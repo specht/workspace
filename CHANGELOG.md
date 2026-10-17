@@ -721,6 +721,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Wer sich als Testkonto (`name+test@…`) anmeldet, bekommt den Anmelde-Code
+  an die eigene Adresse ohne `+test`, mit dem Hinweis, dass er für das
+  Testkonto ist.
 - Startseite auf dem Tablet (zwei Spalten): Steht eine Karte allein in der
   letzten Reihe ihres Bereichs, nimmt sie die ganze Breite ein, mit dem Bild
   links und dem Text daneben, statt eine halbe Reihe leer zu lassen.

@@ -2911,17 +2911,21 @@ class Main < Sinatra::Base
             if DEVELOPMENT
                 STDERR.puts 'Not sending login code email in development mode.'
             else
-                STDERR.puts "Sending login code email to invited user #{email}"
+                # A test account's code goes to its teacher, at the address
+                # without +test: plus addresses do not reach every inbox.
+                recipient = @@test_accounts[email] || email
+                for_test = recipient != email
+                STDERR.puts "Sending login code email for invited user #{email} to #{recipient}"
                 deliver_mail do
-                    to email
+                    to recipient
                     # bcc SMTP_FROM
                     from SMTP_FROM
 
-                    subject "Dein Anmeldecode lautet #{login_request[:code]}"
+                    subject for_test ? "Anmeldecode für dein Testkonto: #{login_request[:code]}" : "Dein Anmeldecode lautet #{login_request[:code]}"
 
                     StringIO.open do |io|
                         io.puts "<p>Hallo!</p>"
-                        io.puts "<p>Dein Anmeldecode lautet:</p>"
+                        io.puts for_test ? "<p>Der Anmeldecode für dein Testkonto #{CGI.escapeHTML(email)} lautet:</p>" : "<p>Dein Anmeldecode lautet:</p>"
                         io.puts "<p style='font-size: 200%;'>#{login_request[:code]}</p>"
                         io.puts "<p>Der Code ist für zehn Minuten gültig. Nachdem du dich angemeldet hast, bleibst du für ein ganzes Jahr angemeldet (falls du dich nicht wieder abmeldest).</p>"
                         io.puts "<p>Falls du diese E-Mail nicht angefordert hast, hat jemand versucht, sich mit deiner E-Mail-Adresse auf <a href='https://#{WEBSITE_HOST}/'>https://#{WEBSITE_HOST}/</a> anzumelden. In diesem Fall musst du nichts weiter tun (es sei denn, du befürchtest, dass jemand anderes Zugriff auf dein E-Mail-Konto hat – dann solltest du dein E-Mail-Passwort ändern).</p>"
@@ -7483,6 +7487,31 @@ class Main < Sinatra::Base
             headers 'Cache-Control' => 'no-store'
             respond_raw_with_mimetype(File.binread(image_path), 'image/webp')
         end
+    end
+
+    # The case files of »Ein Krimi im Terminal«. Downloaded in one's own
+    # Workspace (the request comes from its address), they carry a note with
+    # that person's access to the case server; from anywhere else, without.
+    get '/terminal-mystery/bitstein.tar.gz' do
+        archive = File.binread('/src/content/terminal-mystery/beispiele/bitstein.tar.gz')
+        email = CaseServer.enabled? ? workspace_email_for_ip(client_ip) : nil
+        if email
+            archive = CaseServer.archive_with_note(archive, CaseServer.note(CaseServer.secret(LOGIN_CODE_SALT), email))
+        end
+        respond_raw_with_mimetype(archive, 'application/gzip')
+    end
+
+    # Whose Workspace has this address: exactly one running Workspace of an
+    # invited person, or nil (an exam Workspace has its own tag and no match).
+    def workspace_email_for_ip(ip)
+        return nil if ip.to_s.empty?
+
+        tags = workspace_runtime.running_workspaces(:timeout => shell_timeout(:docker_network_inspect))
+            .select { |_, w| w[:ip] == ip }.keys
+        return nil unless tags.size == 1
+
+        Main.load_invitations()
+        @@invitations.keys.find { |email| fs_tag_for_email(email) == tags.first }
     end
 
     get '/*' do

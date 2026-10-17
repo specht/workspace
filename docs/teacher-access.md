@@ -77,9 +77,8 @@ Leistungsüberprüfung zuweisen. »Nachahmen« braucht dort keinen Satz.
 leert den Workspace des Testkontos und seine Workspaces in
 Leistungsüberprüfungen, legt seine Datenbanken neu an und löscht seine
 Antworten, Versuche und Abgaben. Zugewiesen bleibt es; andere Konten ändern
-sich nicht. Bei den meisten Mail-Anbietern kommen
-Anmelde-Codes für `+test` im eigenen Postfach an; man kann sich also auch
-direkt als Testkonto anmelden.
+sich nicht. Wer sich direkt als Testkonto anmeldet, bekommt den Anmelde-Code an die
+eigene Adresse ohne `+test`; nicht jedes Postfach nimmt Adressen mit `+` an.
 
 ## Einstieg für Lehrkräfte
 

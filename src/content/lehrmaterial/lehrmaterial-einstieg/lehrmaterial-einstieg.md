@@ -102,7 +102,7 @@ Für dich gibt es ein **Testkonto**, genau eins: ein Konto wie das einer Schüle
 ### So kommst du hinein
 
 - **Nachahmen:** Wähl auf der Klassenseite deine Testgruppe, geh auf **Lernende** und klick bei deinem Testkonto auf **Nachahmen**; einen Satz braucht es dafür nicht. Jetzt siehst du die Website genau so, wie eine Schülerin sie sieht. Mit »Zurück zu deinem Konto« in der Leiste oben bist du wieder du selbst. **Workspace öffnen** startet daneben den Workspace des Testkontos, ohne dass du es nachahmst.
-- **Direkt anmelden:** Das Testkonto hat deine Adresse mit `+test` vor dem @, aus `name@schule.de` wird `name+test@schule.de`. Bei den meisten Mail-Anbietern landet der Anmelde-Code dafür in deinem eigenen Postfach. Meld dich damit in einem privaten Fenster oder einem zweiten Browser an, dann hast du beides nebeneinander: links die Klassenseite als Lehrkraft, rechts das Testkonto als Schülerin.
+- **Direkt anmelden:** Das Testkonto hat deine Adresse mit `+test` vor dem @, aus `name@schule.de` wird `name+test@schule.de`. Den Anmelde-Code dafür schickt der Workspace an deine eigene Adresse, ohne `+test`. Meld dich damit in einem privaten Fenster oder einem zweiten Browser an, dann hast du beides nebeneinander: links die Klassenseite als Lehrkraft, rechts das Testkonto als Schülerin.
 
 ### Was du damit ausprobieren kannst
 
