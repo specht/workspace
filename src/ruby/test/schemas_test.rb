@@ -38,6 +38,9 @@ class SchemasTest < Minitest::Test
         assert_equal 2, out.scan("<span class='schema-new'>neu</span>").size
         assert_equal 2, out.scan("schema-table-rows' open>").size
         assert_includes out, "<td>Afghanistan</td>"
+        # The headers of the rows marked like the line above them
+        assert_includes out, "<th><u>code</u></th><th>name</th>"
+        assert_includes out, "<th><span class='schema-fk' title='verweist auf continent.name'><span class='schema-arrow'>↑</span>continent</span></th>"
         assert_includes out, '… und 194 weitere Zeilen, 197 in allen'
         assert_includes out, '<td>652230</td>'
         basic = Schemas.expand("_schema(countries-basic, rows)\n")

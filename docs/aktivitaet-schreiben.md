@@ -58,7 +58,7 @@ Jahr steht dafür im Titel der Seite in Klammern.
 
 | Feld | Wofür |
 | --- | --- |
-| `image` | Bild für die Karte im Katalog, 16:9 |
+| `image` | Bild für die Karte im Katalog, 16:9; die Karte schneidet es zu, `bild.webp:50:0` legt fest, welcher Teil bleibt. Eine Zeichnung, die ganz zu sehen sein soll, bekommt `bild.webp:contain`: Sie wird mit der Farbe ihrer Ecke auf 16:9 aufgefüllt, auch ihre dunkle Fassung |
 | `kind` | `projekt`, `labor`, `grundlagen`, `uebung`, `galerie` oder `steckbrief` (Programmiersprachen); steht auf der Karte, jede Aktivität im Katalog braucht eines |
 | `language` | Die Sprache, in der man programmiert, wenn es eine feste gibt: `Ruby`, `C / raylib`; steht als »Projekt (Ruby)« auf der Karte |
 | `topic` | Abschnitt im Katalog (Schlüssel aus `src/content/sections.yaml`) |

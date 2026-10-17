@@ -33,18 +33,21 @@ module Schemas
         JSON.parse(File.read(path))['tables']
     end
 
-    # One table as a line: the primary key underlined, a foreign key with ↑
-    def self.line(name, table)
+    # A column as the schema shows it: the primary key underlined, a
+    # foreign key with ↑ and where it points in its title
+    def self.column(column, table)
         key = table['key'] || []
         references = table['references'] || {}
-        columns = table['columns'].map do |column|
-            text = h(column)
-            if references[column]
-                text = "<span class='schema-fk' title='verweist auf #{h(references[column])}'><span class='schema-arrow'>↑</span>#{text}</span>"
-            end
-            key.include?(column) ? "<u>#{text}</u>" : text
+        text = h(column)
+        if references[column]
+            text = "<span class='schema-fk' title='verweist auf #{h(references[column])}'><span class='schema-arrow'>↑</span>#{text}</span>"
         end
-        "<div><span class='schema-table'>#{h(name)}</span>(#{columns.join(', ')})</div>"
+        key.include?(column) ? "<u>#{text}</u>" : text
+    end
+
+    # One table as a line
+    def self.line(name, table)
+        "<div><span class='schema-table'>#{h(name)}</span>(#{table['columns'].map { |c| column(c, table) }.join(', ')})</div>"
     end
 
     # A value as mycli shows it: 652230.0 as 652230, NULL for nothing
@@ -61,7 +64,7 @@ module Schemas
         # count: how many rows the SQL files have; the stepper's JSON may
         # keep fewer (movies) or only the first (countries-basic)
         total = table['count'] || rows.size
-        head = table['columns'].map { |c| "<th>#{h(c)}</th>" }.join
+        head = table['columns'].map { |c| "<th>#{column(c, table)}</th>" }.join
         body = rows.first(ROWS).map { |r| "<tr>#{r.map { |v| "<td>#{h(value(v))}</td>" }.join}</tr>" }.join
         more = total > ROWS ? "<div class='schema-more'>… und #{total - ROWS} weitere Zeilen, #{total} in allen</div>" : ''
         "<div class='schema-rows'><table class='table table-sm'><thead><tr>#{head}</tr></thead><tbody>#{body}</tbody></table></div>#{more}"

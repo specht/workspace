@@ -4916,12 +4916,15 @@ div[data-stepper]::before {
     border-radius: var(--bs-border-radius);
     pointer-events: none;
 }
+/* The mark reaches a little beyond its text with shadows, not padding:
+   padding would move the mirror's text out of line with the field's. */
 .query-stepper .qs-mirror mark {
+    --qs-mark: color-mix(in srgb, var(--bs-primary) 22%, var(--bs-body-bg));
     padding: 0;
     color: transparent;
-    border-radius: 0.2em;
-    background-color: color-mix(in srgb, var(--bs-primary) 22%, transparent);
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--bs-primary) 45%, transparent);
+    border-radius: 0.15em;
+    background-color: var(--qs-mark);
+    box-shadow: 0 0 0 0.25em var(--qs-mark), 0 0 0 calc(0.25em + 1px) color-mix(in srgb, var(--bs-primary) 45%, transparent);
 }
 .query-stepper .qs-order {
     display: flex;

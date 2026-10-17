@@ -1248,6 +1248,26 @@ class Main < Sinatra::Base
         image_sha1
     end
 
+    # A drawing for an overview card (image: name.webp:contain): padded to the
+    # card's 16:9 with the colour of its top left corner and a margin, so
+    # the card crops nothing, in the light and in the dark variant alike.
+    def self.convert_image_padded(image_path)
+        image_sha1 = Digest::SHA1.hexdigest(File.read(image_path) + 'pad-16x9')[0, 16]
+        target_path = "/webcache/#{image_sha1}.webp"
+        unless FileUtils.uptodate?(target_path, [image_path])
+            size, = Open3.capture2('identify', '-format', '%w %h', "#{image_path}[0]")
+            w, h = size.split.map(&:to_i)
+            corner, = Open3.capture2('convert', "#{image_path}[0]", '-format', '%[pixel:p{0,0}]', 'info:')
+            margin = 1.1
+            width = [w, (h * 16.0 / 9).ceil].max * margin
+            height = width * 9 / 16
+            ok = system('convert', "#{image_path}[0]", '-background', corner.strip, '-gravity', 'center',
+                '-extent', "#{width.round}x#{height.round}", target_path)
+            STDERR.puts "...padding of #{image_path} failed!" unless ok
+        end
+        image_sha1
+    end
+
     # Width-specific variants are only needed by overview cards. Restrict this
     # to normal converted cache entries; data-noconvert images use a different key.
     def self.ensure_image_width(image_url, width)
@@ -1870,9 +1890,13 @@ class Main < Sinatra::Base
                     meta = YAML.load(meta)
                     if meta['image']
                         parts = meta['image'].split(':')
+                        # name.webp:contain for a drawing: padded to 16:9 instead of cropped
+                        contain = parts[1] == 'contain'
+                        parts = parts.first(1) if contain
+                        convert = contain ? method(:convert_image_padded) : method(:convert_image)
                         image_path = File.join(File.dirname(path), parts[0])
                         if File.file?(image_path)
-                            sha1 = convert_image(image_path)
+                            sha1 = convert.call(image_path)
                             parsed_content[slug][:image] = "/cache/#{sha1}.webp"
 
                             # The dark file as the screenshot tool names it:
@@ -1881,7 +1905,7 @@ class Main < Sinatra::Base
                             base = image_path.delete_suffix(extension)
                             dark_image_path = base.sub(/(-anaglyph)?\z/) { "-dark#{$1}" } + extension
                             if File.exist?(dark_image_path)
-                                dark_sha1 = convert_image(dark_image_path)
+                                dark_sha1 = convert.call(dark_image_path)
                                 parsed_content[slug][:image_dark] = "/cache/#{dark_sha1}.webp"
                             end
                         else

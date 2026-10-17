@@ -684,6 +684,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- Die Karten von »Endliche Automaten« und »Ein Rechner für Ausdrücke« im
+  Katalog zeigen ihre Zeichnung ganz, statt sie abzuschneiden: `image:
+  bild.webp:contain` füllt eine Zeichnung auf 16:9 auf.
 - Formeln mit großen Klammern, Summenzeichen und einigen Symbolen sahen auf
   allen Seiten falsch aus, weil die meisten Schriften von KaTeX fehlten;
   nur `KaTeX_Main` und `KaTeX_Math` lagen in `src/static/include/katex/fonts`.
@@ -726,7 +729,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   nicht unter den Städten nahe Berlin steht: Eine Datenbank ist ein Ausschnitt
   der Welt.
 - Query Stepper: In der Abfrage selbst ist der Teil markiert, den der
-  gezeigte Schritt ausführt, etwa `WHERE population > 1000000`.
+  gezeigte Schritt ausführt, etwa `WHERE population > 1000000`. In den
+  Kästen »Die Tabellen« tragen auch die Spaltenköpfe der Beispielzeilen die
+  Zeichen für Primär- und Fremdschlüssel.
 - GIF decodieren, LZW zum Durchklicken: Die Tabelle steht von Anfang an da,
   mit den Einträgen 0 bis 3 für die Farben und 4 und 5 für Clear und End, in
   einer eigenen Spalte rechts neben der Erklärung statt darunter und von Anfang

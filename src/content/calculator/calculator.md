@@ -1,5 +1,5 @@
 <div class='meta'>
-image: baum.webp
+image: baum.webp:contain
 kind: projekt
 language: Ruby / Python
 languages: [ruby, python]
