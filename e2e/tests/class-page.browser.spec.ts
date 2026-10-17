@@ -39,12 +39,12 @@ test('the class page remembers the group and each group\'s activity', async ({ p
   await page.goto('/klasse?group=E2E&activity=bif');
   await page.goto('/klasse?group=' + encodeURIComponent(testGroup) + '&activity=tcpip');
   await page.goto('/klasse');
-  await expect(page.locator('.class-board-select select')).toHaveValue(testGroup);
+  await expect(page.locator(".class-board-select select[name='group']")).toHaveValue(testGroup);
   await expect(page.locator('.class-activity-select select')).toHaveValue('tcpip');
-  await page.locator('.class-board-select select').selectOption('E2E');
+  await page.locator(".class-board-select select[name='group']").selectOption('E2E');
   await expect(page.locator('.class-activity-select select')).toHaveValue('bif');
   await page.goto('/klasse');
-  await expect(page.locator('.class-board-select select')).toHaveValue('E2E');
+  await expect(page.locator(".class-board-select select[name='group']")).toHaveValue('E2E');
 });
 
 test('toolbar buttons sit on one line', async ({ page }, testInfo) => {
