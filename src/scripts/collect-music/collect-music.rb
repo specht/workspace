@@ -1047,6 +1047,8 @@ class DiscogsDatasetBuilder
       - `artist_part_of`: an artist (`member_id`) is or was a member of a band
         (`band_id`); both are rows of `artist`
 
+      #{ClassroomDataset.er_section(MYSQL_SCHEMA)}
+
       Import it into an existing database with, for example:
 
       ```sh

@@ -203,6 +203,49 @@ module ClassroomDataset
     writer&.close
   end
 
+  # The tables of a schema (CREATE TABLE as the collectors write them) as a
+  # Mermaid erDiagram, which GitHub draws in a README: PK and FK at the
+  # columns; a solid line where the foreign key is part of the key (an
+  # identifying relationship), a dashed one elsewhere; |o where the foreign
+  # key may be NULL.
+  def self.er_diagram(schema_sql)
+    lines = ['erDiagram']
+    relations = []
+    schema_sql.scan(/CREATE TABLE `(\w+)` \((.*?)\n\) ENGINE/m).each do |table, body|
+      key = body[/PRIMARY KEY \(([^)]*)\)/, 1].to_s.scan(/`(\w+)`/).flatten
+      foreign = body.scan(/FOREIGN KEY \(`(\w+)`\) REFERENCES `(\w+)`/).to_h
+      nullable = {}
+      lines << "  #{table} {"
+      body.scan(/^\s*`(\w+)` ([A-Za-z]+)[^\n]*$/).each do |column, type|
+        line = body[/^\s*`#{column}` [^\n]*$/]
+        nullable[column] = !line.include?('NOT NULL')
+        marks = [('PK' if key.include?(column)), ('FK' if foreign[column])].compact
+        lines << "    #{type.downcase} #{column}#{marks.empty? ? '' : " #{marks.join(', ')}"}"
+      end
+      lines << '  }'
+      foreign.each do |column, parent|
+        line = key.include?(column) ? '--' : '..'
+        relations << "  #{parent} #{nullable[column] ? '|o' : '||'}#{line}o{ #{table} : \"#{column}\""
+      end
+    end
+    (lines + relations).join("\n")
+  end
+
+  # The diagram as a section of a README, with what its lines mean
+  def self.er_section(schema_sql)
+    <<~MARKDOWN.chomp
+      ### ER diagram
+
+      GitHub draws it from the tables. PK and FK mark the keys; a solid line is a
+      foreign key that is part of the key, a dashed one any other foreign key; at the
+      line, `||` is exactly one, `|o` none or one, `o{` none or several.
+
+      ```mermaid
+      #{er_diagram(schema_sql)}
+      ```
+    MARKDOWN
+  end
+
   # Printed at the end of every build, so a refresh can be judged before its
   # diff is committed.
   def self.report(title, counts, notes = [])

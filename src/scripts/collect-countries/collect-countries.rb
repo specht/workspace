@@ -861,6 +861,8 @@ class WikidataCountryBuilder
       language by its ISO 639-3 code (`deu`, `fra`). A continent has no population of its own; it is the sum of its
       countries (`GROUP BY`). Antarctica has no countries.
 
+      #{ClassroomDataset.er_section(FULL_TABLES.map { |t| TABLE_SQL.fetch(t) }.join("\n"))}
+
       ```sh
       mysql < countries.sql
       ```

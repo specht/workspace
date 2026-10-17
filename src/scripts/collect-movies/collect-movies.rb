@@ -600,6 +600,8 @@ class WikidataMovieBuilder
       `producer`, `cinematographer`, `editor`. Titles are not unique, so a film is identified by its `id`, or by
       title and year.
 
+      #{ClassroomDataset.er_section(MYSQL_SCHEMA)}
+
       ```sh
       mysql < movies.sql                 # everything
       mysql < movies-data-films.sql     # or step by step into tables built in class

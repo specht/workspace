@@ -111,6 +111,17 @@ class CollectCountriesTest < Minitest::Test
         assert_equal 'Kansas City', WikidataCountryBuilder.plain_name('Kansas City')
     end
 
+    def test_the_er_diagram_of_the_tables
+        diagram = ClassroomDataset.er_diagram(WikidataCountryBuilder::FULL_TABLES.map { |t| WikidataCountryBuilder::TABLE_SQL.fetch(t) }.join("\n"))
+        assert diagram.start_with?("erDiagram\n  continent {\n    varchar name PK\n")
+        assert_includes diagram, "    char currency_code FK\n"
+        assert_includes diagram, "  border {\n    char country_code PK, FK\n    char neighbor_code PK, FK\n  }"
+        # identifying where the foreign key is part of the key; |o where it may be NULL
+        assert_includes diagram, '  country ||--o{ border : "neighbor_code"'
+        assert_includes diagram, '  country ||..o{ city : "country_code"'
+        assert_includes diagram, '  currency |o..o{ country : "currency_code"'
+    end
+
     def test_cities_sort_by_name_without_accents
         names = %w[Zürich Ägypten Aachen Österreich Berlin]
         assert_equal %w[Aachen Ägypten Berlin Österreich Zürich], names.sort_by { |n| WikidataCountryBuilder.sort_key(n) }
