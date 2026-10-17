@@ -533,3 +533,56 @@ tasks:
       - when: { same_result_as: "SELECT COUNT(*) FROM country_language" }
         say: Das sind alle Paare aus Land und Sprache. Es fehlt die Bedingung für Englisch.
     solution: "`SELECT COUNT(*) FROM country_language JOIN language ON language.code = country_language.language_code WHERE language.name = 'Englisch';` ergibt 59, mehr als bei jeder anderen Sprache. Ohne `JOIN`: `WHERE language_code = 'eng'`."
+
+  - id: naechste-hamburg
+    title: In der Nähe von Hamburg
+    prompt: Welche fünf Städte liegen Hamburg am nächsten? Gib ihre Namen aus, die nächste zuerst; die Entfernung darf dabeistehen.
+    check:
+      type: sql
+      expect_query: SELECT b.name FROM city AS a JOIN city AS b ON b.id <> a.id WHERE a.name = 'Hamburg' ORDER BY ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) LIMIT 5
+      extra_columns: ok
+      tables: { city: 4748 }
+      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT b.name FROM city AS a JOIN city AS b WHERE a.name = 'Hamburg' ORDER BY ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) LIMIT 5" }
+        say: Die nächste Stadt ist Hamburg selbst, 0 Kilometer entfernt. `ON b.id <> a.id` lässt sie weg.
+      - when: { query_matches: 'point\s*\(\s*(\w+\.)?latitude' }
+        say: "`POINT` nimmt zuerst die Länge (`longitude`), dann die Breite (`latitude`)."
+    solution: "`SELECT b.name, ROUND(ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) / 1000) AS km FROM city AS a JOIN city AS b ON b.id <> a.id WHERE a.name = 'Hamburg' ORDER BY km LIMIT 5;` Lübeck (57 km), Kiel, Bremerhaven, Bremen und Oldenburg (127 km)."
+
+  - id: weiteste-vermutung
+    title: Am anderen Ende der Welt
+    prediction: true
+    prompt: Welche Stadt in `city` liegt am weitesten von Berlin entfernt?
+    check:
+      type: choice
+      options:
+        - Dunedin in Neuseeland
+        - Sydney in Australien
+        - Buenos Aires in Argentinien
+        - Honolulu auf Hawaii
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Sydney ist 16.096 Kilometer weit weg. Es gibt eine Stadt, die noch weiter weg liegt.
+      - when: { picked: 2 }
+        say: Buenos Aires liegt 11.908 Kilometer von Berlin entfernt. Es geht noch viel weiter.
+      - when: { picked: 3 }
+        say: Honolulu liegt 11.763 Kilometer von Berlin entfernt. Es geht noch viel weiter.
+    solution: Dunedin auf der Südinsel Neuseelands, 18.206 Kilometer. Weiter als gut 20.000 Kilometer kann auf der Erde nichts entfernt sein, der halbe Umfang; der Punkt gegenüber von Berlin liegt im Pazifik südöstlich von Neuseeland.
+
+  - id: weiteste-berlin
+    title: Die weiteste Stadt
+    prompt: Prüf deine Vermutung mit einer Abfrage. Gib den Namen der Stadt aus, die am weitesten von Berlin entfernt ist.
+    check:
+      type: sql
+      expect_query: SELECT b.name FROM city AS a CROSS JOIN city AS b WHERE a.name = 'Berlin' ORDER BY ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) DESC LIMIT 1
+      extra_columns: ok
+      tables: { city: 4748 }
+      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+    feedback:
+      - when: { query_matches: 'point\s*\(\s*(\w+\.)?latitude' }
+        say: "`POINT` nimmt zuerst die Länge (`longitude`), dann die Breite (`latitude`)."
+      - when: { same_result_as: "SELECT b.name FROM city AS a JOIN city AS b ON b.id <> a.id WHERE a.name = 'Berlin' ORDER BY ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) LIMIT 1" }
+        say: Das ist die nächste Stadt. Für die weiteste sortierst du andersherum.
+    solution: "`SELECT b.name, ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) / 1000 AS km FROM city AS a CROSS JOIN city AS b WHERE a.name = 'Berlin' ORDER BY km DESC LIMIT 1;` Dunedin, 18.206 Kilometer."

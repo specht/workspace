@@ -18,6 +18,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- »Einführung in SQL«, Teil 2: ein Abschnitt »Wie weit ist es?«. Mit
+  `ST_Distance_Sphere` und `CROSS JOIN` rechnen Lernende Entfernungen
+  zwischen Städten aus, finden die fünf nächsten Städte zu Hamburg und die
+  Stadt, die am weitesten von Berlin entfernt ist (erst vermuten, dann
+  abfragen). Ein kurzer Teil erklärt, wann sich ein `SPATIAL INDEX` lohnt.
+  Im Handbuch SQL neu: »Entfernungen auf der Erde«.
 - Unter offenen Aufgaben (Reflexionen) sehen Lehrkräfte auf der Seite einen
   Kasten »Für Lehrkräfte«: Beispielantworten, die Antworten der aktuellen
   Gruppe mit Namen und Datum, oder nichts. Die Wahl gilt für alle Aufgaben

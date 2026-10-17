@@ -847,6 +847,54 @@ _task(deutsch-amtssprache)
 
 _task(englisch-amtssprache)
 
+## Wie weit ist es? Entfernungen
+
+Jede Stadt hat in `latitude` und `longitude` ihre Lage auf der Erde, Breite und Länge in Grad. Daraus rechnet MySQL die Entfernung zweier Städte aus. `POINT(x, y)` macht aus zwei Zahlen einen Punkt, und auf der Erde kommt die Länge zuerst, wie auf einer Karte x vor y. `ST_Distance_Sphere` gibt die Entfernung zweier Punkte auf einer Kugel, so groß wie die Erde, in Metern: die Luftlinie.
+
+Für zwei Städte braucht die Abfrage die Tabelle `city` zweimal, wie `country` bei den Nachbarn. `CROSS JOIN` setzt jede Zeile der einen mit jeder Zeile der anderen zusammen, und `WHERE` sucht das eine Paar heraus:
+
+```sql
+SELECT a.name, b.name,
+    ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) / 1000 AS km
+FROM city AS a
+CROSS JOIN city AS b
+WHERE a.name = 'Berlin' AND b.name = 'Paris';
+```
+
+Berlin und Paris liegen 876 Kilometer auseinander. Für die Städte in der Nähe von Berlin ist `a` Berlin und `b` jede andere Stadt; `ON b.id <> a.id` lässt das Paar von Berlin mit sich selbst weg. Sortiert nach der Entfernung stehen die nächsten oben:
+
+```sql
+SELECT b.name, ROUND(ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) / 1000) AS km
+FROM city AS a
+JOIN city AS b ON b.id <> a.id
+WHERE a.name = 'Berlin'
+ORDER BY km
+LIMIT 5;
+```
+
+<!-- tutorial-screenshot
+press: Control+L
+terminal-run: SELECT b.name, ROUND(ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) / 1000) AS km FROM city AS a JOIN city AS b ON b.id <> a.id WHERE a.name = 'Berlin' ORDER BY km LIMIT 5;
+sleep: 0.5
+terminal-scroll-back: 2
+crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
+-->
+
+<img class='full' src='distance-berlin.webp' alt='Die fünf Städte, die Berlin am nächsten liegen: Potsdam mit 25 Kilometern, dann Magdeburg, Gorzów Wielkopolski, Stettin und Leipzig mit 126 bis 148 Kilometern.'>
+
+_task(naechste-hamburg)
+
+_task(weiteste-vermutung)
+
+_task(weiteste-berlin)
+
+### Braucht das eine besondere Datenbank?
+
+Für diese Abfragen rechnet MySQL die Entfernung von Berlin zu jeder der 4.748 Städte einmal aus und sortiert. Das dauert ein paar Millisekunden. Eine Karten-App hat aber Millionen Orte, Haltestellen, Restaurants, Ladesäulen, und Tausende fragen in jeder Sekunde: »Was ist in meiner Nähe?« Jedes Mal alle Orte durchzurechnen, wäre zu langsam.
+
+Dafür bekommt die Lage eine eigene Spalte vom Typ `POINT` und einen `SPATIAL INDEX`. Der teilt die Karte in Rechtecke ein, große, die kleinere enthalten, und die wieder kleinere (ein R-Baum). Für eine Frage nach der Nähe sieht die Datenbank nur in den Rechtecken nach, die nah genug liegen, und lässt den Rest der Welt aus. Dieselbe Idee steckt in Datenstrukturen wie dem k-d-Baum, der den Raum abwechselnd längs und quer teilt. Für unsere paar Tausend Städte lohnt sich das nicht: Gerechnet ist hier schneller als nachgeschlagen.
+
 ## Zusammenfassung von Teil 2
 
 <div style='max-width: 100%; overflow-x: auto;'>
@@ -861,11 +909,13 @@ _task(englisch-amtssprache)
 <tr><td><code>JOIN … ON</code></td><td>Welche Zeilen zweier Tabellen gehören zusammen?</td></tr>
 <tr><td><code>AS</code> bei einer Tabelle</td><td>Unter welchem Namen steht eine Tabelle in der Abfrage?</td></tr>
 <tr><td><code>LEFT&nbsp;JOIN</code></td><td>Welche Zeilen bleiben, auch wenn es keinen Partner gibt?</td></tr>
+<tr><td><code>CROSS&nbsp;JOIN</code></td><td>Jede Zeile mit jeder: alle Paare, zum Beispiel aus zwei Städten</td></tr>
+<tr><td><code>ST_Distance_Sphere</code></td><td>Wie weit liegen zwei Punkte auf der Erde auseinander, in Metern?</td></tr>
 </tbody>
 </table>
 </div>
 
-Im Handbuch: _uses(aggregieren, join)
+Im Handbuch: _uses(aggregieren, join, entfernung)
 
 <!-- tutorial-step
 # Jede SQL-Aufgabe des zweiten Teils nimmt ihre Lösung an und lehnt einen typischen Fehler ab, auf der ganzen Fassung
@@ -893,4 +943,8 @@ check-task: deutsch-amtssprache <- SELECT country.name FROM country JOIN country
 check-task-fails: deutsch-amtssprache <- SELECT country.name FROM country WHERE continent = 'Europa' AND name LIKE '%reich%';
 check-task: englisch-amtssprache <- SELECT COUNT(*) FROM country_language JOIN language ON language.code = country_language.language_code WHERE language.name = 'Englisch';
 check-task-fails: englisch-amtssprache <- SELECT COUNT(*) FROM country_language;
+check-task: naechste-hamburg <- SELECT b.name, ROUND(ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) / 1000) AS km FROM city AS a JOIN city AS b ON b.id <> a.id WHERE a.name = 'Hamburg' ORDER BY km LIMIT 5;
+check-task-fails: naechste-hamburg <- SELECT b.name FROM city AS a JOIN city AS b WHERE a.name = 'Hamburg' ORDER BY ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) LIMIT 5;
+check-task: weiteste-berlin <- SELECT b.name FROM city AS a CROSS JOIN city AS b WHERE a.name = 'Berlin' ORDER BY ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) DESC LIMIT 1;
+check-task-fails: weiteste-berlin <- SELECT b.name FROM city AS a CROSS JOIN city AS b WHERE a.name = 'Berlin' ORDER BY ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) LIMIT 1;
 -->

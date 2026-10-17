@@ -137,6 +137,22 @@ WHERE movie.title = 'Back to the Future';
 `JOIN … ON …` setzt jede Zeile der einen Tabelle mit den Zeilen der anderen zusammen, für die die Bedingung gilt, meist Fremdschlüssel = Primärschlüssel. Spalten schreibt man dann mit ihrer Tabelle davor (`movie.title`). Braucht eine Abfrage dieselbe Tabelle zweimal, bekommt sie Namen: `JOIN job AS ja ON …`. `LEFT JOIN` behält auch Zeilen ohne Partner; deren Spalten aus der anderen Tabelle sind dann `NULL`.
 <!-- /part -->
 
+<!-- part: entfernung -->
+<!-- short: `ST_Distance_Sphere(POINT(länge, breite), POINT(länge, breite))` gibt die Entfernung auf der Erdkugel in Metern. -->
+### Entfernungen auf der Erde
+
+```sql
+SELECT b.name, ROUND(ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) / 1000) AS km
+FROM city AS a
+JOIN city AS b ON b.id <> a.id
+WHERE a.name = 'Berlin'
+ORDER BY km
+LIMIT 5;
+```
+
+`POINT(x, y)` macht aus zwei Zahlen einen Punkt, auf der Erde mit der Länge (`longitude`) zuerst und der Breite (`latitude`) danach. `ST_Distance_Sphere` gibt die Entfernung zweier Punkte auf einer Kugel vom Radius der Erde, in Metern, also Luftlinie. `CROSS JOIN` setzt jede Zeile der einen Tabelle mit jeder der anderen zusammen; `JOIN … ON b.id <> a.id` tut dasselbe ohne die Paare einer Stadt mit sich selbst. Für viele Millionen Punkte bekommt die Lage eine eigene Spalte vom Typ `POINT` mit einem `SPATIAL INDEX`, damit die Datenbank nicht jede Zeile ausrechnen muss.
+<!-- /part -->
+
 ## Tabellen und Daten ändern
 
 <!-- part: create-table -->
