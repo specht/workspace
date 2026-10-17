@@ -5,7 +5,7 @@ language: SQL
 topic: databases
 duration: 3 Doppelstunden
 requires: [mysql]
-reference: [er-modelle, sql, json]
+reference: [er-modelle, sql, json, datensaetze]
 </div>
 
 <div
@@ -275,7 +275,7 @@ Am Ende meldet MySQL für jede der drei Tabellen `OK`: Es hat sich angesehen, wa
 Schau dir `mysql-data-movies.sql` ruhig an. Es sind lauter `INSERT`-Befehle, und jeder nennt die Spalten, in die er schreibt, zum Beispiel `INSERT INTO movie (id, title, original_title, …)`. Deshalb müssen die Namen in deinem Modell genau stimmen. Meldet MySQL `Unknown column` oder `Table … doesn't exist`, vergleiche die Namen in `film.er` mit der Meldung, erzeuge das SQL neu und fang mit `mysql < film.sql` wieder an.
 
 <div class='hint'>
-Die Filme stammen aus <a href='https://www.wikidata.org/'>Wikidata</a>, einer freien Wissensdatenbank, die jede und jeder weiterverwenden darf. Woher die Daten genau kommen und wie sie ausgewählt wurden, steht in der <code>README.md</code> neben den Dateien.
+Die Filme stammen aus <a href='https://www.wikidata.org/'>Wikidata</a>, einer freien Wissensdatenbank, die jede und jeder weiterverwenden darf. Woher die Daten genau kommen, wie sie ausgewählt wurden und was jede Spalte bedeutet, beschreibt das Handbuch unter <a href='/reference/datensaetze#movies'>Datensätze</a>.
 </div>
 
 _task(daten-filme)

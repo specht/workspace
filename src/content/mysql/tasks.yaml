@@ -1,26 +1,30 @@
 # Aufgaben zu »Einführung in SQL«. Format: docs/aufgaben.md.
 # Die Abfragen laufen in der eigenen MySQL-Datenbank der Lernenden, in die sie
-# terra1.sql importiert haben (Prüfart sql). tables: sorgt dafür, dass eine
+# die Länder der Welt importiert haben (country-archive/mysql.sql aus
+# specht/workspace-files, Prüfart sql). tables: sorgt dafür, dass eine
 # geleerte oder geänderte Tabelle nicht zu »richtigen« leeren Antworten führt.
+# Die Zahlen in den Lösungen gelten für den Stand der Daten vom Oktober 2026.
 format: 1
 activity: mysql
 tasks:
-  - id: ort-land
-    title: Die Tabelle ort
+  - id: stadt-land
+    title: Die Tabelle city
     prompt: |
-      Sieh dir die Tabelle `ort` an, zum Beispiel mit `DESCRIBE ort;` und
-      `SELECT * FROM ort LIMIT 5;`. Was steht in der Spalte `Land`?
+      Sieh dir die Tabelle `city` an, zum Beispiel mit `DESCRIBE city;` und
+      `SELECT * FROM city LIMIT 5;`. Was steht in der Spalte `country_code`?
     check:
       type: choice
       options:
-        - das Kürzel des Landes, zum Beispiel `D`
+        - das Kürzel des Landes, zum Beispiel `DEU`
         - der Name des Landes, zum Beispiel `Deutschland`
         - die Einwohnerzahl des Landes
         - die Hauptstadt des Landes
-      correct: 1
+      correct: 0
     feedback:
-      - when: { picked: 0 }
-        say: Das Kürzel steht in der Tabelle `land` in der Spalte `LNR`. Sieh mit `SELECT * FROM ort LIMIT 5;` nach, was in `ort` steht.
+      - when: { picked: 1 }
+        say: Der Name steht in der Tabelle `country` in der Spalte `name`. Sieh mit `SELECT * FROM city LIMIT 5;` nach, was in `city` steht.
+      - when: { picked: 3 }
+        say: Ob eine Stadt die Hauptstadt ist, steht in `is_capital`. Sieh mit `SELECT * FROM city LIMIT 5;` nach, was in `country_code` steht.
 
   - id: griechenland
     title: Griechenland
@@ -28,44 +32,50 @@ tasks:
     check:
       type: sql
       expect_query:
-        - SELECT Einwohner FROM land WHERE Name = 'Griechenland'
-        - SELECT Name, Einwohner FROM land WHERE Name = 'Griechenland'
-      tables: { land: 197 }
+        - SELECT population FROM country WHERE name = 'Griechenland'
+        - SELECT name, population FROM country WHERE name = 'Griechenland'
+      tables: { country: 197 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
     feedback:
       - when: { query_matches: '=\s*Griechenland\b' }
         say: Texte stehen in SQL in einfachen Anführungszeichen, also `'Griechenland'`.
-    solution: "`SELECT Einwohner FROM land WHERE Name = 'Griechenland';`"
+      - when: { query_matches: "'Greece'" }
+        say: Die Namen der Länder stehen auf Deutsch in der Tabelle, so wie in `SELECT name FROM country;`.
+    solution: "`SELECT population FROM country WHERE name = 'Griechenland';`"
 
-  - id: einwohner-einheit
+  - id: flaeche-einheit
     title: Was bedeutet die Zahl?
-    prompt: Für Griechenland steht in der Spalte `Einwohner` die Zahl `10.81`. Was bedeutet sie?
+    prompt: Für Deutschland steht in der Spalte `area` die Zahl `357587.77`. Was bedeutet sie?
     check:
       type: choice
       options:
-        - 10,81 Millionen Einwohner
-        - 10.810 Einwohner
-        - 10,81 Prozent der Weltbevölkerung
-        - 1081 Einwohner pro Quadratkilometer
+        - 357.587,77 Quadratkilometer
+        - 357.587,77 Quadratmeter
+        - 35.758.777 Quadratkilometer
+        - 357,58777 Quadratkilometer
       correct: 0
     feedback:
       - when: { picked: 1 }
-        say: Der Punkt ist in SQL das Dezimalkomma, kein Tausenderpunkt. Vergleiche mit einem Land, dessen Einwohnerzahl du kennst, zum Beispiel Deutschland.
-    solution: Die Einwohnerzahlen in `land` sind in Millionen angegeben. Das sieht man an großen Ländern wie China (`1367.48`).
+        say: So groß ist ein Stadtviertel, kein Land. Ein Quadratkilometer hat eine Million Quadratmeter.
+      - when: { picked: 2 }
+        say: Der Punkt ist in SQL das Dezimalkomma, kein Tausenderpunkt. Nach dem Punkt kommen die Nachkommastellen.
+      - when: { picked: 3 }
+        say: Der Punkt ist in SQL das Dezimalkomma, kein Tausenderpunkt. Vor dem Punkt steht hier eine sechsstellige Zahl.
+    solution: Die Flächen in `country` sind in Quadratkilometern angegeben, mit zwei Nachkommastellen. Deutschland ist knapp 900 km lang und rund 600 km breit; das passt zu gut 350.000 km².
 
   - id: kleinste-laender
     title: Die kleinsten zuerst
     prompt: Gib Name und Einwohnerzahl aller Länder aus, die Länder mit den wenigsten Einwohnern zuerst.
     check:
       type: sql
-      expect_query: SELECT Name, Einwohner FROM land ORDER BY Einwohner
+      expect_query: SELECT name, population FROM country ORDER BY population
       sorted_by: 2 ASC
-      tables: { land: 197 }
+      tables: { country: 197 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
     feedback:
       - when: { query_matches: 'desc' }
         say: "`DESC` sortiert absteigend, dann stehen die größten Länder oben. Ohne Angabe sortiert `ORDER BY` aufsteigend."
-    solution: "`SELECT Name, Einwohner FROM land ORDER BY Einwohner;` Ganz oben steht die Vatikanstadt."
+    solution: "`SELECT name, population FROM country ORDER BY population;` Ganz oben steht die Vatikanstadt."
 
   - id: top5-laender
     title: Die fünf größten Länder
@@ -73,195 +83,219 @@ tasks:
     check:
       type: sql
       expect_query:
-        - SELECT Name FROM land ORDER BY Einwohner DESC LIMIT 5
-        - SELECT Name, Einwohner FROM land ORDER BY Einwohner DESC LIMIT 5
-      tables: { land: 197 }
+        - SELECT name FROM country ORDER BY population DESC LIMIT 5
+        - SELECT name, population FROM country ORDER BY population DESC LIMIT 5
+      tables: { country: 197 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
     feedback:
-      - when: { same_result_as: "SELECT Name FROM land ORDER BY Einwohner LIMIT 5" }
+      - when: { same_result_as: "SELECT name FROM country ORDER BY population LIMIT 5" }
         say: Das sind die fünf kleinsten. Für die größten sortierst du absteigend, mit `DESC`.
-      - when: { same_result_as: "SELECT Name, Einwohner FROM land ORDER BY Einwohner LIMIT 5" }
+      - when: { same_result_as: "SELECT name, population FROM country ORDER BY population LIMIT 5" }
         say: Das sind die fünf kleinsten. Für die größten sortierst du absteigend, mit `DESC`.
-    solution: "`SELECT Name, Einwohner FROM land ORDER BY Einwohner DESC LIMIT 5;` Erst sortieren, dann die ersten fünf: China, Indien, die Vereinigten Staaten, Indonesien und Brasilien."
+    solution: "`SELECT name, population FROM country ORDER BY population DESC LIMIT 5;` Erst sortieren, dann die ersten fünf: China, Indien, die Vereinigten Staaten, Indonesien und Pakistan."
 
   - id: hundert-millionen
     title: Mehr als 100 Millionen
     prompt: Wie viele Länder haben mehr als 100 Millionen Einwohner?
     check:
       type: sql
-      expect_query: SELECT COUNT(*) FROM land WHERE Einwohner > 100
-      tables: { land: 197 }
+      expect_query: SELECT COUNT(*) FROM country WHERE population > 100000000
+      tables: { country: 197 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
     feedback:
-      - when: { query_matches: '100\s*000\s*000|100000000' }
-        say: In der Spalte `Einwohner` stehen Millionen, also ist 100 Millionen hier einfach `100`.
-    solution: "`SELECT COUNT(*) FROM land WHERE Einwohner > 100;` ergibt 11."
+      - when: { query_matches: '>\s*100\s*(;|$|and|or)' }
+        say: In `population` steht die Zahl der Menschen, nicht der Millionen. 100 Millionen schreibst du als `100000000`.
+      - when: { query_matches: '100[.,]000[.,]000' }
+        say: Zahlen schreibst du in SQL ohne Tausenderpunkte, also `100000000`.
+    solution: "`SELECT COUNT(*) FROM country WHERE population > 100000000;` ergibt 15."
 
   - id: ka-laender
     title: Länder mit »Ka« am Anfang
     prompt: Welche Länder haben einen Namen, der mit `Ka` beginnt?
     check:
       type: sql
-      expect_query: SELECT Name FROM land WHERE Name LIKE 'Ka%'
-      tables: { land: 197 }
+      expect_query: SELECT name FROM country WHERE name LIKE 'Ka%'
+      tables: { country: 197 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
     feedback:
-      - when: { same_result_as: "SELECT Name FROM land WHERE Name LIKE '%Ka%'" }
+      - when: { same_result_as: "SELECT name FROM country WHERE name LIKE '%Ka%'" }
         say: "`'%Ka%'` findet `Ka` überall im Namen, auch in »Jamaika«. Am Anfang heißt: kein `%` davor."
-      - when: { same_result_as: "SELECT Name FROM land WHERE Name LIKE '%Ka'" }
+      - when: { same_result_as: "SELECT name FROM country WHERE name LIKE '%Ka'" }
         say: "`'%Ka'` findet Namen, die mit `Ka` enden. Das `%` gehört ans Ende."
-    solution: "`SELECT Name FROM land WHERE Name LIKE 'Ka%';` findet Kambodscha, Kamerun, Kanada, Kap Verde, Kasachstan und Katar."
+    solution: "`SELECT name FROM country WHERE name LIKE 'Ka%';` findet Kambodscha, Kamerun, Kanada, Kap Verde, Kasachstan und Katar."
 
-  - id: laender-der-orte
-    title: Aus welchen Ländern?
-    prompt: Aus welchen Ländern stammen die Orte in der Tabelle `ort`? Gib jedes Land genau einmal aus.
+  - id: kontinente-grosse-laender
+    title: Wo die großen Länder liegen
+    prompt: Auf welchen Kontinenten liegen die Länder mit mehr als 100 Millionen Einwohnern? Gib jeden Kontinent genau einmal aus.
     check:
       type: sql
-      expect_query: SELECT DISTINCT Land FROM ort
-      tables: { ort: 26314 }
+      expect_query: SELECT DISTINCT continent FROM country WHERE population > 100000000
+      tables: { country: 197 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
     feedback:
-      - when: { same_result_as: "SELECT Land FROM ort" }
-        say: So steht jedes Land so oft da, wie es Orte hat. Mit `DISTINCT` kommt jedes nur einmal.
-    solution: "`SELECT DISTINCT Land FROM ort;` ergibt 196 Länder."
+      - when: { same_result_as: "SELECT continent FROM country WHERE population > 100000000" }
+        say: So steht jeder Kontinent so oft da, wie er große Länder hat. Mit `DISTINCT` kommt jeder nur einmal.
+      - when: { same_result_as: "SELECT DISTINCT continent FROM country" }
+        say: Das sind alle Kontinente mit Ländern. Es fehlt die Bedingung mit `WHERE`.
+    solution: "`SELECT DISTINCT continent FROM country WHERE population > 100000000;` ergibt Afrika, Asien, Europa, Nordamerika und Südamerika: nur Ozeanien fehlt."
 
   - id: laender-sortiert
     title: Länder nach Einwohnern
-    prompt: Gib alle Länder mit Name, Einwohnerzahl und Hauptstadt aus, nach der Einwohnerzahl absteigend sortiert.
+    prompt: Gib alle Länder mit Name, Einwohnerzahl und Fläche aus, nach der Einwohnerzahl absteigend sortiert.
     check:
       type: sql
-      expect_query: SELECT Name, Einwohner, Hauptstadt FROM land ORDER BY Einwohner DESC
+      expect_query: SELECT name, population, area FROM country ORDER BY population DESC
       sorted_by: 2 DESC
-      tables: { land: 197 }
+      tables: { country: 197 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
     feedback:
-      - when: { query_matches: 'order\s+by\s+einwohner\s*(asc\s*)?;?\s*$' }
+      - when: { query_matches: 'order\s+by\s+population\s*(asc\s*)?;?\s*$' }
         say: Sortiert ist es, aber aufsteigend, die kleinsten Länder zuerst. Für absteigend schreibst du `DESC` dahinter.
-    solution: "`SELECT Name, Einwohner, Hauptstadt FROM land ORDER BY Einwohner DESC;`"
+    solution: "`SELECT name, population, area FROM country ORDER BY population DESC;`"
 
   - id: anzahl-laender
     title: Wie viele Länder?
-    prompt: Wie viele Länder gibt es in der Tabelle `land`?
+    prompt: Wie viele Länder gibt es in der Tabelle `country`?
     check:
       type: sql
-      expect_query: SELECT COUNT(*) FROM land
-      tables: { land: 197 }
+      expect_query: SELECT COUNT(*) FROM country
+      tables: { country: 197 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
-    solution: "`SELECT COUNT(*) FROM land;` ergibt 197."
+    solution: "`SELECT COUNT(*) FROM country;` ergibt 197."
 
-  - id: anzahl-europa
-    title: Länder in Europa
-    prompt: Wie viele Länder liegen in Europa? Beachte die beiden Schreibweisen, die du mit `DISTINCT` entdeckt hast.
+  - id: afrika-grosse-laender
+    title: Große Länder in Afrika
+    prompt: Wie viele Länder in Afrika haben mehr als 50 Millionen Einwohner?
     check:
       type: sql
-      expect_query: SELECT COUNT(*) FROM land WHERE Kontinent = 'Europa' OR Kontinent = 'Europe'
-      tables: { land: 197 }
+      expect_query: SELECT COUNT(*) FROM country WHERE continent = 'Afrika' AND population > 50000000
+      tables: { country: 197 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
     feedback:
-      - when: { same_result_as: "SELECT COUNT(*) FROM land WHERE Kontinent = 'Europa'" }
-        say: Das sind nur die Länder mit `Europa`. Mit `DISTINCT` hast du noch eine zweite Schreibweise gesehen.
-      - when: { same_result_as: "SELECT COUNT(*) FROM land WHERE Kontinent = 'Europa' AND Kontinent = 'Europe'" }
-        say: Mit `AND` müsste ein Land gleichzeitig in `Europa` und in `Europe` liegen. Hier passt `OR`.
-    solution: "`SELECT COUNT(*) FROM land WHERE Kontinent = 'Europa' OR Kontinent = 'Europe';` ergibt 45. Mit `Kontinent IN ('Europa', 'Europe')` geht es kürzer."
+      - when: { same_result_as: "SELECT COUNT(*) FROM country WHERE continent = 'Afrika' OR population > 50000000" }
+        say: Mit `OR` zählen alle Länder Afrikas und dazu alle großen Länder der Welt. Beides zugleich verlangt `AND`.
+      - when: { query_matches: "'Africa'" }
+        say: Die Kontinente heißen in der Tabelle auf Deutsch, so wie `SELECT * FROM continent;` sie zeigt.
+    solution: "`SELECT COUNT(*) FROM country WHERE continent = 'Afrika' AND population > 50000000;` ergibt 6."
 
   - id: arm-bein
     title: Arm und Bein
     prompt: Welche Länder haben die Zeichenfolge `arm` oder `bein` im Namen?
     check:
       type: sql
-      expect_query: SELECT Name FROM land WHERE Name LIKE '%arm%' OR Name LIKE '%bein%'
-      tables: { land: 197 }
+      expect_query: SELECT name FROM country WHERE name LIKE '%arm%' OR name LIKE '%bein%'
+      tables: { country: 197 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
     feedback:
       - when: { query_matches: "like[^;]*\\band\\b[^;]*like" }
         say: Mit `AND` müsste ein Name beides enthalten, `arm` und `bein`. Gesucht sind Namen mit einem von beiden.
       - when: { query_matches: "like\\s*'(arm|bein)%'" }
         say: "`'arm%'` findet nur Namen, die mit `arm` anfangen. Die Zeichenfolge darf aber überall im Namen stehen."
-    solution: "`SELECT Name FROM land WHERE Name LIKE '%arm%' OR Name LIKE '%bein%';`"
+    solution: "`SELECT name FROM country WHERE name LIKE '%arm%' OR name LIKE '%bein%';` findet Armenien und die Elfenbeinküste. Groß- und Kleinschreibung spielt bei `LIKE` keine Rolle."
 
-  - id: groesster-ort
-    title: Der größte Ort
-    prompt: Welcher Ort hat die meisten Einwohner? Gib seinen Namen, seine Einwohnerzahl und sein Land aus.
+  - id: groesste-stadt
+    title: Die größte Stadt
+    prompt: Welche Stadt hat die meisten Einwohner? Gib ihren Namen, ihre Einwohnerzahl und das Kürzel ihres Landes aus.
     check:
       type: sql
-      expect_query: SELECT Name, Einwohner, Land FROM ort ORDER BY Einwohner DESC LIMIT 1
-      tables: { ort: 26314 }
+      expect_query: SELECT name, population, country_code FROM city ORDER BY population DESC LIMIT 1
+      tables: { city: 4748 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
     feedback:
-      - when: { query_matches: 'order\s+by\s+einwohner\s*(asc\s*)?limit' }
-        say: Ohne `DESC` wird aufsteigend sortiert, dann steht der kleinste Ort oben.
+      - when: { query_matches: 'order\s+by\s+population\s*(asc\s*)?limit' }
+        say: Ohne `DESC` wird aufsteigend sortiert, dann steht die kleinste Stadt oben.
     solution: |
-      `SELECT Name, Einwohner, Land FROM ort ORDER BY Einwohner DESC LIMIT 1;`
-      Es geht auch ohne Sortieren:
-      `SELECT Name, Einwohner, Land FROM ort WHERE Einwohner = (SELECT MAX(Einwohner) FROM ort);`
+      `SELECT name, population, country_code FROM city ORDER BY population DESC LIMIT 1;`
+      ergibt Chongqing in China (`CHN`): Gezählt sind die Menschen innerhalb der
+      Stadtgrenzen, und die schließen dort viel Land ein. Es geht auch ohne Sortieren:
+      `SELECT name, population, country_code FROM city WHERE population = (SELECT MAX(population) FROM city);`
 
-  - id: orte-frankreich
-    title: Orte in Frankreich
-    prompt: Wie viele Orte aus Frankreich sind in der Tabelle `ort` gespeichert?
+  - id: staedte-frankreich
+    title: Städte in Frankreich
+    prompt: Wie viele Städte aus Frankreich sind in der Tabelle `city` gespeichert?
     check:
       type: sql
-      expect_query: SELECT COUNT(*) FROM ort WHERE Land = 'Frankreich'
-      tables: { ort: 26314 }
+      expect_query: SELECT COUNT(*) FROM city WHERE country_code = 'FRA'
+      tables: { city: 4748 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
     feedback:
-      - when: { query_matches: "'(F|France)'" }
-        say: In der Spalte `Land` steht der Name des Landes auf Deutsch, so wie in `land.Name`.
-    solution: "`SELECT COUNT(*) FROM ort WHERE Land = 'Frankreich';`"
+      - when: { query_matches: "'(Frankreich|France|F|FR)'" }
+        say: In `country_code` steht das Kürzel mit drei Buchstaben, so wie in `country.code`. Für Frankreich findest du es mit `SELECT code FROM country WHERE name = 'Frankreich';`.
+    solution: "`SELECT COUNT(*) FROM city WHERE country_code = 'FRA';` ergibt 43."
 
   - id: top10-frankreich
-    title: Die zehn größten Orte Frankreichs
-    prompt: Gib die Namen der zehn bevölkerungsreichsten Orte Frankreichs aus (wenn du willst, mit ihrer Einwohnerzahl).
+    title: Die zehn größten Städte Frankreichs
+    prompt: Gib die Namen der zehn bevölkerungsreichsten Städte Frankreichs aus (wenn du willst, mit ihrer Einwohnerzahl).
     check:
       type: sql
       expect_query:
-        - SELECT Name FROM ort WHERE Land = 'Frankreich' ORDER BY Einwohner DESC LIMIT 10
-        - SELECT Name, Einwohner FROM ort WHERE Land = 'Frankreich' ORDER BY Einwohner DESC LIMIT 10
-      tables: { ort: 26314 }
+        - SELECT name FROM city WHERE country_code = 'FRA' ORDER BY population DESC LIMIT 10
+        - SELECT name, population FROM city WHERE country_code = 'FRA' ORDER BY population DESC LIMIT 10
+      tables: { city: 4748 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
-    solution: "`SELECT Name, Einwohner FROM ort WHERE Land = 'Frankreich' ORDER BY Einwohner DESC LIMIT 10;`"
+    solution: "`SELECT name, population FROM city WHERE country_code = 'FRA' ORDER BY population DESC LIMIT 10;` Paris, Marseille, Lyon, Toulouse, Nizza, Nantes, Montpellier, Straßburg, Bordeaux und Lille."
 
   - id: drei-arm
-    title: Drei Orte mit »arm«
-    prompt: Finde drei Orte, deren Name die Zeichenfolge `arm` enthält, und gib ihre Namen aus.
+    title: Drei Städte mit »arm«
+    prompt: Finde drei Städte, deren Name die Zeichenfolge `arm` enthält, und gib ihre Namen aus.
     check:
       type: sql
-      expect_query: SELECT Name FROM ort WHERE Name LIKE '%arm%'
+      expect_query: SELECT name FROM city WHERE name LIKE '%arm%'
       compare: subset
       rows: 3
-      tables: { ort: 26314 }
+      tables: { city: 4748 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
-    solution: "`SELECT Name FROM ort WHERE Name LIKE '%arm%' LIMIT 3;`"
+    solution: "`SELECT name FROM city WHERE name LIKE '%arm%' LIMIT 3;`"
 
-  - id: drei-bein
-    title: Drei Orte mit »bein«
-    prompt: Und drei Orte, deren Name `bein` enthält, ebenfalls mit ihren Namen.
+  - id: drei-heim
+    title: Drei Städte mit »heim«
+    prompt: Und drei Städte, deren Name `heim` enthält, ebenfalls mit ihren Namen.
     check:
       type: sql
-      expect_query: SELECT Name FROM ort WHERE Name LIKE '%bein%'
+      expect_query: SELECT name FROM city WHERE name LIKE '%heim%'
       compare: subset
       rows: 3
-      tables: { ort: 26314 }
+      tables: { city: 4748 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
-    solution: "`SELECT Name FROM ort WHERE Name LIKE '%bein%' LIMIT 3;`"
+    solution: "`SELECT name FROM city WHERE name LIKE '%heim%' LIMIT 3;` Mannheim, Mülheim an der Ruhr und Pforzheim, aber auch Trondheim in Norwegen und Anaheim in Kalifornien."
 
-  - id: westlich-aachen
-    title: Westlich von Aachen
-    prompt: Welche Orte in Deutschland liegen westlich von Aachen (6,046° Ost)?
+  - id: noerdlich-hamburg
+    title: Nördlich von Hamburg
+    prompt: Welche Städte in Deutschland liegen nördlicher als Hamburg (53,55° Nord)?
     check:
       type: sql
       expect_query:
-        - SELECT Name FROM ort WHERE Land = 'Deutschland' AND Laenge < 6.046
-        - SELECT Name, Laenge FROM ort WHERE Land = 'Deutschland' AND Laenge < 6.046
-      tables: { ort: 26314 }
+        - SELECT name FROM city WHERE country_code = 'DEU' AND latitude > 53.55
+        - SELECT name, latitude FROM city WHERE country_code = 'DEU' AND latitude > 53.55
+      tables: { city: 4748 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
     feedback:
-      - when: { query_matches: '6,046' }
-        say: Kommazahlen schreibst du in SQL mit Punkt, also `6.046`.
-      - when: { query_matches: 'laenge\s*>' }
-        say: Je weiter westlich, desto kleiner die Länge. Westlich von Aachen heißt `Laenge < 6.046`.
+      - when: { query_matches: '53,55' }
+        say: Kommazahlen schreibst du in SQL mit Punkt, also `53.55`.
+      - when: { query_matches: 'latitude\s*<' }
+        say: Je weiter nördlich, desto größer die Breite. Nördlich von Hamburg heißt `latitude > 53.55`.
+      - when: { query_matches: 'longitude' }
+        say: Wie weit nördlich eine Stadt liegt, sagt die Breite, `latitude`. Die Länge, `longitude`, sagt, wie weit östlich.
     solution: |
-      `SELECT Name FROM ort WHERE Land = 'Deutschland' AND Laenge < 6.046;`
-      Ohne die Zahl abzuschreiben: `… AND Laenge < (SELECT Laenge FROM ort WHERE Name = 'Aachen')`.
+      `SELECT name FROM city WHERE country_code = 'DEU' AND latitude > 53.55;` ergibt Kiel, Lübeck und Rostock.
+      Ohne die Zahl abzuschreiben: `… AND latitude > (SELECT latitude FROM city WHERE name = 'Hamburg')`.
+
+  - id: hauptstaedte-sueden
+    title: Hauptstädte im Süden
+    prompt: Welche Hauptstädte liegen auf der Südhalbkugel, also südlich des Äquators?
+    check:
+      type: sql
+      expect_query:
+        - SELECT name FROM city WHERE is_capital = 1 AND latitude < 0
+        - SELECT name, latitude FROM city WHERE is_capital = 1 AND latitude < 0
+      tables: { city: 4748 }
+      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT name FROM city WHERE latitude < 0" }
+        say: Das sind alle Städte auf der Südhalbkugel. Ob eine Stadt die Hauptstadt ist, steht in `is_capital`.
+      - when: { query_matches: 'latitude\s*>' }
+        say: Südlich des Äquators ist die Breite negativ, also `latitude < 0`.
+    solution: "`SELECT name FROM city WHERE is_capital = 1 AND latitude < 0;` ergibt 40 Hauptstädte, von Antananarivo bis Yaren. Statt `= 1` geht auch `= TRUE` oder nur `WHERE is_capital AND …`."
 
   - id: reihenfolge
     title: Die Reihenfolge
@@ -283,7 +317,7 @@ tasks:
       - when: { picked: 2 }
         say: Fast. Wählt SELECT die Spalten aus, bevor WHERE die Zeilen prüft? Schau in der Zeitlupe, wann die Spalten verschwinden.
       - when: { picked: 3 }
-        say: ORDER BY darf schon die Namen aus SELECT benutzen, etwa dichte. Also muss SELECT vorher drankommen.
+        say: ORDER BY darf schon die Namen aus SELECT benutzen, etwa density. Also muss SELECT vorher drankommen.
 
   - id: dichte-where
     title: Ein Name, den es noch nicht gibt
@@ -293,22 +327,21 @@ tasks:
       Zeitlupe oder in mycli aus.
 
       ```sql
-      SELECT name, einwohner / flaeche * 1000000 AS dichte
-      FROM land
-      WHERE dichte > 1000;
+      SELECT name, population / area AS density
+      FROM country
+      WHERE density > 1000;
       ```
     check:
       type: choice
       options:
-        - 'Ein Fehler: Die Spalte dichte gibt es bei WHERE noch nicht.'
+        - 'Ein Fehler: Die Spalte density gibt es bei WHERE noch nicht.'
         - Die Länder mit mehr als 1000 Menschen pro Quadratkilometer
-        - Alle Länder, denn dichte ist bei WHERE noch leer
+        - Alle Länder, denn density ist bei WHERE noch leer
         - Keine einzige Zeile
       correct: 0
     feedback:
       - when: { picked: 1 }
-        say: So wäre es praktisch. Aber WHERE kommt vor SELECT, und den Namen dichte gibt es erst ab SELECT. MySQL meldet »Unknown column 'dichte' in 'where clause'«.
+        say: So wäre es praktisch. Aber WHERE kommt vor SELECT, und den Namen density gibt es erst ab SELECT. MySQL meldet »Unknown column 'density' in 'where clause'«.
       - when: { picked: 2 }
-        say: Eine leere Spalte gibt es nicht; bei WHERE gibt es dichte schlicht noch gar nicht.
-    solution: "Ein Fehler, in MySQL »Unknown column 'dichte' in 'where clause'«. Richtig ist `WHERE einwohner / flaeche * 1000000 > 1000`: der Ausdruck selbst statt des Namens."
-
+        say: Eine leere Spalte gibt es nicht; bei WHERE gibt es density schlicht noch gar nicht.
+    solution: "Ein Fehler, in MySQL »Unknown column 'density' in 'where clause'«. Richtig ist `WHERE population / area > 1000`: der Ausdruck selbst statt des Namens."

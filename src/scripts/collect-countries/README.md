@@ -44,6 +44,10 @@ Generated files (shared with `collect-movies` and `collect-music` via
 The tables and columns are a contract with the Einführung in SQL, its tasks
 (`src/content/mysql/tasks.yaml`) and the SQL-Zeitlupe
 (`src/scripts/query-stepper-data.rb countries mysql.sql`). Change them together.
+So are the numbers: the tasks expect the published row counts (`tables: { city: … }`)
+and name results in their solutions, and the pictures of the tutorial show them. A
+new build, published, needs the tasks, the stepper's tables and the screenshots
+renewed with it; students who loaded the old build load the new one.
 
 At the end the script prints a sanity summary (counts, countries without capital or
 neighbours, Germany) and notes. Check it, and check by hand what the tutorial asks

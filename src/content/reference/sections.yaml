@@ -95,10 +95,11 @@
   icon: /images/card-file-box.png
   description: |
     SQL für MySQL nachschlagen, ER-Modelle als Text schreiben und in
-    Tabellen übersetzen.
+    Tabellen übersetzen, und was in den Datensätzen der Aktivitäten steht.
   entries:
     - sql
     - er-modelle
+    - datensaetze
 
 - key: reference-stories
   label: Interaktive Geschichten

@@ -11,7 +11,7 @@ kind: reference
 # SQL
 
 <p class='abstract'>
-Abfragen und Änderungen für MySQL zum Nachschlagen: Daten auswählen, filtern, sortieren, zählen und verbinden, Tabellen anlegen und füllen, und wie ein Programm Werte sicher in eine Abfrage gibt. Die Beispiele stammen aus den Datenbanken der Aktivitäten: <code>land</code> aus <code>terra1</code> und die Filmdatenbank.
+Abfragen und Änderungen für MySQL zum Nachschlagen: Daten auswählen, filtern, sortieren, zählen und verbinden, Tabellen anlegen und füllen, und wie ein Programm Werte sicher in eine Abfrage gibt. Die Beispiele stammen aus den Datensätzen der Aktivitäten: die Länder der Welt und die Filmdatenbank (siehe <a href='/reference/datensaetze'>Datensätze</a>).
 </p>
 
 ## Mit der Datenbank arbeiten
@@ -40,12 +40,12 @@ mysql < film.sql
 <!-- /part -->
 
 <!-- part: tabellen-ansehen -->
-<!-- short: `SHOW TABLES;` listet die Tabellen, `DESCRIBE land;` zeigt Spalten und Typen. -->
+<!-- short: `SHOW TABLES;` listet die Tabellen, `DESCRIBE country;` zeigt Spalten und Typen. -->
 ### Tabellen und Spalten ansehen
 
 ```sql
 SHOW TABLES;
-DESCRIBE land;
+DESCRIBE country;
 ```
 
 `SHOW TABLES` listet die Tabellen der Datenbank, `DESCRIBE` die Spalten einer Tabelle mit ihren Datentypen, ob sie leer bleiben dürfen (`NULL`) und welche zum Schlüssel gehören (`PRI`, `MUL`).
@@ -58,9 +58,9 @@ DESCRIBE land;
 ### SELECT und FROM
 
 ```sql
-SELECT name, hauptstadt FROM land;
-SELECT * FROM land;
-SELECT name, einwohner * 1000000 AS menschen FROM land;
+SELECT name, population FROM country;
+SELECT * FROM country;
+SELECT name, population / area AS density FROM country;
 ```
 
 Nach `SELECT` stehen die Spalten, die das Ergebnis haben soll, nach `FROM` die Tabelle. `*` heißt »alle Spalten«. Eine Spalte kann auch ein berechneter Wert sein; `AS` gibt ihr einen Namen.
@@ -71,10 +71,10 @@ Nach `SELECT` stehen die Spalten, die das Ergebnis haben soll, nach `FROM` die T
 ### Zeilen filtern: WHERE
 
 ```sql
-SELECT * FROM land WHERE kontinent = 'Europa';
-SELECT name FROM land WHERE einwohner < 5 AND flaeche > 1000000;
-SELECT name FROM land WHERE kontinent IN ('Europa', 'Asien');
-SELECT name FROM land WHERE name LIKE '%land%';
+SELECT * FROM country WHERE continent = 'Europa';
+SELECT name FROM country WHERE population < 5000000 AND area > 1000000;
+SELECT name FROM country WHERE continent IN ('Europa', 'Asien');
+SELECT name FROM country WHERE name LIKE '%land%';
 ```
 
 <div class='scroll-x'><table class='table table-sm reference-table'>
@@ -98,8 +98,8 @@ Texte stehen in einfachen Anführungszeichen, Zahlen ohne.
 ### Sortieren und begrenzen: ORDER BY, LIMIT
 
 ```sql
-SELECT name, einwohner FROM land ORDER BY einwohner DESC LIMIT 10;
-SELECT name, kontinent FROM land ORDER BY kontinent, name;
+SELECT name, population FROM country ORDER BY population DESC LIMIT 10;
+SELECT name, continent FROM country ORDER BY continent, name;
 ```
 
 `ORDER BY` sortiert aufsteigend, mit `DESC` absteigend; nach mehreren Spalten, wenn die erste gleich ist. `LIMIT` gibt höchstens so viele Zeilen aus. Ohne `ORDER BY` ist die Reihenfolge nicht festgelegt.
@@ -110,13 +110,13 @@ SELECT name, kontinent FROM land ORDER BY kontinent, name;
 ### Zählen und zusammenfassen
 
 ```sql
-SELECT COUNT(*) FROM land WHERE kontinent = 'Asien';
-SELECT DISTINCT kontinent FROM land;
-SELECT kontinent, COUNT(*) AS laender, SUM(einwohner) AS einwohner
-FROM land
-GROUP BY kontinent
+SELECT COUNT(*) FROM country WHERE continent = 'Asien';
+SELECT DISTINCT continent FROM country;
+SELECT continent, COUNT(*) AS countries, SUM(population) AS people
+FROM country
+GROUP BY continent
 HAVING COUNT(*) >= 10
-ORDER BY laender DESC;
+ORDER BY countries DESC;
 ```
 
 `COUNT(*)` zählt Zeilen, `SUM`, `AVG`, `MIN` und `MAX` rechnen über eine Spalte. `DISTINCT` gibt jeden Wert nur einmal aus. `GROUP BY` fasst Zeilen mit gleichem Wert zu einer Gruppe zusammen; dann rechnen die Funktionen je Gruppe. `WHERE` filtert Zeilen vor dem Gruppieren, `HAVING` danach die Gruppen.

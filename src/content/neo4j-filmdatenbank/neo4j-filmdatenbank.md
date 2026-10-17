@@ -130,7 +130,7 @@ crop-terminal-lines: auto
 
 <img class='full' src='neo4j-load.webp' alt='Im Terminal lädt neo4j_bolt die Knoten und Beziehungen aus neo4j.dump.'>
 
-`neo4j.dump` ist eine Textdatei: Jede Zeile beginnt mit `n` für einen Knoten oder mit `r` für eine Beziehung. `neo4j_bolt` legt erst alle Knoten an und verbindet sie dann. Die Daten stammen, wie die für MySQL, aus [Wikidata](https://www.wikidata.org/).
+`neo4j.dump` ist eine Textdatei: Jede Zeile beginnt mit `n` für einen Knoten oder mit `r` für eine Beziehung. `neo4j_bolt` legt erst alle Knoten an und verbindet sie dann. Die Daten stammen, wie die für MySQL, aus [Wikidata](https://www.wikidata.org/); was drinsteht, beschreibt das Handbuch unter [Datensätze](/reference/datensaetze#movies).
 
 <div class='hint'>
 <code>neo4j_bolt load</code> erwartet eine leere Datenbank. Hast du schon etwas ausprobiert, setze deine Neo4j-Datenbank im Profil zurück und lade dann noch einmal.
