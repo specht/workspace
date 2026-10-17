@@ -149,6 +149,7 @@ terminal-run: git add hello.txt
 terminal-run: git status
 terminal-wait-for-prompt
 crop-terminal-lines: auto
+check-task-fails: erster-commit
 -->
 
 <img class='full' src='after-git-add.webp' alt='Nach git add hello.txt meldet git status hello.txt in Grün als new file unter Changes to be committed.'>
@@ -172,6 +173,7 @@ terminal-run: clear
 terminal-run: git commit -m "initial commit"
 terminal-wait-for-prompt
 crop-terminal-lines: auto
+check-task: erster-commit
 -->
 
 <img class='full' src='first-commit.webp' alt='git commit -m "initial commit" meldet einen root-commit auf main, 1 file changed, 1 insertion, create mode 100644 hello.txt.'>
@@ -296,6 +298,7 @@ terminal-run: clear
 terminal-run: git status
 terminal-wait-for-prompt
 crop-terminal-lines: auto
+check-task-fails: drei-commits
 -->
 
 <img class='full' src='git-status-2.webp' alt='git status zeigt README.md in Rot als modified unter Changes not staged for commit.'>
@@ -347,6 +350,7 @@ terminal-run: clear
 terminal-run: git log
 terminal-wait-for-prompt
 crop-terminal-lines: auto
+check-task: drei-commits
 -->
 
 <img class='full' src='git-log.webp' alt='git log zeigt drei Commits mit Autor und Datum, »updated README.md« mit HEAD -&gt; main, »rename hello.txt to README.md« und »initial commit«.'>
@@ -633,6 +637,7 @@ terminal-run: clear
 terminal-run: git commit -a -m "added smiley"
 terminal-wait-for-prompt
 crop-terminal-lines: auto
+check-task-fails: gemergt
 -->
 
 <img class='full' src='git-commit-5.webp' alt='git commit -a -m "added smiley" auf main, 1 file changed, 2 insertions.'>
@@ -664,6 +669,7 @@ terminal-run: clear
 terminal-run: git merge feature -m "merged feature into main"
 terminal-wait-for-prompt
 crop-terminal-lines: auto
+check-task: gemergt
 -->
 
 <img class='full' src='git-merge.webp' alt='git merge feature -m "merged feature into main" meldet Merge made by the »ort« strategy, mit .gitignore und hello.c, 2 files changed, 7 insertions.'>
@@ -833,6 +839,7 @@ terminal-run: git remote add origin ../remote-repo
 terminal-run: cat .git/config
 terminal-wait-for-prompt
 crop-terminal-lines: auto
+check-task-fails: gepusht
 -->
 
 <img class='full' src='remote-config.webp' alt='Nach git remote add origin ../remote-repo zeigt cat .git/config einen Abschnitt [remote "origin"] mit url = ../remote-repo.'>
@@ -852,6 +859,7 @@ terminal-run: clear
 terminal-run: git push -u origin main
 terminal-wait-for-prompt
 crop-terminal-lines: auto
+check-task: gepusht
 -->
 
 <img class='full' src='git-push-origin-main.webp' alt='git push -u origin main überträgt 17 Objekte nach ../remote-repo, legt den Branch main an und meldet branch »main« set up to track »origin/main«.'>
@@ -946,6 +954,7 @@ terminal-run: clear
 terminal-run: git commit -a -m "Bob was here"
 terminal-wait-for-prompt
 crop-terminal-lines: auto
+check-task-fails: bob
 -->
 
 <img class='full' src='bob-commit.webp' alt='git commit -a -m "Bob was here", 1 file changed, 1 insertion, 1 deletion; der Prompt zeigt einen Commit Vorsprung.'>
@@ -961,6 +970,7 @@ terminal-run: clear
 terminal-run: git push
 terminal-wait-for-prompt
 crop-terminal-lines: auto
+check-task: bob
 -->
 
 <img class='full' src='bob-push.webp' alt='git push überträgt Bobs Commit, main -&gt; main.'>
