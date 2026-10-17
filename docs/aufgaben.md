@@ -301,7 +301,7 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `sql` | Ergebnis einer `SELECT`-Abfrage gegen das einer Musterabfrage | Abfrage | eigene MySQL-Datenbank, nur lesend | M6 |
 | `cypher` | Ergebnis einer Cypher-Abfrage gegen das einer Musterabfrage | Abfrage | eigene Neo4j-Datenbank, nur lesend | M7 |
 | `er` | ER-Modell: Entitäten, Schlüssel, Attribute, Beziehungen, Kardinalitäten und die Tabellen, die daraus werden | eine `.er`-Datei | Workspace (ER-Werkstatt) | M7 |
-| `schema` | Tabellen der eigenen Datenbank: Spalten, Primär- und Fremdschlüssel, Zeilenzahl | `information_schema` | eigene MySQL-Datenbank, nur lesend | M7 |
+| `schema` | Tabellen der eigenen Datenbank: Spalten, Primär- und Fremdschlüssel, Indizes, Zeilenzahl | `information_schema` | eigene MySQL-Datenbank, nur lesend | M7 |
 | `keyboard` | ein Kapitel des Keyboard-Tutorials: alle Schritte abgehakt | `/workspace/.hs-kbd-tutorial/.state.json` | Server | M7 |
 | `story` | BIF-Geschichte: Seiten, Entscheidungen, Bedingungen, Enden, Fehler, erreichbar | `<projekt>/.story-tools/analysis.json`, die BIF selbst schreibt | Server | M7 |
 
@@ -908,8 +908,13 @@ check:
       min_rows: 1                  # oder rows: genau so viele
     - name: movie_genre
       foreign_keys: ["movie_id -> movie.id", "genre_id -> genre"]
+      indexes: [[genre_id]]        # ein Index, der mit diesen Spalten anfängt
   setup: Lege die Tabellen mit `mysql < film.sql` an.
 ```
+
+`indexes` verlangt für jede Liste einen Index der Tabelle, dessen erste
+Spalten genau diese sind; der Primärschlüssel zählt mit, und ein Index auf
+`(last_name, first_name)` genügt auch für `[last_name]`.
 
 Ein Fremdschlüssel ohne Spalte nach dem Punkt zeigt auf den Primärschlüssel
 der anderen Tabelle. `setup` steht dabei, wenn Tabellen fehlen. Unter der
@@ -1009,7 +1014,7 @@ die eingebaute Rückmeldung für einen Fall.
 | `references` | `missing`, `external`, `outside_root`, `local_missing` |
 | `git` | `no_repo`, `not_git`, `no_remote`, `no_identity`, `uncommitted`, `too_few_commits`, `detached`, `no_upstream`, `not_pushed` |
 | `er` | `missing`, `errors`, `missing_entity`, `key`, `missing_attribute`, `attribute`, `missing_relationship`, `cardinality`, `missing_table`, `missing_column`, `primary_key`, `foreign_key` |
-| `schema` | `no_tables`, `missing_table`, `missing_column`, `primary_key`, `foreign_key`, `rows` |
+| `schema` | `no_tables`, `missing_table`, `missing_column`, `primary_key`, `foreign_key`, `index`, `rows` |
 | `story` | `no_project`, `no_analysis`, `stale`, `starter`, `errors`, `too_few_pages`, `too_few_choices`, `too_few_local_choices`, `too_few_conditions`, `too_few_scripts`, `too_few_images`, `unreachable`, `too_few_endings` |
 
 Text, der nur die Karten ersetzt (etwa eine nummerierte Aufgabenliste),

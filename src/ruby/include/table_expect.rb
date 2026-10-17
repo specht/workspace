@@ -9,14 +9,18 @@
 #       foreign_keys: ["movie_id -> movie.id", "genre_id -> genre"]
 #       rows: 2740                           # schema only: exactly
 #       min_rows: 1                          # schema only: at least
+#       indexes: [[last_name, first_name]]   # schema only: each the start of an index
 #
 # actual: { name => { :columns => [[name, type]], :pk => [..],
 #                     :fks => [{ :cols => [..], :ref_table =>, :ref_cols => [..] }],
+#                     :indexes => [{ :name =>, :cols => [..] }] (schema only),
 #                     :rows => Integer or nil } }
 module TableExpect
     NAME = /\A[A-Za-z_][A-Za-z0-9_]*\z/
     FK = /\A\s*([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)*)\s*->\s*([A-Za-z_]\w*)(?:\s*\.\s*([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)*))?\s*\z/
-    KEYS = %w[name columns primary_key foreign_keys rows min_rows].freeze
+    KEYS = %w[name columns primary_key foreign_keys rows min_rows indexes].freeze
+    # What only the real database has, not a model
+    DATABASE_KEYS = %w[rows min_rows indexes].freeze
 
     # "genre_id -> genre.id" -> { cols: ['genre_id'], ref_table: 'genre', ref_cols: ['id'] }
     # (ref_cols nil: the referenced table's primary key).
@@ -39,7 +43,7 @@ module TableExpect
                 errors << "tables[#{i}] needs a name (letters, digits, _)"
                 next
             end
-            extra = t.keys - (rows ? KEYS : KEYS - %w[rows min_rows])
+            extra = t.keys - (rows ? KEYS : KEYS - DATABASE_KEYS)
             errors << "tables[#{i}]: unknown keys: #{extra.join(', ')}" unless extra.empty?
             %w[columns primary_key].each do |k|
                 next unless t.key?(k)
@@ -53,6 +57,10 @@ module TableExpect
             end
             %w[rows min_rows].each do |k|
                 errors << "tables[#{i}].#{k} must be a whole number ≥ 0" if t.key?(k) && !(t[k].is_a?(Integer) && t[k] >= 0)
+            end
+            if t.key?('indexes') && !(t['indexes'].is_a?(Array) && !t['indexes'].empty? &&
+                                      t['indexes'].all? { |cols| cols.is_a?(Array) && !cols.empty? && cols.all? { |c| c.to_s =~ NAME } })
+                errors << "tables[#{i}].indexes must be a list of column lists, such as [[last_name, first_name]]"
             end
         end
         errors
@@ -111,6 +119,14 @@ module TableExpect
                     return [:foreign_key, "Der Fremdschlüssel #{list(fk[:cols])} von #{code(name)} zeigt auf #{hit[:ref_table]}(#{hit[:ref_cols].join(', ')}), verlangt ist `#{want}`."]
                 end
             end
+            (spec['indexes'] || []).each do |cols|
+                cols = cols.map(&:to_s)
+                next if (table[:indexes] || []).any? { |ix| ix[:cols].first(cols.size) == cols }
+
+                have = (table[:indexes] || []).map { |ix| "#{ix[:name]} (#{ix[:cols].join(', ')})" }
+                return [:index, "#{label} hat noch keinen Index, der mit #{list(cols)} anfängt." +
+                    (have.empty? ? '' : " Sie hat: #{have.map { |x| code(x) }.join(', ')}.")]
+            end
             rows = table[:rows]
             if spec.key?('rows') && rows != spec['rows']
                 return [:rows, "#{label} hat #{rows_text(rows)}, erwartet #{spec['rows'] == 1 ? 'ist eine' : "sind #{spec['rows']}"}."]
@@ -138,6 +154,8 @@ module TableExpect
             fks = t[:fks].map { |f| "#{f[:cols].join(', ')} → #{f[:ref_table]}(#{f[:ref_cols].join(', ')})" }
             line = "- #{code(name)}: #{cols.join(', ')}"
             line += "; Fremdschlüssel #{fks.join(', ')}" unless fks.empty?
+            others = (t[:indexes] || []).reject { |ix| ix[:name] == 'PRIMARY' }
+            line += "; #{others.size == 1 ? 'Index' : 'Indizes'} #{others.map { |ix| "#{ix[:name]} (#{ix[:cols].join(', ')})" }.join(', ')}" unless others.empty?
             line += "; #{rows_text(t[:rows])}" if rows && !t[:rows].nil?
             line
         end.join("\n")

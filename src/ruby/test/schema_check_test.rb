@@ -25,13 +25,16 @@ class SchemaCheckTest < Minitest::Test
         'setup' => 'Lege die Tabellen mit `mysql < film.sql` an.',
     }.freeze
 
-    def runner(columns: COLUMNS, primary: PRIMARY, foreign: FOREIGN, counts: { 'movie' => 2740 }, seen: [])
+    INDEXES = [%w[movie PRIMARY id], %w[movie by_title title], %w[movie by_title year]].freeze
+
+    def runner(columns: COLUMNS, primary: PRIMARY, foreign: FOREIGN, indexes: INDEXES, counts: { 'movie' => 2740 }, seen: [])
         lambda do |sql|
             seen << sql
             case sql
             when SchemaCheck::COLUMNS then { :columns => [], :rows => columns }
             when SchemaCheck::PRIMARY then { :columns => [], :rows => primary }
             when SchemaCheck::FOREIGN then { :columns => [], :rows => foreign }
+            when SchemaCheck::INDEXES then { :columns => [], :rows => indexes }
             when /\ASELECT COUNT\(\*\) FROM `(\w+)`\z/ then { :columns => ['COUNT(*)'], :rows => [[counts.fetch($1, 0).to_s]] }
             else raise "unexpected #{sql}"
             end
@@ -43,7 +46,7 @@ class SchemaCheckTest < Minitest::Test
         status, message, read, _, problem = SchemaCheck.check({}, CHECK, runner(:seen => seen), ENV_)
         assert_equal :correct, status, message
         assert_nil problem
-        assert_includes read, '`movie`: **id INT**, title VARCHAR(255), year INT; 2740 Zeilen'
+        assert_includes read, '`movie`: **id INT**, title VARCHAR(255), year INT; Index by_title (title, year); 2740 Zeilen'
         assert_includes read, 'Fremdschlüssel movie_id → movie(id), genre_id → genre(id)'
         assert_equal ['SELECT COUNT(*) FROM `movie`'], seen.grep(/COUNT/), 'counts only where asked'
     end
@@ -93,5 +96,22 @@ class SchemaCheckTest < Minitest::Test
         errors = TaskSpec.validate_task(task.merge('check' => bad))
         assert(errors.any? { |e| e.include?('foreign_keys must look like') })
         assert(errors.any? { |e| e.include?('min_rows') })
+    end
+
+    # indexes: each list must be the start of an index, the primary key counts
+    def test_indexes
+        with = ->(*cols) { CHECK.merge('tables' => [{ 'name' => 'movie', 'indexes' => [cols] }]) }
+        assert_equal :correct, SchemaCheck.check({}, with.('title'), runner, ENV_).first
+        assert_equal :correct, SchemaCheck.check({}, with.('title', 'year'), runner, ENV_).first
+        assert_equal :correct, SchemaCheck.check({}, with.('id'), runner, ENV_).first
+        status, message, read, _, problem = SchemaCheck.check({}, with.('year'), runner, ENV_)
+        assert_equal [:wrong, :index], [status, problem]
+        assert_includes message, 'keinen Index, der mit `year` anfängt'
+        assert_includes message, '`by_title (title, year)`'
+        assert_includes read, 'Index by_title (title, year)'
+        task = { 'id' => 'index', 'title' => 'Index', 'prompt' => 'Los', 'check' => with.('title') }
+        assert_equal [], TaskSpec.validate_task(task)
+        bad = CHECK.merge('tables' => [{ 'name' => 'movie', 'indexes' => ['title'] }])
+        assert(TaskSpec.validate_task(task.merge('check' => bad)).any? { |e| e.include?('indexes must be a list of column lists') })
     end
 end

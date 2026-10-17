@@ -12,6 +12,7 @@ require_relative 'sql_check'
 #         columns: [movie_id, genre_id]
 #         primary_key: [movie_id, genre_id]
 #         foreign_keys: ["movie_id -> movie.id", "genre_id -> genre.id"]
+#         indexes: [[movie_id]]
 #         min_rows: 1
 #     setup: Lege die Tabellen mit `mysql < film.sql` an.
 module SchemaCheck
@@ -29,7 +30,11 @@ module SchemaCheck
         WHERE table_schema = DATABASE() AND referenced_table_name IS NOT NULL
         ORDER BY table_name, constraint_name, ordinal_position
     SQL
-    PROBLEMS = %w[no_tables missing_table missing_column primary_key foreign_key rows].freeze
+    INDEXES = <<~SQL.freeze
+        SELECT table_name, index_name, column_name FROM information_schema.statistics
+        WHERE table_schema = DATABASE() ORDER BY table_name, index_name, seq_in_index
+    SQL
+    PROBLEMS = %w[no_tables missing_table missing_column primary_key foreign_key index rows].freeze
 
     def self.spec_errors(check)
         errors = TableExpect.spec_errors(check['tables'], :rows => true)
@@ -40,7 +45,7 @@ module SchemaCheck
     # Reads the tables (TableExpect shape). Returns [tables, stop] where stop
     # is a SqlCheck result tuple when the database cannot be read.
     def self.read(check, runner, env)
-        results = [COLUMNS, PRIMARY, FOREIGN].map do |sql|
+        results = [COLUMNS, PRIMARY, FOREIGN, INDEXES].map do |sql|
             result = runner.call(sql)
             stop = SqlCheck.connection_stop({}, env, result)
             return [nil, stop] if stop
@@ -50,10 +55,10 @@ module SchemaCheck
             end
             result[:rows]
         end
-        columns, primary, foreign = results
+        columns, primary, foreign, indexes = results
         tables = {}
         columns.each do |table, column, type|
-            t = (tables[table.to_s] ||= { :columns => [], :pk => [], :fks => [], :rows => nil })
+            t = (tables[table.to_s] ||= { :columns => [], :pk => [], :fks => [], :indexes => [], :rows => nil })
             t[:columns] << [column.to_s, type.to_s.upcase]
         end
         primary.each { |table, column| tables[table.to_s][:pk] << column.to_s if tables[table.to_s] }
@@ -62,6 +67,9 @@ module SchemaCheck
 
             tables[table][:fks] << { :cols => rows.map { |r| r[2].to_s }, :ref_table => rows.first[3].to_s,
                                      :ref_cols => rows.map { |r| r[4].to_s } }
+        end
+        indexes.group_by { |row| [row[0].to_s, row[1].to_s] }.each do |(table, name), rows|
+            tables[table][:indexes] << { :name => name, :cols => rows.map { |r| r[2].to_s } } if tables[table]
         end
         check['tables'].map { |s| TableExpect.normalize(s) }.each do |spec|
             next unless (spec.key?('rows') || spec.key?('min_rows')) && tables[spec['name']]
