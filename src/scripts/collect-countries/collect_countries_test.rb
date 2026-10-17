@@ -54,6 +54,15 @@ class CollectCountriesTest < Minitest::Test
         def row(item, value) = { 'item' => "#{E}#{item}", 'value' => value, 'rank' => 'http://wikiba.se/ontology#NormalRank' }
     end
 
+    # The statements of one item, as the query service gives them
+    class Statements
+        def select(_query)
+            r = ->(value, rank, date) { { 'item' => "#{E}Q2211", 'value' => value, 'rank' => "http://wikiba.se/ontology##{rank}", 'date' => date } }
+            [r.('12456', 'NormalRank', '2023-12-31'), r.('339316', 'PreferredRank', '2023-12-31'), r.('0', 'NormalRank', '2023-12-31'),
+             r.('324002', 'NormalRank', '2020-12-31')]
+        end
+    end
+
     def builder
         WikidataCountryBuilder.new(output_dir: Dir.mktmpdir, wikidata: Wikidata.new)
     end
@@ -72,12 +81,25 @@ class CollectCountriesTest < Minitest::Test
     def test_the_latest_value
         b = builder
         assert_equal 'Q2', b.latest([{ value: 'Q1', rank: 'NormalRank' }, { value: 'Q2', rank: 'PreferredRank' }])
+        # the latest date first: an estimate of 2025 over a census of 2013 with preferred rank
+        assert_equal '11000000', b.latest([{ value: '8300000', rank: 'PreferredRank', date: '2013' }, { value: '11000000', rank: 'NormalRank', date: '2025' }])
         assert_equal '7', b.latest([{ value: '5', rank: 'NormalRank', date: '2020' }, { value: '7', rank: 'NormalRank', date: '2024' },
                                     { value: '1', rank: 'NormalRank', date: '2025', end: '2025' }])
         # several of the same rank and date: the middle one, the lower of two
         assert_equal '51187', b.latest(%w[10 51209.2 51187].map { |v| { value: v, rank: 'NormalRank' } })
         assert_equal '37378', b.latest(%w[41543 37378].map { |v| { value: v, rank: 'NormalRank' } })
+        # a value for a part only (P518) counts if there is no other
+        assert_equal '136988', b.latest([{ value: '23889', rank: 'NormalRank', date: '2024', part: "#{E}Q1" },
+                                         { value: '136988', rank: 'NormalRank', date: '2023' }])
+        assert_equal '23889', b.latest([{ value: '23889', rank: 'NormalRank', date: '2024', part: "#{E}Q1" }])
         assert_nil b.latest([])
+    end
+
+    def test_a_value_with_preferred_rank_wins
+        b = WikidataCountryBuilder.new(output_dir: Dir.mktmpdir, wikidata: Statements.new)
+        values = b.statements(['Q2211'], 'P1082')['Q2211']
+        assert_equal 'PreferredRank', values[1][:rank]
+        assert_equal '339316', b.latest(values)
     end
 
     def test_the_plain_name_of_a_city

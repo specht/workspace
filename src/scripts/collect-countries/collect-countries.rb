@@ -58,7 +58,7 @@ class WikidataCountryBuilder
   # of administration. Only these kinds themselves: in Wikidata, »city in the
   # United States« is a subclass of »urban area of the United States«.
   NOT_A_CITY = {
-    'Q1907114' => 'metropolitan area', 'Q159313' => 'urban agglomeration', 'Q245260' => 'conurbation',
+    'Q2779745' => 'urban district of the Netherlands', 'Q1907114' => 'metropolitan area', 'Q159313' => 'urban agglomeration', 'Q245260' => 'conurbation',
     'Q2342385' => 'urban area', 'Q3175539' => 'functional urban area', 'Q1029013' => 'megaregion of the United States',
     'Q5951278' => 'urban area of the United States', 'Q1768043' => 'metropolitan statistical area',
     'Q1132300' => 'metropolitan region in Germany', 'Q15110' => 'metropolitan city of Italy', 'Q3333855' => 'métropole',
@@ -103,6 +103,11 @@ class WikidataCountryBuilder
     'Q133442' => 'city-state', 'Q902814' => 'border city'
   }.freeze
   HUMAN_SETTLEMENT = 'Q486972'
+  # Municipalities that are their city, but no »human settlement« in Wikidata:
+  # Marseille, Nantes, Maceió, Sfax
+  MUNICIPAL_CITY = {
+    'Q484170' => 'commune of France', 'Q3184121' => 'municipality of Brazil', 'Q41067667' => 'municipality of Tunisia'
+  }.freeze
   # Two items with the same name in the same country closer than this are the
   # same place (a municipality and its city); Kansas City in Missouri and
   # the one in Kansas are 10 km apart.
@@ -149,15 +154,19 @@ class WikidataCountryBuilder
   end
 
   # The latest value of a statement: none that has ended (an old ISO code),
-  # preferred rank first, then the latest date. Several numbers of the same
-  # rank and date: the middle one, the lower of two. Wikidata has 10 km² for
-  # Bosnia next to 51,187 and 51,209, and land without water next to the
-  # whole.
+  # the latest date (P585), of several with that date the one with preferred
+  # rank. (Preferred rank first would take a census of 2013 over an estimate
+  # of 2025.) A value for a part only (P518: the foreigners of Bern, the land
+  # of Finland without its lakes) counts if there is no other. Several numbers
+  # of the same date and rank: the middle one, the lower of two. Wikidata has
+  # 10 km² for Bosnia next to 51,187 and 51,209.
   def latest(values)
     current = values.reject { |v| v[:end] }
+    whole = current.reject { |v| v[:part] }
+    current = whole unless whole.empty?
     return nil if current.empty?
 
-    tied = current.group_by { |v| [v[:rank] == 'PreferredRank' ? 1 : 0, v[:date].to_s] }.max_by(&:first).last
+    tied = current.group_by { |v| [v[:date].to_s, v[:rank] == 'PreferredRank' ? 1 : 0] }.max_by(&:first).last
     numbers = tied.map { |v| v[:value].to_s }
     return tied.first[:value] unless numbers.size > 1 && numbers.all? { |n| n.match?(/\A-?\d+(?:\.\d+)?(?:e[-+]?\d+)?\z/i) }
 
@@ -167,17 +176,18 @@ class WikidataCountryBuilder
   def statements(qids, property, value_path = "ps:#{property}")
     rows = qids.each_slice(100).flat_map do |batch|
       @wikidata.select(<<~SPARQL)
-        SELECT ?item ?value ?date ?end ?rank WHERE {
+        SELECT ?item ?value ?date ?end ?rank ?part WHERE {
           VALUES ?item { #{entity_list(batch)} }
           ?item p:#{property} ?st . ?st #{value_path} ?value ; wikibase:rank ?rank .
           FILTER(?rank != wikibase:DeprecatedRank)
           OPTIONAL { ?st pq:P585 ?date }
           OPTIONAL { ?st pq:P582 ?end }
+          OPTIONAL { ?st pq:P518 ?part }
         }
       SPARQL
     end
     rows.group_by { |r| self.class.qid(r['item']) }.transform_values do |list|
-      list.map { |r| { value: r['value'], date: r['date'], end: r['end'], rank: self.class.qid(r['rank']) } }
+      list.map { |r| { value: r['value'], date: r['date'], end: r['end'], rank: r['rank'].to_s.split('#').last, part: r['part'] } }.uniq
     end
   end
 
@@ -248,7 +258,7 @@ class WikidataCountryBuilder
 
   def load_cities(countries)
     code_of = countries.to_h { |c| [c[:wikidata], c[:code]] }
-    kinds = subclasses([HUMAN_SETTLEMENT])
+    kinds = subclasses([HUMAN_SETTLEMENT]) | MUNICIPAL_CITY.keys
     no_city = NOT_A_CITY.keys.to_set
     city = subclasses(CITY.keys) - no_city - NOT_CITY_ENOUGH.keys
     candidates = {}
@@ -547,16 +557,17 @@ class WikidataCountryBuilder
 
       - `name`: the German label; #{NAMES.map { |code, name| "#{code} is called #{name}" }.join(', ')}
         instead of #{NAMES.keys.size == 1 ? 'its label' : 'their labels'}
-      - `population` (P1082) and `area` (P2046, in km²): the latest value, a value
-        with preferred rank first; of several with the same rank and date the middle
-        one, the lower of two (an area may then be the land without water, as for the
-        Netherlands); may be empty
+      - `population` (P1082) and `area` (P2046, in km²): the value with the latest
+        date, not a value for a part only (P518), of several with that date the one
+        with preferred rank, of several with the same rank as well the middle one, the
+        lower of two; may be empty
       - `continent`: the continent (P30), by its name; a country on several
         continents counts where its capital lies, as in atlases
         (#{CONTINENT_OF.keys.join(', ')} are set by hand)
       - `is_capital`: the capital of its country (P36); with several in Wikidata,
         the one with preferred rank; set by hand for #{CAPITAL_OF.keys.join(', ')}
-      - cities: every human settlement (P31, a subclass of Q486972) in a country that
+      - cities: every human settlement (P31, a subclass of Q486972, or a
+        #{MUNICIPAL_CITY.values.join(', ')}) in a country that
         had at least #{MIN_PEOPLE} inhabitants at its latest count, and every capital,
         however small; population as Wikidata counts it, by the city's own borders;
         `latitude` and `longitude` from P625. Left out:
