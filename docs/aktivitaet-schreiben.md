@@ -151,6 +151,17 @@ Vector3 sun = Vector3Normalize((Vector3){ 0.5f, 0.8f, 0.3f });
 ~ Vector3 eyes = { feet.x, feet.y + EYE_HEIGHT, feet.z };
 ```
 
+Schreiben die Rezepte der Seite die Datei Stufe für Stufe (`write-file: … <-
+file:…`), schlägt `src/scripts/code-context.rb SEITE.md` den Kontext vor: Es
+sucht jeden Block in der Datei der Stufe und nimmt die Zeilen davor und
+danach, ohne den Code, den spätere Blöcke erst hinzufügen. Mit `--apply`
+schreibt es die Vorschläge in die Seite; `--previous` nimmt zuerst die Stufe
+vor dem Block (wenn das Bild vor dem Code steht), `--existing` macht Zeilen,
+die schon dastehen, im Block zu Kontext (Überschriften einer Gliederung).
+Die Vorschläge immer lesen: Zeigt ein Block eine Änderung statt einer
+Ergänzung, oder ordnet die Stufe die Datei anders, als die Seite sie aufbaut,
+entscheidest du selbst.
+
 Im Code sind Namen englisch: Variablen, Funktionen, Konstanten, Dateien,
 Adressen (`respond`, `style.css`, `/time`), wie in jedem echten Projekt.
 Kommentare und was ein Programm ausgibt, dürfen deutsch sein. Im Text

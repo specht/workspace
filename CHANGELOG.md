@@ -764,6 +764,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   »Eine Klötzchenwelt in 3D« zeigt so bei jedem Stück Code, wo es in `main.c`
   hinkommt, mit drei Zeilen davor und danach, so wie die Datei an dieser
   Stelle aussieht.
+- `src/scripts/code-context.rb` schlägt Kontextzeilen für die Code-Blöcke
+  einer Seite vor, aus den Dateien, die ihre Rezepte Stufe für Stufe
+  schreiben (docs/aktivitaet-schreiben.md).
 - Kontextzeilen auch in »Svelte«, »Eine Facharbeit mit LaTeX« und »Statische
   Webseiten mit HTML & CSS«: Jedes Stück Code zeigt, wo es in der Datei
   hinkommt. In LaTeX stehen die Pakete am Ende der Präambel, wie man sie

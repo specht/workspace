@@ -50,7 +50,9 @@ address from `credentials.rb` and the code `123456`.
 - Code blocks name their language. A copy button (`_copy`) only for what is no
   use to type and for big blocks (about 15 lines and more) that go into a file.
   New code in the middle of a file gets context lines (`~ `, faint, not
-  copied) around it, as the file is at that point of the page.
+  copied) around it, as the file is at that point of the page;
+  `src/scripts/code-context.rb PAGE.md` proposes them from the recipes'
+  stage files (read each proposal before `--apply`).
 - Formulas: KaTeX renders `\(…\)` and `$$…$$`, not single `$…$`. In Markdown write
   `\\(`…`\\)` and `\_` for an underscore inside them: Markdown eats a single
   backslash before a bracket and turns two underscores into emphasis.
