@@ -737,6 +737,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- »Ein Krimi im Terminal«: Der Abschnitt »Ein eigener Fall« mit seiner
+  Abgabe ist weg. Das Bild vor der Aufgabe »Wer ist noch da?« verriet die
+  Antwort; es zeigt jetzt nur noch `who`, was der Eindringling tut, finden
+  Lernende selbst mit `ps aux` heraus. Der Spickzettel kennt `scp` mit `*`.
 - Huffman: Die beiden Arrays einer kanonischen Tabelle heißen wie in der
   JPEG-Norm `bits` und `huffval`, mit dem Beispiel ausgeschrieben; die
   Musterlösung des JPEG-Decoders benutzt dieselben Namen.

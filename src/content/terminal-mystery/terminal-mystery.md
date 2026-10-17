@@ -421,14 +421,14 @@ ps aux
 ```
 
 <!-- tutorial-screenshot
-# Auf der Alarmanlage ist noch jemand: wartung, von 10.8.0.23, mit rm -i
+# Auf der Alarmanlage ist noch jemand: wartung, von 10.8.0.23; was er tut,
+# zeigt ps aux erst den Lernenden
 terminal-run: clear
 terminal-run: who
-terminal-run: ps aux | grep -v '\[' | grep -v 'ps aux'
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='nicht-allein.webp' alt='Im Terminal auf der Alarmanlage: who zeigt den Benutzer wartung, angemeldet von 10.8.0.23, und ps aux unter anderem zwei Prozesse von wartung, -bash und rm -i /home/wartung/.bash_history.'>
+<img class='full' src='nicht-allein.webp' alt='Im Terminal auf der Alarmanlage: who zeigt zwei Anmeldungen, die eigene und die des Benutzers wartung von der Adresse 10.8.0.23.'>
 
 _task(eindringling)
 
@@ -539,35 +539,6 @@ check-task: kamera-auto <- 0
 Die Adresse aus dem VPN, das Gerät dazu, die Befehle aus der Nacht, minutengenau neben den Commits, und ein gelber Kombi auf dem Parkplatz: Jetzt ist der Fall wasserdicht.
 <!-- /feature -->
 
-## Ein eigener Fall
-
-Jetzt bist du dran: Bau einen Fall für jemanden aus deiner Klasse. Er muss nicht groß sein, aber er soll sich nur mit dem Terminal lösen lassen. Drei Schritte reichen.
-
-- Leg einen Ordner `mein-fall` an, mit einer `LIESMICH.txt`, die sagt, was passiert ist und wo man anfängt.
-- Jede Spur führt zur nächsten: ein Hinweis zu einer Datei, eine Zeile zu einer anderen Datei, eine Liste zu einem Namen.
-- Für jeden Schritt braucht man ein anderes Werkzeug, zum Beispiel `grep -l`, `head | tail` und `sort | uniq -d`.
-- Falsche Fährten machen es spannend: ein zweites gelbes Auto, eine Person mit demselben Nachnamen.
-- Schreib in `LOESUNG.txt` die Befehle, die deinen Fall lösen, Schritt für Schritt. Führ sie selbst einmal aus: So merkst du, ob man die Spur wirklich findet, und deine Lehrkraft sieht, wie es gedacht ist.
-
-Die vielen Dateien, in denen die Spur verschwindet, schreibst du nicht von Hand, sondern mit einer Schleife. Sehen alle Dateien gleich aus, findet `grep -L` die eine, auf die es ankommt, sofort. Darum würfelt die Schleife jede Befragung aus Listen zusammen: Eine Liste in runden Klammern ist ein Array, und `${namen[RANDOM % ${#namen[@]}]}` nimmt einen zufälligen Eintrag daraus.
-
-```bash_copy
-namen=(Ada Ben Cem Dana Emil Fiona Gero Hanna Ilja Jana)
-orte=("am Bahnhof" "am Hafen" "auf dem Markt" "im Museum" "im Park" "auf dem Schulhof")
-dinge=("einen Radfahrer" "einen Hund" "ein Taxi" "nichts Besonderes" "einen Lieferwagen")
-mkdir -p befragungen
-for i in $(seq 1000 1499); do
-  n=${namen[RANDOM % ${#namen[@]}]}
-  o=${orte[RANDOM % ${#orte[@]}]}
-  d=${dinge[RANDOM % ${#dinge[@]}]}
-  echo "Befragung $i: $n war um $((RANDOM % 24)):$((RANDOM % 6))0 Uhr $o und hat $d gesehen." > befragungen/befragung-$i.txt
-done
-```
-
-Nimm eigene Listen, passend zu deiner Geschichte. Danach öffnest du eine der Dateien mit `nano` und schreibst die Aussage hinein, auf die es ankommt; eine zweite bekommt die falsche Fährte. Dieselbe Schleife mit anderen Listen schreibt auch die übrigen Akten, etwa eine lange Liste von Autos oder Mitgliedern. Tauscht eure Fälle aus und löst den der anderen.
-
-_task(eigener-fall)
-
 ## Spickzettel
 
 <table class='table table-sm'>
@@ -586,6 +557,7 @@ _task(eigener-fall)
 <tr><td><code>ssh name@rechner</code>, <code>exit</code></td><td>ein Terminal auf einem anderen Rechner; zurück</td></tr>
 <tr><td><code>ssh -J name@a name@b</code></td><td>über den Rechner a zum Rechner b</td></tr>
 <tr><td><code>scp name@rechner:pfad ziel</code></td><td>eine Datei von dort zu dir kopieren</td></tr>
+<tr><td><code>scp 'name@rechner:ordner/a*' ziel</code></td><td>alle Dateien, deren Name mit a anfängt</td></tr>
 <!-- /feature -->
 </table>
 

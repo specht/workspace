@@ -170,19 +170,6 @@ tasks:
         say: Der Nachtwächter hat den Dieb gesehen, nicht gemacht.
     solution: Konstantin Reuter, Elektriker bei Elektro Reuter. Die Firma hat die Anlage 2024 eingebaut und die Karte 4471 nie zurückgegeben.
 
-  - id: eigener-fall
-    title: Ein eigener Fall
-    prompt: |
-      Bau einen kleinen Fall für jemanden aus deiner Klasse, in einem Ordner
-      `mein-fall`: eine `LIESMICH.txt` zum Anfangen, die Akten, die du mit
-      Schleifen erzeugt hast, und eine `LOESUNG.txt` mit den Befehlen, die ihn
-      lösen. Gib den Ordner ab.
-    check:
-      type: submit
-      paths: [mein-fall]
-      max_size: 5MB
-      gallery: false
-
   # Nur mit dem Fallserver (CASE_SERVER = true, docs/entwicklung.md); die
   # Seite zeigt sie sonst nicht. Die Werte kommen aus beispiele/make_case.rb.
   - id: vpn
