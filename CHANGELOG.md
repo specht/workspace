@@ -764,6 +764,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   »Eine Klötzchenwelt in 3D« zeigt so bei jedem Stück Code, wo es in `main.c`
   hinkommt, mit drei Zeilen davor und danach, so wie die Datei an dieser
   Stelle aussieht.
+- Kontextzeilen auch in »Svelte«, »Eine Facharbeit mit LaTeX« und »Statische
+  Webseiten mit HTML & CSS«: Jedes Stück Code zeigt, wo es in der Datei
+  hinkommt. In LaTeX stehen die Pakete am Ende der Präambel, wie man sie
+  ergänzt, und die Überschriften der Gliederung sind schon da. Der Block der
+  Selbstständigkeitserklärung enthielt versehentlich die ganze Arbeit noch
+  einmal; jetzt nur die Erklärung. Durchführung und Messwerte sind zwei Blöcke,
+  damit jeder ganz kopiert. In Svelte kommen die Schriften in `app.html` unter
+  die `<meta>`-Zeilen, wo sie in der fertigen Datei stehen.
 - Die raylib-Vorlage sagt Editor-Erweiterungen für C (clangd, C/C++), wo
   `raylib.h` liegt; `#include <raylib.h>` ist nicht mehr rot unterstrichen.
   Der Patch für `specht/raylib-starter` liegt bei.

@@ -153,12 +153,19 @@ crop-bottom: 60%
 Der Entwicklungsserver zeigt deine Seite im Browser und lädt sie neu, sobald du eine Datei speicherst. Vorher braucht er zwei Einstellungen, damit dein Workspace die Vorschau an deinen Browser weiterleiten kann. Öffne die Datei `vite.config.js` und ergänze nach `export default defineConfig({` den Eintrag `server`:
 
 ```js
-export default defineConfig({
+~ import adapter from '@sveltejs/adapter-auto';
+~ import { sveltekit } from '@sveltejs/kit/vite';
+~ import { defineConfig } from 'vite';
+~
+~ export default defineConfig({
 	server: {
 		host: '127.0.0.1',
 		allowedHosts: true
 	},
-	plugins: [
+~ 	plugins: [
+~ 		sveltekit({
+~ 			compilerOptions: {
+~ 				// Force runes mode for the project, except for libraries. Can be removed in svelte 6.
 ```
 
 - `host: '127.0.0.1'`: Der Server wartet unter dieser Adresse auf Anfragen. Dort sucht ihn die Weiterleitung deines Workspaces. Von außerhalb deines Workspaces ist er so nicht zu erreichen.
@@ -261,15 +268,20 @@ Die Datei hat drei Abschnitte:
 Wir beginnen mit dem CSS. Schreib die folgende Regel zwischen `<style>` und `</style>`, um den Inhalt von `.main` in die Mitte der Seite zu rücken:
 
 ```css
-.main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    margin: 0 1em;
-    user-select: none;
-}
+~     <h1>Rubik's Cube Timer</h1>
+~ </div>
+~
+~ <style>
+    .main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0 1em;
+        user-select: none;
+    }
+~ </style>
 ```
 
 `display: flex` mit `flex-direction: column` stellt die Elemente untereinander, `align-items: center` rückt sie waagerecht in die Mitte, `justify-content: center` senkrecht. Damit es senkrecht eine Mitte gibt, ist `.main` mit `min-height: 100vh` mindestens so hoch wie das Browserfenster. `user-select: none` verhindert, dass beim Tippen auf dem Handy Text markiert wird.
@@ -292,12 +304,17 @@ _task(grundgeruest)
 Die Überschrift steht jetzt in der Mitte. Rechts erscheint aber ein Scrollbalken: Der Browser gibt der Seite einen Rand von ein paar Pixeln, und zusammen mit den 100 % Höhe von `.main` ist sie dadurch etwas höher als das Fenster. Den Rand entfernst du für die ganze Seite in der Datei `src/app.html`. Sie ist das Gerüst um alle Komponenten. Schreib in ihren `<head>`, vor die Zeile `%sveltekit.head%`:
 
 ```html
+~ <meta charset="utf-8" />
+~ <meta name="viewport" content="width=device-width, initial-scale=1" />
+~ <meta name="text-scale" content="scale" />
 <style>
     html,
     body {
         margin: 0;
     }
 </style>
+~ %sveltekit.head%
+~ </head>
 ```
 
 Speichere, und der Scrollbalken ist verschwunden.
@@ -321,12 +338,17 @@ _task(fehlstart)
 Um den Zustand zu speichern, deklarieren wir eine Variable `state` im `<script>`-Teil von `src/routes/+page.svelte`:
 
 ```js
-let state = $state(0);
-// 0 : idle
-// 1 : space pressed
-// 2 : space pressed for 500 ms
-// 3 : timer running
-// 4 : timer stopped
+~ <script>
+    let state = $state(0);
+    // 0 : idle
+    // 1 : space pressed
+    // 2 : space pressed for 500 ms
+    // 3 : timer running
+    // 4 : timer stopped
+~ </script>
+~
+~ <div class="main">
+~     <h1>Rubik's Cube Timer</h1>
 ```
 
 Das ist keine gewöhnliche JavaScript-Variable, sondern ein Zustand von Svelte: Man erkennt es an `$state(` … `)`. Du kannst ihn ins HTML schreiben, und Svelte ändert die Seite von selbst, sobald sich der Wert ändert. Das ist eine der Stärken von Svelte.
@@ -334,7 +356,15 @@ Das ist keine gewöhnliche JavaScript-Variable, sondern ein Zustand von Svelte: 
 Zeig den Zustand auf der Seite an. Schreib unter die Überschrift in `<div class="main">`:
 
 ```html
-<p>State = {state}</p>
+~ </script>
+~
+~ <div class="main">
+~     <h1>Rubik's Cube Timer</h1>
+    <p>State = {state}</p>
+~ </div>
+~
+~ <style>
+~     .main {
 ```
 
 Was in geschweiften Klammern steht, ist JavaScript; Svelte setzt seinen Wert ein. In der Vorschau steht jetzt »State = 0«:
@@ -393,11 +423,18 @@ function handleKeyUp() {
 Und in `onMount` einen zweiten Event-Listener, der beim Loslassen der Leertaste `handleKeyUp` aufruft:
 
 ```js
-document.addEventListener("keyup", (e) => {
-    if (e.code === "Space") {
-        handleKeyUp();
-    }
-});
+~                 handleKeyDown();
+~             }
+~         });
+        document.addEventListener("keyup", (e) => {
+            if (e.code === "Space") {
+                handleKeyUp();
+            }
+        });
+~     });
+~ </script>
+~
+~ <div class="main">
 ```
 
 Jetzt springt der Zustand beim Loslassen wieder auf 0.
@@ -405,8 +442,15 @@ Jetzt springt der Zustand beim Loslassen wieder auf 0.
 Damit der Timer auch auf dem Handy funktioniert, wo es keine Leertaste gibt, reagieren zwei weitere Event-Listener in `onMount` auf das Antippen des Bildschirms:
 
 ```js
-document.addEventListener("touchstart", () => handleKeyDown());
-document.addEventListener("touchend", () => handleKeyUp());
+~                 handleKeyUp();
+~             }
+~         });
+        document.addEventListener("touchstart", () => handleKeyDown());
+        document.addEventListener("touchend", () => handleKeyUp());
+~     });
+~ </script>
+~
+~ <div class="main">
 ```
 
 ### Die Zeit messen
@@ -414,9 +458,16 @@ document.addEventListener("touchend", () => handleKeyUp());
 Oben im `<script>`-Teil, unter `let state`, kommen drei weitere Variablen dazu:
 
 ```js
+~ // 2 : space pressed for 500 ms
+~ // 3 : timer running
+~ // 4 : timer stopped
 let t0 = 0;
 let timerString = $state("00:00<span class='small'>.00</span>");
 let timeoutId = null;
+~
+~ onMount(() => {
+~     document.addEventListener("keydown", (e) => {
+~         if (e.code === "Space") {
 ```
 
 - `t0` ist die Startzeit. Daraus berechnen wir später, wie viel Zeit seit dem Start vergangen ist.
@@ -438,22 +489,26 @@ In `.main` kommen eine Anleitung und die eigentliche Anzeige dazu:
 Im `<style>`-Teil formatieren ein paar Regeln die Anzeige:
 
 ```css
-.timer {
-    font-size: 300%;
-    font-weight: bold;
-    padding: 0.25em 0.5em;
-    border-radius: 0.2em;
-    background-color: #eeeeec;
+~         margin: 0 1em;
+~         user-select: none;
+~     }
+    .timer {
+        font-size: 300%;
+        font-weight: bold;
+        padding: 0.25em 0.5em;
+        border-radius: 0.2em;
+        background-color: #eeeeec;
 
-    :global(.small) {
-        font-size: 75%;
-    }
+        :global(.small) {
+            font-size: 75%;
+        }
 
-    :global(&.ready) {
-        transition: background-color 0.3s ease-in;
-        background-color: #73a946;
+        :global(&.ready) {
+            transition: background-color 0.3s ease-in;
+            background-color: #73a946;
+        }
     }
-}
+~ </style>
 ```
 
 Svelte lässt CSS-Regeln weg, die zu nichts im HTML der Komponente passen. Die Klassen `ready` und `small` kommen aber erst später dazu, durch JavaScript. Deshalb stehen sie in `:global(` … `)`: So bleiben die Regeln erhalten.
@@ -463,6 +518,10 @@ _task(global)
 Jetzt eine Funktion, die die Anzeige, also `timerString`, auf den neuesten Stand bringt. Schreib sie in den `<script>`-Teil, vor `handleKeyDown`:
 
 ```js
+~ let t0 = 0;
+~ let timerString = $state("00:00<span class='small'>.00</span>");
+~ let timeoutId = null;
+~
 function updateTimer() {
     if (state != 3) return;
 
@@ -482,6 +541,10 @@ function updateTimer() {
 
     requestAnimationFrame(updateTimer);
 }
+~
+~ onMount(() => {
+~     document.addEventListener("keydown", (e) => {
+~         if (e.code === "Space") {
 ```
 
 <div class='hint'>
@@ -491,6 +554,11 @@ Die Funktion bricht sofort ab, wenn der Zustand nicht 3 ist. Sonst berechnet sie
 `handleKeyDown` wechselt jetzt richtig zwischen den Zuständen:
 
 ```js
+~     timerString = `${minutes}:${seconds}<span class='small'>.${centiseconds}</span>`;
+~
+~     requestAnimationFrame(updateTimer);
+~ }
+~
 function handleKeyDown() {
     if (state === 0) {
         state = 1;
@@ -504,6 +572,10 @@ function handleKeyDown() {
         state = 4;
     }
 }
+~
+~ onMount(() => {
+~     document.addEventListener("keydown", (e) => {
+~         if (e.code === "Space") {
 ```
 
 Im Zustand 0 springt sie in Zustand 1 und stellt mit `setTimeout` einen Wecker auf 500 ms. Klingelt er und ist der Zustand dann immer noch 1, geht es in Zustand 2, und die Anzeige bekommt die Klasse `ready`, die sie grün färbt. Im Zustand 3 hält ein Tastendruck die Stoppuhr an: Zustand 4.
@@ -511,6 +583,10 @@ Im Zustand 0 springt sie in Zustand 1 und stellt mit `setTimeout` einen Wecker a
 Auch `handleKeyUp` bekommt die ganze Logik:
 
 ```js
+~         state = 4;
+~     }
+~ }
+~
 function handleKeyUp() {
     if (state === 1) {
         state = 0;
@@ -521,6 +597,10 @@ function handleKeyUp() {
         requestAnimationFrame(updateTimer);
     }
 }
+~
+~ onMount(() => {
+~     document.addEventListener("keydown", (e) => {
+~         if (e.code === "Space") {
 ```
 
 Lässt du die Taste im Zustand 1 los, geht es zurück in Zustand 0, und der Wecker wird abgestellt. Im Zustand 2 beginnt die Messung: Zustand 3, die Startzeit kommt in `t0`, und `requestAnimationFrame(updateTimer)` ruft `updateTimer` zum ersten Mal auf.
@@ -550,12 +630,18 @@ Die Stoppuhr funktioniert. Jetzt kümmern wir uns um das Aussehen.
 
 ### Bessere Schriftarten
 
-Schönere Schriften holen wir von Google Fonts. Schreib in den `<head>` von `src/app.html`, vor `%sveltekit.head%`:
+Schönere Schriften holen wir von Google Fonts. Schreib in den `<head>` von `src/app.html`, unter die `<meta>`-Zeilen:
 
 ```html_copy
+~ <meta charset="utf-8" />
+~ <meta name="viewport" content="width=device-width, initial-scale=1" />
+~ <meta name="text-scale" content="scale" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+~ <style>
+~ 	html,
+~ 	body {
 ```
 
 Ergänze dann in `src/routes/+page.svelte` in der Regel `.main` die Zeile `font-family: Quicksand;` und in der Regel `.timer` die Zeile `font-family: "IBM Plex Mono";`:
@@ -591,10 +677,16 @@ sleep: 1
 
 ### Bootstrap einbinden und Reset-Button hinzufügen
 
-[Bootstrap](https://getbootstrap.com/) ist ein beliebtes CSS-Framework, das dir hilft, deine Webseite schnell und einfach zu gestalten. Du bindest es ein, indem du in den `<head>` von `src/app.html` schreibst:
+[Bootstrap](https://getbootstrap.com/) ist ein beliebtes CSS-Framework, das dir hilft, deine Webseite schnell und einfach zu gestalten. Du bindest es ein, indem du in den `<head>` von `src/app.html` schreibst, unter die Schriften:
 
 ```html_copy
+~ <link rel="preconnect" href="https://fonts.googleapis.com">
+~ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+~ <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+~ <style>
+~ 	html,
+~ 	body {
 ```
 
 Bootstrap bringt unter anderem Klassen für Buttons mit. Damit bauen wir einen Reset-Button. Schreib in `<div class="main">`, unter die Anzeige:
@@ -614,6 +706,11 @@ Der Button hat die ID `bu_reset` und die Bootstrap-Klasse `btn`. Solange `state`
 Die fehlt noch. Schreib sie in den `<script>`-Teil, zum Beispiel nach `updateTimer`:
 
 ```js
+~     timerString = `${minutes}:${seconds}<span class='small'>.${centiseconds}</span>`;
+~
+~     requestAnimationFrame(updateTimer);
+~ }
+~
 function resetTimer() {
     if (state > 2) {
         state = 0;
@@ -622,6 +719,10 @@ function resetTimer() {
         document.querySelector(".timer")?.classList.remove("ready");
     }
 }
+~
+~ function handleKeyDown() {
+~     if (state === 0) {
+~         state = 1;
 ```
 
 ### Icons einbinden
@@ -654,17 +755,27 @@ import Icon from '@iconify/svelte';
 und in den `<button>`, direkt vor »Reset«:
 
 ```html
-<Icon icon="material-symbols:device-reset-rounded" class="icon" />
+~         class="btn btn-lg {state < 3 ? 'btn-outline-secondary' : 'btn-warning'}"
+~         disabled={state < 3}
+~         onclick={resetTimer}>
+        <Icon icon="material-symbols:device-reset-rounded" class="icon" />
+~         Reset
+~     </button>
+~ </div>
 ```
 
 Mit dieser Regel im `<style>`-Teil bekommt das Icon etwas Abstand und Größe:
 
 ```css
-:global(.btn .icon) {
-    margin-right: 0.25em;
-    padding-bottom: 0.1em;
-    transform: scale(1.3);
-}
+~             background-color: #73a946;
+~         }
+~     }
+    :global(.btn .icon) {
+        margin-right: 0.25em;
+        padding-bottom: 0.1em;
+        transform: scale(1.3);
+    }
+~ </style>
 ```
 
 Nach einer gemessenen Zeit leuchtet der Button gelb:

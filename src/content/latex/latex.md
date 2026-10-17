@@ -131,6 +131,8 @@ _task(sonderzeichen)
 Eine Facharbeit beginnt mit einer Titelseite und einem Inhaltsverzeichnis. Ersetze `\section{Einleitung}` durch:
 
 ```tex_copy
+~ \begin{document}
+~
 \begin{titlepage}
   \centering
   \vspace*{30mm}
@@ -150,6 +152,8 @@ Eine Facharbeit beginnt mit einer Titelseite und einem Inhaltsverzeichnis. Erset
 \tableofcontents
 \newpage
 \section{Einleitung}
+~
+~ Eine Kugel an einem Faden schwingt hin und her. Ein solches \emph{Fadenpendel}
 ```
 
 - In `titlepage` gestaltest du die Titelseite selbst. `\centering` zentriert alles, `\vspace` macht Abstand, `\vfill` schiebt den Rest ganz nach unten. `\Large`, `\huge` und `\bfseries` machen die Schrift größer und fett, bis zur schließenden Klammer.
@@ -158,6 +162,9 @@ Eine Facharbeit beginnt mit einer Titelseite und einem Inhaltsverzeichnis. Erset
 Unter die Einleitung kommen die anderen Kapitel. Schreib die Überschriften jetzt schon hin, den Text füllen wir Kapitel für Kapitel:
 
 ```tex
+~ war jahrhundertelang das Herz jeder genauen Uhr. In dieser Arbeit untersuche
+~ ich, wovon es abhängt, wie lange eine Schwingung dauert.
+~
 \section{Theorie}
 
 \section{Versuch}
@@ -168,6 +175,8 @@ Unter die Einleitung kommen die anderen Kapitel. Schreib die Überschriften jetz
 \section{Auswertung}
 
 \section{Fazit}
+~
+~ \end{document}
 ```
 
 `\subsection` ist eine Überschrift eine Stufe tiefer: 3.1, 3.2, 3.3. Ändere den Titel, deinen Namen und das Datum auf der Titelseite in deine eigenen.
@@ -181,7 +190,10 @@ _task(nummern)
 Im Kapitel Theorie steht die Formel, um die es geht:
 
 ```tex
-\section{Theorie}
+~ war jahrhundertelang das Herz jeder genauen Uhr. In dieser Arbeit untersuche
+~ ich, wovon es abhängt, wie lange eine Schwingung dauert.
+~
+~ \section{Theorie}
 
 Für kleine Auslenkungen hängt die Schwingungsdauer~$T$ nur von der Länge~$l$
 des Fadens und der Fallbeschleunigung~$g$ ab \parencite{tipler2019}:
@@ -192,6 +204,9 @@ des Fadens und der Fallbeschleunigung~$g$ ab \parencite{tipler2019}:
 Die Masse der Kugel kommt in Gleichung~\eqref{eq:schwingungsdauer} nicht vor.
 Für größere Auslenkungen wird $T$ etwas länger.\footnote{Bei einer Auslenkung
 von \ang{20} ist der Unterschied kleiner als ein Prozent \parencite{pendel}.}
+~
+~ \section{Versuch}
+~ \subsection{Aufbau}
 ```
 
 - Zwischen zwei `$` steht eine Formel im Satz: `$T$` setzt das *T* kursiv, wie Variablen in Formeln üblich sind. `~` ist ein Leerzeichen, an dem LaTeX keine Zeile umbricht.
@@ -203,9 +218,15 @@ von \ang{20} ist der Unterschied kleiner als ein Prozent \parencite{pendel}.}
 Damit Formeln zur Schrift passen und `\ang{20}` funktioniert (der Winkel 20°), brauchen sie Pakete. Ergänze die Präambel:
 
 ```tex
+~ \setdefaultlanguage{german}
+~
+~ \usepackage{fontspec}
+~ \setmainfont{TeX Gyre Termes}
 \usepackage{unicode-math}
 \setmathfont{TeX Gyre Termes Math}
 \usepackage[locale=DE]{siunitx}
+~
+~ \begin{document}
 ```
 
 `siunitx` setzt Zahlen und Einheiten richtig, mit Komma und dem richtigen Abstand. Die Formelzeichen, die du sonst noch brauchst, stehen im Handbuch unter [Formelzeichen](/reference/latex#formelzeichen).
@@ -219,7 +240,10 @@ _task(schwingungsdauer)
 Eine Facharbeit zeigt, wie der Versuch aufgebaut war. Lege dafür ein Bild `aufbau.png` (oder `.jpg`) in den Ordner `facharbeit`: ein Foto von deinem Versuch, eine eigene Zeichnung, zum Beispiel aus dem [2D Game Studio](https://2d.hackschule.de/) (»Funktionen« › »Sprite« › »Als Bild speichern«), oder ein Bild aus dem Internet, dessen Quelle du angibst. Ziehe die Datei aus deinem Download-Ordner einfach in den Explorer des Workspace.
 
 ```tex
-\subsection{Aufbau}
+~ von \ang{20} ist der Unterschied kleiner als ein Prozent \parencite{pendel}.}
+~
+~ \section{Versuch}
+~ \subsection{Aufbau}
 
 An einem Stativ hängt eine Stahlkugel an einem dünnen Faden
 (Abbildung~\ref{fig:aufbau}). Die Länge des Fadens lässt sich verstellen.
@@ -230,6 +254,8 @@ An einem Stativ hängt eine Stahlkugel an einem dünnen Faden
   \caption{Aufbau des Versuchs: ein Fadenpendel an einem Stativ}
   \label{fig:aufbau}
 \end{figure}
+~ \subsection{Durchführung}
+~ \subsection{Messwerte}
 ```
 
 - `\includegraphics` setzt das Bild, mit `width=0.45\textwidth` knapp halb so breit wie der Text.
@@ -239,8 +265,13 @@ An einem Stativ hängt eine Stahlkugel an einem dünnen Faden
 Für Bilder und `[H]` braucht die Präambel noch:
 
 ```tex
+~ \usepackage{unicode-math}
+~ \setmathfont{TeX Gyre Termes Math}
+~ \usepackage[locale=DE]{siunitx}
 \usepackage{graphicx}
 \usepackage{float}
+~
+~ \begin{document}
 ```
 
 _task(bild)
@@ -249,16 +280,25 @@ _task(bild)
 
 Die Durchführung ist eine Liste von Schritten, und die Messwerte gehören in eine Tabelle:
 
-```tex_copy
-\subsection{Durchführung}
+```tex
+~   \label{fig:aufbau}
+~ \end{figure}
+~ \subsection{Durchführung}
 
 \begin{enumerate}
   \item Die Fadenlänge~$l$ einstellen und messen.
   \item Die Kugel um etwa \ang{10} auslenken und loslassen.
   \item Die Zeit für zehn Schwingungen stoppen und durch zehn teilen.
 \end{enumerate}
+~ \subsection{Messwerte}
+```
 
-\subsection{Messwerte}
+Unter `\subsection{Messwerte}` kommt die Tabelle:
+
+```tex_copy
+~ \end{enumerate}
+~
+~ \subsection{Messwerte}
 
 \begin{table}[H]
   \centering
@@ -276,6 +316,8 @@ Die Durchführung ist eine Liste von Schritten, und die Messwerte gehören in ei
     \bottomrule
   \end{tabular}
 \end{table}
+~
+~ \section{Auswertung}
 ```
 
 - `enumerate` nummeriert die Einträge, jeder beginnt mit `\item`. Für Punkte statt Nummern nimmst du `itemize`.
@@ -287,7 +329,12 @@ Die Durchführung ist eine Liste von Schritten, und die Messwerte gehören in ei
 Die Linien kommen aus einem Paket. Ergänze die Präambel um:
 
 ```tex
+~ \usepackage[locale=DE]{siunitx}
+~ \usepackage{graphicx}
+~ \usepackage{float}
 \usepackage{booktabs}
+~
+~ \begin{document}
 ```
 
 _task(tabelle)
@@ -297,7 +344,11 @@ _task(tabelle)
 Messwerte versteht man am besten in einem Diagramm. Mit dem Paket TikZ zeichnest du es in LaTeX selbst, mit Koordinaten statt mit der Maus. Das Kapitel Auswertung:
 
 ```tex_copy
-\section{Auswertung}
+~     \bottomrule
+~   \end{tabular}
+~ \end{table}
+~
+~ \section{Auswertung}
 
 Abbildung~\ref{fig:diagramm} zeigt die Messwerte aus Tabelle~\ref{tab:messwerte}
 zusammen mit der Kurve aus Gleichung~\eqref{eq:schwingungsdauer} für
@@ -328,6 +379,8 @@ Die Messwerte liegen sehr nah an der Kurve. Stellt man
 Gleichung~\eqref{eq:schwingungsdauer} nach $g$ um, ergibt sich aus der Messung
 mit $l = \qty{1,00}{\metre}$ der Wert $g = \frac{4\pi^2 l}{T^2}
 \approx \qty{9,77}{\metre\per\second\squared}$.
+~
+~ \section{Fazit}
 ```
 
 - `[x=10cm, y=2.5cm]` legt den Maßstab fest: Ein Meter Fadenlänge sind 10 cm auf dem Papier, eine Sekunde sind 2,5 cm.
@@ -339,7 +392,12 @@ mit $l = \qty{1,00}{\metre}$ der Wert $g = \frac{4\pi^2 l}{T^2}
 Ergänze die Präambel:
 
 ```tex
+~ \usepackage{graphicx}
+~ \usepackage{float}
+~ \usepackage{booktabs}
 \usepackage{tikz}
+~
+~ \begin{document}
 ```
 
 _task(diagramm)
@@ -347,11 +405,17 @@ _task(diagramm)
 Zum Schluss fehlt noch das Fazit:
 
 ```tex
-\section{Fazit}
+~ Gleichung~\eqref{eq:schwingungsdauer} nach $g$ um, ergibt sich aus der Messung
+~ mit $l = \qty{1,00}{\metre}$ der Wert $g = \frac{4\pi^2 l}{T^2}
+~ \approx \qty{9,77}{\metre\per\second\squared}$.
+~
+~ \section{Fazit}
 
 Die Schwingungsdauer eines Fadenpendels hängt von der Länge des Fadens ab,
 nicht aber von der Masse der Kugel. Vervierfacht man die Länge, verdoppelt
 sich die Schwingungsdauer. Die Messungen bestätigen die Theorie.
+~
+~ \end{document}
 ```
 
 ## Quellen
@@ -381,14 +445,24 @@ Jeder Eintrag beginnt mit seiner Art: `@book` für ein Buch, `@online` für eine
 In der Präambel sagst du LaTeX, wo die Quellen stehen und wie sie aussehen sollen. `authoryear` zitiert mit Name und Jahr:
 
 ```tex
+~ \usepackage{float}
+~ \usepackage{booktabs}
+~ \usepackage{tikz}
 \usepackage[style=authoryear, backend=biber]{biblatex}
 \addbibresource{literatur.bib}
+~
+~ \begin{document}
 ```
 
 Jetzt kannst du die Quellen im Text zitieren: Setze die beiden `\parencite{…}` im Kapitel Theorie ein, wie im Code-Beispiel dort. `\parencite{tipler2019}` wird zu »(Tipler und Mosca 2019)«. Damit das Literaturverzeichnis erscheint, schreibst du nach dem Fazit:
 
 ```tex
+~ nicht aber von der Masse der Kugel. Vervierfacht man die Länge, verdoppelt
+~ sich die Schwingungsdauer. Die Messungen bestätigen die Theorie.
+~
 \printbibliography
+~
+~ \end{document}
 ```
 
 Im Verzeichnis stehen nur die Quellen, die du zitiert hast, alphabetisch sortiert und einheitlich gesetzt, mit Autor, Titel, Verlag und Jahr. Willst du lieber Nummern wie [1], schreibst du `style=numeric`. Frag deine Lehrkraft, welche Form sie erwartet.
@@ -404,125 +478,35 @@ _task(querverweis)
 Schulen geben für Facharbeiten oft vor, wie die Seiten aussehen: Schriftgröße 12 pt, anderthalbfacher Zeilenabstand, links ein breiterer Rand für Korrekturen. Ergänze die Präambel nach den Schriften:
 
 ```tex
+~ \setmainfont{TeX Gyre Termes}
+~ \usepackage{unicode-math}
+~ \setmathfont{TeX Gyre Termes Math}
 \usepackage[left=30mm, right=25mm, top=25mm, bottom=25mm]{geometry}
 \usepackage{setspace}
 \onehalfspacing
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{6pt}
+~ \usepackage[locale=DE]{siunitx}
+~ \usepackage{graphicx}
+~ \usepackage{float}
 ```
 
 `\parindent` und `\parskip` sorgen dafür, dass Absätze nicht eingerückt, sondern durch etwas Abstand getrennt werden. Damit die Verweise im PDF anklickbar sind, kommt als letztes Paket in die Präambel:
 
 ```tex
+~ \usepackage{tikz}
+~ \usepackage[style=authoryear, backend=biber]{biblatex}
+~ \addbibresource{literatur.bib}
 \usepackage[hidelinks]{hyperref}
+~
+~ \begin{document}
 ```
 
 Am Ende einer Facharbeit steht fast immer eine **Selbstständigkeitserklärung**. Sie kommt nach dem Literaturverzeichnis, auf eine eigene Seite und ohne Nummer, darum `\section*` mit Stern:
 
 ```tex_copy
-\newpage
-
-% ------------------------------------------------------------ Text
-\section{Einleitung}
-
-Eine Kugel an einem Faden schwingt hin und her. Ein solches \emph{Fadenpendel}
-war jahrhundertelang das Herz jeder genauen Uhr. In dieser Arbeit untersuche
-ich, wovon es abhängt, wie lange eine Schwingung dauert: von der Länge des
-Fadens, von der Masse der Kugel oder davon, wie weit man sie auslenkt.
-
-\section{Theorie}
-
-Für kleine Auslenkungen hängt die Schwingungsdauer~$T$ nur von der Länge~$l$
-des Fadens und der Fallbeschleunigung~$g$ ab \parencite{tipler2019}:
-\begin{equation}
-  T = 2\pi \sqrt{\frac{l}{g}}
-  \label{eq:schwingungsdauer}
-\end{equation}
-Die Masse der Kugel kommt in Gleichung~\eqref{eq:schwingungsdauer} nicht vor.
-Für größere Auslenkungen wird $T$ etwas länger.\footnote{Bei einer Auslenkung
-von \ang{20} ist der Unterschied kleiner als ein Prozent \parencite{pendel}.}
-
-\section{Versuch}
-
-\subsection{Aufbau}
-
-An einem Stativ hängt eine Stahlkugel an einem dünnen Faden
-(Abbildung~\ref{fig:aufbau}). Die Länge des Fadens lässt sich verstellen.
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.45\textwidth]{aufbau.png}
-  \caption{Aufbau des Versuchs: ein Fadenpendel an einem Stativ}
-  \label{fig:aufbau}
-\end{figure}
-
-\subsection{Durchführung}
-
-\begin{enumerate}
-  \item Die Fadenlänge~$l$ einstellen und messen.
-  \item Die Kugel um etwa \ang{10} auslenken und loslassen.
-  \item Die Zeit für zehn Schwingungen stoppen und durch zehn teilen.
-\end{enumerate}
-
-\subsection{Messwerte}
-
-\begin{table}[H]
-  \centering
-  \caption{Gemessene Schwingungsdauer für verschiedene Fadenlängen}
-  \label{tab:messwerte}
-  \begin{tabular}{ccc}
-    \toprule
-    Länge $l$ in \unit{\metre} & 10 Schwingungen in \unit{\second} & $T$ in \unit{\second} \\
-    \midrule
-    0,20 &  9,0 & 0,90 \\
-    0,40 & 12,7 & 1,27 \\
-    0,60 & 15,6 & 1,56 \\
-    0,80 & 17,9 & 1,79 \\
-    1,00 & 20,1 & 2,01 \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-\section{Auswertung}
-
-Abbildung~\ref{fig:diagramm} zeigt die Messwerte aus Tabelle~\ref{tab:messwerte}
-zusammen mit der Kurve aus Gleichung~\eqref{eq:schwingungsdauer} für
-$g = \qty{9,81}{\metre\per\second\squared}$.
-
-\begin{figure}[H]
-  \centering
-  \begin{tikzpicture}[x=10cm, y=2.5cm]
-    % Achsen mit Beschriftung
-    \draw[->] (0,0) -- (1.1,0) node[right] {$l$ in \unit{\metre}};
-    \draw[->] (0,0) -- (0,2.3) node[above] {$T$ in \unit{\second}};
-    \foreach \x in {0.2, 0.4, 0.6, 0.8, 1.0}
-      \draw (\x,0.03) -- (\x,-0.03) node[below] {\num{\x}};
-    \foreach \y in {0.5, 1.0, 1.5, 2.0}
-      \draw (0.01,\y) -- (-0.01,\y) node[left] {\num{\y}};
-    % Theorie: T = 2 pi sqrt(l / g)
-    \draw[thick, blue, domain=0:1.05, samples=60]
-      plot (\x, {2*pi*sqrt(\x/9.81)});
-    % Messwerte
-    \foreach \l/\t in {0.2/0.90, 0.4/1.27, 0.6/1.56, 0.8/1.79, 1.0/2.01}
-      \fill[red] (\l,\t) circle (2.5pt);
-  \end{tikzpicture}
-  \caption{Messwerte (rot) und die Kurve aus der Theorie (blau)}
-  \label{fig:diagramm}
-\end{figure}
-
-Die Messwerte liegen sehr nah an der Kurve. Stellt man
-Gleichung~\eqref{eq:schwingungsdauer} nach $g$ um, ergibt sich aus der Messung
-mit $l = \qty{1,00}{\metre}$ der Wert $g = \frac{4\pi^2 l}{T^2}
-\approx \qty{9,77}{\metre\per\second\squared}$.
-
-\section{Fazit}
-
-Die Schwingungsdauer eines Fadenpendels hängt von der Länge des Fadens ab,
-nicht aber von der Masse der Kugel. Vervierfacht man die Länge, verdoppelt
-sich die Schwingungsdauer. Die Messungen bestätigen die Theorie.
-
-\printbibliography
-
+~ \printbibliography
+~
 \newpage
 \section*{Selbstständigkeitserklärung}
 
@@ -532,11 +516,11 @@ angegebenen Quellen und Hilfsmittel verwendet habe.
 \vspace{20mm}
 \rule{60mm}{0.4pt}\\
 Ort, Datum, Unterschrift
-
-\end{document}
+~
+~ \end{document}
 ```
 
-Hier ist die ganze Facharbeit, wie sie jetzt aussehen sollte:
+Hier ist die ganze Facharbeit, wie sie jetzt aussehen sollte. Die Pakete stehen hier nach Themen geordnet und mit Kommentaren; bei dir dürfen sie in anderer Reihenfolge stehen, nur `hyperref` kommt zuletzt:
 
 ```tex_copy
 % !TEX program = lualatex

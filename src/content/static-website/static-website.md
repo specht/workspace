@@ -199,13 +199,20 @@ viewport: 720x405
 Auf unserer Beispielseite wollen wir drei Dinge sammeln, die an Axolotl interessant sind. Füge unter dem ersten Absatz Folgendes ein:
 
 ```html
-<h2>Was ich spannend finde</h2>
+~             Axolotl sind Salamander, die normalerweise ihr ganzes Leben
+~             im Wasser verbringen.
+~         </p>
+~
+        <h2>Was ich spannend finde</h2>
 
-<ul>
-    <li>Sie behalten auch als erwachsene Tiere ihre äußeren Kiemen.</li>
-    <li>Sie können verlorene Gliedmaßen regenerieren.</li>
-    <li>In freier Wildbahn kommen sie nur im Gebiet von Xochimilco vor.</li>
-</ul>
+        <ul>
+            <li>Sie behalten auch als erwachsene Tiere ihre äußeren Kiemen.</li>
+            <li>Sie können verlorene Gliedmaßen regenerieren.</li>
+            <li>In freier Wildbahn kommen sie nur im Gebiet von Xochimilco vor.</li>
+        </ul>
+~     </main>
+~ </body>
+~ </html>
 ```
 
 _include(html#listen)
@@ -236,9 +243,16 @@ viewport: 720x405
 </button>
 
 ```html
-<p>
-    <a href="https://de.wikipedia.org/wiki/Axolotl">Mehr über Axolotl erfahren</a>
-</p>
+~             <li>Sie können verlorene Gliedmaßen regenerieren.</li>
+~             <li>In freier Wildbahn kommen sie nur im Gebiet von Xochimilco vor.</li>
+~         </ul>
+~
+        <p>
+            <a href="https://de.wikipedia.org/wiki/Axolotl">Mehr über Axolotl erfahren</a>
+        </p>
+~     </main>
+~ </body>
+~ </html>
 ```
 
 Bei deinem eigenen Thema verlinkst du natürlich auf eine andere Seite.
@@ -267,10 +281,18 @@ viewport: 720x405
 </button>
 
 ```html
-<img
-    src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Ambystoma_mexicanum_Natural_History_Museum_University_of_Pisa_2.jpg/330px-Ambystoma_mexicanum_Natural_History_Museum_University_of_Pisa_2.jpg"
-    alt="Ein Axolotl in einem Aquarium"
->
+~ </head>
+~ <body>
+~     <main>
+        <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Ambystoma_mexicanum_Natural_History_Museum_University_of_Pisa_2.jpg/330px-Ambystoma_mexicanum_Natural_History_Museum_University_of_Pisa_2.jpg"
+            alt="Ein Axolotl in einem Aquarium"
+        >
+~
+~         <h1>Axolotl</h1>
+~
+~         <p>
+~             Axolotl sind Salamander, die normalerweise ihr ganzes Leben
 ```
 
 Hier steht in `src` statt eines Dateinamens die Adresse eines Bildes im Internet. Wie `<img>` funktioniert und was in den Alt-Text gehört:
@@ -291,13 +313,20 @@ viewport: 720x405
 </button>
 
 ```html
-<p class="credit">
-    Foto:
-    <a href="https://commons.wikimedia.org/wiki/File:Ambystoma_mexicanum_Natural_History_Museum_University_of_Pisa_2.jpg">
-        Lorenzo Tarocchi / Wikimedia Commons
-    </a>,
-    <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>
-</p>
+~         <p>
+~             <a href="https://de.wikipedia.org/wiki/Axolotl">Mehr über Axolotl erfahren</a>
+~         </p>
+~
+        <p class="credit">
+            Foto:
+            <a href="https://commons.wikimedia.org/wiki/File:Ambystoma_mexicanum_Natural_History_Museum_University_of_Pisa_2.jpg">
+                Lorenzo Tarocchi / Wikimedia Commons
+            </a>,
+            <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>
+        </p>
+~     </main>
+~ </body>
+~ </html>
 ```
 
 Wikimedia Commons erlaubt, seine Bilder so direkt einzubinden, aber die Lizenz gilt trotzdem: Wer das Bild gemacht hat und unter welcher Lizenz es steht, gehört auf die Seite.
@@ -355,7 +384,13 @@ Erstelle im Explorer neben `index.html` eine neue Datei namens `styles.css`.
 Damit der Browser diese Datei verwendet, fügst du im `<head>` von `index.html` diese Zeile ein:
 
 ```html
-<link rel="stylesheet" href="styles.css">
+~     <meta charset="UTF-8">
+~     <meta name="viewport" content="width=device-width, initial-scale=1">
+~     <title>Axolotl</title>
+    <link rel="stylesheet" href="styles.css">
+~ </head>
+~ <body>
+~     <main>
 ```
 
 Der `<head>` sollte jetzt so aussehen:
@@ -478,20 +513,24 @@ Wenn du dein eigenes Thema und Bild verwendest, behältst du natürlich **deine*
 Ergänze nun die vorhandene `main`-Regel in `styles.css`:
 
 ```css
-main {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2rem;
+~ main {
+~     max-width: 900px;
+~     margin: 0 auto;
+~     padding: 2rem;
 
     display: flex;
     gap: 2rem;
     align-items: center;
-}
+~ }
 ```
 
 Und füge darunter hinzu:
 
 ```css
+~     font-size: 0.8rem;
+~     opacity: 0.75;
+~ }
+~
 main > img {
     width: 45%;
 }
@@ -544,6 +583,10 @@ steht schon seit dem Anfang in unserem `<head>`. Sie sagt mobilen Browsern, dass
 Jetzt ergänzen wir am Ende von `styles.css` eine **Media Query**:
 
 ```css
+~ section {
+~     flex: 1;
+~ }
+~
 @media (max-width: 700px) {
     main {
         flex-direction: column;
