@@ -58,9 +58,12 @@ module Schemas
     # The first rows of a table, and how many there are in all
     def self.rows_html(table)
         rows = table['rows'] || []
+        # count: how many rows the SQL files have; the stepper's JSON may
+        # keep fewer (movies) or only the first (countries-basic)
+        total = table['count'] || rows.size
         head = table['columns'].map { |c| "<th>#{h(c)}</th>" }.join
         body = rows.first(ROWS).map { |r| "<tr>#{r.map { |v| "<td>#{h(value(v))}</td>" }.join}</tr>" }.join
-        more = rows.size > ROWS ? "<div class='schema-more'>… und #{rows.size - ROWS} weitere Zeilen, #{rows.size} in allen</div>" : ''
+        more = total > ROWS ? "<div class='schema-more'>… und #{total - ROWS} weitere Zeilen, #{total} in allen</div>" : ''
         "<div class='schema-rows'><table class='table table-sm'><thead><tr>#{head}</tr></thead><tbody>#{body}</tbody></table></div>#{more}"
     end
 

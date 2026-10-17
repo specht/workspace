@@ -15,8 +15,10 @@
 # https://github.com/specht/workspace-files.
 #
 # countries-basic (the version the Einführung loads) and music are not in
-# the stepper; their files have the tables without rows, for
-# _schema(countries-basic) and _schema(music) only.
+# the stepper; their files are for _schema only: countries-basic with the
+# first three rows of each table (_schema(countries-basic, rows)), music
+# without rows. Every table has count, how many rows the SQL files have,
+# also where the stepper keeps fewer.
 #
 # With the rows go the keys of each table, from CREATE TABLE and ALTER TABLE
 # in the same files: 'key' (the columns of the primary key) and
@@ -104,12 +106,21 @@ end
 # version first
 def countries(files)
     tables = files.map { |f| inserts(File.read(f)) }.reduce(:merge)
+    tables.each_value { |t| t['count'] = t['rows'].size }
     order = %w[continent country city border currency language country_language]
     tables.sort_by { |name, _| order.index(name) || order.size }.to_h
 end
 
+# The basic version for _schema(countries-basic, rows): the tables with
+# their first rows and how many there are, not in the stepper
+def countries_sample(files)
+    countries(files).transform_values { |t| t.merge('rows' => t['rows'].first(SAMPLE_ROWS)) }
+end
+
 def movies(files)
     tables = files.map { |f| inserts(File.read(f)) }.reduce(:merge)
+    # How many rows the files have, before the stepper keeps fewer
+    tables.each_value { |t| t['count'] = t['rows'].size }
     jobs = tables['job']['rows'].to_h { |id, title| [title, id] }
     roles = tables['movie_crew']['rows'].select { |r| r[2] == jobs['actor'] }.group_by { |r| r[1] }.transform_values(&:size)
     tables['movie_crew']['rows'].select! { |r| r[2] == jobs['director'] || (r[2] == jobs['actor'] && roles[r[1]] >= MIN_ROLES) }
@@ -128,7 +139,8 @@ def schema_only(files)
     found.to_h { |table, k| [table, { 'columns' => k['columns'], 'rows' => [] }] }
 end
 
-MODES = { 'countries' => :countries, 'countries-basic' => :schema_only, 'movies' => :movies, 'music' => :schema_only }.freeze
+SAMPLE_ROWS = 3
+MODES = { 'countries' => :countries, 'countries-basic' => :countries_sample, 'movies' => :movies, 'music' => :schema_only }.freeze
 
 name, *files = ARGV
 abort "usage: #{$0} countries countries.sql | countries-basic countries-basic.sql | movies movies-schema.sql movies-data-films.sql movies-data-crew.sql | music music-schema.sql" unless MODES.key?(name) && !files.empty?

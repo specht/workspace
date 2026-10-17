@@ -731,7 +731,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   mit den Einträgen 0 bis 3 für die Farben und 4 und 5 für Clear und End, in
   einer eigenen Spalte rechts neben der Erklärung statt darunter und von Anfang
   an so breit wie ihr längster Eintrag. Feine Linien zeigen das Raster der
-  16 × 16 Pixel, bevor sie da sind.
+  16 × 16 Pixel, bevor sie da sind. Die Einträge 4 und 5 heißen dort, wie in der
+  Spezifikation, CC (Clear Code) und EOI (End of Information).
 - Lauflängenkodierung: Das Ruby-Gerüst gibt das Ergebnis mit `puts` aus
   statt mit `p`, wie in Python mit `print`.
 - Mehr Aufgaben werden bei jedem Durchlauf der Screenshot-Rezepte selbst

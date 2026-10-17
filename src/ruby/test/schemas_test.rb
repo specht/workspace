@@ -42,6 +42,8 @@ class SchemasTest < Minitest::Test
         assert_includes out, '<td>652230</td>'
         basic = Schemas.expand("_schema(countries-basic, rows)\n")
         assert_equal 3, basic.scan("schema-table-rows' open>").size
+        # Only three rows stored, but the count of the whole table
+        assert_includes basic, '… und 4745 weitere Zeilen, 4748 in allen'
         warnings = []
         Schemas.expand("_schema(countries, rows, new: nothing)\n", warn: ->(m) { warnings << m })
         assert_equal ['_schema(countries): no table nothing'], warnings

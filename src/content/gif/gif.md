@@ -265,6 +265,14 @@ template_name: des PixelRAM-Starters
     .lzw-special {
         color: var(--bs-secondary-color);
     }
+    /* The index right-aligned in a column of its own, so the entries start
+       in one line however many digits it has. */
+    .lzw-index {
+        display: inline-block;
+        width: 3.5ch;
+        text-align: right;
+        margin-right: 0.5ch;
+    }
     .lzw-table div.new {
         background-color: color-mix(in srgb, var(--color-m0) 60%, transparent);
     }
@@ -1328,7 +1336,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // first step on, so the column never jumps: the index (4ch), then one
     // pixel box per pixel (1.3em and 1px), and room for a scroll bar.
     const longest = Math.max(...steps.map((s) => Math.max(...s.table.map((e) => (e ? e.length : 0)))));
-    document.getElementById('lzw-table').style.width = `calc(4ch + ${longest} * (1.3em + 1px) + 1.2em)`;
+    document.getElementById('lzw-table').style.width = `calc(4ch + ${longest} * (1.3em + 1px) + 1.6em)`;
     const pix = (list) => `<span class='pixes'>` + list.map((p) => `<span class='pix' style='background: ${PALETTE[p]}; color: ${INK[p]};'>${p}</span>`).join('') + `</span>`;
     const grid = document.getElementById('lzw-grid');
     for (let i = 0; i < WIDTH * HEIGHT; i++) grid.append(document.createElement('div'));
@@ -1410,9 +1418,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const bits = step.code.toString(2).padStart(step.size, '0');
         let text = `<p>Bits ${step.start} bis ${step.start + step.size - 1}: <code>${bits}</code> = <strong>${step.code}</strong>, mit ${step.size} Bits gelesen.</p>`;
         if (step.kind === 'clear') {
-            text += `<p>Das ist der <strong>Clear Code</strong>. Die Tabelle hat nur die Einträge 0 bis 3 für die Farben und 4 und 5 für Clear und End; der nächste freie Eintrag ist 6. Die Codes haben ${MIN_CODE_SIZE + 1} Bits.</p>`;
+            text += `<p>Das ist der <strong>Clear Code</strong> (CC). Die Tabelle hat nur die Einträge 0 bis 3 für die Farben, 4 für ihn selbst und 5 für End of Information (EOI); der nächste freie Eintrag ist 6. Die Codes haben ${MIN_CODE_SIZE + 1} Bits.</p>`;
         } else if (step.kind === 'end') {
-            text += `<p>Das ist <strong>End of Information</strong>. Das Bild ist fertig: ${step.to} Pixel.</p>`;
+            text += `<p>Das ist <strong>End of Information</strong> (EOI). Das Bild ist fertig: ${step.to} Pixel.</p>`;
         } else if (step.kind === 'first') {
             text += `<p>Code ${step.code} ist eine einzelne Farbe: ${pix(step.entry)}. Das kommt ins Bild. Es ist der erste Code nach dem Clear Code, darum entsteht noch kein Eintrag (Regel 1).</p>`;
         } else if (step.kind === 'known') {
@@ -1429,9 +1437,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // From entry 0 on: the colours, Clear and End, then what the decoder
         // has added. A new entry scrolls into view.
         tableBox.innerHTML = step.table.map((entry, index) => {
-                const shown = index === clearCode ? "<span class='lzw-special'>Clear</span>" :
-                    index === endCode ? "<span class='lzw-special'>End</span>" : pix(entry);
-                return `<div class='${index === step.addedIndex ? 'new' : ''}'>${String(index).padStart(2, ' ')}: ${shown}</div>`;
+                const shown = index === clearCode ? "<span class='lzw-special' title='Clear Code'>(CC)</span>" :
+                    index === endCode ? "<span class='lzw-special' title='End of Information'>(EOI)</span>" : pix(entry);
+                return `<div class='${index === step.addedIndex ? 'new' : ''}'><span class='lzw-index'>${index}:</span>${shown}</div>`;
             }).join('');
         const added = tableBox.querySelector('div.new');
         tableBox.scrollTop = added ? added.offsetTop - tableBox.clientHeight + added.offsetHeight + 4 :
