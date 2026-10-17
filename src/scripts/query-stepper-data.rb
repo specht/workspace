@@ -3,18 +3,20 @@
 # from the SQL files students download, as JSON for the browser:
 #
 #   src/scripts/query-stepper-data.rb countries countries.sql
+#   src/scripts/query-stepper-data.rb countries-basic countries-basic.sql
 #   src/scripts/query-stepper-data.rb movies movies-schema.sql movies-data-films.sql movies-data-crew.sql
 #   src/scripts/query-stepper-data.rb music music-schema.sql
 #
-# countries (»Einführung in SQL«): all four tables, whole. movies
+# countries (»Einführung in SQL« and after): all tables, whole. movies
 # (»Filmdatenbank«): genre, movie and movie_genre whole; of the people only
 # directors and actors with at least MIN_ROLES films, so the file stays small
 # enough for the browser. Writes
 # src/static/query-stepper/<name>.json. The SQL files come from
 # https://github.com/specht/workspace-files.
 #
-# music is not in the stepper; its file has the tables without rows, for
-# _schema(music) only.
+# countries-basic (the version the Einführung loads) and music are not in
+# the stepper; their files have the tables without rows, for
+# _schema(countries-basic) and _schema(music) only.
 #
 # With the rows go the keys of each table, from CREATE TABLE and ALTER TABLE
 # in the same files: 'key' (the columns of the primary key) and
@@ -98,9 +100,12 @@ def add_keys!(name, tables, files)
     end
 end
 
-# The countries of the world: every table as it is
+# The countries of the world: every table as it is, those of the basic
+# version first
 def countries(files)
-    files.map { |f| inserts(File.read(f)) }.reduce(:merge).to_h { |name, table| [name, table] }
+    tables = files.map { |f| inserts(File.read(f)) }.reduce(:merge)
+    order = %w[continent country city border currency language country_language]
+    tables.sort_by { |name, _| order.index(name) || order.size }.to_h
 end
 
 def movies(files)
@@ -117,15 +122,17 @@ def movies(files)
     %w[movie genre movie_genre crew job movie_crew].to_h { |name| [name, tables.fetch(name)] }
 end
 
-# The music: only the tables and their columns
-def music(files)
+# Only the tables and their columns
+def schema_only(files)
     found = files.map { |f| keys(File.read(f)) }.reduce({}) { |all, k| all.merge(k) }
     found.to_h { |table, k| [table, { 'columns' => k['columns'], 'rows' => [] }] }
 end
 
+MODES = { 'countries' => :countries, 'countries-basic' => :schema_only, 'movies' => :movies, 'music' => :schema_only }.freeze
+
 name, *files = ARGV
-abort "usage: #{$0} countries countries.sql | movies movies-schema.sql movies-data-films.sql movies-data-crew.sql | music music-schema.sql" unless %w[countries movies music].include?(name) && !files.empty?
-tables = send(name, files)
+abort "usage: #{$0} countries countries.sql | countries-basic countries-basic.sql | movies movies-schema.sql movies-data-films.sql movies-data-crew.sql | music music-schema.sql" unless MODES.key?(name) && !files.empty?
+tables = send(MODES[name], files)
 add_keys!(name, tables, files)
 out = File.join(OUT_DIR, "#{name}.json")
 File.write(out, JSON.generate({ 'source' => files.map { |f| File.basename(f) }.join(', '), 'tables' => tables }) + "\n")

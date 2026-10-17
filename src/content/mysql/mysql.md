@@ -69,10 +69,10 @@ Du kannst das Terminal auch maximieren, indem du auf das Symbol in der rechten o
 
 ### Beispieldaten laden
 
-Um MySQL kennenzulernen, benötigen wir eine Datenbank. Wir verwenden die Länder der Welt: alle 197 Länder mit ihren Kontinenten, gut 4.700 Städte und die Grenzen zwischen den Ländern, zusammengestellt aus [Wikidata](https://www.wikidata.org/); was genau drinsteht, beschreibt das Handbuch unter [Datensätze](/reference/datensaetze#countries). Du lädst sie herunter, indem du folgenden Befehl eingibst:
+Um MySQL kennenzulernen, benötigen wir eine Datenbank. Wir verwenden die Länder der Welt: alle 197 Länder mit ihren Kontinenten und gut 4.700 Städte, zusammengestellt aus [Wikidata](https://www.wikidata.org/); was genau drinsteht, beschreibt das Handbuch unter [Datensätze](/reference/datensaetze#countries). Für den Anfang nehmen wir eine kleine Fassung mit drei Tabellen. Du lädst sie herunter, indem du folgenden Befehl eingibst:
 
 ```bash_copy
-wget https://github.com/specht/workspace-files/raw/main/country-archive/countries.sql
+wget https://github.com/specht/workspace-files/raw/main/country-archive/countries-basic.sql
 ```
 
 Die Ausgabe sollte in etwa so aussehen:
@@ -80,33 +80,33 @@ Die Ausgabe sollte in etwa so aussehen:
 <!-- tutorial-screenshot
 terminal-maximize
 terminal-run: clear
-terminal-run: wget https://github.com/specht/workspace-files/raw/main/country-archive/countries.sql
+terminal-run: wget https://github.com/specht/workspace-files/raw/main/country-archive/countries-basic.sql
 terminal-wait-for-prompt
-wait-for-file: sql-einfuehrung/countries.sql
+wait-for-file: sql-einfuehrung/countries-basic.sql
 sleep: 0.51
 -->
 
-<img class='full' src='wget.webp' alt='Das Terminal nach dem Download: wget hat die Datei countries.sql gespeichert.'>
+<img class='full' src='wget.webp' alt='Das Terminal nach dem Download: wget hat die Datei countries-basic.sql gespeichert.'>
 
 Klicke auf die Datei, um sie zu öffnen. Sie enthält die Befehle, die die Tabellen anlegen und mit Daten füllen, hier die Zeilen der Länder:
 
 <!-- tutorial-screenshot
-open-file: countries.sql
+open-file: countries-basic.sql
 press: Control+G
 press: 1
-press: 2
-press: 1
+press: 0
+press: 9
 press: Enter
 press: Control+J
 sleep: 0.5
 -->
 
-<img class='full' src='country-sql.webp' alt='Die Datei countries.sql im Editor: ein INSERT-Befehl mit einer Zeile pro Land, mit Kürzel, Name, Einwohnerzahl, Fläche und Kontinent, etwa Deutschland.'>
+<img class='full' src='country-sql.webp' alt='Die Datei countries-basic.sql im Editor: ein INSERT-Befehl mit einer Zeile pro Land, mit Kürzel, Name, Einwohnerzahl, Fläche und Kontinent, etwa Deutschland.'>
 
 Um die Beispieldatenbank in MySQL zu importieren, gib einfach den folgenden Befehl ein:
 
 ```bash
-mysql < countries.sql
+mysql < countries-basic.sql
 ```
 
 Der Import geht relativ schnell. Zum Schluss lässt er die Datenbank die neuen Tabellen kurz durchsehen und meldet für jede ein `OK`:
@@ -116,13 +116,13 @@ press: Control+B
 press: Control+J
 terminal-maximize
 terminal-run: clear
-terminal-run: mysql < countries.sql
+terminal-run: mysql < countries-basic.sql
 terminal-wait-for-prompt
 sleep: 0.5
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='sql-import.webp' alt='Das Terminal nach dem Import: unter einer Kopfzeile vier Zeilen, eine für jede Tabelle, jede mit dem Status OK.'>
+<img class='full' src='sql-import.webp' alt='Das Terminal nach dem Import: unter einer Kopfzeile drei Zeilen, eine für jede Tabelle, jede mit dem Status OK.'>
 
 ## Die Datenbank erkunden
 
@@ -159,9 +159,9 @@ crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->
 
-<img class='full' src='show-tables.webp' alt='SHOW TABLES listet die vier Tabellen border, city, continent und country.'>
+<img class='full' src='show-tables.webp' alt='SHOW TABLES listet die drei Tabellen city, continent und country.'>
 
-Du siehst die vier Tabellen `border`, `city`, `continent` und `country`.
+Du siehst die drei Tabellen `city`, `continent` und `country`.
 
 <div class='hint'>
 SQL-Befehle schreiben wir in diesem Tutorial zur besseren Les­bar­keit in Großbuchstaben. Für MySQL spielt die Groß- und Kleinschreibung der hier ver­wen­deten SQL-Schlüsselwörter keine Rolle.
@@ -195,9 +195,9 @@ _task(stadt-land)
 
 Kurz aufgeschrieben sieht die ganze Datenbank so aus, eine Zeile pro Tabelle mit ihren Spalten in Klammern:
 
-_schema(countries)
+_schema(countries-basic)
 
-Unterstrichen ist der **Primärschlüssel**: die Spalte, deren Wert jede Zeile eindeutig macht, in `country` das Kürzel `code`, in `city` eine Nummer, `id`. Der Name reicht bei Städten nicht, denn er kommt mehrfach vor: Springfield gibt es in den Vereinigten Staaten gleich dreimal. Der Pfeil ↑ markiert einen **Fremdschlüssel**, eine Spalte, die auf eine Zeile einer anderen Tabelle verweist: `country_code` in `city` nennt das Land, in dem die Stadt liegt, mit seinem Kürzel; `continent` in `country` den Kontinent mit seinem Namen. In `border` steht jede Grenze als Paar von zwei Ländern, und erst beide Spalten zusammen sind der Primärschlüssel. `is_capital` in `city` ist `1`, wenn die Stadt die Hauptstadt ihres Landes ist, sonst `0`.
+Unterstrichen ist der **Primärschlüssel**: die Spalte, deren Wert jede Zeile eindeutig macht, in `country` das Kürzel `code`, in `city` eine Nummer, `id`. Der Name reicht bei Städten nicht, denn er kommt mehrfach vor: Springfield gibt es in den Vereinigten Staaten gleich dreimal. Der Pfeil ↑ markiert einen **Fremdschlüssel**, eine Spalte, die auf eine Zeile einer anderen Tabelle verweist: `country_code` in `city` nennt das Land, in dem die Stadt liegt, mit seinem Kürzel; `continent` in `country` den Kontinent mit seinem Namen. `is_capital` in `city` ist `1`, wenn die Stadt die Hauptstadt ihres Landes ist, sonst `0`.
 
 ## Abfragen mit SELECT
 
@@ -524,6 +524,8 @@ Im Handbuch: _uses(mycli, select, where, sortieren, aggregieren)
 Um <code>mycli</code> zu beenden, gib <code>exit</code> ein oder verwende <kbd>Strg</kbd><kbd>D</kbd>.
 </div>
 
+Die drei Tabellen sind die kleine Fassung der Länder der Welt. Im zweiten Teil unten lädst du die ganze, mit Grenzen, Währungen und Amtssprachen, und verbindest Tabellen miteinander.
+
 ## Aufgaben
 
 Beantworte die folgenden Fragen mit geeigneten SQL-Abfragen. Gib möglichst nur die Spalten aus, die du für die Antwort tatsächlich brauchst.
@@ -604,4 +606,288 @@ check-task: noerdlich-hamburg <- SELECT name FROM city WHERE country_code = 'DEU
 check-task-fails: noerdlich-hamburg <- SELECT name FROM city WHERE country_code = 'DEU' AND latitude < 53.55;
 check-task: hauptstaedte-sueden <- SELECT name FROM city WHERE is_capital AND latitude < 0;
 check-task-fails: hauptstaedte-sueden <- SELECT name FROM city WHERE latitude < 0;
+-->
+
+## Teil 2: Mehr Tabellen
+
+Bisher hat jede Abfrage eine Tabelle gelesen. Die spannenderen Fragen brauchen mehrere: Welche Hauptstadt hat welches Land? Wer sind die Nachbarn Deutschlands? Wo ist Deutsch Amtssprache? Dafür gibt es die ganze Fassung der Länder der Welt.
+
+### Die ganze Datenbank laden
+
+Beende `mycli` mit <kbd>Strg</kbd><kbd>D</kbd>, lade die ganze Fassung herunter und importiere sie:
+
+```bash_copy
+wget https://github.com/specht/workspace-files/raw/main/country-archive/countries.sql
+```
+
+```bash
+mysql < countries.sql
+```
+
+<!-- tutorial-screenshot
+press: Control+D
+sleep: 0.5
+terminal-run: clear
+terminal-run: wget -q https://github.com/specht/workspace-files/raw/main/country-archive/countries.sql
+terminal-wait-for-prompt
+wait-for-file: sql-einfuehrung/countries.sql
+terminal-run: clear
+terminal-run: mysql < countries.sql
+terminal-wait-for-prompt
+sleep: 0.5
+crop-terminal-lines: auto
+-->
+
+<img class='full' src='sql-import-full.webp' alt='Das Terminal nach dem Import der ganzen Fassung: sieben Zeilen, eine für jede Tabelle, jede mit dem Status OK.'>
+
+`countries.sql` löscht die drei Tabellen der kleinen Fassung und legt sie neu an, dazu vier weitere. Die Länder, Städte und Kontinente sind dieselben wie vorher; deine Abfragen aus dem ersten Teil gehen weiter. Starte `mycli` wieder und sieh dir die Tabellen an:
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: mycli
+sleep: 0.5
+press: Control+L
+type: SHOW TABLES;
+press: Enter
+sleep: 0.5
+terminal-scroll-back: 2
+crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
+-->
+
+<img class='full' src='show-tables-full.webp' alt='SHOW TABLES listet sieben Tabellen: border, city, continent, country, country_language, currency und language.'>
+
+_schema(countries)
+
+Neu in `country` sind vier Spalten: `currency_code`, die Währung, ein Fremdschlüssel auf `currency`; `tld`, die Internet-Endung wie `.de`; `calling_code`, die Vorwahl wie `+49`; und `driving_side`, `left` oder `right`, je nachdem, auf welcher Straßenseite gefahren wird. `border` enthält die Grenzen an Land, jede als Paar von zwei Ländern; erst beide Spalten zusammen sind der Primärschlüssel. `language` und `country_language` sagen, welche Sprachen in welchem Land Amtssprache sind.
+
+_task(linksverkehr)
+
+## Gruppen bilden: GROUP BY
+
+`COUNT(*)` hat bisher alle Zeilen gezählt, die übrig blieben. Mit `GROUP BY` teilt die Datenbank die Zeilen vorher in Gruppen ein und rechnet für jede Gruppe einmal. Wie viele Länder hat jeder Kontinent?
+
+```sql
+SELECT continent, COUNT(*)
+FROM country
+GROUP BY continent;
+```
+
+<!-- tutorial-screenshot
+press: Control+L
+terminal-run: SELECT continent, COUNT(*) FROM country GROUP BY continent;
+sleep: 0.5
+terminal-scroll-back: 2
+crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
+-->
+
+<img class='full' src='group-by.webp' alt='Für jeden der sechs Kontinente mit Ländern eine Zeile mit der Zahl seiner Länder, Afrika mit 54.'>
+
+Jede Gruppe wird zu einer Zeile. Neben `COUNT` gibt es `SUM` (die Summe), `AVG` (den Durchschnitt), `MIN` und `MAX`. Die Einwohner jedes Kontinents, die größten zuerst:
+
+```sql
+SELECT continent, COUNT(*) AS countries, SUM(population) AS people
+FROM country
+GROUP BY continent
+ORDER BY people DESC;
+```
+
+<!-- tutorial-screenshot
+press: Control+L
+terminal-run: SELECT continent, COUNT(*) AS countries, SUM(population) AS people FROM country GROUP BY continent ORDER BY people DESC;
+sleep: 0.5
+terminal-scroll-back: 2
+crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
+-->
+
+<img class='full' src='group-by-sum.webp' alt='Die Kontinente mit der Zahl ihrer Länder und ihren Einwohnern, Asien mit gut 4,5 Milliarden oben.'>
+
+Hinter `SELECT` dürfen bei `GROUP BY` nur die Spalten stehen, nach denen gruppiert wird, und Funktionen wie `COUNT` oder `SUM`: Welchen `name` sollte die Datenbank für Afrika auch zeigen, es sind 54? Gruppen filtern kannst du mit `HAVING`; anders als `WHERE`, das einzelne Zeilen prüft, kommt es nach dem Gruppieren:
+
+```sql
+SELECT continent, COUNT(*) AS countries
+FROM country
+GROUP BY continent
+HAVING countries > 40;
+```
+
+Wie die Gruppen entstehen, zeigt der [Query Stepper](/query-stepper): Er färbt bei `GROUP BY` jede Gruppe ein, und `HAVING` streicht ganze Gruppen.
+
+_task(laender-pro-kontinent)
+
+_task(einwohner-pro-kontinent)
+
+_task(grosse-kontinente)
+
+## Tabellen verbinden: JOIN
+
+In `country` steht nicht, wie die Hauptstadt eines Landes heißt; das steht in `city`, bei der Stadt mit `is_capital = 1`. Ein `JOIN` setzt die beiden Tabellen zusammen: Zu jeder Zeile von `country` holt er die Zeilen von `city`, für die die Bedingung hinter `ON` stimmt, hier die Städte des Landes.
+
+```sql
+SELECT country.name, city.name
+FROM country
+JOIN city ON city.country_code = country.code
+WHERE city.is_capital = 1 AND country.continent = 'Südamerika';
+```
+
+<!-- tutorial-screenshot
+press: Control+L
+terminal-run: SELECT country.name, city.name FROM country JOIN city ON city.country_code = country.code WHERE city.is_capital = 1 AND country.continent = 'Südamerika';
+sleep: 0.5
+terminal-scroll-back: 2
+crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
+-->
+
+<img class='full' src='join-capitals.webp' alt='Die zwölf Länder Südamerikas mit ihren Hauptstädten, von Argentinien mit Buenos Aires bis Venezuela mit Caracas.'>
+
+Weil es `name` in beiden Tabellen gibt, steht der Name der Tabelle davor: `country.name`, `city.name`. Die Bedingung hinter `ON` ist fast immer dieselbe Art: Ein Fremdschlüssel ist gleich dem Primärschlüssel, auf den er verweist. So kommt auch der Name der Währung dazu, über `country.currency_code` und `currency.code`.
+
+Wie ein `JOIN` arbeitet, zeigt der Query Stepper Schritt für Schritt: Nach `FROM` stehen alle Länder da, nach `JOIN` ist jedes Land so oft da, wie es Städte hat, und erst `WHERE` lässt die Hauptstädte übrig.
+
+<div class='query-stepper' data-stepper data-query="SELECT country.name, city.name
+FROM country
+JOIN city ON city.country_code = country.code
+WHERE city.is_capital = 1 AND country.continent = 'Südamerika'
+ORDER BY country.name;"></div>
+
+_task(waehrung-japan)
+
+### Die Nachbarn: dieselbe Tabelle zweimal
+
+In `border` stehen nur Kürzel. Für die Namen der Nachbarn verbindest du `border` mit `country`, und zwar über `neighbor_code`. Bekommt eine Tabelle mit `AS` einen eigenen Namen, liest sich das besser:
+
+```sql
+SELECT neighbor.name
+FROM border
+JOIN country AS neighbor ON neighbor.code = border.neighbor_code
+WHERE border.country_code = 'DEU';
+```
+
+<!-- tutorial-screenshot
+press: Control+L
+terminal-run: SELECT neighbor.name FROM border JOIN country AS neighbor ON neighbor.code = border.neighbor_code WHERE border.country_code = 'DEU';
+sleep: 0.5
+terminal-scroll-back: 2
+crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
+-->
+
+<img class='full' src='join-neighbors.webp' alt='Die neun Nachbarländer Deutschlands, von Belgien bis Tschechien.'>
+
+Jede Grenze steht in `border` zweimal, einmal in jeder Richtung: `('DEU', 'FRA')` und `('FRA', 'DEU')`. Das ist Absicht, sonst müsste die Abfrage in beiden Spalten nach Deutschland suchen.
+
+_task(grenze-zweimal)
+
+_task(nachbarn-deutschland)
+
+_task(viele-nachbarn)
+
+### Auch ohne Partner: LEFT JOIN
+
+Ein `JOIN` lässt ein Land weg, für das es keine passende Zeile gibt: Inselstaaten haben keine Nachbarn und tauchen bei einem `JOIN` mit `border` gar nicht auf. Ein `LEFT JOIN` behält jede Zeile der linken Tabelle und füllt die Spalten der rechten mit `NULL`, wenn es keinen Partner gibt:
+
+```sql
+SELECT country.name, border.neighbor_code
+FROM country
+LEFT JOIN border ON border.country_code = country.code
+WHERE country.continent = 'Ozeanien';
+```
+
+<!-- tutorial-screenshot
+press: Control+L
+terminal-run: SELECT country.name, border.neighbor_code FROM country LEFT JOIN border ON border.country_code = country.code WHERE country.continent = 'Ozeanien';
+sleep: 0.5
+terminal-scroll-back: 2
+crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
+-->
+
+<img class='full' src='left-join.webp' alt='Die Länder Ozeaniens mit ihren Nachbarn: Papua-Neuguinea grenzt an IDN, bei allen anderen steht NULL.'>
+
+Nur Papua-Neuguinea hat einen Nachbarn, Indonesien auf derselben Insel. Mit `WHERE border.country_code IS NULL` bleiben die Länder ohne Nachbarn übrig.
+
+_task(ohne-nachbarn)
+
+_task(meiste-staedte)
+
+## Viele zu viele: Amtssprachen
+
+Ein Land kann mehrere Amtssprachen haben, die Schweiz hat vier, und eine Sprache kann in vielen Ländern Amtssprache sein. Das passt weder in eine Spalte von `country` noch in eine von `language`. Deshalb gibt es eine Tabelle dazwischen, `country_language`, mit einer Zeile für jedes Paar aus Land und Sprache. Für die Namen braucht es zwei `JOIN`s:
+
+```sql
+SELECT country.name, language.name
+FROM country
+JOIN country_language ON country_language.country_code = country.code
+JOIN language ON language.code = country_language.language_code
+WHERE country.name = 'Schweiz';
+```
+
+<!-- tutorial-screenshot
+press: Control+L
+terminal-run: SELECT country.name, language.name FROM country JOIN country_language ON country_language.country_code = country.code JOIN language ON language.code = country_language.language_code WHERE country.name = 'Schweiz';
+sleep: 0.5
+terminal-scroll-back: 2
+crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
+-->
+
+<img class='full' src='join-languages.webp' alt='Die vier Amtssprachen der Schweiz: Deutsch, Französisch, Italienisch und Bündnerromanisch.'>
+
+Eine solche Tabelle in der Mitte brauchst du immer, wenn auf beiden Seiten viele stehen: bei Filmen und Genres in der Filmdatenbank genauso.
+
+_task(sprachen-schweiz)
+
+_task(deutsch-amtssprache)
+
+_task(englisch-amtssprache)
+
+## Zusammenfassung von Teil 2
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table'>
+<thead>
+<tr><th>Baustein</th><th>Bedeutung</th></tr>
+</thead>
+<tbody>
+<tr><td><code>GROUP&nbsp;BY</code></td><td>Welche Zeilen bilden zusammen eine Gruppe, für die einmal gerechnet wird?</td></tr>
+<tr><td><code>SUM</code>, <code>AVG</code>, <code>MIN</code>, <code>MAX</code></td><td>Was wird für jede Gruppe ausgerechnet?</td></tr>
+<tr><td><code>HAVING</code></td><td>Welche Gruppen bleiben übrig?</td></tr>
+<tr><td><code>JOIN … ON</code></td><td>Welche Zeilen zweier Tabellen gehören zusammen?</td></tr>
+<tr><td><code>AS</code> bei einer Tabelle</td><td>Unter welchem Namen steht eine Tabelle in der Abfrage?</td></tr>
+<tr><td><code>LEFT&nbsp;JOIN</code></td><td>Welche Zeilen bleiben, auch wenn es keinen Partner gibt?</td></tr>
+</tbody>
+</table>
+</div>
+
+Im Handbuch: _uses(aggregieren, join)
+
+<!-- tutorial-step
+# Jede SQL-Aufgabe des zweiten Teils nimmt ihre Lösung an und lehnt einen typischen Fehler ab, auf der ganzen Fassung
+check-task: linksverkehr <- SELECT name FROM country WHERE continent = 'Europa' AND driving_side = 'left';
+check-task-fails: linksverkehr <- SELECT name FROM country WHERE continent = 'Europa' AND driving_side = 'right';
+check-task: laender-pro-kontinent <- SELECT continent, COUNT(*) FROM country GROUP BY continent;
+check-task-fails: laender-pro-kontinent <- SELECT continent FROM country GROUP BY continent;
+check-task: einwohner-pro-kontinent <- SELECT continent, SUM(population) AS people FROM country GROUP BY continent ORDER BY people DESC;
+check-task-fails: einwohner-pro-kontinent <- SELECT continent, SUM(population) AS people FROM country GROUP BY continent ORDER BY people;
+check-task: grosse-kontinente <- SELECT continent, COUNT(*) FROM country GROUP BY continent HAVING COUNT(*) > 40;
+check-task-fails: grosse-kontinente <- SELECT continent, COUNT(*) FROM country GROUP BY continent;
+check-task: waehrung-japan <- SELECT currency.name FROM country JOIN currency ON currency.code = country.currency_code WHERE country.name = 'Japan';
+check-task-fails: waehrung-japan <- SELECT currency_code FROM country WHERE name = 'Japan';
+check-task: nachbarn-deutschland <- SELECT neighbor.name FROM border JOIN country AS neighbor ON neighbor.code = border.neighbor_code WHERE border.country_code = 'DEU';
+check-task-fails: nachbarn-deutschland <- SELECT neighbor_code FROM border WHERE country_code = 'DEU';
+check-task: viele-nachbarn <- SELECT country.name FROM border JOIN country ON country.code = border.country_code GROUP BY country.code, country.name HAVING COUNT(*) > 8;
+check-task-fails: viele-nachbarn <- SELECT country.name FROM border JOIN country ON country.code = border.country_code GROUP BY country.code, country.name HAVING COUNT(*) > 9;
+check-task: ohne-nachbarn <- SELECT country.name FROM country LEFT JOIN border ON border.country_code = country.code WHERE border.country_code IS NULL;
+check-task-fails: ohne-nachbarn <- SELECT country.name FROM country JOIN border ON border.country_code = country.code WHERE border.country_code IS NULL;
+check-task: meiste-staedte <- SELECT country.name, COUNT(*) AS cities FROM country JOIN city ON city.country_code = country.code GROUP BY country.code, country.name ORDER BY cities DESC LIMIT 1;
+check-task-fails: meiste-staedte <- SELECT country.name, COUNT(*) AS cities FROM country JOIN city ON city.country_code = country.code GROUP BY country.code, country.name ORDER BY cities LIMIT 1;
+check-task: sprachen-schweiz <- SELECT language.name FROM country_language JOIN language ON language.code = country_language.language_code WHERE country_language.country_code = 'CHE';
+check-task-fails: sprachen-schweiz <- SELECT language_code FROM country_language WHERE country_code = 'CHE';
+check-task: deutsch-amtssprache <- SELECT country.name FROM country JOIN country_language ON country_language.country_code = country.code JOIN language ON language.code = country_language.language_code WHERE language.name = 'Deutsch';
+check-task-fails: deutsch-amtssprache <- SELECT country.name FROM country WHERE continent = 'Europa' AND name LIKE '%reich%';
+check-task: englisch-amtssprache <- SELECT COUNT(*) FROM country_language JOIN language ON language.code = country_language.language_code WHERE language.name = 'Englisch';
+check-task-fails: englisch-amtssprache <- SELECT COUNT(*) FROM country_language;
 -->

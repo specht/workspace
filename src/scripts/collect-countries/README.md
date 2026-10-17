@@ -2,7 +2,9 @@
 
 `collect-countries.rb` builds the classroom country dataset for *Einführung in SQL*
 (`src/content/mysql`) and the Query Stepper: the continents, the countries of the world,
-their cities and which countries share a land border.
+their cities, which countries share a land border, their currencies and official
+languages, in a basic version for the first part of the tutorial and a full one for
+the second.
 
 All data comes from [Wikidata](https://www.wikidata.org/) (CC0 1.0). The countries are
 the 193 members of the United Nations, the two observer states, Kosovo and Taiwan; the
@@ -34,16 +36,21 @@ Generated files (shared with `collect-movies` and `collect-music` via
 `../lib/classroom_dataset.rb`):
 
 - `continents.txt`, `countries.txt`, `cities.txt` — JSON Lines, with Wikidata item IDs
-- `countries.sql` — schema and complete data
+- `countries-basic.sql` — the basic version for the first steps: `continent`, `country`
+  (its first five columns) and `city`, schema and data
+- `countries.sql` — schema and complete data: also `border`, `currency`, `language`,
+  `country_language`
 - `countries-schema.sql`, `countries-data.sql` — schema only and data only
-- `countries-data-cities.sql` (`continent`, `country`, `city`) and `countries-data-borders.sql`
+- `countries-data-cities.sql` (`continent`, `currency`, `country`, `city`),
+  `countries-data-borders.sql` and `countries-data-languages.sql`
   (`border`) — data in two steps
 - `countries-neo4j.dump` — logical dump compatible with `neo4j_bolt load`
 - `README.md` — provenance, licence, the rules and what each column means
 
 The tables and columns are a contract with the Einführung in SQL, its tasks
 (`src/content/mysql/tasks.yaml`) and the Query Stepper
-(`src/scripts/query-stepper-data.rb countries countries.sql`). Change them together.
+(`src/scripts/query-stepper-data.rb countries countries.sql` and `countries-basic
+countries-basic.sql`). Change them together.
 So are the numbers: the tasks expect the published row counts (`tables: { city: … }`)
 and name results in their solutions, and the pictures of the tutorial show them. A
 new build, published, needs the tasks, the stepper's tables and the screenshots

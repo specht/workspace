@@ -27,10 +27,10 @@ DATASETS = {
     'countries' => {
         dir: 'country-archive', from: 'src/scripts/collect-countries/country-archive',
         title: 'Countries of the world',
-        about: 'The continents, the 197 countries of the world, every city with at least 100,000 inhabitants and every capital, and the land borders between the countries, each in both directions.',
+        about: 'The continents, the 197 countries of the world, every city with at least 100,000 inhabitants and every capital, the land borders between the countries (each in both directions), their currencies and official languages. `countries-basic.sql` has only continents, countries and cities, for the first steps.',
         source: '[Wikidata](https://www.wikidata.org/), CC0 1.0',
         used: '*Einführung in SQL*, the Query Stepper',
-        stepper: %w[countries.sql]
+        stepper: { 'countries' => %w[countries.sql], 'countries-basic' => %w[countries-basic.sql] }
     },
     'movies' => {
         dir: 'movie-archive', from: 'src/scripts/collect-movies/movie-archive',
@@ -38,7 +38,7 @@ DATASETS = {
         about: 'Well-known feature films, their genres and the people who made them: cast, direction, writing, music, production, camera and editing.',
         source: '[Wikidata](https://www.wikidata.org/), CC0 1.0; IMDb votes only to choose the films',
         used: '*Filmdatenbank* (MySQL and Neo4j), the Query Stepper',
-        stepper: %w[movies-schema.sql movies-data-films.sql movies-data-crew.sql],
+        stepper: { 'movies' => %w[movies-schema.sql movies-data-films.sql movies-data-crew.sql] },
         # the names before October 2026, for students halfway through the Filmdatenbank
         old_files: %w[mysql.sql mysql-schema.sql mysql-data.sql mysql-data-movies.sql mysql-data-crew.sql neo4j.dump]
     },
@@ -48,7 +48,7 @@ DATASETS = {
         about: 'The albums of a chosen list of artists and bands, with their tracks, genres and who plays in which band.',
         source: '[Discogs data dumps](https://data.discogs.com/), CC0 1.0',
         used: 'no activity yet',
-        stepper: %w[music-schema.sql]
+        stepper: { 'music' => %w[music-schema.sql] }
     }
 }.freeze
 
@@ -61,7 +61,8 @@ OTHER_FILES = {
 }.freeze
 
 # What every dataset has, by its name
-def required(name) = ['README.md', "#{name}.sql", "#{name}-schema.sql", "#{name}-data.sql", "#{name}-neo4j.dump"]
+def required(name) = ['README.md', "#{name}.sql", "#{name}-schema.sql", "#{name}-data.sql", "#{name}-neo4j.dump"] +
+                     (name == 'countries' ? ['countries-basic.sql'] : [])
 
 class Publisher
     def initialize(names:, repo:, from:, commit:, push:, patch:, force:)
@@ -194,10 +195,12 @@ class Publisher
     end
 
     def rebuild_stepper(name, dir)
-        files = DATASETS[name][:stepper].map { |f| File.join(dir, f) }
-        out, status = Open3.capture2e('ruby', File.join(ROOT, 'src/scripts/query-stepper-data.rb'), name, *files)
-        abort "query-stepper-data.rb #{name} failed:\n#{out}" unless status.success?
-        puts "Query Stepper: #{out.lines.last.strip} (commit it in specht/workspace)"
+        DATASETS[name][:stepper].each do |json, names|
+            files = names.map { |f| File.join(dir, f) }
+            out, status = Open3.capture2e('ruby', File.join(ROOT, 'src/scripts/query-stepper-data.rb'), json, *files)
+            abort "query-stepper-data.rb #{json} failed:\n#{out}" unless status.success?
+            puts "Query Stepper: #{out.lines.last.strip} (commit it in specht/workspace)"
+        end
     end
 
     def generated(dir)

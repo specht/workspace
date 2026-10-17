@@ -21,8 +21,10 @@ test('the query stepper works through a query clause by clause', async ({ page, 
 
   // Above it, the tables as schema lines: the key underlined, a foreign key with ↑
   const schema = stepper.locator('.qs-schema > div');
-  await expect(schema).toHaveText(['continent(name, area)', 'country(code, name, population, area, ↑continent)',
-    'city(id, name, ↑country_code, population, latitude, longitude, is_capital)', 'border(↑country_code, ↑neighbor_code)']);
+  await expect(schema).toHaveText(['continent(name, area)',
+    'country(code, name, population, area, ↑continent, ↑currency_code, tld, calling_code, driving_side)',
+    'city(id, name, ↑country_code, population, latitude, longitude, is_capital)', 'border(↑country_code, ↑neighbor_code)',
+    'currency(code, name)', 'language(code, name)', 'country_language(↑country_code, ↑language_code)']);
   await expect(schema.first().locator('u')).toHaveText('name');
   await expect(schema.nth(1).locator('.schema-fk')).toHaveAttribute('title', 'verweist auf continent.name');
 

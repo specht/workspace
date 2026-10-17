@@ -38,6 +38,22 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   wie die Filme und die Musik (auch für Neo4j). Gebaut wird er von
   `src/scripts/collect-countries`, das man jederzeit neu laufen lassen kann.
 
+- Die Länder der Welt gibt es in zwei Fassungen. Die kleine,
+  `countries-basic.sql`, hat nur `continent`, `country` und `city`; die
+  ganze, `countries.sql`, hat dazu die Grenzen, die Währungen (`currency`,
+  der Euro in 27 Ländern) und die Amtssprachen (`language` und
+  `country_language`, die Schweiz mit vier), und in `country` die
+  Internet-Endung, die Vorwahl und die Straßenseite. Die ganze ersetzt beim
+  Import die Tabellen der kleinen.
+
+- Die »Einführung in SQL« hat einen zweiten Teil, »Mehr Tabellen«: Lernende
+  laden die ganze Fassung der Länder der Welt und lernen `GROUP BY` und
+  `HAVING`, `JOIN` mit Hauptstädten, Währungen und Nachbarländern (dieselbe
+  Tabelle zweimal, mit `AS`), `LEFT JOIN` für Länder ohne Nachbarn und eine
+  Beziehung n:m an den Amtssprachen. 14 neue Aufgaben, darunter eine zur
+  Frage, warum jede Grenze zweimal dasteht; der erste Teil lädt die kleine
+  Fassung und ist unverändert.
+
 - Die Dateien der Datensätze tragen den Namen ihres Datensatzes:
   `countries.sql`, `movies-data-films.sql`, `music-neo4j.dump` statt
   `mysql.sql`, `mysql-data-movies.sql`, `neo4j.dump`. Wer eine Datei

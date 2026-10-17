@@ -17,7 +17,11 @@ class SchemasTest < Minitest::Test
 
     def test_the_datasets_of_the_sql_zeitlupe
         countries = Schemas.html('countries')
-        %w[continent country city border].each { |table| assert_includes countries, ">#{table}</span>(" }
+        %w[continent country city border currency language country_language].each { |table| assert_includes countries, ">#{table}</span>(" }
+        basic = Schemas.html('countries-basic')
+        assert_equal 3, basic.scan("<span class='schema-table'>").size
+        assert_includes basic, "<span class='schema-table'>country</span>(<u>code</u>, name, population, area, " \
+            "<span class='schema-fk' title='verweist auf continent.name'><span class='schema-arrow'>↑</span>continent</span>)"
         assert_includes countries, "<span class='schema-table'>city</span>(<u>id</u>, name, " \
             "<span class='schema-fk' title='verweist auf country.code'><span class='schema-arrow'>↑</span>country_code</span>, population,"
         movies = Schemas.html('movies')

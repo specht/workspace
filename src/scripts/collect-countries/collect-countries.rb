@@ -52,6 +52,24 @@ class WikidataCountryBuilder
   # Nicaragua has none.
   CAPITAL_OF = { 'ZAF' => 'Q3926', 'BEN' => 'Q3799', 'NIC' => 'Q3274' }.freeze
 
+  # Driving side (P1622)
+  DRIVING = { 'Q14565199' => 'right', 'Q11920728' => 'left' }.freeze
+  # A country with several current currencies in Wikidata: the one it calls
+  # its own (Panama the balboa beside the US dollar, Namibia the dollar beside
+  # the rand), France the euro (not the Pacific franc of its territories),
+  # Zimbabwe its gold currency, Poland the złoty (not the old one of 1950)
+  CURRENCY_OF = { 'FRA' => 'EUR', 'POL' => 'PLN', 'ZWE' => 'ZWG', 'PAN' => 'PAB', 'LSO' => 'LSL', 'NAM' => 'NAD' }.freeze
+
+  # A language or a variety of one without an ISO 639-3 code of its own in
+  # Wikidata: the code of the language (Greek, British and Australian
+  # English, Taiwan's Mandarin, Hokkien and Hakka, North Korea's Korean)
+  LANGUAGE_CODE = {
+    'Q9129' => 'ell', 'Q7979' => 'eng', 'Q44679' => 'eng', 'Q56467' => 'arb', 'Q18784' => 'kor',
+    'Q262828' => 'cmn', 'Q36778' => 'nan', 'Q2391532' => 'hak'
+  }.freeze
+  # A country with no official language in Wikidata: the language of the state
+  LANGUAGES_OF = { 'AZE' => { 'aze' => 'Aserbaidschanisch' }, 'URY' => { 'spa' => 'Spanisch' } }.freeze
+
   MIN_PEOPLE = 100_000
   # Kinds of »human settlement« that are no city in the sense of the lesson:
   # an area of several cities, a region around one, a part of a city, a unit
@@ -127,6 +145,7 @@ class WikidataCountryBuilder
     items = country_items
     countries = load_countries(items)
     raise "#{countries.size} countries instead of #{COUNTRIES}: #{countries.map { |c| c[:code] }.join(' ')}" unless countries.size == COUNTRIES
+    load_details(countries)
     cities = load_cities(countries)
     add_capitals(countries, cities)
     borders = load_borders(countries)
@@ -236,6 +255,83 @@ class WikidataCountryBuilder
         capital: capital, continent: continent
       }
     end.sort_by { |c| c[:code] }
+  end
+
+  # The current values of a statement, preferred rank first; values for a
+  # part only (P518: the languages of Russia's republics) if there are no others
+  def current(values)
+    now = values.reject { |v| v[:end] }
+    whole = now.reject { |v| v[:part] }
+    (whole.empty? ? now : whole).sort_by { |v| v[:rank] == 'PreferredRank' ? 0 : 1 }
+  end
+
+  # Internet domain (P78), calling code (P474), driving side (P1622), the
+  # currency (P38, by its ISO 4217 code) and the official languages (P37, by
+  # their ISO 639-3 code). Sets @currencies and @languages, the rows of their
+  # tables.
+  def load_details(countries)
+    items = countries.map { |c| c[:wikidata] }
+    domains = statements(items, 'P78')
+    calls = statements(items, 'P474')
+    sides = statements(items, 'P1622')
+    money = statements(items, 'P38')
+    tongues = statements(items, 'P37')
+    alpha2 = statements(items, 'P297')
+    currency_items = money.values.flatten.map { |v| self.class.qid(v[:value]) }.uniq
+    language_items = tongues.values.flatten.map { |v| self.class.qid(v[:value]) }.uniq
+    domain_names = labels(domains.values.flatten.map { |v| self.class.qid(v[:value]) }.uniq)
+    iso4217 = statements(currency_items, 'P498')
+    iso639 = statements(language_items, 'P220')
+    currency_names = labels(currency_items)
+    language_names = labels(language_items)
+    @currencies = {}
+    @languages = {}
+    countries.each do |c|
+      q = c[:wikidata]
+      # an ASCII domain of two letters; of several the one with preferred
+      # rank, else the one of the country's two-letter code (.de, not .deutschland)
+      own = ".#{latest(alpha2[q] || []).to_s.downcase}"
+      tlds = current(domains[q] || []).filter_map do |v|
+        name = domain_names[self.class.qid(v[:value])].to_s.downcase
+        [name, v[:rank]] if name.match?(/\A\.[a-z]{2}\z/)
+      end
+      preferred = tlds.find { |_, rank| rank == 'PreferredRank' }
+      c[:tld] = preferred&.first || (tlds.any? { |name, _| name == own } ? own : tlds.first&.first)
+      code = current(calls[q] || []).map { |v| v[:value].to_s.strip }.first
+      c[:calling_code] = code && (code.start_with?('+') ? code : "+#{code}")
+      c[:driving_side] = current(sides[q] || []).map { |v| DRIVING[self.class.qid(v[:value])] }.compact.first
+      choices = current(money[q] || []).filter_map do |v|
+        item = self.class.qid(v[:value])
+        iso = latest(iso4217[item] || []).to_s
+        [iso, item, v[:rank]] if iso.match?(/\A[A-Z]{3}\z/)
+      end.uniq { |iso, _, _| iso }
+      best = choices.select { |_, _, rank| rank == 'PreferredRank' }
+      best = choices if best.empty?
+      pick = CURRENCY_OF[c[:code]] ? choices.find { |iso, _, _| iso == CURRENCY_OF[c[:code]] } : (best.first if best.size == 1)
+      raise "#{c[:code]}: currencies #{choices.map(&:first).join(', ')}; say which in CURRENCY_OF" unless pick || choices.empty?
+      if pick
+        c[:currency] = pick[0]
+        @currencies[pick[0]] ||= { code: pick[0], name: currency_names[pick[1]], wikidata: pick[1] }
+      else
+        @notes << "#{c[:code]}: no current currency with an ISO code"
+      end
+      c[:languages] = current(tongues[q] || []).filter_map do |v|
+        item = self.class.qid(v[:value])
+        iso = LANGUAGE_CODE[item] || latest(iso639[item] || []).to_s
+        unless iso.match?(/\A[a-z]{3}\z/)
+          @notes << "#{c[:code]}: language #{item} (#{language_names[item]}) has no ISO 639-3 code, left out"
+          next
+        end
+        @languages[iso] ||= { code: iso, name: language_names[item], wikidata: item }
+        iso
+      end.uniq
+      next unless c[:languages].empty? && LANGUAGES_OF[c[:code]]
+
+      c[:languages] = LANGUAGES_OF[c[:code]].map do |iso, name|
+        @languages[iso] ||= { code: iso, name: name }
+        iso
+      end
+    end
   end
 
   # --- Cities ---------------------------------------------------------------
@@ -425,96 +521,197 @@ class WikidataCountryBuilder
     neighbors = borders.group_by(&:first).transform_values { |list| list.map(&:last) }
     write_jsonl('continents.txt', continents.map { |c| c.slice(:name, :area, :wikidata) })
     write_jsonl('countries.txt', countries.map do |c|
-      c.slice(:code, :name, :population, :area, :wikidata).merge(continent: c[:continent_name], neighbors: neighbors[c[:code]] || [])
+      c.slice(:code, :name, :population, :area, :wikidata)
+       .merge(continent: c[:continent_name], currency: c[:currency], tld: c[:tld], calling_code: c[:calling_code],
+              driving_side: c[:driving_side], languages: c[:languages], neighbors: neighbors[c[:code]] || [])
     end)
     write_jsonl('cities.txt', cities.map { |c| c.slice(:id, :name, :country, :population, :latitude, :longitude, :is_capital, :wikidata) })
-    mysql_writer(continents, countries, cities, borders).write
+    write_jsonl('currencies.txt', currencies.map(&:compact))
+    write_jsonl('languages.txt', languages.map(&:compact))
+    tables = mysql_tables(continents, countries, cities, borders)
+    mysql_writer('countries', FULL_TABLES, tables, parts: {
+      'cities' => %w[continent currency country city], 'borders' => %w[border], 'languages' => %w[language country_language]
+    }).write
+    mysql_writer('countries-basic', BASIC_TABLES, basic(tables)).write(only_main: true)
     write_neo4j(continents, countries, cities, borders)
     write_readme(continents, countries, cities, borders)
   end
+
+  def currencies = @currencies.values.sort_by { |c| c[:code] }
+  def languages = @languages.values.sort_by { |l| l[:code] }
 
   def write_jsonl(name, rows)
     File.write(File.join(@output_dir, name), rows.map { |row| JSON.generate(row) }.join("\n") + "\n")
   end
 
-  SCHEMA = <<~SQL
-    CREATE TABLE `continent` (
-      `name` VARCHAR(50) NOT NULL,
-      `area` INT NULL,
-      PRIMARY KEY (`name`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  TABLE_SQL = {
+    'continent' => <<~SQL,
+      CREATE TABLE `continent` (
+        `name` VARCHAR(50) NOT NULL,
+        `area` INT NULL,
+        PRIMARY KEY (`name`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    SQL
+    'currency' => <<~SQL,
+      CREATE TABLE `currency` (
+        `code` CHAR(3) NOT NULL,
+        `name` VARCHAR(100) NOT NULL,
+        PRIMARY KEY (`code`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    SQL
+    'language' => <<~SQL,
+      CREATE TABLE `language` (
+        `code` CHAR(3) NOT NULL,
+        `name` VARCHAR(100) NOT NULL,
+        PRIMARY KEY (`code`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    SQL
+    'country-basic' => <<~SQL,
+      CREATE TABLE `country` (
+        `code` CHAR(3) NOT NULL,
+        `name` VARCHAR(100) NOT NULL,
+        `population` INT NULL,
+        `area` DECIMAL(12,2) NULL,
+        `continent` VARCHAR(50) NOT NULL,
+        PRIMARY KEY (`code`),
+        UNIQUE KEY `uq_country_name` (`name`),
+        KEY `idx_country_continent` (`continent`),
+        CONSTRAINT `fk_country_continent`
+          FOREIGN KEY (`continent`) REFERENCES `continent` (`name`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    SQL
+    'country' => <<~SQL,
+      CREATE TABLE `country` (
+        `code` CHAR(3) NOT NULL,
+        `name` VARCHAR(100) NOT NULL,
+        `population` INT NULL,
+        `area` DECIMAL(12,2) NULL,
+        `continent` VARCHAR(50) NOT NULL,
+        `currency_code` CHAR(3) NULL,
+        `tld` VARCHAR(10) NULL,
+        `calling_code` VARCHAR(10) NULL,
+        `driving_side` ENUM('left', 'right') NULL,
+        PRIMARY KEY (`code`),
+        UNIQUE KEY `uq_country_name` (`name`),
+        KEY `idx_country_continent` (`continent`),
+        KEY `idx_country_currency` (`currency_code`),
+        CONSTRAINT `fk_country_continent`
+          FOREIGN KEY (`continent`) REFERENCES `continent` (`name`),
+        CONSTRAINT `fk_country_currency`
+          FOREIGN KEY (`currency_code`) REFERENCES `currency` (`code`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    SQL
+    'city' => <<~SQL,
+      CREATE TABLE `city` (
+        `id` INT NOT NULL,
+        `name` VARCHAR(100) NOT NULL,
+        `country_code` CHAR(3) NOT NULL,
+        `population` INT NULL,
+        `latitude` DECIMAL(8,4) NOT NULL,
+        `longitude` DECIMAL(8,4) NOT NULL,
+        `is_capital` BOOLEAN NOT NULL,
+        PRIMARY KEY (`id`),
+        KEY `idx_city_country` (`country_code`),
+        CONSTRAINT `fk_city_country`
+          FOREIGN KEY (`country_code`) REFERENCES `country` (`code`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    SQL
+    'border' => <<~SQL,
+      CREATE TABLE `border` (
+        `country_code` CHAR(3) NOT NULL,
+        `neighbor_code` CHAR(3) NOT NULL,
+        PRIMARY KEY (`country_code`, `neighbor_code`),
+        KEY `idx_border_neighbor` (`neighbor_code`),
+        CONSTRAINT `fk_border_country`
+          FOREIGN KEY (`country_code`) REFERENCES `country` (`code`),
+        CONSTRAINT `fk_border_neighbor`
+          FOREIGN KEY (`neighbor_code`) REFERENCES `country` (`code`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    SQL
+    'country_language' => <<~SQL
+      CREATE TABLE `country_language` (
+        `country_code` CHAR(3) NOT NULL,
+        `language_code` CHAR(3) NOT NULL,
+        PRIMARY KEY (`country_code`, `language_code`),
+        KEY `idx_country_language_language` (`language_code`),
+        CONSTRAINT `fk_country_language_country`
+          FOREIGN KEY (`country_code`) REFERENCES `country` (`code`),
+        CONSTRAINT `fk_country_language_language`
+          FOREIGN KEY (`language_code`) REFERENCES `language` (`code`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    SQL
+  }.freeze
+  # In an order that satisfies the foreign keys. The basic version for the
+  # Einführung in SQL has the countries with their first columns, the
+  # continents and the cities; the whole one drops and replaces its tables.
+  FULL_TABLES = %w[continent currency language country city border country_language].freeze
+  BASIC_TABLES = %w[continent country-basic city].freeze
+  BASIC_COUNTRY_COLUMNS = %w[code name population area continent].freeze
 
-    CREATE TABLE `country` (
-      `code` CHAR(3) NOT NULL,
-      `name` VARCHAR(100) NOT NULL,
-      `population` INT NULL,
-      `area` DECIMAL(12,2) NULL,
-      `continent` VARCHAR(50) NOT NULL,
-      PRIMARY KEY (`code`),
-      UNIQUE KEY `uq_country_name` (`name`),
-      KEY `idx_country_continent` (`continent`),
-      CONSTRAINT `fk_country_continent`
-        FOREIGN KEY (`continent`) REFERENCES `continent` (`name`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-    CREATE TABLE `city` (
-      `id` INT NOT NULL,
-      `name` VARCHAR(100) NOT NULL,
-      `country_code` CHAR(3) NOT NULL,
-      `population` INT NULL,
-      `latitude` DECIMAL(8,4) NOT NULL,
-      `longitude` DECIMAL(8,4) NOT NULL,
-      `is_capital` BOOLEAN NOT NULL,
-      PRIMARY KEY (`id`),
-      KEY `idx_city_country` (`country_code`),
-      CONSTRAINT `fk_city_country`
-        FOREIGN KEY (`country_code`) REFERENCES `country` (`code`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-    CREATE TABLE `border` (
-      `country_code` CHAR(3) NOT NULL,
-      `neighbor_code` CHAR(3) NOT NULL,
-      PRIMARY KEY (`country_code`, `neighbor_code`),
-      KEY `idx_border_neighbor` (`neighbor_code`),
-      CONSTRAINT `fk_border_country`
-        FOREIGN KEY (`country_code`) REFERENCES `country` (`code`),
-      CONSTRAINT `fk_border_neighbor`
-        FOREIGN KEY (`neighbor_code`) REFERENCES `country` (`code`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-  SQL
-
-  def mysql_writer(continents, countries, cities, borders)
-    tables = [
+  def mysql_tables(continents, countries, cities, borders)
+    [
       ClassroomDataset::Table.new(name: 'continent', columns: %w[name area], primary_key: %w[name],
                                   rows: continents.map { |c| [c[:name], c[:area]] }),
-      ClassroomDataset::Table.new(name: 'country', columns: %w[code name population area continent], primary_key: %w[code],
-                                  rows: countries.map { |c| [c[:code], c[:name], c[:population], c[:area], c[:continent_name]] }),
+      ClassroomDataset::Table.new(name: 'currency', columns: %w[code name], primary_key: %w[code],
+                                  rows: currencies.map { |c| [c[:code], c[:name]] }),
+      ClassroomDataset::Table.new(name: 'language', columns: %w[code name], primary_key: %w[code],
+                                  rows: languages.map { |l| [l[:code], l[:name]] }),
+      ClassroomDataset::Table.new(name: 'country', columns: BASIC_COUNTRY_COLUMNS + %w[currency_code tld calling_code driving_side],
+                                  primary_key: %w[code],
+                                  rows: countries.map do |c|
+                                    [c[:code], c[:name], c[:population], c[:area], c[:continent_name],
+                                     c[:currency], c[:tld], c[:calling_code], c[:driving_side]]
+                                  end),
       ClassroomDataset::Table.new(name: 'city', columns: %w[id name country_code population latitude longitude is_capital], primary_key: %w[id],
                                   rows: cities.map { |c| [c[:id], c[:name], c[:country], c[:population], c[:latitude], c[:longitude], c[:is_capital] ? 1 : 0] }),
       ClassroomDataset::Table.new(name: 'border', columns: %w[country_code neighbor_code], primary_key: %w[country_code neighbor_code],
-                                  rows: borders)
+                                  rows: borders),
+      ClassroomDataset::Table.new(name: 'country_language', columns: %w[country_code language_code], primary_key: %w[country_code language_code],
+                                  rows: countries.flat_map { |c| c[:languages].map { |l| [c[:code], l] } })
     ]
+  end
+
+  # The tables of the basic version: country with its first columns only
+  def basic(tables)
+    tables.filter_map do |t|
+      next unless %w[continent country city].include?(t.name)
+      next t unless t.name == 'country'
+
+      keep = BASIC_COUNTRY_COLUMNS.map { |column| t.columns.index(column) }
+      ClassroomDataset::Table.new(name: t.name, columns: BASIC_COUNTRY_COLUMNS, primary_key: t.primary_key,
+                                  rows: t.rows.map { |row| row.values_at(*keep) })
+    end
+  end
+
+  def mysql_writer(name, schema, tables, parts: {})
     ClassroomDataset::MysqlWriter.new(
-      name: 'countries',
+      name: name,
       output_dir: @output_dir,
       header: ['Country dataset of the Hackschule Workspace (https://github.com/specht/workspace),',
                "built from Wikidata (CC0 1.0) by src/scripts/collect-countries on #{Time.now.utc.strftime('%Y-%m-%d')}.",
-               'See README.md for what each column means.'],
-      schema: SCHEMA, tables: tables,
-      parts: { 'cities' => %w[continent country city], 'borders' => %w[border] }
+               name == 'countries' ? 'See README.md for what each column means.' :
+                                     'The basic version for the Einführung in SQL; countries.sql has everything. See README.md.'],
+      schema: schema.map { |table| TABLE_SQL.fetch(table) }.join("\n"), tables: tables, parts: parts
     )
   end
 
   def write_neo4j(continents, countries, cities, borders)
     ClassroomDataset.write_neo4j(File.join(@output_dir, ClassroomDataset.neo4j_file('countries'))) do |neo|
       continent_node = continents.to_h { |c| [c[:name], neo.node(['Continent'], { name: c[:name], area: c[:area] }.compact)] }
+      currency_node = currencies.to_h { |c| [c[:code], neo.node(['Currency'], { code: c[:code], name: c[:name] })] }
+      language_node = languages.to_h { |l| [l[:code], neo.node(['Language'], { code: l[:code], name: l[:name] })] }
       country_node = countries.to_h do |c|
-        [c[:code], neo.node(['Country'], { code: c[:code], name: c[:name], population: c[:population], area: c[:area] }.compact)]
+        [c[:code], neo.node(['Country'], { code: c[:code], name: c[:name], population: c[:population], area: c[:area],
+                                           tld: c[:tld], calling_code: c[:calling_code], driving_side: c[:driving_side] }.compact)]
       end
       city_node = cities.to_h do |c|
         [c[:id], neo.node(['City'], { name: c[:name], population: c[:population], latitude: c[:latitude], longitude: c[:longitude] }.compact)]
       end
-      countries.each { |c| neo.relationship(country_node[c[:code]], continent_node[c[:continent_name]], 'ON') }
+      countries.each do |c|
+        neo.relationship(country_node[c[:code]], continent_node[c[:continent_name]], 'ON')
+        neo.relationship(country_node[c[:code]], currency_node[c[:currency]], 'PAYS_WITH') if c[:currency]
+        c[:languages].each { |l| neo.relationship(country_node[c[:code]], language_node[l], 'SPEAKS') }
+      end
       cities.each do |c|
         neo.relationship(city_node[c[:id]], country_node[c[:country]], 'IN')
         neo.relationship(country_node[c[:country]], city_node[c[:id]], 'CAPITAL') if c[:is_capital]
@@ -528,7 +725,8 @@ class WikidataCountryBuilder
     germany = countries.find { |c| c[:code] == 'DEU' }
     ClassroomDataset.report('Country dataset', {
       continents: continents.size, countries: countries.size, cities: cities.size,
-      'border pairs' => borders.size / 2,
+      'border pairs' => borders.size / 2, currencies: currencies.size, languages: languages.size,
+      'official languages (country, language)' => countries.sum { |c| c[:languages].size },
       'countries without population' => countries.count { |c| c[:population].nil? },
       'countries without capital' => countries.count { |c| cities.none? { |city| city[:is_capital] && city[:country] == c[:code] } },
       'countries without neighbours' => countries.count { |c| borders.none? { |a, _| a == c[:code] } },
@@ -541,9 +739,14 @@ class WikidataCountryBuilder
     File.write(File.join(@output_dir, 'README.md'), <<~README)
       # Country dataset (Wikidata)
 
-      The continents, the countries of the world, their cities and which countries
-      share a border, for the *Einführung in SQL* of the Hackschule Workspace. Built
-      with `src/scripts/collect-countries` from https://github.com/specht/workspace.
+      The continents, the countries of the world, their cities, which countries share
+      a border, their currencies and official languages, for the *Einführung in SQL*
+      of the Hackschule Workspace and what comes after it. Built with
+      `src/scripts/collect-countries` from https://github.com/specht/workspace.
+
+      Two versions: `countries-basic.sql` has only `continent`, `country` (with its
+      first five columns) and `city`, for the first steps; `countries.sql` has
+      everything. Importing `countries.sql` later replaces the basic tables.
 
       Generated: #{Time.now.utc.iso8601}
 
@@ -568,6 +771,19 @@ class WikidataCountryBuilder
       - `continent`: the continent (P30), by its name; a country on several
         continents counts where its capital lies, as in atlases
         (#{CONTINENT_OF.keys.join(', ')} are set by hand)
+      - `tld` (P78): the country's internet domain of two letters; of several the one
+        with preferred rank, else the one of its two-letter code (`.de`, not
+        `.deutschland`); `calling_code` (P474) with a `+`; `driving_side` (P1622),
+        `left` or `right`
+      - `currency_code` (P38): the current currency by its ISO 4217 code, of several the
+        one with preferred rank; set by hand for #{CURRENCY_OF.map { |k, v| "#{k} (#{v})" }.join(', ')}.
+        `currency.name` is its German label
+      - `country_language` (P37): the official languages of the whole country (not of
+        a region, as the languages of Russia's republics), by their ISO 639-3 code
+        (P220); a variety without a code of its own counts as its language
+        (#{LANGUAGE_CODE.size} items set by hand), a language without a code is left out.
+        #{LANGUAGES_OF.keys.join(', ')} have no official language in Wikidata and get the
+        language of the state
       - `is_capital`: the capital of its country (P36); with several in Wikidata,
         the one with preferred rank; set by hand for #{CAPITAL_OF.keys.join(', ')}
       - cities: every human settlement (P31, a subclass of Q486972, or a
@@ -606,13 +822,16 @@ class WikidataCountryBuilder
       ## Files
 
       - `continents.txt` — #{continents.size} continents, one JSON object per line
-      - `countries.txt` — #{countries.size} countries, one JSON object per line, with their neighbours
+      - `countries.txt` — #{countries.size} countries, one JSON object per line, with their languages and neighbours
       - `cities.txt` — #{cities.size} cities, one JSON object per line
-      - `countries.sql` — schema and complete data
+      - `currencies.txt` — #{currencies.size} currencies, `languages.txt` — #{languages.size} languages
+      - `countries-basic.sql` — the basic version: `continent`, `country`, `city`, schema and data
+      - `countries.sql` — everything, schema and data
       - `countries-schema.sql` — schema only
       - `countries-data.sql` — data only, for a schema built in class
-      - `countries-data-cities.sql` — data only: `continent`, `country`, `city`
+      - `countries-data-cities.sql` — data only: `continent`, `currency`, `country`, `city`
       - `countries-data-borders.sql` — data only: `border`
+      - `countries-data-languages.sql` — data only: `language`, `country_language`
       - `countries-neo4j.dump` — logical Neo4jBolt dump for `neo4j_bolt load`
 
       Every classroom dataset names its files this way, after the dataset (`countries`, `movies`, `music`).
@@ -621,17 +840,25 @@ class WikidataCountryBuilder
 
       ```
       continent(name, area)
-      country(code, name, population, area, continent → continent)
+      currency(code, name)
+      language(code, name)
+      country(code, name, population, area, continent → continent, currency_code → currency, tld, calling_code, driving_side)
       city(id, name, country_code → country, population, latitude, longitude, is_capital)
       border(country_code → country, neighbor_code → country)
+      country_language(country_code → country, language_code → language)
       ```
+
+      The basic version: `continent`, `country(code, name, population, area,
+      continent → continent)` and `city` as above.
 
       A continent is identified by its name, a country by its ISO 3166-1 alpha-3 code
       (`DEU`, `FRA`; Kosovo, which has none, by `XKS`), a city by its `id`, numbered
       by country and name; city names are not unique. Every country has
       exactly one city with `is_capital` = 1 (TRUE). `border` has a row in both directions for
       each pair of neighbours: Germany and France are `('DEU', 'FRA')` and
-      `('FRA', 'DEU')`. A continent has no population of its own; it is the sum of its
+      `('FRA', 'DEU')`: a deliberate redundancy, so that a plain `JOIN` finds the
+      neighbours of a country. A currency is identified by its ISO 4217 code (`EUR`), a
+      language by its ISO 639-3 code (`deu`, `fra`). A continent has no population of its own; it is the sum of its
       countries (`GROUP BY`). Antarctica has no countries.
 
       ```sh
@@ -640,8 +867,10 @@ class WikidataCountryBuilder
 
       ## Neo4j
 
-      `Continent`, `Country` and `City` nodes; `(Country)-[:ON]->(Continent)`,
-      `(City)-[:IN]->(Country)`, `(Country)-[:CAPITAL]->(City)` and
+      `Continent`, `Country`, `City`, `Currency` and `Language` nodes;
+      `(Country)-[:ON]->(Continent)`, `(City)-[:IN]->(Country)`,
+      `(Country)-[:CAPITAL]->(City)`, `(Country)-[:PAYS_WITH]->(Currency)`,
+      `(Country)-[:SPEAKS]->(Language)` and
       `(Country)-[:BORDERS]->(Country)` once per pair, to be followed either way:
       `(a:Country)-[:BORDERS]-(b:Country)`.
 

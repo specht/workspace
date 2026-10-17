@@ -1,7 +1,8 @@
 # Aufgaben zu »Einführung in SQL«. Format: docs/aufgaben.md.
 # Die Abfragen laufen in der eigenen MySQL-Datenbank der Lernenden, in die sie
-# die Länder der Welt importiert haben (country-archive/countries.sql aus
-# specht/workspace-files, Prüfart sql). tables: sorgt dafür, dass eine
+# die Länder der Welt importiert haben (country-archive/countries-basic.sql aus
+# specht/workspace-files, Prüfart sql; mit der ganzen Fassung countries.sql
+# gehen sie genauso, Länder, Städte und Kontinente sind dieselben). tables: sorgt dafür, dass eine
 # geleerte oder geänderte Tabelle nicht zu »richtigen« leeren Antworten führt.
 # Die Zahlen in den Lösungen gelten für den Stand der Daten vom Oktober 2026.
 format: 1
@@ -345,3 +346,190 @@ tasks:
       - when: { picked: 2 }
         say: Eine leere Spalte gibt es nicht; bei WHERE gibt es density schlicht noch gar nicht.
     solution: "Ein Fehler, in MySQL »Unknown column 'density' in 'where clause'«. Richtig ist `WHERE population / area > 1000`: der Ausdruck selbst statt des Namens."
+
+  # Teil 2: die ganze Fassung (country-archive/countries.sql)
+
+  - id: linksverkehr
+    title: Linksverkehr in Europa
+    prompt: In welchen Ländern Europas wird links gefahren? Gib ihre Namen aus.
+    check:
+      type: sql
+      expect_query: SELECT name FROM country WHERE continent = 'Europa' AND driving_side = 'left'
+      tables: { country: 197, currency: 143 }
+      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+    feedback:
+      - when: { query_matches: "'(links|Links)'" }
+        say: In `driving_side` steht `left` oder `right`, englisch, wie die Spalte heißt.
+      - when: { same_result_as: "SELECT name FROM country WHERE driving_side = 'left'" }
+        say: Das sind alle Länder mit Linksverkehr. Gefragt sind nur die in Europa.
+    solution: "`SELECT name FROM country WHERE continent = 'Europa' AND driving_side = 'left';` Irland, Malta und das Vereinigte Königreich."
+
+  - id: laender-pro-kontinent
+    title: Länder pro Kontinent
+    prompt: Wie viele Länder hat jeder Kontinent? Gib für jeden Kontinent seinen Namen und die Zahl seiner Länder aus.
+    check:
+      type: sql
+      expect_query: SELECT continent, COUNT(*) FROM country GROUP BY continent
+      tables: { country: 197 }
+      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT COUNT(*) FROM country" }
+        say: Das sind alle Länder zusammen. Mit `GROUP BY continent` zählt die Datenbank für jeden Kontinent einzeln.
+      - when: { same_result_as: "SELECT DISTINCT continent FROM country" }
+        say: Die Kontinente stimmen; es fehlt die Zahl ihrer Länder, `COUNT(*)`.
+    solution: "`SELECT continent, COUNT(*) FROM country GROUP BY continent;` Afrika hat die meisten, 54."
+
+  - id: einwohner-pro-kontinent
+    title: Einwohner pro Kontinent
+    prompt: Wie viele Menschen leben auf jedem Kontinent? Gib den Namen und die Summe der Einwohner aus, den Kontinent mit den meisten zuerst.
+    check:
+      type: sql
+      expect_query: SELECT continent, SUM(population) FROM country GROUP BY continent ORDER BY SUM(population) DESC
+      sorted_by: 2 DESC
+      tables: { country: 197 }
+      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT continent, COUNT(*) FROM country GROUP BY continent" }
+        say: "`COUNT(*)` zählt die Länder. Die Einwohner zählt `SUM(population)` zusammen."
+    solution: "`SELECT continent, SUM(population) AS people FROM country GROUP BY continent ORDER BY people DESC;` Asien mit gut 4,5 Milliarden vor Afrika mit gut 1,4 Milliarden."
+
+  - id: grosse-kontinente
+    title: Kontinente mit vielen Ländern
+    prompt: Welche Kontinente haben mehr als 40 Länder? Gib den Namen und die Zahl der Länder aus.
+    check:
+      type: sql
+      expect_query: SELECT continent, COUNT(*) FROM country GROUP BY continent HAVING COUNT(*) > 40
+      tables: { country: 197 }
+      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT continent, COUNT(*) FROM country GROUP BY continent" }
+        say: Das sind alle Kontinente. Welche Gruppen übrig bleiben, entscheidet `HAVING`, nach `GROUP BY`.
+    solution: "`SELECT continent, COUNT(*) FROM country GROUP BY continent HAVING COUNT(*) > 40;` Afrika, Asien und Europa. Mit `WHERE COUNT(*) > 40` meldet MySQL einen Fehler: `WHERE` prüft einzelne Zeilen, bevor es Gruppen gibt."
+
+  - id: waehrung-japan
+    title: Die Währung Japans
+    prompt: Wie heißt die Währung Japans? Gib ihren Namen aus, nicht ihr Kürzel.
+    check:
+      type: sql
+      expect_query: SELECT currency.name FROM country JOIN currency ON currency.code = country.currency_code WHERE country.name = 'Japan'
+      tables: { country: 197, currency: 143 }
+      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT currency_code FROM country WHERE name = 'Japan'" }
+        say: Das ist das Kürzel. Den Namen holst du mit einem `JOIN` aus `currency`, über `currency.code = country.currency_code`.
+      - when: { query_matches: "\\bname\\s*=\\s*'Japan'" }
+        say: "Steht `name` in beiden Tabellen, muss die Tabelle davor: `country.name = 'Japan'`."
+    solution: "`SELECT currency.name FROM country JOIN currency ON currency.code = country.currency_code WHERE country.name = 'Japan';` ergibt den Yen."
+
+  - id: grenze-zweimal
+    title: Jede Grenze zweimal
+    prompt: In `border` steht jede Grenze zweimal, `('DEU', 'FRA')` und `('FRA', 'DEU')`. Warum?
+    check:
+      type: choice
+      options:
+        - Damit eine Abfrage die Nachbarn eines Landes in einer einzigen Spalte findet
+        - Weil eine Grenze in jeder Richtung anders verläuft
+        - Weil MySQL ein Paar sonst nicht als Primärschlüssel annimmt
+        - Weil jedes Land seine Grenze selbst eingetragen hat
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Eine Grenze an Land ist dieselbe, von welcher Seite man sie ansieht. In beiden Zeilen steht dasselbe Paar.
+      - when: { picked: 2 }
+        say: Der Primärschlüssel aus zwei Spalten ginge auch mit einer Zeile pro Grenze. Überleg, wie die Abfrage nach den Nachbarn Deutschlands dann aussähe.
+    solution: Mit einer Zeile pro Grenze müsste jede Frage nach den Nachbarn eines Landes in beiden Spalten suchen, `country_code` und `neighbor_code`. So genügt `WHERE border.country_code = 'DEU'`. Der Preis ist eine Wiederholung, die die Datenbank nicht überwacht.
+
+  - id: nachbarn-deutschland
+    title: Die Nachbarn Deutschlands
+    prompt: Gib die Namen der Nachbarländer Deutschlands aus.
+    check:
+      type: sql
+      expect_query: SELECT neighbor.name FROM border JOIN country AS neighbor ON neighbor.code = border.neighbor_code WHERE border.country_code = 'DEU'
+      tables: { country: 197, border: 636 }
+      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT neighbor_code FROM border WHERE country_code = 'DEU'" }
+        say: Das sind die Kürzel. Für die Namen verbindest du `border` mit `country`, über `neighbor_code`.
+      - when: { same_result_as: "SELECT country.name FROM border JOIN country ON country.code = border.country_code WHERE border.country_code = 'DEU'" }
+        say: So steht neunmal Deutschland da. Der `JOIN` muss über `neighbor_code` gehen, nicht über `country_code`.
+    solution: "`SELECT neighbor.name FROM border JOIN country AS neighbor ON neighbor.code = border.neighbor_code WHERE border.country_code = 'DEU';` Belgien, Dänemark, Frankreich, Luxemburg, die Niederlande, Österreich, Polen, die Schweiz und Tschechien."
+
+  - id: viele-nachbarn
+    title: Viele Nachbarn
+    prompt: Welche Länder haben mehr als acht Nachbarn? Gib ihre Namen aus.
+    check:
+      type: sql
+      expect_query: SELECT country.name FROM border JOIN country ON country.code = border.country_code GROUP BY country.code, country.name HAVING COUNT(*) > 8
+      tables: { country: 197, border: 636 }
+      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT country_code FROM border GROUP BY country_code HAVING COUNT(*) > 8" }
+        say: Die Länder stimmen, als Kürzel. Für die Namen kommt `country` mit einem `JOIN` dazu.
+    solution: "`SELECT country.name FROM border JOIN country ON country.code = border.country_code GROUP BY country.code, country.name HAVING COUNT(*) > 8;` Brasilien, China, die Demokratische Republik Kongo, Deutschland, Frankreich, Russland und Serbien. China und Russland haben je 14."
+
+  - id: ohne-nachbarn
+    title: Länder ohne Nachbarn
+    prompt: Welche Länder haben keinen Nachbarn an Land? Gib ihre Namen aus.
+    check:
+      type: sql
+      expect_query: SELECT country.name FROM country LEFT JOIN border ON border.country_code = country.code WHERE border.country_code IS NULL
+      tables: { country: 197, border: 636 }
+      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+    feedback:
+      - when: { query_matches: '=\s*null' }
+        say: "`= NULL` ist nie wahr, auch nicht für `NULL`. Ob etwas fehlt, prüft `IS NULL`."
+      - when: { query_matches: '^\s*select[^;]*\bfrom\s+country\s+(inner\s+)?join\b' }
+        say: Ein `JOIN` lässt die Länder ohne Partner in `border` gerade weg. Sie behält nur ein `LEFT JOIN`.
+    solution: "`SELECT country.name FROM country LEFT JOIN border ON border.country_code = country.code WHERE border.country_code IS NULL;` 39 Länder, fast alle Inseln, von Antigua und Barbuda bis Vanuatu."
+
+  - id: meiste-staedte
+    title: Die meisten Städte
+    prompt: Welches Land hat die meisten Städte in der Tabelle `city`? Gib seinen Namen und die Zahl der Städte aus.
+    check:
+      type: sql
+      expect_query: SELECT country.name, COUNT(*) FROM country JOIN city ON city.country_code = country.code GROUP BY country.code, country.name ORDER BY COUNT(*) DESC LIMIT 1
+      tables: { country: 197, city: 4748 }
+      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT country_code, COUNT(*) FROM city GROUP BY country_code ORDER BY COUNT(*) DESC LIMIT 1" }
+        say: Das Kürzel stimmt. Für den Namen kommt `country` mit einem `JOIN` dazu.
+    solution: "`SELECT country.name, COUNT(*) AS cities FROM country JOIN city ON city.country_code = country.code GROUP BY country.code, country.name ORDER BY cities DESC LIMIT 1;` Die Vereinigten Staaten mit 390 Städten ab 100.000 Einwohnern."
+
+  - id: sprachen-schweiz
+    title: Die Amtssprachen der Schweiz
+    prompt: Welche Amtssprachen hat die Schweiz (`CHE`)? Gib ihre Namen aus.
+    check:
+      type: sql
+      expect_query: SELECT language.name FROM country_language JOIN language ON language.code = country_language.language_code WHERE country_language.country_code = 'CHE'
+      tables: { country_language: 372, language: 183 }
+      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT language_code FROM country_language WHERE country_code = 'CHE'" }
+        say: Das sind die Kürzel der Sprachen. Ihre Namen stehen in `language`.
+    solution: "`SELECT language.name FROM country_language JOIN language ON language.code = country_language.language_code WHERE country_language.country_code = 'CHE';` Deutsch, Französisch, Italienisch und Bündnerromanisch."
+
+  - id: deutsch-amtssprache
+    title: Wo Deutsch Amtssprache ist
+    prompt: In welchen Ländern ist Deutsch Amtssprache? Gib die Namen der Länder aus.
+    check:
+      type: sql
+      expect_query: SELECT country.name FROM country JOIN country_language ON country_language.country_code = country.code JOIN language ON language.code = country_language.language_code WHERE language.name = 'Deutsch'
+      tables: { country: 197, country_language: 372, language: 183 }
+      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+    feedback:
+      - when: { query_matches: "'(German|deutsch|DEU)'" }
+        say: "Die Sprachen stehen in `language` mit deutschem Namen (`'Deutsch'`) und einem Kürzel aus drei kleinen Buchstaben (`'deu'`)."
+    solution: "`… WHERE language.name = 'Deutsch';` mit den beiden `JOIN`s über `country_language` ergibt Belgien, Deutschland, Liechtenstein, Luxemburg, Österreich und die Schweiz. Mit `WHERE country_language.language_code = 'deu'` geht es mit einem `JOIN` weniger."
+
+  - id: englisch-amtssprache
+    title: Englisch als Amtssprache
+    prompt: In wie vielen Ländern ist Englisch Amtssprache?
+    check:
+      type: sql
+      expect_query: SELECT COUNT(*) FROM country_language JOIN language ON language.code = country_language.language_code WHERE language.name = 'Englisch'
+      tables: { country_language: 372, language: 183 }
+      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT COUNT(*) FROM country_language" }
+        say: Das sind alle Paare aus Land und Sprache. Es fehlt die Bedingung für Englisch.
+    solution: "`SELECT COUNT(*) FROM country_language JOIN language ON language.code = country_language.language_code WHERE language.name = 'Englisch';` ergibt 59, mehr als bei jeder anderen Sprache. Ohne `JOIN`: `WHERE language_code = 'eng'`."

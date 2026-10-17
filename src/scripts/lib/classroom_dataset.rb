@@ -45,12 +45,15 @@ module ClassroomDataset
       check_tables!
     end
 
-    def write
+    # only_main: just NAME.sql, for a variant of a dataset (countries-basic)
+    def write(only_main: false)
       by_name = @tables.to_h { |table| [table.name, table] }
       write_file(ClassroomDataset.mysql_file(@name), 'schema and complete data') do |file|
         write_schema(file)
         write_data(file, @tables)
       end
+      return if only_main
+
       write_file(ClassroomDataset.schema_file(@name), 'schema only') { |file| write_schema(file) }
       write_file(ClassroomDataset.data_file(@name), 'data only, for an existing schema') { |file| write_data(file, @tables) }
       @parts.each do |part, names|

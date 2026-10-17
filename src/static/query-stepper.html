@@ -12,9 +12,11 @@
     durch die Schritte. Wie man solche Abfragen schreibt, zeigt die <a href="/mysql">Einführung in SQL</a>.
   </p>
   <p class="qs-tables">
-    Es gibt zwei Sätze von Tabellen. Die Länder der Welt aus der Einführung: <code>continent</code>,
-    <code>country</code> mit allen 197 Ländern, <code>city</code> mit den rund 4.700 Städten ab 100.000
-    Einwohnern und allen Hauptstädten und <code>border</code> mit den Landgrenzen, jede in beide Richtungen.
+    Es gibt zwei Sätze von Tabellen. Die Länder der Welt aus der Einführung, in der ganzen Fassung:
+    <code>continent</code>, <code>country</code> mit allen 197 Ländern, <code>city</code> mit den rund 4.700
+    Städten ab 100.000 Einwohnern und allen Hauptstädten, <code>border</code> mit den Landgrenzen, jede in beide
+    Richtungen, <code>currency</code> mit den Währungen und <code>language</code> und
+    <code>country_language</code> mit den Amtssprachen.
     Die Filme aus der <a href="/filmdatenbank">Filmdatenbank</a>: <code>movie</code>, <code>genre</code> und
     <code>movie_genre</code> ganz, von <code>crew</code>, <code>job</code> und <code>movie_crew</code> nur Regie
     und die Schauspielerinnen und Schauspieler ab fünf Filmen. Was in den Tabellen steht, beschreibt das Handbuch
@@ -39,6 +41,8 @@ ORDER BY countries DESC;"></div>
     <button class="btn btn-sm btn-outline-secondary" data-query="SELECT country.name, city.name FROM country JOIN city ON city.country_code = country.code WHERE city.is_capital AND country.continent = 'Südamerika' ORDER BY country.name;">Hauptstädte</button>
     <button class="btn btn-sm btn-outline-secondary" data-query="SELECT neighbor.name FROM border JOIN country AS neighbor ON neighbor.code = border.neighbor_code WHERE border.country_code = 'DEU' ORDER BY neighbor.name;">Nachbarländer</button>
     <button class="btn btn-sm btn-outline-secondary" data-query="SELECT country.name FROM country LEFT JOIN border ON border.country_code = country.code WHERE border.country_code IS NULL ORDER BY country.name;">LEFT JOIN</button>
+    <button class="btn btn-sm btn-outline-secondary" data-query="SELECT currency.name, COUNT(*) AS countries FROM country JOIN currency ON currency.code = country.currency_code GROUP BY currency.code, currency.name HAVING COUNT(*) > 2 ORDER BY countries DESC;">Währungen</button>
+    <button class="btn btn-sm btn-outline-secondary" data-query="SELECT country.name FROM country JOIN country_language ON country_language.country_code = country.code JOIN language ON language.code = country_language.language_code WHERE language.name = 'Deutsch' ORDER BY country.name;">Amtssprache Deutsch</button>
     <button class="btn btn-sm btn-outline-secondary" data-query="SELECT name, population / area AS density FROM country WHERE density > 1000;">Ein Fehler</button>
     <button class="btn btn-sm btn-outline-secondary" data-dataset="movies" data-query="SELECT movie.title, genre.name FROM movie JOIN movie_genre ON movie.id = movie_genre.movie_id JOIN genre ON movie_genre.genre_id = genre.id WHERE movie.title = 'Back to the Future';">Filme: zwei JOINs</button>
     <button class="btn btn-sm btn-outline-secondary" data-dataset="movies" data-query="SELECT genre.name, COUNT(*) FROM genre JOIN movie_genre ON genre.id = movie_genre.genre_id GROUP BY genre.id, genre.name HAVING COUNT(*) >= 100 ORDER BY COUNT(*) DESC;">Filme: GROUP BY und HAVING</button>

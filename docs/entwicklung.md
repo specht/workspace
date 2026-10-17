@@ -67,6 +67,7 @@ herunterladen:
 
 ```bash
 src/scripts/query-stepper-data.rb countries countries.sql
+src/scripts/query-stepper-data.rb countries-basic countries-basic.sql
 src/scripts/query-stepper-data.rb movies movies-schema.sql movies-data-films.sql movies-data-crew.sql
 src/scripts/query-stepper-data.rb music music-schema.sql
 ```

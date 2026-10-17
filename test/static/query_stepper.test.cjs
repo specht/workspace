@@ -55,6 +55,12 @@ test('JOIN and LEFT JOIN', () => {
     // the neighbours: border joined with country a second time
     assert.deepStrictEqual(values("SELECT n.name FROM border b JOIN country n ON n.code = b.neighbor_code WHERE b.country_code = 'DEU' ORDER BY n.name"),
         ['Belgien', 'Dänemark', 'Frankreich', 'Luxemburg', 'Niederlande', 'Österreich', 'Polen', 'Schweiz', 'Tschechien']);
+    // currencies (n:1) and official languages (n:m)
+    assert.deepStrictEqual(values("SELECT currency.name, COUNT(*) AS n FROM country JOIN currency ON currency.code = country.currency_code GROUP BY currency.code, currency.name ORDER BY n DESC, currency.name LIMIT 3"),
+        ['Euro | 27', 'CFA-Franc BCEAO | 8', 'US-Dollar | 7']);
+    assert.deepStrictEqual(values("SELECT language.name FROM country_language JOIN language ON language.code = country_language.language_code WHERE country_language.country_code = 'CHE' ORDER BY language.name"),
+        ['Bündnerromanisch', 'Deutsch', 'Französisch', 'Italienisch']);
+    assert.deepStrictEqual(values("SELECT COUNT(*) FROM country WHERE driving_side = 'left'"), ['54']);
 });
 
 test('NULL is neither true nor false', () => {
@@ -95,7 +101,8 @@ test('a self-join with many rows stays fast enough', () => {
 
 test('the schema lines, as _schema(name) on a page draws them', () => {
     const html = QS.schemaHtml(data.tables);
-    assert.ok(html.includes("<span class='schema-table'>country</span>(<u>code</u>, name, population, area, <span class='schema-fk' title='verweist auf continent.name'><span class='schema-arrow'>↑</span>continent</span>)"));
+    assert.ok(html.includes("<span class='schema-table'>country</span>(<u>code</u>, name, population, area, <span class='schema-fk' title='verweist auf continent.name'><span class='schema-arrow'>↑</span>continent</span>, " +
+        "<span class='schema-fk' title='verweist auf currency.code'><span class='schema-arrow'>↑</span>currency_code</span>, tld, calling_code, driving_side)"));
     assert.ok(html.includes("<span class='schema-table'>border</span>(<u><span class='schema-fk' title='verweist auf country.code'><span class='schema-arrow'>↑</span>country_code</span></u>, <u><span class='schema-fk' title='verweist auf country.code'><span class='schema-arrow'>↑</span>neighbor_code</span></u>)"));
     // the same markup as the Ruby side (src/ruby/include/schemas.rb, test/schemas_test.rb)
     const movieGenre = { movie_genre: { columns: ['movie_id', 'genre_id'], key: ['movie_id', 'genre_id'], references: { movie_id: 'movie.id', genre_id: 'genre.id' } } };
