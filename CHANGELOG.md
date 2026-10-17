@@ -718,6 +718,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- GIF decodieren, LZW zum Durchklicken: Die Tabelle steht von Anfang an da,
+  mit den Einträgen 0 bis 3 für die Farben und 4 und 5 für Clear und End, und
+  in einer eigenen Spalte rechts neben der Erklärung statt darunter.
 - Lauflängenkodierung: Das Ruby-Gerüst gibt das Ergebnis mit `puts` aus
   statt mit `p`, wie in Python mit `print`.
 - Mehr Aufgaben werden bei jedem Durchlauf der Screenshot-Rezepte selbst

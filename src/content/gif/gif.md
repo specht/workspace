@@ -235,18 +235,32 @@ template_name: des PixelRAM-Starters
         outline-offset: -1px;
     }
     .lzw-explain {
-        flex: 1 1 18em;
+        flex: 1 1 16em;
         min-width: 0;
     }
     .lzw-explain pre {
         margin: 0.4em 0;
     }
+    /* The table, from entry 0 on, in a column of its own to the right of
+       the explanation; on a narrow screen it wraps below. */
+    .lzw-table-column {
+        flex: none;
+        min-width: 9em;
+    }
+    .lzw-table-head {
+        font-size: 0.85em;
+        font-weight: 600;
+        color: var(--bs-secondary-color);
+    }
     .lzw-table {
         font-family: '0xProto Nerd Font Mono', monospace;
         font-size: 0.85em;
-        max-height: 14em;
+        max-height: 20em;
         overflow-y: auto;
-        margin-top: 0.6em;
+        position: relative;
+    }
+    .lzw-special {
+        color: var(--bs-secondary-color);
     }
     .lzw-table div.new {
         background-color: color-mix(in srgb, var(--color-m0) 60%, transparent);
@@ -948,10 +962,8 @@ Probier es mit den Bytes der Diskette aus: Jeder Klick liest einen Code. Das Bil
 <div class='lzw-direction'>Gelesen wird von rechts nach links: das erste Byte steht rechts, und jeder Code steht in einem Stück da. Gelb ist der Code, den der Decoder gerade liest, blass sind die gelesenen Bits.</div>
 <div class='lzw-main'>
 <div class='lzw-grid' id='lzw-grid' role='img' aria-label='Die Pixel der Diskette, soweit sie entpackt sind'></div>
-<div class='lzw-explain'>
-<div id='lzw-text' aria-live='polite'></div>
-<div class='lzw-table' id='lzw-table'></div>
-</div>
+<div class='lzw-explain' id='lzw-text' aria-live='polite'></div>
+<div class='lzw-table-column'><div class='lzw-table-head'>Tabelle</div><div class='lzw-table' id='lzw-table' aria-label='Die Tabelle des Decoders'></div></div>
 </div>
 </div>
 
@@ -1303,7 +1315,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         step.to = pixelCount;
-        step.table = table.slice(clearCode + 2);
+        step.table = table.slice();
         steps.push(step);
         if (step.kind === 'end') break;
     }
@@ -1406,12 +1418,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         document.getElementById('lzw-text').innerHTML = text;
         const tableBox = document.getElementById('lzw-table');
-        tableBox.innerHTML = step.table.length === 0 ? '' :
-            step.table.map((entry, i) => {
-                const index = i + clearCode + 2;
-                return `<div class='${index === step.addedIndex ? 'new' : ''}'>${String(index).padStart(2, ' ')}: ${pix(entry)}</div>`;
+        // From entry 0 on: the colours, Clear and End, then what the decoder
+        // has added. A new entry scrolls into view.
+        tableBox.innerHTML = step.table.map((entry, index) => {
+                const shown = index === clearCode ? "<span class='lzw-special'>Clear</span>" :
+                    index === endCode ? "<span class='lzw-special'>End</span>" : pix(entry);
+                return `<div class='${index === step.addedIndex ? 'new' : ''}'>${String(index).padStart(2, ' ')}: ${shown}</div>`;
             }).join('');
-        tableBox.scrollTop = tableBox.scrollHeight;
+        const added = tableBox.querySelector('div.new');
+        tableBox.scrollTop = added ? added.offsetTop - tableBox.clientHeight + added.offsetHeight + 4 :
+            step.table.length > clearCode + 2 ? tableBox.scrollHeight : 0;
         document.getElementById('lzw-first').disabled = current === 0;
         document.getElementById('lzw-prev').disabled = current === 0;
         document.getElementById('lzw-next').disabled = current === steps.length - 1;
