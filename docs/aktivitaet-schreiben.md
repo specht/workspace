@@ -137,7 +137,9 @@ umbrechen) und `_lineno` (Zeilennummern), in beliebiger Reihenfolge.
 Kommt neuer Code mitten in eine Datei, zeigt der Block, wo: Zeilen, die mit
 `~ ` anfangen, sind **Kontext**, Code, der schon in der Datei steht. Sie
 erscheinen blass, lassen sich nicht markieren, und der Kopierknopf lässt sie
-weg; `~ …` steht für Code dazwischen. Ein bis zwei Zeilen davor und danach
+weg; `~ …` steht für Code dazwischen. Wo Kontext und neuer Code
+aneinanderstoßen, schneidet eine Zickzacklinie den Block, und der Kopierknopf
+steht neben der ersten Zeile neuen Codes. Bis zu drei Zeilen davor und danach
 reichen. Der Kontext zeigt die Datei, wie sie an dieser Stelle der Seite ist:
 Wird Code später ersetzt, ist sein alter Stand der Kontext, nicht der neue.
 

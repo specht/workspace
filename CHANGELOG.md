@@ -758,9 +758,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 ### Geändert
 
 - Code-Blöcke können Kontext zeigen: Zeilen mit `~ ` davor erscheinen blass,
-  lassen sich nicht markieren und werden nicht mitkopiert. »Eine Klötzchenwelt
-  in 3D« zeigt so bei jedem Stück Code, wo es in `main.c` hinkommt, mit den
-  Zeilen davor und danach, so wie die Datei an dieser Stelle aussieht.
+  lassen sich nicht markieren und werden nicht mitkopiert. Eine dünne
+  Zickzacklinie schneidet den Block dort, wo Kontext und neuer Code
+  aneinanderstoßen, und der Kopierknopf steht neben dem neuen Code.
+  »Eine Klötzchenwelt in 3D« zeigt so bei jedem Stück Code, wo es in `main.c`
+  hinkommt, mit drei Zeilen davor und danach, so wie die Datei an dieser
+  Stelle aussieht.
 - Die raylib-Vorlage sagt Editor-Erweiterungen für C (clangd, C/C++), wo
   `raylib.h` liegt; `#include <raylib.h>` ist nicht mehr rot unterstrichen.
   Der Patch für `specht/raylib-starter` liegt bei.

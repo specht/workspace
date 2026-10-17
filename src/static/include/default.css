@@ -211,23 +211,33 @@ pre .code-context {
     user-select: none;
 }
 
-/* A dashed snip line between the context and the new code */
-pre .snip-above {
-    margin-top: 0.35em;
-    padding-top: 0.35em;
-    border-top: 1px dashed rgba(255, 255, 255, 0.45);
+/* Where context and new code meet, the block is cut through: a thin,
+   faint zigzag line across the padding to both edges. */
+pre .code-cut {
+    display: block;
+    height: 0.4rem;
+    margin: 0.3rem -1em;
+    background: rgba(255, 255, 255, 0.3);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3E%3Cpath d='M0 1.5L8 6.5L16 1.5' fill='none' stroke='black' stroke-width='1.2'/%3E%3C/svg%3E") left center / 0.8rem 100% repeat-x;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3E%3Cpath d='M0 1.5L8 6.5L16 1.5' fill='none' stroke='black' stroke-width='1.2'/%3E%3C/svg%3E") left center / 0.8rem 100% repeat-x;
+    user-select: none;
 }
 
-pre .snip-below {
-    margin-bottom: 0.35em;
-    padding-bottom: 0.35em;
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.45);
+/* A piece of a file confuses the lexer: a lone »}« is no error here */
+pre.has-code-context .err {
+    background: none !important;
+    color: inherit !important;
+}
+
+pre.copy-code .code-cut {
+    margin-right: -3em;
 }
 
 /* Centred on the first line: the block's padding (0.5em at 93%) plus half
    a line (1.5 at 93%) minus half the button. */
 .code-copy {
     position: absolute;
+    /* With context, _template.html moves it next to the first line of new code */
     top: calc(0.465rem + 0.6975rem - 1rem);
     right: 0.3rem;
     width: 2em;
@@ -4450,6 +4460,15 @@ ul.task-teacher-list .task-teacher-answer {
 
     pre.copy-code {
         padding-right: 2.6em;
+    }
+
+    pre .code-cut {
+        margin-left: -0.6em;
+        margin-right: -0.6em;
+    }
+
+    pre.copy-code .code-cut {
+        margin-right: -2.6em;
     }
 
     /* A table wider than the phone scrolls sideways by itself instead of

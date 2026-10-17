@@ -18,7 +18,7 @@ class CodeContextTest < Minitest::Test
         assert_equal [true, false, true], lines.map { |l| l['class'].include?('code-context') }
         refute_includes pre.text, '~'
         assert_equal ['void f(void) {', '    int a = 1;', '}'], lines.map(&:text)
-        assert_equal 'code-line snip-above snip-below', lines[1]['class']
+        assert_equal %w[code-line code-cut code-line code-cut code-line], pre.element_children.map { |e| e['class'].split.first }
     end
 
     def test_blocks_without_context_stay_as_they_were

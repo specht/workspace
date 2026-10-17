@@ -154,14 +154,10 @@ module CodeHighlight
                     div.name = 'span'
                     number = div['class'].to_s[/code-line-(\d+)/, 1].to_i
                     classes = ['code-line']
-                    if context.include?(number)
-                        classes << 'code-context'
-                    else
-                        # new code next to context: the snip line goes there
-                        classes << 'snip-above' if context.include?(number - 1)
-                        classes << 'snip-below' if context.include?(number + 1)
-                    end
+                    classes << 'code-context' if context.include?(number)
                     div['class'] = classes.join(' ')
+                    # where context and new code meet, the block is cut (default.css)
+                    div.add_previous_sibling("<span class='code-cut' aria-hidden='true'></span>") if number > 1 && context.include?(number - 1) != context.include?(number)
                     # Each line is a block of its own (default.css); its line break would add one more
                     last = div.children.last
                     last.content = last.content.sub(/\n\z/, '') if last&.text? && last.content.end_with?("\n")

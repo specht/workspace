@@ -160,6 +160,15 @@ function install_code_copy() {
         button.setAttribute('aria-label', 'Code in die Zwischenablage kopieren');
         button.innerHTML = "<i class='bi bi-copy'></i>";
         box.appendChild(button);
+        // With context: next to the new code, not above the context. A
+        // folded block has no size yet; the observer sees it unfold.
+        let first = pre.querySelector('.code-line:not(.code-context)');
+        if (first) {
+            new ResizeObserver(function () {
+                if (!pre.offsetParent) return;
+                button.style.top = (first.offsetTop + (first.offsetHeight - button.offsetHeight) / 2) + 'px';
+            }).observe(pre);
+        }
     });
     let clipboard = new ClipboardJS('.code-copy', {
         text: function(trigger) {
