@@ -109,6 +109,56 @@ frame, its left edge reaches out into the night, away from the camera.
 
 ## Kamera 3, Parkplatz
 
-Noch offen. Das Auto des Täters ist laut `make_case.rb` ein gelber **Kombi**
+Das Auto des Täters ist laut `make_case.rb` ein gelber **Kombi**
 (`BS-KR 2417`), kein Kleinwagen: die gelben Kleinwagen gehören anderen.
-Ohne Markenzeichen, das Kennzeichen unlesbar.
+Ohne Markenzeichen, das Kennzeichen unlesbar. Weißes Licht der Laterne,
+sonst sieht jede Farbe gelb aus. In Deutschland ist die Fahrertür links;
+die Kamera sieht die rechte Seite des Autos.
+
+`empty.jpg` entstand in zwei Schritten aus einem ersten Bild mit einem gelben
+Kleinwagen, dessen Parklinien gut waren (Linien neu erzeugen gelang nicht):
+
+```text
+Create a new image (not an edit): a photorealistic still from a cheap
+security camera mounted high on the back wall of a museum, looking down at a
+small parking lot at an angle. Slightly wide-angle with mild barrel
+distortion. Night, slightly underexposed. 4:3 landscape. No text anywhere:
+no timestamp, no logos, no watermark, no readable signs, no readable number
+plates.
+
+The scene: a small parking lot behind an old brick museum building in a
+northern German coastal town. Three marked parking spaces side by side, wet
+asphalt after rain. One modern street lamp with WHITE light (not orange), so
+colours stay true. A low brick wall along the back, bushes behind it. On the
+right edge of the image, a paved path leads from the museum's back door to
+the parking lot. In the middle space a small yellow hatchback is parked,
+seen at an angle from behind and the side, so its number plate is not
+readable. Its headlights and tail lights are off. Nobody inside or around
+it. The other two spaces are empty.
+```
+
+dann: »Change only the car: replace the yellow hatchback with a yellow ESTATE
+CAR (a station wagon, German "Kombi") standing in exactly the same place and
+at the same angle … No brand badges or emblems anywhere on the car.« und
+noch einmal: »Remove the round emblem from the tailgate and any lettering or
+model name from the tail lights and the tailgate.«
+
+Die anderen sind Bearbeitungen von `empty.jpg`, eingeleitet mit »Edit the
+image of the parking lot with the yellow estate car and NOBODY there … Keep
+the image size, the 4:3 landscape format, the camera position and the
+framing exactly the same. Keep the car, all three white parking lines, the
+edge of the parking lot, the wall, the bushes, the street lamp and the path
+exactly as they are.«:
+
+- `on-path.jpg`: The person stands on the paved path on the right side of the image, near the bottom right, seen from behind, facing the yellow car, as if walking from the museum toward it; faint shadow falling away from the lamp. (Geht den Weg hinauf, von der Kamera weg: vom Hintereingang her.)
+- `at-passenger-door.jpg`: The person stands at the door on the right side of the car, seen from behind, the free hand on the door handle. Gedacht als Fahrertür; es ist die Beifahrertür, also legt die Person dort die Tasche ab.
+- `reversing.jpg`: The car is reversing out of its parking space: it has moved back about one car length toward the camera … All its lights are OFF, also the brake and reversing lights. Inside, in the driver's seat, a dark figure is barely visible. (Gerade zurück, wie man zuerst ausparkt.)
+- `space-empty.jpg`: Remove the yellow car … the part of the lines the car was hiding is now visible, straight and in line with the rest.
+
+Nicht gelungen und weggelassen: die Person auf halbem Weg zum Auto (einmal
+ein anderes Auto mit leuchtenden Rücklichtern, einmal fehlte eine Parklinie,
+einmal ein anderes Bildformat), die Person um die Motorhaube herum (nach
+der Bearbeitung kaum zu sehen), das Auto beim Lenken (dreht sich auf der
+Stelle quer, eine Parklinie verschwindet) und beim Hinausfahren nach links
+(fährt durch Rasen und Hauswand). Bewegungen des Autos über ein gerades
+Stück hinaus kann ChatGPT nicht.

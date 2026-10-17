@@ -5,7 +5,7 @@ liegen die Ausgangsbilder, so wie ChatGPT sie geliefert hat (als JPEG,
 Qualität 92), und was man braucht, um daraus die Aufnahmen der Kameras zu
 machen oder ein Bild zu verbessern.
 
-- `cam1/`, `cam2/`, später `cam3/`: die Ausgangsbilder. `empty.jpg` ist der
+- `cam1/`, `cam2/`, `cam3/`: die Ausgangsbilder. `empty.jpg` ist der
   leere Raum, aus dem die anderen Bilder der Kamera bearbeitet wurden;
   `cam2/open-nobody.jpg` ist nur Ausgangsbild für die Bilder mit offener Tür.
 - `frames.txt`: welches Bild zu welcher Uhrzeit auf welcher Kamera.
