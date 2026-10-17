@@ -1038,3 +1038,36 @@ Die sechs Zahlen sind die beiden Drehwinkel in Grad, der Abstand und der Punkt, 
 Sobald du unten eine Datei auswählst, zeigt die Karte, wie deine Szene in der Galerie aussehen wird. Deine Abgabe ist eine Kopie: Du kannst danach weiter an der Datei arbeiten, eine neue Version abgeben oder deine Abgabe wieder löschen.
 
 _task(galerie)
+
+<!-- tutorial-step
+# Jede Szene-Aufgabe nimmt eine Lösung an und lehnt die Szene einen Schritt davor ab
+# (solutions/, not-yet/; Würfelgitter und Sonnensystem rendert die Seite selbst)
+write-file: scene.ini <- file:not-yet/kugel.ini
+check-task-fails: kugel
+write-file: scene.ini <- file:solutions/kugel.ini
+check-task: kugel
+write-file: vier-wuerfel.ini <- file:not-yet/vier-wuerfel.ini
+check-task-fails: vier-wuerfel
+write-file: vier-wuerfel.ini <- file:solutions/vier-wuerfel.ini
+check-task: vier-wuerfel
+write-file: wuerfelstern.ini <- file:not-yet/wuerfelstern.ini
+check-task-fails: wuerfelstern
+write-file: wuerfelstern.ini <- file:solutions/wuerfelstern.ini
+check-task: wuerfelstern
+write-file: balken.ini <- file:not-yet/balken.ini
+check-task-fails: balken
+write-file: balken.ini <- file:solutions/balken.ini
+check-task: balken
+write-file: wuerfelgitter.ini <- file:not-yet/wuerfelgitter.ini
+check-task-fails: wuerfelgitter
+write-file: wuerfelgitter.ini <- file:wuerfelgitter.ini
+check-task: wuerfelgitter
+write-file: allee.ini <- file:not-yet/allee.ini
+check-task-fails: allee
+write-file: allee.ini <- file:solutions/allee.ini
+check-task: allee
+write-file: sonnensystem.ini <- file:not-yet/sonnensystem.ini
+check-task-fails: sonnensystem
+write-file: sonnensystem.ini <- file:sonnensystem.ini
+check-task: sonnensystem
+-->
