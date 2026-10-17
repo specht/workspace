@@ -184,6 +184,7 @@ crop-bottom: PERCENT%
 crop-left: PERCENT%
 crop-right: PERCENT%
 crop-element: SELECTOR
+keep-only: SELECTOR
 crop-terminal-lines: NUMBER|auto
 crop-terminal-skip-top: NUMBER
 crop-terminal-skip-bottom: NUMBER
@@ -567,6 +568,23 @@ They work for screenshots, not for videos, PDF pages or graphs.
 element the CSS selector matches, such as the screen of an emulator. It
 replaces the other crops. An element below the fold is scrolled into view
 first; it has to fit into the viewport.
+
+`keep-only: SELECTOR`, once or several times, makes everything in the
+picture transparent except the boxes of these elements (the first match of
+each, with its rounded corners), such as the title bar of the terminal and
+the tooltip below it. An element without a size of its own that draws with
+`::after`, like the little triangle of a VS Code tooltip
+(`.workbench-hover-pointer`), is kept as that rotated square. It goes with the usual crops; the mouse pointer of
+`show-mouse` is drawn afterwards, so it stays visible outside the boxes.
+
+```text
+move-mouse: selector:.part.panel [aria-label*="Maximize Panel"]
+sleep: 1.5
+show-mouse
+keep-only: .part.panel > .composite.title
+keep-only: .workbench-hover
+keep-only: .workbench-hover-pointer
+```
 
 ### PDF pages
 

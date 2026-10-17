@@ -104,8 +104,14 @@
     },
     "teaser.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "9e432b75bda7d3aa006d5cb95088b850fd5cdf966c1b68ec36958c91a237c986",
-      "state_hash": "c79ebeee29106ae887413cd36c1e16cd68eb0642b4e1d261aeca77d40c588d77",
+      "output_sha256": "cb118d69d2a9e58dbf06d9c4d4631a85b5c0b64bf6a69c952862d3cd9dc090b2",
+      "state_hash": "88d91acb56e524f29dc5da9159e3d571b0e140bda50f0ef21d631bc0bd15baef",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "terminal-kill.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "fe3c30cdd004ec974cdbf935e5820b7b3f430ec106ec79019fbefb434b3422b2",
+      "state_hash": "bae337c8f133240ecfdc0b46703021ef2a02c7977b093c7ded8acfece026c713",
       "workspace_look": "4.138.0-ls366"
     },
     "traceroute-q-1-8-8-8-8.webp": {

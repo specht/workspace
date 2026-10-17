@@ -668,7 +668,21 @@ crop-terminal-lines: 99
 
 <img class='full' src='starwars.webp' alt='Eine Star-Wars-Szene aus Textzeichen im Terminal.'>
 
-<img src='terminal-kill.webp' class='r' style='width: 25em;' alt='Der Knopf mit der Mülltonne über dem Terminal, mit dem Hinweis »Kill Terminal«.'>
+<!-- tutorial-screenshot
+# Die Mülltonne über dem Terminal, mit Mauszeiger und Tooltip; nur die
+# Titelleiste des Terminals und der Tooltip, der Rest transparent
+move-mouse: selector:.part.panel [aria-label*="Kill Terminal"] >> nth=0
+sleep: 1.5
+show-mouse
+# the terminal is maximised here: its title bar is at the top
+crop-left: 68%
+crop-bottom: 76%
+keep-only: .part.panel > .composite.title
+keep-only: .workbench-hover
+keep-only: .workbench-hover-pointer
+-->
+
+<img src='terminal-kill.webp' class='r' style='width: 25em;' alt='Der Knopf mit der Mülltonne über dem Terminal, der Mauszeiger darauf, darunter der Hinweis »Kill Terminal«.'>
 
 Da `telnet` etwas umständlich zu beenden ist, drücke einfach auf die Mülltonne in der rechten oberen Ecke des Terminals, um das Terminal zu schließen, und anschließend auf das Pluszeichen, um ein neues Terminal zu öffnen.
 

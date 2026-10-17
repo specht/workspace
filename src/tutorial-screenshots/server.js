@@ -700,6 +700,9 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
         } else if ((match = line.match(/^crop-element:\s*(?:selector:)?(.+)$/))) {
             cropSource = source;
             recipe.cropElement = match[1].trim();
+        } else if ((match = line.match(/^keep-only:\s*(?:selector:)?(.+)$/))) {
+            cropSource = source;
+            (recipe.keepOnly ||= []).push(match[1].trim());
         } else if (line === 'show-mouse') {
             recipe.showMouse = true;
         } else if (line === 'sharp-canvas') {
@@ -781,6 +784,12 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
         recipe.pdfPage || recipe.gitGraph)) {
         throw withSourceError(
             new Error('crop-element replaces the other crops and works for screenshots only'),
+            cropSource || lastSource || recipe[SOURCE_LOCATION],
+        );
+    }
+    if (recipe.keepOnly && (recipe.record != null || recipe.pdfPage || recipe.gitGraph)) {
+        throw withSourceError(
+            new Error('keep-only works for screenshots only'),
             cropSource || lastSource || recipe[SOURCE_LOCATION],
         );
     }
@@ -961,6 +970,7 @@ async function parseTutorial(markdown, markdownPath) {
         if (recipe.cropLeft > 0) resolved.cropLeft = recipe.cropLeft;
         if (recipe.cropRight > 0) resolved.cropRight = recipe.cropRight;
         if (recipe.cropElement) resolved.cropElement = recipe.cropElement;
+        if (recipe.keepOnly) resolved.keepOnly = recipe.keepOnly;
         if (recipe.variants) {
             resolved.variants = recipe.variants;
         }
@@ -2905,6 +2915,73 @@ async function visibleTerminalCropGeometry(page) {
     });
 }
 
+// The boxes of the elements keep-only names, in CSS pixels of the page,
+// with their corner radius. An element without a size of its own that draws
+// with ::after (the little triangle of a VS Code tooltip, a rotated square)
+// counts as that square: a diamond.
+async function keptBoxes(page, selectors) {
+    const boxes = [];
+    for (const selector of selectors) {
+        const element = page.locator(selector).first();
+        await element.waitFor({ state: 'attached', timeout: ACTION_TIMEOUT_MS });
+        const box = await element.evaluate((node) => {
+            const rect = node.getBoundingClientRect();
+            const x = rect.left + window.scrollX;
+            const y = rect.top + window.scrollY;
+            if (rect.width > 0 && rect.height > 0) {
+                const radius = parseFloat(getComputedStyle(node).borderTopLeftRadius) || 0;
+                return { x, y, width: rect.width, height: rect.height, radius };
+            }
+            const after = getComputedStyle(node, '::after');
+            const px = (v) => parseFloat(v) || 0;
+            const w = px(after.width) + px(after.borderLeftWidth) + px(after.borderRightWidth);
+            const h = px(after.height) + px(after.borderTopWidth) + px(after.borderBottomWidth);
+            if (!(w > 0 && h > 0)) return null;
+            const left = after.left === 'auto' ? 0 : px(after.left);
+            const top = after.top === 'auto' ? 0 : px(after.top);
+            return { diamond: true, cx: x + left + w / 2, cy: y + top + h / 2, half: Math.hypot(w, h) / 2 };
+        });
+        if (!box) throw new Error(`keep-only: ${selector} has no size`);
+        boxes.push(box);
+    }
+    return boxes;
+}
+
+// Makes everything outside the boxes transparent. clip: where the picture
+// starts on the page (CSS pixels) and how many picture pixels one CSS pixel is.
+async function keepOnlyBoxes(pngPath, boxes, clip) {
+    // ImageMagick draws no rounded rectangle that reaches outside the
+    // picture: clamp each box, and round only corners that are inside.
+    const clamp = (v, max) => Math.min(Math.max(v, 0), max);
+    const draws = boxes.map((b) => {
+        if (b.diamond) {
+            const cx = (b.cx - clip.x) * clip.scale;
+            const cy = (b.cy - clip.y) * clip.scale;
+            const h = b.half * clip.scale + 0.5;
+            const points = [[cx, cy - h], [cx + h, cy], [cx, cy + h], [cx - h, cy]]
+                .map(([x, y]) => `${Math.round(x)},${Math.round(y)}`).join(' ');
+            return ['-draw', `polygon ${points}`];
+        }
+        const rx0 = Math.round((b.x - clip.x) * clip.scale);
+        const ry0 = Math.round((b.y - clip.y) * clip.scale);
+        const rx1 = Math.round((b.x + b.width - clip.x) * clip.scale) - 1;
+        const ry1 = Math.round((b.y + b.height - clip.y) * clip.scale) - 1;
+        const x0 = clamp(rx0, clip.width - 1);
+        const y0 = clamp(ry0, clip.height - 1);
+        const x1 = clamp(rx1, clip.width - 1);
+        const y1 = clamp(ry1, clip.height - 1);
+        const r = Math.round(b.radius * clip.scale);
+        const inside = x0 === rx0 && y0 === ry0 && x1 === rx1 && y1 === ry1;
+        return ['-draw', r > 0 && inside ? `roundrectangle ${x0},${y0} ${x1},${y1} ${r},${r}` : `rectangle ${x0},${y0} ${x1},${y1}`];
+    }).flat();
+    await execFileAsync('convert', [
+        pngPath,
+        '(', '-size', `${clip.width}x${clip.height}`, 'xc:black', '-fill', 'white', ...draws, ')',
+        '-alpha', 'off', '-compose', 'CopyOpacity', '-composite', '+repage',
+        pngPath,
+    ]);
+}
+
 async function captureShot(shot, tutorialDirectory) {
     const page = pageForTab(shot.tab);
     if (!page || page.isClosed()) {
@@ -3016,6 +3093,7 @@ async function captureShot(shot, tutorialDirectory) {
                 await installWorkspaceScreenshotStyle(page);
             }
             const pointerShape = shot.showMouse ? await mousePointerShape(page) : null;
+            const kept = shot.keepOnly ? await keptBoxes(page, shot.keepOnly) : null;
 
             // Capture through CDP directly. The page keeps its viewport/zoom
             // layout, while clip.scale asks Chromium to render a larger native
@@ -3052,6 +3130,17 @@ async function captureShot(shot, tutorialDirectory) {
                 DEFAULT_PROFILE.captureScale,
             );
             await fs.writeFile(pngPath, png);
+            // keep-only: everything but these elements transparent, before
+            // the pointer, which may stand outside them
+            if (kept) {
+                await keepOnlyBoxes(pngPath, kept, {
+                    x: leftPixels / metrics.deviceScaleFactor,
+                    y: topPixels / metrics.deviceScaleFactor,
+                    scale: actual.width / (widthPixels / metrics.deviceScaleFactor),
+                    width: actual.width,
+                    height: actual.height,
+                });
+            }
             if (pointerShape) {
                 await addMousePointer(pngPath, {
                     clip: { x: leftPixels / metrics.deviceScaleFactor, y: topPixels / metrics.deviceScaleFactor,

@@ -47,6 +47,9 @@ show-mouse
 crop-left: 74%
 crop-top: 63.5%
 crop-bottom: 24%
+keep-only: .part.panel > .composite.title
+keep-only: .workbench-hover
+keep-only: .workbench-hover-pointer
 -->
 
 <img src='maximize-terminal.webp' class='r' style='width: 25em;' alt='Rechts oben im Terminal das Symbol zum Maximieren, der Mauszeiger darauf, darunter der Hinweis »Maximize Panel«.'>
@@ -142,6 +145,10 @@ show-mouse
 crop-top: 88%
 # from »UTF-8« on, so that no word of the status bar is cut in half
 crop-left: 72%
+# only the status bar and the tooltip, the rest transparent
+keep-only: .part.statusbar
+keep-only: .workbench-hover
+keep-only: .workbench-hover-pointer
 -->
 
 <img src='go-live.webp' class='r' style='width: 21em;' alt='Der Eintrag »Go Live« unten rechts in der Statusleiste; der Tooltip sagt »Click to run live server«.'>
@@ -165,6 +172,10 @@ show-mouse
 crop-top: 88%
 # from »UTF-8« on (»Port : 5500« is wider than »Go Live«)
 crop-left: 70%
+# only the status bar and the tooltip, the rest transparent
+keep-only: .part.statusbar
+keep-only: .workbench-hover
+keep-only: .workbench-hover-pointer
 -->
 
 <img src='stop-live.webp' class='r' style='width: 21em;' alt='Statt »Go Live« steht unten rechts »Port : 5500«; der Tooltip sagt »Click to close server«.'>
