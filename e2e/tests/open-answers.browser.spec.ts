@@ -48,8 +48,6 @@ test('teachers see example answers and the answers of their group under open tas
   await expect(panel.locator('.task-teacher-body')).toBeHidden();
   await teacher.reload();
   await expect(panel.locator('.task-teacher-body')).toBeHidden();
-  // Back to the examples for whoever runs this next.
-  await panel.getByRole('button', { name: 'Beispielantworten' }).click();
   expect(errors).toEqual([]);
 
   // A teacher with teaching materials but no group: the examples only.
@@ -57,8 +55,11 @@ test('teachers see example answers and the answers of their group under open tas
   await loginAsE2eUser(materials, 'e2e-materials-teacher@example.com', testInfo);
   await materials.goto('/tcpip');
   const theirs = materials.locator(`${card} .task-teacher`);
-  await expect(theirs.locator('.task-teacher-example')).toHaveCount(2);
   await expect(theirs.locator('.task-teacher-view')).toHaveText(['Beispielantworten', 'Ausblenden']);
+  await theirs.getByRole('button', { name: 'Beispielantworten' }).click();
+  await expect(theirs.locator('.task-teacher-example')).toHaveCount(2);
+  // Closed again for the next run: without a choice the box starts closed.
+  await theirs.getByRole('button', { name: 'Ausblenden' }).click();
 
   await student.request.post('/api/task/delete', { data: { task } });
 });

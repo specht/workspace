@@ -11,13 +11,11 @@ module OpenAnswers
     end
 
     # The view to open with: the one chosen last if it can be shown,
-    # otherwise example answers, or the group's answers for a teacher who
-    # has a group but no example answers to see.
+    # otherwise closed. Nothing opens by itself under the cards, so the page
+    # can go on a projector as it is.
     def self.view(wanted, examples:, groups:)
         possible = VIEWS.select { |v| v == 'off' || (v == 'examples' && examples) || (v == 'group' && groups) }
-        return wanted if possible.include?(wanted)
-
-        possible.first
+        possible.include?(wanted) ? wanted : 'off'
     end
 
     # members: [{ email:, name: }]

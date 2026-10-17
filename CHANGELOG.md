@@ -26,9 +26,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Im Handbuch SQL neu: »Entfernungen auf der Erde«.
 - Unter offenen Aufgaben (Reflexionen) sehen Lehrkräfte auf der Seite einen
   Kasten »Für Lehrkräfte«: Beispielantworten, die Antworten der aktuellen
-  Gruppe mit Namen und Datum, oder nichts. Die Wahl gilt für alle Aufgaben
-  und bleibt am Konto gespeichert; wer mehrere Gruppen betreut, wählt die
-  Gruppe im Kasten. Alle 15 Reflexionen haben je zwei Beispielantworten
+  Gruppe mit Namen und Datum, oder nichts. Zu Beginn ist der Kasten zu; die
+  Wahl gilt für alle Aufgaben und bleibt am Konto gespeichert. Wer mehrere
+  Gruppen betreut, wählt die Gruppe im Kasten. Alle 15 Reflexionen haben je zwei Beispielantworten
   (neues Feld `examples` in `tasks.yaml`, nur für `reflection`). Lernende
   sehen davon nichts.
 - Die Tabellen eines Datensatzes als Schema, eine Zeile pro Tabelle:
@@ -718,6 +718,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Mehr Aufgaben werden bei jedem Durchlauf der Screenshot-Rezepte selbst
+  geprüft: in der Filmdatenbank das ER-Modell, die Tabellen und alle
+  SQL-Abfragen, in der Neo4j-Filmdatenbank alle Cypher-Abfragen, in »Git« die
+  fünf Repository-Aufgaben, in BIF die Geschichte Schritt für Schritt und in
+  »3D-Grafik mit Anaglyphen« jede Szene-Aufgabe (mit Lösungen in
+  `anaglyph/solutions/`).
+  Jede Prüfung muss den gelösten Stand annehmen und den Stand davor ablehnen.
+  Für Betreibende: `recreate-screenshots.rb` bricht ab, wenn eine Prüfung
+  nicht mehr zu ihrer Seite passt.
 - shower.js: »Eine andere Adresse« ist jetzt eine Vermutung mit vier
   Antworten statt einer Adresse zum Eintippen. Die alte Aufgabe ließ sich
   ohne eigenen Rechner nicht lösen und mit `file://…index.html` erraten.

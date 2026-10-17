@@ -1181,8 +1181,9 @@ violetter Kasten »Für Lehrkräfte« mit drei Knöpfen:
   dazugekommen sind.
 - **Ausblenden:** Nur die Knopfleiste bleibt, etwa vor einem Beamer.
 
-Die Wahl gilt für alle Aufgaben und wird am Konto gespeichert
-(`class_prefs`, `answer_view`): Die nächste Seite öffnet genauso.
+Zu Beginn ist der Kasten zu, nur die Knopfleiste ist da; die Seite kann so,
+wie sie ist, an den Beamer. Die Wahl gilt für alle Aufgaben und wird am Konto
+gespeichert (`class_prefs`, `answer_view`): Die nächste Seite öffnet genauso.
 
 ## Neue Version einer Vorlage
 

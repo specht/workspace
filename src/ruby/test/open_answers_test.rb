@@ -17,10 +17,12 @@ class OpenAnswersTest < Minitest::Test
     def test_the_view_chosen_last_unless_it_cannot_be_shown
         assert_equal 'group', OpenAnswers.view('group', :examples => true, :groups => true)
         assert_equal 'off', OpenAnswers.view('off', :examples => true, :groups => false)
-        assert_equal 'examples', OpenAnswers.view(nil, :examples => true, :groups => true)
-        assert_equal 'examples', OpenAnswers.view('group', :examples => true, :groups => false)
-        assert_equal 'group', OpenAnswers.view('examples', :examples => false, :groups => true)
-        assert_equal 'examples', OpenAnswers.view('nonsense', :examples => true, :groups => true)
+        assert_equal 'examples', OpenAnswers.view('examples', :examples => true, :groups => false)
+        # Without a choice, or one that cannot be shown: closed
+        assert_equal 'off', OpenAnswers.view(nil, :examples => true, :groups => true)
+        assert_equal 'off', OpenAnswers.view('group', :examples => true, :groups => false)
+        assert_equal 'off', OpenAnswers.view('examples', :examples => false, :groups => true)
+        assert_equal 'off', OpenAnswers.view('nonsense', :examples => true, :groups => true)
     end
 
     def test_answers_sorted_by_name_without_empty_ones_marked_when_stale
