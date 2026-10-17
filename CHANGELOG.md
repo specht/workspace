@@ -753,6 +753,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   können Lehrkräfte ihren eigenen Gruppen und dem Testkonto eine
   Leistungsüberprüfung zuweisen, nicht mehr nur Admins. Lehrkräfte mit `*`
   sehen jetzt den Menüpunkt »Klassen« mit ihrer Testgruppe.
+  Der Einstieg für Lehrkräfte erklärt, wie man ins Testkonto kommt (Nachahmen
+  oder direkt mit `name+test@…`), was man damit ausprobiert, bis hin zu
+  Leistungsüberprüfungen, und wie man es zurücksetzt.
 - »Endliche Automaten«: Die Zustände heißen überall q₀, q₁ und so weiter, in
   den Bildern, im Text, in den Programmen (`'q0'`) und in den Aufgaben;
   fehlende Übergänge führen in den Fehlerzustand q<sub>F</sub>, der genannt,
