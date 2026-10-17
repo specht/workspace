@@ -769,6 +769,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   und Umbenennen bis zur Umwandlung nach WebP. Das Kontextmenü des Browsers
   ist nachgebaut, weil ein Screenshot das echte nicht zeigt. Nach einem Update
   von VS Code entstehen sie neu.
+- BIF: auch »New File…« im Explorer und die Geschichte mit `has_key: true`
+  unter »State« kommen aus Rezepten; die Seite hat kein Bild mehr von Hand.
 - Die Entwürfe »Autostereogramme« und »Anaglyphen« binden »Terminal öffnen«
   aus dem Handbuch ein, statt den Text mit eigenen (fehlenden) Bildern zu
   wiederholen; »Feueranimation« zeigt den leeren Workspace aus dem Handbuch.

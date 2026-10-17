@@ -113,6 +113,19 @@ Eine Geschichte in BIF besteht aus Seiten. Entscheidungen verbinden sie: Wer lie
 
 ### Zweite Seite
 
+<!-- tutorial-screenshot
+# Das Symbol »New File…« oben im Explorer, mit Tooltip, vergrößert: doppelt
+# so groß gezeichnet (zoom 2 auf doppelter Fläche), dann die Ecke links oben
+# seine Knöpfe zeigt der Kopf des Ordners erst, wenn die Maus darauf steht
+move-mouse: selector:.part.sidebar .pane:has(.explorer-folders-view) > .pane-header
+move-mouse: selector:.part.sidebar .pane-header .action-label[aria-label^="New File"]
+sleep: 1.5
+show-mouse
+viewport: 2058x1032
+zoom: 2
+crop-right: 70%
+crop-bottom: 56%
+-->
 <img src='new-file.webp' class='r' style='width: 18em;' alt='Der Mauszeiger auf dem Symbol »New File…« oben im Explorer, in dem pages-starter mit 1.md aufgeklappt ist.'>
 
 Unsere Geschichte soll nicht auf der ersten Seite stehen bleiben. Erstelle im Ordner `pages-starter` eine neue Datei, indem du auf das entsprechende Icon klickst. Nenne die Datei `2.md`.
@@ -377,6 +390,7 @@ Du willst gerade gehen, da fällt dir ein: Deine Projektmappe liegt noch im Mate
 
 Die vollständige Datei sieht jetzt so aus:
 
+<!-- screenshot-code: 3-var -->
 ```markdown_wrap
 Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kleiner Schlüssel an einem Haken.
 
@@ -399,8 +413,30 @@ Wenn du »Nimm den Schlüssel« auswählst, wird das Skript ausgeführt und `has
 
 Öffne in der Entwicklungsansicht den Bereich **State** und beobachte den Wert beim Spielen.
 
-<!-- Screenshot: Schlüssel genommen / State mit has_key: true -->
-
+<!-- tutorial-screenshot
+# Schlüssel genommen, unter State steht has_key: true
+write-file: pages-starter/1.md <- previous-code (1-var)
+write-file: pages-starter/3.md <- previous-code (3-var)
+wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/3.md
+preview-reload
+hold: 1.5s selector:.story-restart-control
+tab: preview
+click: Fit graph
+sleep: 0.5
+click: Gehe in den Flur.
+wait-for-text: Sieh im Büro nach.
+sleep: 0.5
+click: Sieh im Büro nach.
+wait-for-text: Nimm den Schlüssel.
+sleep: 0.5
+click: Nimm den Schlüssel.
+wait-for-text: Du nimmst den kleinen Schlüssel vom Haken.
+click: State
+wait-for-text: has_key
+move-mouse: No problems
+sleep: 0.5
+variants: dark
+-->
 <img class='full full-shadow' src='take-key.webp' alt='Nach dem Aufnehmen des Schlüssels verschwindet die lokale Entscheidung aus der Geschichte.'>
 
 Die Geschichte hat sich damit zum ersten Mal etwas gemerkt. Solange du im Büro bleibst, sieht auch alles richtig aus: »Nimm den Schlüssel« ist bereits erledigt und kann nicht noch einmal ausgewählt werden.
