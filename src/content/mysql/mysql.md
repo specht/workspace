@@ -479,7 +479,8 @@ Eine Abfrage schreibst du mit `SELECT` zuerst. Die Datenbank fängt aber woander
 FROM country
 WHERE continent = 'Europa'
 ORDER BY density DESC
-LIMIT 5;"></div>
+LIMIT 5;">
+</div>
 
 <script src='/include/query_stepper.js'></script>
 
@@ -752,7 +753,8 @@ Wie ein `JOIN` arbeitet, zeigt der Query Stepper Schritt für Schritt: Nach `FRO
 FROM country
 JOIN city ON city.country_code = country.code
 WHERE city.is_capital = 1 AND country.continent = 'Südamerika'
-ORDER BY country.name;"></div>
+ORDER BY country.name;">
+</div>
 
 _task(waehrung-japan)
 

@@ -326,7 +326,8 @@ Was bei jedem `JOIN` passiert, zeigt der Query Stepper. Er führt die Abfrage Te
 FROM movie
 JOIN movie_genre ON movie.id = movie_genre.movie_id
 JOIN genre ON movie_genre.genre_id = genre.id
-WHERE movie.title = 'Back to the Future';"></div>
+WHERE movie.title = 'Back to the Future';">
+</div>
 
 <script src='/include/query_stepper.js'></script>
 
@@ -446,7 +447,8 @@ Im Query Stepper siehst du die Gruppen: Bei `GROUP BY` bekommt jedes Genre seine
 FROM genre
 JOIN movie_genre ON genre.id = movie_genre.genre_id
 GROUP BY genre.id, genre.name
-HAVING COUNT(*) >= 100;"></div>
+HAVING COUNT(*) >= 100;">
+</div>
 
 _tool(query-stepper)
 
