@@ -24,4 +24,6 @@ src/scripts/collect-movies/movie-archive
 src/scripts/collect-countries/country-archive
 src/scripts/collect-streets/cache
 src/scripts/collect-streets/street-archive
+# the template of »Ein Routenplaner für Berlin« brings its maps along
+!src/content/routenplaner/vorlage/data/
 __pycache__/
