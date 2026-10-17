@@ -201,6 +201,7 @@ Bisher musst du, um dein Skript auszuführen, immer den Lua-Interpreter explizit
 
 ```lua
 #!/usr/bin/env lua
+~ print("Hello, World!")
 ```
 
 Füge diese Zeile ganz oben in deinem Skript ein und speichere die Datei. Bevor wir das Skript ausführen können, müssen wir es noch ausführbar machen. Das machen wir mit dem Befehl `chmod`:

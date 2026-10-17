@@ -250,11 +250,17 @@ Wasser schwimmen würde.
 Beide bekommen sofort denselben Kopf und Fuß, ohne dass du dafür HTML schreibst. Fehlt noch die Navigation zu allen Seiten. Ergänze in `layouts/baseof.html` unter dem Link mit `site.Title`:
 
 ```html
-<nav>
-  {{ range site.RegularPages }}
-    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-  {{ end }}
-</nav>
+~ <body>
+~   <header>
+~     <a class="logo" href="{{ "/" | relURL }}">{{ site.Title }}</a>
+    <nav>
+      {{ range site.RegularPages }}
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      {{ end }}
+    </nav>
+~   </header>
+~   <main>
+~     {{ block "main" . }}{{ end }}
 ```
 
 `{{ range site.RegularPages }} … {{ end }}` ist eine Schleife über alle Seiten der Website. Was dazwischen steht, schreibt Hugo für jede Seite einmal hin; der Punkt steht darin für die Seite, um die es gerade geht. `.RelPermalink` ist ihre Adresse, `.Title` ihr Titel.
@@ -393,7 +399,13 @@ footer {
 und binde die Datei in `layouts/baseof.html` im `<head>` ein, unter dem `<title>`:
 
 ```html
-<link rel="stylesheet" href="{{ "style.css" | relURL }}">
+~   <meta charset="utf-8">
+~   <meta name="viewport" content="width=device-width, initial-scale=1">
+~   <title>{{ .Title }} · {{ site.Title }}</title>
+  <link rel="stylesheet" href="{{ "style.css" | relURL }}">
+~ </head>
+~ <body>
+~   <header>
 ```
 
 Eine Zeile in einem Layout, und jede Seite der Website sieht so aus:
@@ -435,12 +447,15 @@ In der Front Matter jeder Seite stehen schon Schlagwörter, `tags: [Gasriese, Ri
 Dann zeigt jede Planetenseite ihre Schlagwörter als Links. Ersetze in `layouts/page.html` die Zeile mit `<h1>` durch:
 
 ```html
-<h1>{{ .Title }}</h1>
-<p class="tags">
-  {{ range .GetTerms "tags" }}
-    <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
-  {{ end }}
-</p>
+~ {{ define "main" }}
+  <h1>{{ .Title }}</h1>
+  <p class="tags">
+    {{ range .GetTerms "tags" }}
+      <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+    {{ end }}
+  </p>
+~   {{ .Content }}
+~ {{ end }}
 ```
 
 `.GetTerms "tags"` sind die Schlagwörter der Seite, jedes mit seiner eigenen Adresse.

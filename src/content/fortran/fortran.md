@@ -179,7 +179,9 @@ Die Zeichenkombination <code>&amp;&amp;</code> sorgt dafür, dass der zweite Bef
 Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `print` das Wort `prin` zu schreiben:
 
 ```fortran
+~ program HelloWorld
     prin *, "Hello, World!"
+~ end program HelloWorld
 ```
 
 Speichere die Datei und führe den Compiler erneut aus:

@@ -172,7 +172,13 @@ go run hello.go
 Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `Println` das Wort `Printn` zu schreiben:
 
 ```go
+~ package main
+~
+~ import "fmt"
+~
+~ func main() {
     fmt.Printn("Hello, World!")
+~ }
 ```
 
 Speichere die Datei und führe den Compiler erneut aus:

@@ -189,7 +189,12 @@ Die Zeichenkombination <code>&amp;&amp;</code> sorgt dafür, dass der zweite Bef
 Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `DISPLAY` das Wort `DISPLY` zu schreiben:
 
 ```c
-           DISPLY "Hello, World!".
+~ IDENTIFICATION DIVISION.
+~ PROGRAM-ID. HELLO-WORLD.
+~
+~ PROCEDURE DIVISION.
+    DISPLY "Hello, World!".
+~     STOP RUN.
 ```
 
 Speichere die Datei und führe den Compiler erneut aus:

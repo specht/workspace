@@ -420,7 +420,9 @@ function codeBlocks(markdown, markdownPath) {
         blocks.push({
             start: match.index,
             end: regex.lastIndex,
-            contents: match[1].replace(/\n$/, ''),
+            // without context lines (»~ «): they are in the file already,
+            // and the copy button leaves them out too
+            contents: match[1].replace(/\n$/, '').split('\n').filter(line => !/^~( |$)/.test(line)).join('\n'),
             label,
         });
     }

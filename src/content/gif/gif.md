@@ -1045,6 +1045,8 @@ uint32_t screen_checksum(void)
         }
     return (b << 16) | a;
 }
+~
+~ int main(int argc, char **argv)
 ```
 
 und gib sie am Ende von `main` aus, nach der Schleife über die Blöcke:

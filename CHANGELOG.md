@@ -764,6 +764,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   »Eine Klötzchenwelt in 3D« zeigt so bei jedem Stück Code, wo es in `main.c`
   hinkommt, mit drei Zeilen davor und danach, so wie die Datei an dieser
   Stelle aussieht.
+- Kontextzeilen auch in BIF, »Taschenrechner«, GIF, TIC-80, Hugo und
+  »Pixelwand« (Ruby und Python) und auf den Seiten der Sprachen: beim Shebang
+  und beim absichtlichen Tippfehler. Wo man den Code selbst schreibt
+  (Taschenrechner, GIF, TOTP), zeigt der Kontext nichts aus der Lösung.
+- Der Screenshot-Generator lässt Kontextzeilen weg, wenn ein Rezept Code von
+  der Seite tippt oder in eine Datei schreibt (`previous-code`, `code:`).
 - `src/scripts/code-context.rb` schlägt Kontextzeilen für die Code-Blöcke
   einer Seite vor, aus den Dateien, die ihre Rezepte Stufe für Stufe
   schreiben (docs/aktivitaet-schreiben.md).

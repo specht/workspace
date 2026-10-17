@@ -160,7 +160,9 @@ Dart kann Quelltext für viele verschiedene Plattformen kompilieren, z. B. für 
 Wenn du einen Fehler im Code machst, wird Dart eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `print` das Wort `prin` zu schreiben:
 
 ```dart
-prin('Hello, World!');
+~ void main() {
+    prin('Hello, World!');
+~ }
 ```
 
 Speichere die Datei und führe das Programm erneut aus:

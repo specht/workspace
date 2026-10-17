@@ -405,15 +405,22 @@ Ein Rechner, der sich Zahlen merkt, ist viel praktischer: `breite = 4`, `hoehe =
 <!-- language: ruby -->
 Die Werte stehen in einem Hash: `calculate('x * (x + 1)', { 'x' => 3 })` ist 12. Gib `variables` in `evaluate` an jeden Aufruf für die Teilbäume weiter.
 
-Fehlt noch die Zuweisung. Sie gehört nicht in die Grammatik, sondern in den Rechner zum Tippen: Fängt eine Zeile mit einem Namen und `=` an, rechnet er den Rest aus und merkt sich das Ergebnis.
+Fehlt noch die Zuweisung. Sie gehört nicht in die Grammatik, sondern in den Rechner zum Tippen: Fängt eine Zeile mit einem Namen und `=` an, rechnet er den Rest aus und merkt sich das Ergebnis. Das kommt an die Stelle von `p calculate(line)`:
 
 ```ruby
-if (m = line.match(/\A([a-z_][a-z_0-9]*)\s*=(.*)\z/i))
-    variables[m[1]] = calculate(m[2], variables)
-    puts "#{m[1]} = #{variables[m[1]]}"
-else
-    puts calculate(line, variables)
-end
+~ line = line.strip
+~ next if line.empty?
+~
+~ begin
+    if (m = line.match(/\A([a-z_][a-z_0-9]*)\s*=(.*)\z/i))
+        variables[m[1]] = calculate(m[2], variables)
+        puts "#{m[1]} = #{variables[m[1]]}"
+    else
+        puts calculate(line, variables)
+    end
+~ rescue ArgumentError => e
+~     puts "Fehler: #{e.message}"
+~ end
 ```
 
 `variables = {}` steht vor der Schleife, damit es sich von Zeile zu Zeile hält.
@@ -447,15 +454,20 @@ terminal-expect-no-text: Error
 <!-- language: python -->
 Die Werte stehen in einem dict: `calculate('x * (x + 1)', {'x': 3})` ist 12. Gib `variables` in `evaluate` an jeden Aufruf für die Teilbäume weiter.
 
-Fehlt noch die Zuweisung. Sie gehört nicht in die Grammatik, sondern in den Rechner zum Tippen: Fängt eine Zeile mit einem Namen und `=` an, rechnet er den Rest aus und merkt sich das Ergebnis.
+Fehlt noch die Zuweisung. Sie gehört nicht in die Grammatik, sondern in den Rechner zum Tippen: Fängt eine Zeile mit einem Namen und `=` an, rechnet er den Rest aus und merkt sich das Ergebnis. Das kommt an die Stelle von `print(calculate(line))`:
 
 ```python
-m = re.fullmatch(r'([A-Za-z_]\w*)\s*=(.*)', line)
-if m:
-    variables[m[1]] = calculate(m[2], variables)
-    print(f'{m[1]} = {variables[m[1]]}')
-else:
-    print(calculate(line, variables))
+~ if not line:
+~     continue
+~ try:
+    m = re.fullmatch(r'([A-Za-z_]\w*)\s*=(.*)', line)
+    if m:
+        variables[m[1]] = calculate(m[2], variables)
+        print(f'{m[1]} = {variables[m[1]]}')
+    else:
+        print(calculate(line, variables))
+~ except ValueError as error:
+~     print(f'Fehler: {error}')
 ```
 
 `import re` gehört an den Anfang und `variables = {}` vor die Schleife, damit es sich von Zeile zu Zeile hält.

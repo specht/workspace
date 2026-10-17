@@ -438,7 +438,15 @@ Wir beheben zuerst das offensichtlichste Problem: Wenn du den Schlüssel schon b
 Ergänze die Entscheidung in `3.md`:
 
 ```markdown_wrap
+~ - [Frage nach dem Materialschrank.](.)
+~
+~     > "Der ist abgeschlossen. Der kleine Schlüssel hängt hier neben der Tür."
+~
 - [Nimm den Schlüssel.](.){condition="!has_key"}
+~
+~     <script>
+~     has_key = true;
+~     </script>
 ```
 
 Das Besondere steht hinter der Entscheidung:
@@ -465,6 +473,10 @@ Neben der Tür hängt ein kleiner Schlüssel an einem Haken.
 <p condition="has_key">
 Der Haken neben der Tür ist leer.
 </p>
+~
+~ - [Frage nach dem Materialschrank.](.)
+~
+~     > "Der ist abgeschlossen. Der kleine Schlüssel hängt hier neben der Tür."
 ```
 
 BIF zeigt nun abhängig vom Wert von `has_key` genau einen der beiden Absätze an.
@@ -476,17 +488,29 @@ Es gibt noch einen Widerspruch: Wenn du das Büro mit dem Schlüssel erneut betr
 Die bisherige Frage soll nur erscheinen, solange du den Schlüssel noch nicht hast:
 
 ```markdown_wrap
+~ <p condition="has_key">
+~ Der Haken neben der Tür ist leer.
+~ </p>
+~
 - [Frage nach dem Materialschrank.](.){condition="!has_key"}
 
     > "Der ist abgeschlossen. Der kleine Schlüssel hängt hier neben der Tür."
+~
+~ - [Nimm den Schlüssel.](.){condition="!has_key"}
 ```
 
-Sobald du den Schlüssel besitzt, bieten wir stattdessen eine passende Frage an:
+Sobald du den Schlüssel besitzt, bieten wir stattdessen eine passende Frage an, vor dem Weg zurück in den Flur:
 
 ```markdown_wrap
+~     </script>
+~
+~     Du nimmst den kleinen Schlüssel vom Haken.
+~
 - [Frage, ob der Schlüssel zum Materialschrank passt.](.){condition="has_key"}
 
     > "Ja, genau der ist für den Materialschrank."
+~
+~ - [Gehe zurück in den Flur.](2)
 ```
 
 `3.md` sieht damit vollständig so aus:

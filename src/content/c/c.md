@@ -148,7 +148,12 @@ Die Zeichenkombination <code>&amp;&amp;</code> sorgt dafür, dass der zweite Bef
 Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `printf` das Wort `prinft` zu schreiben:
 
 ```c
-prinft("Hello, World!\n");
+~ #include <stdio.h>
+~
+~ int main() {
+    prinft("Hello, World!\n");
+~     return 0;
+~ }
 ```
 
 Speichere die Datei und führe den Compiler erneut aus:

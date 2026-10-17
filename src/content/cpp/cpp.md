@@ -158,7 +158,12 @@ Die Zeichenkombination <code>&amp;&amp;</code> sorgt dafür, dass der zweite Bef
 Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `cout` das Wort `coud` zu schreiben:
 
 ```cpp
-std::coud << "Hello, World!\n";
+~ #include <iostream>
+~
+~ int main() {
+    std::coud << "Hello, World!\n";
+~     return 0;
+~ }
 ```
 
 Speichere die Datei und führe den Compiler erneut aus:

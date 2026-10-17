@@ -190,6 +190,8 @@ Jetzt baust du das Spiel Schritt für Schritt. Lösche dafür im Code-Editor das
 Die Figur steht unten und lässt sich mit den Pfeiltasten nach links und rechts bewegen:
 
 ```lua
+~ -- script:  lua
+~
 x = 112
 
 function TIC()
@@ -333,35 +335,51 @@ _task(ton)
 Noch fallen die Sterne vor einem leeren Bildschirm. Ein Himmel mit funkelnden Punkten und eine Wiese machen daraus eine Nacht. Die Punkte werden nur einmal ausgewürfelt, beim Start, und stehen in einer Tabelle `sky`. Würfelte das Spiel sie in jedem Bild neu, würden sie wild flackern. Schreibe das vor `newGame()`:
 
 ```lua
+~ function newStar(i)
+~ 	stars[i] = { x = math.random(0, 232), y = -math.random(0, 120) }
+~ end
+~
 -- Der Himmel: 60 Punkte an festen Stellen, einmal ausgewürfelt
 sky = {}
 for i = 1, 60 do
 	sky[i] = { x = math.random(0, 239), y = math.random(0, 127) }
 end
 t = 0
+~
+~ newGame()
+~
+~ function TIC()
+~ 	t = t + 1
 ```
 
 `t` zählt die Bilder. Erhöhe es in der ersten Zeile von `TIC()` mit `t = t + 1`. Ersetze dann in `TIC()` alles zwischen `cls(0)` und `spr(…)` durch:
 
 ```lua_copy
-	-- Jeder Punkt wechselt alle halbe Sekunde den Blauton: Der Himmel funkelt
-	for i, p in ipairs(sky) do
-		pix(p.x, p.y, 13 + (i + t // 30) % 3)
-	end
-	for i, s in ipairs(stars) do
-		-- der Schweif: nach oben immer dunkler
-		line(s.x + 4, s.y - 2, s.x + 4, s.y - 4, 3)
-		line(s.x + 4, s.y - 6, s.x + 4, s.y - 8, 2)
-		line(s.x + 4, s.y - 10, s.x + 4, s.y - 11, 1)
-		-- der Stern: ein Kreuz, ein Kreis und ein heller Kern
-		line(s.x + 4, s.y, s.x + 4, s.y + 8, 4)
-		line(s.x, s.y + 4, s.x + 8, s.y + 4, 4)
-		circ(s.x + 4, s.y + 4, 2, 4)
-		pix(s.x + 4, s.y + 4, 12)
-	end
-	-- Die Wiese, auf der die Figur steht
-	rect(0, 128, 240, 8, 6)
-	line(0, 128, 239, 128, 5)
+~ 	newGame()
+~ end
+~
+~ cls(0)
+-- Jeder Punkt wechselt alle halbe Sekunde den Blauton: Der Himmel funkelt
+for i, p in ipairs(sky) do
+	pix(p.x, p.y, 13 + (i + t // 30) % 3)
+end
+for i, s in ipairs(stars) do
+	-- der Schweif: nach oben immer dunkler
+	line(s.x + 4, s.y - 2, s.x + 4, s.y - 4, 3)
+	line(s.x + 4, s.y - 6, s.x + 4, s.y - 8, 2)
+	line(s.x + 4, s.y - 10, s.x + 4, s.y - 11, 1)
+	-- der Stern: ein Kreuz, ein Kreis und ein heller Kern
+	line(s.x + 4, s.y, s.x + 4, s.y + 8, 4)
+	line(s.x, s.y + 4, s.x + 8, s.y + 4, 4)
+	circ(s.x + 4, s.y + 4, 2, 4)
+	pix(s.x + 4, s.y + 4, 12)
+end
+-- Die Wiese, auf der die Figur steht
+rect(0, 128, 240, 8, 6)
+line(0, 128, 239, 128, 5)
+~ spr(1, x, 112, 14, 1, 0, 0, 2, 2)
+~ print("Score: " .. score, 4, 4, 12)
+~ print("Lives: " .. lives, 196, 4, 12)
 ```
 
 - `pix(x, y, farbe)` setzt einen einzelnen Pixel. Die Farben 13, 14 und 15 sind drei Blautöne.

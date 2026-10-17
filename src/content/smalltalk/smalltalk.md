@@ -233,6 +233,7 @@ Bisher musst du, um dein Skript auszuführen, immer den Smalltalk-Interpreter ex
 
 ```smalltalk
 #!/usr/bin/env gst
+~ Transcript show: 'Hello, World!'; cr.
 ```
 
 Füge diese Zeile ganz oben in deinem Skript ein und speichere die Datei. Bevor wir das Skript ausführen können, müssen wir es noch ausführbar machen. Das machen wir mit dem Befehl `chmod`:

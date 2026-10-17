@@ -1122,19 +1122,34 @@ check-task-fails: lock python
 Die Lösung ist ein **Lock**, in Ruby ein `Mutex`: Nur ein Thread auf einmal darf durch, die anderen warten davor. Ergänze unter `$painted = 0`:
 
 ```ruby
+~ $clients = []
+~
+~ # Wie viele Pixel schon gemalt wurden
+~ $painted = 0
 $lock = Mutex.new
+~
+~ # Das Bild in eine Datei schreiben, damit es einen Neustart übersteht
+~ def save_picture
+~   File.write('picture.json', JSON.generate($pixels))
 ```
 
 und schließe das Ändern von Bild und Zähler in `$lock.synchronize` ein:
 
 ```ruby
-$lock.synchronize do
-  $pixels[y * WIDTH + x] = color
-  count = $painted
-  save_picture             # dauert einen Moment
-  $painted = count + 1
-  puts "Pixel Nr. #{$painted}"
-end
+~     x, y, color = message.values_at('x', 'y', 'color')
+~     next unless [x, y, color].all?(Integer)
+~     next unless x.between?(0, WIDTH - 1) && y.between?(0, HEIGHT - 1) && color.between?(0, 15)
+~
+    $lock.synchronize do
+      $pixels[y * WIDTH + x] = color
+      count = $painted
+      save_picture             # dauert einen Moment
+      $painted = count + 1
+      puts "Pixel Nr. #{$painted}"
+    end
+~     broadcast({ 'type' => 'pixel', 'x' => x, 'y' => y, 'color' => color })
+~   end
+~ end
 ```
 <!-- /language -->
 <!-- language: python -->
@@ -1143,18 +1158,30 @@ end
 Die Lösung ist ein **Lock**: Nur ein Thread auf einmal darf durch, die anderen warten davor. Ergänze unter `painted = 0`:
 
 ```python
+~ clients = set()
+~
+~ # Wie viele Pixel schon gemalt wurden
+~ painted = 0
 lock = threading.Lock()
+~
+~ # Das Bild in eine Datei schreiben, damit es einen Neustart übersteht
+~ def save_picture():
+~     Path('picture.json').write_text(json.dumps(pixels))
 ```
 
 und schließe das Ändern von Bild und Zähler in `with lock:` ein:
 
 ```python
+~ if not (0 <= x < WIDTH and 0 <= y < HEIGHT and 0 <= color <= 15):
+~     continue
+~
 with lock:
     pixels[y * WIDTH + x] = color
     count = painted
     save_picture()          # dauert einen Moment
     painted = count + 1
     print(f'Pixel Nr. {painted}')
+~ broadcast({'type': 'pixel', 'x': x, 'y': y, 'color': color})
 ```
 <!-- /language -->
 

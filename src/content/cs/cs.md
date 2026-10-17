@@ -149,7 +149,12 @@ Wo ist das übersetzte Programm? `dotnet` legt es nicht neben deine Datei, sonde
 Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `WriteLine` das Wort `WriteLin` zu schreiben:
 
 ```cs
+~ {
+~     public static void Main(string[] args)
+~     {
         Console.WriteLin("Hello, World!");
+~     }
+~ }
 ```
 
 Speichere die Datei und starte das Programm erneut:

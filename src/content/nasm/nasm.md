@@ -224,7 +224,14 @@ Die Zeichenkombination <code>&amp;&amp;</code> sorgt dafür, dass der nächste B
 Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeben. Versuche zum Beispiel, in Zeile 9 statt `rax` das Wort `ray` zu schreiben:
 
 ```nasm
+~     global _start
+~
+~ _start:
+~     ; write the string to stdout
     mov ray, 1
+~     mov rdi, 1
+~     mov rsi, hello
+~     mov rdx, 14
 ```
 
 Speichere die Datei und führe den Assembler erneut aus:

@@ -187,7 +187,11 @@ Die Zeichenkombination <code>&amp;&amp;</code> sorgt dafür, dass der zweite Bef
 Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `WriteLn` das Wort `WritLn` zu schreiben:
 
 ```pascal
+~ program HelloWorld;
+~
+~ begin
     WritLn('Hello, World!');
+~ end.
 ```
 
 Speichere die Datei und führe den Compiler erneut aus:
