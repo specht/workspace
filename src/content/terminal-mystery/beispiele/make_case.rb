@@ -279,7 +279,7 @@ def make_interviews(people)
         by_house[[person.street, person.house]] ||= [person, number]
     end
     files[WITNESS_FILE] = interview(WITNESS_FILE, KEY[:witness], '15. März 2026, 09:40 Uhr', 'Kommissarin Weber', <<~TEXT.strip)
-        Kurz nach elf bin ich noch einmal mit Krümel raus, das ist mein Dackel.
+        Kurz nach halb zwölf bin ich noch einmal mit Krümel raus, das ist mein Dackel.
         Da kam vom Museum her ein Auto die Straße herunter, ohne Licht, und
         ziemlich schnell. Es war gelb, das habe ich unter der Laterne genau
         gesehen. Vom Kennzeichen habe ich nur den Anfang erkannt, BS-K, und
@@ -291,13 +291,13 @@ def make_interviews(people)
         gekommen und habe es vor dem Haus geparkt. Danach war Ruhe.
     TEXT
     files[GUARD_FILE] = interview(GUARD_FILE, KEY[:guard], '15. März 2026, 08:30 Uhr', 'Kommissarin Weber', <<~TEXT.strip)
-        Um elf habe ich meine Runde im Erdgeschoss gemacht, alles ruhig. Kurz
-        nach halb zwölf hörte ich hinten etwas klappern. Als ich am
-        Hintereingang war, rannte gerade jemand über den Hof, groß, mit
-        Kapuze und einer Sporttasche. Auf der Tasche stand MUSKELKATER, das
-        ist das Fitnessstudio am Markt. Ich hinterher, aber der war schneller.
-        Die Alarmanlage hat keinen Mucks gemacht. Das verstehe ich bis heute
-        nicht, die Tür ist doch gesichert.
+        Um halb elf habe ich meine Runde im Erdgeschoss gemacht, alles ruhig.
+        Kurz nach halb zwölf hörte ich hinten etwas klappern. Aus dem Fenster
+        im Treppenhaus sah ich gerade noch jemanden den Weg zum Parkplatz
+        hinuntergehen, groß, mit Kapuze und einer Sporttasche. Auf der Tasche
+        stand MUSKELKATER, das ist das Fitnessstudio am Markt. Bis ich unten
+        war, war er weg. Die Alarmanlage hat keinen Mucks gemacht. Das
+        verstehe ich bis heute nicht, die Tür ist doch gesichert.
     TEXT
     [files, by_house]
 end
@@ -359,7 +359,7 @@ FILLER = [
     -> { "#{pick(ROOMS)}: Boden abgeklebt, Haare gesichert." },
     -> { "Vitrine der Goldenen Diskette vermessen: #{RNG.rand(40..60)} cm breit." },
     -> { "Schlüsselbund des Hausmeisters geprüft, alle #{RNG.rand(8..14)} Schlüssel da." },
-    -> { "#{pick(ROOMS)}: Kamera geprüft, seit Jahren außer Betrieb." }
+    -> { "#{pick(ROOMS)}: Rauchmelder geprüft, funktioniert." }
 ].freeze
 COFFEE = [
     'Kaffee aus dem Automaten im Foyer geholt. Schmeckt furchtbar.',
@@ -623,6 +623,13 @@ MUSEUM_README = <<~TEXT
       geraete.txt    wer einen Zugang zum VPN hat, mit welcher Adresse
       logs/vpn.log   wer sich wann von außen verbunden hat
       wartung/       die Unterlagen der Wartungsfirmen
+      kameras/       die Bilder der drei Kameras aus der Nacht, 23 bis 24 Uhr
+
+    Die Kameras nehmen nur auf, wenn sich etwas bewegt, dann alle drei
+    Sekunden ein Bild: cam1 in der Ausstellung, cam2 am Hintereingang, cam3
+    am Parkplatz. Der Name sagt, welche Kamera wann: cam2_20260314_231202.jpg
+    ist Kamera 2 um 23:12:02. Die am Parkplatz springt auch bei Regen an.
+    Ansehen kann ich die Bilder hier nicht, der Server hat keinen Bildschirm.
 
     Auf die Alarmanlage kommen Sie von hier aus mit demselben Benutzer, aber
     nicht mit Ihrem Passwort: Dort gilt das Passwort der Wartung. Ich habe es
@@ -699,6 +706,11 @@ def make_servers(root)
     FileUtils.mkdir_p(File.join(museum, 'srv/museum/wartung'))
     File.write(File.join(museum, 'srv/museum/wartung/uebergabe-2025.txt'), HANDOVER)
     File.write(File.join(museum, 'srv/museum/wartung/wartungsplan.txt'), SERVICE_PLAN)
+    # The cameras' frames of the night, from the pictures in cctv/
+    # (cctv/README.md); CCTV_PYTHON is a Python with OpenCV and Pillow
+    python = ENV.fetch('CCTV_PYTHON', 'python3')
+    system(python, File.join(HERE, 'cctv/build.py'), File.join(museum, 'srv/museum/kameras'),
+           :out => File::NULL, :exception => true)
 
     FileUtils.mkdir_p(File.join(alarm, 'home/wartung'))
     FileUtils.mkdir_p(File.join(alarm, 'etc'))

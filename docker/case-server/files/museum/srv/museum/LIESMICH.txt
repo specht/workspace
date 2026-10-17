@@ -6,6 +6,13 @@ Für die Polizei freigegeben, nur zum Lesen. Hier liegt:
   geraete.txt    wer einen Zugang zum VPN hat, mit welcher Adresse
   logs/vpn.log   wer sich wann von außen verbunden hat
   wartung/       die Unterlagen der Wartungsfirmen
+  kameras/       die Bilder der drei Kameras aus der Nacht, 23 bis 24 Uhr
+
+Die Kameras nehmen nur auf, wenn sich etwas bewegt, dann alle drei
+Sekunden ein Bild: cam1 in der Ausstellung, cam2 am Hintereingang, cam3
+am Parkplatz. Der Name sagt, welche Kamera wann: cam2_20260314_231202.jpg
+ist Kamera 2 um 23:12:02. Die am Parkplatz springt auch bei Regen an.
+Ansehen kann ich die Bilder hier nicht, der Server hat keinen Bildschirm.
 
 Auf die Alarmanlage kommen Sie von hier aus mit demselben Benutzer, aber
 nicht mit Ihrem Passwort: Dort gilt das Passwort der Wartung. Ich habe es

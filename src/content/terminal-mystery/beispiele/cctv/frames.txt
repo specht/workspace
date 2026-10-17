@@ -1,7 +1,8 @@
 # Die Aufnahmen der drei Kameras in der Nacht vom 14. auf den 15. März 2026:
 # Kamera, Uhrzeit, Bild. Die Kameras zeichnen nur auf, solange sich etwas
 # bewegt, etwa alle 3 Sekunden ein Bild; längere Abstände sind Wege.
-# Laut Zugangsprotokoll öffnet die Karte den Hintereingang um 23:12 und 23:38.
+# Laut Zugangsprotokoll öffnet die Karte den Hintereingang um 23:12:00 und
+# 23:38:00; die Tür geht erst danach auf.
 
 # Kamera 2, Hintereingang: herein
 2  23:12:02  cam2/in-doorway.jpg
@@ -19,16 +20,64 @@
 1  23:31:44  cam1/after-theft.jpg
 
 # Kamera 2, Hintereingang: hinaus
-2  23:37:51  cam2/corridor-back.jpg
-2  23:37:56  cam2/at-handle.jpg
-2  23:37:59  cam2/pushing-door.jpg
-2  23:38:02  cam2/stepping-out.jpg
-2  23:38:05  cam2/door-closing.jpg
-2  23:38:08  cam2/empty.jpg
+2  23:37:53  cam2/corridor-back.jpg
+2  23:37:58  cam2/at-handle.jpg
+2  23:38:01  cam2/pushing-door.jpg
+2  23:38:04  cam2/stepping-out.jpg
+2  23:38:07  cam2/door-closing.jpg
+2  23:38:10  cam2/empty.jpg
 
 # Kamera 3, Parkplatz: zum Auto, die Tasche in den Kofferraum, auf der
 # abgewandten Seite zur Fahrertür (nicht im Bild), ohne Licht rückwärts hinaus
-3  23:38:12  cam3/on-path.jpg
-3  23:38:21  cam3/at-boot.jpg
-3  23:38:40  cam3/reversing.jpg
-3  23:38:46  cam3/space-empty.jpg
+3  23:38:14  cam3/on-path.jpg
+3  23:38:23  cam3/at-boot.jpg
+3  23:38:42  cam3/reversing.jpg
+3  23:38:48  cam3/space-empty.jpg
+
+# Kamera 3, Parkplatz: Regen löst die Kamera immer wieder aus, die ganze
+# Stunde lang. Bis 23:38 steht das Auto da, danach ist der Platz leer.
+3  23:01:00  cam3/empty.jpg
+3  23:01:03  cam3/empty.jpg
+3  23:02:35  cam3/empty.jpg
+3  23:02:38  cam3/empty.jpg
+3  23:02:41  cam3/empty.jpg
+3  23:04:16  cam3/empty.jpg
+3  23:04:19  cam3/empty.jpg
+3  23:06:54  cam3/empty.jpg
+3  23:06:57  cam3/empty.jpg
+3  23:09:09  cam3/empty.jpg
+3  23:09:12  cam3/empty.jpg
+3  23:11:24  cam3/empty.jpg
+3  23:11:27  cam3/empty.jpg
+3  23:14:29  cam3/empty.jpg
+3  23:18:10  cam3/empty.jpg
+3  23:21:32  cam3/empty.jpg
+3  23:21:35  cam3/empty.jpg
+3  23:24:47  cam3/empty.jpg
+3  23:27:58  cam3/empty.jpg
+3  23:30:21  cam3/empty.jpg
+3  23:30:24  cam3/empty.jpg
+3  23:33:38  cam3/empty.jpg
+3  23:35:47  cam3/empty.jpg
+3  23:35:50  cam3/empty.jpg
+3  23:36:51  cam3/empty.jpg
+3  23:40:08  cam3/space-empty.jpg
+3  23:40:11  cam3/space-empty.jpg
+3  23:40:14  cam3/space-empty.jpg
+3  23:43:48  cam3/space-empty.jpg
+3  23:43:51  cam3/space-empty.jpg
+3  23:43:54  cam3/space-empty.jpg
+3  23:46:40  cam3/space-empty.jpg
+3  23:48:27  cam3/space-empty.jpg
+3  23:48:30  cam3/space-empty.jpg
+3  23:51:17  cam3/space-empty.jpg
+3  23:51:20  cam3/space-empty.jpg
+3  23:51:23  cam3/space-empty.jpg
+3  23:52:19  cam3/space-empty.jpg
+3  23:53:49  cam3/space-empty.jpg
+3  23:53:52  cam3/space-empty.jpg
+3  23:55:11  cam3/space-empty.jpg
+3  23:55:14  cam3/space-empty.jpg
+3  23:57:06  cam3/space-empty.jpg
+3  23:59:20  cam3/space-empty.jpg
+3  23:59:23  cam3/space-empty.jpg
