@@ -2,8 +2,9 @@
 # Makes the case files of »Ein Krimi im Terminal«: the folder bitstein/
 # with the crime scene report, the people, cars, streets, interviews, club
 # lists and the alarm system's Git repository, packed as bitstein.tar.gz
-# next to this script (for the recipes and task-examples.yaml) and copied to
-# src/static/terminal-mystery/, where the page offers it for download.
+# next to this script. The website serves it at
+# /terminal-mystery/bitstein.tar.gz, downloaded in one's own Workspace with
+# a note of that person's access to the case server (CaseServer).
 #
 # Everything comes from a fixed seed, so the numbers in ../tasks.yaml stay
 # right as long as nothing here changes; the script prints them at the end.
@@ -31,7 +32,6 @@ require 'tmpdir'
 SEED = 2026
 HERE = __dir__
 ARCHIVE = File.join(HERE, 'bitstein.tar.gz')
-PUBLISHED = File.expand_path('../../../static/terminal-mystery/bitstein.tar.gz', HERE)
 
 RNG = Random.new(SEED)
 
@@ -562,6 +562,10 @@ SERVER_RNG = Random.new(SEED + 1)
 VPN = { 'hollerbach' => '10.8.0.11', 'brueckner' => '10.8.0.14' }.freeze
 THIEF_VPN = '10.8.0.23'
 SERVICE_VPN = '10.8.0.31'
+# The alarm system knows the same accounts as the museum server, but with
+# the maintenance password, which lies in the maintenance papers on
+# museum.bitstein (wartung/). The entrypoint reads it from etc/.
+ALARM_PASSWORD = 'Leuchtturm-2024'
 
 def epoch(time)
     Time.new(*time.split(/[- :]/).map(&:to_i), '+01:00').to_i
@@ -618,8 +622,47 @@ MUSEUM_README = <<~TEXT
       netzplan.txt   welche Rechner es im Museum gibt
       geraete.txt    wer einen Zugang zum VPN hat, mit welcher Adresse
       logs/vpn.log   wer sich wann von außen verbunden hat
+      wartung/       die Unterlagen der Wartungsfirmen
+
+    Auf die Alarmanlage kommen Sie von hier aus mit demselben Benutzer, aber
+    nicht mit Ihrem Passwort: Dort gilt das Passwort der Wartung. Ich habe es
+    nicht, es muss irgendwo in deren Unterlagen stehen.
 
     Ingrid Hollerbach
+TEXT
+
+# The maintenance papers: the handover from Elektro Reuter, who installed
+# the alarm system, to Nordlicht, with the password nobody ever changed.
+HANDOVER = <<~TEXT
+    Übergabeprotokoll Alarmanlage Stadtmuseum Bitstein
+    15.01.2025
+
+    Übergabe der Wartung von Elektro Reuter (Einbau 2024) an Nordlicht
+    Sicherheitstechnik.
+
+    Zentrale        im Keller, Raum K02, Schlüssel bei der Verwaltung
+    Karten          Liste in /srv/alarmanlage/karten.txt
+    Protokoll       /srv/alarmanlage/zugaenge.log, jede Änderung als Commit
+    Steuerung       ssh alarmanlage.bitstein, nur aus dem Netz des Museums
+    Passwort        #{ALARM_PASSWORD} (beim Einbau gesetzt, gilt für alle
+                    Zugänge der Steuerung; Änderung empfohlen)
+
+    Offene Punkte
+    - Die Karte des Einbauers zurückgeben und sperren.
+    - Den VPN-Zugang des Einbauers sperren.
+    - Das Passwort der Steuerung ändern.
+
+    Konstantin Reuter, Elektro Reuter
+    Jana Petersen, Nordlicht Sicherheitstechnik
+TEXT
+
+SERVICE_PLAN = <<~TEXT
+    Wartungsplan Alarmanlage, Nordlicht Sicherheitstechnik
+
+    2025-03-04  Wartung, Batterien der Melder getauscht
+    2025-09-02  Wartung, ohne Befund
+    2026-03-03  Wartung, Sirene im Treppenhaus getauscht
+    2026-09-01  nächste Wartung
 TEXT
 
 # What the maintenance account typed on the alarm system: two sessions,
@@ -653,11 +696,15 @@ def make_servers(root)
     File.write(File.join(museum, 'srv/museum/netzplan.txt'), NETWORK)
     File.write(File.join(museum, 'srv/museum/geraete.txt'), DEVICES)
     File.write(File.join(museum, 'srv/museum/logs/vpn.log'), vpn_log)
+    FileUtils.mkdir_p(File.join(museum, 'srv/museum/wartung'))
+    File.write(File.join(museum, 'srv/museum/wartung/uebergabe-2025.txt'), HANDOVER)
+    File.write(File.join(museum, 'srv/museum/wartung/wartungsplan.txt'), SERVICE_PLAN)
 
     FileUtils.mkdir_p(File.join(alarm, 'home/wartung'))
     FileUtils.mkdir_p(File.join(alarm, 'etc'))
     File.write(File.join(alarm, 'etc/motd'), "\nAlarmanlage Stadtmuseum Bitstein. Nur zum Lesen.\nDie Steuerung liegt hier in /srv/alarmanlage, die Wartung hat /home/wartung.\n\n")
     File.write(File.join(alarm, 'home/wartung/.bash_history'), bash_history)
+    File.write(File.join(alarm, 'etc/case-alarm-password'), "#{ALARM_PASSWORD}\n")
     # The repository as an archive: Git does not keep a .git inside this one
     tar = ['tar', '--sort=name', '--mtime=2026-03-15 12:00', '--owner=0', '--group=0', '--numeric-owner',
            '-C', root, '-cf', '-', 'alarmanlage']
@@ -694,8 +741,6 @@ def pack(root)
     raise 'gzip failed' unless status.success?
 
     File.binwrite(ARCHIVE, gz)
-    FileUtils.mkdir_p(File.dirname(PUBLISHED))
-    FileUtils.cp(ARCHIVE, PUBLISHED)
 end
 
 # The numbers the tasks need, worked out the way students do it.

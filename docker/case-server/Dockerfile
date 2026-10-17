@@ -19,6 +19,7 @@ COPY files/${ROLE}/ /
 RUN if [ -f /alarmanlage.tar.gz ]; then tar xzf /alarmanlage.tar.gz -C /srv && rm /alarmanlage.tar.gz; fi \
     && chown -R root:root /srv /home \
     && chmod -R a+rX,go-w /srv /home \
+    && if [ -f /etc/case-alarm-password ]; then chmod 0600 /etc/case-alarm-password; fi \
     && cp /etc/passwd /etc/passwd.image && cp /etc/shadow /etc/shadow.image && cp /etc/group /etc/group.image
 
 COPY case.sh /etc/profile.d/case.sh

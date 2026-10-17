@@ -1,0 +1,20 @@
+Übergabeprotokoll Alarmanlage Stadtmuseum Bitstein
+15.01.2025
+
+Übergabe der Wartung von Elektro Reuter (Einbau 2024) an Nordlicht
+Sicherheitstechnik.
+
+Zentrale        im Keller, Raum K02, Schlüssel bei der Verwaltung
+Karten          Liste in /srv/alarmanlage/karten.txt
+Protokoll       /srv/alarmanlage/zugaenge.log, jede Änderung als Commit
+Steuerung       ssh alarmanlage.bitstein, nur aus dem Netz des Museums
+Passwort        Leuchtturm-2024 (beim Einbau gesetzt, gilt für alle
+                Zugänge der Steuerung; Änderung empfohlen)
+
+Offene Punkte
+- Die Karte des Einbauers zurückgeben und sperren.
+- Den VPN-Zugang des Einbauers sperren.
+- Das Passwort der Steuerung ändern.
+
+Konstantin Reuter, Elektro Reuter
+Jana Petersen, Nordlicht Sicherheitstechnik

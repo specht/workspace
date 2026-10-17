@@ -721,6 +721,17 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- »Ein Krimi im Terminal«, Beweise vom Server: Der eigene Zugang zum
+  Museumsserver liegt als Zettel der Kommissarin in den Akten
+  (`bitstein/zugang-museum.txt`), wenn man sie im eigenen Workspace
+  herunterlädt; die Seite zeigt keine Umgebungsvariablen mehr. Auf die
+  Alarmanlage kommt man nur mit dem Passwort der Wartung, das Lernende im
+  Übergabeprotokoll auf dem Museumsserver finden (neue Aufgabe). Dort ist
+  außerdem noch jemand angemeldet: `who` und `ps aux` zeigen `wartung` von
+  Reuters altem Laptop, der gerade versucht, die `.bash_history` zu löschen
+  (neue Aufgabe). Für Betreibende: die beiden Images des Fallservers neu bauen
+  (`./config.rb build case_museum case_alarm`); die Akten liefert jetzt die
+  Website selbst aus.
 - Wer sich als Testkonto (`name+test@…`) anmeldet, bekommt den Anmelde-Code
   an die eigene Adresse ohne `+test`, mit dem Hinweis, dass er für das
   Testkonto ist.

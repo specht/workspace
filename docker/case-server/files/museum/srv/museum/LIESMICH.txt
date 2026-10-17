@@ -5,5 +5,10 @@ Für die Polizei freigegeben, nur zum Lesen. Hier liegt:
   netzplan.txt   welche Rechner es im Museum gibt
   geraete.txt    wer einen Zugang zum VPN hat, mit welcher Adresse
   logs/vpn.log   wer sich wann von außen verbunden hat
+  wartung/       die Unterlagen der Wartungsfirmen
+
+Auf die Alarmanlage kommen Sie von hier aus mit demselben Benutzer, aber
+nicht mit Ihrem Passwort: Dort gilt das Passwort der Wartung. Ich habe es
+nicht, es muss irgendwo in deren Unterlagen stehen.
 
 Ingrid Hollerbach

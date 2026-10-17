@@ -221,6 +221,33 @@ tasks:
         say: Das ist der Commit danach. Gesucht ist der Befehl davor, der die Zeilen löscht.
     solution: "`sed -i '/4471/d' zugaenge.log` um 23:40 Uhr: `sed` löscht (`d`) jede Zeile, in der 4471 steht, und schreibt die Datei gleich zurück (`-i`)."
 
+  - id: wartungspasswort
+    title: Das Passwort der Wartung
+    prompt: Wie lautet das Passwort der Wartung, mit dem du auf die Alarmanlage kommst?
+    check:
+      type: answer
+      expect: Leuchtturm-2024
+    hint: Auf `museum.bitstein` liegen die Unterlagen der Wartungsfirmen im Ordner `wartung`. `grep -ri passwort` sucht in allen Dateien darunter, ohne auf Groß- und Kleinschreibung zu achten.
+    solution: "`grep -ri passwort wartung` findet es im Übergabeprotokoll von 2025: Elektro Reuter hat es beim Einbau gesetzt, und geändert hat es nie jemand. Damit kam auch in der Nacht jemand hinein."
+
+  - id: eindringling
+    title: Wer ist noch da?
+    prompt: Neben dir ist auf der Alarmanlage noch `wartung` angemeldet. Was versucht er gerade?
+    check:
+      type: choice
+      options:
+        - Die Datei `.bash_history` zu löschen, in der steht, was in der Nacht getippt wurde.
+        - Die Alarmanlage noch einmal auszuschalten.
+        - Sich abzumelden.
+        - Eine neue Zugangskarte anzulegen.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Dafür müsste er `einstellungen.txt` ändern. Welche Datei nennt sein Prozess in `ps aux`?
+      - when: { picked: 3 }
+        say: Karten stehen in `karten.txt`. Welche Datei nennt sein Prozess in `ps aux`?
+    solution: "`ps aux` zeigt den Prozess `rm -i /home/wartung/.bash_history` des Benutzers `wartung`, und `who` die Adresse 10.8.0.23, den alten Laptop von Elektro Reuter. Jemand will die Spuren der Nacht beseitigen."
+
   - id: beweis
     title: Beweise sichern
     prompt: Kopier die `.bash_history` der Wartung mit `scp` nach `bitstein/beweis.txt` in deinem Workspace.

@@ -320,30 +320,35 @@ Am Nachmittag des 15. März klingelt Kommissarin Weber an einer Tür in Bitstein
 <!-- feature: case_server -->
 ## Beweise vom Server
 
-Konstantin Reuter streitet alles ab. Er sei die ganze Nacht zu Hause gewesen, und an die Alarmanlage komme man ohnehin nur im Museum heran. Ganz stimmt das nicht: Das Museum hat einen Server, über den man sich von außen verbinden kann, und es hat der Polizei einen Zugang gegeben. Für dich gibt es einen eigenen. Dein Workspace kennt ihn:
+Konstantin Reuter streitet alles ab. Er sei die ganze Nacht zu Hause gewesen, und an die Alarmanlage komme man ohnehin nur im Museum heran. Ganz stimmt das nicht: Das Museum hat einen Server, über den man sich von außen verbinden kann, und es hat der Polizei einen Zugang gegeben. Für dich gibt es einen eigenen, und Kommissarin Weber hat den Zettel dazu zu deinen Akten gelegt:
 
 ```bash
-echo $CASE_USER $CASE_PASSWORD
+cat ~/bitstein/zugang-museum.txt
 ```
 
-Gibt `echo` nichts aus, lief dein Workspace schon, bevor der Server eingeschaltet wurde. Starte ihn neu, dann ist der Zugang da.
+Fehlt die Datei, hast du die Akten nicht in deinem Workspace heruntergeladen, oder der Server war damals noch aus. Dann hol dir nur diese eine Datei noch einmal:
+
+```bash_copy
+cd ~ && wget -q -O - ${web_root}/terminal-mystery/bitstein.tar.gz | tar xzf - bitstein/zugang-museum.txt
+```
 
 ### Anmelden mit ssh
 
 `ssh` (»Secure Shell«) öffnet ein Terminal auf einem anderen Rechner. Alles, was du tippst und was zurückkommt, geht verschlüsselt durchs Netz.
 
 ```bash
-ssh $CASE_USER@museum.bitstein
+ssh e123@museum.bitstein
 ```
 
-Vor dem `@` steht, wer du dort bist, dahinter der Rechner. Beim ersten Mal fragt `ssh`, ob du dem Rechner traust, und zeigt seinen **Fingerabdruck**, eine Prüfsumme seines Schlüssels. Mit `yes` merkt sich `ssh` ihn in `~/.ssh/known_hosts`. Gibt sich später ein anderer Rechner als `museum.bitstein` aus, passt der Fingerabdruck nicht mehr, und `ssh` warnt laut. Dann fragt es nach dem Passwort. Beim Tippen erscheint nichts, auch keine Sternchen. Einfügen geht mit <kbd>Strg</kbd><kbd>Umschalt</kbd><kbd>V</kbd>.
+Statt `e123` steht dort dein Benutzer vom Zettel. Vor dem `@` steht, wer du dort bist, dahinter der Rechner. Beim ersten Mal fragt `ssh`, ob du dem Rechner traust, und zeigt seinen **Fingerabdruck**, eine Prüfsumme seines Schlüssels. Mit `yes` merkt sich `ssh` ihn in `~/.ssh/known_hosts`. Gibt sich später ein anderer Rechner als `museum.bitstein` aus, passt der Fingerabdruck nicht mehr, und `ssh` warnt laut. Dann fragt es nach dem Passwort. Beim Tippen erscheint nichts, auch keine Sternchen. Einfügen geht mit <kbd>Strg</kbd><kbd>Umschalt</kbd><kbd>V</kbd>.
 
 <!-- tutorial-step
-# ssh_askpass tippt das Passwort aus $CASE_PASSWORD, so muss das Rezept es
-# nicht kennen. Die Fingerabdrücke beider Rechner sind danach bekannt: Mit
+# ssh_askpass tippt die Passwörter: für das Museum das aus $CASE_PASSWORD
+# (dasselbe wie auf dem Zettel), für die Alarmanlage das der Wartung. Die
+# Fingerabdrücke beider Rechner sind danach bekannt: Mit
 # SSH_ASKPASS_REQUIRE=force ginge auch die Frage danach an askpass.
 terminal-open
-terminal-run: printf '#!/bin/sh\necho "$CASE_PASSWORD"\n' > /tmp/askpass && chmod +x /tmp/askpass
+terminal-run: printf '#!/bin/sh\ncase "$1" in *alarmanlage*) echo Leuchtturm-2024 ;; *) echo "$CASE_PASSWORD" ;; esac\n' > /tmp/askpass && chmod +x /tmp/askpass
 terminal-run: export SSH_ASKPASS=/tmp/askpass SSH_ASKPASS_REQUIRE=force
 terminal-run: ssh -o StrictHostKeyChecking=accept-new $CASE_USER@museum.bitstein true
 terminal-wait-for-prompt: 30
@@ -363,7 +368,7 @@ wait-for-text: Ingrid Hollerbach
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='ssh-museum.webp' alt='Im Terminal: ssh mit dem eigenen Zugang zu museum.bitstein, die Begrüßung des Servers der Verwaltung, die Eingabeaufforderung mit @museum, darunter ls mit LIESMICH.txt, geraete.txt, logs und netzplan.txt und der Inhalt von LIESMICH.txt.'>
+<img class='full' src='ssh-museum.webp' alt='Im Terminal: ssh mit dem eigenen Zugang zu museum.bitstein, die Begrüßung des Servers der Verwaltung, die Eingabeaufforderung mit @museum, darunter ls mit LIESMICH.txt, geraete.txt, logs, netzplan.txt und wartung und der Inhalt von LIESMICH.txt.'>
 
 Die Eingabeaufforderung zeigt jetzt `@museum`: Jeder Befehl läuft dort, nicht in deinem Workspace. `hostname` sagt, auf welchem Rechner du bist, `whoami`, wer du dort bist. Schreiben kannst du hier nichts, lesen alles, mit denselben Werkzeugen wie in Bitstein. `exit` oder <kbd>Strg</kbd><kbd>D</kbd> bringt dich zurück.
 
@@ -379,12 +384,16 @@ Laut `netzplan.txt` hängt die Alarmanlage nur im Netz des Museums. Aus deinem W
 ssh alarmanlage.bitstein
 ```
 
-Ohne Namen vor dem `@` nimmt `ssh` den, unter dem du gerade angemeldet bist, und der ist auf beiden Rechnern derselbe, mit demselben Passwort. Jetzt bist du zwei Rechner weit weg: dein Workspace, darin eine Verbindung zum Museum, darin eine zur Alarmanlage. Jedes `exit` geht einen Schritt zurück.
+Ohne Namen vor dem `@` nimmt `ssh` den, unter dem du gerade angemeldet bist, und den kennt die Alarmanlage auch. Nach dem Passwort fragt sie trotzdem, und deins gilt dort nicht: Laut `LIESMICH.txt` gilt auf der Alarmanlage das Passwort der Wartung. Irgendwo auf `museum.bitstein` muss es stehen.
 
-Für diesen Weg gibt es eine Abkürzung. `-J` (»jump«) springt über den ersten Rechner zum zweiten, in einem Befehl, und das Passwort fragt `ssh` dann für beide:
+_task(wartungspasswort)
+
+Mit dem Passwort der Wartung bist du drin, zwei Rechner weit weg: dein Workspace, darin eine Verbindung zum Museum, darin eine zur Alarmanlage. Jedes `exit` geht einen Schritt zurück.
+
+Für diesen Weg gibt es eine Abkürzung. `-J` (»jump«) springt über den ersten Rechner zum zweiten, in einem Befehl. Das Passwort fragt `ssh` dann für beide, erst deins für das Museum, dann das der Wartung:
 
 ```bash
-ssh -J $CASE_USER@museum.bitstein $CASE_USER@alarmanlage.bitstein
+ssh -J e123@museum.bitstein e123@alarmanlage.bitstein
 ```
 
 <!-- tutorial-screenshot
@@ -402,6 +411,29 @@ crop-terminal-lines: auto
 
 <img class='full' src='ssh-alarmanlage.webp' alt='Im Terminal: ssh -J über museum.bitstein zu alarmanlage.bitstein, die Begrüßung der Alarmanlage, hostname gibt alarmanlage aus, und ls -a /home/wartung zeigt die versteckte Datei .bash_history.'>
 
+### Nicht allein
+
+Bevor du dich umsiehst: Bist du hier allein? `who` zeigt, wer gerade angemeldet ist und von wo, `ps aux` jeden Prozess auf dem Rechner mit dem Benutzer, dem er gehört:
+
+```bash
+who
+ps aux
+```
+
+<!-- tutorial-screenshot
+# Auf der Alarmanlage ist noch jemand: wartung, von 10.8.0.23, mit rm -i
+terminal-run: clear
+terminal-run: who
+terminal-run: ps aux | grep -v '\[' | grep -v 'ps aux'
+crop-terminal-lines: auto
+-->
+
+<img class='full' src='nicht-allein.webp' alt='Im Terminal auf der Alarmanlage: who zeigt den Benutzer wartung, angemeldet von 10.8.0.23, und ps aux unter anderem zwei Prozesse von wartung, -bash und rm -i /home/wartung/.bash_history.'>
+
+_task(eindringling)
+
+Die Adresse kennst du aus `geraete.txt`. `rm -i` fragt vor dem Löschen nach, und die Antwort ist noch nicht gekommen. Löschen könnte er die Datei ohnehin nicht: Sie gehört `root`, so wie das Verzeichnis, das zeigt `ls -l /home/wartung`. Beenden kannst du seinen Prozess auch nicht; `kill` darf nur Prozesse des eigenen Benutzers beenden. Verlass dich trotzdem nicht darauf und sichere die Datei, bevor er einen anderen Weg findet.
+
 Die Steuerung kennst du schon: `/srv/alarmanlage` ist das Repository aus deinen Akten. Neu ist `/home/wartung`. Die Bash schreibt in die versteckte Datei `.bash_history`, was jemand getippt hat, Befehl für Befehl. Über jedem Befehl steht, wann er kam, als Zeile mit `#` und den Sekunden seit dem 1. Januar 1970. `date -d @1773526140` macht daraus eine Uhrzeit.
 
 _task(loeschbefehl)
@@ -411,7 +443,7 @@ _task(loeschbefehl)
 `scp` (»secure copy«) kopiert Dateien über `ssh`, auch über einen Sprung. Vor dem `:` steht der Rechner, dahinter der Pfad dort, und das Letzte ist das Ziel bei dir:
 
 ```bash
-scp -J $CASE_USER@museum.bitstein $CASE_USER@alarmanlage.bitstein:/home/wartung/.bash_history ~/bitstein/beweis.txt
+scp -J e123@museum.bitstein e123@alarmanlage.bitstein:/home/wartung/.bash_history ~/bitstein/beweis.txt
 ```
 
 Das kommt in deinem Workspace an, nicht auf einem der Server. Führ den Befehl darum in deinem Workspace aus, nicht in einer Verbindung zum Museum.
@@ -429,6 +461,10 @@ check-task-fails: vpn <- 10.8.0.31
 check-task: vpn <- 10.8.0.23
 check-task: geraet <- Elektro Reuter
 check-task: loeschbefehl <- sed -i '/4471/d' zugaenge.log
+check-task-fails: wartungspasswort <- Leuchtturm
+check-task: wartungspasswort <- Leuchtturm-2024
+check-task-fails: eindringling <- 1
+check-task: eindringling <- 0
 -->
 
 Die Adresse aus dem VPN, das Gerät dazu und die Befehle aus der Nacht, minutengenau neben den Commits: Jetzt ist der Fall wasserdicht.

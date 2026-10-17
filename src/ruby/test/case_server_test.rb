@@ -7,6 +7,22 @@ require_relative '../include/case_server'
 class CaseServerTest < Minitest::Test
     SECRET = CaseServer.secret('ein-salt')
 
+    # Downloaded in one's own Workspace, the case files carry a note with
+    # that person's access; everything else in the archive stays as it was.
+    def test_the_archive_gets_the_note_and_keeps_the_rest
+        archive = File.binread(File.expand_path('../../content/terminal-mystery/beispiele/bitstein.tar.gz', __dir__))
+        note = CaseServer.note(SECRET, 'lena@example.org')
+        login = CaseServer.login(SECRET, 'lena@example.org')
+        assert_includes note, "Benutzer   #{login}"
+        assert_includes note, "ssh #{login}@museum.bitstein"
+        out = CaseServer.archive_with_note(archive, note)
+        listing, = Open3.capture2('tar', '-tzf', '-', :stdin_data => out, :binmode => true)
+        original, = Open3.capture2('tar', '-tzf', '-', :stdin_data => archive, :binmode => true)
+        assert_equal original.lines + ["bitstein/zugang-museum.txt\n"], listing.lines
+        text, = Open3.capture2('tar', '-xzOf', '-', 'bitstein/zugang-museum.txt', :stdin_data => out, :binmode => true)
+        assert_equal note, text.force_encoding('UTF-8')
+    end
+
     def test_login_is_one_of_the_accounts_and_stays_the_same
         login = CaseServer.login(SECRET, 'Lena@Example.org')
         assert_match(/\Ae\d{3}\z/, login)

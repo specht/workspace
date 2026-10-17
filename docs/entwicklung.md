@@ -200,15 +200,22 @@ CASE_SERVER = true
 ./config.rb up -d
 ```
 
-Workspaces bekommen ihren Zugang beim nächsten Start.
-
 - **Zugänge:** Jeder Server hat 1000 Konten `e000` bis `e999`. Die Website
-  wählt für jede Person eins aus ihrer Adresse und gibt dem Workspace
-  `CASE_USER` und `CASE_PASSWORD` mit. Die Passwörter kommen aus
-  `LOGIN_CODE_SALT` (`src/ruby/include/case_server.rb`), der Server rechnet
-  sie beim Start mit `openssl` nach (`docker/case-server/entrypoint.sh`).
-  Teilen sich zwei Personen ein Konto, schadet das nicht: Schreiben kann dort
-  niemand etwas.
+  wählt für jede Person eins aus ihrer Adresse. Auf `museum.bitstein` hat
+  jedes Konto ein eigenes Passwort aus `LOGIN_CODE_SALT`
+  (`src/ruby/include/case_server.rb`), das der Server beim Start mit `openssl`
+  nachrechnet (`docker/case-server/entrypoint.sh`). Auf `alarmanlage.bitstein`
+  gilt für alle Konten das Passwort der Wartung, das Lernende im
+  Übergabeprotokoll auf dem Museumsserver finden (`make_case.rb`,
+  `ALARM_PASSWORD`). Teilen sich zwei Personen ein Konto, schadet das nicht:
+  Schreiben kann dort niemand etwas.
+- **Der Zettel:** Die Akten unter `/terminal-mystery/bitstein.tar.gz` liefert
+  die Website selbst. Kommt die Anfrage von einem laufenden Workspace (seine
+  Adresse, wie Traefik oder nginx sie weitergeben), liegt im Archiv
+  zusätzlich `bitstein/zugang-museum.txt` mit dem Zugang dieser Person; sonst
+  fehlt er, und die Seite sagt, wie man ihn im Workspace nachholt. Workspaces
+  bekommen außerdem `CASE_USER` und `CASE_PASSWORD` mit, für die
+  Screenshot-Rezepte; die Seite nennt sie nicht mehr.
 - **Nur lesen:** Alles gehört `root`. Beschreibbar ist nur `/tmp`, 64 MB, und
   dort sieht niemand, was andere ablegen. Jedes Konto hat höchstens 40
   Prozesse, 4 Anmeldungen, Dateien bis 1 MB und 5 Minuten Rechenzeit pro
