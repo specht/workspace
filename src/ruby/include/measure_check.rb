@@ -62,6 +62,12 @@ module MeasureCheck
             (COUNTRIES[tld] || [tld.upcase]).first
         when 'traceroute_hops'
             text.lines.count { |l| l =~ /\A\s*\d+\s/ }
+        when 'dns_answers'
+            # dig +short: one answer per line; of an MX record only the name,
+            # without its priority; without the final dot, in lower case
+            answers = text.lines.map(&:strip).reject { |l| l.empty? || l.start_with?(';') }
+                          .map { |l| l.split.last.sub(/\.\z/, '').downcase }
+            answers.empty? ? nil : answers
         when /\Ahttp_header:(.+)\z/
             header = $1.downcase
             line = text.lines.find { |l| l.split(':', 2).first.to_s.strip.downcase == header }
@@ -94,10 +100,15 @@ module MeasureCheck
             return [:unavailable, 'Meine Messung hat gerade kein Ergebnis gebracht (vielleicht keine Antwort im Netz). Versuch es gleich noch einmal.', read]
         end
 
-        text = check['compare'] == 'text' || measured.any? { |_, v, _| v.is_a?(String) }
+        text = check['compare'] == 'text' || measured.any? { |_, v, _| v.is_a?(String) || v.is_a?(Array) }
         problems = []
         measured.each_with_index do |(field, value, _), i|
-            ok = text ? same_text?(given[i], value) : close_enough?(given[i], value, check)
+            ok = if value.is_a?(Array)
+                # Several answers (DNS): any one of them is right
+                value.any? { |v| same_text?(given[i].to_s.strip.sub(/\.\z/, ''), v) }
+            else
+                text ? same_text?(given[i], value) : close_enough?(given[i], value, check)
+            end
             next if ok
 
             shown = text ? "»#{given[i].strip}«" : "#{given[i].strip} #{check['unit']}".strip
@@ -122,6 +133,7 @@ module MeasureCheck
 
     def self.format_value(value, check)
         return value.to_s if value.is_a?(String)
+        return value.join(', ') if value.is_a?(Array)
 
         number = value.is_a?(Float) ? (value < 10 ? value.round(2) : value.round(1)) : value
         "#{number.to_s.sub('.', ',')} #{check['unit']}".strip

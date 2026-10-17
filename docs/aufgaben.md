@@ -540,8 +540,10 @@ Beispiele stehen in `src/content/tcpip/tasks.yaml` und
 Danach führt der Server den Befehl aus `run` selbst aus, im laufenden
 Workspace der Person, als diese Person, und liest den Wert mit `extract` aus:
 `ping_rtt_avg`, `ping_hops` (aus der TTL der Antwort), `ping_reply_country`
-(aus der Endung des Rechners, der antwortet), `traceroute_hops` oder
-`http_header:<Name>`. Zahlen vergleicht er mit `tolerance` oder
+(aus der Endung des Rechners, der antwortet), `traceroute_hops`,
+`http_header:<Name>` oder `dns_answers` (die Zeilen von `dig +short`, ohne
+Punkt am Ende und bei `MX` ohne Priorität; richtig ist jede davon, darum
+bleibt eine Aufgabe richtig, wenn sich eine Adresse ändert). Zahlen vergleicht er mit `tolerance` oder
 `tolerance_percent`; Werte unter 1 gelten als gleich, wenn beide unter 1
 liegen (Loopback). Texte vergleicht er ohne Groß- und Kleinschreibung,
 `nginx` passt zu `nginx/1.24.0`, `Belgium` zu `Belgien`. Die Rückmeldung

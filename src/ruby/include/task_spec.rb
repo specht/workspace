@@ -58,7 +58,7 @@ module TaskSpec
 
     TASK_KEYS = (%w[id title prompt check hint solution examples feedback prediction file exam] + CodeLanguages::LANGUAGES).freeze
 
-    EXTRACTORS = %w[ping_rtt_avg ping_hops ping_reply_country traceroute_hops].freeze
+    EXTRACTORS = %w[ping_rtt_avg ping_hops ping_reply_country traceroute_hops dns_answers].freeze
     EXTRACTOR_WITH_ARGUMENT = /\Ahttp_header:[A-Za-z0-9-]+\z/
 
     FILES_EXPECT_KEYS = %w[exists executable format new_files name format_matches_extension max_size contains].freeze

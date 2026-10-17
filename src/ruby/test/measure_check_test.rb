@@ -117,4 +117,21 @@ class MeasureCheckTest < Minitest::Test
         refute_empty TaskSpec.validate_check('command', task['check'].merge('dir' => '../etc'))
         refute_empty TaskSpec.validate_check('command', task['check'].merge('dir' => '/etc'))
     end
+
+    # dns_answers: the lines of dig +short; any one of them is right
+    def test_dns_answers
+        assert_equal %w[cheryl.ns.cloudflare.com joel.ns.cloudflare.com],
+            MeasureCheck.extract('dns_answers', "cheryl.ns.cloudflare.com.\njoel.ns.cloudflare.com.\n")
+        assert_equal %w[alt3.gmail-smtp-in.l.google.com], MeasureCheck.extract('dns_answers', "30 alt3.gmail-smtp-in.l.google.com.\n")
+        assert_nil MeasureCheck.extract('dns_answers', "\n")
+        check = { 'type' => 'measure', 'fields' => [{ 'label' => 'Nameserver', 'run' => 'dig +short NS hackschule.de', 'extract' => 'dns_answers' }] }
+        run = ->(_c, _t) { { :output => "cheryl.ns.cloudflare.com.\njoel.ns.cloudflare.com.\n" } }
+        status, _, read = MeasureCheck.measure(check, 'Joel.ns.cloudflare.com.', run)
+        assert_equal :correct, status
+        assert_includes read, 'cheryl.ns.cloudflare.com, joel.ns.cloudflare.com'
+        status, message, = MeasureCheck.measure(check, 'a.nic.de', run)
+        assert_equal :wrong, status
+        assert_includes message, 'meine Messung ergibt gerade cheryl.ns.cloudflare.com, joel.ns.cloudflare.com'
+        assert_empty TaskSpec.validate_check('measure', check)
+    end
 end
