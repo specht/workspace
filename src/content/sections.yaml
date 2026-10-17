@@ -85,14 +85,13 @@
   description: |
     Wie Rechner über das Netz miteinander reden, vom Paket bis zur Webseite:
     TCP/IP, ein eigener Webserver, eine Pixelwand für die ganze Klasse. Und wie
-    man Daten schützt, mit Verschlüsselung, Signaturen, sicheren
-    Datenbankabfragen und einem zweiten Faktor bei der Anmeldung.
+    man Daten schützt, mit Verschlüsselung, Signaturen und einem zweiten
+    Faktor bei der Anmeldung.
   entries:
     - tcpip
     - webserver
     - pixelwand
     - crypto
-    - bobby_tables
     - totp
 
 - key: databases
@@ -101,12 +100,14 @@
   icon: /images/card-file-box.png
   description: |
     Speichere, verknüpfe und durchsuche größere Datenmengen. Lerne SQL kennen,
-    entwirf eine eigene Datenbank für Filme und speichere dieselben Daten
-    anschließend als Graph.
+    entwirf eine eigene Datenbank für Filme, speichere dieselben Daten
+    anschließend als Graph und sieh, wie ein Programm Abfragen sicher stellt.
   entries:
     - mysql
+    - sql-joins
     - filmdatenbank
     - neo4j-filmdatenbank
+    - bobby_tables
 
 - key: computing
   compact: true

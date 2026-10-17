@@ -1,0 +1,23 @@
+# Die Länder der Welt, kleine Fassung (countries-basic.sql), für das Bild
+# der Karte: node src/scripts/er-teaser.cjs src/content/mysql/teaser.er
+# src/content/mysql/teaser.webp --grid 'continent,,city;,country,' 250 230
+
+entity continent
+  name: text, primary key
+
+entity country
+  code: varchar(3), primary key
+  name: text
+  population: int
+  area: decimal(12,2)
+
+entity city
+  id: int, primary key
+  name: text
+  population: int
+  latitude: float
+  longitude: float
+  is_capital: bool
+
+relationship lies_in: country n:1 continent
+relationship located_in: city n:1 country

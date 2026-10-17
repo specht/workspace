@@ -1,0 +1,273 @@
+# Aufgaben zu »SQL mit mehreren Tabellen«. Format: docs/aufgaben.md.
+# Die Abfragen laufen in der eigenen MySQL-Datenbank der Lernenden, in die sie
+# die ganze Fassung der Länder der Welt importiert haben
+# (country-archive/countries.sql aus specht/workspace-files, Prüfart sql).
+# tables: sorgt dafür, dass eine geleerte oder geänderte Tabelle nicht zu
+# »richtigen« leeren Antworten führt. Die Zahlen in den Lösungen gelten für
+# den Stand der Daten vom Oktober 2026. Die Aufgaben standen bis Oktober 2026
+# in mysql/tasks.yaml (MOVED_TASKS in main.rb).
+format: 1
+activity: sql-joins
+tasks:
+  - id: linksverkehr
+    title: Linksverkehr in Europa
+    prompt: In welchen Ländern Europas wird links gefahren? Gib ihre Namen aus.
+    check:
+      type: sql
+      expect_query: SELECT name FROM country WHERE continent = 'Europa' AND driving_side = 'left'
+      tables: { country: 197, currency: 143 }
+      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+    feedback:
+      - when: { query_matches: "'(links|Links)'" }
+        say: In `driving_side` steht `left` oder `right`, englisch, wie die Spalte heißt.
+      - when: { same_result_as: "SELECT name FROM country WHERE driving_side = 'left'" }
+        say: Das sind alle Länder mit Linksverkehr. Gefragt sind nur die in Europa.
+    solution: "`SELECT name FROM country WHERE continent = 'Europa' AND driving_side = 'left';` Irland, Malta und das Vereinigte Königreich."
+
+  - id: laender-pro-kontinent
+    title: Länder pro Kontinent
+    prompt: Wie viele Länder hat jeder Kontinent? Gib für jeden Kontinent seinen Namen und die Zahl seiner Länder aus.
+    check:
+      type: sql
+      expect_query: SELECT continent, COUNT(*) FROM country GROUP BY continent
+      tables: { country: 197 }
+      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT COUNT(*) FROM country" }
+        say: Das sind alle Länder zusammen. Mit `GROUP BY continent` zählt die Datenbank für jeden Kontinent einzeln.
+      - when: { same_result_as: "SELECT DISTINCT continent FROM country" }
+        say: Die Kontinente stimmen; es fehlt die Zahl ihrer Länder, `COUNT(*)`.
+    solution: "`SELECT continent, COUNT(*) FROM country GROUP BY continent;` Afrika hat die meisten, 54."
+
+  - id: einwohner-pro-kontinent
+    title: Einwohner pro Kontinent
+    prompt: Wie viele Menschen leben auf jedem Kontinent? Gib den Namen und die Summe der Einwohner aus, den Kontinent mit den meisten zuerst.
+    check:
+      type: sql
+      expect_query: SELECT continent, SUM(population) FROM country GROUP BY continent ORDER BY SUM(population) DESC
+      sorted_by: 2 DESC
+      tables: { country: 197 }
+      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT continent, COUNT(*) FROM country GROUP BY continent" }
+        say: "`COUNT(*)` zählt die Länder. Die Einwohner zählt `SUM(population)` zusammen."
+    solution: "`SELECT continent, SUM(population) AS people FROM country GROUP BY continent ORDER BY people DESC;` Asien mit gut 4,5 Milliarden vor Afrika mit gut 1,4 Milliarden."
+
+  - id: grosse-kontinente
+    title: Kontinente mit vielen Ländern
+    prompt: Welche Kontinente haben mehr als 40 Länder? Gib den Namen und die Zahl der Länder aus.
+    check:
+      type: sql
+      expect_query: SELECT continent, COUNT(*) FROM country GROUP BY continent HAVING COUNT(*) > 40
+      tables: { country: 197 }
+      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT continent, COUNT(*) FROM country GROUP BY continent" }
+        say: Das sind alle Kontinente. Welche Gruppen übrig bleiben, entscheidet `HAVING`, nach `GROUP BY`.
+    solution: "`SELECT continent, COUNT(*) FROM country GROUP BY continent HAVING COUNT(*) > 40;` Afrika, Asien und Europa. Mit `WHERE COUNT(*) > 40` meldet MySQL einen Fehler: `WHERE` prüft einzelne Zeilen, bevor es Gruppen gibt."
+
+  - id: waehrung-japan
+    title: Die Währung Japans
+    prompt: Wie heißt die Währung Japans? Finde ihren Namen in `mycli` heraus, nicht ihr Kürzel.
+    check:
+      type: answer
+      expect: Yen
+    feedback:
+      - when: { equals: JPY }
+        say: Das ist das Kürzel aus `country.currency_code`. Den Namen holst du mit einem `JOIN` aus `currency`, über `currency.code = country.currency_code`.
+    solution: "`SELECT currency.name FROM country JOIN currency ON currency.code = country.currency_code WHERE country.name = 'Japan';` ergibt den Yen."
+
+  - id: grenze-zweimal
+    title: Jede Grenze zweimal
+    prompt: In `border` steht jede Grenze zweimal, `('DEU', 'FRA')` und `('FRA', 'DEU')`. Warum?
+    check:
+      type: choice
+      options:
+        - Damit eine Abfrage die Nachbarn eines Landes in einer einzigen Spalte findet
+        - Weil eine Grenze in jeder Richtung anders verläuft
+        - Weil MySQL ein Paar sonst nicht als Primärschlüssel annimmt
+        - Weil jedes Land seine Grenze selbst eingetragen hat
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Eine Grenze an Land ist dieselbe, von welcher Seite man sie ansieht. In beiden Zeilen steht dasselbe Paar.
+      - when: { picked: 2 }
+        say: Der Primärschlüssel aus zwei Spalten ginge auch mit einer Zeile pro Grenze. Überleg, wie die Abfrage nach den Nachbarn Deutschlands dann aussähe.
+    solution: Mit einer Zeile pro Grenze müsste jede Frage nach den Nachbarn eines Landes in beiden Spalten suchen, `country_code` und `neighbor_code`. So genügt `WHERE border.country_code = 'DEU'`. Der Preis ist eine Wiederholung, die die Datenbank nicht überwacht.
+
+  - id: nachbarn-deutschland
+    title: Die Nachbarn Deutschlands
+    prompt: Gib die Namen der Nachbarländer Deutschlands aus.
+    check:
+      type: sql
+      expect_query: SELECT neighbor.name FROM border JOIN country AS neighbor ON neighbor.code = border.neighbor_code WHERE border.country_code = 'DEU'
+      tables: { country: 197, border: 636 }
+      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT neighbor_code FROM border WHERE country_code = 'DEU'" }
+        say: Das sind die Kürzel. Für die Namen verbindest du `border` mit `country`, über `neighbor_code`.
+      - when: { same_result_as: "SELECT country.name FROM border JOIN country ON country.code = border.country_code WHERE border.country_code = 'DEU'" }
+        say: So steht neunmal Deutschland da. Der `JOIN` muss über `neighbor_code` gehen, nicht über `country_code`.
+    solution: "`SELECT neighbor.name FROM border JOIN country AS neighbor ON neighbor.code = border.neighbor_code WHERE border.country_code = 'DEU';` Belgien, Dänemark, Frankreich, Luxemburg, die Niederlande, Österreich, Polen, die Schweiz und Tschechien."
+
+  - id: viele-nachbarn
+    title: Viele Nachbarn
+    prompt: Welche Länder haben mehr als acht Nachbarn? Gib ihre Namen aus.
+    check:
+      type: sql
+      expect_query: SELECT country.name FROM border JOIN country ON country.code = border.country_code GROUP BY country.code, country.name HAVING COUNT(*) > 8
+      tables: { country: 197, border: 636 }
+      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT country_code FROM border GROUP BY country_code HAVING COUNT(*) > 8" }
+        say: Die Länder stimmen, als Kürzel. Für die Namen kommt `country` mit einem `JOIN` dazu.
+    solution: "`SELECT country.name FROM border JOIN country ON country.code = border.country_code GROUP BY country.code, country.name HAVING COUNT(*) > 8;` Brasilien, China, die Demokratische Republik Kongo, Deutschland, Frankreich, Russland und Serbien. China und Russland haben je 14."
+
+  - id: kontinent-ohne-laender
+    title: Ein Kontinent ohne Länder
+    prompt: Welcher Kontinent in `continent` hat kein einziges Land in `country`? Gib seinen Namen aus.
+    check:
+      type: sql
+      expect_query: SELECT continent.name FROM continent LEFT JOIN country ON country.continent = continent.name WHERE country.code IS NULL
+      tables: { continent: 7, country: 197 }
+      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+    feedback:
+      - when: { query_matches: '=\s*null' }
+        say: "`= NULL` ist nie wahr, auch nicht für `NULL`. Ob etwas fehlt, prüft `IS NULL`."
+      - when: { query_matches: '^\s*select[^;]*\bfrom\s+continent\s+(inner\s+)?join\b' }
+        say: Ein `JOIN` lässt die Kontinente ohne Partner in `country` gerade weg. Sie behält nur ein `LEFT JOIN`.
+    solution: "`SELECT continent.name FROM continent LEFT JOIN country ON country.continent = continent.name WHERE country.code IS NULL;` Antarktika: Dort gehört kein Land hin, auch wenn einige Länder Teile davon beanspruchen."
+
+
+  - id: meiste-staedte
+    title: Die meisten Städte
+    prompt: Welches Land hat die meisten Städte in der Tabelle `city`? Gib seinen Namen und die Zahl der Städte aus.
+    check:
+      type: sql
+      expect_query: SELECT country.name, COUNT(*) FROM country JOIN city ON city.country_code = country.code GROUP BY country.code, country.name ORDER BY COUNT(*) DESC LIMIT 1
+      tables: { country: 197, city: 4748 }
+      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT country_code, COUNT(*) FROM city GROUP BY country_code ORDER BY COUNT(*) DESC LIMIT 1" }
+        say: Das Kürzel stimmt. Für den Namen kommt `country` mit einem `JOIN` dazu.
+    solution: "`SELECT country.name, COUNT(*) AS cities FROM country JOIN city ON city.country_code = country.code GROUP BY country.code, country.name ORDER BY cities DESC LIMIT 1;` Die Vereinigten Staaten mit 390 Städten ab 100.000 Einwohnern."
+
+  - id: sprachen-schweiz
+    title: Die Amtssprachen der Schweiz
+    prompt: Welche Amtssprachen hat die Schweiz (`CHE`)? Gib ihre Namen aus.
+    check:
+      type: sql
+      expect_query: SELECT language.name FROM country_language JOIN language ON language.code = country_language.language_code WHERE country_language.country_code = 'CHE'
+      tables: { country_language: 372, language: 183 }
+      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT language_code FROM country_language WHERE country_code = 'CHE'" }
+        say: Das sind die Kürzel der Sprachen. Ihre Namen stehen in `language`.
+    solution: "`SELECT language.name FROM country_language JOIN language ON language.code = country_language.language_code WHERE country_language.country_code = 'CHE';` Deutsch, Französisch, Italienisch und Bündnerromanisch."
+
+  - id: deutsch-amtssprache
+    title: Wo Deutsch Amtssprache ist
+    prompt: In welchen Ländern ist Deutsch Amtssprache? Gib die Namen der Länder aus.
+    check:
+      type: sql
+      expect_query: SELECT country.name FROM country JOIN country_language ON country_language.country_code = country.code JOIN language ON language.code = country_language.language_code WHERE language.name = 'Deutsch'
+      tables: { country: 197, country_language: 372, language: 183 }
+      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+    feedback:
+      - when: { query_matches: "'(German|deutsch|DEU)'" }
+        say: "Die Sprachen stehen in `language` mit deutschem Namen (`'Deutsch'`) und einem Kürzel aus drei kleinen Buchstaben (`'deu'`)."
+    solution: "`… WHERE language.name = 'Deutsch';` mit den beiden `JOIN`s über `country_language` ergibt Belgien, Deutschland, Liechtenstein, Luxemburg, Österreich und die Schweiz. Mit `WHERE country_language.language_code = 'deu'` geht es mit einem `JOIN` weniger."
+
+  - id: englisch-amtssprache
+    title: Englisch als Amtssprache
+    prompt: In wie vielen Ländern ist Englisch Amtssprache? Finde es in `mycli` heraus.
+    check:
+      type: number
+      expect: 59
+    feedback:
+      - when: { equals: 372 }
+        say: Das sind alle Paare aus Land und Sprache. Es fehlt die Bedingung für Englisch.
+    solution: "`SELECT COUNT(*) FROM country_language JOIN language ON language.code = country_language.language_code WHERE language.name = 'Englisch';` ergibt 59, mehr als bei jeder anderen Sprache. Ohne `JOIN`: `WHERE language_code = 'eng'`."
+
+  - id: naechste-hamburg
+    title: In der Nähe von Hamburg
+    prompt: Welche fünf Städte liegen Hamburg am nächsten? Gib ihre Namen aus, die nächste zuerst; die Entfernung darf dabeistehen.
+    check:
+      type: sql
+      expect_query: SELECT b.name FROM city AS a JOIN city AS b ON b.id <> a.id WHERE a.name = 'Hamburg' ORDER BY ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) LIMIT 5
+      extra_columns: ok
+      tables: { city: 4748 }
+      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT b.name FROM city AS a JOIN city AS b WHERE a.name = 'Hamburg' ORDER BY ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) LIMIT 5" }
+        say: Die nächste Stadt ist Hamburg selbst, 0 Kilometer entfernt. `ON b.id <> a.id` lässt sie weg.
+      - when: { query_matches: 'point\s*\(\s*(\w+\.)?latitude' }
+        say: "`POINT` nimmt zuerst die Länge (`longitude`), dann die Breite (`latitude`)."
+    solution: "`SELECT b.name, ROUND(ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) / 1000) AS km FROM city AS a JOIN city AS b ON b.id <> a.id WHERE a.name = 'Hamburg' ORDER BY km LIMIT 5;` Lübeck (57 km), Kiel, Bremerhaven, Bremen und Oldenburg (127 km)."
+
+  - id: brandenburg
+    title: Fehlt da nicht eine?
+    prompt: |
+      Brandenburg an der Havel liegt nur 60 Kilometer von Berlin entfernt,
+      näher als Magdeburg. Trotzdem steht es nicht unter den fünf Städten,
+      die Berlin am nächsten liegen. Warum?
+    check:
+      type: choice
+      options:
+        - In `city` stehen nur Städte ab 100.000 Einwohnern und die Hauptstädte; Brandenburg an der Havel ist kleiner.
+        - "`ST_Distance_Sphere` rechnet über die gekrümmte Erde, und so ist Brandenburg weiter weg als Magdeburg."
+        - Brandenburg wäre die sechste Stadt, und `LIMIT 5` schneidet sie ab.
+        - Brandenburg ist ein Bundesland und steht darum in `country`.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Auf 60 Kilometer macht die Krümmung der Erde fast nichts aus. Sieh nach, ob Brandenburg überhaupt in `city` steht.
+      - when: { picked: 2 }
+        say: Mit `LIMIT 10` kommen Halle, Zielona Góra und Dresden dazu, aber kein Brandenburg. Steht es überhaupt in `city`?
+      - when: { picked: 3 }
+        say: In `country` stehen nur Staaten. Gemeint ist die Stadt Brandenburg an der Havel; steht sie in `city`?
+    solution: |
+      `SELECT * FROM city WHERE name LIKE 'Brandenburg%';` findet nichts:
+      Die Tabelle enthält nur Orte ab 100.000 Einwohnern und dazu die
+      Hauptstädte (Handbuch, [Datensätze](/reference/datensaetze#countries)),
+      und Brandenburg an der Havel hat gut 70.000. Eine Datenbank ist
+      immer ein Ausschnitt der Welt. »Die nächste Stadt« heißt hier
+      eigentlich »die nächste Stadt, die in der Tabelle steht«; was jemand
+      beim Sammeln weggelassen hat, findet keine Abfrage.
+
+  - id: weiteste-vermutung
+    title: Am anderen Ende der Welt
+    prediction: true
+    prompt: Welche Stadt in `city` liegt am weitesten von Berlin entfernt?
+    check:
+      type: choice
+      options:
+        - Dunedin in Neuseeland
+        - Sydney in Australien
+        - Buenos Aires in Argentinien
+        - Honolulu auf Hawaii
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Sydney ist 16.096 Kilometer weit weg. Es gibt eine Stadt, die noch weiter weg liegt.
+      - when: { picked: 2 }
+        say: Buenos Aires liegt 11.908 Kilometer von Berlin entfernt. Es geht noch viel weiter.
+      - when: { picked: 3 }
+        say: Honolulu liegt 11.763 Kilometer von Berlin entfernt. Es geht noch viel weiter.
+    solution: Dunedin auf der Südinsel Neuseelands, 18.206 Kilometer. Weiter als gut 20.000 Kilometer kann auf der Erde nichts entfernt sein, der halbe Umfang; der Punkt gegenüber von Berlin liegt im Pazifik südöstlich von Neuseeland.
+
+  - id: weiteste-berlin
+    title: Die weiteste Stadt
+    prompt: Prüf deine Vermutung mit einer Abfrage. Gib den Namen der Stadt aus, die am weitesten von Berlin entfernt ist.
+    check:
+      type: sql
+      expect_query: SELECT b.name FROM city AS a CROSS JOIN city AS b WHERE a.name = 'Berlin' ORDER BY ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) DESC LIMIT 1
+      extra_columns: ok
+      tables: { city: 4748 }
+      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+    feedback:
+      - when: { query_matches: 'point\s*\(\s*(\w+\.)?latitude' }
+        say: "`POINT` nimmt zuerst die Länge (`longitude`), dann die Breite (`latitude`)."
+      - when: { same_result_as: "SELECT b.name FROM city AS a JOIN city AS b ON b.id <> a.id WHERE a.name = 'Berlin' ORDER BY ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) LIMIT 1" }
+        say: Das ist die nächste Stadt. Für die weiteste sortierst du andersherum.
+    solution: "`SELECT b.name, ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) / 1000 AS km FROM city AS a CROSS JOIN city AS b WHERE a.name = 'Berlin' ORDER BY km DESC LIMIT 1;` Dunedin, 18.206 Kilometer."

@@ -88,7 +88,7 @@ WHERE border.country_code = 'DEU';
 
 In Neo4j: Knoten `Continent`, `Country`, `City`, `Currency` und `Language`, `(Country)-[:ON]->(Continent)`, `(City)-[:IN]->(Country)`, `(Country)-[:CAPITAL]->(City)`, `(Country)-[:PAYS_WITH]->(Currency)`, `(Country)-[:SPEAKS]->(Language)` und `(Country)-[:BORDERS]->(Country)`, einmal pro Paar.
 
-Benutzt in: [Einführung in SQL](/mysql) (im ersten Teil die kleine Fassung, im zweiten die ganze), im [Query Stepper](/query-stepper) (die ganze) und in den Beispielen des Handbuchs zu [SQL](/reference/sql).
+Benutzt in: [Einführung in SQL](/mysql) (die kleine Fassung), [SQL mit mehreren Tabellen](/sql-joins) (die ganze), im [Query Stepper](/query-stepper) (die ganze) und in den Beispielen des Handbuchs zu [SQL](/reference/sql).
 
 <!-- /part -->
 

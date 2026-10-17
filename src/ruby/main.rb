@@ -182,11 +182,46 @@ class SetupDatabase
             end
         end
     end
+
+    # The stored states and attempts of a task that moved to another
+    # activity (Main::MOVED_TASKS) move with it. Only states still under the
+    # old name match, so this runs on every start and changes something once.
+    # Did someone solve the task again at its new place, that state stays.
+    def migrate_moved_tasks(moved)
+        moved.each do |from, to|
+            rows = neo4j_query(<<~END_OF_QUERY, :from => from)
+                MATCH (u:User)-[:HAS_TASK_STATE]->(s:TaskState {task: $from})
+                RETURN u.email AS email, s.key AS key;
+            END_OF_QUERY
+            rows.each do |row|
+                new_key = TaskStore.state_key(row['email'], to)
+                taken = neo4j_query('MATCH (s:TaskState {key: $key}) RETURN s.key AS key;', :key => new_key).first
+                if taken
+                    neo4j_query('MATCH (s:TaskState {key: $key}) DETACH DELETE s;', :key => row['key'])
+                else
+                    neo4j_query('MATCH (s:TaskState {key: $key}) SET s.key = $new_key, s.task = $to;',
+                        :key => row['key'], :new_key => new_key, :to => to)
+                end
+            end
+            neo4j_query('MATCH (a:TaskAttempt {task: $from}) SET a.task = $to;', :from => from, :to => to)
+        end
+    end
 end
 
 class Main < Sinatra::Base
     include Neo4jBolt
     helpers Sinatra::Cookies
+
+    # Tasks that moved to another activity, old key => new key; their stored
+    # states move along at startup (SetupDatabase#migrate_moved_tasks).
+    # »Einführung in SQL« was split in two (2026-10): its second part is
+    # »SQL mit mehreren Tabellen«.
+    MOVED_TASKS = %w[
+        linksverkehr laender-pro-kontinent einwohner-pro-kontinent grosse-kontinente waehrung-japan
+        grenze-zweimal nachbarn-deutschland viele-nachbarn kontinent-ohne-laender meiste-staedte
+        sprachen-schweiz deutsch-amtssprache englisch-amtssprache naechste-hamburg brandenburg
+        weiteste-vermutung weiteste-berlin
+    ].to_h { |id| ["mysql/#{id}", "sql-joins/#{id}"] }.freeze
 
     # Pages that were renamed; old links and bookmarks lead to the new page.
     MOVED_PAGES = {
@@ -2196,6 +2231,7 @@ class Main < Sinatra::Base
         @@client_ids_for_email = {}
         @@threads_for_client_id = {}
         $neo4j.setup_constraints_and_indexes(CONSTRAINTS_LIST, INDEX_LIST)
+        setup.migrate_moved_tasks(MOVED_TASKS)
         self.reconcile_live_apps!(:refresh_nginx => false)
         self.refresh_nginx_config()
 

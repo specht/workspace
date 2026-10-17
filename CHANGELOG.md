@@ -742,6 +742,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- »Einführung in SQL« ist zweigeteilt: Der zweite Teil, mit `GROUP BY`,
+  `JOIN`, den Amtssprachen und den Entfernungen, ist jetzt eine eigene
+  Aktivität, »SQL mit mehreren Tabellen«, im Katalog direkt danach. Was
+  Lernende dort schon gelöst hatten, zieht beim Start mit um. Beide Seiten
+  haben eine Notiz für Lehrkräfte, die auch die Musikdatenbank in
+  `workspace-files` nennt. »SQL Injection« steht jetzt unter »Datenbanken«.
+- Die Karten der beiden SQL-Seiten zeigen ihr ER-Diagramm in
+  Krähenfuß-Notation statt eines Ausschnitts aus dem Terminal, die
+  Filmdatenbank die ER-Werkstatt mit dem ganzen Modell. Die Diagramme macht
+  `src/scripts/er-teaser.cjs` aus einem `.er`-Modell, hell und dunkel.
 - Befehlsaufgaben laufen dort, wo die Seite gerade arbeitet (`dir` in
   `tasks.yaml`): In »Ein Krimi im Terminal« schreibt man `grep '^HINWEIS'
   tatort.txt` wie im eigenen Terminal, ohne `bitstein/` davor; mit geht es

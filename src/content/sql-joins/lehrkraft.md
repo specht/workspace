@@ -1,0 +1,23 @@
+Die Fortsetzung der [Einführung in SQL](/mysql): Lernende laden die ganze Fassung der Länder der Welt, mit Grenzen, Währungen und Amtssprachen in sieben Tabellen, und kommen zu `GROUP BY`, `HAVING`, `JOIN`, einer Tabelle zweimal in einer Abfrage, `LEFT JOIN`, einer Tabelle zwischen zwei anderen (viele zu viele) und Entfernungen auf der Erde mit `ST_Distance_Sphere`. Vorausgesetzt werden `SELECT`, `WHERE`, `ORDER BY`, `LIMIT` und `COUNT` aus der Einführung; die Seite beginnt mit dem Ordner und dem Import, sie geht also auch in einem anderen Workspace oder nach einer Pause. Danach passen die [Filmdatenbank](/filmdatenbank) und [SQL Injection](/bobby_tables).
+
+<table class='table'>
+<tr><th>Ablauf</th><td>Zwei Doppelstunden. Erste: die ganze Fassung laden, <code>GROUP BY</code> und <code>HAVING</code>, der erste <code>JOIN</code>. Zweite: die Nachbarn mit derselben Tabelle zweimal, <code>LEFT JOIN</code>, die Amtssprachen und die Entfernungen.</td></tr>
+<tr><th>Daten</th><td><code>countries.sql</code> aus <a href='https://github.com/specht/workspace-files/tree/main/country-archive'><code>specht/workspace-files</code></a>, aus Wikidata vom Oktober 2026. Länder, Städte und Kontinente sind dieselben wie in der kleinen Fassung der Einführung; dazu kommen <code>border</code> (jede Grenze als zwei Paare), <code>currency</code>, <code>language</code> und <code>country_language</code>. Die Seite zeigt nach dem Import die Tabellen mit ein paar Zeilen und markiert die neuen.</td></tr>
+<tr><th>Prüfung</th><td>Wie in der Einführung: Werte werden eingetragen, Abfragen, die Zeilen ausgeben, laufen in der eigenen Datenbank der Lernenden neben der Musterabfrage, und verglichen werden die Ergebnisse. Fehlen die neuen Tabellen, weil nur die kleine Fassung geladen ist, sagt die Karte, dass zuerst <code>countries.sql</code> geladen werden muss.</td></tr>
+<tr><th>Lösung</th><td>Jede Aufgabe zeigt nach der richtigen Antwort eine Lösung; die Musterabfragen stehen in <a href='https://github.com/specht/workspace/blob/main/src/content/sql-joins/tasks.yaml'><code>tasks.yaml</code></a>.</td></tr>
+</table>
+
+**Die Aufgaben.** »Jede Grenze zweimal« fragt, warum `border` jede Grenze in beiden Richtungen enthält: damit eine Abfrage die Nachbarn eines Landes in einer einzigen Spalte findet. »Fehlt da nicht eine?« fragt, warum Brandenburg an der Havel nicht unter den Städten nahe Berlin steht: Die Datenbank kennt nur Städte ab 100.000 Einwohnern, sie ist ein Ausschnitt der Welt. »Am anderen Ende der Welt« ist eine Vorhersage vor der Abfrage, welche Stadt am weitesten von Berlin entfernt liegt. Die Aufgaben standen bis Oktober 2026 auf der Seite der Einführung; was Lernende dort gelöst haben, steht jetzt hier.
+
+**Eigene Aufgaben.** Im selben Repository liegt eine sorgfältig zusammengestellte Musikdatenbank, <a href='https://github.com/specht/workspace-files/tree/main/music-archive'><code>music-archive/music.sql</code></a>: rund 3.100 Alben von gut 1.000 Künstlerinnen, Künstlern und Bands, mit Titeln, Genres und wer in welcher Band spielt, aus Discogs. Keine Aktivität benutzt sie; sie eignet sich für eigene Aufgaben zu `JOIN` und `GROUP BY`, eine Klassenarbeit oder als zweiter Datensatz für dieselben Abfragen. Wie man sie lädt und was in den Spalten steht, steht im Handbuch unter [Datensätze](/reference/datensaetze).
+
+**Was schiefgeht.**
+
+- **`GROUP BY` mit einer Spalte, die nicht gruppiert ist.** `SELECT continent, name, COUNT(*) … GROUP BY continent` bricht mit einem Fehler zu `ONLY_FULL_GROUP_BY` ab: Welchen der vielen Namen sollte die Datenbank nehmen?
+- **`WHERE` statt `HAVING`.** Eine Bedingung an `COUNT(*)` gehört nach `GROUP BY` in `HAVING`; in `WHERE` gibt es die Anzahl noch nicht.
+- **Mehrdeutige Spalten nach `JOIN`.** `name` gibt es in `country` und `city`; ohne `country.name` meldet MySQL »Column 'name' in field list is ambiguous«.
+- **Die Bedingung des `LEFT JOIN` in `WHERE`.** Wer die Bedingung für die zweite Tabelle in `WHERE` statt in `ON` schreibt, verliert genau die Zeilen ohne Partner, um die es geht.
+- **Länge und Breite vertauscht.** `POINT` nimmt zuerst die Länge (`longitude`), dann die Breite; vertauscht kommen falsche Entfernungen heraus, und `ST_Distance_Sphere` rechnet in Metern.
+- **Daten neu laden.** Wer eine Tabelle geändert oder gelöscht hat, lädt `countries.sql` einfach noch einmal; die Datei legt alles neu an.
+
+**Weiter.** In der [Filmdatenbank](/filmdatenbank) entwerfen Lernende eine Datenbank selbst, als ER-Modell, und fragen sie mit vielen `JOIN`s ab; das Handbuch erklärt [ER-Modelle](/reference/er-modelle). [SQL Injection](/bobby_tables) zeigt, was passiert, wenn ein Programm Abfragen aus Eingaben zusammensetzt.

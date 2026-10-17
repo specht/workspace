@@ -1,5 +1,5 @@
 <div class='meta'>
-image: er-preview.webp:50:50
+image: er-crowfoot.webp
 kind: projekt
 language: SQL
 topic: databases
@@ -385,6 +385,27 @@ relationship credit: movie, crew, job as movie_crew
 - Ohne `as` hieße diese Tabelle `movie_crew_job`. Die Filmdaten erwarten `movie_crew`, deshalb gibst du den Namen mit `as movie_crew` vor.
 - `job` enthält Tätigkeiten wie `actor`, `director` oder `composer`.
 
+In der ER-Werkstatt, als Krähenfuß, hängt die Beziehung `credit` an allen drei Entitäten:
+
+<!-- tutorial-screenshot
+# Das ganze Modell in der ER-Werkstatt, als Krähenfuß. mycli from the
+# picture with show-tables ends first: hidden, its terminal is too small.
+terminal-run: quit
+terminal-wait-for-prompt
+check-task-fails: modell-crew
+write-file: filmdatenbank/film.er <- file:film-2.er
+check-task: modell-crew
+open-file: film.er
+hide-left-sidebar
+hide-bottom-panel
+click: Krähenfuß
+sleep: 0.5
+click: Einpassen
+sleep: 1
+-->
+
+<img class='full' src='er-crowfoot.webp' alt='Links das ganze Modell film.er im Editor, rechts die ER-Werkstatt mit dem Krähenfuß-Diagramm: movie, genre, crew und job, dazu der Kasten credit mit Linien zu movie, crew und job.'>
+
 <img class='invert-dark' src='film-2-chen.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Chen-Diagramm mit movie, genre, crew und job; die Raute credit verbindet movie, crew und job.'>
 
 In der Tabellenansicht siehst du `movie_crew` mit drei Fremdschlüsseln, die zusammen den Primärschlüssel bilden. So kann dieselbe Person bei einem Film mehrere Tätigkeiten haben, aber dieselbe Kombination aus Film, Person und Tätigkeit nicht zweimal vorkommen.
@@ -494,7 +515,10 @@ Dein Modell `film.er`, das erzeugte `film.sql` und die Diagramme, die du mit »A
 <!-- tutorial-step
 # Jede Aufgabe, die im Workspace oder in MySQL nachsieht, nimmt den Stand
 # an, den die Seite beschreibt, und lehnt den Stand davor ab.
-# mycli from the last picture; in bash, quit is only an unknown command
+# The ER-Werkstatt's picture hid the terminal and ended mycli; in bash,
+# quit is only an unknown command.
+terminal-open
+terminal-maximize
 terminal-run: quit
 terminal-wait-for-prompt
 write-file: filmdatenbank/film.er <- file:film-1.er
@@ -531,7 +555,6 @@ check-task: animation <- SELECT movie.title, movie.year FROM movie JOIN movie_ge
 check-task-fails: animation <- SELECT movie.title, movie.year FROM movie JOIN movie_genre ON movie.id = movie_genre.movie_id JOIN genre ON movie_genre.genre_id = genre.id WHERE genre.name = 'Animation' ORDER BY movie.title;
 check-task: filme-pro-genre <- SELECT genre.name, COUNT(*) AS movies FROM genre JOIN movie_genre ON genre.id = movie_genre.genre_id GROUP BY genre.id, genre.name ORDER BY movies DESC;
 check-task-fails: filme-pro-genre <- SELECT genre_id, COUNT(*) FROM movie_genre GROUP BY genre_id;
-check-task-fails: modell-crew
 write-file: filmdatenbank/film.er <- file:film-2.er
 check-task: modell-crew
 open-file: film.er

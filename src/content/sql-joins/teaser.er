@@ -1,0 +1,38 @@
+# Die Länder der Welt, ganze Fassung (countries.sql), für das Bild der
+# Karte: node src/scripts/er-teaser.cjs src/content/sql-joins/teaser.er
+# src/content/sql-joins/teaser.webp \
+#   --grid 'continent,country,;city,currency,language' 360 330
+
+entity continent
+  name: text, primary key
+
+entity country
+  code: varchar(3), primary key
+  name: text
+  population: int
+  area: decimal(12,2)
+  tld: text
+  calling_code: text
+  driving_side: text
+
+entity city
+  id: int, primary key
+  name: text
+  population: int
+  latitude: float
+  longitude: float
+  is_capital: bool
+
+entity currency
+  code: varchar(3), primary key
+  name: text
+
+entity language
+  code: varchar(3), primary key
+  name: text
+
+relationship lies_in: country n:1 continent
+relationship located_in: city n:1 country
+relationship pays_with: country n:1 currency
+relationship official: country n:m language as country_language
+relationship border: country n:m country
