@@ -48,8 +48,10 @@ from the side. Small in the frame.« und dazu:
 - `into-bag.jpg`: The person puts the golden disk into the open sports bag. The stand is empty.
 - `leaving.jpg`: The person walks back toward the doorway, bag in hand. The glass hood is back on the plinth, the stand inside is empty.
 
-Es fehlen noch: die Person beim Hereinkommen (Diskette noch da) und der
-Raum danach (Haube drauf, Ständer leer, niemand).
+Später, in einem neuen Chat mit `empty.jpg` hochgeladen:
+
+- `coming-in.jpg`: »Edit this image. Keep the image size, the 4:3 landscape format, the camera position, the framing, the lighting and every object exactly as they are … Add one person who has just come in through the doorway on the upper left: … hood up and pulled far forward, head down so the face is completely in shadow and not visible … a dark sports bag in one hand. The person stands on the floor a few steps inside the room, between the doorway and the display case, seen from the side, body turned toward the display case, as if walking toward it. … Not sharper or brighter than the floor and walls around them.« (Ein früheres Bild ging in die falsche Richtung, vom Doorway weg nach links unten.)
+- `after-theft.jpg`: »Edit the image I uploaded at the start of this chat (the empty room, without the person) … Change only one thing: the golden floppy disk is gone. The dark blue stand inside the display case is empty, its sloped surface plain where the disk was. The glass hood is in place on the plinth, closed, exactly as before. Nobody in the room.«
 
 ## Kamera 2, Hintereingang
 

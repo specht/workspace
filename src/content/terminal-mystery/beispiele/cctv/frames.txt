@@ -9,12 +9,14 @@
 2  23:12:08  cam2/off-mat.jpg
 2  23:12:14  cam2/corridor-away.jpg
 
-# Kamera 1, Ausstellung: an der Vitrine (das Bild vom Hereinkommen fehlt noch)
+# Kamera 1, Ausstellung: herein, an der Vitrine, hinaus, die Vitrine leer
+1  23:30:58  cam1/coming-in.jpg
 1  23:31:04  cam1/at-case.jpg
 1  23:31:07  cam1/lifting-hood.jpg
 1  23:31:12  cam1/reaching-in.jpg
 1  23:31:18  cam1/into-bag.jpg
 1  23:31:41  cam1/leaving.jpg
+1  23:31:44  cam1/after-theft.jpg
 
 # Kamera 2, Hintereingang: hinaus
 2  23:37:51  cam2/corridor-back.jpg
