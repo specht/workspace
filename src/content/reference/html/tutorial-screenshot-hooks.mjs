@@ -15,7 +15,31 @@
 // address, so relative paths in an example (pictures/fuji.jpg, fonts/…)
 // work as they do for students.
 
+import { readFile } from 'node:fs/promises';
+
 const readyTimeout = 60_000;
+
+// A row of VS Code's Explorer by its name
+function explorerRow(page, name) {
+    return page.locator(`.explorer-folders-view .monaco-list-row[aria-label="${name}"]`).first();
+}
+
+// Drag events with a file from outside the browser, as the computer's file
+// manager sends them: VS Code marks the folder the file would land in.
+async function dragEvents(page, row, types) {
+    const box = await row.boundingBox();
+    const transfer = await page.evaluateHandle(() => {
+        const data = new DataTransfer();
+        data.items.add(new File([new Uint8Array(1)], 'classroom.jpg', { type: 'image/jpeg' }));
+        return data;
+    });
+    for (const type of types) {
+        await row.dispatchEvent(type, {
+            dataTransfer: transfer, bubbles: true, cancelable: true,
+            clientX: box.x + box.width / 2, clientY: box.y + box.height / 2,
+        });
+    }
+}
 
 // hook: beispiel css: the example has a stylesheet too (beispiel.css);
 // without it, the one of an earlier example is not used. Kept for the
@@ -112,6 +136,50 @@ export default {
     writeFileSubdirectory: 'shower.js',
 
     actions: {
+        // hook: drag-over NAME: a file from outside is dragged over the
+        // Explorer row NAME (a folder), and stays there for the picture
+        async 'drag-over'({ page, args }) {
+            const row = explorerRow(page, String(args).trim());
+            await row.waitFor({ state: 'visible', timeout: readyTimeout });
+            await dragEvents(page, row, ['dragenter', 'dragover']);
+            await page.waitForTimeout(300);
+        },
+
+        // hook: drag-leave NAME: the file is taken away again, nothing dropped
+        async 'drag-leave'({ page, args }) {
+            await dragEvents(page, explorerRow(page, String(args).trim()), ['dragleave', 'dragend']);
+        },
+
+        // hook: page PATH: the preview shows the page PATH next to this file
+        // (bilder/kopieren.html), its pictures embedded, without writing
+        // anything into the Workspace
+        async page({ page, args }) {
+            const file = new URL(String(args).trim(), import.meta.url);
+            let html = await readFile(file, 'utf8');
+            for (const [, src] of html.matchAll(/src="([^"]+\.jpg)"/g)) {
+                const bytes = await readFile(new URL(src, file));
+                html = html.replace(`src="${src}"`, `src="data:image/jpeg;base64,${bytes.toString('base64')}"`);
+            }
+            await page.setContent(html, { waitUntil: 'load' });
+            await page.waitForFunction(() => [...document.images].every((img) => img.complete), null, { timeout: readyTimeout });
+        },
+
+        // hook: clipboard-image PATH: a picture next to this file, on the
+        // clipboard as PNG, the way »Copy image« in a browser puts it there
+        async 'clipboard-image'({ page, args }) {
+            const bytes = await readFile(new URL(String(args).trim(), import.meta.url));
+            await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(page.url()).origin });
+            await page.bringToFront();
+            await page.evaluate(async (base64) => {
+                const raw = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+                const bitmap = await createImageBitmap(new Blob([raw], { type: 'image/jpeg' }));
+                const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+                canvas.getContext('2d').drawImage(bitmap, 0, 0);
+                const png = await canvas.convertToBlob({ type: 'image/png' });
+                await navigator.clipboard.write([new ClipboardItem({ 'image/png': png })]);
+            }, bytes.toString('base64'));
+        },
+
         // hook: beispiel [css] [folie]: the preview shows beispiel.html (and
         // with css also beispiel.css) as a page, or with folie as a slide:
         // for the Shower page, whose examples only make sense on a slide

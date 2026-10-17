@@ -2281,7 +2281,9 @@ function requirePageForTab(tab, actionName) {
     return page;
 }
 
-async function pageControl(action, verb, targetTab) {
+// byText: the text as it stands (move-mouse), not first a button or link of
+// that name (click, hold)
+async function pageControl(action, verb, targetTab, { byText = false } = {}) {
     const page = requirePageForTab(targetTab, verb);
 
     const description = action.selector
@@ -2289,6 +2291,7 @@ async function pageControl(action, verb, targetTab) {
         : `control named ${JSON.stringify(action.text)}`;
     const locate = async (frame) => {
         if (action.selector) return frame.locator(action.selector);
+        if (byText) return frame.getByText(action.text, { exact: true });
         const buttons = frame.getByRole('button', { name: action.text, exact: true });
         const links = frame.getByRole('link', { name: action.text, exact: true });
         const named = buttons.or(links);
@@ -2393,8 +2396,11 @@ async function typeText(text, targetTab) {
             const element = document.activeElement;
             // Monaco (also small ones like the Extensions search) takes text
             // through a div with the EditContext API, not a <textarea>.
+            // A webview (an extension's page) is an iframe: the keys go to
+            // the field focused inside it.
             return element instanceof HTMLInputElement ||
                 element instanceof HTMLTextAreaElement ||
+                element instanceof HTMLIFrameElement ||
                 element?.isContentEditable === true ||
                 element?.closest?.('.monaco-editor') != null;
         },
@@ -2412,26 +2418,11 @@ async function pressKey(key, targetTab) {
 }
 
 async function moveMouse(action, targetTab) {
-    const page = requirePageForTab(targetTab, 'move-mouse');
-
-    let target;
-    let description;
-    if (action.selector) {
-        target = page.locator(action.selector);
-        description = `element matching selector ${JSON.stringify(action.selector)}`;
-    } else {
-        target = page.getByText(action.text, { exact: true });
-        description = `element with text ${JSON.stringify(action.text)}`;
-    }
-
-    await target.first().waitFor({ state: 'visible', timeout: ACTION_TIMEOUT_MS });
-    const count = await target.count();
-    if (count !== 1) {
-        throw new Error(`move-mouse expected exactly one ${description}, found ${count}`);
-    }
-
-    const box = await target.boundingBox();
-    if (!box) throw new Error(`move-mouse could not measure ${description}`);
+    // on the page, or like a click in a webview (an iframe)
+    const { page, control } = await pageControl(action, 'move-mouse', targetTab, { byText: true });
+    await control.scrollIntoViewIfNeeded({ timeout: ACTION_TIMEOUT_MS });
+    const box = await control.boundingBox();
+    if (!box) throw new Error(`move-mouse could not measure ${action.selector || action.text}`);
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     rememberMousePosition(page, box);
     await page.waitForTimeout(150);

@@ -352,6 +352,26 @@ Ein Bild kommt in zwei Schritten auf die Seite: als Datei ins Projekt, dann mit 
 
 Bevor ein Bild auf der Seite erscheinen kann, muss die Bilddatei in deinem Projekt liegen. In der Shower-Vorlage gibt es dafür den Ordner `pictures`; bei einer eigenen Webseite legst du Bilder neben `index.html` oder in einen eigenen Ordner wie `bilder`.
 
+<!-- tutorial-screenshot
+# Der Ordner der Shower-Vorlage offen, ein Bild aus pictures in der Vorschau
+press: Control+K
+press: Control+O
+wait-for-input-value: /workspace/
+type: shower.js
+press: Enter
+wait-for-input-value: /workspace/shower.js/
+press: Enter
+wait-for-text: pictures
+# die Beispiele von oben gehören nicht zur Vorlage
+terminal-run: rm -f /workspace/shower.js/beispiel.html
+hide-bottom-panel
+show-left-sidebar
+click: selector:.explorer-folders-view .monaco-list-row[aria-label="pictures"]
+close-tab: Welcome
+open-file: pictures/fuji.jpg
+# die Maus weg vom Tab, sonst steht sein Tooltip im Bild
+move-mouse: selector:.part.editor
+-->
 <img class='full' src='file-explorer.webp' alt='Der Explorer von VS Code mit dem Ordner pictures und darin einigen Bilddateien.'>
 
 Verwende einfache Dateinamen: kleine Buchstaben, keine Leerzeichen, keine Umlaute, keine Sonderzeichen.
@@ -398,29 +418,71 @@ Das Format steht in der Datei selbst, nicht im Namen. Benennst du <code>bild.png
 
 Liegt das Bild auf deinem Computer, ziehe es aus deinem Dateimanager in den Explorer von VS Code und lege es im richtigen Ordner ab:
 
+<!-- tutorial-screenshot
+# Eine Datei von außen über dem Ordner pictures: VS Code markiert, wo sie
+# landen würde (tutorial-screenshot-hooks.mjs schickt die Drag-Events)
+hook: drag-over pictures
+move-mouse: selector:.explorer-folders-view .monaco-list-row[aria-label="pictures"]
+show-mouse
+-->
 <img src='drag-and-drop.webp' class='full' alt='Eine Bilddatei wird aus dem Dateimanager in den Ordner pictures im Explorer gezogen.'>
 
 #### Möglichkeit 2: Aus der Zwischenablage
 
-Ein Bild im Browser kopierst du mit einem Rechtsklick und »Bild kopieren« (»Copy Image«):
+Ein Bild im Browser kopierst du mit einem Rechtsklick und »Bild kopieren« (»Copy image«):
 
-<img src='copy-image.webp' class='full' alt='Das Kontextmenü eines Bildes im Browser mit dem Eintrag »Copy Image«.'>
+<!-- tutorial-screenshot
+# Ein Bild im Browser mit seinem Kontextmenü: bilder/kopieren.html baut das
+# Menü von Chrome nach, das eigene zeigt kein Screenshot
+preview-port: 8090
+tab: preview
+hook: page bilder/kopieren.html
+move-mouse: Copy image
+show-mouse
+-->
+<img src='copy-image.webp' class='full' alt='Das Kontextmenü eines Bildes im Browser mit dem Eintrag »Copy image«.'>
 
 Klicke dann im Explorer auf eine Datei im Zielordner und drücke <kbd>Strg</kbd><kbd>V</kbd>. Je nach Browser musst du das Einfügen bestätigen:
 
+<!-- tutorial-screenshot
+# Das Bild in der Zwischenablage, eine Datei in pictures ausgewählt, Strg+V
+hook: drag-leave pictures
+hook: clipboard-image bilder/classroom.jpg
+click: selector:.explorer-folders-view .monaco-list-row[aria-label="fuji.jpg"]
+press: Control+V
+wait-for-text: Are you sure you want to paste
+-->
 <img src='confirm-paste.webp' class='full' alt='Der Browser fragt, ob VS Code auf die Zwischenablage zugreifen darf.'>
 
 Die neue Datei heißt meist `image.png`:
 
+<!-- tutorial-screenshot
+# VS Code öffnet die neue Datei selbst
+click: Paste
+wait-for-file: shower.js/pictures/image.png
+-->
 <img src='image-pasted.webp' class='full' alt='Im Explorer ist die Datei image.png erschienen; die Vorschau nennt unten Auflösung und Dateigröße.'>
 
 Unten stehen zwei wichtige Angaben: die **Auflösung** (hier 1280 × 1013 Pixel; zu kleine Bilder werden unscharf) und die **Dateigröße** (hier 1,92 MB; das ist für ein einzelnes Bild viel). Gib der Datei einen sinnvollen Namen und behalte die Endung:
 
 <div class='row' style='margin-bottom: 1em;'>
     <div class='col-md-6'>
+        <!-- tutorial-screenshot
+        click: selector:.explorer-folders-view .monaco-list-row[aria-label="image.png"]
+        press: Shift+F10
+        wait-for-text: Rename
+        move-mouse: Rename...
+        show-mouse
+        -->
         <img src='rename-image.webp' class='full' alt='Im Explorer wird image.png umbenannt.'>
     </div>
     <div class='col-md-6'>
+        <!-- tutorial-screenshot
+        # F2 markiert den Namen ohne Endung
+        press: Escape
+        press: F2
+        type: classroom
+        -->
         <img src='image-renamed.webp' class='full' alt='Die Datei heißt jetzt classroom.png.'>
     </div>
 </div>
@@ -435,17 +497,66 @@ Bilder aus der Zwischenablage werden als PNG gespeichert, und Fotos sind als PNG
 
 <div class='row' style='margin-bottom: 1em;'>
     <div class='col-md-6'>
+        <!-- tutorial-screenshot
+        press: Enter
+        wait-for-file: shower.js/pictures/classroom.png
+        press: Control+Shift+X
+        sleep: 2
+        type: webp converter
+        wait-for-text: WebP Converter for VSCode
+        -->
         <img src='install-webp-converter.webp' class='full' alt='Die Erweiterung WebP Converter for VSCode in der Erweiterungsansicht.'>
     </div>
     <div class='col-md-6'>
+        <!-- tutorial-screenshot
+        press: Control+A
+        type: @id:kjokkenkoddinger.webp4vscode
+        sleep: 2
+        click: selector:.extensions-viewlet .extension-action.install:not(.hide)
+        wait-for-text: Do you trust the publisher
+        click: Trust Publisher & Install
+        wait-for-text: Uninstall
+        # alle Editoren schließen (die Erweiterung), dann das Bild wieder auf
+        press: Control+K
+        press: KeyW
+        open-file: pictures/classroom.png
+        press: Control+Shift+E
+        click: selector:.explorer-folders-view .monaco-list-row[aria-label="classroom.png"]
+        press: Shift+F10
+        wait-for-text: Convert to WebP
+        move-mouse: Convert to WebP
+        show-mouse
+        -->
         <img src='convert-to-webp.webp' class='full' alt='Das Kontextmenü einer Bilddatei mit »Convert to WebP«.'>
     </div>
 </div>
 
 »Lossless« behält jedes Pixel und eignet sich für Grafiken und Screenshots. »Lossy« verliert ein wenig Qualität und macht Fotos viel kleiner; 85 % sieht man kaum:
 
+<!-- tutorial-screenshot
+# Lossy ist vorgewählt, mit 75 %; der Text nennt 85 %
+click: Convert to WebP
+wait-for-text: Lossy encoding (with quality control)
+click: selector:input[type="number"]
+press: Control+A
+type: 85
+press: Tab
+wait-for-text: Estimated WebP Size
+# die Schätzung rechnet die Erweiterung erst kurz danach neu
+sleep: 3
+move-mouse: Continue
+show-mouse
+-->
 <img src='convert-to-webp-step-1.webp' class='full' alt='Die Auswahl zwischen Lossless und Lossy mit einer Qualität von 85 Prozent.'>
 
+<!-- tutorial-screenshot
+# erst eine Vorschau mit beiden Größen, dann »Finish«
+click: Continue
+wait-for-text: Preview and Adjust Converted Images
+click: Finish
+wait-for-file: shower.js/pictures/classroom.webp
+open-file: pictures/classroom.webp
+-->
 <img src='webp-converted.webp' class='full' alt='Die neue Datei classroom.webp ist nur noch 180 kB groß und sieht unverändert aus.'>
 
 Aus 1,92 MB sind 180 kB geworden.

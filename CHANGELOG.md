@@ -764,6 +764,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   »Eine Klötzchenwelt in 3D« zeigt so bei jedem Stück Code, wo es in `main.c`
   hinkommt, mit drei Zeilen davor und danach, so wie die Datei an dieser
   Stelle aussieht.
+- Handbuch HTML, »Bilddateien ins Projekt holen«: alle elf Bilder kommen aus
+  Rezepten, vom Explorer über Drag & Drop, Einfügen aus der Zwischenablage
+  und Umbenennen bis zur Umwandlung nach WebP. Das Kontextmenü des Browsers
+  ist nachgebaut, weil ein Screenshot das echte nicht zeigt. Nach einem Update
+  von VS Code entstehen sie neu.
+- Screenshot-Generator: `move-mouse` findet auch Text in einem Webview, und
+  `type` schreibt in ein Feld darin.
 - Die Symbole für Panel, Erweiterungen und »Ausführen« im Text der
   Sprachseiten und für »Build« und »View« von LaTeX Workshop im Handbuch
   sind SVGs aus der Symbolschrift von VS Code statt kleiner Bildausschnitte:

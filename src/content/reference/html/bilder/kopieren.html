@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!-- For the screenshot »copy-image.webp« of the Handbuch HTML: a picture
+     opened in the browser, with the browser's context menu on it, rebuilt
+     after Chrome's, since a screenshot cannot show the browser's own menu. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>classroom.jpg (1280×1013)</title>
+<style>
+    html, body { margin: 0; height: 100%; }
+    body {
+        background: #0e0e0e;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Segoe UI', Roboto, 'Noto Sans', system-ui, sans-serif;
+    }
+    img { max-width: 100%; max-height: 100%; display: block; }
+    .menu {
+        position: absolute;
+        left: 58%;
+        top: 46%;
+        width: 15.5em;
+        padding: 0.4em 0;
+        background: #ffffff;
+        color: #1f1f1f;
+        border-radius: 0.5em;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.25);
+        font-size: 13px;
+    }
+    .menu div { padding: 0.45em 1.3em; cursor: default; }
+    .menu div:hover { background: #e8e8e8; }
+    .menu hr { border: 0; border-top: 1px solid #e3e3e3; margin: 0.35em 0; }
+</style>
+</head>
+<body>
+<img src="classroom.jpg" alt="">
+<div class="menu">
+    <div>Open image in new tab</div>
+    <div>Save image as…</div>
+    <div>Copy image</div>
+    <div>Copy image address</div>
+    <hr>
+    <div>Inspect</div>
+</div>
+</body>
+</html>

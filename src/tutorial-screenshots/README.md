@@ -262,7 +262,8 @@ an unsaved file; the source's checksum is part of the screenshot state.
 `type` inserts text literally into the currently focused text control without
 pressing Enter. It is useful for Quick Input and file dialogs. It does not clear
 existing text first; use `press: Control+A` when you want to replace the current
-value.
+value. A field in a webview counts too: `click: selector:input[type="number"]`
+focuses it inside the extension's page, and `type` writes there.
 
 `click` and `hold` target the page selected by `tab`. They first match an exact
 accessible button or link name; when a Workspace control is exposed only as text,
@@ -275,6 +276,8 @@ between 0.05 and 30 seconds.
 
 `move-mouse` also uses the selected page. Without a prefix, the target is matched
 by exact visible text; prefix it with `selector:` to use a CSS selector instead.
+Like `click`, it looks in the page's frames too (»Continue« in an extension's
+webview).
 This is useful for parking the pointer on a neutral element before capture so a
 button does not remain in its hover state.
 
