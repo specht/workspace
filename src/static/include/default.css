@@ -252,16 +252,22 @@ pre .code-line:not(.code-context):has(+ .code-cut)::after {
     pointer-events: none;
 }
 
-/* from the middle of the zigzag line (its margin 0.3rem and half its
-   0.4rem) into the context */
+/* It starts exactly at the zigzag line: across the cut (0.4rem, after its
+   margin of 0.3rem), cut off there by the line's own zigzag, then solid. */
 pre .code-cut + .code-line:not(.code-context)::before {
-    bottom: calc(100% + 0.5rem);
+    bottom: calc(100% + 0.3rem);
+    height: calc(1.4em + 0.4rem);
     background: linear-gradient(to top, rgba(0, 0, 0, 0.42), transparent);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8' preserveAspectRatio='none'%3E%3Cpath d='M0 0H16V1.5L8 6.5L0 1.5Z'/%3E%3C/svg%3E") left bottom / 0.8rem 0.4rem repeat-x, linear-gradient(#000, #000) left top / 100% calc(100% - 0.4rem + 1px) no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8' preserveAspectRatio='none'%3E%3Cpath d='M0 0H16V1.5L8 6.5L0 1.5Z'/%3E%3C/svg%3E") left bottom / 0.8rem 0.4rem repeat-x, linear-gradient(#000, #000) left top / 100% calc(100% - 0.4rem + 1px) no-repeat;
 }
 
 pre .code-line:not(.code-context):has(+ .code-cut)::after {
-    top: calc(100% + 0.5rem);
+    top: calc(100% + 0.3rem);
+    height: calc(1.4em + 0.4rem);
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.42), transparent);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8' preserveAspectRatio='none'%3E%3Cpath d='M0 1.5L8 6.5L16 1.5V8H0Z'/%3E%3C/svg%3E") left top / 0.8rem 0.4rem repeat-x, linear-gradient(#000, #000) left bottom / 100% calc(100% - 0.4rem + 1px) no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8' preserveAspectRatio='none'%3E%3Cpath d='M0 1.5L8 6.5L16 1.5V8H0Z'/%3E%3C/svg%3E") left top / 0.8rem 0.4rem repeat-x, linear-gradient(#000, #000) left bottom / 100% calc(100% - 0.4rem + 1px) no-repeat;
 }
 
 pre.copy-code .code-cut + .code-line:not(.code-context)::before,
