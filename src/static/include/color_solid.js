@@ -193,14 +193,16 @@
                 }, 40));
             }
         }
-        // how far the solid reaches, sideways and up and down
-        let reach = 0, low = Infinity, high = -Infinity;
+        // how far the solid reaches, sideways and up and down, and from the
+        // centre in any direction: turned any way, it stays in that sphere
+        let reach = 0, low = Infinity, high = -Infinity, sphere = 0;
         for (const triangle of out) for (const p of triangle) {
             reach = Math.max(reach, Math.abs(p[0]), Math.abs(p[2]));
             low = Math.min(low, p[1]);
             high = Math.max(high, p[1]);
+            sphere = Math.max(sphere, Math.hypot(p[0], p[1], p[2]));
         }
-        const result = { triangles: out, reach, low, high };
+        const result = { triangles: out, reach, low, high, sphere };
         surfaceCache.set(name, result);
         return result;
     }
@@ -434,7 +436,8 @@
         }
         // the corners of the RGB cube, or the ends of the axes, as labels
         const marks = space.labels.map(([text, rgb, p]) => [text, rgb ? space.forward(...rgb) : p]);
-        const extent = Math.max(whole.reach, whole.high, -whole.low) * 1.08;
+        // the whole sphere fits, so no turn pushes a part out of the picture
+        const extent = whole.sphere * 1.05;
 
         function draw() {
             const explode = state.split ? state.explode : 0;
@@ -483,27 +486,59 @@
             update(true);
         });
         explodeInput.addEventListener('input', () => { state.explode = Number(explodeInput.value) / 100; update(false); });
-        let drag = null;
+        // Dragging turns it so that its front follows the pointer: an angle
+        // per pixel of the sphere's radius on the screen. Let go while moving,
+        // it turns on and slows down, unless the reader wants less motion.
+        const turnBy = (yaw, pitch) => {
+            state.yaw += yaw;
+            state.pitch = Math.max(-1.45, Math.min(1.45, state.pitch + pitch));
+            draw();
+        };
+        const perPixel = () => 1 / Math.max(1, 0.45 * Math.min(canvas.clientWidth, canvas.clientHeight));
+        const still = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+        let drag = null, spin = null;
         canvas.addEventListener('pointerdown', (e) => {
-            drag = { x: e.clientX, y: e.clientY };
+            if (spin) cancelAnimationFrame(spin);
+            spin = null;
+            drag = { x: e.clientX, y: e.clientY, t: e.timeStamp, vx: 0, vy: 0 };
             canvas.setPointerCapture(e.pointerId);
             element.classList.add('cs-turned');
         });
         canvas.addEventListener('pointermove', (e) => {
             if (!drag) return;
-            state.yaw += (e.clientX - drag.x) * 0.01;
-            state.pitch = Math.max(-1.45, Math.min(1.45, state.pitch + (e.clientY - drag.y) * 0.01));
-            drag = { x: e.clientX, y: e.clientY };
-            draw();
+            const k = perPixel(), dx = (e.clientX - drag.x) * k, dy = (e.clientY - drag.y) * k;
+            // the speed, in radians per millisecond, smoothed over the last moves
+            const dt = Math.max(1, e.timeStamp - drag.t);
+            drag.vx = 0.6 * dx / dt + 0.4 * drag.vx;
+            drag.vy = 0.6 * dy / dt + 0.4 * drag.vy;
+            Object.assign(drag, { x: e.clientX, y: e.clientY, t: e.timeStamp });
+            turnBy(dx, dy);
         });
-        canvas.addEventListener('pointerup', () => { drag = null; });
+        const release = (e) => {
+            if (!drag) return;
+            let { vx, vy, t } = drag;
+            drag = null;
+            // held still before letting go: it stays where it is
+            if (e.type !== 'pointerup' || still?.matches || e.timeStamp - t > 80 || Math.hypot(vx, vy) < 0.0003) return;
+            let last = performance.now();
+            const step = (now) => {
+                const dt = Math.min(50, now - last);
+                last = now;
+                turnBy(vx * dt, vy * dt);
+                const slow = Math.exp(-dt / 280);
+                vx *= slow;
+                vy *= slow;
+                spin = Math.hypot(vx, vy) > 0.00003 ? requestAnimationFrame(step) : null;
+            };
+            spin = requestAnimationFrame(step);
+        };
+        canvas.addEventListener('pointerup', release);
+        canvas.addEventListener('pointercancel', release);
         canvas.addEventListener('keydown', (e) => {
             const step = { ArrowLeft: [-0.12, 0], ArrowRight: [0.12, 0], ArrowUp: [0, -0.12], ArrowDown: [0, 0.12] }[e.key];
             if (!step) return;
             e.preventDefault();
-            state.yaw += step[0];
-            state.pitch = Math.max(-1.45, Math.min(1.45, state.pitch + step[1]));
-            draw();
+            turnBy(step[0], step[1]);
         });
         if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => update(false)).observe(canvas);
         update(true);

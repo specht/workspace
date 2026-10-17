@@ -767,6 +767,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Die raylib-Vorlage sagt Editor-Erweiterungen für C (clangd, C/C++), wo
   `raylib.h` liegt; `#include <raylib.h>` ist nicht mehr rot unterstrichen.
   Der Patch für `specht/raylib-starter` liegt bei.
+- Handbuch »Farbräume«: Die Körper passen in jeder Drehung ganz ins Bild; der
+  HSV-Kegel ist kleiner, und bei CIELab und YCbCr ragt keine Ecke mehr hinaus.
+  Beim Ziehen folgt die Vorderseite dem Zeiger, und losgelassen dreht der
+  Körper kurz weiter und läuft aus (nicht bei »weniger Bewegung«).
 - Der Sprachwechsel auf Seiten in Ruby und Python ist ein Umschalter mit den
   Logos der beiden Sprachen.
 - Das Widget zum Entpacken in »LZW« markiert den Code, der gerade gelesen
