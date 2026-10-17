@@ -23,6 +23,20 @@ module CodeHighlight
             context << i + 1
             line.sub(/\A~ ?/, '')
         end
+        # A blank line where context and new code meet belongs to the
+        # context, even one the step adds: the cut runs right up to the
+        # first and last line of code. One between two new lines stays.
+        unless context.empty?
+            blank = ->(n) { n.between?(1, lines.size) && lines[n - 1].strip.empty? }
+            loop do
+                more = (1..lines.size).select do |n|
+                    !context.include?(n) && blank.(n) && (context.include?(n - 1) || context.include?(n + 1))
+                end
+                break if more.empty?
+                context.concat(more)
+            end
+            context.sort!
+        end
         [lines.join, context]
     end
 

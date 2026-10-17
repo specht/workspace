@@ -770,7 +770,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   ist nachgebaut, weil ein Screenshot das echte nicht zeigt. Nach einem Update
   von VS Code entstehen sie neu.
 - Kontextzeilen: Von der Zickzacklinie fällt ein leichter Schatten in den
-  Kontext, so liegt der neue Code sichtbar obenauf.
+  Kontext, so liegt der neue Code sichtbar obenauf. Leerzeilen, wo Kontext und neuer
+  Code aneinanderstoßen, gehören zum Kontext; der Schnitt liegt direkt an der
+  ersten und letzten Zeile Code.
 - Klassenseite und Startseite: Titel mit »&« (»Statische Webseiten mit HTML &
   CSS«) standen dort als »&amp;«.
 - Abgaben ansehen funktioniert jetzt in allen 15 Aktivitäten mit Abgabe; ein

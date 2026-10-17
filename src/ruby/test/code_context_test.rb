@@ -21,6 +21,15 @@ class CodeContextTest < Minitest::Test
         assert_equal %w[code-line code-cut code-line code-cut code-line], pre.element_children.map { |e| e['class'].split.first }
     end
 
+    def test_blank_lines_next_to_context_are_context
+        # main { … } with a new blank line and three new declarations
+        _, context = CodeHighlight.split_context("~ main {\n~     padding: 2rem;\n\n    display: flex;\n\n    gap: 2rem;\n\n~ }\n")
+        assert_equal [1, 2, 3, 7, 8], context
+        # a blank line among new code only stays new
+        _, none = CodeHighlight.split_context("a\n\nb\n")
+        assert_empty none
+    end
+
     def test_blocks_without_context_stay_as_they_were
         pre = render("int a = ~b;\n")
         assert_empty pre.css('.code-line')
