@@ -18,7 +18,7 @@ language: Pixelflow Canvas / Ruby
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='fresh-start.webp' alt='Der Workspace ohne geöffneten Ordner, links »No Folder Opened«, rechts die Willkommensseite mit »New File…«.'>
+<img class='full' src='../reference/workspace/fresh-start.webp' alt='Der Workspace ohne geöffneten Ordner, links »No Folder Opened«, rechts die Willkommensseite mit »New File…«.'>
 
 <div class='hint books'>
 Dieses Tutorial geht davon aus, dass du bereits die Pixelflow Canvas-Erweiterung und das pixelflow_canvas rubygem installiert hast. Falls nicht, findest du die Anleitung hier in Abschnitt 1: <a href='/drawing'>»Pixelflow Canvas installieren«</a>.

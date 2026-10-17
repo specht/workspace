@@ -769,6 +769,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   und Umbenennen bis zur Umwandlung nach WebP. Das Kontextmenü des Browsers
   ist nachgebaut, weil ein Screenshot das echte nicht zeigt. Nach einem Update
   von VS Code entstehen sie neu.
+- Die Entwürfe »Autostereogramme« und »Anaglyphen« binden »Terminal öffnen«
+  aus dem Handbuch ein, statt den Text mit eigenen (fehlenden) Bildern zu
+  wiederholen; »Feueranimation« zeigt den leeren Workspace aus dem Handbuch.
 - Grundlagen: der Verzeichnisbaum kommt aus einem Rezept, ein Ausschnitt des
   Explorers mit der Shower-Vorlage. Die Seite hat jetzt kein Bild mehr, das
   von Hand gemacht ist.
