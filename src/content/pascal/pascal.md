@@ -287,6 +287,13 @@ Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quellte
 
 Wenn du möchtest, kannst du eine kleine Zeitreise machen und wie früher in den 90ern programmieren. Vergrößere dein Terminal und gib einfach `fp bubblesort.pas` ein:
 
+<!-- tutorial-screenshot
+# Die Entwicklungsumgebung fp mit bubblesort.pas, im maximierten Terminal
+press: Control+l
+terminal-maximize
+terminal-run: fp bubblesort.pas
+sleep: 3
+-->
 <img class='full' src='fp.webp' alt='Die Entwicklungsumgebung fp im Terminal, blau, mit Menüleiste und bubblesort.pas im Editor, unten die Tasten F1 Help, F2 Save, F3 Open, Alt+F9 Compile, F9 Make.'>
 
 In dieser Entwicklungsumgebung kannst du den Quelltext direkt bearbeiten und du kannst folgende Tasten verwenden:
@@ -302,13 +309,14 @@ In dieser Entwicklungsumgebung kannst du den Quelltext direkt bearbeiten und du 
 Auch wenn es nicht so aussieht: in der FreePascal-Entwicklungsumgebung kann man auch die Maus verwenden.
 </div>
 
-Bevor du ein Programm kompilieren kannst, musst du der Entwicklungsumgebung allerdings noch einen Hinweis geben, wo die benötigten Units zu finden sind. Klicke dazu auf »Options« und »Directories…«:
+Die Ordner mit den Units kennt die Entwicklungsumgebung schon. Drücke <kbd>F9</kbd>, und sie kompiliert das Programm:
 
-<img class='full' src='options-dir-menu.webp' alt='In fp ist das Menü Options offen, »Directories…« ist ausgewählt.'>
-
-…und trage dann den Pfad `/usr/lib/x86_64-linux-gnu/fpc/3.2.2/units/x86_64-linux/*` ein:
-
-<img class='full' src='fp-directory-added.webp' alt='Der Dialog Directories in fp, Reiter Units, mit dem Eintrag /usr/lib/x86_64-linux-gnu/fpc/3.2.2/units/x86_64-linux/* und den Knöpfen OK und Cancel.'>
+<!-- tutorial-screenshot
+# F9 kompiliert: die Ordner der Units stehen schon in /etc/fp.cfg
+press: F9
+sleep: 5
+-->
+<img class='full' src='fp-compiled.webp' alt='In fp das Fenster Compiling über dem Quelltext: Main file bubblesort.pas, Total errors 0, darunter »Compile successful: Press any key«.'>
 
 ## Zusammenfassung
 
