@@ -23,13 +23,25 @@ module StoryCheck
     STARTER = 'pages-starter'
 
     # Reachable pages without a choice that leads to another page: there the
-    # story ends, and BIF offers to play again.
+    # story ends, and BIF offers to play again. Every such choice is an edge.
     def self.endings(analysis)
         unreachable = (analysis['diagnostics'] || []).select { |d| d['code'] == 'unreachable-page' }.map { |d| d['file'] }
-        (analysis.dig('graph', 'pages') || []).select do |page|
-            !unreachable.include?(page['file']) &&
-                (page['links'] || []).none? { |link| link['kind'] == 'page' && !link['local'] }
+        leaving = (analysis['edges'] || []).map { |edge| edge['sourceNodeId'] }
+        (analysis['nodes'] || []).select do |node|
+            node['kind'] == 'page' && node['reachable'] != false && !unreachable.include?(node['path']) &&
+                !leaving.include?(node['nodeId'])
         end
+    end
+
+    # The summary with every count MINIMUMS asks for: BIF leaves scripts,
+    # conditions and images out of it, they are summed from the pages.
+    def self.totals(analysis)
+        summary = (analysis['summary'] || {}).dup
+        MINIMUMS.each_value do |(field, _, _)|
+            next if summary.key?(field)
+            summary[field] = (analysis['nodes'] || []).sum { |node| node.dig('counts', field).to_i }
+        end
+        summary
     end
 
     # Story files whose content differs from what the analysis read: the
@@ -47,7 +59,7 @@ module StoryCheck
 
     # What the check read, for »Was der Workspace gelesen hat«.
     def self.describe(analysis, project)
-        s = analysis['summary'] || {}
+        s = totals(analysis)
         p = analysis['project'] || {}
         ends = endings(analysis).size
         "Geschichte »#{p['title'] || 'ohne Titel'}« in `#{project}/#{p['pagesPath']}`: " \
@@ -87,7 +99,7 @@ module StoryCheck
             return [false, :stale, "BIF hat deine Geschichte zuletzt gelesen, bevor du `#{stale.first}` geändert hast. Öffne deinen Workspace und speichere eine Seite, dann liest BIF sie neu; danach kann ich nachsehen."]
         end
 
-        summary = analysis['summary'] || {}
+        summary = totals(analysis)
         pages_path = analysis.dig('project', 'pagesPath').to_s
         if expect['own_story'] && pages_path == STARTER
             return [false, :starter, "Deine Geschichte steht noch in `#{project}/#{STARTER}`. Lege einen eigenen Ordner an, etwa `pages-meine-geschichte`, und trag ihn in `#{project}/config.js` ein: `export const path = \"pages-meine-geschichte\";`"]

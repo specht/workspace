@@ -8,7 +8,9 @@ require_relative '../include/task_spec'
 require_relative '../include/workspace_files'
 
 # The fixture is »Nach Schulschluss« as the tutorial ends, with the analysis
-# BIF 9b8abe8 wrote for it (trimmed to the fields the check reads).
+# BIF 9b8abe8 published for it in the screenshot Workspace (the watcher of
+# `npm run dev`, which the extension starts): nodes and edges, and no
+# scripts, conditions or images in the summary.
 class StoryCheckTest < Minitest::Test
     FIXTURE = File.expand_path('fixtures/bif-story', __dir__)
 
@@ -50,6 +52,18 @@ class StoryCheckTest < Minitest::Test
         assert_match(/»Nach Schulschluss« in `bif\/pages-starter`: 5 Seiten, 6 Entscheidungen.*1 Ende; 0 Fehler/, run_task('ende').read)
     end
 
+    def node(data, page_id)
+        data['nodes'].find { |n| n['pageId'] == page_id }
+    end
+
+    def test_scripts_and_conditions_are_counted_from_the_pages
+        assert_includes run_task('ende').read, '8 Bedingungen, 2 Skripte'
+        data = analysis
+        node(data, '3')['counts'].merge!('conditions' => 0, 'scripts' => 0)
+        write_analysis(data)
+        assert_equal :too_few_scripts, run_task('schluessel').problem
+    end
+
     def test_own_story_tasks_want_another_folder
         result = run_task('eigene-geschichte')
         assert_equal :wrong, result.status
@@ -86,7 +100,8 @@ class StoryCheckTest < Minitest::Test
     def test_unreachable_pages_are_no_endings
         data = analysis
         data['summary']['pages'] = 6
-        data['graph']['pages'] << { 'id' => '6', 'file' => 'pages-starter/6.md', 'links' => [] }
+        data['nodes'] << { 'kind' => 'page', 'nodeId' => 'node-page-36', 'pageId' => '6', 'path' => 'pages-starter/6.md',
+                           'reachable' => false, 'counts' => {} }
         data['diagnostics'] << { 'severity' => 'warning', 'code' => 'unreachable-page', 'file' => 'pages-starter/6.md',
                                  'line' => 1, 'column' => 1, 'message' => "Page '6' is unreachable from page '1'." }
         write_analysis(data)
@@ -99,7 +114,7 @@ class StoryCheckTest < Minitest::Test
     def test_a_story_without_an_ending
         File.write(path('pages-starter/5.md'), "Der Schlüssel passt.\n\n- [Zurück.](2)\n")
         data = analysis
-        data['graph']['pages'].find { |p| p['id'] == '5' }['links'] = [{ 'kind' => 'page', 'target' => '2', 'local' => false }]
+        data['edges'] << { 'sourceNodeId' => node(data, '5')['nodeId'], 'target' => '2' }
         write_analysis(data)
         result = run_task('ende')
         assert_equal :too_few_endings, result.problem
@@ -113,9 +128,8 @@ class StoryCheckTest < Minitest::Test
         result = run_task('lokal')
         assert_equal :too_few_local_choices, result.problem
         assert_includes result.message, '`(.)`'
-        office = analysis['graph']['pages'].find { |p| p['id'] == '3' }
-        assert office['links'].any? { |l| l['local'] }
-        refute StoryCheck.endings(analysis).map { |p| p['id'] }.include?('3')
+        assert node(analysis, '3')['choices'].any? { |c| c['local'] }
+        refute StoryCheck.endings(analysis).map { |n| n['pageId'] }.include?('3')
     end
 
     def test_own_folder
@@ -126,7 +140,9 @@ class StoryCheckTest < Minitest::Test
         data['project']['pagesPath'] = 'pages-meine-geschichte'
         data['summary'] = data['summary'].merge('pages' => 1, 'pageChoices' => 0)
         data['inputManifest'] = [{ 'path' => 'config.js' }, { 'path' => 'pages-meine-geschichte/1.md' }]
-        data['graph']['pages'] = [{ 'id' => '1', 'file' => 'pages-meine-geschichte/1.md', 'links' => [] }]
+        data['nodes'] = [{ 'kind' => 'page', 'nodeId' => 'node-page-1', 'pageId' => '1', 'path' => 'pages-meine-geschichte/1.md',
+                           'reachable' => true, 'counts' => {} }]
+        data['edges'] = []
         write_analysis(data)
         assert_equal :correct, run_task('eigener-ordner').status
         result = run_task('eigene-geschichte')

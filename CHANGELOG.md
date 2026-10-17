@@ -684,6 +684,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- BIF: Die Aufgaben »Der Schlüssel« und »Ein Ende« ließen sich im Workspace
+  nicht lösen: Die Prüfung erwartete Skripte, Bedingungen und Enden an
+  anderer Stelle, als BIF sie in die Analyse der Geschichte schreibt, und las
+  sie als 0.
 - Die Karten von »Endliche Automaten« und »Ein Rechner für Ausdrücke« im
   Katalog zeigen ihre Zeichnung ganz, statt sie abzuschneiden: `image:
   bild.webp:contain` füllt eine Zeichnung auf 16:9 auf.

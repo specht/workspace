@@ -882,6 +882,10 @@ heißt es »Öffne deinen Workspace und speichere eine Seite« (`problem: stale`
 Die Rückmeldung nennt Datei und Zeile; die häufigen Meldungen von BIF (fehlende
 Seite, unerreichbare Seite, Fehler in Skript, Bedingung oder Ausdruck,
 fehlendes Bild) stehen auf Deutsch da, alle anderen so, wie BIF sie schreibt.
+Die Datei schreibt der Watcher von `npm run dev`, den die Erweiterung startet
+(`schemaVersion: 2`): `nodes` sind die Seiten mit ihren `counts`, `edges` die
+Entscheidungen zu anderen Seiten. Skripte, Bedingungen und Bilder stehen nicht
+in `summary`; der Server zählt sie aus den `counts` der Seiten zusammen.
 Die Klassenübersicht kann `story` für alle auf einmal prüfen.
 
 ### schema
