@@ -40,6 +40,35 @@ html[data-bs-theme="dark"] {
         background-color: #121212;
         box-shadow: 0 0 1em rgba(0, 0, 0, 1.0);
     }
+    .code-language-switch {
+        border-color: #3a3a37;
+        background: #232321;
+    }
+    .code-language-option {
+        color: #a3a29d;
+    }
+    .code-language-option:hover {
+        color: #ececec;
+    }
+    .code-language-option img {
+        filter: grayscale(1) brightness(1.8);
+        opacity: 0.6;
+    }
+    .code-language-option:hover img,
+    .code-language-option[aria-pressed='true'] img {
+        filter: none;
+        opacity: 1;
+    }
+    .code-language-option[aria-pressed='true'] {
+        background: #3a3a37;
+        box-shadow: none;
+    }
+    .code-language-option[data-set-language='ruby'][aria-pressed='true'] {
+        color: #ff8a8f;
+    }
+    .code-language-option[data-set-language='python'][aria-pressed='true'] {
+        color: #8cbfe8;
+    }
     .autotoc-up {
         color: #c9c8c3;
         background: #2a2a28;

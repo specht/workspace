@@ -117,13 +117,15 @@ module CodeLanguages
         from_group || DEFAULT
     end
 
-    # The switch in the page header: one button per language, the current
-    # one pressed.
+    # The switch in the page header: one button per language, with its logo
+    # (static/images/languages/), the current one pressed; the look follows
+    # aria-pressed (default.css, .code-language-switch).
     def self.switch_html(languages, current)
         buttons = languages.map do |l|
             pressed = l == current
-            "<button type='button' class='btn btn-sm #{pressed ? 'btn-secondary' : 'btn-outline-secondary'}' data-set-language='#{l}' aria-pressed='#{pressed}'>#{NAMES[l]}</button>"
+            "<button type='button' class='code-language-option' data-set-language='#{l}' aria-pressed='#{pressed}'>" \
+                "<img src='/images/languages/#{l}.webp' alt='' width='16' height='16'>#{NAMES[l]}</button>"
         end
-        "<span class='btn-group code-language-switch' role='group' aria-label='Programmiersprache'>#{buttons.join}</span>"
+        "<span class='code-language-switch' role='group' aria-label='Programmiersprache'>#{buttons.join}</span>"
     end
 end

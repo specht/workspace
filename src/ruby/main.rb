@@ -4190,8 +4190,6 @@ class Main < Sinatra::Base
                     container.dataset.codeLanguage = language;
                     container.querySelectorAll('[data-set-language]').forEach(function (button) {
                         const on = button.dataset.setLanguage === language;
-                        button.classList.toggle('btn-secondary', on);
-                        button.classList.toggle('btn-outline-secondary', !on);
                         button.setAttribute('aria-pressed', on ? 'true' : 'false');
                     });
                     container.querySelectorAll('.code-language-name').forEach(function (el) { el.textContent = names[language]; });
