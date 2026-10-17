@@ -1,0 +1,97 @@
+# Aufgaben zu »Ein Routenplaner für Berlin«. Format: docs/aufgaben.md.
+# Alles liegt in /workspace/routenplaner-starter; die Prüfungen lesen die
+# kleine Testkarte data/test.tsv (fünf Kreuzungen: der Ahornweg 1-2-3, ein
+# Fußweg 2-4 und der Birkenweg 3-5-4, eine Einbahnstraße), die Werte kommen
+# aus loesung/.
+format: 1
+activity: routenplaner
+tasks:
+  - id: fusswege
+    title: Wie viele Fußwege?
+    prompt: Wie viele Wege in `data/steglitz.tsv` sind Fußwege, also von der Art `footway`?
+    check:
+      type: number
+      expect: 6589
+    feedback:
+      - when: { equals: 13493 }
+        say: Das sind alle Wege. Gesucht sind nur die, deren Zeile mit `footway` anfängt.
+    hint: '`grep -c` zählt die Zeilen, auf die ein Muster passt: `grep -c "^footway" data/steglitz.tsv`. Das `^` heißt »am Anfang der Zeile«.'
+    solution: 6589, fast die Hälfte aller 13 493 Wege.
+
+  - id: lesen
+    title: Die Wege lesen
+    prompt: Schreib `read_ways` in `routes.rb`.
+    check:
+      type: ruby
+      file: routenplaner-starter/routes.rb
+      cases:
+        - read_ways('routenplaner-starter/data/test.tsv').size: 3
+        - call: read_ways('routenplaner-starter/data/test.tsv').first[:name]
+          expect: "'Ahornweg'"
+          say: Der Name ist der dritte Teil der Zeile, nach Art und Einbahnstraße.
+        - call: read_ways('routenplaner-starter/data/test.tsv')[1][:kind]
+          expect: "'footway'"
+        - call: read_ways('routenplaner-starter/data/test.tsv')[2][:oneway]
+          expect: "'yes'"
+        - call: read_ways('routenplaner-starter/data/test.tsv').first[:points]
+          expect: "[['1', 13.3, 52.45], ['2', 13.301, 52.45], ['3', 13.302, 52.45]]"
+          say: 'Jeder Punkt ist ein Array aus ID (ein Text), Länge und Breite (Kommazahlen): `["2", 13.301, 52.45]`.'
+        - call: read_ways('routenplaner-starter/data/test.tsv')[1][:name]
+          expect: "''"
+          say: Ein Weg ohne Namen hat den leeren Text als Namen, zwei Tabulatoren hintereinander.
+
+  - id: grad
+    title: Ein Grad ist nicht gleich ein Grad
+    prompt: Warum ist in Berlin ein Grad Länge (nach Osten) kürzer als ein Grad Breite (nach Norden)?
+    check:
+      type: choice
+      options:
+        - Die Längengrade laufen an den Polen zusammen. Je weiter nördlich, desto näher liegen sie beieinander.
+        - Die Erde ist am Äquator dicker als von Pol zu Pol.
+        - Ein Grad Länge ist eine Stunde Zeitverschiebung, das ist kürzer.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Die Erde ist am Äquator tatsächlich etwas dicker, aber nur um 0,3 Prozent. In Berlin ist ein Grad Länge fast 40 Prozent kürzer.
+
+  - id: abstand
+    title: Wie weit ist es?
+    prompt: Schreib `distance` in `routes.rb`.
+    check:
+      type: ruby
+      file: routenplaner-starter/routes.rb
+      cases:
+        - call: (distance(13.3, 52.45, 13.3, 52.451) - 111.2).abs < 0.5
+          expect: true
+          say: Ein Tausendstel Grad nach Norden sind überall gut 111 Meter.
+        - call: (distance(13.3, 52.45, 13.301, 52.45) - 67.8).abs < 0.5
+          expect: true
+          say: Ein Tausendstel Grad nach Osten ist in Berlin nur knapp 68 Meter lang. Hast du die Länge mit dem Cosinus der Breite verkürzt? Math.cos rechnet im Bogenmaß.
+        - call: (distance(13.3205, 52.4572, 13.3064, 52.4560) - 965).abs < 3
+          expect: true
+          say: Vom Rathaus Steglitz zum Botanischen Garten sind es in Luftlinie gut 960 Meter.
+        - call: distance(13.3, 52.45, 13.3, 52.45)
+          expect: 0.0
+        - call: distance(13.3, 52.45, 13.301, 52.451) == distance(13.301, 52.451, 13.3, 52.45)
+          expect: true
+          say: Hin ist es so weit wie zurück.
+
+  - id: graph
+    title: Vom Weg zum Graphen
+    prompt: Schreib `build_graph` in `routes.rb`.
+    check:
+      type: ruby
+      file: routenplaner-starter/routes.rb
+      cases:
+        - build_graph(read_ways('routenplaner-starter/data/test.tsv'))[:nodes].size: 5
+        - call: build_graph(read_ways('routenplaner-starter/data/test.tsv'))[:nodes]['2']
+          expect: '[13.301, 52.45]'
+        - call: build_graph(read_ways('routenplaner-starter/data/test.tsv'))[:edges]['2'].map(&:first).sort
+          expect: "['1', '3', '4']"
+          say: Der Punkt 2 liegt am Ahornweg zwischen 1 und 3 und ist der Anfang des Fußwegs zu 4.
+        - call: build_graph(read_ways('routenplaner-starter/data/test.tsv'))[:edges]['5'].map(&:first).sort
+          expect: "['3', '4']"
+          say: Nachbarn sind nur Punkte, die auf einem Weg direkt aufeinander folgen, und das in beide Richtungen.
+        - call: (build_graph(read_ways('routenplaner-starter/data/test.tsv'))[:edges]['1'].first[1] - 67.8).abs < 0.5
+          expect: true
+          say: Zu jedem Nachbarn gehört, wie weit er entfernt ist, mit deiner Funktion distance.

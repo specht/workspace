@@ -72,10 +72,12 @@ function draw() {
     }
     for (const [kind, points] of data.sorted) {
         const [color, width, dash] = STYLES[data.kinds[kind]] || OTHER;
+        // gestrichelte Wege (Fußwege, Radwege) wachsen nur halb so stark
+        const grow = dash ? Math.min(thin, 2 * ratio) : thin;
         context.strokeStyle = color;
-        context.lineWidth = Math.max(0.6 * ratio, width * thin);
+        context.lineWidth = Math.max(0.6 * ratio, width * grow);
         // die Striche wachsen mit der Breite, sonst laufen sie beim Zoomen zusammen
-        context.setLineDash(dash && view.scale > 20000 ? dash.map((d) => d * thin) : []);
+        context.setLineDash(dash && view.scale > 20000 ? dash.map((d) => d * grow) : []);
         path(points);
         context.stroke();
     }

@@ -8,6 +8,8 @@
 
 require 'json'
 require 'sinatra'
+
+$stdout.sync = true # jede Meldung sofort, nicht erst am Ende
 require_relative 'routes'
 
 AREA = ENV.fetch('AREA', 'steglitz')
@@ -19,6 +21,8 @@ set :bind, '0.0.0.0'
 set :host_authorization, { permitted_hosts: [] }
 set :public_folder, File.join(__dir__, 'public')
 set :logging, false
+# Puma ohne seine Meldungen beim Start, damit deine zu sehen sind
+set :server_settings, { Silent: true }
 
 # Die Karte liest der Server selbst, damit sie schon da ist, bevor routes.rb
 # etwas kann: für jeden Weg seine Art und seine Punkte.
@@ -61,6 +65,8 @@ def nearest(lon, lat)
     scale = Math.cos(lat * Math::PI / 180)
     GRAPH[:nodes].min_by { |_id, (x, y)| ((x - lon) * scale)**2 + (y - lat)**2 }.first
 end
+
+puts 'Die Karte: Port 4567 (Reiter »Ports«). Beenden mit Strg+C.'
 
 get '/' do
     send_file File.join(settings.public_folder, 'index.html')

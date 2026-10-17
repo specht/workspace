@@ -769,6 +769,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   und Umbenennen bis zur Umwandlung nach WebP. Das Kontextmenü des Browsers
   ist nachgebaut, weil ein Screenshot das echte nicht zeigt. Nach einem Update
   von VS Code entstehen sie neu.
+- In Arbeit, nur in der Entwicklung im Katalog: »Ein Routenplaner für Berlin«.
+  Mit echten Karten von OpenStreetMap baut man in Ruby einen Routenplaner,
+  erst in Steglitz, dann in ganz Berlin; Start und Ziel sind öffentliche Orte
+  (Sehenswürdigkeiten, alle Schulen Berlins), nie Adressen. Die Schritte 1 bis
+  3 stehen: die Karte, Abstände aus Koordinaten, der Graph. Die Daten baut
+  `src/scripts/collect-streets/`; die Vorlage liegt in `vorlage/`, bis es
+  `specht/routenplaner-starter` gibt.
 - `.gitignore` schließt nur noch den Datenordner der Entwicklung (`/data`) aus,
   nicht mehr jeden Ordner namens `data`. Dadurch fehlten zwei Dateien des
   Monaco-Editors im Repository (`webCustomData.js` für CSS und HTML, aus der

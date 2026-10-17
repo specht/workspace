@@ -125,6 +125,7 @@
     - sandbox-datenstrukturen
     - automata
     - calculator
+    - .routenplaner
     - digits-experiment
 
 - key: compression

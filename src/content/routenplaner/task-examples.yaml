@@ -1,0 +1,29 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): die Musterlösung löst jede Aufgabe, das leere routes.rb
+# der Vorlage keine.
+format: 1
+activity: routenplaner
+examples:
+  lesen:
+    pass:
+      - files: { routenplaner-starter/routes.rb: loesung/routes-3.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+    fail:
+      - files: { routenplaner-starter/routes.rb: vorlage/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+  abstand:
+    pass:
+      - files: { routenplaner-starter/routes.rb: loesung/routes-3.rb }
+    fail:
+      - files: { routenplaner-starter/routes.rb: vorlage/routes.rb }
+      # ohne den Cosinus: nach Osten zu weit
+      - files:
+          routenplaner-starter/routes.rb:
+            text: |
+              def distance(lon1, lat1, lon2, lat2)
+                  Math.sqrt((lon2 - lon1)**2 + (lat2 - lat1)**2) * Math::PI / 180 * 6_371_000
+              end
+        say: Cosinus
+  graph:
+    pass:
+      - files: { routenplaner-starter/routes.rb: loesung/routes-3.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+    fail:
+      - files: { routenplaner-starter/routes.rb: vorlage/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
