@@ -687,7 +687,6 @@ GROUP BY driving_side;
 press: Control+L
 terminal-run: SELECT driving_side, COUNT(*) FROM country GROUP BY driving_side;
 sleep: 0.5
-terminal-scroll-back: 2
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->
@@ -783,9 +782,9 @@ WHERE border.country_code = 'DEU';
 press: Control+L
 terminal-run: SELECT neighbor.name FROM border JOIN country AS neighbor ON neighbor.code = border.neighbor_code WHERE border.country_code = 'DEU';
 sleep: 0.5
-terminal-scroll-back: 3
+terminal-scroll-back: 4
 crop-terminal-lines: auto
-crop-terminal-skip-bottom: 1
+crop-terminal-skip-bottom: 2
 -->
 
 <img class='full' src='join-neighbors.webp' alt='Die neun Nachbarländer Deutschlands, von Belgien bis Tschechien.'>
@@ -813,7 +812,7 @@ WHERE country.continent = 'Ozeanien' AND country.population > 1000000;
 press: Control+L
 terminal-run: SELECT country.name, border.neighbor_code FROM country LEFT JOIN border ON border.country_code = country.code WHERE country.continent = 'Ozeanien' AND country.population > 1000000;
 sleep: 0.5
-terminal-scroll-back: 2
+terminal-scroll-back: 1
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->
@@ -828,26 +827,27 @@ _task(meiste-staedte)
 
 ## Viele zu viele: Amtssprachen
 
-Ein Land kann mehrere Amtssprachen haben, Finnland etwa Finnisch und Schwedisch, und eine Sprache kann in vielen Ländern Amtssprache sein. Das passt weder in eine Spalte von `country` noch in eine von `language`. Deshalb gibt es eine Tabelle dazwischen, `country_language`, mit einer Zeile für jedes Paar aus Land und Sprache. Für die Namen braucht es zwei `JOIN`s:
+Ein Land kann mehrere Amtssprachen haben, Singapur etwa gleich vier, und eine Sprache kann in vielen Ländern Amtssprache sein. Das passt weder in eine Spalte von `country` noch in eine von `language`. Deshalb gibt es eine Tabelle dazwischen, `country_language`, mit einer Zeile für jedes Paar aus Land und Sprache. Für die Namen braucht es zwei `JOIN`s:
 
 ```sql
 SELECT country.name, language.name
 FROM country
 JOIN country_language ON country_language.country_code = country.code
 JOIN language ON language.code = country_language.language_code
-WHERE country.name = 'Finnland';
+WHERE country.name = 'Singapur';
 ```
 
 <!-- tutorial-screenshot
 press: Control+L
-terminal-run: SELECT country.name, language.name FROM country JOIN country_language ON country_language.country_code = country.code JOIN language ON language.code = country_language.language_code WHERE country.name = 'Finnland';
-wait-for-text: 2 rows in set
+terminal-run: SELECT country.name, language.name FROM country JOIN country_language ON country_language.country_code = country.code JOIN language ON language.code = country_language.language_code WHERE country.name = 'Singapur';
+wait-for-text: 4 rows in set
 sleep: 0.5
+terminal-scroll-back: 2
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->
 
-<img class='full' src='join-languages.webp' alt='Die beiden Amtssprachen Finnlands: Finnisch und Schwedisch.'>
+<img class='full' src='join-languages.webp' alt='Die vier Amtssprachen Singapurs: Englisch, Hochchinesisch, Malaiisch und Tamil.'>
 
 Eine solche Tabelle in der Mitte brauchst du immer, wenn auf beiden Seiten viele stehen: bei Filmen und Genres in der Filmdatenbank genauso.
 
