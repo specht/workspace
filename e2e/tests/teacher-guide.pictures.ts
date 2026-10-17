@@ -19,7 +19,7 @@ const GUIDE = path.resolve(__dirname, '../../src/content/lehrmaterial/lehrmateri
 const NAMES: Record<string, string> = {
   'E2E Auth Student 0': 'Aylin Demir', 'E2E Auth Student 1': 'Ben Hoffmann', 'E2E Auth Student 2': 'Clara Weber',
   'E2E Auth Student 3': 'David Novak', 'E2E Auth Student 4': 'Elif Kaya', 'E2E Auth Student 5': 'Finn Schulz',
-  'E2E Auth Student 6': 'Greta Lange', 'E2E Auth Student 7': 'Hannes Vogel', 'E2E Peer': 'Ida Krüger',
+  'E2E Auth Student 6': 'Greta Lange', 'E2E Auth Student 7': 'Hannes Meyer', 'E2E Peer': 'Ida Krüger',
   'E2E Worker 0': 'Jonas Becker', 'E2E Worker 1': 'Kim Nguyen', 'E2E Worker 2': 'Lea Fischer', 'E2E Worker 3': 'Mats Wolf',
   'E2E Worker 4': 'Nora Schmitt', 'E2E Worker 5': 'Ole Brandt', 'E2E Worker 6': 'Paula Richter', 'E2E Worker 7': 'Quentin Roth',
   'E2E Teacher': 'Frau Berger',
@@ -38,6 +38,24 @@ const ANSWERS: [string, string, string][] = [
   ['e2e-auth-student-0@example.com', 'bif/punkt', '1'], ['e2e-auth-student-1@example.com', 'bif/punkt', '0'],
   ['e2e-auth-student-2@example.com', 'bif/punkt', '1'], ['e2e-auth-student-2@example.com', 'bif/anfangswert', '1'],
 ];
+
+// The Workspaces of the class while it works: every one running, most of
+// them nearly idle, a few busy (CPU in percent, memory in MiB). The real
+// figures come over the page's WebSocket; for the picture only those of the
+// Workspaces are replaced, row by row, and the server's (SERVER), not the
+// development machine's with its disk nearly full.
+const LOADS: [number, number][] = [
+  [0.4, 312], [3.1, 486], [0.9, 271], [12.6, 655], [1.7, 398], [0.2, 244], [5.4, 517], [0.7, 289], [2.2, 431],
+  [27.8, 803], [0.8, 302], [1.3, 356], [0.3, 259], [7.9, 590], [1.1, 337], [0.5, 281], [4.0, 472], [0.6, 266],
+];
+// The real server's figures at a lesson, with the unit marked up as the
+// server sends it
+const G = (value: number) => `${value.toFixed(1)}<span class='unit'>G</span>`;
+const SERVER = {
+  cpu_usage: 8.95, num_cores: 16, ram_percent: 46.53, ram_used: G(14.1), ram_total: G(30.3),
+  disk_root_percent: 68.67, disk_root_used: G(51.5), disk_root_total: G(75.0),
+  disk_user_percent: 75.61, disk_user_used: G(224.5), disk_user_total: G(296.9),
+};
 
 const PAGE = '<!DOCTYPE html>\n<html lang="de">\n<head><meta charset="utf-8"><title>Axolotl</title><link rel="stylesheet" href="styles.css"></head>\n<body>\n<h1>Axolotl</h1>\n<p>Axolotl leben ihr ganzes Leben im Wasser.</p>\n<ul>\n<li>Sie behalten ihre Kiemen.</li>\n<li>Sie können Gliedmaßen nachwachsen lassen.</li>\n<li>Sie leben nur bei Mexiko-Stadt.</li>\n</ul>\n<p id="gruss">Hallo!</p>\n<script src="script.js"></script>\n</body>\n</html>\n';
 const STYLES = 'body { font-family: sans-serif; max-width: 40em; margin: 2em auto; background: #fff4f8; }\nh1 { color: #c2185b; }\n';
@@ -105,15 +123,32 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
     await dress(teacher, 0.78);
     await shoot(teacher, 'klasse-fortschritt', '.class-board-select', out);
 
-    // One Workspace at work, so its row shines.
-    const load = container.exec('timeout 25 sh -c "while :; do :; done" || true', { workdir: '/workspace', timeoutMs: 45_000 });
+    // The class at work: each Workspace with a load of its own (LOADS)
     await teacher.goto('/klasse?group=E2E&tab=lernende');
+    const tags = await teacher.locator('.class-ws-status').evaluateAll((cells) => cells.map((td) => (td as HTMLElement).dataset.fsTag!));
+    await teacher.routeWebSocket(/\/ws$/, (ws) => {
+      const server = ws.connectToServer();
+      ws.onMessage((message) => server.send(message));
+      server.onMessage((message) => {
+        let data;
+        try { data = JSON.parse(String(message)); } catch { ws.send(message); return; }
+        if (data.stats) {
+          tags.forEach((tag, i) => {
+            const [cpu, mem] = LOADS[i % LOADS.length];
+            data.stats[tag] = { ...(data.stats[tag] || {}), stats: { CPUPerc: cpu.toFixed(2) + '%', MemUsage: mem.toFixed(1) + 'MiB / 4GiB' } };
+          });
+        }
+        if (data.server_stats) data.server_stats = { ...data.server_stats, ...SERVER };
+        ws.send(JSON.stringify(data));
+      });
+    });
+    await teacher.reload();
     await expect(teacher.locator('.class-server-cards')).toBeVisible({ timeout: 20_000 });
-    await expect(teacher.locator('.class-people-table tr.class-ws-active')).toHaveCount(1, { timeout: 15_000 });
+    await expect(teacher.locator('.class-people-table tr.class-ws-active')).toHaveCount(tags.filter((_, i) => LOADS[i % LOADS.length][0] >= 1).length, { timeout: 15_000 });
     await teacher.waitForTimeout(1500);
     await dress(teacher, 0.78);
     await shoot(teacher, 'klasse-lernende', '.class-board-select', out);
-    await load;
+    await teacher.unrouteAll({ behavior: 'ignoreErrors' });
 
     await teacher.goto('/klasse?group=E2E&activity=static-website');
     await dress(teacher);
