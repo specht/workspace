@@ -24,9 +24,24 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   SQL-Zeitlupe zeigt sie unter der Auswahl der Tabellen, die »Einführung in
   SQL« nach `SHOW TABLES` und `DESCRIBE` (mit einer Erklärung von Primär- und
   Fremdschlüssel), die »Filmdatenbank«, sobald alle sechs Tabellen geladen
-  sind. Für Autorinnen und Autoren: `_schema(terra1)` oder
-  `_schema(movies)` auf einer Zeile für sich; die Schlüssel liest
-  `src/scripts/query-stepper-data.rb` aus den SQL-Dateien.
+  sind. Für Autorinnen und Autoren: `_schema(countries)`,
+  `_schema(movies)` oder `_schema(music)` auf einer Zeile für sich; die
+  Schlüssel liest `src/scripts/query-stepper-data.rb` aus den SQL-Dateien.
+
+- Ein neuer Datensatz »Länder der Welt«, frisch aus Wikidata: die 197 Länder
+  (Mitglieder der Vereinten Nationen, Vatikanstadt, Palästina, Kosovo und
+  Taiwan) mit Einwohnern, Fläche und Kontinent, gut 4.700 Städte ab 100.000
+  Einwohnern und jede Hauptstadt, und die Landgrenzen zwischen den Ländern,
+  in vier Tabellen `continent`, `country`, `city` und `border` mit
+  englischen Spalten und deutschen Namen. Er liegt in
+  `specht/workspace-files` unter `country-archive/`, mit denselben Dateien
+  wie die Filme und die Musik (auch für Neo4j). Gebaut wird er von
+  `src/scripts/collect-countries`, das man jederzeit neu laufen lassen kann.
+
+- Neue Handbuch-Seite »Datensätze« unter »Datenbanken«: die Länder der
+  Welt, die Filme und die Musik, jeweils mit ihren Tabellen als Schema, was
+  die Spalten bedeuten, was drin ist und was nicht, woher die Daten kommen
+  und wie man sie lädt. Die Aktivitäten verweisen darauf.
 
 - Die Handbuch-Seite »Farbräume« erzählt, wie die Farbräume entstanden
   sind: drei Farben bei Young, Helmholtz und Maxwell, die Messungen von
@@ -659,6 +674,21 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Die »Einführung in SQL« arbeitet mit den Ländern der Welt statt mit der
+  alten Datenbank `terra1`, die Fehler hatte und deren Zahlen veraltet
+  waren (Einwohner in Millionen, `Europa` neben `Europe`). Lernende laden
+  `country-archive/mysql.sql`, sehen vier Tabellen mit Primär- und
+  Fremdschlüsseln und erleben, wie ein Fremdschlüssel einen Kontinent
+  ablehnt, den es nicht gibt. Die Aufgaben gehen auf die neuen Tabellen;
+  wo sich die Frage geändert hat, ist es eine neue Aufgabe (zum Beispiel
+  »Nördlich von Hamburg« statt »Westlich von Aachen«, neu »Hauptstädte im
+  Süden«). Wer `terra1` schon importiert hat, lädt die neuen Daten, sonst
+  meldet »Prüfen«, dass die Beispieldaten fehlen. `terra1.sql` bleibt in
+  `specht/workspace-files` für alte Links.
+- Die SQL-Zeitlupe rechnet mit den Ländern der Welt statt mit `terra1`,
+  mit neuen Beispielen für Hauptstädte, Nachbarländer und `LEFT JOIN`.
+- Die READMEs der Film- und der Musikdaten zeigen die Tabellen als Schema
+  und sagen, was die Spalten bedeuten.
 - Die Widgets zum Durchschalten heißen nicht mehr »Schrittmacher«, das an
   einen Herzschrittmacher denken ließ, sondern »Zeitlupe«; das Werkzeug für
   SQL heißt »SQL-Zeitlupe« (die Adresse `/query-stepper` bleibt).
