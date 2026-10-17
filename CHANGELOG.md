@@ -769,6 +769,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   und Umbenennen bis zur Umwandlung nach WebP. Das Kontextmenü des Browsers
   ist nachgebaut, weil ein Screenshot das echte nicht zeigt. Nach einem Update
   von VS Code entstehen sie neu.
+- Grundlagen: der Verzeichnisbaum kommt aus einem Rezept, ein Ausschnitt des
+  Explorers mit der Shower-Vorlage. Die Seite hat jetzt kein Bild mehr, das
+  von Hand gemacht ist.
+- Screenshot-Generator: mehrere `crop-element`-Zeilen schneiden auf den
+  Kasten um alle ihre Elemente zu (die Kopfzeile des Explorers und seine
+  Zeilen).
 - Screenshot-Generator: `move-mouse` findet auch Text in einem Webview, und
   `type` schreibt in ein Feld darin.
 - Die Symbole für Panel, Erweiterungen und »Ausführen« im Text der

@@ -568,7 +568,9 @@ integers and require `crop-terminal-lines`.
 They work for screenshots, not for videos, PDF pages or graphs.
 
 `crop-element: SELECTOR` crops a screenshot to exactly the box of the first
-element the CSS selector matches, such as the screen of an emulator. It
+element the CSS selector matches, such as the screen of an emulator. With
+several `crop-element` lines it crops to the box around all of them: the
+header of the Explorer and its rows, without the empty pane below. It
 replaces the other crops. An element below the fold is scrolled into view
 first; it has to fit into the viewport.
 

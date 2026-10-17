@@ -102,7 +102,29 @@ Rechts oben siehst du mehrere Buttons, mit denen du das Layout anpassen oder ver
 
 ## Dateien, Projekte, Verzeichnisse und Pfade
 
-<img src='directory-tree.webp' class='r' style='width: 15em;' alt='Der Explorer mit dem Ordner SHOWER.JS, darin der Ordner pictures mit monkey.jpg, sky.jpg und titelfolie.jpg, der Ordner shower und die Dateien index.html, LICENSE.md, README.md und styles.css.'>
+<!-- tutorial-screenshot
+# Die Vorlage von Shower als Beispiel eines Projekts: ihr Verzeichnisbaum im
+# Explorer, der Ordner pictures aufgeklappt, die Maus auf der Kopfzeile (so
+# stehen ihre Knöpfe da); nur Kopfzeile und Zeilen, nicht die leere Fläche
+terminal-open
+terminal-run: git clone -q https://git.nhcham.org/specht/shower.js.git /workspace/shower.js && git -C /workspace/shower.js checkout -q 50a071df026545793cfa29853e5e4ed6b1ece36e
+terminal-wait-for-prompt
+hide-bottom-panel
+press: Control+K
+press: Control+O
+wait-for-input-value: /workspace/
+type: shower.js
+press: Enter
+wait-for-input-value: /workspace/shower.js/
+press: Enter
+wait-for-text: pictures
+click: selector:.explorer-folders-view .monaco-list-row[aria-label="pictures"]
+move-mouse: selector:.part.sidebar .pane:has(.explorer-folders-view) > .pane-header
+sleep: 1
+crop-element: .part.sidebar .pane:has(.explorer-folders-view) > .pane-header
+crop-element: .explorer-folders-view .monaco-list-rows
+-->
+<img src='directory-tree.webp' class='r' style='width: 15em;' alt='Der Explorer mit dem Ordner SHOWER.JS, darin die Ordner include und pictures mit fuji.jpg, monkey.jpg, sky.jpg und titelfolie.jpg, der Ordner shower und die Dateien index.html, LICENSE.md, README.md und styles.css.'>
 
 Wenn du am Computer arbeitest, speicherst du deine Arbeit in Dateien. Jede Datei hat einen Dateinamen, der normalerweise auch eine Erweiterung wie `.jpg`, `.html`, `.py` oder `.rb` enthält. Die Dateiendung ist ein Teil des Namens und zeigt oft, um welche Art von Datei es sich handelt.
 
@@ -144,15 +166,16 @@ Wenn später etwas schiefgeht, kannst du zu einem früheren Zwischenstand zurüc
 Um einen Checkpoint zu erstellen, wechsle links in den Explorer und klappe den Bereich **Checkpoints** auf. Klicke auf das Plus-Symbol, um einen neuen Checkpoint zu erstellen.
 
 <!-- tutorial-screenshot
-# Ordner checkpoint-test mit einer README.md öffnen
+# Ordner checkpoint-test mit einer README.md öffnen, von vorn: ohne Ordner
+close-folder
 write-file: checkpoint-test/README.md <- file:checkpoint-test-README.txt
-press: Control+K
-press: Control+O
+# nach dem Schließen hat das Fenster keinen Tastaturfokus: der Knopf statt Strg+K Strg+O
+click: Open Folder
 wait-for-input-value: /workspace/
 type: checkpoint-test
 press: Enter
 wait-for-input-value: /workspace/checkpoint-test/
-press: Enter
+click: OK
 wait-for-text: README.md
 open-file: README.md
 close-tab: Welcome
@@ -185,7 +208,7 @@ move-mouse: selector:.editor-group-container .monaco-editor .view-lines
 sleep: 1
 -->
 
-<img src='checkpoint-created.webp' class='full' alt='Unter Checkpoints steht jetzt Donnerstag, 15.10.2026, mit dem Eintrag »Checkpoint 1«.'>
+<img src='checkpoint-created.webp' class='full' alt='Unter Checkpoints steht jetzt das heutige Datum mit dem Eintrag »Checkpoint 1« und seiner Uhrzeit.'>
 
 Falls du später zu einem Checkpoint zurückkehren möchtest, klicke auf den entsprechenden Eintrag in der Liste:
 

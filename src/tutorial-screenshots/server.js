@@ -701,7 +701,10 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             );
         } else if ((match = line.match(/^crop-element:\s*(?:selector:)?(.+)$/))) {
             cropSource = source;
-            recipe.cropElement = match[1].trim();
+            // several lines: the box around all of them (a pane's header
+            // and its rows); one stays a string, so its hash is as before
+            const selector = match[1].trim();
+            recipe.cropElement = recipe.cropElement == null ? selector : [recipe.cropElement, selector].flat();
         } else if ((match = line.match(/^keep-only:\s*(?:selector:)?(.+)$/))) {
             cropSource = source;
             (recipe.keepOnly ||= []).push(match[1].trim());
@@ -3027,21 +3030,30 @@ async function captureShot(shot, tutorialDirectory) {
         let widthPixels = shot.viewport.width - leftPixels -
             Math.round(shot.viewport.width * (shot.cropRight || 0));
 
-        // crop-element: the picture is exactly that element's box.
+        // crop-element: the picture is exactly that element's box, or the box
+        // around the elements of several lines.
         if (shot.cropElement) {
-            const element = page.locator(shot.cropElement).first();
-            await element.waitFor({ state: 'visible', timeout: ACTION_TIMEOUT_MS });
-            // The screenshot is of the viewport, so the element must be in it.
-            // boundingBox is relative to the viewport, the clip of
-            // Page.captureScreenshot to the document: add the scroll offset.
-            await element.scrollIntoViewIfNeeded();
-            const box = await element.boundingBox();
-            if (!box) throw new Error(`crop-element could not measure ${shot.cropElement}`);
+            const boxes = [];
+            for (const selector of [shot.cropElement].flat()) {
+                const element = page.locator(selector).first();
+                await element.waitFor({ state: 'visible', timeout: ACTION_TIMEOUT_MS });
+                // The screenshot is of the viewport, so the element must be in it.
+                // boundingBox is relative to the viewport, the clip of
+                // Page.captureScreenshot to the document: add the scroll offset.
+                await element.scrollIntoViewIfNeeded();
+                const box = await element.boundingBox();
+                if (!box) throw new Error(`crop-element could not measure ${selector}`);
+                boxes.push(box);
+            }
+            const left = Math.min(...boxes.map((box) => box.x));
+            const top = Math.min(...boxes.map((box) => box.y));
+            const right = Math.max(...boxes.map((box) => box.x + box.width));
+            const bottom = Math.max(...boxes.map((box) => box.y + box.height));
             const scroll = await page.evaluate(() => [window.scrollX, window.scrollY]);
-            leftPixels = (box.x + scroll[0]) * metrics.deviceScaleFactor;
-            topPixels = (box.y + scroll[1]) * metrics.deviceScaleFactor;
-            widthPixels = box.width * metrics.deviceScaleFactor;
-            heightPixels = box.height * metrics.deviceScaleFactor;
+            leftPixels = (left + scroll[0]) * metrics.deviceScaleFactor;
+            topPixels = (top + scroll[1]) * metrics.deviceScaleFactor;
+            widthPixels = (right - left) * metrics.deviceScaleFactor;
+            heightPixels = (bottom - top) * metrics.deviceScaleFactor;
         }
 
         // Important: measure the terminal only AFTER terminal-scroll-back has
