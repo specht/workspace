@@ -626,7 +626,8 @@ class WikidataCountryBuilder
       ```
 
       A continent is identified by its name, a country by its ISO 3166-1 alpha-3 code
-      (`DEU`, `FRA`), a city by its `id`; city names are not unique. Every country has
+      (`DEU`, `FRA`; Kosovo, which has none, by `XKS`), a city by its `id`, numbered
+      by country and name; city names are not unique. Every country has
       exactly one city with `is_capital` = 1 (TRUE). `border` has a row in both directions for
       each pair of neighbours: Germany and France are `('DEU', 'FRA')` and
       `('FRA', 'DEU')`. A continent has no population of its own; it is the sum of its
