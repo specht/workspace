@@ -1,0 +1,147 @@
+# Aufgaben zu »DNS: Wie aus einem Namen eine Adresse wird«. Format: docs/aufgaben.md.
+# Antworten aus dem Netz prüft measure mit dns_answers: Der Server fragt im
+# Workspace der Person selbst mit dig +short nach, und jede der Antworten
+# zählt. So bleiben die Aufgaben richtig, wenn sich eine Adresse ändert.
+format: 1
+activity: dns
+tasks:
+  - id: adresse
+    title: Die Adresse
+    prompt: Welche IPv4-Adresse hat `hackschule.de`?
+    check:
+      type: measure
+      compare: text
+      fields:
+        - { label: hackschule.de, run: dig +short A hackschule.de, extract: dns_answers }
+    hint: Sie steht im ANSWER SECTION, hinter dem `A`.
+
+  - id: nur-adresse
+    title: Nur die Adresse
+    prompt: Schreib einen Befehl, der nur die IPv4-Adresse von `hackschule.de` ausgibt, sonst nichts.
+    check:
+      type: command
+      timeout: 10
+      output:
+        lines: 1
+        matching: '^\d{1,3}(\.\d{1,3}){3}$'
+    feedback:
+      - when: { output_matches: 'ANSWER SECTION|QUESTION' }
+        say: Das ist die ganze Antwort. Mit `+short` gibt `dig` nur die Adresse aus.
+    solution: "`dig +short hackschule.de`"
+
+  - id: mailserver
+    title: Wohin die Post geht
+    prompt: Nenne einen Mailserver von `gmail.com`, ohne die Zahl davor.
+    check:
+      type: measure
+      compare: text
+      fields:
+        - { label: gmail.com, run: dig +short MX gmail.com, extract: dns_answers }
+    hint: Der Typ für Mailserver ist `MX`.
+
+  - id: wurzel
+    title: Was der Root-Server sagt
+    prompt: Du fragst einen Root-Server nach `hackschule.de`. Was antwortet er?
+    check:
+      type: choice
+      options:
+        - Er nennt die Nameserver, die für `de` zuständig sind.
+        - Er nennt die Adresse von `hackschule.de`.
+        - Er sagt, dass es `hackschule.de` nicht gibt.
+        - Er fragt selbst bei den Servern für `de` nach und gibt die Adresse weiter.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Steht im Bild ein ANSWER SECTION?
+      - when: { picked: 2 }
+        say: 'Dann käme `status: NXDOMAIN`. Was steht im AUTHORITY SECTION?'
+      - when: { picked: 3 }
+        say: Das tut der DNS-Server deines Workspace für dich. Ein Root-Server beantwortet nur, was er selbst weiß.
+
+  - id: de-server
+    title: Zuständig für de
+    prompt: Nenne einen Nameserver, der für die Endung `de` zuständig ist.
+    check:
+      type: measure
+      compare: text
+      fields:
+        - { label: de, run: dig +short NS de, extract: dns_answers }
+    hint: Er steht in der Antwort des Root-Servers, im AUTHORITY SECTION. `dig +short NS de` fragt direkt danach.
+
+  - id: zustaendig
+    title: Wer es wirklich weiß
+    prompt: Welcher Nameserver kennt die Adresse von `hackschule.de` selbst? Nenne einen.
+    check:
+      type: measure
+      compare: text
+      fields:
+        - { label: hackschule.de, run: dig +short NS hackschule.de, extract: dns_answers }
+    hint: Frag einen der Server für `de` nach `hackschule.de`, etwa `dig @a.nic.de hackschule.de`, und schau in den AUTHORITY SECTION.
+
+  - id: verteilt
+    title: Warum so umständlich?
+    prompt: Warum gibt es nicht einen einzigen großen Server, der alle Namen der Welt kennt?
+    check:
+      type: reflection
+      min_words: 15
+    examples:
+      - |
+        Es gibt Milliarden Anfragen in jeder Sekunde und ständig ändern
+        Leute ihre Einträge. Ein einziger Server wäre überlastet, und fiele er
+        aus, ginge kein Name mehr. So kümmert sich jeder nur um seinen Teil,
+        und wer hackschule.de anmeldet, kann seine Einträge selbst ändern.
+      - |
+        Weil die Verantwortung verteilt ist: Die DENIC weiß nur, wer für einen
+        Namen unter de zuständig ist, und Cloudflare kennt die Adresse. Dazu
+        merken sich die DNS-Server unterwegs die Antworten, darum muss kaum
+        eine Frage bis zu den Root-Servern.
+
+  - id: zweimal
+    title: Zweimal dieselbe Frage
+    prediction: true
+    prompt: Du fragst zweimal kurz hintereinander nach `wikipedia.org`. Was ist beim zweiten Mal anders?
+    check:
+      type: choice
+      options:
+        - Die Antwort kommt schneller, und ihre TTL ist kleiner.
+        - Nichts, jede Frage geht den ganzen Weg von den Root-Servern an.
+        - Die Antwort kommt schneller, und ihre TTL ist wieder voll.
+        - Die zweite Frage wird abgelehnt, bis die TTL abgelaufen ist.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Dann hätte die TTL keinen Sinn. Was macht der DNS-Server deines Workspace mit der ersten Antwort?
+      - when: { picked: 2 }
+        say: Die TTL zählt, wie lange die gemerkte Antwort noch gilt. Läuft sie beim Merken weiter oder fängt sie neu an?
+      - when: { picked: 3 }
+        say: Eine Frage, deren Antwort gemerkt ist, ist die leichteste. Was macht der Server mit ihr?
+    solution: Beim zweiten Mal kommt die Antwort aus dem Speicher des DNS-Servers, in null oder einer Millisekunde, und ihre TTL ist um die Sekunden kleiner, die seit der ersten Frage vergangen sind.
+
+  - id: rueckwaerts
+    title: Rückwärts
+    prompt: Welcher Name gehört zur Adresse `8.8.8.8`?
+    check:
+      type: measure
+      compare: text
+      fields:
+        - { label: 8.8.8.8, run: dig +short -x 8.8.8.8, extract: dns_answers }
+
+  - id: falsche-antwort
+    title: Eine falsche Antwort
+    prompt: Jemand im selben WLAN schiebt deinem Rechner eine falsche Antwort unter, für `hackschule.de` eine andere Adresse. Was passiert, wenn du dann `http://hackschule.de` öffnest?
+    check:
+      type: choice
+      options:
+        - Der Browser zeigt die Seite eines anderen Servers, und in der Adresszeile steht trotzdem hackschule.de.
+        - Der Browser merkt es an der Adresse und warnt.
+        - Nichts, denn der Server von hackschule.de antwortet trotzdem.
+        - Die Seite lädt nicht, weil die Adresse nicht zum Namen passt.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Woher sollte der Browser wissen, welche Adresse die richtige ist? Er hat nur diese eine Antwort.
+      - when: { picked: 2 }
+        say: Die Pakete gehen an die Adresse aus der Antwort. Erreichen sie den Server von hackschule.de?
+      - when: { picked: 3 }
+        say: Wer prüft, ob Name und Adresse zusammenpassen? Bei `http://` niemand.
+    solution: Der Browser schickt seine Anfrage an die falsche Adresse und zeigt, was von dort kommt; in der Adresszeile steht weiter hackschule.de. Erst bei `https://` merkt er es, denn der falsche Server hat kein Zertifikat für hackschule.de.

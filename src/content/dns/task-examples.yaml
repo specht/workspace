@@ -1,0 +1,7 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: dns
+examples:
+  nur-adresse:
+    skip: Der Befehl fragt im Netz nach; die Adresse kann sich ändern, und ohne Netz gibt es keine.

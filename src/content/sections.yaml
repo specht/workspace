@@ -89,6 +89,7 @@
     Faktor bei der Anmeldung.
   entries:
     - tcpip
+    - dns
     - webserver
     - pixelwand
     - crypto

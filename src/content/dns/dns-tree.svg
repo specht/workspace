@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" width="1200" height="520" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Der Baum der Namen, von der Wurzel bis hackschule.de, und wer für
+       welche Ebene zuständig ist. Als Bild:
+       rsvg-convert -w 1600 dns-tree.svg -o dns-tree.png && cwebp -lossless dns-tree.png -o dns-tree.webp -->
+  <style>
+    .node { fill: #eef3fb; stroke: #1f2937; stroke-width: 2; }
+    .path { fill: #ffffff; stroke: #2b5fb4; stroke-width: 3; }
+    .name { font-size: 26px; fill: #1f2937; text-anchor: middle; }
+    .edge { stroke: #1f2937; stroke-width: 2; }
+    .way { stroke: #2b5fb4; stroke-width: 4; }
+    .who { font-size: 20px; fill: #2b5fb4; }
+    .note { font-size: 18px; fill: #6b7280; font-style: italic; }
+  </style>
+  <rect width="1200" height="520" fill="#ffffff"/>
+
+  <!-- Kanten: der Weg zu hackschule.de blau -->
+  <line class="way" x1="400" y1="85" x2="200" y2="215"/>
+  <line class="edge" x1="400" y1="85" x2="400" y2="215"/>
+  <line class="edge" x1="400" y1="85" x2="600" y2="215"/>
+  <line class="way" x1="200" y1="265" x2="120" y2="395"/>
+  <line class="edge" x1="200" y1="265" x2="300" y2="395"/>
+  <line class="edge" x1="400" y1="265" x2="460" y2="395"/>
+  <line class="edge" x1="600" y1="265" x2="640" y2="395"/>
+
+  <!-- Ebene 0: die Wurzel -->
+  <circle class="path" cx="400" cy="60" r="28"/>
+  <text class="name" x="400" y="70">.</text>
+
+  <!-- Ebene 1: Endungen -->
+  <rect class="path" x="150" y="215" width="100" height="50" rx="8"/>
+  <text class="name" x="200" y="249">de</text>
+  <rect class="node" x="350" y="215" width="100" height="50" rx="8"/>
+  <text class="name" x="400" y="249">com</text>
+  <rect class="node" x="550" y="215" width="100" height="50" rx="8"/>
+  <text class="name" x="600" y="249">org</text>
+
+  <!-- Ebene 2: angemeldete Namen -->
+  <rect class="path" x="30" y="395" width="180" height="50" rx="8"/>
+  <text class="name" x="120" y="429">hackschule</text>
+  <rect class="node" x="220" y="395" width="170" height="50" rx="8"/>
+  <text class="name" x="305" y="429">wikipedia</text>
+  <rect class="node" x="400" y="395" width="120" height="50" rx="8"/>
+  <text class="name" x="460" y="429">google</text>
+  <rect class="node" x="555" y="395" width="170" height="50" rx="8"/>
+  <text class="name" x="640" y="429">wikipedia</text>
+
+  <!-- Wer zuständig ist -->
+  <line x1="770" y1="20" x2="770" y2="470" stroke="#d1d5db" stroke-width="2"/>
+  <text class="who" x="800" y="55">die 13 Root-Server</text>
+  <text class="note" x="800" y="82">a.root-servers.net … m.root-servers.net</text>
+  <text class="who" x="800" y="235">für de: die DENIC</text>
+  <text class="note" x="800" y="262">a.nic.de, f.nic.de, l.de.net, …</text>
+  <text class="who" x="800" y="415">für hackschule.de: Cloudflare</text>
+  <text class="note" x="800" y="442">joel.ns.cloudflare.com, cheryl.ns.cloudflare.com</text>
+
+  <text class="note" x="30" y="500">hackschule.de. von rechts nach links: die Wurzel (der Punkt), dann de, dann hackschule</text>
+</svg>

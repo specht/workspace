@@ -18,6 +18,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Neue Aktivität »DNS: Wie aus einem Namen eine Adresse wird« unter »Netze &
+  Sicherheit«, nach TCP/IP: Lernende fragen mit `dig` nach Adressen und
+  anderen Einträgen, gehen den Weg einer Frage von den Root-Servern über die
+  DENIC bis zum zuständigen Nameserver selbst ab, sehen die TTL im
+  Zwischenspeicher und was eine gefälschte Antwort anrichtet. Zehn Aufgaben,
+  mit Notiz für Lehrkräfte. Antworten aus dem Netz prüft die neue Auswertung
+  `dns_answers` von `measure` live im Workspace.
 - Neue Aktivität »Indizes: Warum eine Abfrage schnell ist« unter
   »Datenbanken«: Lernende legen in ihrer eigenen Datenbank ein Telefonbuch mit
   einer Million Einträgen an, messen eine Suche, sehen mit `EXPLAIN` den Full
