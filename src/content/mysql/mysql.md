@@ -270,6 +270,10 @@ Texte stehen in SQL in einfachen Anführungszeichen, zum Beispiel `'Deutschland'
 Wie viele Einwohner hat Griechenland? Und was bedeutet die Zahl in der Spalte <code>area</code>?
 </div>
 
+<div class='hint tasks-on-only'>
+<strong>Wo du Abfragen schreibst.</strong> Ausprobieren tust du in <code>mycli</code>: Dort siehst du jedes Ergebnis und kannst die Abfrage so oft ändern, wie du willst. Fragt eine Aufgabe nach einem Wert, etwa einer Zahl oder einem Namen, trägst du nur das Ergebnis ein. Soll die Abfrage Zeilen ausgeben, kopierst du die fertige Abfrage aus <code>mycli</code> in das Feld der Aufgabe; dort wird sie geprüft.
+</div>
+
 _task(griechenland)
 
 _task(flaeche-einheit)
@@ -551,7 +555,7 @@ Beantworte die folgenden Fragen mit geeigneten SQL-Abfragen. Gib möglichst nur 
 </ol>
 </div>
 
-<p class='tasks-on-only'>Schreib deine Abfrage in das Feld unter der Aufgabe, so wie du sie in <code>mycli</code> eingeben würdest. Der Workspace führt sie in deiner eigenen Datenbank aus, zeigt dir dein Ergebnis und sagt, ob es passt. Er liest dabei nur; deine Daten bleiben, wie sie sind.</p>
+<p class='tasks-on-only'>Wie vorhin: Probier in <code>mycli</code>, bis das Ergebnis stimmt. Ist nach einem Wert gefragt, trägst du ihn ein; soll die Abfrage Zeilen ausgeben, kommt die fertige Abfrage in das Feld der Aufgabe. Der Workspace führt sie dann in deiner eigenen Datenbank aus und sagt, ob es passt. Er liest dabei nur; deine Daten bleiben, wie sie sind.</p>
 
 _task(laender-sortiert)
 
@@ -577,30 +581,30 @@ _task(hauptstaedte-sueden)
 
 <!-- tutorial-step
 # Jede SQL-Aufgabe nimmt ihre Lösung an und lehnt einen typischen Fehler ab, auf den Daten, die die Seite lädt
-check-task: griechenland <- SELECT population FROM country WHERE name = 'Griechenland';
-check-task-fails: griechenland <- SELECT population FROM country WHERE name = 'Greece';
+check-task: griechenland <- 10566531
+check-task-fails: griechenland <- 1056653
 check-task: kleinste-laender <- SELECT name, population FROM country ORDER BY population;
 check-task-fails: kleinste-laender <- SELECT name, population FROM country ORDER BY population DESC;
 check-task: top5-laender <- SELECT name FROM country ORDER BY population DESC LIMIT 5;
 check-task-fails: top5-laender <- SELECT name FROM country ORDER BY population LIMIT 5;
-check-task: hundert-millionen <- SELECT COUNT(*) FROM country WHERE population > 100000000;
-check-task-fails: hundert-millionen <- SELECT COUNT(*) FROM country WHERE population > 100;
+check-task: hundert-millionen <- 15
+check-task-fails: hundert-millionen <- 197
 check-task: ka-laender <- SELECT name FROM country WHERE name LIKE 'Ka%';
 check-task-fails: ka-laender <- SELECT name FROM country WHERE name LIKE '%Ka%';
 check-task: kontinente-grosse-laender <- SELECT DISTINCT continent FROM country WHERE population > 100000000;
 check-task-fails: kontinente-grosse-laender <- SELECT continent FROM country WHERE population > 100000000;
 check-task: laender-sortiert <- SELECT name, population, area FROM country ORDER BY population DESC;
 check-task-fails: laender-sortiert <- SELECT name, population, area FROM country ORDER BY population;
-check-task: anzahl-laender <- SELECT COUNT(*) FROM country;
-check-task-fails: anzahl-laender <- SELECT COUNT(*) FROM city;
-check-task: afrika-grosse-laender <- SELECT COUNT(*) FROM country WHERE continent = 'Afrika' AND population > 50000000;
-check-task-fails: afrika-grosse-laender <- SELECT COUNT(*) FROM country WHERE continent = 'Afrika' OR population > 50000000;
+check-task: anzahl-laender <- 197
+check-task-fails: anzahl-laender <- 4748
+check-task: afrika-grosse-laender <- 6
+check-task-fails: afrika-grosse-laender <- 76
 check-task: arm-bein <- SELECT name FROM country WHERE name LIKE '%arm%' OR name LIKE '%bein%';
 check-task-fails: arm-bein <- SELECT name FROM country WHERE name LIKE '%arm%' AND name LIKE '%bein%';
 check-task: groesste-stadt <- SELECT name, population, country_code FROM city ORDER BY population DESC LIMIT 1;
 check-task-fails: groesste-stadt <- SELECT name, population, country_code FROM city ORDER BY population LIMIT 1;
-check-task: staedte-frankreich <- SELECT COUNT(*) FROM city WHERE country_code = 'FRA';
-check-task-fails: staedte-frankreich <- SELECT COUNT(*) FROM city WHERE country_code = 'Frankreich';
+check-task: staedte-frankreich <- 43
+check-task-fails: staedte-frankreich <- 0
 check-task: top10-frankreich <- SELECT name, population FROM city WHERE country_code = 'FRA' ORDER BY population DESC LIMIT 10;
 check-task-fails: top10-frankreich <- SELECT name, population FROM city WHERE country_code = 'FRA' LIMIT 10;
 check-task: drei-arm <- SELECT name FROM city WHERE name LIKE '%arm%' LIMIT 3;
@@ -835,8 +839,8 @@ WHERE country.name = 'Finnland';
 <!-- tutorial-screenshot
 press: Control+L
 terminal-run: SELECT country.name, language.name FROM country JOIN country_language ON country_language.country_code = country.code JOIN language ON language.code = country_language.language_code WHERE country.name = 'Finnland';
+wait-for-text: 2 rows in set
 sleep: 0.5
-terminal-scroll-back: 2
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->
@@ -933,8 +937,8 @@ check-task: einwohner-pro-kontinent <- SELECT continent, SUM(population) AS peop
 check-task-fails: einwohner-pro-kontinent <- SELECT continent, SUM(population) AS people FROM country GROUP BY continent ORDER BY people;
 check-task: grosse-kontinente <- SELECT continent, COUNT(*) FROM country GROUP BY continent HAVING COUNT(*) > 40;
 check-task-fails: grosse-kontinente <- SELECT continent, COUNT(*) FROM country GROUP BY continent;
-check-task: waehrung-japan <- SELECT currency.name FROM country JOIN currency ON currency.code = country.currency_code WHERE country.name = 'Japan';
-check-task-fails: waehrung-japan <- SELECT currency_code FROM country WHERE name = 'Japan';
+check-task: waehrung-japan <- Yen
+check-task-fails: waehrung-japan <- JPY
 check-task: nachbarn-deutschland <- SELECT neighbor.name FROM border JOIN country AS neighbor ON neighbor.code = border.neighbor_code WHERE border.country_code = 'DEU';
 check-task-fails: nachbarn-deutschland <- SELECT neighbor_code FROM border WHERE country_code = 'DEU';
 check-task: viele-nachbarn <- SELECT country.name FROM border JOIN country ON country.code = border.country_code GROUP BY country.code, country.name HAVING COUNT(*) > 8;
@@ -947,8 +951,8 @@ check-task: sprachen-schweiz <- SELECT language.name FROM country_language JOIN 
 check-task-fails: sprachen-schweiz <- SELECT language_code FROM country_language WHERE country_code = 'CHE';
 check-task: deutsch-amtssprache <- SELECT country.name FROM country JOIN country_language ON country_language.country_code = country.code JOIN language ON language.code = country_language.language_code WHERE language.name = 'Deutsch';
 check-task-fails: deutsch-amtssprache <- SELECT country.name FROM country WHERE continent = 'Europa' AND name LIKE '%reich%';
-check-task: englisch-amtssprache <- SELECT COUNT(*) FROM country_language JOIN language ON language.code = country_language.language_code WHERE language.name = 'Englisch';
-check-task-fails: englisch-amtssprache <- SELECT COUNT(*) FROM country_language;
+check-task: englisch-amtssprache <- 59
+check-task-fails: englisch-amtssprache <- 372
 check-task: naechste-hamburg <- SELECT b.name, ROUND(ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) / 1000) AS km FROM city AS a JOIN city AS b ON b.id <> a.id WHERE a.name = 'Hamburg' ORDER BY km LIMIT 5;
 check-task-fails: naechste-hamburg <- SELECT b.name FROM city AS a JOIN city AS b WHERE a.name = 'Hamburg' ORDER BY ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) LIMIT 5;
 check-task: weiteste-berlin <- SELECT b.name FROM city AS a CROSS JOIN city AS b WHERE a.name = 'Berlin' ORDER BY ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) DESC LIMIT 1;

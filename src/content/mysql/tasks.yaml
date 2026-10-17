@@ -29,20 +29,12 @@ tasks:
 
   - id: griechenland
     title: Griechenland
-    prompt: Schreib eine Abfrage, die zeigt, wie viele Einwohner Griechenland hat.
+    prompt: Wie viele Einwohner hat Griechenland? Finde es mit einer Abfrage in `mycli` heraus und trag die Zahl ein.
     check:
-      type: sql
-      expect_query:
-        - SELECT population FROM country WHERE name = 'Griechenland'
-        - SELECT name, population FROM country WHERE name = 'Griechenland'
-      tables: { country: 197 }
-      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
-    feedback:
-      - when: { query_matches: '=\s*Griechenland\b' }
-        say: Texte stehen in SQL in einfachen Anführungszeichen, also `'Griechenland'`.
-      - when: { query_matches: "'Greece'" }
-        say: Die Namen der Länder stehen auf Deutsch in der Tabelle, so wie in `SELECT name FROM country;`.
-    solution: "`SELECT population FROM country WHERE name = 'Griechenland';`"
+      type: number
+      expect: 10566531
+    hint: "`SELECT population FROM country WHERE name = …` mit dem Namen in einfachen Anführungszeichen. Die Namen der Länder stehen auf Deutsch in der Tabelle."
+    solution: "`SELECT population FROM country WHERE name = 'Griechenland';` ergibt 10566531."
 
   - id: flaeche-einheit
     title: Was bedeutet die Zahl?
@@ -97,17 +89,13 @@ tasks:
 
   - id: hundert-millionen
     title: Mehr als 100 Millionen
-    prompt: Wie viele Länder haben mehr als 100 Millionen Einwohner?
+    prompt: Wie viele Länder haben mehr als 100 Millionen Einwohner? Finde es in `mycli` heraus.
     check:
-      type: sql
-      expect_query: SELECT COUNT(*) FROM country WHERE population > 100000000
-      tables: { country: 197 }
-      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+      type: number
+      expect: 15
     feedback:
-      - when: { query_matches: '>\s*100\s*(;|$|and|or)' }
-        say: In `population` steht die Zahl der Menschen, nicht der Millionen. 100 Millionen schreibst du als `100000000`.
-      - when: { query_matches: '100[.,]000[.,]000' }
-        say: Zahlen schreibst du in SQL ohne Tausenderpunkte, also `100000000`.
+      - when: { equals: 197 }
+        say: Das sind alle Länder. In `population` steht die Zahl der Menschen, nicht der Millionen; 100 Millionen schreibst du als `100000000`, ohne Tausenderpunkte.
     solution: "`SELECT COUNT(*) FROM country WHERE population > 100000000;` ergibt 15."
 
   - id: ka-laender
@@ -156,27 +144,26 @@ tasks:
 
   - id: anzahl-laender
     title: Wie viele Länder?
-    prompt: Wie viele Länder gibt es in der Tabelle `country`?
+    prompt: Wie viele Länder gibt es in der Tabelle `country`? Lass es dir in `mycli` zählen.
     check:
-      type: sql
-      expect_query: SELECT COUNT(*) FROM country
-      tables: { country: 197 }
-      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+      type: number
+      expect: 197
+    feedback:
+      - when: { equals: 4748 }
+        say: So viele Zeilen hat `city`. Gefragt ist `country`.
     solution: "`SELECT COUNT(*) FROM country;` ergibt 197."
 
   - id: afrika-grosse-laender
     title: Große Länder in Afrika
-    prompt: Wie viele Länder in Afrika haben mehr als 50 Millionen Einwohner?
+    prompt: Wie viele Länder in Afrika haben mehr als 50 Millionen Einwohner? Finde es in `mycli` heraus.
     check:
-      type: sql
-      expect_query: SELECT COUNT(*) FROM country WHERE continent = 'Afrika' AND population > 50000000
-      tables: { country: 197 }
-      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+      type: number
+      expect: 6
     feedback:
-      - when: { same_result_as: "SELECT COUNT(*) FROM country WHERE continent = 'Afrika' OR population > 50000000" }
+      - when: { equals: 76 }
         say: Mit `OR` zählen alle Länder Afrikas und dazu alle großen Länder der Welt. Beides zugleich verlangt `AND`.
-      - when: { query_matches: "'Africa'" }
-        say: Die Kontinente heißen in der Tabelle auf Deutsch, so wie `SELECT * FROM continent;` sie zeigt.
+      - when: { equals: 54 }
+        say: Das sind alle Länder Afrikas. Es fehlt die Bedingung für die Einwohner.
     solution: "`SELECT COUNT(*) FROM country WHERE continent = 'Afrika' AND population > 50000000;` ergibt 6."
 
   - id: arm-bein
@@ -213,15 +200,11 @@ tasks:
 
   - id: staedte-frankreich
     title: Städte in Frankreich
-    prompt: Wie viele Städte aus Frankreich sind in der Tabelle `city` gespeichert?
+    prompt: Wie viele Städte aus Frankreich sind in der Tabelle `city` gespeichert? Finde es in `mycli` heraus.
     check:
-      type: sql
-      expect_query: SELECT COUNT(*) FROM city WHERE country_code = 'FRA'
-      tables: { city: 4748 }
-      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
-    feedback:
-      - when: { query_matches: "'(Frankreich|France|F|FR)'" }
-        say: In `country_code` steht das Kürzel mit drei Buchstaben, so wie in `country.code`. Für Frankreich findest du es mit `SELECT code FROM country WHERE name = 'Frankreich';`.
+      type: number
+      expect: 43
+    hint: In `country_code` steht das Kürzel mit drei Buchstaben, so wie in `country.code`. Für Frankreich findest du es mit `SELECT code FROM country WHERE name = 'Frankreich';`.
     solution: "`SELECT COUNT(*) FROM city WHERE country_code = 'FRA';` ergibt 43."
 
   - id: top10-frankreich
@@ -408,17 +391,13 @@ tasks:
 
   - id: waehrung-japan
     title: Die Währung Japans
-    prompt: Wie heißt die Währung Japans? Gib ihren Namen aus, nicht ihr Kürzel.
+    prompt: Wie heißt die Währung Japans? Finde ihren Namen in `mycli` heraus, nicht ihr Kürzel.
     check:
-      type: sql
-      expect_query: SELECT currency.name FROM country JOIN currency ON currency.code = country.currency_code WHERE country.name = 'Japan'
-      tables: { country: 197, currency: 143 }
-      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+      type: answer
+      expect: Yen
     feedback:
-      - when: { same_result_as: "SELECT currency_code FROM country WHERE name = 'Japan'" }
-        say: Das ist das Kürzel. Den Namen holst du mit einem `JOIN` aus `currency`, über `currency.code = country.currency_code`.
-      - when: { query_matches: "\\bname\\s*=\\s*'Japan'" }
-        say: "Steht `name` in beiden Tabellen, muss die Tabelle davor: `country.name = 'Japan'`."
+      - when: { equals: JPY }
+        say: Das ist das Kürzel aus `country.currency_code`. Den Namen holst du mit einem `JOIN` aus `currency`, über `currency.code = country.currency_code`.
     solution: "`SELECT currency.name FROM country JOIN currency ON currency.code = country.currency_code WHERE country.name = 'Japan';` ergibt den Yen."
 
   - id: grenze-zweimal
@@ -523,14 +502,12 @@ tasks:
 
   - id: englisch-amtssprache
     title: Englisch als Amtssprache
-    prompt: In wie vielen Ländern ist Englisch Amtssprache?
+    prompt: In wie vielen Ländern ist Englisch Amtssprache? Finde es in `mycli` heraus.
     check:
-      type: sql
-      expect_query: SELECT COUNT(*) FROM country_language JOIN language ON language.code = country_language.language_code WHERE language.name = 'Englisch'
-      tables: { country_language: 372, language: 183 }
-      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+      type: number
+      expect: 59
     feedback:
-      - when: { same_result_as: "SELECT COUNT(*) FROM country_language" }
+      - when: { equals: 372 }
         say: Das sind alle Paare aus Land und Sprache. Es fehlt die Bedingung für Englisch.
     solution: "`SELECT COUNT(*) FROM country_language JOIN language ON language.code = country_language.language_code WHERE language.name = 'Englisch';` ergibt 59, mehr als bei jeder anderen Sprache. Ohne `JOIN`: `WHERE language_code = 'eng'`."
 

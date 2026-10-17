@@ -721,6 +721,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- »Einführung in SQL«: Klar getrennt, wo Abfragen hingehören. Ausprobiert
+  wird in `mycli`. Fragt eine Aufgabe nach einem Wert (wie viele Länder, wie
+  heißt die Währung), trägt man nur das Ergebnis ein; sieben Aufgaben sind
+  dafür von Abfrage- zu Zahl- und Textaufgaben geworden, mit Rückmeldungen für
+  die typischen falschen Werte. Sollen Zeilen ausgegeben werden, kommt die
+  fertige Abfrage in die Karte und wird dort geprüft. Wer eine dieser sieben
+  Aufgaben schon gelöst hatte, löst sie neu.
 - Testkonten: Jede Lehrkraft hat genau ein Testkonto in einer eigenen
   Testgruppe, auch Lehrkräfte mit `*` und Admins. Niemand sieht die
   Testgruppen anderer; die Gruppenauswahl von Admins ist nicht mehr voll
