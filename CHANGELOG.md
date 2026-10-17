@@ -718,6 +718,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- shower.js: »Eine andere Adresse« ist jetzt eine Vermutung mit vier
+  Antworten statt einer Adresse zum Eintippen. Die alte Aufgabe ließ sich
+  ohne eigenen Rechner nicht lösen und mit `file://…index.html` erraten.
+  Die Lösung lädt ein, es mit einem eigenen Rechner auszuprobieren.
 - Alle Bilder haben einen Alt-Text, der sagt, was zu sehen ist: rund 450
   Screenshots auf den Seiten der Programmiersprachen, in »Git«, »Mit Dateien
   arbeiten«, im KI-Experiment mit Ziffern und anderswo, die bisher keinen

@@ -78,10 +78,3 @@ examples:
       - files:
           shower.js/index.html: { text: "<!DOCTYPE html>\n<html lang=\"de\">\n<head><meta charset=\"utf-8\"><title>Vortrag</title><link rel=\"stylesheet\" href=\"styles.css\"></head>\n<body class=\"shower list\">\n<section class=\"slide\"><h2>Titel deiner Präsentation</h2><p>Aus der Vorlage.</p></section>\n<section class=\"slide\"><h2>Listen sind super</h2><p>Aus der Vorlage.</p></section>\n<section class=\"slide\"><h2>Vulkane</h2><p>Ein eigener Satz.</p></section>\n<section class=\"slide\"><h2>Wie ein Vulkan entsteht</h2><p>Ein eigener Satz.</p></section>\n<section class=\"slide\"><h2>Der Fuji</h2><p>Ein eigener Satz.</p></section>\n<section class=\"slide\"><h2>Ausbrüche</h2><p>Ein eigener Satz.</p></section>\n<section class=\"slide\"><h2>Was ich gelernt habe</h2><p>Ein eigener Satz.</p></section>\n<img src=\"pictures/fehlt.webp\" alt=\"Fuji\"></body>\n</html>\n" }
           shower.js/styles.css: { text: "h2 { color: darkred; }\n" }
-  file-adresse:
-    pass:
-      - answer: file:///workspace/shower.js/index.html
-      - answer: file:///workspace/shower.js/index.html#3
-    fail:
-      - answer: http://localhost:5500/index.html
-      - answer: /workspace/shower.js/index.html

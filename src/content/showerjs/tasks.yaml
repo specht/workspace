@@ -150,16 +150,27 @@ tasks:
 
   - id: file-adresse
     title: Eine andere Adresse
+    prediction: true
     prompt: |
-      Lade den Ordner herunter und öffne `index.html` von deinem eigenen
-      Rechner oder Stick. Was steht jetzt in der Adresszeile des Browsers?
+      Du lädst den Ordner herunter, kopierst ihn auf einen Stick und öffnest
+      dort `index.html` mit einem Doppelklick. Womit beginnt jetzt die
+      Adresse in der Adresszeile des Browsers?
     check:
-      type: answer
-      compare: regex
-      expect: '^file://.*index\.html(#.*)?$'
+      type: choice
+      options:
+        - Mit `file://`, gefolgt vom Pfad der Datei auf dem Stick
+        - Mit `https://`, wie die Vorschau im Workspace
+        - Mit `http://localhost:5500`, der Adresse des Live Servers
+        - Mit nichts, ohne Internet öffnet der Browser die Datei gar nicht
+      correct: 0
     feedback:
-      - when: { matches: '^https?://' }
-        say: Das ist noch die Adresse des Live Servers. Öffne index.html auf deinem Rechner mit einem Doppelklick.
+      - when: { picked: 1 }
+        say: Diese Adresse gehört dem Workspace, und der läuft nicht auf deinem Stick. Was bleibt, wenn kein Server da ist?
+      - when: { picked: 2 }
+        say: Der Live Server läuft im Workspace. Öffnest du die Datei mit einem Doppelklick, ist gar kein Server im Spiel.
+      - when: { picked: 3 }
+        say: Der Browser kann auch Dateien öffnen, die auf dem Rechner liegen, ganz ohne Netz. Das ist der Grund, warum alles im Ordner liegen muss.
+    solution: "`file://` heißt: Der Browser liest die Datei direkt vom Stick, ohne Server und ohne Netz, zum Beispiel `file:///media/stick/shower.js/index.html`. Darum muss alles, was die Präsentation braucht, im Ordner liegen. Hast du einen eigenen Rechner, probier es aus: Mit <kbd>Strg</kbd><kbd>L</kbd> siehst du die ganze Adresse."
 
   - id: abgabe
     title: Abgabe
