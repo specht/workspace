@@ -721,6 +721,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Startseite auf dem Tablet (zwei Spalten): Steht eine Karte allein in der
+  letzten Reihe ihres Bereichs, nimmt sie die ganze Breite ein, mit dem Bild
+  links und dem Text daneben, statt eine halbe Reihe leer zu lassen.
 - Aufgaben, deren Lösung direkt davor stand, fragen jetzt etwas Eigenes:
   - Einführung in SQL: Die Beispiele zu `GROUP BY`, `SUM` und `HAVING` zählen
     Straßenseiten und Städte pro Land statt der Länder pro Kontinent, die die
