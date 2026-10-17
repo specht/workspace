@@ -2780,6 +2780,16 @@ async function applyViewportProfile(page, viewport, zoom, sharpCanvas = false) {
         requestAnimationFrame(() => requestAnimationFrame(resolve));
     }));
 
+    // A preview page sized its <canvas> for the size and pixel ratio it
+    // loaded with; the changed metrics alone fire no resize here, so tell it
+    // once they are in the layout, and it redraws sharp at the capture size.
+    if (page !== workspace) {
+        await page.evaluate(() => new Promise(resolve => {
+            window.dispatchEvent(new Event('resize'));
+            requestAnimationFrame(() => requestAnimationFrame(resolve));
+        })).catch(() => {});
+    }
+
     appliedViewportProfiles.set(page, profileKey);
     return { session, metrics };
 }

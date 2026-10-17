@@ -21,10 +21,10 @@ Du baust einen Routenplaner wie den in deinem Handy, mit echten Karten von OpenS
 </p>
 
 <!--
-Noch in Arbeit (nur in der Entwicklung im Katalog): die Schritte 1 bis 3 stehen.
-Es fehlen Breitensuche, Dijkstra, die Prioritätswarteschlange, ganz Berlin mit
-A*, die Arten zu reisen und die Stadtrundfahrt. Die Vorlage liegt in vorlage/,
-bis es das Repository specht/routenplaner-starter gibt.
+Noch in Arbeit (nur in der Entwicklung im Katalog): die Schritte 1 bis 5 stehen,
+bis Dijkstra. Es fehlen die Prioritätswarteschlange, ganz Berlin mit A*, die
+Arten zu reisen und die Stadtrundfahrt. Die Vorlage entsteht in vorlage/;
+specht/routenplaner-starter bekommt sie als Patch.
 -->
 
 ## Einrichten
@@ -96,9 +96,9 @@ Visual Studio Code leitet seinen Port 4567 an eine Adresse weiter, die dein Brow
 preview-port: 4567
 tab: preview
 -->
-<img class='full' src='karte.webp' alt='Die Karte von Steglitz im Browser, gezeichnet aus den Daten: Hauptstraßen gelb, Wohnstraßen weiß mit grauem Rand, Fußwege rot gestrichelt; der Botanische Garten, der Bierpinsel, das Titania-Palast und das Rathaus Steglitz sind beschriftet.'>
+<img class='full' src='karte.webp' alt='Die Karte von Steglitz im Browser, gezeichnet aus den Daten: Hauptstraßen gelb, die Autobahn orange, Wohnstraßen weiß; der Botanische Garten, der Bierpinsel, das Titania-Palast und das Rathaus Steglitz sind beschriftet. Links oben die Felder für Start und Ziel, unten links der Maßstab.'>
 
-Ziehen verschiebt die Karte, das Mausrad und die Knöpfe rechts oben zoomen. Oben links wählst du Start und Ziel: Sehenswürdigkeiten und die Schulen in Steglitz. Einen Weg findet die Seite noch nicht; das bringst du ihr bei.
+Ziehen verschiebt die Karte, das Mausrad und die Knöpfe rechts oben zoomen, ein Doppelklick holt eine Stelle heran. Oben links wählst du Start und Ziel: Tipp den Anfang eines Namens, und die Seite schlägt Sehenswürdigkeiten und Schulen in Steglitz vor. Die »Legende« darunter sagt, welche Farbe welche Art von Weg ist. Einen Weg findet die Seite noch nicht; das bringst du ihr bei.
 
 ## Die Karte
 
@@ -173,7 +173,7 @@ Ein Routenplaner sucht nicht in Wegen, sondern in einem **Graphen**: Punkte, die
 
 _task(graph)
 
-Halte den Server mit <kbd>Strg</kbd><kbd>C</kbd> an und starte ihn neu. Er baut jetzt mit deinen Funktionen den Graphen von Steglitz. Klicke auf der Karte auf eine Kreuzung: Die Seite zeigt den Knoten dort und seine Nachbarn.
+Halte den Server mit <kbd>Strg</kbd><kbd>C</kbd> an und starte ihn neu. Er baut jetzt mit deinen Funktionen den Graphen von Steglitz. Schalte auf der Seite »Graph zeigen« ein: Über der blassen Karte siehst du, was `build_graph` gebaut hat, jeden Knoten als Punkt und jede Kante als Linie. Klicke auf eine Kreuzung: Die Seite zeigt den Knoten dort und seine Nachbarn.
 
 <!-- tutorial-step
 # Die Lösung der ersten drei Schritte, der Server neu gestartet (im
@@ -199,7 +199,95 @@ sleep: 2
 preview-reload
 tab: preview
 # die Kreuzung Kuhligkshofstraße / Albrechtstraße, nicht weit von der Schule
-hook: show 13.322572 52.456434 900000
+hook: show 13.322572 52.456434 220000 graph
 wait-for-text: 4 Nachbarn
 -->
-<img class='full' src='nachbarn.webp' alt='Die Karte nah herangezoomt an der Kreuzung Kuhligkshofstraße und Albrechtstraße: der Knoten pink, seine vier Nachbarn blau, mit Linien dazwischen; oben links steht, dass er 4 Nachbarn hat und wie weit sie entfernt sind.'>
+<img class='full' src='nachbarn.webp' alt='Der Graph über der blassen Karte, nah herangezoomt an der Kreuzung Kuhligkshofstraße und Albrechtstraße: die Knoten als blaue Punkte, die Kanten als blaue Linien. Der angeklickte Knoten ist pink, seine vier Nachbarn sind mit pinken Linien verbunden; oben links steht, dass er 4 Nachbarn hat und wie weit sie entfernt sind.'>
+
+Eine Straße ist im Graphen mehr als ihre Kreuzungen: Wo sie eine Kurve macht, hat sie Punkte, die nur ihre Form zeichnen. Auch das sind Knoten, mit genau zwei Nachbarn.
+
+## Breitensuche
+
+Jetzt sucht dein Programm einen Weg. Die einfachste Suche geht vom Start aus wie eine Welle: erst zu allen Nachbarn des Starts, dann zu deren Nachbarn, dann zu den Nachbarn der Nachbarn. Das heißt **Breitensuche**. Die Knoten, die sie gefunden, aber noch nicht weiterverfolgt hat, stehen in einer **Warteschlange**: Wer zuerst hineinkommt, ist zuerst wieder dran. `queue.shift` nimmt den ersten Knoten heraus, `queue << node` stellt einen hinten an.
+
+Damit die Suche am Ende den Weg kennt, merkt sie sich für jeden gefundenen Knoten, von welchem aus sie ihn gefunden hat: seinen **Vorgänger**. In `previous` steht für den Start `nil`, für jeden anderen gefundenen Knoten sein Vorgänger:
+
+<!-- page-code: own -->
+```ruby
+previous = { '11' => nil, '12' => '11', '21' => '11', '13' => '12', … }
+```
+
+So weiß die Suche auch, welche Knoten sie schon kennt: Ein Nachbar, der schon in `previous` steht, kommt nicht noch einmal in die Warteschlange.
+
+Ist die Suche am Ziel, geht der Weg vom Ziel aus rückwärts: zum Vorgänger des Ziels, zu dessen Vorgänger und so weiter, bis zum Start, dessen Vorgänger `nil` ist. Das macht `path_to`. Weil du den Weg rückwärts findest, kommt jeder Knoten vorne dazu: `path.unshift(node)`.
+
+_task(weg)
+
+Die Breitensuche selbst, Schritt für Schritt:
+
+1. In der Warteschlange steht nur der Start, in `previous` der Start mit `nil`.
+2. Nimm den ersten Knoten aus der Warteschlange und schreib ihn in `visited`. Ist es das Ziel, bist du fertig.
+3. Jeder Nachbar, der noch nicht in `previous` steht, bekommt den Knoten als Vorgänger und kommt hinten in die Warteschlange.
+4. Weiter mit 2, solange die Warteschlange nicht leer ist. Wird sie leer, ohne dass das Ziel dran war, gibt es keinen Weg.
+
+`visited` braucht die Suche selbst nicht: Die Seite zeigt damit, in welcher Reihenfolge die Suche die Knoten besucht hat. Zum Ausprobieren gibt es die Testkarte `data/detour.tsv`: Die Lindenstraße geht in fünf Kanten geradeaus vom Knoten 11 zum Knoten 16, der Eichenweg macht einen Bogen und braucht nur drei.
+
+_task(breitensuche)
+
+<!-- tutorial-step
+# Die Lösung bis zur Breitensuche und zu Dijkstra, der Server neu gestartet
+write-file: data/detour.tsv <- file:vorlage/data/detour.tsv
+write-file: routes.rb <- file:loesung/routes-5.rb
+check-task: weg
+check-task: breitensuche
+check-task: dijkstra
+terminal-open
+press: Control+C
+terminal-wait-for-prompt
+terminal-run: clear
+terminal-run: ruby server.rb
+wait-for-text: Graph:
+wait-for-text: Beenden mit Strg+C
+sleep: 2
+-->
+
+Starte den Server neu, wähle einen Start und ein Ziel und lass die Breitensuche suchen. Die Seite zeigt erst die Suche, jeden besuchten Knoten als Punkt, von Gelb (früh besucht) bis Rot (spät), und dann den Weg, den sie gefunden hat:
+
+<!-- tutorial-screenshot
+# Vom Fichtenberg-Gymnasium zum Titania-Palast, mit der Breitensuche
+preview-reload
+tab: preview
+hook: route Fichtenberg | Titania | bfs
+-->
+<img class='full' src='breitensuche.webp' alt='Die Breitensuche vom Fichtenberg-Gymnasium zum Titania-Palast: Über der blassen Karte liegen die besuchten Knoten als Punkte, gelb um die Schule, nach außen orange und rot; der gefundene Weg ist eine lila Linie mit Zacken und Umwegen. Oben links steht, wie lang er ist, über wie viele Knoten er geht und wie viele Knoten die Suche besucht hat.'>
+
+Die Welle breitet sich nach Kanten aus, nicht nach Metern: Im Botanischen Garten, wo die Wege viele kurze Kanten haben, kommt sie langsam voran, auf langen geraden Straßen schnell. Darum macht ihr Weg Zacken und Umwege.
+
+_task(kanten)
+
+## Dijkstra
+
+Den kürzesten Weg in Metern findet die Suche von [Edsger W. Dijkstra](https://de.wikipedia.org/wiki/Edsger_W._Dijkstra) aus dem Jahr 1959. Sie nimmt als Nächstes nicht den Knoten, der am längsten wartet, sondern den, der vom Start aus am nächsten liegt. Dafür merkt sie sich für jeden gefundenen Knoten, wie weit es bis zu ihm ist, auf dem besten Weg, den sie bis jetzt kennt:
+
+1. `metres` sagt, wie weit jeder gefundene Knoten vom Start weg ist, `previous` wieder seinen Vorgänger, `frontier` die Knoten, die gefunden, aber noch nicht dran waren, mit ihrem Abstand. Am Anfang steht in allen dreien nur der Start, mit 0 Metern und ohne Vorgänger.
+2. Nimm aus `frontier` den Knoten mit dem kleinsten Abstand und schreib ihn in `visited`. Ist es das Ziel, bist du fertig.
+3. Für jeden Nachbarn: Wie weit wäre er über diesen Knoten? Sein Abstand plus die Länge der Kante. Kennst du den Nachbarn noch nicht, oder ist der Weg über diesen Knoten kürzer als der bisher beste, bekommt er den neuen Abstand und diesen Knoten als Vorgänger und kommt (wieder) in `frontier`.
+4. Weiter mit 2, solange `frontier` nicht leer ist.
+
+Warum stimmt der Abstand, wenn ein Knoten dran ist? Alle anderen in `frontier` sind weiter weg, und jeder Umweg über sie macht den Weg nur länger: Kanten sind nie kürzer als 0 Meter.
+
+`frontier.min_by { |_id, m| m }` gibt den Knoten mit dem kleinsten Abstand, als Paar aus ID und Metern. `frontier.delete(node)` nimmt ihn heraus. Am Ende baut `path_to` den Weg, genau wie bei der Breitensuche.
+
+_task(dijkstra)
+
+Starte den Server neu und suche denselben Weg noch einmal, jetzt mit »Dijkstra«:
+
+<!-- tutorial-screenshot
+# Derselbe Weg mit Dijkstra
+preview-reload
+tab: preview
+hook: route Fichtenberg | Titania | dijkstra
+-->
+<img class='full' src='dijkstra.webp' alt='Dijkstra vom Fichtenberg-Gymnasium zum Titania-Palast: Die besuchten Knoten liegen gelb nah an der Schule und werden in alle Richtungen gleichmäßig orange und rot, wie Ringe um den Start. Der Weg ist eine lila Linie, die gerade die Schloßstraße entlang führt. Oben links stehen Länge, Knoten und wie viele die Suche besucht hat.'>
+
+Jetzt breitet sich die Welle in Metern aus, wie Ringe um den Start, und der Weg folgt der Schloßstraße statt Zacken zu machen. Er hat mehr Knoten, ist aber kürzer. Schau auf die Zeit: Dijkstra hat etwa so viele Knoten besucht wie die Breitensuche, braucht aber viel länger. `min_by` geht bei jedem Schritt durch die ganze `frontier`, und die wird groß. Für Steglitz geht das noch; wie es für größere Gebiete schneller wird, kommt als Nächstes.

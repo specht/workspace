@@ -23,3 +23,22 @@ end
 def build_graph(ways)
     raise NotImplementedError, 'build_graph'
 end
+
+# Der Weg zum Ziel, rückwärts aus den Vorgängern: previous sagt für jeden
+# gefundenen Knoten, von welchem aus er gefunden wurde (der Start von nil).
+# Gibt die IDs vom Start bis zum Ziel zurück, nil, wenn das Ziel nicht dabei ist.
+def path_to(previous, goal)
+    raise NotImplementedError, 'path_to'
+end
+
+# Breitensuche: der Weg über die wenigsten Kanten. Gibt zurück:
+#   { path: [Start-ID, …, Ziel-ID] (oder nil, wenn es keinen Weg gibt),
+#     visited: [ID, …] }  die besuchten Knoten, in der Reihenfolge der Suche
+def breadth_first(graph, start, goal)
+    raise NotImplementedError, 'breadth_first'
+end
+
+# Dijkstra: der kürzeste Weg in Metern. Gibt dasselbe zurück wie breadth_first.
+def dijkstra(graph, start, goal)
+    raise NotImplementedError, 'dijkstra'
+end

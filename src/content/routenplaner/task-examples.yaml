@@ -6,12 +6,12 @@ activity: routenplaner
 examples:
   lesen:
     pass:
-      - files: { routenplaner-starter/routes.rb: loesung/routes-3.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      - files: { routenplaner-starter/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
     fail:
       - files: { routenplaner-starter/routes.rb: vorlage/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
   abstand:
     pass:
-      - files: { routenplaner-starter/routes.rb: loesung/routes-3.rb }
+      - files: { routenplaner-starter/routes.rb: loesung/routes-5.rb }
     fail:
       - files: { routenplaner-starter/routes.rb: vorlage/routes.rb }
       # ohne den Cosinus: nach Osten zu weit
@@ -24,6 +24,60 @@ examples:
         say: Cosinus
   graph:
     pass:
-      - files: { routenplaner-starter/routes.rb: loesung/routes-3.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      - files: { routenplaner-starter/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
     fail:
       - files: { routenplaner-starter/routes.rb: vorlage/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+  weg:
+    pass:
+      - files: { routenplaner-starter/routes.rb: loesung/routes-5.rb }
+    fail:
+      - files: { routenplaner-starter/routes.rb: vorlage/routes.rb }
+      # vorwärts statt rückwärts: der Weg vom Ziel zum Start
+      - files:
+          routenplaner-starter/solution.rb: loesung/routes-5.rb
+          routenplaner-starter/routes.rb:
+            text: |
+              require_relative 'solution'
+              def path_to(previous, goal)
+                  return nil unless previous.key?(goal)
+                  path = []
+                  node = goal
+                  while node
+                      path << node
+                      node = previous[node]
+                  end
+                  path
+              end
+        say: unshift
+  breitensuche:
+    pass:
+      - files: { routenplaner-starter/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+    fail:
+      - files: { routenplaner-starter/routes.rb: vorlage/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      # die Meter statt der Kanten: Dijkstra unter dem Namen der Breitensuche
+      - files:
+          routenplaner-starter/solution.rb: loesung/routes-5.rb
+          routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+          routenplaner-starter/routes.rb:
+            text: |
+              require_relative 'solution'
+              def breadth_first(graph, start, goal)
+                  dijkstra(graph, start, goal)
+              end
+        say: Eichenweg
+  dijkstra:
+    pass:
+      - files: { routenplaner-starter/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+    fail:
+      - files: { routenplaner-starter/routes.rb: vorlage/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      # die Breitensuche unter dem Namen Dijkstra: zählt Kanten, nicht Meter
+      - files:
+          routenplaner-starter/solution.rb: loesung/routes-5.rb
+          routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+          routenplaner-starter/routes.rb:
+            text: |
+              require_relative 'solution'
+              def dijkstra(graph, start, goal)
+                  breadth_first(graph, start, goal)
+              end
+        say: Lindenstraße

@@ -1,8 +1,10 @@
 # Aufgaben zu »Ein Routenplaner für Berlin«. Format: docs/aufgaben.md.
 # Alles liegt in /workspace/routenplaner-starter; die Prüfungen lesen die
 # kleine Testkarte data/test.tsv (fünf Kreuzungen: der Ahornweg 1-2-3, ein
-# Fußweg 2-4 und der Birkenweg 3-5-4, eine Einbahnstraße), die Werte kommen
-# aus loesung/.
+# Fußweg 2-4 und der Birkenweg 3-5-4, eine Einbahnstraße) und für die Suchen
+# data/detour.tsv (die Lindenstraße 11-12-13-14-15-16 geradeaus, der
+# Eichenweg 11-21-22-16 als Umweg mit weniger Kanten, ein Fußweg 31-32 ohne
+# Verbindung); die Werte kommen aus loesung/.
 format: 1
 activity: routenplaner
 tasks:
@@ -95,3 +97,84 @@ tasks:
         - call: (build_graph(read_ways('routenplaner-starter/data/test.tsv'))[:edges]['1'].first[1] - 67.8).abs < 0.5
           expect: true
           say: Zu jedem Nachbarn gehört, wie weit er entfernt ist, mit deiner Funktion distance.
+
+  - id: weg
+    title: Der Weg zurück
+    prompt: Schreib `path_to` in `routes.rb`.
+    check:
+      type: ruby
+      file: routenplaner-starter/routes.rb
+      cases:
+        - call: path_to({ 'a' => nil, 'b' => 'a', 'c' => 'b' }, 'c')
+          expect: "['a', 'b', 'c']"
+          say: Der Weg geht vom Start zum Ziel. Du findest ihn rückwärts, also kommt jeder Knoten vorne dazu (`unshift`).
+        - call: path_to({ 'a' => nil, 'b' => 'a', 'c' => 'a' }, 'c')
+          expect: "['a', 'c']"
+        - call: path_to({ 'a' => nil }, 'a')
+          expect: "['a']"
+          say: Ist das Ziel der Start, ist der Weg nur dieser eine Knoten.
+        - call: path_to({ 'a' => nil, 'b' => 'a' }, 'x')
+          expect: ~
+          say: Hat die Suche das Ziel nie gefunden, steht es nicht in previous, und es gibt keinen Weg.
+
+  - id: breitensuche
+    title: Breitensuche
+    prompt: Schreib `breadth_first` in `routes.rb`.
+    check:
+      type: ruby
+      file: routenplaner-starter/routes.rb
+      cases:
+        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:path]
+          expect: "['11', '21', '22', '16']"
+          say: Über den Eichenweg sind es nur drei Kanten, über die Lindenstraße fünf.
+        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')[:path]
+          expect: "['11']"
+        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')[:path]
+          expect: ~
+          say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Warteschlange irgendwann leer, und es gibt keinen Weg.
+        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].first
+          expect: "'11'"
+          say: In visited kommt jeder Knoten, wenn er aus der Warteschlange genommen wird, der Start also zuerst.
+        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')[:visited].sort
+          expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
+          say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
+
+  - id: kanten
+    title: Wenige Kanten, langer Weg
+    prompt: Die Breitensuche findet den Weg mit den wenigsten Kanten. Warum ist das auf einer Karte oft nicht der kürzeste Weg?
+    check:
+      type: choice
+      options:
+        - Die Kanten sind verschieden lang. Ein langes gerades Stück ist eine Kante, eine kurze Kurve mit vielen Punkten sind viele.
+        - Die Breitensuche nimmt die Nachbarn in zufälliger Reihenfolge.
+        - Die Breitensuche hört zu früh auf, bevor sie alle Wege gesehen hat.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Die Reihenfolge der Nachbarn ist fest, sie steht so in edges. Auch in anderer Reihenfolge fände sie einen Weg mit genauso wenigen Kanten.
+      - when: { picked: 2 }
+        say: Sie hört auf, wenn sie das Ziel aus der Warteschlange nimmt, und dann gibt es wirklich keinen Weg mit weniger Kanten. Nur zählt sie Kanten, keine Meter.
+
+  - id: dijkstra
+    title: Dijkstra
+    prompt: Schreib `dijkstra` in `routes.rb`.
+    check:
+      type: ruby
+      file: routenplaner-starter/routes.rb
+      cases:
+        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:path]
+          expect: "['11', '12', '13', '14', '15', '16']"
+          say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
+        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')[:path]
+          expect: "['11']"
+        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')[:path]
+          expect: ~
+          say: Zum Fußweg 31-32 führt nichts hin; wenn nichts mehr in frontier steht, gibt es keinen Weg.
+        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].first
+          expect: "'11'"
+        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].last
+          expect: "'16'"
+          say: Ist das Ziel dran, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.
+        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].include?('22')
+          expect: false
+          say: Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.

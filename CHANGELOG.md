@@ -773,9 +773,19 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Mit echten Karten von OpenStreetMap baut man in Ruby einen Routenplaner,
   erst in Steglitz, dann in ganz Berlin; Start und Ziel sind öffentliche Orte
   (Sehenswürdigkeiten, alle Schulen Berlins), nie Adressen. Die Schritte 1 bis
-  3 stehen: die Karte, Abstände aus Koordinaten, der Graph. Die Daten baut
-  `src/scripts/collect-streets/`; die Vorlage liegt in `vorlage/`, bis es
-  `specht/routenplaner-starter` gibt.
+  5 stehen: die Karte, Abstände aus Koordinaten, der Graph, Breitensuche und
+  Dijkstra. Die Seite im Browser zeigt, was der eigene Code tut: den Graphen
+  aus `build_graph` als Punkte und Linien über der blassen Karte, und bei
+  jeder Suche erst die besuchten Knoten in der Reihenfolge der Suche, dann den
+  Weg mit Länge, Knoten und Zeit. Start und Ziel sucht man durch Tippen, dazu
+  Maßstab, Legende und Zoom zur Maus; beim Ziehen und Zoomen wird das letzte
+  Bild der Karte nur verschoben und erst danach neu gezeichnet. Die Daten baut
+  `src/scripts/collect-streets/`; die Vorlage entsteht in `vorlage/`, das
+  Repository `specht/routenplaner-starter` bekommt sie als Patch.
+- Generierte Bilder: Eine Webseite in der Vorschau, die auf ein `<canvas>`
+  zeichnet, wird vor dem Bild neu gezeichnet, in der vollen Auflösung des
+  Bildes (der Generator schickt ihr nach dem Umstellen der Auflösung ein
+  `resize`). Vorher war so eine Karte unscharf.
 - `.gitignore` schließt nur noch den Datenordner der Entwicklung (`/data`) aus,
   nicht mehr jeden Ordner namens `data`. Dadurch fehlten zwei Dateien des
   Monaco-Editors im Repository (`webCustomData.js` für CSS und HTML, aus der
