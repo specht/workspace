@@ -396,6 +396,21 @@
         setTimeout(() => $('#' + id).trigger('focus').trigger('select'), 300);
     }
 
+    // The teacher's own test account back to a fresh start
+    people.addEventListener('click', (e) => {
+        const reset = e.target.closest('.bu-class-reset-test');
+        if (!reset) return;
+        if (!confirm('Das Testkonto zurücksetzen? Sein Workspace, seine Datenbanken, Antworten und Abgaben sind danach weg.')) return;
+        reset.disabled = true;
+        api_call('/api/reset_test_account', {}, function (data) {
+            reset.disabled = false;
+            if (data.success !== false) {
+                const note = reset.parentElement.querySelector('.class-test-reset-note');
+                if (note) note.textContent = 'Zurückgesetzt. Beim nächsten Öffnen startet ein frischer Workspace.';
+            }
+        });
+    });
+
     people.addEventListener('click', (e) => {
         const button = e.target.closest('.bu-class-impersonate, .bu-class-open-workspace');
         if (!button) return;

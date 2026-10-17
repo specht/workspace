@@ -721,6 +721,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Testkonten: Jede Lehrkraft hat genau ein Testkonto in einer eigenen
+  Testgruppe, auch Lehrkräfte mit `*` und Admins. Niemand sieht die
+  Testgruppen anderer; die Gruppenauswahl von Admins ist nicht mehr voll
+  davon. Neu: »Testkonto zurücksetzen« auf der Klassenseite (Workspace,
+  Datenbanken, Antworten und Abgaben des Testkontos, sonst nichts). Im Profil
+  können Lehrkräfte ihren eigenen Gruppen und dem Testkonto eine
+  Leistungsüberprüfung zuweisen, nicht mehr nur Admins. Lehrkräfte mit `*`
+  sehen jetzt den Menüpunkt »Klassen« mit ihrer Testgruppe.
 - »Endliche Automaten«: Die Zustände heißen überall q₀, q₁ und so weiter, in
   den Bildern, im Text, in den Programmen (`'q0'`) und in den Aufgaben;
   fehlende Übergänge führen in den Fehlerzustand q<sub>F</sub>, der genannt,

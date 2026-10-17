@@ -14,6 +14,7 @@ require './include/submission_view.rb'
 require './include/student_home.rb'
 require './include/group_visibility.rb'
 require './include/look_in.rb'
+require './include/test_accounts.rb'
 require './include/reference_index.rb'
 require './include/template_freshness.rb'
 require './include/anaglyph_viewer.rb'
@@ -2108,29 +2109,27 @@ class Main < Sinatra::Base
                 teachers[email] << group
             end
         end
-        # Every group administrator has a test account, alone in a test group
-        # of its own that only this teacher administers: to try hand-ins,
-        # galleries and exams as a student would, away from the real classes
-        # (LookIn). The test groups come last.
-        test_accounts = {}
-        teachers.keys.each do |teacher|
-            test_email = LookIn.test_account_email(teacher)
-            next if test_email.nil? || invitations[test_email]
-            teacher_name = (invitations[teacher] || {})[:name] || teacher.split('@').first
-            test_group = "Testgruppe (#{teacher_name})"
-            test_accounts[test_email] = teacher
-            group_members[test_group] = [test_email]
-            user_groups[test_group] = [test_email]
-            user_group_order << test_group unless user_group_order.include?(test_group)
-            invitations[test_email] = { :group => test_group, :name => "Testkonto (#{teacher_name})" }
-            teachers[teacher] << test_group
-        end
         teacher_emails = TeacherRoles.resolve(
             :invited_emails => invitations.keys,
             :administrators => ADMIN_USERS,
             :group_administrators => teachers.keys,
             :designated_teachers => explicit_teacher_emails,
         )
+        # Every teacher (administrators, + and *) has exactly one test
+        # account, alone in a test group of its own that only this teacher
+        # sees and administers (TestAccounts). The test groups come last.
+        test_accounts = {}
+        test_group_of = {}
+        TestAccounts.plan(teacher_emails, invitations).each do |test_email, account|
+            teacher, test_group = account[:teacher], account[:group]
+            test_accounts[test_email] = teacher
+            test_group_of[teacher] = test_group
+            group_members[test_group] = [test_email]
+            user_groups[test_group] = [test_email]
+            user_group_order << test_group unless user_group_order.include?(test_group)
+            invitations[test_email] = { :group => test_group, :name => account[:name] }
+            (teachers[teacher] ||= Set.new) << test_group
+        end
 
         # Keep readers on the previous complete snapshot until parsing finishes.
         @@invitations = invitations
@@ -2140,6 +2139,8 @@ class Main < Sinatra::Base
         @@teacher_emails = teacher_emails # teachers, with or without group rights
         @@group_members = group_members # all memberships, for the class board
         @@test_accounts = test_accounts # test account email => its teacher
+        @@test_group_of = test_group_of # teacher => its test group
+        @@test_groups = Set.new(test_group_of.values)
     end
 
     private_class_method :load_invitations_locked
@@ -3951,6 +3952,73 @@ class Main < Sinatra::Base
         )
     end
 
+    # A teacher's test account back to a fresh start (TestAccounts): its
+    # Workspace and exam Workspaces emptied, its databases new, its task
+    # results, attempts and hand-ins gone. Only this account's own data;
+    # exams keep it assigned, nothing of anyone else changes.
+    def reset_test_account(email)
+        raise ArgumentError, "#{email} is not a test account" unless @@test_accounts.key?(email)
+
+        stop_server(email)
+        FileUtils.rm_rf("/user/#{fs_tag_for_email(email)}")
+        neo4j_query(<<~END_OF_STRING, :email => email, :server_tag => gen_server_tag, :server_sid => gen_server_sid)
+            MATCH (u:User {email: $email})
+            SET u.server_tag = $server_tag, u.server_sid = $server_sid;
+        END_OF_STRING
+        # The Workspaces of the exams it takes
+        neo4j_query(<<~END_OF_STRING, :email => email).each do |row|
+            MATCH (:User {email: $email})-[:TAKES]->(t:Test)
+            RETURN t.tag AS tag;
+        END_OF_STRING
+            container_name = fs_tag_for_email("#{email}#{row['tag']}")
+            workspace_runtime.stop_workspace(container_name, :timeout => shell_timeout(:docker_kill))
+            FileUtils.rm_rf("/user/#{container_name}")
+        end
+        # Databases: the extra ones gone, the own MySQL and Neo4j database new
+        neo4j_query(<<~END_OF_STRING, :email => email).each do |row|
+            MATCH (:User {email: $email})-[:HAS]->(d:Database {type: 'mysql'})
+            RETURN d.name AS name;
+        END_OF_STRING
+            name = row['name'].to_s
+            next unless DatabaseProvisioning.extra_database?(name)
+
+            client = Mysql2::Client.new(host: 'mysql', username: 'root', password: MYSQL_ROOT_PASSWORD)
+            client.query("DROP DATABASE IF EXISTS `#{name}`;")
+            client.query(DatabaseProvisioning.extra_database_drop_login_statement(name))
+            client.close
+        end
+        neo4j_query(<<~END_OF_STRING, :email => email)
+            MATCH (:User {email: $email})-[:HAS]->(d:Database {type: 'mysql'})
+            DETACH DELETE d;
+        END_OF_STRING
+        reset_mysql(email)
+        reset_neo4j(email)
+        # Task results, attempts and hand-ins
+        neo4j_query(<<~END_OF_STRING, :email => email).each do |row|
+            MATCH (:User {email: $email})-[:HAS_TASK_STATE]->(s:TaskState)
+            RETURN s.task AS task;
+        END_OF_STRING
+            FileUtils.rm_f(submission_path(row['task'].to_s, email))
+        end
+        neo4j_query(<<~END_OF_STRING, :email => email)
+            MATCH (:User {email: $email})-[:HAS_TASK_STATE]->(s:TaskState)
+            DETACH DELETE s;
+        END_OF_STRING
+        neo4j_query(<<~END_OF_STRING, :email => email)
+            MATCH (a:TaskAttempt)-[:BY]->(:User {email: $email})
+            DETACH DELETE a;
+        END_OF_STRING
+    end
+
+    # The logged-in teacher resets its own test account, and only that.
+    post '/api/reset_test_account' do
+        assert(teacher_logged_in?)
+        test_email = @@test_accounts.key(@session_user[:email])
+        halt 404 if test_email.nil?
+        reset_test_account(test_email)
+        respond(:reset => test_email)
+    end
+
     post '/api/reset_server' do
         assert(user_logged_in?)
 
@@ -4519,16 +4587,16 @@ class Main < Sinatra::Base
 
     # --- Class board (docs/aufgaben.md, »Klassenübersicht«) ---------------------
 
-    # Groups whose class board the logged-in person may see: administrators see
-    # all, group administrators (+ in the invitation files) their groups.
+    # Groups whose class board the logged-in person may see: administrators
+    # every real group, group administrators (+) their groups, and every
+    # teacher its own test group, last; never another teacher's.
     def class_groups
         return [] unless user_logged_in?
 
-        groups = (defined?(@@group_members) ? @@group_members : {}).keys
-        return groups.sort_by { |g| @@user_group_order.index(g) || 0 } if admin_logged_in?
-
-        own = @@teachers[@session_user[:email]] || Set.new
-        groups.select { |g| own.include?(g) }.sort_by { |g| @@user_group_order.index(g) || 0 }
+        groups = (defined?(@@group_members) ? @@group_members : {}).keys.sort_by { |g| @@user_group_order.index(g) || 0 }
+        me = @session_user[:email]
+        TestAccounts.visible_groups(groups, :admin => admin_logged_in?, :own => @@teachers[me] || Set.new,
+            :test_groups => @@test_groups, :own_test_group => @@test_group_of[me])
     end
 
     def class_member?(group, email)
@@ -4703,6 +4771,11 @@ class Main < Sinatra::Base
         io = +"<section class='class-people' data-group='#{h.(group)}'>"
         if test_group
             io << "<p>Mit deinem Testkonto probierst du aus, was Lernende sehen: Aufgaben, Abgaben, die Galerie und Leistungsüberprüfungen. Es gehört nur zu dieser Gruppe, die nur du siehst.</p>"
+            if members.any? { |m| @@test_accounts[m[:email]] == @session_user[:email] }
+                io << "<p class='class-test-reset'><button type='button' class='btn btn-sm btn-outline-danger bu-class-reset-test'>" \
+                    "<i class='bi bi-arrow-counterclockwise' aria-hidden='true'></i>Testkonto zurücksetzen</button> " \
+                    "<span class='class-test-reset-note'>Leert seinen Workspace und seine Workspaces in Leistungsüberprüfungen, legt seine Datenbanken neu an und löscht seine Antworten und Abgaben. Andere Konten bleiben, wie sie sind.</span></p>"
+            end
         end
         # The admin page's server cards, filled from the teachers' websocket
         # (server_stats), see class_board.js.
@@ -6107,28 +6180,18 @@ class Main < Sinatra::Base
         )
     end
 
+    # The groups and people a teacher can assign to an exam (profile): the
+    # groups of its class page, so its own test account is among them.
     def my_user_group_order
-        if admin_logged_in?
-            @@user_group_order
-        else
-            []
-        end
+        teacher_logged_in? ? class_groups : []
     end
 
     def my_user_groups
-        if admin_logged_in?
-            @@user_groups
-        else
-            {}
-        end
+        my_user_group_order.to_h { |g| [g, @@group_members[g] || []] }
     end
 
     def my_invitations
-        if admin_logged_in?
-            @@invitations
-        else
-            {}
-        end
+        my_user_groups.values.flatten.uniq.to_h { |email| [email, { :name => (@@invitations[email] || {})[:name] || email }] }
     end
 
     def my_running_tests

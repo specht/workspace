@@ -65,11 +65,19 @@ hineinschauen (Support); dann erfährt die Person nichts.
 
 ## Testkonto
 
-Jede Lehrkraft mit `+` hat ein Testkonto, `adresse+test@domain`, allein in
-einer eigenen **Testgruppe (Name)**, die nur sie sieht und die in der
-Gruppenauswahl der Klassenseite zuletzt steht. Damit probiert sie aus, was
-Lernende sehen: Aufgaben, Abgaben, die Galerie, Leistungsüberprüfungen.
-»Nachahmen« braucht dort keinen Satz. Bei den meisten Mail-Anbietern kommen
+Jede Lehrkraft hat genau ein Testkonto, `adresse+test@domain`, ob mit `+`,
+mit `*` oder als Admin, allein in einer eigenen **Testgruppe (Name)**. Nur
+sie sieht diese Gruppe; sie steht in der Gruppenauswahl der Klassenseite
+zuletzt, und auch Admins sehen die Testgruppen der anderen nicht. Damit
+probiert sie aus, was Lernende sehen: Aufgaben, Abgaben, die Galerie,
+Leistungsüberprüfungen; im Profil kann sie das Testkonto einer eigenen
+Leistungsüberprüfung zuweisen. »Nachahmen« braucht dort keinen Satz.
+
+**Testkonto zurücksetzen** (Klassenseite, Reiter »Lernende« der Testgruppe)
+leert den Workspace des Testkontos und seine Workspaces in
+Leistungsüberprüfungen, legt seine Datenbanken neu an und löscht seine
+Antworten, Versuche und Abgaben. Zugewiesen bleibt es; andere Konten ändern
+sich nicht. Bei den meisten Mail-Anbietern kommen
 Anmelde-Codes für `+test` im eigenen Postfach an; man kann sich also auch
 direkt als Testkonto anmelden.
 

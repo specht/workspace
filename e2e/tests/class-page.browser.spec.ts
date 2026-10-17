@@ -55,3 +55,35 @@ test('toolbar buttons sit on one line', async ({ page }, testInfo) => {
   expect(live && template).toBeTruthy();
   expect(Math.abs((live!.y + live!.height / 2) - (template!.y + template!.height / 2))).toBeLessThan(1);
 });
+
+// Every teacher has exactly one test account in a test group of its own,
+// and sees no other teacher's test group; it can reset its test account.
+test('each teacher has its own test group and resets its test account', async ({ page }, testInfo) => {
+  test.setTimeout(120_000);
+  // A teacher with * only: the class page shows just its test group
+  await loginAsE2eUser(page, 'e2e-materials-teacher@example.com', testInfo);
+  await page.goto('/klasse?tab=lernende');
+  const groups = page.locator(".class-board-select select[name='group'] option");
+  await expect(groups).toHaveCount(1);
+  await expect(groups.first()).toHaveText(/^Testgruppe \(E2E Materials Teacher\)/);
+  await expect(page.locator('.class-people-table')).toContainText('Testkonto (E2E Materials Teacher)');
+
+  // A test result, then the reset: the result is gone
+  const student = await (await page.context().browser()!.newContext()).newPage();
+  await loginAsE2eUser(student, 'e2e-materials-teacher+test@example.com', testInfo);
+  const saved = await (await student.request.post('/api/task/check', { data: { task: 'tcpip/traceroute-erklaeren', answer: 'Jeder Router auf dem Weg zieht von der TTL des Pakets eins ab, und bei null verwirft er es und schickt eine Meldung zurück; so findet traceroute einen Router nach dem anderen.' } })).json();
+  expect(saved.status).toBe('sent');
+  page.once('dialog', (d) => d.accept());
+  await page.getByRole('button', { name: 'Testkonto zurücksetzen' }).click();
+  await expect(page.locator('.class-test-reset-note')).toContainText('Zurückgesetzt', { timeout: 60_000 });
+  const states = await (await student.request.post('/api/task/states', { data: { activity: 'tcpip' } })).json();
+  expect(states.states['traceroute-erklaeren']).toBeUndefined();
+
+  // A group administrator: its group and its own test group, no other
+  const teacher = await (await page.context().browser()!.newContext()).newPage();
+  await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
+  await teacher.goto('/klasse');
+  const names = await teacher.locator(".class-board-select select[name='group'] option").allTextContents();
+  expect(names.filter((n) => n.startsWith('Testgruppe'))).toEqual(['Testgruppe (E2E Teacher) (1)']);
+});
+
