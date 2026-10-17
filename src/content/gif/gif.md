@@ -215,20 +215,23 @@ template_name: des PixelRAM-Starters
         align-items: flex-start;
         flex-wrap: wrap;
     }
+    /* The 16 × 16 pixels: faint lines between the cells show where the
+       pixels will go, also before any are there. */
     .lzw-grid {
         display: grid;
         grid-template-columns: repeat(16, 1.15em);
         grid-auto-rows: 1.15em;
         gap: 1px;
+        padding: 1px;
         flex: none;
+        background: color-mix(in srgb, var(--bs-secondary-color) 22%, transparent);
     }
     .lzw-grid div {
         font-size: 0.7em;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 1px;
-        background: var(--bs-tertiary-bg);
+        background: var(--bs-body-bg);
     }
     .lzw-grid div.new {
         outline: 2px solid var(--color-m2);
@@ -1321,6 +1324,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     const pixels = [];
     steps.forEach((s) => { if (s.entry) pixels.push(...s.entry); });
+    // The table is as wide as its longest entry will ever be, from the
+    // first step on, so the column never jumps: the index (4ch), then one
+    // pixel box per pixel (1.3em and 1px), and room for a scroll bar.
+    const longest = Math.max(...steps.map((s) => Math.max(...s.table.map((e) => (e ? e.length : 0)))));
+    document.getElementById('lzw-table').style.width = `calc(4ch + ${longest} * (1.3em + 1px) + 1.2em)`;
     const pix = (list) => `<span class='pixes'>` + list.map((p) => `<span class='pix' style='background: ${PALETTE[p]}; color: ${INK[p]};'>${p}</span>`).join('') + `</span>`;
     const grid = document.getElementById('lzw-grid');
     for (let i = 0; i < WIDTH * HEIGHT; i++) grid.append(document.createElement('div'));
