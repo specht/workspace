@@ -132,18 +132,18 @@ tasks:
       - when: { problem: index }
         say: 'Noch gibt es keinen Index, der mit `last_name` und dann `first_name` anfängt. In `mycli`: `CREATE INDEX by_name ON person (last_name, first_name);`'
 
-  - id: ada-specht
-    title: Alle Ada Specht
-    prompt: Gib alle Zeilen von `person` aus, in denen jemand Ada Specht heißt.
+  - id: ada-berger
+    title: Alle Ada Berger
+    prompt: Gib alle Zeilen von `person` aus, in denen jemand Ada Berger heißt.
     check:
       type: sql
-      expect_query: SELECT * FROM person WHERE last_name = 'Specht' AND first_name = 'Ada'
+      expect_query: SELECT * FROM person WHERE last_name = 'Berger' AND first_name = 'Ada'
       tables: { person: 1000000 }
       setup: Lege zuerst mit `telefonbuch.sql` die Tabelle `person` an.
     feedback:
-      - when: { same_result_as: "SELECT * FROM person WHERE last_name = 'Specht'" }
-        say: Das sind alle Spechts. Es fehlt noch der Vorname.
-    solution: "`SELECT * FROM person WHERE last_name = 'Specht' AND first_name = 'Ada';` ergibt 1.222 Zeilen; `EXPLAIN` zeigt `key: by_name` mit `ref: const,const`."
+      - when: { same_result_as: "SELECT * FROM person WHERE last_name = 'Berger'" }
+        say: Das sind alle Bergers. Es fehlt noch der Vorname.
+    solution: "`SELECT * FROM person WHERE last_name = 'Berger' AND first_name = 'Ada';` ergibt 1.222 Zeilen; `EXPLAIN` zeigt `key: by_name` mit `ref: const,const`."
 
   - id: nur-vorname
     title: Nur der Vorname

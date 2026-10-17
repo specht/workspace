@@ -67,7 +67,7 @@ SELECT
       'Schröder', 'Neumann', 'Schwarz', 'Zimmermann', 'Braun', 'Krüger', 'Hofmann', 'Hartmann', 'Lange',
       'Schmitt', 'Werner', 'Schmitz', 'Krause', 'Meier', 'Lehmann', 'Schmid', 'Schulze', 'Maier',
       'Köhler', 'Herrmann', 'König', 'Walter', 'Mayer', 'Huber', 'Kaiser', 'Fuchs', 'Peters', 'Lang',
-      'Scholz', 'Möller', 'Weiß', 'Jung', 'Hahn', 'Specht'),
+      'Scholz', 'Möller', 'Weiß', 'Jung', 'Hahn', 'Berger'),
   ELT(1 + CRC32(CONCAT('o', i)) % 12, 'Berlin', 'Hamburg', 'München', 'Köln', 'Frankfurt', 'Stuttgart',
       'Düsseldorf', 'Leipzig', 'Dortmund', 'Essen', 'Bremen', 'Dresden'),
   1940 + CRC32(CONCAT('j', i)) % 70,
@@ -301,9 +301,9 @@ wait-for-text: Query OK
 
 _task(index-name)
 
-Er hilft bei der Suche nach Nachname und Vorname, und auch bei der nach dem Nachnamen allein: Alle Spechts stehen in ihm nebeneinander. Wie viele Ada Specht stehen im Telefonbuch?
+Er hilft bei der Suche nach Nachname und Vorname, und auch bei der nach dem Nachnamen allein: Alle Bergers stehen in ihm nebeneinander. Wie viele Ada Berger stehen im Telefonbuch?
 
-_task(ada-specht)
+_task(ada-berger)
 
 _task(nur-vorname)
 
@@ -370,8 +370,8 @@ check-task: wessen-nummer <- Noah Peters
 check-task-fails: wessen-nummer <- Rosa Scholz
 check-task: index-telefon
 check-task: index-name
-check-task: ada-specht <- SELECT * FROM person WHERE last_name = 'Specht' AND first_name = 'Ada';
-check-task-fails: ada-specht <- SELECT * FROM person WHERE last_name = 'Specht';
+check-task: ada-berger <- SELECT * FROM person WHERE last_name = 'Berger' AND first_name = 'Ada';
+check-task-fails: ada-berger <- SELECT * FROM person WHERE last_name = 'Berger';
 check-task: ebenen <- 3
 check-task-fails: ebenen <- 20
 -->
