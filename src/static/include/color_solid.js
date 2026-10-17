@@ -447,7 +447,7 @@
                 </label>
                 <div class='cs-toggles'>
                     <button type='button' class='cs-toggle' data-cut aria-pressed='true'><i class='bi bi-pie-chart'></i> Viertel herausnehmen</button>
-                    <button type='button' class='cs-toggle' data-split aria-pressed='false'><i class='bi bi-boxes'></i> In 8 × 8 × 8 Würfel teilen</button>
+                    <button type='button' class='cs-toggle' data-split aria-pressed='false'><i class='bi bi-boxes'></i> Zerteilen</button>
                 </div>
                 <label class='cs-field' data-apart hidden>
                     <span class='cs-name'><i class='bi bi-arrows-angle-expand'></i> Auseinander</span>

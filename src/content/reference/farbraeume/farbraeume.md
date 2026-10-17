@@ -16,7 +16,7 @@ kind: reference
 Eine Farbe ist für den Computer drei Zahlen, aber welche drei, hängt davon ab, wofür man sie braucht. Zum Anzeigen nimmt man Rot, Grün und Blau, zum Komprimieren Helligkeit und zwei Farbanteile, zum Vergleichen einen Farbraum, in dem gleiche Abstände gleich verschieden aussehen. Hier stehen die wichtigsten, wie man zwischen ihnen umrechnet, wie dasselbe Foto in jedem von ihnen aussieht und wie sie entstanden sind.
 </p>
 
-Zu jedem Farbraum gibt es einen Körper zum Drehen: alle Farben des RGB-Würfels, an die Stelle gesetzt, die ihnen der Farbraum gibt, das Helle immer oben. Zieh mit der Maus, um ihn zu drehen. Mit **Schnitt** schneidest du ihn waagerecht ab und siehst auf der Schnittfläche alle Farben derselben Helligkeit; ohne das herausgenommene Viertel siehst du nur die Oberfläche. **In 8 × 8 × 8 Würfel teilen** zerlegt den RGB-Würfel in 512 gleich große Würfel von je 32 Stufen pro Kanal, und **Auseinander** zieht sie voneinander weg. So siehst du, wie jeder Farbraum gleiche Schritte in RGB verbiegt.
+Zu jedem Farbraum gibt es einen Körper zum Drehen: alle Farben des RGB-Würfels, an die Stelle gesetzt, die ihnen der Farbraum gibt, das Helle oben. Zieh mit der Maus, um ihn zu drehen. Mit **Schnitt** schneidest du ihn waagerecht ab und siehst auf der Schnittfläche alle Farben derselben Helligkeit; ohne das herausgenommene Viertel siehst du nur die Oberfläche. **Zerteilen** zerlegt den RGB-Würfel in 8 × 8 × 8 gleich große Würfel von je 32 Stufen pro Kanal, und **Auseinander** zieht sie voneinander weg. Im Farbraum sind diese Stücke meist keine Würfel mehr. So siehst du, wie jeder Farbraum gleiche Schritte in RGB verbiegt.
 
 Die Bilder auf dieser Seite zerlegen dasselbe Foto in die drei Kanäle eines Farbraums. Jeder Kanal ist ein Graubild: dunkel, wo der Wert klein ist, hell, wo er groß ist. Unter jedem steht, was dunkel und was hell bedeutet. Das ist das Foto:
 
@@ -137,7 +137,7 @@ Wie bei YCbCr steckt das Bild fast ganz in L, und a und b sind grau, wo keine Fa
 
 In Lab sind die Farben des RGB-Würfels kein Würfel mehr, sondern ein schiefer Körper mit gebogenen Flächen. Er reicht weit nach Blau (−b) und nach Rot und Magenta (+a), und die kräftigen Farben liegen auf ganz verschiedenen Höhen: ein reines Gelb bei L = 97, ein reines Blau bei L = 32. Ein Schnitt zeigt, welche Farben gleich hell aussehen.
 
-Geteilt in die 8 × 8 × 8 Würfel von RGB zeigt Lab, wie verschieden gleiche Schritte in RGB aussehen. Die Würfel der dunklen Farben sind groß, bis zu siebzigmal so groß wie die kleinsten: Dort sieht man 32 Stufen eines Kanals deutlich. Am kleinsten sind die Würfel der kräftigen Grüntöne, dort unterscheidet das Auge dieselben 32 Stufen kaum. In HSV dagegen sind alle Würfel fast gleich groß, nur anders geformt, denn HSV ordnet den Würfel nur um.
+Zerteilt in die 8 × 8 × 8 Würfel von RGB zeigt Lab, wie verschieden gleiche Schritte in RGB aussehen. Die Stücke der dunklen Farben sind groß, bis zu siebzigmal so groß wie die kleinsten: Dort sieht man 32 Stufen eines Kanals deutlich. Am kleinsten sind die Stücke der kräftigen Grüntöne, dort unterscheidet das Auge dieselben 32 Stufen kaum. In HSV dagegen sind alle Stücke fast gleich groß, nur anders geformt, denn HSV ordnet den Würfel nur um.
 
 <div class='color-solid' data-space='lab'></div>
 <!-- /part -->
