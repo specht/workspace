@@ -23,7 +23,7 @@ tasks:
     solution: Fast alle. Jedes Zeichen bleibt nur zufällig gleich, mit einer Chance von 1 zu 16, also im Schnitt etwa 4 von 64.
 
   - id: hash-berechnen
-    title: Ein Hash von Hand
+    title: Ein Hash im Terminal
     prompt: |
       Berechne den SHA-256-Hash des Worts `Hackschule`, ohne Zeilenumbruch.
       Gib die ersten acht Zeichen ein.

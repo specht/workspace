@@ -436,20 +436,30 @@ Die Adresse aus dem VPN, das Gerät dazu und die Befehle aus der Nacht, minuteng
 
 ## Ein eigener Fall
 
-Jetzt bist du dran: Bau einen Fall für jemanden aus deiner Klasse. Er muss nicht groß sein, aber er soll sich nur mit dem Terminal lösen lassen.
+Jetzt bist du dran: Bau einen Fall für jemanden aus deiner Klasse. Er muss nicht groß sein, aber er soll sich nur mit dem Terminal lösen lassen. Drei Schritte reichen.
 
 - Leg einen Ordner `mein-fall` an, mit einer `LIESMICH.txt`, die sagt, was passiert ist und wo man anfängt.
 - Jede Spur führt zur nächsten: ein Hinweis zu einer Datei, eine Zeile zu einer anderen Datei, eine Liste zu einem Namen.
 - Für jeden Schritt braucht man ein anderes Werkzeug, zum Beispiel `grep -l`, `head | tail` und `sort | uniq -d`.
 - Falsche Fährten machen es spannend: ein zweites gelbes Auto, eine Person mit demselben Nachnamen.
+- Schreib in `LOESUNG.txt` die Befehle, die deinen Fall lösen, Schritt für Schritt. Führ sie selbst einmal aus: So merkst du, ob man die Spur wirklich findet, und deine Lehrkraft sieht, wie es gedacht ist.
 
-Viele Dateien schreibt eine Schleife. Diese hier legt 500 Befragungen an, in denen niemand etwas gesehen hat:
+Die vielen Dateien, in denen die Spur verschwindet, schreibst du nicht von Hand, sondern mit einer Schleife. Sehen alle Dateien gleich aus, findet `grep -L` die eine, auf die es ankommt, sofort. Darum würfelt die Schleife jede Befragung aus Listen zusammen: Eine Liste in runden Klammern ist ein Array, und `${namen[RANDOM % ${#namen[@]}]}` nimmt einen zufälligen Eintrag daraus.
 
-```bash
-for i in $(seq 1000 1499); do echo "Befragung $i: Ich habe nichts gesehen." > befragung-$i.txt; done
+```bash_copy
+namen=(Ada Ben Cem Dana Emil Fiona Gero Hanna Ilja Jana)
+orte=("am Bahnhof" "am Hafen" "auf dem Markt" "im Museum" "im Park" "auf dem Schulhof")
+dinge=("einen Radfahrer" "einen Hund" "ein Taxi" "nichts Besonderes" "einen Lieferwagen")
+mkdir -p befragungen
+for i in $(seq 1000 1499); do
+  n=${namen[RANDOM % ${#namen[@]}]}
+  o=${orte[RANDOM % ${#orte[@]}]}
+  d=${dinge[RANDOM % ${#dinge[@]}]}
+  echo "Befragung $i: $n war um $((RANDOM % 24)):$((RANDOM % 6))0 Uhr $o und hat $d gesehen." > befragungen/befragung-$i.txt
+done
 ```
 
-Danach ersetzt du eine davon durch die Befragung, auf die es ankommt. Tauscht eure Fälle aus und löst den der anderen.
+Nimm eigene Listen, passend zu deiner Geschichte. Danach öffnest du eine der Dateien mit `nano` und schreibst die Aussage hinein, auf die es ankommt; eine zweite bekommt die falsche Fährte. Dieselbe Schleife mit anderen Listen schreibt auch die übrigen Akten, etwa eine lange Liste von Autos oder Mitgliedern. Tauscht eure Fälle aus und löst den der anderen.
 
 _task(eigener-fall)
 

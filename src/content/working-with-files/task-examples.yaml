@@ -20,9 +20,11 @@ examples:
       - files: { working-with-files/hello-nano.txt: { text: "Hallo aus nano!\n" } }
   woerter:
     pass:
-      - files: { working-with-files/words.txt: { text: "the\nand\nto\n" } }
+      - files: { working-with-files/words.txt: { text: "a\nAlice\nand\nthe\n" } }
     fail:
       - files: { working-with-files/words.txt: { text: "PK\x03\x04\x14\0\0\0" } }
+      - files: { working-with-files/words.txt: { text: "Alice was beginning to get very tired of sitting by her sister\n" } }
+        say: Alice
   zork:
     pass:
       - files: { working-with-files/zork-master/zork: { text: "\x7FELF\x02\x01\x01\0\0\0\0\0\0\0\0\0\x02\0\x3E\0", executable: true } }

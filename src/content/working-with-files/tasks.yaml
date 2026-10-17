@@ -92,6 +92,8 @@ tasks:
       path: working-with-files/words.txt
       expect:
         format: text
+        contains:
+          - { pattern: '^Alice$', say: 'In `words.txt` steht keine Zeile, die nur `Alice` enthält. Ein Wort pro Zeile liefert `grep -o -E "[A-Za-z]+" alice.txt | sort | uniq -i`.' }
     feedback:
       - when: { problem: wrong_format }
         say: "`words.txt` ist leer. Steht `>` am Ende der ganzen Pipeline, hinter `uniq -i`?"

@@ -174,7 +174,9 @@ tasks:
     title: Ein eigener Fall
     prompt: |
       Bau einen kleinen Fall für jemanden aus deiner Klasse, in einem Ordner
-      `mein-fall` mit einer `LIESMICH.txt`, und gib ihn ab.
+      `mein-fall`: eine `LIESMICH.txt` zum Anfangen, die Akten, die du mit
+      Schleifen erzeugt hast, und eine `LOESUNG.txt` mit den Befehlen, die ihn
+      lösen. Gib den Ordner ab.
     check:
       type: submit
       paths: [mein-fall]
