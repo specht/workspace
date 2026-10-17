@@ -550,6 +550,36 @@ tasks:
         say: "`POINT` nimmt zuerst die Länge (`longitude`), dann die Breite (`latitude`)."
     solution: "`SELECT b.name, ROUND(ST_Distance_Sphere(POINT(a.longitude, a.latitude), POINT(b.longitude, b.latitude)) / 1000) AS km FROM city AS a JOIN city AS b ON b.id <> a.id WHERE a.name = 'Hamburg' ORDER BY km LIMIT 5;` Lübeck (57 km), Kiel, Bremerhaven, Bremen und Oldenburg (127 km)."
 
+  - id: brandenburg
+    title: Fehlt da nicht eine?
+    prompt: |
+      Brandenburg an der Havel liegt nur 60 Kilometer von Berlin entfernt,
+      näher als Magdeburg. Trotzdem steht es nicht unter den fünf Städten,
+      die Berlin am nächsten liegen. Warum?
+    check:
+      type: choice
+      options:
+        - In `city` stehen nur Städte ab 100.000 Einwohnern und die Hauptstädte; Brandenburg an der Havel ist kleiner.
+        - "`ST_Distance_Sphere` rechnet über die gekrümmte Erde, und so ist Brandenburg weiter weg als Magdeburg."
+        - Brandenburg wäre die sechste Stadt, und `LIMIT 5` schneidet sie ab.
+        - Brandenburg ist ein Bundesland und steht darum in `country`.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Auf 60 Kilometer macht die Krümmung der Erde fast nichts aus. Sieh nach, ob Brandenburg überhaupt in `city` steht.
+      - when: { picked: 2 }
+        say: Mit `LIMIT 10` kommen Halle, Zielona Góra und Dresden dazu, aber kein Brandenburg. Steht es überhaupt in `city`?
+      - when: { picked: 3 }
+        say: In `country` stehen nur Staaten. Gemeint ist die Stadt Brandenburg an der Havel; steht sie in `city`?
+    solution: |
+      `SELECT * FROM city WHERE name LIKE 'Brandenburg%';` findet nichts:
+      Die Tabelle enthält nur Orte ab 100.000 Einwohnern und dazu die
+      Hauptstädte (Handbuch, [Datensätze](/reference/datensaetze#countries)),
+      und Brandenburg an der Havel hat gut 70.000. Eine Datenbank ist
+      immer ein Ausschnitt der Welt. »Die nächste Stadt« heißt hier
+      eigentlich »die nächste Stadt, die in der Tabelle steht«; was jemand
+      beim Sammeln weggelassen hat, findet keine Abfrage.
+
   - id: weiteste-vermutung
     title: Am anderen Ende der Welt
     prediction: true

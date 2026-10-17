@@ -124,6 +124,10 @@ crop-terminal-lines: auto
 
 <img class='full' src='sql-import.webp' alt='Das Terminal nach dem Import: unter einer Kopfzeile drei Zeilen, eine für jede Tabelle, jede mit dem Status OK.'>
 
+Das hast du gerade importiert: drei Tabellen, jede mit ihren Spalten und ihren ersten Zeilen. Schau sie dir an, bevor du weiterliest. Was könnte man diese Daten fragen?
+
+_schema(countries-basic, rows)
+
 ## Die Datenbank erkunden
 
 ### mycli starten
@@ -658,7 +662,7 @@ crop-terminal-skip-bottom: 1
 
 <img class='full' src='show-tables-full.webp' alt='SHOW TABLES listet sieben Tabellen: border, city, continent, country, country_language, currency und language.'>
 
-_schema(countries)
+_schema(countries, rows, new: border currency language country_language)
 
 Neu in `country` sind vier Spalten: `currency_code`, die Währung, ein Fremdschlüssel auf `currency`; `tld`, die Internet-Endung wie `.de`; `calling_code`, die Vorwahl wie `+49`; und `driving_side`, `left` oder `right`, je nachdem, auf welcher Straßenseite gefahren wird. `border` enthält die Grenzen an Land, jede als Paar von zwei Ländern; erst beide Spalten zusammen sind der Primärschlüssel. `language` und `country_language` sagen, welche Sprachen in welchem Land Amtssprache sind.
 
@@ -818,26 +822,26 @@ _task(meiste-staedte)
 
 ## Viele zu viele: Amtssprachen
 
-Ein Land kann mehrere Amtssprachen haben, die Schweiz hat vier, und eine Sprache kann in vielen Ländern Amtssprache sein. Das passt weder in eine Spalte von `country` noch in eine von `language`. Deshalb gibt es eine Tabelle dazwischen, `country_language`, mit einer Zeile für jedes Paar aus Land und Sprache. Für die Namen braucht es zwei `JOIN`s:
+Ein Land kann mehrere Amtssprachen haben, Finnland etwa Finnisch und Schwedisch, und eine Sprache kann in vielen Ländern Amtssprache sein. Das passt weder in eine Spalte von `country` noch in eine von `language`. Deshalb gibt es eine Tabelle dazwischen, `country_language`, mit einer Zeile für jedes Paar aus Land und Sprache. Für die Namen braucht es zwei `JOIN`s:
 
 ```sql
 SELECT country.name, language.name
 FROM country
 JOIN country_language ON country_language.country_code = country.code
 JOIN language ON language.code = country_language.language_code
-WHERE country.name = 'Schweiz';
+WHERE country.name = 'Finnland';
 ```
 
 <!-- tutorial-screenshot
 press: Control+L
-terminal-run: SELECT country.name, language.name FROM country JOIN country_language ON country_language.country_code = country.code JOIN language ON language.code = country_language.language_code WHERE country.name = 'Schweiz';
+terminal-run: SELECT country.name, language.name FROM country JOIN country_language ON country_language.country_code = country.code JOIN language ON language.code = country_language.language_code WHERE country.name = 'Finnland';
 sleep: 0.5
 terminal-scroll-back: 2
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->
 
-<img class='full' src='join-languages.webp' alt='Die vier Amtssprachen der Schweiz: Deutsch, Französisch, Italienisch und Bündnerromanisch.'>
+<img class='full' src='join-languages.webp' alt='Die beiden Amtssprachen Finnlands: Finnisch und Schwedisch.'>
 
 Eine solche Tabelle in der Mitte brauchst du immer, wenn auf beiden Seiten viele stehen: bei Filmen und Genres in der Filmdatenbank genauso.
 
@@ -884,6 +888,8 @@ crop-terminal-skip-bottom: 1
 <img class='full' src='distance-berlin.webp' alt='Die fünf Städte, die Berlin am nächsten liegen: Potsdam mit 25 Kilometern, dann Magdeburg, Gorzów Wielkopolski, Stettin und Leipzig mit 126 bis 148 Kilometern.'>
 
 _task(naechste-hamburg)
+
+_task(brandenburg)
 
 _task(weiteste-vermutung)
 

@@ -718,6 +718,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- »Einführung in SQL«: Nach jedem Import steht ein Kasten »Die Tabellen« mit
+  jeder Tabelle, ihren Spalten und ihren ersten Zeilen; im zweiten Teil sind
+  die neuen Tabellen markiert und aufgeklappt (`_schema(name, rows, new: …)`).
+  Das Beispiel zu den Amtssprachen ist jetzt Finnland, damit es die Aufgabe zur
+  Schweiz nicht vorwegnimmt. Neu ist die Frage, warum Brandenburg an der Havel
+  nicht unter den Städten nahe Berlin steht: Eine Datenbank ist ein Ausschnitt
+  der Welt.
 - Query Stepper: In der Abfrage selbst ist der Teil markiert, den der
   gezeigte Schritt ausführt, etwa `WHERE population > 1000000`.
 - GIF decodieren, LZW zum Durchklicken: Die Tabelle steht von Anfang an da,

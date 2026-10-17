@@ -29,6 +29,24 @@ class SchemasTest < Minitest::Test
         assert_includes movies, "<u><span class='schema-fk' title='verweist auf job.id'><span class='schema-arrow'>↑</span>job_id</span></u>)"
     end
 
+    # Right after an import: each table with its first rows; the new ones
+    # marked and open, the known ones closed.
+    def test_rows_and_new_tables_in_a_panel
+        out = Schemas.expand("_schema(countries, rows, new: border language)\n")
+        assert_includes out, "<div class='schema-panel'>"
+        assert_equal 7, out.scan("<details class='schema-lines schema-table-rows'").size
+        assert_equal 2, out.scan("<span class='schema-new'>neu</span>").size
+        assert_equal 2, out.scan("schema-table-rows' open>").size
+        assert_includes out, "<td>Afghanistan</td>"
+        assert_includes out, '… und 194 weitere Zeilen, 197 in allen'
+        assert_includes out, '<td>652230</td>'
+        basic = Schemas.expand("_schema(countries-basic, rows)\n")
+        assert_equal 3, basic.scan("schema-table-rows' open>").size
+        warnings = []
+        Schemas.expand("_schema(countries, rows, new: nothing)\n", warn: ->(m) { warnings << m })
+        assert_equal ['_schema(countries): no table nothing'], warnings
+    end
+
     def test_expand_a_line_of_its_own_and_report_an_unknown_dataset
         warnings = []
         out = Schemas.expand("Vorher\n\n_schema(countries)\n\n_schema(nothing)\n`_schema(countries)` im Text\n", warn: ->(m) { warnings << m })

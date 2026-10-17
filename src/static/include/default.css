@@ -4997,6 +4997,70 @@ div[data-stepper]::before {
     font-weight: 700;
     margin-right: 0.05em;
 }
+/* _schema in a page: the tables in a panel, easy to find again; with rows,
+   each table's first rows below its line, the new ones marked. */
+.schema-panel {
+    margin: 1em 0 1.4em;
+    padding: 0.6em 1em 0.5em;
+    border: 1px solid var(--bs-border-color);
+    border-left: 4px solid var(--bs-primary);
+    border-radius: 0.5em;
+    background-color: var(--bs-tertiary-bg);
+}
+.schema-panel-title {
+    font-size: 0.8em;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+    margin-bottom: 0.3em;
+}
+.schema-panel-title .bi {
+    margin-right: 0.45em;
+}
+.schema-panel .schema-lines {
+    margin: 0;
+}
+.schema-table-rows > summary {
+    cursor: pointer;
+}
+.schema-table-rows > summary > div {
+    display: inline;
+    padding-left: 0;
+    text-indent: 0;
+}
+.schema-rows {
+    overflow-x: auto;
+    margin: 0.2em 0 0 1.1em;
+}
+.schema-rows .table {
+    --bs-table-bg: transparent;
+    width: auto;
+    margin-bottom: 0;
+}
+.schema-rows th,
+.schema-rows td {
+    white-space: nowrap;
+    padding: 0.1em 0.8em 0.1em 0;
+}
+.schema-rows th {
+    font-weight: 600;
+}
+.schema-more {
+    margin: 0.1em 0 0.5em 1.1em;
+    font-family: var(--bs-body-font-family);
+    color: var(--bs-secondary-color);
+}
+.schema-new {
+    margin-left: 0.6em;
+    padding: 0 0.5em;
+    border-radius: 1em;
+    font-family: var(--bs-body-font-family);
+    font-size: 0.85em;
+    font-weight: 600;
+    background-color: var(--bs-primary);
+    color: #fff;
+}
 .query-stepper .qs-table table {
     width: auto;
     margin-bottom: 0;
