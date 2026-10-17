@@ -24,9 +24,9 @@
 2  23:38:05  cam2/door-closing.jpg
 2  23:38:08  cam2/empty.jpg
 
-# Kamera 3, Parkplatz: zum Auto, die Tasche auf den Beifahrersitz, außen
-# herum zur Fahrertür (nicht im Bild), ohne Licht rückwärts hinaus
+# Kamera 3, Parkplatz: zum Auto, die Tasche in den Kofferraum, auf der
+# abgewandten Seite zur Fahrertür (nicht im Bild), ohne Licht rückwärts hinaus
 3  23:38:12  cam3/on-path.jpg
-3  23:38:21  cam3/at-passenger-door.jpg
+3  23:38:21  cam3/at-boot.jpg
 3  23:38:40  cam3/reversing.jpg
 3  23:38:46  cam3/space-empty.jpg

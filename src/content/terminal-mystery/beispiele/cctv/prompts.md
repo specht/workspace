@@ -151,7 +151,7 @@ edge of the parking lot, the wall, the bushes, the street lamp and the path
 exactly as they are.«:
 
 - `on-path.jpg`: The person stands on the paved path on the right side of the image, near the bottom right, seen from behind, facing the yellow car, as if walking from the museum toward it; faint shadow falling away from the lamp. (Geht den Weg hinauf, von der Kamera weg: vom Hintereingang her.)
-- `at-passenger-door.jpg`: The person stands at the door on the right side of the car, seen from behind, the free hand on the door handle. Gedacht als Fahrertür; es ist die Beifahrertür, also legt die Person dort die Tasche ab.
+- `at-boot.jpg`: The car's tailgate is open: hinged at the top of the rear, it is swung up, standing above the back of the car, so the dark boot is open. A person stands directly behind the car, seen from behind, putting a dark sports bag into the boot. All other doors are closed, all lights of the car stay off. (Ein erster Versuch an der Tür rechts zeigte die Beifahrertür: dann sähe es aus, als führe jemand vom Beifahrersitz aus.)
 - `reversing.jpg`: The car is reversing out of its parking space: it has moved back about one car length toward the camera … All its lights are OFF, also the brake and reversing lights. Inside, in the driver's seat, a dark figure is barely visible. (Gerade zurück, wie man zuerst ausparkt.)
 - `space-empty.jpg`: Remove the yellow car … the part of the lines the car was hiding is now visible, straight and in line with the rest.
 
