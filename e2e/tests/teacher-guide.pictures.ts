@@ -9,6 +9,8 @@
 // 16:9, 1280 x 720 at twice the pixels (2560 x 1440), written as .webp next to the
 // guide (needs ImageMagick's convert).
 import { execFileSync } from 'node:child_process';
+import crypto from 'node:crypto';
+import fs from 'node:fs';
 import path from 'node:path';
 import type { Page } from '@playwright/test';
 import { expect, test } from './fixtures';
@@ -25,19 +27,61 @@ const NAMES: Record<string, string> = {
   'E2E Teacher': 'Frau Berger',
 };
 
-// Answers that make a believable class: some right, some wrong, one stuck.
-const ANSWERS: [string, string, string][] = [
-  ['e2e-0@example.com', 'bif/punkt', '1'], ['e2e-0@example.com', 'bif/anfangswert', '1'],
-  ['e2e-1@example.com', 'bif/punkt', '1'], ['e2e-1@example.com', 'bif/anfangswert', '1'],
-  ['e2e-2@example.com', 'bif/punkt', '0'],
-  ['e2e-3@example.com', 'bif/punkt', '1'], ['e2e-3@example.com', 'bif/anfangswert', '3'],
-  ['e2e-3@example.com', 'bif/anfangswert', '0'], ['e2e-3@example.com', 'bif/anfangswert', '2'],
-  ['e2e-4@example.com', 'bif/punkt', '3'], ['e2e-4@example.com', 'bif/punkt', '1'],
-  ['e2e-5@example.com', 'bif/punkt', '1'],
-  ['e2e-6@example.com', 'bif/punkt', '1'], ['e2e-6@example.com', 'bif/anfangswert', '1'],
-  ['e2e-auth-student-0@example.com', 'bif/punkt', '1'], ['e2e-auth-student-1@example.com', 'bif/punkt', '0'],
-  ['e2e-auth-student-2@example.com', 'bif/punkt', '1'], ['e2e-auth-student-2@example.com', 'bif/anfangswert', '1'],
+// The class at work on »Statische Webseiten«: each student as far as the
+// walkthrough's stages (src/content/static-website/lehrkraft/) and has
+// checked every task up to there; stage 8 has handed in. A few mistakes: Ben
+// is stuck at Flexbox, David chose the wrong alt text, Ida needed three tries
+// for ».credit« and has not got it yet. Jonas hands in his own little page
+// (PAGE below), which the viewer picture shows.
+const STAGE: Record<string, number> = {
+  'e2e-auth-student-0@example.com': 8, 'e2e-auth-student-1@example.com': 6, 'e2e-auth-student-2@example.com': 8,
+  'e2e-auth-student-3@example.com': 3, 'e2e-auth-student-4@example.com': 7, 'e2e-auth-student-5@example.com': 5,
+  'e2e-auth-student-6@example.com': 8, 'e2e-auth-student-7@example.com': 2, 'e2e-peer@example.com': 6,
+  'e2e-0@example.com': 8, 'e2e-1@example.com': 4, 'e2e-2@example.com': 7, 'e2e-3@example.com': 0,
+  'e2e-4@example.com': 5, 'e2e-5@example.com': 8, 'e2e-6@example.com': 3, 'e2e-7@example.com': 6,
+};
+// [task, from stage, answer for a choice] in the order of the walkthrough
+const TASKS: [string, number, string?][] = [
+  ['index', 1], ['liste', 2], ['link', 3], ['alt-text', 3, '2'], ['eigenes-bild', 5], ['bilddatei', 5],
+  ['css', 6], ['selektor', 6, '1'], ['flexbox', 7], ['breite', 7, '0'], ['kleine-bildschirme', 8], ['media-query', 8, '0'],
 ];
+// wrong answers given before (or instead of) the right one
+const MISTAKES: [string, string, string][] = [
+  ['e2e-auth-student-1@example.com', 'flexbox', ''],
+  ['e2e-auth-student-3@example.com', 'alt-text', '0'],
+  ['e2e-peer@example.com', 'selektor', '0'], ['e2e-peer@example.com', 'selektor', '2'], ['e2e-peer@example.com', 'selektor', '3'],
+];
+const STUCK = new Set(['e2e-auth-student-3@example.com alt-text', 'e2e-peer@example.com selektor']);
+
+const STAGES = path.resolve(__dirname, '../../src/content/static-website/lehrkraft');
+const PHOTO = path.resolve(__dirname, '../../src/content/reference/html/bilder/classroom.jpg');
+const FIRST_PAGE = '<!DOCTYPE html>\n<html lang="de">\n<head>\n    <meta charset="UTF-8">\n    <title>Axolotl</title>\n</head>\n<body>\n    <h1>Axolotl</h1>\n    <p>Axolotl leben ihr ganzes Leben im Wasser.</p>\n</body>\n</html>\n';
+
+function fsTag(email: string): string {
+  const hex = crypto.createHash('sha256').update(email).digest('hex');
+  return BigInt(`0x${hex}`).toString(36).slice(0, 16);
+}
+
+// The files of a stage in the student's folder on the server, where the
+// checks read them (no Workspace needs to run)
+function writeStage(email: string, stage: number) {
+  const home = `/user/${fsTag(email)}`;
+  const dir = `${home}/workspace/website-test`;
+  const files: Record<string, Buffer> = {};
+  const html = stage >= 8 ? '7-flexbox.html' : ['', '', '2-liste.html', '3-link.html', '4-bild.html', '5-bildnachweis.html', '6-css.html', '7-flexbox.html'][stage];
+  let page = stage === 1 ? FIRST_PAGE : fs.readFileSync(path.join(STAGES, html), 'utf8');
+  if (stage >= 5) {
+    // the student's own picture instead of the one from the internet
+    page = page.replace(/src="https?:\/\/[^"]+"/, 'src="mein-bild.jpg"');
+    files['mein-bild.jpg'] = fs.readFileSync(PHOTO);
+  }
+  files['index.html'] = Buffer.from(page);
+  if (stage >= 6) files['styles.css'] = fs.readFileSync(path.join(STAGES, stage >= 8 ? '8-styles.css' : `${Math.min(stage, 7)}-styles.css`));
+  const docker = (script: string, input?: Buffer) => execFileSync('docker', ['exec', '-i', 'workspace_ruby_1', 'sh', '-c', script], { input });
+  docker(`rm -rf ${dir} && mkdir -p ${dir}`);
+  for (const [name, data] of Object.entries(files)) docker(`cat > ${dir}/${name}`, data);
+  docker(`chown 1000:1000 ${home} ${home}/workspace && chown -R 1000:1000 ${dir}`);
+}
 
 // The Workspaces of the class while it works: every one running, most of
 // them nearly idle, a few busy (CPU in percent, memory in MiB). The real
@@ -90,7 +134,7 @@ async function shoot(page: Page, name: string, anchor: string | null, out: strin
 }
 
 test('pictures for the teacher guide', async ({ freshWorkspace: workspace, browser }, testInfo) => {
-  test.setTimeout(400_000);
+  test.setTimeout(900_000);
   const out = testInfo.outputPath();
   const touched = new Set<string>();
   const pages = new Map<string, Page>();
@@ -104,11 +148,27 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
   };
   const container = new WorkspaceContainer('e2e-0@example.com');
   try {
-    for (const [email, task, answer] of ANSWERS) {
-      expect((await (await as(email)).request.post('/api/task/check', { data: { task, answer } })).ok()).toBe(true);
-      touched.add(email + ' ' + task);
+    const check = async (email: string, task: string, answer = '') => {
+      const result = await (await (await as(email)).request.post('/api/task/check', { data: { task: `static-website/${task}`, answer } })).json();
+      touched.add(`${email} static-website/${task}`);
+      return result.status;
+    };
+    for (const [email, stage] of Object.entries(STAGE)) {
+      if (stage === 0) continue;
+      writeStage(email, stage);
+      for (const [task, answer] of MISTAKES.filter(([who]) => who === email).map(([, t, a]) => [t, a])) {
+        expect(await check(email, task, answer), `${email} ${task} should be wrong`).toBe('wrong');
+      }
+      for (const [task, from, answer] of TASKS) {
+        if (stage < from || STUCK.has(`${email} ${task}`)) continue;
+        if (email === 'e2e-auth-student-1@example.com' && task === 'flexbox') continue;
+        expect(await check(email, task, answer), `${email} ${task}`).toBe('correct');
+      }
+      if (stage >= 8 && email !== 'e2e-0@example.com') expect(await check(email, 'abgabe')).toBe('sent');
     }
     await container.waitUntilRunning();
+    // Jonas's own page instead of his stage: only these three files
+    await container.exec('rm -rf /workspace/website-test', { workdir: '/workspace' });
     for (const [file, text] of [['index.html', PAGE], ['styles.css', STYLES], ['script.js', SCRIPT]]) {
       await container.exec(`mkdir -p /workspace/website-test && cat > /workspace/website-test/${file}`, { workdir: '/workspace', input: text });
     }
@@ -117,7 +177,7 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
 
     const teacher = await (await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 2 })).newPage();
     await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
-    await teacher.goto('/klasse?group=E2E&activity=bif');
+    await teacher.goto('/klasse?group=E2E&activity=static-website');
     await teacher.evaluate(() => localStorage.setItem('hackschule-class-welcome-hidden', '1'));
     await teacher.reload();
     await dress(teacher, 0.78);
@@ -154,7 +214,8 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
     await dress(teacher);
     const box = teacher.locator('details.class-answers', { hasText: 'Abgabe' });
     await box.locator('summary').click();
-    await box.locator('a.cb-submission').first().click();
+    // the link shows what was handed in; whose it is, its title says
+    await box.locator('a.cb-submission[data-view-title^="E2E Worker 0"]').click();
     await expect(teacher.frameLocator('.subview-frame').locator('#gruss')).toContainText('Guten', { timeout: 15_000 });
     await dress(teacher);
     await shoot(teacher, 'abgabe-ansehen', null, out);
@@ -187,6 +248,8 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
       await (await as(email)).request.post('/api/task/delete', { data: { task } });
     }
     await workspace.request.post('/api/task/delete', { data: { task: 'static-website/abgabe' } });
-    await container.exec('rm -rf /workspace/website-test', { workdir: '/workspace' }).catch(() => {});
+    for (const email of Object.keys(STAGE)) {
+      execFileSync('docker', ['exec', 'workspace_ruby_1', 'rm', '-rf', `/user/${fsTag(email)}/workspace/website-test`]);
+    }
   }
 });

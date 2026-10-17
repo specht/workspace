@@ -786,6 +786,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   hat und wie groß sie ist. Alle Knöpfe haben Symbole, die Dateien ihre Art
   als Symbol, eine laufende Seite lässt sich neu laden, und die Pfeiltasten
   gehen durch die Dateien.
+- »Einstieg für Lehrkräfte«, Reiter »Fortschritt«: Im Bild arbeitet die Klasse
+  an »Statische Webseiten«, jede Person bis zu ihrer Stufe der Anleitung, vier
+  haben abgegeben, ein paar hängen. Die Stände sind echt geprüft, wie im
+  Unterricht.
 - »Einstieg für Lehrkräfte«, Reiter »Lernende«: Im Bild läuft jeder Workspace
   der Klasse, die meisten fast im Leerlauf, ein paar beschäftigt, und die
   Karten zeigen die Werte eines echten Servers statt des Entwicklungsrechners.
