@@ -729,19 +729,20 @@ In `country` steht nicht, wie die Hauptstadt eines Landes heißt; das steht in `
 SELECT country.name, city.name
 FROM country
 JOIN city ON city.country_code = country.code
-WHERE city.is_capital = 1 AND country.continent = 'Südamerika';
+WHERE city.is_capital = 1 AND country.continent = 'Europa'
+  AND country.population > 50000000;
 ```
 
 <!-- tutorial-screenshot
 press: Control+L
-terminal-run: SELECT country.name, city.name FROM country JOIN city ON city.country_code = country.code WHERE city.is_capital = 1 AND country.continent = 'Südamerika';
+terminal-run: SELECT country.name, city.name FROM country JOIN city ON city.country_code = country.code WHERE city.is_capital = 1 AND country.continent = 'Europa' AND country.population > 50000000;
 sleep: 0.5
 terminal-scroll-back: 2
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->
 
-<img class='full' src='join-capitals.webp' alt='Die zwölf Länder Südamerikas mit ihren Hauptstädten, von Argentinien mit Buenos Aires bis Venezuela mit Caracas.'>
+<img class='full' src='join-capitals.webp' alt='Die fünf Länder Europas mit mehr als 50 Millionen Einwohnern und ihre Hauptstädte: Deutschland und Berlin, Frankreich und Paris, das Vereinigte Königreich und London, Italien und Rom, Russland und Moskau.'>
 
 Weil es `name` in beiden Tabellen gibt, steht der Name der Tabelle davor: `country.name`, `city.name`. Die Bedingung hinter `ON` ist fast immer dieselbe Art: Ein Fremdschlüssel ist gleich dem Primärschlüssel, auf den er verweist. So kommt auch der Name der Währung dazu, über `country.currency_code` und `currency.code`.
 
@@ -770,7 +771,7 @@ WHERE border.country_code = 'DEU';
 press: Control+L
 terminal-run: SELECT neighbor.name FROM border JOIN country AS neighbor ON neighbor.code = border.neighbor_code WHERE border.country_code = 'DEU';
 sleep: 0.5
-terminal-scroll-back: 2
+terminal-scroll-back: 3
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->
@@ -793,21 +794,21 @@ Ein `JOIN` lässt ein Land weg, für das es keine passende Zeile gibt: Inselstaa
 SELECT country.name, border.neighbor_code
 FROM country
 LEFT JOIN border ON border.country_code = country.code
-WHERE country.continent = 'Ozeanien';
+WHERE country.continent = 'Ozeanien' AND country.population > 1000000;
 ```
 
 <!-- tutorial-screenshot
 press: Control+L
-terminal-run: SELECT country.name, border.neighbor_code FROM country LEFT JOIN border ON border.country_code = country.code WHERE country.continent = 'Ozeanien';
+terminal-run: SELECT country.name, border.neighbor_code FROM country LEFT JOIN border ON border.country_code = country.code WHERE country.continent = 'Ozeanien' AND country.population > 1000000;
 sleep: 0.5
 terminal-scroll-back: 2
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->
 
-<img class='full' src='left-join.webp' alt='Die Länder Ozeaniens mit ihren Nachbarn: Papua-Neuguinea grenzt an IDN, bei allen anderen steht NULL.'>
+<img class='full' src='left-join.webp' alt='Die drei Länder Ozeaniens mit mehr als einer Million Einwohnern: Australien und Neuseeland mit NULL als Nachbarn, Papua-Neuguinea mit IDN.'>
 
-Nur Papua-Neuguinea hat einen Nachbarn, Indonesien auf derselben Insel. Mit `WHERE border.country_code IS NULL` bleiben die Länder ohne Nachbarn übrig.
+Australien und Neuseeland bleiben im Ergebnis, mit `NULL`; Papua-Neuguinea hat einen Nachbarn, Indonesien auf derselben Insel. Mit `WHERE border.country_code IS NULL` bleiben die Länder ohne Nachbarn übrig.
 
 _task(ohne-nachbarn)
 
