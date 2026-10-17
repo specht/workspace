@@ -271,3 +271,18 @@ tasks:
     check:
       type: reflection
       min_words: 25
+    examples:
+      - |
+        Taucht mein Passwort in einem Datenleck auf, nützt es allein niemandem,
+        weil der Code von meinem Handy fehlt; davor schützt der zweite Faktor.
+        Wer mein entsperrtes Handy hat, hat aber beide Faktoren, wenn das
+        Passwort auch darauf gespeichert ist. Und tippe ich den Code selbst auf
+        einer gefälschten Seite ein, kann sie ihn sofort an die echte
+        weiterreichen, solange er gilt. Dagegen helfen Passkeys, weil das Handy
+        dort prüft, mit welcher Seite es redet.
+      - |
+        Der zweite Faktor schützt mich, wenn jemand nur mein Passwort kennt, zum
+        Beispiel aus einem Leck. Er schützt nicht, wenn jemand mein Handy
+        entsperrt in der Hand hat, und nicht vor einer gefälschten Anmeldeseite,
+        denn der Code weiß nicht, wo er eingetippt wird; die Seite kann ihn in
+        den 30 Sekunden selbst benutzen.

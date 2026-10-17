@@ -1,5 +1,7 @@
 // Task cards on activity pages (docs/aufgaben.md). The page sets
-// window.TASK_PAGE = { activity, loggedIn, preview } before loading this file.
+// window.TASK_PAGE = { activity, loggedIn, preview } before loading this file;
+// for teachers also teacher = { view, groups, group, examples } (main.rb,
+// open_answers_config).
 (function () {
     const page = window.TASK_PAGE || {};
     const STATUS_LABELS = {
@@ -506,7 +508,136 @@
             loadStates();
             watchPicks();
         }
+        setupTeacherAnswers();
     }
+
+    // For teachers, under each open task (reflection): the example answers
+    // or the answers of the current group, or nothing. One choice for all
+    // cards, stored with the account, so the next page opens the same way.
+    const teacher = page.teacher;
+    const groupAnswers = {};
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function teacherPanels() {
+        return Array.from(document.querySelectorAll('.task-teacher'));
+    }
+
+    function viewLabel(view) {
+        if (view === 'examples') return 'Beispielantworten';
+        if (view === 'group') return 'Antworten aus ' + teacher.group;
+        return 'Ausblenden';
+    }
+
+    function examplesHtml(card) {
+        const examples = (teacher.examples || {})[cardId(card)] || [];
+        if (examples.length === 0)
+            return "<p class='task-teacher-none'>Für diese Aufgabe gibt es noch keine Beispielantworten.</p>";
+        return "<ol class='task-teacher-list'>" + examples.map((html) =>
+            "<li class='task-teacher-answer task-teacher-example'>" + html + '</li>').join('') + '</ol>';
+    }
+
+    function groupHtml(card) {
+        const data = groupAnswers[teacher.group];
+        if (!data) return "<p class='task-teacher-none'>Einen Moment …</p>";
+        const answers = (data.answers || {})[cardId(card)] || [];
+        let io = "<p class='task-teacher-count'>" + answers.length + ' von ' + data.members +
+            ' in ' + escapeHtml(teacher.group) + (answers.length === 1 ? ' hat' : ' haben') + ' geantwortet.' +
+            "<button type='button' class='btn btn-link btn-sm task-teacher-reload'><i class='bi bi-arrow-clockwise' aria-hidden='true'></i>Neu laden</button></p>";
+        if (answers.length === 0) return io;
+        io += "<ul class='task-teacher-list'>";
+        answers.forEach((a) => {
+            const day = new Date(a.updated * 1000).toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric', year: 'numeric' });
+            io += "<li class='task-teacher-answer'><div class='task-teacher-who'><strong>" + escapeHtml(a.name) + '</strong>' +
+                "<span class='task-teacher-when'>" + day + '</span>' +
+                (a.stale ? "<span class='task-teacher-stale' title='Die Aufgabe hat sich geändert, seit die Antwort gespeichert wurde.'>vor einer Änderung der Aufgabe</span>" : '') +
+                "</div><div class='task-teacher-text'>" + escapeHtml(a.answer) + '</div></li>';
+        });
+        return io + '</ul>';
+    }
+
+    function loadGroupAnswers(fresh) {
+        const group = teacher.group;
+        if (groupAnswers[group] && !fresh) return;
+        api_call('/api/task/group_answers', { activity: page.activity, group: group }, function (data) {
+            if (!data.success) return;
+            groupAnswers[group] = data;
+            if (teacher.view === 'group' && teacher.group === group) showTeacherView();
+        }, { no_please_wait: true });
+    }
+
+    function showTeacherView() {
+        if (teacher.view === 'group') loadGroupAnswers(false);
+        teacherPanels().forEach((panel) => {
+            const card = panel.closest('.task-card');
+            panel.querySelectorAll('.task-teacher-view').forEach((button) => {
+                const on = button.dataset.view === teacher.view;
+                button.classList.toggle('active', on);
+                button.setAttribute('aria-pressed', on ? 'true' : 'false');
+                if (button.dataset.view === 'group') button.textContent = viewLabel('group');
+            });
+            const select = panel.querySelector('.task-teacher-group');
+            if (select) {
+                select.hidden = teacher.view !== 'group';
+                select.value = teacher.group;
+            }
+            const body = panel.querySelector('.task-teacher-body');
+            body.hidden = teacher.view === 'off';
+            if (teacher.view === 'examples') body.innerHTML = examplesHtml(card);
+            else if (teacher.view === 'group') body.innerHTML = groupHtml(card);
+            else body.innerHTML = '';
+        });
+    }
+
+    function chooseTeacherView(view, group) {
+        teacher.view = view;
+        if (group) teacher.group = group;
+        showTeacherView();
+        const data = { view: view };
+        if (view === 'group') data.group = teacher.group;
+        api_call('/api/task/answer_view', data, function () {}, { no_please_wait: true });
+    }
+
+    function setupTeacherAnswers() {
+        if (!teacher) return;
+        const views = [];
+        if (teacher.examples) views.push('examples');
+        if (teacher.group) views.push('group');
+        views.push('off');
+        cards().filter((card) => card.dataset.type === 'reflection').forEach((card) => {
+            const panel = document.createElement('div');
+            panel.className = 'task-teacher';
+            let bar = "<div class='task-teacher-bar'><span class='task-teacher-label'><i class='bi bi-person-video3' aria-hidden='true'></i>Für Lehrkräfte</span>" +
+                "<div class='task-teacher-views' role='group' aria-label='Unter der Aufgabe zeigen'>";
+            views.forEach((view) => {
+                bar += "<button type='button' class='btn btn-sm btn-outline-secondary task-teacher-view' data-view='" + view + "'>" + escapeHtml(viewLabel(view)) + '</button>';
+            });
+            bar += '</div>';
+            if (teacher.groups.length > 1) {
+                bar += "<select class='form-select form-select-sm task-teacher-group' aria-label='Gruppe'>" +
+                    teacher.groups.map((g) => "<option value='" + escapeHtml(g.name) + "'>" + escapeHtml(g.name) + ' (' + g.size + ')</option>').join('') +
+                    '</select>';
+            }
+            panel.innerHTML = bar + "</div><div class='task-teacher-body' aria-live='polite'></div>";
+            const note = card.querySelector('.task-login-note');
+            card.insertBefore(panel, note);
+        });
+        showTeacherView();
+    }
+
+    document.addEventListener('click', function (e) {
+        const button = e.target.closest('.task-teacher-view');
+        if (button) chooseTeacherView(button.dataset.view);
+        if (e.target.closest('.task-teacher-reload')) loadGroupAnswers(true);
+    });
+
+    document.addEventListener('change', function (e) {
+        if (e.target.classList.contains('task-teacher-group')) chooseTeacherView('group', e.target.value);
+    });
 
     // »Details« and »Lösung« under a result: open below on request.
     document.addEventListener('click', function (e) {

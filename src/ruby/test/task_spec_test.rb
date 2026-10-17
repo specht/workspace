@@ -54,6 +54,16 @@ class TaskSpecTest < Minitest::Test
         assert errors_for({ 'type' => 'answer', 'expect' => 'x' }, 'difficulty' => 3).any? { |e| e.include?('unknown keys: difficulty') }
     end
 
+    # Example answers are for open tasks only: teachers see them under the
+    # card, the page never contains them.
+    def test_examples_only_for_reflection
+        reflection = { 'type' => 'reflection', 'min_words' => 10 }
+        assert_empty errors_for(reflection, 'examples' => ['Eine Antwort.', 'Noch eine.'])
+        assert errors_for(reflection, 'examples' => 'Eine Antwort.').any? { |e| e.include?('examples must be a list') }
+        assert errors_for(reflection, 'examples' => ['']).any? { |e| e.include?('examples must be a list') }
+        assert errors_for({ 'type' => 'answer', 'expect' => '42' }, 'examples' => ['42']).any? { |e| e.include?('examples only work with reflection') }
+    end
+
     def test_choice_correct_must_point_to_an_option
         assert_empty errors_for('type' => 'choice', 'options' => %w[a b], 'correct' => 1)
         refute_empty errors_for('type' => 'choice', 'options' => %w[a b], 'correct' => 2)

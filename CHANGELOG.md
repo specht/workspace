@@ -18,6 +18,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Unter offenen Aufgaben (Reflexionen) sehen Lehrkräfte auf der Seite einen
+  Kasten »Für Lehrkräfte«: Beispielantworten, die Antworten der aktuellen
+  Gruppe mit Namen und Datum, oder nichts. Die Wahl gilt für alle Aufgaben
+  und bleibt am Konto gespeichert; wer mehrere Gruppen betreut, wählt die
+  Gruppe im Kasten. Alle 15 Reflexionen haben je zwei Beispielantworten
+  (neues Feld `examples` in `tasks.yaml`, nur für `reflection`). Lernende
+  sehen davon nichts.
 - Die Tabellen eines Datensatzes als Schema, eine Zeile pro Tabelle:
   `movie_genre(↑movie_id, ↑genre_id)`, der Primärschlüssel unterstrichen,
   ein Fremdschlüssel mit ↑ und im Tooltip, worauf er verweist. Der

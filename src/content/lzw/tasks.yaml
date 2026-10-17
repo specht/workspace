@@ -287,3 +287,18 @@ tasks:
     check:
       type: reflection
       min_words: 25
+    examples:
+      - |
+        Ein JPEG ist schon komprimiert. Seine Bytes sehen fast zufällig aus, und
+        Folgen von Bytes wiederholen sich kaum. LZW legt trotzdem für jede neue
+        Folge einen Eintrag an, aber die Einträge werden selten wieder benutzt,
+        also gibt es fast für jedes Byte einen eigenen Code. Ein Code braucht
+        mindestens 9 Bits, ein Byte nur 8, darum wird die Datei größer. Viel spart
+        LZW bei Dateien mit vielen Wiederholungen, etwa Text mit immer denselben
+        Wörtern oder einem Bild mit großen einfarbigen Flächen.
+      - |
+        LZW spart nur, wenn Folgen wiederkommen, die schon im Wörterbuch stehen.
+        Im JPEG ist das kaum der Fall, weil die Wiederholungen schon beim
+        Komprimieren zum JPEG entfernt wurden. Dann gibt LZW fast nur einzelne
+        Bytes als Codes aus, und die sind länger als ein Byte. Gut wäre zum
+        Beispiel eine Textdatei, in der immer wieder dieselben Zeilen stehen.

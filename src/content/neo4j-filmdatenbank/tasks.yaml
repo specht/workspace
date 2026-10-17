@@ -227,3 +227,19 @@ tasks:
     check:
       type: reflection
       min_words: 30
+    examples:
+      - |
+        In MySQL frage ich lieber »Wie viele Filme gibt es in jedem Genre, und
+        wie lang sind sie im Schnitt?«: Das ist eine Tabelle mit Zahlen, und
+        `GROUP BY` mit `COUNT` und `AVG` macht genau das. In Neo4j frage ich
+        lieber »Über welche Filme und Menschen sind Dwayne Johnson und Eddie
+        Murphy verbunden?«: `shortestPath` findet den Weg mit einer Zeile, in SQL
+        bräuchte ich für jeden Schritt zwei Joins mehr und müsste vorher wissen,
+        wie viele Schritte es sind.
+      - |
+        MySQL: »Welches sind die zehn längsten Filme aus den 1990er-Jahren?« Das
+        ist eine Liste aus einer einzigen Tabelle, gefiltert, sortiert und
+        begrenzt, und das Ergebnis ist eine Tabelle. Neo4j: »Mit wem hat Tom Hanks am häufigsten
+        gemeinsam gespielt?« In Neo4j ist das ein kurzes Muster von Person über
+        Film zu Person; in SQL brauchte dieselbe Frage jede Tabelle zweimal und
+        viele Joins.

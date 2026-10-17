@@ -214,3 +214,16 @@ tasks:
     check:
       type: reflection
       min_words: 20
+    examples:
+      - |
+        Die Facharbeit würde ich in LaTeX schreiben: Inhaltsverzeichnis und die
+        Nummern von Kapiteln, Abbildungen und Formeln macht es selbst, und als ich
+        ein Kapitel eingeschoben habe, stimmte trotzdem alles. Die Formel für die
+        Schwingungsdauer sah sofort ordentlich aus. Für ein kurzes Protokoll nehme
+        ich eher Word, weil ich da sofort sehe, wie es aussieht.
+      - |
+        Ich bleibe lieber bei Word. In LaTeX hat mich gestört, dass ein
+        vergessenes `}` das ganze Dokument stoppt und ich die Fehlermeldung erst
+        verstehen musste. Gut fand ich aber, dass Fußnoten und Literaturverzeichnis
+        von selbst richtig nummeriert waren; das muss ich in Word von Hand
+        pflegen.

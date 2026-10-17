@@ -120,6 +120,18 @@ tasks:
     check:
       type: reflection
       min_words: 20
+    examples:
+      - |
+        `traceroute` schickt zuerst ein Paket mit TTL 1. Der erste Router zieht
+        eins ab, kommt auf null, verwirft das Paket und schickt eine
+        Fehlermeldung zurück; aus ihrer Absenderadresse kennt `traceroute` den
+        ersten Router. Dann kommt ein Paket mit TTL 2, das beim zweiten Router
+        hängen bleibt, und so weiter, bis ein Paket das Ziel erreicht.
+      - |
+        Jeder Router verringert die TTL eines Pakets um eins und wirft es bei
+        null weg, mit einer Meldung an den Absender. `traceroute` erhöht die TTL
+        von Paket zu Paket um eins, so meldet sich jeder Router auf dem Weg der
+        Reihe nach. Ein Stern heißt, dass ein Router sich nicht gemeldet hat.
 
   - id: schichten
     title: Wer schickt noch einmal?

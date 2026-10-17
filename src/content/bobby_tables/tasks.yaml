@@ -11,6 +11,17 @@ tasks:
     check:
       type: reflection
       min_words: 15
+    examples:
+      - |
+        Das Programm fragt nach Login und Passwort und sieht in der Tabelle
+        `users` nach, ob es eine Zeile mit genau diesem Login und diesem Passwort
+        gibt. Mit `alice` und `asdf` meldet es »Anmeldung erfolgreich. Herzlich
+        willkommen, alice.«, mit einem falschen Passwort »Fehler: Login oder
+        Passwort falsch.« So eine Anmeldung steht vor jedem geschützten Bereich.
+      - |
+        Es ist eine Anmeldung: Nur wer einen Login und das passende Passwort
+        kennt, wird hereingelassen und mit seinem Namen begrüßt. Alle anderen
+        bekommen eine Fehlermeldung.
 
   - id: abfrage
     title: Die Abfrage
@@ -20,6 +31,19 @@ tasks:
     check:
       type: reflection
       min_words: 20
+    examples:
+      - |
+        Mit `alice` und `asdf` schickt das Programm
+        `SELECT login FROM users WHERE login = 'alice' AND password = 'asdf' LIMIT 1;`.
+        Nach `WHERE` stehen zwei Bedingungen, die beide erfüllt sein müssen: Der
+        Login muss stimmen und das Passwort auch. Nur dann liefert die Abfrage
+        eine Zeile mit dem Login, sonst ist das Ergebnis leer, und das Programm
+        meldet einen Fehler.
+      - |
+        Die Abfrage sucht in `users` nach Zeilen, in denen `login` gleich der
+        Eingabe ist und `password` gleich dem eingegebenen Passwort. Wegen `AND`
+        reicht ein richtiger Login allein nicht. `LIMIT 1` sorgt dafür, dass
+        höchstens eine Zeile zurückkommt.
 
   - id: admin
     title: Als admin, ohne Passwort
@@ -30,6 +54,19 @@ tasks:
     check:
       type: reflection
       min_words: 20
+    examples:
+      - |
+        Als Login `admin' #`, das Passwort ist egal. Es entsteht
+        `SELECT login FROM users WHERE login = 'admin' #' AND password = '' LIMIT 1;`.
+        Mein Anführungszeichen schließt den Login, und alles hinter `#` ist ein
+        Kommentar: Die Prüfung des Passworts wird gar nicht ausgeführt. Übrig
+        bleibt `WHERE login = 'admin'`, und diese Zeile gibt es.
+      - |
+        Als Login `' OR login = 'admin' #`. Die Abfrage wird zu
+        `SELECT login FROM users WHERE login = '' OR login = 'admin' #…`. Den
+        leeren Login gibt es nicht, aber wegen `OR` reicht der zweite Teil, und
+        der Rest mit dem Passwort ist auskommentiert. Also kommt die Zeile von
+        `admin` zurück.
 
   - id: union
     title: Eine zweite Abfrage
@@ -40,6 +77,21 @@ tasks:
     check:
       type: reflection
       min_words: 20
+    examples:
+      - |
+        Das Programm begrüßt mich mit »Herzlich willkommen, 3747 Haven Lane,
+        Lansing MI 48933.«, also mit Mallorys Adresse statt eines Namens. Die
+        Abfrage ist jetzt
+        `SELECT login FROM users WHERE login = 'mallory' UNION SELECT address FROM users WHERE LOGIN='mallory' ORDER BY login ASC`,
+        der Rest mit dem Passwort ist auskommentiert. `UNION` hängt die Ergebnisse
+        zweier Abfragen untereinander: `mallory` und ihre Adresse. Sortiert steht
+        die Adresse vorn, weil sie mit einer Ziffer beginnt, und das Programm gibt
+        die erste Spalte der ersten Zeile als Namen aus.
+      - |
+        Statt eines Namens steht in der Begrüßung eine Adresse. Mit `UNION` habe
+        ich eine zweite Abfrage angehängt, die etwas ganz anderes aus der Tabelle
+        holt. Das Programm weiß nicht, woher die Zeile kommt; es gibt einfach den
+        ersten Wert aus, und nach `ORDER BY` ist das die Adresse.
 
   - id: passwort-auslesen
     title: Das Passwort des Administrators
@@ -49,6 +101,17 @@ tasks:
     check:
       type: reflection
       min_words: 10
+    examples:
+      - |
+        Login `x' UNION SELECT password FROM users WHERE login='admin' #`. Einen
+        Login `x` gibt es nicht, also liefert nur die zweite Abfrage eine Zeile:
+        das Passwort des Administrators. Das Programm begrüßt mich damit,
+        »Herzlich willkommen, YLrelnmPDPB-ZhQ1GzRxiEf.«
+      - |
+        Ich frage in der zweiten Abfrage nach `password` statt nach `address`
+        und nach `admin` statt nach `mallory`:
+        `mallory' UNION SELECT password FROM users WHERE login='admin' ORDER BY login DESC #`.
+        `DESC` sortiert `mallory` nach hinten, damit das Passwort vorn steht.
 
   - id: prepared
     title: Ein Prepared Statement
@@ -87,6 +150,18 @@ tasks:
     check:
       type: reflection
       min_words: 20
+    examples:
+      - |
+        Alle drei Versuche scheitern mit »Fehler: Login oder Passwort falsch.«
+        Beim Prepared Statement gehen die Abfrage mit ihren Platzhaltern und die
+        Werte getrennt an die Datenbank. Mein Login wird nicht mehr in den
+        SQL-Text geklebt, sondern nur noch verglichen: Die Datenbank sucht nach
+        jemandem, der wirklich `admin' #` heißt, und den gibt es nicht.
+      - |
+        Jetzt kommt bei allen dreien nur die Fehlermeldung. Anführungszeichen,
+        `#` und `UNION` in meiner Eingabe sind für die Datenbank nur noch
+        Zeichen in einem Wert und kein SQL mehr, weil die Abfrage schon fertig
+        vorbereitet ist, bevor die Werte ankommen.
 
   - id: warum-prepared
     title: Warum es hilft

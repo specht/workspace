@@ -413,6 +413,17 @@ html[data-bs-theme="dark"] {
         border-color: #4a3a63;
         background-color: #221b2d;
     }
+    .task-teacher {
+        border-color: #4a3a63;
+        background-color: #221b2d;
+    }
+    .task-teacher-label { color: #cdb0f2; }
+    .task-teacher-view:not(.active) { color: #cfcec8; }
+    ul.task-teacher-list .task-teacher-answer { background-color: #151514; }
+    .task-teacher-when,
+    .task-teacher-none,
+    .task-teacher-count { color: #a3a29c; }
+    .task-teacher-stale { color: #e0b050; }
     .teacher-note-toggle {
         border-color: #4a3a63;
         background-color: #221b2d;

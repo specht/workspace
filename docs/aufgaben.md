@@ -215,6 +215,7 @@ tasks:
 | `feedback` | nein | Eigene Rückmeldungen für typische Fehler |
 | `prediction` | nein | `true`: Vorhersage; nur der erste Versuch zählt fürs Klassenboard, danach darf ausprobiert werden |
 | `solution` | nein | Lösung; nur Lehrkräfte sehen sie |
+| `examples` | nein | Nur bei `reflection`: eine Liste von Beispielantworten in Markdown, die nur Lehrkräfte unter der Aufgabe sehen (siehe »Antworten unter offenen Aufgaben«) |
 | `exam` | nein | `false`: nie in einer Leistungsüberprüfung; Prüfarten mit Netz sind dort ohnehin gesperrt |
 | `ruby`, `python` | nein | Was in dieser Sprache anders ist, auf Seiten in mehreren Sprachen (siehe unten) |
 
@@ -329,6 +330,18 @@ check:
 check: { type: choice, options: [A, B, C], correct: 1 }      # gezählt ab 0
 check: { type: number, expect: 111, tolerance: 6, unit: ms }
 check: { type: reflection, min_words: 20 }
+```
+
+Eine Reflexion hat keine Lösung, aber Beispielantworten: zwei kurze, gute
+Antworten, wie sie eine Schülerin oder ein Schüler geben könnte, mit den
+Begriffen der Seite. Sie ändern die Version der Aufgabe nicht.
+
+```yaml
+examples:
+  - |
+    `traceroute` schickt zuerst ein Paket mit TTL 1. Der erste Router …
+  - |
+    Jeder Router verringert die TTL eines Pakets um eins …
 ```
 
 Jede Person sieht die Optionen einer `choice`-Aufgabe in ihrer eigenen
@@ -1016,6 +1029,8 @@ Fehlt die Zeile, bleibt alles wie bisher.
 | `POST /api/task/check` | `task` (`tcpip/adresse`), `answer` | `status`, `message`, `solution`, `state` |
 | `POST /api/task/states` | `activity` | gespeicherte Antworten der angemeldeten Person |
 | `POST /api/task/delete` | `task` | löscht Antwort und Versuche der angemeldeten Person |
+| `POST /api/task/group_answers` | `activity`, `group` | für Lehrkräfte der Gruppe: die Antworten auf die offenen Aufgaben, je Aufgabe mit Name, Antwort, Datum und ob sie älter als die Aufgabe ist |
+| `POST /api/task/answer_view` | `view` (`examples`, `group`, `off`), `group` | merkt sich, was eine Lehrkraft unter offenen Aufgaben sehen will |
 
 `status` ist `correct`, `wrong`, `sent` (Reflexion gespeichert), `invalid`
 (nicht lesbar, z. B. keine Zahl; zählt nicht) oder `unavailable` (gerade nicht
@@ -1148,6 +1163,26 @@ Wer was sieht:
 - Steht eine Adresse in mehreren Gruppen (Klasse 10b und WP 10), erscheint sie
   in jeder davon. Für alles andere im Workspace zählt weiter die erste Gruppe.
 - Lehrkräfte mit `*` ohne eigene Gruppe sehen keine Klassenübersicht.
+
+### Antworten unter offenen Aufgaben
+
+Unter jeder Reflexion auf einer Aktivitätsseite steht für Lehrkräfte ein
+violetter Kasten »Für Lehrkräfte« mit drei Knöpfen:
+
+- **Beispielantworten:** die `examples` aus `tasks.yaml`. Lehrkräfte mit `*`
+  oder `+` und Administratorinnen sehen sie. Sie stehen nur in der
+  Konfiguration der Seite für Lehrkräfte (`window.TASK_PAGE.teacher`), nie in
+  der Karte selbst.
+- **Antworten aus ‹Gruppe›:** was die Mitglieder der aktuellen Gruppe
+  gespeichert haben, nach Namen sortiert, mit Datum. Nur für Lehrkräfte, die
+  die Klassenübersicht der Gruppe sehen dürfen. Wer mehrere Gruppen betreut,
+  wählt die Gruppe im Kasten; sie wird dann auch die aktuelle Gruppe unter
+  `/klasse`. »Neu laden« holt Antworten, die inzwischen
+  dazugekommen sind.
+- **Ausblenden:** Nur die Knopfleiste bleibt, etwa vor einem Beamer.
+
+Die Wahl gilt für alle Aufgaben und wird am Konto gespeichert
+(`class_prefs`, `answer_view`): Die nächste Seite öffnet genauso.
 
 ## Neue Version einer Vorlage
 

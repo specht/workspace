@@ -140,3 +140,17 @@ tasks:
     check:
       type: reflection
       min_words: 25
+    examples:
+      - |
+        Hugo nehme ich für eine Website mit vielen Seiten, die alle gleich
+        aufgebaut sind, wie bei den Planeten: Kopf, Navigation und Fuß stehen
+        einmal im Layout, und eine neue Seite ist nur eine Markdown-Datei. Die
+        Navigation baut Hugo selbst, ich muss sie nicht auf jeder Seite ändern.
+        Eine einzelne Seite, etwa eine Einladung, schreibe ich direkt in HTML,
+        weil sich Layouts und Ordner dafür nicht lohnen.
+      - |
+        Direkt in HTML schreibe ich, wenn jede Seite anders aussieht oder es nur
+        eine oder zwei sind; dann sehe ich genau, was im Browser ankommt. Sobald
+        es mehr Seiten werden, nehme ich Hugo: Eine Änderung am Layout ändert alle
+        Seiten auf einmal, und den Text kann ich in Markdown schreiben, ohne mich
+        um Tags zu kümmern.

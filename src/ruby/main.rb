@@ -9,6 +9,7 @@ require './include/task_check.rb'
 require './include/task_card.rb'
 require './include/task_store.rb'
 require './include/class_board.rb'
+require './include/open_answers.rb'
 require './include/submission_view.rb'
 require './include/student_home.rb'
 require './include/group_visibility.rb'
@@ -4113,6 +4114,8 @@ class Main < Sinatra::Base
         # moves them; the values stay the original option numbers).
         if user_logged_in?
             config[:order] = TaskCard.option_orders(@session_user[:email], tasks[:activity], tasks[:on_page], tasks[:by_id])
+            answers = open_answers_config(tasks)
+            config[:teacher] = answers if answers
         end
         # Text that only stands in for the cards (an exercise list) is hidden
         # while the cards are shown.
@@ -4130,7 +4133,7 @@ class Main < Sinatra::Base
                 "<script src='/include/code_input.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
         end
         "<style>.tasks-off-only { display: none; }</style>" \
-            "<script>window.TASK_PAGE = #{config.to_json};</script>" \
+            "<script>window.TASK_PAGE = #{config.to_json.gsub('</', '<\/')};</script>" \
             "#{previews ? "<script src='/include/anaglyph_preview.js?#{CACHE_BUSTER}'></script>" : ''}" \
             "#{code_input}" \
             "<script src='/include/tasks.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
@@ -4462,6 +4465,34 @@ class Main < Sinatra::Base
             "document.getElementById('teacher-note').hidden = !open; });</script>"
     end
 
+    # --- Answers under open tasks (docs/aufgaben.md) ---------------------------
+
+    # Example answers are teaching material, for every teacher; the answers
+    # of a group only for those who may see its class board.
+    def answer_examples_visible?
+        teacher_account_logged_in? || teacher_logged_in?
+    end
+
+    # For teachers on an activity page: under each open task the example
+    # answers or those of the current group, as chosen last (tasks.js).
+    # The example answers go only into this config, never into the cards.
+    def open_answers_config(tasks)
+        ids = OpenAnswers.task_ids(tasks)
+        return nil if ids.empty?
+
+        examples = answer_examples_visible?
+        groups = class_groups
+        return nil unless examples || !groups.empty?
+
+        prefs = class_prefs
+        {
+            :view => OpenAnswers.view(prefs['answer_view'], :examples => examples, :groups => !groups.empty?),
+            :groups => groups.map { |g| { :name => g, :size => (@@group_members[g] || []).size } },
+            :group => groups.include?(prefs['group']) ? prefs['group'] : groups.first,
+            :examples => examples ? ids.to_h { |id| [id, (tasks[:by_id][id]['examples'] || []).map { |e| render_task_markdown(e) }] } : nil,
+        }
+    end
+
     # --- Class board (docs/aufgaben.md, »Klassenübersicht«) ---------------------
 
     # Groups whose class board the logged-in person may see: administrators see
@@ -4689,6 +4720,10 @@ class Main < Sinatra::Base
 
         prefs['group'] = group
         (prefs['activities'] ||= {})[group] = activity_key
+        store_class_prefs(prefs)
+    end
+
+    def store_class_prefs(prefs)
         json = prefs.to_json
         neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email], :prefs => json)
             MATCH (u:User {email: $email})
@@ -5698,6 +5733,44 @@ class Main < Sinatra::Base
             states[id] = TaskStore.public_state(stored, TaskSpec.check_version(task))
         end
         respond(:states => states)
+    end
+
+    # The answers of a group to the open tasks of an activity, for the
+    # teacher's view under the cards (tasks.js).
+    post '/api/task/group_answers' do
+        assert(user_logged_in?)
+        assert(tasks_visible?)
+        data = parse_request_data(:required_keys => [:activity, :group],
+            :max_value_lengths => {:activity => 64, :group => 256})
+        group = data[:group]
+        assert(class_groups.include?(group))
+        activity = data[:activity]
+        assert(activity =~ /\A[a-z0-9_-]+\z/)
+        entry = @@content.values.find { |c| (c[:tasks] || {})[:activity] == activity }
+        halt 404 if entry.nil?
+
+        tasks = OpenAnswers.task_ids(entry[:tasks]).to_h { |id| [id, { :version => TaskSpec.check_version(entry[:tasks][:by_id][id]) }] }
+        members = class_members(group)
+        states = class_board_states(members.map { |m| m[:email] }, activity)
+        respond(:group => group, :members => members.size, :answers => OpenAnswers.collect(members, tasks, states))
+    end
+
+    # What a teacher last chose under the open tasks: example answers, the
+    # answers of a group (which becomes the current group, as on /klasse),
+    # or nothing.
+    post '/api/task/answer_view' do
+        assert(user_logged_in?)
+        data = parse_request_data(:required_keys => [:view], :optional_keys => [:group],
+            :max_value_lengths => {:view => 16, :group => 256})
+        assert(OpenAnswers::VIEWS.include?(data[:view]))
+        prefs = class_prefs
+        prefs['answer_view'] = data[:view]
+        if data[:group]
+            assert(class_groups.include?(data[:group]))
+            prefs['group'] = data[:group]
+        end
+        store_class_prefs(prefs)
+        respond(:view => data[:view])
     end
 
     # Deletes the logged-in person's answer and attempts for one task. Always

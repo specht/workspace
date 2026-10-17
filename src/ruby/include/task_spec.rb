@@ -56,7 +56,7 @@ module TaskSpec
     # Check types that need the network; they are never used in exams.
     NEEDS_NETWORK = %w[measure].to_set.freeze
 
-    TASK_KEYS = (%w[id title prompt check hint solution feedback prediction file exam] + CodeLanguages::LANGUAGES).freeze
+    TASK_KEYS = (%w[id title prompt check hint solution examples feedback prediction file exam] + CodeLanguages::LANGUAGES).freeze
 
     EXTRACTORS = %w[ping_rtt_avg ping_hops ping_reply_country traceroute_hops].freeze
     EXTRACTOR_WITH_ARGUMENT = /\Ahttp_header:[A-Za-z0-9-]+\z/
@@ -195,6 +195,13 @@ module TaskSpec
         end
         type = check['type']
         errors.concat(validate_check(type, check).map { |e| "check: #{e}" })
+        if task.key?('examples')
+            if type != 'reflection'
+                errors << 'examples only work with reflection; other checks have a solution'
+            elsif !string_list?(task['examples'])
+                errors << 'examples must be a list of answers in Markdown'
+            end
+        end
         if task['prediction'] && !%w[choice number answer].include?(type)
             errors << 'prediction only works with choice, number and answer'
         end

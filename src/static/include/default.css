@@ -2759,6 +2759,105 @@ h3[id] {
     color: #0b4fb3;
 }
 
+/* For teachers under an open task: example answers or those of the
+   group, in the violet of the teacher note (tasks.js). */
+.task-teacher {
+    margin: 0.9em 0 0.2em;
+    padding: 0.55em 0.8em;
+    border: 1px solid #d9c9ee;
+    border-radius: 0.55em;
+    background-color: #f7f2fc;
+}
+
+.task-teacher-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em 0.8em;
+}
+
+.task-teacher-label {
+    color: #5b2f8f;
+    font-size: 90%;
+    font-weight: 600;
+}
+
+.task-teacher-label .bi,
+.task-teacher-reload .bi {
+    margin-right: 0.4em;
+}
+
+/* Three buttons of their own rather than a button group, so that they
+   wrap on a phone. */
+.task-teacher-views {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3em;
+}
+
+.task-teacher-group {
+    width: auto;
+    max-width: 100%;
+}
+
+.task-teacher-body {
+    margin-top: 0.6em;
+}
+
+.task-teacher-body > :last-child,
+.task-teacher-answer > :last-child {
+    margin-bottom: 0;
+}
+
+.task-teacher-list {
+    margin: 0;
+    padding-left: 1.4em;
+}
+
+ul.task-teacher-list {
+    padding-left: 0;
+    list-style: none;
+}
+
+.task-teacher-answer {
+    margin: 0.5em 0;
+    line-height: 1.5;
+}
+
+ul.task-teacher-list .task-teacher-answer {
+    padding: 0.45em 0.7em;
+    border-radius: 0.4em;
+    background-color: #fff;
+}
+
+.task-teacher-who {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2em 0.7em;
+    align-items: baseline;
+    font-size: 90%;
+}
+
+.task-teacher-when,
+.task-teacher-none,
+.task-teacher-count {
+    color: #6c757d;
+}
+
+.task-teacher-count {
+    margin: 0;
+    font-size: 90%;
+}
+
+.task-teacher-stale {
+    color: #9a6700;
+}
+
+.task-teacher-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
 .task-feedback:empty {
     display: none;
 }

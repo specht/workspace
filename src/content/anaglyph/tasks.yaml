@@ -107,6 +107,18 @@ tasks:
     check:
       type: reflection
       min_words: 20
+    examples:
+      - |
+        Skaliere ich zuerst, wird der Würfel im Ursprung größer und danach um
+        genau die angegebene Strecke verschoben. Verschiebe ich zuerst, wird beim
+        Skalieren auch sein Abstand zum Ursprung größer: Mit `move = 100, 0, 0`
+        und danach `scale = 2` steht er nicht bei 100, sondern bei 200. Jede
+        Skalierung findet um den Ursprung statt.
+      - |
+        Der Würfel ist in beiden Fällen gleich groß, aber er steht woanders. Erst
+        skalieren, dann verschieben: Er steht genau dort, wohin ich ihn schiebe.
+        Erst verschieben, dann skalieren: Die Skalierung zieht alles vom Ursprung
+        weg, auch den schon verschobenen Würfel, und er rutscht weiter nach außen.
 
   - id: wie-viele
     title: Wie viele?

@@ -355,3 +355,16 @@ tasks:
     check:
       type: reflection
       min_words: 20
+    examples:
+      - |
+        Einen NEA zu schreiben ist leichter: Er darf raten, darum beschreibe ich
+        nur das Muster, zum Beispiel »irgendwann kommt 1213 und dann nichts
+        mehr«, und brauche wenige Zustände. Ausführen ist beim DEA leichter und
+        schneller: Er hat bei jedem Zeichen genau einen nächsten Zustand, während
+        ich beim NEA eine ganze Menge von Zuständen mitführen muss.
+      - |
+        Für den NEA spricht, dass er klein und übersichtlich bleibt. Für den DEA
+        spricht, dass ein Programm ihn ganz einfach Zeichen für Zeichen abarbeiten
+        kann. Man kann jeden NEA in einen DEA umwandeln, aber der kann
+        exponentiell viele Zustände bekommen: Für »das N-letzte Zeichen ist eine 1«
+        sind es 2 hoch N.

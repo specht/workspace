@@ -323,3 +323,18 @@ tasks:
     check:
       type: reflection
       min_words: 20
+    examples:
+      - |
+        Ein Kino will wissen: »Welche Filme laufen am Samstag ab 20 Uhr, in
+        welchem Saal, und wie viele Plätze sind noch frei?« Dafür fehlen die
+        Entitäten Saal (Name, Anzahl der Plätze), Vorstellung (Beginn) und
+        Ticket. Ein Film hat viele Vorstellungen, eine Vorstellung zeigt genau
+        einen Film (1:n), ebenso läuft ein Saal viele Vorstellungen (1:n), und
+        zu einer Vorstellung gehören viele Tickets (1:n).
+      - |
+        Eine Videothek fragt: »Wer hat gerade ein Exemplar von Inception
+        ausgeliehen, und seit wann?« Es fehlen Kunde und Exemplar. Ein Film hat
+        viele Exemplare (1:n). Zwischen Kunde und Exemplar gibt es die Beziehung
+        »leiht aus« mit dem Datum der Ausleihe und der Rückgabe; ein Kunde leiht
+        im Lauf der Zeit viele Exemplare, ein Exemplar wird von vielen geliehen,
+        also n:m.
