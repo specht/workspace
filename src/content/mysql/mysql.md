@@ -178,6 +178,7 @@ press: Control+L
 type: DESCRIBE country;
 press: Enter
 sleep: 0.5
+terminal-scroll-back: 1
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->
@@ -353,6 +354,7 @@ press: Control+L
 type: SELECT * FROM country LIMIT 5;
 press: Enter
 sleep: 0.5
+terminal-scroll-back: 1
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->
@@ -415,6 +417,7 @@ ORDER BY name;
 press: Control+L
 terminal-run: SELECT name FROM country WHERE name LIKE '%land%' ORDER BY name;
 sleep: 0.5
+terminal-scroll-back: 5
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->
@@ -438,6 +441,7 @@ ORDER BY continent;
 press: Control+L
 terminal-run: SELECT DISTINCT continent FROM country ORDER BY continent;
 sleep: 0.5
+terminal-scroll-back: 2
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->
