@@ -489,3 +489,66 @@ _task(neue-frage)
 Im Handbuch: _uses(create-table, join, aggregieren)
 
 Dein Modell `film.er`, das erzeugte `film.sql` und die Diagramme, die du mit »Als SVG speichern« sicherst, liegen in `/workspace/filmdatenbank`. Sie gehören dir; du kannst sie herunterladen oder in ein eigenes Repository legen.
+
+<!-- tutorial-step
+# Jede Aufgabe, die im Workspace oder in MySQL nachsieht, nimmt den Stand
+# an, den die Seite beschreibt, und lehnt den Stand davor ab.
+# mycli from the last picture; in bash, quit is only an unknown command
+terminal-run: quit
+terminal-wait-for-prompt
+write-file: filmdatenbank/film.er <- file:film-1.er
+check-task: modell-filme
+terminal-run: sed -i 's/n:m/1:n/' film.er
+check-task-fails: modell-filme
+write-file: filmdatenbank/film.er <- file:film-1.er
+# The terminal back to its normal height, the editor above it
+click: selector:.part.panel [aria-label*="Restore Panel"]
+open-file: film.er
+click: selector:.editor-actions a[aria-label="SQL erzeugen"]
+wait-for-file-newer: filmdatenbank/film.sql <- filmdatenbank/film.er
+# Right after »SQL erzeugen« the terminal loses the first line it is sent
+terminal-run: clear
+terminal-wait-for-prompt
+terminal-run: mysql -e 'DROP TABLE IF EXISTS movie_crew, crew, job, movie_genre, movie, genre' && touch dropped
+wait-for-file: filmdatenbank/dropped
+terminal-run: rm dropped
+check-task-fails: tabellen-filme
+terminal-run: mysql < film.sql
+terminal-wait-for-prompt
+check-task: tabellen-filme
+check-task-fails: daten-filme
+terminal-run: test -f movies-data-films.sql || wget -q https://github.com/specht/workspace-files/raw/main/movie-archive/movies-data-films.sql
+terminal-wait-for-prompt: 60
+terminal-run: mysql < movies-data-films.sql
+terminal-wait-for-prompt: 60
+check-task: daten-filme
+check-task: anzahl-filme <- SELECT COUNT(*) FROM movie;
+check-task-fails: anzahl-filme <- SELECT COUNT(*) FROM movie_genre;
+check-task: genres-film <- SELECT genre.name FROM movie JOIN movie_genre ON movie.id = movie_genre.movie_id JOIN genre ON movie_genre.genre_id = genre.id WHERE movie.title = 'Back to the Future';
+check-task-fails: genres-film <- SELECT genre_id FROM movie_genre JOIN movie ON movie.id = movie_genre.movie_id WHERE movie.title = 'Back to the Future';
+check-task: animation <- SELECT movie.title, movie.year FROM movie JOIN movie_genre ON movie.id = movie_genre.movie_id JOIN genre ON movie_genre.genre_id = genre.id WHERE genre.name = 'Animation' ORDER BY movie.year;
+check-task-fails: animation <- SELECT movie.title, movie.year FROM movie JOIN movie_genre ON movie.id = movie_genre.movie_id JOIN genre ON movie_genre.genre_id = genre.id WHERE genre.name = 'Animation' ORDER BY movie.title;
+check-task: filme-pro-genre <- SELECT genre.name, COUNT(*) AS movies FROM genre JOIN movie_genre ON genre.id = movie_genre.genre_id GROUP BY genre.id, genre.name ORDER BY movies DESC;
+check-task-fails: filme-pro-genre <- SELECT genre_id, COUNT(*) FROM movie_genre GROUP BY genre_id;
+check-task-fails: modell-crew
+write-file: filmdatenbank/film.er <- file:film-2.er
+check-task: modell-crew
+open-file: film.er
+click: selector:.editor-actions a[aria-label="SQL erzeugen"]
+wait-for-file-newer: filmdatenbank/film.sql <- filmdatenbank/film.er
+# Right after »SQL erzeugen« the terminal loses the first line it is sent
+terminal-run: clear
+terminal-wait-for-prompt
+check-task-fails: tabellen-crew
+terminal-run: test -f movies-data-crew.sql || wget -q https://github.com/specht/workspace-files/raw/main/movie-archive/movies-data-crew.sql
+terminal-wait-for-prompt: 60
+terminal-run: mysql < film.sql && mysql < movies-data-films.sql && mysql < movies-data-crew.sql
+terminal-wait-for-prompt: 120
+check-task: tabellen-crew
+check-task: besetzung-film <- SELECT crew.name FROM movie JOIN movie_crew ON movie.id = movie_crew.movie_id JOIN crew ON movie_crew.crew_id = crew.id JOIN job ON movie_crew.job_id = job.id WHERE movie.title = 'Back to the Future' AND job.title = 'actor';
+check-task-fails: besetzung-film <- SELECT crew.name FROM movie JOIN movie_crew ON movie.id = movie_crew.movie_id JOIN crew ON movie_crew.crew_id = crew.id WHERE movie.title = 'Back to the Future';
+check-task: nolan <- SELECT movie.title, movie.year FROM crew JOIN movie_crew ON crew.id = movie_crew.crew_id JOIN job ON movie_crew.job_id = job.id JOIN movie ON movie_crew.movie_id = movie.id WHERE crew.name = 'Christopher Nolan' AND job.title = 'director' ORDER BY movie.year;
+check-task-fails: nolan <- SELECT movie.title, movie.year FROM crew JOIN movie_crew ON crew.id = movie_crew.crew_id JOIN movie ON movie_crew.movie_id = movie.id WHERE crew.name = 'Christopher Nolan' ORDER BY movie.year;
+check-task: viel-regie <- SELECT crew.name, COUNT(*) AS movies FROM crew JOIN movie_crew ON crew.id = movie_crew.crew_id JOIN job ON movie_crew.job_id = job.id WHERE job.title = 'director' GROUP BY crew.id, crew.name HAVING movies >= 5 ORDER BY movies DESC;
+check-task-fails: viel-regie <- SELECT crew.name, COUNT(*) AS movies FROM crew JOIN movie_crew ON crew.id = movie_crew.crew_id GROUP BY crew.id, crew.name HAVING movies >= 5 ORDER BY movies DESC;
+-->
