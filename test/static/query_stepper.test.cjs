@@ -31,6 +31,23 @@ test('the queries of the SQL introduction', () => {
     assert.deepStrictEqual(values("SELECT COUNT(*) FROM city WHERE country_code = 'DEU'"), ['79']);
 });
 
+// Each step knows where its clause stands in the text, for the widget to mark it
+test('every step marks its own clause in the query', () => {
+    const sql = "SELECT DISTINCT continent, COUNT(*) AS n\nFROM country AS c\nLEFT JOIN border ON border.country_code = c.code\nWHERE population > 1\nGROUP BY continent HAVING COUNT(*) > 5\nORDER BY n DESC LIMIT 3;";
+    const marked = QS.run(sql, data).steps.map((s) => [s.clause, sql.slice(s.span[0], s.span[1])]);
+    assert.deepStrictEqual(marked, [
+        ['FROM', 'FROM country AS c'],
+        ['LEFT JOIN', 'LEFT JOIN border ON border.country_code = c.code'],
+        ['WHERE', 'WHERE population > 1'],
+        ['GROUP BY', 'GROUP BY continent'],
+        ['HAVING', 'HAVING COUNT(*) > 5'],
+        ['SELECT', 'SELECT DISTINCT continent, COUNT(*) AS n'],
+        ['DISTINCT', 'DISTINCT'],
+        ['ORDER BY', 'ORDER BY n DESC'],
+        ['LIMIT', 'LIMIT 3'],
+    ]);
+});
+
 test('the steps come in the order the database works', () => {
     assert.deepStrictEqual(
         clauses('SELECT DISTINCT continent, COUNT(*) AS n FROM country WHERE population > 1 GROUP BY continent HAVING COUNT(*) > 5 ORDER BY n DESC LIMIT 3'),

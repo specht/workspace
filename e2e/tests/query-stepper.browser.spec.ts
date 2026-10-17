@@ -18,6 +18,8 @@ test('the query stepper works through a query clause by clause', async ({ page, 
   await expect(stepper.locator('.qs-clause')).toHaveText(['FROM', 'WHERE', 'GROUP BY', 'HAVING', 'SELECT', 'ORDER BY']);
   await expect(stepper.locator('.qs-clause.qs-current')).toHaveText('FROM');
   await expect(stepper.locator('.qs-count')).toHaveText('Schritt 1 von 6');
+  // In the query itself, the clause of the step is marked
+  await expect(stepper.locator('.qs-mirror mark')).toHaveText('FROM country');
 
   // Above it, the tables as schema lines: the key underlined, a foreign key with ↑
   const schema = stepper.locator('.qs-schema > div');
@@ -26,12 +28,13 @@ test('the query stepper works through a query clause by clause', async ({ page, 
     'city(id, name, ↑country_code, population, latitude, longitude, is_capital)', 'border(↑country_code, ↑neighbor_code)',
     'currency(code, name)', 'language(code, name)', 'country_language(↑country_code, ↑language_code)']);
   await expect(schema.first().locator('u')).toHaveText('name');
-  await expect(schema.nth(1).locator('.schema-fk')).toHaveAttribute('title', 'verweist auf continent.name');
+  await expect(schema.nth(1).locator('.schema-fk').first()).toHaveAttribute('title', 'verweist auf continent.name');
 
   // The arrow keys step it, as every stepper on the site
   await page.locator('h2').click();
   await page.keyboard.press('ArrowRight');
   await expect(stepper.locator('.qs-clause.qs-current')).toHaveText('WHERE');
+  await expect(stepper.locator('.qs-mirror mark')).toHaveText(/^WHERE /);
   await expect(stepper.locator('tr.qs-drop').first()).toBeVisible();
   await page.keyboard.press('ArrowRight');
   await expect(stepper.locator('.qs-clause.qs-current')).toHaveText('GROUP BY');

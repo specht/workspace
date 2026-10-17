@@ -199,13 +199,17 @@
         }
 
         const query = { distinct: false, select: [], joins: [], where: null, groupBy: [], having: null, orderBy: [], limit: null };
-        // What a clause says, as written, for the explanation of its step
+        // What a clause says, as written, for the explanation of its step,
+        // and where it stands in the text ([start, end]), for the widget to
+        // mark the clause of the step it shows.
         query.sources = {};
+        query.spans = { joins: [] };
         const clauseStart = () => tokens[pos].start;
         const clauseText = (start) => text.slice(start, tokens[pos - 1].end).replace(/\s+/g, ' ');
+        const spanFrom = (start) => [start, tokens[pos - 1].end];
         const selectStart = peek() ? peek().start : 0;
         expectKw('SELECT');
-        if (isKw('DISTINCT')) { pos++; query.distinct = true; }
+        if (isKw('DISTINCT')) { query.spans.distinct = [peek().start, peek().end]; pos++; query.distinct = true; }
         do {
             if (query.select.length) pos++;
             const start = peek() ? peek().start : text.length;
@@ -224,7 +228,9 @@
             query.select.push({ expr, alias, source });
         } while (isOp(','));
         query.sources.select = clauseText(selectStart);
+        query.spans.select = spanFrom(selectStart);
 
+        const fromStart = peek() ? peek().start : text.length;
         expectKw('FROM');
         const tableRef = () => {
             const name = identifier('ein Tabellenname');
@@ -234,6 +240,7 @@
             return { name, alias: alias || name };
         };
         query.from = tableRef();
+        query.spans.from = spanFrom(fromStart);
         for (;;) {
             let type = null;
             const joinStart = peek() ? peek().start : 0;
@@ -247,8 +254,9 @@
             expectKw('ON');
             const on = expression();
             query.joins.push({ type, ...ref, on, source: clauseText(at) });
+            query.spans.joins.push(spanFrom(at));
         }
-        if (isKw('WHERE')) { const at = clauseStart(); pos++; query.where = expression(); query.sources.where = clauseText(at); }
+        if (isKw('WHERE')) { const at = clauseStart(); pos++; query.where = expression(); query.sources.where = clauseText(at); query.spans.where = spanFrom(at); }
         if (isKw('GROUP')) {
             const at = clauseStart();
             pos++;
@@ -256,8 +264,9 @@
             query.groupBy.push(expression());
             while (isOp(',')) { pos++; query.groupBy.push(expression()); }
             query.sources.groupBy = clauseText(at);
+            query.spans.groupBy = spanFrom(at);
         }
-        if (isKw('HAVING')) { const at = clauseStart(); pos++; query.having = expression(); query.sources.having = clauseText(at); }
+        if (isKw('HAVING')) { const at = clauseStart(); pos++; query.having = expression(); query.sources.having = clauseText(at); query.spans.having = spanFrom(at); }
         if (isKw('ORDER')) {
             query.sources.orderStart = clauseStart();
             pos++;
@@ -270,8 +279,10 @@
                 query.orderBy.push({ expr, desc });
             } while (isOp(','));
             query.sources.orderBy = clauseText(query.sources.orderStart);
+            query.spans.orderBy = spanFrom(query.sources.orderStart);
         }
         if (isKw('LIMIT')) {
+            const limitStart = clauseStart();
             pos++;
             const number = () => {
                 const t = peek();
@@ -284,6 +295,7 @@
             if (isOp(',')) { pos++; offset = count; count = number(); }
             else if (isKw('OFFSET')) { pos++; offset = number(); }
             query.limit = { count, offset };
+            query.spans.limit = spanFrom(limitStart);
         }
         if (isOp(';')) pos++;
         if (pos < tokens.length) {
@@ -758,6 +770,12 @@
             results = kept;
         }
 
+        // Where in the text each step's clause stands
+        const SPAN_OF = { FROM: 'from', WHERE: 'where', 'GROUP BY': 'groupBy', HAVING: 'having', SELECT: 'select', DISTINCT: 'distinct', 'ORDER BY': 'orderBy', LIMIT: 'limit' };
+        let joinIndex = 0;
+        steps.forEach((step) => {
+            step.span = step.clause.endsWith('JOIN') ? query.spans.joins[joinIndex++] : query.spans[SPAN_OF[step.clause]];
+        });
         return { steps, result: resultView(results) };
     }
 
@@ -845,7 +863,10 @@
         rootElement.innerHTML = `
             ${choose ? `<label class='qs-dataset'>Tabellen: <select class='form-select form-select-sm' aria-label='Tabellen'>${options}</select></label>
             <div class='qs-schema schema-lines' aria-label='Die Tabellen mit ihren Spalten'></div>` : ''}
-            <textarea class='form-control qs-input' rows='3' spellcheck='false' aria-label='SQL-Abfrage'></textarea>
+            <div class='qs-editor'>
+                <div class='qs-mirror' aria-hidden='true'></div>
+                <textarea class='form-control qs-input' rows='3' spellcheck='false' aria-label='SQL-Abfrage'></textarea>
+            </div>
             <div class='qs-order' aria-hidden='true'></div>
             <div class='qs-controls'>
                 <button class='btn btn-sm btn-success' data-go='first' aria-label='Zum Anfang'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
@@ -857,6 +878,25 @@
             <div class='qs-say' aria-live='polite'></div>
             <div class='qs-view'></div>`;
         const input = rootElement.querySelector('.qs-input');
+        // Behind the text field, the same text with the clause of the current
+        // step marked: the field itself is transparent and keeps the cursor.
+        const mirror = rootElement.querySelector('.qs-mirror');
+        let mirrored = false;
+        const mark = (span) => {
+            if (!mirrored) {
+                const style = getComputedStyle(input);
+                ['fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing', 'tabSize',
+                    'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft',
+                    'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth'].forEach((k) => { mirror.style[k] = style[k]; });
+                mirrored = true;
+            }
+            const text = input.value;
+            mirror.innerHTML = span ?
+                esc(text.slice(0, span[0])) + `<mark>${esc(text.slice(span[0], span[1]))}</mark>` + esc(text.slice(span[1])) + '\n' :
+                esc(text) + '\n';
+            mirror.scrollTop = input.scrollTop;
+        };
+        input.addEventListener('scroll', () => { mirror.scrollTop = input.scrollTop; });
         const orderBox = rootElement.querySelector('.qs-order');
         const say = rootElement.querySelector('.qs-say');
         const viewBox = rootElement.querySelector('.qs-view');
@@ -877,6 +917,7 @@
             orderBox.innerHTML = ORDER.filter((c) => present.includes(c)).map((c) =>
                 `<span class='qs-clause${c === step.clause.replace('LEFT JOIN', 'JOIN') ? ' qs-current' : ''}'>${c}</span>`).join("<i class='bi bi-arrow-right'></i>");
             say.innerHTML = step.text;
+            mark(step.span);
             viewBox.innerHTML = tableHtml(step.table);
             count.textContent = `Schritt ${current + 1} von ${steps.length}`;
             buttons('first').disabled = buttons('prev').disabled = current <= 0;
@@ -889,6 +930,7 @@
             } catch (error) {
                 if (!(error instanceof SqlError)) throw error;
                 steps = [];
+                mark(null);
                 orderBox.innerHTML = '';
                 say.innerHTML = `<span class='qs-error'>${esc(error.message)}</span>`;
                 viewBox.innerHTML = '';
@@ -906,7 +948,7 @@
         buttons('next').addEventListener('click', () => go(current + 1));
         buttons('last').addEventListener('click', () => go(steps.length - 1));
         let timer = null;
-        input.addEventListener('input', () => { fit(); clearTimeout(timer); timer = setTimeout(() => { current = 0; refresh(); }, 250); });
+        input.addEventListener('input', () => { fit(); mark(null); clearTimeout(timer); timer = setTimeout(() => { current = 0; refresh(); }, 250); });
         const use = (name) => {
             dataset = name;
             if (select) select.value = name;

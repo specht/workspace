@@ -718,6 +718,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Query Stepper: In der Abfrage selbst ist der Teil markiert, den der
+  gezeigte Schritt ausführt, etwa `WHERE population > 1000000`.
 - GIF decodieren, LZW zum Durchklicken: Die Tabelle steht von Anfang an da,
   mit den Einträgen 0 bis 3 für die Farben und 4 und 5 für Clear und End, in
   einer eigenen Spalte rechts neben der Erklärung statt darunter und von Anfang

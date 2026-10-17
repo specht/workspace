@@ -4890,9 +4890,38 @@ div[data-stepper]::before {
 /* The query stepper (query_stepper.js): a query, the clauses in the order
    the database works through them, and the table after each step. Rows that
    fall out are struck through; rows of one group share a tint. */
-.query-stepper .qs-input {
-    font-family: '0xProto Nerd Font Mono', monospace;
+/* The query in a text field over a mirror of the same text, in which the
+   clause of the current step is marked (query_stepper.js copies the
+   field's font and padding to the mirror). */
+.query-stepper .qs-editor {
+    position: relative;
     margin-bottom: 0.6em;
+}
+.query-stepper .qs-input,
+.query-stepper .qs-input:focus {
+    position: relative;
+    font-family: '0xProto Nerd Font Mono', monospace;
+    background-color: transparent;
+}
+.query-stepper .qs-mirror {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    color: transparent;
+    background-color: var(--bs-body-bg);
+    border-style: solid;
+    border-color: transparent;
+    border-radius: var(--bs-border-radius);
+    pointer-events: none;
+}
+.query-stepper .qs-mirror mark {
+    padding: 0;
+    color: transparent;
+    border-radius: 0.2em;
+    background-color: color-mix(in srgb, var(--bs-primary) 22%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--bs-primary) 45%, transparent);
 }
 .query-stepper .qs-order {
     display: flex;
