@@ -182,7 +182,7 @@ class Preview {
 <div id="problems" class="problems" hidden></div>
 <div id="board" class="board"></div>
 <p class="hint" id="hint"></p>
-<details id="schema-box" open><summary>Tabellen</summary><div id="schema" class="schema"></div></details>
+<details id="schema-box" open><summary><span id="schema-title">Tabellen</span> <button type="button" class="act copy" data-act="copy-schema" title="Eine Zeile pro Entitätstyp oder Tabelle, Schlüssel unterstrichen, Fremdschlüssel mit ↑, als Text zum Einfügen">Kopieren</button></summary><div id="schema" class="schema"></div></details>
 <details id="steps-box"><summary>So wurde übersetzt</summary><ol id="steps" class="steps"></ol></details>
 <script nonce="${nonce}" src="${src('core', 'er-core.js')}"></script>
 <script nonce="${nonce}" src="${src('media', 'preview.js')}"></script>
@@ -231,6 +231,8 @@ class Preview {
             this.update();
         } else if (msg.type === 'sql') {
             generateSql(this.uri);
+        } else if (msg.type === 'copySchema' && typeof msg.text === 'string') {
+            vscode.env.clipboard.writeText(msg.text).then(() => vscode.window.setStatusBarMessage('Schema kopiert', 3000));
         } else if (msg.type === 'svg' && lib.KINDS.includes(msg.kind)) {
             saveDiagram(this.uri, msg.kind);
         } else if (msg.type === 'reveal' && Number.isInteger(msg.line)) {

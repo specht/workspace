@@ -101,3 +101,4 @@ summary { cursor: pointer; font-weight: 600; }
 }
 
 code { font-family: var(--vscode-editor-font-family); }
+summary .copy { margin-left: 8px; padding: 1px 8px; font-size: 11px; font-weight: 400; vertical-align: 1px; }

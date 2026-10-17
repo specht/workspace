@@ -33,6 +33,7 @@
     const problems = document.getElementById('problems');
     const hint = document.getElementById('hint');
     const schemaBox = document.getElementById('schema');
+    const schemaTitle = document.getElementById('schema-title');
     const stepsBox = document.getElementById('steps');
     const zoomLevel = document.getElementById('zoom-level');
 
@@ -86,7 +87,7 @@
             attrs: attributeSets(graph),
         };
         draw();
-        showSchema(use.result);
+        showSchema(use);
     }
 
     // owner id -> the ids of its attributes, as one string to compare.
@@ -182,17 +183,16 @@
             '<ul>' + list.slice(0, 8).map((p) => `<li><a href="#" data-line="${p.line}">Zeile ${p.line}</a>: ${esc(p.msg)}</li>`).join('') + '</ul>';
     }
 
-    function showSchema(result) {
-        schemaBox.innerHTML = result.tables.map((t) => {
-            const fk = new Set(t.fks.flatMap((f) => f.cols));
-            const cols = t.columns.map((c) => {
-                let s = esc(c.name);
-                if (t.pk.includes(c.name)) s = `<u>${s}</u>`;
-                if (fk.has(c.name)) s = `<span class="fk">↑${s}</span>`;
-                return s;
-            });
-            return `<div><b>${esc(t.name)}</b>(${cols.join(', ')})</div>`;
-        }).join('') + '<p class="legend"><u>unterstrichen</u> = Primärschlüssel · <span class="fk">↑</span> = Fremdschlüssel</p>';
+    // One line per entity type (Chen, Krähenfuß) or per table (Tabellen).
+    let schemaLines = [];
+    function showSchema(use) {
+        const level = kind === 'tables' ? 'tables' : 'entities';
+        schemaLines = core.schemaLines(use.model, use.result, level);
+        schemaTitle.textContent = level === 'tables' ? 'Tabellen' : 'Entitätstypen';
+        schemaBox.innerHTML = core.schemaText(schemaLines, 'html') + (level === 'tables'
+            ? '<p class="legend"><u>unterstrichen</u> = Primärschlüssel · <span class="fk">↑</span> = Fremdschlüssel</p>'
+            : '<p class="legend"><u>unterstrichen</u> = Schlüssel</p>');
+        const result = use.result;
         stepsBox.innerHTML = result.steps.map((s) => `<li><span class="tag">${esc(s.tag)}</span> ${withCode(s.text)}</li>`).join('');
     }
 
@@ -258,6 +258,10 @@
         render();
     });
     document.querySelector('[data-act="sql"]').addEventListener('click', () => vscode.postMessage({ type: 'sql' }));
+    document.querySelector('[data-act="copy-schema"]').addEventListener('click', (ev) => {
+        ev.preventDefault();
+        vscode.postMessage({ type: 'copySchema', text: core.schemaText(schemaLines, 'text') });
+    });
     document.querySelector('[data-act="svg"]').addEventListener('click', () => vscode.postMessage({ type: 'svg', kind }));
     problems.addEventListener('click', (ev) => {
         const a = ev.target.closest('a[data-line]');

@@ -231,6 +231,7 @@ Eine Datei mit der Endung `.er` öffnet VS Code mit der ER-Werkstatt.
 <tr><td>SQL erzeugen</td><td>»SQL erzeugen« schreibt <code>name.sql</code> neben das Modell. Eine Datei, die nicht von der ER-Werkstatt stammt, wird nur nach Rückfrage überschrieben.</td></tr>
 <tr><td>Tabellen anlegen</td><td>im Terminal: <code>mysql &lt; name.sql</code>. Die Datei beginnt mit <code>DROP TABLE IF EXISTS</code>: Vorhandene Tabellen mit diesen Namen werden samt Inhalt gelöscht und neu angelegt.</td></tr>
 <tr><td>Diagramm sichern</td><td>»Als SVG speichern« schreibt <code>name-chen.svg</code>, <code>name-crowfoot.svg</code> oder <code>name-tables.svg</code></td></tr>
+<tr><td>Schema als Text</td><td>Unter dem Diagramm steht eine Zeile pro Entitätstyp (bei Chen und Krähenfuß) oder pro Tabelle (bei Tabellen), der Schlüssel unterstrichen, ein Fremdschlüssel mit ↑. »Kopieren« legt sie als Text in die Zwischenablage, zum Einfügen in ein Arbeitsblatt.</td></tr>
 </tbody>
 </table></div>
 <!-- /part -->
@@ -251,6 +252,7 @@ Dann erzeugt `node $ER` dasselbe wie die Befehle in VS Code:
 ```bash
 node $ER --sql film.er > film.sql
 node $ER --svg tables film.er > film-tables.svg
+node $ER --schema tables film.er      # eine Zeile pro Tabelle; entities: pro Entitätstyp
 node $ER --json film.er
 ```
 <!-- /part -->

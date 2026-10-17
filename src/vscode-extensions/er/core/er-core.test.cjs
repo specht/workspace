@@ -275,6 +275,20 @@ test('crow\'s foot: two foreign keys to the same table get two lines', () => {
     assert.notEqual(starts[0], starts[1]);
 });
 
+test('schema lines: one per entity type or table, key underlined, foreign key with ↑', () => {
+    const { model, result } = core.compile(FILM);
+    const entities = core.schemaLines(model, result, 'entities');
+    assert.deepEqual(entities.map((l) => l.name), ['movie', 'genre', 'crew', 'job']);
+    assert.equal(core.schemaText(entities, 'html').split('</div>')[1], '<div><b>genre</b>(<u>id</u>, name)');
+    const tables = core.schemaText(core.schemaLines(model, result, 'tables'), 'text').split('\n');
+    assert.ok(tables.includes('movie_genre(↑m\u0332o\u0332v\u0332i\u0332e\u0332_\u0332i\u0332d\u0332, ↑g\u0332e\u0332n\u0332r\u0332e\u0332_\u0332i\u0332d\u0332)'));
+    assert.ok(tables.includes('job(i\u0332d\u0332, title)'));
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'er-'));
+    fs.writeFileSync(path.join(dir, 'film.er'), FILM);
+    const out = execFileSync('node', [path.join(__dirname, 'er-core.js'), '--schema', 'entities', path.join(dir, 'film.er')], { encoding: 'utf8' });
+    assert.equal(out.split('\n')[0], 'movie(i\u0332d\u0332, title, original_title, german_title, year, runtime)');
+});
+
 test('chen: attributes spread around their entity, clear of relationship lines', () => {
     const { graph } = core.diagram(FILM, 'chen');
     const byId = new Map(graph.nodes.map((n) => [n.id, n]));

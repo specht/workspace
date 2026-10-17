@@ -713,8 +713,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   dieselbe Tabelle sind zwei Linien, und eine lange Linie läuft um die
   Kästen dazwischen herum. Die Kästen zeigen Typ, Name und Schlüssel in drei
   Spalten. Verschobene Kästen bleiben, wo sie sind; »Neu anordnen« zeigt die
-  neue Anordnung. Chen bleibt, wie es ist. Die Bilder der »Filmdatenbank«
-  und die Vorschau im Handbuch »ER-Modelle« zeigen die neue Darstellung.
+  neue Anordnung. Eine Beziehung mit sich selbst hat eine Schleife mit Platz
+  für Krähenfuß und Strich. Bei Chen läuft keine Linie mehr durch einen
+  Kasten oder eine Raute, und Kardinalitäten liegen nicht mehr aufeinander.
+  Unter dem Diagramm steht eine Zeile pro Entitätstyp oder Tabelle (Schlüssel
+  unterstrichen, Fremdschlüssel mit ↑); »Kopieren« legt sie als Text in die
+  Zwischenablage. Die Bilder der »Filmdatenbank« und die Vorschau im Handbuch
+  »ER-Modelle« zeigen die neue Darstellung.
 - Die »Einführung in SQL« arbeitet mit den Ländern der Welt statt mit der
   alten Datenbank `terra1`, die Fehler hatte und deren Zahlen veraltet
   waren (Einwohner in Millionen, `Europa` neben `Europe`). Lernende laden

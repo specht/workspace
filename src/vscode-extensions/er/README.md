@@ -10,7 +10,9 @@ In VS Code, a `.er` file gets:
   »Probleme«);
 - »ER-Diagramm anzeigen« (button in the editor title, <kbd>Ctrl</kbd>+<kbd>K</kbd>
   <kbd>V</kbd>): a preview beside the editor with Chen, Krähenfuß and Tabellen,
-  the relational schema and »So wurde übersetzt«. Zoom with −, + and
+  one line per entity type (Chen, Krähenfuß) or table (Tabellen) with the key
+  underlined and ↑ for a foreign key, »Kopieren« for the lines as text
+  (the key underlined with U+0332), and »So wurde übersetzt«. Zoom with −, + and
   »Einpassen« or Ctrl + mouse wheel; typing never rescales the view, and
   boxes stay where they are while you type. Krähenfuß and Tabellen are laid
   out in layers, as Mermaid draws them (what is referenced above, join tables

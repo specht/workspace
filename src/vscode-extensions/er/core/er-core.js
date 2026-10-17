@@ -579,8 +579,15 @@
             }
             if (!moved) break;
         }
+        // A box with a loop to itself needs the loop's room on its right.
+        const loopRoom = new Map();
+        for (const e of edges) {
+            if (e.a !== e.b || !index.has(e.a)) continue;
+            const n = nodes[index.get(e.a)];
+            loopRoom.set(n.id, selfLoop(n).out - (n.x || 0) - n.w / 2 + (e.label ? estimateWidth(e.label) + 10 : 0));
+        }
         // Stand-ins where a line spans several layers.
-        const vertices = nodes.map((n) => ({ id: n.id, w: n.w, h: n.h, rank: rank.get(n.id) }));
+        const vertices = nodes.map((n) => ({ id: n.id, w: n.w + (loopRoom.get(n.id) || 0), h: n.h, rank: rank.get(n.id) }));
         const vById = new Map(vertices.map((v) => [v.id, v]));
         const links = [];
         const standIns = [];
@@ -684,7 +691,7 @@
         const round = (v) => Math.round(v * 10) / 10;
         for (const n of nodes) {
             const p = kept[n.id];
-            const lx = x.get(n.id);
+            const lx = x.get(n.id) - (loopRoom.get(n.id) || 0) / 2;
             const ly = yOf[rank.get(n.id)];
             if (p && Number.isFinite(p.x) && Number.isFinite(p.y)) {
                 n.x = p.x; n.y = p.y; fixed.add(n.id);
@@ -827,6 +834,32 @@
                 if (!fixed.has(a.id)) { a.x += dx; a.y += dy; }
                 if (!fixed.has(b.id)) { b.x -= dx; b.y -= dy; }
             }
+            // No line through a box or a diamond: a node too close to a line
+            // between two others moves off it, the line the other way.
+            for (const e of edges) {
+                if (e.kind !== 'rel') continue;
+                const a = byId.get(e.a);
+                const b = byId.get(e.b);
+                if (!a || !b || a === b) continue;
+                const sx = b.x - a.x;
+                const sy = b.y - a.y;
+                const len2 = sx * sx + sy * sy || 1;
+                for (const n of placed) {
+                    if (n === a || n === b) continue;
+                    const u = ((n.x - a.x) * sx + (n.y - a.y) * sy) / len2;
+                    if (u <= 0.02 || u >= 0.98) continue;
+                    let ox = n.x - (a.x + u * sx);
+                    let oy = n.y - (a.y + u * sy);
+                    const d = Math.hypot(ox, oy) || 0.01;
+                    const min = Math.max(n.w, n.h) / 2 + 24;
+                    if (d >= min) continue;
+                    const f = ((min - d) / d) * 0.2 * t;
+                    ox *= f; oy *= f;
+                    if (!fixed.has(n.id)) { n.x += ox; n.y += oy; }
+                    if (!fixed.has(a.id)) { a.x -= ox / 2; a.y -= oy / 2; }
+                    if (!fixed.has(b.id)) { b.x -= ox / 2; b.y -= oy / 2; }
+                }
+            }
         }
 
         for (const [owner, list] of attrsOf) {
@@ -882,6 +915,13 @@
     // and the outward normals of their sides.
     // How far a crow's-foot line runs straight out of its box: past the foot (16) and the bar (12).
     const STUB = 22;
+
+    // The loop of a relationship of a box with itself, on its right side
+    function selfLoop(n) {
+        const x = n.x + n.w / 2;
+        const d = Math.max(14, Math.min(26, n.h / 2 - 10));
+        return { x, y1: n.y - d, y2: n.y + d, out: x + STUB + 52 };
+    }
 
     function crowfootRoutes(byId, edges) {
         const sideOf = (a, b) => {
@@ -941,6 +981,9 @@
             for (const p of waypoints(e, a, b)) {
                 x0 = Math.min(x0, p.x - 20); x1 = Math.max(x1, p.x + 20);
             }
+            if (e.kind === 'cf' && a === b) {
+                x1 = Math.max(x1, selfLoop(a).out + (e.label ? estimateWidth(e.label) + 10 : 0));
+            }
         }
         if (!Number.isFinite(x0)) return [0, 0, 600, 380];
         const pad = 40;
@@ -998,18 +1041,19 @@
             return `<line class="cfl" x1="${f(r.x + px * 8)}" y1="${f(r.y + py * 8)}" x2="${f(r.x - px * 8)}" y2="${f(r.y - py * 8)}"/>`;
         };
         const routes = crowfootRoutes(byId, edges);
+        const cards = [];
         edges.forEach((e, i) => {
             const a = byId.get(e.a);
             const b = byId.get(e.b);
             if (!a || !b) return;
             if (e.kind === 'cf') {
                 if (a === b) {
-                    const x = a.x + a.w / 2;
-                    const y1 = a.y - 10;
-                    const y2 = a.y + 10;
-                    S.push(`<path class="cfl" d="M${f(x)},${f(y1)} C${f(x + 70)},${f(y1 - 50)} ${f(x + 70)},${f(y2 + 50)} ${f(x)},${f(y2)}"/>`);
+                    // A loop on the right side: its two ends far enough apart
+                    // for a foot and a bar each, straight out of the box first.
+                    const { x, y1, y2, out } = selfLoop(a);
+                    S.push(`<path class="cfl" d="M${f(x)},${f(y1)} L${f(x + STUB)},${f(y1)} C${f(out)},${f(y1 - 12)} ${f(out)},${f(y2 + 12)} ${f(x + STUB)},${f(y2)} L${f(x)},${f(y2)}"/>`);
                     S.push(footMark({ x, y: y1 }, 1, 0, e.endA) + footMark({ x, y: y2 }, 1, 0, e.endB));
-                    if (e.label) S.push(`<text class="lbl" x="${f(x + 62 + opts.measure(e.label) / 2)}" y="${f(a.y)}">${esc(e.label)}</text>`);
+                    if (e.label) S.push(`<text class="lbl" x="${f(out - 12 + 10 + opts.measure(e.label) / 2)}" y="${f(a.y)}">${esc(e.label)}</text>`);
                     return;
                 }
                 // A curve that leaves each box at a right angle to its side.
@@ -1054,7 +1098,13 @@
                 // The second line of a relationship with itself runs parallel
                 // to the first; its label goes on the other side.
                 const side = e.offset ? -1 : 1;
-                S.push(`<text class="card" x="${f(p.x + ux * 14 - uy * 10 * side)}" y="${f(p.y + uy * 14 + ux * 10 * side)}">${esc(e.card)}</text>`);
+                // Further out along the line while it would sit on another label.
+                let along = 14;
+                const at = () => ({ x: p.x + ux * along - uy * 10 * side, y: p.y + uy * along + ux * 10 * side });
+                for (let k = 0; k < 8 && cards.some((c) => Math.abs(c.x - at().x) < 14 && Math.abs(c.y - at().y) < 15); k++) along += 12;
+                const q = at();
+                cards.push(q);
+                S.push(`<text class="card" x="${f(q.x)}" y="${f(q.y)}">${esc(e.card)}</text>`);
             }
         });
         for (const n of nodes) {
@@ -1095,6 +1145,35 @@
         return S.join('');
     }
 
+    // The model or its tables as schema lines, one per entity type or table,
+    // as the Handbuch writes them: the key underlined, a foreign key with ↑.
+    // level 'entities': the entity types and their attributes; 'tables': the
+    // tables after the translation.
+    function schemaLines(model, result, level) {
+        if (level === 'entities') {
+            return model.entities.map((e) => ({ name: e.name, cols: e.attrs.map((a) => ({ name: a.name, key: !!a.key, fk: false })) }));
+        }
+        return result.tables.map((t) => {
+            const fk = new Set(t.fks.flatMap((f) => f.cols));
+            return { name: t.name, cols: t.columns.map((c) => ({ name: c.name, key: t.pk.includes(c.name), fk: fk.has(c.name) })) };
+        });
+    }
+
+    // The lines as HTML (<u> for the key) or as text, the key underlined with
+    // a combining low line (U+0332), so it survives a paste into a document.
+    function schemaText(lines, format) {
+        const html = format === 'html';
+        return lines.map((l) => {
+            const cols = l.cols.map((c) => {
+                let s = html ? esc(c.name) : c.name;
+                if (c.key) s = html ? `<u>${s}</u>` : [...s].map((ch) => `${ch}\u0332`).join('');
+                if (c.fk) s = html ? `<span class="fk">↑${s}</span>` : `↑${s}`;
+                return s;
+            });
+            return html ? `<div><b>${esc(l.name)}</b>(${cols.join(', ')})</div>` : `${l.name}(${cols.join(', ')})`;
+        }).join(html ? '' : '\n');
+    }
+
     // One call for a picture: kind 'chen', 'crowfoot' (the model) or 'tables'
     // (crow's foot after the translation). Returns { svg, positions }.
     function diagram(text, kind, options) {
@@ -1109,7 +1188,7 @@
 
     return {
         VERSION, parse, transform, compile, toSQL, summary, sqlName, sqlType, joinTableName,
-        chenGraph, crowfootGraph, layout, renderSVG, diagram, estimateWidth, esc, viewBox,
+        chenGraph, crowfootGraph, layout, renderSVG, diagram, estimateWidth, esc, viewBox, schemaLines, schemaText,
     };
 });
 
@@ -1119,11 +1198,13 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
     const path = require('path');
     const core = module.exports;
     const args = process.argv.slice(2);
-    const usage = 'node er-core.js --json|--sql|--svg chen|crowfoot|tables <datei.er>';
+    const usage = 'node er-core.js --json|--sql|--svg chen|crowfoot|tables|--schema entities|tables <datei.er>';
     const mode = args[0];
-    const kind = mode === '--svg' ? args[1] : null;
-    const file = mode === '--svg' ? args[2] : args[1];
-    if (!['--json', '--sql', '--svg'].includes(mode) || !file || (mode === '--svg' && !['chen', 'crowfoot', 'tables'].includes(kind))) {
+    const withKind = mode === '--svg' || mode === '--schema';
+    const kind = withKind ? args[1] : null;
+    const file = withKind ? args[2] : args[1];
+    const kinds = mode === '--schema' ? ['entities', 'tables'] : ['chen', 'crowfoot', 'tables'];
+    if (!['--json', '--sql', '--svg', '--schema'].includes(mode) || !file || (withKind && !kinds.includes(kind))) {
         process.stderr.write(`${usage}\n`);
         process.exit(2);
     }
@@ -1146,6 +1227,8 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
         process.exit(1);
     } else if (mode === '--sql') {
         process.stdout.write(core.toSQL(result.tables, { source: path.basename(file) }));
+    } else if (mode === '--schema') {
+        process.stdout.write(`${core.schemaText(core.schemaLines(model, result, kind), 'text')}\n`);
     } else {
         // A white background, like »Als SVG speichern«: the file is also read on dark pages.
         process.stdout.write(core.diagram(text, kind, { background: '#ffffff' }).svg + '\n');
