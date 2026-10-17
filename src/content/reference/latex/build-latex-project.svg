@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="96" height="96">
+  <!-- Das Symbol »Build LaTeX project« von LaTeX Workshop, oben rechts im Editor: die Glyphe »debug-start« aus codicon.ttf
+       (/app/code-server/lib/vscode/out/media/) auf dem dunklen Grund von
+       »Dark Modern«. -->
+  <rect width="24" height="24" fill="#181818"/>
+  <path fill="#89d185" d="M8.48 7.52 16.48 12 8.48 16.48ZM8.48 5.973Q7.893 5.973 7.44 6.427Q6.987 6.88 6.987 7.52V16.48Q6.987 17.12 7.44 17.573Q7.893 18.027 8.48 18.027Q8.907 18.027 9.227 17.813L17.227 13.333Q17.707 13.013 17.893 12.507Q18.08 12 17.893 11.493Q17.707 10.987 17.227 10.667L9.227 6.187Q8.907 5.973 8.48 5.973Z"/>
+</svg>

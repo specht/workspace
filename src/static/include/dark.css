@@ -257,6 +257,10 @@ html[data-bs-theme="dark"] {
         border-left-color: #2fb3a5;
         background-color: #15201f;
     }
+    .reference-include .hint {
+        background-color: transparent;
+        border-color: #23423e;
+    }
     .page-kind {
         color: #adb5bd;
     }

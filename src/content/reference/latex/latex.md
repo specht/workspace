@@ -49,9 +49,9 @@ crop-bottom: 50%
 
 Eine `.tex`-Datei ist Text mit Befehlen. Erst LaTeX macht daraus ein PDF; das nennt man **übersetzen** (oder kompilieren).
 
-- <kbd>Strg</kbd><kbd>Alt</kbd><kbd>B</kbd> oder der Button »Build LaTeX project« <img src='build-latex-project.webp' style='border-radius: 4px; height: 1.5em;' alt='ein grünes Dreieck, das nach rechts zeigt'> rechts oben übersetzt die Datei. Im Workspace passiert das außerdem bei jedem Speichern.
+- <kbd>Strg</kbd><kbd>Alt</kbd><kbd>B</kbd> oder der Button »Build LaTeX project« <img src='build-latex-project.svg' style='border-radius: 4px; height: 1.5em;' alt='ein grünes Dreieck, das nach rechts zeigt'> rechts oben übersetzt die Datei. Im Workspace passiert das außerdem bei jedem Speichern.
 - Unten in der Statusleiste dreht sich ein Pfeil, solange LaTeX arbeitet; danach steht dort ein Häkchen oder ein Kreuz für Fehler.
-- <kbd>Strg</kbd><kbd>Alt</kbd><kbd>V</kbd> oder »View LaTeX PDF file« <img src='view-latex-pdf-file.webp' style='border-radius: 4px; height: 1.5em;' alt='eine Seite mit einer Lupe'> zeigt das PDF neben dem Quelltext. Ein Doppelklick ins PDF mit <kbd>Strg</kbd> springt zur Stelle im Quelltext.
+- <kbd>Strg</kbd><kbd>Alt</kbd><kbd>V</kbd> oder »View LaTeX PDF file« <img src='view-latex-pdf-file.svg' style='border-radius: 4px; height: 1.5em;' alt='eine Seite mit einer Lupe'> zeigt das PDF neben dem Quelltext. Ein Doppelklick ins PDF mit <kbd>Strg</kbd> springt zur Stelle im Quelltext.
 
 <!-- tutorial-screenshot
 # Installieren: nur dieses eine »Install« (die Suche oben zeigt mehrere)

@@ -2117,6 +2117,12 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     background-color: #f4fbfa;
 }
 
+/* A hint in an included part: on the box's colour, not a grey of its own */
+.reference-include .hint {
+    background-color: transparent;
+    border-color: #cfe7e3;
+}
+
 /* _include(…, done: id) once the task is solved: one line instead of the box */
 .reference-include-folded {
     padding-bottom: 0.8em;

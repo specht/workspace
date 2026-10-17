@@ -765,8 +765,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   hinkommt, mit drei Zeilen davor und danach, so wie die Datei an dieser
   Stelle aussieht.
 - Die Symbole für Panel, Erweiterungen und »Ausführen« im Text der
-  Sprachseiten sind SVGs aus der Symbolschrift von VS Code statt kleiner
-  Bildausschnitte: scharf in jeder Größe.
+  Sprachseiten und für »Build« und »View« von LaTeX Workshop im Handbuch
+  sind SVGs aus der Symbolschrift von VS Code statt kleiner Bildausschnitte:
+  scharf in jeder Größe.
+- Ein Hinweis in einem eingebundenen Teil des Handbuchs hat keinen eigenen
+  grauen Hintergrund mehr, sondern den des Kastens.
 - Bilder im SVG-Format bleiben SVG; bisher wurden sie wie Fotos umgewandelt
   und kamen mit dem falschen Typ beim Browser an.
 - »Hades in der Altgriechisch-App« ist ganz entfernt; die Seite stand schon
