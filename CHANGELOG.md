@@ -769,6 +769,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   und Umbenennen bis zur Umwandlung nach WebP. Das Kontextmenü des Browsers
   ist nachgebaut, weil ein Screenshot das echte nicht zeigt. Nach einem Update
   von VS Code entstehen sie neu.
+- `.gitignore` schließt nur noch den Datenordner der Entwicklung (`/data`) aus,
+  nicht mehr jeden Ordner namens `data`. Dadurch fehlten zwei Dateien des
+  Monaco-Editors im Repository (`webCustomData.js` für CSS und HTML, aus der
+  ESM-Fassung, die die Code Bites nicht laden); sie sind jetzt dabei.
 - Kontextzeilen: Von der Zickzacklinie fällt ein leichter Schatten in den
   Kontext, so liegt der neue Code sichtbar obenauf. Leerzeilen, wo Kontext und neuer
   Code aneinanderstoßen, gehören zum Kontext; der Schnitt liegt direkt an der
