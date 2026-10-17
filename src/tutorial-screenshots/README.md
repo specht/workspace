@@ -583,8 +583,10 @@ sheet with its margins, at 200 dpi, for a page that should look like a page
 ### Files and editor state
 
 `open-file` opens a Workspace file through Quick Open and waits for the Monaco
-editor to settle. A file a recipe has just written may take a few seconds to
-appear in Quick Open; `open-file` asks again until it does (up to 30 seconds). `close-tab` closes an editor tab by its exact label and is a
+editor to settle; a picture (`.png`, `.jpg`, `.gif`, `.webp`, …) opens in VS
+Code's image preview instead, and `open-file` waits for its webview. A file a
+recipe has just written may take a few seconds to appear in Quick Open;
+`open-file` asks again until it does (up to 30 seconds). `close-tab` closes an editor tab by its exact label and is a
 no-op when that tab is already closed.
 
 `wait-for-file` waits up to 60 seconds for a file below the screenshot user's

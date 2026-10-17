@@ -17,11 +17,23 @@ machen oder ein Bild zu verbessern.
 
 ## Aufnahmen bauen
 
+`make_case.rb` baut die Aufnahmen mit, nach
+`docker/case-server/files/museum/srv/museum/kameras/`, mit dem Python aus
+`CCTV_PYTHON`:
+
 ```bash
 python3 -m venv /tmp/cctv
 /tmp/cctv/bin/pip install opencv-python-headless pillow numpy
-/tmp/cctv/bin/python src/content/terminal-mystery/beispiele/cctv/build.py /tmp/cctv-frames
+CCTV_PYTHON=/tmp/cctv/bin/python ruby src/content/terminal-mystery/beispiele/make_case.rb
+./config.rb build case_museum && ./config.rb up -d case_museum
 ```
+
+Zum Ansehen allein geht auch `build.py /tmp/cctv-frames`. Die Uhrzeit jeder
+Datei setzt das Image aus ihrem Namen (`docker/case-server/Dockerfile`), so
+dass `ls -l` auf dem Museum die Nacht zeigt.
+
+Die Bilder, die der Regen an Kamera 3 auslöst, sind in `frames.txt` einzeln
+aufgeführt: der leere Parkplatz, bis 23:38 mit dem Auto, danach ohne.
 
 Jede Aufnahme heißt nach Kamera und Zeit, etwa `cam2_20260314_231202.jpg`:
 704×576 Pixel wie ein alter Rekorder, Kamera 1 schwarzweiß (im Dunkeln),

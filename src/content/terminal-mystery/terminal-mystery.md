@@ -368,7 +368,7 @@ wait-for-text: Ingrid Hollerbach
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='ssh-museum.webp' alt='Im Terminal: ssh mit dem eigenen Zugang zu museum.bitstein, die Begrüßung des Servers der Verwaltung, die Eingabeaufforderung mit @museum, darunter ls mit LIESMICH.txt, geraete.txt, logs, netzplan.txt und wartung und der Inhalt von LIESMICH.txt.'>
+<img class='full' src='ssh-museum.webp' alt='Im Terminal: ssh mit dem eigenen Zugang zu museum.bitstein, die Begrüßung des Servers der Verwaltung, die Eingabeaufforderung mit @museum, darunter ls mit LIESMICH.txt, geraete.txt, kameras, logs, netzplan.txt und wartung und der Inhalt von LIESMICH.txt.'>
 
 Die Eingabeaufforderung zeigt jetzt `@museum`: Jeder Befehl läuft dort, nicht in deinem Workspace. `hostname` sagt, auf welchem Rechner du bist, `whoami`, wer du dort bist. Schreiben kannst du hier nichts, lesen alles, mit denselben Werkzeugen wie in Bitstein. `exit` oder <kbd>Strg</kbd><kbd>D</kbd> bringt dich zurück.
 
@@ -467,7 +467,76 @@ check-task-fails: eindringling <- 1
 check-task: eindringling <- 0
 -->
 
-Die Adresse aus dem VPN, das Gerät dazu und die Befehle aus der Nacht, minutengenau neben den Commits: Jetzt ist der Fall wasserdicht.
+### Die Kameras
+
+Bleibt Reuters Ausrede, er sei die ganze Nacht zu Hause gewesen. Im Museum hängen drei Kameras, in der Ausstellung, am Hintereingang und am Parkplatz. Sie nehmen auf, sobald sich etwas bewegt, dann alle drei Sekunden ein Bild, und laut `LIESMICH.txt` liegen ihre Bilder aus der Nacht in `kameras/`. Melde dich am Museum an und sieh nach, wie viele es sind:
+
+```bash
+ls kameras | head -n 4
+ls kameras | wc -l
+```
+
+<!-- tutorial-screenshot
+# Die Bilder der Kameras auf museum.bitstein
+terminal-run: clear
+terminal-run: ssh $CASE_USER@museum.bitstein
+wait-for-text: @museum:~$
+terminal-run: clear
+terminal-run: ls kameras | head -n 4
+terminal-run: ls kameras | wc -l
+terminal-run: ls kameras/cam3_20260314_2301*
+wait-for-text: cam3_20260314_230103.jpg
+crop-terminal-lines: auto
+-->
+
+<img class='full' src='kameras.webp' alt='Im Terminal auf museum.bitstein: die ersten vier Bilder in kameras, von Kamera 1 ab 23:30:58, dann 66 Bilder insgesamt, und ls mit cam3_20260314_2301* nennt zwei Bilder der Kamera 3 aus der Minute 23:01.'>
+
+Der Name jedes Bildes sagt, welche Kamera es wann aufgenommen hat: `cam3_20260314_230100.jpg` ist Kamera 3 am 14. März um 23:01:00. Darum passt `cam3_20260314_2301*` auf alle Bilder der Kamera 3 aus der Minute 23:01: Das `*` steht für jeden Rest des Namens, hier die Sekunden und `.jpg`.
+
+Ein Bild kann das Terminal nicht zeigen, und der Server hat keinen Bildschirm. Hol die Bilder darum mit `scp` in deinen Workspace, wieder mit `exit` zurück und ohne Verbindung zum Museum. Mit einem `*` kommen viele auf einmal, alle Bilder der Kamera 1 etwa:
+
+```bash
+mkdir -p ~/bitstein/kameras
+scp 'e123@museum.bitstein:kameras/cam1_*' ~/bitstein/kameras/
+```
+
+Ohne `/` vorn sucht `scp` den Pfad im Home-Verzeichnis auf dem Museum, dem Ordner mit `LIESMICH.txt`. Die Anführungszeichen schicken das `*` unverändert dorthin: Die Namen der passenden Bilder setzt dann die Shell auf dem Museum ein, nicht deine, in deren Ordnern es diese Bilder noch gar nicht gibt.
+
+_task(kamera-bilder)
+
+<!-- tutorial-step
+terminal-run: exit
+wait-for-text: Connection to museum.bitstein closed
+terminal-run: clear
+terminal-run: mkdir -p ~/bitstein/kameras
+terminal-run: scp "$CASE_USER@museum.bitstein:kameras/cam1_*" ~/bitstein/kameras/
+terminal-wait-for-prompt: 30
+check-task: kamera-bilder
+-->
+
+Im Explorer liegen die Bilder jetzt unter `kameras`, und ein Klick öffnet eins im Editor. Geh sie der Reihe nach durch: Was passiert in der Ausstellung, und wann?
+
+<!-- tutorial-screenshot
+# Ein Bild der Kamera 1 im Editor
+open-file: kameras/cam1_20260314_233118.jpg
+hide-bottom-panel
+-->
+
+<img class='full' src='kamera-bild.webp' alt='VS Code mit einem Bild der Kamera 1 im Editor, schwarzweiß, oben 14.03.2026 23:31:18, unten CAM 1 AUSSTELLUNG: neben der Vitrine kauert eine Person mit Kapuze an ihrer Tasche, die Glashaube steht daneben auf dem Boden.'>
+
+Kamera 3 am Parkplatz springt auch bei Regen an, darum hat sie so viele Bilder. Die Karte hat den Hintereingang um 23:38 geöffnet. Hol von Kamera 3 nur die Bilder aus dieser Minute.
+
+_task(kamera-auto)
+
+<!-- tutorial-step
+terminal-run: scp "$CASE_USER@museum.bitstein:kameras/cam3_20260314_2338*" ~/bitstein/kameras/
+terminal-wait-for-prompt: 30
+check-task: kamera-bilder
+check-task-fails: kamera-auto <- 1
+check-task: kamera-auto <- 0
+-->
+
+Die Adresse aus dem VPN, das Gerät dazu, die Befehle aus der Nacht, minutengenau neben den Commits, und ein gelber Kombi auf dem Parkplatz: Jetzt ist der Fall wasserdicht.
 <!-- /feature -->
 
 ## Ein eigener Fall

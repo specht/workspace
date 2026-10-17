@@ -20,6 +20,11 @@ RUN if [ -f /alarmanlage.tar.gz ]; then tar xzf /alarmanlage.tar.gz -C /srv && r
     && chown -R root:root /srv /home \
     && chmod -R a+rX,go-w /srv /home \
     && if [ -f /etc/case-alarm-password ]; then chmod 0600 /etc/case-alarm-password; fi \
+    && for f in /srv/museum/kameras/cam*_*.jpg; do \
+           [ -f "$f" ] || continue; \
+           t=${f##*_}; t=${t%.jpg}; d=${f%_*}; d=${d##*_}; \
+           touch -d "$(echo $d | cut -c1-4)-$(echo $d | cut -c5-6)-$(echo $d | cut -c7-8) $(echo $t | cut -c1-2):$(echo $t | cut -c3-4):$(echo $t | cut -c5-6)" "$f"; \
+       done \
     && cp /etc/passwd /etc/passwd.image && cp /etc/shadow /etc/shadow.image && cp /etc/group /etc/group.image
 
 COPY case.sh /etc/profile.d/case.sh

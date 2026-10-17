@@ -3,61 +3,73 @@
     "fahrzeuge.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "32a9e9beda116a0aaac6f3a756c646bf446710679cb427601acbbc4edb9915b5",
-      "state_hash": "76111388e47b9e63ca0a5ef7d92c4815f63d920e0f40d8875391a5445ecff853",
+      "state_hash": "bbbb90a8ee38d224a437734a6acaef597047bdce98816fa77af8ad5aa81f889c",
       "workspace_look": "4.138.0-ls366"
     },
     "git-show.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "175ae57b0ef637f484891292f2da7b086602cc6d305e335c95bb94fad1623729",
-      "state_hash": "ac6180d5708bc389a2085383ec19a8e0cc93baf1b4219e75d21145b917b0c97f",
+      "state_hash": "16c824b8c5881b6d8f2cf7481629dafa329d5781b6341136321535ce8105d5c1",
       "workspace_look": "4.138.0-ls366"
     },
     "grep-l.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "98026a22024547c7f42a442866a2a453c0723c54522ab4a3bddcfdb117d9e73d",
-      "state_hash": "27c9935b7670247980f2a714774c515f338f65e8263b9eefd83f53efe463cb5c",
+      "state_hash": "91d9b846cb2405aaaa4f5c5829add92f0688a1439422f148058e1c7f35c5167c",
       "workspace_look": "4.138.0-ls366"
     },
     "head-tail.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "86d7a3b29080cedb77f86465b446db6a295efa7d7610844efce4c5eb88a4dbd6",
-      "state_hash": "cbd6213d4abd92f74c71181cd23a7254551843da4fecb2d2fc96c85a7c7a0e0c",
+      "state_hash": "eab4adeb8f8c6d34f46b4ec6043eef78753975449ae2bee280fb08ea4fd7fca0",
       "workspace_look": "4.138.0-ls366"
     },
     "kaffee.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "ef11187d0f688860dee7e13b275093b45bae787c05621a4397a39d2afb316a37",
-      "state_hash": "1567387b9c16544319b27d0c2924387012f65c8f8ccb5e8c732a6bcbd9af5375",
+      "state_hash": "2d042f756e0d94ea7af32fd746d2ae988a68642b25bdad536b1b81751b4ab136",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "kamera-bild.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "e86c70afa82716072e8cf66255ccdae8d62f305eee2c2d85cf8fd627de8cfbb4",
+      "state_hash": "dbd407472ccc67df3db0642711ced9b793f293406dacc7c574e90914d3e1331a",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "kameras.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "8c4dc4b762d0b5972b20702dbb701a77e0827ee0e1e4779072d8abe9c7e2275a",
+      "state_hash": "0572c7ea055c412669d2ae65445389f6a61762e6e0fb8c6481092914c91391b4",
       "workspace_look": "4.138.0-ls366"
     },
     "liesmich.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "9e39695bc1e6a678ac66b103255517208be979b210a924b6b45272b01738cf4b",
-      "state_hash": "31a5393a88613d3c1ec34a876d71072168371117cfb17b42a4fce38e46dd3c1a",
+      "output_sha256": "8497e4d49c6ea218da1f3e87f2451c1c8c6a089f1c2e14498f72b0671426f2ed",
+      "state_hash": "5da88beb05e3532b12aac33b5094a760dc63025e6590fb0de260362ecc7e1083",
       "workspace_look": "4.138.0-ls366"
     },
     "nicht-allein.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "e323319a833c172a82054553d0ad92855dd544982655ea1bc02ee8b64315a7a4",
-      "state_hash": "e037e40b78b40ea4df6101f53873b3bf6927059755e1e562b6368b11f42e277f",
+      "output_sha256": "0736588ed2a51782600464b401d80b0dd8bb9578eaa35d77f52ccacd647b8b56",
+      "state_hash": "e77d7eacfe060337a86bc38132af097dd67bb6e0e79a110bf81c79075f73b9cd",
       "workspace_look": "4.138.0-ls366"
     },
     "ssh-alarmanlage.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "2087b429b02b6cf66f2a78a4d68c9f060b358705657023fe4d245749554830f5",
-      "state_hash": "91cd2fe495f9b9e2b0bad7d5c0bd93ffd7f1a0a75313e9a5cc93fd8760e226d4",
+      "state_hash": "0e7ab72f143b987cbfe3d6943c720a5df9cc53028019d7b1b2c24a5c51e19a45",
       "workspace_look": "4.138.0-ls366"
     },
     "ssh-museum.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "d5a94d845e4f88fe2bd27ff7392d479673c717358dab944f635bec94ebbc5a51",
-      "state_hash": "b88f21fd74c6bf358faae5029bf9d92feebbbc1949e9e0e10f5fac44ac7deec3",
+      "output_sha256": "8e6ee62c987d6243f0273c36fad35a7f023b69c07c4824bc529df16949bea52a",
+      "state_hash": "a5af24cae2f43fda3c5c53258baca095b943cd185ee1f13ca86f47baf140ce2f",
       "workspace_look": "4.138.0-ls366"
     },
     "vereine.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "31c4d746fdf151d9a2e6d4f9446bec1ead6db5be012366c74f3cd2bcfa1ba3cf",
-      "state_hash": "57ec189c1b36001f39e3b974daf4a25ed58a9516035e6145b0f3bf2684ebc5e5",
+      "state_hash": "b8e57f9cfb0bdc9a6cea906e8f60c6c584eb0cb5c07865bba0ad9fde4010027f",
       "workspace_look": "4.138.0-ls366"
     }
   },

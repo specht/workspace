@@ -112,3 +112,21 @@ examples:
       - files: { bitstein/beweis.txt: { text: "#1773526140\ngit commit -am \"Wartung: Alarm vorübergehend aus\"\n" } }
         say: '4471'
       - files: { bitstein/tatort.txt: { text: "HINWEIS: …\n" } }
+
+  kamera-bilder:
+    pass:
+      - files:
+          bitstein/kameras/cam1_20260314_233058.jpg: beispiele/cctv/cam1/empty.jpg
+          bitstein/kameras/cam1_20260314_233104.jpg: beispiele/cctv/cam1/at-case.jpg
+          bitstein/kameras/cam1_20260314_233107.jpg: beispiele/cctv/cam1/lifting-hood.jpg
+          bitstein/kameras/cam1_20260314_233112.jpg: beispiele/cctv/cam1/reaching-in.jpg
+          bitstein/kameras/cam1_20260314_233118.jpg: beispiele/cctv/cam1/into-bag.jpg
+          bitstein/kameras/cam1_20260314_233141.jpg: beispiele/cctv/cam1/leaving.jpg
+          bitstein/kameras/cam1_20260314_233144.jpg: beispiele/cctv/cam1/after-theft.jpg
+    fail:
+      - files:
+          bitstein/kameras/cam1_20260314_233058.jpg: beispiele/cctv/cam1/empty.jpg
+          bitstein/kameras/cam1_20260314_233104.jpg: beispiele/cctv/cam1/at-case.jpg
+        say: sieben Bilder
+      - files: { bitstein/beweis.txt: { text: "#1773528048\n" } }
+        say: mkdir -p

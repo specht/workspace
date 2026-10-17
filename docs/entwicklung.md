@@ -231,7 +231,9 @@ CASE_SERVER = true
   ihr Fingerabdruck nach einem neuen Build gleich bleibt.
 - **Inhalt:** `src/content/terminal-mystery/beispiele/make_case.rb` schreibt
   die Dateien beider Server nach `docker/case-server/files/`; danach die
-  Images neu bauen.
+  Images neu bauen. Die Bilder der Kameras in `kameras/` baut es dabei mit
+  `beispiele/cctv/build.py` aus den Ausgangsbildern daneben; dafür braucht es
+  ein Python mit OpenCV und Pillow, in `CCTV_PYTHON` (`beispiele/cctv/README.md`).
 - **Prüfung:** Im Prüfungsmodus hat ein Workspace kein Netz und bekommt keinen
   Zugang.
 

@@ -262,3 +262,42 @@ tasks:
     feedback:
       - when: { problem: missing }
         say: 'Es gibt noch keine `bitstein/beweis.txt`. `scp` kopiert in deinem Workspace, also ohne Verbindung zum Museum: `scp -J … ~/bitstein/beweis.txt`.'
+
+  - id: kamera-bilder
+    title: Die Bilder der Ausstellung
+    prompt: Kopier mit `scp` alle Bilder der Kamera 1 vom Museum nach `bitstein/kameras/` in deinem Workspace.
+    check:
+      type: files
+      path: bitstein/kameras
+      show: listing
+      expect:
+        new_files: { min: 7 }
+        name: '^cam[123]_20260314_\d{6}\.jpg$'
+        format_matches_extension: true
+    feedback:
+      - when: { problem: missing }
+        say: 'Es gibt noch keinen Ordner `bitstein/kameras`. Leg ihn in deinem Workspace an, `mkdir -p ~/bitstein/kameras`, und kopier dann mit `scp` hinein.'
+      - when: { problem: no_new_files }
+        say: 'Kamera 1 hat in der Nacht sieben Bilder aufgenommen. `ls kameras/cam1_*` auf dem Museum zeigt sie; mit Anführungszeichen um den Pfad holt `scp` alle auf einmal.'
+    hint: '`scp ''e123@museum.bitstein:kameras/cam1_*'' ~/bitstein/kameras/`, mit deinem Benutzer statt `e123`, in deinem Workspace.'
+
+  - id: kamera-auto
+    title: Das Auto auf dem Parkplatz
+    prompt: Vier gelbe Autos passen zu dem, was die Zeugin gesehen hat. Welches davon fährt auf Kamera 3 vom Parkplatz?
+    check:
+      type: choice
+      options:
+        - Der Kombi `BS-KR 2417`
+        - Der Kleinwagen `BS-KM 3107`
+        - Der Transporter `BS-KE 8807`
+        - Der Kleinwagen `BS-KD 1147`
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Ein Kleinwagen ist kurz, und hinten fällt sein Dach ab. Wie lang ist das Dach des Autos auf Kamera 3?
+      - when: { picked: 3 }
+        say: Ein Kleinwagen ist kurz, und hinten fällt sein Dach ab. Wie lang ist das Dach des Autos auf Kamera 3?
+      - when: { picked: 2 }
+        say: Ein Transporter ist hoch und kastenförmig, hinten mit großen Türen. Sieht das Auto auf Kamera 3 so aus?
+    hint: Die Karte hat den Hintereingang um 23:38 geöffnet. Welche Bilder der Kamera 3 sind aus dieser Minute?
+    solution: '`cam3_20260314_2338*` sind vier Bilder von 23:38:14 bis 23:38:48: Jemand legt eine Tasche in den Kofferraum eines gelben Kombis, der ohne Licht rückwärts ausparkt. Von den vier Autos ist nur `BS-KR 2417` ein Kombi, das von Konstantin Reuter.'

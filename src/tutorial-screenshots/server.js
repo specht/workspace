@@ -1896,7 +1896,25 @@ async function openFile(relativePath) {
         { timeout: 20_000 },
     );
 
-    await waitForEditorSettled(workspace);
+    if (IMAGE_FILE.test(basename)) await waitForImagePreview(workspace);
+    else await waitForEditorSettled(workspace);
+}
+
+// VS Code shows a picture in its image preview, a webview, not in a text
+// editor. Its content lives in an iframe of another origin, so wait for the
+// visible webview to be ready and give the picture a moment to paint.
+const IMAGE_FILE = /\.(png|jpe?g|gif|webp|bmp|ico)$/i;
+
+async function waitForImagePreview(page) {
+    await page.waitForFunction(
+        () => [...document.querySelectorAll('iframe.webview')].some(frame => {
+            const rect = frame.getBoundingClientRect();
+            return rect.width > 0 && rect.height > 0 && frame.classList.contains('ready');
+        }),
+        null,
+        { timeout: 20_000 },
+    );
+    await page.waitForTimeout(1_500);
 }
 
 async function goLive(hooks) {

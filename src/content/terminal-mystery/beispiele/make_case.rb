@@ -25,6 +25,8 @@
 #   the cars: Konstantin Reuter and Marlene Voss. alarmanlage/: the commit
 #   »Wartung beendet« deletes two lines of card 4471, which karten.txt gives
 #   to Elektro Reuter. personen.txt: Konstantin Reuter is the electrician.
+#   On museum.bitstein, kameras/ (from cctv/): camera 3 shows a yellow
+#   estate car at 23:38, and of the four cars only BS-KR 2417 is a Kombi.
 require 'fileutils'
 require 'open3'
 require 'tmpdir'
@@ -623,13 +625,7 @@ MUSEUM_README = <<~TEXT
       geraete.txt    wer einen Zugang zum VPN hat, mit welcher Adresse
       logs/vpn.log   wer sich wann von außen verbunden hat
       wartung/       die Unterlagen der Wartungsfirmen
-      kameras/       die Bilder der drei Kameras aus der Nacht, 23 bis 24 Uhr
-
-    Die Kameras nehmen nur auf, wenn sich etwas bewegt, dann alle drei
-    Sekunden ein Bild: cam1 in der Ausstellung, cam2 am Hintereingang, cam3
-    am Parkplatz. Der Name sagt, welche Kamera wann: cam2_20260314_231202.jpg
-    ist Kamera 2 um 23:12:02. Die am Parkplatz springt auch bei Regen an.
-    Ansehen kann ich die Bilder hier nicht, der Server hat keinen Bildschirm.
+      kameras/       die Bilder der Kameras aus der Nacht (hier nicht anzusehen)
 
     Auf die Alarmanlage kommen Sie von hier aus mit demselben Benutzer, aber
     nicht mit Ihrem Passwort: Dort gilt das Passwort der Wartung. Ich habe es

@@ -18,6 +18,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- »Ein Krimi im Terminal«, mit Fallserver: ein Abschnitt »Die Kameras«. Auf
+  `museum.bitstein` liegen die Bilder dreier Überwachungskameras aus der
+  Tatnacht. Lernende holen sie mit `scp` und einem `*` in ihren Workspace,
+  wählen mit einem Muster wie `cam3_20260314_2338*` die Bilder einer Minute
+  aus und sehen sie in VS Code an: Kamera 3 zeigt, welches der vier gelben
+  Autos es war. Zwei neue Aufgaben. Damit alles zusammenpasst, sieht die
+  Zeugin das Auto jetzt kurz nach halb zwölf, und der Nachtwächter sieht den
+  Täter aus dem Fenster. Wer den Fallserver betreibt, baut `case_museum` neu.
 - »Einführung in SQL«, Teil 2: ein Abschnitt »Wie weit ist es?«. Mit
   `ST_Distance_Sphere` und `CROSS JOIN` rechnen Lernende Entfernungen
   zwischen Städten aus, finden die fünf nächsten Städte zu Hamburg und die
@@ -684,6 +692,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- Der Fallserver von »Ein Krimi im Terminal«, frisch aus dem Repository
+  gebaut, hatte kein VPN-Protokoll (`logs/vpn.log` fiel unter eine
+  `.gitignore`-Regel), und die Aufgabe »Wer kam in der Nacht?« ließ sich
+  nicht lösen. Wer den Fallserver betreibt, baut `case_museum` neu.
 - BIF: Die Aufgaben »Der Schlüssel« und »Ein Ende« ließen sich im Workspace
   nicht lösen: Die Prüfung erwartete Skripte, Bedingungen und Enden an
   anderer Stelle, als BIF sie in die Analyse der Geschichte schreibt, und las
