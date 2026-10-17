@@ -76,6 +76,13 @@ tab: preview
 
 Zieh das Tab aus dem Browser und ordne beide Fenster nebeneinander an, dann siehst du jede Änderung sofort:
 
+<!-- tutorial-screenshot
+# VS Code und die Vorschau nebeneinander, wie zwei schmale Fenster: links
+# index.html ohne Seitenleiste, rechts die Übersicht der Folien
+hide-left-sidebar
+viewport: 760x700
+beside: preview
+-->
 <img class='full' src='side-by-side.webp' alt='Links VS Code mit index.html, rechts daneben die Vorschau der Präsentation.'>
 
 _task(adresse)

@@ -769,6 +769,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   und Umbenennen bis zur Umwandlung nach WebP. Das Kontextmenü des Browsers
   ist nachgebaut, weil ein Screenshot das echte nicht zeigt. Nach einem Update
   von VS Code entstehen sie neu.
+- »Eine Präsentation in HTML erstellen«: VS Code und die Vorschau
+  nebeneinander kommen aus einem Rezept. Dafür kennt der Screenshot-Generator
+  `beside: preview`: der andere Tab in derselben Größe rechts daneben.
 - BIF: auch »New File…« im Explorer und die Geschichte mit `has_key: true`
   unter »State« kommen aus Rezepten; die Seite hat kein Bild mehr von Hand.
 - Die Entwürfe »Autostereogramme« und »Anaglyphen« binden »Terminal öffnen«

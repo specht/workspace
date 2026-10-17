@@ -708,6 +708,9 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
         } else if ((match = line.match(/^keep-only:\s*(?:selector:)?(.+)$/))) {
             cropSource = source;
             (recipe.keepOnly ||= []).push(match[1].trim());
+        } else if ((match = line.match(/^beside:\s*(workspace|preview)$/))) {
+            // the other tab captured too, at the same size, to the right
+            recipe.beside = match[1];
         } else if (line === 'show-mouse') {
             recipe.showMouse = true;
         } else if (line === 'sharp-canvas') {
@@ -790,6 +793,14 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
         throw withSourceError(
             new Error('crop-element replaces the other crops and works for screenshots only'),
             cropSource || lastSource || recipe[SOURCE_LOCATION],
+        );
+    }
+    if (recipe.beside && (recipe.cropTop > 0 || recipe.cropBottom > 0 || recipe.cropLeft > 0 ||
+        recipe.cropRight > 0 || recipe.cropElement || recipe.cropTerminalLines != null || recipe.keepOnly ||
+        recipe.record != null || recipe.pdfPage || recipe.gitGraph || recipe.beside === recipe.tab)) {
+        throw withSourceError(
+            new Error('beside: the other tab, whole, next to an uncropped screenshot'),
+            lastSource || recipe[SOURCE_LOCATION],
         );
     }
     if (recipe.keepOnly && (recipe.record != null || recipe.pdfPage || recipe.gitGraph)) {
@@ -976,6 +987,7 @@ async function parseTutorial(markdown, markdownPath) {
         if (recipe.cropRight > 0) resolved.cropRight = recipe.cropRight;
         if (recipe.cropElement) resolved.cropElement = recipe.cropElement;
         if (recipe.keepOnly) resolved.keepOnly = recipe.keepOnly;
+        if (recipe.beside) resolved.beside = recipe.beside;
         if (recipe.variants) {
             resolved.variants = recipe.variants;
         }
@@ -2978,6 +2990,37 @@ async function keepOnlyBoxes(pngPath, boxes, clip) {
     ]);
 }
 
+// beside: capture the other tab with the shot's viewport and zoom and put it
+// to the right of the picture in pngPath
+async function appendTabCapture(pngPath, shot) {
+    const other = pageForTab(shot.beside);
+    if (!other || other.isClosed()) {
+        throw new Error(`beside: ${shot.beside} is not open`);
+    }
+    const { session, metrics } = await applyViewportProfile(other, shot.viewport, shot.zoom, shot.sharpCanvas);
+    if (shot.beside === 'workspace') await installWorkspaceScreenshotStyle(other);
+    await other.waitForTimeout(300);
+    const captured = await session.send('Page.captureScreenshot', {
+        format: 'png',
+        fromSurface: true,
+        captureBeyondViewport: false,
+        clip: {
+            x: 0,
+            y: 0,
+            width: shot.viewport.width / metrics.deviceScaleFactor,
+            height: shot.viewport.height / metrics.deviceScaleFactor,
+            scale: metrics.captureScale,
+        },
+    });
+    const besidePath = `${pngPath}.beside.png`;
+    try {
+        await fs.writeFile(besidePath, Buffer.from(captured.data, 'base64'));
+        await execFileAsync('convert', [pngPath, besidePath, '+append', pngPath]);
+    } finally {
+        await fs.rm(besidePath, { force: true }).catch(() => {});
+    }
+}
+
 async function captureShot(shot, tutorialDirectory) {
     const page = pageForTab(shot.tab);
     if (!page || page.isClosed()) {
@@ -3154,6 +3197,12 @@ async function captureShot(shot, tutorialDirectory) {
                     height: actual.height,
                     shape: pointerShape,
                 });
+            }
+
+            // beside: the other tab at the same size, joined on the right
+            // (VS Code and the preview next to each other, as two windows)
+            if (shot.beside) {
+                await appendTabCapture(pngPath, shot);
             }
 
             const cwebpArgs = [

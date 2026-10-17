@@ -185,6 +185,7 @@ crop-left: PERCENT%
 crop-right: PERCENT%
 crop-element: SELECTOR
 keep-only: SELECTOR
+beside: workspace|preview
 crop-terminal-lines: NUMBER|auto
 crop-terminal-skip-top: NUMBER
 crop-terminal-skip-bottom: NUMBER
@@ -566,6 +567,11 @@ integers and require `crop-terminal-lines`.
 `crop-left` and `crop-right` cut the sides off, in percent of the width like
 `crop-top` and `crop-bottom`, for a detail such as one corner of the status bar.
 They work for screenshots, not for videos, PDF pages or graphs.
+
+`beside: preview` captures the preview tab too, with the same viewport and
+zoom, and puts it to the right of the Workspace: VS Code and the browser next
+to each other, as a student arranges two windows (`beside: workspace` the
+other way round). Both halves are whole, so it goes without crops.
 
 `crop-element: SELECTOR` crops a screenshot to exactly the box of the first
 element the CSS selector matches, such as the screen of an emulator. With
