@@ -177,7 +177,7 @@ Platform-wide:
 * [ ] Use the Handbuch part for the opening (close folder, clone, open) on the 24 pages that still repeat it by hand
 * [ ] Convert manual screenshots to recipes when a page is touched: 212 manual, 712 generated; most left on Ziffernerkennung (44), Anaglyph (33), Fire (15), Handbuch HTML (12)
 * [ ] Small pictures stretched by `class='full'` (100 % wide, at least 1000 px): `gif/dithering.webp` (920 px wide) and the 1350-px PixelRAM and Feuerwerk shots; render them larger, or show a drawing at its own size with `img.drawing` and a recipe with `zoom: 2`, as the calculator and the automata pages do
-* [ ] E2E coverage for Git and TCP/IP
+* [ ] E2E coverage for TCP/IP (the Git checks run in its screenshot recipes)
 * [ ] When a page is touched: English names in its code (variables, functions, files), as in the raylib, web server and pixel wall activities; comments stay German
 * [ ] On narrow screens, consider left-aligning long paragraphs instead of global justified text
 * [ ] A small `prefers-reduced-motion` pass for Workspace-owned transitions and animations
