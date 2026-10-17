@@ -266,7 +266,9 @@ value.
 `click` and `hold` target the page selected by `tab`. They first match an exact
 accessible button or link name; when a Workspace control is exposed only as text,
 `click`/`hold` fall back to exact visible text. Prefix the target with `selector:`
-to address one element by CSS selector instead. `hold` keeps the real Chromium
+to address one element by CSS selector instead. A control that is not on the
+page itself is looked for in its frames, so `click: Krähenfuß` reaches a button
+in a VS Code webview such as the ER-Werkstatt. `hold` keeps the real Chromium
 pointer pressed for the requested duration before releasing it; durations must be
 between 0.05 and 30 seconds.
 

@@ -2272,22 +2272,42 @@ function requirePageForTab(tab, actionName) {
 async function pageControl(action, verb, targetTab) {
     const page = requirePageForTab(targetTab, verb);
 
-    let control;
-    let description;
-    if (action.selector) {
-        control = page.locator(action.selector);
-        description = `element matching selector ${JSON.stringify(action.selector)}`;
-    } else {
-        const buttons = page.getByRole('button', { name: action.text, exact: true });
-        const links = page.getByRole('link', { name: action.text, exact: true });
-        control = buttons.or(links);
-        if (await control.count() === 0) {
-            control = page.getByText(action.text, { exact: true });
-        }
-        description = `control named ${JSON.stringify(action.text)}`;
-    }
+    const description = action.selector
+        ? `element matching selector ${JSON.stringify(action.selector)}`
+        : `control named ${JSON.stringify(action.text)}`;
+    const locate = async (frame) => {
+        if (action.selector) return frame.locator(action.selector);
+        const buttons = frame.getByRole('button', { name: action.text, exact: true });
+        const links = frame.getByRole('link', { name: action.text, exact: true });
+        const named = buttons.or(links);
+        return await named.count() > 0 ? named : frame.getByText(action.text, { exact: true });
+    };
 
-    await control.first().waitFor({ state: 'visible', timeout: ACTION_TIMEOUT_MS });
+    // The page itself first, then its frames: VS Code's webviews (the
+    // ER-Werkstatt, the Markdown preview) are iframes, as for wait-for-text.
+    let control = await locate(page);
+    const deadline = Date.now() + ACTION_TIMEOUT_MS;
+    while (!(await control.count() > 0 && await control.first().isVisible())) {
+        let found = null;
+        for (const frame of page.frames()) {
+            if (frame === page.mainFrame()) continue;
+            const candidate = await locate(frame).catch(() => null);
+            if (candidate && await candidate.count().catch(() => 0) > 0 &&
+                await candidate.first().isVisible().catch(() => false)) {
+                found = candidate;
+                break;
+            }
+        }
+        if (found) {
+            control = found;
+            break;
+        }
+        if (Date.now() > deadline) {
+            await control.first().waitFor({ state: 'visible', timeout: 1 });
+        }
+        await page.waitForTimeout(250);
+        control = await locate(page);
+    }
     const count = await control.count();
     if (count !== 1) {
         throw new Error(`${verb} expected exactly one ${description}, found ${count}`);
