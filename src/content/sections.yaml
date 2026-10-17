@@ -105,6 +105,7 @@
   entries:
     - mysql
     - sql-joins
+    - sql-index
     - filmdatenbank
     - neo4j-filmdatenbank
     - bobby_tables

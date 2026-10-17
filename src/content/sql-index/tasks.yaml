@@ -1,0 +1,182 @@
+# Aufgaben zu »Indizes: Warum eine Abfrage schnell ist«. Format: docs/aufgaben.md.
+# Die Tabelle person legt telefonbuch.sql von der Seite in der eigenen
+# MySQL-Datenbank der Lernenden an: eine Million Zeilen, für alle gleich
+# (CRC32 der Zeilennummer), jede Telefonnummer einmal.
+format: 1
+activity: sql-index
+tasks:
+  - id: telefonbuch
+    title: Das Telefonbuch
+    prompt: Lege mit `telefonbuch.sql` die Tabelle `person` mit einer Million Zeilen an.
+    check:
+      type: schema
+      tables:
+        - name: person
+          columns: [id, first_name, last_name, city, birth_year, phone]
+          primary_key: [id]
+          rows: 1000000
+      setup: Lege die Datei `telefonbuch.sql` an und führe sie im Terminal aus, `mysql < telefonbuch.sql`.
+    feedback:
+      - when: { problem: rows }
+        say: Die Tabelle ist da, aber nicht vollständig. Ist `mysql < telefonbuch.sql` bis zum Ende gelaufen? Führe die Datei noch einmal aus; sie fängt mit `DROP TABLE` an.
+
+  - id: wessen-nummer
+    title: Wessen Nummer?
+    prompt: Wem gehört die Nummer `0151 7825121`? Vor- und Nachname.
+    check:
+      type: answer
+      expect: Noah Peters
+    feedback:
+      - when: { matches: '^\s*Rosa\s+Scholz\s*$' }
+        say: Das ist die Nummer `0151 9500000` vom Beispiel. Gesucht ist `0151 7825121`.
+    solution: "`SELECT * FROM person WHERE phone = '0151 7825121';` findet Noah Peters aus Berlin, die Zeile 314159."
+
+  - id: vollstaendig
+    title: Was ALL bedeutet
+    prompt: "Ohne Index zeigt `EXPLAIN` bei der Suche nach einer Nummer `type: ALL`. Was macht die Datenbank?"
+    check:
+      type: choice
+      options:
+        - Sie liest jede Zeile der Tabelle und prüft bei jeder, ob die Nummer passt.
+        - Sie gibt alle Zeilen der Tabelle aus.
+        - Sie benutzt alle Indizes der Tabelle auf einmal.
+        - Sie liest die Tabelle, bis sie die erste passende Zeile findet, und hört dann auf.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Ausgegeben wird nur die eine Zeile, die passt. Gelesen wird aber mehr.
+      - when: { picked: 2 }
+        say: Es gibt noch gar keinen Index, `key` ist leer.
+      - when: { picked: 3 }
+        say: Woher wüsste sie, dass die Nummer nicht noch einmal vorkommt? Ohne Index muss sie bis zum Ende lesen.
+
+  - id: index-telefon
+    title: Ein Index auf die Nummer
+    prompt: Lege einen Index auf die Spalte `phone` von `person` an.
+    check:
+      type: schema
+      tables:
+        - name: person
+          indexes: [[phone]]
+      setup: Lege zuerst mit `telefonbuch.sql` die Tabelle `person` an.
+    feedback:
+      - when: { problem: index }
+        say: 'Noch gibt es keinen Index auf `phone`. In `mycli`: `CREATE INDEX by_phone ON person (phone);`'
+
+  - id: ebenen
+    title: Wie hoch ist der Baum?
+    prompt: |
+      In jeden Knoten eines B-Baums passen 100 Schlüssel, ein Knoten hat also
+      bis zu 100 Kinder. Wie viele Ebenen braucht der Baum mindestens, damit in
+      seinen Blättern eine Million Telefonnummern Platz haben?
+    check:
+      type: number
+      expect: 3
+    feedback:
+      - when: { equals: 20 }
+        say: So viele Schritte bräuchte die binäre Suche, die bei jedem Schritt halbiert. Ein Knoten des B-Baums teilt aber in 100 Teile.
+      - when: { equals: 2 }
+        say: Zwei Ebenen fassen 100 · 100 = 10.000 Nummern. Für eine Million braucht es noch eine.
+    solution: Eine Ebene fasst 100, zwei fassen 100 · 100 = 10.000, drei 100 · 100 · 100 = 1.000.000. Echte Knoten fassen eher Hunderte von Schlüsseln, darum bleiben auch große Tabellen bei drei oder vier Ebenen.
+
+  - id: primaerschluessel
+    title: Schon schnell
+    prompt: Warum findet `WHERE id = 500000` die Zeile schnell, obwohl du nie einen Index auf `id` angelegt hast?
+    check:
+      type: choice
+      options:
+        - Für den Primärschlüssel legt die Datenbank selbst einen Index an.
+        - Zahlen sucht die Datenbank immer schneller als Text.
+        - Die Datenbank rechnet aus, an welcher Stelle der Datei die Zeile 500000 steht.
+        - Das Ergebnis der Abfrage stand noch im Speicher.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Ohne Index sucht die Datenbank auch eine Zahl, indem sie alle Zeilen liest. Was steht bei `key`?
+      - when: { picked: 2 }
+        say: Die Zeilen liegen nicht einfach nach Nummer in einer Datei. Was steht bei `key`?
+      - when: { picked: 3 }
+        say: Die Frage nach `id = 500000` war neu. Was steht bei `key`?
+
+  - id: welche-nutzt
+    title: Welche Suche nutzt den Index?
+    prediction: true
+    prompt: Es gibt den Index `by_phone` auf `phone`. Welche dieser Bedingungen kann die Datenbank mit ihm beantworten, ohne alle Zeilen zu lesen?
+    check:
+      type: choice
+      options:
+        - "`phone LIKE '0151 95%'`, alle Nummern, die mit 0151 95 anfangen"
+        - "`phone LIKE '%500000'`, alle Nummern, die mit 500000 enden"
+        - "`RIGHT(phone, 6) = '500000'`, dasselbe mit einer Funktion"
+        - Alle drei, denn alle drei suchen in `phone`.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Im Index sind die Nummern von vorn nach hinten sortiert. Wo stehen die, die auf 500000 enden?
+      - when: { picked: 2 }
+        say: Im Index stehen die Nummern, nicht ihre letzten sechs Stellen. Die müsste die Datenbank für jede Zeile erst ausrechnen.
+      - when: { picked: 3 }
+        say: Alle drei lesen `phone`, aber nur eine fragt nach dem Anfang der Nummer. Danach ist der Index sortiert.
+    solution: Nur `LIKE '0151 95%'`. Alle Nummern mit diesem Anfang stehen im Index nebeneinander; die mit demselben Ende sind über den ganzen Index verstreut, und für `RIGHT(phone, 6)` müsste die Datenbank jede Zeile erst ausrechnen.
+
+  - id: index-name
+    title: Ein Index über zwei Spalten
+    prompt: Lege einen Index über `last_name` und `first_name` von `person` an, in dieser Reihenfolge.
+    check:
+      type: schema
+      tables:
+        - name: person
+          indexes: [[last_name, first_name]]
+      setup: Lege zuerst mit `telefonbuch.sql` die Tabelle `person` an.
+    feedback:
+      - when: { problem: index }
+        say: 'Noch gibt es keinen Index, der mit `last_name` und dann `first_name` anfängt. In `mycli`: `CREATE INDEX by_name ON person (last_name, first_name);`'
+
+  - id: ada-specht
+    title: Alle Ada Specht
+    prompt: Gib alle Zeilen von `person` aus, in denen jemand Ada Specht heißt.
+    check:
+      type: sql
+      expect_query: SELECT * FROM person WHERE last_name = 'Specht' AND first_name = 'Ada'
+      tables: { person: 1000000 }
+      setup: Lege zuerst mit `telefonbuch.sql` die Tabelle `person` an.
+    feedback:
+      - when: { same_result_as: "SELECT * FROM person WHERE last_name = 'Specht'" }
+        say: Das sind alle Spechts. Es fehlt noch der Vorname.
+    solution: "`SELECT * FROM person WHERE last_name = 'Specht' AND first_name = 'Ada';` ergibt 1.222 Zeilen; `EXPLAIN` zeigt `key: by_name` mit `ref: const,const`."
+
+  - id: nur-vorname
+    title: Nur der Vorname
+    prediction: true
+    prompt: Hilft der Index `by_name` auf `(last_name, first_name)` bei `WHERE first_name = 'Ada'`?
+    check:
+      type: choice
+      options:
+        - Nein. Die Adas stehen im Index unter jedem Nachnamen verstreut.
+        - Ja, denn `first_name` ist eine Spalte des Index.
+        - Ja, aber nur halb so gut wie bei beiden Spalten.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Denk an ein Telefonbuch. Wo stehen darin alle, die Ada heißen?
+      - when: { picked: 2 }
+        say: Denk an ein Telefonbuch. Stehen alle Adas darin irgendwo beieinander?
+    solution: "Nein: `EXPLAIN` zeigt `type: ALL`. Ein Index über mehrere Spalten hilft nur, wenn die Suche mit seiner ersten Spalte anfängt, so wie ein Telefonbuch nur beim Nachnamen hilft."
+
+  - id: kosten
+    title: Nicht auf jede Spalte
+    prompt: Wenn ein Index so viel schneller macht, warum legt man dann nicht auf jede Spalte einer Tabelle einen an?
+    check:
+      type: reflection
+      min_words: 15
+    examples:
+      - |
+        Jeder Index braucht Platz, bei uns waren zwei Indizes fast so groß wie
+        die ganze Tabelle. Außerdem muss die Datenbank bei jedem neuen oder
+        geänderten Eintrag jeden Index mit ändern, das macht das Schreiben
+        langsamer. Ein Index lohnt sich nur für Spalten, nach denen oft gesucht
+        wird.
+      - |
+        Ein Index nützt nur bei Suchen, die mit seiner Spalte anfangen. Für
+        Spalten, nach denen niemand sucht, kostet er nur: Speicher und Zeit bei
+        jedem INSERT, UPDATE und DELETE, weil der B-Baum mitwachsen muss.

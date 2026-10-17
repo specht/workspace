@@ -1,0 +1,47 @@
+{
+  "screenshots": {
+    "explain-all.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "8c2cc2a9f17812b439e3ac9dc68788d45484acc5d0f18b0f663b4856145fecaa",
+      "state_hash": "3f9bfdc646b3577a72d573f0bb1f0bb0d9ab57818e30e44b3d793b6e45182ecc",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "explain-primary.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "be18b6a739cfec110c865f3c207e5e886a64a969da77a7df2e2f94c78b9bdfa7",
+      "state_hash": "e573268770502b206fc0d87016eb30d94860bcc9c4305f63cbd57c6373a507ff",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "explain-ref.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "81cc333478b3e39b5ca517009a50d1af51c3d2b1b3bda86b16d32dc093e15320",
+      "state_hash": "ab68441c9c549bc6999a7abe6f5ef53a3b5b7653f1a591813974841af8a54679",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "index-size.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "1b7148cffd2a81579e48b417edf32d33a77317e678e1a6a76f3a700d3e1b2796",
+      "state_hash": "8b9418a358c5cc266241776820f1f950e064e2e52768149b45c5d8841c177c70",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "person-limit.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "29d8f292e8a36c9d514d787d560232a473424c60d39653e5b0efce87d5b08f48",
+      "state_hash": "c4ea7ae8a52c3119c3f06325762a16645eafaa4e59cbea905b5a46627c228bd9",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "phone-fast.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "52c4553714851500fe2625f3a4620536873b324ae3424df33d3f01069eb203ca",
+      "state_hash": "68657238a0f9d1ceb14a130174b5bde14fc10ff6b5f3d4a13ec684e6b9498000",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "phone-slow.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "9b42a971dba863a635e9aee970e71c81d38ee48266b6da0249847f57f7401840",
+      "state_hash": "21ead8c3c73d915bd4793f835be2bbd312382a402d7fdeba8d20221aefb0ab3d",
+      "workspace_look": "4.138.0-ls366"
+    }
+  },
+  "version": 1
+}

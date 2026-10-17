@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" width="1200" height="560" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Ein B-Baum über die Telefonnummern: die Wurzel, eine Ebene darunter,
+       die Blätter mit Nummer und Zeile. In jedem Knoten stehen in Wahrheit
+       Hunderte von Schlüsseln, hier zwei. Als Bild:
+       rsvg-convert -w 1600 b-tree.svg -o b-tree.png && cwebp -lossless b-tree.png -o b-tree.webp -->
+  <style>
+    .node { fill: #eef3fb; stroke: #1f2937; stroke-width: 2; }
+    .leaf { fill: #ffffff; stroke: #1f2937; stroke-width: 2; }
+    .key { font-size: 22px; fill: #1f2937; text-anchor: middle; }
+    .row { font-size: 17px; fill: #1f2937; }
+    .ptr { stroke: #2b5fb4; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+    .next { stroke: #6b7280; stroke-width: 1.6; fill: none; stroke-dasharray: 5 4; marker-end: url(#arrow-grey); }
+    .level { font-size: 18px; fill: #6b7280; font-style: italic; }
+    .dots { font-size: 28px; fill: #6b7280; text-anchor: middle; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/>
+    </marker>
+    <marker id="arrow-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="560" fill="#ffffff"/>
+
+  <!-- Ebene 1: die Wurzel -->
+  <rect class="node" x="430" y="30" width="340" height="50" rx="6"/>
+  <line x1="543" y1="30" x2="543" y2="80" stroke="#1f2937" stroke-width="1.5"/>
+  <line x1="657" y1="30" x2="657" y2="80" stroke="#1f2937" stroke-width="1.5"/>
+  <text class="key" x="600" y="63">…</text>
+  <text class="key" x="487" y="63">3400000</text>
+  <text class="key" x="713" y="63">6700000</text>
+
+  <!-- Ebene 2 -->
+  <rect class="node" x="70" y="190" width="300" height="50" rx="6"/>
+  <text class="key" x="145" y="223">1100000</text>
+  <text class="key" x="220" y="223">…</text>
+  <text class="key" x="295" y="223">2200000</text>
+  <rect class="node" x="450" y="190" width="300" height="50" rx="6"/>
+  <text class="key" x="525" y="223">4500000</text>
+  <text class="key" x="600" y="223">…</text>
+  <text class="key" x="675" y="223">5600000</text>
+  <rect class="node" x="830" y="190" width="300" height="50" rx="6"/>
+  <text class="key" x="905" y="223">7800000</text>
+  <text class="key" x="980" y="223">…</text>
+  <text class="key" x="1055" y="223">8900000</text>
+  <path class="ptr" d="M450,80 C420,140 260,140 225,188"/>
+  <path class="ptr" d="M600,80 L600,188"/>
+  <path class="ptr" d="M750,80 C780,140 940,140 975,188"/>
+
+  <!-- Ebene 3: die Blätter, mit Nummer und Zeile, der Reihe nach verbunden -->
+  <rect class="leaf" x="20" y="340" width="280" height="78" rx="6"/>
+  <text class="row" x="38" y="370">0151 0000001 → Zeile 17679</text>
+  <text class="row" x="38" y="400">0151 0000002 → Zeile 35358</text>
+  <rect class="leaf" x="340" y="340" width="280" height="78" rx="6"/>
+  <text class="row" x="358" y="370">0151 1100176 → Zeile 11504</text>
+  <text class="row" x="358" y="400">0151 1100177 → Zeile 29183</text>
+  <text class="dots" x="720" y="388">…</text>
+  <rect class="leaf" x="820" y="340" width="300" height="78" rx="6"/>
+  <text class="row" x="838" y="370">0151 9500000 → Zeile 500000</text>
+  <text class="row" x="838" y="400">0151 9500001 → Zeile 517679</text>
+  <text class="dots" x="1160" y="388">…</text>
+  <path class="ptr" d="M100,240 C100,290 150,300 155,338"/>
+  <path class="ptr" d="M220,240 C230,290 460,300 475,338"/>
+  <path class="ptr" d="M1125,240 C1130,290 990,300 975,338"/>
+  <path class="next" d="M300,379 L338,379"/>
+  <path class="next" d="M620,379 L680,379"/>
+  <path class="next" d="M760,379 L818,379"/>
+  <path class="next" d="M1120,379 L1140,379"/>
+
+  <text class="level" x="40" y="480">Gesucht 0151 9500000: In der Wurzel größer als 6700000, also nach rechts; in Ebene 2 größer als 8900000,</text>
+  <text class="level" x="40" y="508">wieder nach rechts; im Blatt die Nummer mit ihrer Zeile. Drei Knoten gelesen statt einer Million Zeilen.</text>
+</svg>

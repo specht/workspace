@@ -18,6 +18,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Neue Aktivität »Indizes: Warum eine Abfrage schnell ist« unter
+  »Datenbanken«: Lernende legen in ihrer eigenen Datenbank ein Telefonbuch mit
+  einer Million Einträgen an, messen eine Suche, sehen mit `EXPLAIN` den Full
+  Table Scan, legen einen Index an, lernen den B-Baum kennen und finden
+  heraus, wann ein Index nicht hilft und was er kostet. Elf Aufgaben, mit
+  Notiz für Lehrkräfte.
+- Die Prüfart `schema` kennt `indexes`: ein Index der Tabelle, der mit den
+  verlangten Spalten anfängt.
 - »Ein Krimi im Terminal«, mit Fallserver: ein Abschnitt »Die Kameras«. Auf
   `museum.bitstein` liegen die Bilder dreier Überwachungskameras aus der
   Tatnacht. Lernende holen sie mit `scp` und einem `*` in ihren Workspace,
