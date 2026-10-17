@@ -2,7 +2,7 @@
   "screenshots": {
     "choose-folder.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "0998d2a5db1f8e1ddf7a38e1618ca1a9a2c6256f6dfff33974259d13e2143f59",
+      "output_sha256": "99ae1bb89bacbac5d428ee9fe86a5889e6032f171bfb5ee57a7518d2114c67ca",
       "state_hash": "2eeec47a8c814d3a4db9ce58e786af01efd58a53350bbd676c03ac85b3fd6b52",
       "workspace_look": "4.138.0-ls366"
     },
@@ -26,8 +26,8 @@
     },
     "go-live.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "3c22f7c0bead24da8f740a4c63a86a46f329f3b0eeefec3b41ccf2594b563dd1",
-      "state_hash": "fa7e7ca4415d933120a7b6708469fe36871cd6d676c6a1651ae8546ea9fba63c",
+      "output_sha256": "04a8154d6f659bc76c54e8f35ecd91863876606ec9228ce69753191743840d5b",
+      "state_hash": "ef9a592271782bd582fd12873c0b55160bc3aff0f51c4161130c356368bf8deb",
       "workspace_look": "4.138.0-ls366"
     },
     "got-terminal.webp": {
@@ -50,8 +50,8 @@
     },
     "stop-live.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "1e673bc3b04d2a90cf2f19da508c970341ebd119e2671107c49aa08bc7b43ebf",
-      "state_hash": "4461f0ce88c987b78cf6eb508d32727d3f55e41edc5d05e9ec369e657ba0184f",
+      "output_sha256": "f485642e119d563ba5d274f4b833e6412bd34ac4b24d784c6fd38f3668d2f4cf",
+      "state_hash": "a147500eadf0e42defd31e77d18e009b9d38df067ee39e867c7267a348676e4a",
       "workspace_look": "4.138.0-ls366"
     },
     "trust-publisher.webp": {

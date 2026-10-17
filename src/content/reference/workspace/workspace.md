@@ -145,8 +145,10 @@ show-mouse
 crop-top: 88%
 # from »UTF-8« on, so that no word of the status bar is cut in half
 crop-left: 72%
-# only the status bar and the tooltip, the rest transparent
+# the status bar, a strip of the editor above it, so that it is clearly
+# the bottom of the window, and the tooltip; the rest transparent
 keep-only: .part.statusbar
+keep-only: .part.editor
 keep-only: .workbench-hover
 keep-only: .workbench-hover-pointer
 -->
@@ -172,8 +174,10 @@ show-mouse
 crop-top: 88%
 # from »UTF-8« on (»Port : 5500« is wider than »Go Live«)
 crop-left: 70%
-# only the status bar and the tooltip, the rest transparent
+# the status bar, a strip of the editor above it, so that it is clearly
+# the bottom of the window, and the tooltip; the rest transparent
 keep-only: .part.statusbar
+keep-only: .part.editor
 keep-only: .workbench-hover
 keep-only: .workbench-hover-pointer
 -->
