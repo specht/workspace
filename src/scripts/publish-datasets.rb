@@ -240,7 +240,8 @@ class Publisher
     end
 
     def message(names)
-        "Publish #{names.join(', ')}\n\nFrom src/scripts/publish-datasets.rb in specht/workspace."
+        subject = names.empty? ? 'Overview of the datasets' : "Publish #{names.join(', ')}"
+        "#{subject}\n\nFrom src/scripts/publish-datasets.rb in specht/workspace."
     end
 
     def git(dir, *args)
