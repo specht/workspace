@@ -72,7 +72,7 @@ Du kannst das Terminal auch maximieren, indem du auf das Symbol in der rechten o
 Um MySQL kennenzulernen, benötigen wir eine Datenbank. Wir verwenden die Länder der Welt: alle 197 Länder mit ihren Kontinenten, gut 4.700 Städte und die Grenzen zwischen den Ländern, zusammengestellt aus [Wikidata](https://www.wikidata.org/); was genau drinsteht, beschreibt das Handbuch unter [Datensätze](/reference/datensaetze#countries). Du lädst sie herunter, indem du folgenden Befehl eingibst:
 
 ```bash_copy
-wget https://github.com/specht/workspace-files/raw/main/country-archive/mysql.sql
+wget https://github.com/specht/workspace-files/raw/main/country-archive/countries.sql
 ```
 
 Die Ausgabe sollte in etwa so aussehen:
@@ -80,18 +80,18 @@ Die Ausgabe sollte in etwa so aussehen:
 <!-- tutorial-screenshot
 terminal-maximize
 terminal-run: clear
-terminal-run: wget https://github.com/specht/workspace-files/raw/main/country-archive/mysql.sql
+terminal-run: wget https://github.com/specht/workspace-files/raw/main/country-archive/countries.sql
 terminal-wait-for-prompt
-wait-for-file: sql-einfuehrung/mysql.sql
+wait-for-file: sql-einfuehrung/countries.sql
 sleep: 0.51
 -->
 
-<img class='full' src='wget.webp' alt='Das Terminal nach dem Download: wget hat die Datei mysql.sql gespeichert.'>
+<img class='full' src='wget.webp' alt='Das Terminal nach dem Download: wget hat die Datei countries.sql gespeichert.'>
 
 Klicke auf die Datei, um sie zu öffnen. Sie enthält die Befehle, die die Tabellen anlegen und mit Daten füllen, hier die Zeilen der Länder:
 
 <!-- tutorial-screenshot
-open-file: mysql.sql
+open-file: countries.sql
 press: Control+G
 press: 1
 press: 2
@@ -101,12 +101,12 @@ press: Control+J
 sleep: 0.5
 -->
 
-<img class='full' src='country-sql.webp' alt='Die Datei mysql.sql im Editor: ein INSERT-Befehl mit einer Zeile pro Land, mit Kürzel, Name, Einwohnerzahl, Fläche und Kontinent, etwa Deutschland.'>
+<img class='full' src='country-sql.webp' alt='Die Datei countries.sql im Editor: ein INSERT-Befehl mit einer Zeile pro Land, mit Kürzel, Name, Einwohnerzahl, Fläche und Kontinent, etwa Deutschland.'>
 
 Um die Beispieldatenbank in MySQL zu importieren, gib einfach den folgenden Befehl ein:
 
 ```bash
-mysql < mysql.sql
+mysql < countries.sql
 ```
 
 Der Import geht relativ schnell. Zum Schluss lässt er die Datenbank die neuen Tabellen kurz durchsehen und meldet für jede ein `OK`:
@@ -116,7 +116,7 @@ press: Control+B
 press: Control+J
 terminal-maximize
 terminal-run: clear
-terminal-run: mysql < mysql.sql
+terminal-run: mysql < countries.sql
 terminal-wait-for-prompt
 sleep: 0.5
 crop-terminal-lines: auto

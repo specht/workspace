@@ -28,11 +28,11 @@ second run, or a run after an interruption, only asks for what is missing. Delet
 Generated files (shared with `collect-music` via `../lib/classroom_dataset.rb`):
 
 - `movies.txt`, `crew.txt`, `genres.txt` — JSON Lines, with Wikidata item IDs
-- `mysql.sql` — schema and complete data
-- `mysql-schema.sql`, `mysql-data.sql` — schema only and data only
-- `mysql-data-movies.sql` (`genre`, `movie`, `movie_genre`) and `mysql-data-crew.sql`
+- `movies.sql` — schema and complete data
+- `movies-schema.sql`, `movies-data.sql` — schema only and data only
+- `movies-data-films.sql` (`genre`, `movie`, `movie_genre`) and `movies-data-crew.sql`
   (`crew`, `job`, `movie_crew`) — data in two steps, as the tutorial builds its schema
-- `neo4j.dump` — logical dump compatible with `neo4j_bolt load`
+- `movies-neo4j.dump` — logical dump compatible with `neo4j_bolt load`
 - `README.md` — provenance, licence and what each column means
 
 The column lists are a contract with the tutorial: students build the tables from

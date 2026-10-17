@@ -495,17 +495,18 @@ class WikidataCountryBuilder
                                   rows: borders)
     ]
     ClassroomDataset::MysqlWriter.new(
+      name: 'countries',
       output_dir: @output_dir,
       header: ['Country dataset of the Hackschule Workspace (https://github.com/specht/workspace),',
                "built from Wikidata (CC0 1.0) by src/scripts/collect-countries on #{Time.now.utc.strftime('%Y-%m-%d')}.",
                'See README.md for what each column means.'],
       schema: SCHEMA, tables: tables,
-      parts: { 'countries' => %w[continent country city], 'borders' => %w[border] }
+      parts: { 'cities' => %w[continent country city], 'borders' => %w[border] }
     )
   end
 
   def write_neo4j(continents, countries, cities, borders)
-    ClassroomDataset.write_neo4j(File.join(@output_dir, ClassroomDataset::NEO4J_FILE)) do |neo|
+    ClassroomDataset.write_neo4j(File.join(@output_dir, ClassroomDataset.neo4j_file('countries'))) do |neo|
       continent_node = continents.to_h { |c| [c[:name], neo.node(['Continent'], { name: c[:name], area: c[:area] }.compact)] }
       country_node = countries.to_h do |c|
         [c[:code], neo.node(['Country'], { code: c[:code], name: c[:name], population: c[:population], area: c[:area] }.compact)]
@@ -607,14 +608,14 @@ class WikidataCountryBuilder
       - `continents.txt` — #{continents.size} continents, one JSON object per line
       - `countries.txt` — #{countries.size} countries, one JSON object per line, with their neighbours
       - `cities.txt` — #{cities.size} cities, one JSON object per line
-      - `mysql.sql` — schema and complete data
-      - `mysql-schema.sql` — schema only
-      - `mysql-data.sql` — data only, for a schema built in class
-      - `mysql-data-countries.sql` — data only: `continent`, `country`, `city`
-      - `mysql-data-borders.sql` — data only: `border`
-      - `neo4j.dump` — logical Neo4jBolt dump for `neo4j_bolt load`
+      - `countries.sql` — schema and complete data
+      - `countries-schema.sql` — schema only
+      - `countries-data.sql` — data only, for a schema built in class
+      - `countries-data-cities.sql` — data only: `continent`, `country`, `city`
+      - `countries-data-borders.sql` — data only: `border`
+      - `countries-neo4j.dump` — logical Neo4jBolt dump for `neo4j_bolt load`
 
-      Every classroom dataset (also the movie and the music dataset) uses these file names.
+      Every classroom dataset names its files this way, after the dataset (`countries`, `movies`, `music`).
 
       ## MySQL
 
@@ -634,7 +635,7 @@ class WikidataCountryBuilder
       countries (`GROUP BY`). Antarctica has no countries.
 
       ```sh
-      mysql < mysql.sql
+      mysql < countries.sql
       ```
 
       ## Neo4j
@@ -645,7 +646,7 @@ class WikidataCountryBuilder
       `(a:Country)-[:BORDERS]-(b:Country)`.
 
       ```sh
-      neo4j_bolt load neo4j.dump
+      neo4j_bolt load countries-neo4j.dump
       ```
     README
   end

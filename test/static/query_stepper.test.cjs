@@ -1,6 +1,6 @@
 // The engine of the query stepper (src/static/include/query_stepper.js)
 // against what MySQL answers for the same queries on the country dataset
-// (country-archive/mysql.sql).
+// (country-archive/countries.sql).
 //   node --test test/static/*.test.cjs
 const test = require('node:test');
 const assert = require('node:assert');

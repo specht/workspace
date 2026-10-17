@@ -2,7 +2,7 @@
 # er liest /workspace/filmdatenbank/film.er mit der ER-Werkstatt im Workspace,
 # schema und sql lesen die eigene MySQL-Datenbank, angemeldet als die Person.
 # Die Namen der Tabellen und Spalten stehen fest, weil die Filmdaten
-# (movie-archive/mysql-data-movies.sql, mysql-data-crew.sql) sie erwarten.
+# (movie-archive/movies-data-films.sql, movies-data-crew.sql) sie erwarten.
 format: 1
 activity: filmdatenbank
 tasks:
@@ -101,7 +101,7 @@ tasks:
 
   - id: daten-filme
     title: Filmdaten geladen
-    prompt: Lade `mysql-data-movies.sql` in deine Datenbank.
+    prompt: Lade `movies-data-films.sql` in deine Datenbank.
     check:
       type: schema
       tables:
@@ -223,8 +223,8 @@ tasks:
   - id: tabellen-crew
     title: Alles neu angelegt und geladen
     prompt: |
-      Erzeuge das SQL neu und führe `film.sql`, `mysql-data-movies.sql` und
-      `mysql-data-crew.sql` nacheinander aus.
+      Erzeuge das SQL neu und führe `film.sql`, `movies-data-films.sql` und
+      `movies-data-crew.sql` nacheinander aus.
     check:
       type: schema
       tables:
@@ -247,7 +247,7 @@ tasks:
       setup: Führe im Ordner `filmdatenbank` `mysql < film.sql` aus und lade dann beide Datendateien.
     feedback:
       - when: { problem: rows }
-        say: Eine Tabelle ist leer. `film.sql` löscht alle Tabellen; lade danach `mysql-data-movies.sql` und `mysql-data-crew.sql`, in dieser Reihenfolge.
+        say: Eine Tabelle ist leer. `film.sql` löscht alle Tabellen; lade danach `movies-data-films.sql` und `movies-data-crew.sql`, in dieser Reihenfolge.
 
   - id: besetzung-film
     title: Wer spielt in »Back to the Future«?

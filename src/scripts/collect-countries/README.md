@@ -34,16 +34,16 @@ Generated files (shared with `collect-movies` and `collect-music` via
 `../lib/classroom_dataset.rb`):
 
 - `continents.txt`, `countries.txt`, `cities.txt` — JSON Lines, with Wikidata item IDs
-- `mysql.sql` — schema and complete data
-- `mysql-schema.sql`, `mysql-data.sql` — schema only and data only
-- `mysql-data-countries.sql` (`continent`, `country`, `city`) and `mysql-data-borders.sql`
+- `countries.sql` — schema and complete data
+- `countries-schema.sql`, `countries-data.sql` — schema only and data only
+- `countries-data-cities.sql` (`continent`, `country`, `city`) and `countries-data-borders.sql`
   (`border`) — data in two steps
-- `neo4j.dump` — logical dump compatible with `neo4j_bolt load`
+- `countries-neo4j.dump` — logical dump compatible with `neo4j_bolt load`
 - `README.md` — provenance, licence, the rules and what each column means
 
 The tables and columns are a contract with the Einführung in SQL, its tasks
 (`src/content/mysql/tasks.yaml`) and the SQL-Zeitlupe
-(`src/scripts/query-stepper-data.rb countries mysql.sql`). Change them together.
+(`src/scripts/query-stepper-data.rb countries countries.sql`). Change them together.
 So are the numbers: the tasks expect the published row counts (`tables: { city: … }`)
 and name results in their solutions, and the pictures of the tutorial show them. A
 new build, published, needs the tasks, the stepper's tables and the screenshots

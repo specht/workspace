@@ -79,7 +79,7 @@ class DiscogsDatasetBuilder
 
     STDERR.puts
     STDERR.puts "Done. Wrote to #{@output_dir}:"
-    (%w[artists.txt albums.txt tracks.txt genres.txt] + mysql.files + [ClassroomDataset::NEO4J_FILE, 'README.md']).each do |name|
+    (%w[artists.txt albums.txt tracks.txt genres.txt] + mysql.files + [ClassroomDataset.neo4j_file('music'), 'README.md']).each do |name|
       STDERR.puts "  #{name}"
     end
     ClassroomDataset.report('Sanity check:', {
@@ -854,6 +854,7 @@ class DiscogsDatasetBuilder
     ]
 
     ClassroomDataset::MysqlWriter.new(
+      name: 'music',
       output_dir: @output_dir,
       header: [
         "Generated from the Discogs monthly data dumps at #{SOURCE_ROOT}",
@@ -932,7 +933,7 @@ class DiscogsDatasetBuilder
   SQL
 
   def write_neo4j(albums, artists, memberships, genres, tracks)
-    ClassroomDataset.write_neo4j(File.join(@output_dir, ClassroomDataset::NEO4J_FILE)) do |neo4j|
+    ClassroomDataset.write_neo4j(File.join(@output_dir, ClassroomDataset.neo4j_file('music'))) do |neo4j|
       artist_nodes = {}
       album_nodes = {}
       genre_nodes = {}
@@ -1008,15 +1009,15 @@ class DiscogsDatasetBuilder
       - `albums.txt` — #{album_count} albums, one JSON object per line
       - `tracks.txt` — #{track_count} tracks, one JSON object per line
       - `genres.txt` — #{genre_count} genres, one JSON object per line
-      - `mysql.sql` — schema and complete data
-      - `mysql-schema.sql` — schema only
-      - `mysql-data.sql` — data only, for a schema built in class
-      - `mysql-data-albums.sql` — data only: `artist`, `genre`, `album`, `album_genre`
-      - `mysql-data-tracks.sql` — data only: `track` (load after the albums)
-      - `mysql-data-members.sql` — data only: `artist_part_of` (load after the albums)
-      - `neo4j.dump` — logical Neo4jBolt dump ready for `neo4j_bolt load`
+      - `music.sql` — schema and complete data
+      - `music-schema.sql` — schema only
+      - `music-data.sql` — data only, for a schema built in class
+      - `music-data-albums.sql` — data only: `artist`, `genre`, `album`, `album_genre`
+      - `music-data-tracks.sql` — data only: `track` (load after the albums)
+      - `music-data-members.sql` — data only: `artist_part_of` (load after the albums)
+      - `music-neo4j.dump` — logical Neo4jBolt dump ready for `neo4j_bolt load`
 
-      Every classroom dataset (also the IMDb movie dataset) uses these file names.
+      Every classroom dataset names its files this way, after the dataset (`countries`, `movies`, `music`).
 
       The dataset also contains #{membership_count} artist-to-band membership links.
 
@@ -1049,12 +1050,12 @@ class DiscogsDatasetBuilder
       Import it into an existing database with, for example:
 
       ```sh
-      mysql < mysql.sql
+      mysql < music.sql
       ```
 
       ## Neo4j / Neo4jBolt
 
-      `neo4j.dump` uses Neo4jBolt's textual logical dump format. It contains:
+      `music-neo4j.dump` uses Neo4jBolt's textual logical dump format. It contains:
 
       - `Artist` nodes
       - `Album` nodes
@@ -1068,7 +1069,7 @@ class DiscogsDatasetBuilder
       Load it into an empty Neo4j database with:
 
       ```sh
-      neo4j_bolt load neo4j.dump
+      neo4j_bolt load music-neo4j.dump
       ```
 
       Neo4jBolt uses dump-local integer node IDs in this file to reconnect

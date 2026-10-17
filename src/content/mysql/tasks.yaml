@@ -1,6 +1,6 @@
 # Aufgaben zu »Einführung in SQL«. Format: docs/aufgaben.md.
 # Die Abfragen laufen in der eigenen MySQL-Datenbank der Lernenden, in die sie
-# die Länder der Welt importiert haben (country-archive/mysql.sql aus
+# die Länder der Welt importiert haben (country-archive/countries.sql aus
 # specht/workspace-files, Prüfart sql). tables: sorgt dafür, dass eine
 # geleerte oder geänderte Tabelle nicht zu »richtigen« leeren Antworten führt.
 # Die Zahlen in den Lösungen gelten für den Stand der Daten vom Oktober 2026.

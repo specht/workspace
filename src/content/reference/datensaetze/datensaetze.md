@@ -14,7 +14,7 @@ kind: reference
 Die Aktivitäten zu Datenbanken arbeiten mit drei Datensätzen aus offenen Quellen: den Ländern der Welt, Filmen und Musik. Hier steht für jeden, welche Tabellen und Spalten er hat, woher die Daten kommen, was drin ist und was nicht, und wie du ihn in deine Datenbank lädst.
 </p>
 
-Alle drei liegen im Repository [specht/workspace-files](https://github.com/specht/workspace-files), jeder in einem eigenen Ordner mit denselben Dateien: `mysql.sql` mit Tabellen und Daten, `mysql-schema.sql` nur mit den Tabellen, `mysql-data.sql` nur mit den Daten (für Tabellen, die du selbst angelegt hast), dazu Teile der Daten zum schrittweisen Laden, `neo4j.dump` für Neo4j und eine `README.md`. Gebaut werden sie von Skripten im Repository des Workspaces (`src/scripts/collect-…`), die man jederzeit neu laufen lassen kann; so bleiben die Zahlen aktuell.
+Alle drei liegen im Repository [specht/workspace-files](https://github.com/specht/workspace-files), jeder in einem eigenen Ordner mit denselben Dateien, benannt nach dem Datensatz, etwa für die Länder: `countries.sql` mit Tabellen und Daten, `countries-schema.sql` nur mit den Tabellen, `countries-data.sql` nur mit den Daten (für Tabellen, die du selbst angelegt hast), dazu Teile der Daten zum schrittweisen Laden, `countries-neo4j.dump` für Neo4j und eine `README.md`. Gebaut werden sie von Skripten im Repository des Workspaces (`src/scripts/collect-…`), die man jederzeit neu laufen lassen kann; so bleiben die Zahlen aktuell.
 
 <!-- part: schema -->
 ## Wie die Tabellen hier stehen
@@ -51,6 +51,8 @@ _schema(countries)
 </table>
 </div>
 
+Jede Grenze steht also zweimal da, mit Absicht. Einmal würde reichen, die Tabelle wäre dann frei von Wiederholungen, aber jede Frage nach den Nachbarn eines Landes müsste in beiden Spalten suchen. So genügt ein einfacher `JOIN`. Der Preis: Die Datenbank kann nicht verhindern, dass jemand nur eine Richtung einträgt und die beiden Hälften einander widersprechen.
+
 **Was drin ist.** Die 193 Mitglieder der Vereinten Nationen, die beiden Beobachterstaaten Vatikanstadt und Palästina, Kosovo und Taiwan. Dänemark und die Niederlande ohne Grönland, die Färöer und die Karibikinseln. Als Stadt zählt jeder Ort ab 100.000 Einwohnern, dazu jede Hauptstadt, auch die kleinste: Ngerulmud, der Regierungssitz von Palau, hat gar keine Einwohner; Stadtteile, Ballungsräume und Landkreise zählen nicht. Die Zahlen stammen nicht alle aus demselben Jahr. Grenzen sind nur die an Land: 39 Länder, meist Inseln, haben keine Nachbarn. Überseegebiete zählen mit, so grenzt Frankreich über Französisch-Guayana an Brasilien. Eine Stadt, die Wikidata zwei Ländern zuordnet, gehört zu dem, dessen Hauptstadt näher liegt: Donezk und die Krim zur Ukraine, Prizren zum Kosovo.
 
 **Woher, und darf ich das?** Alles stammt aus [Wikidata](https://www.wikidata.org/) und steht unter [CC0](https://creativecommons.org/publicdomain/zero/1.0/). Wikidata schreiben viele Menschen; eine falsche Zahl verbessert man am besten dort, beim nächsten Bau ist sie dann richtig.
@@ -58,11 +60,11 @@ _schema(countries)
 **Laden.**
 
 ```bash_copy
-wget https://github.com/specht/workspace-files/raw/main/country-archive/mysql.sql
+wget https://github.com/specht/workspace-files/raw/main/country-archive/countries.sql
 ```
 
 ```bash
-mysql < mysql.sql
+mysql < countries.sql
 ```
 
 Die Nachbarn eines Landes holt ein `JOIN` von `border` mit `country`:
@@ -108,11 +110,11 @@ _schema(movies)
 **Laden.** Die Filmdatenbank lädt die Daten in zwei Schritten, wie sie das Modell wachsen lässt:
 
 ```bash_copy
-wget https://github.com/specht/workspace-files/raw/main/movie-archive/mysql-data-movies.sql
-wget https://github.com/specht/workspace-files/raw/main/movie-archive/mysql-data-crew.sql
+wget https://github.com/specht/workspace-files/raw/main/movie-archive/movies-data-films.sql
+wget https://github.com/specht/workspace-files/raw/main/movie-archive/movies-data-crew.sql
 ```
 
-Alles auf einmal, mit den Tabellen: `movie-archive/mysql.sql`. In Neo4j: Knoten `Movie`, `Person` und `Genre`, `(Movie)-[:IN_GENRE]->(Genre)` und `(Person)-[:ACTOR|DIRECTOR|…]->(Movie)`.
+Alles auf einmal, mit den Tabellen: `movie-archive/movies.sql`. In Neo4j: Knoten `Movie`, `Person` und `Genre`, `(Movie)-[:IN_GENRE]->(Genre)` und `(Person)-[:ACTOR|DIRECTOR|…]->(Movie)`.
 
 Benutzt in: [Filmdatenbank mit MySQL](/filmdatenbank), [Filmdatenbank mit Neo4j](/neo4j-filmdatenbank) und in der [SQL-Zeitlupe](/query-stepper) (dort nur Regie und Schauspiel, Schauspielerinnen und Schauspieler ab fünf Filmen).
 <!-- /part -->
@@ -146,11 +148,11 @@ _schema(music)
 **Laden.**
 
 ```bash_copy
-wget https://github.com/specht/workspace-files/raw/main/music-archive/mysql.sql
+wget https://github.com/specht/workspace-files/raw/main/music-archive/music.sql
 ```
 
 ```bash
-mysql < mysql.sql
+mysql < music.sql
 ```
 
 In Neo4j: Knoten `Artist`, `Album`, `Track` und `Genre`, `(Artist)-[:RELEASED]->(Album)`, `(Album)-[:HAS_TRACK]->(Track)`, `(Album)-[:IN_GENRE]->(Genre)` und `(Artist)-[:MEMBER_OF]->(Artist)`.

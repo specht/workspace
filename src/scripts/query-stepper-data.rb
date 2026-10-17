@@ -2,9 +2,9 @@
 # The tables of the query stepper (src/static/include/query_stepper.js),
 # from the SQL files students download, as JSON for the browser:
 #
-#   src/scripts/query-stepper-data.rb countries mysql.sql
-#   src/scripts/query-stepper-data.rb movies mysql-schema.sql mysql-data-movies.sql mysql-data-crew.sql
-#   src/scripts/query-stepper-data.rb music mysql-schema.sql
+#   src/scripts/query-stepper-data.rb countries countries.sql
+#   src/scripts/query-stepper-data.rb movies movies-schema.sql movies-data-films.sql movies-data-crew.sql
+#   src/scripts/query-stepper-data.rb music music-schema.sql
 #
 # countries (»Einführung in SQL«): all four tables, whole. movies
 # (»Filmdatenbank«): genre, movie and movie_genre whole; of the people only
@@ -124,7 +124,7 @@ def music(files)
 end
 
 name, *files = ARGV
-abort "usage: #{$0} countries mysql.sql | movies mysql-schema.sql mysql-data-movies.sql mysql-data-crew.sql | music mysql-schema.sql" unless %w[countries movies music].include?(name) && !files.empty?
+abort "usage: #{$0} countries countries.sql | movies movies-schema.sql movies-data-films.sql movies-data-crew.sql | music music-schema.sql" unless %w[countries movies music].include?(name) && !files.empty?
 tables = send(name, files)
 add_keys!(name, tables, files)
 out = File.join(OUT_DIR, "#{name}.json")

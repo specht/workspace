@@ -2,7 +2,7 @@ import { expect, test } from './fixtures';
 import { loginAsE2eUser } from './workspace';
 
 // cypher tasks run in the person's own Neo4j database, read-only. Needs the
-// film data in e2e-0's database (neo4j_bolt load neo4j.dump); without it
+// film data in e2e-0's database (neo4j_bolt load movies-neo4j.dump); without it
 // the card says the data is missing, which is checked too.
 test('a Cypher task checks the query against the reference', async ({ page }, testInfo) => {
   await loginAsE2eUser(page, 'e2e-0@example.com', testInfo);

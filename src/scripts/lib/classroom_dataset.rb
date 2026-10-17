@@ -4,20 +4,23 @@ require 'fileutils'
 require 'json'
 require 'time'
 
-# Shared output contract for the classroom datasets (collect-movies,
-# collect-music). Every dataset directory contains the same files, so
-# tutorials and tools can load any dataset the same way:
+# Shared output contract for the classroom datasets (collect-countries,
+# collect-movies, collect-music). Every dataset directory contains the same
+# files, named after the dataset, so tutorials and tools can load any dataset
+# the same way and a downloaded file says what it is:
 #
-#   mysql.sql              schema and data (DROP + CREATE + INSERT)
-#   mysql-schema.sql       schema only (DROP + CREATE)
-#   mysql-data.sql         data only (INSERT), for a schema students built themselves
-#   mysql-data-PART.sql    data only, one part at a time (e.g. movies before crew)
-#   neo4j.dump             logical Neo4jBolt dump for `neo4j_bolt load`
+#   NAME.sql               schema and data (DROP + CREATE + INSERT)
+#   NAME-schema.sql        schema only (DROP + CREATE)
+#   NAME-data.sql          data only (INSERT), for a schema students built themselves
+#   NAME-data-PART.sql     data only, one part at a time (e.g. films before crew)
+#   NAME-neo4j.dump        logical Neo4jBolt dump for `neo4j_bolt load`
 #
 # plus the dataset's own JSON Lines files and README.md.
 module ClassroomDataset
-  MYSQL_FILES = %w[mysql.sql mysql-schema.sql mysql-data.sql].freeze
-  NEO4J_FILE = 'neo4j.dump'
+  def self.mysql_file(name) = "#{name}.sql"
+  def self.schema_file(name) = "#{name}-schema.sql"
+  def self.data_file(name, part = nil) = part ? "#{name}-data-#{part}.sql" : "#{name}-data.sql"
+  def self.neo4j_file(name) = "#{name}-neo4j.dump"
 
   # One table's rows. `primary_key` lists the column names that must be
   # unique together; a duplicate is a bug in the collector and stops the build,
@@ -25,13 +28,15 @@ module ClassroomDataset
   Table = Struct.new(:name, :columns, :rows, :primary_key, keyword_init: true)
 
   class MysqlWriter
+    # name:   the dataset (countries, movies, music), which names the files
     # header: comment lines (without "-- ")
     # schema: the CREATE TABLE statements, in an order that satisfies the foreign keys
     # tables: Table objects in insert order
-    # parts:  { 'movies' => %w[genre movie movie_genre], ... }, loaded in the
+    # parts:  { 'films' => %w[genre movie movie_genre], ... }, loaded in the
     #         listed order; a part may only point to tables of itself or of an
     #         earlier part
-    def initialize(output_dir:, header:, schema:, tables:, parts: {})
+    def initialize(name:, output_dir:, header:, schema:, tables:, parts: {})
+      @name = name
       @output_dir = output_dir
       @header = header
       @schema = schema.strip
@@ -42,22 +47,23 @@ module ClassroomDataset
 
     def write
       by_name = @tables.to_h { |table| [table.name, table] }
-      write_file('mysql.sql', 'schema and complete data') do |file|
+      write_file(ClassroomDataset.mysql_file(@name), 'schema and complete data') do |file|
         write_schema(file)
         write_data(file, @tables)
       end
-      write_file('mysql-schema.sql', 'schema only') { |file| write_schema(file) }
-      write_file('mysql-data.sql', 'data only, for an existing schema') { |file| write_data(file, @tables) }
+      write_file(ClassroomDataset.schema_file(@name), 'schema only') { |file| write_schema(file) }
+      write_file(ClassroomDataset.data_file(@name), 'data only, for an existing schema') { |file| write_data(file, @tables) }
       @parts.each do |part, names|
         tables = names.map { |name| by_name.fetch(name) { raise "Part #{part}: unknown table #{name}" } }
-        write_file("mysql-data-#{part}.sql", "data only, part \"#{part}\" (#{names.join(', ')})") do |file|
+        write_file(ClassroomDataset.data_file(@name, part), "data only, part \"#{part}\" (#{names.join(', ')})") do |file|
           write_data(file, tables)
         end
       end
     end
 
     def files
-      MYSQL_FILES + @parts.keys.map { |part| "mysql-data-#{part}.sql" }
+      [ClassroomDataset.mysql_file(@name), ClassroomDataset.schema_file(@name), ClassroomDataset.data_file(@name)] +
+        @parts.keys.map { |part| ClassroomDataset.data_file(@name, part) }
     end
 
     private

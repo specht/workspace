@@ -66,9 +66,9 @@ rechnet im Browser mit den Tabellen in `src/static/query-stepper/`.
 herunterladen:
 
 ```bash
-src/scripts/query-stepper-data.rb countries mysql.sql
-src/scripts/query-stepper-data.rb movies mysql-schema.sql mysql-data-movies.sql mysql-data-crew.sql
-src/scripts/query-stepper-data.rb music mysql-schema.sql
+src/scripts/query-stepper-data.rb countries countries.sql
+src/scripts/query-stepper-data.rb movies movies-schema.sql movies-data-films.sql movies-data-crew.sql
+src/scripts/query-stepper-data.rb music music-schema.sql
 ```
 
 `countries`: die Länder der Welt mit allen vier Tabellen ganz. `movies`:

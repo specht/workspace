@@ -105,32 +105,32 @@ cd ~/filmdatenbank
 Lade dort die Filmdaten herunter…
 
 ```bash_copy
-wget https://github.com/specht/workspace-files/raw/main/movie-archive/neo4j.dump
+wget https://github.com/specht/workspace-files/raw/main/movie-archive/movies-neo4j.dump
 ```
 
 …und lade sie in deine Datenbank:
 
 ```bash
-neo4j_bolt load neo4j.dump
+neo4j_bolt load movies-neo4j.dump
 ```
 
 <!-- tutorial-screenshot
-# neo4j.dump geladen
+# movies-neo4j.dump geladen
 hide-left-sidebar
 show-bottom-panel
 terminal-open
 terminal-maximize
 terminal-run: mkdir -p ~/filmdatenbank && cd ~/filmdatenbank
-terminal-run: wget -q https://github.com/specht/workspace-files/raw/main/movie-archive/neo4j.dump
+terminal-run: wget -q https://github.com/specht/workspace-files/raw/main/movie-archive/movies-neo4j.dump
 terminal-wait-for-prompt
-terminal-run: neo4j_bolt load neo4j.dump
+terminal-run: neo4j_bolt load movies-neo4j.dump
 terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='neo4j-load.webp' alt='Im Terminal lädt neo4j_bolt die Knoten und Beziehungen aus neo4j.dump.'>
+<img class='full' src='neo4j-load.webp' alt='Im Terminal lädt neo4j_bolt die Knoten und Beziehungen aus movies-neo4j.dump.'>
 
-`neo4j.dump` ist eine Textdatei: Jede Zeile beginnt mit `n` für einen Knoten oder mit `r` für eine Beziehung. `neo4j_bolt` legt erst alle Knoten an und verbindet sie dann. Die Daten stammen, wie die für MySQL, aus [Wikidata](https://www.wikidata.org/); was drinsteht, beschreibt das Handbuch unter [Datensätze](/reference/datensaetze#movies).
+`movies-neo4j.dump` ist eine Textdatei: Jede Zeile beginnt mit `n` für einen Knoten oder mit `r` für eine Beziehung. `neo4j_bolt` legt erst alle Knoten an und verbindet sie dann. Die Daten stammen, wie die für MySQL, aus [Wikidata](https://www.wikidata.org/); was drinsteht, beschreibt das Handbuch unter [Datensätze](/reference/datensaetze#movies).
 
 <div class='hint'>
 <code>neo4j_bolt load</code> erwartet eine leere Datenbank. Hast du schon etwas ausprobiert, setze deine Neo4j-Datenbank im Profil zurück und lade dann noch einmal.

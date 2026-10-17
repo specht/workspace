@@ -678,7 +678,7 @@ check:
 ### sql
 
 Seit M6. Beispiele stehen in `src/content/mysql/tasks.yaml` (»Einführung in
-SQL«, mit den Ländern der Welt aus `country-archive/mysql.sql`).
+SQL«, mit den Ländern der Welt aus `country-archive/countries.sql`).
 
 ```yaml
 check:
@@ -742,7 +742,7 @@ Passwort). Die Prüfung selbst braucht keinen laufenden Workspace.
 ### cypher
 
 Seit M7. Beispiele stehen in `src/content/neo4j-filmdatenbank/tasks.yaml`
-(»Filmdatenbank als Graph mit Neo4j«, Daten aus `neo4j.dump`).
+(»Filmdatenbank als Graph mit Neo4j«, Daten aus `movies-neo4j.dump`).
 
 ```yaml
 check:

@@ -2,7 +2,7 @@ Die Filmdatenbank löst die alte »Videothek« ab. Statt eines Diagramm-Editors 
 
 <table class='table'>
 <tr><th>Ordner</th><td><code>/workspace/filmdatenbank</code>, von den Lernenden selbst angelegt; darin <code>film.er</code>, das erzeugte <code>film.sql</code> und die geladenen Datendateien</td></tr>
-<tr><th>Daten</th><td><code>movie-archive/mysql-data-movies.sql</code> und <code>mysql-data-crew.sql</code> aus <code>specht/workspace-files</code>, gebaut mit <code>src/scripts/collect-movies</code>. Die Inhalte stammen aus Wikidata (CC0); die Auswahl der Filme steht in der <code>README.md</code> daneben</td></tr>
+<tr><th>Daten</th><td><code>movie-archive/movies-data-films.sql</code> und <code>movies-data-crew.sql</code> aus <code>specht/workspace-files</code>, gebaut mit <code>src/scripts/collect-movies</code>. Die Inhalte stammen aus Wikidata (CC0); die Auswahl der Filme steht in der <code>README.md</code> daneben</td></tr>
 <tr><th>Was gelesen wird</th><td>Aufgaben »Filme und Genres« und »Menschen und Tätigkeiten«: <code>film.er</code>, gelesen mit dem Kern der ER-Werkstatt im laufenden Workspace. Alle anderen: die eigene MySQL-Datenbank, angemeldet als die Person, nur lesend</td></tr>
 <tr><th>Was nie passiert</th><td>Die Prüfungen legen keine Tabellen an und laden keine Daten. Das tun die Lernenden selbst im Terminal.</td></tr>
 </table>

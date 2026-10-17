@@ -38,6 +38,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   wie die Filme und die Musik (auch für Neo4j). Gebaut wird er von
   `src/scripts/collect-countries`, das man jederzeit neu laufen lassen kann.
 
+- Die Dateien der Datensätze tragen den Namen ihres Datensatzes:
+  `countries.sql`, `movies-data-films.sql`, `music-neo4j.dump` statt
+  `mysql.sql`, `mysql-data-movies.sql`, `neo4j.dump`. Wer eine Datei
+  heruntergeladen hat, sieht im Explorer, was sie ist, und zwei Datensätze
+  im selben Ordner überschreiben sich nicht. Die Filmdaten liegen bis zum
+  Ende des Schuljahrs auch noch unter den alten Namen, für alle, die mitten
+  in der »Filmdatenbank« sind.
+
 - Für Autorinnen und Autoren: `src/scripts/publish-datasets.rb`
   veröffentlicht einen gebauten Datensatz in `specht/workspace-files`: Es
   kopiert ihn ohne Caches, schreibt dort eine Übersicht aller Datensätze mit

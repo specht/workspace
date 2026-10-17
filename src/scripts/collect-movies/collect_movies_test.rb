@@ -123,15 +123,15 @@ class CollectMoviesTest < Minitest::Test
             genres = files['genres.txt'].lines.map { |l| JSON.parse(l)['name'] }
             assert_equal %w[Action Animation Comedy Sci-Fi], genres
 
-            data = files['mysql-data-movies.sql']
+            data = files['movies-data-films.sql']
             assert_includes data, 'INSERT INTO `movie` (`id`, `title`, `original_title`, `german_title`, `year`, `runtime`) VALUES'
-            refute_includes files['mysql.sql'], 'rating'
-            crew_sql = files['mysql-data-crew.sql']
+            refute_includes files['movies.sql'], 'rating'
+            crew_sql = files['movies-data-crew.sql']
             assert_includes crew_sql, "'Randy Newman', 1943, NULL"
             assert_includes crew_sql, "(1, 'actor')"
-            refute_includes files['mysql.sql'], 'imdb', 'no IMDb data in the output'
+            refute_includes files['movies.sql'], 'imdb', 'no IMDb data in the output'
             assert_includes files['README.md'], 'CC0'
-            assert_includes files['neo4j.dump'], 'DIRECTOR'
+            assert_includes files['movies-neo4j.dump'], 'DIRECTOR'
 
             crew = files['crew.txt'].lines.map { |l| JSON.parse(l) }
             lana = crew.find { |p| p['name'] == 'Lana Wachowski' }

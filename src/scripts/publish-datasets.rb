@@ -30,7 +30,7 @@ DATASETS = {
         about: 'The continents, the 197 countries of the world, every city with at least 100,000 inhabitants and every capital, and the land borders between the countries, each in both directions.',
         source: '[Wikidata](https://www.wikidata.org/), CC0 1.0',
         used: '*Einführung in SQL*, the SQL-Zeitlupe',
-        stepper: %w[mysql.sql]
+        stepper: %w[countries.sql]
     },
     'movies' => {
         dir: 'movie-archive', from: 'src/scripts/collect-movies/movie-archive',
@@ -38,7 +38,9 @@ DATASETS = {
         about: 'Well-known feature films, their genres and the people who made them: cast, direction, writing, music, production, camera and editing.',
         source: '[Wikidata](https://www.wikidata.org/), CC0 1.0; IMDb votes only to choose the films',
         used: '*Filmdatenbank* (MySQL and Neo4j), the SQL-Zeitlupe',
-        stepper: %w[mysql-schema.sql mysql-data-movies.sql mysql-data-crew.sql]
+        stepper: %w[movies-schema.sql movies-data-films.sql movies-data-crew.sql],
+        # the names before October 2026, for students halfway through the Filmdatenbank
+        old_files: %w[mysql.sql mysql-schema.sql mysql-data.sql mysql-data-movies.sql mysql-data-crew.sql neo4j.dump]
     },
     'music' => {
         dir: 'music-archive', from: 'src/scripts/collect-music/discogs',
@@ -46,7 +48,7 @@ DATASETS = {
         about: 'The albums of a chosen list of artists and bands, with their tracks, genres and who plays in which band.',
         source: '[Discogs data dumps](https://data.discogs.com/), CC0 1.0',
         used: 'no activity yet',
-        stepper: %w[mysql-schema.sql]
+        stepper: %w[music-schema.sql]
     }
 }.freeze
 
@@ -58,7 +60,8 @@ OTHER_FILES = {
     'snake.c' => 'a small game in C, not used by an activity at the moment'
 }.freeze
 
-REQUIRED = %w[README.md mysql.sql mysql-schema.sql mysql-data.sql neo4j.dump].freeze
+# What every dataset has, by its name
+def required(name) = ['README.md', "#{name}.sql", "#{name}-schema.sql", "#{name}-data.sql", "#{name}-neo4j.dump"]
 
 class Publisher
     def initialize(names:, repo:, from:, commit:, push:, patch:, force:)
@@ -89,16 +92,16 @@ class Publisher
     def source(name)
         dataset = DATASETS.fetch(name) { abort "Unknown dataset #{name}; known: #{DATASETS.keys.join(', ')}" }
         dir = File.expand_path(@from[name] || dataset[:from], ROOT)
-        missing = REQUIRED.reject { |file| File.file?(File.join(dir, file)) }
+        missing = required(name).reject { |file| File.file?(File.join(dir, file)) }
         abort "#{name}: #{dir} lacks #{missing.join(', ')}; run the collector first (or --from #{name}=DIR)" unless missing.empty?
         dir
     end
 
     def publish(repo, sources)
         # the new builds, and what workspace-files has of the others
-        rows = DATASETS.to_h { |name, d| [name, row_counts(File.join(sources[name] || File.join(repo, d[:dir]), 'mysql.sql'))] }
+        rows = DATASETS.to_h { |name, d| [name, row_counts(File.join(sources[name] || File.join(repo, d[:dir]), "#{name}.sql"))] }
         check_tasks(rows, sources.keys)
-        sources.each { |name, dir| copy(dir, File.join(repo, DATASETS[name][:dir])) }
+        sources.each { |name, dir| copy(dir, File.join(repo, DATASETS[name][:dir]), DATASETS[name][:old_files] || []) }
         sources.each_key { |name| rebuild_stepper(name, File.join(repo, DATASETS[name][:dir])) }
         File.write(File.join(repo, 'README.md'), overview(repo, rows))
         git(repo, 'add', '--all')
@@ -127,17 +130,20 @@ class Publisher
     end
 
     # The files of a dataset, without the collector's caches (dot files);
-    # what the new build no longer has goes.
-    def copy(from, to)
+    # what the new build no longer has goes, but for the old names kept for
+    # old links.
+    def copy(from, to, keep)
         FileUtils.mkdir_p(to)
         files = Dir.children(from).reject { |f| f.start_with?('.') }.select { |f| File.file?(File.join(from, f)) }
         Dir.children(to).each do |f|
-            FileUtils.rm(File.join(to, f)) if !f.start_with?('.') && File.file?(File.join(to, f)) && !files.include?(f)
+            next if f.start_with?('.') || files.include?(f) || keep.include?(f) || !File.file?(File.join(to, f))
+
+            FileUtils.rm(File.join(to, f))
         end
         files.each { |f| FileUtils.cp(File.join(from, f), File.join(to, f)) }
     end
 
-    # { table => rows } from the INSERT statements of mysql.sql, one row a line
+    # { table => rows } from the INSERT statements of NAME.sql, one row a line
     def row_counts(path)
         return {} unless File.file?(path)
 
@@ -198,6 +204,13 @@ class Publisher
         File.file?(File.join(dir, 'README.md')) && File.read(File.join(dir, 'README.md'))[/^Generated: (\S+)/, 1].to_s[0, 10]
     end
 
+    def old_note(dir, dataset)
+        old = (dataset[:old_files] || []).select { |f| File.file?(File.join(dir, f)) }
+        return '' if old.empty?
+
+        "\nStill there under the names before October 2026, for old links, until the end of the\nschool year: #{old.map { |f| "`#{f}`" }.join(', ')}."
+    end
+
     def overview(repo, rows)
         sections = DATASETS.filter_map do |name, d|
             dir = File.join(repo, d[:dir])
@@ -214,7 +227,7 @@ class Publisher
                 #{tables.join("\n")}
 
                 Source: #{d[:source]}. Built #{generated(dir) || 'at an unknown date'}. Used by: #{d[:used]}.
-                What each column means: [`#{d[:dir]}/README.md`](#{d[:dir]}/README.md).
+                What each column means: [`#{d[:dir]}/README.md`](#{d[:dir]}/README.md).#{old_note(dir, d)}
             SECTION
         end
         known = DATASETS.values.map { |d| d[:dir] } + %w[README.md]
@@ -224,11 +237,12 @@ class Publisher
 
             Files that students download with `wget` in the activities of the
             [Hackschule Workspace](https://github.com/specht/workspace), above all three
-            classroom datasets. Each dataset folder has the same files: `mysql.sql` (tables
-            and data), `mysql-schema.sql` (tables only), `mysql-data.sql` (data only, for
-            tables built in class), `mysql-data-*.sql` (the data in parts), `neo4j.dump`
-            (for `neo4j_bolt load`), the source data as JSON Lines (`*.txt`) and a
-            `README.md` with what each column means. The datasets are built by the scripts
+            classroom datasets. Each dataset folder has the same files, named after the
+            dataset: `countries.sql` (tables and data), `countries-schema.sql` (tables only),
+            `countries-data.sql` (data only, for tables built in class),
+            `countries-data-*.sql` (the data in parts), `countries-neo4j.dump` (for
+            `neo4j_bolt load`), the source data as JSON Lines (`*.txt`) and a `README.md`
+            with what each column means. The datasets are built by the scripts
             in `src/scripts/collect-*` of the Workspace and published with
             `src/scripts/publish-datasets.rb`, which also writes this file.
 

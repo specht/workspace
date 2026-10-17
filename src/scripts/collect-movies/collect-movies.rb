@@ -382,7 +382,7 @@ class WikidataMovieBuilder
 
     STDERR.puts
     STDERR.puts "Done. Wrote to #{@output_dir}:"
-    (%w[movies.txt crew.txt genres.txt] + mysql.files + [ClassroomDataset::NEO4J_FILE, 'README.md']).each do |name|
+    (%w[movies.txt crew.txt genres.txt] + mysql.files + [ClassroomDataset.neo4j_file('movies'), 'README.md']).each do |name|
       STDERR.puts "  #{name}"
     end
     report(movies, crew, genres)
@@ -414,6 +414,7 @@ class WikidataMovieBuilder
                                   primary_key: %w[movie_id crew_id job_id], rows: movie_crew)
     ]
     ClassroomDataset::MysqlWriter.new(
+      name: 'movies',
       output_dir: @output_dir,
       header: [
         'Movie data from Wikidata (https://www.wikidata.org/), CC0 1.0.',
@@ -423,7 +424,7 @@ class WikidataMovieBuilder
       schema: MYSQL_SCHEMA,
       tables: tables,
       # the Filmdatenbank tutorial first models movies and genres, then adds people
-      parts: { 'movies' => %w[genre movie movie_genre], 'crew' => %w[crew job movie_crew] }
+      parts: { 'films' => %w[genre movie movie_genre], 'crew' => %w[crew job movie_crew] }
     )
   end
 
@@ -490,7 +491,7 @@ class WikidataMovieBuilder
   SQL
 
   def write_neo4j(movies, crew, genres)
-    ClassroomDataset.write_neo4j(File.join(@output_dir, ClassroomDataset::NEO4J_FILE)) do |neo4j|
+    ClassroomDataset.write_neo4j(File.join(@output_dir, ClassroomDataset.neo4j_file('movies'))) do |neo4j|
       movie_nodes = {}
       crew_nodes = {}
       genre_nodes = {}
@@ -572,14 +573,14 @@ class WikidataMovieBuilder
       - `movies.txt` — #{movies.size} movies, one JSON object per line
       - `crew.txt` — #{crew.size} people, one JSON object per line
       - `genres.txt` — #{genres.size} genres, one JSON object per line
-      - `mysql.sql` — schema and complete data
-      - `mysql-schema.sql` — schema only
-      - `mysql-data.sql` — data only, for a schema built in class
-      - `mysql-data-movies.sql` — data only: `genre`, `movie`, `movie_genre`
-      - `mysql-data-crew.sql` — data only: `crew`, `job`, `movie_crew`
-      - `neo4j.dump` — logical Neo4jBolt dump for `neo4j_bolt load`
+      - `movies.sql` — schema and complete data
+      - `movies-schema.sql` — schema only
+      - `movies-data.sql` — data only, for a schema built in class
+      - `movies-data-films.sql` — data only: `genre`, `movie`, `movie_genre`
+      - `movies-data-crew.sql` — data only: `crew`, `job`, `movie_crew`
+      - `movies-neo4j.dump` — logical Neo4jBolt dump for `neo4j_bolt load`
 
-      Every classroom dataset (also the music dataset) uses these file names.
+      Every classroom dataset names its files this way, after the dataset (`countries`, `movies`, `music`).
 
       ## MySQL
 
@@ -600,9 +601,9 @@ class WikidataMovieBuilder
       title and year.
 
       ```sh
-      mysql < mysql.sql                 # everything
-      mysql < mysql-data-movies.sql     # or step by step into tables built in class
-      mysql < mysql-data-crew.sql
+      mysql < movies.sql                 # everything
+      mysql < movies-data-films.sql     # or step by step into tables built in class
+      mysql < movies-data-crew.sql
       ```
 
       ## Neo4j
@@ -611,7 +612,7 @@ class WikidataMovieBuilder
       `(Person)-[:ACTOR|DIRECTOR|WRITER|…]->(Movie)`.
 
       ```sh
-      neo4j_bolt load neo4j.dump
+      neo4j_bolt load movies-neo4j.dump
       ```
     README
   end

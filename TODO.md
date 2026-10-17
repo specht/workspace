@@ -48,11 +48,14 @@ A writing and development order, not a prerequisite chain for students.
 
 ### Datasets
 
-Movies and music are published in `specht/workspace-files` (`movie-archive/`,
-built with `src/scripts/collect-movies` and `collect-music`).
+Countries, movies and music are published in `specht/workspace-files`
+(`country-archive/`, `movie-archive/`, `music-archive/`), built with
+`src/scripts/collect-countries`, `collect-movies` and `collect-music` and
+published with `src/scripts/publish-datasets.rb`.
 
-* [ ] A student command `load-dataset movies|music [--schema|--data|--part NAME] [--neo4j]` that loads into the student's database (or a named extra database); the pages use `wget` and `mysql <` today
-* [ ] Refresh both datasets periodically rather than letting them go stale
+* [ ] A student command `load-dataset countries|movies|music [--schema|--data|--part NAME] [--neo4j]` that loads into the student's database (or a named extra database); the pages use `wget` and `mysql <` today
+* [ ] Refresh the datasets periodically rather than letting them go stale (countries: the tasks and screenshots of the SQL introduction follow the row counts)
+* [ ] After the school year (August 2027): delete the movie files under their old names (`mysql*.sql`, `neo4j.dump` in `movie-archive/`) and `old_files` in `publish-datasets.rb`
 
 
 ### Database sequence
@@ -79,6 +82,7 @@ Workspace, »Filmdatenbank mit MySQL« built from the student's ER model, and
 * [ ] From a short story to an ER model in the DSL; Chen and crow's foot
 * [ ] Translation rules for 1:1, 1:n and n:m; relationship attributes
 * [ ] One flat table with update, insert and delete anomalies as the reason for splitting tables
+* [ ] The borders of the country dataset as an example of deliberate redundancy: every pair twice, what goes wrong if one direction is missing, how to store it once
 
 #### Filmdatenbank
 

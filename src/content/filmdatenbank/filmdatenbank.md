@@ -261,18 +261,18 @@ _task(tabellen-filme)
 Die Tabellen sind angelegt, aber leer. Beende `mycli` mit `exit` oder <kbd>Strg</kbd><kbd>D</kbd>. Lade dann die Filme, Genres und ihre Zuordnungen herunter:
 
 ```bash_copy
-wget https://github.com/specht/workspace-files/raw/main/movie-archive/mysql-data-movies.sql
+wget https://github.com/specht/workspace-files/raw/main/movie-archive/movies-data-films.sql
 ```
 
 …und gib sie an MySQL:
 
 ```bash
-mysql < mysql-data-movies.sql
+mysql < movies-data-films.sql
 ```
 
 Am Ende meldet MySQL für jede der drei Tabellen `OK`: Es hat sich angesehen, was jetzt darin steht, damit spätere Abfragen schnell sind.
 
-Schau dir `mysql-data-movies.sql` ruhig an. Es sind lauter `INSERT`-Befehle, und jeder nennt die Spalten, in die er schreibt, zum Beispiel `INSERT INTO movie (id, title, original_title, …)`. Deshalb müssen die Namen in deinem Modell genau stimmen. Meldet MySQL `Unknown column` oder `Table … doesn't exist`, vergleiche die Namen in `film.er` mit der Meldung, erzeuge das SQL neu und fang mit `mysql < film.sql` wieder an.
+Schau dir `movies-data-films.sql` ruhig an. Es sind lauter `INSERT`-Befehle, und jeder nennt die Spalten, in die er schreibt, zum Beispiel `INSERT INTO movie (id, title, original_title, …)`. Deshalb müssen die Namen in deinem Modell genau stimmen. Meldet MySQL `Unknown column` oder `Table … doesn't exist`, vergleiche die Namen in `film.er` mit der Meldung, erzeuge das SQL neu und fang mit `mysql < film.sql` wieder an.
 
 <div class='hint'>
 Die Filme stammen aus <a href='https://www.wikidata.org/'>Wikidata</a>, einer freien Wissensdatenbank, die jede und jeder weiterverwenden darf. Woher die Daten genau kommen, wie sie ausgewählt wurden und was jede Spalte bedeutet, beschreibt das Handbuch unter <a href='/reference/datensaetze#movies'>Datensätze</a>.
@@ -394,13 +394,13 @@ _task(modell-crew)
 Erzeuge das SQL neu, beende `mycli` und lege die Tabellen an. Weil `film.sql` mit `DROP TABLE` beginnt, sind danach auch `movie` und `genre` wieder leer. Lade deshalb danach beide Datendateien. Die neue musst du erst herunterladen:
 
 ```bash_copy
-wget https://github.com/specht/workspace-files/raw/main/movie-archive/mysql-data-crew.sql
+wget https://github.com/specht/workspace-files/raw/main/movie-archive/movies-data-crew.sql
 ```
 
 ```bash
 mysql < film.sql
-mysql < mysql-data-movies.sql
-mysql < mysql-data-crew.sql
+mysql < movies-data-films.sql
+mysql < movies-data-crew.sql
 ```
 
 <div class='hint'>
