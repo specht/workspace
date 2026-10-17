@@ -215,7 +215,7 @@ class Main < Sinatra::Base
     # Tasks that moved to another activity, old key => new key; their stored
     # states move along at startup (SetupDatabase#migrate_moved_tasks).
     # »Einführung in SQL« was split in two (2026-10): its second part is
-    # »SQL mit mehreren Tabellen«.
+    # »SQL: Gruppieren und Verbinden«.
     MOVED_TASKS = %w[
         linksverkehr laender-pro-kontinent einwohner-pro-kontinent grosse-kontinente waehrung-japan
         grenze-zweimal nachbarn-deutschland viele-nachbarn kontinent-ohne-laender meiste-staedte

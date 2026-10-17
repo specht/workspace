@@ -1,4 +1,4 @@
-# Aufgaben zu »SQL mit mehreren Tabellen«. Format: docs/aufgaben.md.
+# Aufgaben zu »SQL: Gruppieren und Verbinden«. Format: docs/aufgaben.md.
 # Die Abfragen laufen in der eigenen MySQL-Datenbank der Lernenden, in die sie
 # die ganze Fassung der Länder der Welt importiert haben
 # (country-archive/countries.sql aus specht/workspace-files, Prüfart sql).

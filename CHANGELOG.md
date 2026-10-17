@@ -747,8 +747,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   steht als »Markdown / JavaScript« da.
 - »Einführung in SQL« ist zweigeteilt: Der zweite Teil, mit `GROUP BY`,
   `JOIN`, den Amtssprachen und den Entfernungen, ist jetzt eine eigene
-  Aktivität, »SQL mit mehreren Tabellen«, im Katalog direkt danach. Was
-  Lernende dort schon gelöst hatten, zieht beim Start mit um. Beide Seiten
+  Aktivität, »SQL: Gruppieren und Verbinden«, im Katalog direkt danach.
+  Was Lernende dort schon gelöst hatten, zieht beim Start mit um. Beide Seiten
   haben eine Notiz für Lehrkräfte, die auch die Musikdatenbank in
   `workspace-files` nennt. »SQL Injection« steht jetzt unter »Datenbanken«.
 - Die Karten der beiden SQL-Seiten zeigen ihr ER-Diagramm in

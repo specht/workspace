@@ -11,10 +11,10 @@ reference: [sql, datensaetze]
     data-levels="h2,h3">
 </div>
 
-# SQL mit mehreren Tabellen
+# SQL: Gruppieren und Verbinden
 
 <p class='abstract'>
-Welche Hauptstadt hat welches Land? Wer sind die Nachbarn Deutschlands? Wo ist Deutsch Amtssprache? Solche Fragen brauchen mehrere Tabellen. Du gruppierst Zeilen mit GROUP BY, verbindest Tabellen mit JOIN und rechnest Entfernungen auf der Erde aus, an den Ländern der Welt.
+Welche Hauptstadt hat welches Land? Wer sind die Nachbarn Deutschlands? Wo ist Deutsch Amtssprache? Solche Fragen lesen mehrere Tabellen in einer Abfrage. Du gruppierst Zeilen mit GROUP BY, verbindest Tabellen mit JOIN und rechnest Entfernungen auf der Erde aus, an den Ländern der Welt.
 </p>
 
 ## Vorbereitung

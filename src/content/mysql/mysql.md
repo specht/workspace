@@ -620,4 +620,4 @@ check-task-fails: hauptstaedte-sueden <- SELECT name FROM city WHERE latitude < 
 
 ## Wie geht es weiter?
 
-Bisher hat jede Abfrage eine Tabelle gelesen. Die spannenderen Fragen brauchen mehrere: Welche Hauptstadt hat welches Land? Wer sind die Nachbarn Deutschlands? Wo ist Deutsch Amtssprache? Darum geht es in [SQL mit mehreren Tabellen](/sql-joins), mit der ganzen Fassung der Länder der Welt.
+Bisher hat jede Abfrage eine Tabelle gelesen. Die spannenderen Fragen brauchen mehrere: Welche Hauptstadt hat welches Land? Wer sind die Nachbarn Deutschlands? Wo ist Deutsch Amtssprache? Darum geht es in [SQL: Gruppieren und Verbinden](/sql-joins), mit der ganzen Fassung der Länder der Welt.
