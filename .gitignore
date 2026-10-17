@@ -22,4 +22,6 @@ src/tutorial-screenshots/node_modules
 temp
 src/scripts/collect-movies/movie-archive
 src/scripts/collect-countries/country-archive
+src/scripts/collect-streets/cache
+src/scripts/collect-streets/street-archive
 __pycache__/

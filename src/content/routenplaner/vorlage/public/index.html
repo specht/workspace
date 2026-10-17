@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Routenplaner</title>
+<link rel="stylesheet" href="map.css">
+</head>
+<body>
+<canvas id="map" aria-label="Die Karte: Straßen und Wege, gezeichnet aus den Daten"></canvas>
+<aside id="panel">
+    <h1>Routenplaner</h1>
+    <p id="area">Lade die Karte …</p>
+    <label>Start <select id="start"></select></label>
+    <label>Ziel <select id="goal"></select></label>
+    <p id="info">Wähle Start und Ziel oder klicke auf die Karte.</p>
+</aside>
+<div id="zoom">
+    <button type="button" data-zoom="1.5" aria-label="Vergrößern">+</button>
+    <button type="button" data-zoom="0.667" aria-label="Verkleinern">−</button>
+</div>
+<p id="credit">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-Mitwirkende</p>
+<script src="map.js"></script>
+</body>
+</html>
