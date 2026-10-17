@@ -128,11 +128,15 @@ tasks:
 
   - id: falsche-antwort
     title: Eine falsche Antwort
-    prompt: Jemand im selben WLAN schiebt deinem Rechner eine falsche Antwort unter, für `hackschule.de` eine andere Adresse. Was passiert, wenn du dann `http://hackschule.de` öffnest?
+    prompt: |
+      Jemand im selben WLAN hat einen eigenen Server mit einer nachgebauten
+      Kopie von hackschule.de, samt Anmeldeseite. Er schiebt deinem Rechner
+      eine falsche DNS-Antwort unter: für `hackschule.de` die Adresse seines
+      Servers. Was passiert, wenn du dann `http://hackschule.de` öffnest?
     check:
       type: choice
       options:
-        - Der Browser zeigt die Seite eines anderen Servers, und in der Adresszeile steht trotzdem hackschule.de.
+        - Der Browser zeigt die Kopie vom Server des Angreifers, und in der Adresszeile steht trotzdem hackschule.de.
         - Der Browser merkt es an der Adresse und warnt.
         - Nichts, denn der Server von hackschule.de antwortet trotzdem.
         - Die Seite lädt nicht, weil die Adresse nicht zum Namen passt.
@@ -141,7 +145,7 @@ tasks:
       - when: { picked: 1 }
         say: Woher sollte der Browser wissen, welche Adresse die richtige ist? Er hat nur diese eine Antwort.
       - when: { picked: 2 }
-        say: Die Pakete gehen an die Adresse aus der Antwort. Erreichen sie den Server von hackschule.de?
+        say: Die Pakete gehen an die Adresse aus der Antwort, also zum Server des Angreifers. Erreichen sie den Server von hackschule.de?
       - when: { picked: 3 }
         say: Wer prüft, ob Name und Adresse zusammenpassen? Bei `http://` niemand.
-    solution: Der Browser schickt seine Anfrage an die falsche Adresse und zeigt, was von dort kommt; in der Adresszeile steht weiter hackschule.de. Erst bei `https://` merkt er es, denn der falsche Server hat kein Zertifikat für hackschule.de.
+    solution: 'Der Browser schickt seine Anfrage an die Adresse aus der Antwort, zum Server des Angreifers, und zeigt dessen Kopie; in der Adresszeile steht weiter hackschule.de. Was du dort eintippst, landet beim Angreifer. Ein beliebiger Server unter der falschen Adresse würde dagegen eine eigene Seite oder einen Fehler zeigen, darum lohnt sich das nur gezielt, mit einer vorbereiteten Kopie. Bei `https://` fällt es auf: Der Server des Angreifers hat kein Zertifikat für hackschule.de, und der Browser warnt.'

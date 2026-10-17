@@ -191,7 +191,7 @@ _task(rueckwaerts)
 
 ## Wem kann man glauben?
 
-Eine DNS-Antwort ist ein unverschlüsseltes UDP-Paket, und dein Rechner glaubt der ersten, die passt. Wer im selben WLAN sitzt oder einen DNS-Server betreibt, könnte dir eine falsche unterschieben.
+Eine DNS-Antwort ist ein unverschlüsseltes UDP-Paket, und dein Rechner glaubt der ersten, die passt. Wer im selben WLAN sitzt oder einen DNS-Server betreibt, könnte dir eine falsche unterschieben, und zwar gezielt: mit der Adresse eines eigenen Servers, auf dem eine Kopie der echten Seite läuft.
 
 _task(falsche-antwort)
 
