@@ -45,6 +45,16 @@ duration: 2 Doppelstunden
         word-break: break-all;
         margin-bottom: 0.6em;
     }
+    .lzw-codes span.done {
+        opacity: 0.55;
+    }
+    .lzw-codes span.now {
+        padding: 0 0.15em;
+        color: var(--bs-body-color);
+        font-weight: 600;
+        background-color: color-mix(in srgb, #ffe617 75%, transparent);
+        border-radius: 0.2em;
+    }
     .lzw-text span.done {
         opacity: 0.45;
     }
@@ -82,7 +92,8 @@ duration: 2 Doppelstunden
         margin-top: 0.6em;
         color: var(--bs-secondary-color);
     }
-    html[data-bs-theme="dark"] .lzw-text span.now {
+    html[data-bs-theme="dark"] .lzw-text span.now,
+    html[data-bs-theme="dark"] .lzw-codes span.now {
         background-color: color-mix(in srgb, #7a6a00 75%, transparent);
     }
     html[data-bs-theme="dark"] .lzw-steps tr.current td {
@@ -459,7 +470,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const step = decoded[k];
         const all = [];
         decoded.forEach((s) => all.push(...s.entry));
-        decodeRoot.querySelector('.lzw-count').textContent = decoded.length ? `Code ${k + 1} von ${decoded.length}: ${encoded.codes.join(' ')}` : '';
+        // The codes, the one being read now marked, the ones before it faint
+        decodeRoot.querySelector('.lzw-count').innerHTML = decoded.length ?
+            `Code ${k + 1} von ${decoded.length}: <span class='lzw-codes'>` +
+            encoded.codes.map((c, i) => `<span class='${i < k ? 'done' : i === k ? 'now' : ''}'>${c}</span>`).join(' ') +
+            '</span>' : '';
         decodeRoot.querySelector('.lzw-text').innerHTML = all.map((b, i) => {
             let cls = '';
             if (step && i >= step.to) return `<span style='visibility: hidden;'>${show([b])}</span>`;
