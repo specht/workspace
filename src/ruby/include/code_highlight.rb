@@ -1,4 +1,5 @@
 require 'rouge'
+require 'nokogiri'
 require_relative 'er_lexer'
 require_relative 'cypher_lexer'
 require_relative 'anaglyph_scene_lexer'
@@ -7,6 +8,23 @@ require_relative 'minicpu_lexer'
 module CodeHighlight
     # From this many lines on, a code block is set a little smaller.
     LONG_CODE_LINES = 20
+    # A line that starts with »~ « (or is only »~«) is context: code that is
+    # already in the file, shown faint around the new code so it is clear
+    # where that goes. It cannot be selected, and the copy button leaves it
+    # out. »~ …« stands for code in between (docs/aktivitaet-schreiben.md).
+    CONTEXT = /\A~(?: |$)/
+
+    # [text without the markers, line numbers (from 1) that are context]
+    def self.split_context(text)
+        context = []
+        lines = text.lines.each_with_index.map do |line, i|
+            next line unless line =~ CONTEXT
+
+            context << i + 1
+            line.sub(/\A~ ?/, '')
+        end
+        [lines.join, context]
+    end
 
     # Fenced code blocks: Rouge by the fence's language. A fence without a
     # language is plain text, like ```text. Used for page content and for the
@@ -123,11 +141,38 @@ module CodeHighlight
             end
             lexer ||= Rouge::Lexers::PlainText.new if language.nil? || language.empty?
             next if lexer.nil?
+            text, context = split_context(code.text)
             pre.content = ''
-            # if lineno
-            #     pre << "<div style='border-bottom: 1px solid white;display: inline-table;width: 100%;margin-bottom: 0.5em;padding-bottom: 0.5em;font-style: italic;font-weight: normal;'>HelloWorld.java (124 Bytes)</div>"
-            # end
-            pre << formatter.format(lexer.lex(code.text))
+            if context.empty? || lineno
+                pre << formatter.format(lexer.lex(text))
+            else
+                # One span per line, those with context marked
+                pre['class'] = [pre['class'], 'has-code-context'].compact.join(' ')
+                lines = Rouge::Formatters::HTMLLinewise.new(formatter, :class => 'code-line-%i').format(lexer.lex(text))
+                fragment = Nokogiri::HTML::DocumentFragment.parse(lines)
+                fragment.css('div').each do |div|
+                    div.name = 'span'
+                    number = div['class'].to_s[/code-line-(\d+)/, 1].to_i
+                    classes = ['code-line']
+                    if context.include?(number)
+                        classes << 'code-context'
+                    else
+                        # new code next to context: the snip line goes there
+                        classes << 'snip-above' if context.include?(number - 1)
+                        classes << 'snip-below' if context.include?(number + 1)
+                    end
+                    div['class'] = classes.join(' ')
+                    # Each line is a block of its own (default.css); its line break would add one more
+                    last = div.children.last
+                    last.content = last.content.sub(/\n\z/, '') if last&.text? && last.content.end_with?("\n")
+                    last = div.children.last
+                    if last && !last.text? && last.children.last&.text?
+                        t = last.children.last
+                        t.content = t.content.sub(/\n\z/, '')
+                    end
+                end
+                pre << fragment.to_html
+            end
         end
         root
     end

@@ -757,6 +757,21 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Code-Blöcke können Kontext zeigen: Zeilen mit `~ ` davor erscheinen blass,
+  lassen sich nicht markieren und werden nicht mitkopiert. »Eine Klötzchenwelt
+  in 3D« zeigt so bei jedem Stück Code, wo es in `main.c` hinkommt, mit den
+  Zeilen davor und danach, so wie die Datei an dieser Stelle aussieht.
+- Die raylib-Vorlage sagt Editor-Erweiterungen für C (clangd, C/C++), wo
+  `raylib.h` liegt; `#include <raylib.h>` ist nicht mehr rot unterstrichen.
+  Der Patch für `specht/raylib-starter` liegt bei.
+- Der Sprachwechsel auf Seiten in Ruby und Python ist ein Umschalter mit den
+  Logos der beiden Sprachen.
+- Das Widget zum Entpacken in »LZW« markiert den Code, der gerade gelesen
+  wird, und zeigt die Codes in Festbreitenschrift.
+- Die Bilder der Knöpfe »Maximize Panel«, »Kill Terminal« und »Go Live«
+  entstehen aus Rezepten, mit Mauszeiger und Tooltip über durchsichtigem
+  Grund (`keep-only` im Screenshot-Generator).
+- »Nach oben« in der Leiste über einer Seite ist ein runder Knopf.
 - Die Karten der Grafik-Aktivitäten nennen die Plattform mit der Sprache,
   etwa »TIC-80 / Lua«, »PixelRAM / C« oder »Pixelflow Canvas / Ruby«; BIF
   steht als »Markdown / JavaScript« da.

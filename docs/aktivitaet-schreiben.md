@@ -134,6 +134,21 @@ bei `_include_file` als Sprache `lua_copy`). Erklärt wird so ein Block
 trotzdem im Text, Zeile für Zeile. Weitere Endungen: `_wrap` (lange Zeilen
 umbrechen) und `_lineno` (Zeilennummern), in beliebiger Reihenfolge.
 
+Kommt neuer Code mitten in eine Datei, zeigt der Block, wo: Zeilen, die mit
+`~ ` anfangen, sind **Kontext**, Code, der schon in der Datei steht. Sie
+erscheinen blass, lassen sich nicht markieren, und der Kopierknopf lässt sie
+weg; `~ …` steht für Code dazwischen. Ein bis zwei Zeilen davor und danach
+reichen. Der Kontext zeigt die Datei, wie sie an dieser Stelle der Seite ist:
+Wird Code später ersetzt, ist sein alter Stand der Kontext, nicht der neue.
+
+```c
+~ move_player(dt);
+~
+Vector3 sun = Vector3Normalize((Vector3){ 0.5f, 0.8f, 0.3f });
+~
+~ Vector3 eyes = { feet.x, feet.y + EYE_HEIGHT, feet.z };
+```
+
 Im Code sind Namen englisch: Variablen, Funktionen, Konstanten, Dateien,
 Adressen (`respond`, `style.css`, `/time`), wie in jedem echten Projekt.
 Kommentare und was ein Programm ausgibt, dürfen deutsch sein. Im Text

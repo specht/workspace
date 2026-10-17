@@ -198,6 +198,32 @@ pre.copy-code {
     padding-right: 3em;
 }
 
+/* Context lines in a code block (code_highlight.rb, »~ «): already in the
+   file, faint, and left out when copying or selecting. */
+pre.has-code-context .code-line {
+    display: block;
+    min-height: 1lh;
+}
+
+pre .code-context {
+    opacity: 0.35;
+    filter: grayscale(1);
+    user-select: none;
+}
+
+/* A dashed snip line between the context and the new code */
+pre .snip-above {
+    margin-top: 0.35em;
+    padding-top: 0.35em;
+    border-top: 1px dashed rgba(255, 255, 255, 0.45);
+}
+
+pre .snip-below {
+    margin-bottom: 0.35em;
+    padding-bottom: 0.35em;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.45);
+}
+
 /* Centred on the first line: the block's padding (0.5em at 93%) plus half
    a line (1.5 at 93%) minus half the button. */
 .code-copy {

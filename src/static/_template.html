@@ -164,6 +164,12 @@ function install_code_copy() {
     let clipboard = new ClipboardJS('.code-copy', {
         text: function(trigger) {
             let pre = trigger.parentNode.querySelector('pre');
+            // With context (code_highlight.rb): one block per line, without
+            // line breaks; the context lines are already in the file
+            if (pre.classList.contains('has-code-context')) {
+                return Array.from(pre.querySelectorAll('.code-line:not(.code-context)'))
+                    .map(function (line) { return line.textContent; }).join('\n');
+            }
             let code = pre.querySelector('.rouge-code') || pre;
             return code.innerText.replace(/\n$/, '');
         },

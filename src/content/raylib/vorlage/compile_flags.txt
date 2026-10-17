@@ -1,0 +1,7 @@
+--target=wasm32-unknown-emscripten
+--sysroot=/opt/emsdk/upstream/emscripten/cache/sysroot
+-D__EMSCRIPTEN__
+-DPLATFORM_WEB
+-std=c11
+-Wall
+-Wextra

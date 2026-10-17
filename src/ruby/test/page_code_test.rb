@@ -24,6 +24,14 @@ class PageCodeTest < Minitest::Test
         assert_match(/w = 4/, PageCode.excerpt_problem("x = 1\nw = 4\n", file))
     end
 
+    # Context lines stand for code around the new code; they are not checked
+    def test_context_lines_are_left_out_code
+        file = "void f(void) {\n    int a = 1;\n    int b = 2;\n}\n"
+        assert_nil PageCode.excerpt_problem("~ void f(void) {\n    int b = 2;\n~ }\n", file)
+        assert_nil PageCode.excerpt_problem("~ void g(void) {\n    int b = 2;\n", file)
+        refute_nil PageCode.excerpt_problem("~ void f(void) {\n    int c = 3;\n", file)
+    end
+
     def test_a_recipe_without_its_code_is_reported
         Dir.mktmpdir do |dir|
             File.write(File.join(dir, 'server.rb'), "puts 'neu'\n")

@@ -69,6 +69,8 @@ write-file: light.vs <- file:vorlage/light.vs
 write-file: light.fs <- file:vorlage/light.fs
 write-file: README.md <- file:vorlage/README.md
 write-file: .gitignore <- file:vorlage/.gitignore
+write-file: compile_flags.txt <- file:vorlage/compile_flags.txt
+write-file: .vscode/c_cpp_properties.json <- file:vorlage/.vscode/c_cpp_properties.json
 write-file: textures.png <- file:vorlage/textures.png
 press: Control+K
 press: Control+O
@@ -227,6 +229,9 @@ _task(zellen)
 Noch ist die Welt leer: Ein globales Array ist in C am Anfang mit Nullen gefüllt, also mit `AIR`. Für die Landschaft berechnen wir für jede Stelle (x, z) eine Höhe und füllen die Säule darunter mit Blöcken: oben Gras, darunter drei Lagen Erde, ganz unten Stein. Die Höhe entsteht aus drei Sinuswellen mit verschiedenen Längen, die sich überlagern, so wie die Wellen bei [PixelRAM](/pixelram#3-wellen). Wo die Welt niedrig ist, liegt Sand.
 
 ```c_copy
+~     return world[x][y][z];
+~ }
+~
 void tree(int x, int y, int z)
 {
     for (int i = 0; i < 4; i++)
@@ -276,6 +281,9 @@ Am Ende stellt `generate_world` noch 14 Bäume an zufällige Stellen. `SetRandom
 Jetzt zeichnen wir die Welt. Für jeden Block einen `DrawCube` aufzurufen, wäre viel Arbeit für den Computer: Die meisten Blöcke stecken im Boden, und niemand sieht sie. Gezeichnet wird deshalb nur ein Block, der an Luft grenzt:
 
 ```c
+~     }
+~ }
+~
 bool visible(int x, int y, int z)
 {
     return block(x + 1, y, z) == AIR || block(x - 1, y, z) == AIR
@@ -289,6 +297,9 @@ Hier hilft, dass `block` außerhalb der Welt `AIR` sagt: Am Rand gilt ein Block 
 Ersetze `main` durch diese Fassung. Die Kamera steht jetzt hoch über der Welt, und `UpdateCamera(&camera, CAMERA_ORBITAL)` lässt sie langsam um ihr Ziel kreisen, die Mitte der Welt:
 
 ```c_copy
+~         || block(x, y, z + 1) == AIR || block(x, y, z - 1) == AIR;
+~ }
+~
 int main(void)
 {
     InitWindow(960, 540, "Klötzchenwelt");
@@ -363,6 +374,9 @@ Bis jetzt schwebt die Kamera über der Welt. Jetzt gehst du hinein: Die Kamera w
 Eine Figur in der Welt hat eine Position und eine Blickrichtung. Die Position sind ihre Füße. Die Blickrichtung beschreiben wir mit zwei Winkeln: `yaw` dreht nach links und rechts, `pitch` nach oben und unten. Daraus berechnet `view_direction()` einen Vektor, der vom Auge aus nach vorne zeigt:
 
 ```c_copy
+~         || block(x, y, z + 1) == AIR || block(x, y, z - 1) == AIR;
+~ }
+~
 // --------------------------------------------------------------- Die Figur
 
 Vector3 feet;          // Mitte der Fußsohlen
@@ -401,6 +415,9 @@ _task(blick)
 `move_player` liest die Tasten und bewegt die Figur. Schreibe sie unter `view_direction`:
 
 ```c_copy
+~     };
+~ }
+~
 void move_player(float dt)
 {
     // Umsehen: Maus (wenn gefangen) oder Pfeiltasten
@@ -435,7 +452,13 @@ void move_player(float dt)
 Die Rechenbefehle für Vektoren wie `Vector3Add` und `Vector3Scale` kommen aus `raymath.h`. Schreibe deshalb oben unter die Zeile mit `raylib.h`:
 
 ```c
+~ #include <stdlib.h>
+~ #include <raylib.h>
 #include <raymath.h>
+~
+~ // ---------------------------------------------------------------- Die Welt
+~
+~ #define WIDTH 48    // x
 ```
 
 _task(pro-bild)
@@ -445,6 +468,9 @@ _task(pro-bild)
 In `main` steht die Kamera jetzt dort, wo die Augen der Figur sind, und schaut in die Blickrichtung. Ersetze `main` noch einmal:
 
 ```c_copy
+~     feet = Vector3Add(feet, move);
+~ }
+~
 int main(void)
 {
     InitWindow(960, 540, "Klötzchenwelt");
@@ -565,14 +591,21 @@ bool on_ground = false;
 Am Ende von `move_player` stand bisher `feet = Vector3Add(feet, move);`. Ersetze diese Zeile durch:
 
 ```c
-// Jede Richtung einzeln: So gleitet man an einer Wand entlang, statt an
-// ihr kleben zu bleiben.
-Vector3 next = feet;
-next.x += move.x;
-if (!collides(next)) feet.x = next.x;
-next = feet;
-next.z += move.z;
-if (!collides(next)) feet.z = next.z;
+~     if (IsKeyDown(KEY_A)) move = Vector3Subtract(move, right);
+~     move = Vector3Scale(Vector3Normalize(move), 4.5f * dt);
+~
+    // Jede Richtung einzeln: So gleitet man an einer Wand entlang, statt an
+    // ihr kleben zu bleiben.
+    Vector3 next = feet;
+    next.x += move.x;
+    if (!collides(next)) feet.x = next.x;
+    next = feet;
+    next.z += move.z;
+    if (!collides(next)) feet.z = next.z;
+~
+~ }
+~
+~ int main(void)
 ```
 
 Das Programm probiert jeden Schritt erst aus: Würde die Figur nach dem Schritt in einem Block stecken, bleibt sie, wo sie ist.
@@ -584,21 +617,27 @@ _task(einzeln)
 Unter den Schritt in x und z kommt die Schwerkraft:
 
 ```c_copy
-// Schwerkraft und Springen
-vy -= 22.0f * dt;
-if (on_ground && IsKeyDown(KEY_SPACE)) vy = 7.5f;
-next = feet;
-next.y += vy * dt;
-if (collides(next)) {
-    if (vy < 0) {
-        on_ground = true;
-        feet.y = floorf(next.y) + 1.0f;   // genau auf den Block stellen
+~     next.z += move.z;
+~     if (!collides(next)) feet.z = next.z;
+~
+    // Schwerkraft und Springen
+    vy -= 22.0f * dt;
+    if (on_ground && IsKeyDown(KEY_SPACE)) vy = 7.5f;
+    next = feet;
+    next.y += vy * dt;
+    if (collides(next)) {
+        if (vy < 0) {
+            on_ground = true;
+            feet.y = floorf(next.y) + 1.0f;   // genau auf den Block stellen
+        }
+        vy = 0;
+    } else {
+        feet.y = next.y;
+        on_ground = false;
     }
-    vy = 0;
-} else {
-    feet.y = next.y;
-    on_ground = false;
-}
+~ }
+~
+~ int main(void)
 ```
 
 `vy` ist die Geschwindigkeit nach oben. Die Schwerkraft verkleinert sie in jeder Sekunde um 22 Blöcke pro Sekunde, also wird die Figur immer schneller, je länger sie fällt. Ein Sprung setzt `vy` auf 7,5, und die Schwerkraft bremst ihn wieder ab. Stößt die Figur beim Fallen auf einen Block, steht sie auf dem Boden: `vy` wird 0, und die Füße kommen genau auf die Oberseite des Blocks.
@@ -606,7 +645,12 @@ if (collides(next)) {
 Zuletzt soll die Figur nicht mehr bei y = 9 in der Luft beginnen, sondern oben über der Welt, und dann auf den Boden fallen. Ändere die Startposition in `main`:
 
 ```c
+~ SetExitKey(KEY_NULL);   // Esc gibt nur die Maus frei
+~
+~ generate_world();
 feet = (Vector3){ 8.5f, HEIGHT - 2, 10.5f };
+~ yaw = 0.8f;      // schräg über die Welt schauen
+~ pitch = -0.2f;
 ```
 
 <!-- tutorial-screenshot
@@ -639,6 +683,9 @@ Um einen Block abzubauen, musst du wissen, auf welchen Block du schaust. Dafür 
 Schreibe das über `main`:
 
 ```c_copy
+~     }
+~ }
+~
 // ------------------------------------------------------------------ Zielen
 
 bool hit = false;
@@ -661,6 +708,9 @@ void aim(Vector3 eyes, Vector3 look)
         ax = x; ay = y; az = z;
     }
 }
+~
+~ int main(void)
+~ {
 ```
 
 _task(schritte)
@@ -670,12 +720,21 @@ _task(schritte)
 In `main` braucht das Programm die Blockart, die du gerade baust. Schreibe vor die Schleife:
 
 ```c
+~ camera.fovy = 70;
+~ camera.projection = CAMERA_PERSPECTIVE;
+~
 int selected = GRASS;
+~
+~ while (!WindowShouldClose())
+~ {
 ```
 
 und ersetze in der Schleife den Teil, der die Maus fängt:
 
 ```c
+~ if (dt > 0.05f) dt = 0.05f;
+~
+~ // Ein Klick ins Bild fängt die Maus, Esc gibt sie frei
 if (!IsCursorHidden() && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
     DisableCursor();
 else {
@@ -690,6 +749,10 @@ else {
 if (IsKeyPressed(KEY_ESCAPE)) EnableCursor();
 for (int i = 1; i < BLOCK_TYPES; i++)
     if (IsKeyPressed(KEY_ONE + i - 1)) selected = i;
+~
+~ move_player(dt);
+~
+~ BeginDrawing();
 ```
 
 Mit der linken Maustaste wird der Block, auf den du schaust, zu Luft. Die rechte Maustaste setzt einen Block der gewählten Art in das Luftfeld davor, aber nicht, wenn du selbst dort stehst. Die Tasten <kbd>1</kbd> bis <kbd>6</kbd> wählen die Art: `KEY_ONE + 1` ist dasselbe wie `KEY_TWO`, weil die Tasten in raylib Nummern in einer Reihe haben.
@@ -697,18 +760,30 @@ Mit der linken Maustaste wird der Block, auf den du schaust, zu Luft. Die rechte
 Damit `aim` in jedem Bild aufgerufen wird und der Block, auf den du schaust, einen Rahmen bekommt, ändere zwei Stellen. Die Kamera:
 
 ```c
+~     if (IsKeyPressed(KEY_ONE + i - 1)) selected = i;
+~
+~ move_player(dt);
+~
 Vector3 eyes = { feet.x, feet.y + EYE_HEIGHT, feet.z };
 Vector3 look = view_direction();
 camera.position = eyes;
 camera.target = Vector3Add(eyes, look);
 aim(eyes, look);
+~
+~ BeginDrawing();
+~ ClearBackground(SKYBLUE);
 ```
 
 und, direkt vor `EndMode3D()`:
 
 ```c
+~                 blocks++;
+~             }
 if (hit)
     DrawCubeWires((Vector3){ hx + 0.5f, hy + 0.5f, hz + 0.5f }, 1.01f, 1.01f, 1.01f, BLACK);
+~ EndMode3D();
+~
+~ DrawText(TextFormat("%d Blöcke  %d FPS", blocks, GetFPS()), 10, 10, 20, DARKBLUE);
 ```
 
 Der Rahmen ist eine Spur größer als der Block, damit er nicht in dessen Kanten verschwindet.
@@ -718,14 +793,24 @@ Der Rahmen ist eine Spur größer als der Block, damit er nicht in dessen Kanten
 Zuletzt zeichnen wir in 2D über das Bild: ein Fadenkreuz in der Mitte, damit du weißt, wohin du zielst, und unten eine Leiste mit den Blockarten. Für die Namen kommt über `colors` eine Liste dazu:
 
 ```c
+~ #define DEPTH 48    // z
+~
+~ enum { AIR, GRASS, DIRT, STONE, WOOD, LEAVES, SAND, BLOCK_TYPES };
+~
 const char *names[BLOCK_TYPES] = {
     "Luft", "Gras", "Erde", "Stein", "Holz", "Laub", "Sand",
 };
+~
+~ Color colors[BLOCK_TYPES] = {
+~     { 0, 0, 0, 0 },
 ```
 
 Und nach `EndMode3D()`, vor dem `DrawText` mit den FPS:
 
 ```c_copy
+~     DrawCubeWires((Vector3){ hx + 0.5f, hy + 0.5f, hz + 0.5f }, 1.01f, 1.01f, 1.01f, BLACK);
+~ EndMode3D();
+~
 // 2D über dem Bild: Fadenkreuz, Leiste mit den Blöcken, Hinweise
 int mx = GetScreenWidth() / 2, my = GetScreenHeight() / 2;
 DrawRectangle(mx - 10, my - 1, 20, 2, WHITE);
@@ -742,6 +827,8 @@ for (int i = 1; i < BLOCK_TYPES; i++) {
         DrawRectangleLinesEx((Rectangle){ fx - 2, fy - 2, 52, 52 }, 3, WHITE);
 }
 DrawText(names[selected], mx - MeasureText(names[selected], 20) / 2, GetScreenHeight() - 88, 20, WHITE);
+~ DrawText(TextFormat("%d Blöcke  %d FPS", blocks, GetFPS()), 10, 10, 20, DARKBLUE);
+~ if (!IsCursorHidden() && GetTime() < 8)
 ```
 
 `MeasureText` sagt, wie breit ein Text wird; so steht der Name genau in der Mitte.
@@ -778,12 +865,22 @@ Um das zu berechnen, muss das Programm für jede Fläche wissen, wohin sie zeigt
 raylib zeichnet alles aus Dreiecken. Mit den Befehlen aus `rlgl.h` können wir der Grafikkarte die Ecken selbst schicken: `rlBegin(RL_QUADS)` sagt, dass immer vier Ecken ein Viereck bilden, `rlColor4ub` und `rlNormal3f` gelten für die folgenden Ecken, `rlVertex3f` ist eine Ecke. Schreibe oben dazu:
 
 ```c
+~ #include <raylib.h>
+~ #include <raymath.h>
 #include <rlgl.h>
+~
+~ // ---------------------------------------------------------------- Die Welt
+~
+~ #define WIDTH 48    // x
 ```
 
 und unter `visible` diese beiden Funktionen:
 
 ```c_copy
+~ }
+~
+~ // ---------------------------------------------------------- Blöcke zeichnen
+~
 // Eine Seite eines Blocks: vier Ecken, eine Richtung (die Normale), eine Farbe
 void face(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Vector3 n, Color f)
 {
@@ -834,6 +931,10 @@ int draw_block(int x, int y, int z)
     rlEnd();
     return faces;
 }
+~
+~ // --------------------------------------------------------------- Die Figur
+~
+~ Vector3 feet;          // Mitte der Fußsohlen
 ```
 
 - Jede der sechs Seiten wird nur gezeichnet, wenn auf ihrer Seite kein fester Block liegt. Zwei Blöcke nebeneinander zeigen sich ihre Seiten nie, die zeichnen wir auch nicht. Am Rand der Welt sagt `solid` »Wand«; damit die Schichten dort trotzdem zu sehen sind, prüft `draw_block` den Rand eigens.
@@ -880,32 +981,54 @@ _task(sonnig)
 Jetzt muss `main` den Shader laden, ihm die Werte geben und mit ihm zeichnen. `make` packt die beiden Dateien schon mit in die Webseite, so dass `LoadShader` sie findet. Vor die Schleife kommt:
 
 ```c
+~ yaw = 0.8f;      // schräg über die Welt schauen
+~ pitch = -0.2f;
+~
 Shader light = LoadShader("light.vs", "light.fs");
 int loc_sun = GetShaderLocation(light, "sun");
 int loc_sunlight = GetShaderLocation(light, "sunlight");
 int loc_ambient = GetShaderLocation(light, "ambient");
+~
+~ Camera3D camera = { 0 };
+~ camera.up = (Vector3){ 0, 1, 0 };
 ```
 
 `GetShaderLocation` sucht für jeden Namen eines `uniform` die Stelle, an der der Shader ihn erwartet. In der Schleife, nach `move_player(dt);`:
 
 ```c
+~     if (IsKeyPressed(KEY_ONE + i - 1)) selected = i;
+~
+~ move_player(dt);
+~
 // Die Sonne steht schräg über der Welt
 Vector3 sun = Vector3Normalize((Vector3){ 0.5f, 0.8f, 0.3f });
 Vector3 sunlight = { 0.75f, 0.7f, 0.6f };
 Vector3 ambient = { 0.43f, 0.46f, 0.54f };
+~
+~ Vector3 eyes = { feet.x, feet.y + EYE_HEIGHT, feet.z };
+~ Vector3 look = view_direction();
 ```
 
 und nach `aim(eyes, look);`:
 
 ```c
+~ camera.target = Vector3Add(eyes, look);
+~ aim(eyes, look);
+~
 SetShaderValue(light, loc_sun, &sun, SHADER_UNIFORM_VEC3);
 SetShaderValue(light, loc_sunlight, &sunlight, SHADER_UNIFORM_VEC3);
 SetShaderValue(light, loc_ambient, &ambient, SHADER_UNIFORM_VEC3);
+~
+~ BeginDrawing();
+~ ClearBackground(SKYBLUE);
 ```
 
 Zuletzt ersetzt du die Schleife, die die Welt zeichnet, durch eine, die `draw_block` aufruft, eingerahmt von `BeginShaderMode` und `EndShaderMode`:
 
 ```c
+~ ClearBackground(SKYBLUE);
+~
+~ BeginMode3D(camera);
 BeginShaderMode(light);
 int faces = 0;
 for (int x = 0; x < WIDTH; x++)
@@ -914,12 +1037,19 @@ for (int x = 0; x < WIDTH; x++)
             if (world[x][y][z] != AIR)
                 faces += draw_block(x, y, z);
 EndShaderMode();
+~
+~ if (hit)
+~     DrawCubeWires((Vector3){ hx + 0.5f, hy + 0.5f, hz + 0.5f }, 1.01f, 1.01f, 1.01f, BLACK);
 ```
 
 Die Zeile mit den FPS zählt jetzt Seiten statt Blöcke; ändere sie zu:
 
 ```c
+~ }
+~ DrawText(names[selected], mx - MeasureText(names[selected], 20) / 2, GetScreenHeight() - 88, 20, WHITE);
 DrawText(TextFormat("%d Seiten  %d FPS", faces, GetFPS()), 10, 10, 10, WHITE);
+~ if (!IsCursorHidden() && GetTime() < 8)
+~     DrawText("Klick ins Bild: Maus fangen. WASD laufen, Pfeiltasten umsehen.", 10, 36, 20, WHITE);
 ```
 
 Die Funktion `visible` brauchst du nicht mehr; `draw_block` prüft jetzt jede Seite einzeln. Vor `CloseWindow()` gibt `UnloadShader(light);` den Shader wieder frei.
@@ -952,12 +1082,23 @@ _task(licht)
 Bisher steht die Sonne still. Mit einer Variable `time_of_day` zwischen 0 und 1 (0 und 1 sind Mitternacht, 0,5 ist Mittag) kann sie wandern. Schreibe über `main`:
 
 ```c
+~ }
+~
+~ // --------------------------------------------------------------- Tageszeit
+~
 float time_of_day = 0.4f;  // 0 und 1: Mitternacht, 0,5: Mittag
+~
+~ int main(void)
+~ {
 ```
 
 Und ersetze in der Schleife die Zeilen der festen Sonne durch:
 
 ```c
+~     if (IsKeyPressed(KEY_ONE + i - 1)) selected = i;
+~
+~ move_player(dt);
+~
 // Die Zeit vergeht: ein Tag dauert zwei Minuten, mit T schneller
 time_of_day += dt / 120.0f + (IsKeyDown(KEY_T) ? dt * 0.2f : 0);
 time_of_day -= floorf(time_of_day);
@@ -971,6 +1112,9 @@ Vector3 sky_v = { sky.r / 255.0f, sky.g / 255.0f, sky.b / 255.0f };
 Vector3 sunlight = { 0.75f * day, 0.7f * day, 0.6f * day };
 // Nachts bleibt bläuliches Mondlicht
 Vector3 ambient = { 0.2f + 0.23f * day, 0.22f + 0.24f * day, 0.34f + 0.2f * day };
+~
+~ Vector3 eyes = { feet.x, feet.y + EYE_HEIGHT, feet.z };
+~ Vector3 look = view_direction();
 ```
 
 - Die Sonne läuft auf einem Kreis um die Welt: `cosf(angle)` und `sinf(angle)` sind ihre Position auf dem Kreis, so wie bei der Blickrichtung. Um 0,25 geht sie auf, um 0,75 unter.
@@ -984,16 +1128,30 @@ Statt `ClearBackground(SKYBLUE)` steht jetzt `ClearBackground(sky)`.
 Nachts ist es dunkel, Zeit für Licht. Eine Fackel ist eine neue Blockart, die du bauen kannst. Sie ist nicht fest, du kannst durch sie hindurchgehen. Ergänze das `enum`, `names` und `colors` um eine siebte Art, `TORCH`:
 
 ```c
+~ #define HEIGHT 24   // y, nach oben
+~ #define DEPTH 48    // z
+~
 enum { AIR, GRASS, DIRT, STONE, WOOD, LEAVES, SAND, TORCH, BLOCK_TYPES };
+~
+~ const char *names[BLOCK_TYPES] = {
+~     "Luft", "Gras", "Erde", "Stein", "Holz", "Laub", "Sand", "Fackel",
 ```
 
 ```c
-{ 255, 200, 80, 255 },    // Fackel
+~     { 52, 128, 56, 255 },     // Laub
+~     { 222, 204, 150, 255 },   // Sand
+    { 255, 200, 80, 255 },    // Fackel
+~ };
+~
+~ unsigned char world[WIDTH][HEIGHT][DEPTH];
 ```
 
 In `solid` ist eine Fackel jetzt wie Luft:
 
 ```c
+~     return world[x][y][z];
+~ }
+~
 bool solid(int x, int y, int z)
 {
     if (x < 0 || z < 0 || x >= WIDTH || z >= DEPTH || y < 0)
@@ -1001,11 +1159,17 @@ bool solid(int x, int y, int z)
     int type = block(x, y, z);
     return type != AIR && type != TORCH;
 }
+~
+~ void tree(int x, int y, int z)
+~ {
 ```
 
 Eine Fackel leuchtet für ihre Umgebung. Dafür sucht das Programm in jedem Bild alle Fackeln der Welt und gibt ihre Positionen dem Shader, als Liste von höchstens 16 Punkten. Das kommt in der Schleife vor die Zeilen mit `SetShaderValue`:
 
 ```c
+~ camera.target = Vector3Add(eyes, look);
+~ aim(eyes, look);
+~
 // Fackeln einsammeln: Sie leuchten im Shader
 Vector3 torches[16];
 int torch_count = 0;
@@ -1014,23 +1178,36 @@ for (int x = 0; x < WIDTH; x++)
         for (int z = 0; z < DEPTH; z++)
             if (world[x][y][z] == TORCH && torch_count < 16)
                 torches[torch_count++] = (Vector3){ x + 0.5f, y + 0.7f, z + 0.5f };
+~
+~ SetShaderValue(light, loc_sun, &sun, SHADER_UNIFORM_VEC3);
+~ SetShaderValue(light, loc_sunlight, &sunlight, SHADER_UNIFORM_VEC3);
 ```
 
 Die Fackeln selbst zeichnen wir nach `EndShaderMode()` ohne den Licht-Shader: Was selbst leuchtet, braucht kein Licht von außen. Ein Stiel aus Holz und oben eine Flamme:
 
 ```c
+~                 faces += draw_block(x, y, z);
+~ EndShaderMode();
+~
 // Fackeln leuchten selbst: ohne Licht-Shader gezeichnet
 for (int i = 0; i < torch_count; i++) {
     Vector3 p = torches[i];
     DrawCube((Vector3){ p.x, p.y - 0.4f, p.z }, 0.15f, 0.6f, 0.15f, (Color){ 120, 80, 40, 255 });
     DrawCube((Vector3){ p.x, p.y - 0.05f, p.z }, 0.22f, 0.18f, 0.22f, colors[TORCH]);
 }
+~
+~ if (hit)
+~     DrawCubeWires((Vector3){ hx + 0.5f, hy + 0.5f, hz + 0.5f }, 1.01f, 1.01f, 1.01f, BLACK);
 ```
 
 Und in der Schleife, die die Welt zeichnet, werden Fackeln nicht als Block gezeichnet:
 
 ```c
-if (world[x][y][z] != AIR && world[x][y][z] != TORCH)
+~     for (int y = 0; y < HEIGHT; y++)
+~         for (int z = 0; z < DEPTH; z++)
+            if (world[x][y][z] != AIR && world[x][y][z] != TORCH)
+~                 faces += draw_block(x, y, z);
+~ EndShaderMode();
 ```
 
 ### Nebel
@@ -1087,19 +1264,29 @@ Jede Fackel gibt warmes, orangefarbenes Licht. Wie bei der Sonne zählt, wie seh
 Damit der Shader die neuen Werte bekommt, braucht `main` vier weitere Stellen:
 
 ```c
+~ int loc_sunlight = GetShaderLocation(light, "sunlight");
+~ int loc_ambient = GetShaderLocation(light, "ambient");
 int loc_sky = GetShaderLocation(light, "sky");
 int loc_eyes = GetShaderLocation(light, "eyes");
 int loc_torches = GetShaderLocation(light, "torches");
 int loc_torch_count = GetShaderLocation(light, "torchCount");
+~
+~ Camera3D camera = { 0 };
+~ camera.up = (Vector3){ 0, 1, 0 };
 ```
 
 und in der Schleife nach den anderen `SetShaderValue`:
 
 ```c
+~ SetShaderValue(light, loc_sunlight, &sunlight, SHADER_UNIFORM_VEC3);
+~ SetShaderValue(light, loc_ambient, &ambient, SHADER_UNIFORM_VEC3);
 SetShaderValue(light, loc_sky, &sky_v, SHADER_UNIFORM_VEC3);
 SetShaderValue(light, loc_eyes, &eyes, SHADER_UNIFORM_VEC3);
 SetShaderValueV(light, loc_torches, torches, SHADER_UNIFORM_VEC3, torch_count > 0 ? torch_count : 1);
 SetShaderValue(light, loc_torch_count, &torch_count, SHADER_UNIFORM_INT);
+~
+~ BeginDrawing();
+~ ClearBackground(sky);
 ```
 
 `SetShaderValueV` gibt dem Shader eine ganze Liste auf einmal. Steht keine Fackel in der Welt, schicken wir trotzdem einen Eintrag, denn eine Liste mit null Einträgen kennt der Shader nicht; `torchCount` ist dann 0, und die Schleife im Shader hört sofort auf.
@@ -1142,6 +1329,10 @@ In der Vorlage liegt `textures.png`, ein Bild aus acht Kacheln von 16 × 16 Pixe
 Gras bekommt oben die erste Kachel, an den Seiten die zweite mit dem grünen Rand und unten Erde. Ein Holzblock zeigt an den Seiten Rinde und oben die Jahresringe. Die Reihenfolge der Kacheln steht als `enum` im Programm, und `tile_for` sagt, welche Kachel eine Seite bekommt. Schreibe beides unter `world`:
 
 ```c_copy
+~ };
+~
+~ unsigned char world[WIDTH][HEIGHT][DEPTH];
+~
 // ---------------------------------------------------------------- Texturen
 
 // textures.png ist ein Streifen aus Kacheln, alle gleich groß, in dieser
@@ -1161,6 +1352,9 @@ int tile_for(int type, int dir)
     default: return T_SAND;
     }
 }
+~
+~ // Der Block an einer Stelle; außerhalb der Welt ist Luft
+~ int block(int x, int y, int z)
 ```
 
 ### Texturkoordinaten
@@ -1170,6 +1364,10 @@ Welcher Teil des Bildes auf welche Ecke kommt, sagen **Texturkoordinaten**: zwei
 Damit eine Kachel nicht auf dem Kopf steht, müssen die Ecken einer Seite immer in derselben Reihenfolge kommen: von außen gesehen links unten, rechts unten, rechts oben, links oben. Das ist auch gegen den Uhrzeigersinn, wie bisher. Ersetze `face` und `draw_block`:
 
 ```c_copy
+~ }
+~
+~ // ---------------------------------------------------------- Blöcke zeichnen
+~
 // Eine Seite eines Blocks: vier Ecken, von außen gesehen links unten, rechts
 // unten, rechts oben, links oben; dazu die Richtung (Normale), eine
 // Helligkeit und die Kachel aus der Textur
@@ -1224,6 +1422,10 @@ int draw_block(int x, int y, int z)
     rlEnd();
     return faces;
 }
+~
+~ // --------------------------------------------------------------- Die Figur
+~
+~ Vector3 feet;          // Mitte der Fußsohlen
 ```
 
 Die Farbe einer Ecke ist jetzt Weiß, ein wenig heller oder dunkler: Die Textur bringt die Farbe mit, und Weiß lässt sie, wie sie ist.
@@ -1233,13 +1435,21 @@ Die Farbe einer Ecke ist jetzt Weiß, ein wenig heller oder dunkler: Die Textur 
 Vor die Schleife kommt, gleich nach `LoadShader`:
 
 ```c
+~ pitch = -0.2f;
+~
+~ Shader light = LoadShader("light.vs", "light.fs");
 Texture2D texture = LoadTexture("textures.png");
 SetTextureFilter(texture, TEXTURE_FILTER_POINT);   // scharfe Pixel
+~ int loc_sun = GetShaderLocation(light, "sun");
+~ int loc_sunlight = GetShaderLocation(light, "sunlight");
 ```
 
 `TEXTURE_FILTER_POINT` sorgt für scharfe Pixel. Ohne diese Zeile würde die Grafikkarte zwischen den Pixeln weich überblenden, und die Blöcke sähen verschwommen aus. Beim Zeichnen sagt `rlSetTexture`, welche Textur die Flächen bekommen:
 
 ```c
+~ ClearBackground(sky);
+~
+~ BeginMode3D(camera);
 BeginShaderMode(light);
 rlSetTexture(texture.id);
 int faces = 0;
@@ -1250,6 +1460,9 @@ for (int x = 0; x < WIDTH; x++)
                 faces += draw_block(x, y, z);
 rlSetTexture(0);
 EndShaderMode();
+~
+~ // Fackeln leuchten selbst: ohne Licht-Shader gezeichnet
+~ for (int i = 0; i < torch_count; i++) {
 ```
 
 Vor `UnloadShader(light);` am Ende kommt `UnloadTexture(texture);`. `make` packt `textures.png` mit in die Webseite, so wie die Shader.
@@ -1267,14 +1480,26 @@ varying vec2 uv;           // wo in der Textur dieser Punkt liegt
 Die ersten beiden gehören zu den anderen `attribute` und `varying` oben, die dritte in `main`. Im Fragment-Shader `light.fs` kommen `varying vec2 uv;` und die Textur dazu:
 
 ```glsl
+~ varying vec4 color;
+~ varying vec2 uv;
+~
 uniform sampler2D texture0;  // die Textur mit allen Kacheln
+~
+~ uniform vec3 sun;        // Richtung, aus der die Sonne scheint
+~ uniform vec3 sunlight;   // Farbe und Stärke des Sonnenlichts
 ```
 
 `texture2D` liest an der Stelle `uv` die Farbe der Textur. Ersetze die Zeile mit `result` durch:
 
 ```glsl
+~     light += vec3(1.0, 0.6, 0.3) * (0.3 + 0.7 * facing) / (1.0 + 0.3 * dist * dist);
+~ }
+~
 vec3 pixel = texture2D(texture0, uv).rgb;
 vec3 result = pixel * color.rgb * min(light, vec3(1.4));
+~
+~ // Nebel: weit Entferntes verschwimmt mit dem Himmel
+~ float fog = clamp((length(position - eyes) - 16.0) / 20.0, 0.0, 1.0);
 ```
 
 Licht, Fackeln und Nebel rechnen weiter wie vorher; sie hellen jetzt die Pixel der Textur auf oder dunkeln sie ab.

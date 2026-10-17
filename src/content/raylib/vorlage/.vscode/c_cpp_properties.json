@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "raylib (Emscripten)",
+            "compilerPath": "/opt/emsdk/upstream/bin/clang",
+            "compilerArgs": [
+                "--target=wasm32-unknown-emscripten",
+                "--sysroot=/opt/emsdk/upstream/emscripten/cache/sysroot"
+            ],
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/opt/emsdk/upstream/emscripten/cache/sysroot/include"
+            ],
+            "defines": ["__EMSCRIPTEN__", "PLATFORM_WEB"],
+            "cStandard": "c11",
+            "intelliSenseMode": "clang-x86"
+        }
+    ],
+    "version": 4
+}

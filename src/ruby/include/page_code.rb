@@ -75,8 +75,11 @@ module PageCode
         end
     end
 
+    # Context lines (»~ «, CodeHighlight::CONTEXT) show what the file has
+    # around the new code at that moment; code from later steps may stand
+    # between them in the finished file. They count as left-out code.
     def self.normalize(text)
-        text.lines.map(&:strip)
+        text.lines.map { |l| l =~ /\A~(?: |$)/ ? '…' : l.strip }
     end
 
     # nil if every run of lines between elisions appears in the file, in
