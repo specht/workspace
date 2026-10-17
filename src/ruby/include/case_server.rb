@@ -42,6 +42,30 @@ module CaseServer
         OpenSSL::HMAC.hexdigest('SHA256', secret, "password:#{login}")[0, PASSWORD_LENGTH]
     end
 
+    # The case files' address, and a person's own one: the page gives the
+    # logged-in person a key in the path, so the website knows whose note to
+    # add even when the Workspace fetches through the public address (and
+    # the request arrives from the server's own address, not the
+    # Workspace's). In the path, not after ?, so wget still saves
+    # bitstein.tar.gz.
+    ARCHIVE_PATH = '/terminal-mystery/bitstein.tar.gz'
+    KEY_LENGTH = 16
+
+    def self.archive_key(secret, email)
+        OpenSSL::HMAC.hexdigest('SHA256', secret, "archive:#{email.to_s.downcase}")[0, KEY_LENGTH]
+    end
+
+    def self.personal_archive_path(secret, email)
+        "/terminal-mystery/akten/#{archive_key(secret, email)}/bitstein.tar.gz"
+    end
+
+    # Whose key this is, among emails; nil if nobody's.
+    def self.email_for_key(secret, key, emails)
+        return nil unless key.to_s.match?(/\A[0-9a-f]{#{KEY_LENGTH}}\z/)
+
+        emails.find { |email| archive_key(secret, email) == key }
+    end
+
     # The variables a person's Workspace gets, for the screenshot recipes;
     # the page itself points to the note in the case files.
     def self.workspace_environment(secret, email)

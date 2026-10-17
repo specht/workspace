@@ -14,6 +14,8 @@ examples:
   hinweise:
     pass:
       - archive: beispiele/bitstein.tar.gz
+        answer: grep '^HINWEIS' tatort.txt
+      - archive: beispiele/bitstein.tar.gz
         answer: grep '^HINWEIS' bitstein/tatort.txt
       - archive: beispiele/bitstein.tar.gz
         answer: cd bitstein && grep ^HINWEIS tatort.txt
@@ -23,15 +25,15 @@ examples:
         answer: grep HINWEIS bitstein/tatort.txt
         say: Mit `^`
       - archive: beispiele/bitstein.tar.gz
-        answer: grep '^HINWEIS' tatort.txt
-        say: bitstein/tatort.txt
+        answer: grep '^HINWEIS' Tatort.txt
+        say: wie `ls` ihn dort zeigt
       - archive: beispiele/bitstein.tar.gz
         answer: grep -i hinweis bitstein/tatort.txt
 
   zeugin:
     pass:
       - archive: beispiele/bitstein.tar.gz
-        answer: head -n 23 bitstein/strassen/moewenweg.txt | tail -n 1
+        answer: head -n 23 strassen/moewenweg.txt | tail -n 1
       - archive: beispiele/bitstein.tar.gz
         answer: sed -n 23p bitstein/strassen/moewenweg.txt
     fail:
@@ -53,7 +55,7 @@ examples:
   autos:
     pass:
       - archive: beispiele/bitstein.tar.gz
-        answer: grep '^BS-K' bitstein/fahrzeuge.txt | grep gelb | grep '7 '
+        answer: grep '^BS-K' fahrzeuge.txt | grep gelb | grep '7 '
       - archive: beispiele/bitstein.tar.gz
         answer: grep -E '^BS-K[A-Z]* [0-9]*7 +gelb' bitstein/fahrzeuge.txt
     fail:
@@ -67,7 +69,7 @@ examples:
   beide-vereine:
     pass:
       - archive: beispiele/bitstein.tar.gz
-        answer: sort bitstein/vereine/schachclub.txt bitstein/vereine/muskelkater.txt | uniq -d
+        answer: sort vereine/schachclub.txt vereine/muskelkater.txt | uniq -d
       - archive: beispiele/bitstein.tar.gz
         answer: cd bitstein/vereine && cat schachclub.txt muskelkater.txt | sort | uniq -d
     fail:

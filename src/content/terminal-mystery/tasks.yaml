@@ -1,8 +1,9 @@
 # Aufgaben zu »Ein Krimi im Terminal«. Format: docs/aufgaben.md.
-# Die Akten kommen aus src/static/terminal-mystery/bitstein.tar.gz, gebaut von
+# Die Akten kommen aus beispiele/bitstein.tar.gz, gebaut von
 # beispiele/make_case.rb, und liegen nach dem Entpacken in /workspace/bitstein.
 # Die Zahlen unten stammen aus diesem Archiv; das Skript gibt sie aus.
-# Befehle laufen in /workspace, also mit bitstein/ davor oder mit cd.
+# Befehle laufen in /workspace/bitstein (dir), wie im Terminal der Seite;
+# mit bitstein/ davor oder cd bitstein laufen sie in /workspace.
 format: 1
 activity: terminal-mystery
 tasks:
@@ -22,10 +23,10 @@ tasks:
     title: Die Hinweise
     prompt: |
       Schreib einen Befehl, der aus `tatort.txt` genau die Zeilen ausgibt, die
-      mit `HINWEIS` anfangen. Der Befehl läuft in deinem Home-Verzeichnis:
-      Schreib also `bitstein/tatort.txt` oder fang mit `cd bitstein &&` an.
+      mit `HINWEIS` anfangen.
     check:
       type: command
+      dir: bitstein
       timeout: 10
       output:
         lines: 5
@@ -34,8 +35,8 @@ tasks:
       - when: { output_matches: 'Bitte nicht berühren' }
         say: Eine Zeile zu viel, das Schild an Vitrine 4. Dort steht `HINWEIS` mitten in der Zeile. Mit `^` passt das Muster nur am Anfang einer Zeile.
       - when: { output_matches: 'No such file' }
-        say: Der Befehl läuft in deinem Home-Verzeichnis. Schreib `bitstein/tatort.txt`.
-    solution: "`grep '^HINWEIS' bitstein/tatort.txt`"
+        say: Diese Datei gibt es nicht. Der Befehl läuft im Ordner `bitstein`, wie in deinem Terminal; schreib den Namen so, wie `ls` ihn dort zeigt.
+    solution: "`grep '^HINWEIS' tatort.txt`"
 
   - id: gross-klein
     title: Groß oder klein
@@ -49,7 +50,7 @@ tasks:
       - when: { equals: 5 }
         say: Das sind nur die Zeilen, die mit `HINWEIS` anfangen. Gesucht ist das Wort überall und in jeder Schreibweise, mit `-i`.
     hint: '`grep -c` zählt Zeilen, `grep -i` macht Groß und Klein gleich.'
-    solution: "`grep -ic hinweis bitstein/tatort.txt` ergibt 181."
+    solution: "`grep -ic hinweis tatort.txt` ergibt 181."
 
   - id: zeugin
     title: Die Zeugin
@@ -58,6 +59,7 @@ tasks:
       der Zeugin ausgibt, und nur sie.
     check:
       type: command
+      dir: bitstein
       timeout: 10
       output:
         lines: 1
@@ -66,7 +68,7 @@ tasks:
       - when: { output_matches: 'befragung-2290' }
         say: Das ist Herr Kowalczyk aus Hausnummer 32, er hat sein eigenes Auto gesehen. Die Zeugin wohnt in Nummer 23.
     hint: '`head -n 23` gibt die ersten 23 Zeilen aus. Was ist davon die letzte?'
-    solution: "`head -n 23 bitstein/strassen/moewenweg.txt | tail -n 1`"
+    solution: "`head -n 23 strassen/moewenweg.txt | tail -n 1`"
 
   - id: nachtwaechter
     title: Der Nachtwächter
@@ -79,7 +81,7 @@ tasks:
       - when: { matches: '3315|4909|7510' }
         say: In dieser Befragung kommt Ole Brandt vor, aber befragt wurde jemand anders. Schau, wer in der zweiten Zeile steht.
     hint: '`grep -l` nennt nur die Dateien, in denen das Muster vorkommt.'
-    solution: "`grep -l \"Ole Brandt\" bitstein/befragungen/*` nennt vier Dateien; befragt wurde er in `befragung-1290.txt`."
+    solution: "`grep -l \"Ole Brandt\" befragungen/*` nennt vier Dateien; befragt wurde er in `befragung-1290.txt`."
 
   - id: autos
     title: Das gelbe Auto
@@ -88,6 +90,7 @@ tasks:
       die zur Aussage der Zeugin passen.
     check:
       type: command
+      dir: bitstein
       timeout: 10
       output:
         lines: 4
@@ -100,7 +103,7 @@ tasks:
       - when: { output_matches: '^BS-K\S* \d+ +(?!gelb)' }
         say: Da ist noch ein Auto dabei, das nicht gelb ist.
     hint: "Mehrere `grep` hintereinander, mit `|` verbunden: Jedes siebt weiter aus, was das vorige übrig lässt."
-    solution: "`grep '^BS-K' bitstein/fahrzeuge.txt | grep gelb | grep '7 '`"
+    solution: "`grep '^BS-K' fahrzeuge.txt | grep gelb | grep '7 '`"
 
   - id: beide-vereine
     title: In beiden Vereinen
@@ -109,6 +112,7 @@ tasks:
       Fitnessstudio Muskelkater sind, jeden Namen einmal.
     check:
       type: command
+      dir: bitstein
       timeout: 10
       output:
         lines: 6
@@ -117,7 +121,7 @@ tasks:
       - when: { output_matches: '^\s+\d+ ' }
         say: Vor den Namen stehen noch Zahlen. `uniq -c` zählt; `uniq -d` gibt nur die doppelten Zeilen aus.
     hint: Schreib beide Listen sortiert untereinander. Wer in beiden Vereinen ist, steht dann zweimal direkt hintereinander.
-    solution: "`sort bitstein/vereine/schachclub.txt bitstein/vereine/muskelkater.txt | uniq -d`"
+    solution: "`sort vereine/schachclub.txt vereine/muskelkater.txt | uniq -d`"
 
   - id: verdaechtige
     title: Zwei Verdächtige

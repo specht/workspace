@@ -107,7 +107,8 @@ module TaskCard
                 reads = "Läuft in deiner eigenen Neo4j-Datenbank, angemeldet als du, und liest nur: eine Abfrage mit <code>MATCH</code> und <code>RETURN</code>, höchstens #{CypherCheck::MAX_SECONDS} Sekunden. <kbd>Strg</kbd>+<kbd>Enter</kbd> prüft."
             when 'command'
                 io << "<input type='text' class='form-control task-input task-command' name='answer' spellcheck='false' autocomplete='off' placeholder='Befehl' aria-labelledby='#{h.(field)}-title'>"
-                reads = "Läuft in deinem Workspace in <code>/workspace</code>, höchstens #{(check['timeout'] || 10).to_i} Sekunden, als Gast: Der Befehl kann lesen, aber nichts verändern oder löschen."
+                where = check['dir'] ? "/workspace/#{check['dir'].to_s.sub(%r{/+\z}, '')}" : '/workspace'
+                reads = "Läuft in deinem Workspace in <code>#{h.(where)}</code>, höchstens #{(check['timeout'] || 10).to_i} Sekunden, als Gast: Der Befehl kann lesen, aber nichts verändern oder löschen."
             when 'submit'
                 if check['pick']
                     io << "<label class='task-pick-label' for='#{h.(field)}-pick'>Welche Datei gibst du ab?</label>"

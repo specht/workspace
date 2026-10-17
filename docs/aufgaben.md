@@ -551,8 +551,12 @@ Lernenden. Im Prüfungsmodus gibt es kein Netz; deshalb ist `measure` dort
 gesperrt.
 
 `command` (seit M6): Lernende tippen einen Befehl. Er läuft in ihrem eigenen
-Workspace in `/workspace`, mit dem Zeitlimit aus `timeout` (höchstens 30
-Sekunden), aber nicht als sie selbst, sondern als Gast (`nobody`, `HOME=/tmp`):
+Workspace in `/workspace`, mit `dir: bitstein` in `/workspace/bitstein`: dort,
+wo das Terminal der Seite gerade steht, damit Lernende tippen, was sie dort
+tippen würden. Nennt der Befehl den Ordner selbst (`bitstein/tatort.txt`,
+`cd bitstein && …`), läuft er wie früher in `/workspace`. Das Zeitlimit kommt
+aus `timeout` (höchstens 30 Sekunden). Er läuft nicht als die Person, sondern
+als Gast (`nobody`, `HOME=/tmp`):
 Er kann lesen und ins Netz, aber in `/workspace` nichts anlegen, ändern oder
 löschen, und keine Prozesse der Person beenden. Ein `rm -rf ~` in der Karte
 scheitert an fehlenden Rechten (Regel 1). Dateien, die nur für die Person

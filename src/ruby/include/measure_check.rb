@@ -1,4 +1,5 @@
 require 'json'
+require 'shellwords'
 
 # Check types measure and command (docs/aufgaben.md).
 #
@@ -154,6 +155,20 @@ module MeasureCheck
     # --- command ----------------------------------------------------------------
 
     MAX_SHOWN_LINES = 12
+    # Printed instead of running the command when its folder (dir) is missing
+    NO_DIR = '__HS_NO_DIR__'
+
+    # The folder a command runs in, relative to /workspace: the task's dir,
+    # the folder the page works in, so a student types what they would in
+    # their terminal there. A command that names the folder itself
+    # (bitstein/tatort.txt, cd bitstein) runs in /workspace as before.
+    def self.command_dir(check, command)
+        dir = check['dir'].to_s.sub(%r{/+\z}, '')
+        return nil if dir.empty?
+        return nil if command.match?(%r{(?<![\w.-])#{Regexp.escape(dir)}(/|(?![\w.-]))})
+
+        dir
+    end
 
     # Returns [status, message, read].
     def self.command(task, check, answer, runner)
@@ -161,15 +176,21 @@ module MeasureCheck
         return [:invalid, 'Trag zuerst einen Befehl ein.', nil] if command.empty?
         return [:invalid, 'Ein Befehl pro Zeile reicht hier.', nil] if command.include?("\n")
 
-        result = runner.call(command, check['timeout'] || 10)
+        dir = command_dir(check, command)
+        run = dir ? "cd -- #{Shellwords.escape(dir)} 2>/dev/null || { echo #{NO_DIR}; exit 1; }; #{command}" : command
+        result = runner.call(run, check['timeout'] || 10)
         return [:unavailable, 'Starte zuerst deinen Workspace. Der Befehl läuft in deinem Workspace.', nil] if result.nil?
 
         output = result[:output].to_s
+        if dir && output.start_with?(NO_DIR)
+            return [:wrong, "Der Befehl läuft im Ordner `#{dir}` in deinem Workspace, aber den gibt es dort noch nicht.", nil]
+        end
         lines = output.lines.map(&:chomp)
         lines.pop while lines.any? && lines.last.strip.empty?
         shown = lines.first(MAX_SHOWN_LINES).join("\n")
         more = lines.size > MAX_SHOWN_LINES ? "\n… (#{lines.size - MAX_SHOWN_LINES} weitere Zeilen)" : ''
-        read = "`$ #{command.gsub('`', "'")}`\n\n```\n#{shown.empty? ? '(keine Ausgabe)' : shown}#{more}\n```"
+        place = "In `/workspace#{dir ? "/#{dir}" : ''}`:\n\n"
+        read = "#{place}`$ #{command.gsub('`', "'")}`\n\n```\n#{shown.empty? ? '(keine Ausgabe)' : shown}#{more}\n```"
         if result[:timed_out]
             return [:wrong, "Der Befehl lief länger als #{check['timeout'] || 10} Sekunden und wurde abgebrochen.", read]
         end

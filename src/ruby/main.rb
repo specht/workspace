@@ -7489,16 +7489,40 @@ class Main < Sinatra::Base
         end
     end
 
-    # The case files of »Ein Krimi im Terminal«. Downloaded in one's own
-    # Workspace (the request comes from its address), they carry a note with
-    # that person's access to the case server; from anywhere else, without.
+    # The case files of »Ein Krimi im Terminal«, with a note of one person's
+    # access to the case server: whose, the key in the address says (the
+    # page gives each logged-in person their own, CaseServer.archive_key),
+    # or else the Workspace the request comes from. Otherwise without.
     get '/terminal-mystery/bitstein.tar.gz' do
+        case_archive_response(CaseServer.enabled? ? workspace_email_for_ip(client_ip) : nil)
+    end
+
+    get '/terminal-mystery/akten/:key/bitstein.tar.gz' do
+        email = nil
+        if CaseServer.enabled?
+            Main.load_invitations()
+            email = CaseServer.email_for_key(CaseServer.secret(LOGIN_CODE_SALT), params[:key], @@invitations.keys) ||
+                workspace_email_for_ip(client_ip)
+        end
+        case_archive_response(email)
+    end
+
+    def case_archive_response(email)
         archive = File.binread('/src/content/terminal-mystery/beispiele/bitstein.tar.gz')
-        email = CaseServer.enabled? ? workspace_email_for_ip(client_ip) : nil
         if email
             archive = CaseServer.archive_with_note(archive, CaseServer.note(CaseServer.secret(LOGIN_CODE_SALT), email))
         end
+        headers 'Cache-Control' => 'no-store'
         respond_raw_with_mimetype(archive, 'application/gzip')
+    end
+
+    # A page's HTML for the person viewing it: the case files' address
+    # carries their key (CaseServer.personal_archive_path).
+    def page_html(slug)
+        html = @@content[slug][:html]
+        return html unless slug == 'terminal-mystery' && CaseServer.enabled? && @session_user
+
+        html.gsub(CaseServer::ARCHIVE_PATH, CaseServer.personal_archive_path(CaseServer.secret(LOGIN_CODE_SALT), @session_user[:email]))
     end
 
     # Whose Workspace has this address: exactly one running Workspace of an

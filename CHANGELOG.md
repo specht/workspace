@@ -692,6 +692,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- »Ein Krimi im Terminal«: Der Zettel mit dem Zugang zum Museumsserver
+  fehlte in den Akten, wenn ein Workspace sie über die öffentliche Adresse
+  der Installation lud; die Website erkannte den Workspace nicht. Wer
+  angemeldet ist, bekommt auf der Seite jetzt eine eigene Adresse der Akten,
+  und der Zettel liegt immer darin.
 - Der Fallserver von »Ein Krimi im Terminal«, frisch aus dem Repository
   gebaut, hatte kein VPN-Protokoll (`logs/vpn.log` fiel unter eine
   `.gitignore`-Regel), und die Aufgabe »Wer kam in der Nacht?« ließ sich
@@ -737,6 +742,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Befehlsaufgaben laufen dort, wo die Seite gerade arbeitet (`dir` in
+  `tasks.yaml`): In »Ein Krimi im Terminal« schreibt man `grep '^HINWEIS'
+  tatort.txt` wie im eigenen Terminal, ohne `bitstein/` davor; mit geht es
+  weiterhin. Die Karte sagt, in welchem Ordner der Befehl läuft.
 - »Ein Krimi im Terminal«: Der Abschnitt »Ein eigener Fall« mit seiner
   Abgabe ist weg. Das Bild vor der Aufgabe »Wer ist noch da?« verriet die
   Antwort; es zeigt jetzt nur noch `who`, was der Eindringling tut, finden

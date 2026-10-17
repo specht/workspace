@@ -86,4 +86,35 @@ class MeasureCheckTest < Minitest::Test
         student = ->(_c, _t) { raise 'must not run as the student' }
         assert_equal :unavailable, TaskCheck.check(task, 'rm -rf ~', variables: {}, runner: student).status
     end
+
+    # dir: the command runs in that folder, as typed in a terminal there; a
+    # command that names the folder runs in /workspace as before.
+    def test_command_in_its_folder
+        require 'open3'
+        require 'tmpdir'
+        task = { 'id' => 'hinweise', 'check' => { 'type' => 'command', 'dir' => 'bitstein', 'output' => { 'lines' => 2, 'matching' => '^HINWEIS' } } }
+        Dir.mktmpdir do |root|
+            FileUtils.mkdir_p(File.join(root, 'bitstein'))
+            File.write(File.join(root, 'bitstein/tatort.txt'), "HINWEIS: eins\nKaffee\nHINWEIS: zwei\n")
+            run = ->(command, _t) { out, st = Open3.capture2e('sh', '-c', command, :chdir => root); { :output => out, :status => st.exitstatus } }
+            [
+                "grep '^HINWEIS' tatort.txt",
+                "grep '^HINWEIS' bitstein/tatort.txt",
+                "cd bitstein && grep '^HINWEIS' tatort.txt",
+                "grep '^HINWEIS' ~/bitstein/tatort.txt".sub('~', root),
+            ].each do |command|
+                result = TaskCheck.check(task, command, variables: {}, guest_runner: run)
+                assert_equal :correct, result.status, "#{command}: #{result.message}"
+            end
+            ok = TaskCheck.check(task, "grep '^HINWEIS' tatort.txt", variables: {}, guest_runner: run)
+            assert_includes ok.read, 'In `/workspace/bitstein`'
+            FileUtils.rm_rf(File.join(root, 'bitstein'))
+            missing = TaskCheck.check(task, "grep '^HINWEIS' tatort.txt", variables: {}, guest_runner: run)
+            assert_equal :wrong, missing.status
+            assert_includes missing.message, 'im Ordner `bitstein`'
+        end
+        assert_empty TaskSpec.validate_check('command', task['check'])
+        refute_empty TaskSpec.validate_check('command', task['check'].merge('dir' => '../etc'))
+        refute_empty TaskSpec.validate_check('command', task['check'].merge('dir' => '/etc'))
+    end
 end

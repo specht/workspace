@@ -209,11 +209,15 @@ CASE_SERVER = true
   Übergabeprotokoll auf dem Museumsserver finden (`make_case.rb`,
   `ALARM_PASSWORD`). Teilen sich zwei Personen ein Konto, schadet das nicht:
   Schreiben kann dort niemand etwas.
-- **Der Zettel:** Die Akten unter `/terminal-mystery/bitstein.tar.gz` liefert
-  die Website selbst. Kommt die Anfrage von einem laufenden Workspace (seine
-  Adresse, wie Traefik oder nginx sie weitergeben), liegt im Archiv
-  zusätzlich `bitstein/zugang-museum.txt` mit dem Zugang dieser Person; sonst
-  fehlt er, und die Seite sagt, wie man ihn im Workspace nachholt. Workspaces
+- **Der Zettel:** Die Akten liefert die Website selbst. Wer angemeldet ist,
+  bekommt auf der Seite eine eigene Adresse,
+  `/terminal-mystery/akten/SCHLÜSSEL/bitstein.tar.gz` (`CaseServer.archive_key`);
+  im Archiv liegt dann zusätzlich `bitstein/zugang-museum.txt` mit dem Zugang
+  dieser Person, egal woher die Anfrage kommt. Unter
+  `/terminal-mystery/bitstein.tar.gz` und ohne gültigen Schlüssel sucht die
+  Website den Workspace an der Adresse der Anfrage. Das klappt nur, wenn der
+  Workspace sie direkt erreicht: Über die öffentliche Adresse kommt die
+  Anfrage vom Server selbst. Workspaces
   bekommen außerdem `CASE_USER` und `CASE_PASSWORD` mit, für die
   Screenshot-Rezepte; die Seite nennt sie nicht mehr.
 - **Nur lesen:** Alles gehört `root`. Beschreibbar ist nur `/tmp`, 64 MB, und

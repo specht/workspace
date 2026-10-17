@@ -104,8 +104,8 @@ Ein Muster für `grep` darf mit `^` anfangen. Das heißt »am Anfang der Zeile«
 _task(hinweise)
 
 <!-- tutorial-step
-check-task-fails: hinweise <- grep HINWEIS bitstein/tatort.txt
-check-task: hinweise <- grep '^HINWEIS' bitstein/tatort.txt
+check-task-fails: hinweise <- grep HINWEIS tatort.txt
+check-task: hinweise <- grep '^HINWEIS' tatort.txt
 check-task: gross-klein <- 181
 -->
 
@@ -152,8 +152,8 @@ Die zweite Ausgabe ist genau eine Zeile: Hausnummer 3. In welcher Straße und in
 _task(zeugin)
 
 <!-- tutorial-step
-check-task-fails: zeugin <- head -n 23 bitstein/strassen/moewenweg.txt
-check-task: zeugin <- head -n 23 bitstein/strassen/moewenweg.txt | tail -n 1
+check-task-fails: zeugin <- head -n 23 strassen/moewenweg.txt
+check-task: zeugin <- head -n 23 strassen/moewenweg.txt | tail -n 1
 -->
 
 Die Zeile nennt die Datei mit ihrer Befragung. Lies sie mit `cat` und schreib dir auf, was die Zeugin gesehen hat.
@@ -221,8 +221,8 @@ Was hat die Zeugin über das Auto gesagt? Bau daraus eine Kette von `grep`, bis 
 _task(autos)
 
 <!-- tutorial-step
-check-task-fails: autos <- grep '^BS-K' bitstein/fahrzeuge.txt | grep gelb
-check-task: autos <- grep '^BS-K' bitstein/fahrzeuge.txt | grep gelb | grep '7 '
+check-task-fails: autos <- grep '^BS-K' fahrzeuge.txt | grep gelb
+check-task: autos <- grep '^BS-K' fahrzeuge.txt | grep gelb | grep '7 '
 -->
 
 Vier Autos, vier Leute. Eine davon könnte es gewesen sein.
@@ -253,8 +253,8 @@ Welche Vereine für dich zählen, sagen ein Hinweis und die Befragung des Nachtw
 _task(beide-vereine)
 
 <!-- tutorial-step
-check-task-fails: beide-vereine <- cat bitstein/vereine/schachclub.txt bitstein/vereine/muskelkater.txt | uniq -d
-check-task: beide-vereine <- sort bitstein/vereine/schachclub.txt bitstein/vereine/muskelkater.txt | uniq -d
+check-task-fails: beide-vereine <- cat vereine/schachclub.txt vereine/muskelkater.txt | uniq -d
+check-task: beide-vereine <- sort vereine/schachclub.txt vereine/muskelkater.txt | uniq -d
 check-task: verdaechtige <- 0
 -->
 

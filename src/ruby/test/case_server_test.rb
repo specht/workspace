@@ -45,4 +45,18 @@ class CaseServerTest < Minitest::Test
         assert_equal CaseServer.password(SECRET, env['CASE_USER']), env['CASE_PASSWORD']
         assert_match(/\A[0-9a-f]{12}\z/, env['CASE_PASSWORD'])
     end
+
+    # The page gives each person their own address of the case files; the
+    # key in it says whose note goes in, wherever the request comes from.
+    def test_personal_archive_address
+        path = CaseServer.personal_archive_path(SECRET, 'Lena@Example.org')
+        assert_match(%r{\A/terminal-mystery/akten/[0-9a-f]{16}/bitstein\.tar\.gz\z}, path)
+        key = path.split('/')[3]
+        emails = %w[max@example.org lena@example.org]
+        assert_equal 'lena@example.org', CaseServer.email_for_key(SECRET, key, emails)
+        refute_equal key, CaseServer.archive_key(SECRET, 'max@example.org')
+        assert_nil CaseServer.email_for_key(SECRET, '0' * 16, emails)
+        assert_nil CaseServer.email_for_key(SECRET, '../etc/passwd', emails)
+        assert_nil CaseServer.email_for_key('another secret', key, emails)
+    end
 end

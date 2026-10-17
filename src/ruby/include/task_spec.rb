@@ -270,7 +270,10 @@ module TaskSpec
                 errors << "#{key} must be a number >= 0" if check.key?(key) && !(check[key].is_a?(Numeric) && check[key] >= 0)
             end
         when 'command'
-            allowed += %w[timeout output placeholder]
+            allowed += %w[timeout output placeholder dir]
+            if check.key?('dir') && !(check['dir'].is_a?(String) && check['dir'].match?(%r{\A[A-Za-z0-9_][A-Za-z0-9_.-]*(/[A-Za-z0-9_][A-Za-z0-9_.-]*)*/?\z}) && !check['dir'].split('/').include?('..'))
+                errors << 'dir must be a folder below /workspace, such as bitstein'
+            end
             output = check['output']
             if output.is_a?(Hash) && !output.empty?
                 extra = output.keys - %w[lines matching not_matching]
