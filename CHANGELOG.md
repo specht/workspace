@@ -718,6 +718,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Lauflängenkodierung: Das Ruby-Gerüst gibt das Ergebnis mit `puts` aus
+  statt mit `p`, wie in Python mit `print`.
 - Mehr Aufgaben werden bei jedem Durchlauf der Screenshot-Rezepte selbst
   geprüft: in der Filmdatenbank das ER-Modell, die Tabellen und alle
   SQL-Abfragen, in der Neo4j-Filmdatenbank alle Cypher-Abfragen, in »Git« die

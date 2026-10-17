@@ -125,7 +125,7 @@ end
 def unrle_bytes(bytes)
 end
 
-p rle('WWWWWWBBBWWWW')
+puts rle('WWWWWWBBBWWWW')
 ```
 
 <!-- tutorial-step

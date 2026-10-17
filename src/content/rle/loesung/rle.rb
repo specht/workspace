@@ -29,7 +29,7 @@ def unrle_bytes(bytes)
     out.pack('C*')
 end
 
-p rle('WWWWWWBBBWWWW')
+puts rle('WWWWWWBBBWWWW')
 if ARGV[0]
     data = File.binread(ARGV[0])
     packed = rle_bytes(data)
