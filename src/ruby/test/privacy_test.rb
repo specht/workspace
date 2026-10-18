@@ -30,13 +30,13 @@ class PrivacyTest < Minitest::Test
 
     def test_renders_with_every_setting_missing
         html = page
-        ['Impressum', 'Datenschutzerklärung', 'Wer verantwortlich ist', 'Rechtsgrundlage', 'Was gespeichert wird',
-         'Dienste außerhalb des Servers', 'Wie lange', 'Deine Rechte', 'Wenn du nicht einverstanden bist'].each do |heading|
+        ['Impressum', 'Datenschutzerklärung', 'Wer verantwortlich ist', 'Rechtsgrundlage', 'Welche Daten gespeichert werden',
+         'Dienste außerhalb des Servers', 'Speicherdauer', 'Rechte der betroffenen Personen', 'Wer nicht einverstanden ist'].each do |heading|
             assert_includes html, heading
         end
         assert_includes html, 'noch nicht eingetragen'
-        assert_includes html, 'an die Lehrkraft, die dich eingeladen hat'
-        assert_includes html, 'Aufsichtsbehörde deines Bundeslandes'
+        assert_includes html, 'die Lehrkraft, die zum Workspace eingeladen hat'
+        assert_includes html, 'Aufsichtsbehörde des Bundeslandes'
         refute_match(/mailto:|\bnil\b|#\{/, html)
     end
 
@@ -58,13 +58,13 @@ class PrivacyTest < Minitest::Test
     def test_the_school_is_responsible_only_by_its_decision
         school = page(FULL.merge('LEGAL_BASIS' => :school))
         assert_includes school, 'Verantwortlich ist die Schule: <strong>Beispiel-Gymnasium</strong>'
-        assert_includes school, 'Art. 6 Abs. 1 Buchstabe e DSGVO in Verbindung mit § 1 Schulgesetz'
+        assert_includes school, 'Art. 6 Abs. 1 Buchst. e DSGVO in Verbindung mit § 1 Schulgesetz'
         assert_includes school, 'widersprechen (Art. 21)'
-        refute_includes school, 'Art. 20'
+        refute_includes school, 'Art. 20)'
 
         consent = page(FULL.merge('LEGAL_BASIS' => :consent))
         assert_includes consent, 'Verantwortlich ist Dr. Erika Muster'
-        assert_includes consent, 'Art. 6 Abs. 1 Buchstabe a DSGVO'
+        assert_includes consent, 'Art. 6 Abs. 1 Buchst. a DSGVO'
         assert_includes consent, 'freiwillig'
         assert_includes consent, 'Datenübertragbarkeit (Art. 20)'
 
@@ -72,8 +72,25 @@ class PrivacyTest < Minitest::Test
     end
 
     def test_parental_consent_on_top_of_the_school_decision
-        refute_includes page(FULL.merge('LEGAL_BASIS' => :school)), 'Einverständnis gegeben'
-        assert_includes page(FULL.merge('LEGAL_BASIS' => :school, 'PARENTAL_CONSENT_REQUIRED' => true)), 'Einverständnis gegeben'
+        refute_includes page(FULL.merge('LEGAL_BASIS' => :school)), 'Einverständnis erklärt'
+        assert_includes page(FULL.merge('LEGAL_BASIS' => :school, 'PARENTAL_CONSENT_REQUIRED' => true)), 'Einverständnis erklärt'
+    end
+
+    # Formal, for parents and the school: no »du« outside quoted notices.
+    def test_addresses_nobody_as_du
+        [{}, FULL, FULL.merge('LEGAL_BASIS' => :school), FULL.merge('LEGAL_BASIS' => :consent)].each do |values|
+            text = page(values).gsub(/»[^«]*«/, '').gsub(/<[^>]+>/, ' ')
+            refute_match(/\b(du|dich|dir|dein\w*|euch|euer|eure\w*)\b/i, text)
+        end
+    end
+
+    # Every point of Art. 13 DSGVO has its heading.
+    def test_names_every_point_of_article_13
+        html = page(FULL)
+        ['Abs. 1 Buchst. a', 'Buchst. c', 'Buchst. e', 'Buchst. f', 'Abs. 2 Buchst. a', 'Buchst. b, c, d', 'Abs. 2 Buchst. e', 'Abs. 2 Buchst. f'].each do |point|
+            assert_includes html, point
+        end
+        Privacy.records.each { |r| assert r[:categories].all? { |c| Privacy::CATEGORIES.key?(c) } }
     end
 
     def test_times_come_from_the_code
