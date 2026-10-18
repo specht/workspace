@@ -831,7 +831,7 @@ tab: preview
 variants: dark anaglyph
 viewport: 2058x1032
 zoom: 1.08
-hook: camera 20 20 -250 0 85 0
+hook: camera 20 20 -225 0 88 0
 crop-top: 27%
 crop-bottom: 27%
 crop-left: 38.5%

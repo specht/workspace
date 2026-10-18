@@ -287,12 +287,12 @@
     },
     "schneemann.webp": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
-      "output_sha256": "6d083c26a59ae4e268ddef739ac0ea56a7f6ee8bab8e9ff7f1454566e6a7afce",
-      "state_hash": "bd468e8fed3d1a7d1aec0efbdaf384ba4737a58ae5f9c07aead0675bdf34ffdd",
+      "output_sha256": "a9b46831e64c589cbd9ae14c3fb0701e6e28e25190f14ceb68208b64882006f0",
+      "state_hash": "7a7057d5e58811e7dda9d3461c8aaee6fa7b494598dd2a8ac2583c6db62538d8",
       "variants": {
-        "schneemann-anaglyph.webp": "e767f577e4eccac17b6276e929a38e10c46a16d4e91c300e80a8834efa6d58f1",
-        "schneemann-dark-anaglyph.webp": "231898f226fa7db7e327ad82fd6abeceb9f41956a9bd11de6585d239aaa81757",
-        "schneemann-dark.webp": "4a4724dd57e8f4f5f98de408b277d0eeea8252d278bce2e375b4033328dd44ed"
+        "schneemann-anaglyph.webp": "663bfc5434858eb49ae5e283691fc6482938ba222af2628d29c2a89117a29064",
+        "schneemann-dark-anaglyph.webp": "645ac61ef340f2bf0918bd03e24d052410ae7c0a1be4aae72c8d3a64e760a301",
+        "schneemann-dark.webp": "b4992e240ebd255c9d6f6ce5417dfb9a4124881647dd6010c6850da637d108e6"
       },
       "workspace_look": "4.138.0-ls366"
     },
