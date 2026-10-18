@@ -17,10 +17,10 @@
     },
     "story-image.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
-      "output_sha256": "4cb531c2fa6e9aea6abb4574d3d5321597fd2b37b45f6213c212921861d48378",
-      "state_hash": "8f98c3228f214a800776215d0a06a5a88d5fa1040ae421cf5ff99790736e861e",
+      "output_sha256": "f78fb3db24893799687b5303378bcd1f5ce86b24afbc06ff0a96da7fe7700e08",
+      "state_hash": "2c2aa5b57acbfe5bc78f8cb8ba65372398af26e2783c9bf972e628a75780d96f",
       "variants": {
-        "story-image-dark.webp": "c4e63fab6f81f8b38c4e89b3678ee59696ba1ba1ec6bbf1b4229929bd93f23ef"
+        "story-image-dark.webp": "1f5d7a9efffbe691f1811478a1a4c361fcb2b3c33572c60cdc2679d52b9c245e"
       },
       "workspace_look": "4.138.0-ls366"
     },

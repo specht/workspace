@@ -504,9 +504,11 @@ wait-for-text: Sieh im Büro nach.
 sleep: 0.5
 click: Sieh im Büro nach.
 wait-for-text: Gehe zurück in den Flur.
-# BIF merkt sich den Reiter unter dem Graphen; »Problems« zeigen, egal
-# welches Rezept vorher lief
+# BIF merkt sich den Reiter unter dem Graphen; »Problems« öffnet ihn, egal
+# welches Rezept vorher lief, »Collapse« klappt ihn ein, damit der Graph
+# Platz hat
 click: Problems (0)
+click: Collapse
 move-mouse: No problems
 click: Fit graph
 sleep: 1.5
