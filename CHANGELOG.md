@@ -57,7 +57,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Einladungslisten« zeigt eine Vorschau, was der Import übernähme; der Import
   schreibt alles, liest es zurück und vergleicht es mit den Dateien (wer
   eingeladen ist, Namen, Gruppen, wer was betreut). Weicht etwas ab, wird
-  nichts geschrieben. »Zurück zu den Dateien« macht den Import rückgängig.
+  nichts geschrieben. Der Import ist endgültig; zurück geht es nur mit einer
+  Sicherung.
   Dateien, deren Name mit _ beginnt, werden weiter gelesen.
   `src/scripts/check-invitation-import.rb` prüft eine Kopie der Dateien
   vorher, ohne Server.
@@ -111,6 +112,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Datum eines schriftlichen Einverständnisses ein (Elternbrief mit
   Einverständniserklärung unter `/datenschutz`). Gesperrt wird ohne beides
   niemand; Gruppe und `/personen` zeigen, wie viele noch ungeklärt sind.
+- Konten löschen und aufräumen an einer Stelle: unter `/personen` beim
+  Konto in »Alle Personen« (Adresse zur Bestätigung, E-Mail an die Person
+  nur mit Häkchen) und unter »Aufräumen«, wo »Einladungen ohne Konto« je
+  Gruppe zeigen, wie viele ein Konto haben (mit Anteil) und wann sie
+  zuletzt da waren, und »Konten ohne Einladung« mit letzter Aktivität und
+  Speicher sich auch gesammelt löschen lassen (bestätigt mit ihrer Zahl).
+  Auf `/admin` bleibt nur »Nach einer Wiederherstellung«. Meldungen auf
+  `/gruppen` und `/personen` erscheinen jetzt (vorher gingen sie ins Leere).
+- Der Import der Einladungslisten lässt sich nicht mehr rückgängig machen
+  (»Zurück zu den Dateien« ist weg); zurück geht es nur mit einer Sicherung.
 - `/gruppen` und `/personen` überarbeitet: Für die Administration stehen
   beide im Menü »Administration«, für Lehrkräfte »Gruppen« als eigener Knopf.
   Jede Gruppe ist eine Zeile, die sich aufklappen lässt, unter ihrer Schule

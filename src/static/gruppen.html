@@ -79,6 +79,7 @@
     }
     .member-name::placeholder { color: var(--bs-secondary-color); font-style: italic; }
 </style>
+<div class='api_messages page-messages' style='display: none;' role='status' aria-live='polite'></div>
 <div class='container'>
     <div class='row'>
         <div class='col-md-12'>
@@ -290,7 +291,9 @@
         body.append(toolbar);
 
         const teachers = $(`<div class='group-teachers'><span class='small text-body-secondary'>Lehrkräfte</span></div>`);
-        group.teachers.forEach(function (t) {
+        // Many teachers (a whole year group): the first eight, the rest on request.
+        const many = group.teachers.length > 10;
+        group.teachers.forEach(function (t, i) {
             const chip = $(`<span class='teacher-chip'>${esc(t.name || t.email)}</span>`).attr('title', t.email);
             if (group.teachers.length > 1 || admin) {
                 const x = $(`<button type='button' class='btn-close' aria-label='${esc(t.name || t.email)} aus der Gruppe nehmen' title='Aus der Gruppe nehmen'></button>`);
@@ -299,8 +302,14 @@
                     () => groups_call('/api/groups/remove_teacher', { name: group.name, email: t.email }, load_groups)));
                 chip.append(x);
             }
+            if (many && i >= 8) chip.addClass('d-none extra-teacher');
             teachers.append(chip);
         });
+        if (many) {
+            const more = $(`<button type='button' class='btn btn-sm btn-link'>alle ${group.teachers.length} zeigen</button>`);
+            more.on('click', function () { teachers.find('.extra-teacher').removeClass('d-none'); more.remove(); });
+            teachers.append(more);
+        }
         const add_teacher = $(`<button type='button' class='btn btn-sm btn-link'><i class='bi bi-person-plus'></i>Lehrkraft dazu</button>`);
         add_teacher.on('click', function () {
             input_dialog({ title: 'Lehrkraft dazu', label: 'Name oder E-Mail-Adresse einer Lehrkraft deiner Schule, die die Gruppe mit betreut', confirm: 'Hinzufügen', icon: 'bi-person-plus',
@@ -481,8 +490,11 @@
             }
             all_schools = data.schools || [];
             fat_kb = data.fat_kb;
-            // A teacher with a few groups sees them open the first time.
+            // A teacher with a few groups sees them open the first time; a link
+            // to #gruppe=NAME (from /personen) opens that group.
+            const wanted = first_load && location.hash.startsWith('#gruppe=') ? decodeURIComponent(location.hash.slice(8)) : null;
             if (first_load && !data.admin && data.groups.length <= 3) data.groups.forEach(g => open_groups.add(g.name));
+            if (wanted) open_groups.add(wanted);
             first_load = false;
             // Under their school when there is more than one; guests last.
             const school_of = g => g.school ? g.school.name : 'ohne Schule';
@@ -497,6 +509,10 @@
             });
             $('#groups_filter').toggle(data.groups.length > 3);
             filter_groups();
+            if (wanted) {
+                const card = $('#groups_here .group-card').filter(function () { return $(this).data('group') === wanted; }).first();
+                if (card.length) card[0].scrollIntoView({ block: 'start' });
+            }
         });
     }
 

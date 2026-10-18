@@ -126,7 +126,7 @@
             #{roster_status_html}
             <div class='d-flex flex-wrap gap-2 mb-3'>
                 <button id='bu_import_preview' class='btn btn-outline-secondary'><i class='bi bi-eye'></i>Vorschau des Imports</button>
-                #{Main.roster_imported ? "<button id='bu_undo_import' class='btn btn-outline-danger'><i class='bi bi-arrow-counterclockwise'></i>Zurück zu den Dateien</button>" : "<button id='bu_import' class='btn btn-primary'><i class='bi bi-box-arrow-in-down'></i>Einladungslisten importieren</button>"}
+                #{Main.roster_imported ? '' : "<button id='bu_import' class='btn btn-primary'><i class='bi bi-box-arrow-in-down'></i>Einladungslisten importieren</button>"}
             </div>
             <p class='small text-body-secondary'>
                 Der Import schreibt alles in die Datenbank, liest es zurück und vergleicht es mit den Dateien: wer eingeladen ist,
@@ -135,46 +135,12 @@
             </p>
             <div id='import_here' class='mb-4'></div>
 
-            <h2 id="konten-loeschen">Konten löschen</h2>
+            <h2 id="konten-loeschen">Konten</h2>
             <p>
-                Gelöscht wird alles, was zu einem Konto gehört: Workspace, die Workspaces der
-                Leistungsüberprüfungen, Datenbanken, Antworten, Abgaben, Sitzungen und das Konto selbst
-                (<a href='/impressum#datenschutz'>Datenschutzerklärung</a>, »Speicherdauer«). Das lässt sich nicht rückgängig machen.
-                Steht die Adresse noch in einer Einladungsliste, beginnt die Person bei der nächsten Anmeldung mit einem leeren Konto.
+                Konten löschen, Einladungen ohne Konto und Konten ohne Einladung stehen unter
+                <a href='/personen#alle'>Personen und Schulen</a> (»Alle Personen« und »Aufräumen«).
             </p>
-            <div class='mb-2'>
-                <label class='form-label' for='people_query'>Person suchen (Name, Adresse oder Gruppe)</label>
-                <input type='search' class='form-control' id='people_query' autocomplete='off' placeholder='zum Beispiel »Müller« oder »10a«'>
-            </div>
-            <div id='people_here' class='mb-3'></div>
-            <form id='delete_account_form' class='row g-2 align-items-end mb-3' autocomplete='off'>
-                <div class='col-sm-5'>
-                    <label class='form-label' for='delete_account_email'>E-Mail-Adresse</label>
-                    <input type='email' class='form-control' id='delete_account_email' required>
-                </div>
-                <div class='col-sm-5'>
-                    <label class='form-label' for='delete_account_confirmation'>Zur Bestätigung noch einmal</label>
-                    <input type='email' class='form-control' id='delete_account_confirmation' required>
-                </div>
-                <div class='col-sm-2'>
-                    <button type='submit' class='btn btn-danger w-100'><i class='bi bi-trash-fill'></i>Löschen</button>
-                </div>
-                <div class='col-12'>
-                    <div class='form-check'>
-                        <input class='form-check-input' type='checkbox' id='delete_account_notify'>
-                        <label class='form-check-label' for='delete_account_notify'>Der Person eine Bestätigung per E-Mail schicken (sonst geht keine E-Mail hinaus)</label>
-                    </div>
-                </div>
-            </form>
-            <div id='delete_account_result' class='mb-3'></div>
-            <h3 id="ohne-einladung">Konten ohne Einladung</h3>
-            <p>
-                Konten, deren Adresse in keiner Einladungsliste mehr steht: Sie werden nach den Löschregeln
-                spätestens zum Ende des Schuljahres gelöscht. Beim Löschen hier geht keine E-Mail hinaus.
-            </p>
-            <button id='bu_uninvited_accounts' class='btn btn-outline-secondary mb-3'><i class='bi bi-search'></i>Konten ohne Einladung anzeigen</button>
-            <div id='uninvited_accounts_here'></div>
-            <h3 id="nach-wiederherstellung">Nach einer Wiederherstellung</h3>
+            <h2 id="nach-wiederherstellung">Nach einer Wiederherstellung</h2>
             <p>
                 Wurde eine Sicherung zurückgespielt, sind Konten wieder da, die seither gelöscht wurden. Hier werden sie erneut gelöscht:
                 Datum und Uhrzeit der Sicherung eingeben. Die Liste der Löschungen (<code>/internal/deleted-accounts.jsonl</code>)
@@ -428,29 +394,6 @@
         setup_ws(ws);
     }
 
-    const DELETE_ACCOUNT_ERRORS = {
-        invalid_email: 'Das ist keine E-Mail-Adresse.',
-        confirmation_mismatch: 'Die beiden Adressen sind nicht gleich.',
-        own_account: 'Das eigene Konto lässt sich hier nicht löschen.',
-        no_account: 'Zu dieser Adresse gibt es kein Konto.',
-    };
-
-    function delete_account(email, confirmation, done, notify) {
-        let result = $('#delete_account_result').empty();
-        api_call('/api/admin/delete_account', { email: email, confirmation: confirmation, notify: notify === true }, function (data) {
-            if (!data.success) {
-                result.append($(`<div class='alert alert-danger'>`).text(DELETE_ACCOUNT_ERRORS[data.error] || 'Das Konto wurde nicht gelöscht.'));
-                return;
-            }
-            let text = `Gelöscht: ${data.deleted} (Workspaces: ${data.removed.workspaces}, Aufgaben: ${data.removed.tasks}). ${data.notified ? 'Eine Bestätigung ist per E-Mail unterwegs.' : 'Es ging keine E-Mail hinaus.'}`;
-            if (data.still_invited)
-                text += ' Die Adresse steht noch in einer Einladungsliste; nimm sie dort heraus, wenn die Person kein Konto mehr haben soll.';
-            result.append($(`<div class='alert alert-success'>`).text(text));
-            $('#delete_account_form')[0].reset();
-            if (done) done();
-        });
-    }
-
     window.addEventListener('load', function () {
         establish_websocket_connection();
         $('.bu-open-workspace-as-admin').on('click', function (e) {
@@ -463,10 +406,6 @@
                 check_server_tag_update(data.watch_tag);
                 check_server_online(data.watch_tag, true);
             });
-        });
-        $('#delete_account_form').on('submit', function (e) {
-            e.preventDefault();
-            delete_account($('#delete_account_email').val(), $('#delete_account_confirmation').val(), null, $('#delete_account_notify').is(':checked'));
         });
         function show_import_result(here, data) {
             if (data.ok) {
@@ -490,51 +429,13 @@
             });
         });
         $('#bu_import').on('click', function () {
-            showTemplateModal('Einladungslisten importieren', 'Die Einladungen kommen danach aus der Datenbank; die Dateien (außer denen, die mit _ beginnen) werden nicht mehr gelesen, bleiben aber liegen. Weicht nach dem Schreiben etwas ab, wird nichts übernommen.',
+            showTemplateModal('Einladungslisten importieren', 'Die Einladungen kommen danach aus der Datenbank; die Dateien (außer denen, die mit _ beginnen) werden nicht mehr gelesen, bleiben aber liegen. Weicht nach dem Schreiben etwas ab, wird nichts übernommen. Der Import lässt sich nicht rückgängig machen; zurück geht es nur mit einer Sicherung.',
                 "<i class='bi bi-box-arrow-in-down'></i>Importieren", 'btn-primary', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function () {
                     api_call('/api/admin/import_invitations', {}, function (data) {
                         if (data.success) show_import_result($('#import_here').empty(), data);
                     });
                 });
         });
-        $('#bu_undo_import').on('click', function () {
-            showTemplateModal('Zurück zu den Dateien', `<p>Gruppen, Einladungen und Schulen werden aus der Datenbank gelöscht, und die Dateien unter <code>/invitations</code> gelten wieder. Was seit dem Import im Browser geändert wurde, geht verloren.</p><label class='form-label' for='ti_undo_import'>Zur Bestätigung <code>zurück</code> eingeben:</label><input id='ti_undo_import' class='form-control' autocomplete='off'>`,
-                "<i class='bi bi-arrow-counterclockwise'></i>Zurück zu den Dateien", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function () {
-                    api_call('/api/admin/undo_invitation_import', { confirmation: $('#ti_undo_import').val().trim() }, function (data) {
-                        if (data.success) location.reload();
-                    });
-                    return false;
-                });
-        });
-        let people_timer = null;
-        $('#people_query').on('input', function () {
-            clearTimeout(people_timer);
-            const query = $(this).val().trim();
-            people_timer = setTimeout(function () {
-                let here = $('#people_here');
-                if (query.length < 2) { here.empty(); return; }
-                api_call('/api/admin/people', { query: query }, function (data) {
-                    if (!data.success) return;
-                    here.empty();
-                    if (data.people.length === 0) { here.append($('<p>').text('Niemand gefunden.')); return; }
-                    let table = $(`<table class='table table-sm'><thead><tr><th>Name</th><th>E-Mail-Adresse</th><th>Rolle</th><th>Gruppen</th><th>Konto</th><th></th></tr></thead><tbody></tbody></table>`);
-                    for (let p of data.people) {
-                        let row = $('<tr>');
-                        let button = $(`<button class='btn btn-sm btn-outline-danger'><i class='bi bi-trash-fill'></i>Löschen</button>`);
-                        button.on('click', function () {
-                            $('#delete_account_email, #delete_account_confirmation').val('');
-                            $('#delete_account_email').val(p.email).trigger('focus');
-                            $('#delete_account_confirmation').trigger('focus');
-                        });
-                        row.append($('<td>').text(p.name || '–'), $('<td>').text(p.email), $('<td>').text(p.role),
-                            $('<td>').text(p.groups.join(', ')), $('<td>').text(p.account ? 'ja' : (p.invited ? 'noch nicht angemeldet' : '')),
-                            $('<td>').append(p.account ? button : ''));
-                        table.find('tbody').append(row);
-                    }
-                    here.append(table);
-                    if (data.total > data.people.length) here.append($('<p class="small">').text(`${data.total} Treffer, die ersten ${data.people.length} stehen hier.`));
-                }, { no_please_wait: true });
-            }, 250);
         });
         $('#repeat_deletions_form').on('submit', function (e) {
             e.preventDefault();
@@ -542,30 +443,6 @@
                 let here = $('#repeat_deletions_result').empty();
                 if (!data.success) return;
                 here.append($(`<div class='alert alert-success'>`).text(data.deleted.length === 0 ? 'Kein Konto war seither gelöscht worden.' : `Erneut gelöscht: ${data.deleted.join(', ')}`));
-            });
-        });
-        $('#bu_uninvited_accounts').on('click', function () {
-            api_call('/api/admin/uninvited_accounts', {}, function (data) {
-                if (!data.success) return;
-                let here = $('#uninvited_accounts_here').empty();
-                if (data.accounts.length === 0) {
-                    here.append($('<p>').text('Jedes Konto hat eine Einladung.'));
-                    return;
-                }
-                let table = $(`<table class='table'><thead><tr><th>E-Mail-Adresse</th><th>Name</th><th></th></tr></thead><tbody></tbody></table>`);
-                for (let account of data.accounts) {
-                    let button = $(`<button class='btn btn-sm btn-outline-danger'><i class='bi bi-trash-fill'></i>Löschen</button>`);
-                    button.on('click', function () {
-                        showTemplateModal('Konto löschen', $('<div>').text(`Das Konto ${account.email} mit allem, was dazugehört, löschen?`).html(),
-                            "<i class='bi bi-trash-fill'></i>Löschen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function () {
-                                delete_account(account.email, account.email, function () { button.closest('tr').remove(); });
-                            });
-                    });
-                    let row = $('<tr>');
-                    row.append($('<td>').text(account.email), $('<td>').text(account.name || ''), $('<td>').append(button));
-                    table.find('tbody').append(row);
-                }
-                here.append(table);
             });
         });
         $('.bu-impersonate').on('click', function (e) {

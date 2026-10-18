@@ -5705,3 +5705,23 @@ table.value-groups td.group-odd {
 .disk-size {
     font-variant-numeric: tabular-nums;
 }
+
+/* Messages on /gruppen and /personen: floating at the bottom, above an
+   open dialog, so that an error is seen where the action was. */
+.page-messages {
+    position: fixed;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1090;
+    width: min(40rem, calc(100vw - 32px));
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 0.3rem 1rem rgba(0, 0, 0, 0.15);
+    background: var(--bs-body-bg);
+}
+
+.page-messages > .bg-light {
+    background-color: var(--bs-body-bg) !important;
+}

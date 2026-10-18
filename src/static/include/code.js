@@ -118,6 +118,10 @@ function show_success_message(message) {
     var div = $('<div>').css('text-align', 'center').css('padding', '15px').addClass('bg-light text-success').html(message);
     $('.api_messages').empty();
     $('.api_messages').append(div).show();
+    // A floating message box (.page-messages) goes again by itself.
+    clearTimeout(window.success_message_timeout);
+    if ($('.api_messages').hasClass('page-messages'))
+        window.success_message_timeout = setTimeout(function () { $('.api_messages').fadeOut(); }, 6000);
 }
 
 function api_call(url, data, callback, options) {

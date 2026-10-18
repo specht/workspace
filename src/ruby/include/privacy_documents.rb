@@ -258,7 +258,7 @@ module PrivacyDocuments
             <h2>Ablauf zum Ende des Schuljahres</h2>
             #{list([
                 'Die Lehrkräfte nehmen Lerngruppen, deren Kurs endet, und Schülerinnen und Schüler, die die Schule verlassen, aus ihren Einladungslisten.',
-                'Die Administration ruft unter »Administration › Konten ohne Einladung« die Konten auf, deren Adresse in keiner Einladungsliste mehr steht, und löscht sie bis zum letzten Tag des Schuljahres.',
+                'Die Administration ruft unter »Personen und Schulen › Aufräumen › Konten ohne Einladung« die Konten auf, deren Adresse in keiner Einladungsliste mehr steht, und löscht sie bis zum letzten Tag des Schuljahres.',
                 'Wer im nächsten Schuljahr weiter Informatik hat, bleibt eingeladen; der Zweck besteht fort, das Konto bleibt.',
                 'Wer die Schule verlässt und das Konto behalten möchte, sagt das vorher; die Administration führt es dann in einer eigenen Gruppe (etwa »Ehemalige«) unter der Nutzungsordnung weiter, und die Person unterschreibt sie.',
             ])}

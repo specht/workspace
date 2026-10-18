@@ -57,10 +57,11 @@ So geht es auf einer laufenden Installation:
    nichts übernommen, und die Abweichungen stehen auf der Seite. Die Schule
    der Installation (`OPERATOR_SCHOOL`) wird angelegt, aber nicht als
    zugestimmt: Das ist sie erst, wenn unter `/personen` beide Daten stehen.
-4. Die Dateien bleiben liegen. »Zurück zu den Dateien« (mit `zurück`
-   bestätigen) löscht Gruppen, Einladungen und Schulen wieder aus der
-   Datenbank; was seit dem Import im Browser geändert wurde, geht dabei
-   verloren, die Seite sagt, ob es das gibt.
+4. Der Import ist endgültig: Einen Weg zurück zu den Dateien gibt es nicht,
+   nur die Sicherung von Neo4j. Die Dateien bleiben liegen, werden aber
+   nicht mehr gelesen. Auf einer Kopie (Entwicklung) lässt sich der Import
+   proben, indem man die Datenbank leert und den Dump neu einspielt
+   (docs/entwicklung.md, »Datenbanken«).
 
 Ein Konto entsteht weiter erst bei der ersten Anmeldung; eine Einladung ist
 kein Konto.
@@ -103,7 +104,7 @@ Nach dem Import verwaltet jede Lehrkraft ihre Gruppen selbst
   (`welcomed_at` an der Einladung). Begrenzt auf 600 je Lehrkraft und Stunde.
 - Die Gruppe löschen (Name zur Bestätigung). Wer danach in keiner Gruppe
   mehr steht und keine Lehrkraft ist, ist nicht mehr eingeladen; ein Konto
-  löscht das nicht (Administration › Konten ohne Einladung).
+  löscht das nicht (»Personen und Schulen › Aufräumen«).
 - Der Link zu den Unterlagen für die eigene Schule (datenschutz.md,
   »Partnerschulen«).
 

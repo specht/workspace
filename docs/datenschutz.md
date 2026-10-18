@@ -15,8 +15,8 @@ gespeichert wird.
   Löschkonzept, Entwurf der Vereinbarung zur Auftragsverarbeitung,
   Elternbrief, Nutzungsordnung, Nutzungsvereinbarung zum Webhosting. Die
   Seiten sind öffentlich, damit ein Link an die Schulleitung gehen kann.
-- »Administration › Konten löschen«: ein Konto mit allem, was dazugehört, und
-  die Liste der Konten ohne Einladung.
+- `/personen` (»Alle Personen«, »Aufräumen«): ein Konto mit allem, was
+  dazugehört, löschen; Einladungen ohne Konto und Konten ohne Einladung.
 
 Alles kommt aus denselben Angaben: `src/ruby/include/privacy.rb` (die Fakten:
 was gespeichert wird, wer es sieht, wie lange, welche Dienste beteiligt sind,
@@ -95,10 +95,13 @@ Standardvertrag an (bei Hetzner in der Console).
 ## Löschen
 
 - Zum Ende des Schuljahres nehmen die Lehrkräfte beendete Kurse und
-  Abgänger aus den Einladungslisten; die Administration löscht unter
-  »Konten ohne Einladung« alles, was dort steht.
-- Auf Wunsch: Adresse unter »Konten löschen« eingeben, zur Bestätigung ein
-  zweites Mal. Steht sie noch in einer Einladungsliste, dort herausnehmen.
+  Abgänger aus ihren Gruppen; die Administration löscht unter
+  »Personen und Schulen › Aufräumen › Konten ohne Einladung« alles, was dort
+  steht. Daneben zeigen »Einladungen ohne Konto« je Gruppe, wie viele ein
+  Konto haben und wann sie zuletzt da waren.
+- Auf Wunsch: unter »Alle Personen« beim Konto auf den Papierkorb, die
+  Adresse zur Bestätigung eingeben. Steht sie noch in einer Gruppe, dort
+  herausnehmen.
 - Gelöscht wird: der Workspace, die Workspaces der Leistungsüberprüfungen
   (und bei Lehrkräften deren Vorschau), die MySQL- und Neo4j-Datenbanken mit
   ihren Logins, die zusätzlichen MySQL-Datenbanken, Abgaben, und in Neo4j

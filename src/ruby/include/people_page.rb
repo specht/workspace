@@ -190,16 +190,27 @@ class Main < Sinatra::Base
         AND coalesce(i.teacher, false) = false AND NOT (i)-[:TEACHES]->(:Group) AND NOT (i)-[:AT]->(:School)
     END_OF_CYPHER
 
+    # Per group: members, unused invitations, and of the others how many have
+    # an account and the range of their last visits, so that a group whose
+    # people never came, or stopped coming long ago, stands out.
     def unused_invitations_by_group
-        neo4j_query(<<~END_OF_QUERY).map { |r| r.transform_keys(&:to_sym) }
+        rows = neo4j_query(<<~END_OF_QUERY).map { |r| r.transform_keys(&:to_sym) }
             MATCH (g:Group)
             OPTIONAL MATCH (g)-[:AT]->(s:School)
             OPTIONAL MATCH (m:Invitation)-[:MEMBER_OF]->(g)
-            WITH g, s, count(m) AS members
+            WITH g, s, collect(m.email) AS emails
             OPTIONAL MATCH (i:Invitation)-[:MEMBER_OF]->(g) WHERE #{UNUSED_INVITATION}
-            RETURN g.name AS name, s.name AS school, members, count(i) AS unused
+            RETURN g.name AS name, s.name AS school, emails, count(i) AS unused
             ORDER BY unused DESC, toLower(g.name);
         END_OF_QUERY
+        accounts = Set.new(neo4j_query('MATCH (u:User) RETURN u.email AS email;').map { |r| r['email'] })
+        activity = activity_by_email
+        rows.map do |r|
+            days = r[:emails].filter_map { |e| (activity[e] || {})[:day] }.sort
+            { :name => r[:name], :school => r[:school], :members => r[:emails].size, :unused => r[:unused],
+              :accounts => r[:emails].count { |e| accounts.include?(e) },
+              :active_from => days.first&.to_s, :active_to => days.last&.to_s }
+        end
     end
 
     def unused_count(groups)
@@ -218,7 +229,7 @@ class Main < Sinatra::Base
 
     # One invitation without an account, from every group. Teachers are
     # refused (»Keine Lehrkraft mehr« first), an account too (that is
-    # »Konten löschen« on /admin).
+    # the row action in »Alle Personen«).
     post '/api/people/remove_invitation' do
         admin_only!
         data = parse_request_data(:required_keys => [:email])

@@ -4299,7 +4299,13 @@ class Main < Sinatra::Base
         rows = neo4j_query('MATCH (u:User) RETURN u.email AS email, u.name AS name ORDER BY u.email;').reject do |row|
             @@invitations.key?(row['email'])
         end
-        respond(:accounts => rows.map { |row| { :email => row['email'], :name => row['name'] } })
+        activity = activity_by_email
+        usage = workspace_disk_usage
+        respond(:accounts => rows.map { |row|
+            active = activity[row['email']] || {}
+            { :email => row['email'], :name => row['name'], :active_on => active[:day]&.to_s, :active_source => active[:day] ? active[:source] : nil,
+              :disk_kb => usage[:by_tag][fs_tag_for_email(row['email'])] }
+        }, :fat_kb => usage[:fat_kb])
     end
 
     # The logged-in teacher resets its own test account, and only that.

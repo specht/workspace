@@ -38,6 +38,7 @@
         padding-left: 0.2rem;
     }
 </style>
+<div class='api_messages page-messages' style='display: none;' role='status' aria-live='polite'></div>
 <div class='container people-page'>
     <div class='row'>
         <div class='col-md-12'>
@@ -47,12 +48,11 @@
                 zur Auftragsverarbeitung einträgst; die Lehrkraft schickt dir beides. Bis dahin vermerken die Lehrkräfte unter
                 <a href='/gruppen'>Gruppen</a>, für wen ein schriftliches Einverständnis vorliegt. Gesperrt wird dadurch niemand.
             </p>
-            <nav class='nav nav-pills mb-3 small' aria-label='Abschnitte'>
-                <a class='nav-link' href='#schulen'>Schulen</a>
-                <a class='nav-link' href='#lehrkraefte'>Lehrkräfte</a>
-                <a class='nav-link' href='#unbenutzt'>Einladungen ohne Konto</a>
-                <a class='nav-link' href='#alle'>Alle Personen</a>
-                <a class='nav-link' href='/admin#konten-loeschen'>Konten löschen</a>
+            <nav class='d-flex flex-wrap gap-2 mb-3' aria-label='Abschnitte'>
+                <a class='btn btn-sm btn-menu' href='#schulen'><i class='bi bi-building'></i>Schulen</a>
+                <a class='btn btn-sm btn-menu' href='#lehrkraefte'><i class='bi bi-person-video3'></i>Lehrkräfte</a>
+                <a class='btn btn-sm btn-menu' href='#alle'><i class='bi bi-people'></i>Alle Personen</a>
+                <a class='btn btn-sm btn-menu' href='#aufraeumen'><i class='bi bi-stars'></i>Aufräumen</a>
             </nav>
             <div id='people_not_imported'></div>
 
@@ -94,15 +94,6 @@
             </form>
             <div id='teachers_here'></div>
 
-            <h2 id='unbenutzt'>Einladungen ohne Konto</h2>
-            <p>
-                Eingeladene, die sich nie angemeldet haben (zu ihrer Adresse gibt es kein Konto), etwa aus einer Liste der ganzen Schule.
-                Lehrkräfte zählen nie dazu. Wähl die Gruppen aus: Die Personen werden aus diesen Gruppen genommen; wer danach in keiner
-                Gruppe mehr steht, ist nicht mehr eingeladen und kann sich nicht anmelden, bis eine Lehrkraft die Adresse wieder einträgt.
-                Es gibt kein Konto, also auch nichts, was gelöscht würde.
-            </p>
-            <div id='unused_here'></div>
-
             <h2 id='alle'>Alle Personen</h2>
             <p>
                 Mit dem Tag, an dem jemand zuletzt da war. Den Tag des Besuchs merkt sich der Workspace seit dem 18.10.2026; für die Zeit davor
@@ -119,6 +110,25 @@
                 </select></div>
             </div>
             <div id='all_here'></div>
+
+            <h2 id='aufraeumen'>Aufräumen</h2>
+            <h3 id='unbenutzt' class='h5 mt-3'>Einladungen ohne Konto</h3>
+            <p>
+                Eingeladene, die sich nie angemeldet haben (zu ihrer Adresse gibt es kein Konto), etwa aus einer Liste der ganzen Schule.
+                Lehrkräfte zählen nie dazu. Daneben steht, wie viele in der Gruppe ein Konto haben und wann sie zuletzt da waren: Ist
+                lange niemand mehr gekommen, kann die ganze Gruppe weg (über den Namen zur Gruppe). Wähl die Gruppen aus: Die Personen
+                ohne Konto werden aus diesen Gruppen genommen; wer danach in keiner Gruppe mehr steht, ist nicht mehr eingeladen.
+                Ein Konto gibt es nicht, es wird also nichts gelöscht.
+            </p>
+            <div id='unused_here'></div>
+
+            <h3 id='ohne-einladung' class='h5 mt-4'>Konten ohne Einladung</h3>
+            <p>
+                Konten, deren Adresse in keiner Gruppe mehr steht: Sie werden nach den Löschregeln spätestens zum Ende des Schuljahres
+                gelöscht. Gelöscht wird alles, was zum Konto gehört (Workspace, Datenbanken, Antworten, Abgaben); das lässt sich nicht
+                rückgängig machen. Einzelne Konten löschst du auch unter »Alle Personen«.
+            </p>
+            <div id='uninvited_here'></div>
         </div>
     </div>
 </div>
@@ -176,6 +186,32 @@
 
     function icon_button(icon, label, cls) {
         return $(`<button type='button' class='btn btn-sm ${cls || 'btn-outline-secondary'} btn-icon'><i class='bi ${icon}'></i></button>`).attr({ title: label, 'aria-label': label });
+    }
+
+    const DELETE_ACCOUNT_ERRORS = {
+        invalid_email: 'Das ist keine E-Mail-Adresse.',
+        confirmation_mismatch: 'Die Adresse stimmt nicht.',
+        own_account: 'Das eigene Konto lässt sich hier nicht löschen.',
+        no_account: 'Zu dieser Adresse gibt es kein Konto.',
+    };
+
+    // Deletes an account with everything that belongs to it, after the
+    // address is typed again; a mail to the person only when ticked.
+    function delete_account_dialog(email, name, done) {
+        showTemplateModal('Konto löschen', `<p>Das Konto von <strong>${esc(name || email)}</strong> wird mit allem gelöscht, was dazugehört: Workspace, die Workspaces der Leistungsüberprüfungen, Datenbanken, Antworten, Abgaben, Sitzungen. Das lässt sich nicht rückgängig machen.</p>`
+            + `<label class='form-label' for='ti_delete_account'>Zur Bestätigung die Adresse eingeben: <code>${esc(email)}</code></label><input id='ti_delete_account' class='form-control' type='email' autocomplete='off' spellcheck='false'>`
+            + `<div class='form-check mt-2'><input class='form-check-input' type='checkbox' id='cb_delete_notify'><label class='form-check-label' for='cb_delete_notify'>Der Person eine Bestätigung per E-Mail schicken (sonst geht keine E-Mail hinaus)</label></div>`,
+            "<i class='bi bi-trash'></i>Konto löschen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-outline-secondary', function () {
+                api_call('/api/admin/delete_account', { email: email, confirmation: $('#ti_delete_account').val().trim(), notify: $('#cb_delete_notify').is(':checked') }, function (r) {
+                    if (!r.success) { show_error_message(DELETE_ACCOUNT_ERRORS[r.error] || 'Das Konto wurde nicht gelöscht.'); return; }
+                    $('#__template_modal').modal('hide');
+                    let text = `Gelöscht: ${esc(r.deleted)}. ${r.notified ? 'Eine Bestätigung ist per E-Mail unterwegs.' : 'Es ging keine E-Mail hinaus.'}`;
+                    if (r.still_invited) text += ' Die Adresse steht noch in einer Gruppe; mit der nächsten Anmeldung entstünde ein leeres Konto.';
+                    show_success_message(text);
+                    if (done) done();
+                });
+                return false;
+            });
     }
 
     function show_school_form(show) {
@@ -327,6 +363,11 @@
                     ? inline_name(p.name, `Name von ${p.email}`, (value, done) => people_call('/api/groups/set_name', { email: p.email, person_name: value }, done))
                     : $('<span>').text(p.name || '–');
                 const actions = $('<td class="row-actions">');
+                if (p.account && p.role !== 'Administration') {
+                    const del = icon_button('bi-trash', `Konto von ${p.name || p.email} löschen`, 'btn-outline-danger');
+                    del.on('click', () => delete_account_dialog(p.email, p.name, load_all));
+                    actions.append(del);
+                }
                 if (p.invited && !p.account && p.role === 'Lernende') {
                     const remove = icon_button('bi-person-dash', `Einladung von ${p.name || p.email} entfernen`);
                     remove.on('click', function () {
@@ -341,7 +382,7 @@
                     $('<td class="text-nowrap">').html(active_html(p)), $('<td class="text-nowrap">').html(disk_html(p.disk_kb, data.fat_kb)), actions));
             });
             here.append($("<div class='table-responsive'></div>").append(table));
-            here.append($('<p class="small text-body-secondary">').text(`${data.total} ${data.total === 1 ? 'Person' : 'Personen'}${data.total > data.people.length ? `, die ersten ${data.people.length} stehen hier` : ''}. Löschen unter »Administration › Konten löschen«.`));
+            here.append($('<p class="small text-body-secondary">').text(`${data.total} ${data.total === 1 ? 'Person' : 'Personen'}${data.total > data.people.length ? `, die ersten ${data.people.length} stehen hier; die Suche und die Filter grenzen ein` : ''}.`));
         }, { no_please_wait: true });
     }
 
@@ -354,11 +395,18 @@
                 return;
             }
             here.append(`<p>${data.total} ${data.total === 1 ? 'Person' : 'Personen'} in ${groups.length} Gruppen.</p>`);
-            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th><input type='checkbox' class='form-check-input' id='cb_unused_all' aria-label='Alle auswählen'></th><th>Gruppe</th><th>Schule</th><th>Ohne Konto</th><th>Mitglieder</th></tr></thead><tbody></tbody></table>`);
+            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th><input type='checkbox' class='form-check-input' id='cb_unused_all' aria-label='Alle auswählen'></th><th>Gruppe</th><th>Schule</th><th>Ohne Konto</th><th>Mit Konto</th><th>Zuletzt da</th></tr></thead><tbody></tbody></table>`);
             groups.forEach(function (g) {
                 const cb = $(`<input type='checkbox' class='form-check-input cb-unused'>`).data('group', g.name).attr('aria-label', g.name);
-                table.find('tbody').append($('<tr>').append($('<td>').append(cb), $('<td>').text(g.name), $('<td>').text(g.school || '–'),
-                    $('<td>').text(g.unused), $('<td>').text(g.members)));
+                const share = g.members ? Math.round(100 * g.unused / g.members) : 0;
+                const link = $(`<a></a>`).attr('href', '/gruppen#gruppe=' + encodeURIComponent(g.name)).text(g.name);
+                // From the longest ago to the latest visit of anyone in the group.
+                const range = !g.active_to ? "<span class='text-warning-emphasis'>noch nie</span>"
+                    : g.active_from === g.active_to ? ago_text(g.active_to)
+                    : `<span class='text-body-secondary'>${ago_text(g.active_from)} –</span> ${ago_text(g.active_to)}`;
+                table.find('tbody').append($('<tr>').append($('<td>').append(cb), $('<td>').append(link), $('<td>').text(g.school || '–'),
+                    $('<td class="text-nowrap">').html(`${g.unused} von ${g.members} <span class='text-body-secondary'>(${share} %)</span>`),
+                    $('<td>').text(g.accounts), $('<td class="text-nowrap">').html(range)));
             });
             here.append(table);
             table.find('#cb_unused_all').on('change', function () { table.find('.cb-unused').prop('checked', this.checked); });
@@ -391,11 +439,63 @@
         });
     }
 
+    function load_uninvited() {
+        people_call('/api/admin/uninvited_accounts', {}, function (data) {
+            const here = $('#uninvited_here').empty();
+            if (!data.accounts.length) { here.append(`<p class='text-body-secondary'>Keine: Jedes Konto hat eine Einladung.</p>`); return; }
+            here.append(`<p>${data.accounts.length} ${data.accounts.length === 1 ? 'Konto' : 'Konten'}.</p>`);
+            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th><input type='checkbox' class='form-check-input' id='cb_uninvited_all' aria-label='Alle auswählen'></th><th>Name und Adresse</th><th>Zuletzt da</th><th title='Speicherplatz des Workspace'>Speicher</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
+            data.accounts.forEach(function (a) {
+                const del = icon_button('bi-trash', `Konto von ${a.name || a.email} löschen`, 'btn-outline-danger');
+                del.on('click', () => delete_account_dialog(a.email, a.name, load_all));
+                const cb = $(`<input type='checkbox' class='form-check-input cb-uninvited'>`).data('email', a.email).attr('aria-label', a.name || a.email);
+                table.find('tbody').append($('<tr>').append($('<td>').append(cb),
+                    $('<td>').append($('<span>').text(a.name || '–'), $("<span class='person-email'></span>").text(a.email)),
+                    $('<td class="text-nowrap">').html(active_html({ active_on: a.active_on, active_source: a.active_source, account: true })),
+                    $('<td class="text-nowrap">').html(disk_html(a.disk_kb, data.fat_kb)), $('<td class="row-actions">').append(del)));
+            });
+            here.append($("<div class='table-responsive'></div>").append(table));
+            table.find('#cb_uninvited_all').on('change', function () { table.find('.cb-uninvited').prop('checked', this.checked); });
+            const bulk = $(`<button type='button' class='btn btn-outline-danger'><i class='bi bi-trash'></i>Ausgewählte Konten löschen</button>`);
+            bulk.on('click', function () {
+                const emails = table.find('.cb-uninvited:checked').map(function () { return $(this).data('email'); }).get();
+                if (!emails.length) return;
+                showTemplateModal('Konten löschen', `<p>${emails.length} ${emails.length === 1 ? 'Konto wird' : 'Konten werden'} mit allem gelöscht, was dazugehört: Workspace, Datenbanken, Antworten, Abgaben. Das lässt sich nicht rückgängig machen. Es geht keine E-Mail hinaus.</p>`
+                    + `<label class='form-label' for='ti_bulk_delete'>Zur Bestätigung die Zahl eingeben: <strong>${emails.length}</strong></label><input id='ti_bulk_delete' class='form-control' inputmode='numeric' autocomplete='off'>`
+                    + `<p id='bulk_progress' class='small text-body-secondary mt-2 mb-0'></p>`,
+                    "<i class='bi bi-trash'></i>Löschen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-outline-secondary', function () {
+                        if ($('#ti_bulk_delete').val().trim() !== String(emails.length)) { $('#bulk_progress').text('Die Zahl stimmt nicht.'); return false; }
+                        $('#__template_modal .modal-footer .btn').prop('disabled', true);
+                        // One after the other: each deletion stops Workspaces and drops databases.
+                        let done = 0, failed = [];
+                        const next = function () {
+                            if (done + failed.length === emails.length) {
+                                $('#__template_modal').modal('hide');
+                                show_success_message(`${done} ${done === 1 ? 'Konto' : 'Konten'} gelöscht${failed.length ? `; nicht gelöscht: ${failed.map(esc).join(', ')}` : ''}.`);
+                                load_all();
+                                return;
+                            }
+                            const email = emails[done + failed.length];
+                            $('#bulk_progress').text(`${done + failed.length + 1} von ${emails.length}: ${email}`);
+                            api_call('/api/admin/delete_account', { email: email, confirmation: email, notify: false }, function (r) {
+                                if (r.success) done += 1; else failed.push(email);
+                                next();
+                            }, { no_please_wait: true });
+                        };
+                        next();
+                        return false;
+                    });
+            });
+            here.append(bulk);
+        });
+    }
+
     function load_all() {
         load_schools();
         setTimeout(load_teachers, 200);
-        load_unused();
         load_all_people();
+        load_unused();
+        load_uninvited();
     }
 
     window.addEventListener('load', function () {

@@ -10,7 +10,8 @@
 # Without the Setting node the invitation files are the roster, as before.
 # The import writes the records, reads them back and compares what they mean
 # with what the files mean (Roster.content), all in one transaction: on any
-# difference nothing is written. »Zurück zu den Dateien« removes it all again.
+# difference nothing is written. The import is final (the maintainer's
+# decision): there is no way back to the files but a backup of Neo4j.
 class Main < Sinatra::Base
     ROSTER_SETTING = 'roster'
     HOME_SCHOOL = 'home'
@@ -172,19 +173,7 @@ class Main < Sinatra::Base
         { :ok => false, :differences => e.differences }
     end
 
-    # Back to the files: removes groups, invitations, schools and the
-    # Setting. What was changed in the browser since the import is lost.
-    def self.undo_invitation_import!
-        $neo4j.transaction do
-            $neo4j.neo4j_query('MATCH (n) WHERE n:Group OR n:Invitation OR n:School DETACH DELETE n;')
-            $neo4j.neo4j_query('MATCH (s:Setting {key: $key}) DELETE s;', :key => ROSTER_SETTING)
-        end
-        roster_changed!
-        load_invitations
-    end
-
-    # Every change in the browser notes the time, so that »Zurück zu den
-    # Dateien« can say that something would be lost.
+    # Every change in the browser notes the time, shown on /admin.
     def self.note_roster_change!
         $neo4j.neo4j_query('MATCH (s:Setting {key: $key}) SET s.changed_at = $now;', :key => ROSTER_SETTING, :now => Time.now.to_i)
         roster_changed!
@@ -218,14 +207,5 @@ class Main < Sinatra::Base
         result = Main.import_invitations!(:by => @session_user[:email], :simulate_difference => data[:simulate_difference] == true)
         STDERR.puts "Invitation import by #{@session_user[:email]}: #{result[:ok] ? 'ok' : "#{result[:differences].size} differences, nothing written"}"
         respond(result)
-    end
-
-    post '/api/admin/undo_invitation_import' do
-        assert(admin_logged_in?)
-        data = parse_request_data(:required_keys => [:confirmation])
-        halt 400, { :error => 'confirmation_mismatch' }.to_json unless data[:confirmation] == 'zurück'
-        Main.undo_invitation_import!
-        STDERR.puts "Invitation import undone by #{@session_user[:email]}"
-        respond(:ok => true)
     end
 end
