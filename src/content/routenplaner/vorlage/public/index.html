@@ -13,7 +13,11 @@
         <h1>Routenplaner</h1>
         <p id="area">Lade die Karte …</p>
     </header>
-    <div id="places">
+    <div id="tabs" role="tablist" aria-label="Was geplant wird">
+        <button type="button" role="tab" data-tab="route" aria-selected="true">Route</button>
+        <button type="button" role="tab" data-tab="tour" aria-selected="false">Rundfahrt</button>
+    </div>
+    <div id="places" data-for="route">
         <label class="place start">
             <span class="dot" aria-hidden="true"></span>
             <span class="label">Start</span>
@@ -34,12 +38,34 @@
             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2v10M2 9l3 3 3-3M11 14V4M8 7l3-3 3 3"/></svg>
         </button>
     </div>
-    <div id="searches" role="group" aria-label="Wie gesucht wird">
+    <div id="tour-stops" data-for="tour" hidden>
+        <ol id="stops"></ol>
+        <label class="place add">
+            <svg class="plus" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>
+            <input id="stop" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions" placeholder="Ort hinzufügen …" autocomplete="off" spellcheck="false">
+            <button type="button" class="clear" hidden title="Text löschen" aria-label="Text löschen">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></svg>
+            </button>
+        </label>
+    </div>
+    <div class="segments" id="searches" role="group" aria-label="Wie gesucht wird">
         <button type="button" data-search="bfs" aria-pressed="true">Breitensuche</button>
         <button type="button" data-search="dijkstra" aria-pressed="false">Dijkstra</button>
+        <button type="button" data-search="astar" aria-pressed="false">A*</button>
+    </div>
+    <div class="segments" id="modes" role="group" aria-label="Wie gereist wird">
+        <button type="button" data-mode="length" aria-pressed="true" title="Der kürzeste Weg, in Metern">Strecke</button>
+        <button type="button" data-mode="foot" aria-pressed="false" title="Der schnellste Weg zu Fuß">Zu Fuß</button>
+        <button type="button" data-mode="bike" aria-pressed="false" title="Der schnellste Weg mit dem Rad">Rad</button>
+        <button type="button" data-mode="car" aria-pressed="false" title="Der schnellste Weg mit dem Auto">Auto</button>
+    </div>
+    <div class="segments" id="methods" data-for="tour" role="group" aria-label="Wie die Reihenfolge gefunden wird" hidden>
+        <button type="button" data-method="best" aria-pressed="false" title="best_tour: jede Reihenfolge ausprobieren">Alle</button>
+        <button type="button" data-method="nearest" aria-pressed="true" title="nearest_tour: immer zum nächsten Ort">Nächster</button>
+        <button type="button" data-method="improved" aria-pressed="false" title="improve_tour: den nächsten Nachbarn mit 2-opt verbessern">2-opt</button>
     </div>
     <p id="info">Wähle Start und Ziel oder klicke auf die Karte.</p>
-    <div id="player" hidden>
+    <div id="player" data-for="route" hidden>
         <div class="controls">
             <button type="button" data-step="first" title="Zum Anfang der Suche" aria-label="Zum Anfang der Suche">
                 <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3v10M13 3 6 8l7 5z"/></svg>

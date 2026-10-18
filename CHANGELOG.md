@@ -770,11 +770,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   ist nachgebaut, weil ein Screenshot das echte nicht zeigt. Nach einem Update
   von VS Code entstehen sie neu.
 - In Arbeit, nur in der Entwicklung im Katalog: »Ein Routenplaner für Berlin«.
-  Mit echten Karten von OpenStreetMap baut man in Ruby einen Routenplaner,
+  Mit echten Karten von OpenStreetMap baut man in Ruby oder Python (je nach
+  Einstellung der Klasse) einen Routenplaner,
   erst in Steglitz, dann in ganz Berlin; Start und Ziel sind öffentliche Orte
   (Sehenswürdigkeiten, Plätze, alle Schulen Berlins), nie Adressen. Die
-  Schritte 1 bis 5 stehen: die Karte, Abstände aus Koordinaten, der Graph,
-  Breitensuche und Dijkstra. Die Karte der Vorlage ist Steglitz-Zehlendorf;
+  neun Schritte: die Karte, Abstände aus Koordinaten, der Graph,
+  Breitensuche, Dijkstra, ein Heap, A* quer durch drei Bezirke bis zum
+  Brandenburger Tor, die Arten zu reisen (zu Fuß, Rad, Auto mit
+  Einbahnstraßen, in Minuten) und eine Rundfahrt (alle Reihenfolgen,
+  nächster Nachbar, 2-opt), jeder mit Aufgaben, die der Workspace prüft. Die Karte der Vorlage ist Steglitz-Zehlendorf;
   jeden anderen der zwölf Bezirke (und ganz Berlin) lädt `server.rb` beim
   ersten Start mit `AREA=…` aus `specht/workspace-files`. Die Seite im Browser zeigt, was der eigene Code tut: den Graphen
   aus `build_graph` als Punkte und Linien über der blassen Karte, und bei

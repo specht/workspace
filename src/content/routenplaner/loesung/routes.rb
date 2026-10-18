@@ -212,7 +212,7 @@ end
 SPEEDS = {
     'foot' => { 'footway' => 5, 'path' => 5, 'pedestrian' => 5, 'steps' => 2, 'living_street' => 5,
                 'residential' => 5, 'service' => 5, 'unclassified' => 5, 'tertiary' => 5, 'secondary' => 5,
-                'primary' => 5, 'track' => 5, 'cycleway' => 5, 'bridleway' => 5, 'ferry' => 10 },
+                'primary' => 5, 'track' => 5, 'cycleway' => 5, 'bridleway' => 5, 'ferry' => 5 },
     'bike' => { 'cycleway' => 18, 'residential' => 15, 'living_street' => 10, 'service' => 12,
                 'unclassified' => 15, 'tertiary' => 16, 'secondary' => 16, 'primary' => 16,
                 'tertiary_link' => 15, 'secondary_link' => 15, 'primary_link' => 15,

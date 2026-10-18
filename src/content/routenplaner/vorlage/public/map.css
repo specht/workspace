@@ -1,3 +1,7 @@
+[hidden] {
+    display: none !important;
+}
+
 :root {
     --ink: #2b2a33;
     --muted: #6b6878;
@@ -261,30 +265,133 @@ button svg {
     stroke-linejoin: round;
 }
 
-#searches {
+#tabs {
     display: flex;
-    margin-top: 0.6rem;
+    gap: 1.2rem;
+    margin: -0.2rem 0 0.7rem;
+    border-bottom: 1px solid var(--line);
+}
+
+#tabs button {
+    width: auto;
+    height: auto;
+    padding: 0.3rem 0 0.45rem;
+    border-radius: 0;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    background: none;
+    color: var(--muted);
+    font: inherit;
+    font-weight: 600;
+}
+
+#tabs button[aria-selected="true"] {
+    border-bottom-color: var(--accent);
+    color: var(--ink);
+}
+
+.segments {
+    display: flex;
+    margin-top: 0.5rem;
     padding: 3px;
     border-radius: 9px;
     background: #f1f3f5;
 }
 
-#searches button {
+.segments[hidden],
+[data-for][hidden] {
+    display: none;
+}
+
+.segments button {
     flex: 1;
     width: auto;
-    height: 1.9rem;
+    height: 1.8rem;
     border-radius: 7px;
     background: none;
     color: var(--muted);
     font: inherit;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
 }
 
-#searches button[aria-pressed="true"] {
+.segments button[aria-pressed="true"] {
     background: #fff;
     color: var(--ink);
     font-weight: 600;
     box-shadow: 0 1px 3px rgba(20, 30, 50, 0.15);
+}
+
+#stops {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin: 0 0 0.45rem;
+    padding: 0;
+    list-style: none;
+}
+
+#stops:empty {
+    display: none;
+}
+
+#stops li {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    max-width: 100%;
+    padding: 0.15rem 0.15rem 0.15rem 0.2rem;
+    border-radius: 999px;
+    background: #f1effb;
+    font-size: 0.8rem;
+}
+
+#stops .number {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
+#stops li:first-child .number {
+    background: var(--start);
+}
+
+#stops .name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#stops button {
+    flex: none;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    background: none;
+    color: var(--muted);
+}
+
+#stops button svg {
+    width: 10px;
+    height: 10px;
+    stroke-width: 2;
+}
+
+.place.add .plus {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: var(--muted);
+    stroke-width: 1.8;
+    stroke-linecap: round;
 }
 
 #info strong {

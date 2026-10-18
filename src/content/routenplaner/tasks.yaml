@@ -41,6 +41,27 @@ tasks:
         - call: read_ways('routenplaner-starter/data/test.tsv')[1][:name]
           expect: "''"
           say: Ein Weg ohne Namen hat den leeren Text als Namen, zwei Tabulatoren hintereinander.
+    python:
+      prompt: Schreib `read_ways` in `routes.py`.
+      check:
+        type: python
+        file: routenplaner-starter/routes.py
+        cases:
+          - call: 'len(read_ways(''routenplaner-starter/data/test.tsv''))'
+            expect: 3
+          - call: 'read_ways(''routenplaner-starter/data/test.tsv'')[0][''name'']'
+            expect: "'Ahornweg'"
+            say: 'Der Name ist der dritte Teil der Zeile, nach Art und Einbahnstraße.'
+          - call: 'read_ways(''routenplaner-starter/data/test.tsv'')[1][''kind'']'
+            expect: "'footway'"
+          - call: 'read_ways(''routenplaner-starter/data/test.tsv'')[2][''oneway'']'
+            expect: "'yes'"
+          - call: '[list(p) for p in read_ways(''routenplaner-starter/data/test.tsv'')[0][''points'']]'
+            expect: "[['1', 13.3, 52.45], ['2', 13.301, 52.45], ['3', 13.302, 52.45]]"
+            say: 'Jeder Punkt ist eine Liste aus ID (ein Text), Länge und Breite (Kommazahlen): `["2", 13.301, 52.45]`.'
+          - call: 'read_ways(''routenplaner-starter/data/test.tsv'')[1][''name'']'
+            expect: "''"
+            say: 'Ein Weg ohne Namen hat den leeren Text als Namen, zwei Tabulatoren hintereinander.'
 
   - id: grad
     title: Ein Grad ist nicht gleich ein Grad
@@ -77,6 +98,26 @@ tasks:
         - call: distance(13.3, 52.45, 13.301, 52.451) == distance(13.301, 52.451, 13.3, 52.45)
           expect: true
           say: Hin ist es so weit wie zurück.
+    python:
+      prompt: Schreib `distance` in `routes.py`.
+      check:
+        type: python
+        file: routenplaner-starter/routes.py
+        cases:
+          - call: 'abs(distance(13.3, 52.45, 13.3, 52.451) - 111.2) < 0.5'
+            expect: true
+            say: 'Ein Tausendstel Grad nach Norden sind überall gut 111 Meter.'
+          - call: 'abs(distance(13.3, 52.45, 13.301, 52.45) - 67.8) < 0.5'
+            expect: true
+            say: 'Ein Tausendstel Grad nach Osten ist in Berlin nur knapp 68 Meter lang. Hast du die Länge mit dem Cosinus der Breite verkürzt? math.cos rechnet im Bogenmaß.'
+          - call: 'abs(distance(13.3205, 52.4572, 13.3064, 52.4560) - 965) < 3'
+            expect: true
+            say: 'Vom Rathaus Steglitz zum Botanischen Garten sind es in Luftlinie gut 960 Meter.'
+          - call: 'distance(13.3, 52.45, 13.3, 52.45)'
+            expect: 0.0
+          - call: 'distance(13.3, 52.45, 13.301, 52.451) == distance(13.301, 52.451, 13.3, 52.45)'
+            expect: true
+            say: 'Hin ist es so weit wie zurück.'
 
   - id: graph
     title: Vom Weg zum Graphen
@@ -97,6 +138,25 @@ tasks:
         - call: (build_graph(read_ways('routenplaner-starter/data/test.tsv'))[:edges]['1'].first[1] - 67.8).abs < 0.5
           expect: true
           say: Zu jedem Nachbarn gehört, wie weit er entfernt ist, mit deiner Funktion distance.
+    python:
+      prompt: Schreib `build_graph` in `routes.py`.
+      check:
+        type: python
+        file: routenplaner-starter/routes.py
+        cases:
+          - call: 'len(build_graph(read_ways(''routenplaner-starter/data/test.tsv''))[''nodes''])'
+            expect: 5
+          - call: 'list(build_graph(read_ways(''routenplaner-starter/data/test.tsv''))[''nodes''][''2''])'
+            expect: '[13.301, 52.45]'
+          - call: 'sorted(e[0] for e in build_graph(read_ways(''routenplaner-starter/data/test.tsv''))[''edges''][''2''])'
+            expect: "['1', '3', '4']"
+            say: 'Der Punkt 2 liegt am Ahornweg zwischen 1 und 3 und ist der Anfang des Fußwegs zu 4.'
+          - call: 'sorted(e[0] for e in build_graph(read_ways(''routenplaner-starter/data/test.tsv''))[''edges''][''5''])'
+            expect: "['3', '4']"
+            say: 'Nachbarn sind nur Punkte, die auf einem Weg direkt aufeinander folgen, und das in beide Richtungen.'
+          - call: 'abs(build_graph(read_ways(''routenplaner-starter/data/test.tsv''))[''edges''][''1''][0][1] - 67.8) < 0.5'
+            expect: true
+            say: 'Zu jedem Nachbarn gehört, wie weit er entfernt ist, mit deiner Funktion distance.'
 
   - id: weg
     title: Der Weg zurück
@@ -116,6 +176,23 @@ tasks:
         - call: path_to({ 'a' => nil, 'b' => 'a' }, 'x')
           expect: ~
           say: Hat die Suche das Ziel nie gefunden, steht es nicht in previous, und es gibt keinen Weg.
+    python:
+      prompt: Schreib `path_to` in `routes.py`.
+      check:
+        type: python
+        file: routenplaner-starter/routes.py
+        cases:
+          - call: 'path_to({''a'': None, ''b'': ''a'', ''c'': ''b''}, ''c'')'
+            expect: "['a', 'b', 'c']"
+            say: 'Der Weg geht vom Start zum Ziel. Du findest ihn rückwärts, also kommt jeder Knoten vorne dazu (`insert(0, …)`).'
+          - call: 'path_to({''a'': None, ''b'': ''a'', ''c'': ''a''}, ''c'')'
+            expect: "['a', 'c']"
+          - call: 'path_to({''a'': None}, ''a'')'
+            expect: "['a']"
+            say: 'Ist das Ziel der Start, ist der Weg nur dieser eine Knoten.'
+          - call: 'path_to({''a'': None, ''b'': ''a''}, ''x'')'
+            expect: ~
+            say: 'Hat die Suche das Ziel nie gefunden, steht es nicht in previous, und es gibt keinen Weg.'
 
   - id: breitensuche
     title: Breitensuche
@@ -138,6 +215,26 @@ tasks:
         - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')[:visited].sort
           expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
           say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
+    python:
+      prompt: Schreib `breadth_first` in `routes.py`.
+      check:
+        type: python
+        file: routenplaner-starter/routes.py
+        cases:
+          - call: 'breadth_first(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''path'']'
+            expect: "['11', '21', '22', '16']"
+            say: 'Über den Eichenweg sind es nur drei Kanten, über die Lindenstraße fünf.'
+          - call: 'breadth_first(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''11'')[''path'']'
+            expect: "['11']"
+          - call: 'breadth_first(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'')[''path'']'
+            expect: ~
+            say: 'Zum Fußweg 31-32 führt nichts hin. Dann ist die Warteschlange irgendwann leer, und es gibt keinen Weg.'
+          - call: 'breadth_first(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''visited''][0]'
+            expect: "'11'"
+            say: 'In visited kommt jeder Knoten, wenn er aus der Warteschlange genommen wird, der Start also zuerst.'
+          - call: 'sorted(breadth_first(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'')[''visited''])'
+            expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
+            say: 'Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.'
 
   - id: kanten
     title: Wenige Kanten, langer Weg
@@ -178,3 +275,288 @@ tasks:
         - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].include?('22')
           expect: false
           say: Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.
+    python:
+      prompt: Schreib `dijkstra` in `routes.py`.
+      check:
+        type: python
+        file: routenplaner-starter/routes.py
+        cases:
+          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''path'']'
+            expect: "['11', '12', '13', '14', '15', '16']"
+            say: 'Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.'
+          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''11'')[''path'']'
+            expect: "['11']"
+          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'')[''path'']'
+            expect: ~
+            say: 'Zum Fußweg 31-32 führt nichts hin; wenn nichts mehr in frontier steht, gibt es keinen Weg.'
+          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''visited''][0]'
+            expect: "'11'"
+          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''visited''][-1]'
+            expect: "'16'"
+            say: 'Ist das Ziel dran, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.'
+          - call: '''22'' in dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''visited'']'
+            expect: false
+            say: 'Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.'
+
+  - id: heap
+    title: Ein Heap
+    prompt: Schreib `push` und `pop` der Klasse `MinHeap` in `routes.rb`.
+    check:
+      type: ruby
+      file: routenplaner-starter/routes.rb
+      cases:
+        - call: h = MinHeap.new; [5, 3, 8, 1].each { |x| h.push(x, x.to_s) }; Array.new(4) { h.pop }
+          expect: "[[1, '1'], [3, '3'], [5, '5'], [8, '8']]"
+          say: pop gibt immer das Paar mit der kleinsten Priorität zurück, als [Priorität, Wert].
+        - call: MinHeap.new.pop
+          expect: ~
+          say: Ein leerer Heap gibt nil zurück.
+        - call: h = MinHeap.new; h.push(5, 'a'); h.push(2, 'b'); first = h.pop; h.push(1, 'c'); [first, h.pop, h.pop, h.empty?]
+          expect: "[[2, 'b'], [1, 'c'], [5, 'a'], true]"
+          say: Auch wenn push und pop sich abwechseln, kommt das Kleinste zuerst.
+        - call: 'h = MinHeap.new; xs = (1..300).to_a.shuffle(random: Random.new(1)); xs.each { |x| h.push(x, x) }; Array.new(300) { h.pop[0] } == (1..300).to_a'
+          expect: true
+        - call: 'h = MinHeap.new; (1..100).to_a.shuffle(random: Random.new(2)).each { |x| h.push(x, x) }; items = h.instance_variable_get(:@items); (1...items.size).all? { |i| items[(i - 1) / 2][0] <= items[i][0] }'
+          expect: true
+          say: Die Einträge in @items sollen ein Heap sein, kein sortiertes Array, keine Liste zum Durchsuchen. Jedes Elternteil (i - 1) / 2 ist höchstens so groß wie sein Kind i.
+    python:
+      prompt: Schreib `push` und `pop` der Klasse `MinHeap` in `routes.py`.
+      check:
+        type: python
+        file: routenplaner-starter/routes.py
+        cases:
+          - call: '(lambda h: [h.push(x, str(x)) for x in [5, 3, 8, 1]] and [tuple(h.pop()) for _ in range(4)])(MinHeap())'
+            expect: "[(1, '1'), (3, '3'), (5, '5'), (8, '8')]"
+            say: 'pop gibt immer das Paar mit der kleinsten Priorität zurück, als (Priorität, Wert).'
+          - call: 'MinHeap().pop()'
+            expect: ~
+            say: 'Ein leerer Heap gibt None zurück.'
+          - call: '(lambda h: [x for x in [h.push(5, ''a''), h.push(2, ''b''), tuple(h.pop()), h.push(1, ''c''), tuple(h.pop()), tuple(h.pop()), h.empty()] if x is not None])(MinHeap())'
+            expect: "[(2, 'b'), (1, 'c'), (5, 'a'), True]"
+            say: 'Auch wenn push und pop sich abwechseln, kommt das Kleinste zuerst.'
+          - call: '(lambda h: [h.push(x, x) for x in [(i * 37) % 301 for i in range(1, 301)]] and [h.pop()[0] for _ in range(300)])(MinHeap()) == list(range(1, 301))'
+            expect: true
+          - call: '(lambda h: [h.push((i * 37) % 101, i) for i in range(1, 101)] and all(h.items[(i - 1) // 2][0] <= h.items[i][0] for i in range(1, len(h.items))))(MinHeap())'
+            expect: true
+            say: 'Die Einträge in self.items sollen ein Heap sein, keine sortierte Liste, keine Liste zum Durchsuchen. Jedes Elternteil (i - 1) // 2 ist höchstens so groß wie sein Kind i.'
+
+  - id: astern
+    title: A*
+    prompt: Schreib `a_star` in `routes.rb`.
+    check:
+      type: ruby
+      file: routenplaner-starter/routes.rb
+      cases:
+        - call: a_star(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:path]
+          expect: "['11', '12', '13', '14', '15', '16']"
+          say: A* findet denselben kürzesten Weg wie Dijkstra, die Lindenstraße entlang.
+        - call: a_star(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].include?('21')
+          expect: false
+          say: Der Knoten 21 liegt nach Norden, weg vom Ziel. Seine Schätzung ist zu groß, als dass A* ihn besuchen müsste.
+        - call: a_star(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')[:path]
+          expect: ~
+        - call: a_star(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')[:path]
+          expect: "['11']"
+        - call: a_star(build_graph(read_ways('routenplaner-starter/data/test.tsv')), '1', '5')[:path].size
+          expect: 4
+    python:
+      prompt: Schreib `a_star` in `routes.py`.
+      check:
+        type: python
+        file: routenplaner-starter/routes.py
+        cases:
+          - call: 'a_star(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''path'']'
+            expect: "['11', '12', '13', '14', '15', '16']"
+            say: 'A* findet denselben kürzesten Weg wie Dijkstra, die Lindenstraße entlang.'
+          - call: '''21'' in a_star(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''visited'']'
+            expect: false
+            say: 'Der Knoten 21 liegt nach Norden, weg vom Ziel. Seine Schätzung ist zu groß, als dass A* ihn besuchen müsste.'
+          - call: 'a_star(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'')[''path'']'
+            expect: ~
+          - call: 'a_star(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''11'')[''path'']'
+            expect: "['11']"
+          - call: 'len(a_star(build_graph(read_ways(''routenplaner-starter/data/test.tsv'')), ''1'', ''5'')[''path''])'
+            expect: 4
+
+  - id: reisen
+    title: Zu Fuß, mit dem Rad, mit dem Auto
+    prompt: Schreib `build_travel_graph` in `routes.rb`.
+    check:
+      type: ruby
+      file: routenplaner-starter/routes.rb
+      cases:
+        - call: build_travel_graph(read_ways('routenplaner-starter/data/test.tsv'), 'foot')[:edges]['5'].map(&:first).sort
+          expect: "['3', '4']"
+          say: Zu Fuß gilt keine Einbahnstraße.
+        - call: build_travel_graph(read_ways('routenplaner-starter/data/test.tsv'), 'car')[:edges]['2'].map(&:first).sort
+          expect: "['1', '3']"
+          say: Den Fußweg von 2 nach 4 darf ein Auto nicht fahren. Er steht nicht in SPEEDS['car'].
+        - call: build_travel_graph(read_ways('routenplaner-starter/data/test.tsv'), 'car')[:edges]['5'].map(&:first)
+          expect: "['4']"
+          say: Der Birkenweg ist eine Einbahnstraße (yes) in Richtung seiner Punkte, 3 → 5 → 4. Von 5 geht es mit dem Auto nur nach 4.
+        - call: build_travel_graph(read_ways('routenplaner-starter/data/test.tsv'), 'car')[:edges]['4'].to_a
+          expect: '[]'
+          say: Von 4 kommt ein Auto nicht weg, gegen die Einbahnstraße nicht und den Fußweg nicht.
+        - call: (build_travel_graph(read_ways('routenplaner-starter/data/test.tsv'), 'car')[:edges]['1'].first[1] - 9.76).abs < 0.05
+          expect: true
+          say: An jeder Kante stehen Sekunden. 67,8 Meter mit 25 km/h, das sind 25 / 3,6 Meter je Sekunde, dauern knapp 10 Sekunden.
+        - call: (build_travel_graph(read_ways('routenplaner-starter/data/test.tsv'), 'car')[:fastest] - 25.0).abs < 0.001
+          expect: true
+          say: fastest ist das größte Tempo in SPEEDS['car'], in Metern je Sekunde, 90 km/h also 25 m/s.
+        - call: build_travel_graph(read_ways('routenplaner-starter/data/test.tsv'), 'bike')[:edges]['4'].map(&:first)
+          expect: "['5']"
+          say: Auf dem Fußweg darf man nicht Rad fahren, die Einbahnstraße gilt für das Rad hier nicht.
+    python:
+      prompt: Schreib `build_travel_graph` in `routes.py`.
+      check:
+        type: python
+        file: routenplaner-starter/routes.py
+        cases:
+          - call: 'sorted(e[0] for e in build_travel_graph(read_ways(''routenplaner-starter/data/test.tsv''), ''foot'')[''edges''][''5''])'
+            expect: "['3', '4']"
+            say: 'Zu Fuß gilt keine Einbahnstraße.'
+          - call: 'sorted(e[0] for e in build_travel_graph(read_ways(''routenplaner-starter/data/test.tsv''), ''car'')[''edges''][''2''])'
+            expect: "['1', '3']"
+            say: 'Den Fußweg von 2 nach 4 darf ein Auto nicht fahren. Er steht nicht in SPEEDS[''car''].'
+          - call: '[e[0] for e in build_travel_graph(read_ways(''routenplaner-starter/data/test.tsv''), ''car'')[''edges''][''5'']]'
+            expect: "['4']"
+            say: 'Der Birkenweg ist eine Einbahnstraße (yes) in Richtung seiner Punkte, 3 → 5 → 4. Von 5 geht es mit dem Auto nur nach 4.'
+          - call: 'list(build_travel_graph(read_ways(''routenplaner-starter/data/test.tsv''), ''car'')[''edges''].get(''4'', []))'
+            expect: '[]'
+            say: 'Von 4 kommt ein Auto nicht weg, gegen die Einbahnstraße nicht und den Fußweg nicht.'
+          - call: 'abs(build_travel_graph(read_ways(''routenplaner-starter/data/test.tsv''), ''car'')[''edges''][''1''][0][1] - 9.76) < 0.05'
+            expect: true
+            say: 'An jeder Kante stehen Sekunden. 67,8 Meter mit 25 km/h, das sind 25 / 3,6 Meter je Sekunde, dauern knapp 10 Sekunden.'
+          - call: 'abs(build_travel_graph(read_ways(''routenplaner-starter/data/test.tsv''), ''car'')[''fastest''] - 25.0) < 0.001'
+            expect: true
+            say: 'fastest ist das größte Tempo in SPEEDS[''car''], in Metern je Sekunde, 90 km/h also 25 m/s.'
+          - call: '[e[0] for e in build_travel_graph(read_ways(''routenplaner-starter/data/test.tsv''), ''bike'')[''edges''][''4'']]'
+            expect: "['5']"
+            say: 'Auf dem Fußweg darf man nicht Rad fahren, die Einbahnstraße gilt für das Rad hier nicht.'
+
+  - id: rundfahrt
+    title: Wie lang ist eine Rundfahrt?
+    prompt: Schreib `tour_length` in `routes.rb`.
+    check:
+      type: ruby
+      file: routenplaner-starter/routes.rb
+      cases:
+        - call: tour_length([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 1, 2, 3, 4])
+          expect: 52
+          say: 'Von 0 nach 1 sind es 10, dann 9, 7 und 12, und am Ende 14 zurück zum Anfang: 52.'
+        - call: tour_length([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 3, 2, 1, 4])
+          expect: 36
+        - call: tour_length([[0, 1], [3, 0]], [0, 1])
+          expect: 4
+          say: Hin ist nicht immer so weit wie zurück, etwa mit dem Auto und Einbahnstraßen. Nimm immer costs[von][nach].
+    python:
+      prompt: Schreib `tour_length` in `routes.py`.
+      check:
+        type: python
+        file: routenplaner-starter/routes.py
+        cases:
+          - call: 'tour_length([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 1, 2, 3, 4])'
+            expect: 52
+            say: 'Von 0 nach 1 sind es 10, dann 9, 7 und 12, und am Ende 14 zurück zum Anfang: 52.'
+          - call: 'tour_length([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 3, 2, 1, 4])'
+            expect: 36
+          - call: 'tour_length([[0, 1], [3, 0]], [0, 1])'
+            expect: 4
+            say: 'Hin ist nicht immer so weit wie zurück, etwa mit dem Auto und Einbahnstraßen. Nimm immer costs[von][nach].'
+
+  - id: alle-reihenfolgen
+    title: Alle Reihenfolgen
+    prompt: Schreib `best_tour` in `routes.rb`.
+    check:
+      type: ruby
+      file: routenplaner-starter/routes.rb
+      cases:
+        - call: tour_length([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], best_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]]))
+          expect: 30
+          say: Die kürzeste Rundfahrt durch diese fünf Orte ist 30 lang.
+        - call: best_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]]).first
+          expect: 0
+          say: Die Reihenfolge beginnt beim Ort 0.
+        - call: best_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]]).sort
+          expect: '[0, 1, 2, 3, 4]'
+          say: Jeder Ort kommt genau einmal vor.
+        - call: best_tour([[0]])
+          expect: '[0]'
+    python:
+      prompt: Schreib `best_tour` in `routes.py`.
+      check:
+        type: python
+        file: routenplaner-starter/routes.py
+        cases:
+          - call: 'tour_length([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], best_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]]))'
+            expect: 30
+            say: 'Die kürzeste Rundfahrt durch diese fünf Orte ist 30 lang.'
+          - call: 'best_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]])[0]'
+            expect: 0
+            say: 'Die Reihenfolge beginnt beim Ort 0.'
+          - call: 'sorted(best_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]]))'
+            expect: '[0, 1, 2, 3, 4]'
+            say: 'Jeder Ort kommt genau einmal vor.'
+          - call: 'list(best_tour([[0]]))'
+            expect: '[0]'
+
+  - id: naechster-nachbar
+    title: Der nächste Nachbar
+    prompt: Schreib `nearest_tour` in `routes.rb`.
+    check:
+      type: ruby
+      file: routenplaner-starter/routes.rb
+      cases:
+        - call: nearest_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]])
+          expect: '[0, 3, 2, 1, 4]'
+          say: 'Von 0 ist 3 am nächsten (2), von 3 dann 2 (7), von 2 dann 1 (9), und übrig bleibt 4.'
+        - call: nearest_tour([[0, 5, 1], [5, 0, 2], [1, 2, 0]])
+          expect: '[0, 2, 1]'
+    python:
+      prompt: Schreib `nearest_tour` in `routes.py`.
+      check:
+        type: python
+        file: routenplaner-starter/routes.py
+        cases:
+          - call: 'list(nearest_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]]))'
+            expect: '[0, 3, 2, 1, 4]'
+            say: 'Von 0 ist 3 am nächsten (2), von 3 dann 2 (7), von 2 dann 1 (9), und übrig bleibt 4.'
+          - call: 'list(nearest_tour([[0, 5, 1], [5, 0, 2], [1, 2, 0]]))'
+            expect: '[0, 2, 1]'
+
+  - id: zwei-opt
+    title: Besser mit 2-opt
+    prompt: Schreib `improve_tour` in `routes.rb`.
+    check:
+      type: ruby
+      file: routenplaner-starter/routes.rb
+      cases:
+        - call: tour_length([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], improve_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 3, 2, 1, 4]))
+          expect: 30
+          say: Aus der Reihenfolge des nächsten Nachbarn (36) macht 2-opt hier die kürzeste (30).
+        - call: improve_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 3, 2, 1, 4]).first
+          expect: 0
+          say: Der Anfang bleibt, wo er ist; umgedreht werden nur Stücke danach.
+        - call: improve_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 3, 2, 1, 4]).sort
+          expect: '[0, 1, 2, 3, 4]'
+        - call: o = [0, 2, 4, 1, 3]; improve_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], o); o
+          expect: '[0, 2, 4, 1, 3]'
+          say: improve_tour gibt eine neue Reihenfolge zurück und lässt die übergebene, wie sie ist (dup).
+    python:
+      prompt: Schreib `improve_tour` in `routes.py`.
+      check:
+        type: python
+        file: routenplaner-starter/routes.py
+        cases:
+          - call: 'tour_length([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], improve_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 3, 2, 1, 4]))'
+            expect: 30
+            say: 'Aus der Reihenfolge des nächsten Nachbarn (36) macht 2-opt hier die kürzeste (30).'
+          - call: 'improve_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 3, 2, 1, 4])[0]'
+            expect: 0
+            say: 'Der Anfang bleibt, wo er ist; umgedreht werden nur Stücke danach.'
+          - call: 'sorted(improve_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 3, 2, 1, 4]))'
+            expect: '[0, 1, 2, 3, 4]'
+          - call: '(lambda o: (improve_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], o), o)[1])([0, 2, 4, 1, 3])'
+            expect: '[0, 2, 4, 1, 3]'
+            say: 'improve_tour gibt eine neue Reihenfolge zurück und lässt die übergebene, wie sie ist (list(order)).'
+

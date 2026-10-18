@@ -43,6 +43,11 @@ let chosen = { start: null, goal: null }; // die gewählten Orte
 let lines = []; // [[[lon, lat], [lon, lat]], …] hervorgehoben
 let fitted = null; // was ganz zu sehen sein soll, bis jemand die Karte bewegt: [West, Süd, Ost, Nord, Zoom höchstens]
 let search = 'bfs'; // welche Suche aus routes.rb
+let mode = 'length'; // wie gereist wird: length (Meter), foot, bike, car (Sekunden)
+let tab = 'route'; // route oder tour
+let stops = []; // die Orte der Rundfahrt
+let method = 'nearest'; // wie die Reihenfolge der Rundfahrt gefunden wird
+let tour = null; // { order: [Nummer in stops, …], legs: [[[lon, lat], …], …] }
 let graph = null; // { nodes: [lon, lat, …], edges: [Nummer, Nummer, …] } aus build_graph, wenn »Graph zeigen« an ist
 let route = null; // { path: [[lon, lat], …], visited: [lon, lat, lon, lat, …], edges: [Nummer, Nummer, …] in visited, shown: wie viele besuchte schon zu sehen }
 
@@ -145,6 +150,7 @@ function draw(quick = false) {
     }
     if (!data) return;
     if (route) drawRoute();
+    if (tab === 'tour') drawTour();
     context.strokeStyle = '#d6336c';
     context.lineWidth = 3;
     for (const [a, b] of lines) {
@@ -335,7 +341,7 @@ async function showGraph(on) {
     const answer = await (await fetch('graph.json')).json();
     if (answer.missing) {
         toggle.checked = false;
-        info.textContent = `Für den Graphen fehlt noch ${answer.missing} in routes.rb.`;
+        info.textContent = `Für den Graphen fehlt noch ${answer.missing} in ${program()}.`;
         return;
     }
     if (!toggle.checked) return;
@@ -454,7 +460,7 @@ function drawPlaces() {
         context.fillText(text, x, y - 6 + below);
     };
     // Start und Ziel zuerst, damit ihre Namen immer zu sehen sind
-    const picked = [[chosen.start, START], [chosen.goal, GOAL]].filter(([place]) => place);
+    const picked = tab === 'route' ? [[chosen.start, START], [chosen.goal, GOAL]].filter(([place]) => place) : [];
     for (const [place, color] of picked) {
         label(place.name, project(place.lon, place.lat), '600 13px system-ui, sans-serif', color, -6);
     }
@@ -465,7 +471,7 @@ function drawPlaces() {
         const [color, text, from, named] = looks[kind];
         if (view.scale < from) continue;
         for (const place of data.places) {
-            if (place.kind !== kind || place === chosen.start || place === chosen.goal) continue;
+            if (place.kind !== kind || picked.some(([p]) => p === place) || (tab === 'tour' && stops.includes(place))) continue;
             const at = project(place.lon, place.lat);
             if (at[0] < -100 || at[1] < -20 || at[0] > canvas.clientWidth + 100 || at[1] > canvas.clientHeight + 20) continue;
             dot(at, kind === 'sight' ? 4 : 3, color, 1.5);
@@ -593,7 +599,7 @@ new ResizeObserver(() => resized()).observe(canvas, { box: 'device-pixel-content
 async function clicked(lon, lat) {
     const answer = await (await fetch(`neighbours?lon=${lon}&lat=${lat}`)).json();
     if (answer.missing) {
-        info.textContent = `Für Knoten und Nachbarn fehlt noch ${answer.missing} in routes.rb.`;
+        info.textContent = `Für Knoten und Nachbarn fehlt noch ${answer.missing} in ${program()}.`;
         return;
     }
     marks = [[...answer.at, '#d6336c', 5], ...answer.neighbours.map(([x, y]) => [x, y, '#1971c2', 4])];
@@ -652,9 +658,26 @@ function showChoice() {
 }
 
 // Die Route mit der gewählten Suche: erst die Suche Knoten für Knoten, dann der Weg
-const SEARCH_NAMES = { bfs: 'Breitensuche', dijkstra: 'Dijkstra' };
+const SEARCH_NAMES = { bfs: 'Breitensuche', dijkstra: 'Dijkstra', astar: 'A*' };
+const MODE_NAMES = { length: 'Strecke', foot: 'zu Fuß', bike: 'mit dem Rad', car: 'mit dem Auto' };
+
+// Die Datei mit den Funktionen: routes.rb oder routes.py, je nach Server
+function program() {
+    return data?.program || 'routes.rb';
+}
+
+function duration(seconds) {
+    const minutes = Math.round(seconds / 60);
+    return minutes < 60 ? `${minutes} min` : `${Math.floor(minutes / 60)} h ${minutes % 60} min`;
+}
+
+function took(seconds) {
+    if (seconds < 0.0001) return 'unter 0,0001';
+    return new Intl.NumberFormat('de-DE', { maximumFractionDigits: seconds < 0.01 ? 4 : 2 }).format(seconds);
+}
 let asked = 0;
 async function findRoute() {
+    if (tab !== 'route') return;
     pause();
     route = null;
     document.getElementById('player').hidden = true;
@@ -665,16 +688,16 @@ async function findRoute() {
     info.textContent = `${name} sucht …`;
     let answer;
     try {
-        const response = await fetch(`route?search=${search}&from=${start.lon},${start.lat}&to=${goal.lon},${goal.lat}`);
+        const response = await fetch(`route?search=${search}&mode=${mode}&from=${start.lon},${start.lat}&to=${goal.lon},${goal.lat}`);
         if (!response.ok) throw new Error(response.status);
         answer = await response.json();
     } catch {
-        if (ask === asked) info.textContent = `${name}: Fehler in routes.rb. Was schiefging, steht im Terminal.`;
+        if (ask === asked) info.textContent = `${name}: Fehler in ${program()}. Was schiefging, steht im Terminal.`;
         return;
     }
     if (ask !== asked) return; // inzwischen anders gewählt
     if (answer.missing) {
-        info.textContent = `Für ${name === 'Dijkstra' ? 'Dijkstra' : `die ${name}`} fehlt noch ${answer.missing} in routes.rb.`;
+        info.textContent = `Für ${['Dijkstra', 'A*'].includes(name) ? name : `die ${name}`} fehlt noch ${answer.missing} in ${program()}.`;
         return draw();
     }
     route = { path: answer.path, visited: answer.visited, edges: answer.edges || [], shown: 0, position: 0 };
@@ -683,6 +706,8 @@ async function findRoute() {
     const slider = document.getElementById('progress');
     slider.max = total;
     document.getElementById('player').hidden = false;
+    // das Ergebnis und der Spieler zu sehen, auch wenn der Kasten scrollt
+    document.getElementById('player').scrollIntoView({ block: 'nearest' });
     // Wer schon selbst angehalten oder geschoben hat, vergleicht: dieselbe
     // Stelle bei der anderen Suche. Sonst läuft die Suche einmal ab.
     if (player.manual) {
@@ -694,13 +719,13 @@ async function findRoute() {
 }
 
 function showRoute(name, answer) {
-    const seconds = answer.seconds < 0.01 ? NUMBER.format(Number(answer.seconds.toFixed(4)))
-        : NUMBER.format(Number(answer.seconds.toFixed(2)));
+    const seconds = took(answer.took);
     const title = document.createElement('strong');
     title.textContent = name;
     const way = document.createElement('span');
+    const time = answer.seconds == null ? '' : `, ${duration(answer.seconds)} ${MODE_NAMES[answer.mode]}`;
     way.textContent = answer.path
-        ? `Weg: ${length(answer.metres)} über ${NUMBER.format(answer.path.length)} Knoten (Luftlinie ${length(beeline())})`
+        ? `Weg: ${length(answer.metres)}${time} über ${NUMBER.format(answer.path.length)} Knoten (Luftlinie ${length(beeline())})`
         : 'Kein Weg gefunden.';
     const visited = document.createElement('span');
     visited.className = 'note';
@@ -789,12 +814,171 @@ function setUpPlayer() {
     setPlayIcon();
 }
 
-function setUpSearches() {
-    document.querySelectorAll('#searches button').forEach((button) => button.addEventListener('click', () => {
-        search = button.dataset.search;
-        document.querySelectorAll('#searches button').forEach((b) => b.setAttribute('aria-pressed', b === button));
-        findRoute();
+// Die Knöpfe, von denen immer einer gedrückt ist
+function segments(id, attribute, current, changed) {
+    const buttons = document.querySelectorAll(`#${id} button`);
+    const press = (value) => buttons.forEach((b) => b.setAttribute('aria-pressed', b.dataset[attribute] === value));
+    press(current);
+    buttons.forEach((button) => button.addEventListener('click', () => {
+        press(button.dataset[attribute]);
+        changed(button.dataset[attribute]);
     }));
+    return press;
+}
+
+let pressSearch, pressMode, pressMethod;
+function setUpSearches() {
+    // Suche und Art zu reisen gelten für die Route und die Rundfahrt
+    const again = () => (tab === 'route' ? findRoute() : findTour());
+    pressSearch = segments('searches', 'search', search, (value) => {
+        search = value;
+        again();
+    });
+    pressMode = segments('modes', 'mode', mode, (value) => {
+        mode = value;
+        again();
+    });
+    pressMethod = segments('methods', 'method', method, (value) => {
+        method = value;
+        findTour();
+    });
+    document.querySelectorAll('#tabs button').forEach((button) => button.addEventListener('click', () => switchTab(button.dataset.tab)));
+}
+
+function switchTab(which) {
+    tab = which;
+    document.querySelectorAll('#tabs button').forEach((b) => b.setAttribute('aria-selected', b.dataset.tab === which));
+    document.querySelectorAll('[data-for]').forEach((element) => {
+        element.hidden = element.dataset.for !== which || (element.id === 'player' && !route);
+    });
+    if (which === 'route') {
+        tour = null;
+        if (chosen.start && chosen.goal) findRoute(); else showChoice();
+    } else {
+        pause();
+        route = null;
+        document.getElementById('player').hidden = true;
+        findTour();
+    }
+    draw();
+}
+
+// Die Rundfahrt: Orte dazu und weg, und mit der gewählten Suche und Art
+// die Reihenfolge
+function addStop(place) {
+    if (!place || stops.includes(place) || stops.length >= 12) return;
+    stops.push(place);
+    showStops();
+    findTourSoon();
+}
+
+function removeStop(place) {
+    stops = stops.filter((p) => p !== place);
+    showStops();
+    findTourSoon();
+}
+
+// Wer mehrere Orte hintereinander hinzufügt, wartet nicht auf jede Rechnung dazwischen
+let tourSoon = null;
+function findTourSoon() {
+    clearTimeout(tourSoon);
+    tour = null;
+    draw();
+    tourSoon = setTimeout(findTour, 600);
+}
+
+function showStops() {
+    const list = document.getElementById('stops');
+    list.replaceChildren(...stops.map((place, i) => {
+        const item = document.createElement('li');
+        const number = document.createElement('span');
+        number.className = 'number';
+        number.textContent = i + 1;
+        const name = document.createElement('span');
+        name.className = 'name';
+        name.textContent = place.name;
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.title = `${place.name} entfernen`;
+        remove.setAttribute('aria-label', remove.title);
+        remove.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></svg>';
+        remove.addEventListener('click', () => removeStop(place));
+        item.append(number, name, remove);
+        return item;
+    }));
+    document.getElementById('stop').placeholder = stops.length ? 'Noch einen Ort hinzufügen …' : 'Ort hinzufügen …';
+}
+
+const METHOD_NAMES = { best: 'Alle Reihenfolgen', nearest: 'Nächster Nachbar', improved: '2-opt' };
+async function findTour() {
+    tour = null;
+    if (tab !== 'tour') return;
+    if (stops.length < 3) {
+        info.textContent = `Wähle mindestens drei Orte für die Rundfahrt${stops.length ? `, noch ${3 - stops.length}` : ''}. Sie beginnt und endet beim ersten.`;
+        if (stops.length) fitStops();
+        return draw();
+    }
+    fitStops();
+    const ask = ++asked;
+    info.textContent = `Die Abstände zwischen ${stops.length} Orten: ${stops.length * (stops.length - 1)} Suchen mit ${SEARCH_NAMES[search]} …`;
+    let answer;
+    try {
+        const points = stops.map((p) => `${p.lon},${p.lat}`).join(';');
+        const response = await fetch(`tour?search=${search}&mode=${mode}&method=${method}&stops=${points}`);
+        if (!response.ok) throw new Error(response.status);
+        answer = await response.json();
+    } catch {
+        if (ask === asked) info.textContent = `Rundfahrt: Fehler in ${program()}. Was schiefging, steht im Terminal.`;
+        return;
+    }
+    if (ask !== asked) return;
+    if (answer.missing || answer.error) {
+        info.textContent = answer.error || `Für die Rundfahrt fehlt noch ${answer.missing} in ${program()}.`;
+        return draw();
+    }
+    tour = answer;
+    const title = document.createElement('strong');
+    title.textContent = `Rundfahrt: ${METHOD_NAMES[method]}`;
+    const way = document.createElement('span');
+    const time = answer.seconds == null ? '' : `, ${duration(answer.seconds)} ${MODE_NAMES[answer.mode]}`;
+    way.textContent = `${length(answer.metres)}${time}: ${[...answer.order, answer.order[0]].map((i) => i + 1).join(' → ')}`;
+    const note = document.createElement('span');
+    note.className = 'note';
+    note.textContent = `Abstände mit ${SEARCH_NAMES[search]} in ${took(answer.table)} s, die Reihenfolge in ${took(answer.took)} s`;
+    info.replaceChildren(title, way, note);
+    info.scrollIntoView({ block: 'nearest' });
+    draw();
+}
+
+function fitStops() {
+    const lons = stops.map((p) => p.lon), lats = stops.map((p) => p.lat);
+    fit(Math.min(...lons), Math.min(...lats), Math.max(...lons), Math.max(...lats), 200000);
+}
+
+// Die Rundfahrt auf der Karte: ihre Wege, und jeder Ort mit seiner Nummer
+function drawTour() {
+    if (tour) {
+        for (const [color, width] of [['#fff', 8], ['#5f3dc4', 4.5]]) {
+            context.strokeStyle = color;
+            context.lineWidth = width;
+            context.lineJoin = 'round';
+            context.beginPath();
+            for (const leg of tour.legs) {
+                leg.forEach(([lon, lat], i) => (i ? context.lineTo : context.moveTo).call(context, ...project(lon, lat)));
+            }
+            context.stroke();
+        }
+    }
+    context.font = '700 11px system-ui, sans-serif';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    stops.forEach((place, i) => {
+        const at = project(place.lon, place.lat);
+        dot(at, 9, i === 0 ? START : '#5f3dc4', 2.5);
+        context.fillStyle = '#fff';
+        context.fillText(String(i + 1), at[0], at[1] + 0.5);
+    });
+    context.textBaseline = 'alphabetic';
 }
 
 // Die Arten von Orten: wie sie heißen und ihr Zeichen
@@ -823,6 +1007,20 @@ function matching(text) {
 
 // Das Feld zum Suchen eines Ortes, mit einer Liste darunter, die beim Tippen
 // passende Orte vorschlägt
+// Was ein Feld zeigt und was ein Ort darin bewirkt: Start und Ziel sind der
+// gewählte Ort, das Feld der Rundfahrt fügt ihn hinzu und wird wieder leer
+function current(which) {
+    return which === 'stop' ? null : chosen[which];
+}
+
+function pick(which, place) {
+    if (which !== 'stop') return choose(which, place);
+    addStop(place);
+    const input = document.getElementById('stop');
+    input.value = '';
+    input.parentElement.querySelector('.clear').hidden = true;
+}
+
 function setUpPlaces() {
     const popup = document.getElementById('suggestions');
     let field = null; // welches Feld die Liste gerade zeigt
@@ -845,10 +1043,10 @@ function setUpPlaces() {
     };
     const open = (input) => {
         field = input;
-        shown = matching(input.value === chosen[input.id]?.name ? '' : input.value);
+        shown = matching(input.value === current(input.id)?.name ? '' : input.value);
         popup.replaceChildren();
         const wanted = input.value.trim().toLowerCase();
-        const grouped = !wanted || input.value === chosen[input.id]?.name;
+        const grouped = !wanted || input.value === current(input.id)?.name;
         const groups = { sight: 'Sehenswürdigkeiten', square: 'Plätze', school: 'Schulen' };
         shown.forEach((place, i) => {
             // ohne Suchtext: die Orte nach Art, mit Überschrift
@@ -866,7 +1064,7 @@ function setUpPlaces() {
             item.innerHTML = icon;
             const name = document.createElement('span');
             name.className = 'name';
-            const at = wanted && input.value !== chosen[input.id]?.name ? place.name.toLowerCase().indexOf(wanted) : -1;
+            const at = wanted && input.value !== current(input.id)?.name ? place.name.toLowerCase().indexOf(wanted) : -1;
             if (at >= 0) {
                 const strong = document.createElement('b');
                 strong.textContent = place.name.slice(at, at + wanted.length);
@@ -881,7 +1079,7 @@ function setUpPlaces() {
             // mousedown, nicht click: sonst verliert das Feld vorher den Fokus
             item.addEventListener('mousedown', (e) => {
                 e.preventDefault();
-                choose(input.id, place);
+                pick(input.id, place);
                 close();
             });
             item.addEventListener('mousemove', () => active !== i && highlight(i));
@@ -900,10 +1098,10 @@ function setUpPlaces() {
         popup.style.maxHeight = `${Math.max(160, window.innerHeight - box.bottom - 24)}px`;
         popup.hidden = false;
         input.setAttribute('aria-expanded', 'true');
-        highlight(shown.length && input.value.trim() && input.value !== chosen[input.id]?.name ? 0 : -1);
+        highlight(shown.length && input.value.trim() && input.value !== current(input.id)?.name ? 0 : -1);
     };
 
-    for (const which of ['start', 'goal']) {
+    for (const which of ['start', 'goal', 'stop']) {
         const input = document.getElementById(which);
         const clear = input.parentElement.querySelector('.clear');
         const update = () => {
@@ -923,12 +1121,12 @@ function setUpPlaces() {
             if (e.key === 'ArrowDown') highlight(Math.min(shown.length - 1, active + 1));
             else if (e.key === 'ArrowUp') highlight(Math.max(0, active - 1));
             else if (e.key === 'Enter') {
-                if (shown[active]) choose(which, shown[active]);
+                if (shown[active]) pick(which, shown[active]);
                 else input.dispatchEvent(new Event('change'));
                 close();
                 input.blur();
             } else if (e.key === 'Escape') {
-                input.value = chosen[which]?.name || '';
+                input.value = current(which)?.name || '';
                 update();
                 close();
                 input.blur();
@@ -940,15 +1138,15 @@ function setUpPlaces() {
         input.addEventListener('change', () => {
             update();
             const text = input.value.trim();
-            if (!text) return choose(which, null);
+            if (!text) return which === 'stop' ? undefined : pick(which, null);
             const place = data.places.find((p) => p.name.toLowerCase() === text.toLowerCase()) || matching(text)[0];
-            if (place) return choose(which, place);
+            if (place) return pick(which, place);
             input.closest('.place').classList.add('unknown');
             info.textContent = `Keinen Ort »${input.value}« gefunden.`;
         });
         clear.addEventListener('mousedown', (e) => e.preventDefault());
         clear.addEventListener('click', () => {
-            choose(which, null);
+            if (which === 'stop') input.value = ''; else pick(which, null);
             update();
             input.focus();
         });
@@ -991,6 +1189,11 @@ function setUpLegend() {
 }
 
 const NUMBER = new Intl.NumberFormat('de-DE');
+const AREA_NAMES = { berlin: 'Berlin', 'charlottenburg-wilmersdorf': 'Charlottenburg-Wilmersdorf',
+    'friedrichshain-kreuzberg': 'Friedrichshain-Kreuzberg', lichtenberg: 'Lichtenberg',
+    'marzahn-hellersdorf': 'Marzahn-Hellersdorf', mitte: 'Mitte', neukoelln: 'Neukölln', pankow: 'Pankow',
+    reinickendorf: 'Reinickendorf', spandau: 'Spandau', 'steglitz-zehlendorf': 'Steglitz-Zehlendorf',
+    'tempelhof-schoeneberg': 'Tempelhof-Schöneberg', 'treptow-koepenick': 'Treptow-Köpenick' };
 
 // Was gewählt ist, steht in der Adresse der Seite: Start, Ziel, Suche, Graph,
 // der Ausschnitt der Karte und der Schritt der Suche. Neu laden oder die
@@ -1007,6 +1210,10 @@ function save() {
     if (chosen.start) state.set('start', chosen.start.name);
     if (chosen.goal) state.set('goal', chosen.goal.name);
     if (search !== 'bfs') state.set('search', search);
+    if (mode !== 'length') state.set('mode', mode);
+    if (tab === 'tour') state.set('tab', 'tour');
+    if (stops.length) state.set('stops', stops.map((p) => p.name).join('|'));
+    if (method !== 'nearest') state.set('method', method);
     if (document.getElementById('graph-view').checked) state.set('graph', '1');
     if (!fitted) state.set('map', `${view.lon.toFixed(5)},${view.lat.toFixed(5)},${Math.round(view.scale)}`);
     if (route && player.manual) state.set('step', player.step);
@@ -1026,11 +1233,11 @@ function restore() {
     if (![...state.keys()].length) return;
     restoring = true;
     const named = (name) => data.places.find((p) => p.name === name) || null;
-    const wanted = state.get('search');
-    if (SEARCH_NAMES[wanted]) {
-        search = wanted;
-        document.querySelectorAll('#searches button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.search === search));
-    }
+    if (SEARCH_NAMES[state.get('search')]) pressSearch(search = state.get('search'));
+    if (MODE_NAMES[state.get('mode')]) pressMode(mode = state.get('mode'));
+    if (METHOD_NAMES[state.get('method')]) pressMethod(method = state.get('method'));
+    stops = (state.get('stops') || '').split('|').map(named).filter((p) => p);
+    showStops();
     if (state.has('step')) {
         player.manual = true;
         player.step = Number(state.get('step')) || 0;
@@ -1041,6 +1248,7 @@ function restore() {
     }
     if (state.get('start')) choose('start', named(state.get('start')));
     if (state.get('goal')) choose('goal', named(state.get('goal')));
+    if (state.get('tab') === 'tour') switchTab('tour');
     const map = (state.get('map') || '').split(',').map(Number);
     if (map.length === 3 && map.every(Number.isFinite)) {
         moved();
@@ -1085,7 +1293,7 @@ fetch('map.json').then((r) => r.json()).then((map) => {
     lats.sort();
     const at = (sorted, share) => sorted[Math.floor(share * (sorted.length - 1))];
     data.core = [at(lons, 0.02), at(lats, 0.02), at(lons, 0.98), at(lats, 0.98)];
-    const name = map.area.replace(/(^|[-+])\p{L}/gu, (s) => s.toUpperCase()).replaceAll('+', ' + ');
+    const name = map.area.split('+').map((part) => AREA_NAMES[part] || part).join(' + ');
     document.getElementById('area').textContent =
         `${name}: ${NUMBER.format(map.ways.length)} Wege, ${NUMBER.format(map.places.length)} Orte`;
     setUpPlaces();

@@ -32,12 +32,14 @@ export default {
             await page.waitForTimeout(300);
         },
 
-        // hook: route START | GOAL | SEARCH: typed into the fields like a
+        // hook: route START | GOAL | SEARCH [| MODE]: typed into the fields like a
         // student would (the first place whose name contains the text), the
         // search (bfs, dijkstra) clicked, and waited for until it has played
         // to the end and the way is drawn
         async route({ page, args }) {
-            const [start, goal, search] = String(args).split('|').map((part) => part.trim());
+            const [start, goal, search, mode = 'length'] = String(args).split('|').map((part) => part.trim());
+            if (await page.getAttribute('#tabs [data-tab="route"]', 'aria-selected') !== 'true') await page.click('#tabs [data-tab="route"]');
+            await page.click(`#modes [data-mode="${mode}"]`);
             // die Ansicht »Graph« eines Bildes davor bleibt nach dem Neuladen in der Adresse
             if (await page.isChecked('#graph-view')) await page.uncheck('#graph-view');
             await page.click(`#searches [data-search="${search}"]`);
@@ -47,6 +49,27 @@ export default {
             }
             // die Suche ist einmal abgelaufen, der Weg gezeichnet
             await page.waitForFunction(() => route && route.shown >= route.visited.length / 2, null, { timeout: 60_000 });
+            await page.locator(':focus').evaluate((element) => element.blur()).catch(() => {});
+            await page.waitForTimeout(300);
+        },
+
+        // hook: tour SEARCH | MODE | METHOD | PLACE | PLACE | …: the tab
+        // »Rundfahrt«, the places typed into its field one after another
+        // (the first that contains the text), and waited for the tour
+        async tour({ page, args }) {
+            const [search, mode, method, ...places] = String(args).split('|').map((part) => part.trim());
+            if (await page.isChecked('#graph-view')) await page.uncheck('#graph-view');
+            await page.click('#tabs [data-tab="tour"]');
+            await page.evaluate(() => { stops = []; showStops(); });
+            await page.click(`#searches [data-search="${search}"]`);
+            await page.click(`#modes [data-mode="${mode}"]`);
+            await page.click(`#methods [data-method="${method}"]`);
+            for (const place of places) {
+                await page.click('#stop');
+                await page.keyboard.type(place);
+                await page.keyboard.press('Enter');
+            }
+            await page.waitForFunction((n) => tour && tour.order.length === n, places.length, { timeout: 180_000 });
             await page.locator(':focus').evaluate((element) => element.blur()).catch(() => {});
             await page.waitForTimeout(300);
         },
