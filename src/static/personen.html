@@ -22,7 +22,7 @@
         border-bottom: 1px dashed var(--bs-border-color);
         background: transparent;
         color: inherit;
-        width: 100%;
+        max-width: 100%;
         padding: 0.1rem 0.2rem;
     }
     .people-page .inline-name:focus {
@@ -31,6 +31,12 @@
         background: var(--bs-body-bg);
     }
     .people-page .inline-name::placeholder { color: var(--bs-secondary-color); font-style: italic; }
+    .people-page .person-email {
+        display: block;
+        font-size: 0.85rem;
+        color: var(--bs-secondary-color);
+        padding-left: 0.2rem;
+    }
 </style>
 <div class='container people-page'>
     <div class='row'>
@@ -244,7 +250,7 @@
             const only = $('#teachers_school').val();
             const teachers = data.teachers.filter(t => !only || t.school === only);
             if (teachers.length === 0) { here.append(`<p class='text-body-secondary'>Keine.</p>`); return; }
-            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Name</th><th>E-Mail-Adresse</th><th>Schule</th><th>Gruppen</th><th>Konto</th><th>Willkommen</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
+            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Name und Adresse</th><th>Schule</th><th>Gruppen</th><th>Konto</th><th>Willkommen</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
             teachers.forEach(function (t) {
                 const select = $(`<select class='form-select form-select-sm school-select'></select>`).attr('aria-label', `Schule von ${t.name || t.email}`);
                 if (!t.school) select.append($('<option>').val('').text('(keine Schule)'));
@@ -272,7 +278,7 @@
                     if (t.school) people_call('/api/people/save_teacher', { email: t.email, person_name: value, school: t.school }, done);
                     else people_call('/api/groups/set_name', { email: t.email, person_name: value }, done);
                 });
-                row.append($('<td>').append(name), $('<td>').text(t.email), $('<td>').append(select), $('<td>').text((t.groups || []).join(', ')),
+                row.append($('<td>').append(name, $("<span class='person-email'></span>").text(t.email)), $('<td>').append(select), $('<td>').text((t.groups || []).join(', ')),
                     $('<td>').html(t.account ? "<i class='bi bi-check-lg' aria-hidden='true'></i><span class='visually-hidden'>ja</span>" : "<span class='text-body-secondary'>–</span>"),
                     $('<td>').append(t.school ? welcome : ''), $('<td class="row-actions">').append(remove));
                 table.find('tbody').append(row);
@@ -287,11 +293,13 @@
         return days <= 0 ? 'heute' : days === 1 ? 'gestern' : days < 60 ? `vor ${days} Tagen` : days < 730 ? `vor ${Math.round(days / 30.4)} Monaten` : `vor ${Math.round(days / 365)} Jahren`;
     }
 
-    // Disk space in KB as »153 MB«; at fat_kb and above highlighted.
+    // Disk space in KB as on the admin dashboard (bytes_to_str): »153.0M«,
+    // the unit in its own span; at fat_kb and above highlighted.
     function disk_html(kb, fat_kb) {
         if (kb === null || kb === undefined) return "<span class='text-body-secondary'>–</span>";
-        const text = kb >= 1024 * 1024 ? `${(kb / 1024 / 1024).toLocaleString('de-DE', { maximumFractionDigits: 1 })} GB` : `${Math.max(1, Math.round(kb / 1024))} MB`;
-        return fat_kb && kb >= fat_kb ? `<span class='disk-fat' title='deutlich mehr als die meisten'><i class='bi bi-hdd-fill'></i>${text}</span>` : text;
+        const [value, unit] = kb < 1024 ? [kb, 'k'] : kb < 1024 * 1024 ? [kb / 1024, 'M'] : kb < 1024 * 1024 * 1024 ? [kb / 1024 / 1024, 'G'] : [kb / 1024 / 1024 / 1024, 'T'];
+        const text = `<span class='disk-size'>${value.toFixed(1)}<span class='unit'>${unit}</span></span>`;
+        return fat_kb && kb >= fat_kb ? `<span class='disk-fat' title='deutlich mehr als die meisten'>${text}</span>` : text;
     }
 
     // »vor 3 Tagen«, with the date, and where it comes from when it is not a
@@ -312,7 +320,7 @@
         api_call('/api/admin/people', filters, function (data) {
             if (!data.success) return;
             const here = $('#all_here').empty();
-            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Name</th><th>E-Mail-Adresse</th><th>Rolle</th><th>Schule</th><th>Gruppen</th><th>Zuletzt da</th><th title='Speicherplatz des Workspace'>Speicher</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
+            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Name und Adresse</th><th>Rolle</th><th>Schule</th><th>Gruppen</th><th>Zuletzt da</th><th title='Speicherplatz des Workspace'>Speicher</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
             data.people.forEach(function (p) {
                 // Names live on the invitation; an account without one keeps its own.
                 const name = p.invited
@@ -328,7 +336,7 @@
                     });
                     actions.append(remove);
                 }
-                table.find('tbody').append($('<tr>').append($('<td>').append(name), $('<td>').text(p.email), $('<td>').text(p.role),
+                table.find('tbody').append($('<tr>').append($('<td>').append(name, $("<span class='person-email'></span>").text(p.email)), $('<td>').text(p.role),
                     $('<td>').text((p.schools || []).join(', ')), $('<td>').text(p.groups.join(', ')),
                     $('<td class="text-nowrap">').html(active_html(p)), $('<td class="text-nowrap">').html(disk_html(p.disk_kb, data.fat_kb)), actions));
             });

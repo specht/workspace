@@ -5694,3 +5694,14 @@ table.value-groups td.group-odd {
     color: var(--bs-danger-text-emphasis);
     font-weight: 600;
 }
+
+/* A unit after a number (153.0M), as on the admin dashboard. */
+.unit {
+    margin-left: 0.15em;
+    font-size: 90%;
+    opacity: 0.7;
+}
+
+.disk-size {
+    font-variant-numeric: tabular-nums;
+}

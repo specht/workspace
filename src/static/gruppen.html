@@ -134,11 +134,13 @@
         return days <= 0 ? 'heute' : days === 1 ? 'gestern' : days < 60 ? `vor ${days} Tagen` : days < 730 ? `vor ${Math.round(days / 30.4)} Monaten` : `vor ${Math.round(days / 365)} Jahren`;
     }
 
-    // Disk space in KB as »153 MB«; at fat_kb and above highlighted.
+    // Disk space in KB as on the admin dashboard (bytes_to_str): »153.0M«,
+    // the unit in its own span; at fat_kb and above highlighted.
     function disk_html(kb, fat_kb) {
         if (kb === null || kb === undefined) return "<span class='text-body-secondary'>–</span>";
-        const text = kb >= 1024 * 1024 ? `${(kb / 1024 / 1024).toLocaleString('de-DE', { maximumFractionDigits: 1 })} GB` : `${Math.max(1, Math.round(kb / 1024))} MB`;
-        return fat_kb && kb >= fat_kb ? `<span class='disk-fat' title='deutlich mehr als die meisten'><i class='bi bi-hdd-fill'></i>${text}</span>` : text;
+        const [value, unit] = kb < 1024 ? [kb, 'k'] : kb < 1024 * 1024 ? [kb / 1024, 'M'] : kb < 1024 * 1024 * 1024 ? [kb / 1024 / 1024, 'G'] : [kb / 1024 / 1024 / 1024, 'T'];
+        const text = `<span class='disk-size'>${value.toFixed(1)}<span class='unit'>${unit}</span></span>`;
+        return fat_kb && kb >= fat_kb ? `<span class='disk-fat' title='deutlich mehr als die meisten'>${text}</span>` : text;
     }
 
     let fat_kb = null;
