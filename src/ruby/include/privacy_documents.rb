@@ -293,24 +293,21 @@ module PrivacyDocuments
 
     # --- Elternbrief ----------------------------------------------------
 
-    # A box with the address of the Workspace, for the top of the letter:
+    # The address of the Workspace for the first paragraph of the letter:
     # parents can look at every activity without an account.
-    def self.website_box(s)
+    def self.website_link(s)
         return '' unless s[:web_root]
 
         url = h(s[:web_root])
-        "<div class='website'><strong>Zum Ansehen:</strong> <a href='#{url}'>#{url.sub(%r{\Ahttps?://}, '')}</a><br>" \
-            "Alle Aktivitäten und das Handbuch sind dort ohne Anmeldung zu sehen; die Datenschutzerklärung steht unter " \
-            "<a href='#{url}/impressum'>#{url.sub(%r{\Ahttps?://}, '')}/impressum</a>.</div>\n"
+        " (<a href='#{url}'>#{url.sub(%r{\Ahttps?://}, '')}</a>; alle Aktivitäten und das Handbuch lassen sich dort ohne Anmeldung ansehen)"
     end
 
     def self.elternbrief_html(s)
         consent = s[:parental_consent_required] || s[:legal_basis] == :consent
         out = <<~END_OF_HTML
-            #{website_box(s)}
             <p>Liebe Eltern und Erziehungsberechtigte,</p>
             <p>
-            im Informatikunterricht arbeitet Ihr Kind mit dem Workspace, einer Programmierumgebung im Browser. Ihr Kind erhält dort
+            im Informatikunterricht arbeitet Ihr Kind mit dem Workspace#{website_link(s)}, einer Programmierumgebung im Browser. Ihr Kind erhält dort
             einen eigenen Editor mit Terminal und Datenbanken, Aufgaben, die der Workspace selbst prüft, und ein Handbuch.
             Es muss nichts installiert werden; der Workspace funktioniert in der Schule wie zu Hause.
             </p>
@@ -495,8 +492,6 @@ module PrivacyDocuments
         .signature { flex: 1; font-size: 0.85rem; color: #444; }
         .signature .line { border-bottom: 1px solid #333; height: 2.5em; margin-bottom: 0.3em; }
         .draft { border-left: 4px solid #c90; padding-left: 0.8em; color: #750; }
-        .website { border: 2px solid #333; padding: 0.8em 1em; margin: 0 0 1.5em 0; font-size: 1.05rem; }
-        .website a { font-size: 1.25rem; font-weight: bold; }
         .documents li { margin-bottom: 0.6em; }
         .toolbar { margin-bottom: 1.5em; font-size: 0.9rem; }
         .toolbar a, .toolbar button { margin-right: 1em; }
