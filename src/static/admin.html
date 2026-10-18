@@ -133,6 +133,11 @@
                 (<a href='/impressum#datenschutz'>Datenschutzerklärung</a>, »Speicherdauer«). Das lässt sich nicht rückgängig machen.
                 Steht die Adresse noch in einer Einladungsliste, beginnt die Person bei der nächsten Anmeldung mit einem leeren Konto.
             </p>
+            <div class='mb-2'>
+                <label class='form-label' for='people_query'>Person suchen (Name, Adresse oder Gruppe)</label>
+                <input type='search' class='form-control' id='people_query' autocomplete='off' placeholder='zum Beispiel »Müller« oder »10a«'>
+            </div>
+            <div id='people_here' class='mb-3'></div>
             <form id='delete_account_form' class='row g-2 align-items-end mb-3' autocomplete='off'>
                 <div class='col-sm-5'>
                     <label class='form-label' for='delete_account_email'>E-Mail-Adresse</label>
@@ -447,6 +452,36 @@
         $('#delete_account_form').on('submit', function (e) {
             e.preventDefault();
             delete_account($('#delete_account_email').val(), $('#delete_account_confirmation').val());
+        });
+        let people_timer = null;
+        $('#people_query').on('input', function () {
+            clearTimeout(people_timer);
+            const query = $(this).val().trim();
+            people_timer = setTimeout(function () {
+                let here = $('#people_here');
+                if (query.length < 2) { here.empty(); return; }
+                api_call('/api/admin/people', { query: query }, function (data) {
+                    if (!data.success) return;
+                    here.empty();
+                    if (data.people.length === 0) { here.append($('<p>').text('Niemand gefunden.')); return; }
+                    let table = $(`<table class='table table-sm'><thead><tr><th>Name</th><th>E-Mail-Adresse</th><th>Rolle</th><th>Gruppen</th><th>Konto</th><th></th></tr></thead><tbody></tbody></table>`);
+                    for (let p of data.people) {
+                        let row = $('<tr>');
+                        let button = $(`<button class='btn btn-sm btn-outline-danger'><i class='bi bi-trash-fill'></i>Löschen</button>`);
+                        button.on('click', function () {
+                            $('#delete_account_email, #delete_account_confirmation').val('');
+                            $('#delete_account_email').val(p.email).trigger('focus');
+                            $('#delete_account_confirmation').trigger('focus');
+                        });
+                        row.append($('<td>').text(p.name || '–'), $('<td>').text(p.email), $('<td>').text(p.role),
+                            $('<td>').text(p.groups.join(', ')), $('<td>').text(p.account ? 'ja' : (p.invited ? 'noch nicht angemeldet' : '')),
+                            $('<td>').append(p.account ? button : ''));
+                        table.find('tbody').append(row);
+                    }
+                    here.append(table);
+                    if (data.total > data.people.length) here.append($('<p class="small">').text(`${data.total} Treffer, die ersten ${data.people.length} stehen hier.`));
+                }, { no_please_wait: true });
+            }, 250);
         });
         $('#repeat_deletions_form').on('submit', function (e) {
             e.preventDefault();

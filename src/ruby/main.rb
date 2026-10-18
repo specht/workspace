@@ -4112,6 +4112,36 @@ class Main < Sinatra::Base
         end
     end
 
+    # Everyone invited or with an account, for the administration: address,
+    # name, role, groups, whether there is an account. query matches part of
+    # the name or the address; at most 100 rows.
+    def people_overview(query = '')
+        Main.load_invitations()
+        accounts = neo4j_query('MATCH (u:User) RETURN u.email AS email, u.name AS name;').to_h { |row| [row['email'], row['name']] }
+        groups_of = Hash.new { |hash, key| hash[key] = [] }
+        @@group_members.each { |group, members| members.each { |email| groups_of[email] << group unless @@test_groups.include?(group) } }
+        q = query.to_s.strip.downcase
+        (@@invitations.keys | accounts.keys).map do |email|
+            name = (@@invitations[email] || {})[:name] || accounts[email] || email
+            role = if ADMIN_USERS.include?(email) then 'Administration'
+                elsif @@test_accounts.key?(email) then 'Testkonto'
+                elsif @@teacher_emails.include?(email) then 'Lehrkraft'
+                else 'Lernende'
+            end
+            { :email => email, :name => name == email ? nil : name, :role => role, :groups => groups_of[email].sort,
+              :account => accounts.key?(email), :invited => @@invitations.key?(email) }
+        end.select do |p|
+            q.empty? || p[:email].include?(q) || p[:name].to_s.downcase.include?(q) || p[:groups].any? { |g| g.downcase.include?(q) }
+        end.sort_by { |p| [p[:name].to_s.downcase, p[:email]] }
+    end
+
+    post '/api/admin/people' do
+        assert(admin_logged_in?)
+        data = parse_request_data(:optional_keys => [:query], :max_body_length => 1024)
+        people = people_overview(data[:query])
+        respond(:people => people.first(100), :total => people.size)
+    end
+
     # Accounts whose address is no longer in any invitation list: what the
     # deletion rules remove at the end of a school year.
     post '/api/admin/uninvited_accounts' do

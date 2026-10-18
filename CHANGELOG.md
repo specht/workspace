@@ -70,6 +70,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Sitzungen), nach Eingabe der Adresse zur Bestätigung. Eine Liste zeigt die
   Konten, deren Adresse in keiner Einladungsliste mehr steht, für das Löschen
   zum Ende des Schuljahres.
+  Eine Suche nach Name, Adresse oder Gruppe zeigt jede eingeladene Person
+  mit Rolle, Gruppen und ob sie schon ein Konto hat.
 - Abgelaufene Sitzungen werden gelöscht (höchstens einmal in der Stunde),
   statt liegen zu bleiben.
 - Die Ausgaben der Dienste (darin E-Mail-Adressen) werden nach 3 × 10 MB je
