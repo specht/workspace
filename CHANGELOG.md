@@ -1879,8 +1879,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Für Betreibende
 
-- `neo4j_bolt` ist auf 0.5.0 gestiegen (für den Neo4j-Teil von »Meine
-  Daten«): `./config.rb build ruby && ./config.rb up -d ruby`.
+- `neo4j_bolt` ist auf 0.5.1 gestiegen (für den Neo4j-Teil von »Meine
+  Daten«; Dumps behalten jetzt Datum, Uhrzeit, Dauer und Punkte), im Server
+  und im Workspace-Image: `./config.rb build ruby && ./config.rb up -d ruby`
+  und das Workspace-Image neu bauen (`build-image.sh`).
 
 - ER-Werkstatt 0.3.0 (`hackschule-er-0.3.0.vsix`): das Workspace-Image neu
   bauen.
