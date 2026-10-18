@@ -3146,11 +3146,13 @@ ul.task-teacher-list .task-teacher-answer {
 }
 
 
-.task-feedback-correct { background-color: #e3f4ea; }
-.task-feedback-wrong { background-color: #fdf0dc; }
-.task-feedback-sent { background-color: #e7f0fe; }
+/* Tints, not solid colours: the box sits on the task card, whose own colour
+   (blue for the current task) shows through instead of a grey patch. */
+.task-feedback-correct { background-color: rgba(31, 157, 85, 0.12); }
+.task-feedback-wrong { background-color: rgba(224, 160, 48, 0.16); }
+.task-feedback-sent { background-color: rgba(11, 94, 215, 0.08); }
 .task-feedback-invalid,
-.task-feedback-unavailable { background-color: #f1f3f5; }
+.task-feedback-unavailable { background-color: rgba(33, 37, 41, 0.045); }
 
 .task-solution {
     margin-top: 0.5em;

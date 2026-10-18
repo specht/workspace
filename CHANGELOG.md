@@ -759,6 +759,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- Die Rückmeldung unter einer Aufgabe ist eine durchscheinende Tönung statt
+  einer festen Fläche: Auf der blauen Karte der aktuellen Aufgabe steht kein
+  grauer Kasten mehr.
 - Der Screenshot-Generator bleibt nicht mehr hängen, wenn nach vielen
   3D-Szenen der Vorschau-Tab verschwindet und der Browser keinen neuen
   aufbaut: Das Bild schlägt nach zwei Minuten fehl. Am Ende eines
