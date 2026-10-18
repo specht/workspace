@@ -333,7 +333,7 @@ def expression(tokens):
 Schreib `parse` so, dass es eine Kopie der Tokens (`list(tokens)`) an `expression` gibt und danach prüft, dass nichts übrig ist. Dann fehlen `term`, `factor` und `atom`. Bei einer Klammer ruft `atom` wieder `expression` auf und erwartet danach ein `)`.
 <!-- /language -->
 
-Wo der Automat nur Zustände hatte, merkt sich das Programm, wo es gerade ist: Jeder Aufruf, der noch nicht fertig ist, wartet auf dem **Stack**, bis der Aufruf darin zurückkommt. Bei `((((1))))` liegen vier `atom` übereinander, und jedes weiß, dass es noch ein `)` braucht. Eine Grammatik wie diese heißt **kontextfrei**, und ein Parser, der für jede Regel eine Methode hat, die sich gegenseitig aufrufen, heißt **rekursiver Abstieg**.
+Wo der Automat nur Zustände hatte, merkt sich das Programm, wo es gerade ist: Jeder Aufruf, der noch nicht fertig ist, wartet auf dem **[Stack](/reference/listen#stack)**, bis der Aufruf darin zurückkommt. Bei `((((1))))` liegen vier `atom` übereinander, und jedes weiß, dass es noch ein `)` braucht. Eine Grammatik wie diese heißt **kontextfrei**, und ein Parser, der für jede Regel eine Methode hat, die sich gegenseitig aufrufen, heißt **rekursiver Abstieg**.
 
 _task(baum)
 
