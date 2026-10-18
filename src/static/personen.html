@@ -103,7 +103,7 @@
                 <div class='col-md-4'><input type='search' id='all_query' class='form-control' placeholder='Name, Adresse, Gruppe oder Schule' autocomplete='off' aria-label='Suche'></div>
                 <div class='col-md-3'><select id='all_school' class='form-select' aria-label='Schule'><option value=''>alle Schulen</option></select></div>
                 <div class='col-md-2'><select id='all_role' class='form-select' aria-label='Rolle'>
-                    <option value=''>alle Rollen</option><option>Lehrkraft</option><option>Lernende</option><option>Testkonto</option><option>Administration</option>
+                    <option value=''>alle Rollen</option><option>Lehrkraft</option><option>Lernende</option><option>Gast</option><option>Testkonto</option><option>Administration</option>
                 </select></div>
                 <div class='col-md-3'><select id='all_sort' class='form-select' aria-label='Sortierung'>
                     <option value='name'>nach Name</option><option value='active'>am längsten nicht da zuerst</option><option value='disk'>meister Speicher zuerst</option>
@@ -163,7 +163,7 @@
     }
 
     function school_status(s) {
-        if (s.guests) return 'Erwachsene von außerhalb, Nutzungsordnung. Gruppen dafür legst du unter <a href="/gruppen">Gruppen</a> mit der Schule »Gäste« an.';
+        if (s.guests) return 'Nur Erwachsene: Workshops, Firmen, Ehemalige, die ihr Konto behalten. Jede Person stimmt bei der ersten Anmeldung der <a href="/datenschutz/nutzungsordnung">Nutzungsordnung</a> zu. Gruppen dafür legst du unter <a href="/gruppen">Gruppen</a> mit der Schule »Gäste« an.';
         if (s.approved_at) return `hat zugestimmt (eingetragen ${day(s.approved_at)})`;
         const open = s.students - s.consent;
         return `<span class="text-warning-emphasis">hat noch nicht zugestimmt</span>`
@@ -503,7 +503,8 @@
                 const cb = p.account && p.role !== 'Administration' ? $(`<input type='checkbox' class='form-check-input cb-account'>`).data('person', p).attr('aria-label', p.name || p.email) : '';
                 table.find('tbody').append($('<tr>').append($('<td>').append(cb),
                     $('<td>').attr('data-sort', (p.name || p.email).toLowerCase()).append(name, $("<span class='person-email'></span>").text(p.email).append(deletion_note(p))),
-                    $('<td>').text(p.role), $('<td>').text((p.schools || []).join(', ')), $('<td>').text(p.groups.join(', ')),
+                    $('<td>').html(esc(p.role) + (p.guest && p.role !== 'Administration' ? `<span class='person-email'>${p.terms_accepted_at ? `Nutzungsordnung angenommen ${new Date(p.terms_accepted_at * 1000).toLocaleDateString('de-DE')}` : (p.account ? "<span class='text-warning-emphasis'>Nutzungsordnung offen</span>" : 'Nutzungsordnung bei der ersten Anmeldung')}</span>` : '')),
+                    $('<td>').text((p.schools || []).join(', ')), $('<td>').text(p.groups.join(', ')),
                     $('<td class="text-nowrap">').attr('data-sort', p.active_on || '').html(active_html(p)),
                     $('<td class="text-nowrap">').attr('data-sort', p.disk_kb === null || p.disk_kb === undefined ? -1 : p.disk_kb).html(disk_html(p.disk_kb, data.fat_kb)), actions));
             });

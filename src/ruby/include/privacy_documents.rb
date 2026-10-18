@@ -386,7 +386,8 @@ module PrivacyDocuments
             <p>
             Der Workspace ist eine Programmierumgebung für den Informatikunterricht. Diese Ordnung gilt für alle, die dort ein Konto haben.
             Für Erwachsene von außerhalb der Schule und für ehemalige Schülerinnen und Schüler, die ihr Konto behalten, ist sie die
-            Vereinbarung mit #{operator(s)}, mit der sie ihr Konto erhalten oder weiterführen; sie endet, wenn eine Seite es wünscht.
+            Vereinbarung mit #{operator(s)}, mit der sie ihr Konto erhalten oder weiterführen; sie stimmen ihr bei der ersten Anmeldung im Workspace zu,
+            und sie endet, wenn eine Seite es wünscht. Gäste sind Erwachsene; Minderjährige nehmen nur über ihre Schule teil.
             </p>
             <h2>Konto und Anmeldung</h2>
             #{list([

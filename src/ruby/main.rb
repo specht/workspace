@@ -3049,6 +3049,42 @@ class Main < Sinatra::Base
 
     # The bar at the top: as a student for a teacher, or the student's
     # notice that someone looked in.
+    # Guests (adults in a group of the guests' school: workshops, companies,
+    # former students who keep their account) agree to the Nutzungsordnung
+    # once, before their own Workspace starts; it is their legal basis
+    # (Art. 6 Abs. 1 Buchst. b DSGVO). Administrators and test accounts do
+    # not. The date and the version (Privacy::CHECKED) stay on the account.
+    def terms_required?
+        return false unless user_logged_in? && @impersonated_by.nil?
+        return false if @session_user[:terms_accepted_at]
+        return @terms_required unless @terms_required.nil?
+
+        email = @session_user[:email]
+        @terms_required = !ADMIN_USERS.include?(email) && !@@test_accounts.key?(email) && !Main.roster_imported.nil? &&
+            !neo4j_query(<<~END_OF_QUERY, :email => email).empty?
+                MATCH (:Invitation {email: $email})-[:MEMBER_OF]->(:Group)-[:AT]->(:School {guests: true})
+                RETURN 1 AS yes LIMIT 1;
+            END_OF_QUERY
+    end
+
+    def terms_bar_html
+        return '' unless terms_required?
+
+        "<div class='look-in-bar terms-bar'><i class='bi bi-file-earmark-check'></i>" \
+            "<span>Du nutzt den Workspace als Gast. Dafür gilt die <a href='/datenschutz/nutzungsordnung' target='_blank'>Nutzungsordnung</a>; " \
+            'bitte lies sie und stimme zu, dann startet auch dein Workspace.</span>' \
+            "<button type='button' class='btn btn-sm btn-light bu-accept-terms'><i class='bi bi-check-lg'></i>Ich bin einverstanden</button></div>"
+    end
+
+    post '/api/accept_terms' do
+        assert(user_logged_in?)
+        halt 403, { :error => 'impersonating' }.to_json if @impersonated_by
+        neo4j_query('MATCH (u:User {email: $email}) SET u.terms_accepted_at = $now, u.terms_version = $version;',
+            :email => @session_user[:email], :now => Time.now.to_i, :version => Privacy::CHECKED.to_s)
+        STDERR.puts "Nutzungsordnung accepted by #{@session_user[:email]}"
+        respond(:ok => true)
+    end
+
     def look_in_bar_html
         return '' unless user_logged_in?
 
@@ -3730,6 +3766,7 @@ class Main < Sinatra::Base
 
     post '/api/start_server' do
         assert(user_logged_in?)
+        halt 403, { :error => 'terms_required' }.to_json if terms_required?
         data = parse_request_data(:optional_keys => [:test_tag])
 
         email = @session_user[:email]
@@ -4343,6 +4380,10 @@ class Main < Sinatra::Base
         activity = activity_by_email
         disk = workspace_disk_usage[:by_tag]
         deletion_at = neo4j_query('MATCH (u:User) WHERE u.deletion_at IS NOT NULL RETURN u.email AS email, u.deletion_at AS day;').to_h { |r| [r['email'], r['day']] }
+        terms_at = neo4j_query('MATCH (u:User) WHERE u.terms_accepted_at IS NOT NULL RETURN u.email AS email, u.terms_accepted_at AS at;').to_h { |r| [r['email'], r['at']] }
+        guests = Main.roster_imported ? Set.new(neo4j_query(<<~END_OF_QUERY).map { |r| r['email'] }) : Set.new
+            MATCH (i:Invitation)-[:MEMBER_OF]->(:Group)-[:AT]->(:School {guests: true}) RETURN DISTINCT i.email AS email;
+        END_OF_QUERY
         groups_of = Hash.new { |hash, key| hash[key] = [] }
         @@group_members.each { |group, members| members.each { |email| groups_of[email] << group unless @@test_groups.include?(group) } }
         q = query.to_s.strip.downcase
@@ -4361,13 +4402,15 @@ class Main < Sinatra::Base
             role = if ADMIN_USERS.include?(email) then 'Administration'
                 elsif @@test_accounts.key?(email) then 'Testkonto'
                 elsif @@teacher_emails.include?(email) then 'Lehrkraft'
+                elsif guests.include?(email) then 'Gast'
                 else 'Lernende'
             end
             active = activity[email]
             { :email => email, :name => name == email ? nil : name, :role => role, :groups => groups_of[email].sort,
               :schools => schools_of[email].sort, :account => accounts.key?(email), :invited => @@invitations.key?(email),
               :active_on => active && active[:day] ? active[:day].to_s : nil, :active_source => active && active[:day] ? active[:source] : nil,
-              :disk_kb => accounts.key?(email) ? disk[fs_tag_for_email(email)] : nil, :deletion_at => deletion_at[email] }
+              :disk_kb => accounts.key?(email) ? disk[fs_tag_for_email(email)] : nil, :deletion_at => deletion_at[email],
+              :guest => guests.include?(email), :terms_accepted_at => terms_at[email] }
         end.select do |p|
             q.empty? || p[:email].include?(q) || p[:name].to_s.downcase.include?(q) || p[:groups].any? { |g| g.downcase.include?(q) } ||
                 p[:schools].any? { |g| g.downcase.include?(q) }

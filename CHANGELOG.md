@@ -112,6 +112,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Datum eines schriftlichen Einverständnisses ein (Elternbrief mit
   Einverständniserklärung unter `/datenschutz`). Gesperrt wird ohne beides
   niemand; Gruppe und `/personen` zeigen, wie viele noch ungeklärt sind.
+- Gäste stimmen der Nutzungsordnung zu: Wer in einer Gruppe der Gäste
+  steht (Workshops, Firmen, Ehemalige, die ihr Konto behalten), sieht bei der
+  ersten Anmeldung eine Leiste mit der Nutzungsordnung und »Ich bin
+  einverstanden«; vorher startet der eigene Workspace nicht. Datum und
+  Fassung stehen am Konto; `/personen` zeigt Gäste als »Gast« mit dem Stand.
+  Gäste sind Erwachsene; Minderjährige nehmen nur über ihre Schule teil
+  (Datenschutzerklärung, Nutzungsordnung, `/gruppen`).
 - Löschung ankündigen: Beim Löschen eines Kontos (einzeln oder gesammelt)
   ist die Vorgabe jetzt eine E-Mail an die Person: Ihr Konto wird in zwei
   Wochen gelöscht; bis dahin lädt sie unter »Meine Daten« alles herunter

@@ -187,6 +187,13 @@ module Privacy
                 :how_long => ACCOUNT_END,
             },
             {
+                :data => 'Bei Gästen: wann sie der Nutzungsordnung zugestimmt haben, und welcher Fassung',
+                :categories => [:account],
+                :purpose => 'Nachweis der Vereinbarung, auf der ihr Konto beruht',
+                :who => 'Administration',
+                :how_long => ACCOUNT_END,
+            },
+            {
                 :data => 'Tag des letzten Besuchs (nur das Datum, ohne Uhrzeit; nicht, während jemand anderes in das Konto sieht)',
                 :categories => [:traffic],
                 :purpose => 'erkennen, welche Konten nicht mehr genutzt werden, damit sie gelöscht werden können',
@@ -409,7 +416,8 @@ module Privacy
     def self.others_html
         '<p>Für Erwachsene von außerhalb der Schule (Gäste, etwa Lehrkräfte anderer Schulen, die den Workspace kennenlernen) und für ehemalige Schülerinnen und Schüler, ' \
             'die ihr Konto behalten, ist Rechtsgrundlage die Nutzungsordnung, mit der sie das Konto erhalten oder weiterführen ' \
-            '(Art. 6 Abs. 1 Buchst. b DSGVO); verantwortlich ist dafür der Betreiber, nicht die Schule. ' \
+            '(Art. 6 Abs. 1 Buchst. b DSGVO); sie stimmen ihr bei der ersten Anmeldung zu, und verantwortlich ist dafür der Betreiber, nicht die Schule. ' \
+            'Gäste sind Erwachsene; Minderjährige nehmen nur über ihre Schule teil. ' \
             'Schülerinnen und Schüler einer anderen Schule nutzen den Workspace nur, wenn ihre Schule das ebenso entschieden hat; ' \
             'verantwortlich ist dann ihre Schule.</p>'
     end

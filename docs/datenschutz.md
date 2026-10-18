@@ -29,7 +29,11 @@ Alle freiwillig; fehlt eine, sagt die Seite, dass die Angabe fehlt.
 
 - `OPERATOR_NAME`, `OPERATOR_ROLE`, `OPERATOR_SCHOOL`, `OPERATOR_ADDRESS`:
   wer den Workspace betreibt, mit einer Anschrift, unter der Briefe ankommen
-  (die der Schule genügt).
+  (die der Schule genügt). Name, Rolle und Schule ergeben die Zeile
+  »Name, Rolle am Schule« (`Privacy.operator_line`) im Impressum, in der
+  Datenschutzerklärung, der Vereinbarung zur Auftragsverarbeitung, der
+  Entscheidung für die Schulleitung und der Nutzungsordnung; ohne Rolle
+  »Name am Schule«. Den Elternbrief unterschreibt der Name allein.
 - `CONTACT_EMAIL`: an wen man schreibt, auch für Auskunft und Löschung.
 - `DATA_PROTECTION_OFFICER`: die Datenschutzbeauftragte Stelle der Schule.
 - `HOSTING`, `MAIL_PROVIDER`: Rechenzentrum (nur eines in der EU, denn die

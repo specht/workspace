@@ -155,6 +155,15 @@ bleiben.
   einer der Gruppen nehmen.
 - Ein vermerktes Einverständnis bleibt beim Wechsel erhalten.
 
+**Gäste** (Gruppen der Schule `guests`) sind Erwachsene: Teilnehmende an
+Workshops, Firmen, Ehemalige, die ihr Konto behalten. Minderjährige nehmen
+nur über ihre Schule teil. Ihre Grundlage ist die Nutzungsordnung: Bei der
+ersten Anmeldung zeigt die Seite eine Leiste (`Main#terms_bar_html`), und
+der eigene Workspace startet erst nach »Ich bin einverstanden«
+(`/api/accept_terms`, `User.terms_accepted_at` und `terms_version`).
+Administration und Testkonten sind ausgenommen; wer in einen Workspace
+hineinsieht, ist nicht betroffen.
+
 ## Personen und Schulen (`/personen`, Administration)
 
 `include/people_page.rb`, `static/personen.html`:

@@ -5739,3 +5739,19 @@ table.value-groups td.group-odd {
 
 .people-table th[aria-sort='ascending']::after { content: '\2191'; opacity: 0.8; }
 .people-table th[aria-sort='descending']::after { content: '\2193'; opacity: 0.8; }
+
+/* The guests' agreement to the Nutzungsordnung, in the place of the
+   look-in bar. */
+.terms-bar {
+    background-color: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+}
+
+.terms-bar a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+.terms-bar-flash {
+    outline: 3px solid var(--bs-warning);
+}

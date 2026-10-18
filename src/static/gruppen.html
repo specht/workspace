@@ -268,7 +268,7 @@
         const body = $(`<div class='group-body'></div>`);
         details.append(body);
         const school_line = group.school
-            ? `${esc(group.school.name)}${group.school.guests ? ' (ohne Schule, Nutzungsordnung)' : group.school.approved ? ' · hat zugestimmt' : ' · <span class="text-warning-emphasis">hat noch nicht zugestimmt</span>'}`
+            ? `${esc(group.school.name)}${group.school.guests ? ' (ohne Schule): nur Erwachsene; jede Person stimmt bei der ersten Anmeldung der <a href="/datenschutz/nutzungsordnung">Nutzungsordnung</a> zu' : group.school.approved ? ' · hat zugestimmt' : ' · <span class="text-warning-emphasis">hat noch nicht zugestimmt</span>'}`
             : 'ohne Schule';
         // One row for what concerns the whole group.
         const toolbar = $(`<div class='group-toolbar'><span class='small text-body-secondary me-auto'>${school_line}</span></div>`);

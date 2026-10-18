@@ -869,11 +869,23 @@ window.addEventListener('load', function() {
         check_server_tag_update(server_tag);
     }
 
+    $('.bu-accept-terms').on('click', function () {
+        api_call('/api/accept_terms', {}, function (data) {
+            if (data.success) $('.terms-bar').slideUp();
+        });
+    });
     $('.bu-launch-workspace').on('click', function(e) {
         $('.bu-launch-workspace').prop('disabled', true);
         $('.bu-launch-workspace .bi').addClass('bi-spin');
         api_call('/api/start_server', {}, function(data) {
             console.log(data);
+            if (!data.success && data.error === 'terms_required') {
+                $('.bu-launch-workspace').prop('disabled', false);
+                $('.bu-launch-workspace .bi').removeClass('bi-spin');
+                $('.terms-bar').addClass('terms-bar-flash');
+                setTimeout(() => $('.terms-bar').removeClass('terms-bar-flash'), 1200);
+                return;
+            }
             check_server_tag_update(data.server_tag);
             check_server_online(data.server_tag);
         });
@@ -1035,6 +1047,7 @@ window.addEventListener('load', function() {
         </div>
     </div>
     #{look_in_bar_html}
+    #{terms_bar_html}
     #{CONTENT}
 
     <nav class="autotoc hidden" aria-label="Seitennavigation" inert>
