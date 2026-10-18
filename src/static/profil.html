@@ -562,7 +562,7 @@ vscode_config: {}</pre>
                     let td = $(`<td>`).appendTo(row);
                     td.append(bu_results_pdf);
                     bu_delete.on('click', function(e) {
-                        showTemplateModal('Leistungsüberprüfung löschen', 'Bist du sicher, dass du diese Leistungsüberprüfung löschen möchtest?',
+                        showTemplateModal('Leistungsüberprüfung löschen', 'Bist du sicher, dass du diese Leistungsüberprüfung löschen möchtest? Die Workspaces und Datenbanken aller Teilnehmenden werden mitgelöscht. Lade vorher die Ergebnisse als PDF herunter, wenn du sie noch brauchst.',
                             "<i class='bi bi-trash-fill'></i>Löschen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
                                 api_call('/api/delete_test', {tag: entry.tag}, function(data2) {
                                 if (data2.success) {

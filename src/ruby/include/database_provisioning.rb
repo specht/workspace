@@ -84,6 +84,25 @@ module DatabaseProvisioning
         ]
     end
 
+    # A person's own database and login gone for good (account deletion);
+    # also for the databases of an exam it took.
+    def self.mysql_drop_statements(login)
+        DatabaseIdentity.validate!(login)
+        [
+            "DROP DATABASE IF EXISTS `#{login}`;",
+            "DROP USER IF EXISTS '#{login}'@'%';",
+        ]
+    end
+
+    def self.neo4j_drop_statements(login)
+        DatabaseIdentity.validate!(login)
+        [
+            "DROP DATABASE `#{login}` IF EXISTS;",
+            "DROP USER `#{login}` IF EXISTS;",
+            "DROP ROLE `#{neo4j_role_name(login)}` IF EXISTS;",
+        ]
+    end
+
     def self.neo4j_role_name(login)
         DatabaseIdentity.validate!(login)
         return login if login.match?(NEO4J_ROLE_PATTERN)

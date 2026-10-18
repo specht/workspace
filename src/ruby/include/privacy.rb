@@ -165,6 +165,13 @@ module Privacy
                 :how_long => 'bis die Person sie löscht oder neu abgibt, sonst ' + ACCOUNT_END,
             },
             {
+                :data => 'Leistungsüberprüfungen: ein eigener Workspace und eigene Datenbanken für die Dauer einer Leistungsüberprüfung, mit allem, was darin entsteht',
+                :categories => [:content],
+                :purpose => 'Leistungsüberprüfung im Unterricht; die Lehrkraft lädt die Ergebnisse zur Korrektur als PDF herunter',
+                :who => 'die Person selbst während der Überprüfung; die Lehrkraft, der die Überprüfung gehört',
+                :how_long => 'bis die Lehrkraft die Leistungsüberprüfung löscht, sonst ' + ACCOUNT_END,
+            },
+            {
                 :data => 'Hinweise, wer in Workspace oder Konto gesehen hat: wer, wann, mit welcher Begründung',
                 :categories => [:traffic],
                 :purpose => 'Transparenz gegenüber der Person',
@@ -258,7 +265,7 @@ module Privacy
             'Trennung und Berechtigungen' => [
                 'Jede Person hat einen eigenen Workspace in einem eigenen Container und eigene Datenbanken mit eigenen Zugangsdaten.',
                 'Die Workspaces erreichen einander im Netz nicht; eine Firewall lässt nur einen Port frei, den die Aktivitäten zu Netzwerken brauchen.',
-                'Lehrkräfte sehen nur die Schülerinnen und Schüler ihrer eigenen Gruppen, nie die Konten anderer Lehrkräfte.',
+                'Lehrkräfte sehen nur die Schülerinnen und Schüler ihrer eigenen Gruppen und nehmen nur diese in eine Leistungsüberprüfung auf; die Konten anderer Lehrkräfte sehen sie nie.',
             ],
             'Transparenz' => [
                 'Öffnet eine Lehrkraft einen Workspace oder sieht die Seite so, wie die Schülerin oder der Schüler sie sieht, gibt sie eine Begründung an (5 bis 300 Zeichen); die Person sieht beim nächsten Besuch, wer, wann und warum.',
@@ -276,7 +283,8 @@ module Privacy
             ],
             'Löschung' => [
                 'Schülerinnen und Schüler löschen ihre Antworten und Abgaben selbst, jederzeit.',
-                'Die Administration löscht ein Konto mit allem, was dazugehört (Workspace, Datenbanken, Aufgaben, Abgaben, Sitzungen), in einem Schritt.',
+                'Die Administration löscht ein Konto mit allem, was dazugehört (Workspaces, Datenbanken, Aufgaben, Abgaben, Sitzungen), in einem Schritt, und sieht jederzeit, welche Konten keine Einladung mehr haben.',
+                'Mit einer Leistungsüberprüfung löscht die Lehrkraft auch die Workspaces und Datenbanken aller, die sie geschrieben haben.',
             ],
         }
     end
@@ -515,7 +523,7 @@ module Privacy
             <p>
             Eine E-Mail an #{contact_html(s)} genügt, mit der Adresse, mit der die Person eingeladen wurde, und dem Anliegen:
             Auskunft, Berichtigung, Widerspruch oder Löschung des Kontos. Bei einer Löschung wird alles oben Genannte gelöscht:
-            Workspace, Datenbanken, Antworten und Abgaben, Sitzungen und das Konto. Eigene Dateien lassen sich vorher selbst sichern,
+            Workspaces, Datenbanken, Antworten und Abgaben, Sitzungen und das Konto. Eigene Dateien lassen sich vorher selbst sichern,
             im Explorer des Workspace mit Rechtsklick › »Herunterladen …«. Die Antwort kommt, sobald das Anliegen erledigt ist,
             spätestens innerhalb eines Monats. Im Unterricht erhalten Schülerinnen und Schüler dann eine andere Möglichkeit,
             die Aufgaben zu bearbeiten.

@@ -12,6 +12,16 @@ class DatabaseProvisioningTest < Minitest::Test
             )
     end
 
+    # Deleting an account removes the database and the login, nothing else.
+    def test_drop_statements_name_only_the_login
+        assert_equal ["DROP DATABASE IF EXISTS `lena`;", "DROP USER IF EXISTS 'lena'@'%';"],
+            DatabaseProvisioning.mysql_drop_statements('lena')
+        neo4j = DatabaseProvisioning.neo4j_drop_statements('lena-t-1a2b3c4d')
+        assert_equal 3, neo4j.size
+        assert neo4j.all? { |s| s.include?('lena') && s.include?('IF EXISTS') }
+        assert_raises(DatabaseIdentity::AllocationError) { DatabaseProvisioning.mysql_drop_statements("x`; DROP DATABASE y; --") }
+    end
+
     # An extra database's login reaches that database and nothing else.
     def test_extra_database_login_reaches_only_its_database
         statements = DatabaseProvisioning.extra_database_login_statements('db_k7q4bcd9fghj', "pa'ss")

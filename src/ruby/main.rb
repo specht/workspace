@@ -38,6 +38,7 @@ require './include/tools.rb'
 require './include/schemas.rb'
 require './include/weather_mirror.rb'
 require './include/privacy.rb'
+require './include/account_deletion.rb'
 require 'base64'
 require 'cgi'
 require 'digest'
@@ -2443,6 +2444,7 @@ class Main < Sinatra::Base
     end
 
     def cleanup_login_requests
+        cleanup_expired_sessions
         cleanup_params = {
             :now => Time.now.to_i,
             :max_attempts => Authentication::LOGIN_REQUEST_MAX_ATTEMPTS,
@@ -2453,6 +2455,24 @@ class Main < Sinatra::Base
                OR COALESCE(l.attempts, 0) >= $max_attempts
             DETACH DELETE l;
         END_OF_QUERY
+    end
+
+    # Sessions past their expiry go, at most once an hour, so that a session
+    # is kept no longer than the Datenschutzerklärung says (Privacy).
+    @@sessions_cleaned_at = 0
+
+    def cleanup_expired_sessions
+        return if Time.now.to_i - @@sessions_cleaned_at < 3600
+
+        @@sessions_cleaned_at = Time.now.to_i
+        now = DateTime.now
+        expired = neo4j_query('MATCH (s:Session) RETURN s.sid AS sid, s.expires AS expires;').map do |row|
+            expires = DateTime.parse(row['expires'].to_s) rescue nil
+            row['sid'] if expires.nil? || expires <= now
+        end.compact
+        return if expired.empty?
+
+        neo4j_query('MATCH (s:Session) WHERE s.sid IN $sids DETACH DELETE s;', :sids => expired)
     end
 
     def cleanup_qr_login_requests
@@ -3951,6 +3971,102 @@ class Main < Sinatra::Base
             MATCH (a:TaskAttempt)-[:BY]->(:User {email: $email})
             DETACH DELETE a;
         END_OF_STRING
+    end
+
+    def run_mysql_statements(statements)
+        Open3.popen2("docker exec -i workspace_mysql_1 mysql --user=root --password=#{MYSQL_ROOT_PASSWORD}") do |stdin, _stdout, wait_thr|
+            statements.each { |statement| stdin.puts statement }
+            stdin.close
+            raise 'MySQL statements failed' unless wait_thr.value.success?
+        end
+    end
+
+    def run_neo4j_statements(statements)
+        Open3.popen2("docker exec -i workspace_neo4j_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, _stdout, wait_thr|
+            statements.each { |statement| stdin.puts statement }
+            stdin.close
+            raise 'Neo4j statements failed' unless wait_thr.value.success?
+        end
+    end
+
+    # An account with everything that belongs to it (AccountDeletion): the
+    # Workspace and the exams' Workspaces, the databases, tasks, hand-ins,
+    # sessions and the User node. Someone still invited starts with an empty
+    # account at the next login. Returns what went, for the answer and the log.
+    def delete_account(email)
+        user = neo4j_query('MATCH (u:User {email: $email}) RETURN u;', :email => email).first
+        return nil unless user
+
+        db_login = db_login_for_email(email)
+        taken = neo4j_query(<<~END_OF_QUERY, :email => email).map { |row| row['tag'].to_s }
+            MATCH (:User {email: $email})-[:TAKES]->(t:Test)
+            RETURN t.tag AS tag;
+        END_OF_QUERY
+        owned = neo4j_query(<<~END_OF_QUERY, :email => email).map { |row| row['tag'].to_s }
+            MATCH (:User {email: $email})<-[:BELONGS_TO]-(t:Test)
+            RETURN t.tag AS tag;
+        END_OF_QUERY
+        instances = taken + owned.map { |tag| Main.test_demo_tag(email, tag) }
+        extra_databases = neo4j_query(<<~END_OF_QUERY, :email => email).map { |row| row['name'].to_s }
+            MATCH (:User {email: $email})-[:HAS]->(d:Database {type: 'mysql'})
+            RETURN d.name AS name;
+        END_OF_QUERY
+        task_keys = neo4j_query(<<~END_OF_QUERY, :email => email).map { |row| row['task'].to_s }
+            MATCH (:User {email: $email})-[:HAS_TASK_STATE]->(s:TaskState)
+            RETURN s.task AS task;
+        END_OF_QUERY
+
+        stop_server(email)
+        ([fs_tag_for_email(email)] + instances.map { |tag| fs_tag_for_email("#{email}#{tag}") }).each do |container_name|
+            workspace_runtime.stop_workspace(container_name, :timeout => shell_timeout(:docker_kill))
+            FileUtils.rm_rf("/user/#{container_name}")
+        end
+
+        logins = [db_login] + instances.map { |tag| DatabaseIdentity.ephemeral_login(db_login, tag) }
+        mysql = logins.flat_map { |login| DatabaseProvisioning.mysql_drop_statements(login) }
+        extra_databases.select { |name| DatabaseProvisioning.extra_database?(name) }.each do |name|
+            mysql << "DROP DATABASE IF EXISTS `#{name}`;" << DatabaseProvisioning.extra_database_drop_login_statement(name)
+        end
+        run_mysql_statements(mysql)
+        run_neo4j_statements(logins.flat_map { |login| DatabaseProvisioning.neo4j_drop_statements(login) })
+
+        task_keys.each { |task| FileUtils.rm_f(submission_path(task, email)) }
+        AccountDeletion.node_statements.each { |statement| neo4j_query(statement, :email => email) }
+        Main.refresh_nginx_config()
+
+        {
+            :workspaces => 1 + instances.size,
+            :databases => logins.size * 2 + extra_databases.size,
+            :tasks => task_keys.size,
+        }
+    end
+
+    # An administrator deletes an account, on request or by the deletion
+    # rules (Datenschutzerklärung, »Speicherdauer«). The address typed a
+    # second time is the confirmation.
+    post '/api/admin/delete_account' do
+        assert(admin_logged_in?)
+        data = parse_request_data(:required_keys => [:email, :confirmation])
+        email = AccountDeletion.normalize_email(data[:email])
+        halt 400, { :error => 'invalid_email' }.to_json unless email
+        halt 400, { :error => 'confirmation_mismatch' }.to_json unless AccountDeletion.normalize_email(data[:confirmation]) == email
+        halt 400, { :error => 'own_account' }.to_json if email == @session_user[:email]
+        Main.load_invitations()
+        removed = delete_account(email)
+        halt 404, { :error => 'no_account' }.to_json unless removed
+        STDERR.puts "Account deleted by #{@session_user[:email]}: #{email} #{removed.inspect}"
+        respond(:deleted => email, :removed => removed, :still_invited => @@invitations.key?(email))
+    end
+
+    # Accounts whose address is no longer in any invitation list: what the
+    # deletion rules remove at the end of a school year.
+    post '/api/admin/uninvited_accounts' do
+        assert(admin_logged_in?)
+        Main.load_invitations()
+        rows = neo4j_query('MATCH (u:User) RETURN u.email AS email, u.name AS name ORDER BY u.email;').reject do |row|
+            @@invitations.key?(row['email'])
+        end
+        respond(:accounts => rows.map { |row| { :email => row['email'], :name => row['name'] } })
     end
 
     # The logged-in teacher resets its own test account, and only that.
@@ -5947,6 +6063,26 @@ class Main < Sinatra::Base
     post '/api/delete_test' do
         assert(teacher_logged_in?)
         data = parse_request_data(:required_keys => [:tag])
+        # The exam's Workspaces and databases go with it: of every student who
+        # took it, and the teacher's own demo.
+        takers = neo4j_query(<<~END_OF_STRING, {:tag => data[:tag], :email => @session_user[:email]}).map { |row| row['email'].to_s }
+            MATCH (s:User)-[:TAKES]->(t:Test {tag: $tag})-[:BELONGS_TO]->(:User {email: $email})
+            RETURN s.email AS email;
+        END_OF_STRING
+        instances = takers.map { |email| [email, data[:tag]] }
+        unless neo4j_query('MATCH (:User {email: $email})<-[:BELONGS_TO]-(t:Test {tag: $tag}) RETURN t.tag;', :email => @session_user[:email], :tag => data[:tag]).empty?
+            instances << [@session_user[:email], Main.test_demo_tag(@session_user[:email], data[:tag])]
+        end
+        instances.each do |email, tag|
+            container_name = fs_tag_for_email("#{email}#{tag}")
+            workspace_runtime.stop_workspace(container_name, :timeout => shell_timeout(:docker_kill))
+            FileUtils.rm_rf("/user/#{container_name}")
+        end
+        unless instances.empty?
+            logins = instances.map { |email, tag| DatabaseIdentity.ephemeral_login(db_login_for_email(email), tag) }
+            run_mysql_statements(logins.flat_map { |login| DatabaseProvisioning.mysql_drop_statements(login) })
+            run_neo4j_statements(logins.flat_map { |login| DatabaseProvisioning.neo4j_drop_statements(login) })
+        end
         deleted = neo4j_query(<<~END_OF_STRING, {:tag => data[:tag], :email => @session_user[:email]}).size
             MATCH (u:User {email: $email})<-[:BELONGS_TO]-(t:Test {tag: $tag})
             WITH t, t.tag AS tag

@@ -31,6 +31,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   `DATA_PROTECTION_OFFICER`, `HOSTING`, `MAIL_PROVIDER`, `LEGAL_BASIS`,
   `SCHOOL_LAW`, `SUPERVISORY_AUTHORITY`, siehe `credentials.template.rb`);
   ohne sie sagt die Seite, was fehlt.
+- Konten löschen: Unter »Administration« löscht ein Klick ein Konto mit
+  allem, was dazugehört (Workspace, die Workspaces der
+  Leistungsüberprüfungen, MySQL- und Neo4j-Datenbanken, Antworten, Abgaben,
+  Sitzungen), nach Eingabe der Adresse zur Bestätigung. Eine Liste zeigt die
+  Konten, deren Adresse in keiner Einladungsliste mehr steht, für das Löschen
+  zum Ende des Schuljahres.
+- Abgelaufene Sitzungen werden gelöscht (höchstens einmal in der Stunde),
+  statt liegen zu bleiben.
 - Die Ausgaben der Dienste (darin E-Mail-Adressen) werden nach 3 × 10 MB je
   Dienst überschrieben. Für Betreibende: `./config.rb` und
   `./config.rb up -d`, damit es gilt.
@@ -780,6 +788,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- Wer eine Leistungsüberprüfung löscht, löscht jetzt auch die Workspaces
+  und Datenbanken aller, die sie geschrieben haben; bisher blieben sie auf
+  dem Server liegen. Die Frage vor dem Löschen sagt es und rät, vorher die
+  Ergebnisse als PDF zu laden.
 - Die Suche im Handbuch zeigt Formeln in den Ergebnissen gesetzt statt als
   `\(n \log n\)`, und ein Ausschnitt schneidet keine Formel mehr mittendurch.
 - Die Bilder auf den Karten von Lauflängen, Huffman und LZW sind auf 16:9
