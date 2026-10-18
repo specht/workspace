@@ -1,5 +1,5 @@
 <div class='meta'>
-image: karte.webp
+image: teaser.webp
 kind: projekt
 language: Ruby / Python
 languages: [ruby, python]
@@ -91,7 +91,7 @@ check-task-fails: abstand
 check-task-fails: graph
 crop-terminal-lines: auto
 -->
-<img class='full' src='server.webp' alt='Im Terminal läuft server.rb: steglitz-zehlendorf: 45181 Wege, 126 Orte, »Noch nicht fertig: read_ways«, die Karte auf Port 4567, und Sinatra hat auf Port 4567 begonnen.'>
+<img class='full' src='server.webp' alt='Im Terminal läuft server.rb: steglitz-zehlendorf: 45181 Wege, 126 Orte, »Noch nicht fertig: read_ways«, die Adresse der Karte zum Anklicken, und Sinatra hat auf Port 4567 begonnen.'>
 <!-- /language -->
 <!-- language: python -->
 Der Routenplaner läuft im Browser. Die Seite mit der Karte bekommt er von einem kleinen Server in Python, der mit [Flask](https://flask.palletsprojects.com/) gebaut ist. Flask installierst du einmal, es bleibt in deinem Workspace:
@@ -124,16 +124,17 @@ check-task-fails: abstand python
 check-task-fails: graph python
 crop-terminal-lines: auto
 -->
-<img class='full' src='server-python.webp' alt='Im Terminal läuft server.py: steglitz-zehlendorf: 45181 Wege, 126 Orte, »Noch nicht fertig: read_ways«, die Karte auf Port 4567.'>
+<img class='full' src='server-python.webp' alt='Im Terminal läuft server.py: steglitz-zehlendorf: 45181 Wege, 126 Orte, »Noch nicht fertig: read_ways« und die Adresse der Karte zum Anklicken.'>
 <!-- /language -->
 
 Der Server sagt, was er gefunden hat: 45 181 Wege in Steglitz-Zehlendorf und 126 Orte. Dass `read_ways` noch nicht fertig ist, stimmt: Das schreibst du gleich selbst. Der Server läuft so lange, bis du ihn mit <kbd>Strg</kbd><kbd>C</kbd> anhältst.
 
-Visual Studio Code leitet seinen Port 4567 an eine Adresse weiter, die dein Browser erreicht. Du findest sie im Reiter »Ports« neben »Terminal«, in der Spalte »Forwarded Address«. Klicke mit gedrückter <kbd>Strg</kbd>-Taste darauf:
+Darunter steht die Adresse der Karte, `http://127.0.0.1:4567`. Klicke mit gedrückter <kbd>Strg</kbd>-Taste darauf: Visual Studio Code leitet den Port 4567 an eine Adresse weiter, die dein Browser erreicht, und öffnet sie.
 
 <!-- tutorial-screenshot
 preview-port: 4567
 tab: preview
+variants: dark
 -->
 <img class='full' src='karte.webp' alt='Die Karte von Steglitz-Zehlendorf im Browser, gezeichnet aus den Daten: Hauptstraßen gelb, die Autobahn orange, Wohnstraßen weiß; beschriftet sind Sehenswürdigkeiten wie der Botanische Garten, das Rathaus Zehlendorf und der Bahnhof Wannsee. Links oben die Felder für Start und Ziel, unten rechts der Maßstab.'>
 
@@ -275,6 +276,7 @@ sleep: 2
 # (tutorial-screenshot-hooks.mjs)
 preview-reload
 tab: preview
+variants: dark
 # die Kreuzung Kuhligkshofstraße / Albrechtstraße, nicht weit von der Schule
 hook: show 13.322572 52.456434 220000 graph
 wait-for-text: 4 Nachbarn
@@ -352,6 +354,7 @@ Starte den Server neu, wähle einen Start und ein Ziel und lass die Breitensuche
 # Vom Gymnasium Steglitz zum Botanischen Garten, mit der Breitensuche
 preview-reload
 tab: preview
+variants: dark
 hook: route Gymnasium Steglitz | Botanischer Garten | bfs
 -->
 <img class='full' src='breitensuche.webp' alt='Die Breitensuche vom Gymnasium Steglitz zum Botanischen Garten: Über der blassen Karte liegen die besuchten Knoten und Kanten, gelb um die Schule, nach außen orange und rot; der gefundene Weg ist eine lila Linie. Oben links steht, wie lang er ist, über wie viele Knoten er geht und wie viele Knoten die Suche besucht hat, darunter der Schieber, mit dem man die Suche Schritt für Schritt ansieht.'>
@@ -386,6 +389,7 @@ Starte den Server neu und suche denselben Weg noch einmal, jetzt mit »Dijkstra�
 # Derselbe Weg mit Dijkstra
 preview-reload
 tab: preview
+variants: dark
 hook: route Gymnasium Steglitz | Botanischer Garten | dijkstra
 -->
 <img class='full' src='dijkstra.webp' alt='Dijkstra vom Gymnasium Steglitz zum Botanischen Garten: Die besuchten Knoten liegen gelb nah an der Schule und werden in alle Richtungen gleichmäßig orange und rot, wie Ringe um den Start. Der Weg ist eine lila Linie. Oben links stehen Länge, Knoten und wie viele die Suche besucht hat.'>
@@ -401,6 +405,7 @@ Probier einen weiten Weg, zur Pfaueninsel ganz im Westen. Dahin kommt man nur mi
 # Zur Pfaueninsel mit der Breitensuche
 preview-reload
 tab: preview
+variants: dark
 hook: route Gymnasium Steglitz | Pfaueninsel | bfs
 -->
 <figure>
@@ -411,6 +416,7 @@ hook: route Gymnasium Steglitz | Pfaueninsel | bfs
 # Und mit Dijkstra
 preview-reload
 tab: preview
+variants: dark
 hook: route Gymnasium Steglitz | Pfaueninsel | dijkstra
 -->
 <figure>
@@ -571,6 +577,7 @@ sleep: 2
 # Zum Brandenburger Tor mit Dijkstra
 preview-reload
 tab: preview
+variants: dark
 hook: route Gymnasium Steglitz | Brandenburger Tor | dijkstra
 -->
 <figure>
@@ -581,6 +588,7 @@ hook: route Gymnasium Steglitz | Brandenburger Tor | dijkstra
 # Und mit A*
 preview-reload
 tab: preview
+variants: dark
 hook: route Gymnasium Steglitz | Brandenburger Tor | astar
 -->
 <figure>
@@ -624,6 +632,7 @@ check-task: reisen python
 # Mit dem Rad zum Brandenburger Tor
 preview-reload
 tab: preview
+variants: dark
 hook: route Gymnasium Steglitz | Brandenburger Tor | astar | bike
 -->
 <figure>
@@ -634,6 +643,7 @@ hook: route Gymnasium Steglitz | Brandenburger Tor | astar | bike
 # Mit dem Auto
 preview-reload
 tab: preview
+variants: dark
 hook: route Gymnasium Steglitz | Brandenburger Tor | astar | car
 -->
 <figure>
@@ -714,6 +724,7 @@ Wechsle auf der Seite zu »Rundfahrt«, füge Orte hinzu und probiere die drei A
 # Eine Rundfahrt durch Mitte zu Fuß, mit dem nächsten Nachbarn
 preview-reload
 tab: preview
+variants: dark
 hook: tour astar | foot | nearest | Brandenburger Tor | Berliner Fernsehturm | Siegessäule | Gendarmenmarkt | Reichstagsgebäude | Rotes Rathaus | Denkmal für die ermordeten Juden Europas | Berliner Dom
 -->
 <figure>
@@ -724,6 +735,7 @@ hook: tour astar | foot | nearest | Brandenburger Tor | Berliner Fernsehturm | S
 # Dieselben Orte, alle Reihenfolgen ausprobiert
 preview-reload
 tab: preview
+variants: dark
 hook: tour astar | foot | best | Brandenburger Tor | Berliner Fernsehturm | Siegessäule | Gendarmenmarkt | Reichstagsgebäude | Rotes Rathaus | Denkmal für die ermordeten Juden Europas | Berliner Dom
 -->
 <figure>
@@ -733,3 +745,15 @@ hook: tour astar | foot | best | Brandenburger Tor | Berliner Fernsehturm | Sieg
 </div>
 
 Der nächste Nachbar kommt auf 11,2 km, das Ausprobieren aller 5 040 Reihenfolgen auf 9,8 km. 2-opt, aus der Reihenfolge des nächsten Nachbarn, kommt bis auf 44 Meter an die beste heran, in einem Bruchteil der Zeit. Ganz die beste ist es nicht: 2-opt hört auf, wenn kein einzelnes Umdrehen mehr hilft, und das ist nicht immer die beste Rundfahrt. Für sehr viele Orte kennt niemand einen schnellen Weg zur besten. Routenplaner, Paketdienste und Busunternehmen arbeiten darum mit Verfahren wie 2-opt: gut genug, und rechtzeitig fertig.
+
+<!-- tutorial-screenshot
+# Bild für die Karte der Aktivität: A* vom Gymnasium Steglitz zum
+# Botanischen Garten, nur die Karte, hell und dunkel
+preview-reload
+tab: preview
+variants: dark
+viewport: 720x405
+hook: route Gymnasium Steglitz | Botanischer Garten | astar
+hook: teaser
+-->
+<img class='teaser' hidden src='teaser.webp' alt='A* vom Gymnasium Steglitz zum Botanischen Garten: Über der blassen Karte liegen die Straßen, die die Suche besucht hat, gelb um die Schule, zum Garten hin orange und rot, und darüber der gefundene Weg als lila Linie.'>

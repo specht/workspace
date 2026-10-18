@@ -11,7 +11,26 @@ export default {
         await page.waitForTimeout(500);
     },
 
+    // variants: dark: the map page follows the system's colour scheme, like
+    // the site; the Workspace's own pictures (the terminal) have no variant.
+    variants: {
+        async dark({ page, on }) {
+            await page.emulateMedia({ colorScheme: on ? 'dark' : 'light' });
+            await page.waitForTimeout(500);
+        },
+    },
+
     actions: {
+        // hook: teaser: the map alone, for the card of the activity: the panel,
+        // zoom and scale hidden and the route fitted into the whole picture
+        async teaser({ page }) {
+            await page.evaluate(() => {
+                for (const id of ['panel', 'zoom', 'scale', 'suggestions']) document.getElementById(id).style.display = 'none';
+                if (fitted) fit(...fitted); else draw();
+            });
+            await page.waitForTimeout(300);
+        },
+
         // hook: show LON LAT SCALE [graph]: the map there, SCALE pixels per
         // degree of latitude, and a click on that spot, as a student would
         // click; with »graph« the switch »Graph zeigen« on first

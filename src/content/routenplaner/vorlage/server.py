@@ -152,7 +152,10 @@ def metres_between(a, b):
     return math.sqrt(x * x + y * y) * 6_371_000
 
 
-say('Die Karte: Port 4567 (Reiter »Ports«). Beenden mit Strg+C.')
+# Ein Klick mit Strg auf die Adresse öffnet die Karte; VS Code leitet sie
+# an eine Adresse weiter, die der Browser erreicht
+say('Die Karte: http://127.0.0.1:4567 (mit Strg anklicken)')
+say('Beenden mit Strg+C.')
 
 app = flask.Flask(__name__, static_folder=os.path.join(HERE, 'public'), static_url_path='')
 

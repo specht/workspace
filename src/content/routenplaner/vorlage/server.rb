@@ -124,7 +124,10 @@ def metres_between((lon1, lat1), (lon2, lat2))
     Math.sqrt(x * x + y * y) * 6_371_000
 end
 
-puts 'Die Karte: Port 4567 (Reiter »Ports«). Beenden mit Strg+C.'
+# Ein Klick mit Strg auf die Adresse öffnet die Karte; VS Code leitet sie
+# an eine Adresse weiter, die der Browser erreicht
+puts 'Die Karte: http://127.0.0.1:4567 (mit Strg anklicken)'
+puts 'Beenden mit Strg+C.'
 
 get '/' do
     send_file File.join(settings.public_folder, 'index.html')

@@ -788,7 +788,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Vergleichen. Start und Ziel sucht man durch Tippen in einer Liste mit
   Vorschlägen, dazu Straßennamen, Maßstab, Legende und Zoom zur Maus; was
   gewählt ist, steht in der Adresse der Seite; dunkle Farben, wenn der
-  Bildschirm dunkel eingestellt ist, oder mit dem Knopf rechts oben; beim Ziehen und Zoomen wird das letzte
+  Bildschirm dunkel eingestellt ist, oder mit dem Knopf rechts oben (die
+  Bilder der Seite und der Karte im Katalog gibt es hell und dunkel); der
+  Server schreibt die Adresse der Karte zum Anklicken ins Terminal; beim Ziehen und Zoomen wird das letzte
   Bild der Karte nur verschoben und erst danach neu gezeichnet. Die Daten baut
   `src/scripts/collect-streets/`, für Berlin geschnitten an den Grenzen der
   Bezirke, mit Fähren und den Schulen aus dem Schulverzeichnis Berlins (in
