@@ -248,7 +248,7 @@ terminal-run: ruby -C /workspace/drawing-steps -r ./save_step.rb step-2.rb
 terminal-wait-for-prompt
 image-file: drawing-steps/step.png 8
 -->
-<img src='out2.webp' class='r' alt='Ein dunkeltürkiser Pixel liegt auf einer dunkelvioletten Fläche.'>
+<img src='out2.webp' class='full' alt='Ein dunkeltürkiser Pixel liegt auf einer dunkelvioletten Fläche.'>
 
 Die Farben haben sich geändert: Der Hintergrund ist nicht mehr schwarz, weil die Farbe 0 jetzt ein dunkles Lila ist, und die Farbe 10 ist jetzt ein dunkles Türkis.
 
