@@ -112,6 +112,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Datum eines schriftlichen Einverständnisses ein (Elternbrief mit
   Einverständniserklärung unter `/datenschutz`). Gesperrt wird ohne beides
   niemand; Gruppe und `/personen` zeigen, wie viele noch ungeklärt sind.
+- Konten der Administration (`ADMIN_USERS`) lassen sich auf keinem Weg
+  löschen: weder unter `/personen` (einzeln, gesammelt, angekündigt) noch
+  im eigenen Profil noch durch die stündliche Löschung. Das Profil sagt
+  Admins, dass sie zuerst aus `ADMIN_USERS` genommen werden müssen.
 - Wer nicht mehr eingeladen ist, verliert den Zugang sofort: Eine bestehende
   Sitzung endet bei der nächsten Anfrage (vorher galt sie bis zu 365 Tage),
   und ein laufender Workspace samt geteilten Links ist nicht mehr erreichbar,

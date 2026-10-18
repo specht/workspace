@@ -441,7 +441,7 @@
                         Solange du eingeladen bist, kannst du dich danach wieder anmelden und beginnst mit einem leeren Konto.
                         Zur Sicherheit bekommst du vorher einen Code per E-Mail; die Administration erfährt, dass du dein Konto gelöscht hast.
                     </p>
-                    <button id='bu_delete_my_account' class="btn btn-danger" #{@impersonated_by ? 'disabled' : ''}><i class='bi bi-trash-fill'></i>Konto löschen</button>
+                    #{ADMIN_USERS.include?((@session_user || {})[:email]) ? "<p class='text-body-secondary mb-0'><i class='bi bi-shield-lock'></i>Ein Konto der Administration lässt sich nicht löschen. Wer nicht mehr zur Administration gehören soll, wird zuerst aus <code>ADMIN_USERS</code> in <code>credentials.rb</code> genommen.</p>" : "<button id='bu_delete_my_account' class=\"btn btn-danger\" #{@impersonated_by ? 'disabled' : ''}><i class='bi bi-trash-fill'></i>Konto löschen</button>"}
                 </div>
             </section>
 

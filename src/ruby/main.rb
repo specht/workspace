@@ -4024,6 +4024,10 @@ class Main < Sinatra::Base
     # sessions and the User node. Someone still invited starts with an empty
     # account at the next login. Returns what went, for the answer and the log.
     def delete_account(email)
+        # An administrator's account is never deleted, by no path (the routes
+        # say so first; this is the last guard).
+        return nil if ADMIN_USERS.include?(email)
+
         user = neo4j_query('MATCH (u:User {email: $email}) RETURN u;', :email => email).first
         return nil unless user
 
@@ -4117,6 +4121,7 @@ class Main < Sinatra::Base
         halt 400, { :error => 'invalid_email' }.to_json unless email
         halt 400, { :error => 'confirmation_mismatch' }.to_json unless AccountDeletion.normalize_email(data[:confirmation]) == email
         halt 400, { :error => 'own_account' }.to_json if email == @session_user[:email]
+        halt 400, { :error => 'admin_account' }.to_json if ADMIN_USERS.include?(email)
         Main.load_invitations()
         removed = delete_account(email)
         halt 404, { :error => 'no_account' }.to_json unless removed
@@ -4145,7 +4150,8 @@ class Main < Sinatra::Base
         data = parse_request_data(:required_keys => [:email])
         email = AccountDeletion.normalize_email(data[:email])
         halt 400, { :error => 'invalid_email' }.to_json unless email
-        halt 400, { :error => 'own_account' }.to_json if email == @session_user[:email] || ADMIN_USERS.include?(email)
+        halt 400, { :error => 'own_account' }.to_json if email == @session_user[:email]
+        halt 400, { :error => 'admin_account' }.to_json if ADMIN_USERS.include?(email)
         halt 404, { :error => 'no_account' }.to_json if neo4j_query('MATCH (u:User {email: $email}) RETURN u.email;', :email => email).empty?
         date = Date.today + DELETION_NOTICE_DAYS
         neo4j_query('MATCH (u:User {email: $email}) SET u.deletion_at = $date, u.deletion_announced_at = $now, u.deletion_announced_by = $me;',
@@ -4231,6 +4237,7 @@ class Main < Sinatra::Base
     post '/api/request_account_deletion' do
         assert(user_logged_in?)
         halt 403 if @impersonated_by
+        halt 400, { :error => 'admin_account' }.to_json if ADMIN_USERS.include?(@session_user[:email])
         data = parse_request_data(:required_keys => [:confirmation])
         email = @session_user[:email]
         halt 400, { :error => 'confirmation_mismatch' }.to_json unless AccountDeletion.normalize_email(data[:confirmation]) == email
@@ -4252,6 +4259,7 @@ class Main < Sinatra::Base
     post '/api/delete_my_account' do
         assert(user_logged_in?)
         halt 403 if @impersonated_by
+        halt 400, { :error => 'admin_account' }.to_json if ADMIN_USERS.include?(@session_user[:email])
         data = parse_request_data(:required_keys => [:confirmation, :code])
         email = @session_user[:email]
         halt 400, { :error => 'confirmation_mismatch' }.to_json unless AccountDeletion.normalize_email(data[:confirmation]) == email

@@ -240,6 +240,7 @@ class Main < Sinatra::Base
                 coalesce(i.teacher, false) OR EXISTS { (i)-[:TEACHES]->(:Group) } OR EXISTS { (i)-[:AT]->(:School) } AS teacher;
         END_OF_QUERY
         halt 404, { :error => 'not_invited' }.to_json unless row
+        halt 400, { :error => 'admin_account' }.to_json if ADMIN_USERS.include?(email)
         halt 409, { :error => 'has_account' }.to_json if row['account']
         halt 409, { :error => 'is_teacher' }.to_json if row['teacher']
         neo4j_query('MATCH (i:Invitation {email: $email}) DETACH DELETE i;', :email => email)
