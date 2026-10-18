@@ -18,6 +18,24 @@ export default {
     },
 
     actions: {
+        // hook: dct-select X Y [1d|2d] [COEFFICIENTS]: on the page »DCT«
+        // (/dct), the mode and the number of coefficients set with their
+        // knobs, and the eight pixels (1d) or the 8 x 8 block (2d) from X, Y of
+        // the photo selected, as a click there selects them. A click cannot
+        // aim that well: eight pixels of the photo are about one on the
+        // screen.
+        async 'dct-select'({ page, args }) {
+            const [x, y, mode = '1d', count] = args.trim().split(/\s+/);
+            await page.waitForFunction(() => typeof selectionState !== 'undefined' && width > 1 && coefficientsKnob);
+            await page.evaluate(([x, y, mode, count]) => {
+                knobs.find((knob) => knob.opts.label === 'Mode').setValue(mode === '2d' ? 2 : 1, true);
+                if (count) coefficientsKnob.setValue(count, true);
+                selectionState.hover = clampSelectionOrigin(x, y, 8, mode === '2d' ? 8 : 1);
+                commitHoverSelection();
+            }, [Number(x), Number(y), mode, count ? Number(count) : null]);
+            await page.waitForTimeout(1500);
+        },
+
         // hook: expect-value PREFIX EXPECTED TOLERANCE: the number the
         // program prints after PREFIX must be EXPECTED, give or take
         // TOLERANCE, as the task that asks for it accepts. PREFIX has no
