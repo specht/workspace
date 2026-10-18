@@ -205,6 +205,44 @@ reassures is a familiar structure, precise facts and no overstatement.
   the Senatsverwaltung for digital teaching tools; the page should not cite
   rules the session has not looked up.
 
+## Decision (2026-10-18): the maintainer handles it himself
+
+The school tolerates the Workspace but does not want to be involved, and he
+does not want to bring in the Schulleitung. So the route is: **he is the
+controller (Verantwortlicher) personally**, the offer is his own, and the
+legal basis is **consent**, from parents for students under 16 (DSGVO
+Art. 8). This replaces the »decision by the Schulleitung« idea above; keep
+`LEGAL_BASIS` configurable for other installations, but `:consent` is the
+case to build first.
+
+What follows from it, to build in this order:
+
+1. **Parental consent becomes the core**, not an option: the design below,
+   on by default for this installation. An account logs in but stays locked
+   until consent is recorded (who confirmed it, when, how: a signed form
+   handed to him, or an e-mail from a parent).
+2. **Voluntary in practice**: the page says that taking part is voluntary
+   and that a student who does not take part gets another way to work
+   (locally, on paper; ask the maintainer what he offers). A teacher who
+   requires the platform weakens consent; this sentence is what a lawyer
+   checks first.
+3. **Account deletion** (admin action): user node, sessions, tasks,
+   submissions, Workspace volume, databases; optionally an export first.
+   Then a fixed rule on the page, e.g. deletion some months after the end of
+   the course or on request, whichever comes first (ask him for the period).
+4. **Data minimisation**: store nothing that is not needed; check whether
+   names in the invitation files could be first names or nicknames.
+5. **The page states it plainly**: a private, non-profit offer by a
+   teacher, not a service of the school; his name and the school's address
+   as the place he can be reached (ask him whether he is reachable there for
+   letters; a »ladungsfähige Anschrift« must work).
+
+**Not settled, say so honestly to him, do not hide it on the page**: Berlin
+has rules for teachers processing student data on systems the school has not
+approved (Schuldatenverordnung, rules on private devices). Whether consent
+alone covers this is not clear to us. That is the remaining risk of this
+route; do not claim on the page that it is covered.
+
 ## Parental consent: things to put to the maintainer
 
 Not legal advice; the next session should say so and suggest he asks the
