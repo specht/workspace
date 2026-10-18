@@ -436,7 +436,6 @@
                     });
                 });
         });
-        });
         $('#repeat_deletions_form').on('submit', function (e) {
             e.preventDefault();
             api_call('/api/admin/repeat_deletions', { backup_date: $('#repeat_deletions_date').val() }, function (data) {
