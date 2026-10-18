@@ -707,7 +707,26 @@ wait-for-file-newer: facharbeit/facharbeit.pdf <- facharbeit/facharbeit.tex
 sleep: 3
 press: Control+Alt+V
 wait-for-text: Facharbeit im Fach Physik
-move-mouse: selector:.editor-group-container .monaco-editor .view-lines
+hide-left-sidebar
+# Der Quelltext breiter als das PDF, der Cursor im Titel, den das PDF zeigt
+press: Control+1
+press: Control+Shift+P
+wait-for-input-value: >
+type: View: Increase Editor Width
+sleep: 1
+press: Enter
+sleep: 0.5
+press: Control+Shift+P
+wait-for-input-value: >
+type: View: Increase Editor Width
+sleep: 1
+press: Enter
+sleep: 0.5
+press: Control+G
+type: 43:20
+press: Enter
+sleep: 0.5
+move-mouse: selector:.part.statusbar
 sleep: 2
 check-task: erstes-pdf
 check-task: gliederung
