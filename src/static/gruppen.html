@@ -287,6 +287,10 @@
         if (group.school && !group.school.approved && !group.school.guests && students.length) {
             facts.push(`<span class='text-warning-emphasis'>Einverständnis ${with_consent} von ${students.length}</span>`);
         }
+        if (group.ends_on) {
+            const past = group.ends_on < new Date().toISOString().slice(0, 10);
+            facts.push(`<span class='${past ? 'text-warning-emphasis' : ''}'>${past ? 'zu Ende seit' : 'endet am'} ${new Date(group.ends_on).toLocaleDateString('de-DE')}</span>`);
+        }
         if (group.teachers.length) {
             const names = group.teachers.map(t => esc(t.name || t.email));
             facts.push(names.length > 2 ? `<span title='${names.join(', ')}'>${names.slice(0, 2).join(', ')} +${names.length - 2}</span>` : names.join(', '));
@@ -306,6 +310,13 @@
             : 'ohne Schule';
         // One row for what concerns the whole group.
         const toolbar = $(`<div class='group-toolbar'><span class='small text-body-secondary me-auto'>${school_line}</span></div>`);
+        // When the group ends: afterwards its teachers get one reminder.
+        const ends = $(`<label class='small d-flex align-items-center gap-1 text-body-secondary'>Endet am <input type='date' class='form-control form-control-sm' style='width: auto;'></label>`);
+        ends.find('input').val(group.ends_on || '').on('change', function () {
+            const input = $(this);
+            groups_call('/api/groups/set_end', { name: group.name, date: input.val() }, function (r) { group.ends_on = r.ends_on; flash(input); });
+        });
+        toolbar.append(ends);
         const rename = $(`<button type='button' class='btn btn-sm btn-outline-secondary'><i class='bi bi-pencil'></i>Umbenennen</button>`);
         rename.on('click', () => rename_group(group));
         toolbar.append(rename);

@@ -122,6 +122,14 @@
             </p>
             <div id='unused_here'></div>
 
+            <h3 id='zu-ende' class='h5 mt-3'>Gruppen nach ihrem Ende</h3>
+            <p>
+                Gruppen, deren Enddatum vorbei ist (Lehrkräfte tragen es unter <a href='/gruppen'>Gruppen</a> ein; nach dem Ende bekommen
+                sie einmal eine Erinnerung). Zum Ende des Schuljahres: löschen, was nicht weitergeht; wer danach in keiner Gruppe steht,
+                erscheint unter »Konten ohne Einladung«.
+            </p>
+            <div id='ended_groups_here'></div>
+
             <h3 id='mehrere-schulen' class='h5 mt-4'>In Gruppen mehrerer Schulen</h3>
             <p>
                 Schülerinnen und Schüler, die in Gruppen von mehr als einer Schule stehen (Gruppen der Gäste zählen nicht). Weil es je
@@ -718,7 +726,22 @@
         });
     }
 
+    function load_ended_groups() {
+        people_call('/api/people/ended_groups', {}, function (data) {
+            const here = $('#ended_groups_here').empty();
+            if (!data.groups.length) { here.append(`<p class='text-body-secondary'>Keine.</p>`); return; }
+            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Gruppe</th><th>Schule</th><th>Zu Ende seit</th><th>Mitglieder</th><th>Lehrkräfte</th></tr></thead><tbody></tbody></table>`);
+            data.groups.forEach(g => table.find('tbody').append($('<tr>').append(
+                $('<td>').append($('<a>').attr('href', '/gruppen#gruppe=' + encodeURIComponent(g.name)).text(g.name)),
+                $('<td>').text(g.school || '–'), $('<td>').attr('data-sort', g.ends_on).text(new Date(g.ends_on).toLocaleDateString('de-DE')),
+                $('<td>').text(g.members), $('<td>').text(g.teachers.join(', ') || '–'))));
+            make_sortable(table);
+            here.append($("<div class='table-responsive'></div>").append(table));
+        });
+    }
+
     function load_all() {
+        load_ended_groups();
         load_cross_school();
         load_schools();
         setTimeout(load_teachers, 200);

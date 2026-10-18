@@ -249,6 +249,22 @@ class Main < Sinatra::Base
         respond(:removed => email)
     end
 
+    # Groups past their end date, for the yearly cleanup: who teaches them,
+    # how many members, when anyone was last here.
+    post '/api/people/ended_groups' do
+        admin_only!
+        rows = neo4j_query(<<~END_OF_QUERY, :today => Date.today.to_s)
+            MATCH (g:Group) WHERE g.ends_on IS NOT NULL AND g.ends_on < $today
+            OPTIONAL MATCH (g)-[:AT]->(s:School)
+            OPTIONAL MATCH (m:Invitation)-[:MEMBER_OF]->(g)
+            WITH g, s, count(DISTINCT m) AS members
+            OPTIONAL MATCH (t:Invitation)-[:TEACHES]->(g)
+            RETURN g.name AS name, g.ends_on AS ends_on, s.name AS school, members, collect(coalesce(t.name, t.email)) AS teachers
+            ORDER BY g.ends_on;
+        END_OF_QUERY
+        respond(:groups => rows.map { |r| r.transform_keys(&:to_sym) })
+    end
+
     # Read only: students in groups of more than one school (guest groups
     # do not count). One account per address, so a teacher of either school
     # sees the student's Workspace; the administration resolves each case by

@@ -102,6 +102,8 @@ class Main < Sinatra::Base
             MATCH (i:Invitation)-[:TEACHES]->(g:Group) WHERE g.name IN $names
             RETURN g.name AS group, i.email AS email, i.name AS name ORDER BY i.email;
         END_OF_QUERY
+        ends = neo4j_query('MATCH (g:Group) WHERE g.name IN $names AND g.ends_on IS NOT NULL RETURN g.name AS name, g.ends_on AS ends_on;', :names => names)
+            .to_h { |r| [r['name'], r['ends_on']] }
         schools = neo4j_query(<<~END_OF_QUERY, :names => names).to_h { |r| [r['group'], r.transform_keys(&:to_sym).except(:group)] }
             MATCH (g:Group)-[:AT]->(s:School) WHERE g.name IN $names
             RETURN g.name AS group, s.key AS key, s.name AS name, s.approved_at IS NOT NULL AS approved,
@@ -121,7 +123,7 @@ class Main < Sinatra::Base
                 end
                 m
             end
-            group = { :name => name, :school => schools[name], :members => list, :teachers => teachers[name] }
+            group = { :name => name, :school => schools[name], :members => list, :teachers => teachers[name], :ends_on => ends[name] }
             if admin
                 students = list.reject { |m| m[:teacher] }
                 group[:last_active] = students.map { |m| m[:active_on] }.compact.max
@@ -177,6 +179,21 @@ class Main < Sinatra::Base
             END_OF_QUERY
         end
         respond(:people => rows.map { |r| { :email => r['email'], :name => r['name'] } })
+    end
+
+    # When a group ends (a course, a school year, a workshop): afterwards its
+    # teachers get one reminder to delete it or set a new end
+    # (Main#remind_ended_groups), and »Aufräumen« lists it. Empty removes it.
+    post '/api/groups/set_end' do
+        teacher_or_admin!
+        roster_writable!
+        data = parse_request_data(:required_keys => [:name, :date])
+        name = managed_group!(data[:name])
+        text = data[:date].to_s.strip
+        date = text.empty? ? nil : (Date.iso8601(text).to_s rescue halt(400, { :error => 'invalid_date' }.to_json))
+        neo4j_query('MATCH (g:Group {name: $name}) SET g.ends_on = $date REMOVE g.end_reminded_at;', :name => name, :date => date)
+        Main.note_roster_change!
+        respond(:ends_on => date)
     end
 
     # A student's written consent (of the parents, or their own when of

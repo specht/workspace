@@ -307,6 +307,7 @@ module PrivacyDocuments
             </p>
             <h2>Ablauf zum Ende des Schuljahres</h2>
             #{list([
+                'Die Lehrkräfte tragen für jede Lerngruppe ein Enddatum ein. Danach erinnert der Workspace sie einmal per E-Mail, die Gruppe zu löschen oder ein neues Ende einzutragen; die Administration sieht unter »Aufräumen« alle Gruppen nach ihrem Ende.',
                 'Die Lehrkräfte nehmen Lerngruppen, deren Kurs endet, und Schülerinnen und Schüler, die die Schule verlassen, aus ihren Einladungslisten.',
                 'Die Administration ruft unter »Personen und Schulen › Aufräumen › Konten ohne Einladung« die Konten auf, deren Adresse in keiner Einladungsliste mehr steht, und löscht sie bis zum letzten Tag des Schuljahres.',
                 'Wer im nächsten Schuljahr weiter Informatik hat, bleibt eingeladen; der Zweck besteht fort, das Konto bleibt.',

@@ -124,6 +124,19 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   keine Kommunikation, keine Organisation des Unterrichts, keine Noten;
   Abgaben und Leistungsüberprüfungen sind genannt, die Einordnung trifft die
   Schule.
+- Gruppen haben ein Enddatum (»Endet am« unter `/gruppen`): Danach bekommen
+  ihre Lehrkräfte einmal eine Erinnerung, die Gruppe zu löschen oder ein neues
+  Ende einzutragen, und »Aufräumen« unter `/personen` listet alle Gruppen nach
+  ihrem Ende. Das Löschkonzept nennt den Ablauf.
+- Wenig Speicherplatz: Ein stündlicher Blick auf `/user` schickt der
+  Administration höchstens einmal am Tag eine E-Mail, wenn weniger als 10 %
+  oder 20 GB frei sind; `/admin` zeigt es oben.
+- Zugriffe der Administration (Workspace öffnen, nachahmen) stehen mit und
+  ohne Grund ein Jahr lang in `/internal/admin-access.jsonl` und auf `/admin`;
+  die Person erfährt es weiter nur mit Grund.
+- Im Profil: »In allen anderen Browsern abmelden«. Links zum Teilen des
+  Workspace gelten eine Woche (erneutes Teilen verlängert denselben Link);
+  abgelaufene gehen aus der nginx-Tabelle.
 - Zugang sperren: Unter `/personen` sperrt die Administration ein Konto mit
   einem Grund (etwa ein Widerspruch, der geprüft wird). Sitzungen, Anmeldung,
   laufender Workspace, geteilte Links und Web-Apps enden sofort; gelöscht

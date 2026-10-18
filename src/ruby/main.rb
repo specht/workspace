@@ -2203,6 +2203,11 @@ class Main < Sinatra::Base
                 rescue => e
                     STDERR.puts "Disk check failed: #{e.class}: #{e.message}"
                 end
+                begin
+                    Main.new!.remind_ended_groups
+                rescue => e
+                    STDERR.puts "Reminders for ended groups failed: #{e.class}: #{e.message}"
+                end
                 sleep 3000
             end
         end
@@ -4727,6 +4732,36 @@ class Main < Sinatra::Base
             end
         end
         AtomicFile.write(DISK_ALERT_FILE, JSON.generate({ 'sent' => today }))
+    end
+
+    # Groups past their end date: one mail to their teachers (delete the
+    # group, or set a new end), marked so that it goes only once.
+    def remind_ended_groups
+        return if Main.roster_imported.nil?
+
+        rows = neo4j_query(<<~END_OF_QUERY, :today => Date.today.to_s)
+            MATCH (g:Group) WHERE g.ends_on IS NOT NULL AND g.ends_on < $today AND g.end_reminded_at IS NULL
+            OPTIONAL MATCH (t:Invitation)-[:TEACHES]->(g)
+            RETURN g.name AS name, g.ends_on AS ends_on, collect(t.email) AS teachers;
+        END_OF_QUERY
+        rows.each do |r|
+            recipients = r['teachers'].empty? ? ADMIN_USERS : r['teachers']
+            day = (Date.iso8601(r['ends_on']).strftime('%d.%m.%Y') rescue r['ends_on'])
+            text = "<p>Die Gruppe <strong>#{CGI.escapeHTML(r['name'])}</strong> im Workspace ist am #{day} zu Ende gegangen.</p>" \
+                "<p>Wird sie nicht mehr gebraucht, lösche sie unter #{WEB_ROOT}/gruppen; wer danach in keiner Gruppe mehr steht, ist nicht mehr eingeladen, " \
+                'und die Konten werden nach den Löschregeln gelöscht. Geht der Kurs weiter, trag dort ein neues Ende ein.</p>' \
+                "<p>Viele Grüße<br>#{CGI.escapeHTML(mail_signature)}</p>"
+            recipients.each do |email|
+                deliver_mail do
+                    to email
+                    from SMTP_FROM
+                    subject "Workspace: Die Gruppe #{r['name']} ist zu Ende"
+                    text
+                end
+            end
+            neo4j_query('MATCH (g:Group {name: $name}) SET g.end_reminded_at = $now;', :name => r['name'], :now => Time.now.to_i)
+            STDERR.puts "Reminder sent for ended group #{r['name']} to #{recipients.size} teacher(s)"
+        end
     end
 
     # Links shared before there was an expiry get SHARE_DAYS from now; expired
