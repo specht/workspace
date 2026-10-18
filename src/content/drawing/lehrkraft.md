@@ -1,4 +1,4 @@
-Ein Einstieg in Grafikprogrammierung ohne Vorkenntnisse: Das Bild entsteht Befehl für Befehl, und jeder Schritt ist sofort auf der Zeichenfläche zu sehen. Ruby wird nur so weit gebraucht, wie es die Befehle verlangen; Schleifen kommen erst beim Regenbogen und beim Himmel vor.
+Ein Einstieg in Grafikprogrammierung ohne Vorkenntnisse: Lernende zeichnen in Ruby Pixel für Pixel ein Bild, erst eine Wiese mit Regenbogen nach Anleitung, dann ein eigenes, und sehen jeden Befehl sofort auf der Zeichenfläche. Ruby wird nur so weit gebraucht, wie es die Befehle verlangen; Schleifen kommen erst beim Regenbogen und beim Himmel vor.
 
 <table class='table'>
 <tr><th>Ablauf</th><td>Erste Doppelstunde: Einrichten, der erste Pixel, die Wiese mit Regenbogen und das gespeicherte Bild. Zweite Doppelstunde: das eigene Bild mit den Ideen am Ende der Seite, dann Abgabe.</td></tr>

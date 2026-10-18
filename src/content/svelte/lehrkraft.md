@@ -1,4 +1,4 @@
-Ein erstes Projekt mit einem Frontend-Framework: Aus HTML, CSS und etwas JavaScript in einer Komponente entsteht eine Stoppuhr, die als Zustandsautomat modelliert ist. Am Ende steht eine statische Webseite, die ohne Svelte auf jedem Webserver läuft.
+Lernende bauen ihr erstes Projekt mit einem Frontend-Framework: Aus HTML, CSS und etwas JavaScript in einer Svelte-Komponente entsteht eine Stoppuhr für Zauberwürfel, die als Zustandsautomat modelliert ist. Am Ende steht eine statische Webseite, die ohne Svelte auf jedem Webserver läuft.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>HTML und CSS wie in <a href='/static-website'>Statische Webseiten mit HTML & CSS</a>. JavaScript wird unterwegs erklärt: Variablen, Funktionen, <code>if</code>, Event-Listener.</td></tr>

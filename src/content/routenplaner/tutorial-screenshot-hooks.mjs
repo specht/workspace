@@ -33,11 +33,11 @@ export default {
 
         // hook: show LON LAT SCALE [graph]: the map there, SCALE pixels per
         // degree of latitude, and a click on that spot, as a student would
-        // click; with »graph« the switch »Graph zeigen« on first
+        // click; with »graph« the view »Graph« first
         async show({ page, args }) {
             const [lon, lat, scale, graph] = String(args).trim().split(/\s+/);
             if (graph === 'graph') {
-                await page.check('#graph-view');
+                await page.click('#layers [data-layer="graph"]');
                 await page.waitForFunction(() => typeof graph !== 'undefined' && graph);
             }
             await page.evaluate(async ([lon, lat, scale]) => {
@@ -60,7 +60,7 @@ export default {
             if (await page.getAttribute('#tabs [data-tab="route"]', 'aria-selected') !== 'true') await page.click('#tabs [data-tab="route"]');
             await page.click(`#modes [data-mode="${mode}"]`);
             // die Ansicht »Graph« eines Bildes davor bleibt nach dem Neuladen in der Adresse
-            if (await page.isChecked('#graph-view')) await page.uncheck('#graph-view');
+            await page.click('#layers [data-layer="map"]');
             await page.click(`#searches [data-search="${search}"]`);
             for (const [field, text] of [['#start', start], ['#goal', goal]]) {
                 await page.fill(field, text);
@@ -77,7 +77,8 @@ export default {
         // (the first that contains the text), and waited for the tour
         async tour({ page, args }) {
             const [search, mode, method, ...places] = String(args).split('|').map((part) => part.trim());
-            if (await page.isChecked('#graph-view')) await page.uncheck('#graph-view');
+            // die Ansicht »Graph« eines Bildes davor bleibt nach dem Neuladen in der Adresse
+            await page.click('#layers [data-layer="map"]');
             await page.click('#tabs [data-tab="tour"]');
             await page.evaluate(() => { stops = []; showStops(); });
             await page.click(`#searches [data-search="${search}"]`);

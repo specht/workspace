@@ -56,8 +56,12 @@ address from `credentials.rb` and the code `123456`.
 - Formulas: KaTeX renders `\(…\)` and `$$…$$`, not single `$…$`. In Markdown write
   `\\(`…`\\)` and `\_` for an underscore inside them: Markdown eats a single
   backslash before a bracket and turns two underscores into emphasis.
-- In HTML tables inside Markdown, `</table>` and `</div>` go on lines of their
-  own, otherwise the rest of the page renders as raw text.
+- Tables are HTML (`<table class='table'>`); the site's Markdown has no pipe
+  tables (`no_pipe_tables_test.rb`). In HTML tables inside Markdown,
+  `</table>` and `</div>` go on lines of their own, otherwise the rest of the
+  page renders as raw text.
+- Every activity has a teacher note (`lehrkraft.md`) whose first paragraph says
+  what the students do (»Lernende …«); `teacher_note_test.rb` checks it.
 
 ## Working on the code
 

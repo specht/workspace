@@ -93,16 +93,17 @@ Das Herz jedes TIC-80-Programms ist die Funktion `TIC()`. TIC-80 ruft sie **60-m
 
 Die wichtigsten Tasten:
 
-| Taste | Was sie tut |
-| --- | --- |
-| <kbd>Esc</kbd> | zwischen Konsole und Editor wechseln; ein laufendes Spiel beenden |
-| <kbd>Strg</kbd><kbd>R</kbd> | das Spiel starten |
-| <kbd>Strg</kbd><kbd>S</kbd> | speichern |
-| <kbd>F1</kbd> | Code-Editor |
-| <kbd>F2</kbd> | Sprite-Editor (Figuren) |
-| <kbd>F3</kbd> | Map-Editor (Spielfelder) |
-| <kbd>F4</kbd> | SFX-Editor (Töne) |
-| <kbd>F5</kbd> | Musik-Editor |
+<table class='table'>
+<tr><th>Taste</th><th>Was sie tut</th></tr>
+<tr><td><kbd>Esc</kbd></td><td>zwischen Konsole und Editor wechseln; ein laufendes Spiel beenden</td></tr>
+<tr><td><kbd>Strg</kbd><kbd>R</kbd></td><td>das Spiel starten</td></tr>
+<tr><td><kbd>Strg</kbd><kbd>S</kbd></td><td>speichern</td></tr>
+<tr><td><kbd>F1</kbd></td><td>Code-Editor</td></tr>
+<tr><td><kbd>F2</kbd></td><td>Sprite-Editor (Figuren)</td></tr>
+<tr><td><kbd>F3</kbd></td><td>Map-Editor (Spielfelder)</td></tr>
+<tr><td><kbd>F4</kbd></td><td>SFX-Editor (Töne)</td></tr>
+<tr><td><kbd>F5</kbd></td><td>Musik-Editor</td></tr>
+</table>
 
 <div class='hint'>
 TIC-80 kennt keine Umlaute: <code>ä</code>, <code>ö</code>, <code>ü</code> und <code>ß</code> erscheinen als Kästchen. Schreib in Texten für den Bildschirm <code>ae</code>, <code>oe</code>, <code>ue</code> und <code>ss</code>, oder gleich Englisch, wie das Spiel auf dieser Seite.

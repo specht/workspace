@@ -1,3 +1,5 @@
+Lernende üben Git im Terminal an zwei ausgedachten Personen: Erst arbeitet Alice allein (Commits, `git add`, `.gitignore`, ein Blick zurück mit `HEAD~2`, ein Branch und ein Merge), dann arbeiten Alice und Bob über ein gemeinsames Remote zusammen, mit Push, Pull, einem Konflikt, den sie auflösen, und Tags. Vorkenntnisse braucht es keine außer dem Terminal aus »Dateien und Verzeichnisse«.
+
 Die Aufgaben folgen dem Weg durch das Tutorial: erst Alice allein, dann Alice und Bob mit einem gemeinsamen Remote im Ordner `git-tutorial/remote-repo`.
 
 <table class='table'>

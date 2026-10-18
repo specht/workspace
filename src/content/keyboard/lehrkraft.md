@@ -1,3 +1,5 @@
+Lernende arbeiten das Keyboard-Tutorial durch, eine Erweiterung in Visual Studio Code: in sieben Kapiteln die Tastatur, Navigieren und Markieren ohne Maus, Text bearbeiten, Suchen und Ersetzen, mehrere Cursor und Code bearbeiten, jeweils mit kleinen Übungen direkt im Editor. Gut als Einstieg in der ersten Stunde, aber auch zwischendurch.
+
 Das Keyboard-Tutorial ist eine Erweiterung in Visual Studio Code; die Seite hier begleitet es. Jede Aufgabe ist ein Kapitel des Tutorials.
 
 <table class='table'>

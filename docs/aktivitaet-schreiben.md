@@ -287,9 +287,13 @@ Aktivitäten davon.
 ## 5. Eine Notiz für Lehrkräfte
 
 `lehrkraft.md` neben der Seite erscheint für Lehrkräfte als aufklappbare Notiz
-oben auf der Seite. Was hineingehört: der Ablauf über die Stunden, was
-erfahrungsgemäß schiefgeht, was die Aufgaben genau prüfen. Lernende sehen sie
-nicht.
+oben auf der Seite. Jede Aktivität im Katalog hat eine. Sie beginnt mit einem
+Absatz, der sagt, was die Lernenden tun: »Lernende bauen …, schreiben …,
+messen …«, so dass eine Lehrkraft nach drei Sätzen weiß, worum es geht und
+was vorausgesetzt wird. Danach, meist als Tabelle: der Ablauf über die
+Stunden, was erfahrungsgemäß schiefgeht, was die Aufgaben genau prüfen, die
+Abgabe. Lernende sehen die Notiz nicht. `teacher_note_test.rb` prüft, dass es
+die Notiz gibt und ihr erster Absatz »Lernende« nennt.
 
 ## 6. Prüfen, bevor es live geht
 

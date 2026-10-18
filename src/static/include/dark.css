@@ -198,6 +198,13 @@ html[data-bs-theme="dark"] {
             }
         }
         @media (max-width: 767.999999px) {
+            /* the line between picture and text, which is light #eee otherwise */
+            .tutorial_card3 .card-content {
+                border-left: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            .tutorial_card3 {
+                border-color: #333;
+            }
             .card-content {
                 h4 {
                     border-bottom: none;

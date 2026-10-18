@@ -10,9 +10,15 @@
 <canvas id="map" tabindex="0" aria-label="Die Karte: Straßen und Wege, gezeichnet aus den Daten. Ziehen verschiebt sie, das Mausrad zoomt, ein Klick zeigt den Knoten dort."></canvas>
 <aside id="panel">
     <header>
-        <h1>Routenplaner</h1>
-        <p id="area">Lade die Karte …</p>
+        <div>
+            <h1>Routenplaner</h1>
+            <p id="area">Lade die Karte …</p>
+        </div>
+        <button type="button" id="collapse" aria-expanded="true" aria-controls="panel-body" title="Einklappen" aria-label="Einklappen">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 10 4-4 4 4"/></svg>
+        </button>
     </header>
+    <div id="panel-body">
     <div id="tabs" role="tablist" aria-label="Was geplant wird">
         <button type="button" role="tab" data-tab="route" aria-selected="true">Route</button>
         <button type="button" role="tab" data-tab="tour" aria-selected="false">Rundfahrt</button>
@@ -48,21 +54,37 @@
             </button>
         </label>
     </div>
-    <div class="segments" id="searches" role="group" aria-label="Wie gesucht wird">
+    <div class="option">
+    <span class="caption" id="searches-caption">Suche</span>
+    <div class="segments" id="searches" role="group" aria-labelledby="searches-caption">
         <button type="button" data-search="bfs" aria-pressed="true">Breitensuche</button>
         <button type="button" data-search="dijkstra" aria-pressed="false">Dijkstra</button>
         <button type="button" data-search="astar" aria-pressed="false">A*</button>
     </div>
-    <div class="segments" id="modes" role="group" aria-label="Wie gereist wird">
+    </div>
+    <div class="option">
+    <span class="caption" id="modes-caption">Unterwegs</span>
+    <div class="segments" id="modes" role="group" aria-labelledby="modes-caption">
         <button type="button" data-mode="length" aria-pressed="true" title="Der kürzeste Weg, in Metern">Strecke</button>
         <button type="button" data-mode="foot" aria-pressed="false" title="Der schnellste Weg zu Fuß">Zu Fuß</button>
         <button type="button" data-mode="bike" aria-pressed="false" title="Der schnellste Weg mit dem Rad">Rad</button>
         <button type="button" data-mode="car" aria-pressed="false" title="Der schnellste Weg mit dem Auto">Auto</button>
     </div>
-    <div class="segments" id="methods" data-for="tour" role="group" aria-label="Wie die Reihenfolge gefunden wird" hidden>
+    </div>
+    <div class="option" data-for="tour" hidden>
+    <span class="caption" id="methods-caption">Reihenfolge</span>
+    <div class="segments" id="methods" role="group" aria-labelledby="methods-caption">
         <button type="button" data-method="best" aria-pressed="false" title="best_tour: jede Reihenfolge ausprobieren">Alle</button>
         <button type="button" data-method="nearest" aria-pressed="true" title="nearest_tour: immer zum nächsten Ort">Nächster</button>
         <button type="button" data-method="improved" aria-pressed="false" title="improve_tour: den nächsten Nachbarn mit 2-opt verbessern">2-opt</button>
+    </div>
+    </div>
+    <div class="option">
+    <span class="caption" id="layers-caption">Ansicht</span>
+    <div class="segments" id="layers" role="group" aria-labelledby="layers-caption">
+        <button type="button" data-layer="map" aria-pressed="true" title="Die Karte mit ihren Straßen und Wegen">Karte</button>
+        <button type="button" data-layer="graph" aria-pressed="false" title="Der Graph aus build_graph: jeder Knoten ein Punkt, jede Kante eine Linie">Graph</button>
+    </div>
     </div>
     <p id="info">Wähle Start und Ziel oder klicke auf die Karte.</p>
     <div id="player" data-for="route" hidden>
@@ -92,14 +114,14 @@
         <input id="progress" type="range" min="0" max="0" value="0" step="1" aria-label="Wie weit die Suche ist">
         <p id="step"></p>
     </div>
-    <label id="graph-switch">
-        <input type="checkbox" id="graph-view">
-        <span>Graph zeigen: Knoten und Kanten aus <code>build_graph</code></span>
-    </label>
     <details id="legend">
-        <summary>Legende</summary>
+        <summary>
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 4 4 4-4 4"/></svg>
+            Was die Farben bedeuten
+        </summary>
         <ul></ul>
     </details>
+    </div>
 </aside>
 <div id="zoom" role="group" aria-label="Zoom">
     <button type="button" data-zoom="1.5" title="Vergrößern (+)" aria-label="Vergrößern">

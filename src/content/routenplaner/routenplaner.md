@@ -21,13 +21,6 @@ template_name: der Vorlage des Routenplaners
 Du baust einen Routenplaner wie den in deinem Handy, mit echten Karten von OpenStreetMap: Dein Programm macht aus den Straßen und Wegen von Berlin einen Graphen und findet darin den kürzesten Weg, von deiner Schule zum Botanischen Garten oder quer durch die Stadt zum Brandenburger Tor. Erst in Steglitz-Zehlendorf, dann in jedem anderen Bezirk und in ganz Berlin, wo der schnelle Weg auch eine schnelle Suche braucht.
 </p>
 
-<!--
-Noch in Arbeit (nur in der Entwicklung im Katalog): die Schritte 1 bis 5 stehen,
-bis Dijkstra, in Steglitz-Zehlendorf. Es fehlen die Prioritätswarteschlange, ganz Berlin mit A*, die
-Arten zu reisen und die Stadtrundfahrt. Die Vorlage entsteht in vorlage/;
-specht/routenplaner-starter übernimmt sie von dort.
--->
-
 ## Einrichten
 
 ### Repository klonen
@@ -158,12 +151,13 @@ Die Karte kommt von [OpenStreetMap](https://www.openstreetmap.org/), einer Karte
 residential		Schloßstraße	26735834 13.326700,52.456700 26735901 13.325300,52.457700 …
 ```
 
-| Teil | Bedeutung |
-| --- | --- |
-| Art | was für ein Weg: `residential` (Wohnstraße), `primary` (Hauptstraße), `footway` (Fußweg), `cycleway` (Radweg), `steps` (Treppe), … |
-| Einbahnstraße | `yes`, wenn man nur in Richtung der Punkte fahren darf, `-1` nur dagegen, sonst leer |
-| Name | der Name der Straße, oft leer |
-| Punkte | je eine ID und die Lage als Länge und Breite in Grad, mit Komma dazwischen |
+<table class='table'>
+<tr><th>Teil</th><th>Bedeutung</th></tr>
+<tr><td>Art</td><td>was für ein Weg: <code>residential</code> (Wohnstraße), <code>primary</code> (Hauptstraße), <code>footway</code> (Fußweg), <code>cycleway</code> (Radweg), <code>steps</code> (Treppe), …</td></tr>
+<tr><td>Einbahnstraße</td><td><code>yes</code>, wenn man nur in Richtung der Punkte fahren darf, <code>-1</code> nur dagegen, sonst leer</td></tr>
+<tr><td>Name</td><td>der Name der Straße, oft leer</td></tr>
+<tr><td>Punkte</td><td>je eine ID und die Lage als Länge und Breite in Grad, mit Komma dazwischen</td></tr>
+</table>
 
 Die ID macht den Punkt eindeutig: Zwei Wege mit derselben ID an einem Punkt sind an dieser Stelle verbunden. Länge und Breite sind die Koordinaten, wie in jeder Karten-App: Steglitz liegt bei 13,3 Grad östlicher Länge und 52,45 Grad nördlicher Breite.
 
@@ -247,7 +241,7 @@ Ein Routenplaner sucht nicht in Wegen, sondern in einem **Graphen**: Punkte, die
 
 _task(graph)
 
-Halte den Server mit <kbd>Strg</kbd><kbd>C</kbd> an und starte ihn neu. Er baut jetzt mit deinen Funktionen den Graphen von Steglitz-Zehlendorf. Schalte auf der Seite »Graph zeigen« ein: Über der blassen Karte siehst du, was `build_graph` gebaut hat, jeden Knoten als Punkt und jede Kante als Linie. Klicke auf eine Kreuzung: Die Seite zeigt den Knoten dort und seine Nachbarn.
+Halte den Server mit <kbd>Strg</kbd><kbd>C</kbd> an und starte ihn neu. Er baut jetzt mit deinen Funktionen den Graphen von Steglitz-Zehlendorf. Wähle auf der Seite unter »Ansicht« den »Graph«: Über der blassen Karte siehst du, was `build_graph` gebaut hat, jeden Knoten als Punkt und jede Kante als Linie. Klicke auf eine Kreuzung: Die Seite zeigt den Knoten dort und seine Nachbarn.
 
 <!-- tutorial-step
 # Die Lösung der ersten drei Schritte, der Server neu gestartet (im

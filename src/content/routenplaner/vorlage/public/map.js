@@ -409,19 +409,22 @@ function drawGraph(c) {
     c.fill();
 }
 
+let layer = 'map'; // map oder graph: was über der Karte liegt
 async function showGraph(on) {
-    const toggle = document.getElementById('graph-view');
+    layer = on ? 'graph' : 'map';
+    pressLayer?.(layer);
     if (!on) {
         graph = null;
         return draw();
     }
     const answer = await (await fetch('graph.json')).json();
     if (answer.missing) {
-        toggle.checked = false;
+        layer = 'map';
+        pressLayer?.(layer);
         info.textContent = `Für den Graphen fehlt noch ${answer.missing} in ${program()}.`;
         return;
     }
-    if (!toggle.checked) return;
+    if (layer !== 'graph') return;
     graph = answer;
     info.textContent = `Der Graph: ${NUMBER.format(graph.nodes.length / 2)} Knoten, ${NUMBER.format(graph.edges.length / 2)} Kanten`;
     draw();
@@ -903,7 +906,7 @@ function segments(id, attribute, current, changed) {
     return press;
 }
 
-let pressSearch, pressMode, pressMethod;
+let pressSearch, pressMode, pressMethod, pressLayer;
 function setUpSearches() {
     // Suche und Art zu reisen gelten für die Route und die Rundfahrt
     const again = () => (tab === 'route' ? findRoute() : findTour());
@@ -1293,7 +1296,7 @@ function save() {
     if (tab === 'tour') state.set('tab', 'tour');
     if (stops.length) state.set('stops', stops.map((p) => p.name).join('|'));
     if (method !== 'nearest') state.set('method', method);
-    if (document.getElementById('graph-view').checked) state.set('graph', '1');
+    if (layer === 'graph') state.set('graph', '1');
     if (!fitted) state.set('map', `${view.lon.toFixed(5)},${view.lat.toFixed(5)},${Math.round(view.scale)}`);
     if (route && player.manual) state.set('step', player.step);
     const hash = state.toString();
@@ -1322,7 +1325,6 @@ function restore() {
         player.step = Number(state.get('step')) || 0;
     }
     if (state.get('graph') === '1') {
-        document.getElementById('graph-view').checked = true;
         showGraph(true);
     }
     if (state.get('start')) choose('start', named(state.get('start')));
@@ -1378,10 +1380,16 @@ fetch('map.json').then((r) => r.json()).then((map) => {
     setUpPlaces();
     setUpSearches();
     setUpPlayer();
-    const toggle = document.getElementById('graph-view');
-    toggle.addEventListener('change', () => {
-        showGraph(toggle.checked);
+    pressLayer = segments('layers', 'layer', layer, (value) => {
+        showGraph(value === 'graph');
         saveSoon();
+    });
+    const panel = document.getElementById('panel');
+    document.getElementById('collapse').addEventListener('click', (e) => {
+        const open = panel.classList.toggle('collapsed') === false;
+        e.currentTarget.setAttribute('aria-expanded', open);
+        e.currentTarget.title = open ? 'Einklappen' : 'Aufklappen';
+        e.currentTarget.setAttribute('aria-label', e.currentTarget.title);
     });
     fitArea();
     restore();
