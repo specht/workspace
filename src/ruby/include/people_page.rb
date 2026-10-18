@@ -248,6 +248,47 @@ class Main < Sinatra::Base
         respond(:removed => email)
     end
 
+    # Teachers who were invited but never logged in (no account): school and
+    # the groups they teach with their number of teachers, so that the page
+    # can say which groups would be left without one. Administrators never.
+    UNUSED_TEACHER = <<~END_OF_CYPHER
+        NOT EXISTS { MATCH (:User {email: i.email}) } AND NOT i.email IN $admins
+        AND (coalesce(i.teacher, false) OR (i)-[:TEACHES]->(:Group) OR (i)-[:AT]->(:School))
+    END_OF_CYPHER
+
+    post '/api/people/unused_teachers' do
+        admin_only!
+        rows = neo4j_query(<<~END_OF_QUERY, :admins => ADMIN_USERS)
+            MATCH (i:Invitation) WHERE #{UNUSED_TEACHER}
+            OPTIONAL MATCH (i)-[:AT]->(s:School)
+            OPTIONAL MATCH (i)-[:TEACHES]->(g:Group)
+            OPTIONAL MATCH (t:Invitation)-[:TEACHES]->(g)
+            WITH i, s, g, collect(DISTINCT t.email) AS teachers
+            RETURN i.email AS email, i.name AS name, s.name AS school,
+                collect(CASE WHEN g IS NULL THEN NULL ELSE { name: g.name, teachers: teachers } END) AS groups
+            ORDER BY toLower(coalesce(i.name, i.email));
+        END_OF_QUERY
+        respond(:teachers => rows.map { |r| { :email => r['email'], :name => r['name'], :school => r['school'], :groups => r['groups'] } })
+    end
+
+    # Removes the invitations of teachers without an account entirely
+    # (school, teaching, memberships); confirmation: their number.
+    post '/api/people/remove_unused_teachers' do
+        admin_only!
+        data = parse_request_data(:required_keys => [:emails, :confirmation], :types => { :emails => Array }, :max_body_length => 64_000)
+        emails = data[:emails].map { |e| e.to_s.downcase }.uniq
+        halt 400, { :error => 'no_groups' }.to_json if emails.empty?
+        halt 409, { :error => 'count_changed' }.to_json unless data[:confirmation].to_s.strip == emails.size.to_s
+        removed = neo4j_query(<<~END_OF_QUERY, :emails => emails, :admins => ADMIN_USERS).first['n'].to_i
+            MATCH (i:Invitation) WHERE i.email IN $emails AND #{UNUSED_TEACHER}
+            DETACH DELETE i
+            RETURN count(*) AS n;
+        END_OF_QUERY
+        Main.note_roster_change!
+        STDERR.puts "Unused teacher invitations removed by #{my_email}: #{removed}"
+        respond(:removed => removed)
+    end
+
     # How many distinct people removing the unused invitations of these
     # groups would touch: the number the administrator confirms.
     post '/api/people/unused_count' do

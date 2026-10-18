@@ -177,6 +177,10 @@ hineinsieht, ist nicht betroffen.
   haben und wie viele ungeklärt sind. »Gäste anlegen« macht die Schule
   `guests` für Erwachsene von außerhalb (Nutzungsordnung); ihre Gruppen
   entstehen unter `/gruppen`.
+- Lehrkräfte ohne Konto (»Aufräumen«): eingeladene Lehrkräfte ohne Konto,
+  mit Schule und betreuten Gruppen (allein betreute hervorgehoben);
+  entfernen nimmt die ganze Einladung heraus (`/api/people/remove_unused_teachers`,
+  bestätigt mit der Zahl). Administration nie.
 - Einladungen ohne Konto: Gruppen mit Eingeladenen, zu deren Adresse es kein
   Konto gibt (etwa aus der Liste der ganzen Schule); Lehrkräfte zählen nie
   dazu. Ausgewählte Gruppen lassen sich davon leeren, bestätigt mit der Zahl

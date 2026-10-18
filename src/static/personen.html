@@ -122,6 +122,14 @@
             </p>
             <div id='unused_here'></div>
 
+            <h3 id='lehrkraefte-ohne-konto' class='h5 mt-4'>Lehrkräfte ohne Konto</h3>
+            <p>
+                Lehrkräfte, die eingeladen sind, sich aber nie angemeldet haben. Entfernen nimmt ihre Einladung ganz heraus: Schule,
+                betreute Gruppen, Mitgliedschaften. Ein Konto gibt es nicht, es wird also nichts gelöscht. Bleibt eine Gruppe danach ohne
+                Lehrkraft, sagt die Seite es vorher.
+            </p>
+            <div id='unused_teachers_here'></div>
+
             <h3 id='ohne-einladung' class='h5 mt-4'>Konten ohne Einladung</h3>
             <p>
                 Konten, deren Adresse in keiner Gruppe mehr steht: Sie werden nach den Löschregeln spätestens zum Ende des Schuljahres
@@ -591,11 +599,51 @@
         });
     }
 
+    function load_unused_teachers() {
+        people_call('/api/people/unused_teachers', {}, function (data) {
+            const here = $('#unused_teachers_here').empty();
+            if (!data.teachers.length) { here.append(`<p class='text-body-secondary'>Keine.</p>`); return; }
+            here.append(`<p>${data.teachers.length} ${data.teachers.length === 1 ? 'Lehrkraft' : 'Lehrkräfte'}.</p>`);
+            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th><input type='checkbox' class='form-check-input cb-teacher-all' aria-label='Alle auswählen'></th><th>Name und Adresse</th><th>Schule</th><th>Betreut</th></tr></thead><tbody></tbody></table>`);
+            data.teachers.forEach(function (t) {
+                const cb = $(`<input type='checkbox' class='form-check-input cb-teacher'>`).data('teacher', t).attr('aria-label', t.name || t.email);
+                // A group this teacher teaches alone is marked.
+                const groups = t.groups.map(g => g.teachers.length <= 1 ? `<span class='text-warning-emphasis' title='sonst keine Lehrkraft'>${esc(g.name)}</span>` : esc(g.name)).join(', ');
+                table.find('tbody').append($('<tr>').append($('<td>').append(cb),
+                    $('<td>').attr('data-sort', (t.name || t.email).toLowerCase()).append($('<span>').text(t.name || '–'), $("<span class='person-email'></span>").text(t.email)),
+                    $('<td>').text(t.school || '–'), $('<td>').attr('data-sort', t.groups.length).html(groups || "<span class='text-body-secondary'>keine Gruppe</span>")));
+            });
+            make_sortable(table);
+            table.find('.cb-teacher-all').on('change', function () { table.find('.cb-teacher').prop('checked', this.checked); });
+            const button = $(`<button type='button' class='btn btn-outline-danger'><i class='bi bi-person-dash'></i>Ausgewählte entfernen</button>`);
+            button.on('click', function () {
+                const chosen = table.find('.cb-teacher:checked').map(function () { return $(this).data('teacher'); }).get();
+                if (!chosen.length) return;
+                // Groups that would have no teacher left, counting all chosen together.
+                const gone = new Set(chosen.map(t => t.email));
+                const orphaned = [...new Set(chosen.flatMap(t => t.groups.filter(g => g.teachers.every(e => gone.has(e))).map(g => g.name)))];
+                showTemplateModal('Lehrkräfte ohne Konto entfernen', `<p>Die Einladungen von ${chosen.length} ${chosen.length === 1 ? 'Lehrkraft' : 'Lehrkräften'} werden ganz entfernt: Schule, betreute Gruppen, Mitgliedschaften. Ein Konto gibt es nicht.</p>`
+                    + (orphaned.length ? `<div class='alert alert-warning small'>Danach ohne Lehrkraft: ${orphaned.map(esc).join(', ')}. Du siehst diese Gruppen weiter unter <a href='/gruppen'>Gruppen</a> und kannst dort eine Lehrkraft dazunehmen oder sie löschen.</div>` : '')
+                    + `<label class='form-label' for='ti_teachers_confirm'>Zur Bestätigung die Zahl eingeben: <strong>${chosen.length}</strong></label><input id='ti_teachers_confirm' class='form-control' inputmode='numeric' autocomplete='off'>`,
+                    "<i class='bi bi-person-dash'></i>Entfernen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-outline-secondary', function () {
+                        people_call('/api/people/remove_unused_teachers', { emails: chosen.map(t => t.email), confirmation: $('#ti_teachers_confirm').val().trim() }, function (r) {
+                            $('#__template_modal').modal('hide');
+                            show_success_message(`${r.removed} ${r.removed === 1 ? 'Einladung' : 'Einladungen'} entfernt.`);
+                            load_all();
+                        });
+                        return false;
+                    });
+            });
+            here.append($("<div class='table-responsive'></div>").append(table), button);
+        });
+    }
+
     function load_all() {
         load_schools();
         setTimeout(load_teachers, 200);
         load_all_people();
         load_unused();
+        load_unused_teachers();
         load_uninvited();
     }
 

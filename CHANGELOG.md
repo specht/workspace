@@ -112,6 +112,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Datum eines schriftlichen Einverständnisses ein (Elternbrief mit
   Einverständniserklärung unter `/datenschutz`). Gesperrt wird ohne beides
   niemand; Gruppe und `/personen` zeigen, wie viele noch ungeklärt sind.
+- »Aufräumen« unter `/personen` hat jetzt auch »Lehrkräfte ohne Konto«:
+  Eingeladene Lehrkräfte, die sich nie angemeldet haben, lassen sich
+  gesammelt entfernen (Schule, betreute Gruppen, Mitgliedschaften),
+  bestätigt mit ihrer Zahl; die Seite sagt vorher, welche Gruppen danach
+  ohne Lehrkraft wären. Die Administration ist ausgenommen.
 - Gäste stimmen der Nutzungsordnung zu: Wer in einer Gruppe der Gäste
   steht (Workshops, Firmen, Ehemalige, die ihr Konto behalten), sieht bei der
   ersten Anmeldung eine Leiste mit der Nutzungsordnung und »Ich bin
