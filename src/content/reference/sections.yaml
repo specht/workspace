@@ -137,9 +137,10 @@
   label: Algorithmen und Datenstrukturen
   icon: /images/brain.png
   description: |
-    Wie Suchen in Graphen und Priority Queues arbeiten, Schritt für Schritt
-    zum Durchklicken und als Pseudocode: Breitensuche, Tiefensuche,
-    Dijkstra, A*, Rundreisen, Heap und Heapsort.
+    Wie Sortierverfahren, Suchen in Graphen und Datenstrukturen arbeiten,
+    Schritt für Schritt zum Durchklicken und als Pseudocode zum Übersetzen
+    in die eigene Sprache.
   entries:
+    - sortieren
     - graphen
     - heap

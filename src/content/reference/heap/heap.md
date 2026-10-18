@@ -32,7 +32,7 @@ Wie sie das macht, ist erst einmal egal. Die einfachste Art, eine Liste, in der 
 <tbody>
 <tr><td>unsortierte Liste</td><td>schnell</td><td>alle ansehen</td><td>eine Million Vergleiche je <code>pop</code></td></tr>
 <tr><td>sortierte Liste</td><td>verschieben</td><td>schnell</td><td>bis zu einer Million Verschiebungen je <code>push</code></td></tr>
-<tr><td>binärer Heap</td><td>\\(\log_2 n\\) Schritte</td><td>\\(\log_2 n\\) Schritte</td><td>etwa 20 Schritte</td></tr>
+<tr><td>binärer Heap</td><td>\(\log_2 n\) Schritte</td><td>\(\log_2 n\) Schritte</td><td>etwa 20 Schritte</td></tr>
 </tbody>
 </table>
 </div>

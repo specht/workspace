@@ -37,6 +37,7 @@ Repository arbeitet, liest sie also ohnehin.
 | Tabellen sind HTML (`<table class='table'>`), `</table>` und `</div>` auf eigener Zeile | Die Seite kennt keine Markdown-Tabellen | `no_pipe_tables_test.rb` |
 | Haken sind Bootstrap-Icons, keine Unicode-Zeichen | Sie passen zu den anderen Icons und jeder Schrift | `no_check_marks_test.rb` |
 | Formeln mit `\\(`…`\\)` und `$$`…`$$`, `\_` für Unterstriche | Markdown frisst sonst Backslashes und Unterstriche | Lesen |
+| In HTML-Tabellen nur ein Backslash: `\(`…`\)` | HTML geht nicht durch Markdown, sonst steht `\\(n^2\\)` auf der Seite | `formula_escaping_test.rb` |
 
 ## Sprache und Code
 

@@ -27,6 +27,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   und den Vorgängern daneben (`algo_stepper.js`, mit ← und →). Der
   Routenplaner verweist an jeder Stelle darauf, die Sorting Sandbox und die
   Data Structures Sandbox auf den Heap.
+- Handbuch »Sortieren«: Selection, Insertion, Bubble, Merge und Quick Sort
+  als Pseudocode und zum Durchklicken an denselben acht Zahlen, mit
+  mitgezählten Vergleichen und Schreibzugriffen, typischen Fehlern und einer
+  Tabelle, wie viele Vergleiche jedes Verfahren für 100 zufällige, sortierte
+  und umgekehrt sortierte Zahlen braucht. Die Sorting Sandbox verweist
+  darauf.
 - `docs/checkliste.md` sammelt alle Regeln für Aktivitäten an einem Ort, mit
   dem Grund und damit, ob ein Test sie prüft, dazu eine Bitte, mit der man
   ein Sprachmodell eine Aktivität prüfen lässt.

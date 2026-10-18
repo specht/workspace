@@ -3,8 +3,10 @@
 //
 //   <div class='algo-stepper' data-algo='dijkstra' data-graph='stadt' data-start='A' data-goal='H'></div>
 //   <div class='algo-stepper' data-algo='heap' data-ops='push 5, push 3, push 8, pop'></div>
+//   <div class='algo-stepper' data-algo='sort' data-sort='insertion' data-values='5, 2, 8, 1'></div>
 //
-// algo: bfs, dfs, dijkstra, astar (on a graph from GRAPHS), heap. The widget
+// algo: bfs, dfs, dijkstra, astar (on a graph from GRAPHS), heap, sort
+// (selection, insertion, bubble, merge, quick). The widget
 // computes every step at once and shows one at a time; its buttons carry
 // data-go like the other steppers, so stepper_keys.js steps it with ← and →.
 (function () {
@@ -358,13 +360,496 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         svg.setAttribute('viewBox', `0 0 ${width} ${top + 52}`);
     }
 
+    // Sorting: every comparison and every write is a step, counted like the
+    // Sorting Sandbox counts them. sorted: indices already in their place.
+    function traceSort(values, kind) {
+        const a = [...values];
+        const frames = [];
+        let comparisons = 0;
+        let writes = 0;
+        const snapshot = (message, marks = {}) => frames.push({ items: [...a], message, comparisons, writes, ...marks });
+        const less = (i, j) => { comparisons += 1; return a[i] < a[j]; };
+        const swap = (i, j) => { [a[i], a[j]] = [a[j], a[i]]; writes += 2; };
+        const n = a.length;
+        snapshot(`${n} Zahlen, unsortiert.`);
+        if (kind === 'selection') {
+            for (let i = 0; i < n - 1; i++) {
+                let min = i;
+                for (let j = i + 1; j < n; j++) {
+                    const smaller = less(j, min);
+                    snapshot(`Kleinste ab Index ${i} gesucht: ${a[j]} ${smaller ? 'ist kleiner als' : 'ist nicht kleiner als'} ${a[min]}.`, { compare: [j, min], sortedTo: i, mark: [min] });
+                    if (smaller) min = j;
+                }
+                if (min !== i) swap(i, min);
+                snapshot(min !== i ? `Die kleinste, ${a[i]}, tauscht mit Index ${i}. Bis Index ${i} ist alles fertig.` : `${a[i]} steht schon richtig. Bis Index ${i} ist alles fertig.`, { sortedTo: i + 1, mark: [i] });
+            }
+        } else if (kind === 'insertion') {
+            for (let i = 1; i < n; i++) {
+                const current = a[i];
+                let j = i;
+                snapshot(`${current} (Index ${i}) wird einsortiert, links davon ist alles sortiert.`, { lifted: i, sortedTo: i });
+                while (j > 0) {
+                    comparisons += 1;
+                    if (!(a[j - 1] > current)) {
+                        snapshot(`${a[j - 1]} ist nicht größer als ${current}: Hier ist sein Platz.`, { compare: [j - 1], lifted: j, sortedTo: i });
+                        break;
+                    }
+                    a[j] = a[j - 1];
+                    writes += 1;
+                    a[j - 1] = current;
+                    snapshot(`${a[j]} ist größer als ${current} und rückt eins nach rechts.`, { compare: [j], lifted: j - 1, sortedTo: i });
+                    j -= 1;
+                }
+                a[j] = current;
+                writes += 1;
+                snapshot(`${current} steht an Index ${j}. Bis Index ${i} ist alles sortiert.`, { mark: [j], sortedTo: i + 1 });
+            }
+        } else if (kind === 'bubble') {
+            for (let end = n - 1; end > 0; end--) {
+                let swapped = false;
+                for (let i = 0; i < end; i++) {
+                    const bigger = less(i + 1, i);
+                    if (bigger) { swap(i, i + 1); swapped = true; }
+                    snapshot(bigger ? `${a[i + 1]} ist größer als ${a[i]}: tauschen.` : `${a[i]} und ${a[i + 1]} stehen richtig herum.`, { compare: [i, i + 1], sortedFrom: end + 1 });
+                }
+                snapshot(`Ein Durchgang: Die größte bis hier, ${a[end]}, ist ganz nach rechts gewandert.`, { sortedFrom: end, mark: [end] });
+                if (!swapped) {
+                    snapshot('In diesem Durchgang wurde nichts getauscht: Alles ist sortiert.', { sortedFrom: 0 });
+                    break;
+                }
+            }
+        } else if (kind === 'merge') {
+            const scratch = Array(n).fill(null);
+            const sort = (lo, hi) => {
+                if (hi - lo < 2) return;
+                const mid = Math.floor((lo + hi) / 2);
+                sort(lo, mid);
+                sort(mid, hi);
+                snapshot(`Die beiden sortierten Hälften ${lo}–${mid - 1} und ${mid}–${hi - 1} werden zusammengeführt.`, { range: [lo, hi], split: mid });
+                let i = lo;
+                let j = mid;
+                for (let k = lo; k < hi; k++) {
+                    let take;
+                    if (i < mid && j < hi) {
+                        comparisons += 1;
+                        take = a[i] <= a[j] ? i++ : j++;
+                    } else take = i < mid ? i++ : j++;
+                    scratch[k] = a[take];
+                    writes += 1;
+                    snapshot(`Die kleinere der beiden vordersten, ${a[take]}, kommt in den Zwischenspeicher an Index ${k}.`, { range: [lo, hi], split: mid, compare: [take], scratch: [...scratch] });
+                }
+                for (let k = lo; k < hi; k++) { a[k] = scratch[k]; writes += 1; }
+                scratch.fill(null, lo, hi);
+                snapshot(`${lo}–${hi - 1} ist sortiert und steht wieder in der Liste.`, { range: [lo, hi], mark: Array.from({ length: hi - lo }, (_, k) => lo + k) });
+            };
+            sort(0, n);
+        } else if (kind === 'quick') {
+            const sort = (lo, hi) => {
+                if (hi - lo < 1) return;
+                const pivot = a[hi];
+                snapshot(`Bereich ${lo}–${hi}: Das Pivot ist der letzte, ${pivot}.`, { range: [lo, hi + 1], pivot: hi });
+                let store = lo;
+                for (let i = lo; i < hi; i++) {
+                    comparisons += 1;
+                    const small = a[i] < pivot;
+                    if (small) {
+                        if (i !== store) swap(i, store);
+                        store += 1;
+                    }
+                    snapshot(small ? `${a[store - 1]} ist kleiner als ${pivot} und kommt nach links (vor Index ${store}).` : `${a[i]} ist nicht kleiner als ${pivot} und bleibt rechts.`, { range: [lo, hi + 1], pivot: hi, compare: [i], boundary: store });
+                }
+                swap(store, hi);
+                snapshot(`Das Pivot ${pivot} kommt an Index ${store}: Links stehen die kleineren, rechts die anderen. ${pivot} ist an seinem Platz.`, { range: [lo, hi + 1], mark: [store] });
+                sort(lo, store - 1);
+                sort(store + 1, hi);
+            };
+            sort(0, n - 1);
+        }
+        snapshot(`Fertig: ${comparisons} Vergleiche, ${writes} Schreibzugriffe.`, { sortedTo: n });
+        return frames;
+    }
+
+    function drawSort(svg, frame) {
+        svg.replaceChildren();
+        const n = frame.items.length;
+        const most = Math.max(...frame.items);
+        const width = 520;
+        const cell = width / n;
+        const height = 200;
+        const compare = new Set(frame.compare || []);
+        const mark = new Set(frame.mark || []);
+        const inRange = (i) => !frame.range || (i >= frame.range[0] && i < frame.range[1]);
+        const isSorted = (i) => (frame.sortedTo !== undefined && i < frame.sortedTo) || (frame.sortedFrom !== undefined && i >= frame.sortedFrom);
+        frame.items.forEach((value, i) => {
+            const h = 20 + (value / most) * (height - 40);
+            const x = i * cell + 4;
+            const lifted = frame.lifted === i;
+            const y = height - h - (lifted ? 18 : 0);
+            const fill = frame.pivot === i ? 'var(--algo-goal)' : mark.has(i) || lifted ? 'var(--algo-accent)' : compare.has(i) ? 'var(--algo-frontier)'
+                : isSorted(i) ? 'var(--algo-done)' : 'color-mix(in srgb, var(--algo-line) 60%, transparent)';
+            svg.appendChild(el('svg:rect', { x, y, width: cell - 8, height: h, rx: 4, fill, opacity: inRange(i) ? 1 : 0.35,
+                stroke: compare.has(i) ? 'var(--algo-ink)' : 'none', 'stroke-width': 2 }));
+            svg.appendChild(el('svg:text', { x: x + (cell - 8) / 2, y: y - 6, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(value) }));
+            svg.appendChild(el('svg:text', { x: x + (cell - 8) / 2, y: height + 16, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: String(i) }));
+        });
+        if (frame.split !== undefined) {
+            const x = frame.split * cell;
+            svg.appendChild(el('svg:line', { x1: x, y1: 0, x2: x, y2: height, stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '5 4' }));
+        }
+        if (frame.boundary !== undefined) {
+            const x = frame.boundary * cell;
+            svg.appendChild(el('svg:line', { x1: x, y1: 0, x2: x, y2: height, stroke: 'var(--algo-goal)', 'stroke-width': 2, 'stroke-dasharray': '5 4' }));
+        }
+        let bottom = height + 24;
+        if (frame.scratch) {
+            frame.scratch.forEach((value, i) => {
+                const x = i * cell + 4;
+                svg.appendChild(el('svg:rect', { x, y: bottom + 6, width: cell - 8, height: 28, rx: 4, fill: value === null ? 'none' : 'var(--algo-frontier)', stroke: 'var(--algo-line)', 'stroke-width': 1.5 }));
+                if (value !== null) svg.appendChild(el('svg:text', { x: x + (cell - 8) / 2, y: bottom + 25, 'text-anchor': 'middle', 'font-size': 13, fill: 'var(--algo-ink)', text: String(value) }));
+            });
+            svg.appendChild(el('svg:text', { x: 0, y: bottom + 50, 'font-size': 11, fill: 'var(--bs-secondary-color)', text: 'Zwischenspeicher' }));
+            bottom += 56;
+        }
+        svg.setAttribute('viewBox', `0 0 ${width} ${frame.scratchSpace ? height + 80 : bottom}`);
+    }
+
+    // ---- Queue as a ring buffer: head, size, capacity; the next free cell
+    // is (head + size) mod capacity.
+    function traceRing(ops, capacity) {
+        const cells = Array(capacity).fill(null);
+        let head = 0;
+        let size = 0;
+        const frames = [];
+        const snapshot = (message, marks = {}) => frames.push({ cells: [...cells], head, size, capacity, message, ...marks });
+        snapshot(`Eine leere Queue in einem Array mit ${capacity} Zellen: head = 0, size = 0.`);
+        for (const op of ops) {
+            if (op.type === 'enqueue') {
+                if (size === capacity) { snapshot(`enqueue ${op.value}: Alle ${capacity} Zellen sind belegt, die Queue ist voll.`, { error: true }); continue; }
+                const at = (head + size) % capacity;
+                cells[at] = op.value;
+                size += 1;
+                snapshot(`enqueue ${op.value}: in die Zelle (head + size) mod ${capacity} = (${head} + ${size - 1}) mod ${capacity} = ${at}. size wird ${size}.`, { focus: at });
+            } else {
+                if (size === 0) { snapshot('dequeue: Die Queue ist leer.', { error: true }); continue; }
+                const value = cells[head];
+                cells[head] = null;
+                const old = head;
+                head = (head + 1) % capacity;
+                size -= 1;
+                snapshot(`dequeue: ${value} aus Zelle head = ${old}. head wird (${old} + 1) mod ${capacity} = ${head}, size ${size}.`, { out: value, focus: old });
+            }
+        }
+        return frames;
+    }
+
+    function drawRing(svg, frame) {
+        svg.replaceChildren();
+        const cell = 56;
+        const left = 20;
+        frame.cells.forEach((value, i) => {
+            const x = left + i * cell;
+            svg.appendChild(el('svg:rect', { x, y: 50, width: cell - 6, height: 44, rx: 6, fill: value === null ? 'var(--algo-paper)' : 'var(--algo-frontier)', stroke: frame.focus === i ? 'var(--algo-accent)' : 'var(--algo-line)', 'stroke-width': frame.focus === i ? 3.5 : 1.5 }));
+            if (value !== null) svg.appendChild(el('svg:text', { x: x + (cell - 6) / 2, y: 78, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(value) }));
+            svg.appendChild(el('svg:text', { x: x + (cell - 6) / 2, y: 110, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--bs-secondary-color)', text: String(i) }));
+        });
+        const arrow = (i, label, y, up) => {
+            const x = left + i * cell + (cell - 6) / 2;
+            svg.appendChild(el('svg:text', { x, y: up ? y : y + 12, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 600, fill: 'var(--algo-accent)', text: label }));
+            svg.appendChild(el('svg:path', { d: up ? `M${x} ${y + 4} l0 12 m-5 -5 l5 5 l5 -5` : `M${x} ${y - 4} l0 -12 m-5 5 l5 -5 l5 5`, stroke: 'var(--algo-accent)', 'stroke-width': 2, fill: 'none' }));
+        };
+        arrow(frame.head, 'head', 26, true);
+        arrow((frame.head + frame.size) % frame.capacity, frame.size === frame.capacity ? 'voll' : 'nächste frei', 132, false);
+        svg.setAttribute('viewBox', `0 0 ${left * 2 + frame.capacity * cell} 150`);
+    }
+
+    // ---- Linked List: nodes with value and next; get, insert and remove walk
+    // from head to the node before the index.
+    function traceLinked(ops) {
+        let nodes = [];
+        const frames = [];
+        const snapshot = (message, marks = {}) => frames.push({ nodes: nodes.map((n) => ({ ...n })), message, ...marks });
+        snapshot('Eine leere Linked List: head zeigt auf keinen Knoten.');
+        for (const op of ops) {
+            const { type, index, value } = op;
+            if (type === 'insert') {
+                if (index < 0 || index > nodes.length) { snapshot(`insert(${index}, ${value}): Index ${index} gibt es nicht.`, { error: true }); continue; }
+                if (index === 0) {
+                    nodes.unshift({ value, fresh: true });
+                    snapshot(`insert(0, ${value}): ein neuer Knoten, sein next zeigt auf den alten ersten, und head zeigt auf ihn. Nichts muss laufen.`, { focus: 0 });
+                } else {
+                    for (let i = 0; i < index; i++) snapshot(`insert(${index}, ${value}): Laufen zum Knoten vor Index ${index}, gerade bei Index ${i}.`, { walk: i });
+                    nodes.splice(index, 0, { value, fresh: true });
+                    snapshot(`Der neue Knoten zeigt auf den, der bisher an Index ${index} war, und der Knoten davor zeigt jetzt auf ihn: zwei Referenzen umgebogen, nichts verschoben.`, { focus: index, walk: index - 1 });
+                }
+                nodes.forEach((n) => delete n.fresh);
+            } else if (type === 'remove') {
+                if (index < 0 || index >= nodes.length) { snapshot(`remove(${index}): Index ${index} gibt es nicht.`, { error: true }); continue; }
+                for (let i = 0; i < index; i++) snapshot(`remove(${index}): Laufen zum Knoten vor Index ${index}, gerade bei Index ${i}.`, { walk: i });
+                const gone = nodes[index].value;
+                snapshot(index === 0 ? `remove(0): head zeigt jetzt auf den zweiten Knoten; ${gone} hängt an nichts mehr.` : `Der Knoten davor zeigt jetzt am Knoten mit ${gone} vorbei auf den nächsten.`, { focus: index, gone: index, walk: index - 1 });
+                nodes.splice(index, 1);
+                snapshot(`${gone} ist weg.`);
+            } else if (type === 'get') {
+                if (index < 0 || index >= nodes.length) { snapshot(`get(${index}): Index ${index} gibt es nicht.`, { error: true }); continue; }
+                for (let i = 0; i <= index; i++) snapshot(i < index ? `get(${index}): bei Index ${i}, weiter mit next.` : `get(${index}): ${nodes[i].value}. Dafür ist die Suche ${index} Knoten weit gelaufen.`, { walk: i, focus: i === index ? i : undefined });
+            }
+        }
+        return frames;
+    }
+
+    function drawLinked(svg, frame, most) {
+        svg.replaceChildren();
+        const box = 64;
+        const gap = 34;
+        const top = 50;
+        const x0 = 70;
+        svg.appendChild(el('svg:text', { x: 8, y: top + 26, 'font-size': 13, 'font-weight': 600, fill: 'var(--algo-ink)', text: 'head' }));
+        const headTarget = frame.nodes.length ? x0 : null;
+        if (headTarget !== null) svg.appendChild(el('svg:path', { d: `M46 ${top + 22} L${x0 - 4} ${top + 22} m-6 -5 l6 5 l-6 5`, stroke: 'var(--algo-ink)', 'stroke-width': 2, fill: 'none' }));
+        else svg.appendChild(el('svg:text', { x: 50, y: top + 26, 'font-size': 13, fill: 'var(--bs-secondary-color)', text: '→ nichts' }));
+        frame.nodes.forEach((node, i) => {
+            const x = x0 + i * (box + gap);
+            const fill = frame.gone === i ? 'color-mix(in srgb, var(--algo-goal) 30%, transparent)' : frame.focus === i ? 'var(--algo-frontier)' : 'var(--algo-paper)';
+            svg.appendChild(el('svg:rect', { x, y: top, width: box, height: 44, rx: 6, fill, stroke: frame.walk === i ? 'var(--algo-accent)' : 'var(--algo-ink)', 'stroke-width': frame.walk === i ? 3.5 : 1.5 }));
+            svg.appendChild(el('svg:line', { x1: x + box * 0.62, y1: top, x2: x + box * 0.62, y2: top + 44, stroke: 'var(--algo-line)', 'stroke-width': 1.5 }));
+            svg.appendChild(el('svg:text', { x: x + box * 0.31, y: top + 28, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(node.value) }));
+            svg.appendChild(el('svg:text', { x: x + box * 0.31, y: top + 62, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--bs-secondary-color)', text: String(i) }));
+            const nx = x + box * 0.81;
+            if (i < frame.nodes.length - 1) {
+                const skip = frame.gone === i + 1 && i + 2 < frame.nodes.length;
+                if (skip) {
+                    const tx = x0 + (i + 2) * (box + gap);
+                    svg.appendChild(el('svg:path', { d: `M${nx} ${top + 10} C ${nx + 40} ${top - 40}, ${tx - 40} ${top - 40}, ${tx - 2} ${top + 8}`, stroke: 'var(--algo-accent)', 'stroke-width': 2, fill: 'none' }));
+                } else {
+                    svg.appendChild(el('svg:path', { d: `M${nx} ${top + 22} L${x + box + gap - 4} ${top + 22} m-6 -5 l6 5 l-6 5`, stroke: 'var(--algo-ink)', 'stroke-width': 2, fill: 'none' }));
+                }
+            } else {
+                svg.appendChild(el('svg:text', { x: nx, y: top + 27, 'text-anchor': 'middle', 'font-size': 13, fill: 'var(--bs-secondary-color)', text: '∅' }));
+            }
+        });
+        svg.setAttribute('viewBox', `0 0 ${x0 + Math.max(most, 1) * (box + gap) + 10} ${top + 80}`);
+    }
+
+    // ---- Search trees: a binary search tree, optionally AVL (heights and
+    // rotations after every insert). Nodes are { value, left, right, height }.
+    function traceTree(ops, avl) {
+        let root = null;
+        const frames = [];
+        const height = (n) => (n ? n.height : 0);
+        const update = (n) => { n.height = 1 + Math.max(height(n.left), height(n.right)); };
+        const copy = (n) => (n ? { value: n.value, height: n.height, left: copy(n.left), right: copy(n.right) } : null);
+        const snapshot = (message, marks = {}) => frames.push({ root: copy(root), message, avl, ...marks });
+        const rotateRight = (y) => { const x = y.left; y.left = x.right; x.right = y; update(y); update(x); return x; };
+        const rotateLeft = (x) => { const y = x.right; x.right = y.left; y.left = x; update(x); update(y); return y; };
+        snapshot(avl ? 'Ein leerer AVL-Baum.' : 'Ein leerer Suchbaum.');
+        const insert = (node, value, path) => {
+            if (!node) return { value, left: null, right: null, height: 1 };
+            path.push(node.value);
+            if (value === node.value) return node;
+            if (value < node.value) node.left = insert(node.left, value, path);
+            else node.right = insert(node.right, value, path);
+            update(node);
+            if (!avl) return node;
+            const balance = height(node.left) - height(node.right);
+            if (balance > 1 || balance < -1) {
+                const heavyLeft = balance > 1;
+                const child = heavyLeft ? node.left : node.right;
+                const outer = heavyLeft ? value < child.value : value > child.value;
+                const kind = heavyLeft ? (outer ? 'LL' : 'LR') : (outer ? 'RR' : 'RL');
+                pending.push({ at: node.value, kind, balance });
+                if (kind === 'LL') return rotateRight(node);
+                if (kind === 'RR') return rotateLeft(node);
+                if (kind === 'LR') { node.left = rotateLeft(node.left); return rotateRight(node); }
+                node.right = rotateRight(node.right); return rotateLeft(node);
+            }
+            return node;
+        };
+        let pending = [];
+        for (const op of ops) {
+            if (op.type !== 'insert') continue;
+            const path = [];
+            // the way down first, step by step
+            let walk = root;
+            while (walk) {
+                const dir = op.value < walk.value ? 'links' : op.value > walk.value ? 'rechts' : null;
+                snapshot(dir ? `insert ${op.value}: ${op.value} ${dir === 'links' ? '<' : '>'} ${walk.value}, also nach ${dir}.` : `insert ${op.value}: ${op.value} ist schon da.`, { focus: walk.value });
+                if (!dir) break;
+                walk = dir === 'links' ? walk.left : walk.right;
+            }
+            pending = [];
+            const before = copy(root);
+            root = insert(root, op.value, path);
+            if (pending.length) {
+                const r = pending[pending.length - 1];
+                frames.push({ root: before ? (() => { const t = copy(root); return t; })() : null, message: '', avl });
+                frames.pop();
+                // show the unbalanced tree, then the rotated one
+                const unbalanced = (() => { const t = copy(before); const add = (n) => { if (!n) return { value: op.value, left: null, right: null, height: 1 }; if (op.value < n.value) n.left = add(n.left); else n.right = add(n.right); n.height = 1 + Math.max(height(n.left), height(n.right)); return n; }; return add(t); })();
+                frames.push({ root: unbalanced, message: `${op.value} hängt jetzt unten. Beim Knoten ${r.at} unterscheiden sich die Höhen der Teilbäume um ${Math.abs(r.balance)}: zu viel. Das ist der Fall ${r.kind}.`, avl, focus: r.at, fresh: op.value });
+                const how = { LL: `eine Rotation nach rechts um ${r.at}`, RR: `eine Rotation nach links um ${r.at}`, LR: `erst eine Rotation nach links um das linke Kind, dann nach rechts um ${r.at}`, RL: `erst eine Rotation nach rechts um das rechte Kind, dann nach links um ${r.at}` }[r.kind];
+                snapshot(`Fall ${r.kind}: ${how}. Danach ist der Baum wieder ausgeglichen, und die Suchregel gilt immer noch.`, { fresh: op.value });
+            } else {
+                snapshot(`${op.value} kommt dorthin, wo die Suche ins Leere gelaufen ist.`, { fresh: op.value });
+            }
+        }
+        return frames;
+    }
+
+    function drawTree(svg, frame) {
+        svg.replaceChildren();
+        const placed = [];
+        let column = 0;
+        const place = (n, depth) => {
+            if (!n) return;
+            place(n.left, depth + 1);
+            placed.push({ node: n, x: column++, depth });
+            place(n.right, depth + 1);
+        };
+        place(frame.root, 0);
+        const at = new Map(placed.map((p) => [p.node.value, p]));
+        const cols = Math.max(placed.length, 1);
+        const depth = Math.max(0, ...placed.map((p) => p.depth)) + 1;
+        const width = Math.max(320, cols * 52);
+        const sx = (x) => (x + 0.5) * (width / cols);
+        const sy = (d) => 34 + d * 64;
+        const edges = (n) => {
+            if (!n) return;
+            for (const child of [n.left, n.right]) {
+                if (!child) continue;
+                const a = at.get(n.value); const b = at.get(child.value);
+                svg.appendChild(el('svg:line', { x1: sx(a.x), y1: sy(a.depth), x2: sx(b.x), y2: sy(b.depth), stroke: 'var(--algo-line)', 'stroke-width': 2 }));
+                edges(child);
+            }
+        };
+        edges(frame.root);
+        for (const { node, x, depth: d } of placed) {
+            const fill = frame.fresh === node.value ? 'var(--algo-frontier)' : 'var(--algo-paper)';
+            if (frame.focus === node.value) svg.appendChild(el('svg:circle', { cx: sx(x), cy: sy(d), r: 23, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 3 }));
+            svg.appendChild(el('svg:circle', { cx: sx(x), cy: sy(d), r: 18, fill, stroke: 'var(--algo-ink)', 'stroke-width': 1.5 }));
+            svg.appendChild(el('svg:text', { x: sx(x), y: sy(d) + 5, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(node.value) }));
+            if (frame.avl) svg.appendChild(el('svg:text', { x: sx(x) + 20, y: sy(d) - 15, 'font-size': 10, fill: 'var(--bs-secondary-color)', text: `h${node.height}` }));
+        }
+        svg.setAttribute('viewBox', `0 0 ${width} ${Math.max(140, 20 + depth * 64)}`);
+    }
+
+    // ---- Hash Table with 8 buckets, h(k) = k mod 8: chaining (a list per
+    // bucket) or linear probing (the next free bucket).
+    function traceHash(ops, mode, size) {
+        const table = Array.from({ length: size }, () => (mode === 'chain' ? [] : null));
+        const frames = [];
+        const count = () => (mode === 'chain' ? table.reduce((s, b) => s + b.length, 0) : table.filter((x) => x !== null).length);
+        const snapshot = (message, marks = {}) => frames.push({ table: table.map((b) => (Array.isArray(b) ? [...b] : b)), mode, message, load: count() / size, ...marks });
+        snapshot(`Eine leere Hash Table mit ${size} Buckets. Der Hash eines Schlüssels k ist k mod ${size}.`);
+        for (const op of ops) {
+            const k = op.value;
+            const h = ((k % size) + size) % size;
+            if (op.type === 'insert') {
+                if (mode === 'chain') {
+                    table[h].push(k);
+                    snapshot(`insert ${k}: ${k} mod ${size} = ${h}.${table[h].length > 1 ? ` Bucket ${h} ist schon belegt, eine Kollision: ${k} kommt hinten an seine Liste.` : ` ${k} kommt in Bucket ${h}.`}`, { focus: h, probe: [h] });
+                } else {
+                    const probe = [];
+                    let i = h;
+                    while (table[i] !== null && probe.length < size) { probe.push(i); snapshot(`insert ${k}: ${k} mod ${size} = ${h}. Bucket ${i} ist belegt, weiter zum nächsten.`, { probe: [...probe] }); i = (i + 1) % size; }
+                    if (probe.length === size) { snapshot(`insert ${k}: Alle Buckets sind belegt.`, { error: true }); continue; }
+                    table[i] = k;
+                    probe.push(i);
+                    snapshot(`insert ${k}: ${i === h ? `${k} mod ${size} = ${h}, frei.` : `Bucket ${i} ist frei.`} ${k} kommt in Bucket ${i}.`, { probe, focus: i });
+                }
+            } else if (op.type === 'find') {
+                if (mode === 'chain') {
+                    const found = table[h].includes(k);
+                    snapshot(`find ${k}: nur Bucket ${h} ansehen. ${found ? `${k} steht in seiner Liste.` : `${k} steht nicht darin, also nirgends.`}`, { focus: h, probe: [h] });
+                } else {
+                    const probe = [];
+                    let i = h;
+                    while (table[i] !== null && table[i] !== k && probe.length < size) { probe.push(i); i = (i + 1) % size; }
+                    probe.push(i);
+                    snapshot(`find ${k}: ab Bucket ${h} suchen, bis ${k} kommt oder ein leerer Bucket. ${table[i] === k ? `Gefunden in Bucket ${i}, nach ${probe.length} Buckets.` : `Bucket ${i} ist leer: ${k} ist nicht da.`}`, { probe, focus: i });
+                }
+            }
+        }
+        return frames;
+    }
+
+    function drawHash(svg, frame) {
+        svg.replaceChildren();
+        const size = frame.table.length;
+        const rowH = 38;
+        const probe = frame.probe || [];
+        frame.table.forEach((bucket, i) => {
+            const y = 10 + i * rowH;
+            const inProbe = probe.includes(i);
+            svg.appendChild(el('svg:text', { x: 8, y: y + 23, 'font-size': 12, fill: 'var(--bs-secondary-color)', text: String(i) }));
+            svg.appendChild(el('svg:rect', { x: 30, y, width: 60, height: rowH - 6, rx: 5, fill: frame.focus === i ? 'var(--algo-frontier)' : inProbe ? 'color-mix(in srgb, var(--algo-accent) 18%, transparent)' : 'var(--algo-paper)', stroke: inProbe ? 'var(--algo-accent)' : 'var(--algo-line)', 'stroke-width': inProbe ? 2.5 : 1.5 }));
+            if (frame.mode === 'chain') {
+                bucket.forEach((k, j) => {
+                    const x = 110 + j * 70;
+                    svg.appendChild(el('svg:path', { d: `M${x - (j ? 14 : 20)} ${y + 16} l${j ? 10 : 16} 0 m-5 -4 l5 4 l-5 4`, stroke: 'var(--algo-ink)', 'stroke-width': 1.5, fill: 'none' }));
+                    svg.appendChild(el('svg:rect', { x, y: y + 2, width: 50, height: rowH - 10, rx: 5, fill: 'var(--algo-paper)', stroke: 'var(--algo-ink)', 'stroke-width': 1.5 }));
+                    svg.appendChild(el('svg:text', { x: x + 25, y: y + 21, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(k) }));
+                });
+            } else if (bucket !== null) {
+                svg.appendChild(el('svg:text', { x: 60, y: y + 22, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(bucket) }));
+            }
+        });
+        svg.setAttribute('viewBox', `0 0 ${frame.mode === 'chain' ? 420 : 200} ${20 + size * rowH}`);
+    }
+
     function setUp(widget) {
         const algo = widget.dataset.algo;
         let frames;
         let draw;
         const svg = el('svg:svg', { class: 'algo-picture', role: 'img' });
         const side = el('div', { class: 'algo-side' });
-        if (algo === 'heap') {
+        const parseOps = (text) => text.split(',').map((t) => t.trim()).filter(Boolean).map((t) => {
+            const m = t.match(/^(\w+)\s*\(?\s*(-?\d+)?\s*,?\s*(-?\d+)?\s*\)?$/);
+            const [, type, first, second] = m || [];
+            return second !== undefined ? { type, index: Number(first), value: Number(second) } : { type, value: Number(first), index: Number(first) };
+        });
+        const sideText = (title, text) => side.replaceChildren(el('h5', { text: title }), el('div', { class: 'algo-items' }, [text === undefined
+            ? el('span', { class: 'algo-empty', text: '–' }) : el('span', { class: 'algo-item next', text: String(text) })]));
+        if (algo === 'ring') {
+            const capacity = Number(widget.dataset.capacity || 6);
+            frames = traceRing(parseOps(widget.dataset.ops), capacity);
+            svg.setAttribute('aria-label', 'Die Zellen des Arrays mit head und der nächsten freien Zelle');
+            draw = (frame) => { drawRing(svg, frame); sideText('Heraus mit dequeue', frame.out); };
+        } else if (algo === 'linked') {
+            frames = traceLinked(parseOps(widget.dataset.ops));
+            const most = Math.max(...frames.map((f) => f.nodes.length));
+            svg.setAttribute('aria-label', 'Die Knoten der Linked List mit ihren next-Referenzen');
+            side.hidden = true;
+            draw = (frame) => drawLinked(svg, frame, most);
+        } else if (algo === 'bst' || algo === 'avl') {
+            frames = traceTree(parseOps(widget.dataset.ops), algo === 'avl');
+            svg.setAttribute('aria-label', 'Der Baum: links die kleineren, rechts die größeren Werte');
+            side.hidden = true;
+            draw = (frame) => drawTree(svg, frame);
+        } else if (algo === 'hash') {
+            const mode = widget.dataset.mode || 'chain';
+            frames = traceHash(parseOps(widget.dataset.ops), mode, Number(widget.dataset.size || 8));
+            svg.setAttribute('aria-label', 'Die Buckets der Hash Table mit ihren Schlüsseln');
+            draw = (frame) => {
+                drawHash(svg, frame);
+                side.replaceChildren(el('h5', { text: 'Füllgrad' }), el('div', { class: 'algo-items' }, [el('span', { class: 'algo-item', text: `${Math.round(frame.load * 100)} %` })]));
+            };
+        } else if (algo === 'sort') {
+            const values = widget.dataset.values.split(',').map(Number);
+            const kind = widget.dataset.sort;
+            frames = traceSort(values, kind);
+            // the picture keeps its height when the scratch row comes and goes
+            const scratch = kind === 'merge';
+            for (const frame of frames) frame.scratchSpace = scratch;
+            svg.setAttribute('aria-label', 'Die Zahlen als Balken, Höhe nach Wert, darunter die Indizes');
+            draw = (frame) => {
+                drawSort(svg, frame);
+                side.replaceChildren(el('h5', { text: 'Gezählt' }),
+                    el('table', { class: 'algo-table' }, [
+                        el('tr', {}, [el('th', { text: 'Vergleiche' }), el('td', { text: String(frame.comparisons) })]),
+                        el('tr', {}, [el('th', { text: 'Schreibzugriffe' }), el('td', { text: String(frame.writes) })]),
+                    ]));
+            };
+        } else if (algo === 'heap') {
             const ops = widget.dataset.ops.split(',').map((text) => text.trim().split(/\s+/))
                 .map(([type, value]) => ({ type, value: Number(value) }));
             frames = traceHeap(ops);
