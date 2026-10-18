@@ -25,7 +25,84 @@ for (const kind of ['motorway', 'trunk', 'primary', 'secondary', 'tertiary']) {
     CASING[`${kind}_link`] = CASING[kind];
 }
 const OTHER = ['#b8bec7', 1];
-const BACKGROUND = '#eef0f2';
+
+// Die Farben der Karte, hell und dunkel. Die helle steht oben in STYLES und
+// CASING; die dunkle ersetzt sie, wenn der Bildschirm dunkel eingestellt ist
+// (oder jemand oben rechts auf den Mond klickt).
+const LIGHT = {
+    styles: Object.fromEntries(Object.entries(STYLES).map(([kind, [color]]) => [kind, color])),
+    casing: { ...CASING },
+    other: '#b8bec7', background: '#eef0f2', names: '#5c5f66', halo: 'rgba(255, 255, 255, 0.9)',
+    ring: '#fff', graphEdge: 'rgba(54, 79, 199, 0.75)', graphNode: '#364fc7', current: '#212529',
+    connector: '#868e96', routeHalo: '#fff', route: '#5f3dc4', tour: '#5f3dc4',
+    places: { sight: ['#7048e8', '#5f3dc4'], square: ['#2f9e44', '#2b8a3e'], school: ['#4c6ef5', '#364fc7'] },
+};
+const DARK = {
+    styles: { motorway: '#b8684d', trunk: '#b5784f', primary: '#a8823d', secondary: '#8a7a4c', tertiary: '#4f5562',
+        residential: '#3f4450', living_street: '#3f4450', unclassified: '#3f4450', pedestrian: '#4a4558',
+        service: '#373b45', footway: '#8c6e66', path: '#5d8a5a', cycleway: '#5a7cbd', steps: '#9a6c60',
+        track: '#86704d', bridleway: '#5d8a5a', ferry: '#3a8ad0' },
+    casing: { motorway: '#7d3f2c', trunk: '#7d4d2e', primary: '#6d5222', secondary: '#5a4f2e', tertiary: '#2a2e36',
+        residential: '#2a2e36', living_street: '#2a2e36', unclassified: '#2a2e36', pedestrian: '#2d2a36',
+        service: '#2a2e36' },
+    other: '#4a505c', background: '#1c1f25', names: '#aab1bd', halo: 'rgba(28, 31, 37, 0.9)',
+    ring: '#1c1f25', graphEdge: 'rgba(116, 143, 252, 0.7)', graphNode: '#91a7ff', current: '#f8f9fa',
+    connector: '#868e96', routeHalo: '#1c1f25', route: '#b197fc', tour: '#9775fa',
+    places: { sight: ['#9775fa', '#c4b5fd'], square: ['#51cf66', '#8ce99a'], school: ['#5c7cfa', '#a5b4fc'] },
+};
+for (const kind of ['motorway', 'trunk', 'primary', 'secondary', 'tertiary']) {
+    for (const theme of [LIGHT, DARK]) {
+        theme.styles[`${kind}_link`] = theme.styles[kind];
+        theme.casing[`${kind}_link`] = theme.casing[kind];
+    }
+}
+let PAINT = LIGHT;
+let BACKGROUND = LIGHT.background;
+
+// Hell oder dunkel: wie der Bildschirm eingestellt ist, oder was jemand mit
+// dem Knopf gewählt hat (bleibt im Browser gespeichert)
+const darkScreen = matchMedia('(prefers-color-scheme: dark)');
+let themeChoice = 'auto'; // auto (wie der Bildschirm), light, dark
+try {
+    themeChoice = localStorage.getItem('routenplaner-theme') || 'auto';
+} catch {
+    // ohne Speicher eben jedes Mal wie der Bildschirm
+}
+
+function applyTheme() {
+    const dark = themeChoice === 'dark' || (themeChoice === 'auto' && darkScreen.matches);
+    PAINT = dark ? DARK : LIGHT;
+    BACKGROUND = PAINT.background;
+    for (const [kind, color] of Object.entries(PAINT.styles)) if (STYLES[kind]) STYLES[kind][0] = color;
+    Object.assign(CASING, PAINT.casing);
+    OTHER[0] = PAINT.other;
+    document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+    const button = document.getElementById('theme');
+    if (button) {
+        // der Knopf zeigt, wohin er wechselt: den Mond, wenn es hell ist
+        button.title = dark ? 'Helle Farben' : 'Dunkle Farben';
+        button.setAttribute('aria-label', button.title);
+        button.dataset.shows = dark ? 'light' : 'dark';
+    }
+    baseKey = '';
+    if (typeof setUpLegend === 'function' && legendReady) setUpLegend();
+    draw();
+}
+
+function setUpTheme() {
+    document.getElementById('theme').addEventListener('click', () => {
+        // das Gegenteil von jetzt; ist es das, was der Bildschirm will, wieder »wie der Bildschirm«
+        const dark = document.documentElement.dataset.theme !== 'dark';
+        themeChoice = dark === darkScreen.matches ? 'auto' : dark ? 'dark' : 'light';
+        try {
+            localStorage.setItem('routenplaner-theme', themeChoice);
+        } catch {
+            // dann gilt die Wahl nur bis zum Neuladen
+        }
+        applyTheme();
+    });
+    darkScreen.addEventListener('change', () => themeChoice === 'auto' && applyTheme());
+}
 // Wichtige Straßen zuletzt, damit sie oben liegen
 const ORDER = ['ferry', 'footway', 'path', 'cycleway', 'steps', 'track', 'bridleway', 'service', 'pedestrian',
     'living_street', 'unclassified', 'residential', 'tertiary_link', 'tertiary', 'secondary_link', 'secondary',
@@ -282,9 +359,9 @@ function drawStreetNames(c) {
             c.translate(x, y);
             c.rotate(angle);
             c.lineWidth = 3;
-            c.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+            c.strokeStyle = PAINT.halo;
             c.strokeText(name, 0, 0);
-            c.fillStyle = '#5c5f66';
+            c.fillStyle = PAINT.names;
             c.fillText(name, 0, 0);
             c.restore();
         }
@@ -298,7 +375,7 @@ function drawGraph(c) {
     const { ax, ay, ox, oy } = projection();
     const width = canvas.clientWidth;
     const height = canvas.clientHeight;
-    c.strokeStyle = 'rgba(54, 79, 199, 0.75)';
+    c.strokeStyle = PAINT.graphEdge;
     c.lineWidth = Math.min(2, Math.max(0.7, view.scale / 200000));
     c.beginPath();
     for (let i = 0; i < edges.length; i += 2) {
@@ -325,10 +402,10 @@ function drawGraph(c) {
     }
     if (radius > 2) {
         c.lineWidth = 1.5;
-        c.strokeStyle = '#fff';
+        c.strokeStyle = PAINT.ring;
         c.stroke();
     }
-    c.fillStyle = '#364fc7';
+    c.fillStyle = PAINT.graphNode;
     c.fill();
 }
 
@@ -402,17 +479,17 @@ function drawRoute() {
         const i = count - 1;
         const at = [ox + visited[2 * i] * ax, oy - visited[2 * i + 1] * ay];
         context.lineWidth = 2.5;
-        context.strokeStyle = '#212529';
+        context.strokeStyle = PAINT.current;
         context.beginPath();
         context.arc(at[0], at[1], radius + 5, 0, 2 * Math.PI);
         context.stroke();
-        dot(at, radius + 1.5, '#212529');
+        dot(at, radius + 1.5, PAINT.current);
     }
     if (!path || count < total) return;
     // vom Ort zum nächsten Knoten des Graphen, gestrichelt
     context.setLineDash([3, 4]);
     context.lineWidth = 2;
-    context.strokeStyle = '#868e96';
+    context.strokeStyle = PAINT.connector;
     for (const [place, end] of [[chosen.start, path[0]], [chosen.goal, path[path.length - 1]]]) {
         if (!place) continue;
         context.beginPath();
@@ -421,7 +498,7 @@ function drawRoute() {
         context.stroke();
     }
     context.setLineDash([]);
-    for (const [color, width] of [['#fff', 8], ['#5f3dc4', 4.5]]) {
+    for (const [color, width] of [[PAINT.routeHalo, 8], [PAINT.route, 4.5]]) {
         context.strokeStyle = color;
         context.lineWidth = width;
         context.beginPath();
@@ -435,7 +512,7 @@ function dot([x, y], radius, color, border = 0) {
     context.arc(x, y, radius, 0, 2 * Math.PI);
     if (border) {
         context.lineWidth = border;
-        context.strokeStyle = '#fff';
+        context.strokeStyle = PAINT.ring;
         context.stroke();
     }
     context.fillStyle = color;
@@ -454,7 +531,7 @@ function drawPlaces() {
         taken.push(box);
         context.textAlign = 'center';
         context.lineWidth = 3.5;
-        context.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+        context.strokeStyle = PAINT.halo;
         context.strokeText(text, x, y - 6 + below);
         context.fillStyle = color;
         context.fillText(text, x, y - 6 + below);
@@ -465,8 +542,8 @@ function drawPlaces() {
         label(place.name, project(place.lon, place.lat), '600 13px system-ui, sans-serif', color, -6);
     }
     // Art: Farbe des Punkts, der Schrift, ab welchem Zoom zu sehen und beschriftet
-    const looks = { sight: ['#7048e8', '#5f3dc4', 0, 0], square: ['#2f9e44', '#2b8a3e', 60000, 120000],
-        school: ['#4c6ef5', '#364fc7', 60000, 120000] };
+    const shown = { sight: [0, 0], square: [60000, 120000], school: [60000, 120000] };
+    const looks = Object.fromEntries(Object.entries(shown).map(([kind, zoom]) => [kind, [...PAINT.places[kind], ...zoom]]));
     for (const kind of ORDER_OF_KINDS) {
         const [color, text, from, named] = looks[kind];
         if (view.scale < from) continue;
@@ -958,7 +1035,7 @@ function fitStops() {
 // Die Rundfahrt auf der Karte: ihre Wege, und jeder Ort mit seiner Nummer
 function drawTour() {
     if (tour) {
-        for (const [color, width] of [['#fff', 8], ['#5f3dc4', 4.5]]) {
+        for (const [color, width] of [[PAINT.routeHalo, 8], [PAINT.route, 4.5]]) {
             context.strokeStyle = color;
             context.lineWidth = width;
             context.lineJoin = 'round';
@@ -974,7 +1051,7 @@ function drawTour() {
     context.textBaseline = 'middle';
     stops.forEach((place, i) => {
         const at = project(place.lon, place.lat);
-        dot(at, 9, i === 0 ? START : '#5f3dc4', 2.5);
+        dot(at, 9, i === 0 ? START : PAINT.tour, 2.5);
         context.fillStyle = '#fff';
         context.fillText(String(i + 1), at[0], at[1] + 0.5);
     });
@@ -1160,9 +1237,11 @@ function setUpPlaces() {
     });
 }
 
+let legendReady = false;
 function setUpLegend() {
     const ratio = window.devicePixelRatio || 1;
     const list = document.querySelector('#legend ul');
+    list.replaceChildren();
     for (const [kind, name] of LEGEND) {
         const [color, width, dash] = STYLES[kind];
         const item = document.createElement('li');
@@ -1307,7 +1386,10 @@ fetch('map.json').then((r) => r.json()).then((map) => {
     fitArea();
     restore();
 }).catch(() => {
-    document.getElementById('area').textContent = 'Keine Karte: Läuft ruby server.rb noch?';
+    document.getElementById('area').textContent = 'Keine Karte: Läuft der Server noch?';
 });
+setUpTheme();
+applyTheme();
 setUpLegend();
+legendReady = true;
 draw();

@@ -3,6 +3,13 @@
 }
 
 :root {
+    color-scheme: light;
+    --page: #eef0f2;
+    --field: #fff;
+    --soft: #f1f3f5;
+    --hover: #f4f1fb;
+    --chip: #f1effb;
+    --halo: rgba(255, 255, 255, 0.8);
     --ink: #2b2a33;
     --muted: #6b6878;
     --line: #e1e4e8;
@@ -13,12 +20,38 @@
     --goal: #e03131;
 }
 
+/* Dunkel: die Farben des Kastens; die der Karte stehen in map.js (DARK) */
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #1c1f25;
+    --field: #2a2e36;
+    --soft: #23272e;
+    --hover: #343048;
+    --chip: #322d45;
+    --halo: rgba(28, 31, 37, 0.8);
+    --ink: #e4e6eb;
+    --muted: #9aa0ab;
+    --line: #353a44;
+    --card: rgba(33, 36, 43, 0.96);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.4);
+    --accent: #9775fa;
+}
+
+#theme svg {
+    display: none;
+}
+
+#theme[data-shows="light"] svg.light,
+#theme[data-shows="dark"] svg.dark {
+    display: block;
+}
+
 html, body {
     margin: 0;
     height: 100%;
     overflow: hidden;
     font-family: system-ui, sans-serif;
-    background: #eef0f2;
+    background: var(--page);
     color: var(--ink);
 }
 
@@ -85,7 +118,7 @@ html, body {
     padding: 0 0.6rem;
     border: 1px solid var(--line);
     border-radius: 8px;
-    background: #fff;
+    background: var(--field);
 }
 
 .place:focus-within {
@@ -101,7 +134,7 @@ html, body {
     flex: none;
     width: 10px;
     height: 10px;
-    border: 2px solid #fff;
+    border: 2px solid var(--field);
     border-radius: 50%;
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
 }
@@ -156,7 +189,7 @@ html, body {
     overflow-y: auto;
     list-style: none;
     border-radius: 10px;
-    background: #fff;
+    background: var(--field);
     box-shadow: 0 2px 4px rgba(20, 30, 50, 0.08), 0 12px 32px rgba(20, 30, 50, 0.18);
     font-size: 0.88rem;
 }
@@ -175,7 +208,7 @@ html, body {
 }
 
 #suggestions li.active {
-    background: #f1effb;
+    background: var(--chip);
 }
 
 #suggestions li.heading {
@@ -240,13 +273,13 @@ button {
     padding: 0;
     border: 0;
     border-radius: 8px;
-    background: #fff;
+    background: var(--field);
     color: var(--ink);
     cursor: pointer;
 }
 
 button:hover {
-    background: #f4f1fb;
+    background: var(--hover);
     color: var(--accent);
 }
 
@@ -295,7 +328,7 @@ button svg {
     margin-top: 0.5rem;
     padding: 3px;
     border-radius: 9px;
-    background: #f1f3f5;
+    background: var(--soft);
 }
 
 .segments[hidden],
@@ -315,7 +348,7 @@ button svg {
 }
 
 .segments button[aria-pressed="true"] {
-    background: #fff;
+    background: var(--field);
     color: var(--ink);
     font-weight: 600;
     box-shadow: 0 1px 3px rgba(20, 30, 50, 0.15);
@@ -341,7 +374,7 @@ button svg {
     max-width: 100%;
     padding: 0.15rem 0.15rem 0.15rem 0.2rem;
     border-radius: 999px;
-    background: #f1effb;
+    background: var(--chip);
     font-size: 0.8rem;
 }
 
@@ -416,7 +449,7 @@ button svg {
     margin-top: 0.6rem;
     padding: 0.5rem 0.6rem 0.45rem;
     border-radius: 9px;
-    background: #f1f3f5;
+    background: var(--soft);
 }
 
 #player[hidden] {
@@ -436,7 +469,7 @@ button svg {
 }
 
 #player button:hover {
-    background: #fff;
+    background: var(--field);
 }
 
 #player button.play {
@@ -461,7 +494,7 @@ button svg {
     padding: 0.25rem 0.3rem;
     border: 1px solid var(--line);
     border-radius: 6px;
-    background: #fff;
+    background: var(--field);
     font: inherit;
     font-size: 0.8rem;
     color: var(--ink);
@@ -559,7 +592,7 @@ code {
     bottom: 26px;
     padding: 0.2rem 0.45rem 0.25rem;
     border-radius: 6px;
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--halo);
     font-size: 0.75rem;
     color: var(--ink);
 }
@@ -581,7 +614,7 @@ code {
     margin: 0;
     padding: 0.15rem 0.5rem;
     border-top-left-radius: 6px;
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--halo);
     color: var(--muted);
     font-size: 0.72rem;
 }
@@ -595,3 +628,9 @@ code {
         width: 19rem;
     }
 }
+
+:root[data-theme="dark"] #suggestions .kind.sight { color: #b197fc; }
+:root[data-theme="dark"] #suggestions .kind.square { color: #69db7c; }
+:root[data-theme="dark"] #suggestions .kind.school { color: #91a7ff; }
+:root[data-theme="dark"] #player button.play:hover { background: #b197fc; }
+:root[data-theme="dark"] #suggestions { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.5); }
