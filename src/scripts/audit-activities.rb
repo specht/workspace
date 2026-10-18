@@ -9,8 +9,9 @@
 # »flach« when a long page has no ###), Sprachen (languages of the page),
 # Notiz (lehrkraft.md opens with »Lernende«), generiert / von Hand (pictures
 # from recipes and others; »von Hand« counts photos and diagrams too),
-# dunkel (dark variants among the generated pictures), Karte (the card
-# picture comes from a recipe). A »!« marks what the checklist asks for.
+# dunkel (dark variants among the generated pictures), Karte (whether the card
+# picture comes from a recipe and has a NAME-dark version). A »!« marks what
+# the checklist asks for.
 require 'json'
 require 'yaml'
 
@@ -63,7 +64,12 @@ def audit(slug)
         note: note_ok ? 'ja' : 'fehlt!',
         generated: generated.size, manual: manual.size,
         dark: dark,
-        card: card.nil? ? 'fehlt!' : generated.include?(card) ? 'Rezept' : 'kein Rezept'
+        card: if card.nil?
+                  'fehlt!'
+              else
+                  dark_card = File.file?(File.join(dir, card.sub(/(\.\w+)\z/, '-dark\1')))
+                  (generated.include?(card) ? 'Rezept' : 'kein Rezept') + (dark_card ? '' : ', nicht dunkel')
+              end
     }
 end
 

@@ -33,7 +33,7 @@ Repository arbeitet, liest sie also ohnehin.
 | Meta-Block mit `image`, `kind`, `topic`, `duration`; `language` oder `languages`, wenn programmiert wird | Die Karte im Katalog braucht sie | `page_kinds_test.rb`, Audit |
 | Ein Absatz `<p class='abstract'>`, der sagt, was man baut, in der Du-Form | Er steht auf der Karte | Audit |
 | Das Inhaltsverzeichnis ist nicht flach: längere Seiten gliedern ihre Kapitel (`##`) in Abschnitte (`###`) | Am Rand findet man sich in langen Seiten nur so zurecht | Audit (Spalte »Gliederung«) |
-| Ein Bild für die Karte (`teaser.webp` oder das erste Bild), aus einem Rezept, wo es ein Bildschirmfoto ist, mit dunkler Fassung, wenn die Seite dunkel werden kann | Der Katalog ist das Erste, was man sieht | Audit |
+| Ein Bild für die Karte (`teaser.webp` oder das erste Bild), aus einem Rezept, wo es ein Bildschirmfoto ist, mit dunkler Fassung (`NAME-dark.webp`, aus `variants: dark` oder `src/scripts/render-svg.rb`, nicht invertiert), wenn die Seite dunkel werden kann | Der Katalog ist das Erste, was man sieht; ein invertiertes Bild verdreht die Farben | Audit (Spalte »Karte«) |
 | Tabellen sind HTML (`<table class='table'>`), `</table>` und `</div>` auf eigener Zeile | Die Seite kennt keine Markdown-Tabellen | `no_pipe_tables_test.rb` |
 | Haken sind Bootstrap-Icons, keine Unicode-Zeichen | Sie passen zu den anderen Icons und jeder Schrift | `no_check_marks_test.rb` |
 | Formeln mit `\\(`…`\\)` und `$$`…`$$`, `\_` für Unterstriche | Markdown frisst sonst Backslashes und Unterstriche | Lesen |
