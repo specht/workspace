@@ -50,12 +50,15 @@ test('teachers see example answers and the answers of their group under open tas
   await expect(panel.locator('.task-teacher-body')).toBeHidden();
   expect(errors).toEqual([]);
 
-  // A teacher with teaching materials but no group: the examples only.
+  // A teacher with teaching materials but no group: the examples and its own
+  // test group (every teacher has one, docs/teacher-access.md »Testkonto«),
+  // never another teacher's group.
   const materials = await (await browser.newContext()).newPage();
   await loginAsE2eUser(materials, 'e2e-materials-teacher@example.com', testInfo);
   await materials.goto('/tcpip');
   const theirs = materials.locator(`${card} .task-teacher`);
-  await expect(theirs.locator('.task-teacher-view')).toHaveText(['Beispielantworten', 'Ausblenden']);
+  await expect(theirs.locator('.task-teacher-view')).toHaveText(['Beispielantworten', /^Antworten aus Testgruppe \(/, 'Ausblenden']);
+  await expect(theirs.getByRole('button', { name: 'Antworten aus E2E' })).toHaveCount(0);
   await theirs.getByRole('button', { name: 'Beispielantworten' }).click();
   await expect(theirs.locator('.task-teacher-example')).toHaveCount(2);
   // Closed again for the next run: without a choice the box starts closed.
