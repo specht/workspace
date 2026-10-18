@@ -137,7 +137,9 @@ export default {
         async aspect({ page, args }) {
             const [w, h] = String(args).trim().split(/\s+/).map(Number);
             if (!(w > 0 && h > 0)) throw new Error('hook: aspect W H');
-            await page.addStyleTag({ content: `#canvas { aspect-ratio: ${w} / ${h} !important; height: auto !important; object-fit: cover !important; object-position: 50% 50% !important; }` });
+            // The CRT filter draws on its own canvas over the same frame:
+            // it gets the same cut, or the crt variant shows the whole screen.
+            await page.addStyleTag({ content: `#canvas, #crt-canvas { aspect-ratio: ${w} / ${h} !important; height: auto !important; object-fit: cover !important; object-position: 50% 50% !important; }` });
             await settleFrames(page, 2);
         },
 
