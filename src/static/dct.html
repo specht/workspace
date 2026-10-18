@@ -2458,10 +2458,14 @@
             wrap.style.gridTemplateColumns = 'repeat(8, 1fr)';
             wrap.style.gridTemplateRows = 'repeat(8, 1fr)';
 
+            // Scaled by the largest AC coefficient: the DC one (the block's
+            // average) is nearly always far larger and would leave every
+            // other pattern dark. Its own tile is simply at full strength.
             let maxScaledAbs = 1;
             if (coeffs) {
                 for (let v = 0; v < 8; v++) {
                     for (let u = 0; u < 8; u++) {
+                        if (u === 0 && v === 0) continue;
                         maxScaledAbs = Math.max(maxScaledAbs, Math.abs(coeffs[v][u]));
                     }
                 }
@@ -2495,7 +2499,7 @@
                                 overlay.style.inset = '0';
 
                                 const scaled = basis[y][x] * coeff / maxScaledAbs;
-                                overlay.style.background = getBasisCellStyle(scaled, 1);
+                                overlay.style.background = getBasisCellStyle(scaled, 0.25);
                                 overlay.style.opacity = active ? '0.95' : '0.22';
 
                                 cell.appendChild(overlay);

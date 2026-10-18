@@ -759,6 +759,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- DCT-Werkzeug (`/dct`) in 2D: Die mit ihren Koeffizienten gewichteten
+  Kosinusmuster sind kräftig zu sehen. Bisher richtete sich ihre Helligkeit
+  nach dem DC-Koeffizienten, dem Mittelwert des Blocks, der fast immer viel
+  größer ist, und alle anderen Muster blieben fast schwarz.
 - Die Rückmeldung unter einer Aufgabe ist eine durchscheinende Tönung statt
   einer festen Fläche: Auf der blauen Karte der aktuellen Aufgabe steht kein
   grauer Kasten mehr.
