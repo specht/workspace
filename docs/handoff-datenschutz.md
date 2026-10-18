@@ -161,6 +161,50 @@ Keep the facts in one place in code if possible (a Ruby hash or YAML in
 service and that nothing on it contradicts the configuration. A test that
 `impressum.html` renders with all new settings missing is a must.
 
+## The aim: honest, and calm for data protection officers and lawyers
+
+The maintainer's words: honest, but such that data protection officers and
+lawyers stay calm. He does not expect real help from the school's data
+protection officer. These go together: what worries a reviewer is vagueness
+and promises the system cannot keep (the old »keine externen Dienste«); what
+reassures is a familiar structure, precise facts and no overstatement.
+
+- **Follow DSGVO Art. 13 point by point**, with the usual headings, so a
+  reviewer can tick it off: Verantwortlicher; Kontakt (and the school's
+  Datenschutzbeauftragter if configured); Zwecke; Rechtsgrundlage;
+  Empfänger; Übermittlung in Drittländer (say whether any of the outside
+  services is outside the EU: GitHub, package registries; only the server
+  contacts them); Speicherdauer; Rechte; Beschwerderecht bei der
+  Aufsichtsbehörde; ob die Angabe der Daten erforderlich ist; keine
+  automatisierte Entscheidung, kein Profiling.
+- **Say only what is true and checked**, in the present tense, without
+  softeners (»grundsätzlich«, »in der Regel«). Where something is not built
+  (account deletion), say how it is done today, not what will be.
+- **Name the technical and organisational measures** that already exist,
+  since they show care: invitation only, login code plus browser tag,
+  rate limits, no tracking and no analytics, no IP addresses in the logs,
+  fonts and scripts from the site itself, Workspaces isolated from each
+  other on the network, Look In only with a reason and a notice to the
+  student, encryption in transit (check: HTTPS in production). A short
+  section »So schützen wir eure Daten«.
+- **The legal basis is the one point not to guess.** »Art. 6 Abs. 1 lit. e
+  DSGVO in Verbindung mit dem Schulgesetz« is only true if the school uses
+  the Workspace officially; otherwise it is consent. The cleanest way that
+  does not depend on the data protection officer: a short written decision
+  by the Schulleitung that the Workspace is used in lessons. Then the page
+  can name the school as the place of use and him as the teacher who runs
+  it. Make the sentence configurable (`LEGAL_BASIS = :school | :consent`) so
+  each installation states its own case; the consent design below is the
+  other branch.
+- **Offer the documents reviewers ask for**, generated from the same facts:
+  a Verzeichnis der Verarbeitungstätigkeiten (VVT) entry and a list of the
+  technical and organisational measures (TOM), as a page or a download for
+  admins. Handing those over unprompted is what usually ends a discussion.
+- For questions the school cannot answer: the Berliner Beauftragte für
+  Datenschutz und Informationsfreiheit publishes guidance for schools, and
+  the Senatsverwaltung for digital teaching tools; the page should not cite
+  rules the session has not looked up.
+
 ## Parental consent: things to put to the maintainer
 
 Not legal advice; the next session should say so and suggest he asks the
