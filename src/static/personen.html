@@ -17,8 +17,9 @@
         <div class='col-md-12'>
             <h1>Personen und Schulen</h1>
             <p>
-                Schulen, Lehrkräfte und alle, die eingeladen sind. Eine Schule ist freigegeben, sobald die Entscheidung der Schulleitung
-                und die unterschriebene Vereinbarung zur Auftragsverarbeitung vorliegen; erst dann können sich ihre Schülerinnen und Schüler anmelden.
+                Schulen, Lehrkräfte und alle, die eingeladen sind. Eine Schule hat zugestimmt, sobald du das Datum der Entscheidung der Schulleitung
+                und das der unterschriebenen Vereinbarung zur Auftragsverarbeitung einträgst; die Lehrkraft schickt dir beides. Bis dahin vermerken
+                die Lehrkräfte unter Gruppen, für wen ein schriftliches Einverständnis vorliegt. Gesperrt wird dadurch niemand.
                 Ihre Lehrkräfte können vorher schon alles ausprobieren und Gruppen anlegen. Gruppen verwalten die Lehrkräfte unter <a href='/gruppen'>Gruppen</a>.
             </p>
             <div id='people_not_imported'></div>
@@ -54,6 +55,15 @@
                 </div>
             </form>
 
+            <h2 id='unbenutzt'>Einladungen ohne Konto</h2>
+            <p>
+                Eingeladene, die sich nie angemeldet haben (zu ihrer Adresse gibt es kein Konto), etwa aus einer Liste der ganzen Schule.
+                Lehrkräfte zählen nie dazu. Wähl die Gruppen aus: Die Personen werden aus diesen Gruppen genommen; wer danach in keiner
+                Gruppe mehr steht, ist nicht mehr eingeladen und kann sich nicht anmelden, bis eine Lehrkraft die Adresse wieder einträgt.
+                Es gibt kein Konto, also auch nichts, was gelöscht würde.
+            </p>
+            <div id='unused_here'></div>
+
             <h2 id='alle'>Alle Personen</h2>
             <input type='search' id='all_query' class='form-control mb-2' placeholder='Name, Adresse oder Gruppe' autocomplete='off'>
             <div id='all_here'></div>
@@ -66,6 +76,8 @@
         roster_in_files: 'Die Einladungen stehen noch in Dateien. Erst unter »Administration › Einladungslisten« importieren.',
         invalid_name: 'Der Name fehlt oder ist zu lang.',
         invalid_email: 'Das ist keine E-Mail-Adresse.',
+        count_changed: 'Die Zahl stimmt nicht (oder hat sich inzwischen geändert). Bitte die Zahl eingeben, die der Dialog nennt.',
+        no_groups: 'Keine Gruppe ausgewählt.',
         no_school: 'Eine Lehrkraft braucht eine Schule.',
         school_in_use: 'Die Schule hat noch Gruppen oder Lehrkräfte.',
         invalid_date: 'Das Datum ist ungültig.',
@@ -89,9 +101,11 @@
     }
 
     function school_status(s) {
-        if (s.home) return s.approved_at ? 'freigegeben (Schule dieser Installation, beim Import)' : 'nicht freigegeben';
-        if (s.guests) return 'Erwachsene von außerhalb, Nutzungsordnung: immer freigegeben. Gruppen dafür legst du unter <a href="/gruppen">Gruppen</a> mit der Schule »Gäste« an.';
-        return s.approved_at ? `freigegeben seit ${day(s.approved_at)}` : '<span class="text-warning-emphasis">noch nicht freigegeben</span>';
+        if (s.guests) return 'Erwachsene von außerhalb, Nutzungsordnung. Gruppen dafür legst du unter <a href="/gruppen">Gruppen</a> mit der Schule »Gäste« an.';
+        if (s.approved_at) return `hat zugestimmt (eingetragen ${day(s.approved_at)})`;
+        const open = s.students - s.consent;
+        return `<span class="text-warning-emphasis">hat noch nicht zugestimmt</span>`
+            + (s.students ? `<br><span class='small'>Einverständnis für ${s.consent} von ${s.students}${open ? `; ${open} ungeklärt` : ''}</span>` : '');
     }
 
     function load_schools() {
@@ -108,7 +122,7 @@
                 const row = $('<tr>');
                 const name = $(`<td><strong>${esc(s.name)}</strong>${s.address ? '<br><span class="small text-body-secondary">' + esc(s.address).replace(/\n/g, ', ') + '</span>' : ''}</td>`);
                 const date_input = function (field) {
-                    if (s.home || s.guests) return $('<td>').text(s[field] || '–');
+                    if (s.guests) return $('<td>').text('–');
                     const input = $(`<input type='date' class='form-control form-control-sm small-input'>`).val(s[field] || '');
                     input.on('change', function () {
                         const payload = { key: s.key };
@@ -192,9 +206,56 @@
         }, { no_please_wait: true });
     }
 
+    function load_unused() {
+        people_call('/api/people/unused_invitations', {}, function (data) {
+            const here = $('#unused_here').empty();
+            const groups = data.groups.filter(g => g.unused > 0);
+            if (!groups.length) {
+                here.append(`<p class='text-body-secondary'>Keine.</p>`);
+                return;
+            }
+            here.append(`<p>${data.total} ${data.total === 1 ? 'Person' : 'Personen'} in ${groups.length} Gruppen.</p>`);
+            const table = $(`<table class='table table-sm'><thead><tr><th><input type='checkbox' class='form-check-input' id='cb_unused_all' aria-label='Alle auswählen'></th><th>Gruppe</th><th>Schule</th><th>ohne Konto</th><th>Mitglieder</th></tr></thead><tbody></tbody></table>`);
+            groups.forEach(function (g) {
+                const cb = $(`<input type='checkbox' class='form-check-input cb-unused'>`).data('group', g.name);
+                table.find('tbody').append($('<tr>').append($('<td>').append(cb), $('<td>').text(g.name), $('<td>').text(g.school || '–'),
+                    $('<td>').text(g.unused), $('<td>').text(g.members)));
+            });
+            here.append(table);
+            table.find('#cb_unused_all').on('change', function () { table.find('.cb-unused').prop('checked', this.checked); });
+            const button = $(`<button class='btn btn-outline-danger'><i class='bi bi-person-dash'></i>Aus den ausgewählten Gruppen nehmen</button>`);
+            button.on('click', function () {
+                const chosen = table.find('.cb-unused:checked').map(function () { return $(this).data('group'); }).get();
+                if (!chosen.length) return;
+                const count = chosen.reduce((n, name) => n + groups.find(g => g.name === name).unused, 0);
+                showTemplateModal('Einladungen ohne Konto entfernen', `<p>Aus ${chosen.length} ${chosen.length === 1 ? 'Gruppe' : 'Gruppen'} werden alle genommen, die nie ein Konto hatten (in diesen Gruppen zusammen höchstens ${count}; wer in mehreren steht, zählt einmal).</p>`
+                    + `<p id='unused_exact'>Einen Moment …</p>`
+                    + `<label class='form-label' for='ti_unused_confirm'>Zur Bestätigung diese Zahl eingeben:</label><input id='ti_unused_confirm' class='form-control' autocomplete='off' inputmode='numeric'>`,
+                    "<i class='bi bi-person-dash'></i>Entfernen", 'btn-danger', 'Abbruch', 'btn-secondary', function () {
+                        api_call('/api/people/remove_unused_invitations', { groups: chosen, confirmation: $('#ti_unused_confirm').val().trim() }, function (r) {
+                            if (!r.success) {
+                                show_error_message(PEOPLE_ERRORS[r.error] || 'Das hat nicht geklappt.');
+                                return;
+                            }
+                            $('#__template_modal').modal('hide');
+                            alert(`${r.memberships} Mitgliedschaften entfernt; ${r.uninvited} ${r.uninvited === 1 ? 'Person ist' : 'Personen sind'} nicht mehr eingeladen.`);
+                            load_all();
+                        });
+                        return false;
+                    });
+                // The exact number (people in several groups once) comes from the server.
+                people_call('/api/people/unused_count', { groups: chosen }, function (r) {
+                    $('#unused_exact').text(`Das sind ${r.count} ${r.count === 1 ? 'Person' : 'Personen'}.`);
+                });
+            });
+            here.append(button);
+        });
+    }
+
     function load_all() {
         load_schools();
         setTimeout(load_teachers, 200);
+        load_unused();
         load_all_people();
     }
 

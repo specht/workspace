@@ -80,7 +80,7 @@ class RosterTest < Minitest::Test
         assert(lines.any? { |l| l.start_with?('t@example.org betreut') })
     end
 
-    def test_students_of_a_school_not_yet_approved_cannot_log_in
+    def test_students_of_a_school_not_yet_approved_can_still_log_in
         records = {
             :groups => [{ :name => '10a', :school => 'home', :approved => true }, { :name => 'BS 1', :school => 'bs', :approved => false }],
             :invitations => [
@@ -93,11 +93,11 @@ class RosterTest < Minitest::Test
         }
         from = Roster.from_records(records)
         built = Roster.build(:groups => from[:groups], :members => from[:members], :designated => from[:designated], :admins => [])
-        assert_equal %w[a@example.org ext@example.org], built[:invitations].keys.sort
+        assert_equal %w[a@example.org b@example.org ext@example.org], built[:invitations].keys.sort
         assert_equal ['ext@example.org'], built[:group_members]['Lehrkräfte']
         assert_includes built[:teacher_emails], 'ext@example.org'
         assert_equal Set['BS 1'], built[:teachers]['ext@example.org']
-        assert_nil built[:group_members]['BS 1']
+        assert_equal %w[a@example.org b@example.org], built[:group_members]['BS 1'].sort
     end
 
     def test_pasted_addresses

@@ -86,7 +86,7 @@
     let all_schools = [];
 
     function school_label(s) {
-        return `${esc(s.name)} <span class='small ${s.approved ? 'text-body-secondary' : 'text-warning-emphasis'}'>(${s.approved ? 'freigegeben' : 'noch nicht freigegeben'})</span>`;
+        return `${esc(s.name)} <span class='small ${s.approved ? 'text-body-secondary' : 'text-warning-emphasis'}'>(${s.approved ? 'hat zugestimmt' : 'hat noch nicht zugestimmt'})</span>`;
     }
 
     // Administrators only: move a group to another school. First choose the
@@ -98,7 +98,7 @@
             alert('Es gibt keine andere Schule. Lege sie zuerst unter »Personen« an.');
             return;
         }
-        const select = `<select id='sel_target_school' class='form-select'>${others.map(s => `<option value='${esc(s.key)}'>${esc(s.name)}${s.approved ? '' : ' (noch nicht freigegeben)'}</option>`).join('')}</select>`;
+        const select = `<select id='sel_target_school' class='form-select'>${others.map(s => `<option value='${esc(s.key)}'>${esc(s.name)}${s.approved ? '' : ' (hat noch nicht zugestimmt)'}</option>`).join('')}</select>`;
         showTemplateModal('Schule wechseln', `<p>Zu welcher Schule gehört die Gruppe ${esc(group.name)}? Fehlt die Schule, lege sie zuerst unter <a href='/personen#schulen'>Personen</a> an.</p><label class='form-label' for='sel_target_school'>Neue Schule</label>${select}`,
             "<i class='bi bi-arrow-right'></i>Weiter", 'btn-primary', 'Abbruch', 'btn-secondary', function () {
                 const target = $('#sel_target_school').val();
@@ -112,7 +112,7 @@
             + `von ${plan.from ? school_label(plan.from) : 'ohne Schule'}<br>nach ${school_label(plan.to)}</p>`
             + `<p class='small'>Es ändert sich nur die Schule der Gruppe. Mitglieder, Namen, Konten, Workspaces, Aufgaben und Abgaben bleiben, wie sie sind.</p>`;
         if (!plan.to.approved) {
-            html += `<div class='alert alert-warning small'>${esc(plan.to.name)} ist noch nicht freigegeben: Die Schülerinnen und Schüler der Gruppe können sich danach nicht mehr anmelden, bis die Schule zugestimmt hat. Ihre Daten bleiben.</div>`;
+            html += `<div class='alert alert-warning small'>${esc(plan.to.name)} hat dem Einsatz noch nicht zugestimmt. Die Schülerinnen und Schüler können sich weiter anmelden; ein vermerktes Einverständnis bleibt.</div>`;
         }
         const ok = plan.students_elsewhere.length === 0;
         if (!ok) {
@@ -149,7 +149,11 @@
 
     function render_group(group, admin) {
         const card = $(`<div class='group-card'></div>`);
-        const school = group.school ? `${esc(group.school.name)}${group.school.approved ? '' : ' · <span class="text-warning-emphasis">Schule hat noch nicht zugestimmt: Schülerinnen und Schüler können sich noch nicht anmelden</span>'}` : 'ohne Schule';
+        const students = group.members.filter(m => !m.teacher);
+        const with_consent = students.filter(m => m.consent_at).length;
+        const open_note = group.school && !group.school.approved && students.length
+            ? ` · <span class="text-warning-emphasis">Schule hat noch nicht zugestimmt; Einverständnis für ${with_consent} von ${students.length}</span>` : '';
+        const school = group.school ? `${esc(group.school.name)}${open_note}` : 'ohne Schule';
         card.append(`<div class='school'>${school}</div><h2>${esc(group.name)}</h2>`);
 
         const teachers = $(`<p class='small mb-2'>Lehrkräfte: </p>`);
@@ -176,7 +180,10 @@
 
         const without = group.members.filter(m => !m.welcomed_at && !m.teacher).length;
         if (group.members.length > 0) {
-            const table = $(`<table class='table table-sm'><thead><tr><th>Name</th><th>E-Mail-Adresse</th><th>Konto</th><th>Willkommensmail</th><th></th></tr></thead><tbody></tbody></table>`);
+            // The consent column only while the school has not agreed: then a
+            // student's written consent covers that student.
+            const ask_consent = group.school && !group.school.approved;
+            const table = $(`<table class='table table-sm'><thead><tr><th>Name</th><th>E-Mail-Adresse</th><th>Konto</th><th>Willkommensmail</th>${ask_consent ? "<th title='Schriftliches Einverständnis, das du aufbewahrst'>Einverständnis</th>" : ''}<th></th></tr></thead><tbody></tbody></table>`);
             group.members.forEach(function (m) {
                 const row = $('<tr>');
                 const name = $(`<input class='member-name' placeholder='(ohne Namen)' aria-label='Name'>`).val(m.name || '');
@@ -199,7 +206,16 @@
                         });
                 });
                 row.append($('<td>').append(name), $('<td>').text(m.email), $('<td>').text(m.account ? 'ja' : '–'),
-                    $('<td>').append(m.teacher ? '' : welcome), $('<td class="text-end">').append(remove));
+                    $('<td>').append(m.teacher ? '' : welcome));
+                if (ask_consent) {
+                    const consent = $(`<input type='date' class='form-control form-control-sm' aria-label='Einverständnis vom'>`).val(m.consent_at || '');
+                    consent.attr('max', new Date().toISOString().slice(0, 10));
+                    consent.on('change', function () {
+                        groups_call('/api/groups/set_consent', { name: group.name, email: m.email, date: consent.val() }, load_groups);
+                    });
+                    row.append($('<td>').append(m.teacher ? '' : consent));
+                }
+                row.append($('<td class="text-end">').append(remove));
                 table.find('tbody').append(row);
             });
             card.append(table);
@@ -270,7 +286,7 @@
             if (data.school) {
                 school.append(`<p>Deine Schule: <strong>${esc(data.school.name)}</strong>. ${data.school.approved
                     ? `Sie hat dem Einsatz zugestimmt. Die <a href="/datenschutz?schule=${encodeURIComponent(data.school.key)}">Unterlagen für deine Schule</a> (Elternbrief, Datenschutzerklärung und mehr) lassen sich dort drucken.`
-                    : 'Sie hat dem Einsatz noch nicht zugestimmt: Bis dahin können sich deine Schülerinnen und Schüler nicht anmelden; Gruppen anlegen und Adressen eintragen kannst du schon. Die <a href="/datenschutz?schule=${encodeURIComponent(data.school.key)}">Unterlagen für deine Schule</a> helfen dabei.'}</p>`);
+                    : `Sie hat dem Einsatz noch nicht zugestimmt. Am besten unterschreibt die Schulleitung die Entscheidung und die Vereinbarung aus den <a href="/datenschutz?schule=${encodeURIComponent(data.school.key)}">Unterlagen für deine Schule</a>; schick sie dann an die Administration. Bis dahin genügt für eine Schülerin oder einen Schüler ein schriftliches Einverständnis (<a href="/datenschutz/elternbrief?schule=${encodeURIComponent(data.school.key)}&einverstaendnis=1">Elternbrief mit Einverständniserklärung</a>): Du bewahrst es auf und trägst das Datum unten in der Gruppe ein. Anmelden können sich alle schon jetzt.`}</p>`);
             } else if (!data.admin) {
                 school.append(`<div class='alert alert-warning'>Dir ist noch keine Schule zugeordnet; das macht die Administration. Bis dahin kannst du keine Gruppe anlegen.</div>`);
             }

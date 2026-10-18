@@ -9,6 +9,36 @@ notes later in this handoff.**
 
 **Read first:** `AGENTS.md`, `docs/datenschutz.md`, `docs/teacher-access.md`, and the rest of this handoff. Work in `specht/workspace`, branch `datenschutz`; do not merge/deploy or modify production data without the maintainer's explicit approval. Keep changes in coherent commits, write a German CHANGELOG entry, and run the repository's Ruby and relevant browser/E2E tests.
 
+### Decided by the maintainer later the same day — overrides the plan below where they differ
+
+- **Nobody is locked out over the legal status.** (1) A school that agreed
+  (decision of the Schulleitung and AVV, sent by the teacher, entered by the
+  admin on /personen) covers all its students. (2) Until then, a student's
+  written consent covers that student; the teacher keeps it, records the
+  date on /gruppen and is responsible for it, not the admin. (3) Neither:
+  tolerated while it is being clarified, shown as »ungeklärt«. So the P0
+  acceptance criteria »student logins blocked« / »pending school's inability
+  to enroll pupils« do not apply; login never depends on approval.
+- Built: the import approves no school, the home school included
+  (`approved_at` only from both dates, `school_approval!` covers home);
+  `Roster.from_records` has no approval gate; per-student
+  `consent_at`/`consent_by` on the Invitation (`/api/groups/set_consent`,
+  date column on /gruppen while the school has not agreed); counts per
+  school on /personen; the Elternbrief with consent form at
+  `/datenschutz/elternbrief?einverstaendnis=1`; »Schule wechseln« for admins
+  (preview, teachers moved along or taken off, blocked when a student is in
+  another school's group); »Einladungen ohne Konto« on /personen (remove
+  never-used invitations by group, confirmed by their number; teachers never
+  count).
+- Dev state: the live dump loaded, the invitations imported with this code
+  (no school approved, people overview identical to before the import).
+  Ernst-Haeckel OS is still under `home`; the maintainer moves it with
+  »Schule wechseln« after creating the school. Group rename is not built.
+- Still open from the plan, not yet discussed with the maintainer: session
+  revocation, cross-school isolation, workshop accounts, school-requested
+  affiliation, restricting the document package, the deletion warning,
+  school merge.
+
 ### New information from the maintainer — overrides older notes below
 
 1. **The invitation import was tested in DEVELOPMENT only. Production has NOT been imported.** Some entries under `home` and the false home-school approval were observed in that development test. Do not treat the development database as production or perform a production import until the fixes are finished and tested. Dev undo/reimport may be used only as part of an intentional, non-destructive test plan; never reset real learner data.

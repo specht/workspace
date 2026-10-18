@@ -113,8 +113,7 @@ class Main < Sinatra::Base
         school_address = defined?(OPERATOR_ADDRESS) ? OPERATOR_ADDRESS.to_s.strip : ''
         $neo4j.neo4j_query(<<~END_OF_QUERY, :key => HOME_SCHOOL, :name => school_name, :address => school_address, :now => now, :by => by)
             MERGE (s:School {key: $key})
-            ON CREATE SET s.name = $name, s.address = $address, s.home = true,
-                s.approved_at = $now, s.approved_by = $by, s.created_at = $now;
+            ON CREATE SET s.name = $name, s.address = $address, s.home = true, s.created_at = $now;
         END_OF_QUERY
         $neo4j.neo4j_query(<<~END_OF_QUERY, :groups => records[:groups].map { |g| { 'name' => g[:name], 'school' => g[:school] } }, :now => now, :by => by)
             UNWIND $groups AS g

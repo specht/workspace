@@ -55,16 +55,35 @@ So geht es auf einer laufenden Installation:
 3. »Einladungslisten importieren«. Der Import schreibt in einer Transaktion,
    liest zurück und vergleicht mit den Dateien; bei einer Abweichung wird
    nichts übernommen, und die Abweichungen stehen auf der Seite. Die Schule
-   der Installation (`OPERATOR_SCHOOL`) wird als freigegeben angelegt.
+   der Installation (`OPERATOR_SCHOOL`) wird angelegt, aber nicht als
+   zugestimmt: Das ist sie erst, wenn unter `/personen` beide Daten stehen.
 4. Die Dateien bleiben liegen. »Zurück zu den Dateien« (mit `zurück`
    bestätigen) löscht Gruppen, Einladungen und Schulen wieder aus der
    Datenbank; was seit dem Import im Browser geändert wurde, geht dabei
    verloren, die Seite sagt, ob es das gibt.
 
 Ein Konto entsteht weiter erst bei der ersten Anmeldung; eine Einladung ist
-kein Konto. Gehört eine Gruppe zu einer Schule, die noch nicht freigegeben
-ist, können sich ihre Schülerinnen und Schüler noch nicht anmelden; ihre
-Lehrkräfte schon.
+kein Konto.
+
+## Zustimmung der Schule, Einverständnis, ungeklärt
+
+Wer eingeladen ist, kann sich anmelden; ob die Schule zugestimmt hat,
+sperrt niemanden (Entscheidung des Betreibers: Während die Rechtslage
+geklärt wird, bleibt der Unterricht, wie er ist). Die Seiten zeigen, was
+offen ist:
+
+1. Die Schule hat zugestimmt: Die Lehrkraft schickt der Administration die
+   unterschriebene Entscheidung der Schulleitung und die Vereinbarung zur
+   Auftragsverarbeitung; die Administration trägt beide Daten unter
+   `/personen` ein. Dann ist für die ganze Schule alles geklärt.
+2. Bis dahin: Liegt für eine Schülerin oder einen Schüler ein schriftliches
+   Einverständnis vor (Elternbrief mit Einverständniserklärung,
+   `/datenschutz/elternbrief?einverstaendnis=1`), bewahrt die Lehrkraft es
+   auf und trägt das Datum unter `/gruppen` ein (`consent_at`, `consent_by`
+   an der Einladung). Dafür ist sie verantwortlich; die Administration hat
+   damit nichts zu tun.
+3. Weder noch: geduldet, aber sichtbar (»ungeklärt« auf `/personen`, »Einverständnis
+   für x von y« an der Gruppe), damit es geklärt wird.
 
 ## Gruppen im Browser (`/gruppen`)
 
@@ -109,21 +128,26 @@ bleiben.
   Schule, verweigert der Server den Wechsel: Eine Lehrkraft der Zielschule
   sähe sonst jemanden einer anderen Schule (ein Konto je Adresse). Erst aus
   einer der Gruppen nehmen.
-- Ist die Zielschule noch nicht freigegeben, können sich die Schülerinnen
-  und Schüler der Gruppe danach nicht mehr anmelden, bis sie es ist; ihre
-  Daten bleiben.
+- Ein vermerktes Einverständnis bleibt beim Wechsel erhalten.
 
 ## Personen und Schulen (`/personen`, Administration)
 
 `include/people_page.rb`, `static/personen.html`:
 
 - Schulen: Name, Anschrift, Datenschutzbeauftragte Stelle, Vorschrift,
-  Aufsichtsbehörde (für die Unterlagen der Schule) und die beiden Daten, die
-  eine Schule freigeben: Entscheidung der Schulleitung und Vereinbarung zur
-  Auftragsverarbeitung (`decision_at`, `agreement_at`; `approved_at`, sobald
-  beide da sind). Die Schule der Installation ist beim Import freigegeben.
-  »Gäste anlegen« macht die Schule `guests` für Erwachsene von außerhalb,
-  immer freigegeben; ihre Gruppen entstehen unter `/gruppen`.
+  Aufsichtsbehörde (für die Unterlagen der Schule) und die beiden Daten, mit
+  denen eine Schule zugestimmt hat: Entscheidung der Schulleitung und
+  Vereinbarung zur Auftragsverarbeitung (`decision_at`, `agreement_at`;
+  `approved_at`, sobald beide da sind), für die Schule der Installation
+  genauso. Daneben, wie viele Schülerinnen und Schüler ein Einverständnis
+  haben und wie viele ungeklärt sind. »Gäste anlegen« macht die Schule
+  `guests` für Erwachsene von außerhalb (Nutzungsordnung); ihre Gruppen
+  entstehen unter `/gruppen`.
+- Einladungen ohne Konto: Gruppen mit Eingeladenen, zu deren Adresse es kein
+  Konto gibt (etwa aus der Liste der ganzen Schule); Lehrkräfte zählen nie
+  dazu. Ausgewählte Gruppen lassen sich davon leeren, bestätigt mit der Zahl
+  der Personen; wer danach in keiner Gruppe steht, ist nicht mehr
+  eingeladen. Ein Konto wird dabei nicht gelöscht, es gibt keins.
 - Lehrkräfte: Adresse, Name (freiwillig) und Schule (Pflicht); eine
   Willkommensmail (`MailTexts.welcome_teacher`) mit den Links zum Einstieg,
   zu `/gruppen` und zu den Unterlagen ihrer Schule und, wenn `COST_NOTE`

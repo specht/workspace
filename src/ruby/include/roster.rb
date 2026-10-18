@@ -119,7 +119,7 @@ module Roster
         teaching = parsed[:groups].flat_map { |g| g.teachers.map { |email| [email, g.name] } }.uniq.select { |email, _| invited.include?(email) }
         teachers = designated + teaching.map(&:first)
         {
-            :groups => parsed[:groups].map { |g| { :name => g.name, :school => school, :approved => true } },
+            :groups => parsed[:groups].map { |g| { :name => g.name, :school => school, :approved => false } },
             :invitations => emails.map do |email|
                 name = built[:invitations][email][:name]
                 { :email => email, :name => name == email ? nil : name, :teacher => designated.include?(email),
@@ -130,23 +130,22 @@ module Roster
         }
     end
 
-    # What Roster.build needs, from the records. Students of a group whose
-    # school is not approved yet are left out, so they cannot log in; teachers
-    # always count. A teacher in no group is listed under »Lehrkräfte«, as the
-    # files had it, so that it is invited.
+    # What Roster.build needs, from the records. Whether a school has agreed
+    # does not decide who can log in (the maintainer's decision: nobody is
+    # locked out while the legal side is being settled); /gruppen and
+    # /personen show it. A teacher in no group is listed under »Lehrkräfte«,
+    # as the files had it, so that it is invited.
     def self.from_records(records)
-        approved = records[:groups].to_h { |g| [g[:name], g[:approved]] }
+        known = records[:groups].to_h { |g| [g[:name], true] }
         names = records[:invitations].to_h { |i| [i[:email], i[:name]] }
-        teaching = records[:teaching].select { |_, group| approved.key?(group) }
+        teaching = records[:teaching].select { |_, group| known.key?(group) }
         teachers = Set.new(records[:invitations].select { |i| i[:teacher] }.map { |i| i[:email] }) + teaching.map(&:first)
-        members = records[:memberships].select do |email, group|
-            approved.key?(group) && (approved[group] || teachers.include?(email))
-        end
+        members = records[:memberships].select { |_, group| known.key?(group) }
         members = members.sort_by { |email, group| [group, email] }.map { |email, group| [group, email, names[email]] }
         members = members.select { |_, email, _| names.key?(email) }
         lonely = teachers.select { |email| names.key?(email) }.sort - members.map { |_, email, _| email }
         members += lonely.map { |email| [TEACHERS_GROUP, email, names[email]] }
-        group_names = (approved.keys + (lonely.empty? ? [] : [TEACHERS_GROUP])).uniq.sort
+        group_names = (known.keys + (lonely.empty? ? [] : [TEACHERS_GROUP])).uniq.sort
         groups = group_names.map do |name|
             Group.new(:name => name, :teachers => teaching.select { |_, g| g == name }.map(&:first).sort, :declared => true)
         end

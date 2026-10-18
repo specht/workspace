@@ -88,8 +88,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   später, auch aus einer Tabelle kopiert), nehmen Lehrkräfte ihrer Schule
   dazu und schicken Willkommensmails; Antworten gehen an sie. `/personen`
   für die Administration: Schulen mit dem Datum der Entscheidung der
-  Schulleitung und der Vereinbarung zur Auftragsverarbeitung (erst mit
-  beidem können sich ihre Schülerinnen und Schüler anmelden), Gäste,
+  Schulleitung und der Vereinbarung zur Auftragsverarbeitung, Gäste,
   Lehrkräfte mit ihrer Schule (nur die Administration ordnet sie zu) und
   Willkommensmail, alle Personen mit Schule und Gruppen.
 - Unterlagen je Schule: `/datenschutz?schule=KEY` (der Link steht unter
@@ -104,6 +103,18 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Schulleitung, in der Vereinbarung und in der Willkommensmail an
   Lehrkräfte, was der Server kostet und wie eine Schule beitragen kann; die
   Seiten sagen dazu, dass die Nutzung nie davon abhängt.
+- Zustimmung, Einverständnis, ungeklärt: Eine Schule hat zugestimmt, sobald
+  die Administration unter `/personen` das Datum der Entscheidung der
+  Schulleitung und das der Vereinbarung zur Auftragsverarbeitung einträgt,
+  die Schule der Installation genauso; der Import setzt das nicht mehr.
+  Bis dahin tragen Lehrkräfte unter `/gruppen` je Schülerin oder Schüler das
+  Datum eines schriftlichen Einverständnisses ein (Elternbrief mit
+  Einverständniserklärung unter `/datenschutz`). Gesperrt wird ohne beides
+  niemand; Gruppe und `/personen` zeigen, wie viele noch ungeklärt sind.
+- »Einladungen ohne Konto« unter `/personen`: Eingeladene, die sich nie
+  angemeldet haben (etwa aus der Liste der ganzen Schule), lassen sich
+  gruppenweise entfernen, bestätigt mit ihrer Zahl. Lehrkräfte zählen nie
+  dazu; wer danach in keiner Gruppe steht, ist nicht mehr eingeladen.
 - »Schule wechseln« unter »Gruppen« (nur Administration): verschiebt eine
   Gruppe, die beim Import unter der eigenen Schule gelandet ist, zu der
   Schule, zu der sie gehört. Eine Vorschau zeigt, was sich ändert; Lehrkräfte

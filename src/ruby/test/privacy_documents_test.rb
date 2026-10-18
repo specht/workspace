@@ -51,6 +51,8 @@ class PrivacyDocumentsTest < Minitest::Test
             assert_includes html, "href='/datenschutz?schule=partner-1'", slug.inspect if slug
         end
         PrivacyDocuments::DOCUMENTS.each_key { |slug| assert_includes PrivacyDocuments.page(nil, s), "href='/datenschutz/#{slug}?schule=partner-1'" }
+        assert_includes PrivacyDocuments.page(nil, s), "href='/datenschutz/elternbrief?schule=partner-1&amp;einverstaendnis=1'"
+        assert_includes PrivacyDocuments.page(nil, settings(FULL)), "href='/datenschutz/elternbrief?einverstaendnis=1'"
 
         schulleitung = PrivacyDocuments.body('schulleitung', s)
         assert_includes schulleitung, 'Für Partnerschule ist der Betreiber Auftragsverarbeiter'

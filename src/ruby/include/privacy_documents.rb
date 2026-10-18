@@ -495,7 +495,8 @@ module PrivacyDocuments
     # The index of /datenschutz.
     def self.index_html(s)
         items = DOCUMENTS.map do |slug, (title, who)|
-            "<li><a href='#{path(s, slug)}'>#{h(title)}</a><br><span class='who'>#{h(who)}</span></li>"
+            consent = slug == 'elternbrief' ? " · <a href='#{path(s, slug)}#{s[:school_key] ? '&amp;' : '?'}einverstaendnis=1'>mit Einverständniserklärung</a> (solange die Schule nicht zugestimmt hat)" : ''
+            "<li><a href='#{path(s, slug)}'>#{h(title)}</a>#{consent}<br><span class='who'>#{h(who)}</span></li>"
         end
         partner = s[:partner] ? "<p>Die Unterlagen für <strong>#{school(s)}</strong>: Verantwortlich ist die Schule, #{operator(s)} betreibt den Workspace für sie als Auftragsverarbeiter. " \
             "Was hier fehlt (Anschrift, Datenschutzbeauftragte Stelle, Vorschrift, Aufsichtsbehörde), trägt die Administration unter »Personen › Schulen« ein.</p>" : ''

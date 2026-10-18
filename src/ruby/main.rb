@@ -7192,9 +7192,13 @@ class Main < Sinatra::Base
         respond_raw_with_mimetype(PrivacyDocuments.page(nil, privacy_settings_for(params['schule'])), 'text/html')
     end
 
+    # ?einverstaendnis=1 on the Elternbrief adds the consent form: for a
+    # student whose school has not agreed yet (/gruppen, »Einverständnis«).
     get '/datenschutz/:document' do
         halt 404 unless PrivacyDocuments::DOCUMENTS.key?(params['document'])
-        respond_raw_with_mimetype(PrivacyDocuments.page(params['document'], privacy_settings_for(params['schule'])), 'text/html')
+        s = privacy_settings_for(params['schule'])
+        s = s.merge(:parental_consent_required => true) if params['document'] == 'elternbrief' && params['einverstaendnis'] == '1'
+        respond_raw_with_mimetype(PrivacyDocuments.page(params['document'], s), 'text/html')
     end
 
     get '/*' do

@@ -17,7 +17,9 @@ class MailTextsTest < Minitest::Test
         args = { :web_root => WEB, :school => 'BS 7', :email => 't@example.org', :signature => 'Admin', :documents_url => "#{WEB}/datenschutz?schule=bs7" }
         _, waiting = MailTexts.welcome_teacher(**args, :school_approved => false)
         _, ready = MailTexts.welcome_teacher(**args, :school_approved => true, :cost_note => 'Der Server kostet 40 € im Monat.')
-        assert_includes waiting, 'sobald deine Schule zugestimmt hat'
+        assert_includes waiting, 'noch nicht zugestimmt'
+        assert_includes waiting, 'schriftliches Einverständnis'
+        assert_includes waiting, 'Anmelden können sich deine Schülerinnen und Schüler schon jetzt'
         refute_includes waiting, 'Server kostet'
         assert_includes ready, 'hat dem Einsatz zugestimmt'
         assert_includes ready, 'Der Server kostet 40 € im Monat.'

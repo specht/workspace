@@ -82,10 +82,10 @@ class Main < Sinatra::Base
         names.map do |name|
             members = neo4j_query(<<~END_OF_QUERY, :name => name).map do |r|
                 MATCH (i:Invitation)-[:MEMBER_OF]->(:Group {name: $name})
-                RETURN i.email AS email, i.name AS name, i.welcomed_at AS welcomed_at
+                RETURN i.email AS email, i.name AS name, i.welcomed_at AS welcomed_at, i.consent_at AS consent_at
                 ORDER BY toLower(coalesce(i.name, i.email));
             END_OF_QUERY
-                { :email => r['email'], :name => r['name'], :welcomed_at => r['welcomed_at'],
+                { :email => r['email'], :name => r['name'], :welcomed_at => r['welcomed_at'], :consent_at => r['consent_at'],
                   :account => accounts.include?(r['email']), :teacher => @@teacher_emails.include?(r['email']) }
             end
             teachers = neo4j_query(<<~END_OF_QUERY, :name => name).map { |r| { :email => r['email'], :name => r['name'] } }
@@ -102,6 +102,30 @@ class Main < Sinatra::Base
         respond(:imported => !imported.nil?, :admin => admin_logged_in?, :school => imported ? school_of_teacher(my_email) : nil,
             :groups => imported ? groups_overview : [],
             :schools => admin_logged_in? && imported ? neo4j_query('MATCH (s:School) RETURN s.key AS key, s.name AS name, s.approved_at IS NOT NULL AS approved ORDER BY s.name;').map { |r| { :key => r['key'], :name => r['name'], :approved => r['approved'] == true } } : [])
+    end
+
+    # A student's written consent (of the parents, or their own when of
+    # age), recorded by a teacher of the group, who keeps the form and is
+    # responsible for it: date (YYYY-MM-DD) or empty to remove it. It matters
+    # while the school has not agreed; it never decides who can log in.
+    post '/api/groups/set_consent' do
+        assert(teacher_account_logged_in?)
+        roster_writable!
+        data = parse_request_data(:required_keys => [:name, :email, :date])
+        name = managed_group!(data[:name])
+        email = data[:email].to_s.downcase
+        text = data[:date].to_s.strip
+        date = text.empty? ? nil : (Date.iso8601(text).to_s rescue halt(400, { :error => 'invalid_date' }.to_json))
+        halt 400, { :error => 'invalid_date' }.to_json if date && Date.iso8601(date) > Date.today
+        done = neo4j_query(<<~END_OF_QUERY, :email => email, :name => name, :date => date, :me => date ? my_email : nil).first
+            MATCH (i:Invitation {email: $email})-[:MEMBER_OF]->(:Group {name: $name})
+            SET i.consent_at = $date, i.consent_by = $me
+            RETURN i.email AS email;
+        END_OF_QUERY
+        halt 403, { :error => 'not_your_student' }.to_json unless done
+        Main.note_roster_change!
+        STDERR.puts "Consent for a member of #{name} #{date ? 'recorded' : 'removed'} by #{my_email}"
+        respond(:email => email, :consent_at => date)
     end
 
     # --- Moving a group to another school (administrators only) ----------

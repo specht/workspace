@@ -170,7 +170,8 @@ module Privacy
     def self.base_records
         [
             {
-                :data => 'Einladungslisten: E-Mail-Adresse, Name (freiwillig) und Gruppe aller eingeladenen Personen, auch derer, die sich nie anmelden',
+                :data => 'Einladungslisten: E-Mail-Adresse, Name (freiwillig) und Gruppe aller eingeladenen Personen, auch derer, die sich nie anmelden; ' \
+                    'gegebenenfalls das Datum eines schriftlichen Einverständnisses und wer es vermerkt hat',
                 :source => 'von der Lehrkraft eingetragen',
                 :categories => [:master, :assignment],
                 :purpose => 'festlegen, wer sich anmelden kann',

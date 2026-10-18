@@ -1,10 +1,13 @@
 # /personen, for administrators: schools and whether they have agreed,
 # teachers and their school (only administrators assign one), welcome mails
-# to teachers. A school counts as approved (its students can log in) once
-# both the Schulleitung's decision and the agreement on processing
-# (Auftragsverarbeitung) are recorded; the school of the installation is
-# approved by the import, as it was before. »Gäste« is a school of its own
-# for adults from outside (Nutzungsordnung), approved from the start.
+# to teachers. A school has agreed (approved_at) once both the
+# Schulleitung's decision and the agreement on processing
+# (Auftragsverarbeitung) are recorded, the school of the installation too;
+# nothing else, not the import, sets it. Until then a student's own written
+# consent, which the teacher records on /gruppen, covers that student.
+# Neither locks anyone out (the maintainer's decision); the pages show what
+# is still open. »Gäste« is a school of its own for adults from outside
+# (Nutzungsordnung), which needs no school's decision.
 class Main < Sinatra::Base
     GUESTS_SCHOOL = 'guests'
 
@@ -20,13 +23,19 @@ class Main < Sinatra::Base
         "#{base}-#{SecureRandom.hex(3)}"
     end
 
+    # students: invited non-teachers in the school's groups; consent: of
+    # those, the ones whose written consent a teacher has recorded.
     def schools_overview
-        neo4j_query(<<~END_OF_QUERY).map { |r| r['s'].merge(:groups => r['groups'], :teachers => r['teachers']) }
+        neo4j_query(<<~END_OF_QUERY).map { |r| r['s'].merge(:groups => r['groups'], :teachers => r['teachers'], :students => r['students'], :consent => r['consent']) }
             MATCH (s:School)
             OPTIONAL MATCH (g:Group)-[:AT]->(s)
             WITH s, count(DISTINCT g) AS groups
             OPTIONAL MATCH (t:Invitation)-[:AT]->(s)
-            RETURN s, groups, count(DISTINCT t) AS teachers
+            WITH s, groups, count(DISTINCT t) AS teachers
+            OPTIONAL MATCH (m:Invitation)-[:MEMBER_OF]->(:Group)-[:AT]->(s)
+            WHERE coalesce(m.teacher, false) = false AND NOT (m)-[:TEACHES]->(:Group) AND NOT (m)-[:AT]->(:School)
+            RETURN s, groups, teachers, count(DISTINCT m) AS students,
+                count(DISTINCT CASE WHEN m.consent_at IS NOT NULL THEN m END) AS consent
             ORDER BY coalesce(s.home, false) DESC, coalesce(s.guests, false), toLower(s.name);
         END_OF_QUERY
     end
@@ -34,7 +43,7 @@ class Main < Sinatra::Base
     def school_approval!(key)
         neo4j_query(<<~END_OF_QUERY, :key => key, :now => Time.now.to_i, :me => my_email)
             MATCH (s:School {key: $key})
-            WHERE coalesce(s.home, false) = false AND coalesce(s.guests, false) = false
+            WHERE coalesce(s.guests, false) = false
             SET s.approved_at = CASE WHEN s.decision_at IS NOT NULL AND s.agreement_at IS NOT NULL
                 THEN coalesce(s.approved_at, $now) ELSE null END,
                 s.approved_by = CASE WHEN s.decision_at IS NOT NULL AND s.agreement_at IS NOT NULL
@@ -167,6 +176,74 @@ class Main < Sinatra::Base
         end
         neo4j_query('MATCH (i:Invitation {email: $email}) SET i.welcomed_at = $now;', :email => email, :now => Time.now.to_i)
         respond(:sent => email)
+    end
+
+    # --- Invitations nobody used ---------------------------------------------
+    #
+    # Whole classes are often invited at once (the school list, for
+    # Vertretungsstunden); many never log in. An invitation counts as unused
+    # while no account exists for its address (no User node: nobody has even
+    # asked for a code). Teachers never count: who teaches a group, is marked
+    # as a teacher or has a school stays.
+    UNUSED_INVITATION = <<~END_OF_CYPHER
+        NOT EXISTS { MATCH (:User {email: i.email}) }
+        AND coalesce(i.teacher, false) = false AND NOT (i)-[:TEACHES]->(:Group) AND NOT (i)-[:AT]->(:School)
+    END_OF_CYPHER
+
+    def unused_invitations_by_group
+        neo4j_query(<<~END_OF_QUERY).map { |r| r.transform_keys(&:to_sym) }
+            MATCH (g:Group)
+            OPTIONAL MATCH (g)-[:AT]->(s:School)
+            OPTIONAL MATCH (m:Invitation)-[:MEMBER_OF]->(g)
+            WITH g, s, count(m) AS members
+            OPTIONAL MATCH (i:Invitation)-[:MEMBER_OF]->(g) WHERE #{UNUSED_INVITATION}
+            RETURN g.name AS name, s.name AS school, members, count(i) AS unused
+            ORDER BY unused DESC, toLower(g.name);
+        END_OF_QUERY
+    end
+
+    def unused_count(groups)
+        neo4j_query(<<~END_OF_QUERY, :groups => groups).first['n'].to_i
+            MATCH (i:Invitation)-[:MEMBER_OF]->(g:Group) WHERE g.name IN $groups AND #{UNUSED_INVITATION}
+            RETURN count(DISTINCT i) AS n;
+        END_OF_QUERY
+    end
+
+    post '/api/people/unused_invitations' do
+        admin_only!
+        groups = unused_invitations_by_group
+        total = neo4j_query("MATCH (i:Invitation) WHERE #{UNUSED_INVITATION} AND (i)-[:MEMBER_OF]->(:Group) RETURN count(i) AS n;").first['n'].to_i
+        respond(:groups => groups, :total => total)
+    end
+
+    # How many distinct people removing the unused invitations of these
+    # groups would touch: the number the administrator confirms.
+    post '/api/people/unused_count' do
+        admin_only!
+        data = parse_request_data(:required_keys => [:groups], :types => { :groups => Array }, :max_body_length => 64_000)
+        respond(:count => unused_count(data[:groups].map(&:to_s).uniq))
+    end
+
+    # groups: the group names to clean up; confirmation: the number of people
+    # the page showed, so that nothing else goes than what was confirmed.
+    post '/api/people/remove_unused_invitations' do
+        admin_only!
+        data = parse_request_data(:required_keys => [:groups, :confirmation], :types => { :groups => Array }, :max_body_length => 64_000)
+        groups = data[:groups].map(&:to_s).uniq
+        halt 400, { :error => 'no_groups' }.to_json if groups.empty?
+        count = unused_count(groups)
+        halt 409, { :error => 'count_changed' }.to_json unless data[:confirmation].to_s.strip == count.to_s
+        removed = neo4j_query(<<~END_OF_QUERY, :groups => groups).first['n'].to_i
+            MATCH (i:Invitation)-[r:MEMBER_OF]->(g:Group) WHERE g.name IN $groups AND #{UNUSED_INVITATION}
+            DELETE r
+            RETURN count(r) AS n;
+        END_OF_QUERY
+        before = neo4j_query('MATCH (i:Invitation) RETURN count(i) AS n;').first['n'].to_i
+        drop_orphan_invitations
+        gone = before - neo4j_query('MATCH (i:Invitation) RETURN count(i) AS n;').first['n'].to_i
+        Main.note_roster_change!
+        STDERR.puts "Unused invitations removed by #{my_email}: #{removed} memberships in #{groups.size} groups, #{gone} people no longer invited"
+        respond(:memberships => removed, :uninvited => gone)
     end
 
     # Teachers with their school, for the list on /personen.

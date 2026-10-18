@@ -71,10 +71,12 @@ bekommen die gewöhnlichen Unterlagen. Lehrkräfte finden den Link unter
 `/gruppen`, die Administration unter `/personen`.
 
 Hat die Schulleitung entschieden und die Vereinbarung unterschrieben, trägt
-die Administration beide Daten unter `/personen` ein; erst dann können sich
-die Schülerinnen und Schüler dieser Schule anmelden, und die
-Datenschutzerklärung unter `/impressum` nennt die Schule mit einem Link auf
-ihre Fassung.
+die Administration beide Daten unter `/personen` ein; dann nennt die
+Datenschutzerklärung unter `/impressum` die Schule mit einem Link auf ihre
+Fassung. Bis dahin vermerken die Lehrkräfte ein schriftliches Einverständnis
+je Schülerin oder Schüler (Elternbrief mit Einverständniserklärung,
+`?einverstaendnis=1`). Gesperrt wird ohne beides niemand
+(teacher-access.md, »Zustimmung der Schule, Einverständnis, ungeklärt«).
 
 ## Der Weg über die Schule
 
