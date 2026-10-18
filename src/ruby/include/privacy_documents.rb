@@ -24,8 +24,27 @@ module PrivacyDocuments
         Privacy.h(text)
     end
 
+    # The school that is responsible: the operator's own, or a partner
+    # school (Privacy.for_school).
     def self.school(s)
-        s[:operator_school] ? h(s[:operator_school]) : 'die Schule'
+        s[:school_name] ? h(s[:school_name]) : 'die Schule'
+    end
+
+    # The links between the documents keep the school (?schule=KEY).
+    def self.path(s, slug = nil)
+        base = slug ? "/datenschutz/#{slug}" : '/datenschutz'
+        s[:school_key] ? "#{base}?schule=#{h(CGI.escape(s[:school_key].to_s))}" : base
+    end
+
+    # Where the Datenschutzerklärung of this school is, as a printed address.
+    def self.privacy_url(s)
+        "#{h(s[:web_root].to_s)}#{s[:partner] ? path(s, 'datenschutzerklaerung') : '/impressum'}"
+    end
+
+    # Who signs the Elternbrief: the teacher of the partner school, otherwise
+    # the operator.
+    def self.signer(s)
+        s[:signer] ? h(s[:signer]) : operator_name(s)
     end
 
     def self.operator(s)
@@ -76,6 +95,7 @@ module PrivacyDocuments
             <p>
             Betrieben wird der Workspace von #{operator(s)}, nicht-kommerziell, ohne Werbung und ohne Tracking.
             Der Server läuft bei #{hosting(s)}. Der Quelltext ist öffentlich (github.com/specht/workspace).
+            #{s[:partner] ? "Für #{school(s)} ist der Betreiber Auftragsverarbeiter; verantwortlich ist die Schule selbst. Ansprechperson an der Schule: #{Privacy.contact_html(s)}." : ''}
             </p>
 
             <h2>Welche Daten anfallen</h2>
@@ -100,9 +120,10 @@ module PrivacyDocuments
             Um eine schriftliche Entscheidung, dass der Workspace im Unterricht, vor allem im Fach Informatik, als digitales
             Lehr- und Lernmittel eingesetzt werden darf. Damit ist die Schule verantwortlich und der Einsatz rechtlich auf die Aufgabe der Schule gestützt
             (Art. 6 Abs. 1 Buchst. e DSGVO#{s[:school_law] ? " in Verbindung mit #{h(s[:school_law])}" : ''});
-            eine Einwilligung jeder einzelnen Familie ist dann nicht nötig. Es entstehen keine Kosten, und es ist nichts zu installieren.
+            eine Einwilligung jeder einzelnen Familie ist dann nicht nötig. Für die Schule ist die Nutzung kostenlos, und es ist nichts zu installieren.
             Die Entscheidung kann jederzeit widerrufen werden; dann werden alle Konten der Schule gelöscht.
             </p>
+            #{cost_note_html(s)}
             <p>Alle weiteren Unterlagen liegen fertig vor:</p>
             #{list(DOCUMENTS.reject { |slug, _| slug == 'schulleitung' }.map { |_, (title, who)| "#{h(title)}, #{h(who)}" })}
             <p>Aufgaben für die Schule: die Entscheidung unterschreiben, die Vereinbarung zur Auftragsverarbeitung unterschreiben,
@@ -119,6 +140,15 @@ module PrivacyDocuments
             #{signature('Ort, Datum', 'Schulleitung')}
             </div>
         END_OF_HTML
+    end
+
+    # Voluntary contributions to the server's cost (COST_NOTE), on the page
+    # for the Schulleitung; the use never depends on them, and the page says
+    # so itself, whatever the note says.
+    def self.cost_note_html(s)
+        return '' unless s[:cost_note]
+
+        "<p>#{h(s[:cost_note])} Ein Beitrag ist keine Bedingung: Die Nutzung hängt nicht davon ab, ob eine Schule beitragen kann.</p>\n"
     end
 
     # --- Prüfübersicht ---------------------------------------------------
@@ -170,8 +200,10 @@ module PrivacyDocuments
     # --- VVT --------------------------------------------------------------
 
     def self.vvt_html(s)
-        controller = s[:legal_basis] == :school || s[:operator_school].nil? ? "#{school(s)}, vertreten durch die Schulleitung" : operator(s)
-        address = s[:operator_address] ? "<br>#{Privacy.lines_html(s[:operator_address])}" : ''
+        school_controller = s[:legal_basis] == :school || s[:school_name].nil?
+        controller = school_controller ? "#{school(s)}, vertreten durch die Schulleitung" : operator(s)
+        address_text = school_controller ? s[:school_address] : s[:operator_address]
+        address = address_text ? "<br>#{Privacy.lines_html(address_text)}" : ''
         dsb = s[:data_protection_officer] ? Privacy.lines_html(s[:data_protection_officer]) : 'die Datenschutzbeauftragte Stelle der Schule'
         records = Privacy.records(s).map do |r|
             [h(r[:data]), h(Privacy.categories_text(r)), h(r[:who]), h(r[:how_long])]
@@ -286,7 +318,7 @@ module PrivacyDocuments
             <h2>§ 5 Ort der Verarbeitung</h2>
             <p>Die Daten werden ausschließlich in der Europäischen Union verarbeitet.</p>
             <h2>§ 6 Vergütung</h2>
-            <p>Der Auftragsverarbeiter erbringt die Leistung unentgeltlich.</p>
+            <p>Der Auftragsverarbeiter erbringt die Leistung unentgeltlich.#{s[:cost_note] ? ' Freiwillige Beiträge zu den Kosten des Servers sind möglich; sie sind keine Gegenleistung und keine Bedingung.' : ''}</p>
             #{signature('Ort, Datum, Schulleitung', 'Ort, Datum, Auftragsverarbeiter')}
         END_OF_HTML
     end
@@ -327,9 +359,9 @@ module PrivacyDocuments
             <h2>Ihre Rechte</h2>
             <p>
             #{Privacy.rights_html(s)} Für alle Fragen und Anliegen schreiben Sie bitte an #{Privacy.contact_html(s)}.
-            Die vollständige Datenschutzerklärung steht unter #{h(s[:web_root].to_s)}/impressum.
+            Die vollständige Datenschutzerklärung steht unter #{privacy_url(s)}.
             </p>
-            <p>Mit freundlichen Grüßen<br>#{operator_name(s)}</p>
+            <p>Mit freundlichen Grüßen<br>#{signer(s)}</p>
         END_OF_HTML
         if consent
             out += <<~END_OF_HTML
@@ -463,13 +495,16 @@ module PrivacyDocuments
     # The index of /datenschutz.
     def self.index_html(s)
         items = DOCUMENTS.map do |slug, (title, who)|
-            "<li><a href='/datenschutz/#{slug}'>#{h(title)}</a><br><span class='who'>#{h(who)}</span></li>"
+            "<li><a href='#{path(s, slug)}'>#{h(title)}</a><br><span class='who'>#{h(who)}</span></li>"
         end
+        partner = s[:partner] ? "<p>Die Unterlagen für <strong>#{school(s)}</strong>: Verantwortlich ist die Schule, #{operator(s)} betreibt den Workspace für sie als Auftragsverarbeiter. " \
+            "Was hier fehlt (Anschrift, Datenschutzbeauftragte Stelle, Vorschrift, Aufsichtsbehörde), trägt die Administration unter »Personen › Schulen« ein.</p>" : ''
         <<~END_OF_HTML
             <p>
             Alles, was eine Schule braucht, um den Workspace im Unterricht einzusetzen, aus denselben Angaben wie die
             <a href='/impressum#datenschutz'>Datenschutzerklärung</a>. Jede Unterlage lässt sich drucken oder als PDF speichern.
             </p>
+            #{partner}
             <ol class='documents'>
             #{items.join("\n")}
             </ol>
@@ -502,7 +537,7 @@ module PrivacyDocuments
     def self.page(slug, s)
         title, who = slug ? DOCUMENTS.fetch(slug) : ['Datenschutz: Unterlagen für die Schule', 'für Schulleitung, Datenschutzbeauftragte Stelle und Eltern']
         content = slug ? body(slug, s) : index_html(s)
-        toolbar = slug ? "<div class='toolbar'><a href='/datenschutz'>Alle Unterlagen</a><button onclick='window.print()'>Drucken</button></div>" : ''
+        toolbar = slug ? "<div class='toolbar'><a href='#{path(s)}'>Alle Unterlagen</a><button onclick='window.print()'>Drucken</button></div>" : ''
         <<~END_OF_HTML
             <!DOCTYPE html>
             <html lang='de'>
@@ -516,7 +551,7 @@ module PrivacyDocuments
             <body>
             #{toolbar}
             <h1>#{h(title)}</h1>
-            <p class='who'>#{h(who)}#{s[:operator_school] ? " · #{h(s[:operator_school])}" : ''} · Stand #{Privacy::CHECKED.strftime('%d.%m.%Y')}</p>
+            <p class='who'>#{h(who)}#{s[:school_name] ? " · #{h(s[:school_name])}" : ''} · Stand #{Privacy::CHECKED.strftime('%d.%m.%Y')}</p>
             #{content}
             </body>
             </html>

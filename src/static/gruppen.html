@@ -196,8 +196,8 @@
             }
             if (data.school) {
                 school.append(`<p>Deine Schule: <strong>${esc(data.school.name)}</strong>. ${data.school.approved
-                    ? 'Sie hat dem Einsatz zugestimmt.'
-                    : 'Sie hat dem Einsatz noch nicht zugestimmt: Bis dahin können sich deine Schülerinnen und Schüler nicht anmelden; Gruppen anlegen und Adressen eintragen kannst du schon. Die <a href="/datenschutz">Unterlagen für die Schule</a> helfen dabei.'}</p>`);
+                    ? `Sie hat dem Einsatz zugestimmt. Die <a href="/datenschutz?schule=${encodeURIComponent(data.school.key)}">Unterlagen für deine Schule</a> (Elternbrief, Datenschutzerklärung und mehr) lassen sich dort drucken.`
+                    : 'Sie hat dem Einsatz noch nicht zugestimmt: Bis dahin können sich deine Schülerinnen und Schüler nicht anmelden; Gruppen anlegen und Adressen eintragen kannst du schon. Die <a href="/datenschutz?schule=${encodeURIComponent(data.school.key)}">Unterlagen für deine Schule</a> helfen dabei.'}</p>`);
             } else if (!data.admin) {
                 school.append(`<div class='alert alert-warning'>Dir ist noch keine Schule zugeordnet; das macht die Administration. Bis dahin kannst du keine Gruppe anlegen.</div>`);
             }

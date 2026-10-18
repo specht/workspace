@@ -61,6 +61,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Dateien, deren Name mit _ beginnt, werden weiter gelesen.
   `src/scripts/check-invitation-import.rb` prüft eine Kopie der Dateien
   vorher, ohne Server.
+  Für Betreibende anderer Installationen: Nach dem Import liest der Server
+  die Dateien unter `/invitations` nicht mehr (außer denen mit `_`);
+  Änderungen gehören dann in den Browser (`/gruppen`, `/personen`). Bis zum
+  Import ändert sich nichts.
 - Datenschutzerklärung und Unterlagen: ehemalige Schülerinnen und Schüler
   können ihr Konto unter der Nutzungsordnung weiterführen; die
   Einladungslisten stehen als eigene Datenart in der Tabelle; Cloudflare als
@@ -88,6 +92,20 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   beidem können sich ihre Schülerinnen und Schüler anmelden), Gäste,
   Lehrkräfte mit ihrer Schule (nur die Administration ordnet sie zu) und
   Willkommensmail, alle Personen mit Schule und Gruppen.
+- Unterlagen je Schule: `/datenschutz?schule=KEY` (der Link steht unter
+  »Gruppen« und auf `/personen`) ist das Paket für eine Partnerschule, mit
+  ihr als Verantwortlicher (Name, Anschrift, Datenschutzbeauftragte Stelle,
+  Vorschrift und Aufsichtsbehörde, wie auf `/personen` eingetragen), dem
+  Betreiber als Auftragsverarbeiter und ihren Lehrkräften als
+  Ansprechpersonen; den Elternbrief unterschreibt die Lehrkraft, die ihn
+  aufruft. Die Datenschutzerklärung unter `/impressum` nennt jede
+  freigegebene Partnerschule mit einem Link auf ihre Fassung. Für
+  Betreibende: `COST_NOTE` in `credentials.rb` nennt auf der Seite für die
+  Schulleitung, in der Vereinbarung und in der Willkommensmail an
+  Lehrkräfte, was der Server kostet und wie eine Schule beitragen kann; die
+  Seiten sagen dazu, dass die Nutzung nie davon abhängt.
+- Klassenseite: Gibt es mehr als eine Schule (Partnerschulen, Gäste), stehen
+  die Gruppen in der Auswahl unter ihrer Schule.
 - Konten löschen: Unter »Administration« löscht ein Klick ein Konto mit
   allem, was dazugehört (Workspace, die Workspaces der
   Leistungsüberprüfungen, MySQL- und Neo4j-Datenbanken, Antworten, Abgaben,

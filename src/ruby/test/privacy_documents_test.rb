@@ -36,6 +36,52 @@ class PrivacyDocumentsTest < Minitest::Test
         end
     end
 
+    PARTNER = { 'key' => 'partner-1', 'name' => 'Partnerschule', 'address' => 'Weg 9, 54321 Anderswo', 'data_protection_officer' => 'Frau Partner-DSB' }.freeze
+
+    def partner(signer: nil)
+        Privacy.for_school(settings(FULL), PARTNER, :teachers => [{ :name => 'Tom Lehrer', :email => 'tom@partner.example' }], :signer => signer)
+    end
+
+    def test_the_package_of_a_partner_school
+        s = partner
+        ([nil] + PrivacyDocuments::DOCUMENTS.keys).each do |slug|
+            html = PrivacyDocuments.page(slug, s)
+            refute_match(/\bnil\b|#\{/, html, slug.inspect)
+            assert_includes html, '· Partnerschule ·', slug.inspect
+            assert_includes html, "href='/datenschutz?schule=partner-1'", slug.inspect if slug
+        end
+        PrivacyDocuments::DOCUMENTS.each_key { |slug| assert_includes PrivacyDocuments.page(nil, s), "href='/datenschutz/#{slug}?schule=partner-1'" }
+
+        schulleitung = PrivacyDocuments.body('schulleitung', s)
+        assert_includes schulleitung, 'Für Partnerschule ist der Betreiber Auftragsverarbeiter'
+        assert_includes schulleitung, 'Tom Lehrer'
+        vvt = PrivacyDocuments.body('vvt', s)
+        assert_includes vvt, 'Partnerschule, vertreten durch die Schulleitung<br>Weg 9, 54321 Anderswo'
+        assert_includes vvt, 'Frau Partner-DSB'
+        refute_includes vvt, 'Schulweg 1'
+        avv = PrivacyDocuments.body('auftragsverarbeitung', s)
+        assert_includes avv, '<strong>Partnerschule</strong>, vertreten durch die Schulleitung'
+        assert_includes avv, '<strong>Dr. Erika Muster</strong>, Schulweg 1, 12345 Musterstadt (Auftragsverarbeiter)'
+        letter = PrivacyDocuments.body('elternbrief', s)
+        assert_includes letter, 'Mit freundlichen Grüßen<br>Tom Lehrer'
+        assert_includes letter, 'https://code.example.org/datenschutz/datenschutzerklaerung?schule=partner-1'
+        assert_includes letter, 'tom@partner.example'
+        refute_includes letter, 'muster@example.org'
+        assert_includes PrivacyDocuments.body('elternbrief', partner(:signer => 'Anna Lehrerin')), 'Mit freundlichen Grüßen<br>Anna Lehrerin'
+        assert_includes PrivacyDocuments.body('elternbrief', settings(FULL)), 'Mit freundlichen Grüßen<br>Dr. Erika Muster'
+        assert_includes PrivacyDocuments.body('elternbrief', settings(FULL)), 'https://code.example.org/impressum'
+    end
+
+    def test_contributions_are_never_a_condition
+        plain = PrivacyDocuments.body('schulleitung', settings(FULL))
+        assert_includes plain, 'Für die Schule ist die Nutzung kostenlos'
+        refute_includes plain, 'keine Bedingung'
+        with_note = settings(FULL.merge('COST_NOTE' => 'Der Server kostet <500 €> im Jahr.'))
+        assert_includes PrivacyDocuments.body('schulleitung', with_note), 'Der Server kostet &lt;500 €&gt; im Jahr. Ein Beitrag ist keine Bedingung'
+        assert_includes PrivacyDocuments.body('auftragsverarbeitung', with_note), 'unentgeltlich. Freiwillige Beiträge'
+        refute_includes PrivacyDocuments.body('auftragsverarbeitung', settings(FULL)), 'Freiwillige Beiträge'
+    end
+
     def test_the_index_links_every_document
         index = PrivacyDocuments.page(nil, settings(FULL))
         PrivacyDocuments::DOCUMENTS.each_key { |slug| assert_includes index, "href='/datenschutz/#{slug}'" }

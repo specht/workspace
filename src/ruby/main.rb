@@ -5053,7 +5053,22 @@ class Main < Sinatra::Base
         io = +"<p class='small mb-2'><a href='/gruppen'>Gruppen verwalten</a>: anlegen, Adressen eintragen, Willkommensmails.</p>"
         io << "<form class='class-board-select' method='get' action='/klasse'>"
         io << "<label>Gruppe <select class='form-select' name='group' onchange='this.form.submit()'>"
-        groups.each { |g| io << "<option value='#{h.(g)}'#{g == group ? ' selected' : ''}>#{h.(g)} (#{(@@group_members[g] || []).size})</option>" }
+        option = ->(g) { "<option value='#{h.(g)}'#{g == group ? ' selected' : ''}>#{h.(g)} (#{(@@group_members[g] || []).size})</option>" }
+        # With more than one school (partner schools, guests), the groups are
+        # nested under their school; test groups and groups without a school
+        # come last, on their own.
+        schools = school_names_of_groups
+        by_school = groups.group_by { |g| schools[g] }
+        if (by_school.keys - [nil]).size > 1
+            by_school.each do |school, names|
+                next if school.nil?
+
+                io << "<optgroup label='#{h.(school)}'>#{names.map(&option).join}</optgroup>"
+            end
+            (by_school[nil] || []).each { |g| io << option.call(g) }
+        else
+            groups.each { |g| io << option.call(g) }
+        end
         io << "</select></label><input type='hidden' name='tab' value='#{h.(tab)}'>"
         # The programming language of the group's activities (CodeLanguages),
         # where an activity offers more than one; saved at once, not sent with
@@ -7140,13 +7155,45 @@ class Main < Sinatra::Base
     # The documents for the school (PrivacyDocuments): public, like the
     # Datenschutzerklärung they are made from, so that a link can go to the
     # Schulleitung.
+    #
+    # ?schule=KEY renders them for a partner school (Privacy.for_school): that
+    # school as controller, its teachers as contact; the teacher who is logged
+    # in signs the Elternbrief. The operator's own school and the guests get
+    # the plain package.
+    def privacy_settings_for(key)
+        s = Privacy.settings
+        return s if key.to_s.empty? || Main.roster_imported.nil?
+
+        row = neo4j_query('MATCH (s:School {key: $key}) RETURN s;', :key => key.to_s).first
+        halt 404 unless row
+        teachers = neo4j_query(<<~END_OF_QUERY, :key => key.to_s).map { |r| { :name => r['name'], :email => r['email'] } }
+            MATCH (i:Invitation {teacher: true})-[:AT]->(:School {key: $key})
+            RETURN i.name AS name, i.email AS email
+            ORDER BY toLower(coalesce(i.name, i.email));
+        END_OF_QUERY
+        me = user_logged_in? ? teachers.find { |x| x[:email] == @session_user[:email] } : nil
+        Privacy.for_school(s, row['s'], :teachers => teachers, :signer => me && me[:name])
+    end
+
+    # The approved partner schools, for the list on /impressum.
+    def partner_schools
+        return [] if Main.roster_imported.nil?
+
+        neo4j_query(<<~END_OF_QUERY).map { |r| { :key => r['key'], :name => r['name'] } }
+            MATCH (s:School)
+            WHERE s.approved_at IS NOT NULL AND coalesce(s.home, false) = false AND coalesce(s.guests, false) = false
+            RETURN s.key AS key, s.name AS name
+            ORDER BY toLower(s.name);
+        END_OF_QUERY
+    end
+
     get '/datenschutz' do
-        respond_raw_with_mimetype(PrivacyDocuments.page(nil, Privacy.settings), 'text/html')
+        respond_raw_with_mimetype(PrivacyDocuments.page(nil, privacy_settings_for(params['schule'])), 'text/html')
     end
 
     get '/datenschutz/:document' do
         halt 404 unless PrivacyDocuments::DOCUMENTS.key?(params['document'])
-        respond_raw_with_mimetype(PrivacyDocuments.page(params['document'], Privacy.settings), 'text/html')
+        respond_raw_with_mimetype(PrivacyDocuments.page(params['document'], privacy_settings_for(params['schule'])), 'text/html')
     end
 
     get '/*' do

@@ -24,7 +24,7 @@ module Privacy
     # The settings the pages use, each optional (credentials.template.rb).
     STRING_SETTINGS = %w[
         OPERATOR_NAME OPERATOR_ROLE OPERATOR_SCHOOL OPERATOR_ADDRESS CONTACT_EMAIL
-        DATA_PROTECTION_OFFICER HOSTING MAIL_PROVIDER SCHOOL_LAW SUPERVISORY_AUTHORITY BACKUP
+        DATA_PROTECTION_OFFICER HOSTING MAIL_PROVIDER SCHOOL_LAW SUPERVISORY_AUTHORITY BACKUP COST_NOTE
     ].freeze
 
     # The settings as a Hash with symbol keys: strings stripped, an empty or
@@ -41,7 +41,39 @@ module Privacy
         values[:web_root] = scope.const_defined?('WEB_ROOT') ? scope.const_get('WEB_ROOT').to_s : nil
         values[:parental_consent_required] =
             scope.const_defined?('PARENTAL_CONSENT_REQUIRED') && scope.const_get('PARENTAL_CONSENT_REQUIRED') == true
+        # The school that is responsible and whom to write to: the operator's
+        # own school and the operator, unless for_school replaces them.
+        values[:school_name] = values[:operator_school]
+        values[:school_address] = values[:operator_address]
+        values[:contacts] = [{ :name => values[:operator_name], :email => values[:contact_email] }]
         values
+    end
+
+    # The settings for the package of a partner school (/datenschutz?schule=KEY):
+    # that school is the controller, with name, address, data protection
+    # officer, law and authority from its School node (/personen); the operator
+    # stays the processor; its teachers are the contact, and the one who is
+    # logged in signs the Elternbrief. school: the node's properties, string
+    # or symbol keys; teachers: [{ name:, email: }].
+    def self.for_school(s, school, teachers: [], signer: nil)
+        school = school.transform_keys(&:to_sym)
+        return s if school[:home] || school[:guests]
+
+        field = ->(key) { text = school[key].to_s.strip; text.empty? ? nil : text }
+        teachers = teachers.map { |t| { :name => t[:name].to_s.strip.empty? ? nil : t[:name].strip, :email => t[:email] } }
+        s.merge(
+            :partner => true,
+            :school_key => school[:key],
+            :school_name => field.call(:name),
+            :school_address => field.call(:address),
+            :data_protection_officer => field.call(:data_protection_officer),
+            :school_law => field.call(:school_law),
+            :supervisory_authority => field.call(:supervisory_authority),
+            :legal_basis => :school,
+            :parental_consent_required => false,
+            :contacts => teachers,
+            :signer => signer || (teachers.map { |t| t[:name] }.compact.join(', ') if teachers.any? { |t| t[:name] }),
+        )
     end
 
     def self.h(text)
@@ -58,21 +90,23 @@ module Privacy
         "<a href='mailto:#{h(s[:contact_email])}'>#{h(s[:contact_email])}</a>"
     end
 
-    # Whom to write to: »Dr. Erika Muster (muster@…)«, as far as configured.
+    # Whom to write to: »Dr. Erika Muster (muster@…)«, as far as configured;
+    # for a partner school its teachers.
     def self.contact_html(s)
-        name = s[:operator_name] ? h(s[:operator_name]) : nil
-        link = email_link(s)
-        return "#{name} (#{link})" if name && link
-        return link if link
-        return name if name
+        parts = (s[:contacts] || []).map do |c|
+            name = c[:name] ? h(c[:name]) : nil
+            link = c[:email] ? "<a href='mailto:#{h(c[:email])}'>#{h(c[:email])}</a>" : nil
+            next "#{name} (#{link})" if name && link
 
-        'die Lehrkraft, die zum Workspace eingeladen hat'
+            link || name
+        end.compact
+        parts.empty? ? 'die Lehrkraft, die zum Workspace eingeladen hat' : parts.join(', ')
     end
 
     # Who is responsible (Verantwortlicher): the school when it uses the
     # Workspace by a decision of the Schulleitung, otherwise the operator.
     def self.school_is_controller?(s)
-        s[:legal_basis] == :school && !s[:operator_school].nil?
+        s[:legal_basis] == :school && !s[:school_name].nil?
     end
 
     def self.operator_line(s)
@@ -364,22 +398,27 @@ module Privacy
     # Who is not covered by the school's decision: adults from elsewhere and
     # the classes of other schools.
     def self.others_html
-        '<p>Für Erwachsene von außerhalb der Schule (etwa Lehrkräfte anderer Schulen) und für ehemalige Schülerinnen und Schüler, ' \
+        '<p>Für Erwachsene von außerhalb der Schule (Gäste, etwa Lehrkräfte anderer Schulen, die den Workspace kennenlernen) und für ehemalige Schülerinnen und Schüler, ' \
             'die ihr Konto behalten, ist Rechtsgrundlage die Nutzungsordnung, mit der sie das Konto erhalten oder weiterführen ' \
-            '(Art. 6 Abs. 1 Buchst. b DSGVO); verantwortlich ist dafür der Betreiber. ' \
+            '(Art. 6 Abs. 1 Buchst. b DSGVO); verantwortlich ist dafür der Betreiber, nicht die Schule. ' \
             'Schülerinnen und Schüler einer anderen Schule nutzen den Workspace nur, wenn ihre Schule das ebenso entschieden hat; ' \
             'verantwortlich ist dann ihre Schule.</p>'
     end
 
     def self.controller_html(s)
-        address = s[:operator_address] ? "<br>#{lines_html(s[:operator_address])}" : ''
         if school_is_controller?(s)
-            out = "<p>Verantwortlich ist die Schule: <strong>#{h(s[:operator_school])}</strong>, vertreten durch die Schulleitung#{address}</p>"
-            if s[:operator_name]
+            address = s[:school_address] ? "<br>#{lines_html(s[:school_address])}" : ''
+            out = "<p>Verantwortlich ist die Schule: <strong>#{h(s[:school_name])}</strong>, vertreten durch die Schulleitung#{address}</p>"
+            if s[:partner]
+                operator_address = s[:operator_address] ? ", #{h(s[:operator_address].split("\n").map(&:strip).reject(&:empty?).join(', '))}" : ''
+                out += "<p>Den Workspace betreibt für die Schule als Auftragsverarbeiter (Art. 28 DSGVO) #{operator_line(s) || 'eine Lehrkraft einer anderen Schule'}#{operator_address}. " \
+                    "Ansprechperson an der Schule für alle Fragen zum Datenschutz: #{contact_html(s)}.</p>"
+            elsif s[:operator_name]
                 out += "<p>Den Workspace betreibt im Auftrag der Schule #{operator_line(s)}. " \
                     "Ansprechperson für alle Fragen zum Datenschutz: #{contact_html(s)}.</p>"
             end
         else
+            address = s[:operator_address] ? "<br>#{lines_html(s[:operator_address])}" : ''
             who = operator_line(s) || 'die Lehrkraft, die den Workspace betreibt'
             out = "<p>Verantwortlich ist #{who}#{address}</p>"
             out += "<p>E-Mail: #{email_link(s)}</p>" if s[:contact_email]
@@ -450,8 +489,19 @@ module Privacy
         out
     end
 
-    # The whole /impressum page body.
-    def self.page_html(s)
+    # The schools whose Schulleitung decided the same: each has its own
+    # version of this page. partners: [{ key:, name: }], approved only.
+    def self.partners_html(partners)
+        return '' if partners.nil? || partners.empty?
+
+        links = partners.map { |p| "<a href='/datenschutz/datenschutzerklaerung?schule=#{h(CGI.escape(p[:key].to_s))}'>#{h(p[:name])}</a>" }
+        '<p>Folgende Schulen haben den Einsatz ebenso entschieden. Für ihre Schülerinnen und Schüler ist die jeweilige Schule verantwortlich, ' \
+            "und es gilt deren Fassung dieser Erklärung: #{links.join(', ')}.</p>"
+    end
+
+    # The whole /impressum page body; partners: the approved partner schools
+    # (Main#partner_schools), listed under the legal basis.
+    def self.page_html(s, partners: [])
         out = +"<div class='privacy-page'>\n"
         out << impressum_html(s)
         out << <<~END_OF_HTML
@@ -476,6 +526,7 @@ module Privacy
 
             #{heading('Rechtsgrundlage', 'Art. 13 Abs. 1 Buchst. c DSGVO')}
             #{legal_basis_html(s)}
+            #{partners_html(partners)}
 
             #{heading('Welche Daten gespeichert werden', 'Kategorien, Herkunft, Empfänger und Speicherdauer · Art. 13 Abs. 1 Buchst. e, Abs. 2 Buchst. a; Art. 14 Abs. 1 Buchst. d, Abs. 2 Buchst. f DSGVO')}
             #{records_table_html(records(s))}

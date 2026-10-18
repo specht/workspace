@@ -25,6 +25,14 @@ class Main < Sinatra::Base
         row && { :key => row['key'], :name => row['name'], :approved => row['approved'] == true }
     end
 
+    # The school of every group, once the roster is in Neo4j:
+    # { group name => school name }; groups without a school are left out.
+    def school_names_of_groups
+        return {} if Main.roster_imported.nil?
+
+        neo4j_query('MATCH (g:Group)-[:AT]->(s:School) RETURN g.name AS name, s.name AS school;').to_h { |r| [r['name'], r['school']] }
+    end
+
     def school_of_group(name)
         row = neo4j_query(<<~END_OF_QUERY, :name => name).first
             MATCH (:Group {name: $name})-[:AT]->(s:School)

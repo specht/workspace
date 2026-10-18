@@ -90,7 +90,7 @@
 
     function school_status(s) {
         if (s.home) return s.approved_at ? 'freigegeben (Schule dieser Installation, beim Import)' : 'nicht freigegeben';
-        if (s.guests) return 'Erwachsene von außerhalb, Nutzungsordnung: immer freigegeben';
+        if (s.guests) return 'Erwachsene von außerhalb, Nutzungsordnung: immer freigegeben. Gruppen dafür legst du unter <a href="/gruppen">Gruppen</a> mit der Schule »Gäste« an.';
         return s.approved_at ? `freigegeben seit ${day(s.approved_at)}` : '<span class="text-warning-emphasis">noch nicht freigegeben</span>';
     }
 

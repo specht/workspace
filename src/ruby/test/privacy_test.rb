@@ -71,6 +71,44 @@ class PrivacyTest < Minitest::Test
         assert_includes page(FULL), 'Verantwortlich ist Dr. Erika Muster'
     end
 
+    PARTNER = {
+        'key' => 'partner-1', 'name' => 'Partner & Co. Schule', 'address' => "Weg 9\n54321 Anderswo",
+        'data_protection_officer' => 'Frau Partner-DSB', 'school_law' => '§ 2 Schulgesetz Anderswo', 'supervisory_authority' => '',
+    }.freeze
+    TEACHERS = [{ :name => 'Tom Lehrer', :email => 'tom@partner.example' }, { :name => nil, :email => 'zweite@partner.example' }].freeze
+
+    def test_a_partner_school_is_responsible_for_its_own_package
+        s = Privacy.for_school(Privacy.settings(scope(FULL.merge('LEGAL_BASIS' => :school))), PARTNER, :teachers => TEACHERS)
+        html = Privacy.page_html(s).split("<h1 id='datenschutz'>").last
+        assert_includes html, 'Verantwortlich ist die Schule: <strong>Partner &amp; Co. Schule</strong>, vertreten durch die Schulleitung<br>Weg 9<br>54321 Anderswo'
+        assert_includes html, 'als Auftragsverarbeiter (Art. 28 DSGVO) Dr. Erika Muster, Lehrerin für Informatik am Beispiel-Gymnasium, Schulweg 1, 12345 Musterstadt'
+        assert_includes html, "Ansprechperson an der Schule für alle Fragen zum Datenschutz: Tom Lehrer (<a href='mailto:tom@partner.example'>tom@partner.example</a>), <a href='mailto:zweite@partner.example'>zweite@partner.example</a>."
+        assert_includes html, 'in Verbindung mit § 2 Schulgesetz Anderswo'
+        assert_includes html, 'Frau Partner-DSB'
+        refute_includes html, 'Max Schutz'
+        refute_includes html, 'muster@example.org', 'the operator is not the contact of a partner school'
+        assert_includes html, 'Aufsichtsbehörde des Bundeslandes', 'an empty field of the school is missing, not the operator\'s'
+        assert_equal 'Tom Lehrer', s[:signer]
+        assert_equal 'Anna', Privacy.for_school(s, PARTNER, :teachers => TEACHERS, :signer => 'Anna')[:signer]
+
+        # A partner school is responsible even before the operator's school decided.
+        assert_includes Privacy.page_html(Privacy.for_school(Privacy.settings(scope(FULL)), PARTNER)), 'Verantwortlich ist die Schule: <strong>Partner'
+        assert_includes Privacy.page_html(Privacy.for_school(Privacy.settings(scope(FULL)), PARTNER)), 'die Lehrkraft, die zum Workspace eingeladen hat'
+    end
+
+    def test_the_operators_school_and_the_guests_get_the_plain_package
+        s = Privacy.settings(scope(FULL))
+        assert_same s, Privacy.for_school(s, { 'key' => 'home', 'name' => 'Anders', 'home' => true })
+        assert_same s, Privacy.for_school(s, { :key => 'guests', :name => 'Gäste', :guests => true })
+    end
+
+    def test_approved_partner_schools_are_listed
+        partners = [{ :key => 'p 1', :name => 'Erste <Schule>' }, { :key => 'p2', :name => 'Zweite' }]
+        html = Privacy.page_html(Privacy.settings(scope(FULL.merge('LEGAL_BASIS' => :school))), :partners => partners)
+        assert_includes html, "<a href='/datenschutz/datenschutzerklaerung?schule=p+1'>Erste &lt;Schule&gt;</a>, <a href='/datenschutz/datenschutzerklaerung?schule=p2'>Zweite</a>"
+        refute_includes page(FULL), 'ebenso entschieden'
+    end
+
     def test_parental_consent_on_top_of_the_school_decision
         refute_includes page(FULL.merge('LEGAL_BASIS' => :school)), 'Einverständnis erklärt'
         assert_includes page(FULL.merge('LEGAL_BASIS' => :school, 'PARENTAL_CONSENT_REQUIRED' => true)), 'Einverständnis erklärt'

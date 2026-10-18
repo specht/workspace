@@ -48,6 +48,33 @@ Alle freiwillig; fehlt eine, sagt die Seite, dass die Angabe fehlt.
 - `PARENTAL_CONSENT_REQUIRED = true`: der Elternbrief bekommt eine
   Einverständniserklärung, die Datenschutzerklärung sagt, dass Konten erst
   danach freigeschaltet werden. Das Sperren selbst ist noch nicht gebaut.
+- `COST_NOTE`: was der Server kostet und wie eine Schule beitragen kann;
+  steht auf der Seite für die Schulleitung, in der Vereinbarung (§ 6) und in
+  der Willkommensmail an Lehrkräfte. Die Seiten sagen dazu immer, dass die
+  Nutzung nicht davon abhängt. Geht Geld an eine Privatperson, sind Steuer
+  und Nebentätigkeit zu bedenken; einfacher zahlt ein Förderverein oder der
+  Schulträger den Server.
+
+## Partnerschulen
+
+Sobald die Einladungen in der Datenbank sind (teacher-access.md,
+»Einladungen importieren«), legt die Administration unter `/personen`
+weitere Schulen an, mit Anschrift, Datenschutzbeauftragter Stelle, Vorschrift
+und Aufsichtsbehörde. `/datenschutz?schule=KEY` (und jede Unterlage darunter)
+ist dann das Paket für diese Schule (`Privacy.for_school`): Sie ist die
+Verantwortliche, der Betreiber ihr Auftragsverarbeiter, ihre Lehrkräfte sind
+die Ansprechpersonen, und den Elternbrief unterschreibt die Lehrkraft, die
+angemeldet ist (sonst stehen alle Lehrkräfte der Schule darunter). Fehlt
+eine Angabe der Schule, fehlt sie in den Unterlagen, statt dass die der
+eigenen Schule dort stünde. Die Schule der Installation und die Gäste
+bekommen die gewöhnlichen Unterlagen. Lehrkräfte finden den Link unter
+`/gruppen`, die Administration unter `/personen`.
+
+Hat die Schulleitung entschieden und die Vereinbarung unterschrieben, trägt
+die Administration beide Daten unter `/personen` ein; erst dann können sich
+die Schülerinnen und Schüler dieser Schule anmelden, und die
+Datenschutzerklärung unter `/impressum` nennt die Schule mit einem Link auf
+ihre Fassung.
 
 ## Der Weg über die Schule
 

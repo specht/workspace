@@ -55,6 +55,12 @@ CONTACT_EMAIL = 'kontakt@example.com'
 # SCHOOL_LAW = '§ 64 Abs. 11 des Schulgesetzes für das Land Berlin und § 2 der Digitale Lehr- und Lernmittel-Verordnung (DigLLV)'
 # Die Aufsichtsbehörde für Beschwerden:
 # SUPERVISORY_AUTHORITY = "Berliner Beauftragte für Datenschutz und Informationsfreiheit\nAlt-Moabit 59–61, 10555 Berlin\nmailbox@datenschutz-berlin.de"
+# Was der Server kostet und wie eine Schule beitragen kann, wenn sie möchte;
+# steht auf der Seite für die Schulleitung und in der Willkommensmail an
+# Lehrkräfte. Die Nutzung hängt nie davon ab, und die Seite sagt das dazu.
+# Geht Geld an eine Privatperson, sind Steuer und Nebentätigkeit zu
+# bedenken; einfacher zahlt ein Förderverein oder der Schulträger den Server.
+# COST_NOTE = 'Der Server kostet etwa 500 € im Jahr. Wer beitragen möchte, etwa über den Förderverein, schreibt an die Ansprechperson.'
 
 MYSQL_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'
 MYSQL_PASSWORD_SALT = 'bitte_ein_langes_salt_generieren'

@@ -66,6 +66,52 @@ kein Konto. Gehört eine Gruppe zu einer Schule, die noch nicht freigegeben
 ist, können sich ihre Schülerinnen und Schüler noch nicht anmelden; ihre
 Lehrkräfte schon.
 
+## Gruppen im Browser (`/gruppen`)
+
+Nach dem Import verwaltet jede Lehrkraft ihre Gruppen selbst
+(`include/groups_page.rb`, `static/gruppen.html`):
+
+- Eine Gruppe anlegen; sie gehört zur Schule der Lehrkraft. Namen müssen
+  frei sein; `Administrator`, `Lehrkräfte`, die Testgruppen und Gruppen aus
+  den `_`-Dateien sind reserviert.
+- Adressen eintragen, eine pro Zeile, mit oder ohne Namen
+  (`Roster.parse_member_lines`, auch aus einer Tabelle kopiert); ein Name,
+  der später kommt, wird ergänzt, ein vorhandener nicht überschrieben.
+- Lehrkräfte derselben Schule in eine Gruppe aufnehmen; eine andere Schule
+  wird abgelehnt. Nur die Administration ordnet Lehrkräfte einer Schule zu.
+- Willkommensmails an die Mitglieder, die noch keine bekommen haben
+  (`MailTexts.welcome_student`); Antworten gehen an die Lehrkraft
+  (`welcomed_at` an der Einladung). Begrenzt auf 600 je Lehrkraft und Stunde.
+- Die Gruppe löschen (Name zur Bestätigung). Wer danach in keiner Gruppe
+  mehr steht und keine Lehrkraft ist, ist nicht mehr eingeladen; ein Konto
+  löscht das nicht (Administration › Konten ohne Einladung).
+- Der Link zu den Unterlagen für die eigene Schule (datenschutz.md,
+  »Partnerschulen«).
+
+Administratorinnen und Administratoren sehen alle Gruppen und wählen beim
+Anlegen die Schule, auch »Gäste«.
+
+## Personen und Schulen (`/personen`, Administration)
+
+`include/people_page.rb`, `static/personen.html`:
+
+- Schulen: Name, Anschrift, Datenschutzbeauftragte Stelle, Vorschrift,
+  Aufsichtsbehörde (für die Unterlagen der Schule) und die beiden Daten, die
+  eine Schule freigeben: Entscheidung der Schulleitung und Vereinbarung zur
+  Auftragsverarbeitung (`decision_at`, `agreement_at`; `approved_at`, sobald
+  beide da sind). Die Schule der Installation ist beim Import freigegeben.
+  »Gäste anlegen« macht die Schule `guests` für Erwachsene von außerhalb,
+  immer freigegeben; ihre Gruppen entstehen unter `/gruppen`.
+- Lehrkräfte: Adresse, Name (freiwillig) und Schule (Pflicht); eine
+  Willkommensmail (`MailTexts.welcome_teacher`) mit den Links zum Einstieg,
+  zu `/gruppen` und zu den Unterlagen ihrer Schule und, wenn `COST_NOTE`
+  gesetzt ist, dem Hinweis zu den Kosten. »Keine Lehrkraft mehr« nimmt
+  Schule und betreute Gruppen weg.
+- Alle Personen mit Rolle, Schule, Gruppen und ob sie ein Konto haben.
+
+Auf der Klassenseite stehen die Gruppen unter ihrer Schule, sobald es mehr
+als eine gibt; Testgruppen und Gruppen ohne Schule zuletzt.
+
 ## Wer was sieht
 
 | | Lernende | Lehrkraft (`*`) | Lehrkraft (`+`) | Admin |
