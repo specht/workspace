@@ -12,6 +12,12 @@
       "state_hash": "39f01525e8cf67a776515598c0c548464691d7117a422ac120df15ea61044b45",
       "workspace_look": "4.138.0-ls366"
     },
+    "showerjs.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "67bf11d4f05eea759a8504d70be500f0985170d2048f241fd03363e46f9432ae",
+      "state_hash": "f2039a05910478664aed44650b4f9a92bb1e013885aae30a424513ab9fcf0884",
+      "workspace_look": "4.138.0-ls366"
+    },
     "side-by-side.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "25b8762ffc46dee20c521021581e7c35294afe1fdab6702451aa81dbcc1ded74",

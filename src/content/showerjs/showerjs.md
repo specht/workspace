@@ -167,9 +167,9 @@ window.addEventListener('load', function () {
 preview-reload
 tab: preview
 viewport: 1280x720
-click: selector:.slide
+click: selector:section.slide:first-of-type
 sleep: 1.5
 move-mouse: selector:body
 -->
-<img class='teaser' hidden src='showerjs.webp' alt='Die Titelfolie einer shower.js-Präsentation: »Shower Presentation Engine«, darunter »Brought to you by Vadim Makeev«, im Hintergrund Hände an einer orangefarbenen Schreibmaschine.'>
+<img class='teaser' hidden src='showerjs.webp' alt='Die Titelfolie der shower.js-Vorlage: oben eine orangefarbene Schreibmaschine vor hellblauem Grund, darunter »Titel deiner Präsentation« und »Dein Name«.'>
 
