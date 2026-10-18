@@ -5650,3 +5650,47 @@ table.value-groups td.group-even {
 table.value-groups td.group-odd {
     background: color-mix(in srgb, var(--bs-primary) 10%, transparent);
 }
+
+/* /gruppen and /personen: tables of people and their row actions. Headings
+   small and on one line; a button with only an icon has no gap after it. */
+.people-table th {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+    white-space: nowrap;
+}
+
+.people-table td {
+    white-space: normal;
+    hyphens: manual;
+    overflow-wrap: break-word;
+}
+
+
+.btn.btn-icon .bi {
+    margin-right: 0;
+}
+
+.btn-link .bi {
+    margin-right: 0.3em;
+}
+
+.btn-link {
+    text-decoration: none;
+}
+
+.saved-flash {
+    background-color: var(--bs-success-bg-subtle) !important;
+    transition: background-color 0.3s;
+}
+
+.suggest-menu {
+    width: 100%;
+    max-height: 18rem;
+    overflow-y: auto;
+}
+
+.disk-fat {
+    color: var(--bs-danger-text-emphasis);
+    font-weight: 600;
+}

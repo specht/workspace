@@ -34,6 +34,86 @@ function confirm_dialog(options, on_confirm) {
         function () { on_confirm(); });
 }
 
+// In-page question with one input instead of the browser's prompt().
+// options: { title, label, value, placeholder, confirm, icon, type, suggest }
+// (suggest: as fetch for attach_suggestions).
+// on_ok(value) gets the trimmed text; returning false keeps the dialog open.
+function input_dialog(options, on_ok) {
+    const esc = (t) => $('<div>').text(t === undefined || t === null ? '' : String(t)).html();
+    const dialog = $('#__template_modal .modal-dialog');
+    if (dialog.hasClass('modal-lg')) {
+        dialog.removeClass('modal-lg');
+        $('#__template_modal').one('hidden.bs.modal', function () { dialog.addClass('modal-lg'); });
+    }
+    const body = `<label class='form-label' for='ti_input_dialog'>${esc(options.label)}</label>`
+        + `<input id='ti_input_dialog' class='form-control' type='${options.type || 'text'}' autocomplete='off' placeholder='${esc(options.placeholder)}' value='${esc(options.value)}'>`;
+    const submit = function () {
+        const value = $('#ti_input_dialog').val().trim();
+        if (!value) return false;
+        return on_ok(value);
+    };
+    showTemplateModal(esc(options.title), body,
+        `<i class='bi ${options.icon || 'bi-check-lg'}'></i>${esc(options.confirm || 'OK')}`, 'btn-primary',
+        "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-outline-secondary', submit);
+    $('#__template_modal').one('shown.bs.modal', function () { $('#ti_input_dialog').trigger('focus').trigger('select'); });
+    // Suggestions first, so that Enter on a suggestion picks it instead of
+    // confirming the dialog.
+    if (options.suggest) attach_suggestions($('#ti_input_dialog'), options.suggest, function (person) { $('#ti_input_dialog').val(person.email); });
+    $('#ti_input_dialog').on('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); $('#__template_modal .modal-footer .btn').first().trigger('click'); }
+    });
+}
+
+// Suggestions under an input while typing (people by name or address).
+// fetch(q, show) calls show([{ email, name }]); on_pick(person) gets the
+// chosen one. Arrow keys move, Enter picks, Escape closes.
+function attach_suggestions(input, fetch, on_pick) {
+    const esc = (t) => $('<div>').text(t === undefined || t === null ? '' : String(t)).html();
+    const wrap = $("<div class='position-relative'></div>");
+    input.after(wrap);
+    wrap.append(input);
+    const menu = $("<ul class='dropdown-menu suggest-menu' role='listbox'></ul>");
+    wrap.append(menu);
+    input.attr({ autocomplete: 'off', role: 'combobox', 'aria-expanded': 'false', 'aria-autocomplete': 'list' });
+    let people = [], active = -1, timer = null, asked = '';
+    const close = function () { menu.removeClass('show').empty(); input.attr('aria-expanded', 'false'); people = []; active = -1; };
+    const mark = function () {
+        menu.find('.dropdown-item').removeClass('active').eq(active).addClass('active');
+    };
+    const pick = function (i) {
+        const person = people[i];
+        close();
+        if (person) on_pick(person);
+    };
+    const show = function (list) {
+        people = list || [];
+        active = -1;
+        menu.empty();
+        if (!people.length) { close(); return; }
+        people.forEach(function (p, i) {
+            const item = $(`<li><button type='button' class='dropdown-item' role='option'>${p.name ? `${esc(p.name)} <span class='text-body-secondary small'>${esc(p.email)}</span>` : esc(p.email)}</button></li>`);
+            item.find('button').on('mousedown', function (e) { e.preventDefault(); pick(i); });
+            menu.append(item);
+        });
+        menu.addClass('show');
+        input.attr('aria-expanded', 'true');
+    };
+    input.on('input', function () {
+        clearTimeout(timer);
+        const q = input.val().trim();
+        if (q.length < 2) { close(); return; }
+        timer = setTimeout(function () { asked = q; fetch(q, function (list) { if (asked === q) show(list); }); }, 200);
+    });
+    input.on('keydown', function (e) {
+        if (!menu.hasClass('show')) return;
+        if (e.key === 'ArrowDown') { e.preventDefault(); active = Math.min(active + 1, people.length - 1); mark(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); active = Math.max(active - 1, 0); mark(); }
+        else if (e.key === 'Enter' && active >= 0) { e.preventDefault(); e.stopImmediatePropagation(); pick(active); }
+        else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); }
+    });
+    input.on('blur', () => setTimeout(close, 150));
+}
+
 function show_success_message(message) {
     var div = $('<div>').css('text-align', 'center').css('padding', '15px').addClass('bg-light text-success').html(message);
     $('.api_messages').empty();

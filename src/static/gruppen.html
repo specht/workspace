@@ -2,45 +2,94 @@
     .group-card {
         border: 1px solid var(--bs-border-color);
         border-radius: 0.5rem;
-        padding: 1rem;
-        margin-bottom: 1.5rem;
+        margin-bottom: 0.6rem;
     }
+    .group-card > summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 0.6rem 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0.2rem 1rem;
+    }
+    .group-card > summary::-webkit-details-marker { display: none; }
+    .group-card > summary::before {
+        content: '\203A';
+        display: inline-block;
+        width: 0.8rem;
+        transition: transform 0.15s;
+        color: var(--bs-secondary-color);
+    }
+    .group-card[open] > summary::before { transform: rotate(90deg); }
+    .group-card[open] > summary { border-bottom: 1px solid var(--bs-border-color); }
+    .group-card .group-body { padding: 0.8rem 1rem 1rem 1rem; }
     .group-card h2 {
-        font-size: 1.3rem;
-        margin-bottom: 0.2rem;
+        font-size: 1.15rem;
+        margin: 0;
     }
-    .group-card .school {
+    .group-card .facts {
         color: var(--bs-secondary-color);
         font-size: 0.9rem;
     }
-    .group-card table td,
-    .group-card table th {
-        white-space: normal;
-        vertical-align: middle;
+    .school-heading {
+        font-size: 1.1rem;
+        margin: 1.6rem 0 0.6rem 0;
+        color: var(--bs-secondary-color);
     }
+    .group-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.4rem;
+        margin-bottom: 0.6rem;
+    }
+    .group-teachers {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.4rem;
+        margin-bottom: 0.6rem;
+    }
+    .teacher-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.1rem 0.6rem;
+        border: 1px solid var(--bs-border-color);
+        border-radius: 1rem;
+        font-size: 0.9rem;
+    }
+    .teacher-chip .btn-close { font-size: 0.55rem; }
+    .group-add { margin-top: 0.4rem; }
+    .consent-date { min-width: 9rem; }
     .member-name {
         border: none;
+        border-bottom: 1px dashed var(--bs-border-color);
         background: transparent;
         width: 100%;
         padding: 0.1rem 0.3rem;
         color: inherit;
     }
+    .member-name:hover { border-bottom-color: var(--bs-secondary-color); }
     .member-name:focus {
         background: var(--bs-body-bg);
         outline: 1px solid var(--bs-border-color);
+        border-bottom-color: transparent;
     }
+    .member-name::placeholder { color: var(--bs-secondary-color); font-style: italic; }
 </style>
 <div class='container'>
     <div class='row'>
         <div class='col-md-12'>
             <h1>Gruppen</h1>
             <p>
-                Hier legst du Gruppen an und trägst ein, wer dazugehört. Namen sind freiwillig und können auch später kommen;
-                ohne Namen zeigt der Workspace die Adresse. Wer in einer Gruppe steht, kann sich anmelden; ein Konto entsteht bei der ersten Anmeldung.
-                Die Gruppen erscheinen auf der <a href='/klasse'>Klassenseite</a>.
+                Wer in einer Gruppe steht, kann sich anmelden; ein Konto entsteht bei der ersten Anmeldung. Namen sind freiwillig und können
+                auch später kommen. Die Gruppen erscheinen auf der <a href='/klasse'>Klassenseite</a>.
             </p>
             <div id='groups_school'></div>
             <div id='groups_new'></div>
+            <input type='search' id='groups_filter' class='form-control mb-2' placeholder='Gruppe, Name oder Adresse suchen' autocomplete='off' aria-label='Gruppen durchsuchen' style='display: none;'>
             <div id='groups_here'><p class='text-body-secondary'>Einen Moment …</p></div>
         </div>
     </div>
@@ -79,6 +128,31 @@
         });
     }
 
+    // »vor 3 Tagen« for a date (YYYY-MM-DD).
+    function ago_text(date) {
+        const days = Math.round((new Date(new Date().toISOString().slice(0, 10)) - new Date(date)) / 86400000);
+        return days <= 0 ? 'heute' : days === 1 ? 'gestern' : days < 60 ? `vor ${days} Tagen` : days < 730 ? `vor ${Math.round(days / 30.4)} Monaten` : `vor ${Math.round(days / 365)} Jahren`;
+    }
+
+    // Disk space in KB as »153 MB«; at fat_kb and above highlighted.
+    function disk_html(kb, fat_kb) {
+        if (kb === null || kb === undefined) return "<span class='text-body-secondary'>–</span>";
+        const text = kb >= 1024 * 1024 ? `${(kb / 1024 / 1024).toLocaleString('de-DE', { maximumFractionDigits: 1 })} GB` : `${Math.max(1, Math.round(kb / 1024))} MB`;
+        return fat_kb && kb >= fat_kb ? `<span class='disk-fat' title='deutlich mehr als die meisten'><i class='bi bi-hdd-fill'></i>${text}</span>` : text;
+    }
+
+    let fat_kb = null;
+
+    function suggest_people(group, kind, q, show) {
+        api_call('/api/groups/suggest', { name: group.name, kind: kind, q: q }, r => show(r.success ? r.people : []), { no_please_wait: true });
+    }
+
+    // A short green glow: saved.
+    function flash(el) {
+        el.addClass('saved-flash');
+        setTimeout(() => el.removeClass('saved-flash'), 900);
+    }
+
     function day(ts) {
         return ts ? new Date(ts * 1000).toLocaleDateString('de-DE') : '';
     }
@@ -95,7 +169,7 @@
     function change_school(group) {
         const others = all_schools.filter(s => !group.school || s.key !== group.school.key);
         if (!others.length) {
-            alert('Es gibt keine andere Schule. Lege sie zuerst unter »Personen« an.');
+            show_error_message('Es gibt keine andere Schule. Lege sie zuerst unter <a href="/personen#schulen">Personen</a> an.');
             return;
         }
         const select = `<select id='sel_target_school' class='form-select'>${others.map(s => `<option value='${esc(s.key)}'>${esc(s.name)}${s.approved ? '' : ' (hat noch nicht zugestimmt)'}</option>`).join('')}</select>`;
@@ -149,87 +223,169 @@
         });
     }
 
+    // Which groups are open, so that a reload after every change keeps them.
+    const open_groups = new Set();
+    let first_load = true;
+
+    function rename_group(group) {
+        input_dialog({ title: 'Gruppe umbenennen', label: 'Neuer Name', value: group.name, confirm: 'Umbenennen', icon: 'bi-pencil' }, function (name) {
+            if (name === group.name) return true;
+            groups_call('/api/groups/rename', { name: group.name, new_name: name }, function (r) {
+                $('#__template_modal').modal('hide');
+                if (open_groups.delete(group.name)) open_groups.add(r.renamed);
+                load_groups();
+            });
+            return false;
+        });
+    }
+
     function render_group(group, admin) {
-        const card = $(`<div class='group-card'></div>`);
         const students = group.members.filter(m => !m.teacher);
         const with_consent = students.filter(m => m.consent_at).length;
-        const open_note = group.school && !group.school.approved && students.length
-            ? ` · <span class="text-warning-emphasis">Schule hat noch nicht zugestimmt; Einverständnis für ${with_consent} von ${students.length}</span>` : '';
-        const school = group.school ? `${esc(group.school.name)}${open_note}` : 'ohne Schule';
-        card.append(`<div class='school'>${school}</div><h2>${esc(group.name)}</h2>`);
-
-        const teachers = $(`<p class='small mb-2'>Lehrkräfte: </p>`);
-        group.teachers.forEach(function (t, i) {
-            const chip = $(`<span class='me-2'>${esc(t.name || t.email)}</span>`);
-            if (group.teachers.length > 1 || admin) {
-                const x = $(`<a href='#' class='text-danger ms-1' title='Aus der Gruppe nehmen'><i class='bi bi-x-lg'></i></a>`);
-                x.on('click', function (e) {
-                    e.preventDefault();
-                    groups_call('/api/groups/remove_teacher', { name: group.name, email: t.email }, load_groups);
+        const accounts = students.filter(m => m.account).length;
+        const details = $(`<details class='group-card'></details>`).attr('data-group', group.name).prop('open', open_groups.has(group.name));
+        details.on('toggle', function () { this.open ? open_groups.add(group.name) : open_groups.delete(group.name); });
+        // What a closed group says: enough to find it and to see what is open.
+        const facts = [`${students.length} ${students.length === 1 ? 'Mitglied' : 'Mitglieder'}`, `${accounts} mit Konto`];
+        if (group.school && !group.school.approved && !group.school.guests && students.length) {
+            facts.push(`<span class='text-warning-emphasis'>Einverständnis ${with_consent} von ${students.length}</span>`);
+        }
+        if (group.teachers.length) {
+            const names = group.teachers.map(t => esc(t.name || t.email));
+            facts.push(names.length > 2 ? `<span title='${names.join(', ')}'>${names.slice(0, 2).join(', ')} +${names.length - 2}</span>` : names.join(', '));
+        }
+        else facts.push(`<span class='text-warning-emphasis'>keine Lehrkraft</span>`);
+        // For administrators: when anyone of the group was last here, and the
+        // disk space of all its Workspaces.
+        if (admin && students.length) {
+            facts.push(group.last_active ? `zuletzt da ${ago_text(group.last_active)}` : `<span class='text-warning-emphasis'>noch nie da</span>`);
+            if (group.disk_kb) facts.push(disk_html(group.disk_kb, null));
+        }
+        details.append($('<summary>').append(`<h2>${esc(group.name)}</h2><span class='facts'>${facts.join(' · ')}</span>`));
+        const body = $(`<div class='group-body'></div>`);
+        details.append(body);
+        const school_line = group.school
+            ? `${esc(group.school.name)}${group.school.guests ? ' (ohne Schule, Nutzungsordnung)' : group.school.approved ? ' · hat zugestimmt' : ' · <span class="text-warning-emphasis">hat noch nicht zugestimmt</span>'}`
+            : 'ohne Schule';
+        // One row for what concerns the whole group.
+        const toolbar = $(`<div class='group-toolbar'><span class='small text-body-secondary me-auto'>${school_line}</span></div>`);
+        const rename = $(`<button type='button' class='btn btn-sm btn-outline-secondary'><i class='bi bi-pencil'></i>Umbenennen</button>`);
+        rename.on('click', () => rename_group(group));
+        toolbar.append(rename);
+        if (admin) {
+            const move = $(`<button type='button' class='btn btn-sm btn-outline-secondary'><i class='bi bi-building'></i>Schule wechseln</button>`);
+            move.on('click', () => change_school(group));
+            toolbar.append(move);
+        }
+        const del = $(`<button type='button' class='btn btn-sm btn-outline-danger'><i class='bi bi-trash'></i>Löschen</button>`);
+        del.on('click', function () {
+            showTemplateModal('Gruppe löschen', `<p>Die Gruppe ${esc(group.name)} wird gelöscht. Wer in keiner anderen Gruppe steht, kann sich danach nicht mehr anmelden; Konten bleiben, bis sie nach den Löschregeln gelöscht werden.</p><label class='form-label' for='ti_delete_group'>Zur Bestätigung den Namen der Gruppe eingeben:</label><input id='ti_delete_group' class='form-control' autocomplete='off'>`,
+                "<i class='bi bi-trash'></i>Löschen", 'btn-danger', 'Abbruch', 'btn-secondary', function () {
+                    groups_call('/api/groups/delete', { name: group.name, confirmation: $('#ti_delete_group').val().trim() }, load_groups);
                 });
+        });
+        toolbar.append(del);
+        body.append(toolbar);
+
+        const teachers = $(`<div class='group-teachers'><span class='small text-body-secondary'>Lehrkräfte</span></div>`);
+        group.teachers.forEach(function (t) {
+            const chip = $(`<span class='teacher-chip'>${esc(t.name || t.email)}</span>`).attr('title', t.email);
+            if (group.teachers.length > 1 || admin) {
+                const x = $(`<button type='button' class='btn-close' aria-label='${esc(t.name || t.email)} aus der Gruppe nehmen' title='Aus der Gruppe nehmen'></button>`);
+                x.on('click', () => confirm_dialog({ title: 'Lehrkraft aus der Gruppe nehmen', text: `${t.name || t.email} betreut ${group.name} danach nicht mehr. Die Schule der Lehrkraft und ihre anderen Gruppen bleiben.`,
+                    confirm: 'Herausnehmen', icon: 'bi-x-lg', danger: true },
+                    () => groups_call('/api/groups/remove_teacher', { name: group.name, email: t.email }, load_groups)));
                 chip.append(x);
             }
             teachers.append(chip);
         });
-        const add_teacher = $(`<a href='#' class='small'><i class='bi bi-person-plus'></i>Lehrkraft dazu</a>`);
-        add_teacher.on('click', function (e) {
-            e.preventDefault();
-            const email = prompt('Adresse einer Lehrkraft deiner Schule, die die Gruppe mit betreut:');
-            if (email) groups_call('/api/groups/add_teacher', { name: group.name, email: email.trim() }, load_groups);
+        const add_teacher = $(`<button type='button' class='btn btn-sm btn-link'><i class='bi bi-person-plus'></i>Lehrkraft dazu</button>`);
+        add_teacher.on('click', function () {
+            input_dialog({ title: 'Lehrkraft dazu', label: 'Name oder E-Mail-Adresse einer Lehrkraft deiner Schule, die die Gruppe mit betreut', confirm: 'Hinzufügen', icon: 'bi-person-plus',
+                suggest: (q, show) => suggest_people(group, 'teacher', q, show) }, function (email) {
+                groups_call('/api/groups/add_teacher', { name: group.name, email: email }, function () {
+                    $('#__template_modal').modal('hide');
+                    load_groups();
+                });
+                return false;
+            });
         });
         teachers.append(add_teacher);
-        card.append(teachers);
+        body.append(teachers);
 
         const without = group.members.filter(m => !m.welcomed_at && !m.teacher).length;
         if (group.members.length > 0) {
             // The consent column only while the school has not agreed: then a
             // student's written consent covers that student.
             const ask_consent = group.school && !group.school.approved;
-            const table = $(`<table class='table table-sm'><thead><tr><th>Name</th><th>E-Mail-Adresse</th><th>Konto</th><th>Willkommensmail</th>${ask_consent ? "<th title='Schriftliches Einverständnis, das du aufbewahrst'>Einverständnis</th>" : ''}<th></th></tr></thead><tbody></tbody></table>`);
+            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Name</th><th>E-Mail-Adresse</th><th>Konto</th>${admin ? '<th>Zuletzt da</th><th>Speicher</th>' : ''}<th>Willkommen</th>${ask_consent ? "<th title='Datum des schriftlichen Einverständnisses, das du aufbewahrst'>Einverständnis</th>" : ''}<th><span class='visually-hidden'>Entfernen</span></th></tr></thead><tbody></tbody></table>`);
             group.members.forEach(function (m) {
                 const row = $('<tr>');
-                const name = $(`<input class='member-name' placeholder='(ohne Namen)' aria-label='Name'>`).val(m.name || '');
+                const name = $(`<input class='member-name' placeholder='Namen eintragen' aria-label='Name von ${esc(m.email)}' title='Klicken, um den Namen zu ändern'>`).attr('size', Math.max(16, (m.name || '').length + 1)).val(m.name || '');
                 name.on('change', function () {
-                    groups_call('/api/groups/set_name', { email: m.email, person_name: name.val() });
-                });
-                const welcome = $(`<a href='#' class='small'>${m.welcomed_at ? day(m.welcomed_at) + ' · erneut' : 'senden'}</a>`);
-                welcome.on('click', function (e) {
-                    e.preventDefault();
-                    groups_call('/api/groups/send_welcome', { name: group.name, emails: [m.email] }, function (r) {
-                        show_success_message ? show_success_message(`Willkommensmail an ${m.email} gesendet.`) : null;
-                        load_groups();
+                    groups_call('/api/groups/set_name', { email: m.email, person_name: name.val() }, function () {
+                        m.name = name.val().trim() || null;
+                        flash(name);
                     });
                 });
-                const remove = $(`<button class='btn btn-sm btn-outline-danger' title='Aus der Gruppe nehmen'><i class='bi bi-x-lg'></i></button>`);
+                name.on('keydown', function (e) { if (e.key === 'Enter') this.blur(); });
+                const welcome = $(`<button type='button' class='btn btn-sm btn-link p-0'>${m.welcomed_at ? day(m.welcomed_at) + ' · erneut' : 'senden'}</button>`);
+                welcome.on('click', function () {
+                    groups_call('/api/groups/send_welcome', { name: group.name, emails: [m.email] }, function () {
+                        m.welcomed_at = Date.now() / 1000;
+                        welcome.text(day(m.welcomed_at) + ' · erneut');
+                        flash(welcome);
+                    });
+                });
+                const remove = $(`<button type='button' class='btn btn-sm btn-outline-secondary btn-icon' title='Aus der Gruppe nehmen' aria-label='${esc(m.name || m.email)} aus der Gruppe nehmen'><i class='bi bi-x-lg'></i></button>`);
                 remove.on('click', function () {
                     showTemplateModal('Aus der Gruppe nehmen', `<p>${esc(m.name || m.email)} aus ${esc(group.name)} nehmen? Steht die Person in keiner Gruppe mehr, kann sie sich nicht mehr anmelden; ihr Konto bleibt, bis es nach den Löschregeln gelöscht wird.</p>`,
                         "<i class='bi bi-x-lg'></i>Herausnehmen", 'btn-danger', 'Abbruch', 'btn-secondary', function () {
                             groups_call('/api/groups/remove_member', { name: group.name, email: m.email }, load_groups);
                         });
                 });
-                row.append($('<td>').append(name), $('<td>').text(m.email), $('<td>').text(m.account ? 'ja' : '–'),
-                    $('<td>').append(m.teacher ? '' : welcome));
+                row.append($('<td>').append(name), $('<td>').text(m.email),
+                    $('<td>').html(m.account ? "<i class='bi bi-check-lg' aria-hidden='true'></i><span class='visually-hidden'>ja</span>" : "<span class='text-body-secondary'>–</span>"));
+                if (admin) {
+                    row.append($('<td class="text-nowrap">').html(m.active_on ? `<span title='${new Date(m.active_on).toLocaleDateString('de-DE')}'>${ago_text(m.active_on)}</span>` : "<span class='text-body-secondary'>nie</span>"),
+                        $('<td class="text-nowrap">').html(disk_html(m.disk_kb, fat_kb)));
+                }
+                row.append($('<td>').append(m.teacher ? "<span class='small text-body-secondary'>Lehrkraft</span>" : welcome));
                 if (ask_consent) {
-                    const consent = $(`<input type='date' class='form-control form-control-sm' aria-label='Einverständnis vom'>`).val(m.consent_at || '');
+                    const consent = $(`<input type='date' class='form-control form-control-sm consent-date' aria-label='Einverständnis von ${esc(m.name || m.email)} vom'>`).val(m.consent_at || '');
                     consent.attr('max', new Date().toISOString().slice(0, 10));
                     consent.on('change', function () {
-                        groups_call('/api/groups/set_consent', { name: group.name, email: m.email, date: consent.val() }, load_groups);
+                        groups_call('/api/groups/set_consent', { name: group.name, email: m.email, date: consent.val() }, function () {
+                            m.consent_at = consent.val() || null;
+                            flash(consent);
+                        });
                     });
                     row.append($('<td>').append(m.teacher ? '' : consent));
                 }
                 row.append($('<td class="text-end">').append(remove));
                 table.find('tbody').append(row);
             });
-            card.append(table);
+            body.append($(`<div class='table-responsive'></div>`).append(table));
         } else {
-            card.append(`<p class='text-body-secondary'>Noch niemand in dieser Gruppe.</p>`);
+            body.append(`<p class='text-body-secondary'>Noch niemand in dieser Gruppe.</p>`);
         }
 
-        const add = $(`<div class='mb-2'>
-            <label class='form-label small'>Adressen hinzufügen, eine pro Zeile, mit oder ohne Namen (»Lena Muster &lt;lena@example.org&gt;«, »lena@example.org« oder aus einer Tabelle kopiert)</label>
-            <textarea class='form-control' rows='3' spellcheck='false'></textarea>
+        const field = `add_${esc(group.name).replace(/\W+/g, '_')}`;
+        const add = $(`<div class='group-add'>
+            <label class='form-label small' for='ti_find_${field}'>Hinzufügen: schon Eingeladene suchen (Name oder Adresse), oder neue Adressen unten eintragen, eine pro Zeile, mit oder ohne Namen (»Lena Muster &lt;lena@example.org&gt;«, »lena@example.org« oder aus einer Tabelle kopiert)</label>
+            <input class='form-control form-control-sm mb-1' id='ti_find_${field}' placeholder='Name oder Adresse suchen …' aria-label='Eingeladene suchen'>
+            <textarea class='form-control mb-2' rows='2' spellcheck='false' id='ta_${field}' aria-label='Adressen, eine pro Zeile'></textarea>
         </div>`);
-        const add_button = $(`<button class='btn btn-sm btn-primary me-2'><i class='bi bi-person-plus'></i>Hinzufügen</button>`);
+        // A suggestion goes into the box as a line; »Hinzufügen« adds them all.
+        attach_suggestions(add.find('input'), (q, show) => suggest_people(group, 'member', q, show), function (person) {
+            const box = add.find('textarea');
+            const line = person.name ? `${person.name} <${person.email}>` : person.email;
+            const lines = box.val().split('\n').filter(l => l.trim());
+            if (!lines.some(l => l.includes(person.email))) lines.push(line);
+            box.val(lines.join('\n') + '\n');
+            add.find('input').val('').trigger('focus');
+        });
+        const add_button = $(`<button type='button' class='btn btn-sm btn-primary'><i class='bi bi-person-plus'></i>Hinzufügen</button>`);
         add_button.on('click', function () {
             const lines = add.find('textarea').val();
             if (!lines.trim()) return;
@@ -238,41 +394,45 @@
                 if (r.already) text += `, ${r.already} waren schon in der Gruppe`;
                 if (r.kept_names.length) text += `; bei ${r.kept_names.length} stand schon ein anderer Name, der bleibt`;
                 if (r.rejected.length) text += `. Ohne gültige Adresse und nicht übernommen: ${r.rejected.join(' · ')}`;
-                alert(text + '.');
+                if (r.other_school && r.other_school.length) text += `. Schon in einer Gruppe einer anderen Schule und deshalb nicht übernommen (die Administration hilft): ${r.other_school.join(' · ')}`;
+                show_success_message(esc(text + '.'));
                 load_groups();
             });
         });
-        card.append(add);
-        const actions = $(`<div class='d-flex flex-wrap gap-2 align-items-center'></div>`);
-        actions.append(add_button);
+        const actions = $(`<div class='d-flex flex-wrap gap-2'></div>`).append(add_button);
         if (without > 0) {
-            const send = $(`<button class='btn btn-sm btn-outline-primary'><i class='bi bi-envelope'></i>Willkommensmail an ${without} ${without === 1 ? 'Person' : 'Personen'} ohne</button>`);
+            const send = $(`<button type='button' class='btn btn-sm btn-outline-secondary'><i class='bi bi-envelope'></i>Willkommensmail an alle ohne (${without})</button>`);
             send.on('click', function () {
                 showTemplateModal('Willkommensmails senden', `<p>${without} ${without === 1 ? 'Person bekommt' : 'Personen bekommen'} eine E-Mail mit dem Link zum Workspace, wie die Anmeldung geht und dem Link zur Datenschutzerklärung. Antworten gehen an dich.</p>`,
                     "<i class='bi bi-envelope'></i>Senden", 'btn-primary', 'Abbruch', 'btn-secondary', function () {
                         groups_call('/api/groups/send_welcome', { name: group.name }, function (r) {
-                            alert(`${r.sent} Willkommensmail(s) gesendet.${r.limited ? ' Mehr geht in dieser Stunde nicht; den Rest später.' : ''}`);
+                            show_success_message(`${r.sent} ${r.sent === 1 ? 'Willkommensmail' : 'Willkommensmails'} gesendet.${r.limited ? ' Mehr geht in dieser Stunde nicht; den Rest später.' : ''}`);
                             load_groups();
                         });
                     });
             });
             actions.append(send);
         }
-        if (admin) {
-            const move = $(`<button class='btn btn-sm btn-outline-secondary ms-auto'><i class='bi bi-building'></i>Schule wechseln</button>`);
-            move.on('click', () => change_school(group));
-            actions.append(move);
-        }
-        const del = $(`<button class='btn btn-sm btn-outline-danger${admin ? '' : ' ms-auto'}'><i class='bi bi-trash'></i>Gruppe löschen</button>`);
-        del.on('click', function () {
-            showTemplateModal('Gruppe löschen', `<p>Die Gruppe ${esc(group.name)} wird gelöscht. Wer in keiner anderen Gruppe steht, kann sich danach nicht mehr anmelden; Konten bleiben, bis sie nach den Löschregeln gelöscht werden.</p><label class='form-label' for='ti_delete_group'>Zur Bestätigung den Namen der Gruppe eingeben:</label><input id='ti_delete_group' class='form-control' autocomplete='off'>`,
-                "<i class='bi bi-trash'></i>Löschen", 'btn-danger', 'Abbruch', 'btn-secondary', function () {
-                    groups_call('/api/groups/delete', { name: group.name, confirmation: $('#ti_delete_group').val().trim() }, load_groups);
-                });
+        add.append(actions);
+        body.append(add);
+        return details;
+    }
+
+    // Shows only the groups whose name, or one of whose members, matches;
+    // a match on a member opens the group.
+    function filter_groups() {
+        const q = $('#groups_filter').val().trim().toLowerCase();
+        $('#groups_here .group-card').each(function () {
+            const card = $(this);
+            const group = card.data('info');
+            const by_name = group.name.toLowerCase().includes(q);
+            const by_member = q.length > 1 && group.members.some(m => m.email.includes(q) || (m.name || '').toLowerCase().includes(q));
+            card.toggle(!q || by_name || by_member);
+            if (q && by_member && !by_name) card.prop('open', true);
         });
-        actions.append(del);
-        card.append(actions);
-        return card;
+        $('#groups_here .school-heading').each(function () {
+            $(this).toggle($(this).nextUntil('.school-heading', '.group-card:visible').length > 0);
+        });
     }
 
     function load_groups() {
@@ -286,22 +446,25 @@
                 return;
             }
             if (data.school) {
-                school.append(`<p>Deine Schule: <strong>${esc(data.school.name)}</strong>. ${data.school.approved
-                    ? `Sie hat dem Einsatz zugestimmt. Die <a href="/datenschutz?schule=${encodeURIComponent(data.school.key)}">Unterlagen für deine Schule</a> (Elternbrief, Datenschutzerklärung und mehr) lassen sich dort drucken.`
-                    : `Sie hat dem Einsatz noch nicht zugestimmt. Am besten unterschreibt die Schulleitung die Entscheidung und die Vereinbarung aus den <a href="/datenschutz?schule=${encodeURIComponent(data.school.key)}">Unterlagen für deine Schule</a>; schick sie dann an die Administration. Bis dahin genügt für eine Schülerin oder einen Schüler ein schriftliches Einverständnis (<a href="/datenschutz/elternbrief?schule=${encodeURIComponent(data.school.key)}&einverstaendnis=1">Elternbrief mit Einverständniserklärung</a>): Du bewahrst es auf und trägst das Datum unten in der Gruppe ein. Anmelden können sich alle schon jetzt.`}</p>`);
+                const key = encodeURIComponent(data.school.key);
+                school.append(data.school.approved
+                    ? `<p>Deine Schule: <strong>${esc(data.school.name)}</strong>, hat dem Einsatz zugestimmt · <a href="/datenschutz?schule=${key}"><i class='bi bi-file-earmark-text'></i> Unterlagen für deine Schule</a></p>`
+                    : `<details class='mb-3'><summary>Deine Schule: <strong>${esc(data.school.name)}</strong>, <span class='text-warning-emphasis'>hat noch nicht zugestimmt</span> · was heißt das?</summary>`
+                        + `<p class='mt-2'>Am besten unterschreibt die Schulleitung die Entscheidung und die Vereinbarung aus den <a href="/datenschutz?schule=${key}">Unterlagen für deine Schule</a>; schick sie dann an die Administration. `
+                        + `Bis dahin genügt für eine Schülerin oder einen Schüler ein schriftliches Einverständnis (<a href="/datenschutz/elternbrief?schule=${key}&einverstaendnis=1">Elternbrief mit Einverständniserklärung</a>): Du bewahrst es auf und trägst das Datum in der Gruppe ein. Anmelden können sich alle schon jetzt.</p></details>`);
             } else if (!data.admin) {
                 school.append(`<div class='alert alert-warning'>Dir ist noch keine Schule zugeordnet; das macht die Administration. Bis dahin kannst du keine Gruppe anlegen.</div>`);
             }
             if (data.school || data.admin) {
-                const form = $(`<form class='row g-2 align-items-end mb-4'>
-                    <div class='col-sm-5'><label class='form-label' for='ti_new_group'>Neue Gruppe</label><input id='ti_new_group' class='form-control' placeholder='zum Beispiel »10a Informatik«' maxlength='60'></div>
+                const form = $(`<form class='row g-2 align-items-end mb-3'>
+                    <div class='col-sm-5'><label class='form-label small' for='ti_new_group'>Neue Gruppe</label><input id='ti_new_group' class='form-control' placeholder='zum Beispiel »10a Informatik«' maxlength='60'></div>
                     <div class='col-sm-4 admin-school'></div>
-                    <div class='col-sm-3'><button class='btn btn-primary w-100'><i class='bi bi-plus-lg'></i>Anlegen</button></div>
+                    <div class='col-sm-3'><button class='btn btn-primary'><i class='bi bi-plus-lg'></i>Gruppe anlegen</button></div>
                 </form>`);
                 if (data.admin && data.schools.length) {
                     const select = $(`<select id='sel_new_group_school' class='form-select'></select>`);
                     data.schools.forEach(s => select.append($('<option>').val(s.key).text(s.name)));
-                    form.find('.admin-school').append(`<label class='form-label' for='sel_new_group_school'>Schule</label>`).append(select);
+                    form.find('.admin-school').append(`<label class='form-label small' for='sel_new_group_school'>Schule</label>`).append(select);
                 }
                 form.on('submit', function (e) {
                     e.preventDefault();
@@ -315,9 +478,28 @@
                 here.append(`<p class='text-body-secondary'>Noch keine Gruppe.</p>`);
             }
             all_schools = data.schools || [];
-            data.groups.forEach(g => here.append(render_group(g, data.admin)));
+            fat_kb = data.fat_kb;
+            // A teacher with a few groups sees them open the first time.
+            if (first_load && !data.admin && data.groups.length <= 3) data.groups.forEach(g => open_groups.add(g.name));
+            first_load = false;
+            // Under their school when there is more than one; guests last.
+            const school_of = g => g.school ? g.school.name : 'ohne Schule';
+            const schools = [...new Set(data.groups.map(school_of))];
+            const guests = new Set(data.groups.filter(g => g.school && g.school.guests).map(school_of));
+            const home = new Set(data.groups.filter(g => g.school && g.school.home).map(school_of));
+            schools.sort((a, b) => (home.has(b) - home.has(a)) || (guests.has(a) - guests.has(b)) || a.localeCompare(b, 'de'));
+            schools.forEach(function (name) {
+                const groups = data.groups.filter(g => school_of(g) === name);
+                if (schools.length > 1) here.append($(`<h2 class='school-heading'></h2>`).text(`${name}${guests.has(name) ? ' (ohne Schule)' : ''} · ${groups.length} ${groups.length === 1 ? 'Gruppe' : 'Gruppen'}`));
+                groups.forEach(g => here.append(render_group(g, data.admin).data('info', g)));
+            });
+            $('#groups_filter').toggle(data.groups.length > 3);
+            filter_groups();
         });
     }
 
-    window.addEventListener('load', load_groups);
+    window.addEventListener('load', function () {
+        $('#groups_filter').on('input', filter_groups);
+        load_groups();
+    });
 </script>

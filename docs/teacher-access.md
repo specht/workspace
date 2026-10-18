@@ -108,7 +108,31 @@ Nach dem Import verwaltet jede Lehrkraft ihre Gruppen selbst
   »Partnerschulen«).
 
 Administratorinnen und Administratoren sehen alle Gruppen und wählen beim
-Anlegen die Schule, auch »Gäste«.
+Anlegen die Schule, auch »Gäste«. Sie finden `/gruppen` und `/personen` im
+Menü »Administration«; Lehrkräfte ohne Administration haben einen eigenen
+Knopf »Gruppen«. Alle Routen unter `/api/groups/*` verlangen eine Lehrkraft
+oder die Administration (`teacher_or_admin!`, sonst 403) und prüfen danach
+die Gruppe (`managed_group!`) oder die Person (`not_your_student`); die unter
+`/api/people/*` nur die Administration (`admin_only!`, 403).
+
+- Jede Gruppe ist eine geschlossene Zeile (Mitglieder, mit Konto,
+  Einverständnis, Lehrkräfte; für die Administration zuletzt da und
+  Speicher); ein Klick öffnet sie. Gruppen stehen unter ihrer Schule, die
+  eigene zuerst, Gäste zuletzt; ein Suchfeld findet Gruppen, Namen und
+  Adressen.
+- Umbenennen (Lehrkräfte der Gruppe und Administration): Der Name ist auch
+  Schlüssel der angehefteten Aktivitäten (`Pin`), der Programmiersprache
+  der Gruppe (`GroupSetting`) und der Auswahl auf der Klassenseite
+  (`User.class_prefs`); alles zieht in einer Transaktion mit
+  (`/api/groups/rename`).
+- Hinzufügen mit Vorschlägen beim Tippen, nach Name oder Adresse
+  (`/api/groups/suggest`): für Lehrkräfte nur Eingeladene aus Gruppen ihrer
+  Schule und Lehrkräfte ihrer Schule, für die Administration alle. Eine
+  Schülerin oder ein Schüler, die schon in einer Gruppe einer anderen Schule
+  stehen, werden nicht aufgenommen (wie bei »Schule wechseln«); Gruppen der
+  Gäste zählen dabei nicht als andere Schule, dort dürfen dieselben Personen
+  auch stehen (Workshops, Firmen, Veranstaltungen).
+- Namen lassen sich in der Tabelle ändern, auch unter `/personen`.
 
 **Schule wechseln** (nur Administration, an jeder Gruppe): für Gruppen, die
 beim Import unter der Schule der Installation gelandet sind, aber zu einer
@@ -153,8 +177,12 @@ bleiben.
   zu `/gruppen` und zu den Unterlagen ihrer Schule und, wenn `COST_NOTE`
   gesetzt ist, dem Hinweis zu den Kosten. »Keine Lehrkraft mehr« nimmt
   Schule und betreute Gruppen weg.
-- Alle Personen mit Rolle, Schule, Gruppen und wann sie zuletzt da waren,
-  filterbar nach Schule und Rolle, sortierbar nach »am längsten nicht da«.
+- Alle Personen mit Rolle, Schule, Gruppen, wann sie zuletzt da waren und
+  dem Speicher ihres Workspace (`Main#workspace_disk_usage`, aus der Messung
+  von `housekeeping.rb`; hervorgehoben ab dem Fünffachen des Medians und
+  mindestens 200 MB), filterbar nach Schule und Rolle, sortierbar nach »am
+  längsten nicht da« und »meister Speicher«. Namen lassen sich dort ändern;
+  eine einzelne Einladung ohne Konto lässt sich entfernen.
   »Zuletzt da« ist `User.last_seen` (der Tag des letzten Besuchs, seit
   2026-10-18 erfasst, höchstens ein Schreibzugriff am Tag, nicht beim
   Hineinsehen); fehlt er, die letzte Anmeldung (Ablauf der neuesten Sitzung

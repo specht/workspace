@@ -52,7 +52,7 @@ class Main < Sinatra::Base
     end
 
     post '/api/people/schools' do
-        assert(admin_logged_in?)
+        halt 403, { :error => 'admins_only' }.to_json unless admin_logged_in?
         imported = !Main.roster_imported.nil?
         respond(:schools => imported ? schools_overview : [], :imported => imported)
     end
@@ -216,6 +216,27 @@ class Main < Sinatra::Base
         respond(:groups => groups, :total => total)
     end
 
+    # One invitation without an account, from every group. Teachers are
+    # refused (»Keine Lehrkraft mehr« first), an account too (that is
+    # »Konten löschen« on /admin).
+    post '/api/people/remove_invitation' do
+        admin_only!
+        data = parse_request_data(:required_keys => [:email])
+        email = data[:email].to_s.downcase
+        row = neo4j_query(<<~END_OF_QUERY, :email => email).first
+            MATCH (i:Invitation {email: $email})
+            RETURN EXISTS { MATCH (:User {email: $email}) } AS account,
+                coalesce(i.teacher, false) OR EXISTS { (i)-[:TEACHES]->(:Group) } OR EXISTS { (i)-[:AT]->(:School) } AS teacher;
+        END_OF_QUERY
+        halt 404, { :error => 'not_invited' }.to_json unless row
+        halt 409, { :error => 'has_account' }.to_json if row['account']
+        halt 409, { :error => 'is_teacher' }.to_json if row['teacher']
+        neo4j_query('MATCH (i:Invitation {email: $email}) DETACH DELETE i;', :email => email)
+        Main.note_roster_change!
+        STDERR.puts "Invitation removed by #{my_email}"
+        respond(:removed => email)
+    end
+
     # How many distinct people removing the unused invitations of these
     # groups would touch: the number the administrator confirms.
     post '/api/people/unused_count' do
@@ -248,7 +269,7 @@ class Main < Sinatra::Base
 
     # Teachers with their school, for the list on /personen.
     post '/api/people/teachers' do
-        assert(admin_logged_in?)
+        halt 403, { :error => 'admins_only' }.to_json unless admin_logged_in?
         rows = Main.roster_imported.nil? ? [] : neo4j_query(<<~END_OF_QUERY)
             MATCH (i:Invitation)
             WHERE i.teacher = true OR (i)-[:TEACHES]->(:Group)

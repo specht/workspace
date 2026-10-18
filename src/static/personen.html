@@ -1,32 +1,62 @@
 #{ assert(admin_logged_in?) }
 <style>
-    .people-page table td,
-    .people-page table th {
-        white-space: normal;
-        vertical-align: middle;
-    }
     .people-page h2 {
         margin-top: 2rem;
     }
     .people-page .small-input {
+        min-width: 9rem;
         max-width: 11rem;
     }
+    .people-page .school-select {
+        min-width: 13rem;
+    }
+    .people-page .row-actions {
+        white-space: nowrap;
+        text-align: right;
+    }
+    .people-page .row-actions .btn + .btn {
+        margin-left: 0.25rem;
+    }
+    .people-page .inline-name {
+        border: none;
+        border-bottom: 1px dashed var(--bs-border-color);
+        background: transparent;
+        color: inherit;
+        width: 100%;
+        padding: 0.1rem 0.2rem;
+    }
+    .people-page .inline-name:focus {
+        outline: 1px solid var(--bs-border-color);
+        border-bottom-color: transparent;
+        background: var(--bs-body-bg);
+    }
+    .people-page .inline-name::placeholder { color: var(--bs-secondary-color); font-style: italic; }
 </style>
 <div class='container people-page'>
     <div class='row'>
         <div class='col-md-12'>
             <h1>Personen und Schulen</h1>
             <p>
-                Schulen, Lehrkräfte und alle, die eingeladen sind. Eine Schule hat zugestimmt, sobald du das Datum der Entscheidung der Schulleitung
-                und das der unterschriebenen Vereinbarung zur Auftragsverarbeitung einträgst; die Lehrkraft schickt dir beides. Bis dahin vermerken
-                die Lehrkräfte unter Gruppen, für wen ein schriftliches Einverständnis vorliegt. Gesperrt wird dadurch niemand.
-                Ihre Lehrkräfte können vorher schon alles ausprobieren und Gruppen anlegen. Gruppen verwalten die Lehrkräfte unter <a href='/gruppen'>Gruppen</a>.
+                Eine Schule hat zugestimmt, sobald du das Datum der Entscheidung der Schulleitung und das der unterschriebenen Vereinbarung
+                zur Auftragsverarbeitung einträgst; die Lehrkraft schickt dir beides. Bis dahin vermerken die Lehrkräfte unter
+                <a href='/gruppen'>Gruppen</a>, für wen ein schriftliches Einverständnis vorliegt. Gesperrt wird dadurch niemand.
             </p>
+            <nav class='nav nav-pills mb-3 small' aria-label='Abschnitte'>
+                <a class='nav-link' href='#schulen'>Schulen</a>
+                <a class='nav-link' href='#lehrkraefte'>Lehrkräfte</a>
+                <a class='nav-link' href='#unbenutzt'>Einladungen ohne Konto</a>
+                <a class='nav-link' href='#alle'>Alle Personen</a>
+                <a class='nav-link' href='/admin#konten-loeschen'>Konten löschen</a>
+            </nav>
             <div id='people_not_imported'></div>
 
             <h2 id='schulen'>Schulen</h2>
             <div id='schools_here'></div>
-            <form id='school_form' class='row g-2 mb-3' autocomplete='off'>
+            <div class='d-flex gap-2 mb-3' id='school_buttons'>
+                <button type='button' id='bu_school_new' class='btn btn-outline-primary'><i class='bi bi-building-add'></i>Neue Schule</button>
+                <button type='button' id='bu_guests' class='btn btn-outline-secondary'><i class='bi bi-people'></i>Gäste anlegen (für Workshops, Firmen, Veranstaltungen)</button>
+            </div>
+            <form id='school_form' class='row g-2 mb-3' autocomplete='off' style='display: none;'>
                 <input type='hidden' id='school_key'>
                 <div class='col-md-4'><label class='form-label' for='school_name'>Name der Schule</label><input id='school_name' class='form-control' required maxlength='120'></div>
                 <div class='col-md-4'><label class='form-label' for='school_address'>Anschrift</label><textarea id='school_address' class='form-control' rows='2'></textarea></div>
@@ -35,14 +65,16 @@
                 <div class='col-md-6'><label class='form-label' for='school_authority'>Aufsichtsbehörde</label><textarea id='school_authority' class='form-control' rows='2'></textarea></div>
                 <div class='col-12 d-flex gap-2'>
                     <button class='btn btn-primary'><i class='bi bi-building-add'></i><span id='school_submit_label'>Schule anlegen</span></button>
-                    <button type='button' id='bu_school_reset' class='btn btn-outline-secondary' style='display: none;'>Abbrechen</button>
-                    <button type='button' id='bu_guests' class='btn btn-outline-secondary ms-auto'><i class='bi bi-people'></i>Gäste anlegen</button>
+                    <button type='button' id='bu_school_reset' class='btn btn-outline-secondary'>Abbrechen</button>
                 </div>
             </form>
 
             <h2 id='lehrkraefte'>Lehrkräfte</h2>
-            <div id='teachers_here'></div>
-            <form id='teacher_form' class='row g-2 align-items-end mb-3' autocomplete='off'>
+            <div class='d-flex flex-wrap gap-2 mb-2'>
+                <button type='button' id='bu_teacher_new' class='btn btn-outline-primary'><i class='bi bi-person-plus'></i>Lehrkraft hinzufügen</button>
+                <select id='teachers_school' class='form-select w-auto' aria-label='Lehrkräfte einer Schule'><option value=''>alle Schulen</option></select>
+            </div>
+            <form id='teacher_form' class='row g-2 align-items-end mb-3' autocomplete='off' style='display: none;'>
                 <div class='col-md-4'><label class='form-label' for='teacher_email'>E-Mail-Adresse</label><input id='teacher_email' type='email' class='form-control' required></div>
                 <div class='col-md-3'><label class='form-label' for='teacher_name'>Name</label><input id='teacher_name' class='form-control' placeholder='freiwillig'></div>
                 <div class='col-md-3'><label class='form-label' for='teacher_school'>Schule</label><select id='teacher_school' class='form-select' required></select></div>
@@ -54,6 +86,7 @@
                     </div>
                 </div>
             </form>
+            <div id='teachers_here'></div>
 
             <h2 id='unbenutzt'>Einladungen ohne Konto</h2>
             <p>
@@ -76,7 +109,7 @@
                     <option value=''>alle Rollen</option><option>Lehrkraft</option><option>Lernende</option><option>Testkonto</option><option>Administration</option>
                 </select></div>
                 <div class='col-md-3'><select id='all_sort' class='form-select' aria-label='Sortierung'>
-                    <option value='name'>nach Name</option><option value='active'>am längsten nicht da zuerst</option>
+                    <option value='name'>nach Name</option><option value='active'>am längsten nicht da zuerst</option><option value='disk'>meister Speicher zuerst</option>
                 </select></div>
             </div>
             <div id='all_here'></div>
@@ -121,6 +154,30 @@
             + (s.students ? `<br><span class='small'>Einverständnis für ${s.consent} von ${s.students}${open ? `; ${open} ungeklärt` : ''}</span>` : '');
     }
 
+    // A short green glow: saved.
+    function flash(el) {
+        el.addClass('saved-flash');
+        setTimeout(() => el.removeClass('saved-flash'), 900);
+    }
+
+    // A name that can be edited in place; save(name, done) stores it.
+    function inline_name(value, label, save) {
+        const input = $(`<input class='inline-name' placeholder='Namen eintragen' title='Klicken, um den Namen zu ändern'>`).attr({ 'aria-label': label, size: Math.max(16, (value || '').length + 1) }).val(value || '');
+        input.on('keydown', function (e) { if (e.key === 'Enter') this.blur(); });
+        input.on('change', () => save(input.val().trim(), () => flash(input)));
+        return input;
+    }
+
+    function icon_button(icon, label, cls) {
+        return $(`<button type='button' class='btn btn-sm ${cls || 'btn-outline-secondary'} btn-icon'><i class='bi ${icon}'></i></button>`).attr({ title: label, 'aria-label': label });
+    }
+
+    function show_school_form(show) {
+        $('#school_form').toggle(show);
+        $('#school_buttons').toggle(!show);
+        if (!show) { $('#school_form')[0].reset(); $('#school_key').val(''); $('#school_submit_label').text('Schule anlegen'); }
+    }
+
     function load_schools() {
         people_call('/api/people/schools', {}, function (data) {
             schools = data.schools;
@@ -134,14 +191,19 @@
             filter.append($('<option>').val('-').text('ohne Schule'));
             filter.val(chosen || '');
             $('#bu_guests').toggle(!schools.some(s => s.guests));
+            const tfilter = $('#teachers_school'), tchosen = tfilter.val();
+            tfilter.find('option:not(:first)').remove();
+            schools.filter(s => !s.guests).forEach(s => tfilter.append($('<option>').val(s.key).text(s.name)));
+            tfilter.val(tchosen || '');
             if (schools.length === 0) return;
-            const table = $(`<table class='table table-sm'><thead><tr><th>Schule</th><th>Entscheidung der Schulleitung</th><th>Vereinbarung (AVV)</th><th>Status</th><th>Gruppen · Lehrkräfte</th><th></th></tr></thead><tbody></tbody></table>`);
+            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Schule</th><th title='Datum der Entscheidung der Schulleitung'>Entscheidung</th><th title='Datum der unterschriebenen Vereinbarung zur Auftragsverarbeitung'>AVV</th><th>Stand</th><th>Gruppen</th><th>Lehrkräfte</th><th title='eingeladene Schülerinnen und Schüler in den Gruppen der Schule'>Lernende</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
             schools.forEach(function (s) {
                 const row = $('<tr>');
                 const name = $(`<td><strong>${esc(s.name)}</strong>${s.address ? '<br><span class="small text-body-secondary">' + esc(s.address).replace(/\n/g, ', ') + '</span>' : ''}</td>`);
                 const date_input = function (field) {
                     if (s.guests) return $('<td>').text('–');
-                    const input = $(`<input type='date' class='form-control form-control-sm small-input'>`).val(s[field] || '');
+                    const input = $(`<input type='date' class='form-control form-control-sm small-input'>`).val(s[field] || '')
+                        .attr('aria-label', `${field === 'decision_at' ? 'Entscheidung der Schulleitung' : 'Vereinbarung zur Auftragsverarbeitung'}, ${s.name}`);
                     input.on('change', function () {
                         const payload = { key: s.key };
                         payload[field] = input.val();
@@ -149,49 +211,56 @@
                     });
                     return $('<td>').append(input);
                 };
-                const actions = $('<td class="text-end text-nowrap">');
-                actions.append($(`<a class='btn btn-sm btn-outline-secondary me-1' title='Unterlagen für diese Schule' href='/datenschutz?schule=${encodeURIComponent(s.key)}'><i class='bi bi-file-earmark-text'></i></a>`));
-                const edit = $(`<button class='btn btn-sm btn-outline-secondary me-1' title='Bearbeiten'><i class='bi bi-pencil'></i></button>`);
+                const actions = $('<td class="row-actions">');
+                actions.append($(`<a class='btn btn-sm btn-outline-secondary btn-icon' href='/datenschutz?schule=${encodeURIComponent(s.key)}'><i class='bi bi-file-earmark-text'></i></a>`)
+                    .attr({ title: `Unterlagen für ${s.name}`, 'aria-label': `Unterlagen für ${s.name}` }));
+                const edit = icon_button('bi-pencil', `${s.name} bearbeiten`);
                 edit.on('click', function () {
+                    show_school_form(true);
                     $('#school_key').val(s.key); $('#school_name').val(s.name); $('#school_address').val(s.address || '');
                     $('#school_dpo').val(s.data_protection_officer || ''); $('#school_law').val(s.school_law || '');
                     $('#school_authority').val(s.supervisory_authority || '');
-                    $('#school_submit_label').text('Speichern'); $('#bu_school_reset').show();
+                    $('#school_submit_label').text('Speichern');
                     $('#school_name').trigger('focus');
                 });
                 actions.append(edit);
                 if (!s.home && s.groups === 0 && s.teachers === 0) {
-                    const del = $(`<button class='btn btn-sm btn-outline-danger' title='Löschen'><i class='bi bi-trash'></i></button>`);
-                    del.on('click', () => people_call('/api/people/delete_school', { key: s.key }, load_all));
+                    const del = icon_button('bi-trash', `${s.name} löschen`, 'btn-outline-danger');
+                    del.on('click', () => confirm_dialog({ title: 'Schule löschen', text: `${s.name} löschen? Die Schule hat keine Gruppen und keine Lehrkräfte.`, confirm: 'Löschen', icon: 'bi-trash', danger: true },
+                        () => people_call('/api/people/delete_school', { key: s.key }, load_all)));
                     actions.append(del);
                 }
                 row.append(name, date_input('decision_at'), date_input('agreement_at'), $('<td>').html(school_status(s)),
-                    $('<td>').text(`${s.groups} · ${s.teachers}`), actions);
+                    $('<td>').text(s.groups), $('<td>').text(s.teachers), $('<td>').text(s.students), actions);
                 table.find('tbody').append(row);
             });
-            here.append(table);
+            here.append($("<div class='table-responsive'></div>").append(table));
         });
     }
 
     function load_teachers() {
         people_call('/api/people/teachers', {}, function (data) {
             const here = $('#teachers_here').empty();
-            if (data.teachers.length === 0) { here.append(`<p class='text-body-secondary'>Noch keine.</p>`); return; }
-            const table = $(`<table class='table table-sm'><thead><tr><th>Name</th><th>E-Mail-Adresse</th><th>Schule</th><th>Gruppen</th><th>Konto</th><th>Willkommensmail</th><th></th></tr></thead><tbody></tbody></table>`);
-            data.teachers.forEach(function (t) {
-                const select = $(`<select class='form-select form-select-sm'></select>`);
+            const only = $('#teachers_school').val();
+            const teachers = data.teachers.filter(t => !only || t.school === only);
+            if (teachers.length === 0) { here.append(`<p class='text-body-secondary'>Keine.</p>`); return; }
+            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Name</th><th>E-Mail-Adresse</th><th>Schule</th><th>Gruppen</th><th>Konto</th><th>Willkommen</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
+            teachers.forEach(function (t) {
+                const select = $(`<select class='form-select form-select-sm school-select'></select>`).attr('aria-label', `Schule von ${t.name || t.email}`);
                 if (!t.school) select.append($('<option>').val('').text('(keine Schule)'));
                 schools.forEach(s => select.append($('<option>').val(s.key).text(s.name)));
                 select.val(t.school || '');
                 select.on('change', function () {
                     if (select.val()) people_call('/api/people/save_teacher', { email: t.email, school: select.val() }, load_all);
                 });
-                const welcome = $(`<a href='#' class='small'>${t.welcomed_at ? day(t.welcomed_at) + ' · erneut' : 'senden'}</a>`);
-                welcome.on('click', function (e) {
-                    e.preventDefault();
-                    people_call('/api/people/welcome_teacher', { email: t.email }, function () { load_teachers(); });
+                const welcome = $(`<button type='button' class='btn btn-sm btn-link p-0'>${t.welcomed_at ? day(t.welcomed_at) + ' · erneut' : 'senden'}</button>`);
+                welcome.on('click', function () {
+                    people_call('/api/people/welcome_teacher', { email: t.email }, function () {
+                        show_success_message(`Willkommensmail an ${esc(t.email)} gesendet.`);
+                        load_teachers();
+                    });
                 });
-                const remove = $(`<button class='btn btn-sm btn-outline-danger' title='Keine Lehrkraft mehr'><i class='bi bi-person-dash'></i></button>`);
+                const remove = icon_button('bi-person-dash', `${t.name || t.email}: keine Lehrkraft mehr`);
                 remove.on('click', function () {
                     showTemplateModal('Keine Lehrkraft mehr', `<p>${esc(t.name || t.email)} betreut danach keine Gruppen mehr und hat keine Schule. Steht die Person in keiner Gruppe, kann sie sich nicht mehr anmelden; ihr Konto bleibt, bis es nach den Löschregeln gelöscht wird.</p>`,
                         "<i class='bi bi-person-dash'></i>Entfernen", 'btn-danger', 'Abbruch', 'btn-secondary', function () {
@@ -199,12 +268,30 @@
                         });
                 });
                 const row = $('<tr>');
-                row.append($('<td>').text(t.name || '–'), $('<td>').text(t.email), $('<td>').append(select), $('<td>').text((t.groups || []).join(', ')),
-                    $('<td>').text(t.account ? 'ja' : '–'), $('<td>').append(t.school ? welcome : ''), $('<td class="text-end">').append(remove));
+                const name = inline_name(t.name, `Name von ${t.email}`, function (value, done) {
+                    if (t.school) people_call('/api/people/save_teacher', { email: t.email, person_name: value, school: t.school }, done);
+                    else people_call('/api/groups/set_name', { email: t.email, person_name: value }, done);
+                });
+                row.append($('<td>').append(name), $('<td>').text(t.email), $('<td>').append(select), $('<td>').text((t.groups || []).join(', ')),
+                    $('<td>').html(t.account ? "<i class='bi bi-check-lg' aria-hidden='true'></i><span class='visually-hidden'>ja</span>" : "<span class='text-body-secondary'>–</span>"),
+                    $('<td>').append(t.school ? welcome : ''), $('<td class="row-actions">').append(remove));
                 table.find('tbody').append(row);
             });
-            here.append(table);
+            here.append($("<div class='table-responsive'></div>").append(table));
         });
+    }
+
+    // »vor 3 Tagen« for a date (YYYY-MM-DD).
+    function ago_text(date) {
+        const days = Math.round((new Date(new Date().toISOString().slice(0, 10)) - new Date(date)) / 86400000);
+        return days <= 0 ? 'heute' : days === 1 ? 'gestern' : days < 60 ? `vor ${days} Tagen` : days < 730 ? `vor ${Math.round(days / 30.4)} Monaten` : `vor ${Math.round(days / 365)} Jahren`;
+    }
+
+    // Disk space in KB as »153 MB«; at fat_kb and above highlighted.
+    function disk_html(kb, fat_kb) {
+        if (kb === null || kb === undefined) return "<span class='text-body-secondary'>–</span>";
+        const text = kb >= 1024 * 1024 ? `${(kb / 1024 / 1024).toLocaleString('de-DE', { maximumFractionDigits: 1 })} GB` : `${Math.max(1, Math.round(kb / 1024))} MB`;
+        return fat_kb && kb >= fat_kb ? `<span class='disk-fat' title='deutlich mehr als die meisten'><i class='bi bi-hdd-fill'></i>${text}</span>` : text;
     }
 
     // »vor 3 Tagen«, with the date, and where it comes from when it is not a
@@ -225,13 +312,27 @@
         api_call('/api/admin/people', filters, function (data) {
             if (!data.success) return;
             const here = $('#all_here').empty();
-            const table = $(`<table class='table table-sm'><thead><tr><th>Name</th><th>E-Mail-Adresse</th><th>Rolle</th><th>Schule</th><th>Gruppen</th><th>Zuletzt da</th></tr></thead><tbody></tbody></table>`);
+            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Name</th><th>E-Mail-Adresse</th><th>Rolle</th><th>Schule</th><th>Gruppen</th><th>Zuletzt da</th><th title='Speicherplatz des Workspace'>Speicher</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
             data.people.forEach(function (p) {
-                table.find('tbody').append($('<tr>').append($('<td>').text(p.name || '–'), $('<td>').text(p.email), $('<td>').text(p.role),
+                // Names live on the invitation; an account without one keeps its own.
+                const name = p.invited
+                    ? inline_name(p.name, `Name von ${p.email}`, (value, done) => people_call('/api/groups/set_name', { email: p.email, person_name: value }, done))
+                    : $('<span>').text(p.name || '–');
+                const actions = $('<td class="row-actions">');
+                if (p.invited && !p.account && p.role === 'Lernende') {
+                    const remove = icon_button('bi-person-dash', `Einladung von ${p.name || p.email} entfernen`);
+                    remove.on('click', function () {
+                        confirm_dialog({ title: 'Einladung entfernen', text: `${p.name || p.email} wird aus allen Gruppen genommen (${p.groups.join(', ') || 'keine'}) und kann sich nicht mehr anmelden. Ein Konto gibt es nicht, es wird also nichts gelöscht.`,
+                            confirm: 'Entfernen', icon: 'bi-person-dash', danger: true },
+                            () => people_call('/api/people/remove_invitation', { email: p.email }, load_all));
+                    });
+                    actions.append(remove);
+                }
+                table.find('tbody').append($('<tr>').append($('<td>').append(name), $('<td>').text(p.email), $('<td>').text(p.role),
                     $('<td>').text((p.schools || []).join(', ')), $('<td>').text(p.groups.join(', ')),
-                    $('<td class="text-nowrap">').html(active_html(p))));
+                    $('<td class="text-nowrap">').html(active_html(p)), $('<td class="text-nowrap">').html(disk_html(p.disk_kb, data.fat_kb)), actions));
             });
-            here.append(table);
+            here.append($("<div class='table-responsive'></div>").append(table));
             here.append($('<p class="small text-body-secondary">').text(`${data.total} ${data.total === 1 ? 'Person' : 'Personen'}${data.total > data.people.length ? `, die ersten ${data.people.length} stehen hier` : ''}. Löschen unter »Administration › Konten löschen«.`));
         }, { no_please_wait: true });
     }
@@ -245,15 +346,15 @@
                 return;
             }
             here.append(`<p>${data.total} ${data.total === 1 ? 'Person' : 'Personen'} in ${groups.length} Gruppen.</p>`);
-            const table = $(`<table class='table table-sm'><thead><tr><th><input type='checkbox' class='form-check-input' id='cb_unused_all' aria-label='Alle auswählen'></th><th>Gruppe</th><th>Schule</th><th>ohne Konto</th><th>Mitglieder</th></tr></thead><tbody></tbody></table>`);
+            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th><input type='checkbox' class='form-check-input' id='cb_unused_all' aria-label='Alle auswählen'></th><th>Gruppe</th><th>Schule</th><th>Ohne Konto</th><th>Mitglieder</th></tr></thead><tbody></tbody></table>`);
             groups.forEach(function (g) {
-                const cb = $(`<input type='checkbox' class='form-check-input cb-unused'>`).data('group', g.name);
+                const cb = $(`<input type='checkbox' class='form-check-input cb-unused'>`).data('group', g.name).attr('aria-label', g.name);
                 table.find('tbody').append($('<tr>').append($('<td>').append(cb), $('<td>').text(g.name), $('<td>').text(g.school || '–'),
                     $('<td>').text(g.unused), $('<td>').text(g.members)));
             });
             here.append(table);
             table.find('#cb_unused_all').on('change', function () { table.find('.cb-unused').prop('checked', this.checked); });
-            const button = $(`<button class='btn btn-outline-danger'><i class='bi bi-person-dash'></i>Aus den ausgewählten Gruppen nehmen</button>`);
+            const button = $(`<button type='button' class='btn btn-outline-danger'><i class='bi bi-person-dash'></i>Aus den ausgewählten Gruppen nehmen</button>`);
             button.on('click', function () {
                 const chosen = table.find('.cb-unused:checked').map(function () { return $(this).data('group'); }).get();
                 if (!chosen.length) return;
@@ -268,7 +369,7 @@
                                 return;
                             }
                             $('#__template_modal').modal('hide');
-                            alert(`${r.memberships} Mitgliedschaften entfernt; ${r.uninvited} ${r.uninvited === 1 ? 'Person ist' : 'Personen sind'} nicht mehr eingeladen.`);
+                            show_success_message(`${r.memberships} Mitgliedschaften entfernt; ${r.uninvited} ${r.uninvited === 1 ? 'Person ist' : 'Personen sind'} nicht mehr eingeladen.`);
                             load_all();
                         });
                         return false;
@@ -298,15 +399,18 @@
             const payload = { name: $('#school_name').val(), address: $('#school_address').val(), data_protection_officer: $('#school_dpo').val(),
                 school_law: $('#school_law').val(), supervisory_authority: $('#school_authority').val() };
             if ($('#school_key').val()) payload.key = $('#school_key').val();
-            people_call('/api/people/save_school', payload, function () { $('#school_form')[0].reset(); $('#school_key').val(''); $('#school_submit_label').text('Schule anlegen'); $('#bu_school_reset').hide(); load_all(); });
+            people_call('/api/people/save_school', payload, function () { show_school_form(false); load_all(); });
         });
-        $('#bu_school_reset').on('click', function () { $('#school_form')[0].reset(); $('#school_key').val(''); $('#school_submit_label').text('Schule anlegen'); $(this).hide(); });
+        $('#bu_school_reset').on('click', () => show_school_form(false));
+        $('#bu_school_new').on('click', function () { show_school_form(true); $('#school_name').trigger('focus'); });
+        $('#bu_teacher_new').on('click', function () { $('#teacher_form').toggle(); $('#teacher_email').trigger('focus'); });
+        $('#teachers_school').on('change', load_teachers);
         $('#bu_guests').on('click', () => people_call('/api/people/ensure_guests', {}, load_all));
         $('#teacher_form').on('submit', function (e) {
             e.preventDefault();
             const email = $('#teacher_email').val().trim();
             people_call('/api/people/save_teacher', { email: email, person_name: $('#teacher_name').val(), school: $('#teacher_school').val() }, function () {
-                const done = function () { $('#teacher_form')[0].reset(); $('#teacher_welcome').prop('checked', true); load_all(); };
+                const done = function () { $('#teacher_form')[0].reset(); $('#teacher_welcome').prop('checked', true); $('#teacher_form').hide(); load_all(); };
                 if ($('#teacher_welcome').is(':checked')) people_call('/api/people/welcome_teacher', { email: email }, done); else done();
             });
         });

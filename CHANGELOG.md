@@ -111,6 +111,20 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Datum eines schriftlichen Einverständnisses ein (Elternbrief mit
   Einverständniserklärung unter `/datenschutz`). Gesperrt wird ohne beides
   niemand; Gruppe und `/personen` zeigen, wie viele noch ungeklärt sind.
+- `/gruppen` und `/personen` überarbeitet: Für die Administration stehen
+  beide im Menü »Administration«, für Lehrkräfte »Gruppen« als eigener Knopf.
+  Jede Gruppe ist eine Zeile, die sich aufklappen lässt, unter ihrer Schule
+  (die eigene zuerst), mit Suche; Gruppen lassen sich umbenennen (angeheftete
+  Aktivitäten, Programmiersprache und die Auswahl auf der Klassenseite
+  ziehen mit); beim Hinzufügen schlägt die Seite beim Tippen Personen vor,
+  nach Name oder Adresse, Lehrkräften nur aus ihrer Schule; Namen lassen sich
+  direkt in der Tabelle ändern; für die Administration zeigt jede Gruppe,
+  wann zuletzt jemand da war, und den Speicher. Ruhigere Knöpfe, kurze
+  Spaltenköpfe, keine Fenster des Browsers mehr (eigene Dialoge), eine
+  Rückfrage, bevor eine Lehrkraft aus einer Gruppe genommen wird. Eine
+  Schülerin oder ein Schüler einer anderen Schule lässt sich nicht mehr in
+  eine Gruppe eintragen (Gruppen der Gäste ausgenommen). Die Übersicht der
+  Gruppen braucht drei Abfragen statt drei je Gruppe.
 - »Alle Personen« unter `/personen` zeigt, wann jemand zuletzt da war
   (»vor 3 Tagen«, nach einem halben Jahr hervorgehoben), mit Filtern für
   Schule und Rolle und der Sortierung »am längsten nicht da zuerst«. Dafür

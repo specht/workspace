@@ -8,6 +8,12 @@ class Main < Sinatra::Base
     GROUP_NAME_MAX = 60
     WELCOME_MAILS_PER_TEACHER = RateLimit.new(:limit => 600, :period => 3600)
 
+    # Teachers manage their own groups, administrators every group; anyone
+    # else gets a refusal, not an error.
+    def teacher_or_admin!
+        halt 403, { :error => 'teachers_only' }.to_json unless teacher_account_logged_in? || admin_logged_in?
+    end
+
     def roster_writable!
         halt 409, { :error => 'roster_in_files' }.to_json unless Main.roster_imported
     end
@@ -36,9 +42,9 @@ class Main < Sinatra::Base
     def school_of_group(name)
         row = neo4j_query(<<~END_OF_QUERY, :name => name).first
             MATCH (:Group {name: $name})-[:AT]->(s:School)
-            RETURN s.key AS key, s.name AS name, s.approved_at IS NOT NULL AS approved;
+            RETURN s.key AS key, s.name AS name, s.approved_at IS NOT NULL AS approved, coalesce(s.guests, false) AS guests, coalesce(s.home, false) AS home;
         END_OF_QUERY
-        row && { :key => row['key'], :name => row['name'], :approved => row['approved'] == true }
+        row && { :key => row['key'], :name => row['name'], :approved => row['approved'] == true, :guests => row['guests'] == true, :home => row['home'] == true }
     end
 
     # Administrators manage every group, teachers the ones they teach.
@@ -68,9 +74,15 @@ class Main < Sinatra::Base
         END_OF_QUERY
     end
 
+    # The groups the logged-in person manages, with members, teachers and
+    # school, in three queries for all groups. For administrators also when
+    # each member was last here and how much disk space the Workspace takes
+    # (Main#activity_by_email, Main#workspace_disk_usage); the
+    # Datenschutzerklärung says only the administration sees these.
     def groups_overview
         Main.load_invitations()
-        names = if admin_logged_in?
+        admin = admin_logged_in?
+        names = if admin
             neo4j_query('MATCH (g:Group) RETURN g.name AS name ORDER BY g.name;').map { |r| r['name'] }
         else
             neo4j_query(<<~END_OF_QUERY, :email => my_email).map { |r| r['name'] }
@@ -79,29 +91,92 @@ class Main < Sinatra::Base
             END_OF_QUERY
         end
         accounts = Set.new(neo4j_query('MATCH (u:User) RETURN u.email AS email;').map { |r| r['email'] })
+        members = Hash.new { |h, k| h[k] = [] }
+        neo4j_query(<<~END_OF_QUERY, :names => names).each { |r| members[r['group']] << r }
+            MATCH (i:Invitation)-[:MEMBER_OF]->(g:Group) WHERE g.name IN $names
+            RETURN g.name AS group, i.email AS email, i.name AS name, i.welcomed_at AS welcomed_at, i.consent_at AS consent_at
+            ORDER BY toLower(coalesce(i.name, i.email));
+        END_OF_QUERY
+        teachers = Hash.new { |h, k| h[k] = [] }
+        neo4j_query(<<~END_OF_QUERY, :names => names).each { |r| teachers[r['group']] << { :email => r['email'], :name => r['name'] } }
+            MATCH (i:Invitation)-[:TEACHES]->(g:Group) WHERE g.name IN $names
+            RETURN g.name AS group, i.email AS email, i.name AS name ORDER BY i.email;
+        END_OF_QUERY
+        schools = neo4j_query(<<~END_OF_QUERY, :names => names).to_h { |r| [r['group'], r.transform_keys(&:to_sym).except(:group)] }
+            MATCH (g:Group)-[:AT]->(s:School) WHERE g.name IN $names
+            RETURN g.name AS group, s.key AS key, s.name AS name, s.approved_at IS NOT NULL AS approved,
+                coalesce(s.guests, false) AS guests, coalesce(s.home, false) AS home;
+        END_OF_QUERY
+        activity = admin ? activity_by_email : {}
+        disk = admin ? workspace_disk_usage[:by_tag] : {}
         names.map do |name|
-            members = neo4j_query(<<~END_OF_QUERY, :name => name).map do |r|
-                MATCH (i:Invitation)-[:MEMBER_OF]->(:Group {name: $name})
-                RETURN i.email AS email, i.name AS name, i.welcomed_at AS welcomed_at, i.consent_at AS consent_at
-                ORDER BY toLower(coalesce(i.name, i.email));
-            END_OF_QUERY
-                { :email => r['email'], :name => r['name'], :welcomed_at => r['welcomed_at'], :consent_at => r['consent_at'],
-                  :account => accounts.include?(r['email']), :teacher => @@teacher_emails.include?(r['email']) }
+            list = members[name].map do |r|
+                m = { :email => r['email'], :name => r['name'], :welcomed_at => r['welcomed_at'], :consent_at => r['consent_at'],
+                      :account => accounts.include?(r['email']), :teacher => @@teacher_emails.include?(r['email']) }
+                if admin
+                    active = activity[r['email']]
+                    m[:active_on] = active && active[:day] ? active[:day].to_s : nil
+                    m[:active_source] = active && active[:day] ? active[:source] : nil
+                    m[:disk_kb] = m[:account] ? disk[fs_tag_for_email(r['email'])] : nil
+                end
+                m
             end
-            teachers = neo4j_query(<<~END_OF_QUERY, :name => name).map { |r| { :email => r['email'], :name => r['name'] } }
-                MATCH (i:Invitation)-[:TEACHES]->(:Group {name: $name})
-                RETURN i.email AS email, i.name AS name ORDER BY i.email;
-            END_OF_QUERY
-            { :name => name, :school => school_of_group(name), :members => members, :teachers => teachers }
+            group = { :name => name, :school => schools[name], :members => list, :teachers => teachers[name] }
+            if admin
+                students = list.reject { |m| m[:teacher] }
+                group[:last_active] = students.map { |m| m[:active_on] }.compact.max
+                group[:disk_kb] = students.sum { |m| m[:disk_kb].to_i }
+            end
+            group
         end
     end
 
     post '/api/groups/list' do
-        assert(teacher_account_logged_in?)
+        teacher_or_admin!
         imported = Main.roster_imported
         respond(:imported => !imported.nil?, :admin => admin_logged_in?, :school => imported ? school_of_teacher(my_email) : nil,
-            :groups => imported ? groups_overview : [],
-            :schools => admin_logged_in? && imported ? neo4j_query('MATCH (s:School) RETURN s.key AS key, s.name AS name, s.approved_at IS NOT NULL AS approved ORDER BY s.name;').map { |r| { :key => r['key'], :name => r['name'], :approved => r['approved'] == true } } : [])
+            :groups => imported ? groups_overview : [], :fat_kb => admin_logged_in? ? workspace_disk_usage[:fat_kb] : nil,
+            :schools => admin_logged_in? && imported ? neo4j_query('MATCH (s:School) RETURN s.key AS key, s.name AS name, s.approved_at IS NOT NULL AS approved ORDER BY coalesce(s.home, false) DESC, coalesce(s.guests, false), toLower(s.name);').map { |r| { :key => r['key'], :name => r['name'], :approved => r['approved'] == true } } : [])
+    end
+
+    # Suggestions while typing, by part of a name or address, at most ten.
+    # kind 'teacher': teachers of the group's school (who may co-teach it);
+    # kind 'member': people already invited, for a teacher only those in
+    # groups of the group's school, never the whole installation; for an
+    # administrator everyone. Who is in the group already is left out.
+    post '/api/groups/suggest' do
+        teacher_or_admin!
+        roster_writable!
+        data = parse_request_data(:required_keys => [:name, :q, :kind], :max_value_lengths => { :q => 100 })
+        name = managed_group!(data[:name])
+        q = data[:q].to_s.strip.downcase
+        halt 400, { :error => 'invalid_kind' }.to_json unless %w[teacher member].include?(data[:kind])
+        school = (school_of_group(name) || {})[:key]
+        rows = if q.size < 2
+            []
+        elsif data[:kind] == 'teacher'
+            neo4j_query(<<~END_OF_QUERY, :q => q, :name => name, :school => school)
+                MATCH (i:Invitation)-[:AT]->(:School {key: $school})
+                WHERE NOT (i)-[:TEACHES]->(:Group {name: $name})
+                    AND (toLower(i.email) CONTAINS $q OR toLower(coalesce(i.name, '')) CONTAINS $q)
+                RETURN i.email AS email, i.name AS name ORDER BY toLower(coalesce(i.name, i.email)) LIMIT 10;
+            END_OF_QUERY
+        elsif admin_logged_in?
+            neo4j_query(<<~END_OF_QUERY, :q => q, :name => name)
+                MATCH (i:Invitation)
+                WHERE NOT (i)-[:MEMBER_OF]->(:Group {name: $name})
+                    AND (toLower(i.email) CONTAINS $q OR toLower(coalesce(i.name, '')) CONTAINS $q)
+                RETURN i.email AS email, i.name AS name ORDER BY toLower(coalesce(i.name, i.email)) LIMIT 10;
+            END_OF_QUERY
+        else
+            neo4j_query(<<~END_OF_QUERY, :q => q, :name => name, :school => school)
+                MATCH (i:Invitation)-[:MEMBER_OF]->(:Group)-[:AT]->(:School {key: $school})
+                WHERE NOT (i)-[:MEMBER_OF]->(:Group {name: $name})
+                    AND (toLower(i.email) CONTAINS $q OR toLower(coalesce(i.name, '')) CONTAINS $q)
+                RETURN DISTINCT i.email AS email, i.name AS name ORDER BY toLower(coalesce(i.name, i.email)) LIMIT 10;
+            END_OF_QUERY
+        end
+        respond(:people => rows.map { |r| { :email => r['email'], :name => r['name'] } })
     end
 
     # A student's written consent (of the parents, or their own when of
@@ -109,7 +184,7 @@ class Main < Sinatra::Base
     # responsible for it: date (YYYY-MM-DD) or empty to remove it. It matters
     # while the school has not agreed; it never decides who can log in.
     post '/api/groups/set_consent' do
-        assert(teacher_account_logged_in?)
+        teacher_or_admin!
         roster_writable!
         data = parse_request_data(:required_keys => [:name, :email, :date])
         name = managed_group!(data[:name])
@@ -162,12 +237,15 @@ class Main < Sinatra::Base
             t[:matches] = t[:school] == to[:key]
             t[:admin] = ADMIN_USERS.include?(t[:email])
         end
-        elsewhere = neo4j_query(<<~END_OF_QUERY, :name => name, :target => to[:key]).map { |r| { :email => r['email'], :name => r['name'], :groups => r['groups'] } }
+        # Guest groups (workshops, events, companies) are no other school: the
+        # same people may be in them.
+        to_guests = neo4j_query('MATCH (s:School {key: $key}) RETURN coalesce(s.guests, false) AS g;', :key => to[:key]).first['g'] == true
+        elsewhere = neo4j_query(<<~END_OF_QUERY, :name => name, :target => to[:key], :to_guests => to_guests).map { |r| { :email => r['email'], :name => r['name'], :groups => r['groups'] } }
             MATCH (m:Invitation)-[:MEMBER_OF]->(:Group {name: $name})
             WHERE coalesce(m.teacher, false) = false AND NOT (m)-[:TEACHES]->(:Group {name: $name})
             MATCH (m)-[:MEMBER_OF]->(o:Group) WHERE o.name <> $name
             OPTIONAL MATCH (o)-[:AT]->(os:School)
-            WITH m, o, os WHERE os IS NULL OR os.key <> $target
+            WITH m, o, os WHERE (os IS NULL OR os.key <> $target) AND coalesce(os.guests, false) = false AND NOT $to_guests
             RETURN m.email AS email, m.name AS name, collect(DISTINCT o.name) AS groups
             ORDER BY m.email;
         END_OF_QUERY
@@ -236,17 +314,56 @@ class Main < Sinatra::Base
         respond(:moved => name, :to => plan[:to])
     end
 
-    post '/api/groups/create' do
-        assert(teacher_account_logged_in?)
-        roster_writable!
-        data = parse_request_data(:required_keys => [:name], :optional_keys => [:school])
-        name = data[:name].to_s.strip.squeeze(' ')
+    # A new group name, cleaned up, or a refusal: not empty, not too long,
+    # no < or >, not reserved and not taken (group names are unique).
+    def free_group_name!(text)
+        name = text.to_s.strip.squeeze(' ')
         halt 400, { :error => 'invalid_name' }.to_json if name.empty? || name.size > GROUP_NAME_MAX || name.match?(/[<>]/)
         Main.load_invitations()
         reserved = ['Administrator', Roster::TEACHERS_GROUP, Roster::NO_GROUP]
         taken = reserved.include?(name) || @@group_members.key?(name) || @@test_groups.include?(name) ||
             name.start_with?('Testgruppe') || !neo4j_query('MATCH (g:Group {name: $name}) RETURN g;', :name => name).empty?
         halt 409, { :error => 'name_taken' }.to_json if taken
+        name
+    end
+
+    # Renaming a group, by its teachers or an administrator. The name is also
+    # the key of the pins on the start page (Pin, key »group|slug«), of the
+    # group's programming language (GroupSetting) and of the teachers' last
+    # choice on the class page (User.class_prefs): all of them follow, in one
+    # transaction.
+    post '/api/groups/rename' do
+        teacher_or_admin!
+        roster_writable!
+        data = parse_request_data(:required_keys => [:name, :new_name])
+        old_name = managed_group!(data[:name])
+        new_name = free_group_name!(data[:new_name])
+        prefs = neo4j_query('MATCH (u:User) WHERE u.class_prefs CONTAINS $quoted RETURN u.email AS email, u.class_prefs AS prefs;',
+            :quoted => old_name.to_json).filter_map do |r|
+            parsed = (JSON.parse(r['prefs'].to_s) rescue nil)
+            next unless parsed.is_a?(Hash)
+
+            parsed['group'] = new_name if parsed['group'] == old_name
+            parsed['activities'][new_name] = parsed['activities'].delete(old_name) if parsed['activities'].is_a?(Hash) && parsed['activities'].key?(old_name)
+            { 'email' => r['email'], 'prefs' => parsed.to_json }
+        end
+        $neo4j.transaction do
+            $neo4j.neo4j_query('MATCH (g:Group {name: $old}) SET g.name = $new, g.renamed_from = $old, g.renamed_at = $now, g.renamed_by = $me;',
+                :old => old_name, :new => new_name, :now => Time.now.to_i, :me => my_email)
+            $neo4j.neo4j_query('MATCH (p:Pin {group: $old}) SET p.group = $new, p.key = $new + "|" + p.slug;', :old => old_name, :new => new_name)
+            $neo4j.neo4j_query('MATCH (s:GroupSetting {group: $old}) SET s.group = $new;', :old => old_name, :new => new_name)
+            $neo4j.neo4j_query('UNWIND $rows AS r MATCH (u:User {email: r.email}) SET u.class_prefs = r.prefs;', :rows => prefs)
+        end
+        Main.note_roster_change!
+        STDERR.puts "Group #{old_name} renamed to #{new_name} by #{my_email}"
+        respond(:renamed => new_name)
+    end
+
+    post '/api/groups/create' do
+        teacher_or_admin!
+        roster_writable!
+        data = parse_request_data(:required_keys => [:name], :optional_keys => [:school])
+        name = free_group_name!(data[:name])
         school = if admin_logged_in? && data[:school]
             data[:school].to_s
         else
@@ -276,7 +393,7 @@ class Main < Sinatra::Base
     end
 
     post '/api/groups/delete' do
-        assert(teacher_account_logged_in?)
+        teacher_or_admin!
         roster_writable!
         data = parse_request_data(:required_keys => [:name, :confirmation])
         name = managed_group!(data[:name])
@@ -289,13 +406,28 @@ class Main < Sinatra::Base
     end
 
     post '/api/groups/add_members' do
-        assert(teacher_account_logged_in?)
+        teacher_or_admin!
         roster_writable!
         data = parse_request_data(:required_keys => [:name, :lines], :max_body_length => 200_000, :max_value_lengths => { :lines => 190_000 })
         name = managed_group!(data[:name])
         parsed = Roster.parse_member_lines(data[:lines])
         halt 400, { :error => 'too_many' }.to_json if parsed[:people].size > 1000
-        rows = neo4j_query(<<~END_OF_QUERY, :people => parsed[:people].map { |e, n| { 'email' => e, 'name' => n } }, :name => name, :now => Time.now.to_i, :me => my_email)
+        # A student already in a group of another school is not added: one
+        # account per address, so this group's teachers would see that
+        # student's Workspace (as with »Schule wechseln«). Teachers are not
+        # students here; workshop groups have teachers of other schools.
+        elsewhere = neo4j_query(<<~END_OF_QUERY, :emails => parsed[:people].map(&:first), :name => name).map { |r| r['email'] }
+            MATCH (g:Group {name: $name})
+            OPTIONAL MATCH (g)-[:AT]->(gs:School)
+            MATCH (i:Invitation)-[:MEMBER_OF]->(o:Group) WHERE i.email IN $emails AND o.name <> $name
+                AND coalesce(i.teacher, false) = false AND NOT (i)-[:TEACHES]->(:Group) AND NOT (i)-[:AT]->(:School)
+            OPTIONAL MATCH (o)-[:AT]->(os:School)
+            WITH i, gs, os WHERE coalesce(os.key, '') <> coalesce(gs.key, '')
+                AND coalesce(os.guests, false) = false AND coalesce(gs.guests, false) = false
+            RETURN DISTINCT i.email AS email;
+        END_OF_QUERY
+        people = parsed[:people].reject { |email, _| elsewhere.include?(email) }
+        rows = neo4j_query(<<~END_OF_QUERY, :people => people.map { |e, n| { 'email' => e, 'name' => n } }, :name => name, :now => Time.now.to_i, :me => my_email)
             UNWIND $people AS p
             MATCH (g:Group {name: $name})
             MERGE (i:Invitation {email: p.email})
@@ -308,11 +440,11 @@ class Main < Sinatra::Base
         Main.note_roster_change!
         STDERR.puts "#{my_email} added #{rows.count { |r| !r['already'] }} to #{name}"
         respond(:added => rows.count { |r| !r['already'] }, :already => rows.count { |r| r['already'] },
-            :kept_names => rows.select { |r| r['kept_name'] }.map { |r| r['email'] }, :rejected => parsed[:rejected])
+            :kept_names => rows.select { |r| r['kept_name'] }.map { |r| r['email'] }, :rejected => parsed[:rejected], :other_school => elsewhere.sort)
     end
 
     post '/api/groups/remove_member' do
-        assert(teacher_account_logged_in?)
+        teacher_or_admin!
         roster_writable!
         data = parse_request_data(:required_keys => [:name, :email])
         name = managed_group!(data[:name])
@@ -324,7 +456,7 @@ class Main < Sinatra::Base
 
     # The name shown for a person; the teacher must teach one of its groups.
     post '/api/groups/set_name' do
-        assert(teacher_account_logged_in?)
+        teacher_or_admin!
         roster_writable!
         data = parse_request_data(:required_keys => [:email, :person_name])
         email = data[:email].to_s.downcase
@@ -341,7 +473,7 @@ class Main < Sinatra::Base
 
     # A co-teacher: an existing teacher of the same school.
     post '/api/groups/add_teacher' do
-        assert(teacher_account_logged_in?)
+        teacher_or_admin!
         roster_writable!
         data = parse_request_data(:required_keys => [:name, :email])
         name = managed_group!(data[:name])
@@ -356,11 +488,12 @@ class Main < Sinatra::Base
             MERGE (i)-[:TEACHES]->(g);
         END_OF_QUERY
         Main.note_roster_change!
+        STDERR.puts "Teacher #{email} added to #{name} by #{my_email}"
         respond(:added => email)
     end
 
     post '/api/groups/remove_teacher' do
-        assert(teacher_account_logged_in?)
+        teacher_or_admin!
         roster_writable!
         data = parse_request_data(:required_keys => [:name, :email])
         name = managed_group!(data[:name])
@@ -369,13 +502,14 @@ class Main < Sinatra::Base
         halt 400, { :error => 'last_teacher' }.to_json if others.zero? && !admin_logged_in?
         neo4j_query('MATCH (:Invitation {email: $email})-[r:TEACHES]->(:Group {name: $name}) DELETE r;', :email => email, :name => name)
         Main.note_roster_change!
+        STDERR.puts "Teacher #{email} taken off #{name} by #{my_email}"
         respond(:removed => email)
     end
 
     # Welcome mails to the members of a group: to the addresses given, or to
     # everyone who has none yet.
     post '/api/groups/send_welcome' do
-        assert(teacher_account_logged_in?)
+        teacher_or_admin!
         roster_writable!
         data = parse_request_data(:required_keys => [:name], :optional_keys => [:emails], :types => { :emails => Array }, :max_body_length => 100_000)
         name = managed_group!(data[:name])

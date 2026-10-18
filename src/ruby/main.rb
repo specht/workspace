@@ -4223,13 +4223,27 @@ class Main < Sinatra::Base
         end
     end
 
+    # The disk space of each Workspace folder in KB, as housekeeping.rb last
+    # measured it (by fs tag), and from which size a Workspace stands out:
+    # five times the median and at least 200 MB, so that it scales with the
+    # installation.
+    def workspace_disk_usage
+        path = '/internal/du_for_fs_tag.json'
+        by_tag = (JSON.parse(File.read(path)) rescue {})
+        sizes = by_tag.values.map(&:to_i).sort
+        median = sizes.empty? ? 0 : sizes[sizes.size / 2]
+        { :by_tag => by_tag, :fat_kb => [median * 5, 200 * 1024].max, :measured_at => (File.mtime(path).to_i rescue nil) }
+    end
+
     # Everyone invited or with an account, for the administration: address,
     # name, role, groups, schools, whether there is an account, when last
-    # active. query matches part of the name, address, group or school.
+    # active, the disk space of the Workspace. query matches part of the name,
+    # address, group or school.
     def people_overview(query = '')
         Main.load_invitations()
         accounts = neo4j_query('MATCH (u:User) RETURN u.email AS email, u.name AS name;').to_h { |row| [row['email'], row['name']] }
         activity = activity_by_email
+        disk = workspace_disk_usage[:by_tag]
         groups_of = Hash.new { |hash, key| hash[key] = [] }
         @@group_members.each { |group, members| members.each { |email| groups_of[email] << group unless @@test_groups.include?(group) } }
         q = query.to_s.strip.downcase
@@ -4253,7 +4267,8 @@ class Main < Sinatra::Base
             active = activity[email]
             { :email => email, :name => name == email ? nil : name, :role => role, :groups => groups_of[email].sort,
               :schools => schools_of[email].sort, :account => accounts.key?(email), :invited => @@invitations.key?(email),
-              :active_on => active && active[:day] ? active[:day].to_s : nil, :active_source => active && active[:day] ? active[:source] : nil }
+              :active_on => active && active[:day] ? active[:day].to_s : nil, :active_source => active && active[:day] ? active[:source] : nil,
+              :disk_kb => accounts.key?(email) ? disk[fs_tag_for_email(email)] : nil }
         end.select do |p|
             q.empty? || p[:email].include?(q) || p[:name].to_s.downcase.include?(q) || p[:groups].any? { |g| g.downcase.include?(q) } ||
                 p[:schools].any? { |g| g.downcase.include?(q) }
@@ -4270,7 +4285,10 @@ class Main < Sinatra::Base
         people = people.select { |p| school == '-' ? p[:schools].empty? : p[:schools].include?(school) } unless school.empty?
         people = people.select { |p| p[:role] == data[:role] } unless data[:role].to_s.empty?
         people = people.sort_by { |p| [p[:active_on] || '', p[:name].to_s.downcase, p[:email]] } if data[:sort] == 'active'
-        respond(:people => people.first([[data[:limit] || 100, 1].max, 10_000].min), :total => people.size)
+        people = people.sort_by { |p| [-p[:disk_kb].to_i, p[:name].to_s.downcase, p[:email]] } if data[:sort] == 'disk'
+        usage = workspace_disk_usage
+        respond(:people => people.first([[data[:limit] || 100, 1].max, 10_000].min), :total => people.size,
+            :fat_kb => usage[:fat_kb], :measured_at => usage[:measured_at])
     end
 
     # Accounts whose address is no longer in any invitation list: what the
@@ -7318,7 +7336,7 @@ class Main < Sinatra::Base
         if path == '/gruppen'
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
-            halt 403 unless teacher_account_logged_in?
+            halt 403 unless teacher_account_logged_in? || admin_logged_in?
         end
         if path == '/klasse'
             this_is_a_page_for_logged_in_users!
