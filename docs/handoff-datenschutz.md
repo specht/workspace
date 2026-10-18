@@ -86,6 +86,52 @@ the same.
   administration keeps the invitations; update it again once teachers manage
   their groups on /gruppen.
 
+## State at the end of the session (2026-10-18, last)
+
+Built and committed, all Ruby tests passing:
+
+- `/gruppen` (`include/groups_page.rb`, `static/gruppen.html`): teachers
+  create groups (they belong to the teacher's school), add addresses
+  (`Roster.parse_member_lines`), edit names, add co-teachers of the same
+  school, send welcome mails (`MailTexts.welcome_student`, reply-to the
+  teacher, `welcomed_at` on the Invitation), delete groups. Works only after
+  the import; before, the page says so.
+- `/personen` (`include/people_page.rb`, `static/personen.html`), admin only:
+  schools (name, address, DSB, law, authority; `decision_at` and
+  `agreement_at`, approved when both are set; the home school is approved by
+  the import; »Gäste« school `guests`, always approved), teachers with a
+  required school (only the admin assigns it), welcome mail to teachers
+  (`MailTexts.welcome_teacher`, link `/datenschutz?schule=KEY`, optional
+  `COST_NOTE` setting, not yet in credentials.template.rb), overview of
+  everyone with schools and groups.
+- Tested end to end on the dev site (import, new school, teacher, group,
+  students blocked until both dates are set, then able to log in; co-teacher
+  of another school refused), then undone; dev roster is back to files.
+- neo4j_bolt 0.5.1 released (rubygems, tag v0.5.1 pushed) and used by the
+  server and the Workspace image (`ARG NEO4J_BOLT_VERSION=0.5.1`; the image
+  is not rebuilt yet).
+
+Still to do, in this order:
+
+1. The package per school: `/datenschutz?schule=KEY` (and the documents
+   under it) rendered with that school as controller (name, address, DSB,
+   law, authority from the School node), the operator as processor, the
+   teacher as contact, the Elternbrief signed by the teacher; the
+   Datenschutzerklärung on /impressum listing approved partner schools.
+   Until then the onboarding page says the documents name the operator's
+   school (keep it true). Then update the onboarding sentence.
+2. `COST_NOTE` in credentials.template.rb and on the Schulleitung page
+   (free to use, contributions welcome, never a condition).
+3. Guests in the Datenschutzerklärung (adults under the Nutzungsordnung;
+   already covered by `others_html`, check the wording) and a »Gäste«
+   group flow on /personen (create a group at the guests school).
+4. Nested display »Schule › Gruppe« on /klasse (the maintainer asked for it).
+5. docs/teacher-access.md: describe /gruppen and /personen; CHANGELOG notes
+   that after the import the files are no longer read (a major change for
+   operators of other installations).
+6. Before the live import: the maintainer tests check-invitation-import.rb
+   on a copy of the production files, then imports on production.
+
 ## Next: invitations in the browser (decided)
 
 - Groups in Neo4j (decided: everything moves, after the import); students of
