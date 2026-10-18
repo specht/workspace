@@ -69,6 +69,7 @@ Repository arbeitet, liest sie also ohnehin.
 | Regel | Warum | Geprüft durch |
 | --- | --- | --- |
 | Jedes Bild hat einen `alt`-Text, der sagt, was zu sehen ist | Barrierefreiheit, und beim Lesen ohne Bild | `alt_text_test.rb` |
+| In Diagrammen zielt eine Kante auf die Mitten der Knoten, die sie verbindet; eine Pfeilspitze zeigt in Richtung ihrer Kante, die Spitze auf dem Rand des Knotens. Ein gebogener Pfeil kommt auf der Linie zur Mitte an (sein letzter Kontrollpunkt liegt darauf), und ein Pfeil beginnt an der Stelle im Knoten, zu der er gehört, nicht in einer Ecke | Kanten, die an einer Kante des Kastens enden oder schräg ankommen, sehen unordentlich aus | Lesen (`dns/dns-tree.svg`, `sql-index/b-tree.svg` als Beispiele) |
 | Bilder aus dem Workspace, aus einer Vorschau oder von einer Seite der Website kommen aus Rezepten, nie von Hand | Nach einem Update von VS Code, des Themes oder der Seite entstehen sie neu | Audit (Spalte »von Hand«), `recreate-screenshots.rb --status` |
 | Rezepte, deren Bild für die folgenden nichts ändert (eine Galerie von Beispielen, eine Vorschau nach der anderen), stehen jedes in einem `<!-- tutorial-scope -->` | Dann rendert eine Änderung an einem Bild nur dieses neu, nicht alle danach, Videos eingeschlossen | Lesen (`src/tutorial-screenshots/README.md`, »Scopes«) |
 | Vor einer Scope-Marke steht eine Leerzeile, wenn die Zeile davor ein Bild oder Text ist | Sonst gehört sie für Markdown zum Absatz davor und steht als Text auf der Seite | `scope_markers_test.rb` |

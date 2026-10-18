@@ -13,14 +13,15 @@
   </style>
   <rect width="1200" height="520" fill="#ffffff"/>
 
-  <!-- Kanten: der Weg zu hackschule.de blau -->
-  <line class="way" x1="400" y1="85" x2="200" y2="215"/>
-  <line class="edge" x1="400" y1="85" x2="400" y2="215"/>
-  <line class="edge" x1="400" y1="85" x2="600" y2="215"/>
-  <line class="way" x1="200" y1="265" x2="120" y2="395"/>
-  <line class="edge" x1="200" y1="265" x2="300" y2="395"/>
-  <line class="edge" x1="400" y1="265" x2="460" y2="395"/>
-  <line class="edge" x1="600" y1="265" x2="640" y2="395"/>
+  <!-- Kanten: der Weg zu hackschule.de blau; jede von Mitte zu Mitte, die
+       Knoten darüber verdecken den Rest, so zielt sie auf beide Mitten -->
+  <line class="way" x1="400" y1="60" x2="200" y2="240"/>
+  <line class="edge" x1="400" y1="60" x2="400" y2="240"/>
+  <line class="edge" x1="400" y1="60" x2="600" y2="240"/>
+  <line class="way" x1="200" y1="240" x2="120" y2="420"/>
+  <line class="edge" x1="200" y1="240" x2="305" y2="420"/>
+  <line class="edge" x1="400" y1="240" x2="460" y2="420"/>
+  <line class="edge" x1="600" y1="240" x2="640" y2="420"/>
 
   <!-- Ebene 0: die Wurzel -->
   <circle class="path" cx="400" cy="60" r="28"/>

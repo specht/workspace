@@ -47,6 +47,12 @@ address from `credentials.rb` and the code `123456`.
   before the `<img>`), never by hand. Render with
   `src/scripts/recreate-screenshots.rb PAGE`, check `--status`, and look at
   every new picture before committing it with its `.tutorial-screenshots.json`.
+- Diagrams: an edge aims at the centres of the nodes it joins (drawn from
+  centre to centre under the nodes, or ending on the border on that line), and
+  an arrowhead points along its edge, its tip on the node's border. A curved
+  arrow arrives on the line towards the centre: its last control point lies on
+  that line, so the head follows the curve (`dns/dns-tree.svg`,
+  `sql-index/b-tree.svg`).
 - Check marks are Bootstrap icons (`<i class='bi bi-check-lg'></i>`), never
   Unicode characters; `no_check_marks_test.rb` enforces this.
 - Code blocks name their language. A copy button (`_copy`) only for what is no

@@ -759,6 +759,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- Diagramme: Im DNS-Baum zielen die Kanten auf die Mitten der Knoten, im
+  B-Baum von »SQL-Index« zeigen die Pfeilspitzen in Richtung ihrer Kurve, mit
+  der Spitze auf dem Rand. Beides gilt jetzt für alle Diagramme der Seite
+  (`docs/checkliste.md`).
 - DCT-Werkzeug (`/dct`) in 2D: Die mit ihren Koeffizienten gewichteten
   Kosinusmuster sind kräftig zu sehen. Bisher richtete sich ihre Helligkeit
   nach dem DC-Koeffizienten, dem Mittelwert des Blocks, der fast immer viel
