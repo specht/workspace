@@ -787,7 +787,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Bild der Karte nur verschoben und erst danach neu gezeichnet. Die Daten baut
   `src/scripts/collect-streets/`, für Berlin geschnitten an den Grenzen der
   Bezirke, mit Fähren; `publish-datasets.rb streets` veröffentlicht sie; die Vorlage entsteht in `vorlage/`, das
-  Repository `specht/routenplaner-starter` bekommt sie als Patch.
+  Repository `specht/routenplaner-starter` übernimmt sie von dort.
 - Generierte Bilder: Eine Webseite in der Vorschau, die auf ein `<canvas>`
   zeichnet, wird vor dem Bild neu gezeichnet, in der vollen Auflösung des
   Bildes (der Generator schickt ihr nach dem Umstellen der Auflösung ein

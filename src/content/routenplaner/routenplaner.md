@@ -24,7 +24,7 @@ Du baust einen Routenplaner wie den in deinem Handy, mit echten Karten von OpenS
 Noch in Arbeit (nur in der Entwicklung im Katalog): die Schritte 1 bis 5 stehen,
 bis Dijkstra, in Steglitz-Zehlendorf. Es fehlen die Prioritätswarteschlange, ganz Berlin mit A*, die
 Arten zu reisen und die Stadtrundfahrt. Die Vorlage entsteht in vorlage/;
-specht/routenplaner-starter bekommt sie als Patch.
+specht/routenplaner-starter übernimmt sie von dort.
 -->
 
 ## Einrichten
