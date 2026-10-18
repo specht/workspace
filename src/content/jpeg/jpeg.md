@@ -67,7 +67,9 @@ template_name: des PixelRAM-Starters
             position: absolute;
             left: -0.2em;
             right: -0.2em;
-            bottom: 0.05em;
+            /* centred on the digits, not on the line box: hex digits have no
+               descenders, so their middle is at about 0.75em from the top */
+            top: 0.15em;
             height: 1.2em;
             z-index: -1;
             border-radius: 0.25em;
@@ -225,17 +227,18 @@ sleep: 2
 -->
 <figure><a href='/colorspace' target='_blank' rel='noopener'><img src='colorspace.webp' alt='Ein Foto, zerlegt in drei Graubilder für Rot, Grün und Blau, mit Reglern dazwischen und dem wieder zusammengesetzten Foto rechts.'></a><figcaption>Trennung von Helligkeit und Farbe</figcaption></figure>
 <!-- tutorial-screenshot
-# »DCT«, eine Zeile von acht Pixeln mitten im Foto ausgewählt, damit die
-# Kurve, die Koeffizienten und die Kosinuswellen darunter zu sehen sind
+# »DCT« zweidimensional: ein 8 x 8-Block aus der gestreiften Krawatte
+# rechts, mit allen 64 Koeffizienten, damit die schrägen Streifen in den
+# Koeffizienten und in den gewichteten Kosinusmustern zu sehen sind
 open-site: /dct
 tab: preview
 viewport: 1280x720
 sleep: 2
-click: selector:#source canvas
+hook: dct-select 476 178 2d 64
 move-mouse: selector:#coefficients_chooser
 sleep: 1
 -->
-<figure><a href='/dct' target='_blank' rel='noopener'><img src='dct.webp' alt='Ein Ausschnitt aus acht Pixeln als Kurve, darunter seine acht DCT-Koeffizienten und die acht Kosinuswellen, aus denen die Kurve wieder entsteht.'></a><figcaption>Diskrete Kosinustransformation (DCT)</figcaption></figure>
+<figure><a href='/dct' target='_blank' rel='noopener'><img src='dct.webp' alt='Die DCT in 2D: ein 8 × 8-Block aus einer gestreiften Krawatte als Tabelle seiner Helligkeiten, daneben seine 64 DCT-Koeffizienten, die mit ihnen gewichteten Kosinusmuster und rechts der Block, wieder zusammengesetzt.'></a><figcaption>Diskrete Kosinustransformation (DCT)</figcaption></figure>
 </div>
 
 <!-- Basiswechsel, Quantisierung, Huffman-Codierung -->
