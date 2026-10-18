@@ -27,6 +27,8 @@ address from `credentials.rb` and the code `123456`.
 - [docs/entwicklung.md](docs/entwicklung.md): what to rebuild after a change, tests, screenshots, extensions, image
 - [docs/aktivitaet-schreiben.md](docs/aktivitaet-schreiben.md): writing an activity, with a template in `docs/vorlage-aktivitaet/`
 - [docs/aufgaben.md](docs/aufgaben.md): every meta field, task type and placeholder
+- [docs/datenschutz.md](docs/datenschutz.md): Impressum, Datenschutzerklärung, the documents for the school, deleting accounts;
+  change `src/ruby/include/privacy.rb` whenever what is stored changes
 - [docs/checkliste.md](docs/checkliste.md): every rule an activity must meet, why, and what checks it;
   go through it for every new or changed activity. `src/scripts/audit-activities.rb` counts the countable part
 - [src/tutorial-screenshots/README.md](src/tutorial-screenshots/README.md): the recipe language for generated pictures
