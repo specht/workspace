@@ -112,6 +112,18 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Datum eines schriftlichen Einverständnisses ein (Elternbrief mit
   Einverständniserklärung unter `/datenschutz`). Gesperrt wird ohne beides
   niemand; Gruppe und `/personen` zeigen, wie viele noch ungeklärt sind.
+- Willkommensmails an Schülerinnen und Schüler haben die
+  Datenschutzerklärung ihrer Schule als PDF im Anhang; vor dem Senden zeigt
+  `/gruppen` eine Vorschau (Empfänger, Betreff, Text, Anhang zum Ansehen).
+  Mails mit Anhang sind `multipart/mixed`, damit Mailprogramme den Anhang
+  zeigen.
+- Unter `/personen` wählt »Alle auswählen, die über ein Jahr nicht da waren«
+  die Konten für eine angekündigte Löschung aus.
+- Die Prüfübersicht (Berlin) begründet, warum der Workspace ein digitales
+  Lehr- und Lernmittel nach § 2 DigLLV ist und kein Lernmanagementsystem:
+  keine Kommunikation, keine Organisation des Unterrichts, keine Noten;
+  Abgaben und Leistungsüberprüfungen sind genannt, die Einordnung trifft die
+  Schule.
 - Die Unterlagen für die Schule sind nicht mehr öffentlich: Nur
   `/impressum` ist es. Datenschutzerklärung, Nutzungsordnung und
   Webhosting-Vereinbarung öffnen alle, die angemeldet sind (die Fassung einer

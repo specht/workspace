@@ -119,6 +119,9 @@ class PrivacyDocumentsTest < Minitest::Test
 
     def test_berlin_rules_only_where_configured
         assert_includes PrivacyDocuments.body('loeschkonzept', settings(FULL)), '§ 2 Abs. 6 DigLLV'
+        assert_includes PrivacyDocuments.body('pruefuebersicht', settings(FULL)), 'Einordnung: digitales Lehr- und Lernmittel (§ 2 DigLLV)'
+        assert_includes PrivacyDocuments.body('pruefuebersicht', settings(FULL)), 'Leistungsüberprüfungen'
+        refute_includes PrivacyDocuments.body('pruefuebersicht', settings(FULL.merge('SCHOOL_LAW' => 'Schulgesetz NRW'))), 'Einordnung'
         refute_includes PrivacyDocuments.body('loeschkonzept', settings(FULL.merge('SCHOOL_LAW' => 'Schulgesetz NRW'))), 'DigLLV'
         refute_includes PrivacyDocuments.body('pruefuebersicht', settings({})), 'DigLLV'
     end

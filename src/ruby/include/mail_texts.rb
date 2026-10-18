@@ -64,14 +64,17 @@ module MailTexts
 
     # From a teacher to the people in its group, so that they know the
     # Workspace exists and how to log in. Replies go to the teacher.
-    def self.welcome_student(web_root:, group:, teacher:, email:, privacy_url: nil)
+    # attached: the Datenschutzerklärung of the group's school goes with the
+    # mail as a PDF (only /impressum is public); public_url: where the
+    # operator's own school also has it online.
+    def self.welcome_student(web_root:, group:, teacher:, email:, privacy_url: nil, attached: false)
         body = +"<p>Hallo!</p>\n"
         body << "<p>#{h(teacher)} hat dich in die Gruppe <strong>#{h(group)}</strong> im Workspace eingeladen. " \
             'Der Workspace ist eine Programmierumgebung im Browser für den Unterricht: Du bekommst einen eigenen Editor, ' \
             'Aufgaben, die der Workspace selbst prüft, und ein Handbuch.</p>' + "\n"
         body << "<p>So meldest du dich an: Öffne #{link(web_root)}, gib deine E-Mail-Adresse <strong>#{h(email)}</strong> ein " \
             'und dann den Code, den du per E-Mail bekommst. Danach bleibst du angemeldet. Es gibt kein Passwort.</p>' + "\n"
-        body << "<p>Was der Workspace speichert und wer es sieht, steht in der Datenschutzerklärung: #{link(privacy_url || "#{web_root}/impressum#datenschutz")}. " \
+        body << (attached ? "<p>Was der Workspace speichert und wer es sieht, steht in der Datenschutzerklärung; sie hängt als PDF an dieser E-Mail#{privacy_url ? " und steht auch unter #{link(privacy_url)}" : ''}. " : "<p>Was der Workspace speichert und wer es sieht, steht in der Datenschutzerklärung: #{link(privacy_url || "#{web_root}/impressum#datenschutz")}. ") + \
             'Fragen beantwortet deine Lehrkraft; du kannst einfach auf diese E-Mail antworten.</p>' + "\n"
         body << closing(teacher)
         ["Willkommen im Workspace: #{group}", body]

@@ -339,13 +339,19 @@
         never.on('click', function () {
             table.find('.cb-account').each(function () { $(this).prop('checked', !$(this).data('person').active_on); });
         });
+        // Away for more than a year: the usual case for an announced deletion.
+        const year_ago = new Date(Date.now() - 365 * 86400000).toISOString().slice(0, 10);
+        const inactive = $(`<button type='button' class='btn btn-sm btn-outline-secondary'><i class='bi bi-hourglass-bottom'></i>Alle auswählen, die über ein Jahr nicht da waren</button>`);
+        inactive.on('click', function () {
+            table.find('.cb-account').each(function () { const p = $(this).data('person'); $(this).prop('checked', !!p.active_on && p.active_on < year_ago); });
+        });
         const del = $(`<button type='button' class='btn btn-sm btn-outline-danger'><i class='bi bi-trash'></i>Ausgewählte löschen …</button>`);
         del.on('click', function () {
             const chosen = table.find('.cb-account:checked').map(function () { return $(this).data('person'); }).get();
             if (chosen.length) bulk_delete_dialog(chosen, done);
         });
         table.find('.cb-account-all').on('change', function () { table.find('.cb-account').prop('checked', this.checked); });
-        return bar.append(never, del);
+        return bar.append(never, inactive, del);
     }
 
     function show_school_form(show) {

@@ -196,6 +196,31 @@ module PrivacyDocuments
         rows
     end
 
+    # Why the Workspace is a digital teaching and learning tool (§ 2 DigLLV)
+    # and not a learning management system (§ 3): the facts that decide it,
+    # every feature named, the decision left to the school.
+    def self.digllv_classification_html
+        <<~END_OF_HTML
+            <h2>Einordnung: digitales Lehr- und Lernmittel (§ 2 DigLLV)</h2>
+            <p>
+            Der Workspace ist eine Programmierumgebung: ein Werkzeug, mit dem Schülerinnen und Schüler im Fach arbeiten,
+            vergleichbar einer Software im Computerraum. Er ist kein Lernmanagementsystem, das den Unterricht einer Schule
+            organisiert:
+            </p>
+            #{list([
+                'Keine Kommunikation: keine Nachrichten, Foren oder Chats zwischen Personen.',
+                'Keine Organisation des Unterrichts: keine Stundenpläne, Termine, Anwesenheit oder Klassenbücher; Gruppen legen nur fest, wer sich anmelden kann und welche Lehrkraft wem hilft.',
+                'Keine Bewertung: Noten werden nicht gespeichert. Die automatische Prüfung von Aufgaben ist eine Rückmeldung an die Lernenden, wie ein Compiler, der einen Fehler meldet.',
+                'Abgaben sind Kopien von Dateien, die die Lehrkraft ansehen kann; der Workspace bewertet sie nicht.',
+                'Leistungsüberprüfungen geben Lernenden für die Dauer einer Überprüfung einen eigenen Workspace; was dort entsteht, lädt die Lehrkraft als PDF herunter und bewertet es außerhalb des Workspace, wie eine Arbeit auf Papier.',
+            ])}
+            <p>
+            Die Einordnung trifft die Schule mit ihrer Datenschutzbeauftragten Stelle; die Angaben hier beschreiben jede Funktion, auch Abgaben
+            und Leistungsüberprüfungen.
+            </p>
+        END_OF_HTML
+    end
+
     def self.pruefuebersicht_html(s)
         <<~END_OF_HTML
             <p>
@@ -203,6 +228,7 @@ module PrivacyDocuments
             Alle Angaben beschreiben den Workspace, wie er ist (Stand #{Privacy::CHECKED.strftime('%d.%m.%Y')}), und lassen sich am öffentlichen Quelltext nachprüfen.
             </p>
             #{table(%w[Anforderung Vorschrift Erfüllt\ durch], pruefuebersicht_rows(s))}
+            #{digllv?(s) ? digllv_classification_html : ''}
             <h2>Datenschutz-Folgenabschätzung (Art. 35 DSGVO)</h2>
             <p>
             Zur Einschätzung, ob eine Folgenabschätzung nötig ist: Der Workspace verarbeitet keine besonderen Kategorien von Daten

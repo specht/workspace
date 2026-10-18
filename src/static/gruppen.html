@@ -63,6 +63,13 @@
     .teacher-chip .btn-close { font-size: 0.55rem; }
     .group-add { margin-top: 0.4rem; }
     .consent-date { min-width: 9rem; }
+    .mail-preview {
+        width: 100%;
+        height: 22rem;
+        border: 1px solid var(--bs-border-color);
+        border-radius: 0.4rem;
+        background: #fff;
+    }
     .member-name {
         border: none;
         border-bottom: 1px dashed var(--bs-border-color);
@@ -145,6 +152,33 @@
     }
 
     let fat_kb = null;
+
+    // The welcome mail before it goes: recipients, subject, the text as the
+    // first one gets it, and the attached Datenschutzerklärung to look at.
+    function welcome_dialog(group, emails, done) {
+        const payload = { name: group.name };
+        if (emails) payload.emails = emails;
+        groups_call('/api/groups/welcome_preview', payload, function (p) {
+            if (!p.recipients) { show_error_message('Alle in der Gruppe haben schon eine Willkommensmail bekommen.'); return; }
+            const frame = $(`<iframe class='mail-preview' title='Vorschau der E-Mail' sandbox></iframe>`).attr('srcdoc', p.html);
+            const body = $(`<div></div>`).append(
+                `<p class='mb-1'><strong>An:</strong> ${p.recipients === 1 ? esc(p.first) : `${p.recipients} Personen (die Vorschau zeigt die E-Mail an ${esc(p.first)})`}<br>`
+                    + `<strong>Antworten an:</strong> ${esc(p.reply_to)}<br><strong>Betreff:</strong> ${esc(p.subject)}</p>`,
+                frame,
+                `<p class='mt-2 mb-0'><i class='bi bi-paperclip'></i><a href='${esc(p.attachment.url)}' target='_blank'>${esc(p.attachment.filename)}</a> <span class='small text-body-secondary'>(Anhang, zum Ansehen)</span></p>`);
+            showTemplateModal('Willkommensmail', '', `<i class='bi bi-envelope'></i>${p.recipients === 1 ? 'Senden' : `An ${p.recipients} senden`}`, 'btn-primary', "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-outline-secondary', function () {
+                const button = $('#__template_modal .modal-footer .btn-primary').prop('disabled', true).html("<i class='bi bi-arrow-repeat bi-spin'></i>Wird gesendet …");
+                groups_call('/api/groups/send_welcome', payload, function (r) {
+                    $('#__template_modal').modal('hide');
+                    show_success_message(`${r.sent} ${r.sent === 1 ? 'Willkommensmail' : 'Willkommensmails'} gesendet.${r.limited ? ' Mehr geht in dieser Stunde nicht; den Rest später.' : ''}`);
+                    if (done) done(r);
+                });
+                return false;
+            });
+            // The iframe goes in as an element: showTemplateModal takes text.
+            $('#__template_modal .modal-body').append(body);
+        });
+    }
 
     function suggest_people(group, kind, q, show) {
         api_call('/api/groups/suggest', { name: group.name, kind: kind, q: q }, r => show(r.success ? r.people : []), { no_please_wait: true });
@@ -342,7 +376,7 @@
                 name.on('keydown', function (e) { if (e.key === 'Enter') this.blur(); });
                 const welcome = $(`<button type='button' class='btn btn-sm btn-link p-0'>${m.welcomed_at ? day(m.welcomed_at) + ' · erneut' : 'senden'}</button>`);
                 welcome.on('click', function () {
-                    groups_call('/api/groups/send_welcome', { name: group.name, emails: [m.email] }, function () {
+                    welcome_dialog(group, [m.email], function () {
                         m.welcomed_at = Date.now() / 1000;
                         welcome.text(day(m.welcomed_at) + ' · erneut');
                         flash(welcome);
@@ -414,15 +448,7 @@
         const actions = $(`<div class='d-flex flex-wrap gap-2'></div>`).append(add_button);
         if (without > 0) {
             const send = $(`<button type='button' class='btn btn-sm btn-outline-secondary'><i class='bi bi-envelope'></i>Willkommensmail an alle ohne (${without})</button>`);
-            send.on('click', function () {
-                showTemplateModal('Willkommensmails senden', `<p>${without} ${without === 1 ? 'Person bekommt' : 'Personen bekommen'} eine E-Mail mit dem Link zum Workspace, wie die Anmeldung geht und dem Link zur Datenschutzerklärung. Antworten gehen an dich.</p>`,
-                    "<i class='bi bi-envelope'></i>Senden", 'btn-primary', 'Abbruch', 'btn-secondary', function () {
-                        groups_call('/api/groups/send_welcome', { name: group.name }, function (r) {
-                            show_success_message(`${r.sent} ${r.sent === 1 ? 'Willkommensmail' : 'Willkommensmails'} gesendet.${r.limited ? ' Mehr geht in dieser Stunde nicht; den Rest später.' : ''}`);
-                            load_groups();
-                        });
-                    });
-            });
+            send.on('click', () => welcome_dialog(group, null, load_groups));
             actions.append(send);
         }
         add.append(actions);

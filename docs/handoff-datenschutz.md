@@ -31,17 +31,21 @@ Done on the branch (each with tests or a run on the dev copy):
 - Guests: adults only, agree to the Nutzungsordnung at first login.
 - The import is final (no »Zurück zu den Dateien«).
 
-Open, waiting for a decision of the maintainer:
-- Finding 3: a partner school's public package and Datenschutzerklärung
-  list all its teachers with addresses. Proposal: one contact per school,
-  set on /personen.
-- Which school documents stay public (Impressum and the
-  Datenschutzerklärungen must); the rest behind a login would break the
-  link teachers hand to their Schulleitung.
-- Finding 4, automatic retention rules (group end dates, reminders).
-- Finding 5, the deletion ledger in /internal and restores.
-- Merging duplicate schools.
-- Finding 7, § 2 or § 3 DigLLV: for the school's DSB.
+Decided and built since:
+- Only /impressum is public; all school documents behind a login, as PDFs
+  (weasyprint in the Ruby image) and as one ZIP for the Schulleitung; the
+  partner school's Datenschutzerklärung goes with each welcome mail as a
+  PDF, after a preview. That settles finding 3 (teachers' addresses are no
+  longer public).
+- Long inactivity: an offer (»über ein Jahr nicht da« selects them for an
+  announced deletion); fully automatic rules not wanted yet.
+- Finding 5: the backup includes /internal and a restore would be from the
+  day before; the maintainer accepts that. No merge of schools (moving
+  groups and deleting schools suffices).
+- Finding 7: the Prüfübersicht argues § 2 DigLLV (no communication, no
+  organisation, no grades; hand-ins and exams named); the school decides.
+
+Open:
 - Finding 8, the AVV draft says contracts with Hetzner and the mail provider
   exist: true once the maintainer has concluded them.
 - Not wanted: teachers requesting their school themselves (only the admin

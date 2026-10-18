@@ -137,8 +137,24 @@ def mail_html_to_plain_text(s)
     s.gsub('<p>', "\n\n").gsub(/<br\s*\/?>/, "\n").gsub(/<\/?[^>]*>/, '').strip
 end
 
-def deliver_mail(plain_text = nil, &block)
-    mail = Mail.new do
+# attachments: [{ filename:, content: }]. With attachments the mail is
+# multipart/mixed: the text and HTML alternative, then the files (Mail would
+# otherwise put a file among the alternatives, where mail programs hide it).
+def deliver_mail(plain_text = nil, attachments: [], &block)
+    mail = if attachments.empty?
+        nil
+    else
+        message = nil
+        built = Mail.new { message = self.instance_eval(&block) }
+        alternative = Mail::Part.new { content_type 'multipart/alternative' }
+        alternative.add_part(Mail::Part.new { content_type 'text/plain; charset=UTF-8'; body mail_html_to_plain_text(message) })
+        alternative.add_part(Mail::Part.new { content_type 'text/html; charset=UTF-8'; body message })
+        built.add_part(alternative)
+        attachments.each { |a| built.add_file(:filename => a[:filename], :content => a[:content]) }
+        built.content_type = built.content_type.sub(%r{\Amultipart/[a-z]+}, 'multipart/mixed')
+        built
+    end
+    mail ||= Mail.new do
         charset = 'UTF-8'
         message = self.instance_eval(&block)
         if plain_text.nil?
@@ -164,6 +180,7 @@ def deliver_mail(plain_text = nil, &block)
         STDERR.puts "From:    #{mail.from.join('; ')}"
         STDERR.puts "To:      #{mail.to.join('; ')}"
         STDERR.puts "Subject: #{mail.subject}"
+        STDERR.puts "Attachments: #{mail.attachments.map(&:filename).join(', ')}" unless mail.attachments.empty?
         STDERR.puts mail.text_part
         STDERR.puts '-' * 40
     else

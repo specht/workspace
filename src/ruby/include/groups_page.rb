@@ -508,6 +508,45 @@ class Main < Sinatra::Base
 
     # Welcome mails to the members of a group: to the addresses given, or to
     # everyone who has none yet.
+    # The Datenschutzerklärung that applies to a group, as the PDF that goes
+    # with its welcome mails: a partner school's own version, otherwise the
+    # operator's (also online on /impressum).
+    def welcome_attachment(name)
+        school = school_of_group(name)
+        partner = school && !school[:home] && !school[:guests]
+        s = partner ? privacy_settings_for(school[:key]) : Privacy.settings
+        { :filename => PrivacyDocuments.pdf_name('datenschutzerklaerung', s), :content => document_pdf('datenschutzerklaerung', s),
+          :url => partner ? "/datenschutz/datenschutzerklaerung.pdf?schule=#{CGI.escape(school[:key])}" : '/datenschutz/datenschutzerklaerung.pdf',
+          :public_url => partner ? nil : "#{WEB_ROOT}/impressum#datenschutz" }
+    end
+
+    def welcome_mail_for(name, teacher, email, attachment)
+        MailTexts.welcome_student(:web_root => WEB_ROOT, :group => name, :teacher => teacher, :email => email,
+            :privacy_url => attachment[:public_url], :attached => true)
+    end
+
+    # What the welcome mail will look like, before it goes: subject, text for
+    # the first recipient, how many get it, and the attached PDF to look at.
+    post '/api/groups/welcome_preview' do
+        teacher_or_admin!
+        roster_writable!
+        data = parse_request_data(:required_keys => [:name], :optional_keys => [:emails], :types => { :emails => Array }, :max_body_length => 100_000)
+        name = managed_group!(data[:name])
+        rows = neo4j_query('MATCH (i:Invitation)-[:MEMBER_OF]->(:Group {name: $name}) RETURN i.email AS email, i.welcomed_at AS welcomed_at;', :name => name)
+        wanted = data[:emails] ? Set.new(data[:emails].map { |e| e.to_s.downcase }) : nil
+        targets = rows.select { |r| wanted ? wanted.include?(r['email']) : r['welcomed_at'].nil? }.map { |r| r['email'] }.sort
+        Main.load_invitations()
+        teacher = (@@invitations[my_email] || {})[:name] || my_email
+        school = school_of_group(name)
+        partner = school && !school[:home] && !school[:guests]
+        s = partner ? privacy_settings_for(school[:key]) : Privacy.settings
+        attachment = { :filename => PrivacyDocuments.pdf_name('datenschutzerklaerung', s), :public_url => partner ? nil : "#{WEB_ROOT}/impressum#datenschutz",
+                       :url => partner ? "/datenschutz/datenschutzerklaerung.pdf?schule=#{CGI.escape(school[:key])}" : '/datenschutz/datenschutzerklaerung.pdf' }
+        mail_subject, html = welcome_mail_for(name, teacher, targets.first || 'name@example.org', attachment)
+        respond(:subject => mail_subject, :html => html, :recipients => targets.size, :first => targets.first,
+            :reply_to => my_email, :attachment => { :filename => attachment[:filename], :url => attachment[:url] })
+    end
+
     post '/api/groups/send_welcome' do
         teacher_or_admin!
         roster_writable!
@@ -521,17 +560,14 @@ class Main < Sinatra::Base
         targets = rows.select { |r| wanted ? wanted.include?(r['email']) : r['welcomed_at'].nil? }.map { |r| r['email'] }
         Main.load_invitations()
         teacher = (@@invitations[my_email] || {})[:name] || my_email
-        # The privacy notice that applies: a partner school's own version,
-        # otherwise the one on /impressum.
-        school = school_of_group(name)
-        privacy_url = school && !school[:home] && !school[:guests] ? "#{WEB_ROOT}/datenschutz/datenschutzerklaerung?schule=#{CGI.escape(school[:key])}" : nil
+        attachment = welcome_attachment(name)
         sent = []
         targets.each do |email|
             break unless DEVELOPMENT || WELCOME_MAILS_PER_TEACHER.allow?(my_email)
 
-            mail_subject, html = MailTexts.welcome_student(:web_root => WEB_ROOT, :group => name, :teacher => teacher, :email => email, :privacy_url => privacy_url)
+            mail_subject, html = welcome_mail_for(name, teacher, email, attachment)
             reply = my_email
-            deliver_mail do
+            deliver_mail(:attachments => [attachment]) do
                 to email
                 from SMTP_FROM
                 reply_to reply
