@@ -79,6 +79,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Administration des Workspace (nicht der Schule), Namen sind freiwillig;
   neu sind »Meine Daten«, die Löschregeln und ein Abschnitt zu den
   Unterlagen für die Schule, auch für Lehrkräfte anderer Schulen.
+- Gruppen im Browser (`/gruppen`, nach dem Import der Einladungslisten):
+  Lehrkräfte legen Gruppen an, tragen Adressen ein (Namen freiwillig, auch
+  später, auch aus einer Tabelle kopiert), nehmen Lehrkräfte ihrer Schule
+  dazu und schicken Willkommensmails; Antworten gehen an sie. `/personen`
+  für die Administration: Schulen mit dem Datum der Entscheidung der
+  Schulleitung und der Vereinbarung zur Auftragsverarbeitung (erst mit
+  beidem können sich ihre Schülerinnen und Schüler anmelden), Gäste,
+  Lehrkräfte mit ihrer Schule (nur die Administration ordnet sie zu) und
+  Willkommensmail, alle Personen mit Schule und Gruppen.
 - Konten löschen: Unter »Administration« löscht ein Klick ein Konto mit
   allem, was dazugehört (Workspace, die Workspaces der
   Leistungsüberprüfungen, MySQL- und Neo4j-Datenbanken, Antworten, Abgaben,

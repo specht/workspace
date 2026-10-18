@@ -100,6 +100,25 @@ class RosterTest < Minitest::Test
         assert_nil built[:group_members]['BS 1']
     end
 
+    def test_pasted_addresses
+        parsed = Roster.parse_member_lines(<<~END_OF_TEXT)
+            Lena Muster <Lena@Example.org>
+            tom@example.org
+            mia@example.org Mia Neu
+            "Kai", kai@example.org
+            Kai Kollege <kai@example.org>
+            Ole	oele@example.org
+
+            keine Adresse hier
+            zwei@at@example.org
+        END_OF_TEXT
+        assert_equal [
+            ['lena@example.org', 'Lena Muster'], ['tom@example.org', nil], ['mia@example.org', 'Mia Neu'],
+            ['kai@example.org', 'Kai'], ['oele@example.org', 'Ole'],
+        ], parsed[:people]
+        assert_equal ['keine Adresse hier', 'zwei@at@example.org'], parsed[:rejected]
+    end
+
     # The files in data/invitations of this checkout (development: the
     # e2e and screenshot fixtures; on a copy of production: the real ones).
     def test_the_invitation_files_here

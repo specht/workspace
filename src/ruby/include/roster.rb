@@ -58,6 +58,44 @@ module Roster
         { :groups => groups.values, :members => members, :designated => designated }
     end
 
+    # Addresses as a teacher pastes them into /gruppen, one person a line:
+    # »Lena Muster <lena@example.org>«, »lena@example.org« or »lena@example.org
+    # Lena Muster«, also separated by commas, semicolons or tabs as from a
+    # spreadsheet. Returns { people: [[email, name or nil]], rejected: [line] }.
+    def self.parse_member_lines(text)
+        people = []
+        rejected = []
+        text.to_s.each_line do |raw|
+            line = raw.strip
+            next if line.empty?
+
+            email = nil
+            name = nil
+            if (m = line.match(/\A(.*?)\s*<([^<>\s]+)>\s*\z/))
+                name, email = m[1], m[2]
+            else
+                parts = line.split(/[\s,;]+/)
+                address = parts.find { |p| p.include?('@') }
+                email = address
+                name = (parts - [address]).join(' ') if address
+            end
+            email = TeacherRoles.normalize_email(email)
+            if email.nil?
+                rejected << line
+                next
+            end
+            name = name.to_s.gsub(/[,;\t"]+/, ' ').strip.squeeze(' ')
+            name = nil if name.empty?
+            existing = people.index { |e, _| e == email }
+            if existing
+                people[existing][1] ||= name
+            else
+                people << [email, name]
+            end
+        end
+        { :people => people, :rejected => rejected }
+    end
+
     # --- The roster as records, as Neo4j keeps it --------------------------
     #
     # :groups       [{ name:, school: key, approved: true/false }]

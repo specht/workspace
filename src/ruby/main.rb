@@ -633,6 +633,8 @@ class Main < Sinatra::Base
 
     require './include/live_apps.rb'
     require './include/roster_store.rb'
+    require './include/groups_page.rb'
+    require './include/people_page.rb'
 
     def workspace_url()
         if user_logged_in?
@@ -4198,6 +4200,16 @@ class Main < Sinatra::Base
         groups_of = Hash.new { |hash, key| hash[key] = [] }
         @@group_members.each { |group, members| members.each { |email| groups_of[email] << group unless @@test_groups.include?(group) } }
         q = query.to_s.strip.downcase
+        schools_of = Hash.new { |hash, key| hash[key] = [] }
+        if Main.roster_imported
+            neo4j_query(<<~END_OF_QUERY).each { |r| schools_of[r['email']] |= [r['school']] }
+                MATCH (i:Invitation)-[:MEMBER_OF|AT]->(x)
+                OPTIONAL MATCH (x)-[:AT]->(gs:School)
+                WITH i, CASE WHEN x:School THEN x.name ELSE gs.name END AS school
+                WHERE school IS NOT NULL
+                RETURN DISTINCT i.email AS email, school;
+            END_OF_QUERY
+        end
         (@@invitations.keys | accounts.keys).map do |email|
             name = (@@invitations[email] || {})[:name] || accounts[email] || email
             role = if ADMIN_USERS.include?(email) then 'Administration'
@@ -4206,9 +4218,10 @@ class Main < Sinatra::Base
                 else 'Lernende'
             end
             { :email => email, :name => name == email ? nil : name, :role => role, :groups => groups_of[email].sort,
-              :account => accounts.key?(email), :invited => @@invitations.key?(email) }
+              :schools => schools_of[email].sort, :account => accounts.key?(email), :invited => @@invitations.key?(email) }
         end.select do |p|
-            q.empty? || p[:email].include?(q) || p[:name].to_s.downcase.include?(q) || p[:groups].any? { |g| g.downcase.include?(q) }
+            q.empty? || p[:email].include?(q) || p[:name].to_s.downcase.include?(q) || p[:groups].any? { |g| g.downcase.include?(q) } ||
+                p[:schools].any? { |g| g.downcase.include?(q) }
         end.sort_by { |p| [p[:name].to_s.downcase, p[:email]] }
     end
 
@@ -5032,12 +5045,13 @@ class Main < Sinatra::Base
     def class_board_page
         groups = class_groups
         h = ->(t) { CGI.escapeHTML(t.to_s) }
-        return "<p>Du betreust noch keine Gruppe.</p>" if groups.empty?
+        return "<p>Du betreust noch keine Gruppe. Unter <a href='/gruppen'>Gruppen</a> legst du eine an.</p>" if groups.empty?
 
         prefs = class_prefs
         group = [params['group'], prefs['group']].find { |g| groups.include?(g) } || groups.first
         tab = CLASS_TABS.any? { |key, _, _| key == params['tab'] } ? params['tab'] : 'fortschritt'
-        io = +"<form class='class-board-select' method='get' action='/klasse'>"
+        io = +"<p class='small mb-2'><a href='/gruppen'>Gruppen verwalten</a>: anlegen, Adressen eintragen, Willkommensmails.</p>"
+        io << "<form class='class-board-select' method='get' action='/klasse'>"
         io << "<label>Gruppe <select class='form-select' name='group' onchange='this.form.submit()'>"
         groups.each { |g| io << "<option value='#{h.(g)}'#{g == group ? ' selected' : ''}>#{h.(g)} (#{(@@group_members[g] || []).size})</option>" }
         io << "</select></label><input type='hidden' name='tab' value='#{h.(tab)}'>"
@@ -7201,6 +7215,18 @@ class Main < Sinatra::Base
         end
         # The tools (Tools: TCP-Konsole, Automatron) are for logged-in users only.
         this_is_a_page_for_logged_in_users! if Tools::PATHS.include?(path)
+        # Managing groups (groups_page.rb) is for every teacher, also one
+        # without a group yet.
+        if path == '/personen'
+            this_is_a_page_for_logged_in_users!
+            Main.load_invitations()
+            halt 403 unless admin_logged_in?
+        end
+        if path == '/gruppen'
+            this_is_a_page_for_logged_in_users!
+            Main.load_invitations()
+            halt 403 unless teacher_account_logged_in?
+        end
         if path == '/klasse'
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()

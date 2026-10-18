@@ -43,6 +43,43 @@ module MailTexts
         ["Konto gelöscht: #{email}", body + "\n" + closing(signature)]
     end
 
+    # From a teacher to the people in its group, so that they know the
+    # Workspace exists and how to log in. Replies go to the teacher.
+    def self.welcome_student(web_root:, group:, teacher:, email:)
+        body = +"<p>Hallo!</p>\n"
+        body << "<p>#{h(teacher)} hat dich in die Gruppe <strong>#{h(group)}</strong> im Workspace eingeladen. " \
+            'Der Workspace ist eine Programmierumgebung im Browser für den Unterricht: Du bekommst einen eigenen Editor, ' \
+            'Aufgaben, die der Workspace selbst prüft, und ein Handbuch.</p>' + "\n"
+        body << "<p>So meldest du dich an: Öffne #{link(web_root)}, gib deine E-Mail-Adresse <strong>#{h(email)}</strong> ein " \
+            'und dann den Code, den du per E-Mail bekommst. Danach bleibst du angemeldet. Es gibt kein Passwort.</p>' + "\n"
+        body << "<p>Was der Workspace speichert und wer es sieht, steht in der Datenschutzerklärung: #{link("#{web_root}/impressum#datenschutz")}. " \
+            'Fragen beantwortet deine Lehrkraft; du kannst einfach auf diese E-Mail antworten.</p>' + "\n"
+        body << closing(teacher)
+        ["Willkommen im Workspace: #{group}", body]
+    end
+
+    # From the administration to a new teacher. school_approved: whether the
+    # school has agreed, so that its students can log in.
+    def self.welcome_teacher(web_root:, school:, school_approved:, email:, signature:, documents_url:, cost_note: nil)
+        body = +"<p>Hallo!</p>\n"
+        body << "<p>Du hast jetzt ein Konto als Lehrkraft im Workspace (#{link(web_root)}), für <strong>#{h(school)}</strong>. " \
+            "Anmelden kannst du dich mit deiner Adresse #{h(email)}; den Code dafür bekommst du per E-Mail.</p>\n"
+        body << "<p>Für den Anfang:</p>\n<ul>\n"
+        body << "<li>#{link("#{web_root}/lehrmaterial-einstieg")}: was du für die erste Stunde brauchst und wie du mit deinem Testkonto alles selbst ausprobierst.</li>\n"
+        body << "<li>#{link("#{web_root}/gruppen")}: Hier legst du Gruppen an, trägst die Adressen deiner Schülerinnen und Schüler ein (Namen sind freiwillig) und schickst ihnen eine Willkommensmail.</li>\n"
+        body << "<li>#{link(documents_url)}: die Unterlagen für deine Schule, zum Drucken: eine Seite mit der Entscheidung für die Schulleitung, ein Elternbrief und mehr.</li>\n"
+        body << "</ul>\n"
+        body << if school_approved
+            "<p>Deine Schule hat dem Einsatz zugestimmt; deine Schülerinnen und Schüler können sich anmelden, sobald du sie einträgst.</p>\n"
+        else
+            "<p>Deine Schülerinnen und Schüler können sich anmelden, sobald deine Schule zugestimmt hat: Die Schulleitung unterschreibt die Entscheidung " \
+                "und die Vereinbarung zur Auftragsverarbeitung aus den Unterlagen. Gruppen anlegen und Adressen eintragen kannst du schon vorher.</p>\n"
+        end
+        body << "<p>#{h(cost_note)}</p>\n" if cost_note && !cost_note.strip.empty?
+        body << closing(signature)
+        ['Willkommen im Workspace', body]
+    end
+
     # The answer to »Bitte lösch mein Konto«.
     def self.account_deleted(web_root:, signature:, still_invited:)
         body = +"<p>Hallo!</p>\n"
