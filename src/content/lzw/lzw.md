@@ -1,5 +1,5 @@
 <div class='meta'>
-image: title.webp
+image: teaser.webp
 kind: labor
 language: Ruby / Python
 languages: [ruby, python]
@@ -520,3 +520,15 @@ check-task: kompressor python
 check-task: entpacker
 check-task: entpacker python
 -->
+
+<!-- tutorial-screenshot
+# Das Bild für die Karte: das Wörterbuch nach 14 Schritten
+open-site: /lzw
+tab: preview
+viewport: 1280x1000
+variants: dark
+hook: widget #lzw-encode 13
+crop-element: #lzw-encode .lzw-controls
+crop-element: #lzw-encode .lzw-steps
+-->
+<img class='teaser' hidden src='teaser.webp' alt='LZW Schritt 14 von 38 für RHABARBERBARBARABARBARBARENBARTBARBIER: eine Tabelle mit Präfix, Byte, ob es im Wörterbuch ist, der Ausgabe und dem neuen Eintrag, zuletzt BAR als 266.'>

@@ -1,5 +1,5 @@
 <div class='meta'>
-image: title.webp
+image: teaser.webp
 kind: labor
 language: Ruby / Python
 languages: [ruby, python]
@@ -379,3 +379,18 @@ check-task: unrle python
 check-task: bytes
 check-task: bytes python
 -->
+
+<!-- tutorial-screenshot
+# Das Bild für die Karte: der Editor mit dem Beispielbild und seinen Läufen
+open-site: /rle
+tab: preview
+viewport: 1280x900
+variants: dark
+hook: widget .rle-editor 0
+# das Raster und die Läufe bis zum Ende der längsten Zeile (der dritten),
+# nicht die leere Breite dahinter
+crop-element: .rle-grid
+crop-element: .rle-rows .run:nth-child(15)
+crop-element: .rle-rows .run:last-child
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Ein Bild aus 16 × 16 Kästchen in Blau, Grau, Weiß und Schwarz, eine Diskette, daneben jede Zeile als Läufe wie 3×1 und 9×3: wie viele Kästchen in welcher Farbe.'>

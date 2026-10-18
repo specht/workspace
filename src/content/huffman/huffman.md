@@ -1,5 +1,5 @@
 <div class='meta'>
-image: title.webp
+image: teaser.webp
 kind: labor
 language: Ruby / Python
 languages: [ruby, python]
@@ -579,3 +579,15 @@ check-task: decodieren python
 check-task: kanonisch
 check-task: kanonisch python
 -->
+
+<!-- tutorial-screenshot
+# Das Bild für die Karte: der fertige Huffman-Baum für den Text, den auch
+# die LZW-Seite nimmt
+open-site: /huffman
+tab: preview
+viewport: 1280x1000
+variants: dark
+hook: widget .hf-stepper last RHABARBERBARBARABARBARBARENBARTBARBIER
+crop-element: .hf-forest svg
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Der Huffman-Baum für RHABARBERBARBARABARBARBARENBARTBARBIER: oben die Wurzel mit 38, die Kanten mit 0 und 1 beschriftet, unten die Blätter mit ihren Häufigkeiten, R 11, A und B 10, E 3, H, I, N und T je 1.'>
