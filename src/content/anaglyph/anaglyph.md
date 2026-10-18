@@ -122,6 +122,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='sphere.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Eine weiße Kugel schwebt im Raum.'>
+
 <!-- /tutorial-scope -->
 </div>
 
@@ -167,6 +168,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='sphere-with-grid.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Eine Kugel aus Gitternetzlinien schwebt über einem quadratischen Gitter.'>
+
 <!-- /tutorial-scope -->
 </div>
 
@@ -195,6 +197,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='sphere-with-torus.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein Ring umschließt eine Kugel.'>
+
 <!-- /tutorial-scope -->
 </div>
 
@@ -226,6 +229,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='box-move-right.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein Würfel steht rechts vom Ursprung des Gitters.'>
+
 <!-- /tutorial-scope -->
 </div>
 
@@ -289,6 +293,7 @@ crop-bottom: 22%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='three-cubes.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Vier Würfel spannen ein Koordinatensystem auf.'>
+
 <!-- /tutorial-scope -->
 </div>
 
@@ -331,6 +336,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='rotate-boxes.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Drei Würfel stehen verdreht nebeneinander auf einem Gitter.'>
+
 <!-- /tutorial-scope -->
 </div>
 
@@ -373,6 +379,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='cube-star.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Viele gedrehte Würfel bilden einen sternförmigen Ring.'>
+
 <!-- /tutorial-scope -->
 </div>
 
@@ -426,6 +433,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='scaled-spheres.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Mehrere Kugeln werden entlang einer Reihe zunehmend größer.'>
+
 <!-- /tutorial-scope -->
 </div>
 
@@ -457,6 +465,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='pancake.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Eine stark abgeflachte Kugel liegt wie ein Pfannkuchen auf dem Gitter.'>
+
 <!-- /tutorial-scope -->
 </div>
 
@@ -491,6 +500,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='slab.webp' style='max-width: 100%;' alt='Ein langer, flacher Balken liegt auf dem Gitter.'>
+
 <!-- /tutorial-scope -->
 </div>
 
@@ -527,6 +537,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='rotate-then-move.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein gedrehter Würfel bleibt seitlich auf dem Gitter stehen.'>
+
 <!-- /tutorial-scope -->
 </div>
 
@@ -558,6 +569,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='move-then-rotate.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein verschobener Würfel schwebt nach der Drehung über dem Gitter.'>
+
 <!-- /tutorial-scope -->
 </div>
 
@@ -752,6 +764,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='3d-torus.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein grau schattierter Ring schwebt über einem Gitter.'>
+
 <!-- /tutorial-scope -->
 </div>
 
@@ -972,6 +985,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='hello.webp' style='max-width: 100%; min-height: 15em; object-fit: cover; object-position: center;' alt='Der weiße Schriftzug „Hello!“ schwebt im Raum.'>
+
 <!-- /tutorial-scope -->
 </div>
 
@@ -1001,6 +1015,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='hello-shade.webp' style='max-width: 100%; min-height: 15em; object-fit: cover; object-position: center;' alt='Der gelb schattierte Schriftzug „Hello!“ schwebt im Raum.'>
+
 <!-- /tutorial-scope -->
 </div>
 
@@ -1081,6 +1096,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='3-cubes-row.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Drei Würfel stehen in einer Reihe auf dem Gitter.'>
+
 <!-- /tutorial-scope -->
 </div>
 
@@ -1160,6 +1176,7 @@ crop-bottom: 16%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='9-cubes-loop.webp' style='max-width: 100%; min-height: 20em; object-fit: cover; object-position: center;' alt='Neun Würfel sind in drei Reihen mit jeweils drei Würfeln angeordnet.'>
+
 <!-- /tutorial-scope -->
 </div>
 
@@ -1186,6 +1203,7 @@ crop-bottom: 16%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='27-cubes-loop.webp' style='max-width: 100%; min-height: 20em; object-fit: cover; object-position: center;' alt='27 Würfel bilden ein räumliches Gitter aus drei mal drei mal drei Würfeln.'>
+
 <!-- /tutorial-scope -->
 </div>
 

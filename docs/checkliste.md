@@ -71,6 +71,7 @@ Repository arbeitet, liest sie also ohnehin.
 | Jedes Bild hat einen `alt`-Text, der sagt, was zu sehen ist | Barrierefreiheit, und beim Lesen ohne Bild | `alt_text_test.rb` |
 | Bilder aus dem Workspace, aus einer Vorschau oder von einer Seite der Website kommen aus Rezepten, nie von Hand | Nach einem Update von VS Code, des Themes oder der Seite entstehen sie neu | Audit (Spalte »von Hand«), `recreate-screenshots.rb --status` |
 | Rezepte, deren Bild für die folgenden nichts ändert (eine Galerie von Beispielen, eine Vorschau nach der anderen), stehen jedes in einem `<!-- tutorial-scope -->` | Dann rendert eine Änderung an einem Bild nur dieses neu, nicht alle danach, Videos eingeschlossen | Lesen (`src/tutorial-screenshots/README.md`, »Scopes«) |
+| Vor einer Scope-Marke steht eine Leerzeile, wenn die Zeile davor ein Bild oder Text ist | Sonst gehört sie für Markdown zum Absatz davor und steht als Text auf der Seite | `scope_markers_test.rb` |
 | Screenshots ohne linke Seitenleiste, außer sie gehört zum Schritt | Sie nimmt Platz und lässt das Terminal umbrechen | Lesen |
 | Bilder, die hell und dunkel aussehen können (Karten, Vorschauen, Zeichnungen), haben eine dunkle Fassung (`variants: dark`) | Die Seite folgt dem Farbschema | Audit (Spalte »dunkel«) |
 | Bilder nebeneinander sind eine Galerie (`<div class='gallery'>`, je ein `<figure>` mit `<figcaption>`), Beschriftungen in der Bildunterschrift, nicht im Bild | Sie passen sich der Breite an | `gallery_markup_test.rb` |

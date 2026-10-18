@@ -280,6 +280,7 @@ hook: show 13.322572 52.456434 220000 graph
 wait-for-text: 4 Nachbarn
 -->
 <img class='full' src='nachbarn.webp' alt='Der Graph über der blassen Karte, nah herangezoomt an der Kreuzung Kuhligkshofstraße und Albrechtstraße: die Knoten als blaue Punkte, die Kanten als blaue Linien. Der angeklickte Knoten ist pink, seine vier Nachbarn sind mit pinken Linien verbunden; oben links steht, dass er 4 Nachbarn hat und wie weit sie entfernt sind.'>
+
 <!-- /tutorial-scope -->
 
 Eine Straße ist im Graphen mehr als ihre Kreuzungen: Wo sie eine Kurve macht, hat sie Punkte, die nur ihre Form zeichnen. Auch das sind Knoten, mit genau zwei Nachbarn.
@@ -360,6 +361,7 @@ variants: dark
 hook: route Gymnasium Steglitz | Botanischer Garten | bfs
 -->
 <img class='full' src='breitensuche.webp' alt='Die Breitensuche vom Gymnasium Steglitz zum Botanischen Garten: Über der blassen Karte liegen die besuchten Knoten und Kanten, gelb um die Schule, nach außen orange und rot; der gefundene Weg ist eine lila Linie. Oben links steht, wie lang er ist, über wie viele Knoten er geht und wie viele Knoten die Suche besucht hat, darunter der Schieber, mit dem man die Suche Schritt für Schritt ansieht.'>
+
 <!-- /tutorial-scope -->
 
 Die Welle breitet sich nach Kanten aus, nicht nach Metern: Im Botanischen Garten, wo die Wege viele kurze Kanten haben, kommt sie langsam voran, auf langen geraden Straßen schnell. Darum macht ihr Weg Zacken und Umwege.
@@ -399,6 +401,7 @@ variants: dark
 hook: route Gymnasium Steglitz | Botanischer Garten | dijkstra
 -->
 <img class='full' src='dijkstra.webp' alt='Dijkstra vom Gymnasium Steglitz zum Botanischen Garten: Die besuchten Knoten liegen gelb nah an der Schule und werden in alle Richtungen gleichmäßig orange und rot, wie Ringe um den Start. Der Weg ist eine lila Linie. Oben links stehen Länge, Knoten und wie viele die Suche besucht hat.'>
+
 <!-- /tutorial-scope -->
 
 Jetzt breitet sich die Welle in Metern aus, wie Ringe um den Start. Der Weg ist 1,8 km lang statt 2,1 km: Er hat mehr Knoten, aber keine Zacken. Wie verschieden die beiden Wege sein können, zeigt erst ein weiter Weg.
@@ -787,4 +790,5 @@ hook: route Gymnasium Steglitz | Botanischer Garten | astar
 hook: teaser
 -->
 <img class='teaser' hidden src='teaser.webp' alt='A* vom Gymnasium Steglitz zum Botanischen Garten: Über der blassen Karte liegen die Straßen, die die Suche besucht hat, gelb um die Schule, zum Garten hin orange und rot, und darüber der gefundene Weg als lila Linie.'>
+
 <!-- /tutorial-scope -->
