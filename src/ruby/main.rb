@@ -2219,6 +2219,14 @@ class Main < Sinatra::Base
                     @session_user[:show_workspace] = true unless @session_user.include?(:show_workspace)
                     # Set while a teacher looks at the site as this student.
                     @impersonated_by = session[:impersonated_by]
+                    # The day of the last visit, without a time, at most one write
+                    # a day; not while someone else looks in. For the overview of
+                    # who still uses the Workspace (/personen; Löschkonzept).
+                    today = Date.today.to_s
+                    if @impersonated_by.nil? && @session_user[:last_seen] != today
+                        neo4j_query('MATCH (u:User {email: $email}) SET u.last_seen = $today;', :email => email, :today => today)
+                        @session_user[:last_seen] = today
+                    end
 
                     expires = session_cookie_expiry
                     if DEVELOPMENT || request.cookies.include?('hs_sid')
@@ -4191,12 +4199,37 @@ class Main < Sinatra::Base
         end
     end
 
+    # When a person was last active, as a date and where it comes from:
+    # :visit (User.last_seen, recorded since 2026-10-18), otherwise the later
+    # of the last login (a session's expiry minus its fixed lifetime;
+    # sessions of someone looking in do not count) and the last task answer.
+    def activity_by_email
+        seen = neo4j_query('MATCH (u:User) WHERE u.last_seen IS NOT NULL RETURN u.email AS email, u.last_seen AS day;')
+            .to_h { |r| [r['email'], (Date.iso8601(r['day'].to_s) rescue nil)] }
+        logins = {}
+        neo4j_query('MATCH (s:Session)-[:FOR]->(u:User) WHERE s.impersonated_by IS NULL RETURN u.email AS email, s.expires AS expires;').each do |r|
+            day = (DateTime.parse(r['expires'].to_s).to_date - Authentication::SESSION_LIFETIME_DAYS rescue nil)
+            logins[r['email']] = day if day && (logins[r['email']].nil? || day > logins[r['email']])
+        end
+        tasks = neo4j_query('MATCH (a:TaskAttempt)-[:BY]->(u:User) RETURN u.email AS email, max(a.ts) AS ts;')
+            .to_h { |r| [r['email'], Time.at(r['ts'].to_i).to_date] }
+        (seen.keys | logins.keys | tasks.keys).to_h do |email|
+            if seen[email]
+                [email, { :day => seen[email], :source => 'besuch' }]
+            else
+                login, task = logins[email], tasks[email]
+                [email, task && (login.nil? || task > login) ? { :day => task, :source => 'aufgabe' } : { :day => login, :source => 'anmeldung' }]
+            end
+        end
+    end
+
     # Everyone invited or with an account, for the administration: address,
-    # name, role, groups, whether there is an account. query matches part of
-    # the name or the address; at most 100 rows.
+    # name, role, groups, schools, whether there is an account, when last
+    # active. query matches part of the name, address, group or school.
     def people_overview(query = '')
         Main.load_invitations()
         accounts = neo4j_query('MATCH (u:User) RETURN u.email AS email, u.name AS name;').to_h { |row| [row['email'], row['name']] }
+        activity = activity_by_email
         groups_of = Hash.new { |hash, key| hash[key] = [] }
         @@group_members.each { |group, members| members.each { |email| groups_of[email] << group unless @@test_groups.include?(group) } }
         q = query.to_s.strip.downcase
@@ -4217,18 +4250,26 @@ class Main < Sinatra::Base
                 elsif @@teacher_emails.include?(email) then 'Lehrkraft'
                 else 'Lernende'
             end
+            active = activity[email]
             { :email => email, :name => name == email ? nil : name, :role => role, :groups => groups_of[email].sort,
-              :schools => schools_of[email].sort, :account => accounts.key?(email), :invited => @@invitations.key?(email) }
+              :schools => schools_of[email].sort, :account => accounts.key?(email), :invited => @@invitations.key?(email),
+              :active_on => active && active[:day] ? active[:day].to_s : nil, :active_source => active && active[:day] ? active[:source] : nil }
         end.select do |p|
             q.empty? || p[:email].include?(q) || p[:name].to_s.downcase.include?(q) || p[:groups].any? { |g| g.downcase.include?(q) } ||
                 p[:schools].any? { |g| g.downcase.include?(q) }
         end.sort_by { |p| [p[:name].to_s.downcase, p[:email]] }
     end
 
+    # school: a school's name (or '-' for none); role: one of the roles;
+    # sort: 'active' puts those inactive longest (and never) first.
     post '/api/admin/people' do
         assert(admin_logged_in?)
-        data = parse_request_data(:optional_keys => [:query, :limit], :types => { :limit => Integer }, :max_body_length => 1024)
+        data = parse_request_data(:optional_keys => [:query, :limit, :school, :role, :sort], :types => { :limit => Integer }, :max_body_length => 1024)
         people = people_overview(data[:query])
+        school = data[:school].to_s
+        people = people.select { |p| school == '-' ? p[:schools].empty? : p[:schools].include?(school) } unless school.empty?
+        people = people.select { |p| p[:role] == data[:role] } unless data[:role].to_s.empty?
+        people = people.sort_by { |p| [p[:active_on] || '', p[:name].to_s.downcase, p[:email]] } if data[:sort] == 'active'
         respond(:people => people.first([[data[:limit] || 100, 1].max, 10_000].min), :total => people.size)
     end
 

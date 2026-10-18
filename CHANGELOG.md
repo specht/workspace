@@ -111,6 +111,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Datum eines schriftlichen Einverständnisses ein (Elternbrief mit
   Einverständniserklärung unter `/datenschutz`). Gesperrt wird ohne beides
   niemand; Gruppe und `/personen` zeigen, wie viele noch ungeklärt sind.
+- »Alle Personen« unter `/personen` zeigt, wann jemand zuletzt da war
+  (»vor 3 Tagen«, nach einem halben Jahr hervorgehoben), mit Filtern für
+  Schule und Rolle und der Sortierung »am längsten nicht da zuerst«. Dafür
+  merkt sich der Workspace ab jetzt den Tag des letzten Besuchs (nur das
+  Datum, höchstens einmal am Tag geschrieben, nicht beim Hineinsehen);
+  für die Zeit davor steht dort die letzte Anmeldung oder Antwort auf eine
+  Aufgabe. Die Datenschutzerklärung nennt die neue Angabe, das ZIP unter
+  »Meine Daten« enthält sie.
 - »Einladungen ohne Konto« unter `/personen`: Eingeladene, die sich nie
   angemeldet haben (etwa aus der Liste der ganzen Schule), lassen sich
   gruppenweise entfernen, bestätigt mit ihrer Zahl. Lehrkräfte zählen nie

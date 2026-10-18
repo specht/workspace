@@ -153,7 +153,13 @@ bleiben.
   zu `/gruppen` und zu den Unterlagen ihrer Schule und, wenn `COST_NOTE`
   gesetzt ist, dem Hinweis zu den Kosten. »Keine Lehrkraft mehr« nimmt
   Schule und betreute Gruppen weg.
-- Alle Personen mit Rolle, Schule, Gruppen und ob sie ein Konto haben.
+- Alle Personen mit Rolle, Schule, Gruppen und wann sie zuletzt da waren,
+  filterbar nach Schule und Rolle, sortierbar nach »am längsten nicht da«.
+  »Zuletzt da« ist `User.last_seen` (der Tag des letzten Besuchs, seit
+  2026-10-18 erfasst, höchstens ein Schreibzugriff am Tag, nicht beim
+  Hineinsehen); fehlt er, die letzte Anmeldung (Ablauf der neuesten Sitzung
+  minus `SESSION_LIFETIME_DAYS`) oder die letzte Antwort auf eine Aufgabe,
+  was später war (`Main#activity_by_email`).
 
 Auf der Klassenseite stehen die Gruppen unter ihrer Schule, sobald es mehr
 als eine gibt; Testgruppen und Gruppen ohne Schule zuletzt.

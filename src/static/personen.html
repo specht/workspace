@@ -65,7 +65,20 @@
             <div id='unused_here'></div>
 
             <h2 id='alle'>Alle Personen</h2>
-            <input type='search' id='all_query' class='form-control mb-2' placeholder='Name, Adresse oder Gruppe' autocomplete='off'>
+            <p>
+                Mit dem Tag, an dem jemand zuletzt da war. Den Tag des Besuchs merkt sich der Workspace seit dem 18.10.2026; für die Zeit davor
+                steht hier die letzte Anmeldung oder die letzte Antwort auf eine Aufgabe, je nachdem, was später war.
+            </p>
+            <div class='row g-2 mb-2'>
+                <div class='col-md-4'><input type='search' id='all_query' class='form-control' placeholder='Name, Adresse, Gruppe oder Schule' autocomplete='off' aria-label='Suche'></div>
+                <div class='col-md-3'><select id='all_school' class='form-select' aria-label='Schule'><option value=''>alle Schulen</option></select></div>
+                <div class='col-md-2'><select id='all_role' class='form-select' aria-label='Rolle'>
+                    <option value=''>alle Rollen</option><option>Lehrkraft</option><option>Lernende</option><option>Testkonto</option><option>Administration</option>
+                </select></div>
+                <div class='col-md-3'><select id='all_sort' class='form-select' aria-label='Sortierung'>
+                    <option value='name'>nach Name</option><option value='active'>am längsten nicht da zuerst</option>
+                </select></div>
+            </div>
             <div id='all_here'></div>
         </div>
     </div>
@@ -115,6 +128,11 @@
             const here = $('#schools_here').empty();
             const select = $('#teacher_school').empty();
             schools.forEach(s => select.append($('<option>').val(s.key).text(s.name)));
+            const filter = $('#all_school'), chosen = filter.val();
+            filter.find('option:not(:first)').remove();
+            schools.forEach(s => filter.append($('<option>').val(s.name).text(s.name)));
+            filter.append($('<option>').val('-').text('ohne Schule'));
+            filter.val(chosen || '');
             $('#bu_guests').toggle(!schools.some(s => s.guests));
             if (schools.length === 0) return;
             const table = $(`<table class='table table-sm'><thead><tr><th>Schule</th><th>Entscheidung der Schulleitung</th><th>Vereinbarung (AVV)</th><th>Status</th><th>Gruppen · Lehrkräfte</th><th></th></tr></thead><tbody></tbody></table>`);
@@ -189,17 +207,29 @@
         });
     }
 
+    // »vor 3 Tagen«, with the date, and where it comes from when it is not a
+    // recorded visit.
+    function active_html(p) {
+        if (!p.active_on) return `<span class='text-body-secondary'>${p.account ? 'nie' : 'nie (kein Konto)'}</span>`;
+        const days = Math.round((new Date(new Date().toISOString().slice(0, 10)) - new Date(p.active_on)) / 86400000);
+        const ago = days <= 0 ? 'heute' : days === 1 ? 'gestern' : days < 60 ? `vor ${days} Tagen` : days < 730 ? `vor ${Math.round(days / 30.4)} Monaten` : `vor ${Math.round(days / 365)} Jahren`;
+        const source = p.active_source === 'anmeldung' ? ' · Anmeldung' : p.active_source === 'aufgabe' ? ' · Aufgabe' : '';
+        const old = days > 180 ? ' text-warning-emphasis' : '';
+        return `<span class='${old}' title='${new Date(p.active_on).toLocaleDateString('de-DE')}'>${ago}</span><span class='small text-body-secondary'>${source}</span>`;
+    }
+
     let all_timer = null;
     function load_all_people() {
         const query = $('#all_query').val().trim();
-        api_call('/api/admin/people', { query: query, limit: 300 }, function (data) {
+        const filters = { query: query, limit: 500, school: $('#all_school').val(), role: $('#all_role').val(), sort: $('#all_sort').val() };
+        api_call('/api/admin/people', filters, function (data) {
             if (!data.success) return;
             const here = $('#all_here').empty();
-            const table = $(`<table class='table table-sm'><thead><tr><th>Name</th><th>E-Mail-Adresse</th><th>Rolle</th><th>Schule</th><th>Gruppen</th><th>Konto</th></tr></thead><tbody></tbody></table>`);
+            const table = $(`<table class='table table-sm'><thead><tr><th>Name</th><th>E-Mail-Adresse</th><th>Rolle</th><th>Schule</th><th>Gruppen</th><th>Zuletzt da</th></tr></thead><tbody></tbody></table>`);
             data.people.forEach(function (p) {
                 table.find('tbody').append($('<tr>').append($('<td>').text(p.name || '–'), $('<td>').text(p.email), $('<td>').text(p.role),
                     $('<td>').text((p.schools || []).join(', ')), $('<td>').text(p.groups.join(', ')),
-                    $('<td>').text(p.account ? 'ja' : (p.invited ? 'noch nicht angemeldet' : ''))));
+                    $('<td class="text-nowrap">').html(active_html(p))));
             });
             here.append(table);
             here.append($('<p class="small text-body-secondary">').text(`${data.total} ${data.total === 1 ? 'Person' : 'Personen'}${data.total > data.people.length ? `, die ersten ${data.people.length} stehen hier` : ''}. Löschen unter »Administration › Konten löschen«.`));
@@ -262,6 +292,7 @@
     window.addEventListener('load', function () {
         load_all();
         $('#all_query').on('input', function () { clearTimeout(all_timer); all_timer = setTimeout(load_all_people, 250); });
+        $('#all_school, #all_role, #all_sort').on('change', load_all_people);
         $('#school_form').on('submit', function (e) {
             e.preventDefault();
             const payload = { name: $('#school_name').val(), address: $('#school_address').val(), data_protection_officer: $('#school_dpo').val(),

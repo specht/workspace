@@ -10,7 +10,7 @@ require_relative 'submission_view'
 module AccountExport
     # What of a User node goes into the export; the rest are keys and tags
     # that open the Workspace (server_sid, share_tag …) and stay out.
-    USER_KEYS = %w[email name brightness code_language preferred_language class_prefs].freeze
+    USER_KEYS = %w[email name brightness code_language preferred_language class_prefs last_seen].freeze
 
     README = <<~END_OF_TEXT
         Deine Daten aus dem Workspace

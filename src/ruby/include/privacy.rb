@@ -187,6 +187,13 @@ module Privacy
                 :how_long => ACCOUNT_END,
             },
             {
+                :data => 'Tag des letzten Besuchs (nur das Datum, ohne Uhrzeit; nicht, während jemand anderes in das Konto sieht)',
+                :categories => [:traffic],
+                :purpose => 'erkennen, welche Konten nicht mehr genutzt werden, damit sie gelöscht werden können',
+                :who => 'Administration',
+                :how_long => 'wird bei jedem Besuch überschrieben, bis zur Löschung des Kontos (siehe Speicherdauer)',
+            },
+            {
                 :data => 'Anmeldeanfragen: Code und eine zufällige Kennung des Browsers',
                 :categories => [:account],
                 :purpose => 'Anmeldung',
