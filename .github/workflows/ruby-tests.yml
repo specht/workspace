@@ -1,0 +1,34 @@
+# The Ruby tests (src/ruby/test) on every push and pull request: the facts
+# of the Datenschutzerklärung against the code, the roster, account deletion,
+# task checks and their examples, and the rest. Tests that need tools not
+# installed here (LaTeX, Graphviz and so on) skip themselves. The E2E suite
+# (e2e/) needs the whole installation and runs by hand (docs/entwicklung.md).
+name: Ruby tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: ruby:3.4.10-bookworm
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tools the task examples need
+        run: |
+          apt-get update -qq
+          apt-get install -y -qq python3-pil
+          gem install --no-document minitest minitest-mock rouge nokogiri redcarpet chunky_png
+      - name: Run every test file
+        working-directory: src/ruby
+        run: |
+          failed=0
+          for f in test/*_test.rb; do
+            if ! ruby "$f" > /tmp/out.txt 2>&1; then
+              echo "::error file=src/ruby/$f::$(tail -3 /tmp/out.txt | tr '\n' ' ')"
+              failed=1
+            fi
+            echo "$f: $(tail -1 /tmp/out.txt)"
+          done
+          exit $failed
