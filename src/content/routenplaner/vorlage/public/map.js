@@ -525,13 +525,18 @@ function dot([x, y], radius, color, border = 0) {
 // Die Orte: Sehenswürdigkeiten mit Namen, Schulen erst von nah. Ein Name,
 // der einen anderen verdecken würde, bleibt weg.
 function drawPlaces() {
+    // Jeder Ort braucht Platz für seinen Punkt und seinen Namen darüber. Was
+    // sich mit einem Ort davor überschneidet, bleibt weg: von weitem ganz,
+    // von nah nur sein Name. So wird es beim Herauszoomen weniger statt enger.
     const taken = [];
+    const overlaps = (box) => taken.some((b) => box[0] < b[2] && b[0] < box[2] && box[1] < b[3] && b[1] < box[3]);
+    const room = (text, [x, y], font, radius, below = 0) => {
+        context.font = font;
+        const half = text ? context.measureText(text).width / 2 + 3 : radius + 2;
+        return [x - half, y - (text ? 18 - below : radius + 2), x + half, y + radius + 2];
+    };
     const label = (text, [x, y], font, color, below = 0) => {
         context.font = font;
-        const width = context.measureText(text).width;
-        const box = [x - width / 2 - 2, y - 16 + below, x + width / 2 + 2, y - 4 + below];
-        if (taken.some((b) => box[0] < b[2] && b[0] < box[2] && box[1] < b[3] && b[1] < box[3])) return;
-        taken.push(box);
         context.textAlign = 'center';
         context.lineWidth = 3.5;
         context.strokeStyle = PAINT.halo;
@@ -541,21 +546,35 @@ function drawPlaces() {
     };
     // Start und Ziel zuerst, damit ihre Namen immer zu sehen sind
     const picked = tab === 'route' ? [[chosen.start, START], [chosen.goal, GOAL]].filter(([place]) => place) : [];
-    for (const [place, color] of picked) {
-        label(place.name, project(place.lon, place.lat), '600 13px system-ui, sans-serif', color, -6);
-    }
-    // Art: Farbe des Punkts, der Schrift, ab welchem Zoom zu sehen und beschriftet
-    const shown = { sight: [0, 0], square: [60000, 120000], school: [60000, 120000] };
-    const looks = Object.fromEntries(Object.entries(shown).map(([kind, zoom]) => [kind, [...PAINT.places[kind], ...zoom]]));
+    const bold = '600 13px system-ui, sans-serif';
+    for (const [place] of picked) taken.push(room(place.name, project(place.lon, place.lat), bold, 8, -6));
+    if (tab === 'tour') for (const place of stops) taken.push(room('', project(place.lon, place.lat), '', 10));
+    for (const [place, color] of picked) label(place.name, project(place.lon, place.lat), bold, color, -6);
+    // Art: ab welchem Zoom zu sehen, ab welchem beschriftet
+    const zooms = { sight: [0, 0], square: [60000, 120000], school: [60000, 120000] };
+    const close = view.scale > 120000;
     for (const kind of ORDER_OF_KINDS) {
-        const [color, text, from, named] = looks[kind];
+        const [color, text] = PAINT.places[kind];
+        const [from, named] = zooms[kind];
         if (view.scale < from) continue;
+        const font = kind === 'sight' ? '600 12px system-ui, sans-serif' : '11px system-ui, sans-serif';
+        const radius = kind === 'sight' ? 4 : 3;
         for (const place of data.places) {
             if (place.kind !== kind || picked.some(([p]) => p === place) || (tab === 'tour' && stops.includes(place))) continue;
             const at = project(place.lon, place.lat);
             if (at[0] < -100 || at[1] < -20 || at[0] > canvas.clientWidth + 100 || at[1] > canvas.clientHeight + 20) continue;
-            dot(at, kind === 'sight' ? 4 : 3, color, 1.5);
-            if (view.scale > named) label(place.name, at, kind === 'sight' ? '600 12px system-ui, sans-serif' : '11px system-ui, sans-serif', text);
+            const withName = view.scale > named ? room(place.name, at, font, radius) : null;
+            if (withName && !overlaps(withName)) {
+                taken.push(withName);
+                dot(at, radius, color, 1.5);
+                label(place.name, at, font, text);
+            } else if (close || !withName) {
+                // von nah der Punkt ohne Namen, wenn er Platz hat
+                const alone = room('', at, font, radius);
+                if (overlaps(alone)) continue;
+                taken.push(alone);
+                dot(at, radius, color, 1.5);
+            }
         }
     }
     for (const [place, color] of picked) {
@@ -948,12 +967,14 @@ function switchTab(which) {
 function addStop(place) {
     if (!place || stops.includes(place) || stops.length >= 12) return;
     stops.push(place);
+    tour = null;
     showStops();
     findTourSoon();
 }
 
 function removeStop(place) {
     stops = stops.filter((p) => p !== place);
+    tour = null;
     showStops();
     findTourSoon();
 }
@@ -967,9 +988,15 @@ function findTourSoon() {
     tourSoon = setTimeout(findTour, 600);
 }
 
+// Die Orte in der Reihenfolge, in der die Rundfahrt sie besucht; ohne
+// Rundfahrt so, wie sie hinzugefügt wurden
+function visitOrder() {
+    return tour ? tour.order.map((i) => stops[i]) : stops;
+}
+
 function showStops() {
     const list = document.getElementById('stops');
-    list.replaceChildren(...stops.map((place, i) => {
+    list.replaceChildren(...visitOrder().map((place, i) => {
         const item = document.createElement('li');
         const number = document.createElement('span');
         number.className = 'number';
@@ -991,9 +1018,11 @@ function showStops() {
 
 const METHOD_NAMES = { best: 'Alle Reihenfolgen', nearest: 'Nächster Nachbar', improved: '2-opt' };
 async function findTour() {
-    tour = null;
+    // Die alte Rundfahrt bleibt zu sehen, bis die neue da ist
     if (tab !== 'tour') return;
     if (stops.length < 3) {
+        tour = null;
+        showStops();
         info.textContent = `Wähle mindestens drei Orte für die Rundfahrt${stops.length ? `, noch ${3 - stops.length}` : ''}. Sie beginnt und endet beim ersten.`;
         if (stops.length) fitStops();
         return draw();
@@ -1013,15 +1042,18 @@ async function findTour() {
     }
     if (ask !== asked) return;
     if (answer.missing || answer.error) {
+        tour = null;
+        showStops();
         info.textContent = answer.error || `Für die Rundfahrt fehlt noch ${answer.missing} in ${program()}.`;
         return draw();
     }
     tour = answer;
+    showStops();
     const title = document.createElement('strong');
     title.textContent = `Rundfahrt: ${METHOD_NAMES[method]}`;
     const way = document.createElement('span');
     const time = answer.seconds == null ? '' : `, ${duration(answer.seconds)} ${MODE_NAMES[answer.mode]}`;
-    way.textContent = `${length(answer.metres)}${time}: ${[...answer.order, answer.order[0]].map((i) => i + 1).join(' → ')}`;
+    way.textContent = `${length(answer.metres)}${time}, in der Reihenfolge oben und zurück zu ${stops[0].name}`;
     const note = document.createElement('span');
     note.className = 'note';
     note.textContent = `Abstände mit ${SEARCH_NAMES[search]} in ${took(answer.table)} s, die Reihenfolge in ${took(answer.took)} s`;
@@ -1052,7 +1084,7 @@ function drawTour() {
     context.font = '700 11px system-ui, sans-serif';
     context.textAlign = 'center';
     context.textBaseline = 'middle';
-    stops.forEach((place, i) => {
+    visitOrder().forEach((place, i) => {
         const at = project(place.lon, place.lat);
         dot(at, 9, i === 0 ? START : PAINT.tour, 2.5);
         context.fillStyle = '#fff';

@@ -3,7 +3,7 @@ image: sorting-sandbox.webp
 kind: projekt
 language: Dart / Python / JavaScript / Java
 topic: computing
-reference: [gitlab]
+reference: [gitlab, heap]
 template: https://github.com/specht/sorting-sandbox.git
 class_repo: git@git.nhcham.org:specht/sorting-sandbox-algorithms-2026.git
 template_name: der Sorting Sandbox

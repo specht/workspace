@@ -61,7 +61,7 @@ App = lambda do |env|
       broadcast({ 'type' => 'people', 'count' => $clients.size })
     end
 
-    # Jede Nachricht kommt in die Warteschlange; Faye ist sofort frei
+    # Jede Nachricht kommt in die Queue; Faye ist sofort frei
     ws.on(:message) { |event| $queue << event.data }
 
     ws.on(:close) do

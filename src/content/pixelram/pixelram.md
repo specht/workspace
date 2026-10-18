@@ -794,6 +794,28 @@ make crystal
 
 Das lädt PixelRAM mit seinen Spiele-Anpassungen und den Quelltext von OpenCrystalCaves, einer freien Neuprogrammierung des Spiels, und übersetzt alles. Das dauert ein, zwei Minuten. Dann öffnest du `spiele/crystal.html` in der Vorschau. Du läufst mit den Pfeiltasten, springst mit <kbd>Z</kbd> und schießt mit <kbd>X</kbd>.
 
+<!-- tutorial-screenshot
+# Crystal Caves: übersetzen, öffnen, mit Enter vom Titel ins erste Level;
+# auf 16:9 geschnitten wie die beiden Bilder oben neben ihm
+terminal-open
+terminal-run: make crystal
+terminal-wait-for-prompt: 600
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+variants: crt
+viewport: 800x450
+hook: open spiele/crystal.html
+click: selector:#canvas
+sleep: 3
+press: Enter
+sleep: 2
+press: Enter
+sleep: 4
+hook: aspect 16 9
+move-mouse: selector:body
+crop-element: #canvas
+-->
 <img class='full' src='crystal-caves.webp' alt='Ein Level aus Crystal Caves: der Bergmann Mylo vor einer Mine mit Steinwänden, Holzbalken und einem Schild »Danger«.'>
 
 Die Grafik des Spiels kommt am Ende als Pixel in genau dem Speicher an, den du mit `set_pixel` beschreibst, und die Tasten kommen über `key_down` und `poll_key_event` herein. Wie das Spiel an PixelRAM angeschlossen ist, steht in [`ports/crystal`](https://github.com/specht/pixelram/tree/main/ports/crystal) im Repository von PixelRAM. Wer die Originaldateien besitzt, kann auf dieselbe Weise auch [**Prince of Persia**](https://github.com/specht/pixelram/tree/main/ports/prince) und [**Descent**](https://github.com/specht/pixelram/tree/main/ports/descent) übersetzen.

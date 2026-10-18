@@ -208,10 +208,10 @@ tasks:
           expect: "['11']"
         - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')[:path]
           expect: ~
-          say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Warteschlange irgendwann leer, und es gibt keinen Weg.
+          say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Queue irgendwann leer, und es gibt keinen Weg.
         - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].first
           expect: "'11'"
-          say: In visited kommt jeder Knoten, wenn er aus der Warteschlange genommen wird, der Start also zuerst.
+          say: In visited kommt jeder Knoten, wenn er aus der Queue genommen wird, der Start also zuerst.
         - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')[:visited].sort
           expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
           say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
@@ -228,10 +228,10 @@ tasks:
             expect: "['11']"
           - call: 'breadth_first(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'')[''path'']'
             expect: ~
-            say: 'Zum Fußweg 31-32 führt nichts hin. Dann ist die Warteschlange irgendwann leer, und es gibt keinen Weg.'
+            say: 'Zum Fußweg 31-32 führt nichts hin. Dann ist die Queue irgendwann leer, und es gibt keinen Weg.'
           - call: 'breadth_first(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''visited''][0]'
             expect: "'11'"
-            say: 'In visited kommt jeder Knoten, wenn er aus der Warteschlange genommen wird, der Start also zuerst.'
+            say: 'In visited kommt jeder Knoten, wenn er aus der Queue genommen wird, der Start also zuerst.'
           - call: 'sorted(breadth_first(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'')[''visited''])'
             expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
             say: 'Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.'
@@ -250,7 +250,7 @@ tasks:
       - when: { picked: 1 }
         say: Die Reihenfolge der Nachbarn ist fest, sie steht so in edges. Auch in anderer Reihenfolge fände sie einen Weg mit genauso wenigen Kanten.
       - when: { picked: 2 }
-        say: Sie hört auf, wenn sie das Ziel aus der Warteschlange nimmt, und dann gibt es wirklich keinen Weg mit weniger Kanten. Nur zählt sie Kanten, keine Meter.
+        say: Sie hört auf, wenn sie das Ziel aus der Queue nimmt, und dann gibt es wirklich keinen Weg mit weniger Kanten. Nur zählt sie Kanten, keine Meter.
 
   - id: dijkstra
     title: Dijkstra

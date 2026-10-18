@@ -170,6 +170,9 @@ sleep: SECONDS
 wait-for-text: TEXT
 wait-for-input-value: TEXT
 
+# Around recipes (HTML comments of their own): shots that later ones do not depend on
+<!-- tutorial-scope --> … <!-- /tutorial-scope -->
+
 # Screenshot target and capture
 tab: workspace|preview
 git-graph: PATH           (only before an _include_svg(NAME.svg))
@@ -611,6 +614,41 @@ really has.
 `pdf-page-full: PATH PAGE [TEXT]` is the same without the cutting: the whole
 sheet with its margins, at 200 dpi, for a page that should look like a page
 (the pages of the Facharbeit in the LaTeX activity).
+
+### Scopes: pictures that later ones do not depend on
+
+Every shot depends on everything before it on its page: its hash chains the
+actions of all earlier recipes, so changing one recipe makes every later
+picture stale, videos included. Recipes whose pictures stand on their own
+(a gallery of example scenes, the steps of a drawing, one theme after the
+other) go into a scope:
+
+```markdown
+<!-- tutorial-scope -->
+<div class='gallery columns-3'>
+<!-- tutorial-screenshot
+write-file: scene.ini <- file:ampel.ini
+…
+-->
+<figure>…</figure>
+…
+</div>
+<!-- /tutorial-scope -->
+```
+
+- A shot after the scope hashes as if the scope were not there: changing the
+  snowman re-renders the snowman, not the videos after it.
+- At the end of the scope the generator writes back every file that
+  `write-file` changed inside it (and removes the ones it created), and
+  reloads the preview if one is open.
+- A scope whose pictures are all current is not walked at all, so a render
+  of a later picture is faster too. `tutorial-step` blocks from before the
+  scope still run; a step inside it belongs to a screenshot inside it.
+
+A scope promises that what comes after it does not rely on it: no tab it
+opens, no setting it changes, no file it creates other than with
+`write-file` is needed later. Files a program in the scope writes
+(`step.png`) may stay. Scopes do not nest.
 
 ### Pictures a program saved
 

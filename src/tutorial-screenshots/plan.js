@@ -125,11 +125,30 @@ export function stateParts(shot) {
 // legacyStateHash: the hash generator versions up to 19 stored, where every
 //   earlier shot's crop and file name were part of the chain. Accepted once
 //   so that switching to the narrower chain does not re-render everything.
-export function chainStateHashes(shots, seed) {
+//
+// scopeOf(shot) says which tutorial-scope a shot lies in ({ scope, entry }:
+// its index, and how many of its first actions are steps from before the
+// scope), or null. Inside a scope the chain runs on as usual; after it, it
+// goes on from where it stood before the scope, plus those entry steps, as
+// if the scope had not been there.
+export function chainStateHashes(shots, seed, scopeOf = () => null) {
     let chain = seed;
     let legacy = seed;
+    let open = null; // { scope, before }
     return shots.map(original => {
+        const scoped = scopeOf(original);
+        if (open && (!scoped || scoped.scope !== open.scope)) {
+            chain = open.after;
+            open = null;
+        }
         const shot = withoutAssertions(original);
+        if (scoped && !open) {
+            const entry = { actions: shot.actions.slice(0, scoped.entry) };
+            open = {
+                scope: scoped.scope,
+                after: scoped.entry > 0 ? sha256(`${chain}\0${JSON.stringify(entry)}`) : chain,
+            };
+        }
         const stateHash = sha256(`${chain}\0${JSON.stringify(shot)}`);
         const legacyStateHash = sha256(`${legacy}\0${JSON.stringify(shot)}`);
         chain = sha256(`${chain}\0${JSON.stringify(stateParts(shot))}`);

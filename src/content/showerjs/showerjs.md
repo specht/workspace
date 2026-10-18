@@ -160,3 +160,16 @@ window.addEventListener('load', function () {
     }, 300);
 });
 </script>
+
+<!-- tutorial-screenshot
+# Das Bild oben auf der Seite und für die Karte: die erste Folie der Vorlage,
+# angeklickt, so groß wie beim Vortrag (die Vorschau läuft seit oben)
+preview-reload
+tab: preview
+viewport: 1280x720
+click: selector:.slide
+sleep: 1.5
+move-mouse: selector:body
+-->
+<img class='teaser' hidden src='showerjs.webp' alt='Die Titelfolie einer shower.js-Präsentation: »Shower Presentation Engine«, darunter »Brought to you by Vadim Makeev«, im Hintergrund Hände an einer orangefarbenen Schreibmaschine.'>
+

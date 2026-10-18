@@ -189,7 +189,7 @@ pixel[y * screen_pitch() + x] = 12;   // dasselbe wie set_pixel(x, y, 12)
 <tr><td><code>key_down(pixel_key_w)</code></td><td>solange die Taste gedrückt ist; für Bewegung</td></tr>
 <tr><td><code>key_pressed(pixel_key_space)</code></td><td>nur in dem Bild, in dem sie heruntergedrückt wurde</td></tr>
 <tr><td><code>key_released(pixel_key_e)</code></td><td>nur in dem Bild, in dem sie losgelassen wurde</td></tr>
-<tr><td><code>poll_key_event(&amp;ereignis)</code></td><td>wenn noch ein Tastendruck in der Warteschlange steht; <code>ereignis.key</code> und <code>ereignis.pressed</code> sagen welcher</td></tr>
+<tr><td><code>poll_key_event(&amp;ereignis)</code></td><td>wenn noch ein Tastendruck in der Queue steht; <code>ereignis.key</code> und <code>ereignis.pressed</code> sagen welcher</td></tr>
 </tbody>
 </table>
 </div>

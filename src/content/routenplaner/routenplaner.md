@@ -7,6 +7,7 @@ topic: computing
 duration: 6 Doppelstunden
 template: https://github.com/specht/routenplaner-starter.git
 template_name: der Vorlage des Routenplaners
+reference: [graphen, heap]
 </div>
 
 <div
@@ -239,6 +240,8 @@ Ein Routenplaner sucht nicht in Wegen, sondern in einem **Graphen**: Punkte, die
 `zip(points, points[1:])` gibt immer zwei aufeinanderfolgende Punkte eines Weges. `edges.setdefault(id, [])` gibt die Liste der Nachbarn von `id` und legt sie an, wenn es sie noch nicht gibt.
 <!-- /language -->
 
+_uses(graph)
+
 _task(graph)
 
 Halte den Server mit <kbd>Strg</kbd><kbd>C</kbd> an und starte ihn neu. Er baut jetzt mit deinen Funktionen den Graphen von Steglitz-Zehlendorf. Wähle auf der Seite unter »Ansicht« den »Graph«: Über der blassen Karte siehst du, was `build_graph` gebaut hat, jeden Knoten als Punkt und jede Kante als Linie. Klicke auf eine Kreuzung: Die Seite zeigt den Knoten dort und seine Nachbarn.
@@ -265,6 +268,7 @@ wait-for-text: Beenden mit Strg+C
 sleep: 2
 -->
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Auf der Karte nah heran und auf eine Kreuzung geklickt
 # (tutorial-screenshot-hooks.mjs)
@@ -276,12 +280,13 @@ hook: show 13.322572 52.456434 220000 graph
 wait-for-text: 4 Nachbarn
 -->
 <img class='full' src='nachbarn.webp' alt='Der Graph über der blassen Karte, nah herangezoomt an der Kreuzung Kuhligkshofstraße und Albrechtstraße: die Knoten als blaue Punkte, die Kanten als blaue Linien. Der angeklickte Knoten ist pink, seine vier Nachbarn sind mit pinken Linien verbunden; oben links steht, dass er 4 Nachbarn hat und wie weit sie entfernt sind.'>
+<!-- /tutorial-scope -->
 
 Eine Straße ist im Graphen mehr als ihre Kreuzungen: Wo sie eine Kurve macht, hat sie Punkte, die nur ihre Form zeichnen. Auch das sind Knoten, mit genau zwei Nachbarn.
 
 ## Breitensuche
 
-Jetzt sucht dein Programm einen Weg. Die einfachste Suche geht vom Start aus wie eine Welle: erst zu allen Nachbarn des Starts, dann zu deren Nachbarn, dann zu den Nachbarn der Nachbarn. Das heißt **Breitensuche**. Die Knoten, die sie gefunden, aber noch nicht weiterverfolgt hat, stehen in einer **Warteschlange**: Wer zuerst hineinkommt, ist zuerst wieder dran.
+Jetzt sucht dein Programm einen Weg. Die einfachste Suche geht vom Start aus wie eine Welle: erst zu allen Nachbarn des Starts, dann zu deren Nachbarn, dann zu den Nachbarn der Nachbarn. Das heißt **Breitensuche**. Die Knoten, die sie gefunden, aber noch nicht weiterverfolgt hat, stehen in einer **Queue**: Wer zuerst hineinkommt, ist zuerst wieder dran.
 
 <!-- language: ruby -->
 `queue.shift` nimmt den ersten Knoten heraus, `queue << node` stellt einen hinten an.
@@ -304,7 +309,7 @@ previous = {'11': None, '12': '11', '21': '11', '13': '12', …}
 ```
 <!-- /language -->
 
-So weiß die Suche auch, welche Knoten sie schon kennt: Ein Nachbar, der schon in `previous` steht, kommt nicht noch einmal in die Warteschlange.
+So weiß die Suche auch, welche Knoten sie schon kennt: Ein Nachbar, der schon in `previous` steht, kommt nicht noch einmal in die Queue.
 
 Ist die Suche am Ziel, geht der Weg vom Ziel aus rückwärts: zum Vorgänger des Ziels, zu dessen Vorgänger und so weiter, bis zum Start, der keinen Vorgänger hat. Das macht `path_to`. Weil du den Weg rückwärts findest, kommt jeder Knoten vorne dazu: `path.unshift(node)` in Ruby, `path.insert(0, node)` in Python.
 
@@ -312,12 +317,14 @@ _task(weg)
 
 Die Breitensuche selbst, Schritt für Schritt:
 
-1. In der Warteschlange steht nur der Start, in `previous` der Start ohne Vorgänger.
-2. Nimm den ersten Knoten aus der Warteschlange und schreib ihn in `visited`. Ist es das Ziel, bist du fertig.
-3. Jeder Nachbar, der noch nicht in `previous` steht, bekommt den Knoten als Vorgänger und kommt hinten in die Warteschlange.
-4. Weiter mit 2, solange die Warteschlange nicht leer ist. Wird sie leer, ohne dass das Ziel dran war, gibt es keinen Weg.
+1. In der Queue steht nur der Start, in `previous` der Start ohne Vorgänger.
+2. Nimm den ersten Knoten aus der Queue und schreib ihn in `visited`. Ist es das Ziel, bist du fertig.
+3. Jeder Nachbar, der noch nicht in `previous` steht, bekommt den Knoten als Vorgänger und kommt hinten in die Queue.
+4. Weiter mit 2, solange die Queue nicht leer ist. Wird sie leer, ohne dass das Ziel dran war, gibt es keinen Weg.
 
 `visited` braucht die Suche selbst nicht: Die Seite zeigt damit, in welcher Reihenfolge die Suche die Knoten besucht hat. Zum Ausprobieren gibt es die Testkarte `data/detour.tsv`: Die Lindenstraße geht in fünf Kanten geradeaus vom Knoten 11 zum Knoten 16, der Eichenweg macht einen Bogen und braucht nur drei.
+
+_uses(weg-zurueck, breitensuche)
 
 _task(breitensuche)
 
@@ -344,6 +351,7 @@ sleep: 2
 
 Starte den Server neu, wähle einen Start und ein Ziel und lass die Breitensuche suchen. Die Seite zeigt erst die Suche, jeden besuchten Knoten als Punkt, von Gelb (früh besucht) bis Rot (spät), und dann den Weg, den sie gefunden hat:
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Vom Gymnasium Steglitz zum Botanischen Garten, mit der Breitensuche
 preview-reload
@@ -352,6 +360,7 @@ variants: dark
 hook: route Gymnasium Steglitz | Botanischer Garten | bfs
 -->
 <img class='full' src='breitensuche.webp' alt='Die Breitensuche vom Gymnasium Steglitz zum Botanischen Garten: Über der blassen Karte liegen die besuchten Knoten und Kanten, gelb um die Schule, nach außen orange und rot; der gefundene Weg ist eine lila Linie. Oben links steht, wie lang er ist, über wie viele Knoten er geht und wie viele Knoten die Suche besucht hat, darunter der Schieber, mit dem man die Suche Schritt für Schritt ansieht.'>
+<!-- /tutorial-scope -->
 
 Die Welle breitet sich nach Kanten aus, nicht nach Metern: Im Botanischen Garten, wo die Wege viele kurze Kanten haben, kommt sie langsam voran, auf langen geraden Straßen schnell. Darum macht ihr Weg Zacken und Umwege.
 
@@ -375,10 +384,13 @@ Warum stimmt der Abstand, wenn ein Knoten dran ist? Alle anderen in `frontier` s
 `min(frontier, key=frontier.get)` gibt den Knoten mit dem kleinsten Abstand, `frontier.pop(node)` nimmt ihn heraus und gibt seinen Abstand. Am Ende baut `path_to` den Weg, genau wie bei der Breitensuche.
 <!-- /language -->
 
+_uses(dijkstra)
+
 _task(dijkstra)
 
 Starte den Server neu und suche denselben Weg noch einmal, jetzt mit »Dijkstra«:
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Derselbe Weg mit Dijkstra
 preview-reload
@@ -387,6 +399,7 @@ variants: dark
 hook: route Gymnasium Steglitz | Botanischer Garten | dijkstra
 -->
 <img class='full' src='dijkstra.webp' alt='Dijkstra vom Gymnasium Steglitz zum Botanischen Garten: Die besuchten Knoten liegen gelb nah an der Schule und werden in alle Richtungen gleichmäßig orange und rot, wie Ringe um den Start. Der Weg ist eine lila Linie. Oben links stehen Länge, Knoten und wie viele die Suche besucht hat.'>
+<!-- /tutorial-scope -->
 
 Jetzt breitet sich die Welle in Metern aus, wie Ringe um den Start. Der Weg ist 1,8 km lang statt 2,1 km: Er hat mehr Knoten, aber keine Zacken. Wie verschieden die beiden Wege sein können, zeigt erst ein weiter Weg.
 
@@ -395,6 +408,7 @@ Mit dem Schieber unter dem Ergebnis siehst du dir die Suche Schritt für Schritt
 Probier einen weiten Weg, zur Pfaueninsel ganz im Westen. Dahin kommt man nur mit der Fähre, und auch die ist ein Weg der Karte:
 
 <div class='gallery columns-2'>
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Zur Pfaueninsel mit der Breitensuche
 preview-reload
@@ -406,6 +420,8 @@ hook: route Gymnasium Steglitz | Pfaueninsel | bfs
 <img src='pfaueninsel-breitensuche.webp' alt='Die Breitensuche vom Gymnasium Steglitz zur Pfaueninsel: Die besuchten Knoten füllen den ganzen Bezirk, gelb im Osten um die Schule, rot im Westen. Der Weg ist eine lila Linie mit großen Zacken nach Süden.'>
 <figcaption>Breitensuche: 23,9 km</figcaption>
 </figure>
+<!-- /tutorial-scope -->
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Und mit Dijkstra
 preview-reload
@@ -417,13 +433,14 @@ hook: route Gymnasium Steglitz | Pfaueninsel | dijkstra
 <img src='pfaueninsel-dijkstra.webp' alt='Dijkstra vom Gymnasium Steglitz zur Pfaueninsel: Die besuchten Knoten füllen den Bezirk ebenso. Der Weg ist eine lila Linie fast gerade nach Westen, über den Bahnhof Wannsee zur Fähre.'>
 <figcaption>Dijkstra: 16,7 km</figcaption>
 </figure>
+<!-- /tutorial-scope -->
 </div>
 
 Die Breitensuche macht gut 7 Kilometer Umweg. Dijkstra findet den kürzesten Weg, aber schau auf die Zeit: ein paar Sekunden statt Bruchteilen davon. Beide besuchen fast den ganzen Bezirk, der Unterschied ist die Suche nach dem kleinsten Abstand: Sie geht bei jedem Schritt durch die ganze `frontier`, und die wird groß. Wie es schneller geht, kommt als Nächstes.
 
-## Eine Warteschlange mit Vorrang
+## Eine Priority Queue
 
-Dijkstra sucht bei jedem Schritt in der ganzen `frontier` nach dem kleinsten Abstand. Stehen dort tausend Knoten, sind das tausend Vergleiche, bei jedem der hunderttausend Schritte. Schneller geht es mit einer **Prioritätswarteschlange**: Man legt Werte mit einer Priorität hinein und bekommt immer den mit der kleinsten heraus, ohne alle anzusehen.
+Dijkstra sucht bei jedem Schritt in der ganzen `frontier` nach dem kleinsten Abstand. Stehen dort tausend Knoten, sind das tausend Vergleiche, bei jedem der hunderttausend Schritte. Schneller geht es mit einer **Priority Queue**: Man legt Werte mit einer Priorität hinein und bekommt immer den mit der kleinsten heraus, ohne alle anzusehen.
 
 Ein **binärer Heap** macht das so: Die Einträge stehen in einem Array, aber man denkt sie sich als Baum. Die Kinder des Eintrags an der Stelle `i` stehen an den Stellen `2 * i + 1` und `2 * i + 2`, sein Elternteil an der Stelle `(i - 1) / 2`. Und es gilt immer: Kein Kind ist kleiner als sein Elternteil. Ganz oben, an der Stelle 0, steht deshalb das Kleinste.
 
@@ -438,6 +455,8 @@ In `routes.rb` gibt es die Klasse `MinHeap` schon, mit dem Array `@items` für P
 <!-- language: python -->
 In `routes.py` gibt es die Klasse `MinHeap` schon, mit der Liste `self.items` für Paare aus Priorität und Wert. Es fehlen `push` und `pop`. Python hat für so etwas das Modul `heapq`; hier baust du den Heap selbst, damit du siehst, wie er arbeitet.
 <!-- /language -->
+
+_uses(priority-queue, heap, heap-push, heap-pop)
 
 _task(heap)
 
@@ -531,6 +550,8 @@ heap.push(total + estimate(neighbour), neighbour)
 `estimate` ist eine kleine Funktion für die Luftlinie, mit deinem `distance` und der Lage des Ziels, `graph['nodes'][goal]`. Du kannst sie innerhalb von `a_star` mit `def` schreiben.
 <!-- /language -->
 
+_uses(a-stern)
+
 _task(astern)
 
 <!-- tutorial-step
@@ -567,6 +588,7 @@ sleep: 2
 -->
 
 <div class='gallery columns-2'>
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Zum Brandenburger Tor mit Dijkstra
 preview-reload
@@ -578,6 +600,8 @@ hook: route Gymnasium Steglitz | Brandenburger Tor | dijkstra
 <img src='tor-dijkstra.webp' alt='Dijkstra vom Gymnasium Steglitz zum Brandenburger Tor, über drei Bezirke: Die besuchten Knoten bilden einen großen Kreis um die Schule, gelb in der Mitte, rot am Rand, bis über das Brandenburger Tor hinaus. Der Weg ist eine lila Linie nach Norden.'>
 <figcaption>Dijkstra: 225 556 Knoten besucht</figcaption>
 </figure>
+<!-- /tutorial-scope -->
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Und mit A*
 preview-reload
@@ -589,6 +613,7 @@ hook: route Gymnasium Steglitz | Brandenburger Tor | astar
 <img src='tor-astern.webp' alt='A* auf demselben Weg: Die besuchten Knoten bilden nur ein schmales Band von der Schule nach Norden zum Brandenburger Tor. Der Weg ist derselbe.'>
 <figcaption>A*: 23 996 Knoten besucht</figcaption>
 </figure>
+<!-- /tutorial-scope -->
 </div>
 
 Derselbe Weg, 8 km, aber A* besucht nur ein Zehntel der Knoten: ein Band zum Ziel hin statt eines Kreises, und ist darum zehnmal so schnell fertig. Mit `AREA=berlin` hast du die ganze Stadt, 1,3 Millionen Knoten. Das Lesen dauert dann gut eine halbe Minute, aber A* findet auch dort einen Weg in Sekunden.
@@ -622,6 +647,7 @@ check-task: reisen python
 -->
 
 <div class='gallery columns-2'>
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Mit dem Rad zum Brandenburger Tor
 preview-reload
@@ -633,6 +659,8 @@ hook: route Gymnasium Steglitz | Brandenburger Tor | astar | bike
 <img src='tor-rad.webp' alt='Mit dem Rad vom Gymnasium Steglitz zum Brandenburger Tor: der Weg als lila Linie über Radwege und Nebenstraßen, oben links die Länge und die Zeit in Minuten.'>
 <figcaption>Mit dem Rad</figcaption>
 </figure>
+<!-- /tutorial-scope -->
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Mit dem Auto
 preview-reload
@@ -644,6 +672,7 @@ hook: route Gymnasium Steglitz | Brandenburger Tor | astar | car
 <img src='tor-auto.webp' alt='Mit dem Auto auf demselben Weg: Die lila Linie nimmt große Straßen, oben links Länge und Zeit. Die besuchten Knoten füllen einen breiten Streifen um den Weg.'>
 <figcaption>Mit dem Auto</figcaption>
 </figure>
+<!-- /tutorial-scope -->
 </div>
 
 Schau dir an, wie viele Knoten A* mit dem Auto besucht: Zu Fuß ist es ein Zehntel dessen, was Dijkstra besucht, mit dem Auto fast die Hälfte. Die Schätzung rechnet mit 90 km/h, dem Tempo auf der Autobahn, aber in der Stadt kommt man viel langsamer voran. Je weiter die Schätzung unter dem wirklichen Weg liegt, desto weniger hilft sie.
@@ -662,6 +691,8 @@ costs = [[0, 10, 5, 2, 14],     Reihenfolge [0, 3, 2, 1, 4]:
          [2, 8, 7, 0, 12],
          [14, 4, 11, 12, 0]]
 ```
+
+_uses(rundreise)
 
 _task(rundfahrt)
 
@@ -711,9 +742,10 @@ check-task: zwei-opt
 check-task: zwei-opt python
 -->
 
-Wechsle auf der Seite zu »Rundfahrt«, füge Orte hinzu und probiere die drei Arten aus. Der erste Ort ist der Anfang:
+Wechsle auf der Seite zu »Rundfahrt«, füge Orte hinzu und probiere die drei Arten aus. Der erste Ort ist der Anfang. Ist die Rundfahrt berechnet, stehen die Orte in der Liste und auf der Karte in der Reihenfolge, in der sie besucht werden:
 
 <div class='gallery columns-2'>
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Eine Rundfahrt durch Mitte zu Fuß, mit dem nächsten Nachbarn
 preview-reload
@@ -725,6 +757,8 @@ hook: tour astar | foot | nearest | Brandenburger Tor | Berliner Fernsehturm | S
 <img src='rundfahrt-nachbar.webp' alt='Eine Rundfahrt zu Fuß durch Mitte, mit dem nächsten Nachbarn: acht nummerierte Orte vom Brandenburger Tor bis zum Fernsehturm und zur Siegessäule, verbunden durch eine lila Linie, die am Ende einen langen Weg zurück macht. Oben links die Orte und die Länge.'>
 <figcaption>Nächster Nachbar: 11,2 km</figcaption>
 </figure>
+<!-- /tutorial-scope -->
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Dieselben Orte, alle Reihenfolgen ausprobiert
 preview-reload
@@ -736,10 +770,12 @@ hook: tour astar | foot | best | Brandenburger Tor | Berliner Fernsehturm | Sieg
 <img src='rundfahrt-beste.webp' alt='Dieselben acht Orte mit allen Reihenfolgen ausprobiert: Die lila Linie geht in einer großen Runde von Ort zu Ort, die Rundfahrt ist kürzer.'>
 <figcaption>Alle Reihenfolgen: 9,8 km</figcaption>
 </figure>
+<!-- /tutorial-scope -->
 </div>
 
 Der nächste Nachbar kommt auf 11,2 km, das Ausprobieren aller 5 040 Reihenfolgen auf 9,8 km. 2-opt, aus der Reihenfolge des nächsten Nachbarn, kommt bis auf 44 Meter an die beste heran, in einem Bruchteil der Zeit. Ganz die beste ist es nicht: 2-opt hört auf, wenn kein einzelnes Umdrehen mehr hilft, und das ist nicht immer die beste Rundfahrt. Für sehr viele Orte kennt niemand einen schnellen Weg zur besten. Routenplaner, Paketdienste und Busunternehmen arbeiten darum mit Verfahren wie 2-opt: gut genug, und rechtzeitig fertig.
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Bild für die Karte der Aktivität: A* vom Gymnasium Steglitz zum
 # Botanischen Garten, nur die Karte, hell und dunkel
@@ -751,3 +787,4 @@ hook: route Gymnasium Steglitz | Botanischer Garten | astar
 hook: teaser
 -->
 <img class='teaser' hidden src='teaser.webp' alt='A* vom Gymnasium Steglitz zum Botanischen Garten: Über der blassen Karte liegen die Straßen, die die Suche besucht hat, gelb um die Schule, zum Garten hin orange und rot, und darüber der gefundene Weg als lila Linie.'>
+<!-- /tutorial-scope -->

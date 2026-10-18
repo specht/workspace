@@ -208,8 +208,29 @@ Das JPEG-Format (Joint Photographic Experts Group) ist ein weit verbreitetes Bil
 Dieser Artikel soll dir helfen, einen JPEG-Decoder zu implementieren. Dafür ist es wichtig, zunächst einige Grundlagen zu verstehen:
 
 <div class='gallery columns-3'>
+<!-- tutorial-screenshot
+# Die Seite »Farbräume«, wie sie aufgeht
+open-site: /rgb
+tab: preview
+viewport: 1280x720
+sleep: 2
+-->
 <figure><a href='/rgb'><img src='title.webp' alt='Der RGB-Würfel als Drahtgitter, darin ein Farbpunkt, zerlegt in Pfeile für Y, Cb und Cr.'></a><figcaption>Farbräume</figcaption></figure>
+<!-- tutorial-screenshot
+# »Trennung von Helligkeit und Farbe«
+open-site: /colorspace
+tab: preview
+viewport: 1280x720
+sleep: 2
+-->
 <figure><a href='/colorspace'><img src='colorspace.webp' alt='Ein Foto, zerlegt in drei Graubilder für Rot, Grün und Blau, mit Reglern dazwischen und dem wieder zusammengesetzten Foto rechts.'></a><figcaption>Trennung von Helligkeit und Farbe</figcaption></figure>
+<!-- tutorial-screenshot
+# »DCT«
+open-site: /dct
+tab: preview
+viewport: 1280x720
+sleep: 2
+-->
 <figure><a href='/dct'><img src='dct.webp' alt='Ein Ausschnitt aus acht Pixeln als Kurve, darunter seine acht DCT-Koeffizienten und die acht Kosinuswellen, aus denen die Kurve wieder entsteht.'></a><figcaption>Diskrete Kosinustransformation (DCT)</figcaption></figure>
 </div>
 

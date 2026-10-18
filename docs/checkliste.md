@@ -44,6 +44,8 @@ Repository arbeitet, liest sie also ohnehin.
 | --- | --- | --- |
 | Namen im Code sind Englisch (Variablen, Funktionen, Dateien, Routen); Kommentare und Ausgaben dürfen Deutsch sein | So sieht Code auch später im Beruf aus | Lesen |
 | Fachwörter, die man im Deutschen englisch sagt, bleiben englisch (Handshake, Lock, String, Header); Elemente von VS Code heißen wie ihre Beschriftung | Lernende sollen die Wörter wiedererkennen | Lesen |
+| Datenstrukturen heißen englisch: Stack, Queue, Priority Queue, Heap, Linked List, Hash Table | So sagt man es auch im Deutschen | Lesen |
+| Im Handbuch stehen Algorithmen als Pseudocode mit einem Beispiel zum Durchklicken, nicht in Ruby oder Python | Lernende sollen verstehen und übersetzen, nicht die Lösung einer Aufgabe kopieren | Lesen |
 | »Index« oder »Zählvariable«, nicht »Stelle«, für die Position in einem Array oder eine Schleifenvariable | »Stelle« ist dafür ungenau | Lesen |
 | Ist die Sprache frei, gibt es die Aktivität in Ruby und Python (`languages: [ruby, python]`), sonst in Ruby. C bleibt C | Schulen unterrichten das eine oder das andere; die Klasse stellt es ein | Audit (Spalte »Sprachen«) |
 | Jeder Codeblock nennt seine Sprache. Ein Kopierknopf nur für Code, den man nicht tippen soll, und für große Blöcke | Abtippen ist Lernen; Abschreiben von Gerüsten nicht | `code_highlight_test.rb` (teilweise), Lesen |
@@ -67,6 +69,7 @@ Repository arbeitet, liest sie also ohnehin.
 | --- | --- | --- |
 | Jedes Bild hat einen `alt`-Text, der sagt, was zu sehen ist | Barrierefreiheit, und beim Lesen ohne Bild | `alt_text_test.rb` |
 | Bilder aus dem Workspace, aus einer Vorschau oder von einer Seite der Website kommen aus Rezepten, nie von Hand | Nach einem Update von VS Code, des Themes oder der Seite entstehen sie neu | Audit (Spalte »von Hand«), `recreate-screenshots.rb --status` |
+| Rezepte, deren Bild für die folgenden nichts ändert (eine Galerie von Beispielen, eine Vorschau nach der anderen), stehen jedes in einem `<!-- tutorial-scope -->` | Dann rendert eine Änderung an einem Bild nur dieses neu, nicht alle danach, Videos eingeschlossen | Lesen (`src/tutorial-screenshots/README.md`, »Scopes«) |
 | Screenshots ohne linke Seitenleiste, außer sie gehört zum Schritt | Sie nimmt Platz und lässt das Terminal umbrechen | Lesen |
 | Bilder, die hell und dunkel aussehen können (Karten, Vorschauen, Zeichnungen), haben eine dunkle Fassung (`variants: dark`) | Die Seite folgt dem Farbschema | Audit (Spalte »dunkel«) |
 | Bilder nebeneinander sind eine Galerie (`<div class='gallery'>`, je ein `<figure>` mit `<figcaption>`), Beschriftungen in der Bildunterschrift, nicht im Bild | Sie passen sich der Breite an | `gallery_markup_test.rb` |

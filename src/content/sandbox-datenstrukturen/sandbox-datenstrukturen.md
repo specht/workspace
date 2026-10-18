@@ -3,7 +3,7 @@ image: data-structures-avl.webp
 kind: projekt
 language: Dart / Python / JavaScript / Java
 topic: computing
-reference: [gitlab]
+reference: [gitlab, heap]
 template: https://github.com/specht/data-structures-sandbox.git
 class_repo: git@git.nhcham.org:specht/data-structure-sandbox-structures-2026.git
 template_name: der Data Structures Sandbox
@@ -27,7 +27,7 @@ In der Data Structures Sandbox programmierst du Listen, Stacks, Queues, Bäume, 
 
 ## Worum es geht
 
-Die meisten Programmiersprachen bringen fertige Listen, Mengen und Wörterbücher mit. Gerade deshalb bleibt oft unklar, was darin eigentlich passiert. In der Sandbox gibt es diese Abkürzung nicht: Eine Array-Liste besteht aus **acht festen Speicherzellen**, eine verkettete Liste aus **Knoten mit `next`-Referenz**, und die Größe ist ein Feld `size`, das du selbst pflegst. Die Darstellung zeigt genau diesen Speicher; sie räumt nichts auf und rechnet nichts nach.
+Die meisten Programmiersprachen bringen fertige Listen, Mengen und Wörterbücher mit. Gerade deshalb bleibt oft unklar, was darin eigentlich passiert. In der Sandbox gibt es diese Abkürzung nicht: Eine Array-Liste besteht aus **acht festen Speicherzellen**, eine Linked List aus **Knoten mit `next`-Referenz**, und die Größe ist ein Feld `size`, das du selbst pflegst. Die Darstellung zeigt genau diesen Speicher; sie räumt nichts auf und rechnet nichts nach.
 
 Jede Struktur gibt es als unfertigen **Starter** und als vollständiges **Referenzbeispiel**. Du schreibst nur die Logik, keinen Code zum Zeichnen. Ins Eingabefeld oben tippst du Methodenaufrufe wie `insert(30); insert(20)`, drückst Enter und spulst den Ablauf dann Schritt für Schritt vor und zurück.
 
@@ -103,7 +103,7 @@ Das legt `structures/DEIN_NAME/my_array_stack.py` an. Vorhandene Dateien werden 
 
 ### Ein Datentyp, mehrere Speicherformen
 
-Ein **Stack** arbeitet nach dem LIFO-, eine **Queue** nach dem FIFO-Prinzip. Dasselbe Verhalten lässt sich aber mit einem festen Array, einem Ringpuffer oder verketteten Knoten erreichen. Besonders ergiebig sind die **vier Listen**: unsortiert oder sortiert, jeweils als Array oder als verkettete Knoten. Alle vier haben dieselbe Schnittstelle, und du kannst dieselbe Folge von Aufrufen auf alle vier loslassen. Hier eine Folge von Einfügungen auf einer einfach verketteten Liste, in Java implementiert:
+Ein **Stack** arbeitet nach dem LIFO-, eine **Queue** nach dem FIFO-Prinzip. Dasselbe Verhalten lässt sich aber mit einem festen Array, einem Ringpuffer oder verketteten Knoten erreichen. Besonders ergiebig sind die **vier Listen**: unsortiert oder sortiert, jeweils als Array oder als verkettete Knoten. Alle vier haben dieselbe Schnittstelle, und du kannst dieselbe Folge von Aufrufen auf alle vier loslassen. Hier eine Folge von Einfügungen auf einer einfach Linked List, in Java implementiert:
 
 <!-- tutorial-screenshot
 terminal-open
@@ -129,10 +129,10 @@ click: selector:#fit-scene
 move-mouse: selector:.scene-hint
 sleep: 1
 -->
-<img class='full' src='data-structures-sandbox.webp' alt='Einfach verkettete Liste in Java nach vier Einfügungen: Knoten und next-Referenzen neben dem Quelltext.'>
+<img class='full' src='data-structures-sandbox.webp' alt='Linked List in Java nach vier Einfügungen: Knoten und next-Referenzen neben dem Quelltext.'>
 
 <div class='hint task'>
-<strong>Dieselben Aufrufe, zwei Welten.</strong> Lass <code>insert(0,7); insert(1,3); insert(1,5); insert(3,9)</code> zuerst auf der Array-Liste und dann auf der verketteten Liste laufen. Welche Operation verschiebt Werte, welche biegt nur Referenzen um? Warum geht <code>get(i)</code> beim Array in konstanter Zeit, während die verkettete Liste dafür bis zu <em>n</em> Knoten ablaufen muss? Und was kostet umgekehrt das Einfügen ganz vorne?
+<strong>Dieselben Aufrufe, zwei Welten.</strong> Lass <code>insert(0,7); insert(1,3); insert(1,5); insert(3,9)</code> zuerst auf der Array-Liste und dann auf der Linked List laufen. Welche Operation verschiebt Werte, welche biegt nur Referenzen um? Warum geht <code>get(i)</code> beim Array in konstanter Zeit, während die Linked List dafür bis zu <em>n</em> Knoten ablaufen muss? Und was kostet umgekehrt das Einfügen ganz vorne?
 </div>
 
 Die Tests sind streng, und das ist gewollt: Eine Liste gilt erst dann als richtig, wenn sie sich nach außen richtig verhält **und** ihr Inneres stimmt, etwa wenn `size` wirklich der Zahl der gespeicherten Werte entspricht oder die Knotenkette keinen Kreis enthält. Ungültige Indizes, volle Arrays und doppelte Werte gehören fest zur Prüfung.

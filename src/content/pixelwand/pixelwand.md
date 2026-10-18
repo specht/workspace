@@ -894,7 +894,7 @@ App = lambda do |env|
       broadcast({ 'type' => 'people', 'count' => $clients.size })
     end
 
-    # Jede Nachricht kommt in die Warteschlange; Faye ist sofort frei
+    # Jede Nachricht kommt in die Queue; Faye ist sofort frei
     ws.on(:message) { |event| $queue << event.data }
 
     ws.on(:close) do
@@ -913,7 +913,7 @@ puts "Der Server wartet auf Port 8000 ..."
 Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Silent: true)
 ```
 
-- `ws.on(:message)` legt jede Nachricht nur in eine **Warteschlange**, `$queue`, und ist sofort frei für die nächste.
+- `ws.on(:message)` legt jede Nachricht nur in eine **Queue**, `$queue`, und ist sofort frei für die nächste.
 - Vier Threads holen sich mit `$queue.pop` die nächste Nachricht und verarbeiten sie, jeder in einer Schleife ohne Ende. `pop` wartet, solange die Schlange leer ist. Ein Thread pro Nachricht wäre einfacher, aber jeder Thread kostet Speicher, und dein Workspace darf nicht beliebig viele starten. Echte Server arbeiten genauso mit einer festen Zahl von Threads.
 - `save_picture` schreibt das ganze Bild als JSON in die Datei.
 - `$painted` zählt die Pixel: lesen, speichern, um eins erhöhen.
@@ -1011,7 +1011,7 @@ def handle(ws):
                         'height': HEIGHT, 'pixels': pixels}))
     broadcast({'type': 'people', 'count': len(clients)})
     try:
-        # Jede Nachricht kommt in die Warteschlange; die Verbindung ist sofort frei
+        # Jede Nachricht kommt in die Queue; die Verbindung ist sofort frei
         for text in ws:
             messages.put(text)
     finally:
@@ -1024,7 +1024,7 @@ with serve(handle, '0.0.0.0', 8000, process_request=page) as server:
     server.serve_forever()
 ```
 
-- `handle` legt jede Nachricht nur in eine **Warteschlange**, `messages`, und ist sofort frei für die nächste.
+- `handle` legt jede Nachricht nur in eine **Queue**, `messages`, und ist sofort frei für die nächste.
 - Vier Threads holen sich mit `messages.get()` die nächste Nachricht und verarbeiten sie in `work`, jeder in einer Schleife ohne Ende. `get` wartet, solange die Schlange leer ist. Ein Thread pro Nachricht wäre einfacher, aber jeder Thread kostet Speicher, und dein Workspace darf nicht beliebig viele starten. Echte Server arbeiten genauso mit einer festen Zahl von Threads. `daemon=True` heißt: Die Threads halten das Programm nicht am Leben, <kbd>Strg</kbd><kbd>C</kbd> beendet es trotzdem.
 - `save_picture` schreibt das ganze Bild als JSON in die Datei.
 - `painted` zählt die Pixel: lesen, speichern, um eins erhöhen. `global painted` erlaubt `work`, die Variable außerhalb der Funktion zu ändern.

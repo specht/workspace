@@ -45,7 +45,7 @@ def dijkstra(graph, start, goal):
     raise NotImplementedError('dijkstra')
 
 
-# Eine Prioritätswarteschlange: push legt einen Wert mit einer Priorität
+# Eine Priority Queue: push legt einen Wert mit einer Priorität
 # hinein, pop gibt das Paar (Priorität, Wert) mit der kleinsten Priorität
 # zurück und nimmt es heraus (None, wenn sie leer ist).
 class MinHeap:

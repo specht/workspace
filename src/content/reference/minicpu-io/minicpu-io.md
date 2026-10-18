@@ -86,7 +86,7 @@ crop-element: #devices
 **Ein Klick auf den Bildschirm** schickt die Tasten an das Programm: Pfeiltasten (oder W A S D) und Leertaste an den Joystick, jedes getippte Zeichen außerdem an die Tastatur. <kbd>Esc</kbd> gibt die Tasten zurück. Liest ein Programm Joystick oder Tastatur, gibt »Run« dem Bildschirm die Tasten von selbst. Die Joystick-Knöpfe in der Leiste lassen sich auch anklicken.
 
 - **Joystick** (`0x00`) meldet die Tasten, die *gerade jetzt* gedrückt sind, als Bits: 1 ←, 2 →, 4 ↑, 8 ↓, 16 Leertaste. In C: `JOY_LEFT`, `JOY_RIGHT`, `JOY_UP`, `JOY_DOWN`, `JOY_FIRE`, etwa `if (in(JOYSTICK) & JOY_FIRE)`.
-- **Tastatur** (`0x01`) sammelt getippte Zeichen in einer Warteschlange, bis das Programm sie liest; jedes Lesen holt eins (als ASCII-Code), 0 heißt: nichts getippt.
+- **Tastatur** (`0x01`) sammelt getippte Zeichen in einer Queue, bis das Programm sie liest; jedes Lesen holt eins (als ASCII-Code), 0 heißt: nichts getippt.
 - **Gehaltene Taste** (`0x05`) meldet, *wo* die zuletzt gedrückte, noch gehaltene Taste liegt, egal welches Tastaturlayout der Rechner hat: Reihe × 16 + Spalte. Shift (links oder rechts) zählt `0x80` dazu, Shift allein zählt als keine Taste. In C ist das Shift-Bit `KEY_SHIFT`.
 
 <div class='scroll-x'><table class='table table-sm reference-table'>

@@ -233,6 +233,10 @@ const TARGET_LOCATION = Symbol('tutorial-screenshot-target-location');
 // Steps after the last screenshot (<!-- tutorial-step --> blocks): parseTutorial
 // hands them along on the list of shots; they run at the end of a replay.
 const TRAILING_STEPS = Symbol('tutorial-screenshot-trailing-steps');
+// The tutorial-scope a shot lies in (an index), and how many of its first
+// actions are steps from before the scope (they run even if it is skipped).
+const SCOPE = Symbol('tutorial-scope');
+const SCOPE_ENTRY = Symbol('tutorial-scope-entry');
 
 function markdownSourceLocation(markdown, markdownPath, offset) {
     const boundedOffset = Math.max(0, Math.min(offset, markdown.length));
@@ -894,12 +898,41 @@ async function resolveWriteFileSource(blocks, recipeStart, selector, markdownPat
 // (check-task, expect-no-text). Its actions run, in its own tab, before the
 // next screenshot's and count towards that screenshot's state; steps after
 // the last screenshot run at the end of every replay.
+// <!-- tutorial-scope --> … <!-- /tutorial-scope --> encloses recipes whose
+// pictures do not matter for what comes after them: a shot after the scope
+// does not depend on the shots inside (its hash chains past them), and at
+// the end of the scope the generator puts back every file write-file wrote
+// inside it and reloads the preview. A scope whose shots are all current is
+// not walked at all. Scopes do not nest.
+function tutorialScopes(markdown, markdownPath) {
+    const scopes = [];
+    const marker = /<!--\s*(\/?)tutorial-scope\s*-->/g;
+    let open = null;
+    let match;
+    while ((match = marker.exec(markdown)) !== null) {
+        const source = markdownSourceLocation(markdown, markdownPath, match.index);
+        if (!match[1]) {
+            if (open) throw withSourceError(new Error('tutorial-scope inside another tutorial-scope'), source);
+            open = { start: match.index, source };
+        } else {
+            if (!open) throw withSourceError(new Error('/tutorial-scope without tutorial-scope'), source);
+            scopes.push({ start: open.start, end: match.index, source: open.source });
+            open = null;
+        }
+    }
+    if (open) throw withSourceError(new Error('tutorial-scope is never closed'), open.source);
+    return scopes;
+}
+
 async function parseTutorial(markdown, markdownPath) {
     const blocks = codeBlocks(markdown, markdownPath);
     const regex = /<!--\s*tutorial-(screenshot|step)\s*\n([\s\S]*?)-->/g;
     const shots = [];
     let pendingSteps = [];
     let match;
+    const scopes = tutorialScopes(markdown, markdownPath);
+    const scopeAt = (index) => scopes.findIndex(scope => scope.start < index && index < scope.end);
+    let stepsScope = -1; // the scope the pending steps were written in
 
     const resolveActions = (recipe, matchIndex, recipeSource) => Promise.all(recipe.actions.map(async action => {
         if (action.type !== 'write-file' && action.type !== 'type-source') return action;
@@ -924,7 +957,12 @@ async function parseTutorial(markdown, markdownPath) {
             throw withSourceError(error, recipeSource);
         }
 
+        const scope = scopeAt(match.index);
+        if (pendingSteps.length > 0 && stepsScope !== scope && stepsScope >= 0) {
+            throw withSourceError(new Error('a tutorial-step at the end of a tutorial-scope needs a screenshot after it, inside the scope'), recipeSource);
+        }
         if (kind === 'step') {
+            if (pendingSteps.length === 0) stepsScope = scope;
             const actions = await resolveActions(recipe, match.index, recipeSource);
             pendingSteps.push(...actions.map(action => {
                 const tagged = { ...action, tab: recipe.tab };
@@ -960,8 +998,11 @@ async function parseTutorial(markdown, markdownPath) {
             throw withSourceError(error, targetSource);
         }
 
+        // Steps from before a scope run even when the scope is skipped
+        const entryActions = scope >= 0 && stepsScope !== scope ? pendingSteps.length : 0;
         const resolvedActions = [...pendingSteps, ...await resolveActions(recipe, match.index, recipeSource)];
         pendingSteps = [];
+        stepsScope = -1;
 
         const resolved = {
             target,
@@ -1026,13 +1067,21 @@ async function parseTutorial(markdown, markdownPath) {
         }
         resolved[SOURCE_LOCATION] = recipe[SOURCE_LOCATION] || recipeSource;
         resolved[TARGET_LOCATION] = targetSource;
+        if (scope >= 0) {
+            resolved[SCOPE] = scope;
+            if (entryActions > 0) resolved[SCOPE_ENTRY] = entryActions;
+        }
         shots.push(resolved);
+    }
+    if (pendingSteps.length > 0 && stepsScope >= 0) {
+        throw withSourceError(new Error('a tutorial-step at the end of a tutorial-scope needs a screenshot after it, inside the scope'), scopes[stepsScope].source);
     }
 
     // See plan.js: a shot depends on the actions before it, not on their crops.
     const hashes = chainStateHashes(
         shots,
         sha256(`tutorial-screenshot-v${GENERATOR_VERSION}\0${markdownPath}`),
+        shot => (shot[SCOPE] === undefined ? null : { scope: shot[SCOPE], entry: shot[SCOPE_ENTRY] || 0 }),
     );
     shots.forEach((shot, index) => Object.assign(shot, hashes[index]));
     shots[TRAILING_STEPS] = pendingSteps;
@@ -2117,6 +2166,25 @@ async function previewReload(reset = false, hooks = null) {
     }
 }
 
+// While a <!-- tutorial-scope --> runs, every file write-file touches is
+// noted with what it held before (null: it was not there), so the end of the
+// scope can put it back (restoreScopeFiles).
+let scopeJournal = null;
+
+async function restoreScopeFiles() {
+    const journal = scopeJournal;
+    scopeJournal = null;
+    if (!journal) return;
+    for (const [file, before] of [...journal.entries()].reverse()) {
+        if (before === null) {
+            await fs.rm(file, { force: true });
+        } else {
+            await fs.writeFile(file, before);
+            await fs.chown(file, 1000, 1000).catch(() => {});
+        }
+    }
+}
+
 async function writeWorkspaceFile(relativePath, contents, hooks) {
     const root = path.join(
         USER_ROOT,
@@ -2129,6 +2197,9 @@ async function writeWorkspaceFile(relativePath, contents, hooks) {
     const resolvedTarget = path.resolve(target);
     if (!resolvedTarget.startsWith(`${resolvedRoot}${path.sep}`)) {
         throw new Error(`Workspace path escaped configured write-file root: ${relativePath}`);
+    }
+    if (scopeJournal && !scopeJournal.has(resolvedTarget)) {
+        scopeJournal.set(resolvedTarget, await fs.readFile(resolvedTarget).catch(() => null));
     }
     // Directories created here belong to the Workspace user, like the file:
     // owned by root, Git and the editor could not write into them.
@@ -3787,8 +3858,40 @@ async function generateTutorial(payload, progressJob = null) {
     if (progressJob) progressJob.status = 'running';
 
     let generated = 0;
+    scopeJournal = null; // a render that failed inside a scope left it behind
     for (let index = 0; index < shots.length; index += 1) {
         const shot = shots[index];
+
+        // The first shot of a tutorial-scope: if none of its shots needs a
+        // new file, only the steps from before the scope run, and the walk
+        // goes on after it. Otherwise the scope runs, with its files noted
+        // from the first of its own actions on, and is undone at its end.
+        const scope = shot[SCOPE];
+        const scopeStart = scope !== undefined && shots[index - 1]?.[SCOPE] !== scope;
+        const scopeEnd = scope !== undefined && shots[index + 1]?.[SCOPE] !== scope;
+        let journalFrom = -1;
+        if (scopeStart) {
+            let last = index;
+            while (shots[last + 1]?.[SCOPE] === scope) last += 1;
+            const entry = shot[SCOPE_ENTRY] || 0;
+            if (!stale.slice(index, last + 1).some(Boolean)) {
+                console.log(`Tutorial scope ${relativeMarkdown} -> ${shot.target} … ${shots[last].target}: current, skipped`);
+                for (const action of shot.actions.slice(0, entry)) {
+                    try {
+                        await executeAction(action, action.tab || shot.tab, tutorialHooks);
+                    } catch (error) {
+                        throw withSourceError(error, action[SOURCE_LOCATION] || shot[SOURCE_LOCATION]);
+                    }
+                }
+                if (progressJob) {
+                    for (let i = index; i <= last; i += 1) progressJob.screenshots[i].state = 'current';
+                    progressJob.completed = last + 1;
+                }
+                index = last;
+                continue;
+            }
+            journalFrom = entry;
+        }
 
         console.log(`Tutorial screenshot ${relativeMarkdown} -> ${shot.target}`);
         if (progressJob) {
@@ -3807,7 +3910,8 @@ async function generateTutorial(payload, progressJob = null) {
             throw withSourceError(error, shotSource);
         }
 
-        for (const action of shot.actions) {
+        for (const [actionIndex, action] of shot.actions.entries()) {
+            if (actionIndex === journalFrom) scopeJournal = new Map();
             const source = action[SOURCE_LOCATION] || shotSource;
             console.log(`  line ${source?.line ?? '?'}: ${source?.text?.trim() || action.type}`);
 
@@ -3896,6 +4000,20 @@ async function generateTutorial(payload, progressJob = null) {
         } else if (progressJob) {
             // buildGenerationPlan already put the current entry into nextManifest.
             progressJob.screenshots[index].state = 'current';
+        }
+
+        // The end of a scope: its files as they were, the preview reloaded
+        if (scopeEnd) {
+            if (journalFrom === shot.actions.length) scopeJournal = scopeJournal || new Map();
+            await restoreScopeFiles();
+            if (preview && !preview.isClosed()) {
+                try {
+                    await previewReload(false, tutorialHooks);
+                } catch (error) {
+                    throw withSourceError(error, shotSource);
+                }
+            }
+            console.log(`  end of tutorial-scope: files restored`);
         }
 
         if (progressJob) progressJob.completed = index + 1;

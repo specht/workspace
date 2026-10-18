@@ -18,6 +18,39 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Handbuch »Algorithmen und Datenstrukturen«: »Graphen und Wege«
+  (Adjazenzliste, der Weg zurück, Breitensuche, Tiefensuche, Dijkstra, A*,
+  Rundreise mit nächstem Nachbarn und 2-opt) und »Heap und Priority Queue«
+  (das Array als Baum, `push`, `pop`, Heapsort). Jedes Verfahren gibt es als
+  Pseudocode, zum Selbst-Übersetzen, nicht zum Kopieren, und zum
+  Durchklicken an demselben Beispiel, mit Queue, Stack oder Priority Queue
+  und den Vorgängern daneben (`algo_stepper.js`, mit ← und →). Der
+  Routenplaner verweist an jeder Stelle darauf, die Sorting Sandbox und die
+  Data Structures Sandbox auf den Heap.
+- `docs/checkliste.md` sammelt alle Regeln für Aktivitäten an einem Ort, mit
+  dem Grund und damit, ob ein Test sie prüft, dazu eine Bitte, mit der man
+  ein Sprachmodell eine Aktivität prüfen lässt.
+  `src/scripts/audit-activities.rb` zeigt das Zählbare davon für alle
+  Aktivitäten als Tabelle (Aufgaben, Gliederung, Sprachen, Notiz, Bilder).
+- Screenshot-Generator: `image-file: PATH SCALE` macht das Bild aus einer
+  Datei, die ein Programm im Workspace gespeichert hat, mit scharfen Pixeln
+  vergrößert. Die Zwischenstände in »Zeichnen mit Pixelflow Canvas« und in
+  der Feueranimation entstehen so aus genau den Programmen der Seite, die
+  Kegel, Ampel, Eistüte und Schneemann der Anaglyphen aus dem Viewer, die
+  drei Karten der Grundlagen im JPEG-Labor aus den Seiten selbst, die
+  Titelfolie von shower.js und Crystal Caves (auf 16:9, mit Röhrenfilter)
+  aus der Vorschau.
+- Screenshot-Generator: `<!-- tutorial-scope -->` … `<!-- /tutorial-scope -->`
+  um Rezepte, deren Bilder für die folgenden nichts ändern. Bilder danach
+  hängen nicht mehr von ihnen ab, am Ende stellt der Generator die Dateien
+  wieder her, die die Rezepte darin geschrieben haben, und ein Scope, dessen
+  Bilder aktuell sind, wird gar nicht erst durchlaufen. Die Anaglyphen und
+  der Routenplaner haben jetzt einen Scope um jedes Bild: Ändert sich der
+  Schneemann, entsteht nur der Schneemann neu, nicht die Videos danach.
+- Die Bilder der Einführung für Lehrkräfte merkt sich, aus welchen Dateien
+  sie entstehen: Ändert sich die Klassenseite, nennt
+  `recreate-screenshots.rb --status` sie veraltet, und `--stale` nimmt sie
+  mit dem Playwright-Skript neu auf.
 - Jede Aktivität im Katalog hat jetzt eine Notiz für Lehrkräfte, und jede
   beginnt damit, was die Lernenden tun. Neu sind die Notizen zu »Was ist der
   Hackschule Workspace?«, »Die Basics«, »3D-Grafik mit Anaglyphen«,
@@ -767,6 +800,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Datenstrukturen heißen auf allen Seiten so, wie man sie auch im Deutschen
+  nennt: Queue, Priority Queue, Stack, Linked List, statt Warteschlange,
+  Stapel und verkettete Liste.
+- »Die Basics«: Die Farbschemata aus dem Marketplace sind jetzt
+  verschiedener (Dracula, Gruvbox, GitHub Light, Cobalt2) statt vier
+  ähnlicher dunkler.
 - Code-Blöcke können Kontext zeigen: Zeilen mit `~ ` davor erscheinen blass,
   lassen sich nicht markieren und werden nicht mitkopiert. Eine dünne
   Zickzacklinie schneidet den Block dort, wo Kontext und neuer Code
@@ -800,7 +839,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   gewählt ist, steht in der Adresse der Seite; dunkle Farben, wenn der
   Bildschirm dunkel eingestellt ist, oder mit dem Knopf rechts oben (die
   Bilder der Seite und der Karte im Katalog gibt es hell und dunkel); der
-  Server schreibt die Adresse der Karte zum Anklicken ins Terminal; beim Ziehen und Zoomen wird das letzte
+  Server schreibt die Adresse der Karte zum Anklicken ins Terminal; von
+  weitem zeigt die Karte weniger Namen, statt dass sie sich überdecken; eine
+  berechnete Rundfahrt ordnet die Orte in der Liste und auf der Karte in der
+  Reihenfolge, in der sie besucht werden; beim Ziehen und Zoomen wird das letzte
   Bild der Karte nur verschoben und erst danach neu gezeichnet. Die Daten baut
   `src/scripts/collect-streets/`, für Berlin geschnitten an den Grenzen der
   Bezirke, mit Fähren und den Schulen aus dem Schulverzeichnis Berlins (in
@@ -1568,7 +1610,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - »Eine Pixelwand für alle« nutzt faye-websocket statt eines selbst
   geschriebenen Handshakes und Frame-Parsers: Die Seite beginnt mit einem
   Echo in zehn Zeilen, der Handshake bleibt mit `curl` sichtbar. Neuer
-  Abschnitt »Viele Threads«: Vier Threads arbeiten eine Warteschlange ab,
+  Abschnitt »Viele Threads«: Vier Threads arbeiten eine Queue ab,
   ein Zähler verzählt sich bei 200 Pixeln auf einmal (`flood.js`), ein Lock
   behebt es. Die Seite sagt deutlich, dass das Überschütten fremder Server
   ein Angriff ist.

@@ -66,7 +66,7 @@ end
 
 # Breitensuche: der Weg über die wenigsten Kanten. Gibt den Weg zurück (die
 # IDs vom Start bis zum Ziel, nil ohne Weg) und alle besuchten Knoten in der
-# Reihenfolge, in der die Suche sie aus der Warteschlange genommen hat.
+# Reihenfolge, in der die Suche sie aus der Queue genommen hat.
 def breadth_first(graph, start, goal)
     previous = { start => nil }
     queue = [start]
@@ -111,7 +111,7 @@ def dijkstra(graph, start, goal)
     { path: path_to(previous, goal), visited: visited }
 end
 
-# Eine Prioritätswarteschlange: push legt einen Wert mit einer Priorität
+# Eine Priority Queue: push legt einen Wert mit einer Priorität
 # hinein, pop gibt das Paar [Priorität, Wert] mit der kleinsten Priorität
 # zurück und nimmt es heraus (nil, wenn sie leer ist).
 class MinHeap

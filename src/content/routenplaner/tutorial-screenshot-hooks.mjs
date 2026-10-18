@@ -89,7 +89,9 @@ export default {
                 await page.keyboard.type(place);
                 await page.keyboard.press('Enter');
             }
-            await page.waitForFunction((n) => tour && tour.order.length === n, places.length, { timeout: 180_000 });
+            // die neue Rundfahrt, nicht die von vorher, die bis dahin stehen bleibt
+            await page.waitForFunction(([n, wanted]) => tour && tour.order.length === n && method === wanted
+                && document.getElementById('info').textContent.startsWith(`Rundfahrt: ${METHOD_NAMES[wanted]}`), [places.length, method], { timeout: 180_000 });
             await page.locator(':focus').evaluate((element) => element.blur()).catch(() => {});
             await page.waitForTimeout(300);
         },

@@ -87,7 +87,7 @@ def handle(ws):
                         'height': HEIGHT, 'pixels': pixels}))
     broadcast({'type': 'people', 'count': len(clients)})
     try:
-        # Jede Nachricht kommt in die Warteschlange; die Verbindung ist sofort frei
+        # Jede Nachricht kommt in die Queue; die Verbindung ist sofort frei
         for text in ws:
             messages.put(text)
     finally:

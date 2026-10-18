@@ -170,3 +170,29 @@ test('assertions are not part of any hash, so adding one re-renders nothing', ()
     ];
     assert.deepEqual(chainStateHashes(checked, 'seed'), chainStateHashes(plain, 'seed'));
 });
+
+test('a tutorial-scope keeps the shots after it independent of the shots inside', () => {
+    const shot = (target, actions, scope) => ({ target, tab: 'workspace', viewport: { width: 1, height: 1 }, zoom: 1, actions, scope });
+    const scopeOf = s => (s.scope === undefined ? null : { scope: s.scope, entry: s.entry || 0 });
+    const strip = shots => shots.map(({ scope, entry, ...rest }) => rest);
+    const before = shot('a.webp', [{ type: 'press', key: 'Enter' }]);
+    const after = shot('c.webp', [{ type: 'sleep', seconds: 1 }]);
+    const inside = actions => shot('b.webp', actions, 0);
+    const one = chainStateHashes([before, inside([{ type: 'type', text: 'snowman' }]), after], 'seed', scopeOf);
+    const two = chainStateHashes([before, inside([{ type: 'type', text: 'ice cream' }]), after], 'seed', scopeOf);
+    // the shot inside changes, the one after does not
+    assert.notEqual(one[1].stateHash, two[1].stateHash);
+    assert.equal(one[2].stateHash, two[2].stateHash);
+    // and the shot after hashes as if the scope were not there
+    const without = chainStateHashes(strip([before, after]), 'seed');
+    assert.equal(one[2].stateHash, without[1].stateHash);
+    assert.equal(one[0].stateHash, without[0].stateHash);
+    // without scopes nothing changes
+    const plain = [before, inside([{ type: 'type', text: 'snowman' }]), after].map(s => ({ ...s, scope: undefined }));
+    assert.deepEqual(chainStateHashes(plain, 'seed', scopeOf), chainStateHashes(plain, 'seed'));
+    // steps from before the scope (entry) count for the shots after it
+    const entered = (text) => ({ ...inside([{ type: 'press', key: text }, { type: 'type', text: 'x' }]), entry: 1 });
+    const a = chainStateHashes([before, entered('a'), after], 'seed', scopeOf);
+    const b = chainStateHashes([before, entered('b'), after], 'seed', scopeOf);
+    assert.notEqual(a[2].stateHash, b[2].stateHash);
+});

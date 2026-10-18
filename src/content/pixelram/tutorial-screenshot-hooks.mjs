@@ -132,6 +132,15 @@ export default {
             await page.mouse.move(0, 0);
         },
 
+        // hook: aspect W H: the screen cut to W:H around its middle, so a
+        // game with 320 x 200 pixels fits the row of 16:9 pictures beside it
+        async aspect({ page, args }) {
+            const [w, h] = String(args).trim().split(/\s+/).map(Number);
+            if (!(w > 0 && h > 0)) throw new Error('hook: aspect W H');
+            await page.addStyleTag({ content: `#canvas { aspect-ratio: ${w} / ${h} !important; height: auto !important; object-fit: cover !important; object-position: 50% 50% !important; }` });
+            await settleFrames(page, 2);
+        },
+
         // hook: freeze: stops the clock where it is. The program keeps its
         // last picture, so a variant shows the same moment as the shot.
         async freeze({ page }) {

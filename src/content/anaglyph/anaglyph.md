@@ -105,6 +105,7 @@ shape = sphere
 
 Speichere die Datei mit <kbd>Strg</kbd><kbd>S</kbd> und schaue dir die Vorschau an. Du solltest nun eine Kugel sehen:
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Kugel
 write-file: scene.ini <- previous-code
@@ -121,6 +122,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='sphere.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Eine weiße Kugel schwebt im Raum.'>
+<!-- /tutorial-scope -->
 </div>
 
 <div class='hint'>
@@ -148,6 +150,7 @@ shape = grid
 shape = sphere
 ```
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Kugel über dem Gitter
 write-file: scene.ini <- previous-code
@@ -164,6 +167,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='sphere-with-grid.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Eine Kugel aus Gitternetzlinien schwebt über einem quadratischen Gitter.'>
+<!-- /tutorial-scope -->
 </div>
 
 
@@ -174,6 +178,7 @@ shape = torus
 shape = sphere
 ```
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Ring um eine Kugel
 write-file: scene.ini <- previous-code
@@ -190,6 +195,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='sphere-with-torus.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein Ring umschließt eine Kugel.'>
+<!-- /tutorial-scope -->
 </div>
 
 ### Objekte verschieben
@@ -203,6 +209,7 @@ shape = box
 move = 100, 0, 0
 ```
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # verschobener Würfel
 write-file: scene.ini <- previous-code
@@ -219,6 +226,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='box-move-right.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein Würfel steht rechts vom Ursprung des Gitters.'>
+<!-- /tutorial-scope -->
 </div>
 
 Dabei gibt `move = 100, 0, 0` an, dass das Objekt um 100 Einheiten nach rechts verschoben wird. Die drei Werte stehen für die Verschiebung in den X-, Y- und Z-Richtungen.
@@ -263,6 +271,7 @@ move = 0, 0, 100
 
 </div>
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # vier Würfel (Lösung der Aufgabe)
 write-file: scene.ini <- previous-code
@@ -280,6 +289,7 @@ crop-bottom: 22%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='three-cubes.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Vier Würfel spannen ein Koordinatensystem auf.'>
+<!-- /tutorial-scope -->
 </div>
 
 
@@ -304,6 +314,7 @@ rotate = 30, 0, 0
 move = 100, 0, 0
 ```
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # gedrehte Würfel
 write-file: scene.ini <- previous-code
@@ -320,6 +331,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='rotate-boxes.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Drei Würfel stehen verdreht nebeneinander auf einem Gitter.'>
+<!-- /tutorial-scope -->
 </div>
 
 Du siehst hier ein Gitter und drei Würfel:
@@ -344,6 +356,7 @@ rotate = 0, 0, 30
 ```
 </div>
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Würfelstern (Lösung der Aufgabe)
 write-file: scene.ini <- previous-code
@@ -360,6 +373,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='cube-star.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Viele gedrehte Würfel bilden einen sternförmigen Ring.'>
+<!-- /tutorial-scope -->
 </div>
 
 
@@ -395,6 +409,7 @@ In diesem Beispiel siehst du ein Gitter und drei Kugeln:
 Achtung: Beim Programmieren musst du meistens Kommazahlen mit einem Punkt schreiben, also <code>1.8</code> und nicht <code>1,8</code>. Wenn du ein Komma eingibst, werden die Nachkommastellen ignoriert und die Zahl wird als ganze Zahl interpretiert.
 </div>
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # skalierte Kugeln
 write-file: scene.ini <- previous-code
@@ -411,6 +426,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='scaled-spheres.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Mehrere Kugeln werden entlang einer Reihe zunehmend größer.'>
+<!-- /tutorial-scope -->
 </div>
 
 Du kannst ein Objekt auch in alle drei Richtungen unterschiedlich skalieren, indem du drei Werte angibst:
@@ -424,6 +440,7 @@ scale = 1, 0.2, 1
 
 Hier wurde eine Kugel nur in der Y-Richtung verkleinert (auf 20%), sodass sie wie eine Scheibe aussieht:
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # flache Kugel
 write-file: scene.ini <- previous-code
@@ -440,6 +457,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='pancake.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Eine stark abgeflachte Kugel liegt wie ein Pfannkuchen auf dem Gitter.'>
+<!-- /tutorial-scope -->
 </div>
 
 **Aufgabe:** Versuche, die folgende Szene zu erstellen, indem du eine Box erstellst und sie auf die zehnfache Breite skalierst. Verschiebe die Box anschließend um 25 Einheiten nach oben, so dass sie auf dem Gitter aufliegt:
@@ -456,6 +474,7 @@ move = 0, 25, 0
 
 </div>
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Balken (Lösung der Aufgabe)
 write-file: scene.ini <- previous-code
@@ -472,6 +491,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='slab.webp' style='max-width: 100%;' alt='Ein langer, flacher Balken liegt auf dem Gitter.'>
+<!-- /tutorial-scope -->
 </div>
 
 _task(balken)
@@ -490,6 +510,7 @@ move = 100, 0, 0
 
 Hier wurde ein Würfel zuerst um 45 Grad um die Z-Achse gedreht und dann um 100 Einheiten nach rechts verschoben. Das Ergebnis sieht so aus:
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # erst drehen, dann verschieben
 write-file: scene.ini <- previous-code
@@ -506,6 +527,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='rotate-then-move.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein gedrehter Würfel bleibt seitlich auf dem Gitter stehen.'>
+<!-- /tutorial-scope -->
 </div>
 
 _task(reihenfolge)
@@ -519,6 +541,7 @@ shape = box
 move = 100, 0, 0
 rotate = 0, 0, 45
 ```
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # erst verschieben, dann drehen
 write-file: scene.ini <- previous-code
@@ -535,6 +558,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='move-then-rotate.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein verschobener Würfel schwebt nach der Drehung über dem Gitter.'>
+<!-- /tutorial-scope -->
 </div>
 
 Dieser Würfel schwebt jetzt über dem Gitter, weil er zuerst nach rechts verschoben wurde und danach erst um 45 Grad um die Z-Achse gedreht wurde, denn: jede Drehung findet immer um den Ursprung statt (und jede Skalierung auch).
@@ -545,17 +569,145 @@ _task(reihenfolge-erklaeren)
 
 Du kannst die Farben der Objekte kontrollieren, um verschiedene Effekte zu erzielen:
 
-<div style='text-align: center; margin: 1em 0; width: 100%;'>
-<img src='cone-white-black-white.webp' style='max-width: 23%;' alt='Weiß gefüllter Kegel mit schwarzen Konturen auf weißem Grund.'>
-<img src='cone-white-black-off.webp' style='max-width: 23%;' alt='Ungefüllter Kegel mit schwarzen Konturen auf weißem Grund.'>
-<img src='cone-white-black-shade.webp' style='max-width: 23%;' alt='Grau schattierter Kegel mit schwarzen Konturen auf weißem Grund.'>
-<img src='cone-white-off-shade.webp' style='max-width: 23%;' alt='Grau schattierter Kegel ohne Konturen auf weißem Grund.'>
+<div class='gallery columns-4'>
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Kegel mit background = 1.0
+write-file: scene.ini <- file:stufen/cone-white-black-white.ini
+sleep: 1
+preview-reload
+tab: preview
+variants: anaglyph
+zoom: 0.54
+hook: camera 20 20 -330
+crop-top: 27%
+crop-bottom: 27%
+crop-left: 38.5%
+crop-right: 38.5%
+-->
+<figure><img src='cone-white-black-white.webp' alt='Weiß gefüllter Kegel mit schwarzen Konturen auf weißem Grund.'><figcaption><code>stroke = 0.0</code><br><code>fill = 1.0</code></figcaption></figure>
+<!-- /tutorial-scope -->
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Kegel mit background = 1.0
+write-file: scene.ini <- file:stufen/cone-white-black-off.ini
+sleep: 1
+preview-reload
+tab: preview
+variants: anaglyph
+zoom: 0.54
+hook: camera 20 20 -330
+crop-top: 27%
+crop-bottom: 27%
+crop-left: 38.5%
+crop-right: 38.5%
+-->
+<figure><img src='cone-white-black-off.webp' alt='Ungefüllter Kegel mit schwarzen Konturen auf weißem Grund.'><figcaption><code>stroke = 0.0</code><br><code>fill = off</code></figcaption></figure>
+<!-- /tutorial-scope -->
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Kegel mit background = 1.0
+write-file: scene.ini <- file:stufen/cone-white-black-shade.ini
+sleep: 1
+preview-reload
+tab: preview
+variants: anaglyph
+zoom: 0.54
+hook: camera 20 20 -330
+crop-top: 27%
+crop-bottom: 27%
+crop-left: 38.5%
+crop-right: 38.5%
+-->
+<figure><img src='cone-white-black-shade.webp' alt='Grau schattierter Kegel mit schwarzen Konturen auf weißem Grund.'><figcaption><code>stroke = 0.0</code><br><code>shade = on</code></figcaption></figure>
+<!-- /tutorial-scope -->
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Kegel mit background = 1.0
+write-file: scene.ini <- file:stufen/cone-white-off-shade.ini
+sleep: 1
+preview-reload
+tab: preview
+variants: anaglyph
+zoom: 0.54
+hook: camera 20 20 -330
+crop-top: 27%
+crop-bottom: 27%
+crop-left: 38.5%
+crop-right: 38.5%
+-->
+<figure><img src='cone-white-off-shade.webp' alt='Grau schattierter Kegel ohne Konturen auf weißem Grund.'><figcaption><code>stroke = off</code><br><code>shade = on</code></figcaption></figure>
+<!-- /tutorial-scope -->
 </div>
-<div style='text-align: center; margin: 1em 0; width: 100%; background-color: #000;'>
-<img src='cone-black-white-black.webp' style='max-width: 23%;' alt='Schwarz gefüllter Kegel mit weißen Konturen auf schwarzem Grund.'>
-<img src='cone-black-white-off.webp' style='max-width: 23%;' alt='Ungefüllter Kegel mit weißen Konturen auf schwarzem Grund.'>
-<img src='cone-black-black-shade.webp' style='max-width: 23%;' alt='Grau schattierter Kegel mit schwarzen Konturen auf schwarzem Grund.'>
-<img src='cone-black-off-shade.webp' style='max-width: 23%;' alt='Grau schattierter Kegel ohne Konturen auf schwarzem Grund.'>
+<div class='gallery columns-4'>
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Kegel mit background = 0.0
+write-file: scene.ini <- file:stufen/cone-black-white-black.ini
+sleep: 1
+preview-reload
+tab: preview
+variants: anaglyph
+zoom: 0.54
+hook: camera 20 20 -330
+crop-top: 27%
+crop-bottom: 27%
+crop-left: 38.5%
+crop-right: 38.5%
+-->
+<figure><img src='cone-black-white-black.webp' alt='Schwarz gefüllter Kegel mit weißen Konturen auf schwarzem Grund.'><figcaption><code>stroke = 1.0</code><br><code>fill = 0.0</code></figcaption></figure>
+<!-- /tutorial-scope -->
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Kegel mit background = 0.0
+write-file: scene.ini <- file:stufen/cone-black-white-off.ini
+sleep: 1
+preview-reload
+tab: preview
+variants: anaglyph
+zoom: 0.54
+hook: camera 20 20 -330
+crop-top: 27%
+crop-bottom: 27%
+crop-left: 38.5%
+crop-right: 38.5%
+-->
+<figure><img src='cone-black-white-off.webp' alt='Ungefüllter Kegel mit weißen Konturen auf schwarzem Grund.'><figcaption><code>stroke = 1.0</code><br><code>fill = off</code></figcaption></figure>
+<!-- /tutorial-scope -->
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Kegel mit background = 0.0
+write-file: scene.ini <- file:stufen/cone-black-black-shade.ini
+sleep: 1
+preview-reload
+tab: preview
+variants: anaglyph
+zoom: 0.54
+hook: camera 20 20 -330
+crop-top: 27%
+crop-bottom: 27%
+crop-left: 38.5%
+crop-right: 38.5%
+-->
+<figure><img src='cone-black-black-shade.webp' alt='Grau schattierter Kegel mit schwarzen Konturen auf schwarzem Grund.'><figcaption><code>stroke = 0.0</code><br><code>shade = on</code></figcaption></figure>
+<!-- /tutorial-scope -->
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Kegel mit background = 0.0
+write-file: scene.ini <- file:stufen/cone-black-off-shade.ini
+sleep: 1
+preview-reload
+tab: preview
+variants: anaglyph
+zoom: 0.54
+hook: camera 20 20 -330
+crop-top: 27%
+crop-bottom: 27%
+crop-left: 38.5%
+crop-right: 38.5%
+-->
+<figure><img src='cone-black-off-shade.webp' alt='Grau schattierter Kegel ohne Konturen auf schwarzem Grund.'><figcaption><code>stroke = off</code><br><code>shade = on</code></figcaption></figure>
+<!-- /tutorial-scope -->
 </div>
 
 Dafür stehen dir vier Befehle zur Verfügung:
@@ -575,6 +727,7 @@ shade = on
 stroke = off
 ```
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # schattierter Ring
 write-file: scene.ini <- previous-code
@@ -591,6 +744,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='3d-torus.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein grau schattierter Ring schwebt über einem Gitter.'>
+<!-- /tutorial-scope -->
 </div>
 
 ### Bunte Farben
@@ -622,10 +776,58 @@ Mit `strokeWeight = 4` kannst du außerdem die Dicke der Konturen verändern.
 
 Versuche, eine oder mehrere der folgenden Szenen zu erstellen:
 
-<div style='text-align: center;'>
-<img src='ampel.png' style='width: 33%;' alt='Eine dreidimensionale Ampel mit rotem, gelbem und grünem Licht.'>
-<img src='eis.png' style='width: 33%;' alt='Eine Eistüte aus Kegel und drei farbigen Kugeln.'>
-<img src='schneemann.png' style='width: 33%;' alt='Ein Schneemann aus weißen Kugeln mit schwarzem Hut und orangefarbener Nase.'>
+<div class='gallery columns-3'>
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Eine Ampel
+write-file: scene.ini <- file:ampel.ini
+sleep: 1
+preview-reload
+tab: preview
+variants: dark anaglyph
+zoom: 0.54
+hook: camera 20 20 -230 0 0 0
+crop-top: 27%
+crop-bottom: 27%
+crop-left: 38.5%
+crop-right: 38.5%
+-->
+<figure><img src='ampel.webp' alt='Eine dreidimensionale Ampel mit rotem, gelbem und grünem Licht.'><figcaption>Eine Ampel</figcaption></figure>
+<!-- /tutorial-scope -->
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Eine Eistüte
+write-file: scene.ini <- file:eis.ini
+sleep: 1
+preview-reload
+tab: preview
+variants: dark anaglyph
+zoom: 0.54
+hook: camera 20 20 -290 0 10 0
+crop-top: 27%
+crop-bottom: 27%
+crop-left: 38.5%
+crop-right: 38.5%
+-->
+<figure><img src='eis.webp' alt='Eine Eistüte aus Kegel und drei farbigen Kugeln.'><figcaption>Eine Eistüte</figcaption></figure>
+<!-- /tutorial-scope -->
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Ein Schneemann
+write-file: scene.ini <- file:schneemann.ini
+sleep: 1
+preview-reload
+tab: preview
+variants: dark anaglyph
+zoom: 0.54
+hook: camera 20 20 -270 0 105 0
+crop-top: 27%
+crop-bottom: 27%
+crop-left: 38.5%
+crop-right: 38.5%
+-->
+<figure><img src='schneemann.webp' alt='Ein Schneemann aus weißen Kugeln mit schwarzem Hut und orangefarbener Nase.'><figcaption>Ein Schneemann</figcaption></figure>
+<!-- /tutorial-scope -->
 </div>
 
 Erstelle dafür jeweils eine neue Datei (mit »File« / »New Text File«) und speichere sie unter einem passenden Namen, z. B. `ampel.ini`, `eis.ini` oder `schneemann.ini`. Du musst dann auf der Vorschauseite nur noch den passenden Dateinamen im Textfeld unten ändern, um die Szene zu sehen.
@@ -662,6 +864,7 @@ rotate = 0, t * 30, 0
 
 In diesem Beispiel wird der Torus um 30 Grad pro Sekunde um die Y-Achse gedreht. Das bedeutet, dass er nach 3 Sekunden 90 Grad geschafft hat und nach 12 Sekunden eine volle Umdrehung gemacht hat.
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Ring, der sich dreht (eine halbe Umdrehung, dann sieht er wieder gleich aus)
 write-file: scene.ini <- previous-code
@@ -677,6 +880,7 @@ record: 6s
 
 <div style='text-align: center; margin: 1em 0;'>
 <video src='animation1.mp4' autoplay loop muted style='width: 380px; max-width: 100%;' aria-label='Ein goldener Torus dreht sich gleichmäßig um die Y-Achse.'></video>
+<!-- /tutorial-scope -->
 </div>  
 
 _task(umdrehung)
@@ -690,6 +894,7 @@ shape = box
 rotate = cos(t * 2) * 10, 0, sin(t * 3) * 10
 ```
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # wackelnder Würfel (cos(2t) und sin(3t) wiederholen sich nach 2π Sekunden)
 write-file: scene.ini <- previous-code
@@ -705,10 +910,12 @@ record: 6.28s
 
 <div style='text-align: center; margin: 1em 0;'>
 <video src='animation2.mp4' autoplay loop muted style='width: 300px; max-width: 100%;' aria-label='Ein orangefarbener Würfel wackelt im Raum hin und her.'></video>
+<!-- /tutorial-scope -->
 </div>
 
 **Aufgabe:** Erstelle eine Animation, bei der eine gelbe Sonne in der Mitte steht und eine blaue Erde um die Sonne kreist. Ein weißer Mond soll dabei um die Erde kreisen, und der Hintergrund ist schwarz wie das Weltall:
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Sonne, Erde, Mond: eine Erdumrundung dauert 12 Sekunden
 write-file: scene.ini <- file:sonnensystem.ini
@@ -724,6 +931,7 @@ record: 12s
 
 <div style='text-align: center; margin: 1em 0;'>
 <video src='animation3.mp4' autoplay loop muted style='width: 1029px; max-width: 100%;' aria-label='Vor schwarzem Hintergrund kreist eine blaue Erde um eine gelbe Sonne, ein weißer Mond kreist um die Erde.'></video>
+<!-- /tutorial-scope -->
 </div>
 
 _task(sonnensystem)
@@ -736,6 +944,7 @@ Du kannst Text in deine Szene einfügen, indem du den Befehl `text` verwendest:
 text = Hello!
 ```
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Text
 write-file: scene.ini <- previous-code
@@ -752,6 +961,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='hello.webp' style='max-width: 100%; min-height: 15em; object-fit: cover; object-position: center;' alt='Der weiße Schriftzug „Hello!“ schwebt im Raum.'>
+<!-- /tutorial-scope -->
 </div>
 
 Richtig gut sieht er aber erst mit einer 3D-Schattierung aus:
@@ -763,6 +973,7 @@ stroke = off
 fill = #f9b935
 ```
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # schattierter Text
 write-file: scene.ini <- previous-code
@@ -779,6 +990,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='hello-shade.webp' style='max-width: 100%; min-height: 15em; object-fit: cover; object-position: center;' alt='Der gelb schattierte Schriftzug „Hello!“ schwebt im Raum.'>
+<!-- /tutorial-scope -->
 </div>
 
 Bei 3D-Text kannst du zusätzlich die Schriftgröße mit `size`, die Tiefe mit `depth` und die horizontale Ausrichtung mit `align` (`left`, `center` oder `right`) einstellen:
@@ -841,6 +1053,7 @@ shape = box
 move = 100, 0, 0
 ```
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # drei Würfel in einer Reihe
 write-file: scene.ini <- previous-code
@@ -857,6 +1070,7 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='3-cubes-row.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Drei Würfel stehen in einer Reihe auf dem Gitter.'>
+<!-- /tutorial-scope -->
 </div>
 
 Du kannst ähnliche Zeilen zu einer Schleife zusammenfassen. Wenn du z. B. schreibst:
@@ -918,6 +1132,7 @@ end
 
 In der äußeren Schleife nimmt `z` drei verschiedene Werte an und für jeden Durchlauf der äußeren Schleife nimmt `x` unabhängig von `z` ebenso drei Werte an. Diese beiden Werte können wir jetzt verwenden, um den Würfel in x- und z-Richtung zu verschieben. Das Ergebnis sieht dann so aus:
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # neun Würfel aus zwei verschachtelten Schleifen
 write-file: scene.ini <- code:loop z from -100 to 100 step 100||move = x, 0, z
@@ -934,6 +1149,7 @@ crop-bottom: 16%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='9-cubes-loop.webp' style='max-width: 100%; min-height: 20em; object-fit: cover; object-position: center;' alt='Neun Würfel sind in drei Reihen mit jeweils drei Würfeln angeordnet.'>
+<!-- /tutorial-scope -->
 </div>
 
 <div class='hint'>
@@ -942,6 +1158,7 @@ Achtung: Achte darauf, bei verschachtelten Schleifen verschiedene Variablen für
 
 **Aufgabe:** Versuche, mit Hilfe von verschachtelten Schleifen ein Gitter aus 3x3x3 Würfeln zu bauen:
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # 27 Würfel: die Lösung der Aufgabe steht nicht auf der Seite, sondern daneben
 write-file: scene.ini <- file:wuerfelgitter.ini
@@ -958,6 +1175,7 @@ crop-bottom: 16%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='27-cubes-loop.webp' style='max-width: 100%; min-height: 20em; object-fit: cover; object-position: center;' alt='27 Würfel bilden ein räumliches Gitter aus drei mal drei mal drei Würfeln.'>
+<!-- /tutorial-scope -->
 </div>
 
 _task(wuerfelgitter)

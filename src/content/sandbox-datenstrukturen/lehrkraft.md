@@ -16,11 +16,11 @@ Am Ende jeder Stunde lohnt eine Minute: alle prüfen Aufgabe 5. Wer dabei hänge
 
 Eine mögliche Unterrichtsreihe:
 
-1. **Indizierter Speicher:** unsortierte Array-Liste, danach die unsortierte verkettete Liste mit denselben Aufrufen. Einfügen, Entfernen, Zugriff und ihre Kosten.
+1. **Indizierter Speicher:** unsortierte Array-Liste, danach die unsortierte Linked List mit denselben Aufrufen. Einfügen, Entfernen, Zugriff und ihre Kosten.
 2. **Abstrakte Datentypen:** Stack und Queue als Verhalten formulieren und je zwei Implementierungen schreiben und testen; der Ringpuffer als Höhepunkt.
 3. **Sortierte Listen:** Was ändert sich am Einfügen, was an der Suche?
 4. **Bäume:** Suchbaum, Einfluss der Einfügereihenfolge auf die Höhe, AVL-Rotationen (die vier Fälle LL, RR, LR, RL) als Erweiterung.
-5. **Heap und Hashing:** Prioritätswarteschlange und Hash-Tabelle als weitere Antworten auf die Frage, wie man schnell findet, was man sucht.
+5. **Heap und Hashing:** Priority Queue und Hash-Tabelle als weitere Antworten auf die Frage, wie man schnell findet, was man sucht.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Klassen und Objekte, Referenzen, Rekursion für die Bäume</td></tr>

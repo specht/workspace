@@ -341,41 +341,41 @@ sleep: 1.5
 -->
 <figure><img src='theme-dracula.webp' alt='VS Code im Farbschema Dracula: Pink, Lila und Grün auf dunklem Grund.'><figcaption><b>Dracula</b></figcaption></figure>
 <!-- tutorial-screenshot
-# Farbschema One Dark Pro
-hook: install zhuangtongfa.material-theme
+# Farbschema Gruvbox, warm und erdig
+hook: install jdinhlife.gruvbox
 open-file: farben.py
 press: Control+K
 press: Control+T
-type: One Dark Pro
+type: Gruvbox Dark Medium
 sleep: 1
 press: Enter
 sleep: 1.5
 -->
-<figure><img src='theme-one-dark-pro.webp' alt='VS Code im Farbschema One Dark Pro.'><figcaption><b>One Dark Pro</b></figcaption></figure>
+<figure><img src='theme-gruvbox.webp' alt='VS Code im Farbschema Gruvbox: warmes Orange, Gelb und Grün auf dunkelbraunem Grund.'><figcaption><b>Gruvbox</b></figcaption></figure>
 <!-- tutorial-screenshot
-# Farbschema Tokyo Night
-hook: install enkia.tokyo-night
+# Farbschema GitHub Light, hell
+hook: install GitHub.github-vscode-theme
 open-file: farben.py
 press: Control+K
 press: Control+T
-type: Tokyo Night
+type: GitHub Light Default
 sleep: 1
 press: Enter
 sleep: 1.5
 -->
-<figure><img src='theme-tokyo-night.webp' alt='VS Code im Farbschema Tokyo Night in Blau- und Violetttönen.'><figcaption><b>Tokyo Night</b></figcaption></figure>
+<figure><img src='theme-github-light.webp' alt='VS Code im Farbschema GitHub Light: dunkle Schrift in Blau und Rot auf weißem Grund, wie Code auf GitHub.'><figcaption><b>GitHub Light</b></figcaption></figure>
 <!-- tutorial-screenshot
-# Farbschema Catppuccin Mocha
-hook: install Catppuccin.catppuccin-vsc
+# Farbschema Cobalt2, kräftiges Blau
+hook: install wesbos.theme-cobalt2
 open-file: farben.py
 press: Control+K
 press: Control+T
-type: Catppuccin Mocha
+type: Cobalt2
 sleep: 1
 press: Enter
 sleep: 1.5
 -->
-<figure><img src='theme-catppuccin.webp' alt='VS Code im Farbschema Catppuccin Mocha in sanften Pastellfarben auf dunklem Grund.'><figcaption><b>Catppuccin</b></figcaption></figure>
+<figure><img src='theme-cobalt2.webp' alt='VS Code im Farbschema Cobalt2: leuchtendes Gelb und Orange auf kräftigem Blau.'><figcaption><b>Cobalt2</b></figcaption></figure>
 </div>
 
 <div class='hint'>
