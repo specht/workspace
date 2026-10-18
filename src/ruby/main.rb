@@ -38,6 +38,7 @@ require './include/tools.rb'
 require './include/schemas.rb'
 require './include/weather_mirror.rb'
 require './include/privacy.rb'
+require './include/privacy_documents.rb'
 require './include/account_deletion.rb'
 require 'base64'
 require 'cgi'
@@ -2716,8 +2717,10 @@ class Main < Sinatra::Base
             RETURN n;
         END_OF_QUERY
         user[:db_login] = Main.db_login_for_email(email)
-        unless user[:name]
-            name = @@invitations[email][:name]
+        # The name is optional and may come later than the address: the one
+        # in the invitation list wins.
+        name = @@invitations[email][:name]
+        if name && user[:name] != name
             user = neo4j_query_expect_one(<<~END_OF_QUERY, :email => email, :name => name)['n']
                 MATCH (n:User {email: $email})
                 SET n.name = $name
@@ -6960,6 +6963,18 @@ class Main < Sinatra::Base
 
         Main.load_invitations()
         @@invitations.keys.find { |email| fs_tag_for_email(email) == tags.first }
+    end
+
+    # The documents for the school (PrivacyDocuments): public, like the
+    # Datenschutzerklärung they are made from, so that a link can go to the
+    # Schulleitung.
+    get '/datenschutz' do
+        respond_raw_with_mimetype(PrivacyDocuments.page(nil, Privacy.settings), 'text/html')
+    end
+
+    get '/datenschutz/:document' do
+        halt 404 unless PrivacyDocuments::DOCUMENTS.key?(params['document'])
+        respond_raw_with_mimetype(PrivacyDocuments.page(params['document'], Privacy.settings), 'text/html')
     end
 
     get '/*' do

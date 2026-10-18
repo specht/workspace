@@ -31,6 +31,20 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   `DATA_PROTECTION_OFFICER`, `HOSTING`, `MAIL_PROVIDER`, `LEGAL_BASIS`,
   `SCHOOL_LAW`, `SUPERVISORY_AUTHORITY`, siehe `credentials.template.rb`);
   ohne sie sagt die Seite, was fehlt.
+- Unterlagen für die Schule unter `/datenschutz`, zum Drucken oder als PDF,
+  aus denselben Angaben wie die Datenschutzerklärung: eine Seite mit der
+  Entscheidung für die Schulleitung, eine Prüfübersicht (jede Vorschrift von
+  DSGVO und, in Berlin, DigLLV mit der Stelle, an der sie erfüllt ist), der
+  Eintrag für das Verzeichnis von Verarbeitungstätigkeiten, die technischen
+  und organisatorischen Maßnahmen, ein Löschkonzept, ein Entwurf der
+  Vereinbarung zur Auftragsverarbeitung, ein Elternbrief (mit
+  Einverständniserklärung, wenn sie gewünscht ist), eine Nutzungsordnung und
+  die Nutzungsvereinbarung zum Webhosting. Diese ersetzt das PDF
+  `docs/Nutzungsvereinbarung-Webhosting.pdf`: Sie sagt jetzt auch, was
+  gespeichert und wann es gelöscht wird, und nimmt den Betreiber aus den
+  Einstellungen.
+- Namen in den Einladungslisten sind freiwillig, und ein Name, der später
+  dazukommt oder sich ändert, kommt jetzt auch im Konto an.
 - Konten löschen: Unter »Administration« löscht ein Klick ein Konto mit
   allem, was dazugehört (Workspace, die Workspaces der
   Leistungsüberprüfungen, MySQL- und Neo4j-Datenbanken, Antworten, Abgaben,

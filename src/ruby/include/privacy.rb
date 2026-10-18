@@ -36,6 +36,7 @@ module Privacy
         end
         basis = scope.const_defined?('LEGAL_BASIS') ? scope.const_get('LEGAL_BASIS').to_s.strip.to_sym : nil
         values[:legal_basis] = LEGAL_BASES.include?(basis) ? basis : nil
+        values[:web_root] = scope.const_defined?('WEB_ROOT') ? scope.const_get('WEB_ROOT').to_s : nil
         values[:parental_consent_required] =
             scope.const_defined?('PARENTAL_CONSENT_REQUIRED') && scope.const_get('PARENTAL_CONSENT_REQUIRED') == true
         values
@@ -108,7 +109,7 @@ module Privacy
     def self.records
         [
             {
-                :data => 'E-Mail-Adresse, Name und Gruppe (Klasse oder Kurs)',
+                :data => 'E-Mail-Adresse, Name (freiwillig) und Gruppe (Klasse oder Kurs)',
                 :source => 'aus der Einladungsliste der Lehrkraft',
                 :categories => [:master, :assignment],
                 :purpose => 'Anmeldung; Zuordnung zur Lerngruppe',
@@ -243,6 +244,11 @@ module Privacy
                 :name => 'git.nhcham.org',
                 :kind => :own,
                 :html => 'Einige Schülerinnen und Schüler nutzen auf eigenen Wunsch zusätzlich den Git-Server git.nhcham.org. Er gehört nicht zum Workspace, und keine Aktivität setzt ihn voraus. Wer ihn nutzt, hat dort ein eigenes Konto; der Workspace überträgt nichts dorthin, nur was die Person selbst hochlädt.',
+            },
+            {
+                :name => 'Webhosting',
+                :kind => :own,
+                :html => 'Wer eine fertige Website dauerhaft veröffentlichen möchte, kann eine eigene Subdomain von hackschule.de bekommen. Das ist ein eigenes Angebot mit eigener Nutzungsvereinbarung; die Website ist öffentlich.',
             },
             {
                 :name => 'Eigene Programme',
@@ -434,8 +440,8 @@ module Privacy
             #{heading('Welche Daten gespeichert werden', 'Kategorien, Herkunft, Empfänger und Speicherdauer · Art. 13 Abs. 1 Buchst. e, Abs. 2 Buchst. a; Art. 14 Abs. 1 Buchst. d, Abs. 2 Buchst. f DSGVO')}
             #{records_table_html}
             <p>
-            Alle diese Daten liegen auf dem Server des Workspace. Name, E-Mail-Adresse und Gruppe trägt die Lehrkraft aus ihrer
-            Einladungsliste ein; alles andere entsteht durch die Arbeit im Workspace.
+            Alle diese Daten liegen auf dem Server des Workspace. E-Mail-Adresse, Gruppe und, wenn gewünscht, den Namen trägt die
+            Lehrkraft aus ihrer Einladungsliste ein; alles andere entsteht durch die Arbeit im Workspace.
             </p>
 
             #{heading('Anmeldung per Code', 'Sicherheit der Anmeldung · Art. 32 DSGVO')}
@@ -500,8 +506,9 @@ module Privacy
 
             #{heading('Pflicht zur Angabe von Daten', 'Art. 13 Abs. 2 Buchst. e DSGVO')}
             <p>
-            Für ein Konto sind E-Mail-Adresse und Name erforderlich; beides trägt die einladende Lehrkraft ein.
-            Ohne sie ist keine Anmeldung möglich. Weitere Angaben werden nicht verlangt.
+            Erforderlich ist nur eine E-Mail-Adresse, an die Anmeldecodes gehen können; sie muss den Namen nicht enthalten.
+            Ein Name ist freiwillig; ohne ihn zeigt der Workspace die Adresse. Beides trägt die einladende Lehrkraft ein.
+            Weitere Angaben werden nicht verlangt.
             </p>
 
             #{heading('Keine automatisierten Entscheidungen', 'Art. 13 Abs. 2 Buchst. f, Art. 22 DSGVO')}

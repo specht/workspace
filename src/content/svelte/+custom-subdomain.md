@@ -4,7 +4,7 @@ Eine eigene Hackschule-Subdomain ist öffentlicher Webspace für deine **fertige
 
 ## Einverständniserklärung
 
-Wenn du noch minderjährig bist, benötigen wir vor der öffentlichen Freischaltung das Einverständnis einer sorgeberechtigten Person. Lade die [Einverständniserklärung als PDF](/docs/Nutzungsvereinbarung-Webhosting.pdf) herunter, lass sie unterschreiben und gib sie bei deiner Lehrkraft ab. Das Formular erklärt auch, dass deine Website öffentlich und nicht nur innerhalb des Workspace sichtbar ist.
+Für die Subdomain unterschreibst du eine [Nutzungsvereinbarung](/datenschutz/webhosting); wenn du noch minderjährig bist, unterschreibt auch eine erziehungsberechtigte Person. Druck sie aus, lass sie unterschreiben und gib sie bei deiner Lehrkraft ab. Sie erklärt auch, dass deine Website öffentlich und nicht nur innerhalb des Workspace sichtbar ist und was gespeichert wird.
 
 ## Schlüsselpaar erstellen
 
