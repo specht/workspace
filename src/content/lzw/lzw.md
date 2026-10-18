@@ -1,5 +1,5 @@
 <div class='meta'>
-image: teaser.webp
+image: teaser.webp:contain
 kind: labor
 language: Ruby / Python
 languages: [ruby, python]

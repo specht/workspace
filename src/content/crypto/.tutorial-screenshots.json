@@ -50,8 +50,8 @@
     },
     "teaser.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "f221eeee68d0ab886a475ea6bde887ee6214c9984a5a428be382ef97186da085",
-      "state_hash": "9780ffb82c34d205376121eaa78ef894df86f14da80c37af06e3eba08302ab22",
+      "output_sha256": "33de8467f699bc70821f355cf9e7959ed432335d05978fb7be4e149b2549e507",
+      "state_hash": "7b670790adb34e77516992f6fc6c2d440bb28a8d8546ad50ee552a26114f1f7a",
       "workspace_look": "4.138.0-ls366"
     },
     "unterschrift.webp": {

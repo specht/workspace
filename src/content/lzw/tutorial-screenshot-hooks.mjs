@@ -22,6 +22,9 @@ export default {
             // the page's fixed bars (contents, footer) would cover it
             await page.evaluate((selector) => {
                 const keep = document.querySelector(selector);
+                // on the page background, white or dark, not the tinted box
+                keep.style.setProperty('background', 'var(--bs-body-bg)', 'important');
+                keep.style.setProperty('border-color', 'transparent', 'important');
                 for (const element of document.querySelectorAll('body *')) {
                     if (keep.contains(element) || element.contains(keep)) continue;
                     const { position } = getComputedStyle(element);

@@ -13,6 +13,15 @@ export default {
     },
 
     actions: {
+        // hook: pad SELECTOR PIXELS: a margin of page background inside the
+        // element, so that a crop to it starts with background, not with a
+        // coloured cell (image: …:contain pads with the corner's colour)
+        async pad({ page, args }) {
+            const [selector, pixels] = args.trim().split(/\s+/);
+            await page.addStyleTag({ content: `${selector} { padding: ${Number(pixels)}px !important; box-sizing: content-box !important; background: var(--bs-body-bg) !important; }` });
+            await page.waitForTimeout(300);
+        },
+
         // hook: widget SELECTOR [STEPS [TEXT]]: the widget scrolled into
         // view; TEXT typed into its field, as a reader types it; then its
         // »next« button pressed STEPS times (»last«: its last step)
@@ -22,6 +31,9 @@ export default {
             // the page's fixed bars (contents, footer) would cover it
             await page.evaluate((selector) => {
                 const keep = document.querySelector(selector);
+                // on the page background, white or dark, not the tinted box
+                keep.style.setProperty('background', 'var(--bs-body-bg)', 'important');
+                keep.style.setProperty('border-color', 'transparent', 'important');
                 for (const element of document.querySelectorAll('body *')) {
                     if (keep.contains(element) || element.contains(keep)) continue;
                     const { position } = getComputedStyle(element);

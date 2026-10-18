@@ -1,5 +1,5 @@
 <div class='meta'>
-image: teaser.webp:0:50
+image: teaser.webp
 kind: labor
 language: Bash
 duration: 2 Doppelstunden
@@ -384,9 +384,11 @@ _task(fingerabdruck)
 Auf der Seite [Git und GitHub](/git) sind Commits nach ihrem Hash benannt; jetzt weißt du, warum eine Commit-ID eine Version eindeutig festhält. Wie HTTP über eine TCP-Verbindung läuft, zeigt [TCP/IP](/tcpip); bei `https://` liegt die Verschlüsselung von hier dazwischen.
 
 <!-- tutorial-screenshot
-# Bild für die Karte der Aktivität: dieselbe Unterschrift, einmal gültig, einmal nicht
+# Bild für die Karte der Aktivität: dieselbe Unterschrift, einmal gültig, einmal
+# nicht; der ganze Workspace in 16:9, das Terminal groß
 zoom: 1.4
-viewport: 1029x600
+viewport: 1029x579
+terminal-maximize
 terminal-run: sed -i "s/17 Uhr/16 Uhr/" letter.txt
 terminal-run: clear
 terminal-run: ssh-keygen -Y verify -f allowed_signers -I alice -n file -s letter.txt.sig < letter.txt
@@ -394,6 +396,5 @@ terminal-wait-for-prompt
 terminal-run: sed -i "s/16 Uhr/17 Uhr/" letter.txt
 terminal-run: ssh-keygen -Y verify -f allowed_signers -I alice -n file -s letter.txt.sig < letter.txt
 terminal-wait-for-prompt
-crop-terminal-lines: auto
 -->
-<img class='teaser' hidden src='teaser.webp' alt='Ein Terminal in großer Schrift: dieselbe Unterschrift wird zweimal geprüft. Zuerst meldet ssh-keygen Good signature for alice, nach der Änderung von 16 auf 17 Uhr im Brief Signature verification failed.'>
+<img class='teaser' hidden src='teaser.webp' alt='Der Workspace mit dem Terminal in großer Schrift: dieselbe Unterschrift wird zweimal geprüft. Zuerst meldet ssh-keygen Good signature for alice, nach der Änderung von 16 auf 17 Uhr im Brief Signature verification failed.'>

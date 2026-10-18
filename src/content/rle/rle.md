@@ -1,5 +1,5 @@
 <div class='meta'>
-image: teaser.webp
+image: teaser.webp:contain
 kind: labor
 language: Ruby / Python
 languages: [ruby, python]
@@ -387,6 +387,7 @@ tab: preview
 viewport: 1280x900
 variants: dark
 hook: widget .rle-editor 0
+hook: pad .rle-grid 14
 # das Raster und die Läufe bis zum Ende der längsten Zeile (der dritten),
 # nicht die leere Breite dahinter
 crop-element: .rle-grid
