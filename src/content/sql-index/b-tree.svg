@@ -4,8 +4,8 @@
        Hunderte von Schlüsseln, hier zwei. Jeder Pfeil verlässt seinen Knoten
        senkrecht und kommt auf der Linie zur Mitte seines Kindknotens an, die
        Spitze genau auf dem Rand: Der letzte Kontrollpunkt liegt auf dieser
-       Linie, so zeigt die Pfeilspitze in die Richtung, in die die Kurve läuft. Als Bild:
-       rsvg-convert -w 1600 b-tree.svg -o b-tree.png && cwebp -lossless b-tree.png -o b-tree.webp -->
+       Linie, so zeigt die Pfeilspitze in die Richtung, in die die Kurve läuft. Als Bild, hell und dunkel:
+       src/scripts/render-svg.rb src/content/sql-index/b-tree.svg -->
   <style>
     .node { fill: #eef3fb; stroke: #1f2937; stroke-width: 2; }
     .leaf { fill: #ffffff; stroke: #1f2937; stroke-width: 2; }

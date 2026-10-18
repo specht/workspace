@@ -100,7 +100,7 @@ _task(mailserver)
 
 Kein Server der Welt kennt alle Namen. Stattdessen ist jeder Name ein Pfad, von rechts nach links gelesen, und für jedes Stück ist jemand anderes zuständig:
 
-<img class='full invert-dark' src='dns-tree.webp' alt='Der Baum der Namen: oben die Wurzel, ein Punkt, darunter die Endungen de, com und org, unter de die Namen hackschule und wikipedia, unter com google, unter org wikipedia; der Weg zu hackschule.de ist blau; daneben, wer zuständig ist: die Root-Server, DENIC für de, Cloudflare für hackschule.de.'>
+<img class='full' src='dns-tree.webp' alt='Der Baum der Namen: oben die Wurzel, ein Punkt, darunter die Endungen de, com und org, unter de die Namen hackschule und wikipedia, unter com google, unter org wikipedia; der Weg zu hackschule.de ist blau; daneben, wer zuständig ist: die Root-Server, DENIC für de, Cloudflare für hackschule.de.'>
 
 - Ganz oben steht die **Wurzel**, geschrieben als der Punkt am Ende von `hackschule.de.`. Für sie sind die 13 **Root-Server** zuständig, `a.root-servers.net` bis `m.root-servers.net`.
 - Darunter die **Endungen** (*Top-Level-Domains*) wie `de`, `com` oder `pe`. Für `de` ist die DENIC zuständig, eine Genossenschaft in Frankfurt.

@@ -18,6 +18,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- `src/scripts/render-svg.rb` rendert ein gezeichnetes SVG-Diagramm hell und
+  mit einer eigenen dunklen Farbpalette als `NAME-dark.webp`. Der DNS-Baum
+  und der B-Baum von »SQL-Index« haben so eine echte dunkle Fassung, auf der
+  Seite und auf der Karte der Aktivität, statt im dunklen Modus invertiert zu
+  werden.
 - Handbuch »Algorithmen und Datenstrukturen«: »Graphen und Wege«
   (Adjazenzliste, der Weg zurück, Breitensuche, Tiefensuche, Dijkstra, A*,
   Rundreise mit nächstem Nachbarn und 2-opt) und »Heap und Priority Queue«

@@ -227,7 +227,7 @@ _task(index-telefon)
 
 Eine sortierte Liste mit einer Million Nummern ließe sich mit binärer Suche durchsuchen, in etwa 20 Schritten. Eine Datenbank liest aber nicht einzelne Nummern von der Festplatte, sondern ganze Blöcke von 16 KB auf einmal, und jeder Block, den sie liest, kostet Zeit. Darum ist ihr Index ein **B-Baum**: ein Baum, in dessen Knoten nicht ein Schlüssel steht, sondern Hunderte, so viele, wie in einen Block passen.
 
-<img class='full invert-dark' src='b-tree.webp' alt='Ein B-Baum über die Telefonnummern mit drei Ebenen: oben die Wurzel mit den Grenzen 3400000 und 6700000, darunter drei Knoten mit weiteren Grenzen, unten die Blätter mit Nummer und Zeile, etwa 0151 9500000 → Zeile 500000, der Reihe nach verbunden.'>
+<img class='full' src='b-tree.webp' alt='Ein B-Baum über die Telefonnummern mit drei Ebenen: oben die Wurzel mit den Grenzen 3400000 und 6700000, darunter drei Knoten mit weiteren Grenzen, unten die Blätter mit Nummer und Zeile, etwa 0151 9500000 → Zeile 500000, der Reihe nach verbunden.'>
 
 Die Wurzel oben teilt alle Nummern in Bereiche ein und sagt, in welchem Knoten darunter es weitergeht. Jeder Knoten darunter teilt seinen Bereich wieder ein. Erst in den Blättern ganz unten stehen die Nummern selbst, mit dem Verweis auf ihre Zeile. Wer eine Nummer sucht, liest auf jeder Ebene einen Knoten und weiß danach, wo es weitergeht: nach drei, vier Blöcken ist man da.
 

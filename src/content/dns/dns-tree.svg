@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" width="1200" height="520" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
   <!-- Der Baum der Namen, von der Wurzel bis hackschule.de, und wer für
-       welche Ebene zuständig ist. Als Bild:
-       rsvg-convert -w 1600 dns-tree.svg -o dns-tree.png && cwebp -lossless dns-tree.png -o dns-tree.webp -->
+       welche Ebene zuständig ist. Als Bild, hell und dunkel:
+       src/scripts/render-svg.rb src/content/dns/dns-tree.svg -->
   <style>
     .node { fill: #eef3fb; stroke: #1f2937; stroke-width: 2; }
     .path { fill: #ffffff; stroke: #2b5fb4; stroke-width: 3; }
