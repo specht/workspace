@@ -18,6 +18,48 @@ export default {
     },
 
     actions: {
+        // hook: knob LABEL VALUE: on the pages with knobs (/rgb, /dct), the
+        // knob LABEL dragged up or down, as with the mouse, until it shows
+        // VALUE (»knob Mode YCbCr«, »knob R 255«)
+        async knob({ page, args }) {
+            const [label, value] = args.trim().split(/\s+/);
+            const svg = page.locator(`svg[aria-label="${label}"]`);
+            const shown = async () => (await svg.locator('xpath=..').locator('.knob-value').textContent()).trim();
+            const box = await svg.boundingBox();
+            const x = box.x + box.width / 2;
+            const y = box.y + box.height / 2;
+            for (const direction of [1, -1]) {
+                if (await shown() === value) return;
+                await page.mouse.move(x, y);
+                await page.mouse.down();
+                for (let step = 1; step <= 600; step += 1) {
+                    await page.mouse.move(x, y - direction * step);
+                    if (await shown() === value) break;
+                }
+                await page.mouse.up();
+            }
+            if (await shown() !== value) throw new Error(`hook: knob ${label}: ${value} not reached, it shows ${await shown()}`);
+        },
+
+        // hook: only SELECTOR [WHEEL]: that panel alone fills the window,
+        // without its title and its hint, drawn again at that size; with
+        // WHEEL the mouse wheel turned over its middle (negative zooms in),
+        // then the mouse out of the way
+        async only({ page, args }) {
+            const [selector, wheel] = args.trim().split(/\s+/);
+            await page.addStyleTag({ content: `${selector} { position: fixed !important; left: 0 !important; top: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 100; margin: 0 !important; border-radius: 0 !important; } ${selector} .panel-title, ${selector} .result-label { display: none !important; }` });
+            await page.evaluate(() => window.dispatchEvent(new Event('resize')));
+            await page.waitForTimeout(800);
+            if (wheel) {
+                const size = page.viewportSize();
+                await page.mouse.move(size.width / 2, size.height / 2);
+                await page.mouse.wheel(0, Number(wheel));
+                await page.waitForTimeout(300);
+            }
+            await page.mouse.move(2, 2);
+            await page.waitForTimeout(1200);
+        },
+
         // hook: dct-select X Y [1d|2d] [COEFFICIENTS]: on the page »DCT«
         // (/dct), the mode and the number of coefficients set with their
         // knobs, and the eight pixels (1d) or the 8 x 8 block (2d) from X, Y of

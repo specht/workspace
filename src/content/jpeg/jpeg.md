@@ -1,5 +1,5 @@
 <div class='meta'>
-image: title.webp
+image: teaser.webp
 kind: labor
 language: C
 duration: 4 Doppelstunden
@@ -1910,3 +1910,20 @@ hook: expect-value Blau 108.9 1
 hook: run 91-baseline.jpg
 hook: expect-value 350: 80 2
 -->
+
+<!-- tutorial-screenshot
+# Das Bild für die Karte: der Weg einer Farbe durch den Farbraum. Auf der
+# Seite »Farbräume« der Modus YCbCr und Orange (255, 128, 0), das lange,
+# deutlich verschiedene Stücke für Y, Cb und Cr hat; nur der Würfel,
+# so nah, wie er geht
+open-site: /rgb
+tab: preview
+viewport: 1280x720
+sleep: 2
+hook: knob Mode YCbCr
+hook: knob R 255
+hook: knob G 128
+hook: knob B 0
+hook: only #cube_view -320
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Der Weg der Farbe Orange durch den YCbCr-Farbraum: vom schwarzen Punkt ein grauer Pfeil für die Helligkeit Y, dann ein grüner für Cb und ein oranger für Cr bis zum orangefarbenen Punkt, im Hintergrund der RGB-Würfel als Drahtgitter.'>
