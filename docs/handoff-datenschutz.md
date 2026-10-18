@@ -9,6 +9,44 @@ notes later in this handoff.**
 
 **Read first:** `AGENTS.md`, `docs/datenschutz.md`, `docs/teacher-access.md`, and the rest of this handoff. Work in `specht/workspace`, branch `datenschutz`; do not merge/deploy or modify production data without the maintainer's explicit approval. Keep changes in coherent commits, write a German CHANGELOG entry, and run the repository's Ruby and relevant browser/E2E tests.
 
+### Status of the plan below (2026-10-18, night) — read this first
+
+Done on the branch (each with tests or a run on the dev copy):
+- School approval truthful: the import approves no school; both dates on
+  /personen for every school; per-student consent on /gruppen; nobody is
+  locked out (the maintainer's rule, overrides the plan's lockout).
+- Group transfer (»Schule wechseln«), rename, suggestions, the reworked
+  /gruppen and /personen, cleanup under »Aufräumen« (invitations without
+  account, teachers without account, accounts without invitation).
+- Finding 1, session revocation: `Main.may_use_workspace?`; sessions end
+  and the nginx map drops running Workspaces of people no longer invited.
+- Finding 2, cross-school: adding a student of another school to a group
+  and moving a group are refused; guest groups are exempt by design.
+  Existing double memberships from the files are not audited yet.
+- Announced deletion (two weeks, mail, data takeout, keep as guest, the
+  hourly job); admin-triggered, not yet by automatic rules.
+- Finding 6, export: dumps checked, `nicht-enthalten.txt`, chown.
+- Finding 8 partly: welcome mail links the school's notice;
+  PARENTAL_CONSENT_REQUIRED no longer claims a gate.
+- Guests: adults only, agree to the Nutzungsordnung at first login.
+- The import is final (no »Zurück zu den Dateien«).
+
+Open, waiting for a decision of the maintainer:
+- Finding 3: a partner school's public package and Datenschutzerklärung
+  list all its teachers with addresses. Proposal: one contact per school,
+  set on /personen.
+- Which school documents stay public (Impressum and the
+  Datenschutzerklärungen must); the rest behind a login would break the
+  link teachers hand to their Schulleitung.
+- Finding 4, automatic retention rules (group end dates, reminders).
+- Finding 5, the deletion ledger in /internal and restores.
+- Merging duplicate schools.
+- Finding 7, § 2 or § 3 DigLLV: for the school's DSB.
+- Finding 8, the AVV draft says contracts with Hetzner and the mail provider
+  exist: true once the maintainer has concluded them.
+- Not wanted: teachers requesting their school themselves (only the admin
+  assigns), a notice when an admin looks in.
+
 ### Decided by the maintainer later the same day — overrides the plan below where they differ
 
 - **Nobody is locked out over the legal status.** (1) A school that agreed
