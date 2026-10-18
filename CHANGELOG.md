@@ -75,6 +75,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   gelöschten Konten erneut.
 - `docker/traefik/docker-compose.yaml`: Traefik vor dem Workspace, wie er in
   Betrieb ist, ohne Zugriffsprotokoll und mit begrenzter Ausgabe.
+- »Einstieg für Lehrkräfte«: Fehlt jemand, schreibt die Lehrkraft an die
+  Administration des Workspace (nicht der Schule), Namen sind freiwillig;
+  neu sind »Meine Daten«, die Löschregeln und ein Abschnitt zu den
+  Unterlagen für die Schule, auch für Lehrkräfte anderer Schulen.
 - Konten löschen: Unter »Administration« löscht ein Klick ein Konto mit
   allem, was dazugehört (Workspace, die Workspaces der
   Leistungsüberprüfungen, MySQL- und Neo4j-Datenbanken, Antworten, Abgaben,

@@ -35,7 +35,7 @@ In der Schule kommen viele nicht an ihr Postfach. Dafür gibt es die Klassenseit
 Ein Code gilt einmal und nur kurze Zeit. Wer sich vertippt, fordert einfach einen neuen an. Wartet jemand auf einen Code, siehst du ihn auch ohne Beamer-Ansicht oben auf der Klassenseite.
 
 <div class='hint'>
-Fehlt jemand aus deiner Klasse oder fehlt dir eine Gruppe, steht die Person nicht in den Einladungen. Die pflegt die Administration deiner Schule.
+Fehlt jemand aus deiner Klasse oder fehlt dir eine Gruppe, steht die Person nicht in den Einladungen. Die pflegt die Administration des Workspace: Schreib an <a href='mailto:${contact_email}'>${contact_email}</a>, für welche Gruppe, und schick die E-Mail-Adressen mit. Namen sind freiwillig und können auch später kommen; ohne Namen zeigt die Klassenseite die Adresse.
 </div>
 
 ## Die Klassenseite
@@ -131,5 +131,13 @@ Steht an einer Aufgabe **Vorschau für Lehrkräfte**, sind Aufgaben auf eurer In
 - Wer wann einen Workspace geöffnet oder jemanden nachgeahmt hat, mit deinem Satz dazu.
 
 Noten speichert der Workspace nicht. Die Haken auf der Klassenseite sagen, ob eine Aufgabe gelöst ist, nicht wie gut.
+
+Im Profil unter **Meine Daten** lädt jede Person alles, was zu ihrem Konto gespeichert ist, als ZIP herunter und löscht ihr Konto selbst. Spätestens zum Ende des Schuljahres, in dem ein Kurs endet, werden die Konten gelöscht; sag der Administration, welche Gruppen enden und wer die Schule verlässt. Wer die Schule verlässt und das Konto behalten möchte, kann es weiterführen. Alles Weitere steht in der [Datenschutzerklärung](/impressum#datenschutz).
+
+## Wenn deine Schule zustimmen soll
+
+Unter [Datenschutz: Unterlagen für die Schule](/datenschutz) liegt alles, was eine Schulleitung braucht, um den Workspace im Unterricht einzusetzen: eine Seite mit der Entscheidung zum Unterschreiben, eine Prüfübersicht für die Datenschutzbeauftragte Stelle, der Eintrag für das Verzeichnis von Verarbeitungstätigkeiten, ein Elternbrief und eine Nutzungsordnung, jeweils zum Drucken.
+
+Unterrichtest du an einer anderen Schule als der, die den Workspace betreibt, gilt das auch für dich: Deine Klasse kann sich erst anmelden, wenn deine Schule den Einsatz entschieden hat. Die Unterlagen nennen bisher die Schule, die den Workspace betreibt; schreib an <a href='mailto:${contact_email}'>${contact_email}</a>, dann bekommst du sie für deine Schule. Ausprobieren kannst du vorher alles mit deinem Testkonto.
 
 Leistungsüberprüfungen bereitest du im **Profil** unter **Für Lehrkräfte** vor.
