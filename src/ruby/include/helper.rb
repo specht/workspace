@@ -142,7 +142,8 @@ class Main < Sinatra::Base
     end
 
     after "*" do
-        if response.status.to_i == 200
+        # A streamed download (stream do … end) keeps its own body.
+        if response.status.to_i == 200 && !@respond_streaming
             if @respond_content
                 response.body = @respond_content
                 response.headers["Content-Type"] = @respond_mimetype

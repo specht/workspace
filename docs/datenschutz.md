@@ -73,6 +73,13 @@ Standardvertrag an (bei Hetzner in der Console).
 - Abgelaufene Sitzungen löscht der Server selbst, Zugriffsprotokolle
   logrotate nach 7 Tagen (`bootstrap/03-setup-storage.rb`), die Ausgaben der
   Dienste Docker nach 3 × 10 MB.
+- Traefik vor dem Workspace (`docker/traefik/docker-compose.yaml`) schreibt
+  bewusst kein Zugriffsprotokoll (kein `--accesslog`): Die
+  Datenschutzerklärung sagt, dass die Protokolle keine IP-Adressen enthalten.
+- Selbst: Im Profil unter »Meine Daten« lädt jede Person alle ihre Daten als
+  Archiv herunter (`include/account_export.rb`) und löscht ihr Konto selbst.
+  Wer die Schule verlässt und das Konto behalten möchte, kommt in eine eigene
+  Gruppe (etwa »Ehemalige«) und unterschreibt die Nutzungsordnung.
 
 ## Wer am Code ändert, was gespeichert wird
 

@@ -45,6 +45,19 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Einstellungen.
 - Namen in den Einladungslisten sind freiwillig, und ein Name, der später
   dazukommt oder sich ändert, kommt jetzt auch im Konto an.
+- »Meine Daten« im Profil: Jede Person lädt alles, was zu ihrem Konto
+  gespeichert ist, als ein Archiv herunter (Workspace, Abgaben,
+  MySQL-Datenbank als SQL, Kontodaten als JSON, mit einer Erklärung), und
+  löscht ihr Konto selbst. Wer als Lehrkraft in ein Konto sieht, kann beides
+  nicht.
+- Datenschutzerklärung und Unterlagen: ehemalige Schülerinnen und Schüler
+  können ihr Konto unter der Nutzungsordnung weiterführen; die
+  Einladungslisten stehen als eigene Datenart in der Tabelle; Cloudflare als
+  DNS-Dienst ist genannt; git.nhcham.org nicht mehr (freiwillig, kein Teil
+  des Workspace); der Elternbrief beginnt mit einem Kasten mit der Adresse
+  der Seite.
+- `docker/traefik/docker-compose.yaml`: Traefik vor dem Workspace, wie er in
+  Betrieb ist, ohne Zugriffsprotokoll und mit begrenzter Ausgabe.
 - Konten löschen: Unter »Administration« löscht ein Klick ein Konto mit
   allem, was dazugehört (Workspace, die Workspaces der
   Leistungsüberprüfungen, MySQL- und Neo4j-Datenbanken, Antworten, Abgaben,

@@ -40,6 +40,7 @@ require './include/weather_mirror.rb'
 require './include/privacy.rb'
 require './include/privacy_documents.rb'
 require './include/account_deletion.rb'
+require './include/account_export.rb'
 require 'base64'
 require 'cgi'
 require 'digest'
@@ -4059,6 +4060,74 @@ class Main < Sinatra::Base
         halt 404, { :error => 'no_account' }.to_json unless removed
         STDERR.puts "Account deleted by #{@session_user[:email]}: #{email} #{removed.inspect}"
         respond(:deleted => email, :removed => removed, :still_invited => @@invitations.key?(email))
+    end
+
+    # The person deletes its own account (Datenschutzerklärung, »Wer nicht
+    # einverstanden ist«), never a teacher looking in as the person.
+    post '/api/delete_my_account' do
+        assert(user_logged_in?)
+        halt 403 if @impersonated_by
+        data = parse_request_data(:required_keys => [:confirmation])
+        email = @session_user[:email]
+        halt 400, { :error => 'confirmation_mismatch' }.to_json unless AccountDeletion.normalize_email(data[:confirmation]) == email
+        removed = delete_account(email)
+        STDERR.puts "Account deleted by its owner: #{email} #{removed.inspect}"
+        clear_session_cookies
+        respond(:deleted => true)
+    end
+
+    # »Meine Daten herunterladen« (AccountExport): built in a temporary
+    # folder, then streamed as .tar.gz together with the Workspace folder, so
+    # a big Workspace never sits in memory. tar stores links as links and
+    # never follows them.
+    get '/api/export_my_data' do
+        assert(user_logged_in?)
+        halt 403 if @impersonated_by
+        email = @session_user[:email]
+        dir = Dir.mktmpdir('export')
+        begin
+            rows = {
+                :user => neo4j_query_expect_one('MATCH (u:User {email: $email}) RETURN u;', :email => email)['u'],
+                :groups => my_groups,
+                :task_states => neo4j_query('MATCH (:User {email: $email})-[:HAS_TASK_STATE]->(s:TaskState) RETURN s;', :email => email).map { |r| r['s'] },
+                :attempts => neo4j_query('MATCH (a:TaskAttempt)-[:BY]->(:User {email: $email}) RETURN a ORDER BY a.ts;', :email => email).map { |r| r['a'] },
+                :look_ins => neo4j_query('MATCH (l:LookIn)-[:FOR]->(:User {email: $email}) RETURN l ORDER BY l.ts;', :email => email).map { |r| r['l'] },
+                :live_apps => neo4j_query('MATCH (:User {email: $email})-[:SHARES_LIVE_APP]->(s:LiveAppShare) RETURN s;', :email => email).map { |r| r['s'] },
+            }
+            File.write(File.join(dir, 'konto.json'), AccountExport.account_json(rows))
+            File.write(File.join(dir, 'LIESMICH.txt'), AccountExport::README)
+            FileUtils.mkdir_p(File.join(dir, 'abgaben'))
+            rows[:task_states].each do |state|
+                path = submission_path(state[:task].to_s, email)
+                FileUtils.cp(path, File.join(dir, 'abgaben', "#{state[:task].to_s.gsub(/[^a-z0-9_-]/i, '_')}.tar.gz")) if File.file?(path)
+            end
+            login = db_login_for_email(email)
+            DatabaseIdentity.validate!(login)
+            system('docker', 'exec', 'workspace_mysql_1', 'mysqldump', '--user=root', "--password=#{MYSQL_ROOT_PASSWORD}", login,
+                :out => File.join(dir, 'mysql.sql'), :err => File::NULL)
+        rescue StandardError
+            FileUtils.rm_rf(dir)
+            raise
+        end
+
+        workspace_root = "/user/#{fs_tag_for_email(email)}"
+        args = ['tar', '-czf', '-', '--exclude=workspace/.cache', '-C', dir, '.']
+        args += ['-C', workspace_root, './workspace'] if File.directory?(File.join(workspace_root, 'workspace'))
+        @respond_streaming = true
+        content_type 'application/gzip'
+        attachment AccountExport.filename(email)
+        response.headers['Cache-Control'] = 'no-store'
+        stream do |out|
+            begin
+                IO.popen(args, 'rb', :err => File::NULL) do |io|
+                    while (chunk = io.read(65_536))
+                        out << chunk
+                    end
+                end
+            ensure
+                FileUtils.rm_rf(dir)
+            end
+        end
     end
 
     # Accounts whose address is no longer in any invitation list: what the

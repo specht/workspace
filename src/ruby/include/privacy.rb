@@ -109,7 +109,15 @@ module Privacy
     def self.records
         [
             {
-                :data => 'E-Mail-Adresse, Name (freiwillig) und Gruppe (Klasse oder Kurs)',
+                :data => 'Einladungslisten: E-Mail-Adresse, Name (freiwillig) und Gruppe aller eingeladenen Personen, auch derer, die sich nie anmelden',
+                :source => 'von der Lehrkraft eingetragen',
+                :categories => [:master, :assignment],
+                :purpose => 'festlegen, wer sich anmelden kann',
+                :who => 'Lehrkräfte der Gruppe, Administration',
+                :how_long => 'bis die Lehrkraft die Person oder die Gruppe aus der Liste nimmt',
+            },
+            {
+                :data => 'Konto: E-Mail-Adresse, Name (freiwillig) und Gruppe (Klasse oder Kurs); entsteht bei der ersten Anmeldung',
                 :source => 'aus der Einladungsliste der Lehrkraft',
                 :categories => [:master, :assignment],
                 :purpose => 'Anmeldung; Zuordnung zur Lerngruppe',
@@ -203,7 +211,6 @@ module Privacy
         'api.open-meteo.com' => 'Open-Meteo',
         'geocoding-api.open-meteo.com' => 'Open-Meteo',
         'open-vsx.org' => 'Open VSX',
-        'git.nhcham.org' => 'git.nhcham.org',
         'github.com' => 'GitHub',
     }.freeze
 
@@ -226,6 +233,11 @@ module Privacy
                 :html => "Anmeldecodes und Einladungen verschickt ein E-Mail-Dienst#{mail}. Er sieht die Adresse, die Uhrzeit und den Code; der Code allein ermöglicht keine Anmeldung (siehe »Anmeldung per Code«).",
             },
             {
+                :name => 'DNS',
+                :kind => :server,
+                :html => 'Die Namen der Seite (DNS) verwaltet Cloudflare. Über Cloudflare laufen keine Verbindungen: Die Namen zeigen direkt auf den Server, und Cloudflare sieht nur Anfragen von DNS-Servern, keine Inhalte und keine Daten über Personen.',
+            },
+            {
                 :name => 'Paketquellen und GitHub',
                 :kind => :server,
                 :html => 'Vorlagen und Programmbibliotheken holt der Workspace von GitHub und den üblichen Paketquellen (RubyGems, PyPI, npm und andere), wenn eine Aktivität es vorsieht. Diese Dienste sehen die Adresse des Servers, keine Daten über Personen.',
@@ -239,11 +251,6 @@ module Privacy
                 :name => 'Open VSX',
                 :kind => :own,
                 :html => 'Wer im Editor nach einer Erweiterung sucht oder eine installiert, ruft sie bei Open VSX (Eclipse Foundation) ab.',
-            },
-            {
-                :name => 'git.nhcham.org',
-                :kind => :own,
-                :html => 'Einige Schülerinnen und Schüler nutzen auf eigenen Wunsch zusätzlich den Git-Server git.nhcham.org. Er gehört nicht zum Workspace, und keine Aktivität setzt ihn voraus. Wer ihn nutzt, hat dort ein eigenes Konto; der Workspace überträgt nichts dorthin, nur was die Person selbst hochlädt.',
             },
             {
                 :name => 'Webhosting',
@@ -288,7 +295,8 @@ module Privacy
                 'Alle Verbindungen zur Seite und zu den Workspaces sind verschlüsselt (HTTPS mit Zertifikat von Let’s Encrypt).',
             ],
             'Löschung' => [
-                'Schülerinnen und Schüler löschen ihre Antworten und Abgaben selbst, jederzeit.',
+                'Schülerinnen und Schüler löschen ihre Antworten und Abgaben selbst, jederzeit, und ebenso ihr ganzes Konto.',
+                'Alle Daten eines Kontos lassen sich im Profil als ein Archiv herunterladen.',
                 'Die Administration löscht ein Konto mit allem, was dazugehört (Workspaces, Datenbanken, Aufgaben, Abgaben, Sitzungen), in einem Schritt, und sieht jederzeit, welche Konten keine Einladung mehr haben.',
                 'Mit einer Leistungsüberprüfung löscht die Lehrkraft auch die Workspaces und Datenbanken aller, die sie geschrieben haben.',
             ],
@@ -298,7 +306,9 @@ module Privacy
     def self.deletion_rule_html(s)
         'Ein Konto wird mit allen zugehörigen Daten gelöscht, sobald es nicht mehr gebraucht wird: ' \
             'spätestens zum Ende des Schuljahres, in dem der Kurs endet oder die Schülerin oder der Schüler die Schule verlässt, ' \
-            "und jederzeit früher auf Wunsch der Person oder ihrer Erziehungsberechtigten, per E-Mail an #{contact_html(s)}."
+            'und jederzeit früher auf Wunsch: im Profil unter »Meine Daten« oder per E-Mail an ' + contact_html(s) + '. ' \
+            'Wer die Schule verlässt und das Konto behalten möchte, kann es auf eigenen Wunsch weiterführen; es gilt dann die Nutzungsordnung ' \
+            '(bei Minderjährigen mit Unterschrift der Erziehungsberechtigten), und verantwortlich ist nicht mehr die Schule, sondern der Betreiber.'
     end
 
     def self.legal_basis_html(s)
@@ -325,8 +335,9 @@ module Privacy
     # Who is not covered by the school's decision: adults from elsewhere and
     # the classes of other schools.
     def self.others_html
-        '<p>Für Erwachsene von außerhalb der Schule (etwa Lehrkräfte anderer Schulen) ist Rechtsgrundlage die Nutzungsvereinbarung, ' \
-            'mit der sie ein Konto erhalten (Art. 6 Abs. 1 Buchst. b DSGVO). ' \
+        '<p>Für Erwachsene von außerhalb der Schule (etwa Lehrkräfte anderer Schulen) und für ehemalige Schülerinnen und Schüler, ' \
+            'die ihr Konto behalten, ist Rechtsgrundlage die Nutzungsordnung, mit der sie das Konto erhalten oder weiterführen ' \
+            '(Art. 6 Abs. 1 Buchst. b DSGVO); verantwortlich ist dafür der Betreiber. ' \
             'Schülerinnen und Schüler einer anderen Schule nutzen den Workspace nur, wenn ihre Schule das ebenso entschieden hat; ' \
             'verantwortlich ist dann ihre Schule.</p>'
     end
@@ -428,7 +439,7 @@ module Privacy
 
             #{heading('Wozu die Daten verarbeitet werden', 'Zwecke · Art. 13 Abs. 1 Buchst. c DSGVO')}
             <p>
-            Für den Informatikunterricht: Schülerinnen und Schüler programmieren in ihrem eigenen Workspace, bearbeiten Aufgaben,
+            Für den Unterricht, vor allem im Fach Informatik: Schülerinnen und Schüler programmieren in ihrem eigenen Workspace, bearbeiten Aufgaben,
             lassen sie automatisch prüfen und geben Ergebnisse ab; die Lehrkraft sieht den Stand der Lerngruppe und hilft bei Problemen.
             Die Daten werden für keinen anderen Zweck verarbeitet: nicht für Noten, nicht für Werbung, nicht für Profile,
             nicht für Forschung, und sie werden an niemanden für eigene Zwecke weitergegeben.
@@ -528,12 +539,13 @@ module Privacy
 
             #{heading('Wer nicht einverstanden ist', 'Ausübung der Rechte · Art. 12 DSGVO', :id => 'nicht-einverstanden')}
             <p>
-            Eine E-Mail an #{contact_html(s)} genügt, mit der Adresse, mit der die Person eingeladen wurde, und dem Anliegen:
+            Im Profil unter »Meine Daten« lässt sich alles, was zum Konto gespeichert ist, als Archiv herunterladen
+            (Workspace, Abgaben, MySQL-Datenbank, Kontodaten), und das Konto lässt sich dort selbst löschen.
+            Ebenso genügt eine E-Mail an #{contact_html(s)}, mit der Adresse, mit der die Person eingeladen wurde, und dem Anliegen:
             Auskunft, Berichtigung, Widerspruch oder Löschung des Kontos. Bei einer Löschung wird alles oben Genannte gelöscht:
-            Workspaces, Datenbanken, Antworten und Abgaben, Sitzungen und das Konto. Eigene Dateien lassen sich vorher selbst sichern,
-            im Explorer des Workspace mit Rechtsklick › »Herunterladen …«. Die Antwort kommt, sobald das Anliegen erledigt ist,
+            Workspaces, Datenbanken, Antworten und Abgaben, Sitzungen und das Konto. Die Antwort kommt, sobald das Anliegen erledigt ist,
             spätestens innerhalb eines Monats. Im Unterricht erhalten Schülerinnen und Schüler dann eine andere Möglichkeit,
-            die Aufgaben zu bearbeiten.
+            die Aufgaben zu bearbeiten: mit ausgedruckten Unterlagen, auf Papier oder am eigenen Rechner.
             </p>
 
             <p class='text-body-secondary'>Stand: #{CHECKED.strftime('%d.%m.%Y')}</p>

@@ -80,7 +80,7 @@ module PrivacyDocuments
 
             <h2>Welche Daten anfallen</h2>
             #{list([
-                'E-Mail-Adresse, Name und Lerngruppe, aus der Einladungsliste der Lehrkraft; der Name ist nicht zwingend.',
+                'E-Mail-Adresse, Name und Lerngruppe, aus der Einladungsliste der Lehrkraft; der Name ist nicht zwingend. Ein Konto entsteht erst bei der ersten Anmeldung.',
                 'Was im Unterricht entsteht: Programme, Dateien, Datenbanken, Antworten auf Aufgaben, Abgaben.',
                 'Technisch Nötiges: Anmeldecodes, Sitzungen, Protokolle ohne IP-Adressen.',
             ])}
@@ -97,8 +97,8 @@ module PrivacyDocuments
 
             <h2>Worum die Schule gebeten wird</h2>
             <p>
-            Um eine schriftliche Entscheidung, dass der Workspace im Informatikunterricht als digitales Lehr- und Lernmittel
-            eingesetzt werden darf. Damit ist die Schule verantwortlich und der Einsatz rechtlich auf die Aufgabe der Schule gestützt
+            Um eine schriftliche Entscheidung, dass der Workspace im Unterricht, vor allem im Fach Informatik, als digitales
+            Lehr- und Lernmittel eingesetzt werden darf. Damit ist die Schule verantwortlich und der Einsatz rechtlich auf die Aufgabe der Schule gestützt
             (Art. 6 Abs. 1 Buchst. e DSGVO#{s[:school_law] ? " in Verbindung mit #{h(s[:school_law])}" : ''});
             eine Einwilligung jeder einzelnen Familie ist dann nicht nötig. Es entstehen keine Kosten, und es ist nichts zu installieren.
             Die Entscheidung kann jederzeit widerrufen werden; dann werden alle Konten der Schule gelöscht.
@@ -112,7 +112,7 @@ module PrivacyDocuments
             <div class='decision'>
             <h2>Entscheidung der Schulleitung</h2>
             <p>
-            Der Workspace darf im Informatikunterricht als digitales Lehr- und Lernmittel eingesetzt werden. Verantwortlich für den Betrieb ist #{operator_name(s)}.
+            Der Workspace darf im Unterricht, vor allem im Fach Informatik, als digitales Lehr- und Lernmittel eingesetzt werden. Verantwortlich für den Betrieb ist #{operator_name(s)}.
             Die beigefügte Datenschutzerklärung, das Löschkonzept und die technischen und organisatorischen Maßnahmen gelten.
             Die Entscheidung kann jederzeit widerrufen werden.
             </p>
@@ -185,7 +185,7 @@ module PrivacyDocuments
                 ['Ansprechperson', Privacy.contact_html(s)],
                 ['Zwecke (Buchst. b)', 'Durchführung des Informatikunterrichts: Programmieren in einer eigenen Umgebung, Bearbeitung und automatische Prüfung von Aufgaben, Abgaben, Leistungsüberprüfungen, Begleitung des Lernstands durch die Lehrkraft.'],
                 ['Rechtsgrundlage', 'Art. 6 Abs. 1 Buchst. e DSGVO' + (s[:school_law] ? " in Verbindung mit #{h(s[:school_law])}" : '') + '; für Erwachsene von außerhalb der Schule Art. 6 Abs. 1 Buchst. b DSGVO'],
-                ['Betroffene Personen (Buchst. c)', 'Schülerinnen und Schüler der Lerngruppen im Fach Informatik; Lehrkräfte; vereinzelt Erwachsene von außerhalb der Schule (Lehrkräfte anderer Schulen)'],
+                ['Betroffene Personen (Buchst. c)', 'Schülerinnen und Schüler, die eine Lehrkraft eingeladen hat; Lehrkräfte. Nicht in der Verantwortung der Schule: Erwachsene von außerhalb der Schule und ehemalige Schülerinnen und Schüler, die ihr Konto behalten (Nutzungsordnung)'],
                 ['Empfänger (Buchst. d)', 'Lehrkräfte der jeweiligen Lerngruppe; die Administration des Servers; als Auftragsverarbeiter: ' + processors.join(' ')],
                 ['Drittländer (Buchst. e)', 'keine'],
                 ['Löschfristen (Buchst. f)', Privacy.deletion_rule_html(s) + ' Einzelheiten: Löschkonzept.'],
@@ -228,10 +228,12 @@ module PrivacyDocuments
                 'Die Lehrkräfte nehmen Lerngruppen, deren Kurs endet, und Schülerinnen und Schüler, die die Schule verlassen, aus ihren Einladungslisten.',
                 'Die Administration ruft unter »Administration › Konten ohne Einladung« die Konten auf, deren Adresse in keiner Einladungsliste mehr steht, und löscht sie bis zum letzten Tag des Schuljahres.',
                 'Wer im nächsten Schuljahr weiter Informatik hat, bleibt eingeladen; der Zweck besteht fort, das Konto bleibt.',
+                'Wer die Schule verlässt und das Konto behalten möchte, sagt das vorher; die Administration führt es dann in einer eigenen Gruppe (etwa »Ehemalige«) unter der Nutzungsordnung weiter, und die Person unterschreibt sie.',
             ])}
             <h2>Löschung auf Wunsch</h2>
             <p>
-            Eine E-Mail an #{Privacy.contact_html(s)} genügt. Die Administration löscht das Konto mit allem, was dazugehört, in einem Schritt,
+            Jede Person kann ihr Konto im Profil unter »Meine Daten« selbst löschen und vorher alle ihre Daten als Archiv herunterladen.
+            Ebenso genügt eine E-Mail an #{Privacy.contact_html(s)}: Die Administration löscht das Konto mit allem, was dazugehört, in einem Schritt,
             binnen eines Monats, und bestätigt es. Antworten zu Aufgaben und Abgaben löschen Schülerinnen und Schüler jederzeit selbst.
             </p>
             <h2>Fristen je Datenart</h2>
@@ -291,9 +293,21 @@ module PrivacyDocuments
 
     # --- Elternbrief ----------------------------------------------------
 
+    # A box with the address of the Workspace, for the top of the letter:
+    # parents can look at every activity without an account.
+    def self.website_box(s)
+        return '' unless s[:web_root]
+
+        url = h(s[:web_root])
+        "<div class='website'><strong>Zum Ansehen:</strong> <a href='#{url}'>#{url.sub(%r{\Ahttps?://}, '')}</a><br>" \
+            "Alle Aktivitäten und das Handbuch sind dort ohne Anmeldung zu sehen; die Datenschutzerklärung steht unter " \
+            "<a href='#{url}/impressum'>#{url.sub(%r{\Ahttps?://}, '')}/impressum</a>.</div>\n"
+    end
+
     def self.elternbrief_html(s)
         consent = s[:parental_consent_required] || s[:legal_basis] == :consent
         out = <<~END_OF_HTML
+            #{website_box(s)}
             <p>Liebe Eltern und Erziehungsberechtigte,</p>
             <p>
             im Informatikunterricht arbeitet Ihr Kind mit dem Workspace, einer Programmierumgebung im Browser. Ihr Kind erhält dort
@@ -341,7 +355,8 @@ module PrivacyDocuments
         <<~END_OF_HTML
             <p>
             Der Workspace ist eine Programmierumgebung für den Informatikunterricht. Diese Ordnung gilt für alle, die dort ein Konto haben.
-            Für Erwachsene von außerhalb der Schule ist sie die Vereinbarung, mit der sie ihr Konto erhalten.
+            Für Erwachsene von außerhalb der Schule und für ehemalige Schülerinnen und Schüler, die ihr Konto behalten, ist sie die
+            Vereinbarung mit #{operator_name(s)}, mit der sie ihr Konto erhalten oder weiterführen; sie endet, wenn eine Seite es wünscht.
             </p>
             <h2>Konto und Anmeldung</h2>
             #{list([
@@ -368,6 +383,7 @@ module PrivacyDocuments
             <h2>Ende</h2>
             <p>
             Das Konto wird nach dem Löschkonzept gelöscht: #{Privacy.deletion_rule_html(s)}
+            Vorher lassen sich alle Daten im Profil unter »Meine Daten« herunterladen.
             Bei einem Verstoß gegen diese Ordnung kann ein Konto gesperrt werden.
             </p>
         END_OF_HTML
@@ -479,6 +495,8 @@ module PrivacyDocuments
         .signature { flex: 1; font-size: 0.85rem; color: #444; }
         .signature .line { border-bottom: 1px solid #333; height: 2.5em; margin-bottom: 0.3em; }
         .draft { border-left: 4px solid #c90; padding-left: 0.8em; color: #750; }
+        .website { border: 2px solid #333; padding: 0.8em 1em; margin: 0 0 1.5em 0; font-size: 1.05rem; }
+        .website a { font-size: 1.25rem; font-weight: bold; }
         .documents li { margin-bottom: 0.6em; }
         .toolbar { margin-bottom: 1.5em; font-size: 0.9rem; }
         .toolbar a, .toolbar button { margin-right: 1em; }

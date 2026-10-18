@@ -104,11 +104,6 @@ class PrivacyTest < Minitest::Test
         Privacy::OUTSIDE_HOSTS.each_value { |name| assert_includes html, name }
         hosts = WeatherMirror::UPSTREAMS.values.map { |url| URI(url).host } + [URI(TestWorkspaceExtensions::REGISTRY).host]
         hosts.each { |host| assert Privacy::OUTSIDE_HOSTS.key?(host), "#{host} is used by the code but missing in Privacy::OUTSIDE_HOSTS" }
-        Dir[File.join(ROOT, 'src/content/**/*.md')].each do |path|
-            File.read(path).scan(%r{https?://(git\.[a-z0-9.-]+)}).flatten.uniq.each do |host|
-                assert Privacy::OUTSIDE_HOSTS.key?(host), "#{path}: #{host} missing in Privacy::OUTSIDE_HOSTS"
-            end
-        end
     end
 
     # The page says the site loads nothing from other servers.

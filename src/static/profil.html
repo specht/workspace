@@ -418,6 +418,31 @@
                 <a class="btn btn-secondary" href="/logout"><i class='bi bi-box-arrow-in-right'></i>Abmelden</a>
             </section>
 
+            <section class="profile-section" aria-labelledby="my-data">
+                <h2 id="my-data">Meine Daten</h2>
+                <p>
+                    Was der Workspace über dich speichert, wer es sieht und wann es gelöscht wird, steht in der
+                    <a href='/impressum#datenschutz'>Datenschutzerklärung</a>.
+                </p>
+                <div class="profile-subsection">
+                    <h3>Daten herunterladen</h3>
+                    <p>
+                        Ein Archiv (.tar.gz) mit deinem Workspace, deinen Abgaben, deiner MySQL-Datenbank und allem, was zu deinem Konto
+                        gespeichert ist. Was drin ist, erklärt die Datei <code>LIESMICH.txt</code> im Archiv. Bei einem großen Workspace dauert es einen Moment.
+                    </p>
+                    <a class="btn btn-secondary #{@impersonated_by ? 'disabled' : ''}" href="/api/export_my_data" download><i class='bi bi-download'></i>Meine Daten herunterladen</a>
+                </div>
+                <div class="profile-danger-zone">
+                    <h3>Konto löschen</h3>
+                    <p>
+                        Löscht dein Konto mit allem, was dazugehört: deinen Workspace, deine Datenbanken, deine Antworten und Abgaben
+                        und deine Sitzungen. Lade vorher deine Daten herunter, wenn du sie behalten möchtest.
+                        Solange du eingeladen bist, kannst du dich danach wieder anmelden und beginnst mit einem leeren Konto.
+                    </p>
+                    <button id='bu_delete_my_account' class="btn btn-danger" #{@impersonated_by ? 'disabled' : ''}><i class='bi bi-trash-fill'></i>Konto löschen</button>
+                </div>
+            </section>
+
             <section id="profile-for-teachers" class="profile-section" aria-labelledby="for-teachers" #{teacher_logged_in? ? '' : 'hidden'}>
                 <h2 id="for-teachers">Für Lehrkräfte</h2>
                 <div class="profile-subsection-heading">
@@ -905,6 +930,33 @@ vscode_config: {}</pre>
                     return false;
                 }
             );
+        });
+        $('#bu_delete_my_account').on('click', function() {
+            const email = #{@session_user[:email].to_json};
+            const escaped_email = $('<div>').text(email).html();
+            showTemplateModal('Konto endgültig löschen', `
+                <div class='alert alert-danger' role='alert'>
+                    <strong>Das lässt sich nicht rückgängig machen.</strong>
+                    <div class='mt-2'>Dein Workspace, deine Datenbanken, deine Antworten, Abgaben und Sitzungen werden gelöscht.</div>
+                </div>
+                <label class='form-label' for='ti_delete_account_confirmation'>Gib zur Bestätigung exakt deine E-Mail-Adresse <code>${escaped_email}</code> ein:</label>
+                <input id='ti_delete_account_confirmation' class='form-control' type='email' inputmode='email' autocomplete='off' spellcheck='false'>
+                <div id='div_delete_account_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog bi-spin'></i>Moment, dein Konto wird gelöscht…</div>`,
+                "<i class='bi bi-trash-fill'></i>Konto endgültig löschen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-secondary', function() {
+                    const input = $('#ti_delete_account_confirmation');
+                    if (input.val().trim().toLowerCase() !== email) return false;
+                    $('#__template_modal .modal-footer .btn').prop('disabled', true);
+                    $('#div_delete_account_please_wait').slideDown();
+                    api_call('/api/delete_my_account', {confirmation: input.val()}, function(data) {
+                        if (data.success) {
+                            location.href = '/';
+                        } else {
+                            $('#div_delete_account_please_wait').hide();
+                            $('#__template_modal .modal-footer .btn').prop('disabled', false);
+                        }
+                    }, {no_please_wait: true});
+                    return false;
+                });
         });
         $('#bu_reset_workspace').on('click', function() {
             show_workspace_reset_modal(#{@session_user[:email].to_json});
