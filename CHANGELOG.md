@@ -33,6 +33,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Tabelle, wie viele Vergleiche jedes Verfahren für 100 zufällige, sortierte
   und umgekehrt sortierte Zahlen braucht. Die Sorting Sandbox verweist
   darauf.
+- Handbuch »Listen, Stack und Queue« (Array List mit Rücken und
+  Verdoppeln, Linked List, sortierte Listen mit binärer Suche, Stack, Queue
+  als Ring Buffer, was was kostet), »Suchbäume« (Suchen, Einfügen, die drei
+  Fälle beim Entfernen, inorder/preorder/postorder, AVL mit allen vier
+  Rotationen) und »Hash Tables« (Hashfunktion, Chaining, Linear Probing mit
+  Clustern, Füllgrad und Rehashing), jeweils mit Pseudocode und
+  Schritt-für-Schritt-Ansichten. Die Data Structures Sandbox verweist an jeder
+  Stelle darauf und sagt jetzt Hash Table und Ring Buffer.
 - `docs/checkliste.md` sammelt alle Regeln für Aktivitäten an einem Ort, mit
   dem Grund und damit, ob ein Test sie prüft, dazu eine Bitte, mit der man
   ein Sprachmodell eine Aktivität prüfen lässt.
@@ -751,6 +759,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- Der Screenshot-Generator bleibt nicht mehr hängen, wenn nach vielen
+  3D-Szenen der Vorschau-Tab verschwindet und der Browser keinen neuen
+  aufbaut: Das Bild schlägt nach zwei Minuten fehl. Am Ende eines
+  `tutorial-scope` wartet er eine Sekunde, bis Live Server die Vorschau selbst
+  neu geladen hat.
+- Das Titelbild von BIF zeigt den Graphen mit eingeklapptem Problems-Bereich,
+  das LaTeX-Titelbild den Quelltext breiter als das PDF, ohne Seitenleiste,
+  mit dem Cursor im Titel.
 - Im Katalog auf dem Handy stand im dunklen Modus neben jedem Bild ein heller
   Strich: Die Linie zwischen Bild und Text hatte keine dunkle Farbe.
 - Zwei Tabellen standen als Text mit senkrechten Strichen da, weil die Seiten

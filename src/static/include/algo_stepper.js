@@ -519,8 +519,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         const cells = Array(capacity).fill(null);
         let head = 0;
         let size = 0;
+        let out;
         const frames = [];
-        const snapshot = (message, marks = {}) => frames.push({ cells: [...cells], head, size, capacity, message, ...marks });
+        const snapshot = (message, marks = {}) => frames.push({ cells: [...cells], head, size, capacity, message, out, ...marks });
         snapshot(`Eine leere Queue in einem Array mit ${capacity} Zellen: head = 0, size = 0.`);
         for (const op of ops) {
             if (op.type === 'enqueue') {
@@ -536,7 +537,8 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 const old = head;
                 head = (head + 1) % capacity;
                 size -= 1;
-                snapshot(`dequeue: ${value} aus Zelle head = ${old}. head wird (${old} + 1) mod ${capacity} = ${head}, size ${size}.`, { out: value, focus: old });
+                out = value;
+                snapshot(`dequeue: ${value} aus Zelle head = ${old}. head wird (${old} + 1) mod ${capacity} = ${head}, size ${size}.`, { focus: old });
             }
         }
         return frames;
@@ -562,6 +564,71 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         svg.setAttribute('viewBox', `0 0 ${left * 2 + frame.capacity * cell} 150`);
     }
 
+    // ---- Array List: the values in the first size cells of an array;
+    // insert and remove shift everything behind the index, a full array is
+    // copied into one twice as large.
+    function traceArray(ops, capacity) {
+        let cells = Array(capacity).fill(null);
+        let size = 0;
+        let moves = 0;
+        const frames = [];
+        const snapshot = (message, marks = {}) => frames.push({ cells: [...cells], size, moves, message, ...marks });
+        snapshot(`Eine leere Array List: ein Array mit ${capacity} Zellen, size = 0.`);
+        for (const { type, index, value } of ops) {
+            if (type === 'insert') {
+                if (index < 0 || index > size) { snapshot(`insert(${index}, ${value}): Index ${index} gibt es nicht, erlaubt ist 0 bis ${size}.`, { error: true }); continue; }
+                if (size === cells.length) {
+                    const bigger = Array(cells.length * 2).fill(null);
+                    cells.forEach((v, i) => { bigger[i] = v; });
+                    cells = bigger;
+                    moves += size;
+                    snapshot(`insert(${index}, ${value}): Das Array ist voll. Ein neues mit ${cells.length} Zellen, alle ${size} Werte werden hinüberkopiert.`, { copied: size });
+                }
+                for (let i = size; i > index; i--) {
+                    cells[i] = cells[i - 1];
+                    moves += 1;
+                    snapshot(`insert(${index}, ${value}): ${cells[i]} rückt von Index ${i - 1} nach ${i}.`, { focus: i, moved: true });
+                }
+                cells[index] = value;
+                size += 1;
+                snapshot(`insert(${index}, ${value}): ${value} kommt an Index ${index}. size wird ${size}.${size - 1 - index === 1 ? ' Dafür ist ein Wert gerückt.' : size - 1 - index ? ` Dafür sind ${size - 1 - index} Werte gerückt.` : ''}`, { focus: index, fresh: true });
+            } else if (type === 'remove') {
+                if (index < 0 || index >= size) { snapshot(`remove(${index}): Index ${index} gibt es nicht.`, { error: true }); continue; }
+                const gone = cells[index];
+                snapshot(`remove(${index}): ${gone} kommt heraus.`, { focus: index, gone: true });
+                for (let i = index; i < size - 1; i++) {
+                    cells[i] = cells[i + 1];
+                    moves += 1;
+                    snapshot(`remove(${index}): ${cells[i]} rückt von Index ${i + 1} nach ${i}.`, { focus: i, moved: true });
+                }
+                size -= 1;
+                cells[size] = null;
+                snapshot(`size wird ${size}.`);
+            } else if (type === 'get') {
+                if (index < 0 || index >= size) { snapshot(`get(${index}): Index ${index} gibt es nicht.`, { error: true }); continue; }
+                snapshot(`get(${index}): ${cells[index]}, sofort. Die Zelle liegt an einer bekannten Stelle im Speicher, nichts muss laufen.`, { focus: index });
+            }
+        }
+        return frames;
+    }
+
+    function drawArray(svg, frame, most) {
+        svg.replaceChildren();
+        const cell = 50;
+        const left = 14;
+        frame.cells.forEach((value, i) => {
+            const x = left + i * cell;
+            const used = i < frame.size || value !== null;
+            const fill = frame.gone && frame.focus === i ? 'color-mix(in srgb, var(--algo-goal) 30%, var(--algo-paper))'
+                : frame.focus === i ? 'var(--algo-frontier)' : used ? 'var(--algo-paper)' : 'transparent';
+            svg.appendChild(el('svg:rect', { x, y: 40, width: cell - 6, height: 42, rx: 6, fill, stroke: frame.focus === i ? 'var(--algo-accent)' : 'var(--algo-line)', 'stroke-width': frame.focus === i ? 3.5 : 1.5, 'stroke-dasharray': used || frame.focus === i ? null : '4 4' }));
+            if (value !== null) svg.appendChild(el('svg:text', { x: x + (cell - 6) / 2, y: 67, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(value) }));
+            svg.appendChild(el('svg:text', { x: x + (cell - 6) / 2, y: 98, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--bs-secondary-color)', text: String(i) }));
+        });
+        svg.appendChild(el('svg:text', { x: left, y: 24, 'font-size': 13, fill: 'var(--algo-ink)', text: `size = ${frame.size}, Kapazität ${frame.cells.length}` }));
+        svg.setAttribute('viewBox', `0 0 ${left * 2 + most * cell} 110`);
+    }
+
     // ---- Linked List: nodes with value and next; get, insert and remove walk
     // from head to the node before the index.
     function traceLinked(ops) {
@@ -578,8 +645,11 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                     snapshot(`insert(0, ${value}): ein neuer Knoten, sein next zeigt auf den alten ersten, und head zeigt auf ihn. Nichts muss laufen.`, { focus: 0 });
                 } else {
                     for (let i = 0; i < index; i++) snapshot(`insert(${index}, ${value}): Laufen zum Knoten vor Index ${index}, gerade bei Index ${i}.`, { walk: i });
+                    const last = index === nodes.length;
                     nodes.splice(index, 0, { value, fresh: true });
-                    snapshot(`Der neue Knoten zeigt auf den, der bisher an Index ${index} war, und der Knoten davor zeigt jetzt auf ihn: zwei Referenzen umgebogen, nichts verschoben.`, { focus: index, walk: index - 1 });
+                    snapshot(last
+                        ? `Der Knoten davor zeigt jetzt auf den neuen, dessen next auf nichts zeigt: eine Referenz gesetzt, nichts verschoben.`
+                        : `Der neue Knoten zeigt auf den, der bisher an Index ${index} war, und der Knoten davor zeigt jetzt auf ihn: zwei Referenzen umgebogen, nichts verschoben.`, { focus: index, walk: index - 1 });
                 }
                 nodes.forEach((n) => delete n.fresh);
             } else if (type === 'remove') {
@@ -609,7 +679,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         else svg.appendChild(el('svg:text', { x: 50, y: top + 26, 'font-size': 13, fill: 'var(--bs-secondary-color)', text: '→ nichts' }));
         frame.nodes.forEach((node, i) => {
             const x = x0 + i * (box + gap);
-            const fill = frame.gone === i ? 'color-mix(in srgb, var(--algo-goal) 30%, transparent)' : frame.focus === i ? 'var(--algo-frontier)' : 'var(--algo-paper)';
+            const fill = frame.gone === i ? 'color-mix(in srgb, var(--algo-goal) 30%, var(--algo-paper))' : frame.focus === i ? 'var(--algo-frontier)' : 'var(--algo-paper)';
             svg.appendChild(el('svg:rect', { x, y: top, width: box, height: 44, rx: 6, fill, stroke: frame.walk === i ? 'var(--algo-accent)' : 'var(--algo-ink)', 'stroke-width': frame.walk === i ? 3.5 : 1.5 }));
             svg.appendChild(el('svg:line', { x1: x + box * 0.62, y1: top, x2: x + box * 0.62, y2: top + 44, stroke: 'var(--algo-line)', 'stroke-width': 1.5 }));
             svg.appendChild(el('svg:text', { x: x + box * 0.31, y: top + 28, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(node.value) }));
@@ -642,12 +712,12 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         const rotateRight = (y) => { const x = y.left; y.left = x.right; x.right = y; update(y); update(x); return x; };
         const rotateLeft = (x) => { const y = x.right; x.right = y.left; y.left = x; update(x); update(y); return y; };
         snapshot(avl ? 'Ein leerer AVL-Baum.' : 'Ein leerer Suchbaum.');
-        const insert = (node, value, path) => {
+        let pending = [];
+        const insert = (node, value) => {
             if (!node) return { value, left: null, right: null, height: 1 };
-            path.push(node.value);
             if (value === node.value) return node;
-            if (value < node.value) node.left = insert(node.left, value, path);
-            else node.right = insert(node.right, value, path);
+            if (value < node.value) node.left = insert(node.left, value);
+            else node.right = insert(node.right, value);
             update(node);
             if (!avl) return node;
             const balance = height(node.left) - height(node.right);
@@ -664,10 +734,55 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             }
             return node;
         };
-        let pending = [];
+        const removeNode = (node, value) => {
+            if (!node) return null;
+            if (value < node.value) node.left = removeNode(node.left, value);
+            else if (value > node.value) node.right = removeNode(node.right, value);
+            else if (!node.left) return node.right;
+            else if (!node.right) return node.left;
+            else {
+                let next = node.right;
+                while (next.left) next = next.left;
+                node.value = next.value;
+                node.right = removeNode(node.right, next.value);
+            }
+            update(node);
+            return node;
+        };
+        const walkTo = (value, what) => {
+            let walk = root;
+            while (walk && walk.value !== value) {
+                const left = value < walk.value;
+                snapshot(`${what} ${value}: ${value} ${left ? '<' : '>'} ${walk.value}, also nach ${left ? 'links' : 'rechts'}.`, { focus: walk.value });
+                walk = left ? walk.left : walk.right;
+            }
+            return walk;
+        };
         for (const op of ops) {
+            if (op.type === 'find') {
+                const found = walkTo(op.value, 'find');
+                snapshot(found ? `find ${op.value}: gefunden.` : `find ${op.value}: Hier wäre ${op.value}, aber der Platz ist leer. ${op.value} ist nicht im Baum.`, { focus: found ? op.value : undefined });
+                continue;
+            }
+            if (op.type === 'remove') {
+                const node = walkTo(op.value, 'remove');
+                if (!node) { snapshot(`remove ${op.value}: ${op.value} ist nicht im Baum.`); continue; }
+                if (!node.left && !node.right) {
+                    snapshot(`remove ${op.value}: gefunden. Der Knoten hat keine Kinder und fällt einfach weg.`, { focus: op.value, gone: op.value });
+                } else if (!node.left || !node.right) {
+                    const child = (node.left || node.right).value;
+                    snapshot(`remove ${op.value}: gefunden. Der Knoten hat nur ein Kind, ${child}; es rückt mit seinem ganzen Teilbaum an seine Stelle.`, { focus: op.value, gone: op.value });
+                } else {
+                    let next = node.right;
+                    snapshot(`remove ${op.value}: gefunden, mit zwei Kindern. Sein Platz bekommt den nächstgrößeren Wert: einmal rechts, dann links, so weit es geht.`, { focus: op.value, gone: op.value });
+                    while (next.left) { snapshot(`Der nächstgrößere nach ${op.value}: bei ${next.value} weiter nach links.`, { focus: next.value, gone: op.value }); next = next.left; }
+                    snapshot(`${next.value} ist der nächstgrößere. Er kommt an die Stelle von ${op.value}, und sein alter Knoten wird entfernt; der hat höchstens ein rechtes Kind.`, { focus: next.value, gone: op.value });
+                }
+                root = removeNode(root, op.value);
+                snapshot(`${op.value} ist weg, und links stehen immer noch die kleineren, rechts die größeren Werte.`);
+                continue;
+            }
             if (op.type !== 'insert') continue;
-            const path = [];
             // the way down first, step by step
             let walk = root;
             while (walk) {
@@ -678,24 +793,31 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             }
             pending = [];
             const before = copy(root);
-            root = insert(root, op.value, path);
+            root = insert(root, op.value);
             if (pending.length) {
                 const r = pending[pending.length - 1];
-                frames.push({ root: before ? (() => { const t = copy(root); return t; })() : null, message: '', avl });
-                frames.pop();
                 // show the unbalanced tree, then the rotated one
                 const unbalanced = (() => { const t = copy(before); const add = (n) => { if (!n) return { value: op.value, left: null, right: null, height: 1 }; if (op.value < n.value) n.left = add(n.left); else n.right = add(n.right); n.height = 1 + Math.max(height(n.left), height(n.right)); return n; }; return add(t); })();
                 frames.push({ root: unbalanced, message: `${op.value} hängt jetzt unten. Beim Knoten ${r.at} unterscheiden sich die Höhen der Teilbäume um ${Math.abs(r.balance)}: zu viel. Das ist der Fall ${r.kind}.`, avl, focus: r.at, fresh: op.value });
                 const how = { LL: `eine Rotation nach rechts um ${r.at}`, RR: `eine Rotation nach links um ${r.at}`, LR: `erst eine Rotation nach links um das linke Kind, dann nach rechts um ${r.at}`, RL: `erst eine Rotation nach rechts um das rechte Kind, dann nach links um ${r.at}` }[r.kind];
                 snapshot(`Fall ${r.kind}: ${how}. Danach ist der Baum wieder ausgeglichen, und die Suchregel gilt immer noch.`, { fresh: op.value });
             } else {
-                snapshot(`${op.value} kommt dorthin, wo die Suche ins Leere gelaufen ist.`, { fresh: op.value });
+                snapshot(before ? `${op.value} kommt dorthin, wo die Suche ins Leere gelaufen ist.` : `${op.value} wird die Wurzel.`, { fresh: op.value });
             }
         }
         return frames;
     }
 
-    function drawTree(svg, frame) {
+    function treeShape(n, depth = 1) {
+        if (!n) return { count: 0, depth: depth - 1 };
+        const l = treeShape(n.left, depth + 1);
+        const r = treeShape(n.right, depth + 1);
+        return { count: 1 + l.count + r.count, depth: Math.max(depth, l.depth, r.depth) };
+    }
+
+    // most: the most nodes and the deepest level of any frame, so that the
+    // picture keeps its size while the tree grows and shrinks
+    function drawTree(svg, frame, most) {
         svg.replaceChildren();
         const placed = [];
         let column = 0;
@@ -707,11 +829,11 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         };
         place(frame.root, 0);
         const at = new Map(placed.map((p) => [p.node.value, p]));
-        const cols = Math.max(placed.length, 1);
-        const depth = Math.max(0, ...placed.map((p) => p.depth)) + 1;
-        const width = Math.max(320, cols * 52);
-        const sx = (x) => (x + 0.5) * (width / cols);
-        const sy = (d) => 34 + d * 64;
+        const colW = 54;
+        const width = Math.max(300, most.count * colW);
+        const offset = (width - placed.length * colW) / 2;
+        const sx = (x) => offset + (x + 0.5) * colW;
+        const sy = (d) => 30 + d * 62;
         const edges = (n) => {
             if (!n) return;
             for (const child of [n.left, n.right]) {
@@ -723,13 +845,13 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         };
         edges(frame.root);
         for (const { node, x, depth: d } of placed) {
-            const fill = frame.fresh === node.value ? 'var(--algo-frontier)' : 'var(--algo-paper)';
+            const fill = frame.gone === node.value ? 'color-mix(in srgb, var(--algo-goal) 30%, var(--algo-paper))' : frame.fresh === node.value ? 'var(--algo-frontier)' : 'var(--algo-paper)';
             if (frame.focus === node.value) svg.appendChild(el('svg:circle', { cx: sx(x), cy: sy(d), r: 23, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 3 }));
             svg.appendChild(el('svg:circle', { cx: sx(x), cy: sy(d), r: 18, fill, stroke: 'var(--algo-ink)', 'stroke-width': 1.5 }));
             svg.appendChild(el('svg:text', { x: sx(x), y: sy(d) + 5, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(node.value) }));
-            if (frame.avl) svg.appendChild(el('svg:text', { x: sx(x) + 20, y: sy(d) - 15, 'font-size': 10, fill: 'var(--bs-secondary-color)', text: `h${node.height}` }));
+            if (frame.avl) svg.appendChild(el('svg:text', { x: sx(x), y: sy(d) + 32, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: `h${node.height}` }));
         }
-        svg.setAttribute('viewBox', `0 0 ${width} ${Math.max(140, 20 + depth * 64)}`);
+        svg.setAttribute('viewBox', `0 0 ${width} ${Math.max(100, most.depth * 62 + (frame.avl ? 8 : 0))}`);
     }
 
     // ---- Hash Table with 8 buckets, h(k) = k mod 8: chaining (a list per
@@ -793,7 +915,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 svg.appendChild(el('svg:text', { x: 60, y: y + 22, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(bucket) }));
             }
         });
-        svg.setAttribute('viewBox', `0 0 ${frame.mode === 'chain' ? 420 : 200} ${20 + size * rowH}`);
+        svg.setAttribute('viewBox', `0 0 420 ${20 + size * rowH}`);
     }
 
     function setUp(widget) {
@@ -802,7 +924,8 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         let draw;
         const svg = el('svg:svg', { class: 'algo-picture', role: 'img' });
         const side = el('div', { class: 'algo-side' });
-        const parseOps = (text) => text.split(',').map((t) => t.trim()).filter(Boolean).map((t) => {
+        // »insert(1, 3), remove(0)« or »push 5, pop«: commas inside brackets stay
+        const parseOps = (text) => text.split(/,(?![^(]*\))/).map((t) => t.trim()).filter(Boolean).map((t) => {
             const m = t.match(/^(\w+)\s*\(?\s*(-?\d+)?\s*,?\s*(-?\d+)?\s*\)?$/);
             const [, type, first, second] = m || [];
             return second !== undefined ? { type, index: Number(first), value: Number(second) } : { type, value: Number(first), index: Number(first) };
@@ -813,7 +936,12 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             const capacity = Number(widget.dataset.capacity || 6);
             frames = traceRing(parseOps(widget.dataset.ops), capacity);
             svg.setAttribute('aria-label', 'Die Zellen des Arrays mit head und der nächsten freien Zelle');
-            draw = (frame) => { drawRing(svg, frame); sideText('Heraus mit dequeue', frame.out); };
+            draw = (frame) => { drawRing(svg, frame); sideText('Zuletzt mit dequeue heraus', frame.out); };
+        } else if (algo === 'array') {
+            frames = traceArray(parseOps(widget.dataset.ops), Number(widget.dataset.capacity || 4));
+            const most = Math.max(...frames.map((f) => f.cells.length));
+            svg.setAttribute('aria-label', 'Die Zellen des Arrays, die ersten size davon belegt');
+            draw = (frame) => { drawArray(svg, frame, most); sideText('Verschoben und kopiert', frame.moves); };
         } else if (algo === 'linked') {
             frames = traceLinked(parseOps(widget.dataset.ops));
             const most = Math.max(...frames.map((f) => f.nodes.length));
@@ -824,7 +952,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             frames = traceTree(parseOps(widget.dataset.ops), algo === 'avl');
             svg.setAttribute('aria-label', 'Der Baum: links die kleineren, rechts die größeren Werte');
             side.hidden = true;
-            draw = (frame) => drawTree(svg, frame);
+            const shapes = frames.map((f) => treeShape(f.root));
+            const most = { count: Math.max(...shapes.map((t) => t.count)), depth: Math.max(...shapes.map((t) => t.depth)) };
+            draw = (frame) => drawTree(svg, frame, most);
         } else if (algo === 'hash') {
             const mode = widget.dataset.mode || 'chain';
             frames = traceHash(parseOps(widget.dataset.ops), mode, Number(widget.dataset.size || 8));

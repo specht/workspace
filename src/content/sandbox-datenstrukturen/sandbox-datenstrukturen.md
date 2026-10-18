@@ -3,7 +3,7 @@ image: data-structures-avl.webp
 kind: projekt
 language: Dart / Python / JavaScript / Java
 topic: computing
-reference: [gitlab, heap]
+reference: [gitlab, listen, baeume, heap, hash-tables]
 template: https://github.com/specht/data-structures-sandbox.git
 class_repo: git@git.nhcham.org:specht/data-structure-sandbox-structures-2026.git
 template_name: der Data Structures Sandbox
@@ -18,7 +18,7 @@ template_name: der Data Structures Sandbox
 # Datenstrukturen von innen sehen
 
 <p class='abstract'>
-In der Data Structures Sandbox programmierst du Listen, Stacks, Queues, Bäume, Heaps und Hash-Tabellen selbst, in Dart, Python, JavaScript oder Java, und siehst bei jedem Methodenaufruf, was in deinem Speicher passiert: welche Zelle beschrieben wird, welche Referenz umgebogen wird, welcher Knoten rotiert.
+In der Data Structures Sandbox programmierst du Listen, Stacks, Queues, Bäume, Heaps und Hash Tables selbst, in Dart, Python, JavaScript oder Java, und siehst bei jedem Methodenaufruf, was in deinem Speicher passiert: welche Zelle beschrieben wird, welche Referenz umgebogen wird, welcher Knoten rotiert.
 </p>
 
 <div class='hint'>
@@ -103,7 +103,9 @@ Das legt `structures/DEIN_NAME/my_array_stack.py` an. Vorhandene Dateien werden 
 
 ### Ein Datentyp, mehrere Speicherformen
 
-Ein **Stack** arbeitet nach dem LIFO-, eine **Queue** nach dem FIFO-Prinzip. Dasselbe Verhalten lässt sich aber mit einem festen Array, einem Ringpuffer oder verketteten Knoten erreichen. Besonders ergiebig sind die **vier Listen**: unsortiert oder sortiert, jeweils als Array oder als verkettete Knoten. Alle vier haben dieselbe Schnittstelle, und du kannst dieselbe Folge von Aufrufen auf alle vier loslassen. Hier eine Folge von Einfügungen auf einer einfach Linked List, in Java implementiert:
+_uses(array-list, linked-list, stack, queue)
+
+Ein **Stack** arbeitet nach dem LIFO-, eine **Queue** nach dem FIFO-Prinzip. Dasselbe Verhalten lässt sich aber mit einem festen Array, einem Ring Buffer oder verketteten Knoten erreichen. Besonders ergiebig sind die **vier Listen**: unsortiert oder sortiert, jeweils als Array oder als verkettete Knoten. Alle vier haben dieselbe Schnittstelle, und du kannst dieselbe Folge von Aufrufen auf alle vier loslassen. Hier eine Folge von Einfügungen auf einer einfach verketteten Linked List, in Java implementiert:
 
 <!-- tutorial-screenshot
 terminal-open
@@ -139,6 +141,8 @@ Die Tests sind streng, und das ist gewollt: Eine Liste gilt erst dann als richti
 
 ### Bäume, Rekursion und AVL-Rotationen
 
+_uses(suchbaum, suchbaum-entfernen, avl)
+
 Bei **binären Suchbäumen** wird die Suchregel sichtbar: links das Kleinere, rechts das Größere. Rekursive Aufrufe verfolgst du Schritt für Schritt und siehst, an welchem Knoten gerade gearbeitet wird. **AVL-Bäume** speichern zusätzlich die Höhe ihrer Teilbäume und stellen das Gleichgewicht nach dem Einfügen durch Rotationen wieder her. Hier ein AVL-Baum, in Python implementiert, nach sechs Einfügungen:
 
 <!-- tutorial-screenshot
@@ -164,9 +168,11 @@ sleep: 1
 <strong>Erst skizzieren, dann rotieren.</strong> Skizziere nach <code>insert(30); insert(20); insert(10)</code> zuerst den unbalancierten Baum und begründe, welche Rotation ihn rettet. Dann lass die Sandbox nachrechnen. Zum Vergleich: Was passiert mit einem gewöhnlichen Suchbaum, wenn du 1, 2, 3, … 10 der Reihe nach einfügst?
 </div>
 
-### Hash-Tabellen: Du entscheidest
+### Hash Tables: Du entscheidest
 
-Die Hash-Tabelle löst Kollisionen durch **Verkettung** (separate chaining). Wie viele Buckets es gibt und welche Hashfunktion verwendet wird, legst du in deiner eigenen Klasse fest; die Tests akzeptieren jede gültige Wahl. So werden Kollisionen und Lastfaktor zu etwas, das du gezielt herbeiführen und vermeiden kannst.
+_uses(hash-funktion, hash-chaining, hash-fuellgrad)
+
+Die Hash Table löst Kollisionen durch **Chaining** (separate chaining). Wie viele Buckets es gibt und welche Hashfunktion verwendet wird, legst du in deiner eigenen Klasse fest; die Tests akzeptieren jede gültige Wahl. So werden Kollisionen und Füllgrad zu etwas, das du gezielt herbeiführen und vermeiden kannst.
 
 <!-- tutorial-screenshot
 tab: preview
@@ -185,7 +191,7 @@ click: selector:#fit-scene
 move-mouse: selector:.scene-hint
 sleep: 1
 -->
-<img class='full' src='data-structures-hash.webp' alt='Hash-Tabelle mit acht Buckets, in denen sich kollidierende Schlüssel zu Ketten verbinden.'>
+<img class='full' src='data-structures-hash.webp' alt='Hash Table mit acht Buckets, in denen sich kollidierende Schlüssel zu Ketten verbinden.'>
 
 <div class='hint task'>
 <strong>Kollisionen provozieren.</strong> Finde fünf Schlüssel, die alle im selben Bucket landen. Was passiert mit der Suche? Ändere dann die Zahl der Buckets von 8 auf 7 oder 11 und wiederhole die Folge. Welche Bucketzahlen sind eine schlechte Idee, wenn die Schlüssel zum Beispiel alle gerade sind?

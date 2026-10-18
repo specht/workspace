@@ -1,4 +1,4 @@
-Lernende programmieren in der Data Structures Sandbox Listen, Stacks, Queues, Bäume, Heaps und Hash-Tabellen selbst (in Dart, Python, JavaScript oder Java) und sehen bei jedem Aufruf, was im Speicher passiert. Die Sandbox ist ein eigenes Programm im Browser; die Seite hier zeigt, wie sie ihre Programme im Workspace mit Git ablegen und veröffentlichen.
+Lernende programmieren in der Data Structures Sandbox Listen, Stacks, Queues, Bäume, Heaps und Hash Tables selbst (in Dart, Python, JavaScript oder Java) und sehen bei jedem Aufruf, was im Speicher passiert. Die Sandbox ist ein eigenes Programm im Browser; die Seite hier zeigt, wie sie ihre Programme im Workspace mit Git ablegen und veröffentlichen.
 
 Diese Seite begleitet die Data Structures Sandbox, ersetzt sie aber nicht. Sie ist für alle gedacht, die Git noch nicht kennen, zum Beispiel neue Lernende in Klasse 11.
 
@@ -17,10 +17,10 @@ Am Ende jeder Stunde lohnt eine Minute: alle prüfen Aufgabe 5. Wer dabei hänge
 Eine mögliche Unterrichtsreihe:
 
 1. **Indizierter Speicher:** unsortierte Array-Liste, danach die unsortierte Linked List mit denselben Aufrufen. Einfügen, Entfernen, Zugriff und ihre Kosten.
-2. **Abstrakte Datentypen:** Stack und Queue als Verhalten formulieren und je zwei Implementierungen schreiben und testen; der Ringpuffer als Höhepunkt.
+2. **Abstrakte Datentypen:** Stack und Queue als Verhalten formulieren und je zwei Implementierungen schreiben und testen; der Ring Buffer als Höhepunkt.
 3. **Sortierte Listen:** Was ändert sich am Einfügen, was an der Suche?
 4. **Bäume:** Suchbaum, Einfluss der Einfügereihenfolge auf die Höhe, AVL-Rotationen (die vier Fälle LL, RR, LR, RL) als Erweiterung.
-5. **Heap und Hashing:** Priority Queue und Hash-Tabelle als weitere Antworten auf die Frage, wie man schnell findet, was man sucht.
+5. **Heap und Hashing:** Priority Queue und Hash Table als weitere Antworten auf die Frage, wie man schnell findet, was man sucht.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Klassen und Objekte, Referenzen, Rekursion für die Bäume</td></tr>

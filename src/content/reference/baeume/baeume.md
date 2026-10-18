@@ -1,0 +1,173 @@
+<div class='meta'>
+kind: reference
+</div>
+
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3">
+</div>
+
+# Suchbäume
+
+<p class='abstract'>
+Ein binärer Suchbaum hält Werte so geordnet, dass Suchen, Einfügen und Entfernen nur einen Weg von oben nach unten brauchen: links das Kleinere, rechts das Größere. Damit das schnell bleibt, darf der Baum nicht zu einer langen Kette werden; ein AVL-Baum verhindert das mit Rotationen. Hier steht jeder Schritt als Pseudocode und zum Durchklicken, dazu die drei Arten, einen Baum zu durchlaufen.
+</p>
+
+<script src='/include/algo_stepper.js'></script>
+
+<!-- part: suchbaum -->
+<!-- short: Binärer Suchbaum: jeder Knoten hat höchstens zwei Kinder, links nur kleinere, rechts nur größere Werte. -->
+## Der binäre Suchbaum
+
+Ein **Baum** besteht aus Knoten. Ganz oben steht die **Wurzel**, jeder Knoten hat höchstens zwei **Kinder**, ein linkes und ein rechtes, und jeder Knoten außer der Wurzel genau ein Elternteil. Ein Knoten ohne Kinder heißt **Blatt**. Jedes Kind ist selbst wieder die Wurzel eines kleineren Baums, seines **Teilbaums**: Darum lässt sich fast alles an Bäumen rekursiv schreiben.
+
+Ein **binärer Suchbaum** hat eine Regel: Für jeden Knoten stehen in seinem linken Teilbaum **nur kleinere** Werte, in seinem rechten **nur größere**. Nicht nur das direkte Kind, der ganze Teilbaum.
+
+### Suchen
+
+Die Regel sagt bei jedem Knoten, wohin es weitergeht: Ist der gesuchte Wert kleiner, nach links, ist er größer, nach rechts. Endet der Weg an einer leeren Stelle, ist der Wert nicht im Baum.
+
+```text
+find(knoten, wert):
+    wenn knoten leer: nicht gefunden
+    wenn wert = knoten.wert: gefunden
+    wenn wert < knoten.wert: gib find(knoten.links, wert) zurück
+    sonst: gib find(knoten.rechts, wert) zurück
+```
+
+### Einfügen
+
+Einfügen ist Suchen: Man sucht den Wert, und an der leeren Stelle, an der die Suche endet, kommt der neue Knoten hin. Der Baum wächst immer unten.
+
+```text
+insert(knoten, wert):
+    wenn knoten leer: gib einen neuen Knoten mit wert zurück
+    wenn wert < knoten.wert: knoten.links ← insert(knoten.links, wert)
+    wenn wert > knoten.wert: knoten.rechts ← insert(knoten.rechts, wert)
+    gib knoten zurück
+```
+
+Dass `insert` den Knoten zurückgibt und der Aufrufer ihn wieder einträgt, ist der Trick: So braucht kein Knoten sein Elternteil zu kennen, und die leere Wurzel ist kein Sonderfall (`wurzel ← insert(wurzel, wert)`).
+
+Acht Werte, dann zwei Suchen, eine erfolgreich und eine nicht:
+
+<div class='algo-stepper' data-algo='bst' data-ops='insert 50, insert 30, insert 70, insert 20, insert 40, insert 60, insert 80, insert 35, find 35, find 65'></div>
+<!-- /part -->
+
+<!-- part: suchbaum-entfernen -->
+<!-- short: Entfernen: ein Blatt fällt weg, ein Knoten mit einem Kind wird durch das Kind ersetzt, einer mit zwei Kindern durch den nächstgrößeren Wert. -->
+## Aus dem Suchbaum entfernen
+
+Ein Knoten wird zuerst gesucht. Dann gibt es drei Fälle:
+
+1. **Keine Kinder:** Er fällt einfach weg.
+2. **Ein Kind:** Das Kind rückt mit seinem ganzen Teilbaum an seine Stelle. Die Regel bleibt erfüllt, denn der ganze Teilbaum lag schon auf der richtigen Seite.
+3. **Zwei Kinder:** Hier passt kein Kind an seine Stelle. Stattdessen kommt der **nächstgrößere** Wert dorthin: der kleinste im rechten Teilbaum, einmal nach rechts und dann links, so weit es geht. Er ist größer als alles links und kleiner als alles andere rechts. Sein alter Knoten hat kein linkes Kind (sonst wäre er nicht der kleinste) und ist damit Fall 1 oder 2.
+
+```text
+remove(knoten, wert):
+    wenn knoten leer: gib leer zurück
+    wenn wert < knoten.wert: knoten.links ← remove(knoten.links, wert)
+    sonst wenn wert > knoten.wert: knoten.rechts ← remove(knoten.rechts, wert)
+    sonst:
+        wenn knoten.links leer: gib knoten.rechts zurück
+        wenn knoten.rechts leer: gib knoten.links zurück
+        nächster ← knoten.rechts
+        solange nächster.links nicht leer: nächster ← nächster.links
+        knoten.wert ← nächster.wert
+        knoten.rechts ← remove(knoten.rechts, nächster.wert)
+    gib knoten zurück
+```
+
+Derselbe Baum, dann alle drei Fälle nacheinander: 20 ist ein Blatt, 40 hat ein Kind, 50 hat zwei:
+
+<div class='algo-stepper' data-algo='bst' data-ops='insert 50, insert 30, insert 70, insert 20, insert 40, insert 60, insert 80, insert 35, remove 20, remove 40, remove 50'></div>
+
+**Typische Fehler**
+
+- Im Fall 3 den nächstgrößeren Wert kopieren, aber seinen alten Knoten nicht entfernen: Der Wert steht dann zweimal im Baum.
+- Den Rückgabewert von `remove` nicht eintragen: Der Knoten ist »entfernt«, hängt aber noch am Elternteil.
+- Statt des nächstgrößeren das rechte Kind nach oben holen: Dann hat es plötzlich drei Teilbäume, und einer geht verloren.
+<!-- /part -->
+
+<!-- part: traversierung -->
+<!-- short: Einen Baum durchlaufen: inorder (sortiert), preorder (Knoten zuerst), postorder (Knoten zuletzt). -->
+## Einen Baum durchlaufen
+
+Um jeden Knoten einmal zu besuchen, etwa zum Ausgeben oder Zählen, geht man rekursiv in beide Teilbäume. Die drei Arten unterscheiden sich nur darin, wann der Knoten selbst drankommt:
+
+```text
+inorder(knoten):
+    wenn knoten leer: fertig
+    inorder(knoten.links)
+    knoten besuchen
+    inorder(knoten.rechts)
+```
+
+- **Inorder** (links, Knoten, rechts) besucht die Werte eines Suchbaums **sortiert**. Für den Baum oben: 20, 30, 35, 40, 50, 60, 70, 80.
+- **Preorder** (Knoten, links, rechts) besucht jeden Knoten vor seinen Kindern: 50, 30, 20, 40, 35, 70, 60, 80. Wer die Werte in dieser Reihenfolge in einen leeren Suchbaum einfügt, bekommt genau denselben Baum zurück, deshalb speichert man Bäume so.
+- **Postorder** (links, rechts, Knoten) besucht jeden Knoten nach seinen Kindern: 20, 35, 40, 30, 60, 80, 70, 50. So berechnet man, was von den Teilbäumen abhängt, etwa die Höhe, oder gibt einen Baum frei.
+
+Die **Höhe** eines Baums ist die Zahl der Knoten auf dem längsten Weg von der Wurzel nach unten, ein leerer Baum hat die Höhe 0:
+
+```text
+höhe(knoten):
+    wenn knoten leer: gib 0 zurück
+    gib 1 + größere von höhe(knoten.links) und höhe(knoten.rechts) zurück
+```
+<!-- /part -->
+
+<!-- part: avl -->
+<!-- short: AVL-Baum: die Höhen der Teilbäume unterscheiden sich höchstens um 1; nach dem Einfügen stellen Rotationen (LL, RR, LR, RL) das wieder her. -->
+## Ausgeglichene Bäume: AVL
+
+Suchen, Einfügen und Entfernen laufen einen Weg von der Wurzel nach unten, sie brauchen also so viele Schritte, wie der Baum hoch ist. Ein gut gemischter Baum mit einer Million Werten ist etwa 20 Ebenen hoch. Kommen die Werte aber sortiert an, hängt jeder rechts am vorigen, und der Baum wird eine Kette:
+
+<div class='algo-stepper' data-algo='bst' data-ops='insert 10, insert 20, insert 30, insert 40, insert 50, insert 60'></div>
+
+Das ist eine Linked List mit Umwegen: Bei einer Million Werten braucht die Suche eine Million Schritte.
+
+### Die AVL-Regel
+
+Ein **AVL-Baum** (nach Adelson-Velski und Landis) hält sich selbst ausgeglichen. Jeder Knoten speichert seine Höhe, und für jeden Knoten gilt: Die Höhen seines linken und rechten Teilbaums unterscheiden sich **höchstens um 1**. Ein AVL-Baum mit \\(n\\) Werten ist höchstens etwa \\(1{,}44 \log_2 n\\) hoch.
+
+Nach jedem Einfügen geht man den Weg zurück nach oben, berechnet die Höhen neu und prüft die Regel. Der erste Knoten, bei dem sie verletzt ist, wird mit einer **Rotation** repariert.
+
+### Rotationen
+
+Eine **Rotation nach rechts** um einen Knoten \\(y\\) mit linkem Kind \\(x\\) hebt \\(x\\) nach oben: \\(y\\) wird das rechte Kind von \\(x\\), und der rechte Teilbaum von \\(x\\) wechselt als linker Teilbaum zu \\(y\\). Die Suchregel bleibt erfüllt, denn dieser Teilbaum liegt zwischen \\(x\\) und \\(y\\). Die Rotation nach links ist dasselbe spiegelverkehrt.
+
+```text
+rotiere_rechts(y):
+    x ← y.links
+    y.links ← x.rechts
+    x.rechts ← y
+    höhe von y neu berechnen, dann die von x
+    gib x zurück
+```
+
+Welche Rotation nötig ist, hängt davon ab, wo der neue Wert gelandet ist, von dem zu hohen Knoten aus gesehen:
+
+<div class='scroll-x'><table class='table table-sm reference-table'>
+<thead><tr><th>Fall</th><th>der neue Wert liegt</th><th>Reparatur</th></tr></thead>
+<tbody>
+<tr><td>LL</td><td>links vom linken Kind</td><td>rechts rotieren</td></tr>
+<tr><td>RR</td><td>rechts vom rechten Kind</td><td>links rotieren</td></tr>
+<tr><td>LR</td><td>rechts vom linken Kind</td><td>erst das linke Kind links rotieren, dann rechts rotieren</td></tr>
+<tr><td>RL</td><td>links vom rechten Kind</td><td>erst das rechte Kind rechts rotieren, dann links rotieren</td></tr>
+</tbody>
+</table>
+</div>
+
+Diese acht Werte lösen alle vier Fälle aus, LL, RR, RL und LR in dieser Reihenfolge. Klein neben jedem Knoten steht seine Höhe:
+
+<div class='algo-stepper' data-algo='avl' data-ops='insert 50, insert 40, insert 30, insert 60, insert 70, insert 45, insert 20, insert 25'></div>
+
+**Typische Fehler**
+
+- Die Höhen in der falschen Reihenfolge neu berechnen: Erst der Knoten, der nach unten gerutscht ist, dann der, der jetzt oben ist.
+- Den neuen obersten Knoten nicht zurückgeben und eintragen: Die Rotation passiert, aber der Elternteil zeigt noch auf den alten.
+- LR und RL mit einer einzigen Rotation lösen: Dann ist der Baum danach genauso schief, nur zur anderen Seite.
+- Die Höhe eines leeren Teilbaums nicht als 0 behandeln: Ohne eine kleine Funktion `höhe(knoten)`, die bei leer 0 liefert, stürzt jede Rechnung an einem Blatt ab.
+<!-- /part -->
