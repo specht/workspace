@@ -386,6 +386,15 @@ async function runHookAction(action, targetTab, hooks) {
     await run({ page, args: action.args, timeout: 60_000, writeFile });
 }
 
+// A promise that rejects after ms with what was being waited for.
+function withTimeout(promise, ms, what) {
+    let timer;
+    const limit = new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`gave up after ${ms / 1000} s: ${what}`)), ms);
+    });
+    return Promise.race([promise, limit]).finally(() => clearTimeout(timer));
+}
+
 async function waitForPreviewReady(page, hooks) {
     if (!hooks?.waitForPreview) return;
     await hooks.waitForPreview({ page, timeout: 60_000 });
@@ -2141,12 +2150,15 @@ async function previewReload(reset = false, hooks = null) {
                     // Still no page: the tab itself is gone (after many 3D
                     // scenes in a row, for example). A new one at the same
                     // address is what a reload would have shown.
+                    // If the browser's GPU process is the reason, a new tab
+                    // can wait for it forever; then the shot fails instead.
                     const url = preview.url();
                     console.log(`  the preview tab is gone; opening ${url} in a new one`);
-                    await preview.close().catch(() => {});
-                    preview = await context.newPage();
+                    await withTimeout(preview.close(), 10_000, 'closing the preview tab').catch(() => {});
+                    preview = await withTimeout(context.newPage(), 60_000, 'opening a new preview tab');
                     await preview.goto(url, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-                    break;
+                    await withTimeout(waitForPreviewReady(preview, hooks), 120_000, 'the new preview tab getting ready');
+                    return;
                 }
                 console.log(`  preview-reload crossed a reload of the page itself; again (${attempt})`);
                 await preview.waitForLoadState('domcontentloaded', { timeout: 60_000 }).catch(() => {});
@@ -4007,6 +4019,9 @@ async function generateTutorial(payload, progressJob = null) {
             if (journalFrom === shot.actions.length) scopeJournal = scopeJournal || new Map();
             await restoreScopeFiles();
             if (preview && !preview.isClosed()) {
+                // As in a recipe (write-file, sleep: 1): Live Server reloads
+                // by itself first; a reload right away would cross it.
+                await preview.waitForTimeout(1000);
                 try {
                     await previewReload(false, tutorialHooks);
                 } catch (error) {
