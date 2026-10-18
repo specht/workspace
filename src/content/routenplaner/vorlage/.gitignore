@@ -1,0 +1,7 @@
+# Gebiete, die der Server beim Start herunterlädt (AREA=berlin, AREA=mitte,…);
+# mitgeliefert sind nur Steglitz-Zehlendorf und die beiden Testkarten
+data/*.tsv
+!data/test.tsv
+!data/detour.tsv
+!data/steglitz-zehlendorf.tsv
+!data/steglitz-zehlendorf-places.tsv
