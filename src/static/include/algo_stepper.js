@@ -669,14 +669,14 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 
     function drawLinked(svg, frame, most) {
         svg.replaceChildren();
-        const box = 64;
-        const gap = 34;
-        const top = 50;
-        const x0 = 70;
-        svg.appendChild(el('svg:text', { x: 8, y: top + 26, 'font-size': 13, 'font-weight': 600, fill: 'var(--algo-ink)', text: 'head' }));
+        const box = 58;
+        const gap = 26;
+        const top = 46;
+        const x0 = 62;
+        svg.appendChild(el('svg:text', { x: 4, y: top + 26, 'font-size': 13, 'font-weight': 600, fill: 'var(--algo-ink)', text: 'head' }));
         const headTarget = frame.nodes.length ? x0 : null;
-        if (headTarget !== null) svg.appendChild(el('svg:path', { d: `M46 ${top + 22} L${x0 - 4} ${top + 22} m-6 -5 l6 5 l-6 5`, stroke: 'var(--algo-ink)', 'stroke-width': 2, fill: 'none' }));
-        else svg.appendChild(el('svg:text', { x: 50, y: top + 26, 'font-size': 13, fill: 'var(--bs-secondary-color)', text: '→ nichts' }));
+        if (headTarget !== null) svg.appendChild(el('svg:path', { d: `M40 ${top + 22} L${x0 - 4} ${top + 22} m-6 -5 l6 5 l-6 5`, stroke: 'var(--algo-ink)', 'stroke-width': 2, fill: 'none' }));
+        else svg.appendChild(el('svg:text', { x: 42, y: top + 26, 'font-size': 13, fill: 'var(--bs-secondary-color)', text: '→ nichts' }));
         frame.nodes.forEach((node, i) => {
             const x = x0 + i * (box + gap);
             const fill = frame.gone === i ? 'color-mix(in srgb, var(--algo-goal) 30%, var(--algo-paper))' : frame.focus === i ? 'var(--algo-frontier)' : 'var(--algo-paper)';
@@ -690,6 +690,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 if (skip) {
                     const tx = x0 + (i + 2) * (box + gap);
                     svg.appendChild(el('svg:path', { d: `M${nx} ${top + 10} C ${nx + 40} ${top - 40}, ${tx - 40} ${top - 40}, ${tx - 2} ${top + 8}`, stroke: 'var(--algo-accent)', 'stroke-width': 2, fill: 'none' }));
+                    svg.appendChild(el('svg:path', { d: `M${tx - 2} ${top + 8} l-1.6 -8.8 M${tx - 2} ${top + 8} l-8.3 -3.6`, stroke: 'var(--algo-accent)', 'stroke-width': 2, fill: 'none', 'stroke-linecap': 'round' }));
                 } else {
                     svg.appendChild(el('svg:path', { d: `M${nx} ${top + 22} L${x + box + gap - 4} ${top + 22} m-6 -5 l6 5 l-6 5`, stroke: 'var(--algo-ink)', 'stroke-width': 2, fill: 'none' }));
                 }
