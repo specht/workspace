@@ -119,6 +119,14 @@ class PrivacyTest < Minitest::Test
         end
     end
 
+    def test_backups_only_when_named
+        refute_includes page(FULL), 'Sicherungen'
+        html = page(FULL.merge('BACKUP' => 'in einer Storage Box', 'BACKUP_RETENTION_MONTHS' => 6))
+        assert_includes html, 'Sicherungen werden höchstens 6 Monate aufbewahrt.'
+        assert_includes html, 'erneut gelöscht'
+        assert_includes page(FULL.merge('BACKUP' => 'in einer Storage Box')), 'noch nicht eingetragen'
+    end
+
     def test_no_old_claims
         html = page(FULL)
         refute_includes html, 'keine externen Dienste'

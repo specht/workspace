@@ -41,6 +41,10 @@ CONTACT_EMAIL = 'kontakt@example.com'
 # HOSTING = 'Hetzner Online GmbH, Rechenzentrum in Deutschland'
 # Wer die E-Mails verschickt:
 # MAIL_PROVIDER = 'united-domains AG'
+# Wo die verschlüsselten Sicherungen liegen und wie viele Monate sie
+# höchstens aufbewahrt werden (so lange bleiben gelöschte Daten darin):
+# BACKUP = 'in einer eigenen Storage Box im Rechenzentrum'
+# BACKUP_RETENTION_MONTHS = 6
 # Die Rechtsgrundlage: :school erst, wenn die Schulleitung schriftlich
 # entschieden hat, dass der Workspace im Unterricht eingesetzt wird (die
 # Unterlagen unter /datenschutz helfen dabei); :consent, wenn er ein eigenes

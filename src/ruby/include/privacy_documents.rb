@@ -173,7 +173,7 @@ module PrivacyDocuments
         controller = s[:legal_basis] == :school || s[:operator_school].nil? ? "#{school(s)}, vertreten durch die Schulleitung" : operator(s)
         address = s[:operator_address] ? "<br>#{Privacy.lines_html(s[:operator_address])}" : ''
         dsb = s[:data_protection_officer] ? Privacy.lines_html(s[:data_protection_officer]) : 'die Datenschutzbeauftragte Stelle der Schule'
-        records = Privacy.records.map do |r|
+        records = Privacy.records(s).map do |r|
             [h(r[:data]), h(Privacy.categories_text(r)), h(r[:who]), h(r[:how_long])]
         end
         processors = Privacy.services(s).select { |svc| svc[:kind] == :processor }.map { |svc| svc[:html] }
@@ -218,7 +218,7 @@ module PrivacyDocuments
     # --- Löschkonzept ---------------------------------------------------
 
     def self.loeschkonzept_html(s)
-        rows = Privacy.records.map { |r| [h(r[:data]), h(r[:how_long])] }
+        rows = Privacy.records(s).map { |r| [h(r[:data]), h(r[:how_long])] }
         <<~END_OF_HTML
             <p>
             #{digllv?(s) ? 'Nach § 2 Abs. 6 DigLLV sind die Daten zu löschen, sobald kein Verarbeitungszweck mehr besteht, in der Regel spätestens zum Ende eines Schuljahres; dieses Löschkonzept legt die Fristen fest. ' : ''}#{Privacy.deletion_rule_html(s)}

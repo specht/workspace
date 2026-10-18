@@ -56,6 +56,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   DNS-Dienst ist genannt; git.nhcham.org nicht mehr (freiwillig, kein Teil
   des Workspace); der Elternbrief beginnt mit einem Kasten mit der Adresse
   der Seite.
+- Sicherungen in Datenschutzerklärung und Unterlagen (`BACKUP`,
+  `BACKUP_RETENTION_MONTHS` in `credentials.rb`): wo sie liegen, dass sie
+  verschlüsselt sind und wie lange gelöschte Daten darin bleiben. Jede
+  Löschung wird ohne Adresse vermerkt; nach dem Zurückspielen einer Sicherung
+  löscht »Löschungen wiederholen« unter »Administration« alle seither
+  gelöschten Konten erneut.
 - `docker/traefik/docker-compose.yaml`: Traefik vor dem Workspace, wie er in
   Betrieb ist, ohne Zugriffsprotokoll und mit begrenzter Ausgabe.
 - Konten löschen: Unter »Administration« löscht ein Klick ein Konto mit

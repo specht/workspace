@@ -1,3 +1,7 @@
+require 'digest'
+require 'json'
+require 'set'
+
 # Deleting an account with everything that belongs to it (Datenschutzerklärung,
 # »Speicherdauer«; docs/datenschutz.md, Löschkonzept). Plain Ruby, tested on
 # its own; Main#delete_account does the work.
@@ -39,6 +43,47 @@ module AccountDeletion
         OWN_NODES.values.map do |pattern|
             "MATCH (u:User {email: $email}) MATCH #{pattern} DETACH DELETE n;"
         end + ['MATCH (u:User {email: $email}) DETACH DELETE u;']
+    end
+
+    # --- Deletions after a restore ---------------------------------------
+    #
+    # Backups are not edited; a deleted account stays in them until they
+    # expire (BACKUP_RETENTION_MONTHS). So that a restore does not bring it
+    # back, every deletion is noted in a log outside Neo4j: a hash of the
+    # address and the date, nothing else. After a restore, »Löschungen
+    # wiederholen« deletes again every account deleted after the backup was
+    # made. Entries go once no backup can be older than them.
+
+    def self.address_hash(email, salt)
+        Digest::SHA256.hexdigest("deleted-account:#{salt}:#{email}")
+    end
+
+    def self.log_line(email, salt, now: Time.now)
+        JSON.generate({ 'hash' => address_hash(email, salt), 'deleted_at' => now.to_i }) + "\n"
+    end
+
+    def self.parse_log(text)
+        text.to_s.each_line.map { |line| JSON.parse(line) rescue nil }.compact
+    end
+
+    # The entries a backup made at backup_time does not know of.
+    def self.entries_since(entries, backup_time)
+        entries.select { |e| e['deleted_at'].to_i >= backup_time.to_i }
+    end
+
+    # The addresses among emails that were deleted after backup_time.
+    def self.to_delete_again(entries, emails, salt, backup_time)
+        hashes = Set.new(entries_since(entries, backup_time).map { |e| e['hash'] })
+        emails.select { |email| hashes.include?(address_hash(email, salt)) }
+    end
+
+    # Entries older than the oldest backup can be; months: the retention,
+    # plus one month for safety.
+    def self.prune(entries, months, now: Time.now)
+        return entries unless months.to_i > 0
+
+        cutoff = now.to_i - (months.to_i + 1) * 31 * 24 * 3600
+        entries.select { |e| e['deleted_at'].to_i >= cutoff }
     end
 
     # The address as typed, or nil when it cannot be an account: one line,

@@ -24,7 +24,7 @@ module Privacy
     # The settings the pages use, each optional (credentials.template.rb).
     STRING_SETTINGS = %w[
         OPERATOR_NAME OPERATOR_ROLE OPERATOR_SCHOOL OPERATOR_ADDRESS CONTACT_EMAIL
-        DATA_PROTECTION_OFFICER HOSTING MAIL_PROVIDER SCHOOL_LAW SUPERVISORY_AUTHORITY
+        DATA_PROTECTION_OFFICER HOSTING MAIL_PROVIDER SCHOOL_LAW SUPERVISORY_AUTHORITY BACKUP
     ].freeze
 
     # The settings as a Hash with symbol keys: strings stripped, an empty or
@@ -36,6 +36,8 @@ module Privacy
         end
         basis = scope.const_defined?('LEGAL_BASIS') ? scope.const_get('LEGAL_BASIS').to_s.strip.to_sym : nil
         values[:legal_basis] = LEGAL_BASES.include?(basis) ? basis : nil
+        months = scope.const_defined?('BACKUP_RETENTION_MONTHS') ? scope.const_get('BACKUP_RETENTION_MONTHS').to_i : 0
+        values[:backup_retention_months] = months > 0 ? months : nil
         values[:web_root] = scope.const_defined?('WEB_ROOT') ? scope.const_get('WEB_ROOT').to_s : nil
         values[:parental_consent_required] =
             scope.const_defined?('PARENTAL_CONSENT_REQUIRED') && scope.const_get('PARENTAL_CONSENT_REQUIRED') == true
@@ -106,7 +108,32 @@ module Privacy
 
     # What is stored about a person: data, category, purpose, who sees it,
     # how long. »Lehrkräfte« are always those of the person's own groups.
-    def self.records
+    # How long a backup is kept, as the page says it.
+    def self.backup_retention(s)
+        months = s[:backup_retention_months]
+        months ? "höchstens #{months} #{months == 1 ? 'Monat' : 'Monate'}" : 'wie lange, ist in dieser Installation noch nicht eingetragen'
+    end
+
+    # With s, the backups too, when the installation names them (BACKUP).
+    def self.records(s = {})
+        base_records + (s[:backup] ? [backup_record(s)] : [])
+    end
+
+    def self.backup_kept_sentence(s)
+        s[:backup_retention_months] ? "Sicherungen werden #{backup_retention(s)} aufbewahrt." : 'Wie lange Sicherungen aufbewahrt werden, ist noch nicht eingetragen.'
+    end
+
+    def self.backup_record(s)
+        {
+            :data => 'Sicherungen: eine verschlüsselte Kopie aller Daten oben, auch gelöschter, bis die Sicherung abläuft',
+            :categories => CATEGORIES.keys,
+            :purpose => 'Wiederherstellung nach einem Ausfall',
+            :who => 'Administration, nur für eine Wiederherstellung',
+            :how_long => backup_retention(s),
+        }
+    end
+
+    def self.base_records
         [
             {
                 :data => 'Einladungslisten: E-Mail-Adresse, Name (freiwillig) und Gruppe aller eingeladenen Personen, auch derer, die sich nie anmelden',
@@ -225,7 +252,8 @@ module Privacy
             {
                 :name => 'Rechenzentrum',
                 :kind => :processor,
-                :html => "Der Server läuft bei #{hosting}. Dort liegen alle oben genannten Daten; das Rechenzentrum stellt die Technik bereit.",
+                :html => "Der Server läuft bei #{hosting}. Dort liegen alle oben genannten Daten; das Rechenzentrum stellt die Technik bereit." +
+                    (s[:backup] ? " Verschlüsselte Sicherungen liegen #{h(s[:backup])}; der Schlüssel liegt nur beim Betreiber, das Rechenzentrum kann sie nicht lesen." : ''),
             },
             {
                 :name => 'E-Mail',
@@ -293,12 +321,13 @@ module Privacy
             ],
             'Verschlüsselung' => [
                 'Alle Verbindungen zur Seite und zu den Workspaces sind verschlüsselt (HTTPS mit Zertifikat von Let’s Encrypt).',
-            ],
+            ] + (s[:backup] ? ["Sicherungen sind verschlüsselt, bevor sie den Server verlassen (#{s[:backup]}); den Schlüssel hat nur der Betreiber."] : []),
             'Löschung' => [
                 'Schülerinnen und Schüler löschen ihre Antworten und Abgaben selbst, jederzeit, und ebenso ihr ganzes Konto.',
                 'Alle Daten eines Kontos lassen sich im Profil als ein Archiv herunterladen.',
                 'Die Administration löscht ein Konto mit allem, was dazugehört (Workspaces, Datenbanken, Aufgaben, Abgaben, Sitzungen), in einem Schritt, und sieht jederzeit, welche Konten keine Einladung mehr haben.',
                 'Mit einer Leistungsüberprüfung löscht die Lehrkraft auch die Workspaces und Datenbanken aller, die sie geschrieben haben.',
+            ] + (s[:backup] ? ["#{backup_kept_sentence(s)} Jede Löschung wird ohne Adresse vermerkt (ein Hashwert und das Datum); nach dem Zurückspielen einer Sicherung werden alle seither gelöschten Konten erneut gelöscht."] : []) + [
             ],
         }
     end
@@ -449,7 +478,7 @@ module Privacy
             #{legal_basis_html(s)}
 
             #{heading('Welche Daten gespeichert werden', 'Kategorien, Herkunft, Empfänger und Speicherdauer · Art. 13 Abs. 1 Buchst. e, Abs. 2 Buchst. a; Art. 14 Abs. 1 Buchst. d, Abs. 2 Buchst. f DSGVO')}
-            #{records_table_html}
+            #{records_table_html(records(s))}
             <p>
             Alle diese Daten liegen auf dem Server des Workspace. E-Mail-Adresse, Gruppe und, wenn gewünscht, den Namen trägt die
             Lehrkraft aus ihrer Einladungsliste ein; alles andere entsteht durch die Arbeit im Workspace.
@@ -512,6 +541,7 @@ module Privacy
             <p>#{deletion_rule_html(s)}</p>
             <p>
             Kürzer gespeichert werden: Anmeldecodes #{login_minutes} Minuten, Sitzungen #{session_days} Tage, Zugriffsprotokolle 7 Tage.
+            #{s[:backup] ? "Sicherungen werden nicht nachträglich verändert: Gelöschte Daten verschwinden aus ihnen, wenn die Sicherung abläuft (#{backup_retention(s)}). Wird eine Sicherung zurückgespielt, werden alle seither gelöschten Konten sofort erneut gelöscht." : ''}
             Antworten zu Aufgaben und Abgaben löschen Schülerinnen und Schüler selbst, wann sie wollen.
             </p>
 

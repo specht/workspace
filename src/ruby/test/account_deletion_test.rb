@@ -38,6 +38,26 @@ class AccountDeletionTest < Minitest::Test
         assert_equal 'MATCH (u:User {email: $email}) DETACH DELETE u;', statements.last
     end
 
+    def test_deletions_are_repeated_after_a_restore
+        t0 = Time.at(1_000_000)
+        log = AccountDeletion.log_line('old@example.org', 'salt', :now => t0) +
+            AccountDeletion.log_line('new@example.org', 'salt', :now => t0 + 100) + "kaputt\n"
+        refute_includes log, 'example.org'
+        entries = AccountDeletion.parse_log(log)
+        assert_equal 2, entries.size
+        emails = %w[old@example.org new@example.org other@example.org]
+        assert_equal ['new@example.org'], AccountDeletion.to_delete_again(entries, emails, 'salt', t0 + 50)
+        assert_equal %w[old@example.org new@example.org], AccountDeletion.to_delete_again(entries, emails, 'salt', t0)
+        assert_equal [], AccountDeletion.to_delete_again(entries, emails, 'other salt', t0)
+    end
+
+    def test_old_entries_go_once_no_backup_is_older
+        now = Time.at(100_000_000)
+        entries = [{ 'hash' => 'a', 'deleted_at' => now.to_i - 8 * 31 * 86_400 }, { 'hash' => 'b', 'deleted_at' => now.to_i - 86_400 }]
+        assert_equal ['b'], AccountDeletion.prune(entries, 6, :now => now).map { |e| e['hash'] }
+        assert_equal 2, AccountDeletion.prune(entries, nil, :now => now).size
+    end
+
     def test_normalize_email
         assert_equal 'lena@example.org', AccountDeletion.normalize_email(' Lena@Example.org ')
         [nil, '', 'lena', 'a@b@c', "lena@example.org'; DROP", 'le na@example.org', "lena@example.org\nx"].each do |bad|

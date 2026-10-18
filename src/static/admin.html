@@ -154,6 +154,22 @@
             </p>
             <button id='bu_uninvited_accounts' class='btn btn-outline-secondary mb-3'><i class='bi bi-search'></i>Konten ohne Einladung anzeigen</button>
             <div id='uninvited_accounts_here'></div>
+            <h3 id="nach-wiederherstellung">Nach einer Wiederherstellung</h3>
+            <p>
+                Wurde eine Sicherung zurückgespielt, sind Konten wieder da, die seither gelöscht wurden. Hier werden sie erneut gelöscht:
+                Datum und Uhrzeit der Sicherung eingeben. Die Liste der Löschungen (<code>/internal/deleted-accounts.jsonl</code>)
+                muss dafür die aktuelle sein, nicht die aus der Sicherung.
+            </p>
+            <form id='repeat_deletions_form' class='row g-2 align-items-end mb-3'>
+                <div class='col-sm-5'>
+                    <label class='form-label' for='repeat_deletions_date'>Sicherung vom</label>
+                    <input type='datetime-local' class='form-control' id='repeat_deletions_date' required>
+                </div>
+                <div class='col-sm-4'>
+                    <button type='submit' class='btn btn-outline-danger w-100'><i class='bi bi-arrow-repeat'></i>Löschungen wiederholen</button>
+                </div>
+            </form>
+            <div id='repeat_deletions_result'></div>
         </div>
     </div>
 </div>
@@ -431,6 +447,14 @@
         $('#delete_account_form').on('submit', function (e) {
             e.preventDefault();
             delete_account($('#delete_account_email').val(), $('#delete_account_confirmation').val());
+        });
+        $('#repeat_deletions_form').on('submit', function (e) {
+            e.preventDefault();
+            api_call('/api/admin/repeat_deletions', { backup_date: $('#repeat_deletions_date').val() }, function (data) {
+                let here = $('#repeat_deletions_result').empty();
+                if (!data.success) return;
+                here.append($(`<div class='alert alert-success'>`).text(data.deleted.length === 0 ? 'Kein Konto war seither gelöscht worden.' : `Erneut gelöscht: ${data.deleted.join(', ')}`));
+            });
         });
         $('#bu_uninvited_accounts').on('click', function () {
             api_call('/api/admin/uninvited_accounts', {}, function (data) {

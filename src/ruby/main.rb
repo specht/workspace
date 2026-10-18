@@ -3987,6 +3987,7 @@ class Main < Sinatra::Base
 
         task_keys.each { |task| FileUtils.rm_f(submission_path(task, email)) }
         AccountDeletion.node_statements.each { |statement| neo4j_query(statement, :email => email) }
+        note_deletion(email)
         Main.refresh_nginx_config()
 
         {
@@ -3994,6 +3995,36 @@ class Main < Sinatra::Base
             :databases => logins.size * 2 + extra_databases.size,
             :tasks => task_keys.size,
         }
+    end
+
+    DELETION_LOG = '/internal/deleted-accounts.jsonl'
+    @@deletion_log_mutex = Mutex.new
+
+    # So that a restored backup does not bring a deleted account back
+    # (AccountDeletion, »Deletions after a restore«).
+    def note_deletion(email)
+        months = defined?(BACKUP_RETENTION_MONTHS) ? BACKUP_RETENTION_MONTHS : nil
+        @@deletion_log_mutex.synchronize do
+            entries = AccountDeletion.parse_log(File.exist?(DELETION_LOG) ? File.read(DELETION_LOG) : '')
+            kept = AccountDeletion.prune(entries, months)
+            text = kept.map { |e| JSON.generate(e) + "\n" }.join + AccountDeletion.log_line(email, LOGIN_CODE_SALT)
+            AtomicFile.write(DELETION_LOG, text)
+        end
+    end
+
+    # After restoring a backup made at backup_time: delete again every
+    # account deleted since. Returns the addresses.
+    post '/api/admin/repeat_deletions' do
+        assert(admin_logged_in?)
+        data = parse_request_data(:required_keys => [:backup_date])
+        backup_time = Time.parse(data[:backup_date].to_s) rescue nil
+        halt 400, { :error => 'invalid_date' }.to_json unless backup_time
+        entries = AccountDeletion.parse_log(File.exist?(DELETION_LOG) ? File.read(DELETION_LOG) : '')
+        emails = neo4j_query('MATCH (u:User) RETURN u.email AS email;').map { |row| row['email'].to_s }
+        again = AccountDeletion.to_delete_again(entries, emails, LOGIN_CODE_SALT, backup_time)
+        again.each { |email| delete_account(email) }
+        STDERR.puts "Deletions repeated by #{@session_user[:email]} for a backup of #{backup_time}: #{again.size}"
+        respond(:deleted => again)
     end
 
     # An administrator deletes an account, on request or by the deletion

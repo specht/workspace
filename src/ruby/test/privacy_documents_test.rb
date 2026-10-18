@@ -12,6 +12,8 @@ class PrivacyDocumentsTest < Minitest::Test
         'SCHOOL_LAW' => '§ 64 Abs. 11 SchulG und § 2 DigLLV',
         'LEGAL_BASIS' => :school,
         'WEB_ROOT' => 'https://code.example.org',
+        'BACKUP' => 'auf einem Speicher im Rechenzentrum',
+        'BACKUP_RETENTION_MONTHS' => 6,
     }.freeze
 
     def settings(values)
@@ -43,7 +45,7 @@ class PrivacyDocumentsTest < Minitest::Test
         s = settings(FULL)
         vvt = PrivacyDocuments.body('vvt', s)
         loesch = PrivacyDocuments.body('loeschkonzept', s)
-        Privacy.records.each do |r|
+        Privacy.records(s).each do |r|
             assert_includes vvt, Privacy.h(r[:data])
             assert_includes loesch, Privacy.h(r[:how_long])
         end

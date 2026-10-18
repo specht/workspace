@@ -41,6 +41,10 @@ Alle freiwillig; fehlt eine, sagt die Seite, dass die Angabe fehlt.
 - `SCHOOL_LAW`: die Vorschrift, auf die sich die Schule stützt. Steht darin
   `DigLLV`, nennen Prüfübersicht und Löschkonzept die Berliner Regeln.
 - `SUPERVISORY_AUTHORITY`: die Aufsichtsbehörde für Beschwerden.
+- `BACKUP`, `BACKUP_RETENTION_MONTHS`: wo die verschlüsselten Sicherungen
+  liegen und wie viele Monate sie höchstens aufbewahrt werden. Ohne `BACKUP`
+  erwähnen die Seiten keine Sicherungen; die Zahl muss zu borgmatic passen
+  (`keep_daily`, `keep_weekly`, `keep_monthly`, kein `keep_yearly`).
 - `PARENTAL_CONSENT_REQUIRED = true`: der Elternbrief bekommt eine
   Einverständniserklärung, die Datenschutzerklärung sagt, dass Konten erst
   danach freigeschaltet werden. Das Sperren selbst ist noch nicht gebaut.
@@ -73,6 +77,13 @@ Standardvertrag an (bei Hetzner in der Console).
 - Abgelaufene Sitzungen löscht der Server selbst, Zugriffsprotokolle
   logrotate nach 7 Tagen (`bootstrap/03-setup-storage.rb`), die Ausgaben der
   Dienste Docker nach 3 × 10 MB.
+- Sicherungen werden nicht nachträglich verändert; gelöschte Daten
+  verschwinden aus ihnen, wenn sie ablaufen. Jede Löschung steht deshalb
+  ohne Adresse (Hashwert und Datum) in `/internal/deleted-accounts.jsonl`.
+  Nach dem Zurückspielen einer Sicherung: die aktuelle Datei behalten (vorher
+  wegkopieren, wenn `/internal` mit zurückgespielt wird) und unter
+  »Administration › Nach einer Wiederherstellung« mit dem Datum der Sicherung
+  »Löschungen wiederholen«.
 - Traefik vor dem Workspace (`docker/traefik/docker-compose.yaml`) schreibt
   bewusst kein Zugriffsprotokoll (kein `--accesslog`): Die
   Datenschutzerklärung sagt, dass die Protokolle keine IP-Adressen enthalten.
