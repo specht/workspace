@@ -2198,6 +2198,11 @@ class Main < Sinatra::Base
                 rescue => e
                     STDERR.puts "Expiring share links failed: #{e.class}: #{e.message}"
                 end
+                begin
+                    Main.new!.check_disk_space
+                rescue => e
+                    STDERR.puts "Disk check failed: #{e.class}: #{e.message}"
+                end
                 sleep 3000
             end
         end
@@ -4683,6 +4688,45 @@ class Main < Sinatra::Base
         Main.refresh_nginx_config()
 
         respond(:yay => 'sure', :share_tag => share_tag, :share_expires => expires)
+    end
+
+    # Free space where the Workspaces live: a full disk stops every school at
+    # once. Below DISK_LOW_PERCENT or DISK_LOW_GB the administrators get a
+    # mail, at most once a day, and /admin shows it.
+    DISK_LOW_PERCENT = 10
+    DISK_LOW_GB = 20
+    DISK_ALERT_FILE = '/internal/disk-alert.json'
+
+    def self.disk_status
+        line = `df -Pk /user 2>/dev/null`.lines.last.to_s.split
+        total, free = line[1].to_i, line[3].to_i
+        return nil if total.zero?
+
+        free_gb = free / 1024.0 / 1024.0
+        percent = 100.0 * free / total
+        { :free_gb => free_gb.round(1), :free_percent => percent.round(1), :low => percent < DISK_LOW_PERCENT || free_gb < DISK_LOW_GB }
+    end
+
+    def check_disk_space
+        status = Main.disk_status
+        return unless status && status[:low]
+
+        today = Date.today.to_s
+        last = (JSON.parse(File.read(DISK_ALERT_FILE))['sent'] rescue nil)
+        return if last == today
+
+        STDERR.puts "Disk space low: #{status[:free_gb]} GB (#{status[:free_percent]} %) free"
+        text = "<p>Auf dem Server sind unter /user nur noch #{status[:free_gb]} GB frei (#{status[:free_percent]} %). " \
+            'Ist die Platte voll, startet kein Workspace mehr, und Dateien gehen verloren. Unter »Personen und Schulen« zeigt »Speicher« die größten Workspaces.</p>'
+        ADMIN_USERS.each do |admin|
+            deliver_mail do
+                to admin
+                from SMTP_FROM
+                subject "Workspace: wenig Speicherplatz (#{status[:free_gb]} GB frei)"
+                text
+            end
+        end
+        AtomicFile.write(DISK_ALERT_FILE, JSON.generate({ 'sent' => today }))
     end
 
     # Links shared before there was an expiry get SHARE_DAYS from now; expired

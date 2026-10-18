@@ -68,6 +68,7 @@
                     </table>
                 </div>
             </div>
+            #{(d = Main.disk_status) && d[:low] ? "<div class='alert alert-danger'><i class='bi bi-hdd'></i> Wenig Speicherplatz: unter <code>/user</code> sind nur noch #{d[:free_gb]} GB frei (#{d[:free_percent]} %). Die größten Workspaces zeigt <a href='/personen#alle'>»Personen und Schulen«</a> (Sortierung »meister Speicher zuerst«).</div>" : ''}
             <h2 id="server">Server</h2>
             <div class="row">
                 <div class="col-md-6 mb-3">
