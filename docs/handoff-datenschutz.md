@@ -18,21 +18,38 @@ live apps need an owner/viewer who may still use the Workspace; a read-only
 cross-school report; the texts say an account is created with the first
 code request (deferring creation would mean reworking the login request).
 
-Left, as recommendations for the maintainer to weigh:
-- Sessions of 365 days, no »sign out everywhere«; share links without
-  expiry. Login codes stay readable on purpose: teachers show them on the
-  projector.
-- The Ruby backend holds the Docker socket; network exceptions from
-  student containers to infrastructure deserve a service-by-service audit.
-- An audit log of admin look-ins (no notice to the student, by decision).
-- Capacity: one start worker, no storage quotas, no alerting dashboard.
-- main.rb (~7,700 lines): a central authorization service over time.
-- CI: the E2E suite is run by hand; open-answers.browser.spec.ts still
-  expects no test group for `*` teachers (stale since 2026-10-17).
-- Retention »end of the school year« rests on the annual cleanup under
-  »Aufräumen«; group end dates and reminders would make it enforceable.
-- The swap file of credentials.rb was never pushed (removed before the
-  first push).
+Done since (2026-10-19): sign out in all other browsers (profile); share
+links for the whole Workspace hold a week (extend with the same link);
+every admin look-in in /internal/admin-access.jsonl (a year) and on /admin;
+a mail to the admins when /user runs low (10 % or 20 GB); group end dates
+with one reminder and »Gruppen nach ihrem Ende«; CI for the Ruby tests
+(.github/workflows/ruby-tests.yml, checked in a clean ruby:3.4.10-bookworm);
+the open-answers E2E test fixed; client_ip no longer forgeable from a
+Workspace (see the CHANGELOG).
+
+Left, with an assessment (not changed, for the maintainer to decide):
+- Docker socket in the backend: whoever takes over the Ruby process owns
+  the host. The backend is not reachable for students except through its
+  routes (Host check, sessions); the risk is a bug in a route. A first
+  step without a rewrite: a small socket proxy (e.g. one that allows only
+  container create/start/stop/inspect for images and labels of Workspaces)
+  between the backend and Docker. Until then: keep one installation per
+  server, as now.
+- Student containers reach nginx, ruby, mysql and neo4j on every port
+  (peer-firewall.sh, »infrastructure«). The app's own Neo4j (neo4japp) is
+  not on that network. MySQL and Neo4j need credentials per student; worth
+  a test from a Workspace that the root logins are refused from there.
+- Sessions of 365 days: kept on purpose (class rooms); »sign out
+  elsewhere« added. Login codes stay readable: teachers project them.
+- Capacity: one start worker, no storage quotas. Next: measure a class of
+  30 starting at once (e2e resource profile), then a cap on parallel
+  starts per school; quotas only if the disk mail shows a need.
+- main.rb (~7,800 lines): move routes by topic into include/ as was done
+  for groups and people; first candidate a central `Access` module around
+  may_use_workspace?, may_look_in?, managed_group!.
+- Retention »end of the school year«: now group end dates with reminders;
+  the deletion itself stays a decision of the admin (announced deletion).
+- The swap file of credentials.rb was never pushed.
 
 ### Status of the plan below (2026-10-18, night) — read this first
 

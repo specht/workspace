@@ -124,6 +124,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   keine Kommunikation, keine Organisation des Unterrichts, keine Noten;
   Abgaben und Leistungsüberprüfungen sind genannt, die Einordnung trifft die
   Schule.
+- Ein Workspace kann nicht mehr vorgeben, von einer anderen Adresse zu
+  kommen: `X-Forwarded-For` gilt nur, wenn die Anfrage über nginx und Traefik
+  kommt. Vorher ließen sich so die Grenzen je Adresse umgehen (Anmeldecodes,
+  QR-Anmeldung, geteilte Links) und für »Ein Krimi im Terminal« ein fremder
+  Workspace vortäuschen.
+- CI: Die Ruby-Tests laufen bei jedem Push und Pull Request (GitHub
+  Actions). Der E2E-Test zu offenen Antworten erwartet für Lehrkräfte ohne
+  Gruppe jetzt ihre Testgruppe.
 - Gruppen haben ein Enddatum (»Endet am« unter `/gruppen`): Danach bekommen
   ihre Lehrkräfte einmal eine Erinnerung, die Gruppe zu löschen oder ein neues
   Ende einzutragen, und »Aufräumen« unter `/personen` listet alle Gruppen nach
