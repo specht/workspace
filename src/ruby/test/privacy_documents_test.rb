@@ -68,7 +68,8 @@ class PrivacyDocumentsTest < Minitest::Test
         assert_includes PrivacyDocuments.body('nutzungsordnung', s), 'Vereinbarung mit Dr. Erika Muster am Beispiel-Gymnasium'
         letter = PrivacyDocuments.body('elternbrief', s)
         assert_includes letter, 'Mit freundlichen Grüßen<br>Tom Lehrer'
-        assert_includes letter, 'https://code.example.org/datenschutz/datenschutzerklaerung?schule=partner-1'
+        assert_includes letter, 'erhält Ihr Kind mit der Einladung als PDF'
+        refute_includes letter, '/datenschutz/datenschutzerklaerung?schule=partner-1'
         assert_includes letter, 'tom@partner.example'
         refute_includes letter, 'muster@example.org'
         assert_includes PrivacyDocuments.body('elternbrief', partner(:signer => 'Anna Lehrerin')), 'Mit freundlichen Grüßen<br>Anna Lehrerin'
@@ -84,6 +85,19 @@ class PrivacyDocumentsTest < Minitest::Test
         assert_includes PrivacyDocuments.body('schulleitung', with_note), 'Der Server kostet &lt;500 €&gt; im Jahr. Ein Beitrag ist keine Bedingung'
         assert_includes PrivacyDocuments.body('auftragsverarbeitung', with_note), 'unentgeltlich. Freiwillige Beiträge'
         refute_includes PrivacyDocuments.body('auftragsverarbeitung', settings(FULL)), 'Freiwillige Beiträge'
+    end
+
+    def test_pdf_names_are_plain_ascii
+        s = partner
+        PrivacyDocuments::DOCUMENTS.each_key do |slug|
+            name = PrivacyDocuments.pdf_name(slug, s)
+            assert_match(/\A[A-Za-z0-9 .,()_-]+\.pdf\z/, name, slug)
+            assert_includes name, 'Partnerschule'
+        end
+        assert_equal 'Elternbrief mit Einverstaendniserklaerung - Partnerschule.pdf', PrivacyDocuments.pdf_name('elternbrief', s, :consent => true)
+        assert_equal 'Pruefuebersicht Datenschutz.pdf', PrivacyDocuments.pdf_name('pruefuebersicht', settings({}))
+        assert_includes PrivacyDocuments.page(nil, s), "href='/datenschutz/unterlagen.zip?schule=partner-1'"
+        assert_includes PrivacyDocuments.page(nil, s), "href='/datenschutz/vvt.pdf?schule=partner-1'"
     end
 
     def test_the_index_links_every_document

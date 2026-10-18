@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   pkg-config \
   imagemagick \
   libwebp-dev \
+  weasyprint \
   default-libmysqlclient-dev \
   && rm -rf /var/lib/apt/lists/*
 

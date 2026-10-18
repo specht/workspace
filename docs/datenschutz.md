@@ -8,13 +8,21 @@ gespeichert wird.
 - `/impressum`: Impressum und Datenschutzerklärung, gegliedert nach Art. 13
   und 14 DSGVO; unter jeder Überschrift steht klein, welchen Punkt sie
   erfüllt.
-- `/datenschutz`: die Unterlagen für die Schule, jede zum Drucken oder als
-  PDF: Information und Entscheidung für die Schulleitung, Prüfübersicht,
+- `/datenschutz`: die Unterlagen für die Schule, jede zum Drucken und als
+  PDF (`NAME.pdf`), alle zusammen als ZIP (`unterlagen.zip`): Information
+  und Entscheidung für die Schulleitung, Prüfübersicht,
   Datenschutzerklärung, Eintrag für das Verzeichnis von
   Verarbeitungstätigkeiten, technische und organisatorische Maßnahmen,
   Löschkonzept, Entwurf der Vereinbarung zur Auftragsverarbeitung,
-  Elternbrief, Nutzungsordnung, Nutzungsvereinbarung zum Webhosting. Die
-  Seiten sind öffentlich, damit ein Link an die Schulleitung gehen kann.
+  Elternbrief (auch mit Einverständniserklärung), Nutzungsordnung,
+  Nutzungsvereinbarung zum Webhosting. Nicht öffentlich
+  (`Main#document_access!`): Datenschutzerklärung, Nutzungsordnung und
+  Webhosting für alle, die angemeldet sind (die Fassung einer Partnerschule
+  nur für deren Leute), alles andere für Lehrkräfte der Schule und die
+  Administration. Die Unterlagen gehen als Dateien oder ausgedruckt an die
+  Schulleitung. Öffentlich ist nur `/impressum`. Die PDFs macht
+  `weasyprint` im Ruby-Image, mit nur den Schnitten von IBM Plex Sans
+  (`Main.pdf_font_css`; alle 48 Schriften kosteten neun Sekunden je PDF).
 - `/personen` (»Alle Personen«, »Aufräumen«): ein Konto mit allem, was
   dazugehört, löschen; Einladungen ohne Konto und Konten ohne Einladung.
 

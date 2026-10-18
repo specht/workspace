@@ -508,12 +508,13 @@ module Privacy
 
     # The schools whose Schulleitung decided the same: each has its own
     # version of this page. partners: [{ key:, name: }], approved only.
+    # Partner schools are not named on the public page; their students get
+    # their school's version of this notice as a PDF with the invitation.
     def self.partners_html(partners)
         return '' if partners.nil? || partners.empty?
 
-        links = partners.map { |p| "<a href='/datenschutz/datenschutzerklaerung?schule=#{h(CGI.escape(p[:key].to_s))}'>#{h(p[:name])}</a>" }
-        '<p>Folgende Schulen haben den Einsatz ebenso entschieden. Für ihre Schülerinnen und Schüler ist die jeweilige Schule verantwortlich, ' \
-            "und es gilt deren Fassung dieser Erklärung: #{links.join(', ')}.</p>"
+        '<p>Auch andere Schulen setzen den Workspace ein. Für ihre Schülerinnen und Schüler ist die jeweilige Schule verantwortlich, ' \
+            'und es gilt deren Fassung dieser Erklärung; sie kommt mit der Einladung als PDF.</p>'
     end
 
     # The whole /impressum page body; partners: the approved partner schools

@@ -20,6 +20,30 @@ module PrivacyDocuments
         'webhosting' => ['Nutzungsvereinbarung zum Webhosting', 'für eine eigene, öffentliche Website auf einer Subdomain'],
     }.freeze
 
+    # Who may open a document (Main#document_access!): these three everyone
+    # who is logged in (for a partner school's version: its people), the
+    # rest teachers of the school and the administration. Only /impressum is
+    # public.
+    FOR_EVERYONE = %w[datenschutzerklaerung nutzungsordnung webhosting].freeze
+
+    # The documents in the ZIP for the Schulleitung, in this order; the
+    # webhosting agreement is an offer of its own.
+    PACKAGE = %w[schulleitung pruefuebersicht datenschutzerklaerung vvt tom loeschkonzept auftragsverarbeitung elternbrief nutzungsordnung].freeze
+
+    # A file name in plain ASCII, so that it survives any download header
+    # and any file system: »Elternbrief - Ernst-Haeckel-Schule.pdf«.
+    def self.ascii_name(text)
+        text.gsub('ä', 'ae').gsub('ö', 'oe').gsub('ü', 'ue').gsub('Ä', 'Ae').gsub('Ö', 'Oe').gsub('Ü', 'Ue').gsub('ß', 'ss')
+            .gsub(/[–—]/, '-').gsub(/[^A-Za-z0-9 .,()_-]+/, '').squeeze(' ').strip
+    end
+
+    def self.pdf_name(slug, s, consent: false)
+        title = DOCUMENTS.fetch(slug).first.sub(/ \(Entwurf\)\z/, '').sub(/: .*/, '')
+        title += ' mit Einverstaendniserklaerung' if consent
+        school = s[:school_name] ? " - #{s[:school_name]}" : ''
+        ascii_name("#{title}#{school}") + '.pdf'
+    end
+
     def self.h(text)
         Privacy.h(text)
     end
@@ -160,7 +184,7 @@ module PrivacyDocuments
             ['Datenminimierung', 'Art. 5 Abs. 1 Buchst. c, Art. 25 DSGVO', 'Name nicht zwingend; Protokolle ohne IP-Adressen; von Aufgaben nur die letzte Antwort; kein Tracking (TOM)'],
             ['Datenkategorien', digllv?(s) ? '§ 2 Abs. 5 DigLLV' : 'Art. 30 Abs. 1 Buchst. c DSGVO', 'Stammdaten, Account-Daten, Zuordnungsdaten, nutzergenerierte Inhalte, Verkehrsdaten; jede Datenart ist zugeordnet (VVT)'],
             ['Speicherbegrenzung', 'Art. 5 Abs. 1 Buchst. e DSGVO' + (digllv?(s) ? '; § 2 Abs. 6 DigLLV' : ''), 'Löschung spätestens zum Ende des Schuljahres, Löschkonzept; Löschfunktion für die Administration'],
-            ['Information', 'Art. 12–14 DSGVO', 'Datenschutzerklärung nach Art. 13/14, öffentlich unter /impressum; Elternbrief'],
+            ['Information', 'Art. 12–14 DSGVO', s[:partner] ? 'Datenschutzerklärung nach Art. 13/14, als PDF mit der Einladung an jede Schülerin und jeden Schüler; Elternbrief' : 'Datenschutzerklärung nach Art. 13/14, öffentlich unter /impressum und als PDF mit der Einladung; Elternbrief'],
             ['Rechte der Betroffenen', 'Art. 15–21 DSGVO', 'Eine E-Mail genügt; Antwort binnen eines Monats; Löschung in einem Schritt'],
             ['Auftragsverarbeitung', 'Art. 28 DSGVO' + (digllv?(s) ? '; § 2 Abs. 3 DigLLV' : ''), 'Vereinbarung Schule – Betreiber (Entwurf); Rechenzentrum und E-Mail-Dienst als Unterauftragnehmer mit deren Standardverträgen'],
             ['Serverstandort', digllv?(s) ? '§ 2 Abs. 3 Satz 2 DigLLV' : 'Art. 44 ff. DSGVO', "EU: #{hosting(s)}; keine Übermittlung in Drittländer"],
@@ -360,7 +384,7 @@ module PrivacyDocuments
             <h2>Ihre Rechte</h2>
             <p>
             #{Privacy.rights_html(s)} Für alle Fragen und Anliegen schreiben Sie bitte an #{Privacy.contact_html(s)}.
-            Die vollständige Datenschutzerklärung steht unter #{privacy_url(s)}.
+            #{s[:partner] ? 'Die vollständige Datenschutzerklärung Ihrer Schule erhält Ihr Kind mit der Einladung als PDF per E-Mail; Sie bekommen sie auch bei der Lehrkraft.' : "Die vollständige Datenschutzerklärung steht unter #{privacy_url(s)}."}
             </p>
             <p>Mit freundlichen Grüßen<br>#{signer(s)}</p>
         END_OF_HTML
@@ -497,15 +521,18 @@ module PrivacyDocuments
     # The index of /datenschutz.
     def self.index_html(s)
         items = DOCUMENTS.map do |slug, (title, who)|
-            consent = slug == 'elternbrief' ? " · <a href='#{path(s, slug)}#{s[:school_key] ? '&amp;' : '?'}einverstaendnis=1'>mit Einverständniserklärung</a> (solange die Schule nicht zugestimmt hat)" : ''
-            "<li><a href='#{path(s, slug)}'>#{h(title)}</a>#{consent}<br><span class='who'>#{h(who)}</span></li>"
+            pdf = " · <a href='#{path(s, "#{slug}.pdf")}'>PDF</a>"
+            consent = slug == 'elternbrief' ? " · <a href='#{path(s, slug)}#{s[:school_key] ? '&amp;' : '?'}einverstaendnis=1'>mit Einverständniserklärung</a> (<a href='#{path(s, 'elternbrief.pdf')}#{s[:school_key] ? '&amp;' : '?'}einverstaendnis=1'>PDF</a>; solange die Schule nicht zugestimmt hat)" : ''
+            "<li><a href='#{path(s, slug)}'>#{h(title)}</a>#{pdf}#{consent}<br><span class='who'>#{h(who)}</span></li>"
         end
         partner = s[:partner] ? "<p>Die Unterlagen für <strong>#{school(s)}</strong>: Verantwortlich ist die Schule, #{operator(s)} betreibt den Workspace für sie als Auftragsverarbeiter. " \
             "Was hier fehlt (Anschrift, Datenschutzbeauftragte Stelle, Vorschrift, Aufsichtsbehörde), trägt die Administration unter »Personen › Schulen« ein.</p>" : ''
         <<~END_OF_HTML
             <p>
             Alles, was eine Schule braucht, um den Workspace im Unterricht einzusetzen, aus denselben Angaben wie die
-            <a href='/impressum#datenschutz'>Datenschutzerklärung</a>. Jede Unterlage lässt sich drucken oder als PDF speichern.
+            <a href='/impressum#datenschutz'>Datenschutzerklärung</a>. Für die Schulleitung gibt es alle als PDF in einem Archiv:
+            <a href='#{path(s, 'unterlagen.zip')}'><strong>Alle Unterlagen als PDF (ZIP)</strong></a>; jede einzelne lässt sich auch drucken.
+            Die Unterlagen sind nicht öffentlich: Sie gehen als Dateien oder ausgedruckt an die Schulleitung.
             </p>
             #{partner}
             <ol class='documents'>

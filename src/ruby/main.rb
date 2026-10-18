@@ -2156,10 +2156,11 @@ class Main < Sinatra::Base
             end
         end
 
-        # Announced deletions whose date has come, once an hour.
+        # Announced deletions whose date has come, once an hour (the first
+        # time a minute after start in development, to see it work).
         Thread.new do
             loop do
-                sleep 600
+                sleep(DEVELOPMENT ? 60 : 600)
                 begin
                     Main.new!.run_scheduled_deletions
                 rescue => e
@@ -7424,7 +7425,7 @@ class Main < Sinatra::Base
         row = neo4j_query('MATCH (s:School {key: $key}) RETURN s;', :key => key.to_s).first
         halt 404 unless row
         teachers = neo4j_query(<<~END_OF_QUERY, :key => key.to_s).map { |r| { :name => r['name'], :email => r['email'] } }
-            MATCH (i:Invitation {teacher: true})-[:AT]->(:School {key: $key})
+            MATCH (i:Invitation)-[:AT]->(:School {key: $key})
             RETURN i.name AS name, i.email AS email
             ORDER BY toLower(coalesce(i.name, i.email));
         END_OF_QUERY
@@ -7444,17 +7445,101 @@ class Main < Sinatra::Base
         END_OF_QUERY
     end
 
+    # Who may open a document (the maintainer's decision: only /impressum is
+    # public; the school's documents go to the Schulleitung as files or on
+    # paper). Datenschutzerklärung, Nutzungsordnung and the webhosting
+    # agreement: everyone logged in, a partner school's version only its
+    # people. Everything else: teachers of that school and administrators.
+    def document_access!(slug, key)
+        redirect "#{WEB_ROOT}/login", 302 unless user_logged_in?
+        return if admin_logged_in?
+
+        key = key.to_s
+        roster = !Main.roster_imported.nil?
+        mine = roster ? (school_of_teacher(@session_user[:email]) || {})[:key] : nil
+        if PrivacyDocuments::FOR_EVERYONE.include?(slug)
+            return if key.empty? || mine == key
+            return if roster && !neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email], :key => key).empty?
+                MATCH (:Invitation {email: $email})-[:MEMBER_OF]->(:Group)-[:AT]->(:School {key: $key}) RETURN 1 AS yes LIMIT 1;
+            END_OF_QUERY
+        else
+            halt 403 unless teacher_account_logged_in?
+            return if key.empty? ? (!roster || mine.nil? || mine == Main::HOME_SCHOOL) : mine == key
+        end
+        halt 403
+    end
+
+    # A document as PDF (weasyprint, in the Ruby image): the print view, with
+    # the page's own stylesheet and fonts read from the static folder.
+    #
+    # fonts.css defines every font of the site (48 faces); loading them all
+    # costs weasyprint nine seconds per document. The documents use IBM Plex
+    # Sans only, so the PDF gets just its faces, with file paths.
+    @@pdf_font_css = nil
+
+    def self.pdf_font_css
+        @@pdf_font_css ||= begin
+            css = File.read(File.join(@@static_dir, 'include', 'fonts.css'))
+            css.scan(/@font-face\s*\{[^}]*\}/m).select { |face| face.match?(/font-family:\s*['"]?IBM Plex Sans['"]?\s*;/) }
+                .map { |face| face.gsub(/url\((['"]?)fonts\//, "url(\\1file://#{@@static_dir}/include/fonts/").gsub(/\s*font-display:[^;]*;/, '') }
+                .join("\n")
+        end
+    end
+
+    def document_pdf(slug, s)
+        html = PrivacyDocuments.page(slug, s).sub(%r{<link href='/include/fonts.css' rel='stylesheet'>}, "<style>#{Main.pdf_font_css}</style>")
+        pdf, error, status = Open3.capture3('weasyprint', '--quiet', '-', '-', :stdin_data => html, :binmode => true)
+        raise "weasyprint failed: #{error[0, 300]}" unless status.success?
+
+        pdf
+    end
+
+    def document_settings(slug)
+        s = privacy_settings_for(params['schule'])
+        s = s.merge(:parental_consent_required => true) if slug == 'elternbrief' && params['einverstaendnis'] == '1'
+        s
+    end
+
     get '/datenschutz' do
+        document_access!('schulleitung', params['schule'])
         respond_raw_with_mimetype(PrivacyDocuments.page(nil, privacy_settings_for(params['schule'])), 'text/html')
     end
 
     # ?einverstaendnis=1 on the Elternbrief adds the consent form: for a
     # student whose school has not agreed yet (/gruppen, »Einverständnis«).
+    # NAME.pdf is the document as a PDF, unterlagen.zip all of the package.
     get '/datenschutz/:document' do
-        halt 404 unless PrivacyDocuments::DOCUMENTS.key?(params['document'])
-        s = privacy_settings_for(params['schule'])
-        s = s.merge(:parental_consent_required => true) if params['document'] == 'elternbrief' && params['einverstaendnis'] == '1'
-        respond_raw_with_mimetype(PrivacyDocuments.page(params['document'], s), 'text/html')
+        document = params['document'].to_s
+        if document == 'unterlagen.zip'
+            document_access!('schulleitung', params['schule'])
+            s = privacy_settings_for(params['schule'])
+            Dir.mktmpdir('unterlagen') do |dir|
+                PrivacyDocuments::PACKAGE.each_with_index do |slug, i|
+                    File.binwrite(File.join(dir, format('%02d %s', i + 1, PrivacyDocuments.pdf_name(slug, s))), document_pdf(slug, s))
+                end
+                File.binwrite(File.join(dir, format('%02d %s', PrivacyDocuments::PACKAGE.size + 1, PrivacyDocuments.pdf_name('elternbrief', s, :consent => true))),
+                    document_pdf('elternbrief', s.merge(:parental_consent_required => true)))
+                zip = File.join(dir, 'unterlagen.zip')
+                ok = system('python3', '-I', '-c', 'import sys, zipfile, os; z = zipfile.ZipFile(sys.argv[1], "w", zipfile.ZIP_DEFLATED); [z.write(os.path.join(sys.argv[2], f), f) for f in sorted(os.listdir(sys.argv[2])) if f.endswith(".pdf")]; z.close()',
+                    zip, dir)
+                raise 'zip failed' unless ok
+
+                @respond_filename = PrivacyDocuments.ascii_name("Unterlagen Workspace#{s[:school_name] ? " - #{s[:school_name]}" : ''}") + '.zip'
+                respond_raw_with_mimetype(File.binread(zip), 'application/zip')
+            end
+            return
+        end
+        pdf = document.end_with?('.pdf')
+        slug = document.delete_suffix('.pdf')
+        halt 404 unless PrivacyDocuments::DOCUMENTS.key?(slug)
+        document_access!(slug, params['schule'])
+        s = document_settings(slug)
+        if pdf
+            @respond_filename = PrivacyDocuments.pdf_name(slug, s, :consent => s[:parental_consent_required] && slug == 'elternbrief')
+            respond_raw_with_mimetype(document_pdf(slug, s), 'application/pdf')
+        else
+            respond_raw_with_mimetype(PrivacyDocuments.page(slug, s), 'text/html')
+        end
     end
 
     get '/*' do

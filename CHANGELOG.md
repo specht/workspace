@@ -112,6 +112,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Datum eines schriftlichen Einverständnisses ein (Elternbrief mit
   Einverständniserklärung unter `/datenschutz`). Gesperrt wird ohne beides
   niemand; Gruppe und `/personen` zeigen, wie viele noch ungeklärt sind.
+- Die Unterlagen für die Schule sind nicht mehr öffentlich: Nur
+  `/impressum` ist es. Datenschutzerklärung, Nutzungsordnung und
+  Webhosting-Vereinbarung öffnen alle, die angemeldet sind (die Fassung einer
+  Partnerschule nur deren Leute), alles Weitere Lehrkräfte der Schule und die
+  Administration. Jede Unterlage gibt es als PDF, alle zusammen als ZIP für
+  die Schulleitung (»Alle Unterlagen als PDF«). `/impressum` nennt keine
+  Partnerschulen mehr. Für Betreibende: Das Ruby-Image enthält jetzt
+  `weasyprint`; nach dem Update `./config.rb build ruby` und
+  `./config.rb up -d ruby`.
 - Konten der Administration (`ADMIN_USERS`) lassen sich auf keinem Weg
   löschen: weder unter `/personen` (einzeln, gesammelt, angekündigt) noch
   im eigenen Profil noch durch die stündliche Löschung. Das Profil sagt

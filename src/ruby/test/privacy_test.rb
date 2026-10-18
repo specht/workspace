@@ -105,7 +105,9 @@ class PrivacyTest < Minitest::Test
     def test_approved_partner_schools_are_listed
         partners = [{ :key => 'p 1', :name => 'Erste <Schule>' }, { :key => 'p2', :name => 'Zweite' }]
         html = Privacy.page_html(Privacy.settings(scope(FULL.merge('LEGAL_BASIS' => :school))), :partners => partners)
-        assert_includes html, "<a href='/datenschutz/datenschutzerklaerung?schule=p+1'>Erste &lt;Schule&gt;</a>, <a href='/datenschutz/datenschutzerklaerung?schule=p2'>Zweite</a>"
+        assert_includes html, 'Auch andere Schulen setzen den Workspace ein'
+        refute_includes html, 'Erste', 'partner schools are not named on the public page'
+        refute_includes html, 'schule=p2'
         refute_includes page(FULL), 'ebenso entschieden'
     end
 
