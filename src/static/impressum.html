@@ -10,8 +10,38 @@
         font-size: 1.05rem;
         margin: 1em 0 0.3em 0;
     }
+    /* default.css keeps .table cells on one line */
+    .privacy-table td,
+    .privacy-table th {
+        white-space: normal;
+    }
     .privacy-table td:first-child {
         width: 35%;
+    }
+    @media (max-width: 767px) {
+        .privacy-table thead {
+            display: none;
+        }
+        .privacy-table tr,
+        .privacy-table td {
+            display: block;
+            width: auto !important;
+        }
+        .privacy-table td {
+            border: none;
+            padding: 0.1em 0;
+        }
+        .privacy-table td:first-child {
+            font-weight: bold;
+            padding-top: 0.8em;
+        }
+        .privacy-table td:nth-child(2)::before { content: 'Wozu: '; }
+        .privacy-table td:nth-child(3)::before { content: 'Wer sieht sie: '; }
+        .privacy-table td:nth-child(4)::before { content: 'Wie lange: '; }
+        .privacy-table tr {
+            border-bottom: 1px solid var(--bs-border-color);
+            padding-bottom: 0.8em;
+        }
     }
 </style>
 <div class='container'>
