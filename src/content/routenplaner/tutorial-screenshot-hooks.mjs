@@ -1,6 +1,14 @@
 // Screenshot hooks for »Ein Routenplaner für Berlin«,
 // src/tutorial-screenshots/README.md »Tutorial-specific hooks«.
 
+// A click on a button of the panel, as the page receives it. Playwright's own
+// click waits until nothing moves, and while a search with a hundred thousand
+// nodes replays, the page draws without a pause.
+async function press(page, selector) {
+    await page.waitForSelector(selector, { state: 'attached' });
+    await page.evaluate((selector) => document.querySelector(selector).click(), selector);
+}
+
 export default {
     // The template is cloned to /workspace/routenplaner-starter.
     writeFileSubdirectory: 'routenplaner-starter',
@@ -37,7 +45,7 @@ export default {
         async show({ page, args }) {
             const [lon, lat, scale, graph] = String(args).trim().split(/\s+/);
             if (graph === 'graph') {
-                await page.click('#layers [data-layer="graph"]');
+                await press(page, '#layers [data-layer="graph"]');
                 await page.waitForFunction(() => typeof graph !== 'undefined' && graph);
             }
             await page.evaluate(async ([lon, lat, scale]) => {
@@ -57,11 +65,11 @@ export default {
         // to the end and the way is drawn
         async route({ page, args }) {
             const [start, goal, search, mode = 'length'] = String(args).split('|').map((part) => part.trim());
-            if (await page.getAttribute('#tabs [data-tab="route"]', 'aria-selected') !== 'true') await page.click('#tabs [data-tab="route"]');
-            await page.click(`#modes [data-mode="${mode}"]`);
+            if (await page.getAttribute('#tabs [data-tab="route"]', 'aria-selected') !== 'true') await press(page, '#tabs [data-tab="route"]');
+            await press(page, `#modes [data-mode="${mode}"]`);
             // die Ansicht »Graph« eines Bildes davor bleibt nach dem Neuladen in der Adresse
-            await page.click('#layers [data-layer="map"]');
-            await page.click(`#searches [data-search="${search}"]`);
+            await press(page, '#layers [data-layer="map"]');
+            await press(page, `#searches [data-search="${search}"]`);
             for (const [field, text] of [['#start', start], ['#goal', goal]]) {
                 await page.fill(field, text);
                 await page.locator(field).dispatchEvent('change');
@@ -78,14 +86,14 @@ export default {
         async tour({ page, args }) {
             const [search, mode, method, ...places] = String(args).split('|').map((part) => part.trim());
             // die Ansicht »Graph« eines Bildes davor bleibt nach dem Neuladen in der Adresse
-            await page.click('#layers [data-layer="map"]');
-            await page.click('#tabs [data-tab="tour"]');
-            await page.evaluate(() => { stops = []; showStops(); });
-            await page.click(`#searches [data-search="${search}"]`);
-            await page.click(`#modes [data-mode="${mode}"]`);
-            await page.click(`#methods [data-method="${method}"]`);
+            await press(page, '#layers [data-layer="map"]');
+            await press(page, '#tabs [data-tab="tour"]');
+            await page.evaluate(() => { stops = []; tour = null; showStops(); });
+            await press(page, `#searches [data-search="${search}"]`);
+            await press(page, `#modes [data-mode="${mode}"]`);
+            await press(page, `#methods [data-method="${method}"]`);
             for (const place of places) {
-                await page.click('#stop');
+                await page.focus('#stop');
                 await page.keyboard.type(place);
                 await page.keyboard.press('Enter');
             }
