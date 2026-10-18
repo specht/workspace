@@ -22,7 +22,11 @@ writes next to the files.
 
 Next to each file of ways, `NAME-places.tsv` has the places to start from and
 go to: chosen sights, every named square (`place=square`) and every school.
-Never addresses.
+For Berlin the schools come from its official list (the WFS `schulen` of the
+Geoportal Berlin, Senatsverwaltung für Bildung, Datenlizenz Deutschland Zero
+2.0; cached in `cache/`), without the adult education centres: in
+OpenStreetMap `amenity=school` is also a DJ school, an atelier or a school
+garden. Only names and positions are used, never addresses.
 
 Every file of ways is written compressed as well (Berlin is 70 MB as text, a
 Bezirk 3 to 7 MB). `src/scripts/publish-datasets.rb streets` publishes the

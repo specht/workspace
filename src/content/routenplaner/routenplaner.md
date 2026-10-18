@@ -298,7 +298,7 @@ hook: route Fichtenberg | Titania | dijkstra
 -->
 <img class='full' src='dijkstra.webp' alt='Dijkstra vom Fichtenberg-Gymnasium zum Titania-Palast: Die besuchten Knoten liegen gelb nah an der Schule und werden in alle Richtungen gleichmäßig orange und rot, wie Ringe um den Start. Der Weg ist eine lila Linie, die gerade die Schloßstraße entlang führt. Oben links stehen Länge, Knoten und wie viele die Suche besucht hat.'>
 
-Jetzt breitet sich die Welle in Metern aus, wie Ringe um den Start, und der Weg folgt der Schloßstraße statt Zacken zu machen. Er hat mehr Knoten, ist aber kürzer.
+Jetzt breitet sich die Welle in Metern aus, wie Ringe um den Start, und der Weg folgt der Schloßstraße statt Zacken zu machen. Auf diesem kurzen Stück sind beide Wege fast gleich lang; wie verschieden sie sein können, zeigt ein weiter Weg.
 
 Mit dem Schieber unter dem Ergebnis siehst du dir die Suche Schritt für Schritt an: ▶ spielt sie ab, ‹ und › gehen einen Knoten zurück und vor, das Tempo »Langsam« zeigt jeden einzelnen. Hast du angehalten, bleibt der Schritt stehen, wenn du die andere Suche wählst. So vergleichst du beide an derselben Stelle.
 
@@ -323,8 +323,8 @@ hook: route Fichtenberg | Pfaueninsel | dijkstra
 -->
 <figure>
 <img src='pfaueninsel-dijkstra.webp' alt='Dijkstra vom Fichtenberg-Gymnasium zur Pfaueninsel: Die besuchten Knoten füllen den Bezirk ebenso. Der Weg ist eine lila Linie fast gerade nach Westen, über den Bahnhof Wannsee zur Fähre.'>
-<figcaption>Dijkstra: 15,8 km</figcaption>
+<figcaption>Dijkstra: 15,7 km</figcaption>
 </figure>
 </div>
 
-Die Breitensuche macht 7 Kilometer Umweg. Dijkstra findet den kürzesten Weg, aber schau auf die Zeit: ein paar Sekunden statt Bruchteilen davon. Beide besuchen fast den ganzen Bezirk, der Unterschied ist `min_by`: Es geht bei jedem Schritt durch die ganze `frontier`, und die wird groß. Wie es schneller geht, kommt als Nächstes.
+Die Breitensuche macht gut 7 Kilometer Umweg. Dijkstra findet den kürzesten Weg, aber schau auf die Zeit: ein paar Sekunden statt Bruchteilen davon. Beide besuchen fast den ganzen Bezirk, der Unterschied ist `min_by`: Es geht bei jedem Schritt durch die ganze `frontier`, und die wird groß. Wie es schneller geht, kommt als Nächstes.

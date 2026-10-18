@@ -22,7 +22,8 @@ steglitz-zehlendorf.tsv, mitte.tsv, … Other areas are bounding boxes.
 
 Next to each file of ways, NAME-places.tsv has the places to start from and
 go to: public places only (sights, stations, parks, squares), and every
-school with a name. Never addresses: nobody should plan the way to their own
+school (for Berlin from its official list of schools, elsewhere every
+amenity=school with a name). Never addresses: nobody should plan the way to their own
 home. A line:
 
     kind      sight, square or school
@@ -34,6 +35,7 @@ OpenStreetMap data © OpenStreetMap contributors, ODbL 1.0.
 import argparse
 import datetime
 import gzip
+import json
 import math
 import os
 import sys
@@ -52,6 +54,13 @@ BEZIRKE = ['Mitte', 'Friedrichshain-Kreuzberg', 'Pankow', 'Charlottenburg-Wilmer
            'Marzahn-Hellersdorf', 'Lichtenberg', 'Reinickendorf']
 # The grid the Bezirke are drawn into, in degrees: about 14 m by 22 m
 CELL = 0.0002
+# Berlin's own list of its schools (Senatsverwaltung für Bildung, Datenlizenz
+# Deutschland Zero 2.0): in OpenStreetMap, amenity=school is also a DJ
+# school, an atelier or a school garden. Only the name and the position are
+# used, not the adult education centres.
+SCHOOLS = ('https://gdi.berlin.de/services/wfs/schulen?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature'
+           '&TYPENAMES=schulen:schulen&OUTPUTFORMAT=application/json&SRSNAME=EPSG:4326')
+NOT_SCHOOLS = {'Volkshochschule', 'Volkshochschul-Kolleg'}
 
 
 def slug(name):
@@ -132,7 +141,9 @@ class Places(osmium.SimpleHandler):
         if points:
             self.check(a.tags, sum(p[0] for p in points) / len(points), sum(p[1] for p in points) / len(points))
 
-    def places(self):
+    def places(self, schools=None):
+        """The sights, squares and schools; schools=[(name, lon, lat)] in place
+        of the ones from OpenStreetMap"""
         out = []
         for sight in SIGHTS:
             name, near = sight[0], (sight[2] if len(sight) > 2 else None)
@@ -144,7 +155,7 @@ class Places(osmium.SimpleHandler):
             lon, lat = min(hits, key=lambda p: (p[0] - near[0]) ** 2 + (p[1] - near[1]) ** 2) if near else hits[0]
             out.append(('sight', shown, lon, lat))
         out += [('square', name, lon, lat) for name, lon, lat in sorted(self.squares.values())]
-        out += [('school', name, lon, lat) for name, lon, lat in sorted(self.schools.values())]
+        out += [('school', name, lon, lat) for name, lon, lat in sorted(schools or self.schools.values())]
         return out
 
 
@@ -216,6 +227,21 @@ class Ways(osmium.SimpleHandler):
         self.count += 1
 
 
+def official_schools():
+    """[(name, lon, lat)] from Berlin's list of schools, cached in cache/"""
+    path = os.path.join(HERE, 'cache', 'berlin-schulen.json')
+    if not os.path.exists(path):
+        print('Downloading the schools of Berlin', file=sys.stderr)
+        request = urllib.request.Request(SCHOOLS, headers={'User-Agent': 'collect-streets (Hackschule Workspace)'})
+        with urllib.request.urlopen(request) as response, open(path + '.part', 'wb') as f:
+            f.write(response.read())
+        os.rename(path + '.part', path)
+    with open(path) as f:
+        features = json.load(f)['features']
+    return [(x['properties']['schulname'], *x['geometry']['coordinates'][:2]) for x in features
+            if x.get('geometry') and x['properties'].get('schulart') not in NOT_SCHOOLS]
+
+
 def download(region):
     os.makedirs(os.path.join(HERE, 'cache'), exist_ok=True)
     path = os.path.join(HERE, 'cache', region.replace('/', '-') + '.osm.pbf')
@@ -247,7 +273,7 @@ def main():
     # the places and, for Berlin, the boundaries of the Bezirke
     finder = Places(BEZIRKE if berlin else ())
     finder.apply_file(download(args.region), locations=True)
-    places = finder.places()
+    places = finder.places(official_schools() if berlin else None)
     missing = [name for name, rings in finder.bezirke.items() if not rings]
     if missing:
         sys.exit(f'No boundary found for {", ".join(missing)}')

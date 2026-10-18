@@ -1085,7 +1085,7 @@ fetch('map.json').then((r) => r.json()).then((map) => {
     lats.sort();
     const at = (sorted, share) => sorted[Math.floor(share * (sorted.length - 1))];
     data.core = [at(lons, 0.02), at(lats, 0.02), at(lons, 0.98), at(lats, 0.98)];
-    const name = map.area.replace(/(^|-)\p{L}/gu, (s) => s.toUpperCase());
+    const name = map.area.replace(/(^|[-+])\p{L}/gu, (s) => s.toUpperCase()).replaceAll('+', ' + ');
     document.getElementById('area').textContent =
         `${name}: ${NUMBER.format(map.ways.length)} Wege, ${NUMBER.format(map.places.length)} Orte`;
     setUpPlaces();

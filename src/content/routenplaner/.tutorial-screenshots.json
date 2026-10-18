@@ -2,44 +2,44 @@
   "screenshots": {
     "breitensuche.webp": {
       "environment_fingerprint": "a0340f4e302596cfdd3917efb2c60d391af18d874754b0ea90ad4694e6d3ee4d",
-      "output_sha256": "28263e9be6f87a195ee8f6ae7a34968691fc98970327c77a1baab37fed9fe665",
-      "state_hash": "52af8cf9a879fbc554dd4cdaedfabe7050af021da2f94a1cc26e8330789eb95a",
+      "output_sha256": "237537769d33f758bf6f21eff5ee9eb1575a45177b9c2e4cb608779b332646b2",
+      "state_hash": "ced1b15f12fba5a451b985d0f1ba8113ff0f940a2c215d5bfdf265f238aa35d5",
       "workspace_look": "4.138.0-ls366"
     },
     "dijkstra.webp": {
       "environment_fingerprint": "a0340f4e302596cfdd3917efb2c60d391af18d874754b0ea90ad4694e6d3ee4d",
-      "output_sha256": "f888320abd86803f2ccd3ad77fce4a74c3c99cd0f41ede709e534137aca482bd",
-      "state_hash": "824946b32db863c0557b9c8406cb98520e5b5afd4638cc702abe70d04fb6c40b",
+      "output_sha256": "9d5969d0497003f37466add6ad33325fd2c79f71f5acb98353b56f30ac583862",
+      "state_hash": "6d52b86a6c58063721d23461429736649a100412a9fe721785f375b41240ac66",
       "workspace_look": "4.138.0-ls366"
     },
     "karte.webp": {
       "environment_fingerprint": "a0340f4e302596cfdd3917efb2c60d391af18d874754b0ea90ad4694e6d3ee4d",
-      "output_sha256": "4d11def988e536d834606eb10b048c9a0163720811ed196ade1e5e14ac597ca3",
-      "state_hash": "8c8712e40f69ab70daef8e0ec1791181b3f8822b3c7d9658c00fd557dabd0dd3",
+      "output_sha256": "057c260afef2a763342a39c49ebbbe0aada4535b7604dca402e67aaba7031a34",
+      "state_hash": "295fc9b4a52e9bec0e97353a18c819a26ca1d3cb1f55815778ef382bc8d88d28",
       "workspace_look": "4.138.0-ls366"
     },
     "nachbarn.webp": {
       "environment_fingerprint": "a0340f4e302596cfdd3917efb2c60d391af18d874754b0ea90ad4694e6d3ee4d",
-      "output_sha256": "9408a371838745d24b0d8815b7cc31178ef7c3dd15449372a57965d9bce8839d",
-      "state_hash": "b76c6597074862b02eb5e97c3ff2d2e7a5e42b50b33d0ff33faf33193251fbd8",
+      "output_sha256": "5f90b2f9ddba59722af7c087929ea50eeec2d9e9cfd608cbe85f15c23fc8755f",
+      "state_hash": "926fdfd22f2df2627a5f1f767e1ce6822b7563feedf0659900172479dd1d11e7",
       "workspace_look": "4.138.0-ls366"
     },
     "pfaueninsel-breitensuche.webp": {
       "environment_fingerprint": "a0340f4e302596cfdd3917efb2c60d391af18d874754b0ea90ad4694e6d3ee4d",
-      "output_sha256": "5ba6ec34070dcbfbe04b95b9f4ac9ab14d6723ac6bb04bf4e67050ca8d7a1451",
-      "state_hash": "4d0f27815e9080e091c500002e8ea96bbe412d8ada4c868e91afa06c71e429a4",
+      "output_sha256": "4464622778d1e4853657d623231a547f807b1b12b263295bdc1044103f476548",
+      "state_hash": "1ebc7f168452166899b16e5f856ee78fca64eaafc026a0aaaba80278e85e528d",
       "workspace_look": "4.138.0-ls366"
     },
     "pfaueninsel-dijkstra.webp": {
       "environment_fingerprint": "a0340f4e302596cfdd3917efb2c60d391af18d874754b0ea90ad4694e6d3ee4d",
-      "output_sha256": "871a2e2982bc9fd900f97cc81b1db7229229012125f6480e3c81ad3ddcea93ce",
-      "state_hash": "8ecde8cf0d41e1e9f3a4778a4ebd0b4bf394eb74beff4c3100ba6e9562632683",
+      "output_sha256": "a5cc99184af8265d3928c22d11e7807436262d85ac005337f4bdb45302cf73b2",
+      "state_hash": "a1436fb0b662463e24ade09759d60382fa6a3af421d2e00f9ee169ec7bdd8d3c",
       "workspace_look": "4.138.0-ls366"
     },
     "server.webp": {
       "environment_fingerprint": "a0340f4e302596cfdd3917efb2c60d391af18d874754b0ea90ad4694e6d3ee4d",
-      "output_sha256": "f2a80c107f5513ed6409e32cdd0fe91ea3ec3f77c6c3dd05ddba02721ead68d6",
-      "state_hash": "f6e037d92a0e20f51db600646809a5054ba87ad137d3c7c616910703aa1d047a",
+      "output_sha256": "55f10dfa513400037040ea79d694ee279571761348d489a1dafecada64c676ac",
+      "state_hash": "c7a253d04d380343ad672add848bfceb3554839cd9100abdbe869c68d82696d9",
       "workspace_look": "4.138.0-ls366"
     }
   },

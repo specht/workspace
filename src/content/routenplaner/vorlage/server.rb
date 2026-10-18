@@ -3,6 +3,7 @@
 #
 #   ruby server.rb                 # Steglitz-Zehlendorf
 #   AREA=mitte ruby server.rb      # ein anderer Bezirk, oder AREA=berlin für ganz Berlin
+#   AREA=mitte,pankow ruby server.rb   # mehrere Bezirke zusammen
 #
 # Nach jeder Änderung an routes.rb: mit Strg+C beenden und neu starten.
 
@@ -14,25 +15,35 @@ require 'zlib'
 $stdout.sync = true # jede Meldung sofort, nicht erst am Ende
 require_relative 'routes'
 
-AREA = ENV.fetch('AREA', 'steglitz-zehlendorf')
-FILE = File.join(__dir__, 'data', "#{AREA}.tsv")
-PLACES_FILE = File.join(__dir__, 'data', "#{AREA}-places.tsv")
-
 # Die zwölf Bezirke und ganz Berlin; was nicht in data/ liegt, lädt der
 # Server beim ersten Mal herunter
 AREAS = %w[berlin charlottenburg-wilmersdorf friedrichshain-kreuzberg lichtenberg marzahn-hellersdorf mitte
            neukoelln pankow reinickendorf spandau steglitz-zehlendorf tempelhof-schoeneberg treptow-koepenick].freeze
 DOWNLOADS = 'https://github.com/specht/workspace-files/raw/main/street-archive'
 
-unless File.exist?(FILE)
-    abort "Kein Gebiet #{AREA}. Es gibt: #{AREAS.join(', ')}" unless AREAS.include?(AREA)
+def data_file(name, suffix = '') = File.join(__dir__, 'data', "#{name}#{suffix}.tsv")
 
-    puts "Lade #{AREA} herunter …"
-    URI.open("#{DOWNLOADS}/#{AREA}.tsv.gz") do |download|
-        File.write("#{FILE}.part", Zlib::GzipReader.new(download).read)
+def download(area)
+    abort "Kein Gebiet #{area}. Es gibt: #{AREAS.join(', ')}" unless AREAS.include?(area)
+
+    puts "Lade #{area} herunter …"
+    URI.open("#{DOWNLOADS}/#{area}.tsv.gz") do |download|
+        File.write("#{data_file(area)}.part", Zlib::GzipReader.new(download).read)
     end
-    File.write(PLACES_FILE, URI.open("#{DOWNLOADS}/#{AREA}-places.tsv", &:read))
-    File.rename("#{FILE}.part", FILE)
+    File.write(data_file(area, '-places'), URI.open("#{DOWNLOADS}/#{area}-places.tsv", &:read))
+    File.rename("#{data_file(area)}.part", data_file(area))
+end
+
+# Mehrere Gebiete, durch Kommas getrennt, werden zu einer Datei: Wege an
+# einer Grenze stehen in beiden Bezirken, in der Datei nur einmal
+PARTS = ENV.fetch('AREA', 'steglitz-zehlendorf').split(',').map(&:strip).reject(&:empty?).uniq.sort
+PARTS.each { |area| download(area) unless File.exist?(data_file(area)) }
+AREA = PARTS.join('+')
+FILE = data_file(AREA)
+PLACES_FILE = data_file(AREA, '-places')
+if PARTS.size > 1
+    File.write(FILE, PARTS.flat_map { |area| File.readlines(data_file(area)) }.uniq.join)
+    File.write(PLACES_FILE, PARTS.flat_map { |area| File.readlines(data_file(area, '-places')) }.uniq.join)
 end
 
 set :port, 4567
