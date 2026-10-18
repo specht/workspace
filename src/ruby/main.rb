@@ -5307,7 +5307,6 @@ class Main < Sinatra::Base
         rescue
         end
 
-        STDERR.puts "email_for_tag: #{email_for_tag.to_yaml}"
 
         info_for_tag = workspace_runtime.workspace_network_info(
             :timeout => shell_timeout(:docker_inspect),
@@ -5337,7 +5336,9 @@ class Main < Sinatra::Base
                         next unless active_users.include?(user_tag)
                         io2.puts "<tr id='tr_hs_code_#{user_tag}'>"
                         io2.puts "<td><code>#{user_tag}</code></td>"
-                        io2.puts "<td>#{@@invitations[email_for_tag[user_tag]][:name]}</td>"
+                        # The address from the group, not from email_for_tag: an invited
+                        # address can have a Workspace folder without a User node.
+                        io2.puts "<td>#{CGI.escapeHTML(((@@invitations[email] || {})[:name] || email).to_s)}</td>"
                         # io2.puts "<td class='td_ip'>#{(info_for_tag[user_tag] || {})[:ip] || '&ndash;'}</td>"
                         io2.puts "<td class='td_cpu'>&ndash;</td>"
                         io2.puts "<td class='td_ram'>&ndash;</td>"
@@ -5349,9 +5350,9 @@ class Main < Sinatra::Base
                             io2.puts "<td>&ndash;</td>"
                         end
                         io2.puts "<td class='td_pid'>&ndash;</td>"
-                        io2.puts "<td><button class='btn btn-sm btn-success bu-open-workspace-as-admin' data-email='#{email_for_tag[user_tag]}'><i class='bi bi-code-slash'></i>&nbsp;Workspace öffnen</button></td>"
+                        io2.puts "<td><button class='btn btn-sm btn-success bu-open-workspace-as-admin' data-email='#{CGI.escapeHTML(email)}'><i class='bi bi-code-slash'></i>&nbsp;Workspace öffnen</button></td>"
                         if admin_logged_in?
-                            io2.puts "<td><button class='btn btn-sm btn-warning bu-impersonate' data-email='#{email_for_tag[user_tag]}'><i class='bi bi-person-vcard'></i>&nbsp;Impersonate</button></td>"
+                            io2.puts "<td><button class='btn btn-sm btn-warning bu-impersonate' data-email='#{CGI.escapeHTML(email)}'><i class='bi bi-person-vcard'></i>&nbsp;Impersonate</button></td>"
                         end
                         io2.puts "</tr>"
                     end
