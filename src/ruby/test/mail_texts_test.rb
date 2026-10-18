@@ -28,6 +28,13 @@ class MailTextsTest < Minitest::Test
         assert_includes ready, "#{WEB}/datenschutz?schule=bs7"
     end
 
+    def test_welcome_student_links_the_notice_that_applies
+        _, plain = MailTexts.welcome_student(:web_root => WEB, :group => '10a', :teacher => 'T', :email => 's@example.org')
+        assert_includes plain, "#{WEB}/impressum#datenschutz"
+        _, partner = MailTexts.welcome_student(:web_root => WEB, :group => '10a', :teacher => 'T', :email => 's@example.org', :privacy_url => "#{WEB}/datenschutz/datenschutzerklaerung?schule=bs7")
+        assert_includes partner, 'schule=bs7'
+    end
+
     def test_deletion_notice_says_the_date_and_that_nothing_is_to_do
         subject, html = MailTexts.deletion_notice(:web_root => WEB, :date => Date.new(2026, 11, 1), :signature => 'Admin')
         assert_includes subject, '01.11.2026'

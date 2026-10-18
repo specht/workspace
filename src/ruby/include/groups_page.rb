@@ -521,11 +521,15 @@ class Main < Sinatra::Base
         targets = rows.select { |r| wanted ? wanted.include?(r['email']) : r['welcomed_at'].nil? }.map { |r| r['email'] }
         Main.load_invitations()
         teacher = (@@invitations[my_email] || {})[:name] || my_email
+        # The privacy notice that applies: a partner school's own version,
+        # otherwise the one on /impressum.
+        school = school_of_group(name)
+        privacy_url = school && !school[:home] && !school[:guests] ? "#{WEB_ROOT}/datenschutz/datenschutzerklaerung?schule=#{CGI.escape(school[:key])}" : nil
         sent = []
         targets.each do |email|
             break unless DEVELOPMENT || WELCOME_MAILS_PER_TEACHER.allow?(my_email)
 
-            mail_subject, html = MailTexts.welcome_student(:web_root => WEB_ROOT, :group => name, :teacher => teacher, :email => email)
+            mail_subject, html = MailTexts.welcome_student(:web_root => WEB_ROOT, :group => name, :teacher => teacher, :email => email, :privacy_url => privacy_url)
             reply = my_email
             deliver_mail do
                 to email

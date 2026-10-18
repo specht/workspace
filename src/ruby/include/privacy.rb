@@ -398,7 +398,7 @@ module Privacy
                 "Rechtsgrundlage ist Art. 6 Abs. 1 Buchst. e DSGVO in Verbindung mit #{law}. " \
                 'Eine Einwilligung ist dafür nicht erforderlich; die Verarbeitung ist auf das beschränkt, was der Unterricht braucht.</p>'
             if s[:parental_consent_required]
-                text += '<p>Zusätzlich wird ein Konto erst freigeschaltet, wenn die Erziehungsberechtigten ihr Einverständnis erklärt haben; ab 16 Jahren erklären Schülerinnen und Schüler es selbst.</p>'
+                text += '<p>Zusätzlich holt die Lehrkraft das schriftliche Einverständnis der Erziehungsberechtigten ein (ab 16 Jahren das der Schülerinnen und Schüler selbst) und vermerkt es im Workspace.</p>'
             end
             text + others_html
         when :consent

@@ -110,8 +110,9 @@ class PrivacyTest < Minitest::Test
     end
 
     def test_parental_consent_on_top_of_the_school_decision
-        refute_includes page(FULL.merge('LEGAL_BASIS' => :school)), 'Einverständnis erklärt'
-        assert_includes page(FULL.merge('LEGAL_BASIS' => :school, 'PARENTAL_CONSENT_REQUIRED' => true)), 'Einverständnis erklärt'
+        refute_includes page(FULL.merge('LEGAL_BASIS' => :school)), 'Einverständnis der Erziehungsberechtigten ein'
+        assert_includes page(FULL.merge('LEGAL_BASIS' => :school, 'PARENTAL_CONSENT_REQUIRED' => true)), 'Einverständnis der Erziehungsberechtigten ein'
+        refute_includes page(FULL.merge('LEGAL_BASIS' => :school, 'PARENTAL_CONSENT_REQUIRED' => true)), 'erst freigeschaltet'
     end
 
     # Formal, for parents and the school: no »du« outside quoted notices.

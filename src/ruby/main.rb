@@ -669,6 +669,20 @@ class Main < Sinatra::Base
         end.join("\n\n            ")
     end
 
+    # Who may use the Workspace: whoever is invited, the administration,
+    # test accounts, and an account whose deletion is announced (until the
+    # day, to take out its data). Everyone else loses existing sessions and
+    # access to a running Workspace and its shared links too, not only the
+    # next login.
+    def self.may_use_workspace?(email, user = nil)
+        # At start the nginx map is built before the invitations are loaded:
+        # as before, until the next refresh.
+        return true unless class_variable_defined?(:@@invitations) && class_variable_defined?(:@@test_accounts)
+        return true if ADMIN_USERS.include?(email) || @@invitations.key?(email) || @@test_accounts.key?(email)
+
+        !(user || {})[:deletion_at].to_s.empty?
+    end
+
     def self.refresh_nginx_config
         @@nginx_config_mutex.synchronize do
             refresh_nginx_config_locked
@@ -717,6 +731,7 @@ class Main < Sinatra::Base
             email_with_test_tag = "#{user[:email]}#{(test || {})[:tag]}"
             server_tag = "#{user[:server_tag]}#{(test || {})[:tag]}"
             fs_tag = fs_tag_for_email(email_with_test_tag)
+            next unless may_use_workspace?(user[:email].to_s, user)
             if running_servers.include?(fs_tag)
                 # sid_ip_pairs << "#{user[:server_sid]} #{running_servers[fs_tag][:ip]}:8443;"
                 running_servers[fs_tag][:server_sid] = user[:server_sid]
@@ -2218,7 +2233,12 @@ class Main < Sinatra::Base
                     nil
                 end
 
-                if session_expiry && session_expiry > DateTime.now
+                Main.load_invitations()
+                if session_expiry && session_expiry > DateTime.now && !Main.may_use_workspace?(results.first['u'][:email].to_s.downcase, results.first['u'])
+                    # No longer invited: the session ends now, not in a year.
+                    STDERR.puts "Session ended: #{results.first['u'][:email]} is no longer invited"
+                    neo4j_query('MATCH (s:Session {sid: $sid}) DETACH DELETE s;', :sid => sid)
+                elsif session_expiry && session_expiry > DateTime.now
                     email = results.first['u'][:email]
                     @session_user = {
                         :email => email.downcase,
@@ -2687,7 +2707,7 @@ class Main < Sinatra::Base
         user[:db_login] = Main.db_login_for_email(email)
         # The name is optional and may come later than the address: the one
         # in the invitation list wins.
-        name = @@invitations[email][:name]
+        name = (@@invitations[email] || {})[:name]
         if name && user[:name] != name
             user = neo4j_query_expect_one(<<~END_OF_QUERY, :email => email, :name => name)['n']
                 MATCH (n:User {email: $email})
@@ -2746,7 +2766,9 @@ class Main < Sinatra::Base
 
         # Said plainly, so a typo is noticed at once; the limits per client
         # keep this from being a fast way to find out who is invited.
-        unless @@invitations.include?(email)
+        announced = !@@invitations.include?(email) &&
+            !neo4j_query('MATCH (u:User {email: $email}) WHERE u.deletion_at IS NOT NULL RETURN 1 AS yes;', :email => email).empty?
+        unless @@invitations.include?(email) || announced
             content_type :json
             halt 404, { :error => 'no_invitation_found' }.to_json
         end
@@ -3361,7 +3383,7 @@ class Main < Sinatra::Base
                 [init]
                     defaultBranch = main
                 [user]
-                    name = #{@@invitations[email][:name] || email.split('@').first}
+                    name = #{(@@invitations[email] || {})[:name] || email.split('@').first}
                     email = #{email}
                 [core]
                     editor = nano
@@ -4298,22 +4320,41 @@ class Main < Sinatra::Base
                 RETURN d.name AS name;
             END_OF_QUERY
             FileUtils.mkdir_p(File.join(dir, 'mysql'))
+            # A dump that fails is not silently missing: the archive says so in
+            # nicht-enthalten.txt, and the log has it.
+            missing = []
             ([login] + extra).each do |database|
-                system('docker', 'exec', 'workspace_mysql_1', 'mysqldump', '--user=root', "--password=#{MYSQL_ROOT_PASSWORD}", database,
-                    :out => File.join(dir, 'mysql', "#{database}.sql"), :err => File::NULL)
+                target = File.join(dir, 'mysql', "#{database}.sql")
+                next if system('docker', 'exec', 'workspace_mysql_1', 'mysqldump', '--user=root', "--password=#{MYSQL_ROOT_PASSWORD}", database,
+                    :out => target, :err => File::NULL)
+
+                FileUtils.rm_f(target)
+                missing << "MySQL-Datenbank #{database}"
             end
             # The own Neo4j database, read with the person's own login, as the
             # dump that `neo4j_bolt load` in the Workspace reads.
-            system({ 'NEO4J_URI' => 'bolt://neo4j:7687', 'NEO4J_USERNAME' => login, 'NEO4J_DATABASE' => login,
-                     'NEO4J_PASSWORD' => Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT) },
-                'neo4j_bolt', 'dump', '-o', File.join(dir, 'neo4j.dump'), :err => File::NULL)
+            neo4j_target = File.join(dir, 'neo4j.dump')
+            unless system({ 'NEO4J_URI' => 'bolt://neo4j:7687', 'NEO4J_USERNAME' => login, 'NEO4J_DATABASE' => login,
+                            'NEO4J_PASSWORD' => Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT) },
+                          'neo4j_bolt', 'dump', '-o', neo4j_target, :err => File::NULL)
+                FileUtils.rm_f(neo4j_target)
+                missing << 'Neo4j-Datenbank'
+            end
+            unless missing.empty?
+                STDERR.puts "Export for #{email}: not included: #{missing.join(', ')}"
+                File.write(File.join(dir, 'nicht-enthalten.txt'),
+                    "Diese Teile ließen sich nicht exportieren und fehlen im Archiv:\n\n" + missing.map { |m| "- #{m}\n" }.join +
+                    "\nMeist heißt das, dass es die Datenbank noch nicht gibt (noch nie benutzt). Sonst bitte an die Administration schreiben.\n")
+            end
         rescue StandardError
             FileUtils.rm_rf(dir)
             raise
         end
 
         workspace_root = "/user/#{fs_tag_for_email(email)}"
-        FileUtils.chmod_R('a+rX', dir)
+        # The archive is written as the Workspace user: the folder becomes
+        # theirs instead of readable for everyone.
+        FileUtils.chown_R(WORKSPACE_UID, WORKSPACE_GID, dir)
         args = ['setpriv', "--reuid=#{WORKSPACE_UID}", "--regid=#{WORKSPACE_GID}", '--clear-groups',
             'python3', '-I', File.join(__dir__, 'tools', 'zip_stream.py'), '--exclude', 'workspace/.cache', "=#{dir}"]
         args << "workspace=#{File.join(workspace_root, 'workspace')}" if File.directory?(File.join(workspace_root, 'workspace'))

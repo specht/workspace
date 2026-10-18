@@ -112,6 +112,20 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Datum eines schriftlichen Einverständnisses ein (Elternbrief mit
   Einverständniserklärung unter `/datenschutz`). Gesperrt wird ohne beides
   niemand; Gruppe und `/personen` zeigen, wie viele noch ungeklärt sind.
+- Wer nicht mehr eingeladen ist, verliert den Zugang sofort: Eine bestehende
+  Sitzung endet bei der nächsten Anfrage (vorher galt sie bis zu 365 Tage),
+  und ein laufender Workspace samt geteilten Links ist nicht mehr erreichbar,
+  sobald sich die Einladungen ändern. Ausnahme: Ist die Löschung eines Kontos
+  angekündigt, kann sich die Person bis zum Tag anmelden und ihre Daten
+  herunterladen (das ging vorher nicht, obwohl die E-Mail es sagt).
+- »Meine Daten«: Lässt sich eine Datenbank nicht exportieren, sagt das ZIP
+  es in `nicht-enthalten.txt`, statt dass sie stillschweigend fehlt; der
+  Ordner für das ZIP gehört dem Workspace-Nutzer, statt für alle lesbar zu
+  sein.
+- Die Willkommensmail an Schülerinnen und Schüler einer Partnerschule
+  verlinkt die Datenschutzerklärung ihrer Schule. `PARENTAL_CONSENT_REQUIRED`
+  verspricht nicht mehr, dass Konten erst danach freigeschaltet werden: Die
+  Lehrkraft holt das Einverständnis ein und vermerkt es.
 - »Aufräumen« unter `/personen` hat jetzt auch »Lehrkräfte ohne Konto«:
   Eingeladene Lehrkräfte, die sich nie angemeldet haben, lassen sich
   gesammelt entfernen (Schule, betreute Gruppen, Mitgliedschaften),

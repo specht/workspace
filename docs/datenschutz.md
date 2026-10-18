@@ -49,9 +49,12 @@ Alle freiwillig; fehlt eine, sagt die Seite, dass die Angabe fehlt.
   liegen und wie viele Monate sie höchstens aufbewahrt werden. Ohne `BACKUP`
   erwähnen die Seiten keine Sicherungen; die Zahl muss zu borgmatic passen
   (`keep_daily`, `keep_weekly`, `keep_monthly`, kein `keep_yearly`).
-- `PARENTAL_CONSENT_REQUIRED = true`: der Elternbrief bekommt eine
-  Einverständniserklärung, die Datenschutzerklärung sagt, dass Konten erst
-  danach freigeschaltet werden. Das Sperren selbst ist noch nicht gebaut.
+- `PARENTAL_CONSENT_REQUIRED = true`: für eine Installation, deren Schule ein
+  Einverständnis verlangt. Der Elternbrief bekommt dann immer die
+  Einverständniserklärung, und die Datenschutzerklärung sagt, dass die
+  Lehrkraft es einholt und unter `/gruppen` vermerkt. Gesperrt wird ohne
+  Einverständnis niemand (teacher-access.md, »Zustimmung der Schule,
+  Einverständnis, ungeklärt«).
 - `COST_NOTE`: was der Server kostet und wie eine Schule beitragen kann;
   steht auf der Seite für die Schulleitung, in der Vereinbarung (§ 6) und in
   der Willkommensmail an Lehrkräfte. Die Seiten sagen dazu immer, dass die
