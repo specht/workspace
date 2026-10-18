@@ -77,8 +77,14 @@ the same.
   »Einladungen importieren«). Tested on the dev site: preview, simulated
   difference (nothing written), import (people overview identical), logins
   and teacher groups, undo.
-- Known limitation: `neo4j_bolt dump` writes dates and times as strings, so
-  they come back as strings after `load`. A fix belongs in the gem.
+- `neo4j_bolt` dump/load of dates, times, durations and points: fixed in a
+  patch for the gem (tagged maps `{"$neo4j": …}`, older dumps load as
+  before; specs pass on Neo4j 4.4, 5.26, 2026.06). The patch was handed to
+  the maintainer for `git am` in ~/programming/neo4j_bolt (not committed
+  there); after a release, raise the Workspace's Gemfile.
+- Teacher onboarding (lehrmaterial-einstieg) says the Workspace's
+  administration keeps the invitations; update it again once teachers manage
+  their groups on /gruppen.
 
 ## Next: invitations in the browser (decided)
 
