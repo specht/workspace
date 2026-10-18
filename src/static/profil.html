@@ -253,9 +253,10 @@
                     <button style='#{(@session_user || {})[:share_tag].nil? ? 'display: none;' : ''}' id='bu_stop_share' class="btn btn-primary"><i class='bi bi-trash-fill'></i>Teilen beenden</button>
                 </div>
                 <p>
-                    Wenn du jemandem deinen Workspace zeigen möchtest oder dir helfen lassen möchtest, kannst du deinen Workspace teilen. Du erhältst einen Link, den du weitergeben kannst. Jeder, der diesen Link hat, hat uneingeschränkten Zugriff auf deinen Workspace, auch ohne Anmeldung. Der Link ist solange gültig, bis du ihn deaktivierst.
+                    Wenn du jemandem deinen Workspace zeigen möchtest oder dir helfen lassen möchtest, kannst du deinen Workspace teilen. Du erhältst einen Link, den du weitergeben kannst. Jeder, der diesen Link hat, hat uneingeschränkten Zugriff auf deinen Workspace, auch ohne Anmeldung. Der Link gilt eine Woche lang oder bis du das Teilen beendest; teilst du erneut, gilt derselbe Link wieder eine Woche.
                 </p>
                 <div id='div_share_link' style="#{(@session_user || {})[:share_tag] ? '' : 'display: none;'}" class="profile-share-link mt-2 mb-4">
+                    <p class='small mb-1' id='share_expiry'>#{(@session_user || {})[:share_expires] ? "Gültig bis #{Time.at((@session_user || {})[:share_expires].to_i).strftime('%d.%m.%Y, %H:%M')} · <a href='#' id='bu_extend_share'>um eine Woche verlängern</a>" : ''}</p>
                     <div class="input-group">
                         <input type="text" id='ti_share_link' class="form-control" aria-label="Freigabelink" readonly value="#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}">
                         <button id='bu_copy_share_link' class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}'><i class='bi bi-copy'></i>Kopieren</button>
@@ -415,7 +416,11 @@
                     <button type="button" class="bu-set-brightness btn btn-dark" data-brightness="dark"><i class='bi bi-moon-fill'></i>Dunkel #{(@session_user[:brightness] || 'auto') == 'dark' ? "<i class='bi bi-check-lg'></i>" : ''}</button>
                 </div>
                 #{look_ins_profile_html}
-                <a class="btn btn-secondary" href="/logout"><i class='bi bi-box-arrow-in-right'></i>Abmelden</a>
+                <div class='d-flex flex-wrap gap-2 align-items-center'>
+                    <a class="btn btn-secondary" href="/logout"><i class='bi bi-box-arrow-in-right'></i>Abmelden</a>
+                    #{(n = other_sessions_count) > 0 && !@impersonated_by ? "<button type='button' id='bu_sign_out_elsewhere' class='btn btn-outline-secondary'><i class='bi bi-pc-display'></i>In allen anderen Browsern abmelden (#{n})</button>" : ''}
+                </div>
+                <p class='small text-body-secondary mt-2'>Eine Anmeldung gilt ein Jahr lang im jeweiligen Browser. Warst du an einem fremden Rechner angemeldet, meldest du dich hier dort ab.</p>
             </section>
 
             <section class="profile-section" aria-labelledby="my-data">
@@ -933,6 +938,18 @@ vscode_config: {}</pre>
                     return false;
                 }
             );
+        });
+        $('#bu_extend_share').on('click', function (e) {
+            e.preventDefault();
+            api_call('/api/share_server', {}, function (data) {
+                if (data.success) $('#share_expiry').text('Gültig bis ' + new Date(data.share_expires * 1000).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' }) + ' (verlängert)');
+            });
+        });
+        $('#bu_sign_out_elsewhere').on('click', function () {
+            api_call('/api/sign_out_elsewhere', {}, function (data) {
+                if (!data.success) return;
+                $('#bu_sign_out_elsewhere').replaceWith(`<span class='text-success'><i class='bi bi-check-lg'></i>${data.ended} ${data.ended === 1 ? 'anderer Browser' : 'andere Browser'} abgemeldet</span>`);
+            });
         });
         $('#bu_delete_my_account').on('click', function() {
             const email = #{@session_user[:email].to_json};

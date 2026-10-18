@@ -275,7 +275,7 @@ module Privacy
                 :categories => [:account],
                 :purpose => 'eigene Arbeit zeigen; Hilfe bekommen',
                 :who => 'wer den Link hat (siehe »Teilen«)',
-                :how_long => 'bis die Person den Link abschaltet',
+                :how_long => 'Link zum Workspace eine Woche (verlängerbar), sonst bis die Person den Link abschaltet',
             },
             {
                 :data => 'Protokolle des Servers: welche Seite wann mit welchem Ergebnis abgerufen wurde, ohne IP-Adresse und ohne Namen; Meldungen der Programme, in denen bei manchen Vorgängen (Anmeldung, Start eines Workspace) die E-Mail-Adresse steht',
@@ -586,7 +586,7 @@ module Privacy
             <p>
             Wer den eigenen Workspace teilt, erhält einen Link, mit dem jede Person, die ihn hat, diesen Workspace öffnen kann,
             auch ohne Anmeldung. Eine Web-App, die im Workspace läuft, lässt sich ebenfalls teilen; diesen Link öffnen nur Personen,
-            die im Workspace angemeldet sind. Beides gilt, bis es abgeschaltet wird. Die Seite weist beim Teilen darauf hin.
+            die im Workspace angemeldet sind. Der Link zum Workspace gilt eine Woche (erneutes Teilen verlängert ihn) oder bis er abgeschaltet wird, der zur Web-App bis zum Abschalten. Die Seite weist beim Teilen darauf hin.
             </p>
 
             #{heading('Cookies und Speicher im Browser', 'Endgeräte · § 25 TDDDG')}

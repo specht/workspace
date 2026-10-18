@@ -758,7 +758,7 @@ class Main < Sinatra::Base
                 # sid_ip_pairs << "#{user[:server_sid]} #{running_servers[fs_tag][:ip]}:8443;"
                 running_servers[fs_tag][:server_sid] = user[:server_sid]
                 running_servers[fs_tag][:server_tag] = server_tag
-                running_servers[fs_tag][:share_tag] = user[:share_tag]
+                running_servers[fs_tag][:share_tag] = user[:share_tag] if user[:share_expires].nil? || user[:share_expires].to_i > Time.now.to_i
             end
         end
 
@@ -2193,6 +2193,11 @@ class Main < Sinatra::Base
                 rescue => e
                     STDERR.puts "Scheduled deletions failed: #{e.class}: #{e.message}"
                 end
+                begin
+                    Main.expire_shares!
+                rescue => e
+                    STDERR.puts "Expiring share links failed: #{e.class}: #{e.message}"
+                end
                 sleep 3000
             end
         end
@@ -3139,6 +3144,25 @@ class Main < Sinatra::Base
         respond(:ok => true)
     end
 
+    # Other browsers in which this account is logged in (sessions last a
+    # year; a forgotten login on a school computer is ended from here).
+    def other_sessions_count
+        return 0 unless user_logged_in?
+
+        neo4j_query('MATCH (s:Session)-[:FOR]->(:User {email: $email}) WHERE s.sid <> $sid AND s.impersonated_by IS NULL RETURN count(s) AS n;',
+            :email => @session_user[:email], :sid => current_session_sid.to_s).first['n'].to_i
+    end
+
+    post '/api/sign_out_elsewhere' do
+        assert(user_logged_in?)
+        halt 403 if @impersonated_by
+        n = other_sessions_count
+        neo4j_query('MATCH (s:Session)-[:FOR]->(:User {email: $email}) WHERE s.sid <> $sid AND s.impersonated_by IS NULL DETACH DELETE s;',
+            :email => @session_user[:email], :sid => current_session_sid.to_s)
+        STDERR.puts "#{@session_user[:email]} signed out #{n} other sessions"
+        respond(:ended => n)
+    end
+
     def look_in_bar_html
         return '' unless user_logged_in?
 
@@ -3897,10 +3921,15 @@ class Main < Sinatra::Base
         data = parse_request_data(:required_keys => [:share_tag])
         share_tag = data[:share_tag]
 
-        user = neo4j_query_expect_one(<<~END_OF_QUERY, :share_tag => share_tag)['u']
+        user = neo4j_query(<<~END_OF_QUERY, :share_tag => share_tag.to_s, :now => Time.now.to_i).first
             MATCH (u:User {share_tag: $share_tag})
+            WHERE u.share_expires IS NULL OR u.share_expires > $now
             RETURN u;
         END_OF_QUERY
+        halt 404, { :error => 'share_expired' }.to_json unless user
+        user = user['u']
+        Main.load_invitations()
+        halt 404, { :error => 'share_expired' }.to_json unless Main.may_use_workspace?(user[:email].to_s, user)
 
         job = Main.enqueue_server_start(
             :email => user[:email],
@@ -4597,19 +4626,39 @@ class Main < Sinatra::Base
         respond(:yay => 'sure')
     end
 
+    # A link to the whole Workspace opens it for anyone who has it, without
+    # login: it holds SHARE_DAYS, sharing again extends it with the same
+    # link, and expire_shares! (hourly) takes expired ones out.
+    SHARE_DAYS = 7
+
     post '/api/share_server' do
         assert(user_logged_in?)
+        halt 403, { :error => 'terms_required' }.to_json if terms_required?
 
-        # create server_tag for user
-        share_tag = gen_share_tag()
-        neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :share_tag => share_tag})
+        share_tag = @session_user[:share_tag] || gen_share_tag()
+        expires = Time.now.to_i + SHARE_DAYS * 24 * 3600
+        neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :share_tag => share_tag, :expires => expires})
             MATCH (u:User {email: $email})
-            SET u.share_tag = $share_tag;
+            SET u.share_tag = $share_tag, u.share_expires = $expires;
         END_OF_STRING
 
         Main.refresh_nginx_config()
 
-        respond(:yay => 'sure', :share_tag => share_tag)
+        respond(:yay => 'sure', :share_tag => share_tag, :share_expires => expires)
+    end
+
+    # Links shared before there was an expiry get SHARE_DAYS from now; expired
+    # ones go, and the nginx map with them.
+    def self.expire_shares!
+        now = Time.now.to_i
+        $neo4j.neo4j_query('MATCH (u:User) WHERE u.share_tag IS NOT NULL AND u.share_expires IS NULL SET u.share_expires = $expires;',
+            :expires => now + SHARE_DAYS * 24 * 3600)
+        gone = $neo4j.neo4j_query('MATCH (u:User) WHERE u.share_tag IS NOT NULL AND u.share_expires <= $now REMOVE u.share_tag, u.share_expires RETURN count(u) AS n;',
+            :now => now).first['n'].to_i
+        return if gone.zero?
+
+        STDERR.puts "Expired #{gone} workspace share link(s)"
+        refresh_nginx_config
     end
 
     post '/api/unshare_server' do
@@ -4617,7 +4666,7 @@ class Main < Sinatra::Base
 
         neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email]})
             MATCH (u:User {email: $email})
-            REMOVE u.share_tag;
+            REMOVE u.share_tag, u.share_expires;
         END_OF_STRING
 
         Main.refresh_nginx_config()

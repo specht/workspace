@@ -913,6 +913,7 @@ window.addEventListener('load', function() {
             api_call('/api/share_server', {}, function(data) {
                 if (data.success) {
                     $('#ti_share_link').val("#{WEB_ROOT}/share/" + data.share_tag);
+                    if (data.share_expires) $('#share_expiry').text('Gültig bis ' + new Date(data.share_expires * 1000).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' }));
                     $('#bu_copy_share_link').attr('data-clipboard-text', "#{WEB_ROOT}/share/" + data.share_tag);
                     $('#div_share_link').slideDown();
                     $('#bu_share').hide();
