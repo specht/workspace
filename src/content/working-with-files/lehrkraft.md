@@ -1,3 +1,5 @@
+Lernende lernen im Terminal mit Dateien und Verzeichnissen umzugehen: sich umsehen (`ls`, `cd`, versteckte Dateien), Dateien anzeigen, mit `nano` und `vim` bearbeiten, Texte mit `grep` und `wc` untersuchen, Archive entpacken und packen, aufräumen mit `cp`, `mv` und `rm`. Geübt wird an einem Archiv mit Beispieldateien, darunter ein altes Textadventure.
+
 Die Aufgaben prüfen, was im Ordner `/workspace/working-with-files` entstanden ist, und fragen ein paar Zahlen ab, die man nur mit dem richtigen Befehl findet.
 
 <table class='table'>

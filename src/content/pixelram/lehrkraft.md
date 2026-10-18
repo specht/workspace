@@ -1,4 +1,4 @@
-Die Seite führt in zwei Teilen zum selben Gedanken: Ein Bild ist eine Rechenvorschrift für jedes Pixel (Formeln, Wellen), und der Bildschirm ist Speicher, den man auch lesen kann (das Spiel »Lichtspur« erkennt Zusammenstöße allein mit `get_pixel`). Wer die Wellen überspringen will, kann nach »Alle Pixel« direkt mit dem Spiel weitermachen.
+Lernende programmieren in C Grafik direkt in den Bildschirmspeicher (PixelRAM), in zwei Teilen mit demselben Gedanken: Ein Bild ist eine Rechenvorschrift für jedes Pixel (Formeln, Wellen), und der Bildschirm ist Speicher, den man auch lesen kann: Im Spiel »Lichtspur« erkennen sie Zusammenstöße allein mit `get_pixel`. Wer die Wellen überspringen will, kann nach »Alle Pixel« direkt mit dem Spiel weitermachen.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Variablen, Schleifen, Bedingungen in irgendeiner Sprache; C wird unterwegs erklärt. Beim Spiel kommen <code>struct</code> und Zeiger dazu, nur so weit wie nötig.</td></tr>

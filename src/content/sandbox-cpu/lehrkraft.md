@@ -1,3 +1,5 @@
+Lernende programmieren in der CPU Sandbox einen kleinen 8-Bit-Computer, erst in Assembler, später in C, und sehen dabei Register, Flags, Speicher und Bildschirm. Die Sandbox ist ein eigenes Programm im Browser; die Seite hier zeigt, wie sie ihre Programme im Workspace mit Git ablegen und veröffentlichen.
+
 Diese Seite begleitet die CPU Sandbox, ersetzt sie aber nicht. Sie ist für alle gedacht, die Git noch nicht kennen, zum Beispiel neue Lernende in einem Kurs.
 
 <table class='table'>

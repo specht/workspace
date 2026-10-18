@@ -1,4 +1,4 @@
-Die Fortsetzung der »Filmdatenbank mit MySQL«: dieselben Daten, als Graph. Sie setzt voraus, dass die Lernenden `JOIN` und `GROUP BY` kennen, denn die Vergleiche mit SQL tragen das Kapitel.
+Lernende fragen dieselben Filmdaten wie in der »Filmdatenbank mit MySQL« als Graph ab, in Neo4j mit Cypher, und vergleichen die Abfragen mit SQL. Die Aktivität setzt voraus, dass die Lernenden `JOIN` und `GROUP BY` kennen, denn die Vergleiche mit SQL tragen das Kapitel.
 
 <table class='table'>
 <tr><th>Ordner</th><td><code>/workspace/filmdatenbank</code> (wie im MySQL-Kapitel); darin nur die heruntergeladene <code>movies-neo4j.dump</code></td></tr>

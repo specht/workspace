@@ -1,3 +1,5 @@
+Lernende bauen eine Präsentation in HTML mit shower.js für ein echtes Referat: Folien schreiben, Bilder einbinden, mit CSS gestalten, die Präsentation halten und abgeben.
+
 Diese Aktivität lebt davon, dass die Lernenden etwas vortragen, das sie ohnehin vortragen müssen. Sie taugt deshalb auch für Referate in anderen Fächern.
 
 <table class='table'>

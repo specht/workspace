@@ -1,0 +1,1403 @@
+// Die Karte: gezeichnet aus den Daten, die server.rb unter map.json liefert.
+// Ziehen verschiebt sie, das Mausrad, + / − und die Pfeiltasten bewegen sie,
+// ein Klick fragt den Server nach dem Knoten an dieser Stelle.
+
+const canvas = document.getElementById('map');
+const context = canvas.getContext('2d');
+const info = document.getElementById('info');
+
+// Wie eine Art von Weg aussieht: Farbe, Breite in Pixeln, gestrichelt
+const STYLES = {
+    motorway: ['#f2a07b', 4.4], trunk: ['#f7b98b', 4], primary: ['#fdd889', 3.6], secondary: ['#fdeaa8', 3.2],
+    tertiary: ['#ffffff', 2.8], residential: ['#ffffff', 2.4], living_street: ['#ffffff', 2.4],
+    unclassified: ['#ffffff', 2.4], pedestrian: ['#f4f0f7', 2.4], service: ['#ffffff', 1.5],
+    footway: ['#c9a497', 0.9, [2, 2]], path: ['#88b083', 0.9, [2, 2]], cycleway: ['#7b9fdc', 0.9, [3, 2]],
+    steps: ['#b98576', 1.6, [1, 1.2]], track: ['#b59a6d', 1, [4, 2]], bridleway: ['#88b083', 0.9, [3, 2]],
+    ferry: ['#4dabf7', 1.4, [5, 4]],
+};
+// Straßen haben einen Rand, damit die weißen sich vom Grund abheben
+const CASING = { motorway: '#d0714f', trunk: '#d78e5c', primary: '#d9a54a', secondary: '#dcc072',
+    tertiary: '#bdc3cb', residential: '#c7ccd3', living_street: '#c7ccd3', unclassified: '#c7ccd3',
+    pedestrian: '#cbc5d6', service: '#d3d8de' };
+// Auffahrten (motorway_link, …) wie ihre Straße, nur schmaler
+for (const kind of ['motorway', 'trunk', 'primary', 'secondary', 'tertiary']) {
+    STYLES[`${kind}_link`] = [STYLES[kind][0], STYLES[kind][1] * 0.7];
+    CASING[`${kind}_link`] = CASING[kind];
+}
+const OTHER = ['#b8bec7', 1];
+
+// Die Farben der Karte, hell und dunkel. Die helle steht oben in STYLES und
+// CASING; die dunkle ersetzt sie, wenn der Bildschirm dunkel eingestellt ist
+// (oder jemand oben rechts auf den Mond klickt).
+const LIGHT = {
+    styles: Object.fromEntries(Object.entries(STYLES).map(([kind, [color]]) => [kind, color])),
+    casing: { ...CASING },
+    other: '#b8bec7', background: '#eef0f2', names: '#5c5f66', halo: 'rgba(255, 255, 255, 0.9)',
+    ring: '#fff', graphEdge: 'rgba(54, 79, 199, 0.75)', graphNode: '#364fc7', current: '#212529',
+    connector: '#868e96', routeHalo: '#fff', route: '#5f3dc4', tour: '#5f3dc4',
+    places: { sight: ['#7048e8', '#5f3dc4'], square: ['#2f9e44', '#2b8a3e'], school: ['#4c6ef5', '#364fc7'] },
+};
+const DARK = {
+    styles: { motorway: '#b8684d', trunk: '#b5784f', primary: '#a8823d', secondary: '#8a7a4c', tertiary: '#4f5562',
+        residential: '#3f4450', living_street: '#3f4450', unclassified: '#3f4450', pedestrian: '#4a4558',
+        service: '#373b45', footway: '#8c6e66', path: '#5d8a5a', cycleway: '#5a7cbd', steps: '#9a6c60',
+        track: '#86704d', bridleway: '#5d8a5a', ferry: '#3a8ad0' },
+    casing: { motorway: '#7d3f2c', trunk: '#7d4d2e', primary: '#6d5222', secondary: '#5a4f2e', tertiary: '#2a2e36',
+        residential: '#2a2e36', living_street: '#2a2e36', unclassified: '#2a2e36', pedestrian: '#2d2a36',
+        service: '#2a2e36' },
+    other: '#4a505c', background: '#1c1f25', names: '#aab1bd', halo: 'rgba(28, 31, 37, 0.9)',
+    ring: '#1c1f25', graphEdge: 'rgba(116, 143, 252, 0.7)', graphNode: '#91a7ff', current: '#f8f9fa',
+    connector: '#868e96', routeHalo: '#1c1f25', route: '#b197fc', tour: '#9775fa',
+    places: { sight: ['#9775fa', '#c4b5fd'], square: ['#51cf66', '#8ce99a'], school: ['#5c7cfa', '#a5b4fc'] },
+};
+for (const kind of ['motorway', 'trunk', 'primary', 'secondary', 'tertiary']) {
+    for (const theme of [LIGHT, DARK]) {
+        theme.styles[`${kind}_link`] = theme.styles[kind];
+        theme.casing[`${kind}_link`] = theme.casing[kind];
+    }
+}
+let PAINT = LIGHT;
+let BACKGROUND = LIGHT.background;
+
+// Hell oder dunkel: wie der Bildschirm eingestellt ist, oder was jemand mit
+// dem Knopf gewählt hat (bleibt im Browser gespeichert)
+const darkScreen = matchMedia('(prefers-color-scheme: dark)');
+let themeChoice = 'auto'; // auto (wie der Bildschirm), light, dark
+try {
+    themeChoice = localStorage.getItem('routenplaner-theme') || 'auto';
+} catch {
+    // ohne Speicher eben jedes Mal wie der Bildschirm
+}
+
+function applyTheme() {
+    const dark = themeChoice === 'dark' || (themeChoice === 'auto' && darkScreen.matches);
+    PAINT = dark ? DARK : LIGHT;
+    BACKGROUND = PAINT.background;
+    for (const [kind, color] of Object.entries(PAINT.styles)) if (STYLES[kind]) STYLES[kind][0] = color;
+    Object.assign(CASING, PAINT.casing);
+    OTHER[0] = PAINT.other;
+    document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+    const button = document.getElementById('theme');
+    if (button) {
+        // der Knopf zeigt, wohin er wechselt: den Mond, wenn es hell ist
+        button.title = dark ? 'Helle Farben' : 'Dunkle Farben';
+        button.setAttribute('aria-label', button.title);
+        button.dataset.shows = dark ? 'light' : 'dark';
+    }
+    baseKey = '';
+    if (typeof setUpLegend === 'function' && legendReady) setUpLegend();
+    draw();
+}
+
+function setUpTheme() {
+    document.getElementById('theme').addEventListener('click', () => {
+        // das Gegenteil von jetzt; ist es das, was der Bildschirm will, wieder »wie der Bildschirm«
+        const dark = document.documentElement.dataset.theme !== 'dark';
+        themeChoice = dark === darkScreen.matches ? 'auto' : dark ? 'dark' : 'light';
+        try {
+            localStorage.setItem('routenplaner-theme', themeChoice);
+        } catch {
+            // dann gilt die Wahl nur bis zum Neuladen
+        }
+        applyTheme();
+    });
+    darkScreen.addEventListener('change', () => themeChoice === 'auto' && applyTheme());
+}
+// Wichtige Straßen zuletzt, damit sie oben liegen
+const ORDER = ['ferry', 'footway', 'path', 'cycleway', 'steps', 'track', 'bridleway', 'service', 'pedestrian',
+    'living_street', 'unclassified', 'residential', 'tertiary_link', 'tertiary', 'secondary_link', 'secondary',
+    'primary_link', 'primary', 'trunk_link', 'trunk', 'motorway_link', 'motorway'];
+const LEGEND = [['primary', 'Hauptstraße'], ['secondary', 'Nebenstraße'], ['residential', 'Wohnstraße'],
+    ['footway', 'Fußweg'], ['path', 'Weg im Grünen'], ['cycleway', 'Radweg'], ['steps', 'Treppe'], ['track', 'Feldweg'], ['ferry', 'Fähre']];
+const START = '#2f9e44';
+const GOAL = '#e03131';
+const METRES_PER_DEGREE = 2 * Math.PI * 6371000 / 360;
+
+let data = null;
+let view = { lon: 13.33, lat: 52.455, scale: 40000 }; // scale: Pixel je Grad Breite
+let marks = []; // [[lon, lat, Farbe, Radius], …]
+let chosen = { start: null, goal: null }; // die gewählten Orte
+let lines = []; // [[[lon, lat], [lon, lat]], …] hervorgehoben
+let fitted = null; // was ganz zu sehen sein soll, bis jemand die Karte bewegt: [West, Süd, Ost, Nord, Zoom höchstens]
+let search = 'bfs'; // welche Suche aus routes.rb
+let mode = 'length'; // wie gereist wird: length (Meter), foot, bike, car (Sekunden)
+let tab = 'route'; // route oder tour
+let stops = []; // die Orte der Rundfahrt
+let method = 'nearest'; // wie die Reihenfolge der Rundfahrt gefunden wird
+let tour = null; // { order: [Nummer in stops, …], legs: [[[lon, lat], …], …] }
+let graph = null; // { nodes: [lon, lat, …], edges: [Nummer, Nummer, …] } aus build_graph, wenn »Graph zeigen« an ist
+let route = null; // { path: [[lon, lat], …], visited: [lon, lat, lon, lat, …], edges: [Nummer, Nummer, …] in visited, shown: wie viele besuchte schon zu sehen }
+
+// Länge und Breite auf Pixel: ein Grad Länge ist um cos(Breite) kürzer
+function project(lon, lat) {
+    const k = Math.cos(view.lat * Math.PI / 180);
+    return [canvas.clientWidth / 2 + (lon - view.lon) * k * view.scale, canvas.clientHeight / 2 - (lat - view.lat) * view.scale];
+}
+
+function unproject(x, y) {
+    const k = Math.cos(view.lat * Math.PI / 180);
+    return [view.lon + (x - canvas.clientWidth / 2) / (k * view.scale), view.lat - (y - canvas.clientHeight / 2) / view.scale];
+}
+
+// project() als Zahlen zum Selberrechnen, für die Schleifen über
+// zehntausende Punkte: x = ox + Länge · ax, y = oy − Breite · ay
+function projection() {
+    const ax = Math.cos(view.lat * Math.PI / 180) * view.scale;
+    const ay = view.scale;
+    return { ax, ay, ox: canvas.clientWidth / 2 - view.lon * ax, oy: canvas.clientHeight / 2 + view.lat * ay };
+}
+
+// Was zu sehen ist, als Länge und Breite, mit etwas Rand
+function viewBox() {
+    const [west, north] = unproject(-20, -20);
+    const [east, south] = unproject(canvas.clientWidth + 20, canvas.clientHeight + 20);
+    return [west, south, east, north];
+}
+
+// Von weitem bleiben die kleinen Wege weg: Sie wären kaum zu sehen und
+// kosten beim Zeichnen am meisten
+function shown(kind) {
+    if (STYLES[kind]?.[2]) return view.scale > 40000;
+    if (kind === 'service') return view.scale > 20000;
+    return true;
+}
+
+// Die Karte selbst (Grund, Wege, Graph) liegt in einem Bild für sich: Solange
+// sich nichts an ihr ändert, wird sie nur kopiert, etwa während die Suche läuft
+const base = document.createElement('canvas');
+const baseContext = base.getContext('2d');
+let baseKey = '';
+let baseView = null; // die Ansicht, für die die Karte zuletzt gezeichnet wurde
+
+function fitSize(target, ratio) {
+    const width = Math.round(canvas.clientWidth * ratio);
+    const height = Math.round(canvas.clientHeight * ratio);
+    if (target.width !== width || target.height !== height) {
+        target.width = width;
+        target.height = height;
+    }
+}
+
+// Beim Ziehen und Zoomen: höchstens einmal je Bild des Bildschirms, und nur
+// das letzte Bild der Karte verschoben und vergrößert. Ganz neu gezeichnet
+// wird sie erst, wenn die Bewegung kurz innehält.
+let drawing = false;
+let settle = null;
+function requestDraw() {
+    clearTimeout(settle);
+    settle = setTimeout(draw, 150);
+    if (drawing) return;
+    drawing = true;
+    requestAnimationFrame(() => {
+        drawing = false;
+        draw(true);
+    });
+}
+
+function draw(quick = false) {
+    // so viele Pixel, wie der Bildschirm hat: sonst wird die Karte unscharf
+    const ratio = window.devicePixelRatio || 1;
+    fitSize(canvas, ratio);
+    drawScale();
+    const key = [view.lon, view.lat, view.scale, canvas.width, canvas.height, ratio,
+        Boolean(data), Boolean(route), graph ? graph.nodes.length : 0].join();
+    const same = baseView && base.width === canvas.width && base.height === canvas.height;
+    if (quick && same && key !== baseKey) {
+        // das alte Bild dorthin, wo seine Punkte jetzt liegen
+        context.setTransform(ratio, 0, 0, ratio, 0, 0);
+        context.fillStyle = BACKGROUND;
+        context.fillRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+        const w = canvas.clientWidth, h = canvas.clientHeight;
+        const k0 = Math.cos(baseView.lat * Math.PI / 180), k1 = Math.cos(view.lat * Math.PI / 180);
+        const fx = k1 * view.scale / (k0 * baseView.scale), fy = view.scale / baseView.scale;
+        const cx = w / 2 - fx * w / 2 + (baseView.lon - view.lon) * k1 * view.scale;
+        const cy = h / 2 - fy * h / 2 - (baseView.lat - view.lat) * view.scale;
+        context.drawImage(base, cx, cy, w * fx, h * fy);
+    } else {
+        if (key !== baseKey) {
+            fitSize(base, ratio);
+            baseContext.setTransform(ratio, 0, 0, ratio, 0, 0);
+            drawBase(baseContext);
+            baseKey = key;
+            baseView = { ...view };
+        }
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.drawImage(base, 0, 0);
+        context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    }
+    if (!data) return;
+    if (route) drawRoute();
+    if (tab === 'tour') drawTour();
+    context.strokeStyle = '#d6336c';
+    context.lineWidth = 3;
+    for (const [a, b] of lines) {
+        context.beginPath();
+        context.moveTo(...project(...a));
+        context.lineTo(...project(...b));
+        context.stroke();
+    }
+    for (const [lon, lat, color, radius] of marks) {
+        dot(project(lon, lat), radius, color);
+    }
+    drawPlaces();
+    saveSoon();
+}
+
+function drawBase(c) {
+    c.fillStyle = BACKGROUND;
+    c.fillRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+    if (!data) return;
+    // die Wege werden mit dem Zoom breiter und schmaler, aber nur gemäßigt
+    const thin = Math.min(2.6, Math.max(0.45, Math.sqrt(view.scale / 30000)));
+    // Fußwege und Radwege treten von weitem zurück, damit die Straßen zu sehen sind
+    const faint = Math.min(1, Math.max(0.45, view.scale / 120000));
+    // unter dem Graphen und der Suche bleibt die Karte blass im Hintergrund
+    const pale = graph ? 0.35 : route ? 0.6 : 1;
+    const { ax, ay, ox, oy } = projection();
+    const [west, south, east, north] = viewBox();
+    // jeder Weg ein Strich, aber nur, wenn er zu sehen ist
+    const trace = (group) => {
+        const { ways, boxes } = group;
+        for (let w = 0; w < ways.length; w++) {
+            if (boxes[4 * w] > east || boxes[4 * w + 2] < west || boxes[4 * w + 1] > north || boxes[4 * w + 3] < south) continue;
+            const points = ways[w];
+            c.beginPath();
+            let x = ox + points[0] * ax, y = oy - points[1] * ay;
+            c.moveTo(x, y);
+            // Punkte, die nicht einmal einen Pixel weiter liegen, braucht der Strich nicht
+            const last = points.length - 2;
+            for (let i = 2; i <= last; i += 2) {
+                const nx = ox + points[i] * ax, ny = oy - points[i + 1] * ay;
+                if (i < last && Math.abs(nx - x) + Math.abs(ny - y) < 1) continue;
+                c.lineTo(nx, ny);
+                x = nx;
+                y = ny;
+            }
+            c.stroke();
+        }
+    };
+    c.lineCap = 'round';
+    c.lineJoin = 'round';
+    // erst die Ränder aller Straßen, dann ihre Füllung darüber
+    c.setLineDash([]);
+    c.globalAlpha = pale;
+    for (const group of data.groups) {
+        const casing = CASING[group.kind];
+        if (!casing || !shown(group.kind)) continue;
+        c.strokeStyle = casing;
+        c.lineWidth = Math.max(0.6, STYLES[group.kind][1] * thin) + Math.min(2, 0.8 + 0.4 * thin);
+        trace(group);
+    }
+    for (const group of data.groups) {
+        if (!shown(group.kind)) continue;
+        const [color, width, dash] = STYLES[group.kind] || OTHER;
+        // gestrichelte Wege (Fußwege, Radwege) wachsen nur halb so stark
+        const grow = dash ? Math.min(thin, 2) : thin;
+        c.globalAlpha = (dash ? faint : 1) * pale;
+        c.strokeStyle = color;
+        c.lineWidth = Math.max(0.6, width * grow);
+        // die Striche wachsen mit der Breite, sonst laufen sie beim Zoomen zusammen
+        c.setLineDash(dash && view.scale > 60000 ? dash.map((d) => d * grow) : []);
+        trace(group);
+    }
+    c.globalAlpha = 1;
+    c.setLineDash([]);
+    if (graph) drawGraph(c);
+    else if (view.scale > 140000) drawStreetNames(c);
+}
+
+// Die Namen der Straßen, entlang ihres längsten geraden Stücks, wenn es lang
+// genug ist; jeder Name nicht zu oft, und keiner über einem anderen
+function drawStreetNames(c) {
+    const { ax, ay, ox, oy } = projection();
+    const [west, south, east, north] = viewBox();
+    const width = canvas.clientWidth, height = canvas.clientHeight;
+    const taken = []; // die Kästen der Namen schon da: [links, oben, rechts, unten]
+    const placed = new Map(); // Name → wo er schon steht
+    c.font = '500 11px system-ui, sans-serif';
+    c.textAlign = 'center';
+    c.textBaseline = 'middle';
+    c.lineJoin = 'round';
+    // die wichtigen Straßen zuerst
+    for (const group of [...data.groups].reverse()) {
+        if (!CASING[group.kind]) continue;
+        const { ways, boxes, names } = group;
+        for (let w = 0; w < ways.length; w++) {
+            if (names[w] < 0) continue;
+            if (boxes[4 * w] > east || boxes[4 * w + 2] < west || boxes[4 * w + 1] > north || boxes[4 * w + 3] < south) continue;
+            const name = data.names[names[w]];
+            const points = ways[w];
+            // das längste Stück, das fast geradeaus geht
+            let best = null;
+            let from = 0;
+            for (let i = 2; i < points.length; i += 2) {
+                const angle = (j) => Math.atan2(points[j + 1] - points[j - 1], points[j] - points[j - 2]);
+                if (i > 2 && Math.abs(Math.sin(angle(i) - angle(i - 2))) > 0.2) from = i - 2;
+                const x1 = ox + points[from] * ax, y1 = oy - points[from + 1] * ay;
+                const x2 = ox + points[i] * ax, y2 = oy - points[i + 1] * ay;
+                const length = Math.hypot(x2 - x1, y2 - y1);
+                if (!best || length > best.length) best = { x1, y1, x2, y2, length };
+            }
+            if (!best) continue;
+            const text = c.measureText(name).width;
+            if (best.length < text + 16) continue;
+            const x = (best.x1 + best.x2) / 2, y = (best.y1 + best.y2) / 2;
+            if (x < 0 || y < 0 || x > width || y > height) continue;
+            const seen = placed.get(name) || [];
+            if (seen.some(([sx, sy]) => Math.hypot(sx - x, sy - y) < 300)) continue;
+            let angle = Math.atan2(best.y2 - best.y1, best.x2 - best.x1);
+            if (angle > Math.PI / 2) angle -= Math.PI;
+            if (angle < -Math.PI / 2) angle += Math.PI;
+            const halfW = (Math.abs(Math.cos(angle)) * text + Math.abs(Math.sin(angle)) * 12) / 2 + 2;
+            const halfH = (Math.abs(Math.sin(angle)) * text + Math.abs(Math.cos(angle)) * 12) / 2 + 2;
+            const box = [x - halfW, y - halfH, x + halfW, y + halfH];
+            if (taken.some((b) => box[0] < b[2] && b[0] < box[2] && box[1] < b[3] && b[1] < box[3])) continue;
+            taken.push(box);
+            seen.push([x, y]);
+            placed.set(name, seen);
+            c.save();
+            c.translate(x, y);
+            c.rotate(angle);
+            c.lineWidth = 3;
+            c.strokeStyle = PAINT.halo;
+            c.strokeText(name, 0, 0);
+            c.fillStyle = PAINT.names;
+            c.fillText(name, 0, 0);
+            c.restore();
+        }
+    }
+}
+
+// Der Graph, wie build_graph ihn gebaut hat: jede Kante eine Linie, jeder
+// Knoten ein Punkt
+function drawGraph(c) {
+    const { nodes, edges } = graph;
+    const { ax, ay, ox, oy } = projection();
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    c.strokeStyle = PAINT.graphEdge;
+    c.lineWidth = Math.min(2, Math.max(0.7, view.scale / 200000));
+    c.beginPath();
+    for (let i = 0; i < edges.length; i += 2) {
+        const a = 2 * edges[i];
+        const b = 2 * edges[i + 1];
+        const x1 = ox + nodes[a] * ax, y1 = oy - nodes[a + 1] * ay;
+        const x2 = ox + nodes[b] * ax, y2 = oy - nodes[b + 1] * ay;
+        if ((x1 < 0 && x2 < 0) || (y1 < 0 && y2 < 0) || (x1 > width && x2 > width) || (y1 > height && y2 > height)) continue;
+        c.moveTo(x1, y1);
+        c.lineTo(x2, y2);
+    }
+    c.stroke();
+    const radius = Math.min(4, Math.max(0.9, view.scale / 80000));
+    c.beginPath();
+    for (let i = 0; i < nodes.length; i += 2) {
+        const x = ox + nodes[i] * ax, y = oy - nodes[i + 1] * ay;
+        if (x < -5 || y < -5 || x > width + 5 || y > height + 5) continue;
+        if (radius > 2) {
+            c.moveTo(x + radius, y);
+            c.arc(x, y, radius, 0, 2 * Math.PI);
+        } else {
+            c.rect(x - radius, y - radius, 2 * radius, 2 * radius);
+        }
+    }
+    if (radius > 2) {
+        c.lineWidth = 1.5;
+        c.strokeStyle = PAINT.ring;
+        c.stroke();
+    }
+    c.fillStyle = PAINT.graphNode;
+    c.fill();
+}
+
+let layer = 'map'; // map oder graph: was über der Karte liegt
+async function showGraph(on) {
+    layer = on ? 'graph' : 'map';
+    pressLayer?.(layer);
+    if (!on) {
+        graph = null;
+        return draw();
+    }
+    const answer = await (await fetch('graph.json')).json();
+    if (answer.missing) {
+        layer = 'map';
+        pressLayer?.(layer);
+        info.textContent = `Für den Graphen fehlt noch ${answer.missing} in ${program()}.`;
+        return;
+    }
+    if (layer !== 'graph') return;
+    graph = answer;
+    info.textContent = `Der Graph: ${NUMBER.format(graph.nodes.length / 2)} Knoten, ${NUMBER.format(graph.edges.length / 2)} Kanten`;
+    draw();
+}
+
+// Die Suche: jeder besuchte Knoten ein Punkt, von Gelb (früh besucht) bis
+// Rot (spät), und darüber der gefundene Weg
+function drawRoute() {
+    const { visited, path, shown: count } = route;
+    const total = visited.length / 2;
+    const radius = Math.min(3, Math.max(1.1, view.scale / 90000));
+    const { ax, ay, ox, oy } = projection();
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    // in 20 Farben, jede ein Pfad: viel schneller als jeder Punkt für sich
+    const shades = 20;
+    const color = (shade, alpha) => `hsla(${52 - 50 * shade / (shades - 1)}, 95%, 50%, ${alpha})`;
+    // erst die Kanten, die die Suche angesehen hat, in der Farbe des Knotens,
+    // bei dem sie aufleuchten
+    const { edges } = route;
+    context.lineWidth = Math.min(3.5, Math.max(1.5, view.scale / 70000));
+    context.lineCap = 'round';
+    let e = 0;
+    for (let shade = 0; shade < shades; shade++) {
+        const to = Math.min(count, Math.floor(total * (shade + 1) / shades));
+        context.strokeStyle = color(shade, 0.7);
+        context.beginPath();
+        for (; e < edges.length && edges[e + 1] < to; e += 2) {
+            const a = 2 * edges[e], b = 2 * edges[e + 1];
+            const x1 = ox + visited[a] * ax, y1 = oy - visited[a + 1] * ay;
+            const x2 = ox + visited[b] * ax, y2 = oy - visited[b + 1] * ay;
+            if ((x1 < 0 && x2 < 0) || (y1 < 0 && y2 < 0) || (x1 > width && x2 > width) || (y1 > height && y2 > height)) continue;
+            context.moveTo(x1, y1);
+            context.lineTo(x2, y2);
+        }
+        context.stroke();
+        if (to >= count) break;
+    }
+    for (let shade = 0; shade < shades; shade++) {
+        const from = Math.floor(total * shade / shades);
+        const to = Math.min(count, Math.floor(total * (shade + 1) / shades));
+        if (from >= to) break;
+        context.fillStyle = color(shade, 0.85);
+        context.beginPath();
+        for (let i = from; i < to; i++) {
+            const x = ox + visited[2 * i] * ax, y = oy - visited[2 * i + 1] * ay;
+            if (x < -5 || y < -5 || x > width + 5 || y > height + 5) continue;
+            context.moveTo(x + radius, y);
+            context.arc(x, y, radius, 0, 2 * Math.PI);
+        }
+        context.fill();
+    }
+    // der Knoten, bei dem die Suche gerade ist
+    if (count > 0 && count < total) {
+        const i = count - 1;
+        const at = [ox + visited[2 * i] * ax, oy - visited[2 * i + 1] * ay];
+        context.lineWidth = 2.5;
+        context.strokeStyle = PAINT.current;
+        context.beginPath();
+        context.arc(at[0], at[1], radius + 5, 0, 2 * Math.PI);
+        context.stroke();
+        dot(at, radius + 1.5, PAINT.current);
+    }
+    if (!path || count < total) return;
+    // vom Ort zum nächsten Knoten des Graphen, gestrichelt
+    context.setLineDash([3, 4]);
+    context.lineWidth = 2;
+    context.strokeStyle = PAINT.connector;
+    for (const [place, end] of [[chosen.start, path[0]], [chosen.goal, path[path.length - 1]]]) {
+        if (!place) continue;
+        context.beginPath();
+        context.moveTo(...project(place.lon, place.lat));
+        context.lineTo(...project(...end));
+        context.stroke();
+    }
+    context.setLineDash([]);
+    for (const [color, width] of [[PAINT.routeHalo, 8], [PAINT.route, 4.5]]) {
+        context.strokeStyle = color;
+        context.lineWidth = width;
+        context.beginPath();
+        path.forEach(([lon, lat], i) => (i ? context.lineTo : context.moveTo).call(context, ...project(lon, lat)));
+        context.stroke();
+    }
+}
+
+function dot([x, y], radius, color, border = 0) {
+    context.beginPath();
+    context.arc(x, y, radius, 0, 2 * Math.PI);
+    if (border) {
+        context.lineWidth = border;
+        context.strokeStyle = PAINT.ring;
+        context.stroke();
+    }
+    context.fillStyle = color;
+    context.fill();
+}
+
+// Die Orte: Sehenswürdigkeiten mit Namen, Schulen erst von nah. Ein Name,
+// der einen anderen verdecken würde, bleibt weg.
+function drawPlaces() {
+    const taken = [];
+    const label = (text, [x, y], font, color, below = 0) => {
+        context.font = font;
+        const width = context.measureText(text).width;
+        const box = [x - width / 2 - 2, y - 16 + below, x + width / 2 + 2, y - 4 + below];
+        if (taken.some((b) => box[0] < b[2] && b[0] < box[2] && box[1] < b[3] && b[1] < box[3])) return;
+        taken.push(box);
+        context.textAlign = 'center';
+        context.lineWidth = 3.5;
+        context.strokeStyle = PAINT.halo;
+        context.strokeText(text, x, y - 6 + below);
+        context.fillStyle = color;
+        context.fillText(text, x, y - 6 + below);
+    };
+    // Start und Ziel zuerst, damit ihre Namen immer zu sehen sind
+    const picked = tab === 'route' ? [[chosen.start, START], [chosen.goal, GOAL]].filter(([place]) => place) : [];
+    for (const [place, color] of picked) {
+        label(place.name, project(place.lon, place.lat), '600 13px system-ui, sans-serif', color, -6);
+    }
+    // Art: Farbe des Punkts, der Schrift, ab welchem Zoom zu sehen und beschriftet
+    const shown = { sight: [0, 0], square: [60000, 120000], school: [60000, 120000] };
+    const looks = Object.fromEntries(Object.entries(shown).map(([kind, zoom]) => [kind, [...PAINT.places[kind], ...zoom]]));
+    for (const kind of ORDER_OF_KINDS) {
+        const [color, text, from, named] = looks[kind];
+        if (view.scale < from) continue;
+        for (const place of data.places) {
+            if (place.kind !== kind || picked.some(([p]) => p === place) || (tab === 'tour' && stops.includes(place))) continue;
+            const at = project(place.lon, place.lat);
+            if (at[0] < -100 || at[1] < -20 || at[0] > canvas.clientWidth + 100 || at[1] > canvas.clientHeight + 20) continue;
+            dot(at, kind === 'sight' ? 4 : 3, color, 1.5);
+            if (view.scale > named) label(place.name, at, kind === 'sight' ? '600 12px system-ui, sans-serif' : '11px system-ui, sans-serif', text);
+        }
+    }
+    for (const [place, color] of picked) {
+        dot(project(place.lon, place.lat), 7, color, 2.5);
+    }
+}
+
+// Der Maßstab unten links: eine runde Strecke, höchstens 120 Pixel lang
+function drawScale() {
+    const metresPerPixel = METRES_PER_DEGREE / view.scale;
+    const most = 120 * metresPerPixel;
+    const power = 10 ** Math.floor(Math.log10(most));
+    const metres = [5, 2, 1].map((f) => f * power).find((m) => m <= most);
+    const bar = document.querySelector('#scale span');
+    bar.style.width = `${metres / metresPerPixel}px`;
+    bar.textContent = metres >= 1000 ? `${metres / 1000} km` : `${metres} m`;
+}
+
+// Verschieben und zoomen
+function zoom(factor, x = canvas.clientWidth / 2, y = canvas.clientHeight / 2) {
+    // der Punkt unter der Maus bleibt, wo er ist
+    moved();
+    const [lon, lat] = unproject(x, y);
+    view.scale = Math.min(2000000, Math.max(2000, view.scale * factor));
+    const [lon2, lat2] = unproject(x, y);
+    view.lon += lon - lon2;
+    view.lat += lat - lat2;
+    requestDraw();
+}
+
+function moved() {
+    fitted = null;
+}
+
+function pan(dx, dy) {
+    moved();
+    const k = Math.cos(view.lat * Math.PI / 180);
+    view.lon -= dx / (k * view.scale);
+    view.lat += dy / view.scale;
+    requestDraw();
+}
+
+// Zeigt ein Rechteck aus Länge und Breite ganz, mit etwas Rand, rechts vom
+// Kasten oben links, wenn das Fenster breit genug ist. Mit cover füllt das
+// Rechteck stattdessen das ganze Fenster, auch wenn dafür etwas wegfällt.
+function fit(west, south, east, north, most = 2000000, cover = false) {
+    fitted = [west, south, east, north, most, cover];
+    view.lon = (west + east) / 2;
+    view.lat = (south + north) / 2;
+    const k = Math.cos(view.lat * Math.PI / 180);
+    const across = Math.max(1e-6, (east - west) * k);
+    const down = Math.max(1e-6, north - south);
+    if (cover) {
+        view.scale = Math.min(most, Math.max(canvas.clientWidth / across, canvas.clientHeight / down));
+        return draw();
+    }
+    const panel = document.getElementById('panel').getBoundingClientRect();
+    const left = canvas.clientWidth > 2 * panel.width + 200 ? panel.right : 0;
+    const width = canvas.clientWidth - left - 200;
+    const height = canvas.clientHeight - 160;
+    view.scale = Math.min(most, width / across, height / down);
+    view.lon -= left / 2 / (k * view.scale);
+    draw();
+}
+
+// Das Gebiet, so dass die Karte das ganze Fenster füllt
+function fitArea() {
+    fit(...data.core, 2000000, true);
+}
+
+let drag = null;
+canvas.addEventListener('pointerdown', (e) => {
+    drag = { x: e.clientX, y: e.clientY, moved: false };
+    canvas.setPointerCapture(e.pointerId);
+});
+canvas.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    const dx = e.clientX - drag.x;
+    const dy = e.clientY - drag.y;
+    if (!drag.moved && Math.abs(dx) + Math.abs(dy) < 4) return;
+    drag.moved = true;
+    canvas.classList.add('dragging');
+    drag.x = e.clientX;
+    drag.y = e.clientY;
+    pan(dx, dy);
+});
+canvas.addEventListener('pointerup', (e) => {
+    canvas.classList.remove('dragging');
+    if (drag && !drag.moved && data) clicked(...unproject(e.offsetX, e.offsetY));
+    drag = null;
+});
+canvas.addEventListener('dblclick', (e) => zoom(2, e.offsetX, e.offsetY));
+canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    // ein Mausrad macht große Schritte, ein Touchpad viele kleine
+    const step = e.deltaMode === 1 ? e.deltaY * 40 : e.deltaY;
+    zoom(Math.exp(-Math.max(-200, Math.min(200, step)) / 400), e.offsetX, e.offsetY);
+}, { passive: false });
+canvas.addEventListener('keydown', (e) => {
+    const moves = { ArrowLeft: [120, 0], ArrowRight: [-120, 0], ArrowUp: [0, 120], ArrowDown: [0, -120] };
+    if (moves[e.key]) pan(...moves[e.key]);
+    else if (e.key === '+' || e.key === '=') zoom(1.5);
+    else if (e.key === '-') zoom(1 / 1.5);
+    else if (e.key === '0' && data) fitArea();
+    else return;
+    e.preventDefault();
+});
+document.querySelectorAll('#zoom [data-zoom]').forEach((b) => b.addEventListener('click', () => zoom(Number(b.dataset.zoom))));
+document.getElementById('fit').addEventListener('click', () => data && fitArea());
+// Ein größeres Fenster, ein anderer Bildschirm oder der Zoom des Browsers
+// ändert, wie viele Pixel die Karte hat: neu zeichnen, damit sie scharf bleibt
+// Ist die Karte noch so, wie sie eingepasst wurde, passt sie sich an die neue
+// Größe wieder ein
+function resized() {
+    if (fitted) fit(...fitted); else draw();
+}
+window.addEventListener('resize', resized);
+new ResizeObserver(() => resized()).observe(canvas, { box: 'device-pixel-content-box' });
+
+// Ein Klick: der Knoten dort und seine Nachbarn (build_graph in routes.rb)
+async function clicked(lon, lat) {
+    const answer = await (await fetch(`neighbours?lon=${lon}&lat=${lat}`)).json();
+    if (answer.missing) {
+        info.textContent = `Für Knoten und Nachbarn fehlt noch ${answer.missing} in ${program()}.`;
+        return;
+    }
+    marks = [[...answer.at, '#d6336c', 5], ...answer.neighbours.map(([x, y]) => [x, y, '#1971c2', 4])];
+    lines = answer.neighbours.map(([x, y]) => [answer.at, [x, y]]);
+    const metres = answer.neighbours.map(([, , m]) => `${Math.round(m)} m`).join(', ');
+    info.textContent = `Knoten ${answer.id}: ${answer.neighbours.length} Nachbarn${metres ? ` (${metres})` : ''}`;
+    draw();
+}
+
+// Start und Ziel: ein Feld zum Suchen, mit allen Orten zur Auswahl
+function choose(which, place) {
+    const input = document.getElementById(which);
+    input.value = place ? place.name : '';
+    input.parentElement.querySelector('.clear').hidden = !place;
+    input.closest('.place').classList.remove('unknown');
+    // derselbe Ort noch einmal (etwa wenn das Feld den Fokus verliert): nichts Neues
+    if (chosen[which] === place) return;
+    chosen[which] = place;
+    showChoice();
+    findRoute();
+    // beide zu sehen, oder der eine in der Mitte
+    const both = [chosen.start, chosen.goal].filter((p) => p);
+    if (both.length === 2) {
+        const lons = both.map((p) => p.lon), lats = both.map((p) => p.lat);
+        fit(Math.min(...lons), Math.min(...lats), Math.max(...lons), Math.max(...lats), 200000);
+    } else if (place) {
+        moved();
+        view.lon = place.lon;
+        view.lat = place.lat;
+        view.scale = Math.max(view.scale, 120000);
+        draw();
+    } else {
+        draw();
+    }
+}
+
+function length(metres) {
+    return metres < 1000 ? `${Math.round(metres)} m` : `${NUMBER.format(Math.round(metres / 100) / 10)} km`;
+}
+
+// Wie weit Start und Ziel in Luftlinie auseinander sind
+function beeline() {
+    const { start, goal } = chosen;
+    const k = Math.cos((start.lat + goal.lat) / 2 * Math.PI / 180);
+    return Math.hypot((goal.lon - start.lon) * k, goal.lat - start.lat) * METRES_PER_DEGREE;
+}
+
+// Was gewählt ist, und wie weit es in Luftlinie ist
+function showChoice() {
+    const { start, goal } = chosen;
+    if (start && goal) {
+        info.textContent = `Luftlinie: ${length(beeline())}`;
+    } else {
+        info.textContent = start || goal ? `Wähle noch ${start ? 'das Ziel' : 'den Start'}.` : 'Wähle Start und Ziel oder klicke auf die Karte.';
+    }
+}
+
+// Die Route mit der gewählten Suche: erst die Suche Knoten für Knoten, dann der Weg
+const SEARCH_NAMES = { bfs: 'Breitensuche', dijkstra: 'Dijkstra', astar: 'A*' };
+const MODE_NAMES = { length: 'Strecke', foot: 'zu Fuß', bike: 'mit dem Rad', car: 'mit dem Auto' };
+
+// Die Datei mit den Funktionen: routes.rb oder routes.py, je nach Server
+function program() {
+    return data?.program || 'routes.rb';
+}
+
+function duration(seconds) {
+    const minutes = Math.round(seconds / 60);
+    return minutes < 60 ? `${minutes} min` : `${Math.floor(minutes / 60)} h ${minutes % 60} min`;
+}
+
+function took(seconds) {
+    if (seconds < 0.0001) return 'unter 0,0001';
+    return new Intl.NumberFormat('de-DE', { maximumFractionDigits: seconds < 0.01 ? 4 : 2 }).format(seconds);
+}
+let asked = 0;
+async function findRoute() {
+    if (tab !== 'route') return;
+    pause();
+    route = null;
+    document.getElementById('player').hidden = true;
+    const { start, goal } = chosen;
+    if (!start || !goal) return draw();
+    const ask = ++asked;
+    const name = SEARCH_NAMES[search];
+    info.textContent = `${name} sucht …`;
+    let answer;
+    try {
+        const response = await fetch(`route?search=${search}&mode=${mode}&from=${start.lon},${start.lat}&to=${goal.lon},${goal.lat}`);
+        if (!response.ok) throw new Error(response.status);
+        answer = await response.json();
+    } catch {
+        if (ask === asked) info.textContent = `${name}: Fehler in ${program()}. Was schiefging, steht im Terminal.`;
+        return;
+    }
+    if (ask !== asked) return; // inzwischen anders gewählt
+    if (answer.missing) {
+        info.textContent = `Für ${['Dijkstra', 'A*'].includes(name) ? name : `die ${name}`} fehlt noch ${answer.missing} in ${program()}.`;
+        return draw();
+    }
+    route = { path: answer.path, visited: answer.visited, edges: answer.edges || [], shown: 0, position: 0 };
+    showRoute(name, answer);
+    const total = answer.visited.length / 2;
+    const slider = document.getElementById('progress');
+    slider.max = total;
+    document.getElementById('player').hidden = false;
+    // das Ergebnis und der Spieler zu sehen, auch wenn der Kasten scrollt
+    document.getElementById('player').scrollIntoView({ block: 'nearest' });
+    // Wer schon selbst angehalten oder geschoben hat, vergleicht: dieselbe
+    // Stelle bei der anderen Suche. Sonst läuft die Suche einmal ab.
+    if (player.manual) {
+        show(Math.min(player.step, total));
+    } else {
+        show(0);
+        play();
+    }
+}
+
+function showRoute(name, answer) {
+    const seconds = took(answer.took);
+    const title = document.createElement('strong');
+    title.textContent = name;
+    const way = document.createElement('span');
+    const time = answer.seconds == null ? '' : `, ${duration(answer.seconds)} ${MODE_NAMES[answer.mode]}`;
+    way.textContent = answer.path
+        ? `Weg: ${length(answer.metres)}${time} über ${NUMBER.format(answer.path.length)} Knoten (Luftlinie ${length(beeline())})`
+        : 'Kein Weg gefunden.';
+    const visited = document.createElement('span');
+    visited.className = 'note';
+    visited.textContent = `Besucht: ${NUMBER.format(answer.visited.length / 2)} Knoten in ${seconds} s, von Gelb (früh) bis Rot (spät)`;
+    info.replaceChildren(title, way, visited);
+}
+
+// Die Suche zum Zusehen: abspielen, anhalten, Schritt für Schritt oder mit
+// dem Schieber an jede Stelle
+const player = { playing: false, manual: false, step: 0, last: 0 };
+const SPEEDS = { slow: 25, medium: 500 }; // Knoten je Sekunde; schnell: alles in zwei Sekunden
+
+function show(step) {
+    if (!route) return;
+    const total = route.visited.length / 2;
+    route.shown = Math.max(0, Math.min(total, Math.round(step)));
+    route.position = route.shown;
+    player.step = route.shown;
+    document.getElementById('progress').value = route.shown;
+    document.getElementById('step').textContent = route.shown >= total
+        ? `Fertig: ${NUMBER.format(total)} Knoten besucht`
+        : `Schritt ${NUMBER.format(route.shown)} von ${NUMBER.format(total)}`;
+    draw();
+}
+
+function play() {
+    if (!route) return;
+    const total = route.visited.length / 2;
+    if (route.shown >= total) show(0);
+    player.playing = true;
+    player.last = performance.now();
+    setPlayIcon();
+    requestAnimationFrame(tick);
+}
+
+function pause() {
+    player.playing = false;
+    setPlayIcon();
+}
+
+function tick(now) {
+    if (!player.playing || !route) return;
+    const total = route.visited.length / 2;
+    const speed = document.getElementById('speed').value;
+    const rate = SPEEDS[speed] || Math.max(total / 2, 50);
+    route.position = Math.min(total, route.position + rate * (now - player.last) / 1000);
+    player.last = now;
+    const position = route.position;
+    show(Math.floor(position));
+    route.position = position; // show rundet, die Bruchteile laufen weiter
+    if (route.shown >= total) pause(); else requestAnimationFrame(tick);
+}
+
+function setPlayIcon() {
+    const button = document.getElementById('play');
+    button.querySelector('.icon-play').style.display = player.playing ? 'none' : '';
+    button.querySelector('.icon-pause').style.display = player.playing ? '' : 'none';
+    button.title = player.playing ? 'Anhalten' : 'Abspielen';
+    button.setAttribute('aria-label', button.title);
+}
+
+function setUpPlayer() {
+    document.getElementById('play').addEventListener('click', () => {
+        if (player.playing) {
+            pause();
+            player.manual = true;
+            saveSoon();
+        } else {
+            play();
+        }
+    });
+    document.querySelectorAll('#player [data-step]').forEach((button) => button.addEventListener('click', () => {
+        if (!route) return;
+        pause();
+        player.manual = true;
+        const step = button.dataset.step;
+        if (step === 'first') show(0);
+        else if (step === 'last') show(route.visited.length / 2);
+        else show(route.shown + Number(step));
+    }));
+    document.getElementById('progress').addEventListener('input', (e) => {
+        pause();
+        player.manual = true;
+        show(Number(e.target.value));
+    });
+    setPlayIcon();
+}
+
+// Die Knöpfe, von denen immer einer gedrückt ist
+function segments(id, attribute, current, changed) {
+    const buttons = document.querySelectorAll(`#${id} button`);
+    const press = (value) => buttons.forEach((b) => b.setAttribute('aria-pressed', b.dataset[attribute] === value));
+    press(current);
+    buttons.forEach((button) => button.addEventListener('click', () => {
+        press(button.dataset[attribute]);
+        changed(button.dataset[attribute]);
+    }));
+    return press;
+}
+
+let pressSearch, pressMode, pressMethod, pressLayer;
+function setUpSearches() {
+    // Suche und Art zu reisen gelten für die Route und die Rundfahrt
+    const again = () => (tab === 'route' ? findRoute() : findTour());
+    pressSearch = segments('searches', 'search', search, (value) => {
+        search = value;
+        again();
+    });
+    pressMode = segments('modes', 'mode', mode, (value) => {
+        mode = value;
+        again();
+    });
+    pressMethod = segments('methods', 'method', method, (value) => {
+        method = value;
+        findTour();
+    });
+    document.querySelectorAll('#tabs button').forEach((button) => button.addEventListener('click', () => switchTab(button.dataset.tab)));
+}
+
+function switchTab(which) {
+    tab = which;
+    document.querySelectorAll('#tabs button').forEach((b) => b.setAttribute('aria-selected', b.dataset.tab === which));
+    document.querySelectorAll('[data-for]').forEach((element) => {
+        element.hidden = element.dataset.for !== which || (element.id === 'player' && !route);
+    });
+    if (which === 'route') {
+        tour = null;
+        if (chosen.start && chosen.goal) findRoute(); else showChoice();
+    } else {
+        pause();
+        route = null;
+        document.getElementById('player').hidden = true;
+        findTour();
+    }
+    draw();
+}
+
+// Die Rundfahrt: Orte dazu und weg, und mit der gewählten Suche und Art
+// die Reihenfolge
+function addStop(place) {
+    if (!place || stops.includes(place) || stops.length >= 12) return;
+    stops.push(place);
+    showStops();
+    findTourSoon();
+}
+
+function removeStop(place) {
+    stops = stops.filter((p) => p !== place);
+    showStops();
+    findTourSoon();
+}
+
+// Wer mehrere Orte hintereinander hinzufügt, wartet nicht auf jede Rechnung dazwischen
+let tourSoon = null;
+function findTourSoon() {
+    clearTimeout(tourSoon);
+    tour = null;
+    draw();
+    tourSoon = setTimeout(findTour, 600);
+}
+
+function showStops() {
+    const list = document.getElementById('stops');
+    list.replaceChildren(...stops.map((place, i) => {
+        const item = document.createElement('li');
+        const number = document.createElement('span');
+        number.className = 'number';
+        number.textContent = i + 1;
+        const name = document.createElement('span');
+        name.className = 'name';
+        name.textContent = place.name;
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.title = `${place.name} entfernen`;
+        remove.setAttribute('aria-label', remove.title);
+        remove.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></svg>';
+        remove.addEventListener('click', () => removeStop(place));
+        item.append(number, name, remove);
+        return item;
+    }));
+    document.getElementById('stop').placeholder = stops.length ? 'Noch einen Ort hinzufügen …' : 'Ort hinzufügen …';
+}
+
+const METHOD_NAMES = { best: 'Alle Reihenfolgen', nearest: 'Nächster Nachbar', improved: '2-opt' };
+async function findTour() {
+    tour = null;
+    if (tab !== 'tour') return;
+    if (stops.length < 3) {
+        info.textContent = `Wähle mindestens drei Orte für die Rundfahrt${stops.length ? `, noch ${3 - stops.length}` : ''}. Sie beginnt und endet beim ersten.`;
+        if (stops.length) fitStops();
+        return draw();
+    }
+    fitStops();
+    const ask = ++asked;
+    info.textContent = `Die Abstände zwischen ${stops.length} Orten: ${stops.length * (stops.length - 1)} Suchen mit ${SEARCH_NAMES[search]} …`;
+    let answer;
+    try {
+        const points = stops.map((p) => `${p.lon},${p.lat}`).join(';');
+        const response = await fetch(`tour?search=${search}&mode=${mode}&method=${method}&stops=${points}`);
+        if (!response.ok) throw new Error(response.status);
+        answer = await response.json();
+    } catch {
+        if (ask === asked) info.textContent = `Rundfahrt: Fehler in ${program()}. Was schiefging, steht im Terminal.`;
+        return;
+    }
+    if (ask !== asked) return;
+    if (answer.missing || answer.error) {
+        info.textContent = answer.error || `Für die Rundfahrt fehlt noch ${answer.missing} in ${program()}.`;
+        return draw();
+    }
+    tour = answer;
+    const title = document.createElement('strong');
+    title.textContent = `Rundfahrt: ${METHOD_NAMES[method]}`;
+    const way = document.createElement('span');
+    const time = answer.seconds == null ? '' : `, ${duration(answer.seconds)} ${MODE_NAMES[answer.mode]}`;
+    way.textContent = `${length(answer.metres)}${time}: ${[...answer.order, answer.order[0]].map((i) => i + 1).join(' → ')}`;
+    const note = document.createElement('span');
+    note.className = 'note';
+    note.textContent = `Abstände mit ${SEARCH_NAMES[search]} in ${took(answer.table)} s, die Reihenfolge in ${took(answer.took)} s`;
+    info.replaceChildren(title, way, note);
+    info.scrollIntoView({ block: 'nearest' });
+    draw();
+}
+
+function fitStops() {
+    const lons = stops.map((p) => p.lon), lats = stops.map((p) => p.lat);
+    fit(Math.min(...lons), Math.min(...lats), Math.max(...lons), Math.max(...lats), 200000);
+}
+
+// Die Rundfahrt auf der Karte: ihre Wege, und jeder Ort mit seiner Nummer
+function drawTour() {
+    if (tour) {
+        for (const [color, width] of [[PAINT.routeHalo, 8], [PAINT.route, 4.5]]) {
+            context.strokeStyle = color;
+            context.lineWidth = width;
+            context.lineJoin = 'round';
+            context.beginPath();
+            for (const leg of tour.legs) {
+                leg.forEach(([lon, lat], i) => (i ? context.lineTo : context.moveTo).call(context, ...project(lon, lat)));
+            }
+            context.stroke();
+        }
+    }
+    context.font = '700 11px system-ui, sans-serif';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    stops.forEach((place, i) => {
+        const at = project(place.lon, place.lat);
+        dot(at, 9, i === 0 ? START : PAINT.tour, 2.5);
+        context.fillStyle = '#fff';
+        context.fillText(String(i + 1), at[0], at[1] + 0.5);
+    });
+    context.textBaseline = 'alphabetic';
+}
+
+// Die Arten von Orten: wie sie heißen und ihr Zeichen
+const KINDS = {
+    sight: ['Sehenswürdigkeit', '<path d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z"/>'],
+    square: ['Platz', '<rect x="2.5" y="2.5" width="11" height="11" rx="2"/><path d="M2.5 8h11M8 2.5v11"/>'],
+    school: ['Schule', '<path d="M1.5 6 8 3l6.5 3L8 9z"/><path d="M4 7.3v3.4c0 1 1.8 2 4 2s4-1 4-2V7.3M14.5 6v4"/>'],
+};
+const ORDER_OF_KINDS = ['sight', 'square', 'school'];
+
+// Die Orte, die zu einem Text passen: die, deren Name so anfängt, vor denen,
+// in denen er irgendwo steht; sonst nach Art und Name
+function matching(text) {
+    const wanted = text.trim().toLowerCase();
+    const rank = (place) => {
+        const name = place.name.toLowerCase();
+        const at = wanted ? name.indexOf(wanted) : 0;
+        if (at < 0) return null;
+        const word = at === 0 || /[\s-]/.test(name[at - 1]);
+        return [at === 0 ? 0 : word ? 1 : 2, ORDER_OF_KINDS.indexOf(place.kind), place.name];
+    };
+    return data.places.map((place) => [rank(place), place]).filter(([r]) => r)
+        .sort(([a], [b]) => a[0] - b[0] || a[1] - b[1] || a[2].localeCompare(b[2], 'de'))
+        .slice(0, wanted ? 60 : 400).map(([, place]) => place);
+}
+
+// Das Feld zum Suchen eines Ortes, mit einer Liste darunter, die beim Tippen
+// passende Orte vorschlägt
+// Was ein Feld zeigt und was ein Ort darin bewirkt: Start und Ziel sind der
+// gewählte Ort, das Feld der Rundfahrt fügt ihn hinzu und wird wieder leer
+function current(which) {
+    return which === 'stop' ? null : chosen[which];
+}
+
+function pick(which, place) {
+    if (which !== 'stop') return choose(which, place);
+    addStop(place);
+    const input = document.getElementById('stop');
+    input.value = '';
+    input.parentElement.querySelector('.clear').hidden = true;
+}
+
+function setUpPlaces() {
+    const popup = document.getElementById('suggestions');
+    let field = null; // welches Feld die Liste gerade zeigt
+    let shown = [];
+    let active = -1;
+
+    const close = () => {
+        popup.hidden = true;
+        if (field) field.setAttribute('aria-expanded', 'false');
+        field = null;
+    };
+    const highlight = (index) => {
+        active = index;
+        popup.querySelectorAll('li[role="option"]').forEach((item, i) => item.classList.toggle('active', i === index));
+        const item = document.getElementById(`suggestion-${index}`);
+        if (item) {
+            item.scrollIntoView({ block: 'nearest' });
+            field.setAttribute('aria-activedescendant', item.id);
+        }
+    };
+    const open = (input) => {
+        field = input;
+        shown = matching(input.value === current(input.id)?.name ? '' : input.value);
+        popup.replaceChildren();
+        const wanted = input.value.trim().toLowerCase();
+        const grouped = !wanted || input.value === current(input.id)?.name;
+        const groups = { sight: 'Sehenswürdigkeiten', square: 'Plätze', school: 'Schulen' };
+        shown.forEach((place, i) => {
+            // ohne Suchtext: die Orte nach Art, mit Überschrift
+            if (grouped && place.kind !== shown[i - 1]?.kind) {
+                const heading = document.createElement('li');
+                heading.className = 'heading';
+                heading.setAttribute('role', 'presentation');
+                heading.textContent = groups[place.kind] || '';
+                popup.appendChild(heading);
+            }
+            const item = document.createElement('li');
+            item.id = `suggestion-${i}`;
+            item.setAttribute('role', 'option');
+            const icon = `<svg viewBox="0 0 16 16" aria-hidden="true" class="kind ${place.kind}">${KINDS[place.kind]?.[1] || ''}</svg>`;
+            item.innerHTML = icon;
+            const name = document.createElement('span');
+            name.className = 'name';
+            const at = wanted && input.value !== current(input.id)?.name ? place.name.toLowerCase().indexOf(wanted) : -1;
+            if (at >= 0) {
+                const strong = document.createElement('b');
+                strong.textContent = place.name.slice(at, at + wanted.length);
+                name.append(place.name.slice(0, at), strong, place.name.slice(at + wanted.length));
+            } else {
+                name.textContent = place.name;
+            }
+            const kind = document.createElement('span');
+            kind.className = 'what';
+            kind.textContent = KINDS[place.kind]?.[0] || '';
+            item.append(name, kind);
+            // mousedown, nicht click: sonst verliert das Feld vorher den Fokus
+            item.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                pick(input.id, place);
+                close();
+            });
+            item.addEventListener('mousemove', () => active !== i && highlight(i));
+            popup.appendChild(item);
+        });
+        if (!shown.length) {
+            const empty = document.createElement('li');
+            empty.className = 'empty';
+            empty.textContent = 'Kein Ort mit diesem Namen';
+            popup.appendChild(empty);
+        }
+        const box = input.closest('.place').getBoundingClientRect();
+        popup.style.left = `${box.left}px`;
+        popup.style.top = `${box.bottom + 6}px`;
+        popup.style.width = `${Math.min(window.innerWidth - box.left - 12, Math.max(box.width + 60, 360))}px`;
+        popup.style.maxHeight = `${Math.max(160, window.innerHeight - box.bottom - 24)}px`;
+        popup.hidden = false;
+        input.setAttribute('aria-expanded', 'true');
+        highlight(shown.length && input.value.trim() && input.value !== current(input.id)?.name ? 0 : -1);
+    };
+
+    for (const which of ['start', 'goal', 'stop']) {
+        const input = document.getElementById(which);
+        const clear = input.parentElement.querySelector('.clear');
+        const update = () => {
+            clear.hidden = !input.value;
+        };
+        input.addEventListener('focus', () => {
+            input.select();
+            open(input);
+        });
+        input.addEventListener('input', () => {
+            update();
+            input.closest('.place').classList.remove('unknown');
+            open(input);
+        });
+        input.addEventListener('keydown', (e) => {
+            if (popup.hidden && e.key === 'ArrowDown') return open(input);
+            if (e.key === 'ArrowDown') highlight(Math.min(shown.length - 1, active + 1));
+            else if (e.key === 'ArrowUp') highlight(Math.max(0, active - 1));
+            else if (e.key === 'Enter') {
+                if (shown[active]) pick(which, shown[active]);
+                else input.dispatchEvent(new Event('change'));
+                close();
+                input.blur();
+            } else if (e.key === 'Escape') {
+                input.value = current(which)?.name || '';
+                update();
+                close();
+                input.blur();
+            } else return;
+            e.preventDefault();
+        });
+        input.addEventListener('blur', () => close());
+        // ein Name, der so getippt (oder eingefügt) wurde: der erste Ort, der passt
+        input.addEventListener('change', () => {
+            update();
+            const text = input.value.trim();
+            if (!text) return which === 'stop' ? undefined : pick(which, null);
+            const place = data.places.find((p) => p.name.toLowerCase() === text.toLowerCase()) || matching(text)[0];
+            if (place) return pick(which, place);
+            input.closest('.place').classList.add('unknown');
+            info.textContent = `Keinen Ort »${input.value}« gefunden.`;
+        });
+        clear.addEventListener('mousedown', (e) => e.preventDefault());
+        clear.addEventListener('click', () => {
+            if (which === 'stop') input.value = ''; else pick(which, null);
+            update();
+            input.focus();
+        });
+    }
+    window.addEventListener('resize', close);
+    document.getElementById('swap').addEventListener('click', () => {
+        const { start, goal } = chosen;
+        chosen.start = null;
+        choose('goal', start);
+        choose('start', goal);
+    });
+}
+
+let legendReady = false;
+function setUpLegend() {
+    const ratio = window.devicePixelRatio || 1;
+    const list = document.querySelector('#legend ul');
+    list.replaceChildren();
+    for (const [kind, name] of LEGEND) {
+        const [color, width, dash] = STYLES[kind];
+        const item = document.createElement('li');
+        const sample = document.createElement('canvas');
+        sample.width = 28 * ratio;
+        sample.height = 10 * ratio;
+        const c = sample.getContext('2d');
+        c.scale(ratio, ratio);
+        c.lineCap = 'round';
+        const line = (style, w, d = []) => {
+            c.strokeStyle = style;
+            c.lineWidth = w;
+            c.setLineDash(d);
+            c.beginPath();
+            c.moveTo(3, 5);
+            c.lineTo(25, 5);
+            c.stroke();
+        };
+        if (CASING[kind]) line(CASING[kind], width * 1.6 + 2);
+        line(color, dash ? 2 : width * 1.6, dash ? dash.map((d) => d * 1.6) : []);
+        item.append(sample, name);
+        list.appendChild(item);
+    }
+}
+
+const NUMBER = new Intl.NumberFormat('de-DE');
+const AREA_NAMES = { berlin: 'Berlin', 'charlottenburg-wilmersdorf': 'Charlottenburg-Wilmersdorf',
+    'friedrichshain-kreuzberg': 'Friedrichshain-Kreuzberg', lichtenberg: 'Lichtenberg',
+    'marzahn-hellersdorf': 'Marzahn-Hellersdorf', mitte: 'Mitte', neukoelln: 'Neukölln', pankow: 'Pankow',
+    reinickendorf: 'Reinickendorf', spandau: 'Spandau', 'steglitz-zehlendorf': 'Steglitz-Zehlendorf',
+    'tempelhof-schoeneberg': 'Tempelhof-Schöneberg', 'treptow-koepenick': 'Treptow-Köpenick' };
+
+// Was gewählt ist, steht in der Adresse der Seite: Start, Ziel, Suche, Graph,
+// der Ausschnitt der Karte und der Schritt der Suche. Neu laden oder die
+// Adresse weitergeben zeigt dasselbe.
+let saving = null;
+function saveSoon() {
+    if (!data || restoring) return;
+    clearTimeout(saving);
+    saving = setTimeout(save, 300);
+}
+
+function save() {
+    const state = new URLSearchParams();
+    if (chosen.start) state.set('start', chosen.start.name);
+    if (chosen.goal) state.set('goal', chosen.goal.name);
+    if (search !== 'bfs') state.set('search', search);
+    if (mode !== 'length') state.set('mode', mode);
+    if (tab === 'tour') state.set('tab', 'tour');
+    if (stops.length) state.set('stops', stops.map((p) => p.name).join('|'));
+    if (method !== 'nearest') state.set('method', method);
+    if (layer === 'graph') state.set('graph', '1');
+    if (!fitted) state.set('map', `${view.lon.toFixed(5)},${view.lat.toFixed(5)},${Math.round(view.scale)}`);
+    if (route && player.manual) state.set('step', player.step);
+    const hash = state.toString();
+    if (hash !== location.hash.slice(1)) {
+        try {
+            history.replaceState(null, '', hash ? `#${hash}` : location.pathname + location.search);
+        } catch {
+            // zu oft hintereinander: dann eben beim nächsten Mal
+        }
+    }
+}
+
+let restoring = false;
+function restore() {
+    const state = new URLSearchParams(location.hash.slice(1));
+    if (![...state.keys()].length) return;
+    restoring = true;
+    const named = (name) => data.places.find((p) => p.name === name) || null;
+    if (SEARCH_NAMES[state.get('search')]) pressSearch(search = state.get('search'));
+    if (MODE_NAMES[state.get('mode')]) pressMode(mode = state.get('mode'));
+    if (METHOD_NAMES[state.get('method')]) pressMethod(method = state.get('method'));
+    stops = (state.get('stops') || '').split('|').map(named).filter((p) => p);
+    showStops();
+    if (state.has('step')) {
+        player.manual = true;
+        player.step = Number(state.get('step')) || 0;
+    }
+    if (state.get('graph') === '1') {
+        showGraph(true);
+    }
+    if (state.get('start')) choose('start', named(state.get('start')));
+    if (state.get('goal')) choose('goal', named(state.get('goal')));
+    if (state.get('tab') === 'tour') switchTab('tour');
+    const map = (state.get('map') || '').split(',').map(Number);
+    if (map.length === 3 && map.every(Number.isFinite)) {
+        moved();
+        [view.lon, view.lat, view.scale] = map;
+    }
+    restoring = false;
+    draw();
+}
+
+fetch('map.json').then((r) => r.json()).then((map) => {
+    data = map;
+    // die Wege nach Art, gezeichnet in der Reihenfolge der Wichtigkeit; zu
+    // jedem Weg sein Rechteck (West, Süd, Ost, Nord), damit nur gezeichnet
+    // wird, was zu sehen ist
+    const byKind = map.kinds.map((kind) => ({ kind, ways: [], boxes: [], names: [] }));
+    for (const [kind, points, named] of map.ways) {
+        const coordinates = Float64Array.from(points);
+        let w = Infinity, e = -Infinity, s = Infinity, n = -Infinity;
+        for (let i = 0; i < coordinates.length; i += 2) {
+            w = Math.min(w, coordinates[i]); e = Math.max(e, coordinates[i]);
+            s = Math.min(s, coordinates[i + 1]); n = Math.max(n, coordinates[i + 1]);
+        }
+        byKind[kind].ways.push(coordinates);
+        byKind[kind].boxes.push(w, s, e, n);
+        byKind[kind].names.push(named ?? -1);
+    }
+    data.groups = byKind.filter((group) => group.ways.length)
+        .map((group) => ({ ...group, boxes: Float64Array.from(group.boxes) }))
+        .sort((a, b) => ORDER.indexOf(a.kind) - ORDER.indexOf(b.kind));
+    // Für den Anfang die dichte Mitte: ohne die Wege, die über den Rand des
+    // Gebiets hinausragen, ist das Fenster überall voller Karte
+    const lons = new Float64Array(map.ways.reduce((sum, [, points]) => sum + points.length / 2, 0));
+    const lats = new Float64Array(lons.length);
+    let n = 0;
+    for (const [, points] of map.ways) {
+        for (let i = 0; i < points.length; i += 2, n++) {
+            lons[n] = points[i];
+            lats[n] = points[i + 1];
+        }
+    }
+    lons.sort();
+    lats.sort();
+    const at = (sorted, share) => sorted[Math.floor(share * (sorted.length - 1))];
+    data.core = [at(lons, 0.02), at(lats, 0.02), at(lons, 0.98), at(lats, 0.98)];
+    const name = map.area.split('+').map((part) => AREA_NAMES[part] || part).join(' + ');
+    document.getElementById('area').textContent =
+        `${name}: ${NUMBER.format(map.ways.length)} Wege, ${NUMBER.format(map.places.length)} Orte`;
+    setUpPlaces();
+    setUpSearches();
+    setUpPlayer();
+    pressLayer = segments('layers', 'layer', layer, (value) => {
+        showGraph(value === 'graph');
+        saveSoon();
+    });
+    const panel = document.getElementById('panel');
+    document.getElementById('collapse').addEventListener('click', (e) => {
+        const open = panel.classList.toggle('collapsed') === false;
+        e.currentTarget.setAttribute('aria-expanded', open);
+        e.currentTarget.title = open ? 'Einklappen' : 'Aufklappen';
+        e.currentTarget.setAttribute('aria-label', e.currentTarget.title);
+    });
+    fitArea();
+    restore();
+}).catch(() => {
+    document.getElementById('area').textContent = 'Keine Karte: Läuft der Server noch?';
+});
+setUpTheme();
+applyTheme();
+setUpLegend();
+legendReady = true;
+draw();

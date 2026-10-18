@@ -1,3 +1,5 @@
+Lernende programmieren in der Data Structures Sandbox Listen, Stacks, Queues, Bäume, Heaps und Hash-Tabellen selbst (in Dart, Python, JavaScript oder Java) und sehen bei jedem Aufruf, was im Speicher passiert. Die Sandbox ist ein eigenes Programm im Browser; die Seite hier zeigt, wie sie ihre Programme im Workspace mit Git ablegen und veröffentlichen.
+
 Diese Seite begleitet die Data Structures Sandbox, ersetzt sie aber nicht. Sie ist für alle gedacht, die Git noch nicht kennen, zum Beispiel neue Lernende in Klasse 11.
 
 <table class='table'>

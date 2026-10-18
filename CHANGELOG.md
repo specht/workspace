@@ -18,6 +18,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Jede Aktivität im Katalog hat jetzt eine Notiz für Lehrkräfte, und jede
+  beginnt damit, was die Lernenden tun. Neu sind die Notizen zu »Was ist der
+  Hackschule Workspace?«, »Die Basics«, »3D-Grafik mit Anaglyphen«,
+  »Feueranimation« und »Ein Rechner für Ausdrücke«; in vierzehn anderen sagt jetzt der erste Absatz, worum es
+  geht. Ein Test hält das so.
 - Neue Aktivität »DNS: Wie aus einem Namen eine Adresse wird« unter »Netze &
   Sicherheit«, nach TCP/IP: Lernende fragen mit `dig` nach Adressen und
   anderen Einträgen, gehen den Weg einer Frage von den Root-Servern über die
@@ -707,6 +712,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- Im Katalog auf dem Handy stand im dunklen Modus neben jedem Bild ein heller
+  Strich: Die Linie zwischen Bild und Text hatte keine dunkle Farbe.
+- Zwei Tabellen standen als Text mit senkrechten Strichen da, weil die Seiten
+  sie in Markdown schrieben (das Format der Straßendaten im Routenplaner, die
+  Tasten in TIC-80). Sie sind jetzt HTML, und ein Test findet solche Tabellen.
 - »Ein Krimi im Terminal«: Der Zettel mit dem Zugang zum Museumsserver
   fehlte in den Akten, wenn ein Workspace sie über die öffentliche Adresse
   der Installation lud; die Website erkannte den Workspace nicht. Wer
@@ -769,6 +779,42 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   und Umbenennen bis zur Umwandlung nach WebP. Das Kontextmenü des Browsers
   ist nachgebaut, weil ein Screenshot das echte nicht zeigt. Nach einem Update
   von VS Code entstehen sie neu.
+- Neue Aktivität »Ein Routenplaner für Berlin« unter »Wie Computer rechnen«.
+  Mit echten Karten von OpenStreetMap baut man in Ruby oder Python (je nach
+  Einstellung der Klasse) einen Routenplaner,
+  erst in Steglitz, dann in ganz Berlin; Start und Ziel sind öffentliche Orte
+  (Sehenswürdigkeiten, Plätze, alle Schulen Berlins), nie Adressen. Die
+  neun Schritte: die Karte, Abstände aus Koordinaten, der Graph,
+  Breitensuche, Dijkstra, ein Heap, A* quer durch drei Bezirke bis zum
+  Brandenburger Tor, die Arten zu reisen (zu Fuß, Rad, Auto mit
+  Einbahnstraßen, in Minuten) und eine Rundfahrt (alle Reihenfolgen,
+  nächster Nachbar, 2-opt), jeder mit Aufgaben, die der Workspace prüft. Die Karte der Vorlage ist Steglitz-Zehlendorf;
+  jeden anderen der zwölf Bezirke (und ganz Berlin) lädt `server.rb` beim
+  ersten Start mit `AREA=…` aus `specht/workspace-files`. Die Seite im Browser zeigt, was der eigene Code tut: den Graphen
+  aus `build_graph` als Punkte und Linien über der blassen Karte, und bei
+  jeder Suche erst die besuchten Knoten in der Reihenfolge der Suche, dann den
+  Weg mit Länge, Knoten und Zeit; ein Spieler mit Schieber zeigt die Suche
+  Schritt für Schritt, und beim Wechsel der Suche bleibt der Schritt, zum
+  Vergleichen. Start und Ziel sucht man durch Tippen in einer Liste mit
+  Vorschlägen, dazu Straßennamen, Maßstab, Legende und Zoom zur Maus; was
+  gewählt ist, steht in der Adresse der Seite; dunkle Farben, wenn der
+  Bildschirm dunkel eingestellt ist, oder mit dem Knopf rechts oben (die
+  Bilder der Seite und der Karte im Katalog gibt es hell und dunkel); der
+  Server schreibt die Adresse der Karte zum Anklicken ins Terminal; beim Ziehen und Zoomen wird das letzte
+  Bild der Karte nur verschoben und erst danach neu gezeichnet. Die Daten baut
+  `src/scripts/collect-streets/`, für Berlin geschnitten an den Grenzen der
+  Bezirke, mit Fähren und den Schulen aus dem Schulverzeichnis Berlins (in
+  OpenStreetMap ist auch eine DJ-Schule eine Schule); mehrere Bezirke
+  zusammen startet `AREA=mitte,pankow`; `publish-datasets.rb streets` veröffentlicht sie; die Vorlage entsteht in `vorlage/`, das
+  Repository `specht/routenplaner-starter` übernimmt sie von dort.
+- Generierte Bilder: Eine Webseite in der Vorschau, die auf ein `<canvas>`
+  zeichnet, wird vor dem Bild neu gezeichnet, in der vollen Auflösung des
+  Bildes (der Generator schickt ihr nach dem Umstellen der Auflösung ein
+  `resize`). Vorher war so eine Karte unscharf.
+- `.gitignore` schließt nur noch den Datenordner der Entwicklung (`/data`) aus,
+  nicht mehr jeden Ordner namens `data`. Dadurch fehlten zwei Dateien des
+  Monaco-Editors im Repository (`webCustomData.js` für CSS und HTML, aus der
+  ESM-Fassung, die die Code Bites nicht laden); sie sind jetzt dabei.
 - Kontextzeilen: Von der Zickzacklinie fällt ein leichter Schatten in den
   Kontext, so liegt der neue Code sichtbar obenauf. Leerzeilen, wo Kontext und neuer
   Code aneinanderstoßen, gehören zum Kontext; der Schnitt liegt direkt an der
@@ -1645,6 +1691,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Entfernt
 
+- »Trainiere ein neuronales Netzwerk« (ein Netz erkennt handgeschriebene
+  Ziffern) steht nicht mehr im Katalog; an seiner Stelle steht der
+  Routenplaner. Die Seite ist unter ihrer Adresse noch da.
 - Der Endpunkt, der Keras-Modelle für die Ziffernerkennung in TensorFlow.js
   umwandelte. Die Aktivität wandelt ihr Modell inzwischen selbst in ONNX um;
   der Endpunkt nahm ohne Anmeldung bis zu 100 MB an und legte sie dauerhaft

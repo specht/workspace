@@ -42,6 +42,15 @@ DATASETS = {
         # the names before October 2026, for students halfway through the Filmdatenbank
         old_files: %w[mysql.sql mysql-schema.sql mysql-data.sql mysql-data-movies.sql mysql-data-crew.sql neo4j.dump]
     },
+    'streets' => {
+        dir: 'street-archive', from: 'src/scripts/collect-streets/street-archive',
+        title: 'Streets of Berlin',
+        about: 'Every street, path and stair of Berlin and of each of its twelve Bezirke, one way per line with its kind, one-way flag, name and points, compressed; next to each the public places to start from and go to: sights, squares and every school. Never addresses.',
+        source: '[OpenStreetMap](https://www.openstreetmap.org/copyright), © OpenStreetMap contributors, ODbL 1.0',
+        used: '*Ein Routenplaner für Berlin* (`server.rb` of the template loads a Bezirk from here)',
+        # whole files, not SQL: only what the activity downloads
+        files: /\A(README\.md|.+\.tsv\.gz|.+-places\.tsv)\z/
+    },
     'music' => {
         dir: 'music-archive', from: 'src/scripts/collect-music/discogs',
         title: 'Music',
@@ -61,8 +70,12 @@ OTHER_FILES = {
 }.freeze
 
 # What every dataset has, by its name
-def required(name) = ['README.md', "#{name}.sql", "#{name}-schema.sql", "#{name}-data.sql", "#{name}-neo4j.dump"] +
-                     (name == 'countries' ? ['countries-basic.sql'] : [])
+def required(name)
+    return ['README.md', 'berlin.tsv.gz', 'steglitz-zehlendorf.tsv.gz', 'steglitz-zehlendorf-places.tsv'] if name == 'streets'
+
+    ['README.md', "#{name}.sql", "#{name}-schema.sql", "#{name}-data.sql", "#{name}-neo4j.dump"] +
+        (name == 'countries' ? ['countries-basic.sql'] : [])
+end
 
 class Publisher
     def initialize(names:, repo:, from:, commit:, push:, patch:, force:)
@@ -102,8 +115,8 @@ class Publisher
         # the new builds, and what workspace-files has of the others
         rows = DATASETS.to_h { |name, d| [name, row_counts(File.join(sources[name] || File.join(repo, d[:dir]), "#{name}.sql"))] }
         check_tasks(rows, sources.keys)
-        sources.each { |name, dir| copy(dir, File.join(repo, DATASETS[name][:dir]), DATASETS[name][:old_files] || []) }
-        sources.each_key { |name| rebuild_stepper(name, File.join(repo, DATASETS[name][:dir])) }
+        sources.each { |name, dir| copy(dir, File.join(repo, DATASETS[name][:dir]), DATASETS[name][:old_files] || [], DATASETS[name][:files]) }
+        sources.each_key { |name| rebuild_stepper(name, File.join(repo, DATASETS[name][:dir])) if DATASETS[name][:stepper] }
         File.write(File.join(repo, 'README.md'), overview(repo, rows))
         git(repo, 'add', '--all')
         changes = git(repo, 'status', '--short')
@@ -130,12 +143,13 @@ class Publisher
         end
     end
 
-    # The files of a dataset, without the collector's caches (dot files);
-    # what the new build no longer has goes, but for the old names kept for
-    # old links.
-    def copy(from, to, keep)
+    # The files of a dataset, without the collector's caches (dot files), and
+    # for a dataset of whole files only those it names; what the new build no
+    # longer has goes, but for the old names kept for old links.
+    def copy(from, to, keep, only = nil)
         FileUtils.mkdir_p(to)
         files = Dir.children(from).reject { |f| f.start_with?('.') }.select { |f| File.file?(File.join(from, f)) }
+        files = files.grep(only) if only
         Dir.children(to).each do |f|
             next if f.start_with?('.') || files.include?(f) || keep.include?(f) || !File.file?(File.join(to, f))
 
@@ -219,15 +233,21 @@ class Publisher
             dir = File.join(repo, d[:dir])
             next unless File.directory?(dir)
 
-            tables = rows[name].map { |table, n| "| `#{table}` | #{n.to_s.reverse.scan(/\d{1,3}/).join(',').reverse} |" }
+            thousands = ->(n) { n.to_s.reverse.scan(/\d{1,3}/).join(',').reverse }
+            contents = if d[:files]
+                files = Dir.children(dir).grep(d[:files]).reject { |f| f == 'README.md' }.sort
+                ['| File | Size |', '| --- | ---: |'] +
+                    files.map { |f| "| `#{f}` | #{thousands.(File.size(File.join(dir, f)) / 1024)} KB |" }
+            else
+                ['| Table | Rows |', '| --- | ---: |'] +
+                    rows[name].map { |table, n| "| `#{table}` | #{thousands.(n)} |" }
+            end
             <<~SECTION
                 ## #{d[:title]}: [`#{d[:dir]}/`](#{d[:dir]}/)
 
                 #{d[:about]}
 
-                | Table | Rows |
-                | --- | ---: |
-                #{tables.join("\n")}
+                #{contents.join("\n")}
 
                 Source: #{d[:source]}. Built #{generated(dir) || 'at an unknown date'}. Used by: #{d[:used]}.
                 What each column means: [`#{d[:dir]}/README.md`](#{d[:dir]}/README.md).#{old_note(dir, d)}
@@ -239,8 +259,8 @@ class Publisher
             # Files for the Hackschule Workspace
 
             Files that students download with `wget` in the activities of the
-            [Hackschule Workspace](https://github.com/specht/workspace), above all three
-            classroom datasets. Each dataset folder has the same files, named after the
+            [Hackschule Workspace](https://github.com/specht/workspace), above all the
+            classroom datasets. Each SQL dataset folder has the same files, named after the
             dataset: `countries.sql` (tables and data), `countries-schema.sql` (tables only),
             `countries-data.sql` (data only, for tables built in class),
             `countries-data-*.sql` (the data in parts), `countries-neo4j.dump` (for

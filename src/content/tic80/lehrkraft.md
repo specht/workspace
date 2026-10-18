@@ -1,4 +1,4 @@
-Ein erstes eigenes Spiel, mit allem, was dazugehört: Code, Figuren, Töne. TIC-80 ist dafür ideal, weil seine Grenzen (240 × 136 Pixel, 16 Farben) Entscheidungen erzwingen und weil alles in einem Fenster liegt. Lua wird unterwegs erklärt; wer Variablen, `if` und Schleifen aus einer anderen Sprache kennt, kommt schnell voran.
+Lernende bauen in TIC-80 ihr erstes eigenes Spiel, mit allem, was dazugehört: Code in Lua, Figuren, Töne. Nach einem gemeinsamen Spiel (eine Figur fängt fallende Sterne) entsteht ein eigenes. TIC-80 ist dafür ideal, weil seine Grenzen (240 × 136 Pixel, 16 Farben) Entscheidungen erzwingen und weil alles in einem Fenster liegt. Lua wird unterwegs erklärt; wer Variablen, `if` und Schleifen aus einer anderen Sprache kennt, kommt schnell voran.
 
 <table class='table'>
 <tr><th>Ablauf</th><td>Erste Doppelstunde: TIC-80 kennenlernen, das Beispielprogramm, Speichern im Workspace, der Bildschirm, die Figur. Zweite: ein fallender Stern, Fangen, eine eigene Figur. Dritte: viele Sterne, Leben, Ton, dann das eigene Spiel und die Abgabe.</td></tr>

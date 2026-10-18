@@ -1,3 +1,5 @@
+Lernende schreiben in der Sorting Sandbox Sortieralgorithmen (in Dart, Python, JavaScript oder Java), sehen ihrem eigenen Code beim Sortieren zu, lassen Verfahren gegeneinander antreten und messen ihren Aufwand. Die Sandbox ist ein eigenes Programm im Browser; die Seite hier zeigt, wie sie ihre Programme im Workspace mit Git ablegen und veröffentlichen.
+
 Diese Seite begleitet die Sorting Sandbox, ersetzt sie aber nicht. Sie ist für alle gedacht, die Git noch nicht kennen, zum Beispiel neue Lernende in einem Kurs.
 
 <table class='table'>

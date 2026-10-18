@@ -1,4 +1,4 @@
-Die Filmdatenbank löst die alte »Videothek« ab. Statt eines Diagramm-Editors mit Maus schreiben die Lernenden ihr ER-Modell als Text; die ER-Werkstatt (VS Code-Erweiterung im Workspace) zeichnet es als Chen-, Krähenfuß- und Tabellendiagramm und erzeugt das SQL. Ruby, ein Import-Skript und ein Programm mit Menüs braucht es nicht mehr.
+Lernende entwerfen eine Datenbank für Filme und ihre Mitwirkenden: ein ER-Modell, daraus Tabellen in MySQL, die echten Daten laden und mit SQL abfragen. Die Filmdatenbank löst die alte »Videothek« ab. Statt eines Diagramm-Editors mit Maus schreiben die Lernenden ihr ER-Modell als Text; die ER-Werkstatt (VS Code-Erweiterung im Workspace) zeichnet es als Chen-, Krähenfuß- und Tabellendiagramm und erzeugt das SQL. Ruby, ein Import-Skript und ein Programm mit Menüs braucht es nicht mehr.
 
 <table class='table'>
 <tr><th>Ordner</th><td><code>/workspace/filmdatenbank</code>, von den Lernenden selbst angelegt; darin <code>film.er</code>, das erzeugte <code>film.sql</code> und die geladenen Datendateien</td></tr>

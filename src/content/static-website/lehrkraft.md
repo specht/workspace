@@ -1,3 +1,5 @@
+Lernende bauen ihre erste eigene Webseite mit HTML und CSS: eine Seite mit Überschrift, Liste, Link und einem eigenen Bild, dann Farben, Schriften und ein Layout mit Flexbox, das auf dem Handy untereinander rückt. Sie sehen jede Änderung sofort im Live Server und geben am Ende den Ordner ab.
+
 Die Aufgaben lesen nur Dateien in `/workspace/website-test` und entscheiden selbst, ob etwas da ist: ob `index.html` sauber verschachtelt ist und eine Liste mit drei Punkten und einen Link hat, ob Bilder einen Alt-Text haben und unter ihrem Pfad wirklich existieren (mit Groß- und Kleinschreibung, wie der Live Server sie sieht), ob die Bilddatei zu ihrer Endung passt, ob `index.html` die `styles.css` wirklich einbindet und ob darin `main` mit Flexbox angeordnet ist und in einer Media Query untereinander rückt.
 
 <table class='table'>

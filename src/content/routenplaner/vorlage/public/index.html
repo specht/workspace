@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Routenplaner</title>
+<link rel="stylesheet" href="map.css">
+</head>
+<body>
+<canvas id="map" tabindex="0" aria-label="Die Karte: Straßen und Wege, gezeichnet aus den Daten. Ziehen verschiebt sie, das Mausrad zoomt, ein Klick zeigt den Knoten dort."></canvas>
+<aside id="panel">
+    <header>
+        <div>
+            <h1>Routenplaner</h1>
+            <p id="area">Lade die Karte …</p>
+        </div>
+        <button type="button" id="collapse" aria-expanded="true" aria-controls="panel-body" title="Einklappen" aria-label="Einklappen">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 10 4-4 4 4"/></svg>
+        </button>
+    </header>
+    <div id="panel-body">
+    <div id="tabs" role="tablist" aria-label="Was geplant wird">
+        <button type="button" role="tab" data-tab="route" aria-selected="true">Route</button>
+        <button type="button" role="tab" data-tab="tour" aria-selected="false">Rundfahrt</button>
+    </div>
+    <div id="places" data-for="route">
+        <label class="place start">
+            <span class="dot" aria-hidden="true"></span>
+            <span class="label">Start</span>
+            <input id="start" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions" placeholder="Ort suchen …" autocomplete="off" spellcheck="false">
+            <button type="button" class="clear" hidden title="Start löschen" aria-label="Start löschen">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></svg>
+            </button>
+        </label>
+        <label class="place goal">
+            <span class="dot" aria-hidden="true"></span>
+            <span class="label">Ziel</span>
+            <input id="goal" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions" placeholder="Ort suchen …" autocomplete="off" spellcheck="false">
+            <button type="button" class="clear" hidden title="Ziel löschen" aria-label="Ziel löschen">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></svg>
+            </button>
+        </label>
+        <button id="swap" type="button" title="Start und Ziel tauschen" aria-label="Start und Ziel tauschen">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2v10M2 9l3 3 3-3M11 14V4M8 7l3-3 3 3"/></svg>
+        </button>
+    </div>
+    <div id="tour-stops" data-for="tour" hidden>
+        <ol id="stops"></ol>
+        <label class="place add">
+            <svg class="plus" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>
+            <input id="stop" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions" placeholder="Ort hinzufügen …" autocomplete="off" spellcheck="false">
+            <button type="button" class="clear" hidden title="Text löschen" aria-label="Text löschen">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></svg>
+            </button>
+        </label>
+    </div>
+    <div class="option">
+    <span class="caption" id="searches-caption">Suche</span>
+    <div class="segments" id="searches" role="group" aria-labelledby="searches-caption">
+        <button type="button" data-search="bfs" aria-pressed="true">Breitensuche</button>
+        <button type="button" data-search="dijkstra" aria-pressed="false">Dijkstra</button>
+        <button type="button" data-search="astar" aria-pressed="false">A*</button>
+    </div>
+    </div>
+    <div class="option">
+    <span class="caption" id="modes-caption">Unterwegs</span>
+    <div class="segments" id="modes" role="group" aria-labelledby="modes-caption">
+        <button type="button" data-mode="length" aria-pressed="true" title="Der kürzeste Weg, in Metern">Strecke</button>
+        <button type="button" data-mode="foot" aria-pressed="false" title="Der schnellste Weg zu Fuß">Zu Fuß</button>
+        <button type="button" data-mode="bike" aria-pressed="false" title="Der schnellste Weg mit dem Rad">Rad</button>
+        <button type="button" data-mode="car" aria-pressed="false" title="Der schnellste Weg mit dem Auto">Auto</button>
+    </div>
+    </div>
+    <div class="option" data-for="tour" hidden>
+    <span class="caption" id="methods-caption">Reihenfolge</span>
+    <div class="segments" id="methods" role="group" aria-labelledby="methods-caption">
+        <button type="button" data-method="best" aria-pressed="false" title="best_tour: jede Reihenfolge ausprobieren">Alle</button>
+        <button type="button" data-method="nearest" aria-pressed="true" title="nearest_tour: immer zum nächsten Ort">Nächster</button>
+        <button type="button" data-method="improved" aria-pressed="false" title="improve_tour: den nächsten Nachbarn mit 2-opt verbessern">2-opt</button>
+    </div>
+    </div>
+    <div class="option">
+    <span class="caption" id="layers-caption">Ansicht</span>
+    <div class="segments" id="layers" role="group" aria-labelledby="layers-caption">
+        <button type="button" data-layer="map" aria-pressed="true" title="Die Karte mit ihren Straßen und Wegen">Karte</button>
+        <button type="button" data-layer="graph" aria-pressed="false" title="Der Graph aus build_graph: jeder Knoten ein Punkt, jede Kante eine Linie">Graph</button>
+    </div>
+    </div>
+    <p id="info">Wähle Start und Ziel oder klicke auf die Karte.</p>
+    <div id="player" data-for="route" hidden>
+        <div class="controls">
+            <button type="button" data-step="first" title="Zum Anfang der Suche" aria-label="Zum Anfang der Suche">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3v10M13 3 6 8l7 5z"/></svg>
+            </button>
+            <button type="button" data-step="-1" title="Einen Schritt zurück" aria-label="Einen Schritt zurück">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg>
+            </button>
+            <button type="button" id="play" class="play">
+                <svg class="icon-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3v10l8-5z"/></svg>
+                <svg class="icon-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3v10M11 3v10"/></svg>
+            </button>
+            <button type="button" data-step="1" title="Einen Schritt vor" aria-label="Einen Schritt vor">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg>
+            </button>
+            <button type="button" data-step="last" title="Zum Ende der Suche" aria-label="Zum Ende der Suche">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 3v10M3 3l7 5-7 5z"/></svg>
+            </button>
+            <select id="speed" aria-label="Tempo">
+                <option value="slow">Langsam</option>
+                <option value="medium">Mittel</option>
+                <option value="fast" selected>Schnell</option>
+            </select>
+        </div>
+        <input id="progress" type="range" min="0" max="0" value="0" step="1" aria-label="Wie weit die Suche ist">
+        <p id="step"></p>
+    </div>
+    <details id="legend">
+        <summary>
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 4 4 4-4 4"/></svg>
+            Was die Farben bedeuten
+        </summary>
+        <ul></ul>
+    </details>
+    </div>
+</aside>
+<div id="zoom" role="group" aria-label="Zoom">
+    <button type="button" data-zoom="1.5" title="Vergrößern (+)" aria-label="Vergrößern">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>
+    </button>
+    <button type="button" data-zoom="0.667" title="Verkleinern (−)" aria-label="Verkleinern">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/></svg>
+    </button>
+    <button type="button" id="fit" title="Ganzes Gebiet (0)" aria-label="Ganzes Gebiet zeigen">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/></svg>
+    </button>
+    <button type="button" id="theme" title="Farben" aria-label="Farben">
+        <svg class="light" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3"/><path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3 3l1 1M12 12l1 1M3 13l1-1M12 4l1-1"/></svg>
+        <svg class="dark" viewBox="0 0 16 16" aria-hidden="true"><path d="M13 9.5A5.5 5.5 0 1 1 6.5 3a4.5 4.5 0 0 0 6.5 6.5z"/></svg>
+    </button>
+</div>
+<ul id="suggestions" role="listbox" aria-label="Orte" hidden></ul>
+<div id="scale" aria-hidden="true"><span></span></div>
+<p id="credit">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-Mitwirkende</p>
+<script src="map.js"></script>
+</body>
+</html>

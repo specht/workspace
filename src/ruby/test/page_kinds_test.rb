@@ -94,7 +94,8 @@ class PageKindsTest < Minitest::Test
     def test_every_activity_in_the_catalog_has_a_known_kind
         root = File.expand_path('../../content', __dir__)
         catalog = YAML.safe_load(File.read(File.join(root, 'sections.yaml'), encoding: 'UTF-8'))
-        catalog.flat_map { |s| s['entries'] || [] }.each do |slug|
+        catalog.flat_map { |s| s['entries'] || [] }.each do |entry|
+            slug = entry.delete_prefix('.') # ».slug«: only in development (main.rb)
             md = File.read(File.join(root, slug, "#{slug}.md"), encoding: 'UTF-8')
             kind = ContentParts.meta(md)['kind'].to_s
             assert_includes PageKinds::KIND_LABELS.keys, kind, "#{slug}.md: kind »#{kind}« (#{PageKinds::KIND_LABELS.keys.join(', ')})"
