@@ -153,15 +153,6 @@ class TaskCardTest < Minitest::Test
         assert_includes html, "placeholder='a&#39;b'"
     end
 
-    def test_code_card_links_to_the_editor
-        task = TaskSpec.load_file(File.expand_path('../../content/uebung-arrays/tasks.yaml', __dir__))['tasks'].first
-        html = TaskCard.html(task, activity: 'uebung-arrays', number: 1, render: RENDER)
-        assert_includes html, "href='/codebites/array_sum'"
-        assert_includes html, 'Im Code-Editor lösen'
-        assert_includes html, 'Stand holen'
-        assert_includes html, 'Code Bites: <code>array_sum</code>, in Ruby, Python, JavaScript'
-    end
-
     # docs/vorlage-aktivitaet is what authors copy; it must stay valid.
     def test_the_template_for_authors_is_valid
         dir = File.expand_path('../../../docs/vorlage-aktivitaet', __dir__)

@@ -12,23 +12,6 @@
     - basics
     - keyboard
 
-# Code Bites (Programmieren üben) is off the start page for now (hidden:
-# not in the catalog, not pinnable); the exercises stay reachable from the
-# profile and by direct links until they get a new place.
-- key: practice
-  hidden: true
-  compact: true
-  label: Programmieren üben
-  icon: /images/hacker.png
-  description: |
-    Kurze Aufgaben, die du im Code-Editor in Ruby, Python oder JavaScript löst.
-    Automatische Tests sagen dir sofort, ob deine Funktion stimmt. Gut für
-    zwischendurch, auch ohne Workspace.
-  entries:
-    - uebung-zahlen
-    - uebung-arrays
-    - uebung-strings
-
 - key: graphics
   compact: true
   label: Grafik & Spiele

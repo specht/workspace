@@ -27,8 +27,7 @@ module TaskCheck
     # read files or git status (/api/class/check_now).
     LIVE_TYPES = (FILE_TYPES + %w[git keyboard]).freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit code measure command scene sql cypher er schema keyboard python ruby]).freeze
-    LANGUAGE_NAMES = { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript' }.freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er schema keyboard python ruby]).freeze
 
     # status:
     #   :correct, :wrong   – checked; counts as an attempt
@@ -67,8 +66,6 @@ module TaskCheck
     # workspace: WorkspaceFiles for the student's folder, or nil if there is none
     # git:       lambda(repo) -> GitCheck.parse result, or nil if the Workspace
     #            is not running
-    # code_solved: lambda(codebite) -> languages in which the person has solved
-    #              that Code Bites task (from the Code Bites results)
     # runner:      lambda(command, timeout) -> { output:, status:, timed_out: },
     #              runs in the person's container as them; nil if not running.
     #              Only for commands that come from the task or from us.
@@ -78,14 +75,13 @@ module TaskCheck
     #              database as them, read-only (SqlCheck); nil if unreachable
     # sql_env:     what to name when the database cannot be used (login,
     #              database, host, workspace running, .my.cnf); see SqlCheck
-    def self.check(task, answer, variables: {}, workspace: nil, git: nil, code_solved: nil, runner: nil, guest_runner: nil, sql: nil, sql_env: {}, cypher: nil)
+    def self.check(task, answer, variables: {}, workspace: nil, git: nil, runner: nil, guest_runner: nil, sql: nil, sql_env: {}, cypher: nil)
         check = task['check']
         type = check['type']
         unless RUNS.include?(type)
             return Result.new(:status => :unavailable,
                 :message => 'Diese Aufgabe kann der Workspace noch nicht selbst prüfen. Zeig dein Ergebnis deiner Lehrkraft.')
         end
-        return check_code(task, check, code_solved) if type == 'code'
         return check_run(task, check, answer, type == 'command' ? guest_runner : runner) if %w[measure command].include?(type)
         return check_scene(task, check, workspace, runner) if type == 'scene'
         return check_sql(task, check, answer, sql, sql_env) if type == 'sql'
@@ -214,22 +210,6 @@ module TaskCheck
         status, message, read = language.evaluate(task, check, result[:output], timed_out: result[:timed_out])
         Result.new(:status => status, :message => message, :read => read,
             :solution => status == :correct ? task['solution'] : nil)
-    end
-
-    # code: solved in the Code Bites editor, in one of the allowed languages.
-    def self.check_code(task, check, code_solved)
-        solved = code_solved&.call(check['codebite'])
-        return Result.new(:status => :unavailable, :message => 'Melde dich an, damit ich deine gelösten Aufgaben sehe.') if solved.nil?
-
-        allowed = check['languages'] || TaskSpec::CODE_LANGUAGES
-        hits = solved & allowed
-        if hits.empty?
-            other = solved.empty? ? '' : " In #{solved.map { |l| LANGUAGE_NAMES[l] || l }.join(' und ')} zählt sie hier nicht; erlaubt #{allowed.size == 1 ? 'ist' : 'sind'} #{allowed.map { |l| LANGUAGE_NAMES[l] || l }.join(', ')}."
-            return Result.new(:status => :invalid,
-                :message => "Noch nicht gelöst. Öffne die Aufgabe im Code-Editor; sobald dein Code alle Tests besteht, ist sie hier abgehakt.#{other}")
-        end
-        Result.new(:status => :correct, :message => "Gelöst in #{hits.map { |l| LANGUAGE_NAMES[l] || l }.join(' und ')}.",
-            :solution => task['solution'])
     end
 
     # files, html, css, references, git and submit.

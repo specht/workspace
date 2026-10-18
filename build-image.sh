@@ -16,13 +16,6 @@ for asset in \
     fi
 done
 
-# The three small executor images are independent of the code-server image.
-# Build sequentially on the disk-constrained production server.
-echo '=== Building executor images ==='
-docker build -t hackschule-exec-ruby src/codebites/executor/ruby
-docker build -t hackschule-exec-python src/codebites/executor/python
-docker build -t hackschule-exec-javascript src/codebites/executor/javascript
-
 echo '=== Preparing VS Code extensions ==='
 cp src/vscode-extensions/sidebar-init/hackschule-sidebar-init-0.0.1.vsix \
     docker/code/hackschule-sidebar-init-0.1.0.vsix

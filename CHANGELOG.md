@@ -1795,6 +1795,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Entfernt
 
+- Code Bites, mit den Übungen »Zahlen«, »Arrays« und »Strings« und der
+  Prüfart `code`. Was Code Bites gespeichert hat (eingereichter Code,
+  gelöste Aufgaben, die Stände der drei Übungen), löscht der Server beim
+  nächsten Start; alte Links führen zur Startseite. Für Betreibende:
+  `build-image.sh` baut die drei Executor-Images nicht mehr; vorhandene
+  (`hackschule-exec-*`) lassen sich mit `docker rmi` entfernen.
 - »Trainiere ein neuronales Netzwerk« (ein Netz erkennt handgeschriebene
   Ziffern) steht nicht mehr im Katalog; an seiner Stelle steht der
   Routenplaner. Die Seite ist unter ihrer Adresse noch da.

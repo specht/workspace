@@ -32,13 +32,12 @@ Principles:
 ### Content model
 
 Activities, Handbuch pages and tasks with checks are in place, as are the class
-page, the start page and practice sets from Code Bites (`docs/aufgaben.md`).
+page and the start page (`docs/aufgaben.md`).
 Still open:
 
 * [ ] A generated »Wie geht es weiter?« box at the end of a page, from a new `next` field
 * [ ] Teacher notes with solutions for every activity; 32 have a `lehrkraft.md`, the SQL introduction and the language pages have none
 * [ ] Workspace-state check for a running server (a port answers), for the setup steps of web activities
-* [ ] Link the matching Code Bites exercises from each programming-language page
 
 
 ## Roadmap
@@ -183,7 +182,7 @@ Platform-wide:
 * [ ] On narrow screens, consider left-aligning long paragraphs instead of global justified text
 * [ ] A small `prefers-reduced-motion` pass for Workspace-owned transitions and animations
 * [ ] Mention Shared Live Apps in BIF for peer-testing unfinished stories, and wherever sharing a running app helps
-* [ ] Review `_template_codebites.html` language metadata and remaining manually authored homepage image alt attributes
+* [ ] Review the remaining manually authored homepage image alt attributes
 * [ ] Revisit BIF after the teacher workshop and incorporate classroom feedback
 * [ ] Link Automatron from formal-language material and teacher notes; add a short introduction if students use it alone
 * [ ] Find a section for new pages as they land (Flutter under Web & Schnittstellen); keep related progressions adjacent
@@ -229,6 +228,7 @@ Continue extracting coherent pieces from `main.rb` (about 7000 lines) incrementa
 
 ## Later ideas
 
+* **Code Bites, revamped** – short functions in Ruby, Python or JavaScript with tests; removed on 2026-10-18 together with the practice sets Zahlen, Arrays and Strings, it may come back in a new form, ideally as tasks in the Workspace itself (the old code is in the git history under `src/codebites/`)
 * **Prolog** – facts, rules, queries, pattern matching, backtracking, recursive rules, a small knowledge base, a logic puzzle
 * **Digital audio** – oscillators, frequency and amplitude, envelopes, mixing, waveform/spectrum views, a tiny synthesizer or drum machine (headphones needed)
 * **WebGPU / parallel computing** – a minimal WGSL compute shader, CPU vs GPU, particles, cellular automata, image processing or fractals

@@ -120,7 +120,6 @@ module TaskCard
                 reads = reads_line(check, h)
             end
             label = case
-                when type == 'code' then 'Stand holen'
                 when %w[command sql cypher].include?(type) then 'Ausführen und prüfen'
                 when type == 'reflection' then 'Speichern'
                 when type == 'submit' then 'Abgeben'
@@ -128,12 +127,7 @@ module TaskCard
                 else 'Prüfen'
             end
             io << "<div class='task-actions'>"
-            if type == 'code'
-                io << "<a class='btn btn-success task-open' href='/codebites/#{h.(check['codebite'])}'><i class='bi bi-code-slash'></i>Im Code-Editor lösen</a>"
-                io << "<button type='submit' class='btn btn-outline-secondary btn-sm task-submit'>#{label}</button>"
-            else
-                io << "<button type='submit' class='btn btn-success task-submit'>#{label}</button>"
-            end
+            io << "<button type='submit' class='btn btn-success task-submit'>#{label}</button>"
             io << "<button type='button' class='btn btn-link btn-sm task-delete' hidden>Meine Antwort löschen</button>"
             # What the check reads, for whoever wants to know (rule 5), behind
             # a small (i) so the card itself stays short.
@@ -184,9 +178,6 @@ module TaskCard
             n = (check['cases'] || []).size
             "Lädt #{path.(check['file'])} in deinem Workspace, als Gast, der nichts verändern kann, und probiert #{n == 1 ? 'einen Aufruf' : "#{n} Aufrufe"} aus"
         when 'schema' then 'Liest den Aufbau deiner MySQL-Datenbank, angemeldet als du, und ändert nichts'
-        when 'code'
-            langs = (check['languages'] || %w[ruby python javascript]).map { |l| { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript' }[l] || l }
-            "Code Bites: <code>#{h.(check['codebite'])}</code>, in #{h.(langs.join(', '))}. Ist sie gelöst, wird sie hier von selbst abgehakt."
         when 'submit'
             if check['pick']
                 "Kopiert die gewählte Datei, höchstens #{size.(check['max_size'] || '20MB')}"

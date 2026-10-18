@@ -69,16 +69,18 @@ CACHE_BUSTER = SecureRandom.alphanumeric(12)
 SUBMISSION_VIEW_HOST = "abgaben.#{WEBSITE_HOST.split(':').first}"
 SUBMISSION_VIEW_ROOT = WEB_ROOT.sub('//', '//abgaben.')
 SUBMISSION_VIEW_SECRET = SecureRandom.hex(32)
-RUBOCOP_LAYOUT_CONFIG_PATH = "/tmp/rubocop_layout.yml"
 
-MODULE_ORDER = [:workspace, :codebites, :phpmyadmin, :neo4j, :tic80]
+MODULE_ORDER = [:workspace, :phpmyadmin, :neo4j, :tic80]
 MODULE_LABELS = {
     :workspace  => 'Workspace',
-    :codebites  => 'Code Bites',
     :phpmyadmin => 'phpMyAdmin',
     :neo4j      => 'Neo4j',
     :tic80      => 'TIC-80',
 }
+
+# Activities that were removed, with what was stored about them
+# (SetupDatabase#remove_code_bites); their addresses lead to the start page.
+REMOVED_ACTIVITIES = %w[uebung-zahlen uebung-arrays uebung-strings].freeze
 
 class Neo4jGlobal
     include Neo4jBolt
@@ -207,6 +209,21 @@ class SetupDatabase
             neo4j_query('MATCH (a:TaskAttempt {task: $from}) SET a.task = $to;', :from => from, :to => to)
         end
     end
+
+    # Code Bites is gone (2026-10-18), with its practice sets: what it stored
+    # goes too, so the Datenschutzerklärung need not mention it. Runs on every
+    # start and finds something once.
+    def remove_code_bites
+        %w[Submission Solved Code Task Language].each do |label|
+            neo4j_query("MATCH (n:#{label}) DETACH DELETE n;")
+        end
+        neo4j_query(<<~END_OF_QUERY, :prefixes => REMOVED_ACTIVITIES.map { |slug| "#{slug}/" })
+            MATCH (n) WHERE (n:TaskState OR n:TaskAttempt) AND any(p IN $prefixes WHERE n.task STARTS WITH p)
+            DETACH DELETE n;
+        END_OF_QUERY
+        neo4j_query('MATCH (u:User) WHERE u.show_codebites IS NOT NULL REMOVE u.show_codebites;')
+        FileUtils.rm_rf('/internal/codebites')
+    end
 end
 
 class Main < Sinatra::Base
@@ -237,6 +254,10 @@ class Main < Sinatra::Base
         'lehrmaterial-2d' => 'https://2d.hackschule.de/',
         'lehrmaterial' => 'lehrmaterial-einstieg',
         'lehrmaterial.html' => 'lehrmaterial-einstieg',
+        # Code Bites and its practice sets are gone (2026-10-18, TODO.md).
+        'codebites' => '',
+        'codebites_admin' => '',
+        **REMOVED_ACTIVITIES.to_h { |slug| [slug, ''] },
         # »HTML-Folien gestalten« became four Handbuch pages for web pages and
         # slides alike (2026-10); most of it is on the HTML page.
         'reference/html-folien' => 'reference/html',
@@ -275,36 +296,6 @@ class Main < Sinatra::Base
             halt 400, { error: "regex must be a non-empty string" }.to_json if str.nil? || str.strip.empty?
             halt 413, { error: "regex too long" }.to_json if str.length > AUTOMATRON_MAX_REGEX
             str
-        end
-
-        def rubocop_format_ruby(code)
-            Tempfile.create(["codebite", ".rb"]) do |f|
-                f.write(code)
-                f.flush
-
-                cmd = [
-                    "rubocop",
-                    "--server",
-                    "--config", RUBOCOP_LAYOUT_CONFIG_PATH,
-                    "--only", "Layout",
-                    "-x",               # layout-only autocorrect
-                    f.path
-                ]
-
-                _out, err, status = Open3.capture3(*cmd)
-
-                unless status.success?
-                    # fallback without server
-                    cmd.delete("--server")
-                    _out2, err2, status2 = Open3.capture3(*cmd)
-                    unless status2.success?
-                        STDERR.puts "RuboCop failed: #{err}\n#{err2}"
-                        return code
-                    end
-                end
-
-                File.read(f.path)
-            end
         end
     end
 
@@ -2001,65 +1992,6 @@ class Main < Sinatra::Base
 
     private_class_method :parse_content_locked
 
-    def codebite_broadcast(email, payload)
-        msg = payload.is_a?(String) ? payload : payload.to_json
-        conns = @@codebite_mutex.synchronize do
-            (@@codebite_ws_clients[email] || {}).values.dup
-        end
-        conns.each do |ws|
-            begin
-                ws.send(msg)
-            rescue
-                # ignore broken sockets; cleanup happens on close
-            end
-        end
-    end
-
-    def kill_codebite_run(email, reason: "replaced")
-        run = nil
-        @@codebite_mutex.synchronize do
-            run = @@codebite_runs[email]
-            @@codebite_runs.delete(email)
-        end
-        return unless run
-
-        pid = run[:pid]
-        codebite_broadcast(email, { action: "codebite_status", status: "killing", reason: reason })
-
-        begin
-            # Try graceful terminate
-            Process.kill("TERM", pid) rescue nil
-
-            # Wait briefly, then hard kill
-            t0 = Time.now
-            while Time.now - t0 < 1.0
-                break unless run[:wait_thr]&.alive?
-                sleep 0.05
-            end
-            if run[:wait_thr]&.alive?
-                Process.kill("KILL", pid) rescue nil
-            end
-        ensure
-            # Stop reader threads
-            (run[:threads] || []).each do |thr|
-                thr.kill rescue nil
-            end
-            run[:wait_thr]&.join(0.2) rescue nil
-        end
-
-        codebite_broadcast(email, {
-            action: "codebite_exit",
-            exit_code: 1,
-            killed: true
-        })
-    end
-
-    def codebite_run_lock(email)
-        @@codebite_mutex.synchronize do
-            @@codebite_run_locks[email] ||= Mutex.new
-        end
-    end
-
     @@load_invitations_mutex = Mutex.new
     @@admin_ws_mutex = Mutex.new
     @@login_request_mutex = Mutex.new
@@ -2201,17 +2133,12 @@ class Main < Sinatra::Base
 
     configure do
         CONSTRAINTS_LIST = [
-            'Code/sha1',
             'Database/name',
             'File/sha1',
-            'Language/name',
             'LiveAppShare/tag',
             'LoginRequest/tag',
             'QrLoginRequest/tag',
             'Session/sid',
-            'Solved/id',
-            'Submission/id',
-            'Task/name',
             'TaskState/key',
             'Pin/key',
             'Test/tag',
@@ -2221,7 +2148,6 @@ class Main < Sinatra::Base
             'User/share_tag',
         ]
         INDEX_LIST = [
-            'Submission/success',
             'Test/running',
             'TaskAttempt/task',
         ]
@@ -2235,6 +2161,7 @@ class Main < Sinatra::Base
         @@threads_for_client_id = {}
         $neo4j.setup_constraints_and_indexes(CONSTRAINTS_LIST, INDEX_LIST)
         setup.migrate_moved_tasks(MOVED_TASKS)
+        setup.remove_code_bites
         self.reconcile_live_apps!(:refresh_nginx => false)
         self.refresh_nginx_config()
 
@@ -2251,11 +2178,6 @@ class Main < Sinatra::Base
         rescue
         end
 
-        @@codebite_ws_clients ||= {}     # email => { client_id => ws }
-        @@codebite_runs ||= {}           # email => { pid:, wait_thr:, threads:, started_at:, task:, language: }
-        @@codebite_mutex ||= Mutex.new   # protects @@codebite_runs + @@codebite_ws_clients
-        @@codebite_run_locks ||= {}      # serializes start/stop lifecycle per user
-
         Thread.new do
             loop do
                 system("ruby housekeeping.rb")
@@ -2269,28 +2191,6 @@ class Main < Sinatra::Base
                 Main.reconcile_live_apps!
             end
         end
-        # --- RuboCop server + config (layout-only formatting) ---
-        begin
-            unless File.exist?(RUBOCOP_LAYOUT_CONFIG_PATH)
-                File.write(
-                    RUBOCOP_LAYOUT_CONFIG_PATH,
-                    <<~YAML
-                      AllCops:
-                        NewCops: disable
-
-                      Layout/IndentationWidth:
-                        Width: 4
-                    YAML
-                )
-            end
-
-            # Start rubocop server once per Sinatra process
-            # (safe to call multiple times; it will no-op if already started)
-            system("rubocop --start-server >/dev/null 2>&1")
-        rescue => e
-            STDERR.puts "RuboCop server start failed: #{e.class}: #{e.message}"
-        end
-
         @@db_init_queue ||= Queue.new
         @@db_init_mutex ||= Mutex.new
         @@db_init_queued_keys ||= Set.new
@@ -2330,7 +2230,7 @@ class Main < Sinatra::Base
             halt 404
         end
         origin_sensitive = %w(POST PUT PATCH DELETE).include?(request.request_method) ||
-            ['/ws', '/ws_codebites', '/ws_tcp_console', '/logout'].include?(request.path)
+            ['/ws', '/ws_tcp_console', '/logout'].include?(request.path)
         if origin_sensitive && !Authentication.same_origin?(
             :origin => request.env['HTTP_ORIGIN'],
             :referer => request.env['HTTP_REFERER'],
@@ -4467,36 +4367,6 @@ class Main < Sinatra::Base
         GitCheck.complete?(output) ? GitCheck.parse(output) : nil
     end
 
-    # Languages in which a person has solved a Code Bites task.
-    def codebite_solved_languages(email, codebite)
-        neo4j_query(<<~END_OF_QUERY, :email => email, :task => codebite).map { |row| row['lang'] }
-            MATCH (:User {email: $email})<-[:BY]-(s:Solved)-[:FOR]->(:Task {name: $task}), (s)-[:IN]->(l:Language)
-            RETURN DISTINCT l.name AS lang;
-        END_OF_QUERY
-    end
-
-    # A Code Bites task was just solved: tick every practice-set task that
-    # points to it (check type code), so the class board shows it without
-    # the student pressing anything.
-    def sync_code_tasks(email, codebite)
-        languages = codebite_solved_languages(email, codebite)
-        @@content.each_value do |c|
-            next unless c[:tasks]
-
-            c[:tasks][:by_id].each do |id, task|
-                next unless task['check']['type'] == 'code' && task['check']['codebite'] == codebite
-
-                found = { :key => "#{c[:tasks][:activity]}/#{id}", :task => task, :version => TaskSpec.check_version(task) }
-                result = TaskCheck.check(task, '', :code_solved => lambda { |_| languages })
-                next unless result.status == :correct
-
-                store_task_result(found, 'correct', result.message.to_s.sub(/\.\z/, ''), email)
-            end
-        end
-    rescue StandardError => e
-        STDERR.puts "sync_code_tasks #{codebite} #{email}: #{e.class}: #{e.message}"
-    end
-
     # A submit task that shows its scenes with the Anaglyph viewer, or 404.
     def anaglyph_preview_task(key)
         found = find_task(key)
@@ -5527,7 +5397,6 @@ class Main < Sinatra::Base
             :variables => task_variables(found[:task], found[:key]),
             :workspace => task_workspace_files,
             :git => lambda { |repo| task_git_state(repo) },
-            :code_solved => lambda { |codebite| codebite_solved_languages(@session_user[:email], codebite) },
             :runner => lambda { |command, seconds|
                 workspace_runtime.run_command(fs_tag_for_email(@session_user[:email]), :command => command,
                     :uid => "#{WORKSPACE_UID}:#{WORKSPACE_GID}", :seconds => [[seconds.to_i, 1].max, 30].min)
@@ -6563,180 +6432,6 @@ class Main < Sinatra::Base
         end
     end
 
-    @@codebite_content_mutex = Mutex.new
-
-    def self.update_codebites
-        @@codebite_content_mutex.synchronize do
-            update_codebites_locked
-        end
-    end
-
-    def self.update_codebites_locked
-        # In development we want live reload: re-parse on every call.
-        # In production we want to travel light: parse once per process.
-        unless DEVELOPMENT
-            return if defined?(@@codebite_sections) && @@codebite_sections &&
-                defined?(@@codebite_tasks) && @@codebite_tasks
-        end
-
-        codebite_tasks = {}
-
-        sections_path = "/src/codebites/tasks/tasks.yaml"
-        codebite_sections = YAML.load_file(sections_path)
-
-        # Parse embedded @@sections from single-file tasks without executing the Ruby code.
-        section_marker = "\n__END__\n"
-
-        parse_meta = lambda do |sections|
-            # Prefer meta.yaml, fallback to meta.json
-            if (y = sections["meta.yaml"]) && !y.strip.empty?
-                begin
-                    meta = YAML.safe_load(y) || {}
-                    meta.is_a?(Hash) ? meta : {}
-                rescue
-                    {}
-                end
-            else
-                {}
-            end
-        end
-
-        parse_sections = lambda do |text|
-            out = {}
-            current = nil
-            buf = +""
-
-            text.each_line do |line|
-                if line.start_with?("@@")
-                    out[current] = buf.rstrip + "\n" if current
-                    current = line.strip.sub("@@", "")
-                    buf = +""
-                else
-                    buf << line
-                end
-            end
-
-            out[current] = buf.rstrip + "\n" if current
-            out
-        end
-
-        extract_title = lambda do |md|
-            return nil if md.nil? || md.strip.empty?
-            md.each_line do |line|
-                if line =~ /^\s*\#{1,2}\s+(.+?)\s*$/
-                    return Regexp.last_match(1).strip
-                end
-            end
-            nil
-        end
-
-        codebite_sections.each do |section|
-            section.fetch('entries', []).each do |task_id|
-                task_rb_path = "/src/codebites/tasks/#{task_id}.rb"
-                next unless File.exist?(task_rb_path)
-
-                content = File.read(task_rb_path)
-                idx = content.index(section_marker)
-                sections_text = idx ? content[(idx + section_marker.length)..] : ""
-                sections = parse_sections.call(sections_text)
-
-                md = sections['task.md'] || ""
-                heading = extract_title.call(md) || task_id
-
-                meta = parse_meta.call(sections)
-                difficulty = meta["difficulty"] || meta[:difficulty]
-                difficulty = difficulty.to_i if difficulty
-                difficulty = nil unless difficulty && difficulty.between?(1, 5)
-
-                codebite_tasks[task_id] = {
-                    mtime: File.mtime(task_rb_path),
-                    heading: heading,
-                    difficulty: difficulty,
-                    section_key: section['key'],
-                    section_title: section['title'],
-                }
-            end
-        end
-
-        @@codebite_sections = codebite_sections
-        @@codebite_tasks = codebite_tasks
-    end
-
-    private_class_method :update_codebites_locked
-
-    post '/api/codebites_get_tasks' do
-        Main.update_codebites()
-        result = {
-            :sections => @@codebite_sections,
-            :tasks => @@codebite_tasks,
-        }
-        if user_logged_in?
-            result[:solved_tasks] = {}
-            neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email]}).map do |row|
-                MATCH (s:Solved)-[:FOR]->(t:Task), (s)-[:BY]->(u:User {email: $email}), (s)-[:IN]->(l:Language)
-                RETURN DISTINCT t.name, l.name;
-            END_OF_STRING
-                result[:solved_tasks][row['t.name']] ||= []
-                result[:solved_tasks][row['t.name']] << row['l.name']
-            end
-        end
-        respond(result)
-    end
-
-    post '/api/get_codebite' do
-        data = parse_request_data(:required_keys => [:task])
-        Main.update_codebites
-        task = data[:task]
-        assert(!(task.include?('/') || task.include?('.')))
-        result = {}
-        task_rb_path = "/src/codebites/tasks/#{task}.rb"
-        halt 404 unless File.exist?(task_rb_path)
-
-        content = File.read(task_rb_path)
-        section_marker = "\n__END__\n"
-        idx = content.index(section_marker)
-        sections_text = idx ? content[(idx + section_marker.length)..] : ""
-
-        # Parse @@sections (same mini format as the runner)
-        sections = {}
-        current = nil
-        buf = +""
-        sections_text.each_line do |line|
-            if line.start_with?("@@")
-                sections[current] = buf.rstrip + "\n" if current
-                current = line.strip.sub("@@", "")
-                buf = +""
-            else
-                buf << line
-            end
-        end
-        sections[current] = buf.rstrip + "\n" if current
-
-        md = sections['task.md'] || ""
-        redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
-        result[:section_key] = @@codebite_tasks[task][:section_key]
-        result[:section_title] = @@codebite_tasks[task][:section_title]
-        result[:problem] = redcarpet.render(md)
-        result[:preferred_language] = neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email]})['preferred_language']
-            MATCH (u:User {email: $email})
-            RETURN COALESCE(u.preferred_language, "ruby") AS preferred_language;
-        END_OF_STRING
-        result[:solved] = neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :task => task}).map { |x| x['lang'] }
-            MATCH (u:User {email: $email})<-[:BY]-(s:Solved)-[:FOR]->(t:Task {name: $task}), (s)-[:IN]->(l:Language)
-            RETURN DISTINCT l.name AS lang;
-        END_OF_STRING
-        result[:starter] ||= {}
-        {
-            'ruby' => 'starter.rb',
-            'python' => 'starter.py',
-            'javascript' => 'starter.js',
-        }.each do |lang, key|
-            val = sections[key]
-            result[:starter][lang] = val if val && !val.strip.empty?
-        end
-        respond(:result => result)
-    end
-
     # The programming language someone wants to see on pages that offer
     # more than one (CodeLanguages); overrides the class's.
     post '/api/set_code_language' do
@@ -6785,332 +6480,6 @@ class Main < Sinatra::Base
             RETURN u;
         END_OF_STRING
         respond(:yay => 'sure')
-    end
-
-    get '/ws_codebites' do
-        assert(user_logged_in?)
-        if Faye::WebSocket.websocket?(request.env)
-            ws = Faye::WebSocket.new(request.env)
-
-            ws.on(:open) do |_|
-                client_id = request.env['HTTP_SEC_WEBSOCKET_KEY']
-                email = @session_user[:email]
-
-                @@codebite_mutex.synchronize do
-                    @@codebite_ws_clients[email] ||= {}
-                    @@codebite_ws_clients[email][client_id] = ws
-                end
-
-                ws.send({ action: "codebite_ws_ready" }.to_json)
-            end
-
-            ws.on(:close) do |_|
-                client_id = request.env['HTTP_SEC_WEBSOCKET_KEY']
-                email = @session_user[:email]
-
-                @@codebite_mutex.synchronize do
-                    if @@codebite_ws_clients[email]
-                        @@codebite_ws_clients[email].delete(client_id)
-                        @@codebite_ws_clients.delete(email) if @@codebite_ws_clients[email].empty?
-                    end
-                end
-            end
-
-            ws.on(:message) do |msg|
-                # Optional: handle ping or client-side subscription messages later
-                # For now we can ignore or accept {"ping":true}
-                begin
-                    data = msg.data.to_s
-                    if !data.empty?
-                        obj = JSON.parse(data) rescue {}
-                        if obj["ping"]
-                            ws.send({ action: "pong" }.to_json)
-                        end
-                    end
-                rescue
-                end
-            end
-
-            return ws.rack_response
-        end
-        halt 400
-    end
-
-    post '/api/codebite_load_submissions' do
-        assert(user_logged_in?)
-        data = parse_request_data(required_keys: [:task, :language])
-
-        user_has_correct_submissions = neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :task => data[:task], :language => data[:language]})['count'] > 0
-            MATCH (u:User {email: $email})<-[:BY]-(s:Solved)-[:FOR]->(t:Task {name: $task}), (s)-[:IN]->(l:Language {name: $language})
-            RETURN COUNT(s) AS count;
-        END_OF_STRING
-
-        submissions = {:successful => [], :tries => []}
-        [true, false].each do |success|
-            if user_has_correct_submissions
-                next unless success
-            else
-                next if success
-            end
-            if success
-                neo4j_query(<<~END_OF_STRING, {:task => data[:task], :language => data[:language], :success => success}).to_a.each do |x|
-                    MATCH (l:Language {name: $language})<-[:IN]-(s:Submission {success: $success})-[:FOR]->(t:Task {name: $task}), (s)-[:WITH]->(c:Code)
-                    RETURN s, c
-                    ORDER BY c.size;
-                END_OF_STRING
-                    entry = {
-                        :sha1 => x['c'][:sha1],
-                        :line_count => x['c'][:line_count],
-                        :size => x['c'][:size],
-                        :lang => data[:language],
-                        :success => success,
-                    }
-                    submissions[:successful] << entry
-                end
-            else
-                neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :task => data[:task], :language => data[:language], :success => success}).to_a.each do |x|
-                    MATCH (l:Language {name: $language})<-[:IN]-(s:Submission {success: $success})-[:FOR]->(t:Task {name: $task}),
-                    (s)-[:WITH]->(c:Code), (s)-[r:BY]->(u:User {email: $email})
-                    RETURN s, c
-                    ORDER BY r.ts DESC;
-                END_OF_STRING
-                    entry = {
-                        :sha1 => x['c'][:sha1],
-                        :line_count => x['c'][:line_count],
-                        :size => x['c'][:size],
-                        :lang => data[:language],
-                        :success => success,
-                    }
-                    submissions[:tries] << entry
-                end
-            end
-        end
-
-        respond(:submissions => submissions)
-    end
-
-    post '/api/codebite_load_submission_code' do
-        data = parse_request_data(required_keys: [:sha1, :language])
-        sha1 = data[:sha1]
-        assert(sha1 =~ /\A[a-f0-9]{40}\z/)
-        path = "/internal/codebites/#{sha1[0, 2]}/#{sha1[2, sha1.size - 2]}"
-        code = nil
-        highlighted_code = nil
-        if File.exist?(path)
-            code = File.read(path)
-        end
-        highlighted_path = "/internal/codebites/#{sha1[0, 2]}/#{sha1[2, sha1.size - 2]}.hl"
-        if File.exist?(highlighted_path)
-            highlighted_code = File.read(highlighted_path)
-        end
-        respond(:code => code, :formatted_code => highlighted_code)
-    end
-
-    post '/api/run_codebite' do
-        run_lock = nil
-        assert(user_logged_in?)
-        data = parse_request_data(required_keys: [:task, :language, :code], :max_body_length => 100 * 1024, :max_string_length => 100 * 1024, :max_value_lengths => { :code => 100 * 1024 })
-
-        task = data[:task].strip
-        language = data[:language].strip
-        code = data[:code].to_s.strip
-
-        # if data[:language] == "ruby"
-        #     code = rubocop_format_ruby(code).to_s
-        # end
-
-        lines = code.split("\n")
-        lines.map! { |l| l.rstrip }
-        code = lines.join("\n")
-        code.rstrip!
-
-        line_count = code.count("\n") + 1
-        size = code.bytesize
-
-        # basic guardrails
-        assert(task =~ /\A[a-zA-Z0-9_\-]+\z/)
-        assert(%w(ruby python javascript).include?(language))
-
-        email = @session_user[:email]
-        run_lock = codebite_run_lock(email)
-        run_lock.lock
-
-        # 0) kill any existing run for this user
-        kill_codebite_run(email, reason: "new submission")
-
-        # 1) handle: sha1, store file, DB link, etc.
-        sha1 = Digest::SHA1.hexdigest(language + code)
-        path = "/internal/codebites/#{sha1[0, 2]}/#{sha1[2, sha1.size - 2]}"
-        FileUtils.mkpath(File.dirname(path))
-        unless File.exist?(path)
-            AtomicFile.write(path, code)
-        end
-        highlighted_path = "/internal/codebites/#{sha1[0, 2]}/#{sha1[2, sha1.size - 2]}.hl"
-        unless File.exist?(highlighted_path)
-            formatter = Rouge::Formatters::HTML.new
-            lexer = case language
-            when 'ruby'
-                Rouge::Lexers::Ruby.new
-            when 'python'
-                Rouge::Lexers::Python.new
-            when 'javascript'
-                Rouge::Lexers::Javascript.new
-            else
-                Rouge::Lexers::PlainText.new
-            end
-
-            formatted_code = formatter.format(lexer.lex(code))
-            # use first 10 lines
-            formatted_code = formatted_code.split("\n")[0, 10].join("\n")
-            AtomicFile.write(highlighted_path, formatted_code)
-        end
-        ts = Time.now.to_i
-        submission_id = Digest::SHA1.hexdigest("#{task}-#{language}-#{sha1}")
-        neo4j_query(<<~END_OF_STRING, {:email => email, :task => task, :lang => language, :sha1 => sha1, :line_count => line_count, :size => size, :ts => ts, :submission_id => submission_id})
-            MERGE (u:User {email: $email})
-            MERGE (t:Task {name: $task})
-            MERGE (l:Language {name: $lang})
-            MERGE (c:Code {sha1: $sha1})
-            ON CREATE SET c.line_count = $line_count, c.size = $size
-
-            WITH u,t,l,c
-
-            MERGE (s:Submission {id: $submission_id})
-            ON CREATE SET s.success = false
-
-            MERGE (s)-[r:BY]->(u)
-            ON CREATE SET r.ts = $ts
-            MERGE (s)-[:FOR]->(t)
-            MERGE (s)-[:IN]->(l)
-            MERGE (s)-[:WITH]->(c);
-        END_OF_STRING
-
-        # 2) spawn runner
-        cmd = ["/src/codebites/bin/run_task.rb", task, language, "--stream"]
-
-        # codebite_broadcast(email, { action: "codebite_status", status: "starting", task: task, language: language })
-
-        stdin, stdout, stderr, wait_thr = Open3.popen3(*cmd)
-
-        # Important: send the code to stdin, then close it
-        stdin.write(code)
-        stdin.close
-
-        pid = wait_thr.pid
-
-        threads = []
-
-        # helper to stream chunks as base64 (safe for JSON + binary)
-        stream_chunk = lambda do |stream_name, io|
-            begin
-                while (chunk = io.readpartial(64))
-                    codebite_broadcast(email, {
-                        action: "codebite_output",
-                        stream: stream_name,                 # "stdout" or "stderr"
-                        data_b64: Base64.strict_encode64(chunk)
-                    })
-                end
-            rescue EOFError
-            rescue => e
-                codebite_broadcast(email, {
-                    action: "codebite_error",
-                    message: "stream #{stream_name} failed: #{e.class}: #{e.message}"
-                })
-            ensure
-                io.close rescue nil
-            end
-        end
-
-        threads << Thread.new { stream_chunk.call("stdout", stdout) }
-        threads << Thread.new { stream_chunk.call("stderr", stderr) }
-
-        @@codebite_mutex.synchronize do
-            @@codebite_runs[email] = {
-                pid: pid,
-                wait_thr: wait_thr,
-                threads: threads.dup,
-                started_at: Time.now.to_i,
-                task: task,
-                language: language
-            }
-        end
-
-        # watcher thread to emit exit code
-        watcher = Thread.new do
-            status = wait_thr.value
-            exit_code = status.exitstatus || 1
-
-            # wait a moment for remaining output threads to drain
-            threads.each { |t| t.join(0.2) rescue nil }
-
-            codebite_broadcast(email, {
-                action: "codebite_exit",
-                exit_code: exit_code,
-                language: language,
-            })
-
-            if exit_code == 0
-                neo4j_query(<<~END_OF_STRING, {:submission_id => submission_id})
-                    MATCH (s:Submission {id: $submission_id})
-                    SET s.success = true
-                END_OF_STRING
-                solved_id = Digest::SHA1.hexdigest("#{email}-#{task}-#{language}")
-                neo4j_query(<<~END_OF_STRING, {:email => email, :task => task, :language => language, :solved_id => solved_id})
-                    MERGE (u:User {email: $email})
-                    MERGE (t:Task {name: $task})
-                    MERGE (l:Language {name: $language})
-                    MERGE (s:Solved {id: $solved_id})
-                    MERGE (s)-[:BY]->(u)
-                    MERGE (s)-[:FOR]->(t)
-                    MERGE (s)-[:IN]->(l)
-                END_OF_STRING
-                sync_code_tasks(email, task)
-            end
-
-            @@codebite_mutex.synchronize do
-                # Only clear if it still points to this pid
-                if @@codebite_runs[email] && @@codebite_runs[email][:pid] == pid
-                    @@codebite_runs.delete(email)
-                end
-            end
-        end
-
-        @@codebite_mutex.synchronize do
-            run = @@codebite_runs[email]
-            run[:threads] << watcher if run && run[:pid] == pid
-        end
-        respond(yay: "running", pid: pid, code: code)
-    ensure
-        run_lock.unlock if run_lock&.owned?
-    end
-
-    post '/api/codebite_delete_submission' do
-        assert(admin_logged_in?)
-        data = parse_request_data(required_keys: [:sha1, :language])
-        sha1 = data[:sha1]
-        assert(sha1 =~ /\A[a-f0-9]{40}\z/)
-        neo4j_query(<<~END_OF_STRING, {:sha1 => sha1, :language => data[:language]})
-            MATCH (c:Code {sha1: $sha1})<-[:WITH]-(s:Submission)-[:IN]->(l:Language {name: $language})
-            DETACH DELETE s;
-        END_OF_STRING
-        respond(:yay => "deleted")
-    end
-
-    post '/api/stop_codebite' do
-        assert(user_logged_in?)
-        email = @session_user[:email]
-
-        running = codebite_run_lock(email).synchronize do
-            # If nothing is running, just be nice and say ok.
-            found = @@codebite_mutex.synchronize do
-                @@codebite_runs.key?(email)
-            end
-
-            kill_codebite_run(email, reason: "stopped by user") if found
-            found
-        end
-
-        respond(yay: "stopped", running_was: running)
     end
 
     # Automatron needs a login, like every tool (Tools). A regex can make the
@@ -7348,127 +6717,6 @@ class Main < Sinatra::Base
         ws.rack_response
     end
 
-    def print_codebites_admin_table
-        assert(teacher_logged_in?)
-        Main.update_codebites()
-
-        email_for_tag = {}
-        registered_emails = []
-        neo4j_query(<<~END_OF_STRING).each do |row|
-            MATCH (u:User) RETURN u.email;
-        END_OF_STRING
-            email = row['u.email']
-            email_for_tag[fs_tag_for_email(email)] = email
-            registered_emails << email
-        end
-
-        solved_tasks = {}
-        tried_tasks = {}
-
-        neo4j_query(<<~END_OF_STRING).each do |row|
-            MATCH (u:User)<-[:BY]-(s:Solved)-[:FOR]->(t:Task), (s)-[:IN]->(l:Language)
-            RETURN DISTINCT u.email, t.name, l.name;
-        END_OF_STRING
-            email = row['u.email']
-            task = row['t.name']
-            lang = row['l.name']
-            solved_tasks[email] ||= {}
-            solved_tasks[email][task] ||= []
-            solved_tasks[email][task] << lang
-        end
-        neo4j_query(<<~END_OF_STRING).each do |row|
-            MATCH (u:User)<-[:BY]-(s:Submission)-[:FOR]->(t:Task), (s)-[:IN]->(l:Language)
-            RETURN DISTINCT u.email, t.name, l.name;
-        END_OF_STRING
-            email = row['u.email']
-            task = row['t.name']
-            lang = row['l.name']
-            tried_tasks[email] ||= {}
-            tried_tasks[email][task] ||= []
-            tried_tasks[email][task] << lang
-        end
-
-        solution_for_task_and_lang = {}
-        line_count_for_sha1 = {}
-        neo4j_query(<<~END_OF_STRING, {}).to_a.each do |x|
-            MATCH (l:Language)<-[:IN]-(s:Submission {success: TRUE})-[:FOR]->(t:Task), (s)-[:WITH]->(c:Code)
-            RETURN s, c, l.name, t.name
-            ORDER BY c.size;
-        END_OF_STRING
-            sha1 = x['c'][:sha1]
-            lang = x['l.name']
-            task = x['t.name']
-            solution_for_task_and_lang[task] ||= {}
-            solution_for_task_and_lang[task][lang] ||= []
-            solution_for_task_and_lang[task][lang] << sha1
-            line_count_for_sha1[sha1] = x['c'][:line_count]
-        end
-
-        StringIO.open do |io|
-            io.puts "<div style='max-width: 100%; overflow-x: auto;'>"
-            io.puts "<table class='table table-sm'>"
-            io.puts "<thead>"
-            io.puts "<tr>"
-            io.puts "<th rowspan='2' style='text-align: left;'>Name</th>"
-            @@codebite_sections.each do |section|
-                io.puts "<th colspan='#{section['entries'].size}' style='text-align: left;'>#{section['title']}</th>"
-            end
-            io.puts "</tr>"
-            io.puts "<tr>"
-            @@codebite_tasks.each do |task_id, task_info|
-                io.puts "<th><a href='/codebites/#{task_id}'>#{task_info[:heading].split.map { |x| x[0] }.join}</a></th>"
-            end
-            io.puts "</tr>"
-            io.puts "</thead>"
-            last_group = nil
-            @@user_group_order.each do |group|
-                (@@user_groups[group] || []).each do |email|
-                    next unless (@@teachers[@session_user[:email]] || Set.new()).include?(group) || admin_logged_in? || email == @session_user[:email]
-                    user_tag = fs_tag_for_email(email)
-                    next unless tried_tasks.dig(email) || solved_tasks.dig(email)
-                    if group != last_group
-                        io.puts "<tr><td colspan='#{@@codebite_tasks.size + 1}' style='text-align: left; font-weight: bold; background-color: #eee;'>#{group}</td></tr>"
-                        last_group = group
-                    end
-                    io.puts "<tr>"
-                    io.puts "<td style='text-align: left;'>#{@@invitations[email][:name]}</td>"
-                    @@codebite_tasks.each do |task_id, task_info|
-                        io.puts "<td>"
-                        %w(python ruby javascript).each do |lang|
-                            state = 0
-                            if (tried_tasks.dig(email, task_id) || []).include?(lang)
-                                state = 1
-                            end
-                            if (solved_tasks.dig(email, task_id) || []).include?(lang)
-                                state = 2
-                            end
-                            io.puts "<img alt='' src='/images/lang/#{lang.sub('javascript', 'js')}-128.png' class='state-#{state}'>"
-                        end
-                        io.puts "</td>"
-                    end
-                    io.puts "</tr>"
-                end
-            end
-            io.puts "</table>"
-            io.puts "</div>"
-            @@codebite_tasks.each do |task_id, task_info|
-                next unless solution_for_task_and_lang[task_id]
-                io.puts "<h3>#{task_info[:heading]}</h3>"
-                %w(python ruby javascript).each do |lang|
-                    next unless solution_for_task_and_lang[task_id][lang]
-                    solution_for_task_and_lang[task_id][lang].each do |sha1|
-                        io.puts "<div class='masonry-container'>"
-                        code = File.read("/internal/codebites/#{sha1[0, 2]}/#{sha1[2, sha1.size - 2]}.hl") rescue nil
-                        io.puts "<div class='code-container' data-sha1='#{sha1}' data-lang='#{lang}' data-line-count='#{line_count_for_sha1[sha1]}'><pre>#{code}</pre></div>"
-                        io.puts "</div>"
-                    end
-                end
-            end
-
-            io.string
-        end
-    end
-
     if DEVELOPMENT
         post '/api/tutorial_screenshots/auto_render' do
             data = parse_request_data(:required_keys => [:mode])
@@ -7611,6 +6859,10 @@ class Main < Sinatra::Base
         end
         # STDERR.puts "Requested path: #{path}"
         # STDERR.puts "Available content slugs: #{@@content.keys.join(', ')}"
+        if path.start_with?('/codebites/')
+            redirect "#{WEB_ROOT}/", 301
+            return
+        end
         if (moved = MOVED_PAGES[path[1, path.size - 1]])
             redirect moved.start_with?('https://') ? moved : "#{WEB_ROOT}/#{moved}", 301
             return
@@ -7651,10 +6903,6 @@ class Main < Sinatra::Base
             respond_raw_with_mimetype(s, 'text/html')
             return
         end
-        if path[0, 11] == '/codebites/'
-            @codebite_slug = path[11, path.size - 11]
-            path = 'codebites.html'
-        end
         if path[0, 3] == '/l/'
             # Login codes are intentionally redeemed through POST
             # /api/complete_login so they never become part of browser history or
@@ -7691,9 +6939,6 @@ class Main < Sinatra::Base
         respond_with_file(path) do |content, mime_type|
             if mime_type == 'text/html'
                 template = File.read(File.join(@@static_dir, '_template.html'))
-                if path.include?('codebites') && !path.include?('codebites_admin')
-                    template = File.read(File.join(@@static_dir, '_template_codebites.html'))
-                end
                 rendered_page = TrustedTemplate.render_page(template, content, binding)
                 Main.inject_page_metadata(rendered_page, request.path)
             end

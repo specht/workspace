@@ -246,7 +246,7 @@ Welche Prüfart für welchen Zweck:
 | Abgeben | `submit` |
 | Schreibt der Befehl die richtige Ausgabe? | `command` |
 | Steht in der 3D-Szene, was verlangt ist? | `scene` |
-| Eine Programmieraufgabe mit Tests | `code` (Code Bites) |
+| Tut die Funktion im Workspace, was sie soll? | `ruby`, `python` |
 | Liefert die SQL-Abfrage das Richtige? | `sql` |
 
 Drei Faustregeln:

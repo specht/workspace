@@ -43,7 +43,6 @@ module TaskSpec
         'measure' => 'M6',
         'command' => 'M6',
         'scene' => 'M6',
-        'code' => 'M5',
         'sql' => 'M6',
         'cypher' => 'M7',
         'er' => 'M7',
@@ -69,7 +68,6 @@ module TaskSpec
     ].freeze
     SUBMIT_REQUIRES_KEYS = %w[html_parses scene_loads min_objects].freeze
     GIT_EXPECT_KEYS = %w[has_remote min_commits committed pushed identity].freeze
-    CODE_LANGUAGES = %w[ruby python javascript].freeze
 
     # Keys allowed in feedback[].when, per check type.
     WHEN_KEYS = {
@@ -87,7 +85,6 @@ module TaskSpec
         'git' => %w[problem],
         'reflection' => [],
         'submit' => [],
-        'code' => [],
         'sql' => %w[same_result_as query_matches],
         'cypher' => %w[same_result_as query_matches],
         'er' => %w[problem],
@@ -476,12 +473,6 @@ module TaskSpec
                     errors << "expect.#{k} must be true" unless expect[k] == true
                 end
                 errors << 'expect.min_commits must be a positive whole number' if expect.key?('min_commits') && !(expect['min_commits'].is_a?(Integer) && expect['min_commits'] > 0)
-            end
-        when 'code'
-            allowed += %w[codebite languages]
-            errors << 'codebite must name a Code Bites task' unless check['codebite'].to_s =~ /\A[a-z0-9_-]+\z/
-            if check.key?('languages') && !(string_list?(check['languages']) && (check['languages'] - CODE_LANGUAGES).empty?)
-                errors << "languages must be a list of #{CODE_LANGUAGES.join(', ')}"
             end
         when 'sql'
             allowed += %w[expect_query compare rows sorted_by extra_columns tables setup]

@@ -6,8 +6,7 @@ alle, die Inhalte schreiben, auch an Lehrkräfte anderer Schulen mit eigener
 Installation.
 
 **Stand:** Format 1, Meilenstein M6. Aufgabenkarten auf den Seiten, alle
-Prüfarten, Abgaben, die Klassenübersicht, Übungen aus
-Code Bites und die Startseite für Lernende. Was ab wann läuft, steht in der
+Prüfarten, Abgaben, die Klassenübersicht und die Startseite für Lernende. Was ab wann läuft, steht in der
 Tabelle der Prüfarten.
 
 Wer eine eigene Aktivität schreiben will, fängt mit
@@ -297,7 +296,6 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `python` | Funktionen aus einer Python-Datei der Lernenden: Aufrufe und ihre Ergebnisse | eine `.py`-Datei | Workspace, als Gast | M7 |
 | `ruby` | dasselbe für eine Ruby-Datei | eine `.rb`-Datei | Workspace, als Gast | M7 |
 | `scene` | Szene des Anaglyph-Viewers, zu einem oder mehreren Zeitpunkten | eine `.ini`-Datei | Workspace | M6 |
-| `code` | Code-Bites-Aufgabe | Code | Code-Bites-Judge | M5 |
 | `sql` | Ergebnis einer `SELECT`-Abfrage gegen das einer Musterabfrage | Abfrage | eigene MySQL-Datenbank, nur lesend | M6 |
 | `cypher` | Ergebnis einer Cypher-Abfrage gegen das einer Musterabfrage | Abfrage | eigene Neo4j-Datenbank, nur lesend | M7 |
 | `er` | ER-Modell: Entitäten, Schlüssel, Attribute, Beziehungen, Kardinalitäten und die Tabellen, die daraus werden | eine `.er`-Datei | Workspace (ER-Werkstatt) | M7 |
@@ -1050,26 +1048,6 @@ Fehlt die Zeile, bleibt alles wie bisher.
 `status` ist `correct`, `wrong`, `sent` (Reflexion gespeichert), `invalid`
 (nicht lesbar, z. B. keine Zahl; zählt nicht) oder `unavailable` (gerade nicht
 prüfbar, z. B. Workspace aus; zählt nicht).
-
-## Übungen aus Code Bites
-
-Die Aufgaben von Code Bites stehen als Übungen im Katalog unter »Programmieren
-üben« (`uebung-zahlen`, `uebung-arrays`, `uebung-strings`). Jede Karte hat die
-Prüfart `code`:
-
-```yaml
-check:
-  type: code
-  codebite: array_sum            # Datei in src/codebites/tasks/
-  languages: [python, ruby]      # freiwillig; ohne: Ruby, Python, JavaScript
-```
-
-Gelöst wird weiter im Code-Editor von Code Bites (`/codebites/<name>`), mit
-seinen Tests. Besteht der Code dort alle Tests, hakt der Server jede Karte ab,
-die auf diese Aufgabe zeigt, und die Klassenübersicht zeigt es. »Stand holen«
-auf der Karte übernimmt Aufgaben, die vor M5 gelöst wurden. Eine neue
-Code-Bites-Aufgabe erscheint als Übung, sobald sie in einer `tasks.yaml` steht.
-Code Bites hat dafür keinen eigenen Knopf mehr in der Menüleiste.
 
 ## Startseite
 
