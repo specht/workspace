@@ -30,16 +30,28 @@
       "state_hash": "de6ddbd5f9e3d881fd0424209fe3795c104065afabad2d825d7c27c7b823e456",
       "workspace_look": "4.138.0-ls366"
     },
-    "theme-catppuccin.webp": {
+    "theme-cobalt2.webp": {
       "environment_fingerprint": "3b7615ac653fac8f8a8664e884833f87b19d4af2df23a48d5bfb39265506e013",
-      "output_sha256": "70c2c30c4cc8d22363d9c80e265e8c702828feef65d415d590b95fa97da8c57f",
-      "state_hash": "799fc7914e6d4fe011dda4c882b64cd22e58240220a9ce437441a5e64e1392d8",
+      "output_sha256": "9c43b20209cf1e05f34d518980cbe06eac543cefcbefd4983b87efa21fba8856",
+      "state_hash": "2dbbc5fed75b5318d2d844b2c6032f938e04b4f8e68487e5494238187a2724c9",
       "workspace_look": "4.138.0-ls366"
     },
     "theme-dracula.webp": {
       "environment_fingerprint": "3b7615ac653fac8f8a8664e884833f87b19d4af2df23a48d5bfb39265506e013",
       "output_sha256": "226331d6fa7b894477998590049303717d0b31d77666279ac88855d7ff10e057",
       "state_hash": "f09a0f3970bb98238f028ea2159f37422f5807181cb489a51ac6c92dadf8b22d",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "theme-github-light.webp": {
+      "environment_fingerprint": "3b7615ac653fac8f8a8664e884833f87b19d4af2df23a48d5bfb39265506e013",
+      "output_sha256": "6d81c249169d6a67004812571363e68db7c3aa2c0b2ec332b31637624934ed80",
+      "state_hash": "2cbf90feae36db39d148e5a504a06c933a42d97f1bc537be683cc029811ef147",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "theme-gruvbox.webp": {
+      "environment_fingerprint": "3b7615ac653fac8f8a8664e884833f87b19d4af2df23a48d5bfb39265506e013",
+      "output_sha256": "5fd4030f971473d4d7d92cbbd2fce43b7a3d1f9051cd6c9ced165693a16d8d0c",
+      "state_hash": "03f2baa5163a28ab2177aeb8d3d4add50edadc46fc6476f926ff8cceb1cdde6b",
       "workspace_look": "4.138.0-ls366"
     },
     "theme-light-2026.webp": {
@@ -60,12 +72,6 @@
       "state_hash": "0905d340104a7345d7be951df4e69ca9079b8590d54244d7d0289631e98986af",
       "workspace_look": "4.138.0-ls366"
     },
-    "theme-one-dark-pro.webp": {
-      "environment_fingerprint": "3b7615ac653fac8f8a8664e884833f87b19d4af2df23a48d5bfb39265506e013",
-      "output_sha256": "8b7ecdd752f0d22f65e0efe7d7e4d652a7c928989e140e52170c10dce60af5ef",
-      "state_hash": "2789b479c25ca06868d6c3d29466b3f9763ff7320b417598b6987afd40dda68f",
-      "workspace_look": "4.138.0-ls366"
-    },
     "theme-picker.webp": {
       "environment_fingerprint": "3b7615ac653fac8f8a8664e884833f87b19d4af2df23a48d5bfb39265506e013",
       "output_sha256": "3e884ad230a72c17d754cf1b7822a034dfa8b6e137259f7b3dd78d526d49a693",
@@ -82,12 +88,6 @@
       "environment_fingerprint": "3b7615ac653fac8f8a8664e884833f87b19d4af2df23a48d5bfb39265506e013",
       "output_sha256": "88c36852f880484f34d02db0fbc82116c74df979d7d0d0e85056e1b496fab80f",
       "state_hash": "6bc2efb4320be3b6b60257fcd1591f2dd7eeec17ec456f4865a387cb5a22bb29",
-      "workspace_look": "4.138.0-ls366"
-    },
-    "theme-tokyo-night.webp": {
-      "environment_fingerprint": "3b7615ac653fac8f8a8664e884833f87b19d4af2df23a48d5bfb39265506e013",
-      "output_sha256": "1daa3ebfa4d53eeb7cd45de73bc7050e9865df4d1fc18488c22fa8c5874b3bc5",
-      "state_hash": "d2f1e59e2c73c162c8cab12ef7050fbea2cd8e895d48e315b83937684d1d3e0e",
       "workspace_look": "4.138.0-ls366"
     },
     "vs-code-welcome.webp": {
