@@ -215,7 +215,7 @@ tab: preview
 viewport: 1280x720
 sleep: 2
 -->
-<figure><a href='/rgb'><img src='title.webp' alt='Der RGB-Würfel als Drahtgitter, darin ein Farbpunkt, zerlegt in Pfeile für Y, Cb und Cr.'></a><figcaption>Farbräume</figcaption></figure>
+<figure><a href='/rgb' target='_blank' rel='noopener'><img src='title.webp' alt='Der RGB-Würfel als Drahtgitter, darin ein Farbpunkt, zerlegt in Pfeile für Y, Cb und Cr.'></a><figcaption>Farbräume</figcaption></figure>
 <!-- tutorial-screenshot
 # »Trennung von Helligkeit und Farbe«
 open-site: /colorspace
@@ -223,15 +223,19 @@ tab: preview
 viewport: 1280x720
 sleep: 2
 -->
-<figure><a href='/colorspace'><img src='colorspace.webp' alt='Ein Foto, zerlegt in drei Graubilder für Rot, Grün und Blau, mit Reglern dazwischen und dem wieder zusammengesetzten Foto rechts.'></a><figcaption>Trennung von Helligkeit und Farbe</figcaption></figure>
+<figure><a href='/colorspace' target='_blank' rel='noopener'><img src='colorspace.webp' alt='Ein Foto, zerlegt in drei Graubilder für Rot, Grün und Blau, mit Reglern dazwischen und dem wieder zusammengesetzten Foto rechts.'></a><figcaption>Trennung von Helligkeit und Farbe</figcaption></figure>
 <!-- tutorial-screenshot
-# »DCT«
+# »DCT«, eine Zeile von acht Pixeln mitten im Foto ausgewählt, damit die
+# Kurve, die Koeffizienten und die Kosinuswellen darunter zu sehen sind
 open-site: /dct
 tab: preview
 viewport: 1280x720
 sleep: 2
+click: selector:#source canvas
+move-mouse: selector:#coefficients_chooser
+sleep: 1
 -->
-<figure><a href='/dct'><img src='dct.webp' alt='Ein Ausschnitt aus acht Pixeln als Kurve, darunter seine acht DCT-Koeffizienten und die acht Kosinuswellen, aus denen die Kurve wieder entsteht.'></a><figcaption>Diskrete Kosinustransformation (DCT)</figcaption></figure>
+<figure><a href='/dct' target='_blank' rel='noopener'><img src='dct.webp' alt='Ein Ausschnitt aus acht Pixeln als Kurve, darunter seine acht DCT-Koeffizienten und die acht Kosinuswellen, aus denen die Kurve wieder entsteht.'></a><figcaption>Diskrete Kosinustransformation (DCT)</figcaption></figure>
 </div>
 
 <!-- Basiswechsel, Quantisierung, Huffman-Codierung -->
@@ -1585,7 +1589,7 @@ _task(pixel)
 
 Dein Decoder liest jetzt Baseline-JPEGs. Was ihm noch fehlt:
 
-- **Progressive JPEGs**: Die übrigen Fotos von [Trennung von Helligkeit und Farbe](/colorspace) und [DCT](/dct), zum Beispiel <a href='/jpeg/30.jpg' target='_blank'>30.jpg</a>, sind progressiv (SOF<sub>2</sub>): Erst kommen von allen Blöcken die DC-Koeffizienten, dann in mehreren Durchgängen die AC-Koeffizienten, erst grob, dann genau. Lädt das Bild langsam, wird es nach und nach schärfer, wie bei GIF mit Interlacing. Probier aus, ob dein Decoder sie sauber ablehnt.
+- **Progressive JPEGs**: Die übrigen Fotos von <a href='/colorspace' target='_blank' rel='noopener'>Trennung von Helligkeit und Farbe</a> und <a href='/dct' target='_blank' rel='noopener'>DCT</a>, zum Beispiel <a href='/jpeg/30.jpg' target='_blank'>30.jpg</a>, sind progressiv (SOF<sub>2</sub>): Erst kommen von allen Blöcken die DC-Koeffizienten, dann in mehreren Durchgängen die AC-Koeffizienten, erst grob, dann genau. Lädt das Bild langsam, wird es nach und nach schärfer, wie bei GIF mit Interlacing. Probier aus, ob dein Decoder sie sauber ablehnt.
 - **Restart Marker**: Manche Dateien haben ein DRI-Segment (0xFFDD) und in den Bilddaten alle paar MCUs einen Marker 0xFFD0 bis 0xFFD7. Danach beginnen die vorigen DC-Koeffizienten wieder bei 0, und der Bitleser beginnt an einem neuen Byte. So zerstört ein Fehler in der Datei nicht das ganze restliche Bild.
 - **Weiche Farben**: Rechne Cb und Cr bei Subsampling zwischen den Werten hoch, statt einen für vier Pixel zu nehmen. Vergleich die Ränder roter Flächen vorher und nachher.
 - **Schneller**: Die iDCT ist der langsamste Teil. Der Algorithmus von Arai, Agui und Nakajima braucht für 8 Werte nur 5 Multiplikationen; die übrigen schlägt er der Dequantisierung zu.

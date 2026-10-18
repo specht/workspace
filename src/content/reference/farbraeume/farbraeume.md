@@ -103,7 +103,7 @@ Y ist genau das Graubild von oben. Zurück geht es mit \\(R = Y + 1{,}402 (C\_r 
 <figure><img src='ycbcr-cr.webp' alt='Cr: fast überall ein gleichmäßiges Grau; die rote Tür heller, die blauen Türen und der Himmel dunkler.'><figcaption>Cr: grün … rot</figcaption></figure>
 </div>
 
-In Cb und Cr steckt kaum noch etwas vom Bild: Wo eine Fläche fast grau ist, an den blassen Giebeln, sind beide nahe 128, mittleres Grau, und nur die Türen und der Himmel heben sich ab. Die Kanten und Details stecken fast alle in Y. Das nutzt JPEG aus: Das Auge sieht Helligkeit viel feiner als Farbe, also speichert JPEG Cb und Cr oft nur für jedes zweite Pixel in jeder Richtung, ein Viertel der Daten, ohne dass man es sieht. Ausprobieren kannst du das unter [Trennung von Helligkeit und Farbe](/colorspace); wie ein Decoder zurückrechnet, zeigt [Eine JPEG-Datei decodieren](/jpeg).
+In Cb und Cr steckt kaum noch etwas vom Bild: Wo eine Fläche fast grau ist, an den blassen Giebeln, sind beide nahe 128, mittleres Grau, und nur die Türen und der Himmel heben sich ab. Die Kanten und Details stecken fast alle in Y. Das nutzt JPEG aus: Das Auge sieht Helligkeit viel feiner als Farbe, also speichert JPEG Cb und Cr oft nur für jedes zweite Pixel in jeder Richtung, ein Viertel der Daten, ohne dass man es sieht. Ausprobieren kannst du das unter <a href='/colorspace' target='_blank' rel='noopener'>Trennung von Helligkeit und Farbe</a>; wie ein Decoder zurückrechnet, zeigt [Eine JPEG-Datei decodieren](/jpeg).
 
 YCbCr rechnet nur mit festen Gewichten, darum bleibt der Würfel ein Körper mit geraden Kanten, nur schief und gekippt. Seine Ecken liegen auf verschiedenen Höhen: Gelb fast oben bei Weiß, Blau fast unten bei Schwarz, denn Y gewichtet Grün und Rot viel stärker als Blau.
 
