@@ -38,8 +38,9 @@ examples:
       - files: { shower.js/pictures/Mein Vulkan.webp: freshly-cloned.webp }
       # Ein WebP, das .png heißt
       - files: { shower.js/pictures/mein-vulkan.png: freshly-cloned.webp }
-      # Zu groß für eine Folie
-      - files: { shower.js/pictures/mein-vulkan.webp: showerjs.webp }
+      # Zu groß für eine Folie (zu-gross.webp: Rauschen, über 500 kB, nur für
+      # dieses Beispiel; ein Bild der Seite kann beim Neurendern kleiner werden)
+      - files: { shower.js/pictures/mein-vulkan.webp: zu-gross.webp }
   bild-auf-folie:
     pass:
       - files:
