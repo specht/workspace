@@ -729,6 +729,16 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             if (recipe.pdfPage.page < 1) {
                 throw withSourceError(new Error('pdf-page counts pages from 1'), source);
             }
+        } else if ((match = line.match(/^image-file:\s*(\S+)(?:\s+(\d+))?$/))) {
+            // image-file: PATH [SCALE]: a picture a program saved in the
+            // Workspace (a PNG), enlarged SCALE times with sharp pixels
+            recipe.imageFile = {
+                path: valueAtSource(source, () => safeRelativePath(match[1])),
+                scale: match[2] ? Number(match[2]) : 1,
+            };
+            if (recipe.imageFile.scale < 1 || recipe.imageFile.scale > 16) {
+                throw withSourceError(new Error('image-file scales from 1 to 16 times'), source);
+            }
         } else if ((match = line.match(/^git-graph:\s*(.+)$/))) {
             recipe.gitGraph = valueAtSource(source, () => safeRelativePath(match[1].trim()));
         } else if ((match = line.match(/^record:\s*(.+)$/))) {
@@ -756,10 +766,10 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
         }
     }
 
-    if (recipe.pdfPage && (recipe.gitGraph || recipe.record != null || recipe.showMouse ||
+    if ((recipe.pdfPage || recipe.imageFile) && (recipe.gitGraph || recipe.record != null || recipe.showMouse ||
         recipe.cropTerminalLines != null || recipe.cropTop > 0 || recipe.cropBottom > 0)) {
         throw withSourceError(
-            new Error('pdf-page renders a PDF page: no git-graph, record, show-mouse or crops'),
+            new Error('pdf-page and image-file make the image from a file: no git-graph, record, show-mouse or crops'),
             lastSource || recipe[SOURCE_LOCATION],
         );
     }
@@ -769,7 +779,7 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             lastSource || recipe[SOURCE_LOCATION],
         );
     }
-    if (recipe.variants && (recipe.pdfPage || recipe.gitGraph)) {
+    if (recipe.variants && ((recipe.pdfPage || recipe.imageFile) || recipe.gitGraph)) {
         throw withSourceError(
             new Error('variants needs a screenshot or a video, not pdf-page or git-graph'),
             lastSource || recipe[SOURCE_LOCATION],
@@ -789,7 +799,7 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
     }
     if (recipe.cropElement && (recipe.cropTop > 0 || recipe.cropBottom > 0 || recipe.cropLeft > 0 ||
         recipe.cropRight > 0 || recipe.cropTerminalLines != null || recipe.record != null ||
-        recipe.pdfPage || recipe.gitGraph)) {
+        (recipe.pdfPage || recipe.imageFile) || recipe.gitGraph)) {
         throw withSourceError(
             new Error('crop-element replaces the other crops and works for screenshots only'),
             cropSource || lastSource || recipe[SOURCE_LOCATION],
@@ -797,13 +807,13 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
     }
     if (recipe.beside && (recipe.cropTop > 0 || recipe.cropBottom > 0 || recipe.cropLeft > 0 ||
         recipe.cropRight > 0 || recipe.cropElement || recipe.cropTerminalLines != null || recipe.keepOnly ||
-        recipe.record != null || recipe.pdfPage || recipe.gitGraph || recipe.beside === recipe.tab)) {
+        recipe.record != null || (recipe.pdfPage || recipe.imageFile) || recipe.gitGraph || recipe.beside === recipe.tab)) {
         throw withSourceError(
             new Error('beside: the other tab, whole, next to an uncropped screenshot'),
             lastSource || recipe[SOURCE_LOCATION],
         );
     }
-    if (recipe.keepOnly && (recipe.record != null || recipe.pdfPage || recipe.gitGraph)) {
+    if (recipe.keepOnly && (recipe.record != null || (recipe.pdfPage || recipe.imageFile) || recipe.gitGraph)) {
         throw withSourceError(
             new Error('keep-only works for screenshots only'),
             cropSource || lastSource || recipe[SOURCE_LOCATION],
@@ -816,7 +826,7 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
         );
     }
     if ((recipe.cropLeft > 0 || recipe.cropRight > 0) &&
-        (recipe.record != null || recipe.pdfPage || recipe.gitGraph)) {
+        (recipe.record != null || (recipe.pdfPage || recipe.imageFile) || recipe.gitGraph)) {
         throw withSourceError(
             new Error('crop-left and crop-right work for screenshots only'),
             cropSource || lastSource || recipe[SOURCE_LOCATION],
@@ -998,6 +1008,13 @@ async function parseTutorial(markdown, markdownPath) {
                 throw withSourceError(new Error(`pdf-page needs a .webp or .png target, not ${target}`), targetSource);
             }
             resolved.pdfPage = recipe.pdfPage;
+        }
+        // Only pictures from files carry this, so images hash exactly as before.
+        if (recipe.imageFile) {
+            if (!/\.(webp|png)$/i.test(target)) {
+                throw withSourceError(new Error(`image-file needs a .webp or .png target, not ${target}`), targetSource);
+            }
+            resolved.imageFile = recipe.imageFile;
         }
         if (recipe.gitGraph) {
             resolved.gitGraph = recipe.gitGraph;
@@ -3434,6 +3451,36 @@ async function capturePdfPage(shot, tutorialDirectory) {
     return sha256(await fs.readFile(target));
 }
 
+// image-file: PATH [SCALE] makes the image from a picture a program wrote
+// in the screenshot Workspace (save_as_png in Pixelflow Canvas), enlarged
+// SCALE times without smoothing, so each pixel stays a sharp square.
+async function captureImageFile(shot, tutorialDirectory) {
+    const root = path.resolve(USER_ROOT, fsTagForEmail(SCREENSHOT_EMAIL), 'workspace');
+    const source = path.resolve(root, shot.imageFile.path);
+    if (!source.startsWith(`${root}${path.sep}`)) {
+        throw new Error(`image-file path escaped the Workspace: ${shot.imageFile.path}`);
+    }
+    await fs.access(source).catch(() => { throw new Error(`image-file: ${shot.imageFile.path} does not exist`); });
+    const target = path.join(tutorialDirectory, shot.target);
+    const work = await fs.mkdtemp(path.join(os.tmpdir(), 'image-file-'));
+    try {
+        const enlarged = path.join(work, 'image.png');
+        await execFileAsync('convert', [source, '-filter', 'point', '-resize', `${shot.imageFile.scale * 100}%`, enlarged]);
+        const temporary = `${target}.tmp-${process.pid}`;
+        if (/\.webp$/i.test(target)) {
+            await execFileAsync('cwebp', ['-quiet', '-lossless', enlarged, '-o', temporary]);
+        } else {
+            await fs.copyFile(enlarged, temporary);
+        }
+        await fs.chmod(temporary, 0o644);
+        await fs.rename(temporary, target);
+        await inheritDirectoryOwnership(target, tutorialDirectory);
+    } finally {
+        await fs.rm(work, { recursive: true, force: true }).catch(() => {});
+    }
+    return sha256(await fs.readFile(target));
+}
+
 function screenshotOutputDimensions(shot) {
     const topPixels = Math.round(shot.viewport.height * shot.cropTop);
     const bottomPixels = Math.round(shot.viewport.height * shot.cropBottom);
@@ -3805,6 +3852,8 @@ async function generateTutorial(payload, progressJob = null) {
                 const variantShot = { ...shot, target };
                 return shot.pdfPage
                     ? capturePdfPage(variantShot, tutorialDirectory)
+                    : shot.imageFile
+                    ? captureImageFile(variantShot, tutorialDirectory)
                     : shot.gitGraph
                     ? captureGitGraph(variantShot, tutorialDirectory)
                     : shot.record != null

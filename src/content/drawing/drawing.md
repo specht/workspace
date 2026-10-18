@@ -151,6 +151,14 @@ move-mouse: selector:.part.statusbar
 
 In der Mitte der Zeichenfläche leuchtet ein grüner Pixel. Vergrößert sieht die Zeichenfläche so aus:
 
+<!-- tutorial-screenshot
+# Die Zeichenfläche selbst: das Programm von oben, das sein Bild speichert
+write-file: drawing-steps/step-1.rb <- file:stufen/step-1.rb
+write-file: drawing-steps/save_step.rb <- file:stufen/save_step.rb
+terminal-run: ruby -C /workspace/drawing-steps -r ./save_step.rb step-1.rb
+terminal-wait-for-prompt
+image-file: drawing-steps/step.png 8
+-->
 <img src='out1.webp' class='full' alt='Ein einzelner grüner Pixel liegt in der Mitte einer schwarzen Fläche.'>
 
 <div class='hint'>
@@ -232,6 +240,14 @@ Pixelflow::Canvas.new(320, 180, :palette) do
 end
 ```
 
+<!-- tutorial-screenshot
+# Mit der Palette zughy_32
+write-file: drawing-steps/step-2.rb <- file:stufen/step-2.rb
+write-file: drawing-steps/save_step.rb <- file:stufen/save_step.rb
+terminal-run: ruby -C /workspace/drawing-steps -r ./save_step.rb step-2.rb
+terminal-wait-for-prompt
+image-file: drawing-steps/step.png 8
+-->
 <img src='out2.webp' class='r' alt='Ein dunkeltürkiser Pixel liegt auf einer dunkelvioletten Fläche.'>
 
 Die Farben haben sich geändert: Der Hintergrund ist nicht mehr schwarz, weil die Farbe 0 jetzt ein dunkles Lila ist, und die Farbe 10 ist jetzt ein dunkles Türkis.
@@ -249,6 +265,14 @@ fill_rect(0, 0, 319, 179)
 
 `set_color` wählt die Farbe für alle folgenden Befehle, hier 16, ein helles Blau. `fill_rect` füllt ein Rechteck. Es braucht vier Zahlen: x und y der Ecke oben links und x und y der Ecke unten rechts. Weil die Ecke unten rechts (319, 179) ist, füllt dieses Rechteck die ganze Zeichenfläche:
 
+<!-- tutorial-screenshot
+# Der Hintergrund
+write-file: drawing-steps/step-3.rb <- file:stufen/step-3.rb
+write-file: drawing-steps/save_step.rb <- file:stufen/save_step.rb
+terminal-run: ruby -C /workspace/drawing-steps -r ./save_step.rb step-3.rb
+terminal-wait-for-prompt
+image-file: drawing-steps/step.png 8
+-->
 <img src='out3.webp' class='full' alt='Die Zeichenfläche ist vollständig hellblau gefüllt.'>
 
 ### Hügelige Wiese zeichnen
@@ -410,6 +434,14 @@ draw_cubic_bezier(0, 170, 110, 140, 220, 140, 320, 170)
 
 Dein Bild sollte jetzt so aussehen:
 
+<!-- tutorial-screenshot
+# Drei Kurven
+write-file: drawing-steps/step-4.rb <- file:stufen/step-4.rb
+write-file: drawing-steps/save_step.rb <- file:stufen/save_step.rb
+terminal-run: ruby -C /workspace/drawing-steps -r ./save_step.rb step-4.rb
+terminal-wait-for-prompt
+image-file: drawing-steps/step.png 8
+-->
 <img src='out4.webp' class='full' alt='Drei geschwungene grüne Linien verlaufen über den hellblauen Hintergrund.'>
 
 ### Flächen füllen
@@ -427,6 +459,14 @@ flood_fill(0, 130)
 
 Der Punkt (0, 130) liegt zwischen den oberen beiden Kurven, und genau diese Fläche wird hellgrün:
 
+<!-- tutorial-screenshot
+# Die erste Fläche gefüllt
+write-file: drawing-steps/step-5.rb <- file:stufen/step-5.rb
+write-file: drawing-steps/save_step.rb <- file:stufen/save_step.rb
+terminal-run: ruby -C /workspace/drawing-steps -r ./save_step.rb step-5.rb
+terminal-wait-for-prompt
+image-file: drawing-steps/step.png 8
+-->
 <img src='out5.webp' class='full' alt='Die Fläche zwischen den oberen Kurven ist hellgrün gefüllt.'>
 
 Füll mit diesen Zeilen auch die beiden anderen Flächen:
@@ -438,6 +478,14 @@ set_color(9)
 flood_fill(0, 179)
 ```
 
+<!-- tutorial-screenshot
+# Alle drei Flächen
+write-file: drawing-steps/step-6.rb <- file:stufen/step-6.rb
+write-file: drawing-steps/save_step.rb <- file:stufen/save_step.rb
+terminal-run: ruby -C /workspace/drawing-steps -r ./save_step.rb step-6.rb
+terminal-wait-for-prompt
+image-file: drawing-steps/step.png 8
+-->
 <img src='out6.webp' class='full' alt='Mehrere gefüllte grüne Hügel überlagern sich vor hellblauem Hintergrund.'>
 
 ### Regenbogen zeichnen
@@ -467,6 +515,14 @@ end
 
 _task(maske)
 
+<!-- tutorial-screenshot
+# Der Regenbogen hinter den Hügeln
+write-file: drawing-steps/step-7.rb <- file:stufen/step-7.rb
+write-file: drawing-steps/save_step.rb <- file:stufen/save_step.rb
+terminal-run: ruby -C /workspace/drawing-steps -r ./save_step.rb step-7.rb
+terminal-wait-for-prompt
+image-file: drawing-steps/step.png 8
+-->
 <img src='out7.webp' class='full' alt='Ein gestreifter Regenbogen steigt hinter grünen Hügeln auf.'>
 
 ### Himmel zeichnen
@@ -496,12 +552,21 @@ remove_mask()
 
 Das fertige Bild:
 
+<!-- tutorial-screenshot
+# Das ganze Programm, mit einem festen Himmel
+write-file: drawing-steps/rainbow.rb <- file:rainbow.rb
+write-file: drawing-steps/save_step.rb <- file:stufen/save_step.rb
+terminal-run: ruby -C /workspace/drawing-steps -r ./save_step.rb rainbow.rb
+terminal-wait-for-prompt
+image-file: drawing-steps/step.png 8
+-->
 <img src='rainbow.webp' class='full' alt='Fertige Pixelgrafik mit blau gestreiftem Himmel, Regenbogen und grünen Hügeln.'>
 
 ## Bild speichern
 
 Schreib als letzte Zeile vor `end`:
 
+<!-- page-code: own -->
 ```ruby
 save_as_png('rainbow.png')
 ```
@@ -518,6 +583,7 @@ _include_file(rainbow.rb, ruby)
 
 Jetzt bist du dran: Zeichne ein eigenes Bild. Lege dafür eine neue Datei `/workspace/bild.rb` an und beginne mit diesem Gerüst:
 
+<!-- page-code: own -->
 ```ruby
 require 'pixelflow_canvas'
 
@@ -534,6 +600,14 @@ Was du zeichnest, schreibst du an die Stelle mit dem Kommentar, zwischen `set_pr
 
 Die Ideen unten sind Bausteine für diese Stelle. Aus allen zusammen ist dieses Bild entstanden, auf einem Hintergrund mit `set_color(21)` und `fill_rect(0, 0, 319, 179)`:
 
+<!-- tutorial-screenshot
+# Alle Ideen zusammen auf einem dunklen Hintergrund
+write-file: drawing-steps/ideas.rb <- file:stufen/ideas.rb
+write-file: drawing-steps/save_step.rb <- file:stufen/save_step.rb
+terminal-run: ruby -C /workspace/drawing-steps -r ./save_step.rb ideas.rb
+terminal-wait-for-prompt
+image-file: drawing-steps/step.png 8
+-->
 <img class='full' src='ideas.webp' alt='Ein Nachthimmel mit Sternen, einer gelben Sonne, einem rosa Stern aus Linien, einem Haus mit rotem Dach und dem Wort »Hallo«.'>
 
 ### Sterne

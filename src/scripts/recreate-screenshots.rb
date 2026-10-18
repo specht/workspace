@@ -24,6 +24,10 @@ USAGE = <<~TEXT
 
     The development services must be running. Rendering on page views may be
     paused (status bar of a tutorial page); this script renders either way.
+
+    Pictures a script takes (a .pictures.json beside them, as in the teacher
+    guide) are listed after the recipes; --stale and --all take them again
+    when the files they come from have changed, TUTORIAL when it is their page.
 TEXT
 
 mode = :force
@@ -126,6 +130,32 @@ local_media = lambda do |markdown|
            .uniq
 end
 
+# Pictures a script takes instead of a recipe (the teacher guide's, from a
+# Playwright run against the class page): a .pictures.json beside them names
+# the script, the files the pictures come from and their hash when they were
+# taken. A changed file makes them stale.
+require 'digest'
+script_pictures = lambda do
+    Dir[File.join(content_root, '**', '.pictures.json')].sort.map do |manifest|
+        data = JSON.parse(File.read(manifest))
+        digest = Digest::SHA256.new
+        missing = []
+        data['inputs'].sort.each do |file|
+            path = File.join(repo_root, file)
+            next missing << file unless File.file?(path)
+
+            digest << "#{file}\n" << File.binread(path) << "\n"
+        end
+        dir = File.dirname(manifest)
+        absent = data['pictures'].reject { |name| File.file?(File.join(dir, name)) }
+        state = if !absent.empty? || !missing.empty? then 'missing'
+            elsif digest.hexdigest == data['hash'] then 'current'
+            else 'stale'
+        end
+        data.merge('dir' => dir, 'page' => Pathname.new(dir).relative_path_from(Pathname.new(content_root)).to_s, 'state' => state)
+    end
+end
+
 color = $stdout.tty?
 paint = lambda do |text, code|
     color ? "\e[#{code}m#{text}\e[0m" : text
@@ -172,7 +202,8 @@ overview = lambda do |relative_paths|
             manifest = File.join(File.dirname(file), '.tutorial-screenshots.json')
             File.exist?(manifest) && (JSON.parse(File.read(manifest))['screenshots'] || {}).key?(File.basename(file))
         end
-        manual = local_media.call(markdown).reject { |src| generated.include?(src) || borrowed.call(src) }
+        by_script = script_pictures.call.select { |item| item['dir'] == page_dir }.flat_map { |item| item['pictures'] }
+        manual = local_media.call(markdown).reject { |src| generated.include?(src) || borrowed.call(src) || by_script.include?(src) }
         next if generated.empty? && manual.empty?
 
         counts = plan.map { |item| item['state'] }.tally
@@ -200,6 +231,30 @@ overview = lambda do |relative_paths|
     state = out_of_date.zero? ? paint.call('all current ✓', 32) : paint.call("#{totals['stale']} stale, #{totals['missing']} missing", 33)
     puts
     puts "Total: #{totals[:generated]} generated (#{state}), #{totals[:manual]} manual, on #{totals[:pages]} page(s)."
+    pictures = script_pictures.call
+    unless pictures.empty?
+        puts
+        puts 'Taken by a script:'
+        pictures.each do |item|
+            mark = item['state'] == 'current' ? paint.call('✓', 32) : paint.call("✗ #{item['state']}", 33)
+            puts "  #{item['page']}  #{item['pictures'].size} by #{item['script']} #{mark}"
+            puts "      #{item['command']}" unless item['state'] == 'current'
+        end
+    end
+end
+
+# The pictures a script takes, again if they are out of date (or with
+# --all always): the script runs in its own environment (e2e for the teacher
+# guide) and only when the rendering of recipes went through
+run_script_pictures = lambda do |only|
+    script_pictures.call.each do |item|
+        next if only && !only.include?(item['page'])
+        next if mode == :stale && item['state'] == 'current'
+
+        puts "Taking #{item['pictures'].size} picture(s) for #{item['page']} with #{item['script']}..."
+        ok = system(item['command'], chdir: repo_root)
+        puts "#{item['script']} failed; run it yourself: #{item['command']}" unless ok
+    end
 end
 
 if mode == :status
@@ -244,6 +299,7 @@ ok = Dir.chdir(repo_root) do
     end
 end
 
+run_script_pictures.call(args.empty? ? nil : tutorials.map { |t| File.dirname(t) }) if ok
 puts
 overview.call(tutorials)
 abort 'Screenshot recreation failed for at least one tutorial (see above). Are the development services running?' unless ok

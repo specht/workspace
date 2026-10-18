@@ -51,6 +51,31 @@ end
 Starte das Pixelflow Canvas, indem du <kbd>Strg</kbd><kbd>Shift</kbd><kbd>P</kbd> oder <kbd>F1</kbd> drückst und dann »Show Pixelflow Canvas« eingibst.
 Führe das Programm aus, indem du im Terminal `ruby fire.rb` eingibst. Da standardmäßig die [VGA-Palette](https://specht.github.io/pixelflow_canvas_ruby/palettes.html#vga) verwendet wird, sehen wir die ersten 64 Farben der VGA-Palette:
 
+<!-- tutorial-screenshot
+# Erweiterung, Gem und Zeichenfläche wie in »Zeichnen mit Pixelflow Canvas«
+press: Control+p
+type: ext install gymnasiumsteglitz.pixelflow-canvas
+wait-for-text: Press Enter to install extension
+press: Enter
+wait-for-text: Trust Publisher & Install
+click: Trust Publisher & Install
+sleep: 10
+press: F1
+type: pixel
+wait-for-text: Show Pixelflow Canvas
+press: Enter
+wait-for-text: Pixelflow Canvas
+sleep: 2
+terminal-open
+terminal-run: gem install pixelflow_canvas
+terminal-wait-for-prompt: 120
+write-file: fire-steps/save_step.rb <- file:stufen/save_step.rb
+# Die ersten 64 Farben der VGA-Palette
+write-file: fire-steps/ramp0.rb <- file:stufen/ramp0.rb
+terminal-run: ruby -C /workspace/fire-steps -r ./save_step.rb ramp0.rb
+terminal-wait-for-prompt: 180
+image-file: fire-steps/step.png 8
+-->
 <img src='ramp0.webp' class='full' alt='Die ersten 64 Farben der VGA-Palette.'>
 
 Diese 64 Farben sollen nun durch unseren Farbverlauf ersetzt werden. Dazu schauen wir uns den Farbverlauf im Detail an:
@@ -119,6 +144,13 @@ Hinweis: Achte auf die drei Punkte im Bereich <code>(0...16)</code>. Der dritte 
 
 Dein Bild sollte jetzt so aussehen:
 
+<!-- tutorial-screenshot
+# Schwarz bis Dunkelrot
+write-file: fire-steps/ramp1.rb <- file:stufen/ramp1.rb
+terminal-run: ruby -C /workspace/fire-steps -r ./save_step.rb ramp1.rb
+terminal-wait-for-prompt: 180
+image-file: fire-steps/step.png 8
+-->
 <img src='ramp1.webp' class='full' alt='Der Anfang der Palette bildet einen Verlauf von Schwarz zu Dunkelrot.'>
 
 ### Dunkelrot bis Orange
@@ -132,6 +164,13 @@ set_palette(i + 16, i * 8 + 128, i * 8, 0);
 
 Dein Farbverlauf sollte nun so aussehen:
 
+<!-- tutorial-screenshot
+# bis Orange
+write-file: fire-steps/ramp2.rb <- file:stufen/ramp2.rb
+terminal-run: ruby -C /workspace/fire-steps -r ./save_step.rb ramp2.rb
+terminal-wait-for-prompt: 180
+image-file: fire-steps/step.png 8
+-->
 <img src='ramp2.webp' class='full' alt='Der Farbverlauf reicht von Schwarz über Rot bis Orange.'>
 
 ### Orange bis Gelb
@@ -144,6 +183,13 @@ set_palette(i + 32, 255, i * 8 + 128, i * 8);
 
 Dein Farbverlauf sollte nun so aussehen:
 
+<!-- tutorial-screenshot
+# bis Gelb
+write-file: fire-steps/ramp3.rb <- file:stufen/ramp3.rb
+terminal-run: ruby -C /workspace/fire-steps -r ./save_step.rb ramp3.rb
+terminal-wait-for-prompt: 180
+image-file: fire-steps/step.png 8
+-->
 <img src='ramp3.webp' class='full' alt='Der Farbverlauf reicht von Schwarz über Rot und Orange bis Gelb.'>
 
 ### Gelb bis Weiß
@@ -156,6 +202,13 @@ set_palette(i + 48, 255, 255, i * 8 + 128);
 
 Geschafft! Dein Farbverlauf sollte nun so aussehen:
 
+<!-- tutorial-screenshot
+# bis Weiß
+write-file: fire-steps/ramp4.rb <- file:stufen/ramp4.rb
+terminal-run: ruby -C /workspace/fire-steps -r ./save_step.rb ramp4.rb
+terminal-wait-for-prompt: 180
+image-file: fire-steps/step.png 8
+-->
 <img src='ramp4.webp' class='full' alt='Die fertige Feuerrampe verläuft von Schwarz über Rot, Orange und Gelb bis Weiß.'>
 
 ## Animations-Loop
@@ -172,7 +225,14 @@ Anmerkungen:
 
 Das Ergebnis sieht jetzt noch relativ unspektakulär aus, aber wir sehen schon das helle Rechteck am unteren Rand des Bildes (und auch wenn es noch nicht so aussieht, werden schon regelmäßig neue Frames gezeichnet):
 
-<img src='fire1.png' class='full' style='image-rendering: pixelated;' alt='Ein heller gelbweißer Streifen bildet die unterste Zeile einer schwarzen Fläche.'>
+<!-- tutorial-screenshot
+# Das Gerüst der Animation, nach 150 Bildern
+write-file: fire-steps/draft1.rb <- file:draft1.rb
+terminal-run: STEP_FRAMES=150 ruby -C /workspace/fire-steps -r ./save_step.rb draft1.rb
+terminal-wait-for-prompt: 180
+image-file: fire-steps/step.png 4
+-->
+<img src='fire1.webp' class='full' alt='Ein heller gelbweißer Streifen bildet die unterste Zeile einer schwarzen Fläche.'>
 
 Um einen Feuereffekt zu erzielen, verwenden wir eine Technik aus der Bildbearbeitung, die als »Filterkernel« (bzw. Convolution Matrix oder Faltungsmatrix) bezeichnet wird.
 
@@ -308,7 +368,14 @@ Wir gehen zeilenweise durch das Bild und in jeder Zeile betrachten wir jeden Pix
 
 Deine Animation sollte nach einer kleinen Weile nun so aussehen:
 
-<img src='fire2.png' class='full' style='image-rendering: pixelated;' alt='Die Farbwerte steigen als weicher Verlauf vom hellen unteren Rand nach oben.'>
+<!-- tutorial-screenshot
+# Mit dem Filterkernel
+write-file: fire-steps/fire2.rb <- file:stufen/fire2.rb
+terminal-run: STEP_FRAMES=150 ruby -C /workspace/fire-steps -r ./save_step.rb fire2.rb
+terminal-wait-for-prompt: 180
+image-file: fire-steps/step.png 4
+-->
+<img src='fire2.webp' class='full' alt='Die Farbwerte steigen als weicher Verlauf vom hellen unteren Rand nach oben.'>
 
 ### Zufällige Variation
 
@@ -321,7 +388,14 @@ c += rand(7) - 3
 
 Da uns `rand(7)` eine zufällige Zahl im Bereich von 0…6 zurückgibt, subtrahieren wir 3, um Werte von -3 bis +3 zu erhalten. Das Ergebnis wird dann auf den Mittelwert addiert, um eine zufällige Variation zu erzeugen. Das Ergebnis sieht schon vielversprechender aus:
 
-<img src='fire3.png' class='full' style='image-rendering: pixelated;' alt='Das erste verrauschte Feuer enthält noch unpassende bunte Farbflecken.'>
+<!-- tutorial-screenshot
+# Mit Zufall, noch ohne Grenzen
+write-file: fire-steps/fire3.rb <- file:stufen/fire3.rb
+terminal-run: STEP_FRAMES=150 ruby -C /workspace/fire-steps -r ./save_step.rb fire3.rb
+terminal-wait-for-prompt: 180
+image-file: fire-steps/step.png 4
+-->
+<img src='fire3.webp' class='full' alt='Das erste verrauschte Feuer enthält noch unpassende bunte Farbflecken.'>
 
 ### Den Wertebereich begrenzen
 
@@ -338,7 +412,14 @@ c = c.clamp(0, 63)
 
 Dein Ergebnis sollte nun so aussehen:
 
-<img src='fire4.png' class='full' style='image-rendering: pixelated;' alt='Das korrigierte Feuer besteht aus gelben, orangefarbenen und roten Flammen.'>
+<!-- tutorial-screenshot
+# Auf 0 bis 63 begrenzt
+write-file: fire-steps/fire4.rb <- file:stufen/fire4.rb
+terminal-run: STEP_FRAMES=150 ruby -C /workspace/fire-steps -r ./save_step.rb fire4.rb
+terminal-wait-for-prompt: 180
+image-file: fire-steps/step.png 4
+-->
+<img src='fire4.webp' class='full' alt='Das korrigierte Feuer besteht aus gelben, orangefarbenen und roten Flammen.'>
 
 ### Kalte Luft bleibt dunkel
 
@@ -354,7 +435,14 @@ In Ruby können wir statt der normalen <code>if</code>-Syntax auch die Kurzform 
 
 Dein Feuereffekt sollte nun so aussehen:
 
-<img src='fire5.png' class='full' style='image-rendering: pixelated;' alt='Das fertige Pixelfeuer steigt vor schwarzem Hintergrund in gelben, orangefarbenen und roten Flammen auf.'>
+<!-- tutorial-screenshot
+# Das ganze Programm
+write-file: fire-steps/fire.rb <- file:fire.rb
+terminal-run: STEP_FRAMES=150 ruby -C /workspace/fire-steps -r ./save_step.rb fire.rb
+terminal-wait-for-prompt: 180
+image-file: fire-steps/step.png 4
+-->
+<img src='fire5.webp' class='full' alt='Das fertige Pixelfeuer steigt vor schwarzem Hintergrund in gelben, orangefarbenen und roten Flammen auf.'>
 
 ### Das ganze Programm
 

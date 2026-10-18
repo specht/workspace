@@ -1,0 +1,24 @@
+{
+  "script": "e2e/tests/teacher-guide.pictures.ts",
+  "command": "cd e2e && HS_PICTURES=1 npx playwright test --project=pictures",
+  "inputs": [
+    "e2e/tests/teacher-guide.pictures.ts",
+    "src/ruby/include/class_board.rb",
+    "src/ruby/include/submission_view.rb",
+    "src/ruby/include/teacher_roles.rb",
+    "src/static/include/class_board.js",
+    "src/static/include/submission_viewer.js",
+    "src/static/include/tasks.js",
+    "src/static/include/default.css",
+    "src/static/include/dark.css",
+    "src/static/_template.html",
+    "src/content/static-website/tasks.yaml"
+  ],
+  "hash": "ae3627db4e9850875109a22f314bc9d82ee1ad61db69e288c3db25bdab70942f",
+  "pictures": [
+    "abgabe-ansehen.webp",
+    "codes-beamer.webp",
+    "klasse-fortschritt.webp",
+    "klasse-lernende.webp"
+  ]
+}

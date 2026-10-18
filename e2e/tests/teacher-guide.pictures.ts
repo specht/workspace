@@ -18,6 +18,29 @@ import { loginAsE2eUser } from './workspace';
 import { WorkspaceContainer } from './workspace-container';
 
 const GUIDE = path.resolve(__dirname, '../../src/content/lehrmaterial/lehrmaterial-einstieg');
+const REPO = path.resolve(__dirname, '../..');
+// What the pictures show comes from these files: when one changes,
+// src/scripts/recreate-screenshots.rb --status calls the pictures stale, and
+// --stale takes them again (it reads this list from .pictures.json, written
+// below, and hashes the files the same way).
+const INPUTS = [
+  'e2e/tests/teacher-guide.pictures.ts',
+  'src/ruby/include/class_board.rb', 'src/ruby/include/submission_view.rb', 'src/ruby/include/teacher_roles.rb',
+  'src/static/include/class_board.js', 'src/static/include/submission_viewer.js', 'src/static/include/tasks.js',
+  'src/static/include/default.css', 'src/static/include/dark.css', 'src/static/_template.html',
+  'src/content/static-website/tasks.yaml',
+];
+const taken: string[] = [];
+
+function inputsHash(): string {
+  const hash = crypto.createHash('sha256');
+  for (const file of [...INPUTS].sort()) {
+    hash.update(file + '\n');
+    hash.update(fs.readFileSync(path.join(REPO, file)));
+    hash.update('\n');
+  }
+  return hash.digest('hex');
+}
 const NAMES: Record<string, string> = {
   'E2E Auth Student 0': 'Aylin Demir', 'E2E Auth Student 1': 'Ben Hoffmann', 'E2E Auth Student 2': 'Clara Weber',
   'E2E Auth Student 3': 'David Novak', 'E2E Auth Student 4': 'Elif Kaya', 'E2E Auth Student 5': 'Finn Schulz',
@@ -131,6 +154,7 @@ async function shoot(page: Page, name: string, anchor: string | null, out: strin
   const png = path.join(out, name + '.png');
   await page.screenshot({ path: png });
   execFileSync('convert', [png, '-quality', '85', '-define', 'webp:method=6', path.join(GUIDE, name + '.webp')]);
+  taken.push(name + '.webp');
 }
 
 test('pictures for the teacher guide', async ({ freshWorkspace: workspace, browser }, testInfo) => {
@@ -242,6 +266,11 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
       window.dispatchEvent(new Event('resize'));
     });
     await shoot(teacher, 'codes-beamer', null, out);
+    fs.writeFileSync(path.join(GUIDE, '.pictures.json'), JSON.stringify({
+      script: 'e2e/tests/teacher-guide.pictures.ts',
+      command: 'cd e2e && HS_PICTURES=1 npx playwright test --project=pictures',
+      inputs: INPUTS, hash: inputsHash(), pictures: [...taken].sort(),
+    }, null, 2) + '\n');
   } finally {
     for (const key of touched) {
       const [email, task] = key.split(' ');

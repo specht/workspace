@@ -175,6 +175,7 @@ tab: workspace|preview
 git-graph: PATH           (only before an _include_svg(NAME.svg))
 pdf-page: PATH PAGE [TEXT] (a page of a PDF in the Workspace as the image)
 pdf-page-full: PATH PAGE [TEXT] (the same, the whole sheet with its margins)
+image-file: PATH [SCALE]  (a picture a program saved in the Workspace, enlarged with sharp pixels)
 record: SECONDSs          (only before a <video>)
 fps: NUMBER               (with record; default 30)
 viewport: WIDTHxHEIGHT
@@ -610,6 +611,16 @@ really has.
 `pdf-page-full: PATH PAGE [TEXT]` is the same without the cutting: the whole
 sheet with its margins, at 200 dpi, for a page that should look like a page
 (the pages of the Facharbeit in the LaTeX activity).
+
+### Pictures a program saved
+
+`image-file: PATH [SCALE]` makes the recipe's image from a picture file below
+`/workspace`, one the recipe's program has just written there, enlarged SCALE
+times (1 to 16) without smoothing, so each pixel stays a sharp square, and
+stored lossless. Pixelflow Canvas programs save their drawing with
+`save_as_png`; »Zeichnen mit Pixelflow Canvas« and the fire show each step of
+their pictures this way, from the very program the page shows. Like
+`pdf-page`, it takes no crops and no variants.
 
 ### Files and editor state
 
