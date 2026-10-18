@@ -175,7 +175,8 @@ Open findings from the October 2026 review:
 Platform-wide:
 
 * [ ] Use the Handbuch part for the opening (close folder, clone, open) on the 24 pages that still repeat it by hand
-* [ ] Convert manual screenshots to recipes when a page is touched: 212 manual, 712 generated; most left on Ziffernerkennung (44), Anaglyph (33), Fire (15), Handbuch HTML (12)
+* [ ] Convert manual screenshots to recipes when a page is touched: 155 manual, 812 generated; most left on Ziffernerkennung (44, retired), Anaglyph (22), Handbuch Farbräume (14), Steganographie (8)
+* [ ] A dark card picture for the activities that have none (`audit-activities.rb`, column »Karte«: »nicht dunkel«), from `variants: dark` or `render-svg.rb`
 * [ ] Small pictures stretched by `class='full'` (100 % wide, at least 1000 px): `gif/dithering.webp` (920 px wide) and the 1350-px PixelRAM and Feuerwerk shots; render them larger, or show a drawing at its own size with `img.drawing` and a recipe with `zoom: 2`, as the calculator and the automata pages do
 * [ ] E2E coverage for TCP/IP (the Git checks run in its screenshot recipes)
 * [ ] When a page is touched: English names in its code (variables, functions, files), as in the raylib, web server and pixel wall activities; comments stay German
