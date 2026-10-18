@@ -9,6 +9,31 @@ notes later in this handoff.**
 
 **Read first:** `AGENTS.md`, `docs/datenschutz.md`, `docs/teacher-access.md`, and the rest of this handoff. Work in `specht/workspace`, branch `datenschutz`; do not merge/deploy or modify production data without the maintainer's explicit approval. Keep changes in coherent commits, write a German CHANGELOG entry, and run the repository's Ruby and relevant browser/E2E tests.
 
+### External review (2026-10-19) — what was done, what is left
+
+Fixed: access fails closed and invitations load before the first nginx map;
+suspension (`suspended_at`, /personen, ends sessions, login, Workspace,
+shares, live apps, watch links); restart honours the Nutzungsordnung;
+live apps need an owner/viewer who may still use the Workspace; a read-only
+cross-school report; the texts say an account is created with the first
+code request (deferring creation would mean reworking the login request).
+
+Left, as recommendations for the maintainer to weigh:
+- Sessions of 365 days, no »sign out everywhere«; share links without
+  expiry. Login codes stay readable on purpose: teachers show them on the
+  projector.
+- The Ruby backend holds the Docker socket; network exceptions from
+  student containers to infrastructure deserve a service-by-service audit.
+- An audit log of admin look-ins (no notice to the student, by decision).
+- Capacity: one start worker, no storage quotas, no alerting dashboard.
+- main.rb (~7,700 lines): a central authorization service over time.
+- CI: the E2E suite is run by hand; open-answers.browser.spec.ts still
+  expects no test group for `*` teachers (stale since 2026-10-17).
+- Retention »end of the school year« rests on the annual cleanup under
+  »Aufräumen«; group end dates and reminders would make it enforceable.
+- The swap file of credentials.rb was never pushed (removed before the
+  first push).
+
 ### Status of the plan below (2026-10-18, night) — read this first
 
 Done on the branch (each with tests or a run on the dev copy):

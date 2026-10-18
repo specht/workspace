@@ -249,6 +249,24 @@ class Main < Sinatra::Base
         respond(:removed => email)
     end
 
+    # Read only: students in groups of more than one school (guest groups
+    # do not count). One account per address, so a teacher of either school
+    # sees the student's Workspace; the administration resolves each case by
+    # hand (take the person out of one group). Nothing is changed here.
+    post '/api/people/cross_school' do
+        admin_only!
+        rows = neo4j_query(<<~END_OF_QUERY)
+            MATCH (i:Invitation)-[:MEMBER_OF]->(g:Group)-[:AT]->(s:School)
+            WHERE coalesce(s.guests, false) = false AND coalesce(i.teacher, false) = false
+                AND NOT (i)-[:TEACHES]->(:Group) AND NOT (i)-[:AT]->(:School)
+            WITH i, collect(DISTINCT s.name) AS schools, collect(DISTINCT g.name) AS groups
+            WHERE size(schools) > 1
+            RETURN i.email AS email, i.name AS name, schools, groups
+            ORDER BY toLower(coalesce(i.name, i.email));
+        END_OF_QUERY
+        respond(:people => rows.map { |r| r.transform_keys(&:to_sym) })
+    end
+
     # Teachers who were invited but never logged in (no account): school and
     # the groups they teach with their number of teachers, so that the page
     # can say which groups would be left without one. Administrators never.

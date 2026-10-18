@@ -124,6 +124,18 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   keine Kommunikation, keine Organisation des Unterrichts, keine Noten;
   Abgaben und Leistungsüberprüfungen sind genannt, die Einordnung trifft die
   Schule.
+- Zugang sperren: Unter `/personen` sperrt die Administration ein Konto mit
+  einem Grund (etwa ein Widerspruch, der geprüft wird). Sitzungen, Anmeldung,
+  laufender Workspace, geteilte Links und Web-Apps enden sofort; gelöscht
+  wird nichts. Nur »Sperre aufheben« macht das rückgängig, keine neue
+  Einladung. Die Prüfung des Zugangs (`Main.may_use_workspace?`) schlägt
+  jetzt geschlossen fehl, wenn die Einladungen nicht geladen sind; beim
+  Start werden sie vor der ersten nginx-Tabelle geladen. Beobachtungslinks
+  und geteilte Web-Apps folgen derselben Regel; ein Gast ohne Zustimmung zur
+  Nutzungsordnung kann den Workspace auch nicht über »Neu starten« starten.
+- »Aufräumen« zeigt, wer als Schülerin oder Schüler in Gruppen mehrerer
+  Schulen steht (nur lesend). Die Texte sagen jetzt richtig, dass ein Konto
+  mit dem ersten angeforderten Anmeldecode entsteht.
 - Die Unterlagen für die Schule sind nicht mehr öffentlich: Nur
   `/impressum` ist es. Datenschutzerklärung, Nutzungsordnung und
   Webhosting-Vereinbarung öffnen alle, die angemeldet sind (die Fassung einer

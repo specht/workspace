@@ -172,6 +172,8 @@
                     show_error_message('Bitte warte einen Moment, bevor du einen neuen Anmeldecode anforderst.');
                 } else if (data.error === 'no_invitation_found') {
                     show_error_message('Für diese E-Mail-Adresse gibt es keine Einladung. Prüf die Schreibweise oder frag deine Lehrkraft, mit welcher Adresse du eingeladen bist.');
+                } else if (data.error === 'suspended') {
+                    show_error_message('Der Zugang zu diesem Konto ist gesperrt. Deine Daten sind erhalten; frag deine Lehrkraft oder die Administration.');
                 }
             });
         });

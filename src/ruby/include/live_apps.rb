@@ -331,10 +331,12 @@ class Main < Sinatra::Base
 
         row = neo4j_query(<<~END_OF_QUERY, :server_sid => server_sid).first
             MATCH (u:User {server_sid: $server_sid})
-            RETURN u.email
+            RETURN u.email, u
             LIMIT 1;
         END_OF_QUERY
-        !row.nil?
+        # Only someone who may still use the Workspace (not suspended, still
+        # invited): an old cookie is no proof.
+        !row.nil? && Main.may_use_workspace?(row['u.email'].to_s, row['u'])
     rescue => e
         STDERR.puts ">>> Live-app authorization failed: #{e.class}: #{e.message}"
         false

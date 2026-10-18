@@ -691,11 +691,16 @@ class Main < Sinatra::Base
     # day, to take out its data). Everyone else loses existing sessions and
     # access to a running Workspace and its shared links too, not only the
     # next login.
+    #
+    # A suspended account (User.suspended_at, set on /personen) may not, by
+    # no path, whatever else is true; only lifting the suspension undoes it.
+    # Without loaded invitations nobody may (fail closed; the start loads
+    # them before the first nginx map).
     def self.may_use_workspace?(email, user = nil)
-        # At start the nginx map is built before the invitations are loaded:
-        # as before, until the next refresh.
-        return true unless class_variable_defined?(:@@invitations) && class_variable_defined?(:@@test_accounts)
-        return true if ADMIN_USERS.include?(email) || @@invitations.key?(email) || @@test_accounts.key?(email)
+        return false unless (user || {})[:suspended_at].to_s.empty?
+        return true if ADMIN_USERS.include?(email)
+        return false unless class_variable_defined?(:@@invitations) && class_variable_defined?(:@@test_accounts)
+        return true if @@invitations.key?(email) || @@test_accounts.key?(email)
 
         !(user || {})[:deletion_at].to_s.empty?
     end
@@ -784,6 +789,7 @@ class Main < Sinatra::Base
             watch_tag = row['r.watch_tag']
             user = row['u']
             watcher = row['w']
+            next unless may_use_workspace?(user[:email].to_s, user)
             fs_tag = fs_tag_for_email(user[:email])
             if running_servers.include?(fs_tag)
                 # watch_tag_ip_pairs << "#{watch_tag} #{running_servers[fs_tag][:ip]}:8443;"
@@ -793,8 +799,9 @@ class Main < Sinatra::Base
 
         $neo4j.neo4j_query(<<~END_OF_QUERY).each do |row|
             MATCH (u:User)-[:SHARES_LIVE_APP]->(s:LiveAppShare {active: TRUE})
-            RETURN u.email, s.port, s.tag;
+            RETURN u.email, s.port, s.tag, u;
         END_OF_QUERY
+            next unless may_use_workspace?(row['u.email'].to_s, row['u'])
             fs_tag = fs_tag_for_email(row['u.email'])
             next unless running_servers.include?(fs_tag)
             running_servers[fs_tag][:live_apps][row['s.tag']] = row['s.port'].to_i
@@ -2144,6 +2151,9 @@ class Main < Sinatra::Base
         setup.migrate_moved_tasks(MOVED_TASKS)
         setup.remove_code_bites
         self.reconcile_live_apps!(:refresh_nginx => false)
+        # The invitations first: the nginx map decides who may reach a running
+        # Workspace (may_use_workspace?), and without them it would allow none.
+        self.load_invitations()
         self.refresh_nginx_config()
 
         @@content = {}
@@ -2784,6 +2794,10 @@ class Main < Sinatra::Base
 
         # Said plainly, so a typo is noticed at once; the limits per client
         # keep this from being a fast way to find out who is invited.
+        unless neo4j_query('MATCH (u:User {email: $email}) WHERE u.suspended_at IS NOT NULL RETURN 1 AS yes;', :email => email).empty?
+            content_type :json
+            halt 403, { :error => 'suspended' }.to_json
+        end
         announced = !@@invitations.include?(email) &&
             !neo4j_query('MATCH (u:User {email: $email}) WHERE u.deletion_at IS NOT NULL RETURN 1 AS yes;', :email => email).empty?
         unless @@invitations.include?(email) || announced
@@ -3835,6 +3849,7 @@ class Main < Sinatra::Base
 
     post '/api/restart_server' do
         assert(user_logged_in?)
+        halt 403, { :error => 'terms_required' }.to_json if terms_required?
 
         email = @session_user[:email]
         active_workspace = neo4j_query_expect_one(<<~END_OF_QUERY, :email => email)
@@ -4187,6 +4202,38 @@ class Main < Sinatra::Base
         respond(:email => email, :deletion_at => date.to_s)
     end
 
+    # Suspending access (a parent's objection under review, a compromised
+    # account, a school that asks to stop): sessions, login, the running
+    # Workspace, shared links and web apps end at once; nothing is deleted.
+    post '/api/admin/suspend_access' do
+        assert(admin_logged_in?)
+        data = parse_request_data(:required_keys => [:email], :optional_keys => [:reason], :max_value_lengths => { :reason => 300 })
+        email = data[:email].to_s.downcase
+        halt 400, { :error => 'admin_account' }.to_json if ADMIN_USERS.include?(email)
+        halt 404, { :error => 'no_account' }.to_json if neo4j_query('MATCH (u:User {email: $email}) RETURN 1 AS yes;', :email => email).empty?
+        neo4j_query(<<~END_OF_QUERY, :email => email, :now => Time.now.to_i, :me => @session_user[:email], :reason => data[:reason].to_s.strip[0, 300])
+            MATCH (u:User {email: $email})
+            SET u.suspended_at = $now, u.suspended_by = $me, u.suspended_reason = $reason
+            WITH u
+            OPTIONAL MATCH (s:Session)-[:FOR]->(u)
+            DETACH DELETE s;
+        END_OF_QUERY
+        neo4j_query('MATCH (:User {email: $email})-[:SHARES_LIVE_APP]->(s:LiveAppShare) SET s.active = false;', :email => email)
+        stop_server(email)
+        Main.refresh_nginx_config()
+        STDERR.puts "Access of #{email} suspended by #{@session_user[:email]}"
+        respond(:ok => true)
+    end
+
+    post '/api/admin/lift_suspension' do
+        assert(admin_logged_in?)
+        data = parse_request_data(:required_keys => [:email])
+        neo4j_query('MATCH (u:User {email: $email}) REMOVE u.suspended_at, u.suspended_by, u.suspended_reason;', :email => data[:email].to_s.downcase)
+        Main.refresh_nginx_config()
+        STDERR.puts "Suspension of #{data[:email]} lifted by #{@session_user[:email]}"
+        respond(:ok => true)
+    end
+
     post '/api/admin/cancel_deletion' do
         assert(admin_logged_in?)
         data = parse_request_data(:required_keys => [:email])
@@ -4448,6 +4495,7 @@ class Main < Sinatra::Base
         disk = workspace_disk_usage[:by_tag]
         deletion_at = neo4j_query('MATCH (u:User) WHERE u.deletion_at IS NOT NULL RETURN u.email AS email, u.deletion_at AS day;').to_h { |r| [r['email'], r['day']] }
         terms_at = neo4j_query('MATCH (u:User) WHERE u.terms_accepted_at IS NOT NULL RETURN u.email AS email, u.terms_accepted_at AS at;').to_h { |r| [r['email'], r['at']] }
+        suspended = neo4j_query('MATCH (u:User) WHERE u.suspended_at IS NOT NULL RETURN u.email AS email, u.suspended_at AS at, u.suspended_reason AS reason;').to_h { |r| [r['email'], { :at => r['at'], :reason => r['reason'] }] }
         guests = Main.roster_imported ? Set.new(neo4j_query(<<~END_OF_QUERY).map { |r| r['email'] }) : Set.new
             MATCH (i:Invitation)-[:MEMBER_OF]->(:Group)-[:AT]->(:School {guests: true}) RETURN DISTINCT i.email AS email;
         END_OF_QUERY
@@ -4477,7 +4525,7 @@ class Main < Sinatra::Base
               :schools => schools_of[email].sort, :account => accounts.key?(email), :invited => @@invitations.key?(email),
               :active_on => active && active[:day] ? active[:day].to_s : nil, :active_source => active && active[:day] ? active[:source] : nil,
               :disk_kb => accounts.key?(email) ? disk[fs_tag_for_email(email)] : nil, :deletion_at => deletion_at[email],
-              :guest => guests.include?(email), :terms_accepted_at => terms_at[email] }
+              :guest => guests.include?(email), :terms_accepted_at => terms_at[email], :suspended => suspended[email] }
         end.select do |p|
             q.empty? || p[:email].include?(q) || p[:name].to_s.downcase.include?(q) || p[:groups].any? { |g| g.downcase.include?(q) } ||
                 p[:schools].any? { |g| g.downcase.include?(q) }

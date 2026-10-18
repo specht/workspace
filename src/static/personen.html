@@ -122,6 +122,14 @@
             </p>
             <div id='unused_here'></div>
 
+            <h3 id='mehrere-schulen' class='h5 mt-4'>In Gruppen mehrerer Schulen</h3>
+            <p>
+                Schülerinnen und Schüler, die in Gruppen von mehr als einer Schule stehen (Gruppen der Gäste zählen nicht). Weil es je
+                Adresse ein Konto gibt, sähen Lehrkräfte beider Schulen ihren Workspace. Hier ändert sich nichts: Nimm die Person unter
+                <a href='/gruppen'>Gruppen</a> aus einer der Gruppen, oder lass es, wenn es so gewollt ist.
+            </p>
+            <div id='cross_school_here'></div>
+
             <h3 id='lehrkraefte-ohne-konto' class='h5 mt-4'>Lehrkräfte ohne Konto</h3>
             <p>
                 Lehrkräfte, die eingeladen sind, sich aber nie angemeldet haben. Entfernen nimmt ihre Einladung ganz heraus: Schule,
@@ -330,6 +338,25 @@
     function account_actions(p, done) {
         const cell = $('<td class="row-actions">');
         if (!p.account || p.role === 'Administration') return cell;
+        if (p.suspended) {
+            const lift = icon_button('bi-unlock', 'Sperre aufheben');
+            lift.on('click', () => confirm_dialog({ title: 'Sperre aufheben', text: `${p.name || p.email} kann sich danach wieder anmelden und den Workspace nutzen, sofern eingeladen.`, confirm: 'Aufheben', icon: 'bi-unlock' },
+                () => people_call('/api/admin/lift_suspension', { email: p.email }, function () { show_success_message('Die Sperre ist aufgehoben.'); done(); })));
+            cell.append(lift);
+        } else {
+            const lock = icon_button('bi-lock', 'Zugang sperren');
+            lock.on('click', function () {
+                input_dialog({ title: 'Zugang sperren', label: `Warum? (bleibt bei der Sperre vermerkt; etwa »Widerspruch der Eltern, wird geprüft«). ${p.name || p.email} wird sofort abgemeldet, der Workspace gestoppt, geteilte Links und Web-Apps abgeschaltet. Gelöscht wird nichts.`, confirm: 'Sperren', icon: 'bi-lock' }, function (reason) {
+                    people_call('/api/admin/suspend_access', { email: p.email, reason: reason }, function () {
+                        $('#__template_modal').modal('hide');
+                        show_success_message(`${esc(p.name || p.email)} ist gesperrt.`);
+                        done();
+                    });
+                    return false;
+                });
+            });
+            cell.append(lock);
+        }
         if (p.deletion_at) {
             const stop = icon_button('bi-arrow-counterclockwise', 'Löschung abbrechen');
             stop.on('click', () => people_call('/api/admin/cancel_deletion', { email: p.email }, function () { show_success_message('Die Löschung ist abgebrochen.'); done(); }));
@@ -343,7 +370,8 @@
     }
 
     function deletion_note(p) {
-        return p.deletion_at ? `<span class='badge text-bg-warning ms-1'>wird am ${new Date(p.deletion_at).toLocaleDateString('de-DE')} gelöscht</span>` : '';
+        const suspended = p.suspended ? `<span class='badge text-bg-danger ms-1' title='${esc(p.suspended.reason || '')}'>gesperrt seit ${new Date(p.suspended.at * 1000).toLocaleDateString('de-DE')}</span>` : '';
+        return suspended + (p.deletion_at ? `<span class='badge text-bg-warning ms-1'>wird am ${new Date(p.deletion_at).toLocaleDateString('de-DE')} gelöscht</span>` : '');
     }
 
     // Checkboxes for accounts and what to do with the chosen ones.
@@ -677,7 +705,21 @@
         });
     }
 
+    function load_cross_school() {
+        people_call('/api/people/cross_school', {}, function (data) {
+            const here = $('#cross_school_here').empty();
+            if (!data.people.length) { here.append(`<p class='text-body-secondary'>Keine.</p>`); return; }
+            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Name und Adresse</th><th>Schulen</th><th>Gruppen</th></tr></thead><tbody></tbody></table>`);
+            data.people.forEach(p => table.find('tbody').append($('<tr>').append(
+                $('<td>').append($('<span>').text(p.name || '–'), $("<span class='person-email'></span>").text(p.email)),
+                $('<td>').text(p.schools.join(', ')), $('<td>').text(p.groups.join(', ')))));
+            make_sortable(table);
+            here.append($("<div class='table-responsive'></div>").append(table));
+        });
+    }
+
     function load_all() {
+        load_cross_school();
         load_schools();
         setTimeout(load_teachers, 200);
         load_all_people();

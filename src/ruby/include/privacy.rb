@@ -179,12 +179,19 @@ module Privacy
                 :how_long => 'bis die Lehrkraft die Person oder die Gruppe aus der Liste nimmt',
             },
             {
-                :data => 'Konto: E-Mail-Adresse, Name (freiwillig) und Gruppe (Klasse oder Kurs); entsteht bei der ersten Anmeldung',
+                :data => 'Konto: E-Mail-Adresse, Name (freiwillig) und Gruppe (Klasse oder Kurs); entsteht, wenn die Person zum ersten Mal einen Anmeldecode anfordert',
                 :source => 'aus der Einladungsliste der Lehrkraft',
                 :categories => [:master, :assignment],
                 :purpose => 'Anmeldung; Zuordnung zur Lerngruppe',
                 :who => 'die Person selbst, Lehrkräfte der Gruppe, Administration',
                 :how_long => ACCOUNT_END,
+            },
+            {
+                :data => 'Gegebenenfalls eine Sperre des Zugangs: seit wann, wer sie eingetragen hat und warum (etwa ein Widerspruch, der geprüft wird)',
+                :categories => [:account],
+                :purpose => 'den Zugang anhalten, ohne Daten zu löschen',
+                :who => 'Administration',
+                :how_long => 'bis die Sperre aufgehoben oder das Konto gelöscht wird',
             },
             {
                 :data => 'Bei Gästen: wann sie der Nutzungsordnung zugestimmt haben, und welcher Fassung',

@@ -124,7 +124,7 @@ module PrivacyDocuments
 
             <h2>Welche Daten anfallen</h2>
             #{list([
-                'E-Mail-Adresse, Name und Lerngruppe, aus der Einladungsliste der Lehrkraft; der Name ist nicht zwingend. Ein Konto entsteht erst bei der ersten Anmeldung.',
+                'E-Mail-Adresse, Name und Lerngruppe, aus der Einladungsliste der Lehrkraft; der Name ist nicht zwingend. Ein Konto entsteht erst, wenn die Person zum ersten Mal einen Anmeldecode anfordert.',
                 'Was im Unterricht entsteht: Programme, Dateien, Datenbanken, Antworten auf Aufgaben, Abgaben.',
                 'Technisch Nötiges: Anmeldecodes, Sitzungen, Protokolle ohne IP-Adressen.',
             ])}

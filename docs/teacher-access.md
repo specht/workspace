@@ -63,7 +63,10 @@ So geht es auf einer laufenden Installation:
    proben, indem man die Datenbank leert und den Dump neu einspielt
    (docs/entwicklung.md, »Datenbanken«).
 
-Ein Konto entsteht weiter erst bei der ersten Anmeldung; eine Einladung ist
+Ein Konto (`User`) entsteht, sobald jemand zum ersten Mal einen Anmelde-Code
+anfordert (`ensure_user_account` in `/api/request_login`), nicht erst mit
+der Anmeldung; wer den Code nie eingibt, erscheint unter `/personen` als
+»nicht bekannt«. Eine Einladung ist
 kein Konto.
 
 ## Zustimmung der Schule, Einverständnis, ungeklärt
