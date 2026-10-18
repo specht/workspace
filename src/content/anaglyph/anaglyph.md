@@ -578,7 +578,8 @@ sleep: 1
 preview-reload
 tab: preview
 variants: anaglyph
-zoom: 0.54
+viewport: 2058x1032
+zoom: 1.08
 hook: camera 20 20 -330
 crop-top: 27%
 crop-bottom: 27%
@@ -595,7 +596,8 @@ sleep: 1
 preview-reload
 tab: preview
 variants: anaglyph
-zoom: 0.54
+viewport: 2058x1032
+zoom: 1.08
 hook: camera 20 20 -330
 crop-top: 27%
 crop-bottom: 27%
@@ -612,7 +614,8 @@ sleep: 1
 preview-reload
 tab: preview
 variants: anaglyph
-zoom: 0.54
+viewport: 2058x1032
+zoom: 1.08
 hook: camera 20 20 -330
 crop-top: 27%
 crop-bottom: 27%
@@ -629,7 +632,8 @@ sleep: 1
 preview-reload
 tab: preview
 variants: anaglyph
-zoom: 0.54
+viewport: 2058x1032
+zoom: 1.08
 hook: camera 20 20 -330
 crop-top: 27%
 crop-bottom: 27%
@@ -648,7 +652,8 @@ sleep: 1
 preview-reload
 tab: preview
 variants: anaglyph
-zoom: 0.54
+viewport: 2058x1032
+zoom: 1.08
 hook: camera 20 20 -330
 crop-top: 27%
 crop-bottom: 27%
@@ -665,7 +670,8 @@ sleep: 1
 preview-reload
 tab: preview
 variants: anaglyph
-zoom: 0.54
+viewport: 2058x1032
+zoom: 1.08
 hook: camera 20 20 -330
 crop-top: 27%
 crop-bottom: 27%
@@ -682,7 +688,8 @@ sleep: 1
 preview-reload
 tab: preview
 variants: anaglyph
-zoom: 0.54
+viewport: 2058x1032
+zoom: 1.08
 hook: camera 20 20 -330
 crop-top: 27%
 crop-bottom: 27%
@@ -699,7 +706,8 @@ sleep: 1
 preview-reload
 tab: preview
 variants: anaglyph
-zoom: 0.54
+viewport: 2058x1032
+zoom: 1.08
 hook: camera 20 20 -330
 crop-top: 27%
 crop-bottom: 27%
@@ -785,7 +793,8 @@ sleep: 1
 preview-reload
 tab: preview
 variants: dark anaglyph
-zoom: 0.54
+viewport: 2058x1032
+zoom: 1.08
 hook: camera 20 20 -230 0 0 0
 crop-top: 27%
 crop-bottom: 27%
@@ -802,7 +811,8 @@ sleep: 1
 preview-reload
 tab: preview
 variants: dark anaglyph
-zoom: 0.54
+viewport: 2058x1032
+zoom: 1.08
 hook: camera 20 20 -290 0 10 0
 crop-top: 27%
 crop-bottom: 27%
@@ -819,8 +829,9 @@ sleep: 1
 preview-reload
 tab: preview
 variants: dark anaglyph
-zoom: 0.54
-hook: camera 20 20 -270 0 105 0
+viewport: 2058x1032
+zoom: 1.08
+hook: camera 20 20 -250 0 85 0
 crop-top: 27%
 crop-bottom: 27%
 crop-left: 38.5%

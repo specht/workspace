@@ -3,7 +3,7 @@
     "27-cubes-loop.webp": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "1d0fc63f991ba6cc57aa57d1330605012b26dad493c589f7a841e80a1f3563e7",
-      "state_hash": "98a7316ad538fb2b3afa88fb0b027ac2281a454ccdf4013b2ed8868523b931dd",
+      "state_hash": "760c8ab7ee5f0cbd87cccd15147bc4ef57600f144044ba75d1af7648ca5eae71",
       "variants": {
         "27-cubes-loop-anaglyph.webp": "0e584521b709506afa5aec62f814327c68d36263cc281e0c76d7421dddec6ea9",
         "27-cubes-loop-dark-anaglyph.webp": "c3c13b42263414fb70e77513ea0155d5d6a98b47530121aa0336351cc3cd78ce",
@@ -14,7 +14,7 @@
     "3-cubes-row.webp": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "6c45dbaa39dfac71d053c872c74e0ebcad39e5dfdd6405d8cbb9f9a7ca2e1162",
-      "state_hash": "e795da59107ca048d53fddf4f65cf25fc666b3d81cc3034e21e5cfbe953d4329",
+      "state_hash": "f38c4635b22b678d2ab36ae62d6266aadc7beb990afa1566f80b3f1f60ef2caa",
       "variants": {
         "3-cubes-row-anaglyph.webp": "880af0f220572df8b3dd74f65cd91837c47c765743917e45b7eeea0ba68d24eb",
         "3-cubes-row-dark-anaglyph.webp": "d1a329a4bb69fb0631b806bd4ecd069db1cfdbcb4adeec226dcfddeffdb2b749",
@@ -25,7 +25,7 @@
     "3d-torus.webp": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "3d6cf251a1dbb91180ebee5c1f7c815cf840592d409b532868a3145f4614d016",
-      "state_hash": "db2dff68f0f1fb421c0b05f4d5aca5a61bd503943a643c5662e18e3d2e9cd8e2",
+      "state_hash": "9a779a217e1bdbfa40e19293c89c8bd92f4ef0f58adcdc37da823521f7026f27",
       "variants": {
         "3d-torus-anaglyph.webp": "65359d45674e69f3170a0672600cdf5e66f13a5bd07b6477c04fccff4a95ce23",
         "3d-torus-dark-anaglyph.webp": "41a0a90cd717f391e97ae9a6d8909ddd21743534fc3ab058363787f08901986a",
@@ -36,7 +36,7 @@
     "9-cubes-loop.webp": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "59609a87c233db35f0e841628604a069c476c1f284c114d599f2f2b7a93ef96c",
-      "state_hash": "a3eaec1f98398c9f23d1204d4c5d86b4dbb1fda7bc85e1708f4eac16bc8b6e2e",
+      "state_hash": "04f5c97a2636479484b4576c5966c8506b34979f430429ebd07b6e0190e6570a",
       "variants": {
         "9-cubes-loop-anaglyph.webp": "5eacb65f51c16913671a3ecc832671ff9a696961cf08273113ce5e39c3d359bb",
         "9-cubes-loop-dark-anaglyph.webp": "6bd222b61b4cc8aacd6fbcdcd89887dbcc05b163640a1c1de0e1c19e5d62b609",
@@ -44,10 +44,21 @@
       },
       "workspace_look": "4.138.0-ls366"
     },
+    "ampel.webp": {
+      "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
+      "output_sha256": "8ea3850c889e84f87d02c6ba8aa77846cccb95cbe049351276bd0ecb153b5362",
+      "state_hash": "032061c2cae60f8e968c54ccbcdb8c77d4e6e15d6aef31588b7a0a687d4849ee",
+      "variants": {
+        "ampel-anaglyph.webp": "1bd7613c8db238238b1299550c70bd0927f799dba3313f19318afd71e876e11c",
+        "ampel-dark-anaglyph.webp": "03d1c09eb728dcf439801e5875ce37739a7930ce60261cb0508ab80ad2cfc27b",
+        "ampel-dark.webp": "37ad2144d07a8dda619583b79ee007d894be524346def2493bf7d0439bfbf365"
+      },
+      "workspace_look": "4.138.0-ls366"
+    },
     "animation1.mp4": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "831132f4b54cd0f099d5b278450f2e5180c8d2385954e10a41e677fb08856686",
-      "state_hash": "8ddcd86ae7059f8aa652f9e37879357671e7f5e6942717653a4f29bf2a2da1ba",
+      "state_hash": "d54014327ba778de0c1e163badd4983b814dc38530772ba61621261bd993b9a2",
       "variants": {
         "animation1-anaglyph.mp4": "3434c87608207cc99eecd9d879e989dfd1d8a2fffcef86ea64c79cb99829f0ba",
         "animation1-dark-anaglyph.mp4": "3995981d2552e24e54b7eb095cf56321c255e885a5b648190ccd080e1e9b67fd",
@@ -58,7 +69,7 @@
     "animation2.mp4": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "4ab0ffea1f486059fb50dfaac72dd5820e451525e91e4b94ec16b0c174a45412",
-      "state_hash": "84986bbbdf05648e4573a84a89ce0a4aa42e8f05c667afee73057e2d9f6e1eb1",
+      "state_hash": "770e1f5fbafd196472c1427f514b9681b477b35c07c935f216d7ac806a841642",
       "variants": {
         "animation2-anaglyph.mp4": "f02fb40b48d358fcb1715f5a7f888f806c814bce560ea423f3e2a83414f4bd72",
         "animation2-dark-anaglyph.mp4": "e4541e080155811c8f3497af6b1ff1e109a89cdc548a11c700ed98df81f407a9",
@@ -69,7 +80,7 @@
     "animation3.mp4": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "e9cd69515f496a6c3cbd6e825e87427d2f2a83a175cedbb82b59d22fc2baabc1",
-      "state_hash": "17cddef6abbc5e37f600db3b36104501c8b1b764fd78f674f8d00788ff1d2928",
+      "state_hash": "31d697847b0809daeea55a642dd555a30f25b842ceb49eb270409158b4fff660",
       "variants": {
         "animation3-anaglyph.mp4": "d660affca699436f857f8d52aafbf77bd4f8ba85e5275f59bb60a7cd5cf7658f"
       },
@@ -78,7 +89,7 @@
     "box-move-right.webp": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "c13de2dcc1777b368d7f54adacc076a65a8158ac063311fc9c45a550241c06d5",
-      "state_hash": "7fa5ff69bfee486a634000cddb294d4b55c73ec314df8eb75261323200d71765",
+      "state_hash": "aa792d8c3b6b62720b364a54b084f360e66bd874b154bdf3cf69aeee5176dbc6",
       "variants": {
         "box-move-right-anaglyph.webp": "af796c76b5015a71dd096ed70439866e684fbe1868601e8a5235225bc10cf8a9",
         "box-move-right-dark-anaglyph.webp": "8daf677d12408d7824564951f1b9d5b87ca35bb4c42cae6fca54b93e53e2a1a7",
@@ -97,10 +108,82 @@
       },
       "workspace_look": "4.138.0-ls366"
     },
+    "cone-black-black-shade.webp": {
+      "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
+      "output_sha256": "a865024db6386a00059035ce26b401d0ffb2c0bc18e22c49c5f64290134eeba4",
+      "state_hash": "d316b2ce5cf1f9fcbfe0abeb082554a49aff8b8ce3d4de2581bf63e77d7d1898",
+      "variants": {
+        "cone-black-black-shade-anaglyph.webp": "172a271818c153876141835eef5c3cd75fc3630093f11177a45b6d09b2afbdd4"
+      },
+      "workspace_look": "4.138.0-ls366"
+    },
+    "cone-black-off-shade.webp": {
+      "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
+      "output_sha256": "ff4a9e82689ebd02858a34cfb889f8a095c6eef937bf328dd62d88a652e4587c",
+      "state_hash": "c806e3df39d37a647b9b6ff7b7804cf39a94bd63e53c89330cf5212880232e0a",
+      "variants": {
+        "cone-black-off-shade-anaglyph.webp": "7511d43178b971ebb4ee388be343d9afa2ea2382057e36b956e8a0ffa72bc655"
+      },
+      "workspace_look": "4.138.0-ls366"
+    },
+    "cone-black-white-black.webp": {
+      "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
+      "output_sha256": "f4ad3e31c77a6c7972738d0591b42401a24510e4595e06b4c82c65470c39b624",
+      "state_hash": "1d2373f2098e13f9fec2cbb6bcfe0ab060f5b59d088e9c3a2affe80045eee7b7",
+      "variants": {
+        "cone-black-white-black-anaglyph.webp": "e9080f93c00620661138f56c53c791b085b6659011cdc7f375de31934ea24aed"
+      },
+      "workspace_look": "4.138.0-ls366"
+    },
+    "cone-black-white-off.webp": {
+      "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
+      "output_sha256": "33bad1077362aaa32319c480c631301f5c5edb0cd0474825ac6b7fdb1b74f43a",
+      "state_hash": "b58aa3ff762036de25864cfa6d4da42f2d4b787a18bcceab8c7a448f4696b7c3",
+      "variants": {
+        "cone-black-white-off-anaglyph.webp": "d71ceeca14a21368e5827cbac3b43a5f46656ed182fb9a43ac504dad448308f6"
+      },
+      "workspace_look": "4.138.0-ls366"
+    },
+    "cone-white-black-off.webp": {
+      "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
+      "output_sha256": "3769f031393154713cb4f3d89ad7272e7bf94c13c75c827e34550066b7880bc2",
+      "state_hash": "5b96cc9e76f0485fa56ec43b693cf6ffaa6f0d75541e0e02e1cfd8473d5c2cfa",
+      "variants": {
+        "cone-white-black-off-anaglyph.webp": "615f63e877b0f78c811aa557424043564df4444f507e37c3587ae62308a499ed"
+      },
+      "workspace_look": "4.138.0-ls366"
+    },
+    "cone-white-black-shade.webp": {
+      "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
+      "output_sha256": "e742861d3b794e78ba6a5fb071093911467bcf1b257ba0635c69d6b48fd020c3",
+      "state_hash": "291974c2d90175b32ee2d5aaf62061984f76ed6dd766859049dc41fd559c6c41",
+      "variants": {
+        "cone-white-black-shade-anaglyph.webp": "2cd06555a651c66bc4bc2964db3124cf587756e04b4d9941bdf0d97a56bf71f3"
+      },
+      "workspace_look": "4.138.0-ls366"
+    },
+    "cone-white-black-white.webp": {
+      "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
+      "output_sha256": "9a1c3dde3fd7521ff15cddfdbe0254e77e323afb32f223be3539455e8ff2f49b",
+      "state_hash": "3b0e25fd8351e0911859910969e5c35464af64d2e501f1a575a55b2f183c415d",
+      "variants": {
+        "cone-white-black-white-anaglyph.webp": "2456dcb558783bf8bccd20ff5a7e13166812e70732dc99edbacc565a8e23190a"
+      },
+      "workspace_look": "4.138.0-ls366"
+    },
+    "cone-white-off-shade.webp": {
+      "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
+      "output_sha256": "d7a6ede032b754cd7d37d44d7e599a32448b2d36f2f6bd92f51c88580af0b543",
+      "state_hash": "b1e0d2e70de128af88af95ea6f644b1b108bfc15e2d3f6bbcd0b76f344f76960",
+      "variants": {
+        "cone-white-off-shade-anaglyph.webp": "044d7c78c0db0f1a8026870ee5ae057360a04eb6e4ed2cdae6c8c639cc32bd66"
+      },
+      "workspace_look": "4.138.0-ls366"
+    },
     "cube-star.webp": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "6f7be34c8c57fd50aa8beae1f747b9f48d53e305111915159d670065d5356b7b",
-      "state_hash": "dc7effe1db135528bae2a498b3b0a2c3e839760bcf7bc5c4745ca034adfa8c30",
+      "state_hash": "5d35e7c3c6b1a02812b23cdd09f3d2b3362c44dc4a6afdee9259ceefcb49c456",
       "variants": {
         "cube-star-anaglyph.webp": "6df824505ef0aad047170c012227b83e1cecd52a672e28804120a4af81bd1541",
         "cube-star-dark-anaglyph.webp": "6b73fb525da35908136dd7edff47ec34e73ac8c0207c62117875db7610f6582d",
@@ -108,10 +191,21 @@
       },
       "workspace_look": "4.138.0-ls366"
     },
+    "eis.webp": {
+      "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
+      "output_sha256": "e6dc1fb361cfdfd33b0fa07c426f7bd5cb02c88e112e50c51519c3da06dc677d",
+      "state_hash": "e941406f6a7ff1b9d658734039730780fc3473eb76355d2ee500dfc4eaa19f5c",
+      "variants": {
+        "eis-anaglyph.webp": "9563ddf8c959a67dde858eebc834d60ea35d45ae503ebd640e15caac0ab4f233",
+        "eis-dark-anaglyph.webp": "9edfa3d387ca151b58799999bc2c79fcb7c5484b0a379846a4f8d8487d8285f3",
+        "eis-dark.webp": "69684cd52b3acfca853386908c82efc469fc1543256ef1bc32b304d8e321982f"
+      },
+      "workspace_look": "4.138.0-ls366"
+    },
     "hello-shade.webp": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "dfe3f0111a8a770cc2bca51c5a591a9d5fe9f1ae9db6a2e22e52db8bf66fd071",
-      "state_hash": "efc09a5ae2f38d97e30275f6219cda1f491770fc00b91254f0cc3553be8e7783",
+      "state_hash": "514c807eb91aa9fbbf43f0d92e94f33760f46330ada7c6bf6508c35c67096110",
       "variants": {
         "hello-shade-anaglyph.webp": "0b4161f69e38ce030517d992d0c30a4c0e913b51090bd4109321b7b0ff7ce883",
         "hello-shade-dark-anaglyph.webp": "b6c3ac0d99399b84a03df135df842a3af54f68e60fb7573886b4fa10ed71ed1c",
@@ -122,7 +216,7 @@
     "hello.webp": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "755f7b115f3701ef0497155affebcd3e2c93755b96cda4c595fe3cf48a01c4b9",
-      "state_hash": "5f5fe6056bfd097bd867b5bf2f929882963a9766288b937bcc9ffaf25a8388e0",
+      "state_hash": "87e17e8742de91614d6018859eb4d8f3ea9b61391755c49d5728715513d3f43d",
       "variants": {
         "hello-anaglyph.webp": "01978bdda8f925b3de3fbba5e0f762b5c3ded02911c8eb1310df4198399fda51",
         "hello-dark-anaglyph.webp": "0c7ba8a1e2d7d7fabbfce7bba15feaebbd52404d498f570fff35ddf40592c5f9",
@@ -139,7 +233,7 @@
     "move-then-rotate.webp": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "5a4f7c9a96511548f4e0443a55d5d0bf22b28854de9f0155f1f3c7173adae492",
-      "state_hash": "68ff947dfa7db50df8113c4b80bd0023bbd355f64638c6a84d2dd57f5b784289",
+      "state_hash": "a0f108d33e16e694ce68cd40d053afd48eb982470346f15b7280708e34e368ae",
       "variants": {
         "move-then-rotate-anaglyph.webp": "0143d6158e572125d366bccaa7b09875a7fb8bdacfcab3d976c6ffa9fffa6873",
         "move-then-rotate-dark-anaglyph.webp": "8d1dc6661a8880b1f71715ba6a41e6ebce3f822bc80ebef479e890b1154f0b4d",
@@ -150,7 +244,7 @@
     "pancake.webp": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "65ffaff2f47bbda535392d8f420c923f03caae22763fa5ee332fb2e4c5d5f842",
-      "state_hash": "5ce8476537da7ecb14b36aa237ab38df7bc06afd1ac4b3621a4121fe7e78f074",
+      "state_hash": "96e7b89804712ffe41323f338f93e08c98a8165d6e78a44bead3177078b10d5c",
       "variants": {
         "pancake-anaglyph.webp": "0820b29a068cafb242c20bf626e5864a216c31a0d6067c3c6521404645e6a89c",
         "pancake-dark-anaglyph.webp": "2d3ff8dc712ae14b3190b3784bc2f1e232ddfab73250ce629ca0687a78f290cd",
@@ -161,7 +255,7 @@
     "rotate-boxes.webp": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "e4998a6924b26ddf07f6ed187ccd8d9711b5cda1b271602d918ef945abed9222",
-      "state_hash": "c555b759ed921b40314eafdf040e77120db4500acafe5b9ff6d6824875ee6c53",
+      "state_hash": "a6d52a31d6b3b0a812b3d488a801a710c53d846fa7d3b27fcbf7ccf50835c0de",
       "variants": {
         "rotate-boxes-anaglyph.webp": "08606a1a668791ebba90bd3589c51dae4460a370b1c6ac2a0137423da40ef066",
         "rotate-boxes-dark-anaglyph.webp": "e7acee01540ce372394cbe604e58a54b47dbff2b5bb15a407b47be9152392e3e",
@@ -172,7 +266,7 @@
     "rotate-then-move.webp": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "5be6c3f8b791b5a3313bd773dc68cd0fa46a1d1ad305484fbbd81abd6258b993",
-      "state_hash": "8b2bf605105c18a255a634954efe20281e4c17c2c834b46289af2cb1d442259c",
+      "state_hash": "a3f6fc92712a0a761d454b2290a4724a8b8c7747109fb4525ccd411502edfa68",
       "variants": {
         "rotate-then-move-anaglyph.webp": "4556211981d7bd98af151eff82f0fc60d4969dad0d60d29d5fbe9d10d575673c",
         "rotate-then-move-dark-anaglyph.webp": "bc5ef3d7b105ed043a5eb036d06f66330922f2cb862e15ecfe7730c0c1499ef8",
@@ -183,7 +277,7 @@
     "scaled-spheres.webp": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "d200bfa8d5d745d198fd052c7a1fccbfa3cfc42e08413aa8c7dfae67908ce465",
-      "state_hash": "c584052489ef414e9e514b2a903fb210e087d6d1b832eae333c08e099c305a5c",
+      "state_hash": "5d6f0ab192e532631319bb2bb6fcf6d35a7c72000a08c45830b0e6a690799a6b",
       "variants": {
         "scaled-spheres-anaglyph.webp": "e453dbf84baec49c5a6e97154c40930af31791135be9fa50369639db02ff0458",
         "scaled-spheres-dark-anaglyph.webp": "dcd9d979c69c6c772d68a592c6680efa2bd35064b10c44f35ca96dfcab1cbc38",
@@ -191,10 +285,21 @@
       },
       "workspace_look": "4.138.0-ls366"
     },
+    "schneemann.webp": {
+      "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
+      "output_sha256": "6d083c26a59ae4e268ddef739ac0ea56a7f6ee8bab8e9ff7f1454566e6a7afce",
+      "state_hash": "bd468e8fed3d1a7d1aec0efbdaf384ba4737a58ae5f9c07aead0675bdf34ffdd",
+      "variants": {
+        "schneemann-anaglyph.webp": "e767f577e4eccac17b6276e929a38e10c46a16d4e91c300e80a8834efa6d58f1",
+        "schneemann-dark-anaglyph.webp": "231898f226fa7db7e327ad82fd6abeceb9f41956a9bd11de6585d239aaa81757",
+        "schneemann-dark.webp": "4a4724dd57e8f4f5f98de408b277d0eeea8252d278bce2e375b4033328dd44ed"
+      },
+      "workspace_look": "4.138.0-ls366"
+    },
     "slab.webp": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "25c7e9cdb16ac813b8c45a70704700c65d5c258585af4400b495f54dfd9765bb",
-      "state_hash": "8147f21ebdd3622bc87deb485d165529d703f19df6b51432caff9faa3ee73376",
+      "state_hash": "caa1867e2a62c98d86686137e9f01472a356f7c5d4acd8badc96a03ae67ad767",
       "variants": {
         "slab-anaglyph.webp": "4fa7bb9bf96ccb23849311e1d1c8cec0343483138fbd5d338640713da1f00351",
         "slab-dark-anaglyph.webp": "f08becfc12c642041d3243483216a11ce4d8dfccee7268aa0e6bbc01a1aefc35",
@@ -205,7 +310,7 @@
     "sphere-with-grid.webp": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "0d6d6a1e79c9110a96b3662bb96eb706df339bd357dff0a724ea45df07215952",
-      "state_hash": "1bf86c6e9a92946333a0fc992d6e74c11a32274e8c468e948c68f76c7484dd53",
+      "state_hash": "436875383b739d12f4061f694ffa611e8d650397bb4e9b1024f066a49b1a58d1",
       "variants": {
         "sphere-with-grid-anaglyph.webp": "c52992babee1efa4b053989bcb508e2554da2183658d7d06682c939e4c9d1164",
         "sphere-with-grid-dark-anaglyph.webp": "f95d41162617ce710f8ba7a363ec6964409f0a0ccab8e58d5bb326de2e10f3ec",
@@ -216,7 +321,7 @@
     "sphere-with-torus.webp": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "c6360a5b68056e324b5bd9f2d5f965244f7f8f5a4251eca529e6ce2530b42db9",
-      "state_hash": "b6fb07a3d0fcaed5c7105c6d20046bca49cf2ff4abc3af327fdd9f2f83fa9c3b",
+      "state_hash": "5cb02ddfd6c25060fc20a0e63a5d79e404a4370cbc92288b76ef4304fcbab363",
       "variants": {
         "sphere-with-torus-anaglyph.webp": "2baece398bd6498cf4e0942edd8918bd860b340e3eafe45aa880f0e10eba4092",
         "sphere-with-torus-dark-anaglyph.webp": "14a9837566c3df95c363aa1ff05116d901f2650bf4f7a74aacfec0c9b3ba7229",
@@ -238,7 +343,7 @@
     "three-cubes.webp": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "output_sha256": "9c7a011f1aeb241a3eb96b8d15e6408663b4f132a32676dffb44bcad1cde291a",
-      "state_hash": "faa3c27e1d8895292c6c4e61cf511b2c65ccd3a29965c884b9a1bba044776540",
+      "state_hash": "cb6576cc51e48f3e2b7df430d77c500f1f50f500bf3f53963bd8f68f8888eadd",
       "variants": {
         "three-cubes-anaglyph.webp": "9cbb95476f10c259ea1adafac4a317db14889a59d7498927bed2996eaf0cf32c",
         "three-cubes-dark-anaglyph.webp": "db93d58717862dafa1af1a43e3df4c7515583b49f6a29c561843f37cc4b9b121",
