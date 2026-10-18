@@ -3024,9 +3024,47 @@ class Main < Sinatra::Base
 
     # The reason a teacher gave for looking in, kept for the student's
     # notice; nil (and a 400) when a teacher gave none.
+    # Every look-in by an administrator, with or without a reason, goes into
+    # an internal audit log (who, when, what, whose account); the student is
+    # told only when a reason is given (LookIn), as decided. A year is kept.
+    ADMIN_ACCESS_LOG = '/internal/admin-access.jsonl'
+    @@admin_access_mutex = Mutex.new
+
+    def log_admin_access(email, kind, reason)
+        now = Time.now.to_i
+        line = JSON.generate({ 'ts' => now, 'admin' => @session_user[:email], 'kind' => kind, 'account' => email, 'reason' => reason.to_s }) + "\n"
+        @@admin_access_mutex.synchronize do
+            kept = (File.exist?(ADMIN_ACCESS_LOG) ? File.readlines(ADMIN_ACCESS_LOG) : []).select do |l|
+                (JSON.parse(l)['ts'].to_i rescue 0) > now - 365 * 24 * 3600
+            end
+            AtomicFile.write(ADMIN_ACCESS_LOG, kept.join + line)
+        end
+    rescue => e
+        STDERR.puts "Admin access log failed: #{e.class}: #{e.message}"
+    end
+
+    def admin_access_entries(limit = 50)
+        return [] unless File.exist?(ADMIN_ACCESS_LOG)
+
+        File.readlines(ADMIN_ACCESS_LOG).last(limit).reverse.filter_map { |l| JSON.parse(l) rescue nil }
+    end
+
+    def admin_access_html
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        rows = admin_access_entries
+        return "<p class='text-body-secondary'>Noch keine.</p>" if rows.empty?
+
+        kinds = { 'workspace' => 'Workspace geöffnet', 'impersonate' => 'nachgeahmt' }
+        "<table class='table table-sm people-table'><thead><tr><th>Wann</th><th>Wer</th><th>Was</th><th>Konto</th><th>Grund</th></tr></thead><tbody>" +
+            rows.map { |r| "<tr><td>#{h.(Time.at(r['ts'].to_i).strftime('%d.%m.%Y %H:%M'))}</td><td>#{h.(r['admin'])}</td><td>#{h.(kinds[r['kind']] || r['kind'])}</td><td>#{h.(r['account'])}</td><td>#{r['reason'].to_s.empty? ? '–' : h.(r['reason'])}</td></tr>" }.join +
+            '</tbody></table>'
+    end
+
     def record_look_in(email, kind, reason_text)
         # A test account is the teachers' own: no reason, no notice.
         return if @@test_accounts.key?(email)
+
+        log_admin_access(email, kind, reason_text) if admin_logged_in?
 
         reason = LookIn.reason(reason_text, :admin => admin_logged_in?)
         halt 400, { :error => 'reason_missing' }.to_json if reason.nil?

@@ -187,6 +187,13 @@ module Privacy
                 :how_long => ACCOUNT_END,
             },
             {
+                :data => 'Protokoll der Zugriffe der Administration: wann jemand aus der Administration welchen Workspace geöffnet oder welches Konto nachgeahmt hat, und mit welchem Grund',
+                :categories => [:traffic],
+                :purpose => 'Nachvollziehbarkeit von Zugriffen der Administration',
+                :who => 'Administration',
+                :how_long => 'ein Jahr',
+            },
+            {
                 :data => 'Gegebenenfalls eine Sperre des Zugangs: seit wann, wer sie eingetragen hat und warum (etwa ein Widerspruch, der geprüft wird)',
                 :categories => [:account],
                 :purpose => 'den Zugang anhalten, ohne Daten zu löschen',
@@ -579,7 +586,8 @@ module Privacy
             </p>
             <p>
             Die Administration des Servers kann, wie bei jedem Server, alle Daten darauf einsehen; sie tut das nur für den Betrieb
-            und um bei Problemen zu helfen.
+            und um bei Problemen zu helfen. Öffnet sie einen Workspace oder sieht sie die Seite als eine Person, wird das intern
+            protokolliert (wann, wer, welches Konto), auch wenn die Person keinen Hinweis bekommt.
             </p>
 
             #{heading('Teilen', 'Weitergabe durch die Person selbst')}

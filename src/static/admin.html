@@ -140,6 +140,14 @@
                 Konten löschen, Einladungen ohne Konto und Konten ohne Einladung stehen unter
                 <a href='/personen#alle'>Personen und Schulen</a> (»Alle Personen« und »Aufräumen«).
             </p>
+            <h2 id="zugriffe">Zugriffe der Administration</h2>
+            <p>
+                Jedes Mal, wenn jemand aus der Administration einen Workspace öffnet oder ein Konto nachahmt, steht es hier
+                (<code>/internal/admin-access.jsonl</code>, ein Jahr lang), auch ohne Grund. Die Person selbst erfährt es nur,
+                wenn ein Grund angegeben wird.
+            </p>
+            #{admin_access_html}
+
             <h2 id="nach-wiederherstellung">Nach einer Wiederherstellung</h2>
             <p>
                 Wurde eine Sicherung zurückgespielt, sind Konten wieder da, die seither gelöscht wurden. Hier werden sie erneut gelöscht:
