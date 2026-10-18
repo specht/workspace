@@ -1408,12 +1408,32 @@ async function waitForWorkbenchThemeSettled(page) {
     throw new Error('Timed out waiting for the Workspace color theme to settle');
 }
 
+// After many WebGL scenes the browser's GPU process can get stuck; its tabs
+// then never close and every new one waits. A new browser is the way out.
+async function restartBrowser(reason) {
+    console.warn(`Restarting the screenshot browser: ${reason}`);
+    const old = browserPromise;
+    browserPromise = null;
+    context = null;
+    dashboard = null;
+    loggedIn = false;
+    workspace = null;
+    preview = null;
+    const browser = await old?.catch(() => null);
+    browser?.process()?.kill('SIGKILL');
+    await withTimeout(browser?.close() ?? Promise.resolve(), 10_000, 'closing the old browser').catch(() => {});
+}
+
 async function prepareFreshWorkspace() {
     workspacePrepared = false;
     await ensureLoggedIn();
 
-    for (const page of context.pages()) {
-        if (page !== dashboard) await page.close().catch(() => {});
+    const others = context.pages().filter(page => page !== dashboard);
+    try {
+        await withTimeout(Promise.all(others.map(page => page.close().catch(() => {}))), 15_000, 'closing the tabs of the last render');
+    } catch (error) {
+        await restartBrowser(error.message);
+        await ensureLoggedIn();
     }
     workspace = null;
     preview = null;

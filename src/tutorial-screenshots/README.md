@@ -846,6 +846,14 @@ unscaled, so a `<canvas>` (an anaglyph scene, a sandbox, the Neo4j graph)
 draws at full resolution instead of being enlarged. Both give the same image
 size for the same layout.
 
+A `zoom` below 1 lays a preview out on more CSS pixels without more image
+pixels, so a canvas in it draws at less than its full resolution, and a crop
+from the middle keeps only a few hundred pixels. For a small cut-out of a
+canvas, enlarge `viewport` and `zoom` by the same factor instead: the layout
+stays the same and the image gets that many more pixels. The anaglyph
+squares use `viewport: 2058x1032` with `zoom: 1.08` (the layout of
+`zoom: 0.54` in the default window), and their 23% crop is 852 pixels wide.
+
 A recipe's `viewport` is in the same CSS pixels. To keep the look of the other
 screenshots, change only what needs to change and keep the width at 1029:
 `viewport: 1029x560` gives the terminal two more rows. `viewport: 1853x1000`

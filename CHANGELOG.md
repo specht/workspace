@@ -767,6 +767,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   aufbaut: Das Bild schlägt nach zwei Minuten fehl. Am Ende eines
   `tutorial-scope` wartet er eine Sekunde, bis Live Server die Vorschau selbst
   neu geladen hat.
+  Hängt der Browser nach einer 3D-Seite so, dass sich seine Tabs nicht mehr
+  schließen lassen, startet der Generator ihn neu, statt vor der nächsten
+  Seite stehen zu bleiben.
 - Das Titelbild von BIF zeigt den Graphen mit eingeklapptem Problems-Bereich,
   das LaTeX-Titelbild den Quelltext breiter als das PDF, ohne Seitenleiste,
   mit dem Cursor im Titel.
