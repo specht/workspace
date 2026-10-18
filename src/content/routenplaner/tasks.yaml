@@ -10,15 +10,15 @@ activity: routenplaner
 tasks:
   - id: fusswege
     title: Wie viele Fußwege?
-    prompt: Wie viele Wege in `data/steglitz.tsv` sind Fußwege, also von der Art `footway`?
+    prompt: Wie viele Wege in `data/steglitz-zehlendorf.tsv` sind Fußwege, also von der Art `footway`?
     check:
       type: number
-      expect: 6589
+      expect: 21234
     feedback:
-      - when: { equals: 13493 }
+      - when: { equals: 45181 }
         say: Das sind alle Wege. Gesucht sind nur die, deren Zeile mit `footway` anfängt.
-    hint: '`grep -c` zählt die Zeilen, auf die ein Muster passt: `grep -c "^footway" data/steglitz.tsv`. Das `^` heißt »am Anfang der Zeile«.'
-    solution: 6589, fast die Hälfte aller 13 493 Wege.
+    hint: '`grep -c` zählt die Zeilen, auf die ein Muster passt: `grep -c "^footway" data/steglitz-zehlendorf.tsv`. Das `^` heißt »am Anfang der Zeile«.'
+    solution: 21 234, fast die Hälfte aller 45 181 Wege.
 
   - id: lesen
     title: Die Wege lesen

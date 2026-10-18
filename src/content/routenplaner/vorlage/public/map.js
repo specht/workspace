@@ -13,6 +13,7 @@ const STYLES = {
     unclassified: ['#ffffff', 2.4], pedestrian: ['#f4f0f7', 2.4], service: ['#ffffff', 1.5],
     footway: ['#c9a497', 0.9, [2, 2]], path: ['#88b083', 0.9, [2, 2]], cycleway: ['#7b9fdc', 0.9, [3, 2]],
     steps: ['#b98576', 1.6, [1, 1.2]], track: ['#b59a6d', 1, [4, 2]], bridleway: ['#88b083', 0.9, [3, 2]],
+    ferry: ['#4dabf7', 1.4, [5, 4]],
 };
 // Straßen haben einen Rand, damit die weißen sich vom Grund abheben
 const CASING = { motorway: '#d0714f', trunk: '#d78e5c', primary: '#d9a54a', secondary: '#dcc072',
@@ -26,11 +27,11 @@ for (const kind of ['motorway', 'trunk', 'primary', 'secondary', 'tertiary']) {
 const OTHER = ['#b8bec7', 1];
 const BACKGROUND = '#eef0f2';
 // Wichtige Straßen zuletzt, damit sie oben liegen
-const ORDER = ['footway', 'path', 'cycleway', 'steps', 'track', 'bridleway', 'service', 'pedestrian',
+const ORDER = ['ferry', 'footway', 'path', 'cycleway', 'steps', 'track', 'bridleway', 'service', 'pedestrian',
     'living_street', 'unclassified', 'residential', 'tertiary_link', 'tertiary', 'secondary_link', 'secondary',
     'primary_link', 'primary', 'trunk_link', 'trunk', 'motorway_link', 'motorway'];
 const LEGEND = [['primary', 'Hauptstraße'], ['secondary', 'Nebenstraße'], ['residential', 'Wohnstraße'],
-    ['footway', 'Fußweg'], ['path', 'Weg im Grünen'], ['cycleway', 'Radweg'], ['steps', 'Treppe'], ['track', 'Feldweg']];
+    ['footway', 'Fußweg'], ['path', 'Weg im Grünen'], ['cycleway', 'Radweg'], ['steps', 'Treppe'], ['track', 'Feldweg'], ['ferry', 'Fähre']];
 const START = '#2f9e44';
 const GOAL = '#e03131';
 const METRES_PER_DEGREE = 2 * Math.PI * 6371000 / 360;
@@ -219,6 +220,69 @@ function drawBase(c) {
     c.globalAlpha = 1;
     c.setLineDash([]);
     if (graph) drawGraph(c);
+    else if (view.scale > 140000) drawStreetNames(c);
+}
+
+// Die Namen der Straßen, entlang ihres längsten geraden Stücks, wenn es lang
+// genug ist; jeder Name nicht zu oft, und keiner über einem anderen
+function drawStreetNames(c) {
+    const { ax, ay, ox, oy } = projection();
+    const [west, south, east, north] = viewBox();
+    const width = canvas.clientWidth, height = canvas.clientHeight;
+    const taken = []; // die Kästen der Namen schon da: [links, oben, rechts, unten]
+    const placed = new Map(); // Name → wo er schon steht
+    c.font = '500 11px system-ui, sans-serif';
+    c.textAlign = 'center';
+    c.textBaseline = 'middle';
+    c.lineJoin = 'round';
+    // die wichtigen Straßen zuerst
+    for (const group of [...data.groups].reverse()) {
+        if (!CASING[group.kind]) continue;
+        const { ways, boxes, names } = group;
+        for (let w = 0; w < ways.length; w++) {
+            if (names[w] < 0) continue;
+            if (boxes[4 * w] > east || boxes[4 * w + 2] < west || boxes[4 * w + 1] > north || boxes[4 * w + 3] < south) continue;
+            const name = data.names[names[w]];
+            const points = ways[w];
+            // das längste Stück, das fast geradeaus geht
+            let best = null;
+            let from = 0;
+            for (let i = 2; i < points.length; i += 2) {
+                const angle = (j) => Math.atan2(points[j + 1] - points[j - 1], points[j] - points[j - 2]);
+                if (i > 2 && Math.abs(Math.sin(angle(i) - angle(i - 2))) > 0.2) from = i - 2;
+                const x1 = ox + points[from] * ax, y1 = oy - points[from + 1] * ay;
+                const x2 = ox + points[i] * ax, y2 = oy - points[i + 1] * ay;
+                const length = Math.hypot(x2 - x1, y2 - y1);
+                if (!best || length > best.length) best = { x1, y1, x2, y2, length };
+            }
+            if (!best) continue;
+            const text = c.measureText(name).width;
+            if (best.length < text + 16) continue;
+            const x = (best.x1 + best.x2) / 2, y = (best.y1 + best.y2) / 2;
+            if (x < 0 || y < 0 || x > width || y > height) continue;
+            const seen = placed.get(name) || [];
+            if (seen.some(([sx, sy]) => Math.hypot(sx - x, sy - y) < 300)) continue;
+            let angle = Math.atan2(best.y2 - best.y1, best.x2 - best.x1);
+            if (angle > Math.PI / 2) angle -= Math.PI;
+            if (angle < -Math.PI / 2) angle += Math.PI;
+            const halfW = (Math.abs(Math.cos(angle)) * text + Math.abs(Math.sin(angle)) * 12) / 2 + 2;
+            const halfH = (Math.abs(Math.sin(angle)) * text + Math.abs(Math.cos(angle)) * 12) / 2 + 2;
+            const box = [x - halfW, y - halfH, x + halfW, y + halfH];
+            if (taken.some((b) => box[0] < b[2] && b[0] < box[2] && box[1] < b[3] && b[1] < box[3])) continue;
+            taken.push(box);
+            seen.push([x, y]);
+            placed.set(name, seen);
+            c.save();
+            c.translate(x, y);
+            c.rotate(angle);
+            c.lineWidth = 3;
+            c.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+            c.strokeText(name, 0, 0);
+            c.fillStyle = '#5c5f66';
+            c.fillText(name, 0, 0);
+            c.restore();
+        }
+    }
 }
 
 // Der Graph, wie build_graph ihn gebaut hat: jede Kante eine Linie, jeder
@@ -394,16 +458,18 @@ function drawPlaces() {
     for (const [place, color] of picked) {
         label(place.name, project(place.lon, place.lat), '600 13px system-ui, sans-serif', color, -6);
     }
-    for (const kind of ['sight', 'school']) {
+    // Art: Farbe des Punkts, der Schrift, ab welchem Zoom zu sehen und beschriftet
+    const looks = { sight: ['#7048e8', '#5f3dc4', 0, 0], square: ['#2f9e44', '#2b8a3e', 60000, 120000],
+        school: ['#4c6ef5', '#364fc7', 60000, 120000] };
+    for (const kind of ORDER_OF_KINDS) {
+        const [color, text, from, named] = looks[kind];
+        if (view.scale < from) continue;
         for (const place of data.places) {
             if (place.kind !== kind || place === chosen.start || place === chosen.goal) continue;
-            const sight = kind === 'sight';
-            if (!sight && view.scale < 60000) continue;
             const at = project(place.lon, place.lat);
             if (at[0] < -100 || at[1] < -20 || at[0] > canvas.clientWidth + 100 || at[1] > canvas.clientHeight + 20) continue;
-            dot(at, sight ? 4 : 3, sight ? '#7048e8' : '#4c6ef5', 1.5);
-            if (sight) label(place.name, at, '600 12px system-ui, sans-serif', '#5f3dc4');
-            else if (view.scale > 120000) label(place.name, at, '11px system-ui, sans-serif', '#364fc7');
+            dot(at, kind === 'sight' ? 4 : 3, color, 1.5);
+            if (view.scale > named) label(place.name, at, kind === 'sight' ? '600 12px system-ui, sans-serif' : '11px system-ui, sans-serif', text);
         }
     }
     for (const [place, color] of picked) {
@@ -541,6 +607,7 @@ async function clicked(lon, lat) {
 function choose(which, place) {
     const input = document.getElementById(which);
     input.value = place ? place.name : '';
+    input.parentElement.querySelector('.clear').hidden = !place;
     input.closest('.place').classList.remove('unknown');
     // derselbe Ort noch einmal (etwa wenn das Feld den Fokus verliert): nichts Neues
     if (chosen[which] === place) return;
@@ -730,30 +797,163 @@ function setUpSearches() {
     }));
 }
 
+// Die Arten von Orten: wie sie heißen und ihr Zeichen
+const KINDS = {
+    sight: ['Sehenswürdigkeit', '<path d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z"/>'],
+    square: ['Platz', '<rect x="2.5" y="2.5" width="11" height="11" rx="2"/><path d="M2.5 8h11M8 2.5v11"/>'],
+    school: ['Schule', '<path d="M1.5 6 8 3l6.5 3L8 9z"/><path d="M4 7.3v3.4c0 1 1.8 2 4 2s4-1 4-2V7.3M14.5 6v4"/>'],
+};
+const ORDER_OF_KINDS = ['sight', 'square', 'school'];
+
+// Die Orte, die zu einem Text passen: die, deren Name so anfängt, vor denen,
+// in denen er irgendwo steht; sonst nach Art und Name
+function matching(text) {
+    const wanted = text.trim().toLowerCase();
+    const rank = (place) => {
+        const name = place.name.toLowerCase();
+        const at = wanted ? name.indexOf(wanted) : 0;
+        if (at < 0) return null;
+        const word = at === 0 || /[\s-]/.test(name[at - 1]);
+        return [at === 0 ? 0 : word ? 1 : 2, ORDER_OF_KINDS.indexOf(place.kind), place.name];
+    };
+    return data.places.map((place) => [rank(place), place]).filter(([r]) => r)
+        .sort(([a], [b]) => a[0] - b[0] || a[1] - b[1] || a[2].localeCompare(b[2], 'de'))
+        .slice(0, wanted ? 60 : 400).map(([, place]) => place);
+}
+
+// Das Feld zum Suchen eines Ortes, mit einer Liste darunter, die beim Tippen
+// passende Orte vorschlägt
 function setUpPlaces() {
-    const list = document.getElementById('place-list');
-    const kinds = { sight: 'Sehenswürdigkeit', school: 'Schule' };
-    for (const kind of ['sight', 'school']) {
-        for (const place of data.places) {
-            if (place.kind !== kind) continue;
-            const option = document.createElement('option');
-            option.value = place.name;
-            option.label = kinds[kind];
-            list.appendChild(option);
+    const popup = document.getElementById('suggestions');
+    let field = null; // welches Feld die Liste gerade zeigt
+    let shown = [];
+    let active = -1;
+
+    const close = () => {
+        popup.hidden = true;
+        if (field) field.setAttribute('aria-expanded', 'false');
+        field = null;
+    };
+    const highlight = (index) => {
+        active = index;
+        popup.querySelectorAll('li[role="option"]').forEach((item, i) => item.classList.toggle('active', i === index));
+        const item = document.getElementById(`suggestion-${index}`);
+        if (item) {
+            item.scrollIntoView({ block: 'nearest' });
+            field.setAttribute('aria-activedescendant', item.id);
         }
-    }
+    };
+    const open = (input) => {
+        field = input;
+        shown = matching(input.value === chosen[input.id]?.name ? '' : input.value);
+        popup.replaceChildren();
+        const wanted = input.value.trim().toLowerCase();
+        const grouped = !wanted || input.value === chosen[input.id]?.name;
+        const groups = { sight: 'Sehenswürdigkeiten', square: 'Plätze', school: 'Schulen' };
+        shown.forEach((place, i) => {
+            // ohne Suchtext: die Orte nach Art, mit Überschrift
+            if (grouped && place.kind !== shown[i - 1]?.kind) {
+                const heading = document.createElement('li');
+                heading.className = 'heading';
+                heading.setAttribute('role', 'presentation');
+                heading.textContent = groups[place.kind] || '';
+                popup.appendChild(heading);
+            }
+            const item = document.createElement('li');
+            item.id = `suggestion-${i}`;
+            item.setAttribute('role', 'option');
+            const icon = `<svg viewBox="0 0 16 16" aria-hidden="true" class="kind ${place.kind}">${KINDS[place.kind]?.[1] || ''}</svg>`;
+            item.innerHTML = icon;
+            const name = document.createElement('span');
+            name.className = 'name';
+            const at = wanted && input.value !== chosen[input.id]?.name ? place.name.toLowerCase().indexOf(wanted) : -1;
+            if (at >= 0) {
+                const strong = document.createElement('b');
+                strong.textContent = place.name.slice(at, at + wanted.length);
+                name.append(place.name.slice(0, at), strong, place.name.slice(at + wanted.length));
+            } else {
+                name.textContent = place.name;
+            }
+            const kind = document.createElement('span');
+            kind.className = 'what';
+            kind.textContent = KINDS[place.kind]?.[0] || '';
+            item.append(name, kind);
+            // mousedown, nicht click: sonst verliert das Feld vorher den Fokus
+            item.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                choose(input.id, place);
+                close();
+            });
+            item.addEventListener('mousemove', () => active !== i && highlight(i));
+            popup.appendChild(item);
+        });
+        if (!shown.length) {
+            const empty = document.createElement('li');
+            empty.className = 'empty';
+            empty.textContent = 'Kein Ort mit diesem Namen';
+            popup.appendChild(empty);
+        }
+        const box = input.closest('.place').getBoundingClientRect();
+        popup.style.left = `${box.left}px`;
+        popup.style.top = `${box.bottom + 6}px`;
+        popup.style.width = `${Math.min(window.innerWidth - box.left - 12, Math.max(box.width + 60, 360))}px`;
+        popup.style.maxHeight = `${Math.max(160, window.innerHeight - box.bottom - 24)}px`;
+        popup.hidden = false;
+        input.setAttribute('aria-expanded', 'true');
+        highlight(shown.length && input.value.trim() && input.value !== chosen[input.id]?.name ? 0 : -1);
+    };
+
     for (const which of ['start', 'goal']) {
         const input = document.getElementById(which);
+        const clear = input.parentElement.querySelector('.clear');
+        const update = () => {
+            clear.hidden = !input.value;
+        };
+        input.addEventListener('focus', () => {
+            input.select();
+            open(input);
+        });
+        input.addEventListener('input', () => {
+            update();
+            input.closest('.place').classList.remove('unknown');
+            open(input);
+        });
+        input.addEventListener('keydown', (e) => {
+            if (popup.hidden && e.key === 'ArrowDown') return open(input);
+            if (e.key === 'ArrowDown') highlight(Math.min(shown.length - 1, active + 1));
+            else if (e.key === 'ArrowUp') highlight(Math.max(0, active - 1));
+            else if (e.key === 'Enter') {
+                if (shown[active]) choose(which, shown[active]);
+                else input.dispatchEvent(new Event('change'));
+                close();
+                input.blur();
+            } else if (e.key === 'Escape') {
+                input.value = chosen[which]?.name || '';
+                update();
+                close();
+                input.blur();
+            } else return;
+            e.preventDefault();
+        });
+        input.addEventListener('blur', () => close());
+        // ein Name, der so getippt (oder eingefügt) wurde: der erste Ort, der passt
         input.addEventListener('change', () => {
-            const text = input.value.trim().toLowerCase();
+            update();
+            const text = input.value.trim();
             if (!text) return choose(which, null);
-            const place = data.places.find((p) => p.name.toLowerCase() === text)
-                || data.places.find((p) => p.name.toLowerCase().includes(text));
+            const place = data.places.find((p) => p.name.toLowerCase() === text.toLowerCase()) || matching(text)[0];
             if (place) return choose(which, place);
             input.closest('.place').classList.add('unknown');
             info.textContent = `Keinen Ort »${input.value}« gefunden.`;
         });
+        clear.addEventListener('mousedown', (e) => e.preventDefault());
+        clear.addEventListener('click', () => {
+            choose(which, null);
+            update();
+            input.focus();
+        });
     }
+    window.addEventListener('resize', close);
     document.getElementById('swap').addEventListener('click', () => {
         const { start, goal } = chosen;
         chosen.start = null;
@@ -855,8 +1055,8 @@ fetch('map.json').then((r) => r.json()).then((map) => {
     // die Wege nach Art, gezeichnet in der Reihenfolge der Wichtigkeit; zu
     // jedem Weg sein Rechteck (West, Süd, Ost, Nord), damit nur gezeichnet
     // wird, was zu sehen ist
-    const byKind = map.kinds.map((kind) => ({ kind, ways: [], boxes: [] }));
-    for (const [kind, points] of map.ways) {
+    const byKind = map.kinds.map((kind) => ({ kind, ways: [], boxes: [], names: [] }));
+    for (const [kind, points, named] of map.ways) {
         const coordinates = Float64Array.from(points);
         let w = Infinity, e = -Infinity, s = Infinity, n = -Infinity;
         for (let i = 0; i < coordinates.length; i += 2) {
@@ -865,6 +1065,7 @@ fetch('map.json').then((r) => r.json()).then((map) => {
         }
         byKind[kind].ways.push(coordinates);
         byKind[kind].boxes.push(w, s, e, n);
+        byKind[kind].names.push(named ?? -1);
     }
     data.groups = byKind.filter((group) => group.ways.length)
         .map((group) => ({ ...group, boxes: Float64Array.from(group.boxes) }))

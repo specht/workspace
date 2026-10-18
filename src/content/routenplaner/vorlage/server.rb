@@ -1,19 +1,39 @@
 # Der Server des Routenplaners: Er liefert die Karte an den Browser und fragt
 # deine Funktionen in routes.rb nach Nachbarn und Routen.
 #
-#   ruby server.rb                 # Steglitz
-#   AREA=berlin ruby server.rb     # ein anderes Gebiet aus data/
+#   ruby server.rb                 # Steglitz-Zehlendorf
+#   AREA=mitte ruby server.rb      # ein anderer Bezirk, oder AREA=berlin für ganz Berlin
 #
 # Nach jeder Änderung an routes.rb: mit Strg+C beenden und neu starten.
 
 require 'json'
+require 'open-uri'
 require 'sinatra'
+require 'zlib'
 
 $stdout.sync = true # jede Meldung sofort, nicht erst am Ende
 require_relative 'routes'
 
-AREA = ENV.fetch('AREA', 'steglitz')
+AREA = ENV.fetch('AREA', 'steglitz-zehlendorf')
 FILE = File.join(__dir__, 'data', "#{AREA}.tsv")
+PLACES_FILE = File.join(__dir__, 'data', "#{AREA}-places.tsv")
+
+# Die zwölf Bezirke und ganz Berlin; was nicht in data/ liegt, lädt der
+# Server beim ersten Mal herunter
+AREAS = %w[berlin charlottenburg-wilmersdorf friedrichshain-kreuzberg lichtenberg marzahn-hellersdorf mitte
+           neukoelln pankow reinickendorf spandau steglitz-zehlendorf tempelhof-schoeneberg treptow-koepenick].freeze
+DOWNLOADS = 'https://github.com/specht/workspace-files/raw/main/street-archive'
+
+unless File.exist?(FILE)
+    abort "Kein Gebiet #{AREA}. Es gibt: #{AREAS.join(', ')}" unless AREAS.include?(AREA)
+
+    puts "Lade #{AREA} herunter …"
+    URI.open("#{DOWNLOADS}/#{AREA}.tsv.gz") do |download|
+        File.write("#{FILE}.part", Zlib::GzipReader.new(download).read)
+    end
+    File.write(PLACES_FILE, URI.open("#{DOWNLOADS}/#{AREA}-places.tsv", &:read))
+    File.rename("#{FILE}.part", FILE)
+end
 
 set :port, 4567
 set :bind, '0.0.0.0'
@@ -25,17 +45,20 @@ set :logging, false
 set :server_settings, { Silent: true }
 
 # Die Karte liest der Server selbst, damit sie schon da ist, bevor routes.rb
-# etwas kann: für jeden Weg seine Art und seine Punkte.
+# etwas kann: für jeden Weg seine Art, seine Punkte und die Nummer seines
+# Namens (-1 ohne Namen).
 KINDS = []
+NAMES = []
+NAME_INDEX = {}
 MAP_WAYS = File.foreach(FILE).map do |line|
-    kind, _oneway, _name, points = line.chomp.split("\t", 4)
+    kind, _oneway, name, points = line.chomp.split("\t", 4)
     KINDS << kind unless KINDS.include?(kind)
+    named = name.empty? ? -1 : NAME_INDEX[name] ||= (NAMES << name).size - 1
     coordinates = points.split(' ').each_slice(2).flat_map { |_id, position| position.split(',').map(&:to_f) }
-    [KINDS.index(kind), coordinates]
+    [KINDS.index(kind), coordinates, named]
 end
-# Die Orte zum Starten und Ankommen: Sehenswürdigkeiten und Schulen, nur
+# Die Orte zum Starten und Ankommen: Sehenswürdigkeiten, Plätze und Schulen, nur
 # öffentliche Orte
-PLACES_FILE = File.join(__dir__, 'data', "#{AREA}-places.tsv")
 PLACES = []
 if File.exist?(PLACES_FILE)
     File.foreach(PLACES_FILE) do |line|
@@ -44,7 +67,7 @@ if File.exist?(PLACES_FILE)
         PLACES << { kind: kind, name: name, lon: lon, lat: lat }
     end
 end
-MAP_JSON = JSON.generate(area: AREA, kinds: KINDS, ways: MAP_WAYS, places: PLACES)
+MAP_JSON = JSON.generate(area: AREA, kinds: KINDS, names: NAMES, ways: MAP_WAYS, places: PLACES)
 puts "#{AREA}: #{MAP_WAYS.size} Wege, #{PLACES.size} Orte"
 
 # Was routes.rb schon kann: der Graph, einmal beim Start gebaut

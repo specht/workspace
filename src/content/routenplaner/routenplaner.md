@@ -17,12 +17,12 @@ template_name: der Vorlage des Routenplaners
 # Ein Routenplaner für Berlin
 
 <p class='abstract'>
-Du baust einen Routenplaner wie den in deinem Handy, mit echten Karten von OpenStreetMap: Dein Programm macht aus den Straßen und Wegen von Berlin einen Graphen und findet darin den kürzesten Weg, von deiner Schule zum Botanischen Garten oder quer durch die Stadt zum Brandenburger Tor. Erst in Steglitz, dann in ganz Berlin, wo der schnelle Weg auch eine schnelle Suche braucht.
+Du baust einen Routenplaner wie den in deinem Handy, mit echten Karten von OpenStreetMap: Dein Programm macht aus den Straßen und Wegen von Berlin einen Graphen und findet darin den kürzesten Weg, von deiner Schule zum Botanischen Garten oder quer durch die Stadt zum Brandenburger Tor. Erst in Steglitz-Zehlendorf, dann in jedem anderen Bezirk und in ganz Berlin, wo der schnelle Weg auch eine schnelle Suche braucht.
 </p>
 
 <!--
 Noch in Arbeit (nur in der Entwicklung im Katalog): die Schritte 1 bis 5 stehen,
-bis Dijkstra. Es fehlen die Prioritätswarteschlange, ganz Berlin mit A*, die
+bis Dijkstra, in Steglitz-Zehlendorf. Es fehlen die Prioritätswarteschlange, ganz Berlin mit A*, die
 Arten zu reisen und die Stadtrundfahrt. Die Vorlage entsteht in vorlage/;
 specht/routenplaner-starter bekommt sie als Patch.
 -->
@@ -60,8 +60,8 @@ write-file: README.md <- file:vorlage/README.md
 write-file: public/index.html <- file:vorlage/public/index.html
 write-file: public/map.css <- file:vorlage/public/map.css
 write-file: public/map.js <- file:vorlage/public/map.js
-write-file: data/steglitz.tsv <- file:vorlage/data/steglitz.tsv
-write-file: data/steglitz-places.tsv <- file:vorlage/data/steglitz-places.tsv
+write-file: data/steglitz-zehlendorf.tsv <- file:vorlage/data/steglitz-zehlendorf.tsv
+write-file: data/steglitz-zehlendorf-places.tsv <- file:vorlage/data/steglitz-zehlendorf-places.tsv
 write-file: data/test.tsv <- file:vorlage/data/test.tsv
 press: Control+K
 press: Control+O
@@ -86,9 +86,9 @@ check-task-fails: abstand
 check-task-fails: graph
 crop-terminal-lines: auto
 -->
-<img class='full' src='server.webp' alt='Im Terminal läuft server.rb: steglitz: 13493 Wege, 34 Orte, »Noch nicht fertig: read_ways«, die Karte auf Port 4567, und Sinatra hat auf Port 4567 begonnen.'>
+<img class='full' src='server.webp' alt='Im Terminal läuft server.rb: steglitz-zehlendorf: 45181 Wege, 138 Orte, »Noch nicht fertig: read_ways«, die Karte auf Port 4567, und Sinatra hat auf Port 4567 begonnen.'>
 
-Der Server sagt, was er gefunden hat: 13 493 Wege in Steglitz und 34 Orte. Dass `read_ways` noch nicht fertig ist, stimmt: Das schreibst du gleich selbst. Der Server läuft so lange, bis du ihn mit <kbd>Strg</kbd><kbd>C</kbd> anhältst.
+Der Server sagt, was er gefunden hat: 45 181 Wege in Steglitz-Zehlendorf und 138 Orte. Dass `read_ways` noch nicht fertig ist, stimmt: Das schreibst du gleich selbst. Der Server läuft so lange, bis du ihn mit <kbd>Strg</kbd><kbd>C</kbd> anhältst.
 
 Visual Studio Code leitet seinen Port 4567 an eine Adresse weiter, die dein Browser erreicht. Du findest sie im Reiter »Ports« neben »Terminal«, in der Spalte »Forwarded Address«. Klicke mit gedrückter <kbd>Strg</kbd>-Taste darauf:
 
@@ -96,9 +96,17 @@ Visual Studio Code leitet seinen Port 4567 an eine Adresse weiter, die dein Brow
 preview-port: 4567
 tab: preview
 -->
-<img class='full' src='karte.webp' alt='Die Karte von Steglitz im Browser, gezeichnet aus den Daten: Hauptstraßen gelb, die Autobahn orange, Wohnstraßen weiß; der Botanische Garten, der Bierpinsel, das Titania-Palast und das Rathaus Steglitz sind beschriftet. Links oben die Felder für Start und Ziel, unten links der Maßstab.'>
+<img class='full' src='karte.webp' alt='Die Karte von Steglitz-Zehlendorf im Browser, gezeichnet aus den Daten: Hauptstraßen gelb, die Autobahn orange, Wohnstraßen weiß; beschriftet sind Sehenswürdigkeiten wie der Botanische Garten, das Rathaus Zehlendorf und der Bahnhof Wannsee. Links oben die Felder für Start und Ziel, unten rechts der Maßstab.'>
 
-Ziehen verschiebt die Karte, das Mausrad und die Knöpfe rechts oben zoomen, ein Doppelklick holt eine Stelle heran. Oben links wählst du Start und Ziel: Tipp den Anfang eines Namens, und die Seite schlägt Sehenswürdigkeiten und Schulen in Steglitz vor. Die »Legende« darunter sagt, welche Farbe welche Art von Weg ist. Einen Weg findet die Seite noch nicht; das bringst du ihr bei.
+Ziehen verschiebt die Karte, das Mausrad und die Knöpfe rechts oben zoomen, ein Doppelklick holt eine Stelle heran. Oben links wählst du Start und Ziel: Tipp den Anfang eines Namens, und die Seite schlägt Sehenswürdigkeiten, Plätze und Schulen in Steglitz-Zehlendorf vor. Adressen gibt es mit Absicht nicht. Die »Legende« darunter sagt, welche Farbe welche Art von Weg ist. Einen Weg findet die Seite noch nicht; das bringst du ihr bei.
+
+Die Vorlage hat die Karte von Steglitz-Zehlendorf. Jeden anderen Bezirk lädt der Server beim ersten Start selbst herunter, wenn du ihn so startest:
+
+```bash
+AREA=mitte ruby server.rb
+```
+
+Die Namen der Bezirke: `charlottenburg-wilmersdorf`, `friedrichshain-kreuzberg`, `lichtenberg`, `marzahn-hellersdorf`, `mitte`, `neukoelln`, `pankow`, `reinickendorf`, `spandau`, `steglitz-zehlendorf`, `tempelhof-schoeneberg`, `treptow-koepenick`. Ganz Berlin heißt `berlin`, aber damit warte lieber, bis deine Suche schnell ist.
 
 ## Die Karte
 
@@ -122,7 +130,7 @@ Die ID macht den Punkt eindeutig: Zwei Wege mit derselben ID an einem Punkt sind
 _task(fusswege)
 
 <!-- tutorial-step
-check-task: fusswege <- 6589
+check-task: fusswege <- 21234
 -->
 
 Jetzt liest dein Programm die Datei. `read_ways` in `routes.rb` soll für jeden Weg einen Hash zurückgeben, mit der Art, der Einbahnstraße, dem Namen und den Punkten. Ein Punkt ist ein Array aus ID, Länge und Breite:
@@ -173,7 +181,7 @@ Ein Routenplaner sucht nicht in Wegen, sondern in einem **Graphen**: Punkte, die
 
 _task(graph)
 
-Halte den Server mit <kbd>Strg</kbd><kbd>C</kbd> an und starte ihn neu. Er baut jetzt mit deinen Funktionen den Graphen von Steglitz. Schalte auf der Seite »Graph zeigen« ein: Über der blassen Karte siehst du, was `build_graph` gebaut hat, jeden Knoten als Punkt und jede Kante als Linie. Klicke auf eine Kreuzung: Die Seite zeigt den Knoten dort und seine Nachbarn.
+Halte den Server mit <kbd>Strg</kbd><kbd>C</kbd> an und starte ihn neu. Er baut jetzt mit deinen Funktionen den Graphen von Steglitz-Zehlendorf. Schalte auf der Seite »Graph zeigen« ein: Über der blassen Karte siehst du, was `build_graph` gebaut hat, jeden Knoten als Punkt und jede Kante als Linie. Klicke auf eine Kreuzung: Die Seite zeigt den Knoten dort und seine Nachbarn.
 
 <!-- tutorial-step
 # Die Lösung der ersten drei Schritte, der Server neu gestartet (im
@@ -290,4 +298,33 @@ hook: route Fichtenberg | Titania | dijkstra
 -->
 <img class='full' src='dijkstra.webp' alt='Dijkstra vom Fichtenberg-Gymnasium zum Titania-Palast: Die besuchten Knoten liegen gelb nah an der Schule und werden in alle Richtungen gleichmäßig orange und rot, wie Ringe um den Start. Der Weg ist eine lila Linie, die gerade die Schloßstraße entlang führt. Oben links stehen Länge, Knoten und wie viele die Suche besucht hat.'>
 
-Jetzt breitet sich die Welle in Metern aus, wie Ringe um den Start, und der Weg folgt der Schloßstraße statt Zacken zu machen. Er hat mehr Knoten, ist aber kürzer. Schau auf die Zeit: Dijkstra hat etwa so viele Knoten besucht wie die Breitensuche, braucht aber viel länger. `min_by` geht bei jedem Schritt durch die ganze `frontier`, und die wird groß. Für Steglitz geht das noch; wie es für größere Gebiete schneller wird, kommt als Nächstes.
+Jetzt breitet sich die Welle in Metern aus, wie Ringe um den Start, und der Weg folgt der Schloßstraße statt Zacken zu machen. Er hat mehr Knoten, ist aber kürzer.
+
+Mit dem Schieber unter dem Ergebnis siehst du dir die Suche Schritt für Schritt an: ▶ spielt sie ab, ‹ und › gehen einen Knoten zurück und vor, das Tempo »Langsam« zeigt jeden einzelnen. Hast du angehalten, bleibt der Schritt stehen, wenn du die andere Suche wählst. So vergleichst du beide an derselben Stelle.
+
+Probier einen weiten Weg, zur Pfaueninsel ganz im Westen. Dahin kommt man nur mit der Fähre, und auch die ist ein Weg der Karte:
+
+<div class='gallery columns-2'>
+<!-- tutorial-screenshot
+# Zur Pfaueninsel mit der Breitensuche
+preview-reload
+tab: preview
+hook: route Fichtenberg | Pfaueninsel | bfs
+-->
+<figure>
+<img src='pfaueninsel-breitensuche.webp' alt='Die Breitensuche vom Fichtenberg-Gymnasium zur Pfaueninsel: Die besuchten Knoten füllen den ganzen Bezirk, gelb im Osten um die Schule, rot im Westen. Der Weg ist eine lila Linie mit großen Zacken nach Süden.'>
+<figcaption>Breitensuche: 22,9 km</figcaption>
+</figure>
+<!-- tutorial-screenshot
+# Und mit Dijkstra
+preview-reload
+tab: preview
+hook: route Fichtenberg | Pfaueninsel | dijkstra
+-->
+<figure>
+<img src='pfaueninsel-dijkstra.webp' alt='Dijkstra vom Fichtenberg-Gymnasium zur Pfaueninsel: Die besuchten Knoten füllen den Bezirk ebenso. Der Weg ist eine lila Linie fast gerade nach Westen, über den Bahnhof Wannsee zur Fähre.'>
+<figcaption>Dijkstra: 15,8 km</figcaption>
+</figure>
+</div>
+
+Die Breitensuche macht 7 Kilometer Umweg. Dijkstra findet den kürzesten Weg, aber schau auf die Zeit: ein paar Sekunden statt Bruchteilen davon. Beide besuchen fast den ganzen Bezirk, der Unterschied ist `min_by`: Es geht bei jedem Schritt durch die ganze `frontier`, und die wird groß. Wie es schneller geht, kommt als Nächstes.

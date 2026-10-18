@@ -124,6 +124,104 @@ html, body {
     color: inherit;
 }
 
+.place .clear {
+    flex: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: -0.25rem;
+    border-radius: 50%;
+    color: var(--muted);
+}
+
+.place .clear[hidden] {
+    display: none;
+}
+
+.place .clear svg {
+    width: 12px;
+    height: 12px;
+    stroke-width: 2;
+}
+
+#suggestions {
+    position: fixed;
+    z-index: 10;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 4px;
+    overflow-y: auto;
+    list-style: none;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(20, 30, 50, 0.08), 0 12px 32px rgba(20, 30, 50, 0.18);
+    font-size: 0.88rem;
+}
+
+#suggestions[hidden] {
+    display: none;
+}
+
+#suggestions li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 0.6rem;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+#suggestions li.active {
+    background: #f1effb;
+}
+
+#suggestions li.heading {
+    padding: 0.55rem 0.6rem 0.2rem;
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    cursor: default;
+}
+
+#suggestions li.empty {
+    color: var(--muted);
+    cursor: default;
+}
+
+#suggestions .kind {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+#suggestions .kind.sight { color: #7048e8; }
+#suggestions .kind.square { color: #2b8a3e; }
+#suggestions .kind.school { color: #4c6ef5; }
+
+#suggestions .name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#suggestions .name b {
+    font-weight: 650;
+}
+
+#suggestions .what {
+    flex: none;
+    color: var(--muted);
+    font-size: 0.76rem;
+}
+
 #swap {
     grid-column: 2;
     grid-row: 1 / span 2;
@@ -350,8 +448,8 @@ code {
 
 #scale {
     position: absolute;
-    left: 12px;
-    bottom: 12px;
+    right: 12px;
+    bottom: 26px;
     padding: 0.2rem 0.45rem 0.25rem;
     border-radius: 6px;
     background: rgba(255, 255, 255, 0.8);

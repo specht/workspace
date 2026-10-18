@@ -17,18 +17,23 @@
         <label class="place start">
             <span class="dot" aria-hidden="true"></span>
             <span class="label">Start</span>
-            <input id="start" type="search" list="place-list" placeholder="Ort suchen …" autocomplete="off" spellcheck="false">
+            <input id="start" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions" placeholder="Ort suchen …" autocomplete="off" spellcheck="false">
+            <button type="button" class="clear" hidden title="Start löschen" aria-label="Start löschen">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></svg>
+            </button>
         </label>
         <label class="place goal">
             <span class="dot" aria-hidden="true"></span>
             <span class="label">Ziel</span>
-            <input id="goal" type="search" list="place-list" placeholder="Ort suchen …" autocomplete="off" spellcheck="false">
+            <input id="goal" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions" placeholder="Ort suchen …" autocomplete="off" spellcheck="false">
+            <button type="button" class="clear" hidden title="Ziel löschen" aria-label="Ziel löschen">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></svg>
+            </button>
         </label>
         <button id="swap" type="button" title="Start und Ziel tauschen" aria-label="Start und Ziel tauschen">
             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2v10M2 9l3 3 3-3M11 14V4M8 7l3-3 3 3"/></svg>
         </button>
     </div>
-    <datalist id="place-list"></datalist>
     <div id="searches" role="group" aria-label="Wie gesucht wird">
         <button type="button" data-search="bfs" aria-pressed="true">Breitensuche</button>
         <button type="button" data-search="dijkstra" aria-pressed="false">Dijkstra</button>
@@ -81,6 +86,7 @@
         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/></svg>
     </button>
 </div>
+<ul id="suggestions" role="listbox" aria-label="Orte" hidden></ul>
 <div id="scale" aria-hidden="true"><span></span></div>
 <p id="credit">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-Mitwirkende</p>
 <script src="map.js"></script>
