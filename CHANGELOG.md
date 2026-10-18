@@ -46,10 +46,21 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Namen in den Einladungslisten sind freiwillig, und ein Name, der später
   dazukommt oder sich ändert, kommt jetzt auch im Konto an.
 - »Meine Daten« im Profil: Jede Person lädt alles, was zu ihrem Konto
-  gespeichert ist, als ein Archiv herunter (Workspace, Abgaben,
-  MySQL-Datenbank als SQL, Kontodaten als JSON, mit einer Erklärung), und
-  löscht ihr Konto selbst. Wer als Lehrkraft in ein Konto sieht, kann beides
-  nicht.
+  gespeichert ist, als ein ZIP herunter (Workspace, Abgaben als Ordner, alle
+  MySQL-Datenbanken als SQL, die Neo4j-Datenbank als Dump für
+  `neo4j_bolt load`, Kontodaten als JSON, mit einer Erklärung), und löscht
+  ihr Konto selbst, in zwei Schritten: Adresse eingeben, dann einen Code aus
+  einer E-Mail. Die Administration bekommt danach eine E-Mail. Wer als
+  Lehrkraft in ein Konto sieht, kann beides nicht. Das ZIP entsteht als
+  Workspace-Nutzer und folgt keinem Link.
+- Einladungslisten in der Datenbank: Unter »Administration ›
+  Einladungslisten« zeigt eine Vorschau, was der Import übernähme; der Import
+  schreibt alles, liest es zurück und vergleicht es mit den Dateien (wer
+  eingeladen ist, Namen, Gruppen, wer was betreut). Weicht etwas ab, wird
+  nichts geschrieben. »Zurück zu den Dateien« macht den Import rückgängig.
+  Dateien, deren Name mit _ beginnt, werden weiter gelesen.
+  `src/scripts/check-invitation-import.rb` prüft eine Kopie der Dateien
+  vorher, ohne Server.
 - Datenschutzerklärung und Unterlagen: ehemalige Schülerinnen und Schüler
   können ihr Konto unter der Nutzungsordnung weiterführen; die
   Einladungslisten stehen als eigene Datenart in der Tabelle; Cloudflare als
@@ -72,6 +83,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   zum Ende des Schuljahres.
   Eine Suche nach Name, Adresse oder Gruppe zeigt jede eingeladene Person
   mit Rolle, Gruppen und ob sie schon ein Konto hat.
+  Beim Löschen lässt sich der Person eine Bestätigung per E-Mail schicken;
+  ohne Häkchen geht keine E-Mail hinaus, und die Seite sagt es.
 - Abgelaufene Sitzungen werden gelöscht (höchstens einmal in der Stunde),
   statt liegen zu bleiben.
 - Die Ausgaben der Dienste (darin E-Mail-Adressen) werden nach 3 × 10 MB je
@@ -1861,6 +1874,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   `POST` zeigte, steht jetzt im Webserver.
 
 ### Für Betreibende
+
+- `neo4j_bolt` ist auf 0.5.0 gestiegen (für den Neo4j-Teil von »Meine
+  Daten«): `./config.rb build ruby && ./config.rb up -d ruby`.
 
 - ER-Werkstatt 0.3.0 (`hackschule-er-0.3.0.vsix`): das Workspace-Image neu
   bauen.

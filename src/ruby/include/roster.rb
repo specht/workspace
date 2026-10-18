@@ -71,18 +71,24 @@ module Roster
 
     # The records for parsed invitation files (the import). Each person gets
     # the name the old loader showed; a name that is only the address is none.
+    # Teachers belong to the school; a »+« line for someone not invited had
+    # no effect (they could not log in) and is left out.
     def self.records_from_files(parsed, school:)
         built = build(:groups => parsed[:groups], :members => parsed[:members], :designated => parsed[:designated], :admins => [])
         designated = Set.new(parsed[:designated])
         emails = parsed[:members].map { |_, email, _| email }.uniq
+        invited = Set.new(emails)
+        teaching = parsed[:groups].flat_map { |g| g.teachers.map { |email| [email, g.name] } }.uniq.select { |email, _| invited.include?(email) }
+        teachers = designated + teaching.map(&:first)
         {
             :groups => parsed[:groups].map { |g| { :name => g.name, :school => school, :approved => true } },
             :invitations => emails.map do |email|
                 name = built[:invitations][email][:name]
-                { :email => email, :name => name == email ? nil : name, :teacher => designated.include?(email), :school => nil }
+                { :email => email, :name => name == email ? nil : name, :teacher => designated.include?(email),
+                  :school => teachers.include?(email) ? school : nil }
             end,
             :memberships => parsed[:members].map { |group, email, _| [email, group] }.uniq,
-            :teaching => parsed[:groups].flat_map { |g| g.teachers.map { |email| [email, g.name] } }.uniq,
+            :teaching => teaching,
         }
     end
 
@@ -117,7 +123,8 @@ module Roster
         {
             :names => built[:invitations].to_h { |email, i| [email, i[:name]] },
             :groups => built[:group_members].transform_values { |m| Set.new(m) }.reject { |_, m| m.empty? },
-            :teaching => built[:teachers].transform_values { |g| Set.new(g) },
+            # Group rights of someone not invited have no effect.
+            :teaching => built[:teachers].select { |email, _| built[:invitations].key?(email) }.transform_values { |g| Set.new(g) },
             :teacher_emails => Set.new(built[:teacher_emails]),
         }
     end

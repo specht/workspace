@@ -126,6 +126,19 @@
             <div id="active_users_here"></div>
             #{print_workspaces()}
 
+            <h2 id="einladungen">Einladungslisten</h2>
+            #{roster_status_html}
+            <div class='d-flex flex-wrap gap-2 mb-3'>
+                <button id='bu_import_preview' class='btn btn-outline-secondary'><i class='bi bi-eye'></i>Vorschau des Imports</button>
+                #{Main.roster_imported ? "<button id='bu_undo_import' class='btn btn-outline-danger'><i class='bi bi-arrow-counterclockwise'></i>Zurück zu den Dateien</button>" : "<button id='bu_import' class='btn btn-primary'><i class='bi bi-box-arrow-in-down'></i>Einladungslisten importieren</button>"}
+            </div>
+            <p class='small text-body-secondary'>
+                Der Import schreibt alles in die Datenbank, liest es zurück und vergleicht es mit den Dateien: wer eingeladen ist,
+                mit welchem Namen, in welcher Gruppe und wer was betreut. Weicht etwas ab, wird nichts geschrieben, und die
+                Abweichungen stehen hier. Vorher lässt sich eine Kopie der Dateien mit <code>src/scripts/check-invitation-import.rb</code> prüfen.
+            </p>
+            <div id='import_here' class='mb-4'></div>
+
             <h2 id="konten-loeschen">Konten löschen</h2>
             <p>
                 Gelöscht wird alles, was zu einem Konto gehört: Workspace, die Workspaces der
@@ -150,12 +163,18 @@
                 <div class='col-sm-2'>
                     <button type='submit' class='btn btn-danger w-100'><i class='bi bi-trash-fill'></i>Löschen</button>
                 </div>
+                <div class='col-12'>
+                    <div class='form-check'>
+                        <input class='form-check-input' type='checkbox' id='delete_account_notify'>
+                        <label class='form-check-label' for='delete_account_notify'>Der Person eine Bestätigung per E-Mail schicken (sonst geht keine E-Mail hinaus)</label>
+                    </div>
+                </div>
             </form>
             <div id='delete_account_result' class='mb-3'></div>
             <h3 id="ohne-einladung">Konten ohne Einladung</h3>
             <p>
                 Konten, deren Adresse in keiner Einladungsliste mehr steht: Sie werden nach den Löschregeln
-                spätestens zum Ende des Schuljahres gelöscht.
+                spätestens zum Ende des Schuljahres gelöscht. Beim Löschen hier geht keine E-Mail hinaus.
             </p>
             <button id='bu_uninvited_accounts' class='btn btn-outline-secondary mb-3'><i class='bi bi-search'></i>Konten ohne Einladung anzeigen</button>
             <div id='uninvited_accounts_here'></div>
@@ -420,14 +439,14 @@
         no_account: 'Zu dieser Adresse gibt es kein Konto.',
     };
 
-    function delete_account(email, confirmation, done) {
+    function delete_account(email, confirmation, done, notify) {
         let result = $('#delete_account_result').empty();
-        api_call('/api/admin/delete_account', { email: email, confirmation: confirmation }, function (data) {
+        api_call('/api/admin/delete_account', { email: email, confirmation: confirmation, notify: notify === true }, function (data) {
             if (!data.success) {
                 result.append($(`<div class='alert alert-danger'>`).text(DELETE_ACCOUNT_ERRORS[data.error] || 'Das Konto wurde nicht gelöscht.'));
                 return;
             }
-            let text = `Gelöscht: ${data.deleted} (Workspaces: ${data.removed.workspaces}, Aufgaben: ${data.removed.tasks}).`;
+            let text = `Gelöscht: ${data.deleted} (Workspaces: ${data.removed.workspaces}, Aufgaben: ${data.removed.tasks}). ${data.notified ? 'Eine Bestätigung ist per E-Mail unterwegs.' : 'Es ging keine E-Mail hinaus.'}`;
             if (data.still_invited)
                 text += ' Die Adresse steht noch in einer Einladungsliste; nimm sie dort heraus, wenn die Person kein Konto mehr haben soll.';
             result.append($(`<div class='alert alert-success'>`).text(text));
@@ -451,7 +470,45 @@
         });
         $('#delete_account_form').on('submit', function (e) {
             e.preventDefault();
-            delete_account($('#delete_account_email').val(), $('#delete_account_confirmation').val());
+            delete_account($('#delete_account_email').val(), $('#delete_account_confirmation').val(), null, $('#delete_account_notify').is(':checked'));
+        });
+        function show_import_result(here, data) {
+            if (data.ok) {
+                here.append($(`<div class='alert alert-success'>`).text(`Importiert: ${data.groups} Gruppen, ${data.invitations} Einladungen. Ab jetzt kommen die Einladungen aus der Datenbank.`));
+                setTimeout(function () { location.reload(); }, 2500);
+                return;
+            }
+            let box = $(`<div class='alert alert-danger'>`).text(`Nichts geschrieben: ${data.differences.length} Abweichung(en).`);
+            let list = $('<ul class="mb-0">');
+            for (let line of data.differences.slice(0, 50)) list.append($('<li>').text(line));
+            here.append(box.append(list));
+        }
+        $('#bu_import_preview').on('click', function () {
+            api_call('/api/admin/invitation_import_preview', {}, function (data) {
+                if (!data.success) return;
+                let here = $('#import_here').empty();
+                here.append($('<p>').text(`Aus ${data.files.join(', ') || '(keine Dateien)'}: ${data.groups.length} Gruppen, ${data.invitations} Einladungen (davon ${data.without_name} ohne Namen), ${data.teachers} Lehrkräfte.`));
+                let list = $('<ul class="small">');
+                for (let g of data.groups) list.append($('<li>').text(`${g.name}: ${g.members}`));
+                here.append(list);
+            });
+        });
+        $('#bu_import').on('click', function () {
+            showTemplateModal('Einladungslisten importieren', 'Die Einladungen kommen danach aus der Datenbank; die Dateien (außer denen, die mit _ beginnen) werden nicht mehr gelesen, bleiben aber liegen. Weicht nach dem Schreiben etwas ab, wird nichts übernommen.',
+                "<i class='bi bi-box-arrow-in-down'></i>Importieren", 'btn-primary', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function () {
+                    api_call('/api/admin/import_invitations', {}, function (data) {
+                        if (data.success) show_import_result($('#import_here').empty(), data);
+                    });
+                });
+        });
+        $('#bu_undo_import').on('click', function () {
+            showTemplateModal('Zurück zu den Dateien', `<p>Gruppen, Einladungen und Schulen werden aus der Datenbank gelöscht, und die Dateien unter <code>/invitations</code> gelten wieder. Was seit dem Import im Browser geändert wurde, geht verloren.</p><label class='form-label' for='ti_undo_import'>Zur Bestätigung <code>zurück</code> eingeben:</label><input id='ti_undo_import' class='form-control' autocomplete='off'>`,
+                "<i class='bi bi-arrow-counterclockwise'></i>Zurück zu den Dateien", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function () {
+                    api_call('/api/admin/undo_invitation_import', { confirmation: $('#ti_undo_import').val().trim() }, function (data) {
+                        if (data.success) location.reload();
+                    });
+                    return false;
+                });
         });
         let people_timer = null;
         $('#people_query').on('input', function () {

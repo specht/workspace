@@ -427,7 +427,7 @@
                 <div class="profile-subsection">
                     <h3>Daten herunterladen</h3>
                     <p>
-                        Ein Archiv (.tar.gz) mit deinem Workspace, deinen Abgaben, deiner MySQL-Datenbank und allem, was zu deinem Konto
+                        Ein ZIP-Archiv mit deinem Workspace, deinen Abgaben, deinen MySQL- und Neo4j-Datenbanken und allem, was zu deinem Konto
                         gespeichert ist. Was drin ist, erklärt die Datei <code>LIESMICH.txt</code> im Archiv. Bei einem großen Workspace dauert es einen Moment.
                     </p>
                     <a class="btn btn-secondary #{@impersonated_by ? 'disabled' : ''}" href="/api/export_my_data" download><i class='bi bi-download'></i>Meine Daten herunterladen</a>
@@ -438,6 +438,7 @@
                         Löscht dein Konto mit allem, was dazugehört: deinen Workspace, deine Datenbanken, deine Antworten und Abgaben
                         und deine Sitzungen. Lade vorher deine Daten herunter, wenn du sie behalten möchtest.
                         Solange du eingeladen bist, kannst du dich danach wieder anmelden und beginnst mit einem leeren Konto.
+                        Zur Sicherheit bekommst du vorher einen Code per E-Mail; die Administration erfährt, dass du dein Konto gelöscht hast.
                     </p>
                     <button id='bu_delete_my_account' class="btn btn-danger" #{@impersonated_by ? 'disabled' : ''}><i class='bi bi-trash-fill'></i>Konto löschen</button>
                 </div>
@@ -934,27 +935,50 @@ vscode_config: {}</pre>
         $('#bu_delete_my_account').on('click', function() {
             const email = #{@session_user[:email].to_json};
             const escaped_email = $('<div>').text(email).html();
+            let step = 1;
             showTemplateModal('Konto endgültig löschen', `
                 <div class='alert alert-danger' role='alert'>
                     <strong>Das lässt sich nicht rückgängig machen.</strong>
                     <div class='mt-2'>Dein Workspace, deine Datenbanken, deine Antworten, Abgaben und Sitzungen werden gelöscht.</div>
                 </div>
-                <label class='form-label' for='ti_delete_account_confirmation'>Gib zur Bestätigung exakt deine E-Mail-Adresse <code>${escaped_email}</code> ein:</label>
-                <input id='ti_delete_account_confirmation' class='form-control' type='email' inputmode='email' autocomplete='off' spellcheck='false'>
-                <div id='div_delete_account_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog bi-spin'></i>Moment, dein Konto wird gelöscht…</div>`,
-                "<i class='bi bi-trash-fill'></i>Konto endgültig löschen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-secondary', function() {
-                    const input = $('#ti_delete_account_confirmation');
-                    if (input.val().trim().toLowerCase() !== email) return false;
-                    $('#__template_modal .modal-footer .btn').prop('disabled', true);
-                    $('#div_delete_account_please_wait').slideDown();
-                    api_call('/api/delete_my_account', {confirmation: input.val()}, function(data) {
-                        if (data.success) {
-                            location.href = '/';
-                        } else {
-                            $('#div_delete_account_please_wait').hide();
-                            $('#__template_modal .modal-footer .btn').prop('disabled', false);
-                        }
-                    }, {no_please_wait: true});
+                <div id='div_delete_account_step1'>
+                    <label class='form-label' for='ti_delete_account_confirmation'>Schritt 1: Gib zur Bestätigung exakt deine E-Mail-Adresse <code>${escaped_email}</code> ein. Dann bekommst du einen Code per E-Mail.</label>
+                    <input id='ti_delete_account_confirmation' class='form-control' type='email' inputmode='email' autocomplete='off' spellcheck='false'>
+                </div>
+                <div id='div_delete_account_step2' style='display: none;'>
+                    <label class='form-label' for='ti_delete_account_code'>Schritt 2: Gib den Code aus der E-Mail ein, die gerade an <code>${escaped_email}</code> gegangen ist.</label>
+                    <input id='ti_delete_account_code' class='form-control' inputmode='numeric' autocomplete='one-time-code' spellcheck='false'>
+                </div>
+                <div id='div_delete_account_error' class='text-danger mt-2' style='display: none;'></div>`,
+                "<i class='bi bi-envelope'></i>Code anfordern", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-secondary', function() {
+                    const confirmation = $('#ti_delete_account_confirmation').val().trim().toLowerCase();
+                    const confirm_button = $('#__template_modal .modal-footer .btn').eq(0);
+                    const error = $('#div_delete_account_error').hide();
+                    if (confirmation !== email) return false;
+                    confirm_button.prop('disabled', true);
+                    if (step === 1) {
+                        api_call('/api/request_account_deletion', {confirmation: confirmation}, function(data) {
+                            confirm_button.prop('disabled', false);
+                            if (!data.success) {
+                                error.text(data.error === 'rate_limited' ? 'Zu viele Codes in kurzer Zeit. Versuch es in einer Stunde noch einmal.' : 'Das hat nicht geklappt.').show();
+                                return;
+                            }
+                            step = 2;
+                            $('#ti_delete_account_confirmation').prop('disabled', true);
+                            $('#div_delete_account_step2').slideDown();
+                            $('#ti_delete_account_code').trigger('focus');
+                            confirm_button.html("<i class='bi bi-trash-fill'></i>Konto endgültig löschen");
+                        }, {no_please_wait: true});
+                    } else {
+                        api_call('/api/delete_my_account', {confirmation: confirmation, code: $('#ti_delete_account_code').val().trim()}, function(data) {
+                            if (data.success) {
+                                location.href = '/';
+                                return;
+                            }
+                            confirm_button.prop('disabled', false);
+                            error.text(data.error === 'wrong_code' ? 'Der Code stimmt nicht.' : 'Der Code ist abgelaufen. Brich ab und fordere einen neuen an.').show();
+                        }, {no_please_wait: true});
+                    }
                     return false;
                 });
         });

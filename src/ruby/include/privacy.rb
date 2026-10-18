@@ -570,7 +570,7 @@ module Privacy
             #{heading('Wer nicht einverstanden ist', 'Ausübung der Rechte · Art. 12 DSGVO', :id => 'nicht-einverstanden')}
             <p>
             Im Profil unter »Meine Daten« lässt sich alles, was zum Konto gespeichert ist, als Archiv herunterladen
-            (Workspace, Abgaben, MySQL-Datenbank, Kontodaten), und das Konto lässt sich dort selbst löschen.
+            (Workspace, Abgaben, MySQL- und Neo4j-Datenbanken, Kontodaten), und das Konto lässt sich dort selbst löschen.
             Ebenso genügt eine E-Mail an #{contact_html(s)}, mit der Adresse, mit der die Person eingeladen wurde, und dem Anliegen:
             Auskunft, Berichtigung, Widerspruch oder Löschung des Kontos. Bei einer Löschung wird alles oben Genannte gelöscht:
             Workspaces, Datenbanken, Antworten und Abgaben, Sitzungen und das Konto. Die Antwort kommt, sobald das Anliegen erledigt ist,

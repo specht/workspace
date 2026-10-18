@@ -1,8 +1,10 @@
+require 'fileutils'
 require 'json'
 require 'time'
+require_relative 'submission_view'
 
 # »Meine Daten herunterladen« in the profile (Art. 15 Abs. 3 and Art. 20
-# DSGVO): one .tar.gz with the Workspace, the hand-ins, the own MySQL
+# DSGVO): one ZIP with the Workspace, the hand-ins, the own MySQL
 # database as SQL and everything stored about the account as JSON. Plain
 # Ruby, tested on its own; Main builds the archive.
 module AccountExport
@@ -20,14 +22,14 @@ module AccountExport
                       gesehen hat, geteilte Web-Apps
         workspace/    deine Dateien, wie im Explorer des Workspace (ohne den
                       Zwischenspeicher .cache)
-        abgaben/      deine Abgaben, je Aufgabe ein .tar.gz
-        mysql.sql     deine MySQL-Datenbank; mit
-                      mysql DATENBANK < mysql.sql
-                      lässt sie sich woanders wieder einspielen
-
-        Deine Neo4j-Datenbank exportierst du im Neo4j-Browser, zum Beispiel mit
-        MATCH (n) OPTIONAL MATCH (n)-[r]->() RETURN n, r
-        und »Export«.
+        abgaben/      deine Abgaben, je Aufgabe ein Ordner mit den Dateien,
+                      wie du sie abgegeben hast
+        mysql/        deine MySQL-Datenbanken, je eine .sql-Datei; mit
+                      mysql DATENBANK < mysql/NAME.sql
+                      lässt sich eine woanders wieder einspielen
+        neo4j.dump    deine Neo4j-Datenbank; in einer leeren Datenbank lädt
+                      neo4j_bolt load neo4j.dump
+                      sie wieder (im Workspace ist neo4j_bolt installiert)
     END_OF_TEXT
 
     # rows: :user (Hash), :groups (Array), :task_states, :attempts,
@@ -56,7 +58,28 @@ module AccountExport
     end
     private_class_method :pick
 
+    # The folder name for a task's hand-in: activity/task -> activity-task.
+    def self.folder_for(task)
+        task.to_s.gsub(/[^a-z0-9_-]+/i, '-').gsub(/\A-+|-+\z/, '')
+    end
+
+    # Unpacks a stored hand-in (.tar.gz) into target: regular files only,
+    # every path checked, so nothing lands outside target.
+    def self.unpack_submission(archive, target)
+        count = 0
+        SubmissionView.each_entry(archive) do |entry|
+            path = SubmissionView.clean_path(entry.full_name)
+            next unless path
+
+            destination = File.join(target, path)
+            FileUtils.mkdir_p(File.dirname(destination))
+            File.binwrite(destination, entry.read.to_s)
+            count += 1
+        end
+        count
+    end
+
     def self.filename(email, now: Time.now)
-        "workspace-#{email.to_s.split('@').first.gsub(/[^a-z0-9._-]/i, '')}-#{now.strftime('%Y-%m-%d')}.tar.gz"
+        "workspace-#{email.to_s.split('@').first.gsub(/[^a-z0-9._-]/i, '')}-#{now.strftime('%Y-%m-%d')}.zip"
     end
 end

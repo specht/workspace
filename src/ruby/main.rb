@@ -42,6 +42,7 @@ require './include/privacy.rb'
 require './include/privacy_documents.rb'
 require './include/account_deletion.rb'
 require './include/account_export.rb'
+require './include/mail_texts.rb'
 require 'base64'
 require 'cgi'
 require 'digest'
@@ -631,6 +632,7 @@ class Main < Sinatra::Base
     end
 
     require './include/live_apps.rb'
+    require './include/roster_store.rb'
 
     def workspace_url()
         if user_logged_in?
@@ -2015,19 +2017,6 @@ class Main < Sinatra::Base
         end
     end
 
-    # The invitation files, as Roster reads them: all of them before the
-    # import, afterwards only those written by tools (_e2e.txt …).
-    def self.invitation_file_texts(only_tools: false)
-        Dir['/invitations/*.txt'].sort.reject do |path|
-            name = File.basename(path)
-            name == '_template.txt' || (only_tools && !name.start_with?('_'))
-        end.map { |path| File.read(path) }
-    end
-
-    # Where the roster comes from (Roster): the files, as before.
-    def self.roster_source
-        Roster.parse_files(invitation_file_texts)
-    end
 
     def self.load_invitations_locked
         source = roster_source
@@ -2089,6 +2078,10 @@ class Main < Sinatra::Base
         CONSTRAINTS_LIST = [
             'Database/name',
             'File/sha1',
+            'Group/name',
+            'Invitation/email',
+            'School/key',
+            'Setting/key',
             'LiveAppShare/tag',
             'LoginRequest/tag',
             'QrLoginRequest/tag',
@@ -3997,6 +3990,11 @@ class Main < Sinatra::Base
         }
     end
 
+    # Who signs the mails: OPERATOR_NAME, else the address.
+    def mail_signature
+        defined?(OPERATOR_NAME) && !OPERATOR_NAME.to_s.strip.empty? ? OPERATOR_NAME.to_s.strip : 'Workspace'
+    end
+
     DELETION_LOG = '/internal/deleted-accounts.jsonl'
     @@deletion_log_mutex = Mutex.new
 
@@ -4032,7 +4030,7 @@ class Main < Sinatra::Base
     # second time is the confirmation.
     post '/api/admin/delete_account' do
         assert(admin_logged_in?)
-        data = parse_request_data(:required_keys => [:email, :confirmation])
+        data = parse_request_data(:required_keys => [:email, :confirmation], :optional_keys => [:notify], :types => { :notify => Object })
         email = AccountDeletion.normalize_email(data[:email])
         halt 400, { :error => 'invalid_email' }.to_json unless email
         halt 400, { :error => 'confirmation_mismatch' }.to_json unless AccountDeletion.normalize_email(data[:confirmation]) == email
@@ -4041,27 +4039,91 @@ class Main < Sinatra::Base
         removed = delete_account(email)
         halt 404, { :error => 'no_account' }.to_json unless removed
         STDERR.puts "Account deleted by #{@session_user[:email]}: #{email} #{removed.inspect}"
-        respond(:deleted => email, :removed => removed, :still_invited => @@invitations.key?(email))
+        still_invited = @@invitations.key?(email)
+        if data[:notify] == true
+            mail_subject, html = MailTexts.account_deleted(:web_root => WEB_ROOT, :signature => mail_signature, :still_invited => still_invited)
+            deliver_mail do
+                to email
+                from SMTP_FROM
+                subject mail_subject
+                html
+            end
+        end
+        respond(:deleted => email, :removed => removed, :still_invited => still_invited, :notified => data[:notify] == true)
     end
 
     # The person deletes its own account (Datenschutzerklärung, »Wer nicht
-    # einverstanden ist«), never a teacher looking in as the person.
-    post '/api/delete_my_account' do
+    # einverstanden ist«), never a teacher looking in as the person. Two
+    # steps: the address typed again, then a code that comes by mail. The
+    # administration hears of it afterwards.
+    DELETION_CODE_MINUTES = 10
+    DELETION_CODES_PER_ADDRESS = RateLimit.new(:limit => 3, :period => 3600)
+    @@deletion_codes = {}
+    @@deletion_codes_mutex = Mutex.new
+
+    post '/api/request_account_deletion' do
         assert(user_logged_in?)
         halt 403 if @impersonated_by
         data = parse_request_data(:required_keys => [:confirmation])
         email = @session_user[:email]
         halt 400, { :error => 'confirmation_mismatch' }.to_json unless AccountDeletion.normalize_email(data[:confirmation]) == email
+        halt 429, { :error => 'rate_limited' }.to_json unless DEVELOPMENT || DELETION_CODES_PER_ADDRESS.allow?(email)
+        code = Authentication.generate_login_code(:development => DEVELOPMENT)
+        @@deletion_codes_mutex.synchronize do
+            @@deletion_codes[email] = { :code => code, :expires => Time.now.to_i + DELETION_CODE_MINUTES * 60, :tries => 0 }
+        end
+        mail_subject, html = MailTexts.deletion_code(:code => code, :minutes => DELETION_CODE_MINUTES, :signature => mail_signature)
+        deliver_mail do
+            to email
+            from SMTP_FROM
+            subject mail_subject
+            html
+        end
+        respond(:sent => true)
+    end
+
+    post '/api/delete_my_account' do
+        assert(user_logged_in?)
+        halt 403 if @impersonated_by
+        data = parse_request_data(:required_keys => [:confirmation, :code])
+        email = @session_user[:email]
+        halt 400, { :error => 'confirmation_mismatch' }.to_json unless AccountDeletion.normalize_email(data[:confirmation]) == email
+        valid = @@deletion_codes_mutex.synchronize do
+            pending = @@deletion_codes[email]
+            if pending.nil? || pending[:expires] < Time.now.to_i || pending[:tries] >= 5
+                @@deletion_codes.delete(email)
+                nil
+            else
+                pending[:tries] += 1
+                ok = Rack::Utils.secure_compare(pending[:code], data[:code].to_s.strip)
+                @@deletion_codes.delete(email) if ok
+                ok
+            end
+        end
+        halt 400, { :error => valid.nil? ? 'code_expired' : 'wrong_code' }.to_json unless valid
+        Main.load_invitations()
+        name = (@@invitations[email] || {})[:name]
+        groups = @@group_members.select { |group, members| members.include?(email) && !@@test_groups.include?(group) }.keys.sort
         removed = delete_account(email)
         STDERR.puts "Account deleted by its owner: #{email} #{removed.inspect}"
+        mail_subject, html = MailTexts.account_deleted_by_owner(:email => email, :name => name == email ? nil : name, :groups => groups,
+            :still_invited => @@invitations.key?(email), :signature => 'Workspace')
+        ADMIN_USERS.each do |admin|
+            deliver_mail do
+                to admin
+                from SMTP_FROM
+                subject mail_subject
+                html
+            end
+        end
         clear_session_cookies
         respond(:deleted => true)
     end
 
     # »Meine Daten herunterladen« (AccountExport): built in a temporary
-    # folder, then streamed as .tar.gz together with the Workspace folder, so
-    # a big Workspace never sits in memory. tar stores links as links and
-    # never follows them.
+    # folder, then streamed as one ZIP together with the Workspace folder, so
+    # a big Workspace never sits in memory. tools/zip_stream.py runs as the
+    # Workspace user, never follows a link and stores links as links.
     get '/api/export_my_data' do
         assert(user_logged_in?)
         halt 403 if @impersonated_by
@@ -4081,22 +4143,37 @@ class Main < Sinatra::Base
             FileUtils.mkdir_p(File.join(dir, 'abgaben'))
             rows[:task_states].each do |state|
                 path = submission_path(state[:task].to_s, email)
-                FileUtils.cp(path, File.join(dir, 'abgaben', "#{state[:task].to_s.gsub(/[^a-z0-9_-]/i, '_')}.tar.gz")) if File.file?(path)
+                AccountExport.unpack_submission(path, File.join(dir, 'abgaben', AccountExport.folder_for(state[:task]))) if File.file?(path)
             end
             login = db_login_for_email(email)
             DatabaseIdentity.validate!(login)
-            system('docker', 'exec', 'workspace_mysql_1', 'mysqldump', '--user=root', "--password=#{MYSQL_ROOT_PASSWORD}", login,
-                :out => File.join(dir, 'mysql.sql'), :err => File::NULL)
+            # Every MySQL database: the own one and those made in the profile.
+            extra = neo4j_query(<<~END_OF_QUERY, :email => email).map { |r| r['name'].to_s }.select { |n| DatabaseProvisioning.extra_database?(n) }
+                MATCH (:User {email: $email})-[:HAS]->(d:Database {type: 'mysql'})
+                RETURN d.name AS name;
+            END_OF_QUERY
+            FileUtils.mkdir_p(File.join(dir, 'mysql'))
+            ([login] + extra).each do |database|
+                system('docker', 'exec', 'workspace_mysql_1', 'mysqldump', '--user=root', "--password=#{MYSQL_ROOT_PASSWORD}", database,
+                    :out => File.join(dir, 'mysql', "#{database}.sql"), :err => File::NULL)
+            end
+            # The own Neo4j database, read with the person's own login, as the
+            # dump that `neo4j_bolt load` in the Workspace reads.
+            system({ 'NEO4J_URI' => 'bolt://neo4j:7687', 'NEO4J_USERNAME' => login, 'NEO4J_DATABASE' => login,
+                     'NEO4J_PASSWORD' => Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT) },
+                'neo4j_bolt', 'dump', '-o', File.join(dir, 'neo4j.dump'), :err => File::NULL)
         rescue StandardError
             FileUtils.rm_rf(dir)
             raise
         end
 
         workspace_root = "/user/#{fs_tag_for_email(email)}"
-        args = ['tar', '-czf', '-', '--exclude=workspace/.cache', '-C', dir, '.']
-        args += ['-C', workspace_root, './workspace'] if File.directory?(File.join(workspace_root, 'workspace'))
+        FileUtils.chmod_R('a+rX', dir)
+        args = ['setpriv', "--reuid=#{WORKSPACE_UID}", "--regid=#{WORKSPACE_GID}", '--clear-groups',
+            'python3', '-I', File.join(__dir__, 'tools', 'zip_stream.py'), '--exclude', 'workspace/.cache', "=#{dir}"]
+        args << "workspace=#{File.join(workspace_root, 'workspace')}" if File.directory?(File.join(workspace_root, 'workspace'))
         @respond_streaming = true
-        content_type 'application/gzip'
+        content_type 'application/zip'
         attachment AccountExport.filename(email)
         response.headers['Cache-Control'] = 'no-store'
         stream do |out|
@@ -4137,9 +4214,9 @@ class Main < Sinatra::Base
 
     post '/api/admin/people' do
         assert(admin_logged_in?)
-        data = parse_request_data(:optional_keys => [:query], :max_body_length => 1024)
+        data = parse_request_data(:optional_keys => [:query, :limit], :types => { :limit => Integer }, :max_body_length => 1024)
         people = people_overview(data[:query])
-        respond(:people => people.first(100), :total => people.size)
+        respond(:people => people.first([[data[:limit] || 100, 1].max, 10_000].min), :total => people.size)
     end
 
     # Accounts whose address is no longer in any invitation list: what the
