@@ -205,7 +205,53 @@ reassures is a familiar structure, precise facts and no overstatement.
   the Senatsverwaltung for digital teaching tools; the page should not cite
   rules the session has not looked up.
 
-## Decision (2026-10-18): the maintainer handles it himself
+## Preferred route (2026-10-18, latest): a package that makes it easy for the school to agree
+
+The maintainer's latest word: the school may be involved after all, if there
+is a clear plan that makes it easy for them to agree. This is the better
+route; the section »handles it himself« below stays as the fallback. The
+idea: do not ask the school to examine anything; hand them a finished
+package and one small decision.
+
+**What the school is asked for (one page, one signature):** a short written
+decision by the Schulleitung, e.g. »Der Workspace darf im Informatikunterricht
+als digitales Lernmittel eingesetzt werden; verantwortlich für den Betrieb
+ist Herr Specht.« Nothing to buy, nothing to install, revocable at any time.
+
+**What the package contains** (German, generated from the same facts as the
+page where possible, so nothing contradicts anything):
+
+1. **Eine Seite für die Schulleitung**: what the Workspace is, what it is
+   used for, what data it holds (short list), how it is protected, what
+   happens if they say no or withdraw later. Plain, no jargon.
+2. **Die Datenschutzerklärung** (the page itself, Art. 13 structure).
+3. **Eintrag für das Verzeichnis der Verarbeitungstätigkeiten (VVT)**, ready
+   to file.
+4. **Technische und organisatorische Maßnahmen (TOM)**: the measures already
+   in place (see the aim section).
+5. **Elternbrief**: information for parents (with a consent form as an
+   option, if the school wants consent on top).
+6. **Nutzungsordnung für Lernende**: short rules (own account only, no
+   personal data of others in projects, what teachers can see).
+7. **Löschkonzept**: when accounts and data are deleted (end of course,
+   leaving school, on request); needs the deletion feature.
+
+**Open points to settle with the maintainer, not to guess:**
+- Who rents the server. If he runs it privately for the school, the school
+  may need an agreement with him (Auftragsverarbeitung) and he one with the
+  hoster (the hoster's standard DPA). Find the simplest correct shape and
+  put it to him.
+- Whether consent is still wanted on top of the school's decision (with the
+  school's decision, information is enough; some schools want consent
+  anyway; keep it switchable: `PARENTAL_CONSENT_REQUIRED`).
+- Who the school's data protection officer is, for the VVT entry (they only
+  need to receive it).
+
+**Build order for this route:** the facts in one place in code; the page;
+account deletion; the generated documents (a page for admins with the
+package as downloads or printable pages); parental consent as a switch.
+
+## Decision (2026-10-18, superseded by the route above): the maintainer handles it himself
 
 The school tolerates the Workspace but does not want to be involved, and he
 does not want to bring in the Schulleitung. So the route is: **he is the
