@@ -324,7 +324,9 @@ def main():
     # 70 MB as text, a Bezirk 3 to 7 MB
     for name in [whole_name] + areas:
         path = os.path.join(args.out, name + '.tsv')
-        with open(path, 'rb') as src, gzip.open(path + '.gz', 'wb', compresslevel=9) as dst:
+        # without a time stamp inside, so the same streets give the same file
+        with open(path, 'rb') as src, open(path + '.gz', 'wb') as raw, \
+                gzip.GzipFile(filename='', mode='wb', compresslevel=9, fileobj=raw, mtime=0) as dst:
             dst.write(src.read())
 
     with open(os.path.join(args.out, 'README.md'), 'w') as f:
