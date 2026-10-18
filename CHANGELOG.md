@@ -764,6 +764,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- Die Suche im Handbuch zeigt Formeln in den Ergebnissen gesetzt statt als
+  `\(n \log n\)`, und ein Ausschnitt schneidet keine Formel mehr mittendurch.
+- Die Bilder auf den Karten von Lauflängen, Huffman und LZW sind auf 16:9
+  aufgefüllt statt beschnitten, auf weißem oder dunklem Grund wie die Seite;
+  Kryptographie zeigt den ganzen Workspace.
 - Diagramme: Im DNS-Baum zielen die Kanten auf die Mitten der Knoten, im
   B-Baum von »SQL-Index« zeigen die Pfeilspitzen in Richtung ihrer Kurve, mit
   der Spitze auf dem Rand. Beides gilt jetzt für alle Diagramme der Seite

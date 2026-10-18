@@ -50,6 +50,12 @@
         if (start > 0) start = text.indexOf(' ', start) + 1;
         var end = Math.min(text.length, start + 200);
         if (end < text.length) end = text.lastIndexOf(' ', end);
+        // never half a formula: KaTeX renders \(…\) only when both ends are there
+        var opened = text.lastIndexOf('\\(', start);
+        if (opened >= 0 && text.indexOf('\\)', opened) >= start) start = opened;
+        var open = text.lastIndexOf('\\(', end);
+        var close = text.indexOf('\\)', open);
+        if (open >= start && close >= end) end = close + 2;
         return (start > 0 ? '… ' : '') + mark(text.slice(start, end), words) + (end < text.length ? ' …' : '');
     };
 
@@ -89,6 +95,9 @@
                     (hit.section.text ? "<span class='reference-result-snippet'>" + snippet(hit.section.text, found.words) + '</span>' : '') +
                     '</a>';
             }).join('');
+        // the formulas in the snippets, as on the pages (the template renders
+        // only what is there when the page loads)
+        if (window.renderMathInElement) renderMathInElement(results, { throwOnError: false });
         results.hidden = false;
         cards.hidden = true;
     };
