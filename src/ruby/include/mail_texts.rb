@@ -43,6 +43,25 @@ module MailTexts
         ["Konto gelöscht: #{email}", body + "\n" + closing(signature)]
     end
 
+    # Before the administration deletes an account: the date, what the
+    # person can do until then, and that doing nothing is fine. Replies go
+    # to the contact address.
+    def self.deletion_notice(web_root:, date:, signature:)
+        day = date.strftime('%d.%m.%Y')
+        body = +"<p>Hallo!</p>\n"
+        body << "<p>Dein Konto im Workspace (#{link(web_root)}) wird am <strong>#{day}</strong> gelöscht, mit allem, was dazugehört: " \
+            'dein Workspace mit allen Dateien, deine Datenbanken, deine Antworten und Abgaben.</p>' + "\n"
+        body << "<p>Bis dahin kannst du:</p>\n<ul>\n"
+        body << "<li>alle deine Daten herunterladen: Melde dich an und öffne im Profil »Meine Daten« (#{link("#{web_root}/profil#my-data")}). " \
+            'Du bekommst ein ZIP mit deinem Workspace, deinen Abgaben und deinen Datenbanken.</li>' + "\n"
+        body << '<li>dein Konto behalten: Antworte auf diese E-Mail. Wer nicht mehr zur Schule gehört, kann den Workspace als Gast weiter nutzen; ' \
+            'dann gilt die Nutzungsordnung.</li>' + "\n"
+        body << "</ul>\n"
+        body << "<p>Wenn du nichts davon möchtest, musst du nichts tun: Am #{day} wird das Konto gelöscht.</p>\n"
+        body << closing(signature)
+        ["Dein Konto im Workspace wird am #{day} gelöscht", body]
+    end
+
     # From a teacher to the people in its group, so that they know the
     # Workspace exists and how to log in. Replies go to the teacher.
     def self.welcome_student(web_root:, group:, teacher:, email:)

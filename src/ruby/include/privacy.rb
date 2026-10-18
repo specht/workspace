@@ -378,6 +378,7 @@ module Privacy
         'Ein Konto wird mit allen zugehörigen Daten gelöscht, sobald es nicht mehr gebraucht wird: ' \
             'spätestens zum Ende des Schuljahres, in dem der Kurs endet oder die Schülerin oder der Schüler die Schule verlässt, ' \
             'und jederzeit früher auf Wunsch: im Profil unter »Meine Daten« oder per E-Mail an ' + contact_html(s) + '. ' \
+            'Kündigt die Administration eine Löschung per E-Mail an, wird das Konto zwei Wochen später gelöscht; bis dahin lassen sich alle Daten herunterladen. ' \
             'Wer die Schule verlässt und das Konto behalten möchte, kann es auf eigenen Wunsch weiterführen; es gilt dann die Nutzungsordnung ' \
             '(bei Minderjährigen mit Unterschrift der Erziehungsberechtigten), und verantwortlich ist nicht mehr die Schule, sondern der Betreiber.'
     end

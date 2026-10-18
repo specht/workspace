@@ -420,6 +420,7 @@
 
             <section class="profile-section" aria-labelledby="my-data">
                 <h2 id="my-data">Meine Daten</h2>
+                #{(@session_user || {})[:deletion_at] ? "<div class='alert alert-warning'><strong>Dein Konto wird am #{(Date.iso8601((@session_user || {})[:deletion_at].to_s).strftime('%d.%m.%Y') rescue CGI.escapeHTML((@session_user || {})[:deletion_at].to_s))} gelöscht.</strong> Lade vorher deine Daten herunter, wenn du sie behalten möchtest. Möchtest du den Workspace weiter nutzen, schreib an #{defined?(CONTACT_EMAIL) ? "<a href='mailto:#{CGI.escapeHTML(CONTACT_EMAIL.to_s)}'>#{CGI.escapeHTML(CONTACT_EMAIL.to_s)}</a>" : 'die Administration'}; wer nicht mehr zur Schule gehört, kann das Konto als Gast weiterführen. Sonst musst du nichts tun.</div>" : ''}
                 <p>
                     Was der Workspace über dich speichert, wer es sieht und wann es gelöscht wird, steht in der
                     <a href='/impressum#datenschutz'>Datenschutzerklärung</a>.

@@ -99,9 +99,16 @@ Standardvertrag an (bei Hetzner in der Console).
   »Personen und Schulen › Aufräumen › Konten ohne Einladung« alles, was dort
   steht. Daneben zeigen »Einladungen ohne Konto« je Gruppe, wie viele ein
   Konto haben und wann sie zuletzt da waren.
-- Auf Wunsch: unter »Alle Personen« beim Konto auf den Papierkorb, die
-  Adresse zur Bestätigung eingeben. Steht sie noch in einer Gruppe, dort
-  herausnehmen.
+- Auf Wunsch oder beim Aufräumen: unter »Alle Personen« oder »Konten ohne
+  Einladung« beim Konto auf den Papierkorb (oder mehrere auswählen). Vorgabe
+  ist »Per E-Mail ankündigen«: `User.deletion_at` bekommt den Tag in
+  `DELETION_NOTICE_DAYS` (14) Tagen, die Person eine E-Mail
+  (`MailTexts.deletion_notice`, Antworten an `CONTACT_EMAIL`), das Profil
+  zeigt den Tag, und `run_scheduled_deletions` (stündlich, eigener Thread)
+  löscht dann mit einer kurzen Bestätigung. Bis dahin: »Löschung abbrechen«
+  oder »Als Gast weiterführen« (in eine Gruppe der Gäste). »Jetzt löschen«
+  verlangt die Adresse zur Bestätigung. Steht die Adresse noch in einer
+  Gruppe, dort herausnehmen.
 - Gelöscht wird: der Workspace, die Workspaces der Leistungsüberprüfungen
   (und bei Lehrkräften deren Vorschau), die MySQL- und Neo4j-Datenbanken mit
   ihren Logins, die zusätzlichen MySQL-Datenbanken, Abgaben, und in Neo4j

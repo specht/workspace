@@ -355,11 +355,11 @@
                             groups_call('/api/groups/remove_member', { name: group.name, email: m.email }, load_groups);
                         });
                 });
-                row.append($('<td>').append(name), $('<td>').text(m.email),
+                row.append($('<td>').attr('data-sort', (m.name || m.email).toLowerCase()).append(name), $('<td>').text(m.email),
                     $('<td>').html(m.account ? "<i class='bi bi-check-lg' aria-hidden='true'></i><span class='visually-hidden'>ja</span>" : "<span class='text-body-secondary'>–</span>"));
                 if (admin) {
-                    row.append($('<td class="text-nowrap">').html(m.active_on ? `<span title='${new Date(m.active_on).toLocaleDateString('de-DE')}'>${ago_text(m.active_on)}</span>` : "<span class='text-body-secondary'>nie</span>"),
-                        $('<td class="text-nowrap">').html(disk_html(m.disk_kb, fat_kb)));
+                    row.append($('<td class="text-nowrap">').attr('data-sort', m.active_on || '').html(m.active_on ? `<span title='${new Date(m.active_on).toLocaleDateString('de-DE')}'>${ago_text(m.active_on)}</span>` : "<span class='text-body-secondary'>nie</span>"),
+                        $('<td class="text-nowrap">').attr('data-sort', m.disk_kb === null || m.disk_kb === undefined ? -1 : m.disk_kb).html(disk_html(m.disk_kb, fat_kb)));
                 }
                 row.append($('<td>').append(m.teacher ? "<span class='small text-body-secondary'>Lehrkraft</span>" : welcome));
                 if (ask_consent) {
@@ -376,6 +376,7 @@
                 row.append($('<td class="text-end">').append(remove));
                 table.find('tbody').append(row);
             });
+            make_sortable(table);
             body.append($(`<div class='table-responsive'></div>`).append(table));
         } else {
             body.append(`<p class='text-body-secondary'>Noch niemand in dieser Gruppe.</p>`);

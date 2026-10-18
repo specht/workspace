@@ -2140,6 +2140,19 @@ class Main < Sinatra::Base
                 Main.reconcile_live_apps!
             end
         end
+
+        # Announced deletions whose date has come, once an hour.
+        Thread.new do
+            loop do
+                sleep 600
+                begin
+                    Main.new!.run_scheduled_deletions
+                rescue => e
+                    STDERR.puts "Scheduled deletions failed: #{e.class}: #{e.message}"
+                end
+                sleep 3000
+            end
+        end
         @@db_init_queue ||= Queue.new
         @@db_init_mutex ||= Mutex.new
         @@db_init_queued_keys ||= Set.new
@@ -4062,6 +4075,91 @@ class Main < Sinatra::Base
         respond(:deleted => email, :removed => removed, :still_invited => still_invited, :notified => data[:notify] == true)
     end
 
+    # Announced deletion (Löschkonzept): a mail to the person with the date,
+    # DELETION_NOTICE_DAYS later; until then they can take out their data or
+    # ask to keep the account as a guest. Doing nothing means it is deleted:
+    # run_scheduled_deletions, every hour.
+    DELETION_NOTICE_DAYS = 14
+
+    post '/api/admin/announce_deletion' do
+        assert(admin_logged_in?)
+        data = parse_request_data(:required_keys => [:email])
+        email = AccountDeletion.normalize_email(data[:email])
+        halt 400, { :error => 'invalid_email' }.to_json unless email
+        halt 400, { :error => 'own_account' }.to_json if email == @session_user[:email] || ADMIN_USERS.include?(email)
+        halt 404, { :error => 'no_account' }.to_json if neo4j_query('MATCH (u:User {email: $email}) RETURN u.email;', :email => email).empty?
+        date = Date.today + DELETION_NOTICE_DAYS
+        neo4j_query('MATCH (u:User {email: $email}) SET u.deletion_at = $date, u.deletion_announced_at = $now, u.deletion_announced_by = $me;',
+            :email => email, :date => date.to_s, :now => Time.now.to_i, :me => @session_user[:email])
+        mail_subject, html = MailTexts.deletion_notice(:web_root => WEB_ROOT, :date => date, :signature => mail_signature)
+        reply = defined?(CONTACT_EMAIL) ? CONTACT_EMAIL.to_s : ''
+        deliver_mail do
+            to email
+            from SMTP_FROM
+            reply_to reply unless reply.empty?
+            subject mail_subject
+            html
+        end
+        STDERR.puts "Deletion of #{email} announced by #{@session_user[:email]} for #{date}"
+        respond(:email => email, :deletion_at => date.to_s)
+    end
+
+    post '/api/admin/cancel_deletion' do
+        assert(admin_logged_in?)
+        data = parse_request_data(:required_keys => [:email])
+        neo4j_query('MATCH (u:User {email: $email}) REMOVE u.deletion_at, u.deletion_announced_at, u.deletion_announced_by;', :email => data[:email].to_s.downcase)
+        STDERR.puts "Announced deletion of #{data[:email]} cancelled by #{@session_user[:email]}"
+        respond(:ok => true)
+    end
+
+    # The person keeps the account as a guest: into a group of the guests'
+    # school (Nutzungsordnung), and the announced deletion is off.
+    post '/api/admin/keep_as_guest' do
+        assert(admin_logged_in?)
+        data = parse_request_data(:required_keys => [:email, :group])
+        email = data[:email].to_s.downcase
+        halt 400, { :error => 'not_a_guest_group' }.to_json if neo4j_query(<<~END_OF_QUERY, :name => data[:group]).empty?
+            MATCH (:Group {name: $name})-[:AT]->(:School {guests: true}) RETURN 1 AS ok;
+        END_OF_QUERY
+        neo4j_query(<<~END_OF_QUERY, :email => email, :name => data[:group], :now => Time.now.to_i, :me => @session_user[:email])
+            MATCH (u:User {email: $email}), (g:Group {name: $name})
+            MERGE (i:Invitation {email: $email})
+            ON CREATE SET i.teacher = false, i.created_at = $now, i.created_by = $me, i.name = u.name
+            MERGE (i)-[:MEMBER_OF]->(g)
+            REMOVE u.deletion_at, u.deletion_announced_at, u.deletion_announced_by;
+        END_OF_QUERY
+        Main.note_roster_change!
+        STDERR.puts "#{email} kept as a guest in #{data[:group]} by #{@session_user[:email]}"
+        respond(:ok => true)
+    end
+
+    # Deletes the accounts whose announced date has come, with a short mail
+    # that it is done. Runs in its own thread (no request).
+    def run_scheduled_deletions
+        due = neo4j_query('MATCH (u:User) WHERE u.deletion_at IS NOT NULL AND u.deletion_at <= $today RETURN u.email AS email;',
+            :today => Date.today.to_s).map { |r| r['email'] }
+        return if due.empty?
+
+        Main.load_invitations()
+        due.each do |email|
+            next if ADMIN_USERS.include?(email)
+
+            removed = delete_account(email)
+            next unless removed
+
+            STDERR.puts "Announced deletion carried out: #{email} #{removed.inspect}"
+            mail_subject, html = MailTexts.account_deleted(:web_root => WEB_ROOT, :signature => mail_signature, :still_invited => @@invitations.key?(email))
+            deliver_mail do
+                to email
+                from SMTP_FROM
+                subject mail_subject
+                html
+            end
+        rescue => e
+            STDERR.puts "Announced deletion of #{email} failed: #{e.class}: #{e.message}"
+        end
+    end
+
     # The person deletes its own account (Datenschutzerklärung, »Wer nicht
     # einverstanden ist«), never a teacher looking in as the person. Two
     # steps: the address typed again, then a code that comes by mail. The
@@ -4244,6 +4342,7 @@ class Main < Sinatra::Base
         accounts = neo4j_query('MATCH (u:User) RETURN u.email AS email, u.name AS name;').to_h { |row| [row['email'], row['name']] }
         activity = activity_by_email
         disk = workspace_disk_usage[:by_tag]
+        deletion_at = neo4j_query('MATCH (u:User) WHERE u.deletion_at IS NOT NULL RETURN u.email AS email, u.deletion_at AS day;').to_h { |r| [r['email'], r['day']] }
         groups_of = Hash.new { |hash, key| hash[key] = [] }
         @@group_members.each { |group, members| members.each { |email| groups_of[email] << group unless @@test_groups.include?(group) } }
         q = query.to_s.strip.downcase
@@ -4268,7 +4367,7 @@ class Main < Sinatra::Base
             { :email => email, :name => name == email ? nil : name, :role => role, :groups => groups_of[email].sort,
               :schools => schools_of[email].sort, :account => accounts.key?(email), :invited => @@invitations.key?(email),
               :active_on => active && active[:day] ? active[:day].to_s : nil, :active_source => active && active[:day] ? active[:source] : nil,
-              :disk_kb => accounts.key?(email) ? disk[fs_tag_for_email(email)] : nil }
+              :disk_kb => accounts.key?(email) ? disk[fs_tag_for_email(email)] : nil, :deletion_at => deletion_at[email] }
         end.select do |p|
             q.empty? || p[:email].include?(q) || p[:name].to_s.downcase.include?(q) || p[:groups].any? { |g| g.downcase.include?(q) } ||
                 p[:schools].any? { |g| g.downcase.include?(q) }
@@ -4296,7 +4395,7 @@ class Main < Sinatra::Base
     post '/api/admin/uninvited_accounts' do
         assert(admin_logged_in?)
         Main.load_invitations()
-        rows = neo4j_query('MATCH (u:User) RETURN u.email AS email, u.name AS name ORDER BY u.email;').reject do |row|
+        rows = neo4j_query('MATCH (u:User) RETURN u.email AS email, u.name AS name, u.deletion_at AS deletion_at ORDER BY u.email;').reject do |row|
             @@invitations.key?(row['email'])
         end
         activity = activity_by_email
@@ -4304,7 +4403,7 @@ class Main < Sinatra::Base
         respond(:accounts => rows.map { |row|
             active = activity[row['email']] || {}
             { :email => row['email'], :name => row['name'], :active_on => active[:day]&.to_s, :active_source => active[:day] ? active[:source] : nil,
-              :disk_kb => usage[:by_tag][fs_tag_for_email(row['email'])] }
+              :disk_kb => usage[:by_tag][fs_tag_for_email(row['email'])], :deletion_at => row['deletion_at'] }
         }, :fat_kb => usage[:fat_kb])
     end
 

@@ -112,6 +112,18 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Datum eines schriftlichen Einverständnisses ein (Elternbrief mit
   Einverständniserklärung unter `/datenschutz`). Gesperrt wird ohne beides
   niemand; Gruppe und `/personen` zeigen, wie viele noch ungeklärt sind.
+- Löschung ankündigen: Beim Löschen eines Kontos (einzeln oder gesammelt)
+  ist die Vorgabe jetzt eine E-Mail an die Person: Ihr Konto wird in zwei
+  Wochen gelöscht; bis dahin lädt sie unter »Meine Daten« alles herunter
+  oder antwortet, wenn sie das Konto als Gast behalten möchte. Wer nichts
+  tut, dessen Konto löscht der Server zum angekündigten Tag von selbst. Das
+  Profil zeigt den Tag; unter `/personen` lässt sich die Löschung abbrechen
+  oder das Konto in eine Gruppe der Gäste übernehmen. »Jetzt löschen«
+  gibt es weiter. Alle Tabellen unter `/personen` und `/gruppen` lassen sich
+  nach jeder Spalte sortieren, »Alle auswählen, die nie da waren« wählt die
+  Konten ohne einen Besuch aus, und Arbeiten an vielen Konten zeigen einen
+  Fortschrittsbalken. Datenschutzerklärung und Löschkonzept nennen die
+  angekündigte Löschung.
 - Konten löschen und aufräumen an einer Stelle: unter `/personen` beim
   Konto in »Alle Personen« (Adresse zur Bestätigung, E-Mail an die Person
   nur mit Häkchen) und unter »Aufräumen«, wo »Einladungen ohne Konto« je

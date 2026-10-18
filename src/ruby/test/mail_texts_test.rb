@@ -1,4 +1,5 @@
 require 'minitest/autorun'
+require 'date'
 require_relative '../include/mail_texts'
 
 class MailTextsTest < Minitest::Test
@@ -25,6 +26,14 @@ class MailTextsTest < Minitest::Test
         assert_includes ready, 'Der Server kostet 40 € im Monat.'
         assert_includes ready, "#{WEB}/gruppen"
         assert_includes ready, "#{WEB}/datenschutz?schule=bs7"
+    end
+
+    def test_deletion_notice_says_the_date_and_that_nothing_is_to_do
+        subject, html = MailTexts.deletion_notice(:web_root => WEB, :date => Date.new(2026, 11, 1), :signature => 'Admin')
+        assert_includes subject, '01.11.2026'
+        assert_includes html, "#{WEB}/profil#my-data"
+        assert_includes html, 'als Gast'
+        assert_includes html, 'musst du nichts tun'
     end
 
     def test_deletion_texts

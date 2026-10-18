@@ -261,6 +261,7 @@ module PrivacyDocuments
                 'Die Administration ruft unter »Personen und Schulen › Aufräumen › Konten ohne Einladung« die Konten auf, deren Adresse in keiner Einladungsliste mehr steht, und löscht sie bis zum letzten Tag des Schuljahres.',
                 'Wer im nächsten Schuljahr weiter Informatik hat, bleibt eingeladen; der Zweck besteht fort, das Konto bleibt.',
                 'Wer die Schule verlässt und das Konto behalten möchte, sagt das vorher; die Administration führt es dann in einer eigenen Gruppe (etwa »Ehemalige«) unter der Nutzungsordnung weiter, und die Person unterschreibt sie.',
+                'Statt sofort zu löschen, kann die Administration die Löschung per E-Mail ankündigen: Das Konto wird dann zwei Wochen später von selbst gelöscht. Bis dahin lädt die Person ihre Daten herunter oder bittet darum, das Konto als Gast weiterzuführen; wer nichts tut, dessen Konto wird gelöscht.',
             ])}
             <h2>Löschung auf Wunsch</h2>
             <p>

@@ -114,6 +114,40 @@ function attach_suggestions(input, fetch, on_pick) {
     input.on('blur', () => setTimeout(close, 150));
 }
 
+// Sortable columns: a click on a heading sorts by it, a second click the
+// other way round. A cell's data-sort, when given, is what counts (a date,
+// a size); otherwise its text. Headings with class no-sort, or without
+// text, stay as they are.
+function make_sortable(table) {
+    const collator = new Intl.Collator('de', { numeric: true, sensitivity: 'base' });
+    table.find('thead th').each(function (index) {
+        const th = $(this);
+        const visible = th.clone().find('.visually-hidden').remove().end().text().trim();
+        if (th.hasClass('no-sort') || !visible || th.find('input').length) return;
+        th.addClass('sortable').attr({ tabindex: 0, 'aria-sort': 'none' });
+        const sort = function () {
+            const descending = th.attr('aria-sort') === 'ascending';
+            table.find('thead th').attr('aria-sort', function () { return $(this).hasClass('sortable') ? 'none' : null; });
+            th.attr('aria-sort', descending ? 'descending' : 'ascending');
+            const key = function (row) {
+                const cell = $(row).children().eq(index);
+                const value = cell.attr('data-sort');
+                return value !== undefined ? value : cell.text().trim();
+            };
+            const rows = table.find('tbody > tr').get();
+            rows.sort(function (a, b) {
+                const x = key(a), y = key(b);
+                const nx = parseFloat(x), ny = parseFloat(y);
+                const order = (!isNaN(nx) && !isNaN(ny) && String(nx) === x && String(ny) === y) ? nx - ny : collator.compare(x, y);
+                return descending ? -order : order;
+            });
+            table.find('tbody').append(rows);
+        };
+        th.on('click', sort);
+        th.on('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); sort(); } });
+    });
+}
+
 function show_success_message(message) {
     var div = $('<div>').css('text-align', 'center').css('padding', '15px').addClass('bg-light text-success').html(message);
     $('.api_messages').empty();

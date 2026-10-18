@@ -5725,3 +5725,17 @@ table.value-groups td.group-odd {
 .page-messages > .bg-light {
     background-color: var(--bs-body-bg) !important;
 }
+
+.people-table th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.people-table th.sortable::after {
+    content: '\2195';
+    margin-left: 0.3em;
+    opacity: 0.35;
+}
+
+.people-table th[aria-sort='ascending']::after { content: '\2191'; opacity: 0.8; }
+.people-table th[aria-sort='descending']::after { content: '\2193'; opacity: 0.8; }
