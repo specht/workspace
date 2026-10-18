@@ -51,9 +51,8 @@ the same.
   IP addresses.
 - The webhosting server (port 2222, separate from this repo): what it logs
   about visitors of the students' sites.
-- git.nhcham.org: his personal Git server, used voluntarily by a few
-  (mostly LK) students, no activity needs it. It has its own accounts; it
-  probably needs a short notice of its own.
+- git.nhcham.org: decided; it is voluntary and not part of the Workspace,
+  so the page leaves it out.
 - Administrators can look into a Workspace without a reason, and then the
   student sees no notice; the page says so in general terms. He trusts
   teachers; leave as is unless he wants a notice for admins too.
@@ -104,5 +103,4 @@ optional, made-up addresses allowed), and a group can require a consent form
 when a school wants one (`PARENTAL_CONSENT_REQUIRED`, per group rather than
 per installation). `load_invitations_locked` (main.rb) is read everywhere
 (`@@invitations`, teacher roles, groups), so the safe first step is to keep
-its output shape and change only where the data comes from. Design this with
-him before building.
+its output shape and change only where the data comes from (done: Roster).
