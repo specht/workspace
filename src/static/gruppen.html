@@ -122,14 +122,16 @@
         const mismatched = plan.teachers.filter(t => !t.matches && !t.admin);
         const can_move = mismatched.every(t => t.teaches_elsewhere.length === 0);
         if (mismatched.length) {
-            html += `<p class='mb-1'>Diese Lehrkräfte gehören zu einer anderen Schule als ${esc(plan.to.name)}:</p><ul class='small'>`
+            const one = mismatched.length === 1;
+            const who = one ? esc(mismatched[0].name || mismatched[0].email) : 'Diese Lehrkräfte';
+            html += `<p class='mb-1'>${one ? 'Diese Lehrkraft gehört' : 'Diese Lehrkräfte gehören'} zu einer anderen Schule als ${esc(plan.to.name)}:</p><ul class='small'>`
                 + mismatched.map(t => `<li>${esc(t.name || t.email)} (${t.school_name ? esc(t.school_name) : 'ohne Schule'})`
                     + (t.teaches_elsewhere.length ? `; betreut auch ${t.teaches_elsewhere.map(esc).join(', ')}` : '')
                     + (t.member_of.length ? `; Mitglied in ${t.member_of.map(esc).join(', ')} (bleibt)` : '') + `</li>`).join('')
                 + `</ul><div class='form-check'><input class='form-check-input' type='radio' name='rb_teachers' id='rb_teachers_move' value='move'${can_move ? ' checked' : ' disabled'}>`
-                + `<label class='form-check-label' for='rb_teachers_move'>Mit zu ${esc(plan.to.name)} nehmen: Sie gehören dann zu dieser Schule${can_move ? '' : ' (geht nicht, solange sie Gruppen einer anderen Schule betreuen)'}</label></div>`
+                + `<label class='form-check-label' for='rb_teachers_move'>Mit zu ${esc(plan.to.name)} nehmen: ${who} ${one ? 'gehört' : 'gehören'} dann zu dieser Schule${can_move ? '' : ` (geht nicht, solange ${one ? 'die Lehrkraft' : 'eine von ihnen'} noch Gruppen einer anderen Schule betreut)`}</label></div>`
                 + `<div class='form-check mb-2'><input class='form-check-input' type='radio' name='rb_teachers' id='rb_teachers_remove' value='remove'${can_move ? '' : ' checked'}>`
-                + `<label class='form-check-label' for='rb_teachers_remove'>Aus der Gruppe nehmen: Sie betreuen sie nicht mehr; ihre Schule bleibt</label></div>`;
+                + `<label class='form-check-label' for='rb_teachers_remove'>Aus der Gruppe nehmen: ${who} ${one ? 'betreut' : 'betreuen'} die Gruppe nicht mehr und ${one ? 'bleibt' : 'bleiben'} bei ${one ? esc(mismatched[0].school_name || 'der bisherigen Schule') : 'ihrer bisherigen Schule'}</label></div>`;
         }
         const admins = plan.teachers.filter(t => t.admin && !t.matches);
         if (admins.length) {
