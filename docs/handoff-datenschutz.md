@@ -58,7 +58,45 @@ the same.
   student sees no notice; the page says so in general terms. He trusts
   teachers; leave as is unless he wants a notice for admins too.
 
-## Next: invitations in the browser
+## Done since (2026-10-18, later)
+
+- Self-service in the profile (»Meine Daten«): ZIP export (Workspace,
+  hand-ins unpacked, every MySQL database, Neo4j dump via `neo4j_bolt` 0.5,
+  account JSON) built by `tools/zip_stream.py` as uid 1000 without
+  following links; self-deletion in two steps (address, code by mail), with
+  a mail to the administrators.
+- Admin: people search, optional deletion mail, deletion log and »Löschungen
+  wiederholen« after a restore; backups on the page (`BACKUP`,
+  `BACKUP_RETENTION_MONTHS`). The maintainer set borgmatic to about 6 months
+  (keep_daily 14, keep_weekly 8, keep_monthly 6, no yearly); check with
+  `borgmatic rlist` that the oldest archive fits before relying on the page.
+- Roster: `include/roster.rb` (tested against a verbatim copy of the old
+  loader, `test/support/legacy_invitations.rb`), `include/roster_store.rb`
+  (Neo4j, import with preview, verification in one transaction, undo),
+  `src/scripts/check-invitation-import.rb`. Not imported on production yet;
+  the maintainer wants to test it on a copy first (docs/teacher-access.md,
+  »Einladungen importieren«). Tested on the dev site: preview, simulated
+  difference (nothing written), import (people overview identical), logins
+  and teacher groups, undo.
+- Known limitation: `neo4j_bolt dump` writes dates and times as strings, so
+  they come back as strings after `load`. A fix belongs in the gem.
+
+## Next: invitations in the browser (decided)
+
+- Groups in Neo4j (decided: everything moves, after the import); students of
+  an external school log in only once the admin has approved the school
+  (decided).
+- Still to build: /gruppen for teachers (create groups, add addresses with
+  optional names, names later, co-teachers, welcome mails, print the package
+  for their school); /personen for the admin (schools with approval, add a
+  teacher with school, welcome mail to teachers, overview of everyone); the
+  package per school (controller = that school, operator as processor,
+  contact = the teacher, Elternbrief signed by the teacher); a cost note
+  setting (free to use, contributions welcome, never a condition; mind tax
+  and Nebentätigkeit if money goes to the maintainer personally; a
+  Förderverein or the Schulträger paying the server are simpler).
+
+## Next: invitations in the browser (first notes)
 
 The maintainer suggests replacing the text files in `/invitations/*.txt` with
 a user interface: teachers add addresses first and names later (names

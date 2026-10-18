@@ -33,6 +33,39 @@ Lea Lehrerin <lea@example.org>
 - `ADMIN_USERS` in `credentials.rb` sind Administratorinnen und
   Administratoren: Sie sehen alles.
 
+## Einladungen importieren
+
+Bis zum Import sind die Dateien die Einladungslisten, wie oben beschrieben.
+Danach stehen Gruppen, Einladungen und Schulen in Neo4j
+(`include/roster_store.rb`); Lehrkräfte verwalten ihre Gruppen dann im
+Browser. Dateien, deren Name mit `_` beginnt (`_e2e.txt`,
+`_tutorial_screenshots.txt`), schreiben Werkzeuge; sie werden weiter gelesen.
+
+So geht es auf einer laufenden Installation:
+
+1. Eine Kopie von `/invitations` auf den eigenen Rechner holen und prüfen:
+   `src/scripts/check-invitation-import.rb ORDNER`. Das Skript liest die
+   Dateien mit dem alten und dem neuen Leser und prüft, dass die Datensätze
+   des Imports dasselbe ergeben: wer eingeladen ist, mit welchem Namen, in
+   welcher Gruppe, wer was betreut, wer Lehrkraft ist. Die Reihenfolge der
+   Gruppen zählt nicht. `INVITATIONS_DIR=ORDNER ruby
+   src/ruby/test/roster_test.rb` macht dasselbe als Test.
+2. Unter »Administration › Einladungslisten« die Vorschau ansehen: Dateien,
+   Gruppen mit der Zahl ihrer Mitglieder, Einladungen, Lehrkräfte.
+3. »Einladungslisten importieren«. Der Import schreibt in einer Transaktion,
+   liest zurück und vergleicht mit den Dateien; bei einer Abweichung wird
+   nichts übernommen, und die Abweichungen stehen auf der Seite. Die Schule
+   der Installation (`OPERATOR_SCHOOL`) wird als freigegeben angelegt.
+4. Die Dateien bleiben liegen. »Zurück zu den Dateien« (mit `zurück`
+   bestätigen) löscht Gruppen, Einladungen und Schulen wieder aus der
+   Datenbank; was seit dem Import im Browser geändert wurde, geht dabei
+   verloren, die Seite sagt, ob es das gibt.
+
+Ein Konto entsteht weiter erst bei der ersten Anmeldung; eine Einladung ist
+kein Konto. Gehört eine Gruppe zu einer Schule, die noch nicht freigegeben
+ist, können sich ihre Schülerinnen und Schüler noch nicht anmelden; ihre
+Lehrkräfte schon.
+
 ## Wer was sieht
 
 | | Lernende | Lehrkraft (`*`) | Lehrkraft (`+`) | Admin |
