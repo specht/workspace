@@ -63,7 +63,9 @@ class PrivacyDocumentsTest < Minitest::Test
         refute_includes vvt, 'Schulweg 1'
         avv = PrivacyDocuments.body('auftragsverarbeitung', s)
         assert_includes avv, '<strong>Partnerschule</strong>, vertreten durch die Schulleitung'
-        assert_includes avv, '<strong>Dr. Erika Muster</strong>, Schulweg 1, 12345 Musterstadt (Auftragsverarbeiter)'
+        assert_includes avv, '<strong>Dr. Erika Muster am Beispiel-Gymnasium</strong>, Schulweg 1, 12345 Musterstadt (Auftragsverarbeiter)'
+        assert_includes PrivacyDocuments.body('schulleitung', s), 'Verantwortlich für den Betrieb ist Dr. Erika Muster am Beispiel-Gymnasium.'
+        assert_includes PrivacyDocuments.body('nutzungsordnung', s), 'Vereinbarung mit Dr. Erika Muster am Beispiel-Gymnasium'
         letter = PrivacyDocuments.body('elternbrief', s)
         assert_includes letter, 'Mit freundlichen Grüßen<br>Tom Lehrer'
         assert_includes letter, 'https://code.example.org/datenschutz/datenschutzerklaerung?schule=partner-1'

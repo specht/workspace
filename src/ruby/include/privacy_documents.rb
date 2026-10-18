@@ -133,7 +133,7 @@ module PrivacyDocuments
             <div class='decision'>
             <h2>Entscheidung der Schulleitung</h2>
             <p>
-            Der Workspace darf im Unterricht, vor allem im Fach Informatik, als digitales Lehr- und Lernmittel eingesetzt werden. Verantwortlich für den Betrieb ist #{operator_name(s)}.
+            Der Workspace darf im Unterricht, vor allem im Fach Informatik, als digitales Lehr- und Lernmittel eingesetzt werden. Verantwortlich für den Betrieb ist #{operator(s)}.
             Die beigefügte Datenschutzerklärung, das Löschkonzept und die technischen und organisatorischen Maßnahmen gelten.
             Die Entscheidung kann jederzeit widerrufen werden.
             </p>
@@ -289,7 +289,7 @@ module PrivacyDocuments
             <p class='draft'>Entwurf. Vor der Unterzeichnung von der Schule und ihrer Datenschutzbeauftragten Stelle zu prüfen.</p>
             <p>
             zwischen <strong>#{school(s)}</strong>, vertreten durch die Schulleitung (Verantwortlicher),
-            und <strong>#{operator_name(s)}</strong>#{address} (Auftragsverarbeiter).
+            und <strong>#{operator(s)}</strong>#{address} (Auftragsverarbeiter).
             </p>
             <h2>§ 1 Gegenstand und Dauer</h2>
             <p>
@@ -386,7 +386,7 @@ module PrivacyDocuments
             <p>
             Der Workspace ist eine Programmierumgebung für den Informatikunterricht. Diese Ordnung gilt für alle, die dort ein Konto haben.
             Für Erwachsene von außerhalb der Schule und für ehemalige Schülerinnen und Schüler, die ihr Konto behalten, ist sie die
-            Vereinbarung mit #{operator_name(s)}, mit der sie ihr Konto erhalten oder weiterführen; sie endet, wenn eine Seite es wünscht.
+            Vereinbarung mit #{operator(s)}, mit der sie ihr Konto erhalten oder weiterführen; sie endet, wenn eine Seite es wünscht.
             </p>
             <h2>Konto und Anmeldung</h2>
             #{list([
