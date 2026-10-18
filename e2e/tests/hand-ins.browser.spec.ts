@@ -63,7 +63,7 @@ const HAND_INS: HandIn[] = [
     task: 'drawing/eigenes-bild',
     setup: async (c) => {
       await write(c, 'bild.rb', read('drawing/rainbow.rb'));
-      await writeBinary(c, 'bild.png', base64('anaglyph/ampel.png'));
+      await writeBinary(c, 'bild.png', base64('anaglyph/image.png'));
     },
     shown: { code: read('drawing/rainbow.rb').split('\n').find((line) => line.trim())!.trim() },
     folders: ['bild.rb', 'bild.png'],
@@ -134,7 +134,7 @@ const HAND_INS: HandIn[] = [
     task: 'steganography/abgabe',
     setup: async (c) => {
       await write(c, 'stego/stego.rb', read('steganography/loesung/stego.rb'));
-      await writeBinary(c, 'stego/bild.png', base64('anaglyph/ampel.png'));
+      await writeBinary(c, 'stego/bild.png', base64('anaglyph/image.png'));
     },
     shown: { code: read('steganography/loesung/stego.rb').split('\n').find((line) => line.trim())!.trim() },
     folders: ['stego'],

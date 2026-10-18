@@ -167,7 +167,7 @@
                 return;
             }
             if (done) done(result);
-        });
+        }, { no_please_wait: true });
     }
 
     function school_status(s) {
@@ -275,22 +275,36 @@
     }
 
     // Several accounts at once: announce or delete, confirmed with the count.
+    // The chosen people at once: accounts announced or deleted (as chosen),
+    // invitations without an account removed; confirmed with the total.
     function bulk_delete_dialog(people, done) {
-        showTemplateModal(`${people.length} ${people.length === 1 ? 'Konto' : 'Konten'} löschen`, DELETE_CHOICE
-            + `<label class='form-label mt-3' for='ti_bulk_delete'>Zur Bestätigung die Zahl eingeben: <strong>${people.length}</strong></label><input id='ti_bulk_delete' class='form-control' inputmode='numeric' autocomplete='off'>`,
-            "<i class='bi bi-check-lg'></i>Weiter", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-outline-secondary', function () {
-                if ($('#ti_bulk_delete').val().trim() !== String(people.length)) { show_error_message('Die Zahl stimmt nicht.'); return false; }
-                const now = $('#rb_delete_now').is(':checked');
-                // One after the other: each deletion stops Workspaces and drops databases.
-                run_batch(people, p => p.email, function (p, finish) {
-                    const url = now ? '/api/admin/delete_account' : '/api/admin/announce_deletion';
-                    api_call(url, now ? { email: p.email, confirmation: p.email, notify: false } : { email: p.email }, r => finish(r.success), { no_please_wait: true });
-                }, function (ok, failed) {
-                    show_success_message(`${ok} ${ok === 1 ? 'Konto' : 'Konten'} ${now ? 'gelöscht' : 'angekündigt (E-Mail gesendet, Löschung in zwei Wochen)'}${failed.length ? `; nicht geklappt: ${failed.map(p => esc(p.email)).join(', ')}` : ''}.`);
-                    if (done) done();
-                });
-                return false;
+        const accounts = people.filter(p => p.account);
+        const invitations = people.filter(p => !p.account);
+        const parts = [];
+        if (accounts.length) parts.push(`${accounts.length} ${accounts.length === 1 ? 'Konto' : 'Konten'}`);
+        if (invitations.length) parts.push(`${invitations.length} ${invitations.length === 1 ? 'Einladung ohne Konto' : 'Einladungen ohne Konto'}`);
+        const text = (accounts.length ? `<p class='mb-2'><strong>${parts[0]}</strong>:</p>${DELETE_CHOICE}` : '')
+            + (invitations.length ? `<p class='mt-3 mb-0'><strong>${invitations.length} ${invitations.length === 1 ? 'Einladung ohne Konto wird' : 'Einladungen ohne Konto werden'}</strong> entfernt: Die Personen kommen aus allen Gruppen und können sich nicht mehr anmelden; ein Konto gibt es nicht, es wird also nichts gelöscht.</p>` : '')
+            + `<label class='form-label mt-3' for='ti_bulk_delete'>Zur Bestätigung die Zahl eingeben: <strong>${people.length}</strong></label><input id='ti_bulk_delete' class='form-control' inputmode='numeric' autocomplete='off'>`;
+        showTemplateModal(`${parts.join(' und ')}`, text, "<i class='bi bi-check-lg'></i>Weiter", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-outline-secondary', function () {
+            if ($('#ti_bulk_delete').val().trim() !== String(people.length)) { show_error_message('Die Zahl stimmt nicht.'); return false; }
+            const now = $('#rb_delete_now').is(':checked');
+            // One after the other: each deletion stops Workspaces and drops databases.
+            run_batch(people, p => p.email, function (p, finish) {
+                if (!p.account) { api_call('/api/people/remove_invitation', { email: p.email }, r => finish(r.success), { no_please_wait: true }); return; }
+                const url = now ? '/api/admin/delete_account' : '/api/admin/announce_deletion';
+                api_call(url, now ? { email: p.email, confirmation: p.email, notify: false } : { email: p.email }, r => finish(r.success), { no_please_wait: true });
+            }, function (ok, failed) {
+                const done_accounts = accounts.filter(p => !failed.includes(p)).length;
+                const done_invitations = invitations.filter(p => !failed.includes(p)).length;
+                const lines = [];
+                if (accounts.length) lines.push(`${done_accounts} ${done_accounts === 1 ? 'Konto' : 'Konten'} ${now ? 'gelöscht' : 'angekündigt (E-Mail gesendet, Löschung in zwei Wochen)'}`);
+                if (invitations.length) lines.push(`${done_invitations} ${done_invitations === 1 ? 'Einladung' : 'Einladungen'} entfernt`);
+                show_success_message(`${lines.join('; ')}${failed.length ? `; nicht geklappt: ${failed.map(p => esc(p.email)).join(', ')}` : ''}.`);
+                if (done) done();
             });
+            return false;
+        });
     }
 
     // An announced deletion off again, or the account kept as a guest.
@@ -333,25 +347,37 @@
     }
 
     // Checkboxes for accounts and what to do with the chosen ones.
+    // Who can be chosen in a list: accounts (not the administration) and
+    // invitations without an account of students and guests; teachers
+    // without an account have their own list under »Aufräumen«.
+    function selectable(p) {
+        if (p.role === 'Administration') return false;
+        return p.account || (p.invited && (p.role === 'Lernende' || p.role === 'Gast'));
+    }
+
+    // Checkboxes and what to do with the chosen ones.
     function bulk_bar(table, people, done) {
         const bar = $(`<div class='d-flex flex-wrap gap-2 mb-3'></div>`);
-        const never = $(`<button type='button' class='btn btn-sm btn-outline-secondary'><i class='bi bi-check2-square'></i>Alle auswählen, die nie da waren</button>`);
-        never.on('click', function () {
-            table.find('.cb-account').each(function () { $(this).prop('checked', !$(this).data('person').active_on); });
-        });
-        // Away for more than a year: the usual case for an announced deletion.
+        const pick = (test) => table.find('.cb-person').each(function () { $(this).prop('checked', test($(this).data('person'))); });
+        // Away for more than a year, or never seen with an account: the usual
+        // case for an announced deletion.
         const year_ago = new Date(Date.now() - 365 * 86400000).toISOString().slice(0, 10);
-        const inactive = $(`<button type='button' class='btn btn-sm btn-outline-secondary'><i class='bi bi-hourglass-bottom'></i>Alle auswählen, die über ein Jahr nicht da waren</button>`);
-        inactive.on('click', function () {
-            table.find('.cb-account').each(function () { const p = $(this).data('person'); $(this).prop('checked', !!p.active_on && p.active_on < year_ago); });
-        });
-        const del = $(`<button type='button' class='btn btn-sm btn-outline-danger'><i class='bi bi-trash'></i>Ausgewählte löschen …</button>`);
+        const away = $(`<button type='button' class='btn btn-sm btn-outline-secondary' title='Konten, deren letzter Besuch über ein Jahr her ist oder zu denen kein Besuch bekannt ist'><i class='bi bi-hourglass-bottom'></i>Alle auswählen, die über ein Jahr nicht da waren</button>`);
+        away.on('click', () => pick(p => p.account && (!p.active_on || p.active_on < year_ago)));
+        const bar_buttons = [away];
+        if (people.some(p => !p.account && selectable(p))) {
+            const no_account = $(`<button type='button' class='btn btn-sm btn-outline-secondary'><i class='bi bi-person-x'></i>Alle ohne Konto auswählen</button>`);
+            no_account.on('click', () => pick(p => !p.account));
+            bar_buttons.push(no_account);
+        }
+        const del = $(`<button type='button' class='btn btn-sm btn-outline-danger'><i class='bi bi-trash'></i>Ausgewählte entfernen …</button>`);
         del.on('click', function () {
-            const chosen = table.find('.cb-account:checked').map(function () { return $(this).data('person'); }).get();
+            const chosen = table.find('.cb-person:checked').map(function () { return $(this).data('person'); }).get();
             if (chosen.length) bulk_delete_dialog(chosen, done);
+            else show_error_message('Noch niemand ausgewählt.');
         });
-        table.find('.cb-account-all').on('change', function () { table.find('.cb-account').prop('checked', this.checked); });
-        return bar.append(never, inactive, del);
+        table.find('.cb-person-all').on('change', function () { table.find('.cb-person').prop('checked', this.checked); });
+        return bar.append(...bar_buttons, del);
     }
 
     function show_school_form(show) {
@@ -484,7 +510,13 @@
     // »vor 3 Tagen«, with the date, and where it comes from when it is not a
     // recorded visit.
     function active_html(p) {
-        if (!p.active_on) return `<span class='text-body-secondary'>${p.account ? 'nie' : 'nie (kein Konto)'}</span>`;
+        // No account: only invited, never asked for a code. An account
+        // without any trace: a code asked for and never used, or the last
+        // login more than a year ago (sessions end after a year; the visit
+        // day is kept only since 18.10.2026).
+        if (!p.active_on) return p.account
+            ? `<span class='text-warning-emphasis' title='Konto vorhanden, aber kein Besuch bekannt: Code angefordert und nie angemeldet, oder zuletzt vor über einem Jahr'>nicht bekannt</span><span class='person-email'>seit über einem Jahr oder nie angemeldet</span>`
+            : `<span class='text-body-secondary' title='nur eingeladen, hat nie einen Anmelde-Code angefordert'>kein Konto</span>`;
         const days = Math.round((new Date(new Date().toISOString().slice(0, 10)) - new Date(p.active_on)) / 86400000);
         const ago = days <= 0 ? 'heute' : days === 1 ? 'gestern' : days < 60 ? `vor ${days} Tagen` : days < 730 ? `vor ${Math.round(days / 30.4)} Monaten` : `vor ${Math.round(days / 365)} Jahren`;
         const source = p.active_source === 'anmeldung' ? ' · Anmeldung' : p.active_source === 'aufgabe' ? ' · Aufgabe' : '';
@@ -499,7 +531,7 @@
         api_call('/api/admin/people', filters, function (data) {
             if (!data.success) return;
             const here = $('#all_here').empty();
-            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th><input type='checkbox' class='form-check-input cb-account-all' aria-label='Alle Konten auswählen'></th><th>Name und Adresse</th><th>Rolle</th><th>Schule</th><th>Gruppen</th><th>Zuletzt da</th><th title='Speicherplatz des Workspace'>Speicher</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
+            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th><input type='checkbox' class='form-check-input cb-person-all' aria-label='Alle auswählen'></th><th>Name und Adresse</th><th>Rolle</th><th>Schule</th><th>Gruppen</th><th>Zuletzt da</th><th title='Speicherplatz des Workspace'>Speicher</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
             data.people.forEach(function (p) {
                 // Names live on the invitation; an account without one keeps its own.
                 const name = p.invited
@@ -515,7 +547,7 @@
                     });
                     actions.append(remove);
                 }
-                const cb = p.account && p.role !== 'Administration' ? $(`<input type='checkbox' class='form-check-input cb-account'>`).data('person', p).attr('aria-label', p.name || p.email) : '';
+                const cb = selectable(p) ? $(`<input type='checkbox' class='form-check-input cb-person'>`).data('person', p).attr('aria-label', p.name || p.email) : '';
                 table.find('tbody').append($('<tr>').append($('<td>').append(cb),
                     $('<td>').attr('data-sort', (p.name || p.email).toLowerCase()).append(name, $("<span class='person-email'></span>").text(p.email).append(deletion_note(p))),
                     $('<td>').html(esc(p.role) + (p.guest && p.role !== 'Administration' ? `<span class='person-email'>${p.terms_accepted_at ? `Nutzungsordnung angenommen ${new Date(p.terms_accepted_at * 1000).toLocaleDateString('de-DE')}` : (p.account ? "<span class='text-warning-emphasis'>Nutzungsordnung offen</span>" : 'Nutzungsordnung bei der ersten Anmeldung')}</span>` : '')),
@@ -545,7 +577,7 @@
                 const share = g.members ? Math.round(100 * g.unused / g.members) : 0;
                 const link = $(`<a></a>`).attr('href', '/gruppen#gruppe=' + encodeURIComponent(g.name)).text(g.name);
                 // From the longest ago to the latest visit of anyone in the group.
-                const range = !g.active_to ? "<span class='text-warning-emphasis'>noch nie</span>"
+                const range = !g.active_to ? "<span class='text-warning-emphasis'>kein Besuch bekannt</span>"
                     : g.active_from === g.active_to ? ago_text(g.active_to)
                     : `<span class='text-body-secondary'>${ago_text(g.active_from)} –</span> ${ago_text(g.active_to)}`;
                 table.find('tbody').append($('<tr>').append($('<td>').append(cb), $('<td>').append(link), $('<td>').text(g.school || '–'),
@@ -590,10 +622,10 @@
             const here = $('#uninvited_here').empty();
             if (!data.accounts.length) { here.append(`<p class='text-body-secondary'>Keine: Jedes Konto hat eine Einladung.</p>`); return; }
             here.append(`<p>${data.accounts.length} ${data.accounts.length === 1 ? 'Konto' : 'Konten'}.</p>`);
-            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th><input type='checkbox' class='form-check-input cb-account-all' aria-label='Alle auswählen'></th><th>Name und Adresse</th><th>Zuletzt da</th><th title='Speicherplatz des Workspace'>Speicher</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
+            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th><input type='checkbox' class='form-check-input cb-person-all' aria-label='Alle auswählen'></th><th>Name und Adresse</th><th>Zuletzt da</th><th title='Speicherplatz des Workspace'>Speicher</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
             data.accounts.forEach(function (a) {
                 const p = Object.assign({ account: true, role: 'Lernende' }, a);
-                const cb = $(`<input type='checkbox' class='form-check-input cb-account'>`).data('person', p).attr('aria-label', a.name || a.email);
+                const cb = $(`<input type='checkbox' class='form-check-input cb-person'>`).data('person', p).attr('aria-label', a.name || a.email);
                 table.find('tbody').append($('<tr>').append($('<td>').append(cb),
                     $('<td>').attr('data-sort', (a.name || a.email).toLowerCase()).append($('<span>').text(a.name || '–'), $("<span class='person-email'></span>").text(a.email).append(deletion_note(a))),
                     $('<td class="text-nowrap">').attr('data-sort', a.active_on || '').html(active_html(p)),

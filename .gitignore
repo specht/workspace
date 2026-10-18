@@ -13,6 +13,10 @@ logs
 src/content/git/git-tutorial/alice
 src/kenney/previews/
 src/ruby/credentials.rb
+# Editor swap and backup files (one of credentials.rb was committed once)
+*.swp
+*.swo
+*~
 src/ruby/invitations.txt
 src/scripts/collect-music-releases/cache
 src/scripts/dump-*.txt

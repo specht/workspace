@@ -133,7 +133,7 @@
                 return;
             }
             if (done) done(result);
-        });
+        }, { no_please_wait: true });
     }
 
     // »vor 3 Tagen« for a date (YYYY-MM-DD).
@@ -295,7 +295,7 @@
         // For administrators: when anyone of the group was last here, and the
         // disk space of all its Workspaces.
         if (admin && students.length) {
-            facts.push(group.last_active ? `zuletzt da ${ago_text(group.last_active)}` : `<span class='text-warning-emphasis'>noch nie da</span>`);
+            facts.push(group.last_active ? `zuletzt da ${ago_text(group.last_active)}` : `<span class='text-warning-emphasis'>kein Besuch bekannt</span>`);
             if (group.disk_kb) facts.push(disk_html(group.disk_kb, null));
         }
         details.append($('<summary>').append(`<h2>${esc(group.name)}</h2><span class='facts'>${facts.join(' · ')}</span>`));
@@ -392,7 +392,7 @@
                 row.append($('<td>').attr('data-sort', (m.name || m.email).toLowerCase()).append(name), $('<td>').text(m.email),
                     $('<td>').html(m.account ? "<i class='bi bi-check-lg' aria-hidden='true'></i><span class='visually-hidden'>ja</span>" : "<span class='text-body-secondary'>–</span>"));
                 if (admin) {
-                    row.append($('<td class="text-nowrap">').attr('data-sort', m.active_on || '').html(m.active_on ? `<span title='${new Date(m.active_on).toLocaleDateString('de-DE')}'>${ago_text(m.active_on)}</span>` : "<span class='text-body-secondary'>nie</span>"),
+                    row.append($('<td class="text-nowrap">').attr('data-sort', m.active_on || '').html(m.active_on ? `<span title='${new Date(m.active_on).toLocaleDateString('de-DE')}'>${ago_text(m.active_on)}</span>` : (m.account ? "<span class='text-warning-emphasis' title='Konto vorhanden, aber kein Besuch bekannt: seit über einem Jahr oder nie angemeldet'>nicht bekannt</span>" : "<span class='text-body-secondary' title='nur eingeladen, hat nie einen Anmelde-Code angefordert'>kein Konto</span>")),
                         $('<td class="text-nowrap">').attr('data-sort', m.disk_kb === null || m.disk_kb === undefined ? -1 : m.disk_kb).html(disk_html(m.disk_kb, fat_kb)));
                 }
                 row.append($('<td>').append(m.teacher ? "<span class='small text-body-secondary'>Lehrkraft</span>" : welcome));
@@ -540,7 +540,7 @@
                 const card = $('#groups_here .group-card').filter(function () { return $(this).data('group') === wanted; }).first();
                 if (card.length) card[0].scrollIntoView({ block: 'start' });
             }
-        });
+        }, { no_please_wait: true });
     }
 
     window.addEventListener('load', function () {

@@ -169,7 +169,7 @@ function api_call(url, data, callback, options) {
         // show 'please wait' message after 500 ms
         (function () {
             window.please_wait_timeout = setTimeout(function () {
-                var div = $('<div>').css('text-align', 'center').css('padding', '15px').addClass('text-muted').html("<i class='fa fa-cog bi-spin'></i>&nbsp;&nbsp;Einen Moment bitte...");
+                var div = $('<div>').css('text-align', 'center').css('padding', '15px').addClass('text-muted please-wait').html("<i class='fa fa-cog bi-spin'></i>&nbsp;&nbsp;Einen Moment bitte...");
                 $('.api_messages').empty().show();
                 $('.api_messages').append(div);
             }, 500);
@@ -204,7 +204,10 @@ function api_call(url, data, callback, options) {
 
     jqxhr.done(function (data) {
         clearTimeout(window.please_wait_timeout);
-        $('.api_messages').empty().hide();
+        // Only the »please wait« goes; a message another call has just shown
+        // (a success after a reload, say) stays.
+        $('.api_messages .please-wait').remove();
+        if ($('.api_messages').children().length === 0) $('.api_messages').hide();
         if (typeof (callback) !== 'undefined') {
             if (options.method !== 'GET')
                 data.success = true;
