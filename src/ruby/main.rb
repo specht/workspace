@@ -52,6 +52,8 @@ require 'neo4j_bolt'
 require 'nokogiri'
 require 'faye/websocket'
 require 'open3'
+require 'resolv'
+require 'ipaddr'
 require 'redcarpet'
 require 'rouge'
 require './include/er_lexer.rb'
@@ -1260,12 +1262,15 @@ class Main < Sinatra::Base
 
         STDERR.puts ">>> Writing nginx config..."
 
+        # X-Hs-Peer: whom nginx got the request from (Traefik, or a Workspace on
+        # the user network calling nginx directly); client_ip uses it.
         AtomicFile.write('/nginx-snippets/proxy_ws.conf', <<~END_OF_STRING)
             proxy_http_version 1.1;
             proxy_set_header Host $http_host;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection upgrade;
             proxy_set_header Accept-Encoding gzip;
+            proxy_set_header X-Hs-Peer $remote_addr;
         END_OF_STRING
 
         AtomicFile.write('/nginx-snippets/proxy_ws_code.conf', <<~END_OF_STRING)
@@ -2785,9 +2790,75 @@ class Main < Sinatra::Base
     # The browser's address: Traefik appends it to X-Forwarded-For (the last
     # entry; earlier ones come from the client and prove nothing), nginx
     # passes the header on. Without Traefik (development) the peer itself.
+    # The header counts only when the request comes from nginx: Workspaces
+    # reach the backend directly on the user network and could otherwise set
+    # any address and slip past the limits per address.
+    @@nginx_addresses = nil
+    @@nginx_addresses_at = 0
+
+    # Every address of the nginx container, on each network it is in (it may
+    # reach the backend over either): from docker inspect, else by name.
+    def self.nginx_addresses
+        if @@nginx_addresses.nil? || Time.now.to_i - @@nginx_addresses_at > 300
+            names, = Open3.capture2('docker', 'ps', '--filter', 'label=com.docker.compose.service=nginx', '--format', '{{.Names}}')
+            found = names.split.flat_map do |name|
+                out, = Open3.capture2('docker', 'inspect', '-f', '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}', name)
+                out.split
+            end
+            @@nginx_addresses = (found + (Resolv.getaddresses('nginx') rescue [])).uniq
+            @@nginx_addresses_at = Time.now.to_i
+        end
+        @@nginx_addresses
+    rescue => e
+        STDERR.puts "nginx addresses: #{e.class}: #{e.message}"
+        @@nginx_addresses || []
+    end
+
+    # The subnets of the user network (where the Workspaces are), from the
+    # networks of the nginx container whose name ends in _user.
+    @@user_subnets = nil
+
+    def self.user_subnets
+        @@user_subnets ||= begin
+            names, = Open3.capture2('docker', 'ps', '--filter', 'label=com.docker.compose.service=nginx', '--format', '{{.Names}}')
+            networks = names.split.flat_map do |name|
+                out, = Open3.capture2('docker', 'inspect', '-f', '{{range $n, $c := .NetworkSettings.Networks}}{{$n}} {{end}}', name)
+                out.split.select { |n| n.end_with?('_user') }
+            end
+            networks.uniq.flat_map do |network|
+                out, = Open3.capture2('docker', 'network', 'inspect', '-f', '{{range .IPAM.Config}}{{.Subnet}}={{.Gateway}} {{end}}', network)
+                out.split.filter_map do |entry|
+                    cidr, gateway = entry.split('=')
+                    { :net => IPAddr.new(cidr), :gateway => gateway.to_s } rescue nil
+                end
+            end
+        end
+    rescue => e
+        STDERR.puts "user subnets: #{e.class}: #{e.message}"
+        []
+    end
+
+    # In the user network, but not its gateway (that is the host, through
+    # which browsers can arrive when ports are published).
+    def self.in_user_network?(address)
+        ip = (IPAddr.new(address.to_s) rescue nil)
+        !ip.nil? && user_subnets.any? { |s| s[:net].include?(ip) && address.to_s != s[:gateway] }
+    end
+
+    # The peer is REMOTE_ADDR, not request.ip: Rack's request.ip already
+    # follows X-Forwarded-For when the peer has a private address, which
+    # every container has. Through nginx: if nginx got the request from a
+    # Workspace (X-Hs-Peer in the user network), that Workspace; otherwise it
+    # came through Traefik, whose entry is the last in X-Forwarded-For.
     def client_ip
+        peer = request.env['REMOTE_ADDR'].to_s
+        return peer unless Main.nginx_addresses.include?(peer)
+
+        nginx_peer = request.env['HTTP_X_HS_PEER'].to_s
+        return nginx_peer if Main.in_user_network?(nginx_peer)
+
         forwarded = request.env['HTTP_X_FORWARDED_FOR'].to_s.split(',').map(&:strip).reject(&:empty?)
-        forwarded.last || request.ip
+        forwarded.last || (nginx_peer.empty? ? peer : nginx_peer)
     end
 
     post '/api/request_login' do
