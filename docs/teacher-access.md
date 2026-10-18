@@ -91,6 +91,28 @@ Nach dem Import verwaltet jede Lehrkraft ihre Gruppen selbst
 Administratorinnen und Administratoren sehen alle Gruppen und wählen beim
 Anlegen die Schule, auch »Gäste«.
 
+**Schule wechseln** (nur Administration, an jeder Gruppe): für Gruppen, die
+beim Import unter der Schule der Installation gelandet sind, aber zu einer
+anderen gehören. Die Zielschule muss es unter `/personen` schon geben. Eine
+Vorschau zeigt beide Schulen mit ihrem Stand, die Zahl der Mitglieder und
+was zu entscheiden ist; erst die Bestätigung ändert etwas, und dann nur die
+Schule der Gruppe (`moved_from`, `moved_at`, `moved_by` an der Gruppe, eine
+Zeile im Log). Mitglieder, Namen, Konten, Workspaces, Aufgaben und Abgaben
+bleiben.
+
+- Lehrkräfte der Gruppe, die zu einer anderen Schule gehören: entweder mit
+  zur Zielschule nehmen (geht nur, wenn sie keine Gruppe einer anderen
+  Schule betreuen) oder aus der Gruppe nehmen. Ihre Mitgliedschaften in
+  anderen Gruppen (etwa einem Informatiktag) bleiben. Die Administration
+  bleibt, wie sie ist.
+- Steht eine Schülerin oder ein Schüler auch in einer Gruppe einer anderen
+  Schule, verweigert der Server den Wechsel: Eine Lehrkraft der Zielschule
+  sähe sonst jemanden einer anderen Schule (ein Konto je Adresse). Erst aus
+  einer der Gruppen nehmen.
+- Ist die Zielschule noch nicht freigegeben, können sich die Schülerinnen
+  und Schüler der Gruppe danach nicht mehr anmelden, bis sie es ist; ihre
+  Daten bleiben.
+
 ## Personen und Schulen (`/personen`, Administration)
 
 `include/people_page.rb`, `static/personen.html`:

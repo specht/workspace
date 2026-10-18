@@ -8,8 +8,9 @@
 class Main < Sinatra::Base
     GUESTS_SCHOOL = 'guests'
 
+    # A refusal, not an error: 403 for anyone who is not an administrator.
     def admin_only!
-        assert(admin_logged_in?)
+        halt 403, { :error => 'admins_only' }.to_json unless admin_logged_in?
         roster_writable!
     end
 

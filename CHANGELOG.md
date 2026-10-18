@@ -104,6 +104,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Schulleitung, in der Vereinbarung und in der Willkommensmail an
   Lehrkräfte, was der Server kostet und wie eine Schule beitragen kann; die
   Seiten sagen dazu, dass die Nutzung nie davon abhängt.
+- »Schule wechseln« unter »Gruppen« (nur Administration): verschiebt eine
+  Gruppe, die beim Import unter der eigenen Schule gelandet ist, zu der
+  Schule, zu der sie gehört. Eine Vorschau zeigt, was sich ändert; Lehrkräfte
+  einer anderen Schule werden mitgenommen oder aus der Gruppe genommen,
+  nie stillschweigend; steht jemand auch in einer Gruppe einer anderen
+  Schule, geht es nicht. Mitglieder und alle ihre Daten bleiben. Nicht-Admins
+  bekommen auf den Seiten der Administration jetzt 403 statt eines Fehlers.
 - Klassenseite: Gibt es mehr als eine Schule (Partnerschulen, Gäste), stehen
   die Gruppen in der Auswahl unter ihrer Schule.
 - Konten löschen: Unter »Administration« löscht ein Klick ein Konto mit

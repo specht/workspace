@@ -58,6 +58,10 @@
         other_school: 'Diese Lehrkraft gehört zu einer anderen Schule.',
         last_teacher: 'Eine Gruppe braucht mindestens eine Lehrkraft.',
         confirmation_mismatch: 'Der Name stimmt nicht.',
+        same_school: 'Die Gruppe gehört schon zu dieser Schule.',
+        students_elsewhere: 'Einige Schülerinnen und Schüler stehen auch in einer Gruppe einer anderen Schule; so lässt sich die Gruppe nicht verschieben.',
+        teachers_undecided: 'Bitte wählen, was mit den Lehrkräften der anderen Schule geschieht.',
+        teacher_elsewhere: 'Eine Lehrkraft betreut noch Gruppen einer anderen Schule und kann nicht mitgehen; nimm sie stattdessen aus der Gruppe.',
         too_many: 'Höchstens 1000 Adressen auf einmal.',
     };
 
@@ -77,6 +81,70 @@
 
     function day(ts) {
         return ts ? new Date(ts * 1000).toLocaleDateString('de-DE') : '';
+    }
+
+    let all_schools = [];
+
+    function school_label(s) {
+        return `${esc(s.name)} <span class='small ${s.approved ? 'text-body-secondary' : 'text-warning-emphasis'}'>(${s.approved ? 'freigegeben' : 'noch nicht freigegeben'})</span>`;
+    }
+
+    // Administrators only: move a group to another school. First choose the
+    // school, then the server's preview says what changes, and only then
+    // does anything happen.
+    function change_school(group) {
+        const others = all_schools.filter(s => !group.school || s.key !== group.school.key);
+        if (!others.length) {
+            alert('Es gibt keine andere Schule. Lege sie zuerst unter »Personen« an.');
+            return;
+        }
+        const select = `<select id='sel_target_school' class='form-select'>${others.map(s => `<option value='${esc(s.key)}'>${esc(s.name)}${s.approved ? '' : ' (noch nicht freigegeben)'}</option>`).join('')}</select>`;
+        showTemplateModal('Schule wechseln', `<p>Zu welcher Schule gehört die Gruppe ${esc(group.name)}? Fehlt die Schule, lege sie zuerst unter <a href='/personen#schulen'>Personen</a> an.</p><label class='form-label' for='sel_target_school'>Neue Schule</label>${select}`,
+            "<i class='bi bi-arrow-right'></i>Weiter", 'btn-primary', 'Abbruch', 'btn-secondary', function () {
+                const target = $('#sel_target_school').val();
+                groups_call('/api/groups/school_change_preview', { name: group.name, school: target }, plan => confirm_school_change(plan));
+                return false;
+            });
+    }
+
+    function confirm_school_change(plan) {
+        let html = `<p><strong>${esc(plan.group)}</strong> mit ${plan.members} ${plan.members === 1 ? 'Mitglied' : 'Mitgliedern'}<br>`
+            + `von ${plan.from ? school_label(plan.from) : 'ohne Schule'}<br>nach ${school_label(plan.to)}</p>`
+            + `<p class='small'>Es ändert sich nur die Schule der Gruppe. Mitglieder, Namen, Konten, Workspaces, Aufgaben und Abgaben bleiben, wie sie sind.</p>`;
+        if (!plan.to.approved) {
+            html += `<div class='alert alert-warning small'>${esc(plan.to.name)} ist noch nicht freigegeben: Die Schülerinnen und Schüler der Gruppe können sich danach nicht mehr anmelden, bis die Schule zugestimmt hat. Ihre Daten bleiben.</div>`;
+        }
+        const ok = plan.students_elsewhere.length === 0;
+        if (!ok) {
+            html += `<div class='alert alert-danger small'>Diese Personen stehen auch in Gruppen einer anderen Schule. Eine Lehrkraft der neuen Schule sähe dann eine Schülerin oder einen Schüler einer anderen Schule; deshalb geht das nicht. Nimm sie zuerst aus einer der Gruppen:<ul class='mb-0'>`
+                + plan.students_elsewhere.map(s => `<li>${esc(s.name || s.email)}: ${s.groups.map(esc).join(', ')}</li>`).join('') + `</ul></div>`;
+        }
+        const mismatched = plan.teachers.filter(t => !t.matches && !t.admin);
+        const can_move = mismatched.every(t => t.teaches_elsewhere.length === 0);
+        if (mismatched.length) {
+            html += `<p class='mb-1'>Diese Lehrkräfte gehören zu einer anderen Schule als ${esc(plan.to.name)}:</p><ul class='small'>`
+                + mismatched.map(t => `<li>${esc(t.name || t.email)} (${t.school_name ? esc(t.school_name) : 'ohne Schule'})`
+                    + (t.teaches_elsewhere.length ? `; betreut auch ${t.teaches_elsewhere.map(esc).join(', ')}` : '')
+                    + (t.member_of.length ? `; Mitglied in ${t.member_of.map(esc).join(', ')} (bleibt)` : '') + `</li>`).join('')
+                + `</ul><div class='form-check'><input class='form-check-input' type='radio' name='rb_teachers' id='rb_teachers_move' value='move'${can_move ? ' checked' : ' disabled'}>`
+                + `<label class='form-check-label' for='rb_teachers_move'>Mit zu ${esc(plan.to.name)} nehmen: Sie gehören dann zu dieser Schule${can_move ? '' : ' (geht nicht, solange sie Gruppen einer anderen Schule betreuen)'}</label></div>`
+                + `<div class='form-check mb-2'><input class='form-check-input' type='radio' name='rb_teachers' id='rb_teachers_remove' value='remove'${can_move ? '' : ' checked'}>`
+                + `<label class='form-check-label' for='rb_teachers_remove'>Aus der Gruppe nehmen: Sie betreuen sie nicht mehr; ihre Schule bleibt</label></div>`;
+        }
+        const admins = plan.teachers.filter(t => t.admin && !t.matches);
+        if (admins.length) {
+            html += `<p class='small text-body-secondary'>Administration (bleibt, wie sie ist): ${admins.map(t => esc(t.name || t.email)).join(', ')}</p>`;
+        }
+        showTemplateModal('Schule wechseln', html, ok ? "<i class='bi bi-building'></i>Schule wechseln" : 'Schließen', ok ? 'btn-primary' : 'btn-secondary', ok ? 'Abbruch' : null, 'btn-secondary', function () {
+            if (!ok) return true;
+            const payload = { name: plan.group, school: plan.to.key };
+            if (mismatched.length) payload.teachers = $('input[name=rb_teachers]:checked').val();
+            groups_call('/api/groups/change_school', payload, function (r) {
+                $('#__template_modal').modal('hide');
+                load_groups();
+            });
+            return false;
+        });
     }
 
     function render_group(group, admin) {
@@ -172,7 +240,12 @@
             });
             actions.append(send);
         }
-        const del = $(`<button class='btn btn-sm btn-outline-danger ms-auto'><i class='bi bi-trash'></i>Gruppe löschen</button>`);
+        if (admin) {
+            const move = $(`<button class='btn btn-sm btn-outline-secondary ms-auto'><i class='bi bi-building'></i>Schule wechseln</button>`);
+            move.on('click', () => change_school(group));
+            actions.append(move);
+        }
+        const del = $(`<button class='btn btn-sm btn-outline-danger${admin ? '' : ' ms-auto'}'><i class='bi bi-trash'></i>Gruppe löschen</button>`);
         del.on('click', function () {
             showTemplateModal('Gruppe löschen', `<p>Die Gruppe ${esc(group.name)} wird gelöscht. Wer in keiner anderen Gruppe steht, kann sich danach nicht mehr anmelden; Konten bleiben, bis sie nach den Löschregeln gelöscht werden.</p><label class='form-label' for='ti_delete_group'>Zur Bestätigung den Namen der Gruppe eingeben:</label><input id='ti_delete_group' class='form-control' autocomplete='off'>`,
                 "<i class='bi bi-trash'></i>Löschen", 'btn-danger', 'Abbruch', 'btn-secondary', function () {
@@ -223,6 +296,7 @@
             if (data.groups.length === 0) {
                 here.append(`<p class='text-body-secondary'>Noch keine Gruppe.</p>`);
             }
+            all_schools = data.schools || [];
             data.groups.forEach(g => here.append(render_group(g, data.admin)));
         });
     }

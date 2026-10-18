@@ -101,7 +101,115 @@ class Main < Sinatra::Base
         imported = Main.roster_imported
         respond(:imported => !imported.nil?, :admin => admin_logged_in?, :school => imported ? school_of_teacher(my_email) : nil,
             :groups => imported ? groups_overview : [],
-            :schools => admin_logged_in? && imported ? neo4j_query('MATCH (s:School) RETURN s.key AS key, s.name AS name ORDER BY s.name;').map { |r| { :key => r['key'], :name => r['name'] } } : [])
+            :schools => admin_logged_in? && imported ? neo4j_query('MATCH (s:School) RETURN s.key AS key, s.name AS name, s.approved_at IS NOT NULL AS approved ORDER BY s.name;').map { |r| { :key => r['key'], :name => r['name'], :approved => r['approved'] == true } } : [])
+    end
+
+    # --- Moving a group to another school (administrators only) ----------
+    #
+    # Only the group's AT link changes: members, their names, welcome dates,
+    # accounts, Workspaces and everything else stay as they are. Whether the
+    # students can log in then follows the target school's approval.
+    #
+    # What has to be decided first:
+    # - teachers of the group whose own school is a different one: moved
+    #   along (only if they teach no group outside the target school) or
+    #   taken off the group; never silently left behind;
+    # - students who are also in a group of another school: the move is
+    #   refused, as a teacher of the target school would then see a student
+    #   of another school (one account per address).
+    def school_change_plan(name, target)
+        from = school_of_group(name)
+        to = neo4j_query('MATCH (s:School {key: $key}) RETURN s.key AS key, s.name AS name, s.approved_at IS NOT NULL AS approved;', :key => target).first
+        return { :error => 'no_school' } unless to
+
+        to = { :key => to['key'], :name => to['name'], :approved => to['approved'] == true }
+        return { :error => 'same_school' } if from && from[:key] == to[:key]
+
+        teachers = neo4j_query(<<~END_OF_QUERY, :name => name, :target => to[:key]).map { |r| r.transform_keys(&:to_sym) }
+            MATCH (t:Invitation)-[:TEACHES]->(:Group {name: $name})
+            OPTIONAL MATCH (t)-[:AT]->(ts:School)
+            OPTIONAL MATCH (t)-[:TEACHES]->(o:Group) WHERE o.name <> $name AND NOT (o)-[:AT]->(:School {key: $target})
+            OPTIONAL MATCH (t)-[:MEMBER_OF]->(mg:Group)
+            RETURN t.email AS email, t.name AS name, ts.key AS school, ts.name AS school_name,
+                collect(DISTINCT o.name) AS teaches_elsewhere, collect(DISTINCT mg.name) AS member_of
+            ORDER BY t.email;
+        END_OF_QUERY
+        teachers.each do |t|
+            t[:matches] = t[:school] == to[:key]
+            t[:admin] = ADMIN_USERS.include?(t[:email])
+        end
+        elsewhere = neo4j_query(<<~END_OF_QUERY, :name => name, :target => to[:key]).map { |r| { :email => r['email'], :name => r['name'], :groups => r['groups'] } }
+            MATCH (m:Invitation)-[:MEMBER_OF]->(:Group {name: $name})
+            WHERE coalesce(m.teacher, false) = false AND NOT (m)-[:TEACHES]->(:Group {name: $name})
+            MATCH (m)-[:MEMBER_OF]->(o:Group) WHERE o.name <> $name
+            OPTIONAL MATCH (o)-[:AT]->(os:School)
+            WITH m, o, os WHERE os IS NULL OR os.key <> $target
+            RETURN m.email AS email, m.name AS name, collect(DISTINCT o.name) AS groups
+            ORDER BY m.email;
+        END_OF_QUERY
+        members = neo4j_query('MATCH (m:Invitation)-[:MEMBER_OF]->(:Group {name: $name}) RETURN count(m) AS n;', :name => name).first['n'].to_i
+        { :group => name, :from => from, :to => to, :members => members, :teachers => teachers, :students_elsewhere => elsewhere }
+    end
+
+    post '/api/groups/school_change_preview' do
+        admin_only!
+        data = parse_request_data(:required_keys => [:name, :school])
+        name = managed_group!(data[:name])
+        plan = school_change_plan(name, data[:school].to_s)
+        halt 400, { :error => plan[:error] }.to_json if plan[:error]
+        respond(plan)
+    end
+
+    # teachers: 'move' (teachers of another school move to the target
+    # school with the group) or 'remove' (they no longer teach it).
+    # Administrators keep their rights either way and are not moved.
+    post '/api/groups/change_school' do
+        admin_only!
+        data = parse_request_data(:required_keys => [:name, :school], :optional_keys => [:teachers])
+        name = managed_group!(data[:name])
+        plan = school_change_plan(name, data[:school].to_s)
+        halt 400, { :error => plan[:error] }.to_json if plan[:error]
+        halt 409, { :error => 'students_elsewhere', :students => plan[:students_elsewhere] }.to_json unless plan[:students_elsewhere].empty?
+
+        mismatched = plan[:teachers].reject { |t| t[:matches] || t[:admin] }
+        mode = data[:teachers].to_s
+        halt 400, { :error => 'teachers_undecided' }.to_json if !mismatched.empty? && !%w[move remove].include?(mode)
+        if mode == 'move'
+            blocked = mismatched.reject { |t| t[:teaches_elsewhere].empty? }
+            halt 409, { :error => 'teacher_elsewhere', :teachers => blocked }.to_json unless blocked.empty?
+        end
+        emails = mismatched.map { |t| t[:email] }
+        now = Time.now.to_i
+        $neo4j.transaction do
+            $neo4j.neo4j_query(<<~END_OF_QUERY, :name => name, :target => plan[:to][:key], :now => now, :me => my_email)
+                MATCH (g:Group {name: $name})
+                OPTIONAL MATCH (g)-[old:AT]->(from:School)
+                WITH g, old, from
+                MATCH (to:School {key: $target})
+                SET g.moved_from = from.key, g.moved_at = $now, g.moved_by = $me
+                DELETE old
+                CREATE (g)-[:AT]->(to);
+            END_OF_QUERY
+            unless emails.empty?
+                if mode == 'move'
+                    $neo4j.neo4j_query(<<~END_OF_QUERY, :emails => emails, :target => plan[:to][:key])
+                        MATCH (t:Invitation) WHERE t.email IN $emails
+                        OPTIONAL MATCH (t)-[old:AT]->(:School)
+                        DELETE old
+                        WITH DISTINCT t
+                        MATCH (to:School {key: $target})
+                        CREATE (t)-[:AT]->(to);
+                    END_OF_QUERY
+                else
+                    $neo4j.neo4j_query('MATCH (t:Invitation)-[r:TEACHES]->(:Group {name: $name}) WHERE t.email IN $emails DELETE r;', :emails => emails, :name => name)
+                end
+            end
+        end
+        drop_orphan_invitations
+        Main.note_roster_change!
+        STDERR.puts "Group #{name} moved by #{my_email} from #{(plan[:from] || {})[:key] || '-'} to #{plan[:to][:key]}; " \
+            "teachers of another school: #{emails.empty? ? 'none' : "#{emails.size} #{mode == 'move' ? 'moved' : 'removed'}"}"
+        respond(:moved => name, :to => plan[:to])
     end
 
     post '/api/groups/create' do
