@@ -1,49 +1,23 @@
 <style>
-    h2 {
-        margin: 1em 0;
+    .privacy-page h1 {
+        margin: 1em 0 0.5em 0;
+    }
+    .privacy-page h2 {
+        font-size: 1.35rem;
+        margin: 1.5em 0 0.5em 0;
+    }
+    .privacy-page h4 {
+        font-size: 1.05rem;
+        margin: 1em 0 0.3em 0;
+    }
+    .privacy-table td:first-child {
+        width: 35%;
     }
 </style>
 <div class='container'>
     <div class='row'>
         <div class='col-md-12'>
-            <h1>Impressum</h1>
-            <p>
-            Diese Seite ist entstanden zum Zwecke des Informatikunterrichts und wird betrieben von Michael Specht am Gymnasium Steglitz.
-            </p>
-            <p>
-            #{contact_email.empty? ? '' : "Kontakt: #{contact_email_link} <br />"}
-            Quelltext: <a href='https://github.com/specht/workspace'>https://github.com/specht/workspace</a>
-            </p>
-            <h3 style='margin-top: 30px;'>Datenschutzerklärung</h3>
-            <h5>Allgemeines</h5>
-            <p>
-            Diese Plattform („Workspace“) wird von der Schule ausschließlich zu Bildungszwecken betrieben. Der Zugang ist nur mit Einladung möglich. Die Nutzung erfolgt im schulischen Kontext und unterliegt den Regelungen des Schulrechts und des Datenschutzrechts.
-            </p>
-
-            <h5>Keine Einbindung externer Dienste</h5>
-            <p>
-            Es werden keine externen Dienste (wie z. B. Google Fonts, YouTube, oder Analyse-Tools) eingebunden. Es findet kein Tracking statt.
-            </p>
-
-            <h5>Cookies</h5>
-            <p>
-            Nach dem Login wird ein technisch notwendiger Cookie gesetzt, um die Sitzung aufrechtzuerhalten. Vor der Anmeldung werden keine Cookies verwendet.
-            </p>
-
-            <h5>Anmeldung und Datenspeicherung</h5>
-            <p>
-            Eine Anmeldung ist nur mit Einladung möglich. Nach der Anmeldung werden personenbezogene Daten wie Name, Benutzername, bearbeitete Dateien und Aktivitäten im Workspace gespeichert. Diese Daten dienen ausschließlich der Durchführung des Unterrichts.
-            </p>
-
-            <h5>Einsicht durch Lehrkräfte</h5>
-            <p>
-            Lehrkräfte können die Aktivitäten der Schülerinnen und Schüler im Workspace einsehen, um den Lernfortschritt zu begleiten und zu unterstützen.
-            </p>
-
-            <h5>Keine Weitergabe an Dritte</h5>
-            <p>
-            Es erfolgt keine Weitergabe der Daten an Dritte. Alle Daten bleiben auf dem schulischen Server bzw. im Verantwortungsbereich der Schule.
-            </p>
+            #{Privacy.page_html(Privacy.settings)}
         </div>
     </div>
 </div>

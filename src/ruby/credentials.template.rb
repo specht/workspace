@@ -25,6 +25,33 @@ ADMIN_USERS = []
 # in den Inhalten. Ohne diese Zeile fehlt die Adresse dort einfach.
 CONTACT_EMAIL = 'kontakt@example.com'
 
+# Impressum und Datenschutzerklärung (/impressum) und die Unterlagen für die
+# Schule (/datenschutz, docs/datenschutz.md). Jede Zeile ist freiwillig; ohne
+# sie fehlt die Angabe dort, und die Seiten sagen, dass sie fehlt.
+# Wer den Workspace betreibt, mit der Adresse, unter der man ihn erreicht
+# (die der Schule genügt, wenn Briefe dort ankommen):
+# OPERATOR_NAME = 'Vorname Nachname'
+# OPERATOR_ROLE = 'Lehrkraft für Informatik'
+# OPERATOR_SCHOOL = 'Name der Schule'
+# OPERATOR_ADDRESS = "Straße 1\n12345 Ort"
+# Die oder der Datenschutzbeauftragte der Schule, mit Kontakt:
+# DATA_PROTECTION_OFFICER = "Name\ndatenschutz@example.com"
+# Wo der Server läuft; nur ein Rechenzentrum in der EU, denn die
+# Datenschutzerklärung sagt, dass keine Daten die EU verlassen:
+# HOSTING = 'Hetzner Online GmbH, Rechenzentrum in Deutschland'
+# Wer die E-Mails verschickt:
+# MAIL_PROVIDER = 'united-domains AG'
+# Die Rechtsgrundlage: :school erst, wenn die Schulleitung schriftlich
+# entschieden hat, dass der Workspace im Unterricht eingesetzt wird (die
+# Unterlagen unter /datenschutz helfen dabei); :consent, wenn er ein eigenes
+# Angebot ist und jede Person (unter 16 die Eltern) einwilligt. Ohne diese
+# Zeile sagt die Seite, dass sie noch nicht eingetragen ist.
+# LEGAL_BASIS = :school
+# Die Vorschrift, auf die sich die Schule stützt (für :school):
+# SCHOOL_LAW = '§ 64 Abs. 11 des Schulgesetzes für das Land Berlin und § 2 der Digitale Lehr- und Lernmittel-Verordnung (DigLLV)'
+# Die Aufsichtsbehörde für Beschwerden:
+# SUPERVISORY_AUTHORITY = "Berliner Beauftragte für Datenschutz und Informationsfreiheit\nAlt-Moabit 59–61, 10555 Berlin\nmailbox@datenschutz-berlin.de"
+
 MYSQL_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'
 MYSQL_PASSWORD_SALT = 'bitte_ein_langes_salt_generieren'
 NEO4J_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'

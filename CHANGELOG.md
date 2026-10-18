@@ -18,6 +18,22 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Impressum und Datenschutzerklärung (`/impressum`) neu: Sie sagen genau,
+  was der Workspace speichert, wozu, wer es sieht und wie lange, in der
+  Gliederung von Art. 13 DSGVO, mit der Anmeldung per Code, dem, was
+  Lehrkräfte sehen, den Diensten außerhalb des Servers, den Schutzmaßnahmen
+  und dem, was man tun kann, wenn man nicht einverstanden ist. Die alten,
+  zum Teil falschen Sätze (»keine externen Dienste«, »schulischer Server«)
+  sind weg. Die Fakten stehen an einer Stelle im Code
+  (`include/privacy.rb`), ein Test prüft sie gegen den Code. Für
+  Betreibende: neue, freiwillige Einträge in `credentials.rb`
+  (`OPERATOR_NAME`, `OPERATOR_ROLE`, `OPERATOR_SCHOOL`, `OPERATOR_ADDRESS`,
+  `DATA_PROTECTION_OFFICER`, `HOSTING`, `MAIL_PROVIDER`, `LEGAL_BASIS`,
+  `SCHOOL_LAW`, `SUPERVISORY_AUTHORITY`, siehe `credentials.template.rb`);
+  ohne sie sagt die Seite, was fehlt.
+- Die Ausgaben der Dienste (darin E-Mail-Adressen) werden nach 3 × 10 MB je
+  Dienst überschrieben. Für Betreibende: `./config.rb` und
+  `./config.rb up -d`, damit es gilt.
 - `src/scripts/render-svg.rb` rendert ein gezeichnetes SVG-Diagramm hell und
   mit einer eigenen dunklen Farbpalette als `NAME-dark.webp`. Der DNS-Baum
   und der B-Baum von »SQL-Index« haben so eine echte dunkle Fassung, auf der

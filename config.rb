@@ -285,6 +285,13 @@ docker_compose[:services][:peer_firewall] = {
     },
 }
 
+# What the services write to their output (e-mail addresses among it) is
+# overwritten after 3 × 10 MB, as the Datenschutzerklärung says
+# (src/ruby/include/privacy.rb).
+docker_compose[:services].values.each do |x|
+    x[:logging] = { :driver => 'json-file', :options => { 'max-size' => '10m', 'max-file' => '3' } }
+end
+
 unless DEVELOPMENT
     docker_compose[:services].values.each do |x|
         x[:restart] = :always
