@@ -119,7 +119,11 @@ Nachdem das Verzeichnis geöffnet wurde, siehst du links im Explorer deine Datei
 
 <!-- tutorial-screenshot
 press: Enter
-wait-for-text: WEBSITE-TEST
+# VS Code 1.140 writes the folder name in the Explorer in lower case; the
+# pause lets the window reload first, as index.html (with website-test in
+# its breadcrumbs) is already open.
+sleep: 2
+wait-for-text: website-test
 write-file: website-test/index.html <- previous-code
 open-file: index.html
 close-tab: Welcome

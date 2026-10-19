@@ -355,6 +355,9 @@ _task(drei-commits)
 Lass uns jetzt zu einem früheren Commit zurückkehren. Verwende den Befehl `git log`, um die Commit-Historie anzuzeigen:
 
 <!-- tutorial-screenshot
+# Three commits are 17 lines: in the default window git log would page
+# them (less waits at »:«); a taller window shows them all.
+viewport: 1029x640
 terminal-run: clear
 terminal-run: git log
 terminal-wait-for-prompt
@@ -364,7 +367,7 @@ check-task: drei-commits
 
 <img class='full' src='git-log.webp' alt='git log zeigt drei Commits mit Autor und Datum, »updated README.md« mit HEAD -&gt; main, »rename hello.txt to README.md« und »initial commit«.'>
 
-Du siehst eine Liste der Commits, beginnend mit dem neuesten Commit. Du siehst außerdem, dass der `main`-Branch auf den neuesten Commit zeigt und gerade ausgecheckt ist, da auch `HEAD` auf diesen Commit zeigt.
+Du siehst eine Liste der Commits, beginnend mit dem neuesten Commit. Passt sie nicht ins Terminal, zeigt Git sie seitenweise, und unten steht ein Doppelpunkt: Mit den Pfeiltasten oder der Leertaste blätterst du weiter, mit <kbd>q</kbd> kommst du zurück zur Eingabe. Du siehst außerdem, dass der `main`-Branch auf den neuesten Commit zeigt und gerade ausgecheckt ist, da auch `HEAD` auf diesen Commit zeigt.
 
 <div class='hint info'>
 Was heißt »ausgecheckt«? In Git bedeutet »auschecken«, dass du den Zustand des Repositories zu einem bestimmten Commit wiederherstellst. Wenn du einen Commit auscheckst, ändert Git die Dateien in deinem Arbeitsverzeichnis so, dass sie dem Zustand entsprechen, der in diesem Commit gespeichert ist. Standardmäßig zeigt <code>HEAD</code> auf den neuesten Commit im aktuellen Branch. Wenn du jedoch einen älteren Commit auscheckst, verschiebst du <code>HEAD</code> auf diesen älteren Commit, und dein Arbeitsverzeichnis wird entsprechend aktualisiert.

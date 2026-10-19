@@ -117,7 +117,7 @@ Klicke oben rechts im Editor auf »ER-Diagramm anzeigen« (oder <kbd>Strg</kbd><
 press: Enter
 wait-for-text: create it
 press: Enter
-wait-for-text: FILMDATENBANK
+wait-for-text: filmdatenbank
 write-file: filmdatenbank/film.er <- previous-code
 open-file: film.er
 close-tab: Welcome
