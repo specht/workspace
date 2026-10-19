@@ -57,7 +57,7 @@ Danach liegt die Vorlage in `/workspace/backrooms-starter`:
 # Klonen wie im Handbuch »Workspace« (oben eingebunden), dann die
 # geöffnete Vorlage im Explorer, level.ini im Editor
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ bbdb7e3c00e13b1e7640912f04abeb7e28fa84cc
+clone-start: https://github.com/specht/backrooms-starter.git @ 1ac23bbb8e2652479f8be004717e0fd8c56d5a5f
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -117,7 +117,7 @@ Klick ins Bild, dann siehst du dich mit der Maus um. <kbd>Esc</kbd> gibt die Mau
 Wo du stehst, merkt sich die Adresse der Seite. Lädst du neu, stehst du wieder dort, solange sich der Grundriss nicht geändert hat.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Drück <kbd>M</kbd>. Die Automap zeigt jeden Raum in seiner eigenen Farbe und mit seinem Namen, die Leuchten als gelbe Punkte; der rote Pfeil bist du. Zieh mit der Maus, um die Karte zu drehen, mit <kbd>Shift</kbd>, um sie zu verschieben, und zoom mit dem Mausrad. Lauf ein paar Schritte, während sie offen ist, und schau nach unten: Was macht die Karte? <kbd>V</kbd> zeigt statt des Drahtgitters die Räume selbst von oben, ohne Decken, mit ihrem Licht. <kbd>Esc</kbd> schließt die Karte.
+<strong>Ausprobieren:</strong> Drück <kbd>M</kbd>. Die Automap zeigt das Bauwerk als Drahtgitter, jeden Raum mit seinem Namen, die Leuchten als gelbe Punkte; der rote Pfeil bist du. Zieh mit der Maus, um die Karte zu drehen, mit <kbd>Shift</kbd>, um sie zu verschieben, und zoom mit dem Mausrad. Lauf ein paar Schritte, während sie offen ist, und schau nach unten: Was macht die Karte? <kbd>V</kbd> zeigt statt des Drahtgitters die Räume selbst von oben, ohne Decken, mit ihrem Licht. <kbd>Esc</kbd> schließt die Karte.
 </div>
 
 <!-- tutorial-screenshot
@@ -129,7 +129,7 @@ hook: wheel 450
 hook: info off
 -->
 
-<img class='full' src='automap.webp' alt='Die Automap: vier Räume als farbiges Drahtgitter von schräg oben, jeder mit seinem Namen, gelbe Punkte für die Leuchten und ein roter Pfeil mit Ring am Startplatz im Zimmer.'>
+<img class='full' src='automap.webp' alt='Die Automap: vier Räume als hellblaues Drahtgitter von schräg oben, jeder mit seinem Namen, gelbe Punkte für die Leuchten und ein roter Pfeil mit Ring am Startplatz im Zimmer.'>
 
 ## Kartografie
 
@@ -587,13 +587,74 @@ hook: info off
 </div>
 <!-- /tutorial-scope -->
 
+### Eine Rampe
+
+<div class='found-note'>
+<p>Der Gang hinter dem Saal steigt an. Das merkt man an den Beinen, nicht an den Augen: Die Decke hängt schief, die Leuchten auch, und irgendwann weiß ich nicht mehr, ob ich hinauf- oder hinuntergehe.</p>
+<cite>Bleistiftnotiz, sehr klein geschrieben</cite>
+</div>
+
+Ein Boden kann auch schräg sein. Gib dem Saal an der rechten Wand eine zweite Tür:
+
+```room
+~ #...........#
+#.....M.....2
+~ #...........#
+```
+
+```room
+[2]
+door = rampe 1
+```
+
+und leg `rooms/rampe.room` an:
+
+```room
+# Eine Rampe, auf der nichts mehr gerade ist: Der Boden steigt nach Osten,
+# die Decke kippt zur Seite. Wo ist oben?
+
+[room]
+name = Rampe
+ramp = east, 4          # der Boden steigt nach Osten um 4 m
+height = 2.4, 5.5       # über dem Boden: an der Südwand 2,4 m, an der Nordwand 5,5 m
+slope = north           # die Decke steigt zur Seite hin an, quer zur Rampe
+
+[map]
+####################
+#..................#
+#...L.....L.....L..#
+1..................#
+#...L.....L.....L..#
+#..................#
+####################
+
+[L]
+light = #fff3cf
+power = 1.6
+```
+
+`ramp = east, 4` lässt den Boden nach Osten um 4 m ansteigen, vom ersten Feld hinter der Wand bis zum letzten. `height` misst die Decke jetzt über dem Boden an jeder Stelle: Ohne `slope` stiege sie mit der Rampe mit. Hier kippt sie mit `slope = north` zur Seite, quer zur Rampe, und die Leuchten mit ihr. Wie hoch ein Raum liegt, ergibt sich von selbst: An einer Tür liegen beide Böden gleich hoch, und die Felder in den Wänden bleiben eben. Eine Tür am oberen Ende, in der Ostwand, führte in einen Raum 4 m über dem Saal.
+
+<!-- tutorial-screenshot
+write-file: rooms/saal.room <- file:stufen/saal-7.room
+write-file: rooms/rampe.room <- file:stufen/rampe.room
+tab: preview
+viewport: 1024x576
+hook: open view=29.60,18.00,-90,6
+hook: light
+hook: info off
+-->
+
+<img class='full' src='rampe.webp' alt='Ein langer Gang, dessen Boden nach vorn ansteigt, während die Decke zur Seite kippt; die Leuchten hängen schief in ihr, die Sockelleisten laufen schräg nach oben.'>
+
 ## Dein eigener Raum
 
 Jetzt bist du dran: Bau einen Raum nach deiner Idee und schließ ihn mit einer Tür an. Was du in `[room]` einstellen kannst:
 
 <table class='table'>
 <tr><th>Eintrag</th><th>Bedeutung</th></tr>
-<tr><td><code>height</code></td><td>Deckenhöhe in Metern; zwei Zahlen für eine schräge Decke</td></tr>
+<tr><td><code>height</code></td><td>Deckenhöhe über dem Boden in Metern; zwei Zahlen für eine schräge Decke</td></tr>
+<tr><td><code>ramp</code></td><td>ein schräger Boden: Richtung und um wie viele Meter er ansteigt, zum Beispiel <code>east, 4</code></td></tr>
 <tr><td><code>slope</code></td><td><code>flat</code>, <code>north</code>, <code>east</code>, <code>south</code>, <code>west</code> oder <code>gable</code></td></tr>
 <tr><td><code>walls</code></td><td><code>wallpaper</code> (Tapete), <code>marble</code> (Marmor), <code>wood</code> (Holz), <code>tiles</code> (Fliesen), <code>velvet</code> (Samt) oder <code>plain</code> (einfarbig)</td></tr>
 <tr><td><code>floor</code></td><td><code>carpet</code> (Teppich), <code>marble</code>, <code>wood</code>, <code>tiles</code> oder <code>plain</code></td></tr>
