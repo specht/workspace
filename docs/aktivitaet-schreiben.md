@@ -224,6 +224,26 @@ stehen in der Seite, und der Schalter zeigt die eine oder die andere, ohne
 die Seite neu zu laden. Vorbild sind `src/content/rle/`, `huffman/` und
 `lzw/`.
 
+### Zum Ausprobieren einladen
+
+Wie etwas funktioniert, versteht man oft erst, wenn man es ändert und sieht,
+was passiert. Wo Lernende gerade etwas zum Laufen gebracht haben, schlägt ein
+Kasten eine kleine Änderung vor und sagt, worauf man achten soll:
+
+```html
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ersetze <code>gl_FragColor = …</code> durch
+<code>gl_FragColor = vec4(n * 0.5 + 0.5, 1.0);</code>. Jede Seite bekommt die
+Farbe ihrer Normale: Welche Farbe haben die Oberseiten, und warum?
+Stell die Zeile danach wieder zurück.
+</div>
+```
+
+Das ist keine Aufgabe, geprüft wird nichts, und die Seite geht mit dem
+unveränderten Code weiter. Darum endet der Kasten mit »Stell … wieder
+zurück«, wenn die Änderung im Weg wäre. Für eine Frage zum Nachdenken ohne
+Änderung gibt es `hint think`.
+
 ## 3. Aufgaben schreiben
 
 Aufgaben stehen in `tasks.yaml` neben der Seite und werden mit
@@ -284,6 +304,12 @@ Auf der Handbuch-Seite ist ein Teil mit `<!-- part: name -->` und
 `<!-- /part -->` markiert. Wenn ein Teil fehlt, den du brauchst, schreib ihn
 dort hinzu, statt ihn in deine Seite zu kopieren. Dann profitieren alle
 Aktivitäten davon.
+
+Eine Handbuch-Seite enthält die Grundlagen und das Wichtigste, nicht alles.
+Für den Rest verweist sie auf die offizielle Referenz oder das Handbuch der
+Sprache oder Bibliothek (Spezifikation, offizielle Dokumentation,
+Cheatsheet), im passenden Teil oder in einem letzten Abschnitt »Zum
+Nachschlagen«. Jeden Link vorher einmal öffnen.
 
 ## 5. Eine Notiz für Lehrkräfte
 

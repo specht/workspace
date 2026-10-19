@@ -74,6 +74,14 @@ address from `credentials.rb` and the code `123456`.
   page renders as raw text.
 - Every activity has a teacher note (`lehrkraft.md`) whose first paragraph says
   what the students do (»Lernende …«); `teacher_note_test.rb` checks it.
+- Invite optional experiments: where students have just got something
+  working, a box `<div class='hint try'>` (»Ausprobieren:«) suggests a small
+  change and what to watch for, so they see how it works by changing it.
+  Not a task, nothing is checked; the page continues with the unchanged code.
+- A Handbuch page holds the basics and the most important things, not
+  everything, and links to the official reference or manual for the rest
+  (specification, official docs, cheatsheet), in its parts or a closing
+  section »Zum Nachschlagen«. Check every link before adding it.
 
 ## Working on the code
 

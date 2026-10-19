@@ -1009,6 +1009,11 @@ div.floatright > p {
     background-image: url(/images/think.png);
 }
 
+/* An optional experiment: change something and watch what happens */
+.hint.try::before {
+    background-image: url(/images/test-tube.png);
+}
+
 .hint.handshake::before {
     background-image: url(/images/handshake.png);
 }

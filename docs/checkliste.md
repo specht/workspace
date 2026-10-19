@@ -47,6 +47,7 @@ Repository arbeitet, liest sie also ohnehin.
 | Fachwörter, die man im Deutschen englisch sagt, bleiben englisch (Handshake, Lock, String, Header); Elemente von VS Code heißen wie ihre Beschriftung | Lernende sollen die Wörter wiedererkennen | Lesen |
 | Datenstrukturen heißen englisch: Stack, Queue, Priority Queue, Heap, Linked List, Hash Table | So sagt man es auch im Deutschen | Lesen |
 | Im Handbuch stehen Algorithmen als Pseudocode mit einem Beispiel zum Durchklicken, nicht in Ruby oder Python | Lernende sollen verstehen und übersetzen, nicht die Lösung einer Aufgabe kopieren | Lesen |
+| Eine Handbuch-Seite enthält die Grundlagen und das Wichtigste und verlinkt für den Rest die offizielle Referenz oder das Handbuch (»Zum Nachschlagen«) | Lernende finden das Nötige auf der Seite und wissen, wo die vollständige Antwort steht | Lesen |
 | »Index« oder »Zählvariable«, nicht »Stelle«, für die Position in einem Array oder eine Schleifenvariable | »Stelle« ist dafür ungenau | Lesen |
 | Ist die Sprache frei, gibt es die Aktivität in Ruby und Python (`languages: [ruby, python]`), sonst in Ruby. C bleibt C | Schulen unterrichten das eine oder das andere; die Klasse stellt es ein | Audit (Spalte »Sprachen«) |
 | Jeder Codeblock nennt seine Sprache. Ein Kopierknopf nur für Code, den man nicht tippen soll, und für große Blöcke | Abtippen ist Lernen; Abschreiben von Gerüsten nicht | `code_highlight_test.rb` (teilweise), Lesen |
@@ -63,6 +64,7 @@ Repository arbeitet, liest sie also ohnehin.
 | Jede Prüfung, die Dateien liest, hat Beispiele in `task-examples.yaml`: eine Lösung, die sie annimmt, einen Anfang, den sie ablehnt | Sonst merkt niemand, wenn eine Prüfung zu streng oder zu lasch ist | `task_examples_test.rb` |
 | Rezepte prüfen mit `check-task` und `check-task-fails`, dass die Schritte der Seite zur gelösten Aufgabe führen, in jeder Sprache | Die Seite und die Prüfung passen zusammen | Rezepte beim Rendern |
 | Prüfungen lesen nur, sie ändern nichts im Workspace | Die fünf Regeln in aktivitaet-schreiben.md | Lesen |
+| Wo etwas gerade läuft, lädt ein Kasten `hint try` (»Ausprobieren:«) zu einer kleinen Änderung ein und sagt, worauf man achten soll; ungeprüft, die Seite geht mit dem unveränderten Code weiter | Wie etwas funktioniert, versteht man, wenn man es ändert und sieht, was passiert | Lesen |
 
 ## Bilder
 
