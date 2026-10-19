@@ -7,7 +7,7 @@
       "variants": {
         "bild-cover-folie.webp": "86be394d2dd9edfa9d6556052ae55f3930b79c9633b3972ef5014bd6bfa16f0f"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "bild-hoehe.webp": {
       "environment_fingerprint": "f47973a5e3c4b4dc65faea2317e5baacfab79aae92a89de8f43db4cd4ceee6c9",
@@ -16,7 +16,7 @@
       "variants": {
         "bild-hoehe-folie.webp": "3345cc2f8a4927a97c8746779ce2bb8b9844d56087d5fbd7cea4489d99690f5d"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "bild-verzerrt.webp": {
       "environment_fingerprint": "f47973a5e3c4b4dc65faea2317e5baacfab79aae92a89de8f43db4cd4ceee6c9",
@@ -25,7 +25,7 @@
       "variants": {
         "bild-verzerrt-folie.webp": "e59bd3ac23498bc7a1b89810e2b139a95e2ae31788ccb224557cd7f409d6b707"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "farben.webp": {
       "environment_fingerprint": "f47973a5e3c4b4dc65faea2317e5baacfab79aae92a89de8f43db4cd4ceee6c9",
@@ -34,7 +34,7 @@
       "variants": {
         "farben-folie.webp": "292f38f8d80c5335aa2f38e20c12358499891e5a040047c528a51083294e5d95"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "genauer-behoben.webp": {
       "environment_fingerprint": "f47973a5e3c4b4dc65faea2317e5baacfab79aae92a89de8f43db4cd4ceee6c9",
@@ -43,7 +43,7 @@
       "variants": {
         "genauer-behoben-folie.webp": "5429ac02918cdc81b3b0c9d387283803644722f0c4a5f7eeaacdbf8209c2870c"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "genauer.webp": {
       "environment_fingerprint": "f47973a5e3c4b4dc65faea2317e5baacfab79aae92a89de8f43db4cd4ceee6c9",
@@ -52,7 +52,7 @@
       "variants": {
         "genauer-folie.webp": "fa2ff5e5df98ebe784c0bfc5b5eee7457f37862d422960a7256ec27ae730e77f"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "infokarte.webp": {
       "environment_fingerprint": "f47973a5e3c4b4dc65faea2317e5baacfab79aae92a89de8f43db4cd4ceee6c9",
@@ -61,7 +61,7 @@
       "variants": {
         "infokarte-folie.webp": "d5a1b4acbda3d997f0863dcc27654944fb30545e9fcb4d160065ae47622199d8"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "regeln.webp": {
       "environment_fingerprint": "f47973a5e3c4b4dc65faea2317e5baacfab79aae92a89de8f43db4cd4ceee6c9",
@@ -70,7 +70,7 @@
       "variants": {
         "regeln-folie.webp": "aa74ed6a6e9f2410c16b9d77b0a32c397a9b684dc211f0e463b7fbc547b521ed"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "schrift.webp": {
       "environment_fingerprint": "f47973a5e3c4b4dc65faea2317e5baacfab79aae92a89de8f43db4cd4ceee6c9",
@@ -79,7 +79,7 @@
       "variants": {
         "schrift-folie.webp": "ff38e6d6cde908e2777f94b537036659d9a2664198eeff282c201092384645cf"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "seitenverhaeltnis.webp": {
       "environment_fingerprint": "f47973a5e3c4b4dc65faea2317e5baacfab79aae92a89de8f43db4cd4ceee6c9",
@@ -88,7 +88,7 @@
       "variants": {
         "seitenverhaeltnis-folie.webp": "c01dd24120cd075f3dd9810476302c679ff3ec8aa5d0c3b69960a2e8e215a605"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     }
   },
   "version": 1

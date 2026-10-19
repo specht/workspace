@@ -2,9 +2,9 @@
   "screenshots": {
     "bif-project.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
-      "output_sha256": "a35edcb87212405c19e11517ee4b75a3552eed63675be6d61f0dd7c39da16528",
+      "output_sha256": "0f3a6f1a080fa72f0a5563e7dee60a73d038ec972f6d0247d283177ba6451125",
       "state_hash": "41c2467607d4b95852256bbccada25c3d375acd4134d08ec0fea5a04357de5f6",
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "branching-story.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
@@ -13,7 +13,7 @@
       "variants": {
         "branching-story-dark.webp": "0b20c3fcda2ec3d5a195af0fb232c1b7896fa9388e7ceeb9d2bd49b6d56053a3"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "first-page.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
@@ -22,7 +22,7 @@
       "variants": {
         "first-page-dark.webp": "262fc29235f31329e8bfd57fd5da0f5e94e9720fb202a8ec0b44439b8d42626b"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "local-choice.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
@@ -31,7 +31,7 @@
       "variants": {
         "local-choice-dark.webp": "0b37ba5128b8d48e44f66712c1faecc181c573c5cda0c5a1c7ba31d4714bc14b"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "locked-door.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
@@ -40,13 +40,13 @@
       "variants": {
         "locked-door-dark.webp": "312526a72961cd758abad1358d9aedbf82b50bfad4fbf607c2529a026a0b24ce"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "new-file.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
-      "output_sha256": "9401ae7628002a0ea4b1c1ba5052e44f4775526b3f2372e9bac723a8fe78e302",
+      "output_sha256": "4e7a83dd523ec8a94eb87fc0f3729c75a75af0ad9d53bb38caaba3ef0f3a7ca7",
       "state_hash": "941264b299ed1b08cb50fd43148e926132632b0b41ce0d5ec7dbaa39c2b42f08",
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "script-error.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
@@ -55,13 +55,13 @@
       "variants": {
         "script-error-dark.webp": "c3a65b03e8d3cb4b424a1f4c8dfb87b26ac2806cfea140595cfe45917ddb731c"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "story-begin.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
-      "output_sha256": "fca45427c3d40efb36b373e0c0b0a1bdb43b38d2902ddd9d13230e4235d10a50",
+      "output_sha256": "8e57a3ea57de0d62a926ecf0758fa85ecab0517fe271519d7de2f0898c3006a3",
       "state_hash": "d7ab535d07c5783a91fe02eadd421b7dc7ce421f879180443b9823bfd68d6d54",
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "take-key.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
@@ -70,7 +70,7 @@
       "variants": {
         "take-key-dark.webp": "3e8211a7ca702bc9eb4b83ab784ef4ac5dcff8a704417d52019cda968e4da0b9"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "two-pages.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
@@ -79,7 +79,7 @@
       "variants": {
         "two-pages-dark.webp": "9ff5bb1def2b2ffd0aa95aef98d5ef230502871d87d745713d99f6d6e8109ee7"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "unlocked-door.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
@@ -88,7 +88,7 @@
       "variants": {
         "unlocked-door-dark.webp": "198fc9563f1cc439bc2eb54a97da0cddf29c1c9ec65e99c8109d90817a0ca133"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "unreachable-page.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
@@ -97,7 +97,7 @@
       "variants": {
         "unreachable-page-dark.webp": "92bc39bf490565206882249882b8579e7488f3b63c906702ca5361f4d3da7cb0"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     }
   },
   "version": 1

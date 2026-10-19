@@ -4,13 +4,13 @@
       "environment_fingerprint": "33ba41a5d30a0c5bfebca9e4758111621b91bd97a3b7fbce0a568a0bdb2c7beb",
       "output_sha256": "f5516a806addb255ff7c8e1aa900847ea2ee934788a36ed96918e11691d7275a",
       "state_hash": "efdb200a509bdf934cdaa123908e21e1ec260f2c5ce1cc0ea49f521f14db86a5",
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "screen.webp": {
       "environment_fingerprint": "33ba41a5d30a0c5bfebca9e4758111621b91bd97a3b7fbce0a568a0bdb2c7beb",
       "output_sha256": "9034fc89d9aa5715d297973053556c5018098cffbe02eac01f7fab4041f91dc0",
       "state_hash": "fa81ded6995626bc8e053a153d5999d0816cf146784431f5be9bdce615603dec",
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     }
   },
   "version": 1
