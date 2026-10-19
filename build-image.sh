@@ -17,8 +17,8 @@ for asset in \
 done
 
 echo '=== Preparing VS Code extensions ==='
-cp src/vscode-extensions/sidebar-init/hackschule-sidebar-init-0.0.1.vsix \
-    docker/code/hackschule-sidebar-init-0.1.0.vsix
+cp src/vscode-extensions/sidebar-init/hackschule-sidebar-init-0.2.0.vsix \
+    docker/code/hackschule-sidebar-init-0.2.0.vsix
 cp src/vscode-extensions/checkpoints/hackschule-checkpoints-0.6.1.vsix \
     docker/code/hackschule-checkpoints-0.6.1.vsix
 cp src/vscode-extensions/keyboard-tutorial/hackschule-keyboard-tutorial-0.5.4.vsix \

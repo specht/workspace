@@ -18,6 +18,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Der erste Start eines neuen Workspace: eine kurze Einführung auf Deutsch
+  (»Willkommen im Hackschule Workspace«: Dateien, Speichern und
+  Checkpoints, Terminal, wo die Aktivitäten stehen, Tasten üben) statt der
+  englischen Willkommensseite mit der Werbung von Coder. Sie öffnet sich nur
+  einmal und nur in einem Workspace, in dem noch nichts liegt; danach steht
+  sie unter *Help › Welcome*. Bei späteren Starts öffnet sich keine
+  Willkommensseite mehr, und Konfigurationsdateien (`.gitconfig`, `.my.cnf`
+  …) stehen nicht mehr im Explorer. Für Betreibende: Image neu bauen
+  (`./build-image.sh`).
 - `/gruppen` hat jetzt das Aufräumen für Gruppen: Filter mit Zahlen
   (»Nach ihrem Ende«, »Mit nie Angemeldeten«, »Ohne Lehrkraft«), in jeder
   Gruppe »Nie Angemeldete entfernen« und für alle gezeigten Gruppen auf

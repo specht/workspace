@@ -1,16 +1,22 @@
 {
   "name": "hackschule-sidebar-init",
-  "displayName": "Hackschule Sidebar Init",
-  "description": "Ensures the primary sidebar is shown on first startup.",
-  "version": "0.0.1",
+  "displayName": "Hackschule: Willkommen",
+  "description": "Zeigt beim ersten Start eines neuen Workspace eine kurze Einführung und die Seitenleiste.",
+  "version": "0.2.0",
   "publisher": "hackschule",
   "engines": {
     "vscode": "^1.91.0"
   },
-  "categories": ["Other"],
-  "activationEvents": ["onStartupFinished"],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./dist/extension.cjs",
-  "extensionKind": ["workspace"],
+  "extensionKind": [
+    "workspace"
+  ],
   "scripts": {
     "build": "node esbuild.mjs",
     "watch": "node esbuild.mjs --watch",
@@ -21,5 +27,62 @@
     "@vscode/vsce": "^3.2.0",
     "esbuild": "^0.25.0",
     "typescript": "^5.5.0"
+  },
+  "contributes": {
+    "walkthroughs": [
+      {
+        "id": "willkommen",
+        "title": "Willkommen im Hackschule Workspace",
+        "description": "Fünf Dinge, die du am Anfang wissen solltest.",
+        "steps": [
+          {
+            "id": "dateien",
+            "title": "Deine Dateien bleiben",
+            "description": "Alles im Ordner **workspace** bleibt gespeichert, auch wenn du den Browser schließt. Links im Explorer öffnest du einen Ordner oder holst dir mit »Clone Repository« eine Vorlage; die Aktivitäten sagen dir, was du brauchst.\n[Ordner öffnen](command:workbench.action.files.openFolder)",
+            "media": {
+              "markdown": "media/dateien.md"
+            }
+          },
+          {
+            "id": "speichern",
+            "title": "Speichern mit Strg+S",
+            "description": "Der Workspace speichert nicht von selbst: Ein weißer Punkt auf dem Reiter heißt »noch nicht gespeichert«. **Strg+S** speichert. Unter **Checkpoints** (unten im Explorer) geht es zu einem früheren Stand zurück.",
+            "media": {
+              "markdown": "media/speichern.md"
+            },
+            "completionEvents": [
+              "onStepSelected"
+            ]
+          },
+          {
+            "id": "terminal",
+            "title": "Das Terminal",
+            "description": "Im Terminal tippst du Befehle, zum Beispiel um ein Programm zu starten.\n[Terminal öffnen](command:workbench.action.terminal.new)",
+            "media": {
+              "markdown": "media/terminal.md"
+            }
+          },
+          {
+            "id": "aktivitaeten",
+            "title": "Wo es losgeht",
+            "description": "Die Aktivitäten stehen auf der Startseite, im Tab, aus dem du kommst. Jede sagt dir Schritt für Schritt, was du tust, und prüft deine Aufgaben.",
+            "media": {
+              "markdown": "media/aktivitaeten.md"
+            },
+            "completionEvents": [
+              "onStepSelected"
+            ]
+          },
+          {
+            "id": "tastatur",
+            "title": "Tasten üben",
+            "description": "Neu an der Tastatur? Das Keyboard-Tutorial zeigt dir die Zeichen, die du beim Programmieren brauchst.\n[Keyboard-Tutorial öffnen](command:workbench.view.extension.typingTutorSidebar)",
+            "media": {
+              "markdown": "media/tastatur.md"
+            }
+          }
+        ]
+      }
+    ]
   }
 }
