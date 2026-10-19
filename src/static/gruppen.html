@@ -97,6 +97,11 @@
             </p>
             <div id='groups_school'></div>
             <div id='groups_new'></div>
+            <div class='people-chips mb-2' id='groups_chips_row' role='group' aria-label='Nur diese Gruppen zeigen' style='display: none;'>
+                <span class='people-chips-label'>Aufräumen:</span>
+                <div id='groups_chips' class='d-flex flex-wrap gap-2'></div>
+            </div>
+            <div id='groups_chip_action' class='mb-2'></div>
             <input type='search' id='groups_filter' class='form-control mb-2' placeholder='Gruppe, Name oder Adresse suchen' autocomplete='off' aria-label='Gruppen durchsuchen' style='display: none;'>
             <div id='groups_here'><p class='text-body-secondary'>Einen Moment …</p></div>
         </div>
@@ -105,6 +110,7 @@
 
 <script>
     const GROUP_ERRORS = {
+        count_changed: 'Die Zahl stimmt nicht (oder hat sich inzwischen geändert). Bitte die Zahl eingeben, die der Dialog nennt.',
         roster_in_files: 'Die Einladungen stehen noch in Dateien; die Administration muss sie zuerst importieren.',
         invalid_name: 'Der Name ist leer, zu lang oder enthält < oder >.',
         name_taken: 'Diesen Namen gibt es schon.',
@@ -326,6 +332,12 @@
             move.on('click', () => change_school(group));
             toolbar.append(move);
         }
+        const never = never_logged_in(group).length;
+        if (never) {
+            const clean = $(`<button type='button' class='btn btn-sm btn-outline-secondary'><i class='bi bi-envelope-slash'></i>Nie Angemeldete entfernen (${never})</button>`);
+            clean.on('click', () => remove_never_logged_in([group.name]));
+            toolbar.append(clean);
+        }
         const del = $(`<button type='button' class='btn btn-sm btn-outline-danger'><i class='bi bi-trash'></i>Löschen</button>`);
         del.on('click', function () {
             showTemplateModal('Gruppe löschen', `<p>Die Gruppe ${esc(group.name)} wird gelöscht. Wer in keiner anderen Gruppe steht, kann sich danach nicht mehr anmelden; Konten bleiben, bis sie nach den Löschregeln gelöscht werden.</p><label class='form-label' for='ti_delete_group'>Zur Bestätigung den Namen der Gruppe eingeben:</label><input id='ti_delete_group' class='form-control' autocomplete='off'>`,
@@ -470,14 +482,70 @@
 
     // Shows only the groups whose name, or one of whose members, matches;
     // a match on a member opens the group.
+    // Who never logged in (no account), students and guests: what »Nie
+    // Angemeldete entfernen« takes out of a group.
+    const never_logged_in = group => group.members.filter(m => !m.teacher && !m.account);
+    const today = () => new Date().toISOString().slice(0, 10);
+    // What used to be »Aufräumen« on /personen for groups: filters with counts.
+    const GROUP_CHIPS = [
+        { key: 'ended', label: 'Nach ihrem Ende', icon: 'bi-calendar-x', test: g => g.ends_on && g.ends_on < today(),
+          note: 'Gruppen, deren Enddatum vorbei ist; ihre Lehrkräfte haben einmal eine Erinnerung bekommen. Zum Ende des Schuljahres: löschen, was nicht weitergeht; wer danach in keiner Gruppe steht, ist nicht mehr eingeladen.' },
+        { key: 'never', label: 'Mit nie Angemeldeten', icon: 'bi-envelope-slash', test: g => never_logged_in(g).length > 0,
+          note: 'Gruppen mit Eingeladenen, die nie einen Code angefordert haben, etwa aus einer Liste der ganzen Schule. Herausnehmen löscht nichts: ein Konto gibt es nicht.' },
+        { key: 'no-teacher', label: 'Ohne Lehrkraft', icon: 'bi-person-slash', test: g => g.teachers.length === 0, note: 'Gruppen, die niemand betreut.' },
+    ];
+    let group_chip = '';
+
+    function render_group_chips(groups) {
+        const here = $('#groups_chips').empty();
+        GROUP_CHIPS.forEach(function (chip) {
+            const n = groups.filter(chip.test).length;
+            if (n === 0 && group_chip !== chip.key) return;
+            const on = group_chip === chip.key;
+            const button = $(`<button type='button' class='btn btn-sm people-chip'><i class='bi ${chip.icon}' aria-hidden='true'></i>${chip.label} <span class='people-chip-count'>${n}</span></button>`)
+                .toggleClass('active', on).attr('aria-pressed', on ? 'true' : 'false');
+            button.on('click', function () { group_chip = on ? '' : chip.key; render_group_chips(groups); filter_groups(); });
+            here.append(button);
+        });
+        $('#groups_chips_row').toggle(here.children().length > 0);
+        const chip = GROUP_CHIPS.find(c => c.key === group_chip);
+        const action = $('#groups_chip_action').empty();
+        if (chip) action.append($(`<p class='small text-body-secondary mb-2'>`).text(chip.note));
+        if (group_chip === 'never') {
+            const chosen = groups.filter(chip.test);
+            const people = new Set(chosen.flatMap(g => never_logged_in(g).map(m => m.email))).size;
+            const all = $(`<button type='button' class='btn btn-sm btn-outline-danger'><i class='bi bi-person-dash'></i>Aus allen ${chosen.length} Gruppen die nie Angemeldeten entfernen (${people})</button>`);
+            all.on('click', () => remove_never_logged_in(chosen.map(g => g.name)));
+            action.append(all);
+        }
+    }
+
+    // Takes everyone without an account out of these groups, after the
+    // exact number (the server counts, each person once) is typed again.
+    function remove_never_logged_in(names) {
+        groups_call('/api/people/unused_count', { groups: names }, function (r) {
+            showTemplateModal('Nie Angemeldete entfernen', `<p>Aus ${names.length === 1 ? `der Gruppe ${esc(names[0])}` : `${names.length} Gruppen`} werden alle genommen, die nie einen Anmelde-Code angefordert haben: <strong>${r.count} ${r.count === 1 ? 'Person' : 'Personen'}</strong>. Wer danach in keiner Gruppe mehr steht, ist nicht mehr eingeladen. Ein Konto gibt es nicht, es wird also nichts gelöscht.</p>`
+                + `<label class='form-label' for='ti_never_confirm'>Zur Bestätigung die Zahl eingeben: <strong>${r.count}</strong></label><input id='ti_never_confirm' class='form-control' autocomplete='off' inputmode='numeric'>`,
+                "<i class='bi bi-person-dash'></i>Entfernen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-outline-secondary', function () {
+                    groups_call('/api/people/remove_unused_invitations', { groups: names, confirmation: $('#ti_never_confirm').val().trim() }, function (done) {
+                        $('#__template_modal').modal('hide');
+                        show_success_message(`${done.memberships} ${done.memberships === 1 ? 'Mitgliedschaft' : 'Mitgliedschaften'} entfernt; ${done.uninvited} ${done.uninvited === 1 ? 'Person ist' : 'Personen sind'} nicht mehr eingeladen.`);
+                        load_groups();
+                    });
+                    return false;
+                });
+        });
+    }
+
     function filter_groups() {
         const q = $('#groups_filter').val().trim().toLowerCase();
+        const chip = GROUP_CHIPS.find(c => c.key === group_chip);
         $('#groups_here .group-card').each(function () {
             const card = $(this);
             const group = card.data('info');
             const by_name = group.name.toLowerCase().includes(q);
             const by_member = q.length > 1 && group.members.some(m => m.email.includes(q) || (m.name || '').toLowerCase().includes(q));
-            card.toggle(!q || by_name || by_member);
+            card.toggle((!q || by_name || by_member) && (!chip || chip.test(group)));
             if (q && by_member && !by_name) card.prop('open', true);
         });
         $('#groups_here .school-heading').each(function () {
@@ -548,6 +616,7 @@
                 groups.forEach(g => here.append(render_group(g, data.admin).data('info', g)));
             });
             $('#groups_filter').toggle(data.groups.length > 3);
+            render_group_chips(data.groups);
             filter_groups();
             if (wanted) {
                 const card = $('#groups_here .group-card').filter(function () { return $(this).data('group') === wanted; }).first();

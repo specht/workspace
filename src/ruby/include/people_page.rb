@@ -329,19 +329,25 @@ class Main < Sinatra::Base
 
     # How many distinct people removing the unused invitations of these
     # groups would touch: the number the administrator confirms.
+    # Teachers for their own groups too (/gruppen): they may take members
+    # out one by one anyway.
     post '/api/people/unused_count' do
-        admin_only!
+        teacher_or_admin!
         data = parse_request_data(:required_keys => [:groups], :types => { :groups => Array }, :max_body_length => 64_000)
-        respond(:count => unused_count(data[:groups].map(&:to_s).uniq))
+        groups = data[:groups].map(&:to_s).uniq
+        groups.each { |name| managed_group!(name) }
+        respond(:count => unused_count(groups))
     end
 
     # groups: the group names to clean up; confirmation: the number of people
     # the page showed, so that nothing else goes than what was confirmed.
     post '/api/people/remove_unused_invitations' do
-        admin_only!
+        teacher_or_admin!
+        roster_writable!
         data = parse_request_data(:required_keys => [:groups, :confirmation], :types => { :groups => Array }, :max_body_length => 64_000)
         groups = data[:groups].map(&:to_s).uniq
         halt 400, { :error => 'no_groups' }.to_json if groups.empty?
+        groups.each { |name| managed_group!(name) }
         count = unused_count(groups)
         halt 409, { :error => 'count_changed' }.to_json unless data[:confirmation].to_s.strip == count.to_s
         removed = neo4j_query(<<~END_OF_QUERY, :groups => groups).first['n'].to_i

@@ -18,6 +18,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- `/gruppen` hat jetzt das Aufräumen für Gruppen: Filter mit Zahlen
+  (»Nach ihrem Ende«, »Mit nie Angemeldeten«, »Ohne Lehrkraft«), in jeder
+  Gruppe »Nie Angemeldete entfernen« und für alle gezeigten Gruppen auf
+  einmal, bestätigt mit der genauen Zahl. Das können auch Lehrkräfte für
+  ihre eigenen Gruppen.
 - »Zuletzt da« beruht jetzt auf jeder Spur einer Nutzung, die es gibt, und
   sagt, woher sie stammt: Besuch der Website, Anmeldung, geprüfte Aufgabe,
   angeforderter Code, Workspace im Browser offen (der Herzschlag von

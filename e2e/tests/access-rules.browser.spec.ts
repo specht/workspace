@@ -273,7 +273,7 @@ test('a student of one school is not added to a group of another school', async 
   expect((report.people as { email: string }[]).map(p => p.email)).not.toContain(student);
 });
 
-test('a login code requested but never used leaves an account without activity, which can be deleted', async ({ browser }, testInfo) => {
+test('a login code requested but never used leaves an account whose only trace is the request, which can be deleted', async ({ browser }, testInfo) => {
   const student = address('never');
   await addMembers(groupA, student);
   const context = await browser.newContext({ baseURL: baseUrl(testInfo) });
@@ -284,7 +284,8 @@ test('a login code requested but never used leaves an account without activity, 
   }
   const row = await person(admin, student);
   expect(row?.account).toBe(true);
-  expect(row?.active_on).toBeNull();
+  expect(row?.active_source).toBe('code');
+  expect(row?.active_on).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   await postOk(admin, '/api/admin/delete_account', { email: student, confirmation: student });
   expect((await person(admin, student))?.account).toBe(false);
 });
