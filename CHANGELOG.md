@@ -23,8 +23,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Blöcke und Sockel aus einem eigenen Material (`material`, `pedestal_material`);
   die Automap zeigt mit V die Räume selbst von oben, mit Drahtgitter, in einer
   Farbe und mit ruhigeren Namen; schräge Böden (`ramp`), die Decke misst über
-  dem Boden, Räume liegen so hoch, wie ihre Türen es verlangen; die Aktivität
-  zeigt eine Rampe und alle Arten
+  dem Boden, Räume liegen so hoch, wie ihre Türen es verlangen; Leuchten haben
+  einen weichen Schein; die Aktivität zeigt eine Rampe und alle Arten
   am leeren Saal, eine Decke, die nur in eine Richtung ansteigt, und die
   Leuchten im Satteldach weiter auseinander.
 - Backrooms: Jeder Raum hat eine Sockelleiste, etwas dunkler als die Wand
