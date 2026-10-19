@@ -144,8 +144,7 @@
             <h2 id="zugriffe">Zugriffe der Administration</h2>
             <p>
                 Jedes Mal, wenn jemand aus der Administration einen Workspace öffnet oder ein Konto nachahmt, steht es hier
-                (<code>/internal/admin-access.jsonl</code>, ein Jahr lang), auch ohne Grund. Die Person selbst erfährt es nur,
-                wenn ein Grund angegeben wird.
+                (<code>/internal/admin-access.jsonl</code>, ein Jahr lang), mit dem Grund, den die Person auch selbst als Hinweis sieht.
             </p>
             #{admin_access_html}
 
@@ -403,17 +402,35 @@
         setup_ws(ws);
     }
 
+    // Why an administrator opens a Workspace or imitates someone (5 to 300
+    // characters); the person sees it. The last one is offered again.
+    function ask_admin_reason(title, go) {
+        let last = '';
+        try { last = localStorage.getItem('admin_look_in_reason') || ''; } catch (e) { }
+        input_dialog({ title: title, label: 'Warum? Die Person sieht diesen Satz als Hinweis, zum Beispiel »Ich helfe bei einem Problem mit dem Workspace.«', value: last, confirm: 'Weiter', icon: 'bi-check-lg' }, function (reason) {
+            if (reason.length < 5) { show_error_message('Bitte einen Satz mit mindestens 5 Zeichen.'); return false; }
+            try { localStorage.setItem('admin_look_in_reason', reason); } catch (e) { }
+            $('#__template_modal').modal('hide');
+            go(reason);
+            return false;
+        });
+    }
+
     window.addEventListener('load', function () {
         establish_websocket_connection();
         $('.bu-open-workspace-as-admin').on('click', function (e) {
             let button = $(e.target).closest('button');
             let email = button.data('email');
             console.log(`Opening workspace for ${email}`);
-            button.prop('disabled', true);
-            button.find('.bi').addClass('bi-spin');
-            api_call('/api/start_server_as_admin', { email: email }, function (data) {
-                check_server_tag_update(data.watch_tag);
-                check_server_online(data.watch_tag, true);
+            // A reason, as for teachers: the person sees it as a notice.
+            ask_admin_reason(`Workspace von ${email} öffnen`, function (reason) {
+                button.prop('disabled', true);
+                button.find('.bi').addClass('bi-spin');
+                api_call('/api/start_server_as_admin', { email: email, reason: reason }, function (data) {
+                    if (data.success === false || !data.watch_tag) { button.prop('disabled', false); button.find('.bi').removeClass('bi-spin'); return; }
+                    check_server_tag_update(data.watch_tag);
+                    check_server_online(data.watch_tag, true);
+                });
             });
         });
         function show_import_result(here, data) {
@@ -456,10 +473,13 @@
         $('.bu-impersonate').on('click', function (e) {
             let button = $(e.target).closest('button');
             let email = button.data('email');
-            button.prop('disabled', true);
-            button.find('.bi').addClass('bi-spin');
-            api_call('/api/impersonate', { email: email }, function (data) {
-                location.href = '/';
+            ask_admin_reason(`${email} nachahmen`, function (reason) {
+                button.prop('disabled', true);
+                button.find('.bi').addClass('bi-spin');
+                api_call('/api/impersonate', { email: email, reason: reason }, function (data) {
+                    if (data.success !== false) location.href = '/';
+                    else { button.prop('disabled', false); button.find('.bi').removeClass('bi-spin'); }
+                });
             });
         });
     });

@@ -40,11 +40,12 @@ class LookInTest < Minitest::Test
         assert_nil LookIn.test_account_email('kein-at')
     end
 
-    def test_a_teacher_needs_a_reason_an_administrator_may_go_without
+    def test_everyone_needs_a_reason_administrators_too
         assert_nil LookIn.reason('')
         assert_nil LookIn.reason(' ok ')
         assert_equal 'Ich sehe mir deine Abgabe an.', LookIn.reason("  Ich sehe mir\n deine Abgabe an.  ")
-        assert_equal '', LookIn.reason('', :admin => true)
+        assert_nil LookIn.reason('', :admin => true)
+        assert_nil LookIn.reason('kurz', :admin => true)
         assert_equal LookIn::MAX_REASON, LookIn.reason('x' * 500).size
     end
 

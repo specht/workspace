@@ -139,9 +139,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Wenig Speicherplatz: Ein stündlicher Blick auf `/user` schickt der
   Administration höchstens einmal am Tag eine E-Mail, wenn weniger als 10 %
   oder 20 GB frei sind; `/admin` zeigt es oben.
-- Zugriffe der Administration (Workspace öffnen, nachahmen) stehen mit und
-  ohne Grund ein Jahr lang in `/internal/admin-access.jsonl` und auf `/admin`;
-  die Person erfährt es weiter nur mit Grund.
+- Auch die Administration gibt einen Grund an, wenn sie einen Workspace
+  öffnet oder ein Konto nachahmt (auch auf `/admin`), und die Person sieht den
+  Hinweis wie bei Lehrkräften; jeder solche Zugriff steht außerdem ein Jahr
+  lang in `/internal/admin-access.jsonl` und auf `/admin`.
 - Im Profil: »In allen anderen Browsern abmelden«. Links zum Teilen des
   Workspace gelten eine Woche (erneutes Teilen verlängert denselben Link);
   abgelaufene gehen aus der nginx-Tabelle.

@@ -36,10 +36,12 @@ module LookIn
     # The reason as stored: one line, at most MAX_REASON characters. Returns
     # nil when a teacher gave none worth showing; an administrator may look
     # in without one (support), and then the student sees nothing.
+    # Administrators too (the maintainer's decision, 2026-10-19): whoever
+    # opens a Workspace or imitates someone says why, and the person sees it.
+    # admin: kept for callers, it no longer changes anything.
     def self.reason(text, admin: false)
         line = text.to_s.gsub(/\s+/, ' ').strip[0, MAX_REASON]
         return line if line.size >= MIN_REASON
-        return '' if admin && line.empty?
 
         nil
     end

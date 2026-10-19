@@ -236,8 +236,10 @@ Vorher fragt ein Dialog nach einem Satz, warum (»Ich sehe mir deine Abgabe zu
 Aufgabe 3 an.«). Der letzte Satz ist vorausgefüllt; beim Durchsehen einer
 ganzen Klasse genügt er also einmal. Die Person findet den Satz bei der
 nächsten Anmeldung in einer ruhigen Leiste (»Verstanden«) und danach in
-ihrem Profil. Noten gehören nie hierher. Admins dürfen ohne Satz
-hineinschauen (Support); dann erfährt die Person nichts.
+ihrem Profil. Noten gehören nie hierher. Für Admins gilt dasselbe (auch auf
+`/admin`): Sie geben einen Grund an, und die Person sieht den Hinweis;
+zusätzlich steht jeder Zugriff der Administration ein Jahr lang in
+`/internal/admin-access.jsonl`. Nur das eigene Testkonto braucht keinen Satz.
 
 ## Testkonto
 

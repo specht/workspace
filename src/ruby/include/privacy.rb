@@ -586,8 +586,8 @@ module Privacy
             </p>
             <p>
             Die Administration des Servers kann, wie bei jedem Server, alle Daten darauf einsehen; sie tut das nur für den Betrieb
-            und um bei Problemen zu helfen. Öffnet sie einen Workspace oder sieht sie die Seite als eine Person, wird das intern
-            protokolliert (wann, wer, welches Konto), auch wenn die Person keinen Hinweis bekommt.
+            und um bei Problemen zu helfen. Öffnet sie einen Workspace oder sieht sie die Seite als eine Person, gibt sie wie eine
+            Lehrkraft einen Grund an, und die Person sieht den Hinweis; zusätzlich wird der Zugriff intern protokolliert.
             </p>
 
             #{heading('Teilen', 'Weitergabe durch die Person selbst')}

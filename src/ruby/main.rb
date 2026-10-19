@@ -3145,10 +3145,9 @@ class Main < Sinatra::Base
         # A test account is the teachers' own: no reason, no notice.
         return if @@test_accounts.key?(email)
 
-        log_admin_access(email, kind, reason_text) if admin_logged_in?
-
         reason = LookIn.reason(reason_text, :admin => admin_logged_in?)
         halt 400, { :error => 'reason_missing' }.to_json if reason.nil?
+        log_admin_access(email, kind, reason) if admin_logged_in?
         return if reason.empty?
 
         by = @session_user[:email]
