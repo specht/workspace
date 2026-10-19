@@ -118,4 +118,25 @@ module MailTexts
         body << closing(signature)
         ['Dein Konto im Workspace ist gelöscht', body]
     end
+
+    # The administration stopped a Workspace or made room in it (LookIn
+    # stop, cleanup): the same as the notice on the website, for someone who
+    # does not come by soon. details: which folders, with their command.
+    def self.workspace_action(kind:, by_name:, reason:, details: nil, web_root:, signature:)
+        body = +"<p>Hallo!</p>\n"
+        if kind == 'stop'
+            body << "<p>#{h(by_name)} hat deinen Workspace (#{link(web_root)}) gestoppt: »#{h(reason)}«</p>\n"
+            body << "<p>Deine Dateien sind alle noch da. »Workspace öffnen« startet ihn wieder.</p>\n"
+            subject = 'Dein Workspace wurde gestoppt'
+        else
+            body << "<p>#{h(by_name)} hat in deinem Workspace (#{link(web_root)}) Platz geschaffen: »#{h(reason)}«</p>\n"
+            body << "<p>Gelöscht wurden nur Ordner, die ein Werkzeug anlegt und ein Befehl im Projektordner wieder anlegt:</p>\n"
+            body << "<p>#{h(details)}</p>\n"
+            body << "<p>Alles, was du selbst geschrieben hast, ist noch da.</p>\n"
+            subject = 'In deinem Workspace wurde Platz geschaffen'
+        end
+        body << "<p>Bei Fragen antworte einfach auf diese E-Mail.</p>\n"
+        body << closing(signature)
+        [subject, body]
+    end
 end

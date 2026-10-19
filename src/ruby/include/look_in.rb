@@ -7,7 +7,10 @@ require_relative 'group_visibility'
 # 10:12 deinen Workspace angesehen: Ich sehe mir deine Abgabe an.« Grades
 # never go here. Plain Ruby, tested on its own.
 module LookIn
-    KINDS = %w[impersonate workspace].freeze
+    # stop and cleanup: the administration stopped the Workspace (a runaway
+    # program) or deleted folders that a tool makes again (»Platz
+    # schaffen«); details says which, with the command.
+    KINDS = %w[impersonate workspace stop cleanup].freeze
     MAX_REASON = 300
     MIN_REASON = 5
 
@@ -47,12 +50,22 @@ module LookIn
     end
 
     # The notice a student sees, as HTML: who, when, what, and why.
-    # look: { :by_name, :ts (epoch seconds), :kind, :reason }
+    # look: { :by_name, :ts (epoch seconds), :kind, :reason, :details }
     def self.notice_html(look, now: Time.now)
         time = Time.at(look[:ts].to_i).localtime
         day = time.to_date == now.to_date ? 'heute' : "am #{time.strftime('%d.%m.')}"
-        what = look[:kind] == 'workspace' ? 'deinen Workspace angesehen' : 'dein Konto angesehen'
-        "<strong>#{CGI.escapeHTML(look[:by_name].to_s)}</strong> hat sich #{day} um #{time.strftime('%H:%M')} Uhr #{what}: " \
-            "»#{CGI.escapeHTML(look[:reason].to_s)}«"
+        who = "<strong>#{CGI.escapeHTML(look[:by_name].to_s)}</strong>"
+        why = "»#{CGI.escapeHTML(look[:reason].to_s)}«"
+        at = "#{day} um #{time.strftime('%H:%M')} Uhr"
+        case look[:kind]
+        when 'stop'
+            "#{who} hat #{at} deinen Workspace gestoppt: #{why} Deine Dateien sind alle noch da; »Workspace öffnen« startet ihn wieder."
+        when 'cleanup'
+            "#{who} hat #{at} in deinem Workspace Platz geschaffen: #{why} Gelöscht wurden Ordner, die ein Befehl wieder anlegt: " \
+                "#{CGI.escapeHTML(look[:details].to_s)}."
+        else
+            what = look[:kind] == 'workspace' ? 'deinen Workspace angesehen' : 'dein Konto angesehen'
+            "#{who} hat sich #{at} #{what}: #{why}"
+        end
     end
 end

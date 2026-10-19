@@ -60,4 +60,16 @@ class LookInTest < Minitest::Test
         earlier = LookIn.notice_html(look.merge(:ts => Time.local(2026, 10, 9, 8, 5).to_i, :kind => 'impersonate'), :now => now)
         assert_includes earlier, 'am 09.10. um 08:05 Uhr dein Konto angesehen'
     end
+
+    def test_stop_and_cleanup_say_what_happened_and_that_the_files_stay
+        now = Time.local(2026, 10, 19, 15, 0)
+        base = { :by_name => 'Admin', :ts => Time.local(2026, 10, 19, 14, 0).to_i, :reason => 'Der Server war voll.' }
+        stop = LookIn.notice_html(base.merge(:kind => 'stop'), :now => now)
+        assert_includes stop, 'heute um 14:00 Uhr deinen Workspace gestoppt: »Der Server war voll.«'
+        assert_includes stop, 'Deine Dateien sind alle noch da'
+        cleanup = LookIn.notice_html(base.merge(:kind => 'cleanup', :details => 'svelte/node_modules (1,2 GB, npm install)'), :now => now)
+        assert_includes cleanup, 'Platz geschaffen'
+        assert_includes cleanup, 'svelte/node_modules (1,2 GB, npm install)'
+        assert_equal %w[impersonate workspace stop cleanup], LookIn::KINDS
+    end
 end
