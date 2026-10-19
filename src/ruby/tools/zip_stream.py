@@ -21,6 +21,11 @@ import sys
 import time
 import zipfile
 
+# The rules for rebuildable folders live next to this file (python3 -I does
+# not put the script's folder on the path; the folder is the code's own).
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from rebuildable import rebuildable  # noqa: E402
+
 CHUNK = 1 << 16
 
 # Already compressed: stored as they are, deflating them again costs time
@@ -31,39 +36,6 @@ STORED = {
     '.zip', '.gz', '.tgz', '.bz2', '.xz', '.zst', '.7z', '.rar', '.jar', '.apk', '.aab', '.whl', '.pdf', '.woff', '.woff2',
 }
 LEVEL = 1
-
-# Folders a tool makes and one command makes again, with that command.
-# Some names are certain; others count only next to the project file that
-# makes them, since a student may have a folder of their own named »build«.
-ALWAYS = {
-    'node_modules': 'npm install',
-    '__pycache__': 'entsteht beim Ausführen von selbst',
-    '.gradle': 'entsteht beim Bauen von selbst',
-    '.dart_tool': 'flutter pub get',
-    '.pub-cache': 'flutter pub get',
-}
-NEXT_TO = {
-    'build': (('pubspec.yaml', 'flutter build'), ('build.gradle', 'gradle build'), ('build.gradle.kts', 'gradle build'),
-              ('CMakeLists.txt', 'cmake --build build')),
-    'target': (('Cargo.toml', 'cargo build'), ('pom.xml', 'mvn package')),
-}
-
-
-def rebuildable(dir_fd, name, siblings):
-    """The command that makes this folder again, or None to keep it."""
-    if name in ALWAYS:
-        return ALWAYS[name]
-    for marker, command in NEXT_TO.get(name, ()):
-        if marker in siblings:
-            return command
-    if name in ('.venv', 'venv', 'env'):
-        try:
-            os.stat(os.path.join(name, 'pyvenv.cfg'), dir_fd=dir_fd, follow_symlinks=False)
-            return 'python3 -m venv ' + name + ' und die Pakete neu installieren'
-        except OSError:
-            return None
-    return None
-
 
 def zip_time(seconds):
     t = time.localtime(max(seconds, 315532800))  # ZIP cannot go before 1980
