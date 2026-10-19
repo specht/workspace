@@ -993,12 +993,12 @@ $$u\_x v\_y - u\_y v\_x$$
 
 Ist sie positiv, laufen die Ecken auf dem Bildschirm gegen den Uhrzeigersinn: Die Seite zeigt zu dir, sie wird gezeichnet. Ist sie negativ, laufen sie im Uhrzeigersinn: Du schaust von hinten auf die Seite, und sie fällt weg.
 
-<div class='gallery columns-4'>
+<div class='gallery centered'>
 <figure><img src='winding-front.webp' alt='Ein hellblau gefülltes Quadrat mit den Ecken 1 links unten, 2 rechts unten, 3 rechts oben und 4 links oben. Pfeile von Ecke zu Ecke und ein Kreispfeil in der Mitte laufen gegen den Uhrzeigersinn.'><figcaption>Von außen: 1, 2, 3, 4 laufen gegen den Uhrzeigersinn, die Seite wird gezeichnet.</figcaption></figure>
 <figure><img src='winding-back.webp' alt='Dasselbe Quadrat gespiegelt und leer: 1 rechts unten, 2 links unten, 3 links oben, 4 rechts oben. Die Pfeile und der Kreispfeil laufen im Uhrzeigersinn.'><figcaption>Dieselbe Seite von hinten: Dieselben Ecken laufen im Uhrzeigersinn, die Seite fällt weg.</figcaption></figure>
 </div>
 
-Im linken Bild liegen die Ecken 1, 2 und 3 bei (0, 0), (1, 0) und (1, 1). Die Kanten sind \\(\vec u = (1, 0)\\) und \\(\vec v = (1, 1)\\), also \\(1 \cdot 1 - 0 \cdot 1 = 1\\): positiv. Von hinten ist das Bild gespiegelt, die Ecken liegen bei (1, 0), (0, 0) und (0, 1). Jetzt ist \\(\vec u = (-1, 0)\\) und \\(\vec v = (-1, 1)\\), also \\((-1) \cdot 1 - 0 \cdot (-1) = -1\\): negativ. Es ist wie bei einer Uhr an einer Glasscheibe: Von hinten gesehen laufen ihre Zeiger andersherum.
+Im ersten Bild liegen die Ecken 1, 2 und 3 bei (0, 0), (1, 0) und (1, 1). Die Kanten sind \\(\vec u = (1, 0)\\) und \\(\vec v = (1, 1)\\), also \\(1 \cdot 1 - 0 \cdot 1 = 1\\): positiv. Von hinten ist das Bild gespiegelt, die Ecken liegen bei (1, 0), (0, 0) und (0, 1). Jetzt ist \\(\vec u = (-1, 0)\\) und \\(\vec v = (-1, 1)\\), also \\((-1) \cdot 1 - 0 \cdot (-1) = -1\\): negativ. Es ist wie bei einer Uhr an einer Glasscheibe: Von hinten gesehen laufen ihre Zeiger andersherum.
 
 Verloren geht dabei nichts. Die Rückseite einer Seite liegt im Inneren des Blocks, und davor liegen immer andere Seiten. Von einem Würfel zeigen höchstens drei Seiten gleichzeitig zu dir; die anderen lässt die Grafikkarte weg, bevor sie für jedes Pixel darin die Farbe ausrechnet.
 

@@ -1926,6 +1926,23 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     margin: 0 auto;
 }
 
+/* .centered: a few small pictures such as diagrams, at most 16em wide,
+   centred as a group; in one row, so on a phone they shrink side by side */
+.gallery.centered {
+    display: flex;
+    justify-content: center;
+    gap: 2.5em;
+}
+
+@media (max-width: 480px) {
+    .gallery.centered { gap: 1em; }
+}
+
+.gallery.centered figure {
+    flex: 0 1 16em;
+    text-align: center;
+}
+
 .gallery.tiles {
     grid-template-columns: repeat(auto-fill, minmax(9em, 1fr));
     gap: 1em;

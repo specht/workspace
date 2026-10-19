@@ -1,11 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="60 60 280 280" width="280" height="280" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="50 50 300 300" width="300" height="300" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
   <!-- Dieselbe Seite von hinten, gespiegelt: Dieselben Ecken laufen jetzt im
        Uhrzeigersinn, die Grafikkarte lässt die Seite weg (leer).
        Die Pfeile laufen von Mitte zu Mitte der Ecken, die Spitze auf dem
        Rand des Kreises; die Linie endet 6 Pixel davor in der Spitze.
        Die Spitze des Kreispfeils liegt mit Spitze und Mitte ihrer Basis auf
        dem Kreis, so folgt sie der Kurve. Als Bild, hell und dunkel:
-       src/scripts/render-svg.rb src/content/raylib/winding-back.svg 600 -->
+       src/scripts/render-svg.rb src/content/raylib/winding-back.svg -->
   <style>
     .face { fill: #eef3fb; }
     .edge { stroke: #1f2937; stroke-width: 2.5; marker-end: url(#arrow); }
@@ -19,6 +19,7 @@
       <path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/>
     </marker>
   </defs>
+  <rect x="50" y="50" width="300" height="300" fill="#ffffff"/>
   <path class="turn" d="M 145.00 200.00 A 55 55 0 1 1 219.56 251.40"/>
   <path class="turn-head" d="M 222.76 259.82 L 200.00 255.00 L 216.36 242.99 Z"/>
   <line class="edge" x1="286" y1="310" x2="120" y2="310"/>
