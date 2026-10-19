@@ -18,6 +18,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- PixelRAM und Klötzchenwelt hängen nicht mehr an einer festen Version von
+  PixelRAM: Das erste `make` lädt die neueste und nimmt danach immer diese
+  Kopie, auch ohne Internet; bestehende Projekte behalten ihre.
+  `make pixelram-update` holt die neueste Version. Die Vorlagen
+  `pixelram-starter` und `raylib-starter` machen es ebenso.
 - »Echtzeitgrafik mit C« (PixelRAM): neuer Abschnitt »Glatte Kanten« gleich
   nach »Kreiswellen«. Lernende glätten die Treppenstufen der Farbringe mit
   adaptivem Supersampling: Die Farben an den Ecken eines Pixels entscheiden,

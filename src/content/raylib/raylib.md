@@ -58,7 +58,7 @@ _include(workspace#repository-klonen)
 make
 ```
 
-Beim ersten Mal lädt `make` die Webseite herunter, in der dein Programm läuft; sie kommt von PixelRAM. Dann übersetzt es `main.c` in die Datei `main.html`: Dein C-Programm läuft als WebAssembly im Browser.
+Beim ersten Mal lädt `make` die Webseite herunter, in der dein Programm läuft; sie kommt von PixelRAM, in der neuesten Version, und `make` nimmt danach immer diese Kopie. Mit `make pixelram-update` holst du später die neueste Version. Dann übersetzt es `main.c` in die Datei `main.html`: Dein C-Programm läuft als WebAssembly im Browser.
 
 <!-- tutorial-screenshot
 # Die Vorlage so, wie das Klonen sie anlegt (Dateien aus vorlage/, also
