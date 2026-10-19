@@ -103,13 +103,15 @@
         border-radius: 0.4rem;
         box-shadow: 0 0.25rem 1.5rem rgba(0, 0, 0, 0.18);
     }
+    /* A new file pops in once the ones above have moved up. */
     .sp-slide.new .sp-frame img,
     .sp-slide.new .sp-frame video {
-        animation: sp-fly 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+        animation: sp-pop 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
     }
-    @keyframes sp-fly {
-        from { opacity: 0; transform: translateY(2.5rem) scale(0.97); }
-        to { opacity: 1; transform: none; }
+    @keyframes sp-pop {
+        0% { opacity: 0; transform: scale(0.82); }
+        60% { opacity: 1; transform: scale(1.03); }
+        100% { opacity: 1; transform: none; }
     }
     .sp-caption {
         flex: 0 0 auto;
@@ -125,11 +127,17 @@
         text-align: center;
         padding: 2rem;
     }
+    /* Back to the newest: a pill at the bottom in the middle, with the
+       number of files that came since. */
     .sp-live {
         position: absolute;
-        right: 1rem;
-        bottom: 1rem;
+        left: 50%;
+        bottom: 1.25rem;
+        transform: translateX(-50%);
         z-index: 2;
+        border-radius: 2rem;
+        padding: 0.4rem 1.1rem;
+        box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.3);
     }
     .sp-pages {
         flex: 1 1 auto;
@@ -182,7 +190,7 @@
         <div class='sp-slides' id='sp_slides' tabindex='0' aria-label='Aufgenommene Dateien, die neueste unten'>
             <div class='sp-empty' id='sp_empty'>Noch nichts aufgenommen. Die Bilder erscheinen hier, sobald der Generator sie schreibt.</div>
         </div>
-        <button type='button' class='btn btn-primary sp-live' id='bu_sp_live' hidden><i class='bi bi-skip-end-fill'></i>Live</button>
+        <button type='button' class='btn btn-primary sp-live' id='bu_sp_live' hidden><i class='bi bi-arrow-down'></i><span>Live</span></button>
     </div>
     <div class='sp-side'>
         <div class='sp-state'>
@@ -222,9 +230,11 @@
         function to_end(smooth) {
             slides.scrollTo({ top: slides.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
         }
+        let missed = 0;           // files that came while scrolled up
         function set_following(on) {
             following = on;
-            $('#bu_sp_live').prop('hidden', on);
+            if (on) missed = 0;
+            $('#bu_sp_live').prop('hidden', on).find('span').text(missed ? `${missed} neue` : 'Live');
         }
         slides.addEventListener('scroll', () => {
             clearTimeout(slides._settle);
@@ -236,6 +246,34 @@
             if (entry.isIntersecting) entry.target.play().catch(() => { }); else entry.target.pause();
         }), { root: slides, threshold: 0.3 });
 
+        // A file is added once it has loaded, so its height is known: the
+        // ones above glide up by exactly that much, and it pops in.
+        let queue = Promise.resolve();
+        function load(c) {
+            return new Promise(resolve => {
+                if (c.kind === 'video') {
+                    const v = document.createElement('video');
+                    v.preload = 'metadata';
+                    v.onloadedmetadata = v.onerror = () => resolve();
+                    v.src = url(c);
+                } else {
+                    const img = new Image();
+                    img.onload = img.onerror = () => resolve();
+                    img.src = url(c);
+                }
+                setTimeout(resolve, 8000);
+            });
+        }
+        function arrive(c, animate) {
+            queue = queue.then(() => load(c)).then(() => {
+                const follow = following;
+                add_slide(c, animate && follow);
+                if (follow) to_end(animate);
+                else { missed += 1; set_following(false); }
+                return animate ? new Promise(r => setTimeout(r, 450)) : null;
+            });
+        }
+
         function add_slide(c, animate) {
             $('#sp_empty').remove();
             const when = new Date(c.at).toLocaleTimeString('de-DE');
@@ -246,8 +284,7 @@
             slides.appendChild(slide[0]);
             const video = slide.find('video')[0];
             if (video) watcher.observe(video);
-            // A picture changes the height once it has loaded: stay at the end.
-            slide.find('img, video').on('load loadedmetadata', () => { if (following) to_end(false); });
+
         }
 
         function render(data) {
@@ -299,10 +336,9 @@
                 return true;
             });
             if (fresh.length) {
-                const first_load = slides.querySelectorAll('.sp-slide').length === 0;
-                const follow = following;
-                fresh.forEach(c => add_slide(c, follow && !first_load));
-                if (follow) to_end(!first_load);
+                const first_load = slides.querySelectorAll('.sp-slide').length === 0 && !slides._started;
+                slides._started = true;
+                fresh.forEach(c => arrive(c, !first_load));
             }
         }
 

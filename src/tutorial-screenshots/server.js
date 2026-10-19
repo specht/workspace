@@ -2420,6 +2420,9 @@ async function closeTab(label) {
         await target.click();
         await workspace.keyboard.press('Control+W');
     }
+    // The next tab slides under the pointer, and its close button would
+    // show »Close (Ctrl+W)« in the picture: the pointer leaves the window.
+    await workspace.mouse.move(-1, -1);
 
     await workspace.waitForFunction(
         expected =>
