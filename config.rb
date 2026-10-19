@@ -109,9 +109,11 @@ if PROFILE.include?(:dynamic)
         #:privileged => true,
         # rackup's development middleware includes Rack::Lint, which rejects
         # Faye's async hijack response before Puma can take over the socket.
+        # Up to 12 threads (Puma's default is 5): a download of »Meine Daten«
+        # keeps one for its whole length (at most 2 at a time, my_data.rb).
         :entrypoint =>  DEVELOPMENT ?
-            'rerun -b --dir /src/ruby -s SIGKILL -- rackup --server puma --env production --host 0.0.0.0' :
-            'rackup --server puma --env production --host 0.0.0.0'
+            'rerun -b --dir /src/ruby -s SIGKILL -- rackup --server puma --env production --host 0.0.0.0 -O Threads=0:12' :
+            'rackup --server puma --env production --host 0.0.0.0 -O Threads=0:12'
     }
     if PROFILE.include?(:neo4j)
         docker_compose[:services][:ruby][:depends_on] ||= []

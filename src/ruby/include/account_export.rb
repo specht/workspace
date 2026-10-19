@@ -27,6 +27,9 @@ module AccountExport
         mysql/        deine MySQL-Datenbanken, je eine .sql-Datei; mit
                       mysql DATENBANK < mysql/NAME.sql
                       lässt sich eine woanders wieder einspielen
+        weggelassen.txt  Ordner, die ein Befehl wieder anlegt (node_modules,
+                      Build-Ordner, Python-Umgebungen) und die deshalb fehlen;
+                      mit dem Häkchen im Profil sind sie dabei
         neo4j.dump    deine Neo4j-Datenbank; in einer leeren Datenbank lädt
                       neo4j_bolt load neo4j.dump
                       sie wieder (im Workspace ist neo4j_bolt installiert)

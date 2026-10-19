@@ -678,6 +678,7 @@ class Main < Sinatra::Base
     require './include/groups_page.rb'
     require './include/people_page.rb'
     require './include/server_health.rb'
+    require './include/my_data.rb'
 
     def workspace_url()
         if user_logged_in?
@@ -3118,13 +3119,14 @@ class Main < Sinatra::Base
         rows = admin_access_entries
         return "<p class='text-body-secondary'>Noch keine.</p>" if rows.empty?
 
-        kinds = { 'workspace' => 'Workspace geöffnet', 'impersonate' => 'nachgeahmt' }
+        kinds = { 'workspace' => 'Workspace geöffnet', 'impersonate' => 'nachgeahmt', 'stop' => 'Workspace gestoppt', 'cleanup' => 'Platz geschaffen' }
         "<table class='table table-sm people-table'><thead><tr><th>Wann</th><th>Wer</th><th>Was</th><th>Konto</th><th>Grund</th></tr></thead><tbody>" +
             rows.map { |r| "<tr><td>#{h.(Time.at(r['ts'].to_i).strftime('%d.%m.%Y %H:%M'))}</td><td>#{h.(r['admin'])}</td><td>#{h.(kinds[r['kind']] || r['kind'])}</td><td>#{h.(r['account'])}</td><td>#{r['reason'].to_s.empty? ? '–' : h.(r['reason'])}</td></tr>" }.join +
             '</tbody></table>'
     end
 
-    def record_look_in(email, kind, reason_text)
+    # details: what was done (LookIn cleanup: which folders), shown with it.
+    def record_look_in(email, kind, reason_text, details: nil)
         # A test account is the teachers' own: no reason, no notice.
         return if @@test_accounts.key?(email)
 
@@ -3136,9 +3138,9 @@ class Main < Sinatra::Base
         by = @session_user[:email]
         neo4j_query(<<~END_OF_QUERY, :email => email, :ts => Time.now.to_i, :kind => kind, :reason => reason,
             MATCH (u:User {email: $email})
-            CREATE (l:LookIn {ts: $ts, kind: $kind, reason: $reason, by_email: $by_email, by_name: $by_name, seen: false})-[:FOR]->(u);
+            CREATE (l:LookIn {ts: $ts, kind: $kind, reason: $reason, details: $details, by_email: $by_email, by_name: $by_name, seen: false})-[:FOR]->(u);
         END_OF_QUERY
-            :by_email => by, :by_name => ((@@invitations[by] || {})[:name] || by))
+            :by_email => by, :by_name => ((@@invitations[by] || {})[:name] || by), :details => details)
     end
 
     # As the student: the session belongs to it until »Zurück«, and remembers
@@ -4484,6 +4486,18 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         halt 403 if @impersonated_by
         email = @session_user[:email]
+        # One per person, EXPORT_LIMIT at once (include/my_data.rb): a page
+        # that says so instead of an empty download.
+        claim = Main.claim_export(email)
+        unless claim == :ok
+            content_type 'text/html'
+            text = claim == :mine ? 'Dein Download läuft schon. Warte, bis er fertig ist.' : 'Gerade laufen andere Downloads. Versuch es in ein paar Minuten noch einmal.'
+            halt 429, "<!doctype html><meta charset='utf-8'><title>Meine Daten</title><body style='font-family: sans-serif; max-width: 40em; margin: 3em auto;'>" \
+                "<p>#{text}</p><p><a href='/profil#my-data'>Zurück zum Profil</a></p></body>"
+        end
+        # Folders a tool makes again stay out unless asked (»alle=1«); the
+        # archive lists them (tools/rebuildable.py, weggelassen.txt).
+        everything = params['alle'] == '1'
         dir = Dir.mktmpdir('export')
         begin
             rows = {
@@ -4535,17 +4549,20 @@ class Main < Sinatra::Base
                     "Diese Teile ließen sich nicht exportieren und fehlen im Archiv:\n\n" + missing.map { |m| "- #{m}\n" }.join +
                     "\nMeist heißt das, dass es die Datenbank noch nicht gibt (noch nie benutzt). Sonst bitte an die Administration schreiben.\n")
             end
+            # The archive is written as the Workspace user: the folder
+            # becomes theirs instead of readable for everyone.
+            FileUtils.chown_R(WORKSPACE_UID, WORKSPACE_GID, dir)
         rescue StandardError
             FileUtils.rm_rf(dir)
+            Main.release_export(email)
             raise
         end
 
         workspace_root = "/user/#{fs_tag_for_email(email)}"
-        # The archive is written as the Workspace user: the folder becomes
-        # theirs instead of readable for everyone.
-        FileUtils.chown_R(WORKSPACE_UID, WORKSPACE_GID, dir)
         args = ['setpriv', "--reuid=#{WORKSPACE_UID}", "--regid=#{WORKSPACE_GID}", '--clear-groups',
-            'python3', '-I', File.join(__dir__, 'tools', 'zip_stream.py'), '--exclude', 'workspace/.cache', "=#{dir}"]
+            'python3', '-I', File.join(__dir__, 'tools', 'zip_stream.py'), '--exclude', 'workspace/.cache']
+        args << '--skip-rebuildable' unless everything
+        args << "=#{dir}"
         args << "workspace=#{File.join(workspace_root, 'workspace')}" if File.directory?(File.join(workspace_root, 'workspace'))
         @respond_streaming = true
         content_type 'application/zip'
@@ -4560,6 +4577,7 @@ class Main < Sinatra::Base
                 end
             ensure
                 FileUtils.rm_rf(dir)
+                Main.release_export(email)
             end
         end
     end
