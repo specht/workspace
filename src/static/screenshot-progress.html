@@ -66,44 +66,38 @@
         font-size: 0.85rem;
         overflow-wrap: anywhere;
     }
+    /* A stream from top (oldest) to bottom (newest): flat pictures stand
+       several to a screen, a tall one at most as high as the window. */
     .sp-slides {
         flex: 1 1 auto;
         min-height: 0;
         display: flex;
-        overflow-x: auto;
-        overflow-y: hidden;
-        scroll-snap-type: x mandatory;
-        scrollbar-width: none;
-        overscroll-behavior-x: contain;
-    }
-    .sp-slides::-webkit-scrollbar {
-        display: none;
+        flex-direction: column;
+        overflow-x: hidden;
+        overflow-y: auto;
+        overscroll-behavior-y: contain;
+        padding: 0.5rem 0 1rem;
     }
     .sp-slide {
-        flex: 0 0 100%;
-        scroll-snap-align: center;
+        flex: 0 0 auto;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        padding: 0.75rem 1rem 0.5rem;
+        padding: 0.6rem 1rem;
         min-width: 0;
     }
     /* The frame takes the free space; the picture in it is only as large as
        it is shown, so the shadow sits on its edge. */
     .sp-frame {
-        flex: 1 1 auto;
-        min-height: 0;
         width: 100%;
         display: flex;
-        align-items: center;
         justify-content: center;
     }
     .sp-frame img,
     .sp-frame video {
         display: block;
         max-width: 100%;
-        max-height: 100%;
+        max-height: calc(100vh - 5rem);
         width: auto;
         height: auto;
         border-radius: 0.4rem;
@@ -114,12 +108,12 @@
         animation: sp-fly 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
     @keyframes sp-fly {
-        from { opacity: 0; transform: translateX(12%) scale(0.96); }
+        from { opacity: 0; transform: translateY(2.5rem) scale(0.97); }
         to { opacity: 1; transform: none; }
     }
     .sp-caption {
         flex: 0 0 auto;
-        margin-top: 0.5rem;
+        margin-top: 0.35rem;
         font-size: 0.85rem;
         color: var(--bs-secondary-color);
         text-align: center;
@@ -185,7 +179,7 @@
 
 <div class='sp-root' id='sp_root'>
     <div class='sp-stage'>
-        <div class='sp-slides' id='sp_slides' tabindex='0' aria-label='Aufgenommene Dateien; Pfeiltasten blättern'>
+        <div class='sp-slides' id='sp_slides' tabindex='0' aria-label='Aufgenommene Dateien, die neueste unten'>
             <div class='sp-empty' id='sp_empty'>Noch nichts aufgenommen. Die Bilder erscheinen hier, sobald der Generator sie schreibt.</div>
         </div>
         <button type='button' class='btn btn-primary sp-live' id='bu_sp_live' hidden><i class='bi bi-skip-end-fill'></i>Live</button>
@@ -222,13 +216,11 @@
         let following = true;     // at the newest: new files are shown as they come
         let last_running = null;
 
-        // Which slide is in view, and whether that is the last one.
-        const current_index = () => Math.round(slides.scrollLeft / Math.max(1, slides.clientWidth));
-        const at_end = () => slides.children.length === 0 || current_index() >= slides.querySelectorAll('.sp-slide').length - 1;
-        function go(index, smooth) {
-            const count = slides.querySelectorAll('.sp-slide').length;
-            const i = Math.max(0, Math.min(count - 1, index));
-            slides.scrollTo({ left: i * slides.clientWidth, behavior: smooth ? 'smooth' : 'auto' });
+        // At the bottom (the newest): new files scroll into view. Scrolled
+        // up: the view stays, and »Live« goes back down.
+        const at_end = () => slides.scrollTop + slides.clientHeight >= slides.scrollHeight - 48;
+        function to_end(smooth) {
+            slides.scrollTo({ top: slides.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
         }
         function set_following(on) {
             following = on;
@@ -236,19 +228,13 @@
         }
         slides.addEventListener('scroll', () => {
             clearTimeout(slides._settle);
-            slides._settle = setTimeout(() => set_following(at_end()), 120);
-            play_visible();
+            slides._settle = setTimeout(() => set_following(at_end()), 150);
         }, { passive: true });
 
-        // Only the video in view plays.
-        function play_visible() {
-            const i = current_index();
-            slides.querySelectorAll('.sp-slide').forEach((slide, n) => {
-                const video = slide.querySelector('video');
-                if (!video) return;
-                if (n === i) video.play().catch(() => { }); else video.pause();
-            });
-        }
+        // Videos play while they are in view.
+        const watcher = new IntersectionObserver(entries => entries.forEach(entry => {
+            if (entry.isIntersecting) entry.target.play().catch(() => { }); else entry.target.pause();
+        }), { root: slides, threshold: 0.3 });
 
         function add_slide(c, animate) {
             $('#sp_empty').remove();
@@ -258,6 +244,10 @@
                 : `<img src='${url(c)}' alt='${esc(c.target)} aus ${esc(page_name(c.markdown_path))}'>`;
             const slide = $(`<div class='sp-slide${animate ? ' new' : ''}'><div class='sp-frame'>${media}</div><div class='sp-caption'>${esc(page_name(c.markdown_path))} › ${esc(c.target)} · ${when}</div></div>`);
             slides.appendChild(slide[0]);
+            const video = slide.find('video')[0];
+            if (video) watcher.observe(video);
+            // A picture changes the height once it has loaded: stay at the end.
+            slide.find('img, video').on('load loadedmetadata', () => { if (following) to_end(false); });
         }
 
         function render(data) {
@@ -311,9 +301,8 @@
             if (fresh.length) {
                 const first_load = slides.querySelectorAll('.sp-slide').length === 0;
                 const follow = following;
-                fresh.forEach((c, n) => add_slide(c, follow && !first_load && n === fresh.length - 1));
-                if (follow) go(slides.querySelectorAll('.sp-slide').length - 1, !first_load);
-                play_visible();
+                fresh.forEach(c => add_slide(c, follow && !first_load));
+                if (follow) to_end(!first_load);
             }
         }
 
@@ -344,24 +333,13 @@
             $('#bu_sp_full').on('click', toggle_fullscreen);
             document.addEventListener('fullscreenchange', fullscreen_label);
             document.addEventListener('webkitfullscreenchange', fullscreen_label);
-            $('#bu_sp_live').on('click', () => { set_following(true); go(slides.querySelectorAll('.sp-slide').length - 1, true); });
+            $('#bu_sp_live').on('click', () => { set_following(true); to_end(true); });
             document.addEventListener('keydown', function (e) {
-                if (e.key === 'ArrowLeft') { e.preventDefault(); go(current_index() - 1, true); }
-                else if (e.key === 'ArrowRight') { e.preventDefault(); go(current_index() + 1, true); }
-                else if (e.key === 'End') { e.preventDefault(); go(slides.querySelectorAll('.sp-slide').length - 1, true); }
-                else if (e.key === 'Home') { e.preventDefault(); go(0, true); }
+                if (e.key === 'End') { e.preventDefault(); set_following(true); to_end(true); }
+                else if (e.key === 'Home') { e.preventDefault(); slides.scrollTo({ top: 0, behavior: 'smooth' }); }
             });
-            // A turn of the mouse wheel moves sideways by one file.
-            slides.addEventListener('wheel', function (e) {
-                if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
-                e.preventDefault();
-                clearTimeout(slides._wheel);
-                if (slides._wheelLock) return;
-                slides._wheelLock = true;
-                go(current_index() + (e.deltaY > 0 ? 1 : -1), true);
-                slides._wheel = setTimeout(() => { slides._wheelLock = false; }, 350);
-            }, { passive: false });
-            window.addEventListener('resize', () => go(current_index(), false));
+            slides.focus();
+            window.addEventListener('resize', () => { if (following) to_end(false); });
             poll();
             setInterval(poll, 2000);
             document.addEventListener('visibilitychange', poll);
