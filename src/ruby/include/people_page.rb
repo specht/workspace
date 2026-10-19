@@ -11,12 +11,6 @@
 class Main < Sinatra::Base
     GUESTS_SCHOOL = 'guests'
 
-    # A refusal, not an error: 403 for anyone who is not an administrator.
-    def admin_only!
-        halt 403, { :error => 'admins_only' }.to_json unless admin_logged_in?
-        roster_writable!
-    end
-
     def school_key_for(name)
         base = name.downcase.gsub(/[^a-z0-9]+/, '-').gsub(/\A-|-\z/, '')[0, 30]
         base = 'schule' if base.empty?

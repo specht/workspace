@@ -12,7 +12,7 @@ user-facing text are German; code and these notes are English.
 | `src/content/<slug>/<slug>.md` | an activity: page, `tasks.yaml`, `task-examples.yaml` (what each check must accept and reject), `lehrkraft.md` (teacher note), pictures, example files |
 | `src/content/reference/<slug>/` | a Handbuch page; parts marked `<!-- part: name -->` … `<!-- /part -->`, included with `_include(slug#part)` |
 | `src/content/sections.yaml`, `reference/sections.yaml` | the catalogs |
-| `src/ruby/main.rb`, `src/ruby/include/` | the Sinatra app; content is read on every request in development |
+| `src/ruby/main.rb`, `src/ruby/include/` | the Sinatra app; content is read on every request in development; who may do what is in `include/access.rb` |
 | `src/static/` | CSS, JS, page template (`_template.html`) |
 | `src/tutorial-screenshots/` | the screenshot and video generator (its own service) |
 | `docker/code/` | the student Workspace image |

@@ -8,12 +8,6 @@ class Main < Sinatra::Base
     GROUP_NAME_MAX = 60
     WELCOME_MAILS_PER_TEACHER = RateLimit.new(:limit => 600, :period => 3600)
 
-    # Teachers manage their own groups, administrators every group; anyone
-    # else gets a refusal, not an error.
-    def teacher_or_admin!
-        halt 403, { :error => 'teachers_only' }.to_json unless teacher_account_logged_in? || admin_logged_in?
-    end
-
     def roster_writable!
         halt 409, { :error => 'roster_in_files' }.to_json unless Main.roster_imported
     end
@@ -45,22 +39,6 @@ class Main < Sinatra::Base
             RETURN s.key AS key, s.name AS name, s.approved_at IS NOT NULL AS approved, coalesce(s.guests, false) AS guests, coalesce(s.home, false) AS home;
         END_OF_QUERY
         row && { :key => row['key'], :name => row['name'], :approved => row['approved'] == true, :guests => row['guests'] == true, :home => row['home'] == true }
-    end
-
-    # Administrators manage every group, teachers the ones they teach.
-    def may_manage_group?(name)
-        return false unless neo4j_query('MATCH (g:Group {name: $name}) RETURN g.name;', :name => name).first
-        return true if admin_logged_in?
-
-        !neo4j_query(<<~END_OF_QUERY, :email => my_email, :name => name).first.nil?
-            MATCH (:Invitation {email: $email})-[:TEACHES]->(:Group {name: $name})
-            RETURN 1 AS ok;
-        END_OF_QUERY
-    end
-
-    def managed_group!(name)
-        halt 403, { :error => 'not_your_group' }.to_json unless may_manage_group?(name.to_s)
-        name.to_s
     end
 
     # An invitation that is in no group, teaches none and is no teacher
