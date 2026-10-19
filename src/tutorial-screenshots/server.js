@@ -1116,6 +1116,7 @@ async function parseTutorial(markdown, markdownPath) {
         sha256(`tutorial-screenshot-v${GENERATOR_VERSION}\0${markdownPath}`),
         shot => (shot[SCOPE] === undefined ? null : { scope: shot[SCOPE], entry: shot[SCOPE_ENTRY] || 0 }),
         shot => (shot[DEFAULT_WORKSPACE_VIEWPORT] ? { ...shot, viewport: 'workspace' } : shot),
+        shot => (shot[DEFAULT_WORKSPACE_VIEWPORT] ? { ...shot, viewport: { width: DEFAULT_PROFILE.width, height: DEFAULT_PROFILE.height } } : shot),
     );
     shots.forEach((shot, index) => Object.assign(shot, hashes[index]));
     shots[TRAILING_STEPS] = pendingSteps;

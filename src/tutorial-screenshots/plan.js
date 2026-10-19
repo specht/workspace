@@ -135,9 +135,12 @@ export function stateParts(shot) {
 // hashView(shot) is what the hash sees of a shot: the default Workspace
 // window as »workspace«, not its height (server.js), so a taller window does
 // not make the previews after a Workspace shot stale. formerStateHash is
-// the hash before that (the concrete height), accepted once like
-// legacyStateHash so the switch re-renders nothing.
-export function chainStateHashes(shots, seed, scopeOf = () => null, hashView = shot => shot) {
+// the hash stored before the Workspace window got taller: formerView(shot)
+// gives the shot as it was then (the default Workspace window at the
+// preview's height).
+// Accepted once like legacyStateHash, so the switch re-renders nothing that
+// was current.
+export function chainStateHashes(shots, seed, scopeOf = () => null, hashView = shot => shot, formerView = shot => shot) {
     let chain = seed;
     let former = seed;
     let legacy = seed;
@@ -149,7 +152,7 @@ export function chainStateHashes(shots, seed, scopeOf = () => null, hashView = s
             former = open.formerAfter;
             open = null;
         }
-        const concrete = withoutAssertions(original);
+        const concrete = withoutAssertions(formerView(original));
         const shot = withoutAssertions(hashView(original));
         if (scoped && !open) {
             const entry = { actions: shot.actions.slice(0, scoped.entry) };

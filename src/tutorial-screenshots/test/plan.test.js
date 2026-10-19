@@ -242,3 +242,17 @@ test('the Workspace window height is not part of the chain', () => {
     const entry = { state_hash: after[1].formerStateHash, environment_fingerprint: 'e', workspace_look: 'x' };
     assert.ok(entryIsCurrent(entry, { ...shots(560)[1], ...after[1] }, { environmentFingerprint: 'e', workspaceLook: 'x' }));
 });
+
+test('an entry from before the taller Workspace window is accepted once', () => {
+    const shots = height => [
+        { target: 'a.webp', tab: 'workspace', viewport: { width: 1029, height }, defaultWindow: true, actions: [{ type: 'press', key: 'Enter' }] },
+        { target: 'b.webp', tab: 'preview', viewport: { width: 1029, height: 516 }, actions: [{ type: 'sleep', seconds: 1 }] },
+    ];
+    const old = chainStateHashes(shots(516), 'seed');   // what the manifest holds
+    const hashView = s => (s.defaultWindow ? { ...s, viewport: 'workspace' } : s);
+    const formerView = s => (s.defaultWindow ? { ...s, viewport: { width: 1029, height: 516 } } : s);
+    const now = chainStateHashes(shots(560), 'seed', () => null, hashView, formerView);
+    assert.equal(now[1].formerStateHash, old[1].stateHash);
+    const entry = { state_hash: old[1].stateHash, environment_fingerprint: 'e', workspace_look: 'x' };
+    assert.ok(entryIsCurrent(entry, { ...shots(560)[1], ...now[1] }, { environmentFingerprint: 'e', workspaceLook: 'x', workspaceWindow: 560 }));
+});
