@@ -413,3 +413,11 @@ Deine Präsentation läuft in jedem Browser:
 Zum Vortragen brauchst du weder Internet noch den Workspace: Lade den ganzen Ordner herunter, kopiere ihn auf einen Stick und öffne dort `index.html` mit einem Doppelklick. Das klappt nur, wenn alles im Ordner liegt, was die Präsentation braucht: Bilder, Schriften und die Dateien der Vorlage. Probiere es vor dem Vortrag einmal an einem anderen Rechner aus.
 
 <!-- /part -->
+
+## Zum Nachschlagen
+
+- [Shower](https://github.com/shower/shower): das Projekt, auf dem die Vorlage aufbaut. Sie enthält Shower 3.5 mit dem Theme »Ribbon«.
+- [Beispielfolien von Ribbon](https://shwr.me/shower/themes/ribbon/): alles, was das Theme der Vorlage mitbringt, etwa Zitate, Listen in Spalten, Tabellen und Code, als Präsentation. Mit <kbd>Strg</kbd><kbd>U</kbd> siehst du im Browser den Quelltext dazu.
+- [Tastenkürzel](https://github.com/shower/shower/blob/main/docs/shortcuts.md): alle Tasten zum Präsentieren, etwa <kbd>Pos1</kbd> und <kbd>Ende</kbd> für die erste und die letzte Folie.
+- [KaTeX: unterstützte Befehle](https://katex.org/docs/supported.html): alle Befehle aus LaTeX, die KaTeX setzen kann. Was dort fehlt, geht auf einer Folie nicht.
+- [KaTeX: Auto-render](https://katex.org/docs/autorender.html): die Einstellungen von `auto-render.min.js`, etwa andere Zeichen, die eine Formel einschließen.

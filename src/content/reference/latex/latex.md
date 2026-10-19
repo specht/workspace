@@ -775,3 +775,11 @@ sleep: 5
 move-mouse: selector:.monaco-editor .view-lines
 -->
 <img class='full' src='wpgtr.webp' alt='Ein gesetztes Buch mit Inhaltsverzeichnis, Kapiteln, Fließtext und Illustrationen.'>
+
+## Zum Nachschlagen
+
+- [LaTeX2e-Kurzbeschreibung](https://ctan.org/pkg/lshort-german) (»l2kurz«): die deutsche Fassung von »The Not So Short Introduction to LaTeX«, eine Einführung in alles Wichtige zum Nachlesen.
+- [CTAN](https://ctan.org/): das Archiv aller LaTeX-Pakete. Zu jedem Paket gibt es dort die Anleitung als PDF; such nach dem Namen aus `\usepackage`, etwa [siunitx](https://ctan.org/pkg/siunitx), [biblatex](https://ctan.org/pkg/biblatex), [fontspec](https://ctan.org/pkg/fontspec) oder [pgf](https://ctan.org/pkg/pgf) mit dem Handbuch von TikZ.
+- [The Comprehensive LaTeX Symbol List](https://ctan.org/pkg/comprehensive): Tausende Zeichen mit ihrem Befehl und dem Paket, das sie braucht. Kennst du nur das Aussehen, zeichne das Zeichen bei [Detexify](https://detexify.kirelabs.org/classify.html) (keine offizielle Referenz, aber es schlägt passende Befehle vor).
+- [Wiki von LaTeX Workshop](https://github.com/James-Yu/LaTeX-Workshop/wiki): alle Einstellungen und Tastenkürzel der Erweiterung.
+- [Overleaf: Learn LaTeX](https://www.overleaf.com/learn): keine offizielle Referenz, aber verständliche Anleitungen mit Beispielen zu fast jedem Thema, auf Englisch.

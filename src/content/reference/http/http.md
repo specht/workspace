@@ -245,3 +245,11 @@ socket.send('Hallo');
 
 Wie der Handshake im Einzelnen geht, zeigt [Eine Pixelwand für alle](/pixelwand).
 <!-- /part -->
+
+## Zum Nachschlagen
+
+- [MDN: HTTP](https://developer.mozilla.org/de/docs/Web/HTTP), auf Deutsch: Einführungen und zu jedem [Statuscode](https://developer.mozilla.org/de/docs/Web/HTTP/Reference/Status), jeder [Methode](https://developer.mozilla.org/de/docs/Web/HTTP/Reference/Methods) und jedem [Header](https://developer.mozilla.org/de/docs/Web/HTTP/Reference/Headers) eine eigene Seite. Hier schaust du zuerst nach.
+- [RFC 9110: HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110.html): die Spezifikation dafür, was Methoden, Statuscodes und Header bedeuten, gleich in welcher Version von HTTP.
+- [RFC 9112: HTTP/1.1](https://www.rfc-editor.org/rfc/rfc9112.html): wie Anfrage und Antwort Zeichen für Zeichen aussehen, so wie in der TCP-Konsole.
+- [RFC 6455: The WebSocket Protocol](https://www.rfc-editor.org/rfc/rfc6455.html): Handshake und Frames von WebSockets im Einzelnen.
+- [curl-Handbuch](https://curl.se/docs/manpage.html): alle Optionen von `curl`. Im Terminal zeigt `curl --help all` eine Kurzfassung.

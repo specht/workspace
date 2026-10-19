@@ -223,3 +223,11 @@ sRGB ist eine Vereinbarung von HP und Microsoft aus dem Jahr 1996, drei Jahre sp
 ### Heute: OKLab
 
 OKLab erschien nicht als Norm, sondern 2020 in einem Blogeintrag. Björn Ottosson, ein Programmierer aus Schweden, wollte für Bildbearbeitung einen Farbraum, der Helligkeit, Buntheit und Farbton so gut vorhersagt wie die genauen, aber aufwendigen Modelle der Forschung, und dabei so einfach zu rechnen ist wie CIELab. Er passte zwei Matrizen und eine Kubikwurzel an Messdaten an. Schon drei Jahre später konnten ihn alle großen Browser.
+
+## Zum Nachschlagen
+
+- [CSS Color Module Level 4: Beispielcode](https://www.w3.org/TR/css-color-4/#color-conversion-code): die Umrechnungen zwischen sRGB, XYZ, CIELab und OKLab als kurzer Code, mit allen Stellen der Matrizen.
+- [A perceptual color space for image processing](https://bottosson.github.io/posts/oklab/) von Björn Ottosson: die erste Beschreibung von OKLab, wie er hergeleitet ist und Code zum Umrechnen.
+- [A Standard Default Color Space for the Internet – sRGB](https://www.w3.org/Graphics/Color/sRGB.html): der Vorschlag von HP und Microsoft von 1996. Die Norm IEC 61966-2-1, die daraus wurde, ist kostenpflichtig; ihre Zahlen weichen ein wenig ab, die Formel oben folgt der Norm.
+- [JFIF 1.02](https://www.w3.org/Graphics/JPEG/jfif3.pdf): legt fest, wie JPEG-Dateien YCbCr speichern, mit den Formeln von oben, auf vier Stellen gerundet. Die Gewichte für Y stehen in der Fernsehnorm [ITU-R BT.601](https://www.itu.int/rec/R-REC-BT.601/).
+- [Color Gamut Transform Pairs](https://alvyray.com/Papers/CG/color78.pdf) von Alvy Ray Smith: der Aufsatz von 1978, in dem HSV zum ersten Mal beschrieben ist.

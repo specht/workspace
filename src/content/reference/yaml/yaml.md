@@ -123,7 +123,7 @@ YAML errät, was ein Wert ist. Was du als Text meinst, ist manchmal eine Zahl od
 
 Die Regel ist einfach: **Was Text bleiben soll, steht in Anführungszeichen**, sobald es aussieht wie eine Zahl, eine Uhrzeit oder ein Ja und Nein.
 
-Zwei Fehler, bei denen das Lesen ganz abbricht:
+Drei Meldungen, bei denen das Lesen ganz abbricht:
 
 <div class='scroll-x'><table class='table table-sm reference-table'>
 <thead><tr><th>Meldung</th><th>Bedeutung</th></tr></thead>
@@ -196,3 +196,11 @@ File.write('film.yaml', film.to_yaml)
 
 `YAML.load_file` macht aus Objekten Hashes, aus Listen Arrays, wie `JSON.parse`. Ist die Datei kaputt, wirft es einen `Psych::SyntaxError` mit Zeile und Spalte. Ruby liest nach YAML 1.1; die [Fallen](#fallen) oben gelten hier besonders.
 <!-- /part -->
+
+## Zum Nachschlagen
+
+- [YAML 1.2.2](https://yaml.org/spec/1.2.2/): die aktuelle Spezifikation, nach der `yq` liest.
+- [YAML 1.1](https://yaml.org/spec/1.1/): die ältere Fassung, nach der Ruby liest. Welche Wörter dort als Wahrheitswert gelten, steht unter [Boolean Language-Independent Type](https://yaml.org/type/bool.html).
+- [yq-Dokumentation](https://mikefarah.gitbook.io/yq/): alle Befehle und Operatoren von `yq` (Version 4, von Mike Farah), mit Beispielen.
+- [Ruby: Psych](https://docs.ruby-lang.org/en/3.4/Psych.html): die Bibliothek hinter `require 'yaml'`, mit allen Methoden zum Lesen und Schreiben.
+- [yaml-multiline.info](https://yaml-multiline.info/): keine offizielle Referenz, aber dort probierst du aus, was `|`, `>` und ihre Varianten wie `|-` aus einem langen Text machen.

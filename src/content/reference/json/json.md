@@ -162,3 +162,10 @@ curl -s https://api.github.com/users/octocat | jq .name
 
 `jq` meldet kaputtes JSON mit Zeile und Spalte, zum Beispiel `parse error: Expected another key-value pair at line 4, column 1` für ein Komma zu viel.
 <!-- /part -->
+
+## Zum Nachschlagen
+
+- [json.org](https://www.json.org/json-de.html): die ganze Schreibweise von JSON auf einer Seite, mit Diagrammen, auf Deutsch.
+- [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259.html): die Spezifikation von JSON als Internet-Standard, etwa welche Zeichen in einem String mit `\` geschrieben werden müssen.
+- [jq-Handbuch](https://jqlang.org/manual/): alle Filter und Funktionen von `jq`, mit Beispielen.
+- [Ruby: JSON](https://docs.ruby-lang.org/en/3.4/JSON.html), [JavaScript: JSON](https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/JSON) (MDN, auf Deutsch) und [Python: json](https://docs.python.org/3/library/json.html): alle Optionen zum Lesen und Schreiben in der jeweiligen Sprache.

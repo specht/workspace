@@ -220,4 +220,12 @@ Drehst du nur am Farbton, bleibt die Farbe gleich hell und gleich kräftig. So f
 Text muss sich deutlich vom Hintergrund abheben. Schwarz auf Weiß und Weiß auf Dunkelblau sind gut lesbar, Hellgrau auf Weiß und Rot auf Grün nicht: Etwa jeder zwölfte Junge kann Rot und Grün schlecht unterscheiden. Prüfe im Zweifel, ob du den Text auch noch lesen kannst, wenn du ein Stück vom Bildschirm zurücktrittst.
 <!-- /part -->
 
+## Zum Nachschlagen
+
+- [MDN: `<color>`](https://developer.mozilla.org/de/docs/Web/CSS/Reference/Values/color_value): alle Schreibweisen für Farben in CSS, auch `hsl()`, `oklch()` und Farben mit Transparenz, auf Deutsch.
+- [CSS Color Module Level 4](https://www.w3.org/TR/css-color-4/) des W3C: die Spezifikation, in der alle Farbnamen und Farbfunktionen genau festgelegt sind.
+- [WCAG 2.2: Kontrast (Minimum)](https://www.w3.org/TR/WCAG22/#contrast-minimum): die Regel aus den Richtlinien für barrierefreie Webinhalte. Text braucht ein Kontrastverhältnis von mindestens 4,5 : 1 zum Hintergrund, großer Text 3 : 1.
+- [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/): keine offizielle Referenz, aber ein Rechner, der für zwei Farbcodes das Kontrastverhältnis ausrechnet und sagt, ob es nach WCAG reicht.
+- Was hinter `oklch()` und den anderen Farbräumen steckt, steht unter [Farbräume](/reference/farbraeume).
+
 <script src='/include/color_mixer.js'></script>

@@ -486,3 +486,11 @@ Im Browser zeigt dir ein Rechtsklick auf das Element und »Untersuchen« alle Re
 <div class='tutorial-preview-clear'></div>
 
 <!-- /part -->
+
+## Zum Nachschlagen
+
+- [MDN: CSS-Referenz](https://developer.mozilla.org/de/docs/Web/CSS/Reference): alle Eigenschaften, Werte und Selektoren, auf Deutsch. Hier schaust du nach, welche Werte eine Eigenschaft annimmt und was sie bewirken.
+- [MDN: CSS-Selektoren](https://developer.mozilla.org/de/docs/Web/CSS/Guides/Selectors): alle Arten von Selektoren, auch die, die hier fehlen, etwa `li:nth-child(2)` oder `a[href^="https"]`.
+- [MDN: Das Box-Modell](https://developer.mozilla.org/de/docs/Web/CSS/Guides/Box_model/Introduction): wie Inhalt, `padding`, `border` und `margin` zusammen die Größe eines Elements ergeben.
+- [MDN: Spezifität](https://developer.mozilla.org/de/docs/Web/CSS/Guides/Cascade/Specificity): genau, wie der Browser ausrechnet, welche Regel gewinnt.
+- [Can I use](https://caniuse.com/): keine offizielle Referenz, aber eine Übersicht, welcher Browser eine Eigenschaft seit welcher Version kann.
