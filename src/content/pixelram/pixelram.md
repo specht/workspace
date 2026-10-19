@@ -55,12 +55,12 @@ _include(workspace#repository-klonen)
 make
 ```
 
-Beim ersten Mal lädt `make` die Bibliothek PixelRAM herunter. Dann übersetzt es `main.c` in die Datei `main.html`: Dein C-Programm läuft als WebAssembly im Browser.
+Beim ersten Mal lädt `make` die neueste Version der Bibliothek PixelRAM herunter und legt sie im versteckten Ordner `.pixelram` ab; danach nimmt es immer diese Kopie. Mit `make pixelram-update` holst du später die neueste Version. Dann übersetzt es `main.c` in die Datei `main.html`: Dein C-Programm läuft als WebAssembly im Browser.
 
 <!-- tutorial-screenshot
 # Klonen wie im Handbuch »Workspace« (oben eingebunden), dann make im Terminal
 show-left-sidebar
-clone-start: https://github.com/specht/pixelram-starter.git @ 8f36e382554999421d77687c69f7541ca2c4afb7
+clone-start: https://github.com/specht/pixelram-starter.git @ 8eeadbc0bf5b46ccd4e0527f4bcda13b3c0b947d
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -945,7 +945,7 @@ hook: at 6
 crop-element: #canvas
 -->
 <img src='julia.webp' alt='Ein Julia-Fraktal mit farbigen Bändern und Spiralformen.'>
-<figcaption><code>beispiele/julia</code>: Für jedes Pixel immer wieder dieselbe kleine Rechnung: ein Fraktal, das sich langsam verwandelt.</figcaption>
+<figcaption><code>beispiele/julia</code>: Für jedes Pixel immer wieder dieselbe kleine Rechnung, ein Fraktal, das sich langsam verwandelt; die Kanten geglättet wie in »Glatte Kanten«.</figcaption>
 </figure>
 <figure>
 <!-- tutorial-screenshot
@@ -962,7 +962,7 @@ hook: at 1.2
 crop-element: #canvas
 -->
 <img src='magic.webp' alt='Violette und türkise Ringe eines Zauberkreises leuchten auf dunklem Grund.'>
-<figcaption><code>beispiele/magie</code>: Der Kreis wird nur einmal gezeichnet. Bewegung bringt allein die Palette, die sich in der Schleife dreht.</figcaption>
+<figcaption><code>beispiele/magie</code>: Die Form wird nur einmal berechnet. Bewegung bringt allein die Palette, die sich in der Schleife dreht; jedes Bild mischt ihre Farben an den Kanten neu.</figcaption>
 </figure>
 </div>
 
