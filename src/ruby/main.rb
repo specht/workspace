@@ -3938,6 +3938,15 @@ class Main < Sinatra::Base
 
         email = @session_user[:email]
         test_tag = data[:test_tag]
+        # An exam's Workspace only for someone who takes it, and only while it
+        # runs: after »Beenden« its answers stay as they were.
+        if test_tag
+            taking = neo4j_query(<<~END_OF_QUERY, :email => email, :tag => test_tag.to_s)
+                MATCH (:User {email: $email})-[:TAKES]->(t:Test {tag: $tag, running: TRUE})
+                RETURN t.tag;
+            END_OF_QUERY
+            halt 403, { :error => 'exam_not_running' }.to_json if taking.empty?
+        end
         base_server_tag = @session_user[:server_tag]
         server_tag = "#{base_server_tag}#{test_tag}"
 

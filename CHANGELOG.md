@@ -74,6 +74,17 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Klötzchenwelt hat vier: Ecken im Uhrzeigersinn, Licht ohne `ambient`,
   ohne `max` und Normalen als Farbe, Nebel und Fackeln, Texturkoordinaten
   als Farbe.
+- Datenbanken in Leistungsüberprüfungen funktionieren: Ein Prüfungs-Workspace
+  hat absichtlich keine Namensauflösung (er soll offline sein) und fand
+  deshalb auch MySQL und Neo4j nicht. Er bekommt jetzt genau diese beiden
+  Namen fest eingetragen; alles andere bleibt offline. Ein E2E-Test prüft
+  MySQL und `neo4j_bolt load` im Prüfungs-Workspace, dass die normalen
+  Datenbanken unerreichbar bleiben und die Zugänge mit der Prüfung gelöscht
+  werden.
+- Der Workspace einer Leistungsüberprüfung startet nur noch für
+  Teilnehmende und nur, solange sie läuft. Bisher genügte die Kennung der
+  Prüfung, und nach »Beenden« ließ sich der Prüfungs-Workspace wieder
+  öffnen und die Abgabe ändern.
 - Leistungsüberprüfungen im Profil übersichtlicher: je Zeile der Name mit
   dem Tag des Hochladens, wer teilnimmt, der Status mit »Starten« (erst,
   wenn jemand ausgewählt ist) oder »Beenden«, Vorschau und Ergebnisse;

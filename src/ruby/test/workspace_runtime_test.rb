@@ -74,6 +74,17 @@ class WorkspaceRuntimeTest < Minitest::Test
             'NEO4J_DATABASE' => 'student',
         }
 
+        # An exam Workspace has no DNS: the databases come as fixed entries.
+        @capture_outputs = [
+            JSON.generate([{ 'Containers' => {
+                'm1' => { 'Name' => 'workspace_mysql_1' }, 'n1' => { 'Name' => 'workspace_neo4j_1' },
+                'c1' => { 'Name' => 'hs_code_other' },
+            } }]),
+            JSON.generate([
+                { 'NetworkSettings' => { 'Networks' => { 'workspace_user' => { 'Aliases' => ['workspace_mysql_1', 'mysql'], 'IPAddress' => '172.20.0.4' } } } },
+                { 'NetworkSettings' => { 'Networks' => { 'workspace_user' => { 'Aliases' => ['neo4j'], 'IPAddress' => '172.20.0.2' } } } },
+            ]),
+        ]
         @runtime.start_workspace(
             :fs_tag => 'abcdefghijklmnop',
             :workspace_login => 'max.mustermann',
@@ -82,6 +93,7 @@ class WorkspaceRuntimeTest < Minitest::Test
             :test_mode => true,
             :timeout => 60,
         )
+        assert_equal 'docker inspect m1 n1', @captures[1][0]
 
         command, options = @oks.first
         assert_includes command, 'docker run --cpus=4 --memory=4g --memory-swap=4g --pids-limit=256'
@@ -90,6 +102,8 @@ class WorkspaceRuntimeTest < Minitest::Test
         assert_includes command, '-v /srv/workspace/user/abcdefghijklmnop/workspace:/workspace'
         assert_includes command, '--network workspace_user'
         assert_includes command, '-v /dev/null:/etc/resolv.conf:ro'
+        assert_includes command, '--add-host mysql:172.20.0.4'
+        assert_includes command, '--add-host neo4j:172.20.0.2'
         assert_includes command, '-e DOTNET_CLI_TELEMETRY_OPTOUT=1'
         assert_includes command, '--cap-drop NET_RAW'
         assert_includes command, '--security-opt no-new-privileges'
