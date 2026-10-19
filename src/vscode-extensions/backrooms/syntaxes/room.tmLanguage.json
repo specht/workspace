@@ -46,7 +46,7 @@
       },
       "end": "$",
       "patterns": [
-        { "match": "\\s#.*$", "name": "comment.line.number-sign.room" },
+        { "match": "\\s#(?=\\s|$).*$", "name": "comment.line.number-sign.room" },
         { "match": "#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{3})\\b", "name": "constant.other.color.rgb-value.hex.room" },
         { "match": "-?\\d+(?:\\.\\d+)?", "name": "constant.numeric.room" },
         { "match": "[A-Za-z_][\\w./-]*", "name": "string.unquoted.room" },

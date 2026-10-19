@@ -57,7 +57,7 @@ Danach liegt die Vorlage in `/workspace/backrooms-starter`:
 # Klonen wie im Handbuch »Workspace« (oben eingebunden), dann die
 # geöffnete Vorlage im Explorer, level.ini im Editor
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ 57e8292b3a15d54f2da09082d40b4ac05d0c6b70
+clone-start: https://github.com/specht/backrooms-starter.git @ bc18f5618af3f5b77de850c2c50e7eff53cf1242
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -111,6 +111,7 @@ Klick ins Bild, dann siehst du dich mit der Maus um. <kbd>Esc</kbd> gibt die Mau
 <tr><td><kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd></td><td>vor und zurück laufen, nach links und rechts drehen</td></tr>
 <tr><td><kbd>M</kbd> oder <kbd>Tab</kbd></td><td>die Automap: das ganze Bauwerk als Drahtgitter</td></tr>
 <tr><td><kbd>R</kbd></td><td>zurück zum Anfang</td></tr>
+<tr><td><kbd>H</kbd></td><td>den Kasten oben links aus- und wieder einblenden</td></tr>
 </table>
 
 Wo du stehst, merkt sich die Adresse der Seite. Lädst du neu, stehst du wieder dort, solange sich der Grundriss nicht geändert hat.
@@ -145,7 +146,7 @@ hook: info off
 # Ein kleines Zimmer. Du weißt nicht, wie du hierhergekommen bist.
 
 [room]
-baseboard = 0.08, #5a4626
+baseboard = 0.08, #86763c
 name = Zimmer
 height = 2.6
 look = east              # am @ schaust du zur Tür
@@ -166,7 +167,7 @@ power = 0.9
 door = gang 1
 ```
 
-Eine Raumdatei besteht aus Abschnitten in eckigen Klammern. In `[room]` steht, wie der Raum aussieht: sein Name, wie hoch die Decke ist (2,6 m), eine dunkle Sockelleiste unten an den Wänden, 8 cm hoch, und wohin du am Anfang schaust. Alles nach einem `#` mit Leerzeichen davor ist ein Kommentar.
+Eine Raumdatei besteht aus Abschnitten in eckigen Klammern. In `[room]` steht, wie der Raum aussieht: sein Name, wie hoch die Decke ist (2,6 m), eine dunkle Sockelleiste unten an den Wänden, 8 cm hoch, und wohin du am Anfang schaust. Ein `#` mit einem Leerzeichen davor und danach beginnt einen Kommentar; eine Farbe wie `#86763c` hat kein Leerzeichen dahinter.
 
 In `[map]` steht der Grundriss, von oben gesehen, oben ist Norden. Hier zählt jedes Zeichen, Kommentare gibt es darin nicht:
 
@@ -488,7 +489,7 @@ Jetzt bist du dran: Bau einen Raum nach deiner Idee und schließ ihn mit einer T
 <tr><td><code>walls</code></td><td><code>wallpaper</code> (Tapete), <code>marble</code> (Marmor) oder <code>plain</code> (einfarbig)</td></tr>
 <tr><td><code>floor</code></td><td><code>carpet</code> (Teppich), <code>marble</code> oder <code>plain</code></td></tr>
 <tr><td><code>wallpaper</code>, <code>carpet</code>, <code>ceiling</code></td><td>die Farben von Wänden, Boden und Decke</td></tr>
-<tr><td><code>baseboard</code></td><td>eine Sockelleiste: Höhe und Farbe</td></tr>
+<tr><td><code>baseboard</code></td><td>die Sockelleiste: Höhe und Farbe; ohne Angabe 8 cm und halb so hell wie die Tapete, <code>none</code>: keine</td></tr>
 <tr><td><code>look</code></td><td>wohin du am <code>@</code> schaust: <code>north</code>, <code>east</code>, <code>south</code>, <code>west</code> oder Grad</td></tr>
 </table>
 

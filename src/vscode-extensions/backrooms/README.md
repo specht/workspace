@@ -8,8 +8,9 @@ Farben für die Räume der Backrooms (`rooms/NAME.room` in der Vorlage
   ein `#` ist dort eine Wand, kein Kommentar
 - Abschnitte in eckigen Klammern, Einträge `name = wert` mit Farben, Zahlen
   und Wörtern
-- Kommentare: eine Zeile, die mit `#` anfängt und Wörter enthält, und alles
-  nach einem `#` mit Leerzeichen davor am Ende eines Eintrags
+- Kommentare: eine Zeile, die mit `#` anfängt und Wörter enthält, und am
+  Ende eines Eintrags alles ab einem `#` mit Leerzeichen davor und danach
+  (`0.08, #5a4626` ist eine Höhe und eine Farbe)
 
 Dieselben Regeln wie die Code-Blöcke ` ```room ` auf der Website
 (`src/ruby/include/backrooms_room_lexer.rb`).

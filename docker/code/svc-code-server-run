@@ -30,7 +30,7 @@ EXTENSIONS=(
     "/app/extensions/bif-authoring-tools-0.2.1.vsix|gymnasiumsteglitz.bif-authoring-tools"
     "/app/extensions/ritwickdey.LiveServer.vsix|ritwickdey.LiveServer"
     "/app/extensions/hackschule-er-0.3.0.vsix|hackschule.hackschule-er"
-    "/app/extensions/hackschule-backrooms-0.1.0.vsix|hackschule.hackschule-backrooms"
+    "/app/extensions/hackschule-backrooms-0.1.1.vsix|hackschule.hackschule-backrooms"
 )
 
 mkdir -p "$EXT_DIR"

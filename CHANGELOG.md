@@ -18,6 +18,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Backrooms: Jeder Raum hat eine Sockelleiste, etwas dunkler als die Wand
+  (`baseboard = none`: keine), und die Leisten treffen sich sauber an den
+  Ecken; flackernde Leuchten werfen ihr Licht auch zurück (ein Raum nur mit
+  ihnen hatte eine schwarze Decke) und zählen ihre Stärke nur einmal;
+  <kbd>H</kbd> blendet den Kasten oben links aus. Ein Kommentar am Ende
+  eines Eintrags beginnt mit `#` und einem Leerzeichen danach, damit
+  `0.08, #5a4626` eine Farbe bleibt; Website und VS Code (Erweiterung
+  `hackschule-backrooms` 0.1.1) lesen es ebenso.
 - Projekte, deren Ergebnis eine statische Seite ist (Anaglyph, BIF,
   PixelRAM, Klötzchenwelt, Feuerwerk, Shower.js, eigene Website, Svelte,
   Hugo, Backrooms), sagen am Ende, wie man sie der Klasse zeigt (Shared Live

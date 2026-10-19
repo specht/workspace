@@ -49,5 +49,6 @@ test('an entry: colour, numbers, words, a comment at the end', () => {
     assert.ok(colour.test('#9a8a4c'));
     assert.ok(comment.test('0.7, 7, 0.7      # höher als die Decke'));
     assert.ok(!comment.test('#9a8a4c'), 'a colour is not a comment');
+    assert.ok(!comment.test('0.08, #5a4626'), 'a colour after a comma is not a comment either');
     assert.ok(number.test('2.5'));
 });

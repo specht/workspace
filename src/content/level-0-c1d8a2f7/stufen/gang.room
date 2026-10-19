@@ -1,7 +1,7 @@
 # Ein langer Gang mit wenigen Leuchten. Links und rechts fällt farbiges Licht heraus.
 
 [room]
-baseboard = 0.08, #5a4626
+baseboard = 0.08, #86763c
 name = Gang
 height = 2.5
 

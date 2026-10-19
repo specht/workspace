@@ -2,7 +2,7 @@
   "name": "hackschule-backrooms",
   "displayName": "Backrooms-Räume",
   "description": "Farben für Räume der Backrooms (.room): Wände, Boden, Start, Türen und Dinge im Grundriss, Abschnitte, Einträge und Kommentare.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "hackschule",
   "license": "MIT",
   "engines": {

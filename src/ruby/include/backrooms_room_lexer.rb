@@ -8,7 +8,8 @@ module Rouge
         # floor plan, where every character counts: # wall, . floor, @ start,
         # a letter a lamp, block or statue, a digit a door. A # starts a
         # comment only outside the floor plan; at the end of a line only
-        # after a space, as engine/level.js reads it.
+        # with a space before and after it, as engine/level.js reads it
+        # (0.08, #5a4626 is a height and a colour).
         #
         # Blocks on a page often show a few rows of a floor plan without
         # their [map] header. Such a row is told from a comment by what it
@@ -65,7 +66,7 @@ module Rouge
             end
 
             state :value do
-                rule %r/[ \t]+#.*$/, Comment::Single
+                rule %r/[ \t]+#(?=[ \t]|$).*$/, Comment::Single
                 rule %r/#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b/, Num::Hex
                 rule %r/-?\d+(\.\d+)?/, Num::Float
                 rule %r/[A-Za-z_][\w.\/-]*/, Str
