@@ -259,14 +259,24 @@
     function setup_ws(ws) {
         ws.onopen = function () {
             console.log('WS connection established');
-            // ws.send(JSON.stringify({'hello': 'world'}));
+            ws_retries = 0;
+            ws_lost_since = null;
+            $('.please-reload').hide();
             keepAlive();
         }
 
+        // A dropped connection (the tab in the background, a restart of the
+        // server) comes back by itself: again after 1, 2, 4 … seconds, at most
+        // 30; not while the tab is hidden, and at once when it is shown again.
+        // Only after two minutes without success does the page ask for a reload.
         ws.onclose = function () {
             console.log('WS connection closed');
-            $('.please-reload').fadeIn();
             clearTimeout(window.timerId);
+            if (ws_lost_since === null) ws_lost_since = Date.now();
+            if (Date.now() - ws_lost_since > 120000) $('.please-reload').fadeIn();
+            if (document.hidden) return;
+            clearTimeout(ws_retry_timer);
+            ws_retry_timer = setTimeout(establish_websocket_connection, Math.min(30000, 1000 * 2 ** ws_retries++));
         }
 
         // Simple hash function to turn a string into a number
@@ -393,6 +403,18 @@
             }
         }
     }
+
+    var ws_retries = 0;
+    var ws_retry_timer = null;
+    var ws_lost_since = null;
+
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden || typeof ws === 'undefined' || !ws) return;
+        if (ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING) {
+            clearTimeout(ws_retry_timer);
+            establish_websocket_connection();
+        }
+    });
 
     function establish_websocket_connection() {
         var ws_uri = 'ws://' + location.host + '/ws';
