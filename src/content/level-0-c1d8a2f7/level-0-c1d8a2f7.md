@@ -350,27 +350,28 @@ hook: info off
 
 <img class='full' src='saal-2.webp' alt='Derselbe Saal unter einem Satteldach: Die Decke steigt von beiden Wänden zur Mitte hin an, die Leuchten liegen schräg in den Dachflächen, die Stirnwand ist fünfeckig.'>
 
-Eine Decke kann auch nur in eine Richtung ansteigen, wie ein Pultdach. Gib der Kammer eine, die zum Saal hin höher wird:
+Eine Decke kann auch nur in eine Richtung ansteigen, wie ein Pultdach. Mit `slope = east` statt `gable` wird die Decke des Saals nach Osten immer höher, also nach rechts im Grundriss:
 
 ```room
-~ name = Kammer
-height = 2.2, 4
+~ height = 3, 7
 slope = east
-~ wallpaper = #9a8a4c
 ```
 
-Mit `slope = east` steigt die Decke nach Osten an, also nach rechts im Grundriss: an der Westwand 2,2 m hoch, an der Ostwand 4 m. Statt `east` geht auch `north`, `south` oder `west`. Auch hier liegt die Leuchte so schräg wie die Decke.
+An der Westwand ist sie dann 3 m hoch, an der Ostwand 7 m. Statt `east` geht auch `north`, `south` oder `west`. Auch hier liegen die Leuchten so schräg wie die Decke. So sähe der Saal damit aus, von der Seite; für die nächsten Schritte bleibt er beim Satteldach:
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
-write-file: rooms/kammer.room <- file:stufen/kammer-3.room
+write-file: rooms/saal.room <- file:stufen/saal-pult.room
 tab: preview
 viewport: 1024x576
-hook: open view=14.00,18.00,-90,15
+hook: open view=23.00,15.20,180,14
 hook: light
 hook: info off
 -->
 
-<img class='full' src='kammer-schraeg.webp' alt='Die Kammer von ihrer Westwand aus: Die Decke steigt nach vorn zur Tür in den Saal an, die Leuchte hängt schräg wie die Decke.'>
+<img class='full' src='saal-pult.webp' alt='Der leere Saal von der Seite: Die Decke steigt von rechts nach links gleichmäßig an, die Leuchten liegen schräg in ihr.'>
+
+<!-- /tutorial-scope -->
 
 ### Säulen
 
@@ -659,7 +660,7 @@ hook: open view=11.00,14.00,0,4
 hook: light
 hook: info off
 -->
-<img src='licht-alles.webp' alt='Der Gang mit gelber Tapete und Teppich; links fällt blaues, rechts rotes Licht aus einer Tür auf Boden und Wände.'>
+<img src='licht-alles.webp' alt='Der Gang mit gelber Tapete und Teppich; rechts fällt rotes Licht aus einer Tür auf Boden und Wände.'>
 <figcaption>Alles an</figcaption>
 </figure>
 <figure>
