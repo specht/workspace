@@ -4553,22 +4553,37 @@ class Main < Sinatra::Base
     # of the last login (a session's expiry minus its fixed lifetime;
     # sessions of someone looking in do not count) and the last task answer.
     def activity_by_email
-        seen = neo4j_query('MATCH (u:User) WHERE u.last_seen IS NOT NULL RETURN u.email AS email, u.last_seen AS day;')
-            .to_h { |r| [r['email'], (Date.iso8601(r['day'].to_s) rescue nil)] }
-        logins = {}
-        neo4j_query('MATCH (s:Session)-[:FOR]->(u:User) WHERE s.impersonated_by IS NULL RETURN u.email AS email, s.expires AS expires;').each do |r|
-            day = (DateTime.parse(r['expires'].to_s).to_date - Authentication::SESSION_LIFETIME_DAYS rescue nil)
-            logins[r['email']] = day if day && (logins[r['email']].nil? || day > logins[r['email']])
+        # Every trace of use there is; the latest counts. :source says which:
+        # besuch (a page of the website, User.last_seen, since 2026-10-18),
+        # anmeldung (a session's start; sessions end after a year), aufgabe
+        # (a task checked), code (a login code asked for and not used),
+        # workspace (a browser had the Workspace open: code-server's
+        # heartbeat or the launch marker), dateien (a file in the Workspace
+        # changed). The last two come from housekeeping.rb.
+        days = Hash.new { |hash, key| hash[key] = {} }
+        note = lambda do |email, day, source|
+            days[email][source] = day if day && (days[email][source].nil? || day > days[email][source])
         end
-        tasks = neo4j_query('MATCH (a:TaskAttempt)-[:BY]->(u:User) RETURN u.email AS email, max(a.ts) AS ts;')
-            .to_h { |r| [r['email'], Time.at(r['ts'].to_i).to_date] }
-        (seen.keys | logins.keys | tasks.keys).to_h do |email|
-            if seen[email]
-                [email, { :day => seen[email], :source => 'besuch' }]
-            else
-                login, task = logins[email], tasks[email]
-                [email, task && (login.nil? || task > login) ? { :day => task, :source => 'aufgabe' } : { :day => login, :source => 'anmeldung' }]
+        neo4j_query('MATCH (u:User) WHERE u.last_seen IS NOT NULL RETURN u.email AS email, u.last_seen AS day;')
+            .each { |r| note.(r['email'], (Date.iso8601(r['day'].to_s) rescue nil), 'besuch') }
+        neo4j_query('MATCH (s:Session)-[:FOR]->(u:User) WHERE s.impersonated_by IS NULL RETURN u.email AS email, s.expires AS expires;').each do |r|
+            note.(r['email'], (DateTime.parse(r['expires'].to_s).to_date - Authentication::SESSION_LIFETIME_DAYS rescue nil), 'anmeldung')
+        end
+        neo4j_query('MATCH (a:TaskAttempt)-[:BY]->(u:User) RETURN u.email AS email, max(a.ts) AS ts;')
+            .each { |r| note.(r['email'], Time.at(r['ts'].to_i).to_date, 'aufgabe') }
+        users = neo4j_query('MATCH (u:User) RETURN u.email AS email, u.login_request_created_at AS code;').to_a
+        users.each { |r| note.(r['email'], r['code'] ? Time.at(r['code'].to_i).to_date : nil, 'code') }
+        workspace = (JSON.parse(File.read('/internal/activity_for_fs_tag.json')) rescue {})
+        users.each do |r|
+            fs_tag = fs_tag_for_email(r['email'])
+            { 'workspace' => 'workspace', 'files' => 'dateien' }.each do |key, source|
+                ts = (workspace[key] || {})[fs_tag]
+                note.(r['email'], Time.at(ts.to_i).to_date, source) if ts
             end
+        end
+        days.to_h do |email, by_source|
+            source, day = by_source.max_by { |s, d| [d, s == 'besuch' ? 1 : 0] }
+            [email, { :day => day, :source => source }]
         end
     end
 
@@ -4667,6 +4682,7 @@ class Main < Sinatra::Base
         'ohne-einladung' => 'Konto ohne Einladung',
         'ohne-konto' => 'eingeladen, nie angemeldet',
         'lange-nicht-da' => 'über ein Jahr nicht da',
+        'keine-spur' => 'keine Spur einer Nutzung',
         'mehrere-schulen' => 'in Gruppen mehrerer Schulen',
         'loeschung' => 'Löschung angekündigt',
         'gesperrt' => 'gesperrt',
@@ -4678,7 +4694,10 @@ class Main < Sinatra::Base
         states = []
         states << 'ohne-einladung' if p[:account] && !p[:invited]
         states << 'ohne-konto' if !p[:account] && p[:invited] && %w[Lernende Gast].include?(p[:role])
-        states << 'lange-nicht-da' if p[:account] && (p[:active_on].nil? || p[:active_on] < year_ago)
+        # Only with a date as evidence (activity_by_email); an account
+        # without any trace is a case of its own.
+        states << 'lange-nicht-da' if p[:account] && p[:active_on] && p[:active_on] < year_ago
+        states << 'keine-spur' if p[:account] && p[:active_on].nil?
         states << 'mehrere-schulen' if cross.include?(p[:email])
         states << 'loeschung' if p[:deletion_at]
         states << 'gesperrt' if p[:suspended]

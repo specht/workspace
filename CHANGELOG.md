@@ -18,6 +18,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- »Zuletzt da« beruht jetzt auf jeder Spur einer Nutzung, die es gibt, und
+  sagt, woher sie stammt: Besuch der Website, Anmeldung, geprüfte Aufgabe,
+  angeforderter Code, Workspace im Browser offen (der Herzschlag von
+  code-server und die Startmarke, stündlich gelesen), geänderte Datei im
+  Workspace (einmal am Tag). »Über ein Jahr nicht da« nennt nur noch Konten
+  mit einem Datum als Beleg; Konten ganz ohne Spur stehen unter »Keine
+  Spur« für sich. Bisher galt »kein Besuch bekannt« als lange nicht da,
+  obwohl die Besuche erst seit dem 18.10.2026 erfasst werden.
 - »Personen und Schulen« hat drei Reiter (Schulen, Lehrkräfte, Personen);
   die Adresse wählt den Reiter, ein Link springt nicht mehr weg, während
   die Seite lädt. »Aufräumen« ist jetzt eine Reihe von Filtern mit Zahlen

@@ -114,8 +114,8 @@
                 </div>
                 <div id='all_here'></div>
                 <p class='small text-body-secondary mt-3'>
-                    »Zuletzt da«: der Tag des letzten Besuchs (erfasst seit dem 18.10.2026); davor die letzte Anmeldung oder die letzte Antwort
-                    auf eine Aufgabe, je nachdem, was später war. Einladungen ohne Konto gruppenweise entfernen und Gruppen nach ihrem Ende
+                    »Zuletzt da«: die späteste Spur einer Nutzung, dahinter woher sie stammt: Besuch der Website (erfasst seit dem 18.10.2026),
+                    Anmeldung, geprüfte Aufgabe, angeforderter Code, Workspace im Browser offen, geänderte Datei im Workspace (einmal am Tag gemessen). Einladungen ohne Konto gruppenweise entfernen und Gruppen nach ihrem Ende
                     findest du unter <a href='/gruppen'>Gruppen</a>.
                 </p>
             </section>
@@ -522,11 +522,12 @@
         // login more than a year ago (sessions end after a year; the visit
         // day is kept only since 18.10.2026).
         if (!p.active_on) return p.account
-            ? `<span class='text-warning-emphasis' title='Konto vorhanden, aber kein Besuch bekannt: Code angefordert und nie angemeldet, oder zuletzt vor über einem Jahr'>nicht bekannt</span><span class='person-email'>seit über einem Jahr oder nie angemeldet</span>`
+            ? `<span class='text-warning-emphasis' title='Konto vorhanden, aber keine Spur einer Nutzung: kein Besuch, keine Anmeldung, keine Aufgabe, kein Workspace, keine Datei'>keine Spur</span>`
             : `<span class='text-body-secondary' title='nur eingeladen, hat nie einen Anmelde-Code angefordert'>kein Konto</span>`;
         const days = Math.round((new Date(new Date().toISOString().slice(0, 10)) - new Date(p.active_on)) / 86400000);
         const ago = days <= 0 ? 'heute' : days === 1 ? 'gestern' : days < 60 ? `vor ${days} Tagen` : days < 730 ? `vor ${Math.round(days / 30.4)} Monaten` : `vor ${Math.round(days / 365)} Jahren`;
-        const source = p.active_source === 'anmeldung' ? ' · Anmeldung' : p.active_source === 'aufgabe' ? ' · Aufgabe' : '';
+        const SOURCES = { besuch: '', anmeldung: ' · Anmeldung', aufgabe: ' · Aufgabe', code: ' · Code angefordert', workspace: ' · im Workspace', dateien: ' · Datei geändert' };
+        const source = SOURCES[p.active_source] || '';
         const old = days > 180 ? ' text-warning-emphasis' : '';
         return `<span class='${old}' title='${new Date(p.active_on).toLocaleDateString('de-DE')}'>${ago}</span><span class='small text-body-secondary'>${source}</span>`;
     }
@@ -539,7 +540,9 @@
         { state: 'ohne-konto', label: 'Nie angemeldet', icon: 'bi-envelope-slash',
           note: 'Eingeladen, aber nie einen Code angefordert, etwa aus einer Liste der ganzen Schule (Lehrkräfte stehen unter »Lehrkräfte«). Entfernen nimmt sie aus allen Gruppen; ein Konto gibt es nicht, es wird also nichts gelöscht. Gruppenweise geht das unter Gruppen.' },
         { state: 'lange-nicht-da', label: 'Über ein Jahr nicht da', icon: 'bi-hourglass-bottom',
-          note: 'Konten, deren letzter Besuch über ein Jahr her ist oder zu denen kein Besuch bekannt ist: der übliche Fall für eine angekündigte Löschung.' },
+          note: 'Konten, deren letzte Spur über ein Jahr her ist: der übliche Fall für eine angekündigte Löschung. Als Spur zählt das Späteste von: Besuch der Website, Anmeldung, geprüfte Aufgabe, angeforderter Code, Workspace im Browser offen, geänderte Datei im Workspace.' },
+        { state: 'keine-spur', label: 'Keine Spur', icon: 'bi-question-circle',
+          note: 'Konten ohne jede Spur einer Nutzung: kein Besuch, keine Anmeldung, keine Aufgabe, kein Workspace, keine Datei. Meist ein Code, der nie benutzt wurde, bevor der Workspace sich das merkte. Vor einer Löschung lieber ankündigen als gleich löschen.' },
         { state: 'mehrere-schulen', label: 'In mehreren Schulen', icon: 'bi-signpost-split',
           note: 'Schülerinnen und Schüler in Gruppen von mehr als einer Schule (Gruppen der Gäste zählen nicht). Weil es je Adresse ein Konto gibt, sähen Lehrkräfte beider Schulen ihren Workspace. Nimm die Person unter Gruppen aus einer der Gruppen, oder lass es, wenn es so gewollt ist.' },
         { state: 'loeschung', label: 'Löschung angekündigt', icon: 'bi-calendar-x', note: 'Die Person hat eine E-Mail bekommen; ohne Antwort wird das Konto am genannten Tag gelöscht.' },
