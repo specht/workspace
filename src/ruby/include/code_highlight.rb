@@ -4,6 +4,7 @@ require_relative 'er_lexer'
 require_relative 'cypher_lexer'
 require_relative 'anaglyph_scene_lexer'
 require_relative 'minicpu_lexer'
+require_relative 'backrooms_room_lexer'
 
 module CodeHighlight
     # From this many lines on, a code block is set a little smaller.
@@ -136,6 +137,10 @@ module CodeHighlight
                 lexer = Rouge::Lexers::PHP.new(:start_inline => !code.text.include?('<?'))
             when 'python'
                 lexer = Rouge::Lexers::Python.new
+            when 'room'
+                # Rooms and levels of the Backrooms: the floor plan as a grid
+                lexer = Rouge::Lexers::BackroomsRoom.new
+                pre['class'] = [pre['class'], 'code-room'].compact.join(' ')
             when 'ruby'
                 lexer = Rouge::Lexers::Ruby.new
             when 'rust'

@@ -1,0 +1,21 @@
+# Eine Kammer, die gestern noch nicht da war.
+
+[room]
+name = Kammer
+height = 2.2
+wallpaper = #9a8a4c
+
+[map]
+#####
+5...6
+#.L.#
+#...#
+#####
+
+[L]
+light = #ffb070
+power = 0.5
+flicker = 1
+
+[6]
+door = saal 1

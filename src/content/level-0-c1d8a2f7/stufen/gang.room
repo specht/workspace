@@ -1,0 +1,45 @@
+# Ein langer Gang mit wenigen Leuchten. Links und rechts fällt farbiges Licht heraus.
+
+[room]
+baseboard = 0.08, #5a4626
+name = Gang
+height = 2.5
+
+[map]
+#####
+#...#
+#.L.#
+#...#
+#...#
+3...#
+#...#
+#...#
+#.F.#
+#...#
+#...2
+#...#
+#...#
+#...#
+#.L.#
+#...#
+1...5
+#...#
+#####
+
+[L]
+light = #fff0c8
+power = 0.7
+
+[F]
+light = #fff0c8
+power = 0.7
+flicker = 1
+
+[2]
+door = rot 1
+
+[3]
+door = blau 1
+
+[5]
+door = kammer 5

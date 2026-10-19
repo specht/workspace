@@ -1,4 +1,6 @@
 <div class='meta'>
+image: halle.webp
+image_alt: "Eine Halle aus Marmor unter einem hohen Satteldach, zwei Reihen Säulen, ganz hinten im hellen Licht eine Statue der Athena"
 kind: projekt
 topic: hidden
 duration: 2 Doppelstunden
@@ -49,7 +51,26 @@ Alles, was du brauchst, steckt in der Backrooms-Vorlage:
 
 _include(workspace#repository-klonen)
 
-Danach liegt die Vorlage in `/workspace/backrooms-starter`.
+Danach liegt die Vorlage in `/workspace/backrooms-starter`:
+
+<!-- tutorial-screenshot
+# Klonen wie im Handbuch »Workspace« (oben eingebunden), dann die
+# geöffnete Vorlage im Explorer, level.ini im Editor
+show-left-sidebar
+clone-start: https://github.com/specht/backrooms-starter.git @ bbc995c20b097d566b08101cdc0690a8094ace48
+press: Enter
+wait-for-input-value: /workspace/
+press: Enter
+wait-for-text: Would you like to open the repository?
+click: Open
+wait-for-text: level.ini
+open-file: level.ini
+sleep: 1
+-->
+
+<img class='full' src='vorlage.webp' alt='Die geklonte Vorlage im Explorer: die Ordner engine, lobby, rooms, statues und vendor, dazu index.html, level.ini und README.md; im Editor ist level.ini geöffnet.'>
+
+Darin liegen zwei Levels. Deins beginnt klein, in `level.ini` und im Ordner `rooms`: ein Zimmer, ein Gang und zwei farbige Räume. In `lobby` liegt ein ganzes Level zum Ausprobieren; dazu später mehr.
 
 _task(geklont)
 
@@ -57,7 +78,29 @@ _task(geklont)
 
 _include(workspace#live-server)
 
-Die Vorschau zeigt `index.html`. Zuerst ist es dunkel, nur feine Linien zeigen die Kanten der Räume. Dann gehen die Leuchten an, eine nach der anderen, die nächsten zuerst, und oben links wächst ein Balken: Das Licht wird berechnet. Wie lange das dauert, hängt von der Grafikkarte deines Rechners ab. Ist es fertig, steht dort »Light baked in …«.
+Die Vorschau zeigt `index.html`. Zuerst ist es dunkel, nur feine Linien zeigen die Kanten der Räume. Dann gehen die Leuchten an, eine nach der anderen, die nächsten zuerst, und oben links wächst ein Balken: Das Licht wird berechnet.
+
+<!-- tutorial-screenshot
+# Die Vorschau, während das Licht gebacken wird
+go-live
+tab: preview
+viewport: 1024x576
+hook: baking
+sleep: 2
+-->
+
+<img class='full' src='backen.webp' alt='Das Zimmer, noch unfertig beleuchtet; oben links der Name des Levels, »Baking light« mit einem Fortschrittsbalken und darunter die Schalter.'>
+
+Wie lange das dauert, hängt von der Grafikkarte deines Rechners ab. Ist es fertig, steht dort »Light baked in …«:
+
+<!-- tutorial-screenshot
+# fertig gebacken, mit den Schaltern oben links
+tab: preview
+viewport: 1024x576
+hook: light flicker
+-->
+
+<img class='full' src='zimmer.webp' alt='Das Zimmer im warmen Licht seiner Leuchte, gelbe Tapete, dunkle Sockelleiste, durch die offene Tür sieht man in den Gang; oben links »Light baked in …« und die Schalter.'>
 
 Klick ins Bild, dann siehst du dich mit der Maus um. <kbd>Esc</kbd> gibt die Maus wieder frei.
 
@@ -72,8 +115,18 @@ Klick ins Bild, dann siehst du dich mit der Maus um. <kbd>Esc</kbd> gibt die Mau
 Wo du stehst, merkt sich die Adresse der Seite. Lädst du neu, stehst du wieder dort, solange sich der Grundriss nicht geändert hat.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Drück <kbd>M</kbd>. Die Automap zeigt jeden Raum in seiner eigenen Farbe und mit seinem Namen, die Leuchten als gelbe Punkte; der rote Pfeil bist du. Zieh mit der Maus, um die Karte zu drehen, mit <kbd>Shift</kbd>, um sie zu verschieben, und zoom mit dem Mausrad. Laufen kannst du dabei weiter. Wie viele Räume zählst du? <kbd>Esc</kbd> schließt die Karte.
+<strong>Ausprobieren:</strong> Drück <kbd>M</kbd>. Die Automap zeigt jeden Raum in seiner eigenen Farbe und mit seinem Namen, die Leuchten als gelbe Punkte; der rote Pfeil bist du. Zieh mit der Maus, um die Karte zu drehen, mit <kbd>Shift</kbd>, um sie zu verschieben, und zoom mit dem Mausrad. Lauf ein paar Schritte, während sie offen ist, und schau nach unten: Was macht die Karte? <kbd>Esc</kbd> schließt sie.
 </div>
+
+<!-- tutorial-screenshot
+# die Automap vom Start aus
+tab: preview
+viewport: 1024x576
+hook: key m
+hook: info off
+-->
+
+<img class='full' src='automap.webp' alt='Die Automap: vier Räume als farbiges Drahtgitter von schräg oben, jeder mit seinem Namen, gelbe Punkte für die Leuchten und ein roter Pfeil mit Ring am Startplatz im Zimmer.'>
 
 ## Kartografie
 
@@ -86,7 +139,7 @@ Wo du stehst, merkt sich die Adresse der Seite. Lädst du neu, stehst du wieder 
 
 Öffne `rooms/zimmer.room`. Das ist der Raum, in dem du aufgewacht bist:
 
-```ini
+```room
 # Ein kleines Zimmer. Du weißt nicht, wie du hierhergekommen bist.
 
 [room]
@@ -146,7 +199,7 @@ _task(tuer)
 
 Leg im Ordner `rooms` eine neue Datei `kammer.room` an:
 
-```ini
+```room
 # Eine Kammer, die gestern noch nicht da war.
 
 [room]
@@ -171,7 +224,7 @@ Die Leuchte ist orange und schwach, und mit `flicker = 1` flackert sie ab und zu
 
 Noch führt keine Tür in die Kammer, also gibt es sie nicht. Öffne `rooms/gang.room`. Weit unten im Grundriss ist links die `1`, die Tür zum Zimmer. Ersetze in dieser Zeile das `#` am rechten Rand durch eine `5`:
 
-```ini
+```room
 ~ #...#
 1...5
 ~ #...#
@@ -179,22 +232,259 @@ Noch führt keine Tür in die Kammer, also gibt es sie nicht. Öffne `rooms/gang
 
 und schreib ganz unten in die Datei, wohin sie führt:
 
-```ini
+```room
 [5]
 door = kammer 5
 ```
 
 Speichere beide Dateien und lade die Vorschau neu. Die Kammer liegt östlich vom Gang, gegenüber der Tür zum Zimmer. In `kammer.room` steht kein Abschnitt `[5]`: Es genügt, wenn einer der beiden Räume die Tür beschreibt.
 
+<!-- tutorial-screenshot
+# Die Kammer: die Räume wie auf der Seite, dann aus ihrer Ecke zur Tür
+write-file: rooms/zimmer.room <- file:stufen/zimmer.room
+write-file: rooms/gang.room <- file:stufen/gang.room
+write-file: rooms/kammer.room <- file:stufen/kammer.room
+tab: preview
+viewport: 1024x576
+hook: open view=16.00,19.00,56,0
+hook: light
+hook: info off
+-->
+
+<img class='full' src='kammer.webp' alt='Die Kammer: niedrig, mit dunklerer Tapete und einer schwachen orangefarbenen Leuchte; durch die Tür in der Ecke fällt helleres Licht aus dem Gang.'>
+
 Stimmt etwas nicht, steht oben links in Rot, in welcher Datei und in welcher Zeile das Programm hängen geblieben ist, auf Englisch, zum Beispiel `rooms/kammer.room: room kammer overlaps room rot`. Das heißt: Der Raum läge auf dem Boden eines anderen. Schieb die Tür an eine andere Stelle oder mach den Raum kleiner.
 
-<div class='hint try'>
-<strong>Ausprobieren:</strong> Schreib in den Abschnitt <code>[room]</code> der Kammer <code>height = 2.2, 4</code> und <code>slope = east</code>. Die Decke steigt nach Osten an, von 2,2 auf 4 Meter. Statt <code>east</code> geht auch <code>north</code>, <code>south</code> und <code>west</code>, und <code>gable</code> macht ein Satteldach, in der Mitte am höchsten. Sieh dir die Schatten an der schrägen Decke an.
+## Ein Saal, Schritt für Schritt
+
+<div class='found-note'>
+<p>Hinter der Kammer ist noch eine Tür. Dahinter: ein Saal, leer und hoch. Jedes Mal, wenn ich zurückkomme, steht etwas mehr darin.</p>
+<cite>Seite aus einem durchnässten Notizbuch, andere Handschrift</cite>
 </div>
 
-### Bau weiter
+Hinter der Kammer baust du einen Saal, Schritt für Schritt: erst den Grundriss, dann eine hohe Decke, Säulen, farbiges Licht, eine Statue und zum Schluss Marmor. Nach jedem Schritt speicherst du und lädst die Vorschau neu.
 
-Jetzt bist du dran: Bau einen Raum nach deiner Idee und schließ ihn mit einer Tür an. Ein paar Dinge, die du in `[room]` einstellen kannst:
+### Der Grundriss
+
+Gib der Kammer in `rooms/kammer.room` eine zweite Tür, an der rechten Wand, in der Zeile der ersten:
+
+```room
+~ #####
+5...6
+~ #.L.#
+```
+
+und schreib unten dazu, wohin sie führt:
+
+```room
+[6]
+door = saal 1
+```
+
+Dann leg `rooms/saal.room` an:
+
+```room
+# Ein Saal hinter der Kammer.
+
+[room]
+name = Saal
+height = 3
+
+[map]
+#############
+#...........#
+#...........#
+1...L...L...#
+#...........#
+#...L...L...#
+#...........#
+#...........#
+#############
+
+[L]
+light = #fff3cf
+```
+
+Ein Saal, 11 m lang und 7 m breit, mit vier Leuchten in zwei Reihen. Weil `[L]` nur einmal beschrieben ist, sind alle vier gleich.
+
+<!-- tutorial-screenshot
+write-file: rooms/kammer.room <- file:stufen/kammer-2.room
+write-file: rooms/saal.room <- file:stufen/saal-1.room
+tab: preview
+viewport: 1024x576
+hook: open view=18.00,17.00,-90,8
+hook: light
+hook: info off
+-->
+
+<img class='full' src='saal-1.webp' alt='Der leere Saal von seiner Tür aus: gelbe Wände, eine flache Decke mit vier Leuchten in zwei Reihen, Teppich.'>
+
+### Eine hohe Decke
+
+Zwei Höhen machen die Decke schräg, `slope` sagt, wie. `gable` ist ein Satteldach: an den Wänden 3 m, in der Mitte 7 m hoch, der First läuft an der längeren Seite entlang. Die Leuchten liegen dann so schräg wie die Decke über ihnen. Weil sie jetzt höher hängen, bekommen sie mit `power` mehr Kraft:
+
+```room
+~ [room]
+~ name = Saal
+height = 3, 7
+slope = gable
+```
+
+```room
+~ [L]
+~ light = #fff3cf
+power = 1.6
+```
+
+<!-- tutorial-screenshot
+write-file: rooms/saal.room <- file:stufen/saal-2.room
+tab: preview
+viewport: 1024x576
+hook: open view=18.00,17.00,-90,8
+hook: light
+hook: info off
+-->
+
+<img class='full' src='saal-2.webp' alt='Derselbe Saal unter einem Satteldach: Die Decke steigt von beiden Wänden zur Mitte hin an, die Leuchten liegen schräg in den Dachflächen, die Stirnwand ist fünfeckig.'>
+
+Statt `gable` geht auch `north`, `east`, `south` oder `west`: Dann steigt die Decke in diese Richtung an, von der ersten Höhe zur zweiten.
+
+### Säulen
+
+Ein Buchstabe im Grundriss kann auch ein Block sein. Vier Säulen, je zwei an den langen Seiten:
+
+```room
+~ #...........#
+#.....S...S.#
+~ 1...L...L...#
+~ #...........#
+~ #...L...L...#
+#.....S...S.#
+~ #...........#
+```
+
+```room
+[S]
+block = 0.7, 7, 0.7      # höher als die Decke: Die Säule verschwindet in ihr
+```
+
+`block = 0.7, 7, 0.7` ist 0,7 m breit, 7 m hoch und 0,7 m tief, mitten auf seinem Feld. Ist ein Block höher als die Decke, verschwindet er in ihr. `block = 1` füllt das ganze Feld einen Meter hoch, eine Kiste. Mit `base = 2` schwebt ein Block zwei Meter über dem Boden, mit `color = #6a5a3a` bekommt er eine eigene Farbe; ohne sieht er aus wie die Wände seines Raums. Durch Blöcke läuft man nicht hindurch, und sie werfen Schatten.
+
+<!-- tutorial-screenshot
+write-file: rooms/saal.room <- file:stufen/saal-3.room
+tab: preview
+viewport: 1024x576
+hook: open view=18.00,17.00,-90,8
+hook: light
+hook: info off
+-->
+
+<img class='full' src='saal-3.webp' alt='Der Saal mit vier Säulen, die bis in das Dach reichen; an Boden und Wänden ihre weichen Schatten.'>
+
+### Farbiges Licht
+
+Eine Leuchte vorn soll flackern, eine hinten rot leuchten. Sie bekommen eigene Buchstaben:
+
+```room
+~ #.....S...S.#
+1...F...L...#
+~ #...........#
+#...L...R...#
+~ #.....S...S.#
+```
+
+```room
+[R]
+light = #ff3020
+power = 3
+size = 1.2, 1.2
+
+[F]
+light = #fff3cf
+power = 1.6
+flicker = 1
+```
+
+`light` ist die Farbe, `size` die Größe in Metern: Eine größere Leuchte wirft weichere Schatten. Das rote Licht fällt auf Wände, Boden und Säulen und wird von ihnen zurückgeworfen, rot gefärbt.
+
+<!-- tutorial-screenshot
+write-file: rooms/saal.room <- file:stufen/saal-4.room
+tab: preview
+viewport: 1024x576
+hook: open view=18.00,17.00,-90,8
+hook: light
+hook: info off
+-->
+
+<img class='full' src='saal-4.webp' alt='Der Saal mit einer roten Leuchte hinten rechts: Die rechte Wand, der Boden und die Säulen dort glühen rot, nach vorn wird es wieder gelb.'>
+
+### Eine Statue
+
+<div class='found-note'>
+<p>In der großen Halle steht eine Frau aus Stein, sechs Meter hoch. Sie schaut zum Eingang. Ich bin dreimal um sie herumgegangen. Sie schaut immer zum Eingang.</p>
+<cite>Letzter Eintrag einer Kartografin, Halle</cite>
+</div>
+
+In die Mitte des Saals kommt Athena, auf einem Sockel:
+
+```room
+~ 1...F...L...#
+#.....M.....#
+~ #...L...R...#
+```
+
+```room
+[M]
+model = statues/athena.glb
+height = 2.2
+rotation = 270
+material = marble
+pedestal = 0.9, 0.8, 0.9
+```
+
+Eine Statue ist ein 3D-Modell im Format GLB. `height` macht sie so hoch wie angegeben, `rotation` dreht sie in Grad um ihre senkrechte Achse (hier zur Tür), `material = marble` macht sie aus Marmor statt aus den Farben des Modells, und `pedestal` stellt sie auf einen Sockel: 0,9 m breit, 0,8 m hoch, 0,9 m tief. Auch Statuen werfen Schatten und bekommen Bounce-Licht, und wo eine Statue sich selbst verdeckt, ist es auf ihr dunkler.
+
+<!-- tutorial-screenshot
+write-file: rooms/saal.room <- file:stufen/saal-5.room
+tab: preview
+viewport: 1024x576
+hook: open view=18.00,17.00,-90,8
+hook: light
+hook: info off
+-->
+
+<img class='full' src='saal-5.webp' alt='Athena aus weißem Marmor auf einem hellen Sockel in der Mitte des Saals, zwischen den Säulen, von vorn beleuchtet und rot vom Licht hinten rechts.'>
+
+Athena ist der 3D-Scan eines Gipsabgusses einer antiken Statue, aus dem [Statens Museum for Kunst](https://open.smk.dk/artwork/image/KAS255) in Kopenhagen, gemeinfrei. Eigene Modelle lädst du als GLB-Datei herunter und legst sie in den Ordner `statues`. Nimm nur Modelle, deren Lizenz das erlaubt, etwa CC0, und schreib in einem Kommentar neben `model =` dazu, woher sie kommen. Ohne `material = marble` behält ein Modell seine eigenen Farben. Modelle unter CC0 findest du zum Beispiel hier:
+
+- [Kenney](https://kenney.nl/assets): Pakete von Spielfiguren und Möbeln, etwa das [Furniture Kit](https://kenney.nl/assets/furniture-kit) mit Schreibtischen und Bürostühlen; die GLB-Dateien liegen im Paket im Ordner `Models/GLTF format`.
+- [Polygonal Mind](https://github.com/ToxSam/cc0-models-Polygonal-Mind): Hunderte Modelle aus Spielwelten, schon als GLB.
+
+### Marmor
+
+Zum Schluss Wände und Boden aus Marmor:
+
+```room
+~ height = 3, 7
+~ slope = gable
+walls = marble
+floor = marble
+```
+
+<!-- tutorial-screenshot
+write-file: rooms/saal.room <- file:stufen/saal-6.room
+tab: preview
+viewport: 1024x576
+hook: open view=18.00,17.00,-90,8
+hook: light
+hook: info off
+-->
+
+<img class='full' src='saal-6.webp' alt='Der fertige Saal: Wände und Boden aus weißem, geädertem Marmor, die Säulen hell, Athena auf ihrem Sockel, hinten das rote Licht.'>
+
+## Dein eigener Raum
+
+Jetzt bist du dran: Bau einen Raum nach deiner Idee und schließ ihn mit einer Tür an. Was du in `[room]` einstellen kannst:
 
 <table class='table'>
 <tr><th>Eintrag</th><th>Bedeutung</th></tr>
@@ -221,7 +511,7 @@ _task(eigener-raum)
 
 ### Leuchten
 
-Eine Leuchte hängt knapp unter der Decke, mitten über ihrem Feld:
+Eine Leuchte hängt knapp unter der Decke, mitten über ihrem Feld, unter einer schrägen Decke so schräg wie sie:
 
 <table class='table'>
 <tr><th>Eintrag</th><th>Bedeutung</th></tr>
@@ -269,7 +559,59 @@ Geh zurück ins Zimmer (<kbd>R</kbd>) und schau nach oben, zur Decke.
 
 _task(decke)
 
-Probier es aus: Schalte mit <kbd>T</kbd> die Texturen aus, dann siehst du nur noch das Licht. Schalte mit <kbd>L</kbd> und <kbd>B</kbd> abwechselnd das direkte und das Bounce-Licht aus. Schalte mit <kbd>O</kbd> die Kontaktschatten an und aus und schau dabei in eine Ecke am Boden.
+Probier es aus: Schalte mit <kbd>T</kbd> die Texturen aus, dann siehst du nur noch das Licht. Schalte mit <kbd>L</kbd> und <kbd>B</kbd> abwechselnd das direkte und das Bounce-Licht aus. Schalte mit <kbd>O</kbd> die Kontaktschatten an und aus und schau dabei in eine Ecke am Boden. So sieht der Gang aus, mit den Türen zum blauen und zum roten Raum:
+
+<!-- tutorial-scope -->
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1024x576
+hook: open view=11.00,14.00,0,4
+hook: light
+hook: info off
+-->
+<img src='licht-alles.webp' alt='Der Gang mit gelber Tapete und Teppich; links fällt blaues, rechts rotes Licht aus einer Tür auf Boden und Wände.'>
+<figcaption>Alles an</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1024x576
+hook: open view=11.00,14.00,0,4
+hook: light
+hook: info off
+hook: key t
+-->
+<img src='licht-ohne-texturen.webp' alt='Derselbe Gang ganz in Hellgrau: nur das Licht, warm unter den Leuchten, blau und rot vor den beiden Türen, dunkler in den Ecken.'>
+<figcaption><kbd>T</kbd>: ohne Texturen, nur das Licht</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1024x576
+hook: open view=11.00,14.00,0,4
+hook: light
+hook: info off
+hook: key t b
+-->
+<img src='licht-direkt.webp' alt='Der Gang in Grau, nur mit direktem Licht: helle Flecken unter den Leuchten und vor den Türen, die Decke und alles, was keine Leuchte sieht, fast schwarz.'>
+<figcaption><kbd>T</kbd> <kbd>B</kbd>: nur direktes Licht</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1024x576
+hook: open view=11.00,14.00,0,4
+hook: light
+hook: info off
+hook: key t l
+-->
+<img src='licht-bounce.webp' alt='Der Gang in Grau, nur mit Bounce-Licht: weich und gleichmäßig, die Decke hell, die Ecken dunkler, ein Hauch von Blau und Rot an den Türen.'>
+<figcaption><kbd>T</kbd> <kbd>L</kbd>: nur Bounce-Licht</figcaption>
+</figure>
+</div>
+<!-- /tutorial-scope -->
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Gib der Leuchte im Zimmer <code>size = 0.2, 0.2</code> und <code>power = 16</code> und lade neu. Eine kleinere Leuchte gibt auch weniger Licht, darum die größere Zahl. Sieh dir den Lichtfleck an, den sie durch die Tür in den Gang wirft: Seine Ränder werden scharf. Dann <code>size = 2, 2</code> mit <code>power = 0.16</code>: Sie werden ganz weich. Mit <code>bounces = 0</code> in <code>level.ini</code> unter <code>[level]</code> backt das Programm gar kein Bounce-Licht; wie sieht der Gang dann aus? Stell beides danach wieder zurück.
@@ -283,43 +625,47 @@ Backen dauert, darum hebt die Vorschau das fertige Licht im Browser auf. Lädst 
 
 »Save light« lädt das Licht als Datei `level.light` herunter. Zieh sie aus deinem Download-Ordner in den Explorer von VS Code, neben `level.ini`. Dann lädt das Level sein Licht aus dieser Datei, auch in einem anderen Browser, und du kannst deine Backrooms als fertige Webseite weitergeben. Nach jeder Änderung am Level musst du sie neu speichern; eine veraltete Datei meldet die Vorschau oben links.
 
-## Säulen, Sockel und Statuen
+## Die Lobby
 
 <div class='found-note'>
-<p>In der großen Halle steht eine Frau aus Stein, sechs Meter hoch. Sie schaut zum Eingang. Ich bin dreimal um sie herumgegangen. Sie schaut immer zum Eingang.</p>
-<cite>Letzter Eintrag einer Kartografin, Halle</cite>
+<p>Wir haben einen Teil vollständig kartiert. Elf Räume, ein Flur, der immer höher wird, und am Ende eine Halle, in der man leiser spricht. Wir nennen ihn die Lobby. Die Karte liegt bei.</p>
+<cite>Feldhandbuch, eingelegtes Blatt</cite>
 </div>
 
-### Blöcke
+Im Ordner `lobby` liegt ein ganzes Level: ein Flur, der sich auf neun Meter Breite und Höhe öffnet, ein Säulengang, eine Galerie mit Sockeln, ein Lager und eine Halle aus Marmor mit einer Statue. Häng dafür an die Adresse der Vorschau `?level=lobby/level.ini` an, zum Beispiel:
 
-Ein Buchstabe im Grundriss kann auch ein Block sein:
-
-```ini
-[S]
-block = 0.9, 6, 0.9
+```text
+…/index.html?level=lobby/level.ini
 ```
 
-Das ist eine Säule: 0,9 m breit, 6 m hoch und 0,9 m tief, mitten auf ihrem Feld. `block = 1` füllt das ganze Feld einen Meter hoch, eine Kiste. Mit `base = 2` schwebt ein Block zwei Meter über dem Boden, mit `color = #6a5a3a` bekommt er eine eigene Farbe; ohne sieht er aus wie die Wände seines Raums. Durch Blöcke läuft man nicht hindurch, und sie werfen Schatten.
+Das Licht der Lobby ist schon gebacken, in `lobby/level.light` (siehe »Licht aufheben«), darum ist es sofort hell. Ihre Räume stehen in `lobby/rooms/`: Schau nach, wie sie gebaut sind, und nimm dir, was du brauchen kannst.
 
-<div class='hint try'>
-<strong>Ausprobieren:</strong> Stell in der Kammer neben die Leuchte einen Block, zum Beispiel <code>[K]</code> mit <code>block = 0.5, 1.2, 0.5</code>, und sieh dir seinen Schatten an der Wand an. Was passiert mit dem Schatten, wenn du den Block weiter von der Leuchte weg stellst?
+<!-- tutorial-scope -->
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1024x576
+hook: open level=lobby/level.ini&view=27.00,13.00,-90,18
+hook: light
+hook: info off
+-->
+<img src='flur.webp' alt='Der Flur der Lobby: Er öffnet sich nach vorn zu einem hohen, hellen Raum mit zwei großen Leuchten unter der Decke; in der Stirnwand eine schmale Tür.'>
+<figcaption>Der Flur wird weiter und höher</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1024x576
+hook: open level=lobby/level.ini&view=58.00,26.00,180,8
+hook: light
+hook: info off
+-->
+<img src='halle.webp' alt='Die Halle: Marmorwände unter einem hohen Satteldach, zwei Reihen Säulen, ganz hinten im hellen Licht die Statue der Athena.'>
+<figcaption>Die Halle mit Athena</figcaption>
+</figure>
 </div>
-
-### Statuen
-
-In `rooms/halle.room` steht Athena:
-
-```ini
-[M]
-model = statues/athena.glb   # Athena Giustiniani, Abguss im SMK Kopenhagen, gemeinfrei
-height = 6
-rotation = 180            # zum Eingang
-material = marble
-```
-
-Eine Statue ist ein 3D-Modell im Format GLB. `height` macht sie so hoch wie angegeben, `rotation` dreht sie in Grad um ihre senkrechte Achse, `material = marble` macht sie aus Marmor statt aus den Farben des Modells. Mit `pedestal = 1, 0.8, 1` steht sie auf einem Sockel, 0,8 m hoch. Auch Statuen werfen Schatten und bekommen Bounce-Licht, und wo eine Statue sich selbst verdeckt, ist es auf ihr dunkler.
-
-Athena ist der 3D-Scan eines Gipsabgusses einer antiken Statue, aus dem Statens Museum for Kunst in Kopenhagen. Das Museum stellt solche Scans gemeinfrei zur Verfügung. Willst du eigene Modelle verwenden, nimm nur welche, deren Lizenz das erlaubt, zum Beispiel CC0, und schreib in einem Kommentar neben `model =` dazu, woher sie kommen. Mehr steht in der `README.md` der Vorlage.
+<!-- /tutorial-scope -->
 
 ## Mit Brille
 

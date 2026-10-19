@@ -18,6 +18,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Code-Blöcke ` ```room ` für Räume und Levels der Backrooms: Im Grundriss
+  haben Wände, Boden, Start, Türen und Dinge eigene Farben, ohne Ligaturen,
+  damit das Raster stimmt; ein `#` ist dort eine Wand und kein Kommentar.
+- Backrooms: Bilder aus Rezepten, ein kleines Level zum Anfangen und »Level
+  0: Die Lobby« zum Ausprobieren (`?level=lobby/level.ini`, Licht schon
+  gebacken), ein Saal Schritt für Schritt mit Code und Bild zu jedem Schritt
+  (Satteldach, Säulen, farbiges Licht, Statue, Marmor), Links zu Quellen für
+  eigene 3D-Modelle. Leuchten unter schrägen Decken liegen so schräg wie die
+  Decke; die Automap gibt die Maus frei und sagt, wie man sie bedient.
 - Eine Fehlerseite für Adressen, die es nicht gibt: Statt einer leeren
   Seite steht dort »Diese Seite gibt es nicht«, mit der Adresse und Links
   zur Startseite und zum Handbuch, im Rahmen der Website und mit Status 404.

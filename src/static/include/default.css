@@ -176,6 +176,38 @@ pre.code-minicpu .nl {
     font-weight: bold;
 }
 
+/* ```room blocks (Rouge::Lexers::BackroomsRoom): a floor plan is a grid,
+   so no ligatures (»...« would melt into one sign); walls, floor, the start,
+   doors and things each in their own colour. */
+pre.code-room {
+    font-variant-ligatures: none;
+    font-feature-settings: 'liga' 0, 'calt' 0;
+}
+
+pre.code-room .k {
+    color: #d9bd5c !important;   /* Wand */
+    font-weight: bold;
+}
+
+pre.code-room .p {
+    color: #6f6a58 !important;   /* Boden */
+}
+
+pre.code-room .nl {
+    color: #ff6b6b !important;   /* Start */
+    font-weight: bold;
+}
+
+pre.code-room .mi {
+    color: #7cc7ff !important;   /* Tür */
+    font-weight: bold;
+}
+
+pre.code-room .no {
+    color: #a6e07a !important;   /* Leuchte, Block, Statue */
+    font-weight: bold;
+}
+
 /* A formula wider than the screen scrolls by itself instead of widening
    the page (KaTeX, display mode). */
 .katex-display {

@@ -1,0 +1,22 @@
+# Ein kleines Zimmer. Du weißt nicht, wie du hierhergekommen bist.
+
+[room]
+baseboard = 0.08, #5a4626
+name = Zimmer
+height = 2.6
+look = east              # am @ schaust du zur Tür
+
+[map]
+#######
+#.....#
+#.@.L.1
+#.....#
+#.....#
+#######
+
+[L]
+light = #ffe7b8
+power = 0.9
+
+[1]
+door = gang 1
