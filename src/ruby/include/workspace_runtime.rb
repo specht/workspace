@@ -1,3 +1,4 @@
+require 'securerandom'
 require 'json'
 require 'shellwords'
 
@@ -171,7 +172,9 @@ module WorkspaceRuntime
         end
 
         def offline_args(fs_tag, repo:, uid:, script:, host_data_path:)
-            ['docker', 'run', '--rm', '--network', 'none', '--read-only', '--tmpfs', '/tmp',
+            # Named hs_code_offline_*: the Docker guard only starts containers
+            # with the Workspace prefix (docker_policy.rb).
+            ['docker', 'run', '--rm', '--name', "hs_code_offline_#{SecureRandom.hex(4)}", '--network', 'none', '--read-only', '--tmpfs', '/tmp',
              '--cpus', '1', '--memory', '256m', '--pids-limit', '64',
              '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
              '-u', uid, '-e', 'HOME=/workspace',

@@ -96,7 +96,8 @@ if PROFILE.include?(:dynamic)
                      "#{DATA_PATH}/brand:/brand:ro",
                      "#{INVITATIONS_PATH}:/invitations:ro",
                      "#{DATA_PATH}/tic80:/tic80",
-                     "/var/run/docker.sock:/var/run/docker.sock",
+                     # Not Docker itself: the guard's socket (docker_guard below).
+                     "#{DATA_PATH}/docker-guard:/run/docker-guard",
                      "#{NGINX_PATH}:/nginx",
                      "#{DATA_PATH}/nginx-snippets:/nginx-snippets",
                      "#{DOWNLOAD_PATH}:/dl",
@@ -261,6 +262,32 @@ if CaseServer.enabled?
     docker_compose[:networks][:case] = { :driver => 'bridge', :internal => true }
     %w[museum alarmanlage].each { |role| FileUtils.mkpath(File.join(DATA_PATH, 'case-server', role)) }
 end
+
+# The only service with the Docker socket next to the peer firewall: it
+# lets the backend start and stop Workspaces and exec into them and the
+# databases, and refuses everything else (docker/docker-guard/guard.rb,
+# src/ruby/include/docker_policy.rb). The backend reaches it through
+# DOCKER_HOST.
+FileUtils.mkpath(File.join(DATA_PATH, 'docker-guard'))
+docker_compose[:services][:docker_guard] = {
+    :image => 'ruby:3.4.10-alpine3.24',
+    :command => ['ruby', '/guard/guard.rb'],
+    :volumes => ['/var/run/docker.sock:/var/run/docker.sock',
+                 './docker/docker-guard:/guard:ro',
+                 './src/ruby/include/docker_policy.rb:/policy/docker_policy.rb:ro',
+                 "#{DATA_PATH}/docker-guard:/run/docker-guard"],
+    :environment => {
+        'GUARD_IMAGES' => 'hs_code_server',
+        'GUARD_BIND_PREFIX' => "#{PATH_TO_HOST_DATA}/user/",
+        'GUARD_NETWORKS' => "#{PROJECT_NAME}_user,none",
+        'GUARD_EXEC_CONTAINERS' => "#{PROJECT_NAME}_mysql_1,#{PROJECT_NAME}_neo4j_1",
+        'GUARD_HUP_CONTAINERS' => "#{PROJECT_NAME}_nginx_1",
+    },
+    :network_mode => 'none',
+    :restart => 'always',
+}
+docker_compose[:services][:ruby][:environment] << 'DOCKER_HOST=unix:///run/docker-guard/docker.sock'
+(docker_compose[:services][:ruby][:depends_on] ||= []) << :docker_guard
 
 docker_compose[:services][:peer_firewall] = {
     :build => './docker/peer-firewall',

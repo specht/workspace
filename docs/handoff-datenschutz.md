@@ -27,23 +27,30 @@ with one reminder and »Gruppen nach ihrem Ende«; CI for the Ruby tests
 the open-answers E2E test fixed; client_ip no longer forgeable from a
 Workspace (see the CHANGELOG).
 
+Checked 2026-10-19 (no change needed): Workspaces get only their own
+database credentials (workspace_runtime.rb), never a root password or a
+salt; MySQL and Neo4j are not published outside the server. MySQL keeps
+root@% because the backend logs in as root over the network (Mysql2::Client
+to `mysql`) from two networks with changing addresses; a lock after failed
+logins would let a student lock root on purpose. So the guard is the root
+passwords: on the server they must be long and random (dev: 28 characters).
+The access rules now live together in include/access.rb (moved unchanged;
+the dead this_is_a_page_for_logged_in_admins! is gone).
+
 Left, with an assessment (not changed, for the maintainer to decide):
-- Docker socket in the backend: whoever takes over the Ruby process owns
-  the host. The backend is not reachable for students except through its
-  routes (Host check, sessions); the risk is a bug in a route. A first
-  step without a rewrite: a small socket proxy (e.g. one that allows only
-  container create/start/stop/inspect for images and labels of Workspaces)
-  between the backend and Docker. Until then: keep one installation per
-  server, as now.
+- Docker socket: done (2026-10-19). The backend talks to docker_guard
+  (docs/entwicklung.md, »Der Docker-Wächter«), which allows only what the
+  Workspace needs. Remaining power of the backend: exec as root into the
+  MySQL and Neo4j containers (it needs that to provision databases).
 - Student containers reach nginx, ruby, mysql and neo4j on every port
   (peer-firewall.sh, »infrastructure«). The app's own Neo4j (neo4japp) is
   not on that network. MySQL and Neo4j need credentials per student; worth
   a test from a Workspace that the root logins are refused from there.
 - Sessions of 365 days: kept on purpose (class rooms); »sign out
   elsewhere« added. Login codes stay readable: teachers project them.
-- Capacity: one start worker, no storage quotas. Next: measure a class of
-  30 starting at once (e2e resource profile), then a cap on parallel
-  starts per school; quotas only if the disk mail shows a need.
+- Capacity: one start worker, no storage quotas. The maintainer runs
+  src/scripts/measure-capacity.rb on the server; with its numbers, decide
+  on a cap on parallel starts. Quotas only if the disk mail shows a need.
 - main.rb (~7,800 lines): move routes by topic into include/ as was done
   for groups and people; first candidate a central `Access` module around
   may_use_workspace?, may_look_in?, managed_group!.

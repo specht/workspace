@@ -124,6 +124,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   keine Kommunikation, keine Organisation des Unterrichts, keine Noten;
   Abgaben und Leistungsüberprüfungen sind genannt, die Einordnung trifft die
   Schule.
+- Der Ruby-Dienst hat keinen Docker-Socket mehr: Ein eigener Dienst
+  `docker_guard` lässt nur durch, was der Workspace braucht (Workspaces
+  starten und stoppen, `exec` in Workspaces und die Datenbanken, Lesen,
+  nginx neu laden), und lehnt alles andere ab. Wer den Ruby-Prozess
+  übernähme, könnte so keinen privilegierten Container mehr starten und den
+  Server übernehmen. Für Betreibende: nach dem Update `./config.rb up -d`
+  (startet den Wächter und baut den Ruby-Container mit dem neuen Socket
+  neu); das Image `ruby:3.4.10-alpine3.24` wird dabei geladen. Neu ist auch
+  `src/scripts/measure-capacity.rb`, das misst, wie lange es dauert, bis
+  eine ganze Klasse auf einmal ihre Workspaces hat.
 - Ein Workspace kann nicht mehr vorgeben, von einer anderen Adresse zu
   kommen: `X-Forwarded-For` gilt nur, wenn die Anfrage über nginx und Traefik
   kommt. Vorher ließen sich so die Grenzen je Adresse umgehen (Anmeldecodes,

@@ -169,7 +169,7 @@ class WorkspaceRuntimeTest < Minitest::Test
             :timeout => 5, :host_data_path => '/srv/data')
         assert_equal "TOP /workspace/sandbox\n", output
         command = @captures.last.first
-        assert_includes command, 'docker run --rm --network none --read-only'
+        assert_match(/docker run --rm --name hs_code_offline_[0-9a-f]{8} --network none --read-only/, command)
         assert_includes command, '-u 1000:1000'
         assert_includes command, '-v /srv/data/user/abc/workspace:/workspace:ro'
         assert_includes command, '--entrypoint sh hs_code_server'

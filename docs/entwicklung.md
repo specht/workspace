@@ -20,8 +20,31 @@ Repositorys, sofern nicht anders angegeben. Die Einrichtung selbst steht im
 ```
 
 Dienste: `nginx`, `ruby`, `mysql`, `phpmyadmin`, `peer_firewall`, `neo4japp`,
-in der Entwicklung `tutorial_screenshots` und mit `CASE_SERVER = true`
-`case_museum` und `case_alarm` (siehe »Der Fallserver«).
+`docker_guard`, in der Entwicklung `tutorial_screenshots` und mit
+`CASE_SERVER = true` `case_museum` und `case_alarm` (siehe »Der Fallserver«).
+
+### Der Docker-Wächter
+
+Der Ruby-Dienst hat keinen Docker-Socket. Er spricht mit `docker_guard`
+(`DOCKER_HOST=unix:///run/docker-guard/docker.sock`), der als einziger neben
+der Peer-Firewall den echten Socket hat und jede Anfrage prüft
+(`docker/docker-guard/guard.rb`, Regeln in `src/ruby/include/docker_policy.rb`,
+getestet in `test/docker_policy_test.rb`). Durch geht nur, was der Workspace
+braucht: Container `hs_code_*` aus dem Workspace-Image mit Ordnern unter
+`PATH_TO_HOST_DATA/user/`, ohne Privilegien, Host-Modi, zusätzliche
+Fähigkeiten oder Ports; `exec` in Workspaces und in die beiden Datenbanken;
+Lesen; `kill` für Workspaces und `HUP` für nginx. Alles andere bekommt eine
+403, und der Wächter schreibt den Grund in sein Log
+(`./config.rb logs docker_guard`). Braucht der Code eine neue Docker-Aktion,
+gehört sie in `docker_policy.rb` (mit Test) und danach
+`./config.rb restart docker_guard`.
+
+### Kapazität messen
+
+`./config.rb exec ruby ruby /src/scripts/measure-capacity.rb [ANZAHL]`
+startet ANZAHL (vorgegeben 30) Test-Workspaces gleichzeitig, misst die Zeit
+bis jeder antwortet, Last und Speicher, räumt danach auf und legt den Bericht
+in `/internal/capacity-*.txt`. Auf dem Server außerhalb des Unterrichts.
 
 ## Was muss ich nach einer Änderung neu bauen?
 
