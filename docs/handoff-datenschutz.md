@@ -12,17 +12,14 @@ E2E test. `CHANGELOG.md` »Unreleased« lists every change in German.
 
 ## Git state
 
-- Branch `datenschutz`. `origin/main` is at 6429b4ee (Docker guard,
-  capacity script), merged and pushed on the maintainer's request.
-- On `datenschutz`, **not merged, not pushed** (wait for the maintainer):
-  - bc02ce37 E2E tests for the access rules
-  - 3d597d87 /admin »Betrieb« (monitoring)
-  - c0334ade container hardening (needs an image rebuild, see below)
-  - bf1f7c16 »Betrieb« shows the running commit and the image's build date
+- Branch `datenschutz`, identical to `main`; everything is merged and
+  pushed (2026-10-19, on the maintainer's request). The last four changes
+  (access-rule E2E tests, »Betrieb«, container hardening, commit and image
+  on »Betrieb«) still have to be deployed on the server, see below.
 - Stage files by name, never `git add -A` (a swap file of `credentials.rb`
   was once committed that way and had to be filtered out before pushing).
 
-## When the maintainer deploys the four commits
+## When the maintainer deploys
 
 In this order, on the server:
 
