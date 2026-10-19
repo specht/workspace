@@ -1,0 +1,15 @@
+/* Loaded into the code-server workbench (nginx injects it with fonts.css). */
+
+/* xterm's DOM renderer (used when WebGL is off or unavailable) clips each row
+   at its height. At a device pixel ratio that is not a whole number (1.25,
+   1.5, the screenshots' 1.8) a row border falls inside a device pixel, both
+   rows draw that pixel half, and a thin dark line shows between rows of the
+   same background colour. Letting each cell's background reach one pixel
+   into the next row closes the gap; the next row draws over it. */
+.xterm-rows > div {
+    overflow: visible !important;
+}
+.xterm-rows span {
+    padding-bottom: 1px;
+    margin-bottom: -1px;
+}

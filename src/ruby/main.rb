@@ -863,12 +863,12 @@ class Main < Sinatra::Base
                 ~*text/html "";
             }
 
-            # Inject the browser-visible code font only into the code-server
-            # workbench document. Internal HTML such as the web-worker extension
+            # Inject the browser-visible code font and workspace.css only into
+            # the code-server workbench document. Internal HTML such as the web-worker extension
             # host has its own restrictive CSP and must remain untouched.
             map $request_uri $hs_code_font_head {
                 default "</head>";
-                ~^/(?:w/[a-z0-9]+/)?(?:\\?.*)?$ '<link rel="preload" href="/include/fonts/0xProtoNerdFontMono/0xProtoNerdFontMono-Regular.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/include/fonts.css?#{CACHE_BUSTER}"></head>';
+                ~^/(?:w/[a-z0-9]+/)?(?:\\?.*)?$ '<link rel="preload" href="/include/fonts/0xProtoNerdFontMono/0xProtoNerdFontMono-Regular.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/include/fonts.css?#{CACHE_BUSTER}"><link rel="stylesheet" href="/include/workspace.css?#{CACHE_BUSTER}"></head>';
             }
 
             # ---------------------------
@@ -1077,6 +1077,12 @@ class Main < Sinatra::Base
                 # These are public static assets; workspace authentication remains
                 # on the code-server proxy itself.
                 location = /include/fonts.css {
+                    root /usr/share/nginx/html;
+                    try_files $uri =404;
+                }
+
+                # Hackschule's own styles for the workbench (terminal rows).
+                location = /include/workspace.css {
                     root /usr/share/nginx/html;
                     try_files $uri =404;
                 }

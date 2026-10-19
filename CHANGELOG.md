@@ -1257,6 +1257,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- Im Terminal des Workspace zeigen sich zwischen farbig hinterlegten Zeilen
+  keine feinen dunklen Linien mehr, wenn der Browser mit einer Skalierung wie
+  125 % oder 150 % zeichnet und xterm ohne WebGL läuft; die Schrift bleibt.
+  Der Workspace lädt dafür `include/workspace.css`, die nginx neben
+  `fonts.css` einfügt. Die Screenshots zeigen die Linien ebenfalls nicht mehr.
+- TOTP: Der Eintrag in der Authenticator-App heißt »TOTP-Test:mein-Programm«
+  statt »Hackschule:Workspace«, damit er nicht wie ein echtes Konto aussieht.
 - Wer eine Leistungsüberprüfung löscht, löscht jetzt auch die Workspaces
   und Datenbanken aller, die sie geschrieben haben; bisher blieben sie auf
   dem Server liegen. Die Frage vor dem Löschen sagt es und rät, vorher die
