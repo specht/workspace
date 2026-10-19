@@ -141,7 +141,7 @@ int main(void)
         BeginMode3D(camera);
         DrawGrid(10, 1);
         DrawCube((Vector3){ 0, 0.5f, 0 }, 1, 1, 1, ORANGE);
-        DrawCubeWires((Vector3){ 0, 0.5f, 0 }, 1, 1, 1, MAROON);
+        DrawCubeWires((Vector3){ 0, 0.5f, 0 }, 1.01f, 1.01f, 1.01f, MAROON);
         EndMode3D();
 
         DrawText("Hallo, 3D!", 20, 20, 30, DARKBLUE);
@@ -163,7 +163,13 @@ Die erste Zeile in `main` bittet um **Kantenglättung** (Antialiasing). Eine sch
 
 Ein Punkt im Raum hat drei Koordinaten. In raylib zeigt **x** nach rechts, **y** nach oben und **z** nach vorne, auf dich zu, wenn du von vorne auf die Welt schaust. Das Gitter, das `DrawGrid(10, 1)` zeichnet, liegt flach auf dem Boden, also bei y = 0, und reicht von −5 bis 5 in x- und z-Richtung. Eine Einheit ist in diesem Projekt ein Block.
 
-`DrawCube(position, width, height, length, color)` zeichnet einen Quader, dessen **Mitte** an der Position liegt. Der Würfel bei `(0, 0.5f, 0)` ist einen Block hoch und steht deshalb genau auf dem Boden. `DrawCubeWires` zeichnet dieselben Kanten noch einmal als Linien.
+`DrawCube(position, width, height, length, color)` zeichnet einen Quader, dessen **Mitte** an der Position liegt. Der Würfel bei `(0, 0.5f, 0)` ist einen Block hoch und steht deshalb genau auf dem Boden. `DrawCubeWires` zeichnet dieselben Kanten noch einmal als Linien, aber ein winziges Stück größer: `1.01f` statt `1`.
+
+Warum? Für jedes Pixel merkt sich die Grafikkarte, wie weit das, was dort schon gezeichnet ist, von der Kamera entfernt ist, und zeichnet nur, was näher liegt. Lägen die Linien genau auf den Flächen des Würfels, wären beide gleich weit entfernt. Dann entscheiden winzige Rundungsfehler, was vorne ist, mal die Linie, mal die Fläche, und die Kante zerfällt in Stücke. Das heißt **Z-Fighting**, weil die Entfernung zur Kamera in der Grafik z heißt. Ein Hundertstel Block größer liegen die Linien immer vorne.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere bei <code>DrawCubeWires</code> die drei <code>1.01f</code> in <code>1</code>, übersetze und schau dir die Kanten an, auch wenn die Kamera sich bewegt. Stell danach <code>1.01f</code> wieder ein.
+</div>
 
 `(Vector3){ 0, 0.5f, 0 }` ist ein Wert vom Typ `Vector3`: drei Zahlen `x`, `y` und `z`, zusammengefasst wie in einem `struct`. raylib benutzt `Vector3` für Positionen und für Richtungen. Das `f` hinter `0.5` macht daraus eine `float`-Zahl.
 
@@ -342,7 +348,7 @@ int main(void)
                     if (world[x][y][z] != AIR && visible(x, y, z)) {
                         Vector3 center = { x + 0.5f, y + 0.5f, z + 0.5f };
                         DrawCube(center, 1, 1, 1, colors[world[x][y][z]]);
-                        DrawCubeWires(center, 1, 1, 1, Fade(BLACK, 0.25f));
+                        DrawCubeWires(center, 1.01f, 1.01f, 1.01f, Fade(BLACK, 0.25f));
                         blocks++;
                     }
         EndMode3D();
@@ -371,7 +377,7 @@ crop-element: #canvas
 -->
 <img class='full' src='insel.webp' alt='Die ganze Welt von schräg oben: Hügel aus Gras, ein Sandstrand, Bäume, am Rand Erd- und Steinschichten.'>
 
-Oben links zählt das Programm, wie viele Blöcke es zeichnet, und wie viele Bilder pro Sekunde (FPS) es schafft. Behalte die Zahl im Auge: Später zeichnen wir die Welt viel geschickter.
+Jeder Block bekommt dunkle Kanten, wieder ein Hundertstel größer als der Block selbst, gegen das Z-Fighting. Oben links zählt das Programm, wie viele Blöcke es zeichnet, und wie viele Bilder pro Sekunde (FPS) es schafft. Behalte die Zahl im Auge: Später zeichnen wir die Welt viel geschickter.
 
 <div class='hint think'>
 <strong>Zum Nachdenken:</strong> Warum sieht man am Rand der Welt die Schichten aus Erde und Stein? Was würde passieren, wenn <code>block</code> außerhalb der Welt <code>STONE</code> statt <code>AIR</code> sagen würde?
@@ -532,7 +538,7 @@ int main(void)
                     if (world[x][y][z] != AIR && visible(x, y, z)) {
                         Vector3 center = { x + 0.5f, y + 0.5f, z + 0.5f };
                         DrawCube(center, 1, 1, 1, colors[world[x][y][z]]);
-                        DrawCubeWires(center, 1, 1, 1, Fade(BLACK, 0.25f));
+                        DrawCubeWires(center, 1.01f, 1.01f, 1.01f, Fade(BLACK, 0.25f));
                         blocks++;
                     }
         EndMode3D();
@@ -812,7 +818,7 @@ aim(eyes, look);
 und, direkt vor `EndMode3D()`:
 
 ```c
-~                 DrawCubeWires(center, 1, 1, 1, Fade(BLACK, 0.25f));
+~                 DrawCubeWires(center, 1.01f, 1.01f, 1.01f, Fade(BLACK, 0.25f));
 ~                 blocks++;
 ~             }
 if (hit)

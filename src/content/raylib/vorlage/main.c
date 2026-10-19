@@ -22,7 +22,7 @@ int main(void)
         BeginMode3D(camera);
         DrawGrid(10, 1);
         DrawCube((Vector3){ 0, 0.5f, 0 }, 1, 1, 1, ORANGE);
-        DrawCubeWires((Vector3){ 0, 0.5f, 0 }, 1, 1, 1, MAROON);
+        DrawCubeWires((Vector3){ 0, 0.5f, 0 }, 1.01f, 1.01f, 1.01f, MAROON);
         EndMode3D();
 
         DrawText("Hallo, 3D!", 20, 20, 30, DARKBLUE);

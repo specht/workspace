@@ -215,7 +215,7 @@ int main(void)
                     if (world[x][y][z] != AIR && visible(x, y, z)) {
                         Vector3 center = { x + 0.5f, y + 0.5f, z + 0.5f };
                         DrawCube(center, 1, 1, 1, colors[world[x][y][z]]);
-                        DrawCubeWires(center, 1, 1, 1, Fade(BLACK, 0.25f));
+                        DrawCubeWires(center, 1.01f, 1.01f, 1.01f, Fade(BLACK, 0.25f));
                         blocks++;
                     }
         EndMode3D();
