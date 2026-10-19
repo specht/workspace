@@ -163,7 +163,7 @@ crop-terminal-lines: auto
 
 ### Fehler finden und beheben
 
-Wenn du einen Fehler im Code machst, wird Ruby eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `print` das Wort `prin` zu schreiben:
+Wenn du einen Fehler im Code machst, wird Lua eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `print` das Wort `prin` zu schreiben:
 
 ```lua
 prin("Hello, World!")

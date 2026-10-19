@@ -195,7 +195,7 @@ crop-terminal-lines: auto
 
 ### Fehler finden und beheben
 
-Wenn du einen Fehler im Code machst, wird Lisp eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `show` das Wort `sho` zu schreiben:
+Wenn du einen Fehler im Code machst, wird Smalltalk eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `show` das Wort `sho` zu schreiben:
 
 ```smalltalk
 Transcript sho: 'Hello, World!'; cr.
@@ -301,7 +301,7 @@ Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Ander
 
 ## Bubblesort
 
-Im dritten Beispiel wollen wir eine Liste von 10 Zufallszahlen sortieren. Dafür verwenden wir den [Bubblesort-Algorithmus](https://de.wikipedia.org/wiki/Bubblesort), der zwar nicht besonders effizient ist, aber sehr einfach zu verstehen und zu implementieren. Der Bubblesort-Algorithmus funktioniert, indem er die Liste mehrmals durchläuft und benachbarte Elemente vertauscht, wenn sie in der falschen Reihenfolge sind.
+Im dritten Beispiel wollen wir eine Liste von 10 Zahlen sortieren, die im Programm stehen. Dafür verwenden wir den [Bubblesort-Algorithmus](https://de.wikipedia.org/wiki/Bubblesort), der zwar nicht besonders effizient ist, aber sehr einfach zu verstehen und zu implementieren. Der Bubblesort-Algorithmus funktioniert, indem er die Liste mehrmals durchläuft und benachbarte Elemente vertauscht, wenn sie in der falschen Reihenfolge sind.
 
 An diesem Beispiel kannst du sehen, wie man in Smalltalk Arrays verwendet, Funktionen verwendet und Schleifen verschachtelt.
 
@@ -321,7 +321,7 @@ crop-terminal-lines: auto
 
 <img class='full' src='bubblesort.webp' alt='gst bubblesort.st gibt zehn Zahlen aus und darunter dieselben Zahlen sortiert.'>
 
-Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
+Das Programm hat eine Liste von 10 Zahlen sortiert.
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ändere <code>bubblesort.st</code> und starte das Skript noch einmal:
