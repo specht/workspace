@@ -340,6 +340,11 @@ _uses(websocket-upgrade, statuscodes)
 
 _task(handshake)
 
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere im <code>curl</code>-Befehl von eben den ersten Buchstaben des Keys, aus <code>dGhl…</code> wird <code>eGhl…</code>. Wie viel ändert sich an <code>Sec-WebSocket-Accept</code>? Lass dann <code>-H "Upgrade: websocket"</code> ganz weg: Was antwortet der Server jetzt?
+</div>
+
 ## An alle
 
 <!-- language: ruby -->
@@ -802,6 +807,18 @@ _task(pixel-zahl)
 _task(vertrauen)
 
 _task(pixelwand)
+
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Schick deinem Server selbst Nachrichten, so wie es jeder könnte. Öffne auf der Pixelwand mit <kbd>F12</kbd> die Entwicklerwerkzeuge des Browsers, wähle den Reiter »Console« und tippe nacheinander:
+<ul>
+<li><code>socket.send('{"x":0,"y":0,"color":4}')</code></li>
+<li><code>socket.send('{"x":999,"y":0,"color":4}')</code></li>
+<li><code>socket.send('{"x":0,"y":0,"color":99}')</code></li>
+<li><code>socket.send('Hallo')</code></li>
+</ul>
+Welche davon landet auf der Wand? Welche Zeile im Server sorgt jeweils dafür, dass die anderen nichts anrichten?
+</div>
 
 ## Mit der ganzen Klasse
 

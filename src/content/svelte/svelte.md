@@ -625,6 +625,16 @@ Probier es aus: Halte die Leertaste gedrückt, bis die Anzeige grün wird, lass 
 
 _task(timer)
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong>
+<ul>
+<li>Behalte beim Messen die Zeile »State = …« im Auge: Tippe die Leertaste kurz an, halte sie lange, lass los und drück noch einmal. Läuft die Stoppuhr genau den Weg durch das Ablaufdiagramm?</li>
+<li>Lass in <code>updateTimer</code> die letzte Zeile <code>requestAnimationFrame(updateTimer);</code> weg. Was zeigt die Anzeige jetzt, nachdem du losgelassen hast, und warum?</li>
+<li>Schreib in der Regel <code>.timer</code> <code>&amp;.ready {</code> statt <code>:global(&amp;.ready) {</code>. Wird die Anzeige noch grün? Schau auch, was VS Code zu der Zeile sagt.</li>
+</ul>
+Stell die Zeilen danach wieder her.
+</div>
+
 ## Webseite erweitern
 
 Die Stoppuhr funktioniert. Jetzt kümmern wir uns um das Aussehen.

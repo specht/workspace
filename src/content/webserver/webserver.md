@@ -299,6 +299,11 @@ _task(antwort)
 
 _task(bytes)
 
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Schick eine falsche Länge. Schreib in der Zeile mit <code>Content-Length</code> statt der berechneten Länge eine feste Zahl, erst <code>10</code>, dann <code>100</code>, und frag nach jedem Neustart mit <code>curl -i localhost:8000</code>. Was zeigt <code>curl</code> jeweils, und was meldet es? Woher weiß ein Client überhaupt, wann der Inhalt zu Ende ist? Stell die Zeile danach wieder her.
+</div>
+
 Jetzt der Browser. Visual Studio Code leitet Port 8000 an eine Adresse weiter, die dein Browser erreicht. Du findest sie im Reiter »Ports« neben »Terminal«, in der Spalte »Forwarded Address«. Klicke mit gedrückter <kbd>Strg</kbd>-Taste darauf, und dein Server antwortet in einem neuen Tab.
 
 Oder du schreibst die Anfrage selbst, Zeile für Zeile: Öffne die [TCP-Konsole](/tcp-console) und verbinde dich mit `localhost`, Port 8000. Die Konsole beginnt in deinem Workspace, also landet sie bei deinem Server. Tippe `GET / HTTP/1.1`, `Host: localhost` und eine leere Zeile. Im Terminal siehst du, wie dein Server die Zeilen liest, in der Konsole, was er antwortet. Probier auch, was passiert, wenn du die leere Zeile weglässt oder statt einer Anfrage einfach `Hallo` schickst.
@@ -463,6 +468,11 @@ expect-no-text: Traceback
 _uses(statuscodes, curl)
 
 _task(statuscodes)
+
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Schreib in der Antwort für <code>/</code> <code>text/plain; charset=utf-8</code> statt <code>text/html; charset=utf-8</code>, starte den Server neu und öffne <code>/</code> im Browser. Was siehst du jetzt, und warum? Der Inhalt ist doch derselbe. Stell den Typ danach wieder her.
+</div>
 
 ## Webseiten ausliefern
 
@@ -1490,6 +1500,15 @@ _task(umfrage)
 _task(body)
 
 _task(neu-laden)
+
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ein Formular schickt nur, was darin steht, aber <code>curl</code> schickt, was du willst:
+<ul>
+<li><code>curl -i -d choice=sushi localhost:8000/vote</code> und <code>curl -i localhost:8000/vote</code>: Welche Statuscodes bekommst du, und welche Zeilen im Server sorgen dafür?</li>
+<li><code>for i in $(seq 50); do curl -s -o /dev/null -d choice=salad localhost:8000/vote; done</code>: Was zeigt die Ergebnisseite danach? Was müsste der Server wissen, um so etwas zu verhindern?</li>
+</ul>
+</div>
 
 ## Mit der Klasse teilen
 

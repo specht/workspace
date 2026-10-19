@@ -297,11 +297,21 @@ Scanne den QR-Code mit einer Authenticator-App auf deinem Handy, zum Beispiel Fr
 <code>secret.txt</code> ist ein echter Schlüssel: Wer ihn hat, kann deine Codes ausrechnen. Für dieses Programm schadet das nicht, es schützt ja nichts. Ein echter Server bewahrt solche Schlüssel aber so sorgfältig auf wie Passwörter, und in ein Git-Repository gehören sie nie. Den Eintrag in deiner App kannst du danach wieder löschen.
 </div>
 
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere in <code>secret.txt</code> ein einziges Zeichen in ein anderes aus dem Alphabet und starte das Programm neu. Wie viele der sechs Ziffern stimmen noch mit der App überein? Schreib danach statt eines Großbuchstabens denselben Buchstaben klein: Was passiert jetzt, und warum? Stell <code>secret.txt</code> danach wieder her.
+</div>
+
 ## Prüfen wie ein Server
 
 Der Server hat dieselbe Rechnung und prüft, ob der eingetippte Code stimmt. Ganz so einfach ist es aber nicht.
 
 _task(uhr)
+
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Lass die Uhr deines Programms nachgehen: Ersetze in der Schleife <code>totp(base32_decode(secret), now)</code> durch <code>totp(base32_decode(secret), now - 20)</code> und starte es neu. Beobachte eine halbe Minute lang Programm und App nebeneinander: Wie viele Sekunden lang zeigen beide denselben Code? Stell die Zeile danach wieder her.
+</div>
 
 Server nehmen deshalb auch den Code des Zeitfensters davor und danach an, also insgesamt 90 Sekunden. Viele Apps zeigen den Code außerdem mit einem Leerzeichen in der Mitte, `287 082`; auch das soll nicht stören.
 

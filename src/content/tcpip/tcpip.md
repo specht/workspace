@@ -210,6 +210,10 @@ _task(traceroute-erklaeren)
 
 _task(router-zaehlen)
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Gib einem Paket selbst eine kleine TTL mit: <code>ping -c 3 -t 3 8.8.8.8</code> schickt drei Pakete mit TTL 3. Wer antwortet jetzt, und was meldet er? Erhöhe die TTL Schritt für Schritt: Ab welcher TTL antwortet Google selbst? Kommt bei einer TTL gar nichts zurück, hat sich der Router nicht gemeldet, wie bei einem Stern in <code>traceroute</code>.
+</div>
+
 ## Pakete, Ports und Verbindungen
 
 ### Schichten
@@ -424,6 +428,16 @@ _task(erste-webseite)
 
 _task(leere-zeile)
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Schick <code>info.cern.ch</code> Anfragen, die nicht ganz stimmen, jede über eine neue Verbindung mit <code>nc -C info.cern.ch 80</code> und mit einer leeren Zeile am Ende:
+<ul>
+<li>einen Pfad, den es nicht gibt: <code>HEAD /missing.html HTTP/1.0</code></li>
+<li>eine Methode, die es nicht gibt: <code>HAED /hypertext/WWW/TheProject.html HTTP/1.0</code></li>
+<li><code>HTTP/1.1</code> statt <code>HTTP/1.0</code>, aber ohne die Zeile <code>Host:</code></li>
+</ul>
+Welche Status-Line kommt jeweils zurück? Warum besteht ein Server bei <code>HTTP/1.1</code> auf dem <code>Host</code>-Header?
+</div>
+
 ### Die TCP-Konsole
 
 Bei `https://` liegt zwischen TCP und HTTP noch eine Schicht, **TLS**, die alles verschlüsselt. Mit `nc` kommst du da nicht mehr hinein. Die [TCP-Konsole](/tcp-console) kann es: Sie macht dasselbe wie `nc -C`, nur im Browser, mit einem Schalter für TLS, und sie zeigt, was du geschickt hast, was zurückkam und wann. Die Verbindung beginnt dabei in deinem Workspace, so wie bei `nc`.
@@ -607,6 +621,10 @@ crop-terminal-lines: auto
 _uses(http-header, curl)
 
 _task(webserver)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Dreh es um und sieh dir an, was <code>curl</code> schickt. Starte in einem Terminal <code>nc -C -l -p 1234</code> und im zweiten <code>curl http://localhost:1234/hallo</code>. Was steht im ersten Terminal? <code>curl</code> wartet jetzt auf eine Antwort: Tippe im ersten Terminal <code>HTTP/1.0 200 OK</code>, eine leere Zeile und <code>Hallo zurück!</code> und beende <code>nc</code> dann mit <kbd>Strg</kbd><kbd>C</kbd>. Was gibt <code>curl</code> aus? Gerade warst du ein Webserver.
+</div>
 
 Eine API ist eine Adresse, die keine Seite für Menschen liefert, sondern Daten für Programme. Die »Cat Facts«-API zum Beispiel gibt zufällige Fakten über Katzen zurück:
 

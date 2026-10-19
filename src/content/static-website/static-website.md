@@ -336,6 +336,10 @@ Wikimedia Commons erlaubt, seine Bilder so direkt einzubinden, aber die Lizenz g
 
 _task(alt-text)
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere in der Adresse in <code>src</code> einen Buchstaben, etwa am Ende <code>.jpg</code> zu <code>.jpq</code>, und speichere. Was zeigt der Browser jetzt dort, wo das Bild war? Wer bekommt den Alt-Text sonst noch zu sehen, auch wenn das Bild lädt? Stell die Adresse danach wieder her.
+</div>
+
 ### Ein eigenes Bild verwenden
 
 Bis jetzt kommt das Axolotl-Foto direkt von Wikimedia Commons. Spannender wird deine Webseite natürlich mit einem eigenen Bild. Das ist im browserbasierten Workspace etwas ungewohnt: Die Datei liegt zunächst auf **deinem Computer oder im Browser**, dein Projekt liegt aber im **Workspace**. Die Bilddatei muss also erst in den Explorer von VS Code gelangen.
@@ -461,6 +465,15 @@ Unser Bildnachweis hat die Klasse `credit` bekommen (`<p class="credit">`); die 
 
 _task(selektor)
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Bau absichtlich Fehler ein, einen nach dem anderen, und speichere jedes Mal:
+<ul>
+<li>Schreib in der Regel für <code>body</code> <code>colr</code> statt <code>color</code>.</li>
+<li>Ändere in <code>index.html</code> im <code>&lt;link&gt;</code> <code>href="styles.css"</code> zu <code>href="style.css"</code>.</li>
+</ul>
+Was ändert sich in der Vorschau? Meldet der Browser einen Fehler, und woran könntest du merken, was los ist? Stell danach beides wieder her.
+</div>
+
 Mehr zum Gestalten: _uses(selektoren, farben, schrift, abstaende, wirkt-nicht)
 
 <div class='tutorial-preview-clear'></div>
@@ -563,8 +576,8 @@ _task(flexbox)
 
 _task(breite)
 
-<div class='hint task'>
-Probiere bei <code>gap</code> und <code>width</code> andere Werte aus. Was passiert bei <code>width: 30%</code> oder <code>width: 60%</code>?
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere bei <code>main &gt; img</code> die Breite auf <code>30%</code> und bei <code>main</code> den Abstand auf <code>gap: 6rem;</code>. Wer gibt den Platz für den größeren Abstand her, das Bild oder der Text, und warum? Behalte danach die Werte, die zu deiner Seite passen.
 </div>
 
 <div class='tutorial-preview-clear'></div>

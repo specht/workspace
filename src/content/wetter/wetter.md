@@ -495,6 +495,11 @@ check-task: cache python
 
 _task(cache)
 
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Schau mit <code>ls cache</code> nach, welche Dateien dein Programm angelegt hat, und woran du am Namen erkennst, welche Datei zu welcher API gehört. Starte das Programm dann innerhalb der zehn Minuten noch einmal, mit <code>hamburg</code> klein geschrieben. Welche der beiden Anfragen kommt jetzt aus dem Cache und welche nicht? Warum?
+</div>
+
 ### Wenn die API nicht mehr will
 
 Hat doch jemand das Kontingent aufgebraucht, antwortet Open-Meteo mit `429` und nennt in `reason` den Grund, etwa `Hourly API request limit exceeded`. Für diesen Fall gibt es einen **Spiegel** von Open-Meteo im Workspace: dieselben Pfade und Parameter, nur unter der Adresse des Workspaces. Darum stehen die Adressen in deinem Programm oben in Konstanten; tausche sie aus:
@@ -694,6 +699,11 @@ Eigentlich darf eine Webseite nicht einfach Daten von einer fremden Adresse lese
 _uses(http-header)
 
 _task(webseite)
+
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Sieh zu, was die Seite im Netz tut. Öffne in der Vorschau mit <kbd>F12</kbd> die Entwicklerwerkzeuge des Browsers, wähle den Reiter »Network« (»Netzwerk«) und such nach einem Ort, den du noch nicht hattest, dann noch einmal nach demselben, dann klick »Neu laden«. Wie viele Anfragen gehen jedes Mal an Open-Meteo? Klick eine an: Findest du unter den Headern der Antwort <code>access-control-allow-origin</code>?
+</div>
 
 _task(abgabe)
 

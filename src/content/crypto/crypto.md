@@ -207,6 +207,17 @@ Ein falsches Passwort, und sei es nur ein kleiner Buchstabe, ergibt einen ganz a
 
 _task(verschluesselt)
 
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Verändere ein einziges Byte des verschlüsselten Briefs, in einer Kopie:
+<ul>
+<li><code>cp letter.enc broken.enc</code></li>
+<li><code>printf X | dd of=broken.enc bs=1 seek=20 conv=notrunc</code> überschreibt das Byte mit dem Index 20, in der zweiten Zeile von <code>xxd</code>, mit einem <code>X</code>.</li>
+<li><code>openssl enc -d -aes-256-cbc -pbkdf2 -in broken.enc</code> mit dem richtigen Passwort</li>
+</ul>
+Meldet <code>openssl</code> einen Fehler? Welcher Teil des Briefs ist kaputt, und welcher nicht? Probier es mit einer frischen Kopie und <code>seek=60</code>, in der letzten Zeile. Was heißt das für jemanden, der den verschlüsselten Brief unterwegs verändern kann, ohne das Passwort zu kennen?
+</div>
+
 Symmetrische Verschlüsselung ist schnell und sicher, hat aber ein Problem: Beide Seiten brauchen dasselbe Passwort. Wie verabredest du es mit jemandem, ohne dass es unterwegs mitgelesen wird?
 
 _task(schluesselproblem)
@@ -350,6 +361,15 @@ crop-terminal-lines: auto
 Unterschrieben wird nicht der ganze Brief, sondern sein Hash: Ändert sich eine Ziffer, passt der Hash nicht mehr zur Unterschrift. Die Unterschrift beweist also beides, wer unterschrieben hat und dass der Brief seitdem gleich geblieben ist. Geheim ist der Brief dadurch nicht, er liegt ja offen daneben.
 
 _task(unterschrift)
+
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong>
+<ul>
+<li>Stell den Brief mit <code>sed -i "s/17 Uhr/16 Uhr/" letter.txt</code> wieder auf 16 Uhr und prüfe noch einmal. Gilt die Unterschrift wieder? Was sagt das darüber, was eigentlich unterschrieben ist?</li>
+<li>Prüfe mit <code>-I bob</code> statt <code>-I alice</code> oder mit <code>-n mail</code> statt <code>-n file</code>. Was meldet <code>ssh-keygen</code>, und warum?</li>
+</ul>
+</div>
 
 ## Was hinter SSH, Git und HTTPS steckt
 
