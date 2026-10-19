@@ -296,11 +296,11 @@ height = 3
 [map]
 #############
 #...........#
+#...L...L...#
+1...........#
 #...........#
-1...L...L...#
 #...........#
 #...L...L...#
-#...........#
 #...........#
 #############
 
@@ -374,15 +374,15 @@ hook: info off
 
 ### Säulen
 
-Ein Buchstabe im Grundriss kann auch ein Block sein. Vier Säulen, je zwei an den langen Seiten:
+Ein Buchstabe im Grundriss kann auch ein Block sein. Vier Säulen, je zwei an den langen Seiten, zwischen den Leuchten:
 
 ```room
 ~ #...........#
-#.....S...S.#
-~ 1...L...L...#
+#...L.S.L.S.#
+~ 1...........#
 ~ #...........#
-~ #...L...L...#
-#.....S...S.#
+~ #...........#
+#...L.S.L.S.#
 ~ #...........#
 ```
 
@@ -410,8 +410,8 @@ Die Leuchte hinten rechts soll rot leuchten. Sie bekommt einen eigenen Buchstabe
 
 ```room
 ~ #...........#
-#...L...R...#
-~ #.....S...S.#
+#...L.S.R.S.#
+~ #...........#
 ```
 
 ```room
@@ -444,9 +444,9 @@ hook: info off
 In die Mitte des Saals kommt Athena, auf einem Sockel:
 
 ```room
-~ 1...L...L...#
+~ 1...........#
 #.....M.....#
-~ #...L...R...#
+~ #...........#
 ```
 
 ```room
