@@ -6,7 +6,7 @@ language: raylib / C
 topic: graphics
 duration: 5 Doppelstunden
 requires: [pixelram]
-reference: [raylib]
+reference: [raylib, glsl]
 template: https://github.com/specht/raylib-starter.git
 template_name: der raylib-Vorlage
 </div>
@@ -1006,7 +1006,7 @@ _task(wiese)
 
 ### Ein Shader rechnet das Licht
 
-Wie hell eine Fläche wird, berechnet die Grafikkarte, und zwar mit einem kleinen Programm, einem **Shader**. Shader sind in einer eigenen Sprache geschrieben, GLSL, die ein wenig wie C aussieht. In der Vorlage liegen schon zwei: `light.vs` und `light.fs`. Der **Vertex-Shader** `light.vs` läuft für jede Ecke eines Dreiecks und rechnet aus, wo die Ecke auf dem Bildschirm landet. Der **Fragment-Shader** `light.fs` läuft für jeden Pixel einer Fläche und rechnet seine Farbe aus:
+Wie hell eine Fläche wird, berechnet die Grafikkarte, und zwar mit einem kleinen Programm, einem **Shader**. Shader sind in einer eigenen Sprache geschrieben, [GLSL](/reference/glsl), die ein wenig wie C aussieht. In der Vorlage liegen schon zwei: `light.vs` und `light.fs`. Der **Vertex-Shader** `light.vs` läuft für jede Ecke eines Dreiecks und rechnet aus, wo die Ecke auf dem Bildschirm landet. Der **Fragment-Shader** `light.fs` läuft für jeden Pixel einer Fläche und rechnet seine Farbe aus:
 
 ```glsl_copy
 #version 100
@@ -1143,9 +1143,23 @@ check-task-fails: fackeln
 -->
 <img class='full' src='licht.webp' alt='Dieselbe Welt mit Licht: Oberseiten hell, Seiten dunkler, die Bäume haben deutliche Schattenseiten.'>
 
-Vergleiche die Zahl der Seiten und die FPS mit vorher. Jetzt siehst du auch, warum die Ecken der Vierecke gegen den Uhrzeigersinn laufen müssen: Probiere bei einer Seite die umgekehrte Reihenfolge aus.
+Vergleiche die Zahl der Seiten und die FPS mit vorher.
 
 _task(licht)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Vertausche in <code>draw_block</code> bei der Oberseite die zweite und die vierte Ecke, so dass sie im Uhrzeigersinn laufen, und übersetze mit <code>make</code>. Was siehst du, wo vorher Gras war, und warum? Stell die Reihenfolge danach wieder her.
+</div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Der Shader ist ein Programm wie jedes andere. Ändere eine Zeile in <code>light.fs</code>, übersetze mit <code>make</code> und lade die Vorschau neu:
+<ul>
+<li>Ohne das Licht von überall: <code>vec3 light = sunlight * sunAmount;</code>. Wie sehen die Seiten aus, die von der Sonne weg zeigen?</li>
+<li>Ohne <code>max</code>: <code>float sunAmount = dot(n, sun);</code>. Welche Seiten werden jetzt dunkler als vorher, und warum?</li>
+<li>Die Normale als Farbe: <code>gl_FragColor = vec4(n * 0.5 + 0.5, 1.0);</code>. Eine Normale hat Zahlen von −1 bis 1, eine Farbe von 0 bis 1. Welche Farbe haben alle Oberseiten, und in welche Richtung zeigt eine rosa Seite?</li>
+</ul>
+Stell <code>light.fs</code> danach wieder her; die nächsten Schritte bauen darauf auf.
+</div>
 
 ## Tag und Nacht
 
@@ -1411,6 +1425,16 @@ _task(fackel-abstand)
 
 _task(fackeln)
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> In <code>light.fs</code> stecken viele Zahlen, an denen du drehen kannst:
+<ul>
+<li>Färbe den Nebel: Ersetze in der letzten Zeile <code>sky</code> durch <code>vec3(1.0, 0.0, 0.0)</code>. Jetzt siehst du genau, wo der Nebel anfängt und wo er alles verschluckt.</li>
+<li>Ändere <code>16.0</code> und <code>20.0</code> in der Zeile mit <code>fog</code>, etwa zu <code>4.0</code> und <code>8.0</code>. Was bedeutet welche der beiden Zahlen?</li>
+<li>Ändere <code>0.3 * dist * dist</code> zu <code>0.05 * dist * dist</code>: Wie weit reicht das Licht einer Fackel jetzt?</li>
+</ul>
+Drück <kbd>N</kbd> für die Nacht, dann siehst du die Fackeln am besten. Stell <code>light.fs</code> danach wieder her.
+</div>
+
 ## Texturen
 
 Noch hat jeder Block eine einzige Farbe. In Spielen sehen Flächen nach etwas aus: Gras hat Halme, Stein hat Risse, Holz hat Maserung. Dafür klebt die Grafikkarte ein Bild auf jede Fläche, eine **Textur**.
@@ -1631,6 +1655,10 @@ check-task: texturen
 <img class='full' src='tag.webp' alt='Blick über eine hügelige Welt aus Blöcken mit Gras-, Erd- und Holztexturen, ein paar Fackeln stehen im Gras.'>
 
 _task(texturen)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Zeig die Texturkoordinaten als Farbe. Ersetze in <code>light.fs</code> die Zeile mit <code>gl_FragColor</code> durch <code>gl_FragColor = vec4(fract(uv.x * 8.0), uv.y, 0.0, 1.0);</code>: <code>fract(uv.x * 8.0)</code> geht in jeder Kachel von 0 bis 1. In welcher Ecke einer Seite ist es schwarz, in welcher gelb? Oder verschiebe jede Kachel um eine nach rechts, mit <code>texture2D(texture0, uv + vec2(0.125, 0.0))</code>: Wie sieht die Wiese jetzt aus? Stell die Zeilen danach wieder her.
+</div>
 
 ### Eigene Texturen zeichnen
 

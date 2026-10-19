@@ -128,10 +128,12 @@
   icon: /images/star.png
   description: |
     PixelRAM für Bilder aus einzelnen Pixeln, raylib für Spiele in 3D mit
-    Kamera, Licht, Texturen und Shadern; dazu Tastatur, Maus und Zeit.
+    Kamera, Licht, Texturen und Shadern; dazu Tastatur, Maus und Zeit. GLSL
+    für die Shader selbst.
   entries:
     - pixelram
     - raylib
+    - glsl
 
 - key: reference-algorithms
   label: Algorithmen und Datenstrukturen

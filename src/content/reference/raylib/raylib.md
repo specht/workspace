@@ -429,7 +429,7 @@ Liegen mehrere Bilder nebeneinander in einem Streifen (ein **Atlas**), reicht Bi
 <!-- short: `LoadShader("light.vs", "light.fs")`, `GetShaderLocation`, `SetShaderValue`, zeichnen zwischen `BeginShaderMode` und `EndShaderMode`. -->
 ### Shader
 
-Ein Shader ist ein kleines Programm für die Grafikkarte, geschrieben in GLSL. Der **Vertex-Shader** läuft für jede Ecke, der **Fragment-Shader** für jeden Pixel einer Fläche. Im C-Programm:
+Ein Shader ist ein kleines Programm für die Grafikkarte, geschrieben in [GLSL](/reference/glsl). Der **Vertex-Shader** läuft für jede Ecke, der **Fragment-Shader** für jeden Pixel einer Fläche. Hier steht, was das C-Programm dazu tut; die Sprache selbst steht bei [GLSL](/reference/glsl). Im C-Programm:
 
 ```c
 Shader light = LoadShader("light.vs", "light.fs");
@@ -493,3 +493,12 @@ void main()
 
 Eine Schleife braucht in `#version 100` eine feste Obergrenze: `for (int i = 0; i < 16; i++)` und darin `if (i >= count) break;`. Zahlen mit Komma schreibst du immer mit Punkt und Nachkommastelle, `1.0` statt `1`.
 <!-- /part -->
+
+## Zum Nachschlagen
+
+- [raylib-Cheatsheet](https://www.raylib.com/cheatsheet/cheatsheet.html): alle Funktionen von raylib auf einer Seite, nach Modulen geordnet, mit ihren Parametern.
+- [raymath-Cheatsheet](https://www.raylib.com/cheatsheet/raymath_cheatsheet.html): alle Rechenbefehle für Vektoren und Matrizen aus `raymath.h`.
+- [raylib-Beispiele](https://www.raylib.com/examples.html): Hunderte kleine Programme, nach Themen geordnet, im Browser zum Ausprobieren und mit Quelltext.
+- [`rlgl.h`](https://github.com/raysan5/raylib/blob/master/src/rlgl.h): die Befehle für eigene Flächen (`rlBegin`, `rlVertex3f` …), mit Kommentaren im Quelltext.
+- [raylib-Wiki](https://github.com/raysan5/raylib/wiki): Antworten auf häufige Fragen, etwa zum Übersetzen für den Browser.
+- Die Sprache der Shader steht bei [GLSL](/reference/glsl).

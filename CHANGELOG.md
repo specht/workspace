@@ -25,6 +25,25 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   bleiben, wie sie sind). Neue MySQL- und Neo4j-Logins folgen derselben
   Regel; vorhandene bleiben unverändert. Beschrieben in
   `docs/entwicklung.md`, »Namen und Home-Verzeichnis im Workspace«.
+- Neue Handbuch-Seite »GLSL« (`/reference/glsl`): was Vertex- und
+  Fragment-Shader tun, Version und Genauigkeit, Typen, Komponenten
+  (`color.rgb`), `attribute`, `uniform` und `varying`, Schleifen, die
+  wichtigsten Funktionen, was raylib mitschickt, und wie man Fehler findet
+  (Werte als Farbe ausgeben). Am Ende Links zur Reference Card und zur
+  Spezifikation der Khronos Group. Die raylib-Seite des Handbuchs bekommt
+  ebenso »Zum Nachschlagen« mit Cheatsheet, Beispielen und Wiki. Regel für
+  alle Handbuch-Seiten: das Wichtigste auf der Seite, für den Rest ein Link
+  zur offiziellen Referenz (`docs/aktivitaet-schreiben.md`,
+  `docs/checkliste.md`).
+- Kästen »Ausprobieren« (`<div class='hint try'>`, mit Reagenzglas): Wo
+  etwas gerade läuft, schlagen sie eine kleine Änderung vor und fragen, was
+  passiert. Ungeprüft, die Seite geht mit dem unveränderten Code weiter. Die
+  Klötzchenwelt hat vier: Ecken im Uhrzeigersinn, Licht ohne `ambient`,
+  ohne `max` und Normalen als Farbe, Nebel und Fackeln, Texturkoordinaten
+  als Farbe.
+- »Im Handbuch« über einer Aktivität nennt die Seiten in der Reihenfolge
+  des Handbuchs, die Grundlagen (Workspace, Shortcuts, Terminal) zuerst;
+  bisher kamen Seiten aus `_include` nach denen aus `reference:`.
 - »Eine Klötzchenwelt in 3D« endet mit »Wenn die Welt wächst«: was große
   Klötzchenwelten schnell macht (Chunks als Mesh, Sichtweite, Frustum
   Culling, größere Flächen, verdeckte Chunks) und wie eine Welt aus
