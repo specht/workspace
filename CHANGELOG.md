@@ -23,8 +23,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   zur Startseite und zum Handbuch, im Rahmen der Website und mit Status 404.
   Fehlende Bilder, Skripte und Stylesheets bleiben ein leeres 404. Wer auf
   der Fehlerseite `noclip` tippt, fällt durch die Wand in die Backrooms.
-- Eine versteckte Aktivität »Die Backrooms« (`/backrooms`, in keinem
-  Katalog): Lernende beschreiben Räume als Grundriss in Textdateien,
+- Eine versteckte Aktivität »Die Backrooms« (`/level-0-c1d8a2f7`, in keinem
+  Katalog, nur über die Fehlerseite zu finden): Lernende beschreiben Räume als Grundriss in Textdateien,
   verbinden sie über Türen zu einem Bauwerk und gehen im Browser hindurch,
   am Rechner, mit Rot-Cyan-Brille oder in VR. Das Licht backt die
   Grafikkarte ihres Rechners: direktes Licht mit weichen Schatten,

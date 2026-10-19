@@ -3,7 +3,7 @@
 # Die Vorlage kommt aus einem eigenen Repository (specht/backrooms-starter);
 # die Beispiele bauen nur nach, was die Prüfungen lesen.
 format: 1
-activity: backrooms
+activity: level-0-c1d8a2f7
 examples:
   geklont:
     pass:

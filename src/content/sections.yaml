@@ -155,13 +155,13 @@
     - smalltalk
 
 # Hidden: not in the catalog and not pinnable; the pages are found by their
-# address (the Backrooms: by falling through a wall).
+# address (the Backrooms, level-0-…: by typing noclip on the 404 page).
 - key: hidden
   hidden: true
   label: Verborgen
   icon: /images/bookmark.png
   entries:
-    - backrooms
+    - level-0-c1d8a2f7
 
 - key: programming_languages
   compact: true

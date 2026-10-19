@@ -34,7 +34,8 @@
         92% { opacity: 0.35; }
         94.5% { opacity: 0.6; }
     }
-    /* noclip: Die Seite fällt weg, alles wird gelb (siehe das Skript unten) */
+    /* noclip: Du sinkst durch den Boden, die Seite fliegt nach oben weg,
+       alles wird gelb (siehe das Skript unten) */
     .noclip-veil {
         position: fixed;
         inset: 0;
@@ -42,23 +43,28 @@
         background: #c9b458;
         opacity: 0;
         pointer-events: none;
-        transition: opacity 0.8s 0.4s;
     }
-    .noclipping .noclip-veil {
-        opacity: 1;
+    body.noclipping .noclip-veil {
+        animation: noclip-veil 1.3s ease-in forwards;
     }
-    .noclipping .not-found {
+    @keyframes noclip-veil {
+        0%, 30% { opacity: 0; }
+        100% { opacity: 1; }
+    }
+    /* die ganze Seite, Kopf und Fuß eingeschlossen; der Schleier liegt
+       dann direkt in body und bleibt stehen */
+    body.noclipping > :not(.noclip-veil) {
         animation: noclip-fall 1.2s ease-in forwards;
     }
     @keyframes noclip-fall {
         0% { transform: none; opacity: 1; }
         20% { transform: translate(4px, -3px) skewX(3deg); }
         30% { transform: translate(-3px, 2px) skewX(-2deg); }
-        100% { transform: translateY(70vh) scale(0.85); opacity: 0; filter: blur(6px); }
+        100% { transform: translateY(-70vh) scale(0.85); opacity: 0; filter: blur(6px); }
     }
     @media (prefers-reduced-motion: reduce) {
         .not-found-code,
-        .noclipping .not-found {
+        body.noclipping > :not(.noclip-veil) {
             animation: none;
         }
     }
@@ -93,8 +99,11 @@
         if (typed !== word) return;
         falling = true;
         const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        // der Schleier direkt in body: Läge er in einem Teil, der sich bewegt,
+        // bewegte er sich mit
+        document.body.appendChild(document.querySelector('.noclip-veil'));
         document.body.classList.add('noclipping');
-        setTimeout(() => { location.href = '/backrooms'; }, still ? 0 : 1400);
+        setTimeout(() => { location.href = '/level-0-c1d8a2f7'; }, still ? 0 : 1400);
     });
 })();
 </script>

@@ -2,7 +2,7 @@
 # Format: docs/aufgaben.md. Die Vorlage wird nach /workspace/backrooms-starter
 # geklont (specht/backrooms-starter).
 format: 1
-activity: backrooms
+activity: level-0-c1d8a2f7
 tasks:
   - id: geklont
     title: Die Vorlage ist da
