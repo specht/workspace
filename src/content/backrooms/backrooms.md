@@ -262,6 +262,7 @@ Oben links steht für jeden Teil ein Schalter mit seiner Taste; grün heißt an.
 <tr><td><kbd>3</kbd></td><td>Anaglyph</td><td>das Bild für eine Rot-Cyan-Brille</td></tr>
 <tr><td><kbd>M</kbd></td><td>Automap</td><td>die Karte</td></tr>
 <tr><td><kbd>Shift</kbd> <kbd>L</kbd></td><td>Rebake light</td><td>das Licht noch einmal von vorn backen</td></tr>
+<tr><td></td><td>Save light</td><td>das gebackene Licht als Datei herunterladen (siehe unten)</td></tr>
 </table>
 
 Geh zurück ins Zimmer (<kbd>R</kbd>) und schau nach oben, zur Decke.
@@ -275,6 +276,12 @@ Probier es aus: Schalte mit <kbd>T</kbd> die Texturen aus, dann siehst du nur no
 </div>
 
 _task(weiche-schatten)
+
+### Licht aufheben
+
+Backen dauert, darum hebt die Vorschau das fertige Licht im Browser auf. Lädst du neu, ohne etwas zu ändern, steht oben links »Light loaded from this browser«, und es wird hell, ohne dass gebacken wird. Änderst du auch nur ein Zeichen in einem Raum, passt das aufgehobene Licht nicht mehr, und es wird neu gebacken. Ob es passt, sagt ein Fingerabdruck: eine kurze Zahl, ausgerechnet aus allen Dateien des Levels, den Statuen und dem Teil des Programms, der backt.
+
+»Save light« lädt das Licht als Datei `level.light` herunter. Zieh sie aus deinem Download-Ordner in den Explorer von VS Code, neben `level.ini`. Dann lädt das Level sein Licht aus dieser Datei, auch in einem anderen Browser, und du kannst deine Backrooms als fertige Webseite weitergeben. Nach jeder Änderung am Level musst du sie neu speichern; eine veraltete Datei meldet die Vorschau oben links.
 
 ## Säulen, Sockel und Statuen
 
