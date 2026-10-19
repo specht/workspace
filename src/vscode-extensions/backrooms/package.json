@@ -1,0 +1,44 @@
+{
+  "name": "hackschule-backrooms",
+  "displayName": "Backrooms-Räume",
+  "description": "Farben für Räume der Backrooms (.room): Wände, Boden, Start, Türen und Dinge im Grundriss, Abschnitte, Einträge und Kommentare.",
+  "version": "0.1.0",
+  "publisher": "hackschule",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.91.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "extensionKind": [
+    "workspace",
+    "ui"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "room",
+        "aliases": [
+          "Backrooms-Raum",
+          "room"
+        ],
+        "extensions": [
+          ".room"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "room",
+        "scopeName": "source.room",
+        "path": "./syntaxes/room.tmLanguage.json"
+      }
+    ]
+  },
+  "scripts": {
+    "test": "node --test test/*.test.cjs",
+    "package": "npm test && node pack.cjs"
+  }
+}

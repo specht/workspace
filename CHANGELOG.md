@@ -18,6 +18,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Im Workspace hat VS Code Farben für `.room`-Dateien der Backrooms, nach
+  denselben Regeln wie die Website (neue Erweiterung `hackschule-backrooms`,
+  nur eine Grammatik, kein Programm). Für Betreibende: Sie kommt mit dem
+  nächsten Workspace-Image (`./build-image.sh`).
 - Code-Blöcke ` ```room ` für Räume und Levels der Backrooms: Im Grundriss
   haben Wände, Boden, Start, Türen und Dinge eigene Farben, ohne Ligaturen,
   damit das Raster stimmt; ein `#` ist dort eine Wand und kein Kommentar.

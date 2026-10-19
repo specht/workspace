@@ -1,0 +1,66 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Backrooms-Raum",
+  "scopeName": "source.room",
+  "comment": "Rooms of the Backrooms (rooms/NAME.room, read by engine/level.js in specht/backrooms-starter). The same rules as the website's lexer (src/ruby/include/backrooms_room_lexer.rb): in [map] every character counts (# wall, . floor, @ start, a letter a thing, a digit a door); a row of a floor plan outside [map] is told from a comment by having no two letters in a row.",
+  "patterns": [
+    { "include": "#map" },
+    { "include": "#section" },
+    { "include": "#row" },
+    { "include": "#comment" },
+    { "include": "#entry" }
+  ],
+  "repository": {
+    "map": {
+      "begin": "^\\s*(\\[)(map)(\\])\\s*$",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.section.begin.room" },
+        "2": { "name": "entity.name.section.room" },
+        "3": { "name": "punctuation.definition.section.end.room" }
+      },
+      "end": "^(?=\\s*\\[)",
+      "patterns": [{ "include": "#cells" }]
+    },
+    "section": {
+      "match": "^\\s*(\\[)([^\\]]+)(\\])",
+      "captures": {
+        "1": { "name": "punctuation.definition.section.begin.room" },
+        "2": { "name": "entity.name.section.room" },
+        "3": { "name": "punctuation.definition.section.end.room" }
+      }
+    },
+    "row": {
+      "begin": "^(?=[ \\t]*[#.@0-9A-Za-z][#.@0-9A-Za-z \\t]*$)(?!.*[A-Za-z]{2})(?=.*[#.])",
+      "end": "$",
+      "patterns": [{ "include": "#cells" }]
+    },
+    "comment": {
+      "match": "^\\s*[#;].*$",
+      "name": "comment.line.number-sign.room"
+    },
+    "entry": {
+      "begin": "^\\s*([a-z_]+)\\s*(=)\\s*",
+      "beginCaptures": {
+        "1": { "name": "variable.other.property.room" },
+        "2": { "name": "keyword.operator.assignment.room" }
+      },
+      "end": "$",
+      "patterns": [
+        { "match": "\\s#.*$", "name": "comment.line.number-sign.room" },
+        { "match": "#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{3})\\b", "name": "constant.other.color.rgb-value.hex.room" },
+        { "match": "-?\\d+(?:\\.\\d+)?", "name": "constant.numeric.room" },
+        { "match": "[A-Za-z_][\\w./-]*", "name": "string.unquoted.room" },
+        { "match": ",", "name": "punctuation.separator.room" }
+      ]
+    },
+    "cells": {
+      "patterns": [
+        { "match": "#+", "name": "keyword.control.wall.room" },
+        { "match": "\\.+", "name": "comment.floor.room" },
+        { "match": "@", "name": "markup.bold.start.room" },
+        { "match": "[0-9]", "name": "constant.numeric.door.room" },
+        { "match": "[A-Za-z]", "name": "entity.name.type.thing.room" }
+      ]
+    }
+  }
+}

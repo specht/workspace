@@ -252,6 +252,7 @@ Die eigenen Erweiterungen liegen in `src/vscode-extensions/`. Jede baut ihre
 | `bif-watcher` | `npm run package` | `bif-authoring-tools-<version>.vsix` |
 | `keyboard-tutorial` | `npm run package` | `hackschule-keyboard-tutorial-<version>.vsix` |
 | `sidebar-init` | `npm run package` | `hackschule-sidebar-init-<version>.vsix` |
+| `backrooms` (Farben für `.room`) | `npm run package` oder ohne npm: `node --test test/*.test.cjs && node pack.cjs` | `hackschule-backrooms-<version>.vsix` |
 | `live-server` | fremde Erweiterung, liegt fertig bei | `ritwickdey.LiveServer-5.7.10.vsix` |
 
 Ins Workspace-Image kommt eine neue `.vsix` so:
