@@ -252,6 +252,15 @@
                 let stats = data.server_stats;
                 // The server sends the sizes with their unit as HTML (»19.6<span class='unit'>G</span>«).
                 let of = (used, total) => `${used} von ${total}`;
+                // Free = total − used (the server computes used as total − free),
+                // in the unit of the total.
+                let free_of = (used, total) => {
+                    const UNITS = { k: 2 ** 10, K: 2 ** 10, M: 2 ** 20, G: 2 ** 30, T: 2 ** 40 };
+                    const bytes = (html) => { const m = $('<div>').html(html).text().match(/([0-9.]+)\s*([kKMGT]?)/); return m ? parseFloat(m[1]) * (UNITS[m[2]] || 1) : NaN; };
+                    const unit = ($('<div>').html(total).text().match(/[kKMGT]/) || ['G'])[0];
+                    const free = (bytes(total) - bytes(used)) / UNITS[unit];
+                    return Number.isFinite(free) ? `${free.toFixed(1)}<span class='unit'>${unit}</span>` : '–';
+                };
                 let bar = (box, i, percent, text) => {
                     let cell = $(box).find('.server-load-cell').eq(i);
                     cell.find('.progress-bar').css('width', `${percent}%`).toggleClass('load-full', percent >= 90).toggleClass('load-high', percent >= 75 && percent < 90);
@@ -259,7 +268,7 @@
                 };
                 bar('#stats-cpu', 0, stats.cpu_usage, `${Math.round(stats.cpu_usage)} % von ${stats.num_cores} Kernen`);
                 bar('#stats-cpu', 1, stats.ram_percent, of(stats.ram_used, stats.ram_total));
-                bar('#stats-storage', 0, stats.disk_root_percent, of(stats.disk_root_used, stats.disk_root_total));
+                bar('#stats-storage', 0, stats.disk_root_percent, `${free_of(stats.disk_root_used, stats.disk_root_total)} frei von ${stats.disk_root_total}`);
                 // The Workspaces' partition: what is still free, as on the class page.
                 bar('#stats-storage', 1, stats.disk_user_percent, `${stats.disk_user_free || '–'} frei von ${stats.disk_user_total}`);
 
