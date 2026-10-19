@@ -18,6 +18,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Eine Fehlerseite für Adressen, die es nicht gibt: Statt einer leeren
+  Seite steht dort »Diese Seite gibt es nicht«, mit der Adresse und Links
+  zur Startseite und zum Handbuch, im Rahmen der Website und mit Status 404.
+  Fehlende Bilder, Skripte und Stylesheets bleiben ein leeres 404. Wer auf
+  der Fehlerseite `noclip` tippt, fällt durch die Wand in die Backrooms.
 - Eine versteckte Aktivität »Die Backrooms« (`/backrooms`, in keinem
   Katalog): Lernende beschreiben Räume als Grundriss in Textdateien,
   verbinden sie über Türen zu einem Bauwerk und gehen im Browser hindurch,

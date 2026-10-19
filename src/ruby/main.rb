@@ -8051,6 +8051,16 @@ class Main < Sinatra::Base
         path = path + '.html' unless path.include?('.')
         path = File.join(@@static_dir, path)
         assert(File.absolute_path(path).start_with?(@@static_dir))
+        # A page that does not exist gets the 404 page in the frame of the
+        # site (_not_found.html); a missing picture, script or stylesheet
+        # stays an empty 404. The after filter only writes bodies of a 200,
+        # so the page goes out with halt.
+        if path.end_with?('.html') && !File.exist?(path)
+            template = File.read(File.join(@@static_dir, '_template.html'))
+            content = File.read(File.join(@@static_dir, '_not_found.html'))
+            html = Main.inject_page_metadata(TrustedTemplate.render_page(template, content, binding), request.path)
+            halt 404, { 'Content-Type' => 'text/html; charset=utf-8' }, html
+        end
         respond_with_file(path) do |content, mime_type|
             if mime_type == 'text/html'
                 template = File.read(File.join(@@static_dir, '_template.html'))
