@@ -27,9 +27,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   `docs/entwicklung.md`, »Namen und Home-Verzeichnis im Workspace«.
 - »Eine Klötzchenwelt in 3D« endet mit »Wenn die Welt wächst«: was große
   Klötzchenwelten schnell macht (Chunks als Mesh, Sichtweite, Frustum
-  Culling, größere Flächen, verdeckte Chunks) und wie eine Welt aus einer
-  Milliarde Feldern ohne 1 GB Arbeitsspeicher auskommt (nur nahe Chunks,
-  gleiche Chunks als eine Zahl, Palette, Lauflängen).
+  Culling, größere Flächen, verdeckte Chunks) und wie eine Welt aus
+  2000 × 256 × 2000 Feldern ohne 1 GB Arbeitsspeicher auskommt (nur nahe
+  Chunks, gleiche Chunks als eine Zahl, Palette, Lauflängen). Warum die
+  Ecken einer Seite gegen den Uhrzeigersinn laufen müssen, erklärt die
+  Seite jetzt mit dem Kreuzprodukt und zwei Bildern (hell und dunkel): Das
+  Kreuzprodukt der Kanten ist die Normale, und die Grafikkarte prüft auf
+  dem Bildschirm nur sein Vorzeichen; von hinten ist es negativ.
 - Jede Aktivität klont ihre Vorlage in einen eigenen Ordner. »GIF«,
   »JPEG« und »Feuerwerk« teilten sich mit »Echtzeitgrafik mit C« den Ordner
   `pixelram-starter`; VS Code klont dann still nach `pixelram-starter-1`, und

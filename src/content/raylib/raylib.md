@@ -973,8 +973,34 @@ int draw_block(int x, int y, int z)
 ```
 
 - Jede der sechs Seiten wird nur gezeichnet, wenn auf ihrer Seite kein fester Block liegt. Zwei Blöcke nebeneinander zeigen sich ihre Seiten nie, die zeichnen wir auch nicht. Am Rand der Welt sagt `solid` »Wand«; damit die Schichten dort trotzdem zu sehen sind, prüft `draw_block` den Rand eigens.
-- Die Reihenfolge der vier Ecken ist nicht beliebig: Von außen gesehen laufen sie gegen den Uhrzeigersinn. So erkennt die Grafikkarte die Vorderseite eines Vierecks und lässt Rückseiten weg.
 - `shade` macht jeden Block ein wenig heller oder dunkler, je nach seiner Position. Dann wirkt eine Wiese nicht wie eine einzige grüne Fläche.
+
+Auch die Reihenfolge der vier Ecken in `face` ist nicht beliebig: Von außen gesehen laufen sie gegen den Uhrzeigersinn. Dahinter steckt das **Kreuzprodukt**. Für zwei Vektoren \\(\vec u\\) und \\(\vec v\\) ist
+
+$$\vec u \times \vec v = (u\_y v\_z - u\_z v\_y,\; u\_z v\_x - u\_x v\_z,\; u\_x v\_y - u\_y v\_x)$$
+
+ein Vektor, der senkrecht auf beiden steht. In welche der zwei möglichen Richtungen er zeigt, sagt die Rechte-Hand-Regel: Zeigt der Daumen der rechten Hand entlang \\(\vec u\\) und der Zeigefinger entlang \\(\vec v\\), dann zeigt der Mittelfinger in Richtung \\(\vec u \times \vec v\\).
+
+Nimm die Oberseite des Blocks bei (0, 0, 0). Ihre ersten drei Ecken in `draw_block` sind \\(a = (0, 1, 0)\\), \\(b = (0, 1, 1)\\) und \\(c = (1, 1, 1)\\). Die beiden Kanten von \\(a\\) aus sind \\(\vec u = b - a = (0, 0, 1)\\) und \\(\vec v = c - a = (1, 0, 1)\\), und ihr Kreuzprodukt ist
+
+$$\vec u \times \vec v = (0 \cdot 1 - 1 \cdot 0,\; 1 \cdot 1 - 0 \cdot 1,\; 0 \cdot 0 - 0 \cdot 1) = (0, 1, 0)$$
+
+Das ist genau die Normale der Oberseite: nach oben, aus dem Block heraus. »Von außen gesehen gegen den Uhrzeigersinn« heißt also: Das Kreuzprodukt der Kanten zeigt nach außen. In der umgekehrten Reihenfolge zeigte es in den Block hinein.
+
+Die Grafikkarte rechnet dasselbe, aber erst auf dem Bildschirm. Wo bei einem Block außen ist, weiß sie nicht, und die Normale aus `rlNormal3f` braucht sie nur fürs Licht. Sie rechnet aus, wo die Ecken auf dem Bildschirm landen (x nach rechts, y nach oben), nimmt die ersten drei als Punkte in der Ebene, und vom Kreuzprodukt ihrer Kanten braucht sie nur noch die letzte Zahl:
+
+$$u\_x v\_y - u\_y v\_x$$
+
+Ist sie positiv, laufen die Ecken auf dem Bildschirm gegen den Uhrzeigersinn: Die Seite zeigt zu dir, sie wird gezeichnet. Ist sie negativ, laufen sie im Uhrzeigersinn: Du schaust von hinten auf die Seite, und sie fällt weg.
+
+<div class='gallery columns-4'>
+<figure><img src='winding-front.webp' alt='Ein hellblau gefülltes Quadrat mit den Ecken 1 links unten, 2 rechts unten, 3 rechts oben und 4 links oben. Pfeile von Ecke zu Ecke und ein Kreispfeil in der Mitte laufen gegen den Uhrzeigersinn.'><figcaption>Von außen: 1, 2, 3, 4 laufen gegen den Uhrzeigersinn, die Seite wird gezeichnet.</figcaption></figure>
+<figure><img src='winding-back.webp' alt='Dasselbe Quadrat gespiegelt und leer: 1 rechts unten, 2 links unten, 3 links oben, 4 rechts oben. Die Pfeile und der Kreispfeil laufen im Uhrzeigersinn.'><figcaption>Dieselbe Seite von hinten: Dieselben Ecken laufen im Uhrzeigersinn, die Seite fällt weg.</figcaption></figure>
+</div>
+
+Im linken Bild liegen die Ecken 1, 2 und 3 bei (0, 0), (1, 0) und (1, 1). Die Kanten sind \\(\vec u = (1, 0)\\) und \\(\vec v = (1, 1)\\), also \\(1 \cdot 1 - 0 \cdot 1 = 1\\): positiv. Von hinten ist das Bild gespiegelt, die Ecken liegen bei (1, 0), (0, 0) und (0, 1). Jetzt ist \\(\vec u = (-1, 0)\\) und \\(\vec v = (-1, 1)\\), also \\((-1) \cdot 1 - 0 \cdot (-1) = -1\\): negativ. Es ist wie bei einer Uhr an einer Glasscheibe: Von hinten gesehen laufen ihre Zeiger andersherum.
+
+Verloren geht dabei nichts. Die Rückseite einer Seite liegt im Inneren des Blocks, und davor liegen immer andere Seiten. Von einem Würfel zeigen höchstens drei Seiten gleichzeitig zu dir; die anderen lässt die Grafikkarte weg, bevor sie für jedes Pixel darin die Farbe ausrechnet.
 
 _task(wiese)
 
@@ -1656,7 +1682,7 @@ _task(abgabe)
 
 Unsere Welt hat 48 × 24 × 48 = 55 296 Felder. In jedem Bild geht die Schleife in `main` alle durch, fragt bei jedem Block die Nachbarn ab und schickt die Seiten, an die Luft grenzt, neu an die Grafikkarte, 60-mal in der Sekunde. Zwei Dinge sparen dabei schon Arbeit: Seiten zwischen zwei Blöcken zeichnen wir nicht, und die Grafikkarte lässt Rückseiten weg. Gezeichnet wird aber alles andere, auch was hinter dir liegt und was der Nebel längst verschluckt hat.
 
-Eine Welt mit 1000 × 1000 × 1000 Feldern hätte eine Milliarde Felder. Die Schleife schafft kein Computer 60-mal in der Sekunde, und das Array allein bräuchte ein Gigabyte Arbeitsspeicher, ein Byte je Feld. Spiele mit großen Klötzchenwelten lösen beides mit ein paar Ideen.
+Eine Welt, die du erst in sieben Minuten durchquert hast, ist 2000 Blöcke breit und tief. Mit 256 Blöcken in der Höhe sind das 2000 × 256 × 2000, gut eine Milliarde Felder. Die Schleife schafft kein Computer 60-mal in der Sekunde, und das Array allein bräuchte ein Gigabyte Arbeitsspeicher, ein Byte je Feld. Spiele mit großen Klötzchenwelten lösen beides mit ein paar Ideen.
 
 ### Weniger zeichnen
 
@@ -1671,7 +1697,7 @@ Eine Welt mit 1000 × 1000 × 1000 Feldern hätte eine Milliarde Felder. Die Sch
 - **Nur, was in der Nähe ist:** Die Landschaft entsteht aus Wellen und einem festen Startwert für den Zufall. Jeder Chunk lässt sich daraus jederzeit wieder berechnen. Im Arbeitsspeicher bleiben nur die Chunks um dich herum; was du gebaut oder abgebaut hast, merkt sich das Programm getrennt oder speichert den geänderten Chunk in eine Datei.
 - **Gleiche Chunks:** Ein Chunk nur aus Luft, also fast der ganze Himmel, braucht kein Array mit 4096 Feldern. Eine Zahl genügt: »alles Luft«. Dasselbe gilt für Chunks tief im Stein.
 - **Eine Palette je Chunk:** Kommen in einem Chunk nur vier Blockarten vor, speichert er eine Liste dieser vier, und jedes Feld nur, die wievielte es ist. Dafür reichen 2 Bit statt 8.
-- **Lauflängen:** Eine Säule von unten nach oben ist zum Beispiel 40 × Stein, 3 × Erde, 1 × Gras, 956 × Luft: vier Paare statt 1000 Zahlen. Das ist die [Lauflängenkodierung](/rle). Für eine Million Säulen mit je fünf solchen Paaren zu drei Byte sind das etwa 15 MB statt 1 GB.
+- **Lauflängen:** Eine Säule von unten nach oben ist zum Beispiel 60 × Stein, 3 × Erde, 1 × Gras, 192 × Luft: vier Paare statt 256 Zahlen. Das ist die [Lauflängenkodierung](/rle). Für vier Millionen Säulen mit je fünf solchen Paaren zu zwei Byte sind das 40 MB statt 1 GB.
 
 ## Wie geht es weiter?
 
