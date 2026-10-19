@@ -690,9 +690,11 @@ vscode_config: {}</pre>
                         () => api_call('/api/start_test', { tag: entry.tag }, d => { if (d.success) refresh_test_archives(); })));
                 }
 
-                const preview = $(`<div class='btn-group btn-group-sm' role='group' aria-label='Vorschau'>`);
-                const bu_demo = $(`<button type='button' class='btn btn-outline-secondary'><i class='bi bi-box-arrow-up-right'></i>Workspace</button>`).appendTo(preview);
-                const bu_demo_pdf = $(`<button type='button' class='btn btn-outline-secondary'><i class='bi bi-printer'></i>Druckansicht</button>`).appendTo(preview);
+                // Two buttons side by side, not a btn-group: its overlapping
+                // borders look doubled at some zoom levels.
+                const preview = $(`<div class='d-flex gap-1' role='group' aria-label='Vorschau'>`);
+                const bu_demo = $(`<button type='button' class='btn btn-sm btn-outline-secondary'><i class='bi bi-box-arrow-up-right'></i>Workspace</button>`).appendTo(preview);
+                const bu_demo_pdf = $(`<button type='button' class='btn btn-sm btn-outline-secondary'><i class='bi bi-printer'></i>Druckansicht</button>`).appendTo(preview);
                 $('<td>').append(preview).appendTo(row);
                 bu_demo.on('click', function() {
                     showTemplateModal('Workspace-Vorschau öffnen', `
