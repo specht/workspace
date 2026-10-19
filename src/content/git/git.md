@@ -356,8 +356,8 @@ Lass uns jetzt zu einem früheren Commit zurückkehren. Verwende den Befehl `git
 
 <!-- tutorial-screenshot
 # Three commits are 17 lines: in the default window git log would page
-# them (less waits at »:«); a taller window shows them all.
-viewport: 1029x640
+# them (less waits at »:«). No pager in this terminal; clear hides the line.
+terminal-run: export GIT_PAGER=cat
 terminal-run: clear
 terminal-run: git log
 terminal-wait-for-prompt
