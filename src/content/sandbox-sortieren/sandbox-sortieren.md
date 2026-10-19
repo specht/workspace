@@ -239,6 +239,10 @@ sleep: 1
 <strong>Zum Weiterdenken:</strong> Das Gegenbeispiel kennzeichnet gleiche Werte mit Buchstaben, sodass man sieht, wer an wem vorbeigesprungen ist. Welche Zeile ist schuld? Lässt sich Selection Sort stabil machen, ohne die Idee des Verfahrens aufzugeben, und was kostet das? Wichtig ist auch, was der Test <em>nicht</em> leistet: »stable (tested)« heißt nur, dass kein Gegenbeispiel gefunden wurde. Ein Beweis ist das nicht.
 </div>
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Mach deinen Bubble Sort absichtlich instabil: Lass ihn auch gleiche Nachbarn vertauschen, mit <code>&gt;=</code> statt <code>&gt;</code> im Vergleich (in Java und JavaScript <code>greaterOrEqual</code> statt <code>greaterThan</code>). Sortiert er noch richtig? Was sagt Check jetzt zur Stabilität, und was zeigt das Gegenbeispiel? Und hört deiner auf, sobald ein Durchgang nichts mehr tauscht: Was passiert dann bei einer Liste mit gleichen Werten? Stell den Vergleich danach wieder her.
+</div>
+
 Mehr zur App steht in ihrer [Anleitung](https://github.com/specht/sorting-sandbox#readme).
 
 ## Veröffentlichen

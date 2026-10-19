@@ -290,6 +290,10 @@ SELECT * FROM movie_genre LIMIT 5;
 
 _task(anzahl-filme)
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Die Schlüssel aus deinem Modell passen jetzt auf die Daten auf. <code>SELECT * FROM movie_genre WHERE movie_id = 233;</code> zeigt die Genres von »Back to the Future« als IDs. Trag eine dieser Zeilen ein zweites Mal ein, mit <code>INSERT INTO movie_genre (movie_id, genre_id) VALUES (233, …);</code>, und dann eine mit einem Genre, das es nicht gibt, etwa 99. Was meldet MySQL jeweils, und welcher Schlüssel steckt dahinter? Geht ein <code>INSERT</code> doch durch, nimm die Zeile mit <code>DELETE FROM movie_genre WHERE movie_id = 233 AND genre_id = …;</code> wieder heraus.
+</div>
+
 ## JOIN: Beziehungen wieder zusammensetzen
 
 In der »Einführung in SQL« kamen die Antworten aus einer Tabelle. Jetzt hast du die Daten mit Absicht verteilt. Welche Genres hat »Back to the Future«? `movie` kennt den Film, aber nicht seine Genres:
@@ -339,6 +343,10 @@ Jedes <code>JOIN … ON …</code> folgt einer Linie im Tabellendiagramm. Wenn d
 _task(genres-film)
 
 _task(animation)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Vergiss das <code>ON</code> einmal mit Absicht und zähle nur: <code>SELECT COUNT(*) FROM movie JOIN movie_genre;</code> Vergleiche das Ergebnis mit <code>SELECT COUNT(*) FROM movie;</code> und <code>SELECT COUNT(*) FROM movie_genre;</code>. Wie kommt die große Zahl zustande?
+</div>
 
 ### Zählen pro Gruppe
 
@@ -496,6 +504,10 @@ LIMIT 10;
 ```
 
 `AS ma` gibt einer Tabelle einen zweiten Namen, damit sie zweimal vorkommen kann. `a.id < b.id` sorgt dafür, dass jedes Paar nur einmal gezählt wird und niemand mit sich selbst. Du musst die Abfrage nicht Zeile für Zeile nachbauen; probier sie aus.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Frag nach Schauspiel und Regie: Ändere <code>jb.title = 'actor'</code> zu <code>jb.title = 'director'</code> und lass <code>AND a.id &lt; b.id</code> weg. Wer spielt am häufigsten bei derselben Regie mit? Warum muss <code>a.id &lt; b.id</code> dafür weg? Und warum steht jetzt in manchen Zeilen zweimal derselbe Name?
+</div>
 
 Fragen, die von Person zu Film zu Person und weiter wandern, werden in SQL schnell lang. Graphdatenbanken wie Neo4j speichern genau diese Wege und machen solche Fragen kurz.
 

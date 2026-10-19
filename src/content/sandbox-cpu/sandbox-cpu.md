@@ -310,6 +310,10 @@ Ein paar Dinge, die du in der Sandbox fast von selbst entdeckst:
 - 8-Bit-Arithmetik läuft über: 255 + 1 ergibt 0, und das Carry-Flag ist gesetzt.
 - Zeit kosten **Takte, nicht Zeilen**.
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Leg die Schleife von oben als Programm für die MiniCPU 8 an und sieh dir die Maschinenbytes neben <code>JNZ loop</code> an. Setz dann vor <code>LDI A, 5</code> noch eine Zeile <code>LDI C, 1</code>. Welches Byte neben <code>JNZ loop</code> ändert sich, und warum gerade um so viel?
+</div>
+
 Im Handbuch: _uses(takte, maschinencode, stack, funktionen)
 
 ### Von Assembler zu C

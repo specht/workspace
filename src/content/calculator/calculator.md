@@ -361,6 +361,10 @@ values = [evaluate(arg, variables) for arg in args]
 
 _task(ausrechnen)
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Lass <code>expression</code> nach rechts weiterbauen statt nach links: Mach aus dem <code>while</code> ein <code>if</code>, und ruf im neuen Knoten statt <code>term(tokens)</code> wieder <code>expression(tokens)</code> auf. Was ergibt jetzt <code>8 - 3 - 2</code>, und wie sieht sein Baum aus? Bei <code>2 + 3 + 4</code> fällt der Unterschied nicht auf: Warum nicht? Stell die Schleife danach wieder her.
+</div>
+
 ## Fehler
 
 Was soll bei `(1 + 2` herauskommen, oder bei `1 +`? Gar nichts: Das sind keine Ausdrücke. Ein Rechner, der dann trotzdem etwas ausrechnet, ist schlimmer als einer, der es sagt. Wo der Parser etwas anderes findet, als die Grammatik erlaubt, bricht er mit einem Fehler ab:

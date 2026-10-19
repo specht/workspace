@@ -351,6 +351,17 @@ Das sind 1585 Ziffern, und `accepts` merkt sich nie mehr als einen von drei Zust
 
 _task(teilbar-5)
 
+<!-- language: ruby -->
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Die Übergänge bleiben, nur die akzeptierenden Zustände ändern sich. Schreib in <code>divisible.rb</code> <code>ACCEPTING = ['q1', 'q2']</code>. Welche Zahlen nimmt der Automat jetzt an? Und welche mit <code>ACCEPTING = ['q2']</code>? Stell <code>['q0']</code> danach wieder her.
+</div>
+<!-- /language -->
+<!-- language: python -->
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Die Übergänge bleiben, nur die akzeptierenden Zustände ändern sich. Schreib in <code>divisible.py</code> <code>ACCEPTING = {'q1', 'q2'}</code>. Welche Zahlen nimmt der Automat jetzt an? Und welche mit <code>ACCEPTING = {'q2'}</code>? Stell <code>{'q0'}</code> danach wieder her.
+</div>
+<!-- /language -->
+
 ### Was ein Automat nicht kann
 
 Die Stärke des Automaten ist auch seine Grenze: Er weiß nur, in welchem Zustand er ist, und davon hat er endlich viele. Was er sich merken müsste, ohne dass es eine feste Obergrenze gibt, kann er nicht. Darum heißen diese Automaten **endlich**.

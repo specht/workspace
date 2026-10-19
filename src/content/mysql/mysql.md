@@ -349,6 +349,10 @@ sleep: 0.5
 
 _task(groesste-laender)
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Sortiere nach zwei Spalten: <code>SELECT name, continent, population FROM country ORDER BY continent, population DESC;</code> In welcher Reihenfolge stehen die Länder jetzt? Wann kommt die zweite Spalte überhaupt zum Zug? Und was ändert sich, wenn du die beiden Spalten hinter <code>ORDER BY</code> vertauschst?
+</div>
+
 ### Begrenzen: LIMIT
 
 Mit `LIMIT` begrenzt du die Anzahl der ausgegebenen Zeilen:
@@ -436,6 +440,10 @@ crop-terminal-skip-bottom: 1
 `'land%'` würde dagegen nur Namen finden, die mit `land` beginnen, und `'%land'` nur Namen, die damit enden.
 
 _task(ka-laender)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Neben <code>%</code> gibt es ein zweites Zeichen für Muster: Der Unterstrich <code>_</code> steht für genau ein Zeichen. Welche Länder findet <code>SELECT name FROM country WHERE name LIKE '____';</code> mit vier Unterstrichen? Und findet <code>LIKE '%LAND%'</code> in Großbuchstaben weniger Länder als <code>LIKE '%land%'</code>?
+</div>
 
 ### Jeden Wert einmal: DISTINCT
 

@@ -147,6 +147,10 @@ _task(einwohner-pro-kontinent)
 
 _task(grosse-kontinente)
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Frag trotzdem nach einem Namen: <code>SELECT driving_side, name, COUNT(*) FROM country GROUP BY driving_side;</code> Was antwortet MySQL, und warum? Schreib dann <code>MIN(name)</code> statt <code>name</code>. Welches Land steht jetzt bei jeder Gruppe, und warum gerade dieses?
+</div>
+
 ## Tabellen verbinden: JOIN
 
 In `country` steht nicht, wie die Hauptstadt eines Landes heißt; das steht in `city`, bei der Stadt mit `is_capital = 1`. Ein `JOIN` setzt die beiden Tabellen zusammen: Zu jeder Zeile von `country` holt er die Zeilen von `city`, für die die Bedingung hinter `ON` stimmt, hier die Städte des Landes.
@@ -242,6 +246,10 @@ Australien und Neuseeland bleiben im Ergebnis, mit `NULL`; Papua-Neuguinea hat e
 _task(kontinent-ohne-laender)
 
 _task(meiste-staedte)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Zähle, was das <code>LEFT</code> ausmacht: <code>SELECT COUNT(*) FROM country JOIN border ON border.country_code = country.code;</code> und dieselbe Abfrage mit <code>LEFT JOIN</code>. Um wie viele Zeilen ist das zweite Ergebnis größer, und was zählt dieser Unterschied? Und was kommt beim <code>LEFT JOIN</code> heraus, wenn du <code>COUNT(border.neighbor_code)</code> statt <code>COUNT(*)</code> schreibst?
+</div>
 
 ## Viele zu viele: Amtssprachen
 

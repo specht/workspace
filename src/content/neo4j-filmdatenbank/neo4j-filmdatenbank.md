@@ -416,6 +416,10 @@ variants: dark
 
 <img class='full' src='neo4j-browser-pairs.webp' alt='Neo4j Browser: Tabelle der zehn Schauspielpaare mit den meisten gemeinsamen Filmen.'>
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Lass die Zeile <code>WHERE a.id &lt; b.id</code> weg. Wie oft steht jetzt jedes Paar in der Liste, und was ist bei den beiden Zeilen eines Paars verschieden?
+</div>
+
 ### Regie und Kamera
 
 Gibt es Paare aus Regie und Kamera, die immer wieder zusammenarbeiten? Das Muster ändert sich nur bei den Typen:
@@ -429,6 +433,10 @@ ORDER BY together DESC;
 ```
 
 `WITH` reicht Zwischenergebnisse weiter, hier die Zahl gemeinsamer Filme. Das `WHERE` danach filtert die fertigen Paare, so wie `HAVING` in SQL. In MySQL hätte die Frage `movie_crew`, `job` und `crew` je zweimal gebraucht; hier unterscheiden die Typen `DIRECTOR` und `CINEMATOGRAPHER` die beiden Rollen.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Tausch <code>CINEMATOGRAPHER</code> gegen <code>COMPOSER</code>: Wer lässt die Musik seiner Filme immer wieder von derselben Person schreiben? Und dann gegen <code>WRITER</code>: Warum steht jetzt in manchen Zeilen zweimal derselbe Name?
+</div>
 
 ### Wege durch den Graphen
 

@@ -286,6 +286,10 @@ terminal-run: EXPLAIN SELECT * FROM person WHERE RIGHT(phone, 6) = '500000'\G
 sleep: 0.5
 -->
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Miss es auch. <code>SELECT COUNT(*) FROM person WHERE phone LIKE '0151 95%';</code> zählt die Nummern mit diesem Anfang, <code>SELECT COUNT(*) FROM person WHERE phone LIKE '%500000';</code> die mit diesem Ende. Die erste findet fast zehntausend Zeilen, die zweite eine einzige. Welche ist trotzdem schneller fertig, und warum?
+</div>
+
 ## Zwei Spalten in einem Index
 
 Ein echtes Telefonbuch ist nach dem Nachnamen sortiert, und bei gleichem Nachnamen nach dem Vornamen. So ein Index geht auch über zwei Spalten:
@@ -307,6 +311,10 @@ Er hilft bei der Suche nach Nachname und Vorname, und auch bei der nach dem Nach
 _task(ada-berger)
 
 _task(nur-vorname)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Prüf deine Antwort mit <code>EXPLAIN SELECT * FROM person WHERE first_name = 'Ada'\G</code>. Ein sortiertes Verzeichnis kann auch beim Sortieren helfen. Vergleiche <code>EXPLAIN SELECT * FROM person ORDER BY last_name, first_name LIMIT 10\G</code> mit <code>EXPLAIN SELECT * FROM person ORDER BY first_name, last_name LIMIT 10\G</code>: Was steht jeweils bei <code>key</code>, bei <code>rows</code> und bei <code>Extra</code>?
+</div>
 
 ## Was ein Index kostet
 
