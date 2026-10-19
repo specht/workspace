@@ -94,5 +94,5 @@ Repository arbeitet, liest sie also ohnehin.
 | --- | --- | --- |
 | Eine Vorlage zum Klonen hat `template` und `template_name` im Meta-Block; ihr Stand liegt auch im Repository (`vorlage/` oder `stufen/`) | Rezepte und Prüfungen arbeiten damit ohne GitHub | `template_freshness_test.rb` |
 | Jede Aktivität klont in einen Ordner, den keine andere benutzt. »Clone Repository« nennt den Ordner wie das Repository; teilen sich Aktivitäten eine Vorlage, behält die einfachste diesen Weg, die anderen klonen im Terminal mit `git clone ${template} ~/NAME` in einen Ordner mit ihrem Namen | VS Code klont in einen vorhandenen Ordner nicht, sondern still nach `name-1`, und die Seite spricht dann vom falschen Ordner | `clone_folders_test.rb` |
-| Andere Repositories (Starter, Game Studio) bekommen Patches; `specht/routenplaner-starter` und `specht/workspace-files` darf ein Agent direkt pushen | Der Maintainer entscheidet, was dort landet | AGENTS.md |
+| Andere Repositories (Starter, Game Studio) bekommen Patches; `specht/routenplaner-starter`, `specht/backrooms-starter` und `specht/workspace-files` darf ein Agent direkt pushen | Der Maintainer entscheidet, was dort landet | AGENTS.md |
 | Datensätze kommen aus Skripten in `src/scripts/collect-*` und werden mit `publish-datasets.rb` veröffentlicht, mit Lizenz und Quelle | Man kann sie neu bauen | Lesen |
