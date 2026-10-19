@@ -5,6 +5,10 @@
         text-align: center;
     }
     .not-found-code {
+        cursor: default;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
         font-family: '0xProto Nerd Font Mono', monospace;
         font-size: 7rem;
         font-weight: bold;
@@ -62,6 +66,17 @@
         30% { transform: translate(-3px, 2px) skewX(-2deg); }
         100% { transform: translateY(-70vh) scale(0.85); opacity: 0; filter: blur(6px); }
     }
+    /* Auf dem Tablet: Wer gegen die Ziffern tippt, bringt sie zum Zucken,
+       jedes Mal etwas mehr (siehe das Skript unten) */
+    .not-found-code.knocked {
+        animation: not-found-knock 0.25s ease-out;
+    }
+    @keyframes not-found-knock {
+        0% { transform: translate(0, 0); opacity: 1; }
+        30% { transform: translate(calc(var(--knock, 1) * 3px), calc(var(--knock, 1) * -2px)); opacity: 0.4; }
+        60% { transform: translate(calc(var(--knock, 1) * -2px), 1px); opacity: 0.8; }
+        100% { transform: none; opacity: 1; }
+    }
     @media (prefers-reduced-motion: reduce) {
         .not-found-code,
         body.noclipping > :not(.noclip-veil) {
@@ -70,7 +85,8 @@
     }
 </style>
 <!-- Wer hier im Quelltext liest, sucht einen Ausgang. In alten Spielen wie
-     Quake gab es einen Cheat, mit dem man durch Wände ging. Tipp ihn ein. -->
+     Quake gab es einen Cheat, mit dem man durch Wände ging. Tipp ihn ein.
+     Ohne Tastatur: Klopf an die Wand, fünfmal, schnell. -->
 <div class='container'>
     <div class='not-found'>
         <div class='not-found-code' aria-hidden='true'>404</div>
@@ -87,8 +103,9 @@
 <script>
 (function () {
     document.getElementById('not-found-path').textContent = location.pathname;
-    // noclip, irgendwo auf der Seite getippt (nicht in einem Eingabefeld):
-    // Die Seite fällt weg, und du landest in den Backrooms.
+    // noclip, irgendwo auf der Seite getippt (nicht in einem Eingabefeld),
+    // oder ohne Tastatur fünfmal schnell gegen die 404 getippt: Die Seite
+    // fällt weg, und du landest in den Backrooms.
     const word = 'noclip';
     let typed = '';
     let falling = false;
@@ -96,7 +113,26 @@
         if (falling || event.ctrlKey || event.metaKey || event.altKey || event.key.length !== 1) return;
         if (event.target.closest && event.target.closest('input, textarea, select, [contenteditable]')) return;
         typed = (typed + event.key.toLowerCase()).slice(-word.length);
-        if (typed !== word) return;
+        if (typed === word) fall();
+    });
+    const code = document.querySelector('.not-found-code');
+    let knocks = [];
+    code.addEventListener('pointerdown', () => {
+        if (falling) return;
+        const now = Date.now();
+        knocks = knocks.filter((t) => now - t < 2500).concat(now);
+        // jedes Klopfen zuckt stärker
+        code.style.setProperty('--knock', String(knocks.length));
+        code.classList.remove('knocked');
+        void code.offsetWidth;
+        code.classList.add('knocked');
+        if (knocks.length >= 5) fall();
+    });
+    // danach summen die Ziffern wieder wie vorher
+    code.addEventListener('animationend', (event) => {
+        if (event.animationName === 'not-found-knock') code.classList.remove('knocked');
+    });
+    function fall() {
         falling = true;
         const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         // der Schleier direkt in body: Läge er in einem Teil, der sich bewegt,
@@ -104,6 +140,6 @@
         document.body.appendChild(document.querySelector('.noclip-veil'));
         document.body.classList.add('noclipping');
         setTimeout(() => { location.href = '/level-0-c1d8a2f7'; }, still ? 0 : 1400);
-    });
+    }
 })();
 </script>
