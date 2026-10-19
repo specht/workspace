@@ -445,3 +445,24 @@ function admin_impersonate(email, button) {
         });
     });
 }
+
+// What the administration does in someone's Workspace (stop it, make room):
+// a reason the person reads as a notice, and by mail when ticked (the
+// default: the person may not come by soon). intro: HTML above the reason,
+// for example the folders to delete. go(reason, notify) does it.
+function admin_action_dialog(options, go) {
+    let last = '';
+    try { last = localStorage.getItem('admin_look_in_reason') || ''; } catch (e) { }
+    const esc = (t) => $('<div>').text(t === undefined || t === null ? '' : String(t)).html();
+    showTemplateModal(esc(options.title), (options.intro || '')
+        + `<label class='form-label' for='ti_admin_reason'>Warum? Die Person liest diesen Satz.</label><input id='ti_admin_reason' class='form-control' maxlength='300' autocomplete='off'>`
+        + `<div class='form-check mt-2'><input class='form-check-input' type='checkbox' id='cb_admin_notify' checked><label class='form-check-label' for='cb_admin_notify'>Auch per E-Mail Bescheid geben</label></div>`,
+        `<i class='bi ${options.icon || 'bi-check-lg'}'></i>${options.confirm}`, options.danger ? 'btn-danger' : 'btn-primary', "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-outline-secondary', function () {
+            const reason = $('#ti_admin_reason').val().trim();
+            if (reason.length < 5) { show_error_message('Bitte einen Satz mit mindestens 5 Zeichen.'); return false; }
+            try { localStorage.setItem('admin_look_in_reason', reason); } catch (e) { }
+            const result = go(reason, $('#cb_admin_notify').is(':checked'));
+            return result === false ? false : undefined;
+        });
+    $('#ti_admin_reason').val(last);
+}

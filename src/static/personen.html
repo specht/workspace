@@ -339,6 +339,11 @@
             guest.on('click', () => keep_as_guest_dialog(p, done));
             cell.append(stop, guest);
         }
+        if (p.email !== MY_EMAIL && p.disk_kb) {
+            const room = icon_button('bi-eraser', `Platz schaffen im Workspace von ${p.name || p.email}`);
+            room.on('click', () => make_room_dialog(p, done));
+            cell.prepend(room);
+        }
         if (p.email !== MY_EMAIL) {
             const open = icon_button('bi-code-slash', `Workspace von ${p.name || p.email} öffnen`);
             open.on('click', () => admin_open_workspace(p.email, open));
@@ -349,6 +354,32 @@
         const del = icon_button('bi-trash', `Konto von ${p.name || p.email} löschen`, 'btn-outline-danger');
         del.on('click', () => delete_account_dialog(p.email, p.name, done));
         return cell.append(del);
+    }
+
+    // »Platz schaffen« for someone: the folders a tool makes again
+    // (tools/rebuildable.py), pre-ticked as in their own profile; the person
+    // learns what was deleted and why.
+    function make_room_dialog(p, done) {
+        api_call('/api/admin/rebuildable', { email: p.email }, function (data) {
+            if (!data.success) return;
+            if (!data.folders.length) { show_error_message(`Im Workspace von ${esc(p.name || p.email)} gibt es keine Ordner, die sich neu erzeugen lassen.`); return; }
+            const size = (b) => b >= 1024 ** 3 ? (b / 1024 ** 3).toFixed(1).replace('.', ',') + ' GB' : Math.max(1, Math.round(b / 1024 ** 2)) + ' MB';
+            const rows = data.folders.map((f, i) => `<tr><td><input type='checkbox' class='form-check-input cb-room' value='${i}' ${f.tick ? 'checked' : ''} aria-label='${esc(f.path)}'></td>`
+                + `<td><code>${esc(f.path)}</code>${f.note ? `<div class='small text-warning-emphasis'>${esc(f.note)}</div>` : ''}</td><td class='text-end text-nowrap'>${size(f.bytes)}</td><td class='small'>${esc(f.command)}</td></tr>`).join('');
+            admin_action_dialog({ title: `Platz schaffen bei ${p.name || p.email}`, confirm: 'Löschen', icon: 'bi-trash', danger: true,
+                intro: `<p>Ordner, die ein Befehl wieder anlegt; nicht angehakt, wo nach dem Anlegen etwas geändert wurde. Was gelöscht wird, kommt in keinen Papierkorb.</p>`
+                    + `<div class='table-responsive mb-3'><table class='table table-sm align-middle'><tbody>${rows}</tbody></table></div>` }, function (reason, notify) {
+                const paths = $('#__template_modal .cb-room:checked').map(function () { return data.folders[this.value].path; }).get();
+                if (!paths.length) { show_error_message('Nichts angehakt.'); return false; }
+                api_call('/api/admin/clean_rebuildable', { email: p.email, paths: paths, reason: reason, notify: notify }, function (r) {
+                    if (!r.success) return;
+                    $('#__template_modal').modal('hide');
+                    show_success_message(`${r.deleted.length} Ordner mit ${size(r.bytes)} gelöscht; ${esc(p.name || p.email)} ${notify ? 'bekommt eine E-Mail und ' : ''}sieht beim nächsten Besuch, was und warum.`);
+                    if (done) done();
+                }, { no_please_wait: true });
+                return false;
+            });
+        }, { no_please_wait: true });
     }
 
     function deletion_note(p) {

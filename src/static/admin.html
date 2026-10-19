@@ -398,12 +398,15 @@
         // the files stay; with a reason the person sees.
         $(document).on('click', '.bu-stop-workspace', function (e) {
             let button = $(e.target).closest('button');
-            ask_admin_reason(`Workspace von ${button.data('name')} stoppen`, function (reason) {
+            admin_action_dialog({ title: `Workspace von ${button.data('name')} stoppen`, confirm: 'Stoppen', icon: 'bi-stop-circle', danger: true,
+                intro: "<p>Alle Programme im Workspace enden; die Dateien bleiben, und »Workspace öffnen« startet ihn wieder.</p>" }, function (reason, notify) {
                 button.prop('disabled', true);
-                api_call('/api/admin/stop_workspace', { email: button.data('email'), reason: reason }, function (data) {
+                api_call('/api/admin/stop_workspace', { email: button.data('email'), reason: reason, notify: notify }, function (data) {
                     if (data.success === false) { button.prop('disabled', false); return; }
+                    $('#__template_modal').modal('hide');
                     show_success_message(`Der Workspace von ${$('<div>').text(button.data('name')).html()} ist gestoppt; die Dateien bleiben.`);
                 });
+                return false;
             });
         });
         $(document).on('click', '.bu-impersonate', function (e) {

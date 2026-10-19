@@ -434,9 +434,24 @@
                     <h3>Daten herunterladen</h3>
                     <p>
                         Ein ZIP-Archiv mit deinem Workspace, deinen Abgaben, deinen MySQL- und Neo4j-Datenbanken und allem, was zu deinem Konto
-                        gespeichert ist. Was drin ist, erklärt die Datei <code>LIESMICH.txt</code> im Archiv. Bei einem großen Workspace dauert es einen Moment.
+                        gespeichert ist. Was drin ist, erklärt die Datei <code>LIESMICH.txt</code> im Archiv.
                     </p>
-                    <a class="btn btn-secondary #{@impersonated_by ? 'disabled' : ''}" href="/api/export_my_data" download><i class='bi bi-download'></i>Meine Daten herunterladen</a>
+                    <p class='small text-body-secondary' id='my_data_size'>Die Größe wird ermittelt …</p>
+                    <div class='form-check mb-2' id='my_data_all_box' hidden>
+                        <input class='form-check-input' type='checkbox' id='cb_export_all'>
+                        <label class='form-check-label' for='cb_export_all'>Auch Ordner, die sich neu erzeugen lassen (<code>node_modules</code>, Build-Ordner, Python-Umgebungen) <span id='my_data_all_size' class='text-body-secondary'></span></label>
+                    </div>
+                    <a class="btn btn-secondary #{@impersonated_by ? 'disabled' : ''}" id='bu_export_my_data' href="/api/export_my_data" download><i class='bi bi-download'></i>Meine Daten herunterladen</a>
+                </div>
+                <div class="profile-subsection" id='make_room'>
+                    <h3>Platz schaffen</h3>
+                    <p>
+                        Werkzeuge legen Ordner an, die ein Befehl jederzeit wieder anlegt: <code>node_modules</code> mit <code>npm install</code>,
+                        Build-Ordner beim nächsten Bauen, Python-Umgebungen. Sie brauchen oft den meisten Platz. Was du selbst geschrieben hast,
+                        steht nicht in dieser Liste. Ordner, in denen nach dem Anlegen etwas geändert wurde, sind nicht angehakt.
+                    </p>
+                    #{@impersonated_by ? "<p class='text-body-secondary'>Als Administration: unter <a href='/personen?sortierung=speicher#personen'>Personen</a> mit »Platz schaffen«, dann erfährt die Person, was gelöscht wurde und warum.</p>" : ''}
+                    <div id='rebuildable_here'><p class='text-body-secondary small'>Einen Moment …</p></div>
                 </div>
                 <div class="profile-danger-zone">
                     <h3>Konto löschen</h3>
@@ -452,7 +467,7 @@
 
             <section id="profile-for-teachers" class="profile-section" aria-labelledby="for-teachers" #{teacher_logged_in? ? '' : 'hidden'}>
                 <h2 id="for-teachers">Für Lehrkräfte</h2>
-                <p>Deine Gruppen und wer darin ist: <a href='/gruppen'>Gruppen</a>. Wie alles zusammenhängt: <a href='/lehrmaterial-einstieg'>Einstieg für Lehrkräfte</a>.</p>
+                <p>Deine Gruppen und wer darin ist: <a href='/klasse'>Klassen</a>. Wie alles zusammenhängt: <a href='/lehrmaterial-einstieg'>Einstieg für Lehrkräfte</a>.</p>
                 <div class="profile-subsection-heading">
                     <h3>Leistungsüberprüfungen</h3>
                     <div class="btn-module-control">
@@ -863,7 +878,74 @@ vscode_config: {}</pre>
         };
     }
 
+    // »Meine Daten«: how big the download is, and the folders a tool makes
+    // again (tools/rebuildable.py) to leave out or delete. Asked for when the
+    // section comes into view: the scan walks those folders.
+    const IMPERSONATED = #{@impersonated_by ? 'true' : 'false'};
+    function size_text(bytes) {
+        if (bytes >= 1024 ** 3) return (bytes / 1024 ** 3).toFixed(1).replace('.', ',') + ' GB';
+        if (bytes >= 1024 ** 2) return Math.round(bytes / 1024 ** 2) + ' MB';
+        return Math.max(1, Math.round(bytes / 1024)) + ' kB';
+    }
+    // At roughly 30 MB a second, packing and sending together.
+    function duration_text(bytes) {
+        const seconds = bytes / (30 * 1024 ** 2);
+        return seconds < 60 ? 'unter einer Minute' : seconds < 120 ? 'etwa eine Minute' : `etwa ${Math.round(seconds / 60)} Minuten`;
+    }
+    function show_my_data(data) {
+        const total = data.workspace_bytes, skip = data.rebuildable_bytes || 0;
+        if (total === null || total === undefined) {
+            $('#my_data_size').text('Die Größe deines Workspace ist noch nicht gemessen (das passiert stündlich).');
+        } else {
+            const without = Math.max(0, total - skip);
+            $('#my_data_size').html(skip > 0
+                ? `Dein Workspace braucht ${size_text(total)}; ohne die Ordner, die sich neu erzeugen lassen, sind es etwa <strong>${size_text(without)}</strong> vor dem Packen. Der Download dauert ${duration_text(without)}.`
+                : `Dein Workspace braucht etwa <strong>${size_text(total)}</strong> vor dem Packen. Der Download dauert ${duration_text(total)}.`);
+            $('#my_data_all_size').text(skip > 0 ? `– dann etwa ${size_text(total)}, ${duration_text(total)}` : '');
+        }
+        $('#my_data_all_box').prop('hidden', skip === 0);
+        const here = $('#rebuildable_here').empty();
+        const folders = data.rebuildable || [];
+        if (!folders.length) { here.append(`<p class='text-body-secondary small'>Keine solchen Ordner.</p>`); return; }
+        const table = $(`<table class='table table-sm align-middle'><thead><tr><th></th><th>Ordner</th><th class='text-end'>Größe</th><th>Wieder anlegen mit</th></tr></thead><tbody></tbody></table>`);
+        folders.forEach(function (f) {
+            const cb = $(`<input type='checkbox' class='form-check-input cb-rebuildable'>`).val(f.path).prop('checked', f.tick).prop('disabled', IMPERSONATED).attr('aria-label', f.path);
+            const where = $('<td>').append($('<code>').text(f.path));
+            if (f.note) where.append($(`<div class='small text-warning-emphasis'>`).text(f.note));
+            table.find('tbody').append($('<tr>').append($('<td>').append(cb), where, $(`<td class='text-end text-nowrap'>`).text(size_text(f.bytes)), $('<td class="small">').text(f.command)));
+        });
+        const button = $(`<button type='button' class='btn btn-outline-danger btn-sm'><i class='bi bi-trash'></i>Ausgewählte löschen</button>`).prop('disabled', IMPERSONATED);
+        button.on('click', function () {
+            const paths = here.find('.cb-rebuildable:checked').map(function () { return this.value; }).get();
+            if (!paths.length) { show_error_message('Nichts angehakt.'); return; }
+            const bytes = folders.filter(f => paths.includes(f.path)).reduce((n, f) => n + f.bytes, 0);
+            confirm_dialog({ title: 'Platz schaffen', text: `${paths.length} ${paths.length === 1 ? 'Ordner' : 'Ordner'} mit zusammen ${size_text(bytes)} löschen? Sie kommen nicht in einen Papierkorb; der Befehl daneben legt sie wieder an.`, confirm: 'Löschen', icon: 'bi-trash', danger: true }, function () {
+                api_call('/api/clean_rebuildable', { paths: paths }, function (r) {
+                    if (!r.success) return;
+                    show_success_message(`${r.deleted.length} ${r.deleted.length === 1 ? 'Ordner' : 'Ordner'} gelöscht.`);
+                    load_my_data();
+                });
+            });
+        });
+        here.append($("<div class='table-responsive'></div>").append(table), button);
+    }
+    function load_my_data() {
+        api_call('/api/my_data_overview', {}, function (data) { if (data.success) show_my_data(data); }, { no_please_wait: true });
+    }
+
     window.addEventListener('load', function() {
+        $('#cb_export_all').on('change', function () {
+            $('#bu_export_my_data').attr('href', this.checked ? '/api/export_my_data?alle=1' : '/api/export_my_data');
+        });
+        const my_data = document.getElementById('my-data');
+        if (my_data && 'IntersectionObserver' in window) {
+            const seen = new IntersectionObserver(function (entries) {
+                if (entries.some(e => e.isIntersecting)) { seen.disconnect(); load_my_data(); }
+            });
+            seen.observe(my_data);
+        } else {
+            load_my_data();
+        }
         connect_live_apps_socket();
         // Delegated: the cards of extra databases come later.
         $(document).on('click', '.bu-toggle-secret', function(e) {
