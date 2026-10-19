@@ -57,7 +57,7 @@ Danach liegt die Vorlage in `/workspace/backrooms-starter`:
 # Klonen wie im Handbuch »Workspace« (oben eingebunden), dann die
 # geöffnete Vorlage im Explorer, level.ini im Editor
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ e2424e2499bb726cae861272fa532544c3b44d1f
+clone-start: https://github.com/specht/backrooms-starter.git @ 2efe0210b8da7661324d48d5be181216dd9cc0d3
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -501,7 +501,7 @@ hook: info off
 
 ### Andere Wände und Böden
 
-Marmor ist nur eine Möglichkeit. `walls` und `floor` kennen fünf Arten, jede in der Farbe aus `wallpaper` (Wände) und `carpet` (Boden), Marmor in seiner eigenen:
+Marmor ist nur eine Möglichkeit. `walls` kennt sechs Arten, `floor` fünf, jede in der Farbe aus `wallpaper` (Wände) und `carpet` (Boden), Marmor in seiner eigenen:
 
 <table class='table'>
 <tr><th>Wert</th><th>Wände (<code>walls</code>)</th><th>Boden (<code>floor</code>)</th></tr>
@@ -509,6 +509,7 @@ Marmor ist nur eine Möglichkeit. `walls` und `floor` kennen fünf Arten, jede i
 <tr><td><code>marble</code></td><td>Marmor</td><td>Marmor</td></tr>
 <tr><td><code>wood</code></td><td>senkrechte Bretter</td><td>Dielen</td></tr>
 <tr><td><code>tiles</code></td><td>Fliesen</td><td>Fliesen</td></tr>
+<tr><td><code>velvet</code></td><td>Samt in Falten, wie ein Vorhang im Kino</td><td></td></tr>
 <tr><td><code>plain</code></td><td>einfarbig</td><td>einfarbig</td></tr>
 </table>
 
@@ -568,6 +569,18 @@ hook: info off
 <img src='saal-einfarbig.webp' alt='Der leere Saal mit einfarbig blaugrauen Wänden und einem dunkelgrauen Boden.'>
 <figcaption><code>plain</code></figcaption>
 </figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: rooms/saal.room <- file:stufen/saal-samt.room
+tab: preview
+viewport: 1024x576
+hook: open view=18.00,17.00,-90,8
+hook: light
+hook: info off
+-->
+<img src='saal-samt.webp' alt='Der leere Saal wie ein Kino: Wände aus dunkelrotem Samt in senkrechten Falten, ein dunkler Teppich und eine dunkle Decke mit vier Leuchten.'>
+<figcaption><code>velvet</code></figcaption>
+</figure>
 </div>
 <!-- /tutorial-scope -->
 
@@ -579,7 +592,7 @@ Jetzt bist du dran: Bau einen Raum nach deiner Idee und schließ ihn mit einer T
 <tr><th>Eintrag</th><th>Bedeutung</th></tr>
 <tr><td><code>height</code></td><td>Deckenhöhe in Metern; zwei Zahlen für eine schräge Decke</td></tr>
 <tr><td><code>slope</code></td><td><code>flat</code>, <code>north</code>, <code>east</code>, <code>south</code>, <code>west</code> oder <code>gable</code></td></tr>
-<tr><td><code>walls</code></td><td><code>wallpaper</code> (Tapete), <code>marble</code> (Marmor), <code>wood</code> (Holz), <code>tiles</code> (Fliesen) oder <code>plain</code> (einfarbig)</td></tr>
+<tr><td><code>walls</code></td><td><code>wallpaper</code> (Tapete), <code>marble</code> (Marmor), <code>wood</code> (Holz), <code>tiles</code> (Fliesen), <code>velvet</code> (Samt) oder <code>plain</code> (einfarbig)</td></tr>
 <tr><td><code>floor</code></td><td><code>carpet</code> (Teppich), <code>marble</code>, <code>wood</code>, <code>tiles</code> oder <code>plain</code></td></tr>
 <tr><td><code>wallpaper</code>, <code>carpet</code>, <code>ceiling</code></td><td>die Farben von Wänden, Boden und Decke</td></tr>
 <tr><td><code>baseboard</code></td><td>die Sockelleiste: Höhe und Farbe; ohne Angabe 8 cm und halb so hell wie die Tapete, <code>none</code>: keine</td></tr>

@@ -1,0 +1,23 @@
+# Ein Saal hinter der Kammer.
+
+[room]
+name = Saal
+height = 3
+walls = velvet
+wallpaper = #7a1424
+carpet = #4a2c2a
+ceiling = #5a4c50
+
+[map]
+#############
+#...........#
+#...L...L...#
+1...........#
+#...........#
+#...........#
+#...L...L...#
+#...........#
+#############
+
+[L]
+light = #fff3cf

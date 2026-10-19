@@ -19,7 +19,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 ### Hinzugefügt
 
 - Backrooms: Wände und Böden auch aus Holz (`wood`) und aus kleinen
-  Fliesen wie im Schwimmbad (`tiles`); die Aktivität zeigt alle fünf Arten
+  Fliesen wie im Schwimmbad (`tiles`), Wände aus Samt wie im Kino (`velvet`);
+  die Aktivität zeigt alle Arten
   am leeren Saal, eine Decke, die nur in eine Richtung ansteigt, und die
   Leuchten im Satteldach weiter auseinander.
 - Backrooms: Jeder Raum hat eine Sockelleiste, etwas dunkler als die Wand
