@@ -709,7 +709,7 @@ vscode_config: {}</pre>
                 results.on('click', () => print_exam_results(entry));
                 $('<td>').append(results).appendTo(row);
 
-                const del = $(`<button type='button' class='btn btn-sm btn-outline-danger'><i class='bi bi-trash'></i></button>`)
+                const del = $(`<button type='button' class='btn btn-sm btn-outline-danger btn-icon'><i class='bi bi-trash'></i></button>`)
                     .attr({ 'aria-label': `${title} löschen`, title: 'Löschen' });
                 del.on('click', () => confirm_dialog({ title: `»${title}« löschen`, text: 'Die Workspaces und Datenbanken aller Teilnehmenden werden mitgelöscht. Lade vorher die Ergebnisse als PDF herunter, wenn du sie noch brauchst.', confirm: 'Löschen', icon: 'bi-trash', danger: true },
                     () => api_call('/api/delete_test', { tag: entry.tag }, d => { if (d.success) refresh_test_archives(); })));
