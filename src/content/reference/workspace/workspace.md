@@ -190,14 +190,14 @@ Falls sich die Vorschau einmal nicht mehr aktualisiert, lade die Seite neu: <kbd
 ## Zeigen und veröffentlichen
 
 <!-- part: live-apps -->
-<!-- short: Zeigen: im <a href='/profil#live-apps'>Profil</a> unter »Shared Live Apps« die laufende Vorschau teilen. -->
+<!-- short: Zeigen: im Profil unter »Shared Live Apps« die laufende Vorschau teilen. -->
 ### Mit anderen teilen
 
 Solange dein Workspace läuft, kannst du anderen zeigen, was du gebaut hast. Starte die Vorschau, öffne dein [Profil](/profil#live-apps) und teile unter »Shared Live Apps« die laufende Web-App; die Vorschau mit »Go Live« läuft auf Port 5500. Alle, die im Workspace angemeldet sind, finden sie dann in ihrem Profil unter »Von anderen geteilt«, deine Gruppe ganz oben. Erreichbar ist sie, solange dein Workspace und die Vorschau laufen.
 <!-- /part -->
 
 <!-- part: subdomain -->
-<!-- short: Veröffentlichen: mit einer eigenen Hackschule-Subdomain, siehe die <a href='/custom-subdomain'>Anleitung zum eigenen Webspace</a>. -->
+<!-- short: Veröffentlichen: mit einer eigenen Hackschule-Subdomain (Anleitung zum eigenen Webspace). -->
 ### Veröffentlichen
 
 Dauerhaft und für alle, auch ohne Anmeldung, wird dein Projekt mit einer eigenen Hackschule-Subdomain, zum Beispiel `meinprojekt.hackschule.de`. Dorthin kopierst du die fertigen Dateien deines Projekts. Das geht mit allem, was ganz im Browser läuft, ohne ein Programm auf dem Server. Wie du die Subdomain bekommst und die Dateien hochlädst, steht in der [Anleitung zum eigenen Webspace](/custom-subdomain).
