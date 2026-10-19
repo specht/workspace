@@ -267,6 +267,8 @@ runner = <<~'INNER_RUBY'
 
     force = ARGV.shift == 'force'
     failed = []
+    announced = TutorialScreenshots.announce_run(ARGV, force: force)
+    puts "Progress: /screenshot-progress on the development site (#{announced['stale']} file(s) on #{announced['pages']} page(s))" if announced
     ARGV.each do |relative_path|
         begin
             result = force ? TutorialScreenshots.recreate(relative_path) : TutorialScreenshots.refresh(relative_path)

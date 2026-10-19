@@ -7676,6 +7676,37 @@ class Main < Sinatra::Base
             end
         end
 
+        # The progress page (/screenshot-progress): the pass, its pages and
+        # the files captured last, from the generator.
+        get '/api/tutorial_screenshots/overview' do
+            assert(admin_logged_in?)
+            headers 'Cache-Control' => 'no-store'
+            begin
+                respond(TutorialScreenshots.overview)
+            rescue => e
+                status 503
+                content_type :json
+                { :error => e.message }.to_json
+            end
+        end
+
+        # A captured file by its tutorial (rust/rust.md) and target, for the
+        # progress page's stream: inside that tutorial's folder only.
+        get '/api/tutorial_screenshots/capture' do
+            assert(admin_logged_in?)
+            relative = params['markdown'].to_s
+            target = params['target'].to_s
+            halt 400 unless TutorialScreenshots.valid_relative_markdown_path?(relative)
+            mime = { '.webp' => 'image/webp', '.png' => 'image/png', '.mp4' => 'video/mp4', '.webm' => 'video/webm' }[File.extname(target)]
+            halt 400 unless mime && !target.start_with?('/') && !target.split('/').include?('..')
+            directory = File.expand_path(File.dirname(File.join('/src/content', relative)))
+            file = File.expand_path(target, directory)
+            halt 400 unless file.start_with?("#{directory}/")
+            halt 404 unless File.file?(file)
+            headers 'Cache-Control' => 'no-store'
+            respond_raw_with_mimetype(File.binread(file), mime)
+        end
+
         get '/api/tutorial_screenshots/image' do
             slug = params['slug'].to_s
             target = params['target'].to_s
@@ -7935,6 +7966,14 @@ class Main < Sinatra::Base
         # Teachers find their groups' login codes and workspaces on the class
         # page; the admin page (server, all workspaces) is for administrators.
         if path == '/admin'
+            this_is_a_page_for_logged_in_users!
+            Main.load_invitations()
+            halt 403 unless admin_logged_in?
+        end
+        # How a screenshot pass is going (recreate-screenshots.rb), with the
+        # files as they are captured: development only.
+        if path == '/screenshot-progress'
+            halt 404 unless DEVELOPMENT
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
             halt 403 unless admin_logged_in?

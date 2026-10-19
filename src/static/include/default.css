@@ -6007,6 +6007,16 @@ table.value-groups td.group-odd {
 }
 
 
+/* A note below a table row, over the whole width (make_sortable keeps it
+   with its row): one block with the row above it. */
+tr.has-row-detail > td {
+    border-bottom-width: 0;
+}
+
+tr.row-detail > td {
+    padding-top: 0;
+}
+
 .btn.btn-icon .bi {
     margin-right: 0;
 }

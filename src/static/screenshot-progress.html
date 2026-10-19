@@ -1,0 +1,237 @@
+<style>
+    .sp-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0.5rem 1.5rem;
+    }
+    .sp-summary {
+        color: var(--bs-secondary-color);
+    }
+    .sp-bar {
+        height: 1.4rem;
+        margin: 0.75rem 0 0.5rem;
+    }
+    .sp-now {
+        min-height: 1.6em;
+        margin-bottom: 1.25rem;
+    }
+    .sp-now code {
+        font-size: 0.95em;
+    }
+    .sp-latest {
+        margin-bottom: 1rem;
+    }
+    .sp-latest img,
+    .sp-latest video {
+        display: block;
+        width: 100%;
+        max-height: 60vh;
+        object-fit: contain;
+        background: var(--bs-tertiary-bg);
+        border-radius: 0.4rem;
+    }
+    .sp-caption {
+        font-size: 0.85rem;
+        color: var(--bs-secondary-color);
+        margin-top: 0.3rem;
+        overflow-wrap: anywhere;
+    }
+    .sp-stream {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+        gap: 0.75rem;
+    }
+    .sp-thumb {
+        border: 0;
+        padding: 0;
+        background: none;
+        text-align: left;
+        animation: sp-in 0.4s ease-out;
+    }
+    .sp-thumb img,
+    .sp-thumb video {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 10;
+        object-fit: cover;
+        object-position: top left;
+        border-radius: 0.3rem;
+        background: var(--bs-tertiary-bg);
+    }
+    .sp-thumb:hover img,
+    .sp-thumb:hover video {
+        outline: 2px solid var(--bs-primary);
+    }
+    @keyframes sp-in {
+        from { opacity: 0; transform: translateY(-0.4rem); }
+        to { opacity: 1; transform: none; }
+    }
+    .sp-pages {
+        max-height: 75vh;
+        overflow-y: auto;
+        border: 1px solid var(--bs-border-color);
+        border-radius: 0.4rem;
+    }
+    .sp-page {
+        display: grid;
+        grid-template-columns: 1.4rem 1fr auto;
+        gap: 0 0.5rem;
+        align-items: baseline;
+        padding: 0.3rem 0.6rem;
+        border-bottom: 1px solid var(--bs-border-color-translucent);
+        font-size: 0.9rem;
+    }
+    .sp-page:last-child {
+        border-bottom: 0;
+    }
+    .sp-page.running {
+        background: var(--bs-primary-bg-subtle);
+    }
+    .sp-page.waiting {
+        color: var(--bs-secondary-color);
+    }
+    .sp-page .sp-error {
+        grid-column: 2 / 4;
+        color: var(--bs-danger-text-emphasis);
+        font-size: 0.8rem;
+        overflow-wrap: anywhere;
+    }
+    .sp-count {
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+    .sp-large {
+        width: 100%;
+        max-height: 80vh;
+        object-fit: contain;
+    }
+</style>
+
+<div class='container screenshot-progress'>
+    <div class='sp-head'>
+        <h1 class='mb-0'>Screenshots</h1>
+        <span class='sp-summary' id='sp_summary' role='status' aria-live='polite'>Einen Moment …</span>
+    </div>
+    <div class='progress sp-bar' role='progressbar' aria-label='Fortschritt des Durchlaufs' aria-valuemin='0' aria-valuemax='100' id='sp_progress'>
+        <div class='progress-bar' id='sp_bar' style='width: 0%'></div>
+    </div>
+    <div class='sp-now' id='sp_now'></div>
+    <div class='row g-4'>
+        <div class='col-lg-8'>
+            <h2 class='h5'>Gerade aufgenommen</h2>
+            <div class='sp-latest' id='sp_latest'></div>
+            <div class='sp-stream' id='sp_stream'></div>
+        </div>
+        <div class='col-lg-4'>
+            <h2 class='h5'>Seiten</h2>
+            <div class='sp-pages' id='sp_pages'></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // How a pass of src/scripts/recreate-screenshots.rb is going, from the
+    // generator (/api/tutorial_screenshots/overview), every two seconds while
+    // the tab is visible: the overall count, the page and file being made,
+    // each page's state, and the files as they are captured.
+    (function () {
+        const esc = (t) => $('<div>').text(t === undefined || t === null ? '' : String(t)).html();
+        const url = (c) => `/api/tutorial_screenshots/capture?markdown=${encodeURIComponent(c.markdown_path)}&target=${encodeURIComponent(c.target)}&v=${encodeURIComponent(c.revision || c.at)}`;
+        const page_name = (p) => p.replace(/\/[^/]+\.md$/, '');
+        const duration = (ms) => {
+            const s = Math.max(0, Math.round(ms / 1000));
+            const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+            return h ? `${h} h ${m} min` : m ? `${m} min ${s % 60} s` : `${s} s`;
+        };
+        let shown = new Set();
+        let last_running = null;
+
+        function media(c, cls) {
+            return c.kind === 'video'
+                ? `<video class='${cls || ''}' src='${url(c)}' muted autoplay loop playsinline></video>`
+                : `<img class='${cls || ''}' src='${url(c)}' alt='${esc(c.target)} aus ${esc(page_name(c.markdown_path))}' loading='lazy'>`;
+        }
+
+        function open_large(c) {
+            showTemplateModal(esc(`${page_name(c.markdown_path)} › ${c.target}`), media(c, 'sp-large'), "<i class='bi bi-x-lg'></i>Schließen", 'btn-outline-secondary', null, null, function () { });
+        }
+
+        function render(data) {
+            const pages = data.pages || [];
+            if (!data.run) {
+                $('#sp_summary').text('Kein Durchlauf. Start: src/scripts/recreate-screenshots.rb --stale');
+            }
+            const total = pages.reduce((n, p) => n + p.stale, 0);
+            const done = pages.reduce((n, p) => n + Math.min(p.generated, p.stale), 0);
+            const pages_done = pages.filter(p => p.status === 'done' || p.status === 'error').length;
+            const errors = pages.filter(p => p.status === 'error');
+            const percent = total ? Math.round(100 * done / total) : (pages.length && pages_done === pages.length ? 100 : 0);
+            $('#sp_bar').css('width', `${percent}%`).toggleClass('bg-danger', errors.length > 0 && pages_done === pages.length);
+            $('#sp_progress').attr('aria-valuenow', percent);
+            if (data.run) {
+                const elapsed = data.now - data.run.started_at;
+                const left = done > 0 && done < total ? elapsed / done * (total - done) : null;
+                $('#sp_summary').text(`${done} von ${total} Dateien · ${pages_done} von ${pages.length} Seiten · seit ${duration(elapsed)}`
+                    + (left ? ` · noch etwa ${duration(left)}` : '')
+                    + (errors.length ? ` · ${errors.length} ${errors.length === 1 ? 'Seite' : 'Seiten'} mit Fehler` : ''));
+            }
+
+            const running = pages.find(p => p.status === 'running' || p.status === 'preparing');
+            $('#sp_now').html(running
+                ? `<span class='spinner-border spinner-border-sm me-2' aria-hidden='true'></span><strong>${esc(page_name(running.markdown_path))}</strong>`
+                    + ` · ${running.generated} von ${running.stale} neu`
+                    + (running.current_target ? ` · jetzt <code>${esc(running.current_target)}</code>` : running.status === 'preparing' ? ' · Workspace wird vorbereitet' : '')
+                : (data.run && pages_done === pages.length ? `<i class='bi bi-check-lg me-1'></i>Fertig.` : ''));
+
+            const list = $('#sp_pages').empty();
+            for (const p of pages) {
+                const icon = p.status === 'done' ? "<i class='bi bi-check-lg text-success'></i>"
+                    : p.status === 'error' ? "<i class='bi bi-exclamation-triangle text-danger'></i>"
+                    : (p.status === 'running' || p.status === 'preparing') ? "<span class='spinner-border spinner-border-sm' aria-hidden='true'></span>"
+                    : "<i class='bi bi-circle'></i>";
+                const cls = p.status === 'running' || p.status === 'preparing' ? 'running' : p.status === 'waiting' || p.status === 'queued' ? 'waiting' : '';
+                const row = $(`<div class='sp-page ${cls}'>${icon}<span>${esc(page_name(p.markdown_path))}</span><span class='sp-count'>${p.generated} / ${p.stale}</span></div>`);
+                if (p.error) row.append($("<div class='sp-error'>").text(p.error));
+                list.append(row);
+            }
+            if (running && running.markdown_path !== last_running) {
+                last_running = running.markdown_path;
+                const row = list.find('.sp-page.running')[0];
+                if (row) row.scrollIntoView({ block: 'nearest' });
+            }
+
+            const recent = data.recent || [];
+            if (recent.length) {
+                const latest = recent[0];
+                const key = `${latest.markdown_path}|${latest.target}|${latest.revision}`;
+                if ($('#sp_latest').data('key') !== key) {
+                    $('#sp_latest').data('key', key).html(`${media(latest)}<div class='sp-caption'>${esc(page_name(latest.markdown_path))} › ${esc(latest.target)}</div>`);
+                    $('#sp_latest').off('click').on('click', () => open_large(latest)).css('cursor', 'zoom-in');
+                }
+            }
+            for (const c of recent.slice(1).reverse()) {
+                const key = `${c.markdown_path}|${c.target}|${c.revision}`;
+                if (shown.has(key)) continue;
+                shown.add(key);
+                const thumb = $(`<button type='button' class='sp-thumb'>${media(c)}<div class='sp-caption'>${esc(page_name(c.markdown_path))} › ${esc(c.target)}</div></button>`);
+                thumb.on('click', () => open_large(c));
+                $('#sp_stream').prepend(thumb);
+            }
+            $('#sp_stream .sp-thumb').slice(60).remove();
+        }
+
+        function poll() {
+            if (document.hidden) return;
+            fetch('/api/tutorial_screenshots/overview', { cache: 'no-store' })
+                .then(r => r.ok ? r.json() : Promise.reject(r.status))
+                .then(render)
+                .catch(() => $('#sp_summary').text('Der Screenshot-Generator antwortet nicht.'));
+        }
+        window.addEventListener('load', function () {
+            poll();
+            setInterval(poll, 2000);
+            document.addEventListener('visibilitychange', poll);
+        });
+    })();
+</script>

@@ -223,14 +223,20 @@ function make_sortable(table) {
                 const value = cell.attr('data-sort');
                 return value !== undefined ? value : cell.text().trim();
             };
-            const rows = table.find('tbody > tr').get();
-            rows.sort(function (a, b) {
-                const x = key(a), y = key(b);
+            // A row with the class row-detail (a note below a row, over the
+            // whole width) stays with the row above it.
+            const groups = [];
+            table.find('tbody > tr').each(function () {
+                if ($(this).hasClass('row-detail') && groups.length) groups[groups.length - 1].push(this);
+                else groups.push([this]);
+            });
+            groups.sort(function (ga, gb) {
+                const x = key(ga[0]), y = key(gb[0]);
                 const nx = parseFloat(x), ny = parseFloat(y);
                 const order = (!isNaN(nx) && !isNaN(ny) && String(nx) === x && String(ny) === y) ? nx - ny : collator.compare(x, y);
                 return descending ? -order : order;
             });
-            table.find('tbody').append(rows);
+            table.find('tbody').append(groups.flat());
         };
         th.on('click', sort);
         th.on('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); sort(); } });

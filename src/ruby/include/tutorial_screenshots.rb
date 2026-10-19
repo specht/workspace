@@ -9,6 +9,8 @@ module TutorialScreenshots
     STATUS_ENDPOINT = URI('http://tutorial_screenshots:9393/status')
     AUTO_RENDER_ENDPOINT = URI('http://tutorial_screenshots:9393/auto-render')
     PLAN_ENDPOINT = URI('http://tutorial_screenshots:9393/plan')
+    RUN_ENDPOINT = URI('http://tutorial_screenshots:9393/run')
+    OVERVIEW_ENDPOINT = URI('http://tutorial_screenshots:9393/overview')
     WORKSPACE_IMAGE = 'hs_code_server'
 
     def self.prepare(markdown, markdown_path, generate: true)
@@ -134,6 +136,32 @@ module TutorialScreenshots
     def self.look_from_labels(output)
         value = output.to_s.strip.split('|').map(&:strip).find { |v| !v.empty? && v != '<no value>' }
         value || 'unknown'
+    end
+
+    # A pass of recreate-screenshots.rb, for the progress page: its pages,
+    # planned by the generator. Best effort: the pass runs without it.
+    def self.announce_run(relative_paths, force: false)
+        request = Net::HTTP::Post.new(RUN_ENDPOINT)
+        request['content-type'] = 'application/json'
+        request.body = JSON.generate(:markdown_paths => relative_paths, :force => force, :workspace_look => workspace_look)
+        http = Net::HTTP.new(RUN_ENDPOINT.host, RUN_ENDPOINT.port)
+        http.open_timeout = 1
+        http.read_timeout = 120
+        response = http.request(request)
+        response.is_a?(Net::HTTPSuccess) ? JSON.parse(response.body) : nil
+    rescue StandardError => e
+        warn "Could not announce the pass to the progress page: #{e.message}"
+        nil
+    end
+
+    def self.overview
+        http = Net::HTTP.new(OVERVIEW_ENDPOINT.host, OVERVIEW_ENDPOINT.port)
+        http.open_timeout = 1
+        http.read_timeout = 5
+        response = http.request(Net::HTTP::Get.new(OVERVIEW_ENDPOINT))
+        raise "generator returned HTTP #{response.code}" unless response.is_a?(Net::HTTPSuccess)
+
+        JSON.parse(response.body)
     end
 
     def self.request_generation(relative_path, force: false, async: false)

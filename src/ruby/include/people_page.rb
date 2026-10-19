@@ -214,6 +214,19 @@ class Main < Sinatra::Base
         END_OF_QUERY
     end
 
+    # Who »Nie Angemeldete entfernen« takes out of these groups: name,
+    # address, the groups among them, and how many other groups the person
+    # stays in (none: the invitation goes, with name and address).
+    def unused_people(groups)
+        neo4j_query(<<~END_OF_QUERY, :groups => groups).map { |r| { :email => r['email'], :name => r['name'], :groups => r['here'], :elsewhere => r['elsewhere'].to_i } }
+            MATCH (i:Invitation)-[:MEMBER_OF]->(g:Group) WHERE g.name IN $groups AND #{UNUSED_INVITATION}
+            WITH i, collect(g.name) AS here
+            OPTIONAL MATCH (i)-[:MEMBER_OF]->(o:Group) WHERE NOT o.name IN $groups
+            RETURN i.email AS email, i.name AS name, here, count(o) AS elsewhere
+            ORDER BY toLower(coalesce(i.name, i.email));
+        END_OF_QUERY
+    end
+
     post '/api/people/unused_invitations' do
         admin_only!
         groups = unused_invitations_by_group
@@ -336,7 +349,7 @@ class Main < Sinatra::Base
         data = parse_request_data(:required_keys => [:groups], :types => { :groups => Array }, :max_body_length => 64_000)
         groups = data[:groups].map(&:to_s).uniq
         groups.each { |name| managed_group!(name) }
-        respond(:count => unused_count(groups))
+        respond(:count => unused_count(groups), :people => unused_people(groups))
     end
 
     # groups: the group names to clean up; confirmation: the number of people

@@ -205,6 +205,10 @@ erzeugt der Generator die Datei selbst. In der Entwicklung reicht es, die
 Tutorial-Seite neu zu laden: Veraltetes wird im Hintergrund neu gerendert,
 die Fußzeile zeigt den Fortschritt. Rezeptsprache, Hooks, Videos und wann
 etwas als veraltet gilt: [src/tutorial-screenshots/README.md](../src/tutorial-screenshots/README.md).
+Einen ganzen Durchlauf des Skripts verfolgst du unter `/screenshot-progress`
+(als Administration angemeldet): wie viele Dateien und Seiten fertig sind,
+wie lange es noch dauert, welche Seite gerade dran ist, und die Bilder und
+Videos, sobald sie aufgenommen sind.
 
 ```bash
 src/scripts/recreate-screenshots.rb bif           # alles in einem Tutorial, auch Aktuelles

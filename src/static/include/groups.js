@@ -389,7 +389,12 @@ const today = () => new Date().toISOString().slice(0, 10);
 // exact number (the server counts, each person once) is typed again.
 function remove_never_logged_in(names) {
     groups_call('/api/people/unused_count', { groups: names }, function (r) {
-        showTemplateModal('Nie Angemeldete entfernen', `<p>Aus ${names.length === 1 ? `der Gruppe ${esc(names[0])}` : `${names.length} Gruppen`} werden alle genommen, die nie einen Anmelde-Code angefordert haben: <strong>${r.count} ${r.count === 1 ? 'Person' : 'Personen'}</strong>. Wer danach in keiner Gruppe mehr steht, ist nicht mehr eingeladen. Ein Konto gibt es nicht, es wird also nichts gelöscht.</p>`
+        const people = r.people || [];
+        const gone = people.filter(p => p.elsewhere === 0).length;
+        const where = names.length === 1 ? `der Gruppe ${esc(names[0])}` : `${names.length} Gruppen`;
+        showTemplateModal('Nie Angemeldete entfernen', `<p>Aus ${where} werden alle genommen, die nie einen Anmelde-Code angefordert haben: <strong>${r.count} ${r.count === 1 ? 'Person' : 'Personen'}</strong>. Ein Konto hat keine von ihnen; ein Workspace oder eine Datei wird also nicht gelöscht.</p>`
+            + (gone ? `<p><strong>${gone === r.count ? (gone === 1 ? 'Sie steht' : 'Alle stehen') : `${gone} davon ${gone === 1 ? 'steht' : 'stehen'}`} danach in keiner Gruppe mehr und ${gone === 1 ? 'verschwindet' : 'verschwinden'} ganz,</strong> mit Name und Adresse: Keine Seite zeigt sie mehr. Wieder eingeladen wird nur, wer neu in eine Gruppe eingetragen wird. Lade die Liste vorher herunter, wenn du sie noch brauchst.</p>` : '')
+            + `<p><a href='#' id='a_never_csv'><i class='bi bi-download'></i>Liste herunterladen (CSV)</a></p>`
             + `<label class='form-label' for='ti_never_confirm'>Zur Bestätigung die Zahl eingeben: <strong>${r.count}</strong></label><input id='ti_never_confirm' class='form-control' autocomplete='off' inputmode='numeric'>`,
             "<i class='bi bi-person-dash'></i>Entfernen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-outline-secondary', function () {
                 groups_call('/api/people/remove_unused_invitations', { groups: names, confirmation: $('#ti_never_confirm').val().trim() }, function (done) {
@@ -399,6 +404,20 @@ function remove_never_logged_in(names) {
                 });
                 return false;
             });
+        // Name, address, groups and whether the person stays invited, for a
+        // spreadsheet (semicolons, a BOM so that umlauts survive).
+        $('#a_never_csv').on('click', function (e) {
+            e.preventDefault();
+            const cell = (t) => `"${String(t ?? '').replace(/"/g, '""')}"`;
+            const rows = [['Name', 'E-Mail', 'Gruppen', 'Danach noch eingeladen']]
+                .concat(people.map(p => [p.name || '', p.email, p.groups.join(', '), p.elsewhere > 0 ? 'ja' : 'nein']));
+            const csv = '\ufeff' + rows.map(row => row.map(cell).join(';')).join('\r\n') + '\r\n';
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+            link.download = `nie-angemeldet-${today()}.csv`;
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+        });
     });
 }
 

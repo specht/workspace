@@ -154,7 +154,7 @@
     }
 
     function school_status(s) {
-        if (s.guests) return 'Nur Erwachsene: Workshops, Firmen, Ehemalige, die ihr Konto behalten. Jede Person stimmt bei der ersten Anmeldung der <a href="/datenschutz/nutzungsordnung">Nutzungsordnung</a> zu. Gruppen dafür legst du unter <a href="/gruppen">Gruppen</a> mit der Schule »Gäste« an.';
+        if (s.guests) return 'nur Erwachsene, Zustimmung je Person';
         if (s.approved_at) return `hat zugestimmt (eingetragen ${day(s.approved_at)})`;
         const open = s.students - s.consent;
         return `<span class="text-warning-emphasis">hat noch nicht zugestimmt</span>`
@@ -472,6 +472,14 @@
                 row.append(name, date_input('decision_at'), date_input('agreement_at'), $('<td>').html(school_status(s)),
                     $('<td>').text(s.groups), $('<td>').text(s.teachers), $('<td>').text(s.students), actions);
                 table.find('tbody').append(row);
+                // The guests' explanation is long: a row of its own below, so
+                // that it does not squeeze the table's columns.
+                if (s.guests) {
+                    row.addClass('has-row-detail');
+                    table.find('tbody').append($("<tr class='row-detail'>").append($("<td colspan='8' class='small text-body-secondary'>").html(
+                        'Nur Erwachsene: Workshops, Firmen, Ehemalige, die ihr Konto behalten. Jede Person stimmt bei der ersten Anmeldung der '
+                        + '<a href="/datenschutz/nutzungsordnung">Nutzungsordnung</a> zu. Gruppen dafür legst du unter <a href="/gruppen">Gruppen</a> mit der Schule »Gäste« an.')));
+                }
             });
             make_sortable(table);
             here.append($("<div class='table-responsive'></div>").append(table));

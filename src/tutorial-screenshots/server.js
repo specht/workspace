@@ -229,6 +229,16 @@ async function setAutoRender(enabled, reason = null) {
 }
 
 const latestGenerationJobs = new Map();
+// For the progress page (/screenshot-progress on the website): the pass that
+// recreate-screenshots.rb announced (POST /run) and the files captured last.
+let currentRun = null; // { started_at, force, pages: [{ markdown_path, stale }] }
+const recentCaptures = [];
+const RECENT_CAPTURES = 120;
+
+function rememberCapture(markdownPath, target, revision) {
+    recentCaptures.unshift({ markdown_path: markdownPath, target, revision, at: Date.now(), kind: isVideoTarget(target) ? 'video' : 'image' });
+    if (recentCaptures.length > RECENT_CAPTURES) recentCaptures.length = RECENT_CAPTURES;
+}
 let workspacePrepared = false;
 let workspacePreparationPromise = null;
 let terminalShellReady = false;
@@ -3838,6 +3848,7 @@ async function enqueueGeneration(payload) {
     pendingJobs += 1;
     const run = generationQueue.then(async () => {
         try {
+            job.started_at = Date.now();
             const result = await generateTutorial(payload, job);
             job.status = 'done';
             job.current_target = null;
@@ -4035,10 +4046,12 @@ async function generateTutorial(payload, progressJob = null) {
             const variantSha256 = {};
             try {
                 outputSha256 = await capture(shot.target);
+                rememberCapture(relativeMarkdown, shot.target, outputSha256);
                 for (const variant of variantTargets(shot.target, shot.variants)) {
                     console.log(`  capture ${variant.target}`);
                     await setVariants(shot, tutorialHooks, variant.on);
                     variantSha256[variant.target] = await capture(variant.target);
+                    rememberCapture(relativeMarkdown, variant.target, variantSha256[variant.target]);
                 }
                 if (shot.variants) await setVariants(shot, tutorialHooks, []);
             } catch (error) {
@@ -4170,6 +4183,49 @@ const server = http.createServer(async (request, response) => {
             return sendJson(response, 400, { error: error.message });
         }
     }
+    // A pass of recreate-screenshots.rb: its pages, each with the number of
+    // files it will render, planned now so the progress page knows the total.
+    if (request.method === 'POST' && requestUrl.pathname === '/run') {
+        try {
+            const payload = await readJson(request);
+            const force = payload.force === true;
+            const pages = [];
+            for (const markdownPath of payload.markdown_paths || []) {
+                const plan = await buildGenerationPlan({ markdown_path: markdownPath, workspace_look: payload.workspace_look, force });
+                pages.push({ markdown_path: plan.relativeMarkdown, stale: plan.screenshots.filter(s => s.stale).length, total: plan.screenshots.length });
+            }
+            currentRun = { started_at: Date.now(), force, pages };
+            return sendJson(response, 200, { pages: pages.length, stale: pages.reduce((n, p) => n + p.stale, 0) });
+        } catch (error) {
+            return sendJson(response, 400, { error: error.message });
+        }
+    }
+    // Everything the progress page shows: the pass, each page's job, the
+    // files captured last.
+    if (request.method === 'GET' && requestUrl.pathname === '/overview') {
+        const pages = (currentRun?.pages || []).map(page => {
+            const job = latestGenerationJobs.get(page.markdown_path);
+            const fresh = job && currentRun && (job.started_at || 0) >= currentRun.started_at;
+            const queued = job && job.status === 'queued' && !job.started_at;
+            return {
+                ...page,
+                status: fresh ? job.status : (queued ? 'queued' : 'waiting'),
+                generated: fresh ? job.generated : 0,
+                completed: fresh ? job.completed : 0,
+                current_target: fresh ? job.current_target : null,
+                error: fresh ? job.error : null,
+                started_at: fresh ? job.started_at : null,
+                finished_at: fresh ? job.finished_at || null : null,
+            };
+        });
+        return sendJson(response, 200, {
+            run: currentRun ? { started_at: currentRun.started_at, force: currentRun.force } : null,
+            pages,
+            recent: recentCaptures,
+            pending_jobs: pendingJobs,
+            now: Date.now(),
+        });
+    }
     if (requestUrl.pathname === '/auto-render') {
         if (request.method === 'POST') {
             const payload = await readJson(request).catch(() => ({}));
@@ -4194,8 +4250,26 @@ const server = http.createServer(async (request, response) => {
             }
         }
 
+        // A synchronous request (recreate-screenshots.rb) gets a progress
+        // entry too, for /status and the progress page.
+        const relativeMarkdown = safeRelativePath(payload?.markdown_path);
+        const tracked = {
+            status: 'queued', monitor: true, markdown_path: relativeMarkdown,
+            total: 0, completed: 0, stale: 0, generated: 0, current_target: null, error: null, screenshots: [],
+        };
+        latestGenerationJobs.set(relativeMarkdown, tracked);
         pendingJobs += 1;
-        const job = generationQueue.then(() => generateTutorial(payload)).finally(() => { pendingJobs -= 1; });
+        const job = generationQueue.then(async () => {
+            tracked.started_at = Date.now();
+            try {
+                const result = await generateTutorial(payload, tracked);
+                Object.assign(tracked, { status: 'done', current_target: null, finished_at: Date.now() });
+                return result;
+            } catch (error) {
+                Object.assign(tracked, { status: 'error', current_target: null, error: error.message, finished_at: Date.now() });
+                throw error;
+            }
+        }).finally(() => { pendingJobs -= 1; });
         generationQueue = job.catch(() => {});
         const result = await job;
         sendJson(response, 200, result);

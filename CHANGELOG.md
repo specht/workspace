@@ -74,6 +74,17 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Klötzchenwelt hat vier: Ecken im Uhrzeigersinn, Licht ohne `ambient`,
   ohne `max` und Normalen als Farbe, Nebel und Fackeln, Texturkoordinaten
   als Farbe.
+- »Nie Angemeldete entfernen« sagt, wie viele danach in keiner Gruppe mehr
+  stehen und deshalb ganz verschwinden, mit Name und Adresse, und bietet
+  die Liste vorher als CSV an (Name, Adresse, Gruppen, ob noch eingeladen).
+- In der Schultabelle auf »Personen« steht die Erklärung zu »Gäste« in
+  einer eigenen Zeile darunter; die Spalten bleiben schmal. Eine solche
+  Zeile bleibt beim Sortieren bei ihrer Schule.
+- Für Entwicklerinnen und Entwickler: `/screenshot-progress` (nur im
+  Entwicklungsmodus, für die Administration) zeigt, wie ein Durchlauf von
+  `src/scripts/recreate-screenshots.rb` vorankommt: Dateien und Seiten,
+  verbleibende Zeit, die Seite, die gerade dran ist, und die Bilder und
+  Videos, sobald sie aufgenommen sind.
 - Nach dem Import der Einladungslisten liest ein Server im Betrieb keine
   Einladungsdatei mehr, auch keine, deren Name mit `_` beginnt; nur im
   Entwicklungsmodus bleiben `_e2e.txt` und `_tutorial_screenshots.txt` (die
