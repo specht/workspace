@@ -94,13 +94,14 @@ sleep: 2
 Wie lange das dauert, hängt von der Grafikkarte deines Rechners ab. Ist es fertig, steht dort »Light baked in …«:
 
 <!-- tutorial-screenshot
-# fertig gebacken, mit den Schaltern oben links
+# fertig gebacken; der Kasten oben links nur im Bild davor, beim Backen
 tab: preview
 viewport: 1024x576
-hook: light flicker
+hook: light
+hook: info off
 -->
 
-<img class='full' src='zimmer.webp' alt='Das Zimmer im warmen Licht seiner Leuchte, gelbe Tapete, dunkle Sockelleiste, durch die offene Tür sieht man in den Gang; oben links »Light baked in …« und die Schalter.'>
+<img class='full' src='zimmer.webp' alt='Das Zimmer im warmen Licht seiner Leuchte, gelbe Tapete, dunkle Sockelleiste, durch die offene Tür sieht man in den Gang.'>
 
 Klick ins Bild, dann siehst du dich mit der Maus um. <kbd>Esc</kbd> gibt die Maus wieder frei.
 
@@ -123,6 +124,7 @@ Wo du stehst, merkt sich die Adresse der Seite. Lädst du neu, stehst du wieder 
 tab: preview
 viewport: 1024x576
 hook: key m
+hook: wheel 450
 hook: info off
 -->
 
@@ -216,11 +218,11 @@ wallpaper = #9a8a4c
 
 [L]
 light = #ffb070
-power = 0.5
+power = 0.9
 flicker = 1
 ```
 
-Die Leuchte ist orange und schwach, und mit `flicker = 1` flackert sie ab und zu. Die Tapete ist eine Farbe als Hexadezimalzahl wie in CSS: Rot, Grün und Blau, je zwei Ziffern.
+Die Leuchte ist orange und schwächer als die anderen, und mit `flicker = 1` flackert sie ab und zu. Die Tapete ist eine Farbe als Hexadezimalzahl wie in CSS: Rot, Grün und Blau, je zwei Ziffern.
 
 Noch führt keine Tür in die Kammer, also gibt es sie nicht. Öffne `rooms/gang.room`. Weit unten im Grundriss ist links die `1`, die Tür zum Zimmer. Ersetze in dieser Zeile das `#` am rechten Rand durch eine `5`:
 
@@ -251,7 +253,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='kammer.webp' alt='Die Kammer: niedrig, mit dunklerer Tapete und einer schwachen orangefarbenen Leuchte; durch die Tür in der Ecke fällt helleres Licht aus dem Gang.'>
+<img class='full' src='kammer.webp' alt='Die Kammer: niedrig, mit dunklerer Tapete im orangefarbenen Licht ihrer Leuchte; durch die Tür in der Ecke fällt Licht aus dem Gang.'>
 
 Stimmt etwas nicht, steht oben links in Rot, in welcher Datei und in welcher Zeile das Programm hängen geblieben ist, auf Englisch, zum Beispiel `rooms/kammer.room: room kammer overlaps room rot`. Das heißt: Der Raum läge auf dem Boden eines anderen. Schieb die Tür an eine andere Stelle oder mach den Raum kleiner.
 
@@ -666,6 +668,19 @@ hook: info off
 </figure>
 </div>
 <!-- /tutorial-scope -->
+
+## Zeigen und veröffentlichen
+
+<div class='found-note'>
+<p>Wer eine Tür findet, soll sie offen lassen. Für die Nächsten.</p>
+<cite>Mit Kreide an einen Türrahmen geschrieben</cite>
+</div>
+
+_include(workspace#live-apps)
+
+Speichere vorher das Licht (»Save light«, siehe »Licht aufheben«) und leg `level.light` neben `level.ini`: Dann ist es bei allen sofort hell, und niemand muss warten, bis gebacken ist.
+
+_include(workspace#subdomain)
 
 ## Mit Brille
 

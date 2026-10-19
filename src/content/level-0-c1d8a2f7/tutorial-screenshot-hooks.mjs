@@ -66,6 +66,15 @@ export default {
             await page.waitForTimeout(1500);   // the Automap flies there in a second
         },
 
+        // hook: wheel N turns the mouse wheel over the picture: N > 0 zooms the
+        // Automap out (distance times e^(N/1000))
+        async wheel({ page, args }) {
+            const size = page.viewportSize();
+            await page.mouse.move(size.width / 2, size.height / 2);
+            await page.mouse.wheel(0, Number(args));
+            await page.waitForTimeout(500);
+        },
+
         // hook: info off|on hides or shows the box at the top left
         async info({ page, args }) {
             await page.evaluate((show) => {
