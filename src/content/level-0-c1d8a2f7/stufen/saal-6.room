@@ -11,7 +11,7 @@ floor = marble
 #############
 #...........#
 #.....S...S.#
-1...F...L...#
+1...L...L...#
 #.....M.....#
 #...L...R...#
 #.....S...S.#
@@ -29,11 +29,6 @@ block = 0.7, 7, 0.7      # höher als die Decke: Die Säule verschwindet in ihr
 light = #ff3020
 power = 3
 size = 1.2, 1.2
-
-[F]
-light = #fff3cf
-power = 1.6
-flicker = 1
 
 [M]
 model = statues/athena.glb

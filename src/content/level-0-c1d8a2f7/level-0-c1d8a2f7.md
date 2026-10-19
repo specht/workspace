@@ -57,7 +57,7 @@ Danach liegt die Vorlage in `/workspace/backrooms-starter`:
 # Klonen wie im Handbuch »Workspace« (oben eingebunden), dann die
 # geöffnete Vorlage im Explorer, level.ini im Editor
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ bbc995c20b097d566b08101cdc0690a8094ace48
+clone-start: https://github.com/specht/backrooms-starter.git @ 57e8292b3a15d54f2da09082d40b4ac05d0c6b70
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -385,11 +385,9 @@ hook: info off
 
 ### Farbiges Licht
 
-Eine Leuchte vorn soll flackern, eine hinten rot leuchten. Sie bekommen eigene Buchstaben:
+Die Leuchte hinten rechts soll rot leuchten. Sie bekommt einen eigenen Buchstaben:
 
 ```room
-~ #.....S...S.#
-1...F...L...#
 ~ #...........#
 #...L...R...#
 ~ #.....S...S.#
@@ -400,14 +398,9 @@ Eine Leuchte vorn soll flackern, eine hinten rot leuchten. Sie bekommen eigene B
 light = #ff3020
 power = 3
 size = 1.2, 1.2
-
-[F]
-light = #fff3cf
-power = 1.6
-flicker = 1
 ```
 
-`light` ist die Farbe, `size` die Größe in Metern: Eine größere Leuchte wirft weichere Schatten. Das rote Licht fällt auf Wände, Boden und Säulen und wird von ihnen zurückgeworfen, rot gefärbt.
+`light` ist die Farbe, `size` die Größe in Metern: Eine größere Leuchte wirft weichere Schatten. Mit `flicker = 1` flackert eine Leuchte ab und zu, wie die in der Kammer. Das rote Licht fällt auf Wände, Boden und Säulen und wird von ihnen zurückgeworfen, rot gefärbt.
 
 <!-- tutorial-screenshot
 write-file: rooms/saal.room <- file:stufen/saal-4.room
@@ -430,7 +423,7 @@ hook: info off
 In die Mitte des Saals kommt Athena, auf einem Sockel:
 
 ```room
-~ 1...F...L...#
+~ 1...L...L...#
 #.....M.....#
 ~ #...L...R...#
 ```
