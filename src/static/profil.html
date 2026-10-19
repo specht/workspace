@@ -442,6 +442,7 @@
                         <label class='form-check-label' for='cb_export_all'>Auch Ordner, die sich neu erzeugen lassen (<code>node_modules</code>, Build-Ordner, Python-Umgebungen) <span id='my_data_all_size' class='text-body-secondary'></span></label>
                     </div>
                     <a class="btn btn-secondary #{@impersonated_by ? 'disabled' : ''}" id='bu_export_my_data' href="/api/export_my_data" download><i class='bi bi-download'></i>Meine Daten herunterladen</a>
+                    <p class='small text-danger-emphasis mt-2 mb-0' id='export_message' role='status' hidden></p>
                 </div>
                 <div class="profile-subsection" id='make_room'>
                     <h3>Platz schaffen</h3>
@@ -936,6 +937,47 @@ vscode_config: {}</pre>
     window.addEventListener('load', function() {
         $('#cb_export_all').on('change', function () {
             $('#bu_export_my_data').attr('href', this.checked ? '/api/export_my_data?alle=1' : '/api/export_my_data');
+        });
+        // Packing takes a moment before the browser shows anything. The
+        // download runs in a hidden frame: the server sets the cookie
+        // export_started to our token once the archive streams, and a page
+        // instead of an archive (busy, an error) loads into the frame, where
+        // we can read it.
+        $('#bu_export_my_data').on('click', function (e) {
+            const button = $(this);
+            e.preventDefault();
+            if (button.hasClass('disabled') || button.attr('aria-busy')) return;
+            $('#export_message').prop('hidden', true).text('');
+            const label = button.html();
+            const token = Math.random().toString(36).slice(2, 12) + Date.now().toString(36);
+            const href = button.attr('href');
+            // Busy, not disabled: the button keeps its colour while it works.
+            button.attr('aria-busy', 'true').css('pointer-events', 'none')
+                .html("<span class='spinner-border spinner-border-sm me-2' aria-hidden='true'></span>Wird gepackt …");
+            let done = false;
+            const finish = function (html) {
+                if (done) return;
+                done = true;
+                clearInterval(watch);
+                if (html) button.html(html);
+                setTimeout(function () { button.removeAttr('aria-busy').css('pointer-events', '').html(label); frame.remove(); }, html ? 8000 : 0);
+            };
+            const frame = $("<iframe hidden title='Download'></iframe>").appendTo('body');
+            frame.on('load', function () {
+                let text = '';
+                try { text = frame[0].contentDocument.body.innerText.split('\n')[0].trim(); } catch (err) { }
+                $('#export_message').text(text || 'Der Download hat nicht geklappt. Versuch es bitte noch einmal.').prop('hidden', false);
+                finish();
+            });
+            const started = Date.now();
+            const watch = setInterval(function () {
+                if (document.cookie.split('; ').includes(`export_started=${token}`)) {
+                    finish("<i class='bi bi-check-lg'></i>Download läuft, siehe Browser");
+                } else if (Date.now() - started > 120000) {
+                    finish();
+                }
+            }, 300);
+            frame.attr('src', href + (href.includes('?') ? '&' : '?') + 'token=' + token);
         });
         const my_data = document.getElementById('my-data');
         if (my_data && 'IntersectionObserver' in window) {

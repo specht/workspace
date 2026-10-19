@@ -26,7 +26,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   und den Befehl; ein Häkchen nimmt sie doch mit. Gepackt wird schneller:
   Bilder, Videos und Archive kommen unverändert hinein, der Rest mit der
   schnellsten Stufe. Höchstens zwei Downloads laufen gleichzeitig, je Person
-  einer; wer warten muss, bekommt eine Seite, die das sagt.
+  einer; wer warten muss, liest das unter dem Knopf. Der Knopf zeigt
+  »Wird gepackt …«, bis der Download beginnt, dann »Download läuft«.
 - »Platz schaffen« im Profil: Lernende sehen die Ordner, die sich neu
   erzeugen lassen, mit Größe und Befehl, und löschen die angehakten.
   Vorab angehakt ist nur, was sicher unverändert ist: `node_modules` nicht,

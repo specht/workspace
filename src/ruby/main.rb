@@ -4568,6 +4568,12 @@ class Main < Sinatra::Base
         content_type 'application/zip'
         attachment AccountExport.filename(email)
         response.headers['Cache-Control'] = 'no-store'
+        # The profile's button waits for this cookie to say the download has
+        # started: a link that downloads tells the page nothing.
+        if params['token'].to_s =~ /\A[a-z0-9]{8,32}\z/
+            response.set_cookie('export_started', :value => params['token'], :path => '/', :max_age => 120,
+                :same_site => :strict, :httponly => false)
+        end
         stream do |out|
             begin
                 IO.popen(args, 'rb', :err => File::NULL) do |io|
