@@ -18,6 +18,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Backrooms: Wände und Böden auch aus Holz (`wood`) und aus kleinen
+  Fliesen wie im Schwimmbad (`tiles`); die Aktivität zeigt alle fünf Arten
+  am leeren Saal, eine Decke, die nur in eine Richtung ansteigt, und die
+  Leuchten im Satteldach weiter auseinander.
 - Backrooms: Jeder Raum hat eine Sockelleiste, etwas dunkler als die Wand
   (`baseboard = none`: keine), und die Leisten treffen sich sauber an den
   Ecken; flackernde Leuchten werfen ihr Licht auch zurück (ein Raum nur mit

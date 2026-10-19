@@ -1,0 +1,21 @@
+# Ein Saal hinter der Kammer.
+
+[room]
+name = Saal
+height = 3
+walls = marble
+floor = marble
+
+[map]
+#############
+#...........#
+#...L...L...#
+1...........#
+#...........#
+#...........#
+#...L...L...#
+#...........#
+#############
+
+[L]
+light = #fff3cf
