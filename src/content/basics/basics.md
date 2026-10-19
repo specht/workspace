@@ -173,8 +173,9 @@ Um einen Checkpoint zu erstellen, wechsle links in den Explorer und klappe den B
 # Ordner checkpoint-test mit einer README.md öffnen, von vorn: ohne Ordner
 close-folder
 write-file: checkpoint-test/README.md <- file:checkpoint-test-README.txt
-# nach dem Schließen hat das Fenster keinen Tastaturfokus: der Knopf statt Strg+K Strg+O
-click: Open Folder
+# nach dem Schließen hat das Fenster keinen Tastaturfokus: der Knopf statt Strg+K Strg+O;
+# der im Explorer (VS Code 1.140 hat noch einen zweiten »Open Folder«)
+click: selector:.part.sidebar .monaco-button:has-text("Open Folder")
 wait-for-input-value: /workspace/
 type: checkpoint-test
 press: Enter

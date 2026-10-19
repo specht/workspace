@@ -1,119 +1,142 @@
 <style>
-    /* The whole window, without scrolling: the head, then the newest file as
-       large as the space allows, a strip of the ones before, and the pages
-       on the right (they scroll on their own). Height and width come from
-       fit() below. */
-    .screenshot-progress {
+    /* The whole window (or the screen, with »Vollbild«): a slim bar with the
+       state of the pass, and the files captured so far, one at a time, as
+       large as they fit. New ones fly in from the right while you are at the
+       newest; scroll or swipe back and the view stays where you are, back at
+       the end it follows again. */
+    .sp-root {
+        position: fixed;
+        inset: 0;
+        z-index: 1100;
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem);
-        grid-template-rows: auto auto auto minmax(0, 1fr) auto;
-        gap: 0.4rem 1.25rem;
-        height: var(--sp-height, 80vh);
-        width: var(--sp-width, 100%);
-        margin-left: var(--sp-shift, 0);
-        padding: 0 1rem;
-        overflow: hidden;
+        background: var(--bs-body-bg);
+        color: var(--bs-body-color);
     }
-    .sp-head,
-    .sp-bar,
-    .sp-now {
-        grid-column: 1 / 3;
-    }
-    .sp-head {
+    .sp-stage {
+        position: relative;
         display: flex;
-        flex-wrap: wrap;
-        align-items: baseline;
-        gap: 0.25rem 1.5rem;
+        min-width: 0;
+        min-height: 0;
     }
-    .sp-head h1 {
-        font-size: 1.6rem;
-        margin: 0;
-    }
-    .sp-summary {
-        color: var(--bs-secondary-color);
-    }
-    .sp-bar {
-        height: 1rem;
-    }
-    .sp-now {
-        min-height: 1.5em;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-    }
-    .sp-latest {
-        grid-column: 1;
-        grid-row: 4;
+    .sp-side {
         display: flex;
         flex-direction: column;
         min-height: 0;
-        cursor: zoom-in;
+        border-left: 1px solid var(--bs-border-color);
+        background: var(--bs-tertiary-bg);
     }
-    .sp-latest img,
-    .sp-latest video {
+    .sp-state {
+        flex: 0 0 auto;
+        padding: 0.75rem 0.75rem 0.6rem;
+        border-bottom: 1px solid var(--bs-border-color);
+    }
+    .sp-state-head {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .sp-state-head h1 {
+        font-size: 1.1rem;
+        margin: 0 auto 0 0;
+    }
+    .sp-bar {
+        height: 0.5rem;
+        border-radius: 0.25rem;
+        overflow: hidden;
+        background: var(--bs-secondary-bg);
+        margin-bottom: 0.4rem;
+    }
+    .sp-bar > div {
+        height: 100%;
+        width: 0;
+        background: var(--bs-primary);
+        transition: width 0.6s ease;
+    }
+    .sp-bar.has-errors > div {
+        background: var(--bs-warning);
+    }
+    .sp-summary {
+        font-size: 0.85rem;
+        color: var(--bs-secondary-color);
+    }
+    .sp-now {
+        margin-top: 0.3rem;
+        font-size: 0.85rem;
+        overflow-wrap: anywhere;
+    }
+    .sp-slides {
         flex: 1 1 auto;
         min-height: 0;
-        width: 100%;
-        object-fit: contain;
-        background: var(--bs-tertiary-bg);
-        border-radius: 0.4rem;
-    }
-    .sp-caption {
-        font-size: 0.8rem;
-        color: var(--bs-secondary-color);
-        margin-top: 0.2rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .sp-stream {
-        grid-column: 1;
-        grid-row: 5;
         display: flex;
-        gap: 0.6rem;
-        height: 8.5rem;
-        overflow: hidden;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        overscroll-behavior-x: contain;
     }
-    .sp-thumb {
-        flex: 0 0 11rem;
-        border: 0;
-        padding: 0;
-        background: none;
-        text-align: left;
-        animation: sp-in 0.4s ease-out;
+    .sp-slides::-webkit-scrollbar {
+        display: none;
+    }
+    .sp-slide {
+        flex: 0 0 100%;
+        scroll-snap-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1rem 0.5rem;
         min-width: 0;
     }
-    .sp-thumb img,
-    .sp-thumb video {
-        display: block;
-        width: 100%;
-        height: 6.9rem;
+    .sp-slide img,
+    .sp-slide video {
+        flex: 1 1 auto;
+        min-height: 0;
+        max-width: 100%;
         object-fit: contain;
-        border-radius: 0.3rem;
-        background: var(--bs-tertiary-bg);
+        border-radius: 0.4rem;
+        box-shadow: 0 0.25rem 1.5rem rgba(0, 0, 0, 0.18);
     }
-    .sp-thumb:hover img,
-    .sp-thumb:hover video {
-        outline: 2px solid var(--bs-primary);
+    .sp-slide.new img,
+    .sp-slide.new video {
+        animation: sp-fly 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
-    @keyframes sp-in {
-        from { opacity: 0; transform: translateX(-0.4rem); }
+    @keyframes sp-fly {
+        from { opacity: 0; transform: translateX(12%) scale(0.96); }
         to { opacity: 1; transform: none; }
     }
+    .sp-caption {
+        flex: 0 0 auto;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--bs-secondary-color);
+        text-align: center;
+        overflow-wrap: anywhere;
+    }
+    .sp-empty {
+        margin: auto;
+        color: var(--bs-secondary-color);
+        text-align: center;
+        padding: 2rem;
+    }
+    .sp-live {
+        position: absolute;
+        right: 1rem;
+        bottom: 1rem;
+        z-index: 2;
+    }
     .sp-pages {
-        grid-column: 2;
-        grid-row: 4 / 6;
+        flex: 1 1 auto;
         min-height: 0;
         overflow-y: auto;
-        border: 1px solid var(--bs-border-color);
-        border-radius: 0.4rem;
     }
     .sp-page {
         display: grid;
         grid-template-columns: 1.4rem 1fr auto;
         gap: 0 0.5rem;
         align-items: baseline;
-        padding: 0.25rem 0.6rem;
+        padding: 0.3rem 0.7rem;
         border-bottom: 1px solid var(--bs-border-color-translucent);
         font-size: 0.85rem;
     }
@@ -136,42 +159,44 @@
         font-variant-numeric: tabular-nums;
         white-space: nowrap;
     }
-    .sp-large {
-        width: 100%;
-        max-height: 80vh;
-        object-fit: contain;
-    }
+    /* Narrow: the column below the pictures */
     @media (max-width: 767.98px) {
-        .screenshot-progress {
+        .sp-root {
             grid-template-columns: minmax(0, 1fr);
-            grid-template-rows: auto auto auto minmax(0, 1fr) auto 10rem;
+            grid-template-rows: minmax(0, 1fr) 38vh;
         }
-        .sp-pages {
-            grid-column: 1;
-            grid-row: 6;
+        .sp-side {
+            border-left: 0;
+            border-top: 1px solid var(--bs-border-color);
         }
     }
 </style>
 
-<div class='screenshot-progress' id='sp_root'>
-    <div class='sp-head'>
-        <h1>Screenshots</h1>
-        <span class='sp-summary' id='sp_summary' role='status' aria-live='polite'>Einen Moment …</span>
+<div class='sp-root' id='sp_root'>
+    <div class='sp-stage'>
+        <div class='sp-slides' id='sp_slides' tabindex='0' aria-label='Aufgenommene Dateien; Pfeiltasten blättern'>
+            <div class='sp-empty' id='sp_empty'>Noch nichts aufgenommen. Die Bilder erscheinen hier, sobald der Generator sie schreibt.</div>
+        </div>
+        <button type='button' class='btn btn-primary sp-live' id='bu_sp_live' hidden><i class='bi bi-skip-end-fill'></i>Live</button>
     </div>
-    <div class='progress sp-bar' role='progressbar' aria-label='Fortschritt des Durchlaufs' aria-valuemin='0' aria-valuemax='100' id='sp_progress'>
-        <div class='progress-bar' id='sp_bar' style='width: 0%'></div>
+    <div class='sp-side'>
+        <div class='sp-state'>
+            <div class='sp-state-head'>
+                <h1>Screenshots</h1>
+                <button type='button' class='btn btn-sm btn-outline-secondary btn-icon' id='bu_sp_full' title='Vollbild' aria-label='Vollbild'><i class='bi bi-fullscreen'></i></button>
+                <a class='btn btn-sm btn-outline-secondary btn-icon' href='/admin' title='Zurück zur Website' aria-label='Zurück zur Website'><i class='bi bi-x-lg'></i></a>
+            </div>
+            <div class='sp-bar' id='sp_bar' role='progressbar' aria-label='Fortschritt des Durchlaufs' aria-valuemin='0' aria-valuemax='100'><div></div></div>
+            <div class='sp-summary' id='sp_summary' role='status' aria-live='polite'>Einen Moment …</div>
+            <div class='sp-now' id='sp_now'></div>
+        </div>
+        <div class='sp-pages' id='sp_pages' aria-label='Seiten'></div>
     </div>
-    <div class='sp-now' id='sp_now'></div>
-    <div class='sp-latest' id='sp_latest' aria-label='Zuletzt aufgenommen'></div>
-    <div class='sp-stream' id='sp_stream' aria-label='Davor aufgenommen'></div>
-    <div class='sp-pages' id='sp_pages' aria-label='Seiten'></div>
 </div>
 
 <script>
-    // How a pass of src/scripts/recreate-screenshots.rb is going, from the
-    // generator (/api/tutorial_screenshots/overview), every two seconds while
-    // the tab is visible: the overall count, the page and file being made,
-    // each page's state, and the files as they are captured.
+    // How a pass of src/scripts/recreate-screenshots.rb is going
+    // (/api/tutorial_screenshots/overview, every two seconds while visible).
     (function () {
         const esc = (t) => $('<div>').text(t === undefined || t === null ? '' : String(t)).html();
         const url = (c) => `/api/tutorial_screenshots/capture?markdown=${encodeURIComponent(c.markdown_path)}&target=${encodeURIComponent(c.target)}&v=${encodeURIComponent(c.revision || c.at)}`;
@@ -181,45 +206,72 @@
             const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
             return h ? `${h} h ${m} min` : m ? `${m} min ${s % 60} s` : `${s} s`;
         };
-        let shown = new Set();
+        const slides = document.getElementById('sp_slides');
+        const seen = new Set();
+        let following = true;     // at the newest: new files are shown as they come
         let last_running = null;
 
-        function media(c, cls) {
-            return c.kind === 'video'
-                ? `<video class='${cls || ''}' src='${url(c)}' muted autoplay loop playsinline></video>`
-                : `<img class='${cls || ''}' src='${url(c)}' alt='${esc(c.target)} aus ${esc(page_name(c.markdown_path))}' loading='lazy'>`;
+        // Which slide is in view, and whether that is the last one.
+        const current_index = () => Math.round(slides.scrollLeft / Math.max(1, slides.clientWidth));
+        const at_end = () => slides.children.length === 0 || current_index() >= slides.querySelectorAll('.sp-slide').length - 1;
+        function go(index, smooth) {
+            const count = slides.querySelectorAll('.sp-slide').length;
+            const i = Math.max(0, Math.min(count - 1, index));
+            slides.scrollTo({ left: i * slides.clientWidth, behavior: smooth ? 'smooth' : 'auto' });
+        }
+        function set_following(on) {
+            following = on;
+            $('#bu_sp_live').prop('hidden', on);
+        }
+        slides.addEventListener('scroll', () => {
+            clearTimeout(slides._settle);
+            slides._settle = setTimeout(() => set_following(at_end()), 120);
+            play_visible();
+        }, { passive: true });
+
+        // Only the video in view plays.
+        function play_visible() {
+            const i = current_index();
+            slides.querySelectorAll('.sp-slide').forEach((slide, n) => {
+                const video = slide.querySelector('video');
+                if (!video) return;
+                if (n === i) video.play().catch(() => { }); else video.pause();
+            });
         }
 
-        function open_large(c) {
-            showTemplateModal(esc(`${page_name(c.markdown_path)} › ${c.target}`), media(c, 'sp-large'), "<i class='bi bi-x-lg'></i>Schließen", 'btn-outline-secondary', null, null, function () { });
+        function add_slide(c, animate) {
+            $('#sp_empty').remove();
+            const when = new Date(c.at).toLocaleTimeString('de-DE');
+            const media = c.kind === 'video'
+                ? `<video src='${url(c)}' muted loop playsinline preload='metadata'></video>`
+                : `<img src='${url(c)}' alt='${esc(c.target)} aus ${esc(page_name(c.markdown_path))}'>`;
+            const slide = $(`<div class='sp-slide${animate ? ' new' : ''}'>${media}<div class='sp-caption'>${esc(page_name(c.markdown_path))} › ${esc(c.target)} · ${when}</div></div>`);
+            slides.appendChild(slide[0]);
         }
 
         function render(data) {
             const pages = data.pages || [];
-            if (!data.run) {
-                $('#sp_summary').text('Kein Durchlauf. Start: src/scripts/recreate-screenshots.rb --stale');
-            }
             const total = pages.reduce((n, p) => n + p.stale, 0);
             const done = pages.reduce((n, p) => n + Math.min(p.generated, p.stale), 0);
             const pages_done = pages.filter(p => p.status === 'done' || p.status === 'error').length;
             const errors = pages.filter(p => p.status === 'error');
             const percent = total ? Math.round(100 * done / total) : (pages.length && pages_done === pages.length ? 100 : 0);
-            $('#sp_bar').css('width', `${percent}%`).toggleClass('bg-danger', errors.length > 0 && pages_done === pages.length);
-            $('#sp_progress').attr('aria-valuenow', percent);
-            if (data.run) {
+            $('#sp_bar').toggleClass('has-errors', errors.length > 0).attr('aria-valuenow', percent).children().css('width', `${percent}%`);
+            if (!data.run) {
+                $('#sp_summary').text('Kein Durchlauf. Start: src/scripts/recreate-screenshots.rb --stale');
+            } else {
                 const elapsed = data.now - data.run.started_at;
-                const left = done > 0 && done < total ? elapsed / done * (total - done) : null;
-                $('#sp_summary').text(`${done} von ${total} Dateien · ${pages_done} von ${pages.length} Seiten · seit ${duration(elapsed)}`
-                    + (left ? ` · noch etwa ${duration(left)}` : '')
-                    + (errors.length ? ` · ${errors.length} ${errors.length === 1 ? 'Seite' : 'Seiten'} mit Fehler` : ''));
+                const left = done > 2 && done < total ? elapsed / done * (total - done) : null;
+                $('#sp_summary').text(`${done} von ${total} Dateien · ${pages_done} von ${pages.length} Seiten · ${duration(elapsed)}`
+                    + (left ? ` · noch etwa ${duration(left)}` : ''));
             }
+            if (errors.length) $('#sp_summary').append(` · <span class='text-danger-emphasis'>${errors.length} ${errors.length === 1 ? 'Seite' : 'Seiten'} mit Fehler</span>`);
 
             const running = pages.find(p => p.status === 'running' || p.status === 'preparing');
             $('#sp_now').html(running
-                ? `<span class='spinner-border spinner-border-sm me-2' aria-hidden='true'></span><strong>${esc(page_name(running.markdown_path))}</strong>`
-                    + ` · ${running.generated} von ${running.stale} neu`
-                    + (running.current_target ? ` · jetzt <code>${esc(running.current_target)}</code>` : running.status === 'preparing' ? ' · Workspace wird vorbereitet' : '')
-                : (data.run && pages_done === pages.length ? `<i class='bi bi-check-lg me-1'></i>Fertig.` : ''));
+                ? `<span class='spinner-border spinner-border-sm me-1' aria-hidden='true'></span><strong>${esc(page_name(running.markdown_path))}</strong> ${running.generated} / ${running.stale}`
+                    + (running.current_target ? ` · <code>${esc(running.current_target)}</code>` : running.status === 'preparing' ? ' · Workspace wird vorbereitet' : '')
+                : (data.run && pages.length && pages_done === pages.length ? `<i class='bi bi-check-lg me-1'></i>Fertig${errors.length ? `, ${errors.length} ${errors.length === 1 ? 'Seite' : 'Seiten'} mit Fehler` : ''}.` : ''));
 
             const list = $('#sp_pages').empty();
             for (const p of pages) {
@@ -227,7 +279,7 @@
                     : p.status === 'error' ? "<i class='bi bi-exclamation-triangle text-danger'></i>"
                     : (p.status === 'running' || p.status === 'preparing') ? "<span class='spinner-border spinner-border-sm' aria-hidden='true'></span>"
                     : "<i class='bi bi-circle'></i>";
-                const cls = p.status === 'running' || p.status === 'preparing' ? 'running' : p.status === 'waiting' || p.status === 'queued' ? 'waiting' : '';
+                const cls = p.status === 'running' || p.status === 'preparing' ? 'running' : (p.status === 'waiting' || p.status === 'queued') ? 'waiting' : '';
                 const row = $(`<div class='sp-page ${cls}'>${icon}<span>${esc(page_name(p.markdown_path))}</span><span class='sp-count'>${p.generated} / ${p.stale}</span></div>`);
                 if (p.error) row.append($("<div class='sp-error'>").text(p.error));
                 list.append(row);
@@ -238,24 +290,20 @@
                 if (row) row.scrollIntoView({ block: 'nearest' });
             }
 
-            const recent = data.recent || [];
-            if (recent.length) {
-                const latest = recent[0];
-                const key = `${latest.markdown_path}|${latest.target}|${latest.revision}`;
-                if ($('#sp_latest').data('key') !== key) {
-                    $('#sp_latest').data('key', key).html(`${media(latest)}<div class='sp-caption'>${esc(page_name(latest.markdown_path))} › ${esc(latest.target)}</div>`);
-                    $('#sp_latest').off('click').on('click', () => open_large(latest)).css('cursor', 'zoom-in');
-                }
-            }
-            for (const c of recent.slice(1).reverse()) {
+            // New files, oldest first; the view follows only when at the end.
+            const fresh = (data.recent || []).slice().reverse().filter(c => {
                 const key = `${c.markdown_path}|${c.target}|${c.revision}`;
-                if (shown.has(key)) continue;
-                shown.add(key);
-                const thumb = $(`<button type='button' class='sp-thumb'>${media(c)}<div class='sp-caption'>${esc(page_name(c.markdown_path))} › ${esc(c.target)}</div></button>`);
-                thumb.on('click', () => open_large(c));
-                $('#sp_stream').prepend(thumb);
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+            if (fresh.length) {
+                const first_load = slides.querySelectorAll('.sp-slide').length === 0;
+                const follow = following;
+                fresh.forEach((c, n) => add_slide(c, follow && !first_load && n === fresh.length - 1));
+                if (follow) go(slides.querySelectorAll('.sp-slide').length - 1, !first_load);
+                play_visible();
             }
-            $('#sp_stream .sp-thumb').slice(24).remove();
         }
 
         function poll() {
@@ -265,22 +313,44 @@
                 .then(render)
                 .catch(() => $('#sp_summary').text('Der Screenshot-Generator antwortet nicht.'));
         }
-        // The page takes the whole window below the site's head and above its
-        // bar at the bottom, and the whole width, whatever the template's
-        // container: nothing scrolls but the list of pages.
-        function fit() {
-            const root = document.getElementById('sp_root');
-            const top = root.getBoundingClientRect().top + window.scrollY;
-            const bar = [...document.querySelectorAll('body *')].find(e => getComputedStyle(e).position === 'fixed' && e.getBoundingClientRect().bottom >= window.innerHeight - 1 && e.getBoundingClientRect().top > window.innerHeight / 2);
-            const bottom = bar ? bar.getBoundingClientRect().height : 0;
-            const left = root.parentElement.getBoundingClientRect().left;
-            root.style.setProperty('--sp-height', `${Math.max(320, window.innerHeight - top - bottom - 8)}px`);
-            root.style.setProperty('--sp-width', `${document.documentElement.clientWidth}px`);
-            root.style.setProperty('--sp-shift', `${-left}px`);
+
+        // Real fullscreen where the browser allows it (Safari on the iPad
+        // knows only the webkit names).
+        function toggle_fullscreen() {
+            const el = document.getElementById('sp_root');
+            const active = document.fullscreenElement || document.webkitFullscreenElement;
+            if (active) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+            else (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
         }
-        window.addEventListener('resize', fit);
+        function fullscreen_label() {
+            const active = document.fullscreenElement || document.webkitFullscreenElement;
+            $('#bu_sp_full').html(active ? "<i class='bi bi-fullscreen-exit'></i>" : "<i class='bi bi-fullscreen'></i>")
+                .attr({ title: active ? 'Vollbild beenden' : 'Vollbild', 'aria-label': active ? 'Vollbild beenden' : 'Vollbild' });
+        }
+
         window.addEventListener('load', function () {
-            fit();
+            if (!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen)) $('#bu_sp_full').hide();
+            $('#bu_sp_full').on('click', toggle_fullscreen);
+            document.addEventListener('fullscreenchange', fullscreen_label);
+            document.addEventListener('webkitfullscreenchange', fullscreen_label);
+            $('#bu_sp_live').on('click', () => { set_following(true); go(slides.querySelectorAll('.sp-slide').length - 1, true); });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'ArrowLeft') { e.preventDefault(); go(current_index() - 1, true); }
+                else if (e.key === 'ArrowRight') { e.preventDefault(); go(current_index() + 1, true); }
+                else if (e.key === 'End') { e.preventDefault(); go(slides.querySelectorAll('.sp-slide').length - 1, true); }
+                else if (e.key === 'Home') { e.preventDefault(); go(0, true); }
+            });
+            // A turn of the mouse wheel moves sideways by one file.
+            slides.addEventListener('wheel', function (e) {
+                if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+                e.preventDefault();
+                clearTimeout(slides._wheel);
+                if (slides._wheelLock) return;
+                slides._wheelLock = true;
+                go(current_index() + (e.deltaY > 0 ? 1 : -1), true);
+                slides._wheel = setTimeout(() => { slides._wheelLock = false; }, 350);
+            }, { passive: false });
+            window.addEventListener('resize', () => go(current_index(), false));
             poll();
             setInterval(poll, 2000);
             document.addEventListener('visibilitychange', poll);
