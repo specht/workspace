@@ -27,7 +27,8 @@ all: $(PROGRAM).html
 $(PAGE):
 	@mkdir -p $(dir $@)
 	@echo "Lade die Webseite von PixelRAM $(PAGE_VERSION) ..."
-	@curl -fsSL "$(PAGE_URL)" | sed 's|<title>PixelRAM</title>|<title>raylib</title>|' > $@.tmp
+	@curl -fsSL "$(PAGE_URL)" -o $@.download || { rm -f $@.download; echo "Die Webseite von PixelRAM ließ sich nicht laden: $(PAGE_URL)"; exit 1; }
+	@sed 's|<title>PixelRAM</title>|<title>raylib</title>|' $@.download > $@.tmp && rm -f $@.download
 	@mv $@.tmp $@
 
 $(PROGRAM).html: $(PROGRAM).c light.vs light.fs $(IMAGES) $(PAGE)
