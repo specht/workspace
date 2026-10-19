@@ -2071,6 +2071,40 @@ async function waitForImagePreview(page) {
     await page.waitForTimeout(1_500);
 }
 
+// Every tab besides the Workspace and the preview: a preview tab that could
+// not be closed when it was replaced keeps running, a 3D scene drawing frame
+// after frame in software WebGL, and slows everything after it down.
+async function closeLeftoverTabs() {
+    const leftovers = context.pages().filter((page) => page !== workspace && page !== preview);
+    for (const page of leftovers) {
+        await withTimeout(page.close({ runBeforeUnload: false }), 10_000, 'closing a leftover tab').catch((error) => {
+            console.log(`  a leftover tab did not close: ${error.message}`);
+        });
+    }
+    // Chromium itself may still hold a tab Playwright has lost track of.
+    let lost = 0;
+    try {
+        const keep = new Set();
+        for (const page of [workspace, preview]) {
+            if (!page || page.isClosed()) continue;
+            const session = await context.newCDPSession(page);
+            keep.add((await session.send('Target.getTargetInfo')).targetInfo.targetId);
+            await session.detach().catch(() => {});
+        }
+        const browserSession = await (await ensureBrowser()).newBrowserCDPSession();
+        const { targetInfos } = await browserSession.send('Target.getTargets');
+        for (const target of targetInfos) {
+            if (target.type !== 'page' || keep.has(target.targetId)) continue;
+            await browserSession.send('Target.closeTarget', { targetId: target.targetId }).catch(() => {});
+            lost += 1;
+        }
+        await browserSession.detach().catch(() => {});
+    } catch (error) {
+        console.log(`  could not list the browser's tabs: ${error.message}`);
+    }
+    if (leftovers.length || lost) console.log(`  closed ${leftovers.length + lost} leftover tab(s)`);
+}
+
 async function goLive(hooks) {
     const goLive = workspace.getByText('Go Live', { exact: true }).last();
     await goLive.waitFor({ state: 'visible', timeout: 30_000 });
@@ -2208,6 +2242,7 @@ async function previewReload(reset = false, hooks = null) {
                     console.log(`  the preview tab is gone; opening ${url} in a new one`);
                     await withTimeout(preview.close(), 10_000, 'closing the preview tab').catch(() => {});
                     preview = await withTimeout(context.newPage(), 60_000, 'opening a new preview tab');
+                    await closeLeftoverTabs();
                     await preview.goto(url, { waitUntil: 'domcontentloaded', timeout: 60_000 });
                     await withTimeout(waitForPreviewReady(preview, hooks), 120_000, 'the new preview tab getting ready');
                     return;
