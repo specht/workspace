@@ -12,7 +12,6 @@ const readyTimeout = 60_000;
 // screen. The loop drawing on in the background, all in software WebGL,
 // took several seconds per frame in the generator, and every wait for two
 // frames of it with it; a picture needs one frame, drawn when it is due.
-// The next scene reloads the page, which starts the loop again.
 async function drawOnce(page) {
     await page.evaluate(() => {
         noLoop();
@@ -36,9 +35,10 @@ export default {
     writeFileSubdirectory: 'anaglyph',
 
     // The scene file is loaded, its models and textures are there
-    // (pendingAssets, script.js), and it is drawn once: the hooks draw each
-    // picture on demand anyway. Waiting for several frames of the loop took
-    // seconds per scene in software WebGL.
+    // (pendingAssets, script.js), and it is drawn once. Then p5's loop stops:
+    // every picture is drawn on demand by the hooks (drawOnce, setPreviewTime).
+    // A loop drawing on in the background, in software WebGL, scene after
+    // scene, wore the browser's GPU process down until tabs no longer loaded.
     async waitForPreview({ page, timeout }) {
         await page.waitForFunction(
             () => typeof sceneDescription !== 'undefined' && window.frameCount >= 1 &&
@@ -46,6 +46,7 @@ export default {
             null,
             { timeout: timeout ?? readyTimeout },
         );
+        await drawOnce(page);
     },
 
     // Recipe instructions only this viewer understands (hook: NAME ARGS).
@@ -104,8 +105,9 @@ export default {
         await page.evaluate((ms) => {
             if (!window.__tutorialRealMillis) window.__tutorialRealMillis = window.millis;
             if (ms === null) {
+                // back to real time, drawn once; the loop stays off (waitForPreview)
                 window.millis = window.__tutorialRealMillis;
-                loop();
+                redraw();
                 return;
             }
             noLoop();

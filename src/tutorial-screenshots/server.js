@@ -2254,7 +2254,9 @@ async function previewReload(reset = false, hooks = null) {
                     console.log(`  the preview tab is gone; opening ${url} in a new one`);
                     await withTimeout(preview.close(), 10_000, 'closing the preview tab').catch(() => {});
                     preview = await withTimeout(context.newPage(), 60_000, 'opening a new preview tab');
-                    await closeLeftoverTabs();
+                    await withTimeout(closeLeftoverTabs(), 20_000, 'closing leftover preview tabs').catch((error) => {
+                        console.log(`  ${error.message}`);
+                    });
                     await preview.goto(url, { waitUntil: 'domcontentloaded', timeout: 60_000 });
                     await withTimeout(waitForPreviewReady(preview, hooks), 120_000, 'the new preview tab getting ready');
                     return;
