@@ -131,29 +131,41 @@ export function stateParts(shot) {
 // scope), or null. Inside a scope the chain runs on as usual; after it, it
 // goes on from where it stood before the scope, plus those entry steps, as
 // if the scope had not been there.
-export function chainStateHashes(shots, seed, scopeOf = () => null) {
+//
+// hashView(shot) is what the hash sees of a shot: the default Workspace
+// window as »workspace«, not its height (server.js), so a taller window does
+// not make the previews after a Workspace shot stale. formerStateHash is
+// the hash before that (the concrete height), accepted once like
+// legacyStateHash so the switch re-renders nothing.
+export function chainStateHashes(shots, seed, scopeOf = () => null, hashView = shot => shot) {
     let chain = seed;
+    let former = seed;
     let legacy = seed;
-    let open = null; // { scope, before }
+    let open = null; // { scope, after, formerAfter }
     return shots.map(original => {
         const scoped = scopeOf(original);
         if (open && (!scoped || scoped.scope !== open.scope)) {
             chain = open.after;
+            former = open.formerAfter;
             open = null;
         }
-        const shot = withoutAssertions(original);
+        const concrete = withoutAssertions(original);
+        const shot = withoutAssertions(hashView(original));
         if (scoped && !open) {
             const entry = { actions: shot.actions.slice(0, scoped.entry) };
             open = {
                 scope: scoped.scope,
                 after: scoped.entry > 0 ? sha256(`${chain}\0${JSON.stringify(entry)}`) : chain,
+                formerAfter: scoped.entry > 0 ? sha256(`${former}\0${JSON.stringify(entry)}`) : former,
             };
         }
         const stateHash = sha256(`${chain}\0${JSON.stringify(shot)}`);
-        const legacyStateHash = sha256(`${legacy}\0${JSON.stringify(shot)}`);
+        const formerStateHash = sha256(`${former}\0${JSON.stringify(concrete)}`);
+        const legacyStateHash = sha256(`${legacy}\0${JSON.stringify(concrete)}`);
         chain = sha256(`${chain}\0${JSON.stringify(stateParts(shot))}`);
+        former = sha256(`${former}\0${JSON.stringify(stateParts(concrete))}`);
         legacy = legacyStateHash;
-        return { stateHash, legacyStateHash };
+        return { stateHash, formerStateHash, legacyStateHash };
     });
 }
 
@@ -189,7 +201,7 @@ export function entryIsCurrent(previous, shot, { environmentFingerprint, workspa
     if (previous.workspace_look === undefined) {
         return previous.state_hash === shot.legacyStateHash || previous.state_hash === shot.stateHash;
     }
-    if (previous.state_hash !== shot.stateHash) return false;
+    if (previous.state_hash !== shot.stateHash && previous.state_hash !== shot.formerStateHash) return false;
     if (previous.environment_fingerprint !== environmentFingerprint) return false;
     if (showsWorkspace(shot) && workspaceLook !== 'unknown' && previous.workspace_look !== 'unknown' &&
         codeServerRelease(previous.workspace_look) !== codeServerRelease(workspaceLook)) return false;

@@ -841,7 +841,12 @@ the hand-made screenshots, a small browser window at a high zoom: a
 1029x560 (`:workspace_height`, `1008 / 1.8`): since VS Code 1.140 the panel is a
 card with margins and showed two terminal rows fewer. Its height is recorded
 with each Workspace shot (`workspace_window`), so changing it makes only those
-stale, not previews, PDF pages, image files or Git graphs. The renderer deliberately
+stale, not previews, PDF pages, image files or Git graphs. The chained state
+hash sees the default Workspace window as »workspace«, not its height:
+otherwise a taller window would make every shot after the first Workspace
+shot stale, the anaglyph videos included. A page whose Workspace shots are
+stale replays its preview steps, but captures and records only what is
+stale. The renderer deliberately
 does not choose a light or dark color scheme: code-server loads the Workspace's
 actual VS Code theme, and the screenshot generator waits until that theme has
 remained stable before running the recipe. The page keeps its normal layout while

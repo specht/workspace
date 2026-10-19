@@ -243,6 +243,10 @@ const TRAILING_STEPS = Symbol('tutorial-screenshot-trailing-steps');
 // actions are steps from before the scope (they run even if it is skipped).
 const SCOPE = Symbol('tutorial-scope');
 const SCOPE_ENTRY = Symbol('tutorial-scope-entry');
+// A Workspace shot in the default Workspace window (no viewport: of its
+// own): its state hash says »the Workspace window«, not the height, so a
+// taller window does not change the chain of the shots after it (plan.js).
+const DEFAULT_WORKSPACE_VIEWPORT = Symbol('tutorial-default-workspace-viewport');
 
 function markdownSourceLocation(markdown, markdownPath, offset) {
     const boundedOffset = Math.max(0, Math.min(offset, markdown.length));
@@ -1031,6 +1035,7 @@ async function parseTutorial(markdown, markdownPath) {
             cropBottom: recipe.cropBottom,
             actions: resolvedActions,
         };
+        if (!recipe.viewportSet && recipe.tab === 'workspace') resolved[DEFAULT_WORKSPACE_VIEWPORT] = true;
         if (recipe.cropTerminalLines != null) {
             resolved.cropTerminalLines = recipe.cropTerminalLines;
         }
@@ -1100,6 +1105,7 @@ async function parseTutorial(markdown, markdownPath) {
         shots,
         sha256(`tutorial-screenshot-v${GENERATOR_VERSION}\0${markdownPath}`),
         shot => (shot[SCOPE] === undefined ? null : { scope: shot[SCOPE], entry: shot[SCOPE_ENTRY] || 0 }),
+        shot => (shot[DEFAULT_WORKSPACE_VIEWPORT] ? { ...shot, viewport: 'workspace' } : shot),
     );
     shots.forEach((shot, index) => Object.assign(shot, hashes[index]));
     shots[TRAILING_STEPS] = pendingSteps;

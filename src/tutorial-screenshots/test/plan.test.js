@@ -225,3 +225,20 @@ test('a taller Workspace window makes only Workspace shots stale', () => {
     assert.ok(entryIsCurrent(entry, shot({ pdfPage: 1 }), env));
     assert.ok(entryIsCurrent(entry, shot({ gitGraph: 'main' }), env));
 });
+
+test('the Workspace window height is not part of the chain', () => {
+    const hashView = s => (s.defaultWindow ? { ...s, viewport: 'workspace', defaultWindow: undefined } : s);
+    const shots = height => [
+        { target: 'a.webp', tab: 'workspace', viewport: { width: 1029, height }, defaultWindow: true, actions: [{ type: 'press', key: 'Enter' }] },
+        { target: 'b.webp', tab: 'preview', viewport: { width: 1029, height: 516 }, actions: [{ type: 'sleep', seconds: 1 }] },
+    ];
+    const before = chainStateHashes(shots(516), 'seed', () => null, hashView);
+    const after = chainStateHashes(shots(560), 'seed', () => null, hashView);
+    // the preview after a taller Workspace shot keeps its hash
+    assert.equal(after[1].stateHash, before[1].stateHash);
+    assert.equal(after[0].stateHash, before[0].stateHash);
+    // the former formula saw the height: an entry written with it is accepted once
+    assert.notEqual(after[1].formerStateHash, before[1].formerStateHash);
+    const entry = { state_hash: after[1].formerStateHash, environment_fingerprint: 'e', workspace_look: 'x' };
+    assert.ok(entryIsCurrent(entry, { ...shots(560)[1], ...after[1] }, { environmentFingerprint: 'e', workspaceLook: 'x' }));
+});
