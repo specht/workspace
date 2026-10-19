@@ -164,7 +164,11 @@ Die erste Zeile in `main` bittet um zwei Dinge, bevor `InitWindow` das Fenster �
 
 ### Drei Achsen
 
-Ein Punkt im Raum hat drei Koordinaten. In raylib zeigt **x** nach rechts, **y** nach oben und **z** nach vorne, auf dich zu, wenn du von vorne auf die Welt schaust. Das Gitter, das `DrawGrid(10, 1)` zeichnet, liegt flach auf dem Boden, also bei y = 0, und reicht von −5 bis 5 in x- und z-Richtung. Eine Einheit ist in diesem Projekt ein Block.
+Ein Punkt im Raum hat drei Koordinaten. In raylib zeigt **x** nach rechts, **y** nach oben und **z** nach vorne, auf dich zu, wenn du von vorne auf die Welt schaust:
+
+<img class='drawing' style='width: 26em' src='../reference/raylib/axes.webp' alt='Drei Pfeile von einem Punkt aus: x rot nach rechts, y grün nach oben, z blau schräg nach vorne auf den Betrachter zu; darunter ein Gitter, das flach in x und z auf dem Boden liegt.'>
+
+Das Gitter, das `DrawGrid(10, 1)` zeichnet, liegt flach auf dem Boden, also bei y = 0, und reicht von −5 bis 5 in x- und z-Richtung. Eine Einheit ist in diesem Projekt ein Block.
 
 `DrawCube(position, width, height, length, color)` zeichnet einen Quader, dessen **Mitte** an der Position liegt. Der Würfel bei `(0, 0.5f, 0)` ist einen Block hoch und steht deshalb genau auf dem Boden. `DrawCubeWires` zeichnet dieselben Kanten noch einmal als Linien, aber ein winziges Stück größer: `1.01f` statt `1`.
 

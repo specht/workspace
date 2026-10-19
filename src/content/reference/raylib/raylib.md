@@ -115,7 +115,11 @@ DrawText(text, (GetScreenWidth() - MeasureText(text, 20)) / 2, 10, 20, WHITE);
 <!-- short: x nach rechts, y nach oben, z nach vorne; `(Vector3){ x, y, z }`. -->
 ### Koordinaten
 
-Ein Punkt im Raum hat drei Koordinaten: **x** nach rechts, **y** nach oben, **z** nach vorne, zum Betrachter hin, wenn man von vorne auf die Welt schaut. Positionen und Richtungen sind Werte vom Typ `Vector3`:
+Ein Punkt im Raum hat drei Koordinaten: **x** nach rechts, **y** nach oben, **z** nach vorne, zum Betrachter hin, wenn man von vorne auf die Welt schaut.
+
+<img class='drawing' style='width: 26em' src='axes.webp' alt='Drei Pfeile von einem Punkt aus: x rot nach rechts, y grün nach oben, z blau schräg nach vorne auf den Betrachter zu; darunter ein Gitter, das flach in x und z auf dem Boden liegt.'>
+
+Positionen und Richtungen sind Werte vom Typ `Vector3`:
 
 ```c
 Vector3 p = { 1, 0.5f, -2 };

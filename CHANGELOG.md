@@ -18,6 +18,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Ein Bild der drei Achsen in Perspektive (x nach rechts, y nach oben,
+  z nach vorne, darunter der Boden in x und z), hell und dunkel, im
+  Handbuch raylib, in der Klötzchenwelt und im Anaglyph-Editor.
 - PixelRAM und Klötzchenwelt hängen nicht mehr an einer festen Version von
   PixelRAM: Das erste `make` lädt die neueste und nimmt danach immer diese
   Kopie, auch ohne Internet; bestehende Projekte behalten ihre.

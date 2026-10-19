@@ -242,6 +242,8 @@ Die Richtungen sind wie folgt:
 - die Y-Achse verläuft von unten nach oben
 - die Z-Achse verläuft von hinten nach vorn
 
+<img class='drawing' style='width: 26em' src='../reference/raylib/axes.webp' alt='Drei Pfeile von einem Punkt aus: x rot nach rechts, y grün nach oben, z blau schräg nach vorne auf den Betrachter zu; darunter ein Gitter, das flach in x und z auf dem Boden liegt.'>
+
 Ein positiver Wert verschiebt das Objekt also nach rechts (X), nach oben (Y) oder nach vorne (Z), während ein negativer Wert es nach links, nach unten oder nach hinten verschiebt.
 
 Ab jetzt baust du jede Szene in einer eigenen Datei, dann bleiben alle erhalten. Lege dafür eine neue Datei an (»File« / »New Text File«) und speichere sie mit <kbd>Strg</kbd><kbd>S</kbd> im Ordner `anaglyph` unter dem Namen aus der Aufgabe, hier also als `/workspace/anaglyph/vier-wuerfel.ini`. Damit die Vorschau diese Datei zeigt, trägst du unten im Textfeld der Vorschau `vier-wuerfel.ini` statt `scene.ini` ein.

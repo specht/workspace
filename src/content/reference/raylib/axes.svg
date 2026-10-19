@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 380" width="600" height="380" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Die drei Achsen im Raum, wie raylib und der Anaglyph-Editor sie
+       verwenden: x nach rechts, y nach oben, z nach vorne, zum Betrachter.
+       Das Gitter liegt flach in x und z, wie DrawGrid und das Gitter im
+       Editor. In Perspektive, von vorne rechts oben gesehen; gezeichnet von
+       src/scripts/draw-axes.py. Als Bild, hell und dunkel:
+       src/scripts/render-svg.rb src/content/reference/raylib/axes.svg 1200 -->
+  <style>
+    .grid { stroke: #d1d5db; stroke-width: 1.5; }
+    .x, .y, .z { stroke-width: 5; stroke-linecap: round; }
+    .x { stroke: #dc2626; } .x-head { fill: #dc2626; }
+    .y { stroke: #16a34a; } .y-head { fill: #16a34a; }
+    .z { stroke: #2b5fb4; } .z-head { fill: #2b5fb4; }
+    .letter, .way { paint-order: stroke; stroke: #ffffff; stroke-width: 7px; stroke-linejoin: round; }
+    .letter { font-size: 30px; font-weight: bold; font-style: italic; }
+    .way { font-size: 19px; fill: #6b7280; }
+    .origin { fill: #1f2937; }
+  </style>
+  <rect width="600" height="380" fill="#ffffff"/>
+
+  <!-- der Boden: ein Gitter in der Ebene von x und z -->
+  <line class="grid" x1="210.5" y1="157.8" x2="30.0" y2="259.8"/>
+  <line class="grid" x1="210.5" y1="157.8" x2="457.0" y2="183.2"/>
+  <line class="grid" x1="246.9" y1="161.6" x2="82.9" y2="269.6"/>
+  <line class="grid" x1="190.5" y1="169.1" x2="453.2" y2="198.3"/>
+  <line class="grid" x1="285.1" y1="165.5" x2="139.9" y2="280.2"/>
+  <line class="grid" x1="167.7" y1="182.0" x2="448.6" y2="216.0"/>
+  <line class="grid" x1="325.0" y1="169.6" x2="201.3" y2="291.7"/>
+  <line class="grid" x1="141.3" y1="196.9" x2="443.2" y2="236.9"/>
+  <line class="grid" x1="366.9" y1="173.9" x2="267.8" y2="304.1"/>
+  <line class="grid" x1="110.5" y1="214.3" x2="436.8" y2="262.2"/>
+  <line class="grid" x1="410.9" y1="178.4" x2="340.1" y2="317.5"/>
+  <line class="grid" x1="73.9" y1="234.9" x2="428.8" y2="293.2"/>
+  <line class="grid" x1="457.0" y1="183.2" x2="418.8" y2="332.2"/>
+  <line class="grid" x1="30.0" y1="259.8" x2="418.8" y2="332.2"/>
+
+  <!-- die Achsen vom Ursprung aus; jede Pfeilspitze liegt auf ihrer Achse -->
+  <line class="x" x1="278.9" y1="215.1" x2="460.2" y2="239.2"/>
+  <polygon class="x-head" points="480.0,241.8 456.9,248.3 459.4,229.5"/>
+  <line class="y" x1="278.9" y1="215.1" x2="277.1" y2="60.0"/>
+  <polygon class="y-head" points="276.9,40.0 286.6,61.9 267.6,62.1"/>
+  <line class="z" x1="278.9" y1="215.1" x2="185.1" y2="307.7"/>
+  <polygon class="z-head" points="170.8,321.8 179.8,299.6 193.2,313.1"/>
+  <circle class="origin" cx="278.9" cy="215.1" r="5"/>
+
+  <text class="letter" x="492.0" y="251.8" fill="#dc2626">x</text>
+  <text class="way" x="492.0" y="275.8">nach rechts</text>
+  <text class="letter" x="290.9" y="54.0" fill="#16a34a">y</text>
+  <text class="way" x="290.9" y="78.0">nach oben</text>
+  <text class="letter" x="150.9" y="353.6" fill="#2b5fb4">z</text>
+  <text class="way" x="174.9" y="353.6">nach vorne, zu dir</text>
+</svg>
