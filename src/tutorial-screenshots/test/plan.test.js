@@ -211,3 +211,17 @@ test('a tutorial-scope keeps the shots after it independent of the shots inside'
     const b = chainStateHashes([before, entered('b'), after], 'seed', scopeOf);
     assert.notEqual(a[2].stateHash, b[2].stateHash);
 });
+
+test('a taller Workspace window makes only Workspace shots stale', () => {
+    const env = { environmentFingerprint: 'e', workspaceLook: '4.140.0-ls368', workspaceWindow: 560 };
+    const entry = { state_hash: 's', environment_fingerprint: 'e', workspace_look: '4.140.0-ls368' };
+    const shot = extra => ({ stateHash: 's', legacyStateHash: 'l', ...extra });
+    // taken before the height was recorded, or at another height
+    assert.ok(!entryIsCurrent(entry, shot({ tab: 'workspace' }), env));
+    assert.ok(!entryIsCurrent({ ...entry, workspace_window: 516 }, shot({}), env));
+    assert.ok(entryIsCurrent({ ...entry, workspace_window: 560 }, shot({}), env));
+    // previews (anaglyph animations), PDF pages, image files, Git graphs keep theirs
+    assert.ok(entryIsCurrent(entry, shot({ tab: 'preview', record: 6 }), env));
+    assert.ok(entryIsCurrent(entry, shot({ pdfPage: 1 }), env));
+    assert.ok(entryIsCurrent(entry, shot({ gitGraph: 'main' }), env));
+});

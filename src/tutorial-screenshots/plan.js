@@ -182,7 +182,9 @@ export function showsWorkspace(shot) {
     return (shot.tab ?? 'workspace') === 'workspace' && !shot.pdfPage && !shot.imageFile && !shot.gitGraph;
 }
 
-export function entryIsCurrent(previous, shot, { environmentFingerprint, workspaceLook }) {
+// workspaceWindow: the Workspace tab's window height. A Workspace shot taken
+// at another height (or before it was recorded) is stale; other shots are not.
+export function entryIsCurrent(previous, shot, { environmentFingerprint, workspaceLook, workspaceWindow }) {
     if (!previous) return false;
     if (previous.workspace_look === undefined) {
         return previous.state_hash === shot.legacyStateHash || previous.state_hash === shot.stateHash;
@@ -191,6 +193,7 @@ export function entryIsCurrent(previous, shot, { environmentFingerprint, workspa
     if (previous.environment_fingerprint !== environmentFingerprint) return false;
     if (showsWorkspace(shot) && workspaceLook !== 'unknown' && previous.workspace_look !== 'unknown' &&
         codeServerRelease(previous.workspace_look) !== codeServerRelease(workspaceLook)) return false;
+    if (workspaceWindow !== undefined && showsWorkspace(shot) && previous.workspace_window !== workspaceWindow) return false;
     return true;
 }
 

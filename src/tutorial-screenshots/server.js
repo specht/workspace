@@ -28,6 +28,7 @@ import {
     parseFps,
     parseRecordSeconds,
     parseVariants,
+    showsWorkspace,
     variantTargets,
     videoEncodeArgs,
 } from './plan.js';
@@ -83,6 +84,11 @@ const DEFAULT_PROFILE = Object.freeze({
     captureScale: positiveNumberEnv('TUTORIAL_SCREENSHOT_CAPTURE_SCALE', 2),
     desktopScaleFactor: positiveNumberEnv('TUTORIAL_SCREENSHOT_DESKTOP_SCALE_FACTOR', 1.203125),
 });
+// The Workspace tab's window height (config.rb, :workspace_height): taller
+// than a preview's since VS Code 1.140 draws the panel as a card with margins.
+// Recorded per Workspace shot (workspace_window), so changing it makes only
+// those stale, not previews, PDFs, images or Git graphs.
+const WORKSPACE_HEIGHT = positiveIntegerEnv('TUTORIAL_SCREENSHOT_WORKSPACE_HEIGHT', 560);
 const WORKBENCH_PARTS = Object.freeze({
     'left-sidebar': {
         selector: '.part.sidebar',
@@ -489,6 +495,7 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
     const recipe = {
         tab: 'workspace',
         viewport: { width: DEFAULT_PROFILE.width, height: DEFAULT_PROFILE.height },
+        viewportSet: false,
         zoom: DEFAULT_PROFILE.zoom,
         cropTop: 0,
         cropBottom: 0,
@@ -675,6 +682,7 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             recipe.tab = match[1];
         } else if ((match = line.match(/^viewport:\s*(\d+)x(\d+)$/i))) {
             recipe.viewport = { width: Number(match[1]), height: Number(match[2]) };
+            recipe.viewportSet = true;
         } else if ((match = line.match(/^zoom:\s*([0-9.]+)$/))) {
             recipe.zoom = Number.parseFloat(match[1]);
             if (!Number.isFinite(recipe.zoom) || recipe.zoom <= 0) {
@@ -1016,7 +1024,8 @@ async function parseTutorial(markdown, markdownPath) {
         const resolved = {
             target,
             tab: recipe.tab,
-            viewport: recipe.viewport,
+            viewport: recipe.viewportSet || recipe.tab !== 'workspace'
+                ? recipe.viewport : { width: DEFAULT_PROFILE.width, height: WORKSPACE_HEIGHT },
             zoom: recipe.zoom,
             cropTop: recipe.cropTop,
             cropBottom: recipe.cropBottom,
@@ -1465,7 +1474,7 @@ async function prepareFreshWorkspace() {
     const workspaceUrl = `${base.protocol}//${serverTag}.${base.hostname}${base.port ? `:${base.port}` : ''}/`;
     workspace = await context.newPage();
     await waitForWorkspaceWorkbench(workspace, workspaceUrl);
-    await applyViewportProfile(workspace, DEFAULT_PROFILE, DEFAULT_PROFILE.zoom);
+    await applyViewportProfile(workspace, { width: DEFAULT_PROFILE.width, height: WORKSPACE_HEIGHT }, DEFAULT_PROFILE.zoom);
     await waitForFreshWorkspaceUi(workspace);
     await waitForWorkbenchThemeSettled(workspace);
     workspacePrepared = true;
@@ -2553,6 +2562,22 @@ async function pressKey(key, targetTab) {
     const page = requirePageForTab(targetTab, 'press');
     await page.keyboard.press(key);
     await page.waitForTimeout(100);
+    // Control+L clears a terminal later than the key returns: a command
+    // typed right after it was sometimes cleared with it (»ls -l« without
+    // the nasm line above). Wait until the focused terminal shows at most
+    // its prompt, two seconds at most.
+    if (/^control\+l$/i.test(key)) await waitForClearedTerminal(page);
+}
+
+async function waitForClearedTerminal(page) {
+    await page.waitForFunction(() => {
+        const active = document.activeElement;
+        const terminal = active && active.closest ? active.closest('.terminal.xterm') : null;
+        if (!terminal) return true;
+        const rows = [...terminal.querySelectorAll('.xterm-rows > div')]
+            .filter(row => (row.textContent || '').trim());
+        return rows.length <= 1;
+    }, null, { timeout: 2000 }).catch(() => {});
 }
 
 async function moveMouse(action, targetTab) {
@@ -3676,7 +3701,7 @@ async function buildGenerationPlan(payload) {
             try { await fs.access(path.join(tutorialDirectory, file)); } catch { exists = false; }
         }
         const needsGeneration = force || !exists ||
-            !entryIsCurrent(previous, shot, { environmentFingerprint, workspaceLook });
+            !entryIsCurrent(previous, shot, { environmentFingerprint, workspaceLook, workspaceWindow: WORKSPACE_HEIGHT });
         stale.push(needsGeneration);
         screenshots.push(generationStatusItem(shot, needsGeneration, !exists, previous));
         if (!needsGeneration) {
@@ -3691,6 +3716,7 @@ async function buildGenerationPlan(payload) {
                 workspace_look: workspaceLook === 'unknown' ||
                     codeServerRelease(workspaceLook) === codeServerRelease(previous.workspace_look ?? 'unknown')
                     ? (previous.workspace_look ?? workspaceLook) : workspaceLook,
+                ...(showsWorkspace(shot) ? { workspace_window: WORKSPACE_HEIGHT } : {}),
             };
         }
     }
@@ -4017,6 +4043,7 @@ async function generateTutorial(payload, progressJob = null) {
                 state_hash: shot.stateHash,
                 environment_fingerprint: environmentFingerprint,
                 workspace_look: workspaceLook,
+                ...(showsWorkspace(shot) ? { workspace_window: WORKSPACE_HEIGHT } : {}),
                 output_sha256: outputSha256,
             };
             if (shot.variants) {

@@ -837,7 +837,11 @@ invalidates that tutorial's generated screenshots automatically.
 The global screenshot profile lives in `config.rb`. It reproduces the look of
 the hand-made screenshots, a small browser window at a high zoom: a
 1029x516 CSS-pixel viewport (`1853 / 1.8` by `929 / 1.8`) captured at scale
-1.8, so the default image is 1853x929 pixels. The renderer deliberately
+1.8, so the default image is 1853x929 pixels. The Workspace tab is taller,
+1029x560 (`:workspace_height`, `1008 / 1.8`): since VS Code 1.140 the panel is a
+card with margins and showed two terminal rows fewer. Its height is recorded
+with each Workspace shot (`workspace_window`), so changing it makes only those
+stale, not previews, PDF pages, image files or Git graphs. The renderer deliberately
 does not choose a light or dark color scheme: code-server loads the Workspace's
 actual VS Code theme, and the screenshot generator waits until that theme has
 remained stable before running the recipe. The page keeps its normal layout while
@@ -860,7 +864,7 @@ squares use `viewport: 2058x1032` with `zoom: 1.08` (the layout of
 
 A recipe's `viewport` is in the same CSS pixels. To keep the look of the other
 screenshots, change only what needs to change and keep the width at 1029:
-`viewport: 1029x560` gives the terminal two more rows. `viewport: 1853x1000`
+`viewport: 1029x604` gives the terminal two more rows than the Workspace's 560. `viewport: 1853x1000`
 would lay the Workspace out on almost twice the area, and everything in the
 image looks small.
 
