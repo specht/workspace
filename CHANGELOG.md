@@ -18,6 +18,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Wird eine Sicherung der Datenbank eingespielt oder Neo4j von außen
+  geändert, bemerkt der Workspace die neuen Einladungen nach spätestens
+  zehn Sekunden; bisher galten bis zum Neustart des Ruby-Dienstes die
+  alten. Für Betreibende: kein Neustart mehr nötig nach einem Dump.
 - Impressum und Datenschutzerklärung (`/impressum`) neu: Sie sagen genau,
   was der Workspace speichert, wozu, wer es sieht und wie lange, in der
   Gliederung von Art. 13 DSGVO, mit der Anmeldung per Code, dem, was

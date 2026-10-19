@@ -17,6 +17,10 @@ class Main < Sinatra::Base
     HOME_SCHOOL = 'home'
     @@roster_cache = nil
     @@roster_cache_mutex = Mutex.new
+    @@roster_checked_at = 0.0
+    # How often the cache asks Neo4j whether the roster changed behind its
+    # back (a database dump loaded, a change from another process).
+    ROSTER_RECHECK_SECONDS = 10
 
     class RosterImportMismatch < StandardError
         attr_reader :differences
@@ -33,12 +37,40 @@ class Main < Sinatra::Base
     end
 
     def self.cached_roster
-        @@roster_cache_mutex.synchronize do
+        reloaded = false
+        roster = @@roster_cache_mutex.synchronize do
+            if @@roster_cache && Time.now.to_f - @@roster_checked_at > ROSTER_RECHECK_SECONDS
+                @@roster_checked_at = Time.now.to_f
+                if roster_fingerprint != @@roster_cache[:fingerprint]
+                    @@roster_cache = nil
+                    reloaded = true
+                end
+            end
             @@roster_cache ||= begin
+                @@roster_checked_at = Time.now.to_f
+                fingerprint = roster_fingerprint
                 setting = $neo4j.neo4j_query('MATCH (s:Setting {key: $key}) RETURN s;', :key => ROSTER_SETTING).first
-                { :imported => setting && setting['s'], :records => setting ? read_roster_records : nil }
+                { :imported => setting && setting['s'], :records => setting ? read_roster_records : nil, :fingerprint => fingerprint }
             end
         end
+        if reloaded
+            STDERR.puts 'Roster changed in Neo4j outside this process (a dump loaded?): reloaded'
+            # Whoever lost access loses a running Workspace too.
+            Thread.new { load_invitations; refresh_nginx_config }
+        end
+        roster
+    end
+
+    # Changes with every write through the pages (changed_at) and with a
+    # different database (another import, other counts).
+    def self.roster_fingerprint
+        $neo4j.neo4j_query(<<~END_OF_QUERY, :key => ROSTER_SETTING).first.to_h
+            OPTIONAL MATCH (s:Setting {key: $key})
+            RETURN s.imported_at AS imported_at, s.changed_at AS changed_at,
+                COUNT { (:Invitation) } AS invitations,
+                COUNT { (:Invitation)-[:MEMBER_OF|TEACHES|AT]->() } AS links,
+                COUNT { (:Group) } AS groups;
+        END_OF_QUERY
     end
 
     # The Setting node's properties once imported, else nil.
