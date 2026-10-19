@@ -171,3 +171,12 @@ Diese acht Werte lösen alle vier Fälle aus, LL, RR, RL und LR in dieser Reihen
 - LR und RL mit einer einzigen Rotation lösen: Dann ist der Baum danach genauso schief, nur zur anderen Seite.
 - Die Höhe eines leeren Teilbaums nicht als 0 behandeln: Ohne eine kleine Funktion `höhe(knoten)`, die bei leer 0 liefert, stürzt jede Rechnung an einem Blatt ab.
 <!-- /part -->
+
+## Zum Nachschlagen
+
+Weder Ruby noch Python bringen einen Suchbaum mit. Sollen Schlüssel sortiert bleiben, nimmt man dort meist eine [sortierte Liste](/reference/listen#sortierte-liste) mit binärer Suche; ist die Reihenfolge egal, eine [Hash Table](/reference/hash-tables) (`Hash`, `dict`).
+
+- [Python: `bisect`](https://docs.python.org/3/library/bisect.html): binäre Suche und Einfügen in einer sortierten Liste.
+- [Ruby: `Array#bsearch`](https://docs.ruby-lang.org/en/3.4/Array.html#method-i-bsearch): binäre Suche in einem sortierten Array.
+- [VisuAlgo: Binary Search Tree, AVL Tree](https://visualgo.net/en/bst): keine offizielle Referenz; Suchen, Einfügen, Entfernen und die Rotationen als Animation, auf Englisch.
+- [Wikipedia: AVL-Baum](https://de.wikipedia.org/wiki/AVL-Baum): keine offizielle Referenz; mehr über die Höhe, das Entfernen mit Rotationen und die Doppelrotationen.

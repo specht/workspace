@@ -120,7 +120,7 @@ Erst kommen 5, 3, 8, 1, 4 und 2 hinein, dann holt `pop` dreimal den kleinsten he
 **Typische Fehler**
 
 - Mit dem **größeren** Kind tauschen oder mit dem ersten, das kleiner ist. Dann steht das kleinere Geschwister über dem größeren, und die Heap-Eigenschaft ist kaputt.
-- Den letzten Eintrag erst entfernen, nachdem man ihn an Index 0 geschrieben hat. Bei einem Heap mit nur einem Eintrag bleibt er dann stehen.
+- Den letzten Eintrag herausnehmen und an Index 0 schreiben, ohne zu prüfen, ob der Heap danach leer ist. Bei einem Heap mit nur einem Eintrag steht der gerade herausgenommene dann wieder darin.
 - Prüfen, ob ein Kind existiert, ohne die Länge des Arrays: `2i + 1` kann hinter dem Ende liegen.
 - Prioritäten und Werte trennen: Liegen Paare aus Priorität und Wert im Heap, wird nur die Priorität verglichen, sonst entscheidet bei gleicher Priorität der Wert, und der lässt sich vielleicht gar nicht vergleichen.
 <!-- /part -->
@@ -133,3 +133,11 @@ Legt man alle Zahlen mit `push` in einen Heap und holt sie mit `pop` wieder hera
 
 Ohne zweites Array geht es auch: Man baut den Heap im Array selbst auf und legt den jeweils größten Eintrag (mit einem Heap, in dem kein Kind *größer* ist als sein Elternteil) ans Ende, in den Teil, der schon sortiert ist. In der [Sorting Sandbox](/sandbox-sortieren) kannst du Heapsort selbst programmieren und mit den anderen Verfahren vergleichen.
 <!-- /part -->
+
+## Zum Nachschlagen
+
+Python bringt genau diesen Heap mit: `heapq` arbeitet auf einer gewöhnlichen `list`, die Kinder von Index \\(k\\) stehen bei \\(2k + 1\\) und \\(2k + 2\\), der kleinste Eintrag an Index 0. Ruby hat weder einen Heap noch eine Priority Queue; dort baust du ihn wie oben auf einem `Array`.
+
+- [Python: `heapq`](https://docs.python.org/3/library/heapq.html): `heappush`, `heappop` und `heapify` auf einer Liste. Der Abschnitt [Priority Queue Implementation Notes](https://docs.python.org/3/library/heapq.html#priority-queue-implementation-notes) zeigt, wie man Priorität und Wert trennt.
+- [Ruby: `Array`](https://docs.ruby-lang.org/en/3.4/Array.html): das Array, auf dem du den Heap baust, mit `push`, `pop` und dem Zugriff über den Index.
+- [VisuAlgo: Binary Heap](https://visualgo.net/en/heap): keine offizielle Referenz; `push`, `pop` und Heapsort als Animation, auf Englisch. Dort steht der *größte* Eintrag oben, und das Array beginnt bei Index 1: Die Kinder von \\(i\\) stehen bei \\(2i\\) und \\(2i + 1\\).

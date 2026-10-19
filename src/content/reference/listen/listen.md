@@ -246,3 +246,13 @@ Die Zahl der Schritte für eine Liste mit \\(n\\) Werten. »sofort« heißt: gle
 
 In der Praxis gewinnt die Array List fast immer, auch wenn die Tabelle anders aussieht: Ihre Werte liegen nebeneinander im Speicher, und Prozessoren lesen Nachbarzellen viel schneller als Knoten, die irgendwo verstreut sind. Eine Linked List lohnt sich, wenn man oft an einer Stelle einfügt, an der man ohnehin schon ist.
 <!-- /part -->
+
+## Zum Nachschlagen
+
+Die Array List bringen Ruby und Python fertig mit, als `Array` und als `list`; mit `push` (Python: `append`) und `pop` ist sie auch ein Stack. Eine Queue, die vorn schnell herausnimmt, ist in Python `collections.deque`, in Ruby ein `Array` mit `push` und `shift`.
+
+- [Ruby: `Array`](https://docs.ruby-lang.org/en/3.4/Array.html): alle Methoden von Rubys Array List, darunter `insert`, `delete_at`, `push`, `pop` und `shift`. Für sortierte Listen findet [`bsearch_index`](https://docs.ruby-lang.org/en/3.4/Array.html#method-i-bsearch_index) die Stelle mit binärer Suche.
+- [Python: Listen als Stack und als Queue](https://docs.python.org/3/tutorial/datastructures.html#using-lists-as-stacks) im Tutorial: was `list` kann, und warum eine Queue besser eine `deque` ist.
+- [Python: `collections.deque`](https://docs.python.org/3/library/collections.html#collections.deque): eine Queue, die an beiden Enden schnell einfügt und herausnimmt.
+- [Python: `bisect`](https://docs.python.org/3/library/bisect.html): binäre Suche in einer sortierten Liste; `bisect_left` tut dasselbe wie `stelle_finden` oben.
+- [VisuAlgo: Linked List, Stack, Queue](https://visualgo.net/en/list): keine offizielle Referenz, aber jede Operation als Animation, auf Englisch.

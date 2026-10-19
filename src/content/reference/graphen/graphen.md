@@ -222,3 +222,13 @@ Das ist schnell, aber am Ende bleiben die weiten Wege übrig, und die Rundreise 
 
 Eine Kreuzung verschwindet, wenn man das Stück zwischen ihren beiden Kanten umdreht. 2-opt findet nicht immer die beste Rundreise, aber meist eine, die nur wenig länger ist, in einem Bruchteil der Zeit. Für viele Orte kennt niemand ein schnelles Verfahren, das sicher die beste findet; Paketdienste und Routenplaner arbeiten deshalb mit Verfahren wie diesem.
 <!-- /part -->
+
+## Zum Nachschlagen
+
+Die Adjazenzliste ist in Ruby ein `Hash`, in Python ein `dict`. Die Queue der Breitensuche ist in Python `collections.deque`, in Ruby ein `Array` mit `push` und `shift`; den Stack der Tiefensuche gibt jedes Array mit `push` (Python: `append`) und `pop` her. Die Priority Queue für Dijkstra und A* ist in Python `heapq`; Ruby hat keine, dort programmierst du den [Heap](/reference/heap) selbst.
+
+- [Ruby: `Hash`](https://docs.ruby-lang.org/en/3.4/Hash.html): Schlüssel und Werte, für die Adjazenzliste und für `vorgänger` und `weg`.
+- [Python: `dict`](https://docs.python.org/3/library/stdtypes.html#typesmapping): dasselbe in Python.
+- [Python: `collections.deque`](https://docs.python.org/3/library/collections.html#collections.deque): die Queue für die Breitensuche.
+- [Python: `heapq`](https://docs.python.org/3/library/heapq.html): die Priority Queue für Dijkstra und A*.
+- [VisuAlgo: Breiten- und Tiefensuche](https://visualgo.net/en/dfsbfs) und [kürzeste Wege](https://visualgo.net/en/sssp): keine offizielle Referenz; beide Suchen und Dijkstra als Animation, auch an selbst gezeichneten Graphen, auf Englisch.

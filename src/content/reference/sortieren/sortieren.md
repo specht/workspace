@@ -177,3 +177,12 @@ Die Zahl der Vergleiche für 100 Zahlen, gezählt mit genau den Verfahren oben:
 
 Bei 100 Zahlen ist der Unterschied zwischen 550 und 5 000 Vergleichen noch klein. Bei einer Million Zahlen sind es etwa 20 Millionen gegen 500 Milliarden: Sekunden gegen Tage. Schneller als \\(n \log_2 n\\) Vergleiche geht es übrigens nicht, wenn man nur vergleichen darf. Wer mehr über die Zahlen weiß, etwa dass es nur ganze Zahlen von 0 bis 100 sind, kann sie auch zählen statt vergleichen und ist dann noch schneller.
 <!-- /part -->
+
+## Zum Nachschlagen
+
+Im eigenen Programm sortierst du mit dem, was die Sprache mitbringt: `sort` und `sort_by` in Ruby, `sorted` und `list.sort` in Python. Die Verfahren auf dieser Seite programmierst du selbst, um zu verstehen, wie Sortieren geht und was es kostet.
+
+- [Ruby: `Array#sort`](https://docs.ruby-lang.org/en/3.4/Array.html#method-i-sort) und [`sort_by`](https://docs.ruby-lang.org/en/3.4/Array.html#method-i-sort_by-21): sortieren mit `<=>` oder nach einem Schlüssel. Rubys Sortieren ist nicht garantiert stabil: Gleiche Werte können ihre Reihenfolge tauschen.
+- [Python: Sorting HOW TO](https://docs.python.org/3/howto/sorting.html): `sorted` und `list.sort`, Sortieren nach einem Schlüssel (`key=`) und absteigend, und warum Pythons Sortieren **stabil** ist. Python sortiert mit Timsort, einer Mischung aus Merge Sort und Insertion Sort.
+- [VisuAlgo: Sorting](https://visualgo.net/en/sorting): keine offizielle Referenz; alle fünf Verfahren dieser Seite als Animation mit eigenen Zahlen, dazu Counting Sort und Radix Sort, die zählen statt vergleichen. Auf Englisch.
+- [Wikipedia: Sortierverfahren](https://de.wikipedia.org/wiki/Sortierverfahren): keine offizielle Referenz; ein Überblick über viele weitere Verfahren und was sie kosten.

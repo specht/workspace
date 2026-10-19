@@ -77,6 +77,7 @@ insert(k):
         wenn buckets[b] = k: fertig
         b ← (b + 1) mod m
     buckets[b] ← k
+    anzahl ← anzahl + 1
 
 find(k):
     b ← h(k)
@@ -121,3 +122,12 @@ insert(k):
 
 Hash Tables stecken hinter jedem `Hash` in Ruby, jedem `dict` und `set` in Python, jedem Objekt in JavaScript und jeder `HashMap` in Java: überall, wo man zu einem Schlüssel schnell einen Wert finden will. Ein Suchbaum kann dasselbe, langsamer, aber er hält die Schlüssel dafür sortiert. Eine Hash Table weiß nichts über die Reihenfolge, nach dem kleinsten Schlüssel muss sie alle Buckets durchsuchen.
 <!-- /part -->
+
+## Zum Nachschlagen
+
+`Hash` in Ruby, `dict` und `set` in Python sind fertige Hash Tables, mit Hashfunktion, Kollisionen und Rehashing, ohne dass du davon etwas merkst. Sollen zwei eigene Objekte mit gleichem Inhalt derselbe Schlüssel sein, brauchen sie eine Hashfunktion, die zu ihrer Gleichheit passt: gleiche Schlüssel, gleicher Bucket.
+
+- [Ruby: `Hash`](https://docs.ruby-lang.org/en/3.4/Hash.html): alle Methoden; der Abschnitt [User-Defined Hash Keys](https://docs.ruby-lang.org/en/3.4/Hash.html#class-Hash-label-User-Defined+Hash+Keys) zeigt, wie eigene Objekte mit `hash` und `eql?` zu Schlüsseln werden.
+- [Python: `dict`](https://docs.python.org/3/library/stdtypes.html#typesmapping) und [`set`](https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset): die beiden Hash Tables von Python.
+- [Python: `__hash__`](https://docs.python.org/3/reference/datamodel.html#object.__hash__): was eine eigene Klasse zusammen mit `__eq__` braucht, damit ihre Objekte Schlüssel sein können.
+- [VisuAlgo: Hash Table](https://visualgo.net/en/hashtable): keine offizielle Referenz; Chaining und Linear Probing als Animation, dazu Quadratic Probing und Double Hashing, auf Englisch.
