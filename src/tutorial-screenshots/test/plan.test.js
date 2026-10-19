@@ -134,6 +134,21 @@ test('a rebuilt workspace image alone does not make a shot stale', () => {
     assert.ok(!entryIsCurrent(undefined, current, env));
 });
 
+test('a new code-server release leaves what code-server does not draw', () => {
+    const env = { environmentFingerprint: 'e', workspaceLook: '4.140.0-ls368' };
+    const entry = { state_hash: 's', environment_fingerprint: 'e', workspace_look: '4.138.0-ls366' };
+    const shot = extra => ({ stateHash: 's', legacyStateHash: 'l', ...extra });
+    assert.ok(!entryIsCurrent(entry, shot({ tab: 'workspace' }), env));
+    assert.ok(!entryIsCurrent(entry, shot({}), env));
+    // the preview (anaglyph animations, a student's page), PDF pages, image files, Git graphs
+    assert.ok(entryIsCurrent(entry, shot({ tab: 'preview', record: 6 }), env));
+    assert.ok(entryIsCurrent(entry, shot({ pdfPage: 1 }), env));
+    assert.ok(entryIsCurrent(entry, shot({ imageFile: 'out.png' }), env));
+    assert.ok(entryIsCurrent(entry, shot({ gitGraph: 'main' }), env));
+    // their own changes still count
+    assert.ok(!entryIsCurrent({ ...entry, state_hash: 'other' }, shot({ tab: 'preview' }), env));
+});
+
 test('entries from generator 19 are kept if their state matches', () => {
     const current = { stateHash: 's', legacyStateHash: 'l' };
     const env = { environmentFingerprint: 'e', workspaceLook: 'unknown' };

@@ -68,7 +68,11 @@ A generated file is rendered again when one of these changed:
   tutorial's `tutorial-screenshot-hooks.mjs`;
 - **the Workspace look**: the code-server release `hs_code_server` is built on
   (its `org.opencontainers.image.version` label, read by the Ruby service). If
-  Docker cannot tell, the look is `unknown`, and that never counts as a change;
+  Docker cannot tell, the look is `unknown`, and that never counts as a change.
+  Only for shots of the Workspace tab: the preview tab (the anaglyph
+  animations, a student's page), a page of a PDF, an image file and a drawn Git
+  graph look the same with every code-server release (`showsWorkspace` in
+  `plan.js`);
 - or the file is missing.
 
 Rebuilding `hs_code_server` for a new extension, toolchain or font does **not**

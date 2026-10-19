@@ -174,6 +174,14 @@ export function codeServerRelease(look) {
     return `${look}`.replace(/-ls\d+$/, '');
 }
 
+// Whether code-server draws what a shot shows: only the Workspace tab. The
+// preview tab (a student's page, the anaglyph viewer), a page of a PDF, an
+// image file and a drawn Git graph look the same with every code-server
+// release, so a new one does not make them stale.
+export function showsWorkspace(shot) {
+    return (shot.tab ?? 'workspace') === 'workspace' && !shot.pdfPage && !shot.imageFile && !shot.gitGraph;
+}
+
 export function entryIsCurrent(previous, shot, { environmentFingerprint, workspaceLook }) {
     if (!previous) return false;
     if (previous.workspace_look === undefined) {
@@ -181,7 +189,7 @@ export function entryIsCurrent(previous, shot, { environmentFingerprint, workspa
     }
     if (previous.state_hash !== shot.stateHash) return false;
     if (previous.environment_fingerprint !== environmentFingerprint) return false;
-    if (workspaceLook !== 'unknown' && previous.workspace_look !== 'unknown' &&
+    if (showsWorkspace(shot) && workspaceLook !== 'unknown' && previous.workspace_look !== 'unknown' &&
         codeServerRelease(previous.workspace_look) !== codeServerRelease(workspaceLook)) return false;
     return true;
 }
