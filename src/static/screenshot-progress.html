@@ -227,7 +227,11 @@
         // At the bottom (the newest): new files scroll into view. Scrolled
         // up: the view stays, and »Live« goes back down.
         const at_end = () => slides.scrollTop + slides.clientHeight >= slides.scrollHeight - 48;
+        // The page's own scrolling to the end is not the viewer's: while it
+        // runs, scroll events change nothing.
+        let auto_until = 0;
         function to_end(smooth) {
+            auto_until = Date.now() + (smooth ? 900 : 100);
             slides.scrollTo({ top: slides.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
         }
         let missed = 0;           // files that came while scrolled up
@@ -236,10 +240,19 @@
             if (on) missed = 0;
             $('#bu_sp_live').prop('hidden', on).find('span').text(missed ? `${missed} neue` : 'Live');
         }
+        // Any move up by the viewer ends following at once (wheel, touch,
+        // keys, scrollbar); back at the bottom, following starts again.
+        let last_top = 0;
         slides.addEventListener('scroll', () => {
-            clearTimeout(slides._settle);
-            slides._settle = setTimeout(() => set_following(at_end()), 150);
+            const top = slides.scrollTop;
+            const up = top < last_top - 1;
+            last_top = top;
+            if (Date.now() < auto_until && !up) return;
+            if (up) { auto_until = 0; if (following) set_following(false); }
+            else if (!following && at_end()) set_following(true);
         }, { passive: true });
+        slides.addEventListener('wheel', e => { if (e.deltaY < 0 && following) { auto_until = 0; set_following(false); } }, { passive: true });
+        slides.addEventListener('touchstart', () => { auto_until = 0; }, { passive: true });
 
         // Videos play while they are in view.
         const watcher = new IntersectionObserver(entries => entries.forEach(entry => {
