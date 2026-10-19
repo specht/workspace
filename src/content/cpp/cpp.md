@@ -222,7 +222,11 @@ crop-terminal-lines: auto
 
 <img class='full' src='try-factor.webp' alt='g++ übersetzt factor.cpp, ./factor fragt nach einer Zahl und gibt für 123 die Primfaktoren 3 und 41 aus.'>
 
-Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Probiere aus, was passiert, wenn du die Zahl 3000000000 eingibst. Was könnte der Grund dafür sein?
+Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Gib statt 123 die Zahl <code>3000000000</code> ein. Welche Zahl nennt das Programm in seiner Antwort, und was könnte der Grund dafür sein? Ändere danach <code>int number;</code> zu <code>long long number;</code>, übersetze neu und probier <code>123456789123456789</code>. Was ist bei <code>long long</code> anders als bei <code>int</code>?
+</div>
 
 ## Bubblesort
 
@@ -253,7 +257,16 @@ crop-terminal-lines: auto
 
 <img class='full' src='bubblesort.webp' alt='g++ übersetzt bubblesort.cpp, ./bubblesort gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
-Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
+Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere <code>bubblesort.cpp</code>, übersetze neu und starte das Programm:
+<ul>
+<li>Sortiere 100 Zahlen statt 10. Wie oft musst du dafür die 10 ersetzen?</li>
+<li>Ändere nur den Aufruf zu <code>bubbleSort(arr, 5);</code>. Welche Zahlen sind danach sortiert? Ein Array weiß in C++ nicht, wie lang es ist: Deshalb bekommt <code>bubbleSort</code> die Länge mit.</li>
+<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
+</ul>
+</div>
 
 ## Zusammenfassung
 

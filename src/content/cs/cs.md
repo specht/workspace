@@ -210,7 +210,11 @@ crop-terminal-lines: auto
 
 <img class='full' src='try-factor.webp' alt='dotnet run Factor.cs fragt nach einer Zahl und gibt für 123 die Primfaktoren 3 und 41 aus.'>
 
-Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Probiere aus, was passiert, wenn du die Zahl 3000000000 eingibst. Was könnte der Grund dafür sein?
+Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Gib statt 123 die Zahl <code>3000000000</code> ein. Was meldet C#, und was könnte der Grund dafür sein? Ersetze danach in der Zeile mit <code>int.Parse</code> beide <code>int</code> durch <code>long</code> und probier die Zahl noch einmal. Was ist bei <code>long</code> anders als bei <code>int</code>?
+</div>
 
 ## Bubblesort
 
@@ -238,7 +242,16 @@ crop-terminal-lines: auto
 
 <img class='full' src='bubblesort.webp' alt='dotnet run BubbleSort.cs gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
-Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
+Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere <code>BubbleSort.cs</code> und starte das Programm noch einmal:
+<ul>
+<li>Sortiere 100 Zahlen statt 10. Warum musst du dafür nur eine einzige Zahl ändern?</li>
+<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
+<li>Ändere in der Schleife, die das Array füllt, die Bedingung <code>i &lt; numbers.Length</code> zu <code>i &lt;= numbers.Length</code>. Was meldet C# beim Ausführen? Stell die Bedingung danach wieder her.</li>
+</ul>
+</div>
 
 ## Zusammenfassung
 

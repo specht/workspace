@@ -292,7 +292,11 @@ crop-terminal-lines: auto
 
 <img class='full' src='try-factor.webp' alt='nasm und ld bauen factor, ./factor fragt nach einer Zahl und gibt für 123 die Primfaktoren 3 und 41 aus.'>
 
-Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Probiere aus, was passiert, wenn du die Zahl 3000000000 eingibst oder die Zahl 123456789123456789. Was könnte der Grund dafür sein?
+Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Gib statt 123 die Zahl <code>3000000000</code> ein, danach die Zahl <code>123456789123456789</code>. Was passiert jeweils, und was könnte der Grund dafür sein? Was steht nach dem Ende des Programms noch im Terminal, und woher kommt es?
+</div>
 
 ## Bubblesort
 
@@ -324,7 +328,15 @@ crop-terminal-lines: auto
 
 <img class='full' src='bubblesort.webp' alt='nasm und ld bauen bubblesort, ./bubblesort gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
-Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 20 Zahlen sortiert werden. An welchen Stellen musst du dafür etwas ändern?
+Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere <code>bubblesort.asm</code>, übersetze und linke neu und starte das Programm:
+<ul>
+<li>Sortiere 20 Zahlen statt 10. Welche Zeilen musst du dafür ändern? Achte nicht nur auf die 10.</li>
+<li>Ersetze <code>jbe no_swap</code> durch <code>jae no_swap</code>. Was ändert sich, und warum?</li>
+</ul>
+</div>
 
 ## Zusammenfassung
 

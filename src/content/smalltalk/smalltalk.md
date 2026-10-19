@@ -295,6 +295,10 @@ crop-terminal-lines: auto
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann Smalltalk auch Zahlen wie 3000000000 und 123456789123456789 in Sekundenbruchteilen zerlegen, allerdings beendet sich das Programm nicht (probier es gern aus, du kannst das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen). Falls du einen sachdienlichen Hinweis hast, schreib bitte eine E-Mail an <a href='mailto:${contact_email}'>${contact_email}</a>.
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> In Smalltalk ist alles eine Nachricht an ein Objekt, auch <code>+</code> und <code>*</code>. Starte <code>gst</code> ohne Dateinamen und gib <code>(3 + 4 * 2) printNl</code> ein. Was kommt heraus, und warum nicht 11? Probier auch <code>(100 factorial) printNl</code>. Mit <kbd>Strg</kbd><kbd>D</kbd> beendest du <code>gst</code>.
+</div>
+
 ## Bubblesort
 
 Im dritten Beispiel wollen wir eine Liste von 10 Zufallszahlen sortieren. Dafür verwenden wir den [Bubblesort-Algorithmus](https://de.wikipedia.org/wiki/Bubblesort), der zwar nicht besonders effizient ist, aber sehr einfach zu verstehen und zu implementieren. Der Bubblesort-Algorithmus funktioniert, indem er die Liste mehrmals durchläuft und benachbarte Elemente vertauscht, wenn sie in der falschen Reihenfolge sind.
@@ -317,7 +321,15 @@ crop-terminal-lines: auto
 
 <img class='full' src='bubblesort.webp' alt='gst bubblesort.st gibt zehn Zahlen aus und darunter dieselben Zahlen sortiert.'>
 
-Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
+Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere <code>bubblesort.st</code> und starte das Skript noch einmal:
+<ul>
+<li>Schreib weitere Zahlen in das Array, auch große und negative. Musst du sonst noch etwas ändern?</li>
+<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
+</ul>
+</div>
 
 ## Zusammenfassung
 

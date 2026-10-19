@@ -257,7 +257,11 @@ crop-terminal-lines: auto
 
 <img class='full' src='try-factor.webp' alt='node factor.js fragt nach einer Zahl und gibt für 123 die Primfaktoren [ 3, 41 ] aus.'>
 
-Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann JavaScript auch die Zahl 3000000000 in Sekundenbruchteilen zerlegen. Auch mit einer sehr großen Zahl wie 123456789123456789 kommt das Programm problemlos zurecht. Falls du auf eine Zahl stoßen solltest, die so groß ist, dass das Programm sehr lange braucht, kannst du das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen.
+Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann JavaScript auch die Zahl 3000000000 in Sekundenbruchteilen zerlegen. Falls du auf eine Zahl stoßen solltest, die so groß ist, dass das Programm sehr lange braucht, kannst du das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Gib <code>123456789123456789</code> ein. Die Zahl endet auf 9, ist also ungerade: Warum steht trotzdem eine 2 in der Liste? Starte <code>node</code> ohne Dateinamen und gib die Zahl dort ein. Was zeigt <code>node</code> an? Und was zeigt es bei <code>123456789123456789n</code>, mit einem <code>n</code> am Ende? Mit <kbd>Strg</kbd><kbd>D</kbd> beendest du <code>node</code>.
+</div>
 
 ## Bubblesort
 
@@ -281,7 +285,16 @@ crop-terminal-lines: auto
 
 <img class='full' src='bubblesort.webp' alt='node bubblesort.js gibt ein Array aus zehn Zufallszahlen aus und darunter dasselbe Array sortiert.'>
 
-Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
+Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere <code>bubblesort.js</code> und starte das Programm noch einmal:
+<ul>
+<li>Sortiere 100 Zahlen statt 10: Welche Zahl musst du dafür ändern?</li>
+<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
+<li>JavaScript kann Arrays auch selbst sortieren. Gib in <code>node</code> <code>[10, 9, 100, 25, 3].sort()</code> ein. Was fällt dir am Ergebnis auf, und woran könnte das liegen?</li>
+</ul>
+</div>
 
 ## Zusammenfassung
 

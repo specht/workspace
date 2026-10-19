@@ -216,6 +216,14 @@ crop-terminal-lines: auto
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann Dart auch die Zahl 3000000000 in Sekundenbruchteilen zerlegen. Auch mit einer sehr großen Zahl wie 123456789123456789 kommt das Programm problemlos zurecht. Falls du auf eine Zahl stoßen solltest, die so groß ist, dass das Programm sehr lange braucht, kannst du das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen.
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Probier die Grenzen von <code>int</code> aus:
+<ul>
+<li>Gib <code>9223372036854775807</code> ein, die größte Zahl, die in ein <code>int</code> passt, und danach <code>9223372036854775808</code>. Was meldet Dart beim zweiten Mal?</li>
+<li>Lösch das <code>!</code> hinter <code>readLineSync()</code>. Was meldet Dart, noch bevor das Programm startet? Tipp: <code>readLineSync()</code> liefert <code>null</code>, wenn keine Eingabe mehr kommt. Stell das <code>!</code> danach wieder her.</li>
+</ul>
+</div>
+
 ## Bubblesort
 
 Im dritten Beispiel wollen wir eine Liste von 10 Zufallszahlen sortieren. Dafür verwenden wir den [Bubblesort-Algorithmus](https://de.wikipedia.org/wiki/Bubblesort), der zwar nicht besonders effizient ist, aber sehr einfach zu verstehen und zu implementieren. Der Bubblesort-Algorithmus funktioniert, indem er die Liste mehrmals durchläuft und benachbarte Elemente vertauscht, wenn sie in der falschen Reihenfolge sind.
@@ -238,7 +246,16 @@ crop-terminal-lines: auto
 
 <img class='full' src='bubblesort.webp' alt='dart run bubblesort.dart gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
-Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
+Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere <code>bubblesort.dart</code> und starte das Skript noch einmal:
+<ul>
+<li>Sortiere 100 Zahlen statt 10. Warum musst du dafür nur eine einzige Zahl ändern?</li>
+<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
+<li>Ersetze in <code>generateRandomNumbers</code> die Zeile mit <code>numbers.add</code> durch <code>numbers.add('Apfel');</code>. Was meldet Dart, und was hat das mit <code>List&lt;int&gt;</code> zu tun? Stell die Zeile danach wieder her.</li>
+</ul>
+</div>
 
 ## Zusammenfassung
 

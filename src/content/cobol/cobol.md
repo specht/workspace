@@ -253,7 +253,11 @@ crop-terminal-lines: auto
 
 <img class='full' src='try-factor.webp' alt='cobc übersetzt factor.cbl, ./factor fragt nach einer Zahl und gibt für 123 die Faktoren 3 und 41 aus.'>
 
-Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Probiere aus, was passiert, wenn du die Zahl 3000000000 eingibst. Was könnte der Grund dafür sein?
+Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Gib statt 123 die Zahl <code>3000000000</code> ein. Was passiert, und was könnte der Grund dafür sein? Schau dir dazu an, wie <code>NUM</code> in der <code>WORKING-STORAGE SECTION</code> beschrieben ist.
+</div>
 
 ## Bubblesort
 
@@ -284,7 +288,16 @@ crop-terminal-lines: auto
 
 <img class='full' src='bubblesort.webp' alt='cobc übersetzt bubblesort.cbl, ./bubblesort gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
-Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
+Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere <code>bubblesort.cbl</code>, übersetze neu und starte das Programm:
+<ul>
+<li>Füge eine elfte Zahl hinzu. Was musst du außer einer Zeile <code>MOVE … TO ITEM (11)</code> noch ändern?</li>
+<li>Ändere eine der Zahlen zu <code>123</code>. Was meldet <code>cobc</code>, und welche Zahl steht danach in der Ausgabe? Was bedeutet wohl <code>PIC 99</code>?</li>
+<li>Wie viele Zahlen kann das Programm höchstens sortieren?</li>
+</ul>
+</div>
 
 ## Zusammenfassung
 

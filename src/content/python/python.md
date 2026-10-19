@@ -270,6 +270,10 @@ crop-terminal-lines: auto
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann Python auch die Zahl 3000000000 in Sekundenbruchteilen zerlegen. Wenn du allerdings eine sehr große Zahl wie 123456789123456789 verwendest, dauert die Berechnung sehr lange (probier es gern aus, du kannst das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen).
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Warum dauert es bei <code>123456789123456789</code> so lange? Ersetze <code>num = num / i</code> durch <code>num = num // i</code> und probier die Zahl noch einmal. Starte danach <code>python3</code> ohne Dateinamen und vergleiche <code>7 / 2</code> mit <code>7 // 2</code> und <code>123456789123456789 / 3</code> mit <code>123456789123456789 // 3</code>. Was ist der Unterschied? Mit <kbd>Strg</kbd><kbd>D</kbd> beendest du <code>python3</code>.
+</div>
+
 ## Bubblesort
 
 Im dritten Beispiel wollen wir eine Liste von 10 Zufallszahlen sortieren. Dafür verwenden wir den [Bubblesort-Algorithmus](https://de.wikipedia.org/wiki/Bubblesort), der zwar nicht besonders effizient ist, aber sehr einfach zu verstehen und zu implementieren. Der Bubblesort-Algorithmus funktioniert, indem er die Liste mehrmals durchläuft und benachbarte Elemente vertauscht, wenn sie in der falschen Reihenfolge sind.
@@ -292,7 +296,16 @@ crop-terminal-lines: auto
 
 <img class='full' src='bubblesort.webp' alt='python3 bubblesort.py gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
-Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
+Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere <code>bubblesort.py</code> und starte das Skript noch einmal:
+<ul>
+<li>Sortiere 100 Zahlen statt 10: Welche Zahl musst du dafür ändern?</li>
+<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
+<li>Ersetze die Zeile mit <code>random.randint</code> durch <code>array = ["Kiwi", "Apfel", "Birne"]</code>. Klappt das Sortieren auch mit Wörtern? Und was meldet Python bei <code>array = [3, "Apfel", 1]</code>?</li>
+</ul>
+</div>
 
 ## Zusammenfassung
 

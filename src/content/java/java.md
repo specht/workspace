@@ -218,7 +218,11 @@ crop-terminal-lines: auto
 
 <img class='full' src='try-factor.webp' alt='javac übersetzt Factor.java, java Factor fragt nach einer Zahl und gibt für 123 die Primfaktoren 3 und 41 aus.'>
 
-Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Probiere aus, was passiert, wenn du die Zahl 3000000000 eingibst. Was könnte der Grund dafür sein?
+Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Gib statt 123 die Zahl <code>3000000000</code> ein. Was meldet Java, und was könnte der Grund dafür sein? Ändere danach die Zeile mit <code>nextInt</code> zu <code>long number = scanner.nextLong();</code>, übersetze neu und probier die Zahl noch einmal. Was ist bei <code>long</code> anders als bei <code>int</code>?
+</div>
 
 ## Bubblesort
 
@@ -249,7 +253,16 @@ crop-terminal-lines: auto
 
 <img class='full' src='bubblesort.webp' alt='javac übersetzt BubbleSort.java, java BubbleSort gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
-Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
+Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere <code>BubbleSort.java</code>, übersetze neu und starte das Programm:
+<ul>
+<li>Sortiere 100 Zahlen statt 10. Warum musst du dafür nur eine einzige Zahl ändern?</li>
+<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
+<li>Ändere in <code>generateRandomArray</code> die Bedingung <code>i &lt; size</code> zu <code>i &lt;= size</code>. Was meldet Java beim Ausführen? Stell die Bedingung danach wieder her.</li>
+</ul>
+</div>
 
 ## Zusammenfassung
 

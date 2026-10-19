@@ -262,6 +262,10 @@ crop-terminal-lines: auto
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann Lisp auch die Zahl 3000000000 in Sekundenbruchteilen zerlegen. Wenn du allerdings eine sehr große Zahl wie 123456789123456789 verwendest, dauert die Berechnung sehr lange (probier es gern aus, du kannst das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen).
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Lisp rechnet mit beliebig großen ganzen Zahlen und mit Brüchen. Starte <code>sbcl</code> ohne Dateinamen und gib nacheinander <code>(expt 2 100)</code>, <code>(/ 1 3)</code> und <code>(+ 1/3 1/6)</code> ein. Was kommt jeweils heraus? Was hätte ein Taschenrechner bei <code>(/ 1 3)</code> angezeigt? Mit <code>(exit)</code> beendest du <code>sbcl</code>.
+</div>
+
 ## Bubblesort
 
 Im dritten Beispiel wollen wir eine Liste von 10 Zufallszahlen sortieren. Dafür verwenden wir den [Bubblesort-Algorithmus](https://de.wikipedia.org/wiki/Bubblesort), der zwar nicht besonders effizient ist, aber sehr einfach zu verstehen und zu implementieren. Der Bubblesort-Algorithmus funktioniert, indem er die Liste mehrmals durchläuft und benachbarte Elemente vertauscht, wenn sie in der falschen Reihenfolge sind.
@@ -284,7 +288,16 @@ crop-terminal-lines: auto
 
 <img class='full' src='bubblesort.webp' alt='sbcl --script bubblesort.lisp gibt eine Liste von zehn Zufallszahlen aus und darunter dieselbe Liste sortiert.'>
 
-Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
+Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere <code>bubblesort.lisp</code> und starte das Skript noch einmal:
+<ul>
+<li>Starte das Programm mehrmals hintereinander. Sind es jedes Mal andere Zahlen? Schreib dann die Zeile <code>(setf *random-state* (make-random-state t))</code> an den Anfang der Datei und probier es noch einmal.</li>
+<li><code>bubble-sort</code> bekommt die Funktion, mit der es vergleicht, als zweiten Parameter. Ändere den Aufruf zu <code>(bubble-sort list #'&gt;)</code>: Was passiert?</li>
+<li>Sortiere 100 Zahlen statt 10: Welche Zahl musst du dafür ändern?</li>
+</ul>
+</div>
 
 ## Zusammenfassung
 

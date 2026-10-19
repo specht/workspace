@@ -250,7 +250,11 @@ crop-terminal-lines: auto
 
 <img class='full' src='try-factor.webp' alt='fpc übersetzt factor.pas, ./factor fragt nach einer Zahl und gibt für 123 die Faktoren 3 und 41 aus.'>
 
-Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Probiere aus, was passiert, wenn du die Zahl 100000 eingibst. Was könnte der Grund dafür sein?
+Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Gib statt 123 die Zahl <code>100000</code> ein. Was passiert, und was könnte der Grund dafür sein? Ersetze danach in der Zeile <code>number, i: integer;</code> das Wort <code>integer</code> durch <code>longint</code>, übersetze neu und probier die Zahl noch einmal. Und was passiert jetzt bei <code>3000000000</code>?
+</div>
 
 ## Bubblesort
 
@@ -281,7 +285,15 @@ crop-terminal-lines: auto
 
 <img class='full' src='bubblesort.webp' alt='fpc übersetzt bubblesort.pas, ./bubblesort gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
-Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
+Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere <code>bubblesort.pas</code>, übersetze neu und starte das Programm:
+<ul>
+<li>Sortiere 100 Zahlen statt 10. Warum musst du dafür nur eine einzige Zahl ändern?</li>
+<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
+</ul>
+</div>
 
 ## Programmieren wie in den 90ern
 

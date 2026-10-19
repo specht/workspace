@@ -257,6 +257,10 @@ crop-terminal-lines: auto
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Wenn du allerdings eine sehr große Zahl wie 3000000000 verwendest, dauert die Berechnung sehr lange (probier es gern aus, du kannst das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen).
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Gib statt einer Zahl <code>abc</code> ein. In welcher Zeile meldet Lua einen Fehler? Warum erst dort und nicht schon beim Einlesen? Starte danach <code>lua</code> ohne Dateinamen und vergleiche <code>7 / 2</code>, <code>6 / 2</code> und <code>7 // 2</code>. Mit <kbd>Strg</kbd><kbd>D</kbd> beendest du <code>lua</code>.
+</div>
+
 ## Bubblesort
 
 Im dritten Beispiel wollen wir eine Liste von 10 Zufallszahlen sortieren. Dafür verwenden wir den [Bubblesort-Algorithmus](https://de.wikipedia.org/wiki/Bubblesort), der zwar nicht besonders effizient ist, aber sehr einfach zu verstehen und zu implementieren. Der Bubblesort-Algorithmus funktioniert, indem er die Liste mehrmals durchläuft und benachbarte Elemente vertauscht, wenn sie in der falschen Reihenfolge sind.
@@ -279,7 +283,16 @@ crop-terminal-lines: auto
 
 <img class='full' src='bubblesort.webp' alt='lua bubblesort.lua gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
-Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
+Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere <code>bubblesort.lua</code> und starte das Skript noch einmal:
+<ul>
+<li>Sortiere 100 Zahlen statt 10. Wie oft steht die 10 im Quelltext? Ersetze in den beiden Schleifen für die Ausgabe die 10 durch <code>#array</code>, die Länge der Tabelle: Wie viele Zahlen musst du jetzt noch ändern?</li>
+<li>Die Zahlen stehen in <code>array[1]</code> bis <code>array[10]</code>. Was gibt <code>print(array[0])</code> aus?</li>
+<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
+</ul>
+</div>
 
 ## Zusammenfassung
 

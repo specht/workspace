@@ -166,6 +166,10 @@ crop-terminal-lines: auto
 
 <img class='full' src='hello.webp' alt='Im Terminal startet bwbasic hello.bas mit seiner Begrüßung, gibt Hello, World! aus und wartet danach mit bwBASIC:.'>
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> BASIC wartet nach dem Programm hinter <code>bwBASIC:</code> auf weitere Befehle. Gib dort <code>PRINT 6 * 7</code> ein: BASIC führt den Befehl sofort aus, ganz ohne Datei. Was zeigen danach <code>LIST</code> und <code>RUN</code>?
+</div>
+
 Um BASIC zu beenden, gib `SYSTEM` ein und drücke <kbd>Enter</kbd> oder drücke einfach <kbd>Strg</kbd><kbd>D</kbd>.
 
 ### Fehler finden und beheben
@@ -258,7 +262,15 @@ crop-terminal-lines: auto
 
 <img class='full' src='bubblesort.webp' alt='bwbasic bubblesort.bas gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
-Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
+Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere <code>bubblesort.bas</code> und starte das Skript noch einmal:
+<ul>
+<li>Sortiere 100 Zahlen statt 10. Welche Zahlen im Quelltext musst du dafür ändern: nur die 10?</li>
+<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
+</ul>
+</div>
 
 ## Zusammenfassung
 

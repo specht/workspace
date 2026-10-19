@@ -207,6 +207,10 @@ crop-terminal-lines: auto
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 6) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Go ist streng mit allem, was du nicht benutzt. Schreib in <code>main</code> unter die Zeile mit <code>fmt.Println</code> die Zeile <code>x := 42</code> und starte das Programm. Was meldet der Compiler? Lösch die Zeile wieder und lösch stattdessen die Zeile mit <code>fmt.Println</code>: Was meldet er jetzt? Stell die Datei danach wieder her.
+</div>
+
 ## Primfaktorzerlegung
 
 Im zweiten Beispiel wollen wir eine Zahl in ihre Primfaktoren zerlegen. An diesem Beispiel kannst du sehen, wie man in Go Benutzereingaben verarbeitet und Schleifen verwendet.
@@ -253,7 +257,15 @@ crop-terminal-lines: auto
 
 <img class='full' src='bubblesort.webp' alt='go run bubblesort.go gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
-Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
+Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere <code>bubblesort.go</code> und starte das Programm noch einmal:
+<ul>
+<li>Sortiere 100 Zahlen statt 10. Wie oft steht die 10 im Quelltext? Ersetze in der <code>for</code>-Schleife die 10 durch <code>len(numbers)</code>, die Länge der Liste: Wie viele Zahlen musst du jetzt noch ändern?</li>
+<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
+</ul>
+</div>
 
 ## Zusammenfassung
 
