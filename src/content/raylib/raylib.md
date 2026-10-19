@@ -1652,6 +1652,27 @@ Die Welt gehört jetzt dir. Ein paar Ideen, von leicht bis schwer:
 
 _task(abgabe)
 
+## Wenn die Welt wächst
+
+Unsere Welt hat 48 × 24 × 48 = 55 296 Felder. In jedem Bild geht die Schleife in `main` alle durch, fragt bei jedem Block die Nachbarn ab und schickt die Seiten, an die Luft grenzt, neu an die Grafikkarte, 60-mal in der Sekunde. Zwei Dinge sparen dabei schon Arbeit: Seiten zwischen zwei Blöcken zeichnen wir nicht, und die Grafikkarte lässt Rückseiten weg. Gezeichnet wird aber alles andere, auch was hinter dir liegt und was der Nebel längst verschluckt hat.
+
+Eine Welt mit 1000 × 1000 × 1000 Feldern hätte eine Milliarde Felder. Die Schleife schafft kein Computer 60-mal in der Sekunde, und das Array allein bräuchte ein Gigabyte Arbeitsspeicher, ein Byte je Feld. Spiele mit großen Klötzchenwelten lösen beides mit ein paar Ideen.
+
+### Weniger zeichnen
+
+- **Chunks:** Die Welt wird in Würfel aus 16 × 16 × 16 Feldern geteilt. Für jeden Chunk berechnet das Programm die sichtbaren Seiten einmal und legt sie als **Mesh** auf der Grafikkarte ab (in raylib mit `UploadMesh`). Neu berechnet wird ein Chunk nur, wenn sich darin ein Block ändert. In jedem Bild sieht das Programm dann nicht mehr jedes Feld an, sondern nur noch die Chunks.
+- **Sichtweite:** Ab 36 Blöcken Entfernung ist bei uns alles im Nebel verschwunden. Chunks, die weiter weg liegen, braucht man gar nicht zu zeichnen. Dafür ist Nebel in Spielen oft da: Er versteckt, wo die Welt aufhört.
+- **Frustum Culling:** Die Kamera sieht nur, was in einem Pyramidenstumpf vor ihr liegt (englisch *frustum*). Ein Chunk, dessen Kasten ganz außerhalb liegt, wird nicht gezeichnet. Von den Chunks rund um dich fallen so die meisten weg: alle hinter dir und neben dir.
+- **Größere Flächen:** Eine Wiese aus 16 × 16 Grasblöcken ist oben eine einzige ebene Fläche. Statt 256 Vierecken genügt eines, wenn die Textur sich darauf 16 × 16-mal wiederholt (*Greedy Meshing*).
+- **Verdeckte Chunks:** Ein Chunk tief im Berg, rundherum Stein, ist von außen nie zu sehen, auch wenn er vor der Kamera liegt. Ihn wegzulassen heißt *Occlusion Culling*.
+
+### Weniger speichern
+
+- **Nur, was in der Nähe ist:** Die Landschaft entsteht aus Wellen und einem festen Startwert für den Zufall. Jeder Chunk lässt sich daraus jederzeit wieder berechnen. Im Arbeitsspeicher bleiben nur die Chunks um dich herum; was du gebaut oder abgebaut hast, merkt sich das Programm getrennt oder speichert den geänderten Chunk in eine Datei.
+- **Gleiche Chunks:** Ein Chunk nur aus Luft, also fast der ganze Himmel, braucht kein Array mit 4096 Feldern. Eine Zahl genügt: »alles Luft«. Dasselbe gilt für Chunks tief im Stein.
+- **Eine Palette je Chunk:** Kommen in einem Chunk nur vier Blockarten vor, speichert er eine Liste dieser vier, und jedes Feld nur, die wievielte es ist. Dafür reichen 2 Bit statt 8.
+- **Lauflängen:** Eine Säule von unten nach oben ist zum Beispiel 40 × Stein, 3 × Erde, 1 × Gras, 956 × Luft: vier Paare statt 1000 Zahlen. Das ist die [Lauflängenkodierung](/rle). Für eine Million Säulen mit je fünf solchen Paaren zu drei Byte sind das etwa 15 MB statt 1 GB.
+
 ## Wie geht es weiter?
 
 Du hast eine Welt gebaut, die auf dich reagiert: eine Kamera, die deinen Augen folgt, eine Figur mit Körper und Schwerkraft, einen Strahl zum Zielen und einen Shader für Licht, Tag, Nacht und Nebel. Genau diese Bausteine stecken auch in großen Spielen; dort heißen sie Kamera, Physik, Raycasting und Beleuchtung.

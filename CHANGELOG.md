@@ -25,6 +25,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   bleiben, wie sie sind). Neue MySQL- und Neo4j-Logins folgen derselben
   Regel; vorhandene bleiben unverändert. Beschrieben in
   `docs/entwicklung.md`, »Namen und Home-Verzeichnis im Workspace«.
+- »Eine Klötzchenwelt in 3D« endet mit »Wenn die Welt wächst«: was große
+  Klötzchenwelten schnell macht (Chunks als Mesh, Sichtweite, Frustum
+  Culling, größere Flächen, verdeckte Chunks) und wie eine Welt aus einer
+  Milliarde Feldern ohne 1 GB Arbeitsspeicher auskommt (nur nahe Chunks,
+  gleiche Chunks als eine Zahl, Palette, Lauflängen).
 - Jede Aktivität klont ihre Vorlage in einen eigenen Ordner. »GIF«,
   »JPEG« und »Feuerwerk« teilten sich mit »Echtzeitgrafik mit C« den Ordner
   `pixelram-starter`; VS Code klont dann still nach `pixelram-starter-1`, und
