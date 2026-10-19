@@ -883,6 +883,10 @@ _task(build)
 
 _task(abgabe)
 
+### Zeigen
+
+_include(workspace#live-apps)
+
 ### Deine Seite veröffentlichen
 
-Du kannst deine Webseite veröffentlichen, indem du sie auf einen Webserver hochlädst. Viele Hosting-Anbieter helfen dir dabei. Du kannst auch kostenlos eine Hackschule-Subdomain bekommen (z. B. `meineseite.hackschule.de`). Dafür verwendest du die gebauten Dateien aus `build`, nicht den laufenden Entwicklungsserver. In der [Anleitung zum eigenen Webspace](/custom-subdomain) erfährst du, wie du die Subdomain beantragst, was bei minderjährigen Schülerinnen und Schülern für die Einverständniserklärung nötig ist und wie du deine fertige Website hochlädst.
+Du kannst deine Webseite kostenlos unter einer Hackschule-Subdomain veröffentlichen (z. B. `meineseite.hackschule.de`). Dafür verwendest du die gebauten Dateien aus `build`, nicht den laufenden Entwicklungsserver. In der [Anleitung zum eigenen Webspace](/custom-subdomain) erfährst du, wie du die Subdomain beantragst, was bei minderjährigen Schülerinnen und Schülern für die Einverständniserklärung nötig ist und wie du deine fertige Website hochlädst.

@@ -1334,3 +1334,9 @@ check-task-fails: sonnensystem
 write-file: sonnensystem.ini <- file:sonnensystem.ini
 check-task: sonnensystem
 -->
+
+## Zeigen und veröffentlichen
+
+_include(workspace#live-apps)
+
+_include(workspace#subdomain)

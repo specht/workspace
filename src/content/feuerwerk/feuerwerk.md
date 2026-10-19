@@ -662,3 +662,9 @@ Die Funken einer Explosion haben unterschiedliche Lebenszeiten zwischen 1,5 und 
 </div>
 
 _task(abgabe)
+
+## Zeigen und veröffentlichen
+
+_include(workspace#live-apps)
+
+_include(workspace#subdomain)

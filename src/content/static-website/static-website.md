@@ -720,6 +720,8 @@ mein-bild.jpg
 
 Wenn du weiterhin das Wikimedia-Bild per URL einbindest, liegt diese Datei natürlich nicht in deinem Projekt. Dann braucht die veröffentlichte Seite eine Internetverbindung zu Wikimedia, um das Bild zu laden.
 
+_include(workspace#live-apps)
+
 ## Weiter ausprobieren
 
 Deine erste Webseite braucht nicht mehr als HTML und CSS. Genau das ist eine Stärke des Webs: Eine Datei `index.html` und eine Datei `styles.css` reichen schon für eine richtige Webseite. Wenn dein Projekt größer wird, gibt es aber Werkzeuge, die dir Arbeit abnehmen können. Einige davon sind im Workspace bereits installiert oder lassen sich direkt dort verwenden.

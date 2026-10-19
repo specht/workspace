@@ -1009,6 +1009,12 @@ crop-element: #canvas
 
 Die Grafik des Spiels kommt am Ende als Pixel in genau dem Speicher an, den du mit `set_pixel` beschreibst, und die Tasten kommen über `key_down` und `poll_key_event` herein. Wie das Spiel an PixelRAM angeschlossen ist, steht in [`ports/crystal`](https://github.com/specht/pixelram/tree/main/ports/crystal) im Repository von PixelRAM. Wer die Originaldateien besitzt, kann auf dieselbe Weise auch [**Prince of Persia**](https://github.com/specht/pixelram/tree/main/ports/prince) und [**Descent**](https://github.com/specht/pixelram/tree/main/ports/descent) übersetzen.
 
+## Zeigen und veröffentlichen
+
+_include(workspace#live-apps)
+
+_include(workspace#subdomain)
+
 ## Wie geht es weiter?
 
 Auf dieser Seite hast du keine einzige fertige Form gezeichnet. Aus einer Formel wurde ein Bild, aus einer Welle eine Animation und aus einem gelesenen Pixel ein Spiel. Dieselbe Frage trägt noch viel weiter, bis zu eigener 3D-Grafik:

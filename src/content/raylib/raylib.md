@@ -1751,6 +1751,12 @@ Eine Welt, die du erst in sieben Minuten durchquert hast, ist 2000 Blöcke breit
 - **Eine Palette je Chunk:** Kommen in einem Chunk nur vier Blockarten vor, speichert er eine Liste dieser vier, und jedes Feld nur, die wievielte es ist. Dafür reichen 2 Bit statt 8.
 - **Lauflängen:** Eine Säule von unten nach oben ist zum Beispiel 60 × Stein, 3 × Erde, 1 × Gras, 192 × Luft: vier Paare statt 256 Zahlen. Das ist die [Lauflängenkodierung](/rle). Für vier Millionen Säulen mit je fünf solchen Paaren zu zwei Byte sind das 40 MB statt 1 GB.
 
+## Zeigen und veröffentlichen
+
+_include(workspace#live-apps)
+
+_include(workspace#subdomain)
+
 ## Wie geht es weiter?
 
 Du hast eine Welt gebaut, die auf dich reagiert: eine Kamera, die deinen Augen folgt, eine Figur mit Körper und Schwerkraft, einen Strahl zum Zielen und einen Shader für Licht, Tag, Nacht und Nebel. Genau diese Bausteine stecken auch in großen Spielen; dort heißen sie Kamera, Physik, Raycasting und Beleuchtung.

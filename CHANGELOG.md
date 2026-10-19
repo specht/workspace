@@ -18,6 +18,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Projekte, deren Ergebnis eine statische Seite ist (Anaglyph, BIF,
+  PixelRAM, Klötzchenwelt, Feuerwerk, Shower.js, eigene Website, Svelte,
+  Hugo, Backrooms), sagen am Ende, wie man sie der Klasse zeigt (Shared Live
+  Apps im Profil) und dauerhaft veröffentlicht (eigene Hackschule-Subdomain).
+  Beides steht einmal im Handbuch »Workspace« (Teile `live-apps` und
+  `subdomain`) und wird eingebunden. Die Svelte-Seite verweist nicht mehr
+  auf Hosting-Anbieter, sondern auf die Subdomain.
 - Im Workspace hat VS Code Farben für `.room`-Dateien der Backrooms, nach
   denselben Regeln wie die Website (neue Erweiterung `hackschule-backrooms`,
   nur eine Grammatik, kein Programm). Für Betreibende: Sie kommt mit dem

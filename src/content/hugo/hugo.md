@@ -512,6 +512,10 @@ check-task: public
 
 _task(public)
 
+### Zeigen
+
+_include(workspace#live-apps)
+
 ### Veröffentlichen
 
 Den Inhalt von `public` kopierst du auf deine Hackschule-Subdomain, genau wie eine selbst geschriebene Website. Wie du eine Subdomain bekommst und einrichtest, steht in der [Anleitung zum eigenen Webspace](/custom-subdomain); hochladen geht dann mit `rsync`, von `public` aus. Ersetze `max` und `cobolultras` durch deinen Benutzernamen und deine Subdomain:

@@ -146,6 +146,8 @@ _task(alles-im-ordner)
 
 _task(file-adresse)
 
+_include(workspace#live-apps)
+
 Du kannst deine Präsentation auch online stellen, zum Beispiel direkt in der Hackschule. <a href="/custom-subdomain">Hier erfährst du, wie das geht.</a>
 
 ## Abgeben

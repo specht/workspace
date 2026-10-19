@@ -918,6 +918,14 @@ Beginne nicht sofort mit zwanzig oder dreißig Seiten. Ein paar Seiten reichen f
 
 Du musst auch nicht jede Funktion von BIF verwenden. Eine kleine Geschichte mit guten Entscheidungen ist besser als eine komplizierte Geschichte voller Technik, die eigentlich nichts bewirkt.
 
+### Zeigen und veröffentlichen
+
+_include(workspace#live-apps)
+
+Wie aus deiner Geschichte eine fertige Website wird, die auch ohne Workspace läuft, steht in der [Anleitung von BIF](https://github.com/specht/bif#readme) (auf Englisch).
+
+_include(workspace#subdomain)
+
 ### Abgeben
 
 _task(eigene-geschichte)
