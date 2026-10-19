@@ -5672,8 +5672,8 @@ table.value-groups td.group-odd {
    that needs a look gets a stripe on the left in its colour. */
 :root {
     --health-ok: #1f9d55;
-    --health-warn: #d4a106;
-    --health-bad: #d64545;
+    --health-warn: #f2b62b;
+    --health-bad: #e05252;
     --health-unknown: #9aa3ad;
 }
 
