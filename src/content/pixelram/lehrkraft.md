@@ -8,6 +8,8 @@ Lernende programmieren in C Grafik direkt in den Bildschirmspeicher (PixelRAM), 
 
 **Im Unterricht.** Die Lichtspur ist zu zweit an einer Tastatur gespielt ein guter Stundeneinstieg; die Ausbau-Ideen am Ende (Tempo, Hindernisse, Lücken, Computergegner) lassen sich verteilen und vergleichen. Der Computergegner ist der anspruchsvollste: Er braucht dieselbe Idee wie die Kollision, nur vorausschauend.
 
+**Glatte Kanten.** Nach »Kreiswellen« glätten die Lernenden die Treppenstufen mit adaptivem Supersampling: Die Farben an den Ecken eines Pixels entscheiden, ob eine Kante hindurchläuft, und nur dann teilt die rekursive Funktion `square` das Pixel in vier kleinere Quadrate, höchstens `LEVELS`-mal. Ab da zeichnet `draw()` jedes Bild, `color` bleibt eine reine Formel. Dazu gehört, warum Röhrenbildschirme so etwas früher von selbst weicher machten. Der Aufwand ist gemessen (WebAssembly, Interferenz): Ein Bild braucht mit `LEVELS 1` etwa 2,5-mal so lange wie ohne Glätten, mit 2 gut 5-mal, mit 3 elfmal. Für Bewegung ist 1 empfohlen; ruckelt es auf schwachen Rechnern, ist das der Grund.
+
 **Größere Projekte.** PixelRAM ist schnell genug für Vorhaben, die über mehrere Wochen tragen und an denen sich Mathematik und Informatik treffen:
 
 - **Raycaster:** Eine Gitterkarte aus Wänden, für jede Bildschirmspalte ein Strahl, die Wandhöhe aus dem Abstand. Verbindet beide Teile der Seite: Pixelrechnung und Tastatursteuerung.

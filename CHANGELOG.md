@@ -18,6 +18,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- »Echtzeitgrafik mit C« (PixelRAM): neuer Abschnitt »Glatte Kanten« gleich
+  nach »Kreiswellen«. Lernende glätten die Treppenstufen der Farbringe mit
+  adaptivem Supersampling: Die Farben an den Ecken eines Pixels entscheiden,
+  ob eine Kante hindurchläuft, und nur dann teilt die rekursive Funktion
+  `square` das Pixel, höchstens `LEVELS`-mal. Ein vergrößerter Ausschnitt
+  zeigt `LEVELS` 0 bis 3 nebeneinander, mit gemessenem Aufwand; der Text
+  erklärt, warum Röhrenbildschirme früher von selbst weicher zeichneten.
+  Alle folgenden Wellen-Programme glätten (`draw()`), die Interferenz läuft
+  halb so schnell, das Titelbild ist geglättet. Neu ist auch ein
+  Ausprobieren-Kasten zu einer eigenen Palette mit `set_palette`.
 - »Meine Daten« im Profil sagt vor dem Download, wie groß der Workspace
   ist, wie viel davon Ordner sind, die ein Befehl wieder anlegt
   (`node_modules`, `__pycache__`, `.gradle`, `.dart_tool`, `build` neben
@@ -1262,6 +1272,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   125 % oder 150 % zeichnet und xterm ohne WebGL läuft; die Schrift bleibt.
   Der Workspace lädt dafür `include/workspace.css`, die nginx neben
   `fonts.css` einfügt. Die Screenshots zeigen die Linien ebenfalls nicht mehr.
+- Code in Bildunterschriften von Galerien steht im Text statt in einer
+  eigenen Zeile (»`beispiele/tunnel`: …«).
 - TOTP: Der Eintrag in der Authenticator-App heißt »TOTP-Test:mein-Programm«
   statt »Hackschule:Workspace«, damit er nicht wie ein echtes Konto aussieht.
 - Wer eine Leistungsüberprüfung löscht, löscht jetzt auch die Workspaces

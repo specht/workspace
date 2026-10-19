@@ -67,7 +67,7 @@ click: selector:#run
 sleep: 10
 crop-element: #screen-box
 -->
-<figure><img src='gallery-mandelbrot.webp' alt='Die Mandelbrot-Menge in Schwarz vor blauen Farbstufen mit hellem Rand.'><figcaption><code>14-mandelbrot.asm</code> Die Mandelbrot-Menge, in Assembler</figcaption></figure>
+<figure><img src='gallery-mandelbrot.webp' alt='Die Mandelbrot-Menge in Schwarz vor blauen Farbstufen mit hellem Rand.'><figcaption><code>14-mandelbrot.asm</code>: Die Mandelbrot-Menge, in Assembler</figcaption></figure>
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1600x900
@@ -86,7 +86,7 @@ sleep: 10
 hook: stop-at frame:
 crop-element: #screen-box
 -->
-<figure><img src='gallery-inferno.webp' alt='Ein feines, flackerndes Flammenmeer von Weiß über Gelb bis Rot.'><figcaption><code>15-inferno.asm</code> Inferno: ein Feuer, in dem jedes Pixel die Hitze seiner Nachbarn aufnimmt</figcaption></figure>
+<figure><img src='gallery-inferno.webp' alt='Ein feines, flackerndes Flammenmeer von Weiß über Gelb bis Rot.'><figcaption><code>15-inferno.asm</code>: ein Feuer, in dem jedes Pixel die Hitze seiner Nachbarn aufnimmt</figcaption></figure>
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1600x900
@@ -104,7 +104,7 @@ sleep: 2
 hook: play-breakout 33
 crop-element: #screen-box
 -->
-<figure><img src='gallery-breakout.webp' alt='Breakout: Eine bunte Mauer mit Lücken, darunter Schläger und Ball.'><figcaption><code>16-breakout.asm</code> Breakout, mit Joystick und Ton</figcaption></figure>
+<figure><img src='gallery-breakout.webp' alt='Breakout: Eine bunte Mauer mit Lücken, darunter Schläger und Ball.'><figcaption><code>16-breakout.asm</code>: Breakout, mit Joystick und Ton</figcaption></figure>
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1600x900
@@ -121,7 +121,7 @@ click: selector:#run
 sleep: 7
 crop-element: #screen-box
 -->
-<figure><img src='gallery-plasma.webp' alt='Ein Plasma aus weichen, bunten Farbwolken.'><figcaption><code>20-plasma.c</code> Plasma aus Sinuswellen</figcaption></figure>
+<figure><img src='gallery-plasma.webp' alt='Ein Plasma aus weichen, bunten Farbwolken.'><figcaption><code>20-plasma.c</code>: Plasma aus Sinuswellen</figcaption></figure>
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1600x900
@@ -138,7 +138,7 @@ click: selector:#run
 sleep: 7
 crop-element: #screen-box
 -->
-<figure><img src='gallery-life.webp' alt='Conways Game of Life: Zellhaufen in Gelb, Orange und Weiß auf Schwarz.'><figcaption><code>21-life.c</code> Conways Game of Life</figcaption></figure>
+<figure><img src='gallery-life.webp' alt='Conways Game of Life: Zellhaufen in Gelb, Orange und Weiß auf Schwarz.'><figcaption><code>21-life.c</code>: Conways Game of Life</figcaption></figure>
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1600x900
@@ -155,7 +155,7 @@ click: selector:#run
 sleep: 10
 crop-element: #screen-box
 -->
-<figure><img src='gallery-color-cycling.webp' alt='Regenbogenfarbene Ringe um eine Ellipse.'><figcaption><code>23-color-cycling.c</code> Color Cycling: Bewegung nur durch die Palette</figcaption></figure>
+<figure><img src='gallery-color-cycling.webp' alt='Regenbogenfarbene Ringe um eine Ellipse.'><figcaption><code>23-color-cycling.c</code>: Color Cycling, Bewegung nur durch die Palette</figcaption></figure>
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1600x900
@@ -174,7 +174,7 @@ hook: hold-key Shift+KeyT
 sleep: 2
 crop-element: #screen-box
 -->
-<figure><img src='gallery-organ.webp' alt='Eine Orgel: Klaviertasten, darunter drei Reihen Akkordtasten; E-Moll leuchtet.'><figcaption><code>24-arpeggio-organ.c</code> Arpeggio-Orgel: Akkorde auf der Tastatur</figcaption></figure>
+<figure><img src='gallery-organ.webp' alt='Eine Orgel: Klaviertasten, darunter drei Reihen Akkordtasten; E-Moll leuchtet.'><figcaption><code>24-arpeggio-organ.c</code>: eine Arpeggio-Orgel mit Akkorden auf der Tastatur</figcaption></figure>
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1600x900
@@ -191,7 +191,7 @@ click: selector:#run
 sleep: 150
 crop-element: #screen-box
 -->
-<figure><img src='gallery-landscape.webp' alt='Eine Landschaft mit grünen Hügeln, die sich in einem See spiegeln.'><figcaption><code>26-landscape.c</code> Landschaft mit Wasserspiegelung</figcaption></figure>
+<figure><img src='gallery-landscape.webp' alt='Eine Landschaft mit grünen Hügeln, die sich in einem See spiegeln.'><figcaption><code>26-landscape.c</code>: Landschaft mit Wasserspiegelung</figcaption></figure>
 </div>
 
 Du arbeitest mit **zwei Git-Repositories**. Im Workspace ist `~` dein Ordner `/workspace`.

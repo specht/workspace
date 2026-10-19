@@ -1916,10 +1916,6 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     line-height: 1.35;
 }
 
-.gallery figcaption code {
-    display: block;
-}
-
 .gallery.portrait figure {
     text-align: center;
 }

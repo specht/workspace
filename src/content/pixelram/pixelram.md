@@ -1,6 +1,6 @@
 <div class='meta'>
 image: interference.webp
-image_alt: "Bunte, ineinander verschlungene Farbringe aus großen Pixeln"
+image_alt: "Bunte, ineinander verschlungene Farbringe mit weichen Kanten"
 kind: projekt
 language: PixelRAM / C
 reference: [pixelram]
@@ -71,6 +71,8 @@ open-file: main.c
 terminal-open
 terminal-run: make
 terminal-wait-for-prompt: 180
+# Die Maus stand noch auf »Open«, wo jetzt das Schließen-Kreuz des Tabs ist
+move-mouse: selector:.terminal
 terminal-expect-no-text: error:
 terminal-expect-no-text: ***
 -->
@@ -261,7 +263,7 @@ Jetzt wird die Formel für `color` eine Rechnung mit Abständen und Winkelfunkti
 Wie weit ist ein Pixel von der Mitte des Bildschirms entfernt? Der Satz des Pythagoras sagt es: Mit `dx` und `dy`, dem Abstand nach rechts und nach unten, ist der Abstand `sqrt(dx * dx + dy * dy)`. Für `sqrt` brauchst du die Mathematik-Bibliothek: Schreib `#include <math.h>` unter die erste Zeile und ändere `color` so:
 
 ```c
-int color(int x, int y)
+int color(double x, double y)
 {
     double dx = x - W / 2.0;
     double dy = y - H / 2.0;
@@ -271,12 +273,12 @@ int color(int x, int y)
 }
 ```
 
-`double` ist eine Kommazahl. `W / 2.0` statt `W / 2` sorgt dafür, dass C mit Kommazahlen rechnet. `(int)` schneidet die Nachkommastellen ab, denn `%` geht nur mit ganzen Zahlen.
+`double` ist eine Kommazahl. `W / 2.0` statt `W / 2` sorgt dafür, dass C mit Kommazahlen rechnet. `(int)` schneidet die Nachkommastellen ab, denn `%` geht nur mit ganzen Zahlen. Auch `x` und `y` sind jetzt Kommazahlen: Die Schleife in `main` gibt weiter ganze Zahlen hinein, aber `color` kann so auch die Farbe zwischen zwei Pixeln ausrechnen. Das braucht das Programm gleich.
 
 <!-- tutorial-screenshot
 write-file: main.c <- code:int color(int x, int y)||return (x / 20 + y / 20) % 16;
 terminal-open
-terminal-run: sed -i -e 's|#include "pixelram.h"|#include "pixelram.h"\n#include <math.h>|' -e 's|    return (x / 20 + y / 20) % 16;|    double dx = x - W / 2.0;\n    double dy = y - H / 2.0;\n    double distance = sqrt(dx * dx + dy * dy);\n\n    return (int)(distance / 6.0) % 16;|' main.c
+terminal-run: sed -i -e 's|#include "pixelram.h"|#include "pixelram.h"\n#include <math.h>|' -e 's|int color(int x, int y)|int color(double x, double y)|' -e 's|    return (x / 20 + y / 20) % 16;|    double dx = x - W / 2.0;\n    double dy = y - H / 2.0;\n    double distance = sqrt(dx * dx + dy * dy);\n\n    return (int)(distance / 6.0) % 16;|' main.c
 terminal-wait-for-prompt
 terminal-run: make
 terminal-wait-for-prompt
@@ -319,6 +321,188 @@ crop-element: #canvas
 -->
 <img class='full' src='sinus-rings.webp' alt='Viele konzentrische Ringe mit weichen Farbverläufen.'>
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Eine eigene Palette. Schreib in <code>main</code> unter <code>use_palette</code> die Zeile <code>for (int i = 0; i &lt; 16; i++) set_palette(i, i * 17, 0, 255 - i * 17);</code>. Jetzt geht Farbe 0 (Blau) in 16 gleichen Schritten zu Farbe 15 (Rot), und aus den bunten Ringen werden weiche Wellenberge. Wie sieht ein Verlauf von Schwarz über Rot und Gelb bis Weiß aus, wie im <a href='/fire'>Feuer</a>? Dort steht, wie man ihn aus mehreren Abschnitten baut.
+</div>
+
+### Glatte Kanten
+
+Sieh dir die Ränder der Ringe genau an: Treppenstufen. Jedes Pixel bekommt genau eine der 16 Farben, also verläuft jede Grenze zwischen zwei Farben in Stufen. Gleich bewegen sich die Ringe, dann springen die Stufen bei jedem Bild von Pixel zu Pixel, und entlang jeder Kante krabbelt und flimmert es.
+
+Auf den Bildschirmen der 80er- und 90er-Jahre fiel das kaum auf. Ein **Röhrenbildschirm** (CRT, Cathode Ray Tube) hat keine Pixel mit scharfen Rändern: Ein Elektronenstrahl fährt Zeile für Zeile über die Leuchtschicht hinter dem Glas, und wo er sie trifft, glüht sie auf, in einem runden Fleck mit weichem Rand. Der Strahl springt auch nicht von einer Farbe zur nächsten, er wird stärker oder schwächer, und dafür braucht er ein Stück Weg. So fließt jedes Pixel ein wenig in seine Nachbarn über, vor allem nach links und rechts, und zwischen den Zeilen bleibt ein dunkler Streifen, die **Scanline**. Treppenstufen wurden auf der Röhre von selbst weich, und wer damals Grafik zeichnete, rechnete damit: Zwei Farben im Schachbrettmuster sahen aus wie eine Mischfarbe. Ein wenig Glättung gab es umsonst. Der CRT-Filter von PixelRAM (das Röhrensymbol, <kbd>F6</kbd>) ahmt diesen Bildschirm nach; schalte ihn ein und sieh dir die Kanten noch einmal an.
+
+Ohne Röhre muss das Programm selbst glätten. Ein Pixel ist ein kleines Quadrat, und bisher fragt das Programm nur an einem einzigen Punkt nach der Farbe: an seiner linken oberen Ecke `(x, y)`. Läuft eine Grenze zwischen zwei Ringen mitten durch das Quadrat, bekommt es trotzdem ganz die Farbe dieser einen Ecke. Besser wäre eine Farbe dazwischen, so wie das Pixel zum Teil im einen und zum Teil im anderen Ring liegt. Dafür fragt das Programm an mehreren Punkten im Pixel und mischt die Farben. Mehrere Messpunkte für ein Pixel heißen **Supersampling**.
+
+Viele Messpunkte für jedes Pixel wären viel Arbeit, und das schafft der Browser nicht 60-mal pro Sekunde, sobald sich etwas bewegt. Nötig sind sie aber nur an den Kanten, und die findet das Programm billig:
+
+1. Es rechnet wie bisher die Farbe an jedem Punkt `(x, y)` aus, nur eine Spalte und eine Zeile weiter, und merkt sie sich im Array `corner`. Das sind die vier Ecken jedes Pixels; jede Ecke gehört zu vier Pixeln und wird nur einmal gerechnet.
+2. Haben alle vier Ecken eines Quadrats dieselbe Farbe, liegt es ganz in einem Ring und bekommt diese Farbe.
+3. Sonst läuft eine Kante hindurch. Dann teilt das Programm das Quadrat in vier kleinere, rechnet die Farbe an den fünf neuen Ecken aus, den Mitten der vier Seiten und der Mitte, und macht mit jedem der vier kleinen Quadrate dasselbe wie in 2. und 3. Die Farbe des großen Quadrats ist die Mischung der vier kleinen.
+
+Die Funktion `square` ruft sich dafür selbst auf: Sie ist **rekursiv**. Damit das ein Ende hat, zählt `levels` mit, wie oft sie noch teilen darf. Bei 0 nimmt `square` einfach die Farbe der linken oberen Ecke, so wie bisher. `LEVELS 0` ist also genau das Bild von eben, `LEVELS 1` teilt ein Pixel an einer Kante einmal (bis zu 4 Messpunkte), `LEVELS 2` zweimal (bis zu 16), `LEVELS 3` dreimal (bis zu 64). Genauer hinsehen nur dort, wo es etwas bringt: Das heißt **adaptives Supersampling**.
+
+An `color` ändert sich nichts. Ersetze `main` durch:
+
+```c_copy
+~     return (int)((wave + 1.0) * 7.5);
+~ }
+~
+// wie oft ein Pixel an einer Kante höchstens geteilt wird
+#define LEVELS 1
+
+// die Farben an den Ecken der Pixel: eine Zeile und eine Spalte mehr
+int corner[H + 1][W + 1];
+
+// Die Farbe eines Quadrats mit der linken oberen Ecke (x, y) und der
+// Seitenlänge size; c00, c10, c01 und c11 sind die Farben seiner Ecken.
+void square(double x, double y, double size, int c00, int c10, int c01, int c11, int levels, int rgb[3])
+{
+    if (levels == 0 || (c00 == c10 && c00 == c01 && c00 == c11))
+    {
+        // alle Ecken gleich (oder nicht weiter teilen): eine Farbe
+        uint8_t r, g, b;
+        get_palette(c00, &r, &g, &b);
+        rgb[0] = r;
+        rgb[1] = g;
+        rgb[2] = b;
+        return;
+    }
+
+    // eine Kante läuft durch: in vier kleinere Quadrate teilen
+    double half = size / 2;
+    int top    = color(x + half, y);
+    int left   = color(x,        y + half);
+    int middle = color(x + half, y + half);
+    int right  = color(x + size, y + half);
+    int bottom = color(x + half, y + size);
+
+    int upper_left[3], upper_right[3], lower_left[3], lower_right[3];
+    square(x,        y,        half, c00,    top,    left,   middle, levels - 1, upper_left);
+    square(x + half, y,        half, top,    c10,    middle, right,  levels - 1, upper_right);
+    square(x,        y + half, half, left,   middle, c01,    bottom, levels - 1, lower_left);
+    square(x + half, y + half, half, middle, right,  bottom, c11,    levels - 1, lower_right);
+
+    // und ihre Farben mischen
+    for (int i = 0; i < 3; i++)
+        rgb[i] = (upper_left[i] + upper_right[i] + lower_left[i] + lower_right[i]) / 4;
+}
+
+// zeichnet das ganze Bild mit color, die Kanten geglättet
+void draw(void)
+{
+    for (int y = 0; y <= H; y++)
+        for (int x = 0; x <= W; x++)
+            corner[y][x] = color(x, y);
+
+    for (int y = 0; y < H; y++)
+        for (int x = 0; x < W; x++)
+        {
+            int rgb[3];
+            square(x, y, 1.0, corner[y][x], corner[y][x + 1], corner[y + 1][x], corner[y + 1][x + 1], LEVELS, rgb);
+            set_pixel_rgb(x, y, rgb[0], rgb[1], rgb[2]);
+        }
+}
+
+int main(void)
+{
+    screen_open(W, H, pixel_rgb24, "PixelRAM");
+    use_palette("sweetie_16");
+
+    draw();
+
+    return 0;
+}
+```
+
+- Paletten-Nummern lassen sich nicht mischen: Der Mittelwert aus Farbe 5 und Farbe 6 ist 5,5, und das ist keine Farbe. Das Programm öffnet den Bildschirm deshalb mit `pixel_rgb24`, und jedes Pixel bekommt mit `set_pixel_rgb` seinen Rot-, Grün- und Blauanteil, jeweils von 0 bis 255.
+- Die Palette bleibt trotzdem: `get_palette(nummer, &r, &g, &b)` schreibt die drei Anteile einer Paletten-Farbe in `r`, `g` und `b`. Das `&` gibt der Funktion die Adressen der Variablen, damit sie hineinschreiben kann. Jeder Messpunkt ist also eine der 16 Farben; nur Pixel auf einer Kante bekommen eine Mischung.
+- `square` gibt drei Zahlen zurück, Rot, Grün und Blau. Eine Funktion in C kann nur einen Wert zurückgeben, deshalb bekommt `square` das Array `rgb` und schreibt hinein: Ein Array als Parameter ist dasselbe Array wie beim Aufruf, kein neues.
+- `corner` steht außerhalb von `draw`: Mit 181 × 321 Zahlen ist das Array zu groß für den Platz, den eine Funktion im Browser für ihre Variablen hat.
+
+So sieht ein Ausschnitt aus der Nähe aus, mit `LEVELS` von 0 bis 3:
+
+<div class='gallery columns-4'>
+<figure>
+<!-- tutorial-screenshot
+# Noch das Programm aus »Kreiswellen«: dasselbe Bild wie LEVELS 0
+tab: preview
+viewport: 1600x900
+hook: open main.html
+crop-left: 19%
+crop-right: 71%
+crop-top: 11%
+crop-bottom: 71%
+-->
+<img src='zoom-0.webp' alt='Stark vergrößerter Ausschnitt der Ringe: Die Grenzen zwischen den Farben verlaufen in harten Treppenstufen aus großen Pixeln.'>
+<figcaption><code>LEVELS 0</code>: ein Messpunkt</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: main.c <- file:stufen/glatt.c
+terminal-open
+terminal-run: make
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 1600x900
+hook: open main.html
+crop-left: 19%
+crop-right: 71%
+crop-top: 11%
+crop-bottom: 71%
+-->
+<img src='zoom-1.webp' alt='Derselbe Ausschnitt mit LEVELS 1: Pixel innen in den Ringen wie vorher, an den Grenzen Pixel in Zwischentönen; die Stufen sind weich.'>
+<figcaption><code>LEVELS 1</code>: bis zu 4 Messpunkte</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+terminal-open
+terminal-run: sed -i 's|#define LEVELS 1|#define LEVELS 2|' main.c
+terminal-wait-for-prompt
+terminal-run: make
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 1600x900
+hook: open main.html
+crop-left: 19%
+crop-right: 71%
+crop-top: 11%
+crop-bottom: 71%
+-->
+<img src='zoom-2.webp' alt='Derselbe Ausschnitt mit LEVELS 2: Die Zwischentöne an den Grenzen sind feiner abgestuft.'>
+<figcaption><code>LEVELS 2</code>: bis zu 16 Messpunkte</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+terminal-open
+terminal-run: sed -i 's|#define LEVELS 2|#define LEVELS 3|' main.c
+terminal-wait-for-prompt
+terminal-run: make
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 1600x900
+hook: open main.html
+crop-left: 19%
+crop-right: 71%
+crop-top: 11%
+crop-bottom: 71%
+-->
+<img src='zoom-3.webp' alt='Derselbe Ausschnitt mit LEVELS 3: kaum ein Unterschied mehr zu LEVELS 2.'>
+<figcaption><code>LEVELS 3</code>: bis zu 64 Messpunkte</figcaption>
+</figure>
+</div>
+
+Die Pixel innen in den Ringen sind bei jeder Stufe genau wie vorher, das Bild wird nicht unscharf. Nur an den Grenzen sitzen Pixel in Zwischentönen: Je mehr von einem Pixel im einen Ring liegt, desto näher ist seine Farbe an dessen Farbe. Den größten Schritt macht `LEVELS 1`, danach werden die Unterschiede klein, die Arbeit aber nicht: Bei den beiden Wellen weiter unten braucht ein Bild mit `LEVELS 1` etwa zweieinhalbmal so lange wie ohne Glätten, mit `LEVELS 2` gut fünfmal und mit `LEVELS 3` elfmal. Für alles, was sich bewegt, ist `LEVELS 1` die richtige Wahl; für ein einzelnes Bild darf es mehr sein.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Stell <code>LEVELS</code> auf 2 und 3 und vergleiche. Wo sieht das Programm genauer hin? Schreib in <code>square</code> ganz unten, nach der Schleife, die das Mischen erledigt, <code>rgb[0] = 255; rgb[1] = 0; rgb[2] = 0;</code>: Jetzt ist jedes Pixel rot, das das Programm geteilt hat. Und schalte den CRT-Filter ein und aus: Wie viel macht er bei geglätteten Kanten noch aus?
+</div>
+
 ### Bewegung
 
 Bisher rechnet das Programm ein einziges Bild und ist dann fertig. Für eine Animation braucht es eine Schleife, die immer wieder ein neues Bild berechnet, bis jemand die Seite schließt:
@@ -331,7 +515,9 @@ while (!should_close())
 }
 ```
 
-`present()` zeigt das fertige Bild und wartet bis zum nächsten, höchstens 60-mal pro Sekunde. `seconds()` sagt, wie viele Sekunden seit dem Start vergangen sind. Steckt diese Zeit in der Sinusfunktion, wandern die Wellen nach außen. Hier das ganze Programm:
+`present()` zeigt das fertige Bild und wartet bis zum nächsten, höchstens 60-mal pro Sekunde. `seconds()` sagt, wie viele Sekunden seit dem Start vergangen sind. Steckt diese Zeit in der Sinusfunktion, wandern die Wellen nach außen.
+
+Die Zeit braucht `color`, gesetzt wird sie in `main`: Sie steht deshalb als Variable `t` außerhalb von beiden, wo jede Funktion sie lesen kann. Ändere den Anfang der Datei bis `color`:
 
 ```c
 #include "pixelram.h"
@@ -340,23 +526,29 @@ while (!should_close())
 #define W 320
 #define H 180
 
-int main(void)
-{
-    screen_open(W, H, pixel_indexed8, "PixelRAM");
-    use_palette("sweetie_16");
+// Sekunden seit dem Start, für jedes Bild neu
+double t;
 
+int color(double x, double y)
+{
+    double distance = hypot(x - W / 2.0, y - H / 2.0);
+    double wave = sin(distance * 0.12 - t * 2.0);
+    return (int)((wave + 1.0) * 7.5);
+}
+```
+
+`hypot(dx, dy)` rechnet dasselbe wie `sqrt(dx * dx + dy * dy)`, nur kürzer. `draw` bleibt, wie es ist. In `main` kommt die Schleife um `draw()`:
+
+```c
+~ int main(void)
+~ {
+~     screen_open(W, H, pixel_rgb24, "PixelRAM");
+~     use_palette("sweetie_16");
+~
     while (!should_close())
     {
-        double t = seconds();
-
-        for (int y = 0; y < H; y++)
-            for (int x = 0; x < W; x++)
-            {
-                double distance = hypot(x - W / 2.0, y - H / 2.0);
-                double wave = sin(distance * 0.12 - t * 2.0);
-                set_pixel(x, y, (int)((wave + 1.0) * 7.5));
-            }
-
+        t = seconds();
+        draw();
         present();
     }
 
@@ -365,10 +557,8 @@ int main(void)
 }
 ```
 
-`hypot(dx, dy)` rechnet dasselbe wie `sqrt(dx * dx + dy * dy)`, nur kürzer. Die Funktion `color` ist verschwunden, weil die Farbe jetzt auch von `t` abhängt; die Rechnung steht direkt in der Schleife.
-
 <!-- tutorial-screenshot
-write-file: main.c <- previous-code
+write-file: main.c <- file:stufen/bewegung.c
 terminal-open
 terminal-run: make
 terminal-wait-for-prompt
@@ -383,57 +573,50 @@ record: 3.14s
 -->
 <video src='wellen.mp4' autoplay loop muted playsinline style='width: 100%; max-width: 640px;'></video>
 
-Kein Kreis wird verschoben: Das Programm rechnet jedes Bild komplett neu, und weil `t` wächst, liefert `sin` jedes Mal ein wenig andere Werte.
+Kein Kreis wird verschoben: Das Programm rechnet jedes Bild komplett neu, und weil `t` wächst, liefert `sin` jedes Mal ein wenig andere Werte. Die Kanten gleiten dabei ruhig nach außen, weil `draw` sie glättet.
 
 ### Zwei Wellen treffen sich
 
-Die Quelle der Wellen muss nicht in der Mitte bleiben. Mit `cos` und `sin` der Zeit wandert ein Punkt in Schleifen über den Bildschirm. Nimm zwei solche Quellen, rechne für jedes Pixel beide Wellen aus und zähle sie zusammen:
+Die Quelle der Wellen muss nicht in der Mitte bleiben. Mit `cos` und `sin` der Zeit wandert ein Punkt in Schleifen über den Bildschirm. Nimm zwei solche Quellen, rechne für jedes Pixel beide Wellen aus und zähle sie zusammen. Die beiden Quellen stehen wie `t` außerhalb der Funktionen, `color` misst den Abstand zu beiden:
 
 ```c
-#include "pixelram.h"
-#include <math.h>
+~ // Sekunden seit dem Start, für jedes Bild neu
+~ double t;
+~
+// zwei Wellenquellen, die durchs Bild wandern
+double ax, ay, bx, by;
 
-#define W 320
-#define H 180
-
-int main(void)
+int color(double x, double y)
 {
-    screen_open(W, H, pixel_indexed8, "Interferenz");
-    use_palette("sweetie_16");
+    double d1 = hypot(x - ax, y - ay);
+    double d2 = hypot(x - bx, y - by);
 
-    while (!should_close())
-    {
-        double t = seconds();
+    double wave = sin(d1 * 0.12 - t * 1.0) + sin(d2 * 0.12 + t * 1.15);
 
-        // zwei Wellenquellen, die durchs Bild wandern
-        double ax = W / 2.0 + cos(t * 0.8) * 70;
-        double ay = H / 2.0 + sin(t * 1.1) * 40;
-        double bx = W / 2.0 + cos(t * 1.3) * 90;
-        double by = H / 2.0 + sin(t * 0.7) * 50;
-
-        for (int y = 0; y < H; y++)
-            for (int x = 0; x < W; x++)
-            {
-                double d1 = hypot(x - ax, y - ay);
-                double d2 = hypot(x - bx, y - by);
-
-                double wave = sin(d1 * 0.12 - t * 2.0) + sin(d2 * 0.12 + t * 2.3);
-
-                set_pixel(x, y, (int)((wave + 2) * 3.75));
-            }
-
-        present();
-    }
-
-    screen_close();
-    return 0;
+    return (int)((wave + 2) * 3.75);
 }
 ```
 
-Wo beide Wellen gleichzeitig oben sind, verstärken sie sich, wo die eine oben und die andere unten ist, löschen sie sich aus. Das nennt man **Interferenz**. Die Summe liegt zwischen −2 und 2, deshalb rechnet die letzte Zeile `(wave + 2) * 3.75`.
+`main` bewegt die Quellen bei jedem Bild ein Stück weiter:
+
+```c
+~     while (!should_close())
+~     {
+        t = seconds();
+        ax = W / 2.0 + cos(t * 0.4) * 70;
+        ay = H / 2.0 + sin(t * 0.55) * 40;
+        bx = W / 2.0 + cos(t * 0.65) * 90;
+        by = H / 2.0 + sin(t * 0.35) * 50;
+
+        draw();
+~         present();
+~     }
+```
+
+Wo beide Wellen gleichzeitig oben sind, verstärken sie sich, wo die eine oben und die andere unten ist, löschen sie sich aus. Das nennt man **Interferenz**. Die Summe liegt zwischen −2 und 2, deshalb rechnet die letzte Zeile von `color` `(wave + 2) * 3.75`.
 
 <!-- tutorial-screenshot
-write-file: main.c <- previous-code
+write-file: main.c <- file:stufen/interferenz.c
 terminal-open
 terminal-run: make
 terminal-wait-for-prompt
@@ -443,16 +626,16 @@ tab: preview
 variants: crt
 viewport: 800x450
 hook: open main.html
-# nach 3,6 Sekunden: die beiden Quellen nah beieinander, ein ruhiges Muster
-hook: at 3.6
+# nach 7,2 Sekunden: die beiden Quellen nah beieinander, ein ruhiges Muster
+hook: at 7.2
 crop-element: #canvas
 -->
-<img class='full' src='interference.webp' alt='Bunte Wellenringe von zwei Quellen überlagern sich zu einem verwickelten Muster.'>
+<img class='full' src='interference.webp' alt='Bunte Wellenringe von zwei Quellen überlagern sich zu einem verwickelten Muster mit weichen Kanten.'>
 
-Für jedes Bild berechnet das Programm 57.600 Pixel mit je zwei Abständen und zwei Sinuswerten. Bei 60 Bildern pro Sekunde sind das über **3 Millionen Pixel pro Sekunde**. Für solche Rechnungen ist C gemacht.
+Für jedes Bild rechnet `color` an 58.000 Ecken zwei Abstände und zwei Sinuswerte aus, und weil die Ringe hier dicht liegen, an vielen Kanten noch einmal: zusammen rund 200.000-mal pro Bild, bei 60 Bildern pro Sekunde rund **12 Millionen**-mal pro Sekunde. Für solche Rechnungen ist C gemacht.
 
 <div class='hint task'>
-<strong>Experimente.</strong> Mehr Ringe mit <code>d1 * 0.18</code>, langsamere Wellen mit <code>t * 1.0</code>, weitere Wege mit <code>cos(t * 0.8) * 110</code>. Füge eine dritte Quelle hinzu: Wie musst du dann die letzte Zeile ändern, damit die Farben wieder zwischen 0 und 15 liegen? Und wie sieht es mit <code>"aap_64"</code> und 64 Farben aus?
+<strong>Experimente.</strong> Mehr Ringe mit <code>d1 * 0.18</code>, schnellere Wellen mit <code>t * 2.0</code>, weitere Wege mit <code>cos(t * 0.4) * 110</code>. Füge eine dritte Quelle hinzu: Wie musst du dann die letzte Zeile von <code>color</code> ändern, damit die Farben wieder zwischen 0 und 15 liegen? Und wie sieht es mit <code>"aap_64"</code> und 64 Farben aus?
 </div>
 
 ## Ein Spiel: Lichtspur
