@@ -9,7 +9,7 @@ function getPrimeFactors(num) {
     let factors = [];
     let divisor = 2;
 
-    while (num > 2) {
+    while (num > 1) {
         if (num % divisor === 0) {
             factors.push(divisor);
             num = num / divisor;

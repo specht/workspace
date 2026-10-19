@@ -109,6 +109,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - »Im Handbuch« über einer Aktivität nennt die Seiten in der Reihenfolge
   des Handbuchs, die Grundlagen (Workspace, Shortcuts, Terminal) zuerst;
   bisher kamen Seiten aus `_include` nach denen aus `reference:`.
+- Drei Beispielprogramme der Sprachseiten rechnen richtig: Das
+  C++-Programm trennt die Faktoren mit Leerzeichen (12 ergab `223`) und
+  hängt bei 0 oder einer Eingabe ohne Zahl nicht mehr fest, das
+  Fortran-Programm gibt mehrfache Faktoren mehrfach aus (8 ergab 2, 4), das
+  JavaScript-Programm verliert die letzte 2 nicht mehr (4 ergab `[2]`).
 - »Eine Klötzchenwelt in 3D« endet mit »Wenn die Welt wächst«: was große
   Klötzchenwelten schnell macht (Chunks als Mesh, Sichtweite, Frustum
   Culling, größere Flächen, verdeckte Chunks) und wie eine Welt aus

@@ -9,10 +9,10 @@ program prime_factors
     ! Find and print the prime factors
     write(*, *) "Prime factors of", n, ":"
     do i = 2, n
-        if (mod(n, i) == 0) then
+        do while (mod(n, i) == 0)
             write(*, *) i
             n = n / i
-        end if
+        end do
     end do
 
     stop

@@ -268,6 +268,13 @@ test(
           expect(execute.stdout).toMatch(
             /(^|\s)41(\s|$)/,
           );
+
+          // A factor that occurs twice: 12 = 2 · 2 · 3 (an if instead of
+          // a loop printed 2 only once).
+          const twelve = await run('./factor', { input: '12\n' });
+          expectSuccess(twelve, 'factor execution with 12');
+          const factors = twelve.stdout.split(':').at(-1)!.trim().split(/\s+/);
+          expect(factors).toEqual(['2', '2', '3']);
         },
       );
 
