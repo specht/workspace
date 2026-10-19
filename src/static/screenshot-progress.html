@@ -113,9 +113,12 @@
         60% { opacity: 1; transform: scale(1.03); }
         100% { opacity: 1; transform: none; }
     }
-    /* current, only walked through: shown, but quieter than new ones */
-    .sp-slide.replayed .sp-frame {
-        opacity: 0.7;
+    /* New or only walked through: a badge in the caption, the picture
+       itself at full strength either way. */
+    .sp-caption .badge {
+        font-weight: 500;
+        margin-right: 0.35rem;
+        vertical-align: 0.05em;
     }
     .sp-caption {
         flex: 0 0 auto;
@@ -297,7 +300,7 @@
             const media = c.kind === 'video'
                 ? `<video src='${url(c)}' muted loop playsinline preload='metadata'></video>`
                 : `<img src='${url(c)}' alt='${esc(c.target)} aus ${esc(page_name(c.markdown_path))}'>`;
-            const slide = $(`<div class='sp-slide${animate ? ' new' : ''}${c.replayed ? ' replayed' : ''}'><div class='sp-frame'>${media}</div><div class='sp-caption'>${esc(page_name(c.markdown_path))} › ${esc(c.target)} · ${when}${c.replayed ? ' · aktuell, nur nachgespielt' : ''}</div></div>`);
+            const slide = $(`<div class='sp-slide${animate ? ' new' : ''}${c.replayed ? ' replayed' : ''}'><div class='sp-frame'>${media}</div><div class='sp-caption'>${c.replayed ? `<span class='badge text-bg-secondary' title='Die Datei war aktuell und wurde nur nachgespielt'>aktuell</span>` : `<span class='badge text-bg-success'>neu</span>`}${esc(page_name(c.markdown_path))} › ${esc(c.target)} · ${when}</div></div>`);
             slides.appendChild(slide[0]);
             const video = slide.find('video')[0];
             if (video) watcher.observe(video);
