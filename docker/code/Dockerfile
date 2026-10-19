@@ -8,7 +8,7 @@
 # consumes it, which avoids unnecessary BuildKit cache invalidation.
 # ====================================================================
 
-ARG CODE_SERVER_IMAGE=linuxserver/code-server:4.138.0
+ARG CODE_SERVER_IMAGE=linuxserver/code-server:4.140.0
 # Pin the toolchain build environment independently of the code-server release.
 # Keep it compatible with the target code-server distribution (notably glibc).
 # Updating CODE_SERVER_IMAGE alone must not rebuild TeX/Flutter/Android/Emscripten.

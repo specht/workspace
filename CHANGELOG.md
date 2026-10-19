@@ -18,6 +18,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- code-server 4.140.0 (VS Code 1.140) statt 4.138.0. Für Betreibende:
+  Image neu bauen (`./build-image.sh`); alle Screenshots der Tutorials sind
+  neu erzeugt.
 - Der erste Start eines neuen Workspace: eine kurze Einführung auf Deutsch
   (»Willkommen im Hackschule Workspace«: Dateien, Speichern und
   Checkpoints, Terminal, wo die Aktivitäten stehen, Tasten üben) statt der
