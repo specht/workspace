@@ -57,7 +57,7 @@ Danach liegt die Vorlage in `/workspace/backrooms-starter`:
 # Klonen wie im Handbuch »Workspace« (oben eingebunden), dann die
 # geöffnete Vorlage im Explorer, level.ini im Editor
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ 2efe0210b8da7661324d48d5be181216dd9cc0d3
+clone-start: https://github.com/specht/backrooms-starter.git @ 39ee3695a7f01e565bfa14d9f9fee8f6d8728c09
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -422,8 +422,9 @@ power = 3
 size = 1.2, 1.2
 ```
 
-`light` ist die Farbe, `size` die Größe in Metern: Eine größere Leuchte wirft weichere Schatten. Mit `flicker = 1` flackert eine Leuchte ab und zu, wie die in der Kammer. Das rote Licht fällt auf Wände, Boden und Säulen und wird von ihnen zurückgeworfen, rot gefärbt.
+`light` ist die Farbe, `size` die Größe in Metern: Eine größere Leuchte wirft weichere Schatten. Mit `flicker = 1` flackert eine Leuchte ab und zu, wie die in der Kammer. So sähe der Saal mit der roten Leuchte aus; für die nächsten Schritte bleiben alle vier weiß: Das rote Licht fällt auf Wände, Boden und Säulen und wird von ihnen zurückgeworfen, rot gefärbt.
 
+<!-- tutorial-scope -->
 <!-- tutorial-screenshot
 write-file: rooms/saal.room <- file:stufen/saal-4.room
 tab: preview
@@ -434,6 +435,8 @@ hook: info off
 -->
 
 <img class='full' src='saal-4.webp' alt='Der Saal mit einer roten Leuchte hinten rechts: Die rechte Wand, der Boden und die Säulen dort glühen rot, nach vorn wird es wieder gelb.'>
+
+<!-- /tutorial-scope -->
 
 ### Eine Statue
 
@@ -470,7 +473,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='saal-5.webp' alt='Athena aus weißem Marmor auf einem hellen Sockel in der Mitte des Saals, zwischen den Säulen, von vorn beleuchtet und rot vom Licht hinten rechts.'>
+<img class='full' src='saal-5.webp' alt='Athena aus weißem Marmor auf einem hellen Sockel in der Mitte des Saals, zwischen den Säulen, im warmen Licht der vier Leuchten.'>
 
 Athena ist der 3D-Scan eines Gipsabgusses einer antiken Statue, aus dem [Statens Museum for Kunst](https://open.smk.dk/artwork/image/KAS255) in Kopenhagen, gemeinfrei. Eigene Modelle lädst du als GLB-Datei herunter und legst sie in den Ordner `statues`. Nimm nur Modelle, deren Lizenz das erlaubt, etwa CC0, und schreib in einem Kommentar neben `model =` dazu, woher sie kommen. Ohne `material = marble` behält ein Modell seine eigenen Farben. Modelle unter CC0 findest du zum Beispiel hier:
 
@@ -497,7 +500,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='saal-6.webp' alt='Der fertige Saal: Wände und Boden aus weißem, geädertem Marmor, die Säulen hell, Athena auf ihrem Sockel, hinten das rote Licht.'>
+<img class='full' src='saal-6.webp' alt='Der fertige Saal: Wände und Boden aus weißem, geädertem Marmor, die Säulen hell, Athena auf ihrem Sockel.'>
 
 ### Andere Wände und Böden
 
@@ -509,7 +512,7 @@ Marmor ist nur eine Möglichkeit. `walls` kennt sechs Arten, `floor` fünf, jede
 <tr><td><code>marble</code></td><td>Marmor</td><td>Marmor</td></tr>
 <tr><td><code>wood</code></td><td>senkrechte Bretter</td><td>Dielen</td></tr>
 <tr><td><code>tiles</code></td><td>Fliesen</td><td>Fliesen</td></tr>
-<tr><td><code>velvet</code></td><td>Samt in Falten, wie ein Vorhang im Kino</td><td></td></tr>
+<tr><td><code>velvet</code></td><td>Samt in senkrechten Streifen, wie im Kino</td><td></td></tr>
 <tr><td><code>plain</code></td><td>einfarbig</td><td>einfarbig</td></tr>
 </table>
 
@@ -578,7 +581,7 @@ hook: open view=18.00,17.00,-90,8
 hook: light
 hook: info off
 -->
-<img src='saal-samt.webp' alt='Der leere Saal wie ein Kino: Wände aus dunkelrotem Samt in senkrechten Falten, ein dunkler Teppich und eine dunkle Decke mit vier Leuchten.'>
+<img src='saal-samt.webp' alt='Der leere Saal wie ein Kino: Wände mit dunkelrotem Samt in senkrechten Streifen, ein dunkler Teppich und eine dunkle Decke mit vier Leuchten.'>
 <figcaption><code>velvet</code></figcaption>
 </figure>
 </div>

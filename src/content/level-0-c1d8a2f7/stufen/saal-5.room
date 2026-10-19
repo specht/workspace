@@ -12,7 +12,7 @@ slope = gable
 1...........#
 #.....M.....#
 #...........#
-#...L.S.R.S.#
+#...L.S.L.S.#
 #...........#
 #############
 
@@ -22,11 +22,6 @@ power = 1.6
 
 [S]
 block = 0.7, 7, 0.7      # höher als die Decke: Die Säule verschwindet in ihr
-
-[R]
-light = #ff3020
-power = 3
-size = 1.2, 1.2
 
 [M]
 model = statues/athena.glb
