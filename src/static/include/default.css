@@ -5949,12 +5949,23 @@ table.value-groups td.group-odd {
     margin-bottom: 0.3rem;
 }
 
-.server-load .progress-bar.load-high {
+.server-load-pair .progress-bar.load-high {
     background-color: var(--health-warn);
 }
 
-.server-load .progress-bar.load-full {
+.server-load-pair .progress-bar.load-full {
     background-color: var(--health-bad);
+}
+
+.server-load-pair.server-load-three {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+@media (max-width: 575.98px) {
+    .server-load-pair.server-load-three {
+        grid-template-columns: 1fr;
+        gap: 0.6rem;
+    }
 }
 
 .server-load-cell p {

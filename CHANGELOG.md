@@ -18,6 +18,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- E-Mails des Workspace haben eine serifenlose Schrift (bisher je nach
+  Mailprogramm Times), auch in der Vorschau vor dem Senden. Die
+  Klassenseite zeigt neben CPU und RAM, wie voll der Speicher der
+  Workspaces ist: Ist er voll, lässt sich nichts mehr speichern.
 - Klassen und Gruppen sind für Lehrkräfte eins: Im Menü gibt es nur noch
   »Klassen«. Auf der Klassenseite legt »Neue Gruppe« eine Gruppe an, und der
   Reiter »Lernende« zeigt die Gruppe mit allem, was dazugehört: Namen und

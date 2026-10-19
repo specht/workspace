@@ -136,6 +136,14 @@ class RandomTag
     end
 end
 
+# A mail's HTML in the font of the website's family, not the mail program's
+# default (often Times); also what the previews on the website show.
+MAIL_FONT = "font-family: 'IBM Plex Sans', -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; line-height: 1.5; color: #212529;"
+
+def mail_html_document(html)
+    "<div style=\"#{MAIL_FONT}\">#{html}</div>"
+end
+
 def mail_html_to_plain_text(s)
     s.gsub('<p>', "\n\n").gsub(/<br\s*\/?>/, "\n").gsub(/<\/?[^>]*>/, '').strip
 end
@@ -151,7 +159,7 @@ def deliver_mail(plain_text = nil, attachments: [], &block)
         built = Mail.new { message = self.instance_eval(&block) }
         alternative = Mail::Part.new { content_type 'multipart/alternative' }
         alternative.add_part(Mail::Part.new { content_type 'text/plain; charset=UTF-8'; body mail_html_to_plain_text(message) })
-        alternative.add_part(Mail::Part.new { content_type 'text/html; charset=UTF-8'; body message })
+        alternative.add_part(Mail::Part.new { content_type 'text/html; charset=UTF-8'; body mail_html_document(message) })
         built.add_part(alternative)
         attachments.each { |a| built.add_file(:filename => a[:filename], :content => a[:content]) }
         built.content_type = built.content_type.sub(%r{\Amultipart/[a-z]+}, 'multipart/mixed')
@@ -163,7 +171,7 @@ def deliver_mail(plain_text = nil, attachments: [], &block)
         if plain_text.nil?
             html_part do
                 content_type 'text/html; charset=UTF-8'
-                body message
+                body mail_html_document(message)
             end
 
             text_part do
@@ -5558,10 +5566,11 @@ class Main < Sinatra::Base
             end
         end
         # How busy the server is, so that a slow Workspace can be told from a
-        # busy server: CPU and RAM in one row as on »Betrieb«, from the
-        # teachers' websocket (server_stats), see class_board.js.
+        # busy server, and whether the Workspaces' disk is filling up (then
+        # nothing can be saved): one row as on »Betrieb«, from the teachers'
+        # websocket (server_stats), see class_board.js.
         cell = ->(icon, label) { "<div class='server-load-cell'><div class='server-load-label'><i class='bi #{icon}' aria-hidden='true'></i>#{label}</div><div class='progress' role='progressbar' aria-label='#{label}'><div class='progress-bar progress-bar-striped' style='width: 0%'></div></div><p>–</p></div>" }
-        io << "<div class='server-load-pair class-server-load mb-3' aria-label='Server, jede Sekunde neu'>#{cell.('bi-cpu', 'CPU des Servers')}#{cell.('bi-memory', 'RAM des Servers')}</div>"
+        io << "<div class='server-load-pair server-load-three class-server-load mb-3' aria-label='Server, jede Sekunde neu'>#{cell.('bi-cpu', 'CPU des Servers')}#{cell.('bi-memory', 'RAM des Servers')}#{cell.('bi-nvme', 'Speicher der Workspaces')}</div>"
         io << class_group_html(group) unless test_group
         running = (workspace_runtime.running_workspaces(:timeout => shell_timeout(:docker_network_inspect)).keys rescue [])
         io << "<div class='class-people-scroll'><table class='table align-middle class-people-table'>"

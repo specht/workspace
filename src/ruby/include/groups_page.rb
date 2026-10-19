@@ -538,7 +538,7 @@ class Main < Sinatra::Base
         attachment = { :filename => PrivacyDocuments.pdf_name('datenschutzerklaerung', s), :public_url => partner ? nil : "#{WEB_ROOT}/impressum#datenschutz",
                        :url => partner ? "/datenschutz/datenschutzerklaerung.pdf?schule=#{CGI.escape(school[:key])}" : '/datenschutz/datenschutzerklaerung.pdf' }
         mail_subject, html = welcome_mail_for(name, teacher, targets.first || 'name@example.org', attachment)
-        respond(:subject => mail_subject, :html => html, :recipients => targets.size, :first => targets.first,
+        respond(:subject => mail_subject, :html => mail_html_document(html), :recipients => targets.size, :first => targets.first,
             :reply_to => my_email, :attachment => { :filename => attachment[:filename], :url => attachment[:url] })
     end
 
