@@ -57,7 +57,7 @@ Danach liegt die Vorlage in `/workspace/backrooms-starter`:
 # Klonen wie im Handbuch »Workspace« (oben eingebunden), dann die
 # geöffnete Vorlage im Explorer, level.ini im Editor
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ bc18f5618af3f5b77de850c2c50e7eff53cf1242
+clone-start: https://github.com/specht/backrooms-starter.git @ e55cfd34e33df9c2be77f16b6735604539a19edf
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
