@@ -516,6 +516,19 @@ input.error {
     --bs-btn-focus-shadow-rgb: 108, 117, 125;
 }
 
+/* The Administration menu: the same quiet hover and light-blue current
+   page as the menu buttons, not Bootstrap's bright blue. */
+.menu .dropdown-menu {
+    --bs-dropdown-link-hover-bg: #f1f3f5;
+    --bs-dropdown-link-hover-color: #212529;
+    --bs-dropdown-link-active-bg: #e7f0fb;
+    --bs-dropdown-link-active-color: #0b5394;
+}
+
+.menu .dropdown-item.active .bi {
+    color: inherit;
+}
+
 .btn-menu i.bi {
     color: #6c757d;
 }
@@ -5767,6 +5780,60 @@ table.value-groups td.group-odd {
 
 .health-link {
     white-space: nowrap;
+}
+
+/* /personen: the chips above »Personen« (what used to be »Aufräumen«), in
+   the colours of the menu buttons; the chosen one light blue. */
+.people-chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.people-chips-label {
+    font-size: 0.875rem;
+    color: var(--bs-secondary-color);
+}
+
+.people-chip {
+    --bs-btn-color: var(--bs-body-color);
+    --bs-btn-bg: var(--bs-body-bg);
+    --bs-btn-border-color: var(--bs-border-color);
+    --bs-btn-hover-color: var(--bs-body-color);
+    --bs-btn-hover-bg: var(--bs-tertiary-bg);
+    --bs-btn-hover-border-color: var(--bs-border-color);
+    --bs-btn-active-color: #0b5394;
+    --bs-btn-active-bg: #e7f0fb;
+    --bs-btn-active-border-color: #9ec2ec;
+    border-radius: 2rem;
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+}
+
+.people-chip .bi {
+    color: var(--bs-secondary-color);
+}
+
+.people-chip.active .bi {
+    color: inherit;
+}
+
+.people-chip-count {
+    display: inline-block;
+    min-width: 1.6em;
+    padding: 0 0.4em;
+    margin-left: 0.2em;
+    border-radius: 1em;
+    background: var(--bs-secondary-bg);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.8rem;
+}
+
+[data-bs-theme=dark] .people-chip {
+    --bs-btn-active-color: #cfe2ff;
+    --bs-btn-active-bg: #1c3550;
+    --bs-btn-active-border-color: #3d6a9c;
 }
 
 /* /admin: CPU, RAM and the two disks in one row, live. */

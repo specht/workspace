@@ -216,6 +216,7 @@
                 groups_call('/api/groups/school_change_preview', { name: group.name, school: target }, plan => confirm_school_change(plan));
                 return false;
             });
+        searchable_select('#sel_target_school');
     }
 
     function confirm_school_change(plan) {
@@ -514,6 +515,7 @@
                     const select = $(`<select id='sel_new_group_school' class='form-select'></select>`);
                     data.schools.forEach(s => select.append($('<option>').val(s.key).text(s.name)));
                     form.find('.admin-school').append(`<label class='form-label small' for='sel_new_group_school'>Schule</label>`).append(select);
+                    setTimeout(() => searchable_select('#sel_new_group_school'), 0);
                 }
                 form.on('submit', function (e) {
                     e.preventDefault();

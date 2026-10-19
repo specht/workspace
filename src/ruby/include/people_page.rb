@@ -263,9 +263,13 @@ class Main < Sinatra::Base
     # do not count). One account per address, so a teacher of either school
     # sees the student's Workspace; the administration resolves each case by
     # hand (take the person out of one group). Nothing is changed here.
-    post '/api/people/cross_school' do
-        admin_only!
-        rows = neo4j_query(<<~END_OF_QUERY)
+    # The addresses of /api/people/cross_school, for the filter on /personen.
+    def people_in_several_schools
+        Set.new(cross_school_rows.map { |r| r['email'] })
+    end
+
+    def cross_school_rows
+        neo4j_query(<<~END_OF_QUERY).to_a
             MATCH (i:Invitation)-[:MEMBER_OF]->(g:Group)-[:AT]->(s:School)
             WHERE coalesce(s.guests, false) = false AND coalesce(i.teacher, false) = false
                 AND NOT (i)-[:TEACHES]->(:Group) AND NOT (i)-[:AT]->(:School)
@@ -274,6 +278,11 @@ class Main < Sinatra::Base
             RETURN i.email AS email, i.name AS name, schools, groups
             ORDER BY toLower(coalesce(i.name, i.email));
         END_OF_QUERY
+    end
+
+    post '/api/people/cross_school' do
+        admin_only!
+        rows = cross_school_rows
         respond(:people => rows.map { |r| r.transform_keys(&:to_sym) })
     end
 

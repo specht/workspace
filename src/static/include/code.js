@@ -114,6 +114,76 @@ function attach_suggestions(input, fetch, on_pick) {
     input.on('blur', () => setTimeout(close, 150));
 }
 
+// A select one can type into (the schools on /personen and /gruppen): a
+// text field in front shows the chosen option; typing lists the options
+// that contain the text, arrows and Enter pick one. The select stays,
+// hidden, and keeps its value and its change event, so the page's code is
+// unchanged. Options that come later count at once.
+function searchable_select(select) {
+    select = $(select);
+    if (select.length === 0 || select.data('searchable')) return;
+    select.data('searchable', true);
+    const esc = (t) => $('<div>').text(t === undefined || t === null ? '' : String(t)).html();
+    const small = select.hasClass('form-select-sm');
+    const wrap = $("<div class='position-relative searchable-select'></div>");
+    if (select.hasClass('w-auto')) wrap.addClass('d-inline-block');
+    // The select's own classes (a minimum width, …) go to the wrapper; the
+    // field keeps the look of a select, arrow included.
+    (select.attr('class') || '').split(/\s+/).filter(k => k && !/^(form-select|form-select-sm|w-auto|d-none)$/.test(k)).forEach(k => wrap.addClass(k));
+    const input = $(`<input type='text' class='form-select${small ? ' form-select-sm' : ''}' autocomplete='off' spellcheck='false'>`);
+    const id = select.attr('id');
+    const label = id ? $(`label[for="${id}"]`) : $();
+    input.attr({ role: 'combobox', 'aria-expanded': 'false', 'aria-autocomplete': 'list', placeholder: 'Tippen zum Suchen',
+        'aria-label': select.attr('aria-label') || label.text() || 'Auswahl' });
+    if (id) { input.attr('id', `${id}_search`); label.attr('for', `${id}_search`); }
+    const menu = $("<ul class='dropdown-menu suggest-menu' role='listbox'></ul>");
+    select.after(wrap);
+    wrap.append(input, menu);
+    select.addClass('d-none').attr({ 'aria-hidden': 'true', tabindex: '-1' });
+    let shown = [], active = -1, last = select.val();
+    const options = () => select.find('option').map(function () { return { value: $(this).val(), text: $(this).text() }; }).get();
+    const sync = function () { last = select.val(); input.val(select.find('option:selected').text()); };
+    const close = function () { menu.removeClass('show').empty(); input.attr('aria-expanded', 'false'); shown = []; active = -1; };
+    const mark = () => menu.find('.dropdown-item').removeClass('active').eq(active).addClass('active');
+    const pick = function (option) {
+        close();
+        if (option && option.value !== select.val()) select.val(option.value).trigger('change');
+        sync();
+    };
+    const show = function (query) {
+        const q = query.trim().toLowerCase();
+        shown = options().filter(o => !q || o.text.toLowerCase().includes(q));
+        active = shown.length ? 0 : -1;
+        menu.empty();
+        shown.forEach(function (o, i) {
+            const item = $(`<li><button type='button' class='dropdown-item' role='option'>${esc(o.text)}</button></li>`);
+            item.find('button').on('mousedown', function (e) { e.preventDefault(); pick(shown[i]); });
+            menu.append(item);
+        });
+        if (!shown.length) menu.append(`<li><span class='dropdown-item-text text-body-secondary small'>Keine passt.</span></li>`);
+        mark();
+        menu.addClass('show');
+        input.attr('aria-expanded', 'true');
+    };
+    input.on('focus', function () { input.select(); show(''); });
+    input.on('input', () => show(input.val()));
+    input.on('keydown', function (e) {
+        if (e.key === 'ArrowDown') { e.preventDefault(); if (!menu.hasClass('show')) show(''); active = Math.min(active + 1, shown.length - 1); mark(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); active = Math.max(active - 1, 0); mark(); }
+        else if (e.key === 'Enter') { e.preventDefault(); e.stopImmediatePropagation(); if (active >= 0) pick(shown[active]); }
+        else if (e.key === 'Escape' && menu.hasClass('show')) { e.preventDefault(); e.stopPropagation(); close(); sync(); }
+    });
+    input.on('blur', () => setTimeout(function () { close(); sync(); }, 150));
+    select.on('change', sync);
+    // Options filled in later, or a value set by code without an event.
+    new MutationObserver(sync).observe(select[0], { childList: true });
+    const watch = setInterval(function () {
+        if (!document.contains(select[0])) { clearInterval(watch); return; }
+        if (select.val() !== last && !input.is(':focus')) sync();
+    }, 300);
+    sync();
+}
+
 // Sortable columns: a click on a heading sorts by it, a second click the
 // other way round. A cell's data-sort, when given, is what counts (a date,
 // a size); otherwise its text. Headings with class no-sort, or without
@@ -318,4 +388,41 @@ function bytes_to_str(ai_Size) {
         return `${(ai_Size / 1024 / 1024 / 1024).toFixed(1)} GB`;
     }
     return `${(ai_Size / 1024 / 1024 / 1024 / 1024).toFixed(1)} TB`;
+}
+// Why an administrator opens a Workspace or imitates someone (5 to 300
+// characters); the person sees it. The last one is offered again.
+// /admin and /personen.
+function ask_admin_reason(title, go) {
+    let last = '';
+    try { last = localStorage.getItem('admin_look_in_reason') || ''; } catch (e) { }
+    input_dialog({ title: title, label: 'Warum? Die Person sieht diesen Satz als Hinweis, zum Beispiel »Ich helfe bei einem Problem mit dem Workspace.«', value: last, confirm: 'Weiter', icon: 'bi-check-lg' }, function (reason) {
+        if (reason.length < 5) { show_error_message('Bitte einen Satz mit mindestens 5 Zeichen.'); return false; }
+        try { localStorage.setItem('admin_look_in_reason', reason); } catch (e) { }
+        $('#__template_modal').modal('hide');
+        go(reason);
+        return false;
+    });
+}
+
+function admin_open_workspace(email, button) {
+    ask_admin_reason(`Workspace von ${email} öffnen`, function (reason) {
+        button.prop('disabled', true);
+        button.find('.bi').addClass('bi-spin');
+        api_call('/api/start_server_as_admin', { email: email, reason: reason }, function (data) {
+            if (data.success === false || !data.watch_tag) { button.prop('disabled', false); button.find('.bi').removeClass('bi-spin'); return; }
+            check_server_tag_update(data.watch_tag);
+            check_server_online(data.watch_tag, true);
+        });
+    });
+}
+
+function admin_impersonate(email, button) {
+    ask_admin_reason(`${email} nachahmen`, function (reason) {
+        button.prop('disabled', true);
+        button.find('.bi').addClass('bi-spin');
+        api_call('/api/impersonate', { email: email, reason: reason }, function (data) {
+            if (data.success !== false) location.href = '/';
+            else { button.prop('disabled', false); button.find('.bi').removeClass('bi-spin'); }
+        });
+    });
 }

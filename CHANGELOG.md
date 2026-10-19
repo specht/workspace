@@ -18,6 +18,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- »Personen und Schulen« hat drei Reiter (Schulen, Lehrkräfte, Personen);
+  die Adresse wählt den Reiter, ein Link springt nicht mehr weg, während
+  die Seite lädt. »Aufräumen« ist jetzt eine Reihe von Filtern mit Zahlen
+  über derselben Tabelle: Konten ohne Einladung, nie angemeldet, über ein
+  Jahr nicht da, in mehreren Schulen, Löschung angekündigt, gesperrt.
+  »Lehrkräfte ohne Konto« ist ein Filter unter »Lehrkräfte«. Jede Zeile hat
+  »Workspace öffnen« und »Nachahmen«. Schulen lassen sich überall durch
+  Tippen auswählen, und das Menü »Administration« hat die Farben der
+  übrigen Menüknöpfe.
 - Die Bilder der Karten auf der Startseite haben einen Alt-Text, der sagt,
   was zu sehen ist (neues Feld `image_alt` im Meta-Block, Pflicht zu
   `image`; `alt_text_test.rb` prüft es). Die Symbole der Abschnitte und die

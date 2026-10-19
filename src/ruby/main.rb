@@ -4636,8 +4636,21 @@ class Main < Sinatra::Base
     # sort: 'active' puts those inactive longest (and never) first.
     post '/api/admin/people' do
         assert(admin_logged_in?)
-        data = parse_request_data(:optional_keys => [:query, :limit, :school, :role, :sort], :types => { :limit => Integer }, :max_body_length => 1024)
-        people = people_overview(data[:query])
+        data = parse_request_data(:optional_keys => [:query, :limit, :school, :role, :sort, :state], :types => { :limit => Integer }, :max_body_length => 1024)
+        everyone = people_overview(data[:query].to_s.strip.empty? ? '' : data[:query])
+        counts = PEOPLE_STATES.keys.to_h { |state| [state, 0] }
+        states = Hash.new { |hash, key| hash[key] = [] }
+        cross = people_in_several_schools
+        year_ago = (Date.today - 365).to_s
+        everyone.each do |p|
+            people_states(p, cross, year_ago).each do |state|
+                counts[state] += 1
+                states[p[:email]] << state
+            end
+        end
+        people = everyone
+        state = data[:state].to_s
+        people = people.select { |p| states[p[:email]].include?(state) } if PEOPLE_STATES.key?(state)
         school = data[:school].to_s
         people = people.select { |p| school == '-' ? p[:schools].empty? : p[:schools].include?(school) } unless school.empty?
         people = people.select { |p| p[:role] == data[:role] } unless data[:role].to_s.empty?
@@ -4645,7 +4658,31 @@ class Main < Sinatra::Base
         people = people.sort_by { |p| [-p[:disk_kb].to_i, p[:name].to_s.downcase, p[:email]] } if data[:sort] == 'disk'
         usage = workspace_disk_usage
         respond(:people => people.first([[data[:limit] || 100, 1].max, 10_000].min), :total => people.size,
-            :fat_kb => usage[:fat_kb], :measured_at => usage[:measured_at])
+            :fat_kb => usage[:fat_kb], :measured_at => usage[:measured_at], :counts => counts, :everyone => everyone.size)
+    end
+
+    # What /personen offers as filters (»Aufräumen« and the special cases),
+    # each with its count. Administration and test accounts are never in them.
+    PEOPLE_STATES = {
+        'ohne-einladung' => 'Konto ohne Einladung',
+        'ohne-konto' => 'eingeladen, nie angemeldet',
+        'lange-nicht-da' => 'über ein Jahr nicht da',
+        'mehrere-schulen' => 'in Gruppen mehrerer Schulen',
+        'loeschung' => 'Löschung angekündigt',
+        'gesperrt' => 'gesperrt',
+    }.freeze
+
+    def people_states(p, cross, year_ago)
+        return [] if %w[Administration Testkonto].include?(p[:role])
+
+        states = []
+        states << 'ohne-einladung' if p[:account] && !p[:invited]
+        states << 'ohne-konto' if !p[:account] && p[:invited] && %w[Lernende Gast].include?(p[:role])
+        states << 'lange-nicht-da' if p[:account] && (p[:active_on].nil? || p[:active_on] < year_ago)
+        states << 'mehrere-schulen' if cross.include?(p[:email])
+        states << 'loeschung' if p[:deletion_at]
+        states << 'gesperrt' if p[:suspended]
+        states
     end
 
     # Accounts whose address is no longer in any invitation list: what the

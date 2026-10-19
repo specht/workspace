@@ -1,7 +1,7 @@
 #{ assert(admin_logged_in?) }
 <style>
-    .people-page h2 {
-        margin-top: 2rem;
+    .people-tabs {
+        margin-bottom: 1rem;
     }
     .people-page .small-input {
         min-width: 9rem;
@@ -43,116 +43,82 @@
     <div class='row'>
         <div class='col-md-12'>
             <h1>Personen und Schulen</h1>
-            <p>
-                Eine Schule hat zugestimmt, sobald du das Datum der Entscheidung der Schulleitung und das der unterschriebenen Vereinbarung
-                zur Auftragsverarbeitung einträgst; die Lehrkraft schickt dir beides. Bis dahin vermerken die Lehrkräfte unter
-                <a href='/gruppen'>Gruppen</a>, für wen ein schriftliches Einverständnis vorliegt. Gesperrt wird dadurch niemand.
-            </p>
-            <nav class='d-flex flex-wrap gap-2 mb-3' aria-label='Abschnitte'>
-                <a class='btn btn-sm btn-menu' href='#schulen'><i class='bi bi-building'></i>Schulen</a>
-                <a class='btn btn-sm btn-menu' href='#lehrkraefte'><i class='bi bi-person-video3'></i>Lehrkräfte</a>
-                <a class='btn btn-sm btn-menu' href='#alle'><i class='bi bi-people'></i>Alle Personen</a>
-                <a class='btn btn-sm btn-menu' href='#aufraeumen'><i class='bi bi-stars'></i>Aufräumen</a>
-            </nav>
             <div id='people_not_imported'></div>
-
-            <h2 id='schulen'>Schulen</h2>
-            <div id='schools_here'></div>
-            <div class='d-flex gap-2 mb-3' id='school_buttons'>
-                <button type='button' id='bu_school_new' class='btn btn-outline-primary'><i class='bi bi-building-add'></i>Neue Schule</button>
-                <button type='button' id='bu_guests' class='btn btn-outline-secondary'><i class='bi bi-people'></i>Gäste anlegen (für Workshops, Firmen, Veranstaltungen)</button>
+            <div class='class-tabs people-tabs' role='tablist' aria-label='Ansicht'>
+                <button type='button' role='tab' class='class-tab' id='tab-schulen' data-tab='schulen' aria-controls='panel-schulen' aria-selected='false' tabindex='-1'><i class='bi bi-building' aria-hidden='true'></i>Schulen <span class='class-tab-count' id='count-schulen'></span></button>
+                <button type='button' role='tab' class='class-tab' id='tab-lehrkraefte' data-tab='lehrkraefte' aria-controls='panel-lehrkraefte' aria-selected='false' tabindex='-1'><i class='bi bi-person-video3' aria-hidden='true'></i>Lehrkräfte <span class='class-tab-count' id='count-lehrkraefte'></span></button>
+                <button type='button' role='tab' class='class-tab' id='tab-personen' data-tab='personen' aria-controls='panel-personen' aria-selected='true'><i class='bi bi-people' aria-hidden='true'></i>Personen <span class='class-tab-count' id='count-personen'></span></button>
             </div>
-            <form id='school_form' class='row g-2 mb-3' autocomplete='off' style='display: none;'>
-                <input type='hidden' id='school_key'>
-                <div class='col-md-4'><label class='form-label' for='school_name'>Name der Schule</label><input id='school_name' class='form-control' required maxlength='120'></div>
-                <div class='col-md-4'><label class='form-label' for='school_address'>Anschrift</label><textarea id='school_address' class='form-control' rows='2'></textarea></div>
-                <div class='col-md-4'><label class='form-label' for='school_dpo'>Datenschutzbeauftragte Stelle</label><textarea id='school_dpo' class='form-control' rows='2'></textarea></div>
-                <div class='col-md-6'><label class='form-label' for='school_law'>Vorschrift (Schulgesetz des Landes)</label><input id='school_law' class='form-control' placeholder='zum Beispiel § 64 Abs. 11 des Schulgesetzes für das Land Berlin und § 2 DigLLV'></div>
-                <div class='col-md-6'><label class='form-label' for='school_authority'>Aufsichtsbehörde</label><textarea id='school_authority' class='form-control' rows='2'></textarea></div>
-                <div class='col-12 d-flex gap-2'>
-                    <button class='btn btn-primary'><i class='bi bi-building-add'></i><span id='school_submit_label'>Schule anlegen</span></button>
-                    <button type='button' id='bu_school_reset' class='btn btn-outline-secondary'>Abbrechen</button>
+
+            <section class='class-panel' role='tabpanel' id='panel-schulen' aria-labelledby='tab-schulen' hidden>
+                <p class='text-body-secondary'>
+                    Eine Schule hat zugestimmt, sobald du das Datum der Entscheidung der Schulleitung und das der unterschriebenen Vereinbarung
+                    zur Auftragsverarbeitung einträgst; die Lehrkraft schickt dir beides. Bis dahin vermerken die Lehrkräfte unter
+                    <a href='/gruppen'>Gruppen</a>, für wen ein schriftliches Einverständnis vorliegt. Gesperrt wird dadurch niemand.
+                </p>
+                <div id='schools_here'></div>
+                <div class='d-flex gap-2 mb-3' id='school_buttons'>
+                    <button type='button' id='bu_school_new' class='btn btn-outline-primary'><i class='bi bi-building-add'></i>Neue Schule</button>
+                    <button type='button' id='bu_guests' class='btn btn-outline-secondary'><i class='bi bi-people'></i>Gäste anlegen (für Workshops, Firmen, Veranstaltungen)</button>
                 </div>
-            </form>
-
-            <h2 id='lehrkraefte'>Lehrkräfte</h2>
-            <div class='d-flex flex-wrap gap-2 mb-2'>
-                <button type='button' id='bu_teacher_new' class='btn btn-outline-primary'><i class='bi bi-person-plus'></i>Lehrkraft hinzufügen</button>
-                <select id='teachers_school' class='form-select w-auto' aria-label='Lehrkräfte einer Schule'><option value=''>alle Schulen</option></select>
-            </div>
-            <form id='teacher_form' class='row g-2 align-items-end mb-3' autocomplete='off' style='display: none;'>
-                <div class='col-md-4'><label class='form-label' for='teacher_email'>E-Mail-Adresse</label><input id='teacher_email' type='email' class='form-control' required></div>
-                <div class='col-md-3'><label class='form-label' for='teacher_name'>Name</label><input id='teacher_name' class='form-control' placeholder='freiwillig'></div>
-                <div class='col-md-3'><label class='form-label' for='teacher_school'>Schule</label><select id='teacher_school' class='form-select' required></select></div>
-                <div class='col-md-2'><button class='btn btn-primary w-100'><i class='bi bi-person-plus'></i>Hinzufügen</button></div>
-                <div class='col-12'>
-                    <div class='form-check'>
-                        <input class='form-check-input' type='checkbox' id='teacher_welcome' checked>
-                        <label class='form-check-label' for='teacher_welcome'>Gleich eine Willkommensmail schicken (mit Links zum Einstieg, zu den Gruppen und zu den Unterlagen für die Schule)</label>
+                <form id='school_form' class='row g-2 mb-3' autocomplete='off' style='display: none;'>
+                    <input type='hidden' id='school_key'>
+                    <div class='col-md-4'><label class='form-label' for='school_name'>Name der Schule</label><input id='school_name' class='form-control' required maxlength='120'></div>
+                    <div class='col-md-4'><label class='form-label' for='school_address'>Anschrift</label><textarea id='school_address' class='form-control' rows='2'></textarea></div>
+                    <div class='col-md-4'><label class='form-label' for='school_dpo'>Datenschutzbeauftragte Stelle</label><textarea id='school_dpo' class='form-control' rows='2'></textarea></div>
+                    <div class='col-md-6'><label class='form-label' for='school_law'>Vorschrift (Schulgesetz des Landes)</label><input id='school_law' class='form-control' placeholder='zum Beispiel § 64 Abs. 11 des Schulgesetzes für das Land Berlin und § 2 DigLLV'></div>
+                    <div class='col-md-6'><label class='form-label' for='school_authority'>Aufsichtsbehörde</label><textarea id='school_authority' class='form-control' rows='2'></textarea></div>
+                    <div class='col-12 d-flex gap-2'>
+                        <button class='btn btn-primary'><i class='bi bi-building-add'></i><span id='school_submit_label'>Schule anlegen</span></button>
+                        <button type='button' id='bu_school_reset' class='btn btn-outline-secondary'>Abbrechen</button>
                     </div>
+                </form>
+            </section>
+
+            <section class='class-panel' role='tabpanel' id='panel-lehrkraefte' aria-labelledby='tab-lehrkraefte' hidden>
+                <div class='d-flex flex-wrap gap-2 mb-2'>
+                    <button type='button' id='bu_teacher_new' class='btn btn-outline-primary'><i class='bi bi-person-plus'></i>Lehrkraft hinzufügen</button>
+                    <select id='teachers_school' class='form-select w-auto' aria-label='Lehrkräfte einer Schule'><option value=''>alle Schulen</option></select>
+                    <select id='teachers_filter' class='form-select w-auto' aria-label='Welche Lehrkräfte'><option value=''>alle Lehrkräfte</option><option value='ohne-konto'>ohne Konto (nie angemeldet)</option></select>
                 </div>
-            </form>
-            <div id='teachers_here'></div>
+                <form id='teacher_form' class='row g-2 align-items-end mb-3' autocomplete='off' style='display: none;'>
+                    <div class='col-md-4'><label class='form-label' for='teacher_email'>E-Mail-Adresse</label><input id='teacher_email' type='email' class='form-control' required></div>
+                    <div class='col-md-3'><label class='form-label' for='teacher_name'>Name</label><input id='teacher_name' class='form-control' placeholder='freiwillig'></div>
+                    <div class='col-md-3'><label class='form-label' for='teacher_school'>Schule</label><select id='teacher_school' class='form-select' required></select></div>
+                    <div class='col-md-2'><button class='btn btn-primary w-100'><i class='bi bi-person-plus'></i>Hinzufügen</button></div>
+                    <div class='col-12'>
+                        <div class='form-check'>
+                            <input class='form-check-input' type='checkbox' id='teacher_welcome' checked>
+                            <label class='form-check-label' for='teacher_welcome'>Gleich eine Willkommensmail schicken (mit Links zum Einstieg, zu den Gruppen und zu den Unterlagen für die Schule)</label>
+                        </div>
+                    </div>
+                </form>
+                <div id='teachers_here'></div>
+            </section>
 
-            <h2 id='alle'>Alle Personen</h2>
-            <p>
-                Mit dem Tag, an dem jemand zuletzt da war. Den Tag des Besuchs merkt sich der Workspace seit dem 18.10.2026; für die Zeit davor
-                steht hier die letzte Anmeldung oder die letzte Antwort auf eine Aufgabe, je nachdem, was später war.
-            </p>
-            <div class='row g-2 mb-2'>
-                <div class='col-md-4'><input type='search' id='all_query' class='form-control' placeholder='Name, Adresse, Gruppe oder Schule' autocomplete='off' aria-label='Suche'></div>
-                <div class='col-md-3'><select id='all_school' class='form-select' aria-label='Schule'><option value=''>alle Schulen</option></select></div>
-                <div class='col-md-2'><select id='all_role' class='form-select' aria-label='Rolle'>
-                    <option value=''>alle Rollen</option><option>Lehrkraft</option><option>Lernende</option><option>Gast</option><option>Testkonto</option><option>Administration</option>
-                </select></div>
-                <div class='col-md-3'><select id='all_sort' class='form-select' aria-label='Sortierung'>
-                    <option value='name'>nach Name</option><option value='active'>am längsten nicht da zuerst</option><option value='disk'>meister Speicher zuerst</option>
-                </select></div>
-            </div>
-            <div id='all_here'></div>
-
-            <h2 id='aufraeumen'>Aufräumen</h2>
-            <h3 id='unbenutzt' class='h5 mt-3'>Einladungen ohne Konto</h3>
-            <p>
-                Eingeladene, die sich nie angemeldet haben (zu ihrer Adresse gibt es kein Konto), etwa aus einer Liste der ganzen Schule.
-                »Entfernbar« sind die ohne Konto, die keine Lehrkräfte sind; Lehrkräfte ohne Konto bleiben. Daneben steht, wann die mit Konto
-                zuletzt da waren: Ist lange niemand mehr gekommen, kann die ganze Gruppe weg (über den Namen zur Gruppe). Wähl die Gruppen
-                aus: Die entfernbaren Personen werden aus diesen Gruppen genommen; wer danach in keiner Gruppe mehr steht, ist nicht mehr eingeladen.
-                Ein Konto gibt es nicht, es wird also nichts gelöscht.
-            </p>
-            <div id='unused_here'></div>
-
-            <h3 id='zu-ende' class='h5 mt-3'>Gruppen nach ihrem Ende</h3>
-            <p>
-                Gruppen, deren Enddatum vorbei ist (Lehrkräfte tragen es unter <a href='/gruppen'>Gruppen</a> ein; nach dem Ende bekommen
-                sie einmal eine Erinnerung). Zum Ende des Schuljahres: löschen, was nicht weitergeht; wer danach in keiner Gruppe steht,
-                erscheint unter »Konten ohne Einladung«.
-            </p>
-            <div id='ended_groups_here'></div>
-
-            <h3 id='mehrere-schulen' class='h5 mt-4'>In Gruppen mehrerer Schulen</h3>
-            <p>
-                Schülerinnen und Schüler, die in Gruppen von mehr als einer Schule stehen (Gruppen der Gäste zählen nicht). Weil es je
-                Adresse ein Konto gibt, sähen Lehrkräfte beider Schulen ihren Workspace. Hier ändert sich nichts: Nimm die Person unter
-                <a href='/gruppen'>Gruppen</a> aus einer der Gruppen, oder lass es, wenn es so gewollt ist.
-            </p>
-            <div id='cross_school_here'></div>
-
-            <h3 id='lehrkraefte-ohne-konto' class='h5 mt-4'>Lehrkräfte ohne Konto</h3>
-            <p>
-                Lehrkräfte, die eingeladen sind, sich aber nie angemeldet haben. Entfernen nimmt ihre Einladung ganz heraus: Schule,
-                betreute Gruppen, Mitgliedschaften. Ein Konto gibt es nicht, es wird also nichts gelöscht. Bleibt eine Gruppe danach ohne
-                Lehrkraft, sagt die Seite es vorher.
-            </p>
-            <div id='unused_teachers_here'></div>
-
-            <h3 id='ohne-einladung' class='h5 mt-4'>Konten ohne Einladung</h3>
-            <p>
-                Konten, deren Adresse in keiner Gruppe mehr steht: Sie werden nach den Löschregeln spätestens zum Ende des Schuljahres
-                gelöscht. Gelöscht wird alles, was zum Konto gehört (Workspace, Datenbanken, Antworten, Abgaben); das lässt sich nicht
-                rückgängig machen. Einzelne Konten löschst du auch unter »Alle Personen«.
-            </p>
-            <div id='uninvited_here'></div>
+            <section class='class-panel' role='tabpanel' id='panel-personen' aria-labelledby='tab-personen'>
+                <div class='people-chips mb-3' role='group' aria-label='Nur diese zeigen'>
+                    <span class='people-chips-label'>Aufräumen:</span>
+                    <div id='chips_here' class='d-flex flex-wrap gap-2'></div>
+                </div>
+                <p id='chip_note' class='small text-body-secondary'></p>
+                <div class='row g-2 mb-2'>
+                    <div class='col-md-4'><input type='search' id='all_query' class='form-control' placeholder='Name, Adresse, Gruppe oder Schule' autocomplete='off' aria-label='Suche'></div>
+                    <div class='col-md-3'><select id='all_school' class='form-select' aria-label='Schule'><option value=''>alle Schulen</option></select></div>
+                    <div class='col-md-2'><select id='all_role' class='form-select' aria-label='Rolle'>
+                        <option value=''>alle Rollen</option><option>Lehrkraft</option><option>Lernende</option><option>Gast</option><option>Testkonto</option><option>Administration</option>
+                    </select></div>
+                    <div class='col-md-3'><select id='all_sort' class='form-select' aria-label='Sortierung'>
+                        <option value='name'>nach Name</option><option value='active'>am längsten nicht da zuerst</option><option value='disk'>meister Speicher zuerst</option>
+                    </select></div>
+                </div>
+                <div id='all_here'></div>
+                <p class='small text-body-secondary mt-3'>
+                    »Zuletzt da«: der Tag des letzten Besuchs (erfasst seit dem 18.10.2026); davor die letzte Anmeldung oder die letzte Antwort
+                    auf eine Aufgabe, je nachdem, was später war. Einladungen ohne Konto gruppenweise entfernen und Gruppen nach ihrem Ende
+                    findest du unter <a href='/gruppen'>Gruppen</a>.
+                </p>
+            </section>
         </div>
     </div>
 </div>
@@ -169,6 +135,7 @@
         invalid_date: 'Das Datum ist ungültig.',
     };
     let schools = [];
+    const MY_EMAIL = `#{CGI.escapeHTML(@session_user[:email])}`;
 
     function esc(text) {
         return $('<div>').text(text === null || text === undefined ? '' : String(text)).html();
@@ -372,6 +339,13 @@
             guest.on('click', () => keep_as_guest_dialog(p, done));
             cell.append(stop, guest);
         }
+        if (p.email !== MY_EMAIL) {
+            const open = icon_button('bi-code-slash', `Workspace von ${p.name || p.email} öffnen`);
+            open.on('click', () => admin_open_workspace(p.email, open));
+            const imitate = icon_button('bi-person-vcard', `${p.name || p.email} nachahmen`);
+            imitate.on('click', () => admin_impersonate(p.email, imitate));
+            cell.prepend(open, imitate);
+        }
         const del = icon_button('bi-trash', `Konto von ${p.name || p.email} löschen`, 'btn-outline-danger');
         del.on('click', () => delete_account_dialog(p.email, p.name, done));
         return cell.append(del);
@@ -391,29 +365,18 @@
         return p.account || (p.invited && (p.role === 'Lernende' || p.role === 'Gast'));
     }
 
-    // Checkboxes and what to do with the chosen ones.
+    // Checkboxes and what to do with the chosen ones; the chips above
+    // the table choose who is listed.
     function bulk_bar(table, people, done) {
-        const bar = $(`<div class='d-flex flex-wrap gap-2 mb-3'></div>`);
-        const pick = (test) => table.find('.cb-person').each(function () { $(this).prop('checked', test($(this).data('person'))); });
-        // Away for more than a year, or never seen with an account: the usual
-        // case for an announced deletion.
-        const year_ago = new Date(Date.now() - 365 * 86400000).toISOString().slice(0, 10);
-        const away = $(`<button type='button' class='btn btn-sm btn-outline-secondary' title='Konten, deren letzter Besuch über ein Jahr her ist oder zu denen kein Besuch bekannt ist'><i class='bi bi-hourglass-bottom'></i>Alle auswählen, die über ein Jahr nicht da waren</button>`);
-        away.on('click', () => pick(p => p.account && (!p.active_on || p.active_on < year_ago)));
-        const bar_buttons = [away];
-        if (people.some(p => !p.account && selectable(p))) {
-            const no_account = $(`<button type='button' class='btn btn-sm btn-outline-secondary'><i class='bi bi-person-x'></i>Alle ohne Konto auswählen</button>`);
-            no_account.on('click', () => pick(p => !p.account));
-            bar_buttons.push(no_account);
-        }
+        const bar = $(`<div class='d-flex flex-wrap align-items-center gap-2 mb-2'></div>`);
         const del = $(`<button type='button' class='btn btn-sm btn-outline-danger'><i class='bi bi-trash'></i>Ausgewählte entfernen …</button>`);
         del.on('click', function () {
             const chosen = table.find('.cb-person:checked').map(function () { return $(this).data('person'); }).get();
             if (chosen.length) bulk_delete_dialog(chosen, done);
-            else show_error_message('Noch niemand ausgewählt.');
+            else show_error_message('Noch niemand ausgewählt: die Kästchen links, oben alle auf einmal.');
         });
         table.find('.cb-person-all').on('change', function () { table.find('.cb-person').prop('checked', this.checked); });
-        return bar.append(...bar_buttons, del);
+        return bar.append(del);
     }
 
     function show_school_form(show) {
@@ -425,6 +388,7 @@
     function load_schools() {
         people_call('/api/people/schools', {}, function (data) {
             schools = data.schools;
+            $('#count-schulen').text(schools.length);
             $('#people_not_imported').html(data.imported ? '' : `<div class='alert alert-info'>${PEOPLE_ERRORS.roster_in_files}</div>`);
             const here = $('#schools_here').empty();
             const select = $('#teacher_school').empty();
@@ -484,7 +448,13 @@
     }
 
     function load_teachers() {
+        if ($('#teachers_filter').val() === 'ohne-konto') {
+            people_call('/api/people/teachers', {}, data => $('#count-lehrkraefte').text(data.teachers.length));
+            load_unused_teachers();
+            return;
+        }
         people_call('/api/people/teachers', {}, function (data) {
+            $('#count-lehrkraefte').text(data.teachers.length);
             const here = $('#teachers_here').empty();
             const only = $('#teachers_school').val();
             const teachers = data.teachers.filter(t => !only || t.school === only);
@@ -495,6 +465,7 @@
                 if (!t.school) select.append($('<option>').val('').text('(keine Schule)'));
                 schools.forEach(s => select.append($('<option>').val(s.key).text(s.name)));
                 select.val(t.school || '');
+                setTimeout(() => searchable_select(select), 0);
                 select.on('change', function () {
                     if (select.val()) people_call('/api/people/save_teacher', { email: t.email, school: select.val() }, load_all);
                 });
@@ -560,12 +531,52 @@
         return `<span class='${old}' title='${new Date(p.active_on).toLocaleDateString('de-DE')}'>${ago}</span><span class='small text-body-secondary'>${source}</span>`;
     }
 
+    // The chips above »Personen«: what used to be »Aufräumen«, as filters of
+    // the same table, each with its count (/api/admin/people, PEOPLE_STATES).
+    const CHIPS = [
+        { state: 'ohne-einladung', label: 'Konten ohne Einladung', icon: 'bi-person-x',
+          note: 'Konten, deren Adresse in keiner Gruppe mehr steht: Nach den Löschregeln werden sie spätestens zum Ende des Schuljahres gelöscht. Gelöscht wird alles, was zum Konto gehört (Workspace, Datenbanken, Antworten, Abgaben); das lässt sich nicht rückgängig machen.' },
+        { state: 'ohne-konto', label: 'Nie angemeldet', icon: 'bi-envelope-slash',
+          note: 'Eingeladen, aber nie einen Code angefordert, etwa aus einer Liste der ganzen Schule (Lehrkräfte stehen unter »Lehrkräfte«). Entfernen nimmt sie aus allen Gruppen; ein Konto gibt es nicht, es wird also nichts gelöscht. Gruppenweise geht das unter Gruppen.' },
+        { state: 'lange-nicht-da', label: 'Über ein Jahr nicht da', icon: 'bi-hourglass-bottom',
+          note: 'Konten, deren letzter Besuch über ein Jahr her ist oder zu denen kein Besuch bekannt ist: der übliche Fall für eine angekündigte Löschung.' },
+        { state: 'mehrere-schulen', label: 'In mehreren Schulen', icon: 'bi-signpost-split',
+          note: 'Schülerinnen und Schüler in Gruppen von mehr als einer Schule (Gruppen der Gäste zählen nicht). Weil es je Adresse ein Konto gibt, sähen Lehrkräfte beider Schulen ihren Workspace. Nimm die Person unter Gruppen aus einer der Gruppen, oder lass es, wenn es so gewollt ist.' },
+        { state: 'loeschung', label: 'Löschung angekündigt', icon: 'bi-calendar-x', note: 'Die Person hat eine E-Mail bekommen; ohne Antwort wird das Konto am genannten Tag gelöscht.' },
+        { state: 'gesperrt', label: 'Gesperrt', icon: 'bi-lock', note: 'Gesperrte Konten: keine Anmeldung, kein Workspace, nichts gelöscht.' },
+    ];
+    let people_state = '';
+
+    function render_chips(counts) {
+        const here = $('#chips_here').empty();
+        CHIPS.forEach(function (chip) {
+            const n = (counts || {})[chip.state] || 0;
+            if (n === 0 && people_state !== chip.state) return;
+            const on = people_state === chip.state;
+            const button = $(`<button type='button' class='btn btn-sm people-chip'><i class='bi ${chip.icon}' aria-hidden='true'></i>${chip.label} <span class='people-chip-count'>${n}</span></button>`)
+                .toggleClass('active', on).attr('aria-pressed', on ? 'true' : 'false');
+            button.on('click', function () { set_people_state(on ? '' : chip.state); });
+            here.append(button);
+        });
+        if (here.children().length === 0) here.append(`<span class='text-body-secondary small'>Nichts zu tun.</span>`);
+        const chip = CHIPS.find(c => c.state === people_state);
+        $('#chip_note').text(chip ? chip.note : '').toggle(!!chip);
+    }
+
+    function set_people_state(state) {
+        people_state = state;
+        history.replaceState(null, '', location.pathname + location.search + '#' + (state || 'personen'));
+        load_all_people();
+    }
+
     let all_timer = null;
     function load_all_people() {
         const query = $('#all_query').val().trim();
-        const filters = { query: query, limit: 500, school: $('#all_school').val(), role: $('#all_role').val(), sort: $('#all_sort').val() };
+        const filters = { query: query, limit: 500, school: $('#all_school').val(), role: $('#all_role').val(), sort: $('#all_sort').val(), state: people_state };
         api_call('/api/admin/people', filters, function (data) {
             if (!data.success) return;
+            render_chips(data.counts);
+            if (!query) $('#count-personen').text(data.everyone);
             const here = $('#all_here').empty();
             const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th><input type='checkbox' class='form-check-input cb-person-all' aria-label='Alle auswählen'></th><th>Name und Adresse</th><th>Rolle</th><th>Schule</th><th>Gruppen</th><th>Zuletzt da</th><th title='Speicherplatz des Workspace'>Speicher</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
             data.people.forEach(function (p) {
@@ -598,87 +609,14 @@
         }, { no_please_wait: true });
     }
 
-    function load_unused() {
-        people_call('/api/people/unused_invitations', {}, function (data) {
-            const here = $('#unused_here').empty();
-            const groups = data.groups.filter(g => g.unused > 0);
-            if (!groups.length) {
-                here.append(`<p class='text-body-secondary'>Keine.</p>`);
-                return;
-            }
-            here.append(`<p>${data.total} ${data.total === 1 ? 'Person' : 'Personen'} in ${groups.length} Gruppen.</p>`);
-            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th><input type='checkbox' class='form-check-input' id='cb_unused_all' aria-label='Alle auswählen'></th><th>Gruppe</th><th>Schule</th><th>Mitglieder</th><th>Mit Konto</th><th>Ohne Konto</th><th title='ohne Konto und keine Lehrkraft: das nimmt »Aus den ausgewählten Gruppen nehmen« heraus'>Entfernbar</th><th>Zuletzt da</th></tr></thead><tbody></tbody></table>`);
-            groups.forEach(function (g) {
-                const cb = $(`<input type='checkbox' class='form-check-input cb-unused'>`).data('group', g.name).attr('aria-label', g.name);
-                const share = g.members ? Math.round(100 * g.unused / g.members) : 0;
-                const link = $(`<a></a>`).attr('href', '/gruppen#gruppe=' + encodeURIComponent(g.name)).text(g.name);
-                // From the longest ago to the latest visit of anyone in the group.
-                const range = !g.active_to ? "<span class='text-warning-emphasis'>kein Besuch bekannt</span>"
-                    : g.active_from === g.active_to ? ago_text(g.active_to)
-                    : `<span class='text-body-secondary'>${ago_text(g.active_from)} –</span> ${ago_text(g.active_to)}`;
-                table.find('tbody').append($('<tr>').append($('<td>').append(cb), $('<td>').append(link), $('<td>').text(g.school || '–'),
-                    $('<td>').text(g.members), $('<td>').text(g.accounts), $('<td>').text(g.members - g.accounts),
-                    $('<td class="text-nowrap">').attr('data-sort', share).html(`${g.unused} <span class='text-body-secondary'>(${share} %)</span>`),
-                    $('<td class="text-nowrap">').attr('data-sort', g.active_to || '').html(range)));
-            });
-            make_sortable(table);
-            here.append($("<div class='table-responsive'></div>").append(table));
-            table.find('#cb_unused_all').on('change', function () { table.find('.cb-unused').prop('checked', this.checked); });
-            const button = $(`<button type='button' class='btn btn-outline-danger'><i class='bi bi-person-dash'></i>Aus den ausgewählten Gruppen nehmen</button>`);
-            button.on('click', function () {
-                const chosen = table.find('.cb-unused:checked').map(function () { return $(this).data('group'); }).get();
-                if (!chosen.length) return;
-                const count = chosen.reduce((n, name) => n + groups.find(g => g.name === name).unused, 0);
-                showTemplateModal('Einladungen ohne Konto entfernen', `<p>Aus ${chosen.length} ${chosen.length === 1 ? 'Gruppe' : 'Gruppen'} werden alle genommen, die nie ein Konto hatten (in diesen Gruppen zusammen höchstens ${count}; wer in mehreren steht, zählt einmal).</p>`
-                    + `<p id='unused_exact'>Einen Moment …</p>`
-                    + `<label class='form-label' for='ti_unused_confirm'>Zur Bestätigung diese Zahl eingeben:</label><input id='ti_unused_confirm' class='form-control' autocomplete='off' inputmode='numeric'>`,
-                    "<i class='bi bi-person-dash'></i>Entfernen", 'btn-danger', 'Abbruch', 'btn-secondary', function () {
-                        api_call('/api/people/remove_unused_invitations', { groups: chosen, confirmation: $('#ti_unused_confirm').val().trim() }, function (r) {
-                            if (!r.success) {
-                                show_error_message(PEOPLE_ERRORS[r.error] || 'Das hat nicht geklappt.');
-                                return;
-                            }
-                            $('#__template_modal').modal('hide');
-                            show_success_message(`${r.memberships} Mitgliedschaften entfernt; ${r.uninvited} ${r.uninvited === 1 ? 'Person ist' : 'Personen sind'} nicht mehr eingeladen.`);
-                            load_all();
-                        });
-                        return false;
-                    });
-                // The exact number (people in several groups once) comes from the server.
-                people_call('/api/people/unused_count', { groups: chosen }, function (r) {
-                    $('#unused_exact').text(`Das sind ${r.count} ${r.count === 1 ? 'Person' : 'Personen'}.`);
-                });
-            });
-            here.append(button);
-        });
-    }
-
-    function load_uninvited() {
-        people_call('/api/admin/uninvited_accounts', {}, function (data) {
-            const here = $('#uninvited_here').empty();
-            if (!data.accounts.length) { here.append(`<p class='text-body-secondary'>Keine: Jedes Konto hat eine Einladung.</p>`); return; }
-            here.append(`<p>${data.accounts.length} ${data.accounts.length === 1 ? 'Konto' : 'Konten'}.</p>`);
-            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th><input type='checkbox' class='form-check-input cb-person-all' aria-label='Alle auswählen'></th><th>Name und Adresse</th><th>Zuletzt da</th><th title='Speicherplatz des Workspace'>Speicher</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
-            data.accounts.forEach(function (a) {
-                const p = Object.assign({ account: true, role: 'Lernende' }, a);
-                const cb = $(`<input type='checkbox' class='form-check-input cb-person'>`).data('person', p).attr('aria-label', a.name || a.email);
-                table.find('tbody').append($('<tr>').append($('<td>').append(cb),
-                    $('<td>').attr('data-sort', (a.name || a.email).toLowerCase()).append($('<span>').text(a.name || '–'), $("<span class='person-email'></span>").text(a.email).append(deletion_note(a))),
-                    $('<td class="text-nowrap">').attr('data-sort', a.active_on || '').html(active_html(p)),
-                    $('<td class="text-nowrap">').attr('data-sort', a.disk_kb === null || a.disk_kb === undefined ? -1 : a.disk_kb).html(disk_html(a.disk_kb, data.fat_kb)),
-                    account_actions(p, load_all)));
-            });
-            make_sortable(table);
-            here.append(bulk_bar(table, data.accounts, load_all));
-            here.append($("<div class='table-responsive'></div>").append(table));
-        });
-    }
-
     function load_unused_teachers() {
         people_call('/api/people/unused_teachers', {}, function (data) {
-            const here = $('#unused_teachers_here').empty();
+            const here = $('#teachers_here').empty();
+            const only = $('#teachers_school').val();
+            const school_name = only ? (schools.find(s => s.key === only) || {}).name : null;
+            data.teachers = data.teachers.filter(t => !school_name || t.school === school_name);
+            here.append(`<p class='text-body-secondary'>Eingeladen, aber nie angemeldet. Entfernen nimmt die Einladung ganz heraus: Schule, betreute Gruppen, Mitgliedschaften. Ein Konto gibt es nicht, es wird also nichts gelöscht. Bleibt eine Gruppe danach ohne Lehrkraft, sagt die Seite es vorher.</p>`);
             if (!data.teachers.length) { here.append(`<p class='text-body-secondary'>Keine.</p>`); return; }
-            here.append(`<p>${data.teachers.length} ${data.teachers.length === 1 ? 'Lehrkraft' : 'Lehrkräfte'}.</p>`);
             const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th><input type='checkbox' class='form-check-input cb-teacher-all' aria-label='Alle auswählen'></th><th>Name und Adresse</th><th>Schule</th><th>Betreut</th></tr></thead><tbody></tbody></table>`);
             data.teachers.forEach(function (t) {
                 const cb = $(`<input type='checkbox' class='form-check-input cb-teacher'>`).data('teacher', t).attr('aria-label', t.name || t.email);
@@ -713,45 +651,50 @@
         });
     }
 
-    function load_cross_school() {
-        people_call('/api/people/cross_school', {}, function (data) {
-            const here = $('#cross_school_here').empty();
-            if (!data.people.length) { here.append(`<p class='text-body-secondary'>Keine.</p>`); return; }
-            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Name und Adresse</th><th>Schulen</th><th>Gruppen</th></tr></thead><tbody></tbody></table>`);
-            data.people.forEach(p => table.find('tbody').append($('<tr>').append(
-                $('<td>').append($('<span>').text(p.name || '–'), $("<span class='person-email'></span>").text(p.email)),
-                $('<td>').text(p.schools.join(', ')), $('<td>').text(p.groups.join(', ')))));
-            make_sortable(table);
-            here.append($("<div class='table-responsive'></div>").append(table));
-        });
-    }
-
-    function load_ended_groups() {
-        people_call('/api/people/ended_groups', {}, function (data) {
-            const here = $('#ended_groups_here').empty();
-            if (!data.groups.length) { here.append(`<p class='text-body-secondary'>Keine.</p>`); return; }
-            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Gruppe</th><th>Schule</th><th>Zu Ende seit</th><th>Mitglieder</th><th>Lehrkräfte</th></tr></thead><tbody></tbody></table>`);
-            data.groups.forEach(g => table.find('tbody').append($('<tr>').append(
-                $('<td>').append($('<a>').attr('href', '/gruppen#gruppe=' + encodeURIComponent(g.name)).text(g.name)),
-                $('<td>').text(g.school || '–'), $('<td>').attr('data-sort', g.ends_on).text(new Date(g.ends_on).toLocaleDateString('de-DE')),
-                $('<td>').text(g.members), $('<td>').text(g.teachers.join(', ') || '–'))));
-            make_sortable(table);
-            here.append($("<div class='table-responsive'></div>").append(table));
-        });
-    }
-
     function load_all() {
-        load_ended_groups();
-        load_cross_school();
         load_schools();
         setTimeout(load_teachers, 200);
         load_all_people();
-        load_unused();
-        load_unused_teachers();
-        load_uninvited();
+    }
+
+    // The tabs: the address says which (and old links still land right:
+    // #alle, #aufraeumen, a chip's name, #lehrkraefte-ohne-konto).
+    const PEOPLE_TABS = ['schulen', 'lehrkraefte', 'personen'];
+    function select_tab(name, focus) {
+        $('.people-tabs .class-tab').each(function () {
+            const on = this.dataset.tab === name;
+            this.setAttribute('aria-selected', on ? 'true' : 'false');
+            this.tabIndex = on ? 0 : -1;
+            document.getElementById(this.getAttribute('aria-controls')).hidden = !on;
+            if (on && focus) this.focus();
+        });
+    }
+    function tab_from_hash() {
+        const hash = decodeURIComponent(location.hash.replace(/^#/, ''));
+        if (hash === 'lehrkraefte-ohne-konto') { $('#teachers_filter').val('ohne-konto'); return 'lehrkraefte'; }
+        if (CHIPS.some(c => c.state === hash)) { people_state = hash; return 'personen'; }
+        if (hash === 'unbenutzt') { people_state = 'ohne-konto'; return 'personen'; }
+        return PEOPLE_TABS.includes(hash) ? hash : 'personen';
     }
 
     window.addEventListener('load', function () {
+        if (new URLSearchParams(location.search).get('sortierung') === 'speicher') $('#all_sort').val('disk');
+        select_tab(tab_from_hash(), false);
+        $('.people-tabs .class-tab').each(function (i, tab) {
+            $(tab).on('click', function () {
+                select_tab(tab.dataset.tab, false);
+                history.replaceState(null, '', location.pathname + location.search + '#' + (tab.dataset.tab === 'personen' && people_state ? people_state : tab.dataset.tab));
+            });
+            $(tab).on('keydown', function (e) {
+                const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+                if (!step) return;
+                e.preventDefault();
+                const next = PEOPLE_TABS[(PEOPLE_TABS.indexOf(tab.dataset.tab) + step + PEOPLE_TABS.length) % PEOPLE_TABS.length];
+                select_tab(next, true);
+            });
+        });
+        $('#teachers_filter').on('change', load_teachers);
+        ['#teachers_school', '#all_school', '#teacher_school'].forEach(searchable_select);
         load_all();
         $('#all_query').on('input', function () { clearTimeout(all_timer); all_timer = setTimeout(load_all_people, 250); });
         $('#all_school, #all_role, #all_sort').on('change', load_all_people);
