@@ -3,7 +3,7 @@
     "explosion.webp": {
       "environment_fingerprint": "3fa5cba497bc05efe4360d083f364c53d0c02bb4778e3a584153395caf7d896b",
       "output_sha256": "b1d8e521d70a0144b79331480fbd7b2fa7072333c9d360e630a11256dfe3f685",
-      "state_hash": "89c6f8325dc7f5719fea26da8787fb7e435bcfd9a423a165c69f4d327a68d625",
+      "state_hash": "c0331a0d3df29cf98f73d483664fe0d9f3a82ceb35a9c16af6f97ebd2f0b35fe",
       "variants": {
         "explosion-crt.webp": "fa1896c3b76c01e0cc3b3b90cfd20000cb5d819a9585eb95fce1b548b8d74da6"
       },
@@ -12,7 +12,7 @@
     "feuerwerk.webp": {
       "environment_fingerprint": "3fa5cba497bc05efe4360d083f364c53d0c02bb4778e3a584153395caf7d896b",
       "output_sha256": "ed24647ab4e4d2aec51d44f41dd5a23f2f46a1dacd711c013617b2ed021f5769",
-      "state_hash": "861176b256d2e40666641137217318eb654e85c2e60e0ea77bc81c1664be2331",
+      "state_hash": "6d4f43cef49601937e4c5d254055b2bc1881b72e287b4373af7686ac7bac86bb",
       "variants": {
         "feuerwerk-crt.webp": "bc0d2b037bd54b63c9e52613fba31581a1cbc545844abad55ebc60130160385b"
       },
@@ -20,16 +20,17 @@
     },
     "funke-make.webp": {
       "environment_fingerprint": "3fa5cba497bc05efe4360d083f364c53d0c02bb4778e3a584153395caf7d896b",
-      "output_sha256": "560665b1efc05d03b683a0b366806038afc14c978bc0c1381ad0ea3b9719c544",
-      "state_hash": "877264b676dffe58073cbbc1dc71112bd4cd80a64714819ca090ead3acb58743",
-      "workspace_look": "4.140.0-ls368"
+      "output_sha256": "9fbba21f4bce2c20eb6d776916fd5e490773a3f6f9d6216d0b03182942ea7b8f",
+      "state_hash": "f4ee214b1c0a331ae7e2887b918703744b833d07f8649ac10f672f1bf1448ec8",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
     },
     "funke.webp": {
       "environment_fingerprint": "3fa5cba497bc05efe4360d083f364c53d0c02bb4778e3a584153395caf7d896b",
-      "output_sha256": "92d0a09cb1d81864ef0fed3306c7e84c0b0f53e9842d8d278c34b06d11cc3e4c",
-      "state_hash": "f07df91511ee000c1c1d11162f09cbf26a7c2c906844b37e0663c81fc135c64f",
+      "output_sha256": "44f8143eba53c8d9ac40307ead3125f9d0462f4fcf787fe526150fbdf8bf0cf1",
+      "state_hash": "ea4198ff199ec9e0b768f3d9f192f8f0bdfdd4b20e19ef6e993ff1579db440c0",
       "variants": {
-        "funke-crt.webp": "ae27cd1018a45c4e5b91862f1fc667cf6d28340338c2d9c9d6941455eead6214"
+        "funke-crt.webp": "7d14190c6a666506fbf22034abbec06612a855e9af0f32679f24c7ff492b2c4b"
       },
       "workspace_look": "4.140.0-ls368"
     }

@@ -722,9 +722,11 @@ Da `telnet` etwas umständlich zu beenden ist, drücke einfach auf die Mülltonn
 In [Ein eigener Webserver](/webserver) schreibst du die andere Seite selbst: ein Programm, das wie `nc -l` an einem Port wartet, die Zeilen liest, die du hier getippt hast, und mit HTTP antwortet. In der [Pixelwand](/pixelwand) bleibt die Verbindung offen, und die ganze Klasse malt gleichzeitig an einem Bild. Wie du eine API aus Ruby und aus einer Webseite benutzt, zeigt [Daten aus dem Netz](/wetter).
 
 <!-- tutorial-screenshot
-# Bild für die Karte der Aktivität: HTTP von Hand, groß
+# Bild für die Karte der Aktivität: HTTP von Hand, groß; 700 hoch, weil
+# VS Code 1.140 dem Terminal weniger Platz lässt und sonst der Befehl oben
+# herausscrollt
 zoom: 1.5
-viewport: 1029x640
+viewport: 1029x700
 press: Control+Shift+P
 type: Terminal: Kill All Terminals
 press: Enter

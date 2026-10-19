@@ -3,50 +3,52 @@
     "erklaerung.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "2dff63af80853fc707b6188cc5d49b2ee032bf60835c4fcb321b8c7c7398b6b1",
-      "state_hash": "3043bbd23470ae273c14eb5e71bc74b4be0d8f48911b70b183f9832e13e451e7",
-      "workspace_look": "4.138.0-ls366"
+      "state_hash": "3ce1722e272369fff38abb883d4b6a19634194723efb0d32725788bb1149523a",
+      "workspace_look": "4.140.0-ls368"
     },
     "erstes-dokument.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "fd4a0e00eb7522105cfacd056efee0bdcdd436c2ab584a57ac2f03c5e4f07815",
-      "state_hash": "4c76cc3c3dc297b73a910419d93f9f979d8e5f6f72373ce99418317a210ac6eb",
-      "workspace_look": "4.138.0-ls366"
+      "output_sha256": "fac9234febbb5c30e178f6add621c3456150c27df1da7148a8ee192ba6b7c889",
+      "state_hash": "ff6f7dd663a8456945e11edc16ec48b57c3f592aa59d32426c1972f10d52be9b",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
     },
     "facharbeit-fertig.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "f18ce3c781add11ff6e10fb63bec1a59e4353301e7e31aff7d050cecb173752d",
-      "state_hash": "38cf3731d63f659505db02fd6e9725ddb5c9a8eb53ea98b756228bf1a2afe58a",
-      "workspace_look": "4.138.0-ls366"
+      "output_sha256": "4fe9e82321de293492b3dcae41906a5cfd06e4bfd5879274c70dd41a4316dca9",
+      "state_hash": "8816eb8afa33a7687d1d93c6d9199f320c23e13fc7047876406af24c326b2274",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
     },
     "inhaltsverzeichnis.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "b9ba077445076f60152ed4d9b4696e03311bce208df13f38356f362d65234e1a",
-      "state_hash": "523ef36ed371521152765f65ad6c26795365b0d24342d51494aa9a0ed14dfdf0",
-      "workspace_look": "4.138.0-ls366"
+      "state_hash": "3a7b40bb6ecdd1ec2b3d5adca3217ce34ffdcfc79013a5afb906b00ca9782621",
+      "workspace_look": "4.140.0-ls368"
     },
     "seite-auswertung.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "5266b7b71424c7d1abe085d7290ab328efe5eddf9003fe9cf81684053ea892e8",
-      "state_hash": "070094f826135046db975f0c7a291ab6a87a461bf5a6d9523107a46a7ff1f37e",
-      "workspace_look": "4.138.0-ls366"
+      "state_hash": "79cbffe2133e838c9fed6d04eeceb70ce2846681cd36d8e58e629f1ddd582d9f",
+      "workspace_look": "4.140.0-ls368"
     },
     "seite-theorie.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "8697740c4dd3d05d1243ab3c0b6cfe575fe6a1813e3ff28abc2ff5b978168c50",
-      "state_hash": "5246ce867257138a8c10fde1707eca1e4ea3c92921a2c0728ea7b2844e54a0b7",
-      "workspace_look": "4.138.0-ls366"
+      "state_hash": "92d322b77278ad94deaceb6ddff4bbee5afce463bbaa84104de15159ed830253",
+      "workspace_look": "4.140.0-ls368"
     },
     "seite-versuch.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "a4868d25cb0062d91a0c895b6ebca9d6f3dae7a034033879c8c4d4f824b0050d",
-      "state_hash": "c1185cae30aa0470376d77e8436e59a52f2d73e5981b0d0e534cc079c22d7179",
-      "workspace_look": "4.138.0-ls366"
+      "state_hash": "d923565fb4e383df17f183e7c74326140b2050bd4c68538d6affbab9a777d64d",
+      "workspace_look": "4.140.0-ls368"
     },
     "titelseite.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "dea7af2143d4dd92c8d718e052f00cbb3fc7ce092083b4c93713e9d6179510ec",
-      "state_hash": "86b677856696a1e95a3f1fb38c05f5754915658537a2c65befc2cb93097afe35",
-      "workspace_look": "4.138.0-ls366"
+      "state_hash": "63c0cf6df222ae83e01715c87e9876fdd42e410fcdcabc05ba774b544c8820b6",
+      "workspace_look": "4.140.0-ls368"
     }
   },
   "version": 1

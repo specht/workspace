@@ -219,6 +219,11 @@ SELECT * FROM country;
 ```
 
 <!-- tutorial-screenshot
+# Hier mit dem Pager, wie Lernende ihn sehen (der Text erklärt ihn):
+# \P setzt ihn für dieses Bild, das nächste Rezept beendet ihn mit Q und
+# schaltet ihn mit \n wieder ab.
+terminal-run: \P less -S -F
+sleep: 0.5
 press: Control+L
 type: SELECT * FROM country;
 press: Enter
@@ -241,6 +246,8 @@ SELECT name, population FROM country;
 
 <!-- tutorial-screenshot
 press: Q
+terminal-run: \n
+sleep: 0.5
 press: Control+L
 type: SELECT name, population FROM country;
 press: Enter
@@ -258,7 +265,6 @@ SELECT * FROM country WHERE name = 'Deutschland';
 ```
 
 <!-- tutorial-screenshot
-press: Q
 press: Control+L
 type: SELECT * FROM country WHERE name = 'Deutschland';
 press: Enter
@@ -326,7 +332,6 @@ SELECT * FROM country ORDER BY population;
 ```
 
 <!-- tutorial-screenshot
-press: Q
 press: Control+L
 type: SELECT * FROM country ORDER BY population;
 press: Enter
@@ -342,7 +347,6 @@ SELECT * FROM country ORDER BY population DESC;
 ```
 
 <!-- tutorial-screenshot
-press: Q
 press: Control+L
 type: SELECT * FROM country ORDER BY population DESC;
 press: Enter
@@ -366,7 +370,6 @@ SELECT * FROM country LIMIT 5;
 ```
 
 <!-- tutorial-screenshot
-press: Q
 press: Control+L
 type: SELECT * FROM country LIMIT 5;
 press: Enter

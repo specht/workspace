@@ -2,7 +2,7 @@
   "screenshots": {
     "devices.webp": {
       "environment_fingerprint": "33ba41a5d30a0c5bfebca9e4758111621b91bd97a3b7fbce0a568a0bdb2c7beb",
-      "output_sha256": "f5516a806addb255ff7c8e1aa900847ea2ee934788a36ed96918e11691d7275a",
+      "output_sha256": "70150231251bd05e2adf5d107933030cb6818301d07e1c7e9a5be443a67c48c3",
       "state_hash": "efdb200a509bdf934cdaa123908e21e1ec260f2c5ce1cc0ea49f521f14db86a5",
       "workspace_look": "4.140.0-ls368"
     },

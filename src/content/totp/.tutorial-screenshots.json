@@ -2,15 +2,17 @@
   "screenshots": {
     "totp-app-python.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "bbd555b98cdeb60379232b8fa4a13866c6bcbe6067978482c91ce092c9bbc313",
-      "state_hash": "7c2422ae69e10f415d50ed5314af56119fffbd79142b0e1db1e71b4f20989f03",
-      "workspace_look": "4.138.0-ls366"
+      "output_sha256": "db1f859f63ffd73aa9b8913bab350d1771508ba3f7d5abae1c996e482739296b",
+      "state_hash": "ea3892e4429733fd6c6a76282fba689cbac27f40af6410e707dadc5a0c3c25ea",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
     },
     "totp-app.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "70aaa5f0b01f90d0ba2b204ad0e55e4671dbe402f90a99d27caa9ba13c43e506",
-      "state_hash": "bbbeb6cbb0b83dbbba402f334f7de2249a5bbda2306e5b4cf7d142c2d1b1918f",
-      "workspace_look": "4.138.0-ls366"
+      "output_sha256": "8daff4f52d5f716904c4ec353f390a57ebc15c5a05f61428cf248d6df667c205",
+      "state_hash": "87f9c9f029d8a8def3ba7cc656ad07f14d580fee708f1ebfa8e93e5371b6348e",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
     }
   },
   "version": 1

@@ -3,19 +3,20 @@
     "diskette.webp": {
       "environment_fingerprint": "5a48f60d6877335d7072814c1c5b6b423b1698cf130ba9f35aee60cf2b540ca3",
       "output_sha256": "bd529665b37fa13cb1c9b5d8a30f3627c84686e5ac0dc039230c662b79d1d0f2",
-      "state_hash": "20477992b8cbeabefb6160687a8009f5017091c2f3dd7c44d58c04676d0dd8d0",
+      "state_hash": "2b50cd833fa6e4a86ca906779551eaf6460190c2d2e17b4dfd7c22623177cc3f",
       "workspace_look": "4.140.0-ls368"
     },
     "make.webp": {
       "environment_fingerprint": "5a48f60d6877335d7072814c1c5b6b423b1698cf130ba9f35aee60cf2b540ca3",
-      "output_sha256": "383976bd056bb0a172b5ca3b5792bb34c34d0e1b3c53bdf8c04145aa37eb6c80",
-      "state_hash": "7d9c7706decfbfa71bc0c3aa5bf5f5857d266c76ffa2b5b8a5dacb8df8d9a1e2",
-      "workspace_look": "4.140.0-ls368"
+      "output_sha256": "0ee853331363f3ffcf8c00a3ef9c8173008d1e65fad47a216ccaa215ff434bc8",
+      "state_hash": "649f76ac7e45e822a5a0cd8923f457c747371d6c364666649880caabaa7fa2fc",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
     },
     "markt.webp": {
       "environment_fingerprint": "5a48f60d6877335d7072814c1c5b6b423b1698cf130ba9f35aee60cf2b540ca3",
       "output_sha256": "fb064b35c338cf301fd566cbe326a9af077753d7c6c9bbfde5db1ed9bae5a0c1",
-      "state_hash": "f0a1896f117dff706232e51fbe0c8bd742a1ac7033d61a05466bce61ef3ef2f5",
+      "state_hash": "cfad77daa2b9cb1f4f86deaafb2836eded9dbb29bb42f83e5c88d9d821842c6f",
       "workspace_look": "4.140.0-ls368"
     }
   },

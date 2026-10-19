@@ -185,7 +185,9 @@ wait-for-text: README.md
 open-file: README.md
 close-tab: Welcome
 left-sidebar-width: 400
-click: Checkpoints
+# the header of the view in the sidebar: a second control named
+# »Checkpoints« exists elsewhere in the window
+click: selector:.part.sidebar .pane > .pane-header:has(h3.title:text-is("Checkpoints"))
 move-mouse: selector:.pane-header a[aria-label="Checkpoint erstellen"]
 sleep: 1.5
 show-mouse

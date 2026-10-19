@@ -2,21 +2,24 @@
   "screenshots": {
     "ebene-1.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "750e4e6200900e667be1ed52fdcf4ba7781d1d00dd08d5b8461e9b442bbad6e9",
-      "state_hash": "483a3d8fab7421cd4104a1aa5854d12ab6460d7b7e48f15f831e861e477c878e",
-      "workspace_look": "4.138.0-ls366"
+      "output_sha256": "776b2b3ebcc7c902f37c09f457d80f83357fc13153d69890206522c5990c3284",
+      "state_hash": "dc37a7c0cb0b03ec00f960b401329292f01771248cfb516cb8fa35459e94b48f",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
     },
     "start-python.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "3c9bc83541ce3a765bd9a42e8040e58e93c5fb3086d66f9b74ffc437725b278d",
-      "state_hash": "9ac603b1460e9e73c267c7115659f07b6760f44a8041679be3cb20d0c7be45b0",
-      "workspace_look": "4.138.0-ls366"
+      "output_sha256": "c45abc6a2c39e2af194bcc09beb56262ad3ace00ba2c75003fdb735d7bccec09",
+      "state_hash": "cf87624945e8ab7305b9c347bdcf25ca6b6488c5993c0e1a85e96cc6e69fceb5",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
     },
     "start.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "911a9649f2b9223b7486233a795b9b4fc0c5f72c882b14768865f5b3a0bfa830",
-      "state_hash": "414201892b16f1076f3d8a029b7266081fbd1d23bcf5e0f023b7f46391369927",
-      "workspace_look": "4.138.0-ls366"
+      "output_sha256": "1a27156f561efce10dd0019c9a190e7cbd0dc0393f5eba4b9aef0a4ed0f8bebc",
+      "state_hash": "8cc471e3eee7cdf6af122720f8a1342a02efe8694a78c96c7835aef61ad9aae6",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
     }
   },
   "version": 1
