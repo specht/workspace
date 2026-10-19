@@ -128,10 +128,16 @@ export function terminalLineCropPixels({
 
     // Preserve half a rendered xterm row below the requested content. This keeps
     // the crop visually separated from the last line while still adapting to the
-    // terminal's actual font/line-height settings.
+    // terminal's actual font/line-height settings. Not when that row is one
+    // crop-terminal-skip-bottom leaves out and it has text (the prompt): its
+    // upper half would show, so the crop ends exactly at the last row.
+    const nextIndex = skipTop + keptRows;
+    const nextRow = rows[nextIndex];
+    const skipped = nextIndex >= rows.length - skipBottom;
+    const room = skipped && nextRow && !nextRow.empty ? 0 : lastRow.height * 0.5;
     const bottomCss = Math.min(
         screenBottom,
-        lastRow.bottom + lastRow.height * 0.5,
+        lastRow.bottom + room,
     );
     const topCss = skipTop > 0 ? firstRow.top : panelTop;
     const topPixels = Math.max(

@@ -273,3 +273,14 @@ test('terminal crop rejects skip values that remove every rendered row', () => {
         /leave no rendered terminal rows/,
     );
 });
+
+test('the crop leaves out a skipped row with text, also its upper half', () => {
+    const row = (top, empty = false) => ({ top, bottom: top + 20, height: 20, empty });
+    const geometry = { viewportHeight: 600, deviceScaleFactor: 1, panelTop: 0, screenBottom: 500 };
+    // done, then the prompt that skip-bottom leaves out
+    const withText = terminalLineCropPixels({ ...geometry, rows: [row(100), row(120), row(140)], lineCount: 'auto', skipBottom: 1 });
+    assert.equal(withText.heightPixels, 140);
+    // an empty row below: half of it stays as room
+    const withEmpty = terminalLineCropPixels({ ...geometry, rows: [row(100), row(120), row(140, true)], lineCount: 'auto' });
+    assert.equal(withEmpty.heightPixels, 150);
+});
