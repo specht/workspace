@@ -216,18 +216,79 @@
             width: 100%;
         }
     }
+    /* The selection of who takes an exam */
+    .exam-people-bar {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        position: sticky;
+        top: -1rem;
+        z-index: 1;
+        margin: -1rem -1rem 0.75rem;
+        padding: 1rem;
+        background: var(--bs-body-bg);
+        border-bottom: 1px solid var(--bs-border-color);
+    }
+    .exam-people-count {
+        white-space: nowrap;
+        font-weight: 600;
+    }
+    .exam-people-group {
+        border-bottom: 1px solid var(--bs-border-color-translucent);
+        padding: 0.4rem 0;
+    }
+    .exam-people-group > summary {
+        display: flex;
+        align-items: baseline;
+        gap: 0.75rem;
+        cursor: pointer;
+        font-weight: 600;
+    }
+    .exam-people-group > summary::-webkit-details-marker {
+        display: none;
+    }
+    .exam-people-group > summary::before {
+        content: '\F285';   /* bi-chevron-right */
+        font-family: 'bootstrap-icons';
+        font-weight: normal;
+        font-size: 0.8em;
+        transition: transform 0.15s;
+    }
+    .exam-people-group[open] > summary::before {
+        transform: rotate(90deg);
+    }
+    .exam-people-group-actions {
+        margin-left: auto;
+        font-weight: normal;
+    }
+    .exam-people-group-actions .btn {
+        padding: 0 0.4rem;
+    }
+    .exam-people-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+        gap: 0.2rem 1rem;
+        padding: 0.5rem 0 0.4rem 1.2rem;
+    }
+    .exam-people-grid .form-check-label {
+        overflow-wrap: anywhere;
+    }
+    .exam-table td:first-child {
+        min-width: 12rem;
+    }
 </style>
 <div class="modal" id="test_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style='z-index: 200000;'>
     <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Leistungsüberprüfung</h5>
+                <h5 class="modal-title">Teilnehmende</h5>
             </div>
             <div class="modal-body">
                 <div id="test_modal_users_here"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class='bi bi-x-lg'></i>Schließen</button>
+                <span class='small text-body-secondary me-auto'>Jede Änderung wird sofort gespeichert.</span>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class='bi bi-check-lg'></i>Fertig</button>
             </div>
         </div>
     </div>
@@ -544,17 +605,15 @@ vscode_config: {}</pre>
                             </p>
                         </details>
                         <div class="table-responsive mt-3">
-                            <table class="table table-sm" id="table_my_test_archives">
+                            <table class="table table-sm align-middle exam-table" id="table_my_test_archives">
                                 <thead>
                                     <tr>
-                                        <th>Tag</th>
-                                        <th>Dateiname</th>
-                                        <th>Größe</th>
-                                        <th>Löschen</th>
-                                        <th>Gruppe</th>
+                                        <th>Leistungsüberprüfung</th>
+                                        <th>Teilnehmende</th>
                                         <th>Status</th>
                                         <th>Vorschau</th>
                                         <th>Ergebnisse</th>
+                                        <th><span class='visually-hidden'>Löschen</span></th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -572,160 +631,199 @@ vscode_config: {}</pre>
     var user_group_order = #{my_user_group_order.to_json};
     var user_groups = #{my_user_groups.to_json};
     var invitations = #{my_invitations.to_json};
-    var modal_tag = null;
-    var test_email_buttons = {};
+
+    // Exams (»Leistungsüberprüfungen«): one row each, the name and when it
+    // was uploaded first, then who takes it, whether it runs, the preview
+    // and the results; deleting comes last and small.
+    let exam_entries = [];
+
+    function exam_title(entry) {
+        return (entry.filename || 'Leistungsüberprüfung').replace(/\.(tar\.gz|tgz|tar)$/i, '');
+    }
 
     function refresh_test_archives() {
         if ('#{teacher_logged_in?}' !== 'true') return;
         api_call('/api/get_my_test_archives', {}, function(data) {
-            $('#table_my_test_archives tbody').empty();
-            if (data.success) {
-                for (let entry of data.entries) {
-                    let row = $(`<tr>`).appendTo($('#table_my_test_archives tbody'));
-                    row.data('tag', entry.tag);
-                    $(`<td>`).html(`<code>${entry.tag.substr(0, 12)}</code>`).appendTo(row);
-                    $(`<td>`).text(entry.filename).appendTo(row);
-                    $(`<td>`).text(entry.size).appendTo(row);
-                    let bu_delete = $(`<button>`).html(`<i class='bi bi-trash-fill'></i>Löschen`).addClass('btn btn-sm btn-danger');
-                    bu_delete.appendTo($(`<td>`).appendTo(row));
-                    let bu_group = $(`<button>`).html(`<i class='bi bi-people-fill'></i>${entry.count} Person${entry.count == 1 ? '' : 'en'}`).addClass('btn btn-sm btn-secondary');
-                    bu_group.appendTo($(`<td>`).appendTo(row));
-                    let bu_start_stop = null;
-                    if (entry.running) {
-                        bu_start_stop = $(`<button>`).html(`<i class='bi bi-stop-fill'></i>Stop`).addClass('btn btn-sm btn-danger');
-                        let td = $(`<td>`).appendTo(row);
-                        td.append($(`<span style='margin-right: 1.5em;'><i class='bi bi-check-lg text-success' style='margin-right: 0.6em;'></i>läuft</span>`));
-                        td.append(bu_start_stop);
-                    } else {
-                        bu_start_stop = $(`<button>`).html(`<i class='bi bi-play-fill'></i>Start`).addClass('btn btn-sm btn-success');
-                        let td = $(`<td>`).appendTo(row);
-                        td.append(bu_start_stop);
-                    }
-                    let bu_demo = $(`<button>`).html(`<i class='bi bi-box-arrow-up-right'></i>Workspace`).addClass('btn btn-sm btn-primary');
-                    let bu_demo_pdf = $(`<button>`).html(`<i class='bi bi-printer-fill'></i>Druckansicht`).addClass('btn btn-sm btn-secondary');
-                    let td_demo = $(`<td>`).appendTo(row);
-                    let preview_group = $(`<div class='btn-group btn-group-sm' role='group' aria-label='Vorschau'>`);
-                    preview_group.append(bu_demo);
-                    preview_group.append(bu_demo_pdf);
-                    td_demo.append(preview_group);
-                    let bu_results_pdf = $(`<button>`).html(`<i class='bi bi-printer-fill'></i>Ergebnisse`).addClass('btn btn-sm btn-success');
-                    let td = $(`<td>`).appendTo(row);
-                    td.append(bu_results_pdf);
-                    bu_delete.on('click', function(e) {
-                        showTemplateModal('Leistungsüberprüfung löschen', 'Bist du sicher, dass du diese Leistungsüberprüfung löschen möchtest? Die Workspaces und Datenbanken aller Teilnehmenden werden mitgelöscht. Lade vorher die Ergebnisse als PDF herunter, wenn du sie noch brauchst.',
-                            "<i class='bi bi-trash-fill'></i>Löschen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
-                                api_call('/api/delete_test', {tag: entry.tag}, function(data2) {
-                                if (data2.success) {
-                                    refresh_test_archives();
-                                }
-                            });
-                        });
-                    });
-                    bu_group.on('click', function(e) {
-                        modal_tag = entry.tag;
-                        api_call('/api/get_assigned_users_for_test', {tag: entry.tag}, function(data2) {
-                            if (data2.success) {
-                                $('#test_modal .bu_test_user').removeClass('btn-success').addClass('btn-outline-secondary');
-                                for (let email of data2.emails)
-                                    test_email_buttons[email].removeClass('btn-outline-secondary').addClass('btn-success');
-                                $('#test_modal').modal('show');
-                            }
-                        });
-                    });
-                    bu_start_stop.on('click', function(e) {
-                        if (entry.running) {
-                            showTemplateModal('Leistungsüberprüfung beenden', 'Bist du sicher, dass du diese Leistungsüberprüfung beenden möchtest?',
-                            "<i class='bi bi-check-lg'></i>Beenden", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
-                                api_call('/api/stop_test', {tag: entry.tag}, function(data2) {
-                                    if (data2.success) {
-                                        refresh_test_archives();
-                                    }
-                                });
-                            });
-                        } else {
-                            showTemplateModal('Leistungsüberprüfung starten', 'Bist du sicher, dass du diese Leistungsüberprüfung starten möchtest?',
-                            "<i class='bi bi-check-lg'></i>Starten", 'btn-success', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
-                                api_call('/api/start_test', {tag: entry.tag}, function(data2) {
-                                    if (data2.success) {
-                                        refresh_test_archives();
-                                    }
-                                });
-                            });
-                        }
-                    });
-                    bu_demo.on('click', function(e) {
-                        let text = `
-                            <p>Die Workspace-Vorschau ist vollständig von deinem normalen Workspace und von den echten Prüfungs-Workspaces getrennt.</p>
-                            <p>Beim Öffnen werden <strong>nur deine bisherigen Vorschau-Dateien und Vorschau-Datenbanken zurückgesetzt</strong>.</p>
-                            <p>Du erhältst anschließend genau den frischen Workspace, den auch Schülerinnen und Schüler beim ersten Start sehen.</p>
-                        `;
-                        showTemplateModal('Workspace-Vorschau öffnen', text,
-                            "<i class='bi bi-box-arrow-up-right'></i>Frischen Workspace öffnen", 'btn-primary',
-                            "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
-                                bu_demo.prop('disabled', true);
-                                bu_demo.find('.bi').addClass('bi-spin');
-                                api_call('/api/start_test_demo', {tag: entry.tag}, function(data2) {
-                                    bu_demo.prop('disabled', false);
-                                    bu_demo.find('.bi').removeClass('bi-spin');
-                                    if (data2.success && data2.status !== 'failed') {
-                                        check_server_tag_update(data2.server_tag);
-                                        check_server_online(data2.server_tag);
-                                    }
-                                });
-                            });
-                    });
-                    bu_demo_pdf.on('click', function(e) {
-                        window.open(`/api/pdf_for_test_demo/${entry.tag}`, '_blank');
-                    });
-                    bu_results_pdf.on('click', function(e) {
-                        api_call('/api/get_assigned_users_for_test', {tag: entry.tag}, function(data2) {
-                            if (!data2.success) return;
+            const tbody = $('#table_my_test_archives tbody').empty();
+            if (!data.success) return;
+            exam_entries = data.entries.slice().sort((a, b) => (b.ts || 0) - (a.ts || 0));
+            if (exam_entries.length === 0) {
+                tbody.append(`<tr><td colspan='6' class='text-body-secondary'>Noch keine. Lade oben ein Paket hoch; es erscheint dann hier.</td></tr>`);
+                return;
+            }
+            for (let entry of exam_entries) {
+                const title = exam_title(entry);
+                const row = $('<tr>').appendTo(tbody);
+                const uploaded = entry.ts ? new Date(entry.ts * 1000).toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '';
+                $('<td>').append($('<strong>').text(title))
+                    .append($("<div class='small text-body-secondary'>").text(`hochgeladen ${uploaded ? 'am ' + uploaded : ''} · ${entry.size}`))
+                    .appendTo(row);
 
-                            let emails = data2.emails.slice();
-                            emails.sort(function(a, b) {
-                                let name_a = (invitations[a] || {}).name || a;
-                                let name_b = (invitations[b] || {}).name || b;
-                                return name_a.localeCompare(name_b, 'de');
-                            });
+                const people = $(`<button type='button' class='btn btn-sm ${entry.count ? 'btn-outline-secondary' : 'btn-outline-primary'}'>`)
+                    .html(entry.count ? `<i class='bi bi-people'></i>${entry.count} ${entry.count === 1 ? 'Person' : 'Personen'}` : `<i class='bi bi-person-plus'></i>Auswählen`)
+                    .attr('aria-label', `Teilnehmende von ${title}`);
+                people.on('click', () => open_exam_people(entry));
+                $('<td>').append(people).appendTo(row);
 
-                            showTemplateModal(
-                                'Ergebnisse drucken',
-                                `<p>Wähle eine Person oder drucke alle Ergebnisse gemeinsam.</p><div id='test_result_users_here'></div>`,
-                                "<i class='bi bi-printer-fill'></i>Alle drucken",
-                                'btn-success',
-                                "<i class='bi bi-x-lg'></i>Schließen",
-                                'btn-secondary',
-                                function() {
-                                    if (emails.length === 0) return false;
-                                    window.open(`/api/pdf_for_test/${entry.tag}`, '_blank');
-                                }
-                            );
-
-                            let container = $('#test_result_users_here');
-                            if (emails.length === 0) {
-                                container.append($('<p class="text-muted mb-0">').text('Dieser Leistungsüberprüfung ist noch niemand zugeordnet.'));
-                                $('#__template_modal .modal-footer .btn').eq(0).prop('disabled', true);
-                                return;
-                            }
-
-                            for (let email of emails) {
-                                let name = (invitations[email] || {}).name || email;
-                                let button = $('<button type="button">')
-                                    .addClass('btn btn-sm btn-outline-secondary')
-                                    .css({margin: '0.15rem 0.3rem 0.15rem 0'})
-                                    .html("<i class='bi bi-printer-fill'></i>")
-                                    .append(document.createTextNode(name));
-                                button.on('click', function() {
-                                    window.open(
-                                        `/api/pdf_for_test/${entry.tag}?email=${encodeURIComponent(email)}`,
-                                        '_blank'
-                                    );
-                                });
-                                container.append(button);
-                            }
-                        });
-                    });
+                const status = $("<td class='text-nowrap'>").appendTo(row);
+                if (entry.running) {
+                    status.append(`<span class='badge text-bg-success me-2'>läuft</span>`);
+                    const stop = $(`<button type='button' class='btn btn-sm btn-outline-danger'><i class='bi bi-stop-fill'></i>Beenden</button>`).appendTo(status);
+                    stop.on('click', () => confirm_dialog({ title: `»${title}« beenden`, text: 'Die Teilnehmenden kommen danach wieder in ihren normalen Workspace. Ihre Prüfungs-Workspaces bleiben erhalten; ein neuer Start setzt dort fort.', confirm: 'Beenden', icon: 'bi-stop-fill', danger: true },
+                        () => api_call('/api/stop_test', { tag: entry.tag }, d => { if (d.success) refresh_test_archives(); })));
+                } else {
+                    status.append(`<span class='badge text-bg-secondary me-2'>bereit</span>`);
+                    const start = $(`<button type='button' class='btn btn-sm btn-success'><i class='bi bi-play-fill'></i>Starten</button>`).appendTo(status);
+                    if (!entry.count) start.prop('disabled', true).attr('title', 'Wähle zuerst aus, wer teilnimmt.');
+                    start.on('click', () => confirm_dialog({ title: `»${title}« starten`, text: `${entry.count} ${entry.count === 1 ? 'Person kommt' : 'Personen kommen'} beim nächsten Öffnen in den Workspace dieser Leistungsüberprüfung statt in ihren eigenen.`, confirm: 'Starten', icon: 'bi-play-fill' },
+                        () => api_call('/api/start_test', { tag: entry.tag }, d => { if (d.success) refresh_test_archives(); })));
                 }
+
+                const preview = $(`<div class='btn-group btn-group-sm' role='group' aria-label='Vorschau'>`);
+                const bu_demo = $(`<button type='button' class='btn btn-outline-secondary'><i class='bi bi-box-arrow-up-right'></i>Workspace</button>`).appendTo(preview);
+                const bu_demo_pdf = $(`<button type='button' class='btn btn-outline-secondary'><i class='bi bi-printer'></i>Druckansicht</button>`).appendTo(preview);
+                $('<td>').append(preview).appendTo(row);
+                bu_demo.on('click', function() {
+                    showTemplateModal('Workspace-Vorschau öffnen', `
+                        <p>Die Vorschau ist von deinem Workspace und von den Workspaces der Teilnehmenden getrennt.</p>
+                        <p>Beim Öffnen werden <strong>nur deine bisherigen Vorschau-Dateien und Vorschau-Datenbanken zurückgesetzt</strong>.
+                        Du bekommst den frischen Workspace, den auch die Teilnehmenden beim ersten Start sehen.</p>`,
+                        "<i class='bi bi-box-arrow-up-right'></i>Frischen Workspace öffnen", 'btn-primary',
+                        "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-outline-secondary', function() {
+                            bu_demo.prop('disabled', true);
+                            bu_demo.find('.bi').addClass('bi-spin');
+                            api_call('/api/start_test_demo', { tag: entry.tag }, function(data2) {
+                                bu_demo.prop('disabled', false);
+                                bu_demo.find('.bi').removeClass('bi-spin');
+                                if (data2.success && data2.status !== 'failed') {
+                                    check_server_tag_update(data2.server_tag);
+                                    check_server_online(data2.server_tag);
+                                }
+                            });
+                        });
+                });
+                bu_demo_pdf.on('click', () => window.open(`/api/pdf_for_test_demo/${entry.tag}`, '_blank'));
+
+                const results = $(`<button type='button' class='btn btn-sm btn-outline-secondary'><i class='bi bi-printer'></i>Ergebnisse</button>`);
+                if (!entry.count) results.prop('disabled', true);
+                results.on('click', () => print_exam_results(entry));
+                $('<td>').append(results).appendTo(row);
+
+                const del = $(`<button type='button' class='btn btn-sm btn-outline-danger'><i class='bi bi-trash'></i></button>`)
+                    .attr({ 'aria-label': `${title} löschen`, title: 'Löschen' });
+                del.on('click', () => confirm_dialog({ title: `»${title}« löschen`, text: 'Die Workspaces und Datenbanken aller Teilnehmenden werden mitgelöscht. Lade vorher die Ergebnisse als PDF herunter, wenn du sie noch brauchst.', confirm: 'Löschen', icon: 'bi-trash', danger: true },
+                    () => api_call('/api/delete_test', { tag: entry.tag }, d => { if (d.success) refresh_test_archives(); })));
+                $("<td class='text-end'>").append(del).appendTo(row);
+            }
+        });
+    }
+
+    function exam_name(email) {
+        return (invitations[email] || {}).name || email;
+    }
+
+    // Who takes an exam: the groups one teaches, each with »Alle« and
+    // »Keine«, a search over all names, and the number chosen. Every change
+    // is saved at once (/api/test_set_users).
+    function open_exam_people(entry) {
+        api_call('/api/get_assigned_users_for_test', { tag: entry.tag }, function(data) {
+            if (!data.success) return;
+            const chosen = new Set(data.emails);
+            const body = $('#test_modal_users_here').empty();
+            $('#test_modal .modal-title').text(`Wer nimmt an »${exam_title(entry)}« teil?`);
+            const bar = $(`<div class='exam-people-bar'>
+                <input type='search' class='form-control' placeholder='Name suchen …' aria-label='Name suchen' autocomplete='off'>
+                <span class='exam-people-count' role='status' aria-live='polite'></span></div>`).appendTo(body);
+            const search = bar.find('input');
+            const many = user_group_order.length > 4;
+            const sections = [];
+            for (let group of user_group_order) {
+                const members = (user_groups[group] || []).slice().sort((a, b) => exam_name(a).localeCompare(exam_name(b), 'de'));
+                if (members.length === 0) continue;
+                const details = $(`<details class='exam-people-group'>`).appendTo(body);
+                const summary = $(`<summary><span class='exam-people-group-name'></span><span class='exam-people-group-count text-body-secondary small'></span></summary>`).appendTo(details);
+                summary.find('.exam-people-group-name').text(group);
+                const actions = $(`<span class='exam-people-group-actions'>
+                    <button type='button' class='btn btn-link btn-sm' data-flag='1'>Alle</button>
+                    <button type='button' class='btn btn-link btn-sm' data-flag='0'>Keine</button></span>`).appendTo(summary);
+                const grid = $(`<div class='exam-people-grid'>`).appendTo(details);
+                for (let email of members) {
+                    const id = `exam_${Math.random().toString(36).slice(2, 10)}`;
+                    const item = $(`<div class='form-check'><input class='form-check-input' type='checkbox'><label class='form-check-label'></label></div>`).appendTo(grid);
+                    item.find('input').attr({ id: id, 'data-email': email });
+                    item.find('label').attr('for', id).text(exam_name(email));
+                    if (exam_name(email) !== email) item.attr('title', email);
+                }
+                if (!many || members.some(e => chosen.has(e))) details.prop('open', true);
+                sections.push({ details, members });
+                actions.find('button').on('click', function(e) {
+                    e.preventDefault();
+                    const flag = $(this).data('flag') === 1;
+                    set_people(members.filter(m => chosen.has(m) !== flag), flag);
+                });
+            }
+            if (sections.length === 0) body.append(`<p class='text-body-secondary'>In deinen Gruppen ist noch niemand. Unter <a href='/klasse'>Klassen</a> lädst du deine Schülerinnen und Schüler ein.</p>`);
+
+            const show = function () {
+                body.find('input[type=checkbox]').each(function () { this.checked = chosen.has($(this).data('email')); });
+                for (let s of sections) {
+                    const n = s.members.filter(m => chosen.has(m)).length;
+                    s.details.find('.exam-people-group-count').text(`${n} von ${s.members.length}`);
+                }
+                bar.find('.exam-people-count').text(`${chosen.size} ausgewählt`);
+            };
+            const set_people = function (emails, flag) {
+                if (emails.length === 0) return;
+                const boxes = body.find('input[type=checkbox]').filter(function () { return emails.includes($(this).data('email')); }).prop('disabled', true);
+                api_call('/api/test_set_users', { tag: entry.tag, emails: emails, flag: flag }, function(d) {
+                    boxes.prop('disabled', false);
+                    if (d.success) { chosen.clear(); d.emails.forEach(e => chosen.add(e)); }
+                    show();
+                }, { no_please_wait: true });
+            };
+            body.off('change').on('change', 'input[type=checkbox]', function () { set_people([$(this).data('email')], this.checked); });
+            search.on('input', function () {
+                const q = search.val().trim().toLowerCase();
+                for (let s of sections) {
+                    let hits = 0;
+                    s.details.find('.form-check').each(function () {
+                        const email = $(this).find('input').data('email');
+                        const hit = !q || exam_name(email).toLowerCase().includes(q) || email.toLowerCase().includes(q);
+                        $(this).toggle(hit);
+                        if (hit) hits++;
+                    });
+                    s.details.toggle(hits > 0);
+                    if (q && hits > 0) s.details.prop('open', true);
+                }
+            });
+            show();
+            $('#test_modal').one('hidden.bs.modal', refresh_test_archives).modal('show');
+            $('#test_modal').one('shown.bs.modal', () => search.trigger('focus'));
+        });
+    }
+
+    function print_exam_results(entry) {
+        api_call('/api/get_assigned_users_for_test', { tag: entry.tag }, function(data) {
+            if (!data.success) return;
+            const emails = data.emails.slice().sort((a, b) => exam_name(a).localeCompare(exam_name(b), 'de'));
+            showTemplateModal(`Ergebnisse von »${$('<div>').text(exam_title(entry)).html()}«`,
+                `<p>Alle zusammen als ein PDF, oder eine Person einzeln.</p><div class='list-group' id='test_result_users_here'></div>`,
+                "<i class='bi bi-printer'></i>Alle drucken", 'btn-primary', "<i class='bi bi-x-lg'></i>Schließen", 'btn-outline-secondary',
+                function() {
+                    if (emails.length === 0) return false;
+                    window.open(`/api/pdf_for_test/${entry.tag}`, '_blank');
+                });
+            const list = $('#test_result_users_here');
+            if (emails.length === 0) {
+                list.replaceWith($("<p class='text-body-secondary mb-0'>").text('Dieser Leistungsüberprüfung ist noch niemand zugeordnet.'));
+                $('#__template_modal .modal-footer .btn').eq(0).prop('disabled', true);
+                return;
+            }
+            for (let email of emails) {
+                const item = $(`<button type='button' class='list-group-item list-group-item-action d-flex justify-content-between align-items-center'><span></span><i class='bi bi-printer text-body-secondary'></i></button>`);
+                item.find('span').text(exam_name(email));
+                item.on('click', () => window.open(`/api/pdf_for_test/${entry.tag}?email=${encodeURIComponent(email)}`, '_blank'));
+                list.append(item);
             }
         });
     }
@@ -1197,26 +1295,6 @@ vscode_config: {}</pre>
             }
         });
         refresh_test_archives();
-        let div = $(`<div>`).appendTo($('#test_modal_users_here'));
-        for (let group of user_group_order) {
-            div.append($(`<p style='margin: 0.75em 0;'>`).text(group));
-            for (let email of user_groups[group]) {
-                let button = $(`<button class='btn btn-sm btn-outline-secondary bu_test_user' style='margin: .1rem !important;'>`).text(invitations[email].name);
-                test_email_buttons[email] = button;
-                div.append(button);
-                button.on('click', function(e) {
-                    api_call('/api/test_toggle_user', {tag: modal_tag, email: email}, function(data) {
-                        if (data.success) {
-                            if (data.flag)
-                                button.removeClass('btn-outline-secondary').addClass('btn-success');
-                            else
-                                button.removeClass('btn-success').addClass('btn-outline-secondary');
-                            refresh_test_archives();
-                        }
-                    });
-                });
-            }
-        }
         refresh_mysql_databases();
         $('#bu_add_mysql_database').on('click', function() {
             api_call('/api/create_mysql_database', {}, function(data) {

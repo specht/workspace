@@ -6882,6 +6882,43 @@ class Main < Sinatra::Base
         end
     end
 
+    # Who takes an exam, set for several people at once (a whole group from
+    # the selection dialog): flag true adds, false removes. Only one's own
+    # students (and test accounts), as for test_toggle_user; others are left
+    # out. Answers with everyone who takes it now.
+    post '/api/test_set_users' do
+        assert(teacher_logged_in?)
+        data = parse_request_data(:required_keys => [:tag, :emails, :flag], :types => { :emails => Array, :flag => Object },
+            :max_body_length => 64_000)
+        require_test_owner!(data[:tag])
+        Main.load_invitations()
+        emails = data[:emails].map(&:to_s).uniq.select do |email|
+            admin_logged_in? || workspace_user_visible_to?(email, @session_user[:email])
+        end
+        unless emails.empty?
+            if data[:flag] == true
+                neo4j_query(<<~END_OF_STRING, {:tag => data[:tag], :emails => emails})
+                    MATCH (t:Test {tag: $tag})
+                    UNWIND $emails AS email
+                    MERGE (u:User {email: email})
+                    MERGE (u)-[:TAKES]->(t);
+                END_OF_STRING
+            else
+                neo4j_query(<<~END_OF_STRING, {:tag => data[:tag], :emails => emails})
+                    MATCH (u:User)-[r:TAKES]->(:Test {tag: $tag})
+                    WHERE u.email IN $emails
+                    DELETE r;
+                END_OF_STRING
+            end
+            Main.refresh_nginx_config()
+        end
+        taking = neo4j_query(<<~END_OF_STRING, {:tag => data[:tag]}).map { |row| row['email'] }
+            MATCH (u:User)-[:TAKES]->(:Test {tag: $tag})
+            RETURN u.email AS email;
+        END_OF_STRING
+        respond(:emails => taking)
+    end
+
     # Starting or stopping a real test only changes whether assigned students
     # are routed into their existing exam workspace. Their files and databases
     # must survive any number of stop/start cycles.

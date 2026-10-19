@@ -74,6 +74,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Klötzchenwelt hat vier: Ecken im Uhrzeigersinn, Licht ohne `ambient`,
   ohne `max` und Normalen als Farbe, Nebel und Fackeln, Texturkoordinaten
   als Farbe.
+- Leistungsüberprüfungen im Profil übersichtlicher: je Zeile der Name mit
+  dem Tag des Hochladens, wer teilnimmt, der Status mit »Starten« (erst,
+  wenn jemand ausgewählt ist) oder »Beenden«, Vorschau und Ergebnisse;
+  »Löschen« klein am Ende. Wer teilnimmt, wählen Lehrkräfte jetzt mit
+  Häkchen je Gruppe, mit »Alle« und »Keine« für eine ganze Gruppe, einer
+  Suche über alle Namen und der Zahl der Ausgewählten; Gruppen ohne
+  Ausgewählte sind bei vielen Gruppen eingeklappt. Bisher war es eine Wand
+  aus Knöpfen, jeder ein eigener Klick.
 - Die Listen unter Feldern zum Tippen (Schule wählen, Aktivität anheften,
   Person suchen) brechen lange Titel um, statt seitlich zu scrollen, und
   haben runde Einträge in den ruhigen Farben der Menüs statt des grellen
