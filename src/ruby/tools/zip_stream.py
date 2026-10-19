@@ -118,9 +118,11 @@ def main(args):
             if os.path.isdir(folder):
                 add_tree(archive, prefix, folder, excludes, skip_rebuildable, skipped)
         if skipped:
-            lines = ['Diese Ordner fehlen im Archiv. Werkzeuge legen sie an, und ein Befehl im',
-                     'jeweiligen Projektordner legt sie wieder an. Mit allen Ordnern gibt es das',
-                     'Archiv im Profil unter »Meine Daten«, wenn du das Häkchen dafür setzt.', '']
+            lines = ['Diese Ordner fehlen im Archiv. Werkzeuge haben sie angelegt; mit dem Befehl',
+                     'dahinter legst du sie im jeweiligen Projektordner wieder an, solange die',
+                     'Projektdatei daneben liegt (sie ist im Archiv) und das Internet erreichbar ist.',
+                     'Mit allen Ordnern gibt es das Archiv im Profil unter »Meine Daten«, wenn du',
+                     'das Häkchen dafür setzt.', '']
             lines += [f'{path}/  –  {command}' for path, command in skipped]
             archive.writestr(note, '\n'.join(lines) + '\n')
 

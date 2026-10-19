@@ -447,9 +447,10 @@
                 <div class="profile-subsection" id='make_room'>
                     <h3>Platz schaffen</h3>
                     <p>
-                        Werkzeuge legen Ordner an, die ein Befehl jederzeit wieder anlegt: <code>node_modules</code> mit <code>npm install</code>,
-                        Build-Ordner beim nächsten Bauen, Python-Umgebungen. Sie brauchen oft den meisten Platz. Was du selbst geschrieben hast,
-                        steht nicht in dieser Liste. Ordner, in denen nach dem Anlegen etwas geändert wurde, sind nicht angehakt.
+                        Werkzeuge wie npm, Flutter oder Python legen Ordner an, die oft den meisten Platz brauchen: <code>node_modules</code>,
+                        Build-Ordner, Python-Umgebungen. Mit dem Befehl in der letzten Spalte legst du einen solchen Ordner im Projektordner wieder an,
+                        solange die Projektdatei daneben liegt und das Internet erreichbar ist. Was du selbst geschrieben hast, steht nicht in dieser Liste.
+                        Angehakt ist nur, wo sicher ist, dass der Befehl dasselbe wieder anlegt.
                     </p>
                     #{@impersonated_by ? "<p class='text-body-secondary'>Als Administration: unter <a href='/personen?sortierung=speicher#personen'>Personen</a> mit »Platz schaffen«, dann erfährt die Person, was gelöscht wurde und warum.</p>" : ''}
                     <div id='rebuildable_here'><p class='text-body-secondary small'>Einen Moment …</p></div>
@@ -462,7 +463,7 @@
                         Solange du eingeladen bist, kannst du dich danach wieder anmelden und beginnst mit einem leeren Konto.
                         Zur Sicherheit bekommst du vorher einen Code per E-Mail; die Administration erfährt, dass du dein Konto gelöscht hast.
                     </p>
-                    #{ADMIN_USERS.include?((@session_user || {})[:email]) ? "<p class='text-body-secondary mb-0'><i class='bi bi-shield-lock'></i>Ein Konto der Administration lässt sich nicht löschen. Wer nicht mehr zur Administration gehören soll, wird zuerst aus <code>ADMIN_USERS</code> in <code>credentials.rb</code> genommen.</p>" : "<button id='bu_delete_my_account' class=\"btn btn-danger\" #{@impersonated_by ? 'disabled' : ''}><i class='bi bi-trash-fill'></i>Konto löschen</button>"}
+                    #{ADMIN_USERS.include?((@session_user || {})[:email]) ? "<p class='text-body-secondary mb-0'><i class='bi bi-shield-lock me-1'></i>Ein Konto der Administration lässt sich nicht löschen. Wer nicht mehr zur Administration gehören soll, wird zuerst aus <code>ADMIN_USERS</code> in <code>credentials.rb</code> genommen.</p>" : "<button id='bu_delete_my_account' class=\"btn btn-danger\" #{@impersonated_by ? 'disabled' : ''}><i class='bi bi-trash-fill'></i>Konto löschen</button>"}
                 </div>
             </section>
 
@@ -920,7 +921,7 @@ vscode_config: {}</pre>
             const paths = here.find('.cb-rebuildable:checked').map(function () { return this.value; }).get();
             if (!paths.length) { show_error_message('Nichts angehakt.'); return; }
             const bytes = folders.filter(f => paths.includes(f.path)).reduce((n, f) => n + f.bytes, 0);
-            confirm_dialog({ title: 'Platz schaffen', text: `${paths.length} ${paths.length === 1 ? 'Ordner' : 'Ordner'} mit zusammen ${size_text(bytes)} löschen? Sie kommen nicht in einen Papierkorb; der Befehl daneben legt sie wieder an.`, confirm: 'Löschen', icon: 'bi-trash', danger: true }, function () {
+            confirm_dialog({ title: 'Platz schaffen', text: `${paths.length} ${paths.length === 1 ? 'Ordner' : 'Ordner'} mit zusammen ${size_text(bytes)} löschen? Sie kommen nicht in einen Papierkorb; mit dem Befehl daneben legst du sie wieder an.`, confirm: 'Löschen', icon: 'bi-trash', danger: true }, function () {
                 api_call('/api/clean_rebuildable', { paths: paths }, function (r) {
                     if (!r.success) return;
                     show_success_message(`${r.deleted.length} ${r.deleted.length === 1 ? 'Ordner' : 'Ordner'} gelöscht.`);

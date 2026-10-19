@@ -86,6 +86,12 @@ address from `credentials.rb` and the code `123456`.
 
 ## Working on the code
 
+- Never claim that something comes back, restores or recreates itself
+  (»legt es wieder an«, »von selbst«, »jederzeit«) unless the code that
+  does it has been read or the behaviour tested. Otherwise say what the
+  person has to do, and under which conditions it works. When unsure,
+  offer less: an unticked box, a question instead of an answer.
+
 - A new or changed check gets examples in `task-examples.yaml` (docs/aufgaben.md,
   »Beispiele für die Prüfungen«): a solution it must accept, a starting point it
   must reject.

@@ -113,12 +113,24 @@ Welche Ordner sich neu erzeugen lassen, steht an einer Stelle:
 oder `pom.xml`, Python-Umgebungen nur mit `pyvenv.cfg`. Nie in den
 versteckten Ordnern oben im Workspace (`.extensions`, `.local`, `.config`):
 Sie gehören VS Code und den Werkzeugen, und das `node_modules` einer
-Erweiterung legt kein `npm install` wieder an. Vorab angehakt ist
-ein Ordner nur, wenn der Befehl ihn auch wieder anlegen kann (`package.json`
-oder `pubspec.yaml` daneben, bei Python-Umgebungen `requirements.txt` oder
-`pyproject.toml`) und, bei `node_modules`, keine Datei darin jünger ist als
-der feste Zeitstempel, den npm setzt (26.10.1985): Eine jüngere hat jemand
-von Hand geändert. Das Skript läuft als
+Erweiterung legt kein `npm install` wieder an.
+
+Die Texte sagen nur, was sicher ist: den Befehl, den man tippt, und
+»macht das von selbst« nur, wo der Code gelesen ist, der es tut (die
+BIF-Erweiterung `src/vscode-extensions/bif-watcher` führt `npm ci` aus,
+wenn ein Ordner mit `.bif-project` geöffnet wird). Vorab angehakt ist ein
+Ordner nur, wenn der Befehl sicher dasselbe wieder anlegt:
+
+- `node_modules` mit `package.json` und Lock-Datei daneben (`npm ci`
+  installiert dieselben Versionen), mit npms Vermerk der Installation
+  (`node_modules/.package-lock.json`, npm 7 und später), und keine Datei
+  darin ist mehr als zwei Minuten jünger als dieser Vermerk (die hätte
+  jemand danach geschrieben; Zwischenspeicher wie `.vite` zählen nicht);
+- Build-Ordner neben ihrer Projektdatei, `__pycache__`, `.gradle`;
+- Python-Umgebungen nie: welche Pakete in welcher Version darin waren,
+  steht nur in ihnen selbst.
+
+Das Skript läuft als
 Workspace-Benutzer (`setpriv`), folgt keinen Links und löscht nur, was ein
 neuer Scan im Moment des Löschens noch findet.
 

@@ -30,9 +30,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   »Wird gepackt …«, bis der Download beginnt, dann »Download läuft«.
 - »Platz schaffen« im Profil: Lernende sehen die Ordner, die sich neu
   erzeugen lassen, mit Größe und Befehl, und löschen die angehakten.
-  Vorab angehakt ist nur, was sicher unverändert ist: `node_modules` nicht,
-  wenn darin eine Datei nach `npm install` geändert wurde, und nichts ohne
-  `package.json`, `pubspec.yaml` oder `requirements.txt` daneben. Links werden nicht verfolgt,
+  Vorab angehakt ist nur, was der Befehl sicher genauso wieder anlegt:
+  `node_modules` nur mit Lock-Datei (`npm ci`) und wenn darin nach dem
+  Installieren nichts geändert wurde, Python-Umgebungen nie. Die Spalte
+  »Wieder anlegen mit« nennt den Befehl und behauptet nichts, was nicht
+  sicher ist; »von selbst« steht nur bei BIF-Projekten, deren Erweiterung
+  `npm ci` beim Öffnen ausführt. Links werden nicht verfolgt,
   gelöscht wird als Workspace-Benutzer, nie als root. Die versteckten Ordner
   von VS Code und den Werkzeugen (`.extensions` …) bleiben unberührt, auch
   im Download.
