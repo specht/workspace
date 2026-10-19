@@ -4217,6 +4217,10 @@ const server = http.createServer(async (request, response) => {
                 generated: fresh ? job.generated : 0,
                 completed: fresh ? job.completed : 0,
                 current_target: fresh ? job.current_target : null,
+                // rendering: being captured; replaying: current, only walked
+                // through so that the shots after it start from its state
+                current_state: fresh && job.current_target
+                    ? (job.screenshots || []).find(item => item.target === job.current_target)?.state || null : null,
                 error: fresh ? job.error : null,
                 started_at: fresh ? job.started_at : null,
                 finished_at: fresh ? job.finished_at || null : null,

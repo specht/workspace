@@ -308,7 +308,11 @@
             const running = pages.find(p => p.status === 'running' || p.status === 'preparing');
             $('#sp_now').html(running
                 ? `<span class='spinner-border spinner-border-sm me-1' aria-hidden='true'></span><strong>${esc(page_name(running.markdown_path))}</strong> ${running.generated} / ${running.stale}`
-                    + (running.current_target ? ` · <code>${esc(running.current_target)}</code>` : running.status === 'preparing' ? ' · Workspace wird vorbereitet' : '')
+                    + (running.current_target
+                        ? (running.current_state === 'replaying'
+                            ? ` · <span class='text-body-secondary' title='aktuell; nur nachgespielt, damit die Bilder danach stimmen'>spielt nach: ${esc(running.current_target)}</span>`
+                            : ` · nimmt auf: <code>${esc(running.current_target)}</code>`)
+                        : running.status === 'preparing' ? ' · Workspace wird vorbereitet' : '')
                 : (data.run && pages.length && pages_done === pages.length ? `<i class='bi bi-check-lg me-1'></i>Fertig${errors.length ? `, ${errors.length} ${errors.length === 1 ? 'Seite' : 'Seiten'} mit Fehler` : ''}.` : ''));
 
             const list = $('#sp_pages').empty();
