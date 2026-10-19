@@ -7,7 +7,7 @@
 # printf, Vollbild und CRT-Filter. make lädt sie beim ersten Mal herunter.
 PROGRAM := main
 
-PAGE_VERSION := v0.1.22
+PAGE_VERSION := v0.1.23
 PAGE_URL := https://raw.githubusercontent.com/specht/pixelram/$(PAGE_VERSION)/shell.html
 PAGE := .build/page-$(PAGE_VERSION).html
 

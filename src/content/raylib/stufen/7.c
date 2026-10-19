@@ -252,7 +252,7 @@ float time_of_day = 0.4f;  // 0 und 1: Mitternacht, 0,5: Mittag
 
 int main(void)
 {
-    SetConfigFlags(FLAG_MSAA_4X_HINT);   // glatte Kanten (Antialiasing)
+    SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_WINDOW_RESIZABLE);   // glatte Kanten, Größe wie die Seite
     InitWindow(960, 540, "Klötzchenwelt");
     SetTargetFPS(60);
     SetExitKey(KEY_NULL);   // Esc gibt nur die Maus frei

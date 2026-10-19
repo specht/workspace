@@ -2,7 +2,7 @@
 
 int main(void)
 {
-    SetConfigFlags(FLAG_MSAA_4X_HINT);   // glatte Kanten (Antialiasing)
+    SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_WINDOW_RESIZABLE);   // glatte Kanten, Größe wie die Seite
     InitWindow(960, 540, "Klötzchenwelt");
     SetTargetFPS(60);
 
