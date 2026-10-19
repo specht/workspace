@@ -142,6 +142,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - CI: Die Ruby-Tests laufen bei jedem Push und Pull Request (GitHub
   Actions). Der E2E-Test zu offenen Antworten erwartet für Lehrkräfte ohne
   Gruppe jetzt ihre Testgruppe.
+- Workspaces laufen mit weniger Rechten: Von Dockers Fähigkeiten bleiben
+  nur die, die der Start braucht, und kein Programm gewinnt Rechte über
+  setuid (`no-new-privileges`). Im Netz der Lernenden lassen sich keine
+  Pakete mehr fälschen (kein NET_RAW). Für Lernende ändert sich nichts:
+  `ping` und `traceroute` funktionieren wie bisher. Für Betreibende: **erst
+  das Image neu bauen** (`./build-image.sh`), dann den Ruby-Dienst
+  aktualisieren; mit dem alten Image startet `ping` in neuen Workspaces
+  nicht. Laufende Workspaces bekommen die Einschränkung beim nächsten Start.
 - »Betrieb« unter `/admin`: wie alt die letzte Sicherung ist, wie viele
   Workspace-Starts in 24 Stunden fehlgeschlagen sind und wie lange sie
   dauern, ob Starts warten, ob Docker, MySQL und die beiden Neo4j antworten,

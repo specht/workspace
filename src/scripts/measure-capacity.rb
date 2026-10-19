@@ -16,6 +16,7 @@ require 'fileutils'
 require 'net/http'
 require 'shellwords'
 require_relative '../ruby/credentials'
+require_relative '../ruby/include/workspace_runtime'
 
 COUNT = (ARGV[0] || 30).to_i
 IMAGE = 'hs_code_server'
@@ -23,6 +24,8 @@ NETWORK = 'workspace_user'
 READY_TIMEOUT = 300
 PREFIX = "hs_code_loadtest_#{Time.now.strftime('%H%M%S')}"
 HOST_USER = File.join(PATH_TO_HOST_DATA, 'user')
+# As workspace_runtime.rb starts a Workspace.
+HARDENING = WorkspaceRuntime::DirectDocker::HARDENING.split
 
 def sh(*args)
     out, status = Open3.capture2e(*args)
@@ -67,7 +70,7 @@ threads = (0...COUNT).map do |i|
         FileUtils.mkdir_p(%w[config workspace].map { |d| File.join(dir, d) })
         FileUtils.chown_R(1000, 1000, dir)
         t0 = Time.now
-        _, ok = sh('docker', 'run', '--cpus=4', '--memory=4g', '--memory-swap=4g', '--pids-limit=256', '-d', '--rm',
+        _, ok = sh('docker', 'run', '--cpus=4', '--memory=4g', '--memory-swap=4g', '--pids-limit=256', *HARDENING, '-d', '--rm',
             '--hostname', 'workspace', '-e', 'PUID=1000', '-e', 'PGID=1000', '-e', 'TZ=Europe/Berlin',
             '-v', "#{HOST_USER}/#{PREFIX}_#{i}/config:/config", '-v', "#{HOST_USER}/#{PREFIX}_#{i}/workspace:/workspace",
             '--network', NETWORK, '--name', name, IMAGE)

@@ -27,6 +27,14 @@ with one reminder and »Gruppen nach ihrem Ende«; CI for the Ruby tests
 the open-answers E2E test fixed; client_ip no longer forgeable from a
 Workspace (see the CHANGELOG).
 
+Container hardening (2026-10-19, point 8): Workspaces drop NET_RAW, MKNOD,
+AUDIT_WRITE, SYS_CHROOT, SETFCAP, SETPCAP, NET_BIND_SERVICE and FSETID and
+run with no-new-privileges (WorkspaceRuntime::DirectDocker::HARDENING); the
+image strips all file capabilities so ping works over unprivileged ICMP.
+Kept for the s6 init: CHOWN, DAC_OVERRIDE, FOWNER, KILL, SETGID, SETUID.
+Not done: a read-only root, user namespaces, a seccomp profile of our own.
+On the server the image has to be rebuilt before the Ruby update.
+
 Monitoring (2026-10-19, point 10): /admin »Betrieb« (include/health.rb,
 include/server_health.rb) shows backup age (from internal/backup-done, which
 a borgmatic hook touches; the maintainer has to add it), starts and failures

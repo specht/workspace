@@ -27,6 +27,9 @@ class DockerPolicyTest < Minitest::Test
         assert_equal [true], create(workspace)
         exam = workspace({}, 'Binds' => ['/srv/data/user/abc/workspace:/workspace', '/dev/null:/etc/resolv.conf:ro'])
         assert_equal [true], create(exam)
+        hardened = workspace({}, 'CapDrop' => %w[NET_RAW MKNOD AUDIT_WRITE SYS_CHROOT SETFCAP SETPCAP NET_BIND_SERVICE FSETID],
+            'SecurityOpt' => ['no-new-privileges'])
+        assert_equal [true], create(hardened)
         sandbox = workspace({}, 'Binds' => ['/srv/data/user/abc/workspace:/workspace:ro'], 'NetworkMode' => 'none',
             'CapDrop' => ['ALL'], 'SecurityOpt' => ['no-new-privileges'], 'ReadonlyRootfs' => true)
         assert_equal [true], create(sandbox, :name => 'hs_code_offline_1a2b')

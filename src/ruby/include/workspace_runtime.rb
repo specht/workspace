@@ -58,12 +58,23 @@ module WorkspaceRuntime
         # makes an HTTPS developer certificate nobody here needs.
         TOOL_ENVIRONMENT = '-e DOTNET_CLI_TELEMETRY_OPTOUT=1 -e DOTNET_NOLOGO=1 -e DOTNET_GENERATE_ASPNET_CERTIFICATE=false'
 
+        # What a Workspace may not do, though it starts as root (s6 init,
+        # then the student's user): of Docker's default capabilities it
+        # keeps CHOWN, DAC_OVERRIDE, FOWNER, KILL, SETGID and SETUID, which
+        # the init needs. Without NET_RAW no forged packets on the students'
+        # network (ARP, spoofed addresses); ping uses unprivileged ICMP
+        # sockets, the image has no file capabilities (docker/code/Dockerfile).
+        # no-new-privileges: no setuid binary (su, passwd, sudo) gains rights.
+        HARDENING = '--cap-drop NET_RAW --cap-drop MKNOD --cap-drop AUDIT_WRITE --cap-drop SYS_CHROOT ' \
+            '--cap-drop SETFCAP --cap-drop SETPCAP --cap-drop NET_BIND_SERVICE --cap-drop FSETID ' \
+            '--security-opt no-new-privileges'
+
         # extra_environment: more variables for the Workspace, such as the
         # account on the case server (CaseServer.workspace_environment).
         def start_workspace(fs_tag:, workspace_login:, database_environment:,
             host_data_path:, test_mode:, timeout: nil, extra_environment: {})
             extra = extra_environment.map { |k, v| "-e #{Shellwords.escape("#{k}=#{v}")} " }.join
-            command = "docker run --cpus=4 --memory=4g --memory-swap=4g --pids-limit=256 -d --rm --hostname workspace -e PUID=1000 -e PGID=1000 -e TZ=Europe/Berlin -e WORKSPACE_USER=#{Shellwords.escape(workspace_login)} -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace #{TOOL_ENVIRONMENT} -e MYSQL_HOST=\"#{database_environment['MYSQL_HOST']}\" -e MYSQL_USER=\"#{database_environment['MYSQL_USER']}\" -e MYSQL_PASSWORD=\"#{database_environment['MYSQL_PASSWORD']}\" -e MYSQL_DATABASE=\"#{database_environment['MYSQL_DATABASE']}\" -e NEO4J_URI=\"#{database_environment['NEO4J_URI']}\" -e NEO4J_USERNAME=\"#{database_environment['NEO4J_USERNAME']}\" -e NEO4J_PASSWORD=\"#{database_environment['NEO4J_PASSWORD']}\" -e NEO4J_DATABASE=\"#{database_environment['NEO4J_DATABASE']}\" #{extra}-v #{host_data_path}/user/#{fs_tag}/config:/config -v #{host_data_path}/user/#{fs_tag}/workspace:/workspace --network #{WORKSPACE_NETWORK} #{test_mode ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{fs_tag} #{WORKSPACE_IMAGE}"
+            command = "docker run --cpus=4 --memory=4g --memory-swap=4g --pids-limit=256 #{HARDENING} -d --rm --hostname workspace -e PUID=1000 -e PGID=1000 -e TZ=Europe/Berlin -e WORKSPACE_USER=#{Shellwords.escape(workspace_login)} -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace #{TOOL_ENVIRONMENT} -e MYSQL_HOST=\"#{database_environment['MYSQL_HOST']}\" -e MYSQL_USER=\"#{database_environment['MYSQL_USER']}\" -e MYSQL_PASSWORD=\"#{database_environment['MYSQL_PASSWORD']}\" -e MYSQL_DATABASE=\"#{database_environment['MYSQL_DATABASE']}\" -e NEO4J_URI=\"#{database_environment['NEO4J_URI']}\" -e NEO4J_USERNAME=\"#{database_environment['NEO4J_USERNAME']}\" -e NEO4J_PASSWORD=\"#{database_environment['NEO4J_PASSWORD']}\" -e NEO4J_DATABASE=\"#{database_environment['NEO4J_DATABASE']}\" #{extra}-v #{host_data_path}/user/#{fs_tag}/config:/config -v #{host_data_path}/user/#{fs_tag}/workspace:/workspace --network #{WORKSPACE_NETWORK} #{test_mode ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{fs_tag} #{WORKSPACE_IMAGE}"
             @ok.call(command, :timeout => timeout)
         end
 

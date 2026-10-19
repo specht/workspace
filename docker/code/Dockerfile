@@ -930,6 +930,18 @@ COPY hackschule-er-${HACKSCHULE_ER_VERSION}.vsix \
 
 
 # --------------------------------------------------------------------
+# No file capabilities. Workspaces run without NET_RAW and with
+# no-new-privileges (src/ruby/include/workspace_runtime.rb), and the kernel
+# refuses to start a binary whose file capability the container cannot
+# grant. ping then uses unprivileged ICMP sockets
+# (net.ipv4.ping_group_range, which Docker opens for every group).
+# --------------------------------------------------------------------
+
+RUN getcap -r /usr /opt /app 2>/dev/null | cut -d' ' -f1 | xargs -r -n 1 setcap -r; \
+    test -z "$(getcap -r /usr /opt /app 2>/dev/null)"
+
+
+# --------------------------------------------------------------------
 # Startup scripts — always last
 # --------------------------------------------------------------------
 

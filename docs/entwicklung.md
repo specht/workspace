@@ -231,6 +231,17 @@ docker system prune   # wenn der Platz knapp wird
 Das erste Bauen dauert lange und braucht mehrere Gigabyte. Die
 code-server-Version steht in `docker/code/Dockerfile` (`CODE_SERVER_IMAGE`).
 
+Ein Workspace startet als root (die Init von linuxserver, dann der Nutzer
+der Lernenden) und behält von Dockers Fähigkeiten nur CHOWN, DAC_OVERRIDE,
+FOWNER, KILL, SETGID und SETUID, mit `no-new-privileges`
+(`HARDENING` in `src/ruby/include/workspace_runtime.rb`). Ohne NET_RAW kann
+niemand im Netz der Lernenden Pakete fälschen. `ping` kommt ohne aus
+(ICMP-Sockets ohne Rechte); das Image entfernt dafür alle Datei-Fähigkeiten,
+denn ein Programm mit einer Fähigkeit, die der Container nicht hat, startet
+gar nicht erst. `build-image.sh` prüft `ping` so, wie Lernende es aufrufen.
+Braucht ein neues Werkzeug eine Fähigkeit, steht sie in `HARDENING`, nicht
+im Image.
+
 ## Datenbanken
 
 Neo4j (Konten, Aufgabenstände, Gruppen) über `neo4j_bolt` im Ruby-Container:

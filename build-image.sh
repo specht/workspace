@@ -44,6 +44,10 @@ docker run --rm --entrypoint /bin/sh hs_code_server:candidate -c \
     'for vsix in "$@"; do test -f "$vsix" || { echo "Missing in the image: $vsix (docker/code/svc-code-server-run)" >&2; exit 1; }; done' \
     sh $(grep -o '/app/extensions/[^|]*\.vsix' docker/code/svc-code-server-run)
 
+echo '=== Checking ping as a student, without NET_RAW (workspace_runtime.rb) ==='
+docker run --rm --user 1000:1000 --cap-drop NET_RAW --security-opt no-new-privileges \
+    --entrypoint /bin/sh hs_code_server:candidate -c 'ping -c 1 -W 5 127.0.0.1 >/dev/null'
+
 echo '=== Verifying the LaTeX tutorial in the candidate ==='
 docker run --rm --user 0 --entrypoint /bin/bash \
     -e HOME=/tmp \

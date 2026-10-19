@@ -91,6 +91,8 @@ class WorkspaceRuntimeTest < Minitest::Test
         assert_includes command, '--network workspace_user'
         assert_includes command, '-v /dev/null:/etc/resolv.conf:ro'
         assert_includes command, '-e DOTNET_CLI_TELEMETRY_OPTOUT=1'
+        assert_includes command, '--cap-drop NET_RAW'
+        assert_includes command, '--security-opt no-new-privileges'
         assert command.end_with?('--name hs_code_abcdefghijklmnop hs_code_server')
         assert_equal({:timeout => 60}, options)
     end
