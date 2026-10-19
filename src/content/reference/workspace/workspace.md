@@ -145,12 +145,9 @@ show-mouse
 crop-top: 88%
 # from »UTF-8« on, so that no word of the status bar is cut in half
 crop-left: 72%
-# the status bar, a strip of the editor above it, so that it is clearly
-# the bottom of the window, and the tooltip; the rest transparent
-keep-only: .part.statusbar
-keep-only: .part.editor
-keep-only: .workbench-hover
-keep-only: .workbench-hover-pointer
+# the bottom right corner as it is: a strip of the editor, VS Code's dark
+# margin around it (since 1.140) and the status bar with the tooltip; with
+# keep-only the margin would become a transparent gap
 -->
 
 <img src='go-live.webp' class='r' style='width: 21em;' alt='Der Eintrag »Go Live« unten rechts in der Statusleiste; der Tooltip sagt »Click to run live server«.'>
@@ -174,12 +171,9 @@ show-mouse
 crop-top: 88%
 # from »UTF-8« on (»Port : 5500« is wider than »Go Live«)
 crop-left: 70%
-# the status bar, a strip of the editor above it, so that it is clearly
-# the bottom of the window, and the tooltip; the rest transparent
-keep-only: .part.statusbar
-keep-only: .part.editor
-keep-only: .workbench-hover
-keep-only: .workbench-hover-pointer
+# the bottom right corner as it is: a strip of the editor, VS Code's dark
+# margin around it (since 1.140) and the status bar with the tooltip; with
+# keep-only the margin would become a transparent gap
 -->
 
 <img src='stop-live.webp' class='r' style='width: 21em;' alt='Statt »Go Live« steht unten rechts »Port : 5500«; der Tooltip sagt »Click to close server«.'>
@@ -240,3 +234,12 @@ Erweiterungen liegen in deinem Workspace unter `/workspace/.extensions`. Sie ble
 
 <div style='clear: both;'></div>
 <!-- /part -->
+
+## Zum Nachschlagen
+
+- [Visual Studio Code: Dokumentation](https://code.visualstudio.com/docs): das offizielle Handbuch, auf Englisch. Der Workspace ist Visual Studio Code im Browser; fast alles, was dort steht, gilt auch hier.
+- [Die Oberfläche](https://code.visualstudio.com/docs/getstarted/userinterface): wie Explorer, Seitenleiste, Panel und Statusleiste heißen und was sie können.
+- [Das Terminal in Visual Studio Code](https://code.visualstudio.com/docs/terminal/basics): mehrere Terminals, nebeneinander oder umbenannt.
+- [Erweiterungen](https://code.visualstudio.com/docs/configure/extensions/extension-marketplace): Erweiterungen finden, installieren, abschalten und entfernen. Der Workspace holt sie aus der [Open VSX Registry](https://open-vsx.org/), nicht aus dem Marketplace von Microsoft; dort suchst du, ob es eine Erweiterung für den Workspace gibt.
+- [code-server](https://coder.com/docs/code-server): die Software, die Visual Studio Code in den Browser bringt. Die [FAQ](https://coder.com/docs/code-server/FAQ) erklären, was im Browser anders ist als in der Desktop-Fassung.
+- [Live Server](https://github.com/ritwickdey/vscode-live-server): die Erweiterung hinter »Go Live«, mit ihren Einstellungen.
