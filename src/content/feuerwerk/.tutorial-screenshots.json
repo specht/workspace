@@ -1,37 +1,37 @@
 {
   "screenshots": {
     "explosion.webp": {
-      "environment_fingerprint": "7a1fa226558d49e402aeafd9dc1f5d7c61bde8b0ec1b8e9d0bb6072d74db6b97",
+      "environment_fingerprint": "3fa5cba497bc05efe4360d083f364c53d0c02bb4778e3a584153395caf7d896b",
       "output_sha256": "b1d8e521d70a0144b79331480fbd7b2fa7072333c9d360e630a11256dfe3f685",
-      "state_hash": "778c910c39586eb34bee4858a82719835062f41940d3fbe7a9df5bb40ff75535",
+      "state_hash": "89c6f8325dc7f5719fea26da8787fb7e435bcfd9a423a165c69f4d327a68d625",
       "variants": {
         "explosion-crt.webp": "fa1896c3b76c01e0cc3b3b90cfd20000cb5d819a9585eb95fce1b548b8d74da6"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "feuerwerk.webp": {
-      "environment_fingerprint": "7a1fa226558d49e402aeafd9dc1f5d7c61bde8b0ec1b8e9d0bb6072d74db6b97",
+      "environment_fingerprint": "3fa5cba497bc05efe4360d083f364c53d0c02bb4778e3a584153395caf7d896b",
       "output_sha256": "ed24647ab4e4d2aec51d44f41dd5a23f2f46a1dacd711c013617b2ed021f5769",
-      "state_hash": "bb66c604aeaa0d10b5463ec67eb9be2a521bed7988da08345d4bff266359d11d",
+      "state_hash": "861176b256d2e40666641137217318eb654e85c2e60e0ea77bc81c1664be2331",
       "variants": {
         "feuerwerk-crt.webp": "bc0d2b037bd54b63c9e52613fba31581a1cbc545844abad55ebc60130160385b"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "funke-make.webp": {
-      "environment_fingerprint": "7a1fa226558d49e402aeafd9dc1f5d7c61bde8b0ec1b8e9d0bb6072d74db6b97",
-      "output_sha256": "b989acae448c7ca19903c12b97a903287fd0ccf4ed8b34623f7014e801e6df85",
-      "state_hash": "1713490f8c62958533060e470450c47cabefb1afda39536f77aa4a3d7e413646",
-      "workspace_look": "4.138.0-ls366"
+      "environment_fingerprint": "3fa5cba497bc05efe4360d083f364c53d0c02bb4778e3a584153395caf7d896b",
+      "output_sha256": "560665b1efc05d03b683a0b366806038afc14c978bc0c1381ad0ea3b9719c544",
+      "state_hash": "877264b676dffe58073cbbc1dc71112bd4cd80a64714819ca090ead3acb58743",
+      "workspace_look": "4.140.0-ls368"
     },
     "funke.webp": {
-      "environment_fingerprint": "7a1fa226558d49e402aeafd9dc1f5d7c61bde8b0ec1b8e9d0bb6072d74db6b97",
-      "output_sha256": "2736db7069710f22de6e30e15e6aef50cee02c14bf8e6776f43539f54572a8c4",
-      "state_hash": "b5404be68c4b966b0a8c80fe473affaa3c03fde35e95043b13cffcc6b4996393",
+      "environment_fingerprint": "3fa5cba497bc05efe4360d083f364c53d0c02bb4778e3a584153395caf7d896b",
+      "output_sha256": "92d0a09cb1d81864ef0fed3306c7e84c0b0f53e9842d8d278c34b06d11cc3e4c",
+      "state_hash": "f07df91511ee000c1c1d11162f09cbf26a7c2c906844b37e0663c81fc135c64f",
       "variants": {
-        "funke-crt.webp": "1a77b29334043aac8c9937f4090330f6c5dccd1483a68b57d5bf14d6578dfa30"
+        "funke-crt.webp": "ae27cd1018a45c4e5b91862f1fc667cf6d28340338c2d9c9d6941455eead6214"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     }
   },
   "version": 1

@@ -27,9 +27,13 @@ Dieses Projekt baut auf [Echtzeitgrafik mit C](/pixelram) auf. Von dort kennst d
 make PROGRAM=feuerwerk
 ```
 
-Fehlt dir die Vorlage noch, klone sie wie dort beschrieben:
+Klone die Vorlage dafür im Terminal in einen eigenen Ordner `feuerwerk`; so kommt er dem Ordner aus [Echtzeitgrafik mit C](/pixelram) nicht in die Quere:
 
-_include(workspace#repository-klonen)
+```bash_copy
+git clone ${template} ~/feuerwerk
+```
+
+Öffne dann den Ordner `/workspace/feuerwerk` mit <kbd>Strg</kbd><kbd>K</kbd> <kbd>Strg</kbd><kbd>O</kbd>.
 
 ## Ein Funke
 
@@ -105,14 +109,17 @@ int main(void)
 `random_between` liefert eine zufällige Kommazahl zwischen zwei Grenzen: `rand()` gibt eine ganze Zahl von 0 bis `RAND_MAX` zurück, geteilt durch `RAND_MAX` liegt sie zwischen 0 und 1. Weil das Programm den Bildschirm nie löscht, bleibt jede Flugbahn stehen.
 
 <!-- tutorial-screenshot
-# Klonen wie im Handbuch »Workspace«, dann den Funken übersetzen
+# Die Vorlage im Terminal nach feuerwerk klonen, den Ordner öffnen, dann den Funken übersetzen
 show-left-sidebar
-clone-start: https://github.com/specht/pixelram-starter.git @ 8f36e382554999421d77687c69f7541ca2c4afb7
-press: Enter
+terminal-open
+terminal-run: git clone -q https://github.com/specht/pixelram-starter.git ~/feuerwerk && git -C ~/feuerwerk checkout -q 8f36e382554999421d77687c69f7541ca2c4afb7
+press: Control+K
+press: Control+O
 wait-for-input-value: /workspace/
+type: feuerwerk
 press: Enter
-wait-for-text: Would you like to open the repository?
-click: Open
+wait-for-input-value: /workspace/feuerwerk/
+press: Enter
 wait-for-text: main.c
 write-file: feuerwerk.c <- previous-code
 open-file: feuerwerk.c

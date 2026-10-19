@@ -10,7 +10,7 @@
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default {
-    writeFileSubdirectory: 'pixelram-starter',
+    writeFileSubdirectory: 'gif',
 
     // Live Server opens the folder listing; the program is opened by hook.
     async waitForPreview({ page, timeout }) {

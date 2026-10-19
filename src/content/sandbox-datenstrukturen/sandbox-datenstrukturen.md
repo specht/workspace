@@ -58,22 +58,14 @@ _task(git-name)
 
 Klone die App in dein Home-Verzeichnis:
 
-```bash
-cd ~
+```bash_copy
+git clone ${template} ~/data-structures-sandbox
 ```
+
+Klone das Klassen-Repository in ihren Ordner:
 
 ```bash_copy
-git clone ${template}
-```
-
-Wechsle in ihren Ordner und klone dort das Klassen-Repository:
-
-```bash
-cd data-structures-sandbox
-```
-
-```bash_copy
-git clone ${class_repo} structures
+git clone ${class_repo} ~/data-structures-sandbox/structures
 ```
 
 Das Klassen-Repository muss **in** der App liegen und genau `structures` heißen. Gibt es `structures/` schon, klone es nicht noch einmal und lösche nichts, sondern frag nach.

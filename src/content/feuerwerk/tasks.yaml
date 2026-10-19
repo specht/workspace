@@ -8,10 +8,10 @@ tasks:
     prompt: |
       Schreib das Programm mit dem Funken in `feuerwerk.c` und übersetze es mit
       `make PROGRAM=feuerwerk`.
-    file: pixelram-starter/feuerwerk.c
+    file: feuerwerk/feuerwerk.c
     check:
       type: files
-      path: pixelram-starter/feuerwerk.html
+      path: feuerwerk/feuerwerk.html
       expect:
         format: text
     feedback:
@@ -87,5 +87,5 @@ tasks:
       diesen Stand; du kannst jederzeit neu abgeben.
     check:
       type: submit
-      pick: pixelram-starter/*.c
+      pick: feuerwerk/*.c
       max_size: 200kB

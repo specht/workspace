@@ -1,5 +1,5 @@
 # Aufgaben zu »Eine JPEG-Datei decodieren«.
-# Format: docs/aufgaben.md. Gearbeitet wird in /workspace/pixelram-starter.
+# Format: docs/aufgaben.md. Gearbeitet wird in /workspace/jpeg.
 # Die Werte stammen aus dem Referenzdecoder in loesung/jpeg.c und sind mit
 # Pillow nachgerechnet. Zwei Decoder liefern nicht Pixel für Pixel dasselbe
 # (Rundung der iDCT, Hochrechnen von Cb und Cr); deshalb fragen die letzten

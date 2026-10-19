@@ -220,22 +220,14 @@ _task(git-name)
 
 Klone die App in dein Home-Verzeichnis:
 
-```bash
-cd ~
+```bash_copy
+git clone ${template} ~/cpu-sandbox
 ```
+
+Klone das Klassen-Repository in ihren Ordner:
 
 ```bash_copy
-git clone ${template}
-```
-
-Wechsle in ihren Ordner und klone dort das Klassen-Repository:
-
-```bash
-cd cpu-sandbox
-```
-
-```bash_copy
-git clone ${class_repo} programs
+git clone ${class_repo} ~/cpu-sandbox/programs
 ```
 
 Das Klassen-Repository muss **in** der App liegen und genau `programs` heißen. Gibt es `programs/` schon, klone es nicht noch einmal und lösche nichts, sondern frag nach.

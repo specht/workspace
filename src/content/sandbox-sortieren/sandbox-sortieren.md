@@ -82,22 +82,14 @@ _task(git-name)
 
 Klone die App in dein Home-Verzeichnis:
 
-```bash
-cd ~
+```bash_copy
+git clone ${template} ~/sorting-sandbox
 ```
+
+Klone das Klassen-Repository in ihren Ordner:
 
 ```bash_copy
-git clone ${template}
-```
-
-Wechsle in ihren Ordner und klone dort das Klassen-Repository:
-
-```bash
-cd sorting-sandbox
-```
-
-```bash_copy
-git clone ${class_repo} algorithms
+git clone ${class_repo} ~/sorting-sandbox/algorithms
 ```
 
 Das Klassen-Repository muss **in** der App liegen und genau `algorithms` heißen. Gibt es `algorithms/` schon, klone es nicht noch einmal, sondern hol mit `git pull` darin den aktuellen Stand.

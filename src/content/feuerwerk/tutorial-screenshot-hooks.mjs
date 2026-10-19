@@ -20,6 +20,8 @@ async function nextFrames(page, count) {
 
 export default {
     ...base,
+    // Its own clone of the starter (feuerwerk.md), not pixelram-starter.
+    writeFileSubdirectory: 'feuerwerk',
     actions: {
         ...base.actions,
 

@@ -1,5 +1,5 @@
 # Aufgaben zu »Eine GIF-Datei decodieren«.
-# Format: docs/aufgaben.md. Gearbeitet wird in /workspace/pixelram-starter.
+# Format: docs/aufgaben.md. Gearbeitet wird in /workspace/gif.
 # Die Prüfsummen stammen aus dem Referenzdecoder in loesung/gif.c und sind
 # mit Pillow nachgerechnet (Adler-32 über RGB aller Pixel, Zeile für Zeile).
 format: 1

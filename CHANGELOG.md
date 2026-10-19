@@ -18,6 +18,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Jede Aktivität klont ihre Vorlage in einen eigenen Ordner. »GIF«,
+  »JPEG« und »Feuerwerk« teilten sich mit »Echtzeitgrafik mit C« den Ordner
+  `pixelram-starter`; VS Code klont dann still nach `pixelram-starter-1`, und
+  die Seite sprach vom falschen Ordner. Sie klonen jetzt im Terminal nach
+  `~/gif`, `~/jpeg` und `~/feuerwerk` (die Prüfungen von »Feuerwerk« schauen
+  dort nach). Klonen im Terminal ist überall ein Befehl mit dem Ziel
+  (`git clone … ~/ordner`) statt `cd ~` und dann `git clone`. Ein Test
+  (`clone_folders_test.rb`) und die Checkliste halten das fest.
 - E-Mails des Workspace haben eine serifenlose Schrift (bisher je nach
   Mailprogramm Times), auch in der Vorschau vor dem Senden. Die
   Klassenseite zeigt neben CPU und RAM den freien Speicherplatz der

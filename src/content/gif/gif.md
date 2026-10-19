@@ -324,13 +324,17 @@ Das Format ist in einem einzigen Text beschrieben, den die Firma CompuServe 1990
 
 ### Die PixelRAM-Vorlage
 
-Dein Decoder ist ein Programm für PixelRAM. Hast du [Echtzeitgrafik mit C](/pixelram) schon bearbeitet, öffne einfach den Ordner `/workspace/pixelram-starter` mit <kbd>Strg</kbd><kbd>K</kbd> <kbd>Strg</kbd><kbd>O</kbd>. Sonst klone die Vorlage:
+Dein Decoder ist ein Programm für PixelRAM. Klone die Vorlage im Terminal in einen eigenen Ordner `gif`; so kommt er dem Ordner aus [Echtzeitgrafik mit C](/pixelram) nicht in die Quere:
 
-_include(workspace#repository-klonen)
+```bash_copy
+git clone ${template} ~/gif
+```
+
+Öffne dann den Ordner `/workspace/gif` mit <kbd>Strg</kbd><kbd>K</kbd> <kbd>Strg</kbd><kbd>O</kbd>.
 
 ### Die Beispieldateien
 
-Lade im Terminal drei GIF-Dateien in den Ordner der Vorlage:
+Lade im Terminal drei GIF-Dateien in den Ordner `gif`:
 
 ```bash_copy
 wget ${web_root}/gif/diskette.gif
@@ -364,7 +368,7 @@ Das sind alle 106 Bytes. Die Farben zeigen die Blöcke, aus denen eine GIF-Datei
 
 ### Das Programm
 
-Lege im Ordner der Vorlage die Datei `gif.c` an. Der Anfang liest die ganze Datei in den Speicher, und drei kleine Funktionen lesen daraus, immer an der Stelle `pos`, die dabei weiterwandert:
+Lege im Ordner `gif` die Datei `gif.c` an. Der Anfang liest die ganze Datei in den Speicher, und drei kleine Funktionen lesen daraus, immer an der Stelle `pos`, die dabei weiterwandert:
 
 <!-- page-code: own -->
 ```c_copy
@@ -439,15 +443,18 @@ make PROGRAM=gif ARGS=diskette.gif
 ```
 
 <!-- tutorial-screenshot
-# Klonen wie im Handbuch »Workspace« (oben eingebunden); gif.c ist hier
+# Die Vorlage im Terminal nach gif klonen und den Ordner öffnen; gif.c ist hier
 # schon der fertige Decoder, oben steht dasselbe wie im Gerüst
 show-left-sidebar
-clone-start: https://github.com/specht/pixelram-starter.git @ 8f36e382554999421d77687c69f7541ca2c4afb7
-press: Enter
+terminal-open
+terminal-run: git clone -q https://github.com/specht/pixelram-starter.git ~/gif && git -C ~/gif checkout -q 8f36e382554999421d77687c69f7541ca2c4afb7
+press: Control+K
+press: Control+O
 wait-for-input-value: /workspace/
+type: gif
 press: Enter
-wait-for-text: Would you like to open the repository?
-click: Open
+wait-for-input-value: /workspace/gif/
+press: Enter
 wait-for-text: main.c
 write-file: gif.c <- file:loesung/gif.c
 write-file: diskette.gif <- file:beispiele/diskette.gif

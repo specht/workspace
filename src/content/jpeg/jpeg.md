@@ -250,13 +250,17 @@ Dein Decoder wird ein Programm in C, das das Bild mit PixelRAM zeigt. Hast du sc
 
 ### Die PixelRAM-Vorlage
 
-Hast du [Echtzeitgrafik mit C](/pixelram) oder das GIF-Labor schon bearbeitet, öffne einfach den Ordner `/workspace/pixelram-starter` mit <kbd>Strg</kbd><kbd>K</kbd> <kbd>Strg</kbd><kbd>O</kbd>. Sonst klone die Vorlage:
+Klone die Vorlage im Terminal in einen eigenen Ordner `jpeg`; so kommt er den Ordnern aus [Echtzeitgrafik mit C](/pixelram) und dem GIF-Labor nicht in die Quere:
 
-_include(workspace#repository-klonen)
+```bash_copy
+git clone ${template} ~/jpeg
+```
+
+Öffne dann den Ordner `/workspace/jpeg` mit <kbd>Strg</kbd><kbd>K</kbd> <kbd>Strg</kbd><kbd>O</kbd>.
 
 ### Die Beispieldateien
 
-Lade im Terminal zwei Fotos in den Ordner der Vorlage:
+Lade im Terminal zwei Fotos in den Ordner `jpeg`:
 
 ```bash_copy
 wget ${web_root}/jpeg/44-baseline.jpg
@@ -267,7 +271,7 @@ Beide haben 1000 × 667 Pixel und sind Baseline-JPEGs, die einfachste Art von JP
 
 ### Das Programm
 
-Lege im Ordner der Vorlage die Datei `jpeg.c` an, mit diesem Anfang:
+Lege im Ordner `jpeg` die Datei `jpeg.c` an, mit diesem Anfang:
 
 <!-- page-code: own -->
 ```c_copy
@@ -339,15 +343,18 @@ make PROGRAM=jpeg ARGS=44-baseline.jpg
 ```
 
 <!-- tutorial-screenshot
-# Klonen wie im Handbuch »Workspace« (oben eingebunden); jpeg.c ist hier
+# Die Vorlage im Terminal nach jpeg klonen und den Ordner öffnen; jpeg.c ist hier
 # schon der fertige Decoder, oben steht dasselbe wie im Gerüst
 show-left-sidebar
-clone-start: https://github.com/specht/pixelram-starter.git @ 8f36e382554999421d77687c69f7541ca2c4afb7
-press: Enter
+terminal-open
+terminal-run: git clone -q https://github.com/specht/pixelram-starter.git ~/jpeg && git -C ~/jpeg checkout -q 8f36e382554999421d77687c69f7541ca2c4afb7
+press: Control+K
+press: Control+O
 wait-for-input-value: /workspace/
+type: jpeg
 press: Enter
-wait-for-text: Would you like to open the repository?
-click: Open
+wait-for-input-value: /workspace/jpeg/
+press: Enter
 wait-for-text: main.c
 write-file: jpeg.c <- file:loesung/jpeg.c
 write-file: 44-baseline.jpg <- file:beispiele/44-baseline.jpg

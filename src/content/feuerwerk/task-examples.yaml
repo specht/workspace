@@ -5,6 +5,6 @@ activity: feuerwerk
 examples:
   erster-funke:
     pass:
-      - files: { pixelram-starter/feuerwerk.html: { text: "<!DOCTYPE html>\n<html><body><canvas></canvas></body></html>\n" } }
+      - files: { feuerwerk/feuerwerk.html: { text: "<!DOCTYPE html>\n<html><body><canvas></canvas></body></html>\n" } }
     fail:
-      - files: { pixelram-starter/index.html: { text: "<!DOCTYPE html>\n" } }
+      - files: { feuerwerk/index.html: { text: "<!DOCTYPE html>\n" } }
