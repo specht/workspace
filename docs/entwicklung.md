@@ -96,6 +96,34 @@ sie leert sich von selbst. Was das alles nicht sieht: einen Server, der
 ganz steht. Dafür braucht es einen Dienst von außen, der die Startseite
 aufruft.
 
+### Große Workspaces
+
+»Betrieb« zeigt die laufenden Workspaces nach Last (Rechenzeit, dann
+Arbeitsspeicher), die zehn größten zuerst. »Stoppen« beendet alle Programme
+eines Workspace; die Dateien bleiben. Für den Speicherplatz gibt es in
+`/personen` »Platz schaffen« in der Zeile einer Person. Beides fragt nach
+einem Grund, den die Person als Hinweis liest (`include/look_in.rb`, Arten
+`stop` und `cleanup`), und schickt ihn, wenn angehakt, per E-Mail
+(`MailTexts.workspace_action`).
+
+Welche Ordner sich neu erzeugen lassen, steht an einer Stelle:
+`src/ruby/tools/rebuildable.py`. Immer: `node_modules`, `__pycache__`,
+`.gradle`, `.dart_tool`, `.pub-cache`. `build` nur neben `pubspec.yaml`,
+`build.gradle(.kts)` oder `CMakeLists.txt`, `target` nur neben `Cargo.toml`
+oder `pom.xml`, Python-Umgebungen nur mit `pyvenv.cfg`. Vorab angehakt ist
+ein Ordner nur, wenn der Befehl ihn auch wieder anlegen kann (`package.json`
+oder `pubspec.yaml` daneben, bei Python-Umgebungen `requirements.txt` oder
+`pyproject.toml`) und, bei `node_modules`, keine Datei darin jünger ist als
+der feste Zeitstempel, den npm setzt (26.10.1985): Eine jüngere hat jemand
+von Hand geändert. Das Skript läuft als
+Workspace-Benutzer (`setpriv`), folgt keinen Links und löscht nur, was ein
+neuer Scan im Moment des Löschens noch findet.
+
+Der Download von »Meine Daten« (`tools/zip_stream.py`) lässt diese Ordner
+weg, außer mit `?alle=1`, und hält einen Puma-Thread, solange er läuft.
+Deshalb laufen höchstens `EXPORT_LIMIT` (2) gleichzeitig
+(`include/my_data.rb`) und Puma hat 12 Threads (`config.rb`).
+
 ## Was muss ich nach einer Änderung neu bauen?
 
 | Geändert | Dann |

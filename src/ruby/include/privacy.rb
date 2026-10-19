@@ -271,7 +271,7 @@ module Privacy
                 :how_long => 'bis die Lehrkraft die Leistungsüberprüfung löscht, sonst ' + ACCOUNT_END,
             },
             {
-                :data => 'Hinweise, wer in Workspace oder Konto gesehen hat: wer, wann, mit welcher Begründung',
+                :data => 'Hinweise, wer in Workspace oder Konto gesehen oder den Workspace gestoppt oder darin Platz geschaffen hat: wer, wann, mit welcher Begründung, welche Ordner gelöscht wurden',
                 :categories => [:traffic],
                 :purpose => 'Transparenz gegenüber der Person',
                 :who => 'die Person selbst; Administration',
@@ -588,6 +588,10 @@ module Privacy
             Die Administration des Servers kann, wie bei jedem Server, alle Daten darauf einsehen; sie tut das nur für den Betrieb
             und um bei Problemen zu helfen. Öffnet sie einen Workspace oder sieht sie die Seite als eine Person, gibt sie wie eine
             Lehrkraft einen Grund an, und die Person sieht den Hinweis; zusätzlich wird der Zugriff intern protokolliert.
+            Für den Betrieb sieht die Administration, welche Workspaces gerade laufen und wie viel Rechenzeit, Arbeitsspeicher
+            und Speicherplatz sie brauchen. Stoppt sie einen Workspace oder löscht sie darin Ordner, die sich mit einem Befehl
+            neu erzeugen lassen (etwa <code>node_modules</code>), damit der Server genug Platz hat, erfährt die Person das
+            ebenso mit Begründung als Hinweis und, wenn die Administration es auswählt, per E-Mail; ihre eigenen Dateien bleiben.
             </p>
 
             #{heading('Teilen', 'Weitergabe durch die Person selbst')}

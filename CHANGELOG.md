@@ -18,6 +18,33 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- »Meine Daten« im Profil sagt vor dem Download, wie groß der Workspace
+  ist, wie viel davon Ordner sind, die ein Befehl wieder anlegt
+  (`node_modules`, `__pycache__`, `.gradle`, `.dart_tool`, `build` neben
+  `pubspec.yaml` und andere), und wie lange der Download etwa dauert. Diese
+  Ordner bleiben im ZIP-Archiv weg, eine Datei `weggelassen.txt` nennt sie
+  und den Befehl; ein Häkchen nimmt sie doch mit. Gepackt wird schneller:
+  Bilder, Videos und Archive kommen unverändert hinein, der Rest mit der
+  schnellsten Stufe. Höchstens zwei Downloads laufen gleichzeitig, je Person
+  einer; wer warten muss, bekommt eine Seite, die das sagt.
+- »Platz schaffen« im Profil: Lernende sehen die Ordner, die sich neu
+  erzeugen lassen, mit Größe und Befehl, und löschen die angehakten.
+  Vorab angehakt ist nur, was sicher unverändert ist: `node_modules` nicht,
+  wenn darin eine Datei nach `npm install` geändert wurde, und nichts ohne
+  `package.json`, `pubspec.yaml` oder `requirements.txt` daneben. Links werden nicht verfolgt,
+  gelöscht wird als Workspace-Benutzer, nie als root.
+- Für die Administration: »Platz schaffen« in `/personen` für den
+  Workspace einer Person und »Stoppen« für einen laufenden Workspace unter
+  »Betrieb« (die laufenden Workspaces stehen jetzt nach Last sortiert, die
+  zehn größten zuerst, mit Zahlen je Gruppe und einer Markierung für einen,
+  der seit einer Minute mehr als einen halben Kern oder 2 GB braucht). Beide
+  fragen nach einem Grund: Die Person liest ihn als Hinweis beim nächsten
+  Besuch, mit den gelöschten Ordnern, und auf Wunsch (vorgewählt) per
+  E-Mail. Während man jemanden nachahmt, ist »Platz schaffen« im Profil
+  gesperrt, damit die Person es auf diesem Weg erfährt. Die
+  Datenschutzerklärung nennt beides.
+- Für Betreibende: Puma läuft mit bis zu 12 Threads statt 5, damit ein
+  langer Download die Seite nicht aufhält. Wirkt nach `./config.rb up -d`.
 - Umlaute in Namen, die aus der E-Mail-Adresse entstehen: ä → ae, ö → oe,
   ü → ue, ß → ss, andere Buchstaben ohne Akzent (é → e). Der
   Linux-Benutzer im Workspace hieß bei `jürgen.müller@…` bisher
