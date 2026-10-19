@@ -235,8 +235,9 @@ let currentRun = null; // { started_at, force, pages: [{ markdown_path, stale }]
 const recentCaptures = [];
 const RECENT_CAPTURES = 120;
 
-function rememberCapture(markdownPath, target, revision) {
-    recentCaptures.unshift({ markdown_path: markdownPath, target, revision, at: Date.now(), kind: isVideoTarget(target) ? 'video' : 'image' });
+// replayed: the file is current and was only walked through (no new file).
+function rememberCapture(markdownPath, target, revision, replayed = false) {
+    recentCaptures.unshift({ markdown_path: markdownPath, target, revision, at: Date.now(), kind: isVideoTarget(target) ? 'video' : 'image', replayed });
     if (recentCaptures.length > RECENT_CAPTURES) recentCaptures.length = RECENT_CAPTURES;
 }
 let workspacePrepared = false;
@@ -4029,6 +4030,13 @@ async function generateTutorial(payload, progressJob = null) {
             } catch (error) {
                 throw withSourceError(error, shotSource);
             }
+        }
+
+        // A current shot, only walked through: the progress page shows its
+        // file all the same, marked as replayed.
+        if (!stale[index]) {
+            const revision = nextManifest.screenshots[shot.target]?.output_sha256;
+            if (revision) rememberCapture(relativeMarkdown, shot.target, revision, true);
         }
 
         if (stale[index]) {

@@ -113,6 +113,10 @@
         60% { opacity: 1; transform: scale(1.03); }
         100% { opacity: 1; transform: none; }
     }
+    /* current, only walked through: shown, but quieter than new ones */
+    .sp-slide.replayed .sp-frame {
+        opacity: 0.7;
+    }
     .sp-caption {
         flex: 0 0 auto;
         margin-top: 0.35rem;
@@ -293,7 +297,7 @@
             const media = c.kind === 'video'
                 ? `<video src='${url(c)}' muted loop playsinline preload='metadata'></video>`
                 : `<img src='${url(c)}' alt='${esc(c.target)} aus ${esc(page_name(c.markdown_path))}'>`;
-            const slide = $(`<div class='sp-slide${animate ? ' new' : ''}'><div class='sp-frame'>${media}</div><div class='sp-caption'>${esc(page_name(c.markdown_path))} › ${esc(c.target)} · ${when}</div></div>`);
+            const slide = $(`<div class='sp-slide${animate ? ' new' : ''}${c.replayed ? ' replayed' : ''}'><div class='sp-frame'>${media}</div><div class='sp-caption'>${esc(page_name(c.markdown_path))} › ${esc(c.target)} · ${when}${c.replayed ? ' · aktuell, nur nachgespielt' : ''}</div></div>`);
             slides.appendChild(slide[0]);
             const video = slide.find('video')[0];
             if (video) watcher.observe(video);
