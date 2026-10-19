@@ -33,7 +33,6 @@ press: Enter
 wait-for-text: create it
 press: Enter
 sleep: 1
-click: Next Up
 hide-left-sidebar
 terminal-open
 terminal-maximize

@@ -58,7 +58,6 @@ crop-bottom: 83%
 <!-- tutorial-screenshot
 press: Enter
 sleep: 1
-click: Next Up
 terminal-open
 -->
 

@@ -340,7 +340,7 @@ check-task: totp python
 check-task: pruefen
 check-task: pruefen python
 check-task: zweiter-faktor <- 0
-check-task: bytes <- 20
+check-task: bytes <- 10
 check-task: uhr <- 0
 check-task: einmal <- 0
 -->

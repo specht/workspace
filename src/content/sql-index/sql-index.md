@@ -34,7 +34,6 @@ press: Enter
 wait-for-text: create it
 press: Enter
 sleep: 1
-click: Next Up
 -->
 
 ## Ein Telefonbuch mit einer Million Einträgen
