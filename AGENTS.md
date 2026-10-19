@@ -81,7 +81,8 @@ address from `credentials.rb` and the code `123456`.
 - A Handbuch page holds the basics and the most important things, not
   everything, and links to the official reference or manual for the rest
   (specification, official docs, cheatsheet), in its parts or a closing
-  section »Zum Nachschlagen«. Check every link before adding it.
+  section »Zum Nachschlagen«. Check every link before adding it. Activities
+  link to the Handbuch page instead of repeating its official links.
 
 ## Working on the code
 

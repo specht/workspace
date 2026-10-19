@@ -1731,4 +1731,4 @@ Eine Welt, die du erst in sieben Minuten durchquert hast, ist 2000 Blöcke breit
 
 Du hast eine Welt gebaut, die auf dich reagiert: eine Kamera, die deinen Augen folgt, eine Figur mit Körper und Schwerkraft, einen Strahl zum Zielen und einen Shader für Licht, Tag, Nacht und Nebel. Genau diese Bausteine stecken auch in großen Spielen; dort heißen sie Kamera, Physik, Raycasting und Beleuchtung.
 
-Alle Befehle von raylib, die in diesem Projekt vorkommen, und ein paar mehr findest du im [Handbuch](/reference/raylib). Die vollständige Liste aller Funktionen steht im [raylib-Cheatsheet](https://www.raylib.com/cheatsheet/cheatsheet.html), und unter [raylib.com/examples](https://www.raylib.com/examples.html) gibt es Hunderte Beispiele, die du direkt im Browser ausprobieren kannst.
+Alle Befehle von raylib, die in diesem Projekt vorkommen, und ein paar mehr findest du im Handbuch unter [raylib](/reference/raylib), die Sprache der Shader unter [GLSL](/reference/glsl). Am Ende jeder der beiden Seiten stehen die offiziellen Unterlagen, zum Beispiel die vollständige Liste aller Funktionen von raylib und Hunderte Beispiele zum Ausprobieren im Browser.

@@ -309,7 +309,9 @@ Eine Handbuch-Seite enthält die Grundlagen und das Wichtigste, nicht alles.
 Für den Rest verweist sie auf die offizielle Referenz oder das Handbuch der
 Sprache oder Bibliothek (Spezifikation, offizielle Dokumentation,
 Cheatsheet), im passenden Teil oder in einem letzten Abschnitt »Zum
-Nachschlagen«. Jeden Link vorher einmal öffnen.
+Nachschlagen«. Jeden Link vorher einmal öffnen. Eine Aktivität verweist auf
+die Handbuch-Seite, statt deren offizielle Links zu wiederholen: So gibt es
+jeden Link nur an einer Stelle, und er veraltet nicht doppelt.
 
 ## 5. Eine Notiz für Lehrkräfte
 
