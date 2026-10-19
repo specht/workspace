@@ -57,7 +57,7 @@ Danach liegt die Vorlage in `/workspace/backrooms-starter`:
 # Klonen wie im Handbuch »Workspace« (oben eingebunden), dann die
 # geöffnete Vorlage im Explorer, level.ini im Editor
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ 39ee3695a7f01e565bfa14d9f9fee8f6d8728c09
+clone-start: https://github.com/specht/backrooms-starter.git @ bbdb7e3c00e13b1e7640912f04abeb7e28fa84cc
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -117,7 +117,7 @@ Klick ins Bild, dann siehst du dich mit der Maus um. <kbd>Esc</kbd> gibt die Mau
 Wo du stehst, merkt sich die Adresse der Seite. Lädst du neu, stehst du wieder dort, solange sich der Grundriss nicht geändert hat.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Drück <kbd>M</kbd>. Die Automap zeigt jeden Raum in seiner eigenen Farbe und mit seinem Namen, die Leuchten als gelbe Punkte; der rote Pfeil bist du. Zieh mit der Maus, um die Karte zu drehen, mit <kbd>Shift</kbd>, um sie zu verschieben, und zoom mit dem Mausrad. Lauf ein paar Schritte, während sie offen ist, und schau nach unten: Was macht die Karte? <kbd>Esc</kbd> schließt sie.
+<strong>Ausprobieren:</strong> Drück <kbd>M</kbd>. Die Automap zeigt jeden Raum in seiner eigenen Farbe und mit seinem Namen, die Leuchten als gelbe Punkte; der rote Pfeil bist du. Zieh mit der Maus, um die Karte zu drehen, mit <kbd>Shift</kbd>, um sie zu verschieben, und zoom mit dem Mausrad. Lauf ein paar Schritte, während sie offen ist, und schau nach unten: Was macht die Karte? <kbd>V</kbd> zeigt statt des Drahtgitters die Räume selbst von oben, ohne Decken, mit ihrem Licht. <kbd>Esc</kbd> schließt die Karte.
 </div>
 
 <!-- tutorial-screenshot
@@ -392,7 +392,7 @@ Ein Buchstabe im Grundriss kann auch ein Block sein. Vier Säulen, je zwei an de
 block = 0.7, 7, 0.7      # höher als die Decke: Die Säule verschwindet in ihr
 ```
 
-`block = 0.7, 7, 0.7` ist 0,7 m breit, 7 m hoch und 0,7 m tief, mitten auf seinem Feld. Ist ein Block höher als die Decke, verschwindet er in ihr. `block = 1` füllt das ganze Feld einen Meter hoch, eine Kiste. Mit `base = 2` schwebt ein Block zwei Meter über dem Boden, mit `color = #6a5a3a` bekommt er eine eigene Farbe; ohne sieht er aus wie die Wände seines Raums. Durch Blöcke läuft man nicht hindurch, und sie werfen Schatten.
+`block = 0.7, 7, 0.7` ist 0,7 m breit, 7 m hoch und 0,7 m tief, mitten auf seinem Feld. Ist ein Block höher als die Decke, verschwindet er in ihr. `block = 1` füllt das ganze Feld einen Meter hoch, eine Kiste. Mit `base = 2` schwebt ein Block zwei Meter über dem Boden, mit `color = #6a5a3a` bekommt er eine eigene Farbe; ohne sieht er aus wie die Wände seines Raums. Mit `material = marble` ist er aus Marmor, auch in einem Raum mit Tapete; es gehen alle Arten, die es für Wände gibt (weiter unten im Kapitel). Durch Blöcke läuft man nicht hindurch, und sie werfen Schatten.
 
 <!-- tutorial-screenshot
 write-file: rooms/saal.room <- file:stufen/saal-3.room
