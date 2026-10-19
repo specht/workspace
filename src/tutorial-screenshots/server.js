@@ -1244,6 +1244,16 @@ async function ensureContext() {
 
 async function ensureBootstrapPage() {
     await ensureContext();
+    // The bootstrap tab is gone (closed by mistake, or with a crashed
+    // renderer): a new one, or a new browser if not even that works.
+    if (!dashboard || dashboard.isClosed()) {
+        try {
+            dashboard = await withTimeout(context.newPage(), 30_000, 'opening a new bootstrap tab');
+        } catch (error) {
+            await restartBrowser(`no bootstrap tab: ${error.message}`);
+            await ensureContext();
+        }
+    }
     const expected = new URL('/_tutorial_screenshot_bootstrap.html', BASE_URL).href;
     if (dashboard.url() === expected) return;
     await dashboard.goto(expected, { waitUntil: 'domcontentloaded', timeout: 30_000 });
@@ -2071,30 +2081,32 @@ async function waitForImagePreview(page) {
     await page.waitForTimeout(1_500);
 }
 
-// Every tab besides the Workspace and the preview: a preview tab that could
-// not be closed when it was replaced keeps running, a 3D scene drawing frame
-// after frame in software WebGL, and slows everything after it down.
+// Other tabs at the preview's address: a preview tab that could not be
+// closed when it was replaced keeps running, a 3D scene drawing frame after
+// frame in software WebGL, and slows everything after it down. Only tabs of
+// the preview's host: the Workspace, the bootstrap tab (dashboard) and the
+// Workspace prepared in the background stay.
 async function closeLeftoverTabs() {
-    const leftovers = context.pages().filter((page) => page !== workspace && page !== preview);
+    const host = new URL(preview.url()).host;
+    const atPreview = (url) => {
+        try { return new URL(url).host === host; } catch { return false; }
+    };
+    const leftovers = context.pages().filter((page) => page !== preview && atPreview(page.url()));
     for (const page of leftovers) {
         await withTimeout(page.close({ runBeforeUnload: false }), 10_000, 'closing a leftover tab').catch((error) => {
             console.log(`  a leftover tab did not close: ${error.message}`);
         });
     }
-    // Chromium itself may still hold a tab Playwright has lost track of.
+    // Chromium itself may still hold a preview tab Playwright has lost track of.
     let lost = 0;
     try {
-        const keep = new Set();
-        for (const page of [workspace, preview]) {
-            if (!page || page.isClosed()) continue;
-            const session = await context.newCDPSession(page);
-            keep.add((await session.send('Target.getTargetInfo')).targetInfo.targetId);
-            await session.detach().catch(() => {});
-        }
+        const session = await context.newCDPSession(preview);
+        const own = (await session.send('Target.getTargetInfo')).targetInfo.targetId;
+        await session.detach().catch(() => {});
         const browserSession = await (await ensureBrowser()).newBrowserCDPSession();
         const { targetInfos } = await browserSession.send('Target.getTargets');
         for (const target of targetInfos) {
-            if (target.type !== 'page' || keep.has(target.targetId)) continue;
+            if (target.type !== 'page' || target.targetId === own || !atPreview(target.url)) continue;
             await browserSession.send('Target.closeTarget', { targetId: target.targetId }).catch(() => {});
             lost += 1;
         }
@@ -2102,7 +2114,7 @@ async function closeLeftoverTabs() {
     } catch (error) {
         console.log(`  could not list the browser's tabs: ${error.message}`);
     }
-    if (leftovers.length || lost) console.log(`  closed ${leftovers.length + lost} leftover tab(s)`);
+    if (leftovers.length || lost) console.log(`  closed ${leftovers.length + lost} leftover preview tab(s)`);
 }
 
 async function goLive(hooks) {
