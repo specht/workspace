@@ -264,6 +264,13 @@
     .exam-people-group-actions .btn {
         padding: 0 0.4rem;
     }
+    .exam-people-school {
+        margin: 1rem 0 0.2rem;
+        color: var(--bs-secondary-color);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        font-size: 0.78rem;
+    }
     .exam-people-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
@@ -631,6 +638,10 @@ vscode_config: {}</pre>
     var user_group_order = #{my_user_group_order.to_json};
     var user_groups = #{my_user_groups.to_json};
     var invitations = #{my_invitations.to_json};
+    // The school of each group, and one's own (for an admin without one: the
+    // home school): the exam dialog shows one's own school first.
+    var group_schools = #{teacher_logged_in? ? school_names_of_groups.slice(*my_user_group_order).to_json : '{}'};
+    var my_school = #{teacher_logged_in? ? ((school_of_teacher(@session_user[:email]) || {})[:name] || (admin_logged_in? ? (neo4j_query('MATCH (s:School) WHERE s.home = true RETURN s.name AS name;').first || {})['name'] : nil)).to_json : 'null'};
 
     // Exams (»Leistungsüberprüfungen«): one row each, the name and when it
     // was uploaded first, then who takes it, whether it runs, the preview
@@ -737,10 +748,23 @@ vscode_config: {}</pre>
             const search = bar.find('input');
             const many = user_group_order.length > 4;
             const sections = [];
-            for (let group of user_group_order) {
+            // Groups by school, one's own first. Other schools stay hidden
+            // behind a button, unless someone there is already chosen.
+            const school_of = (group) => group_schools[group] || 'Ohne Schule';
+            const schools = [...new Set(user_group_order.map(school_of))]
+                .sort((a, b) => (b === my_school) - (a === my_school) || a.localeCompare(b, 'de'));
+            const own_only = !!my_school && schools.includes(my_school) && schools.length > 1;
+            const others = $(`<div class='exam-people-others'></div>`);
+            for (let school of schools) {
+              const groups = user_group_order.filter((g) => school_of(g) === school && (user_groups[g] || []).length);
+              if (groups.length === 0) continue;
+              const own = !own_only || school === my_school;
+              const keep = own || groups.some((g) => user_groups[g].some((e) => chosen.has(e)));
+              const target = keep ? body : others;
+              if (schools.length > 1) target.append($("<h6 class='exam-people-school'>").text(school));
+              for (let group of groups) {
                 const members = (user_groups[group] || []).slice().sort((a, b) => exam_name(a).localeCompare(exam_name(b), 'de'));
-                if (members.length === 0) continue;
-                const details = $(`<details class='exam-people-group'>`).appendTo(body);
+                const details = $(`<details class='exam-people-group'>`).appendTo(target);
                 const summary = $(`<summary><span class='exam-people-group-name'></span><span class='exam-people-group-count text-body-secondary small'></span></summary>`).appendTo(details);
                 summary.find('.exam-people-group-name').text(group);
                 const actions = $(`<span class='exam-people-group-actions'>
@@ -761,6 +785,13 @@ vscode_config: {}</pre>
                     const flag = $(this).data('flag') === 1;
                     set_people(members.filter(m => chosen.has(m) !== flag), flag);
                 });
+              }
+            }
+            if (others.children().length) {
+                const n = others.find('.exam-people-group').length;
+                const more = $(`<button type='button' class='btn btn-link btn-sm px-0 mt-2'><i class='bi bi-chevron-down'></i>Gruppen anderer Schulen zeigen (${n})</button>`);
+                body.append(more, others.hide());
+                more.on('click', () => { more.remove(); others.show(); });
             }
             if (sections.length === 0) body.append(`<p class='text-body-secondary'>In deinen Gruppen ist noch niemand. Unter <a href='/klasse'>Klassen</a> lädst du deine Schülerinnen und Schüler ein.</p>`);
 
@@ -784,6 +815,8 @@ vscode_config: {}</pre>
             body.off('change').on('change', 'input[type=checkbox]', function () { set_people([$(this).data('email')], this.checked); });
             search.on('input', function () {
                 const q = search.val().trim().toLowerCase();
+                // A search looks into the other schools too.
+                if (q) others.show();
                 for (let s of sections) {
                     let hits = 0;
                     s.details.find('.form-check').each(function () {

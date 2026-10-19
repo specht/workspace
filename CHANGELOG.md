@@ -91,7 +91,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   »Löschen« klein am Ende. Wer teilnimmt, wählen Lehrkräfte jetzt mit
   Häkchen je Gruppe, mit »Alle« und »Keine« für eine ganze Gruppe, einer
   Suche über alle Namen und der Zahl der Ausgewählten; Gruppen ohne
-  Ausgewählte sind bei vielen Gruppen eingeklappt. Bisher war es eine Wand
+  Ausgewählte sind bei vielen Gruppen eingeklappt. Die Gruppen stehen nach
+  Schulen, die eigene zuerst; andere Schulen (für die Administration) erst
+  nach »Gruppen anderer Schulen zeigen« oder bei einer Suche. Bisher war es eine Wand
   aus Knöpfen, jeder ein eigener Klick.
 - Die Listen unter Feldern zum Tippen (Schule wählen, Aktivität anheften,
   Person suchen) brechen lange Titel um, statt seitlich zu scrollen, und
