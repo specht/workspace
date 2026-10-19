@@ -142,6 +142,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - CI: Die Ruby-Tests laufen bei jedem Push und Pull Request (GitHub
   Actions). Der E2E-Test zu offenen Antworten erwartet für Lehrkräfte ohne
   Gruppe jetzt ihre Testgruppe.
+- E2E-Tests für die Zugriffsregeln (`e2e/tests/access-rules.browser.spec.ts`):
+  Wer aus seiner Gruppe genommen oder gesperrt wird, verliert Sitzung und
+  laufenden Workspace sofort; Gäste ohne Nutzungsordnung starten nichts;
+  eine angekündigte Löschung lässt bis zum Tag an die Daten; Lernende einer
+  Schule kommen nicht in Gruppen einer anderen; eine nach einer
+  Wiederherstellung zurückgekehrte Löschung wird wiederholt. Für
+  Betreibende: Der Test meldet sich als erste Adresse aus `ADMIN_USERS` an
+  (oder `E2E_ADMIN_EMAIL`) und legt nur erfundene Schulen, Gruppen und
+  Konten an, die er danach löscht.
 - Gruppen haben ein Enddatum (»Endet am« unter `/gruppen`): Danach bekommen
   ihre Lehrkräfte einmal eine Erinnerung, die Gruppe zu löschen oder ein neues
   Ende einzutragen, und »Aufräumen« unter `/personen` listet alle Gruppen nach

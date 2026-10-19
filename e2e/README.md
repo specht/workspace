@@ -19,6 +19,13 @@ in [AGENTS.md](AGENTS.md).
 The suite creates its disposable invitation pool itself in
 `data/invitations/_e2e.txt` (ignored by Git).
 
+`tests/access-rules.browser.spec.ts` tests who may use the Workspace
+(removed from a group, suspended, guests without the Nutzungsordnung,
+announced and repeated deletions, students of two schools). It needs an
+imported roster and logs in as the first address in `ADMIN_USERS`
+(`src/ruby/credentials.rb`), or `E2E_ADMIN_EMAIL`; its schools, groups and
+accounts are made up and deleted afterwards.
+
 ## First-time setup
 
 Start Workspace from the repository root as usual:

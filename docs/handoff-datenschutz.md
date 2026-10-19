@@ -27,6 +27,15 @@ with one reminder and »Gruppen nach ihrem Ende«; CI for the Ruby tests
 the open-answers E2E test fixed; client_ip no longer forgeable from a
 Workspace (see the CHANGELOG).
 
+E2E tests for the access rules (2026-10-19, the review's table):
+e2e/tests/access-rules.browser.spec.ts covers removal from a group during a
+session (session and the running Workspace end at nginx), suspension and
+lifting, a guest without the Nutzungsordnung (start, restart, share), an
+announced deletion of an uninvited account, a school's approval withdrawn
+(no lockout, by the maintainer's rule), students of two schools (add and
+move refused), an unused login request, a deletion repeated after a
+restore, and an admin look-in without a reason.
+
 Checked 2026-10-19 (no change needed): Workspaces get only their own
 database credentials (workspace_runtime.rb), never a root password or a
 salt; MySQL and Neo4j are not published outside the server. MySQL keeps
