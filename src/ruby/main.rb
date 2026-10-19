@@ -1833,7 +1833,8 @@ class Main < Sinatra::Base
                 # inserts a part of a reference page, _uses(a, b) links to parts,
                 # and part markers become anchors on the reference page itself.
                 page_meta = ContentParts.meta(markdown)
-                page_references = PageKinds.references_of(page_meta, markdown, ContentParts::INCLUDE)
+                page_references = PageKinds.references_of(page_meta, markdown, ContentParts::INCLUDE,
+                    :catalog => reference_sections.flat_map { |section| Array(section['entries']).map(&:to_s) })
                 content_warning = lambda { |message| STDERR.puts "#{path}: #{message}" }
                 page_included_parts = ContentParts.included_parts(markdown)
                 markdown = ContentParts.expand_includes(markdown,

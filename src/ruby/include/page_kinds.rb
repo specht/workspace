@@ -37,10 +37,15 @@ module PageKinds
     end
 
     # Reference names a page uses: meta reference: plus every _include(name#part).
-    def self.references_of(page_meta, markdown, include_pattern)
+    # catalog: the reference slugs in the order of the Handbuch catalog
+    # (reference/sections.yaml), which begins with the basics (Workspace,
+    # Shortcuts, Terminal): the strip lists them in that order, basics
+    # first; pages not in the catalog come last, as named.
+    def self.references_of(page_meta, markdown, include_pattern, catalog: [])
         names = Array(page_meta['reference']).map(&:to_s)
         names += markdown.scan(include_pattern).map { |m| m.first.to_s }
-        names.reject(&:empty?).uniq
+        names = names.reject(&:empty?).uniq
+        names.each_with_index.sort_by { |name, i| [catalog.index(name) || catalog.size, i] }.map(&:first)
     end
 
     # Pages that use a reference page, as [slug, title], sorted by title.

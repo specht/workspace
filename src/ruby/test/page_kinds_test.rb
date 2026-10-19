@@ -76,6 +76,15 @@ class PageKindsTest < Minitest::Test
         assert_equal [], PageKinds.references_of({}, 'nichts', ContentParts::INCLUDE)
     end
 
+    # raylib names its own page, the Workspace basics come in by _include:
+    # the basics still come first, as in the Handbuch catalog.
+    def test_references_follow_the_catalog_basics_first
+        md = "_include(workspace#repository-klonen)\n"
+        assert_equal %w[workspace raylib glsl unlisted],
+            PageKinds.references_of({ 'reference' => %w[glsl unlisted raylib] }, md, ContentParts::INCLUDE,
+                :catalog => %w[workspace shortcuts terminal raylib glsl])
+    end
+
     def test_real_pages_point_at_existing_reference_pages
         root = File.expand_path('../../content', __dir__)
         catalog = YAML.safe_load(File.read(File.join(root, 'reference/sections.yaml'), encoding: 'UTF-8'))
