@@ -246,8 +246,9 @@ terminal-wait-for-prompt
 terminal-run: mycli
 wait-for-text: student>
 # No pager in the recipes (mycli's less would swallow the next steps);
-# Control+L clears its answer. Students see the pager, the page explains it.
-terminal-run: nopager
+# Control+L clears its answer. \n is nopager; a backslash command runs at once
+# in multi-line mode. Students see the pager, the page explains it.
+terminal-run: \n
 sleep: 0.5
 press: Control+L
 type: SHOW TABLES;
