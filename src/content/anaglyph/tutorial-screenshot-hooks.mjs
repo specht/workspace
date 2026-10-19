@@ -8,12 +8,17 @@
 
 const readyTimeout = 60_000;
 
-async function framesDrawn(page, count, timeout) {
-    await page.waitForFunction(
-        ([start, wanted]) => window.frameCount >= start + wanted,
-        [await page.evaluate(() => window.frameCount), count],
-        { timeout, polling: 'raf' },
-    );
+// Stops p5's loop and draws exactly one frame, then waits until it is on
+// screen. The loop drawing on in the background, all in software WebGL,
+// took several seconds per frame in the generator, and every wait for two
+// frames of it with it; a picture needs one frame, drawn when it is due.
+// The next scene reloads the page, which starts the loop again.
+async function drawOnce(page) {
+    await page.evaluate(() => {
+        noLoop();
+        redraw();
+    });
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => resolve())));
 }
 
 // Clicks a viewer button if camera[flag] is not already on (or off).
@@ -23,7 +28,7 @@ async function toggleButton(page, id, flag, on, timeout) {
         document.getElementById(id).click();
         return true;
     }, [id, flag, on]);
-    if (changed) await framesDrawn(page, 2, timeout ?? readyTimeout);
+    if (changed) await drawOnce(page);
 }
 
 export default {
@@ -57,7 +62,7 @@ export default {
                 camera.center = createVector(cx, cy, cz);
                 camera.targetCenter = camera.center.copy();
             }, values);
-            await framesDrawn(page, 2, timeout ?? readyTimeout);
+            await drawOnce(page);
         },
 
         // hook: anaglyph on|off: the »Anaglyph 3D« button, to a known state.
