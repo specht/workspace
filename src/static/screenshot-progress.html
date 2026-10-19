@@ -89,17 +89,28 @@
         padding: 0.75rem 1rem 0.5rem;
         min-width: 0;
     }
-    .sp-slide img,
-    .sp-slide video {
+    /* The frame takes the free space; the picture in it is only as large as
+       it is shown, so the shadow sits on its edge. */
+    .sp-frame {
         flex: 1 1 auto;
         min-height: 0;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .sp-frame img,
+    .sp-frame video {
+        display: block;
         max-width: 100%;
-        object-fit: contain;
+        max-height: 100%;
+        width: auto;
+        height: auto;
         border-radius: 0.4rem;
         box-shadow: 0 0.25rem 1.5rem rgba(0, 0, 0, 0.18);
     }
-    .sp-slide.new img,
-    .sp-slide.new video {
+    .sp-slide.new .sp-frame img,
+    .sp-slide.new .sp-frame video {
         animation: sp-fly 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
     @keyframes sp-fly {
@@ -245,7 +256,7 @@
             const media = c.kind === 'video'
                 ? `<video src='${url(c)}' muted loop playsinline preload='metadata'></video>`
                 : `<img src='${url(c)}' alt='${esc(c.target)} aus ${esc(page_name(c.markdown_path))}'>`;
-            const slide = $(`<div class='sp-slide${animate ? ' new' : ''}'>${media}<div class='sp-caption'>${esc(page_name(c.markdown_path))} › ${esc(c.target)} · ${when}</div></div>`);
+            const slide = $(`<div class='sp-slide${animate ? ' new' : ''}'><div class='sp-frame'>${media}</div><div class='sp-caption'>${esc(page_name(c.markdown_path))} › ${esc(c.target)} · ${when}</div></div>`);
             slides.appendChild(slide[0]);
         }
 
