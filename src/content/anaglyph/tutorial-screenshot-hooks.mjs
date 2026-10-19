@@ -86,17 +86,24 @@ export default {
     },
 
     // seconds: the frame's time; null hands the sketch back to real time.
+    // While a video is recorded, p5 does not run its loop: for each point in
+    // time it draws exactly once (noLoop, redraw), and one animation frame
+    // later the picture is on screen. With the loop running, every video
+    // frame waited for two whole frames while the loop drew on in between,
+    // all in software WebGL: 5 s per frame instead of a fraction of one.
     async setPreviewTime({ page, seconds, timeout }) {
         await page.evaluate((ms) => {
             if (!window.__tutorialRealMillis) window.__tutorialRealMillis = window.millis;
             if (ms === null) {
                 window.millis = window.__tutorialRealMillis;
+                loop();
                 return;
             }
+            noLoop();
             window.millis = () => ms;
+            redraw();
         }, seconds === null ? null : seconds * 1000);
         if (seconds === null) return;
-        // Two frames: the first may already have started with the old time.
-        await framesDrawn(page, 2, timeout ?? readyTimeout);
+        await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => resolve())));
     },
 };
