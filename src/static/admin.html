@@ -5,7 +5,11 @@
     #running_here td.num { text-align: right; font-variant-numeric: tabular-nums; }
     #running_count { font-size: 1rem; vertical-align: middle; }
     #running_here tr > td { --bs-table-bg-state: rgba(255, 200, 0, var(--ws-activity, 0)); }
+    #running_here tr.running-heavy > td:first-child { box-shadow: inset 4px 0 0 var(--health-warn); }
+    #running_here tr.running-heavy .running-name::after { content: ' · braucht viel'; color: var(--bs-warning-text-emphasis); font-size: 0.8rem; }
+    .running-groups { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; font-size: 0.875rem; color: var(--bs-secondary-color); }
 </style>
+<div class='api_messages page-messages' style='display: none;' role='status' aria-live='polite'></div>
 <div class='container admin-page'>
     <h1>Betrieb</h1>
     <p class='page-intro'>
@@ -31,12 +35,16 @@
 
     <h2 id="laufend">Laufende Workspaces <span class='class-tab-count align-middle' id='running_count'>0</span></h2>
     <p class='small text-body-secondary'>
-        Jede Sekunde neu; gelb, wer gerade rechnet. Einen Workspace, der nicht läuft, öffnest du unter
-        <a href='/personen#personen'>Personen</a> oder auf der <a href='/klasse'>Klassenseite</a>.
+        Jede Sekunde neu, wer am meisten braucht oben; gelb, wer gerade rechnet, markiert, wer seit über einer Minute
+        mehr als die Hälfte eines Kerns oder 2 GB Speicher braucht. Wer am meisten Platz belegt, zeigt
+        <a href='/personen?sortierung=speicher#personen'>Personen</a>; einen Workspace, der nicht läuft, öffnest du dort oder
+        auf der <a href='/klasse'>Klassenseite</a>.
     </p>
-    <div id='running_here' class='table-responsive mb-4'>
+    <div id='running_groups' class='running-groups mb-2'></div>
+    <div id='running_here' class='table-responsive mb-1'>
         <p class='text-body-secondary'>Gerade läuft keiner.</p>
     </div>
+    <p class='mb-4'><button type='button' class='btn btn-sm btn-link p-0' id='running_more' hidden></button></p>
 
     <div id="login_codes_here" style="display: none;">
         <h2 id="login-codes">Wartende Anmelde-Codes</h2>
@@ -167,39 +175,78 @@
     // CPU (also as the row's yellow), RAM, processes; open or imitate.
     const my_email = `#{CGI.escapeHTML(@session_user[:email])}`;
 
+    // The running Workspaces, from the WebSocket every second: the ten that
+    // use most (CPU, then RAM) with their names, the rest on request; above
+    // them how many run, per group. A Workspace that has used more than half
+    // a core or 2 GB for over a minute is marked. While the mouse is over the
+    // table its order stays, so that a row does not move away from a click.
+    const HEAVY_CPU = 50, HEAVY_RAM = 2 * 2 ** 30, HEAVY_AFTER = 60 * 1000, TOP = 10;
+    const heavy_since = {};
+    let show_all = false, hovering = false, order = [];
+
+    function bytes_of(text) {
+        const m = `${text || ''}`.match(/([0-9.]+)\s*([kKMGT]?)i?B/);
+        if (!m) return 0;
+        return parseFloat(m[1]) * ({ k: 2 ** 10, K: 2 ** 10, M: 2 ** 20, G: 2 ** 30, T: 2 ** 40 }[m[2]] || 1);
+    }
+
     function render_running(stats) {
-        let tags = Object.keys(stats).sort((a, b) => (stats[a].name || stats[a].email || '').localeCompare(stats[b].name || stats[b].email || ''));
+        const now = Date.now();
+        const usage = {};
+        for (const tag of Object.keys(stats)) {
+            const s = stats[tag].stats || {};
+            usage[tag] = { cpu: parseFloat(s['CPUPerc']) || 0, ram: bytes_of((s['MemUsage'] || '').split('/')[0]) };
+            const over = usage[tag].cpu >= HEAVY_CPU || usage[tag].ram >= HEAVY_RAM;
+            if (over) heavy_since[tag] = heavy_since[tag] || now; else delete heavy_since[tag];
+        }
+        const tags = Object.keys(stats);
         $('#running_count').text(tags.length);
-        let here = $('#running_here');
+        // How many per group, the largest first.
+        const per_group = {};
+        tags.forEach(t => { const g = stats[t].group || 'ohne Gruppe'; per_group[g] = (per_group[g] || 0) + 1; });
+        $('#running_groups').html(Object.entries(per_group).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+            .map(([g, c]) => `<span class='running-group'>${$('<div>').text(g).html()} <span class='people-chip-count'>${c}</span></span>`).join(''));
+        const here = $('#running_here');
         if (tags.length === 0) {
             here.html("<p class='text-body-secondary'>Gerade läuft keiner.</p>");
+            $('#running_more').prop('hidden', true);
             return;
         }
+        if (!hovering || order.length === 0) {
+            order = tags.sort((a, b) => usage[b].cpu - usage[a].cpu || usage[b].ram - usage[a].ram);
+        } else {
+            order = order.filter(t => stats[t]).concat(tags.filter(t => !order.includes(t)));
+        }
+        const shown = show_all ? order : order.slice(0, TOP);
         let table = here.find('table');
         if (table.length === 0) {
             table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Name</th><th>Gruppe</th><th class='num'>CPU</th><th class='num'>RAM</th><th class='num'>Prozesse</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
+            table.on('mouseenter', () => { hovering = true; }).on('mouseleave', () => { hovering = false; });
             here.empty().append(table);
         }
-        let tbody = table.find('tbody');
-        let rows = [];
-        for (let tag of tags) {
-            let info = stats[tag];
+        const tbody = table.find('tbody');
+        const rows = [];
+        for (const tag of shown) {
+            const info = stats[tag];
             let row = tbody.find(`tr[data-tag="${tag}"]`);
             if (row.length === 0) {
                 row = $(`<tr>`).attr('data-tag', tag);
-                let who = $('<td>');
-                who.append($('<div>').text(info.name || info.email || tag));
+                const who = $('<td>');
+                who.append($('<div class="running-name">').text(info.name || info.email || tag));
                 if (info.name && info.email) who.append($('<div class="small text-body-secondary">').text(info.email));
                 row.append(who, $('<td>').text(info.group || '–'), $(`<td class='num td_cpu'>`), $(`<td class='num td_ram'>`), $(`<td class='num td_pid'>`));
-                let actions = $(`<td class='text-end text-nowrap'>`).appendTo(row);
+                const actions = $(`<td class='text-end text-nowrap'>`).appendTo(row);
                 if (info.email && info.email !== my_email) {
-                    actions.append($(`<button class='btn btn-sm btn-outline-secondary bu-open-workspace-as-admin me-1'><i class='bi bi-code-slash'></i>Workspace öffnen</button>`).attr('data-email', info.email));
-                    actions.append($(`<button class='btn btn-sm btn-outline-secondary bu-impersonate'><i class='bi bi-person-vcard'></i>Nachahmen</button>`).attr('data-email', info.email));
+                    actions.append($(`<button class='btn btn-sm btn-outline-secondary btn-icon bu-open-workspace-as-admin me-1' title='Workspace öffnen' aria-label='Workspace öffnen'><i class='bi bi-code-slash'></i></button>`).attr('data-email', info.email));
+                    actions.append($(`<button class='btn btn-sm btn-outline-secondary btn-icon bu-impersonate me-1' title='Nachahmen' aria-label='Nachahmen'><i class='bi bi-person-vcard'></i></button>`).attr('data-email', info.email));
+                    actions.append($(`<button class='btn btn-sm btn-outline-danger btn-icon bu-stop-workspace' title='Workspace stoppen' aria-label='Workspace stoppen'><i class='bi bi-stop-circle'></i></button>`).attr('data-email', info.email).attr('data-name', info.name || info.email));
                 }
             }
-            let s = info.stats || {};
-            let cpu = parseFloat(s['CPUPerc']) || 0;
-            row.css('--ws-activity', Math.min(1, cpu / 100) * 0.6);
+            const s = info.stats || {};
+            row.css('--ws-activity', Math.min(1, usage[tag].cpu / 100) * 0.6);
+            const heavy = heavy_since[tag] && now - heavy_since[tag] >= HEAVY_AFTER;
+            row.toggleClass('running-heavy', !!heavy)
+                .attr('title', heavy ? `Seit ${Math.round((now - heavy_since[tag]) / 60000)} Minuten über der Hälfte eines Kerns oder 2 GB` : null);
             row.find('.td_cpu').html(wrapLettersInSpan(s['CPUPerc'] || '–'));
             row.find('.td_ram').html(wrapLettersInSpan((s['MemUsage'] ?? '–').split('/')[0].trim().replace('iB', '')));
             row.find('.td_pid').text(s['PIDs'] || '–');
@@ -207,6 +254,8 @@
         }
         tbody.children().detach();
         tbody.append(rows);
+        $('#running_more').prop('hidden', order.length <= TOP)
+            .text(show_all ? 'Nur die zehn, die am meisten brauchen' : `Alle ${order.length} zeigen`);
     }
 
     function wrapLettersInSpan(input) {
@@ -342,6 +391,19 @@
                 let here = $('#repeat_deletions_result').empty();
                 if (!data.success) return;
                 here.append($(`<div class='alert alert-success'>`).text(data.deleted.length === 0 ? 'Kein Konto war seither gelöscht worden.' : `Erneut gelöscht: ${data.deleted.join(', ')}`));
+            });
+        });
+        $('#running_more').on('click', function () { show_all = !show_all; $(this).prop('hidden', true); });
+        // Stopping someone's Workspace (a runaway program): the processes end,
+        // the files stay; with a reason the person sees.
+        $(document).on('click', '.bu-stop-workspace', function (e) {
+            let button = $(e.target).closest('button');
+            ask_admin_reason(`Workspace von ${button.data('name')} stoppen`, function (reason) {
+                button.prop('disabled', true);
+                api_call('/api/admin/stop_workspace', { email: button.data('email'), reason: reason }, function (data) {
+                    if (data.success === false) { button.prop('disabled', false); return; }
+                    show_success_message(`Der Workspace von ${$('<div>').text(button.data('name')).html()} ist gestoppt; die Dateien bleiben.`);
+                });
             });
         });
         $(document).on('click', '.bu-impersonate', function (e) {
