@@ -3386,6 +3386,14 @@ class Main < Sinatra::Base
         login[0, 32]
     end
 
+    # The screenshot generator's account (development only): its Workspaces
+    # start like a student's, but without the first-start walkthrough, which
+    # would cover VS Code's welcome page that recipes click on.
+    def self.screenshot_account?(email)
+        screenshot_email = ENV['TUTORIAL_SCREENSHOT_EMAIL'].to_s
+        DEVELOPMENT && !screenshot_email.empty? && email.to_s.casecmp?(screenshot_email)
+    end
+
     def self.workspace_login_for_email(email)
         screenshot_email = ENV['TUTORIAL_SCREENSHOT_EMAIL'].to_s
         screenshot_user = ENV['TUTORIAL_SCREENSHOT_WORKSPACE_USER'].to_s
@@ -3817,8 +3825,9 @@ class Main < Sinatra::Base
                     :database_environment => database_environment,
                     # The account on the case server (»Ein Krimi im Terminal«);
                     # not in an exam, which has no network anyway.
-                    :extra_environment => CaseServer.enabled? && test_tag.nil? ?
-                        CaseServer.workspace_environment(CaseServer.secret(LOGIN_CODE_SALT), email) : {},
+                    :extra_environment => (CaseServer.enabled? && test_tag.nil? ?
+                        CaseServer.workspace_environment(CaseServer.secret(LOGIN_CODE_SALT), email) : {})
+                        .merge(Main.screenshot_account?(email) ? { 'HACKSCHULE_NO_WALKTHROUGH' => '1' } : {}),
                     :host_data_path => PATH_TO_HOST_DATA,
                     :test_mode => !test_tag.nil?,
                     :timeout => shell_timeout(:docker_run),

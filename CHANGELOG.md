@@ -26,9 +26,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Checkpoints, Terminal, wo die Aktivitäten stehen, Tasten üben) statt der
   englischen Willkommensseite mit der Werbung von Coder. Sie öffnet sich nur
   einmal und nur in einem Workspace, in dem noch nichts liegt; danach steht
-  sie unter *Help › Welcome*. Bei späteren Starts öffnet sich keine
-  Willkommensseite mehr, und Konfigurationsdateien (`.gitconfig`, `.my.cnf`
-  …) stehen nicht mehr im Explorer. Für Betreibende: Image neu bauen
+  sie auf der Willkommensseite unter »Walkthroughs«. Die Werbung von Coder
+  ist auch dort weg. Konfigurationsdateien (`.gitconfig`, `.my.cnf` …)
+  stehen nicht mehr im Explorer. Für Betreibende: Image neu bauen
   (`./build-image.sh`).
 - `/gruppen` hat jetzt das Aufräumen für Gruppen: Filter mit Zahlen
   (»Nach ihrem Ende«, »Mit nie Angemeldeten«, »Ohne Lehrkraft«), in jeder

@@ -1,6 +1,6 @@
 <div class='meta'>
 image: vs-code-welcome.webp:0:50
-image_alt: "VS Code im Browser mit der Willkommensseite und dem leeren Explorer"
+image_alt: "VS Code im Browser mit der Einführung »Willkommen im Hackschule Workspace« und dem leeren Explorer"
 kind: grundlagen
 </div>
 
@@ -39,14 +39,17 @@ kind: grundlagen
 Eine kleine Tour durch die Benutzeroberfläche von Visual Studio Code, gefolgt von grundlegenden Hinweisen zur Arbeit mit Dateien, Ordnern und Projekten. Lerne wichtige Shortcuts und Funktionen zum Bearbeiten von Text kennen, erfahre, wie du mit Checkpoints sichere Zwischenstände deiner Arbeit anlegst, und gib VS Code ein Farbschema, das dir gefällt.
 </p>
 
-Wenn du den Workspace öffnest, siehst du die Entwicklungsumgebung Visual Studio Code:
+Wenn du den Workspace zum ersten Mal öffnest, siehst du die Entwicklungsumgebung Visual Studio Code mit einer kurzen Einführung; später steht sie auf der Willkommensseite unter »Walkthroughs«:
 
 <!-- tutorial-screenshot
-# Workspace ohne geöffneten Ordner
+# Workspace ohne geöffneten Ordner, mit der Einführung beim ersten Start
+# (in Screenshot-Workspaces öffnet sie sich nicht von selbst)
 show-left-sidebar
+click: Willkommen im Hackschule Workspace
+wait-for-text: Deine Dateien bleiben
 -->
 
-<img class='full' src='vs-code-welcome.webp' data alt='Visual Studio Code ohne geöffneten Ordner, links der Explorer mit »Open Folder« und »Clone Repository«, rechts die Willkommensseite mit »New File…«, »Open File…« und »Clone Git Repository…«.'>
+<img class='full' src='vs-code-welcome.webp' data alt='Visual Studio Code ohne geöffneten Ordner, links der Explorer mit »Open Folder« und »Clone Repository«, rechts die Einführung »Willkommen im Hackschule Workspace« mit dem ersten Schritt »Deine Dateien bleiben« und dem Knopf »Ordner öffnen«.'>
 
 ## Die Benutzeroberfläche
 

@@ -45,7 +45,6 @@
     "keyboard.layout": "de",
 
     "window.menuBarVisibility": "visible",
-    "workbench.startupEditor": "none",
     "workbench.welcomePage.walkthroughs.openOnInstall": false,
     "workbench.secondarySideBar.defaultVisibility": "hidden",
     "workbench.colorTheme": "Dark 2026",

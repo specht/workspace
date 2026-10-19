@@ -28,7 +28,9 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   }
 
-  if (!context.globalState.get<boolean>(WELCOME_KEY, false)) {
+  // The screenshot generator's Workspaces (HACKSCHULE_NO_WALKTHROUGH, set by
+  // the backend): recipes click on VS Code's welcome page beneath.
+  if (process.env.HACKSCHULE_NO_WALKTHROUGH !== "1" && !context.globalState.get<boolean>(WELCOME_KEY, false)) {
     await context.globalState.update(WELCOME_KEY, true);
     if (workspaceIsNew()) {
       try {

@@ -2011,9 +2011,9 @@ async function openFile(relativePath) {
 
     await workspace.waitForFunction(
         name =>
-            [...document.querySelectorAll(
-                '.tab .label-name, .tabs-container .label-name'
-            )].some(node => node.textContent?.trim() === name),
+            [...document.querySelectorAll('.tabs-container .tab')]
+                .some(tab => (tab.querySelector('.monaco-icon-label-container') ?? tab.querySelector('.label-name'))
+                    ?.textContent?.trim() === name),
         basename,
         { timeout: 20_000 },
     );
@@ -2368,7 +2368,9 @@ async function closeTab(label) {
 
     for (let index = 0; index < count; index += 1) {
         const tab = tabs.nth(index);
-        const name = await tab.locator('.label-name')
+        // The whole label: VS Code 1.140 puts the extension of a file name
+        // into an element of its own (label-name »hello«, label-suffix ».txt«).
+        const name = await tab.locator('.monaco-icon-label-container, .label-name').first()
             .textContent()
             .catch(() => '');
 
@@ -2395,8 +2397,9 @@ async function closeTab(label) {
 
     await workspace.waitForFunction(
         expected =>
-            ![...document.querySelectorAll('.tabs-container .tab .label-name')]
-                .some(node => node.textContent?.trim() === expected),
+            ![...document.querySelectorAll('.tabs-container .tab')]
+                .some(tab => (tab.querySelector('.monaco-icon-label-container') ?? tab.querySelector('.label-name'))
+                    ?.textContent?.trim() === expected),
         label,
         { timeout: 10_000 },
     );
