@@ -350,7 +350,27 @@ hook: info off
 
 <img class='full' src='saal-2.webp' alt='Derselbe Saal unter einem Satteldach: Die Decke steigt von beiden Wänden zur Mitte hin an, die Leuchten liegen schräg in den Dachflächen, die Stirnwand ist fünfeckig.'>
 
-Statt `gable` geht auch `north`, `east`, `south` oder `west`: Dann steigt die Decke in diese Richtung an, von der ersten Höhe zur zweiten.
+Eine Decke kann auch nur in eine Richtung ansteigen, wie ein Pultdach. Gib der Kammer eine, die zum Saal hin höher wird:
+
+```room
+~ name = Kammer
+height = 2.2, 4
+slope = east
+~ wallpaper = #9a8a4c
+```
+
+Mit `slope = east` steigt die Decke nach Osten an, also nach rechts im Grundriss: an der Westwand 2,2 m hoch, an der Ostwand 4 m. Statt `east` geht auch `north`, `south` oder `west`. Auch hier liegt die Leuchte so schräg wie die Decke.
+
+<!-- tutorial-screenshot
+write-file: rooms/kammer.room <- file:stufen/kammer-3.room
+tab: preview
+viewport: 1024x576
+hook: open view=14.00,18.00,-90,15
+hook: light
+hook: info off
+-->
+
+<img class='full' src='kammer-schraeg.webp' alt='Die Kammer von ihrer Westwand aus: Die Decke steigt nach vorn zur Tür in den Saal an, die Leuchte hängt schräg wie die Decke.'>
 
 ### Säulen
 
