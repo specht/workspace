@@ -74,8 +74,7 @@
     </p>
     #{admin_access_html}
 
-    <h2 id="einladungslisten">Einladungslisten</h2>
-    #{roster_status_html}
+    #{Main.roster_imported ? '' : "<h2 id='einladungslisten'>Einladungslisten</h2>#{roster_status_html}"}
     #{Main.roster_imported ? '' : "<div class='d-flex flex-wrap gap-2 mb-3'><button id='bu_import_preview' class='btn btn-outline-secondary'><i class='bi bi-eye'></i>Vorschau des Imports</button><button id='bu_import' class='btn btn-primary'><i class='bi bi-box-arrow-in-down'></i>Einladungslisten importieren</button></div><p class='small text-body-secondary'>Der Import schreibt alles in die Datenbank, liest es zurück und vergleicht es mit den Dateien: wer eingeladen ist, mit welchem Namen, in welcher Gruppe und wer was betreut. Weicht etwas ab, wird nichts geschrieben, und die Abweichungen stehen hier. Vorher lässt sich eine Kopie der Dateien mit <code>src/scripts/check-invitation-import.rb</code> prüfen.</p>"}
     <div id='import_here' class='mb-4'></div>
 
@@ -378,7 +377,7 @@
             });
         });
         $('#bu_import').on('click', function () {
-            showTemplateModal('Einladungslisten importieren', 'Die Einladungen kommen danach aus der Datenbank; die Dateien (außer denen, die mit _ beginnen) werden nicht mehr gelesen, bleiben aber liegen. Weicht nach dem Schreiben etwas ab, wird nichts übernommen. Der Import lässt sich nicht rückgängig machen; zurück geht es nur mit einer Sicherung.',
+            showTemplateModal('Einladungslisten importieren', 'Die Einladungen kommen danach aus der Datenbank; die Dateien werden nicht mehr gelesen, bleiben aber liegen (im Entwicklungsmodus weiter die, deren Name mit _ beginnt: die Konten der Tests und der Bildschirmfotos). Weicht nach dem Schreiben etwas ab, wird nichts übernommen. Der Import lässt sich nicht rückgängig machen; zurück geht es nur mit einer Sicherung.',
                 "<i class='bi bi-box-arrow-in-down'></i>Importieren", 'btn-primary', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function () {
                     api_call('/api/admin/import_invitations', {}, function (data) {
                         if (data.success) show_import_result($('#import_here').empty(), data);

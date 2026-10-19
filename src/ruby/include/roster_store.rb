@@ -106,14 +106,17 @@ class Main < Sinatra::Base
         invitation_files(which).map { |path| File.read(path) }
     end
 
-    # Where the roster comes from: the files before the import; afterwards
-    # Neo4j and the tools' files.
+    # Where the roster comes from: the files before the import (an
+    # installation that has not switched yet); afterwards Neo4j, and in
+    # development also the tools' files (_e2e.txt, _tutorial_screenshots.txt:
+    # the accounts of the E2E tests and the screenshot generator). A
+    # production server reads no file any more once it has switched.
     def self.roster_source
         cached = cached_roster
         return Roster.parse_files(invitation_file_texts(:all)) unless cached[:imported]
 
         db = Roster.from_records(cached[:records])
-        tools = Roster.parse_files(invitation_file_texts(:tools))
+        tools = DEVELOPMENT ? Roster.parse_files(invitation_file_texts(:tools)) : { :groups => [], :members => [], :designated => [] }
         {
             :groups => db[:groups] + tools[:groups],
             :members => db[:members] + tools[:members],
@@ -216,20 +219,13 @@ class Main < Sinatra::Base
         Thread.new { refresh_nginx_config } unless Set.new(@@invitations.keys) == before
     end
 
-    # The state of the roster for the administration page.
+    # The state of the roster for the administration page, as long as the
+    # invitations are in files (»Betrieb« shows the section only then).
     def roster_status_html
-        imported = Main.roster_imported
         h = ->(t) { CGI.escapeHTML(t.to_s) }
-        if imported
-            at = Time.at(imported[:imported_at].to_i).strftime('%d.%m.%Y, %H:%M')
-            changed = imported[:changed_at] ? " Seitdem im Browser geändert: #{Time.at(imported[:changed_at].to_i).strftime('%d.%m.%Y, %H:%M')}." : ' Seitdem nichts im Browser geändert.'
-            "<p>Die Einladungen stehen seit dem #{at} in der Datenbank (übernommen aus #{h.(Array(imported[:files]).join(', '))}).#{changed} " \
-                'Dateien, deren Name mit _ beginnt, werden weiter gelesen; die anderen nicht mehr.</p>'
-        else
-            files = Main.invitation_files(:people).map { |p| File.basename(p) }
-            "<p>Die Einladungen kommen aus #{files.size} #{files.size == 1 ? 'Datei' : 'Dateien'} unter <code>/invitations</code>: #{h.(files.join(', '))}. " \
-                'Mit dem Import kommen sie in die Datenbank; Lehrkräfte verwalten ihre Gruppen dann im Browser.</p>'
-        end
+        files = Main.invitation_files(:people).map { |p| File.basename(p) }
+        "<p>Die Einladungen kommen aus #{files.size} #{files.size == 1 ? 'Datei' : 'Dateien'} unter <code>/invitations</code>: #{h.(files.join(', '))}. " \
+            'Mit dem Import kommen sie in die Datenbank; Lehrkräfte verwalten ihre Gruppen dann im Browser.</p>'
     end
 
     post '/api/admin/invitation_import_preview' do

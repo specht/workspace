@@ -74,6 +74,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Klötzchenwelt hat vier: Ecken im Uhrzeigersinn, Licht ohne `ambient`,
   ohne `max` und Normalen als Farbe, Nebel und Fackeln, Texturkoordinaten
   als Farbe.
+- Nach dem Import der Einladungslisten liest ein Server im Betrieb keine
+  Einladungsdatei mehr, auch keine, deren Name mit `_` beginnt; nur im
+  Entwicklungsmodus bleiben `_e2e.txt` und `_tutorial_screenshots.txt` (die
+  Konten der Tests und des Screenshot-Generators). »Betrieb« zeigt den
+  Abschnitt »Einladungslisten« nur noch, solange der Import aussteht. Für
+  Betreibende, die ihre Einladungen noch in Dateien haben: Der Import
+  bleibt, wie er ist.
 - Datenbanken in Leistungsüberprüfungen funktionieren: Ein Prüfungs-Workspace
   hat absichtlich keine Namensauflösung (er soll offline sein) und fand
   deshalb auch MySQL und Neo4j nicht. Er bekommt jetzt genau diese beiden
