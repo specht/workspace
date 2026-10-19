@@ -186,6 +186,13 @@ const WORKSPACE_SCREENSHOT_STYLE = `
 }
 `;
 
+function webglArgs() {
+    if (process.env.TUTORIAL_SCREENSHOT_GPU === 'nvidia') {
+        return ['--use-gl=angle', '--use-angle=gl-egl', '--enable-gpu', '--ignore-gpu-blocklist'];
+    }
+    return ['--use-gl=angle', '--use-angle=swiftshader'];
+}
+
 function screenshotMetricsFor(viewport, zoom) {
     const deviceScaleFactor = DEFAULT_PROFILE.desktopScaleFactor * zoom;
     if (!Number.isFinite(deviceScaleFactor) || deviceScaleFactor <= 0) {
@@ -1194,6 +1201,7 @@ async function ensureBrowser() {
                 'EXCLUDE localhost',
             ].join(',');
             console.log(`Tutorial screenshot browser routing: ${hostRules}`);
+            console.log(`Tutorial screenshot WebGL: ${process.env.TUTORIAL_SCREENSHOT_GPU === 'nvidia' ? 'NVIDIA graphics card' : 'software (SwiftShader)'}`);
             // Development runs on plain http. VS Code webviews (the ER-Werkstatt,
             // the Markdown preview) need a service worker, which browsers allow
             // only in a secure context; students on https have one.
@@ -1210,10 +1218,11 @@ async function ensureBrowser() {
                     `--host-resolver-rules=${hostRules}`,
                     `--unsafely-treat-insecure-origin-as-secure=${secureOrigins}`,
 
-                    // Give headless Chromium a software-backed WebGL implementation.
-                    // This lets VS Code/xterm use its WebGL renderer even without a GPU.
-                    '--use-gl=angle',
-                    '--use-angle=swiftshader',
+                    // WebGL on the host's NVIDIA card when config.rb passed it in
+                    // (several times faster: the Backrooms bake their light in
+                    // seconds), otherwise in software (SwiftShader). Either way
+                    // VS Code/xterm can use its WebGL renderer.
+                    ...webglArgs(),
                     '--enable-webgl',
 
                     // '--disable-font-subpixel-positioning',

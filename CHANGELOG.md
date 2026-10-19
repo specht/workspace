@@ -18,6 +18,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Bildgenerator: WebGL läuft auf der NVIDIA-Grafikkarte des Servers, wenn es
+  eine gibt und Docker die `nvidia`-Runtime kennt (nvidia-container-toolkit),
+  sonst wie bisher in Software. Bilder mit 3D-Szenen (Anaglyphen, Backrooms)
+  entstehen dadurch um ein Vielfaches schneller. Betreibende: nichts zu tun;
+  `TUTORIAL_SCREENSHOT_GPU=0` erzwingt Software.
 - Backrooms: Wände und Böden auch aus Holz (`wood`) und aus kleinen
   Fliesen wie im Schwimmbad (`tiles`), Wände aus Samt wie im Kino (`velvet`);
   Blöcke und Sockel aus einem eigenen Material (`material`, `pedestal_material`);

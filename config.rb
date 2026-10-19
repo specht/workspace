@@ -126,6 +126,14 @@ if PROFILE.include?(:dynamic)
 end
 
 if DEVELOPMENT && PROFILE.include?(:dynamic) && PROFILE.include?(:static)
+    # WebGL in the screenshots (the anaglyph scenes, the Backrooms, VS Code's
+    # terminal) renders on an NVIDIA graphics card when the host has one and
+    # Docker knows the nvidia runtime (nvidia-container-toolkit), several
+    # times faster than in software (SwiftShader), which is used otherwise.
+    # TUTORIAL_SCREENSHOT_GPU=0 ./config.rb up -d forces software.
+    tutorial_screenshot_gpu = ENV['TUTORIAL_SCREENSHOT_GPU'] != '0' &&
+        system('nvidia-smi -L > /dev/null 2>&1') &&
+        `docker info --format '{{json .Runtimes}}' 2> /dev/null`.include?('"nvidia"')
     docker_compose[:services][:tutorial_screenshots] = {
         :build => {
             :context => './src/tutorial-screenshots',
@@ -147,12 +155,19 @@ if DEVELOPMENT && PROFILE.include?(:dynamic) && PROFILE.include?(:static)
             'TUTORIAL_SCREENSHOT_ZOOM' => TUTORIAL_SCREENSHOT[:zoom].to_s,
             'TUTORIAL_SCREENSHOT_CAPTURE_SCALE' => TUTORIAL_SCREENSHOT[:capture_scale].to_s,
             'TUTORIAL_SCREENSHOT_DESKTOP_SCALE_FACTOR' => TUTORIAL_SCREENSHOT[:desktop_scale_factor].to_s,
+            'TUTORIAL_SCREENSHOT_GPU' => tutorial_screenshot_gpu ? 'nvidia' : 'none',
         },
         :extra_hosts => [
             'host.docker.internal:host-gateway',
         ],
         :shm_size => '1gb',
     }
+    if tutorial_screenshot_gpu
+        docker_compose[:services][:tutorial_screenshots][:runtime] = 'nvidia'
+        docker_compose[:services][:tutorial_screenshots][:environment]['NVIDIA_VISIBLE_DEVICES'] = 'all'
+        # graphics: the card's OpenGL/EGL libraries, not only CUDA
+        docker_compose[:services][:tutorial_screenshots][:environment]['NVIDIA_DRIVER_CAPABILITIES'] = 'all'
+    end
 end
 
 if PROFILE.include?(:neo4j)

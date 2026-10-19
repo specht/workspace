@@ -859,6 +859,18 @@ unscaled, so a `<canvas>` (an anaglyph scene, a sandbox, the Neo4j graph)
 draws at full resolution instead of being enlarged. Both give the same image
 size for the same layout.
 
+WebGL (the anaglyph scenes, the Backrooms, VS Code's terminal) renders on the
+host's NVIDIA graphics card when `config.rb` finds one (`nvidia-smi` works)
+and Docker knows the `nvidia` runtime (nvidia-container-toolkit): the service
+then runs with `runtime: nvidia`, and Chromium uses ANGLE on EGL. That is
+several times faster than software; the Backrooms bake their light in
+seconds instead of a minute. Without a card, or with
+`TUTORIAL_SCREENSHOT_GPU=0 ./config.rb up -d`, it renders in software
+(SwiftShader). The log says which (»Tutorial screenshot WebGL: …«). The
+renderer is not part of a picture's fingerprint: switching it does not make
+pictures stale, and both give the same pictures up to small differences in
+the last bit.
+
 A `zoom` below 1 lays a preview out on more CSS pixels without more image
 pixels, so a canvas in it draws at less than its full resolution, and a crop
 from the middle keeps only a few hundred pixels. For a small cut-out of a
