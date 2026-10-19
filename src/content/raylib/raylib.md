@@ -615,7 +615,7 @@ float vy = 0;          // Geschwindigkeit nach oben, in Blöcken pro Sekunde
 bool on_ground = false;
 ```
 
-`solid` hat am Rand und unter der Welt unsichtbare Wände, damit du nicht hinunterfällst.
+`solid` hat am Rand und unter der Welt unsichtbare Wände, damit du nicht [hinunterfällst](/unter-der-welt).
 
 ### Eine Richtung nach der anderen
 
