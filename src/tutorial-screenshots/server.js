@@ -2979,6 +2979,23 @@ async function installWorkspaceScreenshotStyle(page) {
     }, WORKSPACE_SCREENSHOT_STYLE);
 }
 
+// An editor tab shows a tooltip (its path, or »Close (Ctrl+W)« on its close
+// button) when the mouse happens to rest on it, for example after a click on
+// »Open« in a notification, where the new tab opens. No recipe points at a
+// tab: if the mouse is over the tabs and a tooltip shows, move the mouse out
+// of the window and let it fade. Other tooltips (»Go Live«) stay.
+async function dismissTabHover(page) {
+    const tooltip = () => page.evaluate(() =>
+        [...document.querySelectorAll('.workbench-hover')].some((element) => element.offsetParent !== null));
+    const onTab = await page.evaluate(() => document.querySelector('.tabs-container :hover') !== null);
+    if (!onTab || !(await tooltip())) return;
+    console.log('Moving the mouse away from an editor tab and its tooltip');
+    await page.mouse.move(-1, -1);
+    for (let attempt = 0; attempt < 30 && await tooltip(); attempt += 1) {
+        await page.waitForTimeout(100);
+    }
+}
+
 async function waitForWorkspaceFont(page) {
     const loadedFaceCount = await page.evaluate(async family => {
         const faces = await document.fonts.load(`16px "${family}"`);
@@ -3217,6 +3234,7 @@ async function captureShot(shot, tutorialDirectory) {
 
     if (shot.tab === 'workspace') {
         await waitForWorkspaceFont(page);
+        await dismissTabHover(page);
     }
 
     let originalTerminalScrollTop = null;
