@@ -3,6 +3,7 @@
 <style>
     /* .unit, .server-stats and .health-*: in default.css. */
     #running_here td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    #running_count { font-size: 1rem; vertical-align: middle; }
     #running_here tr > td { --bs-table-bg-state: rgba(255, 200, 0, var(--ws-activity, 0)); }
 </style>
 <div class='container admin-page'>
@@ -28,7 +29,7 @@
         </div>
     </div>
 
-    <h2 id="laufend">Laufende Workspaces <span class='badge text-bg-secondary align-middle' id='running_count'>0</span></h2>
+    <h2 id="laufend">Laufende Workspaces <span class='class-tab-count align-middle' id='running_count'>0</span></h2>
     <p class='small text-body-secondary'>
         Jede Sekunde neu; gelb, wer gerade rechnet. Einen Workspace, der nicht läuft, öffnest du unter
         <a href='/personen#personen'>Personen</a> oder auf der <a href='/klasse'>Klassenseite</a>.

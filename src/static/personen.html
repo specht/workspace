@@ -352,8 +352,8 @@
     }
 
     function deletion_note(p) {
-        const suspended = p.suspended ? `<span class='badge text-bg-danger ms-1' title='${esc(p.suspended.reason || '')}'>gesperrt seit ${new Date(p.suspended.at * 1000).toLocaleDateString('de-DE')}</span>` : '';
-        return suspended + (p.deletion_at ? `<span class='badge text-bg-warning ms-1'>wird am ${new Date(p.deletion_at).toLocaleDateString('de-DE')} gelöscht</span>` : '');
+        const suspended = p.suspended ? `<span class='state-badge state-bad ms-1' title='${esc(p.suspended.reason || '')}'><i class='bi bi-lock' aria-hidden='true'></i>gesperrt seit ${new Date(p.suspended.at * 1000).toLocaleDateString('de-DE')}</span>` : '';
+        return suspended + (p.deletion_at ? `<span class='state-badge state-warn ms-1'><i class='bi bi-calendar-x' aria-hidden='true'></i>wird am ${new Date(p.deletion_at).toLocaleDateString('de-DE')} gelöscht</span>` : '');
     }
 
     // Checkboxes for accounts and what to do with the chosen ones.

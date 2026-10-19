@@ -5836,6 +5836,28 @@ table.value-groups td.group-odd {
     --bs-btn-active-border-color: #3d6a9c;
 }
 
+/* A person's state in a list (gesperrt, wird gelöscht): a soft pill in the
+   colours of »Betrieb«, not a solid block. */
+.state-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    padding: 0.05em 0.55em;
+    border-radius: 1em;
+    font-size: 0.78rem;
+    white-space: nowrap;
+    border: 1px solid color-mix(in srgb, var(--state-color) 45%, transparent);
+    background: color-mix(in srgb, var(--state-color) 12%, transparent);
+    color: var(--bs-body-color);
+}
+
+.state-badge .bi {
+    color: var(--state-color);
+}
+
+.state-warn { --state-color: var(--health-warn); }
+.state-bad { --state-color: var(--health-bad); }
+
 /* /admin: CPU, RAM and the two disks in one row, live. */
 .server-load {
     display: grid;

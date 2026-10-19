@@ -19,6 +19,20 @@ E2E test. `CHANGELOG.md` »Unreleased« lists every change in German.
 - Stage files by name, never `git add -A` (a swap file of `credentials.rb`
   was once committed that way and had to be filtered out before pushing).
 
+## Branch `admin-pages` (2026-10-19, not merged)
+
+The admin pages consolidated with the maintainer: /admin is »Betrieb«
+(status cards, live load, running Workspaces only, audit log, restore);
+/personen has tabs and »Aufräumen« as chips (/api/admin/people `state`,
+`counts`); /gruppen has the group cleanup (chips, »Nie Angemeldete
+entfernen«, also for teachers); school fields are typeable
+(`searchable_select` in code.js); the roster cache notices a loaded dump
+within 10 s; »Zuletzt da« uses every trace of use (housekeeping.rb writes
+/internal/activity_for_fs_tag.json: code-server heartbeat and launch
+marker hourly, newest file change daily); catalog cards have alt texts
+(`image_alt`). Open from the maintainer: a custom first start of the
+Workspace (code-server's welcome page shows Coder's ad).
+
 ## When the maintainer deploys
 
 In this order, on the server:
