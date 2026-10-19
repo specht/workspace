@@ -1089,6 +1089,7 @@ div.floatright > p {
 
 .found-note p {
     margin-bottom: 0.6em;
+    font-style: italic;
 }
 
 .found-note cite {
