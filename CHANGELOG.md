@@ -1288,6 +1288,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- Klassenseite, Reiter »Lernende«: Bei einer Gruppe, die nicht als Karte
+  verwaltet wird (etwa aus den Einladungsdateien), stand die Last jedes
+  Workspace in der Spalte »Workspace« (»läuft0,40% · 312,0MB«), und CPU und
+  RAM blieben leer. Die Zellen werden jetzt erst übernommen, wenn die Gruppe
+  als Karte erscheint; sonst bleibt die Tabelle, wie sie ist.
 - Im Terminal des Workspace zeigen sich zwischen farbig hinterlegten Zeilen
   keine feinen dunklen Linien mehr, wenn der Browser mit einer Skalierung wie
   125 % oder 150 % zeichnet und xterm ohne WebGL läuft; die Schrift bleibt.

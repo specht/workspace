@@ -547,18 +547,25 @@ document.addEventListener('click', function (e) {
     if (!here) return;
     const name = here.dataset.group;
     const live = new Map();
-    document.querySelectorAll('.class-people-table tbody tr[data-email]').forEach((tr) => {
-        const status = tr.querySelector('.class-ws-status');
-        const usage = document.createElement('span');
-        usage.className = 'class-ws-usage';
-        usage.innerHTML = "<span class='class-ws-cpu'>–</span> · <span class='class-ws-ram'>–</span>";
-        status.append(usage);
-        status.classList.add('text-nowrap');
-        // Square, as the »remove« next to them: the icon only.
-        const buttons = [...tr.querySelectorAll('.class-person-actions .btn')];
-        buttons.forEach((b) => b.classList.add('btn-icon'));
-        live.set(tr.dataset.email, { cell: status, buttons: buttons });
-    });
+    // Only once the group is shown as a card: a group the card does not know
+    // keeps its table as it is, with CPU and RAM in their own columns.
+    const adopt = () => {
+        if (live.size) return;
+        document.querySelectorAll('.class-people-table tbody tr[data-email]').forEach((tr) => {
+            const status = tr.querySelector('.class-ws-status');
+            // the table's own columns go with it, so the live updates find the new ones
+            tr.querySelectorAll('td.class-ws-cpu, td.class-ws-ram').forEach((td) => td.remove());
+            const usage = document.createElement('span');
+            usage.className = 'class-ws-usage';
+            usage.innerHTML = "<span class='class-ws-cpu'>–</span> · <span class='class-ws-ram'>–</span>";
+            status.append(usage);
+            status.classList.add('text-nowrap');
+            // Square, as the »remove« next to them: the icon only.
+            const buttons = [...tr.querySelectorAll('.class-person-actions .btn')];
+            buttons.forEach((b) => b.classList.add('btn-icon'));
+            live.set(tr.dataset.email, { cell: status, buttons: buttons });
+        });
+    };
     let shown = false;
     window.member_table_hook = function (table) {
         table.find('thead th').first().after("<th>Workspace</th>");
@@ -585,6 +592,7 @@ document.addEventListener('click', function (e) {
                 return;
             }
             shown = true;
+            adopt();
             open_groups.add(group.name);
             $(here).empty().append(render_group(group, data.admin));
             const old = document.querySelector('.class-people-scroll');
