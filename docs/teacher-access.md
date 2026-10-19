@@ -89,10 +89,15 @@ offen ist:
 3. Weder noch: geduldet, aber sichtbar (»ungeklärt« auf `/personen`, »Einverständnis
    für x von y« an der Gruppe), damit es geklärt wird.
 
-## Gruppen im Browser (`/gruppen`)
+## Gruppen im Browser (Klassenseite und `/gruppen`)
 
-Nach dem Import verwaltet jede Lehrkraft ihre Gruppen selbst
-(`include/groups_page.rb`, `static/gruppen.html`):
+Nach dem Import verwaltet jede Lehrkraft ihre Gruppen selbst, auf der
+Klassenseite: »Neue Gruppe« neben der Auswahl der Gruppe, und im Reiter
+»Lernende« die Gruppe als Karte (`static/include/groups.js`, dieselbe wie
+auf `/gruppen`), jede Zeile mit dem Workspace der Person (`class_board.js`
+verschiebt die Zellen des Servers hinein). `/gruppen` ist die Übersicht
+der Administration über alle Gruppen; Lehrkräfte landen von dort im Reiter
+»Lernende«. Die Routen (`include/groups_page.rb`):
 
 - Eine Gruppe anlegen; sie gehört zur Schule der Lehrkraft. Namen müssen
   frei sein; `Administrator`, `Lehrkräfte`, die Testgruppen und Gruppen aus

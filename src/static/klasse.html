@@ -1,3 +1,4 @@
+<div class='api_messages page-messages' style='display: none;' role='status' aria-live='polite'></div>
 <div class='container class-board-page'>
     <div class='class-board-title'>
         <h1 class='mt-4'>Klassen</h1>
@@ -11,5 +12,6 @@
     </div>
     #{class_board_page}
 </div>
+<script src='/include/groups.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>
 <script src='/include/class_board.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>
 <script src='/include/submission_viewer.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>

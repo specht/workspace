@@ -18,6 +18,20 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Klassen und Gruppen sind für Lehrkräfte eins: Im Menü gibt es nur noch
+  »Klassen«. Auf der Klassenseite legt »Neue Gruppe« eine Gruppe an, und der
+  Reiter »Lernende« zeigt die Gruppe mit allem, was dazugehört: Namen und
+  Adressen, Willkommensmails, Einverständnis, Enddatum, weitere Lehrkräfte,
+  Umbenennen, Löschen, neue Personen, und in jeder Zeile den Workspace der
+  Person, live (ob er läuft, CPU, Speicher, »Workspace öffnen«,
+  »Nachahmen«). Die Auslastung des Servers steht als eine Zeile auf
+  Deutsch darüber. `/gruppen` bleibt die Übersicht der Administration.
+  Die Klassenseite öffnet sich auch für Lehrkräfte ohne Gruppe. Eine
+  Aktivität zum Anheften findet sich durch Tippen, auch über ihre Adresse
+  und ihre Beschreibung. Die Anmelde-Codes am Beamer nennen Gruppe und
+  Schule. Behoben: Ein Workspace, der gerade erst mit seinem Konto
+  entstand, erschien in der Live-Ansicht erst nach dem Neuladen; nach dem
+  Laden stand jeder Workspace erst einmal auf »aus«.
 - code-server 4.140.0 (VS Code 1.140) statt 4.138.0. Für Betreibende:
   Image neu bauen (`./build-image.sh`); alle Screenshots der Tutorials sind
   neu erzeugt.

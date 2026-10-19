@@ -24,7 +24,7 @@ class MailTextsTest < Minitest::Test
         refute_includes waiting, 'Server kostet'
         assert_includes ready, 'hat dem Einsatz zugestimmt'
         assert_includes ready, 'Der Server kostet 40 € im Monat.'
-        assert_includes ready, "#{WEB}/gruppen"
+        assert_includes ready, "#{WEB}/klasse"
         assert_includes ready, "#{WEB}/datenschutz?schule=bs7"
     end
 

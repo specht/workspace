@@ -18,7 +18,7 @@ Was du für die erste Stunde mit dem Workspace brauchst: wie deine Klasse sich a
 
 Jede Schülerin und jeder Schüler hat einen eigenen **Workspace**: Visual Studio Code im Browser, mit einem eigenen Ordner, der erhalten bleibt. Auf der Startseite stehen **Aktivitäten**, also Anleitungen zu einem Thema (eine Webseite bauen, eine interaktive Geschichte schreiben, eine Datenbank abfragen). In vielen Aktivitäten stehen **Aufgaben**, die der Workspace selbst prüft: Er sieht in den Dateien nach, führt eine Abfrage aus oder vergleicht eine Antwort. Im **Handbuch** schlagen die Lernenden nach, was sie in mehreren Aktivitäten brauchen.
 
-Du siehst dieselben Seiten wie deine Klasse, mit zwei Zusätzen: dem Menüpunkt **Klassen** und auf manchen Aktivitäten dem Knopf **Notiz für Lehrkräfte** (mehr dazu unten).
+Du siehst dieselben Seiten wie deine Klasse, mit zwei Zusätzen: dem Menüpunkt **Klassen** (deine Gruppen, ihr Fortschritt und wer darin ist) und auf manchen Aktivitäten dem Knopf **Notiz für Lehrkräfte** (mehr dazu unten).
 
 ## Die erste Stunde: anmelden
 
@@ -36,12 +36,12 @@ Ein Code gilt einmal und nur kurze Zeit. Wer sich vertippt, fordert einfach eine
 
 ## Gruppen und Einladungen
 
-Wer sich anmelden kann, steht in einer Gruppe. Unter **Gruppen** legst du deine Gruppen an, trägst die E-Mail-Adressen ein (eine pro Zeile, mit oder ohne Namen, auch aus einer Tabelle kopiert) und schickst eine **Willkommensmail**: Sie sagt, wie die Anmeldung geht, und Antworten darauf kommen bei dir an. Namen sind freiwillig und können auch später kommen; ohne Namen zeigt die Klassenseite die Adresse. Eine Kollegin oder einen Kollegen deiner Schule nimmst du mit **Lehrkraft dazu** in eine Gruppe.
+Wer sich anmelden kann, steht in einer Gruppe. Unter **Klassen** legst du mit **Neue Gruppe** deine Gruppen an; im Reiter **Lernende** trägst du die E-Mail-Adressen ein (eine pro Zeile, mit oder ohne Namen, auch aus einer Tabelle kopiert) und schickst eine **Willkommensmail**: Sie sagt, wie die Anmeldung geht, und Antworten darauf kommen bei dir an. Namen sind freiwillig und können auch später kommen; ohne Namen zeigt die Klassenseite die Adresse. Eine Kollegin oder einen Kollegen deiner Schule nimmst du mit **Lehrkraft dazu** in eine Gruppe.
 
-Welcher Schule du angehörst, trägt die Administration ein. Hat deine Schule dem Einsatz noch nicht zugestimmt, vermerkst du unter **Gruppen**, für wen ein schriftliches Einverständnis vorliegt; anmelden können sich alle schon jetzt (mehr dazu unten).
+Welcher Schule du angehörst, trägt die Administration ein. Hat deine Schule dem Einsatz noch nicht zugestimmt, vermerkst du im Reiter **Lernende**, für wen ein schriftliches Einverständnis vorliegt; anmelden können sich alle schon jetzt (mehr dazu unten).
 
 <div class='hint'>
-Steht unter <strong>Gruppen</strong>, dass die Einladungen noch in Dateien stehen, pflegt sie die Administration: Schreib an <a href='mailto:${contact_email}'>${contact_email}</a>, für welche Gruppe, und schick die E-Mail-Adressen mit.
+Steht auf der Klassenseite, dass die Einladungen noch in Dateien stehen, pflegt sie die Administration: Schreib an <a href='mailto:${contact_email}'>${contact_email}</a>, für welche Gruppe, und schick die E-Mail-Adressen mit.
 </div>
 
 ## Die Klassenseite
@@ -86,9 +86,11 @@ Die Klassenseite merkt sich, welche Gruppe und welche Aktivität du zuletzt ange
 
 ### Lernende
 
-Hier steht jede Person mit ihrem Workspace: ob er läuft, wie viel Rechenzeit und Speicher er gerade braucht. Eine Zeile leuchtet gelb, solange ihr Workspace arbeitet. Darüber zeigen zwei Karten, wie ausgelastet der Server ist. So erkennst du, ob ein Workspace hängt oder ob gerade alle gleichzeitig etwas Großes starten.
+Hier steht jede Person der Gruppe mit ihrem Workspace: ob er läuft, wie viel Rechenzeit und Speicher er gerade braucht. Eine Zeile leuchtet gelb, solange ihr Workspace arbeitet. Darüber zeigt eine Zeile, wie ausgelastet der Server ist. So erkennst du, ob ein Workspace hängt oder ob gerade alle gleichzeitig etwas Großes starten.
 
-<img class='full full-shadow' src='klasse-lernende.webp' alt='Der Reiter Lernende: Karten zu CPU und Speicher des Servers, darunter die Lernenden mit ihrem Workspace.'>
+Im selben Reiter verwaltest du die Gruppe: Namen und Adressen, Willkommensmails, das Einverständnis, ein Enddatum, weitere Lehrkräfte, Umbenennen und Löschen; unten nimmst du neue Personen auf.
+
+<img class='full full-shadow' src='klasse-lernende.webp' alt='Der Reiter Lernende: oben die Auslastung des Servers, darunter die Lernenden mit ihrem Workspace und den Angaben der Gruppe.'>
 
 Bei jeder Person stehen zwei Knöpfe:
 

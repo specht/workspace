@@ -4836,7 +4836,7 @@ class Main < Sinatra::Base
             recipients = r['teachers'].empty? ? ADMIN_USERS : r['teachers']
             day = (Date.iso8601(r['ends_on']).strftime('%d.%m.%Y') rescue r['ends_on'])
             text = "<p>Die Gruppe <strong>#{CGI.escapeHTML(r['name'])}</strong> im Workspace ist am #{day} zu Ende gegangen.</p>" \
-                "<p>Wird sie nicht mehr gebraucht, lösche sie unter #{WEB_ROOT}/gruppen; wer danach in keiner Gruppe mehr steht, ist nicht mehr eingeladen, " \
+                "<p>Wird sie nicht mehr gebraucht, lösche sie unter #{WEB_ROOT}/klasse (Reiter »Lernende«); wer danach in keiner Gruppe mehr steht, ist nicht mehr eingeladen, " \
                 'und die Konten werden nach den Löschregeln gelöscht. Geht der Kurs weiter, trag dort ein neues Ende ein.</p>' \
                 "<p>Viele Grüße<br>#{CGI.escapeHTML(mail_signature)}</p>"
             recipients.each do |email|
@@ -5520,7 +5520,8 @@ class Main < Sinatra::Base
         io << "<select class='form-select form-select-sm class-pin-select' aria-label='Aktivität zum Anheften'><option value=''>Aktivität anheften …</option>"
         pinned = pins.map { |p| p[:slug] }
         pinnable_slugs.reject { |s| pinned.include?(s) }.sort_by { |s| plain_title(s).downcase }.each do |s|
-            io << "<option value='#{h.(s)}'>#{h.(plain_title(s))}</option>"
+            # The description too, for the search (searchable_select).
+            io << "<option value='#{h.(s)}' data-search='#{h.((@@content[s] || {})[:abstract].to_s.strip[0, 600])}'>#{h.(plain_title(s))}</option>"
         end
         io << "</select><div class='class-pins-note'>Angeheftetes steht bei allen in der Gruppe oben auf der Startseite und lässt sich dort nicht ausblenden.</div></div>"
         io
@@ -5556,20 +5557,22 @@ class Main < Sinatra::Base
                     "<span class='class-test-reset-note'>Leert seinen Workspace und seine Workspaces in Leistungsüberprüfungen, legt seine Datenbanken neu an und löscht seine Antworten und Abgaben. Andere Konten bleiben, wie sie sind.</span></p>"
             end
         end
-        # The admin page's server cards, filled from the teachers' websocket
-        # (server_stats), see class_board.js.
-        bar = ->(label) { "<div class='col-6'>#{label}<div class='progress' role='progressbar' aria-label='#{label}'><div class='progress-bar progress-bar-striped' style='width: 0%'></div></div><p>&nbsp;</p></div>" }
-        io << "<div class='row class-server-cards' hidden>"
-        io << "<div class='col-md-6 mb-3'><div class='server-stats class-server-cpu'><h4>CPU / RAM</h4><i class='bi bi-cpu' aria-hidden='true'></i><hr><div class='row'>#{bar.('CPU')}#{bar.('RAM')}</div></div></div>"
-        io << "<div class='col-md-6 mb-3'><div class='server-stats class-server-storage'><h4>Storage</h4><i class='bi bi-nvme' aria-hidden='true'></i><hr><div class='row'>#{bar.('System')}#{bar.('User data')}</div></div></div>"
-        io << "</div>"
+        # How busy the server is, so that a slow Workspace can be told from a
+        # busy server: CPU and RAM in one row as on »Betrieb«, from the
+        # teachers' websocket (server_stats), see class_board.js.
+        cell = ->(icon, label) { "<div class='server-load-cell'><div class='server-load-label'><i class='bi #{icon}' aria-hidden='true'></i>#{label}</div><div class='progress' role='progressbar' aria-label='#{label}'><div class='progress-bar progress-bar-striped' style='width: 0%'></div></div><p>–</p></div>" }
+        io << "<div class='server-load-pair class-server-load mb-3' aria-label='Server, jede Sekunde neu'>#{cell.('bi-cpu', 'CPU des Servers')}#{cell.('bi-memory', 'RAM des Servers')}</div>"
+        io << class_group_html(group) unless test_group
+        running = (workspace_runtime.running_workspaces(:timeout => shell_timeout(:docker_network_inspect)).keys rescue [])
         io << "<div class='class-people-scroll'><table class='table align-middle class-people-table'>"
         io << "<thead><tr><th>Name</th><th>Workspace</th><th class='text-end'>CPU</th><th class='text-end'>RAM</th><th></th></tr></thead><tbody>"
         members.each do |m|
             email = m[:email]
             test = @@test_accounts.key?(email)
             io << "<tr data-email='#{h.(email)}'><td class='class-person'>#{h.(m[:name])}</td>"
-            io << "<td class='class-ws-status' data-fs-tag='#{h.(fs_tag_for_email(email))}'><span class='class-ws-dot' aria-hidden='true'></span><span class='class-ws-text'>aus</span></td>"
+            # Right from the start, not »aus« until the websocket says otherwise.
+            on = running.include?(fs_tag_for_email(email))
+            io << "<td class='class-ws-status#{on ? ' class-ws-running' : ''}' data-fs-tag='#{h.(fs_tag_for_email(email))}'><span class='class-ws-dot' aria-hidden='true'></span><span class='class-ws-text'>#{on ? 'läuft' : 'aus'}</span></td>"
             io << "<td class='class-ws-cpu text-end'>–</td><td class='class-ws-ram text-end'>–</td><td class='class-person-actions'>"
             if may_look_in?(email)
                 attrs = "data-email='#{h.(email)}' data-name='#{h.(m[:name])}'#{test ? " data-test='1'" : ''}"
@@ -5614,6 +5617,25 @@ class Main < Sinatra::Base
         ['startseite', 'Startseite', 'bi-pin-angle'],
     ].freeze
 
+    # »Neue Gruppe« on the class page: for teachers with a school (their
+    # groups belong to it) and the administration.
+    def may_create_group?
+        admin_logged_in? || (teacher_account_logged_in? && !school_of_teacher(my_email).nil?)
+    end
+
+    def new_group_button_html
+        return '' unless may_create_group? && !Main.roster_imported.nil?
+
+        "<button type='button' class='btn btn-outline-secondary class-group-new'><i class='bi bi-plus-lg' aria-hidden='true'></i>Neue Gruppe</button>"
+    end
+
+    # In the tab »Lernende«: the group's card from include/groups.js
+    # (members, co-teachers, consent, welcome mails, end), filled by
+    # class_board.js, which moves each person's Workspace into its row.
+    def class_group_html(group)
+        "<section class='class-group-manage' data-group='#{CGI.escapeHTML(group.to_s)}'><p class='text-body-secondary'>Einen Moment …</p></section>"
+    end
+
     # The class page (/klasse): the group up top, waiting login codes right
     # under it (never missed), and three tabs, each with one job: what the
     # group did in an activity, the people and their Workspaces, and what
@@ -5621,13 +5643,18 @@ class Main < Sinatra::Base
     def class_board_page
         groups = class_groups
         h = ->(t) { CGI.escapeHTML(t.to_s) }
-        return "<p>Du betreust noch keine Gruppe. Unter <a href='/gruppen'>Gruppen</a> legst du eine an.</p>" if groups.empty?
+        if groups.empty?
+            return "<p>Du betreust noch keine Gruppe.</p><p>#{new_group_button_html}</p>" unless new_group_button_html.empty?
+
+            return "<p>Du betreust noch keine Gruppe. Dir ist noch keine Schule zugeordnet; das macht die Administration. Danach legst du hier deine Gruppen an.</p>"
+        end
 
         prefs = class_prefs
         group = [params['group'], prefs['group']].find { |g| groups.include?(g) } || groups.first
-        tab = CLASS_TABS.any? { |key, _, _| key == params['tab'] } ? params['tab'] : 'fortschritt'
-        io = +"<p class='small mb-2'><a href='/gruppen'>Gruppen verwalten</a>: anlegen, Adressen eintragen, Willkommensmails.</p>"
-        io << "<form class='class-board-select' method='get' action='/klasse'>"
+        # »gruppe«: the tab that managed the group is part of »Lernende« now.
+        wanted = params['tab'] == 'gruppe' ? 'lernende' : params['tab']
+        tab = CLASS_TABS.any? { |key, _, _| key == wanted } ? wanted : 'fortschritt'
+        io = +"<form class='class-board-select' method='get' action='/klasse'>"
         io << "<label>Gruppe <select class='form-select' name='group' onchange='this.form.submit()'>"
         option = ->(g) { "<option value='#{h.(g)}'#{g == group ? ' selected' : ''}>#{h.(g)} (#{(@@group_members[g] || []).size})</option>" }
         # With more than one school (partner schools, guests), the groups are
@@ -5661,8 +5688,9 @@ class Main < Sinatra::Base
             "});</script>"
         io << "<noscript><button class='btn btn-primary'>Anzeigen</button></noscript>"
         # For the projector: the group's codes, big, names only (class_board.js).
-        io << "<button type='button' class='btn btn-outline-primary class-codes-show'><i class='bi bi-projector' aria-hidden='true'></i>Anmelde-Codes zeigen</button></form>"
-        io << "<div class='class-login-codes' data-group='#{h.(group)}' hidden><h2><i class='bi bi-key' aria-hidden='true'></i>Anmelde-Codes</h2>" \
+        io << "<span class='class-board-actions'>#{new_group_button_html}" \
+            "<button type='button' class='btn btn-outline-secondary class-codes-show'><i class='bi bi-projector' aria-hidden='true'></i>Anmelde-Codes zeigen</button></span></form>"
+        io << "<div class='class-login-codes' data-group='#{h.(group)}' data-school='#{h.(school_names_of_groups[group])}' hidden><h2><i class='bi bi-key' aria-hidden='true'></i>Anmelde-Codes</h2>" \
             "<p>Diese Personen aus #{h.(group)} warten gerade auf ihren Code:</p>" \
             "<table class='table table-sm'><tbody></tbody></table></div>"
         io << "<div class='class-tabs' role='tablist' aria-label='Ansicht'>"
@@ -5936,17 +5964,21 @@ class Main < Sinatra::Base
                     @@client_ids_for_email[@session_user[:email]] ||= []
                     @@client_ids_for_email[@session_user[:email]] << client_id
                 end
+                # Whose Workspace is whose. A Workspace opened for someone
+                # without an account yet (the account comes with it) is not
+                # in the list: an unknown one reloads it, at most every 5 s.
                 email_for_tag = {}
-                neo4j_query(<<~END_OF_STRING).each do |row|
-                    MATCH (u:User) RETURN u.email;
-                END_OF_STRING
-                    email = row['u.email']
-                    email_for_tag[fs_tag_for_email(email)] = email
+                email_for_tag_loaded_at = Time.at(0)
+                load_email_for_tag = lambda do
+                    email_for_tag = neo4j_query('MATCH (u:User) RETURN u.email;').to_h { |row| [fs_tag_for_email(row['u.email']), row['u.email']] }
+                    email_for_tag_loaded_at = Time.now
                 end
+                load_email_for_tag.call
                 docker_stats_thread = Thread.new do
                     loop do
                         lines = {}
                         workspace_runtime.workspace_stats.each_pair do |fs_tag, stat_line|
+                            load_email_for_tag.call if !email_for_tag.key?(fs_tag) && Time.now - email_for_tag_loaded_at > 5
                             email = email_for_tag[fs_tag]
                             next unless workspace_user_visible_to?(email, viewer_email)
                             lines[fs_tag] = {
@@ -7844,11 +7876,15 @@ class Main < Sinatra::Base
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
             halt 403 unless teacher_account_logged_in? || admin_logged_in?
+            # Teachers manage their groups on the class page (tab »Gruppe«);
+            # /gruppen is the administration's overview of all groups.
+            redirect "#{WEB_ROOT}/klasse?tab=lernende", 302 unless admin_logged_in?
         end
         if path == '/klasse'
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
-            halt 403 if class_groups.empty?
+            # Every teacher, also one without a group yet: »Neue Gruppe«.
+            halt 403 if class_groups.empty? && !teacher_account_logged_in? && !admin_logged_in?
         end
         if path == '/tic80/'
             s = File.read(File.join(@@static_dir, '/tic80/index.html'))

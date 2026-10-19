@@ -84,6 +84,8 @@
                 if (data.success) window.location.reload();
             });
         });
+        // Typing a word finds the activity (code.js).
+        if (select) searchable_select(select);
         pins.querySelectorAll('.class-unpin').forEach((button) => {
             button.addEventListener('click', function () {
                 api_call('/api/class/unpin', { group: pins.dataset.group, slug: button.dataset.slug }, function (data) {
@@ -287,8 +289,11 @@
         title.textContent = 'Anmelde-Codes';
         const groupName = document.createElement('span');
         groupName.className = 'class-codes-group';
-        groupName.textContent = group;
-        groupName.title = group;
+        // Which group, and of which school: on a projector in a room that
+        // other classes use too.
+        const school = (document.querySelector('.class-login-codes') || {}).dataset?.school || '';
+        groupName.textContent = school ? group + ' · ' + school : group;
+        groupName.title = groupName.textContent;
         title.appendChild(groupName);
         projector.querySelector('.class-codes-close').addEventListener('click', closeProjector);
         document.body.appendChild(projector);
@@ -327,6 +332,11 @@
             td.classList.toggle('class-ws-running', running);
             const row = td.closest('tr');
             const s = (entry && entry.stats) || {};
+            // A running Workspace has an account: opening it creates one.
+            const account = row.querySelector('.member-account');
+            if (running && account && !account.querySelector('.bi-check-lg')) {
+                account.innerHTML = "<i class='bi bi-check-lg' aria-hidden='true'></i><span class='visually-hidden'>ja</span>";
+            }
             // The row lights up yellow while the Workspace works, as on the
             // admin page: as strong as its CPU load; quiet or off, it fades back.
             const cpu = running ? parseFloat(String(s.CPUPerc || '0').replace(',', '.')) || 0 : 0;
@@ -338,22 +348,21 @@
     }
 
     // The server as a whole, so a slow Workspace can be told from a busy
-    // server: the same cards as on the admin page.
+    // server: CPU and RAM in one row, as on »Betrieb«.
     function showServer(data) {
-        const cards = people.querySelector('.class-server-cards');
-        if (!cards || !data) return;
-        // As on the admin page, in English.
-        const fill = (card, i, percent, html) => {
-            card.querySelectorAll('.progress-bar')[i].style.width = percent + '%';
-            card.querySelectorAll('p')[i].innerHTML = html;
+        const row = people.querySelector('.class-server-load');
+        if (!row || !data) return;
+        const fill = (i, percent, html) => {
+            const bar = row.querySelectorAll('.progress-bar')[i];
+            bar.style.width = percent + '%';
+            bar.classList.toggle('load-full', percent >= 90);
+            bar.classList.toggle('load-high', percent >= 75 && percent < 90);
+            row.querySelectorAll('p')[i].innerHTML = html;
         };
-        const cpu = cards.querySelector('.class-server-cpu');
-        const storage = cards.querySelector('.class-server-storage');
-        fill(cpu, 0, data.cpu_usage, Number(data.cpu_usage).toFixed(2) + '% of ' + data.num_cores + ' cores');
-        fill(cpu, 1, data.ram_percent, data.ram_used + ' of ' + data.ram_total);
-        fill(storage, 0, data.disk_root_percent, data.disk_root_used + ' of ' + data.disk_root_total);
-        fill(storage, 1, data.disk_user_percent, data.disk_user_used + ' of ' + data.disk_user_total);
-        cards.hidden = false;
+        fill(0, data.cpu_usage, Math.round(data.cpu_usage) + ' % von ' + data.num_cores + ' Kernen');
+        // The sizes come with their unit as HTML (»19.6<span class='unit'>G</span>«).
+        fill(1, data.ram_percent, data.ram_used + ' von ' + data.ram_total);
+        row.hidden = false;
     }
 
     function connect() {
@@ -512,3 +521,74 @@ document.addEventListener('click', function (e) {
         });
     });
 });
+
+// »Neue Gruppe«: a name, then the new group's tab »Gruppe« to add people.
+(function () {
+    document.querySelectorAll('.class-group-new').forEach((button) => button.addEventListener('click', () => {
+        input_dialog({ title: 'Neue Gruppe', label: 'Name der Gruppe, zum Beispiel »10a Informatik«', confirm: 'Anlegen', icon: 'bi-plus-lg' }, function (name) {
+            api_call('/api/groups/create', { name: name }, function (r) {
+                if (!r.success) { show_error_message(GROUP_ERRORS[r.error] || 'Das hat nicht geklappt.'); return; }
+                location.href = '/klasse?group=' + encodeURIComponent(r.created) + '&tab=lernende';
+            }, { no_please_wait: true });
+            return false;
+        });
+    }));
+})();
+
+// The tab »Lernende«: the group as the card of /gruppen (include/groups.js:
+// names, addresses, welcome mails, consent, co-teachers, adding people),
+// each row with its Workspace, live: the cells the server rendered into the
+// table of Workspaces move into the card, where the websocket keeps
+// updating them. A group not managed here (a teacher's test group, groups
+// from the invitation files) keeps that table as it is.
+(function () {
+    const here = document.querySelector('.class-group-manage');
+    if (!here) return;
+    const name = here.dataset.group;
+    const live = new Map();
+    document.querySelectorAll('.class-people-table tbody tr[data-email]').forEach((tr) => {
+        const status = tr.querySelector('.class-ws-status');
+        const usage = document.createElement('span');
+        usage.className = 'class-ws-usage';
+        usage.innerHTML = "<span class='class-ws-cpu'>–</span> · <span class='class-ws-ram'>–</span>";
+        status.append(usage);
+        status.classList.add('text-nowrap');
+        // Square, as the »remove« next to them: the icon only.
+        const buttons = [...tr.querySelectorAll('.class-person-actions .btn')];
+        buttons.forEach((b) => b.classList.add('btn-icon'));
+        live.set(tr.dataset.email, { cell: status, buttons: buttons });
+    });
+    let shown = false;
+    window.member_table_hook = function (table) {
+        table.find('thead th').first().after("<th>Workspace</th>");
+    };
+    window.member_row_hook = function (member, row) {
+        // The same elements on every re-render, so live updates keep working.
+        const cells = live.get(member.email);
+        row.children().first().after(cells ? cells.cell : $("<td><span class='text-body-secondary'>–</span></td>"));
+        if (cells) row.find('.member-actions').prepend(cells.buttons);
+    };
+    window.on_group_renamed = function (old_name, new_name) {
+        location.href = '/klasse?group=' + encodeURIComponent(new_name) + '&tab=lernende';
+    };
+    window.load_groups = function () {
+        api_call('/api/groups/list', {}, function (data) {
+            if (!data.success) return;
+            all_schools = data.schools || [];
+            fat_kb = data.fat_kb;
+            const group = (data.groups || []).find((g) => g.name === name);
+            if (!group) {
+                // Deleted just now: back to the class page.
+                if (shown) { location.href = '/klasse'; return; }
+                here.remove();
+                return;
+            }
+            shown = true;
+            open_groups.add(group.name);
+            $(here).empty().append(render_group(group, data.admin));
+            const old = document.querySelector('.class-people-scroll');
+            if (old) old.remove();
+        }, { no_please_wait: true });
+    };
+    window.load_groups();
+})();

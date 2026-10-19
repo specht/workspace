@@ -141,8 +141,17 @@ function searchable_select(select) {
     wrap.append(input, menu);
     select.addClass('d-none').attr({ 'aria-hidden': 'true', tabindex: '-1' });
     let shown = [], active = -1, last = select.val();
-    const options = () => select.find('option').map(function () { return { value: $(this).val(), text: $(this).text() }; }).get();
-    const sync = function () { last = select.val(); input.val(select.find('option:selected').text()); };
+    // An option without a value (»Aktivität anheften …«) is the prompt: the
+    // field's placeholder, not a choice.
+    const prompt = select.find('option').filter(function () { return $(this).val() === ''; }).first().text();
+    if (prompt && !/alle /i.test(prompt)) input.attr('placeholder', prompt);
+    const options = () => select.find('option').map(function () { return { value: $(this).val(), text: $(this).text(), more: $(this).attr('data-search') || '' }; }).get()
+        .filter(o => o.value !== '' || /alle /i.test(o.text));
+    const sync = function () {
+        last = select.val();
+        const chosen = select.find('option:selected');
+        input.val(chosen.val() === '' && !/alle /i.test(chosen.text()) ? '' : chosen.text());
+    };
     const close = function () { menu.removeClass('show').empty(); input.attr('aria-expanded', 'false'); shown = []; active = -1; };
     const mark = () => menu.find('.dropdown-item').removeClass('active').eq(active).addClass('active');
     const pick = function (option) {
@@ -150,13 +159,23 @@ function searchable_select(select) {
         if (option && option.value !== select.val()) select.val(option.value).trigger('change');
         sync();
     };
+    // A word finds an option by its text or its value (the address of an
+    // activity, »pixelram«), without regard to case, accents, spaces and
+    // hyphens; several words must all be found. An option's data-search
+    // (an activity's description) counts too, but those come after the
+    // others and say »im Text«.
+    const plain = (t) => `${t}`.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[\s\-_.]+/g, '');
     const show = function (query) {
-        const q = query.trim().toLowerCase();
-        shown = options().filter(o => !q || o.text.toLowerCase().includes(q));
+        const words = query.trim().split(/\s+/).filter(Boolean).map(plain);
+        const all = options();
+        const direct = all.filter(o => { const hay = plain(o.text) + ' ' + plain(o.value); return words.every(w => hay.includes(w)); });
+        const in_text = words.length === 0 ? [] : all.filter(o => !direct.includes(o) && o.more &&
+            words.every(w => (plain(o.text) + ' ' + plain(o.value) + ' ' + plain(o.more)).includes(w))).map(o => ({ ...o, in_text: true }));
+        shown = direct.concat(in_text);
         active = shown.length ? 0 : -1;
         menu.empty();
         shown.forEach(function (o, i) {
-            const item = $(`<li><button type='button' class='dropdown-item' role='option'>${esc(o.text)}</button></li>`);
+            const item = $(`<li><button type='button' class='dropdown-item' role='option'>${esc(o.text)}${o.in_text ? " <span class='small text-body-secondary'>im Text</span>" : ''}</button></li>`);
             item.find('button').on('mousedown', function (e) { e.preventDefault(); pick(shown[i]); });
             menu.append(item);
         });

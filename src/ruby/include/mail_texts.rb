@@ -88,7 +88,7 @@ module MailTexts
             "Anmelden kannst du dich mit deiner Adresse #{h(email)}; den Code dafür bekommst du per E-Mail.</p>\n"
         body << "<p>Für den Anfang:</p>\n<ul>\n"
         body << "<li>#{link("#{web_root}/lehrmaterial-einstieg")}: was du für die erste Stunde brauchst und wie du mit deinem Testkonto alles selbst ausprobierst.</li>\n"
-        body << "<li>#{link("#{web_root}/gruppen")}: Hier legst du Gruppen an, trägst die Adressen deiner Schülerinnen und Schüler ein (Namen sind freiwillig) und schickst ihnen eine Willkommensmail.</li>\n"
+        body << "<li>#{link("#{web_root}/klasse")}: Hier legst du mit »Neue Gruppe« Gruppen an, trägst im Reiter »Lernende« die Adressen deiner Schülerinnen und Schüler ein (Namen sind freiwillig) und schickst ihnen eine Willkommensmail.</li>\n"
         body << "<li>#{link(documents_url)}: die Unterlagen für deine Schule, zum Drucken: eine Seite mit der Entscheidung für die Schulleitung, ein Elternbrief und mehr.</li>\n"
         body << "</ul>\n"
         body << if school_approved

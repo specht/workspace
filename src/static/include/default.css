@@ -3399,8 +3399,75 @@ ul.task-teacher-list .task-teacher-answer {
     flex: 1;
 }
 
-.class-board-select .class-codes-show {
+.class-board-select .class-board-actions {
     margin-left: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+}
+
+/* A table of people in a scrolling box: as wide as its content, so that
+   the box scrolls instead of the page (phones). Positioned, so that the
+   hidden labels for screen readers stay inside it too. */
+.table-responsive {
+    position: relative;
+}
+
+.table-responsive > .people-table {
+    width: max-content;
+    min-width: 100%;
+}
+
+/* The class page's tabs on a phone: one row that scrolls sideways. */
+@media (max-width: 575.98px) {
+    .class-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: thin;
+    }
+
+    .class-tab {
+        padding: 0.5em 0.7em;
+        white-space: nowrap;
+    }
+}
+
+/* The class page's tab »Lernende«: the group's card without the frame of
+   /gruppen; each row with its Workspace, yellow while it works (as the
+   table of Workspaces; class_board.js sets --ws-activity). */
+.class-group-manage tr > td {
+    --bs-table-bg-state: rgba(255, 200, 0, var(--ws-activity, 0));
+}
+
+.class-group-manage .class-ws-usage {
+    margin-left: 0.4em;
+    font-size: 0.8rem;
+    color: var(--bs-secondary-color);
+}
+
+/* CPU and RAM only while the Workspace runs. */
+.class-group-manage .class-ws-status:not(.class-ws-running) .class-ws-usage {
+    display: none;
+}
+
+.class-group-manage .class-btn-label {
+    display: none;
+}
+
+.class-group-manage .member-actions .btn + .btn {
+    margin-left: 0.25rem;
+}
+
+.class-group-manage .group-card {
+    border: none;
+}
+
+.class-group-manage .group-card > summary {
+    display: none;
+}
+
+.class-group-manage .group-card .group-body {
+    padding: 0;
 }
 
 .class-codes-show .bi {
@@ -5992,3 +6059,92 @@ table.value-groups td.group-odd {
 .terms-bar-flash {
     outline: 3px solid var(--bs-warning);
 }
+
+/* A group as a card (include/groups.js): /gruppen and the class page's tab
+   »Gruppe«. */
+.group-card {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5rem;
+    margin-bottom: 0.6rem;
+}
+.group-card > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 0.6rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.2rem 1rem;
+}
+.group-card > summary::-webkit-details-marker { display: none; }
+.group-card > summary::before {
+    content: '\203A';
+    display: inline-block;
+    width: 0.8rem;
+    transition: transform 0.15s;
+    color: var(--bs-secondary-color);
+}
+.group-card[open] > summary::before { transform: rotate(90deg); }
+.group-card[open] > summary { border-bottom: 1px solid var(--bs-border-color); }
+.group-card .group-body { padding: 0.8rem 1rem 1rem 1rem; }
+.group-card h2 {
+    font-size: 1.15rem;
+    margin: 0;
+}
+.group-card .facts {
+    color: var(--bs-secondary-color);
+    font-size: 0.9rem;
+}
+.school-heading {
+    font-size: 1.1rem;
+    margin: 1.6rem 0 0.6rem 0;
+    color: var(--bs-secondary-color);
+}
+.group-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.6rem;
+}
+.group-teachers {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.6rem;
+}
+.teacher-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.1rem 0.6rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1rem;
+    font-size: 0.9rem;
+}
+.teacher-chip .btn-close { font-size: 0.55rem; }
+.group-add { margin-top: 0.4rem; }
+.consent-date { min-width: 9rem; }
+.mail-preview {
+    width: 100%;
+    height: 22rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.4rem;
+    background: #fff;
+}
+.member-name {
+    border: none;
+    border-bottom: 1px dashed var(--bs-border-color);
+    background: transparent;
+    width: 100%;
+    padding: 0.1rem 0.3rem;
+    color: inherit;
+}
+.member-name:hover { border-bottom-color: var(--bs-secondary-color); }
+.member-name:focus {
+    background: var(--bs-body-bg);
+    outline: 1px solid var(--bs-border-color);
+    border-bottom-color: transparent;
+}
+.member-name::placeholder { color: var(--bs-secondary-color); font-style: italic; }

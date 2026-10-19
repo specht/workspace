@@ -20,8 +20,9 @@ test('the class page: tabs, menu and the Workspaces of the group', async ({ page
   await expect(page).toHaveURL(/tab=lernende/);
   await expect(page.locator('#class-panel-fortschritt')).toBeHidden();
   await expect(page.locator('.class-people-table')).toBeVisible();
-  await expect(page.locator('.class-server-cards')).toBeVisible({ timeout: 20_000 });
-  await expect(page.locator('.class-server-cpu p').first()).toContainText('% of');
+  // The server's CPU and RAM in one row, from the start; the values follow.
+  await expect(page.locator('.class-server-load')).toBeVisible();
+  await expect(page.locator('.class-server-load p').first()).toContainText('% von', { timeout: 20_000 });
 
   await page.reload();
   await expect(page.getByRole('tab', { name: /Lernende/ })).toHaveAttribute('aria-selected', 'true');
