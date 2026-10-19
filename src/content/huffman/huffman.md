@@ -308,6 +308,17 @@ _task(baum)
 
 _task(decodieren)
 
+<!-- language: ruby -->
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Was passiert, wenn unterwegs ein einziges Bit kippt? Codiere einen längeren Satz, etwa <code>data = 'Fischers Fritz fischt frische Fische, frische Fische fischt Fischers Fritz.'</code>, mit <code>tree = build_tree(frequencies(data))</code> und <code>bits = encode(data, code_table(tree))</code>. Dreh dann ein Bit um, mit <code>bits[100] = bits[100] == '0' ? '1' : '0'</code>, und gib <code>decode(bits, tree)</code> aus. Ist nur ein Zeichen falsch oder alles danach? Probier auch andere Stellen als 100: Findet <code>decode</code> wieder in den Text zurück, und warum?
+</div>
+<!-- /language -->
+<!-- language: python -->
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Was passiert, wenn unterwegs ein einziges Bit kippt? Codiere einen längeren Satz, etwa <code>data = b'Fischers Fritz fischt frische Fische, frische Fische fischt Fischers Fritz.'</code>, mit <code>tree = build_tree(frequencies(data))</code> und <code>bits = encode(data, code_table(tree))</code>. Dreh dann ein Bit um, mit <code>bits = bits[:100] + ('1' if bits[100] == '0' else '0') + bits[101:]</code>, und gib <code>decode(bits, tree)</code> aus. Ist nur ein Zeichen falsch oder alles danach? Probier auch andere Stellen als 100: Findet <code>decode</code> wieder in den Text zurück, und warum?
+</div>
+<!-- /language -->
+
 ## Wie gut ist das?
 
 Lade die Spezifikation von GIF in den Ordner, einen Text von 1990 mit 83.003 Bytes, und ein Foto als JPEG:
@@ -325,6 +336,17 @@ wget ${web_root}/jpeg/44-baseline.jpg
 <!-- /language -->
 
 _task(spec)
+
+<!-- language: ruby -->
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Sieh dir die Tabelle für die Spezifikation an. <code>table.sort_by { |byte, code| code.length }.first(5).each { |byte, code| p [byte.chr, code] }</code> gibt die fünf Bytes mit den kürzesten Codes aus. Welche sind es, und überrascht dich das erste? Mit <code>last(5)</code> statt <code>first(5)</code> siehst du die längsten: Wie oft kommen diese Bytes wohl im Text vor?
+</div>
+<!-- /language -->
+<!-- language: python -->
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Sieh dir die Tabelle für die Spezifikation an. <code>for byte, code in sorted(table.items(), key=lambda item: len(item[1]))[:5]: print(repr(chr(byte)), code)</code> gibt die fünf Bytes mit den kürzesten Codes aus. Welche sind es, und überrascht dich das erste? Mit <code>[-5:]</code> statt <code>[:5]</code> siehst du die längsten: Wie oft kommen diese Bytes wohl im Text vor?
+</div>
+<!-- /language -->
 
 <div style='max-width: 100%; overflow-x: auto;'>
 <table class='table'>

@@ -291,6 +291,14 @@ crop-element: #canvas
 
 Jede Sekunde explodiert es an einer neuen Stelle. Die Funken fliegen als Kreis auseinander und sinken dabei nach unten.
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Dreh an den Zahlen und übersetze jedes Mal mit <code>make PROGRAM=feuerwerk</code>:
+<ul>
+<li>Setze <code>#define GRAVITY 0.0</code> und vergleich mit 40. Bleibt ein Kreis ein Kreis, während er fällt? Warum?</li>
+<li>Lass in <code>explode</code> 1000 statt 100 Funken entstehen. Warum sind manche Explosionen jetzt dünner als andere? Sieh dir dafür <code>MAX_PARTICLES</code> und <code>add</code> an.</li>
+</ul>
+</div>
+
 ## Ein richtiges Feuerwerk
 
 ### Farben, die verglühen

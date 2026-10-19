@@ -761,6 +761,10 @@ crop-terminal-lines: auto
 
 `tail` wird in Verbindung mit der Option `-f` (für »follow«) oft verwendet, um eine Datei in Echtzeit zu beobachten. Wenn du z. B. eine Logdatei überwachen möchtest, kannst du `tail -f logfile.log` verwenden, um die letzten Zeilen der Datei anzuzeigen und neue Zeilen anzuzeigen, sobald sie hinzugefügt werden.
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Mit <code>-c</code> schreibt <code>uniq</code> vor jede Zeile, wie oft sie hintereinander vorkam, <code>sort -n</code> sortiert nach dieser Zahl, und <code>tail</code> zeigt die letzten zehn. Welche zehn Wörter kommen in <code>alice.txt</code> am häufigsten vor? Das sagt <code>grep -o -E "[A-Za-z]+" alice.txt | sort | uniq -ic | sort -n | tail</code>. Hast du mit diesen Wörtern gerechnet? Was ändert sich, wenn du das <code>sort</code> vor <code>uniq</code> weglässt, und warum?
+</div>
+
 ## Archive entpacken und packen
 
 <div class='hint books'>
@@ -1093,6 +1097,15 @@ crop-terminal-lines: auto
 <img class='full' src='bzip2-d-alice.webp' alt='bzip2 -d alice.txt.bz2 packt die Datei wieder aus, alice.txt hat wieder 174355 Bytes.'>
 
 Die Datei ist wieder 174.355 Bytes groß.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Mit <code>-c</code> schreibt <code>gzip</code> das Ergebnis ins Terminal statt in eine Datei, und <code>wc -c</code> zählt die Bytes. So kannst du vergleichen, ohne eine Datei anzulegen:
+<ul>
+<li><code>gzip -c alice.txt | gzip | wc -c</code> komprimiert zweimal. Wird es beim zweiten Mal noch kleiner?</li>
+<li><code>head -c 100000 /dev/urandom | gzip | wc -c</code> komprimiert 100.000 zufällige Bytes. Was macht <code>gzip</code> daraus, und warum?</li>
+<li><code>head -c 100000 /dev/zero | gzip | wc -c</code> komprimiert 100.000 Nullen. Und jetzt?</li>
+</ul>
+</div>
 
 ## Verzeichnisse untersuchen
 

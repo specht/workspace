@@ -1067,6 +1067,14 @@ und gib sie am Ende von `main` aus, nach der Schleife über die Blöcke:
 
 _task(pruefsumme-diskette)
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Verändere eine Kopie der Diskette, Byte für Byte, und sieh, was dein Decoder daraus macht. <code>cp diskette.gif kaputt.gif</code> legt die Kopie an. <code>printf '\xc0\x20\x20' | dd of=kaputt.gif bs=1 seek=16 conv=notrunc</code> schreibt drei Bytes ab Offset 16 (0x10) hinein, ohne den Rest der Datei anzufassen. Übersetze dann mit <code>make PROGRAM=gif ARGS=kaputt.gif</code>.
+<ul>
+<li>Ab Offset 16 steht die zweite Farbe der Global Color Table. Welche Pixel ändern sich, und warum genügen dafür drei Bytes?</li>
+<li>Fang mit einer neuen Kopie an und schreib mit <code>printf '\x00' | dd of=kaputt.gif bs=1 seek=80 conv=notrunc</code> ein einziges Byte mitten in die Bilddaten. Ist jetzt nur ein Pixel falsch, oder alles danach? Probier auch andere Werte und Offsets zwischen 59 und 103.</li>
+</ul>
+</div>
+
 ### Ein Foto
 
 Tippe in der Konsole `markt.gif` in das Feld der Argumente und klicke auf »Run«. Bei diesem Bild kommt alles vor, was die Diskette nicht braucht: 256 Farben, Codes von 9 bis 12 Bits, eine volle Tabelle und viele Clear Codes.

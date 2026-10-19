@@ -243,6 +243,17 @@ Schreib `compress` nach den drei Regeln oben. Was du aus Python dafür brauchst:
 
 _task(kompressor)
 
+<!-- language: ruby -->
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Lass <code>compress</code> lauter gleiche Bytes komprimieren. <code>p compress('A' * 20)</code> zeigt die Codes: Für wie viele A steht jeder? <code>p compress('A' * 1000).size</code> zählt die Codes für 1000-mal A. Wie viele sind es, wie viele bei 10.000-mal A, und warum wächst ihre Zahl so viel langsamer als der Text?
+</div>
+<!-- /language -->
+<!-- language: python -->
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Lass <code>compress</code> lauter gleiche Bytes komprimieren. <code>print(compress(b'A' * 20))</code> zeigt die Codes: Für wie viele A steht jeder? <code>print(len(compress(b'A' * 1000)))</code> zählt die Codes für 1000-mal A. Wie viele sind es, wie viele bei 10.000-mal A, und warum wächst ihre Zahl so viel langsamer als der Text?
+</div>
+<!-- /language -->
+
 ## Entpacken
 
 Der Entpacker bekommt nur die Codes. Die Codes unter 256 versteht er sofort, sie sind einzelne Bytes. Für alle anderen baut er das Wörterbuch selbst nach, so wie der Kompressor es gebaut hat, nur einen Schritt später:

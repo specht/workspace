@@ -265,6 +265,17 @@ _task(text)
 
 In einem Text sind Läufe selten: Außer Leerzeichen und Linien aus `-` und `=` kommt kaum ein Zeichen zweimal hintereinander, und jedes einzelne kostet jetzt zwei Bytes. Im JPEG ist fast jedes Byte ein Lauf der Länge 1.
 
+<!-- language: ruby -->
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Wende <code>rle_bytes</code> ein zweites Mal an, auf das, was es aus der Diskette gemacht hat. Mit <code>data = File.binread('diskette.raw')</code> ist das <code>rle_bytes(rle_bytes(data).pack('C*')).size</code>. Wird die Diskette noch einmal kleiner? Sieh dir mit <code>p rle_bytes(data).first(20)</code> an, was da steht: Wie viele Läufe findest du darin?
+</div>
+<!-- /language -->
+<!-- language: python -->
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Wende <code>rle_bytes</code> ein zweites Mal an, auf das, was es aus der Diskette gemacht hat. Mit <code>data = open('diskette.raw', 'rb').read()</code> ist das <code>len(rle_bytes(bytes(rle_bytes(data))))</code>. Wird die Diskette noch einmal kleiner? Sieh dir mit <code>print(rle_bytes(data)[:20])</code> an, was da steht: Wie viele Läufe findest du darin?
+</div>
+<!-- /language -->
+
 ## RLE in Fax und JPEG
 
 Ein Faxgerät tastet eine Seite Zeile für Zeile ab, jede Zeile 1728 Pixel breit, und jedes Pixel ist weiß oder schwarz. Eine Zeile Text besteht dann aus langen weißen Läufen mit kurzen schwarzen dazwischen. Das Fax schickt nur die Längen der Läufe, abwechselnd weiß und schwarz, sodass es die Farbe gar nicht mitschicken muss, und codiert diese Längen mit festen [Huffman-Codes](/huffman): Häufige Längen bekommen kurze Codes.

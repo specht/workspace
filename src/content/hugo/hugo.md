@@ -199,6 +199,10 @@ Noch ohne CSS, aber eine Seite: Der Kopf mit »Unser Sonnensystem« und der Fuß
 
 _task(content)
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Bau den Fehler aus der Aufgabe »Ein Doppelpunkt zu viel« absichtlich ein: Ändere in <code>content/mars.md</code> den Titel zu <code>title: Mars: der rote Planet</code> und speichere. Was meldet <code>hugo server</code> im Terminal, und woran erkennst du, in welcher Datei und Zeile der Fehler steckt? Was zeigt die Vorschau nach dem Neuladen? Setz den Titel danach in Anführungszeichen, <code>title: "Mars: der rote Planet"</code>, und dann wieder auf <code>title: Mars</code>.
+</div>
+
 ## Mehr Seiten und eine Navigation
 
 Jetzt zeigt sich, wofür das gut ist. Lege zwei weitere Seiten an, `content/jupiter.md`:
@@ -268,6 +272,10 @@ Beide bekommen sofort denselben Kopf und Fuß, ohne dass du dafür HTML schreibs
 _task(neue-seite)
 
 _task(navigation)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Schreib in die Front Matter von <code>content/saturn.md</code> die Zeile <code>draft: true</code> (ein Entwurf) und speichere. Wo ist der Saturn jetzt noch zu finden, in der Navigation, unter <code>/saturn/</code>? Nimm die Zeile wieder heraus und setz stattdessen <code>date</code> beim Saturn auf ein Datum in der Zukunft, etwa <code>2030-01-01</code>: Was passiert jetzt, und wozu könnte das gut sein? Stell danach das alte Datum wieder her.
+</div>
 
 ## Die Startseite
 

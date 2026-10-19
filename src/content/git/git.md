@@ -213,6 +213,14 @@ crop-terminal-lines: auto
 
 _task(erster-commit)
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Git zeigt dir seine Objekte auch selbst.
+<ul>
+<li><code>git cat-file -p HEAD</code> zeigt deinen Commit so, wie Git ihn gespeichert hat. Welche ID steht hinter <code>tree</code>? Gib sie an <code>git cat-file -p</code> weiter, und danach die ID, die im Tree steht: Was kommt jeweils heraus?</li>
+<li><code>git hash-object hello.txt</code> rechnet die ID einer Datei aus, ohne etwas zu speichern. Stimmt sie mit dem Blob oben überein? Dann <code>echo "Hello, World!" | git hash-object --stdin</code>, mit großem W: Wie viel von der ID ändert sich durch einen einzigen Buchstaben?</li>
+</ul>
+</div>
+
 ### Dateien umbenennen
 
 Benenne die Datei `hello.txt` in `README.md` um, indem du den Befehl `git mv` verwendest:
@@ -1294,6 +1302,10 @@ Denke daran, dass Knoten im Git-Objektgraphen niemals gelöscht werden. Selbst w
 </div>
 
 _task(rueckgaengig)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Probier die Tabelle in <code>alice</code> aus, an einer Änderung, die du nicht brauchst. Sieh vorher mit <code>git status</code> nach, dass <code>README.md</code> dort nicht als geändert auftaucht, sonst verwirfst du am Ende mehr als nur den Versuch. Häng mit <code>echo "Eins" &gt;&gt; README.md</code> eine Zeile an (<code>&gt;&gt;</code> hängt an, statt zu überschreiben), lege sie mit <code>git add README.md</code> bereit und häng mit <code>echo "Zwei" &gt;&gt; README.md</code> noch eine an. Wie oft steht <code>README.md</code> jetzt in <code>git status</code>? Was zeigt <code>git diff</code>, und was <code>git diff --staged</code>? Mach danach beides rückgängig, mit den Befehlen aus der Tabelle, und sieh nach jedem Schritt mit <code>git status</code> und <code>cat README.md</code> nach, wo die beiden Zeilen gerade sind.
+</div>
 
 ## Zusammenfassung
 

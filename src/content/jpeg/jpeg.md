@@ -1596,6 +1596,14 @@ Die Mittelwerte prüfen vor allem die DC-Koeffizienten und die Farben. Ob auch d
 
 _task(pixel)
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Jetzt kannst du sehen, was JPEG beim Speichern weglässt.
+<ul>
+<li>ImageMagick speichert dasselbe Foto mit einer anderen Qualität: <code>convert 44-baseline.jpg -quality 5 q5.jpg</code>. Wie groß ist <code>q5.jpg</code> (<code>ls -l</code>)? Decodiere sie mit <code>make PROGRAM=jpeg ARGS=q5.jpg</code>: Wo siehst du die 8 × 8-Blöcke? Vergleich mit <code>hexdump -C q5.jpg | head -n 6</code> die erste Quantisierungstabelle mit der aus dem Beispiel beim DQT-Segment: Was ist aus den kleinen Zahlen geworden?</li>
+<li>Setz in deinem Decoder nach der Dequantisierung alle Koeffizienten außer dem DC-Koeffizienten auf 0. Wie sieht <code>44-baseline.jpg</code> jetzt aus, und warum? Nimm danach immer mehr AC-Koeffizienten dazu, in der Zick-Zack-Reihenfolge: Ab wie vielen erkennst du das Foto wieder? Stell den Decoder danach wieder her.</li>
+</ul>
+</div>
+
 ## Weiter geht's
 
 Dein Decoder liest jetzt Baseline-JPEGs. Was ihm noch fehlt:

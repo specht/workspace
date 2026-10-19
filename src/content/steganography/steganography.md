@@ -234,6 +234,17 @@ sleep: 3
 
 In Bitebene 1 steht ein Hinweis, mitten in einem Foto, das ganz normal aussieht. Bitebene 0 sieht dagegen nach Rauschen aus, wie bei jedem Foto, nur dass in ihr diesmal etwas steckt.
 
+<!-- language: ruby -->
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Speichere alle acht Bitebenen eines Fotos ohne Botschaft: <code>image = ChunkyPNG::Image.from_file('strandhaeuser.png')</code> und <code>(0..7).each { |bit| bit_plane(image, bit).save("haus-#{bit}.png") }</code>. Ab welcher Ebene erkennst du die Häuser nicht mehr? Wo hält sich ein Muster am längsten, im glatten Himmel oder an den Türen?
+</div>
+<!-- /language -->
+<!-- language: python -->
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Speichere alle acht Bitebenen eines Fotos ohne Botschaft: <code>image = Image.open('strandhaeuser.png')</code> und <code>for bit in range(8): bit_plane(image, bit).save(f'haus-{bit}.png')</code>. Ab welcher Ebene erkennst du die Häuser nicht mehr? Wo hält sich ein Muster am längsten, im glatten Himmel oder an den Türen?
+</div>
+<!-- /language -->
+
 ## Eine Botschaft im untersten Bit
 
 Das Verfahren heißt **Least Significant Bit**, kurz LSB: Jedes unterste Bit jedes Kanals wird durch ein Bit der Botschaft ersetzt. Damit ein Programm die Botschaft wieder herausholen kann, müssen beide Seiten dieselben Regeln benutzen. Hier sind sie:
@@ -287,6 +298,10 @@ terminal-expect-no-text: Error
 _task(codewort)
 
 Versteck eine eigene Botschaft in `strandhaeuser.png`, speichere das Ergebnis als `geheim.png` und öffne beide nebeneinander. Findest du einen Unterschied?
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Schick <code>geheim.png</code> einmal durch JPEG und zurück, mit ImageMagick: <code>convert geheim.png -quality 95 geheim.jpg</code> und <code>convert geheim.jpg zurueck.png</code>. Was liefert <code>reveal</code> für <code>zurueck.png</code>? Probier es auch mit <code>-quality 100</code>. Warum hilft selbst die beste Qualität nicht?
+</div>
 
 ## Wie viel passt hinein?
 
