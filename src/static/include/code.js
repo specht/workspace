@@ -91,7 +91,7 @@ function attach_suggestions(input, fetch, on_pick) {
         menu.empty();
         if (!people.length) { close(); return; }
         people.forEach(function (p, i) {
-            const item = $(`<li><button type='button' class='dropdown-item' role='option'>${p.name ? `${esc(p.name)} <span class='text-body-secondary small'>${esc(p.email)}</span>` : esc(p.email)}</button></li>`);
+            const item = $(`<li><button type='button' class='dropdown-item' role='option'>${p.name ? `${esc(p.name)}<span class='d-block text-body-secondary small'>${esc(p.email)}</span>` : esc(p.email)}</button></li>`);
             item.find('button').on('mousedown', function (e) { e.preventDefault(); pick(i); });
             menu.append(item);
         });

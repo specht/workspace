@@ -41,6 +41,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Klötzchenwelt hat vier: Ecken im Uhrzeigersinn, Licht ohne `ambient`,
   ohne `max` und Normalen als Farbe, Nebel und Fackeln, Texturkoordinaten
   als Farbe.
+- Die Listen unter Feldern zum Tippen (Schule wählen, Aktivität anheften,
+  Person suchen) brechen lange Titel um, statt seitlich zu scrollen, und
+  haben runde Einträge in den ruhigen Farben der Menüs statt des grellen
+  Blaus; bei Personen steht die Adresse unter dem Namen.
 - »Im Handbuch« über einer Aktivität nennt die Seiten in der Reihenfolge
   des Handbuchs, die Grundlagen (Workspace, Shortcuts, Terminal) zuerst;
   bisher kamen Seiten aus `_include` nach denen aus `reference:`.
