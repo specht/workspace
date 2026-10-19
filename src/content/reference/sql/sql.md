@@ -256,3 +256,11 @@ Platzhalter stehen nur für Werte, nicht für Tabellen- oder Spaltennamen. Muss 
 </table>
 </div>
 <!-- /part -->
+
+## Zum Nachschlagen
+
+- [MySQL 8.4 Reference Manual](https://dev.mysql.com/doc/refman/8.4/en/): das offizielle Handbuch zur Version im Workspace, auf Englisch. Jede Anweisung mit allen Möglichkeiten steht unter [SQL Statements](https://dev.mysql.com/doc/refman/8.4/en/sql-statements.html), die Datentypen unter [Data Types](https://dev.mysql.com/doc/refman/8.4/en/data-types.html).
+- [Functions and Operators](https://dev.mysql.com/doc/refman/8.4/en/functions.html): alle Funktionen für Texte, Zahlen, Datum und Zusammenfassen; `ST_Distance_Sphere` steht bei den [Spatial Convenience Functions](https://dev.mysql.com/doc/refman/8.4/en/spatial-convenience-functions.html).
+- [Server Error Message Reference](https://dev.mysql.com/doc/mysql-errors/8.4/en/server-error-reference.html): jede Fehlernummer mit ihrer Meldung, wenn sie oben nicht steht.
+- [mycli](https://www.mycli.net/): Tastenkürzel, Einstellungen und Spezialbefehle des Clients.
+- Platzhalter in Programmen: [Prepared Statements mit PDO](https://www.php.net/manual/de/pdo.prepared-statements.php) (PHP, auf Deutsch), [mysql2](https://github.com/brianmario/mysql2) (Ruby) und [Connector/Python](https://dev.mysql.com/doc/connector-python/en/) (Python).

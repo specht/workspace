@@ -169,3 +169,12 @@ In Neo4j: Knoten `Artist`, `Album`, `Track` und `Genre`, `(Artist)-[:RELEASED]->
 
 Noch benutzt ihn keine Aktivität; er eignet sich für eigene Aufgaben zu `JOIN` und `GROUP BY` oder als zweiter Datensatz für dieselben Abfragen wie bei den Filmen.
 <!-- /part -->
+
+## Zum Nachschlagen
+
+- [specht/workspace-files](https://github.com/specht/workspace-files): alle Dateien zum Herunterladen; die `README.md` in jedem Ordner sagt auf Englisch, wann und woraus der Datensatz gebaut wurde.
+- [Wikidata](https://www.wikidata.org/): die Quelle für die Länder und die Filme. Dort kannst du einen Eintrag nachsehen oder verbessern; die [Lizenzseite](https://www.wikidata.org/wiki/Wikidata:Licensing) erklärt, was unter CC0 steht.
+- [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/deed.de): die Lizenz aller drei Datensätze in kurzen Worten, auf Deutsch.
+- [Discogs Data Dumps](https://data.discogs.com/): die monatlichen Exporte, aus denen der Datensatz Musik stammt.
+- [IMDb Non-Commercial Datasets](https://developer.imdb.com/non-commercial-datasets/): woher die Stimmenzahlen für die Auswahl der Filme kommen. Diese Dateien stehen nicht unter CC0; sie entscheiden nur, welche Filme hineinkommen, im Datensatz selbst steht nichts aus ihnen.
+- [Cypher Manual](https://neo4j.com/docs/cypher-manual/25/): die Abfragesprache von Neo4j, für die Datensätze als Graph, auf Englisch.

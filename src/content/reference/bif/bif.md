@@ -612,3 +612,10 @@ BIF liest deine Geschichte bei jedem Speichern und meldet unten im Bereich **Pro
 
 Läuft dein Workspace nicht, liest BIF auch nichts. Öffne ihn und speichere eine Seite, dann ist die Liste wieder aktuell.
 <!-- /part -->
+
+## Zum Nachschlagen
+
+- [BIF story syntax](https://github.com/specht/bif/blob/main/SYNTAX.md): alle Schreibweisen von BIF vollständig, mit Beispielen, auf Englisch. Dort steht auch, welche Regeln BIF beim Prüfen einer Geschichte anwendet.
+- [BIF](https://github.com/specht/bif#readme): das Repository der Vorlage. Die Anleitung erklärt Projektordner, Themes, den Graphen, die Befehle zum Prüfen und wie du eine fertige Geschichte als Website veröffentlichst, auf Englisch.
+- [CommonMark: Markdown Reference](https://commonmark.org/help/): alle normalen Markdown-Schreibweisen auf einen Blick; BIF versteht sie, weil es Markdown nach diesem Standard liest.
+- [JavaScript bei MDN](https://developer.mozilla.org/de/docs/Web/JavaScript): die Referenz zur Sprache, auf Deutsch, für Skripte in deiner Geschichte.

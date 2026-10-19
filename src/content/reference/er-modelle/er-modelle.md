@@ -256,3 +256,11 @@ node $ER --schema tables film.er      # eine Zeile pro Tabelle; entities: pro En
 node $ER --json film.er
 ```
 <!-- /part -->
+
+## Zum Nachschlagen
+
+Die Schreibweise der `.er`-Dateien gehört zur ER-Werkstatt; eine Referenz außerhalb dieser Seite gibt es dafür nicht. Für das SQL, das sie erzeugt:
+
+- [CREATE TABLE](https://dev.mysql.com/doc/refman/8.4/en/create-table.html) im Handbuch von MySQL 8.4, auf Englisch: alles, was in einer Tabellendefinition stehen kann, auch `PRIMARY KEY` und `UNIQUE`.
+- [FOREIGN KEY Constraints](https://dev.mysql.com/doc/refman/8.4/en/create-table-foreign-keys.html): wie MySQL Fremdschlüssel prüft und was beim Löschen einer Zeile geschieht, auf die einer zeigt.
+- Abfragen auf die fertigen Tabellen stehen bei [SQL](/reference/sql), die Datensätze der Aktivitäten bei [Datensätze](/reference/datensaetze).

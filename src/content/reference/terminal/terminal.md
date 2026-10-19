@@ -180,3 +180,11 @@ Im Terminal gibt es keinen Papierkorb: Was <code>rm</code> löscht, ist weg. Has
 <tr><td><code>./zork</code></td><td>startet ein Programm im aktuellen Verzeichnis</td></tr>
 </table>
 <!-- /part -->
+
+## Zum Nachschlagen
+
+Ausführlicher als `man`, mit Beispielen und zum Durchblättern, auf Englisch:
+
+- [Bash Reference Manual](https://www.gnu.org/software/bash/manual/): das Handbuch der Shell im Workspace: Pipelines, Umleitungen, Platzhalter wie `*`, Variablen und Schleifen.
+- [GNU Coreutils](https://www.gnu.org/software/coreutils/manual/): die Grundbefehle `ls`, `cp`, `mv`, `rm`, `mkdir`, `cat`, `head`, `sort`, `uniq`, `wc`, `du` und viele mehr, jeder mit allen Optionen.
+- [nano](https://www.nano-editor.org/docs.php): Handbuch und Übersicht der Tastenkürzel des Editors; für `vim` die [Dokumentation von Vim](https://www.vim.org/docs.php).

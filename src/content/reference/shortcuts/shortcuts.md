@@ -137,3 +137,9 @@ Mit mehreren Cursorn tippst du an vielen Stellen gleichzeitig. Das gibt es in Vi
 Der Workspace läuft im Browser, und manche Shortcuts gehören dem Browser: <kbd>Strg</kbd><kbd>W</kbd> schließt nicht den Tab in VS Code, sondern den ganzen Browser-Tab mit deinem Workspace. Schließe Dateien mit dem Kreuz im Tab. Auch <kbd>Strg</kbd><kbd>N</kbd> und <kbd>Strg</kbd><kbd>T</kbd> öffnen ein neues Browserfenster oder einen neuen Browser-Tab.
 </div>
 <!-- /part -->
+
+## Zum Nachschlagen
+
+- [Keyboard Shortcuts for Linux](https://code.visualstudio.com/shortcuts/keyboard-shortcuts-linux.pdf): die offizielle Übersicht von Visual Studio Code auf einer Seite zum Ausdrucken, auf Englisch und für eine US-Tastatur: <kbd>Ctrl</kbd> ist <kbd>Strg</kbd>, und statt <kbd>Strg</kbd><kbd>#</kbd> steht dort <kbd>Ctrl</kbd><kbd>/</kbd>. Dieselbe Übersicht gibt es für [Windows](https://code.visualstudio.com/shortcuts/keyboard-shortcuts-windows.pdf) und [macOS](https://code.visualstudio.com/shortcuts/keyboard-shortcuts-macos.pdf).
+- [Keyboard shortcuts](https://code.visualstudio.com/docs/configure/keybindings): wie du alle Shortcuts durchsuchst (<kbd>Strg</kbd><kbd>K</kbd>, dann <kbd>Strg</kbd><kbd>S</kbd>) und eigene festlegst.
+- [Basic editing](https://code.visualstudio.com/docs/editing/codebasics): mehrere Cursor, Spaltenauswahl, Suchen und Ersetzen und Einrücken ausführlich.

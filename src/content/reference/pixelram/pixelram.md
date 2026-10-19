@@ -245,3 +245,11 @@ while (!should_close())
 }
 ```
 <!-- /part -->
+
+## Zum Nachschlagen
+
+- [PixelRAM-Dokumentation](https://specht.github.io/pixelram/): die offizielle Dokumentation der Bibliothek, auf Englisch, mit einem Feuer-Beispiel, das im Browser läuft.
+- [API reference](https://specht.github.io/pixelram/api.html): jede Funktion mit Parametern und Rückgabewert, nach Themen geordnet.
+- [Palettes](https://specht.github.io/pixelram/palettes.html): alle 88 Paletten mit ihren Farben und den Namen für `use_palette`.
+- [WebAssembly](https://specht.github.io/pixelram/web.html): was im Browser anders ist, etwa bei Animation, Maus und Vollbild.
+- [PixelRAM auf GitHub](https://github.com/specht/pixelram): der Quelltext mit Beispielen und mit [Umsetzungen von Spielen aus den 1990ern](https://github.com/specht/pixelram/tree/main/ports) wie DOOM und Prince of Persia, die dieselben Befehle verwenden.

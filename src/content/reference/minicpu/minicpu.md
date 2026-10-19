@@ -449,3 +449,11 @@ Eine Zeile enthält höchstens einen Befehl. Groß- und Kleinschreibung der Befe
 
 Die Sandbox übersetzt schon beim Tippen. Fehler erscheinen unter dem Editor, ein Klick springt in die Zeile. Die Meldungen erklären mit diesen Regeln, was gemeint war: Auf `LDA A, 0x70` antwortet sie, dass `LDA` den Speicher liest, und schlägt `LDA A, [0x70]` oder `LDI A, 0x70` vor.
 <!-- /part -->
+
+## Zum Nachschlagen
+
+Die MiniCPU gibt es nur in der CPU Sandbox; diese Seite ist ihre Referenz. Im Repository der Sandbox steht dazu:
+
+- [CPU Sandbox](https://github.com/specht/cpu-sandbox#readme): die Anleitung, auf Deutsch: Sandbox und Klassen-Repository klonen, starten, Aufgaben bearbeiten und veröffentlichen, und was bei häufigen Problemen hilft.
+- [The three MiniCPU levels](https://github.com/specht/cpu-sandbox/blob/main/docs/cpu-levels.md): die drei Stufen, Takte und Maschinencode noch einmal im Zusammenhang, auf Englisch.
+- [Beispielprogramme](https://github.com/specht/cpu-sandbox/tree/main/examples): fertige Programme in Assembler und C, von der Addition bis zum Raycaster, zum Lesen und Abwandeln.

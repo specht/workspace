@@ -78,3 +78,10 @@ git push
 
 Öffnet `git pull` einen Editor für eine Commit-Nachricht, speichere sie unverändert und schließe den Editor. Meldet Git einen **Konflikt**, hat jemand dieselbe Datei geändert wie du. Dann gilt: nichts löschen, nichts überschreiben, nach Hilfe fragen. Solange du nur Dateien in deinem eigenen Ordner änderst, passiert das nicht.
 <!-- /part -->
+
+## Zum Nachschlagen
+
+- [Pro Git](https://git-scm.com/book/de/v2): das offizielle Buch zu Git, auf Deutsch. [Mit Remotes arbeiten](https://git-scm.com/book/de/v2/Git-Grundlagen-Mit-Remotes-arbeiten) erklärt `pull` und `push`, [Einfaches Branching und Merging](https://git-scm.com/book/de/v2/Git-Branching-Einfaches-Branching-und-Merging), was bei einem Konflikt passiert.
+- [Git-Referenz](https://git-scm.com/docs): jeder Befehl mit allen Optionen, auf Englisch.
+- [GitLab: SSH-Schlüssel](https://docs.gitlab.com/user/ssh/): Schlüssel anlegen, eintragen und prüfen, wenn die Verbindung nicht klappt, auf Englisch.
+- [GitLab-Dokumentation](https://docs.gitlab.com/): alles zu Projekten, Gruppen und Rechten in GitLab.

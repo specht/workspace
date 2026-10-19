@@ -287,3 +287,12 @@ Die erste Palette jeder Größe ist der Standard. Bis auf `fire_256` stammen all
 
 <!-- /minicpu-table -->
 <!-- /part -->
+
+## Zum Nachschlagen
+
+Die Geräte und der Bildschirm gehören zur CPU Sandbox; diese Seite ist ihre Referenz. Dazu, auf Englisch:
+
+- [Devices and I/O ports](https://github.com/specht/cpu-sandbox/blob/main/docs/devices.md): alle Ports mit Joystick, Tastatur, Ton, Zeit und Seitenwechsel im Zusammenhang.
+- [The screen: RAM as pixels](https://github.com/specht/cpu-sandbox/blob/main/docs/screen.md): Pixelformate, `.display`, Palettenchip und Vsync, dazu, wie viele Pixel in den Speicher passen.
+- [Beispielprogramme](https://github.com/specht/cpu-sandbox/tree/main/examples): Programme mit Bildschirm, Eingabe und Ton, etwa `08-input.asm`, `09-fire.asm` und `24-arpeggio-organ.c`.
+- [Paletten von PixelRAM](https://specht.github.io/pixelram/palettes.html): woher die vordefinierten Paletten stammen, mit allen Farben.
