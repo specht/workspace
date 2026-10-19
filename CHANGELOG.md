@@ -120,6 +120,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - »Im Handbuch« über einer Aktivität nennt die Seiten in der Reihenfolge
   des Handbuchs, die Grundlagen (Workspace, Shortcuts, Terminal) zuerst;
   bisher kamen Seiten aus `_include` nach denen aus `reference:`.
+- Die Klötzchenwelt glättet Kanten (Antialiasing, `FLAG_MSAA_4X_HINT` vor
+  `InitWindow`): Der Rand der Blöcke vor dem Himmel ist keine Treppe mehr.
+  Die Seite erklärt, was die Zeile tut, mit einem Kasten zum Ausprobieren.
+  Für die Vorlage `specht/raylib-starter` liegt ein Patch bereit.
 - Drei Beispielprogramme der Sprachseiten rechnen richtig: Das
   C++-Programm trennt die Faktoren mit Leerzeichen (12 ergab `223`) und
   hängt bei 0 oder einer Eingabe ohne Zahl nicht mehr fest, das

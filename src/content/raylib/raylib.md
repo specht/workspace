@@ -121,6 +121,7 @@ Sieh dir `main.c` an. Das ganze Programm ist eine Schleife, die raylib 60-mal in
 ```c_copy
 int main(void)
 {
+    SetConfigFlags(FLAG_MSAA_4X_HINT);   // glatte Kanten (Antialiasing)
     InitWindow(960, 540, "Klötzchenwelt");
     SetTargetFPS(60);
 
@@ -151,6 +152,12 @@ int main(void)
     return 0;
 }
 ```
+
+Die erste Zeile in `main` bittet um **Kantenglättung** (Antialiasing). Eine schräge Kante liegt auf dem Bildschirm zwischen den Pixeln; ohne Glättung ist jedes Pixel ganz Würfel oder ganz Himmel, und die Kante wird zur Treppe. Mit `FLAG_MSAA_4X_HINT` prüft die Grafikkarte an jedem Rand vier Punkte pro Pixel und mischt die Farbe daraus. Die Zeile muss vor `InitWindow` stehen, denn die Glättung wird beim Öffnen des Fensters eingerichtet.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Setz <code>//</code> vor die Zeile mit <code>SetConfigFlags</code>, übersetze mit <code>make</code> und lade die Vorschau neu. Sieh dir die schrägen Kanten des Würfels vor dem Himmel und die Linien des Gitters an: Was ist anders? Nimm die <code>//</code> danach wieder weg.
+</div>
 
 ### Drei Achsen
 
@@ -306,6 +313,7 @@ Ersetze `main` durch diese Fassung. Die Kamera steht jetzt hoch über der Welt, 
 ~
 int main(void)
 {
+    SetConfigFlags(FLAG_MSAA_4X_HINT);   // glatte Kanten (Antialiasing)
     InitWindow(960, 540, "Klötzchenwelt");
     SetTargetFPS(60);
 
@@ -482,6 +490,7 @@ In `main` steht die Kamera jetzt dort, wo die Augen der Figur sind, und schaut i
 ~
 int main(void)
 {
+    SetConfigFlags(FLAG_MSAA_4X_HINT);   // glatte Kanten (Antialiasing)
     InitWindow(960, 540, "Klötzchenwelt");
     SetTargetFPS(60);
     SetExitKey(KEY_NULL);   // Esc gibt nur die Maus frei
@@ -728,6 +737,7 @@ void aim(Vector3 eyes, Vector3 look)
 ~
 ~ int main(void)
 ~ {
+~     SetConfigFlags(FLAG_MSAA_4X_HINT);   // glatte Kanten (Antialiasing)
 ~     InitWindow(960, 540, "Klötzchenwelt");
 ```
 
@@ -1177,6 +1187,7 @@ float time_of_day = 0.4f;  // 0 und 1: Mitternacht, 0,5: Mittag
 ~
 ~ int main(void)
 ~ {
+~     SetConfigFlags(FLAG_MSAA_4X_HINT);   // glatte Kanten (Antialiasing)
 ~     InitWindow(960, 540, "Klötzchenwelt");
 ```
 

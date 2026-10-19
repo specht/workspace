@@ -2,6 +2,7 @@
 
 int main(void)
 {
+    SetConfigFlags(FLAG_MSAA_4X_HINT);   // glatte Kanten (Antialiasing)
     InitWindow(960, 540, "Klötzchenwelt");
     SetTargetFPS(60);
 

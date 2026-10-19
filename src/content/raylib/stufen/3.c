@@ -125,6 +125,7 @@ void move_player(float dt)
 
 int main(void)
 {
+    SetConfigFlags(FLAG_MSAA_4X_HINT);   // glatte Kanten (Antialiasing)
     InitWindow(960, 540, "Klötzchenwelt");
     SetTargetFPS(60);
     SetExitKey(KEY_NULL);   // Esc gibt nur die Maus frei
