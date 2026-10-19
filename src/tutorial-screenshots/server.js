@@ -229,6 +229,11 @@ async function setAutoRender(enabled, reason = null) {
 }
 
 const latestGenerationJobs = new Map();
+// The jobs of a pass (recreate-screenshots.rb, synchronous), apart from
+// latestGenerationJobs: a page view asks for its page's state too and may
+// store what it found there, but the progress page must keep following the
+// job that really runs.
+const passJobs = new Map();
 // For the progress page (/screenshot-progress on the website): the pass that
 // recreate-screenshots.rb announced (POST /run) and the files captured last.
 let currentRun = null; // { started_at, force, pages: [{ markdown_path, stale }] }
@@ -3818,6 +3823,11 @@ async function enqueueGeneration(payload) {
     const plan = await buildGenerationPlan(payload);
     const staleCount = plan.stale.filter(Boolean).length;
 
+    // A pass renders this page right now: a page view waits for it and
+    // stores nothing of its own.
+    const passing = passJobs.get(plan.relativeMarkdown);
+    if (activeGenerationJob(passing)) return passing;
+
     const existing = latestGenerationJobs.get(plan.relativeMarkdown);
     if (activeGenerationJob(existing) && existing.fingerprint === plan.fingerprint) {
         return existing;
@@ -4191,7 +4201,8 @@ const server = http.createServer(async (request, response) => {
             if (!relativeMarkdown.endsWith('.md')) {
                 throw new Error('markdown_path must name a Markdown file');
             }
-            const job = latestGenerationJobs.get(relativeMarkdown);
+            const passing = passJobs.get(relativeMarkdown);
+            const job = activeGenerationJob(passing) ? passing : latestGenerationJobs.get(relativeMarkdown);
             return sendJson(response, 200, { ...(job || {
                 status: 'idle',
                 monitor: false,
@@ -4234,7 +4245,7 @@ const server = http.createServer(async (request, response) => {
     // files captured last.
     if (request.method === 'GET' && requestUrl.pathname === '/overview') {
         const pages = (currentRun?.pages || []).map(page => {
-            const job = latestGenerationJobs.get(page.markdown_path);
+            const job = passJobs.get(page.markdown_path) || latestGenerationJobs.get(page.markdown_path);
             const fresh = job && currentRun && (job.started_at || 0) >= currentRun.started_at;
             const queued = job && job.status === 'queued' && !job.started_at;
             return {
@@ -4292,6 +4303,7 @@ const server = http.createServer(async (request, response) => {
             total: 0, completed: 0, stale: 0, generated: 0, current_target: null, error: null, screenshots: [],
         };
         latestGenerationJobs.set(relativeMarkdown, tracked);
+        passJobs.set(relativeMarkdown, tracked);
         pendingJobs += 1;
         const job = generationQueue.then(async () => {
             tracked.started_at = Date.now();
