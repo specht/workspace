@@ -940,6 +940,9 @@ COPY hackschule-er-${HACKSCHULE_ER_VERSION}.vsix \
 RUN getcap -r /usr /opt /app 2>/dev/null | cut -d' ' -f1 | xargs -r -n 1 setcap -r; \
     test -z "$(getcap -r /usr /opt /app 2>/dev/null)"
 
+# /admin »Betrieb« warns about an image built before this.
+LABEL de.hackschule.file-capabilities="none"
+
 
 # --------------------------------------------------------------------
 # Startup scripts — always last

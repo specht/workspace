@@ -150,7 +150,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   das Image neu bauen** (`./build-image.sh`), dann den Ruby-Dienst
   aktualisieren; mit dem alten Image startet `ping` in neuen Workspaces
   nicht. Laufende Workspaces bekommen die Einschränkung beim nächsten Start.
-- »Betrieb« unter `/admin`: wie alt die letzte Sicherung ist, wie viele
+- »Betrieb« unter `/admin`: welcher Commit läuft (mit Link) und wann das
+  Workspace-Image gebaut wurde, mit einer Warnung, wenn es älter als die
+  Härtung ist; wie alt die letzte Sicherung ist, wie viele
   Workspace-Starts in 24 Stunden fehlgeschlagen sind und wie lange sie
   dauern, ob Starts warten, ob Docker, MySQL und die beiden Neo4j antworten,
   der Speicherplatz und ob die stündlichen Aufgaben laufen. Ist etwas
@@ -159,7 +161,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   `internal/backup-done` im Datenordner anfasst (borgmatic-Hook in
   `docs/entwicklung.md`, »Betrieb überwachen«); ohne das zeigt die Seite
   »nicht eingerichtet«. Neu und freiwillig: `BACKUP_MAX_AGE_HOURS`
-  (vorgegeben 26).
+  (vorgegeben 26). Der Ruby-Dienst liest dafür `.git` (nur lesend
+  eingebunden, `./config.rb up -d`).
 - E2E-Tests für die Zugriffsregeln (`e2e/tests/access-rules.browser.spec.ts`):
   Wer aus seiner Gruppe genommen oder gesperrt wird, verliert Sitzung und
   laufenden Workspace sofort; Gäste ohne Nutzungsordnung starten nichts;

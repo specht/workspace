@@ -50,6 +50,20 @@ class HealthTest < Minitest::Test
         assert_equal :ok, Health.jobs(nil, nil, :now => NOW, :since => NOW - 300).state
     end
 
+    def test_version_and_image
+        assert_equal :unknown, Health.version(nil).state
+        version = Health.version(:short => 'c0334ade', :time => NOW, :subject => 'Workspaces drop NET_RAW', :branch => 'main',
+            :url => 'https://github.com/specht/workspace/commit/c0334ade')
+        assert_equal :ok, version.state
+        assert_equal 'c0334ade vom 19.10.2026 12:00 auf main: Workspaces drop NET_RAW', version.text
+        assert_equal 'https://github.com/specht/workspace/commit/c0334ade', version.link
+        assert_equal :bad, Health.image(nil).state
+        assert_equal :ok, Health.image(:created => NOW, :hardened => true).state
+        old = Health.image(:created => NOW, :hardened => false)
+        assert_equal :warn, old.state
+        assert_includes old.text, './build-image.sh'
+    end
+
     def test_mails_once_a_day_for_what_stops_lessons
         checks = [
             Health.probe('mysql', 'MySQL', 'timeout'),

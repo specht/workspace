@@ -1,4 +1,6 @@
+require 'open3'
 require 'socket'
+require 'time'
 require 'timeout'
 
 # What /admin shows under »Betrieb« and what the administration gets a mail
@@ -54,6 +56,37 @@ class Main < Sinatra::Base
         end
     end
 
+    GIT_DIR = '/git'
+
+    # The checked-out commit (config.rb mounts .git read-only), or nil.
+    def self.running_commit
+        return nil unless File.directory?(GIT_DIR)
+
+        git = ['git', '-c', 'safe.directory=*', "--git-dir=#{GIT_DIR}"]
+        out, status = Open3.capture2(*git, 'log', '-1', '--format=%H%x09%h%x09%ct%x09%s')
+        return nil unless status.success?
+
+        full, short, time, subject = out.strip.split("\t", 4)
+        branch, = Open3.capture2(*git, 'symbolic-ref', '--short', '-q', 'HEAD')
+        origin, = Open3.capture2(*git, 'config', '--get', 'remote.origin.url')
+        repo = origin.strip[%r{github\.com[:/](.+?)(?:\.git)?\z}, 1]
+        { :short => short, :time => time.to_i, :subject => subject, :branch => branch.strip,
+          :url => repo ? "https://github.com/#{repo}/commit/#{full}" : nil }
+    rescue StandardError
+        nil
+    end
+
+    def self.workspace_image
+        out, status = Open3.capture2('docker', 'image', 'inspect', '--format',
+            '{{.Created}}|{{index .Config.Labels "de.hackschule.file-capabilities"}}', 'hs_code_server')
+        return nil unless status.success?
+
+        created, label = out.strip.split('|', 2)
+        { :created => Time.parse(created).to_i, :hardened => label == 'none' }
+    rescue StandardError
+        nil
+    end
+
     def health_checks
         now = Time.now
         queued, running = Main.server_start_queue_state
@@ -73,6 +106,8 @@ class Main < Sinatra::Base
         results = probes.transform_values { |(_, probe)| Thread.new { Main.probe_error { probe.call } } }
             .transform_values { |thread| thread.join(PROBE_SECONDS + 1) ? thread.value : "keine Antwort in #{PROBE_SECONDS} s" }
         [
+            Health.version(Main.running_commit),
+            Health.image(Main.workspace_image),
             Health.backup((File.mtime(BACKUP_STAMP_FILE) rescue nil), :now => now, :max_hours => Main.backup_max_hours),
             Health.starts(history, :now => now, :since => @@process_started_at),
             Health.queue(queued, :running => running, :now => now),
@@ -94,7 +129,10 @@ class Main < Sinatra::Base
         bad = checks.select { |c| c.state == :bad }
         alert = bad.empty? ? '' : "<div class='alert alert-danger'><i class='bi bi-x-octagon'></i> Im Betrieb ist etwas gestört: #{bad.map { |c| h.(c.label) }.join(', ')}.</div>"
         alert + "<table class='table table-sm people-table health-table'><tbody>" +
-            checks.map { |c| "<tr><td>#{icons[c.state]}</td><th scope='row'>#{h.(c.label)}</th><td>#{h.(c.text)}</td></tr>" }.join +
+            checks.map do |c|
+                link = c.link ? " <a href='#{h.(c.link)}' target='_blank' rel='noopener'>Details</a>" : ''
+                "<tr><td>#{icons[c.state]}</td><th scope='row'>#{h.(c.label)}</th><td>#{h.(c.text)}#{link}</td></tr>"
+            end.join +
             '</tbody></table>'
     end
 

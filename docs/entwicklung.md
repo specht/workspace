@@ -52,6 +52,10 @@ in `/internal/capacity-*.txt`. Auf dem Server außerhalb des Unterrichts.
 (`src/ruby/include/server_health.rb`, bewertet in `include/health.rb`, getestet
 in `test/health_test.rb`):
 
+- **Version:** der ausgecheckte Commit mit Link (der Ruby-Dienst sieht
+  `.git` nur lesend) und wann das Workspace-Image gebaut wurde; fehlt ihm
+  das Label `de.hackschule.file-capabilities`, ist es älter als die Härtung
+  und muss neu gebaut werden.
 - **Sicherung:** wie alt die letzte ist. Der Workspace sieht die Sicherungen
   nicht; sie melden sich selbst, indem sie nach jedem erfolgreichen Lauf die
   Datei `internal/backup-done` im Datenordner anfassen. Ohne die Datei steht

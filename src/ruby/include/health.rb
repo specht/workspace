@@ -6,7 +6,8 @@
 module Health
     # state: :ok, :warn (look at it soon), :bad (something does not work),
     # :unknown (not set up). text: one German sentence for the page.
-    Check = Struct.new(:key, :label, :state, :text, keyword_init: true)
+    # link: a page with the details (the commit on GitHub).
+    Check = Struct.new(:key, :label, :state, :text, :link, keyword_init: true)
 
     STATES = %i[ok unknown warn bad].freeze
 
@@ -123,6 +124,35 @@ module Health
 
         text = last_run ? "Zuletzt vor #{age_text(now - last_run.to_i)}." : 'Laufen kurz nach dem Start zum ersten Mal.'
         Check.new(:key => 'jobs', :label => label, :state => :ok, :text => text)
+    end
+
+    # commit: { short:, time:, subject:, branch:, url: } from git, or nil
+    # when the Ruby service does not see .git (config.rb mounts it).
+    def self.version(commit)
+        label = 'Version'
+        unless commit
+            return Check.new(:key => 'version', :label => label, :state => :unknown,
+                :text => 'Nicht lesbar: Der Ruby-Dienst sieht ./.git nicht (config.rb, dann ./config.rb up -d).')
+        end
+
+        text = "#{commit[:short]} vom #{clock(commit[:time])}"
+        text += " auf #{commit[:branch]}" unless commit[:branch].to_s.empty?
+        subject = commit[:subject].to_s
+        text += ": #{subject.size > 100 ? "#{subject[0, 99]}…" : subject}" unless subject.empty?
+        Check.new(:key => 'version', :label => label, :state => :ok, :text => text, :link => commit[:url])
+    end
+
+    # image: { created:, hardened: } for hs_code_server, or nil. hardened:
+    # built with docker/code/Dockerfile's label for no file capabilities.
+    def self.image(image)
+        label = 'Workspace-Image'
+        return Check.new(:key => 'image', :label => label, :state => :bad, :text => 'Nicht gefunden: ./build-image.sh') unless image
+
+        text = "Gebaut am #{clock(image[:created])}."
+        return Check.new(:key => 'image', :label => label, :state => :ok, :text => text) if image[:hardened]
+
+        Check.new(:key => 'image', :label => label, :state => :warn,
+            :text => "#{text} Älter als die Härtung (Oktober 2026): ./build-image.sh, sonst startet ping in neuen Workspaces nicht.")
     end
 
     # What gets a mail (once a day each): what stops lessons or loses data.

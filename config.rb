@@ -101,6 +101,8 @@ if PROFILE.include?(:dynamic)
                      "#{NGINX_PATH}:/nginx",
                      "#{DATA_PATH}/nginx-snippets:/nginx-snippets",
                      "#{DOWNLOAD_PATH}:/dl",
+                     # The running commit, for /admin »Betrieb«.
+                     './.git:/git:ro',
                     ],
         :environment => env,
         :working_dir => '/src/ruby',
