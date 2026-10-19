@@ -155,6 +155,10 @@ crop-terminal-skip-bottom: 1
 Um dir die Tabellen in der Datenbank anzeigen zu lassen, gib den Befehl `SHOW TABLES;` ein und drücke <kbd>Enter</kbd>:
 
 <!-- tutorial-screenshot
+# No pager in the recipes (mycli's less would swallow the next steps);
+# Control+L clears its answer. Students see the pager, the page explains it.
+terminal-run: nopager
+sleep: 0.5
 press: Control+L
 type: SHOW TABLES;
 press: Enter

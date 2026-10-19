@@ -70,6 +70,10 @@ crop-terminal-lines: auto
 terminal-run: clear
 terminal-run: mycli
 sleep: 0.5
+# No pager in the recipes (mycli's less would swallow the next steps);
+# Control+L clears its answer. Students see the pager, the page explains it.
+terminal-run: nopager
+sleep: 0.5
 press: Control+L
 type: SHOW TABLES;
 press: Enter

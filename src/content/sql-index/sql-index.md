@@ -106,6 +106,10 @@ SELECT * FROM person LIMIT 5;
 terminal-run: clear
 terminal-run: mycli
 sleep: 0.5
+# No pager in the recipes (mycli's less would swallow the next steps);
+# Control+L clears its answer. Students see the pager, the page explains it.
+terminal-run: nopager
+sleep: 0.5
 press: Control+L
 terminal-run: SELECT * FROM person LIMIT 5;
 wait-for-text: 5 rows in set
