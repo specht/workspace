@@ -711,7 +711,7 @@ vscode_config: {}</pre>
 
                 const del = $(`<button type='button' class='btn btn-sm btn-outline-danger btn-icon'><i class='bi bi-trash'></i></button>`)
                     .attr({ 'aria-label': `${title} löschen`, title: 'Löschen' });
-                del.on('click', () => confirm_dialog({ title: `»${title}« löschen`, text: 'Die Workspaces und Datenbanken aller Teilnehmenden werden mitgelöscht. Lade vorher die Ergebnisse als PDF herunter, wenn du sie noch brauchst.', confirm: 'Löschen', icon: 'bi-trash', danger: true },
+                del.on('click', () => confirm_dialog({ title: `»${title}« löschen`, text: 'Gelöscht werden die Workspaces und Datenbanken, die für diese Leistungsüberprüfung angelegt wurden, bei allen Teilnehmenden, und deine Vorschau. Die eigenen Workspaces und Datenbanken der Teilnehmenden bleiben, wie sie sind. Lade vorher die Ergebnisse als PDF herunter, wenn du sie noch brauchst.', confirm: 'Löschen', icon: 'bi-trash', danger: true },
                     () => api_call('/api/delete_test', { tag: entry.tag }, d => { if (d.success) refresh_test_archives(); })));
                 $("<td class='text-end'>").append(del).appendTo(row);
             }
