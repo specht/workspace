@@ -260,7 +260,8 @@
                 bar('#stats-cpu', 0, stats.cpu_usage, `${Math.round(stats.cpu_usage)} % von ${stats.num_cores} Kernen`);
                 bar('#stats-cpu', 1, stats.ram_percent, of(stats.ram_used, stats.ram_total));
                 bar('#stats-storage', 0, stats.disk_root_percent, of(stats.disk_root_used, stats.disk_root_total));
-                bar('#stats-storage', 1, stats.disk_user_percent, of(stats.disk_user_used, stats.disk_user_total));
+                // The Workspaces' partition: what is still free, as on the class page.
+                bar('#stats-storage', 1, stats.disk_user_percent, `${stats.disk_user_free || '–'} frei von ${stats.disk_user_total}`);
 
             } else if (data.stats) {
                 render_running(data.stats);
