@@ -5666,6 +5666,16 @@ table.value-groups td.group-odd {
     overflow-wrap: break-word;
 }
 
+/* /admin, »Betrieb«: one row per check, the state as an icon. */
+.health-table th[scope='row'] {
+    font-size: inherit;
+    color: var(--bs-body-color);
+}
+
+.health-table td:first-child {
+    width: 1.5em;
+}
+
 
 .btn.btn-icon .bi {
     margin-right: 0;

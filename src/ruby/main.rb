@@ -43,6 +43,7 @@ require './include/privacy_documents.rb'
 require './include/account_deletion.rb'
 require './include/account_export.rb'
 require './include/mail_texts.rb'
+require './include/health.rb'
 require 'base64'
 require 'cgi'
 require 'digest'
@@ -563,6 +564,16 @@ class Main < Sinatra::Base
         end
     end
 
+    # For »Betrieb« on /admin: when each waiting start was queued, and how
+    # many run.
+    def self.server_start_queue_state
+        ensure_server_start_queue!
+        @@server_start_mutex.synchronize do
+            jobs = @@server_start_jobs.values
+            [jobs.select { |j| j[:status] == 'queued' }.map { |j| j[:queued_at].to_i }, jobs.count { |j| j[:status] == 'running' }]
+        end
+    end
+
     def self.enqueue_server_start(email:, test_tag:, server_tag:, refresh_nginx_after: false, &block)
         raise 'enqueue_server_start requires a block' unless block_given?
 
@@ -635,6 +646,7 @@ class Main < Sinatra::Base
                     job[:status] = 'ready'
                     job[:finished_at] = Time.now
                 end
+                Main.record_server_start(job, true)
                 STDERR.puts ">>> Server start worker: ready #{job[:key]}"
             rescue => e
                 @@server_start_mutex.synchronize do
@@ -642,6 +654,7 @@ class Main < Sinatra::Base
                     job[:finished_at] = Time.now
                     job[:error] = "#{e.class}: #{e.message}"
                 end
+                Main.record_server_start(job, false)
                 STDERR.puts ">>> Server start worker failed for #{job[:key]}: #{e.class}: #{e.message}"
                 STDERR.puts e.backtrace.join("\n")
             ensure
@@ -655,6 +668,7 @@ class Main < Sinatra::Base
     require './include/roster_store.rb'
     require './include/groups_page.rb'
     require './include/people_page.rb'
+    require './include/server_health.rb'
 
     def workspace_url()
         if user_logged_in?
@@ -2170,8 +2184,10 @@ class Main < Sinatra::Base
             end
         end
 
-        # Announced deletions whose date has come, once an hour (the first
-        # time a minute after start in development, to see it work).
+        # Announced deletions whose date has come, expired share links, the
+        # disk, ended groups and »Betrieb« (include/server_health.rb), once
+        # an hour (the first time a minute after start in development, to
+        # see it work).
         Thread.new do
             loop do
                 sleep(DEVELOPMENT ? 60 : 600)
@@ -2194,6 +2210,12 @@ class Main < Sinatra::Base
                     Main.new!.remind_ended_groups
                 rescue => e
                     STDERR.puts "Reminders for ended groups failed: #{e.class}: #{e.message}"
+                end
+                Main.hourly_jobs_ran!
+                begin
+                    Main.new!.check_health
+                rescue => e
+                    STDERR.puts "Health check failed: #{e.class}: #{e.message}"
                 end
                 sleep 3000
             end

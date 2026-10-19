@@ -46,6 +46,52 @@ startet ANZAHL (vorgegeben 30) Test-Workspaces gleichzeitig, misst die Zeit
 bis jeder antwortet, Last und Speicher, räumt danach auf und legt den Bericht
 in `/internal/capacity-*.txt`. Auf dem Server außerhalb des Unterrichts.
 
+### Betrieb überwachen
+
+`/admin` zeigt unter »Betrieb«, beim Laden der Seite geprüft
+(`src/ruby/include/server_health.rb`, bewertet in `include/health.rb`, getestet
+in `test/health_test.rb`):
+
+- **Sicherung:** wie alt die letzte ist. Der Workspace sieht die Sicherungen
+  nicht; sie melden sich selbst, indem sie nach jedem erfolgreichen Lauf die
+  Datei `internal/backup-done` im Datenordner anfassen. Ohne die Datei steht
+  dort »nicht eingerichtet«, älter als `BACKUP_MAX_AGE_HOURS` (in
+  `credentials.rb`, vorgegeben 26) gilt als gestört. Für borgmatic:
+
+  ```yaml
+  # borgmatic 1.x
+  after_backup:
+      - touch /pfad/zum/datenordner/internal/backup-done
+
+  # borgmatic 2
+  commands:
+      - after: action
+        when: [create]
+        run:
+            - touch /pfad/zum/datenordner/internal/backup-done
+  ```
+
+- **Workspace-Starts:** wie viele in 24 Stunden (seit dem Neustart des
+  Ruby-Dienstes, die Zahlen liegen nur im Speicher), wie viele
+  fehlgeschlagen sind, wie lange einer dauert. Gestört ab drei Fehlschlägen,
+  wenn sie ein Fünftel der Starts sind; die Gründe stehen im Log
+  (`Server start worker failed`).
+- **Warteschlange:** wartende Starts; gestört, wenn einer länger als fünf
+  Minuten wartet.
+- **Docker** (über den Wächter), **MySQL**, **Neo4j** der Lernenden und die
+  Neo4j des Workspace: ob sie innerhalb von drei Sekunden antworten.
+- **Speicherplatz** unter `/user` und die **stündlichen Aufgaben**
+  (Löschungen, Links, Erinnerungen, die Speichermessung von
+  `housekeeping.rb`): gestört, wenn sie länger als zwei Stunden nicht
+  gelaufen sind.
+
+Ist etwas davon gestört, bekommt die Administration einmal am Tag eine
+E-Mail je Punkt (vermerkt in `/internal/health-alerts.json`; für den
+Speicherplatz gibt es die eigene Mail). Die Warteschlange bekommt keine Mail,
+sie leert sich von selbst. Was das alles nicht sieht: einen Server, der
+ganz steht. Dafür braucht es einen Dienst von außen, der die Startseite
+aufruft.
+
 ## Was muss ich nach einer Änderung neu bauen?
 
 | Geändert | Dann |

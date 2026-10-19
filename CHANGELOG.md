@@ -142,6 +142,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - CI: Die Ruby-Tests laufen bei jedem Push und Pull Request (GitHub
   Actions). Der E2E-Test zu offenen Antworten erwartet für Lehrkräfte ohne
   Gruppe jetzt ihre Testgruppe.
+- »Betrieb« unter `/admin`: wie alt die letzte Sicherung ist, wie viele
+  Workspace-Starts in 24 Stunden fehlgeschlagen sind und wie lange sie
+  dauern, ob Starts warten, ob Docker, MySQL und die beiden Neo4j antworten,
+  der Speicherplatz und ob die stündlichen Aufgaben laufen. Ist etwas
+  gestört, bekommt die Administration einmal am Tag eine E-Mail. Für
+  Betreibende: Die Sicherung meldet sich selbst, indem sie nach jedem Lauf
+  `internal/backup-done` im Datenordner anfasst (borgmatic-Hook in
+  `docs/entwicklung.md`, »Betrieb überwachen«); ohne das zeigt die Seite
+  »nicht eingerichtet«. Neu und freiwillig: `BACKUP_MAX_AGE_HOURS`
+  (vorgegeben 26).
 - E2E-Tests für die Zugriffsregeln (`e2e/tests/access-rules.browser.spec.ts`):
   Wer aus seiner Gruppe genommen oder gesperrt wird, verliert Sitzung und
   laufenden Workspace sofort; Gäste ohne Nutzungsordnung starten nichts;

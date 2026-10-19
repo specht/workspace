@@ -45,6 +45,10 @@ CONTACT_EMAIL = 'kontakt@example.com'
 # höchstens aufbewahrt werden (so lange bleiben gelöschte Daten darin):
 # BACKUP = 'in einer eigenen Storage Box im Rechenzentrum'
 # BACKUP_RETENTION_MONTHS = 6
+# Ab wie vielen Stunden ohne Meldung der Sicherung (internal/backup-done)
+# /admin »Betrieb« sie als gestört zeigt und die Administration eine E-Mail
+# bekommt (docs/entwicklung.md, »Betrieb überwachen«):
+# BACKUP_MAX_AGE_HOURS = 26
 # Die Rechtsgrundlage: :school erst, wenn die Schulleitung schriftlich
 # entschieden hat, dass der Workspace im Unterricht eingesetzt wird (die
 # Unterlagen unter /datenschutz helfen dabei); :consent, wenn er ein eigenes

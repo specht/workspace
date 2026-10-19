@@ -27,6 +27,13 @@ with one reminder and »Gruppen nach ihrem Ende«; CI for the Ruby tests
 the open-answers E2E test fixed; client_ip no longer forgeable from a
 Workspace (see the CHANGELOG).
 
+Monitoring (2026-10-19, point 10): /admin »Betrieb« (include/health.rb,
+include/server_health.rb) shows backup age (from internal/backup-done, which
+a borgmatic hook touches; the maintainer has to add it), starts and failures
+in 24 h, the start queue, Docker, MySQL, both Neo4j, disk and the hourly
+jobs; a mail once a day per broken item. A server that is down entirely
+needs an outside check.
+
 E2E tests for the access rules (2026-10-19, the review's table):
 e2e/tests/access-rules.browser.spec.ts covers removal from a group during a
 session (session and the running Workspace end at nginx), suspension and
