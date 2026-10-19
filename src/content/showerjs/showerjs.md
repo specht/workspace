@@ -132,6 +132,10 @@ _task(eigene-regel)
 
 _include(css#wirkt-nicht)
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Rechtsklicke in der Vorschau auf die Überschrift einer Folie und wähle »Untersuchen«. Klicke bei einer ihrer Regeln auf einen Wert, etwa die Farbe, und ändere ihn: Die Folie ändert sich sofort. Was ist von deiner Änderung noch da, wenn du die Vorschau neu lädst, und was steht in <code>styles.css</code>? Warum gehört eine Regel, die bleiben soll, trotzdem dorthin?
+</div>
+
 Was du sonst gestalten kannst: _uses(farben, schrift, abstaende, spalten, platzieren, seitenzahl, formeln)
 
 ## Präsentation halten

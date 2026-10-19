@@ -578,6 +578,10 @@ Dieser Würfel schwebt jetzt über dem Gitter, weil er zuerst nach rechts versch
 
 _task(reihenfolge-erklaeren)
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Prüfe deine Erklärung in der Vorschau. Lege eine Datei <code>reihenfolge.ini</code> an, trag sie unten in der Vorschau ein und schalte »Achsen« ein. Schreib unter <code>shape = box</code> erst <code>move = 100, 0, 0</code> und darunter <code>scale = 2</code>, danach dieselben beiden Zeilen andersherum. Wo steht der Würfel jeweils, und wie groß ist er?
+</div>
+
 ## Farben und Schattierung
 
 Du kannst die Farben der Objekte kontrollieren, um verschiedene Effekte zu erzielen:
@@ -938,6 +942,10 @@ record: 6.28s
 <!-- /tutorial-scope -->
 </div>
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere beim wackelnden Würfel in <code>cos(t * 2) * 10</code> erst die <code>10</code> in <code>40</code>, dann die <code>2</code> in <code>6</code>. Welche der beiden Zahlen bestimmt, wie weit er kippt, und welche, wie schnell er wackelt?
+</div>
+
 **Aufgabe:** Erstelle eine Animation, bei der eine gelbe Sonne in der Mitte steht und eine blaue Erde um die Sonne kreist. Ein weißer Mond soll dabei um die Erde kreisen, und der Hintergrund ist schwarz wie das Weltall:
 
 <!-- tutorial-scope -->
@@ -1115,6 +1123,10 @@ end
 …erhältst du genau dasselbe Bild. Dabei lassen wir eine Variable `x` in 100er-Schritten von -100 bis 100 laufen, wodurch drei Würfel an den gewünschten Positionen gezeichnet werden.
 
 _task(wie-viele)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Prüfe deine Antwort: Ersetze <code>step 100</code> durch <code>step 50</code> und zähl die Würfel. Probier dann <code>step 75</code>: Wie viele Würfel sind es jetzt, und bei welchem <code>x</code> steht der rechte? Warum steht keiner bei 100?
+</div>
 
 <div class='hint'>
 Tipp: Rücke das Innere einer Schleife ein (wie oben z. B. mit Tab oder ein 4 Leerzeichen), um den Überblick zu behalten.

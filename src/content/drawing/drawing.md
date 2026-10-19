@@ -526,6 +526,10 @@ image-file: drawing-steps/step.png 8
 -->
 <img src='out7.webp' class='full' alt='Ein gestreifter Regenbogen steigt hinter grünen Hügeln auf.'>
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere <code>r -= 5</code> in <code>r -= 10</code>: Wie breit sind die Streifen jetzt, und wie groß bleibt das Himmelblau in der Mitte? Nimm danach die <code>16</code> am Ende der Liste heraus: Was steht jetzt in der Mitte, und warum? Stell beides danach wieder her.
+</div>
+
 ### Himmel zeichnen
 
 Für den Himmel brauchen wir die Maske neu: Sie umfasst noch die Pixel, die vorhin hellblau waren, also auch die, auf denen jetzt der Regenbogen liegt. Neu festgelegt umfasst sie nur noch, was jetzt hellblau ist:
@@ -562,6 +566,10 @@ terminal-wait-for-prompt
 image-file: drawing-steps/step.png 8
 -->
 <img src='rainbow.webp' class='full' alt='Fertige Pixelgrafik mit blau gestreiftem Himmel, Regenbogen und grünen Hügeln.'>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Schreib vor die drei Zeilen der zweiten Maske, direkt über dem Himmel, je ein <code>#</code>. Was passiert jetzt mit dem Regenbogen, und warum? Nimm die <code>#</code> danach wieder heraus.
+</div>
 
 ## Bild speichern
 
@@ -665,6 +673,10 @@ t.set_color(25)
     t.turn_right(144)
 end
 ```
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere <code>144</code> in <code>72</code>: Welche Figur entsteht jetzt? Rechne für beide Figuren aus, um wie viel Grad sich die Schildkröte insgesamt dreht. Welchen Winkel und wie viele Schritte brauchst du dann für ein Sechseck?
+</div>
 
 Alle Befehle stehen in der [Dokumentation des Pixelflow Canvas](https://specht.github.io/pixelflow_canvas_ruby/drawing_things.html), mit Bildern zu jedem Befehl.
 

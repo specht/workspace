@@ -225,6 +225,10 @@ show-mouse
 
 <img src='restore-checkpoint.webp' class='full' alt='Der Mauszeiger auf einem Symbol neben »Checkpoint 1«, mit dem Hinweis »Diesen Checkpoint wiederherstellen«.'>
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere in <code>README.md</code> eine Zeile, lege daneben eine neue Datei <code>notiz.txt</code> an und speichere beides. Stelle dann »Checkpoint 1« wieder her. Was steht danach in <code>README.md</code>, und was ist mit <code>notiz.txt</code> passiert? Schau auch in die Liste der Checkpoints: Welche Einträge sind dazugekommen, und wie bekommst du deine Änderungen zurück?
+</div>
+
 
 <div class='hint'>
 <p>

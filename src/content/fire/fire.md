@@ -445,6 +445,15 @@ image-file: fire-steps/step.png 4
 -->
 <img src='fire5.webp' class='full' alt='Das fertige Pixelfeuer steigt vor schwarzem Hintergrund in gelben, orangefarbenen und roten Flammen auf.'>
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Jetzt kannst du am Feuer drehen:
+<ul>
+<li>Ändere <code>rand(7) - 3</code> in <code>rand(7) - 4</code>: Im Mittel wird jetzt jeder Pixel bei jedem Bild ein wenig kälter. Wie hoch schlagen die Flammen jetzt? Und mit <code>rand(7) - 2</code>?</li>
+<li>Ändere die Glut: In <code>fire.rb</code> legen <code>set_color(63)</code> und <code>fill_rect(10, 126, 245, 127)</code> sie an den unteren Rand. Mit <code>fill_rect(100, 126, 155, 127)</code> wird sie schmaler, mit <code>set_color(40)</code> kühler. Wie sieht das Feuer dann aus?</li>
+<li>Vertausche in den vier <code>set_palette</code>-Zeilen jeweils den Wert für Rot und den für Blau. Warum brennt das Feuer jetzt blau, obwohl du an der Animation nichts geändert hast?</li>
+</ul>
+</div>
+
 ### Das ganze Programm
 
 Das gesamte Programm sieht nun so aus:

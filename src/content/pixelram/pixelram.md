@@ -528,6 +528,10 @@ crop-element: #canvas
 -->
 <img class='full' src='lichtspur-fahren.webp' alt='Eine türkise Linie fährt nach rechts, macht eine Schleife und kreuzt dabei ihre eigene Spur.'>
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Schreib <code>clear(0);</code> als erste Zeile in die <code>while</code>-Schleife, übersetze mit <code>make PROGRAM=lichtspur</code> und lade die Vorschau neu. Was bleibt von der Spur übrig, und warum? Ändere auch <code>set_target_fps(30)</code> in <code>set_target_fps(10)</code> oder <code>set_target_fps(60)</code>: Was ändert sich am Spiel? Nimm <code>clear(0);</code> danach wieder heraus und stell 30 wieder ein.
+</div>
+
 Noch kannst du deine eigene Spur kreuzen und aus dem Bild fahren. Das ändert sich jetzt.
 
 ### Wände und Zusammenstöße

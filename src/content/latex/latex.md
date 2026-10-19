@@ -277,6 +277,10 @@ Für Bilder und `[H]` braucht die Präambel noch:
 
 _task(bild)
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Lösch <code>[H]</code> hinter <code>\begin{figure}</code> und speichere: Wo setzt LaTeX die Abbildung jetzt, und stimmt der Verweis »Abbildung 1« im Text trotzdem? Ändere auch <code>width=0.45\textwidth</code> in <code>width=\textwidth</code>. Stell danach beides wieder her.
+</div>
+
 ## Eine Tabelle
 
 Die Durchführung ist eine Liste von Schritten, und die Messwerte gehören in eine Tabelle:
@@ -402,6 +406,15 @@ Ergänze die Präambel:
 ```
 
 _task(diagramm)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Das Diagramm ist Code, du kannst daran drehen:
+<ul>
+<li>Ändere in der Zeile mit <code>plot</code> die <code>9.81</code> in <code>1.62</code>, die Fallbeschleunigung auf dem Mond. Wohin wandert die blaue Kurve, und was heißt das für ein Pendel auf dem Mond?</li>
+<li>Ändere den Maßstab <code>[x=10cm, y=2.5cm]</code> in <code>[x=5cm, y=2.5cm]</code>. Was wird schmaler, und was bleibt so groß wie vorher?</li>
+</ul>
+Stell beides danach wieder her.
+</div>
 
 Zum Schluss fehlt noch das Fazit:
 

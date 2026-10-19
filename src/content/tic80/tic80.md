@@ -311,6 +311,15 @@ sleep: 16
 
 _task(viele-sterne)
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Dreh an zwei Zahlen:
+<ul>
+<li>Ändere in <code>newGame()</code> die Zeile <code>for i = 1, 3 do</code> in <code>for i = 1, 10 do</code>: Wie viele Sterne fallen jetzt? Warum reicht es, eine einzige Zahl zu ändern?</li>
+<li>Ändere <code>speed = speed + 0.05</code> in <code>speed = speed + 0.5</code>: Wie viele Sterne fängst du, bevor es zu schnell wird?</li>
+</ul>
+Stell die Zahlen danach wieder her.
+</div>
+
 ### Ein Ton
 
 Drücke <kbd>F4</kbd>: Im **SFX-Editor** baust du Töne. Ton 0 ist schon da. Klicke unten auf die Tasten des Klaviers, um ihn zu hören, und verändere oben die Lautstärke (VOL) und die Tonhöhe (PITCH) über die Zeit.
@@ -406,6 +415,16 @@ check-task: himmel
 <img class='full' src='sky.webp' alt='Das fertige Spiel: funkelnde Sterne mit einem Schweif in Orange, Rot und Lila fallen über einen Nachthimmel mit kleinen blauen Punkten, unten steht die Figur auf einer grünen Wiese.'>
 
 _task(himmel)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong>
+<ul>
+<li>Ändere <code>t // 30</code> in <code>t // 5</code>: Wie funkelt der Himmel jetzt?</li>
+<li>Lass <code>i +</code> weg, also <code>13 + (t // 30) % 3</code>: Was ist jetzt anders, und warum?</li>
+<li>Schieb die beiden Zeilen der Wiese, <code>rect</code> und <code>line</code>, vor die Schleife über die Sterne: Was siehst du, wenn ein Stern unten ankommt?</li>
+</ul>
+Stell den Code danach wieder her.
+</div>
 
 ## Dein Spiel
 

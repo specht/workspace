@@ -673,6 +673,10 @@ _task(schluessel)
 Gerade beim Testen einer interaktiven Geschichte lohnt es sich, Orte mehrmals zu besuchen und Entscheidungen in unterschiedlicher Reihenfolge auszuprobieren. So fallen Widersprüche auf, die beim ersten Durchspielen leicht unbemerkt bleiben.
 </div>
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Wo eine Variable ihren Anfangswert bekommt, ist wichtig. Kopiere das Skript mit <code>has_key = false;</code> aus <code>1.md</code> zusätzlich an den Anfang von <code>3.md</code>. Nimm dann im Büro den Schlüssel, geh in den Flur, wieder ins Büro und noch einmal in den Flur. Was zeigt <strong>State</strong> nach jedem Schritt, und was passiert mit »Öffne den Materialschrank«? Nimm das Skript danach wieder aus <code>3.md</code> heraus.
+</div>
+
 ### Ende
 
 Öffne jetzt den Materialschrank:
