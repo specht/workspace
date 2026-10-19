@@ -1,5 +1,6 @@
 <div class='meta'>
 image: facharbeit-fertig.webp
+image_alt: "VS Code mit dem LaTeX-Quelltext einer Facharbeit links und dem fertigen Titelblatt als PDF rechts"
 kind: projekt
 language: LaTeX
 topic: writing

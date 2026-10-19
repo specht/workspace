@@ -1,5 +1,6 @@
 <div class='meta'>
 image: baum.webp:contain
+image_alt: "Der Syntaxbaum zu 2 + 3 * 4: oben das Plus, rechts darunter das Mal mit 3 und 4"
 kind: projekt
 language: Ruby / Python
 languages: [ruby, python]

@@ -1,5 +1,6 @@
 <div class='meta'>
 image: start-page.webp:50:0
+image_alt: "Die Startseite des Workspace mit einem kurzen Text, daneben VS Code mit einem kleinen Python-Programm im Terminal"
 kind: grundlagen
 </div>
 

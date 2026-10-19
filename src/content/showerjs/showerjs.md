@@ -1,5 +1,6 @@
 <div class='meta'>
 image: showerjs.webp:0:80
+image_alt: "Eine orange Schreibmaschine, darunter der Platzhalter »Titel deiner Präsentation«"
 kind: projekt
 language: HTML
 topic: writing

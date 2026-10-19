@@ -1,5 +1,6 @@
 <div class='meta'>
 image: xkcd-327.webp:0:50
+image_alt: "Ausschnitt aus dem xkcd-Comic »Exploits of a Mom«: Die Schule ruft eine Mutter an, weil sie Probleme mit dem Computer hat"
 kind: labor
 language: Ruby / Python / SQL
 languages: [ruby, python]

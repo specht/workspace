@@ -1,5 +1,6 @@
 <div class='meta'>
 image: teaser.webp
+image_alt: "Ein Pixelbild auf einem Raster: ein Haus mit rotem Dach, ein Baum, ein Regenbogen, Sonne und Wolken"
 kind: projekt
 language: Ruby / Python
 languages: [ruby, python]

@@ -101,6 +101,8 @@ image: tcpip.webp
 | `template` | Adresse der Vorlage zum Klonen (`https://…`); andere Schulen können hier einen Spiegel eintragen. Im Text `${template}`; der Workspace sagt Lernenden, wenn es eine neue Version gibt (siehe unten) |
 | `template_name` | Name der Vorlage im Genitiv, für »Es gibt eine neue Version der CPU Sandbox!«; ohne das Feld: »… von `cpu-sandbox`« |
 | `class_repo` | Adresse des Klassen-Repositorys, zum Beispiel für die Sandboxes; im Text `${class_repo}` |
+| `image` | Das Bild der Karte im Katalog, relativ zur Seite; `name.webp:30:0` setzt den Ausschnitt (x und y in Prozent), `name.webp:contain` zeigt eine Zeichnung ganz |
+| `image_alt` | Was das Bild der Karte zeigt, in Anführungszeichen (`image_alt: "Ein Huffman-Baum mit …"`); Pflicht zu `image`, `alt_text_test.rb` prüft es. Steht dasselbe Bild mit Alt-Text auf der Seite, gilt dieser |
 
 Über jeder Seite steht ein schmaler Streifen, der sagt, was sie ist:
 

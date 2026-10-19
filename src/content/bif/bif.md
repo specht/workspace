@@ -1,5 +1,6 @@
 <div class='meta'>
 image: ../reference/bif/story-image.webp
+image_alt: "Der BIF-Editor mit den Seiten einer Geschichte als Graph, daneben die Vorschau mit einem Schlüssel an einer Wand"
 kind: projekt
 language: Markdown / JavaScript
 template: https://github.com/specht/bif.git

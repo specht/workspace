@@ -1,5 +1,6 @@
 <div class='meta'>
 image: teaser.webp
+image_alt: "Ein Farbwürfel, in dem eine Farbe als Pfeile entlang Y, Cb und Cr zerlegt ist"
 kind: labor
 language: C
 duration: 4 Doppelstunden

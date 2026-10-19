@@ -1,5 +1,6 @@
 <div class='meta'>
 image: html-css-logo.png
+image_alt: "Die Logos von HTML5 und CSS"
 kind: projekt
 language: HTML / CSS
 reference: [workspace, html, css, layout]

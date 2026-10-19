@@ -1,5 +1,6 @@
 <div class='meta'>
 image: data-structures-avl.webp
+image_alt: "Die Datenstruktur-Sandbox mit Python-Code eines AVL-Baums links und dem gezeichneten Baum mit der Wurzel 30 rechts"
 kind: projekt
 language: Dart / Python / JavaScript / Java
 topic: computing

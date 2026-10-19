@@ -1,5 +1,6 @@
 <div class='meta'>
 image: teaser.webp
+image_alt: "Ein Terminal, in dem ssh-keygen die Signatur eines Briefs erst bestätigt und nach einer Änderung ablehnt"
 kind: labor
 language: Bash
 duration: 2 Doppelstunden

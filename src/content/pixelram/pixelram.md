@@ -1,5 +1,6 @@
 <div class='meta'>
 image: interference.webp
+image_alt: "Bunte, ineinander verschlungene Farbringe aus großen Pixeln"
 kind: projekt
 language: PixelRAM / C
 reference: [pixelram]

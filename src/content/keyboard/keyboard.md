@@ -1,5 +1,6 @@
 <div class='meta'>
 image: keyboard-tutorial.webp:0:30
+image_alt: "VS Code mit dem Keyboard-Tutorial in der Seitenleiste: Buchstaben, Umlaute und Ziffern zum Abhaken"
 kind: uebung
 reference: [shortcuts]
 duration: 2 bis 3 Doppelstunden

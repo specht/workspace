@@ -1,5 +1,6 @@
 <div class='meta'>
 image: teaser.webp:contain
+image_alt: "Ein Huffman-Baum mit der Wurzel 38, die Kanten mit 0 und 1 beschriftet, unten die Buchstaben mit ihrer Häufigkeit"
 kind: labor
 language: Ruby / Python
 languages: [ruby, python]

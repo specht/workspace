@@ -1994,6 +1994,11 @@ class Main < Sinatra::Base
                         parsed_content[slug][:image_x] = (parts[1] || '50').to_i
                         parsed_content[slug][:image_y] = (parts[2] || '50').to_i
                         parsed_content[slug][:needs_contrast] = meta['needs_contrast']
+                        # The card's alt text (docs/aufgaben.md): image_alt,
+                        # else the alt of the same picture on the page.
+                        basename = File.basename(parts[0])
+                        same = root.css('img').find { |img| File.basename(img['src'].to_s) == basename && !img['alt'].to_s.strip.empty? }
+                        parsed_content[slug][:image_alt] = meta['image_alt'] || (same && same['alt'])
                     end
                 end
                 begin
@@ -2005,6 +2010,9 @@ class Main < Sinatra::Base
                 rescue
                 end
                 begin
+                    unless parsed_content[slug][:image]
+                        parsed_content[slug][:image_alt] = root.css('img').first.attr('alt')
+                    end
                     parsed_content[slug][:image] ||= root.css('img').first.attr('src')
                     parsed_content[slug][:image_x] ||= 50
                     parsed_content[slug][:image_y] ||= 50
@@ -5689,6 +5697,7 @@ class Main < Sinatra::Base
                     next if section[:entries].reject do |entry|
                         (!DEVELOPMENT) && @@content[entry][:dev_only]
                     end.empty?
+                    # The icon next to the heading is decoration (alt='').
                     io.puts "<h2><div class='squircle'><img alt='' src='#{section[:icon]}'></div> #{section[:label]}</h2>"
                     if section[:description]
                         io.puts "<p style='margin-top: -1em; margin-bottom: 1em;'>#{section[:description]}</p>"
@@ -5739,11 +5748,14 @@ class Main < Sinatra::Base
                             Main.ensure_image_width(image_url, 1024)
                         end
                         image_style = "object-position: #{content[:image_x]}% #{content[:image_y]}%;"
+                        # What the picture shows (image_alt); the title next to
+                        # it is no alt text, so without one it stays empty.
+                        card_alt = CGI.escapeHTML(content[:image_alt].to_s)
                         if content[:image_dark]
-                            io.puts "<img alt='' class='#{(additional_classes + ['theme-image-light']).join(' ')}' src='#{content[:image].sub('.webp', '-1024.webp')}' style='#{image_style}'>"
-                            io.puts "<img alt='' class='#{(additional_classes + ['theme-image-dark']).join(' ')}' src='#{content[:image_dark].sub('.webp', '-1024.webp')}' style='#{image_style}'>"
+                            io.puts "<img alt='#{card_alt}' class='#{(additional_classes + ['theme-image-light']).join(' ')}' src='#{content[:image].sub('.webp', '-1024.webp')}' style='#{image_style}'>"
+                            io.puts "<img alt='#{card_alt}' class='#{(additional_classes + ['theme-image-dark']).join(' ')}' src='#{content[:image_dark].sub('.webp', '-1024.webp')}' style='#{image_style}'>"
                         else
-                            io.puts "<img alt='' class='#{additional_classes.join(' ')}' src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='#{image_style}'>"
+                            io.puts "<img alt='#{card_alt}' class='#{additional_classes.join(' ')}' src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='#{image_style}'>"
                         end
                         io.puts "<div class='shade'></div>"
                         io.puts "<div class='card-content'>"

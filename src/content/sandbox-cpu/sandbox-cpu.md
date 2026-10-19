@@ -1,5 +1,6 @@
 <div class='meta'>
 image: cpu-sandbox.webp
+image_alt: "Die CPU-Sandbox mit Maschinencode, dem Quelltext, den Registern, dem Speicher und einem kleinen 3D-Labyrinth auf dem Bildschirm"
 kind: projekt
 language: Assembler / C
 topic: computing

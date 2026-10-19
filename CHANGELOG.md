@@ -18,6 +18,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Die Bilder der Karten auf der Startseite haben einen Alt-Text, der sagt,
+  was zu sehen ist (neues Feld `image_alt` im Meta-Block, Pflicht zu
+  `image`; `alt_text_test.rb` prüft es). Die Symbole der Abschnitte und die
+  Logos der Sprachen bleiben bewusst ohne, sie stehen neben ihrem Namen.
+  Für Betreibende: Das Sponsorenlogo in `data/brand/header.html` braucht
+  ein `alt` (zum Beispiel `alt="Hetzner"`), denn es ist der einzige Inhalt
+  seines Links.
 - `/admin` heißt jetzt »Betrieb« und ist auf das Wesentliche gekürzt: oben
   eine Zeile, die sagt, was gestört ist, darunter eine Karte je Prüfung
   (ruhig, solange alles in Ordnung ist; ein farbiger Punkt und ein

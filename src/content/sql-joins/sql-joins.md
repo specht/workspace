@@ -1,5 +1,6 @@
 <div class='meta'>
 image: teaser.webp:contain
+image_alt: "Ein ER-Diagramm mit country in der Mitte und continent, city, currency und language darum herum"
 kind: grundlagen
 language: SQL
 reference: [sql, datensaetze]

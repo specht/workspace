@@ -1,5 +1,6 @@
 <div class='meta'>
 image: git-logo.png
+image_alt: "Das Logo von Git"
 kind: grundlagen
 reference: [workspace, terminal]
 </div>

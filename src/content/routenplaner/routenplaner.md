@@ -1,5 +1,6 @@
 <div class='meta'>
 image: teaser.webp
+image_alt: "Ein Stadtplan von Steglitz mit farbigen Straßen und einer Route vom Botanischen Garten zum Gymnasium Steglitz"
 kind: projekt
 language: Ruby / Python
 languages: [ruby, python]

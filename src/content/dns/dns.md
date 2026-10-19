@@ -1,5 +1,6 @@
 <div class='meta'>
 image: dns-tree.webp:contain
+image_alt: "Ein Baum der Domainnamen: die Wurzel, darunter de, com und org, darunter hackschule, wikipedia und google"
 kind: labor
 language: Bash
 requires: [tcpip]

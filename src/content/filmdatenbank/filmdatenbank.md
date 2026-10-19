@@ -1,5 +1,6 @@
 <div class='meta'>
 image: er-crowfoot.webp
+image_alt: "VS Code mit einem Datenmodell für Filme als Text links und dem daraus gezeichneten ER-Diagramm rechts"
 kind: projekt
 language: SQL
 topic: databases

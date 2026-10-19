@@ -1,5 +1,6 @@
 <div class='meta'>
 image: tag.webp
+image_alt: "Eine Blockwelt mit Bäumen auf grüner Wiese, unten eine Leiste mit Blöcken zum Bauen"
 kind: projekt
 language: raylib / C
 topic: graphics

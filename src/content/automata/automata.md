@@ -1,5 +1,6 @@
 <div class='meta'>
 image: teaser.webp:contain
+image_alt: "Ein endlicher Automat mit den Zuständen q0, q1 und q2 und Übergängen für die Ziffern 0 bis 9"
 kind: projekt
 language: Ruby / Python
 languages: [ruby, python]

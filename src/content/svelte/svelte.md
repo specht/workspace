@@ -1,5 +1,6 @@
 <div class='meta'>
 image: svelte5.webp
+image_alt: "Das Svelte-Logo als futuristisches Gebäude, durch das eine Fahrbahn mit kleinen Autos führt"
 kind: projekt
 language: Svelte
 duration: 3 Doppelstunden

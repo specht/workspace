@@ -1,5 +1,6 @@
 <div class='meta'>
 image: teaser.webp:contain
+image_alt: "Die LZW-Kompression von RHABARBERBARBARA Schritt für Schritt als Tabelle, jede Zeile ein neuer Eintrag im Wörterbuch"
 kind: labor
 language: Ruby / Python
 languages: [ruby, python]

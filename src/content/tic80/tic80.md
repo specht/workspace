@@ -1,5 +1,6 @@
 <div class='meta'>
 image: sky.webp
+image_alt: "Ein Retro-Spiel: eine kleine Figur auf grünem Boden, von oben fallen Sterne; oben »Score: 0« und »Lives: 3«"
 kind: projekt
 language: TIC-80 / Lua
 duration: 3 Doppelstunden

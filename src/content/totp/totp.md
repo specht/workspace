@@ -1,5 +1,6 @@
 <div class='meta'>
 image: totp-app.webp
+image_alt: "VS Code mit einem QR-Code und im Terminal einem Programm, das sechsstellige Codes wie eine Authenticator-App erzeugt"
 kind: projekt
 language: Ruby / Python
 languages: [ruby, python]

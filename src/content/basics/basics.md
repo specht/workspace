@@ -1,5 +1,6 @@
 <div class='meta'>
 image: vs-code-welcome.webp:0:50
+image_alt: "VS Code im Browser mit der Willkommensseite und dem leeren Explorer"
 kind: grundlagen
 </div>
 

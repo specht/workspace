@@ -1,5 +1,6 @@
 <div class='meta'>
 image: rainbow.webp
+image_alt: "Ein pixeliger Regenbogen über einer grünen Wiese vor einem gestreiften blauen Himmel"
 kind: projekt
 language: Pixelflow Canvas / Ruby
 duration: 2 Doppelstunden

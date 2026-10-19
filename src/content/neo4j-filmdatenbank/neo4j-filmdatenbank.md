@@ -1,5 +1,6 @@
 <div class='meta'>
 image: neo4j-browser-path.webp:0:100
+image_alt: "Der Neo4j Browser mit einer Cypher-Abfrage und dem Ergebnis als Graph aus Personen und Filmen"
 kind: projekt
 language: Cypher
 topic: databases

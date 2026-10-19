@@ -1,5 +1,6 @@
 <div class='meta'>
 image: liesmich.webp
+image_alt: "VS Code mit dem Ordner bitstein und dem Brief der Kriminalpolizei über die gestohlene Goldene Diskette"
 kind: projekt
 language: Bash
 duration: 2 Doppelstunden

@@ -1,5 +1,6 @@
 <div class='meta'>
 image: title.webp
+image_alt: "Ein Straßenfoto mit einem Lastendreirad; ein Gesicht ist vergrößert und zeigt grobe Farbpixel"
 kind: labor
 language: C
 duration: 3 Doppelstunden

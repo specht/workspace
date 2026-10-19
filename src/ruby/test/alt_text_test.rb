@@ -1,4 +1,5 @@
 require 'minitest/autorun'
+require 'yaml'
 
 # Every picture has an alt text that says what is to be seen (AGENTS.md).
 # An <img> in inline code or a code block is an example, not a picture.
@@ -18,5 +19,28 @@ class AltTextTest < Minitest::Test
             prose.scan(WITHOUT_ALT).map { "#{name}: #{$~[0][0, 100]}" }
         end
         assert_empty found, "A picture without an alt text:\n#{found.join("\n")}"
+    end
+
+    # The picture on an activity's card in the catalog (meta »image«) says
+    # what it shows (»image_alt«), unless the page has the same picture with
+    # an alt text (docs/aufgaben.md). Only cards: the logos of the language
+    # tiles stand next to their names, hidden sections show nothing.
+    def test_every_card_picture_has_an_alt_text
+        cards = YAML.load_file(File.join(CONTENT, 'sections.yaml')).reject { |s| s['tiles'] || s['hidden'] }.flat_map { |s| s['entries'] }
+        found = cards.filter_map do |slug|
+            file = Dir[File.join(CONTENT, '**', "#{slug}.md")].find { |f| File.basename(File.dirname(f)) == slug }
+            next "#{slug}: no page" unless file
+
+            text = File.read(file, encoding: 'UTF-8')
+            meta = text[%r{<div class='meta'>(.*?)</div>}m, 1].to_s
+            image = meta[/^image:\s*(\S+)/, 1]
+            next unless image
+            next if meta.match?(/^image_alt:\s*\S/)
+
+            basename = File.basename(image.split(':').first)
+            on_page = text.scan(/<img[^>]*>/).any? { |img| img.include?(basename) && img.match?(/\balt=(['"])[^'"]+\1/) }
+            slug unless on_page
+        end
+        assert_empty found, "A card picture without image_alt:\n#{found.join("\n")}"
     end
 end
