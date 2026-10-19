@@ -167,8 +167,10 @@ _task(totp)
 Jetzt kommt dein Programm mit einer echten App zusammen. Es braucht dafür einen eigenen Schlüssel und einen QR-Code, den die App scannen kann. Im QR-Code steht eine Adresse, die jede Authenticator-App versteht:
 
 ```text
-otpauth://totp/Hackschule:Workspace?secret=JBSWY3DPEHPK3PXP&issuer=Hackschule
+otpauth://totp/TOTP-Test:mein-Programm?secret=JBSWY3DPEHPK3PXP&issuer=TOTP-Test
 ```
+
+Vor dem Doppelpunkt steht der Name, unter dem die App den Eintrag zeigt: »TOTP-Test«, damit du ihn nicht mit einem echten Konto verwechselst.
 
 <!-- language: ruby -->
 Den QR-Code macht eine Bibliothek:
@@ -184,7 +186,7 @@ require 'rqrcode'
 path = File.join(__dir__, 'secret.txt')
 File.write(path, base32_encode(SecureRandom.random_bytes(20)) + "\n") unless File.exist?(path)
 secret = File.read(path).strip
-uri = "otpauth://totp/Hackschule:Workspace?secret=#{secret}&issuer=Hackschule"
+uri = "otpauth://totp/TOTP-Test:mein-Programm?secret=#{secret}&issuer=TOTP-Test"
 RQRCode::QRCode.new(uri).as_png(size: 300).save(File.join(__dir__, 'qr.png'))
 puts "Geheimnis: #{secret}"
 puts 'Scanne qr.png mit deiner Authenticator-App. Beenden mit Strg+C.'
@@ -250,7 +252,7 @@ if not os.path.exists(path):
         f.write(base32_encode(secrets.token_bytes(20)) + '\n')
 with open(path) as f:
     secret = f.read().strip()
-uri = f'otpauth://totp/Hackschule:Workspace?secret={secret}&issuer=Hackschule'
+uri = f'otpauth://totp/TOTP-Test:mein-Programm?secret={secret}&issuer=TOTP-Test'
 qrcode.make(uri).save(os.path.join(os.path.dirname(path), 'qr.png'))
 print(f'Geheimnis: {secret}')
 print('Scanne qr.png mit deiner Authenticator-App. Beenden mit Strg+C.')

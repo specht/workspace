@@ -58,7 +58,7 @@ if not os.path.exists(path):
         f.write(base32_encode(secrets.token_bytes(20)) + '\n')
 with open(path) as f:
     secret = f.read().strip()
-uri = f'otpauth://totp/Hackschule:Workspace?secret={secret}&issuer=Hackschule'
+uri = f'otpauth://totp/TOTP-Test:mein-Programm?secret={secret}&issuer=TOTP-Test'
 qrcode.make(uri).save(os.path.join(os.path.dirname(path), 'qr.png'))
 print(f'Geheimnis: {secret}')
 print('Scanne qr.png mit deiner Authenticator-App. Beenden mit Strg+C.')

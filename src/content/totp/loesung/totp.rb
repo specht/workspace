@@ -50,7 +50,7 @@ require 'rqrcode'
 path = File.join(__dir__, 'secret.txt')
 File.write(path, base32_encode(SecureRandom.random_bytes(20)) + "\n") unless File.exist?(path)
 secret = File.read(path).strip
-uri = "otpauth://totp/Hackschule:Workspace?secret=#{secret}&issuer=Hackschule"
+uri = "otpauth://totp/TOTP-Test:mein-Programm?secret=#{secret}&issuer=TOTP-Test"
 RQRCode::QRCode.new(uri).as_png(size: 300).save(File.join(__dir__, 'qr.png'))
 puts "Geheimnis: #{secret}"
 puts 'Scanne qr.png mit deiner Authenticator-App. Beenden mit Strg+C.'
