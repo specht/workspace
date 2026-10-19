@@ -46,6 +46,19 @@ export default {
             null,
             { timeout: timeout ?? readyTimeout },
         );
+        // The generator sets each shot's window size and zoom afterwards; p5
+        // then makes the canvas anew and empty (windowResized). Without the
+        // loop nothing would draw it again: two frames after every resize, an
+        // animation frame apart (measured: the first still has the old size).
+        await page.evaluate(() => {
+            if (window.__tutorialRedrawOnResize) return;
+            window.__tutorialRedrawOnResize = true;
+            // the first frame after a resize still draws at the old size
+            window.addEventListener('resize', () => requestAnimationFrame(() => {
+                redraw();
+                requestAnimationFrame(() => redraw());
+            }));
+        });
         await drawOnce(page);
     },
 
