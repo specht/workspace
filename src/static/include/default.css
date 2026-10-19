@@ -3406,16 +3406,19 @@ ul.task-teacher-list .task-teacher-answer {
     gap: 0.5em;
 }
 
-/* A table of people in a scrolling box: as wide as its content, so that
-   the box scrolls instead of the page (phones). Positioned, so that the
-   hidden labels for screen readers stay inside it too. */
+/* A table in a scrolling box: positioned, so that the hidden labels for
+   screen readers stay inside it (otherwise they widen the page on a
+   phone). On a phone a table of people is as wide as its content, so that
+   the box scrolls instead of the page; wider screens wrap its cells. */
 .table-responsive {
     position: relative;
 }
 
-.table-responsive > .people-table {
-    width: max-content;
-    min-width: 100%;
+@media (max-width: 767.98px) {
+    .table-responsive > .people-table {
+        width: max-content;
+        min-width: 100%;
+    }
 }
 
 /* The class page's tabs on a phone: one row that scrolls sideways. */
