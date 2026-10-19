@@ -35,10 +35,14 @@ export default {
     // The template is cloned to /workspace/anaglyph; scene files live there.
     writeFileSubdirectory: 'anaglyph',
 
-    // The scene file is loaded and drawn a few times.
+    // The scene file is loaded, its models and textures are there
+    // (pendingAssets, script.js), and it is drawn once: the hooks draw each
+    // picture on demand anyway. Waiting for several frames of the loop took
+    // seconds per scene in software WebGL.
     async waitForPreview({ page, timeout }) {
         await page.waitForFunction(
-            () => typeof sceneDescription !== 'undefined' && window.frameCount > 3,
+            () => typeof sceneDescription !== 'undefined' && window.frameCount >= 1 &&
+                (typeof pendingAssets === 'undefined' || pendingAssets === 0),
             null,
             { timeout: timeout ?? readyTimeout },
         );
