@@ -362,7 +362,7 @@
         fill(0, data.cpu_usage, Math.round(data.cpu_usage) + ' % von ' + data.num_cores + ' Kernen');
         // The sizes come with their unit as HTML (»19.6<span class='unit'>G</span>«).
         fill(1, data.ram_percent, data.ram_used + ' von ' + data.ram_total);
-        fill(2, data.disk_user_percent, data.disk_user_used + ' von ' + data.disk_user_total);
+        fill(2, data.disk_user_percent, (data.disk_user_free || '–') + ' frei von ' + data.disk_user_total);
         row.hidden = false;
     }
 

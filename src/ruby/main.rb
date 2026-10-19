@@ -5566,11 +5566,12 @@ class Main < Sinatra::Base
             end
         end
         # How busy the server is, so that a slow Workspace can be told from a
-        # busy server, and whether the Workspaces' disk is filling up (then
-        # nothing can be saved): one row as on »Betrieb«, from the teachers'
-        # websocket (server_stats), see class_board.js.
+        # busy server, and how much room is left on the disk of the
+        # Workspaces (df: the whole partition, so nothing can be saved once
+        # it is full): one row as on »Betrieb«, from the teachers' websocket
+        # (server_stats), see class_board.js.
         cell = ->(icon, label) { "<div class='server-load-cell'><div class='server-load-label'><i class='bi #{icon}' aria-hidden='true'></i>#{label}</div><div class='progress' role='progressbar' aria-label='#{label}'><div class='progress-bar progress-bar-striped' style='width: 0%'></div></div><p>–</p></div>" }
-        io << "<div class='server-load-pair server-load-three class-server-load mb-3' aria-label='Server, jede Sekunde neu'>#{cell.('bi-cpu', 'CPU des Servers')}#{cell.('bi-memory', 'RAM des Servers')}#{cell.('bi-nvme', 'Speicher der Workspaces')}</div>"
+        io << "<div class='server-load-pair server-load-three class-server-load mb-3' aria-label='Server, jede Sekunde neu'>#{cell.('bi-cpu', 'CPU des Servers')}#{cell.('bi-memory', 'RAM des Servers')}#{cell.('bi-nvme', 'Speicherplatz')}</div>"
         io << class_group_html(group) unless test_group
         running = (workspace_runtime.running_workspaces(:timeout => shell_timeout(:docker_network_inspect)).keys rescue [])
         io << "<div class='class-people-scroll'><table class='table align-middle class-people-table'>"
@@ -6042,6 +6043,8 @@ class Main < Sinatra::Base
                         data[:disk_user_total] = bytes_to_str(disk_total).sub('B', '').gsub(' ', '').gsub(/([A-Za-z]+)/, '<span class=\'unit\'>\1</span>')
                         data[:disk_user_used] = bytes_to_str(disk_used).sub('B', '').gsub(' ', '').gsub(/([A-Za-z]+)/, '<span class=\'unit\'>\1</span>')
                         data[:disk_user_percent] = (disk_used * 100.0 / disk_total * 100).to_i.to_f / 100
+                        # What can still be written there (df's »Available«).
+                        data[:disk_user_free] = bytes_to_str(disk_free).sub('B', '').gsub(' ', '').gsub(/([A-Za-z]+)/, '<span class=\'unit\'>\1</span>')
 
                         ws.send({:server_stats => data}.to_json)
 
