@@ -1,5 +1,6 @@
 require 'digest'
 require 'set'
+require_relative 'login_names'
 
 module DatabaseIdentity
     MAX_LOGIN_LENGTH = 32
@@ -51,8 +52,8 @@ module DatabaseIdentity
 
     def self.stem_for_email(email)
         local = normalized_email(email).split('@', 2).first.to_s
-        stem = local.unicode_normalize(:nfkd)
-            .encode('ASCII', :invalid => :replace, :undef => :replace, :replace => '')
+        # ä → ae, é → e (LoginNames), as the Linux user in the Workspace.
+        stem = LoginNames.ascii(local)
             .gsub(/[^a-z0-9.]+/, '-')
             .gsub(/[.-]{2,}/, '-')
             .gsub(/\A[.-]+|[.-]+\z/, '')

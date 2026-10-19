@@ -20,6 +20,7 @@ require './include/template_freshness.rb'
 require './include/anaglyph_viewer.rb'
 require './include/atomic_file.rb'
 require './include/authentication.rb'
+require './include/login_names.rb'
 require './include/database_provisioning.rb'
 require './include/case_server.rb'
 require './include/trusted_template.rb'
@@ -3386,12 +3387,9 @@ class Main < Sinatra::Base
     # Turn the requested value into a portable Unix login name. The container
     # init script validates this again before renaming the image's build-time
     # `abc` account. Keep this deterministic so logs are readable.
+    # include/login_names.rb: ä → ae, é → e, other characters → »-«.
     def self.sanitize_workspace_login(value)
-        login = value.to_s.downcase
-        login = login.gsub(/[^a-z0-9._-]+/, '-').gsub(/\A[.-]+|[.-]+\z/, '')
-        login = 'student' if login.empty?
-        login = "user-#{login}" unless login.match?(/\A[a-z_]/)
-        login[0, 32]
+        LoginNames.linux_login(value)
     end
 
     # The screenshot generator's account (development only): its Workspaces

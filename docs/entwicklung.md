@@ -246,6 +246,50 @@ gar nicht erst. `build-image.sh` prüft `ping` so, wie Lernende es aufrufen.
 Braucht ein neues Werkzeug eine Fähigkeit, steht sie in `HARDENING`, nicht
 im Image.
 
+## Namen und Home-Verzeichnis im Workspace
+
+Alle Namen kommen aus dem Teil der E-Mail-Adresse vor dem `@`; der Name
+einer Person (Einladung, Profil) spielt keine Rolle. Umlaute werden so
+geschrieben, wie man es ohne sie tut: ä → ae, ö → oe, ü → ue, ß → ss;
+andere Buchstaben verlieren ihre Akzente (é → e, ø → o, ł → l); was dann
+noch kein Buchstabe, keine Ziffer, kein Punkt oder Bindestrich ist, wird
+zu `-` (`src/ruby/include/login_names.rb`, getestet in
+`test/login_names_test.rb`).
+
+- **Linux-Benutzer** im Workspace (`LoginNames.linux_login`): beginnt mit
+  einem Buchstaben (sonst `user-` davor, leer: `student`), höchstens
+  32 Zeichen. Er muss nicht eindeutig sein: Jeder Workspace ist ein eigener
+  Container, der Name steht nur im Prompt und bei `whoami`. Heißt er wie ein
+  Systemkonto des Images (`root@…`), benennt der Container ihn um
+  (`student-root-2`, `docker/code/init-code-server-run`). Er wird bei jedem
+  Start neu gebildet; die Dateien gehören der Benutzernummer 1000, eine
+  andere Regel ändert also nur den Prompt.
+- **MySQL- und Neo4j-Login** (`DatabaseIdentity`): dieselbe Umschrift,
+  dazu 3 bis 32 Zeichen aus a–z, 0–9, `.` und `-`, nie ein reservierter Name
+  (`root`, `mysql`, `neo4j`, `system…`). Er ist eindeutig: Haben zwei
+  Adressen denselben Teil vor dem `@`, bekommt die zweite einen Zusatz aus
+  der ganzen Adresse (`max-3pnw`). Gespeichert wird er einmal am Konto
+  (`User.db_login`) und ändert sich danach nicht; ältere Konten behalten
+  ihren Login aus der Zeit vor der Umschrift (`jurgen.muller` statt
+  `juergen.mueller`).
+
+| Adresse | Linux | MySQL / Neo4j |
+| --- | --- | --- |
+| `jürgen.müller@…` | `juergen.mueller` | `juergen.mueller` |
+| `anna+informatik@…` | `anna-informatik` | `anna-informatik` |
+| `2a.lea@…` | `user-2a.lea` | `2a.lea` |
+| `max@schule-b.de`, wenn es `max@schule-a.de` schon gibt | `max` | `max-3pnw` |
+
+Das Home-Verzeichnis ist `/workspace`, für alle gleich, und bleibt es
+(Entscheidung vom 19.10.2026). `/home/<name>` wäre näher an einem
+Linux-Lehrbuch, aber Pfade wären dann je Person verschieden, sodass die
+Seiten keinen Pfad mehr nennen könnten, den alle abtippen; `/workspace`
+steht in rund 100 Seiten, 35 Aufgabendateien, den Rezepten der Screenshots,
+dem Backend, dem Image und den E2E-Tests; und vorhandene Workspaces
+speichern absolute Pfade (Python-Umgebungen, installierte Werkzeuge,
+zuletzt geöffnete Ordner in VS Code). Befehle auf den Seiten schreiben das
+Home trotzdem als `~` (`git clone … ~/gif`), wo das natürlich ist.
+
 ## Datenbanken
 
 Neo4j (Konten, Aufgabenstände, Gruppen) über `neo4j_bolt` im Ruby-Container:

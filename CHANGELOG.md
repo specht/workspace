@@ -18,6 +18,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Umlaute in Namen, die aus der E-Mail-Adresse entstehen: ä → ae, ö → oe,
+  ü → ue, ß → ss, andere Buchstaben ohne Akzent (é → e). Der
+  Linux-Benutzer im Workspace hieß bei `jürgen.müller@…` bisher
+  `j-rgen.m-ller`, jetzt `juergen.mueller` (ab dem nächsten Start; Dateien
+  bleiben, wie sie sind). Neue MySQL- und Neo4j-Logins folgen derselben
+  Regel; vorhandene bleiben unverändert. Beschrieben in
+  `docs/entwicklung.md`, »Namen und Home-Verzeichnis im Workspace«.
 - Jede Aktivität klont ihre Vorlage in einen eigenen Ordner. »GIF«,
   »JPEG« und »Feuerwerk« teilten sich mit »Echtzeitgrafik mit C« den Ordner
   `pixelram-starter`; VS Code klont dann still nach `pixelram-starter-1`, und

@@ -33,6 +33,11 @@ marker hourly, newest file change daily); catalog cards have alt texts
 (`image_alt`). Open from the maintainer: a custom first start of the
 Workspace (code-server's welcome page shows Coder's ad).
 
+Decided 2026-10-19: the home directory stays `/workspace` (not
+`/home/<name>`); reasons in docs/entwicklung.md, »Namen und
+Home-Verzeichnis im Workspace«, which also describes how Linux and
+database login names are formed (include/login_names.rb).
+
 ## When the maintainer deploys
 
 In this order, on the server:
