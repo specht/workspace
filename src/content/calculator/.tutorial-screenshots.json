@@ -7,28 +7,28 @@
       "variants": {
         "automatron-zahl-dark.webp": "438b6e4556f44f108bb907182576e6c83afe71b96adcd039864c65fba223c71c"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "baum.webp": {
       "environment_fingerprint": "38969cf7edcb64d69c7503528c872dc915c02e8e64e13075466e5258fb6f442e",
-      "output_sha256": "40c42d204dcdb7ca5d3f3f3405b95873c3ed2c06629c1f07319edbd66e03cf5c",
+      "output_sha256": "59ff9f9a793821910fcf7687af63b96c0afedf0bd3fb658909f17c52bc4ff866",
       "state_hash": "c6e0422c6cad5d5cd5fa73b9627cdcabc2d6b94dcb5303a2d1b58d71eee60fe5",
       "variants": {
-        "baum-dark.webp": "970b0474799e97429da587de44a28e19e6820776355807717c47ee192c9893d8"
+        "baum-dark.webp": "91d23f819b2c06ecaabbb143ac5f1fab24d954f77ce46b3f7b9c200b1a062a28"
       },
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "rechner-python.webp": {
       "environment_fingerprint": "38969cf7edcb64d69c7503528c872dc915c02e8e64e13075466e5258fb6f442e",
-      "output_sha256": "deeb1d9f63d937f52c8157b5bd711465d41c22be0d454d94a307ee3b17c1d64b",
+      "output_sha256": "5271998314a08dd83573365d3a06540ea2c968f8a23cdeb949aee6bdb0b7efa3",
       "state_hash": "67a0291757a0bc4441474916b03f6ff2f17203633e6632b90de33599d24913f0",
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     },
     "rechner.webp": {
       "environment_fingerprint": "38969cf7edcb64d69c7503528c872dc915c02e8e64e13075466e5258fb6f442e",
-      "output_sha256": "af8d83900b31144caf73df21d14bf66cefe20567e6891263f1d9654f4c2eb0c5",
+      "output_sha256": "f81994e5299bd275e3b98cf7f5d61f57c08c94d1c3506f114f3f0e3db8f1adc2",
       "state_hash": "8ef7864196f207044528c6577e47ec7faf6d1b658472b44f01516a92bfb5a2c3",
-      "workspace_look": "4.138.0-ls366"
+      "workspace_look": "4.140.0-ls368"
     }
   },
   "version": 1
