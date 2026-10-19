@@ -117,23 +117,31 @@ class Main < Sinatra::Base
         ]
     end
 
+    # One card per check, in a fixed order so that the eye learns where
+    # to look; above them one line that names what is wrong, if anything.
     def health_html
         h = ->(t) { CGI.escapeHTML(t.to_s) }
-        icons = {
-            :ok => "<i class='bi bi-check-circle-fill text-success' title='in Ordnung'></i>",
-            :warn => "<i class='bi bi-exclamation-triangle-fill text-warning' title='ansehen'></i>",
-            :bad => "<i class='bi bi-x-octagon-fill text-danger' title='gestört'></i>",
-            :unknown => "<i class='bi bi-question-circle text-body-secondary' title='nicht eingerichtet'></i>",
-        }
+        state_names = { :ok => 'in Ordnung', :warn => 'ansehen', :bad => 'gestört', :unknown => 'nicht eingerichtet' }
+        links = { 'version' => 'Commit ansehen', 'disk' => 'Größte Workspaces' }
         checks = health_checks
+        checks.find { |c| c.key == 'disk' }&.link = '/personen?sortierung=speicher#personen'
         bad = checks.select { |c| c.state == :bad }
-        alert = bad.empty? ? '' : "<div class='alert alert-danger'><i class='bi bi-x-octagon'></i> Im Betrieb ist etwas gestört: #{bad.map { |c| h.(c.label) }.join(', ')}.</div>"
-        alert + "<table class='table table-sm people-table health-table'><tbody>" +
-            checks.map do |c|
-                link = c.link ? " <a href='#{h.(c.link)}' target='_blank' rel='noopener'>Details</a>" : ''
-                "<tr><td>#{icons[c.state]}</td><th scope='row'>#{h.(c.label)}</th><td>#{h.(c.text)}#{link}</td></tr>"
-            end.join +
-            '</tbody></table>'
+        warn = checks.select { |c| c.state == :warn }
+        summary = if !bad.empty?
+            [:bad, "Gestört: <strong>#{bad.map { |c| h.(c.label) }.join(', ')}</strong>#{warn.empty? ? '' : "; ansehen: <strong>#{warn.map { |c| h.(c.label) }.join(', ')}</strong>"}"]
+        elsif !warn.empty?
+            [:warn, "Ansehen: <strong>#{warn.map { |c| h.(c.label) }.join(', ')}</strong>"]
+        else
+            [:ok, 'Alles in Ordnung']
+        end
+        cards = checks.map do |c|
+            link = c.link ? "<a class='health-link' href='#{h.(c.link)}'#{c.link.start_with?('http') ? " target='_blank' rel='noopener'" : ''}>#{links[c.key] || 'Mehr'}</a>" : ''
+            "<div class='health-card health-#{c.state}'>" \
+                "<div class='health-head'><span class='health-dot' role='img' aria-label='#{state_names[c.state]}'></span>#{h.(c.label)}</div>" \
+                "<div class='health-text'>#{h.(c.text)} #{link}</div></div>"
+        end
+        "<p class='health-summary health-#{summary[0]}'><span class='health-dot' aria-hidden='true'></span><span>#{summary[1]}</span></p>" \
+            "<div class='health-grid'>#{cards.join}</div>"
     end
 
     # Hourly: a mail to the administration for what stops lessons or loses

@@ -1,177 +1,91 @@
 #{ assert(admin_logged_in?) }
 
 <style>
-    .table tr {
-        transition: background-color 0.5s ease-out;
-    }
-
-    .table>:not(caption)>*>* {
-        background: none;
-    }
-
-    /* .unit: in default.css, shared with /gruppen and /personen. */
-
-    /* .server-stats: in default.css, shared with the class page. */
-
-    /* Keep the long list of running users inside its own horizontal scroller. */
-    #active_users_here {
-        max-width: 100%;
-        min-width: 0;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    #active_users_here .workspace-group-table {
-        width: max-content;
-        min-width: 100%;
-    }
-
-    #active_users_here .workspace-group-table th,
-    #active_users_here .workspace-group-table td {
-        white-space: nowrap;
-    }
-
-    .user_pill {
-        padding: 0 0.2em;
-        border-radius: 2px;
-    }
-
-    h4 {
-        margin: 0;
-    }
+    /* .unit, .server-stats and .health-*: in default.css. */
+    #running_here td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    #running_here tr > td { --bs-table-bg-state: rgba(255, 200, 0, var(--ws-activity, 0)); }
 </style>
-<div class='container'>
-    <div class='row'>
-        <div class='col-md-12'>
-            <div
-                class="autotoc-secondary-trigger-defunct"
-                data-title="Administration"
-                data-levels="h2,h3,h4">
-            </div>
+<div class='container admin-page'>
+    <h1>Betrieb</h1>
+    <p class='page-intro'>
+        Wie es dem Server geht und wer gerade arbeitet. Gruppen und Personen stehen unter
+        <a href='/gruppen'>Gruppen</a> und <a href='/personen'>Personen und Schulen</a>.
+    </p>
 
-            <div id="login_codes_here" style="display: none;">
-                <h2 id="login-codes">Anmelde-Codes</h2>
-                <div class="login-code-group" hidden>
-                    <label for="login_code_group">Gruppe</label>
-                    <select class="form-select form-select-sm" id="login_code_group"></select>
-                </div>
-                <div style="max-width: 100%; overflow-x: auto;">
-                    <table class="table table-sm" id="table_login_codes">
-                        <thead>
-                            <tr>
-                                <th>E-Mail</th>
-                                <th class="login-code-groups">Gruppe</th>
-                                <th>Code</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-            #{(d = Main.disk_status) && d[:low] ? "<div class='alert alert-danger'><i class='bi bi-hdd'></i> Wenig Speicherplatz: unter <code>/user</code> sind nur noch #{d[:free_gb]} GB frei (#{d[:free_percent]} %). Die größten Workspaces zeigt <a href='/personen#alle'>»Personen und Schulen«</a> (Sortierung »meister Speicher zuerst«).</div>" : ''}
-            <h2 id="server">Server</h2>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <div class="server-stats" id="stats-cpu">
-                        <h4>CPU / RAM</h4>
-                        <i class='bi bi-cpu'></i>
-                        <hr>
-                        <div class="row">
-                            <div class="col-md-6">
-                                CPU
-                                <div class="progress" role="progressbar">
-                                    <div class="progress-bar progress-bar-striped" style="width: 0%"></div>
-                                </div>
-                                <p>&nbsp;</p>
-                            </div>
-                            <div class="col-md-6">
-                                RAM
-                                <div class="progress" role="progressbar">
-                                    <div class="progress-bar progress-bar-striped" style="width: 0%"></div>
-                                </div>
-                                <p>&nbsp;</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="server-stats" id="stats-storage">
-                        <h4>Storage</h4>
-                        <i class='bi bi-nvme'></i>
-                        <hr>
-                        <div class="row">
-                            <div class="col-md-6">
-                                System
-                                <div class="progress" role="progressbar">
-                                    <div class="progress-bar progress-bar-striped" style="width: 0%"></div>
-                                </div>
-                                <p>&nbsp;</p>
-                            </div>
-                            <div class="col-md-6">
-                                User data
-                                <div class="progress" role="progressbar">
-                                    <div class="progress-bar progress-bar-striped" style="width: 0%"></div>
-                                </div>
-                                <p>&nbsp;</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <h2 id="betrieb">Betrieb</h2>
-            <p class='small text-body-secondary'>
-                Beim Laden der Seite geprüft. Ist etwas gestört, bekommt die Administration einmal am Tag eine E-Mail
-                (<code>docs/entwicklung.md</code>, »Betrieb überwachen«).
-            </p>
-            #{health_html}
-            <h2 id="workspaces">Workspaces</h2>
-            <div id="active_users_here"></div>
-            #{print_workspaces()}
+    <h2 id="zustand" class='visually-hidden'>Zustand</h2>
+    #{health_html}
 
-            <h2 id="einladungen">Einladungslisten</h2>
-            <p>Schulen, Lehrkräfte und alle Eingeladenen stehen unter <a href='/personen'>Personen und Schulen</a>; Gruppen unter <a href='/gruppen'>Gruppen</a>.</p>
-            #{roster_status_html}
-            <div class='d-flex flex-wrap gap-2 mb-3'>
-                <button id='bu_import_preview' class='btn btn-outline-secondary'><i class='bi bi-eye'></i>Vorschau des Imports</button>
-                #{Main.roster_imported ? '' : "<button id='bu_import' class='btn btn-primary'><i class='bi bi-box-arrow-in-down'></i>Einladungslisten importieren</button>"}
-            </div>
-            <p class='small text-body-secondary'>
-                Der Import schreibt alles in die Datenbank, liest es zurück und vergleicht es mit den Dateien: wer eingeladen ist,
-                mit welchem Namen, in welcher Gruppe und wer was betreut. Weicht etwas ab, wird nichts geschrieben, und die
-                Abweichungen stehen hier. Vorher lässt sich eine Kopie der Dateien mit <code>src/scripts/check-invitation-import.rb</code> prüfen.
-            </p>
-            <div id='import_here' class='mb-4'></div>
-
-            <h2 id="konten-loeschen">Konten</h2>
-            <p>
-                Konten löschen, Einladungen ohne Konto und Konten ohne Einladung stehen unter
-                <a href='/personen#alle'>Personen und Schulen</a> (»Alle Personen« und »Aufräumen«).
-            </p>
-            <h2 id="zugriffe">Zugriffe der Administration</h2>
-            <p>
-                Jedes Mal, wenn jemand aus der Administration einen Workspace öffnet oder ein Konto nachahmt, steht es hier
-                (<code>/internal/admin-access.jsonl</code>, ein Jahr lang), mit dem Grund, den die Person auch selbst als Hinweis sieht.
-            </p>
-            #{admin_access_html}
-
-            <h2 id="nach-wiederherstellung">Nach einer Wiederherstellung</h2>
-            <p>
-                Wurde eine Sicherung zurückgespielt, sind Konten wieder da, die seither gelöscht wurden. Hier werden sie erneut gelöscht:
-                Datum und Uhrzeit der Sicherung eingeben. Die Liste der Löschungen (<code>/internal/deleted-accounts.jsonl</code>)
-                muss dafür die aktuelle sein, nicht die aus der Sicherung.
-            </p>
-            <form id='repeat_deletions_form' class='row g-2 align-items-end mb-3'>
-                <div class='col-sm-5'>
-                    <label class='form-label' for='repeat_deletions_date'>Sicherung vom</label>
-                    <input type='datetime-local' class='form-control' id='repeat_deletions_date' required>
-                </div>
-                <div class='col-sm-4'>
-                    <button type='submit' class='btn btn-outline-danger w-100'><i class='bi bi-arrow-repeat'></i>Löschungen wiederholen</button>
-                </div>
-            </form>
-            <div id='repeat_deletions_result'></div>
+    <!-- Live, from the WebSocket: the same four values as the cards on the
+         class page, in one row. -->
+    <div class='server-load mb-4' aria-label='Auslastung, jede Sekunde neu'>
+        <div id="stats-cpu" class='server-load-pair'>
+            <div class='server-load-cell'><div class='server-load-label'><i class='bi bi-cpu' aria-hidden='true'></i>CPU</div><div class="progress" role="progressbar" aria-label="CPU"><div class="progress-bar" style="width: 0%"></div></div><p>–</p></div>
+            <div class='server-load-cell'><div class='server-load-label'><i class='bi bi-memory' aria-hidden='true'></i>RAM</div><div class="progress" role="progressbar" aria-label="RAM"><div class="progress-bar" style="width: 0%"></div></div><p>–</p></div>
+        </div>
+        <div id="stats-storage" class='server-load-pair'>
+            <div class='server-load-cell'><div class='server-load-label'><i class='bi bi-device-ssd' aria-hidden='true'></i>System</div><div class="progress" role="progressbar" aria-label="System"><div class="progress-bar" style="width: 0%"></div></div><p>–</p></div>
+            <div class='server-load-cell'><div class='server-load-label'><i class='bi bi-nvme' aria-hidden='true'></i>Workspaces</div><div class="progress" role="progressbar" aria-label="Workspaces"><div class="progress-bar" style="width: 0%"></div></div><p>–</p></div>
         </div>
     </div>
+
+    <h2 id="laufend">Laufende Workspaces <span class='badge text-bg-secondary align-middle' id='running_count'>0</span></h2>
+    <p class='small text-body-secondary'>
+        Jede Sekunde neu; gelb, wer gerade rechnet. Einen Workspace, der nicht läuft, öffnest du unter
+        <a href='/personen#personen'>Personen</a> oder auf der <a href='/klasse'>Klassenseite</a>.
+    </p>
+    <div id='running_here' class='table-responsive mb-4'>
+        <p class='text-body-secondary'>Gerade läuft keiner.</p>
+    </div>
+
+    <div id="login_codes_here" style="display: none;">
+        <h2 id="login-codes">Wartende Anmelde-Codes</h2>
+        <p class='small text-body-secondary'>Wer gerade einen Code angefordert und noch nicht eingegeben hat.</p>
+        <div class="login-code-group mb-2" hidden>
+            <label for="login_code_group">Gruppe</label>
+            <select class="form-select form-select-sm" id="login_code_group"></select>
+        </div>
+        <div class='table-responsive'>
+            <table class="table table-sm people-table" id="table_login_codes">
+                <thead>
+                    <tr>
+                        <th>E-Mail</th>
+                        <th class="login-code-groups">Gruppe</th>
+                        <th>Code</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <h2 id="zugriffe">Zugriffe der Administration</h2>
+    <p class='small text-body-secondary'>
+        Jedes Mal, wenn jemand aus der Administration einen Workspace öffnet oder ein Konto nachahmt, mit dem Grund,
+        den die Person auch selbst als Hinweis sieht (<code>/internal/admin-access.jsonl</code>, ein Jahr lang).
+    </p>
+    #{admin_access_html}
+
+    <h2 id="einladungslisten">Einladungslisten</h2>
+    #{roster_status_html}
+    #{Main.roster_imported ? '' : "<div class='d-flex flex-wrap gap-2 mb-3'><button id='bu_import_preview' class='btn btn-outline-secondary'><i class='bi bi-eye'></i>Vorschau des Imports</button><button id='bu_import' class='btn btn-primary'><i class='bi bi-box-arrow-in-down'></i>Einladungslisten importieren</button></div><p class='small text-body-secondary'>Der Import schreibt alles in die Datenbank, liest es zurück und vergleicht es mit den Dateien: wer eingeladen ist, mit welchem Namen, in welcher Gruppe und wer was betreut. Weicht etwas ab, wird nichts geschrieben, und die Abweichungen stehen hier. Vorher lässt sich eine Kopie der Dateien mit <code>src/scripts/check-invitation-import.rb</code> prüfen.</p>"}
+    <div id='import_here' class='mb-4'></div>
+
+    <h2 id="nach-wiederherstellung">Nach einer Wiederherstellung</h2>
+    <p class='small text-body-secondary'>
+        Wurde eine Sicherung zurückgespielt, sind Konten wieder da, die seither gelöscht wurden. Hier werden sie erneut gelöscht:
+        Datum und Uhrzeit der Sicherung eingeben. Die Liste der Löschungen (<code>/internal/deleted-accounts.jsonl</code>)
+        muss dafür die aktuelle sein, nicht die aus der Sicherung.
+    </p>
+    <form id='repeat_deletions_form' class='row g-2 align-items-end mb-3'>
+        <div class='col-sm-5'>
+            <label class='form-label' for='repeat_deletions_date'>Sicherung vom</label>
+            <input type='datetime-local' class='form-control' id='repeat_deletions_date' required>
+        </div>
+        <div class='col-sm-4'>
+            <button type='submit' class='btn btn-outline-danger w-100'><i class='bi bi-arrow-repeat'></i>Löschungen wiederholen</button>
+        </div>
+    </form>
+    <div id='repeat_deletions_result'></div>
 </div>
 
 <script>
@@ -248,6 +162,52 @@
         render_login_codes();
     });
 
+    // The running Workspaces, from the WebSocket every second: name, group,
+    // CPU (also as the row's yellow), RAM, processes; open or imitate.
+    const my_email = `#{CGI.escapeHTML(@session_user[:email])}`;
+
+    function render_running(stats) {
+        let tags = Object.keys(stats).sort((a, b) => (stats[a].name || stats[a].email || '').localeCompare(stats[b].name || stats[b].email || ''));
+        $('#running_count').text(tags.length);
+        let here = $('#running_here');
+        if (tags.length === 0) {
+            here.html("<p class='text-body-secondary'>Gerade läuft keiner.</p>");
+            return;
+        }
+        let table = here.find('table');
+        if (table.length === 0) {
+            table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Name</th><th>Gruppe</th><th class='num'>CPU</th><th class='num'>RAM</th><th class='num'>Prozesse</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
+            here.empty().append(table);
+        }
+        let tbody = table.find('tbody');
+        let rows = [];
+        for (let tag of tags) {
+            let info = stats[tag];
+            let row = tbody.find(`tr[data-tag="${tag}"]`);
+            if (row.length === 0) {
+                row = $(`<tr>`).attr('data-tag', tag);
+                let who = $('<td>');
+                who.append($('<div>').text(info.name || info.email || tag));
+                if (info.name && info.email) who.append($('<div class="small text-body-secondary">').text(info.email));
+                row.append(who, $('<td>').text(info.group || '–'), $(`<td class='num td_cpu'>`), $(`<td class='num td_ram'>`), $(`<td class='num td_pid'>`));
+                let actions = $(`<td class='text-end text-nowrap'>`).appendTo(row);
+                if (info.email && info.email !== my_email) {
+                    actions.append($(`<button class='btn btn-sm btn-outline-secondary bu-open-workspace-as-admin me-1'><i class='bi bi-code-slash'></i>Workspace öffnen</button>`).attr('data-email', info.email));
+                    actions.append($(`<button class='btn btn-sm btn-outline-secondary bu-impersonate'><i class='bi bi-person-vcard'></i>Nachahmen</button>`).attr('data-email', info.email));
+                }
+            }
+            let s = info.stats || {};
+            let cpu = parseFloat(s['CPUPerc']) || 0;
+            row.css('--ws-activity', Math.min(1, cpu / 100) * 0.6);
+            row.find('.td_cpu').html(wrapLettersInSpan(s['CPUPerc'] || '–'));
+            row.find('.td_ram').html(wrapLettersInSpan((s['MemUsage'] ?? '–').split('/')[0].trim().replace('iB', '')));
+            row.find('.td_pid').text(s['PIDs'] || '–');
+            rows.push(row);
+        }
+        tbody.children().detach();
+        tbody.append(rows);
+    }
+
     function wrapLettersInSpan(input) {
         return input.replace(/([A-Za-z%]+)/g, "<span class='unit'>$1</span>");
     }
@@ -285,124 +245,24 @@
             ws_retry_timer = setTimeout(establish_websocket_connection, Math.min(30000, 1000 * 2 ** ws_retries++));
         }
 
-        // Simple hash function to turn a string into a number
-        function hashString(str) {
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-                hash = str.charCodeAt(i) + ((hash << 5) - hash);
-            }
-            return hash;
-        }
-
-        // Convert hash to HSL color
-        function stringToColor(str) {
-            const hash = hashString(str);
-            const h = Math.abs(hash) % 360; // hue between 0-359
-            const s = 40;                   // saturation (fixed for vivid colors)
-            const l = 50;                   // lightness (balanced)
-            return `hsl(${h}, ${s}%, ${l}%)`;
-        }
-
-        // Compute luminance to decide black/white text
-        function getContrastColor(hsl) {
-            // Convert HSL to RGB first
-            const hslMatch = hsl.match(/hsl\((\d+), (\d+)%?, (\d+)%?\)/);
-            let [_, h, s, l] = hslMatch.map(Number);
-            h /= 360;
-            s /= 100;
-            l /= 100;
-
-            // HSL → RGB conversion
-            const a = s * Math.min(l, 1 - l);
-            function f(n) {
-                const k = (n + h * 12) % 12;
-                const c = l - a * Math.max(-1, Math.min(k - 3, Math.min(9 - k, 1)));
-                return Math.round(255 * c);
-            }
-            const [r, g, b] = [f(0), f(8), f(4)];
-
-            // Relative luminance
-            const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-
-            return luminance > 0.6 ? "#000000" : "#FFFFFF";
-        }
-
-        // Main function: takes a string, returns { background, color }
-        function getUserColors(name) {
-            const background = stringToColor(name);
-            const color = getContrastColor(background);
-            return { background, color };
-        }
-
         ws.onmessage = function (msg) {
             data = JSON.parse(msg.data);
             if (data.server_stats) {
                 let stats = data.server_stats;
-                $('#stats-cpu p').eq(0).html(`${stats.cpu_usage.toFixed(2)}% of ${stats.num_cores} cores`);
-                $('#stats-cpu .progress-bar').eq(0).css('width', `${stats.cpu_usage}%`);
-                $('#stats-cpu p').eq(1).html(`${stats.ram_used} of ${stats.ram_total}`);
-                $('#stats-cpu .progress-bar').eq(1).css('width', `${stats.ram_percent}%`);
-                $('#stats-storage p').eq(0).html(`${stats.disk_root_used} of ${stats.disk_root_total}`);
-                $('#stats-storage .progress-bar').eq(0).css('width', `${stats.disk_root_percent}%`);
-                $('#stats-storage p').eq(1).html(`${stats.disk_user_used} of ${stats.disk_user_total}`);
-                $('#stats-storage .progress-bar').eq(1).css('width', `${stats.disk_user_percent}%`);
-                console.log(data.server_stats);
+                // The server sends the sizes with their unit as HTML (»19.6<span class='unit'>G</span>«).
+                let of = (used, total) => `${used} von ${total}`;
+                let bar = (box, i, percent, text) => {
+                    let cell = $(box).find('.server-load-cell').eq(i);
+                    cell.find('.progress-bar').css('width', `${percent}%`).toggleClass('load-full', percent >= 90).toggleClass('load-high', percent >= 75 && percent < 90);
+                    cell.find('p').html(text);
+                };
+                bar('#stats-cpu', 0, stats.cpu_usage, `${Math.round(stats.cpu_usage)} % von ${stats.num_cores} Kernen`);
+                bar('#stats-cpu', 1, stats.ram_percent, of(stats.ram_used, stats.ram_total));
+                bar('#stats-storage', 0, stats.disk_root_percent, of(stats.disk_root_used, stats.disk_root_total));
+                bar('#stats-storage', 1, stats.disk_user_percent, of(stats.disk_user_used, stats.disk_user_total));
+
             } else if (data.stats) {
-                let seen_tags = {};
-                let row_for_group = {};
-                let tags_for_group = {};
-                let table = $('<div>');
-                let tbody = null;
-                for (let tag in data.stats) {
-                    let name = data.stats[tag].name;
-                    const { background: bg_color, color: fg_color } = getUserColors(tag);
-                    let group = data.stats[tag].group;
-                    let shorthand = name.split(/[\s@\.]/).map((x) => x[0]).join('');
-                    if (!(group in row_for_group)) {
-                        if (Object.keys(row_for_group).length === 0) {
-                            table = $(`<table class='table table-sm workspace-group-table'>`);
-                            let thead = $(`<thead>`).appendTo(table);
-                            let row = $(`<tr>`).appendTo(thead);
-                            row.append($(`<th>`).text('Group'));
-                            row.append($(`<th>`).text('Count'));
-                            row.append($(`<th>`).text('Users'));
-                            tbody = $(`<tbody>`).appendTo(table);
-                        }
-                        let row = $(`<tr>`);
-                        row_for_group[group] = row;
-                        tags_for_group[group] = 0;
-                        row.append($(`<td>`).text(group));
-                        row.append($(`<td>`).text('0'));
-                        row.append($(`<td>`));
-                        tbody.append(row);
-                    }
-                    tags_for_group[group] += 1;
-                    $(row_for_group[group]).find('td').eq(1).text(`${tags_for_group[group]}`);
-                    let cell = $(row_for_group[group]).find('td').eq(2);
-                    cell.html(`${cell.html()} <span class='badge' style='background-color: ${bg_color}; color: ${fg_color};'>${shorthand}</span>`);
-                    seen_tags[tag] = true;
-                    let row = $(`#tr_hs_code_${tag}`);
-                    let perc = parseFloat(data.stats[tag].stats['CPUPerc']) / 100.0;
-                    row.css('background-color', `rgba(255, 200, 0, ${perc})`);
-                    row.find('.td_cpu').html(wrapLettersInSpan(data.stats[tag].stats['CPUPerc']));
-                    row.find('.td_ram').html(wrapLettersInSpan((data.stats[tag].stats['MemUsage'] ?? '').split('/')[0].trim().replace('iB', '')));
-                    row.find('.td_net').html(wrapLettersInSpan(data.stats[tag].stats['NetIO'].replace(/B/g, '')));
-                    row.find('.td_disk').html(wrapLettersInSpan(data.stats[tag].stats['BlockIO'].replace(/B/g, '')));
-                    row.find('.td_pid').html(wrapLettersInSpan(data.stats[tag].stats['PIDs']));
-                }
-                $('#active_users_here').empty().append(table);
-                for (let row of $('#table_admin_workspaces tr')) {
-                    let tag = ($(row).attr('id') ?? '').replace('tr_hs_code_', '');
-                    if (!(tag in seen_tags)) {
-                        $(row).css('background-color', `unset`);
-                        // $(row).find('.td_ip').html('&ndash;')
-                        $(row).find('.td_cpu').html('&ndash;')
-                        $(row).find('.td_ram').html('&ndash;')
-                        $(row).find('.td_net').html('&ndash;')
-                        $(row).find('.td_disk').html('&ndash;')
-                        $(row).find('.td_pid').html('&ndash;')
-                    }
-                }
+                render_running(data.stats);
             }
             if (data.action === 'login_codes') {
                 render_login_codes(data.lines, data.groups || []);
@@ -446,7 +306,7 @@
 
     window.addEventListener('load', function () {
         establish_websocket_connection();
-        $('.bu-open-workspace-as-admin').on('click', function (e) {
+        $(document).on('click', '.bu-open-workspace-as-admin', function (e) {
             let button = $(e.target).closest('button');
             let email = button.data('email');
             console.log(`Opening workspace for ${email}`);
@@ -498,7 +358,7 @@
                 here.append($(`<div class='alert alert-success'>`).text(data.deleted.length === 0 ? 'Kein Konto war seither gelöscht worden.' : `Erneut gelöscht: ${data.deleted.join(', ')}`));
             });
         });
-        $('.bu-impersonate').on('click', function (e) {
+        $(document).on('click', '.bu-impersonate', function (e) {
             let button = $(e.target).closest('button');
             let email = button.data('email');
             ask_admin_reason(`${email} nachahmen`, function (reason) {

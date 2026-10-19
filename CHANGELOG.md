@@ -18,6 +18,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- `/admin` heißt jetzt »Betrieb« und ist auf das Wesentliche gekürzt: oben
+  eine Zeile, die sagt, was gestört ist, darunter eine Karte je Prüfung
+  (ruhig, solange alles in Ordnung ist; ein farbiger Punkt und ein
+  Streifen, wo etwas zu tun ist), die Auslastung in einer Zeile und nur die
+  Workspaces, die gerade laufen, mit »Workspace öffnen« und »Nachahmen«. Die
+  lange Tabelle aller Workspaces ist weg (dasselbe steht für jede Gruppe auf
+  der Klassenseite), ebenso die doppelten Hinweise zum Speicherplatz.
 - Wird eine Sicherung der Datenbank eingespielt oder Neo4j von außen
   geändert, bemerkt der Workspace die neuen Einladungen nach spätestens
   zehn Sekunden; bisher galten bis zum Neustart des Ruby-Dienstes die

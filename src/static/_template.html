@@ -1038,7 +1038,7 @@ window.addEventListener('load', function() {
                 <div class='btn-group' style='#{admin_logged_in? ? '' : 'display: none;'}'>
                     <button type='button' class="btn btn-menu dropdown-toggle #{['/admin', '/gruppen', '/personen'].include?(request.path) ? 'active' : ''}" data-bs-toggle='dropdown' aria-expanded='false'><i class='bi bi-wrench-adjustable'></i>Administration</button>
                     <ul class='dropdown-menu'>
-                        <li><a class="dropdown-item #{request.path == '/admin' ? 'active' : ''}" href='/admin'#{request.path == '/admin' ? " aria-current='page'" : ''}><i class='bi bi-speedometer2 me-2'></i>Server und Workspaces</a></li>
+                        <li><a class="dropdown-item #{request.path == '/admin' ? 'active' : ''}" href='/admin'#{request.path == '/admin' ? " aria-current='page'" : ''}><i class='bi bi-speedometer2 me-2'></i>Betrieb</a></li>
                         <li><a class="dropdown-item #{request.path == '/gruppen' ? 'active' : ''}" href='/gruppen'#{request.path == '/gruppen' ? " aria-current='page'" : ''}><i class='bi bi-person-lines-fill me-2'></i>Gruppen</a></li>
                         <li><a class="dropdown-item #{request.path == '/personen' ? 'active' : ''}" href='/personen'#{request.path == '/personen' ? " aria-current='page'" : ''}><i class='bi bi-building me-2'></i>Personen und Schulen</a></li>
                     </ul>

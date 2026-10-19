@@ -5666,14 +5666,152 @@ table.value-groups td.group-odd {
     overflow-wrap: break-word;
 }
 
-/* /admin, »Betrieb«: one row per check, the state as an icon. */
-.health-table th[scope='row'] {
-    font-size: inherit;
+/* /admin, »Betrieb«: one line that names what is wrong, then one card per
+   check. Calm when all is well. A state is a coloured dot with a soft halo
+   (as the running Workspaces on the class page), never a filled box; a card
+   that needs a look gets a stripe on the left in its colour. */
+:root {
+    --health-ok: #1f9d55;
+    --health-warn: #d4a106;
+    --health-bad: #d64545;
+    --health-unknown: #9aa3ad;
+}
+
+/* The site's dark theme (the account's brightness, else the system's). */
+[data-bs-theme=dark] {
+    --health-ok: #3ccf7f;
+    --health-warn: #f0c040;
+    --health-bad: #f07070;
+    --health-unknown: #7c8590;
+}
+
+.health-ok { --health-color: var(--health-ok); }
+.health-warn { --health-color: var(--health-warn); }
+.health-bad { --health-color: var(--health-bad); }
+.health-unknown { --health-color: var(--health-unknown); }
+
+.health-dot {
+    display: inline-block;
+    flex: none;
+    width: 0.62rem;
+    height: 0.62rem;
+    border-radius: 50%;
+    background: var(--health-color);
+    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--health-color) 20%, transparent);
+}
+
+/* Not set up: an empty ring. */
+.health-unknown .health-dot {
+    background: transparent;
+    border: 2px solid var(--health-color);
+    box-shadow: none;
+}
+
+.health-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    padding: 0.55rem 0.9rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.health-summary .health-dot {
+    width: 0.75rem;
+    height: 0.75rem;
+}
+
+.health-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+}
+
+.health-card {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5rem;
+    padding: 0.55rem 0.8rem;
+    min-width: 0;
+}
+
+.health-card.health-warn,
+.health-card.health-bad {
+    border-left: 4px solid var(--health-color);
+    padding-left: calc(0.8rem - 3px);
+}
+
+.health-card.health-unknown {
+    border-style: dashed;
+}
+
+.health-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    font-weight: 600;
+}
+
+.health-text {
+    font-size: 0.875rem;
+    color: var(--bs-secondary-color);
+    overflow-wrap: anywhere;
+    margin-top: 0.15rem;
+}
+
+.health-card.health-warn .health-text,
+.health-card.health-bad .health-text {
     color: var(--bs-body-color);
 }
 
-.health-table td:first-child {
-    width: 1.5em;
+.health-link {
+    white-space: nowrap;
+}
+
+/* /admin: CPU, RAM and the two disks in one row, live. */
+.server-load {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+}
+
+.server-load-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5rem;
+    padding: 0.55rem 0.8rem;
+}
+
+.server-load-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.server-load .progress-bar.load-high {
+    background-color: var(--health-warn);
+}
+
+.server-load .progress-bar.load-full {
+    background-color: var(--health-bad);
+}
+
+.server-load-cell p {
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+    color: var(--bs-secondary-color);
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 767.98px) {
+    .server-load {
+        grid-template-columns: 1fr;
+    }
 }
 
 

@@ -5790,105 +5790,6 @@ class Main < Sinatra::Base
             :admin => ADMIN_USERS.include?(viewer_email))
     end
 
-    def print_workspaces()
-        assert(teacher_logged_in?)
-
-        cleanup_login_requests
-
-        email_for_tag = {}
-        registered_emails = []
-        neo4j_query(<<~END_OF_STRING).each do |row|
-            MATCH (u:User) RETURN u.email;
-        END_OF_STRING
-            email = row['u.email']
-            email_for_tag[fs_tag_for_email(email)] = email
-            registered_emails << email
-        end
-        du_for_fs_tag = {}
-        begin
-            du_for_fs_tag = JSON.parse(File.read('/internal/du_for_fs_tag.json'))
-        rescue
-        end
-
-
-        info_for_tag = workspace_runtime.workspace_network_info(
-            :timeout => shell_timeout(:docker_inspect),
-        )
-
-        StringIO.open do |io|
-            io.puts "<div style='max-width: 100%; overflow-x: auto;'>"
-            io.puts "<table class='table table-sm' id='table_admin_workspaces'>"
-            active_users = Dir['/user/*'].map do |path|
-                path.split('/').last
-            end.select do |user_tag|
-                user_tag =~ /^[0-9a-z]{16}$/
-            end
-            active_users = Set.new(active_users)
-            # Each student once, under the first of its groups this teacher
-            # administers (all groups for an administrator): a student in
-            # Klasse 12 and in the LK appears for both teachers.
-            viewer_groups = @@teachers[@session_user[:email]] || Set.new()
-            listed = Set.new()
-            @@user_group_order.each do |group|
-                next unless admin_logged_in? || viewer_groups.include?(group)
-                sub = StringIO.open do |io2|
-                    ((@@user_groups[group] || []) | (@@group_members[group] || [])).each do |email|
-                        next if listed.include?(email)
-                        listed << email
-                        user_tag = fs_tag_for_email(email)
-                        next unless active_users.include?(user_tag)
-                        io2.puts "<tr id='tr_hs_code_#{user_tag}'>"
-                        io2.puts "<td><code>#{user_tag}</code></td>"
-                        # The address from the group, not from email_for_tag: an invited
-                        # address can have a Workspace folder without a User node.
-                        io2.puts "<td>#{CGI.escapeHTML(((@@invitations[email] || {})[:name] || email).to_s)}</td>"
-                        # io2.puts "<td class='td_ip'>#{(info_for_tag[user_tag] || {})[:ip] || '&ndash;'}</td>"
-                        io2.puts "<td class='td_cpu'>&ndash;</td>"
-                        io2.puts "<td class='td_ram'>&ndash;</td>"
-                        io2.puts "<td class='td_net'>&ndash;</td>"
-                        io2.puts "<td class='td_disk'>&ndash;</td>"
-                        if du_for_fs_tag[user_tag]
-                            io2.puts "<td>#{bytes_to_str(du_for_fs_tag[user_tag] * 1024).sub('B', '').gsub(' ', '').gsub(/([A-Za-z]+)/, '<span class=\'unit\'>\1</span>')}</td>"
-                        else
-                            io2.puts "<td>&ndash;</td>"
-                        end
-                        io2.puts "<td class='td_pid'>&ndash;</td>"
-                        io2.puts "<td><button class='btn btn-sm btn-success bu-open-workspace-as-admin' data-email='#{CGI.escapeHTML(email)}'><i class='bi bi-code-slash'></i>&nbsp;Workspace öffnen</button></td>"
-                        if admin_logged_in?
-                            io2.puts "<td><button class='btn btn-sm btn-warning bu-impersonate' data-email='#{CGI.escapeHTML(email)}'><i class='bi bi-person-vcard'></i>&nbsp;Impersonate</button></td>"
-                        end
-                        io2.puts "</tr>"
-                    end
-                    io2.string
-                end
-                unless sub.empty?
-                    io.puts "<thead>"
-                    io.puts "<tr><th colspan='#{admin_logged_in? ? 10 : 9}' style='background-color: rgba(0,0,0,0); padding: 1em 0;'><h4>#{group}</h4></th></tr>"
-                    io.puts "<tr>"
-                    io.puts "<th>Tag</th>"
-                    io.puts "<th>Name</th>"
-                    # io.puts "<th>IP</th>"
-                    io.puts "<th style='width: 5.2em;'>CPU</th>"
-                    io.puts "<th>RAM</th>"
-                    io.puts "<th>Network</th>"
-                    io.puts "<th>Disk I/O</th>"
-                    io.puts "<th>Storage</th>"
-                    io.puts "<th>#PID</th>"
-                    io.puts "<th>Workspace</th>"
-                    if admin_logged_in?
-                        io.puts "<th>Impersonate</th>"
-                    end
-                    io.puts "</tr>"
-                    io.puts "</thead>"
-                    io.puts sub
-                end
-            end
-            io.puts "</table>"
-            io.puts "</div>"
-            io.string
-        end
-    end
-
     def stub
         write = contact_email.empty? ? 'Melde dich' : "Schreib eine E-Mail an #{contact_email_link}"
         "<em>Dieser Artikel ist noch nicht vollständig. #{write}, wenn du dabei helfen möchtest, ihn fertigzustellen.</em>\n"
@@ -5972,6 +5873,7 @@ class Main < Sinatra::Base
                             email = email_for_tag[fs_tag]
                             next unless workspace_user_visible_to?(email, viewer_email)
                             lines[fs_tag] = {
+                                :email => email,
                                 :name => (@@invitations[email] || {})[:name],
                                 :group => (@@invitations[email] || {})[:group],
                                 :stats => stat_line

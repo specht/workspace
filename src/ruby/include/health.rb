@@ -138,7 +138,7 @@ module Health
         text = "#{commit[:short]} vom #{clock(commit[:time])}"
         text += " auf #{commit[:branch]}" unless commit[:branch].to_s.empty?
         subject = commit[:subject].to_s
-        text += ": #{subject.size > 100 ? "#{subject[0, 99]}…" : subject}" unless subject.empty?
+        text += ": #{subject.size > 60 ? "#{subject[0, 59]}…" : subject}" unless subject.empty?
         Check.new(:key => 'version', :label => label, :state => :ok, :text => text, :link => commit[:url])
     end
 
