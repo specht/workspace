@@ -1,0 +1,135 @@
+# Aufgaben zur versteckten Aktivität »Die Backrooms«.
+# Format: docs/aufgaben.md. Die Vorlage wird nach /workspace/backrooms-starter
+# geklont (specht/backrooms-starter).
+format: 1
+activity: backrooms
+tasks:
+  - id: geklont
+    title: Die Vorlage ist da
+    prompt: Die Backrooms-Vorlage liegt in `/workspace/backrooms-starter`.
+    check:
+      type: files
+      path: backrooms-starter/level.ini
+      expect:
+        exists: true
+    feedback:
+      - when: { problem: missing }
+        say: "`/workspace/backrooms-starter/level.ini` gibt es noch nicht. Klone die Vorlage wie oben beschrieben; als Ordner schlägt VS Code `/workspace/` vor, darin entsteht `backrooms-starter`."
+
+  - id: tuer
+    title: Eine Tür ins Nichts
+    prompt: |
+      Du legst `rooms/keller.room` an. In seinem Grundriss steht eine `1`,
+      und darunter `[1]` mit `door = gang 6`. Im Gang gibt es aber keine `6`,
+      und keine andere Datei nennt den Keller. Was passiert, wenn du die
+      Vorschau neu lädst?
+    check:
+      type: choice
+      options:
+        - "Das Level lädt wie vorher, ohne Keller: Das Programm liest `keller.room` gar nicht."
+        - "Oben links steht ein Fehler: Im Gang gibt es keine Tür `6`."
+        - "Der Keller hängt an einer freien Stelle am Gang."
+        - "Der Keller steht für sich allein, ohne Verbindung, neben dem Bauwerk."
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Den Fehler gäbe es, wenn das Programm `keller.room` läse. Aber woher weiß es, dass es die Datei gibt?
+      - when: { picked: 2 }
+        say: Wo ein Raum liegt, bestimmen nur seine Türen, und die müssen in beiden Räumen auf demselben Feld liegen.
+      - when: { picked: 3 }
+        say: Das Programm sucht nicht im Ordner `rooms` nach Dateien. Womit fängt es an, und wie findet es die nächsten Räume?
+    solution: |
+      Das Programm fängt beim Raum aus `start =` in `level.ini` an und liest
+      danach nur Räume, zu denen eine Tür eines schon gelesenen Raums führt.
+      Keine Tür führt zum Keller, also liest es `keller.room` nie, und was
+      darin steht, spielt keine Rolle. Erst wenn der Gang `door = keller 1`
+      oder eine `6` mit Tür bekommt, gibt es den Keller.
+
+  - id: eigener-raum
+    title: Ein Raum nach deiner Idee
+    prompt: |
+      In `rooms` liegt außer der Kammer ein Raum, den du selbst entworfen
+      hast. Sein Name besteht aus Kleinbuchstaben, Ziffern, `-` und `_`, und
+      er endet auf `.room`. Damit es ihn im Level gibt, braucht er eine Tür
+      zu einem anderen Raum.
+    file: backrooms-starter/rooms
+    check:
+      type: files
+      path: backrooms-starter/rooms
+      template: [blau.room, flur.room, galerie.room, gang.room, halle.room, kreuzung.room,
+                 lager.room, rot.room, saeulengang.room, vorhalle.room, zimmer.room, kammer.room]
+      show: listing
+      expect:
+        new_files: { min: 1 }
+        name: '^[a-z0-9_-]+\.room$'
+    hint: Schreib zuerst den Grundriss in `[map]`, mit einer Ziffer in einer Wand, und dann in einem Raum, den es schon gibt, die passende Tür mit `door = name ziffer`.
+
+  - id: lichtpunkte
+    title: Punkte auf einer Wand
+    prompt: |
+      Eine Wand ist 10 m lang und 3 m hoch. Wie viele Punkte hat die
+      Lightmap auf dieser Wand?
+    check:
+      type: number
+      expect: 7680
+      tolerance: 0
+      unit: Punkte
+    feedback:
+      - when: { equals: 480 }
+        say: Das wären 16 Punkte auf jedem Quadratmeter. Es sind aber 16 auf jedem Meter, und zwar in jeder Richtung.
+      - when: { equals: 30 }
+        say: Das ist die Fläche der Wand in Quadratmetern. Wie viele Punkte liegen in einer Reihe von 10 m?
+      - when: { equals: 208 }
+        say: Du hast die Punkte in der Länge und in der Höhe zusammengezählt. Sie bilden aber ein Raster.
+    solution: |
+      In der Länge 10 · 16 = 160 Punkte, in der Höhe 3 · 16 = 48. Die Punkte
+      bilden ein Raster: 160 · 48 = 7680. Für jeden davon schickt die
+      Grafikkarte 64-mal einen Strahl zu jeder Leuchte in der Nähe.
+
+  - id: decke
+    title: Die Decke ohne Bounce
+    prompt: |
+      Was passiert mit der Decke des Zimmers, wenn du das Bounce-Licht
+      ausschaltest (<kbd>B</kbd>)? Überleg zuerst, dann probier es aus.
+    prediction: true
+    check:
+      type: choice
+      options:
+        - Sie wird fast schwarz.
+        - Nichts, die Leuchten hängen ja direkt an ihr.
+        - Sie wird heller, weil kein Licht mehr an die Wände verloren geht.
+        - Nur ihre Ecken werden dunkler, die Mitte bleibt hell.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: In welche Richtung strahlt eine Leuchte, die unter der Decke hängt?
+      - when: { picked: 2 }
+        say: Licht geht an den Wänden nicht verloren. Ein Teil davon kommt zurück, aber wohin?
+      - when: { picked: 3 }
+        say: Dunklere Ecken sind die Kontaktschatten (<kbd>O</kbd>). Was bleibt an der Decke übrig, wenn das Bounce-Licht fehlt?
+    solution: |
+      Die Leuchten strahlen nur nach unten. Auf die Decke fällt kein
+      direktes Licht; hell ist sie nur durch das Licht, das Boden und Wände
+      zurückwerfen.
+
+  - id: weiche-schatten
+    title: Weiche Schatten
+    prompt: |
+      Erkläre in eigenen Worten, warum eine große Leuchte weichere Schatten
+      wirft als eine kleine. Benutze dabei, wie das Programm das direkte
+      Licht ausrechnet.
+    check:
+      type: reflection
+      min_words: 25
+    examples:
+      - |
+        Das Programm schickt von jedem Punkt 64-mal einen Strahl zu einem
+        zufälligen Punkt auf der Leuchte. Bei einer großen Leuchte treffen
+        am Rand eines Schattens manche Strahlen die Säule und manche nicht.
+        Der Punkt ist dann nur zum Teil beleuchtet, so entsteht ein breiter
+        Halbschatten.
+      - |
+        Von einer kleinen Leuchte sieht ein Punkt entweder alles oder nichts,
+        darum ist die Grenze scharf. Eine große Leuchte kann ein Punkt auch
+        halb sehen. Dann landet nur ein Teil der Strahlen auf ihr, und es wird
+        nach außen allmählich heller.

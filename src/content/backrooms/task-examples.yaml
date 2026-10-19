@@ -1,0 +1,27 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Die Vorlage kommt aus einem eigenen Repository (specht/backrooms-starter);
+# die Beispiele bauen nur nach, was die Prüfungen lesen.
+format: 1
+activity: backrooms
+examples:
+  geklont:
+    pass:
+      - files: { backrooms-starter/level.ini: { text: "[level]\nname = Level 0\nstart = zimmer\n" } }
+    fail:
+      - files: { backrooms/level.ini: { text: "[level]\nname = Level 0\nstart = zimmer\n" } }
+  eigener-raum:
+    pass:
+      - files:
+          backrooms-starter/rooms/zimmer.room: { text: "[map]\n###\n#@#\n###\n" }
+          backrooms-starter/rooms/kammer.room: { text: "[map]\n###\n5.#\n###\n" }
+          backrooms-starter/rooms/pool_raum.room: { text: "[map]\n####\n1..#\n####\n" }
+    fail:
+      # Nur die Räume der Vorlage und die Kammer von der Seite
+      - files:
+          backrooms-starter/rooms/zimmer.room: { text: "[map]\n###\n#@#\n###\n" }
+          backrooms-starter/rooms/kammer.room: { text: "[map]\n###\n5.#\n###\n" }
+      # Großbuchstaben und ein Leerzeichen im Namen
+      - files: { backrooms-starter/rooms/Mein Raum.room: { text: "[map]\n####\n1..#\n####\n" } }
+      # Ohne die Endung .room liest das Programm die Datei nie
+      - files: { backrooms-starter/rooms/keller.txt: { text: "[map]\n####\n1..#\n####\n" } }

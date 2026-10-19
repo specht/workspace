@@ -18,6 +18,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Eine versteckte Aktivität »Die Backrooms« (`/backrooms`, in keinem
+  Katalog): Lernende beschreiben Räume als Grundriss in Textdateien,
+  verbinden sie über Türen zu einem Bauwerk und gehen im Browser hindurch,
+  am Rechner, mit Rot-Cyan-Brille oder in VR. Das Licht backt die
+  Grafikkarte ihres Rechners: direktes Licht mit weichen Schatten,
+  Bounce-Licht und Kontaktschatten, jedes einzeln abschaltbar. Die Vorlage
+  ist `specht/backrooms-starter`; die Seite ist im Stil der Legende
+  geschrieben, mit Fundnotizen (`.found-note` in `default.css`).
 - Ein Bild der drei Achsen in Perspektive (x nach rechts, y nach oben,
   z nach vorne, darunter der Boden in x und z), hell und dunkel, im
   Handbuch raylib, in der Klötzchenwelt und im Anaglyph-Editor.

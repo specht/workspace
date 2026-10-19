@@ -1043,6 +1043,39 @@ div.floatright > p {
     transform: scale(0.5) translateY(-8px);
 }
 
+/* A note found in the Backrooms: a scrap of paper with typewriter text,
+   the source underneath (backrooms.md) */
+.found-note {
+    margin: 1.5em 0;
+    padding: 0.9em 1.2em 0.8em 1.2em;
+    border-left: 4px solid #c9b458;
+    color: #4a4220;
+    background: #f6f0d2;
+    font-family: 'Courier New', ui-monospace, monospace;
+    text-align: left;
+}
+
+.found-note p {
+    margin-bottom: 0.6em;
+}
+
+.found-note cite {
+    display: block;
+    font-size: 0.85em;
+    font-style: normal;
+    opacity: 0.75;
+}
+
+.found-note cite::before {
+    content: '— ';
+}
+
+[data-bs-theme=dark] .found-note {
+    border-left-color: #8c7a35;
+    color: #e6dcae;
+    background: #2a2612;
+}
+
 /* Logo blocks */
 
 .logos {

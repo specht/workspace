@@ -154,6 +154,15 @@
     - cobol
     - smalltalk
 
+# Hidden: not in the catalog and not pinnable; the pages are found by their
+# address (the Backrooms: by falling through a wall).
+- key: hidden
+  hidden: true
+  label: Verborgen
+  icon: /images/bookmark.png
+  entries:
+    - backrooms
+
 - key: programming_languages
   compact: true
   tiles: true
