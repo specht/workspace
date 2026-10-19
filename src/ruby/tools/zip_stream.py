@@ -24,7 +24,7 @@ import zipfile
 # The rules for rebuildable folders live next to this file (python3 -I does
 # not put the script's folder on the path; the folder is the code's own).
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from rebuildable import rebuildable  # noqa: E402
+from rebuildable import in_tool_folder, rebuildable  # noqa: E402
 
 CHUNK = 1 << 16
 
@@ -49,7 +49,7 @@ def add_tree(archive, prefix, top, excludes, skip_rebuildable, skipped):
         if any(base == e or base.startswith(e + '/') for e in excludes):
             dirs[:] = []
             continue
-        if skip_rebuildable:
+        if skip_rebuildable and not in_tool_folder(rel):
             siblings = set(files) | set(dirs)
             for name in list(dirs):
                 command = rebuildable(dir_fd, name, siblings)

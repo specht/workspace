@@ -110,7 +110,10 @@ Welche Ordner sich neu erzeugen lassen, steht an einer Stelle:
 `src/ruby/tools/rebuildable.py`. Immer: `node_modules`, `__pycache__`,
 `.gradle`, `.dart_tool`, `.pub-cache`. `build` nur neben `pubspec.yaml`,
 `build.gradle(.kts)` oder `CMakeLists.txt`, `target` nur neben `Cargo.toml`
-oder `pom.xml`, Python-Umgebungen nur mit `pyvenv.cfg`. Vorab angehakt ist
+oder `pom.xml`, Python-Umgebungen nur mit `pyvenv.cfg`. Nie in den
+versteckten Ordnern oben im Workspace (`.extensions`, `.local`, `.config`):
+Sie gehören VS Code und den Werkzeugen, und das `node_modules` einer
+Erweiterung legt kein `npm install` wieder an. Vorab angehakt ist
 ein Ordner nur, wenn der Befehl ihn auch wieder anlegen kann (`package.json`
 oder `pubspec.yaml` daneben, bei Python-Umgebungen `requirements.txt` oder
 `pyproject.toml`) und, bei `node_modules`, keine Datei darin jünger ist als

@@ -37,9 +37,13 @@ class RebuildableTest < Minitest::Test
             write(root, 'notizen/build/plan.txt', 'meine Notiz')
             write(root, 'py/.venv/pyvenv.cfg', 'home = /usr')
             write(root, 'py/ordner/venv/notiz.txt')
+            # An extension's own node_modules: VS Code's, not npm install's.
+            write(root, '.extensions/some.extension-1.0.0/package.json', '{}')
+            write(root, '.extensions/some.extension-1.0.0/node_modules/dep/index.js', time: NPM_TIME)
+            write(root, '.venv/pyvenv.cfg', 'home = /usr')
 
             found = run_tool('scan', root).to_h { |f| [f['path'], f] }
-            assert_equal %w[app/build lose/node_modules py/.venv svelte/node_modules web/node_modules].sort, found.keys.sort
+            assert_equal %w[.venv app/build lose/node_modules py/.venv svelte/node_modules web/node_modules].sort, found.keys.sort
             assert found['svelte/node_modules']['tick'], 'npm dates, a tool cache inside'
             assert found['app/build']['tick']
             refute found['web/node_modules']['tick']
@@ -47,10 +51,12 @@ class RebuildableTest < Minitest::Test
             refute found['lose/node_modules']['tick'], 'no package.json beside it'
             refute found['py/.venv']['tick'], 'no requirements.txt beside it'
 
-            deleted = run_tool('delete', root, 'svelte/node_modules', 'notizen/build', '../etwas')
+            deleted = run_tool('delete', root, 'svelte/node_modules', 'notizen/build', '../etwas',
+                '.extensions/some.extension-1.0.0/node_modules')
             assert_equal ['svelte/node_modules'], deleted
             refute File.exist?(File.join(root, 'svelte/node_modules'))
             assert File.exist?(File.join(root, 'notizen/build/plan.txt'))
+            assert File.exist?(File.join(root, '.extensions/some.extension-1.0.0/node_modules/dep/index.js'))
         end
     end
 end

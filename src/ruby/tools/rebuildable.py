@@ -34,6 +34,15 @@ NEXT_TO = {
 }
 
 
+def in_tool_folder(rel):
+    """Whether rel (relative to the Workspace) lies inside a hidden folder at
+    its top: .extensions, .local, .config belong to VS Code and the tools,
+    not to a project. Nothing in there counts as rebuildable, not even an
+    extension's node_modules, which npm install would not bring back."""
+    first = rel.split(os.sep, 1)[0]
+    return first != '.' and first.startswith('.')
+
+
 def rebuildable(dir_fd, name, siblings):
     """The command that makes this folder again, or None to keep it."""
     if name in ALWAYS:
@@ -96,6 +105,10 @@ def scan(top):
     for folder, dirs, files, dir_fd in os.fwalk(top, follow_symlinks=False):
         rel = os.path.relpath(folder, top)
         siblings = set(files) | set(dirs)
+        if rel == '.':
+            # The tools' hidden folders (in_tool_folder) are not walked at
+            # all, unless one is itself rebuildable (a .venv at the top).
+            dirs[:] = [d for d in dirs if not d.startswith('.') or rebuildable(dir_fd, d, siblings)]
         for name in list(dirs):
             command = rebuildable(dir_fd, name, siblings)
             if not command:

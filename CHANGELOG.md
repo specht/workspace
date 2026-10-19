@@ -32,7 +32,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Vorab angehakt ist nur, was sicher unverändert ist: `node_modules` nicht,
   wenn darin eine Datei nach `npm install` geändert wurde, und nichts ohne
   `package.json`, `pubspec.yaml` oder `requirements.txt` daneben. Links werden nicht verfolgt,
-  gelöscht wird als Workspace-Benutzer, nie als root.
+  gelöscht wird als Workspace-Benutzer, nie als root. Die versteckten Ordner
+  von VS Code und den Werkzeugen (`.extensions` …) bleiben unberührt, auch
+  im Download.
 - Für die Administration: »Platz schaffen« in `/personen` für den
   Workspace einer Person und »Stoppen« für einen laufenden Workspace unter
   »Betrieb« (die laufenden Workspaces stehen jetzt nach Last sortiert, die
