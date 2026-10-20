@@ -7717,7 +7717,9 @@ class Main < Sinatra::Base
             slug = params['slug'].to_s
             target = params['target'].to_s
             halt 400 unless slug.match?(/\A[a-zA-Z0-9_-]+\z/)
-            halt 400 unless target.end_with?('.webp') &&
+            # pictures and the Git graphs (SVG)
+            mimetype = { '.webp' => 'image/webp', '.svg' => 'image/svg+xml', '.png' => 'image/png' }[File.extname(target)]
+            halt 400 unless mimetype &&
                 !target.start_with?('/') &&
                 !target.split('/').include?('..')
 
@@ -7732,7 +7734,7 @@ class Main < Sinatra::Base
             halt 404 unless File.file?(image_path)
 
             headers 'Cache-Control' => 'no-store'
-            respond_raw_with_mimetype(File.binread(image_path), 'image/webp')
+            respond_raw_with_mimetype(File.binread(image_path), mimetype)
         end
     end
 
