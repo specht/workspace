@@ -18,6 +18,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Backrooms: Das fertige Level »Nachtschicht« läuft als Website unter
+  `/nachtschicht-8ee59051/`, mit gebackenem Licht, ohne Anmeldung, auch für
+  Handy, Tablet und VR-Brille. Betreibende: Der Workspace liefert aus, was in
+  `INTERNAL_PATH/nachtschicht` liegt; dorthin kommt der Ordner, den
+  `export.sh` im Starter baut, per `rsync` (docs/entwicklung.md, »Das
+  Demo-Level der Backrooms«). Fehlt der Ordner, antwortet die Adresse mit 404.
 - Startseite (nicht angemeldet): eine kurze Überschrift, zwei Sätze und
   drei Punkte statt eines langen Absatzes, in normaler Schriftgröße.
   Daneben steht das Bild des Workspace leicht zum Text gedreht auf einem
