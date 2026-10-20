@@ -1,0 +1,36 @@
+# Hinter dem Vorgang: ein Bad. Das Wasser ist still. Zu still.
+
+[room]
+name = Bad
+height = 4.5
+walls = tiles
+floor = tiles
+wallpaper = #d6e4e1
+carpet = #b9ccc8
+ceiling = #e6efec
+dado = 1.1, #2f4a4a     # unten dunkle Fliesen
+dado_material = tiles
+
+[map]
+###33###########
+#..............#
+#..L.......L...#
+#..............#
+#..WWWWWWWWWW..#
+#..WWWWWWWWWW..#
+#..WWWWWWWWWW..#
+#..............#
+#..L.......L...#
+#..............#
+################
+
+[L]
+light = #e4f3ff
+size = 1.4
+power = 1.4
+
+[W]
+pool = 2.2              # so tief ist das Becken unter dem Boden
+water = 0.25            # so tief unter dem Boden steht das Wasser
+rim = 0.15, 0.3         # ein Rand aus Fliesen, 15 cm hoch, 30 cm breit
+railing = on            # ein Geländer auf dem Rand

@@ -45,58 +45,11 @@ tasks:
       darin steht, spielt keine Rolle. Erst wenn der Gang `door = keller 1`
       oder eine `6` mit Tür bekommt, gibt es den Keller.
 
-  - id: zwischendecke
-    title: Wie dick ist der Boden?
-    prompt: |
-      Die Treppe steigt vom Saal aus um 3 m, der Gang ist 2,5 m hoch, beide
-      Böden liegen auf derselben Höhe. Was muss in `[_]` des Dachbodens bei
-      `slab` stehen, damit das Loch über dem Gang passt?
-    check:
-      type: number
-      expect: 0.5
-      tolerance: 0.001
-      unit: m
-    feedback:
-      - when: { equals: 3 }
-        say: "3 m liegt der Boden des Dachbodens über dem des Gangs. Der Gang selbst nimmt davon aber schon einen Teil ein."
-      - when: { equals: 2.5 }
-        say: "So hoch ist der Gang. Gefragt ist, wie viel zwischen seiner Decke und dem Boden darüber bleibt."
-      - when: { equals: 0.3 }
-        say: "0,3 m nimmt das Programm, wenn bei `slab` nichts steht. Hier legen die Treppe und der Gang die Höhen schon fest."
-      - when: { equals: 5.5 }
-        say: "Du hast die Höhen zusammengezählt. Die Decke des Gangs liegt 2,5 m über seinem Boden, der Dachboden 3 m: Wie viel liegt dazwischen?"
-    solution: |
-      Der Boden des Dachbodens liegt 3 m über dem des Gangs, die Decke des
-      Gangs 2,5 m darüber. Dazwischen bleiben 3 − 2,5 = 0,5 m: `slab = 0.5`.
-      Mit einer anderen Zahl meldet die Vorschau, dass das Loch nicht passt.
-
-  - id: wassertiefe
-    title: Wie tief ist das Wasser?
-    prompt: |
-      Im Becken des Bads steht `pool = 2.2` und `water = 0.25`. Wie tief ist
-      das Wasser im Becken?
-    check:
-      type: number
-      expect: 1.95
-      tolerance: 0.001
-      unit: m
-    feedback:
-      - when: { equals: 2.2 }
-        say: "So tief reicht das Becken unter den Boden. Das Wasser steht aber nicht bis an den Rand."
-      - when: { equals: 0.25 }
-        say: "So tief unter dem Rand steht das Wasser. Gefragt ist, wie tief es vom Wasser bis zum Boden des Beckens ist."
-      - when: { equals: 2.45 }
-        say: "Du hast beide Zahlen zusammengezählt. Das Wasser beginnt 0,25 m unter dem Rand, der Boden des Beckens liegt 2,2 m darunter: Wie viel liegt dazwischen?"
-    solution: |
-      Der Boden des Beckens liegt 2,2 m unter dem Rand, das Wasser 0,25 m.
-      Das Wasser ist also 2,2 − 0,25 = 1,95 m tief.
-
   - id: eigener-raum
     title: Ein Raum nach deiner Idee
     prompt: |
-      In `rooms` liegt außer den Räumen, die du auf der Seite gebaut hast
-      (Kammer, Saal, Vorgang, Rampe, die drei Knicke, Treppe,
-      Dachboden, Schacht und Bad), ein Raum, den du
+      In `rooms` liegt außer den Räumen der Vorlage und denen, die du auf
+      dieser Seite gebaut hast (Kammer, Saal und Salon), ein Raum, den du
       selbst entworfen hast. Sein Name besteht aus Kleinbuchstaben, Ziffern, `-` und `_`, und
       er endet auf `.room`. Damit es ihn im Level gibt, braucht er eine Tür
       zu einem anderen Raum.
@@ -104,79 +57,10 @@ tasks:
     check:
       type: files
       path: backrooms-starter/rooms
-      template: [blau.room, gang.room, rot.room, zimmer.room, kammer.room, saal.room, vorgang.room, rampe.room, knick1.room, knick2.room, knick3.room, treppe.room, dachboden.room, schacht.room, bad.room]
+      template: [blau.room, gang.room, rot.room, zimmer.room, kammer.room, saal.room, salon.room, vorgang.room, rampe.room, knick1.room, knick2.room, knick3.room, treppe.room, dachboden.room, schacht.room, bad.room]
       show: listing
       expect:
         new_files: { min: 1 }
         name: '^[a-z0-9_-]+\.room$'
     hint: Schreib zuerst den Grundriss in `[map]`, mit einer Ziffer in einer Wand, und dann in einem Raum, den es schon gibt, die passende Tür mit `door = name ziffer`.
 
-  - id: lichtpunkte
-    title: Punkte auf einer Wand
-    prompt: |
-      Eine Wand ist 10 m lang und 3 m hoch. Wie viele Punkte hat die
-      Lightmap auf dieser Wand?
-    check:
-      type: number
-      expect: 7680
-      tolerance: 0
-      unit: Punkte
-    feedback:
-      - when: { equals: 480 }
-        say: Das wären 16 Punkte auf jedem Quadratmeter. Es sind aber 16 auf jedem Meter, und zwar in jeder Richtung.
-      - when: { equals: 30 }
-        say: Das ist die Fläche der Wand in Quadratmetern. Wie viele Punkte liegen in einer Reihe von 10 m?
-      - when: { equals: 208 }
-        say: Du hast die Punkte in der Länge und in der Höhe zusammengezählt. Sie bilden aber ein Raster.
-    solution: |
-      In der Länge 10 · 16 = 160 Punkte, in der Höhe 3 · 16 = 48. Die Punkte
-      bilden ein Raster: 160 · 48 = 7680. Für jeden davon schickt die
-      Grafikkarte 64-mal einen Strahl zu jeder Leuchte in der Nähe.
-
-  - id: decke
-    title: Die Decke ohne Bounce
-    prompt: |
-      Was passiert mit der Decke des Zimmers, wenn du das Bounce-Licht
-      ausschaltest (<kbd>B</kbd>)? Überleg zuerst, dann probier es aus.
-    prediction: true
-    check:
-      type: choice
-      options:
-        - Sie wird fast schwarz.
-        - Nichts, die Leuchten hängen ja direkt an ihr.
-        - Sie wird heller, weil kein Licht mehr an die Wände verloren geht.
-        - Nur ihre Ecken werden dunkler, die Mitte bleibt hell.
-      correct: 0
-    feedback:
-      - when: { picked: 1 }
-        say: In welche Richtung strahlt eine Leuchte, die unter der Decke hängt?
-      - when: { picked: 2 }
-        say: Licht geht an den Wänden nicht verloren. Ein Teil davon kommt zurück, aber wohin?
-      - when: { picked: 3 }
-        say: Dunklere Ecken sind die Kontaktschatten (<kbd>O</kbd>). Was bleibt an der Decke übrig, wenn das Bounce-Licht fehlt?
-    solution: |
-      Die Leuchten strahlen nur nach unten. Auf die Decke fällt kein
-      direktes Licht; hell ist sie nur durch das Licht, das Boden und Wände
-      zurückwerfen.
-
-  - id: weiche-schatten
-    title: Weiche Schatten
-    prompt: |
-      Erkläre in eigenen Worten, warum eine große Leuchte weichere Schatten
-      wirft als eine kleine. Benutze dabei, wie das Programm das direkte
-      Licht ausrechnet.
-    check:
-      type: reflection
-      min_words: 25
-    examples:
-      - |
-        Das Programm schickt von jedem Punkt 64-mal einen Strahl zu einem
-        zufälligen Punkt auf der Leuchte. Bei einer großen Leuchte treffen
-        am Rand eines Schattens manche Strahlen die Säule und manche nicht.
-        Der Punkt ist dann nur zum Teil beleuchtet, so entsteht ein breiter
-        Halbschatten.
-      - |
-        Von einer kleinen Leuchte sieht ein Punkt entweder alles oder nichts,
-        darum ist die Grenze scharf. Eine große Leuchte kann ein Punkt auch
-        halb sehen. Dann landet nur ein Teil der Strahlen auf ihr, und es wird
-        nach außen allmählich heller.

@@ -1,0 +1,38 @@
+# Ein Salon hinter dem Saal. Jemand hat ihn eingerichtet und ist nie zurückgekommen.
+
+[room]
+name = Salon
+height = 3.2
+wallpaper = #66784f
+floor = wood
+carpet = #8a6646
+ceiling = #ece4cc
+baseboard = 0.1, #3a281a
+dado = 1, #553a27       # unten Holz, bis 1 m über dem Boden
+dado_material = wood
+dado_rail = 0.06, #d9cdae
+cornice = 0.14, #f6f3ec
+
+[map]
+#####111#####
+#...........#
+#..L.....L..#
+#...........#
+#.....T.....#
+#.....S.....#
+#..L.....L..#
+#...........#
+#############
+
+[L]
+light = #ffe7b8
+power = 1.4
+
+[S]
+model = models/sofa_03/sofa_03_1k.gltf   # Poly Haven, CC0
+height = 0.93
+rotation = 180          # mit Blick zur Tür
+
+[T]
+model = models/small_wooden_table_01/small_wooden_table_01_1k.gltf   # Poly Haven, CC0
+height = 0.53

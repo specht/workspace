@@ -40,8 +40,7 @@ block = 0.8, 6.7, 0.8   # vom Boden des Beckens bis an die Decke
 shape = round
 material = tiles
 color = #e8eeec
-pool = 2.2              # das Feld liegt im Becken, wie die W daneben
-water = 0.25
+in = W                  # die Säule steht im Becken
 
 [S]
 stairs = north, 2       # eine Treppe nach Norden, 2 m hinauf
@@ -56,10 +55,7 @@ color = #e8eeec
 railing = on
 
 [C]
-model = statues/plastic_monobloc_chair_01/plastic_monobloc_chair_01_1k.gltf   # Poly Haven, CC0
+model = models/plastic_monobloc_chair_01/plastic_monobloc_chair_01_1k.gltf   # Poly Haven, CC0
 height = 0.88
 rotation = 270          # mit Blick über das Becken
-raise = 2               # auf dem Podest
-material = tiles
-color = #e8eeec
-railing = on
+on = P                  # auf dem Podest

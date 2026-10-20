@@ -20,7 +20,7 @@ ceiling = #5a4c50
 #############
 
 [N]
-model = statues/brass_candleholders/brass_candleholder_03.gltf   # Poly Haven, CC0, nur der große Leuchter
+model = models/brass_candleholders/brass_candleholder_03.gltf   # Poly Haven, CC0, nur der große Leuchter
 height = 0.83
 rotation = 0
 offset = 0, 0, -0.2      # vor der Nordwand
@@ -31,7 +31,7 @@ light = #ffb066
 power = 0.9
 
 [S]
-model = statues/brass_candleholders/brass_candleholder_03.gltf   # Poly Haven, CC0, nur der große Leuchter
+model = models/brass_candleholders/brass_candleholder_03.gltf   # Poly Haven, CC0, nur der große Leuchter
 height = 0.83
 rotation = 180
 offset = 0, 0, 0.2       # vor der Südwand

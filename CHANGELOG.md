@@ -18,52 +18,56 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
-- Backrooms: ein neues Kapitel »Hinauf und hinunter«. Nach den Rampen
-  bauen Lernende eine Treppe durch eine breite Tür, einen Dachboden über
-  dem Gang, ein Loch in seinem Boden, durch das man in den Gang fällt, und
-  eine Tür hoch in der Wand eines Schachts; dazu eine Frage, wie dick der
-  Boden zwischen zwei Stockwerken sein muss. Ein ebener Gang führt jetzt
-  vor die Rampe, damit man sieht, wo es hinaufgeht, und hinter ihr geht es
-  in einem krummen Gang weiter (drei kurze Stücke, die steigen, fallen und
-  deren Decken kippen); die Tür ins Leere liegt an dessen Ende. Neu ist
-  ein Bad mit einem Becken voll Wasser: `pool` (wie tief), `water` (wie tief
-  das Wasser unter dem Rand steht, `off`: leer), `tint` (die Farbe des
-  Wassers) und `railing = on` (ein Geländer); das Wasser spiegelt, man sieht
-  den Boden hindurch, mit leichten Wellen und Licht auf dem Grund. Dazu eine
-  Frage, wie tief das Wasser ist. Lampen mit Schirm leuchten mit `beam`
-  nur nach unten; der Holzsaal hat solche Wandlampen, der Samtsaal
-  Kerzenleuchter. Die Tiefe hat in ihrer gefliesten Halle ein Becken.
-  Gezeichnet werden nur noch die Räume, die man durch Türen und Löcher
-  sieht (Portale); der Maschinenraum erklärt das mit Bildern der Automap,
-  in der <kbd>U</kbd> zeigt, welche Räume das von deinem Platz aus sind.
-  Bloom ist sanfter, die Leuchten behalten ihr Gitter; <kbd>X</kbd> gibt
-  farbige Säume wie durch eine einfache Linse. Die Bilder schauen nicht
-  mehr genau nach Norden, Osten, Süden oder Westen, sondern leicht schräg.
-  Neu in den Räumen: runde Türen (`arch = höhe` oder `arch = höhe, breite`),
-  runde Säulen (`shape = round`), Säulen und Leuchten im Wasser (`pool` bei
-  einem Block, einer Leuchte oder einem Modell), größere Wellen (`waves`).
-  Holz, Fliesen und Marmor rechnet der Shader aus der Stelle in der Welt:
-  Kein Brett und keine Fliese wiederholt sich, Marmoradern laufen um Ecken.
-  Fliesen und Marmor glänzen, sie spiegeln die Leuchten ihres Raums. Flecken
-  auf Wänden, Böden und Decken wiederholen sich nicht mehr mit der Textur.
-  Arm und Schirm einer Lampe aus einem Modell werfen Schatten. Die
-  geflieste Halle der Tiefe hat ein dunkles Becken mit runden Säulen im
-  Wasser und runde Türen, wie im Spiel POOLS. Neu sind außerdem frei
-  stehende Treppen (`stairs`, auch hinauf zu einer Tür hoch in der Wand),
-  Podeste (`raise`), beide mit Geländer, ein gefliester Rand um Becken
-  (`rim`) und zweifarbige Wände (`dado`). Das Bad bekommt eine runde Tür,
-  einen Rand und runde Säulen im Wasser, und die Seite erklärt, wie das
-  Wasser entsteht. Die Seite ist durchgesehen: falsche Angaben und
-  Bildbeschreibungen berichtigt, das Bad vor die Tür ins Leere gerückt,
-  zwei Aufgaben vor die Stellen, die sie beantworten. Der Maschinenraum
-  erklärt, wie die Texturen ohne ein einziges Bild entstehen, mit einer
-  eigenen Seite der Vorlage (`textures.html`); »Die Punkte« zeigt an drei
-  Stellen, wo die Lightmap feiner wird und warum. Unten im Schacht steht ein
-  Becken mit Geländer und einem Stuhl.
-  »Fertige Levels« stellt neben
-  der Lobby »Level 1: Die Tiefe« vor, mit Bildern; die Seite nennt
-  außerdem die Steuerung auf dem Handy, den VHS-Blick (Taste C) und dass
-  die Adresse eine offene Automap behält.
+- Die Backrooms sind jetzt eine Reihe aus vier versteckten Seiten, jede ein
+  Level, das auf dem vorigen aufbaut; ein Link am Ende jeder Seite führt ins
+  nächste, sonst finden Lernende sie nirgends. Jede Seite führt eine Sache
+  nach der anderen ein, mit einem Bild nach jedem Schritt, und endet mit
+  einem »Maschinenraum«, der erklärt, wie das Programm das gerade Gebaute
+  macht. Level 0 (`/level-0-c1d8a2f7`): Räume, Türen, der Saal mit
+  Satteldach, Säulen (auch runden) und Statue, andere Wände und Böden und
+  ein neuer Salon, in dem Schritt für Schritt eine breite Tür zum runden
+  Bogen wird und die Wände einen Lambris aus Holz, eine Stuhlleiste und
+  ein Gesims bekommen; im Maschinenraum, wie aus Textdateien ein Bauwerk
+  wird, und Texturen aus GLSL, mit einem Stück Shader zum Lesen. Level 1
+  (`/level-1-7e3a91c4`): Rampen, der krumme Gang, ein Treppenhaus, in dem
+  eine Treppe über einen Absatz um die Ecke zu einer hohen Tür in den
+  Dachboden führt, das Loch im Boden und die Tür ins Leere; im
+  Maschinenraum die Kollisionserkennung, mit der neuen Taste <kbd>K</kbd>,
+  die zeigt, was beim Laufen im Weg ist. Level 2 (`/level-2-b52d0f18`): ein
+  Bad in vier Schritten (Becken, Rand und Geländer, Säulen im Wasser, eine
+  Treppe auf ein Podest mit Stuhl), anderes Wasser, ein Becken im Schacht;
+  im Maschinenraum, wie Wasser gezeichnet wird und warum nur die Räume, die
+  man durch Türen sieht (Portale). Level 3 (`/level-3-4c9e6a2d`): Lampen
+  und Möbel, das Licht Schritt für Schritt, Licht aufheben und
+  veröffentlichen, und zum Schluss die beiden fertigen Levels der Vorlage,
+  Lobby und Tiefe, deren Räume man dann ganz lesen kann. Die Aufgaben sind
+  auf die Seiten verteilt, zu denen sie gehören.
+- Backrooms-Vorlage: Modelle liegen in `models/` statt in `statues/`.
+  `rotation` nimmt eine Zahl (um die senkrechte Achse) oder drei
+  (`x, y, z`); `tilt` gibt es nicht mehr. Eine Säule oder Leuchte im Becken
+  schreibt `in = W` (der Buchstabe des Beckens), ein Stuhl auf einem Podest
+  `on = P`, statt dessen Werte abzuschreiben. Treppen und Podeste eines
+  Raums haben ein Geländer in einem Stück, das um Ecken biegt und an
+  Absätzen auf einem Pfosten zusammenläuft. Eine Tür gehört zur Hälfte
+  jedem ihrer Räume, mit Wand, Sockelleiste, Boden und Bogen wie dort: Man
+  sieht der Wand ihre Dicke an. Treppen können zu einer Tür in einen Raum
+  führen, der über anderen liegt. Die Kanten (<kbd>E</kbd>) sind blau wie
+  in der Automap. `textures.html?show=…&step=N` zeigt einen Schritt einer
+  Textur allein; die Seite zeigt die Schritte als Galerie, auch auf dem
+  Handy gut lesbar.
+- Handbuch: eine Seite »Kartografie« mit allen Einträgen für Räume in
+  Textdateien (Grundriss, `[room]`, Leuchten, Blöcke, Modelle, Becken,
+  Treppen, Türen, Löcher, Tasten) und eine Seite »Prozedurale Texturen«:
+  Zufall aus einer Hash-Funktion, Fliesen, Rauschen und Turbulenz, Marmor
+  und Holz, nahtlose Kacheln, Texturen ohne Wiederholung und Linien ohne
+  Flimmern mit `fwidth`, jedes Beispiel ein Shader, der auf der Seite läuft
+  und sich ändern lässt. Die Seite zu GLSL nennt `dFdx`, `dFdy` und
+  `fwidth`.
+- Bildgenerator: `write-file: … <- file:../andere-seite/…` liest Dateien
+  einer anderen Seite (Teile einer Reihe teilen sich Stufen), nie außerhalb
+  des Ordners mit den Inhalten.
+- Tabellen: Code in der ersten Spalte (`light`, `door = …`) wird nicht mehr
+  mitten im Wort umbrochen.
 - Startseite (nicht angemeldet): eine kurze Überschrift, zwei Sätze und
   drei Punkte statt eines langen Absatzes, in normaler Schriftgröße.
   Daneben steht das Bild des Workspace leicht zum Text gedreht auf einem

@@ -30,7 +30,7 @@ power = 3
 size = 1.4
 
 [W]
-model = statues/industrial_wall_lamp/industrial_wall_lamp_1k.gltf   # Poly Haven, CC0
+model = models/industrial_wall_lamp/industrial_wall_lamp_1k.gltf   # Poly Haven, CC0
 height = 0.43
 rotation = 270
 offset = 0.42, 1.9, 0    # ganz unten an der Ostwand
@@ -44,6 +44,6 @@ tint = #9fbfb4
 railing = on
 
 [S]
-model = statues/plastic_monobloc_chair_01/plastic_monobloc_chair_01_1k.gltf   # Poly Haven, CC0
+model = models/plastic_monobloc_chair_01/plastic_monobloc_chair_01_1k.gltf   # Poly Haven, CC0
 height = 0.88
 rotation = 200

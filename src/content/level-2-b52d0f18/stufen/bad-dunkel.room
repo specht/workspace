@@ -1,0 +1,63 @@
+# Hinter dem Vorgang: ein Bad. Das Wasser ist still. Zu still.
+
+[room]
+name = Bad
+height = 4.5
+walls = tiles
+floor = tiles
+wallpaper = #d6e4e1
+carpet = #b9ccc8
+ceiling = #e6efec
+dado = 1.1, #2f4a4a     # unten dunkle Fliesen
+dado_material = tiles
+
+[map]
+###33###########
+#..............#
+#..L.......L...#
+#..............#
+#..WWWWWWWWWWPP#
+#..WWWOWWWOWWPC#
+#..WWWWWWWWWWSS#
+#............SS#
+#..L.......L.SS#
+#..............#
+################
+
+[L]
+light = #e4f3ff
+size = 1.4
+power = 1.4
+
+[W]
+pool = 2.2              # so tief ist das Becken unter dem Boden
+water = 0.05
+waves = 1.6
+tint = #4f6b62
+rim = 0.15, 0.3         # ein Rand aus Fliesen, 15 cm hoch, 30 cm breit
+railing = on            # ein Geländer auf dem Rand
+
+[O]
+block = 0.8, 6.7, 0.8   # vom Boden des Beckens bis an die Decke
+shape = round
+material = tiles
+color = #e8eeec
+in = W                  # die Säule steht im Becken
+
+[S]
+stairs = north, 2       # eine Treppe nach Norden, 2 m hinauf
+material = tiles
+color = #e8eeec
+railing = on
+
+[P]
+raise = 2               # oben ein Podest, so hoch, wie die Treppe steigt
+material = tiles
+color = #e8eeec
+railing = on
+
+[C]
+model = models/plastic_monobloc_chair_01/plastic_monobloc_chair_01_1k.gltf   # Poly Haven, CC0
+height = 0.88
+rotation = 270          # mit Blick über das Becken
+on = P                  # auf dem Podest

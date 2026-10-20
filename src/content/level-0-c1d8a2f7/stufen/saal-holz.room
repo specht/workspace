@@ -20,7 +20,7 @@ carpet = #6e4426
 #############
 
 [N]
-model = statues/industrial_wall_sconce/industrial_wall_sconce_1k.gltf   # Poly Haven, CC0
+model = models/industrial_wall_sconce/industrial_wall_sconce_1k.gltf   # Poly Haven, CC0
 height = 0.4
 rotation = 0
 offset = 0, 1.75, -0.35  # an die Nordwand
@@ -29,7 +29,7 @@ power = 0.7
 beam = 75               # unter dem Schirm: nach unten
 
 [S]
-model = statues/industrial_wall_sconce/industrial_wall_sconce_1k.gltf   # Poly Haven, CC0
+model = models/industrial_wall_sconce/industrial_wall_sconce_1k.gltf   # Poly Haven, CC0
 height = 0.4
 rotation = 180
 offset = 0, 1.75, 0.35   # an die Südwand

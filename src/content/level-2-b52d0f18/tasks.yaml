@@ -1,0 +1,27 @@
+# Aufgaben zu Level 2 der versteckten Reihe »Die Backrooms«.
+# Format: docs/aufgaben.md. Die Vorlage liegt seit Level 0 in
+# /workspace/backrooms-starter (specht/backrooms-starter).
+format: 1
+activity: level-2-b52d0f18
+tasks:
+  - id: wassertiefe
+    title: Wie tief ist das Wasser?
+    prompt: |
+      Im Becken des Bads steht `pool = 2.2` und `water = 0.25`. Wie tief ist
+      das Wasser im Becken?
+    check:
+      type: number
+      expect: 1.95
+      tolerance: 0.001
+      unit: m
+    feedback:
+      - when: { equals: 2.2 }
+        say: "So tief reicht das Becken unter den Boden. Das Wasser steht aber nicht bis an den Rand."
+      - when: { equals: 0.25 }
+        say: "So tief unter dem Rand steht das Wasser. Gefragt ist, wie tief es vom Wasser bis zum Boden des Beckens ist."
+      - when: { equals: 2.45 }
+        say: "Du hast beide Zahlen zusammengezählt. Das Wasser beginnt 0,25 m unter dem Rand, der Boden des Beckens liegt 2,2 m darunter: Wie viel liegt dazwischen?"
+    solution: |
+      Der Boden des Beckens liegt 2,2 m unter dem Rand, das Wasser 0,25 m.
+      Das Wasser ist also 2,2 − 0,25 = 1,95 m tief.
+
