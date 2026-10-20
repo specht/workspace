@@ -2,37 +2,62 @@
     h2 {
         margin: 1em 0;
     }
-    /* From xl the same columns as the cards below (.hscol): the text over two,
-       the picture over the third; on lg 7 : 5, so both are about as tall. */
-    .front-hero { margin-top: 2em; margin-bottom: 1em; row-gap: 1.2em; }
-    .front-hero-lead { font-size: 1.25rem; line-height: 1.5; margin: 0 0 0.8em; text-align: left; hyphens: manual; }
+    /* Text and picture 7 : 5, so both are about as tall */
+    .front-hero { margin-top: 2.2em; margin-bottom: 1.2em; row-gap: 1.6em; }
+    .front-hero-title { margin: 0 0 0.5em; font-size: 1.65rem; line-height: 1.25; text-align: left; hyphens: manual; }
+    .front-hero-lead { margin: 0 0 1em; font-size: 1.05rem; line-height: 1.55; text-align: left; hyphens: manual; color: var(--bs-secondary-color); }
+    .front-hero-points { margin: 0 0 1.1em; padding: 0; list-style: none; display: grid; gap: 0.55em; }
+    .front-hero-points li { display: flex; gap: 0.7em; align-items: baseline; line-height: 1.45; text-align: left; hyphens: manual; }
+    .front-hero-points i { flex: none; color: var(--bs-success); }
     .front-hero-login { margin: 0; color: var(--bs-secondary-color); text-align: left; hyphens: manual; }
-    /* From lg, beside the text: the picture turned a little towards it, as if
-       it stood on a glossy floor, with a faint reflection below (Chrome and
-       Safari; elsewhere none). Below lg it sits under the text, centred,
-       smaller and plain. */
     .front-hero-picture { display: block; width: 100%; border-radius: 10px; box-shadow: 0 0.4em 1.5em rgba(0, 0, 0, 0.2); }
+    .front-hero-reflection { display: none; }
+    /* From lg, beside the text: the picture turned a little towards it,
+       standing on a glossy floor. The reflection is the same picture upside
+       down, right under its lower edge, fading out within a few
+       centimetres, as on polished stone; it takes almost no
+       space of its own (the negative margin). Below lg the picture sits
+       under the text, centred, smaller and plain. */
     @media (min-width: 992px) {
-        /* room below for the reflection, which takes no space of its own */
-        .front-hero-stage { perspective: 1400px; margin-top: 0.4rem; padding-bottom: 12%; }
-        .front-hero-picture {
-            box-shadow: 0 0 1.4em rgba(0, 0, 0, 0.22);
-            transform: rotateY(-11deg) rotateX(2deg);
+        .front-hero-stage { perspective: 1400px; margin-top: 0.3rem; }
+        .front-hero-picture,
+        .front-hero-reflection {
             transform-origin: 30% 50%;
             transition: transform 0.6s ease;
-            -webkit-box-reflect: below 0 linear-gradient(to bottom, transparent 62%, rgba(255, 255, 255, 0.16));
         }
-        .front-hero-picture:hover { transform: rotateY(-4deg) rotateX(1deg); }
+        .front-hero-picture {
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 0.2em 0.6em rgba(0, 0, 0, 0.18);
+            transform: rotateY(-11deg) rotateX(2deg);
+        }
+        .front-hero-reflection {
+            display: block;
+            width: 100%;
+            margin-top: 1px;
+            margin-bottom: -44%;
+            border-radius: 10px;
+            /* mirrored at the lower edge; the tilt backwards turns round with it */
+            transform: rotateY(-11deg) rotateX(-2deg) scaleY(-1);
+            opacity: 0.7;
+            /* after the flip the bottom is on top: visible only close to the edge */
+            -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.3) 12%, transparent 30%);
+            mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.3) 12%, transparent 30%);
+            pointer-events: none;
+        }
+        .front-hero-stage:hover .front-hero-picture { transform: rotateY(-4deg) rotateX(1deg); }
+        .front-hero-stage:hover .front-hero-reflection { transform: rotateY(-4deg) rotateX(-1deg) scaleY(-1); }
     }
     @media (max-width: 991.999999px) {
         .front-hero-stage { max-width: 34rem; margin: 0 auto; }
     }
     @media (max-width: 767.999999px) {
-        .front-hero { margin-top: 1.2em; }
-        .front-hero-lead { font-size: 1.1rem; }
+        .front-hero { margin-top: 1.4em; }
+        .front-hero-title { font-size: 1.4rem; }
     }
     @media (prefers-reduced-motion: reduce) {
-        .front-hero-picture { transition: none; }
+        .front-hero-picture,
+        .front-hero-reflection { transition: none; }
     }
 </style>
 <div class='container'>
@@ -41,21 +66,24 @@
             <!-- Not logged in: what the Workspace is and how to get in, in one
                  compact header; the catalog below shows what it offers. -->
             <div class='row align-items-start front-hero' style='#{user_logged_in? || !running_tests.empty? ? 'display: none;' : ''}'>
-                <div class='front-hero-text col-12 col-lg-7 col-xl-8'>
+                <div class='front-hero-text col-12 col-lg-7'>
+                    <h2 class='front-hero-title'>Programmieren im Browser, mit echten Werkzeugen</h2>
                     <p class='front-hero-lead'>
-                        Der Hackschule Workspace ist eine Entwicklungsumgebung im Browser: Visual Studio Code mit
-                        Linux-Terminal, Git, vielen Programmiersprachen und eigenen Datenbanken. Das sind die Werkzeuge,
-                        mit denen auch Software entwickelt wird, und du musst nichts installieren. Deine Dateien bleiben
-                        gespeichert, in der Schule wie zu Hause. Die Projekte und Labore unten führen dich in Themen von
-                        Grafik und Spielen bis zu Netzen und Datenbanken ein. Probier dabei ruhig aus, was passiert, wenn
-                        du etwas änderst: Mit Checkpoints kommst du jederzeit zu einem früheren Stand zurück.
+                        Der Hackschule Workspace ist Visual Studio Code mit Linux-Terminal, Git, vielen
+                        Programmiersprachen und eigenen Datenbanken: die Werkzeuge, mit denen auch Software entwickelt
+                        wird. Installieren musst du nichts.
                     </p>
+                    <ul class='front-hero-points'>
+                        <li><i class='bi bi-cloud-check'></i><span>Deine Dateien bleiben gespeichert, in der Schule wie zu Hause.</span></li>
+                        <li><i class='bi bi-signpost-split'></i><span>Projekte und Labore führen dich in Grafik, Spiele, Netze und Datenbanken ein.</span></li>
+                        <li><i class='bi bi-arrow-counterclockwise'></i><span>Probier ruhig aus: Mit Checkpoints kommst du jederzeit zu einem früheren Stand zurück.</span></li>
+                    </ul>
                     <p class='front-hero-login'>
                         <a href='/login'>Melde dich mit deiner E-Mail-Adresse an.</a>
                         Noch keinen Zugang? Frag nach einer #{contact_email.empty? ? 'Einladung' : "<a href='mailto:#{CGI.escapeHTML(contact_email)}'>Einladung</a>"}.
                     </p>
                 </div>
-                <div class='col-12 col-lg-5 col-xl-4'><div class='front-hero-stage'>#{front_picture_html}</div></div>
+                <div class='col-12 col-lg-5'><div class='front-hero-stage'>#{front_picture_html}</div></div>
             </div>
             <p class="mt-4" style="#{running_tests.empty? && user_logged_in? ? '' : 'display: none;'}">
                 Herzlich willkommen im <strong>Hackschule Workspace</strong>!

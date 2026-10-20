@@ -18,11 +18,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
-- Startseite (nicht angemeldet): Neben dem Text steht das Bild des
-  Workspace leicht zum Text gedreht auf einem glänzenden Boden, mit
-  schwachem Spiegelbild (in Chrome und Safari), und schließt oben mit dem
-  Text ab. Auf mittelbreiten Bildschirmen teilen sich Text und Bild die
-  Breite 7 : 5, auf schmalen steht das Bild schlicht unter dem Text.
+- Startseite (nicht angemeldet): eine kurze Überschrift, zwei Sätze und
+  drei Punkte statt eines langen Absatzes, in normaler Schriftgröße.
+  Daneben steht das Bild des Workspace leicht zum Text gedreht auf einem
+  glänzenden Boden, mit seinem Spiegelbild darunter (in jedem Browser),
+  und schließt oben mit dem Text ab; Text und Bild teilen sich die Breite
+  7 : 5. Auf schmalen Bildschirmen steht das Bild schlicht unter dem Text.
 - Galerien: Ein vergrößertes Bild lässt sich auf dem Tablet zur Seite
   wischen, zum nächsten oder vorigen Bild der Galerie; es folgt dabei dem
   Finger. Zwei Finger zoomen wie bisher.

@@ -5117,9 +5117,13 @@ class Main < Sinatra::Base
     def front_picture_html
         return '' unless File.file?(FRONT_PICTURE)
 
-        "<img class='front-hero-picture' src='/cache/#{Main.convert_image(FRONT_PICTURE)}.webp' " \
+        src = "/cache/#{Main.convert_image(FRONT_PICTURE)}.webp"
+        # the same picture once more, upside down: its reflection on the
+        # floor (index.html), for nobody who reads the page aloud
+        "<img class='front-hero-picture' src='#{src}' " \
             "alt='Der Workspace: oben im Editor ein kurzes Programm, das nach dem Namen fragt, " \
-            "unten im Terminal sein Lauf: Hallo, Ada!'>"
+            "unten im Terminal sein Lauf: Hallo, Ada!'>" \
+            "<img class='front-hero-reflection' src='#{src}' alt='' aria-hidden='true'>"
     end
 
     # Loads media_variants.js on a page with image or video variants.
