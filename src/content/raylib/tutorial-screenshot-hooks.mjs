@@ -35,6 +35,8 @@ async function tap(page, key) {
 }
 
 export default {
+    // 3D scenes: on the graphics card, if the server has one
+    gpu: true,
     writeFileSubdirectory: 'raylib-starter',
 
     // Live Server opens the folder listing; the program is opened by hook.

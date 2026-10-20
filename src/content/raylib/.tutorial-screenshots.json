@@ -1,75 +1,75 @@
 {
   "screenshots": {
     "bauen.webp": {
-      "environment_fingerprint": "a3758f87f70f6ad5d2dd4241a857e66ce71fb15bed420375e42851b7b8b05506",
-      "output_sha256": "b3abb936988400838c3d5ca9523b18d452445a44fb2a42a7245e035bd4e1629d",
+      "environment_fingerprint": "51d55b40f3db9f903f5b093506d396f95a1d358ef632e692c1dc4c456eb7f1f1",
+      "output_sha256": "f909d0038d6dce83bc446827f68c03c03b560b97b0c87be777531db87f5e5ea3",
       "state_hash": "4db97c264a9b1fe6e20358741d14a69c0663e2011f8e39097783c2308d47b011",
       "workspace_look": "4.140.0-ls368"
     },
     "fackeln.webp": {
-      "environment_fingerprint": "a3758f87f70f6ad5d2dd4241a857e66ce71fb15bed420375e42851b7b8b05506",
-      "output_sha256": "cfc16f73e8f638e939ff5b14fe7a8d192af070fa08348c51769d6b01f31af45f",
+      "environment_fingerprint": "51d55b40f3db9f903f5b093506d396f95a1d358ef632e692c1dc4c456eb7f1f1",
+      "output_sha256": "aa5179a6bbe0c7100d28af23fb9ea0cb02b1f212c90ab014b2da7b9b9026b705",
       "state_hash": "b20a8d49ca926b7d922ae175c6ed6eabb0920a119df2cc7ad179c2252e760b21",
       "variants": {
-        "fackeln-dark.webp": "cf901e9edf97b5303361f162a7fe2484931358d65388644114806be306366223"
+        "fackeln-dark.webp": "ea142af53ad94ca6e937cb9958533cbae9e11b2b1a7315a79f22adf95c4108d1"
       },
       "workspace_look": "4.140.0-ls368"
     },
     "geist.webp": {
-      "environment_fingerprint": "a3758f87f70f6ad5d2dd4241a857e66ce71fb15bed420375e42851b7b8b05506",
-      "output_sha256": "7387968498d14d82bd32d47d55e3ab1e5dc1cdd6c9742f9874c5237795c59b63",
+      "environment_fingerprint": "51d55b40f3db9f903f5b093506d396f95a1d358ef632e692c1dc4c456eb7f1f1",
+      "output_sha256": "816ad4b8b1d68dc4bbc67eeb73f1a799c6ed12f34bbe53c9872f6c1c7a2b1236",
       "state_hash": "2a033f2cee8fe75b87b2f41e3da12ed3a124c4d4edd3529eafe8b84d143b10e4",
       "workspace_look": "4.140.0-ls368"
     },
     "insel.webp": {
-      "environment_fingerprint": "a3758f87f70f6ad5d2dd4241a857e66ce71fb15bed420375e42851b7b8b05506",
-      "output_sha256": "7578afd39ee7277ef86bdc971fd07229227a7868b75e386c8158c83e2595485d",
+      "environment_fingerprint": "51d55b40f3db9f903f5b093506d396f95a1d358ef632e692c1dc4c456eb7f1f1",
+      "output_sha256": "64be05b25ae14a5848147d9ff333ca655ea8db0ddb04923995cefb2776768e58",
       "state_hash": "eeda7e4ee4a63b2c7e35ac58697fb5e6fa716ab793f1e505e89cba564ded073c",
       "workspace_look": "4.140.0-ls368"
     },
     "laufen.webp": {
-      "environment_fingerprint": "a3758f87f70f6ad5d2dd4241a857e66ce71fb15bed420375e42851b7b8b05506",
-      "output_sha256": "57986e3ce310a0e9f9f2faf95c978260ba2abefd77b3d533d13055b29e471148",
+      "environment_fingerprint": "51d55b40f3db9f903f5b093506d396f95a1d358ef632e692c1dc4c456eb7f1f1",
+      "output_sha256": "a767dae6e20a784a838c38a9fc64389eaa24f263b74b1e4afc381d205831e804",
       "state_hash": "ec66a69226ecd624d8034f3005dccb502f5e0721e316eea15273805dec7a7a24",
       "workspace_look": "4.140.0-ls368"
     },
     "licht.webp": {
-      "environment_fingerprint": "a3758f87f70f6ad5d2dd4241a857e66ce71fb15bed420375e42851b7b8b05506",
-      "output_sha256": "7e15cdb9a594f08944e7729c1bcc511532352b4be076d8335158525056bf6d1b",
+      "environment_fingerprint": "51d55b40f3db9f903f5b093506d396f95a1d358ef632e692c1dc4c456eb7f1f1",
+      "output_sha256": "3de4b4381069a2a6a6b9d6991cbe1f106d12369a0dd32dd1d3cd467768860021",
       "state_hash": "9d4c87029b285aeff4bbbb08cc91ada46ebf4437361a7623432d292539e81cfd",
       "workspace_look": "4.140.0-ls368"
     },
     "make.webp": {
-      "environment_fingerprint": "a3758f87f70f6ad5d2dd4241a857e66ce71fb15bed420375e42851b7b8b05506",
+      "environment_fingerprint": "51d55b40f3db9f903f5b093506d396f95a1d358ef632e692c1dc4c456eb7f1f1",
       "output_sha256": "4bcb11cc0e88d82de2ce8ab2ca6e15e16d2e0dc2b81290d0824673c8d8e84155",
       "state_hash": "21057ec144624d98adea3a94974427b25ab8af3b7ac7e098e42d3ec444ebcf68",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "start.webp": {
-      "environment_fingerprint": "a3758f87f70f6ad5d2dd4241a857e66ce71fb15bed420375e42851b7b8b05506",
+      "environment_fingerprint": "51d55b40f3db9f903f5b093506d396f95a1d358ef632e692c1dc4c456eb7f1f1",
       "output_sha256": "74de37a6d0bd9a300d942404c1f31b25d45cbae4ee776c92d0661b4b9e8574d3",
       "state_hash": "0d06b497023619bfc543faf8c6ecf330d802255b1ad6c3cabf105094f3824633",
       "workspace_look": "4.140.0-ls368"
     },
     "studio-kacheln.webp": {
-      "environment_fingerprint": "a3758f87f70f6ad5d2dd4241a857e66ce71fb15bed420375e42851b7b8b05506",
+      "environment_fingerprint": "51d55b40f3db9f903f5b093506d396f95a1d358ef632e692c1dc4c456eb7f1f1",
       "output_sha256": "08848b20949f525d86e2a2dd96ef0b18069d0db687dbc31976e71f5d42d7c411",
       "state_hash": "357fbd1b6d5544e0f5a224fd7e75dd155eeb312f2c86aad694f70a2005266125",
       "workspace_look": "4.140.0-ls368"
     },
     "studio-speichern.webp": {
-      "environment_fingerprint": "a3758f87f70f6ad5d2dd4241a857e66ce71fb15bed420375e42851b7b8b05506",
+      "environment_fingerprint": "51d55b40f3db9f903f5b093506d396f95a1d358ef632e692c1dc4c456eb7f1f1",
       "output_sha256": "dd753e3b1f10eddaaff8d986c7817ff06cd2e42dc908787fe6a7893336d38cc3",
       "state_hash": "9dab6684ebf8e8d85d2f1e612f14ce5b1f8ae1785c8040782e1170d6d2014116",
       "workspace_look": "4.140.0-ls368"
     },
     "tag.webp": {
-      "environment_fingerprint": "a3758f87f70f6ad5d2dd4241a857e66ce71fb15bed420375e42851b7b8b05506",
-      "output_sha256": "174ccdcc81eca8ccaaa01e487cb0686dadcb4db9e2116e881e198cdee28f777b",
+      "environment_fingerprint": "51d55b40f3db9f903f5b093506d396f95a1d358ef632e692c1dc4c456eb7f1f1",
+      "output_sha256": "f3be4a50786076c7d2d7aeb1493cbb4893ff6e4cd52036ce52cfa4c6fea5a1dd",
       "state_hash": "68120e50ce41db62ae6017e475c73f260ecf4385e5051a358631ba5e16a9424d",
       "variants": {
-        "tag-dark.webp": "3e331c85ccfc13bd5723f0e28d5bf0939984e620b0ec8f77d71f5fc9d1b3a4eb"
+        "tag-dark.webp": "4381052c0d8f5f75da8f2a8ba39cdde817ec774e0d20939a9afed7188bc11ba9"
       },
       "workspace_look": "4.140.0-ls368"
     }

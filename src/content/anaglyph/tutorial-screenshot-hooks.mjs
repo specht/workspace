@@ -31,6 +31,9 @@ async function toggleButton(page, id, flag, on, timeout) {
 }
 
 export default {
+    // 3D scenes: on the graphics card, if the server has one
+    gpu: true,
+
     // The template is cloned to /workspace/anaglyph; scene files live there.
     writeFileSubdirectory: 'anaglyph',
 

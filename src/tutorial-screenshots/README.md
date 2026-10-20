@@ -828,6 +828,9 @@ the screenshot user's Workspace instead of the Workspace root. This only affects
 `write-file`; `wait-for-file` and `wait-for-file-newer` remain explicitly relative
 to the Workspace root so their recipe paths stay unambiguous.
 
+`gpu: true` renders the tutorial on the graphics card, if the server has one
+(see »WebGL« below): only for real 3D scenes, everything else stays in software.
+
 `waitForPreview` runs after `DOMContentLoaded` whenever `go-live`,
 `preview-reload`, or `preview-reset` opens or reloads the preview. Tutorials that
 do not provide a hook simply continue after `DOMContentLoaded`. The hook file's
@@ -859,15 +862,19 @@ unscaled, so a `<canvas>` (an anaglyph scene, a sandbox, the Neo4j graph)
 draws at full resolution instead of being enlarged. Both give the same image
 size for the same layout.
 
-WebGL (the anaglyph scenes, the Backrooms, VS Code's terminal) renders on the
-host's NVIDIA graphics card when `config.rb` finds one (`nvidia-smi` works)
-and Docker knows the `nvidia` runtime (nvidia-container-toolkit): the service
-then runs with `runtime: nvidia`, and Chromium uses ANGLE on Vulkan (on
-OpenGL ES, ANGLE's other way to the card, it dropped whole draw calls in
-some frames, and a picture could catch one). That is
-several times faster than software; the Backrooms bake their light in
-seconds instead of a minute. Without a card, or with
-`TUTORIAL_SCREENSHOT_GPU=0 ./config.rb up -d`, it renders in software
+WebGL renders on the host's NVIDIA graphics card for tutorials whose hooks
+file says `gpu: true` (the anaglyph scenes, the Backrooms, the Klötzchenwelt),
+when `config.rb` finds a card (`nvidia-smi` works) and Docker knows the
+`nvidia` runtime (nvidia-container-toolkit): the service then runs with
+`runtime: nvidia`, and for those tutorials Chromium uses ANGLE on Vulkan (on
+OpenGL ES, ANGLE's other way to the card, it dropped whole draw calls in some
+frames). That is several times faster than software; the Backrooms bake their
+light in seconds instead of a minute. Everything else, VS Code above all,
+renders in software (SwiftShader) as before: on the card, captures of VS Code
+now and then hung or came back as the page repeated 3 × 3. Switching between
+the two starts a new browser. A capture that has not come back after 30 s is
+asked for again. Without a card, or with
+`TUTORIAL_SCREENSHOT_GPU=0 ./config.rb up -d`, everything renders in software
 (SwiftShader). The log says which (»Tutorial screenshot WebGL: …«). The
 renderer is not part of a picture's fingerprint: switching it does not make
 pictures stale, and both give the same pictures up to small differences in

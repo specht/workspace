@@ -20,6 +20,9 @@ async function waitForStatus(page, pattern, timeout) {
 }
 
 export default {
+    // 3D scenes: on the graphics card, if the server has one
+    gpu: true,
+
     // The template is cloned to /workspace/backrooms-starter.
     writeFileSubdirectory: 'backrooms-starter',
 

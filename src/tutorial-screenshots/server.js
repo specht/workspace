@@ -191,11 +191,20 @@ const WORKSPACE_SCREENSHOT_STYLE = `
 }
 `;
 
-// On the card, ANGLE runs on Vulkan: on OpenGL ES (gl-egl) it dropped whole
-// draw calls in about one frame of five (raylib's world in the Klötzchenwelt,
-// the cube's faces), and a picture could catch such a frame.
+// The graphics card only for tutorials whose hooks ask for it (gpu: true: the
+// anaglyph scenes, the Backrooms, the Klötzchenwelt), everything else in
+// software as always: on the card, captures of VS Code now and then hung or
+// came back as the page repeated 3 × 3. On the card, ANGLE runs on Vulkan: on
+// OpenGL ES (gl-egl) it dropped whole draw calls in about one frame of five
+// (raylib's world in the Klötzchenwelt), and a picture could catch one.
+let browserGpu = false;
+
+function gpuAvailable() {
+    return process.env.TUTORIAL_SCREENSHOT_GPU === 'nvidia';
+}
+
 function webglArgs() {
-    if (process.env.TUTORIAL_SCREENSHOT_GPU === 'nvidia') {
+    if (browserGpu) {
         return ['--use-gl=angle', '--use-angle=vulkan', '--enable-features=Vulkan', '--enable-gpu', '--ignore-gpu-blocklist'];
     }
     return ['--use-gl=angle', '--use-angle=swiftshader'];
@@ -351,6 +360,7 @@ async function loadTutorialScreenshotHooks(tutorialDirectory) {
                 waitForPreview: null,
                 setPreviewTime: null,
                 actions: {},
+                gpu: false,
             };
         }
         throw error;
@@ -396,6 +406,7 @@ async function loadTutorialScreenshotHooks(tutorialDirectory) {
         setPreviewTime: hooks.setPreviewTime ?? null,
         actions,
         variants,
+        gpu: hooks.gpu === true,
     };
 }
 
@@ -1209,7 +1220,7 @@ async function ensureBrowser() {
                 'EXCLUDE localhost',
             ].join(',');
             console.log(`Tutorial screenshot browser routing: ${hostRules}`);
-            console.log(`Tutorial screenshot WebGL: ${process.env.TUTORIAL_SCREENSHOT_GPU === 'nvidia' ? 'NVIDIA graphics card' : 'software (SwiftShader)'}`);
+            console.log(`Tutorial screenshot WebGL: ${browserGpu ? 'NVIDIA graphics card' : 'software (SwiftShader)'}`);
             // Development runs on plain http. VS Code webviews (the ER-Werkstatt,
             // the Markdown preview) need a service worker, which browsers allow
             // only in a secure context; students on https have one.
@@ -1226,10 +1237,11 @@ async function ensureBrowser() {
                     `--host-resolver-rules=${hostRules}`,
                     `--unsafely-treat-insecure-origin-as-secure=${secureOrigins}`,
 
-                    // WebGL on the host's NVIDIA card when config.rb passed it in
-                    // (several times faster: the Backrooms bake their light in
-                    // seconds), otherwise in software (SwiftShader). Either way
-                    // VS Code/xterm can use its WebGL renderer.
+                    // WebGL on the host's NVIDIA card for a tutorial with gpu: true
+                    // when config.rb passed it in (several times faster: the
+                    // Backrooms bake their light in seconds), otherwise in
+                    // software (SwiftShader). Either way VS Code/xterm can use
+                    // its WebGL renderer.
                     ...webglArgs(),
                     '--enable-webgl',
 
@@ -1479,7 +1491,8 @@ async function restartBrowser(reason) {
     workspace = null;
     preview = null;
     const browser = await old?.catch(() => null);
-    browser?.process()?.kill('SIGKILL');
+    // A Browser from chromium.launch() has no process() (only a BrowserServer
+    // has): close it, and give up on it after ten seconds.
     await withTimeout(browser?.close() ?? Promise.resolve(), 10_000, 'closing the old browser').catch(() => {});
 }
 
@@ -1530,12 +1543,19 @@ async function prepareFreshWorkspace() {
     workspacePrepared = true;
 }
 
-async function acquireFreshWorkspace() {
+async function acquireFreshWorkspace(gpu = false) {
     // A previous render may already be preparing the next pristine Workspace in
     // the background. Only wait for that work when screenshots actually need a
     // Workspace; a no-op tutorial reload remains immediate.
     if (workspacePreparationPromise) {
         await workspacePreparationPromise;
+    }
+
+    // on the graphics card or in software: a new browser when that changes
+    const wanted = gpu && gpuAvailable();
+    if (wanted !== browserGpu) {
+        browserGpu = wanted;
+        if (browserPromise) await restartBrowser(wanted ? 'this tutorial renders 3D on the graphics card' : 'back to software rendering');
     }
 
     if (!workspacePrepared || !workspace || workspace.isClosed()) {
@@ -3439,21 +3459,18 @@ async function captureShot(shot, tutorialDirectory) {
                     },
                 },
             );
-            let captured;
-            for (let attempt = 1; ; attempt += 1) {
-                try {
-                    captured = await withTimeout(captureOnce(), CAPTURE_TIMEOUT_MS, `capture ${shot.target}`);
-                    break;
-                } catch (error) {
-                    if (attempt === 3 || !/gave up after/.test(error.message)) throw error;
-                    console.log(`  ${error.message}; again (${attempt + 1})`);
+            const captureInTime = async () => {
+                for (let attempt = 1; ; attempt += 1) {
+                    try {
+                        const captured = await withTimeout(captureOnce(), CAPTURE_TIMEOUT_MS, `capture ${shot.target}`);
+                        return Buffer.from(captured.data, 'base64');
+                    } catch (error) {
+                        if (attempt === 3 || !/gave up after/.test(error.message)) throw error;
+                        console.log(`  ${error.message}; again (${attempt + 1})`);
+                    }
                 }
-            }
-
-            const png = Buffer.from(
-                captured.data,
-                'base64',
-            );
+            };
+            const png = await captureInTime();
 
             const actual = pngDimensions(png);
             const expected = scalePixelDimensions(
@@ -4046,7 +4063,7 @@ async function generateTutorial(payload, progressJob = null) {
     }
 
     if (progressJob) progressJob.status = 'preparing';
-    await acquireFreshWorkspace();
+    await acquireFreshWorkspace(tutorialHooks.gpu);
     mousePosition = null;
     if (progressJob) progressJob.status = 'running';
 
