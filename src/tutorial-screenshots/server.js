@@ -73,6 +73,11 @@ const DEFAULT_VIDEO_FPS = 30;
 // wrong selector costs seconds; waiting for the application to get somewhere
 // (compiling, cloning) gets longer.
 const ACTION_TIMEOUT_MS = 10_000;
+// On the graphics card (ANGLE on Vulkan) a tab sometimes gets no frames for a
+// while, and the generator waited for them forever. So a wait for two
+// animation frames in a page ends after a second anyway, and a capture that
+// has not come back after this long is asked for again.
+const CAPTURE_TIMEOUT_MS = 30_000;
 const WAIT_FOR_TEXT_TIMEOUT_MS = 30_000;
 const WORKSPACE_FONT_FAMILY = '0xProto Nerd Font Mono';
 const PLAYWRIGHT_VERSION = '1.62.1';
@@ -3013,6 +3018,7 @@ async function applyViewportProfile(page, viewport, zoom, sharpCanvas = false) {
     // Give VS Code two frames to react to the changed layout metrics.
     await page.evaluate(() => new Promise(resolve => {
         requestAnimationFrame(() => requestAnimationFrame(resolve));
+        setTimeout(resolve, 1000);   // no frames for a while: see CAPTURE_TIMEOUT_MS
     }));
 
     // A preview page sized its <canvas> for the size and pixel ratio it
@@ -3022,6 +3028,7 @@ async function applyViewportProfile(page, viewport, zoom, sharpCanvas = false) {
         await page.evaluate(() => new Promise(resolve => {
             window.dispatchEvent(new Event('resize'));
             requestAnimationFrame(() => requestAnimationFrame(resolve));
+        setTimeout(resolve, 1000);   // no frames for a while: see CAPTURE_TIMEOUT_MS
         })).catch(() => {});
     }
 
@@ -3041,6 +3048,7 @@ async function installWorkspaceScreenshotStyle(page) {
         style.textContent = css;
         return new Promise(resolve => {
             requestAnimationFrame(() => requestAnimationFrame(resolve));
+        setTimeout(resolve, 1000);   // no frames for a while: see CAPTURE_TIMEOUT_MS
         });
     }, WORKSPACE_SCREENSHOT_STYLE);
 }
@@ -3068,6 +3076,7 @@ async function waitForWorkspaceFont(page) {
         await document.fonts.ready;
         await new Promise(resolve => {
             requestAnimationFrame(() => requestAnimationFrame(resolve));
+        setTimeout(resolve, 1000);   // no frames for a while: see CAPTURE_TIMEOUT_MS
         });
         return faces.length;
     }, WORKSPACE_FONT_FAMILY);
@@ -3102,6 +3111,7 @@ async function scrollVisibleTerminalBack(page, lineCount) {
     // Give xterm a couple of frames to repaint the scrolled buffer.
     await page.evaluate(() => new Promise(resolve => {
         requestAnimationFrame(() => requestAnimationFrame(resolve));
+        setTimeout(resolve, 1000);   // no frames for a while: see CAPTURE_TIMEOUT_MS
     }));
 
     // We only need to know how many lines to undo afterwards.
@@ -3120,6 +3130,7 @@ async function restoreVisibleTerminalScroll(page, lineCount) {
 
     await page.evaluate(() => new Promise(resolve => {
         requestAnimationFrame(() => requestAnimationFrame(resolve));
+        setTimeout(resolve, 1000);   // no frames for a while: see CAPTURE_TIMEOUT_MS
     }));
 }
 
@@ -3409,7 +3420,7 @@ async function captureShot(shot, tutorialDirectory) {
             // Capture through CDP directly. The page keeps its viewport/zoom
             // layout, while clip.scale asks Chromium to render a larger native
             // snapshot without changing the page's persistent device metrics.
-            const captured = await session.send(
+            const captureOnce = () => session.send(
                 'Page.captureScreenshot',
                 {
                     format: 'png',
@@ -3428,6 +3439,16 @@ async function captureShot(shot, tutorialDirectory) {
                     },
                 },
             );
+            let captured;
+            for (let attempt = 1; ; attempt += 1) {
+                try {
+                    captured = await withTimeout(captureOnce(), CAPTURE_TIMEOUT_MS, `capture ${shot.target}`);
+                    break;
+                } catch (error) {
+                    if (attempt === 3 || !/gave up after/.test(error.message)) throw error;
+                    console.log(`  ${error.message}; again (${attempt + 1})`);
+                }
+            }
 
             const png = Buffer.from(
                 captured.data,
