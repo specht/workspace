@@ -195,7 +195,10 @@ Eine Tür ist ein Feld, das zwei Räumen gehört. Wie hoch und wo ein Raum liegt
 <tr><td><code>door = gang 2</code></td><td>diese Ziffer ist dasselbe Feld wie die <code>2</code> in <code>rooms/gang.room</code></td></tr>
 <tr><td><code>door = halle 1, -4</code></td><td>eine Tür hoch in der Wand: Der Boden auf der anderen Seite liegt 4 m tiefer; ohne Minus höher</td></tr>
 <tr><td><code>arch = 2.4</code></td><td>oben rund, ein Halbkreis über die ganze Breite, in der Mitte 2,4 m hoch; <code>arch = 2.4, 0.8</code>: nur 0,8 m breit, daneben Wand</td></tr>
+<tr><td><code>casing = off</code></td><td>ohne Bekleidung: Sonst rahmt auf jeder Seite der Wand eine Leiste in der Farbe der Sockelleiste die Öffnung ein</td></tr>
 </table>
+
+Eine Tür ist so tief wie die Wand, ein Feld. Innen, an den Seiten, unter dem Sturz und im Bogen, ist sie heller Putz.
 
 Ein Loch verbindet zwei Räume übereinander. Im oberen Raum stehen `_` im Grundriss und ein Abschnitt `[_]`, im unteren an denselben Feldern `^`:
 

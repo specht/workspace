@@ -46,14 +46,51 @@ void main() {
 void main() { gl_Position = vec4(corner, 0.0, 1.0); }
 `;
 
+    // GLSL in the classes Rouge gives a ```glsl block (kt, nf, nb, k, mf, mi,
+    // c1, cm, cp, n, p), so the page's colours apply, light and dark
+    const KEYWORDS = new Set('return if else for while do break continue discard in out inout uniform varying attribute const precision highp mediump lowp struct true false'.split(' '));
+    const TYPES = new Set('void bool int float vec2 vec3 vec4 bvec2 bvec3 bvec4 ivec2 ivec3 ivec4 mat2 mat3 mat4 sampler2D samplerCube'.split(' '));
+    const BUILTINS = new Set(('radians degrees sin cos tan asin acos atan pow exp log exp2 log2 sqrt inversesqrt abs sign floor ceil fract mod min max clamp mix step smoothstep '
+        + 'length distance dot cross normalize faceforward reflect refract matrixCompMult lessThan lessThanEqual greaterThan greaterThanEqual equal notEqual any all not '
+        + 'texture2D textureCube dFdx dFdy fwidth').split(' '));
+    const escape = (text) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    function highlight(text) {
+        const rules = [
+            [/\/\/.*/y, () => 'c1'],
+            [/\/\*[\s\S]*?(?:\*\/|$)/y, () => 'cm'],
+            [/#.*/y, () => 'cp'],
+            [/(?:\d+\.\d*|\.\d+)(?:[eE][+-]?\d+)?|\d+[eE][+-]?\d+/y, () => 'mf'],
+            [/\d+/y, () => 'mi'],
+            [/[A-Za-z_]\w*/y, (word, after, before) => (KEYWORDS.has(word) ? 'k' : TYPES.has(word) ? 'kt' : BUILTINS.has(word) ? 'nb'
+                : before === 'kt' && /^\s*\(/.test(after) ? 'nf' : 'n')],
+            [/[^\sA-Za-z_0-9]/y, () => 'p'],
+            [/\s+/y, () => null],
+        ];
+        let out = '', i = 0, last = null;
+        while (i < text.length) {
+            for (const [re, token] of rules) {
+                re.lastIndex = i;
+                const m = re.exec(text);
+                if (!m) continue;
+                const kind = token(m[0], text.slice(i + m[0].length, i + m[0].length + 40), last);
+                out += kind ? `<span class="${kind}">${escape(m[0])}</span>` : escape(m[0]);
+                if (kind) last = kind;
+                i += m[0].length;
+                break;
+            }
+        }
+        return out + '\n';   // a last empty line keeps the height of the textarea
+    }
+
     const style = document.createElement('style');
     style.textContent = `
 .shader-lab { display: grid; grid-template-columns: minmax(0, 20em) minmax(0, 1fr); gap: 0.75em 1.25em; margin: 1em 0 1.5em; align-items: start; }
 .shader-lab canvas { width: 100%; aspect-ratio: 1; border-radius: 4px; background: #222; display: block; }
-.shader-lab textarea { width: 100%; min-height: 14em; font-family: var(--bs-font-monospace, monospace); font-size: 0.85em; line-height: 1.45; padding: 0.6em; border: 1px solid #ccc; border-radius: 4px; resize: vertical; tab-size: 4; white-space: pre; }
+.shader-lab .code-input { min-width: 0; }
+.shader-lab .code-input .code-input-text { width: 100%; }
 .shader-lab label { display: flex; gap: 0.6em; align-items: center; font-size: 0.9em; }
 .shader-lab input[type=range] { flex: 1; }
-.shader-lab .shader-error { color: #b00020; font-size: 0.8em; white-space: pre-wrap; margin: 0; min-height: 1em; }
+.shader-lab .shader-error { color: var(--bs-danger-text-emphasis, #b00020); font-size: 0.8em; white-space: pre-wrap; margin: 0; min-height: 1em; }
 @media (max-width: 720px) { .shader-lab { grid-template-columns: minmax(0, 1fr); } }
 `;
     document.head.append(style);
@@ -76,8 +113,24 @@ void main() { gl_Position = vec4(corner, 0.0, 1.0); }
 
     function setUp(lab) {
         const area = lab.querySelector('textarea');
+        // wie die Code-Felder der Aufgaben (code_input.js): darunter ein <pre>
+        // mit Farben, darüber das Textfeld mit unsichtbarer Schrift
+        const box = document.createElement('div');
+        box.className = 'code-input';
+        const view = document.createElement('pre');
+        view.className = 'code-input-view';
+        view.setAttribute('aria-hidden', 'true');
+        area.classList.add('code-input-text');
+        area.parentNode.insertBefore(box, area);
+        box.append(view, area);
+        const paint = () => {
+            view.innerHTML = highlight(area.value);
+            area.style.height = 'auto';
+            area.style.height = `${area.scrollHeight + 2}px`;
+        };
+        area.addEventListener('input', paint);
         const canvas = document.createElement('canvas');
-        const error = document.createElement('pre');
+        const error = document.createElement('div');
         error.className = 'shader-error';
         const column = document.createElement('div');
         column.append(canvas);
@@ -153,9 +206,12 @@ void main() { gl_Position = vec4(corner, 0.0, 1.0); }
             if (event.key !== 'Tab') return;
             event.preventDefault();
             area.setRangeText('    ', area.selectionStart, area.selectionEnd, 'end');
+            paint();
         });
         range?.addEventListener('input', draw);
         new ResizeObserver(draw).observe(canvas);
+        new ResizeObserver(paint).observe(box);
+        paint();
         build();
     }
 

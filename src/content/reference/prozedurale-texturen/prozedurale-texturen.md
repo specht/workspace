@@ -56,7 +56,7 @@ float hash(vec2 p) {
 <div class='shader-lab' data-metres='1'>
 <textarea spellcheck='false'>vec3 color(vec2 p) {
     vec2 cell = floor(p * 10.0), inside = fract(p * 10.0);
-    vec2 edge = min(inside, 1.0 - inside);   // Abstand zum nächsten Rand, 0 bis 0.5
+    vec2 edge = min(inside, 1.0 - inside);   // zum Rand: 0 bis 0.5
     float grout = step(min(edge.x, edge.y), 0.04);
     float tone = 0.9 + 0.1 * hash(cell);
     vec3 tile = vec3(0.85, 0.92, 0.93) * tone;
