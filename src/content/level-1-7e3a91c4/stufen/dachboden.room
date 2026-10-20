@@ -21,7 +21,7 @@ ceiling = #8e7658
 #.L..............#
 #........F.......1
 #................1
-#..K..........K..#
+#..J..........M..#
 #......___..K....#
 #......___.......#
 ##################
@@ -39,6 +39,19 @@ flicker = 1
 block = 0.8, 0.7, 0.8    # eine Kiste aus Pappe, mit Klebeband
 material = cardboard
 color = #a9814f
+rotation = 6             # ein wenig gedreht
+
+[J]
+block = 0.6, 0.5, 0.6    # eine kleinere
+material = cardboard
+color = #9c7648
+rotation = -14
+
+[M]
+block = 0.8, 0.7, 0.8
+material = cardboard
+color = #b08a58
+rotation = 12
 
 
 [_]

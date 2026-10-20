@@ -59,7 +59,7 @@ Danach liegt die Vorlage in `/workspace/backrooms-starter`:
 # Klonen wie im Handbuch »Workspace« (oben eingebunden), dann die
 # geöffnete Vorlage im Explorer, level.ini im Editor
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ e9d041a77d7f4487f0870ce74b9f8e2addee1ed3
+clone-start: https://github.com/specht/backrooms-starter.git @ 063adacad291d7b582feb438671b8b083018ddc3
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -70,9 +70,9 @@ open-file: level.ini
 sleep: 1
 -->
 
-<img class='full' src='vorlage.webp' alt='Die geklonte Vorlage im Explorer: die Ordner engine, lobby, models, rooms, tiefe und vendor, dazu index.html, level.ini, README.md und textures.html; im Editor ist level.ini geöffnet.'>
+<img class='full' src='vorlage.webp' alt='Die geklonte Vorlage im Explorer: die Ordner engine, models, rooms und vendor, dazu export.sh, index.html, level.ini, README.md und textures.html; im Editor ist level.ini geöffnet.'>
 
-Darin liegen drei Levels. Deins beginnt klein, in `level.ini` und im Ordner `rooms`: ein Zimmer, ein Gang und zwei farbige Räume. In `lobby` und `tiefe` liegen zwei fertige Levels zum Ausprobieren; dazu später mehr.
+Darin liegt dein Level. Es beginnt klein, in `level.ini` und im Ordner `rooms`: ein Zimmer, ein Gang und zwei farbige Räume. Ein fertiges Level zum Durchlaufen wartet am Ende der Reihe.
 
 _task(geklont)
 
@@ -577,6 +577,7 @@ Marmor ist nur eine Möglichkeit. `walls` kennt neun Arten, `floor` zehn, jede i
 <tr><td><code>terrazzo</code></td><td>Terrazzo: Steinchen in Zement</td><td>Terrazzo</td></tr>
 <tr><td><code>carpet_tiles</code></td><td></td><td>Teppichfliesen wie im Büro, jede gegen ihre Nachbarn gedreht</td></tr>
 <tr><td><code>checker</code></td><td></td><td>Schachbrett, schwarz und in der Farbe aus <code>carpet</code></td></tr>
+<tr><td><code>parquet</code></td><td></td><td>Fischgrätparkett: kurze Stäbe, abwechselnd längs und quer</td></tr>
 </table>
 
 Für Fliesen wie in einem Schwimmbad zum Beispiel `walls = tiles`, `floor = tiles`, `wallpaper = #e6ecef` und `carpet = #c4ced3`, dazu eine helle Decke mit `ceiling = #e8ecee`. So sieht der leere Saal vom Anfang mit jeder Art aus, Holz mit Wandlampen und Samt mit Kerzenleuchtern statt Leuchten an der Decke; Lampen, die selbst leuchten, kommen in einem tieferen Level (ein Klick zeigt ein Bild groß):
@@ -717,6 +718,19 @@ hook: info off
 -->
 <img src='saal-schach.webp' alt='Der leere Saal mit weiß gefliesten Wänden und einem Boden im Schachbrettmuster, schwarz und cremeweiß.'>
 <figcaption>Boden <code>checker</code></figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: rooms/saal.room <- file:stufen/saal-parkett.room
+tab: preview
+viewport: 1536x864
+zoom: 1.5
+hook: open view=18.00,17.20,-100,6
+hook: light
+hook: info off
+-->
+<img src='saal-parkett.webp' alt='Der leere Saal mit hellen, cremefarbenen Wänden und einem Boden aus honigfarbenem Fischgrätparkett: kurze Stäbe im Zickzack, jeder in einem etwas anderen Ton.'>
+<figcaption>Boden <code>parquet</code></figcaption>
 </figure>
 </div>
 
@@ -874,7 +888,7 @@ Jetzt bist du dran: Bau einen Raum nach deiner Idee und schließ ihn mit einer T
 <tr><td><code>height</code></td><td>Deckenhöhe in Metern; zwei Zahlen für eine schräge Decke</td></tr>
 <tr><td><code>slope</code></td><td>wie die Decke schräg ist: <code>north</code>, <code>east</code>, <code>south</code>, <code>west</code> (sie steigt in diese Richtung an) oder <code>gable</code> (ein Satteldach)</td></tr>
 <tr><td><code>walls</code></td><td><code>wallpaper</code> (Tapete), <code>marble</code> (Marmor), <code>wood</code> (Holz), <code>tiles</code> (Fliesen), <code>velvet</code> (Samt), <code>plain</code> (einfarbig), <code>concrete</code> (Beton), <code>brick</code> (Ziegel) oder <code>terrazzo</code></td></tr>
-<tr><td><code>floor</code></td><td><code>carpet</code> (Teppich), <code>marble</code>, <code>wood</code>, <code>tiles</code>, <code>plain</code>, <code>concrete</code>, <code>brick</code>, <code>terrazzo</code>, <code>carpet_tiles</code> (Teppichfliesen) oder <code>checker</code> (Schachbrett)</td></tr>
+<tr><td><code>floor</code></td><td><code>carpet</code> (Teppich), <code>marble</code>, <code>wood</code>, <code>tiles</code>, <code>plain</code>, <code>concrete</code>, <code>brick</code>, <code>terrazzo</code>, <code>carpet_tiles</code> (Teppichfliesen), <code>checker</code> (Schachbrett) oder <code>parquet</code> (Fischgrätparkett)</td></tr>
 <tr><td><code>wallpaper</code>, <code>carpet</code>, <code>ceiling</code></td><td>die Farben von Wänden, Boden und Decke</td></tr>
 <tr><td><code>baseboard</code></td><td>die Sockelleiste: Höhe und Farbe; ohne Angabe 8 cm und etwas dunkler als die Tapete, <code>none</code>: keine</td></tr>
 <tr><td><code>dado</code></td><td>die Wände unten anders: Höhe und Farbe, <code>dado_material</code> sagt, woraus</td></tr>
@@ -888,7 +902,7 @@ Für die Buchstaben im Grundriss:
 <table class='table'>
 <tr><th>Eintrag</th><th>Bedeutung</th></tr>
 <tr><td><code>light</code></td><td>eine Leuchte unter der Decke, in dieser Farbe; dazu <code>power</code> (wie hell), <code>size</code> (wie groß, in Metern) und <code>flicker = 1</code> (sie flackert)</td></tr>
-<tr><td><code>block</code></td><td>ein Block: Breite, Höhe, Tiefe; eine Zahl: ein ganzes Feld so hoch. Dazu <code>base</code> (wie hoch er schwebt), <code>color</code>, <code>material</code> (auch <code>cardboard</code>, ein Karton) und <code>shape = round</code></td></tr>
+<tr><td><code>block</code></td><td>ein Block: Breite, Höhe, Tiefe; eine Zahl: ein ganzes Feld so hoch. Dazu <code>base</code> (wie hoch er schwebt), <code>color</code>, <code>material</code> (auch <code>cardboard</code>, ein Karton), <code>shape = round</code> und <code>rotation</code> (in Grad um die senkrechte Achse gedreht)</td></tr>
 <tr><td><code>model</code></td><td>ein Modell aus <code>models/</code>: <code>height</code> (wie hoch), <code>rotation</code> (in Grad gedreht), <code>material = marble</code>, <code>pedestal</code> (ein Sockel: Breite, Höhe, Tiefe)</td></tr>
 </table>
 

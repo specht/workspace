@@ -30,7 +30,7 @@ Woher kommt das Licht in den Backrooms? Du hängst Lampen an die Wand, stellst e
 <tr><th>Level</th><td>3, »Das Licht«</td></tr>
 <tr><th>Überlebensschwierigkeit</th><td>Klasse 1: hell, warm, sehr ruhig</td></tr>
 <tr><th>Ausdehnung</th><td>so weit das Licht reicht</td></tr>
-<tr><th>Ausgänge</th><td>keine bekannten. Aber zwei Türen in andere Levels (siehe »Zwei fertige Levels«).</td></tr>
+<tr><th>Ausgänge</th><td>keine bekannten. Aber eine Tür in ein anderes Level (siehe »Die Nachtschicht«).</td></tr>
 </table>
 
 ## Wo du weitermachst
@@ -40,7 +40,7 @@ Diese Seite baut auf [Level 2](/level-2-b52d0f18) auf: auf deinem Level, so wie 
 <!-- tutorial-step
 # Wo Level 2 aufgehört hat: die Vorlage mit den Räumen aus Level 0, 1 und 2, die Vorschau
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ e9d041a77d7f4487f0870ce74b9f8e2addee1ed3
+clone-start: https://github.com/specht/backrooms-starter.git @ 063adacad291d7b582feb438671b8b083018ddc3
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -111,7 +111,7 @@ hook: info off
 
 ### Modelle von Poly Haven
 
-Sofa und Wandlampe liegen schon in `models/`, dazu die Wandlampe mit Schirm und der Kerzenleuchter aus dem Holz- und dem Samtsaal und die Möbel aus »Die Tiefe«: ein Schreibtisch aus Metall, Stühle, eine Kommode, ein Regal, ein altes Bettgestell, ein Schaukelstuhl und ein kleiner Tisch. Alle sind von [Poly Haven](https://polyhaven.com/models). Dort steht jedes Modell unter CC0: Du darfst es verwenden, wofür du willst, ohne zu fragen. So holst du dir weitere:
+Sofa und Wandlampe liegen schon in `models/`, dazu die Wandlampe mit Schirm und der Kerzenleuchter aus dem Holz- und dem Samtsaal und Möbel: ein Schreibtisch aus Metall, Stühle, eine Kommode, ein Regal, ein altes Bettgestell, ein Schaukelstuhl und ein kleiner Tisch. Alle sind von [Poly Haven](https://polyhaven.com/models). Dort steht jedes Modell unter CC0: Du darfst es verwenden, wofür du willst, ohne zu fragen. So holst du dir weitere:
 
 1. Wähl auf der Seite des Modells beim Download die Auflösung **1K** und das Format **glTF**. glTF und GLB kann das Programm lesen. 1K genügt: Das Programm nimmt vom Modell die Farbe der Oberfläche und, für Spiegelungen, wie glatt und metallisch sie ist; 2K oder 4K sähen genauso aus und wären nur größer.
 2. Ein Modell in glTF besteht aus mehreren Dateien: einer `.gltf`, einer `.bin` und Bildern im Ordner `textures`. Sie gehören zusammen in einen eigenen Ordner in `models`, etwa `models/sessel/`, so wie sie ankommen.
@@ -142,11 +142,11 @@ hook: info off
 hook: key t g
 -->
 
-<img class='full' src='licht-punkte.webp' alt='Der Saal ganz in Hellgrau, übersät mit einem Raster aus dunklen Punkten auf Wänden, Boden, Säulen und Satteldach; vorn sind die Punkte groß und weit auseinander, hinten klein und dicht, um die Statue herum feiner.'>
+<img class='full' src='licht-punkte.webp' alt='Der Saal ganz in Hellgrau, übersät mit einem Raster aus dunklen Punkten auf Wänden, Boden, Säulen und Satteldach; vorn sind die Punkte groß und weit auseinander, hinten klein und dicht; um die Säulen und die Statue herum sind sie so fein, dass man sie kaum sieht.'>
 
 _task(lichtpunkte)
 
-Wo ein Modell nah an einer Wand oder auf dem Boden steht, wirft es Schatten, für die 6,25 cm zu grob sind. Dort bekommt die Fläche ein zweites, feineres Stück Lightmap, mit bis zu viermal so vielen Punkten in jeder Richtung, das zu seinem Rand hin weich in das grobe übergeht. Es reicht 60 cm über den Umriss des Modells hinaus, so weit reichen seine weichen Schatten; auch eine Lampe an der Wand bekommt eins, für die Schatten ihres Arms. Weit weg sind die feinen Punkte so klein, dass <kbd>G</kbd> sie ausblendet; dort sieht die Fläche glatt aus.
+Wo ein Modell oder ein Block nah an einer Wand, auf dem Boden oder unter der Decke steht, wirft er Schatten, für die 6,25 cm zu grob sind: Eine Säule unter der Decke wirft dort einen scharfen Keil. Dort bekommt die Fläche ein zweites, feineres Stück Lightmap, das zu seinem Rand hin weich in das grobe übergeht. Es reicht 60 cm über den Umriss hinaus, so weit reichen die weichen Schatten; um ein Modell liegen bis zu viermal so viele Punkte in jeder Richtung, um einen Block dreimal so viele, denn seine Kanten sind gerade. Auch eine Lampe an der Wand bekommt eins, für die Schatten ihres Arms. Weit weg sind die feinen Punkte so klein, dass <kbd>G</kbd> sie ausblendet; dort sieht die Fläche glatt aus.
 
 <div class='gallery columns-2'>
 <figure>
@@ -176,6 +176,86 @@ hook: key t g
 -->
 <img src='licht-punkte-gelaender.webp' alt='Von oben auf den Rand des Beckens im Bad: Am Geländer sind die Punkte auf dem Boden klein und dicht, weiter weg größer.'>
 <figcaption>am Geländer, das wie ein Modell zählt</figcaption>
+</figure>
+</div>
+
+**Ein Bild für alle Flächen.** Alle Punkte aller Flächen liegen in einem einzigen Bild, der Lightmap. Jede Fläche ist darin ein Rechteck aus ihren Punkten: so viele breit und hoch, wie sie Meter breit und hoch ist, mal 16. Das Programm legt die Rechtecke dicht an dicht in das Bild, die großen zuerst, wie Kisten in einen Kofferraum, und macht das Bild nur so groß wie nötig, mit einer Zweierpotenz als Seite, etwa 1024 × 1024 Punkte. Jede Ecke einer Fläche weiß, wo im Bild ihr Rechteck liegt. Beim Zeichnen holt sich die Grafikkarte für jeden Pixel der Fläche die Helligkeit von der passenden Stelle im Rechteck: Das Rechteck wird auf die Fläche geklebt, wie ein Bild auf eine Wand. <kbd>Shift</kbd>+<kbd>G</kbd> zeigt die ganze Lightmap; `?show=atlas&face=saal,floor` in der Adresse zeigt nur das Rechteck des Bodens im Saal, Punkt für Punkt (`wall` statt `floor` für eine Wand, dazu `fine` für ihr feineres Stück):
+
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1536x864
+zoom: 1.5
+hook: open show=atlas&face=saal,floor
+hook: light
+hook: info off
+-->
+<img src='lightmap-boden.webp' alt='Ein großes Rechteck aus Punkten vor dunklem Grund, jeder Punkt ein kleines Quadrat: hell unter den vier Leuchten, dazwischen dunkler, mit den runden Schatten der Säulen und dem Schatten der Statue in der Mitte.'>
+<figcaption>der Boden des Saals in der Lightmap</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1536x864
+zoom: 1.5
+hook: open view=18.00,17.40,-94,-32
+hook: light
+hook: info off
+hook: key t
+-->
+<img src='lightmap-boden-saal.webp' alt='Derselbe Boden im Saal, ohne Teppich ganz in Hellgrau: dieselben hellen Flecken unter den Leuchten und dieselben Schatten der Säulen und der Statue.'>
+<figcaption>derselbe Boden im Saal (<kbd>T</kbd>)</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1536x864
+zoom: 1.5
+hook: open show=atlas&face=saal,floor,fine
+hook: light
+hook: info off
+-->
+<img src='lightmap-fein.webp' alt='Ein kleineres Rechteck aus viel kleineren Punkten: der Fuß einer Säule und ihr Schatten, so fein, dass die Kante des Schattens scharf ist.'>
+<figcaption>das feinere Stück um eine Säule</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1536x864
+zoom: 1.5
+hook: open view=18.00,17.40,-94,-32
+hook: light
+hook: info off
+hook: key t g
+-->
+<img src='lightmap-fein-saal.webp' alt='Der Saal ganz in Hellgrau mit den Punkten der Lightmap: Um die Säulen und die Statue auf dem Boden sind sie viel dichter als dazwischen.'>
+<figcaption>dort, wo es liegt (<kbd>T</kbd>, <kbd>G</kbd>)</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1536x864
+zoom: 1.5
+hook: open show=atlas&face=saal,wall
+hook: light
+hook: info off
+-->
+<img src='lightmap-wand.webp' alt='Ein breites, flaches Rechteck aus Punkten: oben dunkler, unten über dem Boden heller, mit den weichen Schatten von zwei Säulen.'>
+<figcaption>die längste Wand des Saals in der Lightmap</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1536x864
+zoom: 1.5
+hook: open view=18.00,17.40,-94,7
+hook: light
+hook: info off
+hook: key t
+-->
+<img src='lightmap-wand-saal.webp' alt='Die lange Wand des Saals ganz in Hellgrau: Über dem Boden ist sie heller, nach oben dunkler, mit den weichen Schatten der Säulen.'>
+<figcaption>dieselbe Wand im Saal (<kbd>T</kbd>)</figcaption>
 </figure>
 </div>
 
@@ -398,9 +478,9 @@ _task(weiche-schatten)
 
 ### Licht aufheben
 
-Backen dauert, darum hebt die Vorschau das fertige Licht im Browser auf. Lädst du neu, ohne etwas zu ändern, steht oben links »Light loaded from this browser«, und es wird hell, ohne dass gebacken wird. Änderst du auch nur ein Zeichen in einem Raum, passt das aufgehobene Licht nicht mehr, und es wird neu gebacken. Ob es passt, sagt ein Fingerabdruck (englisch Hash): eine kurze Zahl, ausgerechnet aus allen Dateien des Levels, den Statuen und dem Teil des Programms, der backt.
+Backen dauert, darum hebt die Vorschau das fertige Licht im Browser auf. Lädst du neu, ohne etwas zu ändern, steht oben links »Light loaded from this browser«, und es wird hell, ohne dass gebacken wird. Änderst du auch nur ein Zeichen in einem Raum, passt das aufgehobene Licht nicht mehr, und es wird neu gebacken. Ob es passt, sagt ein Fingerabdruck (englisch Hash): eine kurze Zahl, ausgerechnet aus allen Dateien des Levels, den Modellen, dem Teil des Programms, der backt, und dem, was das Programm aus deinen Räumen baut: den Flächen und den Leuchten.
 
-»Save light« lädt das Licht als Datei `level.light` herunter. Zieh sie aus deinem Download-Ordner in den Explorer von VS Code, neben `level.ini`. Dann lädt das Level sein Licht aus dieser Datei, auch in einem anderen Browser, und du kannst deine Backrooms als fertige Webseite weitergeben. Nach jeder Änderung am Level musst du sie neu speichern; eine veraltete Datei meldet die Vorschau oben links.
+Nach dem Backen bekommen noch die Modelle ihr Licht, oben links steht dann »Light for the models« mit einer Zahl in Prozent. Ist auch das fertig, lädt »Save light« das Licht als Datei `level.light` herunter. Zieh sie aus deinem Download-Ordner in den Explorer von VS Code, neben `level.ini`. Dann lädt das Level sein Licht aus dieser Datei, auch in einem anderen Browser, und du kannst deine Backrooms als fertige Webseite weitergeben. Nach jeder Änderung am Level musst du sie neu speichern; eine veraltete Datei meldet die Vorschau oben links.
 
 ## Zeigen und veröffentlichen
 
@@ -415,149 +495,32 @@ Speichere vorher das Licht (»Save light«, siehe »Licht aufheben«) und leg `l
 
 _include(workspace#subdomain)
 
-## Zwei fertige Levels
-
-Jetzt kennst du alles, was in einer Raumdatei stehen kann. In der Vorlage liegen zwei ganze Levels, gebaut aus genau diesen Einträgen. Häng an die Adresse der Vorschau `?level=` und den Pfad zu ihrer `level.ini` an. Ihr Licht ist schon gebacken und liegt neben `level.ini` (siehe »Licht aufheben«), darum ist es sofort hell. Lies ihre Räume, Zeile für Zeile, und nimm dir, was du brauchen kannst.
-
-### Die Lobby
+## Die Nachtschicht
 
 <div class='found-note'>
-<p>Wir haben einen Teil vollständig kartiert. Vierzehn Räume, ein Flur, der immer höher wird, ein Weg, auf dem nichts gerade ist, und am Ende eine Halle, in der man leiser spricht. Wir nennen ihn die Lobby. Die Karte liegt bei.</p>
+<p>Ein Gebäude, nachts. In jedem Raum brennt Licht, und in jedem ist es ein anderes. Niemand hat Dienst. Trotzdem steht im Büro ein Laptop offen.</p>
 <cite>Feldhandbuch, eingelegtes Blatt</cite>
 </div>
 
-Im Ordner `lobby` liegt »Level 0: Die Lobby«: ein Flur, der sich auf neun Meter Breite und Höhe öffnet, ein Säulengang, eine Galerie mit Sockeln, ein Lager, eine Halle aus Marmor mit einer Statue und, vom roten Raum aus, ein Weg über Rampen in die Halle, mitten darin die Schieflage, in der kein Boden und keine Decke gerade ist:
+Jetzt kennst du alles, was in einer Raumdatei stehen kann. Die Nachtschicht ist ein ganzes Level, gebaut aus genau diesen Einträgen. Du kannst sie sofort durchlaufen, ihr Licht ist schon gebacken:
 
-```text
-…/index.html?level=lobby/level.ini
-```
+<a class='btn btn-primary' href='/nachtschicht-8ee59051/' target='_blank'><i class='bi bi-door-open'></i> Die Nachtschicht betreten</a>
 
-<!-- tutorial-scope -->
-
-<div class='gallery columns-2'>
-<figure>
-<!-- tutorial-screenshot
-tab: preview
-viewport: 1536x864
-zoom: 1.5
-hook: open level=lobby/level.ini&view=27.00,13.30,-84,18
-hook: light
-hook: info off
--->
-<img src='flur.webp' alt='Der Flur der Lobby: Er öffnet sich nach vorn zu einem hohen, hellen Raum mit zwei großen Leuchten unter der Decke; in der Stirnwand eine schmale Tür.'>
-<figcaption>Der Flur wird weiter und höher</figcaption>
-</figure>
-<figure>
-<!-- tutorial-screenshot
-tab: preview
-viewport: 1536x864
-zoom: 1.5
-hook: open level=lobby/level.ini&view=58.00,26.00,172,8
-hook: light
-hook: info off
--->
-<img src='halle.webp' alt='Die Halle: Marmorwände unter einem hohen Satteldach, zwei Reihen Säulen, ganz hinten im hellen Licht die Statue der Athena.'>
-<figcaption>Die Halle mit Athena</figcaption>
-</figure>
-<figure>
-<!-- tutorial-screenshot
-tab: preview
-viewport: 1536x864
-zoom: 1.5
-hook: open level=lobby/level.ini&view=24.00,28.30,-96,10
-hook: light
-hook: info off
--->
-<img src='aufgang.webp' alt='Der Aufgang: ein Gang, dessen Boden nach vorn ansteigt, während die Decke zur Seite kippt; hinten eine Tür in einen hellen Raum.'>
-<figcaption>Der Aufgang</figcaption>
-</figure>
-<figure>
-<!-- tutorial-screenshot
-tab: preview
-viewport: 1536x864
-zoom: 1.5
-hook: open level=lobby/level.ini&view=38.50,31.50,30,10
-hook: light
-hook: info off
--->
-<img src='schieflage.webp' alt='Die Schieflage: ein Raum, dessen Boden zur Seite ansteigt und dessen Decke nach hinten kippt; keine Kante ist waagerecht, die Leuchten hängen schief, links eine Tür.'>
-<figcaption>Die Schieflage</figcaption>
-</figure>
-</div>
-
-<!-- /tutorial-scope -->
-
-### Die Tiefe
-
-<div class='found-note'>
-<p>Unter der Lobby geht es weiter, und über ihr auch. Die Tapete wird grau, dann gibt es keine mehr. Irgendwo ist ein Wohnzimmer. Ich gehe da nicht noch einmal hin.</p>
-<cite>Feldhandbuch, Seite ohne Nummer</cite>
-</div>
-
-Im Ordner `tiefe` liegt »Level 1: Die Tiefe«, mit Räumen über- und untereinander: ein enger Gang, dessen Tapete Stück für Stück grau wird, eine Halle aus Säulen mit einer Öffnung acht Meter über einem Abgrund, ein Großraumbüro oben mit einem Loch im Boden, eine Grube darunter, niedrige Keller, eine gekachelte Halle unter der Erde mit einem dunklen Becken, runden Säulen im Wasser und runden Türen und ein Gang aus rotem Samt, der wieder hinaufführt. Die Möbel sind von Poly Haven.
-
-```text
-…/index.html?level=tiefe/level.ini
-```
+Sie öffnet sich in einem neuen Tab, schon fertig gebacken. Das geht auch auf dem Handy, dem Tablet und mit einer VR-Brille: Öffne dieselbe Adresse im Browser der Brille und tippe auf »ENTER VR«.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Drück in der Tiefe <kbd>C</kbd>. Jetzt sieht alles aus wie von einer alten Videokassette, mit Zeilen, verwaschenen Farben, einem Streifen Bandsalat und dem Datum und der Uhrzeit deines Rechners in der Ecke. Wo wirkt die Tiefe so am unheimlichsten? Mit <kbd>X</kbd> dazu bekommt alles zum Rand hin farbige Säume, wie durch eine billige Linse.
+<strong>Ausprobieren:</strong> Drück <kbd>C</kbd>. Jetzt sieht alles aus wie von einer alten Videokassette, mit Zeilen, verwaschenen Farben, einem Streifen Bandsalat und dem Datum und der Uhrzeit deines Rechners in der Ecke. Mit <kbd>X</kbd> dazu bekommt alles zum Rand hin farbige Säume, wie durch eine billige Linse.
 </div>
 
-<!-- tutorial-scope -->
+Wie sie gebaut ist, kannst du nachlesen: Ihre Räume liegen auf [GitHub](https://github.com/specht/backrooms-nachtschicht), eine Datei pro Raum, im Ordner `rooms`. Lies sie Zeile für Zeile und nimm dir, was du brauchen kannst.
 
-<div class='gallery columns-2'>
-<figure>
-<!-- tutorial-screenshot
-tab: preview
-viewport: 1536x864
-zoom: 1.5
-hook: open level=tiefe/level.ini&view=43.20,23.00,-96,-55,,0
-hook: light
-hook: info off
--->
-<img src='tiefe-abgrund.webp' alt='Von einer gefliesten Kante steil hinab in einen grauen Abgrund; ganz unten an der Wand leuchtet eine einzelne Wandlampe.'>
-<figcaption>Die Öffnung in der Halle</figcaption>
-</figure>
-<figure>
-<!-- tutorial-screenshot
-tab: preview
-viewport: 1536x864
-zoom: 1.5
-hook: open level=tiefe/level.ini&view=7.00,39.00,180,-25,,3.00
-hook: light
-hook: info off
--->
-<img src='tiefe-buero.webp' alt='Ein Großraumbüro mit grauem Teppich und grauen Wänden; im Boden ein großes, dunkles, quadratisches Loch.'>
-<figcaption>Das Loch im Büro</figcaption>
-</figure>
-<figure>
-<!-- tutorial-screenshot
-tab: preview
-viewport: 1536x864
-zoom: 1.5
-hook: open level=tiefe/level.ini&view=26.00,52.00,-84,-8,,-3
-hook: light
-hook: info off
--->
-<img src='tiefe-becken.webp' alt='Eine weite, hell erleuchtete Halle ganz in weißen und blassgrünen Fliesen, in der Mitte ein langes Becken voll dunklem, grünlichem Wasser fast bis an den Rand, darin runde, gekachelte Säulen, die sich im Wasser spiegeln; links eine runde Tür, hinten ein einzelner Plastikstuhl.'>
-<figcaption>Das Becken unter der Erde</figcaption>
-</figure>
-<figure>
-<!-- tutorial-screenshot
-tab: preview
-viewport: 1536x864
-zoom: 1.5
-hook: open level=tiefe/level.ini&vhs&view=42.60,69.20,-142,-10,,0
-hook: light
-hook: info off
--->
-<img src='tiefe-wohnzimmer.webp' alt='Ein düsteres Wohnzimmer mit Wänden aus braunen Brettern, ein altes Sofa und ein kleiner Tisch im Licht einer Leuchte, vorn rechts im Dunkeln die Lehne eines Schaukelstuhls, wie auf einer alten Videoaufnahme: Zeilen, flaue Farben, ein Streifen Bandsalat, unten links Uhrzeit und Datum, oben REC.'>
-<figcaption>Das Wohnzimmer, mit <kbd>C</kbd></figcaption>
-</figure>
-</div>
+Du kannst sie auch in deine Vorlage holen und dort öffnen. Klone sie im Terminal in den Ordner der Vorlage, als Ordner `nachtschicht`:
 
-<!-- /tutorial-scope -->
+```bash
+git clone https://github.com/specht/backrooms-nachtschicht nachtschicht
+```
+
+Dann häng an die Adresse der Vorschau `?level=nachtschicht` an. Beim ersten Mal backt dein Browser das Licht selbst. Bei vierzehn Räumen und fast 150 Modellen dauert das an einem Rechner einige Minuten. Lass so lange den Tab und die Vorschau offen. Danach hebt dein Browser das Licht auf, und beim nächsten Mal ist es sofort hell, solange du an der Nachtschicht nichts änderst.
 
 <div class='found-note'>
 <p>Wenn du einen Ausgang findest, schreib ihn auf. Wenn du keinen findest, bau einen Raum, in dem es sich zu warten lohnt.</p>

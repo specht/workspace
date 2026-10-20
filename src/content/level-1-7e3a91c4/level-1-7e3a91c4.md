@@ -40,7 +40,7 @@ Diese Seite baut auf [Level 0](/level-0-c1d8a2f7) auf: auf deinem Klon der Vorla
 <!-- tutorial-step
 # Wo Level 0 aufgehört hat: die Vorlage mit den Räumen von dort, die Vorschau
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ e9d041a77d7f4487f0870ce74b9f8e2addee1ed3
+clone-start: https://github.com/specht/backrooms-starter.git @ 063adacad291d7b582feb438671b8b083018ddc3
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -240,7 +240,7 @@ hook: info off
 
 <img class='full' src='krumm.webp' alt='Vom oberen Ende der Rampe in einen krummen Gang: Er knickt zur Seite und wieder zurück, die Decken kippen mal nach links, mal nach rechts, ganz hinten eine gelbe Wand.'>
 
-Am Ende der Reihe wartet ein fertiges Level, die Lobby, mit einem ganzen Weg aus solchen Räumen, die Schieflage mitten darin.
+Am Ende der Reihe wartet ein fertiges Level, die Nachtschicht, gebaut aus genau solchen Räumen.
 
 ## Eine Treppe hinauf
 
@@ -326,6 +326,8 @@ _include_file(stufen/dachboden-1.room, room_copy)
 
 Die Kisten sind aus Pappe: `material = cardboard` macht aus einem Block einen Karton, mit Klebeband über den Deckel, einem Etikett und zwei Pfeilen, die zeigen, wo oben ist.
 
+Keine Kiste steht genau gerade: `rotation` dreht einen Block wie ein Modell um die senkrechte Achse, in Grad. Damit nicht alle gleich schief stehen, hat jede Sorte Kiste ihren eigenen Buchstaben, mit etwas anderer Größe, Farbe und Drehung. Bleib bei ein paar Grad: Eine gedrehte Kiste sollte ihr Feld nicht verlassen.
+
 Eine Beschreibung der Tür genügt: Die Treppe hat sie, also steht sie im Dachboden nicht noch einmal.
 
 Speichere und lade neu. Der Dachboden liegt über Blau, dem Gang und Rot: Die Tür hebt ihn um 3 m, und keiner der drei Räume darunter ist so hoch. Räume dürfen übereinander liegen, solange der obere Boden nirgends unter der Decke des unteren Raums liegt. Wie hoch jeder liegt, rechnet das Programm wie immer aus seinen Türen aus. Läge die Tür nur 2,6 m hoch, stünde oben links `room dachboden and room rot lie in the same place at the same height`: Rot ist 2,8 m hoch.
@@ -348,7 +350,7 @@ hook: info off
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=18.60,9.60,112,-10,,3
+hook: open view=19.00,9.45,112,-18,,3
 hook: light
 hook: info off
 -->
@@ -575,7 +577,7 @@ zoom: 1.5
 hook: open view=23.00,19.00,-20,-40
 hook: light
 hook: key m k
-hook: wheel 500
+hook: wheel 900
 hook: info off
 -->
 <img src='kollision-karte.webp' alt='Die Automap von schräg oben mit der Taste K: zwischen den hellblauen Linien der Räume rote Kästen für alle Säulen, die Statue, die Möbel im Salon und die Geländer im Treppenhaus.'>
