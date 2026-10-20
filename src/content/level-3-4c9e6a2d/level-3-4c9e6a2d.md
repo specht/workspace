@@ -495,6 +495,8 @@ Speichere vorher das Licht (»Save light«, siehe »Licht aufheben«) und leg `l
 
 _include(workspace#subdomain)
 
+Willst du dein Level woanders hinlegen, auf einen Webserver, der nur Dateien ausliefert: `./export.sh . ../mein-level` im Terminal, im Ordner der Vorlage, baut einen Ordner `mein-level` neben ihr, nur mit dem, was dein Level braucht, dem Licht und den Modellen, die es nennt. Für eine VR-Brille muss die Adresse mit `https://` anfangen.
+
 ## Die Nachtschicht
 
 <div class='found-note'>
@@ -520,7 +522,7 @@ Du kannst sie auch in deine Vorlage holen und dort öffnen. Klone sie im Termina
 git clone https://github.com/specht/backrooms-nachtschicht nachtschicht
 ```
 
-Dann häng an die Adresse der Vorschau `?level=nachtschicht` an. Beim ersten Mal backt dein Browser das Licht selbst. Bei vierzehn Räumen und fast 150 Modellen dauert das an einem Rechner einige Minuten. Lass so lange den Tab und die Vorschau offen. Danach hebt dein Browser das Licht auf, und beim nächsten Mal ist es sofort hell, solange du an der Nachtschicht nichts änderst.
+Dann häng an die Adresse der Vorschau `?level=nachtschicht` an. Beim ersten Mal backt dein Browser das Licht selbst. Bei siebzehn Räumen und 150 Modellen dauert das an einem Rechner mit einer Grafikkarte von vor ein paar Jahren etwa eine Viertelstunde. Lass so lange den Tab und die Vorschau offen. Danach hebt dein Browser das Licht auf, und beim nächsten Mal ist es sofort hell, solange du an der Nachtschicht nichts änderst.
 
 <div class='found-note'>
 <p>Wenn du einen Ausgang findest, schreib ihn auf. Wenn du keinen findest, bau einen Raum, in dem es sich zu warten lohnt.</p>
