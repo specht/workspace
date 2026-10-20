@@ -16,7 +16,18 @@ const lightTimeout = 15 * 60_000;
 async function waitForStatus(page, pattern, timeout) {
     const started = Date.now();
     const report = setInterval(async () => {
-        const text = await page.evaluate(() => document.getElementById('status')?.textContent ?? '').catch(() => '?');
+        const text = await page.evaluate(async () => {
+            // frames in one second, and the card WebGL draws on
+            let frames = 0;
+            const count = () => { frames += 1; if (performance.now() - t0 < 1000) requestAnimationFrame(count); };
+            const t0 = performance.now();
+            requestAnimationFrame(count);
+            await new Promise((resolve) => setTimeout(resolve, 1100));
+            const gl = document.querySelector('canvas')?.getContext('webgl2');
+            const info = gl?.getExtension('WEBGL_debug_renderer_info');
+            const gpu = info ? gl.getParameter(info.UNMASKED_RENDERER_WEBGL) : '?';
+            return `${document.getElementById('status')?.textContent ?? ''} | ${frames} frames/s | ${document.visibilityState} | ${gpu}`;
+        }).catch((error) => `? ${error.message}`);
         console.log(`  waiting ${Math.round((Date.now() - started) / 1000)} s for /${pattern}/: ${text}`);
     }, 30_000);
     try {
