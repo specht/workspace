@@ -862,7 +862,9 @@ size for the same layout.
 WebGL (the anaglyph scenes, the Backrooms, VS Code's terminal) renders on the
 host's NVIDIA graphics card when `config.rb` finds one (`nvidia-smi` works)
 and Docker knows the `nvidia` runtime (nvidia-container-toolkit): the service
-then runs with `runtime: nvidia`, and Chromium uses ANGLE on EGL. That is
+then runs with `runtime: nvidia`, and Chromium uses ANGLE on Vulkan (on
+OpenGL ES, ANGLE's other way to the card, it dropped whole draw calls in
+some frames, and a picture could catch one). That is
 several times faster than software; the Backrooms bake their light in
 seconds instead of a minute. Without a card, or with
 `TUTORIAL_SCREENSHOT_GPU=0 ./config.rb up -d`, it renders in software

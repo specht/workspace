@@ -165,7 +165,7 @@ if DEVELOPMENT && PROFILE.include?(:dynamic) && PROFILE.include?(:static)
     if tutorial_screenshot_gpu
         docker_compose[:services][:tutorial_screenshots][:runtime] = 'nvidia'
         docker_compose[:services][:tutorial_screenshots][:environment]['NVIDIA_VISIBLE_DEVICES'] = 'all'
-        # graphics: the card's OpenGL/EGL libraries, not only CUDA
+        # graphics: the card's Vulkan libraries, not only CUDA
         docker_compose[:services][:tutorial_screenshots][:environment]['NVIDIA_DRIVER_CAPABILITIES'] = 'all'
     end
 end

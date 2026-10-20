@@ -186,9 +186,12 @@ const WORKSPACE_SCREENSHOT_STYLE = `
 }
 `;
 
+// On the card, ANGLE runs on Vulkan: on OpenGL ES (gl-egl) it dropped whole
+// draw calls in about one frame of five (raylib's world in the Klötzchenwelt,
+// the cube's faces), and a picture could catch such a frame.
 function webglArgs() {
     if (process.env.TUTORIAL_SCREENSHOT_GPU === 'nvidia') {
-        return ['--use-gl=angle', '--use-angle=gl-egl', '--enable-gpu', '--ignore-gpu-blocklist'];
+        return ['--use-gl=angle', '--use-angle=vulkan', '--enable-features=Vulkan', '--enable-gpu', '--ignore-gpu-blocklist'];
     }
     return ['--use-gl=angle', '--use-angle=swiftshader'];
 }
