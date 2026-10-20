@@ -11,12 +11,23 @@
 
 const lightTimeout = 15 * 60_000;
 
+// Waits until the status line matches; says in the log every 30 s what it
+// says meanwhile, so that a bake that hangs shows where.
 async function waitForStatus(page, pattern, timeout) {
-    await page.waitForFunction(
-        (source) => new RegExp(source).test(document.getElementById('status')?.textContent ?? ''),
-        pattern,
-        { timeout },
-    );
+    const started = Date.now();
+    const report = setInterval(async () => {
+        const text = await page.evaluate(() => document.getElementById('status')?.textContent ?? '').catch(() => '?');
+        console.log(`  waiting ${Math.round((Date.now() - started) / 1000)} s for /${pattern}/: ${text}`);
+    }, 30_000);
+    try {
+        await page.waitForFunction(
+            (source) => new RegExp(source).test(document.getElementById('status')?.textContent ?? ''),
+            pattern,
+            { timeout, polling: 250 },
+        );
+    } finally {
+        clearInterval(report);
+    }
 }
 
 export default {
