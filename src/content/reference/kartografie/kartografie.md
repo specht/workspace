@@ -92,9 +92,9 @@ Ein Feld mit Boden darf nicht an »nichts« grenzen: Um jeden Raum steht eine Wa
 <tr><td><code>slope</code></td><td><code>flat</code>, die Richtung, in die die Decke ansteigt (<code>north</code>, <code>east</code>, <code>south</code>, <code>west</code>), oder <code>gable</code>, ein Satteldach, sein First an der längeren Seite</td></tr>
 <tr><td><code>ramp</code></td><td>ein schräger Boden: Richtung und um wie viele Meter er ansteigt, etwa <code>ramp = east, 4</code>; negativ: Er fällt. Decke und Leuchten steigen mit</td></tr>
 <tr><td><code>walls</code></td><td><code>wallpaper</code>, <code>marble</code>, <code>wood</code>, <code>tiles</code>, <code>velvet</code>, <code>plain</code>, <code>concrete</code>, <code>brick</code> oder <code>terrazzo</code>, in der Farbe von <code>wallpaper</code></td></tr>
-<tr><td><code>floor</code></td><td><code>carpet</code>, <code>marble</code>, <code>wood</code>, <code>tiles</code>, <code>plain</code>, <code>concrete</code>, <code>brick</code>, <code>terrazzo</code>, <code>carpet_tiles</code> oder <code>checker</code>, in der Farbe von <code>carpet</code></td></tr>
+<tr><td><code>floor</code></td><td><code>carpet</code>, <code>marble</code>, <code>wood</code>, <code>tiles</code>, <code>plain</code>, <code>concrete</code>, <code>brick</code>, <code>terrazzo</code>, <code>carpet_tiles</code>, <code>checker</code> oder <code>parquet</code>, in der Farbe von <code>carpet</code></td></tr>
 <tr><td><code>wallpaper</code>, <code>carpet</code>, <code>ceiling</code></td><td>die Farben von Wänden, Boden und Decke</td></tr>
-<tr><td><code>baseboard</code></td><td>die Sockelleiste: Höhe und Farbe; ohne Angabe 8 cm und dunkler als die Tapete; <code>none</code>: keine. An einem schrägen Boden gibt es keine</td></tr>
+<tr><td><code>baseboard</code></td><td>die Sockelleiste: Höhe und Farbe; ohne Angabe 8 cm und dunkler als die Tapete; <code>none</code>: keine. An einem schrägen Boden läuft sie schräg mit</td></tr>
 <tr><td><code>dado</code></td><td>die Wände unten anders: Höhe und Farbe, etwa <code>dado = 1, #553a27</code></td></tr>
 <tr><td><code>dado_material</code></td><td>woraus dieser untere Teil ist, wie bei <code>walls</code>; ohne: wie die Wand</td></tr>
 <tr><td><code>dado_rail</code></td><td>eine Leiste auf seiner Kante: Höhe und Farbe</td></tr>
@@ -128,6 +128,7 @@ Sie hängt knapp unter der Decke, mitten über ihrem Feld, unter einer schrägen
 <tr><td><code>color</code></td><td>seine Farbe; ohne: wie die Wände seines Raums</td></tr>
 <tr><td><code>material</code></td><td>woraus, wie bei <code>walls</code>, dazu <code>cardboard</code>: ein Karton mit Klebeband, Etikett und Pfeilen</td></tr>
 <tr><td><code>shape</code></td><td><code>round</code>: eine runde Säule</td></tr>
+<tr><td><code>rotation</code></td><td>in Grad um die senkrechte Achse gedreht, um seine Mitte; nur um diese Achse. Gedreht bleibt er am besten in seinem Feld</td></tr>
 <tr><td><code>offset</code></td><td>aus der Mitte des Felds geschoben: x, y, z (x nach Osten, y nach oben, z nach Süden)</td></tr>
 </table>
 
