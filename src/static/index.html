@@ -2,14 +2,36 @@
     h2 {
         margin: 1em 0;
     }
-    /* The same columns as the cards below (.hscol): the text over two, the picture over the third. */
+    /* From xl the same columns as the cards below (.hscol): the text over two,
+       the picture over the third; on lg 7 : 5, so both are about as tall. */
     .front-hero { margin-top: 2em; margin-bottom: 1em; row-gap: 1.2em; }
     .front-hero-lead { font-size: 1.25rem; line-height: 1.5; margin: 0 0 0.8em; text-align: left; hyphens: manual; }
     .front-hero-login { margin: 0; color: var(--bs-secondary-color); text-align: left; hyphens: manual; }
-    .front-hero-picture { width: 100%; border-radius: 10px; box-shadow: 0 0.4em 1.5em rgba(0, 0, 0, 0.2); }
+    /* The picture turned a little towards the text, as if it stood on a
+       glossy floor: a faint reflection below (Chrome and Safari; elsewhere
+       none). Below lg it sits under the text, centred and smaller. */
+    /* room below for the reflection, which takes no space of its own */
+    .front-hero-stage { perspective: 1400px; margin-top: 0.4rem; padding-bottom: 12%; }
+    .front-hero-picture {
+        display: block;
+        width: 100%;
+        border-radius: 10px;
+        box-shadow: 0 0.6em 1.6em rgba(0, 0, 0, 0.28);
+        transform: rotateY(-11deg) rotateX(2deg);
+        transform-origin: 30% 50%;
+        transition: transform 0.6s ease;
+        -webkit-box-reflect: below 0.6em linear-gradient(to bottom, transparent 62%, rgba(255, 255, 255, 0.16));
+    }
+    .front-hero-picture:hover { transform: rotateY(-4deg) rotateX(1deg); }
+    @media (max-width: 991.999999px) {
+        .front-hero-stage { max-width: 34rem; margin: 0 auto; }
+    }
     @media (max-width: 767.999999px) {
         .front-hero { margin-top: 1.2em; }
         .front-hero-lead { font-size: 1.1rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .front-hero-picture { transition: none; }
     }
 </style>
 <div class='container'>
@@ -17,8 +39,8 @@
         <div class='col-md-12'>
             <!-- Not logged in: what the Workspace is and how to get in, in one
                  compact header; the catalog below shows what it offers. -->
-            <div class='row align-items-center front-hero' style='#{user_logged_in? || !running_tests.empty? ? 'display: none;' : ''}'>
-                <div class='front-hero-text col-12 col-md-6 col-xl-8'>
+            <div class='row align-items-start front-hero' style='#{user_logged_in? || !running_tests.empty? ? 'display: none;' : ''}'>
+                <div class='front-hero-text col-12 col-lg-7 col-xl-8'>
                     <p class='front-hero-lead'>
                         Der Hackschule Workspace ist eine Entwicklungsumgebung im Browser: Visual Studio Code mit
                         Linux-Terminal, Git, vielen Programmiersprachen und eigenen Datenbanken. Das sind die Werkzeuge,
@@ -32,7 +54,7 @@
                         Noch keinen Zugang? Frag nach einer #{contact_email.empty? ? 'Einladung' : "<a href='mailto:#{CGI.escapeHTML(contact_email)}'>Einladung</a>"}.
                     </p>
                 </div>
-                <div class='col-12 col-md-6 col-xl-4'>#{front_picture_html}</div>
+                <div class='col-12 col-lg-5 col-xl-4'><div class='front-hero-stage'>#{front_picture_html}</div></div>
             </div>
             <p class="mt-4" style="#{running_tests.empty? && user_logged_in? ? '' : 'display: none;'}">
                 Herzlich willkommen im <strong>Hackschule Workspace</strong>!
