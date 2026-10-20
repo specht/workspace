@@ -180,9 +180,20 @@ Fast alle Funktionen nehmen auch Vektoren und rechnen dann mit jeder Komponente 
 <tr><td><code>pow(x, y)</code>, <code>sqrt(x)</code>, <code>exp</code>, <code>log</code></td><td>Potenz, Wurzel, Exponential- und Logarithmusfunktion</td></tr>
 <tr><td><code>sin</code>, <code>cos</code>, <code>tan</code>, <code>atan(y, x)</code></td><td>Winkelfunktionen im Bogenmaß; <code>radians(deg)</code> rechnet Grad um</td></tr>
 <tr><td><code>texture2D(t, uv)</code></td><td>Farbe der Textur <code>t</code> an der Stelle <code>uv</code>, von (0.0, 0.0) bis (1.0, 1.0)</td></tr>
+<tr><td><code>dFdx(v)</code>, <code>dFdy(v)</code>, <code>fwidth(v)</code></td><td>Wie sehr sich <code>v</code> von einem Pixel zum nächsten ändert: nach rechts, nach oben, und beides zusammen (<code>abs(dFdx(v)) + abs(dFdy(v))</code>). In <code>#version 100</code> nur mit <code>#extension GL_OES_standard_derivatives : enable</code> in der ersten Zeile, in <code>#version 300 es</code> immer</td></tr>
 </tbody>
 </table>
 </div>
+
+`fwidth` sagt, wie viel von einer Fläche ein Pixel gerade zeigt. Damit wird eine feine Linie, eine Fuge zwischen zwei Fliesen etwa, weit weg weich und blass, statt zu flimmern: Ist ein Pixel breiter als die Linie, zeichnet man sie nicht scharf, sondern nur so stark, wie sie den Pixel füllt.
+
+```glsl
+float d = abs(fract(uv.x * 10.0) - 0.5);   // Abstand zur Mitte einer Fliese, 0 bis 0.5
+float w = fwidth(uv.x * 10.0);              // so viel misst ein Pixel hier
+float grout = smoothstep(0.5 - w, 0.5, d);  // eine Fuge am Rand, weich über einen Pixel
+```
+
+Mehr dazu, mit Beispielen zum Ausprobieren, steht in [Prozedurale Texturen](/reference/prozedurale-texturen).
 <!-- /part -->
 
 ## Mit raylib

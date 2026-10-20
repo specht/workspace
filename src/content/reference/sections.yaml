@@ -129,11 +129,13 @@
   description: |
     PixelRAM für Bilder aus einzelnen Pixeln, raylib für Spiele in 3D mit
     Kamera, Licht, Texturen und Shadern; dazu Tastatur, Maus und Zeit. GLSL
-    für die Shader selbst.
+    für die Shader selbst, prozedurale Texturen für Holz, Fliesen und Marmor
+    ohne ein einziges Bild.
   entries:
     - pixelram
     - raylib
     - glsl
+    - prozedurale-texturen
 
 - key: reference-algorithms
   label: Algorithmen und Datenstrukturen
@@ -149,3 +151,12 @@
     - heap
     - baeume
     - hash-tables
+
+- key: reference-kartografie
+  label: Kartografie
+  icon: /images/book.png
+  description: |
+    Räume in Textdateien festhalten, Feld für Feld: Wände, Türen, Leuchten,
+    Treppen und Wasser. Für Räume, die man findet, und für solche, die man baut.
+  entries:
+    - kartografie
