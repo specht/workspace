@@ -36,6 +36,6 @@ power = 1.4
 flicker = 1
 
 [K]
-block = 0.8, 0.7, 0.8    # eine Kiste
-material = wood
-color = #6b5035
+block = 0.8, 0.7, 0.8    # eine Kiste aus Pappe, mit Klebeband
+material = cardboard
+color = #a9814f

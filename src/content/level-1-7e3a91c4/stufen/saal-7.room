@@ -35,6 +35,7 @@ pedestal = 0.9, 0.8, 0.9
 [4]
 door = salon 1
 arch = 2.9              # oben rund, in der Mitte 2,9 m hoch
+casing = on             # mit Rahmen: Putz, Bekleidung und Schwelle
 
 [2]
 door = vorgang 1

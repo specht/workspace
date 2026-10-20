@@ -40,7 +40,7 @@ Diese Seite baut auf [Level 1](/level-1-7e3a91c4) auf: auf deinem Level, so wie 
 <!-- tutorial-step
 # Wo Level 1 aufgehört hat: die Vorlage mit den Räumen aus Level 0 und 1, die Vorschau
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ 906bfdb1ef53e14f13067a1c4e34f449726dbaa8
+clone-start: https://github.com/specht/backrooms-starter.git @ 6e6e78f6d4c1304a6b6885b4cd9b6ab9989cc926
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -230,7 +230,7 @@ hook: info off
 
 ## Anderes Wasser
 
-Das Wasser hat noch drei Einträge. `tint` ist seine Farbe, so, wie Weiß hinter 2 m davon aussieht; ohne Angabe `#bff0f3`, klar und blaugrün. `waves` sagt, wie groß die Wellen sind: 1 ruhig, 2 größer und schneller, 0 glatt wie Glas. Und `water = off` lässt das Becken leer; ohne Geländer fällst du dann hinein. So sähe das Bad mit dreien davon aus, vom Ende des Beckens aus über seine ganze Länge; danach bleibt es klar:
+Das Wasser hat noch drei Einträge. `tint` ist seine Farbe, so, wie Weiß hinter 2 m davon aussieht; ohne Angabe `#86b8b5`, blaugrün. `waves` sagt, wie groß die Wellen sind: 1 ruhig, 2 größer und schneller, 0 glatt wie Glas. Und `water = off` lässt das Becken leer; ohne Geländer fällst du dann hinein. So sähe das Bad mit dreien davon aus, vom Ende des Beckens aus über seine ganze Länge; danach bleibt es klar:
 
 <!-- tutorial-scope -->
 
@@ -368,7 +368,7 @@ hook: info off
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=4.00,17.00,-82,0&automap=0,64,62,42,4,0,sight
+hook: open view=4.00,17.00,-82,0&automap=0,64,64,38,-10,0,sight
 hook: light
 hook: info off
 -->

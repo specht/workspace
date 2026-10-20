@@ -1,0 +1,24 @@
+# Ein Saal hinter der Kammer.
+
+[room]
+name = Saal
+height = 3
+walls = plain
+floor = terrazzo
+wallpaper = #d8d2c4
+carpet = #cdc6b6
+ceiling = #e6e2d8
+
+[map]
+#############
+#...........#
+#...L...L...#
+1...........#
+#...........#
+#...........#
+#...L...L...#
+#...........#
+#############
+
+[L]
+light = #fff3cf

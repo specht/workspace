@@ -59,7 +59,7 @@ Danach liegt die Vorlage in `/workspace/backrooms-starter`:
 # Klonen wie im Handbuch »Workspace« (oben eingebunden), dann die
 # geöffnete Vorlage im Explorer, level.ini im Editor
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ 906bfdb1ef53e14f13067a1c4e34f449726dbaa8
+clone-start: https://github.com/specht/backrooms-starter.git @ 6e6e78f6d4c1304a6b6885b4cd9b6ab9989cc926
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -562,7 +562,7 @@ hook: info off
 
 ### Andere Wände und Böden
 
-Marmor ist nur eine Möglichkeit. `walls` kennt sechs Arten, `floor` fünf, jede in der Farbe aus `wallpaper` (Wände) und `carpet` (Boden), Marmor in seiner eigenen:
+Marmor ist nur eine Möglichkeit. `walls` kennt neun Arten, `floor` zehn, jede in der Farbe aus `wallpaper` (Wände) und `carpet` (Boden), Marmor in seiner eigenen:
 
 <table class='table'>
 <tr><th>Wert</th><th>Wände (<code>walls</code>)</th><th>Boden (<code>floor</code>)</th></tr>
@@ -572,6 +572,11 @@ Marmor ist nur eine Möglichkeit. `walls` kennt sechs Arten, `floor` fünf, jede
 <tr><td><code>tiles</code></td><td>Fliesen</td><td>Fliesen</td></tr>
 <tr><td><code>velvet</code></td><td>Samt in senkrechten Streifen, wie im Kino</td><td></td></tr>
 <tr><td><code>plain</code></td><td>einfarbig</td><td>einfarbig</td></tr>
+<tr><td><code>concrete</code></td><td>Sichtbeton: Fugen der Schaltafeln und die Löcher ihrer Anker</td><td>Beton mit Fugen</td></tr>
+<tr><td><code>brick</code></td><td>Ziegel im Läuferverband</td><td>Ziegelpflaster</td></tr>
+<tr><td><code>terrazzo</code></td><td>Terrazzo: Steinchen in Zement</td><td>Terrazzo</td></tr>
+<tr><td><code>carpet_tiles</code></td><td></td><td>Teppichfliesen wie im Büro, jede gegen ihre Nachbarn gedreht</td></tr>
+<tr><td><code>checker</code></td><td></td><td>Schachbrett, schwarz und in der Farbe aus <code>carpet</code></td></tr>
 </table>
 
 Für Fliesen wie in einem Schwimmbad zum Beispiel `walls = tiles`, `floor = tiles`, `wallpaper = #e6ecef` und `carpet = #c4ced3`, dazu eine helle Decke mit `ceiling = #e8ecee`. So sieht der leere Saal vom Anfang mit jeder Art aus, Holz mit Wandlampen und Samt mit Kerzenleuchtern statt Leuchten an der Decke; Lampen, die selbst leuchten, kommen in einem tieferen Level (ein Klick zeigt ein Bild groß):
@@ -648,6 +653,71 @@ hook: info off
 <img src='saal-samt.webp' alt='Der leere Saal wie ein Kino: Wände mit dunkelrotem Samt in senkrechten Streifen, ein dunkler Teppich, eine dunkle Decke, Licht nur von Kerzenleuchtern aus Messing, die auf dunklen Holzsockeln an den langen Wänden stehen.'>
 <figcaption><code>velvet</code>, mit Kerzenleuchtern</figcaption>
 </figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: rooms/saal.room <- file:stufen/saal-beton.room
+tab: preview
+viewport: 1536x864
+zoom: 1.5
+hook: open view=18.00,17.20,-100,6
+hook: light
+hook: info off
+-->
+<img src='saal-beton.webp' alt='Der leere Saal in grauem Sichtbeton: an den Wänden die feinen Fugen großer Schaltafeln und Reihen kleiner dunkler Löcher, der Boden aus Beton.'>
+<figcaption><code>concrete</code></figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: rooms/saal.room <- file:stufen/saal-ziegel.room
+tab: preview
+viewport: 1536x864
+zoom: 1.5
+hook: open view=18.00,17.20,-100,6
+hook: light
+hook: info off
+-->
+<img src='saal-ziegel.webp' alt='Der leere Saal mit Wänden aus roten Ziegeln, jeder in einem etwas anderen Ton, und einem grauen Betonboden.'>
+<figcaption><code>brick</code>, Boden <code>concrete</code></figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: rooms/saal.room <- file:stufen/saal-terrazzo.room
+tab: preview
+viewport: 1536x864
+zoom: 1.5
+hook: open view=18.00,17.20,-100,6
+hook: light
+hook: info off
+-->
+<img src='saal-terrazzo.webp' alt='Der leere Saal mit hellen, glatten Wänden und einem Boden aus Terrazzo: kleine eckige Steinchen in Weiß, Grau, Rotbraun und Schwarz in hellem Zement.'>
+<figcaption>Boden <code>terrazzo</code></figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: rooms/saal.room <- file:stufen/saal-buero.room
+tab: preview
+viewport: 1536x864
+zoom: 1.5
+hook: open view=18.00,17.20,-100,6
+hook: light
+hook: info off
+-->
+<img src='saal-buero.webp' alt='Der leere Saal wie ein Büro: hellgraue Wände, ein Boden aus blaugrauen Teppichfliesen in leicht verschiedenen Tönen.'>
+<figcaption>Boden <code>carpet_tiles</code></figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: rooms/saal.room <- file:stufen/saal-schach.room
+tab: preview
+viewport: 1536x864
+zoom: 1.5
+hook: open view=18.00,17.20,-100,6
+hook: light
+hook: info off
+-->
+<img src='saal-schach.webp' alt='Der leere Saal mit weiß gefliesten Wänden und einem Boden im Schachbrettmuster, schwarz und cremeweiß.'>
+<figcaption>Boden <code>checker</code></figcaption>
+</figure>
 </div>
 
 <!-- /tutorial-scope -->
@@ -702,11 +772,12 @@ Eckig sieht die Öffnung nach einem Lager aus. `arch` macht aus einer Tür einen
 ~ [4]
 ~ door = salon 1
 arch = 2.9              # oben rund, in der Mitte 2,9 m hoch
+casing = on             # mit Rahmen: Putz, Bekleidung und Schwelle
 ```
 
 Über die ganze Breite der Tür spannt sich ein Halbkreis, in der Mitte so hoch wie die Zahl. Hier ist die Tür 3 m breit, der Halbkreis hat also 1,5 m Radius und beginnt 1,4 m über dem Boden. Es genügt, wenn einer der beiden Räume `arch` nennt, so wie bei `door`.
 
-Eine Tür ist so tief wie die Wand, ein ganzes Feld. Innen ist sie heller Putz, und auf beiden Seiten der Wand rahmt eine Leiste die Öffnung ein, in der Farbe der Sockelleiste des Raums, hier also dunkles Holz; ein Raum ohne Sockelleiste bekommt einen hell gestrichenen. Wer keinen Rahmen will, schreibt `casing = off` in den Abschnitt der Tür.
+Eine Tür ist so tief wie die Wand, ein ganzes Feld, und sieht aus wie der Raum, dem dieses Feld gehört. Zwischen zwei gelben Räumen fällt das nicht auf; hier wäre der Bogen innen aus Marmor, und vom Salon aus sähe die grüne Wand dünn wie Papier aus. `casing = on` gibt der Tür einen Rahmen: innen heller Putz, unten eine Schwelle aus Stein und auf beiden Seiten der Wand eine Leiste um die Öffnung, in der Farbe der Sockelleiste des Raums, hier also dunkles Holz.
 
 <!-- tutorial-screenshot
 write-file: rooms/saal.room <- file:stufen/saal-salon-2.room
@@ -802,8 +873,8 @@ Jetzt bist du dran: Bau einen Raum nach deiner Idee und schließ ihn mit einer T
 <tr><td><code>name</code></td><td>der Name, den die Automap zeigt</td></tr>
 <tr><td><code>height</code></td><td>Deckenhöhe in Metern; zwei Zahlen für eine schräge Decke</td></tr>
 <tr><td><code>slope</code></td><td>wie die Decke schräg ist: <code>north</code>, <code>east</code>, <code>south</code>, <code>west</code> (sie steigt in diese Richtung an) oder <code>gable</code> (ein Satteldach)</td></tr>
-<tr><td><code>walls</code></td><td><code>wallpaper</code> (Tapete), <code>marble</code> (Marmor), <code>wood</code> (Holz), <code>tiles</code> (Fliesen), <code>velvet</code> (Samt) oder <code>plain</code> (einfarbig)</td></tr>
-<tr><td><code>floor</code></td><td><code>carpet</code> (Teppich), <code>marble</code>, <code>wood</code>, <code>tiles</code> oder <code>plain</code></td></tr>
+<tr><td><code>walls</code></td><td><code>wallpaper</code> (Tapete), <code>marble</code> (Marmor), <code>wood</code> (Holz), <code>tiles</code> (Fliesen), <code>velvet</code> (Samt), <code>plain</code> (einfarbig), <code>concrete</code> (Beton), <code>brick</code> (Ziegel) oder <code>terrazzo</code></td></tr>
+<tr><td><code>floor</code></td><td><code>carpet</code> (Teppich), <code>marble</code>, <code>wood</code>, <code>tiles</code>, <code>plain</code>, <code>concrete</code>, <code>brick</code>, <code>terrazzo</code>, <code>carpet_tiles</code> (Teppichfliesen) oder <code>checker</code> (Schachbrett)</td></tr>
 <tr><td><code>wallpaper</code>, <code>carpet</code>, <code>ceiling</code></td><td>die Farben von Wänden, Boden und Decke</td></tr>
 <tr><td><code>baseboard</code></td><td>die Sockelleiste: Höhe und Farbe; ohne Angabe 8 cm und etwas dunkler als die Tapete, <code>none</code>: keine</td></tr>
 <tr><td><code>dado</code></td><td>die Wände unten anders: Höhe und Farbe, <code>dado_material</code> sagt, woraus</td></tr>
@@ -817,7 +888,7 @@ Für die Buchstaben im Grundriss:
 <table class='table'>
 <tr><th>Eintrag</th><th>Bedeutung</th></tr>
 <tr><td><code>light</code></td><td>eine Leuchte unter der Decke, in dieser Farbe; dazu <code>power</code> (wie hell), <code>size</code> (wie groß, in Metern) und <code>flicker = 1</code> (sie flackert)</td></tr>
-<tr><td><code>block</code></td><td>ein Block: Breite, Höhe, Tiefe; eine Zahl: ein ganzes Feld so hoch. Dazu <code>base</code> (wie hoch er schwebt), <code>color</code>, <code>material</code> und <code>shape = round</code></td></tr>
+<tr><td><code>block</code></td><td>ein Block: Breite, Höhe, Tiefe; eine Zahl: ein ganzes Feld so hoch. Dazu <code>base</code> (wie hoch er schwebt), <code>color</code>, <code>material</code> (auch <code>cardboard</code>, ein Karton) und <code>shape = round</code></td></tr>
 <tr><td><code>model</code></td><td>ein Modell aus <code>models/</code>: <code>height</code> (wie hoch), <code>rotation</code> (in Grad gedreht), <code>material = marble</code>, <code>pedestal</code> (ein Sockel: Breite, Höhe, Tiefe)</td></tr>
 </table>
 
@@ -827,6 +898,7 @@ Und für eine Tür, im Abschnitt ihrer Ziffer:
 <tr><th>Eintrag</th><th>Bedeutung</th></tr>
 <tr><td><code>door = gang 2</code></td><td>diese Ziffer ist dasselbe Feld wie die <code>2</code> im Gang</td></tr>
 <tr><td><code>arch = 2.4</code></td><td>oben rund, ein Halbkreis, in der Mitte 2,4 m hoch; <code>arch = 2.4, 0.8</code>: nur 0,8 m breit, daneben Wand</td></tr>
+<tr><td><code>casing = on</code></td><td>ein Rahmen: innen Putz, eine Schwelle, auf beiden Seiten eine Leiste um die Öffnung</td></tr>
 </table>
 
 Es gibt noch mehr: Böden, die ansteigen, Treppen, Räume übereinander, Wasser. Das kommt in den tieferen Levels. Alle Einträge stehen zum Nachschlagen im Handbuch unter [Kartografie](/reference/kartografie) und in der `README.md` der Vorlage. Der Dateiname ist der Name des Raums, den eine Tür nennt: nur Kleinbuchstaben, Ziffern, `-` und `_`.

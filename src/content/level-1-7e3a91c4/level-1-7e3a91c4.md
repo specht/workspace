@@ -40,7 +40,7 @@ Diese Seite baut auf [Level 0](/level-0-c1d8a2f7) auf: auf deinem Klon der Vorla
 <!-- tutorial-step
 # Wo Level 0 aufgehört hat: die Vorlage mit den Räumen von dort, die Vorschau
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ 906bfdb1ef53e14f13067a1c4e34f449726dbaa8
+clone-start: https://github.com/specht/backrooms-starter.git @ 6e6e78f6d4c1304a6b6885b4cd9b6ab9989cc926
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -119,7 +119,7 @@ write-file: rooms/rampe.room <- file:stufen/rampe-1.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=34.40,17.50,-84,10,,0
+hook: open view=30.20,17.70,-86,4,,0
 hook: light
 hook: info off
 -->
@@ -145,7 +145,7 @@ write-file: rooms/rampe.room <- file:stufen/rampe-2.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=34.40,17.50,-84,6,,0
+hook: open view=30.20,17.70,-86,2,,0
 hook: light
 hook: info off
 -->
@@ -191,7 +191,7 @@ write-file: rooms/rampe.room <- file:stufen/rampe.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=34.40,17.50,-84,10,,0
+hook: open view=30.20,17.70,-86,6,,0
 hook: light
 hook: info off
 -->
@@ -323,6 +323,8 @@ Eine Treppe fängt auf der Höhe dessen an, was an ihrem unteren Ende liegt: Lie
 Die Zahl hinter `dachboden 1` sagt, wie viel höher der Boden auf der anderen Seite der Tür liegt: 3 m. Im Treppenhaus sitzt die Tür also 3 m über dem Boden, darunter ist Wand, und die Treppe endet genau davor. Leg dahinter `rooms/dachboden.room` an, unter einem Satteldach aus Holz, mit ein paar Kisten:
 
 _include_file(stufen/dachboden-1.room, room_copy)
+
+Die Kisten sind aus Pappe: `material = cardboard` macht aus einem Block einen Karton, mit Klebeband über den Deckel, einem Etikett und zwei Pfeilen, die zeigen, wo oben ist.
 
 Eine Beschreibung der Tür genügt: Die Treppe hat sie, also steht sie im Dachboden nicht noch einmal.
 
