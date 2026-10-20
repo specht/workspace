@@ -203,6 +203,11 @@
     display: block;
 }
 
+/* One finger swipes to the next picture (tutorial-preview.js), two zoom */
+.tutorial-preview-lightbox.is-gallery.has-steps {
+    touch-action: pinch-zoom;
+}
+
 /* A gallery picture with its caption needs a quieter page behind it */
 .tutorial-preview-lightbox.is-gallery::backdrop {
     background: rgba(0, 0, 0, 0.94);

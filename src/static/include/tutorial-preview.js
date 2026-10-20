@@ -2,8 +2,9 @@
 // tutorial (.tutorial-preview, a button around the picture) and every picture
 // in a .gallery that is not a link, the grids of pictures with captions. A
 // gallery picture fills the window, shows its caption, and ← → (or the
-// buttons at the sides) go through the pictures of its gallery. On a phone
-// the pictures already fill the width, so nothing opens there.
+// buttons at the sides, or a swipe on a tablet) go through the pictures of
+// its gallery. On a phone the pictures already fill the width, so nothing
+// opens there.
 document.addEventListener('DOMContentLoaded', () => {
     const previews = document.querySelectorAll('.tutorial-preview');
     const galleryImages = [...document.querySelectorAll('.gallery figure img')].filter((image) => !image.closest('a'));
@@ -196,7 +197,92 @@ document.addEventListener('DOMContentLoaded', () => {
     prevButton.addEventListener('click', () => step(-1));
     nextButton.addEventListener('click', () => step(1));
 
+    // Swiping on a touch screen: the picture follows the finger sideways; let
+    // go far enough (or quickly) and it slides out, the next one comes in
+    // from the other side. Otherwise it springs back. Two fingers zoom as
+    // usual (touch-action in tutorial-preview.css) and swipe nothing.
+    const SWIPE_DISTANCE = 60;
+    const SLIDE_TIME = 140;
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let swipe = null;
+    let swiped = false;
+
+    const canSwipe = () => lightbox.classList.contains('is-gallery') && lightbox.classList.contains('has-steps');
+
+    function drag(dx) {
+        content.style.transition = 'none';
+        content.style.transform = `translateX(${dx}px)`;
+        content.style.opacity = String(1 - Math.min(Math.abs(dx) / window.innerWidth, 0.5));
+    }
+
+    function release() {
+        content.style.transition = '';
+        content.style.transform = '';
+        content.style.opacity = '';
+    }
+
+    function swipeTo(delta) {
+        if (still.matches) {
+            release();
+            step(delta);
+            return;
+        }
+        const away = delta > 0 ? -1 : 1;
+        content.style.transition = `transform ${SLIDE_TIME}ms ease-in, opacity ${SLIDE_TIME}ms ease-in`;
+        content.style.transform = `translateX(${away * window.innerWidth * 0.6}px)`;
+        content.style.opacity = '0';
+        window.setTimeout(() => {
+            step(delta);
+            drag(-away * window.innerWidth * 0.3);
+            content.style.opacity = '0';
+            void content.offsetWidth;
+            release();
+        }, SLIDE_TIME);
+    }
+
+    lightbox.addEventListener('pointerdown', (event) => {
+        if (event.pointerType === 'mouse' || !canSwipe()) return;
+        if (swipe) {
+            // a second finger: zooming, not swiping
+            swipe = null;
+            release();
+            return;
+        }
+        swipe = { id: event.pointerId, x: event.clientX, y: event.clientY, time: event.timeStamp, moving: false };
+    });
+
+    lightbox.addEventListener('pointermove', (event) => {
+        if (!swipe || event.pointerId !== swipe.id) return;
+        const dx = event.clientX - swipe.x;
+        const dy = event.clientY - swipe.y;
+        if (!swipe.moving) {
+            if (Math.abs(dx) < 10 || Math.abs(dx) < Math.abs(dy)) return;
+            swipe.moving = true;
+        }
+        drag(dx);
+    });
+
+    function endSwipe(event) {
+        if (!swipe || event.pointerId !== swipe.id) return;
+        const { moving, x, time } = swipe;
+        swipe = null;
+        if (!moving) return;
+        swiped = true;
+        window.setTimeout(() => { swiped = false; }, 400);
+        const dx = event.clientX - x;
+        const fast = Math.abs(dx) / Math.max(event.timeStamp - time, 1) > 0.5;
+        if (event.type === 'pointerup' && (Math.abs(dx) > SWIPE_DISTANCE || (fast && Math.abs(dx) > 20))) {
+            swipeTo(dx < 0 ? 1 : -1);
+        } else {
+            release();
+        }
+    }
+    lightbox.addEventListener('pointerup', endSwipe);
+    lightbox.addEventListener('pointercancel', endSwipe);
+
     lightbox.addEventListener('click', (event) => {
+        // the end of a swipe on the dark part does not close the picture
+        if (swiped) return;
         if (event.target === lightbox) {
             closePreview();
         }

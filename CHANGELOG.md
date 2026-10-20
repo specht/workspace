@@ -18,6 +18,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Galerien: Ein vergrößertes Bild lässt sich auf dem Tablet zur Seite
+  wischen, zum nächsten oder vorigen Bild der Galerie; es folgt dabei dem
+  Finger. Zwei Finger zoomen wie bisher.
 - Bildgenerator: WebGL läuft auf der NVIDIA-Grafikkarte des Servers, wenn es
   eine gibt und Docker die `nvidia`-Runtime kennt (nvidia-container-toolkit),
   sonst wie bisher in Software. Bilder mit 3D-Szenen (Anaglyphen, Backrooms)
