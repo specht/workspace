@@ -69,8 +69,15 @@ export default {
         // the progress bar about a third full) and stops the page's animation
         // loop there: on a GPU the whole bake takes a few seconds, the picture
         // would show it finished. The frozen frame stays on screen; the next
-        // shot opens the page again (hook: open).
+        // shot opens the page again (hook: open). With ?rebake: light this
+        // browser kept from an earlier picture would otherwise just be loaded.
         async baking({ page }) {
+            const url = new URL(page.url());
+            if (!url.searchParams.has('rebake')) {
+                url.searchParams.set('rebake', '');
+                await page.goto(url.href);
+                await page.waitForSelector('#status');
+            }
             await waitForStatus(page, 'Baking light: bounce 1', lightTimeout);
             await page.evaluate(() => { window.requestAnimationFrame = () => 0; });
             await page.waitForTimeout(300);
