@@ -1,0 +1,29 @@
+# Eine Treppe hinter dem Saal, genau ein Stockwerk hinauf.
+
+[room]
+name = Treppe
+ramp = north, 3         # der Boden steigt nach Norden um 3 m
+height = 2.4
+
+[map]
+#222#
+#...#
+#...#
+#.L.#
+#...#
+#...#
+#...#
+#.L.#
+#...#
+#...#
+#111#
+
+[L]
+light = #fff0c8
+power = 0.8
+
+[1]
+door = saal 3
+
+[2]
+door = dachboden 1

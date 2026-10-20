@@ -1,0 +1,48 @@
+# Der Dachboden. Er liegt über Blau, dem Gang und Rot.
+
+[room]
+name = Dachboden
+height = 2.2, 3.6       # unter dem Dach: an den Wänden 2,2 m, in der Mitte 3,6 m
+slope = gable
+walls = wood
+wallpaper = #8a6a44
+floor = wood
+carpet = #5b4430
+ceiling = #6f5a44
+
+[map]
+######################
+#....................#
+#.K..................#
+#................#111#
+#................#
+#...L...L....L...#
+#................#
+#.L..............#
+#........F.......#
+#................#
+#..K..........K..#
+#......___..K....#
+#......___.......#
+##################
+
+[L]
+light = #ffd9a0
+power = 1.8
+
+[F]
+light = #ffd9a0
+power = 1.4
+flicker = 1
+
+[K]
+block = 0.8, 0.7, 0.8    # eine Kiste
+material = wood
+color = #6b5035
+
+[1]
+door = treppe 2
+
+[_]
+below = gang            # darunter liegt der Gang
+slab = 0.5              # so dick ist der Boden zwischen beiden

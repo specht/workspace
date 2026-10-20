@@ -52,6 +52,19 @@ export default {
             await page.waitForSelector('#status');
         },
 
+        // hook: page FILE?QUERY opens another page of the starter in the
+        // preview, such as textures.html?show=marble&bare
+        async page({ page, args }) {
+            await page.waitForTimeout(1200);
+            const url = new URL(page.url());
+            const [file, query = ''] = args.trim().split('?');
+            url.pathname = url.pathname.replace(/[^/]*$/, file);
+            url.search = query ? `?${query}` : '';
+            await page.goto(url.href);
+            await page.waitForSelector('canvas');
+            await page.waitForTimeout(1000);
+        },
+
         // hook: baking waits until the light is being baked (the first bounce,
         // the progress bar about a third full) and stops the page's animation
         // loop there: on a GPU the whole bake takes a few seconds, the picture

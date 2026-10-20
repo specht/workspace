@@ -1,0 +1,23 @@
+# Eine Rampe hinter dem Saal.
+
+[room]
+name = Rampe
+ramp = east, 4          # der Boden steigt nach Osten um 4 m
+height = 2.4, 5.5       # über dem Boden: an der Südwand 2,4 m, an der Nordwand 5,5 m
+slope = north           # die Decke steigt zur Seite hin an, quer zur Rampe
+
+[map]
+####################
+1..................#
+1...L.....L.....L..2
+1..................2
+1...L.....L.....L..2
+1..................#
+####################
+
+[L]
+light = #fff3cf
+power = 1.6
+
+[2]
+door = knick1 1

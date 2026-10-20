@@ -1,0 +1,25 @@
+# Hinter dem Saal ein ebener Gang, so breit wie die Rampe dahinter.
+
+[room]
+name = Vorgang
+height = 2.6
+
+[map]
+########
+#......2
+1......2
+1..L...2
+1......2
+#......2
+###33###
+
+[L]
+light = #fff3cf
+power = 1.6
+
+[2]
+door = rampe 1
+
+[3]
+door = bad 3
+arch = 2.3              # oben rund, in der Mitte 2,3 m hoch

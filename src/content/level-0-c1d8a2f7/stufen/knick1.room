@@ -1,0 +1,21 @@
+# Hinter der Rampe wird der Gang krumm: Er steigt weiter, die Decke kippt nach rechts.
+
+[room]
+name = Knick
+ramp = east, 0.8
+height = 2.4, 3.0
+slope = south           # die Decke steigt nach rechts
+
+[map]
+######
+1....#
+1..L.2
+1....2
+######
+
+[L]
+light = #fff3cf
+power = 1.2
+
+[2]
+door = knick2 1

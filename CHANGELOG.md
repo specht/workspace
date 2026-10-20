@@ -18,6 +18,52 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Backrooms: ein neues Kapitel »Hinauf und hinunter«. Nach den Rampen
+  bauen Lernende eine Treppe durch eine breite Tür, einen Dachboden über
+  dem Gang, ein Loch in seinem Boden, durch das man in den Gang fällt, und
+  eine Tür hoch in der Wand eines Schachts; dazu eine Frage, wie dick der
+  Boden zwischen zwei Stockwerken sein muss. Ein ebener Gang führt jetzt
+  vor die Rampe, damit man sieht, wo es hinaufgeht, und hinter ihr geht es
+  in einem krummen Gang weiter (drei kurze Stücke, die steigen, fallen und
+  deren Decken kippen); die Tür ins Leere liegt an dessen Ende. Neu ist
+  ein Bad mit einem Becken voll Wasser: `pool` (wie tief), `water` (wie tief
+  das Wasser unter dem Rand steht, `off`: leer), `tint` (die Farbe des
+  Wassers) und `railing = on` (ein Geländer); das Wasser spiegelt, man sieht
+  den Boden hindurch, mit leichten Wellen und Licht auf dem Grund. Dazu eine
+  Frage, wie tief das Wasser ist. Lampen mit Schirm leuchten mit `beam`
+  nur nach unten; der Holzsaal hat solche Wandlampen, der Samtsaal
+  Kerzenleuchter. Die Tiefe hat in ihrer gefliesten Halle ein Becken.
+  Gezeichnet werden nur noch die Räume, die man durch Türen und Löcher
+  sieht (Portale); der Maschinenraum erklärt das mit Bildern der Automap,
+  in der <kbd>U</kbd> zeigt, welche Räume das von deinem Platz aus sind.
+  Bloom ist sanfter, die Leuchten behalten ihr Gitter; <kbd>X</kbd> gibt
+  farbige Säume wie durch eine einfache Linse. Die Bilder schauen nicht
+  mehr genau nach Norden, Osten, Süden oder Westen, sondern leicht schräg.
+  Neu in den Räumen: runde Türen (`arch = höhe` oder `arch = höhe, breite`),
+  runde Säulen (`shape = round`), Säulen und Leuchten im Wasser (`pool` bei
+  einem Block, einer Leuchte oder einem Modell), größere Wellen (`waves`).
+  Holz, Fliesen und Marmor rechnet der Shader aus der Stelle in der Welt:
+  Kein Brett und keine Fliese wiederholt sich, Marmoradern laufen um Ecken.
+  Fliesen und Marmor glänzen, sie spiegeln die Leuchten ihres Raums. Flecken
+  auf Wänden, Böden und Decken wiederholen sich nicht mehr mit der Textur.
+  Arm und Schirm einer Lampe aus einem Modell werfen Schatten. Die
+  geflieste Halle der Tiefe hat ein dunkles Becken mit runden Säulen im
+  Wasser und runde Türen, wie im Spiel POOLS. Neu sind außerdem frei
+  stehende Treppen (`stairs`, auch hinauf zu einer Tür hoch in der Wand),
+  Podeste (`raise`), beide mit Geländer, ein gefliester Rand um Becken
+  (`rim`) und zweifarbige Wände (`dado`). Das Bad bekommt eine runde Tür,
+  einen Rand und runde Säulen im Wasser, und die Seite erklärt, wie das
+  Wasser entsteht. Die Seite ist durchgesehen: falsche Angaben und
+  Bildbeschreibungen berichtigt, das Bad vor die Tür ins Leere gerückt,
+  zwei Aufgaben vor die Stellen, die sie beantworten. Der Maschinenraum
+  erklärt, wie die Texturen ohne ein einziges Bild entstehen, mit einer
+  eigenen Seite der Vorlage (`textures.html`); »Die Punkte« zeigt an drei
+  Stellen, wo die Lightmap feiner wird und warum. Unten im Schacht steht ein
+  Becken mit Geländer und einem Stuhl.
+  »Fertige Levels« stellt neben
+  der Lobby »Level 1: Die Tiefe« vor, mit Bildern; die Seite nennt
+  außerdem die Steuerung auf dem Handy, den VHS-Blick (Taste C) und dass
+  die Adresse eine offene Automap behält.
 - Startseite (nicht angemeldet): eine kurze Überschrift, zwei Sätze und
   drei Punkte statt eines langen Absatzes, in normaler Schriftgröße.
   Daneben steht das Bild des Workspace leicht zum Text gedreht auf einem
@@ -26,7 +72,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   7 : 5. Auf schmalen Bildschirmen steht das Bild schlicht unter dem Text.
 - Galerien: Ein vergrößertes Bild lässt sich auf dem Tablet zur Seite
   wischen, zum nächsten oder vorigen Bild der Galerie; es folgt dabei dem
-  Finger. Zwei Finger zoomen wie bisher.
+  Finger, gleitet hinaus, und das nächste gleitet herein, ohne Überblenden. Zwei Finger zoomen wie bisher.
 - Bildgenerator: WebGL läuft auf der NVIDIA-Grafikkarte des Servers, wenn es
   eine gibt und Docker die `nvidia`-Runtime kennt (nvidia-container-toolkit),
   sonst wie bisher in Software. Bilder mit 3D-Szenen (Anaglyphen, Backrooms)

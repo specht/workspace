@@ -27,6 +27,18 @@ examples:
           backrooms-starter/rooms/kammer.room: { text: "[map]\n###\n5.#\n###\n" }
           backrooms-starter/rooms/saal.room: { text: "[map]\n###\n1.#\n###\n" }
           backrooms-starter/rooms/rampe.room: { text: "[map]\n###\n1.#\n###\n" }
+      # dazu Vorgang, Knicke, Treppe, Dachboden, Schacht und Bad aus »Hinauf und hinunter«: immer noch keiner
+      - files:
+          backrooms-starter/rooms/zimmer.room: { text: "[map]\n###\n#@#\n###\n" }
+          backrooms-starter/rooms/saal.room: { text: "[map]\n###\n1.#\n###\n" }
+          backrooms-starter/rooms/vorgang.room: { text: "[map]\n###\n1.2\n###\n" }
+          backrooms-starter/rooms/knick1.room: { text: "[map]\n###\n1.2\n###\n" }
+          backrooms-starter/rooms/knick2.room: { text: "[map]\n###\n1.2\n###\n" }
+          backrooms-starter/rooms/knick3.room: { text: "[map]\n###\n1.2\n###\n" }
+          backrooms-starter/rooms/bad.room: { text: "[map]\n#33#\n#..#\n####\n" }
+          backrooms-starter/rooms/treppe.room: { text: "[map]\n#2#\n#.#\n#1#\n" }
+          backrooms-starter/rooms/dachboden.room: { text: "[map]\n###\n1_#\n###\n" }
+          backrooms-starter/rooms/schacht.room: { text: "[map]\n###\n1.#\n###\n" }
       # Großbuchstaben und ein Leerzeichen im Namen
       - files: { backrooms-starter/rooms/Mein Raum.room: { text: "[map]\n####\n1..#\n####\n" } }
       # Ohne die Endung .room liest das Programm die Datei nie

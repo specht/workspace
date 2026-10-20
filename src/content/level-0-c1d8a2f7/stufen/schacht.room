@@ -1,0 +1,49 @@
+# Hinter dem krummen Gang: ein Schacht, sieben Meter tief, ganz in Fliesen.
+
+[room]
+name = Schacht
+height = 10
+walls = tiles
+wallpaper = #e6eae6
+floor = tiles
+carpet = #d6dcd8
+ceiling = #e2e6e2
+
+[map]
+############
+#..........#
+#..........#
+#..L.......#
+#..........#
+#....BBBB..#
+1....BBBB.W#
+#....BBBB..#
+#....BBBB..#
+#..S...L...#
+#..........#
+#..........#
+############
+
+[L]
+light = #f2f0ea
+power = 3
+size = 1.4
+
+[W]
+model = statues/industrial_wall_lamp/industrial_wall_lamp_1k.gltf   # Poly Haven, CC0
+height = 0.43
+rotation = 270
+offset = 0.42, 1.9, 0    # ganz unten an der Ostwand
+light = #ffc98a
+power = 1.2
+
+[B]
+pool = 1.4              # unten im Schacht ein Becken
+water = 0.2
+tint = #9fbfb4
+railing = on
+
+[S]
+model = statues/plastic_monobloc_chair_01/plastic_monobloc_chair_01_1k.gltf   # Poly Haven, CC0
+height = 0.88
+rotation = 200

@@ -45,10 +45,58 @@ tasks:
       darin steht, spielt keine Rolle. Erst wenn der Gang `door = keller 1`
       oder eine `6` mit Tür bekommt, gibt es den Keller.
 
+  - id: zwischendecke
+    title: Wie dick ist der Boden?
+    prompt: |
+      Die Treppe steigt vom Saal aus um 3 m, der Gang ist 2,5 m hoch, beide
+      Böden liegen auf derselben Höhe. Was muss in `[_]` des Dachbodens bei
+      `slab` stehen, damit das Loch über dem Gang passt?
+    check:
+      type: number
+      expect: 0.5
+      tolerance: 0.001
+      unit: m
+    feedback:
+      - when: { equals: 3 }
+        say: "3 m liegt der Boden des Dachbodens über dem des Gangs. Der Gang selbst nimmt davon aber schon einen Teil ein."
+      - when: { equals: 2.5 }
+        say: "So hoch ist der Gang. Gefragt ist, wie viel zwischen seiner Decke und dem Boden darüber bleibt."
+      - when: { equals: 0.3 }
+        say: "0,3 m nimmt das Programm, wenn bei `slab` nichts steht. Hier legen die Treppe und der Gang die Höhen schon fest."
+      - when: { equals: 5.5 }
+        say: "Du hast die Höhen zusammengezählt. Die Decke des Gangs liegt 2,5 m über seinem Boden, der Dachboden 3 m: Wie viel liegt dazwischen?"
+    solution: |
+      Der Boden des Dachbodens liegt 3 m über dem des Gangs, die Decke des
+      Gangs 2,5 m darüber. Dazwischen bleiben 3 − 2,5 = 0,5 m: `slab = 0.5`.
+      Mit einer anderen Zahl meldet die Vorschau, dass das Loch nicht passt.
+
+  - id: wassertiefe
+    title: Wie tief ist das Wasser?
+    prompt: |
+      Im Becken des Bads steht `pool = 2.2` und `water = 0.25`. Wie tief ist
+      das Wasser im Becken?
+    check:
+      type: number
+      expect: 1.95
+      tolerance: 0.001
+      unit: m
+    feedback:
+      - when: { equals: 2.2 }
+        say: "So tief reicht das Becken unter den Boden. Das Wasser steht aber nicht bis an den Rand."
+      - when: { equals: 0.25 }
+        say: "So tief unter dem Rand steht das Wasser. Gefragt ist, wie tief es vom Wasser bis zum Boden des Beckens ist."
+      - when: { equals: 2.45 }
+        say: "Du hast beide Zahlen zusammengezählt. Das Wasser beginnt 0,25 m unter dem Rand, der Boden des Beckens liegt 2,2 m darunter: Wie viel liegt dazwischen?"
+    solution: |
+      Der Boden des Beckens liegt 2,2 m unter dem Rand, das Wasser 0,25 m.
+      Das Wasser ist also 2,2 − 0,25 = 1,95 m tief.
+
   - id: eigener-raum
     title: Ein Raum nach deiner Idee
     prompt: |
-      In `rooms` liegt außer der Kammer, dem Saal und der Rampe ein Raum, den du
+      In `rooms` liegt außer den Räumen, die du auf der Seite gebaut hast
+      (Kammer, Saal, Vorgang, Rampe, die drei Knicke, Treppe,
+      Dachboden, Schacht und Bad), ein Raum, den du
       selbst entworfen hast. Sein Name besteht aus Kleinbuchstaben, Ziffern, `-` und `_`, und
       er endet auf `.room`. Damit es ihn im Level gibt, braucht er eine Tür
       zu einem anderen Raum.
@@ -56,7 +104,7 @@ tasks:
     check:
       type: files
       path: backrooms-starter/rooms
-      template: [blau.room, gang.room, rot.room, zimmer.room, kammer.room, saal.room, rampe.room]
+      template: [blau.room, gang.room, rot.room, zimmer.room, kammer.room, saal.room, vorgang.room, rampe.room, knick1.room, knick2.room, knick3.room, treppe.room, dachboden.room, schacht.room, bad.room]
       show: listing
       expect:
         new_files: { min: 1 }

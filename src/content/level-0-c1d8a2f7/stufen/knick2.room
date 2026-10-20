@@ -1,0 +1,21 @@
+# Der zweite Knick: einen Schritt nach rechts versetzt, es geht hinunter, die Decke kippt nach links.
+
+[room]
+name = Knick
+ramp = east, -0.5
+height = 2.4, 3.0
+slope = north           # die Decke steigt nach links
+
+[map]
+######
+1....2
+1..L.2
+#....#
+######
+
+[L]
+light = #fff3cf
+power = 1.2
+
+[2]
+door = knick3 1
