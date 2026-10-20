@@ -94,7 +94,7 @@ Ein Feld mit Boden darf nicht an »nichts« grenzen: Um jeden Raum steht eine Wa
 <tr><td><code>walls</code></td><td><code>wallpaper</code>, <code>marble</code>, <code>wood</code>, <code>tiles</code>, <code>velvet</code> oder <code>plain</code>, in der Farbe von <code>wallpaper</code></td></tr>
 <tr><td><code>floor</code></td><td><code>carpet</code>, <code>marble</code>, <code>wood</code>, <code>tiles</code> oder <code>plain</code>, in der Farbe von <code>carpet</code></td></tr>
 <tr><td><code>wallpaper</code>, <code>carpet</code>, <code>ceiling</code></td><td>die Farben von Wänden, Boden und Decke</td></tr>
-<tr><td><code>baseboard</code></td><td>die Sockelleiste: Höhe und Farbe; ohne Angabe 8 cm und dunkler als die Tapete; <code>none</code>: keine</td></tr>
+<tr><td><code>baseboard</code></td><td>die Sockelleiste: Höhe und Farbe; ohne Angabe 8 cm und dunkler als die Tapete; <code>none</code>: keine. An einem schrägen Boden gibt es keine</td></tr>
 <tr><td><code>dado</code></td><td>die Wände unten anders: Höhe und Farbe, etwa <code>dado = 1, #553a27</code></td></tr>
 <tr><td><code>dado_material</code></td><td>woraus dieser untere Teil ist, wie bei <code>walls</code>; ohne: wie die Wand</td></tr>
 <tr><td><code>dado_rail</code></td><td>eine Leiste auf seiner Kante: Höhe und Farbe</td></tr>
@@ -195,7 +195,7 @@ Eine Tür ist ein Feld, das zwei Räumen gehört. Wie hoch und wo ein Raum liegt
 <tr><td><code>door = gang 2</code></td><td>diese Ziffer ist dasselbe Feld wie die <code>2</code> in <code>rooms/gang.room</code></td></tr>
 <tr><td><code>door = halle 1, -4</code></td><td>eine Tür hoch in der Wand: Der Boden auf der anderen Seite liegt 4 m tiefer; ohne Minus höher</td></tr>
 <tr><td><code>arch = 2.4</code></td><td>oben rund, ein Halbkreis über die ganze Breite, in der Mitte 2,4 m hoch; <code>arch = 2.4, 0.8</code>: nur 0,8 m breit, daneben Wand</td></tr>
-<tr><td><code>casing = off</code></td><td>ohne Bekleidung: Sonst rahmt auf jeder Seite der Wand eine Leiste in der Farbe der Sockelleiste die Öffnung ein</td></tr>
+<tr><td><code>casing = off</code></td><td>ohne Bekleidung: Sonst rahmt auf jeder Seite der Wand eine Leiste die Öffnung ein, in der Farbe der Sockelleiste des Raums oder, ohne Sockelleiste, hell gestrichen</td></tr>
 </table>
 
 Eine Tür ist so tief wie die Wand, ein Feld. Innen, an den Seiten, unter dem Sturz und im Bogen, ist sie heller Putz.

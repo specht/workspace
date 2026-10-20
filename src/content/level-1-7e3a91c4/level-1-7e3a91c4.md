@@ -40,7 +40,7 @@ Diese Seite baut auf [Level 0](/level-0-c1d8a2f7) auf: auf deinem Klon der Vorla
 <!-- tutorial-step
 # Wo Level 0 aufgehört hat: die Vorlage mit den Räumen von dort, die Vorschau
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ 1d61af81498d555e60f795e91f2b37b1df0b06d7
+clone-start: https://github.com/specht/backrooms-starter.git @ 906bfdb1ef53e14f13067a1c4e34f449726dbaa8
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -196,7 +196,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='rampe.webp' alt='Vom ebenen Gang aus: Der Boden dahinter steigt an, während die Decke zur Seite kippt; die Leuchten hängen schief in ihr, die Sockelleisten laufen schräg nach oben.'>
+<img class='full' src='rampe.webp' alt='Vom ebenen Gang aus: Der Boden dahinter steigt an, während die Decke zur Seite kippt; die Leuchten hängen schief in ihr.'>
 
 ### Ein krummer Gang
 
@@ -277,7 +277,7 @@ write-file: rooms/treppe.room <- file:stufen/treppe-1.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=21.50,13.50,-50,14
+hook: open view=21.00,13.50,-62,16
 hook: light
 hook: info off
 -->
@@ -334,19 +334,19 @@ write-file: rooms/dachboden.room <- file:stufen/dachboden-1.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=21.50,13.50,-50,14
+hook: open view=21.90,10.10,-125,-30,,3
 hook: light
 hook: info off
 -->
 
-<img class='full' src='treppe.webp' alt='Das Treppenhaus mit der ganzen Treppe: an der Ostwand hinauf zum Absatz in der Ecke, an der Nordwand weiter hinauf zu einem Podest vor einer dunklen Öffnung hoch in der Wand; ein Geländer aus Metall läuft ohne Unterbrechung an allem entlang.'>
+<img class='full' src='treppe.webp' alt='Vom oberen Podest hinunter: die zweite Treppe führt an der Nordwand hinab zum Absatz in der Ecke, von dort die erste an der Ostwand weiter hinunter; ein Geländer aus Metall läuft ohne Unterbrechung an allem entlang, rechts unten die Tür zum Marmorsaal.'>
 
 <!-- tutorial-screenshot
 # Der Dachboden, von der Tür aus über die Kisten hinweg
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=18.50,9.60,100,-6,,3
+hook: open view=18.60,9.60,112,-10,,3
 hook: light
 hook: info off
 -->
@@ -418,7 +418,7 @@ hook: info off
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=11.00,14.10,10,35,,0
+hook: open view=11.00,14.10,10,27,,0
 hook: light
 hook: info off
 -->
@@ -542,12 +542,12 @@ Danach stellt es dich auf den Boden, der dort ist: Auf einer Rampe oder Stufe ei
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=24.20,12.80,-35,-38,,0
+hook: open view=25.00,11.80,-80,-68,,0
 hook: light
 hook: info off
 hook: key k
 -->
-<img src='kollision-treppe.webp' alt='Das Treppenhaus mit der Taste K: Die Rohre des Geländers sind von roten, halb durchsichtigen Kästen umgeben, die bis einen Meter unter sie reichen; am Boden ein weißer Kreis mit acht Punkten, die vorn rot sind, wo die Treppe zu hoch ist, und sonst grün.'>
+<img src='kollision-treppe.webp' alt='Von oben auf den Boden vor der Treppe, mit der Taste K: Das Rohr des Geländers steckt in einem roten, halb durchsichtigen Kasten, der bis einen Meter unter es reicht; am Boden ein weißer Kreis mit acht grünen Punkten, daneben die Stufen.'>
 <figcaption>Geländer als Kästen, dein Kreis am Boden</figcaption>
 </figure>
 <figure>

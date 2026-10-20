@@ -8,7 +8,7 @@ walls = wood
 wallpaper = #8a6a44
 floor = wood
 carpet = #5b4430
-ceiling = #6f5a44
+ceiling = #8e7658
 
 [map]
 ##################
@@ -28,7 +28,7 @@ ceiling = #6f5a44
 
 [L]
 light = #ffd9a0
-power = 1.8
+power = 2.6
 
 [F]
 light = #ffd9a0

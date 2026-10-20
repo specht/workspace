@@ -40,7 +40,7 @@ Diese Seite baut auf [Level 1](/level-1-7e3a91c4) auf: auf deinem Level, so wie 
 <!-- tutorial-step
 # Wo Level 1 aufgehört hat: die Vorlage mit den Räumen aus Level 0 und 1, die Vorschau
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ 1d61af81498d555e60f795e91f2b37b1df0b06d7
+clone-start: https://github.com/specht/backrooms-starter.git @ 906bfdb1ef53e14f13067a1c4e34f449726dbaa8
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -92,7 +92,7 @@ write-file: rooms/bad.room <- file:stufen/bad-1.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=37.50,29.80,-35,2,,0
+hook: open view=36.00,29.60,-42,0,,0
 hook: light
 hook: info off
 -->
@@ -118,7 +118,7 @@ write-file: rooms/bad.room <- file:stufen/bad-2.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=37.50,29.80,-35,2,,0
+hook: open view=36.00,29.60,-42,0,,0
 hook: light
 hook: info off
 -->
@@ -151,7 +151,7 @@ write-file: rooms/bad.room <- file:stufen/bad-3.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=37.50,29.80,-35,2,,0
+hook: open view=36.00,29.60,-42,0,,0
 hook: light
 hook: info off
 -->
@@ -206,7 +206,7 @@ write-file: rooms/bad.room <- file:stufen/bad.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=37.50,29.80,-35,2,,0
+hook: open view=36.00,29.60,-42,0,,0
 hook: light
 hook: info off
 -->
@@ -219,7 +219,7 @@ hook: info off
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=43.20,25.60,98,-12,,2
+hook: open view=42.80,25.30,95,-16,,2
 hook: light
 hook: info off
 -->
@@ -230,7 +230,7 @@ hook: info off
 
 ## Anderes Wasser
 
-Das Wasser hat noch drei Einträge. `tint` ist seine Farbe, so, wie Weiß hinter 2 m davon aussieht; ohne Angabe `#bff0f3`, klar und blaugrün. `waves` sagt, wie groß die Wellen sind: 1 ruhig, 2 größer und schneller, 0 glatt wie Glas. Und `water = off` lässt das Becken leer; ohne Geländer fällst du dann hinein. So sähe das Bad mit dreien davon aus, von oben auf das Becken geschaut; danach bleibt es klar:
+Das Wasser hat noch drei Einträge. `tint` ist seine Farbe, so, wie Weiß hinter 2 m davon aussieht; ohne Angabe `#bff0f3`, klar und blaugrün. `waves` sagt, wie groß die Wellen sind: 1 ruhig, 2 größer und schneller, 0 glatt wie Glas. Und `water = off` lässt das Becken leer; ohne Geländer fällst du dann hinein. So sähe das Bad mit dreien davon aus, vom Ende des Beckens aus über seine ganze Länge; danach bleibt es klar:
 
 <!-- tutorial-scope -->
 
@@ -241,11 +241,11 @@ write-file: rooms/bad.room <- file:stufen/bad-gruen.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=31.50,23.20,-117,-35,,0
+hook: open view=30.50,26.00,-92,-32,,0
 hook: light
 hook: info off
 -->
-<img src='wasser-gruen.webp' alt='Das Becken von oben, voll trübem, grünem Wasser, in dem man den Boden kaum sieht.'>
+<img src='wasser-gruen.webp' alt='Vom Ende des Beckens schräg hinunter über seine ganze Länge: trübes, grünes Wasser, in dem man den Boden kaum sieht, darin die runden Säulen.'>
 <figcaption><code>tint = #6f8f5a</code>: trüb</figcaption>
 </figure>
 <figure>
@@ -254,11 +254,11 @@ write-file: rooms/bad.room <- file:stufen/bad-dunkel.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=31.50,23.20,-117,-35,,0
+hook: open view=30.50,26.00,-92,-32,,0
 hook: light
 hook: info off
 -->
-<img src='wasser-dunkel.webp' alt='Das Becken von oben, fast bis an den Rand voll dunklem, grünlichem Wasser, das die Säulen und die Decke spiegelt.'>
+<img src='wasser-dunkel.webp' alt='Dasselbe Becken fast bis an den Rand voll dunklem, grünlichem Wasser, das die Säulen und die Decke spiegelt.'>
 <figcaption><code>tint = #4f6b62</code>, <code>water = 0.05</code>, <code>waves = 1.6</code></figcaption>
 </figure>
 <figure>
@@ -267,11 +267,11 @@ write-file: rooms/bad.room <- file:stufen/bad-leer.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=31.50,23.20,-117,-35,,0
+hook: open view=30.50,26.00,-92,-32,,0
 hook: light
 hook: info off
 -->
-<img src='wasser-leer.webp' alt='Das Becken von oben, leer: weiße Fliesen bis tief hinunter auf den Grund, die Säulen stehen auf dem trockenen Boden.'>
+<img src='wasser-leer.webp' alt='Dasselbe Becken leer: weiße Fliesen bis tief hinunter auf den Grund, die Säulen stehen auf dem trockenen Boden.'>
 <figcaption><code>water = off</code>: leer</figcaption>
 </figure>
 </div>
@@ -368,7 +368,7 @@ hook: info off
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=4.00,17.00,-82,0&automap=0,64,48,34,0,0,sight
+hook: open view=4.00,17.00,-82,0&automap=0,64,62,42,4,0,sight
 hook: light
 hook: info off
 -->

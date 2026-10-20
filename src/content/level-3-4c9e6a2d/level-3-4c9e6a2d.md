@@ -40,7 +40,7 @@ Diese Seite baut auf [Level 2](/level-2-b52d0f18) auf: auf deinem Level, so wie 
 <!-- tutorial-step
 # Wo Level 2 aufgehört hat: die Vorlage mit den Räumen aus Level 0, 1 und 2, die Vorschau
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ 1d61af81498d555e60f795e91f2b37b1df0b06d7
+clone-start: https://github.com/specht/backrooms-starter.git @ 906bfdb1ef53e14f13067a1c4e34f449726dbaa8
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -102,12 +102,12 @@ write-file: rooms/kammer.room <- file:stufen/kammer-lampen.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=14.00,17.00,-150,-12
+hook: open view=16.20,16.60,158,-14
 hook: light
 hook: info off
 -->
 
-<img class='full' src='kammer-lampen.webp' alt='Die Kammer, nur von zwei Wandlampen beleuchtet: Links an der Wand leuchtet eine ovale Lampe hell, am rechten Bildrand ist die zweite mit ihrem Gitter zu sehen, an der Südwand steht ein braunes Sofa mit gemusterten Kissen, die Decke ist hell.'>
+<img class='full' src='kammer-lampen.webp' alt='Die Kammer, nur von zwei Wandlampen beleuchtet: an der linken und an der rechten Wand je eine ovale Lampe mit Gitter, dazwischen an der Südwand ein braunes Sofa mit gemusterten Kissen; die Decke ist hell.'>
 
 ### Modelle von Poly Haven
 
@@ -289,7 +289,7 @@ hook: key t
 
 <!-- /tutorial-scope -->
 
-**Kontaktschatten.** Wo zwei Flächen aneinanderstoßen, in Ecken, an der Sockelleiste oder unter einem Block, kommt von vielen Seiten kein Bounce-Licht, weil die andere Fläche im Weg ist. Zwei kurze Strahlen von 80 cm prüfen bei jedem der 64 Durchgänge, wie viel Platz um einen Punkt herum ist: Trifft einer etwas, dunkelt das Bounce-Licht dort ab, umso mehr, je näher es ist, und sanft auslaufend, damit keine harte Linie entsteht. Auf Englisch heißt das **Ambient Occlusion**. Nur das Bounce-Licht, ohne und mit Kontaktschatten:
+**Kontaktschatten.** Wo zwei Flächen aneinanderstoßen, in Ecken, an einer Sockelleiste oder unter einem Block, kommt von vielen Seiten kein Bounce-Licht, weil die andere Fläche im Weg ist. Zwei kurze Strahlen von 80 cm prüfen bei jedem der 64 Durchgänge, wie viel Platz um einen Punkt herum ist: Trifft einer etwas, dunkelt das Bounce-Licht dort ab, umso mehr, je näher es ist, und sanft auslaufend, damit keine harte Linie entsteht. Auf Englisch heißt das **Ambient Occlusion**. Nur das Bounce-Licht, ohne und mit Kontaktschatten:
 
 <div class='gallery columns-2'>
 <figure>

@@ -59,7 +59,7 @@ Danach liegt die Vorlage in `/workspace/backrooms-starter`:
 # Klonen wie im Handbuch »Workspace« (oben eingebunden), dann die
 # geöffnete Vorlage im Explorer, level.ini im Editor
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ 1d61af81498d555e60f795e91f2b37b1df0b06d7
+clone-start: https://github.com/specht/backrooms-starter.git @ 906bfdb1ef53e14f13067a1c4e34f449726dbaa8
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -706,7 +706,7 @@ arch = 2.9              # oben rund, in der Mitte 2,9 m hoch
 
 Über die ganze Breite der Tür spannt sich ein Halbkreis, in der Mitte so hoch wie die Zahl. Hier ist die Tür 3 m breit, der Halbkreis hat also 1,5 m Radius und beginnt 1,4 m über dem Boden. Es genügt, wenn einer der beiden Räume `arch` nennt, so wie bei `door`.
 
-Eine Tür ist so tief wie die Wand, ein ganzes Feld. Innen ist sie heller Putz, und auf beiden Seiten der Wand rahmt eine Leiste die Öffnung ein, in der Farbe der Sockelleiste des Raums, hier also dunkles Holz. Wer keinen Rahmen will, schreibt `casing = off` in den Abschnitt der Tür.
+Eine Tür ist so tief wie die Wand, ein ganzes Feld. Innen ist sie heller Putz, und auf beiden Seiten der Wand rahmt eine Leiste die Öffnung ein, in der Farbe der Sockelleiste des Raums, hier also dunkles Holz; ein Raum ohne Sockelleiste bekommt einen hell gestrichenen. Wer keinen Rahmen will, schreibt `casing = off` in den Abschnitt der Tür.
 
 <!-- tutorial-screenshot
 write-file: rooms/saal.room <- file:stufen/saal-salon-2.room

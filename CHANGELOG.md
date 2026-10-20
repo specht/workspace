@@ -50,8 +50,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Raums haben ein Geländer in einem Stück, das um Ecken biegt und an
   Absätzen auf einem Pfosten zusammenläuft. Eine Tür ist so tief wie die
   Wand: innen heller Putz, auf jeder Seite eine Bekleidung in der Farbe der
-  Sockelleiste, eckig oder im Bogen (`casing = off`: ohne); der Boden geht
-  in ihrer Mitte vom einen Raum in den anderen über. Treppen können zu einer Tür in einen Raum
+  Sockelleiste (ohne Sockelleiste hell gestrichen), eckig oder im Bogen
+  (`casing = off`: ohne); unten liegt eine Schwelle aus hellem Stein, von
+  Bekleidung zu Bekleidung. An einem schrägen Boden gibt es keine
+  Sockelleiste mehr, sie klettert nicht mehr die Wand einer Rampe hinauf. Treppen können zu einer Tür in einen Raum
   führen, der über anderen liegt. Die Kanten (<kbd>E</kbd>) sind blau wie
   in der Automap. `textures.html?show=…&step=N` zeigt einen Schritt einer
   Textur allein; die Seite zeigt die Schritte als Galerie, auch auf dem
