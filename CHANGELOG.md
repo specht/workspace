@@ -39,8 +39,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   im Maschinenraum, wie Wasser gezeichnet wird und warum nur die Räume, die
   man durch Türen sieht (Portale). Level 3 (`/level-3-4c9e6a2d`): Lampen
   und Möbel, das Licht Schritt für Schritt, Licht aufheben und
-  veröffentlichen, und zum Schluss die beiden fertigen Levels der Vorlage,
-  Lobby und Tiefe, deren Räume man dann ganz lesen kann. Die Aufgaben sind
+  veröffentlichen, und zum Schluss die Nachtschicht, ein fertiges Level mit
+  gebackenem Licht zum Durchlaufen (ein Knopf öffnet es) und mit seinen
+  Räumen auf GitHub zum Lesen. Die Aufgaben sind
   auf die Seiten verteilt, zu denen sie gehören.
 - Backrooms-Vorlage: Modelle liegen in `models/` statt in `statues/`.
   `rotation` nimmt eine Zahl (um die senkrechte Achse) oder drei
@@ -52,19 +53,71 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Wand und sieht aus wie der Raum, dem ihr Feld gehört; `casing = on` gibt
   ihr einen Rahmen: innen heller Putz, unten eine Schwelle aus Stein, auf
   jeder Seite eine Bekleidung in der Farbe der Sockelleiste, eckig oder im
-  Bogen. An einem schrägen Boden gibt es keine Sockelleiste mehr, sie
-  klettert nicht mehr die Wand einer Rampe hinauf. Treppen können zu einer Tür in einen Raum
+  Bogen. Treppen können zu einer Tür in einen Raum
   führen, der über anderen liegt. Die Kanten (<kbd>E</kbd>) sind blau wie
   in der Automap. `textures.html?show=…&step=N` zeigt einen Schritt einer
   Textur allein; die Seite zeigt die Schritte als Galerie, auch auf dem
-  Handy gut lesbar.
+  Handy gut lesbar. Neue Materialien für Wände, Böden und Blöcke: Beton
+  (`concrete`, Schalungstafeln mit Ankerlöchern), Ziegel (`brick`),
+  Terrazzo (`terrazzo`), Teppichfliesen (`carpet_tiles`), Schachbrett
+  (`checker`) und Fischgrätparkett (`parquet`); Blöcke auch aus Pappe (`cardboard`): ein Karton mit
+  Klebeband über dem Deckel, einem Etikett und zwei Pfeilen. `rotation`
+  dreht einen Block um die senkrechte Achse, etwa eine Kiste, die nicht
+  ganz gerade steht. Wo ein Block nah an einer Wand oder Decke steht (eine
+  Säule unter der Decke), backt das Licht dort feiner, wie schon bei
+  Modellen: Die Schatten sind schärfer. Wasser ist ohne `tint` dunkler.
+  Ein runder Bogen ist in gleichen Winkeln gebaut, nicht in gleichen
+  Abständen entlang der Tür: Am Fuß des Bogens sind die Punkte der
+  Lightmap nicht mehr in die Länge gezogen. Mit gespeichertem Licht
+  (`level.light` oder im Browser) bereitet das Programm das Backen gar
+  nicht erst vor: Ein Level lädt schneller und braucht weniger Speicher,
+  vor allem auf Handy, Tablet und VR-Brille. <kbd>I</kbd> (auch ein Knopf
+  im Kasten und `?stats`) zeigt Zahlen zur Leistung: Bilder pro Sekunde,
+  Draw Calls, Dreiecke, wie viele Räume gezeichnet werden, die Größe der
+  Lightmap und ungefähr, wie viel Speicher Texturen brauchen. Das Backen
+  läuft in Stücken, die klein anfangen und wachsen, solange die
+  Grafikkarte mitkommt; neue Arbeit bekommt sie erst, wenn die letzte
+  fertig ist. So bleibt die Seite beim Backen bedienbar, der Rechner
+  stockt nicht, und Tablets verlieren den GL-Kontext nicht mehr; die
+  Lightmap ist höchstens 2048 × 2048 groß. Jede Modelldatei wird einmal
+  geladen, auch wenn sie dreißigmal im Level steht, und beim Laden zeigt
+  ein Balken, wie weit es ist. Nur echte Spiegel bekommen ein eigenes
+  scharfes Rundumbild, was nur glänzt, teilt sich eines je Raum: Große
+  Level stürzen auf Tablet und Handy nicht mehr ab. In VR zeichnet das
+  Programm wieder die Räume hinter den Türen, nicht nur den, in dem man
+  steht. Nach dem Backen zeigt der Kasten, wie weit die Modelle ihr Licht
+  haben (»Light for the models«), und »Save light« sagt, worauf es noch
+  wartet. Eine Treppe geht man hinauf wie eine Rampe: Füße und Blick
+  springen nicht mehr bei jeder Stufe, auch in VR. Gespeichertes Licht
+  passt weiter, wenn sich am Programm nur etwas ändert, das am Licht
+  nichts ändert; es hängt an den Räumen und an dem, was das Programm aus
+  ihnen baut.
+  Neu sind ein Knopf für den Vollbildmodus (auch auf Handy und Tablet),
+  `?level=ordner` für ein Level in einem Ordner, `?tour=8` (alle 8
+  Sekunden der nächste Raum, zum Messen), <kbd>Shift</kbd>+<kbd>G</kbd>
+  für die Lightmap selbst und eine Meldung mit dem, was gerade lief, wenn
+  die Grafikkarte aufgibt. Wird es langsam, zeichnet das Programm mit
+  weniger Pixeln. Das fertige Level »Nachtschicht« (siebzehn Räume: ein
+  schiefer Gang, in dem kein Boden und keine Decke gerade ist, ein Parkdeck
+  unter dem Gebäude, Modelle von Poly Haven) liegt in einem eigenen Repository,
+  `specht/backrooms-nachtschicht`, das man in die Vorlage klont; Lobby und
+  Tiefe sind nicht mehr in der Vorlage, und die Vorlage ist ohne sie und ohne
+  gespeichertes Licht viel kleiner. `export.sh` macht aus einem Level eine
+  Website zum Hochladen. Betreibende: Der Workspace
+  liefert das Demo-Level unter `/nachtschicht-8ee59051/` aus, ohne
+  Anmeldung, aus `INTERNAL_PATH/nachtschicht`, wohin es per `rsync` kommt
+  (docs/entwicklung.md, »Das Demo-Level der Backrooms«); fehlt der Ordner,
+  antwortet die Adresse mit 404.
 - Handbuch: eine Seite »Kartografie« mit allen Einträgen für Räume in
   Textdateien (Grundriss, `[room]`, Leuchten, Blöcke, Modelle, Becken,
   Treppen, Türen, Löcher, Tasten) und eine Seite »Prozedurale Texturen«:
   Zufall aus einer Hash-Funktion, Fliesen, Rauschen und Turbulenz, Marmor
   und Holz, nahtlose Kacheln, Texturen ohne Wiederholung und Linien ohne
   Flimmern mit `fwidth`, jedes Beispiel ein Shader, der auf der Seite läuft
-  und sich ändern lässt. Die Seite zu GLSL nennt `dFdx`, `dFdy` und
+  und sich ändern lässt, dazu versetzte Reihen (Mauerwerk), abwechselnd
+  gedrehte Kacheln, Fischgrätparkett auf einem schiefen Gitter, Zellen
+  (Voronoi, Worley Noise), Formen aus Abständen und ein Schachbrett ohne
+  Flimmern. Die Seite zu GLSL nennt `dFdx`, `dFdy` und
   `fwidth`.
 - Bildgenerator: `write-file: … <- file:../andere-seite/…` liest Dateien
   einer anderen Seite (Teile einer Reihe teilen sich Stufen), nie außerhalb
@@ -97,8 +150,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   <kbd>G</kbd> zeigt die Punkte der Lightmap, <kbd>P</kbd> blendet den Kasten
   aus, zurück zum Anfang mit <kbd>Shift</kbd> <kbd>R</kbd>. Die Aktivität
   erklärt das Licht Schritt für Schritt mit Bildern, zeigt schräge Böden und
-  ihre Verbindung mit schrägen Decken, die Automap über dem ganzen Level, die
-  Lobby mit einem Weg über Rampen, und alle Bilder in höherer Auflösung.
+  ihre Verbindung mit schrägen Decken, die Automap über dem ganzen Level und
+  alle Bilder in höherer Auflösung.
   Fundnotizen stehen kursiv.
 - Backrooms: Wände und Böden auch aus Holz (`wood`) und aus kleinen
   Fliesen wie im Schwimmbad (`tiles`), Wände aus Samt wie im Kino (`velvet`);
@@ -131,9 +184,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Code-Blöcke ` ```room ` für Räume und Levels der Backrooms: Im Grundriss
   haben Wände, Boden, Start, Türen und Dinge eigene Farben, ohne Ligaturen,
   damit das Raster stimmt; ein `#` ist dort eine Wand und kein Kommentar.
-- Backrooms: Bilder aus Rezepten, ein kleines Level zum Anfangen und »Level
-  0: Die Lobby« zum Ausprobieren (`?level=lobby/level.ini`, Licht schon
-  gebacken), ein Saal Schritt für Schritt mit Code und Bild zu jedem Schritt
+- Backrooms: Bilder aus Rezepten, ein kleines Level zum Anfangen, ein Saal Schritt für Schritt mit Code und Bild zu jedem Schritt
   (Satteldach, Säulen, farbiges Licht, Statue, Marmor), Links zu Quellen für
   eigene 3D-Modelle. Leuchten unter schrägen Decken liegen so schräg wie die
   Decke; die Automap gibt die Maus frei und sagt, wie man sie bedient.
