@@ -2574,6 +2574,12 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     overflow-wrap: anywhere;
 }
 
+/* The first column names things (light, block, door = …): only between
+   words, otherwise the table squeezes it down to two letters a line. */
+.table td:first-child code {
+    overflow-wrap: normal;
+}
+
 /* On a phone: the teacher note runs from edge to edge, its label-and-text
    tables put the label above its text, and a Handbuch table that does not
    fit scrolls sideways by itself instead of widening the page. */
