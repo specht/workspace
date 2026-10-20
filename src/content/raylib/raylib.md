@@ -102,6 +102,7 @@ Klicke unten rechts auf »Go Live«. Im neuen Tab siehst du die Dateien des Proj
 go-live
 tab: preview
 viewport: 960x540
+zoom: 0.5555556
 hook: open main.html
 hook: settle
 crop-element: #canvas
@@ -377,6 +378,7 @@ terminal-expect-no-text: error:
 terminal-expect-no-text: ***
 tab: preview
 viewport: 960x540
+zoom: 0.5555556
 hook: open main.html
 hook: play 3
 hook: settle
@@ -571,8 +573,9 @@ terminal-expect-no-text: error:
 terminal-expect-no-text: ***
 tab: preview
 viewport: 960x540
+zoom: 0.5555556
 hook: open main.html
-hook: play 8 KeyW:1.2 ArrowLeft:0.4
+hook: play 8 KeyW:0.3 ArrowLeft:0.1
 hook: settle
 crop-element: #canvas
 check-task-fails: figur
@@ -699,8 +702,9 @@ terminal-expect-no-text: error:
 terminal-expect-no-text: ***
 tab: preview
 viewport: 960x540
+zoom: 0.5555556
 hook: open main.html
-hook: play 8 KeyW:2 ArrowRight:0.3
+hook: play 8 KeyW:0.5 ArrowRight:0.08
 hook: settle
 crop-element: #canvas
 check-task: figur
@@ -895,8 +899,9 @@ terminal-expect-no-text: error:
 terminal-expect-no-text: ***
 tab: preview
 viewport: 960x540
+zoom: 0.5555556
 hook: open main.html
-hook: play 8 ArrowDown:0.25 Digit3 Rechtsklick ArrowLeft:0.15 Rechtsklick ArrowLeft:0.15 Rechtsklick ArrowRight:0.6 Rechtsklick ArrowUp:0.12
+hook: play 8 ArrowDown:0.075 Digit3 Rechtsklick ArrowLeft:0.05 Rechtsklick ArrowLeft:0.05 Rechtsklick ArrowRight:0.18 Rechtsklick ArrowUp:0.04
 hook: settle
 crop-element: #canvas
 check-task: bauen
@@ -1157,6 +1162,7 @@ terminal-expect-no-text: error:
 terminal-expect-no-text: ***
 tab: preview
 viewport: 960x540
+zoom: 0.5555556
 hook: open main.html
 hook: play 10
 hook: settle
@@ -1433,6 +1439,7 @@ terminal-expect-no-text: error:
 terminal-expect-no-text: ***
 tab: preview
 viewport: 960x540
+zoom: 0.5555556
 hook: open main.html
 hook: play 8 ArrowDown:0.25 Digit7 Rechtsklick ArrowLeft:0.35 Rechtsklick ArrowRight:0.7 Rechtsklick ArrowLeft:0.35 ArrowUp:0.15 KeyS:0.9
 hook: settle
@@ -1669,6 +1676,7 @@ terminal-expect-no-text: error:
 terminal-expect-no-text: ***
 tab: preview
 viewport: 960x540
+zoom: 0.5555556
 hook: open main.html
 hook: play 8 ArrowDown:0.25 Digit7 Rechtsklick ArrowLeft:0.35 Rechtsklick ArrowRight:0.7 Rechtsklick ArrowLeft:0.35 ArrowUp:0.15 KeyS:0.9
 hook: settle

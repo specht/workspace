@@ -6,6 +6,15 @@
 // Live Server preview. The page around the program is PixelRAM's shell, so
 // opening a program works as in the PixelRAM tutorial. Unlike PixelRAM, the
 // clock must never be stopped here (see hook: settle).
+//
+// The programs are resizable, and the shell gives them one canvas pixel per
+// CSS pixel. The program shots use zoom: 0.5555556 (1 / the capture scale
+// 1.8): one CSS pixel is one picture pixel, the program draws the whole
+// picture itself instead of being enlarged with blocky pixels.
+//
+// Timelines are in seconds of the program's time: the stages cap a frame at
+// 0.05 s, so a key held for 1 s moves less when the frames come slower than
+// 20 per second (WebGL in software).
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 

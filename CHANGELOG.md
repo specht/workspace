@@ -24,7 +24,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Bildgenerator: WebGL läuft auf der NVIDIA-Grafikkarte des Servers, wenn es
   eine gibt und Docker die `nvidia`-Runtime kennt (nvidia-container-toolkit),
   sonst wie bisher in Software. Bilder mit 3D-Szenen (Anaglyphen, Backrooms)
-  entstehen dadurch um ein Vielfaches schneller. Betreibende: nichts zu tun;
+  entstehen dadurch um ein Vielfaches schneller. Chromium spricht die Karte
+  über Vulkan an: Über OpenGL ES ließ sie in manchen Bildern ganze Teile weg
+  (in der Klötzchenwelt die Blöcke, den Würfel). Betreibende: nichts zu tun;
   `TUTORIAL_SCREENSHOT_GPU=0` erzwingt Software.
 - Backrooms: Lampen aus Modellen (eine Wandlampe leuchtet mit `light =`),
   Modelle lassen sich mit `offset = x, y, z` verschieben (y nach oben),
@@ -1345,6 +1347,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- Klötzchenwelt: Die Bilder des laufenden Programms sind scharf. Das
+  Programm zeichnet sie in voller Größe (1700 × 944 Pixel), statt kleiner
+  gezeichnet und mit groben Pixeln vergrößert zu werden.
 - Klassenseite, Reiter »Lernende«: Bei einer Gruppe, die nicht als Karte
   verwaltet wird (etwa aus den Einladungsdateien), stand die Last jedes
   Workspace in der Spalte »Workspace« (»läuft0,40% · 312,0MB«), und CPU und
