@@ -170,7 +170,6 @@ Open findings from the October 2026 review:
 | Ziffernerkennung | collect handwriting in the browser instead of print + 300 dpi scan; predict-then-run tasks; discuss overfitting (training loss 10⁻⁴); a shared preinstalled environment instead of 500 MB download and 2 GB per student; typos "boostrap", "Kenrel", "beboachten", "des die" |
 | Git/GitHub | mark low-level internals as optional/advanced |
 | Programming languages | fact-check history, creator/date and lineage claims; one convention for the year in headings |
-| Backrooms | the velvet and the wooden hall (»Andere Wände und Böden«, `stufen/saal-samt.room`, `stufen/saal-holz.room`): wall lamps along the walls instead of panels in the ceiling, more like a cinema and a panelled room |
 
 Platform-wide:
 

@@ -48,15 +48,15 @@ tasks:
   - id: eigener-raum
     title: Ein Raum nach deiner Idee
     prompt: |
-      In `rooms` liegt außer der Kammer und dem Saal ein Raum, den du selbst entworfen
-      hast. Sein Name besteht aus Kleinbuchstaben, Ziffern, `-` und `_`, und
+      In `rooms` liegt außer der Kammer, dem Saal und der Rampe ein Raum, den du
+      selbst entworfen hast. Sein Name besteht aus Kleinbuchstaben, Ziffern, `-` und `_`, und
       er endet auf `.room`. Damit es ihn im Level gibt, braucht er eine Tür
       zu einem anderen Raum.
     file: backrooms-starter/rooms
     check:
       type: files
       path: backrooms-starter/rooms
-      template: [blau.room, gang.room, rot.room, zimmer.room, kammer.room, saal.room]
+      template: [blau.room, gang.room, rot.room, zimmer.room, kammer.room, saal.room, rampe.room]
       show: listing
       expect:
         new_files: { min: 1 }

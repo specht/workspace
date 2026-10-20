@@ -23,6 +23,18 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   sonst wie bisher in Software. Bilder mit 3D-Szenen (Anaglyphen, Backrooms)
   entstehen dadurch um ein Vielfaches schneller. Betreibende: nichts zu tun;
   `TUTORIAL_SCREENSHOT_GPU=0` erzwingt Software.
+- Backrooms: Lampen aus Modellen (eine Wandlampe leuchtet mit `light =`),
+  Modelle lassen sich mit `offset = x, y, z` verschieben (y nach oben),
+  ein Sofa und eine Wandlampe von Poly Haven liegen in der Vorlage, und die
+  Aktivität erklärt, wie man weitere holt (glTF, 1K); feinere Schatten von
+  Statuen und Möbeln an Wand und Boden; Türen zwischen verschieden schrägen
+  Böden ohne Lücke; Linien hinter Wänden und Decken blass in der Automap;
+  <kbd>G</kbd> zeigt die Punkte der Lightmap, <kbd>P</kbd> blendet den Kasten
+  aus, zurück zum Anfang mit <kbd>Shift</kbd> <kbd>R</kbd>. Die Aktivität
+  erklärt das Licht Schritt für Schritt mit Bildern, zeigt schräge Böden und
+  ihre Verbindung mit schrägen Decken, die Automap über dem ganzen Level, die
+  Lobby mit einem Weg über Rampen, und alle Bilder in höherer Auflösung.
+  Fundnotizen stehen kursiv.
 - Backrooms: Wände und Böden auch aus Holz (`wood`) und aus kleinen
   Fliesen wie im Schwimmbad (`tiles`), Wände aus Samt wie im Kino (`velvet`);
   Blöcke und Sockel aus einem eigenen Material (`material`, `pedestal_material`);
@@ -36,7 +48,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   (`baseboard = none`: keine), und die Leisten treffen sich sauber an den
   Ecken; flackernde Leuchten werfen ihr Licht auch zurück (ein Raum nur mit
   ihnen hatte eine schwarze Decke) und zählen ihre Stärke nur einmal;
-  <kbd>H</kbd> blendet den Kasten oben links aus. Ein Kommentar am Ende
+  <kbd>P</kbd> blendet den Kasten oben links aus. Ein Kommentar am Ende
   eines Eintrags beginnt mit `#` und einem Leerzeichen danach, damit
   `0.08, #5a4626` eine Farbe bleibt; Website und VS Code (Erweiterung
   `hackschule-backrooms` 0.1.1) lesen es ebenso.

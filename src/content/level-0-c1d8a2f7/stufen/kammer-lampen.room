@@ -1,0 +1,38 @@
+# Eine Kammer, die gestern noch nicht da war. Jetzt steht ein Sofa darin.
+
+[room]
+name = Kammer
+height = 2.2
+wallpaper = #9a8a4c
+
+[map]
+#####
+5...6
+#W.E#
+#.S.#
+#####
+
+[W]
+model = statues/industrial_wall_lamp/industrial_wall_lamp_1k.gltf   # Poly Haven, CC0
+height = 0.43
+rotation = 90
+offset = -0.42, 1.4, 0   # an die Westwand, 1,4 m hoch
+light = #ffd9a0
+power = 1.2
+
+[E]
+model = statues/industrial_wall_lamp/industrial_wall_lamp_1k.gltf   # Poly Haven, CC0
+height = 0.43
+rotation = 270
+offset = 0.42, 1.4, 0    # an die Ostwand
+light = #ffd9a0
+power = 1.2
+
+[S]
+model = statues/sofa_03/sofa_03_1k.gltf   # Poly Haven, CC0
+height = 0.93
+rotation = 180
+offset = 0, 0, -0.07     # an die Südwand
+
+[6]
+door = saal 1

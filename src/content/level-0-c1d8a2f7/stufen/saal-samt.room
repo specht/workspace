@@ -1,4 +1,4 @@
-# Ein Saal hinter der Kammer.
+# Ein Saal hinter der Kammer, von Wandlampen beleuchtet.
 
 [room]
 name = Saal
@@ -10,14 +10,27 @@ ceiling = #5a4c50
 
 [map]
 #############
+#..N..N..N..#
 #...........#
-#...L...L...#
 1...........#
 #...........#
 #...........#
-#...L...L...#
 #...........#
+#..S..S..S..#
 #############
 
-[L]
-light = #fff3cf
+[N]
+model = statues/industrial_wall_lamp/industrial_wall_lamp_1k.gltf   # Poly Haven, CC0
+height = 0.43
+rotation = 0
+offset = 0, 1.9, -0.42   # an die Nordwand
+light = #ffd9a0
+power = 1.6
+
+[S]
+model = statues/industrial_wall_lamp/industrial_wall_lamp_1k.gltf   # Poly Haven, CC0
+height = 0.43
+rotation = 180
+offset = 0, 1.9, 0.42    # an die Südwand
+light = #ffd9a0
+power = 1.6

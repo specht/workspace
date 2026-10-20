@@ -21,6 +21,12 @@ examples:
       - files:
           backrooms-starter/rooms/zimmer.room: { text: "[map]\n###\n#@#\n###\n" }
           backrooms-starter/rooms/kammer.room: { text: "[map]\n###\n5.#\n###\n" }
+      # Kammer, Saal und Rampe von der Seite: noch kein eigener Raum
+      - files:
+          backrooms-starter/rooms/zimmer.room: { text: "[map]\n###\n#@#\n###\n" }
+          backrooms-starter/rooms/kammer.room: { text: "[map]\n###\n5.#\n###\n" }
+          backrooms-starter/rooms/saal.room: { text: "[map]\n###\n1.#\n###\n" }
+          backrooms-starter/rooms/rampe.room: { text: "[map]\n###\n1.#\n###\n" }
       # Großbuchstaben und ein Leerzeichen im Namen
       - files: { backrooms-starter/rooms/Mein Raum.room: { text: "[map]\n####\n1..#\n####\n" } }
       # Ohne die Endung .room liest das Programm die Datei nie
