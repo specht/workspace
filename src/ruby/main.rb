@@ -1951,6 +1951,8 @@ class Main < Sinatra::Base
                 :html => html,
                 :dev_only => entry[:dev_only],
                 :teacher_only => parsed_sections.dig(section, :teacher_only) == true,
+                # in a section hidden from the catalogs (sections.yaml hidden: true)
+                :hidden_section => parsed_sections.dig(section, :hidden) == true,
                 # What kind of page this is (PageKinds.header shows it).
                 :section => section,
                 :kind => page_meta['kind'],

@@ -1400,6 +1400,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- Handbuch: Unter »Wird verwendet in« stehen keine Seiten mehr aus verborgenen
+  Bereichen; die Seite »Workspace« nannte bisher eine Aktivität, zu der kein
+  Katalog führt.
 - Klötzchenwelt: Die Bilder des laufenden Programms sind scharf. Das
   Programm zeichnet sie in voller Größe (1700 × 944 Pixel), statt kleiner
   gezeichnet und mit groben Pixeln vergrößert zu werden.
