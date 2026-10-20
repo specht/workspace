@@ -699,7 +699,9 @@ the visible tutorial code as the source of truth instead of duplicating it in th
 hidden recipe.
 
 `file:RELATIVE_PATH` reads a file next to the tutorial Markdown (or from a
-subdirectory beneath it) as raw bytes and copies it without text decoding. The
+subdirectory beneath it) as raw bytes and copies it without text decoding.
+Parts of a series share files with `../`: `file:../part-1/stufen/scene.ini`
+reads the first part's stage file; the path may not leave the content folder. The
 source SHA-256 is included in the screenshot state, so binary assets such as JPEG,
 PNG, WebP, or audio files are safe and still invalidate dependent screenshots when
 changed.
