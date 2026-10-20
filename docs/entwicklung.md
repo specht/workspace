@@ -417,6 +417,26 @@ CASE_SERVER = true
 - **Prüfung:** Im Prüfungsmodus hat ein Workspace kein Netz und bekommt keinen
   Zugang.
 
+## Das Demo-Level der Backrooms
+
+Das fertige Level der Backrooms, »Nachtschicht«
+(`specht/backrooms-nachtschicht`), liegt mit gebackenem Licht als Website
+auf dem Server, für Lernende zum Durchlaufen, auch mit einer VR-Brille:
+`https://<host>/nachtschicht-8ee59051/`, ohne Anmeldung, verlinkt nur am Ende
+der versteckten Aktivität Level 3 (`src/ruby/include/backrooms_demo.rb`). Es
+ist nicht in diesem Repository. In einem Klon von `specht/backrooms-starter`:
+
+```bash
+git clone https://github.com/specht/backrooms-nachtschicht nachtschicht
+# Vorschau öffnen mit ?level=nachtschicht&rebake, backen lassen, »Save light«,
+# die Datei als nachtschicht/level.light ablegen (git ignoriert sie dort)
+./export.sh nachtschicht ../nachtschicht-site
+rsync -a --delete ../nachtschicht-site/ SERVER:/mnt/hackschule/workspace/internal/nachtschicht/
+```
+
+Der Server liefert, was in `INTERNAL_PATH/nachtschicht` liegt, sofort aus;
+ein Neustart ist nicht nötig. Lokal ist das `data/internal/nachtschicht`.
+
 ## Daten für Tutorials
 
 Große Dateien, die Lernende mit `wget` holen, liegen im Repository

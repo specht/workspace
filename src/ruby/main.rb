@@ -18,6 +18,7 @@ require './include/test_accounts.rb'
 require './include/reference_index.rb'
 require './include/template_freshness.rb'
 require './include/anaglyph_viewer.rb'
+require './include/backrooms_demo.rb'
 require './include/atomic_file.rb'
 require './include/authentication.rb'
 require './include/login_names.rb'
@@ -6443,6 +6444,21 @@ class Main < Sinatra::Base
         token = AnaglyphViewer.scene_token(data, :secret => SUBMISSION_VIEW_SECRET)
         response.headers['Cache-Control'] = 'no-store'
         respond(:url => "#{SUBMISSION_VIEW_ROOT}/anaglyph-viewer/index.html?scene=#{CGI.escape("szene/#{token}.ini")}")
+    end
+
+    # The demo level of the Backrooms as a website (BackroomsDemo): the
+    # folder export.sh builds, copied to /internal/nachtschicht. Streamed,
+    # since its light alone is about 20 MB.
+    get "/#{BackroomsDemo::PREFIX}" do
+        redirect "/#{BackroomsDemo::PREFIX}/"
+    end
+
+    get "/#{BackroomsDemo::PREFIX}/*" do
+        path = BackroomsDemo.file(params['splat'].first)
+        halt 404 if path.nil?
+        @respond_streaming = true
+        cache_control :public, :max_age => 600
+        send_file path, :type => BackroomsDemo.mime(path)
     end
 
     # abgaben.<host>/anaglyph-viewer/: the viewer, the Kenney kits it loads
