@@ -48,9 +48,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   schreibt `in = W` (der Buchstabe des Beckens), ein Stuhl auf einem Podest
   `on = P`, statt dessen Werte abzuschreiben. Treppen und Podeste eines
   Raums haben ein Geländer in einem Stück, das um Ecken biegt und an
-  Absätzen auf einem Pfosten zusammenläuft. Eine Tür gehört zur Hälfte
-  jedem ihrer Räume, mit Wand, Sockelleiste, Boden und Bogen wie dort: Man
-  sieht der Wand ihre Dicke an. Treppen können zu einer Tür in einen Raum
+  Absätzen auf einem Pfosten zusammenläuft. Eine Tür ist so tief wie die
+  Wand: innen heller Putz, auf jeder Seite eine Bekleidung in der Farbe der
+  Sockelleiste, eckig oder im Bogen (`casing = off`: ohne); der Boden geht
+  in ihrer Mitte vom einen Raum in den anderen über. Treppen können zu einer Tür in einen Raum
   führen, der über anderen liegt. Die Kanten (<kbd>E</kbd>) sind blau wie
   in der Automap. `textures.html?show=…&step=N` zeigt einen Schritt einer
   Textur allein; die Seite zeigt die Schritte als Galerie, auch auf dem

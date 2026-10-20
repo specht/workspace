@@ -59,7 +59,7 @@ Danach liegt die Vorlage in `/workspace/backrooms-starter`:
 # Klonen wie im Handbuch »Workspace« (oben eingebunden), dann die
 # geöffnete Vorlage im Explorer, level.ini im Editor
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ 4e346d4c5f03d0ac5a83ebdd2b632714f44bf1a7
+clone-start: https://github.com/specht/backrooms-starter.git @ 1d61af81498d555e60f795e91f2b37b1df0b06d7
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -344,7 +344,7 @@ write-file: rooms/saal.room <- file:stufen/saal-1.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=18.00,16.40,-102,8
+hook: open view=18.00,17.20,-100,6
 hook: light
 hook: info off
 -->
@@ -373,7 +373,7 @@ write-file: rooms/saal.room <- file:stufen/saal-2.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=18.00,16.40,-102,8
+hook: open view=18.00,17.20,-100,6
 hook: light
 hook: info off
 -->
@@ -431,7 +431,7 @@ write-file: rooms/saal.room <- file:stufen/saal-3.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=18.00,16.40,-102,8
+hook: open view=18.00,17.20,-100,6
 hook: light
 hook: info off
 -->
@@ -453,7 +453,7 @@ write-file: rooms/saal.room <- file:stufen/saal-rund.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=18.00,16.40,-102,8
+hook: open view=18.00,17.20,-100,6
 hook: light
 hook: info off
 -->
@@ -488,7 +488,7 @@ write-file: rooms/saal.room <- file:stufen/saal-4.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=18.00,16.40,-102,8
+hook: open view=18.00,17.20,-100,6
 hook: light
 hook: info off
 -->
@@ -528,7 +528,7 @@ write-file: rooms/saal.room <- file:stufen/saal-5.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=18.00,16.40,-102,8
+hook: open view=18.00,17.20,-100,6
 hook: light
 hook: info off
 -->
@@ -553,7 +553,7 @@ write-file: rooms/saal.room <- file:stufen/saal-6.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=18.00,16.40,-102,8
+hook: open view=18.00,17.20,-100,6
 hook: light
 hook: info off
 -->
@@ -589,7 +589,7 @@ write-file: rooms/saal.room <- file:stufen/saal-marmor.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=18.00,16.40,-102,8
+hook: open view=18.00,17.20,-100,6
 hook: light
 hook: info off
 -->
@@ -602,7 +602,7 @@ write-file: rooms/saal.room <- file:stufen/saal-holz.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=18.00,16.40,-102,8
+hook: open view=18.00,17.20,-100,6
 hook: light
 hook: info off
 -->
@@ -615,7 +615,7 @@ write-file: rooms/saal.room <- file:stufen/saal-fliesen.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=18.00,16.40,-102,8
+hook: open view=18.00,17.20,-100,6
 hook: light
 hook: info off
 -->
@@ -628,7 +628,7 @@ write-file: rooms/saal.room <- file:stufen/saal-einfarbig.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=18.00,16.40,-102,8
+hook: open view=18.00,17.20,-100,6
 hook: light
 hook: info off
 -->
@@ -641,7 +641,7 @@ write-file: rooms/saal.room <- file:stufen/saal-samt.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=18.00,16.40,-102,8
+hook: open view=18.00,17.20,-100,6
 hook: light
 hook: info off
 -->
@@ -687,7 +687,7 @@ write-file: rooms/salon.room <- file:stufen/salon-1.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=26.60,25.40,64,4
+hook: open view=27.60,28.60,42,1
 hook: light
 hook: info off
 -->
@@ -706,12 +706,14 @@ arch = 2.9              # oben rund, in der Mitte 2,9 m hoch
 
 Über die ganze Breite der Tür spannt sich ein Halbkreis, in der Mitte so hoch wie die Zahl. Hier ist die Tür 3 m breit, der Halbkreis hat also 1,5 m Radius und beginnt 1,4 m über dem Boden. Es genügt, wenn einer der beiden Räume `arch` nennt, so wie bei `door`.
 
+Eine Tür ist so tief wie die Wand, ein ganzes Feld. Innen ist sie heller Putz, und auf beiden Seiten der Wand rahmt eine Leiste die Öffnung ein, in der Farbe der Sockelleiste des Raums, hier also dunkles Holz. Wer keinen Rahmen will, schreibt `casing = off` in den Abschnitt der Tür.
+
 <!-- tutorial-screenshot
 write-file: rooms/saal.room <- file:stufen/saal-salon-2.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=26.60,25.40,64,4
+hook: open view=27.60,28.60,42,1
 hook: light
 hook: info off
 -->
@@ -739,7 +741,7 @@ write-file: rooms/salon.room <- file:stufen/salon-3.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=26.60,25.40,64,4
+hook: open view=27.60,28.60,42,1
 hook: light
 hook: info off
 -->
@@ -762,7 +764,7 @@ write-file: rooms/salon.room <- file:stufen/salon-4.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=26.60,25.40,64,4
+hook: open view=27.60,28.60,42,1
 hook: light
 hook: info off
 -->
@@ -785,7 +787,7 @@ write-file: rooms/salon.room <- file:stufen/salon-5.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=26.60,25.40,64,4
+hook: open view=27.60,28.60,42,1
 hook: light
 hook: info off
 -->
@@ -869,16 +871,16 @@ Bis hierher hast du gebaut. Jetzt schauen wir hinter die Wände: Das Programm st
 3. **Ein Gitter.** Alle Räume kommen in ein großes Gitter aus Feldern, ein Meter je Feld. Für jedes Feld steht fest, ob dort Boden ist, Wand oder nichts, und zu welchem Raum es gehört. Zwei Räume auf demselben Feld meldet das Programm: `lie in the same place`.
 4. **Flächen.** `geometry.js` setzt ein Stück Wand überall dort, wo ein Feld mit Boden an eines ohne grenzt, von Boden bis Decke, und über jedes Feld mit Boden ein Stück Decke. Ein `#` im Grundriss ist im Bauwerk also keine dicke Mauer, sondern eine dünne Fläche an der Kante des Felds davor. Darum dürfen sich die Wände zweier Räume überdecken. Stücke nebeneinander legt es zu großen Flächen zusammen, solange sie nicht knicken.
 
-Mit <kbd>E</kbd> siehst du das Gerüst des Bauwerks: jede Kante, an der zwei Flächen im Winkel aneinanderstoßen, an Ecken, an Leisten, an Möbeln und am Bogen. Am Anfang, solange das Licht noch fehlt, zeigt die Vorschau genau diese Linien. Im Salon:
+Mit <kbd>E</kbd> siehst du das Gerüst des Bauwerks: jede Kante, an der zwei Flächen im Winkel aneinanderstoßen, an Ecken, an Leisten, an Möbeln und am Bogen. Am Anfang, solange das Licht noch fehlt, zeigt die Vorschau genau diese Linien. Im Salon, mit <kbd>T</kbd> ohne Texturen, damit man sie besser sieht:
 
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=26.60,25.40,64,4
+hook: open view=27.60,28.60,42,1
 hook: light
 hook: info off
-hook: key e
+hook: key e t
 -->
 
 <img class='full' src='saal-kanten.webp' alt='Der Salon mit hellblauen Linien auf allen Kanten: wo die Wände auf Boden und Decke treffen, an den Leisten, um den Bogen, an Sofa und Tisch.'>

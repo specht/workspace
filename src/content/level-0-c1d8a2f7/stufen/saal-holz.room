@@ -2,11 +2,12 @@
 
 [room]
 name = Saal
+ceiling = #e8dcc4
 height = 3
 walls = wood
 floor = wood
-wallpaper = #b07a48
-carpet = #6e4426
+wallpaper = #c4915c
+carpet = #87573a
 
 [map]
 #############
@@ -25,7 +26,7 @@ height = 0.4
 rotation = 0
 offset = 0, 1.75, -0.35  # an die Nordwand
 light = #ffcf8a
-power = 0.7
+power = 2.4
 beam = 75               # unter dem Schirm: nach unten
 
 [S]
@@ -34,5 +35,5 @@ height = 0.4
 rotation = 180
 offset = 0, 1.75, 0.35   # an die Südwand
 light = #ffcf8a
-power = 0.7
+power = 2.4
 beam = 75               # unter dem Schirm: nach unten
