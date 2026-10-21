@@ -72,6 +72,11 @@ CONTACT_EMAIL = 'kontakt@example.com'
 # allein ändert nichts am Zugang; was danach geschieht, entscheidet der Betreiber.
 # TRANSITION_DEADLINE = '2027-04-12'
 
+# true, wenn auf dem Server nichts anderes läuft als der Workspace: Dann sagen
+# die technischen Maßnahmen und die Risikoanalyse das. Nur eintragen, wenn es
+# stimmt.
+# DEDICATED_SERVER = true
+
 MYSQL_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'
 MYSQL_PASSWORD_SALT = 'bitte_ein_langes_salt_generieren'
 NEO4J_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'

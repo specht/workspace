@@ -217,11 +217,29 @@ this runs on 12 April 2027 by itself.
 
 1. Is the Workspace a digital teaching tool (§ 2 DigLLV) or a
    Lernmanagementsystem (§ 3)? The documents argue § 2 (no communication,
-   organisation or grades); tasks, groups and progress views look LMS-like.
-   § 3 adds the Schulaufsicht's agreement and a risk analysis.
+   organisation or grades); tasks, groups and progress views look LMS-like,
+   and the maintainer expects the DSB to choose § 3 to be safe. § 3 adds the
+   Schulaufsicht's agreement (»Einvernehmen«, the longest step: ask early how
+   it is applied for), a risk analysis, a role, permission and deletion
+   concept and a DPIA if required. The documents for that exist on
+   /datenschutz (Rollen- und Berechtigungskonzept, Risikoanalyse,
+   Datenschutz-Folgenabschätzung as a draft), built from privacy.rb and
+   checked by privacy_documents_test.rb; the levels in the risk analysis are
+   the operator's assessment.
 2. Lit. c or lit. e of Art. 6 Abs. 1 in the notices.
 3. The maintainer at his own school: part of the school, or its processor?
-   Who signs AVVs for Berlin schools?
+   He teaches there and runs the Workspace privately on a rented dedicated
+   server (`DEDICATED_SERVER = true`), because there is no money for it
+   otherwise. The cleaner proposal for the DSB is the processor
+   construction with an AVV (DigLLV § 2 Abs. 3 provides for processors; the
+   SchuldatenV, with its rules on private equipment in § 17, does not apply
+   to digital teaching tools, § 1 Abs. 1). Whether an employee can be the
+   school's processor is for the DSB. If there are concerns: the
+   Förderverein as contract partner for the server, pseudonymous accounts,
+   or the official list (§ 7 Abs. 2a). His school's DSB is a regional
+   school DSB at SenBJF (name and address only in `credentials.rb`,
+   `DATA_PROTECTION_OFFICER`; never real names in the repository). Who signs AVVs for other Berlin
+   schools: ask the DSB.
 4. DigLLV § 2 Abs. 6 (»in der Regel spätestens zum Ende eines
    Schuljahres«): the Löschkonzept keeps accounts of students who go on
    with computer science next year (the purpose continues). The DSB should

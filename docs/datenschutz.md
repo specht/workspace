@@ -13,7 +13,11 @@ gespeichert wird.
   und Entscheidung für die Schulleitung, Prüfübersicht,
   Datenschutzerklärung, Eintrag für das Verzeichnis von
   Verarbeitungstätigkeiten, technische und organisatorische Maßnahmen,
-  Löschkonzept, Entwurf der Vereinbarung zur Auftragsverarbeitung,
+  Löschkonzept, Rollen- und Berechtigungskonzept, Risikoanalyse, Entwurf
+  einer Datenschutz-Folgenabschätzung (diese drei für den Fall, dass die
+  Schule den Workspace als Lernmanagementsystem nach § 3 DigLLV einordnet;
+  die Einschätzungen darin stammen vom Betreiber und sind von der Schule zu
+  prüfen), Entwurf der Vereinbarung zur Auftragsverarbeitung,
   Elternbrief (auch mit Einverständniserklärung), Nutzungsordnung,
   Nutzungsvereinbarung zum Webhosting. Nicht öffentlich
   (`Main#document_access!`): Datenschutzerklärung, Nutzungsordnung und
@@ -69,6 +73,9 @@ Alle freiwillig; fehlt eine, sagt die Seite, dass die Angabe fehlt.
   Lehrkraft es einholt und unter `/gruppen` vermerkt. Gesperrt wird ohne
   Einverständnis niemand (teacher-access.md, »Zustimmung der Schule,
   Einverständnis, ungeklärt«).
+- `DEDICATED_SERVER = true`: wenn auf dem Server nichts anderes läuft als
+  der Workspace. Dann sagen es die technischen Maßnahmen, die Risikoanalyse
+  und die Folgenabschätzung; ohne die Zeile sagen sie nichts darüber.
 - `COST_NOTE`: was der Server kostet und wie eine Schule beitragen kann;
   steht auf der Seite für die Schulleitung, in der Vereinbarung (§ 6) und in
   der Willkommensmail an Lehrkräfte. Die Seiten sagen dazu immer, dass die

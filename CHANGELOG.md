@@ -18,6 +18,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Unter `/datenschutz` drei weitere Unterlagen für den Fall, dass eine
+  Schule den Workspace als Lernmanagementsystem einordnet (§ 3 DigLLV): ein
+  Rollen- und Berechtigungskonzept (wer welche Rolle hat, wer sie vergibt,
+  was jede sehen und tun darf), eine datenschutzrechtliche Risikoanalyse
+  (elf Risiken mit Einschätzung vor und nach den Maßnahmen) und der Entwurf
+  einer Datenschutz-Folgenabschätzung nach Art. 35 DSGVO mit Platz für die
+  Stellungnahme der Datenschutzbeauftragten Stelle; alle drei als PDF und im
+  ZIP für die Schulleitung, aus denselben Angaben wie die übrigen Unterlagen.
+  Betreibende: `DEDICATED_SERVER = true` in `credentials.rb`, wenn auf dem
+  Server nichts anderes läuft; dann sagen es die Unterlagen.
 - Übergangszeit für die Unterlagen der Schulen: Unter `/personen` › Schulen
   hält die Administration fest, wie weit jede Schule ist (Stand des
   Gesprächs, letzter Kontakt, wann nachgefasst wird, die Schritte von

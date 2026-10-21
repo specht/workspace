@@ -17,7 +17,7 @@ require_relative 'authentication'
 # stored, who sees it or which outside service is used changes it here too.
 module Privacy
     # When the facts were last checked against the code; the page says so.
-    CHECKED = Date.new(2026, 10, 18)
+    CHECKED = Date.new(2026, 10, 21)
 
     LEGAL_BASES = [:school, :consent].freeze
 
@@ -41,6 +41,8 @@ module Privacy
         values[:web_root] = scope.const_defined?('WEB_ROOT') ? scope.const_get('WEB_ROOT').to_s : nil
         values[:parental_consent_required] =
             scope.const_defined?('PARENTAL_CONSENT_REQUIRED') && scope.const_get('PARENTAL_CONSENT_REQUIRED') == true
+        # DEDICATED_SERVER = true: on the server runs nothing but the Workspace
+        values[:dedicated_server] = scope.const_defined?('DEDICATED_SERVER') && scope.const_get('DEDICATED_SERVER') == true
         # The school that is responsible and whom to write to: the operator's
         # own school and the operator, unless for_school replaces them.
         values[:school_name] = values[:operator_school]
@@ -370,7 +372,7 @@ module Privacy
                 'Jede Person hat einen eigenen Workspace in einem eigenen Container und eigene Datenbanken mit eigenen Zugangsdaten.',
                 'Die Workspaces erreichen einander im Netz nicht; eine Firewall lässt nur einen Port frei, den die Aktivitäten zu Netzwerken brauchen.',
                 'Lehrkräfte sehen nur die Schülerinnen und Schüler ihrer eigenen Gruppen und nehmen nur diese in eine Leistungsüberprüfung auf; die Konten anderer Lehrkräfte sehen sie nie.',
-            ],
+            ] + (s[:dedicated_server] ? ['Der Server dient nur dem Workspace; auf ihm läuft kein anderer Dienst und keine andere Anwendung.'] : []),
             'Transparenz' => [
                 'Öffnet eine Lehrkraft einen Workspace oder sieht die Seite so, wie die Schülerin oder der Schüler sie sieht, gibt sie eine Begründung an (5 bis 300 Zeichen); die Person sieht beim nächsten Besuch, wer, wann und warum.',
                 'Noten werden im Workspace nicht gespeichert; die automatische Prüfung von Aufgaben ist eine Rückmeldung, keine Bewertung.',
