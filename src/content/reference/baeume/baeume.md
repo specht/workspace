@@ -192,9 +192,9 @@ rebalance(node):
     return node
 ```
 
-Hier löst schon das Entfernen der 50 zwei Reparaturen aus: erst eine Doppelrotation bei 60, dann eine Rotation bei der Wurzel:
+Hier fehlt nach dem Entfernen der 10 links ein Stockwerk. Auf dem Weg zurück ist die Wurzel schief, und weil beim schwereren Kind 60 der innere Teilbaum höher ist, braucht sie die Doppelrotation: erst 60 rechts, dann die Wurzel links. In einem größeren Baum könnte danach der Knoten darüber schief sein und die nächste Reparatur brauchen:
 
-<div class='algo-stepper' data-title='AVL-Baum: entfernen' data-algo='avl' data-setup='insert 40, insert 20, insert 60, insert 10, insert 30, insert 50, insert 70, insert 5, insert 15, insert 25, insert 35, insert 65, insert 3' data-ops='remove 50'></div>
+<div class='algo-stepper' data-title='AVL-Baum: entfernen' data-algo='avl' data-setup='insert 40, insert 20, insert 60, insert 10, insert 50, insert 70, insert 45' data-ops='remove 10'></div>
 
 **Typische Fehler**
 
