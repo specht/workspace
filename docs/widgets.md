@@ -17,11 +17,16 @@ in doubt, do it the way it does.
   finished tree, not with the eight inserts that build it: `data-setup` holds
   the operations that build the start without steps of their own,
   `data-ops` the ones the widget is about.
-- **One step is one line of the pseudocode,** the pseudocode the page shows
-  (in English, as on the page; comments in it may be German). Beside the
-  picture a code box shows the function that runs, with the current line
-  marked. A step that does not change the picture still gets its line when
-  the line matters (`return node`).
+- **One step is one line of the pseudocode,** the pseudocode the page shows.
+  Beside the picture a code box shows the function that runs, with the
+  current line marked. A step that does not change the picture still gets its
+  line when the line matters (`return node`).
+- **Pseudocode is English, its comments German.** Names and keywords as on
+  the Handbuch pages (`rotate_right(y)`, `node.left`, `if … :`, `return`,
+  `empty`); a remark in parentheses may be German. On the pages it is a
+  ```` ```pseudocode ```` block (`pseudocode_lexer.rb`), and the code box
+  colours the same tokens the same way (`highlightPseudocode` in
+  `algo_stepper.js`): dark, like every other code block on the site.
 - **The operations in their order** stand above the picture (`insert 50 ·
   insert 40 · …`): done ones faded, the current one marked, what comes
   next visible. The viewer always knows where they are.
@@ -29,8 +34,8 @@ in doubt, do it the way it does.
   this step did and why, with the values: »40 hängt nur noch an der
   Variablen x.« Plain statements, no questions.
 - **Variables are visible** when they matter: a label with the variable's
-  English name (`root`, `node`, `x`, `y`, `successor`) and an arrow to what
-  it references. `root` comes in from above the tree. A temporary variable
+  English name (`root`, `node`, `x`, `y`, `successor`; not »Wurzel«) and an
+  arrow to what it references. `root` comes in from above the tree. A temporary variable
   appears when it is assigned and disappears when its function returns; the
   moment it holds the only reference to a node is said out loud.
 
@@ -55,9 +60,17 @@ the next with their eyes.
   arrowhead stays visible, and they **bend while they move**: a path whose
   middle trails behind its ends like a rubber band and straightens when the
   nodes rest.
-- **A pulse runs down a pointer** (`data-pulse`) when it is followed into a
-  recursive call, and on the way back up when each pointer is assigned the
-  subtree its call returned (the lowest first).
+- **A pulse runs down a pointer** (`data-pulse`) on the way back up of a
+  recursive function, when the pointer is assigned the subtree its call
+  returned (`node.left ← remove(node.left, value)`): one pointer after
+  another, the lowest first, each with a pause before the next (650 ms each,
+  `PULSE_TIME`), the arrow of `root` last. A pointer that changes swings to
+  its new target first and gets its pulse after. On the way down there is no
+  pulse: the ring moving along the edge already shows the call.
+- **An arrow whose label travels with its node** (`node`, `successor`,
+  `data-rigid`) moves along rigidly instead of letting go and snapping on;
+  letting go and snapping on are for real reassignments, where the owner
+  stays.
 - **A value on its way** is a token beside the node it is compared with, and
   it lands where it is inserted (`data-from`). A copied value flies from the
   node it is copied from.
@@ -78,10 +91,31 @@ the next with their eyes.
   20 px from nodes and from each other; labels of the smaller and the larger
   value go on opposite sides, `successor` below its node.
 
+## Why (decisions of the maintainer, October 2026)
+
+- Children below their parents at every step, never a child drawn above its
+  parent: a tree is read top down, and a picture that breaks that confuses
+  more than it shows. The nodes move up and down with the pointers instead.
+- One pointer assignment per step, and temporary variables shown: the point
+  of a rotation is that the order of the assignments matters and that a node
+  is held only by a variable for a moment.
+- Sprouting from the owner and snapping onto the target, letting go and
+  shrinking back: a pointer is a field of its node, and the picture should
+  say who owns it and when it is assigned.
+- Pulses on the way back only, one after another with a pause: on the way
+  down the ring already moves along the edge, a pulse on top made the edge
+  busy; on the way back each assignment should be seen on its own.
+- The ring is the parameter `node`: it never appears without its label.
+- A demo starts with what it shows: nobody should click through eight inserts
+  to see a remove.
+- The call stack beside the code: a recursive function goes down and comes
+  back up, and the viewer should always know on which level they are.
+
 ## Timing and controls
 
-- A step forward or back moves (550 ms, `MOTION_TIME`); a jump (first, last)
-  shows the step at once. A click during a movement finishes it first.
+- A step forward or back moves (550 ms, `MOTION_TIME`; a step with pulses one
+  after another takes longer, `frame.duration`); a jump (first, last) shows
+  the step at once. A click during a movement finishes it first.
 - `prefers-reduced-motion` shows every step at once. `?motion=slow` in the
   address makes every movement six times slower, to look at it closely.
 - Four buttons with `data-go` (first, prev, next, last) and ← → through
