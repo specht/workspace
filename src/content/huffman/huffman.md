@@ -466,7 +466,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!n.left) x = x0 + (next++ + 0.5) * DX;
                 else { place(n.left, d + 1); place(n.right, d + 1); x = (pos.get(key(n.left)).x + pos.get(key(n.right)).x) / 2; }
                 pos.set(key(n), { x: x, y: TOP + (lift + d) * DY, node: n });
-                height = Math.max(height, TOP + (lift + d) * DY + 34);
+                height = Math.max(height, TOP + (lift + d) * DY + 42);
             };
             place(t, 0);
             x0 += leaves(t) * DX + GAP;
@@ -504,12 +504,13 @@ document.addEventListener('DOMContentLoaded', function() {
             svg.appendChild(make('circle', { 'data-key': `node-${k}`, 'data-grow': '', class: n.left ? 'node' : 'leaf', cx: p.x, cy: p.y, r: n.left ? 14 : 15 }));
             // the label comes with its node
             svg.appendChild(make('text', { 'data-key': `label-${k}`, 'data-grow': '', x: p.x, y: p.y }, n.left ? String(n.weight) : label(n.byte)));
-            if (!n.left) svg.appendChild(make('text', { 'data-key': `weight-${k}`, class: 'weight', x: p.x, y: p.y + 25 }, String(n.weight)));
+            // the count under a leaf, clear of the ring around it
+            if (!n.left) svg.appendChild(make('text', { 'data-key': `weight-${k}`, class: 'weight', x: p.x, y: p.y + 33 }, String(n.weight)));
         });
         // the rings in front, staying on their node while they fade
         picks.forEach((t) => {
             const p = placed.pos.get(key(t));
-            svg.appendChild(make('circle', { 'data-key': `pick-${key(t)}`, 'data-follow': `node-${key(t)}`, class: 'pick', cx: p.x, cy: p.y, r: 21 }));
+            svg.appendChild(make('circle', { 'data-key': `pick-${key(t)}`, 'data-follow': `node-${key(t)}`, class: 'pick', cx: p.x, cy: p.y, r: 20 }));
         });
         // the same size for every step of a text: the picture does not jump
         svg.setAttribute('viewBox', `0 0 ${size.width} ${size.height}`);
