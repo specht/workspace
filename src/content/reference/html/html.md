@@ -151,6 +151,8 @@ Zwischen zwei Absätzen entsteht von selbst etwas Abstand. Leere Zeilen im Code 
 
 Eine Überschrift sollte sagen, worum es geht. Besser als ein einzelnes Wort ist oft eine kleine Aussage:
 
+<div class='tutorial-preview-clear'></div>
+
 <div class='row'>
     <div class='col-md-6'>
         <div class='hint bad'>
@@ -165,8 +167,6 @@ Eine Überschrift sollte sagen, worum es geht. Besser als ein einzelnes Wort ist
         </div>
     </div>
 </div>
-
-<div class='tutorial-preview-clear'></div>
 
 #### Eine neue Zeile ohne neuen Absatz
 

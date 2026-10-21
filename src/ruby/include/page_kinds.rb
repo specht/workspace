@@ -76,7 +76,9 @@ module PageKinds
         h = ->(s) { CGI.escapeHTML(s.to_s) }
         if reference?(slug)
             section = sections[entry[:section]] || {}
-            label = section[:label].to_s.gsub('&shy;', '')
+            # the catalog's label is HTML already (»HTML &amp; CSS«): unescaped
+            # first, so that it is escaped once
+            label = CGI.unescapeHTML(section[:label].to_s.gsub('&shy;', ''))
             used = used_by(slug, content, development: development)
             html = +"<nav class='page-kind page-kind-reference' aria-label='Handbuch'>"
             html << "<span class='page-kind-label'><a href='/reference'><i class='bi bi-book'></i>Handbuch</a>"

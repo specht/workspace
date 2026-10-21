@@ -61,7 +61,8 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 .algo-stepper .algo-message { margin-top: 0.6em; min-height: 3em; }
 .algo-stepper svg text { font-family: system-ui, sans-serif; }
 .algo-stepper svg [data-key] { transition: fill 0.3s, stroke 0.3s; }
-.algo-stepper pre.algo-code { font-size: 0.85em; margin: 0; padding: 0.4em 0; white-space: pre-wrap; }
+.algo-stepper pre.algo-code { font-size: 0.85em; margin: 0; padding: 0.4em 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.algo-stepper .algo-side table + h5 { margin-top: 0.9em; }
 .algo-stepper pre.algo-code span.line { display: block; padding: 0.05em 0.6em; border-left: 3px solid transparent; transition: background-color 0.3s; }
 .algo-stepper pre.algo-code span.line.current { background: rgba(255, 255, 255, 0.13); border-left-color: #b197fc; }
 .algo-stepper ol.algo-stack { list-style: none; padding: 0; margin: 0 0 0.8em; font-family: '0xProto Nerd Font Mono', monospace; font-size: 0.82em; }

@@ -417,10 +417,14 @@
 }
 
 @media (max-width: 760px) {
-    .tutorial-preview {
+    .tutorial-preview,
+    .media-variant-box-preview {
         float: none;
         width: 100%;
         margin: 1rem 0;
+    }
+    .media-variant-box-preview > .tutorial-preview {
+        margin: 0;
     }
 }
 

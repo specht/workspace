@@ -144,7 +144,7 @@ template_name: des PixelRAM-Starters
         vertical-align: middle;
         line-height: 1;
         overflow: hidden;
-        border: 1px solid #ccc;
+        border: 1px solid var(--bs-border-color);
         font-size: 80%;
     }
 

@@ -289,6 +289,9 @@ template_name: des PixelRAM-Starters
         text-align: center;
         border-radius: 0.2em;
         margin-right: 1px;
+        /* a dark colour stays visible on a dark page */
+        outline: 1px solid var(--bs-border-color);
+        outline-offset: -1px;
     }
 
     html[data-bs-theme="dark"] {

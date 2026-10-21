@@ -90,6 +90,11 @@ pre {
     border-radius: 0.5em;
 }
 
+/* on a dark page a code block is nearly as dark as the page: a faint edge */
+html[data-bs-theme="dark"] pre {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.09);
+}
+
 pre pre {
     padding: 0;
     border-radius: 0;
@@ -2216,6 +2221,11 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     float: none;
     width: 100%;
     margin: 0;
+}
+/* the switch at the bottom of a slide, where it covers no page number */
+.media-variant-box-preview .media-variant-toggles {
+    top: auto;
+    bottom: 0.5em;
 }
 
 .media-variant-toggles {
@@ -5544,6 +5554,8 @@ div[data-stepper] [data-play] {
 div[data-stepper]::before {
     content: 'Zum Ausprobieren · ← → schalten weiter';
     display: block;
+    /* clear of the lightbox button at the top right */
+    padding-right: 3em;
     font-size: 0.75em;
     font-weight: 600;
     letter-spacing: 0.03em;
