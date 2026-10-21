@@ -331,7 +331,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <img src='stroustrup.webp' alt='Bjarne Stroustrup 2013: ein Mann mit Halbglatze, längerem grauem Haar und randloser Brille, in schwarzem Hemd, den Blick schräg nach oben.'>
 <p><strong>Bjarne Stroustrup</strong> (geboren 1950), dänischer Informatiker. Für seine Doktorarbeit in Cambridge hatte er in der Sprache Simula mit Klassen programmiert, doch die Programme liefen zu langsam. Ab 1979 baute er deshalb bei den Bell Labs Klassen in C ein, erst »C with Classes«, ab 1983 C++. Das <code>++</code> ist der Operator, der in C eine Variable um eins erhöht, wie <code>i++</code> in einer <code>for</code>-Schleife.</p>
-<p>Von ihm stammt der Satz: »C makes it easy to shoot yourself in the foot; C++ makes it harder, but when you do it blows your whole leg off.« In C schießt man sich leicht in den Fuß, in C++ schwerer, aber dann ist gleich das ganze Bein weg.</p>
+<p>Von ihm stammt der Satz: »C makes it easy to shoot yourself in the foot; C++ makes it harder, but when you do it blows your whole leg off.«</p>
 <p class='person-credit'>Foto: Victor Zavyalov (ICPC News), 2013, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->

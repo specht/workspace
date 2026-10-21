@@ -1738,6 +1738,18 @@ Die Welt gehört jetzt dir. Ein paar Ideen, von leicht bis schwer:
 
 _task(abgabe)
 
+## Was vorne liegt
+
+Die Schleife in `main` zeichnet die Blöcke in der Reihenfolge des Arrays, von `x = 0` an, ganz gleich, wo du stehst. Trotzdem verdeckt ein naher Block immer den fernen dahinter, auch wenn der ferne erst danach gezeichnet wird. Welche Fläche an einem Pixel zu sehen ist, heißt in der Computergrafik *Visible Surface Determination*. Zwei Ideen dafür stecken in fast jedem Spiel.
+
+### Der Tiefenpuffer
+
+Die Grafikkarte merkt sich für jedes Pixel nicht nur seine Farbe, sondern auch, wie weit die Fläche, die dort gezeichnet wurde, von der Kamera entfernt ist: im **Tiefenpuffer** (englisch *Z-Buffer*). Kommt eine neue Fläche an dasselbe Pixel, vergleicht die Grafikkarte die beiden Entfernungen. Ist die neue weiter weg, bleibt das Pixel, wie es ist. In welcher Reihenfolge gezeichnet wird, spielt dann keine Rolle mehr. `BeginMode3D` schaltet diesen Vergleich ein, `EndMode3D` wieder aus; darum liegen Fadenkreuz und Leiste, die danach kommen, immer obenauf.
+
+### Der Baum der Wände
+
+Grafikkarten mit Tiefenpuffer gab es für zu Hause erst ab 1996. DOOM (1993) musste ohne auskommen. Es zeichnete die Wände von vorne nach hinten, und ein Pixel, das schon gefüllt war, blieb, wie es war. Die richtige Reihenfolge holte es aus einem **BSP-Baum** (*Binary Space Partitioning*), einem [binären Baum](/reference/baeume): Eine Wand teilt die Karte in zwei Hälften, die vor ihr und die hinter ihr. Jede Hälfte wird von einer weiteren Wand geteilt, und so fort, bis jedes Stück nur noch Wände enthält, die sich nicht gegenseitig verdecken. Diesen Baum rechnete ein Programm einmal aus, bevor das Spiel startete. Beim Zeichnen ging DOOM ihn durch wie einen Suchbaum: an jedem Knoten erst in die Hälfte, in der die Kamera steht, dann in die andere. So kamen die Wände von vorne nach hinten heraus, von jedem Standort aus richtig, ohne dass das Spiel etwas sortieren musste.
+
 ## Wenn die Welt wächst
 
 Unsere Welt hat 48 × 24 × 48 = 55 296 Felder. In jedem Bild geht die Schleife in `main` alle durch, fragt bei jedem Block die Nachbarn ab und schickt die Seiten, an die Luft grenzt, neu an die Grafikkarte, 60-mal in der Sekunde. Zwei Dinge sparen dabei schon Arbeit: Seiten zwischen zwei Blöcken zeichnen wir nicht, und die Grafikkarte lässt Rückseiten weg. Gezeichnet wird aber alles andere, auch was hinter dir liegt und was der Nebel längst verschluckt hat.
