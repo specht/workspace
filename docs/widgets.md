@@ -199,11 +199,12 @@ only to look nice.
   narrow, paler and set apart to their left, so that a finger meant for next
   does not jump to the end; the step count on the left, on a phone on a line
   of its own (`default.css`).
-- **Full screen for a demo**: every widget has a button at its top right
-  (`stepper_keys.js`) that shows it full screen, larger, for the big screen;
-  the keys and the swipe work as before, Esc or the button leaves. Where the
-  browser cannot show an element full screen (an iPhone), the widget fills
-  the window as a lightbox.
+- **A lightbox for a demo**: every widget has a square button at its top
+  right (`bi-fullscreen`, `stepper_keys.js`) that opens it larger in a
+  lightbox on a black background, for the big screen. The keys and the
+  sideways swipe step it as before; the arrows at the bottom right, Page Up
+  and Page Down, or a swipe up and down go to the previous or next widget of
+  the page; Esc, the button again or the browser's back button close it.
 - Colours come from the widget's CSS variables, so light and dark mode both
   work; no fixed colours in the drawing.
 

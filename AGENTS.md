@@ -67,7 +67,10 @@ address from `credentials.rb` and the code `123456`.
   Unicode characters; `no_check_marks_test.rb` enforces this.
 - Icons come from what the site already has, Bootstrap Icons
   (`src/static/include/bootstrap-icons-1.11.3`, `bi-chevron-right`, `bi-x-lg`
-  and so on), before drawing an SVG or using a character like › or ×.
+  and so on), before drawing an SVG or using a character like › or ×. An
+  icon alone in a button must sit in its middle: the site gives `button .bi` a
+  right margin for icons beside a label, so reset it (`margin: 0`,
+  `::before { vertical-align: 0 }`) and centre with flex, and look at it.
 - Code blocks name their language. A copy button (`_copy`) only for what is no
   use to type and for big blocks (about 15 lines and more) that go into a file.
   New code in the middle of a file gets context lines (`~ `, faint, not

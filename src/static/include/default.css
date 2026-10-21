@@ -5368,9 +5368,9 @@ div[data-stepper] {
     border-left: 3px solid color-mix(in srgb, var(--bs-primary) 55%, transparent);
     border-radius: 0 0.4em 0.4em 0;
 }
-/* full screen for a demo (stepper_keys.js): the button at the top right; the
-   widget larger on the screen, or as a lightbox where full screen is not
-   possible */
+/* the lightbox for a demo (stepper_keys.js): the square button at the top
+   right; the widget larger over the page; arrows at the edges to the
+   previous and next widget */
 div[data-stepper] {
     position: relative;
 }
@@ -5378,29 +5378,74 @@ div[data-stepper] > .stepper-full {
     position: absolute;
     top: 0.45em;
     right: 0.6em;
-    padding: 0.1em 0.45em;
-    line-height: 1.2;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-div[data-stepper]:fullscreen,
 div[data-stepper].stepper-lightbox {
+    position: fixed;
+    inset: 2.5vh 2.5vw;
+    z-index: 2000;
     margin: 0;
-    padding: 3vh 4vw;
+    padding: 2.5vh 4vw;
     border: none;
-    border-radius: 0;
+    border-radius: 0.75rem;
     overflow: auto;
     background: var(--bs-body-bg);
     font-size: clamp(16px, 1.45vw, 26px);
 }
-div[data-stepper].stepper-lightbox {
+/* black around the lightbox */
+html.stepper-lightbox-open::after {
+    content: '';
     position: fixed;
     inset: 0;
-    z-index: 2000;
+    z-index: 1999;
+    background: #000;
 }
-div[data-stepper]:fullscreen .algo-body > svg.algo-picture,
+html.stepper-lightbox-open {
+    overflow: hidden;
+}
 div[data-stepper].stepper-lightbox .algo-body > svg.algo-picture {
-    max-width: none;
+    max-width: none !important;
     flex: 3 1 40em;
     max-height: 72vh;
+}
+.stepper-lightbox-nav {
+    position: fixed;
+    z-index: 2001;
+    right: 1rem;
+    bottom: 1rem;
+    display: flex;
+    gap: 0.5rem;
+}
+.stepper-lightbox-nav .stepper-nav {
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bs-body-bg);
+}
+/* an icon alone in a stepper button sits in its middle: no margin from the
+   site's rule for icons beside a label, no vertical shift of the glyph */
+div[data-stepper] button .bi,
+.stepper-lightbox-nav button .bi {
+    margin: 0 !important;
+    line-height: 1;
+    display: inline-flex;
+}
+div[data-stepper] button .bi::before,
+.stepper-lightbox-nav button .bi::before {
+    vertical-align: 0;
+}
+div[data-stepper] [data-go] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 div[data-stepper]::before {
     content: 'Zum Ausprobieren · ← → schalten weiter';

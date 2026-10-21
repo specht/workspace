@@ -60,45 +60,121 @@ document.addEventListener('keydown', (event) => {
     document.addEventListener('pointercancel', () => { start = null; });
 })();
 
-// Every widget gets a button at its top right that shows it full screen, for
-// a demo on the big screen: larger, the keys and the swipe work as before; Esc
-// or the button again leaves. Where the browser cannot show an element full
-// screen (an iPhone), the widget fills the window as a lightbox instead.
+// Every widget gets a button at its top right that opens it in a lightbox
+// over the page, larger, for a demo on the big screen. In the lightbox the
+// keys and the sideways swipe step the widget as before; the arrows at the
+// edges, Page Up and Page Down, or a swipe up and down go to the previous or
+// next widget of the page. Esc, the button again or the browser's back
+// button close it.
 (() => {
+    let open = null;
+    let nav = null;
+    // while open, the widget is moved under body (out of any stacking
+    // context of the page, which would keep the page's header on top), and
+    // a placeholder keeps its place
+    let placeholder = null;
+    const lift = (widget) => {
+        placeholder = document.createElement('div');
+        placeholder.style.height = `${widget.offsetHeight}px`;
+        widget.before(placeholder);
+        document.body.appendChild(widget);
+    };
+    const putBack = (widget) => {
+        if (placeholder) placeholder.replaceWith(widget);
+        placeholder = null;
+    };
+    const widgets = () => [...document.querySelectorAll('[data-stepper]')].filter((w) => w !== open).concat(open ? [open] : [])
+        .sort((a, b) => ((a === open ? placeholder : a).compareDocumentPosition(b === open ? placeholder : b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
     const setLabel = (button, full) => {
-        button.replaceChildren(Object.assign(document.createElement('i'), { className: `bi ${full ? 'bi-fullscreen-exit' : 'bi-arrows-fullscreen'}` }));
-        button.setAttribute('aria-label', full ? 'Vollbild verlassen' : 'Im Vollbild zeigen');
+        button.replaceChildren(Object.assign(document.createElement('i'), { className: `bi ${full ? 'bi-fullscreen-exit' : 'bi-fullscreen'}` }));
+        button.setAttribute('aria-label', full ? 'Lightbox schließen' : 'In der Lightbox zeigen');
         button.title = button.getAttribute('aria-label');
     };
-    const isFull = (widget) => document.fullscreenElement === widget || widget.classList.contains('stepper-lightbox');
-    const toggle = (widget) => {
-        if (isFull(widget)) {
-            if (document.fullscreenElement === widget) document.exitFullscreen();
-            widget.classList.remove('stepper-lightbox');
-        } else if (widget.requestFullscreen && document.fullscreenEnabled) widget.requestFullscreen().catch(() => widget.classList.add('stepper-lightbox'));
-        else widget.classList.add('stepper-lightbox');
-        setTimeout(() => window.dispatchEvent(new Event('resize')), 60);
+    const navButton = (icon, label, go) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `btn btn-outline-secondary stepper-nav stepper-nav-${go < 0 ? 'prev' : 'next'}`;
+        button.setAttribute('aria-label', label);
+        button.title = label;
+        button.appendChild(Object.assign(document.createElement('i'), { className: `bi ${icon}` }));
+        button.addEventListener('click', () => move(go));
+        return button;
+    };
+    const show = (widget) => {
+        if (open) { open.classList.remove('stepper-lightbox'); setLabel(open.querySelector(':scope > .stepper-full'), false); putBack(open); }
+        lift(widget);
+        open = widget;
+        widget.classList.add('stepper-lightbox');
+        document.documentElement.classList.add('stepper-lightbox-open');
+        setLabel(widget.querySelector(':scope > .stepper-full'), true);
+        if (!nav) {
+            nav = document.createElement('div');
+            nav.className = 'stepper-lightbox-nav';
+            nav.append(navButton('bi-chevron-up', 'Voriges Widget', -1), navButton('bi-chevron-down', 'Nächstes Widget', 1));
+            document.body.appendChild(nav);
+        }
+        const all = widgets();
+        nav.querySelector('.stepper-nav-prev').disabled = all.indexOf(widget) <= 0;
+        nav.querySelector('.stepper-nav-next').disabled = all.indexOf(widget) >= all.length - 1;
+        nav.hidden = all.length < 2;
+        widget.scrollTop = 0;
+        window.dispatchEvent(new Event('resize'));
+    };
+    const close = (fromHistory) => {
+        if (!open) return;
+        open.classList.remove('stepper-lightbox');
+        setLabel(open.querySelector(':scope > .stepper-full'), false);
+        putBack(open);
+        open.scrollIntoView({ block: 'center' });
+        open = null;
+        document.documentElement.classList.remove('stepper-lightbox-open');
+        if (nav) nav.hidden = true;
+        if (!fromHistory && history.state && history.state.stepperLightbox) history.back();
+        window.dispatchEvent(new Event('resize'));
+    };
+    const move = (go) => {
+        const all = widgets();
+        const next = all[all.indexOf(open) + go];
+        if (next) show(next);
     };
     const add = () => {
-        for (const widget of document.querySelectorAll('[data-stepper]')) {
+        for (const widget of widgets()) {
             if (widget.querySelector(':scope > .stepper-full')) continue;
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'btn btn-sm btn-outline-secondary stepper-full';
             setLabel(button, false);
-            button.addEventListener('click', () => toggle(widget));
+            button.addEventListener('click', () => {
+                if (open === widget) close(false);
+                else {
+                    // the browser's back button closes the lightbox
+                    if (!open) history.pushState({ stepperLightbox: true }, '');
+                    show(widget);
+                }
+            });
             widget.appendChild(button);
         }
     };
-    const update = () => {
-        for (const button of document.querySelectorAll('.stepper-full')) setLabel(button, isFull(button.parentElement));
-        window.dispatchEvent(new Event('resize'));
-    };
-    document.addEventListener('fullscreenchange', update);
+    window.addEventListener('popstate', () => close(true));
     document.addEventListener('keydown', (event) => {
-        if (event.key !== 'Escape') return;
-        const box = document.querySelector('.stepper-lightbox');
-        if (box) { box.classList.remove('stepper-lightbox'); update(); }
+        if (!open) return;
+        if (event.key === 'Escape') { event.preventDefault(); close(false); }
+        else if (event.key === 'PageDown') { event.preventDefault(); move(1); }
+        else if (event.key === 'PageUp') { event.preventDefault(); move(-1); }
+    });
+    // a swipe up or down in the lightbox: the next or the previous widget
+    let start = null;
+    document.addEventListener('pointerdown', (event) => {
+        if (!open || event.pointerType !== 'touch' || !open.contains(event.target) || event.target.closest('[data-no-swipe]')) return;
+        start = { x: event.clientX, y: event.clientY, time: event.timeStamp };
+    });
+    document.addEventListener('pointerup', (event) => {
+        if (!start || !open) return;
+        const dx = event.clientX - start.x;
+        const dy = event.clientY - start.y;
+        const quick = event.timeStamp - start.time < 700;
+        start = null;
+        if (quick && Math.abs(dy) > 80 && Math.abs(dx) < Math.abs(dy) * 0.5 && open.scrollHeight <= open.clientHeight + 2) move(dy < 0 ? 1 : -1);
     });
     // after the widgets have built themselves
     if (document.readyState === 'complete') add();

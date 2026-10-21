@@ -1789,68 +1789,162 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         svg.setAttribute('viewBox', `0 0 ${left + width + 50} ${top + Math.max(100, most.depth * 62 + (frame.avl ? 8 : 0))}`);
     }
 
-    // ---- Hash Table with 8 buckets, h(k) = k mod 8: chaining (a list per
-    // bucket) or linear probing (the next free bucket).
-    function traceHash(ops, mode, size) {
-        const table = Array.from({ length: size }, () => (mode === 'chain' ? [] : null));
+    // ---- Hash Table (reference/hash-tables): m buckets, h(k) = k mod m;
+    // chaining (a list per bucket) or linear probing (the next free bucket).
+    // Every step is a line of the page's pseudocode (HASH_CODE). A frame:
+    // table (chain: arrays of keys; probe: key or null), b (the variable b),
+    // token (the key on its way), count, m, compare (the key it is compared
+    // with), found, fresh (the key just put in), code, op.
+    const HASH_CODE = {
+        chainInsert: ['insert(k):', '    b ← h(k)', '    if k already in buckets[b]: done', '    append k to the back of buckets[b]', '    count ← count + 1'],
+        chainFind: ['find(k):', '    b ← h(k)', '    return whether k is in buckets[b]'],
+        probeInsert: ['insert(k):', '    b ← h(k)', '    while buckets[b] occupied:', '        if buckets[b] = k: done', '        b ← (b + 1) mod m', '    buckets[b] ← k', '    count ← count + 1'],
+        probeFind: ['find(k):', '    b ← h(k)', '    while buckets[b] occupied:', '        if buckets[b] = k: found', '        b ← (b + 1) mod m', '    not found'],
+    };
+
+    function traceHash(ops, mode, m, setup = []) {
+        const chain = mode === 'chain';
+        const table = Array.from({ length: m }, () => (chain ? [] : null));
+        let count = 0;
+        let current = -1;
         const frames = [];
-        const count = () => (mode === 'chain' ? table.reduce((s, b) => s + b.length, 0) : table.filter((x) => x !== null).length);
-        const snapshot = (message, marks = {}) => frames.push({ table: table.map((b) => (Array.isArray(b) ? [...b] : b)), mode, message, load: count() / size, ...marks });
-        snapshot(`Eine leere Hash Table mit ${size} Buckets. Der Hash eines Schlüssels k ist k mod ${size}.`);
-        for (const op of ops) {
-            const k = op.value;
-            const h = ((k % size) + size) % size;
-            if (op.type === 'insert') {
-                if (mode === 'chain') {
-                    table[h].push(k);
-                    snapshot(`insert ${k}: ${k} mod ${size} = ${h}.${table[h].length > 1 ? ` Bucket ${h} ist schon belegt, eine Kollision: ${k} kommt hinten an seine Liste.` : ` ${k} kommt in Bucket ${h}.`}`, { focus: h, probe: [h] });
-                } else {
-                    const probe = [];
-                    let i = h;
-                    while (table[i] !== null && probe.length < size) { probe.push(i); snapshot(`insert ${k}: ${k} mod ${size} = ${h}. Bucket ${i} ist belegt, weiter zum nächsten.`, { probe: [...probe] }); i = (i + 1) % size; }
-                    if (probe.length === size) { snapshot(`insert ${k}: Alle Buckets sind belegt.`, { error: true }); continue; }
-                    table[i] = k;
-                    probe.push(i);
-                    snapshot(`insert ${k}: ${i === h ? `${k} mod ${size} = ${h}, frei.` : `Bucket ${i} ist frei.`} ${k} kommt in Bucket ${i}.`, { probe, focus: i });
+        const snapshot = (message, marks = {}) => frames.push({ table: table.map((b) => (Array.isArray(b) ? [...b] : b)), mode, m, count, message, op: current, ...marks });
+        const C = (name, at) => ({ lines: HASH_CODE[name], at });
+        const hash = (k) => ((k % m) + m) % m;
+        const insert = (k, quiet) => {
+            const say = quiet ? () => {} : snapshot;
+            const name = chain ? 'chainInsert' : 'probeInsert';
+            say(`insert(${k}): Der Schlüssel ${k} soll in die Hash Table.`, { token: k, code: C(name, 0) });
+            let b = hash(k);
+            say(`b ← h(k): h(${k}) = ${k} mod ${m} = ${b}.`, { token: k, b, code: C(name, 1) });
+            if (chain) {
+                for (const s of table[b]) {
+                    say(`if k already in buckets[b]: ${s} ist nicht ${k}.`, { token: k, b, compare: s, code: C(name, 2) });
                 }
-            } else if (op.type === 'find') {
-                if (mode === 'chain') {
-                    const found = table[h].includes(k);
-                    snapshot(`find ${k}: nur Bucket ${h} ansehen. ${found ? `${k} steht in seiner Liste.` : `${k} steht nicht darin, also nirgends.`}`, { focus: h, probe: [h] });
-                } else {
-                    const probe = [];
-                    let i = h;
-                    while (table[i] !== null && table[i] !== k && probe.length < size) { probe.push(i); i = (i + 1) % size; }
-                    probe.push(i);
-                    snapshot(`find ${k}: ab Bucket ${h} suchen, bis ${k} kommt oder ein leerer Bucket. ${table[i] === k ? `Gefunden in Bucket ${i}, nach ${probe.length} Buckets.` : `Bucket ${i} ist leer: ${k} ist nicht da.`}`, { probe, focus: i });
+                if (table[b].includes(k)) { say(`${k} steht schon in Bucket ${b}: nichts zu tun.`, { token: k, b, code: C(name, 2) }); return; }
+                table[b].push(k);
+                say(table[b].length > 1 ? `append k to the back of buckets[b]: Bucket ${b} ist schon belegt, eine Kollision. ${k} kommt hinten an seine Liste.` : `append k to the back of buckets[b]: ${k} kommt in Bucket ${b}.`,
+                    { b, fresh: k, code: C(name, 3) });
+            } else {
+                let tries = 0;
+                while (table[b] !== null && tries < m) {
+                    say(`while buckets[b] occupied: In Bucket ${b} steht ${table[b]}.`, { token: k, b, compare: table[b], code: C(name, 2) });
+                    if (table[b] === k) { say(`buckets[b] = k: ${k} steht schon da, nichts zu tun.`, { token: k, b, code: C(name, 3) }); return; }
+                    const old = b;
+                    b = (b + 1) % m;
+                    tries += 1;
+                    say(`b ← (b + 1) mod m: (${old} + 1) mod ${m} = ${b}.${b === 0 ? ' Nach dem letzten Bucket geht es vorn weiter.' : ''}`, { token: k, b, code: C(name, 4) });
                 }
+                if (table[b] !== null) { say('Alle Buckets sind belegt.', { b, code: C(name, 2) }); return; }
+                say(`while buckets[b] occupied: Bucket ${b} ist frei.`, { token: k, b, code: C(name, 2) });
+                table[b] = k;
+                say(`buckets[b] ← k: ${k} kommt in Bucket ${b}.`, { b, fresh: k, code: C(name, 5) });
             }
+            count += 1;
+            say(`count ← count + 1: ${count} Schlüssel in ${m} Buckets, der Füllgrad ist ${Math.round((count / m) * 100)} %.`, { b, code: C(name, chain ? 4 : 6) });
+        };
+        const find = (k) => {
+            const name = chain ? 'chainFind' : 'probeFind';
+            snapshot(`find(${k}): Steht der Schlüssel ${k} in der Hash Table?`, { token: k, code: C(name, 0) });
+            let b = hash(k);
+            snapshot(`b ← h(k): h(${k}) = ${k} mod ${m} = ${b}. Nur hier kann ${k} stehen${chain ? '' : ', oder ein Stück weiter'}.`, { token: k, b, code: C(name, 1) });
+            if (chain) {
+                for (const s of table[b]) {
+                    if (s === k) { snapshot(`${k} steht in der Liste von Bucket ${b}: gefunden.`, { token: k, b, compare: s, found: s, code: C(name, 2) }); return; }
+                    snapshot(`${s} ist nicht ${k}, weiter in der Liste.`, { token: k, b, compare: s, code: C(name, 2) });
+                }
+                snapshot(`Die Liste von Bucket ${b} ist zu Ende: ${k} ist nicht da. Kein anderer Bucket musste angesehen werden.`, { token: k, b, code: C(name, 2) });
+                return;
+            }
+            let tries = 0;
+            while (table[b] !== null && tries < m) {
+                snapshot(`while buckets[b] occupied: In Bucket ${b} steht ${table[b]}.`, { token: k, b, compare: table[b], code: C(name, 2) });
+                if (table[b] === k) { snapshot(`buckets[b] = k: gefunden, in Bucket ${b}.`, { token: k, b, compare: k, found: k, code: C(name, 3) }); return; }
+                const old = b;
+                b = (b + 1) % m;
+                tries += 1;
+                snapshot(`b ← (b + 1) mod m: (${old} + 1) mod ${m} = ${b}.`, { token: k, b, code: C(name, 4) });
+            }
+            snapshot(`while buckets[b] occupied: Bucket ${b} ist leer. Wäre ${k} da, stünde es spätestens hier: not found.`, { token: k, b, code: C(name, 5) });
+        };
+        for (const op of setup) if (op.type === 'insert') insert(op.value, true);
+        snapshot(setup.length ? 'Die Hash Table von oben. Jetzt der Reihe nach die Operationen darüber.' : `Eine leere Hash Table mit ${m} Buckets. Der Hash eines Schlüssels k ist k mod ${m}.`);
+        for (const [number, op] of ops.entries()) {
+            current = number;
+            if (op.type === 'insert') insert(op.value);
+            else if (op.type === 'find') find(op.value);
         }
         return frames;
     }
 
-    function drawHash(svg, frame) {
+    // The buckets as a column; with chaining each bucket points to its list,
+    // the keys as boxes with arrows (pointers of their box, sprouting when a
+    // key is appended); the key on its way as a dashed token where it would
+    // go (after the list of bucket b, or right of bucket b); b as a label on
+    // the left with an arrow to its bucket.
+    function drawHash(svg, frame, longest, marker) {
         svg.replaceChildren();
-        const size = frame.table.length;
-        const rowH = 38;
-        const probe = frame.probe || [];
+        const rowH = 40;
+        const top = 30;
+        const bx = 90;
+        const bw = 56;
+        const keyW = 48;
+        const step = 72;
+        svg.appendChild(arrowheads(marker));
+        const rowY = (i) => top + i * rowH;
+        const key = (k, x, y, extra = {}) => el('svg:g', { 'data-key': `key-${k}`, 'data-grow': '', ...(frame.fresh === k ? { 'data-from': 'token' } : {}), transform: `translate(${x} ${y})` }, [
+            el('svg:rect', { x: 0, y: 0, width: keyW, height: rowH - 10, rx: 5, fill: extra.fill || 'var(--algo-paper)', stroke: extra.stroke || 'var(--algo-ink)', 'stroke-width': extra.width || 1.5 }),
+            el('svg:text', { x: keyW / 2, y: 20, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(k) })]);
+        const look = (k) => (frame.found === k ? { fill: 'var(--algo-frontier)', stroke: 'var(--algo-accent)', width: 2.5 } : frame.compare === k ? { fill: 'var(--algo-frontier)' } : frame.fresh === k ? { fill: 'var(--algo-frontier)' } : {});
+        const arrow = (k, ends, [x1, y1], [x2, y2]) => el('svg:path', { 'data-key': k, 'data-ends': ends, 'data-inset': 2,
+            d: `M${x1} ${y1} Q${(x1 + x2) / 2} ${(y1 + y2) / 2} ${x2} ${y2}`, fill: 'none', stroke: 'var(--algo-line)', 'stroke-width': 2, 'marker-end': `url(#${marker})` });
         frame.table.forEach((bucket, i) => {
-            const y = 10 + i * rowH;
-            const inProbe = probe.includes(i);
-            svg.appendChild(el('svg:text', { x: 8, y: y + 23, 'font-size': 12, fill: 'var(--bs-secondary-color)', text: String(i) }));
-            svg.appendChild(el('svg:rect', { x: 30, y, width: 60, height: rowH - 6, rx: 5, fill: frame.focus === i ? 'var(--algo-frontier)' : inProbe ? 'color-mix(in srgb, var(--algo-accent) 18%, transparent)' : 'var(--algo-paper)', stroke: inProbe ? 'var(--algo-accent)' : 'var(--algo-line)', 'stroke-width': inProbe ? 2.5 : 1.5 }));
+            const y = rowY(i);
+            svg.appendChild(el('svg:text', { 'data-key': `bindex-${i}`, x: bx - 8, y: y + 20, 'text-anchor': 'end', 'font-size': 12, fill: 'var(--bs-secondary-color)', text: String(i) }));
+            svg.appendChild(el('svg:rect', { 'data-key': `bucket-${i}`, x: bx, y, width: bw, height: rowH - 8, rx: 5, fill: frame.b === i ? 'color-mix(in srgb, var(--algo-accent) 14%, var(--algo-paper))' : 'var(--algo-paper)',
+                stroke: frame.b === i ? 'var(--algo-accent)' : 'var(--algo-line)', 'stroke-width': frame.b === i ? 2.5 : 1.5 }));
+            // where the arrow of b ends: before the bucket's number
+            svg.appendChild(el('svg:circle', { 'data-key': `bin-${i}`, cx: bx - 24, cy: y + (rowH - 8) / 2, r: 0, fill: 'none' }));
             if (frame.mode === 'chain') {
+                svg.appendChild(el('svg:circle', { 'data-key': `bfield-${i}`, cx: bx + bw * 0.5, cy: y + (rowH - 8) / 2, r: 0, fill: 'none' }));
+                if (!bucket.length) svg.appendChild(el('svg:text', { 'data-key': `bempty-${i}`, x: bx + bw / 2, y: y + 20, 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--bs-secondary-color)', text: '∅' }));
                 bucket.forEach((k, j) => {
-                    const x = 110 + j * 70;
-                    svg.appendChild(el('svg:path', { d: `M${x - (j ? 14 : 20)} ${y + 16} l${j ? 10 : 16} 0 m-5 -4 l5 4 l-5 4`, stroke: 'var(--algo-ink)', 'stroke-width': 1.5, fill: 'none' }));
-                    svg.appendChild(el('svg:rect', { x, y: y + 2, width: 50, height: rowH - 10, rx: 5, fill: 'var(--algo-paper)', stroke: 'var(--algo-ink)', 'stroke-width': 1.5 }));
-                    svg.appendChild(el('svg:text', { x: x + 25, y: y + 21, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(k) }));
+                    const x = bx + bw + 22 + j * step;
+                    const owner = j === 0 ? `bfield-${i}` : `kfield-${bucket[j - 1]}`;
+                    const from = j === 0 ? [bx + bw * 0.5, y + 16] : [bx + bw + 22 + (j - 1) * step + keyW - 2, y + 16];
+                    svg.appendChild(arrow(`next-${i}-${j}`, `${owner} kin-${k}`, from, [x - 2, y + 16]));
+                    svg.appendChild(el('svg:circle', { 'data-key': `kin-${k}`, cx: x - 2, cy: y + 16, r: 0, fill: 'none' }));
+                    svg.appendChild(el('svg:circle', { 'data-key': `kfield-${k}`, cx: x + keyW - 2, cy: y + 16, r: 0, fill: 'none' }));
+                    svg.appendChild(key(k, x, y + 1, look(k)));
                 });
-            } else if (bucket !== null) {
-                svg.appendChild(el('svg:text', { x: 60, y: y + 22, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(bucket) }));
-            }
+            } else if (bucket !== null) svg.appendChild(key(bucket, bx + (bw - keyW) / 2, y + 1, look(bucket)));
         });
-        svg.setAttribute('viewBox', `0 0 420 ${20 + size * rowH}`);
+        // the key on its way, where it would go
+        if (frame.token !== undefined && frame.b !== undefined) {
+            const y = rowY(frame.b);
+            const x = frame.mode === 'chain' ? bx + bw + 22 + frame.table[frame.b].length * step : bx + bw + 24;
+            svg.appendChild(el('svg:g', { 'data-key': 'token', 'data-grow': '', 'data-merge': '', transform: `translate(${x} ${y + 1})` }, [
+                el('svg:rect', { x: 0, y: 0, width: keyW, height: rowH - 10, rx: 5, fill: 'var(--algo-frontier)', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '4 3' }),
+                el('svg:text', { x: keyW / 2, y: 20, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.token) })]));
+        } else if (frame.token !== undefined) {
+            svg.appendChild(el('svg:g', { 'data-key': 'token', 'data-grow': '', transform: `translate(${bx + bw + 24} 0)` }, [
+                el('svg:rect', { x: 0, y: 0, width: keyW, height: rowH - 10, rx: 5, fill: 'var(--algo-frontier)', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '4 3' }),
+                el('svg:text', { x: keyW / 2, y: 20, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.token) })]));
+        }
+        // b: a label on the left, its arrow to bucket b
+        if (frame.b !== undefined) {
+            const y = rowY(frame.b) + (rowH - 8) / 2;
+            const w = 14 + 7.5;
+            svg.appendChild(el('svg:path', { 'data-key': 'pointer-b', 'data-ends': `var-b bin-${frame.b}`, 'data-inset': 2, 'data-rigid': '',
+                d: `M${8 + w / 2} ${y} Q${(8 + w / 2 + bx - 26) / 2} ${y} ${bx - 26} ${y}`, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 1.5, 'marker-end': `url(#${marker}-accent)` }));
+            svg.appendChild(el('svg:rect', { 'data-solid': '', 'data-key': 'var-b', x: 8, y: y - 9, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
+            svg.appendChild(el('svg:text', { 'data-key': 'var-b-label', x: 8 + w / 2, y: y + 4, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'b' }));
+        }
+        const width = bx + bw + 22 + Math.max(1, longest) * step + 30;
+        svg.appendChild(el('svg:text', { 'data-key': 'count', x: width - 8, y: 18, 'text-anchor': 'end', 'font-size': 12, fill: 'var(--bs-secondary-color)',
+            text: `count ${frame.count}, m ${frame.m}, Füllgrad ${Math.round((frame.count / frame.m) * 100)} %` }));
+        svg.setAttribute('viewBox', `0 0 ${width} ${top + frame.m * rowH + 6}`);
+        svg.dataset.natural = width;
     }
 
     let widgetCount = 0;
@@ -2019,12 +2113,11 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             };
         } else if (algo === 'hash') {
             const mode = widget.dataset.mode || 'chain';
-            frames = traceHash(parseOps(widget.dataset.ops), mode, Number(widget.dataset.size || 8));
+            frames = traceHash(parseOps(widget.dataset.ops), mode, Number(widget.dataset.size || 8), setupOps);
+            const longest = Math.max(1, ...frames.map((f) => (mode === 'chain' ? Math.max(...f.table.map((b) => b.length + 1)) : 1)));
+            const marker = `algo-arrow-${++widgetCount}`;
             svg.setAttribute('aria-label', 'Die Buckets der Hash Table mit ihren Schlüsseln');
-            draw = (frame) => {
-                drawHash(svg, frame);
-                side.replaceChildren(el('h5', { text: 'Füllgrad' }), el('div', { class: 'algo-items' }, [el('span', { class: 'algo-item', text: `${Math.round(frame.load * 100)} %` })]));
-            };
+            draw = (frame) => { drawHash(svg, frame, longest, marker); listSide(frame, 0); };
         } else if (algo === 'sort') {
             const values = widget.dataset.values.split(',').map(Number);
             const kind = widget.dataset.sort;
