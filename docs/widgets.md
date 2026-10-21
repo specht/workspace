@@ -227,6 +227,11 @@ only to look nice.
   with its length (none under 40 px), so the head of an index arrow never
   tilts. A label that comes or goes follows its node (`data-follow` on a
   text), and what merges into an element keeps its own key.
+- **Bit planes** (`bitplane_widget.js`, steganography): a slider with two
+  handles over the bits 7 to 0, the bits between them kept, all others 0;
+  »verstärken« stretches the rest to 0 to 255; one pixel's red value in
+  binary under the picture. The photo (CC0, credited under it) is a PNG, so
+  that every bit is the photo's own, and not one of the activity's photos.
 - **What grows comes first**: in a step that also sprouts a pointer, an
   element that grows in does so at the start (`early` in
   `stepper_motion.js`), so that its pointers sprout from something.

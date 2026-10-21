@@ -245,6 +245,13 @@ In Bitebene 1 steht ein Hinweis, mitten in einem Foto, das ganz normal aussieht.
 </div>
 <!-- /language -->
 
+Hier geht es mit einem anderen Foto weiter, und mit mehr als einem Bit: Zieh die beiden Griffe, und nur die Bits zwischen ihnen bleiben, alle anderen werden 0. Liegen beide auf demselben Bit, ist das eine Bitebene; »verstärken« streckt, was übrig bleibt, auf 0 bis 255, sonst wären die unteren Bits fast schwarz. Wie viele Bits von oben brauchst du, bis der Himmel glatt aussieht?
+
+<div class='bitplane-widget' data-x='300' data-y='30' data-credit='Foto: Uwe Jelting, <a href="https://commons.wikimedia.org/wiki/File:Strandwagen_Auf_Borkum_(183887415).jpeg">Strandwagen auf Borkum</a>, CC0'>
+<img data-noconvert src='strandwagen.png' alt='Ein roter Strandwagen auf hellem Sand unter blauem Himmel, mit den gewählten Bits jedes Kanals.'>
+</div>
+<script src='/include/bitplane_widget.js'></script>
+
 ## Eine Botschaft im untersten Bit
 
 Das Verfahren heißt **Least Significant Bit**, kurz LSB: Jedes unterste Bit jedes Kanals wird durch ein Bit der Botschaft ersetzt. Damit ein Programm die Botschaft wieder herausholen kann, müssen beide Seiten dieselben Regeln benutzen. Hier sind sie:

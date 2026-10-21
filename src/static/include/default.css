@@ -6650,3 +6650,133 @@ html[data-bs-theme="dark"] .automaton-stepper {
     height: auto;
     margin: 0.4em auto 0;
 }
+
+/* The bit-plane widget (bitplane_widget.js): the bits 7 to 0 as cells, the
+   kept ones purple, a slider with two handles under them, the photo below */
+.bitplane-widget {
+    --bitplane-accent: #6741d9;
+    margin: 1em 0 1.5em;
+}
+html[data-bs-theme="dark"] .bitplane-widget {
+    --bitplane-accent: #b197fc;
+}
+.bitplane-widget .bitplane-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6em 2em;
+    margin-bottom: 0.4em;
+}
+.bitplane-widget .bitplane-bits {
+    width: 18em;
+    max-width: 100%;
+}
+.bitplane-widget .bitplane-cells {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 3px;
+    font-family: '0xProto Nerd Font Mono', monospace;
+}
+.bitplane-widget .bitplane-cell {
+    text-align: center;
+    padding: 0.15em 0;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 4px;
+    color: var(--bs-secondary-color);
+    transition: background-color 0.15s, color 0.15s;
+}
+.bitplane-widget .bitplane-cell.on {
+    background: color-mix(in srgb, var(--bitplane-accent) 18%, transparent);
+    border-color: var(--bitplane-accent);
+    color: var(--bitplane-accent);
+    font-weight: 700;
+}
+/* two range inputs on one track; only their handles take the pointer. The
+   track runs from the middle of the first cell to the middle of the last */
+.bitplane-widget .bitplane-range {
+    position: relative;
+    height: 1.8em;
+}
+.bitplane-widget .bitplane-range::before {
+    content: '';
+    position: absolute;
+    left: 6.25%;
+    right: 6.25%;
+    top: 50%;
+    height: 2px;
+    background: var(--bs-border-color);
+}
+.bitplane-widget .bitplane-range input {
+    position: absolute;
+    left: calc(6.25% - 0.6em);
+    right: calc(6.25% - 0.6em);
+    width: calc(87.5% + 1.2em);
+    top: 0;
+    height: 100%;
+    margin: 0;
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    pointer-events: none;
+}
+.bitplane-widget .bitplane-range input::-webkit-slider-runnable-track {
+    background: transparent;
+}
+.bitplane-widget .bitplane-range input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    pointer-events: auto;
+    width: 1.2em;
+    height: 1.2em;
+    border-radius: 50%;
+    background: var(--bitplane-accent);
+    border: 2px solid var(--bs-body-bg);
+    cursor: grab;
+}
+.bitplane-widget .bitplane-range input::-moz-range-thumb {
+    pointer-events: auto;
+    width: 1.2em;
+    height: 1.2em;
+    border-radius: 50%;
+    background: var(--bitplane-accent);
+    border: 2px solid var(--bs-body-bg);
+    cursor: grab;
+}
+.bitplane-widget .bitplane-range input::-moz-range-track {
+    background: transparent;
+}
+.bitplane-widget .bitplane-say {
+    min-height: 1.6em;
+    margin-bottom: 0.4em;
+}
+.bitplane-widget canvas.bitplane-picture {
+    display: block;
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    border-radius: 6px;
+}
+.bitplane-widget .bitplane-sample {
+    margin-top: 0.5em;
+    font-size: 0.95em;
+}
+.bitplane-widget .bitplane-sample code {
+    background: none;
+    color: inherit;
+    padding: 0;
+    font-size: 1em;
+}
+.bitplane-widget .bitplane-sample .kept {
+    color: var(--bitplane-accent);
+    font-weight: 700;
+}
+.bitplane-widget .bitplane-sample .gone {
+    color: var(--bs-secondary-color);
+    text-decoration: line-through;
+}
+.bitplane-widget .bitplane-credit {
+    margin-top: 0.3em;
+    font-size: 0.8em;
+    color: var(--bs-secondary-color);
+}
+
