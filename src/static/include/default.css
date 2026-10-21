@@ -5876,7 +5876,15 @@ div[data-stepper]::before {
 
 /* The iDCT stepper (idct_stepper.js): coefficients, the current basis
    picture, the block so far and its pixel values. All four are squares of
-   the same size, 8 × 8 cells; the numbers are smaller, not the cells. */
+   the same size, 8 × 8 cells; the numbers are smaller, not the cells.
+   Four in a row, two by two or one below the other, never three and one
+   alone: four in a row where the cells stay nearly at full size, else two
+   columns, on a phone one; the cells follow the widget's width (container
+   units) and the numbers their cells. In em, so that they grow with the
+   text in the lightbox. */
+.idct-stepper {
+    container-type: inline-size;
+}
 .idct-stepper .idct-controls {
     display: flex;
     gap: 0.3em;
@@ -5893,11 +5901,23 @@ div[data-stepper]::before {
     margin-bottom: 0.6em;
 }
 .idct-stepper .idct-panels {
-    --idct-cell: 1.9rem;
-    display: flex;
-    flex-wrap: wrap;
+    --idct-cell: clamp(1.5em, calc((100cqi - 2px) / 8), 1.9em);
+    display: grid;
+    grid-template-columns: max-content;
     gap: 1.2em;
-    align-items: flex-start;
+    align-items: start;
+}
+@container (min-width: 26em) {
+    .idct-stepper .idct-panels {
+        --idct-cell: clamp(1.5em, calc((100cqi - 1.2em - 4px) / 16), 1.9em);
+        grid-template-columns: repeat(2, max-content);
+    }
+}
+@container (min-width: 54em) {
+    .idct-stepper .idct-panels {
+        --idct-cell: clamp(1.55em, calc((100cqi - 3.6em - 8px) / 32), 1.9em);
+        grid-template-columns: repeat(4, max-content);
+    }
 }
 .idct-stepper figure {
     margin: 0;
@@ -5922,7 +5942,7 @@ div[data-stepper]::before {
 }
 .idct-stepper .idct-coef span, .idct-stepper .idct-numbers span {
     font-family: '0xProto Nerd Font Mono', monospace;
-    font-size: 0.68rem;
+    font-size: calc(var(--idct-cell) * 0.36);
 }
 .idct-stepper .idct-coef span.zero {
     color: var(--bs-secondary-color);
