@@ -104,6 +104,11 @@ only to look nice.
   and snaps onto its target where the target stands, and only then does the
   target move into its new place, the pointer staying on it (two phases, the
   step 1.7 times as long).
+- **Arrow tips never touch a ring**: an arrow to a node that wears a ring
+  ends outside the ring (`data-ring` on the ring, `stepper_motion.js`), at
+  rest as well as while it moves.
+- **Edge labels keep clear of every edge**: the automaton places each label
+  where it keeps 4 units from all arrows and states.
 - **Arrows end on the border** of their node (`data-inset`), so the
   arrowhead stays visible (a curve that would come in backwards is drawn
   straight for that moment, so the head never turns over), and they **bend

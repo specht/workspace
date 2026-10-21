@@ -119,8 +119,13 @@
     // back below, a loop above its state
     const GAP = 120;
     const LEFT = 70;
-    const TOP = 112;
+    // the variables on top, the tape under them, the states under that
+    const VARS = 6;
+    const TAPE = 38;
+    const TOP = 150;
     const R = 24;
+    // the ring around a state the automaton is in
+    const RING = R + 6;
     function geometry(a) {
         const x = (s) => LEFT + a.states.indexOf(s) * GAP;
         const pairs = new Map();
@@ -135,11 +140,14 @@
             const [from, to] = k.split(' ');
             const [x1, x2] = [x(from), x(to)];
             const label = shorten(symbols);
-            let d;
+            let path;
             let lx;
             let ly;
+            // path(inset): the arrow ending inset from the centre of its
+            // target (further out when the target wears a ring)
             if (from === to) {
-                d = `M${x1 - 10} ${TOP - R + 2} C${x1 - 34} ${TOP - 78} ${x1 + 34} ${TOP - 78} ${x1 + 10} ${TOP - R + 2}`;
+                const angle = Math.atan2(-(R - 2), 10);
+                path = (inset) => `M${x1 - 10} ${TOP - R + 2} C${x1 - 34} ${TOP - 78} ${x1 + 34} ${TOP - 78} ${x1 + Math.cos(angle) * inset} ${TOP + Math.sin(angle) * inset}`;
                 [lx, ly] = [x1, TOP - 68];
             } else {
                 const forward = x2 > x1;
@@ -151,7 +159,7 @@
                 const mx = (x1 + x2) / 2;
                 const my = TOP + bend;
                 if (bend === 0) {
-                    d = `M${x1 + R} ${TOP} L${x2 - R - 2} ${TOP}`;
+                    path = (inset) => `M${x1 + R} ${TOP} L${x2 - inset} ${TOP}`;
                     [lx, ly] = [mx, TOP - 8];
                 } else {
                     // a curve whose middle is at my: its control point twice
@@ -161,13 +169,42 @@
                     const cy = 2 * my - TOP;
                     const towards = (xa, r) => { const l = Math.hypot(mx - xa, cy - TOP); return [xa + ((mx - xa) / l) * r, TOP + ((cy - TOP) / l) * r]; };
                     const [sx, sy] = towards(x1, R);
-                    const [tx, ty] = towards(x2, R + 2);
-                    d = `M${sx} ${sy} Q${mx} ${cy} ${tx} ${ty}`;
+                    path = (inset) => { const [tx, ty] = towards(x2, inset); return `M${sx} ${sy} Q${mx} ${cy} ${tx} ${ty}`; };
                     [lx, ly] = [mx, bend < 0 ? my - 6 : my + 16];
                 }
             }
-            return { from, to, d, label, lx, ly, key: `edge-${from}-${to}` };
+            const d = path(R + 2);
+            return { from, to, d, path, label, lx, ly, out: from === to || (x2 > x1) || Math.abs(x2 - x1) === 0 ? -1 : 1, key: `edge-${from}-${to}` };
         });
+        // The labels clear of every arrow: points along each arrow (read from
+        // its path), and a label moves away from its arrow, in steps, until
+        // it keeps 4 units from all of them and from the states
+        const points = [];
+        for (const e of edges) {
+            const n = e.d.match(/-?\d+(?:\.\d+)?/g).map(Number);
+            const at = (u) => {
+                const v = 1 - u;
+                if (e.d.includes('C')) return [v ** 3 * n[0] + 3 * v * v * u * n[2] + 3 * v * u * u * n[4] + u ** 3 * n[6], v ** 3 * n[1] + 3 * v * v * u * n[3] + 3 * v * u * u * n[5] + u ** 3 * n[7]];
+                if (e.d.includes('Q')) return [v * v * n[0] + 2 * v * u * n[2] + u * u * n[4], v * v * n[1] + 2 * v * u * n[3] + u * u * n[5]];
+                return [n[0] + (n[2] - n[0]) * u, n[1] + (n[3] - n[1]) * u];
+            };
+            for (let u = 0; u <= 1.0001; u += 0.02) points.push(at(u));
+        }
+        const circles = a.states.map((s) => [x(s), TOP]);
+        const clearance = (cx, baseline, w) => {
+            const box = { x: cx - w / 2, y: baseline - 11, w, h: 14 };
+            const to = ([px, py]) => Math.hypot(Math.max(box.x - px, 0, px - box.x - box.w), Math.max(box.y - py, 0, py - box.y - box.h));
+            let least = Infinity;
+            for (const p of points) least = Math.min(least, to(p));
+            for (const c of circles) least = Math.min(least, to(c) - R);
+            return least;
+        };
+        for (const e of edges) {
+            const w = 7.8 * e.label.length + 4;
+            let k = 0;
+            while (k < 12 && clearance(e.lx, e.ly + e.out * 3 * k, w) < 4) k++;
+            e.ly += e.out * 3 * k;
+        }
         const width = LEFT * 2 + (a.states.length - 1) * GAP;
         // room under the row for the arrows back
         const below = edges.some((e) => a.states.indexOf(e.to) < a.states.indexOf(e.from)) ? 70 : 34;
@@ -185,15 +222,30 @@
         [...word].forEach((symbol, i) => {
             const x = tapeLeft + i * CELL;
             const done = i < step.at || (step.end && i < word.length);
-            svg.appendChild(make('rect', { 'data-key': `cell-${i}`, x, y: 6, width: CELL - 2, height: 26, rx: 4, fill: 'var(--automaton-paper)', stroke: 'var(--automaton-line)', 'stroke-width': 1 }));
-            svg.appendChild(make('text', { 'data-key': `symbol-${i}`, x: x + (CELL - 2) / 2, y: 24, 'text-anchor': 'middle', 'font-size': 14, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: done ? 'var(--automaton-faint)' : 'var(--automaton-ink)', text: symbol }));
+            svg.appendChild(make('rect', { 'data-key': `cell-${i}`, x, y: TAPE, width: CELL - 2, height: 26, rx: 4, fill: 'var(--automaton-paper)', stroke: 'var(--automaton-line)', 'stroke-width': 1 }));
+            svg.appendChild(make('text', { 'data-key': `symbol-${i}`, x: x + (CELL - 2) / 2, y: TAPE + 18, 'text-anchor': 'middle', 'font-size': 14, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: done ? 'var(--automaton-faint)' : 'var(--automaton-ink)', text: symbol }));
         });
-        if (step.at >= 0 && step.at < word.length) svg.appendChild(make('rect', { 'data-key': 'head', x: tapeLeft + step.at * CELL - 2, y: 4, width: CELL + 2, height: 30, rx: 6, fill: 'none', stroke: 'var(--automaton-accent)', 'stroke-width': 2.5 }));
+        if (step.at >= 0 && step.at < word.length) svg.appendChild(make('rect', { 'data-key': 'head', x: tapeLeft + step.at * CELL - 2, y: TAPE - 2, width: CELL + 2, height: 30, rx: 6, fill: 'none', stroke: 'var(--automaton-accent)', 'stroke-width': 2.5 }));
+        // the variables of the code: the symbol just read, the state (a
+        // NEA: the set of states), each a box with its value beside its name
+        const vars = [...(step.symbol !== undefined ? [['symbol', step.symbol]] : []), [a.nfa ? 'states' : 'state', a.nfa ? (step.states.length ? step.states.join(', ') : '–') : (step.states[0] || '–')]];
+        let vx = 8;
+        for (const [name, value] of vars) {
+            const w = 22 + 7.5 * (name.length + String(value).length);
+            const split = vx + 10 + 7.5 * name.length;
+            svg.appendChild(make('rect', { 'data-key': `var-${name}`, x: vx, y: VARS, width: w, height: 20, rx: 4, fill: 'var(--automaton-paper)', stroke: 'var(--automaton-accent)', 'stroke-width': 1.5 }));
+            svg.appendChild(make('line', { 'data-key': `var-${name}-split`, x1: split, y1: VARS, x2: split, y2: VARS + 20, stroke: 'var(--automaton-accent)', 'stroke-width': 1 }));
+            svg.appendChild(make('text', { 'data-key': `var-${name}-label`, x: vx + 5 + 3.75 * name.length, y: VARS + 14, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--automaton-accent)', text: name }));
+            svg.appendChild(make('text', { 'data-key': `var-${name}-value`, x: split + (vx + w - split) / 2, y: VARS + 14, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 600, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--automaton-ink)', text: String(value) }));
+            vx += w + 8;
+        }
         // the arrows, the ones just taken purple
         const used = new Set(step.used.map(([f, t]) => `edge-${f}-${t}`));
         for (const e of geo.edges) {
             const on = used.has(e.key);
-            svg.appendChild(make('path', { 'data-key': e.key, d: e.d, fill: 'none', stroke: on ? 'var(--automaton-accent)' : 'var(--automaton-line)', 'stroke-width': on ? 2.5 : 1.6, 'marker-end': `url(#${marker}${on ? '-accent' : ''})` }));
+            // into a state with a ring: the tip outside the ring
+            const ringed = step.states.includes(e.to);
+            svg.appendChild(make('path', { 'data-key': e.key, d: ringed ? e.path(RING + 1.5 + 2) : e.d, fill: 'none', stroke: on ? 'var(--automaton-accent)' : 'var(--automaton-line)', 'stroke-width': on ? 2.5 : 1.6, 'marker-end': `url(#${marker}${on ? '-accent' : ''})` }));
         }
         step.used.forEach(([f, t], i) => svg.appendChild(make('path', { 'data-key': `pulse-${i}`, 'data-pulse': `edge-${f}-${t}`, 'data-delay': 0, 'data-length': 0.85, 'data-swell': 2.5, d: 'M0 0', opacity: 0 })));
         for (const e of geo.edges) svg.appendChild(make('text', { 'data-key': `label-${e.key}`, x: e.lx, y: e.ly, 'text-anchor': 'middle', 'font-size': 13, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: used.has(e.key) ? 'var(--automaton-accent)' : 'var(--automaton-ink)', 'font-weight': used.has(e.key) ? 700 : 400, text: e.label }));
@@ -213,7 +265,7 @@
         for (const s of step.states) {
             const from = step.used.find(([, t]) => t === s);
             const key = a.nfa ? `ring-${s}` : 'ring';
-            svg.appendChild(make('circle', { 'data-key': key, 'data-grow': '', ...(a.nfa && from ? { 'data-from': `ring-${from[0]}` } : {}), cx: geo.x(s), cy: TOP, r: R + 6, fill: 'none', stroke: 'var(--automaton-accent)', 'stroke-width': 3 }));
+            svg.appendChild(make('circle', { 'data-key': key, 'data-grow': '', ...(a.nfa && from ? { 'data-from': `ring-${from[0]}` } : {}), cx: geo.x(s), cy: TOP, r: RING, fill: 'none', stroke: 'var(--automaton-accent)', 'stroke-width': 3 }));
         }
         svg.setAttribute('viewBox', `0 0 ${geo.width} ${geo.height}`);
     }

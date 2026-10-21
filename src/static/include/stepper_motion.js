@@ -195,6 +195,7 @@
         // the new one
         const present = new Map();
         for (const node of [...leaving, ...shown]) if (node.dataset.key && !node.dataset.ends) present.set(node.dataset.key, node);
+        const rings = new Map(shown.filter((node) => node.dataset.ring).map((node) => [node.dataset.ring, node]));
         const centre = (key) => {
             const node = present.get(key);
             if (!node) return null;
@@ -246,9 +247,14 @@
             // data-inset='auto': as far as the current radius of the circle it
             // points to, so the tip stays on the border of a node that grows
             let inset = Number(r.line.dataset.inset || 0);
+            // a node that wears a ring (data-ring='node-…'): the tip stops
+            // outside the ring, never on it
             if (r.line.dataset.inset === 'auto') {
-                const target = present.get(r.kind === 'cut' ? r.from[1] : r.to[1]);
-                inset = target && target.hasAttribute('r') ? Number(target.getAttribute('r')) + 2 : 20;
+                const key = r.kind === 'cut' ? r.from[1] : r.to[1];
+                const target = present.get(key);
+                const ring = rings.get(key);
+                inset = ring ? Number(ring.getAttribute('r')) + Number(ring.getAttribute('stroke-width') || 2) / 2 + 2
+                    : target && target.hasAttribute('r') ? Number(target.getAttribute('r')) + 2 : 20;
             }
             let end = tip;
             let control = bend;

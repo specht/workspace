@@ -385,8 +385,17 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         // an arrow lets go and snaps onto its new node when it changes: the
         // variable (node, neighbor) holds another node now, a predecessor
         // was found shorter
-        const pointer = (key, ends, [x1, y1], [x2, y2], extra = {}, rigid = false) => el('svg:path', { 'data-key': key, 'data-ends': ends, 'data-inset': 'auto', ...(rigid ? { 'data-rigid': '' } : {}),
-            d: `M${x1} ${y1} L${x2} ${y2}`, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 1.5, 'marker-end': `url(#${marker}-accent)`, ...extra });
+        // It ends on the border of its target, outside the ring if the
+        // target wears one (as the motion ends it, stepper_motion.js), also
+        // after a jump, when nothing moves
+        const pointer = (key, ends, [x1, y1], [x2, y2], extra = {}, rigid = false) => {
+            const target = ends.split(' ')[1];
+            const inset = target === 'focus' ? 22 + 2 : frame.focus && target === `node-${frame.focus}` ? 22 + 1.5 + 2 : R + 2;
+            const d = Math.hypot(x2 - x1, y2 - y1) || 1;
+            const s = d > inset ? (d - inset) / d : 0;
+            return el('svg:path', { 'data-key': key, 'data-ends': ends, 'data-inset': 'auto', ...(rigid ? { 'data-rigid': '' } : {}),
+                d: `M${x1} ${y1} L${x1 + (x2 - x1) * s} ${y1 + (y2 - y1) * s}`, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 1.5, 'marker-end': `url(#${marker}-accent)`, ...extra });
+        };
         // the lengths stand in genuine gaps of their edges: a mask cuts the
         // edges and the arrows along them where a length is written
         const mid = (a, b) => [(at[a][0] + at[b][0]) / 2, (at[a][1] + at[b][1]) / 2];
@@ -460,7 +469,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 'font-weight': frame.changed === id ? 700 : 400, fill: frame.changed === id ? 'var(--algo-accent)' : 'var(--algo-ink)', text: String(frame.dist[id]) }));
             if (kind === 'astar') svg.appendChild(el('svg:text', { 'data-key': `h-${id}`, x, y: y + 32, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: `h ${straight(graph, id, goal)}` }));
         }
-        if (frame.focus && frame.focus !== 'null') svg.appendChild(el('svg:circle', { 'data-key': 'focus', cx: at[frame.focus][0], cy: at[frame.focus][1], r: 22, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 3 }));
+        if (frame.focus && frame.focus !== 'null') svg.appendChild(el('svg:circle', { 'data-key': 'focus', 'data-ring': `node-${frame.focus}`, cx: at[frame.focus][0], cy: at[frame.focus][1], r: 22, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 3 }));
         for (const node of labels) svg.appendChild(node);
         // the row under the graph: the queue, the stack (its top on the
         // right) or the priority queue (the smallest first), each entry a
@@ -1979,9 +1988,12 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         const INSET = RADIUS + 2;
         // an arrow from (x1, y1) that stops at the border of the node it points
         // to; a path, so that it can bend while the nodes move (stepper_motion.js)
+        // an arrow to the node with the ring stops outside the ring
+        const RINGED = 23 + 1.5 + 2;
         const arrow = (key, ends, [x1, y1], [x2, y2], extra = {}) => {
             const d = Math.hypot(x2 - x1, y2 - y1);
-            const s = d > INSET ? (d - INSET) / d : 0;
+            const inset = frame.focus !== undefined && ends.split(' ')[1] === `node-${frame.focus}` ? RINGED : INSET;
+            const s = d > inset ? (d - inset) / d : 0;
             const [ex, ey] = [x1 + (x2 - x1) * s, y1 + (y2 - y1) * s];
             return el('svg:path', { 'data-key': key, 'data-ends': ends, 'data-inset': 'auto', d: `M${x1} ${y1} Q${(x1 + ex) / 2} ${(y1 + ey) / 2} ${ex} ${ey}`,
                 fill: 'none', stroke: 'var(--algo-line)', 'stroke-width': 2, 'marker-end': `url(#${most.marker})`, ...extra });
@@ -2080,7 +2092,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             const copied = frame.copied && frame.copied.into === id ? { 'data-from': `label-${frame.copied.from}-${value}` } : {};
             // the ring stays on its node while it fades in or out; it is
             // drawn in front of the nodes (after them)
-            if (frame.focus === id) ring = el('svg:circle', { 'data-key': 'focus', 'data-follow': `node-${id}`, cx: sx(x), cy: sy(d), r: 23, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 3 });
+            if (frame.focus === id) ring = el('svg:circle', { 'data-key': 'focus', 'data-follow': `node-${id}`, 'data-ring': `node-${id}`, cx: sx(x), cy: sy(d), r: 23, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 3 });
             svg.appendChild(el('svg:circle', { 'data-key': `node-${id}`, 'data-grow': '', ...(fresh ? { 'data-from': 'incoming' } : {}), cx: sx(x), cy: sy(d), r: RADIUS, fill, stroke: 'var(--algo-ink)', 'stroke-width': 1.5 }));
             svg.appendChild(el('svg:text', { 'data-key': `label-${id}-${value}`, ...fromToken, ...copied, x: sx(x), y: sy(d) + 5, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(value) }));
             if (frame.avl) svg.appendChild(el('svg:text', { 'data-key': `height-${id}`, ...fromToken, x: sx(x), y: sy(d) + 32, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: `h${graph[id].height}` }));
