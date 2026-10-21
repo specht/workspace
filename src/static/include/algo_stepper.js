@@ -387,16 +387,29 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         // was found shorter
         const pointer = (key, ends, [x1, y1], [x2, y2], extra = {}, rigid = false) => el('svg:path', { 'data-key': key, 'data-ends': ends, 'data-inset': 'auto', ...(rigid ? { 'data-rigid': '' } : {}),
             d: `M${x1} ${y1} L${x2} ${y2}`, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 1.5, 'marker-end': `url(#${marker}-accent)`, ...extra });
-        svg.appendChild(el('svg:defs', {}, [['', 'var(--algo-line)'], ['-accent', 'var(--algo-accent)'], ['-pred', 'var(--algo-pred)']].map(([suffix, fill]) =>
-            el('svg:marker', { id: `${marker}${suffix}`, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 9, markerHeight: 9, markerUnits: 'userSpaceOnUse', orient: 'auto-start-reverse' },
-                [el('svg:path', { d: 'M0 0L10 5L0 10z', fill })]))));
+        // the lengths stand in genuine gaps of their edges: a mask cuts the
+        // edges and the arrows along them where a length is written
+        const mid = (a, b) => [(at[a][0] + at[b][0]) / 2, (at[a][1] + at[b][1]) / 2];
+        const gaps = shortest ? graph.edges.map(([a, b, w]) => {
+            const [mx, my] = mid(a, b);
+            const half = 3.6 * String(w).length + 4;
+            return el('svg:rect', { x: mx - half, y: my - 8, width: 2 * half, height: 16, rx: 4, fill: 'black' });
+        }) : [];
+        const masked = shortest ? { mask: `url(#${marker}-gaps)` } : {};
+        svg.appendChild(el('svg:defs', {}, [
+            ...[['', 'var(--algo-line)'], ['-accent', 'var(--algo-accent)'], ['-pred', 'var(--algo-pred)']].map(([suffix, fill]) =>
+                el('svg:marker', { id: `${marker}${suffix}`, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 9, markerHeight: 9, markerUnits: 'userSpaceOnUse', orient: 'auto-start-reverse' },
+                    [el('svg:path', { d: 'M0 0L10 5L0 10z', fill })])),
+            ...(shortest ? [el('svg:mask', { id: `${marker}-gaps`, maskUnits: 'userSpaceOnUse', x: -100, y: -100, width: width + 200, height: rowY + 300 },
+                [el('svg:rect', { x: -100, y: -100, width: width + 200, height: rowY + 300, fill: 'white' }), ...gaps])] : []),
+        ]));
         // the path at the end: the arrows along it, thick
         const onPath = new Set();
         if (frame.done) for (let n = goal; frame.found[n]; n = frame.found[n]) onPath.add(n);
         for (const [a, b, w] of graph.edges) {
             const key = [a, b].sort().join('-');
             const look = frame.look === key;
-            svg.appendChild(el('svg:line', { 'data-key': `edge-${key}`, x1: at[a][0], y1: at[a][1], x2: at[b][0], y2: at[b][1], stroke: look ? 'var(--algo-accent)' : 'var(--algo-line)', 'stroke-width': look ? 3 : 2, 'stroke-linecap': 'round' }));
+            svg.appendChild(el('svg:line', { 'data-key': `edge-${key}`, x1: at[a][0], y1: at[a][1], x2: at[b][0], y2: at[b][1], stroke: look ? 'var(--algo-accent)' : 'var(--algo-line)', 'stroke-width': look ? 3 : 2, 'stroke-linecap': 'round', ...masked }));
         }
         // predecessor: an arrow from a node to the node it was found from;
         // it sprouts from its node and snaps on, and swings over when a
@@ -405,13 +418,13 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             if (p === null) continue;
             const thick = onPath.has(n);
             svg.appendChild(pointer(`pred-${n}`, `node-${n} node-${p}`, at[n], at[p], { stroke: thick ? 'var(--algo-accent)' : 'var(--algo-pred)', 'stroke-width': thick ? 4 : 2.5,
-                'marker-end': `url(#${marker}${thick ? '-accent' : '-pred'})` }));
+                'marker-end': `url(#${marker}${thick ? '-accent' : '-pred'})`, ...masked }));
         }
+        // the length of the edge looked along: bold and purple, like its edge
         if (shortest) for (const [a, b, w] of graph.edges) {
-            const [mx, my] = [(at[a][0] + at[b][0]) / 2, (at[a][1] + at[b][1]) / 2];
+            const [mx, my] = mid(a, b);
             const look = frame.look === [a, b].sort().join('-');
-            svg.appendChild(el('svg:rect', { 'data-key': `weight-${a}${b}-box`, x: mx - 12, y: my - 9, width: 24, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: look ? 'var(--algo-accent)' : 'none', 'stroke-width': 1.5 }));
-            svg.appendChild(el('svg:text', { 'data-key': `weight-${a}${b}`, x: mx, y: my + 4, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': look ? 700 : 400, fill: 'var(--algo-ink)', text: String(w) }));
+            svg.appendChild(el('svg:text', { 'data-key': `weight-${a}${b}`, x: mx, y: my + 4, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': look ? 700 : 400, fill: look ? 'var(--algo-accent)' : 'var(--algo-ink)', text: String(w) }));
         }
         // the start's predecessor: null at the end of a stub
         if (start in frame.found) {
