@@ -170,7 +170,11 @@ module ContentParts
     end
 
     # Relative image and video paths in a part are relative to the reference
-    # page; on the including page they must point to the same files.
+    # page; on the including page they must point to the same files. Only
+    # real tags and Markdown pictures: an example in a code block, in <pre>
+    # or in `code` shows a path to copy and stays as it is written.
+    CODE_SPANS = /(^```.*?^```[^\n]*$|<pre\b.*?<\/pre>|`[^`\n]+`)/m
+    MEDIA_SRC = /(<(?:img|video|audio|source|track|iframe|embed)\b[^>]*?\bsrc=)(['"])([^'"]+)\2/
     def self.rewrite_relative_sources(text, from_dir:, to_dir:)
         fix = lambda do |src|
             return src if src.start_with?('/', '#') || src =~ /\A[a-z]+:/i
@@ -178,9 +182,13 @@ module ContentParts
             Pathname.new(File.expand_path(src, from_dir)).relative_path_from(Pathname.new(to_dir)).to_s
         end
         # Capture the groups first: fix runs its own regex and resets $1..$3.
-        text
-            .gsub(/(\bsrc=)(['"])([^'"]+)\2/) { attr, quote, src = $1, $2, $3; "#{attr}#{quote}#{fix.call(src)}#{quote}" }
-            .gsub(/(!\[[^\]]*\]\()([^)\s]+)/) { prefix, src = $1, $2; "#{prefix}#{fix.call(src)}" }
+        text.split(CODE_SPANS).map.with_index do |piece, i|
+            next piece if i.odd?
+
+            piece
+                .gsub(MEDIA_SRC) { attr, quote, src = $1, $2, $3; "#{attr}#{quote}#{fix.call(src)}#{quote}" }
+                .gsub(/(!\[[^\]]*\]\()([^)\s]+)/) { prefix, src = $1, $2; "#{prefix}#{fix.call(src)}" }
+        end.join
     end
 
     def self.reference_file(reference_root, slug)

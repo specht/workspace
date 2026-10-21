@@ -256,4 +256,15 @@ class ContentPartsTest < Minitest::Test
         assert_includes warnings, '<!-- feature: teleport -->: unknown feature'
         assert_includes warnings, '<!-- feature: teleport --> without <!-- /feature -->'
     end
+
+    def test_paths_in_code_examples_stay_as_written
+        text = "<img src='bild.webp' alt=''>\n\n```html\n<img src=\"pictures/fuji.jpg\" alt=\"\">\n```\n\n" \
+               "<pre><code>&lt;img src=\"Fuji.jpg\"&gt;</code></pre>\n\nIm Text: `src=\"fuji.jpg\"`, und ![Bild](foto.webp)\n"
+        out = ContentParts.rewrite_relative_sources(text, from_dir: '/c/reference/html', to_dir: '/c/showerjs')
+        assert_includes out, "<img src='../reference/html/bild.webp'"
+        assert_includes out, '<img src="pictures/fuji.jpg" alt="">'
+        assert_includes out, '&lt;img src="Fuji.jpg"&gt;'
+        assert_includes out, '`src="fuji.jpg"`'
+        assert_includes out, '![Bild](../reference/html/foto.webp)'
+    end
 end
