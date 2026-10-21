@@ -109,7 +109,7 @@ open-site: /calculator
 tab: preview
 viewport: 1029x700
 zoom: 2
-select-option: #calc-input = 2 + 3 * 4
+select-option: #calc-input = 2+3*4
 hook: plain-tree
 sleep: 1
 crop-element: #calc-stepper .calc-tree svg
@@ -281,7 +281,7 @@ Jeder Knoten ist entweder eine Zahl, ein **Blatt**, oder eine Liste aus dem Rech
 Probier es aus, mit einem der Ausdrücke oben. Der Baum steht so, dass du den Ausdruck von links nach rechts lesen kannst. Mit den Pfeilen rechnest du ihn aus, einen Knoten nach dem anderen. Lila umrandet ist der Knoten, der als Nächstes drankommt: immer einer, unter dem nur noch Zahlen hängen.
 
 <div class='calc-stepper' id='calc-stepper' data-stepper>
-<select class='form-select' id='calc-input' aria-label='Ausdruck für den Baum'><option selected>2 + 3 * (4 - 1)</option><option>2 + 3 * 4</option><option>(2 + 3) * 4</option><option>12 + 3 * (4 - 1)</option><option>-(1 + 2) * 4</option><option>10 / 4 + 1</option></select>
+<select class='form-select' id='calc-input' aria-label='Ausdruck für den Baum'><option selected value='2+3*(4-1)'>2 + 3 * (4 - 1)</option><option value='2+3*4'>2 + 3 * 4</option><option value='(2+3)*4'>(2 + 3) * 4</option><option value='12+3*(4-1)'>12 + 3 * (4 - 1)</option><option value='-(1+2)*4'>-(1 + 2) * 4</option><option value='10/4+1'>10 / 4 + 1</option></select>
 <div class='calc-controls'>
 <button class='btn btn-sm btn-success' data-go='first' aria-label='Zum Anfang'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
 <button class='btn btn-sm btn-success' data-go='prev' aria-label='Einen Schritt zurück'><i class='bi bi-chevron-left' style='margin-right: 0;'></i></button>
