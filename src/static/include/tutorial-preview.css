@@ -1,6 +1,9 @@
 .tutorial-preview {
     box-sizing: border-box;
     float: right;
+    /* below the previous preview, never to its left: two side by side left
+       the text beside them a column one word wide */
+    clear: right;
     position: relative;
 
     width: min(28rem, 45%);
