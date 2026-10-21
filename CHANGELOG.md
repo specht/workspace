@@ -138,6 +138,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Bootstrap-Icons, ihr Zeichen genau in der Mitte; nach einem Klick zeigen
   sie keinen Fokusrahmen mehr. <kbd>Esc</kbd> schließt das Bild auch dann,
   wenn Chrome sein eigenes Schließen nicht mehr meldet.
+- Backrooms in VR: <kbd>Y</kbd> am linken Controller zeigt eine Karte am
+  Handgelenk, ein kleines Hologramm über der linken Hand: das Bauwerk um
+  einen herum in cyanfarbenen Linien, bis 10 m ganz und bis 15 m auslaufend,
+  Linien hinter Wänden dünner und blasser, so gedreht wie das Bauwerk selbst;
+  man selbst ist ein Ring, der sich dreht, mit einem Strich in Blickrichtung.
+  `?wristmap` zeigt sie am Rechner. Level 0 erwähnt sie bei der VR-Brille.
 - Backrooms: Das Licht backt mehrfach schneller, bei einem Level wie am
   Ende von Level 3 (16 Räume, 39 Leuchten) etwa viermal so schnell. Die
   feineren Stücke der Lightmap an Modellen und Blöcken nehmen nur noch einen
