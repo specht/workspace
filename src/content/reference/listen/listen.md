@@ -24,7 +24,7 @@ Eine **Liste** hält Werte in einer festen Reihenfolge, jeder an einem **Index**
 
 - `get(i)` gibt den Wert an Index \\(i\\) zurück,
 - `insert(i, value)` fügt einen Wert an Index \\(i\\) ein, alles ab \\(i\\) rückt einen Index weiter,
-- `remove(i)` nimmt den Wert an Index \\(i\\) heraus, alles dahinter rückt nach vorn,
+- `remove_at(i)` nimmt den Wert an Index \\(i\\) heraus, alles dahinter rückt nach vorn,
 - `size` sagt, wie viele Werte darin sind.
 
 Ein Index außerhalb von 0 bis size − 1 ist ein Fehler, bei `insert` ist zusätzlich size erlaubt (hinten anhängen). Diese Schnittstelle lässt sich auf zwei grundverschiedene Arten bauen, mit einem **Array** oder mit verketteten **Knoten**. Von außen verhalten sich beide gleich, innen kosten dieselben Aufrufe ganz verschieden viel.
@@ -53,7 +53,7 @@ insert(i, value):
     cells[i] ← value
     size ← size + 1
 
-remove(i):
+remove_at(i):
     if i < 0 or i ≥ size: error
     value ← cells[i]
     for j from i to size - 2:
@@ -72,7 +72,7 @@ Probier es mit einem Array mit vier Zellen und den Aufrufen der [Data Structures
 
 Und `remove` in derselben Liste, einmal in der Mitte, einmal vorn:
 
-<div class='algo-stepper' data-title='Array List: entfernen' data-algo='array' data-capacity='4' data-setup='insert(0, 7), insert(1, 3), insert(1, 5), insert(3, 9)' data-ops='remove(1), remove(0)'></div>
+<div class='algo-stepper' data-title='Array List: entfernen' data-algo='array' data-capacity='4' data-setup='insert(0, 7), insert(1, 3), insert(1, 5), insert(3, 9)' data-ops='remove_at(1), remove_at(0)'></div>
 
 **Typische Fehler**
 
@@ -116,7 +116,7 @@ insert(i, value):
         before.next ← new
     size ← size + 1
 
-remove(i):
+remove_at(i):
     if i < 0 or i ≥ size: error
     if i == 0:
         value ← head.value
@@ -135,27 +135,27 @@ Dieselben Aufrufe wie oben, jetzt auf einer Linked List. Die Knoten liegen irgen
 
 Und `remove`, einmal in der Mitte, einmal vorn:
 
-<div class='algo-stepper' data-title='Linked List: entfernen' data-algo='linked' data-setup='insert(0, 7), insert(1, 3), insert(1, 5), insert(3, 9)' data-ops='remove(2), remove(0)'></div>
+<div class='algo-stepper' data-title='Linked List: entfernen' data-algo='linked' data-setup='insert(0, 7), insert(1, 3), insert(1, 5), insert(3, 9)' data-ops='remove_at(2), remove_at(0)'></div>
 
 ### Rekursiv entfernen
 
-Dasselbe geht ohne `node_at` und ohne den Sonderfall vorn: Jeder Aufruf kümmert sich um einen Knoten und gibt zurück, was an seiner Stelle stehen soll. Der Knoten, der heraus soll, gibt seinen Nachfolger zurück, und der Knoten davor trägt ihn in sein `next` ein. Alle anderen geben sich selbst zurück. Aufgerufen wird es als `head ← remove(head, i)`; so arbeiten auch [Suchbäume](/reference/baeume).
+Dasselbe geht ohne `node_at` und ohne den Sonderfall vorn: Jeder Aufruf kümmert sich um einen Knoten und gibt zurück, was an seiner Stelle stehen soll. Der Knoten, der heraus soll, gibt seinen Nachfolger zurück, und der Knoten davor trägt ihn in sein `next` ein. Alle anderen geben sich selbst zurück. Aufgerufen wird es als `head ← remove_at(head, i)`; so arbeiten auch [Suchbäume](/reference/baeume).
 
 ```pseudocode
-remove(node, i):
+remove_at(node, i):
     if node == null: error
     if i == 0: return node.next
-    node.next ← remove(node.next, i - 1)
+    node.next ← remove_at(node.next, i - 1)
     return node
 ```
 
-<div class='algo-stepper' data-title='Linked List: rekursiv entfernen' data-algo='linked' data-mode='recursive' data-setup='insert(0, 7), insert(1, 3), insert(1, 5), insert(3, 9)' data-ops='remove(2)'></div>
+<div class='algo-stepper' data-title='Linked List: rekursiv entfernen' data-algo='linked' data-mode='recursive' data-setup='insert(0, 7), insert(1, 3), insert(1, 5), insert(3, 9)' data-ops='remove_at(2)'></div>
 
 **Typische Fehler**
 
 - Erst `before.next ← new`, dann `new.next ← before.next`: Der neue Knoten zeigt auf sich selbst, die Liste wird zum Kreis.
 - Den Fall `i == 0` vergessen: Es gibt keinen Vorgänger, `node_at(-1)` geht schief.
-- Einen Schritt zu weit laufen: Für `insert(i, …)` und `remove(i)` braucht man den Knoten an \\(i - 1\\), nicht an \\(i\\).
+- Einen Schritt zu weit laufen: Für `insert(i, …)` und `remove_at(i)` braucht man den Knoten an \\(i - 1\\), nicht an \\(i\\).
 - `size` vergessen. Die Sandbox prüft, dass size zur Zahl der Knoten passt.
 
 ### Doppelt verkettet
@@ -198,7 +198,7 @@ Ein **Stack** kann nur an einem Ende arbeiten, oben:
 
 Was zuletzt hineinkam, kommt zuerst heraus: **LIFO**, last in, first out. Ein Stack steckt in jedem Programm, das Funktionen aufruft: Jeder Aufruf legt fest, wohin es danach zurückgeht, und `return` nimmt das wieder vom Stack. Die [Tiefensuche](/reference/graphen#tiefensuche) benutzt einen, und jedes »Rückgängig« in einem Editor auch.
 
-Mit einem Array ist das obere Ende das **hintere**: `push` hängt an Index size an, `pop` nimmt den an size − 1. Nichts muss rücken. Mit Knoten ist das obere Ende der **Anfang**: `push` ist `insert(0, …)`, `pop` ist `remove(0)`, und auch da muss nichts laufen.
+Mit einem Array ist das obere Ende das **hintere**: `push` hängt an Index size an, `pop` nimmt den an size − 1. Nichts muss rücken. Mit Knoten ist das obere Ende der **Anfang**: `push` ist `insert(0, …)`, `pop` ist `remove_at(0)`, und auch da muss nichts laufen.
 
 ```pseudocode
 push(value):
@@ -219,7 +219,7 @@ pop():
 
 Eine **Queue** arbeitet an beiden Enden: `enqueue(value)` stellt hinten an, `dequeue()` nimmt vorn weg. Was zuerst kam, kommt zuerst dran: **FIFO**, first in, first out. Die [Breitensuche](/reference/graphen#breitensuche) braucht eine, ebenso ein Drucker, der Aufträge der Reihe nach abarbeitet.
 
-Mit Knoten braucht die Queue `head` und `tail`: `enqueue` hängt hinter `tail` an, `dequeue` nimmt `head` weg. Mit einem einfachen Array ginge `dequeue` als `remove(0)`, aber dann rückt bei jedem `dequeue` die ganze Queue.
+Mit Knoten braucht die Queue `head` und `tail`: `enqueue` hängt hinter `tail` an, `dequeue` nimmt `head` weg. Mit einem einfachen Array ginge `dequeue` als `remove_at(0)`, aber dann rückt bei jedem `dequeue` die ganze Queue.
 
 ### Der Ring Buffer
 

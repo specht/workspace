@@ -1058,13 +1058,13 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
     const LIST_CODE = {
         arrayInsert: ['insert(i, value):', '    if i < 0 or i > size: error', '    if size == capacity: grow', '    for j from size - 1 down to i:',
             '        cells[j + 1] ← cells[j]', '    cells[i] ← value', '    size ← size + 1'],
-        arrayRemove: ['remove(i):', '    if i < 0 or i ≥ size: error', '    value ← cells[i]', '    for j from i to size - 2:', '        cells[j] ← cells[j + 1]',
+        arrayRemove: ['remove_at(i):', '    if i < 0 or i ≥ size: error', '    value ← cells[i]', '    for j from i to size - 2:', '        cells[j] ← cells[j + 1]',
             '    size ← size - 1', '    return value'],
         linkedInsert: ['insert(i, value):', '    if i < 0 or i > size: error', '    new ← a node with value', '    if i == 0:', '        new.next ← head', '        head ← new',
             '    else:', '        before ← node_at(i - 1)', '        new.next ← before.next', '        before.next ← new', '    size ← size + 1'],
-        linkedRemove: ['remove(i):', '    if i < 0 or i ≥ size: error', '    if i == 0:', '        value ← head.value', '        head ← head.next', '    else:',
+        linkedRemove: ['remove_at(i):', '    if i < 0 or i ≥ size: error', '    if i == 0:', '        value ← head.value', '        head ← head.next', '    else:',
             '        before ← node_at(i - 1)', '        value ← before.next.value', '        before.next ← before.next.next', '    size ← size - 1', '    return value'],
-        linkedRemoveRecursive: ['remove(node, i):', '    if node == null: error', '    if i == 0: return node.next', '    node.next ← remove(node.next, i - 1)', '    return node'],
+        linkedRemoveRecursive: ['remove_at(node, i):', '    if node == null: error', '    if i == 0: return node.next', '    node.next ← remove_at(node.next, i - 1)', '    return node'],
         nodeAt: ['node_at(i):', '    k ← head', '    repeat i times:', '        k ← k.next', '    return k'],
         enqueue: ['enqueue(value):', '    if size == capacity: error, the queue is full', '    cells[(head + size) mod capacity] ← value', '    size ← size + 1'],
         dequeue: ['dequeue():', '    if size == 0: error, the queue is empty', '    value ← cells[head]', '    head ← (head + 1) mod capacity', '    size ← size - 1', '    return value'],
@@ -1121,9 +1121,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             size += 1;
             say(`size ← size + 1: size ist jetzt ${size}.`, { vars: vars(), code: I(6) });
         };
-        const remove = (i) => {
+        const removeAt = (i) => {
             const vars = (j) => [{ name: 'i', index: i }, { name: 'size', index: size }, ...(j !== undefined ? [{ name: 'j', index: j }] : [])];
-            snapshot(`remove(${i}): Der Wert an Index ${i} soll heraus.`, { vars: vars(), code: R(0), focus: i });
+            snapshot(`remove_at(${i}): Der Wert an Index ${i} soll heraus.`, { vars: vars(), code: R(0), focus: i });
             if (i < 0 || i >= size) { snapshot(`Index ${i} gibt es nicht.`, { code: R(1) }); return; }
             card = { id: copy(cells[i]), at: i };
             snapshot(`value ← cells[i]: Die Variable value merkt sich ${values[card.id]}.`, { vars: vars(), code: R(2), from: { [card.id]: cells[i] } });
@@ -1145,7 +1145,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         for (const [number, op] of ops.entries()) {
             current = number;
             if (op.type === 'insert') insert(op.index, op.value);
-            else if (op.type === 'remove') remove(op.index);
+            else if (op.type === 'remove_at') removeAt(op.index);
         }
         return frames;
     }
@@ -1232,7 +1232,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
     // (the ids from head on), loose (a node no pointer of the list reaches:
     // { id, at } above the gap at index at), vars (variables that point at a
     // node: head always, new, before, k), card (value), marks.
-    // recursive: remove(node, i) as on the page, the call stack beside it
+    // recursive: remove_at(node, i) as on the page, the call stack beside it
     function traceLinked(ops, setup = [], recursive = false) {
         const nodes = {};
         let head = null;
@@ -1295,20 +1295,20 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             say(`size ← size + 1: size ist jetzt ${size()}.`, { code: I(10) });
             stack = [];
         };
-        const remove = (i) => {
-            stack = [{ call: `remove(i: ${i})`, node: null }];
-            if (i < 0 || i >= size()) { snapshot(`remove(${i}): Index ${i} gibt es nicht.`, { code: R(1) }); stack = []; return; }
+        const removeAt = (i) => {
+            stack = [{ call: `remove_at(i: ${i})`, node: null }];
+            if (i < 0 || i >= size()) { snapshot(`remove_at(${i}): Index ${i} gibt es nicht.`, { code: R(1) }); stack = []; return; }
             let gone;
             if (i === 0) {
                 gone = head;
-                snapshot(`remove(0): i ist 0, der erste Knoten soll heraus.`, { code: R(2), focus: gone });
+                snapshot(`remove_at(0): i ist 0, der erste Knoten soll heraus.`, { code: R(2), focus: gone });
                 card = { value: nodes[gone].value, from: gone };
                 snapshot(`value ← head.value: Die Variable value merkt sich ${card.value}.`, { code: R(3), focus: gone });
                 head = nodes[gone].next;
                 loose = { id: gone, at: 0 };
                 snapshot(`head ← head.next: head ${head !== null ? `zeigt jetzt auf ${nodes[head].value}` : 'ist jetzt null'}. ${nodes[gone].value} hängt an keinem Zeiger der Liste mehr.`, { code: R(4), focus: gone });
             } else {
-                snapshot(`remove(${i}): Der Knoten davor muss gefunden werden.`, { code: R(5) });
+                snapshot(`remove_at(${i}): Der Knoten davor muss gefunden werden.`, { code: R(5) });
                 const before = nodeAt(i - 1, []);
                 gone = nodes[before].next;
                 snapshot(`before ← node_at(${i - 1}): before ist der Knoten mit ${nodes[before].value}.`, { vars: [{ name: 'before', to: before }], code: R(6), focus: gone });
@@ -1327,17 +1327,17 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             snapshot(`return value: ${out} kommt heraus.`, { code: R(10) });
             stack = [];
         };
-        // remove(node, i), recursive: each call goes one node further with
+        // remove_at(node, i), recursive: each call goes one node further with
         // i - 1; the call with i = 0 returns node.next, and its caller puts
         // that into its next field: the node is skipped. On the way back
-        // every call returns its node, and head ← remove(head, i) at the end.
-        const removeRecursive = (i) => {
+        // every call returns its node, and head ← remove_at(head, i) at the end.
+        const removeAtRecursive = (i) => {
             const RR = (at) => ({ lines: LIST_CODE.linkedRemoveRecursive, at });
             const calls = [];
             const path = [];
             let node = head;
             for (let left = i; ; left--) {
-                calls.push({ call: `remove(node: ${node === null ? 'null' : nodes[node].value}, i: ${left})`, node });
+                calls.push({ call: `remove_at(node: ${node === null ? 'null' : nodes[node].value}, i: ${left})`, node });
                 stack = calls.map((c) => ({ ...c }));
                 const here = node === null ? [] : [{ name: 'node', to: node }];
                 if (node === null) { snapshot('if node == null: Die Liste ist zu Ende, so viele Knoten hat sie nicht.', { code: RR(1) }); stack = []; return; }
@@ -1354,18 +1354,18 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                         nodes[caller].next = next;
                         loose = { id: gone, at: i };
                         stack = calls.map((c) => ({ ...c }));
-                        snapshot(`node.next ← remove(node.next, i - 1): ${nodes[caller].value} trägt ${next === null ? 'null' : nodes[next].value} in sein next ein und zeigt damit an ${nodes[gone].value} vorbei. ${nodes[gone].value} hängt an keinem Zeiger der Liste mehr.`,
+                        snapshot(`node.next ← remove_at(node.next, i - 1): ${nodes[caller].value} trägt ${next === null ? 'null' : nodes[next].value} in sein next ein und zeigt damit an ${nodes[gone].value} vorbei. ${nodes[gone].value} hängt an keinem Zeiger der Liste mehr.`,
                             { vars: [{ name: 'node', to: caller }], code: RR(3), focus: gone, pulses: [{ edge: `next-${caller}`, delay: 0.6 }] });
                     } else {
                         head = next;
                         loose = { id: gone, at: 0 };
-                        snapshot(`head ← remove(head, i): head ${next === null ? 'ist jetzt null' : `zeigt jetzt auf ${nodes[next].value}`}. ${nodes[gone].value} hängt an keinem Zeiger der Liste mehr.`, { code: RR(2), focus: gone });
+                        snapshot(`head ← remove_at(head, i): head ${next === null ? 'ist jetzt null' : `zeigt jetzt auf ${nodes[next].value}`}. ${nodes[gone].value} hängt an keinem Zeiger der Liste mehr.`, { code: RR(2), focus: gone });
                     }
                     delete nodes[gone];
                     loose = null;
                     break;
                 }
-                snapshot(`i ist ${left}, nicht 0: node.next ← remove(node.next, ${left - 1}), weiter zum nächsten Knoten.`, { vars: here, code: RR(3) });
+                snapshot(`i ist ${left}, nicht 0: node.next ← remove_at(node.next, ${left - 1}), weiter zum nächsten Knoten.`, { vars: here, code: RR(3) });
                 path.push(`next-${node}`);
                 node = nodes[node].next;
             }
@@ -1373,7 +1373,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             // back into its next field, the lowest first, head last
             const edges = [...path].reverse().concat(['pointer-head']);
             stack = calls.map((c) => ({ ...c, returns: String(nodes[c.node].value) }));
-            snapshot('return node: Jeder Aufruf darüber gibt seinen Knoten zurück, und der Aufrufer trägt ihn wieder in sein next ein, zuletzt head ← remove(head, i). Die Zeiger zeigen danach auf dasselbe wie vorher.',
+            snapshot('return node: Jeder Aufruf darüber gibt seinen Knoten zurück, und der Aufrufer trägt ihn wieder in sein next ein, zuletzt head ← remove_at(head, i). Die Zeiger zeigen danach auf dasselbe wie vorher.',
                 { code: RR(4), returning: true, pulses: edges.map((edge, k) => ({ edge, delay: k / edges.length, length: 0.6 / edges.length })), duration: Math.max(MOTION_TIME, edges.length * PULSE_TIME) });
             stack = [];
         };
@@ -1382,7 +1382,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         for (const [number, op] of ops.entries()) {
             current = number;
             if (op.type === 'insert') insert(op.index, op.value);
-            else if (op.type === 'remove') (recursive ? removeRecursive : remove)(op.index);
+            else if (op.type === 'remove_at') (recursive ? removeAtRecursive : removeAt)(op.index);
         }
         return frames;
     }

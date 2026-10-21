@@ -35,7 +35,9 @@ in doubt, do it the way it does.
   confuses assignment and comparison; `null` is a reference to nothing (`node == null`,
   `return null`, in the picture too), `empty` is a collection without
   entries (`queue not empty`, `empty set`); words rather than symbols where
-  a word is clear (`and`, `or`, `not`, `mod`). The code box and the pages
+  a word is clear (`and`, `or`, `not`, `mod`). `remove_at(i)` takes out
+  what stands at a position, `remove` is only for taking out a value
+  (`remove(node, value)` in a tree, `remove(k)` in a hash table). The code box and the pages
   hold the same lines: a change goes into both. On the pages it is a
   ```` ```pseudocode ```` block (`pseudocode_lexer.rb`), and the code box
   colours the same tokens the same way (`highlightPseudocode` in
