@@ -214,7 +214,7 @@
         const pulses = shown.filter((node) => node.dataset.pulse);
         // options.done: called when the movement has ended by itself (not
         // when the next one cut it short), for a step made of two movements
-        if (!tracks.length && !ride.length && !pulses.length) { rest(); if (options.done) options.done(); return; }
+        if (!duration || (!tracks.length && !ride.length && !pulses.length)) { rest(); if (options.done) options.done(); return; }
         // a pulse runs along a pointer or along any keyed path (a curved
         // edge of an automaton that does not move)
         const lineByKey = new Map([...leaving, ...shown].filter((node) => node.dataset.ends || (node.tagName === 'path' && node.dataset.key)).map((node) => [node.dataset.key, node]));
@@ -401,6 +401,8 @@
                 const line = lineByKey.get(node.dataset.along);
                 if (t >= 1 && r && !tracks.some((k) => k.node === node && k.name === 'r')) node.setAttribute('r', r);
                 if (t >= 1 && hide) { if (opacity === null) node.removeAttribute('opacity'); else node.setAttribute('opacity', opacity); }
+                // at the end exactly at its place
+                if (t >= 1) { node.setAttribute('cx', to[0]); node.setAttribute('cy', to[1]); }
                 if (t >= 1 || !line || !line.getTotalLength) continue;
                 const pulse = pulses.find((p) => p.dataset.pulse === node.dataset.along);
                 const delay = pulse ? Number(pulse.dataset.delay || 0) : 0;
