@@ -74,7 +74,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 .algo-stepper .algo-timeline-box { margin: 0 0 0.8em; overflow-x: auto; scrollbar-width: none; }
 .algo-stepper .algo-timeline-box::-webkit-scrollbar { display: none; }
 .algo-stepper .algo-timeline-inner { min-width: calc(var(--steps) * 6px); padding-right: 4em; }
-@media (pointer: coarse), (max-width: 576px) { .algo-stepper .algo-timeline-inner { min-width: calc(var(--steps) * 14px); } }
+@media (pointer: coarse), (max-width: 576px) { .algo-stepper .algo-timeline-inner { min-width: calc(var(--steps) * 24px); } }
 .algo-stepper .algo-timeline { margin: 0; }
 .algo-stepper .algo-op-names { position: relative; font-family: '0xProto Nerd Font Mono', monospace; font-size: 0.72em; }
 .algo-stepper .algo-op-name { position: absolute; white-space: nowrap;

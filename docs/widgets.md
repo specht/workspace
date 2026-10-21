@@ -39,7 +39,7 @@ in doubt, do it the way it does.
   its steps, so that they read as part of the job above: `R 50` and `L 40`
   for a rotation, `sift up` and `sift down` in the heap, `successor` in
   remove, `merge 0–3` and `partition 0–7` in sorting (the `phase` of a
-  frame). Each step has a minimum width (14 px on a touch screen); where the
+  frame). Each step has a minimum width (24 px on a touch screen, so the dots have room); where the
   timeline gets wider than the widget it scrolls sideways and keeps the
   current step in the middle by itself. The dots are evenly
   spaced; done dots coloured, the current one large. A tap or a drag
