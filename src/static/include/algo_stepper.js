@@ -356,7 +356,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         // null: the start's predecessor, at the end of a short stub
         const stub = spot(start, 30, 16, 40);
         const nullAt = [stub.x + 15, stub.y + 8];
-        return { at, width, rowY, nodeSpot, neighborSpot, nullAt, nodeAtNull: { x: nullAt[0] - 20 - 44, y: nullAt[1] - 9 } };
+        return { at, width, rowY, nodeSpot, neighborSpot, nullAt, nodeAtNull: { x: nullAt[0] - 14.5 - 6 - 44, y: nullAt[1] - 9 } };
     }
 
     // A variable that holds a number: its name and, beside it, the value
@@ -1430,7 +1430,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         if (headTo) svg.insertBefore(arrow('pointer-head', `var-head in-${frame.head}`, [4 + w / 2, top + 22], [headTo[0] - 2, headTo[1] + 22], { stroke: 'var(--algo-accent)', 'marker-end': `url(#${marker}-accent)`, ...marked('pointer-head', false) }), svg.lastChild);
         for (const node of pulseNodes(frame.pulses)) svg.insertBefore(node, svg.lastChild);
         svg.appendChild(el('svg:text', { 'data-key': 'var-head-label', x: 4 + w / 2, y: top + 26, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'head' }));
-        if (!headTo) svg.appendChild(el('svg:text', { 'data-key': 'head-empty', x: 8 + w, y: top + 26, 'font-size': 13, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--bs-secondary-color)', text: 'null' }));
+        if (!headTo) svg.appendChild(nullBeside('head-empty', 4 + w, top + 13));
         for (const [id, [x, y]] of place) {
             const node = frame.nodes[id];
             const fill = frame.focus === id ? 'color-mix(in srgb, var(--algo-goal) 30%, var(--algo-paper))' : frame.fresh === id ? 'var(--algo-frontier)' : 'var(--algo-paper)';
@@ -2038,8 +2038,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 x = cx - w / 2;
                 y = 10;
             } else if (v.to === 'null') {
-                // right before the word null, like head in the linked list
-                x = nullSpot[0] - 16 - w;
+                // right before the word null (centred on the spot), like
+                // head in the linked list
+                x = nullSpot[0] - 14.5 - NULL_GAP - w;
                 y = nullSpot[1] - 9;
             } else {
                 const [cx, cy] = point(v.to);
@@ -2051,6 +2052,8 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 ...(chain.has(`pointer-${v.name}`) ? { class: 'on-stack', ...settled(`pointer-${v.name}`, 'var(--algo-accent)', `url(#${most.marker}-accent)`) } : {}) }));
             labels.push(el('svg:rect', { 'data-solid': '', 'data-key': `var-${v.name}`, x, y, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
             labels.push(el('svg:text', { 'data-key': `var-${v.name}-label`, x: centre[0], y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: v.name }));
+            // root of an empty tree: null after it, like head of an empty list
+            if (v.above && (v.to === null || v.to === undefined)) labels.push(nullBeside(`${v.name}-null`, x + w, y));
         }
         // a node by its id; a new node comes from the token that carried its
         // value down the tree; a copied value flies over from the node it was
@@ -2300,6 +2303,12 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         }
         return groups;
     }
+
+    // A variable that holds null: the word right after its label (head,
+    // root), where its arrow would end; the same size and gap everywhere
+    const NULL_GAP = 6;
+    const nullBeside = (key, right, top) => el('svg:text', { 'data-key': key, x: right + NULL_GAP, y: top + 13, 'font-size': 12,
+        'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--bs-secondary-color)', text: 'null' });
 
     // Arrowheads in the colour of their line: id for the grey pointers of a
     // structure, id-accent for the variables

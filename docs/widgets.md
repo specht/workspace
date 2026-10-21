@@ -175,12 +175,14 @@ only to look nice.
   (`size | 2`, a box with the value beside the name); right of it the cells and values are faint. The faint part is
   a copy clipped to the area right of the line, so a cell turns solid exactly
   where the moving line passes over it, never all at once.
-- **null is shown where the code looks at it**: in a node's next field, after
-  `head` when the list is empty, and in a tree at the place of the child a
-  call reached (`find`, `remove` of a value that is not there): `node null`
-  there, the stub of the pointer as the last piece of the stack's way, the
-  call's line and the value ending there. Not under every leaf: that would
-  fill the tree with nulls nobody looks at.
+- **null is one word in one place: where the arrow would end.** A
+  variable that holds null (`head`, `root`, `node`) has the word right after
+  its label, the same gap everywhere (`nullBeside`); a field drawn as a box
+  (a node's `next`) has it inside; a tree's child pointer, which has no
+  box, is a short stub from its node ending in the word, and so is the
+  start's predecessor in a graph search. Shown where the code looks at it:
+  in a tree only at the place a call reached (`find`, `remove` of a value
+  that is not there), not under every leaf.
 - **Graph searches** (Breitensuche, Tiefensuche, Dijkstra, A*): the ring is
   `node`, `neighbor` a label with an arrow, the edge looked along drawn
   purple; `predecessor[neighbor] ← node` is an arrow from the neighbor to
