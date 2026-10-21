@@ -106,7 +106,10 @@ address from `credentials.rb` and the code `123456`.
   »Beispiele für die Prüfungen«): a solution it must accept, a starting point it
   must reject.
 - Run the Ruby tests (`cd src/ruby; for f in test/*_test.rb; do ruby "$f" | tail -1; done`)
-  and, for the generator, `node --test src/tutorial-screenshots/test/*.test.js`.
+  and the JavaScript tests (`node --test src/tutorial-screenshots/test/*.test.js`,
+  `node --test src/static-tests/*.test.cjs`). GitHub runs them on every push, and the
+  website's E2E tests too (`.github/workflows/`); the E2E tests that start a
+  Workspace and the toolchain tests run by hand (e2e/README.md).
 - After a change to `src/tutorial-screenshots/server.js`, rebuild the service:
   `./config.rb build tutorial_screenshots && ./config.rb up -d tutorial_screenshots`.
 - Add a CHANGELOG entry for every notable change, in German, saying what

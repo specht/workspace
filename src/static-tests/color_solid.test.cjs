@@ -3,7 +3,7 @@
 // 8 × 8 × 8 cubes cover the solid.
 const test = require('node:test');
 const assert = require('node:assert');
-const CS = require('../../src/static/include/color_solid.js');
+const CS = require('../static/include/color_solid.js');
 
 const near = (a, b, eps, what) => assert.ok(Math.abs(a - b) < eps, `${what}: ${a} is not close to ${b}`);
 const linear = (v) => v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;

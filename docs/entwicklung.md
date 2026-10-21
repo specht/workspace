@@ -171,7 +171,7 @@ JavaScript-Tests laufen mit Node, ohne npm-Pakete:
 
 ```bash
 node --test src/tutorial-screenshots/test/*.test.js
-node --test test/static/*.test.cjs        # JavaScript der Website, etwa der Query Stepper
+node --test src/static-tests/*.test.cjs      # JavaScript der Website, etwa der Query Stepper
 cd src/vscode-extensions/er && node --test test/*.test.cjs core/*.test.cjs
 ```
 

@@ -1,14 +1,14 @@
 // The engine of the query stepper (src/static/include/query_stepper.js)
 // against what MySQL answers for the same queries on the country dataset
 // (country-archive/countries.sql).
-//   node --test test/static/*.test.cjs
+//   node --test src/static-tests/*.test.cjs
 const test = require('node:test');
 const assert = require('node:assert');
 const path = require('node:path');
 const fs = require('node:fs');
-const QS = require('../../src/static/include/query_stepper.js');
+const QS = require('../static/include/query_stepper.js');
 
-const data = JSON.parse(fs.readFileSync(path.join(__dirname, '../../src/static/query-stepper/countries.json')));
+const data = JSON.parse(fs.readFileSync(path.join(__dirname, '../static/query-stepper/countries.json')));
 const result = (sql) => QS.run(sql, data).result;
 const values = (sql) => result(sql).rows.map((r) => r.cells.join(' | '));
 const clauses = (sql) => QS.run(sql, data).steps.map((s) => s.clause);
@@ -97,7 +97,7 @@ test('mistakes MySQL also rejects, with an explanation', () => {
 
 // The queries of »Filmdatenbank« on the movie tables; values as MySQL gives
 // them on the full data (directors are complete in the stepper's tables).
-const movies = JSON.parse(fs.readFileSync(path.join(__dirname, '../../src/static/query-stepper/movies.json')));
+const movies = JSON.parse(fs.readFileSync(path.join(__dirname, '../static/query-stepper/movies.json')));
 const films = (sql) => QS.run(sql, movies).result.rows.map((r) => r.cells.join(' | '));
 
 test('the movie tables, as in Filmdatenbank', () => {

@@ -1,0 +1,90 @@
+# The E2E tests of the website (e2e/, docs/entwicklung.md) on every push and
+# pull request: login, access rules, the class page, /personen, the catalog,
+# the Handbuch and the task cards. They need the Ruby app, nginx and Neo4j,
+# but no student Workspace: the student image (about 18 GB) does not fit a
+# GitHub runner, so the tests that start a Workspace and the toolchain tests
+# still run by hand (e2e/README.md).
+name: Website tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      E2E_ADMIN_EMAIL: e2e-admin@example.com
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+
+      - name: Development credentials
+        run: |
+          sed -e "s|^PATH_TO_HOST_DATA = nil|PATH_TO_HOST_DATA = '$GITHUB_WORKSPACE/data'|" \
+              -e "s|^ADMIN_USERS = \[\]|ADMIN_USERS = ['$E2E_ADMIN_EMAIL']|" \
+              src/ruby/credentials.template.rb > src/ruby/credentials.rb
+          grep -q "^ADMIN_USERS = \['$E2E_ADMIN_EMAIL'\]" src/ruby/credentials.rb
+          echo '127.0.0.1 workspace.test' | sudo tee -a /etc/hosts
+
+      - name: Start the website
+        run: |
+          ./config.rb build nginx ruby neo4japp
+          ./config.rb up -d nginx neo4j
+          for i in $(seq 1 90); do
+            if curl -fsS -o /dev/null http://workspace.test:8025/; then echo "up after ${i}0 s"; exit 0; fi
+            sleep 10
+          done
+          ./config.rb ps
+          ./config.rb logs --tail 100 ruby neo4japp nginx
+          exit 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+
+      - name: Playwright
+        working-directory: e2e
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      # The browser tests that need no running Workspace container
+      - name: Website tests
+        working-directory: e2e
+        run: |
+          npx playwright test --project=workspace-smoke --no-deps \
+            tests/access-rules.browser.spec.ts \
+            tests/auth.browser.spec.ts \
+            tests/class-page.browser.spec.ts \
+            tests/code-input.browser.spec.ts \
+            tests/color-solid.browser.spec.ts \
+            tests/handbuch-tables.browser.spec.ts \
+            tests/media-variants.browser.spec.ts \
+            tests/navigation.browser.spec.ts \
+            tests/neo4j-tasks.browser.spec.ts \
+            tests/open-answers.browser.spec.ts \
+            tests/profile.browser.spec.ts \
+            tests/qr-login.browser.spec.ts \
+            tests/query-stepper.browser.spec.ts \
+            tests/school-transition.browser.spec.ts \
+            tests/teacher-guide.browser.spec.ts \
+            tests/teacher-materials.browser.spec.ts \
+            tests/teaching-catalog.browser.spec.ts
+
+      - name: Logs of the website
+        if: failure()
+        run: ./config.rb logs --tail 200 ruby nginx
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: e2e/playwright-report
+          retention-days: 7

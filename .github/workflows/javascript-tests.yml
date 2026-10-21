@@ -1,0 +1,24 @@
+# The JavaScript tests that need no npm packages (docs/entwicklung.md): the
+# screenshot generator's recipe language, the website's steppers and colour
+# solids, the ER extension.
+name: JavaScript tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Screenshot generator
+        run: node --test src/tutorial-screenshots/test/*.test.js
+      - name: Website JavaScript
+        run: node --test src/static-tests/*.test.cjs
+      - name: ER extension
+        working-directory: src/vscode-extensions/er
+        run: node --test test/*.test.cjs core/*.test.cjs

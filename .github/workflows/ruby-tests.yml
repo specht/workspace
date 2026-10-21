@@ -1,8 +1,9 @@
 # The Ruby tests (src/ruby/test) on every push and pull request: the facts
 # of the Datenschutzerklärung against the code, the roster, account deletion,
 # task checks and their examples, and the rest. Tests that need tools not
-# installed here (LaTeX, Graphviz and so on) skip themselves. The E2E suite
-# (e2e/) needs the whole installation and runs by hand (docs/entwicklung.md).
+# installed here (LaTeX, Graphviz and so on) skip themselves. The website's
+# E2E tests run in website-tests.yml; those that start a Workspace and the
+# toolchain tests need the student image and run by hand (e2e/README.md).
 name: Ruby tests
 
 on:
