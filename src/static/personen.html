@@ -54,8 +54,11 @@
                 <p class='text-body-secondary'>
                     Eine Schule hat zugestimmt, sobald du das Datum der Entscheidung der Schulleitung und das der unterschriebenen Vereinbarung
                     zur Auftragsverarbeitung einträgst; die Lehrkraft schickt dir beides. Bis dahin vermerken die Lehrkräfte unter
-                    <a href='/gruppen'>Gruppen</a>, für wen ein schriftliches Einverständnis vorliegt. Gesperrt wird dadurch niemand.
+                    <a href='/gruppen'>Gruppen</a>, für wen ein schriftliches Einverständnis vorliegt. Während der Übergangszeit wird dadurch
+                    niemand gesperrt. Wie weit das Gespräch mit einer Schule ist, hältst du unter »Übergang« fest; das ist kein Nachweis und
+                    ändert nichts an der Zustimmung, am Zugang oder an E-Mails.
                 </p>
+                <div id='transition_here'></div>
                 <div id='schools_here'></div>
                 <div class='d-flex gap-2 mb-3' id='school_buttons'>
                     <button type='button' id='bu_school_new' class='btn btn-outline-primary'><i class='bi bi-building-add'></i>Neue Schule</button>
@@ -151,6 +154,86 @@
             }
             if (done) done(result);
         }, { no_please_wait: true });
+    }
+
+    // The transition (school_transition.rb): where the talks with each school stand
+    let transition = null;
+    const open_transitions = new Set();   // whose details are open (they stay open when the table reloads)
+    const CATEGORY = {
+        documented: ['Unterlagen vollständig', 'text-success-emphasis'],
+        in_progress: ['in Arbeit', ''],
+        not_contacted: ['noch nicht angesprochen', 'text-body-secondary'],
+        follow_up: ['Nachfassen fällig', 'text-warning-emphasis'],
+    };
+
+    function show_transition(t) {
+        const here = $('#transition_here').empty();
+        if (!t || !t.total) return;
+        const deadline = new Date(t.deadline + 'T00:00:00').toLocaleDateString('de-DE');
+        const chip = (key, n) => `<span class='badge rounded-pill text-bg-light border me-1'>${CATEGORY[key][0]}: ${n}</span>`;
+        here.append($(`<div class='alert alert-light border mb-3'>
+            <div><strong>Übergangszeit bis ${deadline}</strong> · noch ${t.days_left} Tage · ${t.total} Schulen</div>
+            <div class='small text-body-secondary mb-2'>${esc(t.phase.text)}</div>
+            <div>${chip('documented', t.documented)}${chip('in_progress', t.in_progress)}${chip('not_contacted', t.not_contacted)}${chip('follow_up', t.follow_up)}</div>
+        </div>`));
+    }
+
+    // The cell »Übergang«: status of the talks, next step, follow-up date
+    function transition_cell(s) {
+        if (s.guests || !s.transition) return $('<td>').text('–');
+        const [label, cls] = CATEGORY[s.transition.category];
+        const cell = $('<td class="small">').append($(`<div class='${cls}'>`).text(label));
+        if (s.transition_status && s.transition.category !== 'documented') cell.append($('<div class="text-body-secondary">').text(transition.states[s.transition_status]));
+        if (s.transition.next_step) cell.append($('<div class="text-body-secondary">').text('als Nächstes: ' + s.transition.next_step));
+        if (s.next_follow_up_at && s.transition.category !== 'documented')
+            cell.append($('<div class="text-body-secondary">').text('nachfassen am ' + new Date(s.next_follow_up_at + 'T00:00:00').toLocaleDateString('de-DE')));
+        return cell;
+    }
+
+    // Below a school: the checklist, dates, notes and a message to copy.
+    // Every field saves when it changes; nothing is sent.
+    function transition_detail(s) {
+        const box = $("<td colspan='9'>");
+        const save = function (field, value, input) {
+            const payload = { key: s.key };
+            payload[field] = value;
+            people_call('/api/people/school_transition', payload, function () { flash(input); load_all(); });
+        };
+        const date_field = function (field, label, readonly) {
+            const input = $(`<input type='date' class='form-control form-control-sm'>`).val(s[field] || '').attr('aria-label', `${label}, ${s.name}`);
+            if (readonly) input.prop('disabled', true).attr('title', 'in der Zeile oben eintragen');
+            else input.on('change', () => save(field, input.val(), input));
+            return $("<div class='col-md-4'>").append($("<label class='form-label small mb-0'>").text(label), input);
+        };
+        const status = $("<select class='form-select form-select-sm'>").attr('aria-label', `Stand des Gesprächs, ${s.name}`).append($('<option value="">').text('–'));
+        Object.entries(transition.states).forEach(([k, v]) => status.append($('<option>').val(k).text(v)));
+        status.val(s.transition_status || '');
+        status.on('change', () => save('transition_status', status.val(), status));
+        const grid = $("<div class='row g-2 mb-2'>").append(
+            $("<div class='col-md-4'>").append($("<label class='form-label small mb-0'>").text('Stand des Gesprächs'), status),
+            date_field('last_contact_at', 'Letzter Kontakt'), date_field('next_follow_up_at', 'Nachfassen am'));
+        const steps = $("<div class='row g-2 mb-2'>");
+        transition.steps.forEach(([field, label]) => steps.append(date_field(field, label, field === 'decision_at' || field === 'agreement_at')));
+        const text_field = function (field, label) {
+            const area = $("<textarea class='form-control form-control-sm' rows='2' maxlength='1000'>").val(s[field] || '').attr('aria-label', `${label}, ${s.name}`);
+            area.on('change', () => save(field, area.val(), area));
+            return $("<div class='col-md-6'>").append($("<label class='form-label small mb-0'>").text(label), area);
+        };
+        const texts = $("<div class='row g-2 mb-2'>").append(text_field('open_questions', 'Offene Fragen'),
+            text_field('transition_note', 'Notiz (ohne Namen von Personen)'));
+        const choose = $("<select class='form-select form-select-sm w-auto'>").attr('aria-label', `Vorlage, ${s.name}`);
+        Object.entries(transition.templates).forEach(([k, v]) => choose.append($('<option>').val(k).text(v)));
+        choose.val(s.transition.template);
+        const message = $("<textarea class='form-control form-control-sm mt-2' rows='9' readonly>").hide().attr('aria-label', `Nachricht an ${s.name}`);
+        const prepare = $("<button type='button' class='btn btn-sm btn-outline-secondary'><i class='bi bi-envelope'></i>Nachricht vorbereiten</button>");
+        prepare.on('click', () => people_call('/api/people/school_template', { key: s.key, template: choose.val() }, function (data) {
+            message.val(data.text).show();
+            message[0].select();
+        }));
+        const tools = $("<div class='d-flex gap-2 align-items-center'>").append(choose, prepare,
+            $("<span class='small text-body-secondary'>").text('zum Kopieren in eine eigene E-Mail; der Workspace verschickt nichts'));
+        box.append(grid, steps, texts, tools, message);
+        return $("<tr class='row-detail transition-detail'>").append(box).toggle(open_transitions.has(s.key));
     }
 
     function school_status(s) {
@@ -419,6 +502,8 @@
     function load_schools() {
         people_call('/api/people/schools', {}, function (data) {
             schools = data.schools;
+            transition = data.transition;
+            show_transition(transition);
             $('#count-schulen').text(schools.length);
             $('#people_not_imported').html(data.imported ? '' : `<div class='alert alert-info'>${PEOPLE_ERRORS.roster_in_files}</div>`);
             const here = $('#schools_here').empty();
@@ -435,7 +520,7 @@
             schools.filter(s => !s.guests).forEach(s => tfilter.append($('<option>').val(s.key).text(s.name)));
             tfilter.val(tchosen || '');
             if (schools.length === 0) return;
-            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Schule</th><th title='Datum der Entscheidung der Schulleitung'>Entscheidung</th><th title='Datum der unterschriebenen Vereinbarung zur Auftragsverarbeitung'>AVV</th><th>Stand</th><th>Gruppen</th><th>Lehrkräfte</th><th title='eingeladene Schülerinnen und Schüler in den Gruppen der Schule'>Lernende</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
+            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Schule</th><th title='Datum der Entscheidung der Schulleitung'>Entscheidung</th><th title='Datum der unterschriebenen Vereinbarung zur Auftragsverarbeitung'>AVV</th><th>Stand</th><th title='wie weit das Gespräch mit der Schule ist (kein Nachweis)'>Übergang</th><th>Gruppen</th><th>Lehrkräfte</th><th title='eingeladene Schülerinnen und Schüler in den Gruppen der Schule'>Lernende</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
             schools.forEach(function (s) {
                 const row = $('<tr>');
                 const name = $(`<td><strong>${esc(s.name)}</strong>${s.address ? '<br><span class="small text-body-secondary">' + esc(s.address).replace(/\n/g, ', ') + '</span>' : ''}</td>`);
@@ -463,20 +548,34 @@
                     $('#school_name').trigger('focus');
                 });
                 actions.append(edit);
+                let detail = null;
+                if (!s.guests) {
+                    detail = transition_detail(s);
+                    const open = icon_button('bi-list-check', `Übergang bei ${s.name}`);
+                    open.on('click', function () {
+                        if (open_transitions.has(s.key)) open_transitions.delete(s.key); else open_transitions.add(s.key);
+                        detail.toggle(open_transitions.has(s.key));
+                    });
+                    actions.append(open);
+                }
                 if (!s.home && s.groups === 0 && s.teachers === 0) {
                     const del = icon_button('bi-trash', `${s.name} löschen`, 'btn-outline-danger');
                     del.on('click', () => confirm_dialog({ title: 'Schule löschen', text: `${s.name} löschen? Die Schule hat keine Gruppen und keine Lehrkräfte.`, confirm: 'Löschen', icon: 'bi-trash', danger: true },
                         () => people_call('/api/people/delete_school', { key: s.key }, load_all)));
                     actions.append(del);
                 }
-                row.append(name, date_input('decision_at'), date_input('agreement_at'), $('<td>').html(school_status(s)),
+                row.append(name, date_input('decision_at'), date_input('agreement_at'), $('<td>').html(school_status(s)), transition_cell(s),
                     $('<td>').text(s.groups), $('<td>').text(s.teachers), $('<td>').text(s.students), actions);
                 table.find('tbody').append(row);
+                if (detail) {
+                    row.addClass('has-row-detail');
+                    table.find('tbody').append(detail);
+                }
                 // The guests' explanation is long: a row of its own below, so
                 // that it does not squeeze the table's columns.
                 if (s.guests) {
                     row.addClass('has-row-detail');
-                    table.find('tbody').append($("<tr class='row-detail'>").append($("<td colspan='8' class='small text-body-secondary'>").html(
+                    table.find('tbody').append($("<tr class='row-detail'>").append($("<td colspan='9' class='small text-body-secondary'>").html(
                         'Nur Erwachsene: Workshops, Firmen, Ehemalige, die ihr Konto behalten. Jede Person stimmt bei der ersten Anmeldung der '
                         + '<a href="/datenschutz/nutzungsordnung">Nutzungsordnung</a> zu. Gruppen dafür legst du unter <a href="/gruppen">Gruppen</a> mit der Schule »Gäste« an.')));
                 }

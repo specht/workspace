@@ -8,6 +8,12 @@
 # Neither locks anyone out (the maintainer's decision); the pages show what
 # is still open. »Gäste« is a school of its own for adults from outside
 # (Nutzungsordnung), which needs no school's decision.
+#
+# During the transition (school_transition.rb) the administration also keeps
+# track of how the talks with each school stand: a status, dates, the steps,
+# a note. That is kept apart from approved_at and never changes it.
+require './include/school_transition.rb'
+
 class Main < Sinatra::Base
     GUESTS_SCHOOL = 'guests'
 
@@ -48,7 +54,53 @@ class Main < Sinatra::Base
     post '/api/people/schools' do
         halt 403, { :error => 'admins_only' }.to_json unless admin_logged_in?
         imported = !Main.roster_imported.nil?
-        respond(:schools => imported ? schools_overview : [], :imported => imported)
+        schools = imported ? schools_overview : []
+        deadline = SchoolTransition.deadline
+        transition = SchoolTransition.summary(schools, Date.today, deadline).merge(
+            :states => SchoolTransition::STATES, :steps => SchoolTransition::STEPS,
+            :templates => SchoolTransition::TEMPLATES.transform_values { |t| t[:title] })
+        schools.each do |school|
+            school[:transition] = {
+                :category => SchoolTransition.category(school, Date.today),
+                :next_step => SchoolTransition.next_step(school),
+                :template => SchoolTransition.template_for(transition[:phase][:key]),
+            }
+        end
+        respond(:schools => schools, :imported => imported, :transition => transition)
+    end
+
+    # The progress of the talks with one school (school_transition.rb): only
+    # the keys sent are changed. Never decision_at, agreement_at, approved_at
+    # or anyone's consent, never access, never a mail.
+    post '/api/people/school_transition' do
+        admin_only!
+        data = parse_request_data(:required_keys => [:key], :optional_keys => SchoolTransition::FIELDS.map(&:to_sym),
+            :max_body_length => 8192, :max_string_length => 2000)
+        values = begin
+            SchoolTransition.clean(data.reject { |k, _| k == :key })
+        rescue SchoolTransition::Invalid => e
+            halt 400, { :error => e.code }.to_json
+        end
+        found = neo4j_query(<<~END_OF_QUERY, :key => data[:key], :values => values, :now => Time.now.to_i, :me => my_email).first
+            MATCH (s:School {key: $key})
+            WHERE coalesce(s.guests, false) = false
+            SET s += $values, s.transition_updated_at = $now, s.transition_updated_by = $me
+            RETURN s.key AS key;
+        END_OF_QUERY
+        halt 404, { :error => 'no_school' }.to_json if found.nil?
+        respond(:ok => true)
+    end
+
+    # A message to copy into one's own mail, filled in for the school; sent from nowhere
+    post '/api/people/school_template' do
+        admin_only!
+        data = parse_request_data(:required_keys => [:key, :template])
+        halt 400, { :error => 'invalid_template' }.to_json unless SchoolTransition::TEMPLATES.key?(data[:template])
+        school = neo4j_query('MATCH (s:School {key: $key}) RETURN s;', :key => data[:key]).first
+        halt 404, { :error => 'no_school' }.to_json if school.nil?
+        operator = Privacy.settings[:operator_name]
+        respond(:title => SchoolTransition::TEMPLATES[data[:template]][:title],
+            :text => SchoolTransition.fill(data[:template], school['s'], SchoolTransition.deadline, operator))
     end
 
     SCHOOL_FIELDS = %w[name address school_law supervisory_authority data_protection_officer].freeze

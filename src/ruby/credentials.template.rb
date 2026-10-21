@@ -66,6 +66,12 @@ CONTACT_EMAIL = 'kontakt@example.com'
 # bedenken; einfacher zahlt ein Förderverein oder der Schulträger den Server.
 # COST_NOTE = 'Der Server kostet etwa 500 € im Jahr. Wer beitragen möchte, etwa über den Förderverein, schreibt an die Ansprechperson.'
 
+# Bis zu diesem Tag läuft die Übergangszeit (docs/handoff-datenschutz.md): Bis
+# dahin sperrt die Rechtslage einer Schule niemanden, /personen zeigt den Stand
+# jeder Schule und die Tage bis dahin. Ohne die Zeile: 12. April 2027. Der Tag
+# allein ändert nichts am Zugang; was danach geschieht, entscheidet der Betreiber.
+# TRANSITION_DEADLINE = '2027-04-12'
+
 MYSQL_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'
 MYSQL_PASSWORD_SALT = 'bitte_ein_langes_salt_generieren'
 NEO4J_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'
