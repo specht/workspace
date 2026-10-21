@@ -145,5 +145,5 @@ Was ein endlicher Automat nicht kann, kann auch kein regulärer Ausdruck aus die
 - [grep(1)](https://man7.org/linux/man-pages/man1/grep.1.html): die Handbuchseite von grep mit allen Schaltern.
 - [VS Code: Suchen und Ersetzen](https://code.visualstudio.com/docs/editing/codebasics#_find-and-replace): reguläre Ausdrücke im Editor.
 - [MDN: Cheatsheet](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions/Cheatsheet): alle Bausteine auf einer Seite (für JavaScript, fast alles gilt auch in Ruby und Python).
-- [Rubular](https://rubular.com/): keine offizielle Referenz; testet einen Ausdruck in Ruby an eigenem Text und zeigt, was jede Klammer findet, mit einer Kurzübersicht der Bausteine darunter, auf Englisch.
-- [regex101](https://regex101.com/): keine offizielle Referenz; testet einen Ausdruck an eigenem Text und erklärt jeden Baustein, auf Englisch.
+- [Rubular](https://rubular.com/): testet einen Ausdruck in Ruby an eigenem Text und zeigt, was jede Klammer findet, mit einer Kurzübersicht der Bausteine darunter, auf Englisch.
+- [regex101](https://regex101.com/): testet einen Ausdruck an eigenem Text und erklärt jeden Baustein, auf Englisch.

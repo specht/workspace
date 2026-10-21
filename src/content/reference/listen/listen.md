@@ -281,4 +281,4 @@ Die Array List bringen Ruby und Python fertig mit, als `Array` und als `list`; m
 - [Python: Listen als Stack und als Queue](https://docs.python.org/3/tutorial/datastructures.html#using-lists-as-stacks) im Tutorial: was `list` kann, und warum eine Queue besser eine `deque` ist.
 - [Python: `collections.deque`](https://docs.python.org/3/library/collections.html#collections.deque): eine Queue, die an beiden Enden schnell einfügt und herausnimmt.
 - [Python: `bisect`](https://docs.python.org/3/library/bisect.html): binäre Suche in einer sortierten Liste; `bisect_left` tut dasselbe wie `find_position` oben.
-- [VisuAlgo: Linked List, Stack, Queue](https://visualgo.net/en/list): keine offizielle Referenz, aber jede Operation als Animation, auf Englisch.
+- [VisuAlgo: Linked List, Stack, Queue](https://visualgo.net/en/list): jede Operation als Animation, auf Englisch.

@@ -677,4 +677,4 @@ Für die großen Teile einer Webseite gibt es Bereiche mit Bedeutung: `<header>`
 - [MDN: Referenz der HTML-Elemente](https://developer.mozilla.org/de/docs/Web/HTML/Reference/Elements): jedes Element mit seinen Attributen und Beispielen, auf Deutsch. Hier findest du auch, was auf dieser Seite fehlt, etwa `<table>`, `<video>` oder `<details>`.
 - [HTML Living Standard](https://html.spec.whatwg.org/multipage/) der WHATWG: die Spezifikation, nach der sich alle Browser richten. Sehr ausführlich; schau dort nach, wenn MDN eine Frage offenlässt.
 - [W3C Markup Validation Service](https://validator.w3.org/): prüft deine Seite auf Fehler wie ein vergessenes schließendes Tag oder falsch verschachtelte Elemente. Unter »Validate by Direct Input« fügst du deinen Code ein.
-- [SELFHTML](https://wiki.selfhtml.org/wiki/HTML): keine offizielle Referenz, aber ein deutschsprachiges Wiki, das HTML mit vielen Beispielen erklärt.
+- [SELFHTML](https://wiki.selfhtml.org/wiki/HTML): ein deutschsprachiges Wiki, das HTML mit vielen Beispielen erklärt.

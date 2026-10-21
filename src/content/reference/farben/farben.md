@@ -225,7 +225,7 @@ Text muss sich deutlich vom Hintergrund abheben. Schwarz auf Weiß und Weiß auf
 - [MDN: `<color>`](https://developer.mozilla.org/de/docs/Web/CSS/Reference/Values/color_value): alle Schreibweisen für Farben in CSS, auch `hsl()`, `oklch()` und Farben mit Transparenz, auf Deutsch.
 - [CSS Color Module Level 4](https://www.w3.org/TR/css-color-4/) des W3C: die Spezifikation, in der alle Farbnamen und Farbfunktionen genau festgelegt sind.
 - [WCAG 2.2: Kontrast (Minimum)](https://www.w3.org/TR/WCAG22/#contrast-minimum): die Regel aus den Richtlinien für barrierefreie Webinhalte. Text braucht ein Kontrastverhältnis von mindestens 4,5 : 1 zum Hintergrund, großer Text 3 : 1.
-- [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/): keine offizielle Referenz, aber ein Rechner, der für zwei Farbcodes das Kontrastverhältnis ausrechnet und sagt, ob es nach WCAG reicht.
+- [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/): ein Rechner, der für zwei Farbcodes das Kontrastverhältnis ausrechnet und sagt, ob es nach WCAG reicht.
 - Was hinter `oklch()` und den anderen Farbräumen steckt, steht unter [Farbräume](/reference/farbraeume).
 
 <script src='/include/color_mixer.js'></script>

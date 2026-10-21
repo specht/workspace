@@ -140,4 +140,4 @@ Python bringt genau diesen Heap mit: `heapq` arbeitet auf einer gewöhnlichen `l
 
 - [Python: `heapq`](https://docs.python.org/3/library/heapq.html): `heappush`, `heappop` und `heapify` auf einer Liste. Der Abschnitt [Priority Queue Implementation Notes](https://docs.python.org/3/library/heapq.html#priority-queue-implementation-notes) zeigt, wie man Priorität und Wert trennt.
 - [Ruby: `Array`](https://docs.ruby-lang.org/en/3.4/Array.html): das Array, auf dem du den Heap baust, mit `push`, `pop` und dem Zugriff über den Index.
-- [VisuAlgo: Binary Heap](https://visualgo.net/en/heap): keine offizielle Referenz; `push`, `pop` und Heapsort als Animation, auf Englisch. Dort steht der *größte* Eintrag oben, und das Array beginnt bei Index 1: Die Kinder von \\(i\\) stehen bei \\(2i\\) und \\(2i + 1\\).
+- [VisuAlgo: Binary Heap](https://visualgo.net/en/heap): `push`, `pop` und Heapsort als Animation, auf Englisch. Dort steht der *größte* Eintrag oben, und das Array beginnt bei Index 1: Die Kinder von \\(i\\) stehen bei \\(2i\\) und \\(2i + 1\\).

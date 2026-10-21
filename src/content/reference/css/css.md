@@ -503,4 +503,4 @@ Im Browser zeigt dir ein Rechtsklick auf das Element und »Untersuchen« alle Re
 - [MDN: CSS-Selektoren](https://developer.mozilla.org/de/docs/Web/CSS/Guides/Selectors): alle Arten von Selektoren, auch die, die hier fehlen, etwa `li:nth-child(2)` oder `a[href^="https"]`.
 - [MDN: Das Box-Modell](https://developer.mozilla.org/de/docs/Web/CSS/Guides/Box_model/Introduction): wie Inhalt, `padding`, `border` und `margin` zusammen die Größe eines Elements ergeben.
 - [MDN: Spezifität](https://developer.mozilla.org/de/docs/Web/CSS/Guides/Cascade/Specificity): genau, wie der Browser ausrechnet, welche Regel gewinnt.
-- [Can I use](https://caniuse.com/): keine offizielle Referenz, aber eine Übersicht, welcher Browser eine Eigenschaft seit welcher Version kann.
+- [Can I use](https://caniuse.com/): eine Übersicht, welcher Browser eine Eigenschaft seit welcher Version kann.

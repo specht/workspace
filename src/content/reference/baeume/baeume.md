@@ -211,5 +211,5 @@ Weder Ruby noch Python bringen einen Suchbaum mit. Sollen Schlüssel sortiert bl
 
 - [Python: `bisect`](https://docs.python.org/3/library/bisect.html): binäre Suche und Einfügen in einer sortierten Liste.
 - [Ruby: `Array#bsearch`](https://docs.ruby-lang.org/en/3.4/Array.html#method-i-bsearch): binäre Suche in einem sortierten Array.
-- [VisuAlgo: Binary Search Tree, AVL Tree](https://visualgo.net/en/bst): keine offizielle Referenz; Suchen, Einfügen, Entfernen und die Rotationen als Animation, auf Englisch.
-- [Wikipedia: AVL-Baum](https://de.wikipedia.org/wiki/AVL-Baum): keine offizielle Referenz; mehr über die Höhe, das Entfernen mit Rotationen und die Doppelrotationen.
+- [VisuAlgo: Binary Search Tree, AVL Tree](https://visualgo.net/en/bst): Suchen, Einfügen, Entfernen und die Rotationen als Animation, auf Englisch.
+- [Wikipedia: AVL-Baum](https://de.wikipedia.org/wiki/AVL-Baum): mehr über die Höhe, das Entfernen mit Rotationen und die Doppelrotationen.

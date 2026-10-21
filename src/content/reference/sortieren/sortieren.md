@@ -184,5 +184,5 @@ Im eigenen Programm sortierst du mit dem, was die Sprache mitbringt: `sort` und 
 
 - [Ruby: `Array#sort`](https://docs.ruby-lang.org/en/3.4/Array.html#method-i-sort) und [`sort_by`](https://docs.ruby-lang.org/en/3.4/Array.html#method-i-sort_by-21): sortieren mit `<=>` oder nach einem Schlüssel. Rubys Sortieren ist nicht garantiert stabil: Gleiche Werte können ihre Reihenfolge tauschen.
 - [Python: Sorting HOW TO](https://docs.python.org/3/howto/sorting.html): `sorted` und `list.sort`, Sortieren nach einem Schlüssel (`key=`) und absteigend, und warum Pythons Sortieren **stabil** ist. Python sortiert mit Timsort, einer Mischung aus Merge Sort und Insertion Sort.
-- [VisuAlgo: Sorting](https://visualgo.net/en/sorting): keine offizielle Referenz; alle fünf Verfahren dieser Seite als Animation mit eigenen Zahlen, dazu Counting Sort und Radix Sort, die zählen statt vergleichen. Auf Englisch.
-- [Wikipedia: Sortierverfahren](https://de.wikipedia.org/wiki/Sortierverfahren): keine offizielle Referenz; ein Überblick über viele weitere Verfahren und was sie kosten.
+- [VisuAlgo: Sorting](https://visualgo.net/en/sorting): alle fünf Verfahren dieser Seite als Animation mit eigenen Zahlen, dazu Counting Sort und Radix Sort, die zählen statt vergleichen. Auf Englisch.
+- [Wikipedia: Sortierverfahren](https://de.wikipedia.org/wiki/Sortierverfahren): ein Überblick über viele weitere Verfahren und was sie kosten.

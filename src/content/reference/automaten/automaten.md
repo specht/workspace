@@ -247,7 +247,7 @@ r<sub>0</sub> und r<sub>1</sub> werden ein Zustand s<sub>0</sub>, r<sub>2</sub> 
 
 ## Zum Nachschlagen
 
-Wie man solche Automaten selbst programmiert, zeigt die Aktivität [Endliche Automaten](/automata); [Automatron](/automatron) rechnet alle Schritte dieser Seite für einen eigenen regulären Ausdruck durch. Ein offizielles Handbuch gibt es für Automaten nicht; sie stehen in jedem Lehrbuch der theoretischen Informatik. Zum Weiterlesen:
+Wie man solche Automaten selbst programmiert, zeigt die Aktivität [Endliche Automaten](/automata); [Automatron](/automatron) rechnet alle Schritte dieser Seite für einen eigenen regulären Ausdruck durch. Automaten stehen in jedem Lehrbuch der theoretischen Informatik. Zum Weiterlesen:
 
 - [Wikipedia: Endlicher Automat](https://de.wikipedia.org/wiki/Endlicher_Automat), mit [deterministischem](https://de.wikipedia.org/wiki/Deterministischer_endlicher_Automat) und [nichtdeterministischem](https://de.wikipedia.org/wiki/Nichtdeterministischer_endlicher_Automat) Automaten: die Definitionen, Beispiele und Beweise.
 - [Wikipedia: Thompson-Konstruktion](https://de.wikipedia.org/wiki/Thompson-Konstruktion), [Potenzmengenkonstruktion](https://de.wikipedia.org/wiki/Potenzmengenkonstruktion) und [Minimalautomat](https://de.wikipedia.org/wiki/Minimalautomat): die drei Verfahren dieser Seite ausführlich.

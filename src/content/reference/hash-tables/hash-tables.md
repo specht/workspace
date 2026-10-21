@@ -138,4 +138,4 @@ Hash Tables stecken hinter jedem `Hash` in Ruby, jedem `dict` und `set` in Pytho
 - [Ruby: `Hash`](https://docs.ruby-lang.org/en/3.4/Hash.html): alle Methoden; der Abschnitt [User-Defined Hash Keys](https://docs.ruby-lang.org/en/3.4/Hash.html#class-Hash-label-User-Defined+Hash+Keys) zeigt, wie eigene Objekte mit `hash` und `eql?` zu Schlüsseln werden.
 - [Python: `dict`](https://docs.python.org/3/library/stdtypes.html#typesmapping) und [`set`](https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset): die beiden Hash Tables von Python.
 - [Python: `__hash__`](https://docs.python.org/3/reference/datamodel.html#object.__hash__): was eine eigene Klasse zusammen mit `__eq__` braucht, damit ihre Objekte Schlüssel sein können.
-- [VisuAlgo: Hash Table](https://visualgo.net/en/hashtable): keine offizielle Referenz; Chaining und Linear Probing als Animation, dazu Quadratic Probing und Double Hashing, auf Englisch.
+- [VisuAlgo: Hash Table](https://visualgo.net/en/hashtable): Chaining und Linear Probing als Animation, dazu Quadratic Probing und Double Hashing, auf Englisch.

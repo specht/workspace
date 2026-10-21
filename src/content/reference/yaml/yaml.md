@@ -203,4 +203,4 @@ File.write('film.yaml', film.to_yaml)
 - [YAML 1.1](https://yaml.org/spec/1.1/): die ältere Fassung, nach der Ruby liest. Welche Wörter dort als Wahrheitswert gelten, steht unter [Boolean Language-Independent Type](https://yaml.org/type/bool.html).
 - [yq-Dokumentation](https://mikefarah.gitbook.io/yq/): alle Befehle und Operatoren von `yq` (Version 4, von Mike Farah), mit Beispielen.
 - [Ruby: Psych](https://docs.ruby-lang.org/en/3.4/Psych.html): die Bibliothek hinter `require 'yaml'`, mit allen Methoden zum Lesen und Schreiben.
-- [yaml-multiline.info](https://yaml-multiline.info/): keine offizielle Referenz, aber dort probierst du aus, was `|`, `>` und ihre Varianten wie `|-` aus einem langen Text machen.
+- [yaml-multiline.info](https://yaml-multiline.info/): dort probierst du aus, was `|`, `>` und ihre Varianten wie `|-` aus einem langen Text machen.

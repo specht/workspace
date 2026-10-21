@@ -268,4 +268,4 @@ Jetzt hat jede Richtung ihre Farbe: Oberseiten (0, 1, 0) werden hellgrün, Seite
 - [GLSL ES 1.00 Specification](https://registry.khronos.org/OpenGL/specs/es/2.0/GLSL_ES_Specification_1.00.pdf): die vollständige Beschreibung der Sprache, für `#version 100`. Die Einschränkungen für Schleifen stehen im Anhang A.
 - [GLSL 3.30 Specification](https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.3.30.pdf): die Fassung `#version 330` für raylib ohne Browser.
 - [raylib: Shader-Beispiele](https://www.raylib.com/examples.html) (Abschnitt »shaders«) und ihre [Shader in `#version 100`](https://github.com/raysan5/raylib/tree/master/examples/shaders/resources/shaders/glsl100) zum Lesen und Abwandeln.
-- [The Book of Shaders](https://thebookofshaders.com/?lan=de) von Patricio Gonzalez Vivo und Jen Lowe: keine offizielle Referenz, aber eine Einführung in Fragment-Shader zum Ausprobieren im Browser, auch auf Deutsch.
+- [The Book of Shaders](https://thebookofshaders.com/?lan=de) von Patricio Gonzalez Vivo und Jen Lowe: eine Einführung in Fragment-Shader zum Ausprobieren im Browser, auch auf Deutsch.

@@ -114,4 +114,4 @@ MiniC gibt es nur in der CPU Sandbox; diese Seite ist seine Referenz. Dazu:
 
 - [MiniC: C for the MiniCPU](https://github.com/specht/cpu-sandbox/blob/main/docs/minic.md): dieselben Regeln im Repository der Sandbox, auf Englisch.
 - [Beispielprogramme in C](https://github.com/specht/cpu-sandbox/tree/main/examples): von `17-first-c.c` bis `26-landscape.c`, zum Lesen und Abwandeln.
-- [C reference bei cppreference.com](https://en.cppreference.com/w/c): keine offizielle Referenz, aber eine vollständige Übersicht über das ganze C, auf Englisch. Was MiniC davon kann, steht oben unter [Was es gibt](#c-sprache).
+- [C reference bei cppreference.com](https://en.cppreference.com/w/c): eine vollständige Übersicht über das ganze C, auf Englisch. Was MiniC davon kann, steht oben unter [Was es gibt](#c-sprache).

@@ -247,4 +247,4 @@ Die Adjazenzliste ist in Ruby ein `Hash`, in Python ein `dict`. Die Queue der Br
 - [Python: `dict`](https://docs.python.org/3/library/stdtypes.html#typesmapping): dasselbe in Python.
 - [Python: `collections.deque`](https://docs.python.org/3/library/collections.html#collections.deque): die Queue für die Breitensuche.
 - [Python: `heapq`](https://docs.python.org/3/library/heapq.html): die Priority Queue für Dijkstra und A*.
-- [VisuAlgo: Breiten- und Tiefensuche](https://visualgo.net/en/dfsbfs) und [kürzeste Wege](https://visualgo.net/en/sssp): keine offizielle Referenz; beide Suchen und Dijkstra als Animation, auch an selbst gezeichneten Graphen, auf Englisch.
+- [VisuAlgo: Breiten- und Tiefensuche](https://visualgo.net/en/dfsbfs) und [kürzeste Wege](https://visualgo.net/en/sssp): beide Suchen und Dijkstra als Animation, auch an selbst gezeichneten Graphen, auf Englisch.
