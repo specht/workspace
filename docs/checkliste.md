@@ -47,6 +47,7 @@ Repository arbeitet, liest sie also ohnehin.
 | Fachwörter, die man im Deutschen englisch sagt, bleiben englisch (Handshake, Lock, String, Header); Elemente von VS Code heißen wie ihre Beschriftung | Lernende sollen die Wörter wiedererkennen | Lesen |
 | Datenstrukturen heißen englisch: Stack, Queue, Priority Queue, Heap, Linked List, Hash Table | So sagt man es auch im Deutschen | Lesen |
 | Im Handbuch stehen Algorithmen als Pseudocode mit einem Beispiel zum Durchklicken, nicht in Ruby oder Python | Lernende sollen verstehen und übersetzen, nicht die Lösung einer Aufgabe kopieren | Lesen |
+| Ein Widget löst keine Aufgabe seiner Aktivität: Es zeigt andere Beispiele als die Aufgaben, und wo man seine Eingabe ändern kann, gibt auch die Eingabe einer Aufgabe nicht ihre Antwort | Sonst rechnet das Widget, und die Lernenden müssen nicht mehr denken | Lesen |
 | Eine Handbuch-Seite enthält die Grundlagen und das Wichtigste und verlinkt für den Rest die offizielle Referenz oder das Handbuch (»Zum Nachschlagen«) | Lernende finden das Nötige auf der Seite und wissen, wo die vollständige Antwort steht | Lesen |
 | »Index« oder »Zählvariable«, nicht »Stelle«, für die Position in einem Array oder eine Schleifenvariable | »Stelle« ist dafür ungenau | Lesen |
 | Ist die Sprache frei, gibt es die Aktivität in Ruby und Python (`languages: [ruby, python]`), sonst in Ruby. C bleibt C | Schulen unterrichten das eine oder das andere; die Klasse stellt es ein | Audit (Spalte »Sprachen«) |

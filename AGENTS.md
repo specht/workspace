@@ -90,7 +90,9 @@ address from `credentials.rb` and the code `123456`.
   what the students do (»Lernende …«); `teacher_note_test.rb` checks it.
 - Interactive widgets (steppers) follow [docs/widgets.md](docs/widgets.md): they start with
   what they show, one step per line of the page's pseudocode with the code beside it, and
-  everything that stays the same thing moves instead of popping.
+  everything that stays the same thing moves instead of popping. A widget never solves a task of its
+  activity: it shows other examples than the tasks ask about, and where its
+  input can be edited, the task's input must not give the answer either.
 - Invite optional experiments: where students have just got something
   working, a box `<div class='hint try'>` (»Ausprobieren:«) suggests a small
   change and what to watch for, so they see how it works by changing it.

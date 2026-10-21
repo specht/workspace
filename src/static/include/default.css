@@ -6583,3 +6583,57 @@ tr.row-detail > td {
     border-bottom-color: transparent;
 }
 .member-name::placeholder { color: var(--bs-secondary-color); font-style: italic; }
+
+/* The automaton stepper (automaton_stepper.js): a DEA or a NEA reading a
+   word, in the colours of the other step-by-step widgets */
+.automaton-stepper {
+    --automaton-accent: #6741d9;
+    --automaton-line: #adb5bd;
+    --automaton-ink: var(--bs-body-color);
+    --automaton-faint: var(--bs-secondary-color);
+    --automaton-paper: var(--bs-body-bg);
+    --automaton-yes: color-mix(in srgb, #2f9e44 30%, var(--bs-body-bg));
+    margin: 1em 0 1.5em;
+}
+html[data-bs-theme="dark"] .automaton-stepper {
+    --automaton-accent: #b197fc;
+    --automaton-line: #5c636e;
+}
+.automaton-stepper .automaton-title {
+    font-size: 1.05em;
+    font-weight: 600;
+    margin: 0 0 0.6em;
+}
+.automaton-stepper input {
+    font-family: '0xProto Nerd Font Mono', monospace;
+    max-width: 16em;
+    margin-bottom: 0.6em;
+}
+.automaton-stepper .automaton-controls {
+    display: flex;
+    gap: 0.3em;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 0.6em;
+}
+.automaton-stepper .automaton-count {
+    margin-left: 0.6em;
+    color: var(--bs-secondary-color);
+}
+.automaton-stepper .automaton-say {
+    min-height: 3em;
+}
+.automaton-stepper .automaton-say.yes {
+    color: color-mix(in srgb, #2f9e44 80%, var(--bs-body-color));
+    font-weight: 600;
+}
+.automaton-stepper .automaton-say.no {
+    color: color-mix(in srgb, #e03131 80%, var(--bs-body-color));
+    font-weight: 600;
+}
+.automaton-stepper svg.automaton-picture {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0.4em auto 0;
+}

@@ -186,7 +186,9 @@
         // options.done: called when the movement has ended by itself (not
         // when the next one cut it short), for a step made of two movements
         if (!tracks.length && !ride.length && !pulses.length) { if (options.done) options.done(); return; }
-        const lineByKey = new Map([...leaving, ...shown].filter((node) => node.dataset.ends).map((node) => [node.dataset.key, node]));
+        // a pulse runs along a pointer or along any keyed path (a curved
+        // edge of an automaton that does not move)
+        const lineByKey = new Map([...leaving, ...shown].filter((node) => node.dataset.ends || (node.tagName === 'path' && node.dataset.key)).map((node) => [node.dataset.key, node]));
 
         // where the ends of the edges are: on the centres of their nodes as
         // they move; an end that changes its node slides from the old one to

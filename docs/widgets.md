@@ -13,6 +13,11 @@ in doubt, do it the way it does.
 
 ## What a widget shows
 
+- **A widget never solves a task.** It shows other examples than the
+  activity's tasks (the DEA and NEA of the automata page work on `a` and `b`,
+  the tasks on digits), and where its input can be edited, typing a task's
+  input must not give the task's answer.
+
 - **A title says what can be seen** (`data-title`), above the buttons, short
   and not too specific: »Suchbaum: einfügen«, »AVL-Baum: entfernen«,
   »Heap: pop«, »Merge Sort«.
@@ -216,6 +221,13 @@ only to look nice.
 - **What grows comes first**: in a step that also sprouts a pointer, an
   element that grows in does so at the start (`early` in
   `stepper_motion.js`), so that its pointers sprout from something.
+- **Automata** (`automaton_stepper.js`, data attributes for states, start,
+  accepting states, transitions, the word): the word as a tape with a head
+  over it, the states in a row, arrows to the next state straight, further
+  on above, back below, loops on top; the ring for the state (a NEA: a ring
+  for every state it can be in, a new one coming out of the state it is
+  reached from), the arrow taken purple with a pulse; at the end the
+  accepting state green or the verdict »abgelehnt«. The word can be edited.
 - **What grows, grows from its middle** (`data-grow='22 21'` on a group
   drawn from its corner), and ends on its own transform, so that its next
   move slides instead of jumping.

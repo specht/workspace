@@ -332,6 +332,11 @@ python3 divisible.py
 
 _task(rest)
 
+So liest ein DEA, Zeichen für Zeichen, hier an einem anderen Automaten: Er nimmt die Wörter aus `a` und `b` an, die auf `ab` enden. In q<sub>1</sub> war das letzte Zeichen ein `a`, in q<sub>2</sub> waren die letzten beiden `ab`. Der Ring zeigt, in welchem Zustand er ist, der lila Pfeil, welchen Übergang er gerade nimmt. Ändere das Wort oben:
+
+<div class='automaton-stepper' data-stepper data-title='DEA: endet auf ab' data-states='q0 q1 q2' data-start='q0' data-accept='q2' data-alphabet='ab' data-transitions='q0 a q1, q0 b q0, q1 a q1, q1 b q2, q2 a q1, q2 b q0' data-input='abbab'></div>
+<script src='/include/automaton_stepper.js'></script>
+
 <!-- language: ruby -->
 Der Automat hat nur drei Zustände und liest jede Ziffer genau einmal. Darum ist ihm egal, wie lang die Zahl ist. `(3 ** 1000).to_s(2)` schreibt 3 hoch 1000 als Binärzahl. Hänge diese Zeile an und probier es aus:
 
@@ -649,6 +654,10 @@ python3 lock_nfa.py
 <!-- /language -->
 
 Nach jeder Ziffer steht die Menge der Zustände, in denen der NEA sein könnte. `121213` öffnet, ohne dass du über einen einzigen Pfeil zurück nachdenken musstest.
+
+So verfolgt ein NEA alle Wege zugleich, hier an einem anderen: Er nimmt die Wörter aus `a` und `b` an, deren **vorletztes** Zeichen ein `b` ist. Bei jedem `b` rät er, dass es das vorletzte sein könnte, und geht nach q<sub>1</sub>, ohne q<sub>0</sub> zu verlassen. Jeder Zustand, in dem er sein könnte, trägt einen Ring; ein neuer Ring kommt aus dem Zustand, von dem aus er erreicht wird, und ein Weg ohne passenden Pfeil endet:
+
+<div class='automaton-stepper' data-stepper data-title='NEA: das vorletzte Zeichen ist ein b' data-states='q0 q1 q2' data-start='q0' data-accept='q2' data-alphabet='ab' data-transitions='q0 a-b q0, q0 b q1, q1 a-b q2' data-input='aabba'></div>
 
 ## Vom NEA zum DEA
 
