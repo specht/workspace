@@ -71,9 +71,12 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 /* a dot for every step; the dot where an operation starts is ringed and
    carries the operation's name */
 .algo-stepper .algo-section { min-width: 0; display: flex; flex-direction: column; }
-.algo-stepper .algo-section-name { font-family: '0xProto Nerd Font Mono', monospace; font-size: 0.72em; white-space: nowrap; overflow: hidden;
-    color: var(--bs-secondary-color); height: 1.45em; padding-left: 1px; }
-.algo-stepper .algo-section.current .algo-section-name { color: var(--algo-ink); font-weight: 600; }
+.algo-stepper .algo-timeline-box { margin: 0 0 0.8em; }
+.algo-stepper .algo-timeline { margin: 0; }
+.algo-stepper .algo-op-names { position: relative; font-family: '0xProto Nerd Font Mono', monospace; font-size: 0.72em; }
+.algo-stepper .algo-op-name { position: absolute; white-space: nowrap;
+    color: var(--bs-secondary-color); line-height: 1.35; }
+.algo-stepper .algo-op-name.current { color: var(--algo-ink); font-weight: 600; }
 .algo-stepper .algo-ticks { display: flex; height: 16px; }
 .algo-stepper .algo-tick { flex: 1 1 0; min-width: 3px; position: relative; }
 /* a fine line from each dot to the next, coloured where the steps are done */
@@ -1723,17 +1726,37 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         });
         const ticks = [];
         const timeline = el('div', { class: 'algo-timeline', 'data-no-swipe': '', role: 'slider', 'aria-label': 'Die Schritte', 'aria-valuemin': 0, 'aria-valuemax': frames.length - 1, tabindex: -1 },
-            sections.map((section) => el('div', { class: 'algo-section', style: `flex-grow: ${section.steps.length};` }, [
-                // the name starts at the section's first dot (the middle of its first step)
-                el('span', { class: 'algo-section-name', style: `padding-left: calc(${50 / section.steps.length}% - 4.5px);`, text: section.op >= 0 && opsText ? opsText[section.op] : '' }),
+            sections.map((section) => el('div', { class: 'algo-section', style: `flex: ${section.steps.length} 1 0;` }, [
                 el('div', { class: 'algo-ticks' }, section.steps.map((i, k) => {
                     const tick = el('span', { class: 'algo-tick', 'data-step': i, ...(k === 0 && section.op >= 0 ? { 'data-start': '' } : {}) });
                     ticks.push(tick);
                     return tick;
                 })),
             ])));
+        // the names of the operations above their first dot, each starting
+        // at its dot; one that would run into the name before it goes up a row
+        const names = sections.filter((s) => s.op >= 0 && opsText).map((s) => ({ section: s, node: el('span', { class: 'algo-op-name', text: opsText[s.op] }) }));
+        const nameRow = el('div', { class: 'algo-op-names' }, names.map((n) => n.node));
+        const placeNames = () => {
+            const ends = [];
+            const origin = nameRow.getBoundingClientRect().left;
+            for (const { section, node } of names) {
+                const dot = ticks[section.steps[0]].getBoundingClientRect();
+                const left = dot.left + dot.width / 2 - origin - 4.5;
+                let row = 0;
+                while (ends[row] !== undefined && ends[row] > left - 8) row++;
+                ends[row] = left + node.offsetWidth;
+                node.style.left = `${left}px`;
+                node.style.bottom = `${row * 1.35}em`;
+            }
+            nameRow.style.height = `${Math.max(1, ends.length) * 1.35}em`;
+        };
+        const timelineBox = el('div', { class: 'algo-timeline-box' }, [nameRow, timeline]);
         const body = el('div', { class: 'algo-body' }, [picture, side]);
-        widget.replaceChildren(el('div', { class: 'algo-controls' }, [...buttons, count]), timeline, body, message);
+        widget.replaceChildren(el('div', { class: 'algo-controls' }, [...buttons, count]), timelineBox, body, message);
+        requestAnimationFrame(placeNames);
+        if (document.fonts) document.fonts.ready.then(placeNames);
+        window.addEventListener('resize', placeNames);
         let dragging = false;
         const stepAt = (event) => {
             const box = timeline.getBoundingClientRect();
@@ -1805,7 +1828,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             message.textContent = frame.message;
             if (links) follow((frame.duration || MOTION_TIME) * 2 + 600);
             ticks.forEach((tick, i) => { tick.className = `algo-tick${'start' in tick.dataset ? ' start' : ''}${i < index ? ' done' : i === index ? ' current' : ''}`; });
-            for (const node of timeline.children) node.classList.toggle('current', node.contains(ticks[index]));
+            for (const { section, node } of names) node.classList.toggle('current', section.steps.includes(index));
             timeline.setAttribute('aria-valuenow', index);
             count.textContent = `Schritt ${index} von ${frames.length - 1}`;
             buttons[0].disabled = buttons[1].disabled = index === 0;

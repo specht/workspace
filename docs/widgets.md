@@ -32,7 +32,9 @@ in doubt, do it the way it does.
 - **A timeline** under the buttons: a dot for every step, joined by a fine
   line (coloured as far as the steps are done); the dot where an
   operation starts is ringed and carries the operation's name (`remove 20`,
-  `remove 40`, `remove 50`); done dots coloured, the current one large. A tap or a drag
+  `remove 40`, `remove 50`), starting at its dot; a name that would run into
+  the one before it goes up a row, so all stay readable. The dots are evenly
+  spaced; done dots coloured, the current one large. A tap or a drag
   on it goes to that step. The viewer always knows where they are and where
   each operation starts.
 - **The message under the picture** says in one or two German sentences what
