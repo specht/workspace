@@ -476,9 +476,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // One step drawn into an SVG that is never shown; the visible one moves
     // to it (stepper_motion.js): every node, edge and label keeps its key,
-    // so that a tree glides to its new place. A new node grows in above the
-    // two trees it joins, its edges sprout from it and snap onto their roots,
-    // then the trees move up under it. The two lightest trees, which come
+    // so that a tree glides to its new place. A new node grows in right
+    // above the two trees it joins, where they stand, with their sum; its
+    // edges sprout from it and snap onto their roots; only then does the
+    // forest rearrange (show, between). The two lightest trees, which come
     // together next, wear the purple ring of the other widgets.
     const SVG = 'http://www.w3.org/2000/svg';
     const make = (tag, attrs, text) => {
@@ -487,25 +488,28 @@ document.addEventListener('DOMContentLoaded', function() {
         if (text !== undefined) node.textContent = text;
         return node;
     };
-    function draw(svg, placed, picks, size) {
+    // lift: the nodes of a tree that passes over others on its way, and how
+    // high it rises (data-lift, stepper_motion.js)
+    function draw(svg, placed, picks, size, lift = null) {
         svg.replaceChildren();
+        const up = (k) => (lift && lift.keys.has(k) ? { 'data-lift': lift.by } : {});
         placed.pos.forEach((p) => {
             const n = p.node;
             if (!n.left) return;
             [[n.left, '0'], [n.right, '1']].forEach(([c, bit]) => {
                 const q = placed.pos.get(key(c));
                 svg.appendChild(make('path', { 'data-key': `edge-${key(n)}-${key(c)}`, 'data-ends': `node-${key(n)} node-${key(c)}`, class: 'edge', d: `M${p.x} ${p.y} L${q.x} ${q.y}` }));
-                svg.appendChild(make('text', { 'data-key': `bit-${key(c)}`, class: 'bit', x: (p.x + q.x) / 2 + (bit === '0' ? -8 : 8), y: (p.y + q.y) / 2 - 4 }, bit));
+                svg.appendChild(make('text', { 'data-key': `bit-${key(c)}`, ...up(key(c)), class: 'bit', x: (p.x + q.x) / 2 + (bit === '0' ? -8 : 8), y: (p.y + q.y) / 2 - 4 }, bit));
             });
         });
         placed.pos.forEach((p) => {
             const n = p.node;
             const k = key(n);
-            svg.appendChild(make('circle', { 'data-key': `node-${k}`, 'data-grow': '', class: n.left ? 'node' : 'leaf', cx: p.x, cy: p.y, r: n.left ? 14 : 15 }));
+            svg.appendChild(make('circle', { 'data-key': `node-${k}`, 'data-grow': '', ...up(k), class: n.left ? 'node' : 'leaf', cx: p.x, cy: p.y, r: n.left ? 14 : 15 }));
             // the label comes with its node
-            svg.appendChild(make('text', { 'data-key': `label-${k}`, 'data-grow': '', x: p.x, y: p.y }, n.left ? String(n.weight) : label(n.byte)));
+            svg.appendChild(make('text', { 'data-key': `label-${k}`, 'data-grow': '', ...up(k), x: p.x, y: p.y }, n.left ? String(n.weight) : label(n.byte)));
             // the count under a leaf, clear of the ring around it
-            if (!n.left) svg.appendChild(make('text', { 'data-key': `weight-${k}`, class: 'weight', x: p.x, y: p.y + 33 }, String(n.weight)));
+            if (!n.left) svg.appendChild(make('text', { 'data-key': `weight-${k}`, ...up(k), class: 'weight', x: p.x, y: p.y + 33 }, String(n.weight)));
         });
         // the rings in front, staying on their node while they fade
         picks.forEach((t) => {
@@ -515,8 +519,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // the same size for every step of a text: the picture does not jump
         svg.setAttribute('viewBox', `0 0 ${size.width} ${size.height}`);
     }
+    // between: where everything stands for a moment after two trees were
+    // joined: the new node right above the two, all else still in place;
+    // the step moves there first and only then to its own layout
     let live = null;
-    function show(box, placed, picks, size, animate) {
+    let step2 = 0;
+    function show(box, placed, picks, size, animate, between, lift) {
         if (!live || live.parentNode !== box) {
             box.replaceChildren();
             live = make('svg', { class: 'hf-svg' });
@@ -525,9 +533,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         live.style.maxWidth = `${size.width}px`;
         const next = make('svg', {});
-        draw(next, placed, picks, size);
-        if (window.StepperMotion) window.StepperMotion.morph(live, next, { duration: animate ? 550 : 0 });
-        else { live.setAttribute('viewBox', next.getAttribute('viewBox')); live.replaceChildren(...next.childNodes); }
+        draw(next, placed, picks, size, lift);
+        step2 += 1;
+        if (!window.StepperMotion) { live.setAttribute('viewBox', next.getAttribute('viewBox')); live.replaceChildren(...next.childNodes); return; }
+        if (!animate || !between) { window.StepperMotion.morph(live, next, { duration: animate ? 550 : 0 }); return; }
+        const first = make('svg', {});
+        draw(first, between, [], size);
+        const mine = step2;
+        // the second movement only if no other step came in between
+        window.StepperMotion.morph(live, first, { duration: 550, done: () => { if (mine === step2) window.StepperMotion.morph(live, next, { duration: 550 }); } });
     }
 
     function codes(t, prefix, table) {
@@ -539,7 +553,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let built = { steps: [] }, current = 0, size = null;
     // animate: a step forward or back moves, a jump shows the step at once
-    function render(animate = false) {
+    function render(animate = false, forward = false) {
         const step = built.steps[current];
         const count = built.steps.length;
         root.querySelector('.hf-count').textContent = count ? `Schritt ${current + 1} von ${count}` : '';
@@ -557,7 +571,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 ? 'Nur ein einziges Byte: Der Baum ist ein Blatt, und sein Code ist 0.'
                 : `Fertig: ein einziger Baum. Die Codes stehen auf den Wegen von oben zu den Blättern.`;
         }
-        show(forest, layout(step.forest, size.tall), step.pick, size, animate);
+        // forward after a merge: first the new node above the two trees
+        let between = null;
+        if (animate && forward && step.made) {
+            const before = layout(built.steps[current - 1].forest, size.tall);
+            const [a, b] = [before.pos.get(key(step.made.left)), before.pos.get(key(step.made.right))];
+            between = { pos: new Map([...before.pos, [key(step.made), { x: (a.x + b.x) / 2, y: Math.min(a.y, b.y) - DY, node: step.made }]]) };
+        }
+        // the new tree rises over the lighter trees it passes to its place,
+        // as high as the tallest of them, without leaving the picture
+        let lift = null;
+        const placed = layout(step.forest, size.tall);
+        if (between) {
+            const at = step.forest.indexOf(step.made);
+            if (at > 0) {
+                const keys = new Set();
+                (function walk(n) { keys.add(key(n)); if (n.left) { walk(n.left); walk(n.right); } })(step.made);
+                // clear of the counts under their leaves too
+                const by = Math.min(Math.max(...step.forest.slice(0, at).map(depth)) * DY + 40, placed.pos.get(key(step.made)).y - 12);
+                lift = { keys, by };
+            }
+        }
+        show(forest, placed, step.pick, size, animate, between, lift);
         if (!step.pick.length) {
             const tree = step.forest[0];
             const table_ = codes(tree, '', new Map());
@@ -582,7 +617,7 @@ document.addEventListener('DOMContentLoaded', function() {
         root.dataset.step = current;
         root.dataset.steps = count;
     }
-    const go = (k) => { const before = current; current = Math.max(0, Math.min(built.steps.length - 1, k)); render(Math.abs(current - before) === 1); };
+    const go = (k) => { const before = current; current = Math.max(0, Math.min(built.steps.length - 1, k)); render(Math.abs(current - before) === 1, current > before); };
     root.stepperGo = go;
     root.querySelector("[data-go='first']").addEventListener('click', () => go(0));
     root.querySelector("[data-go='prev']").addEventListener('click', () => go(current - 1));

@@ -2738,6 +2738,10 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             timeline.setAttribute('aria-valuenow', index);
             keepInView(!dragging);
             count.textContent = `Schritt ${index} von ${frames.length - 1}`;
+            // for the lightbox, which measures the first and the last step
+            // (stepper_keys.js)
+            widget.dataset.step = index;
+            widget.dataset.steps = frames.length;
             buttons[0].disabled = buttons[1].disabled = index === 0;
             buttons[2].disabled = buttons[3].disabled = index === frames.length - 1;
         };
@@ -2768,6 +2772,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             speed = (speed + 1) % SPEEDS.length;
             speedButton.textContent = SPEEDS[speed][1];
         });
+        widget.stepperGo = (k) => { index = Math.max(0, Math.min(frames.length - 1, k)); show(false); };
         const go = { first: () => 0, prev: () => index - 1, next: () => index + 1, last: () => frames.length - 1 };
         for (const b of buttons) b.addEventListener('click', () => {
             stop();

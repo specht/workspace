@@ -183,7 +183,9 @@
         // data-delay and taking data-length (parts of the movement, 0 to 1);
         // at rest it is invisible
         const pulses = shown.filter((node) => node.dataset.pulse);
-        if (!tracks.length && !ride.length && !pulses.length) return;
+        // options.done: called when the movement has ended by itself (not
+        // when the next one cut it short), for a step made of two movements
+        if (!tracks.length && !ride.length && !pulses.length) { if (options.done) options.done(); return; }
         const lineByKey = new Map([...leaving, ...shown].filter((node) => node.dataset.ends).map((node) => [node.dataset.key, node]));
 
         // where the ends of the edges are: on the centres of their nodes as
@@ -332,6 +334,15 @@
         // of that element in every frame (a ring that fades on a moving node)
         const follow = [...leaving, ...shown].filter((node) => node.dataset.follow && !kept.has(node));
         const arcs = tracks.filter((track) => track.name === 'transform' && track.node.dataset.arc && /^translate/.test(track.to));
+        // data-lift='h': a circle or a text that rises by up to h on its way
+        // and comes down at its target (a tree that passes over others);
+        // the lines to it follow. Its height is the moving one or, if it
+        // only moves sideways, its own
+        const lifted = shown.filter((node) => node.dataset.lift && (node.hasAttribute('cy') || node.tagName === 'text')).map((node) => {
+            const name = node.hasAttribute('cy') ? 'cy' : 'y';
+            const track = tracks.find((k) => k.node === node && k.name === name);
+            return { node, name, track, base: Number(node.getAttribute(name)), lift: Number(node.dataset.lift) };
+        });
         const paint = (t, now) => {
             for (const track of tracks) track.node.setAttribute(track.name, t >= 1 ? track.final : mix(track.from, track.to, ease(track.early ? early(t) : later(t))));
             // data-arc: a group that moves by its translate goes on a small
@@ -344,6 +355,13 @@
                 const len = Math.hypot(x1 - x0, y1 - y0) || 1;
                 const bow = Number(track.node.dataset.arc) * Math.sin(Math.PI * e);
                 track.node.setAttribute('transform', `translate(${round(x0 + (x1 - x0) * e - ((y1 - y0) / len) * bow)} ${round(y0 + (y1 - y0) * e + ((x1 - x0) / len) * bow)})`);
+            }
+            if (lifted.length) {
+                const e = t >= 1 ? 1 : ease(later(t));
+                for (const l of lifted) {
+                    const at = l.track ? Number(l.node.getAttribute(l.name)) : l.base;
+                    l.node.setAttribute(l.name, round(at - l.lift * Math.sin(Math.PI * e)));
+                }
             }
             for (const node of follow) {
                 const c = centre(node.dataset.follow);
@@ -420,7 +438,7 @@
         const frame = (now) => {
             if (start === null) start = now;
             const t = (now - start) / (assigning ? duration * STRETCH : duration);
-            if (t >= 1) return finish();
+            if (t >= 1) { finish(); if (options.done) options.done(); return; }
             paint(t, now);
             frameId = requestAnimationFrame(frame);
         };

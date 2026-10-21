@@ -197,8 +197,10 @@ only to look nice.
 - **Huffman** (`huffman.md`, no code box: the students write it): the trees
   stand on one line at the bottom, so a new node always appears above the
   two it joins; it grows in with its weight first, its edges sprout and snap
-  onto the two roots, then the lower tree rises to meet it. The two
-  lightest trees wear the purple ring.
+  onto the two roots, where they stand; only then does the forest
+  rearrange (two movements in one step, `done` in `morph`), and the new
+  tree rises over the lighter trees it passes (`data-lift`). The two
+  lightest trees wear the purple ring, the counts clear of it.
 - **The calculator** (`calculator.md`): an operator is a round box, a number
   a box; when a node is computed, its numbers rise into it and merge, and
   the round box turns into the result's box; back, they come out of it
@@ -281,7 +283,9 @@ only to look nice.
   wins (a tablet upright puts the code under the picture). The picture gives
   up height only while its labels stay at least 70 % of the text size;
   beside the code it keeps at least 60 % of its size across the whole width.
-  The size is measured when the picture rests, kept from step to step and
+  The size is measured when the picture rests, at the first, the last and
+  the current step (`stepperGo`), so that a widget that grows (the LZW
+  table) has one size from the start; it is kept from step to step and
   only made smaller when a step does not fit, so the text does not jump; a
   new window size or another widget fits afresh.
 - Colours come from the widget's CSS variables, so light and dark mode both

@@ -159,15 +159,27 @@ document.addEventListener('keydown', (event) => {
         const keep = !fresh && fitted && fitted.widget === open;
         if (keep && fits(fitted.size, picture)) return;
         const hi = keep ? fitted.size : 32;
+        // when the lightbox opens: the size that fits the first, the last
+        // and the current step, so that a widget that grows (the LZW
+        // table) keeps one size from the start (stepperGo, data-step)
+        const probe = (measure) => {
+            const steps = Number(open.dataset.steps);
+            if (keep || typeof open.stepperGo !== 'function' || !(steps > 1)) return measure();
+            const at = Number(open.dataset.step) || 0;
+            let least = Infinity;
+            for (const s of new Set([at, 0, steps - 1])) { open.stepperGo(s); least = Math.min(least, measure()); }
+            open.stepperGo(at);
+            return least;
+        };
         if (!picture) {
-            fitted = { widget: open, size: largest(null, hi) };
+            fitted = { widget: open, size: probe(() => largest(null, hi)) };
             fits(fitted.size, null);
             return;
         }
         let best = null;
         for (const layout of LAYOUTS) {
             use(layout);
-            const size = largest(picture, hi);
+            const size = probe(() => largest(picture, hi));
             if (!best || size > best.size + 0.2) best = { layout, size };
         }
         use(best.layout);
