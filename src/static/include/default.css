@@ -5445,32 +5445,33 @@ table.automaton-table tbody th { text-align: left; white-space: nowrap; }
 }
 
 /* An interactive widget on a page (data-stepper, stepper_keys.js): a card
-   like a task's (.task-card), in a colour of its own, a warm orange (tasks
-   are blue, the Handbuch is teal, a guess is violet), with a label like a
-   task's number that says it can be tried and stepped with the arrow
-   keys. div[…] outweighs the widgets' own margins. */
+   like a task's (.task-card), in a colour of its own, slate (tasks are
+   blue, the Handbuch is teal, a guess is violet; a calm frame lets the
+   widget's own colours speak), with a label like a task's number that says
+   it can be tried and stepped with the arrow keys. div[…] outweighs the
+   widgets' own margins. */
 div[data-stepper],
 .bitplane-widget {
-    --widget: #d9480f;
-    --widget-ink: #a8380b;
-    --widget-chip: #fdebe0;
-    --widget-line: #f5dccd;
-    --widget-tint: #fffaf6;
+    --widget: #5c677d;
+    --widget-ink: #4a5264;
+    --widget-chip: #ebecef;
+    --widget-line: #dbdee3;
+    --widget-tint: #fafafb;
     margin: 1.75em 0;
     padding: 0.9em 1.25em 0.9em;
     border: 1px solid var(--widget-line);
     border-left: 5px solid var(--widget);
     border-radius: 0.6em;
     background: var(--widget-tint);
-    box-shadow: 0 1px 3px rgba(217, 72, 15, 0.06);
+    box-shadow: 0 1px 3px rgba(92, 103, 125, 0.08);
 }
 html[data-bs-theme="dark"] div[data-stepper],
 html[data-bs-theme="dark"] .bitplane-widget {
-    --widget: #f57c45;
-    --widget-ink: #ffb48c;
-    --widget-chip: #3a2216;
-    --widget-line: #4a2f22;
-    --widget-tint: #1f1915;
+    --widget: #858d9e;
+    --widget-ink: #a5abb7;
+    --widget-chip: #25272b;
+    --widget-line: #2a2e34;
+    --widget-tint: #1a1b1b;
 }
 /* the lightbox for a demo (stepper_keys.js): the square button at the top
    right; the widget larger over the page; arrows at the edges to the

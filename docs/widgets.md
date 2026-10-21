@@ -55,9 +55,9 @@ in doubt, do it the way it does.
   (`.stepper-word`, from `stepper_keys.js`); on a touch screen large for
   the thumb (default.css, `pointer: coarse`). A button that cannot be used
   is grey.
-- **The frame is a card like a task's**, in the widgets' own warm orange
-  (tasks are blue, the Handbuch teal, a guess violet), its label a pill like
-  a task's number.
+- **The frame is a card like a task's**, in the widgets' own slate (tasks
+  are blue, the Handbuch teal, a guess violet; a calm frame lets the
+  widget's own colours speak), its label a pill like a task's number.
 - **A timeline** under the buttons: a dot for every step, joined by a fine
   line (coloured as far as the steps are done); the dot where an
   operation starts is ringed and carries the operation's name (`remove 20`,
