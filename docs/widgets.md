@@ -113,7 +113,9 @@ the next with their eyes.
   deepest first, in time with the pulses on the pointers. A thin line joins
   each call to the node it holds (strong for the current one, dashed and
   faint for those that wait), behind the picture and the code: so it is
-  visible how many nodes are held at once. Only when the code stands beside
+  visible how many nodes are held at once. The current call's line runs
+  through the value on its way (the dashed token beside the node), so the
+  token, the call's argument, sits on it. Only when the code stands beside
   the picture; on a phone, where it stands below, there are no lines.
 - **Layout keeps the structure readable at every step.** In a tree a child
   is always below every node that points to it; the column is the place of

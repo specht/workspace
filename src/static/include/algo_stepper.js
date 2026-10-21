@@ -1890,9 +1890,17 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 const [sx, sy] = [l.left - box.left - 2, l.top + l.height / 2 - box.top];
                 const d = Math.hypot(sx - cx, sy - cy) || 1;
                 const [ex, ey] = [cx + ((sx - cx) / d) * (r + 3), cy + ((sy - cy) / d) * (r + 3)];
-                const bend = `C${sx - 40} ${sy} ${ex + 30} ${ey}`;
                 const current = li.classList.contains('current');
-                paths.push(el('svg:path', { d: `M${sx} ${sy} ${bend} ${ex} ${ey}`, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': current ? 1.8 : 1.2,
+                // the current call's line runs through the value on its way
+                // (the dashed token beside the node), so the token sits on it
+                const token = current && picture.querySelector('[data-key="incoming"]');
+                let route = `C${sx - 40} ${sy} ${ex + 30} ${ey}`;
+                if (token && Number(token.getAttribute('opacity') || 1) > 0.05) {
+                    const k = token.getBoundingClientRect();
+                    const [kx, ky] = [k.left + k.width / 2 - box.left, k.top + k.height / 2 - box.top];
+                    route = `C${sx - 40} ${sy} ${kx + 40} ${ky} ${kx} ${ky} L${ex} ${ey}`;
+                }
+                paths.push(el('svg:path', { d: `M${sx} ${sy} ${route}`, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': current ? 1.8 : 1.2,
                     'stroke-dasharray': current ? 'none' : '3 4', opacity: (current ? 0.9 : 0.45) * Number(getComputedStyle(li).opacity) }));
                 paths.push(el('svg:circle', { cx: ex, cy: ey, r: 2.5, fill: 'var(--algo-accent)', opacity: (current ? 0.9 : 0.45) * Number(getComputedStyle(li).opacity) }));
             }
