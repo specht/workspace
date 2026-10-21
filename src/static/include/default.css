@@ -681,6 +681,14 @@ button .bi {
     background-color: #428bd4;
 }
 
+/* a link as a button: white, not the (light blue) link colour of the dark theme */
+a.btn.btn-primary,
+a.btn.btn-primary:visited,
+a.btn.btn-primary:hover,
+a.btn.btn-primary:focus {
+    color: #fff;
+}
+
 .btn-primary:focus,
 .btn-primary:hover {
     border: 1px solid #2c72b8;

@@ -126,7 +126,12 @@ für hohe Bilder wie einen Handybildschirm, `tiles` für viele kleine wie die
 Modelle eines Kenney-Kits, `centered` für wenige kleine Bilder wie zwei Diagramme
 (höchstens 16em breit, in der Mitte, immer in einer Reihe). Mit `hide-lone` fällt von vier Bildern das vierte
 weg, wenn drei in eine Reihe passen und es allein in der nächsten stünde: für
-Beispiele, bei denen drei genügen. Bilder zum Vergleichen sind einzelne Dateien, die
+Beispiele, bei denen drei genügen. Ein Bild mit der Klasse `inspect`
+(`<img class='inspect' …>`) ist zum genauen Hinsehen da, etwa eine ganze
+Lightmap: Es öffnet sich auch auf dem Handy, und im großen Bild vergrößern
+Mausrad, zwei Finger oder ein Doppelklick die Stelle, auf die sie zeigen;
+ziehen verschiebt es, ab anderthalbfacher Größe mit scharfen Pixeln.
+Bilder zum Vergleichen sind einzelne Dateien, die
 Unterschrift steht in der `<figcaption>`, nicht ins Bild gezeichnet: So lesen
 sie auch Screenreader, und sie bricht auf dem Handy um.
 `gallery_markup_test.rb` prüft, dass jede Galerie so aussieht und keine

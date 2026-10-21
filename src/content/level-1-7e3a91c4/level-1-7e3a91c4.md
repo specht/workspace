@@ -40,7 +40,7 @@ Diese Seite baut auf [Level 0](/level-0-c1d8a2f7) auf: auf deinem Klon der Vorla
 <!-- tutorial-step
 # Wo Level 0 aufgehört hat: die Vorlage mit den Räumen von dort, die Vorschau
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ c50c53e0e2747a3c73b81e00b072d4ad4d7c3130
+clone-start: https://github.com/specht/backrooms-starter.git @ f19e4cd775bc42e8338fc1c9645a016b49e44cdf
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -119,12 +119,12 @@ write-file: rooms/rampe.room <- file:stufen/rampe-1.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=30.20,17.70,-86,4,,0
+hook: open view=32.80,19.70,-80,10
 hook: light
 hook: info off
 -->
 
-<img class='full fit-width' src='rampe-1.webp' alt='Ein breiter Gang mit gelber Tapete; vorn ist der Boden eben, weiter hinten steigt er gleichmäßig an, und die Decke steigt mit.'>
+<img class='full fit-width' src='rampe-1.webp' alt='Ein breiter Gang mit gelber Tapete, schräg von der Seite: Vorn ist der Boden eben, dann knickt die Sockelleiste nach oben, und der Boden steigt gleichmäßig an; die Decke steigt mit.'>
 
 ### Boden und Decke zusammen
 
@@ -145,12 +145,12 @@ write-file: rooms/rampe.room <- file:stufen/rampe-2.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=30.20,17.70,-86,2,,0
+hook: open view=32.80,19.70,-80,10
 hook: light
 hook: info off
 -->
 
-<img class='full fit-width' src='rampe-2.webp' alt='Derselbe Gang: vorn eben, dahinter steigt der Boden an, während die Decke fast waagerecht bleibt; ganz hinten treffen sich Boden und Decke beinahe.'>
+<img class='full fit-width' src='rampe-2.webp' alt='Derselbe Gang von derselben Stelle: Vorn ist der Boden eben, dahinter steigt er an, während die Decke fast waagerecht bleibt; nach hinten wird der Gang immer niedriger.'>
 
 <!-- /tutorial-scope -->
 
@@ -169,7 +169,7 @@ write-file: rooms/rampe.room <- file:stufen/rampe-3.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=31.00,18.50,-97,-5,,0
+hook: open view=34.60,18.00,-90,-14
 hook: light
 hook: info off
 -->
@@ -191,7 +191,7 @@ write-file: rooms/rampe.room <- file:stufen/rampe.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=30.20,17.70,-86,6,,0
+hook: open view=34.80,19.40,-76,14
 hook: light
 hook: info off
 -->
@@ -277,7 +277,7 @@ write-file: rooms/treppe.room <- file:stufen/treppe-1.room
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=21.00,13.50,-62,16
+hook: open view=21.00,12.40,-62,16
 hook: light
 hook: info off
 -->
@@ -358,7 +358,12 @@ hook: info off
 <img class='full fit-width' src='dachboden.webp' alt='Der Dachboden: ein weiter, niedriger Raum mit Wänden und Boden aus Holz unter einem flachen Satteldach, ein paar Kisten, wenige gelbliche Leuchten.'>
 
 <div class='hint try'>
-<p><strong>Ausprobieren:</strong> Stell im Treppenhaus mit <code>on = P</code> etwas auf das obere Podest, den Plastikstuhl zum Beispiel, in einem eigenen Feld: <code>[C]</code> mit <code>model = models/plastic_monobloc_chair_01/plastic_monobloc_chair_01_1k.gltf</code>, <code>height = 0.88</code> und <code>on = P</code>. Das Feld gehört dann zum Podest, und der Stuhl steht oben. Was passiert ohne <code>on = P</code>?</p>
+<p><strong>Ausprobieren:</strong> Stell im Treppenhaus etwas auf das obere Podest, den Plastikstuhl zum Beispiel. Er bekommt ein eigenes Feld auf dem Podest, ein <code>C</code> im Grundriss, und dazu:</p>
+<pre class='code-room'>[C]
+model = models/plastic_monobloc_chair_01/plastic_monobloc_chair_01_1k.gltf
+height = 0.88
+on = P</pre>
+<p>Mit <code>on = P</code> gehört das Feld zum Podest, und der Stuhl steht oben. Was passiert ohne <code>on = P</code>?</p>
 </div>
 
 ### Ein Loch im Boden
@@ -413,7 +418,7 @@ hook: open view=11.00,9.80,172,-50,,3
 hook: light
 hook: info off
 -->
-<img src='loch-oben.webp' alt='Ein rechteckiges Loch im Holzboden des Dachbodens; tief darunter der hell erleuchtete Gang mit gelber Tapete.'>
+<img src='loch-oben.webp' alt='Ein rechteckiges Loch im Holzboden des Dachbodens, ringsum mit Kanten aus grauem Beton; tief darunter der hell erleuchtete Gang mit gelber Tapete.'>
 <figcaption>Von oben: der Gang unter dem Dachboden</figcaption>
 </figure>
 <figure>
@@ -457,7 +462,7 @@ _include_file(stufen/schacht.room, room_copy)
 
 Unten im Schacht stehen ein paar Kisten und ein Plastikstuhl: Von oben siehst du an ihnen, wie tief es ist. Die Lampe unten an der Ostwand ist ein Modell, das selbst leuchtet; wie das geht, kommt in Level 3.
 
-Wer durch die Tür tritt, fällt. Zurück kommst du mit <kbd>Shift</kbd> <kbd>R</kbd>.
+Wer durch die Tür tritt, fällt. <kbd>R</kbd> bringt dich an die Stelle kurz vor dem Sturz zurück, <kbd>Shift</kbd> <kbd>R</kbd> an den Anfang.
 
 <div class='gallery columns-2'>
 <figure>

@@ -40,7 +40,7 @@ Diese Seite baut auf [Level 2](/level-2-b52d0f18) auf: auf deinem Level, so wie 
 <!-- tutorial-step
 # Wo Level 2 aufgehört hat: die Vorlage mit den Räumen aus Level 0, 1 und 2, die Vorschau
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ c50c53e0e2747a3c73b81e00b072d4ad4d7c3130
+clone-start: https://github.com/specht/backrooms-starter.git @ f19e4cd775bc42e8338fc1c9645a016b49e44cdf
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -179,7 +179,24 @@ hook: key t g
 </figure>
 </div>
 
-**Ein Bild für alle Flächen.** Alle Punkte aller Flächen liegen in einem einzigen Bild, der Lightmap. Jede Fläche ist darin ein Rechteck aus ihren Punkten: so viele breit und hoch, wie sie Meter breit und hoch ist, mal 16. Das Programm legt die Rechtecke dicht an dicht in das Bild, die großen zuerst, wie Kisten in einen Kofferraum, und macht das Bild nur so groß wie nötig, mit einer Zweierpotenz als Seite, etwa 1024 × 1024 Punkte. Jede Ecke einer Fläche weiß, wo im Bild ihr Rechteck liegt. Beim Zeichnen holt sich die Grafikkarte für jeden Pixel der Fläche die Helligkeit von der passenden Stelle im Rechteck: Das Rechteck wird auf die Fläche geklebt, wie ein Bild auf eine Wand. <kbd>Shift</kbd>+<kbd>G</kbd> zeigt die ganze Lightmap; `?show=atlas&face=kammer,floor` in der Adresse zeigt nur das Rechteck des Bodens in der Kammer, Punkt für Punkt (ein anderer Raum statt `kammer`, `wall` statt `floor` für seine größte Wand, dazu `fine` für ihr feineres Stück):
+**Ein Bild für alle Flächen.** Alle Punkte aller Flächen liegen in einem einzigen Bild, der Lightmap. Jede Fläche ist darin ein Rechteck aus ihren Punkten: so viele breit und hoch, wie sie Meter breit und hoch ist, mal 16. Das Programm legt die Rechtecke dicht an dicht in das Bild, die großen zuerst, wie Kisten in einen Kofferraum, und macht das Bild nur so groß wie nötig, mit einer Zweierpotenz als Seite, etwa 1024 × 1024 Punkte. Jede Ecke einer Fläche weiß, wo im Bild ihr Rechteck liegt. Beim Zeichnen holt sich die Grafikkarte für jeden Pixel der Fläche die Helligkeit von der passenden Stelle im Rechteck: Das Rechteck wird auf die Fläche geklebt, wie ein Bild auf eine Wand. <kbd>Shift</kbd>+<kbd>G</kbd> zeigt die ganze Lightmap, hier die deines Levels (zum Vergrößern anklicken):
+
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1200x1200
+zoom: 1.5
+hook: open show=atlas
+hook: light
+hook: info off
+-->
+<img class='inspect' src='lightmap-ganz.webp' alt='Ein quadratisches Bild, oben dicht an dicht gefüllt mit Rechtecken in Beige, Blaugrau, Rot und Blau, oben die großen, nach unten immer schmalere Streifen; in vielen dunkle Schatten von Treppen, Möbeln und Kisten. Das untere Drittel ist leer und schwarz.'>
+<figcaption>die ganze Lightmap, 2048 × 2048 Punkte</figcaption>
+</figure>
+</div>
+
+`?show=atlas&face=bad,wall` in der Adresse zeigt nur das Rechteck der größten Wand im Bad, Punkt für Punkt. Ein anderer Raum statt `bad`, `floor` oder `ceiling` statt `wall`; eine Zahl dahinter nimmt die nächstkleinere Fläche (`bad,wall,1` die zweitgrößte), `fine` ihr feineres Stück. In den feinen Stücken sieht man gut, wie ein Schatten an der Kante, die ihn wirft, scharf beginnt und mit dem Abstand weicher wird, warum, kommt gleich. An der Wand hinter der Treppe im Bad und um eine Kiste auf dem Dachboden, die zwei Leuchten sieht und darum zwei Schatten wirft:
 
 <div class='gallery columns-2'>
 <figure>
@@ -187,50 +204,50 @@ hook: key t g
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open show=atlas&face=kammer,floor
+hook: open show=atlas&face=bad,wall,3,fine
 hook: light
 hook: info off
 -->
-<img src='lightmap-kammer.webp' alt='Ein Rechteck aus großen, gut erkennbaren Quadraten vor dunklem Grund, jedes ein Punkt der Lightmap: oben hell, unten in der Mitte ein dunkles Feld, der Schatten des Sofas, zu seiner Mitte hin am dunkelsten.'>
-<figcaption>der Boden der Kammer in der Lightmap</figcaption>
+<img src='lightmap-bad-wand.webp' alt='Ein breites Rechteck aus Punkten in hellem Blaugrau. Unten ein dunkles Feld mit einer scharfen Kante oben, die rechts in Stufen nach unten führt: Treppe und Podest an der Wand. Auf dem Podest ein dünner, scharfer Strich, ein Pfosten des Geländers; darüber laufen die Schatten der Geländerstangen und des Stuhls als weiche, verschwommene Bögen.'>
+<figcaption>die Wand hinter der Treppe im Bad in der Lightmap (<code>bad,wall,3,fine</code>)</figcaption>
 </figure>
 <figure>
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=16.20,16.60,158,-48
+hook: open view=38.00,29.70,-70,12
 hook: light
 hook: info off
 hook: key t
 -->
-<img src='lightmap-kammer-raum.webp' alt='Die Kammer schräg von oben, ohne Tapete und Teppich ganz in hellem Beige: ein heller Boden, an der Wand gegenüber das Sofa.'>
-<figcaption>derselbe Boden in der Kammer (<kbd>T</kbd>)</figcaption>
+<img src='lightmap-bad-raum.webp' alt='Das Bad ohne Fliesen, ganz in hellem Blaugrau: hinter dem Geländer des Beckens führt eine Treppe an der Wand hinauf zu einem Podest mit Geländer und einem Stuhl.'>
+<figcaption>dieselbe Wand im Bad (<kbd>T</kbd>)</figcaption>
 </figure>
 <figure>
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open show=atlas&face=saal,floor
+hook: open show=atlas&face=dachboden,floor,1,fine
 hook: light
 hook: info off
 -->
-<img src='lightmap-boden.webp' alt='Ein schmales, hohes Rechteck aus Punkten vor dunklem Grund, fast überall hell; darin drei blasse Schatten: oben und unten je ein spitzer von einer Säule, in der Mitte ein runder von der Statue auf ihrem Sockel.'>
-<figcaption>der Boden des Saals in der Lightmap</figcaption>
+<img src='lightmap-kiste.webp' alt='Ein fast quadratisches Rechteck aus Punkten in Beige. In der Mitte ein dunkelbraunes, schräges Viereck, links davon zwei hellere Schatten, die sich an einer Spitze berühren. Nahe der Mitte haben sie scharfe, gestufte Kanten, zum Rand hin werden sie weich.'>
+<figcaption>der Boden um eine Kiste auf dem Dachboden in der Lightmap (<code>dachboden,floor,1,fine</code>)</figcaption>
 </figure>
 <figure>
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1536x864
 zoom: 1.5
-hook: open view=18.00,17.40,-94,-32
+hook: open view=7.60,2.40,110,-45,,3
 hook: light
 hook: info off
 hook: key t
 -->
-<img src='lightmap-boden-saal.webp' alt='Derselbe Boden im Saal, ohne Teppich in hellem Beige: vorn weit und gleichmäßig hell, hinten die Säulen und die Statue auf ihrem Sockel mit blassen Schatten um sie herum.'>
-<figcaption>derselbe Boden im Saal (<kbd>T</kbd>)</figcaption>
+<img src='lightmap-kiste-raum.webp' alt='Der Dachboden ohne Tapete, ganz in Beige, schräg von oben: eine Kiste aus Pappe nahe der Ecke, hinter ihr zur Wand hin ein dunkler Schatten und daneben ein hellerer.'>
+<figcaption>dieselbe Kiste auf dem Dachboden (<kbd>T</kbd>)</figcaption>
 </figure>
 </div>
 
@@ -238,7 +255,7 @@ Bevor es um die Strahlen geht: Geh zurück ins Zimmer (<kbd>Shift</kbd> <kbd>R</
 
 _task(decke)
 
-**Direktes Licht.** Für jeden Punkt nimmt das Programm einen zufälligen Punkt auf jeder Leuchte und schickt einen Strahl dorthin. Steht etwas im Weg, eine Wand, eine Säule oder ein Modell, kommt von dieser Leuchte nichts an. Sonst kommt Licht an, umso weniger, je weiter die Leuchte weg ist (doppelt so weit: ein Viertel) und je schräger es auf die Fläche fällt. Das wiederholt es 64-mal, jedes Mal mit einem anderen Punkt auf der Leuchte, und nimmt den Durchschnitt. Ein Punkt, der eine Leuchte nur halb sieht, ist in etwa der Hälfte der Durchgänge beleuchtet: Er liegt im **Halbschatten**. Darum werfen große Leuchten weiche Schatten und kleine scharfe. Nur mit direktem Licht sieht der Saal so aus:
+**Direktes Licht.** Für jeden Punkt nimmt das Programm einen Punkt auf jeder Leuchte und schickt einen Strahl dorthin. Steht etwas im Weg, eine Wand, eine Säule oder ein Modell, kommt von dieser Leuchte nichts an. Sonst kommt Licht an, umso weniger, je weiter die Leuchte weg ist (doppelt so weit: ein Viertel) und je schräger es auf die Fläche fällt. Das wiederholt es 64-mal, jedes Mal mit einem anderen Punkt auf der Leuchte, und nimmt den Durchschnitt. Ganz zufällig sind diese Punkte nicht: Das Programm teilt die Leuchte in 8 × 8 Felder, und jeder Punkt der Lightmap kommt in den 64 Durchgängen in jedes Feld genau einmal, darin an eine zufällige Stelle. So verteilen sich seine Strahlen gleichmäßig über die ganze Leuchte, und der Halbschatten wird glatter als mit Zufall allein. Ein Punkt, der eine Leuchte nur halb sieht, ist in etwa der Hälfte der Durchgänge beleuchtet: Er liegt im **Halbschatten**. Darum werfen große Leuchten weiche Schatten und kleine scharfe. Und der Halbschatten ist dort schmal, wo der Schatten an der Kante beginnt, die ihn wirft, und wird breiter, je weiter er von ihr weg fällt: wie an der Wand hinter der Treppe und um die Kiste. Nur mit direktem Licht sieht der Saal so aus:
 
 <!-- tutorial-screenshot
 tab: preview
@@ -507,7 +524,7 @@ Sie öffnet sich in einem neuen Tab, schon fertig gebacken. Das geht auch auf de
 <figcaption>das Parkdeck</figcaption>
 </figure>
 <figure>
-<img src='nachtschicht-notgang.webp' alt='Ein schmaler, hoher Gang mit kahlen, gelblichen Wänden, vorn eine Lampe an der Decke, weitere weit hinten; ganz am Ende, kaum zu erkennen, ein Stuhl.'>
+<img src='nachtschicht-notgang.webp' alt='Ein schmaler, hoher Gang mit kahlen, gelblichen Wänden, vorn eine Lampe an der Decke, weitere weit hinten; ganz am Ende, in einem kleinen warmen Lichtfleck, ein Schaukelstuhl.'>
 <figcaption>ein Gang, der nirgends hinführt</figcaption>
 </figure>
 </div>
