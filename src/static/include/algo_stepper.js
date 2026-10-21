@@ -1883,7 +1883,11 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             }
             const paths = [];
             for (const li of side.querySelectorAll('li[data-node]')) {
-                const node = picture.querySelector(`[data-key="node-${li.dataset.node}"]`);
+                const current = li.classList.contains('current');
+                // the current call's line ends at the ring, which glides from
+                // node to node, so that the line (and the value on it) glide too
+                const ring = current && picture.querySelector('[data-key="focus"]');
+                const node = ring || picture.querySelector(`[data-key="node-${li.dataset.node}"]`);
                 if (!node) continue;
                 const c = node.getBoundingClientRect();
                 const l = li.getBoundingClientRect();
@@ -1891,19 +1895,28 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 const [sx, sy] = [l.left - box.left - 2, l.top + l.height / 2 - box.top];
                 const d = Math.hypot(sx - cx, sy - cy) || 1;
                 const [ex, ey] = [cx + ((sx - cx) / d) * (r + 3), cy + ((sy - cy) / d) * (r + 3)];
-                const current = li.classList.contains('current');
-                // the current call's line runs through the value on its way
-                // (the dashed token beside the node), so the token sits on it
+                const [c1, c2] = [[sx - 40, sy], [ex + 30, ey]];
+                const fade = Number(getComputedStyle(li).opacity);
+                paths.push(el('svg:path', { d: `M${sx} ${sy} C${c1[0]} ${c1[1]} ${c2[0]} ${c2[1]} ${ex} ${ey}`, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': current ? 1.8 : 1.2,
+                    'stroke-dasharray': current ? 'none' : '3 4', opacity: (current ? 0.9 : 0.45) * fade }));
+                // the value on its way (the call's argument) sits on this line,
+                // just before the node
                 const token = current && picture.querySelector('[data-key="incoming"]');
-                let route = `C${sx - 40} ${sy} ${ex + 30} ${ey}`;
-                if (token && Number(token.getAttribute('opacity') || 1) > 0.05) {
-                    const k = token.getBoundingClientRect();
-                    const [kx, ky] = [k.left + k.width / 2 - box.left, k.top + k.height / 2 - box.top];
-                    route = `C${sx - 40} ${sy} ${kx + 40} ${ky} ${kx} ${ky} L${ex} ${ey}`;
+                if (token && !picture.hasAttribute('data-token-free')) {
+                    const at = (u) => {
+                        const v = 1 - u;
+                        return [v ** 3 * sx + 3 * v * v * u * c1[0] + 3 * v * u * u * c2[0] + u ** 3 * ex, v ** 3 * sy + 3 * v * v * u * c1[1] + 3 * v * u * u * c2[1] + u ** 3 * ey];
+                    };
+                    let u = 1;
+                    let p = at(u);
+                    while (u > 0 && Math.hypot(p[0] - ex, p[1] - ey) < 30) { u -= 0.01; p = at(u); }
+                    const m = picture.getScreenCTM().inverse();
+                    const q = new DOMPoint(p[0] + box.left, p[1] + box.top).matrixTransform(m);
+                    token.setAttribute('cx', q.x);
+                    token.setAttribute('cy', q.y);
+                    const label = picture.querySelector('[data-key="incoming-label"]');
+                    if (label) { label.setAttribute('x', q.x); label.setAttribute('y', q.y + 4); }
                 }
-                paths.push(el('svg:path', { d: `M${sx} ${sy} ${route}`, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': current ? 1.8 : 1.2,
-                    'stroke-dasharray': current ? 'none' : '3 4', opacity: (current ? 0.9 : 0.45) * Number(getComputedStyle(li).opacity) }));
-                paths.push(el('svg:circle', { cx: ex, cy: ey, r: 2.5, fill: 'var(--algo-accent)', opacity: (current ? 0.9 : 0.45) * Number(getComputedStyle(li).opacity) }));
             }
             links.replaceChildren(...paths);
         };
