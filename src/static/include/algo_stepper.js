@@ -2629,12 +2629,22 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             if (frame.current !== undefined) svg.appendChild(stateRing('dea-current', L2, `r${frame.current}`, dx2, dy2));
             // beside it the table, a row for each set found
             const head = el('tr', {}, [el('th', { text: 'DEA' }), el('th', { text: 'Menge' }), ...frames.symbols.map((a) => el('th', { text: a }))]);
-            const rows = frames.dea.states.slice(0, frame.known).map((s, i) => el('tr', { class: i === frame.current ? 'current' : '' }, [
-                el('th', { html: `r<sub>${i}</sub>${frame.final && frames.dea.accept.includes(s.id) ? ' <i class="bi bi-check-lg"></i>' : ''}` }), el('td', { text: `{${s.set.join(', ')}}` }),
-                ...frames.symbols.map((a) => {
-                    const m = moves.findIndex(([f, sym]) => f === i && sym === a);
-                    return el('td', { class: m >= 0 && m === frame.newMove ? 'changed' : '', html: m >= 0 ? `r<sub>${moves[m][2]}</sub>` : (frame.moves > 0 && i < (frame.current ?? frame.known) ? '–' : '') });
-                })]));
+            // every row of the finished DEA from the start, unseen until its
+            // set is found, and every cell as wide as it will be: the table
+            // and the code under it stay where they are
+            const unseen = (html) => `<span style="visibility: hidden">${html}</span>`;
+            const rows = frames.dea.states.map((s, i) => {
+                const found = i < frame.known;
+                const accept = frames.dea.accept.includes(s.id) ? ' <i class="bi bi-check-lg"></i>' : '';
+                return el('tr', { class: found && i === frame.current ? 'current' : '', style: found ? '' : 'visibility: hidden;' }, [
+                    el('th', { html: `r<sub>${i}</sub>${frame.final ? accept : unseen(accept)}` }), el('td', { text: `{${s.set.join(', ')}}` }),
+                    ...frames.symbols.map((a) => {
+                        const m = moves.findIndex(([f, sym]) => f === i && sym === a);
+                        const end = frames.moves.find(([f, sym]) => f === i && sym === a);
+                        const later = end ? unseen(`r<sub>${end[2]}</sub>`) : '';
+                        return el('td', { class: m >= 0 && m === frame.newMove ? 'changed' : '', html: m >= 0 ? `r<sub>${moves[m][2]}</sub>` : (found && frame.moves > 0 && i < (frame.current ?? frame.known) ? '–' : later) });
+                    })]);
+            });
             side.replaceChildren(el('h5', { text: 'Tabelle' }), el('table', { class: 'algo-table' }, [head, ...rows]), ...codeBox(frame.code));
         };
         return { frames, draw };
