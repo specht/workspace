@@ -71,12 +71,23 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 /* a dot for every step; the dot where an operation starts is ringed and
    carries the operation's name */
 .algo-stepper .algo-section { min-width: 0; display: flex; flex-direction: column; }
-.algo-stepper .algo-timeline-box { margin: 0 0 0.8em; }
+.algo-stepper .algo-timeline-box { margin: 0 0 0.8em; overflow-x: auto; scrollbar-width: none; }
+.algo-stepper .algo-timeline-box::-webkit-scrollbar { display: none; }
+.algo-stepper .algo-timeline-inner { min-width: calc(var(--steps) * 6px); padding-right: 4em; }
+@media (pointer: coarse), (max-width: 576px) { .algo-stepper .algo-timeline-inner { min-width: calc(var(--steps) * 14px); } }
 .algo-stepper .algo-timeline { margin: 0; }
 .algo-stepper .algo-op-names { position: relative; font-family: '0xProto Nerd Font Mono', monospace; font-size: 0.72em; }
 .algo-stepper .algo-op-name { position: absolute; white-space: nowrap;
     color: var(--bs-secondary-color); line-height: 1.35; }
 .algo-stepper .algo-op-name.current { color: var(--algo-ink); font-weight: 600; }
+/* the parts of an operation below the dots: quieter, smaller, under a
+   fine bracket over their steps, so that they read as part of the job above */
+.algo-stepper .algo-parts { position: relative; font-family: '0xProto Nerd Font Mono', monospace; font-size: 0.64em; }
+.algo-stepper .algo-part-bracket { position: absolute; top: 0.15em; height: 0.35em; border: 1px solid color-mix(in srgb, var(--algo-line) 80%, transparent); border-top: none; border-radius: 0 0 3px 3px; }
+.algo-stepper .algo-part-bracket.current { border-color: var(--algo-accent); }
+.algo-stepper .algo-part-name { position: absolute; white-space: nowrap; color: color-mix(in srgb, var(--bs-secondary-color) 85%, transparent); line-height: 1.3; }
+.algo-stepper .algo-part-name.current { color: var(--algo-accent); }
+.algo-stepper .algo-part-leader { position: absolute; top: 0.5em; width: 1px; background: color-mix(in srgb, var(--algo-line) 70%, transparent); }
 .algo-stepper .algo-op-leader { position: absolute; bottom: -0.3em; width: 1px; background: color-mix(in srgb, var(--algo-line) 70%, transparent); }
 .algo-stepper .algo-ticks { display: flex; height: 16px; }
 .algo-stepper .algo-tick { flex: 1 1 0; min-width: 3px; position: relative; }
@@ -334,7 +345,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         let current = -1;
         const frames = [];
         let aside = {};
-        const snapshot = (message, marks = {}) => frames.push({ slots: [...slots], values: { ...values }, aside: { ...aside }, out: [...out], message, op: current, ...marks });
+        // phase: a part of the operation (sift up, sift down), for the timeline
+        let phase = null;
+        const snapshot = (message, marks = {}) => frames.push({ slots: [...slots], values: { ...values }, aside: { ...aside }, out: [...out], message, op: current, phase, ...marks });
         const code = (name, at) => ({ lines: HEAP_CODE[name], at });
         const v = (i) => values[slots[i]];
         const push = (value, quiet) => {
@@ -350,6 +363,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             }
             snapshot(`push ${value}: ${value} kommt hinten an das Array, an Index ${slots.length - 1}, die erste freie Stelle des Baums.`, { fresh: id, code: code('push', 1) });
             let i = slots.length - 1;
+            phase = 'sift up';
             snapshot(`i ← ${i}, der letzte Index.`, { at: i, vars: [{ name: 'i', index: i }], code: code('push', 2) });
             for (;;) {
                 if (i === 0) {
@@ -370,6 +384,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 i = parent;
                 snapshot(`i ← parent: i ist jetzt ${i}.`, { at: i, vars: [{ name: 'i', index: i }, { name: 'parent', index: parent }], code: code('push', 7) });
             }
+            phase = null;
         };
         const pop = () => {
             const P = (at) => code('pop', at);
@@ -394,6 +409,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                     { holders: [{ name: 'top', id: top }], at: 0, code: P(5) });
                 let i = 0;
                 const holders = [{ name: 'top', id: top }];
+                phase = 'sift down';
                 snapshot('i ← 0.', { holders, at: i, vars: [{ name: 'i', index: i }], code: P(6) });
                 for (;;) {
                     let min = i;
@@ -422,6 +438,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                     snapshot(`i ← min: i ist jetzt ${i}.`, { holders, at: i, vars: [{ name: 'i', index: i }, { name: 'min', index: min }], code: P(14) });
                 }
             }
+            phase = null;
             aside = {};
             out = [...out, values[top]];
             delete values[top];
@@ -574,8 +591,10 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         const stack = [];
         const frames = [];
         const v = (i) => values[slots[i]];
+        // phase: a part of the work (merge, partition), for the timeline
+        let phase = null;
         const snapshot = (message, marks = {}) => frames.push({ slots: [...slots], values: { ...values }, lifted: lifted && { ...lifted }, scratch: scratch && [...scratch],
-            stack: stack.map((call) => ({ call })), comparisons, writes, message, code: { lines: SORT_CODE[kind], at: marks.line }, ...marks });
+            stack: stack.map((call) => ({ call })), comparisons, writes, message, phase, code: { lines: SORT_CODE[kind], at: marks.line }, ...marks });
         const swap = (a, b) => { [slots[a], slots[b]] = [slots[b], slots[a]]; writes += 2; };
         const copyTo = (index, fromId) => {
             const id = nextId++;
@@ -674,6 +693,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 sort(mid, hi);
                 let i = lo;
                 let j = mid;
+                phase = `merge ${lo}–${hi - 1}`;
                 const vars = (k) => [{ name: 'i', index: i }, { name: 'j', index: j }, ...(k !== undefined ? [{ name: 'k', index: k }] : [])];
                 snapshot(`Beide Hälften sind sortiert. i ← ${lo}, j ← ${mid}: die vorderste von jeder.`, { line: 5, vars: vars(), range: [lo, hi], split: mid });
                 for (let k = lo; k < hi; k++) {
@@ -693,6 +713,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 for (let k = lo; k < hi; k++) from[copyTo(k, scratch[k])] = scratch[k];
                 for (let k = lo; k < hi; k++) scratch[k] = null;
                 snapshot(`Zurück in die Liste: ${lo} bis ${hi - 1} ist sortiert.`, { line: 11, vars: ends, range: [lo, hi], from, fromScratch: true });
+                phase = null;
                 stack.pop();
             };
             sort(0, n);
@@ -706,6 +727,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                     return;
                 }
                 const pivot = v(hi);
+                phase = `partition ${lo}–${hi}`;
                 snapshot(`pivot ← list[last]: Das Pivot ist ${pivot}.`, { line: 2, vars: ends, range: [lo, hi + 1], pivot: hi });
                 let boundary = lo;
                 const vars = (i) => [...ends, { name: 'boundary', index: boundary }, ...(i !== undefined ? [{ name: 'i', index: i }] : [])];
@@ -725,6 +747,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 if (boundary !== hi) swap(boundary, hi);
                 snapshot(`swap list[boundary] and list[last]: Das Pivot ${pivot} kommt an Index ${boundary}, an seinen Platz. Links die kleineren, rechts die anderen.`,
                     { line: 8, vars: vars(), range: [lo, hi + 1], pivot: boundary, boundary, swap: boundary !== hi });
+                phase = null;
                 snapshot(`quick_sort(list, first, boundary - 1): links weiter, ${lo} bis ${boundary - 1}.`, { line: 9, vars: vars(), range: [lo, hi + 1], pivot: boundary });
                 sort(lo, boundary - 1);
                 snapshot(`quick_sort(list, boundary + 1, last): rechts weiter, ${boundary + 1} bis ${hi}.`, { line: 10, vars: vars(), range: [lo, hi + 1], pivot: boundary });
@@ -1079,7 +1102,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         // subtree its call returned; the way down shows the ring alone);
         // stack (the calls that run, the deepest last: { call, returns }) and
         // returning (they return one after another, the deepest first)
-        const snapshot = (message, marks = {}) => frames.push({ graph: toGraph(root), rootId: root ? root.id : null, message, avl, op: current, ...marks });
+        // phase: a part of the operation (successor), for the timeline
+        let phase = null;
+        const snapshot = (message, marks = {}) => frames.push({ graph: toGraph(root), rootId: root ? root.id : null, message, avl, op: current, phase, ...marks });
         const code = (name, at) => ({ lines: CODE[name], at });
         // node and successor travel with the node they point to: their arrow
         // stays rigid instead of letting go and snapping on
@@ -1218,6 +1243,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                     break;
                 }
                 let successor = n.right;
+                phase = 'successor';
                 const successorVar = () => [{ name: 'successor', to: successor.id, side: 'below', rigid: true }];
                 snapshot(`Zwei Kinder: Der nächstgrößere Wert kommt an diese Stelle. successor ← node.right, das ist ${successor.value}.`,
                     { focus: n.id, gone: n.id, vars: [...nodeVar(n), ...successorVar()], code: L(7), stack: stackOf(calls) });
@@ -1230,6 +1256,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 n.value = successor.value;
                 snapshot(`node.value ← successor.value: ${successor.value} kommt in den Knoten, in dem ${old} stand. Jetzt steht ${successor.value} zweimal im Baum.`,
                     { focus: n.id, copied: { into: n.id, from: successor.id }, vars: [...nodeVar(n), ...successorVar()], code: L(9), stack: stackOf(calls) });
+                phase = null;
                 extra = successorVar();
                 followed.push(`edge-${n.id}-right`);
                 snapshot(`node.right ← remove(node.right, ${successor.value}): Der alte Knoten von ${successor.value} muss noch weg; dieselbe Funktion sucht ihn im rechten Teilbaum.`,
@@ -1287,7 +1314,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         const vp = { name: p, to: top, side: val(child) < val(top) ? 'right' : 'left' };
         const vq = { name: q, to: child, side: val(child) < val(top) ? 'left' : 'right' };
         const stack = [...(base.stack || []), { call: `${title.replace(/\(.\)/, `(${p}: ${val(top)})`)}`, node: top }];
-        const snap = (line, message, vars) => frames.push({ ...base, graph: clone(), rootId, rootAt: startRoot, loose, vars, code: { lines, at: line }, message, stack });
+        // for the timeline: R or L and the node it turns about
+        const phase = `${right ? 'R' : 'L'} ${val(top)}`;
+        const snap = (line, message, vars) => frames.push({ ...base, graph: clone(), rootId, rootAt: startRoot, loose, vars, code: { lines, at: line }, message, stack, phase });
         const h = (id) => (id === null ? 0 : memory[id].height);
         snap(0, `${prefix}${title.replace(/\(.\)/, `(${val(top)})`)}. ${p} ist ${val(top)}, der Knoten, um den rotiert wird.`, [vp]);
         snap(1, `${q} ← ${p}.${A}: Die Variable ${q} merkt sich ${val(child)}, das ${a === 'links' ? 'linke' : 'rechte'} Kind von ${val(top)}.`, [vp, vq]);
@@ -1308,7 +1337,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         const tidy = fromGraph(memory, rootId);
         fixHeights(tidy);
         Object.assign(memory, toGraph(tidy));
-        frames.push({ ...base, graph: clone(), rootId, vars: [], message: `${val(child)} steht jetzt über ${val(top)}, die Höhen stimmen. ${after}` });
+        frames.push({ ...base, graph: clone(), rootId, vars: [], phase, message: `${val(child)} steht jetzt über ${val(top)}, die Höhen stimmen. ${after}` });
         return rootId;
     }
 
@@ -1747,22 +1776,29 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         // the lowest row where it overlaps no name and covers no line).
         const names = sections.filter((s) => s.op >= 0 && opsText).map((s) => ({ section: s, node: el('span', { class: 'algo-op-name', text: opsText[s.op] }), leader: el('span', { class: 'algo-op-leader' }) }));
         const nameRow = el('div', { class: 'algo-op-names' }, names.flatMap((n) => [n.leader, n.node]));
-        const placeNames = () => {
-            const origin = nameRow.getBoundingClientRect().left;
+        // rows for labels that start at a dot: placed from the last to the
+        // first, each in the row nearest the dots where it overlaps no label
+        // and covers no line of a label further out, and where no label
+        // nearer the dots covers its own line
+        const stackLabels = (items, origin) => {
             const placed = [];
-            for (const name of [...names].reverse()) {
-                const dot = ticks[name.section.steps[0]].getBoundingClientRect();
-                const x = dot.left + dot.width / 2 - origin;
-                const left = x - 4.5;
-                const right = left + name.node.offsetWidth;
+            for (const item of [...items].reverse()) {
+                const left = item.x - 4.5;
+                const right = left + item.node.offsetWidth;
                 let row = 0;
                 const fits = (r) => placed.every((o) => (o.row !== r || right + 8 < o.left || left > o.right + 8) && (o.row <= r || o.x < left - 3 || o.x > right + 3));
                 while (!fits(row)) row++;
-                Object.assign(name, { x, left, right, row });
-                placed.push(name);
+                Object.assign(item, { left, right, row });
+                placed.push(item);
             }
-            const rows = Math.max(1, ...placed.map((n) => n.row + 1));
-            for (const { node, leader, left, x, row } of placed) {
+            return Math.max(1, ...placed.map((n) => n.row + 1));
+        };
+        const dotX = (step, origin) => { const dot = ticks[step].getBoundingClientRect(); return dot.left + dot.width / 2 - origin; };
+        const placeNames = () => {
+            const origin = nameRow.getBoundingClientRect().left;
+            for (const name of names) name.x = dotX(name.section.steps[0], origin);
+            const rows = stackLabels(names);
+            for (const { node, leader, left, x, row } of names) {
                 node.style.left = `${left}px`;
                 node.style.bottom = `${row * 1.35}em`;
                 leader.style.left = `${x}px`;
@@ -1770,8 +1806,47 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 leader.hidden = row === 0;
             }
             nameRow.style.height = `${rows * 1.35}em`;
+            // the parts of an operation, below the dots: a bracket over their
+            // steps, the label under it
+            const below = phaseRow.getBoundingClientRect().left;
+            for (const part of parts) {
+                part.x = dotX(part.steps[0], below);
+                const end = dotX(part.steps[part.steps.length - 1], below);
+                part.bracket.style.left = `${part.x - 3}px`;
+                part.bracket.style.width = `${Math.max(6, end - part.x + 6)}px`;
+            }
+            const partRows = parts.length ? stackLabels(parts) : 0;
+            for (const { node, leader, left, x, row } of parts) {
+                node.style.left = `${left}px`;
+                node.style.top = `${0.55 + row * 1.3}em`;
+                leader.style.left = `${x}px`;
+                leader.style.height = `${row * 1.3 + 0.25}em`;
+                leader.hidden = row === 0;
+            }
+            phaseRow.style.height = `${partRows ? 0.55 + partRows * 1.3 : 0}em`;
         };
-        const timelineBox = el('div', { class: 'algo-timeline-box' }, [nameRow, timeline]);
+        // the parts of the operations (a rotation, sift up, a merge): runs of
+        // steps with the same phase
+        const parts = [];
+        frames.forEach((frame, i) => {
+            const last = parts[parts.length - 1];
+            if (frame.phase && last && last.phase === frame.phase && last.steps[last.steps.length - 1] === i - 1) last.steps.push(i);
+            else if (frame.phase) parts.push({ phase: frame.phase, steps: [i] });
+        });
+        for (const part of parts) Object.assign(part, { node: el('span', { class: 'algo-part-name', text: part.phase }), bracket: el('span', { class: 'algo-part-bracket' }), leader: el('span', { class: 'algo-part-leader' }) });
+        const phaseRow = el('div', { class: 'algo-parts' }, parts.flatMap((p) => [p.bracket, p.leader, p.node]));
+        // a minimum width for each step; wider than the widget (a phone), it
+        // scrolls sideways and follows the current step by itself
+        const timelineInner = el('div', { class: 'algo-timeline-inner', style: `--steps: ${frames.length};` }, [nameRow, timeline, phaseRow]);
+        const timelineBox = el('div', { class: 'algo-timeline-box' }, [timelineInner]);
+        const keepInView = (smooth) => {
+            const tick = ticks[index];
+            if (!tick || timelineBox.scrollWidth <= timelineBox.clientWidth) return;
+            const box = timelineBox.getBoundingClientRect();
+            const dot = tick.getBoundingClientRect();
+            const left = timelineBox.scrollLeft + dot.left + dot.width / 2 - box.left - box.width / 2;
+            timelineBox.scrollTo({ left, behavior: smooth && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'auto' });
+        };
         const body = el('div', { class: 'algo-body' }, [picture, side]);
         widget.replaceChildren(el('div', { class: 'algo-controls' }, [...buttons, count]), timelineBox, body, message);
         requestAnimationFrame(placeNames);
@@ -1853,7 +1928,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             if (links) follow((frame.duration || MOTION_TIME) * 2 + 600);
             ticks.forEach((tick, i) => { tick.className = `algo-tick${'start' in tick.dataset ? ' start' : ''}${i < index ? ' done' : i === index ? ' current' : ''}`; });
             for (const { section, node } of names) node.classList.toggle('current', section.steps.includes(index));
+            for (const part of parts) { part.node.classList.toggle('current', part.steps.includes(index)); part.bracket.classList.toggle('current', part.steps.includes(index)); }
             timeline.setAttribute('aria-valuenow', index);
+            keepInView(!dragging);
             count.textContent = `Schritt ${index} von ${frames.length - 1}`;
             buttons[0].disabled = buttons[1].disabled = index === 0;
             buttons[2].disabled = buttons[3].disabled = index === frames.length - 1;

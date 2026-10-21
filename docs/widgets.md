@@ -34,7 +34,14 @@ in doubt, do it the way it does.
   operation starts is ringed and carries the operation's name (`remove 20`,
   `remove 40`, `remove 50`), starting at its dot. Where names would run into
   each other, the earlier ones go up a row and get a fine line down to their
-  dot; no name stands in the way of such a line. The dots are evenly
+  dot; no name stands in the way of such a line. The parts of an operation
+  stand below the dots, smaller and quieter, each under a fine bracket over
+  its steps, so that they read as part of the job above: `R 50` and `L 40`
+  for a rotation, `sift up` and `sift down` in the heap, `successor` in
+  remove, `merge 0–3` and `partition 0–7` in sorting (the `phase` of a
+  frame). Each step has a minimum width (14 px on a touch screen); where the
+  timeline gets wider than the widget it scrolls sideways and keeps the
+  current step in the middle by itself. The dots are evenly
   spaced; done dots coloured, the current one large. A tap or a drag
   on it goes to that step. The viewer always knows where they are and where
   each operation starts.
