@@ -17,7 +17,7 @@ jobs:
     env:
       E2E_ADMIN_EMAIL: e2e-admin@example.com
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: ruby/setup-ruby@v1
         with:
@@ -31,16 +31,26 @@ jobs:
           grep -q "^ADMIN_USERS = \['$E2E_ADMIN_EMAIL'\]" src/ruby/credentials.rb
           echo '127.0.0.1 workspace.test' | sudo tee -a /etc/hosts
 
+      # A failure writes its reason as an annotation: the run's log needs a
+      # token to read, the annotations do not
+      - name: Build the website
+        run: |
+          ./config.rb build nginx ruby neo4japp > build.log 2>&1 || {
+            echo "::error title=Build failed::$(tail -40 build.log | sed 's/%/%25/g' | tr '\n' '\r' | sed 's/\r/%0A/g')"
+            exit 1
+          }
+
       - name: Start the website
         run: |
-          ./config.rb build nginx ruby neo4japp
           ./config.rb up -d nginx neo4j
-          for i in $(seq 1 90); do
-            if curl -fsS -o /dev/null http://workspace.test:8025/; then echo "up after ${i}0 s"; exit 0; fi
-            sleep 10
+          for i in $(seq 1 60); do
+            if curl -fsS -o /dev/null http://workspace.test:8025/; then echo "up after $((i * 5)) s"; exit 0; fi
+            sleep 5
           done
-          ./config.rb ps
-          ./config.rb logs --tail 100 ruby neo4japp nginx
+          for s in ruby neo4japp nginx docker_guard; do
+            echo "::error title=$s did not come up::$(./config.rb logs --tail 30 $s 2>&1 | sed 's/%/%25/g' | tr '\n' '\r' | sed 's/\r/%0A/g')"
+          done
+          echo "::error title=Containers::$(./config.rb ps -a 2>&1 | tr '\n' '\r' | sed 's/\r/%0A/g')"
           exit 1
 
       - uses: actions/setup-node@v4
@@ -82,7 +92,7 @@ jobs:
         if: failure()
         run: ./config.rb logs --tail 200 ruby nginx
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: failure()
         with:
           name: playwright-report
