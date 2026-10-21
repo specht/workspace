@@ -118,6 +118,13 @@ Rhabarberbarbara, Barbarabar, Barbarbarbier: Wo sich etwas wiederholt, lässt es
 
 Ein Text wiederholt sich ständig: Buchstabenfolgen wie »ch«, »sch«, »ein« und »der« kommen auf jeder Seite dutzendfach vor, ganze Wörter auch. Ein Programm, das komprimiert, sucht solche Wiederholungen und ersetzt sie durch etwas Kürzeres. Beim Entpacken muss genau das Original zurückkommen, Byte für Byte; das heißt **verlustfrei**.
 
+<div class='person pair'>
+<div class='portraits'><img src='lempel.webp' alt='Abraham Lempel 2007: ein Mann mit Brille, weißem Bart und Glatze, lächelnd.'><img src='ziv.webp' alt='Jacob Ziv bei einem Vortrag: ein älterer Mann mit Brille und weißem Haar.'></div>
+<p><strong>Abraham Lempel</strong> (1936–2023) und <strong>Jacob Ziv</strong> (1931–2023), Informatiker am Technion in Haifa. Ihre Idee, dass ein Text sich selbst als Wörterbuch nimmt, steckt in jedem GIF, und ihre andere Fassung von 1977 zusammen mit Huffman-Codes in ZIP, PNG und gzip.</p>
+<p>Viele Webseiten kommen so gepackt in deinen Browser. Terry Welch machte 1984 daraus das LZW dieser Seite.</p>
+<p class='person-credit'>Fotos: Staelin, 2007, CC BY 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Abraham_Lempel.JPG'>Wikimedia Commons</a>); gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:Jacob_Ziv.jpeg'>Wikimedia Commons</a>)</p>
+</div>
+
 Das Verfahren auf dieser Seite haben Abraham Lempel und Jacob Ziv 1978 erfunden und Terry Welch 1984 so vereinfacht, wie es seitdem benutzt wird, daher der Name **LZW**. Es steckt in GIF-Bildern, in TIFF, in alten PDF-Dateien und im Unix-Programm `compress`. Die Idee ist ein **Wörterbuch**, in dem jede Folge von Bytes, die schon vorkam, eine Nummer hat, den **Code**:
 
 - Am Anfang stehen darin die 256 möglichen Bytes, jedes einzeln. Das Byte 65 (»A«) hat den Code 65.

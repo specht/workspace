@@ -129,6 +129,13 @@ Hier findet sie A–D–G–H, weil sie D als Letztes auf den Stack gelegt hat u
 
 Den kürzesten Weg nach Länge findet das Verfahren von **Edsger W. Dijkstra** (1959). Es nimmt als Nächstes immer den Knoten, der vom Start aus am nächsten liegt, auf dem besten Weg, den es bis jetzt kennt. Dafür hält es die gefundenen Knoten in einer **Priority Queue**: Man legt Einträge mit einer Priorität hinein und nimmt immer den mit der kleinsten heraus. Wie das schnell geht, steht unter [Heap](/reference/heap).
 
+<div class='person'>
+<img src='dijkstra.webp' alt='Edsger W. Dijkstra 2002: ein Mann mit Brille, grauem Bart und roter Pullunderweste, im Halbprofil.'>
+<p><strong>Edsger W. Dijkstra</strong> (1930–2002), niederländischer Informatiker. Das Verfahren erdachte er 1956 in zwanzig Minuten auf einer Caféterrasse in Amsterdam, ohne Stift und Papier. Navis und der <a href='/routenplaner'>Routenplaner</a> suchen ihre Wege mit seiner Idee.</p>
+<p>Dass du Schleifen und Funktionen schreibst, statt mit <code>goto</code> kreuz und quer durchs Programm zu springen, geht auch auf ihn zurück: »Go To Statement Considered Harmful«, 1968.</p>
+<p class='person-credit'>Foto: Hamilton Richards, 2002, CC BY-SA 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Edsger_Wybe_Dijkstra.jpg'>Wikimedia Commons</a>)</p>
+</div>
+
 ```pseudocode
 dijkstra(graph, start, goal):
     dist ← { start: 0 }

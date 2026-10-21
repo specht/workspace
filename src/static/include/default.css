@@ -5369,11 +5369,23 @@ table.automaton-table tbody th { text-align: left; white-space: nowrap; }
 .person img {
     display: block;
     width: 7.5em;
+    /* every portrait 4:5, the eyes at about 40 % of its height */
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
     margin: 0 0 0.6em;
     border-radius: 0.4em;
-    filter: grayscale(1);
 }
 .person p { margin: 0 0 0.5em; text-align: left; }
+/* boxes with a frame or a background give way to a person beside them
+   instead of running under it */
+.reference-include, .task-card, .teacher-note { display: flow-root; }
+/* two people in one box (Lempel and Ziv, Adelson-Velski and Landis) */
+.person .portraits { display: flex; gap: 0.4em; margin: 0 0 0.6em; }
+.person .portraits img { width: calc(50% - 0.2em); margin: 0; }
+@media (max-width: 576px) {
+    .person.pair { display: block; }
+    .person.pair .portraits img { width: 6em; }
+}
 .person .person-credit { font-size: 0.85em; color: var(--bs-secondary-color); margin: 0; }
 @media (max-width: 576px) {
     .person { float: none; width: auto; margin: 1em 0; display: grid; grid-template-columns: 6em 1fr; gap: 0 0.9em; }
@@ -5502,6 +5514,8 @@ div[data-stepper],
     border-radius: 0.6em;
     background: var(--widget-tint);
     box-shadow: 0 1px 3px rgba(92, 103, 125, 0.08);
+    /* below a box beside the text (.person), not under it */
+    clear: both;
 }
 html[data-bs-theme="dark"] div[data-stepper],
 html[data-bs-theme="dark"] .bitplane-widget {

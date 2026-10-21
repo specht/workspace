@@ -90,7 +90,7 @@ Dieser NEA nimmt die Wörter an, in denen **aa** vorkommt. In q<sub>0</sub> lies
 
 <div class='automaton-stepper' data-stepper data-title='NEA: enthält aa' data-states='q0 q1 q2' data-start='q0' data-accept='q2' data-alphabet='ab' data-transitions='q0 a-b q0, q0 a q1, q1 a q2, q2 a-b q2' data-input='abaab'></div>
 
-### ε-Übergänge
+### ε-Übergänge und ε-Hülle
 
 Ein **ε-Übergang** (Epsilon) kostet kein Zeichen: Der NEA darf ihn jederzeit nehmen, auch mehrere hintereinander. Die Zustände, die er von einem Zustand aus über ε-Übergänge erreicht, samt diesem selbst, heißen seine **ε-Hülle**. Die ε-Hülle einer Menge sind die ε-Hüllen ihrer Zustände zusammen; die Funktion `closure` bildet sie. Ein NEA ohne ε-Übergänge hat in jeder Hülle nur den Zustand selbst.
 
@@ -143,10 +143,10 @@ Ein NEA ist oft kleiner und leichter aufzuschreiben als ein DEA für dieselbe Sp
 <!-- part: thompson -->
 <!-- short: Thompson-Konstruktion: für jedes Zeichen ein Pfeil, für Hintereinander, |, * (Kleenesche Hülle) und + (positive Hülle) je ein Baustein aus ε-Übergängen; daraus ein NEA mit einem Start und einem akzeptierenden Zustand. -->
 <div class='person'>
-<img src='thompson.webp' alt='Schwarzweißfoto von Ken Thompson: ein Mann mit Brille, langem Bart und Halbglatze, lächelnd.'>
+<img src='thompson.webp' alt='Ken Thompson 2019: ein Mann mit Brille, weißem Bart und Halbglatze in einem schwarzen T-Shirt.'>
 <p><strong>Ken Thompson</strong> (geboren 1943). Du suchst im Terminal mit <code>grep</code>? Das hat er 1973 geschrieben; der Name kommt aus seinem Texteditor, wo der Befehl <code>g/re/p</code> hieß: global, <em>regular expression</em>, print. Den Automaten dahinter baute er nach dieser Konstruktion.</p>
 <p>Das Terminal selbst läuft unter Linux, einem Nachfahren von Unix, das er ab 1969 mit Dennis Ritchie schrieb. Unten rechts in VS Code steht <em>UTF-8</em>: Die Kodierung hat er 1992 mit Rob Pike auf ein Tischset in einem Diner gezeichnet. Und die Sprache <a href='/go'>Go</a> hat er mit erfunden.</p>
-<p class='person-credit'>Foto: aus dem Jargon File, gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:Ken_Thompson_02.jpg'>Wikimedia Commons</a>)</p>
+<p class='person-credit'>Foto: A. C. Diller, 2019, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Brian_Kernighan_and_Ken_Thompson.jpg'>Wikimedia Commons</a>)</p>
 </div>
 
 Ein [regulärer Ausdruck](/reference/regex) beschreibt eine Sprache, und die **Thompson-Konstruktion** baut daraus einen NEA, Stück für Stück aus wenigen **Bausteinen**. Jeder Baustein hat einen Start und einen akzeptierenden Zustand, und die Bausteine werden mit ε-Übergängen verbunden. Die Bilder in diesem Abschnitt zeichnet Automatron, und genau so sehen die Automaten dort aus. Es baut nach dieser Konstruktion, lässt aber ε-Übergänge weg, die nur ein Stück an das nächste hängen.

@@ -134,6 +134,13 @@ Das ist eine Linked List mit Umwegen: Bei einer Million Werten braucht die Suche
 
 ### Die AVL-Regel
 
+<div class='person pair'>
+<div class='portraits'><img src='adelson-velsky.webp' alt='Georgi Adelson-Velski 1980 in Moskau: ein älterer Mann mit getönter Brille und weißem Haar.'><img src='landis.webp' alt='Schwarzweißfoto von Jewgeni Landis 1987: ein älterer Mann mit zurückgekämmtem Haar im Profil.'></div>
+<p><strong>Georgi Adelson-Velski</strong> (1922–2014) und <strong>Jewgeni Landis</strong> (1921–1997), Mathematiker in Moskau, erfanden 1962 den AVL-Baum: den ersten Suchbaum, der sich selbst ausgleicht. Die Buchstaben AVL sind ihre Namen.</p>
+<p>Adelson-Velski schrieb auch an Kaissa mit, dem Schachprogramm, das 1974 die erste Weltmeisterschaft im Computerschach gewann.</p>
+<p class='person-credit'>Fotos: Monroe Newborn, 1980, CC BY 3.0 (<a href='https://commons.wikimedia.org/wiki/File:Adelson-Velsky-G.Moscow-1980.jpg'>Wikimedia Commons</a>); Konrad Jacobs, 1987, CC BY-SA 2.0 de (<a href='https://commons.wikimedia.org/wiki/File:%D0%95%D0%B2%D0%B3%D0%B5%D0%BD%D0%B8%D0%B9_%D0%9C%D0%B8%D1%85%D0%B0%D0%B9%D0%BB%D0%BE%D0%B2%D0%B8%D1%87_%D0%9B%D0%B0%D0%BD%D0%B4%D0%B8%D1%81.jpeg'>Wikimedia Commons</a>), beide zugeschnitten</p>
+</div>
+
 Ein **AVL-Baum** (nach Adelson-Velski und Landis) hält sich selbst ausgeglichen. Jeder Knoten speichert seine Höhe, und für jeden Knoten gilt: Die Höhen seines linken und rechten Teilbaums unterscheiden sich **höchstens um 1**. Ein AVL-Baum mit \\(n\\) Werten ist höchstens etwa \\(1{,}44 \log_2 n\\) hoch.
 
 Nach jedem Einfügen geht man den Weg zurück nach oben, berechnet die Höhen neu und prüft die Regel. Der erste Knoten, bei dem sie verletzt ist, wird mit einer **Rotation** repariert.
