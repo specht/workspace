@@ -442,6 +442,14 @@ document.addEventListener('DOMContentLoaded', function() {
             forest = sorted.slice(2).concat([node]);
             steps.push({ forest: order(forest), pick: [], made: node });
         }
+        // The trees stand in the order their leaves have in the finished
+        // tree: the two that come together are always neighbours, and no
+        // tree ever has to pass another (the rings say which are lightest)
+        const last = steps[steps.length - 1].forest[0];
+        const rank = new Map();
+        (function leaves(n) { if (n.left) { leaves(n.left); leaves(n.right); } else rank.set(n.made, rank.size); })(last);
+        const first = (n) => (n.left ? first(n.left) : rank.get(n.made));
+        for (const step of steps) step.forest = step.forest.slice().sort((a, b) => first(a) - first(b));
         return { counts, steps };
     }
 
@@ -479,7 +487,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // so that a tree glides to its new place. A new node grows in right
     // above the two trees it joins, where they stand, with their sum; its
     // edges sprout from it and snap onto their roots; only then does the
-    // forest rearrange (show, between). The two lightest trees, which come
+    // forest close up (show, between). The two lightest trees, which come
     // together next, wear the purple ring of the other widgets.
     const SVG = 'http://www.w3.org/2000/svg';
     const make = (tag, attrs, text) => {
@@ -578,21 +586,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const [a, b] = [before.pos.get(key(step.made.left)), before.pos.get(key(step.made.right))];
             between = { pos: new Map([...before.pos, [key(step.made), { x: (a.x + b.x) / 2, y: Math.min(a.y, b.y) - DY, node: step.made }]]) };
         }
-        // the new tree rises over the lighter trees it passes to its place,
-        // as high as the tallest of them, without leaving the picture
-        let lift = null;
-        const placed = layout(step.forest, size.tall);
-        if (between) {
-            const at = step.forest.indexOf(step.made);
-            if (at > 0) {
-                const keys = new Set();
-                (function walk(n) { keys.add(key(n)); if (n.left) { walk(n.left); walk(n.right); } })(step.made);
-                // clear of the counts under their leaves too
-                const by = Math.min(Math.max(...step.forest.slice(0, at).map(depth)) * DY + 40, placed.pos.get(key(step.made)).y - 12);
-                lift = { keys, by };
-            }
-        }
-        show(forest, placed, step.pick, size, animate, between, lift);
+        show(forest, layout(step.forest, size.tall), step.pick, size, animate, between, null);
         if (!step.pick.length) {
             const tree = step.forest[0];
             const table_ = codes(tree, '', new Map());

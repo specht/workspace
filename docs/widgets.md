@@ -212,8 +212,10 @@ only to look nice.
   stand on one line at the bottom, so a new node always appears above the
   two it joins; it grows in with its weight first, its edges sprout and snap
   onto the two roots, where they stand; only then does the forest
-  rearrange (two movements in one step, `done` in `morph`), and the new
-  tree rises over the lighter trees it passes (`data-lift`). The two
+  close up (two movements in one step, `done` in `morph`). The trees stand
+  in the order their leaves have in the finished tree, so the two that come
+  together are always neighbours and no tree jumps sides (`data-lift` would
+  let a tree rise over others, where passing cannot be avoided). The two
   lightest trees wear the purple ring, the counts clear of it.
 - **The calculator** (`calculator.md`): an operator is a round box, a number
   a box; when a node is computed, its numbers rise into it and merge, and
