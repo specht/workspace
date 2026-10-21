@@ -189,6 +189,7 @@ JOIN city ON city.country_code = country.code
 WHERE city.is_capital = 1 AND country.continent = 'Südamerika'
 ORDER BY country.name;">
 </div>
+<script src='/include/query_stepper.js'></script>
 
 _task(waehrung-japan)
 

@@ -284,3 +284,64 @@ document.addEventListener('keydown', (event) => {
     if (document.readyState === 'complete') add();
     else window.addEventListener('load', add);
 })();
+
+// Play for every widget whose step buttons have none of their own (the Algo
+// Stepper has one that also speeds up its movements): next, again and
+// again, with a pause to read, until next is disabled. The speed button
+// cycles 1×, 2× and ½×; a step by hand (a button, a key, a swipe) stops it,
+// and play at the end starts again from the beginning.
+(() => {
+    const SPEEDS = [[1, '1×'], [2, '2×'], [0.5, '½×']];
+    const STEP_TIME = 2200;
+    const add = (widget) => {
+        const next = widget.querySelector("[data-go='next']");
+        if (!next || widget.querySelector('[data-play]')) return;
+        const first = widget.querySelector("[data-go='first']");
+        const row = next.parentElement;
+        const last = [...row.querySelectorAll(':scope > [data-go]')].pop();
+        const play = document.createElement('button');
+        play.type = 'button';
+        play.className = 'btn btn-sm btn-outline-success';
+        play.dataset.play = '';
+        play.setAttribute('aria-label', 'Abspielen');
+        play.appendChild(Object.assign(document.createElement('i'), { className: 'bi bi-play-fill' }));
+        const speedButton = document.createElement('button');
+        speedButton.type = 'button';
+        speedButton.className = 'btn btn-sm btn-outline-success';
+        speedButton.dataset.speed = '';
+        speedButton.setAttribute('aria-label', 'Tempo beim Abspielen');
+        speedButton.textContent = SPEEDS[0][1];
+        // spaces between them, like between the step buttons in a row of
+        // inline buttons (a flex row ignores them)
+        last.after(' ', play, ' ', speedButton);
+        let speed = 0;
+        let timer = null;
+        let auto = false;
+        const press = (button) => { auto = true; button.click(); auto = false; };
+        const stop = () => {
+            clearTimeout(timer);
+            timer = null;
+            play.firstChild.className = 'bi bi-play-fill';
+            play.setAttribute('aria-label', 'Abspielen');
+        };
+        const tick = () => {
+            if (next.disabled) { stop(); return; }
+            press(next);
+            timer = setTimeout(tick, STEP_TIME / SPEEDS[speed][0]);
+        };
+        play.addEventListener('click', () => {
+            if (timer) { stop(); return; }
+            play.firstChild.className = 'bi bi-pause-fill';
+            play.setAttribute('aria-label', 'Anhalten');
+            if (next.disabled && first) { press(first); timer = setTimeout(tick, STEP_TIME / SPEEDS[speed][0]); } else tick();
+        });
+        speedButton.addEventListener('click', () => {
+            speed = (speed + 1) % SPEEDS.length;
+            speedButton.textContent = SPEEDS[speed][1];
+        });
+        widget.addEventListener('click', (event) => { if (!auto && event.target.closest('[data-go]')) stop(); }, true);
+    };
+    const all = () => document.querySelectorAll('[data-stepper]').forEach(add);
+    if (document.readyState === 'complete') all();
+    else window.addEventListener('load', all);
+})();

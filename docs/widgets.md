@@ -242,7 +242,9 @@ only to look nice.
   (`READ_TIME`); the speed button beside it cycles 1×, 2× and ½× and changes
   both. A step by hand (button, key, swipe, timeline) stops it; play at the
   end starts again from the beginning. On a touch screen play and its speed
-  sit beside the step count.
+  sit beside the step count. Every other widget with step buttons (Huffman,
+  LZW, GIF, JPEG, the calculator, the Query Stepper, the iDCT) gets the same
+  play from `stepper_keys.js`, which presses next until it is disabled.
 - **A lightbox for a demo**: every widget has a square button at its top
   right (`bi-fullscreen`, `stepper_keys.js`) that opens it larger in a
   lightbox on a black background, for the big screen. The keys and the
