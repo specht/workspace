@@ -4538,6 +4538,12 @@ ul.task-teacher-list .task-teacher-answer {
     text-decoration: none;
 }
 
+/* the words searched for: marked without padding, so that a word they sit
+   inside stays one word (Bootstrap pads <mark> on every side) */
+.reference-result mark {
+    padding: 0;
+    border-radius: 0.15em;
+}
 .reference-result-path {
     display: block;
     font-size: 78%;
