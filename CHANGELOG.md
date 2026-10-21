@@ -138,6 +138,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Bootstrap-Icons, ihr Zeichen genau in der Mitte; nach einem Klick zeigen
   sie keinen Fokusrahmen mehr. <kbd>Esc</kbd> schließt das Bild auch dann,
   wenn Chrome sein eigenes Schließen nicht mehr meldet.
+- Backrooms in VR: Das Wasser sieht aus wie Wasser, nicht mehr wie eine
+  halb durchsichtige Fläche: Was darunter liegt, wird mit dem Weg durch das
+  Wasser blaugrün, so dunkel wie am Rechner, und darüber liegt die
+  Spiegelung aus einem Rundumbild über dem Becken, von den Wellen verbogen;
+  ohne zusätzliche Bilder je Auge (`?vrwater` zeigt es am Rechner).
+  »ENTER VR« erscheint erst, wenn die Linien der Welt zu sehen sind. In der
+  Nachtschicht leuchten die Schreibtischlampen im Nachtbüro über den Tisch
+  statt an die Wand, der winzige Projektor im Kino ist weg, und der Notgang
+  hat mehr Deckenleuchten.
 - Backrooms in VR: Der rechte Abzug (Zeigefinger) zeigt eine Karte am
   Handgelenk, ein kleines Hologramm über der rechten Hand: das Bauwerk um
   einen herum in cyanfarbenen Linien, bis 10 m ganz und bis 15 m auslaufend,
