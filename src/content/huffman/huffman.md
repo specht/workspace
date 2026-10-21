@@ -425,12 +425,7 @@ _task(kanonisch)
 
 ## Weiter geht's
 
-<div class='person'>
-<img src='shannon.webp' alt='Schwarzweißporträt von Claude Shannon als junger Mann in Anzug und Krawatte.'>
-<p><strong>Claude Shannon</strong> (1916–2001). Wie viele Bits eine Nachricht mindestens braucht, rechnete er 1948 aus und gründete damit die Informationstheorie; das Wort <em>Bit</em> machte er bekannt. Er fuhr Einrad, jonglierte und baute die Maus Theseus, die selbst lernte, durch ein Labyrinth zu finden.</p>
-<p>Einen besten Code fand er nicht. Das schaffte 1952 der Student David Huffman in einer Hausarbeit, die er statt einer Prüfung schrieb: den Huffman-Code.</p>
-<p class='person-credit'>Foto: Tekniska museet, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:C.E._Shannon._Tekniska_museet_43069_(cropped).jpg'>Wikimedia Commons</a>)</p>
-</div>
+_person(shannon)
 
 - **JPEG**: In [Eine JPEG-Datei decodieren](/jpeg) liest du die Huffman-Tabellen aus einem DHT-Segment und decodierst damit Bit für Bit die Koeffizienten eines Fotos.
 <!-- language: ruby -->

@@ -153,12 +153,7 @@ float noise(vec2 p) {
 }
 ```
 
-<div class='person'>
-<img src='perlin.webp' alt='Ken Perlin 2007 auf einem Podium: ein Mann mit dunklem Haar in blauem Hemd, lächelnd zur Seite.'>
-<p><strong>Ken Perlin</strong> (geboren 1954), Informatiker in New York. Nach den Computerbildern für den Film <em>Tron</em> (1982) störte ihn, wie glatt und sauber Oberflächen aus dem Computer aussahen, und er erfand das Rauschen, das seinen Namen trägt. Dafür bekam er 1997 einen Oscar für technische Leistungen.</p>
-<p>Wolken, Feuer und ganze Landschaften in Spielen wie Minecraft entstehen aus Perlin-Rauschen und seinen Verwandten.</p>
-<p class='person-credit'>Foto: Ambuj Saxena, 2007, CC BY 2.5, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Ken_Perlin.jpg'>Wikimedia Commons</a>)</p>
-</div>
+_person(perlin)
 
 Weil `mix` mit `u` statt mit `f` mischt, gibt es an den Gitterlinien keinen Knick. Diese Art heißt **Value Noise**; Ken Perlin rechnete 1985 statt Zahlen Richtungen auf die Ecken, das gibt das bekanntere [Perlin-Rauschen](https://de.wikipedia.org/wiki/Perlin-Noise), ähnlich, nur gleichmäßiger.
 

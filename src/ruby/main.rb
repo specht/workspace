@@ -15,6 +15,7 @@ require './include/group_visibility.rb'
 require './include/look_in.rb'
 require './include/test_accounts.rb'
 require './include/reference_index.rb'
+require './include/person_boxes.rb'
 require './include/template_freshness.rb'
 require './include/anaglyph_viewer.rb'
 require './include/backrooms_demo.rb'
@@ -1741,6 +1742,10 @@ class Main < Sinatra::Base
             end
         end
 
+        # the pages a person box on the Personen page may lead to (PersonBoxes)
+        person_pages = paths.reject { |entry| entry[:dev_only] || entry[:extra] || %w[hidden parked].include?(entry[:section]) }
+            .map { |entry| ["/#{entry[:slug]}", entry[:original_path]] }
+
         if partial
             paths.select! do |entry|
                 entry_path = entry[:original_path]
@@ -1827,7 +1832,15 @@ class Main < Sinatra::Base
                     :warn => content_warning)
                 markdown = ContentParts.fill_variables(markdown, Main.content_variables(page_meta))
                 markdown = ContentParts.filter_features(markdown, Main.content_features, :warn => content_warning)
+                # on the Personen page, the pages that place each person (before
+                # the part markers become anchors)
+                if path == PersonBoxes.file(REFERENCE_ROOT)
+                    markdown = PersonBoxes.annotate(markdown, PersonBoxes.uses(person_pages))
+                end
                 markdown = ContentParts.mark_parts(markdown)
+                # _person(name): a person box from the Handbuch page Personen.
+                markdown = PersonBoxes.expand(markdown, :page_dir => File.dirname(path),
+                    :reference_root => REFERENCE_ROOT, :warn => content_warning)
                 # _tool(name): a box that opens a tool of the site in a new tab (Tools).
                 markdown = Tools.expand(markdown, :warn => content_warning)
                 # _schema(dataset): the tables of a dataset as schema lines (Schemas).

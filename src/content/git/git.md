@@ -13,17 +13,12 @@ reference: [workspace, terminal]
 
 # Versionsverwaltung mit Git
 
-<div class='person'>
-<img src='torvalds.webp' alt='Linus Torvalds 2018 auf einer Konferenz: ein Mann mit Brille und kurzem Haar in einem schwarzen T-Shirt, lächelnd.'>
-<p><strong>Linus Torvalds</strong> (geboren 1969). Das Terminal im Workspace läuft unter Linux: Das hat er 1991 als Student in Helsinki angefangen, »nur ein Hobby«, schrieb er damals. Heute läuft Linux auf den meisten Servern der Welt und in jedem Android-Handy.</p>
-<p>2005 brauchte er für die Arbeit an Linux eine neue Versionsverwaltung und schrieb in wenigen Tagen die erste Fassung von Git.</p>
-<p class='person-credit'>Foto: Raysonho, 2018, CC0 (<a href='https://commons.wikimedia.org/wiki/File:LC3Beijing2018_(cropped).jpg'>Wikimedia Commons</a>)</p>
-</div>
-
 <p class='abstract'>
 Git ist ein Versionsverwaltungssystem, das von Linus Torvalds entwickelt wurde, also ein Werkzeug, mit dem Änderungen an Dateien über längere Zeit hinweg nachvollziehbar gespeichert werden können. Es wird zur Verwaltung von Quellcode in Softwareprojekten eingesetzt und gehört heute zu den bekanntesten und am weitesten verbreiteten Werkzeugen dieser Art.
 Der eigentliche Nutzen von Git zeigt sich jedoch erst, wenn man selbst an größeren Texten oder Programmen arbeitet und dabei immer wieder Änderungen vornimmt. Oft möchte man etwas ausprobieren, eine Idee testen oder einen Fehler beheben – und merkt später, dass es doch nicht die richtige Lösung war. Ohne ein Werkzeug wie Git ist es dann schwierig, zu einem früheren, funktionierenden Stand zurückzukehren oder überhaupt noch nachzuvollziehen, was sich wann geändert hat.
 </p>
+
+_person(torvalds)
 
 
 Git löst dieses Problem, indem es die Entwicklung eines Projekts als eine Abfolge von nachvollziehbaren Zwischenschritten speichert. Diese Zwischenschritte bilden eine Art Geschichte des Projekts, zu der man jederzeit zurückkehren kann. Auf diese Weise wird es möglich, Änderungen zu vergleichen, alternative Lösungswege auszuprobieren und Fehler rückgängig zu machen, ohne Angst haben zu müssen, etwas dauerhaft zu zerstören.

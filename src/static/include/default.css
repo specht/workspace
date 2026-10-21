@@ -5348,48 +5348,66 @@ table.automaton-table td {
 table.automaton-table thead th { background: var(--bs-tertiary-bg); }
 table.automaton-table tbody th { text-align: left; white-space: nowrap; }
 
-/* A person a page names (Thompson-Konstruktion, Kleenesche Hülle): a small
-   box beside the text with a free photo, who the person was in a few
-   sentences, and the photo's source; full width on a phone */
+/* A person a page names (Thompson-Konstruktion, Kleenesche Hülle): a box
+   in the flow of the page, after the paragraph that names the person, with
+   a free photo beside who the person was in a few sentences and the photo's
+   source. The photo has a fixed size: a short text leaves the box as tall
+   as the photo, a long one makes it grow */
 .person {
-    float: right;
-    clear: right;
-    width: 15em;
-    margin: 0.3em 0 1em 1.5em;
-    padding: 0.8em 0.9em 0.6em;
+    display: grid;
+    grid-template-columns: 6.5em minmax(0, 1fr);
+    gap: 0 1.1em;
+    align-items: start;
+    margin: 1.5em 0;
+    padding: 0.9em 1.1em;
     border: 1px solid var(--bs-border-color);
     border-radius: 0.6em;
     background: var(--bs-tertiary-bg);
-    font-size: 0.88em;
-    line-height: 1.45;
-    /* not justified: a narrow box would show wide gaps */
+    font-size: 0.92em;
+    line-height: 1.5;
     text-align: left;
     hyphens: auto;
 }
+.person > img, .person .portraits {
+    grid-column: 1;
+    grid-row: 1 / span 20;
+}
 .person img {
     display: block;
-    width: 7.5em;
+    width: 100%;
     /* every portrait 4:5, the eyes at about 40 % of its height */
     aspect-ratio: 4 / 5;
     object-fit: cover;
-    margin: 0 0 0.6em;
+    margin: 0;
     border-radius: 0.4em;
 }
-.person p { margin: 0 0 0.5em; text-align: left; }
-/* boxes with a frame or a background give way to a person beside them
-   instead of running under it */
-.reference-include, .task-card, .teacher-note { display: flow-root; }
+.person p { grid-column: 2; margin: 0 0 0.5em; text-align: left; }
+/* a person without a free photo: the text alone */
+.person.no-photo { display: block; }
 /* two people in one box (Lempel and Ziv, Adelson-Velski and Landis) */
-.person .portraits { display: flex; gap: 0.4em; margin: 0 0 0.6em; }
-.person .portraits img { width: calc(50% - 0.2em); margin: 0; }
-@media (max-width: 576px) {
-    .person.pair { display: block; }
-    .person.pair .portraits img { width: 6em; }
-}
+.person.pair { grid-template-columns: 13.4em minmax(0, 1fr); }
+.person .portraits { display: flex; gap: 0.4em; }
+.person .portraits img { width: 6.5em; }
 .person .person-credit { font-size: 0.85em; color: var(--bs-secondary-color); margin: 0; }
+/* on the Personen page: where the person appears; the heading above each
+   box is there for the search and the table of contents, the box shows the
+   name already */
+.person .person-pages { font-size: 0.92em; }
+h3:has(+ .person) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+/* on a phone the text runs on below the photo: inside the box, a float
+   troubles nothing around it */
 @media (max-width: 576px) {
-    .person { float: none; width: auto; margin: 1em 0; display: grid; grid-template-columns: 6em 1fr; gap: 0 0.9em; }
-    .person img { width: 6em; grid-row: span 3; }
+    .person { display: flow-root; padding: 0.8em 0.9em; }
+    .person > img { float: left; width: 5em; margin: 0.25em 0.9em 0.3em 0; }
+    .person .portraits { margin: 0 0 0.6em; }
+    .person .portraits img { width: 5em; }
 }
 
 /* The box that _tool(name) puts into a page (Tools in tools.rb); it opens
@@ -5514,8 +5532,6 @@ div[data-stepper],
     border-radius: 0.6em;
     background: var(--widget-tint);
     box-shadow: 0 1px 3px rgba(92, 103, 125, 0.08);
-    /* below a box beside the text (.person), not under it */
-    clear: both;
 }
 html[data-bs-theme="dark"] div[data-stepper],
 html[data-bs-theme="dark"] .bitplane-widget {

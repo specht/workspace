@@ -237,21 +237,43 @@ die Seite neu zu laden. Vorbild sind `src/content/rle/`, `huffman/` und
 ### Menschen hinter einem Namen
 
 Nennt eine Seite einen Menschen (die Thompson-Konstruktion, die Kleenesche
-Hülle, die Erfinderin einer Sprache), steht neben dem Text ein kleiner Kasten
-mit einem freien Foto und zwei, drei Sätzen, wer das war. Die Sätze knüpfen an
-das an, was Lernende aus dem Workspace kennen: »Du suchst im Terminal mit
-`grep`? Das hat er geschrieben.« Das Foto ist gemeinfrei oder CC0, von
-Wikimedia Commons, mit einer Zeile, woher es stammt. Die Sätze sagen genau, was
-die Person gemacht hat, mit dem Namen der Sache (»Git«, »den Huffman-Code«),
-nie »das Verfahren dieser Seite«: Das klänge, als hätte sie die Seite gemacht.
+Hülle, die Erfinderin einer Sprache), steht nach dem Absatz, der den Namen
+nennt, ein Kasten mit einem freien Foto und zwei, drei Sätzen, wer das war.
+Die Sätze knüpfen an das an, was Lernende aus dem Workspace kennen: »Du suchst
+im Terminal mit `grep`? Das hat er geschrieben.« Sie sagen genau, was die
+Person gemacht hat, mit dem Namen der Sache (»Git«, »den Huffman-Code«), nie
+»das Verfahren dieser Seite« oder »das du hier programmierst«: Derselbe Kasten
+steht auch im Handbuch auf der Seite Personen, und es klänge, als hätte die
+Person die Seite gemacht.
+
+Alle Personen stehen an einer Stelle, auf der Handbuch-Seite
+`src/content/reference/personen/personen.md`, jede als Teil mit Überschrift,
+Kasten und Foto im selben Ordner. Eine Seite setzt den Kasten mit
+`_person(name)` auf einer eigenen Zeile ein, ohne den Rahmen eines
+Handbuch-Bausteins. Auf der Seite Personen steht in jedem Kasten von selbst,
+auf welchen Seiten die Person vorkommt; versteckte und zurückgestellte Seiten
+zählen nicht mit. Über die Überschriften findet die Suche im Handbuch jeden
+Namen.
 
 ```html
+<!-- part: thompson -->
+### Ken Thompson
+
 <div class='person'>
-<img src='thompson.webp' alt='Schwarzweißfoto von Ken Thompson: …'>
+<img src='thompson.webp' alt='Ken Thompson 2019: ein Mann mit Brille, …'>
 <p><strong>Ken Thompson</strong> (geboren 1943). Du suchst im Terminal mit <code>grep</code>? …</p>
-<p class='person-credit'>Foto: aus dem Jargon File, gemeinfrei (<a href='…'>Wikimedia Commons</a>)</p>
+<p class='person-credit'>Foto: A. C. Diller, 2019, CC BY-SA 4.0, zugeschnitten (<a href='…'>Wikimedia Commons</a>)</p>
 </div>
+<!-- /part -->
 ```
+
+Zwei Menschen in einem Kasten: `<div class='person pair'>` mit
+`<div class='portraits'>` um die beiden Fotos. Das Foto ist frei
+(gemeinfrei, CC0, CC BY, CC BY-SA), meist von Wikimedia Commons, die
+Zeile darunter nennt Urheber, Jahr und Lizenz. Jedes Porträt ist 4:5, die
+Augen auf etwa 40 % der Höhe, 320 × 400 Pixel als WebP. Der Kasten steht im
+Fluss der Seite, Foto links, Text rechts, und ist so hoch wie das Größere von
+beiden.
 
 ### Zum Ausprobieren einladen
 

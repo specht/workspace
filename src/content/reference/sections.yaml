@@ -171,3 +171,13 @@
     Treppen und Wasser. Für Räume, die man findet, und für solche, die man baut.
   entries:
     - kartografie
+
+- key: reference-people
+  label: Personen
+  icon: /images/technologist.png
+  description: |
+    Wer grep, Git, das Bit oder den kürzesten Weg im Navi erfunden hat:
+    die Menschen, die im Workspace vorkommen, mit Foto und dem, was sie
+    gemacht haben.
+  entries:
+    - personen

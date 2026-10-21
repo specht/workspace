@@ -142,14 +142,9 @@ Ein NEA ist oft kleiner und leichter aufzuschreiben als ein DEA für dieselbe Sp
 
 <!-- part: thompson -->
 <!-- short: Thompson-Konstruktion: für jedes Zeichen ein Pfeil, für Hintereinander, |, * (Kleenesche Hülle) und + (positive Hülle) je ein Baustein aus ε-Übergängen; daraus ein NEA mit einem Start und einem akzeptierenden Zustand. -->
-<div class='person'>
-<img src='thompson.webp' alt='Ken Thompson 2019: ein Mann mit Brille, weißem Bart und Halbglatze in einem schwarzen T-Shirt.'>
-<p><strong>Ken Thompson</strong> (geboren 1943). Du suchst im Terminal mit <code>grep</code>? Das hat er 1973 geschrieben; der Name kommt aus seinem Texteditor, wo der Befehl <code>g/re/p</code> hieß: global, <em>regular expression</em>, print. Den Automaten dahinter baute er nach der Thompson-Konstruktion.</p>
-<p>Das Terminal selbst läuft unter Linux, einem Nachfahren von Unix, das er ab 1969 mit Dennis Ritchie schrieb. Unten rechts in VS Code steht <em>UTF-8</em>: Die Kodierung hat er 1992 mit Rob Pike auf ein Tischset in einem Diner gezeichnet. Und die Sprache <a href='/go'>Go</a> hat er mit erfunden.</p>
-<p class='person-credit'>Foto: A. C. Diller, 2019, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Brian_Kernighan_and_Ken_Thompson.jpg'>Wikimedia Commons</a>)</p>
-</div>
-
 Ein [regulärer Ausdruck](/reference/regex) beschreibt eine Sprache, und die **Thompson-Konstruktion** baut daraus einen NEA, Stück für Stück aus wenigen **Bausteinen**. Jeder Baustein hat einen Start und einen akzeptierenden Zustand, und die Bausteine werden mit ε-Übergängen verbunden. Die Bilder in diesem Abschnitt zeichnet Automatron, und genau so sehen die Automaten dort aus. Es baut nach dieser Konstruktion, lässt aber ε-Übergänge weg, die nur ein Stück an das nächste hängen.
+
+_person(thompson)
 
 <div class='gallery columns-3'>
 <figure>
@@ -178,12 +173,9 @@ Ein [regulärer Ausdruck](/reference/regex) beschreibt eine Sprache, und die **T
 </figure>
 </div>
 
-Symbol, Verkettung, Alternative und Kleenesche Hülle reichen für jeden regulären Ausdruck; positive Hülle und Option sind Abkürzungen: `a+` ist `aa*`, `a?` ist »a oder nichts«. <div class='person'>
-<img src='kleene.webp' alt='Schwarzweißfoto von Stephen Kleene um 1963: ein Mann mit Halbglatze in Anzug und Krawatte, im Halbprofil.'>
-<p><strong>Stephen Cole Kleene</strong> (1909–1994), Mathematiker in Madison, Wisconsin. Jedes <code>*</code> in einem regulären Ausdruck, bei <code>grep</code> oder in der Suche von VS Code, ist sein Stern.</p>
-<p>1951 wollte er wissen, welche Muster ein Netz aus Nervenzellen erkennen kann, und erfand dafür die Bausteine, die heute reguläre Ausdrücke heißen, zwanzig Jahre bevor es <code>grep</code> gab. Er bewies auch, dass sie und endliche Automaten genau dasselbe können.</p>
-<p class='person-credit'>Foto: Harold N. Hone, um 1963, gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:Stephen_Cole_Kleene_circa_1963.tif'>Wikimedia Commons</a>)</p>
-</div>
+Symbol, Verkettung, Alternative und Kleenesche Hülle reichen für jeden regulären Ausdruck; positive Hülle und Option sind Abkürzungen: `a+` ist `aa*`, `a?` ist »a oder nichts«.
+
+_person(kleene)
 
 Die Kleenesche Hülle einer Sprache L, geschrieben L<sup>&#42;</sup>, sind alle Wörter, die sich aus beliebig vielen Wörtern von L zusammensetzen lassen, auch aus keinem: Das leere Wort ε gehört immer dazu. Die positive Hülle L<sup>+</sup> lässt das leere Zusammensetzen weg: mindestens ein Wort von L; L<sup>+</sup> ist dasselbe wie L L<sup>&#42;</sup>. Größere Ausdrücke werden aus diesen Bausteinen zusammengesetzt, von innen nach außen; für `(a|b)*aa` steckt der Baustein für `a|b` im Baustein für `*`, und danach kommen zwei a:
 
