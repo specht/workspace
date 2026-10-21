@@ -600,7 +600,22 @@
         svg.addEventListener('pointerleave', () => to(null));
     }
 
-    root.AutomatonLayout = { R, layout, svg, table, fromData, joinLabels, hover };
+    // Automata side by side in a gallery are drawn at one scale, the largest
+    // at which each fits its column (at most 1.2), so that a small automaton
+    // does not look bigger than a large one
+    function fitGalleries() {
+        if (typeof document === 'undefined') return;
+        for (const gallery of document.querySelectorAll('.gallery')) {
+            const svgs = [...gallery.querySelectorAll('.automaton-drawing svg.automaton-drawn')];
+            if (!svgs.length) continue;
+            const width = (svg) => Number(svg.getAttribute('viewBox').split(/\s+/)[2]) || 1;
+            const scale = Math.min(1.2, ...svgs.map((svg) => svg.closest('figure').clientWidth / width(svg)));
+            for (const svg of svgs) Object.assign(svg.style, { width: `${Math.floor(width(svg) * scale)}px`, minWidth: '0', maxWidth: '100%' });
+        }
+    }
+    if (typeof window !== 'undefined') window.addEventListener('resize', fitGalleries);
+
+    root.AutomatonLayout = { R, layout, svg, table, fromData, joinLabels, hover, fitGalleries };
 
     // the drawings in the page
     if (typeof document === 'undefined') return;
@@ -610,7 +625,7 @@
         el.dataset.drawn = '1';
         el.innerHTML = svg(fromData(el.dataset));
         if (el.querySelector('svg')) hover(el.querySelector('svg'));
-    });
+    }) || fitGalleries();
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
     else start();
 })(typeof window !== 'undefined' ? window : globalThis);

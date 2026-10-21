@@ -128,31 +128,31 @@ Ein [regulärer Ausdruck](/reference/regex) beschreibt eine Sprache, und die **T
 <div class='gallery columns-3'>
 <figure>
 <div class='automaton-drawing' role='img' aria-label='Zwei Kreise: a führt vom Start q0 zum akzeptierenden q1.' data-regex='a' data-automaton='nfa'></div>
-<figcaption><code>a</code>: ein Zeichen ist ein Pfeil.</figcaption>
+<figcaption><strong>Symbol</strong> <code>a</code>: ein Zeichen ist ein Pfeil.</figcaption>
 </figure>
 <figure>
 <div class='automaton-drawing' role='img' aria-label='Drei Kreise in einer Reihe: a von q0 nach q1, b von q1 nach q2, q2 akzeptiert.' data-regex='ab' data-automaton='nfa'></div>
-<figcaption><code>ab</code>: hintereinander heißt, der akzeptierende Zustand des ersten Stücks ist der Start des zweiten.</figcaption>
+<figcaption><strong>Verkettung</strong> (Konkatenation) <code>ab</code>: Der akzeptierende Zustand des ersten Stücks ist der Start des zweiten.</figcaption>
 </figure>
 <figure>
 <div class='automaton-drawing' role='img' aria-label='Vom Start q0 führen zwei ε-Pfeile zu zwei Wegen, einem mit a und einem mit b; beide führen mit ε zum akzeptierenden q5.' data-regex='a|b' data-automaton='nfa'></div>
-<figcaption><code>a|b</code>: ein neuer Start mit ε zu beiden Stücken, von beiden mit ε zu einem neuen Ende.</figcaption>
+<figcaption><strong>Alternative</strong> <code>a|b</code>: ein neuer Start mit ε zu beiden Stücken, von beiden mit ε zu einem neuen Ende. Die Sprache ist die <strong>Vereinigung</strong> der beiden Sprachen.</figcaption>
 </figure>
 <figure>
 <div class='automaton-drawing' role='img' aria-label='Vom Start q0 führt ε nach q1 und, im Bogen über alles hinweg, nach dem akzeptierenden q3. Von q1 führt a nach q2, von q2 führt ε zurück nach q1 und weiter nach q3.' data-regex='a*' data-automaton='nfa'></div>
-<figcaption><code>a*</code>, die <strong>Kleenesche Hülle</strong> (der Kleene-Stern): ein ε am Stück vorbei (keinmal) und eins vom Ende zurück an seinen Anfang (noch einmal).</figcaption>
+<figcaption><strong>Kleenesche Hülle</strong> (Kleene-Stern) <code>a*</code>: ein ε am Stück vorbei (keinmal) und eins vom Ende zurück an seinen Anfang (noch einmal).</figcaption>
 </figure>
 <figure>
 <div class='automaton-drawing' role='img' aria-label='Wie bei a*, aber ohne den ε-Bogen vom Start zum Ende: q0 führt mit ε nach q1, a nach q2, von q2 ε zurück nach q1 und weiter zum akzeptierenden q3.' data-regex='a+' data-automaton='nfa'></div>
-<figcaption><code>a+</code>, die <strong>positive Hülle</strong>: derselbe Baustein ohne den Pfeil vorbei, das Stück kommt mindestens einmal.</figcaption>
+<figcaption><strong>Positive Hülle</strong> <code>a+</code>: derselbe Baustein ohne den Pfeil vorbei, das Stück kommt mindestens einmal.</figcaption>
 </figure>
 <figure>
 <div class='automaton-drawing' role='img' aria-label='Wie bei a*, aber ohne den ε-Pfeil zurück: q0 führt mit ε nach q1 und im Bogen nach q3, q1 mit a nach q2, q2 mit ε nach q3.' data-regex='a?' data-automaton='nfa'></div>
-<figcaption><code>a?</code>: derselbe Baustein ohne den Pfeil zurück, das Stück kommt höchstens einmal.</figcaption>
+<figcaption><strong>Option</strong> <code>a?</code>: derselbe Baustein ohne den Pfeil zurück, das Stück kommt höchstens einmal.</figcaption>
 </figure>
 </div>
 
-Die Kleenesche Hülle einer Sprache L, geschrieben L<sup>*</sup>, sind alle Wörter, die sich aus beliebig vielen Wörtern von L zusammensetzen lassen, auch aus keinem: Das leere Wort ε gehört immer dazu. Die positive Hülle L<sup>+</sup> lässt das leere Zusammensetzen weg: mindestens ein Wort von L; L<sup>+</sup> ist dasselbe wie L L<sup>*</sup>. Größere Ausdrücke werden aus diesen Bausteinen zusammengesetzt, von innen nach außen; für `(a|b)*aa` steckt der Baustein für `a|b` im Baustein für `*`, und danach kommen zwei a:
+Symbol, Verkettung, Alternative und Kleenesche Hülle reichen für jeden regulären Ausdruck; positive Hülle und Option sind Abkürzungen: `a+` ist `aa*`, `a?` ist »a oder nichts«. Die Kleenesche Hülle einer Sprache L, geschrieben L<sup>*</sup>, sind alle Wörter, die sich aus beliebig vielen Wörtern von L zusammensetzen lassen, auch aus keinem: Das leere Wort ε gehört immer dazu. Die positive Hülle L<sup>+</sup> lässt das leere Zusammensetzen weg: mindestens ein Wort von L; L<sup>+</sup> ist dasselbe wie L L<sup>*</sup>. Größere Ausdrücke werden aus diesen Bausteinen zusammengesetzt, von innen nach außen; für `(a|b)*aa` steckt der Baustein für `a|b` im Baustein für `*`, und danach kommen zwei a:
 
 <div class='automaton-drawing' role='img' aria-label='Der NEA zu (a|b)*aa: in einer Reihe der Baustein für a oder b, umschlossen von einem ε-Bogen zurück und einem ε-Bogen vorbei, danach a und noch einmal a bis zum akzeptierenden q9.' data-regex='(a|b)*aa' data-automaton='nfa'></div>
 <!-- /part -->

@@ -5309,6 +5309,25 @@ html[data-bs-theme="dark"] .automaton-drawn { --automaton-line: #8b949e; --autom
 .automaton-drawn .automaton-state { fill: var(--automaton-paper); stroke: var(--automaton-ink); stroke-width: 1.5; }
 .automaton-drawn .automaton-accepting { fill: none; stroke: var(--automaton-ink); stroke-width: 1.2; }
 .automaton-drawing { overflow-x: auto; }
+/* automata in a gallery: one scale for all (fitGalleries in
+   automaton_layout.js); each figure spans two shared rows, the drawings
+   centred in the first, so that the captions start on one line */
+.gallery figure:has(> .automaton-drawing) {
+    display: grid;
+    grid-row: span 2;
+    grid-template-rows: subgrid;
+    row-gap: 0.3em;
+}
+.gallery figure > .automaton-drawing {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.gallery figure > .automaton-drawing svg.automaton-drawn { margin: 0.3em 0; }
+/* on a phone one automaton a row: two would be too small to read */
+@media (max-width: 576px) {
+    .gallery:has(.automaton-drawing) { grid-template-columns: 1fr; }
+}
 table.automaton-table {
     border-collapse: collapse;
     margin: 0.5em 0 1em;

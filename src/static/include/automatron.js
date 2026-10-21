@@ -711,7 +711,7 @@
         const a = which === 'min' ? r.min_dfa.implicit_sink.drawing : which === 'dfa' ? r.dfa.implicit_sink.drawing : r.nfa.drawing;
         el.innerHTML = root.AutomatonLayout.svg(a);
         if (el.querySelector('svg')) root.AutomatonLayout.hover(el.querySelector('svg'));
-    });
+    }) || (root.AutomatonLayout && root.AutomatonLayout.fitGalleries());
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', draw);
     else draw();
 })(typeof window !== 'undefined' ? window : globalThis);
