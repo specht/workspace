@@ -287,7 +287,9 @@ only to look nice.
   the current step (`stepperGo`), so that a widget that grows (the LZW
   table) has one size from the start; it is kept from step to step and
   only made smaller when a step does not fit, so the text does not jump; a
-  new window size or another widget fits afresh.
+  new window size or another widget fits afresh. The content stands in the
+  middle of the window, for the classroom: moved down by half the room its
+  tallest step leaves, so it does not move up and down from step to step.
 - Colours come from the widget's CSS variables, so light and dark mode both
   work; no fixed colours in the drawing.
 

@@ -5391,6 +5391,8 @@ div[data-stepper].stepper-lightbox {
     z-index: 2000;
     margin: 0;
     padding: 2vh 3vw;
+    /* in the middle of the window: the fit's shift (stepper_keys.js) */
+    padding-top: calc(2vh + var(--lightbox-shift, 0px));
     border: none;
     border-radius: 0.75rem;
     overflow: auto;

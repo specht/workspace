@@ -113,6 +113,7 @@ document.addEventListener('keydown', (event) => {
     let fitting = 0;
     const LABEL = 12;
     const fits = (size, picture) => {
+        open.style.setProperty('--lightbox-shift', '0px');
         open.style.fontSize = `${size}px`;
         if (!picture) return open.scrollHeight <= open.clientHeight + 0.5 && open.scrollWidth <= open.clientWidth + 0.5;
         picture.style.maxHeight = 'none';
@@ -157,7 +158,15 @@ document.addEventListener('keydown', (event) => {
         // a step that still fits keeps size and layout; one that does not
         // gets the best layout again, at most as large as before
         const keep = !fresh && fitted && fitted.widget === open;
-        if (keep && fits(fitted.size, picture)) return;
+        // In the middle of the window, for the classroom: the content moved
+        // down by half the room its tallest step leaves (measured with the
+        // size, at the same steps); never so far that a step scrolls
+        const shift = () => {
+            open.style.setProperty('--lightbox-shift', `${fitted.shift}px`);
+            const over = open.scrollHeight - open.clientHeight;
+            if (over > 0) open.style.setProperty('--lightbox-shift', `${Math.max(0, fitted.shift - over)}px`);
+        };
+        if (keep && fits(fitted.size, picture)) { shift(); return; }
         const hi = keep ? fitted.size : 32;
         // when the lightbox opens: the size that fits the first, the last
         // and the current step, so that a widget that grows (the LZW
@@ -171,9 +180,27 @@ document.addEventListener('keydown', (event) => {
             open.stepperGo(at);
             return least;
         };
+        // how tall the content is: down to the end of its last part (the
+        // scroll height is never less than the window)
+        const contentHeight = () => {
+            const box = open.getBoundingClientRect();
+            let bottom = box.top;
+            for (const child of open.children) {
+                const position = getComputedStyle(child).position;
+                if (position !== 'absolute' && position !== 'fixed' && child.offsetParent !== null) bottom = Math.max(bottom, child.getBoundingClientRect().bottom);
+            }
+            return bottom - box.top + parseFloat(getComputedStyle(open).paddingBottom);
+        };
+        const center = () => {
+            let tallest = 0;
+            probe(() => { fits(fitted.size, picture); tallest = Math.max(tallest, contentHeight()); return 0; });
+            fits(fitted.size, picture);
+            fitted.shift = Math.max(0, (open.clientHeight - tallest) / 2);
+            shift();
+        };
         if (!picture) {
             fitted = { widget: open, size: probe(() => largest(null, hi)) };
-            fits(fitted.size, null);
+            center();
             return;
         }
         let best = null;
@@ -184,10 +211,11 @@ document.addEventListener('keydown', (event) => {
         }
         use(best.layout);
         fitted = { widget: open, size: best.size };
-        fits(best.size, picture);
+        center();
     };
     const unfit = (widget) => {
         widget.classList.remove('stepper-stacked');
+        widget.style.removeProperty('--lightbox-shift');
         widget.style.removeProperty('--stepper-side');
         const picture = widget.querySelector('.algo-body > svg.algo-picture');
         if (picture) picture.style.maxHeight = '';
