@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <button class='tutorial-preview-lightbox-step tutorial-preview-lightbox-prev' type='button' aria-label='Voriges Bild'>‹</button>
         <button class='tutorial-preview-lightbox-step tutorial-preview-lightbox-next' type='button' aria-label='Nächstes Bild'>›</button>
         <figure class='tutorial-preview-lightbox-content'></figure>
+        <div class='tutorial-preview-lightbox-dots'></div>
     `;
 
     document.body.appendChild(lightbox);
@@ -27,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeButton = lightbox.querySelector('.tutorial-preview-lightbox-close');
     const prevButton = lightbox.querySelector('.tutorial-preview-lightbox-prev');
     const nextButton = lightbox.querySelector('.tutorial-preview-lightbox-next');
+    const dots = lightbox.querySelector('.tutorial-preview-lightbox-dots');
     // The gallery picture that is open, to step from it; null for a preview.
     let current = null;
 
@@ -132,9 +134,54 @@ document.addEventListener('DOMContentLoaded', () => {
         const siblings = gallerySiblings(source);
         lightbox.classList.add('is-gallery');
         lightbox.classList.toggle('has-steps', siblings.length > 1);
+        showDots(siblings, source);
         content.replaceChildren(...parts);
         show();
         if (image.complete) fit(image);
+    }
+
+    // At the bottom a dot for each picture of the gallery, the open one
+    // filled, a tap on one opens its picture. At most SLOTS are visible: the
+    // open one in the middle, those further away smaller, the rest gone. The
+    // row slides when stepping, the dots grow and shrink (tutorial-preview.css).
+    const SLOTS = 7;
+    let dotsFor = null;   // the gallery the dots belong to
+    function showDots(siblings, source) {
+        const index = siblings.indexOf(source);
+        const gallery = source.closest('.gallery');
+        if (siblings.length < 2) {
+            dots.replaceChildren();
+            dotsFor = null;
+            return;
+        }
+        if (dotsFor !== gallery) {
+            dotsFor = gallery;
+            const track = document.createElement('div');
+            track.className = 'tutorial-preview-lightbox-dots-track';
+            track.append(...siblings.map((other, i) => {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'tutorial-preview-lightbox-dot';
+                dot.setAttribute('aria-label', `Bild ${i + 1} von ${siblings.length}`);
+                dot.addEventListener('click', () => openGallery(other));
+                return dot;
+            }));
+            dots.replaceChildren(track);
+            dots.style.setProperty('--slots', Math.min(SLOTS, siblings.length));
+        }
+        const track = dots.firstChild;
+        const half = Math.floor(SLOTS / 2);
+        const few = siblings.length <= SLOTS;
+        [...track.children].forEach((dot, i) => {
+            const away = Math.abs(i - index);
+            const size = few || away <= 1 ? 1 : away === 2 ? 0.75 : away === half ? 0.45 : away < half ? 0.75 : 0;
+            dot.style.setProperty('--size', size);
+            dot.style.pointerEvents = size ? '' : 'none';
+            dot.tabIndex = size ? 0 : -1;
+            if (i === index) dot.setAttribute('aria-current', 'true');
+            else dot.removeAttribute('aria-current');
+        });
+        track.style.setProperty('--shift', few ? 0 : half - index);
     }
 
     function gallerySiblings(image) {
