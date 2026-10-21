@@ -149,11 +149,12 @@ the next with their eyes.
 - Four buttons with `data-go` (first, prev, next, last) and ← → through
   `stepper_keys.js` (`data-stepper` on the widget); on a touch screen a
   sideways swipe across the picture steps it too (not on the timeline,
-  `data-no-swipe`). On a touch screen (tablet, phone) back and next are
-  large, finger-sized (44 px) and share the row, while to the start and to
-  the end are narrow, paler and set apart, so that a finger meant for next
-  does not jump to the end; on a narrow screen back and next take the whole
-  width and the step count goes on its own line (`default.css`).
+  `data-no-swipe`). On a touch screen (tablet, phone) the controls sit on
+  the right, where the thumb is: back and next large and finger-sized
+  (44 px) at the edge, next on the very edge; to the start and to the end
+  narrow, paler and set apart to their left, so that a finger meant for next
+  does not jump to the end; the step count on the left, on a phone on a line
+  of its own (`default.css`).
 - Colours come from the widget's CSS variables, so light and dark mode both
   work; no fixed colours in the drawing.
 

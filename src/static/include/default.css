@@ -5378,9 +5378,12 @@ div[data-stepper]::before {
     color: color-mix(in srgb, var(--bs-primary) 80%, var(--bs-body-color));
     margin-bottom: 0.6em;
 }
-/* On a touch screen (a tablet, a phone) the step buttons are big enough
-   for a finger and share the width of the row, and the label says that a
-   swipe steps too (stepper_keys.js) */
+/* On a touch screen (a tablet, a phone) the step buttons sit on the right,
+   where the thumb is: back and next large at the edge, next on the very
+   edge; to the start and to the end narrow, paler and set apart to the
+   left of them, so that a finger meant for next does not jump to the end;
+   the step count on the left. The label says that a swipe across the
+   picture steps too (stepper_keys.js). */
 @media (pointer: coarse) {
     div[data-stepper]::before {
         content: 'Zum Ausprobieren · Tasten tippen oder über das Bild wischen';
@@ -5391,15 +5394,15 @@ div[data-stepper]::before {
         align-items: center;
         gap: 0.4em;
     }
+    div[data-stepper] :has(> [data-go]) > :not([data-go]) {
+        order: 0;
+        margin: 0 auto 0 0;
+    }
     div[data-stepper] :has(> [data-go]) > [data-go] {
-        flex: 2 1 0;
-        max-width: 9rem;
         min-height: 2.75rem;
         margin: 0;
         font-size: 1.25rem;
     }
-    /* to the start and to the end: narrow, paler and set apart, so that a
-       finger meant for next does not jump to the end */
     div[data-stepper] :has(> [data-go]) > [data-go='first'],
     div[data-stepper] :has(> [data-go]) > [data-go='last'] {
         flex: 0 0 2.75rem;
@@ -5407,28 +5410,32 @@ div[data-stepper]::before {
         font-size: 1.05rem;
     }
     div[data-stepper] :has(> [data-go]) > [data-go='first'] {
-        margin-right: 0.9em;
+        order: 1;
+        margin-left: auto;
     }
     div[data-stepper] :has(> [data-go]) > [data-go='last'] {
-        margin-left: 0.9em;
+        order: 2;
+        margin-right: 0.9em;
+    }
+    div[data-stepper] :has(> [data-go]) > [data-go='prev'] {
+        order: 3;
+        flex: 0 0 5.5rem;
+    }
+    div[data-stepper] :has(> [data-go]) > [data-go='next'] {
+        order: 4;
+        flex: 0 0 5.5rem;
     }
 }
-/* On a narrow screen the step buttons share the whole width, so each is
-   wide enough for a finger */
+/* On a narrow screen the step count goes on a line of its own above the
+   buttons, which keep to the right */
 @media (max-width: 576px) {
     div[data-stepper] :has(> [data-go]) {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        gap: 0.3em;
+        justify-content: flex-end;
+        gap: 0.4em;
     }
-    div[data-stepper] :has(> [data-go]) > [data-go='prev'],
-    div[data-stepper] :has(> [data-go]) > [data-go='next'] {
-        flex: 2 1 0;
-        max-width: none;
-        font-size: 1.05rem;
-    }
-    /* the step count and the like on a line of their own */
     div[data-stepper] :has(> [data-go]) > :not([data-go]) {
         flex-basis: 100%;
         margin-left: 0;
