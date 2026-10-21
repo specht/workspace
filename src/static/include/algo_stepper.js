@@ -67,17 +67,22 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 /* the lines from the calls to their nodes lie behind the picture and the code */
 .algo-stepper svg.algo-links { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 0; }
 .algo-stepper .algo-body > svg.algo-picture, .algo-stepper .algo-body > .algo-side { position: relative; z-index: 1; }
-.algo-stepper .algo-timeline { display: flex; gap: 3px; margin: 0 0 0.8em; cursor: pointer; touch-action: none; user-select: none; }
-.algo-stepper .algo-section { min-width: 0; display: flex; flex-direction: column; border-left: 2px solid color-mix(in srgb, var(--algo-line) 80%, transparent); padding-left: 2px; }
-.algo-stepper .algo-section.current { border-left-color: var(--algo-accent); }
-.algo-stepper .algo-section-name { font-family: '0xProto Nerd Font Mono', monospace; font-size: 0.72em; white-space: nowrap; overflow: hidden; text-overflow: clip;
-    color: var(--bs-secondary-color); height: 1.4em; }
+.algo-stepper .algo-timeline { display: flex; margin: 0 0 0.8em; cursor: pointer; touch-action: none; user-select: none; }
+/* a dot for every step; the dot where an operation starts is ringed and
+   carries the operation's name */
+.algo-stepper .algo-section { min-width: 0; display: flex; flex-direction: column; }
+.algo-stepper .algo-section-name { font-family: '0xProto Nerd Font Mono', monospace; font-size: 0.72em; white-space: nowrap; overflow: hidden;
+    color: var(--bs-secondary-color); height: 1.45em; padding-left: 1px; }
 .algo-stepper .algo-section.current .algo-section-name { color: var(--algo-ink); font-weight: 600; }
-.algo-stepper .algo-ticks { display: flex; gap: 1px; height: 12px; align-items: flex-end; }
-.algo-stepper .algo-tick { flex: 1 1 0; min-width: 1px; height: 7px; border-radius: 1px; background: color-mix(in srgb, var(--algo-line) 45%, transparent); transition: background-color 0.2s, height 0.2s; }
-.algo-stepper .algo-tick.done { background: color-mix(in srgb, var(--algo-accent) 45%, transparent); }
-.algo-stepper .algo-tick.current { background: var(--algo-accent); height: 12px; }
-@media (pointer: coarse) { .algo-stepper .algo-ticks { height: 20px; } .algo-stepper .algo-tick { height: 12px; } .algo-stepper .algo-tick.current { height: 20px; } }
+.algo-stepper .algo-ticks { display: flex; height: 16px; }
+.algo-stepper .algo-tick { flex: 1 1 0; min-width: 3px; position: relative; }
+.algo-stepper .algo-tick::before { content: ''; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; transform: translate(-50%, -50%); border-radius: 50%;
+    background: color-mix(in srgb, var(--algo-line) 60%, transparent); transition: width 0.2s, height 0.2s, background-color 0.2s; }
+.algo-stepper .algo-tick.start::before { width: 9px; height: 9px; background: var(--algo-paper); box-shadow: 0 0 0 2px var(--algo-accent); }
+.algo-stepper .algo-tick.done::before { background: color-mix(in srgb, var(--algo-accent) 55%, transparent); }
+.algo-stepper .algo-tick.start.done::before { background: color-mix(in srgb, var(--algo-accent) 55%, var(--algo-paper)); }
+.algo-stepper .algo-tick.current::before { width: 12px; height: 12px; background: var(--algo-accent); box-shadow: 0 0 0 2px var(--algo-paper), 0 0 0 3.5px var(--algo-accent); }
+@media (pointer: coarse) { .algo-stepper .algo-ticks { height: 24px; } .algo-stepper .algo-tick.current::before { width: 14px; height: 14px; } }
 @media (prefers-reduced-motion: reduce) { .algo-stepper svg [data-key] { transition: none; } }
 `;
 
@@ -1714,8 +1719,13 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         const ticks = [];
         const timeline = el('div', { class: 'algo-timeline', 'data-no-swipe': '', role: 'slider', 'aria-label': 'Die Schritte', 'aria-valuemin': 0, 'aria-valuemax': frames.length - 1, tabindex: -1 },
             sections.map((section) => el('div', { class: 'algo-section', style: `flex-grow: ${section.steps.length};` }, [
-                el('span', { class: 'algo-section-name', text: section.op >= 0 && opsText ? opsText[section.op] : '' }),
-                el('div', { class: 'algo-ticks' }, section.steps.map((i) => { const tick = el('span', { class: 'algo-tick', 'data-step': i }); ticks.push(tick); return tick; })),
+                // the name starts at the section's first dot (the middle of its first step)
+                el('span', { class: 'algo-section-name', style: `padding-left: calc(${50 / section.steps.length}% - 4.5px);`, text: section.op >= 0 && opsText ? opsText[section.op] : '' }),
+                el('div', { class: 'algo-ticks' }, section.steps.map((i, k) => {
+                    const tick = el('span', { class: 'algo-tick', 'data-step': i, ...(k === 0 && section.op >= 0 ? { 'data-start': '' } : {}) });
+                    ticks.push(tick);
+                    return tick;
+                })),
             ])));
         const body = el('div', { class: 'algo-body' }, [picture, side]);
         widget.replaceChildren(el('div', { class: 'algo-controls' }, [...buttons, count]), timeline, body, message);
@@ -1789,7 +1799,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             }
             message.textContent = frame.message;
             if (links) follow((frame.duration || MOTION_TIME) * 2 + 600);
-            ticks.forEach((tick, i) => { tick.className = `algo-tick${i < index ? ' done' : i === index ? ' current' : ''}`; });
+            ticks.forEach((tick, i) => { tick.className = `algo-tick${'start' in tick.dataset ? ' start' : ''}${i < index ? ' done' : i === index ? ' current' : ''}`; });
             for (const node of timeline.children) node.classList.toggle('current', node.contains(ticks[index]));
             timeline.setAttribute('aria-valuenow', index);
             count.textContent = `Schritt ${index} von ${frames.length - 1}`;

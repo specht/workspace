@@ -221,6 +221,12 @@
                     }
                 }
             }
+            // the curve must arrive in the direction of the arrow, else its
+            // arrowhead turns over: then this frame is straight
+            const heading = [tip[0] - base[0], tip[1] - base[1]];
+            if ((end[0] - control[0]) * heading[0] + (end[1] - control[1]) * heading[1] <= 0.05 * (heading[0] ** 2 + heading[1] ** 2)) {
+                control = [(base[0] + end[0]) / 2, (base[1] + end[1]) / 2];
+            }
             if (r.line.tagName === 'path') r.line.setAttribute('d', `M${round(base[0])} ${round(base[1])} Q${round(control[0])} ${round(control[1])} ${round(end[0])} ${round(end[1])}`);
             else {
                 r.line.setAttribute('x1', round(base[0]));

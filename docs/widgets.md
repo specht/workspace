@@ -29,9 +29,9 @@ in doubt, do it the way it does.
   ```` ```pseudocode ```` block (`pseudocode_lexer.rb`), and the code box
   colours the same tokens the same way (`highlightPseudocode` in
   `algo_stepper.js`): dark, like every other code block on the site.
-- **A timeline** under the buttons: a mark for every step, the steps of one
-  operation a section with its name at its start (`remove 20 | remove 40 |
-  remove 50`), done steps coloured, the current one marked. A tap or a drag
+- **A timeline** under the buttons: a dot for every step; the dot where an
+  operation starts is ringed and carries the operation's name (`remove 20`,
+  `remove 40`, `remove 50`); done dots coloured, the current one large. A tap or a drag
   on it goes to that step. The viewer always knows where they are and where
   each operation starts.
 - **The message under the picture** says in one or two German sentences what
@@ -65,7 +65,9 @@ the next with their eyes.
   target move into its new place, the pointer staying on it (two phases, the
   step 1.7 times as long).
 - **Arrows end on the border** of their node (`data-inset`), so the
-  arrowhead stays visible, and they **bend while they move**: a path whose
+  arrowhead stays visible (a curve that would come in backwards is drawn
+  straight for that moment, so the head never turns over), and they **bend
+  while they move**: a path whose
   middle trails behind its ends like a rubber band and straightens when the
   nodes rest. Only as far as its two ends move differently: when the whole
   picture shifts to make room, that is a change of view, and the arrows stay
