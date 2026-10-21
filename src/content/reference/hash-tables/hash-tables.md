@@ -78,7 +78,7 @@ Ohne Listen geht es auch: Jeder Bucket hält höchstens einen Schlüssel. Ist de
 insert(k):
     b ← h(k)
     while buckets[b] occupied:
-        if buckets[b] = k: done
+        if buckets[b] == k: done
         b ← (b + 1) mod m
     buckets[b] ← k
     count ← count + 1
@@ -86,7 +86,7 @@ insert(k):
 find(k):
     b ← h(k)
     while buckets[b] occupied:
-        if buckets[b] = k: found
+        if buckets[b] == k: found
         b ← (b + 1) mod m
     not found
 ```

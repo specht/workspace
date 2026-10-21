@@ -73,24 +73,31 @@
         const goal = new Map();
         for (const child of next.children) if (child.dataset.key) goal.set(child.dataset.key, attributes(child));
         const tracks = [];
-        const move = (node, name, from, to) => {
+        // final: what the attribute is at the end, when it differs from to
+        // only in its form (a group that grew: its transform without the scale)
+        const move = (node, name, from, to, final = to) => {
             if (duration && from !== undefined && from !== to && movable(name) && mix(from, to, 0) !== null) {
-                tracks.push({ node, name, from, to });
+                tracks.push({ node, name, from, to, final });
                 node.setAttribute(name, from);
-            } else node.setAttribute(name, to);
+            } else node.setAttribute(name, final);
         };
         // data-grow: an element that covers what lies behind it (a node, a
         // token over lines) comes and goes by its size, opaque, not by fading:
-        // a circle by its radius, a group by a scale about its own origin
+        // a circle by its radius, a group by a scale about its own origin or
+        // about the point data-grow names ('22 21', in its own units: a cell
+        // drawn from its corner grows from its middle); a group that came
+        // ends on its own transform, so that its next move tweens
         const grow = (node, coming) => {
             if (node.tagName === 'circle') {
                 const r = node.getAttribute('r');
                 if (coming) move(node, 'r', '0', r);
                 else move(node, 'r', r, '0');
             } else if (node.tagName === 'g') {
-                const base = (node.getAttribute('transform') || '').replace(/\s*scale\([^)]*\)/, '');
-                if (coming) move(node, 'transform', `${base} scale(0)`, `${base} scale(1)`);
-                else move(node, 'transform', `${base} scale(1)`, `${base} scale(0)`);
+                const base = node.getAttribute('transform') || '';
+                const [cx, cy] = (node.dataset.grow || '0 0').split(/\s+/).map(Number);
+                const about = (s) => `${base} translate(${cx} ${cy}) scale(${s}) translate(${-cx} ${-cy})`;
+                if (coming) move(node, 'transform', about(0), about(1), base);
+                else move(node, 'transform', about(1), about(0));
             } else if (coming) move(node, 'opacity', '0', node.getAttribute('opacity') || '1');
             else move(node, 'opacity', node.getAttribute('opacity') || '1', '0');
         };
@@ -317,7 +324,7 @@
         const follow = [...leaving, ...shown].filter((node) => node.dataset.follow && !kept.has(node));
         const arcs = tracks.filter((track) => track.name === 'transform' && track.node.dataset.arc && /^translate/.test(track.to));
         const paint = (t, now) => {
-            for (const track of tracks) track.node.setAttribute(track.name, t >= 1 ? track.to : mix(track.from, track.to, ease(later(t))));
+            for (const track of tracks) track.node.setAttribute(track.name, t >= 1 ? track.final : mix(track.from, track.to, ease(later(t))));
             // data-arc: a group that moves by its translate goes on a small
             // arc (that many units to the side at the middle), so that two
             // that swap pass each other

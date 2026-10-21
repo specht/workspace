@@ -52,7 +52,7 @@ path_back(predecessor, goal):
     if goal not in predecessor: no path
     path ← empty list
     node ← goal
-    while node is not none:
+    while node != null:
         add node at the front of path
         node ← predecessor[node]
     return path
@@ -69,11 +69,11 @@ Die **Breitensuche** geht vom Start aus wie eine Welle: erst zu allen Nachbarn d
 
 ```pseudocode
 breadth_first_search(graph, start, goal):
-    predecessor ← { start: none }
+    predecessor ← { start: null }
     queue ← [start]
     while queue not empty:
         node ← take the front node from queue
-        if node = goal: return path_back(predecessor, goal)
+        if node == goal: return path_back(predecessor, goal)
         for each neighbor of node:
             if neighbor not in predecessor:
                 predecessor[neighbor] ← node
@@ -104,11 +104,11 @@ Die **Tiefensuche** nimmt statt einer Queue einen **Stack**: Was zuletzt hineink
 
 ```pseudocode
 depth_first_search(graph, start, goal):
-    predecessor ← { start: none }
+    predecessor ← { start: null }
     stack ← [start]
     while stack not empty:
         node ← take the top node from stack
-        if node = goal: return path_back(predecessor, goal)
+        if node == goal: return path_back(predecessor, goal)
         for each neighbor of node:
             if neighbor not in predecessor:
                 predecessor[neighbor] ← node
@@ -130,14 +130,14 @@ Den kürzesten Weg nach Länge findet das Verfahren von **Edsger W. Dijkstra** (
 ```pseudocode
 dijkstra(graph, start, goal):
     dist ← { start: 0 }
-    predecessor ← { start: none }
+    predecessor ← { start: null }
     finished ← empty set
     pq ← priority queue with (0, start)
     while pq not empty:
         (distance, node) ← take the smallest entry from pq
         if node in finished: continue        (ein alter Eintrag)
         add node to finished
-        if node = goal: return path_back(predecessor, goal)
+        if node == goal: return path_back(predecessor, goal)
         for each (neighbor, length) of node:
             new ← distance + length
             if neighbor not in dist or new < dist[neighbor]:

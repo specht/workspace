@@ -3,8 +3,8 @@ require 'rouge'
 module Rouge
     module Lexers
         # The pseudocode of the Handbuch pages (```pseudocode blocks): English
-        # keywords, function names, fields, ← and the comparisons, constants
-        # such as empty and found, numbers, and German remarks in parentheses.
+        # keywords, function names, fields, ← and the comparisons (==, !=, <, ≤ …),
+        # constants such as null, empty and found, numbers, and German remarks in parentheses.
         # The Algo Stepper's code box colours the same tokens the same way
         # (algo_stepper.js, highlightPseudocode).
         class Pseudocode < RegexLexer
@@ -20,7 +20,7 @@ module Rouge
                 # a remark: three words or more in parentheses, no operators
                 # (a tuple like (0, start) or (i - 1) is code)
                 rule %r/\((?=[^()\n]*\s[^()\n]*\s)[^()\n+\-*\/=<>≤≥≠\[\]]*\)/, Comment::Single
-                rule %r/←|≤|≥|≠|<|>|=|\+|-|\*|\/|%/, Operator
+                rule %r/←|==|!=|<=|>=|≤|≥|≠|<|>|=|\+|-|\*|\/|%/, Operator
                 rule %r/\d+(?:\.\d+)?/, Literal::Number::Integer
                 rule %r/(\.)(#{IDENT})/ do
                     groups Punctuation, Name::Attribute

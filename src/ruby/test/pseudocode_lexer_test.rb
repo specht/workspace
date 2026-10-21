@@ -17,7 +17,8 @@ class PseudocodeLexerTest < Minitest::Test
     end
 
     def test_constants_and_numbers
-        assert_equal [%w[k if], %w[n node], %w[kc empty], %w[p :], ['kc', 'not found']], tokens('if node empty: not found')
+        assert_equal [%w[k if], %w[n node], %w[o ==], %w[kc null], %w[p :], ['kc', 'not found']], tokens('if node == null: not found')
+        assert_includes tokens('while successor.left != null: successor ← successor.left'), %w[o !=]
         assert_includes tokens('i ← (i - 1) / 2'), %w[mi 1]
     end
 

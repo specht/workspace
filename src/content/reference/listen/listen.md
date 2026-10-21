@@ -47,7 +47,7 @@ Soll ein Wert an Index \\(i\\) hinein, muss dort erst Platz werden: Jeder Wert a
 ```pseudocode
 insert(i, value):
     if i < 0 or i > size: error
-    if size = capacity: grow
+    if size == capacity: grow
     for j from size - 1 down to i:
         cells[j + 1] ← cells[j]
     cells[i] ← value
@@ -107,7 +107,7 @@ Zum Einfügen läuft man zum Knoten **vor** dem Index, dem Vorgänger. Dann zeig
 insert(i, value):
     if i < 0 or i > size: error
     new ← a node with value
-    if i = 0:
+    if i == 0:
         new.next ← head
         head ← new
     else:
@@ -118,7 +118,7 @@ insert(i, value):
 
 remove(i):
     if i < 0 or i ≥ size: error
-    if i = 0:
+    if i == 0:
         value ← head.value
         head ← head.next
     else:
@@ -143,8 +143,8 @@ Dasselbe geht ohne `node_at` und ohne den Sonderfall vorn: Jeder Aufruf kümmert
 
 ```pseudocode
 remove(node, i):
-    if node empty: error
-    if i = 0: return node.next
+    if node == null: error
+    if i == 0: return node.next
     node.next ← remove(node.next, i - 1)
     return node
 ```
@@ -154,7 +154,7 @@ remove(node, i):
 **Typische Fehler**
 
 - Erst `before.next ← new`, dann `new.next ← before.next`: Der neue Knoten zeigt auf sich selbst, die Liste wird zum Kreis.
-- Den Fall `i = 0` vergessen: Es gibt keinen Vorgänger, `node_at(-1)` geht schief.
+- Den Fall `i == 0` vergessen: Es gibt keinen Vorgänger, `node_at(-1)` geht schief.
 - Einen Schritt zu weit laufen: Für `insert(i, …)` und `remove(i)` braucht man den Knoten an \\(i - 1\\), nicht an \\(i\\).
 - `size` vergessen. Die Sandbox prüft, dass size zur Zahl der Knoten passt.
 
@@ -202,12 +202,12 @@ Mit einem Array ist das obere Ende das **hintere**: `push` hängt an Index size 
 
 ```pseudocode
 push(value):
-    if size = capacity: full (oder vergrößern)
+    if size == capacity: full (oder vergrößern)
     cells[size] ← value
     size ← size + 1
 
 pop():
-    if size = 0: error, the stack is empty
+    if size == 0: error, the stack is empty
     size ← size - 1
     return cells[size]
 ```
@@ -227,12 +227,12 @@ Ein **Ring Buffer** lässt die Werte stehen und bewegt stattdessen den Anfang. E
 
 ```pseudocode
 enqueue(value):
-    if size = capacity: error, the queue is full
+    if size == capacity: error, the queue is full
     cells[(head + size) mod capacity] ← value
     size ← size + 1
 
 dequeue():
-    if size = 0: error, the queue is empty
+    if size == 0: error, the queue is empty
     value ← cells[head]
     head ← (head + 1) mod capacity
     size ← size - 1
@@ -249,7 +249,7 @@ Und `dequeue` aus der vollen Queue: head läuft hinterher, ebenfalls um das Ende
 
 **Typische Fehler**
 
-- Statt size ein zweites Ende `tail` speichern und »voll« mit »leer« verwechseln: Bei beiden ist `head = tail`. Mit size gibt es das Problem nicht.
+- Statt size ein zweites Ende `tail` speichern und »voll« mit »leer« verwechseln: Bei beiden ist `head == tail`. Mit size gibt es das Problem nicht.
 - `mod` in Sprachen, in denen der Rest negativ werden kann (Java, JavaScript, C): `head - 1` mod 6 ist dort −1. Beim Rückwärtsgehen vorher die Kapazität addieren.
 - `dequeue` setzt head weiter, vergisst aber size: Dann ist die Queue scheinbar nie leer.
 <!-- /part -->

@@ -30,8 +30,8 @@ Die Regel sagt bei jedem Knoten, wohin es weitergeht: Ist der gesuchte Wert klei
 
 ```pseudocode
 find(node, value):
-    if node empty: not found
-    if value = node.value: found
+    if node == null: not found
+    if value == node.value: found
     if value < node.value: return find(node.left, value)
     else: return find(node.right, value)
 ```
@@ -42,7 +42,7 @@ Einfügen ist Suchen: Man sucht den Wert, und an der leeren Stelle, an der die S
 
 ```pseudocode
 insert(node, value):
-    if node empty: return a new node with value
+    if node == null: return a new node with value
     if value < node.value: node.left ← insert(node.left, value)
     if value > node.value: node.right ← insert(node.right, value)
     return node
@@ -71,14 +71,14 @@ Ein Knoten wird zuerst gesucht. Dann gibt es drei Fälle:
 
 ```pseudocode
 remove(node, value):
-    if node empty: return empty
+    if node == null: return null
     if value < node.value: node.left ← remove(node.left, value)
     else if value > node.value: node.right ← remove(node.right, value)
     else:
-        if node.left empty: return node.right
-        if node.right empty: return node.left
+        if node.left == null: return node.right
+        if node.right == null: return node.left
         successor ← node.right
-        while successor.left not empty: successor ← successor.left
+        while successor.left != null: successor ← successor.left
         node.value ← successor.value
         node.right ← remove(node.right, successor.value)
     return node
@@ -103,7 +103,7 @@ Um jeden Knoten einmal zu besuchen, etwa zum Ausgeben oder Zählen, geht man rek
 
 ```pseudocode
 inorder(node):
-    if node empty: done
+    if node == null: done
     inorder(node.left)
     visit node
     inorder(node.right)
@@ -117,7 +117,7 @@ Die **Höhe** eines Baums ist die Zahl der Knoten auf dem längsten Weg von der 
 
 ```pseudocode
 height(node):
-    if node empty: return 0
+    if node == null: return 0
     return 1 + the larger of height(node.left) and height(node.right)
 ```
 <!-- /part -->

@@ -29,8 +29,13 @@ in doubt, do it the way it does.
 - **Short variable names** (`min`, not `smallest`): they fit in a label and
   are read at a glance.
 - **Pseudocode is English, its comments German.** Names and keywords as on
-  the Handbuch pages (`rotate_right(y)`, `node.left`, `if … :`, `return`,
-  `empty`); a remark in parentheses may be German. On the pages it is a
+  the Handbuch pages (`rotate_right(y)`, `node.left`, `if … :`, `return`);
+  a remark in parentheses may be German. `←` assigns, `==` and `!=` compare
+  (never a single `=`); `null` is a reference to nothing (`node == null`,
+  `return null`, in the picture too), `empty` is a collection without
+  entries (`queue not empty`, `empty set`); words rather than symbols where
+  a word is clear (`and`, `or`, `not`, `mod`). The code box and the pages
+  hold the same lines: a change goes into both. On the pages it is a
   ```` ```pseudocode ```` block (`pseudocode_lexer.rb`), and the code box
   colours the same tokens the same way (`highlightPseudocode` in
   `algo_stepper.js`): dark, like every other code block on the site.
@@ -160,7 +165,22 @@ only to look nice.
   so the index stays readable and the tips end apart. Groups go into rows so
   that no box overlaps another and none stands in an arrow's way (narrow
   groups first). A new box is there at once (`data-solid`), so it hides the
-  start of its arrow.
+  start of its arrow. An arrow keeps about 24 px between box and tip, so it
+  reads as an arrow and not as a lone arrowhead.
+- **A count is a border, not a place.** `size` of an Array List is the line
+  in the gap after the last used cell, labelled with its value
+  (`size = 2`); right of it the cells and values are faint. The faint part is
+  a copy clipped to the area right of the line, so a cell turns solid exactly
+  where the moving line passes over it, never all at once.
+- **null is shown where the code looks at it**: in a node's next field, after
+  `head` when the list is empty, and in a tree at the place of the child a
+  call reached (`find`, `remove` of a value that is not there): `node null`
+  there, the stub of the pointer as the last piece of the stack's way, the
+  call's line and the value ending there. Not under every leaf: that would
+  fill the tree with nulls nobody looks at.
+- **What grows, grows from its middle** (`data-grow='22 21'` on a group
+  drawn from its corner), and ends on its own transform, so that its next
+  move slides instead of jumping.
 - **The same thing has the same size** across related widgets: a list's
   cells are as large in the widget that grows to 8 cells as in the one with
   4 (the picture at most as wide as drawn, `data-natural`).
@@ -201,8 +221,9 @@ only to look nice.
   `data-no-swipe`). On a touch screen (tablet, phone) the controls sit on
   the right, where the thumb is: back and next large and finger-sized
   (44 px) at the edge, next on the very edge; to the start and to the end
-  narrow, paler and set apart to their left, so that a finger meant for next
-  does not jump to the end; the step count on the left, on a phone on a line
+  narrow, outlined instead of filled and set apart to their left, so that a
+  finger meant for next does not jump to the end (outlined, not paler: pale
+  reads as disabled); the step count on the left, on a phone on a line
   of its own (`default.css`).
 - **A lightbox for a demo**: every widget has a square button at its top
   right (`bi-fullscreen`, `stepper_keys.js`) that opens it larger in a
@@ -210,6 +231,10 @@ only to look nice.
   sideways swipe step it as before; the arrows at the bottom right, Page Up
   and Page Down, or a swipe up and down go to the previous or next widget of
   the page; Esc, the button again or the browser's back button close it.
+  Everything fits without scrolling, as large as the window allows: the
+  font size is found by halving (`stepper_keys.js`, `fit`), and the picture
+  is never taller than its share of the window (`max-height`), so a tall
+  picture does not push the text down to a tiny size.
 - Colours come from the widget's CSS variables, so light and dark mode both
   work; no fixed colours in the drawing.
 

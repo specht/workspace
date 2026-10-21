@@ -340,7 +340,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         pop: ['pop(heap):', '    if heap empty: nothing to pop', '    top ← heap[0]', '    last ← take the last entry from heap', '    if heap not empty:',
             '        heap[0] ← last', '        i ← 0', '        repeat:', '            min ← i', '            for each child in (2i + 1, 2i + 2):',
             '                if child < length of heap and heap[child] < heap[min]:', '                    min ← child',
-            '            if min = i: done', '            swap heap[min] and heap[i]', '            i ← min', '    return top'],
+            '            if min == i: done', '            swap heap[min] and heap[i]', '            i ← min', '    return top'],
     };
 
     function traceHeap(ops, setup = []) {
@@ -435,7 +435,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                         }
                     }
                     if (min === i) {
-                        snapshot(`min = i: Kein Kind ist kleiner als ${v(i)}. Fertig.`, { holders, at: i, vars: vars(), code: P(12) });
+                        snapshot(`min == i: Kein Kind ist kleiner als ${v(i)}. Fertig.`, { holders, at: i, vars: vars(), code: P(12) });
                         break;
                     }
                     [slots[min], slots[i]] = [slots[i], slots[min]];
@@ -537,7 +537,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         };
         // index variables under their cell, one label for each cell (indexLabels)
         const labels = [];
-        for (const placed of indexLabels(frame.vars, (index) => cellX(index) + (cell - 3) / 2, width)) labels.push(...indexLabel(placed, top + 58 + placed.row * 24, top + 24, top + 50, marker));
+        for (const placed of indexLabels(frame.vars, (index) => cellX(index) + (cell - 3) / 2, width)) labels.push(...indexLabel(placed, top + 74 + placed.row * 24, top + 24, top + 50, marker));
         for (const h of frame.holders || []) {
             const place = frame.aside[h.id] ? asidePlace[frame.aside[h.id]] : pos(frame.slots.indexOf(h.id));
             labels.push(...label(h.name, place[0] - 26, place[1] - 40, null, 0, 'left'));
@@ -556,7 +556,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             svg.querySelector(`[data-key="var-${h.name}"]`));
             svg.appendChild(el('svg:circle', { 'data-key': `anchor-${h.id}`, cx: place[0], cy: place[1], r: 0, fill: 'none' }));
         }
-        svg.setAttribute('viewBox', `0 0 ${width} ${top + 56 + 3 * 24}`);
+        svg.setAttribute('viewBox', `0 0 ${width} ${top + 72 + 3 * 24}`);
     }
 
     // ---- Sorting: every step is a line of the Handbuch's pseudocode
@@ -778,6 +778,10 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
     function indexLabel(group, y, aim, stop, marker) {
         const out = [];
         group.boxes.forEach((box) => {
+            if (box.border !== undefined) {
+                out.push(el('svg:line', { 'data-key': `border-${box.name}`, x1: group.x, y1: box.border, x2: group.x, y2: y, stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-linecap': 'round' }));
+                return;
+            }
             const centre = [box.x, y + 9];
             const f = (centre[1] - stop) / (centre[1] - aim);
             const end = [centre[0] + (group.x - centre[0]) * f, stop];
@@ -787,7 +791,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         });
         group.boxes.forEach((box) => {
             out.push(el('svg:rect', { 'data-solid': '', 'data-key': `var-${box.name}`, x: box.x - box.width / 2, y, width: box.width, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
-            out.push(el('svg:text', { 'data-key': `var-${box.name}-label`, x: box.x, y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: box.name }));
+            out.push(el('svg:text', { 'data-key': `var-${box.name}-label`, x: box.x, y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: box.text || box.name }));
         });
         return out;
     }
@@ -864,7 +868,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         if (frame.split !== undefined) svg.appendChild(el('svg:line', { 'data-key': 'split', x1: frame.split * cell, y1: lift - 10, x2: frame.split * cell, y2: baseline, stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '5 4' }));
         if (frame.boundary !== undefined) svg.appendChild(el('svg:line', { 'data-key': 'boundary', x1: frame.boundary * cell, y1: lift - 10, x2: frame.boundary * cell, y2: baseline, stroke: 'var(--algo-goal)', 'stroke-width': 2, 'stroke-dasharray': '5 4' }));
         // the index variables, one label for each place (indexLabels)
-        const labelTop = baseline + 28;
+        const labelTop = baseline + 38;
         const placed = indexLabels(frame.vars, (index) => index * cell + cell / 2, width + cell);
         for (const label of placed) for (const node of indexLabel(label, labelTop + 8 + label.row * 24, baseline - 8, baseline + 22, marker)) svg.appendChild(node);
         let bottom = labelTop + 6 + Math.max(3, ...placed.map((l) => l.row + 1)) * 24;
@@ -893,18 +897,18 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
     // (LIST_CODE). A value has an id, so that a copy is a new id flying from
     // where it is copied from: for a moment it is there twice.
     const LIST_CODE = {
-        arrayInsert: ['insert(i, value):', '    if i < 0 or i > size: error', '    if size = capacity: grow', '    for j from size - 1 down to i:',
+        arrayInsert: ['insert(i, value):', '    if i < 0 or i > size: error', '    if size == capacity: grow', '    for j from size - 1 down to i:',
             '        cells[j + 1] ← cells[j]', '    cells[i] ← value', '    size ← size + 1'],
         arrayRemove: ['remove(i):', '    if i < 0 or i ≥ size: error', '    value ← cells[i]', '    for j from i to size - 2:', '        cells[j] ← cells[j + 1]',
             '    size ← size - 1', '    return value'],
-        linkedInsert: ['insert(i, value):', '    if i < 0 or i > size: error', '    new ← a node with value', '    if i = 0:', '        new.next ← head', '        head ← new',
+        linkedInsert: ['insert(i, value):', '    if i < 0 or i > size: error', '    new ← a node with value', '    if i == 0:', '        new.next ← head', '        head ← new',
             '    else:', '        before ← node_at(i - 1)', '        new.next ← before.next', '        before.next ← new', '    size ← size + 1'],
-        linkedRemove: ['remove(i):', '    if i < 0 or i ≥ size: error', '    if i = 0:', '        value ← head.value', '        head ← head.next', '    else:',
+        linkedRemove: ['remove(i):', '    if i < 0 or i ≥ size: error', '    if i == 0:', '        value ← head.value', '        head ← head.next', '    else:',
             '        before ← node_at(i - 1)', '        value ← before.next.value', '        before.next ← before.next.next', '    size ← size - 1', '    return value'],
-        linkedRemoveRecursive: ['remove(node, i):', '    if node empty: error', '    if i = 0: return node.next', '    node.next ← remove(node.next, i - 1)', '    return node'],
+        linkedRemoveRecursive: ['remove(node, i):', '    if node == null: error', '    if i == 0: return node.next', '    node.next ← remove(node.next, i - 1)', '    return node'],
         nodeAt: ['node_at(i):', '    k ← head', '    repeat i times:', '        k ← k.next', '    return k'],
-        enqueue: ['enqueue(value):', '    if size = capacity: error, the queue is full', '    cells[(head + size) mod capacity] ← value', '    size ← size + 1'],
-        dequeue: ['dequeue():', '    if size = 0: error, the queue is empty', '    value ← cells[head]', '    head ← (head + 1) mod capacity', '    size ← size - 1', '    return value'],
+        enqueue: ['enqueue(value):', '    if size == capacity: error, the queue is full', '    cells[(head + size) mod capacity] ← value', '    size ← size + 1'],
+        dequeue: ['dequeue():', '    if size == 0: error, the queue is empty', '    value ← cells[head]', '    head ← (head + 1) mod capacity', '    size ← size - 1', '    return value'],
     };
 
     // A frame of an array: cells (ids or null), values (id -> value), size,
@@ -936,7 +940,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             if (size === cells.length) {
                 phase = 'grow';
                 bigger = Array(cells.length * 2).fill(null);
-                say(`size = capacity: Alle ${cells.length} Zellen sind belegt. grow: ein neues Array mit ${bigger.length} Zellen.`, { vars: vars(), code: I(2) });
+                say(`size == capacity: Alle ${cells.length} Zellen sind belegt. grow: ein neues Array mit ${bigger.length} Zellen.`, { vars: vars(), code: I(2) });
                 const from = {};
                 for (let k = 0; k < size; k++) { bigger[k] = copy(cells[k]); from[bigger[k]] = cells[k]; }
                 say(`Alle ${size} Werte werden ins neue Array kopiert, jeder einzeln.`, { vars: vars(), code: I(2), from });
@@ -995,34 +999,54 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         const cell = 50;
         const left = 14;
         const top = 46;
-        const below = top + 86;
+        // the new array while growing: under the rows of the variables
+        const bigTop = top + 90 + 2 * 24 + 22;
         svg.appendChild(arrowheads(marker));
-        const box = (key, x, y, used) => el('svg:rect', { 'data-key': key, x, y, width: cell - 6, height: 42, rx: 6, fill: used ? 'var(--algo-paper)' : 'transparent',
-            stroke: 'var(--algo-line)', 'stroke-width': 1.5, 'stroke-dasharray': used ? 'none' : '4 4' });
-        const value = (id, x, y, extra = {}) => el('svg:g', { 'data-key': `value-${id}`, 'data-grow': '', ...(frame.from && frame.from[id] !== undefined ? { 'data-from': `value-${frame.from[id]}` } : {}),
-            transform: `translate(${x} ${y})`, ...extra }, [
-            el('svg:rect', { x: 0, y: 0, width: cell - 6, height: 42, rx: 6, fill: extra.fill || 'var(--algo-paper)', stroke: extra.stroke || 'var(--algo-ink)', 'stroke-width': 1.5, ...(extra.dash ? { 'stroke-dasharray': extra.dash } : {}) }),
+        // The cells and values are drawn as in the list; right of the size
+        // border a faint copy lies over them (uses of them, clipped to the
+        // area right of the border, the look through CSS variables), so a
+        // cell turns solid exactly where the border sweeps over it
+        const look = (fill, stroke, dash) => `fill: var(--cell-fill, ${fill}); stroke: var(--cell-stroke, ${stroke}); stroke-width: var(--cell-width, 1.5); stroke-dasharray: var(--cell-dash, ${dash})`;
+        const box = (key, x, y) => el('svg:rect', { 'data-key': key, id: `${marker}-${key}`, x, y, width: cell - 6, height: 42, rx: 6, style: look('var(--algo-paper)', 'var(--algo-line)', 'none') });
+        const value = (id, x, y, extra = {}) => el('svg:g', { 'data-key': `value-${id}`, id: `${marker}-value-${id}`, 'data-grow': `${(cell - 6) / 2} 21`, ...(frame.from && frame.from[id] !== undefined ? { 'data-from': `value-${frame.from[id]}` } : {}),
+            transform: `translate(${x} ${y})` }, [
+            el('svg:rect', { x: 0, y: 0, width: cell - 6, height: 42, rx: 6, style: look(extra.fill || 'var(--algo-paper)', extra.stroke || 'var(--algo-ink)', extra.dash || 'none') }),
             el('svg:text', { x: (cell - 6) / 2, y: 27, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.values[id]) })]);
         frame.cells.forEach((id, i) => {
             const x = left + i * cell;
-            svg.appendChild(box(`cell-${i}`, x, top, i < frame.size));
+            svg.appendChild(box(`cell-${i}`, x, top));
             svg.appendChild(el('svg:text', { 'data-key': `index-${i}`, x: x + (cell - 6) / 2, y: top + 58, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--bs-secondary-color)', text: String(i) }));
             svg.appendChild(el('svg:rect', { 'data-key': `slot-${i}`, x: x + 2, y: top + 34, width: cell - 10, height: 4, fill: 'none', stroke: 'none' }));
         });
         svg.appendChild(el('svg:rect', { 'data-key': `slot-${frame.cells.length}`, x: left + frame.cells.length * cell + 2, y: top + 34, width: cell - 10, height: 4, fill: 'none', stroke: 'none' }));
+        // size is no cell but the border after the used ones: a line in the
+        // gap between two cells, labelled with its value (indexLabel draws
+        // it); at the end of the array the list is full
+        const border = (n) => left + n * cell - 3;
+        const sizeVar = (frame.vars || []).find((v) => v.name === 'size');
+        if (sizeVar && sizeVar.index === frame.cells.length) svg.appendChild(el('svg:text', { 'data-key': 'full', x: border(sizeVar.index) + 8, y: top + 26, 'font-size': 12, fill: 'var(--algo-goal)', text: 'voll' }));
         frame.cells.forEach((id, i) => {
-            if (id === null) return;
-            const out = i >= frame.size;
-            svg.appendChild(value(id, left + i * cell, top, out ? { fill: 'color-mix(in srgb, var(--algo-line) 18%, var(--algo-paper))', stroke: 'var(--algo-line)' }
-                : frame.focus === i ? { fill: 'var(--algo-frontier)' } : {}));
+            if (id !== null) svg.appendChild(value(id, left + i * cell, top, frame.focus === i && i < frame.size ? { fill: 'var(--algo-frontier)' } : {}));
         });
+        // the faint copy: first the outline covered in the paper's colour
+        // (the dashes would let it show), then dashed and grey
+        const area = `${marker}-outside`;
+        svg.appendChild(el('svg:rect', { 'data-key': 'outside-area', id: `${area}-area`, x: border(frame.size), y: top - 4, width: (frame.cells.length + 2) * cell, height: 50, fill: 'none', stroke: 'none' }));
+        const cover = '--cell-stroke: var(--algo-paper); --cell-width: 3';
+        const copy = (key, style) => el('svg:use', { href: `#${marker}-${key}`, style });
+        svg.appendChild(el('svg:g', { 'data-solid': '', 'clip-path': `url(#${area})`, 'aria-hidden': 'true' }, [
+            el('svg:clipPath', { id: area }, [el('svg:use', { href: `#${area}-area` })]),
+            ...frame.cells.flatMap((id, i) => [copy(`cell-${i}`, cover), copy(`cell-${i}`, '--cell-fill: var(--algo-paper); --cell-dash: 4 4')]),
+            ...frame.cells.filter((id) => id !== null).flatMap((id) => [copy(`value-${id}`, cover),
+                copy(`value-${id}`, '--cell-fill: color-mix(in srgb, var(--algo-line) 35%, var(--algo-paper)); --cell-stroke: var(--algo-line); --cell-dash: 3 3')]),
+        ]));
         if (frame.bigger) {
             frame.bigger.forEach((id, i) => {
                 const x = left + i * cell;
-                svg.appendChild(box(`big-${i}`, x, below + 30, true));
-                if (id !== null) svg.appendChild(value(id, x, below + 30));
+                svg.appendChild(box(`big-${i}`, x, bigTop));
+                if (id !== null) svg.appendChild(value(id, x, bigTop));
             });
-            svg.appendChild(el('svg:text', { 'data-key': 'big-label', x: left, y: below + 22, 'font-size': 11, fill: 'var(--bs-secondary-color)', text: `neues Array, ${frame.bigger.length} Zellen` }));
+            svg.appendChild(el('svg:text', { 'data-key': 'big-label', x: left, y: bigTop - 8, 'font-size': 11, fill: 'var(--bs-secondary-color)', text: `neues Array, ${frame.bigger.length} Zellen` }));
         }
         if (frame.card) {
             const x = left + frame.card.at * cell;
@@ -1031,12 +1055,16 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             svg.appendChild(el('svg:rect', { 'data-solid': '', 'data-key': 'var-value', x: x + cell - 2, y: 12, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
             svg.appendChild(el('svg:text', { 'data-key': 'var-value-label', x: x + cell - 2 + w / 2, y: 25, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'value' }));
         }
-        const labelTop = top + 68;
-        const placed = indexLabels(frame.vars, (index) => left + index * cell + (cell - 6) / 2, left * 2 + (most + 1) * cell);
-        for (const label of placed) for (const node of indexLabel(label, labelTop + label.row * 24, top + 36, top + 62, marker)) svg.appendChild(node);
+        const labelTop = top + 90;
+        const vars = (frame.vars || []).map((v) => (v.name === 'size' ? { ...v, index: `b${v.index}`, text: `size = ${v.index}`, border: top - 6 } : v));
+        const at = (index) => (typeof index === 'string' ? border(Number(index.slice(1))) : left + index * cell + (cell - 6) / 2);
+        const placed = indexLabels(vars, at, left * 2 + (most + 1) * cell);
+        // all lines under all boxes: the border moves past other boxes
+        const labels = placed.flatMap((label) => indexLabel(label, labelTop + label.row * 24, top + 36, top + 66, marker));
+        for (const node of [...labels.filter((n) => n.tagName !== 'rect' && n.tagName !== 'text'), ...labels.filter((n) => n.tagName === 'rect' || n.tagName === 'text')]) svg.appendChild(node);
         svg.appendChild(el('svg:text', { 'data-key': 'capacity', x: left + (most + 1) * cell - 6, y: 24, 'text-anchor': 'end', 'font-size': 12, fill: 'var(--bs-secondary-color)', text: `capacity ${frame.capacity}` }));
         // the picture keeps its size: room for the new array when the example grows
-        svg.setAttribute('viewBox', `0 0 ${left * 2 + (most + 1) * cell} ${grows ? below + 84 : labelTop + 3 * 24}`);
+        svg.setAttribute('viewBox', `0 0 ${left * 2 + (most + 1) * cell} ${grows ? bigTop + 54 : labelTop + 3 * 24}`);
         svg.dataset.natural = left * 2 + (most + 1) * cell;
     }
 
@@ -1085,10 +1113,10 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             const id = nextId++;
             nodes[id] = { value, next: null };
             loose = { id, at: i };
-            say(`new ← a node with value: ein neuer Knoten mit ${value}, sein next zeigt noch auf nichts.`, { vars: [{ name: 'new', to: id }], code: I(2), fresh: id });
+            say(`new ← a node with value: ein neuer Knoten mit ${value}, sein next ist noch null.`, { vars: [{ name: 'new', to: id }], code: I(2), fresh: id });
             if (i === 0) {
                 nodes[id].next = head;
-                say(head !== null ? `new.next ← head: Der neue Knoten zeigt auf ${nodes[head].value}, den bisher ersten.` : 'new.next ← head: head zeigt auf nichts, also der neue Knoten auch.', { vars: [{ name: 'new', to: id }], code: I(4), fresh: id });
+                say(head !== null ? `new.next ← head: Der neue Knoten zeigt auf ${nodes[head].value}, den bisher ersten.` : 'new.next ← head: head ist null, also wird new.next auch null.', { vars: [{ name: 'new', to: id }], code: I(4), fresh: id });
                 head = id;
                 loose = null;
                 say(`head ← new: head zeigt jetzt auf den neuen Knoten. Nichts musste laufen.`, { vars: [{ name: 'new', to: id }], code: I(5), fresh: id });
@@ -1098,7 +1126,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 const both = [{ name: 'new', to: id }, { name: 'before', to: before }];
                 say(`before ← node_at(${i - 1}): before ist der Knoten mit ${nodes[before].value}.`, { vars: both, code: I(7), fresh: id });
                 nodes[id].next = nodes[before].next;
-                say(nodes[id].next !== null ? `new.next ← before.next: Der neue Knoten zeigt auf ${nodes[nodes[id].next].value}. Jetzt zeigen zwei Zeiger auf ${nodes[nodes[id].next].value}.` : 'new.next ← before.next: before.next ist leer, also zeigt der neue Knoten auf nichts.',
+                say(nodes[id].next !== null ? `new.next ← before.next: Der neue Knoten zeigt auf ${nodes[nodes[id].next].value}. Jetzt zeigen zwei Zeiger auf ${nodes[nodes[id].next].value}.` : 'new.next ← before.next: before.next ist null, also wird new.next auch null.',
                     { vars: both, code: I(8), fresh: id });
                 nodes[before].next = id;
                 loose = null;
@@ -1118,7 +1146,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 snapshot(`value ← head.value: Die Variable value merkt sich ${card.value}.`, { code: R(3), focus: gone });
                 head = nodes[gone].next;
                 loose = { id: gone, at: 0 };
-                snapshot(`head ← head.next: head zeigt jetzt auf ${head !== null ? nodes[head].value : 'nichts'}. ${nodes[gone].value} hängt an keinem Zeiger der Liste mehr.`, { code: R(4), focus: gone });
+                snapshot(`head ← head.next: head ${head !== null ? `zeigt jetzt auf ${nodes[head].value}` : 'ist jetzt null'}. ${nodes[gone].value} hängt an keinem Zeiger der Liste mehr.`, { code: R(4), focus: gone });
             } else {
                 snapshot(`remove(${i}): Der Knoten davor muss gefunden werden.`, { code: R(5) });
                 const before = nodeAt(i - 1, []);
@@ -1128,7 +1156,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 snapshot(`value ← before.next.value: Die Variable value merkt sich ${card.value}.`, { vars: [{ name: 'before', to: before }], code: R(7), focus: gone });
                 nodes[before].next = nodes[gone].next;
                 loose = { id: gone, at: i };
-                snapshot(`before.next ← before.next.next: ${nodes[before].value} zeigt jetzt an ${nodes[gone].value} vorbei auf ${nodes[before].next !== null ? nodes[nodes[before].next].value : 'nichts'}. ${nodes[gone].value} hängt an keinem Zeiger der Liste mehr.`,
+                snapshot(`before.next ← before.next.next: ${nodes[before].value} zeigt jetzt an ${nodes[gone].value} vorbei ${nodes[before].next !== null ? `auf ${nodes[nodes[before].next].value}` : ', sein next ist jetzt null'}. ${nodes[gone].value} hängt an keinem Zeiger der Liste mehr.`,
                     { vars: [{ name: 'before', to: before }], code: R(8), focus: gone });
             }
             delete nodes[gone];
@@ -1149,15 +1177,15 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             const path = [];
             let node = head;
             for (let left = i; ; left--) {
-                calls.push({ call: `remove(node: ${node === null ? 'empty' : nodes[node].value}, i: ${left})`, node });
+                calls.push({ call: `remove(node: ${node === null ? 'null' : nodes[node].value}, i: ${left})`, node });
                 stack = calls.map((c) => ({ ...c }));
                 const here = node === null ? [] : [{ name: 'node', to: node }];
-                if (node === null) { snapshot('if node empty: Die Liste ist zu Ende, so viele Knoten hat sie nicht.', { code: RR(1) }); stack = []; return; }
+                if (node === null) { snapshot('if node == null: Die Liste ist zu Ende, so viele Knoten hat sie nicht.', { code: RR(1) }); stack = []; return; }
                 if (left === 0) {
                     const next = nodes[node].next;
-                    calls[calls.length - 1].returns = next === null ? 'empty' : String(nodes[next].value);
+                    calls[calls.length - 1].returns = next === null ? 'null' : String(nodes[next].value);
                     stack = calls.map((c) => ({ ...c }));
-                    snapshot(`if i = 0: Das ist der Knoten, der heraus soll. return node.next: Der Aufruf gibt ${next === null ? 'empty' : nodes[next].value} zurück, den Knoten danach.`, { vars: here, code: RR(2), focus: node });
+                    snapshot(`if i == 0: Das ist der Knoten, der heraus soll. return node.next: Der Aufruf gibt ${next === null ? 'null' : nodes[next].value} zurück, den Knoten danach.`, { vars: here, code: RR(2), focus: node });
                     const gone = node;
                     calls.pop();
                     path.pop();
@@ -1166,12 +1194,12 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                         nodes[caller].next = next;
                         loose = { id: gone, at: i };
                         stack = calls.map((c) => ({ ...c }));
-                        snapshot(`node.next ← remove(node.next, i - 1): ${nodes[caller].value} trägt ${next === null ? 'empty' : nodes[next].value} in sein next ein und zeigt damit an ${nodes[gone].value} vorbei. ${nodes[gone].value} hängt an keinem Zeiger der Liste mehr.`,
+                        snapshot(`node.next ← remove(node.next, i - 1): ${nodes[caller].value} trägt ${next === null ? 'null' : nodes[next].value} in sein next ein und zeigt damit an ${nodes[gone].value} vorbei. ${nodes[gone].value} hängt an keinem Zeiger der Liste mehr.`,
                             { vars: [{ name: 'node', to: caller }], code: RR(3), focus: gone, pulses: [{ edge: `next-${caller}`, delay: 0.6 }] });
                     } else {
                         head = next;
                         loose = { id: gone, at: 0 };
-                        snapshot(`head ← remove(head, i): head zeigt jetzt auf ${next === null ? 'nichts' : nodes[next].value}. ${nodes[gone].value} hängt an keinem Zeiger der Liste mehr.`, { code: RR(2), focus: gone });
+                        snapshot(`head ← remove(head, i): head ${next === null ? 'ist jetzt null' : `zeigt jetzt auf ${nodes[next].value}`}. ${nodes[gone].value} hängt an keinem Zeiger der Liste mehr.`, { code: RR(2), focus: gone });
                     }
                     delete nodes[gone];
                     loose = null;
@@ -1205,7 +1233,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
     // the list does not reach (new, or removed) stands above its gap.
     function drawLinked(svg, frame, most, marker) {
         svg.replaceChildren();
-        const box = 58;
+        const box = 66;
         const gap = 34;
         const top = 92;
         const x0 = 78;
@@ -1233,7 +1261,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             const node = frame.nodes[id];
             if (node.next === null || !place.has(node.next)) continue;
             const [tx, ty] = place.get(node.next);
-            svg.appendChild(arrow(`next-${id}`, `field-${id} in-${node.next}`, [x + box * 0.81, y + 22], [tx - 2, ty + 22], marked(`next-${id}`, true)));
+            svg.appendChild(arrow(`next-${id}`, `field-${id} in-${node.next}`, [x + box * 0.8, y + 22], [tx - 2, ty + 22], marked(`next-${id}`, true)));
         }
         // the variables: head on the left, the others below their node
         const headTo = frame.head !== null && place.has(frame.head) ? place.get(frame.head) : null;
@@ -1242,32 +1270,32 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         if (headTo) svg.insertBefore(arrow('pointer-head', `var-head in-${frame.head}`, [4 + w / 2, top + 22], [headTo[0] - 2, headTo[1] + 22], { stroke: 'var(--algo-accent)', 'marker-end': `url(#${marker}-accent)`, ...marked('pointer-head', false) }), svg.lastChild);
         for (const node of pulseNodes(frame.pulses)) svg.insertBefore(node, svg.lastChild);
         svg.appendChild(el('svg:text', { 'data-key': 'var-head-label', x: 4 + w / 2, y: top + 26, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'head' }));
-        if (!headTo) svg.appendChild(el('svg:text', { 'data-key': 'head-empty', x: 8 + w, y: top + 26, 'font-size': 13, fill: 'var(--bs-secondary-color)', text: 'nichts' }));
+        if (!headTo) svg.appendChild(el('svg:text', { 'data-key': 'head-empty', x: 8 + w, y: top + 26, 'font-size': 13, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--bs-secondary-color)', text: 'null' }));
         for (const [id, [x, y]] of place) {
             const node = frame.nodes[id];
             const fill = frame.focus === id ? 'color-mix(in srgb, var(--algo-goal) 30%, var(--algo-paper))' : frame.fresh === id ? 'var(--algo-frontier)' : 'var(--algo-paper)';
-            svg.appendChild(el('svg:g', { 'data-key': `node-${id}`, 'data-grow': '', transform: `translate(${x} ${y})` }, [
+            svg.appendChild(el('svg:g', { 'data-key': `node-${id}`, 'data-grow': `${box / 2} 22`, transform: `translate(${x} ${y})` }, [
                 el('svg:rect', { x: 0, y: 0, width: box, height: 44, rx: 6, fill, stroke: 'var(--algo-ink)', 'stroke-width': 1.5 }),
-                el('svg:line', { x1: box * 0.62, y1: 0, x2: box * 0.62, y2: 44, stroke: 'var(--algo-line)', 'stroke-width': 1.5 }),
-                el('svg:text', { x: box * 0.31, y: 28, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(node.value) }),
-                ...(node.next === null ? [el('svg:text', { x: box * 0.81, y: 27, 'text-anchor': 'middle', 'font-size': 13, fill: 'var(--bs-secondary-color)', text: '∅' })] : []),
+                el('svg:line', { x1: box * 0.6, y1: 0, x2: box * 0.6, y2: 44, stroke: 'var(--algo-line)', 'stroke-width': 1.5 }),
+                el('svg:text', { x: box * 0.3, y: 28, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(node.value) }),
+                ...(node.next === null ? [el('svg:text', { x: box * 0.8, y: 26, 'text-anchor': 'middle', 'font-size': 11, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--bs-secondary-color)', text: 'null' })] : []),
             ]));
             // anchors: the next field (where its arrow starts), the left side
             // (where arrows arrive), the bottom (where variables point)
-            svg.appendChild(el('svg:circle', { 'data-key': `field-${id}`, cx: x + box * 0.81, cy: y + 22, r: 0, fill: 'none' }));
+            svg.appendChild(el('svg:circle', { 'data-key': `field-${id}`, cx: x + box * 0.8, cy: y + 22, r: 0, fill: 'none' }));
             svg.appendChild(el('svg:circle', { 'data-key': `in-${id}`, cx: x - 2, cy: y + 22, r: 0, fill: 'none' }));
-            svg.appendChild(el('svg:rect', { 'data-key': `slot-${id}`, x: x + box * 0.31 - 2, y: y + 38, width: 4, height: 4, fill: 'none', stroke: 'none' }));
+            svg.appendChild(el('svg:rect', { 'data-key': `slot-${id}`, x: x + box * 0.3 - 2, y: y + 38, width: 4, height: 4, fill: 'none', stroke: 'none' }));
         }
         frame.order.forEach((id, i) => {
             const [x, y] = place.get(id);
-            svg.appendChild(el('svg:text', { 'data-key': `index-${i}`, x: x + box * 0.31, y: y + 58, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--bs-secondary-color)', text: String(i) }));
+            svg.appendChild(el('svg:text', { 'data-key': `index-${i}`, x: x + box * 0.3, y: y + 58, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--bs-secondary-color)', text: String(i) }));
         });
         if (frame.card) {
             const at = place.get(frame.card.from) || [x0, top];
-            svg.appendChild(el('svg:g', { 'data-key': 'card', 'data-grow': '', transform: `translate(${at[0]} ${top - 74})` }, [
-                el('svg:rect', { x: 0, y: 0, width: box * 0.62, height: 32, rx: 5, fill: 'color-mix(in srgb, var(--algo-accent) 25%, var(--algo-paper))', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '5 3' }),
-                el('svg:text', { x: box * 0.31, y: 22, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.card.value) })]));
-            svg.appendChild(el('svg:text', { 'data-key': 'card-label', x: at[0] + box * 0.62 + 6, y: top - 53, 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'value' }));
+            svg.appendChild(el('svg:g', { 'data-key': 'card', 'data-grow': `${box * 0.3} 16`, transform: `translate(${at[0]} ${top - 74})` }, [
+                el('svg:rect', { x: 0, y: 0, width: box * 0.6, height: 32, rx: 5, fill: 'color-mix(in srgb, var(--algo-accent) 25%, var(--algo-paper))', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '5 3' }),
+                el('svg:text', { x: box * 0.3, y: 22, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.card.value) })]));
+            svg.appendChild(el('svg:text', { 'data-key': 'card-label', x: at[0] + box * 0.6 + 6, y: top - 53, 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'value' }));
         }
         // a variable that points at the node outside the list stands to its
         // left, its arrow to the node's left side
@@ -1281,9 +1309,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             svg.appendChild(el('svg:text', { 'data-key': `var-${v.name}-label`, x: lx + lw / 2, y: ny + 26, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: v.name }));
         }
         const others = (frame.vars || []).filter((v) => !isLoose(v.to)).map((v) => ({ name: v.name, index: v.to }));
-        const labelTop = top + 68;
-        const placed = indexLabels(others, (id) => (place.get(id) || [0])[0] + box * 0.31, x0 + (most + 1) * (box + gap));
-        for (const label of placed) for (const node of indexLabel(label, labelTop + label.row * 24, top + 40, top + 62, marker)) svg.appendChild(node);
+        const labelTop = top + 90;
+        const placed = indexLabels(others, (id) => (place.get(id) || [0])[0] + box * 0.3, x0 + (most + 1) * (box + gap));
+        for (const label of placed) for (const node of indexLabel(label, labelTop + label.row * 24, top + 40, top + 66, marker)) svg.appendChild(node);
         svg.setAttribute('viewBox', `0 0 ${x0 + Math.max(most + 1, 2) * (box + gap)} ${labelTop + 3 * 24}`);
         svg.dataset.natural = x0 + Math.max(most + 1, 2) * (box + gap);
     }
@@ -1312,7 +1340,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             values[id] = value;
             card = { id, at };
             say(`enqueue(${value}): ${value} soll hinten in die Queue.`, { vars: vars(), code: E(0) });
-            if (size === capacity) { card = null; say(`size = capacity: Alle ${capacity} Zellen gehören zur Queue, sie ist voll.`, { vars: vars(), code: E(1) }); return; }
+            if (size === capacity) { card = null; say(`size == capacity: Alle ${capacity} Zellen gehören zur Queue, sie ist voll.`, { vars: vars(), code: E(1) }); return; }
             cells[at] = id;
             card = null;
             say(`cells[(head + size) mod capacity] ← value: (${head} + ${size}) mod ${capacity} = ${at}. ${value} kommt in Zelle ${at}${head + size >= capacity ? ', vorn im Array: Der Ring geht weiter' : ''}.`, { vars: vars(), code: E(2), focus: at });
@@ -1322,7 +1350,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         const dequeue = (quiet) => {
             const say = quiet ? () => {} : snapshot;
             say('dequeue(): Der vorderste Wert soll heraus.', { vars: vars(), code: D(0), focus: head });
-            if (size === 0) { say('size = 0: Die Queue ist leer.', { vars: vars(), code: D(1) }); return; }
+            if (size === 0) { say('size == 0: Die Queue ist leer.', { vars: vars(), code: D(1) }); return; }
             const id = nextId++;
             values[id] = values[cells[head]];
             card = { id, at: head };
@@ -1359,22 +1387,22 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             svg.appendChild(el('svg:text', { 'data-key': `index-${i}`, x: x + (cell - 6) / 2, y: top + 60, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--bs-secondary-color)', text: String(i) }));
             svg.appendChild(el('svg:rect', { 'data-key': `slot-${i}`, x: x + 2, y: top + 36, width: cell - 10, height: 4, fill: 'none', stroke: 'none' }));
         });
-        const value = (id, x, y, extra = {}) => el('svg:g', { 'data-key': `value-${id}`, 'data-grow': '', ...(frame.from && frame.from[id] !== undefined ? { 'data-from': `value-${frame.from[id]}` } : {}), transform: `translate(${x} ${y})` }, [
+        const value = (id, x, y, extra = {}) => el('svg:g', { 'data-key': `value-${id}`, 'data-grow': `${(cell - 6) / 2} 21`, ...(frame.from && frame.from[id] !== undefined ? { 'data-from': `value-${frame.from[id]}` } : {}), transform: `translate(${x} ${y})` }, [
             el('svg:rect', { x: 0, y: 0, width: cell - 6, height: 44, rx: 6, fill: extra.fill || 'var(--algo-frontier)', stroke: extra.stroke || 'var(--algo-ink)', 'stroke-width': 1.5, ...(extra.dash ? { 'stroke-dasharray': extra.dash } : {}) }),
             el('svg:text', { x: (cell - 6) / 2, y: 29, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.values[id]) })]);
         frame.cells.forEach((id, i) => {
             if (id === null) return;
             svg.appendChild(value(id, left + i * cell, top, inQueue(i) ? (frame.focus === i ? { fill: 'var(--algo-frontier)' } : { fill: 'var(--algo-paper)' })
-                : { fill: 'color-mix(in srgb, var(--algo-line) 18%, var(--algo-paper))', stroke: 'var(--algo-line)' }));
+                : { fill: 'color-mix(in srgb, var(--algo-line) 35%, var(--algo-paper))', stroke: 'var(--algo-line)', dash: '3 3' }));
         });
         if (frame.card) {
             const x = left + frame.card.at * cell;
             svg.appendChild(value(frame.card.id, x, 2, { fill: 'color-mix(in srgb, var(--algo-accent) 25%, var(--algo-paper))', stroke: 'var(--algo-accent)', dash: '5 3' }));
             svg.appendChild(el('svg:text', { 'data-key': 'card-label', x: x + cell, y: 28, 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'value' }));
         }
-        const labelTop = top + 70;
+        const labelTop = top + 92;
         const placed = indexLabels(frame.vars, (index) => left + index * cell + (cell - 6) / 2, left * 2 + frame.capacity * cell);
-        for (const label of placed) for (const node of indexLabel(label, labelTop + label.row * 24, top + 38, top + 64, marker)) svg.appendChild(node);
+        for (const label of placed) for (const node of indexLabel(label, labelTop + label.row * 24, top + 38, top + 68, marker)) svg.appendChild(node);
         svg.appendChild(el('svg:text', { 'data-key': 'size', x: left + frame.capacity * cell - 6, y: labelTop + 14, 'text-anchor': 'end', 'font-size': 13, fill: 'var(--algo-ink)', text: `size ${frame.size}, capacity ${frame.capacity}` }));
         svg.setAttribute('viewBox', `0 0 ${left * 2 + frame.capacity * cell} ${labelTop + 2 * 24}`);
         svg.dataset.natural = left * 2 + frame.capacity * cell;
@@ -1388,18 +1416,18 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
     // remove copies a value into another node, and for a moment it is there
     // twice.
     const CODE = {
-        find: ['find(node, value):', '    if node empty: not found', '    if value = node.value: found',
+        find: ['find(node, value):', '    if node == null: not found', '    if value == node.value: found',
             '    if value < node.value: return find(node.left, value)', '    else: return find(node.right, value)'],
-        insert: ['insert(node, value):', '    if node empty: return a new node with value', '    if value < node.value: node.left ← insert(node.left, value)',
+        insert: ['insert(node, value):', '    if node == null: return a new node with value', '    if value < node.value: node.left ← insert(node.left, value)',
             '    if value > node.value: node.right ← insert(node.right, value)', '    return node'],
-        remove: ['remove(node, value):', '    if node empty: return empty', '    if value < node.value: node.left ← remove(node.left, value)',
-            '    else if value > node.value: node.right ← remove(node.right, value)', '    else:', '        if node.left empty: return node.right',
-            '        if node.right empty: return node.left', '        successor ← node.right', '        while successor.left not empty: successor ← successor.left',
+        remove: ['remove(node, value):', '    if node == null: return null', '    if value < node.value: node.left ← remove(node.left, value)',
+            '    else if value > node.value: node.right ← remove(node.right, value)', '    else:', '        if node.left == null: return node.right',
+            '        if node.right == null: return node.left', '        successor ← node.right', '        while successor.left != null: successor ← successor.left',
             '        node.value ← successor.value', '        node.right ← remove(node.right, successor.value)', '    return node'],
         // in an AVL tree remove ends by setting the height and rebalancing
-        avlRemove: ['remove(node, value):', '    if node empty: return empty', '    if value < node.value: node.left ← remove(node.left, value)',
-            '    else if value > node.value: node.right ← remove(node.right, value)', '    else:', '        if node.left empty: return node.right',
-            '        if node.right empty: return node.left', '        successor ← node.right', '        while successor.left not empty: successor ← successor.left',
+        avlRemove: ['remove(node, value):', '    if node == null: return null', '    if value < node.value: node.left ← remove(node.left, value)',
+            '    else if value > node.value: node.right ← remove(node.right, value)', '    else:', '        if node.left == null: return node.right',
+            '        if node.right == null: return node.left', '        successor ← node.right', '        while successor.left != null: successor ← successor.left',
             '        node.value ← successor.value', '        node.right ← remove(node.right, successor.value)', '    update the height of node', '    return rebalance(node)'],
         rebalance: ['rebalance(node):', '    if height(node.left) - height(node.right) > 1:', '        if height(node.left.left) < height(node.left.right):',
             '            node.left ← rotate_left(node.left)', '        return rotate_right(node)', '    if height(node.right) - height(node.left) > 1:',
@@ -1445,8 +1473,12 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         // stays rigid instead of letting go and snapping on
         const nodeVar = (n) => (n ? [{ name: 'node', to: n.id, side: 'left', rigid: true }] : []);
         const sideWord = (side) => (side === 'left' ? 'links' : 'rechts');
-        const call = (name, n, value) => ({ call: `${name}(node: ${n ? n.value : 'empty'}, value: ${value})`, node: n ? n.id : null });
+        const call = (name, n, value) => ({ call: `${name}(node: ${n ? n.value : 'null'}, value: ${value})`, node: n ? n.id : null });
         const stackOf = (calls) => calls.map((c) => ({ ...c }));
+        // a call that got to an empty child: the picture shows null where the
+        // child would be, node beside it, and the call's line goes there
+        const atNull = (calls, parent, side) => ({ nullAt: { parent: parent ? parent.id : null, side }, vars: [{ name: 'node', to: 'null' }],
+            stack: stackOf(calls).map((c, i, all) => (i === all.length - 1 ? { ...c, node: 'null' } : c)) });
         // every call returns its node: the stack for the step back up
         const returning = (calls, nodes) => calls.map((c, i) => ({ ...c, returns: c.returns || String(nodes[i].value) }));
         // back up: every pointer of the way gets its subtree again, the
@@ -1460,17 +1492,21 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 
         const find = (value) => {
             let walk = root;
+            let parent = null;
+            let side = null;
             const calls = [];
             while (walk && walk.value !== value) {
                 const left = value < walk.value;
                 calls.push(call('find', walk, value));
                 snapshot(`find ${value}: ${value} ${left ? '<' : '>'} ${walk.value}, also nach ${left ? 'links' : 'rechts'}.`,
                     { focus: walk.id, incoming: value, vars: nodeVar(walk), code: code('find', left ? 3 : 4), stack: stackOf(calls) });
-                walk = left ? walk.left : walk.right;
+                parent = walk;
+                side = left ? 'left' : 'right';
+                walk = walk[side];
             }
             calls.push(call('find', walk, value));
             if (walk) snapshot(`find ${value}: gefunden.`, { focus: walk.id, incoming: value, vars: nodeVar(walk), code: code('find', 2), stack: stackOf(calls) });
-            else snapshot(`find ${value}: Hier wäre ${value}, aber der Platz ist leer. ${value} ist nicht im Baum.`, { code: code('find', 1), stack: stackOf(calls) });
+            else snapshot(`find ${value}: Hier wäre ${value}, aber ${parent ? `${parent.value}.${side}` : 'root'} ist null. ${value} ist nicht im Baum.`, { code: code('find', 1), incoming: value, ...atNull(calls, parent, side) });
         };
 
         const insert = (value) => {
@@ -1495,7 +1531,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             for (const { node } of [...path].reverse()) update(node);
             const bad = avl && [...path].reverse().map((p) => p.node).find((n) => Math.abs(height(n.left) - height(n.right)) > 1);
             if (!bad) {
-                snapshot(path.length ? `${value} kommt an die leere Stelle, an der die Suche geendet hat: if node empty: return a new node with value. Der Aufrufer trägt den neuen Knoten ein.` : `${value} wird die Wurzel: root ← insert(root, ${value}).`,
+                snapshot(path.length ? `${value} kommt an die leere Stelle, an der die Suche geendet hat: if node == null: return a new node with value. Der Aufrufer trägt den neuen Knoten ein.` : `${value} wird die Wurzel: root ← insert(root, ${value}).`,
                     { fresh: id, code: code('insert', 1), stack: stackOf([...calls, bottom]) });
                 if (path.length) snapshot('return node: Jeder Aufruf darüber gibt seinen Knoten zurück, und der Aufrufer trägt ihn wieder ein, von unten nach oben, zuletzt root ← insert(root, value). Die Zeiger zeigen danach auf dasselbe wie vorher, nur der unterste zeigt auf den neuen Knoten.',
                     { fresh: id, code: code('insert', 4), pulses: back(path.map(({ node, side }) => `edge-${node.id}-${side}`)), duration: backTime(path),
@@ -1541,8 +1577,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 calls.push(call('remove', n, target));
                 nodes.push(n);
                 if (!n) {
-                    calls[calls.length - 1].returns = 'empty';
-                    snapshot(`remove ${target}: Der Platz ist leer, ${target} ist nicht im Baum: return empty.`, { code: L(1), vars: extra, stack: stackOf(calls) });
+                    calls[calls.length - 1].returns = 'null';
+                    const spot = atNull(calls, parent, side);
+                    snapshot(`remove ${target}: ${parent ? `${parent.value}.${side}` : 'root'} ist null, ${target} ist nicht im Baum: return null.`, { code: L(1), incoming: target, ...spot, vars: [...extra, ...spot.vars] });
                     calls.pop();
                     nodes.pop();
                     break;
@@ -1566,13 +1603,13 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                     if (parent) parent[side] = replacement;
                     else root = replacement;
                     // this call returns at once; the ones above it wait
-                    calls[calls.length - 1].returns = replacement ? String(replacement.value) : 'empty';
+                    calls[calls.length - 1].returns = replacement ? String(replacement.value) : 'null';
                     const deepest = stackOf(calls);
                     calls.pop();
                     nodes.pop();
                     snapshot(replacement
                         ? `node.${missing} ist leer: return node.${missing === 'left' ? 'right' : 'left'}. Der Aufrufer trägt ${replacement.value} ein, ${where} zeigt jetzt auf ${replacement.value}. ${gone.value} hängt an keinem Zeiger mehr und ist weg.`
-                        : `${gone.value} hat keine Kinder: return node.right gibt empty zurück, ${where} zeigt auf nichts mehr. ${gone.value} ist weg.`,
+                        : `${gone.value} hat keine Kinder: return node.right gibt null zurück, ${where} ist jetzt null. ${gone.value} ist weg.`,
                     // the pointer swings over, then gets its new subtree
                     { code: L(missing === 'left' ? 5 : 6), vars: parent ? nodeVar(parent) : [], focus: parent ? parent.id : undefined, pulses: replacement && parent ? [{ edge: `edge-${parent.id}-${side}`, delay: 0.6 }] : [], stack: deepest });
                     break;
@@ -1699,7 +1736,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         memory[top][A] = middle;
         snap(2, middle !== null
             ? `${p}.${A} ← ${q}.${B}: ${val(top)} zeigt ${a} jetzt auf ${val(middle)}. Zwei Zeiger führen gerade zu ${val(middle)}, und ${val(child)} hängt nur noch an der Variablen ${q}.`
-            : `${p}.${A} ← ${q}.${B}: ${q}.${B} ist leer, also zeigt ${val(top)} ${a} auf nichts mehr. ${val(child)} hängt nur noch an der Variablen ${q}.`, [vp, vq]);
+            : `${p}.${A} ← ${q}.${B}: ${q}.${B} ist null, also ist ${p}.${A} jetzt auch null. ${val(child)} hängt nur noch an der Variablen ${q}.`, [vp, vq]);
         memory[child][B] = top;
         snap(3, `${q}.${B} ← ${p}: ${val(child)} zeigt ${b} auf ${val(top)}.${middle !== null ? ` Jetzt führt nur noch ein Zeiger zu ${val(middle)}, der von ${val(top)}.` : ''}`, [vp, vq]);
         memory[top].height = 1 + Math.max(h(memory[top].left), h(memory[top].right));
@@ -1809,6 +1846,21 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 svg.appendChild(arrow(`edge-${id}-${side}`, `node-${id} node-${node[side]}`, point(Number(id)), point(node[side]), onStack(`edge-${id}-${side}`)));
             }
         }
+        // null where the child of a call would be (between its neighbours in
+        // the order, one level down), a short stub from the parent, the last
+        // part of the stack's way: the pointer the call followed, null
+        let nullSpot = null;
+        if (frame.nullAt) {
+            const p = frame.nullAt.parent === null ? null : at.get(frame.nullAt.parent);
+            nullSpot = p ? [sx(p.x + (frame.nullAt.side === 'left' ? -0.5 : 0.5)), sy(p.depth + 1)] : [left + width / 2, sy(0)];
+            if (p) {
+                const [px, py] = [sx(p.x), sy(p.depth)];
+                const d = Math.hypot(nullSpot[0] - px, nullSpot[1] - py);
+                const [ux, uy] = [(nullSpot[0] - px) / d, (nullSpot[1] - py) / d];
+                svg.appendChild(el('svg:path', { 'data-key': 'null-stub', d: `M${px + ux * RADIUS} ${py + uy * RADIUS} L${nullSpot[0] - ux * 16} ${nullSpot[1] - uy * 16}`,
+                    class: 'on-stack', fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 2 }));
+            }
+        }
         // the pulses on the arrows, behind the nodes like the arrows themselves
         const pulseLayer = pulseNodes(frame.pulses);
         for (const node of pulseLayer) svg.appendChild(node);
@@ -1825,13 +1877,17 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 const cx = v.at === null || v.at === undefined ? left + width / 2 : point(v.at)[0];
                 x = cx - w / 2;
                 y = 10;
+            } else if (v.to === 'null') {
+                // right before the word null, like head in the linked list
+                x = nullSpot[0] - 16 - w;
+                y = nullSpot[1] - 9;
             } else {
                 const [cx, cy] = point(v.to);
                 x = v.side === 'right' ? cx + 40 : v.side === 'below' ? cx - w / 2 : cx - 40 - w;
                 y = v.side === 'below' ? cy + 26 : cy - 9;
             }
             const centre = [x + w / 2, y + 9];
-            if (v.to !== null && v.to !== undefined) svg.appendChild(arrow(`pointer-${v.name}`, `var-${v.name} node-${v.to}`, centre, point(v.to), { stroke: 'var(--algo-accent)', 'marker-end': `url(#${most.marker}-accent)`, ...(v.rigid ? { 'data-rigid': '' } : {}),
+            if (v.to !== null && v.to !== undefined && v.to !== 'null') svg.appendChild(arrow(`pointer-${v.name}`, `var-${v.name} node-${v.to}`, centre, point(v.to), { stroke: 'var(--algo-accent)', 'marker-end': `url(#${most.marker}-accent)`, ...(v.rigid ? { 'data-rigid': '' } : {}),
                 ...(chain.has(`pointer-${v.name}`) ? { class: 'on-stack', ...settled(`pointer-${v.name}`, 'var(--algo-accent)', `url(#${most.marker}-accent)`) } : {}) }));
             labels.push(el('svg:rect', { 'data-solid': '', 'data-key': `var-${v.name}`, x, y, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
             labels.push(el('svg:text', { 'data-key': `var-${v.name}-label`, x: centre[0], y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: v.name }));
@@ -1854,14 +1910,19 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             if (frame.avl) svg.appendChild(el('svg:text', { 'data-key': `height-${id}`, ...fromToken, x: sx(x), y: sy(d) + 32, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: `h${graph[id].height}` }));
         }
         if (ring) svg.appendChild(ring);
+        if (nullSpot) {
+            // node-null: where the call's line ends (setUp, connect)
+            svg.appendChild(el('svg:circle', { 'data-key': 'node-null', cx: nullSpot[0], cy: nullSpot[1], r: 15, fill: 'none', stroke: 'none' }));
+            svg.appendChild(el('svg:text', { 'data-key': 'null-label', x: nullSpot[0], y: nullSpot[1] + 4, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--bs-secondary-color)', text: 'null' }));
+        }
         for (const label of labels) svg.appendChild(label);
         // the value on its way: a token beside the node it is compared with
-        const near = frame.incoming !== undefined && at.get(frame.focus);
+        const near = frame.incoming !== undefined && (at.get(frame.focus) || nullSpot);
         if (near) {
             // well clear of the node and its focus ring (radius 23), and of
             // the edges below it
-            const cx = sx(near.x) + 58;
-            const cy = sy(near.depth) - 8;
+            const cx = (Array.isArray(near) ? near[0] : sx(near.x)) + 58;
+            const cy = (Array.isArray(near) ? near[1] : sy(near.depth)) - 8;
             // on insert the token goes into its new node, under it
             const to = frame.incomingTo !== undefined ? { 'data-to': `node-${frame.incomingTo}`, 'data-merge': '' } : {};
             const toLabel = frame.incomingTo !== undefined ? { 'data-to': `label-${frame.incomingTo}-${frame.incoming}`, 'data-merge': '' } : {};
@@ -1881,8 +1942,8 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
     const HASH_CODE = {
         chainInsert: ['insert(k):', '    b ← h(k)', '    if k already in buckets[b]: done', '    append k to the back of buckets[b]', '    count ← count + 1'],
         chainFind: ['find(k):', '    b ← h(k)', '    return whether k is in buckets[b]'],
-        probeInsert: ['insert(k):', '    b ← h(k)', '    while buckets[b] occupied:', '        if buckets[b] = k: done', '        b ← (b + 1) mod m', '    buckets[b] ← k', '    count ← count + 1'],
-        probeFind: ['find(k):', '    b ← h(k)', '    while buckets[b] occupied:', '        if buckets[b] = k: found', '        b ← (b + 1) mod m', '    not found'],
+        probeInsert: ['insert(k):', '    b ← h(k)', '    while buckets[b] occupied:', '        if buckets[b] == k: done', '        b ← (b + 1) mod m', '    buckets[b] ← k', '    count ← count + 1'],
+        probeFind: ['find(k):', '    b ← h(k)', '    while buckets[b] occupied:', '        if buckets[b] == k: found', '        b ← (b + 1) mod m', '    not found'],
     };
 
     function traceHash(ops, mode, m, setup = []) {
@@ -1912,7 +1973,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 let tries = 0;
                 while (table[b] !== null && tries < m) {
                     say(`while buckets[b] occupied: In Bucket ${b} steht ${table[b]}.`, { token: k, b, compare: table[b], code: C(name, 2) });
-                    if (table[b] === k) { say(`buckets[b] = k: ${k} steht schon da, nichts zu tun.`, { token: k, b, code: C(name, 3) }); return; }
+                    if (table[b] === k) { say(`buckets[b] == k: ${k} steht schon da, nichts zu tun.`, { token: k, b, code: C(name, 3) }); return; }
                     const old = b;
                     b = (b + 1) % m;
                     tries += 1;
@@ -1942,7 +2003,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             let tries = 0;
             while (table[b] !== null && tries < m) {
                 snapshot(`while buckets[b] occupied: In Bucket ${b} steht ${table[b]}.`, { token: k, b, compare: table[b], code: C(name, 2) });
-                if (table[b] === k) { snapshot(`buckets[b] = k: gefunden, in Bucket ${b}.`, { token: k, b, compare: k, found: k, code: C(name, 3) }); return; }
+                if (table[b] === k) { snapshot(`buckets[b] == k: gefunden, in Bucket ${b}.`, { token: k, b, compare: k, found: k, code: C(name, 3) }); return; }
                 const old = b;
                 b = (b + 1) % m;
                 tries += 1;
@@ -1975,7 +2036,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         const step = 72;
         svg.appendChild(arrowheads(marker));
         const rowY = (i) => top + i * rowH;
-        const key = (k, x, y, extra = {}) => el('svg:g', { 'data-key': `key-${k}`, 'data-grow': '', ...(frame.fresh === k ? { 'data-from': 'token' } : {}), transform: `translate(${x} ${y})` }, [
+        const key = (k, x, y, extra = {}) => el('svg:g', { 'data-key': `key-${k}`, 'data-grow': `${keyW / 2} ${(rowH - 10) / 2}`, ...(frame.fresh === k ? { 'data-from': 'token' } : {}), transform: `translate(${x} ${y})` }, [
             el('svg:rect', { x: 0, y: 0, width: keyW, height: rowH - 10, rx: 5, fill: extra.fill || 'var(--algo-paper)', stroke: extra.stroke || 'var(--algo-ink)', 'stroke-width': extra.width || 1.5 }),
             el('svg:text', { x: keyW / 2, y: 20, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(k) })]);
         const look = (k) => (frame.found === k ? { fill: 'var(--algo-frontier)', stroke: 'var(--algo-accent)', width: 2.5 } : frame.compare === k ? { fill: 'var(--algo-frontier)' } : frame.fresh === k ? { fill: 'var(--algo-frontier)' } : {});
@@ -1990,8 +2051,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             svg.appendChild(el('svg:circle', { 'data-key': `bin-${i}`, cx: bx - 24, cy: y + (rowH - 8) / 2, r: 0, fill: 'none' }));
             if (frame.mode === 'chain') {
                 svg.appendChild(el('svg:circle', { 'data-key': `bfield-${i}`, cx: bx + bw * 0.5, cy: y + (rowH - 8) / 2, r: 0, fill: 'none' }));
-                if (!bucket.length) svg.appendChild(el('svg:text', { 'data-key': `bempty-${i}`, x: bx + bw / 2, y: y + 20, 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--bs-secondary-color)', text: '∅' }));
-                bucket.forEach((k, j) => {
+                        bucket.forEach((k, j) => {
                     const x = bx + bw + 22 + j * step;
                     const owner = j === 0 ? `bfield-${i}` : `kfield-${bucket[j - 1]}`;
                     const from = j === 0 ? [bx + bw * 0.5, y + 16] : [bx + bw + 22 + (j - 1) * step + keyW - 2, y + 16];
@@ -2006,11 +2066,11 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         if (frame.token !== undefined && frame.b !== undefined) {
             const y = rowY(frame.b);
             const x = frame.mode === 'chain' ? bx + bw + 22 + frame.table[frame.b].length * step : bx + bw + 24;
-            svg.appendChild(el('svg:g', { 'data-key': 'token', 'data-grow': '', 'data-merge': '', transform: `translate(${x} ${y + 1})` }, [
+            svg.appendChild(el('svg:g', { 'data-key': 'token', 'data-grow': `${keyW / 2} ${(rowH - 10) / 2}`, 'data-merge': '', transform: `translate(${x} ${y + 1})` }, [
                 el('svg:rect', { x: 0, y: 0, width: keyW, height: rowH - 10, rx: 5, fill: 'var(--algo-frontier)', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '4 3' }),
                 el('svg:text', { x: keyW / 2, y: 20, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.token) })]));
         } else if (frame.token !== undefined) {
-            svg.appendChild(el('svg:g', { 'data-key': 'token', 'data-grow': '', transform: `translate(${bx + bw + 24} 0)` }, [
+            svg.appendChild(el('svg:g', { 'data-key': 'token', 'data-grow': `${keyW / 2} ${(rowH - 10) / 2}`, transform: `translate(${bx + bw + 24} 0)` }, [
                 el('svg:rect', { x: 0, y: 0, width: keyW, height: rowH - 10, rx: 5, fill: 'var(--algo-frontier)', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '4 3' }),
                 el('svg:text', { x: keyW / 2, y: 20, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.token) })]));
         }
@@ -2045,15 +2105,15 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         const byIndex = new Map();
         for (const v of vars || []) {
             if (!byIndex.has(v.index)) byIndex.set(v.index, []);
-            byIndex.get(v.index).push(v.name);
+            byIndex.get(v.index).push(v);
         }
         const groups = [...byIndex.entries()].sort((a, b) => x(a[0]) - x(b[0])).map(([index, names]) => {
-            const widths = names.map((name) => 14 + 7.5 * name.length);
+            const widths = names.map((v) => 14 + 7.5 * (v.text || v.name).length);
             const width = widths.reduce((s, w) => s + w, 0) + GAP * (names.length - 1);
             // inside the picture: pushed in at the edges, the arrows then slant
             let left = Math.min(Math.max(2, x(index) - width / 2), maxX - width - 2);
             const centre = left + width / 2;
-            const boxes = names.map((name, k) => { const box = { name, x: left + widths[k] / 2, width: widths[k] }; left += widths[k] + GAP; return box; });
+            const boxes = names.map((v, k) => { const box = { name: v.name, text: v.text, border: v.border, x: left + widths[k] / 2, width: widths[k] }; left += widths[k] + GAP; return box; });
             return { index, x: x(index), centre, width, boxes };
         });
         const rows = [];
@@ -2108,7 +2168,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
     // the pages (pseudocode_lexer.rb): the same classes, the same colours
     const KEYWORDS = new Set(['if', 'else', 'while', 'for', 'each', 'in', 'of', 'return', 'not', 'and', 'or', 'repeat', 'until', 'break', 'continue', 'do', 'then', 'to', 'from', 'down', 'mod', 'div']);
     const CONSTANTS = new Set(['empty', 'none', 'null', 'true', 'false', 'found', 'done', 'full', 'error']);
-    const PSEUDOCODE = /(\((?=[^()\n]*\s[^()\n]*\s)[^()\n+\-*/=<>≤≥≠[\]]*\))|(←|≤|≥|≠|<|>|=|\+|-|\*|\/|%)|(\d+(?:\.\d+)?)|(\.)([\p{L}_][\p{L}\p{N}_]*)|(not found\b)|([\p{L}_][\p{L}\p{N}_]*)(\()?|([()[\]{},:])/gu;
+    const PSEUDOCODE = /(\((?=[^()\n]*\s[^()\n]*\s)[^()\n+\-*/=<>≤≥≠[\]]*\))|(←|==|!=|<=|>=|≤|≥|≠|<|>|=|\+|-|\*|\/|%)|(\d+(?:\.\d+)?)|(\.)([\p{L}_][\p{L}\p{N}_]*)|(not found\b)|([\p{L}_][\p{L}\p{N}_]*)(\()?|([()[\]{},:])/gu;
     function highlightPseudocode(line) {
         const out = [];
         let last = 0;

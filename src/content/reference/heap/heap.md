@@ -107,7 +107,7 @@ pop(heap):
             for each child in (2i + 1, 2i + 2):
                 if child < length of heap and heap[child] < heap[min]:
                     min ← child
-            if min = i: done
+            if min == i: done
             swap heap[min] and heap[i]
             i ← min
     return top
