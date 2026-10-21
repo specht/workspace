@@ -241,7 +241,9 @@ Hülle, die Erfinderin einer Sprache), steht neben dem Text ein kleiner Kasten
 mit einem freien Foto und zwei, drei Sätzen, wer das war. Die Sätze knüpfen an
 das an, was Lernende aus dem Workspace kennen: »Du suchst im Terminal mit
 `grep`? Das hat er geschrieben.« Das Foto ist gemeinfrei oder CC0, von
-Wikimedia Commons, mit einer Zeile, woher es stammt:
+Wikimedia Commons, mit einer Zeile, woher es stammt. Die Sätze sagen genau, was
+die Person gemacht hat, mit dem Namen der Sache (»Git«, »den Huffman-Code«),
+nie »das Verfahren dieser Seite«: Das klänge, als hätte sie die Seite gemacht.
 
 ```html
 <div class='person'>
