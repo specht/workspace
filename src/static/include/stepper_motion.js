@@ -326,9 +326,12 @@
                     const along = f < 0.5 ? 4 * f ** 3 : 1 - (2 - 2 * f) ** 3 / 2;
                     const swell = Number(node.dataset.swell || 4) * Math.sin(Math.PI * f) ** 0.6;
                     const half = Number(line.getAttribute('stroke-width') || 2) / 2;
-                    const at = along * total;
+                    // up to the tip: the arrowhead (HEAD long) stays as it is
+                    const HEAD = 9;
+                    const reach = Math.max(1, total - HEAD);
+                    const at = along * reach;
                     const from = Math.max(0, at - 3 * SPREAD);
-                    const to = Math.min(total, at + 3 * SPREAD);
+                    const to = Math.min(reach, at + 3 * SPREAD);
                     const left = [];
                     const right = [];
                     for (let s = from; s <= to + 0.01; s += 1.5) {
@@ -338,7 +341,8 @@
                         const tx = q.x - r.x;
                         const ty = q.y - r.y;
                         const length = Math.hypot(tx, ty) || 1;
-                        const w = half + swell * Math.exp(-(((s - at) / SPREAD) ** 2));
+                        // tapering to the line's own width at the arrowhead
+                        const w = half + swell * Math.exp(-(((s - at) / SPREAD) ** 2)) * Math.min(1, (reach - s) / SPREAD);
                         left.push(`${round(p.x - (ty / length) * w)} ${round(p.y + (tx / length) * w)}`);
                         right.push(`${round(p.x + (ty / length) * w)} ${round(p.y - (tx / length) * w)}`);
                     }

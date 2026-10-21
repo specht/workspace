@@ -77,6 +77,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 .algo-stepper .algo-op-name { position: absolute; white-space: nowrap;
     color: var(--bs-secondary-color); line-height: 1.35; }
 .algo-stepper .algo-op-name.current { color: var(--algo-ink); font-weight: 600; }
+.algo-stepper .algo-op-leader { position: absolute; bottom: -0.3em; width: 1px; background: color-mix(in srgb, var(--algo-line) 70%, transparent); }
 .algo-stepper .algo-ticks { display: flex; height: 16px; }
 .algo-stepper .algo-tick { flex: 1 1 0; min-width: 3px; position: relative; }
 /* a fine line from each dot to the next, coloured where the steps are done */
@@ -1734,22 +1735,35 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 })),
             ])));
         // the names of the operations above their first dot, each starting
-        // at its dot; one that would run into the name before it goes up a row
-        const names = sections.filter((s) => s.op >= 0 && opsText).map((s) => ({ section: s, node: el('span', { class: 'algo-op-name', text: opsText[s.op] }) }));
-        const nameRow = el('div', { class: 'algo-op-names' }, names.map((n) => n.node));
+        // at its dot. Where they would run into each other, the earlier ones
+        // go up a row and get a fine line down to their dot; no name stands in
+        // the way of such a line (placed from the last to the first, each in
+        // the lowest row where it overlaps no name and covers no line).
+        const names = sections.filter((s) => s.op >= 0 && opsText).map((s) => ({ section: s, node: el('span', { class: 'algo-op-name', text: opsText[s.op] }), leader: el('span', { class: 'algo-op-leader' }) }));
+        const nameRow = el('div', { class: 'algo-op-names' }, names.flatMap((n) => [n.leader, n.node]));
         const placeNames = () => {
-            const ends = [];
             const origin = nameRow.getBoundingClientRect().left;
-            for (const { section, node } of names) {
-                const dot = ticks[section.steps[0]].getBoundingClientRect();
-                const left = dot.left + dot.width / 2 - origin - 4.5;
+            const placed = [];
+            for (const name of [...names].reverse()) {
+                const dot = ticks[name.section.steps[0]].getBoundingClientRect();
+                const x = dot.left + dot.width / 2 - origin;
+                const left = x - 4.5;
+                const right = left + name.node.offsetWidth;
                 let row = 0;
-                while (ends[row] !== undefined && ends[row] > left - 8) row++;
-                ends[row] = left + node.offsetWidth;
+                const fits = (r) => placed.every((o) => (o.row !== r || right + 8 < o.left || left > o.right + 8) && (o.row <= r || o.x < left - 3 || o.x > right + 3));
+                while (!fits(row)) row++;
+                Object.assign(name, { x, left, right, row });
+                placed.push(name);
+            }
+            const rows = Math.max(1, ...placed.map((n) => n.row + 1));
+            for (const { node, leader, left, x, row } of placed) {
                 node.style.left = `${left}px`;
                 node.style.bottom = `${row * 1.35}em`;
+                leader.style.left = `${x}px`;
+                leader.style.height = `${row * 1.35 + 0.2}em`;
+                leader.hidden = row === 0;
             }
-            nameRow.style.height = `${Math.max(1, ends.length) * 1.35}em`;
+            nameRow.style.height = `${rows * 1.35}em`;
         };
         const timelineBox = el('div', { class: 'algo-timeline-box' }, [nameRow, timeline]);
         const body = el('div', { class: 'algo-body' }, [picture, side]);

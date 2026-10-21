@@ -32,8 +32,9 @@ in doubt, do it the way it does.
 - **A timeline** under the buttons: a dot for every step, joined by a fine
   line (coloured as far as the steps are done); the dot where an
   operation starts is ringed and carries the operation's name (`remove 20`,
-  `remove 40`, `remove 50`), starting at its dot; a name that would run into
-  the one before it goes up a row, so all stay readable. The dots are evenly
+  `remove 40`, `remove 50`), starting at its dot. Where names would run into
+  each other, the earlier ones go up a row and get a fine line down to their
+  dot; no name stands in the way of such a line. The dots are evenly
   spaced; done dots coloured, the current one large. A tap or a drag
   on it goes to that step. The viewer always knows where they are and where
   each operation starts.
@@ -76,8 +77,8 @@ the next with their eyes.
   picture shifts to make room, that is a change of view, and the arrows stay
   straight.
 - **A pulse runs down a pointer** (`data-pulse`): the arrow itself swells a
-  little and the bulge travels from the owner to the tip, like a peristaltic
-  wave, in the arrow's colour; no glow, no dot. It runs on the way back up of a
+  little and the bulge travels from the owner up to the arrowhead (not into
+  it), like a peristaltic wave, in the arrow's colour; no glow, no dot. It runs on the way back up of a
   recursive function, when the pointer is assigned the subtree its call
   returned (`node.left ← remove(node.left, value)`): one pointer after
   another, the lowest first, each with a pause before the next (650 ms each,
