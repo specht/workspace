@@ -6625,11 +6625,11 @@ html[data-bs-theme="dark"] .automaton-stepper {
     min-height: 3em;
 }
 .automaton-stepper .automaton-say.yes {
-    color: var(--bs-success-text-emphasis);
+    color: var(--bs-success);
     font-weight: 600;
 }
 .automaton-stepper .automaton-say.no {
-    color: var(--bs-danger-text-emphasis);
+    color: var(--bs-danger);
     font-weight: 600;
 }
 .automaton-stepper svg.automaton-picture {
