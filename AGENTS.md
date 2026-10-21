@@ -39,7 +39,7 @@ address from `credentials.rb` and the code `123456`.
 - [docs/checkliste.md](docs/checkliste.md): every rule an activity must meet, why, and what checks it;
   go through it for every new or changed activity. `src/scripts/audit-activities.rb` counts the countable part
 - [src/tutorial-screenshots/README.md](src/tutorial-screenshots/README.md): the recipe language for generated pictures
-- [CHANGELOG.md](CHANGELOG.md): every notable change goes under »Unreleased«
+- [CHANGELOG.md](CHANGELOG.md): per release, what an operator of another installation must know
 - [TODO.md](TODO.md): direction and open work; delete what is done instead of ticking it off
 
 ## Rules for content
@@ -109,13 +109,18 @@ address from `credentials.rb` and the code `123456`.
   and, for the generator, `node --test src/tutorial-screenshots/test/*.test.js`.
 - After a change to `src/tutorial-screenshots/server.js`, rebuild the service:
   `./config.rb build tutorial_screenshots && ./config.rb up -d tutorial_screenshots`.
-- Add a CHANGELOG entry for every notable change, in German, saying what
-  changes for students, teachers and operators.
+- CHANGELOG: a short German line under »Unreleased« only for what an
+  operator of another installation must know (new or changed values in
+  `credentials.rb`, migrations or steps on update, features that start
+  switched off, changes to what is stored); not every change.
 
 ## Git
 
 - Work on a branch; commit in coherent pieces. Merge into `main` and push only
   when the maintainer asks for it.
+- Releases are tags `vX.Y.Z` on `main` (Semantic Versioning as in the
+  CHANGELOG header), made when the maintainer asks: »Unreleased« becomes the
+  version's section, a fresh »Unreleased« goes on top.
 - Other repositories (starter templates such as `specht/raylib-starter`, the
   2D Game Studio) get a patch for `git am`, checked with `git apply --check`;
   never commit or push there directly. Exceptions the maintainer allowed:

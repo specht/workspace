@@ -1,7 +1,9 @@
 # Changelog
 
-Alle nennenswerten Änderungen am Hackschule Workspace stehen hier. Andere
-Schulen mit eigener Installation folgen getaggten Releases statt `main`.
+Was Betreibende einer eigenen Installation wissen müssen, je Release.
+Andere Schulen mit eigener Installation folgen getaggten Releases
+(`v1.0.0`, …) statt `main`; die Einzelheiten jeder Änderung stehen in der
+Git-Historie.
 
 Versionen folgen [Semantic Versioning](https://semver.org/lang/de/):
 
@@ -12,9 +14,17 @@ Versionen folgen [Semantic Versioning](https://semver.org/lang/de/):
   Neue Funktionen sind zunächst abgeschaltet.
 - **Patch** (`1.0.1`): Fehlerkorrekturen.
 
-Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
+Ein Eintrag ist eine kurze Zeile zu dem, was beim Update zu tun oder zu
+wissen ist: neue oder geänderte Werte in `credentials.rb`, Migrationen und
+Handgriffe, Funktionen, die zunächst abgeschaltet sind, Änderungen daran,
+was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
+
+## 1.0.0 (21. Oktober 2026)
+
+Das erste getaggte Release. Die Einträge darunter sind über drei Jahre
+gesammelt und ausführlicher als die künftigen.
 
 ### Hinzugefügt
 
