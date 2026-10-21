@@ -16,7 +16,7 @@ reference: [workspace, terminal]
 <div class='person'>
 <img src='torvalds.webp' alt='Linus Torvalds 2018 auf einer Konferenz: ein Mann mit Brille und kurzem Haar in einem schwarzen T-Shirt, lächelnd.'>
 <p><strong>Linus Torvalds</strong> (geboren 1969). Das Terminal im Workspace läuft unter Linux: Das hat er 1991 als Student in Helsinki angefangen, »nur ein Hobby«, schrieb er damals. Heute läuft Linux auf den meisten Servern der Welt und in jedem Android-Handy.</p>
-<p>2005 brauchte er für die Arbeit an Linux eine neue Versionsverwaltung und schrieb in wenigen Tagen die erste Fassung von Git, dem Werkzeug dieser Seite.</p>
+<p>2005 brauchte er für die Arbeit an Linux eine neue Versionsverwaltung und schrieb in wenigen Tagen die erste Fassung von Git.</p>
 <p class='person-credit'>Foto: Raysonho, 2018, CC0 (<a href='https://commons.wikimedia.org/wiki/File:LC3Beijing2018_(cropped).jpg'>Wikimedia Commons</a>)</p>
 </div>
 

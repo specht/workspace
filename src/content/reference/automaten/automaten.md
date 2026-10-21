@@ -144,7 +144,7 @@ Ein NEA ist oft kleiner und leichter aufzuschreiben als ein DEA für dieselbe Sp
 <!-- short: Thompson-Konstruktion: für jedes Zeichen ein Pfeil, für Hintereinander, |, * (Kleenesche Hülle) und + (positive Hülle) je ein Baustein aus ε-Übergängen; daraus ein NEA mit einem Start und einem akzeptierenden Zustand. -->
 <div class='person'>
 <img src='thompson.webp' alt='Ken Thompson 2019: ein Mann mit Brille, weißem Bart und Halbglatze in einem schwarzen T-Shirt.'>
-<p><strong>Ken Thompson</strong> (geboren 1943). Du suchst im Terminal mit <code>grep</code>? Das hat er 1973 geschrieben; der Name kommt aus seinem Texteditor, wo der Befehl <code>g/re/p</code> hieß: global, <em>regular expression</em>, print. Den Automaten dahinter baute er nach dieser Konstruktion.</p>
+<p><strong>Ken Thompson</strong> (geboren 1943). Du suchst im Terminal mit <code>grep</code>? Das hat er 1973 geschrieben; der Name kommt aus seinem Texteditor, wo der Befehl <code>g/re/p</code> hieß: global, <em>regular expression</em>, print. Den Automaten dahinter baute er nach der Thompson-Konstruktion.</p>
 <p>Das Terminal selbst läuft unter Linux, einem Nachfahren von Unix, das er ab 1969 mit Dennis Ritchie schrieb. Unten rechts in VS Code steht <em>UTF-8</em>: Die Kodierung hat er 1992 mit Rob Pike auf ein Tischset in einem Diner gezeichnet. Und die Sprache <a href='/go'>Go</a> hat er mit erfunden.</p>
 <p class='person-credit'>Foto: A. C. Diller, 2019, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Brian_Kernighan_and_Ken_Thompson.jpg'>Wikimedia Commons</a>)</p>
 </div>

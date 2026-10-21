@@ -156,7 +156,7 @@ float noise(vec2 p) {
 <div class='person'>
 <img src='perlin.webp' alt='Ken Perlin 2007 auf einem Podium: ein Mann mit dunklem Haar in blauem Hemd, lächelnd zur Seite.'>
 <p><strong>Ken Perlin</strong> (geboren 1954), Informatiker in New York. Nach den Computerbildern für den Film <em>Tron</em> (1982) störte ihn, wie glatt und sauber Oberflächen aus dem Computer aussahen, und er erfand das Rauschen, das seinen Namen trägt. Dafür bekam er 1997 einen Oscar für technische Leistungen.</p>
-<p>Wolken, Feuer und ganze Landschaften in Spielen wie Minecraft entstehen aus Rauschen wie diesem.</p>
+<p>Wolken, Feuer und ganze Landschaften in Spielen wie Minecraft entstehen aus Perlin-Rauschen und seinen Verwandten.</p>
 <p class='person-credit'>Foto: Ambuj Saxena, 2007, CC BY 2.5, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Ken_Perlin.jpg'>Wikimedia Commons</a>)</p>
 </div>
 
