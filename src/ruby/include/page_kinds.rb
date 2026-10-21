@@ -49,12 +49,14 @@ module PageKinds
     end
 
     # Pages that use a reference page, as [slug, title], sorted by title.
-    # Hidden pages (teacher-only, or dev-only outside development) are left out.
+    # Hidden pages (teacher-only, in a hidden section such as the one only a
+    # secret on the error page leads to, or dev-only outside development)
+    # are left out: a Handbuch page must not give them away.
     def self.used_by(reference_slug, content, development: false)
         name = reference_slug.to_s.delete_prefix(REFERENCE_PREFIX)
         content.select do |slug, entry|
             next false if reference?(slug)
-            next false if entry[:teacher_only]
+            next false if entry[:teacher_only] || entry[:hidden_section]
             next false if entry[:dev_only] && !development
             (entry[:references] || []).include?(name)
         end.map { |slug, entry| [slug, plain_title(entry).then { |t| t.empty? ? slug : t }] }

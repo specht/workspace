@@ -1,0 +1,41 @@
+# Ein Saal hinter der Kammer.
+
+[room]
+name = Saal
+height = 3, 7
+slope = gable
+walls = marble
+floor = marble
+
+[map]
+#############
+#...........#
+#...L.S.L.S.#
+1...........2
+#.....M.....2
+#...........2
+#...L.S.L.S.#
+#...........#
+#####444#####
+
+[L]
+light = #fff3cf
+power = 1.6
+
+[S]
+block = 0.7, 7, 0.7      # höher als die Decke: Die Säule verschwindet in ihr
+
+[M]
+model = models/athena.glb
+height = 2.2
+rotation = 270
+material = marble
+pedestal = 0.9, 0.8, 0.9
+
+[4]
+door = salon 1
+arch = 2.9              # oben rund, in der Mitte 2,9 m hoch
+casing = on             # mit Rahmen: Putz, Bekleidung und Schwelle
+
+[2]
+door = vorgang 1

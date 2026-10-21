@@ -11,12 +11,34 @@
 
 const lightTimeout = 15 * 60_000;
 
+// Waits until the status line matches; says in the log every 30 s what it
+// says meanwhile, so that a bake that hangs shows where.
 async function waitForStatus(page, pattern, timeout) {
-    await page.waitForFunction(
-        (source) => new RegExp(source).test(document.getElementById('status')?.textContent ?? ''),
-        pattern,
-        { timeout },
-    );
+    const started = Date.now();
+    const report = setInterval(async () => {
+        const text = await page.evaluate(async () => {
+            // frames in one second, and the card WebGL draws on
+            let frames = 0;
+            const count = () => { frames += 1; if (performance.now() - t0 < 1000) requestAnimationFrame(count); };
+            const t0 = performance.now();
+            requestAnimationFrame(count);
+            await new Promise((resolve) => setTimeout(resolve, 1100));
+            const gl = document.querySelector('canvas')?.getContext('webgl2');
+            const info = gl?.getExtension('WEBGL_debug_renderer_info');
+            const gpu = info ? gl.getParameter(info.UNMASKED_RENDERER_WEBGL) : '?';
+            return `${document.getElementById('status')?.textContent ?? ''} | ${frames} frames/s | ${document.visibilityState} | ${gpu}`;
+        }).catch((error) => `? ${error.message}`);
+        console.log(`  waiting ${Math.round((Date.now() - started) / 1000)} s for /${pattern}/: ${text}`);
+    }, 30_000);
+    try {
+        await page.waitForFunction(
+            (source) => new RegExp(source).test(document.getElementById('status')?.textContent ?? ''),
+            pattern,
+            { timeout, polling: 250 },
+        );
+    } finally {
+        clearInterval(report);
+    }
 }
 
 export default {
@@ -52,12 +74,32 @@ export default {
             await page.waitForSelector('#status');
         },
 
+        // hook: page FILE?QUERY opens another page of the starter in the
+        // preview, such as textures.html?show=marble&bare
+        async page({ page, args }) {
+            await page.waitForTimeout(1200);
+            const url = new URL(page.url());
+            const [file, query = ''] = args.trim().split('?');
+            url.pathname = url.pathname.replace(/[^/]*$/, file);
+            url.search = query ? `?${query}` : '';
+            await page.goto(url.href);
+            await page.waitForSelector('canvas');
+            await page.waitForTimeout(1000);
+        },
+
         // hook: baking waits until the light is being baked (the first bounce,
         // the progress bar about a third full) and stops the page's animation
         // loop there: on a GPU the whole bake takes a few seconds, the picture
         // would show it finished. The frozen frame stays on screen; the next
-        // shot opens the page again (hook: open).
+        // shot opens the page again (hook: open). With ?rebake: light this
+        // browser kept from an earlier picture would otherwise just be loaded.
         async baking({ page }) {
+            const url = new URL(page.url());
+            if (!url.searchParams.has('rebake')) {
+                url.searchParams.set('rebake', '');
+                await page.goto(url.href);
+                await page.waitForSelector('#status');
+            }
             await waitForStatus(page, 'Baking light: bounce 1', lightTimeout);
             await page.evaluate(() => { window.requestAnimationFrame = () => 0; });
             await page.waitForTimeout(300);

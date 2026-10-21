@@ -162,6 +162,9 @@
   icon: /images/bookmark.png
   entries:
     - level-0-c1d8a2f7
+    - level-1-7e3a91c4
+    - level-2-b52d0f18
+    - level-3-4c9e6a2d
 
 - key: programming_languages
   compact: true

@@ -1,0 +1,31 @@
+# Aufgaben zu Level 1 der versteckten Reihe »Die Backrooms«.
+# Format: docs/aufgaben.md. Die Vorlage liegt seit Level 0 in
+# /workspace/backrooms-starter (specht/backrooms-starter).
+format: 1
+activity: level-1-7e3a91c4
+tasks:
+  - id: zwischendecke
+    title: Wie dick ist der Boden?
+    prompt: |
+      Die Tür zum Dachboden liegt 3 m über dem Boden des Saals, der Gang ist
+      2,5 m hoch, und die Böden von Saal und Gang liegen auf derselben Höhe. Was muss in `[_]` des Dachbodens bei
+      `slab` stehen, damit das Loch über dem Gang passt?
+    check:
+      type: number
+      expect: 0.5
+      tolerance: 0.001
+      unit: m
+    feedback:
+      - when: { equals: 3 }
+        say: "3 m liegt der Boden des Dachbodens über dem des Gangs. Der Gang selbst nimmt davon aber schon einen Teil ein."
+      - when: { equals: 2.5 }
+        say: "So hoch ist der Gang. Gefragt ist, wie viel zwischen seiner Decke und dem Boden darüber bleibt."
+      - when: { equals: 0.3 }
+        say: "0,3 m nimmt das Programm, wenn bei `slab` nichts steht. Hier legen die Türen die Höhen schon fest."
+      - when: { equals: 5.5 }
+        say: "Du hast die Höhen zusammengezählt. Die Decke des Gangs liegt 2,5 m über seinem Boden, der Dachboden 3 m: Wie viel liegt dazwischen?"
+    solution: |
+      Der Boden des Dachbodens liegt 3 m über dem des Gangs, die Decke des
+      Gangs 2,5 m darüber. Dazwischen bleiben 3 − 2,5 = 0,5 m: `slab = 0.5`.
+      Mit einer anderen Zahl meldet die Vorschau, dass das Loch nicht passt.
+

@@ -20,17 +20,23 @@ ceiling = #5a4c50
 #############
 
 [N]
-model = statues/industrial_wall_lamp/industrial_wall_lamp_1k.gltf   # Poly Haven, CC0
-height = 0.43
+model = models/brass_candleholders/brass_candleholder_03.gltf   # Poly Haven, CC0, nur der große Leuchter
+height = 0.83
 rotation = 0
-offset = 0, 1.9, -0.42   # an die Nordwand
-light = #ffd9a0
-power = 1.6
+offset = 0, 0, -0.2      # vor der Nordwand
+pedestal = 0.45, 1, 0.45
+pedestal_material = wood
+pedestal_color = #3a2418
+light = #ffb066
+power = 0.9
 
 [S]
-model = statues/industrial_wall_lamp/industrial_wall_lamp_1k.gltf   # Poly Haven, CC0
-height = 0.43
+model = models/brass_candleholders/brass_candleholder_03.gltf   # Poly Haven, CC0, nur der große Leuchter
+height = 0.83
 rotation = 180
-offset = 0, 1.9, 0.42    # an die Südwand
-light = #ffd9a0
-power = 1.6
+offset = 0, 0, 0.2       # vor der Südwand
+pedestal = 0.45, 1, 0.45
+pedestal_material = wood
+pedestal_color = #3a2418
+light = #ffb066
+power = 0.9

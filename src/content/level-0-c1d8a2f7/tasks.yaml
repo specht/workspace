@@ -48,7 +48,8 @@ tasks:
   - id: eigener-raum
     title: Ein Raum nach deiner Idee
     prompt: |
-      In `rooms` liegt außer der Kammer, dem Saal und der Rampe ein Raum, den du
+      In `rooms` liegt außer den Räumen der Vorlage und denen, die du auf
+      dieser Seite gebaut hast (Kammer, Saal und Salon), ein Raum, den du
       selbst entworfen hast. Sein Name besteht aus Kleinbuchstaben, Ziffern, `-` und `_`, und
       er endet auf `.room`. Damit es ihn im Level gibt, braucht er eine Tür
       zu einem anderen Raum.
@@ -56,79 +57,10 @@ tasks:
     check:
       type: files
       path: backrooms-starter/rooms
-      template: [blau.room, gang.room, rot.room, zimmer.room, kammer.room, saal.room, rampe.room]
+      template: [blau.room, gang.room, rot.room, zimmer.room, kammer.room, saal.room, salon.room, vorgang.room, rampe.room, knick1.room, knick2.room, knick3.room, treppe.room, dachboden.room, schacht.room, bad.room]
       show: listing
       expect:
         new_files: { min: 1 }
         name: '^[a-z0-9_-]+\.room$'
     hint: Schreib zuerst den Grundriss in `[map]`, mit einer Ziffer in einer Wand, und dann in einem Raum, den es schon gibt, die passende Tür mit `door = name ziffer`.
 
-  - id: lichtpunkte
-    title: Punkte auf einer Wand
-    prompt: |
-      Eine Wand ist 10 m lang und 3 m hoch. Wie viele Punkte hat die
-      Lightmap auf dieser Wand?
-    check:
-      type: number
-      expect: 7680
-      tolerance: 0
-      unit: Punkte
-    feedback:
-      - when: { equals: 480 }
-        say: Das wären 16 Punkte auf jedem Quadratmeter. Es sind aber 16 auf jedem Meter, und zwar in jeder Richtung.
-      - when: { equals: 30 }
-        say: Das ist die Fläche der Wand in Quadratmetern. Wie viele Punkte liegen in einer Reihe von 10 m?
-      - when: { equals: 208 }
-        say: Du hast die Punkte in der Länge und in der Höhe zusammengezählt. Sie bilden aber ein Raster.
-    solution: |
-      In der Länge 10 · 16 = 160 Punkte, in der Höhe 3 · 16 = 48. Die Punkte
-      bilden ein Raster: 160 · 48 = 7680. Für jeden davon schickt die
-      Grafikkarte 64-mal einen Strahl zu jeder Leuchte in der Nähe.
-
-  - id: decke
-    title: Die Decke ohne Bounce
-    prompt: |
-      Was passiert mit der Decke des Zimmers, wenn du das Bounce-Licht
-      ausschaltest (<kbd>B</kbd>)? Überleg zuerst, dann probier es aus.
-    prediction: true
-    check:
-      type: choice
-      options:
-        - Sie wird fast schwarz.
-        - Nichts, die Leuchten hängen ja direkt an ihr.
-        - Sie wird heller, weil kein Licht mehr an die Wände verloren geht.
-        - Nur ihre Ecken werden dunkler, die Mitte bleibt hell.
-      correct: 0
-    feedback:
-      - when: { picked: 1 }
-        say: In welche Richtung strahlt eine Leuchte, die unter der Decke hängt?
-      - when: { picked: 2 }
-        say: Licht geht an den Wänden nicht verloren. Ein Teil davon kommt zurück, aber wohin?
-      - when: { picked: 3 }
-        say: Dunklere Ecken sind die Kontaktschatten (<kbd>O</kbd>). Was bleibt an der Decke übrig, wenn das Bounce-Licht fehlt?
-    solution: |
-      Die Leuchten strahlen nur nach unten. Auf die Decke fällt kein
-      direktes Licht; hell ist sie nur durch das Licht, das Boden und Wände
-      zurückwerfen.
-
-  - id: weiche-schatten
-    title: Weiche Schatten
-    prompt: |
-      Erkläre in eigenen Worten, warum eine große Leuchte weichere Schatten
-      wirft als eine kleine. Benutze dabei, wie das Programm das direkte
-      Licht ausrechnet.
-    check:
-      type: reflection
-      min_words: 25
-    examples:
-      - |
-        Das Programm schickt von jedem Punkt 64-mal einen Strahl zu einem
-        zufälligen Punkt auf der Leuchte. Bei einer großen Leuchte treffen
-        am Rand eines Schattens manche Strahlen die Säule und manche nicht.
-        Der Punkt ist dann nur zum Teil beleuchtet, so entsteht ein breiter
-        Halbschatten.
-      - |
-        Von einer kleinen Leuchte sieht ein Punkt entweder alles oder nichts,
-        darum ist die Grenze scharf. Eine große Leuchte kann ein Punkt auch
-        halb sehen. Dann landet nur ein Teil der Strahlen auf ihr, und es wird
-        nach außen allmählich heller.

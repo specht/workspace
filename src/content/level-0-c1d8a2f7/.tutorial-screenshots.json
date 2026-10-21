@@ -1,244 +1,262 @@
 {
   "screenshots": {
-    "aufgang.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "574c42be2c3ab50ce339e97547f6677221ab174e828dcd6ef1534aee28be8f6a",
-      "state_hash": "fbdc5dfea4e8d7b53dc475c8d2fb7892515465ac337de5952f7ed48697b1c744",
-      "workspace_look": "4.140.0-ls368"
-    },
     "automap-raeume.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "c4282439d0c4e5ddcd51cbf5751e5441469b538612dc926398a77e45548c6adb",
-      "state_hash": "b02420c826695e7ec66b751b518c9f8517cbdfe5b34ccc8c9a995e5eb4a54d52",
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "91ffc4b82298aae84a524a9c42d183faa11322ee4e4c8a70d92df74f83e7db57",
+      "state_hash": "9e92541ac86efa62090869f5142b7b095d71f57f7eaabadcf12e390cda7e506e",
       "workspace_look": "4.140.0-ls368"
     },
     "automap.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "bf0180202d6fd397ada2b9ec79588c859776e94e3ea807da251843e7113d2159",
-      "state_hash": "8bea5ec3c60273c939545436ba830bbfda4021a89751467637c6cc40a82b0326",
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "e80f490b10c5e8c1cc83de878bda76f73c7a3454102122e523cdd175eeb5950b",
+      "state_hash": "ee35520b94c45d30673cd40cd0bf394086b742ffb911444bea469060c6dc92eb",
       "workspace_look": "4.140.0-ls368"
     },
     "backen.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "925d1023d8253d09fecbc8a256bcb862b7faca052411c165296fbfac51a824e8",
-      "state_hash": "39ed0b51b7cab7e5d34438f601917bc87184435ffb45c08b9ffd3b78cfd40e61",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "flur.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "b12694ab53fff779896005a5e784e452f03cf92f77416992501c5e0f830ba4a4",
-      "state_hash": "1b64c184ae433c1776039ac844ccdc27800b9d14223f51c65c9717602b83271b",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "halle.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "c22eb99d6c47d453531571cb17d57b2a0f490bf06a54c7b8f493b48dbcf41b9a",
-      "state_hash": "e2a60e7a7ae4deccd81081c14d6164ccad617d220470bf5585e69c4bddc53f1c",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "kammer-lampen.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "13f0897a951a010d849151ee85165305b0ba4077f646808f36e1b027f3dc178f",
-      "state_hash": "4d02649f9fe104365a8827ae5e8c85dd6db659496a0123046d1bfc224342465a",
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "d1ba4b35fa20b32e6c1197543acdc8cb7880de16962fc74327bbf9d4df4e7035",
+      "state_hash": "3be15c8f12d0cd96f79ac6890eb701683f5759fdd1af790dba270c429a2cd86a",
       "workspace_look": "4.140.0-ls368"
     },
     "kammer.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "979af0e75f4527aadbcc19a4302449ee1e5efa0c807755148a5e82e036b6bee5",
-      "state_hash": "70012a235b530eb89279e8e7fb50c13618be4e8a11c29e671084df741648faad",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "licht-alles.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "f9f26aeb4ba8f44cd9da24d925f06d3df59cb23bf53779a636283143f03d000c",
-      "state_hash": "db605691e71cc0974cc890bb5862a89039f4f7e450056d5f04a13eeeacf69ac4",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "licht-bloom.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "f9f26aeb4ba8f44cd9da24d925f06d3df59cb23bf53779a636283143f03d000c",
-      "state_hash": "33fe16c0cae8e8de1f6f77dc5e9fcdbcd4fb031bc8a1aa55942068415a6582c4",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "licht-bounce-ohne-kontakt.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "71c2533340746ea8e3b1186721630258be006d13e3ef2dd69cd5f4b898be7120",
-      "state_hash": "ddb44110748e8f65fc8aa64f5ba778b6a25454a60d0c004dd4549b886fdf956a",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "licht-bounce.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "4b9d97be5443fc3d0f9d955216c0584cd83bf48932bd9fd31e732d8d33f8120a",
-      "state_hash": "645a41642e7fd40c0c434fa5fcb5b1a77b28d5eeff37ba196067b31ff3ef9c9c",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "licht-bounces-1.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "feb1a2bc5c4e479ba536477f713bff7ec2fb6b0f25773ca59423edfa16affa25",
-      "state_hash": "9a6f82100b5aea2d7d976ed1b2dd93e0daee96b6d2aba4bfbe74a0bcbeeb3151",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "licht-bounces-2.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "fa0baea77ac578d6bf9f6976aa08ad5cdf35110daa720d9e1f49e2b1c682fa03",
-      "state_hash": "12734584615ef8509b42b0998ecc0b2340e5cabf611b308b399aaf41b85d4e50",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "licht-direkt.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "f1ac00eb569262ce8c9647b7cedfb87ae41f6351242e110f77518393bdc8cbf9",
-      "state_hash": "cae74fbdad97c6c43d37b932c6058a51baaa72bb0c68d2c6dbbfcd252e3ae50f",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "licht-gross.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "82d794386f24e2239727441012e773baedbe43f54409a2603a7279fc60214ba0",
-      "state_hash": "cc7afc276518591407b5a7fa5e4ad0060f0df75feed5b34e41b374e67f9f0e8a",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "licht-klein.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "a3b916179b64e6d12c4ac91938a934e39793adb45e97dc6aae292e7fef6b2fc6",
-      "state_hash": "7a9363ccef0e7c91341e12546682cf824ea80064ce0f8f80988b456076bd9004",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "licht-ohne-bloom.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "4c9337c6d5b5305f560e1ce05c6b7092fb2e5053c85b3e4e86628148c4f96dc7",
-      "state_hash": "97a640cae726f14743651fc245345cc23f53a56ac5428c5d5f05056bc5994354",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "licht-ohne-texturen.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "29b92a758ae67ba19d9baa024309f3a5b6e505c3836c5ae2e9267c135bd5971b",
-      "state_hash": "5c9cb3bd2453e0611cf9779dd6c20035dbf09052a1a84f33fc175e7fb8cf05cb",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "licht-punkte-sofa.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "1b8daed48003416d0996b6b3330f35b7a2f90d6f3989d05fc7481027ab59b24a",
-      "state_hash": "d341a5e470c6d165d8eb64f811d332a62c23daff8ab9e1c085fd2b141da50448",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "licht-punkte.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "9c87d61f3256cb83e5979853a198fa734f95de5086c4a0b5aab4125d8a076462",
-      "state_hash": "8c0d9b174b351a6d49c233d01d1de2147ce7a41406bea2b5eba9983f580dccbd",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "rampe-1.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "3797a173d17958e112096cb34f2bf0de203ea49411c111dfeb77db5901a5f832",
-      "state_hash": "fcc5817459a57754807baf24f4839971a6a6d5c09c473d32ded4746cc0da88b5",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "rampe-2.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "1ab03c01f0ceb1137012a1d920a84df30a7cd10c797275c5b0c0d69af70b859e",
-      "state_hash": "ea9e36501bc8aabc1fe4bb1af13b1cac8f81cb0dfa1b3319afdea4eeb0111897",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "rampe-3.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "50cf04c648abae82aa7d3006c96b9c24ecc6d3f327002d110a4fe3558a36942c",
-      "state_hash": "313086c5c943a6216e23838baf86a88c8eede421486e7af12922645a6f07a07d",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "rampe.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "df50fb47e7e8d8bf2e3cc12df54a7d832861624524268a10091709d6c07f36d8",
-      "state_hash": "ed413a1184b560138fd9f3f9256fd9758c96579c4a4920fc2bd0cac346d8a27f",
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "0d487f7ae4070c98b9a22a023cd9e1ffbd4fc936250f9f7a1a04e9d8d70b6dce",
+      "state_hash": "2268371d999f2a93ffc1677be7fc7aa0faf4d03823d25b202ba9fc0ccd5613da",
       "workspace_look": "4.140.0-ls368"
     },
     "saal-1.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "07e66564a82c98bbdfc16f8142d792c3b1d50daf9de0804863eb8515e8f6087c",
-      "state_hash": "8ad4c65a1fe090cb3e091a4986bdb31fc4e96c09d3c37a3f986409dd0603d937",
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "15785fa0bade7d663fba4f1243e067df7f4930e0fb23081e1c7709589e579ad8",
+      "state_hash": "4ee598456d45318d722e7f4b83ad85ca07fdb19bbc99ac3b2f013beee55402f9",
       "workspace_look": "4.140.0-ls368"
     },
     "saal-2.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "a4d7aa6c4667b645157464220eaf448aeb3a17d774335ea40d60ccb1a263d0b1",
-      "state_hash": "af02cb342de54f63b0a39e6f69666e11afb5fcab2c556408f208ee5eecd1f233",
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "87f8f55416a873b35ae9ed6f3b484bc82c41763df133e2d51555c7b050c7029e",
+      "state_hash": "c70b5522084f169e422ccdd84151da3bd2e3c6037a73f2c68a296ce1636ff544",
       "workspace_look": "4.140.0-ls368"
     },
     "saal-3.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "1ff8850bc9a0fd089c7ab2f95d2e6ac2d6fd1080ec0416b32dafacd7866029a6",
-      "state_hash": "14bc3b74001f346c98131187edd1aeb05baeb5b8a02c2cf87e96ce2c7bb4b6d1",
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "f58ce7a398f07e833175f9bd13304456f90fc1ffd5d220c292e3c434944dff76",
+      "state_hash": "ee2512e4274f7f93c1ddc822d884795e5d04ca37e23f7b289e007e6fd63e2046",
       "workspace_look": "4.140.0-ls368"
     },
     "saal-4.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "c064f9e8d2584b2407b402b5afdee37cae0a64b399f3e7c94415d1c3e82ba8bb",
-      "state_hash": "aa3af31221e3f7f70061aa35f9442fb79551771dfcccb99129deecb0108bfaf2",
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "35d5c60e1f61debcc3384c3a375d698676026cd542aa505acbee29a8d4c1388a",
+      "state_hash": "ad19012c489c6069a14330a00ac911b88a332140f03b2c5eb2d69a6d8369e68e",
       "workspace_look": "4.140.0-ls368"
     },
     "saal-5.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "dfda0c78e5b3da1152d2fa2aac72844a5d7b74dd5b8e4a0d9efb1ade3781df1f",
-      "state_hash": "d706615fe7b943230978502817734459802e2286cd4380d34109c14f59dbc897",
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "afaab6f3bac26bccb2eaecbbcbc0d9d3f60ab15dcff47c172b6b1ea5ab71d1b3",
+      "state_hash": "8711fb71a92b8fb57c5335a5590e88a9e6acc602a34d4011af5aa37b63da15ae",
       "workspace_look": "4.140.0-ls368"
     },
     "saal-6.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "2e4573a60436bfafe234d092b6975cf3a20205b54cffdce928a785df55f5ac36",
-      "state_hash": "05d5c4ac591cf270d89b1edb1e6fa38c23314c294c5ced754a5f600a12fa3c49",
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "e31e606633e8e2b92df4b58c910d7ede82897b20dbab3e729523ef5286eb10de",
+      "state_hash": "158a74b0b1796778ef85d7e87524584390c9f245444dc820574e4c10931fc46f",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "saal-beton.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "79f172084cbc5ae538c4d4ede3b91bc21babd381edac91e000a0d1786f0158d9",
+      "state_hash": "88a14755e22cde7bd620d21c3a3f4aaf064c06c374cf5e7f09693267c2c521ec",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "saal-buero.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "96ac99f56f74af38f50b5a128b40859034cfe79cc04e4a9d1ac6bad106eb092d",
+      "state_hash": "b238f6a8d90a527153a12a7699efe3b9b504aff7794f06f16759d8cf1e7586bf",
       "workspace_look": "4.140.0-ls368"
     },
     "saal-einfarbig.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "853169798177d6bcc0c73f7569f998ea08dc74e5c3e3d3b62e4759d04261b224",
-      "state_hash": "c9ce3785ba2a6c37207f50adeb485d4cf8e89625690d614b8c5d66f755c91700",
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "92021d121b0d8a3731c0cf788c909fad43641eb2a81e76b619d7b9805f059778",
+      "state_hash": "5263e7b71d0b4932ad05eff1f6639e3af6a3a3a7ae7240a2429a09dbb16489f1",
       "workspace_look": "4.140.0-ls368"
     },
     "saal-fliesen.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "590728db84a1004eeb9049cd057ac646e70ba2dde6c1655d825f59ff0a5e42a4",
-      "state_hash": "269e0f2ec5d4fa5e871748ade304c172adeec877d460a0efb0400ec54a3c1d5d",
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "b4e7cae5871eb459c856beb41c802e90e9a541399fd5cee65bbb5f8d434e3a8e",
+      "state_hash": "a12add9b89b2f64738231ba60e1cb79ee7096078f0c0e607ce942e082b017bb6",
       "workspace_look": "4.140.0-ls368"
     },
     "saal-holz.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "4a78ecdb639ec574c3498904079cb36bcb5820394ef4090113c95776110caaaf",
-      "state_hash": "31283609720c4f7b1ad4b8ff91d985374ee374b2d05af5fa4dd914dd9ef931e0",
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "cda2a27ac1b1214b3dd51cb64df53aa60aeb1c2733ad3bcd37814319606326f0",
+      "state_hash": "1abd58c61007b69f4e21e8adae231143ec95bfb72b0632c7a9dbcac7d7f01f5c",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "saal-kanten.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "d2a423ba537e7e2ff1c91d6fa15985e6efd5e04c68a1ad27e848a0d1b4654b58",
+      "state_hash": "b122a0539803e6878429d1c6b0995cdcb3d05fce7b16be6f0500e885cdafd3c0",
       "workspace_look": "4.140.0-ls368"
     },
     "saal-marmor.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "a5715efcd2eec2e51f58c62a4a405e28d2f357f3482e2bdc9d5febed296f042d",
-      "state_hash": "24c80c35436b0ed1c999c6f8d32319645b6a6b0043b05bb5e2f8423e26035857",
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "d6c105883cf85fe352c304e25799be467c9d2e71bc6f9432e715572331f7b56a",
+      "state_hash": "e2388c30a0f67adf86c23630ba6dd63d16914331ce903f031c1c2108b2b3b7a0",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "saal-parkett.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "b8bb22ebcf98d286e61bdf832b34b2e67795630039397b029ab91544f35bf3a6",
+      "state_hash": "5879a806a71e368e587537e045d4bcf937f05fe61a66a6c5104852cfec7df0fa",
       "workspace_look": "4.140.0-ls368"
     },
     "saal-pult.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "988685b426928e8fb8114278aefe9b613797db5d9b7e3a26d1369d72d597fb04",
-      "state_hash": "928a69878bbe4723347fdfe4f6a3ff92c7cfcbea6fc5e7c2c4b245a3665b1574",
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "3a11ff285adcfc901d87be7dfe2c7940619f9cbf6d50cb8099a09fc7d968baea",
+      "state_hash": "3a8f314e23e16b25a52c22543951bdfca9b3efe5edef936516c3fa1858638d2e",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "saal-rund.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "fce34edfa33737cea210dc1f3e8823aa3cbd6fd8d4f33a3870822ac79fd50b15",
+      "state_hash": "f738ba322dc5090ee18adc778ad07e7bc3fabde2732433772dc35678c1769e6e",
       "workspace_look": "4.140.0-ls368"
     },
     "saal-samt.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "61b09ebef9823b7414522ba58907555d14fb5acfb4caf465560b2a67a288bf83",
-      "state_hash": "f96c836ee997d5cec1b7b0aad049406389ef9eaa740e3447fe8adc6e2606708e",
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "1c545954382e5f6ca377945ef45791aa6b00b258aec5666d1f9b7afc486e3fe5",
+      "state_hash": "b2d852b0c8ca7895ec72dfe9fd3950cc89da13df2136e5e39c1f071bab2b3986",
       "workspace_look": "4.140.0-ls368"
     },
-    "schieflage.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "a178a583f0d764bcdc8c0da500af787850348bc07063fe33d5182cde87d7a29a",
-      "state_hash": "e4395db666fcbd02dee61637b2f0d5378543563313b8ff171aa4a502370a7faf",
+    "saal-schach.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "a6470d4bc730e198095ddd4ec08678a7ec716cf41bfcb171ee96ccb7066dd640",
+      "state_hash": "a40789f1cb416ec9c8aa3595d8eaf3cdced1382cb71861d77723cdae072c0733",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "saal-terrazzo.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "43b6df022d07e682928007daf1671cb16d37ca102bf5796f1d7e87297f162b6b",
+      "state_hash": "40dd8165498a7d1b33724515f6e6a4feb698d5d5356cace468883f2dfc4ef079",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "saal-ziegel.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "cd2680a92fb8a43307b6b5a980d197e88ae1aa0813ff3ed06b10c7f55c1f40bc",
+      "state_hash": "4f1557360faf1c4a414609c47738644d7729503215152d5e38d91d5f62e89e03",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "salon-1.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "742e9c6b028edd46324879d77740b739242e97818115a8ac3ffb44c8d51e3628",
+      "state_hash": "7c5c269c0b6092834a941c4ccc994229ab5e5b9e7166a7585c843e86182d61bd",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "salon-2.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "e6e497f354e784c1f23bb4481d80967c2a063f163d948f45110f963f59bfc461",
+      "state_hash": "7de3958429aa6c0ffa3bed4f703fa323dcecc57b9901f5a95131e4f331e242d1",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "salon-3.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "ffa89345a3f2923efff9435a73d07d52da87489d163381f9b3e681a417dd8876",
+      "state_hash": "048e9b531001b3f60efabe2e60d17753dad5e596238f13bd3040ad4280d57b1b",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "salon-4.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "e8d936f886d0350f54c72cb8f07b9fba46146d5ef05322647d6ba3fb981fa691",
+      "state_hash": "547077d5a50b10df4edb1e0025694aeccfb0cf36b7cd8ab7fd2e8275c87aa901",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "salon-5.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "99362b85086b8f3fba551fcda8432d3abe2cbdd9549640a0421363b17ad7e100",
+      "state_hash": "09cad49079fcae7c3d3ecc74641408fb936559824e03a1b006222327654a8bbf",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "textur-holz-bretter.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "cf5a29cbf4f919f2a26249039a55f0616fb23cb082433a15e7988abea7dc20dc",
+      "state_hash": "04e99bfce19ffedf6439cdefe3053ea035738ff4e53053517d43a3686ef363bd",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "textur-holz-fugen.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "d42f8e6d418b88bd9d3d222754d253f109704ea64a40a62ef48d99f1bc1a65fa",
+      "state_hash": "7c68b93a38924be6698ffbad0ba04b86c948b5ad2af4add84655e8040d2bf8dc",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "textur-holz-gebogen.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "afcbe6fb3630fa9ff86d3a1a547fc59144861fadaadd38c91ae9180c6a295f37",
+      "state_hash": "d4d87738090a3ad993dfa5f494058caf0c533a0560d8ffef211abe0ac4c82888",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "textur-holz-maserung.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "27e75e10bc2844e9dff8843c06e3b95993666a6d7c0bb95b80c4e276c968da09",
+      "state_hash": "460427552d7867c029645ee862189fef243377a89b4d478e782879c6e22f5303",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "textur-marmor-adern.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "0161ef0fccda636841227773f656b2d06beeba21f938261425c255a5cd04b359",
+      "state_hash": "89628caac1c9d27ee273d6d24c8d8664f27edaf3b436a639c38b141e35611fd0",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "textur-marmor-rauschen.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "0c717ac833617db6ca0b944c5cfc0c2a22b1018b88476526ad7ecfbddf41cd93",
+      "state_hash": "4004683046232fbbf1cf7ede4928a319454477e578612a6a7dc501677e449016",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "textur-marmor-sinus.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "57a6efad025b2efde22b707635c4e80001a4f8789d3803ce304ccd3b194f6ebc",
+      "state_hash": "0998cb5b5e187e012079c2fd885c43189f0edb244c3968da28fe9ea4e3740186",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "textur-marmor-turbulenz.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "91c8313cb380809acd733651ca7f0e7b9e5b3a4a66877edc62d811a77a74bb54",
+      "state_hash": "0a45c3f920f1e63d36dbd1fd8525a81c6d3164c215d49f9e85b74a29f65ae69c",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "textur-nahtlos.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "637a8b430f84bed74c52e325dfa21045ed0aa65adee0cdf982839b769e9eb1d1",
+      "state_hash": "ac3a2fd38171895a511b880cd2d4fbf5a0d6461d359bc97b85eb05dc794995bc",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "textur-tapete-farbe.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "55e8e4c200c55c7f5f676a63113dfe3e9e8cd69825b8d4bfc5965463d27fc87b",
+      "state_hash": "3867c90d86f56e172272ed748aeaeb88f13d0ebfd61b6b8fb7d47b1d44515f32",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "textur-tapete-rauten.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "70b8c9c7bda9bbeafd991c5dea9b58b994e779c96fe703ec90067e206fd5c512",
+      "state_hash": "c50aeef99f205760b11cfcd4df93d0089128769c618bfd414709e5f8cf212181",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "textur-tapete-streifen.webp": {
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "16d9acf2febf28184047e562ca0186d466903a3cd448b78552e7671b70293691",
+      "state_hash": "6688bc9b07f340ec73d08d0a11e55d02a095b2be2a9d5c5ff67bbcb1d1b40cbb",
       "workspace_look": "4.140.0-ls368"
     },
     "vorlage.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "81076a54ea79bb3b9fd22555371013385087c5619810b1f50330b2f8b9df622a",
-      "state_hash": "38fc12bf2491d3b03af63672dc934556cea2a5c21016e1c030047732c80ae75c",
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "807d6373a7029b34542724fb332539b0871785b6c8868bcbf2e98834359fbc0a",
+      "state_hash": "1bafe1153137b4ba2fe419ca5abf6bbc613cdd11f8e482e47d4c653159398719",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "zimmer.webp": {
-      "environment_fingerprint": "d1d49abc66380a9ad6391f5609f1e036361a5ac76ef3f2721847fe5fd755052e",
-      "output_sha256": "7ebb1daea2f5ee732596deeab4b94437dd769eb28d75825d8df415ae18753ea5",
-      "state_hash": "2242d396a53ad5454604a91ea1970ec890a07afd0725f2154db70efcc1af5614",
+      "environment_fingerprint": "7a1c7ca0f6a01df4dd6970a3392c532bd1db15d162a0d8f8a683ddb908b245b3",
+      "output_sha256": "215b639efde92a16b6e19e9883987ae31dec76e7a942dbddd4cc8bed2c433381",
+      "state_hash": "d5e5c52ef07a712541bf3585d888ac3001f141c00a380e819e7daebfc82bcba8",
       "workspace_look": "4.140.0-ls368"
     }
   },

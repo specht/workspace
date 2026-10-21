@@ -10,6 +10,7 @@ class PageKindsTest < Minitest::Test
             'tcpip' => { :title => 'TCP/IP-Verbindungen', :references => ['workspace'] },
             'secret' => { :title => 'Nur Lehrkräfte', :teacher_only => true, :references => ['workspace'] },
             'draft' => { :title => 'Entwurf', :dev_only => true, :references => ['workspace'] },
+            'level-x' => { :title => 'Verborgen', :hidden_section => true, :references => ['workspace'] },
             'reference/workspace' => { :title => 'Work&shy;space', :section => 'reference-workspace' },
             'reference/html-folien' => { :title => 'Folien mit <code>HTML</code>', :section => 'reference-presentations' },
         }
@@ -109,5 +110,11 @@ class PageKindsTest < Minitest::Test
             kind = ContentParts.meta(md)['kind'].to_s
             assert_includes PageKinds::KIND_LABELS.keys, kind, "#{slug}.md: kind »#{kind}« (#{PageKinds::KIND_LABELS.keys.join(', ')})"
         end
+    end
+
+    def test_reference_does_not_give_away_hidden_pages
+        html = PageKinds.header('reference/workspace', content, sections)
+        refute_includes html, 'Verborgen'
+        refute_includes html, 'level-x'
     end
 end

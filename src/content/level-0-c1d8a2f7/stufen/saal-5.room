@@ -24,7 +24,7 @@ power = 1.6
 block = 0.7, 7, 0.7      # höher als die Decke: Die Säule verschwindet in ihr
 
 [M]
-model = statues/athena.glb
+model = models/athena.glb
 height = 2.2
 rotation = 270
 material = marble

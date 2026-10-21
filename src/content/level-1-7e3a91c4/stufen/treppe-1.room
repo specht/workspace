@@ -1,0 +1,34 @@
+# Ein Treppenhaus hinter dem Saal, nur 5 m tief: Für eine gerade Treppe
+# ein Stockwerk hinauf ist es zu kurz.
+
+[room]
+name = Treppe
+height = 5.5
+
+[map]
+#########
+#.....QQ#
+#.L...QQ#
+#.....SS#
+#.....SS#
+#.......#
+#111#####
+
+[L]
+light = #fff0c8
+power = 1.6
+
+[S]
+stairs = north, 1.2     # an der Ostwand nach Norden hinauf, bis auf 1,2 m
+material = wood
+color = #8a6a44
+railing = on
+
+[Q]
+raise = 1.2             # in der Ecke ein Absatz, so hoch, wie die Treppe steigt
+material = wood
+color = #8a6a44
+railing = on
+
+[1]
+door = saal 3

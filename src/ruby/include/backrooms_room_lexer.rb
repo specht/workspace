@@ -61,7 +61,7 @@ module Rouge
                 rule %r/\.+/, Punctuation           # Boden
                 rule %r/@/, Name::Label             # hier fängst du an
                 rule %r/[0-9]/, Num::Integer        # Tür
-                rule %r/[A-Za-z]/, Name::Constant   # Leuchte, Block oder Statue
+                rule %r/[A-Za-z]/, Name::Constant   # Leuchte, Block, Modell, Becken, Treppe oder Podest
                 rule %r/[ \t]+/, Text::Whitespace   # nichts
             end
 

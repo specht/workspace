@@ -1,0 +1,25 @@
+# Ein Saal hinter der Kammer.
+
+[room]
+name = Saal
+height = 3, 7
+slope = gable
+
+[map]
+#############
+#...........#
+#...L.S.L.S.#
+1...........#
+#...........#
+#...........#
+#...L.S.L.S.#
+#...........#
+#############
+
+[L]
+light = #fff3cf
+power = 1.6
+
+[S]
+block = 0.7, 7, 0.7      # höher als die Decke: Die Säule verschwindet in ihr
+shape = round

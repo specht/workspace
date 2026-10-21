@@ -924,18 +924,21 @@ async function resolveWriteFileSource(blocks, recipeStart, selector, markdownPat
         return findCodeSource(blocks, recipeStart, selector);
     }
 
-    const relativeSource = safeRelativePath(selector.slice('file:'.length).trim());
+    // relative to the tutorial's folder; ../other-tutorial/… reaches files
+    // another tutorial shares (a series), but never beyond the content folder
+    const relativeSource = selector.slice('file:'.length).trim().replaceAll('\\', '/');
+    if (relativeSource.length === 0 || relativeSource.includes('\0') || path.posix.isAbsolute(relativeSource)) {
+        throw new Error(`Invalid path: ${JSON.stringify(relativeSource)}`);
+    }
+    const contentRoot = path.resolve(CONTENT_ROOT);
     const tutorialDirectory = path.resolve(
         CONTENT_ROOT,
         path.dirname(markdownPath),
     );
     const sourcePath = path.resolve(tutorialDirectory, relativeSource);
 
-    if (
-        sourcePath !== tutorialDirectory &&
-        !sourcePath.startsWith(`${tutorialDirectory}${path.sep}`)
-    ) {
-        throw new Error(`write-file source escaped the tutorial directory: ${relativeSource}`);
+    if (!sourcePath.startsWith(`${contentRoot}${path.sep}`)) {
+        throw new Error(`write-file source escaped the content folder: ${relativeSource}`);
     }
 
     let stat;

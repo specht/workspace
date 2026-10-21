@@ -59,6 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
     narrow.addEventListener('change', setupGallery);
 
     function show() {
+        // already open (the next picture of a gallery): stays visible, no fading
+        if (lightbox.open && lightbox.classList.contains('is-visible')) return;
         lightbox.classList.remove('is-visible');
         if (!lightbox.open) {
             if (typeof lightbox.showModal === 'function') {
@@ -199,7 +201,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Swiping on a touch screen: the picture follows the finger sideways; let
     // go far enough (or quickly) and it slides out, the next one comes in
-    // from the other side. Otherwise it springs back. Two fingers zoom as
+    // from the other side, both fully visible all the way (no fading).
+    // Otherwise it springs back. Two fingers zoom as
     // usual (touch-action in tutorial-preview.css) and swipe nothing.
     const SWIPE_DISTANCE = 60;
     const SLIDE_TIME = 140;
@@ -212,13 +215,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function drag(dx) {
         content.style.transition = 'none';
         content.style.transform = `translateX(${dx}px)`;
-        content.style.opacity = String(1 - Math.min(Math.abs(dx) / window.innerWidth, 0.5));
     }
 
     function release() {
         content.style.transition = '';
         content.style.transform = '';
-        content.style.opacity = '';
     }
 
     function swipeTo(delta) {
@@ -228,15 +229,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         const away = delta > 0 ? -1 : 1;
-        content.style.transition = `transform ${SLIDE_TIME}ms ease-in, opacity ${SLIDE_TIME}ms ease-in`;
-        content.style.transform = `translateX(${away * window.innerWidth * 0.6}px)`;
-        content.style.opacity = '0';
+        content.style.transition = `transform ${SLIDE_TIME}ms ease-in`;
+        content.style.transform = `translateX(${away * window.innerWidth}px)`;
         window.setTimeout(() => {
             step(delta);
-            drag(-away * window.innerWidth * 0.3);
-            content.style.opacity = '0';
+            drag(-away * window.innerWidth);
             void content.offsetWidth;
-            release();
+            content.style.transition = `transform ${SLIDE_TIME}ms ease-out`;
+            content.style.transform = '';
+            window.setTimeout(release, SLIDE_TIME);
         }, SLIDE_TIME);
     }
 
