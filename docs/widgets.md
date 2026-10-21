@@ -190,6 +190,14 @@ only to look nice.
   `path_back` runs step by step only in the first widget of the page; the
   others show at once what it returns. The timeline is named after the node
   that comes out.
+- **Huffman** (`huffman.md`, no code box: the students write it): the trees
+  stand on one line at the bottom, so a new node always appears above the
+  two it joins; it grows in with its weight first, its edges sprout and snap
+  onto the two roots, then the lower tree rises to meet it. The two
+  lightest trees wear the purple ring.
+- **What grows comes first**: in a step that also sprouts a pointer, an
+  element that grows in does so at the start (`early` in
+  `stepper_motion.js`), so that its pointers sprout from something.
 - **What grows, grows from its middle** (`data-grow='22 21'` on a group
   drawn from its corner), and ends on its own transform, so that its next
   move slides instead of jumping.

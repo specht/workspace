@@ -75,9 +75,11 @@
         const tracks = [];
         // final: what the attribute is at the end, when it differs from to
         // only in its form (a group that grew: its transform without the scale)
-        const move = (node, name, from, to, final = to) => {
+        // early: it runs at the start, before pointers sprout (an element
+        // that grows in: its pointers sprout from it)
+        const move = (node, name, from, to, final = to, early = false) => {
             if (duration && from !== undefined && from !== to && movable(name) && mix(from, to, 0) !== null) {
-                tracks.push({ node, name, from, to, final });
+                tracks.push({ node, name, from, to, final, early });
                 node.setAttribute(name, from);
             } else node.setAttribute(name, final);
         };
@@ -90,15 +92,15 @@
         const grow = (node, coming) => {
             if (node.tagName === 'circle') {
                 const r = node.getAttribute('r');
-                if (coming) move(node, 'r', '0', r);
+                if (coming) move(node, 'r', '0', r, r, true);
                 else move(node, 'r', r, '0');
             } else if (node.tagName === 'g') {
                 const base = node.getAttribute('transform') || '';
                 const [cx, cy] = (node.dataset.grow || '0 0').split(/\s+/).map(Number);
                 const about = (s) => `${base} translate(${cx} ${cy}) scale(${s}) translate(${-cx} ${-cy})`;
-                if (coming) move(node, 'transform', about(0), about(1), base);
+                if (coming) move(node, 'transform', about(0), about(1), base, true);
                 else move(node, 'transform', about(1), about(0));
-            } else if (coming) move(node, 'opacity', '0', node.getAttribute('opacity') || '1');
+            } else if (coming) move(node, 'opacity', '0', node.getAttribute('opacity') || '1', node.getAttribute('opacity') || '1', true);
             else move(node, 'opacity', node.getAttribute('opacity') || '1', '0');
         };
         const copy = (before, target, skip = []) => {
@@ -282,6 +284,8 @@
         const STRETCH = 1.7;
         const assigning = ride.some((r) => (r.kind === 'grow' || r.kind === 'swing') && !('rigid' in r.line.dataset));
         const later = (t) => (assigning ? part(t, PHASE, 1) : t);
+        // what grows in: at once, within the first third of the sprouting
+        const early = (t) => (assigning ? part(t, 0, PHASE / 3) : t);
         const attach = (t, now) => {
             const u = assigning ? Math.min(1, t / PHASE) : t;
             for (const r of ride) {
@@ -324,7 +328,7 @@
         const follow = [...leaving, ...shown].filter((node) => node.dataset.follow && !kept.has(node));
         const arcs = tracks.filter((track) => track.name === 'transform' && track.node.dataset.arc && /^translate/.test(track.to));
         const paint = (t, now) => {
-            for (const track of tracks) track.node.setAttribute(track.name, t >= 1 ? track.final : mix(track.from, track.to, ease(later(t))));
+            for (const track of tracks) track.node.setAttribute(track.name, t >= 1 ? track.final : mix(track.from, track.to, ease(track.early ? early(t) : later(t))));
             // data-arc: a group that moves by its translate goes on a small
             // arc (that many units to the side at the middle), so that two
             // that swap pass each other

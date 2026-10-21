@@ -39,23 +39,33 @@ duration: 2 Doppelstunden
         overflow-x: auto;
         margin-bottom: 0.6em;
     }
+    .hf-stepper {
+        --hf-accent: #6741d9;
+    }
+    html[data-bs-theme="dark"] .hf-stepper {
+        --hf-accent: #b197fc;
+    }
     .hf-forest svg {
         display: block;
+        width: 100%;
+        height: auto;
     }
-    .hf-forest line {
+    .hf-forest path.edge {
+        fill: none;
         stroke: var(--bs-secondary-color);
         stroke-width: 1.5;
     }
-    .hf-forest .node circle, .hf-forest .leaf circle {
+    .hf-forest circle.node, .hf-forest circle.leaf {
         fill: var(--bs-body-bg);
         stroke: var(--bs-body-color);
         stroke-width: 1.5;
     }
-    .hf-forest .leaf circle {
+    .hf-forest circle.leaf {
         fill: color-mix(in srgb, var(--bs-primary) 12%, var(--bs-body-bg));
     }
-    .hf-forest .pick circle {
-        stroke: #bc2326;
+    .hf-forest circle.pick {
+        fill: none;
+        stroke: var(--hf-accent);
         stroke-width: 3;
     }
     .hf-forest text {
@@ -123,7 +133,7 @@ Wie findet man die besten Codes, also die, mit denen ein Text so wenige Bits wie
 
 Den Code eines Bytes liest du auf dem Weg von oben zu seinem Blatt ab: links eine 0, rechts eine 1. Seltene Bytes werden früh zusammengefasst und landen tief unten, mit langen Codes; häufige kommen spät dazu und bleiben oben, mit kurzen. Und weil jedes Byte an einem Blatt hängt und nie auf dem Weg zu einem anderen liegt, ist die Tabelle von selbst präfixfrei.
 
-Probier es aus, mit dem Text unten oder einem eigenen. Rot umrandet sind die beiden Bäume, die als nächste zusammenkommen.
+Probier es aus, mit dem Text unten oder einem eigenen. Lila umrandet sind die beiden Bäume, die als nächste zusammenkommen.
 
 <div class='hf-stepper' id='hf-stepper' data-stepper>
 <input class='form-control' type='text' id='hf-input' value='RHABARBERBARBARA' aria-label='Text für den Huffman-Baum' spellcheck='false'>
@@ -437,21 +447,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function leaves(t) { return t.left ? leaves(t.left) + leaves(t.right) : 1; }
 
-    const DX = 46, DY = 54, TOP = 22, GAP = 12;
+    const DX = 46, DY = 54, TOP = 26, GAP = 12;
     const key = (n) => n.made;
+    const depth = (t) => (t.left ? 1 + Math.max(depth(t.left), depth(t.right)) : 1);
     // Where every node of a forest stands: leaves left to right, a node
-    // above the middle of its children, the trees side by side.
-    function layout(forestList) {
+    // above the middle of its children, the trees side by side and standing
+    // on one line at the bottom (tall: as many rows as the final tree has).
+    // A new node then always appears above both trees it joins, and the
+    // lower one rises to meet it; nothing has to move down.
+    function layout(forestList, tall) {
         const pos = new Map();
         let x0 = 0, height = 0;
         forestList.forEach((t) => {
             let next = 0;
+            const lift = tall - depth(t);
             const place = (n, d) => {
                 let x;
                 if (!n.left) x = x0 + (next++ + 0.5) * DX;
                 else { place(n.left, d + 1); place(n.right, d + 1); x = (pos.get(key(n.left)).x + pos.get(key(n.right)).x) / 2; }
-                pos.set(key(n), { x: x, y: TOP + d * DY, node: n, alpha: 1 });
-                height = Math.max(height, TOP + d * DY + 34);
+                pos.set(key(n), { x: x, y: TOP + (lift + d) * DY, node: n });
+                height = Math.max(height, TOP + (lift + d) * DY + 34);
             };
             place(t, 0);
             x0 += leaves(t) * DX + GAP;
@@ -459,69 +474,59 @@ document.addEventListener('DOMContentLoaded', function() {
         return { pos: pos, width: Math.max(x0 - GAP, 0), height: height };
     }
 
-    // One picture of the forest: every node at its position, faded by alpha
-    // while it appears or goes away.
-    function paint(frame, picks, width, height) {
-        const out = [];
-        frame.forEach((p) => {
+    // One step drawn into an SVG that is never shown; the visible one moves
+    // to it (stepper_motion.js): every node, edge and label keeps its key,
+    // so that a tree glides to its new place. A new node grows in above the
+    // two trees it joins, its edges sprout from it and snap onto their roots,
+    // then the trees move up under it. The two lightest trees, which come
+    // together next, wear the purple ring of the other widgets.
+    const SVG = 'http://www.w3.org/2000/svg';
+    const make = (tag, attrs, text) => {
+        const node = document.createElementNS(SVG, tag);
+        for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
+        if (text !== undefined) node.textContent = text;
+        return node;
+    };
+    function draw(svg, placed, picks, size) {
+        svg.replaceChildren();
+        placed.pos.forEach((p) => {
             const n = p.node;
             if (!n.left) return;
             [[n.left, '0'], [n.right, '1']].forEach(([c, bit]) => {
-                const q = frame.get(key(c));
-                if (!q) return;
-                out.push(`<g opacity='${Math.min(p.alpha, q.alpha)}'><line x1='${p.x}' y1='${p.y}' x2='${q.x}' y2='${q.y}'/>` +
-                    `<text class='bit' x='${(p.x + q.x) / 2 + (bit === '0' ? -8 : 8)}' y='${(p.y + q.y) / 2 - 4}'>${bit}</text></g>`);
+                const q = placed.pos.get(key(c));
+                svg.appendChild(make('path', { 'data-key': `edge-${key(n)}-${key(c)}`, 'data-ends': `node-${key(n)} node-${key(c)}`, class: 'edge', d: `M${p.x} ${p.y} L${q.x} ${q.y}` }));
+                svg.appendChild(make('text', { 'data-key': `bit-${key(c)}`, class: 'bit', x: (p.x + q.x) / 2 + (bit === '0' ? -8 : 8), y: (p.y + q.y) / 2 - 4 }, bit));
             });
         });
-        frame.forEach((p) => {
+        placed.pos.forEach((p) => {
             const n = p.node;
-            const pick = picks.some((t) => key(t) === key(n)) ? ' pick' : '';
-            if (!n.left) {
-                // Round like the inner nodes, so every edge ends in the middle
-                // of a curve, aimed at the centre; tinted to tell them apart.
-                out.push(`<g class='leaf${pick}' opacity='${p.alpha}'><circle cx='${p.x}' cy='${p.y}' r='15'/><text x='${p.x}' y='${p.y}'>${esc(label(n.byte))}</text><text class='weight' x='${p.x}' y='${p.y + 25}'>${n.weight}</text></g>`);
-            } else {
-                out.push(`<g class='node${pick}' opacity='${p.alpha}'><circle cx='${p.x}' cy='${p.y}' r='14'/><text x='${p.x}' y='${p.y}'>${n.weight}</text></g>`);
-            }
+            const k = key(n);
+            svg.appendChild(make('circle', { 'data-key': `node-${k}`, 'data-grow': '', class: n.left ? 'node' : 'leaf', cx: p.x, cy: p.y, r: n.left ? 14 : 15 }));
+            // the label comes with its node
+            svg.appendChild(make('text', { 'data-key': `label-${k}`, 'data-grow': '', x: p.x, y: p.y }, n.left ? String(n.weight) : label(n.byte)));
+            if (!n.left) svg.appendChild(make('text', { 'data-key': `weight-${k}`, class: 'weight', x: p.x, y: p.y + 25 }, String(n.weight)));
         });
-        return `<svg width='${width}' height='${height}' viewBox='0 0 ${width} ${height}'>${out.join('')}</svg>`;
+        // the rings in front, staying on their node while they fade
+        picks.forEach((t) => {
+            const p = placed.pos.get(key(t));
+            svg.appendChild(make('circle', { 'data-key': `pick-${key(t)}`, 'data-follow': `node-${key(t)}`, class: 'pick', cx: p.x, cy: p.y, r: 21 }));
+        });
+        // the same size for every step of a text: the picture does not jump
+        svg.setAttribute('viewBox', `0 0 ${size.width} ${size.height}`);
     }
-
-    // From one step to the next, the two picked trees glide together and
-    // sink one level, and their new node fades in above them; going back,
-    // it fades out and they rise apart. Without motion (prefers-reduced-
-    // motion), the next picture just replaces the last.
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const DURATION = 550;
-    let shown = null, animation = 0;
-    function show(box, target, picks) {
-        cancelAnimationFrame(animation);
-        const from = shown;
-        shown = target;
-        if (!from || reduceMotion.matches) { box.innerHTML = paint(target.pos, picks, target.width, target.height); return; }
-        const width = Math.max(from.width, target.width), height = Math.max(from.height, target.height);
-        const start = performance.now();
-        const frame = (now) => {
-            const t = Math.min(1, (now - start) / DURATION);
-            const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-            const mix = new Map();
-            target.pos.forEach((p, k) => {
-                const q = from.pos.get(k);
-                if (q) {
-                    mix.set(k, { x: q.x + (p.x - q.x) * e, y: q.y + (p.y - q.y) * e, node: p.node, alpha: 1 });
-                } else {
-                    // A new node, between where its children were
-                    const kids = [p.node.left, p.node.right].map((c) => c && from.pos.get(key(c))).filter(Boolean);
-                    const sx = kids.length ? (kids[0].x + kids[kids.length - 1].x) / 2 : p.x;
-                    const sy = kids.length ? Math.min(...kids.map((c) => c.y)) : p.y;
-                    mix.set(k, { x: sx + (p.x - sx) * e, y: sy + (p.y - sy) * e, node: p.node, alpha: e });
-                }
-            });
-            from.pos.forEach((q, k) => { if (!target.pos.has(k)) mix.set(k, { x: q.x, y: q.y, node: q.node, alpha: 1 - e }); });
-            box.innerHTML = t < 1 ? paint(mix, [], width, height) : paint(target.pos, picks, target.width, target.height);
-            if (t < 1) animation = requestAnimationFrame(frame);
-        };
-        animation = requestAnimationFrame(frame);
+    let live = null;
+    function show(box, placed, picks, size, animate) {
+        if (!live || live.parentNode !== box) {
+            box.replaceChildren();
+            live = make('svg', { class: 'hf-svg' });
+            box.appendChild(live);
+            animate = false;
+        }
+        live.style.maxWidth = `${size.width}px`;
+        const next = make('svg', {});
+        draw(next, placed, picks, size);
+        if (window.StepperMotion) window.StepperMotion.morph(live, next, { duration: animate ? 550 : 0 });
+        else { live.setAttribute('viewBox', next.getAttribute('viewBox')); live.replaceChildren(...next.childNodes); }
     }
 
     function codes(t, prefix, table) {
@@ -531,15 +536,16 @@ document.addEventListener('DOMContentLoaded', function() {
         return table;
     }
 
-    let built = { steps: [] }, current = 0;
-    function render() {
+    let built = { steps: [] }, current = 0, size = null;
+    // animate: a step forward or back moves, a jump shows the step at once
+    function render(animate = false) {
         const step = built.steps[current];
         const count = built.steps.length;
         root.querySelector('.hf-count').textContent = count ? `Schritt ${current + 1} von ${count}` : '';
         const say = root.querySelector('.hf-say');
         const forest = root.querySelector('.hf-forest');
         const table = root.querySelector('.hf-codes');
-        if (!step) { say.textContent = 'Tipp oben einen Text ein.'; forest.innerHTML = ''; table.innerHTML = ''; shown = null; return; }
+        if (!step) { say.textContent = 'Tipp oben einen Text ein.'; forest.innerHTML = ''; live = null; table.innerHTML = ''; return; }
         const name = (t) => t.left ? `den Baum mit Gewicht ${t.weight}` : `»${esc(label(t.byte))}« (${t.weight})`;
         if (step.pick.length) {
             say.innerHTML = current === 0
@@ -550,7 +556,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ? 'Nur ein einziges Byte: Der Baum ist ein Blatt, und sein Code ist 0.'
                 : `Fertig: ein einziger Baum. Die Codes stehen auf den Wegen von oben zu den Blättern.`;
         }
-        show(forest, layout(step.forest), step.pick);
+        show(forest, layout(step.forest, size.tall), step.pick, size, animate);
         if (!step.pick.length) {
             const tree = step.forest[0];
             const table_ = codes(tree, '', new Map());
@@ -572,7 +578,7 @@ document.addEventListener('DOMContentLoaded', function() {
         root.querySelector("[data-go='next']").disabled = current >= count - 1;
         root.querySelector("[data-go='last']").disabled = current >= count - 1;
     }
-    const go = (k) => { current = Math.max(0, Math.min(built.steps.length - 1, k)); render(); };
+    const go = (k) => { const before = current; current = Math.max(0, Math.min(built.steps.length - 1, k)); render(Math.abs(current - before) === 1); };
     root.querySelector("[data-go='first']").addEventListener('click', () => go(0));
     root.querySelector("[data-go='prev']").addEventListener('click', () => go(current - 1));
     root.querySelector("[data-go='next']").addEventListener('click', () => go(current + 1));
@@ -581,8 +587,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const data = Array.from(new TextEncoder().encode(input.value.slice(0, 200)));
         built = data.length ? build(data) : { steps: [], counts: new Map() };
         current = 0;
-        shown = null;   // a new text: no motion from the old forest
-        render();
+        // the largest picture of all steps, kept for this text
+        const tall = Math.max(1, ...built.steps.map((s) => Math.max(...s.forest.map(depth))));
+        const all = built.steps.map((s) => layout(s.forest, tall));
+        size = { tall, width: Math.max(1, ...all.map((l) => l.width)), height: Math.max(1, ...all.map((l) => l.height)) };
+        render(false);   // a new text: no motion from the old forest
     }
     input.addEventListener('input', refresh);
     refresh();
