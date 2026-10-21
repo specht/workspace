@@ -1,5 +1,7 @@
 // ← and → step through a step-by-step widget: the Huffman tree, the LZW
-// tables, the GIF decoder, the JPEG decoder. A widget is an element with
+// tables, the GIF decoder, the JPEG decoder. A widget built after the page
+// has loaded sends document the event stepper-added (detail: the widget),
+// so that it gets the lightbox, play, the timeline and its reserved heights. A widget is an element with
 // data-stepper; its buttons say what they do with data-go (first, prev,
 // next, last), and the keys press them, so a widget does nothing extra.
 //
@@ -320,9 +322,11 @@ document.addEventListener('keydown', (event) => {
         start = null;
         if (quick && Math.abs(dy) > 80 && Math.abs(dx) < Math.abs(dy) * 0.5 && open.scrollHeight <= open.clientHeight + 2) move(dy < 0 ? 1 : -1);
     });
-    // after the widgets have built themselves
+    // after the widgets have built themselves; a widget built later (in
+    // Automatron) says so with the event stepper-added
     if (document.readyState === 'complete') add();
     else window.addEventListener('load', add);
+    document.addEventListener('stepper-added', add);
 })();
 
 // Play for every widget whose step buttons have none of their own (the Algo
@@ -393,6 +397,7 @@ document.addEventListener('keydown', (event) => {
     const all = () => document.querySelectorAll('[data-stepper]').forEach(add);
     if (document.readyState === 'complete') all();
     else window.addEventListener('load', all);
+    document.addEventListener('stepper-added', (event) => add(event.detail));
 })();
 
 // A timeline for widgets that have none of their own (the Algo Stepper
@@ -437,6 +442,7 @@ document.addEventListener('keydown', (event) => {
     const all = () => document.querySelectorAll('[data-stepper]').forEach(add);
     if (document.readyState === 'complete') all();
     else window.addEventListener('load', all);
+    document.addEventListener('stepper-added', (event) => add(event.detail));
 })();
 
 // Nothing moves while one steps or slides through a widget: every part of
@@ -482,4 +488,5 @@ document.addEventListener('keydown', (event) => {
     const start = () => (window.requestIdleCallback ? requestIdleCallback(all, { timeout: 1500 }) : setTimeout(all, 300));
     if (document.readyState === 'complete') start();
     else window.addEventListener('load', start);
+    document.addEventListener('stepper-added', (event) => setTimeout(() => reserve(event.detail), 50));
 })();

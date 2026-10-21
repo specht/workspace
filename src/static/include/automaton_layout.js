@@ -50,7 +50,13 @@
             if (!best || L.score < best.score) best = { score: L.score, variant, mode };
             if (best.score === 0) break;
         }
-        return layoutOnce(a, options, best.variant, true, best.mode);
+        // labels hard to tell apart (as near to another arrow as to their
+        // own): the same drawing with more room between its rows, if that
+        // leaves fewer of them
+        const L = layoutOnce(a, options, best.variant, true, best.mode);
+        if (!L.ambiguous) return L;
+        const roomy = layoutOnce(a, { ...options, spread: 1.4 }, best.variant, true, best.mode);
+        return roomy.ambiguous < L.ambiguous && roomy.score <= L.score + 2 ? roomy : L;
     }
 
     // how well a drawing reads: crossings, arrows running along each other
@@ -106,7 +112,7 @@
         // grow with the longest
         const longest = Math.max(0, ...edges.map((e) => 7.8 * e.label.length + 4));
         let GAPX = Math.max(BASE_GAPX, longest + 64);
-        let GAPY = Math.max(BASE_GAPY, longest + 40);
+        let GAPY = Math.max(BASE_GAPY, longest + 40) * (options.spread || 1);
         const out = new Map(ids.map((id) => [id, []]));
         for (const e of edges) out.get(e.from).push(e);
         for (const list of out.values()) list.sort((x, y) => (x.label < y.label ? -1 : 1));
@@ -436,7 +442,7 @@
             const h = 15;
             let best = null;
             let margin = -Infinity;
-            const ts = path.loop ? [0.5] : [0.5, 0.42, 0.58, 0.34, 0.66];
+            const ts = path.loop ? [0.5] : [0.5, 0.42, 0.58, 0.34, 0.66, 0.26, 0.74];
             for (const side of [1, -1]) {
                 for (const t of ts) {
                     for (let off = 9; off <= 25; off += 4) {
@@ -447,12 +453,12 @@
                         // clear of everything, and clearly nearer to its own
                         // arrow than to any other, so that it is read as its
                         const mine = Math.min(...path.own.map((pt) => distance(b, pt)));
-                        const others = nearestOther(path, b, mine + 30);
+                        const others = nearestOther(path, b, mine + 46);
                         const ok = mine >= 4 && others >= Math.max(4, mine + 6) && [...pos.values()].every((o) => distance(b, o) >= R + ring + 4) && placed.every((o) => !overlap(b, o));
                         // of the clear places the least ambiguous: furthest
                         // from other arrows compared with its own, near the
                         // middle, on the left (the first side)
-                        const value = Math.min(others - mine, 24) - Math.abs(t - 0.5) * 10 - off * 0.15 - (side < 0 ? 2 : 0);
+                        const value = Math.min(others - mine, 40) - Math.abs(t - 0.5) * 8 - off * 0.15 - (side < 0 ? 2 : 0);
                         if (ok && value > margin) { margin = value; best = b; }
                     }
                 }
@@ -480,7 +486,13 @@
         const xs = [...[...pos.values()].map((p) => p[0] - R - 44), ...[...pos.values()].map((p) => p[0] + R + 6), ...points.map((p) => p[0]), ...placed.flatMap((b) => [b.x, b.x + b.w])];
         const ys = [...[...pos.values()].flatMap((p) => [p[1] - R - 6, p[1] + R + 6]), ...points.map((p) => p[1]), ...placed.flatMap((b) => [b.y, b.y + b.h])];
         const view = [Math.min(...xs) - 8, Math.min(...ys) - 8, Math.max(...xs) - Math.min(...xs) + 16, Math.max(...ys) - Math.min(...ys) + 16];
-        return { pos, paths, view, accept: new Set(a.accept), start: a.start, states: a.states, score: badness(paths, pos) };
+        // labels a reader could take for another arrow's
+        let ambiguous = 0;
+        for (const path of paths) {
+            const mine = Math.min(...path.own.map((pt) => distance(path.box, pt)));
+            if (nearestOther(path, path.box, mine + 12) < mine + 10) ambiguous++;
+        }
+        return { pos, paths, view, accept: new Set(a.accept), start: a.start, states: a.states, score: badness(paths, pos), ambiguous };
     }
 
     // ε stays ε; several symbols in a run: a–c, 0–9
@@ -520,11 +532,16 @@
         const L = layout(a);
         const head = `automaton-head-${++drawings}`;
         const parts = [];
-        parts.push(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${L.view.map((v) => Math.round(v * 10) / 10).join(' ')}" style="max-width:${Math.round(L.view[2] * 1.2)}px" class="automaton-drawn" aria-hidden="true">`);
-        parts.push(`<defs><marker id="${head}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="automaton-head"/></marker></defs>`);
+        parts.push(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${L.view.map((v) => Math.round(v * 10) / 10).join(' ')}" style="max-width:${Math.round(L.view[2] * 1.2)}px;min-width:${Math.round(Math.min(L.view[2] * 0.8, 600))}px" class="automaton-drawn" aria-hidden="true">`);
+        const marker = (id, cls) => `<marker id="${id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="${cls}"/></marker>`;
+        parts.push(`<defs>${marker(head, 'automaton-head')}${marker(`${head}-on`, 'automaton-head-on')}</defs>`);
         const round = (d) => d.replace(/-?\d+\.\d+/g, (n) => String(Math.round(Number(n) * 10) / 10));
-        for (const p of L.paths) parts.push(`<path d="${round(p.d)}" class="automaton-arrow" marker-end="url(#${head})"/>`);
-        for (const p of L.paths) parts.push(`<text x="${Math.round(p.box.x + p.box.w / 2)}" y="${Math.round(p.box.y + 12)}" text-anchor="middle" font-size="13" font-family="${MONO}" class="automaton-label">${esc(p.e.label)}</text>`);
+        // every arrow, its wide invisible line to point at and its label
+        // share data-edge: pointing at one marks all of them (hover)
+        const edge = (p) => esc(`${p.e.from}>${p.e.to}`).replace(/"/g, '&quot;');
+        for (const p of L.paths) parts.push(`<path d="${round(p.d)}" class="automaton-arrow" data-edge="${edge(p)}" data-head-on="url(#${head}-on)" marker-end="url(#${head})"/>`);
+        for (const p of L.paths) parts.push(`<path d="${round(p.d)}" class="automaton-pick" data-edge="${edge(p)}"/>`);
+        for (const p of L.paths) parts.push(`<text x="${Math.round(p.box.x + p.box.w / 2)}" y="${Math.round(p.box.y + 12)}" text-anchor="middle" font-size="13" font-family="${MONO}" class="automaton-label" data-edge="${edge(p)}">${esc(p.e.label)}</text>`);
         const [sx, sy] = L.pos.get(L.start);
         parts.push(`<path d="M${sx - R - 36} ${sy} L${sx - R - 2} ${sy}" class="automaton-arrow" marker-end="url(#${head})"/>`);
         for (const s of L.states) {
@@ -554,7 +571,36 @@
         return { states: ids.map((id) => ({ id, label: id })), start: data.start || ids[0], accept: (data.accept || '').trim().split(/\s+/).filter(Boolean), edges };
     }
 
-    root.AutomatonLayout = { R, layout, svg, table, fromData, joinLabels };
+    // Pointing at an arrow (or its wide invisible line) or at its label marks
+    // both, the arrowhead too: in a crowded drawing it shows which label
+    // belongs to which arrow. Elements of one arrow share data-edge; an
+    // arrow names its marked head in data-head-on
+    function hover(svg) {
+        if (svg.dataset.hover) return;
+        svg.dataset.hover = '1';
+        let current = null;
+        const mark = (key, on) => {
+            for (const node of svg.querySelectorAll('[data-edge]')) {
+                if (node.dataset.edge !== key) continue;
+                node.classList.toggle('edge-hover', on);
+                if (!node.dataset.headOn) continue;
+                if (on) { node.dataset.headOff = node.getAttribute('marker-end') || ''; node.setAttribute('marker-end', node.dataset.headOn); }
+                else if (node.dataset.headOff !== undefined) { node.setAttribute('marker-end', node.dataset.headOff); delete node.dataset.headOff; }
+            }
+        };
+        const to = (key) => {
+            if (key === current) return;
+            if (current !== null) mark(current, false);
+            current = key;
+            if (key !== null) mark(key, true);
+        };
+        // only a pointer that moves: content that appears under one at rest
+        // (a page that scrolls, a screenshot) marks nothing
+        svg.addEventListener('pointermove', (event) => { const node = event.target.closest && event.target.closest('[data-edge]'); to(node ? node.dataset.edge : null); });
+        svg.addEventListener('pointerleave', () => to(null));
+    }
+
+    root.AutomatonLayout = { R, layout, svg, table, fromData, joinLabels, hover };
 
     // the drawings in the page
     if (typeof document === 'undefined') return;
@@ -562,6 +608,7 @@
         if (el.dataset.drawn) return;
         el.dataset.drawn = '1';
         el.innerHTML = svg(fromData(el.dataset));
+        if (el.querySelector('svg')) hover(el.querySelector('svg'));
     });
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
     else start();

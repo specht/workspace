@@ -102,6 +102,18 @@ only to look nice.
   takes its parts in reverse order. Widgets without `stepper_motion.js` do
   the same by hand (GIF: the pixels of the code undone shrink away, its
   table entry lights up and goes). A jump shows the step at once.
+- **Which label belongs to which arrow can be read without help**, as in a
+  printed book: labels stand where they are least ambiguous, and where
+  some still are the rows get more room. On top of that, pointing at an
+  arrow (on a wide invisible line, `.automaton-pick`) or at its label marks
+  both (`AutomatonLayout.hover`, elements of one arrow share `data-edge`):
+  purple, the arrow thicker, the label bold and underlined, so that it
+  does not depend on colour. Only a moving pointer marks.
+- **Automatron** has the step widget too: »Ein Wort durchlaufen« under each
+  drawing (ε-NEA with ε steps, DEA, smallest DEA), a word below runs through
+  the smallest DEA; the expression is in the address (`?regex=…`), the
+  back button goes back to the empty start. Widgets built after the page
+  has loaded send `stepper-added` (stepper_keys.js).
 - **A ring travels along the arrow it takes** (`data-along='edge-key'` on
   the ring, timed with the pulse on that arrow): its centre runs from the
   state's centre along the arrow into the next state's centre, a fifth

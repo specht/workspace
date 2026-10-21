@@ -18,7 +18,26 @@
   .automatron-lead { color: var(--bs-secondary-color); margin-top: -0.2em; }
   /* Wide tables scroll on their own instead of running off the page. */
   #output_area table { display: block; max-width: 100%; overflow-x: auto; }
-  .automatron-words code { display: inline-block; margin: 0 0.3em 0.3em 0; }
+  /* the result's head: the expression, its link, where its parts are */
+  .automatron-result { margin-top: 1.6em; padding-bottom: 0.6em; border-bottom: 1px solid var(--bs-border-color); }
+  .automatron-result-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.6em 1em; }
+  .automatron-result-title h3 { margin: 0; }
+  .automatron-result-title h3 code { font-size: 0.9em; color: inherit; background: none; }
+  .automatron-toc { display: flex; flex-wrap: wrap; gap: 0.3em 1.2em; margin-top: 0.5em; font-size: 0.95em; }
+  #output_area h3[id] { scroll-margin-top: 1em; }
+  .automatron-follow { margin: -0.4em 0 1em; }
+  #output_area .automaton-stepper { margin: 1em 0 1.5em; }
+  /* words that belong green, words that do not red; a click follows one */
+  .automatron-word { display: inline-block; margin: 0 0.3em 0.35em 0; padding: 0.05em 0.45em; border-radius: 0.3em; border: 1px solid transparent;
+                     font-family: '0xProto Nerd Font Mono', monospace; font-size: 0.9em; }
+  .automatron-word.yes { background: var(--bs-success-bg-subtle); color: var(--bs-success-text-emphasis); border-color: var(--bs-success-border-subtle); }
+  .automatron-word.no { background: var(--bs-danger-bg-subtle); color: var(--bs-danger-text-emphasis); border-color: var(--bs-danger-border-subtle); }
+  .automatron-word:not(:disabled):hover { filter: brightness(0.95); text-decoration: underline; }
+  .automatron-word:disabled { opacity: 0.75; cursor: default; }
+  /* the subset construction: the ε-hulls beside the transitions where
+     there is room */
+  .automatron-notes { display: flex; flex-wrap: wrap; gap: 0 2.5em; align-items: flex-start; }
+  .automatron-notes > div { min-width: 0; max-width: 100%; }
   /* The table method: which pairs of states differ (x, with the symbol
      that tells them apart), which do not (check mark) */
   table.min-table { border-collapse: collapse; margin: 12px 0; }
@@ -57,6 +76,7 @@
 
 <script src='/include/automaton_layout.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>
 <script src='/include/automatron.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>
+<script src='/include/automaton_stepper.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const exampleGroups = {
@@ -145,8 +165,10 @@ document.addEventListener('DOMContentLoaded', function() {
     'regex too long': () => 'Der Ausdruck ist zu lang, höchstens 200 Zeichen.',
   };
 
-  function section(title, lead) {
-    out.append(el('h3', '', title));
+  function section(id, title, lead) {
+    const h = el('h3', '', title);
+    h.id = id;
+    out.append(h);
     if (lead) {
       const p = el('p', 'automatron-lead');
       p.innerHTML = lead;
@@ -156,19 +178,62 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // A drawing from automaton_layout.js, like every automaton on the site,
   // or its transition table where it is too big to read; a note for an
-  // automaton far too big even for a table
+  // automaton far too big even for a table. Under a drawing a button turns
+  // it into the step widget of the automata activity (automaton_stepper.js)
+  // with a word to follow through it.
   const TABLE_UP_TO = 80;
-  function drawing(a, id, label) {
+  const steppers = new Map();
+  function drawing(a, id, label, title, word) {
     if (a.states.length > TABLE_UP_TO) {
-      return el('div', 'alert alert-secondary automatron-not-drawn',
+      return [el('div', 'alert alert-secondary automatron-not-drawn',
         'Diesen Automaten zeichnet Automatron nicht: Er hat ' + a.states.length + ' Zustände, zu viele für ein Bild oder eine Tabelle, '
-        + 'die man lesen kann. Die Schritte stimmen trotzdem, und der kleinste DEA weiter unten ist oft viel kleiner.');
+        + 'die man lesen kann. Die Schritte stimmen trotzdem, und der kleinste DEA weiter unten ist oft viel kleiner.')];
     }
     const box = el('div', 'automaton-drawing');
     box.id = id;
     box.innerHTML = AutomatonLayout.svg(a);
-    if (box.querySelector('svg')) { box.setAttribute('role', 'img'); box.setAttribute('aria-label', label); }
-    return box;
+    if (!box.querySelector('svg')) return [box];
+    box.setAttribute('role', 'img');
+    box.setAttribute('aria-label', label);
+    AutomatonLayout.hover(box.querySelector('svg'));
+    const open = el('button', 'btn btn-sm btn-outline-success automatron-follow');
+    open.type = 'button';
+    open.innerHTML = "<i class='bi bi-play-circle'></i> Ein Wort durchlaufen";
+    const become = (text) => {
+      const widget = el('div', 'automaton-stepper');
+      widget.id = id;
+      widget.setAttribute('data-stepper', '');
+      const symbols = [...new Set(a.edges.map((e) => e.label).filter((l) => l !== 'ε'))].sort();
+      Object.assign(widget.dataset, {
+        title,
+        states: a.states.map((s) => s.id).join(' '),
+        start: a.start,
+        accept: a.accept.join(' '),
+        alphabet: symbols.join(''),
+        transitions: a.edges.map((e) => `${e.from} ${e.label} ${e.to}`).join(', '),
+        input: text,
+        ...(a.columns ? { columns: a.columns } : {}),
+      });
+      box.replaceWith(widget);
+      open.remove();
+      AutomatonStepper.mount(widget);
+      steppers.set(id, widget);
+      return widget;
+    };
+    open.addEventListener('click', () => become(word).querySelector('input').focus());
+    steppers.set(id, { become });
+    return [box, open];
+  }
+
+  // a word in the smallest DEA's step widget (a click on a word below)
+  function follow(word) {
+    const at = steppers.get('automatron-min');
+    if (!at) return;
+    const widget = at.become ? at.become(word) : at;
+    const field = widget.querySelector('input');
+    field.value = word;
+    field.dispatchEvent(new Event('input', { bubbles: true }));
+    widget.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function sink(note) {
@@ -188,18 +253,67 @@ document.addEventListener('DOMContentLoaded', function() {
     return norm(a) === norm(b);
   }
 
-  function words(title, icon, items) {
+  // words in green (they belong) or red (they do not); a click follows one
+  // through the smallest DEA
+  function words(id, title, icon, kind, items) {
     const h = el('h3');
+    h.id = id;
     h.innerHTML = icon + ' ';
     h.append(document.createTextNode(title));
     out.append(h);
     const p = el('p', 'automatron-words');
     if (!items.length) p.append(el('span', 'automatron-lead', 'keine'));
-    items.forEach((w) => p.append(el('code', '', w === '' ? 'ε' : w)));
+    items.forEach((w) => {
+      const b = el('button', `automatron-word ${kind}`, w === '' ? 'ε' : w);
+      b.type = 'button';
+      b.title = w.length <= 16 ? 'Im kleinsten DEA Schritt für Schritt' : 'Zu lang für den Schritt-für-Schritt-Automaten';
+      b.disabled = w.length > 16;
+      b.addEventListener('click', () => follow(w));
+      p.append(b);
+    });
     out.append(p);
   }
 
-  function run(regex) {
+  // the head of a result: the expression, a link to share it, and where
+  // its parts are
+  function head(regex) {
+    const box = el('div', 'automatron-result');
+    const h = el('h3', '', 'Ergebnis für ');
+    h.append(el('code', '', regex));
+    const share = el('button', 'btn btn-sm btn-outline-secondary');
+    share.type = 'button';
+    share.innerHTML = "<i class='bi bi-link-45deg'></i> Link kopieren";
+    share.addEventListener('click', () => {
+      const done = () => { share.innerHTML = "<i class='bi bi-check-lg'></i> Kopiert"; setTimeout(() => { share.innerHTML = "<i class='bi bi-link-45deg'></i> Link kopieren"; }, 1800); };
+      if (navigator.clipboard) navigator.clipboard.writeText(location.href).then(done, () => prompt('Link:', location.href));
+      else prompt('Link:', location.href);
+    });
+    const nav = el('nav', 'automatron-toc');
+    nav.setAttribute('aria-label', 'Teile des Ergebnisses');
+    for (const [id, text] of [['am-nfa', 'ε-NEA'], ['am-dfa', 'DEA'], ['am-min', 'kleinster DEA'], ['am-grammar', 'Grammatik'], ['am-words', 'Wörter']]) {
+      const a = el('a', '', text);
+      a.href = '#' + id;
+      a.addEventListener('click', (event) => { event.preventDefault(); document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+      nav.append(a);
+    }
+    box.append(el('div', 'automatron-result-title'), nav);
+    box.firstChild.append(h, share);
+    out.append(box);
+  }
+
+  // What is shown is in the address (?regex=…), so that a link shows it
+  // again and the browser's back button goes back to the empty start
+  let shown = null;
+  const fromAddress = () => new URLSearchParams(location.search).get('regex');
+  function showStart() {
+    shown = null;
+    out.replaceChildren();
+    input.value = '';
+    examples.open = true;
+    list.querySelectorAll('.selected').forEach((s) => s.classList.remove('selected'));
+  }
+
+  function run(regex, remember = true) {
     if (!regex || !regex.trim()) { input.focus(); return; }
     button.disabled = true;
     button.innerHTML = "<span class='spinner-border spinner-border-sm' aria-hidden='true'></span> Rechnet …";
@@ -211,41 +325,55 @@ document.addEventListener('DOMContentLoaded', function() {
       const data = Automatron.run(regex);
       done();
       out.replaceChildren();
+      steppers.clear();
+      if (remember && fromAddress() !== regex) history.pushState({ automatron: regex }, '', `?regex=${encodeURIComponent(regex).replace(/%7C/gi, '|')}`);
+      shown = regex;
       if (data.error) {
         const message = messages[data.error];
         out.append(el('div', 'alert alert-warning', message ? message(data) : 'Das hat nicht geklappt.'));
         return;
       }
+      // a word for the step widgets: the shortest that belongs
+      const word = data.samples_positive.find((w) => w.length <= 16) || '';
 
-      section('Regulärer Ausdruck → ε-NEA (Thompson-Konstruktion)',
+      head(regex);
+      section('am-nfa', 'Regulärer Ausdruck → ε-NEA (Thompson-Konstruktion)',
         'Die Zustände heißen q<sub>0</sub>, q<sub>1</sub>, …; ein ε-Übergang kostet kein Zeichen.');
-      out.append(drawing(data.nfa.drawing, 'automatron-nfa', 'Der ε-NEA als Zustandsdiagramm'));
+      out.append(...drawing(data.nfa.drawing, 'automatron-nfa', 'Der ε-NEA als Zustandsdiagramm', 'ε-NEA', word));
 
-      section('Potenzmengenkonstruktion (ε-NEA → DEA)',
+      section('am-dfa', 'Potenzmengenkonstruktion (ε-NEA → DEA)',
         'Jeder Zustand r des DEA ist eine Menge von Zuständen des NEA: die, in denen der NEA gerade sein könnte.');
       out.append(...$(data.notes_subset_html).toArray());
-      out.append(drawing(data.dfa.implicit_sink.drawing, 'automatron-dfa', 'Der DEA als Zustandsdiagramm'));
+      out.append(...drawing(data.dfa.implicit_sink.drawing, 'automatron-dfa', 'Der DEA als Zustandsdiagramm', 'DEA', word));
       sink(data.dfa.implicit_sink.has_sink);
 
-      section('Minimierung (DEA → kleinster DEA)',
+      section('am-min', 'Minimierung (DEA → kleinster DEA)',
         'Zustände, die kein Wort voneinander unterscheidet, werden zu einem Zustand s zusammengefasst.');
       out.append(...$(data.notes_minimization_html).toArray());
-      out.append(drawing(data.min_dfa.implicit_sink.drawing, 'automatron-min', 'Der kleinste DEA als Zustandsdiagramm'));
+      out.append(...drawing(data.min_dfa.implicit_sink.drawing, 'automatron-min', 'Der kleinste DEA als Zustandsdiagramm', 'Kleinster DEA', word));
       sink(data.min_dfa.implicit_sink.has_sink);
 
-      section('Reguläre Grammatik', 'Aus jedem Übergang des kleinsten DEA wird eine Regel.');
+      section('am-grammar', 'Reguläre Grammatik', 'Aus jedem Übergang des kleinsten DEA wird eine Regel.');
       out.append($('<div>').html(data.grammar)[0]);
       if (!sameGrammar(data.grammar, data.grammar_compact)) {
-        section('Reguläre Grammatik, vereinfacht');
+        section('am-grammar-compact', 'Reguläre Grammatik, vereinfacht');
         out.append($('<div>').html(data.grammar_compact)[0]);
       }
 
-      words('Wörter, die zur Sprache gehören', "<i class='bi bi-check-lg text-success'></i>", data.samples_positive);
-      words('Wörter, die nicht zur Sprache gehören', "<i class='bi bi-x-lg text-danger'></i>", data.samples_negative);
+      words('am-words', 'Wörter, die zur Sprache gehören', "<i class='bi bi-check-lg text-success'></i>", 'yes', data.samples_positive);
+      words('am-words-not', 'Wörter, die nicht zur Sprache gehören', "<i class='bi bi-x-lg text-danger'></i>", 'no', data.samples_negative);
 
       examples.open = false;
-      out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (remember) out.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 30);
   }
+
+  window.addEventListener('popstate', () => {
+    const regex = fromAddress();
+    if (regex === shown) return;   // the lightbox of a step widget closed
+    if (regex) { input.value = regex; run(regex, false); }
+    else showStart();
+  });
+  if (fromAddress()) { input.value = fromAddress(); run(fromAddress(), false); }
 });
 </script>

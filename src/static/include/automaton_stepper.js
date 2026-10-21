@@ -88,17 +88,37 @@
                 if (!delta.get(key).includes(to)) delta.get(key).push(to);
             }
         }
-        const nfa = el.dataset.kind === 'nfa' || [...delta.values()].some((to) => to.length > 1);
-        return { states, start: el.dataset.start || states[0], accept, delta, nfa, alphabet: expand(el.dataset.alphabet || '') };
+        const nfa = el.dataset.kind === 'nfa' || [...delta.values()].some((to) => to.length > 1) || [...delta.keys()].some((k) => k.endsWith(` ${EPS}`));
+        return { states, start: el.dataset.start || states[0], accept, delta, nfa, columns: el.dataset.columns, alphabet: expand(el.dataset.alphabet || '').replace(EPS, '') };
+    }
+
+    // ε: the states reached from these without reading a symbol, and the
+    // arrows that bring each new one
+    const EPS = 'ε';
+    function closure(a, states) {
+        const all = [...states];
+        const taken = [];
+        for (let i = 0; i < all.length; i++) {
+            for (const t of a.delta.get(`${all[i]} ${EPS}`) || []) {
+                if (all.includes(t)) continue;
+                all.push(t);
+                taken.push([all[i], t]);
+            }
+        }
+        all.sort((x, y) => a.states.indexOf(x) - a.states.indexOf(y));
+        return [all, taken];
     }
 
     // Every step: where the head is, the states the automaton can be in,
     // the arrows it took to get there (from, to) and the message
     function trace(a, word) {
-        const steps = [{ at: -1, states: [a.start], used: [], message: a.nfa
-            ? `Am Anfang ist der NEA nur in ${a.start}. Er liest ${word ? `»${word}«` : 'nichts'}.`
-            : `Am Anfang ist der DEA in ${a.start}. Er liest ${word ? `»${word}«` : 'nichts'}.` }];
-        let current = [a.start];
+        const [first, firstEps] = closure(a, [a.start]);
+        const reads = `Er liest ${word ? `»${word}«` : 'nichts'}.`;
+        const steps = [{ at: -1, states: first, used: [], eps: firstEps, message: !a.nfa
+            ? `Am Anfang ist der DEA in ${a.start}. ${reads}`
+            : firstEps.length ? `Am Anfang ist der NEA in ${a.start} und, ohne ein Zeichen zu lesen (ε), auch in ${sets(first.filter((s) => s !== a.start))}. ${reads}`
+                : `Am Anfang ist der NEA nur in ${a.start}. ${reads}` }];
+        let current = first;
         [...word].forEach((symbol, i) => {
             const used = [];
             const next = [];
@@ -112,16 +132,21 @@
                 }
             }
             next.sort((x, y) => a.states.indexOf(x) - a.states.indexOf(y));
+            // then everything an ε reaches from there
+            const [withEps, eps] = closure(a, next);
+            const reached = withEps.filter((t) => !next.includes(t));
+            next.splice(0, next.length, ...withEps);
             let message;
             if (!a.nfa) message = next.length ? `${symbol}: von ${current[0]} nach ${next[0]}.` : `${symbol}: Aus ${current[0]} führt kein Pfeil mit ${symbol}. Der DEA steckt fest.`;
             else {
-                const ways = current.map((s) => {
-                    const to = a.delta.get(`${s} ${symbol}`) || [];
-                    return to.length ? `${s} → ${sets(to)}` : `${s} endet`;
-                });
-                message = `${symbol}: ${ways.join('; ')}. ${next.length ? `Jetzt in ${sets(next)}.` : 'Kein Weg geht weiter.'}`;
+                // the ways that go on; of the others only that they end
+                const ways = current.filter((s) => (a.delta.get(`${s} ${symbol}`) || []).length).map((s) => `${s} → ${sets(a.delta.get(`${s} ${symbol}`))}`);
+                const end = ended.length === 0 ? '' : ways.length === 0 ? '' : ended.length === 1 ? ` Der Weg in ${ended[0]} endet.` : ' Die übrigen Wege enden.';
+                message = ways.length
+                    ? `${symbol}: ${ways.join('; ')}.${end}${reached.length ? ` Mit ε dazu: ${sets(reached)}.` : ''} Jetzt in ${sets(next)}.`
+                    : `${symbol}: Aus ${sets(current)} führt kein Pfeil mit ${symbol}. Kein Weg geht weiter.`;
             }
-            steps.push({ at: i, symbol, states: next, before: current, used, ended, message });
+            steps.push({ at: i, symbol, states: next, before: current, used, eps, ended, message });
             current = next;
         });
         // the end of the word: accepted if a state it can be in accepts
@@ -148,7 +173,7 @@
             const [from, symbol] = key.split(' ');
             for (const t of to) edges.push({ from, to: t, label: symbol });
         }
-        const L = window.AutomatonLayout.layout({ states: a.states.map((id) => ({ id, label: id })), start: a.start, accept: [...a.accept], edges }, { ring: RING + 1.5 - R });
+        const L = window.AutomatonLayout.layout({ states: a.states.map((id) => ({ id, label: id })), start: a.start, accept: [...a.accept], edges, columns: a.columns }, { ring: RING + 1.5 - R });
         const [vx, vy, vw, vh] = L.view;
         // wide enough for the longest word on the tape (16, the input's
         // maxlength), so that the picture keeps its size while it is edited
@@ -196,15 +221,20 @@
             vx += w + 8;
         }
         // the arrows, the ones just taken purple
-        const used = new Set(step.used.map(([f, t]) => `edge-${f}-${t}`));
+        const eps = step.eps || [];
+        const used = new Set([...step.used, ...eps].map(([f, t]) => `edge-${f}-${t}`));
         for (const e of geo.edges) {
             const on = used.has(e.key);
             // into a state with a ring: the tip outside the ring
             const ringed = step.states.includes(e.to);
-            svg.appendChild(make('path', { 'data-key': e.key, d: ringed ? e.path(RING + 1.5 + 2) : e.d, fill: 'none', stroke: on ? 'var(--automaton-accent)' : 'var(--automaton-line)', 'stroke-width': on ? 2.5 : 1.6, 'marker-end': `url(#${marker}${on ? '-accent' : ''})` }));
+            svg.appendChild(make('path', { 'data-key': e.key, 'data-edge': e.key, 'data-head-on': `url(#${marker}-accent)`, d: ringed ? e.path(RING + 1.5 + 2) : e.d, fill: 'none', stroke: on ? 'var(--automaton-accent)' : 'var(--automaton-line)', 'stroke-width': on ? 2.5 : 1.6, 'marker-end': `url(#${marker}${on ? '-accent' : ''})` }));
         }
-        step.used.forEach(([f, t], i) => svg.appendChild(make('path', { 'data-key': `pulse-${i}`, 'data-pulse': `edge-${f}-${t}`, 'data-delay': 0, 'data-length': 0.85, 'data-swell': 2.5, d: 'M0 0', opacity: 0 })));
-        for (const e of geo.edges) svg.appendChild(make('text', { 'data-key': `label-${e.key}`, x: e.lx, y: e.ly, 'text-anchor': 'middle', 'font-size': 13, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: used.has(e.key) ? 'var(--automaton-accent)' : 'var(--automaton-ink)', 'font-weight': used.has(e.key) ? 700 : 400, text: e.label }));
+        // the arrows read pulse at once, the ε arrows after them
+        step.used.forEach(([f, t], i) => svg.appendChild(make('path', { 'data-key': `pulse-${i}`, 'data-pulse': `edge-${f}-${t}`, 'data-delay': 0, 'data-length': eps.length ? 0.55 : 0.85, 'data-swell': 2.5, d: 'M0 0', opacity: 0 })));
+        eps.forEach(([f, t], i) => svg.appendChild(make('path', { 'data-key': `pulse-eps-${i}`, 'data-pulse': `edge-${f}-${t}`, 'data-delay': step.used.length ? 0.5 : 0, 'data-length': 0.5, 'data-swell': 2.5, d: 'M0 0', opacity: 0 })));
+        // a wide invisible line on every arrow to point at (AutomatonLayout.hover)
+        for (const e of geo.edges) svg.appendChild(make('path', { 'data-key': `pick-${e.key}`, 'data-edge': e.key, class: 'automaton-pick', d: e.d }));
+        for (const e of geo.edges) svg.appendChild(make('text', { 'data-key': `label-${e.key}`, 'data-edge': e.key, x: e.lx, y: e.ly, 'text-anchor': 'middle', 'font-size': 13, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: used.has(e.key) ? 'var(--automaton-accent)' : 'var(--automaton-ink)', 'font-weight': used.has(e.key) ? 700 : 400, text: e.label }));
         // the start: an arrow from the left
         const [sx, sy] = geo.pos(a.start);
         svg.appendChild(make('path', { 'data-key': 'start', d: `M${sx - R - 34} ${sy} L${sx - (step.states.includes(a.start) ? RING + 3.5 : R + 2)} ${sy}`, fill: 'none', stroke: 'var(--automaton-line)', 'stroke-width': 1.6, 'marker-end': `url(#${marker})` }));
@@ -224,8 +254,11 @@
         for (const s of step.states) {
             const key = a.nfa ? `ring-${s}` : 'ring';
             const before = step.before || [];
+            // the way in: an arrow read, or an ε from a state that had a
+            // ring already (a ring that is new itself grows in place)
             const way = a.nfa
-                ? (before.includes(s) ? step.used.find(([f, t]) => f === s && t === s) : step.used.find(([, t]) => t === s))
+                ? (before.includes(s) ? step.used.find(([f, t]) => f === s && t === s)
+                    : step.used.find(([, t]) => t === s) || eps.find(([f, t]) => t === s && before.includes(f)))
                 : step.used[0];
             svg.appendChild(make('circle', { 'data-key': key, 'data-grow': '',
                 ...(a.nfa && way && !before.includes(s) ? { 'data-from': `ring-${way[0]}` } : {}),
@@ -248,6 +281,7 @@
         const say = html('div', { class: 'automaton-say', 'aria-live': 'polite' });
         const picture = make('svg', { class: 'automaton-picture', role: 'img', 'aria-label': `Der ${a.nfa ? 'NEA' : 'DEA'} mit den Zuständen ${a.states.join(', ')}; ${a.start} ist der Start, ${[...a.accept].join(', ')} ${a.accept.size === 1 ? 'nimmt' : 'nehmen'} an` });
         picture.style.maxWidth = `${geo.width * 1.25}px`;
+        window.AutomatonLayout.hover(picture);
         el.replaceChildren(...(el.dataset.title ? [html('h4', { class: 'automaton-title', text: el.dataset.title })] : []),
             input, html('div', { class: 'automaton-controls' }, [...buttons, counter]), say, picture);
         let steps = [];
@@ -295,6 +329,8 @@
         refresh();
     }
 
+    // mount(el): a widget built after the page has loaded (Automatron)
+    window.AutomatonStepper = { mount: (el) => { mount(el); document.dispatchEvent(new CustomEvent('stepper-added', { detail: el })); } };
     const start = () => document.querySelectorAll('.automaton-stepper').forEach(mount);
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
     else start();

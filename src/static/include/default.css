@@ -5279,7 +5279,18 @@ img.minicpu-shot.medium {
     height: auto;
     margin: 1em auto;
 }
-html[data-bs-theme="dark"] .automaton-drawn { --automaton-line: #8b949e; }
+html[data-bs-theme="dark"] .automaton-drawn { --automaton-line: #8b949e; --automaton-accent: #b197fc; }
+.automaton-drawn { --automaton-accent: #6741d9; }
+.automaton-drawn .automaton-head-on { fill: var(--automaton-accent); }
+/* an arrow and its label marked together while pointed at (hover in
+   automaton_layout.js), over a wide invisible line that catches the pointer */
+.automaton-pick { fill: none; stroke: transparent; stroke-width: 14; pointer-events: stroke; cursor: default; }
+.automaton-drawn .automaton-arrow.edge-hover,
+.automaton-picture path.edge-hover:not(.automaton-pick) { stroke: var(--automaton-accent) !important; stroke-width: 2.6 !important; }
+/* not only by its colour: the arrow thicker, the label bold and underlined */
+.automaton-drawn .automaton-label.edge-hover,
+.automaton-picture text.edge-hover { fill: var(--automaton-accent) !important; font-weight: 700; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.automaton-drawn text[data-edge], .automaton-picture text[data-edge] { cursor: default; }
 .automaton-drawn .automaton-arrow { fill: none; stroke: var(--automaton-line); stroke-width: 1.6; }
 .automaton-drawn .automaton-head { fill: var(--automaton-line); }
 .automaton-drawn .automaton-label,

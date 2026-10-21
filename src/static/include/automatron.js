@@ -411,13 +411,17 @@
             return `<tr><td>${tag}</td><td>{${k.split(',').map(q).join('; ')}}</td>${cells}</tr>`;
         }).join('');
         const closures = [...trace.epsClosures].sort((a, b) => a[0] - b[0]).map(([s, set]) => `<tr><td>${q(s)}</td><td>{${set.map(q).join('; ')}}</td></tr>`).join('');
-        return `<section>
+        return `<section class="automatron-notes">
+    <div>
     <h4>ε-Hüllen aller Zustände</h4>
     <div style="max-width: 100%; overflow-x: auto;">
     <table class='table' style='width: unset;'>
     <tr><th>q</th><th>E(q)</th></tr>
     ${closures}
     </table>
+    </div>
+    </div>
+    <div>
     <h4>Übergänge</h4>
     <div style="max-width: 100%; overflow-x: auto;">
     <table class='table' style='width: unset;'>
