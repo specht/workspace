@@ -35,9 +35,26 @@ duration: 2 Doppelstunden
     .hf-say {
         min-height: 3em;
     }
+    /* the tree and, at the end, its table beside it, or under it when the
+       tree is too wide (its width set by the script) */
+    .hf-body {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6em 2.5em;
+        align-items: flex-start;
+    }
     .hf-forest {
+        flex: 0 1 auto;
+        max-width: 100%;
         overflow-x: auto;
         margin-bottom: 0.6em;
+    }
+    .hf-codes {
+        flex: 1 1 18em;
+        min-width: 0;
+    }
+    .hf-codes:empty {
+        display: none;
     }
     .hf-stepper {
         --hf-accent: #6741d9;
@@ -145,8 +162,10 @@ Probier es aus, mit dem Text unten oder einem eigenen. Lila umrandet sind die be
 <span class='hf-count'></span>
 </div>
 <div class='hf-say' aria-live='polite'></div>
+<div class='hf-body'>
 <div class='hf-forest' role='img' aria-label='Die Bäume dieses Schritts'></div>
 <div class='hf-codes'></div>
+</div>
 </div>
 
 Haben zwei Bäume dasselbe Gewicht, ist es egal, welchen man nimmt. Die Codes sehen dann anders aus, manche sind sogar anders lang, aber der Text braucht insgesamt genau gleich viele Bits.
@@ -540,6 +559,8 @@ document.addEventListener('DOMContentLoaded', function() {
             animate = false;
         }
         live.style.maxWidth = `${size.width}px`;
+        // as wide as drawn, so that the table can stand beside it
+        box.style.width = `${size.width}px`;
         const next = make('svg', {});
         draw(next, placed, picks, size, lift);
         step2 += 1;
