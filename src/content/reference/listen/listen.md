@@ -137,6 +137,20 @@ Und `remove`, einmal in der Mitte, einmal vorn:
 
 <div class='algo-stepper' data-title='Linked List: entfernen' data-algo='linked' data-setup='insert(0, 7), insert(1, 3), insert(1, 5), insert(3, 9)' data-ops='remove(2), remove(0)'></div>
 
+### Rekursiv entfernen
+
+Dasselbe geht ohne `node_at` und ohne den Sonderfall vorn: Jeder Aufruf kümmert sich um einen Knoten und gibt zurück, was an seiner Stelle stehen soll. Der Knoten, der heraus soll, gibt seinen Nachfolger zurück, und der Knoten davor trägt ihn in sein `next` ein. Alle anderen geben sich selbst zurück. Aufgerufen wird es als `head ← remove(head, i)`; so arbeiten auch [Suchbäume](/reference/baeume).
+
+```pseudocode
+remove(node, i):
+    if node empty: error
+    if i = 0: return node.next
+    node.next ← remove(node.next, i - 1)
+    return node
+```
+
+<div class='algo-stepper' data-title='Linked List: rekursiv entfernen' data-algo='linked' data-mode='recursive' data-setup='insert(0, 7), insert(1, 3), insert(1, 5), insert(3, 9)' data-ops='remove(2)'></div>
+
 **Typische Fehler**
 
 - Erst `before.next ← new`, dann `new.next ← before.next`: Der neue Knoten zeigt auf sich selbst, die Liste wird zum Kreis.

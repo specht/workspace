@@ -884,6 +884,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             '    else:', '        before ← node_at(i - 1)', '        new.next ← before.next', '        before.next ← new', '    size ← size + 1'],
         linkedRemove: ['remove(i):', '    if i < 0 or i ≥ size: error', '    if i = 0:', '        value ← head.value', '        head ← head.next', '    else:',
             '        before ← node_at(i - 1)', '        value ← before.next.value', '        before.next ← before.next.next', '    size ← size - 1', '    return value'],
+        linkedRemoveRecursive: ['remove(node, i):', '    if node empty: error', '    if i = 0: return node.next', '    node.next ← remove(node.next, i - 1)', '    return node'],
         nodeAt: ['node_at(i):', '    k ← head', '    repeat i times:', '        k ← k.next', '    return k'],
         enqueue: ['enqueue(value):', '    if size = capacity: error, the queue is full', '    cells[(head + size) mod capacity] ← value', '    size ← size + 1'],
         dequeue: ['dequeue():', '    if size = 0: error, the queue is empty', '    value ← cells[head]', '    head ← (head + 1) mod capacity', '    size ← size - 1', '    return value'],
@@ -1026,7 +1027,8 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
     // (the ids from head on), loose (a node no pointer of the list reaches:
     // { id, at } above the gap at index at), vars (variables that point at a
     // node: head always, new, before, k), card (value), marks.
-    function traceLinked(ops, setup = []) {
+    // recursive: remove(node, i) as on the page, the call stack beside it
+    function traceLinked(ops, setup = [], recursive = false) {
         const nodes = {};
         let head = null;
         let nextId = 0;
@@ -1120,12 +1122,62 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             snapshot(`return value: ${out} kommt heraus.`, { code: R(10) });
             stack = [];
         };
+        // remove(node, i), recursive: each call goes one node further with
+        // i - 1; the call with i = 0 returns node.next, and its caller puts
+        // that into its next field: the node is skipped. On the way back
+        // every call returns its node, and head ← remove(head, i) at the end.
+        const removeRecursive = (i) => {
+            const RR = (at) => ({ lines: LIST_CODE.linkedRemoveRecursive, at });
+            const calls = [];
+            const path = [];
+            let node = head;
+            for (let left = i; ; left--) {
+                calls.push({ call: `remove(node: ${node === null ? 'empty' : nodes[node].value}, i: ${left})`, node });
+                stack = calls.map((c) => ({ ...c }));
+                const here = node === null ? [] : [{ name: 'node', to: node }];
+                if (node === null) { snapshot('if node empty: Die Liste ist zu Ende, so viele Knoten hat sie nicht.', { code: RR(1) }); stack = []; return; }
+                if (left === 0) {
+                    const next = nodes[node].next;
+                    calls[calls.length - 1].returns = next === null ? 'empty' : String(nodes[next].value);
+                    stack = calls.map((c) => ({ ...c }));
+                    snapshot(`if i = 0: Das ist der Knoten, der heraus soll. return node.next: Der Aufruf gibt ${next === null ? 'empty' : nodes[next].value} zurück, den Knoten danach.`, { vars: here, code: RR(2), focus: node });
+                    const gone = node;
+                    calls.pop();
+                    path.pop();
+                    if (calls.length) {
+                        const caller = calls[calls.length - 1].node;
+                        nodes[caller].next = next;
+                        loose = { id: gone, at: i };
+                        stack = calls.map((c) => ({ ...c }));
+                        snapshot(`node.next ← remove(node.next, i - 1): ${nodes[caller].value} trägt ${next === null ? 'empty' : nodes[next].value} in sein next ein und zeigt damit an ${nodes[gone].value} vorbei. ${nodes[gone].value} hängt an keinem Zeiger der Liste mehr.`,
+                            { vars: [{ name: 'node', to: caller }], code: RR(3), focus: gone, pulses: [{ edge: `next-${caller}`, delay: 0.6 }] });
+                    } else {
+                        head = next;
+                        loose = { id: gone, at: 0 };
+                        snapshot(`head ← remove(head, i): head zeigt jetzt auf ${next === null ? 'nichts' : nodes[next].value}. ${nodes[gone].value} hängt an keinem Zeiger der Liste mehr.`, { code: RR(2), focus: gone });
+                    }
+                    delete nodes[gone];
+                    loose = null;
+                    break;
+                }
+                snapshot(`i ist ${left}, nicht 0: node.next ← remove(node.next, ${left - 1}), weiter zum nächsten Knoten.`, { vars: here, code: RR(3) });
+                path.push(`next-${node}`);
+                node = nodes[node].next;
+            }
+            // back up: every call returns its node and its caller puts it
+            // back into its next field, the lowest first, head last
+            const edges = [...path].reverse().concat(['pointer-head']);
+            stack = calls.map((c) => ({ ...c, returns: String(nodes[c.node].value) }));
+            snapshot('return node: Jeder Aufruf darüber gibt seinen Knoten zurück, und der Aufrufer trägt ihn wieder in sein next ein, zuletzt head ← remove(head, i). Die Zeiger zeigen danach auf dasselbe wie vorher.',
+                { code: RR(4), returning: true, pulses: edges.map((edge, k) => ({ edge, delay: k / edges.length, length: 0.6 / edges.length })), duration: Math.max(MOTION_TIME, edges.length * PULSE_TIME) });
+            stack = [];
+        };
         for (const op of setup) if (op.type === 'insert') insert(op.index, op.value, true);
         snapshot(setup.length ? 'Die Liste von oben. Jetzt der Reihe nach die Operationen darüber.' : 'Eine leere Linked List: head zeigt auf keinen Knoten.');
         for (const [number, op] of ops.entries()) {
             current = number;
             if (op.type === 'insert') insert(op.index, op.value);
-            else if (op.type === 'remove') remove(op.index);
+            else if (op.type === 'remove') (recursive ? removeRecursive : remove)(op.index);
         }
         return frames;
     }
@@ -1146,18 +1198,32 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         svg.appendChild(arrowheads(marker));
         const arrow = (key, ends, [x1, y1], [x2, y2], extra = {}) => el('svg:path', { 'data-key': key, 'data-ends': ends, 'data-inset': 2,
             d: `M${x1} ${y1} Q${(x1 + x2) / 2} ${(y1 + y2) / 2} ${x2} ${y2}`, fill: 'none', stroke: 'var(--algo-line)', 'stroke-width': 2, 'marker-end': `url(#${marker})`, ...extra });
+        // the way the recursive calls went down, as in the trees: purple,
+        // flowing; on the way back each settles once its pulse has passed
+        const chain = new Set();
+        const onPath = (frame.stack || []).map((s) => s.node).filter((id) => id !== null && id !== undefined && frame.nodes[id]);
+        if (onPath.length && onPath[0] === frame.head) chain.add('pointer-head');
+        for (let k = 0; k + 1 < onPath.length; k++) if (frame.nodes[onPath[k]].next === onPath[k + 1]) chain.add(`next-${onPath[k]}`);
+        const settle = new Map();
+        if (frame.returning) {
+            const slow = (window.StepperMotion && window.StepperMotion.slow) || 1;
+            for (const pulse of frame.pulses || []) settle.set(pulse.edge, ((pulse.delay || 0) + (pulse.length || 0.4)) * (frame.duration || MOTION_TIME) * slow / 1000);
+        }
+        const marked = (key, grey) => (chain.has(key) ? { class: 'on-stack', stroke: 'var(--algo-accent)', 'marker-end': `url(#${marker}-accent)`,
+            ...(settle.has(key) ? { 'data-settle': settle.get(key).toFixed(2), 'data-settled-stroke': grey ? 'var(--algo-line)' : 'var(--algo-accent)', 'data-settled-head': grey ? `url(#${marker})` : `url(#${marker}-accent)` } : {}) } : {});
         // the next pointers, behind the nodes
         for (const [id, [x, y]] of place) {
             const node = frame.nodes[id];
             if (node.next === null || !place.has(node.next)) continue;
             const [tx, ty] = place.get(node.next);
-            svg.appendChild(arrow(`next-${id}`, `field-${id} in-${node.next}`, [x + box * 0.81, y + 22], [tx - 2, ty + 22]));
+            svg.appendChild(arrow(`next-${id}`, `field-${id} in-${node.next}`, [x + box * 0.81, y + 22], [tx - 2, ty + 22], marked(`next-${id}`, true)));
         }
         // the variables: head on the left, the others below their node
         const headTo = frame.head !== null && place.has(frame.head) ? place.get(frame.head) : null;
         const w = 14 + 7.5 * 4;
         svg.appendChild(el('svg:rect', { 'data-solid': '', 'data-key': 'var-head', x: 4, y: top + 13, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
-        if (headTo) svg.insertBefore(arrow('pointer-head', `var-head in-${frame.head}`, [4 + w / 2, top + 22], [headTo[0] - 2, headTo[1] + 22], { stroke: 'var(--algo-accent)', 'marker-end': `url(#${marker}-accent)` }), svg.lastChild);
+        if (headTo) svg.insertBefore(arrow('pointer-head', `var-head in-${frame.head}`, [4 + w / 2, top + 22], [headTo[0] - 2, headTo[1] + 22], { stroke: 'var(--algo-accent)', 'marker-end': `url(#${marker}-accent)`, ...marked('pointer-head', false) }), svg.lastChild);
+        for (const node of pulseNodes(frame.pulses)) svg.insertBefore(node, svg.lastChild);
         svg.appendChild(el('svg:text', { 'data-key': 'var-head-label', x: 4 + w / 2, y: top + 26, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'head' }));
         if (!headTo) svg.appendChild(el('svg:text', { 'data-key': 'head-empty', x: 8 + w, y: top + 26, 'font-size': 13, fill: 'var(--bs-secondary-color)', text: 'nichts' }));
         for (const [id, [x, y]] of place) {
@@ -2067,7 +2133,12 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             ? el('span', { class: 'algo-empty', text: '–' }) : el('span', { class: 'algo-item next', text: String(text) })]));
         // the calls that run (a list's node_at), above the code
         const listSide = (frame, deepest) => side.replaceChildren(...(deepest ? [el('h5', { text: 'Aufrufe' }), el('ol', { class: 'algo-stack', style: `min-height: ${deepest * STACK_LINE}em;` },
-            (frame.stack || []).map((entry, i, all) => el('li', { class: i === all.length - 1 ? 'current' : '', style: `margin-left: ${i * 1.2}em;`, text: entry.call })))] : []), ...codeBox(frame.code));
+            (frame.stack || []).map((entry, i, all) => {
+                const li = el('li', { class: !frame.returning && i === all.length - 1 ? 'current' : '', style: `margin-left: ${i * 1.2}em;`, text: entry.returns ? `${entry.call} → ${entry.returns}` : entry.call,
+                    ...(entry.node !== null && entry.node !== undefined ? { 'data-node': entry.node } : {}) });
+                if (frame.returning) { li.classList.add('returning'); li.style.animationDelay = `${((all.length - 1 - i) / (all.length + 1)) * (frame.duration || MOTION_TIME) / 1000}s`; }
+                return li;
+            }))] : []), ...codeBox(frame.code));
         const setupOps = parseOps(widget.dataset.setup || '');
         if (algo === 'ring') {
             const capacity = Number(widget.dataset.capacity || 6);
@@ -2083,7 +2154,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             svg.setAttribute('aria-label', 'Die Zellen des Arrays, die ersten size davon gehören zur Liste');
             draw = (frame) => { drawArray(svg, frame, most, marker, grows); listSide(frame, 0); };
         } else if (algo === 'linked') {
-            frames = traceLinked(parseOps(widget.dataset.ops), setupOps);
+            frames = traceLinked(parseOps(widget.dataset.ops), setupOps, widget.dataset.mode === 'recursive');
             const most = Math.max(...frames.map((f) => f.order.length + (f.loose ? 1 : 0)));
             const deepest = Math.max(0, ...frames.map((f) => (f.stack || []).length));
             const marker = `algo-arrow-${++widgetCount}`;
@@ -2292,7 +2363,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         // Lines from each call on the stack to the node it holds (trees): the
         // current one strong, the waiting ones faint; they follow the nodes
         // while they move and fade with their call when it returns
-        const links = algo === 'bst' || algo === 'avl' ? el('svg:svg', { class: 'algo-links', 'aria-hidden': 'true' }) : null;
+        const links = algo === 'bst' || algo === 'avl' || (algo === 'linked' && widget.dataset.mode === 'recursive') ? el('svg:svg', { class: 'algo-links', 'aria-hidden': 'true' }) : null;
         if (links) body.prepend(links);
         let linking = 0;
         const connect = () => {
