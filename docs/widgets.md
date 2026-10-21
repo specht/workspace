@@ -127,6 +127,10 @@ only to look nice.
   parameter `node`, and the label `node` is always beside it. It moves from
   node to node, and while it fades in or out it stays on its node, even when
   that node moves (`data-follow`).
+- **Nothing jumps, not even while sliding along the timeline**: every part of
+  a widget keeps the height of its tallest step (`stepper_keys.js` goes
+  through all steps once when the page has loaded and sets `min-height` in
+  em; again when the width changes or a text in the widget is edited).
 - **Nothing jumps.** The call stack keeps the height of its deepest moment
   over the whole timeline, and the start (before any operation) already shows
   the code of the first one, no line marked: the code box stays where it is

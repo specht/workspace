@@ -618,7 +618,8 @@ document.addEventListener('DOMContentLoaded', function() {
         root.dataset.steps = count;
     }
     const go = (k) => { const before = current; current = Math.max(0, Math.min(built.steps.length - 1, k)); render(Math.abs(current - before) === 1, current > before); };
-    root.stepperGo = go;
+    // a jump to a step, without movement (the timeline, stepper_keys.js)
+    root.stepperGo = (k) => { current = Math.max(0, Math.min(built.steps.length - 1, k)); render(false); };
     root.querySelector("[data-go='first']").addEventListener('click', () => go(0));
     root.querySelector("[data-go='prev']").addEventListener('click', () => go(current - 1));
     root.querySelector("[data-go='next']").addEventListener('click', () => go(current + 1));

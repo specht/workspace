@@ -431,3 +431,48 @@ document.addEventListener('keydown', (event) => {
     if (document.readyState === 'complete') all();
     else window.addEventListener('load', all);
 })();
+
+// Nothing moves while one steps or slides through a widget: every part of
+// it keeps the height of its tallest step (min-height, in em, so that it
+// follows the text), measured by going through all steps once when the
+// page has loaded, again when the width changes or a text in the widget is
+// edited. Not in the lightbox, whose fit measures for itself.
+(() => {
+    const parts = (widget) => [...widget.children].filter((c) => !['absolute', 'fixed'].includes(getComputedStyle(c).position));
+    const clear = (widget) => { for (const part of parts(widget)) part.style.minHeight = ''; };
+    const reserve = (widget) => {
+        if (typeof widget.stepperGo !== 'function' || widget.classList.contains('stepper-lightbox')) return;
+        const steps = Number(widget.dataset.steps);
+        if (!(steps > 1)) return;
+        const at = Number(widget.dataset.step) || 0;
+        const list = parts(widget);
+        clear(widget);
+        const least = list.map(() => Infinity);
+        const most = list.map(() => 0);
+        for (let s = 0; s < steps; s++) {
+            widget.stepperGo(s);
+            list.forEach((part, i) => {
+                const h = part.getBoundingClientRect().height;
+                least[i] = Math.min(least[i], h);
+                most[i] = Math.max(most[i], h);
+            });
+        }
+        widget.stepperGo(at);
+        list.forEach((part, i) => {
+            if (most[i] - least[i] > 1) part.style.minHeight = `${most[i] / (parseFloat(getComputedStyle(part).fontSize) || 16)}em`;
+        });
+    };
+    const all = () => document.querySelectorAll('[data-stepper]').forEach(reserve);
+    let waiting = 0;
+    const soon = () => { clearTimeout(waiting); waiting = setTimeout(all, 150); };
+    let width = window.innerWidth;
+    window.addEventListener('resize', () => {
+        // the lightbox opens or closes: at once, before its fit measures
+        document.querySelectorAll('[data-stepper].stepper-lightbox').forEach(clear);
+        if (window.innerWidth !== width || !document.querySelector('.stepper-lightbox')) { width = window.innerWidth; soon(); }
+    });
+    document.addEventListener('input', (event) => { const widget = event.target.closest && event.target.closest('[data-stepper]'); if (widget) { clearTimeout(waiting); waiting = setTimeout(() => reserve(widget), 400); } });
+    const start = () => (window.requestIdleCallback ? requestIdleCallback(all, { timeout: 1500 }) : setTimeout(all, 300));
+    if (document.readyState === 'complete') start();
+    else window.addEventListener('load', start);
+})();
