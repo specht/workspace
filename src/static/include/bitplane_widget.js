@@ -8,10 +8,13 @@
 // marked.
 //
 //   <div class='bitplane-widget' data-x='300' data-y='40' data-credit='…'>
-//   <img data-noconvert src='strandwagen.png' alt='…'></div>
+//   <img data-noconvert src='strandwagen.png' alt='…' data-label='ohne Botschaft'>
+//   <img data-noconvert src='strandwagen-text.png' alt='…' data-label='…'></div>
 //
-// The photo is the <img> inside (the page serves it, without the script it
-// is simply shown); a PNG, so that every bit is the photo's own.
+// The photos are the <img>s inside (the page serves them, without the
+// script the first is simply shown); PNGs, so that every bit is the
+// photo's own. With more than one, a choice above: the same photo, with a
+// message hidden in it or without.
 (function () {
     'use strict';
     const html = (tag, attrs = {}, children = []) => {
@@ -23,9 +26,11 @@
     let count = 0;
     function mount(el) {
         const id = `bitplane-${++count}`;
-        const photo = el.querySelector('img');
-        if (!photo) return;
-        const canvas = html('canvas', { class: 'bitplane-picture', role: 'img', 'aria-label': photo.alt || '' });
+        const photos = [...el.querySelectorAll('img')];
+        if (!photos.length) return;
+        const canvas = html('canvas', { class: 'bitplane-picture', role: 'img', 'aria-label': photos[0].alt || '' });
+        const choice = html('select', { class: 'form-select form-select-sm bitplane-choice', 'aria-label': 'Welches Foto' },
+            photos.map((p, i) => html('option', { value: i, text: p.dataset.label || `Foto ${i + 1}` })));
         // the two handles: values are bit numbers, 7 on the left
         const high = html('input', { type: 'range', min: 0, max: 7, step: 1, value: 7, dir: 'rtl', 'aria-label': 'Höchstes Bit, das bleibt' });
         const low = html('input', { type: 'range', min: 0, max: 7, step: 1, value: 0, dir: 'rtl', 'aria-label': 'Niedrigstes Bit, das bleibt' });
@@ -35,6 +40,7 @@
         const sample = html('div', { class: 'bitplane-sample' });
         el.replaceChildren(
             html('div', { class: 'bitplane-controls' }, [
+                ...(photos.length > 1 ? [choice] : []),
                 html('div', { class: 'bitplane-bits' }, [html('div', { class: 'bitplane-cells' }, cells), html('div', { class: 'bitplane-range' }, [high, low])]),
                 html('div', { class: 'form-check' }, [stretch, html('label', { class: 'form-check-label', for: `${id}-stretch`, text: 'verstärken' })]),
             ]),
@@ -45,8 +51,8 @@
             credit.innerHTML = el.dataset.credit;
             el.appendChild(credit);
         }
-        const image = new Image();
-        image.crossOrigin = 'anonymous';
+        // every photo read once, its pixels kept
+        const sources = photos.map(() => null);
         let source = null;
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         const draw = () => {
@@ -81,14 +87,21 @@
             sample.replaceChildren(`Ein Pixel im Himmel, sein Rot: ${red} = `, html('code', {}, bits), ' → ', html('code', { text: kept.toString(2).padStart(8, '0') }),
                 ` = ${kept}${stretch.checked && !(lo === 0 && hi === 7) ? `, gestreckt ${Math.round(((kept >> lo) * 255) / top)}` : ''}`);
         };
-        image.addEventListener('load', () => {
-            canvas.width = image.naturalWidth;
-            canvas.height = image.naturalHeight;
-            ctx.drawImage(image, 0, 0);
-            source = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            draw();
-        });
-        image.src = photo.currentSrc || photo.src;
+        const use = (i) => {
+            canvas.setAttribute('aria-label', photos[i].alt || '');
+            if (sources[i]) { source = sources[i]; draw(); return; }
+            const image = new Image();
+            image.addEventListener('load', () => {
+                canvas.width = image.naturalWidth;
+                canvas.height = image.naturalHeight;
+                ctx.drawImage(image, 0, 0);
+                sources[i] = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                if (Number(choice.value) === i) { source = sources[i]; draw(); }
+            });
+            image.src = photos[i].currentSrc || photos[i].src;
+        };
+        use(0);
+        choice.addEventListener('input', () => use(Number(choice.value)));
         for (const input of [high, low, stretch]) input.addEventListener('input', draw);
     }
     const start = () => document.querySelectorAll('.bitplane-widget').forEach(mount);

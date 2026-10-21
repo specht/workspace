@@ -245,10 +245,12 @@ In Bitebene 1 steht ein Hinweis, mitten in einem Foto, das ganz normal aussieht.
 </div>
 <!-- /language -->
 
-Hier geht es mit einem anderen Foto weiter, und mit mehr als einem Bit: Zieh die beiden Griffe, und nur die Bits zwischen ihnen bleiben, alle anderen werden 0. Liegen beide auf demselben Bit, ist das eine Bitebene; »verstärken« streckt, was übrig bleibt, auf 0 bis 255, sonst wären die unteren Bits fast schwarz. Wie viele Bits von oben brauchst du, bis der Himmel glatt aussieht?
+Hier geht es mit einem anderen Foto weiter, und mit mehr als einem Bit: Zieh die beiden Griffe, und nur die Bits zwischen ihnen bleiben, alle anderen werden 0. Liegen beide auf demselben Bit, ist das eine Bitebene; »verstärken« streckt, was übrig bleibt, auf 0 bis 255, sonst wären die unteren Bits fast schwarz. Wie viele Bits von oben brauchst du, bis der Himmel glatt aussieht? Oben kannst du dasselbe Foto mit einer Botschaft wählen, einmal als Text nach den Regeln dieser Seite, einmal als Schrift: Sieht das Foto anders aus? Und die Bitebene 0?
 
 <div class='bitplane-widget' data-x='300' data-y='30' data-credit='Foto: Uwe Jelting, <a href="https://commons.wikimedia.org/wiki/File:Strandwagen_Auf_Borkum_(183887415).jpeg">Strandwagen auf Borkum</a>, CC0'>
-<img data-noconvert src='strandwagen.png' alt='Ein roter Strandwagen auf hellem Sand unter blauem Himmel, mit den gewählten Bits jedes Kanals.'>
+<img data-noconvert src='strandwagen.png' data-label='ohne Botschaft' alt='Ein roter Strandwagen auf hellem Sand unter blauem Himmel, mit den gewählten Bits jedes Kanals.'>
+<img data-noconvert src='strandwagen-text.png' data-label='mit einem Text im untersten Bit' alt='Derselbe Strandwagen, oben im untersten Bit ein Text nach den Regeln dieser Seite, mit den gewählten Bits jedes Kanals.'>
+<img data-noconvert src='strandwagen-bild.png' data-label='mit einer Schrift im untersten Bit' alt='Derselbe Strandwagen, im untersten Bit jedes Kanals eine Schrift, mit den gewählten Bits jedes Kanals.'>
 </div>
 <script src='/include/bitplane_widget.js'></script>
 
