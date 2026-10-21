@@ -1466,8 +1466,13 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('lzw-prev').disabled = current === 0;
         document.getElementById('lzw-next').disabled = current === steps.length - 1;
         document.getElementById('lzw-last').disabled = current === steps.length - 1;
+        // for the timeline (stepper_keys.js)
+        const widget = document.getElementById('lzw-stepper');
+        widget.dataset.step = current;
+        widget.dataset.steps = steps.length;
     }
     const go = (k) => { current = Math.max(0, Math.min(steps.length - 1, k)); render(); };
+    document.getElementById('lzw-stepper').stepperGo = go;
     document.getElementById('lzw-first').addEventListener('click', () => go(0));
     document.getElementById('lzw-prev').addEventListener('click', () => go(current - 1));
     document.getElementById('lzw-next').addEventListener('click', () => go(current + 1));

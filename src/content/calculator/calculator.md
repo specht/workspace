@@ -801,6 +801,9 @@ python3 -c 'import ast; print(ast.dump(ast.parse("2 + 3 * 4", mode="eval"), inde
         root.querySelector("[data-go='prev']").disabled = current <= 0;
         root.querySelector("[data-go='next']").disabled = current >= steps.length - 1;
         root.querySelector("[data-go='last']").disabled = current >= steps.length - 1;
+        // for the timeline (stepper_keys.js)
+        root.dataset.step = current;
+        root.dataset.steps = steps.length;
     }
 
     function go(index) {
@@ -830,6 +833,7 @@ python3 -c 'import ast; print(ast.dump(ast.parse("2 + 3 * 4", mode="eval"), inde
         draw();
     }
 
+    root.stepperGo = go;
     root.querySelector("[data-go='first']").addEventListener('click', () => go(0));
     root.querySelector("[data-go='prev']").addEventListener('click', () => go(current - 1));
     root.querySelector("[data-go='next']").addEventListener('click', () => go(current + 1));

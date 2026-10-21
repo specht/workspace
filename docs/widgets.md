@@ -264,7 +264,10 @@ only to look nice.
   end starts again from the beginning. On a touch screen play and its speed
   sit beside the step count. Every other widget with step buttons (Huffman,
   LZW, GIF, JPEG, the calculator, the Query Stepper, the iDCT) gets the same
-  play from `stepper_keys.js`, which presses next until it is disabled.
+  play from `stepper_keys.js`, which presses next until it is disabled, and
+  the Algo Stepper's timeline (dots, the done ones purple, tap or drag to a
+  step) where the widget keeps `data-step` and `data-steps` and offers
+  `stepperGo(step)` (Huffman, LZW, GIF, the calculator, the iDCT).
 - **A lightbox for a demo**: every widget has a square button at its top
   right (`bi-fullscreen`, `stepper_keys.js`) that opens it larger in a
   lightbox on a black background, for the big screen. The keys and the

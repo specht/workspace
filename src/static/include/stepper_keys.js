@@ -340,6 +340,52 @@ document.addEventListener('keydown', (event) => {
             speedButton.textContent = SPEEDS[speed][1];
         });
         widget.addEventListener('click', (event) => { if (!auto && event.target.closest('[data-go]')) stop(); }, true);
+        // a step chosen on the timeline stops it too
+        widget.addEventListener('pointerdown', (event) => { if (event.target.closest('.stepper-timeline')) stop(); }, true);
+    };
+    const all = () => document.querySelectorAll('[data-stepper]').forEach(add);
+    if (document.readyState === 'complete') all();
+    else window.addEventListener('load', all);
+})();
+
+// A timeline for widgets that have none of their own (the Algo Stepper
+// has): a dot for every step, joined by a fine line, the steps done
+// coloured, the current one marked; a tap or a drag on it goes to that
+// step. A widget takes part by keeping data-step (from 0) and data-steps
+// up to date and offering widget.stepperGo(step).
+(() => {
+    const add = (widget) => {
+        if (typeof widget.stepperGo !== 'function' || widget.querySelector('.algo-timeline, .stepper-timeline')) return;
+        const next = widget.querySelector("[data-go='next']");
+        if (!next) return;
+        const box = document.createElement('div');
+        box.className = 'stepper-timeline';
+        box.dataset.noSwipe = '';
+        box.setAttribute('role', 'slider');
+        box.setAttribute('aria-label', 'Die Schritte');
+        next.parentElement.after(box);
+        const render = () => {
+            const steps = Number(widget.dataset.steps) || 0;
+            const at = Number(widget.dataset.step) || 0;
+            box.hidden = steps < 2;
+            if (box.children.length !== steps) box.replaceChildren(...Array.from({ length: steps }, () => document.createElement('span')));
+            [...box.children].forEach((tick, i) => { tick.className = i < at ? 'done' : i === at ? 'current' : ''; });
+            box.setAttribute('aria-valuemax', Math.max(0, steps - 1));
+            box.setAttribute('aria-valuenow', at);
+        };
+        new MutationObserver(render).observe(widget, { attributes: true, attributeFilter: ['data-step', 'data-steps'] });
+        render();
+        let dragging = false;
+        const stepAt = (event) => {
+            const steps = Number(widget.dataset.steps) || 0;
+            const rect = box.getBoundingClientRect();
+            const to = Math.max(0, Math.min(steps - 1, Math.floor((event.clientX - rect.left) / rect.width * steps)));
+            if (to !== Number(widget.dataset.step)) widget.stepperGo(to);
+        };
+        box.addEventListener('pointerdown', (event) => { dragging = true; box.setPointerCapture(event.pointerId); stepAt(event); });
+        box.addEventListener('pointermove', (event) => { if (dragging) stepAt(event); });
+        box.addEventListener('pointerup', () => { dragging = false; });
+        box.addEventListener('pointercancel', () => { dragging = false; });
     };
     const all = () => document.querySelectorAll('[data-stepper]').forEach(add);
     if (document.readyState === 'complete') all();

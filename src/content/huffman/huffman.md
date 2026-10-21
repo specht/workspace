@@ -577,8 +577,12 @@ document.addEventListener('DOMContentLoaded', function() {
         root.querySelector("[data-go='prev']").disabled = current <= 0;
         root.querySelector("[data-go='next']").disabled = current >= count - 1;
         root.querySelector("[data-go='last']").disabled = current >= count - 1;
+        // for the timeline (stepper_keys.js)
+        root.dataset.step = current;
+        root.dataset.steps = count;
     }
     const go = (k) => { const before = current; current = Math.max(0, Math.min(built.steps.length - 1, k)); render(Math.abs(current - before) === 1); };
+    root.stepperGo = go;
     root.querySelector("[data-go='first']").addEventListener('click', () => go(0));
     root.querySelector("[data-go='prev']").addEventListener('click', () => go(current - 1));
     root.querySelector("[data-go='next']").addEventListener('click', () => go(current + 1));

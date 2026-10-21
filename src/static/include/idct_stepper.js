@@ -112,9 +112,13 @@
             count.textContent = `Schritt ${current + 1} von ${list.length}`;
             go('first').disabled = go('prev').disabled = current <= 0;
             go('next').disabled = go('last').disabled = current >= list.length - 1;
+            // for the timeline (stepper_keys.js)
+            element.dataset.step = current;
+            element.dataset.steps = list.length;
         }
 
         const to = (i) => { current = Math.max(0, Math.min(list.length - 1, i)); draw(); };
+        element.stepperGo = to;
         go('first').addEventListener('click', () => to(0));
         go('prev').addEventListener('click', () => to(current - 1));
         go('next').addEventListener('click', () => to(current + 1));
