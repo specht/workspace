@@ -76,7 +76,7 @@ jobs:
       - name: Website tests
         working-directory: e2e
         run: |
-          npx playwright test --project=workspace-smoke --no-deps \
+          npx playwright test --project=workspace-smoke --no-deps --reporter=github,list \
             tests/access-rules.browser.spec.ts \
             tests/auth.browser.spec.ts \
             tests/class-page.browser.spec.ts \
