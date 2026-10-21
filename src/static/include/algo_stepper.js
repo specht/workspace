@@ -600,7 +600,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         // phase: a part of the work (merge, partition), for the timeline
         let phase = null;
         const snapshot = (message, marks = {}) => frames.push({ slots: [...slots], values: { ...values }, lifted: lifted && { ...lifted }, scratch: scratch && [...scratch],
-            stack: stack.map((call) => ({ call })), comparisons, writes, message, phase, code: { lines: SORT_CODE[kind], at: marks.line }, ...marks });
+            stack: stack.map((entry) => ({ ...entry })), comparisons, writes, message, phase, code: { lines: SORT_CODE[kind], at: marks.line }, ...marks });
         const swap = (a, b) => { [slots[a], slots[b]] = [slots[b], slots[a]]; writes += 2; };
         const copyTo = (index, fromId) => {
             const id = nextId++;
@@ -683,7 +683,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             }
         } else if (kind === 'merge') {
             const sort = (lo, hi) => {
-                stack.push(`merge_sort(start: ${lo}, stop: ${hi})`);
+                stack.push({ call: `merge_sort(start: ${lo}, stop: ${hi})`, range: [lo, hi] });
                 const ends = [{ name: 'start', index: lo }, { name: 'stop', index: hi }];
                 if (hi - lo < 2) {
                     snapshot(`stop - start < 2: Von ${lo} bis ${hi - 1} steht nur eine Zahl, die ist schon sortiert.`, { line: 1, vars: ends, range: [lo, hi] });
@@ -725,7 +725,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             sort(0, n);
         } else if (kind === 'quick') {
             const sort = (lo, hi) => {
-                stack.push(`quick_sort(first: ${lo}, last: ${hi})`);
+                stack.push({ call: `quick_sort(first: ${lo}, last: ${hi})`, range: [lo, hi + 1] });
                 const ends = [{ name: 'first', index: lo }, { name: 'last', index: hi }];
                 if (hi <= lo) {
                     snapshot(`last ≤ first: Von ${lo} bis ${hi} steht ${hi === lo ? 'nur eine Zahl' : 'nichts'}, fertig.`, { line: 1, vars: ends.filter((e) => e.index >= 0 && e.index < n), range: [lo, hi + 1] });
@@ -821,6 +821,23 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             ];
         };
         svg.appendChild(arrowheads(marker));
+        // the recursion: a band behind the bars for the current call's range,
+        // and above the bars a bracket for every call on the stack, the
+        // outer ones grey, the current one purple; they move with the calls
+        const ranges = (frame.stack || []).map((entry) => entry.range).filter(Boolean);
+        if (ranges.length) {
+            const [a, b] = ranges[ranges.length - 1];
+            if (b > a) svg.appendChild(el('svg:rect', { 'data-key': 'range-band', x: a * cell + 1, y: lift - 4, width: (b - a) * cell - 2, height: height + 6, rx: 6,
+                fill: 'color-mix(in srgb, var(--algo-accent) 9%, transparent)', stroke: 'color-mix(in srgb, var(--algo-accent) 35%, transparent)', 'stroke-width': 1 }));
+            ranges.forEach(([lo, hi], k) => {
+                const current = k === ranges.length - 1;
+                const y = 6 + k * 7;
+                const x1 = lo * cell + 3;
+                const x2 = Math.max(x1 + 4, hi * cell - 3);
+                svg.appendChild(el('svg:path', { 'data-key': `range-${k}`, d: `M${x1} ${y + 5} L${x1} ${y} L${x2} ${y} L${x2} ${y + 5}`, fill: 'none',
+                    stroke: current ? 'var(--algo-accent)' : 'var(--algo-line)', 'stroke-width': current ? 2 : 1.2 }));
+            });
+        }
         frame.slots.forEach((id, i) => {
             const fill = frame.pivot === i ? 'var(--algo-goal)' : compare.has(i) ? 'var(--algo-frontier)'
                 : isSorted(i) ? 'var(--algo-done)' : 'color-mix(in srgb, var(--algo-line) 60%, transparent)';

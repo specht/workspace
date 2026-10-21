@@ -146,6 +146,11 @@ only to look nice.
   the value in the sorted order, which rotations keep, so nodes move up and
   down but not sideways. A node that only a variable still holds stands as a
   small tree of its own beside the node being worked on.
+- **The range of a recursive call is in the picture** (merge sort, quick
+  sort): a light band behind the bars of the current call's range, and above
+  the bars a bracket for every call on the stack, the outer ones grey, the
+  current one purple; they move with the calls, so the recursion is seen
+  going down into the halves and coming back.
 - **Entries that swap** (heap, sorting) glide to each other's place on a
   small arc (`data-arc`), so that they pass each other instead of
   overlapping, in every view at once (the heap's tree and array).
