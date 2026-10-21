@@ -63,6 +63,7 @@ write-file: beispiel.css <- previous-code
 preview-port: 8090
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel css
 variants: folie
 -->
@@ -147,6 +148,7 @@ write-file: beispiel.html <- previous-code (farben-html)
 write-file: beispiel.css <- previous-code
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel css
 variants: folie
 -->
@@ -195,6 +197,7 @@ write-file: beispiel.html <- previous-code (schrift-html)
 write-file: beispiel.css <- previous-code
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel css
 variants: folie
 -->
@@ -288,6 +291,7 @@ write-file: beispiel.html <- previous-code (infokarte-html)
 write-file: beispiel.css <- previous-code
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel css
 variants: folie
 -->
@@ -319,6 +323,7 @@ Ohne Angabe ist ein Bild so groß wie die Datei, oft viel zu groß. Gib ihm eine
 write-file: beispiel.html <- previous-code
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel
 variants: folie
 -->
@@ -343,6 +348,7 @@ Gibst du beides an und es passt nicht zum Bild, wird es verzerrt:
 write-file: beispiel.html <- previous-code
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel
 variants: folie
 -->
@@ -362,6 +368,7 @@ Mit `object-fit: cover` füllt das Bild den Rahmen, ohne sich zu verzerren; was 
 write-file: beispiel.html <- previous-code
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel
 variants: folie
 -->
@@ -397,6 +404,7 @@ write-file: beispiel.html <- previous-code (seitenverhaeltnis-html)
 write-file: beispiel.css <- previous-code
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel css
 variants: folie
 -->
@@ -443,6 +451,7 @@ write-file: beispiel.html <- previous-code (genauer-html)
 write-file: beispiel.css <- previous-code
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel css
 variants: folie
 -->
@@ -471,6 +480,7 @@ write-file: beispiel.html <- previous-code (genauer2-html)
 write-file: beispiel.css <- previous-code
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel css
 variants: folie
 -->

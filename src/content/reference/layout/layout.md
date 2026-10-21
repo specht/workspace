@@ -62,6 +62,7 @@ write-file: beispiel.css <- previous-code
 preview-port: 8090
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel css
 variants: folie
 -->
@@ -121,6 +122,7 @@ write-file: beispiel.html <- previous-code (spalten-html)
 write-file: beispiel.css <- previous-code
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel css
 variants: folie
 -->
@@ -185,6 +187,7 @@ write-file: beispiel.html <- previous-code (absolut-html)
 write-file: beispiel.css <- previous-code
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel css
 variants: folie
 -->

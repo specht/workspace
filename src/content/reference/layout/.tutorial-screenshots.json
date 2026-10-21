@@ -2,28 +2,28 @@
   "screenshots": {
     "beschriftung.webp": {
       "environment_fingerprint": "f47973a5e3c4b4dc65faea2317e5baacfab79aae92a89de8f43db4cd4ceee6c9",
-      "output_sha256": "bd2fe35742133a3f4c9bee646ba6a1792ac9ac8d340c0f0ae21d93b769cb7a07",
-      "state_hash": "0bbd7f9fb03da63994bff3b62d4bb3ff047757d34a9893a1798c68930ba658f4",
+      "output_sha256": "69ca50b0163dfecadfdcc72287d63735178e30d18493ab2a4333602cb23d855b",
+      "state_hash": "16dc90c4baab2aade1f8798b668ca1f061f7702908f1f4a3c5c1ad68e6b8edd7",
       "variants": {
-        "beschriftung-folie.webp": "3f4c2864e0d167581221af2c3176a913888854d54af8647fa455b38cbf1164ee"
+        "beschriftung-folie.webp": "dd14d9d9614dc4677b743ebddb28d1fa6c704d0385aa379861dff7f96ab50609"
       },
       "workspace_look": "4.140.0-ls368"
     },
     "nebeneinander.webp": {
       "environment_fingerprint": "f47973a5e3c4b4dc65faea2317e5baacfab79aae92a89de8f43db4cd4ceee6c9",
-      "output_sha256": "d4b5d09d16f84ffd7d97b61f94abbbf3dbcc635af73e5bd197cb6d6ade8babc8",
-      "state_hash": "13666124a26e1cc2c55d697c6747360d888f230d56d692895b57cf14c7af0fea",
+      "output_sha256": "de59e2053ba34e9391fb7962c1a36f7847ec18eeaea65f326a23cd6ba85e58cb",
+      "state_hash": "e9b45126eb851c471efd2e1ad70ed5a8bf397a1e506f9f1166c034c4ddc0eee5",
       "variants": {
-        "nebeneinander-folie.webp": "70488ce8d5a85a0c43c16d50fcacdceebb154638598b7d07e9f5eb10a6b73071"
+        "nebeneinander-folie.webp": "44fdafc304af916d298a1b27b160437b466606d864ab00f2729ea6c493652400"
       },
       "workspace_look": "4.140.0-ls368"
     },
     "spalten.webp": {
       "environment_fingerprint": "f47973a5e3c4b4dc65faea2317e5baacfab79aae92a89de8f43db4cd4ceee6c9",
-      "output_sha256": "830725c106349e215e9263ddf0c8aa3bb1cde917a58a09168769142e42408b21",
-      "state_hash": "60eeeb066e0e3be007543c9e7d5a9942200c7cf7d4a7900742e94ed0868d49bc",
+      "output_sha256": "ca08e613b75c193d580df4d0e6e7896d28b57799eb8d728b0d43fe1689abf3fb",
+      "state_hash": "1705e6d4169fd0f03ee6310bab1b0f5bcd222ea6effe45d91ca669c89cd1b15f",
       "variants": {
-        "spalten-folie.webp": "7ce50440ddfb4f2469ac7419a8fc1b30cbd4ba7dd8b69f7d9c6dbc8c5c28e0ec"
+        "spalten-folie.webp": "afbf23a862c9f28a4b5eff8f8383684133682eb30b5e935368a711fa5d6915a4"
       },
       "workspace_look": "4.140.0-ls368"
     }

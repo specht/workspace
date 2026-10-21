@@ -43,6 +43,7 @@ write-file: beispiel.html <- previous-code
 preview-port: 8090
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel
 variants: folie
 -->
@@ -98,6 +99,7 @@ Jede Webseite hat dasselbe Gerüst. Der sichtbare Inhalt steht im `<body>`, alle
 write-file: beispiel.html <- previous-code
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel
 -->
 
@@ -139,6 +141,7 @@ Es gibt sechs Stufen von Überschriften, `<h1>` bis `<h6>`; meistens brauchst du
 write-file: beispiel.html <- previous-code
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel
 variants: folie
 -->
@@ -184,6 +187,7 @@ Manchmal soll innerhalb eines Absatzes eine neue Zeile beginnen, zum Beispiel be
 write-file: beispiel.html <- previous-code
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel
 variants: folie
 -->
@@ -222,6 +226,7 @@ Jeder einzelne Punkt steht in einem eigenen `<li>` (»list item«):
 write-file: beispiel.html <- previous-code
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel
 variants: folie
 -->
@@ -244,6 +249,7 @@ Bei `<ol>` setzt der Browser die Nummern selbst davor. Schreib sie also nicht in
 write-file: beispiel.html <- previous-code
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel
 variants: folie
 -->
@@ -277,6 +283,7 @@ Manche Tags stehen mitten im Text und verändern nur ein paar Wörter:
 write-file: beispiel.html <- previous-code
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel
 variants: folie
 -->
@@ -325,6 +332,7 @@ Das **H** in HTML steht für **Hypertext**: Seiten können auf andere Seiten ver
 write-file: beispiel.html <- previous-code
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel
 variants: folie
 -->
@@ -578,6 +586,7 @@ Liegt die Bilddatei im Projekt, fügst du sie mit `<img>` ein:
 write-file: beispiel.html <- previous-code
 tab: preview
 viewport: 1024x576
+zoom: 1.6
 hook: beispiel
 variants: folie
 -->
