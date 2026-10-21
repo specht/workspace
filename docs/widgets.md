@@ -13,6 +13,9 @@ in doubt, do it the way it does.
 
 ## What a widget shows
 
+- **A title says what can be seen** (`data-title`), above the buttons:
+  »AVL-Baum: entfernen, mit Rotationen auf zwei Ebenen«, »Heap: dreimal
+  pop, der letzte Eintrag sickert nach unten«.
 - **It starts with what it is about.** A demo of `remove` starts with the
   finished tree, not with the eight inserts that build it: `data-setup` holds
   the operations that build the start without steps of their own,
@@ -118,6 +121,11 @@ only to look nice.
   over the whole timeline, and the start (before any operation) already shows
   the code of the first one, no line marked: the code box stays where it is
   in every step.
+- **The way the stack went down is marked in the picture**: the pointers from
+  `root` through every waiting call's node to the current one are purple,
+  their dashes flowing in the direction of the calls, so it is always clear
+  along which way the stack will come back up (`on-stack`; without the
+  flowing under reduced motion).
 - **The calls that run** stand above the code box, each one deeper indented
   (`remove(node: 50, value: 20)`), the current one marked. On the way back
   each shows what it returns (`→ 30`) and they return one after another, the

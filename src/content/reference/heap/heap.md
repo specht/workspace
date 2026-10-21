@@ -83,7 +83,7 @@ push(heap, entry):
 
 Probier es aus mit 5, 3, 8, 1, 4 und 2. Oben steht der Heap als Baum, darunter dasselbe als Array, mit den Indizes klein daneben:
 
-<div class='algo-stepper' data-algo='heap' data-ops='push 5, push 3, push 8, push 1, push 4, push 2'></div>
+<div class='algo-stepper' data-title='Heap: sechs Einträge mit push, jeder sickert nach oben' data-algo='heap' data-ops='push 5, push 3, push 8, push 1, push 4, push 2'></div>
 
 Ein Eintrag steigt höchstens so viele Stufen auf, wie der Baum hoch ist: bei \\(n\\) Einträgen etwa \\(\log_2 n\\), bei einer Million also 20.
 <!-- /part -->
@@ -115,7 +115,7 @@ pop(heap):
 
 Derselbe Heap aus 5, 3, 8, 1, 4 und 2, und `pop` holt dreimal den kleinsten heraus:
 
-<div class='algo-stepper' data-algo='heap' data-setup='push 5, push 3, push 8, push 1, push 4, push 2' data-ops='pop, pop, pop'></div>
+<div class='algo-stepper' data-title='Heap: dreimal pop, der letzte Eintrag sickert nach unten' data-algo='heap' data-setup='push 5, push 3, push 8, push 1, push 4, push 2' data-ops='pop, pop, pop'></div>
 
 **Typische Fehler**
 

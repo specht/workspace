@@ -52,7 +52,7 @@ Dass `insert` den Knoten zurückgibt und der Aufrufer ihn wieder einträgt, ist 
 
 Acht Werte, dann zwei Suchen, eine erfolgreich und eine nicht:
 
-<div class='algo-stepper' data-algo='bst' data-ops='insert 50, insert 30, insert 70, insert 20, insert 40, insert 60, insert 80, insert 35, find 35, find 65'></div>
+<div class='algo-stepper' data-title='Suchbaum: acht Werte einfügen, dann zweimal suchen' data-algo='bst' data-ops='insert 50, insert 30, insert 70, insert 20, insert 40, insert 60, insert 80, insert 35, find 35, find 65'></div>
 <!-- /part -->
 
 <!-- part: suchbaum-entfernen -->
@@ -82,7 +82,7 @@ remove(node, value):
 
 Derselbe Baum, dann alle drei Fälle nacheinander: 20 ist ein Blatt, 40 hat ein Kind, 50 hat zwei:
 
-<div class='algo-stepper' data-algo='bst' data-setup='insert 50, insert 30, insert 70, insert 20, insert 40, insert 60, insert 80, insert 35' data-ops='remove 20, remove 40, remove 50'></div>
+<div class='algo-stepper' data-title='Suchbaum: entfernen, ein Blatt, ein Knoten mit einem Kind, einer mit zwei' data-algo='bst' data-setup='insert 50, insert 30, insert 70, insert 20, insert 40, insert 60, insert 80, insert 35' data-ops='remove 20, remove 40, remove 50'></div>
 
 **Typische Fehler**
 
@@ -124,7 +124,7 @@ height(node):
 
 Suchen, Einfügen und Entfernen laufen einen Weg von der Wurzel nach unten, sie brauchen also so viele Schritte, wie der Baum hoch ist. Ein gut gemischter Baum mit einer Million Werten ist etwa 20 Ebenen hoch. Kommen die Werte aber sortiert an, hängt jeder rechts am vorigen, und der Baum wird eine Kette:
 
-<div class='algo-stepper' data-algo='bst' data-ops='insert 10, insert 20, insert 30, insert 40, insert 50, insert 60'></div>
+<div class='algo-stepper' data-title='Suchbaum: sortierte Werte machen ihn zur Kette' data-algo='bst' data-ops='insert 10, insert 20, insert 30, insert 40, insert 50, insert 60'></div>
 
 Das ist eine Linked List mit Umwegen: Bei einer Million Werten braucht die Suche eine Million Schritte.
 
@@ -162,7 +162,35 @@ Welche Rotation nötig ist, hängt davon ab, wo der neue Wert gelandet ist, von 
 
 Diese acht Werte lösen alle vier Fälle aus, LL, RR, RL und LR in dieser Reihenfolge. Klein neben jedem Knoten steht seine Höhe:
 
-<div class='algo-stepper' data-algo='avl' data-ops='insert 50, insert 40, insert 30, insert 60, insert 70, insert 45, insert 20, insert 25'></div>
+<div class='algo-stepper' data-title='AVL-Baum: einfügen, mit allen vier Rotationen LL, RR, RL und LR' data-algo='avl' data-ops='insert 50, insert 40, insert 30, insert 60, insert 70, insert 45, insert 20, insert 25'></div>
+
+### Entfernen
+
+Entfernt wird wie im Suchbaum. Danach kann ein Teilbaum um eins zu niedrig sein, und das zeigt sich auf dem Weg zurück nach oben: Jeder Aufruf berechnet die Höhe seines Knotens neu und repariert ihn, wenn die Regel verletzt ist. Welche Rotation nötig ist, sagt hier nicht der entfernte Wert, sondern das **schwerere Kind**: Ist sein innerer Teilbaum höher als sein äußerer, braucht es die Doppelrotation.
+
+Anders als beim Einfügen ist mit einer Rotation nicht unbedingt Schluss. Die Rotation macht den Teilbaum um eins niedriger, und dann kann der Knoten darüber schief sein, bis hinauf zur Wurzel.
+
+```pseudocode
+remove(node, value):
+    (wie im Suchbaum)
+    update the height of node
+    return rebalance(node)
+
+rebalance(node):
+    if height(node.left) - height(node.right) > 1:
+        if height(node.left.left) < height(node.left.right):
+            node.left ← rotate_left(node.left)
+        return rotate_right(node)
+    if height(node.right) - height(node.left) > 1:
+        if height(node.right.right) < height(node.right.left):
+            node.right ← rotate_right(node.right)
+        return rotate_left(node)
+    return node
+```
+
+Hier löst schon das Entfernen der 50 zwei Reparaturen aus: erst eine Doppelrotation bei 60, dann eine Rotation bei der Wurzel:
+
+<div class='algo-stepper' data-title='AVL-Baum: entfernen, mit Rotationen auf zwei Ebenen' data-algo='avl' data-setup='insert 40, insert 20, insert 60, insert 10, insert 30, insert 50, insert 70, insert 5, insert 15, insert 25, insert 35, insert 65, insert 3' data-ops='remove 50'></div>
 
 **Typische Fehler**
 
@@ -170,6 +198,7 @@ Diese acht Werte lösen alle vier Fälle aus, LL, RR, RL und LR in dieser Reihen
 - Den neuen obersten Knoten nicht zurückgeben und eintragen: Die Rotation passiert, aber der Elternteil zeigt noch auf den alten.
 - LR und RL mit einer einzigen Rotation lösen: Dann ist der Baum danach genauso schief, nur zur anderen Seite.
 - Die Höhe eines leeren Teilbaums nicht als 0 behandeln: Ohne eine kleine Funktion `height(node)`, die bei leer 0 liefert, stürzt jede Rechnung an einem Blatt ab.
+- Nach dem Entfernen beim ersten reparierten Knoten aufhören: Anders als beim Einfügen kann auch darüber noch eine Rotation nötig sein.
 <!-- /part -->
 
 ## Zum Nachschlagen

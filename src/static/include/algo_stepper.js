@@ -33,6 +33,11 @@
 .algo-stepper { margin: 1em 0 1.5em; --algo-accent: #6741d9; --algo-frontier: #ffe066; --algo-done: #b197fc;
     --algo-line: #adb5bd; --algo-ink: var(--bs-body-color); --algo-paper: var(--bs-body-bg); --algo-start: #2f9e44; --algo-goal: #e03131; }
 html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-frontier: #c9a227; --algo-done: #5f3dc4; --algo-line: #5c636e; }
+/* the pointers along which the calls on the stack went down */
+.algo-stepper svg path.on-stack { stroke-width: 2.4; stroke-dasharray: 7 4; animation: algo-march 0.9s linear infinite; }
+@keyframes algo-march { to { stroke-dashoffset: -11; } }
+@media (prefers-reduced-motion: reduce) { .algo-stepper svg path.on-stack { animation: none; stroke-dasharray: none; } }
+.algo-stepper .algo-title { font-weight: 600; font-size: 1.05em; margin: 0 0 0.5em; }
 .algo-stepper .algo-controls { display: flex; gap: 0.3em; align-items: center; flex-wrap: wrap; margin-bottom: 0.6em; }
 .algo-stepper .algo-count { margin-left: 0.6em; color: var(--bs-secondary-color); }
 .algo-stepper .algo-body { display: flex; gap: 1.2em; flex-wrap: wrap; align-items: flex-start; }
@@ -1069,6 +1074,14 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             '    else if value > node.value: node.right ← remove(node.right, value)', '    else:', '        if node.left empty: return node.right',
             '        if node.right empty: return node.left', '        successor ← node.right', '        while successor.left not empty: successor ← successor.left',
             '        node.value ← successor.value', '        node.right ← remove(node.right, successor.value)', '    return node'],
+        // in an AVL tree remove ends by setting the height and rebalancing
+        avlRemove: ['remove(node, value):', '    if node empty: return empty', '    if value < node.value: node.left ← remove(node.left, value)',
+            '    else if value > node.value: node.right ← remove(node.right, value)', '    else:', '        if node.left empty: return node.right',
+            '        if node.right empty: return node.left', '        successor ← node.right', '        while successor.left not empty: successor ← successor.left',
+            '        node.value ← successor.value', '        node.right ← remove(node.right, successor.value)', '    update the height of node', '    return rebalance(node)'],
+        rebalance: ['rebalance(node):', '    if height(node.left) - height(node.right) > 1:', '        if height(node.left.left) < height(node.left.right):',
+            '            node.left ← rotate_left(node.left)', '        return rotate_right(node)', '    if height(node.right) - height(node.left) > 1:',
+            '        if height(node.right.right) < height(node.right.left):', '            node.right ← rotate_right(node.right)', '        return rotate_left(node)', '    return node'],
     };
 
     // The nodes as they are in memory, by id
@@ -1192,7 +1205,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         // with two children the value of the successor is copied, and its old
         // node is removed by the same function further down
         const remove = (value) => {
-            const L = (at) => code('remove', at);
+            const L = (at) => code(avl ? 'avlRemove' : 'remove', at);
             let target = value;
             let n = root;
             let parent = null;
@@ -1266,8 +1279,49 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 side = 'right';
                 n = n.right;
             }
+            if (avl) { avlBack(calls, nodes, followed); return; }
             snapshot('return node: Jeder Aufruf darüber gibt seinen Knoten zurück, und der Aufrufer trägt ihn wieder in seinen Zeiger ein, von unten nach oben, zuletzt root ← remove(root, value). Links stehen immer noch die kleineren, rechts die größeren Werte.',
                 { code: L(11), pulses: back(followed), duration: backTime(followed), stack: returning(calls, nodes), returning: true });
+        };
+
+        // AVL remove on the way back up, one call after another from the
+        // deepest: its pointer gets the subtree the call below returned, the
+        // height is set anew, and rebalance turns the node if its subtrees
+        // differ by more than 1 (the heavier child decides the case). Unlike
+        // insert, this can be needed on several levels.
+        const avlBack = (calls, nodes, followed) => {
+            const A = (at) => code('avlRemove', at);
+            const R = (at) => code('rebalance', at);
+            for (let k = nodes.length - 1; k >= 0; k--) {
+                const n = findById(root, nodes[k].id);
+                const stack = stackOf(calls.slice(0, k + 1));
+                const pulse = followed[k] ? [{ edge: followed[k], delay: 0, length: 0.5 }] : [];
+                update(n);
+                snapshot(`update the height of node: ${n.value} hat jetzt die Höhe h${n.height}.`, { focus: n.id, vars: nodeVar(n), code: A(11), stack, pulses: pulse });
+                const balance = height(n.left) - height(n.right);
+                const withRebalance = [...stack, { call: `rebalance(node: ${n.value})`, node: n.id }];
+                if (Math.abs(balance) <= 1) {
+                    snapshot(`return rebalance(node): Bei ${n.value} unterscheiden sich die Höhen der Teilbäume um ${Math.abs(balance)}, das ist erlaubt. rebalance gibt ${n.value} unverändert zurück.`,
+                        { focus: n.id, vars: nodeVar(n), code: R(9), stack: withRebalance });
+                    continue;
+                }
+                const heavyLeft = balance > 1;
+                const child = heavyLeft ? n.left : n.right;
+                const inner = heavyLeft ? height(child.left) < height(child.right) : height(child.right) < height(child.left);
+                const kind = heavyLeft ? (inner ? 'LR' : 'LL') : (inner ? 'RL' : 'RR');
+                snapshot(`rebalance: Bei ${n.value} unterscheiden sich die Höhen um ${Math.abs(balance)}: zu viel. Das ${heavyLeft ? 'linke' : 'rechte'} Kind ${child.value} entscheidet: Fall ${kind}.`,
+                    { focus: n.id, vars: nodeVar(n), code: R(heavyLeft ? (inner ? 2 : 4) : (inner ? 6 : 8)), stack: withRebalance });
+                const memory = toGraph(root);
+                let rootId = root.id;
+                const plan = { LL: [[n.id, 'right']], RR: [[n.id, 'left']], LR: [[child.id, 'left'], [n.id, 'right']], RL: [[child.id, 'right'], [n.id, 'left']] }[kind];
+                plan.forEach(([top, dir], i) => {
+                    const prefix = plan.length > 1 ? `Fall ${kind}, ${i === 0 ? 'erste' : 'zweite'} Rotation: ` : `Fall ${kind}: `;
+                    const after = i === plan.length - 1 ? (k > 0 ? 'Weiter nach oben: Auch darüber kann der Baum jetzt schief sein.' : 'Der Baum ist wieder ausgeglichen.') : `Jetzt hängt alles auf einer Seite, wie im Fall ${kind === 'LR' ? 'LL' : 'RR'}.`;
+                    rootId = rotationFrames(frames, memory, rootId, top, dir, { op: current, avl, stack: withRebalance }, prefix, after);
+                });
+                root = fromGraph(memory, rootId);
+            }
+            snapshot(`root ← remove(root, value): Der Baum ist ausgeglichen, und links stehen immer noch die kleineren, rechts die größeren Werte.`, { code: A(12) });
         };
 
         for (const op of setup) if (op.type === 'insert') insert(op.value);
@@ -1365,6 +1419,8 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         return new Map(ids.map((id, i) => [id, { x: i, depth: depth.get(id) }]));
     }
 
+    const findById = (n, id) => (!n ? null : n.id === id ? n : findById(n.left, id) || findById(n.right, id));
+
     function treeShape(frame) {
         const layout = treeLayout(frame.graph, frame.rootId, frame.loose);
         return { count: layout.size, depth: Math.max(0, ...[...layout.values()].map((p) => p.depth + 1)) };
@@ -1399,12 +1455,25 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 fill: 'none', stroke: 'var(--algo-line)', 'stroke-width': 2, 'marker-end': `url(#${most.marker})`, ...extra });
         };
         svg.appendChild(arrowheads(most.marker));
+        // the way the calls on the stack went down: from root through every
+        // waiting call's node to the current one; these pointers are purple,
+        // their dashes flowing in the direction of the calls, so that it is
+        // clear along which way the stack will come back up
+        const chain = new Set();
+        const stackNodes = (frame.stack || []).map((entry) => entry.node).filter((node) => node !== null && node !== undefined && graph[node]);
+        if (stackNodes.length && stackNodes[0] === rootId) chain.add('pointer-root');
+        for (let i = 0; i + 1 < stackNodes.length; i++) {
+            const [a, b] = [stackNodes[i], stackNodes[i + 1]];
+            if (graph[a].left === b) chain.add(`edge-${a}-left`);
+            if (graph[a].right === b) chain.add(`edge-${a}-right`);
+        }
+        const onStack = (key) => (chain.has(key) ? { class: 'on-stack', stroke: 'var(--algo-accent)', 'marker-end': `url(#${most.marker}-accent)` } : {});
         // a pointer is the left or right field of its node: when it changes,
         // the arrow lets go of its node and snaps onto the new one
         for (const [id, node] of Object.entries(graph)) {
             for (const side of ['left', 'right']) {
                 if (node[side] === null) continue;
-                svg.appendChild(arrow(`edge-${id}-${side}`, `node-${id} node-${node[side]}`, point(Number(id)), point(node[side])));
+                svg.appendChild(arrow(`edge-${id}-${side}`, `node-${id} node-${node[side]}`, point(Number(id)), point(node[side]), onStack(`edge-${id}-${side}`)));
             }
         }
         // the pulses on the arrows, behind the nodes like the arrows themselves
@@ -1429,7 +1498,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 y = v.side === 'below' ? cy + 26 : cy - 9;
             }
             const centre = [x + w / 2, y + 9];
-            if (v.to !== null && v.to !== undefined) svg.appendChild(arrow(`pointer-${v.name}`, `var-${v.name} node-${v.to}`, centre, point(v.to), { stroke: 'var(--algo-accent)', 'marker-end': `url(#${most.marker}-accent)`, ...(v.rigid ? { 'data-rigid': '' } : {}) }));
+            if (v.to !== null && v.to !== undefined) svg.appendChild(arrow(`pointer-${v.name}`, `var-${v.name} node-${v.to}`, centre, point(v.to), { stroke: 'var(--algo-accent)', 'marker-end': `url(#${most.marker}-accent)`, ...(v.rigid ? { 'data-rigid': '' } : {}), ...(chain.has(`pointer-${v.name}`) ? { class: 'on-stack' } : {}) }));
             labels.push(el('svg:rect', { 'data-solid': '', 'data-key': `var-${v.name}`, x, y, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
             labels.push(el('svg:text', { 'data-key': `var-${v.name}-label`, x: centre[0], y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: v.name }));
         }
@@ -1849,7 +1918,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             timelineBox.scrollTo({ left, behavior: smooth && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'auto' });
         };
         const body = el('div', { class: 'algo-body' }, [picture, side]);
-        widget.replaceChildren(el('div', { class: 'algo-controls' }, [...buttons, count]), timelineBox, body, message);
+        // data-title: what the widget shows, above everything else
+        const title = widget.dataset.title ? [el('div', { class: 'algo-title', text: widget.dataset.title })] : [];
+        widget.replaceChildren(...title, el('div', { class: 'algo-controls' }, [...buttons, count]), timelineBox, body, message);
         requestAnimationFrame(placeNames);
         if (document.fonts) document.fonts.ready.then(placeNames);
         window.addEventListener('resize', placeNames);
