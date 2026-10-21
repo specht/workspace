@@ -20,7 +20,12 @@
 // line 20 units before the centre of keyB (an arrowhead on a node's border).
 // Such a line may be a path: then it bends while it moves and straightens when
 // its ends rest. data-follow='key' keeps an element that comes or goes on the
-// centre of that element while it fades. data-pulse='key' makes an element a
+// centre of that element while it fades. data-grow: an element that covers
+// what lies behind it comes and goes by its size (a circle's radius, a group's
+// scale), opaque, instead of fading; with data-inset='auto' a line stops at
+// the current radius of the circle it points to. data-merge with data-to: an
+// element that goes into the one it moves to (a token into its node) stays
+// opaque under it and is removed at the end. data-pulse='key' makes an element a
 // light that runs once along that line during the movement: a path becomes a
 // bulge of the line that travels along it (wider by data-swell, in the line's
 // colour unless it has data-fill), a circle a point on it. data-rigid on a
@@ -74,6 +79,21 @@
                 node.setAttribute(name, from);
             } else node.setAttribute(name, to);
         };
+        // data-grow: an element that covers what lies behind it (a node, a
+        // token over lines) comes and goes by its size, opaque, not by fading:
+        // a circle by its radius, a group by a scale about its own origin
+        const grow = (node, coming) => {
+            if (node.tagName === 'circle') {
+                const r = node.getAttribute('r');
+                if (coming) move(node, 'r', '0', r);
+                else move(node, 'r', r, '0');
+            } else if (node.tagName === 'g') {
+                const base = (node.getAttribute('transform') || '').replace(/\s*scale\([^)]*\)/, '');
+                if (coming) move(node, 'transform', `${base} scale(0)`, `${base} scale(1)`);
+                else move(node, 'transform', `${base} scale(1)`, `${base} scale(0)`);
+            } else if (coming) move(node, 'opacity', '0', node.getAttribute('opacity') || '1');
+            else move(node, 'opacity', node.getAttribute('opacity') || '1', '0');
+        };
         const copy = (before, target, skip = []) => {
             const from = attributes(before);
             for (const name of Object.keys(from)) if (!target.hasAttribute(name)) before.removeAttribute(name);
@@ -126,7 +146,8 @@
             if (anchor) {
                 const from = attributes(anchor);
                 for (const [name, value] of Object.entries(attributes(target))) move(target, name, from[name], value);
-            } else if (duration && !('solid' in target.dataset)) move(target, 'opacity', '0', target.getAttribute('opacity') || '1');
+            } else if (duration && 'grow' in target.dataset) grow(target, true);
+            else if (duration && !('solid' in target.dataset)) move(target, 'opacity', '0', target.getAttribute('opacity') || '1');
             shown.push(target);
         }
         const leaving = ride.filter((r) => r.leaving).map((r) => r.line);
@@ -135,7 +156,12 @@
                 if (kept.has(node)) continue;
                 const to = node.dataset.to && goal.get(node.dataset.to);
                 if (to) for (const [name, value] of Object.entries(to)) if (node.hasAttribute(name) && name !== 'opacity') move(node, name, node.getAttribute(name), value);
-                move(node, 'opacity', node.getAttribute('opacity') || '1', '0');
+                // data-merge: it goes into the element it moves to, which
+                // covers it; it does not fade (two half-transparent shapes on
+                // top of each other), it is removed at the end
+                if (to && 'merge' in node.dataset) { /* stays as it is */ }
+                else if (!to && 'grow' in node.dataset) grow(node, false);
+                else move(node, 'opacity', node.getAttribute('opacity') || '1', '0');
                 leaving.push(node);
             }
         }
@@ -200,7 +226,13 @@
             const bend = last ? mid : [mid[0] + (earlier.mid[0] - mid[0]) * k, mid[1] + (earlier.mid[1] - mid[1]) * k];
             // data-inset: the line stops that far before its end (an arrowhead
             // on the border of a node), and is hidden while shorter than that
-            const inset = Number(r.line.dataset.inset || 0);
+            // data-inset='auto': as far as the current radius of the circle it
+            // points to, so the tip stays on the border of a node that grows
+            let inset = Number(r.line.dataset.inset || 0);
+            if (r.line.dataset.inset === 'auto') {
+                const target = present.get(r.kind === 'cut' ? r.from[1] : r.to[1]);
+                inset = target && target.hasAttribute('r') ? Number(target.getAttribute('r')) + 2 : 20;
+            }
             let end = tip;
             let control = bend;
             if (inset) {

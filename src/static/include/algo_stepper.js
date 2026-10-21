@@ -480,7 +480,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             svg.appendChild(el('svg:line', { 'data-key': `slot-edge-${i}`, x1, y1, x2, y2, stroke: 'var(--algo-line)', 'stroke-width': 2 }));
         }
         const fill = (id, i) => (frame.fresh === id ? 'var(--algo-frontier)' : i !== undefined && compare.has(i) ? 'var(--algo-frontier)' : 'var(--algo-paper)');
-        const entry = (id, x, y, i) => el('svg:g', { 'data-key': `tree-${id}`, transform: `translate(${x} ${y})`, ...arc }, [
+        const entry = (id, x, y, i) => el('svg:g', { 'data-key': `tree-${id}`, 'data-grow': '', transform: `translate(${x} ${y})`, ...arc }, [
             el('svg:circle', { cx: 0, cy: 0, r: 17, fill: fill(id, i), stroke: i === frame.at ? 'var(--algo-accent)' : 'var(--algo-ink)', 'stroke-width': i === frame.at ? 3 : 1.5 }),
             el('svg:text', { x: 0, y: 5, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.values[id]) }),
         ]);
@@ -1395,7 +1395,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             const d = Math.hypot(x2 - x1, y2 - y1);
             const s = d > INSET ? (d - INSET) / d : 0;
             const [ex, ey] = [x1 + (x2 - x1) * s, y1 + (y2 - y1) * s];
-            return el('svg:path', { 'data-key': key, 'data-ends': ends, 'data-inset': INSET, d: `M${x1} ${y1} Q${(x1 + ex) / 2} ${(y1 + ey) / 2} ${ex} ${ey}`,
+            return el('svg:path', { 'data-key': key, 'data-ends': ends, 'data-inset': 'auto', d: `M${x1} ${y1} Q${(x1 + ex) / 2} ${(y1 + ey) / 2} ${ex} ${ey}`,
                 fill: 'none', stroke: 'var(--algo-line)', 'stroke-width': 2, 'marker-end': `url(#${most.marker})`, ...extra });
         };
         svg.appendChild(arrowheads(most.marker));
@@ -1446,7 +1446,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             // the ring stays on its node while it fades in or out; it is
             // drawn in front of the nodes (after them)
             if (frame.focus === id) ring = el('svg:circle', { 'data-key': 'focus', 'data-follow': `node-${id}`, cx: sx(x), cy: sy(d), r: 23, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 3 });
-            svg.appendChild(el('svg:circle', { 'data-key': `node-${id}`, ...(fresh ? { 'data-from': 'incoming' } : {}), cx: sx(x), cy: sy(d), r: RADIUS, fill, stroke: 'var(--algo-ink)', 'stroke-width': 1.5 }));
+            svg.appendChild(el('svg:circle', { 'data-key': `node-${id}`, 'data-grow': '', ...(fresh ? { 'data-from': 'incoming' } : {}), cx: sx(x), cy: sy(d), r: RADIUS, fill, stroke: 'var(--algo-ink)', 'stroke-width': 1.5 }));
             svg.appendChild(el('svg:text', { 'data-key': `label-${id}-${value}`, ...fromToken, ...copied, x: sx(x), y: sy(d) + 5, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(value) }));
             if (frame.avl) svg.appendChild(el('svg:text', { 'data-key': `height-${id}`, ...fromToken, x: sx(x), y: sy(d) + 32, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: `h${graph[id].height}` }));
         }
@@ -1459,9 +1459,10 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             // the edges below it
             const cx = sx(near.x) + 58;
             const cy = sy(near.depth) - 8;
-            const to = frame.incomingTo !== undefined ? { 'data-to': `node-${frame.incomingTo}` } : {};
-            const toLabel = frame.incomingTo !== undefined ? { 'data-to': `label-${frame.incomingTo}-${frame.incoming}` } : {};
-            svg.appendChild(el('svg:circle', { 'data-key': 'incoming', ...to, cx, cy, r: 13, fill: 'var(--algo-frontier)', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '4 3' }));
+            // on insert the token goes into its new node, under it
+            const to = frame.incomingTo !== undefined ? { 'data-to': `node-${frame.incomingTo}`, 'data-merge': '' } : {};
+            const toLabel = frame.incomingTo !== undefined ? { 'data-to': `label-${frame.incomingTo}-${frame.incoming}`, 'data-merge': '' } : {};
+            svg.appendChild(el('svg:circle', { 'data-key': 'incoming', 'data-grow': '', ...to, cx, cy, r: 13, fill: 'var(--algo-frontier)', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '4 3' }));
             svg.appendChild(el('svg:text', { 'data-key': 'incoming-label', ...toLabel, x: cx, y: cy + 4, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.incoming) }));
         }
         // room on the left for the labels, on the right for the token

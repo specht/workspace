@@ -58,7 +58,18 @@ in doubt, do it the way it does.
 
 The rule: what stays the same thing moves; nothing pops in or out when it
 could move. A viewer should be able to follow every element from one step to
-the next with their eyes.
+the next with their eyes. And every movement means something: nothing moves
+only to look nice.
+
+- **What covers something does not fade.** A node or a token that appears
+  over lines grows in, opaque, from nothing to its size (`data-grow`: a
+  circle by its radius, a group by its scale), and shrinks away when it goes;
+  a fade would let the lines behind it show through. The arrows that end on
+  it follow its current size (`data-inset='auto'`). Fading is for what covers
+  nothing (text, rings); a variable's box is there at once (`data-solid`).
+  What goes into something else (the token into the node it becomes) does
+  not fade either: it moves along under it and is gone at the end
+  (`data-merge`), so two half-transparent shapes never lie on each other.
 
 - **Identity by key.** Every element that lives on between steps has a
   `data-key`: a node by an id, not by its value, wherever a value can be in
