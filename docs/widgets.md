@@ -242,8 +242,12 @@ only to look nice.
   automaton on the site (the drawings in pages, `<div
   class='automaton-drawing'>`, and Automatron): the states in columns by
   their distance from the start, every arrow bent to its left (forward
-  above, back below), arcs within a row nested as in an arc diagram, loops
-  on top; the ring for the state (a NEA: a ring for every state it can be
+  above, back below), arcs within a row nested as in an arc diagram, arcs
+  within a column beside it, loops on top; the gaps grow with the longest
+  label; ends of arrows to different states keep the order of those states,
+  so that neighbouring arrows do not cross; a dense automaton (more than 50
+  states, or more arrows than 45 and 1.4 per state) is its transition table
+  instead (Automatron's DEA for ten digits); the ring for the state (a NEA: a ring for every state it can be
   in, a new one coming out of the state it is reached from), the arrow
   taken purple with a pulse; at the end the accepting state green or the
   verdict »abgelehnt«. The word can be edited. One font, the mono font of

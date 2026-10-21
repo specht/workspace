@@ -26,8 +26,10 @@
 (function (root) {
     'use strict';
     const R = 22;
-    const GAPX = 116;
-    const GAPY = 92;
+    const BASE_GAPX = 116;
+    const BASE_GAPY = 92;
+    // a state's name: a letter and its index, q0, r12, qF (the error state)
+    const NAME = /^([A-Za-z])(\d+|F)$/;
     const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
     function layout(a, options = {}) {
@@ -41,6 +43,11 @@
             pairs.get(k).labels.push(e.label);
         }
         const edges = [...pairs.values()].map((e) => ({ ...e, label: joinLabels(e.labels) }));
+        // long labels (0, 3, 6, 9) need room between the states: the gaps
+        // grow with the longest
+        const longest = Math.max(0, ...edges.map((e) => 7.8 * e.label.length + 4));
+        let GAPX = Math.max(BASE_GAPX, longest + 64);
+        let GAPY = Math.max(BASE_GAPY, longest + 40);
         const out = new Map(ids.map((id) => [id, []]));
         for (const e of edges) out.get(e.from).push(e);
         for (const list of out.values()) list.sort((x, y) => (x.label < y.label ? -1 : 1));
@@ -56,6 +63,13 @@
         for (const id of order) (columns[depth.get(id)] = columns[depth.get(id)] || []).push(id);
         // y: a column centred, then every state moved towards the states it
         // is reached from (a few sweeps), keeping GAPY apart
+        // arrows within a column put their labels between the columns,
+        // among the labels of the arrows to and from the column: more room
+        // both ways
+        if (edges.some((e) => e.from !== e.to && depth.get(e.from) === depth.get(e.to))) {
+            GAPX = Math.max(GAPX, 2 * longest + 30);
+            GAPY = Math.max(GAPY, 2 * longest + 20);
+        }
         const y = new Map();
         columns.forEach((col) => col.forEach((id, k) => y.set(id, (k - (col.length - 1) / 2) * GAPY)));
         // sweeps from the left (towards the states a state is reached from)
@@ -136,6 +150,27 @@
             e.height = neighbours ? 20 : 24 + 22 * (reach - 1);
             e.n = [0, side];
         }
+        // Arrows within a column are arcs beside it, all on the side where
+        // fewer arrows leave the column (the right one when even), nested by
+        // what they span: their labels stand outside them, not among the
+        // labels of the arrows to and from the column
+        const inColumn = routed.filter((e) => !e.loop && Math.abs(pos.get(e.from)[0] - pos.get(e.to)[0]) < 1);
+        const rowOf = (id) => pos.get(id)[1];
+        for (const c of new Set(inColumn.map((e) => depth.get(e.from)))) {
+            const mine = inColumn.filter((e) => depth.get(e.from) === c);
+            const leaving = (dir) => routed.filter((e) => !e.loop && ((depth.get(e.from) === c && Math.sign(depth.get(e.to) - c) === dir) || (depth.get(e.to) === c && Math.sign(depth.get(e.from) - c) === dir))).length;
+            const side = leaving(-1) < leaving(1) ? -1 : 1;
+            // the narrower inside: by span, then the one going down
+            const order = [...mine].sort((x, y) => Math.abs(rowOf(x.to) - rowOf(x.from)) - Math.abs(rowOf(y.to) - rowOf(y.from)) || rowOf(y.to) - rowOf(x.to));
+            let height = 26;
+            for (const e of order) {
+                e.column = side;
+                e.height = height;
+                e.n = [side, 0];
+                // the next one outside this one and its label
+                height += longest + 28;
+            }
+        }
         // loops: on top, or below when a state is right above
         for (const e of routed.filter((r) => r.loop)) {
             const [x, yy] = pos.get(e.from);
@@ -157,7 +192,15 @@
                 ends.get(e.from).push({ fixed: true, angle: Math.atan2(s * (R - 2), -10) }, { fixed: true, angle: Math.atan2(s * (R - 2), 10) });
                 continue;
             }
-            if (e.arc) {
+            if (e.column) {
+                // beside the column: out sideways, turned towards the other end
+                const towards = Math.sign(q[1] - p[1]);
+                const base = e.column > 0 ? 0 : Math.PI;
+                // the wider, the more sideways it leaves, so that it rounds out
+                const tilt = (Math.max(8, 30 - e.height * 0.15) * Math.PI) / 180;
+                e.out = { angle: base + e.column * towards * tilt };
+                e.in = { angle: base - e.column * towards * tilt };
+            } else if (e.arc) {
                 // an arc leaves and enters diagonally, below or above,
                 // turned towards the other end
                 const towards = Math.sign(q[0] - p[0]);
@@ -168,15 +211,45 @@
                 e.out = { angle: e.arc * (Math.PI / 2) - e.arc * towards * tilt };
                 e.in = { angle: e.arc * (Math.PI / 2) + e.arc * towards * tilt };
             } else {
-                e.out = { angle: e.bend === 0 ? angleOf(p, q) : angleOf(p, e.c) };
-                e.in = { angle: e.bend === 0 ? angleOf(q, p) : angleOf(q, e.c) };
+                // base: the straight direction, which keeps the order
+                e.out = { angle: e.bend === 0 ? angleOf(p, q) : angleOf(p, e.c), base: angleOf(p, q) };
+                e.in = { angle: e.bend === 0 ? angleOf(q, p) : angleOf(q, e.c), base: angleOf(q, p) };
             }
             ends.get(e.from).push(e.out);
             ends.get(e.to).push(e.in);
         }
         const MIN = (22 * Math.PI) / 180;
         const wrap = (a) => Math.atan2(Math.sin(a), Math.cos(a));
+        for (const end of [...ends.values()].flat()) if (end.base === undefined) end.base = end.angle;
         for (const list of ends.values()) {
+            // Ends towards different states keep the order of those states:
+            // two arrows that bend towards each other (from a state to two
+            // states above and below it) would otherwise swap and cross, so
+            // such a pair is put back, MIN apart around its middle
+            for (let round = 0; round < 10; round++) {
+                let swapped = false;
+                for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) {
+                    const a = list[i];
+                    const b = list[j];
+                    const order = wrap(b.base - a.base);
+                    // only neighbouring directions: around the circle every
+                    // pair has an order, but only these can swap
+                    if (Math.abs(order) < 0.05 || Math.abs(order) > Math.PI / 2) continue;
+                    const now = wrap(b.angle - a.angle);
+                    if (Math.abs(now) > Math.PI / 2 || Math.sign(now) === Math.sign(order)) continue;
+                    const dir = Math.sign(order);
+                    if (a.fixed && b.fixed) continue;
+                    if (a.fixed) b.angle = a.angle + dir * MIN;
+                    else if (b.fixed) a.angle = b.angle - dir * MIN;
+                    else {
+                        const mid = a.angle + now / 2;
+                        a.angle = mid - dir * MIN / 2;
+                        b.angle = mid + dir * MIN / 2;
+                    }
+                    swapped = true;
+                }
+                if (!swapped) break;
+            }
             for (let round = 0; round < 30; round++) {
                 let moved = false;
                 for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) {
@@ -219,7 +292,7 @@
             const u1 = [Math.cos(e.in.angle), Math.sin(e.in.angle)];
             const s0 = [p[0] + u0[0] * R, p[1] + u0[1] * R];
             const s1 = [q[0] + u1[0] * (R + 2), q[1] + u1[1] * (R + 2)];
-            const reach = e.arc ? e.height * 1.3 : Math.hypot(s1[0] - s0[0], s1[1] - s0[1]) * (e.bend === 0 ? 0.33 : 0.45) + Math.abs(e.bend) * 0.6;
+            const reach = e.column ? e.height * 1.33 / Math.cos(Math.abs(e.out.angle - (e.column > 0 ? 0 : Math.PI))) : e.arc ? e.height * 1.3 : Math.hypot(s1[0] - s0[0], s1[1] - s0[1]) * (e.bend === 0 ? 0.33 : 0.45) + Math.abs(e.bend) * 0.6;
             const c0 = [s0[0] + u0[0] * reach, s0[1] + u0[1] * reach];
             const c1 = [s1[0] + u1[0] * reach, s1[1] + u1[1] * reach];
             const at = (t) => { const v = 1 - t; return [v ** 3 * s0[0] + 3 * v * v * t * c0[0] + 3 * v * t * t * c1[0] + t ** 3 * s1[0], v ** 3 * s0[1] + 3 * v * v * t * c0[1] + 3 * v * t * t * c1[1] + t ** 3 * s1[1]]; };
@@ -234,7 +307,8 @@
         const placed = [];
         const box = (cx, cy, w) => ({ x: cx - w / 2, y: cy - 8, w, h: 15 });
         const distance = (b, [px, py]) => Math.hypot(Math.max(b.x - px, 0, px - b.x - b.w), Math.max(b.y - py, 0, py - b.y - b.h));
-        const overlap = (b, o) => !(b.x + b.w + 3 < o.x || o.x + o.w + 3 < b.x || b.y + b.h + 3 < o.y || o.y + o.h + 3 < b.y);
+        // side by side, two labels would read as one: more room sideways
+        const overlap = (b, o) => !(b.x + b.w + 10 < o.x || o.x + o.w + 10 < b.x || b.y + b.h + 3 < o.y || o.y + o.h + 3 < b.y);
         // a label stays at its own arrow: somewhere along its middle part,
         // at most 25 units out; where nothing is clear, at its middle
         for (const path of paths) {
@@ -260,10 +334,21 @@
                 }
                 if (best) break;
             }
+            // nowhere clear: the place with the most room, never on a state
+            // or another label, as near its own arrow as it can be
             if (!best) {
-                const [mx, my] = path.at(0.5);
-                const ext = Math.abs(path.normal[0]) * w / 2 + Math.abs(path.normal[1]) * h / 2;
-                best = box(mx + path.normal[0] * (ext + 4), my + path.normal[1] * (ext + 4), w);
+                let score = -Infinity;
+                for (const side of [1, -1]) for (let t = 0.2; t <= 0.81; t += 0.05) for (let off = 4; off <= 40; off += 3) {
+                    const [mx, my] = path.at(path.loop ? 0.5 : t);
+                    const ext = Math.abs(path.normal[0]) * w / 2 + Math.abs(path.normal[1]) * h / 2;
+                    const b = box(mx + path.normal[0] * (off + ext - 6) * side, my + path.normal[1] * (off + ext - 6) * side, w);
+                    const mine = Math.min(...path.own.map((pt) => distance(b, pt)));
+                    const others = Math.min(Infinity, ...paths.filter((o) => o !== path).flatMap((o) => o.own.map((pt) => distance(b, pt))));
+                    const states = Math.min(...[...pos.values()].map((o) => distance(b, o) - R - ring));
+                    const free = placed.every((o) => !overlap(b, o));
+                    const value = (states < 4 ? -1000 + states : 0) + (free ? 0 : -500) + Math.min(others, 12) * 2 + Math.min(mine, 4) - Math.max(0, mine - 8) - off * 0.1;
+                    if (value > score) { score = value; best = b; }
+                }
             }
             placed.push(best);
             path.box = best;
@@ -290,12 +375,15 @@
 
     // Where no drawing can be read (many states or many arrows): the
     // transition table instead, a row per state, a column per symbol
-    const TOO_MANY = { states: 14, arrows: 45 };
+    // A sparse automaton (Thompson's NEA, almost a chain) reads well as a
+    // drawing even with many states, a dense one (a DEA with ten digits)
+    // only as a table
+    const drawable = (states, arrows) => states <= 50 && arrows <= Math.max(45, 1.4 * states);
     function table(a) {
         const symbols = [...new Set(a.edges.map((e) => e.label))].sort();
         const name = new Map(a.states.map((s) => [s.id, s.label]));
         // r0 as r with a small 0, as in the drawings
-        const named = (label) => { const m = String(label).match(/^([A-Za-z]+)(\d+)$/); return m ? `${esc(m[1])}<sub>${m[2]}</sub>` : esc(label); };
+        const named = (label) => { const m = String(label).match(NAME); return m ? `<i>${esc(m[1])}<sub>${m[2]}</sub></i>` : esc(label); };
         const rows = a.states.map((s) => `<tr><th>${s.id === a.start ? '<span title="Start">→</span> ' : ''}${named(s.label)}${a.accept.includes(s.id) ? ' <span title="akzeptiert">✱</span>' : ''}</th>${symbols.map((sym) => `<td>${a.edges.filter((e) => e.from === s.id && e.label === sym).map((e) => named(name.get(e.to))).join(', ') || '–'}</td>`).join('')}</tr>`);
         return `<table class="automaton-table"><thead><tr><th>Zustand</th>${symbols.map((s) => `<th>${esc(s)}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table>`;
     }
@@ -305,7 +393,7 @@
     const MONO = "'0xProto Nerd Font Mono', monospace";
     function svg(a) {
         const pairs = new Set(a.edges.map((e) => `${e.from} ${e.to}`));
-        if (a.states.length > TOO_MANY.states || pairs.size > TOO_MANY.arrows) return table(a);
+        if (!drawable(a.states.length, pairs.size)) return table(a);
         const L = layout(a);
         const head = `automaton-head-${++drawings}`;
         const parts = [];
@@ -320,7 +408,7 @@
             const [x, y] = L.pos.get(s.id);
             parts.push(`<circle cx="${x}" cy="${y}" r="${R}" class="automaton-state"/>`);
             if (L.accept.has(s.id)) parts.push(`<circle cx="${x}" cy="${y}" r="${R - 4}" class="automaton-accepting"/>`);
-            const m = String(s.label).match(/^([A-Za-z]+)(\d+)$/);
+            const m = String(s.label).match(NAME);
             parts.push(m ? `<text x="${x}" y="${y + 5}" text-anchor="middle" font-size="15" font-family="${MONO}" font-style="italic" class="automaton-name">${esc(m[1])}<tspan dy="0.3em" font-size="0.7em">${m[2]}</tspan></text>`
                 : `<text x="${x}" y="${y + 5}" text-anchor="middle" font-size="15" font-family="${MONO}" class="automaton-name">${esc(s.label)}</text>`);
         }
@@ -343,26 +431,7 @@
         return { states: ids.map((id) => ({ id, label: id })), start: data.start || ids[0], accept: (data.accept || '').trim().split(/\s+/).filter(Boolean), edges };
     }
 
-    // Automatron's DOT: states with their labels, accepting ones
-    // (doublecircle), the start (__start ->), the arrows with labels
-    function fromDot(dot) {
-        const states = [];
-        const accept = [];
-        let start = null;
-        const edges = [];
-        for (const line of dot.split('\n')) {
-            let m;
-            if ((m = line.match(/^\s*__start\s*->\s*(\w+)/))) start = m[1];
-            else if ((m = line.match(/^\s*(\w+)\s*->\s*(\w+)\s*\[label="([^"]*)"/))) edges.push({ from: m[1], to: m[2], label: m[3] });
-            else if ((m = line.match(/^\s*(q_\w+)\s*\[shape=(\w+)[^\]]*label="([^"]*)"/))) {
-                states.push({ id: m[1], label: m[3] });
-                if (m[2] === 'doublecircle') accept.push(m[1]);
-            }
-        }
-        return { states, start, accept, edges };
-    }
-
-    root.AutomatonLayout = { R, layout, svg, table, fromDot, fromData, joinLabels };
+    root.AutomatonLayout = { R, layout, svg, table, fromData, joinLabels };
 
     // the drawings in the page
     if (typeof document === 'undefined') return;
