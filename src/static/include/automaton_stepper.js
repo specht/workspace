@@ -258,10 +258,14 @@
             // ring already (a ring that is new itself grows in place)
             const way = a.nfa
                 ? (before.includes(s) ? step.used.find(([f, t]) => f === s && t === s)
-                    : step.used.find(([, t]) => t === s) || eps.find(([f, t]) => t === s && before.includes(f)))
+                    : step.used.find(([, t]) => t === s) || eps.find(([, t]) => t === s))
                 : step.used[0];
+            // reached by ε from a state that has only just got its ring: out
+            // of that ring, once it is there (data-along-from)
+            const fresh = a.nfa && way && !before.includes(s) && !before.includes(way[0]);
             svg.appendChild(make('circle', { 'data-key': key, 'data-grow': '',
-                ...(a.nfa && way && !before.includes(s) ? { 'data-from': `ring-${way[0]}` } : {}),
+                ...(a.nfa && way && !before.includes(s) && before.includes(way[0]) ? { 'data-from': `ring-${way[0]}` } : {}),
+                ...(fresh ? { 'data-along-from': `state-${way[0]}` } : {}),
                 ...(way ? { 'data-along': `edge-${way[0]}-${way[1]}` } : {}),
                 cx: geo.pos(s)[0], cy: geo.pos(s)[1], r: RING, fill: 'none', stroke: 'var(--automaton-accent)', 'stroke-width': 3 }));
         }

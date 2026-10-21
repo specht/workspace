@@ -41,7 +41,9 @@
 // data-along='key' on a circle that moves: it travels along that line (an
 // automaton's arrow) instead of straight, in time with the pulse on it, from
 // its old centre to its new one (a loop: once around it), a fifth smaller
-// on its way.
+// on its way. With data-along-from='key' a new element comes out of that
+// element instead (a ring reached by ε out of the ring that has just
+// arrived before it), unseen until it sets off.
 //
 // reverse: true, for a step back: the movement forward from the step shown
 // by next to the one shown now, played backwards, so that a step back looks
@@ -387,18 +389,25 @@
                 return track ? [Number(track.from), Number(track.final)] : [Number(node.getAttribute(name)), Number(node.getAttribute(name))];
             };
             const [x, y] = [ends('cx'), ends('cy')];
-            return { node, from: [x[0], y[0]], to: [x[1], y[1]], r: Number(node.getAttribute('r')) };
+            // data-along-from='key': it comes out of that element (a ring
+            // that arrives in the same step), unseen until it sets off
+            const source = node.dataset.alongFrom && centre(node.dataset.alongFrom);
+            const fixed = !tracks.some((k) => k.node === node && k.name === 'cx');
+            return { node, from: source && fixed ? source : [x[0], y[0]], to: [x[1], y[1]], r: Number(node.getAttribute('r')),
+                hide: !!(source && fixed), opacity: node.getAttribute('opacity') };
         });
         const travel = (t) => {
-            for (const { node, from, to, r } of along) {
+            for (const { node, from, to, r, hide, opacity } of along) {
                 const line = lineByKey.get(node.dataset.along);
                 if (t >= 1 && r && !tracks.some((k) => k.node === node && k.name === 'r')) node.setAttribute('r', r);
+                if (t >= 1 && hide) { if (opacity === null) node.removeAttribute('opacity'); else node.setAttribute('opacity', opacity); }
                 if (t >= 1 || !line || !line.getTotalLength) continue;
                 const pulse = pulses.find((p) => p.dataset.pulse === node.dataset.along);
                 const delay = pulse ? Number(pulse.dataset.delay || 0) : 0;
                 const length = pulse ? Number(pulse.dataset.length || 0.4) : 1;
                 const f = Math.min(1, Math.max(0, (t - delay) / length));
                 const e = f < 0.5 ? 4 * f ** 3 : 1 - (2 - 2 * f) ** 3 / 2;
+                if (hide) node.setAttribute('opacity', f > 0 ? (opacity === null ? 1 : opacity) : 0);
                 // on the way: from the old centre straight to where the line
                 // starts, along the line, straight into the new centre, so
                 // that the centre is on the line all the way
