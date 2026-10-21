@@ -42,4 +42,14 @@ class BackroomsDemoTest < Minitest::Test
     def test_without_the_folder
         assert_nil BackroomsDemo.file('index.html', root: '/nonexistent/nachtschicht')
     end
+
+    # page and code are asked for again on every load, the large files are kept
+    def test_what_is_revalidated
+        %w[index.html engine/main.js engine/style.css nachtschicht/level.ini nachtschicht/rooms/kino.room].each do |file|
+            assert BackroomsDemo.revalidate?(file), file
+        end
+        %w[nachtschicht/level.light models/sofa_03/sofa_03_1k.gltf models/sofa_03/textures/a.jpg].each do |file|
+            refute BackroomsDemo.revalidate?(file), file
+        end
+    end
 end

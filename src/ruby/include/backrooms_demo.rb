@@ -36,4 +36,14 @@ module BackroomsDemo
     def self.mime(path)
         MIME[File.extname(path).downcase]
     end
+
+    # The page, its scripts and the level's text files: the browser asks
+    # every time (no-cache, answered with 304 when unchanged), so a reload
+    # after an rsync runs the new code. Models, textures and the light are
+    # large and change rarely: kept for 10 minutes.
+    REVALIDATE = %w[.html .js .css .ini .room .json].freeze
+
+    def self.revalidate?(path)
+        REVALIDATE.include?(File.extname(path).downcase)
+    end
 end

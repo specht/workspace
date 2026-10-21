@@ -1488,6 +1488,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- Nachtschicht (`/nachtschicht-8ee59051/`): Seite, Skripte und die
+  Textdateien des Levels fragt der Browser bei jedem Laden neu an (bei
+  unverändertem Stand nur eine kurze Antwort), sodass ein Neuladen nach dem
+  Kopieren einer neuen Fassung gleich den neuen Code ausführt. Modelle,
+  Texturen und das Licht bleiben zehn Minuten im Browser.
+
 - Backrooms: In der Automap verschiebt <kbd>Shift</kbd> und Ziehen das Level
   über den Boden, in der Höhe der eigenen Füße. Vorher stieg die Mitte bei
   schrägem Blick mit jedem Zug, und das Level kam der Maus immer langsamer

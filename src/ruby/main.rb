@@ -6457,7 +6457,11 @@ class Main < Sinatra::Base
         path = BackroomsDemo.file(params['splat'].first)
         halt 404 if path.nil?
         @respond_streaming = true
-        cache_control :public, :max_age => 600
+        if BackroomsDemo.revalidate?(path)
+            cache_control :public, :no_cache
+        else
+            cache_control :public, :max_age => 600
+        end
         send_file path, :type => BackroomsDemo.mime(path)
     end
 
