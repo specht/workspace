@@ -81,7 +81,7 @@ breadth_first_search(graph, start, goal):
     no path
 ```
 
-Probier es aus, von A nach H. Gelb sind die Knoten in der Queue, lila die schon besuchten, der schwarze Ring zeigt, wer gerade dran ist; die dicken Linien sind die Vorgänger:
+Probier es aus, von A nach H. Gelb sind die Knoten in der Queue, lila die schon herausgenommenen, der Ring ist `node`; jeder Pfeil zeigt von einem Knoten auf seinen Vorgänger. Unter dem Graphen steht die Queue, vorne links:
 
 <div class='algo-stepper' data-title='Breitensuche' data-algo='bfs' data-graph='stadt' data-start='A' data-goal='H'></div>
 
@@ -116,6 +116,8 @@ depth_first_search(graph, start, goal):
     no path
 ```
 
+Unter dem Graphen steht der Stack, sein oberes Ende rechts:
+
 <div class='algo-stepper' data-title='Tiefensuche' data-algo='dfs' data-graph='stadt' data-start='A' data-goal='H'></div>
 
 Hier findet sie A–D–G–H, weil sie D als Letztes auf den Stack gelegt hat und dort weitermacht. Den kürzesten Weg findet die Tiefensuche im Allgemeinen nicht, und auch nicht den mit den wenigsten Kanten. Sie ist aber die richtige Suche für Fragen wie »Gibt es überhaupt einen Weg?«, »Welche Knoten erreicht man?« oder »Hat der Graph einen Kreis?«, und sie lässt sich ganz kurz rekursiv schreiben: Die Funktion ruft sich für jeden noch nicht gefundenen Nachbarn selbst auf, und der Stack ist der der Aufrufe.
@@ -147,7 +149,7 @@ dijkstra(graph, start, goal):
     no path
 ```
 
-Über jedem Knoten steht der beste bekannte Weg vom Start. Die Tabelle daneben zeigt, was sich in diesem Schritt geändert hat:
+Über jedem Knoten steht `dist`, der beste bekannte Weg vom Start. Unter dem Graphen steht die Priority Queue, die kleinste Priorität vorne, die Priorität über dem Eintrag:
 
 <div class='algo-stepper' data-title='Dijkstra' data-algo='dijkstra' data-graph='stadt' data-start='A' data-goal='H'></div>
 
@@ -173,15 +175,29 @@ Dijkstra sucht in alle Richtungen gleich, auch weg vom Ziel. **A*** (»A-Stern«
 
 $$f(\text{node}) = \text{dist}(\text{node}) + h(\text{node})$$
 
-Auf einer Karte ist die Schätzung \\(h\\) die Luftlinie zum Ziel. Der Pseudocode ist der von Dijkstra, mit zwei Änderungen: In die Priority Queue kommt \\(\text{new} + h(\text{neighbor})\\) statt nur \\(\text{new}\\), und der Weg eines Knotens steht in `dist`, nicht in der Priorität:
+Auf einer Karte ist die Schätzung \\(h\\) die Luftlinie zum Ziel. Der Pseudocode ist der von Dijkstra, mit zwei Änderungen: In die Priority Queue kommt \\(\text{new} + h(\text{neighbor})\\) statt nur \\(\text{new}\\), und der Weg eines Knotens steht deshalb in `dist`, nicht in der Priorität:
 
 ```pseudocode
-        (_, node) ← take the smallest entry from pq
-        …
-            new ← dist[node] + length
-            …
-                put (new + h(neighbor), neighbor) into pq
+a_star(graph, start, goal):
+    dist ← { start: 0 }
+    predecessor ← { start: null }
+    finished ← empty set
+    pq ← priority queue with (0, start)
+    while pq not empty:
+        (_, node) ← take the smallest entry from pq        (anders als bei Dijkstra)
+        if node in finished: continue        (ein alter Eintrag)
+        add node to finished
+        if node == goal: return path_back(predecessor, goal)
+        for each (neighbor, length) of node:
+            new ← dist[node] + length        (anders als bei Dijkstra)
+            if neighbor not in dist or new < dist[neighbor]:
+                dist[neighbor] ← new
+                predecessor[neighbor] ← node
+                put (new + h(neighbor), neighbor) into pq        (anders als bei Dijkstra)
+    no path
 ```
+
+Unter jedem Knoten steht seine Luftlinie zum Ziel, \\(h\\):
 
 <div class='algo-stepper' data-title='A*' data-algo='astar' data-graph='stadt' data-start='A' data-goal='H'></div>
 

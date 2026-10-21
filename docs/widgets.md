@@ -170,7 +170,7 @@ only to look nice.
   reads as an arrow and not as a lone arrowhead.
 - **A count is a border, not a place.** `size` of an Array List is the line
   in the gap after the last used cell, labelled with its value
-  (`size = 2`); right of it the cells and values are faint. The faint part is
+  (`size | 2`, a box with the value beside the name); right of it the cells and values are faint. The faint part is
   a copy clipped to the area right of the line, so a cell turns solid exactly
   where the moving line passes over it, never all at once.
 - **null is shown where the code looks at it**: in a node's next field, after
@@ -179,6 +179,17 @@ only to look nice.
   there, the stub of the pointer as the last piece of the stack's way, the
   call's line and the value ending there. Not under every leaf: that would
   fill the tree with nulls nobody looks at.
+- **Graph searches** (Breitensuche, Tiefensuche, Dijkstra, A*): the ring is
+  `node`, `neighbor` a label with an arrow, the edge looked along drawn
+  purple; `predecessor[neighbor] ← node` is an arrow from the neighbor to
+  node that sprouts and snaps on (a shorter way swings it over), the start's
+  predecessor a stub to `null`. The queue, the stack or the priority queue is
+  a row of tokens under the graph: a token comes out of its node and goes
+  back into it when it is taken; an old entry is struck through. A number a
+  variable holds is a box with its value beside the name (`new | 58`), no `=`.
+  `path_back` runs step by step only in the first widget of the page; the
+  others show at once what it returns. The timeline is named after the node
+  that comes out.
 - **What grows, grows from its middle** (`data-grow='22 21'` on a group
   drawn from its corner), and ends on its own transform, so that its next
   move slides instead of jumping.

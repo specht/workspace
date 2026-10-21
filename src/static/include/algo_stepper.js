@@ -31,7 +31,8 @@
 
     const STYLE = `
 .algo-stepper { margin: 1em 0 1.5em; --algo-accent: #6741d9; --algo-frontier: #ffe066; --algo-done: #b197fc;
-    --algo-line: #adb5bd; --algo-ink: var(--bs-body-color); --algo-paper: var(--bs-body-bg); --algo-start: #2f9e44; --algo-goal: #e03131; }
+    --algo-line: #adb5bd; --algo-ink: var(--bs-body-color); --algo-paper: var(--bs-body-bg); --algo-start: #2f9e44; --algo-goal: #e03131;
+    --algo-pred: color-mix(in srgb, var(--algo-accent) 55%, var(--algo-paper)); }
 html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-frontier: #c9a227; --algo-done: #5f3dc4; --algo-line: #5c636e; }
 /* the pointers along which the calls on the stack went down */
 .algo-stepper svg path.on-stack { stroke-width: 2.4; stroke-dasharray: 7 4; animation: algo-march 0.9s linear infinite; }
@@ -150,180 +151,335 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         return Math.round(Math.hypot(x2 - x1, y2 - y1));
     };
 
-    const pathTo = (previous, goal) => {
-        if (!(goal in previous)) return null;
-        const path = [];
-        for (let node = goal; node !== null; node = previous[node]) path.unshift(node);
-        return path;
+    // ---- Graph searches (reference/graphen). Every step is a line of the
+    // page's pseudocode (GRAPH_CODE). A frame: found (node -> its
+    // predecessor, null for the start), entries (the queue, the stack or the
+    // priority queue in its order: key, node, priority, stale), taken (the
+    // nodes that came out), dist, focus (the node, 'null' at the end of
+    // path_back), neighbor and fresh (the value of new), look (the edge
+    // looked along), path (path_back's list), code, stack, op, message.
+    const GRAPH_CODE = {
+        bfs: ['breadth_first_search(graph, start, goal):', '    predecessor ← { start: null }', '    queue ← [start]', '    while queue not empty:',
+            '        node ← take the front node from queue', '        if node == goal: return path_back(predecessor, goal)', '        for each neighbor of node:',
+            '            if neighbor not in predecessor:', '                predecessor[neighbor] ← node', '                add neighbor at the back of queue', '    no path'],
+        dfs: ['depth_first_search(graph, start, goal):', '    predecessor ← { start: null }', '    stack ← [start]', '    while stack not empty:',
+            '        node ← take the top node from stack', '        if node == goal: return path_back(predecessor, goal)', '        for each neighbor of node:',
+            '            if neighbor not in predecessor:', '                predecessor[neighbor] ← node', '                put neighbor on top of stack', '    no path'],
+        dijkstra: ['dijkstra(graph, start, goal):', '    dist ← { start: 0 }', '    predecessor ← { start: null }', '    finished ← empty set',
+            '    pq ← priority queue with (0, start)', '    while pq not empty:', '        (distance, node) ← take the smallest entry from pq',
+            '        if node in finished: continue        (ein alter Eintrag)', '        add node to finished', '        if node == goal: return path_back(predecessor, goal)',
+            '        for each (neighbor, length) of node:', '            new ← distance + length', '            if neighbor not in dist or new < dist[neighbor]:',
+            '                dist[neighbor] ← new', '                predecessor[neighbor] ← node', '                put (new, neighbor) into pq', '    no path'],
+        astar: ['a_star(graph, start, goal):', '    dist ← { start: 0 }', '    predecessor ← { start: null }', '    finished ← empty set',
+            '    pq ← priority queue with (0, start)', '    while pq not empty:', '        (_, node) ← take the smallest entry from pq        (anders als bei Dijkstra)',
+            '        if node in finished: continue        (ein alter Eintrag)', '        add node to finished', '        if node == goal: return path_back(predecessor, goal)',
+            '        for each (neighbor, length) of node:', '            new ← dist[node] + length        (anders als bei Dijkstra)', '            if neighbor not in dist or new < dist[neighbor]:',
+            '                dist[neighbor] ← new', '                predecessor[neighbor] ← node', '                put (new + h(neighbor), neighbor) into pq        (anders als bei Dijkstra)', '    no path'],
+        pathBack: ['path_back(predecessor, goal):', '    if goal not in predecessor: no path', '    path ← empty list', '    node ← goal', '    while node != null:',
+            '        add node at the front of path', '        node ← predecessor[node]', '    return path'],
     };
 
-    const names = (list) => (list.length === 1 ? list[0] : `${list.slice(0, -1).join(', ')} und ${list[list.length - 1]}`);
-
-    // Breitensuche (queue) and Tiefensuche (stack): a node is marked when it
-    // is found, so it goes into the queue or stack only once.
-    function traceSearch(graph, start, goal, kind) {
+    function traceGraph(graph, start, goal, kind) {
         const adj = neighbours(graph);
-        const previous = { [start]: null };
-        const pending = [start];
-        const order = [];
-        const frames = [];
-        const box = kind === 'bfs' ? 'Queue' : 'Stack';
-        const inBox = kind === 'bfs' ? 'in der Queue' : 'auf dem Stack';
-        const outOf = kind === 'bfs' ? 'aus der Queue' : 'vom Stack';
-        const empty = kind === 'bfs' ? 'Die Queue ist leer' : 'Der Stack ist leer';
-        const snapshot = (current, message, extra = {}) => frames.push({
-            current, message, previous: { ...previous }, order: [...order],
-            items: pending.map((id) => ({ label: id })), ...extra,
-        });
-        snapshot(null, `Am Anfang liegt nur der Start ${start} ${inBox}. Sein Vorgänger ist keiner, damit gilt er als gefunden.`);
-        while (pending.length) {
-            const node = kind === 'bfs' ? pending.shift() : pending.pop();
-            order.push(node);
-            if (node === goal) {
-                snapshot(node, `${node} kommt ${outOf}: das Ziel. Der Weg steht in den Vorgängern, rückwärts gelesen: ${pathTo(previous, goal).join('–')}.`, { path: pathTo(previous, goal) });
-                return frames;
-            }
-            const found = [];
-            const known = [];
-            for (const [next] of adj[node]) {
-                if (next in previous) {
-                    known.push(next);
-                    continue;
-                }
-                previous[next] = node;
-                pending.push(next);
-                found.push(next);
-            }
-            const where = kind === 'bfs' ? 'hinten in die Queue' : 'oben auf den Stack';
-            snapshot(node, `${node} kommt ${outOf}.` +
-                (found.length ? ` Neu gefunden: ${names(found)}, mit ${node} als Vorgänger, ${where}.` : ' Kein neuer Nachbar.') +
-                (known.length ? ` ${names(known)} ${known.length === 1 ? 'ist' : 'sind'} schon gefunden.` : ''));
-        }
-        snapshot(null, `${empty}, ohne dass ${goal} dran war: Es gibt keinen Weg.`);
-        return frames;
-    }
-
-    // Dijkstra and A*: a priority queue of (priority, node); a node can be in
-    // it more than once, an old entry is skipped when it comes out.
-    function traceShortest(graph, start, goal, kind) {
-        const adj = neighbours(graph);
+        const shortest = kind === 'dijkstra' || kind === 'astar';
         const h = (id) => (kind === 'astar' ? straight(graph, id, goal) : 0);
-        const cost = { [start]: 0 };
-        const previous = { [start]: null };
-        const done = new Set();
-        let queue = [{ priority: h(start), node: start }];
-        const order = [];
+        const fn = { bfs: 'breadth_first_search', dfs: 'depth_first_search', dijkstra: 'dijkstra', astar: 'a_star' }[kind];
+        const outer = { call: `${fn}(graph, ${start}, ${goal})` };
+        const box = { bfs: 'queue', dfs: 'stack' }[kind] || 'pq';
+        const lines = GRAPH_CODE[kind];
         const frames = [];
-        const snapshot = (current, message, changed = [], extra = {}) => {
-            const sorted = [...queue].sort((a, b) => a.priority - b.priority || (a.node < b.node ? -1 : 1));
-            frames.push({
-                current, message, changed, previous: { ...previous }, order: [...order],
-                cost: { ...cost }, done: new Set(done),
-                items: sorted.map((entry, i) => ({ label: `${entry.priority} ${entry.node}`, next: i === 0, stale: done.has(entry.node) || cost[entry.node] + h(entry.node) < entry.priority })),
-                ...extra,
-            });
+        // the names of the timeline's sections: the node that comes out
+        frames.opNames = [];
+        const found = {};
+        const dist = {};
+        const taken = [];
+        let entries = [];
+        let key = 0;
+        let op = -1;
+        const snapshot = (message, at, marks = {}) => frames.push({
+            found: { ...found }, dist: shortest ? { ...dist } : null, taken: [...taken], op, message, code: { lines, at }, stack: [outer],
+            entries: entries.map((e) => ({ ...e, stale: shortest && (taken.includes(e.node) || dist[e.node] + h(e.node) < e.priority) })), ...marks });
+        const byPriority = (a, b) => a.priority - b.priority || (a.node < b.node ? -1 : 1) || a.key - b.key;
+
+        const pathBack = () => {
+            op = frames.opNames.length;
+            frames.opNames.push('path_back');
+            const inner = { call: `path_back(predecessor, ${goal})` };
+            const P = (at) => ({ lines: GRAPH_CODE.pathBack, at });
+            const path = [];
+            const back = (message, at, marks) => snapshot(message, 0, { code: P(at), stack: [outer, inner], path: [...path], ...marks });
+            back('path ← empty list: Der Weg ist noch leer. Er entsteht rückwärts, vom Ziel aus.', 2, {});
+            back(`node ← goal: node ist ${goal}, das Ziel.`, 3, { focus: goal });
+            for (let node = goal; node !== null;) {
+                path.unshift(node);
+                back(`add node at the front of path: ${node} kommt vorne dazu.`, 5, { focus: node });
+                const before = found[node];
+                back(before === null ? `node ← predecessor[node]: ${node} ist der Start, sein Vorgänger ist null.` : `node ← predecessor[node]: Der Pfeil von ${node} zeigt auf ${before}.`, 6, { focus: before === null ? 'null' : before });
+                node = before;
+            }
+            back('while node != null: node ist null, die Schleife endet.', 4, { focus: 'null' });
+            back(`return path: Der Weg ist ${path.join('–')}${shortest ? `, ${dist[goal]} lang` : `, ${path.length - 1} Kanten`}.`, 7, { done: true, stack: [{ ...outer, returns: path.join('–') }, { ...inner, returns: path.join('–') }] });
         };
-        const what = kind === 'astar' ? 'Weg bis hier plus Luftlinie zum Ziel' : 'Weg bis hier';
-        snapshot(null, `Am Anfang: der Start ${start} mit Abstand 0 in der Priority Queue. Die Priorität ist der ${what}.`);
-        while (queue.length) {
-            queue.sort((a, b) => a.priority - b.priority || (a.node < b.node ? -1 : 1));
-            const { priority, node } = queue.shift();
-            if (done.has(node)) {
-                snapshot(node, `${node} mit ${priority} kommt heraus, aber ${node} ist schon fertig: ein alter Eintrag, die Suche überspringt ihn.`);
-                continue;
-            }
-            done.add(node);
-            order.push(node);
-            if (node === goal) {
-                snapshot(node, `${node} kommt heraus: das Ziel, ${cost[node]} vom Start, über ${pathTo(previous, goal).join('–')}. Kein anderer Weg kann kürzer sein, denn alles, was noch in der Priority Queue steht, ist mindestens so weit.`, [], { path: pathTo(previous, goal) });
-                return frames;
-            }
-            const changed = [];
-            const notes = [];
-            for (const [next, w] of adj[node]) {
-                if (done.has(next)) continue;
-                const total = cost[node] + w;
-                if (next in cost && cost[next] <= total) {
-                    notes.push(`über ${node} wäre ${next} ${total}, schon bekannt ist ${cost[next]}`);
+
+        if (shortest) {
+            dist[start] = 0;
+            snapshot(`dist ← { ${start}: 0 }: Vom Start bis zum Start ist der Weg 0.`, 1, { changed: start });
+            found[start] = null;
+            snapshot(`predecessor ← { ${start}: null }: Der Start hat keinen Vorgänger.`, 2);
+            entries.push({ key: key++, node: start, priority: 0 });
+            snapshot(`pq ← priority queue with (0, ${start}): Am Anfang steht nur der Start in der Priority Queue. Die Priorität steht über dem Eintrag.`, 4);
+        } else {
+            found[start] = null;
+            snapshot(`predecessor ← { ${start}: null }: ${start} ist gefunden, ohne Vorgänger.`, 1);
+            entries.push({ key: key++, node: start });
+            snapshot(`${box} ← [${start}]: Am Anfang liegt nur der Start ${kind === 'bfs' ? 'in der Queue' : 'auf dem Stack'}.`, 2);
+        }
+        while (entries.length) {
+            const entry = kind === 'dfs' ? entries.pop() : entries.shift();
+            const node = entry.node;
+            const old = shortest && taken.includes(node);
+            op = frames.opNames.length;
+            frames.opNames.push(old ? `${node} (alt)` : node);
+            if (shortest) {
+                const take = kind === 'astar' ? `(_, node) ← take the smallest entry from pq: Die kleinste Priorität ist ${entry.priority}, node ist ${node}.`
+                    : `(distance, node) ← take the smallest entry from pq: distance ist ${entry.priority}, node ist ${node}.`;
+                snapshot(take, 6, { focus: node });
+                if (old) {
+                    snapshot(`if node in finished: continue: ${node} ist schon fertig. Ein alter Eintrag, er wird übersprungen.`, 7, { focus: node });
                     continue;
                 }
-                const before = cost[next];
-                cost[next] = total;
-                previous[next] = node;
-                queue.push({ priority: total + h(next), node: next });
-                changed.push(next);
-                notes.push(before === undefined ? `${next} neu mit ${total}` : `${next} besser: ${total} statt ${before}`);
+                taken.push(node);
+                snapshot(`add node to finished: ${node} ist fertig. Kürzer als ${dist[node]} geht es nicht mehr.`, 8, { focus: node });
+            } else {
+                taken.push(node);
+                snapshot(`node ← take the ${kind === 'bfs' ? 'front node from queue' : 'top node from stack'}: ${node} ist dran${node === goal ? '' : ', nicht das Ziel'}.`, 4, { focus: node });
             }
-            snapshot(node, `${node} hat den kleinsten Wert und ist fertig, ${cost[node]} vom Start.` +
-                (notes.length ? ` Nachbarn: ${notes.join('; ')}.` : ' Alle Nachbarn sind schon fertig.'), changed);
+            if (node === goal) {
+                // path_back step by step in the first widget of the page (the
+                // Breitensuche); the others show at once what it returns
+                if (kind === 'bfs') {
+                    snapshot(`if node == goal: ${node} ist das Ziel. Der Weg steht in den Pfeilen, rückwärts: return path_back(predecessor, goal).`, 5, { focus: node });
+                    pathBack();
+                    return frames;
+                }
+                const path = [];
+                for (let n = goal; n !== null; n = found[n]) path.unshift(n);
+                snapshot(`if node == goal: ${node} ist das Ziel. path_back liest den Weg rückwärts aus den Pfeilen (wie bei der Breitensuche): ${path.join('–')}${shortest ? `, ${dist[goal]} lang` : ''}.`,
+                    shortest ? 9 : 5, { focus: node, path, done: true, stack: [{ ...outer, returns: path.join('–') }] });
+                return frames;
+            }
+            for (const [next, length] of adj[node]) {
+                const look = [node, next].sort().join('-');
+                const here = { focus: node, neighbor: next, look };
+                if (shortest) {
+                    const fresh = dist[node] + length;
+                    snapshot(`${kind === 'astar' ? 'new ← dist[node] + length' : 'new ← distance + length'}: über ${node} ist der Weg bis ${next} ${dist[node]} + ${length}, also ${fresh}.`, 11, { ...here, fresh });
+                    const better = !(next in dist) || fresh < dist[next];
+                    snapshot(next in dist ? `if … new < dist[neighbor]: ${fresh} ${better ? '<' : '≥'} ${dist[next]}, ${better ? 'ein kürzerer Weg' : 'nicht kürzer, nichts ändert sich'}.`
+                        : `if neighbor not in dist: ${next} hat noch keinen Weg.`, 12, { ...here, fresh });
+                    if (!better) continue;
+                    dist[next] = fresh;
+                    snapshot(`dist[neighbor] ← new: Der Weg bis ${next} ist jetzt ${fresh}.`, 13, { ...here, fresh, changed: next });
+                    found[next] = node;
+                    snapshot(`predecessor[neighbor] ← node: Der Pfeil von ${next} zeigt auf ${node}.`, 14, { ...here, fresh });
+                    entries.push({ key: key++, node: next, priority: fresh + h(next) });
+                    entries.sort(byPriority);
+                    snapshot(kind === 'astar' ? `put (new + h(neighbor), neighbor) into pq: Priorität ${fresh} + ${h(next)}, also ${fresh + h(next)}: der Weg bis ${next} plus die Luftlinie von ${next} zum Ziel.`
+                        : `put (new, neighbor) into pq: ${next} mit Priorität ${fresh}. Die Priority Queue hält die kleinste vorne.`, 15, { ...here, fresh });
+                } else {
+                    if (next in found) {
+                        snapshot(`if neighbor not in predecessor: ${next} ist schon gefunden${found[next] === null ? ', der Start' : `, sein Vorgänger ist ${found[next]}`}.`, 7, here);
+                        continue;
+                    }
+                    snapshot(`if neighbor not in predecessor: ${next} ist noch nicht gefunden.`, 7, here);
+                    found[next] = node;
+                    snapshot(`predecessor[neighbor] ← node: Der Pfeil von ${next} zeigt auf ${node}. Damit ist ${next} gefunden.`, 8, here);
+                    entries.push({ key: key++, node: next });
+                    snapshot(kind === 'bfs' ? `add neighbor at the back of queue: ${next} kommt hinten in die Queue.` : `put neighbor on top of stack: ${next} kommt oben auf den Stack.`, 9, here);
+                }
+            }
         }
-        snapshot(null, `Die Priority Queue ist leer: ${goal} ist nicht zu erreichen.`);
+        op = -1;
+        snapshot(`no path: ${kind === 'bfs' ? 'Die Queue' : kind === 'dfs' ? 'Der Stack' : 'Die Priority Queue'} ist leer, ohne dass ${goal} dran war.`, shortest ? 16 : 10);
         return frames;
     }
 
-    function drawGraph(svg, graph, frame, start, goal, kind) {
-        svg.replaceChildren();
-        const sx = (x) => x * 5 + 20;
-        const sy = (y) => y * 5 + 20;
-        const pathEdges = new Set();
-        if (frame.path) for (let i = 1; i < frame.path.length; i++) pathEdges.add([frame.path[i - 1], frame.path[i]].sort().join());
-        const treeEdges = new Set(Object.entries(frame.previous).filter(([, p]) => p).map(([n, p]) => [n, p].sort().join()));
-        for (const [a, b, w] of graph.edges) {
-            const key = [a, b].sort().join();
-            const [x1, y1] = graph.nodes[a];
-            const [x2, y2] = graph.nodes[b];
-            const onPath = pathEdges.has(key);
-            const inTree = treeEdges.has(key);
-            svg.appendChild(el('svg:line', {
-                x1: sx(x1), y1: sy(y1), x2: sx(x2), y2: sy(y2),
-                stroke: onPath ? 'var(--algo-accent)' : inTree ? 'color-mix(in srgb, var(--algo-accent) 55%, transparent)' : 'var(--algo-line)',
-                'stroke-width': onPath ? 6 : inTree ? 3.5 : 2, 'stroke-linecap': 'round',
-            }));
-            if (kind !== 'bfs' && kind !== 'dfs') {
-                const mx = sx((x1 + x2) / 2);
-                const my = sy((y1 + y2) / 2);
-                svg.appendChild(el('svg:rect', { x: mx - 11, y: my - 9, width: 22, height: 17, rx: 4, fill: 'var(--algo-paper)', opacity: 0.9 }));
-                svg.appendChild(el('svg:text', { x: mx, y: my + 4, 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--algo-ink)', text: String(w) }));
+    // Where things go in the graph's picture, worked out once for a widget:
+    // the nodes, a place for each variable's label beside each node (clear
+    // of the other nodes, the edges, the numbers), and the stub of the start's
+    // predecessor null.
+    function graphLayout(graph, start, kind) {
+        const shortest = kind === 'dijkstra' || kind === 'astar';
+        const at = {};
+        for (const [id, [x, y]] of Object.entries(graph.nodes)) at[id] = [x * 5 + 60, y * 5 + 54];
+        const width = 620;
+        const rowY = 400;
+        const segments = graph.edges.map(([a, b]) => [at[a], at[b]]);
+        const rectPoint = (r, [px, py]) => Math.hypot(Math.max(r.x - px, 0, px - r.x - r.w), Math.max(r.y - py, 0, py - r.y - r.h));
+        const rectSegment = (r, [p, q]) => {
+            let best = Infinity;
+            for (let s = 0; s <= 1; s += 0.02) best = Math.min(best, rectPoint(r, [p[0] + (q[0] - p[0]) * s, p[1] + (q[1] - p[1]) * s]));
+            return best;
+        };
+        // the numbers beside a node: dist above, h below (A*)
+        const marks = Object.values(at).flatMap(([x, y]) => [...(shortest ? [{ x: x - 14, y: y - 36, w: 28, h: 15 }] : []), ...(kind === 'astar' ? [{ x: x - 18, y: y + 21, w: 36, h: 14 }] : [])]);
+        const weights = shortest ? segments.map(([p, q]) => ({ x: (p[0] + q[0]) / 2 - 12, y: (p[1] + q[1]) / 2 - 9, w: 24, h: 18 })) : [];
+        const clear = (r, own) => {
+            if (r.x < 4 || r.y < 4 || r.x + r.w > width - 4 || r.y + r.h > rowY - 34) return -Infinity;
+            let score = Infinity;
+            for (const [id, p] of Object.entries(at)) score = Math.min(score, rectPoint(r, p) - (id === own ? 0 : 22));
+            for (const s of segments) score = Math.min(score, rectSegment(r, s) + 2);
+            for (const m of [...marks, ...weights]) score = Math.min(score, Math.max(m.x - r.x - r.w, r.x - m.x - m.w, m.y - r.y - r.h, r.y - m.y - m.h, 0) + 1);
+            return score;
+        };
+        // a box of w × h at gap from the node's centre, in the clearest of
+        // sixteen directions; sideways a little preferred
+        const spot = (id, w, h, gap) => {
+            const [cx, cy] = at[id];
+            let best = null;
+            for (let k = 0; k < 16; k++) {
+                const a = (k / 16) * 2 * Math.PI;
+                const [dx, dy] = [Math.cos(a), Math.sin(a)];
+                const d = gap + Math.abs(dx) * w / 2 + Math.abs(dy) * h / 2;
+                const r = { x: cx + dx * d - w / 2, y: cy + dy * d - h / 2, w, h };
+                const score = clear(r, id) + 4 * Math.abs(dx);
+                if (!best || score > best.score) best = { score, x: r.x, y: r.y, dx, dy };
             }
+            return best;
+        };
+        const nodeSpot = {};
+        const neighborSpot = {};
+        for (const id of Object.keys(at)) {
+            nodeSpot[id] = spot(id, 44, 18, 48);
+            neighborSpot[id] = spot(id, 74, shortest ? 40 : 18, 40);
         }
-        const pending = new Set((frame.items || []).filter((item) => !item.stale).map((item) => item.label.split(' ').pop()));
-        const finished = frame.done || new Set(frame.order);
-        for (const [id, [x, y]] of Object.entries(graph.nodes)) {
-            const isCurrent = frame.current === id;
-            const fill = finished.has(id) ? 'var(--algo-done)' : pending.has(id) ? 'var(--algo-frontier)' : 'var(--algo-paper)';
-            if (isCurrent) svg.appendChild(el('svg:circle', { cx: sx(x), cy: sy(y), r: 21, fill: 'none', stroke: 'var(--algo-ink)', 'stroke-width': 3 }));
-            const ring = id === start ? 'var(--algo-start)' : id === goal ? 'var(--algo-goal)' : 'var(--algo-ink)';
-            svg.appendChild(el('svg:circle', { cx: sx(x), cy: sy(y), r: 15, fill, stroke: ring, 'stroke-width': id === start || id === goal ? 3.5 : 1.5 }));
-            svg.appendChild(el('svg:text', { x: sx(x), y: sy(y) + 5, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: id }));
-            if (frame.cost && id in frame.cost) {
-                svg.appendChild(el('svg:text', { x: sx(x), y: sy(y) - 22, 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--algo-ink)', text: String(frame.cost[id]) }));
-            }
-        }
+        // null: the start's predecessor, at the end of a short stub
+        const stub = spot(start, 30, 16, 40);
+        const nullAt = [stub.x + 15, stub.y + 8];
+        return { at, width, rowY, nodeSpot, neighborSpot, nullAt, nodeAtNull: { x: nullAt[0] - 20 - 44, y: nullAt[1] - 9 } };
     }
 
-    function sideGraph(side, graph, frame, kind, goal) {
-        side.replaceChildren();
-        const title = { bfs: 'Queue (vorne → hinten)', dfs: 'Stack (unten → oben)', dijkstra: 'Priority Queue (kleinste zuerst)', astar: 'Priority Queue (kleinste zuerst)' }[kind];
-        side.appendChild(el('h5', { text: title }));
-        const items = el('div', { class: 'algo-items' });
-        if (!frame.items.length) items.appendChild(el('span', { class: 'algo-empty', text: 'leer' }));
-        for (const item of frame.items) items.appendChild(el('span', { class: `algo-item${item.next ? ' next' : ''}${item.stale ? ' stale' : ''}`, text: item.label }));
-        side.appendChild(items);
-        const ids = Object.keys(graph.nodes);
-        const table = el('table', { class: 'algo-table' });
-        const head = ['Knoten', ...(frame.cost ? ['Weg'] : []), ...(kind === 'astar' ? ['Luftlinie'] : []), 'Vorgänger'];
-        table.appendChild(el('tr', {}, head.map((h) => el('th', { text: h }))));
-        for (const id of ids) {
-            if (!(id in frame.previous)) continue;
-            const row = el('tr', { class: id === frame.current ? 'current' : (frame.done || new Set(frame.order)).has(id) ? 'done' : '' });
-            row.appendChild(el('td', { text: id }));
-            if (frame.cost) row.appendChild(el('td', { class: (frame.changed || []).includes(id) ? 'changed' : '', text: String(frame.cost[id]) }));
-            if (kind === 'astar') row.appendChild(el('td', { text: String(straight(graph, id, goal)) }));
-            row.appendChild(el('td', { class: (frame.changed || []).includes(id) ? 'changed' : '', text: frame.previous[id] ?? '–' }));
-            table.appendChild(row);
+    // A variable that holds a number: its name and, beside it, the value
+    // (»new | 58«), no = sign between them
+    const valueBox = (name, x, y, value) => {
+        const w = 22 + 7.5 * (name.length + String(value).length);
+        const split = x + 10 + 7.5 * name.length;
+        return [
+            el('svg:rect', { 'data-solid': '', 'data-key': `var-${name}`, x, y, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }),
+            el('svg:line', { 'data-key': `var-${name}-split`, x1: split, y1: y, x2: split, y2: y + 18, stroke: 'var(--algo-accent)', 'stroke-width': 1 }),
+            el('svg:text', { 'data-key': `var-${name}-label`, x: x + 5 + 3.75 * name.length, y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: name }),
+            el('svg:text', { 'data-key': `var-${name}-value`, x: split + (x + w - split) / 2, y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 600, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-ink)', text: String(value) }),
+        ];
+    };
+    const valueBoxWidth = (name, value) => 22 + 7.5 * (name.length + String(value).length);
+
+    function drawGraph(svg, graph, frame, start, goal, kind, marker, layout) {
+        svg.replaceChildren();
+        const shortest = kind === 'dijkstra' || kind === 'astar';
+        const { at, width, rowY } = layout;
+        const R = 16;
+        const label = (name, x, y) => [
+            el('svg:rect', { 'data-solid': '', 'data-key': `var-${name}`, x, y, width: 14 + 7.5 * name.length, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }),
+            el('svg:text', { 'data-key': `var-${name}-label`, x: x + (14 + 7.5 * name.length) / 2, y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: name }),
+        ];
+        // an arrow lets go and snaps onto its new node when it changes: the
+        // variable (node, neighbor) holds another node now, a predecessor
+        // was found shorter
+        const pointer = (key, ends, [x1, y1], [x2, y2], extra = {}, rigid = false) => el('svg:path', { 'data-key': key, 'data-ends': ends, 'data-inset': 'auto', ...(rigid ? { 'data-rigid': '' } : {}),
+            d: `M${x1} ${y1} L${x2} ${y2}`, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 1.5, 'marker-end': `url(#${marker}-accent)`, ...extra });
+        svg.appendChild(el('svg:defs', {}, [['', 'var(--algo-line)'], ['-accent', 'var(--algo-accent)'], ['-pred', 'var(--algo-pred)']].map(([suffix, fill]) =>
+            el('svg:marker', { id: `${marker}${suffix}`, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 9, markerHeight: 9, markerUnits: 'userSpaceOnUse', orient: 'auto-start-reverse' },
+                [el('svg:path', { d: 'M0 0L10 5L0 10z', fill })]))));
+        // the path at the end: the arrows along it, thick
+        const onPath = new Set();
+        if (frame.done) for (let n = goal; frame.found[n]; n = frame.found[n]) onPath.add(n);
+        for (const [a, b, w] of graph.edges) {
+            const key = [a, b].sort().join('-');
+            const look = frame.look === key;
+            svg.appendChild(el('svg:line', { 'data-key': `edge-${key}`, x1: at[a][0], y1: at[a][1], x2: at[b][0], y2: at[b][1], stroke: look ? 'var(--algo-accent)' : 'var(--algo-line)', 'stroke-width': look ? 3 : 2, 'stroke-linecap': 'round' }));
         }
-        side.appendChild(el('h5', { text: 'Gefunden' }));
-        side.appendChild(table);
+        // predecessor: an arrow from a node to the node it was found from;
+        // it sprouts from its node and snaps on, and swings over when a
+        // shorter way comes (stepper_motion.js)
+        for (const [n, p] of Object.entries(frame.found)) {
+            if (p === null) continue;
+            const thick = onPath.has(n);
+            svg.appendChild(pointer(`pred-${n}`, `node-${n} node-${p}`, at[n], at[p], { stroke: thick ? 'var(--algo-accent)' : 'var(--algo-pred)', 'stroke-width': thick ? 4 : 2.5,
+                'marker-end': `url(#${marker}${thick ? '-accent' : '-pred'})` }));
+        }
+        if (shortest) for (const [a, b, w] of graph.edges) {
+            const [mx, my] = [(at[a][0] + at[b][0]) / 2, (at[a][1] + at[b][1]) / 2];
+            const look = frame.look === [a, b].sort().join('-');
+            svg.appendChild(el('svg:rect', { 'data-key': `weight-${a}${b}-box`, x: mx - 12, y: my - 9, width: 24, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: look ? 'var(--algo-accent)' : 'none', 'stroke-width': 1.5 }));
+            svg.appendChild(el('svg:text', { 'data-key': `weight-${a}${b}`, x: mx, y: my + 4, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': look ? 700 : 400, fill: 'var(--algo-ink)', text: String(w) }));
+        }
+        // the start's predecessor: null at the end of a stub
+        if (start in frame.found) {
+            const [sx, sy] = at[start];
+            const [nx, ny] = layout.nullAt;
+            const d = Math.hypot(nx - sx, ny - sy);
+            const [ux, uy] = [(nx - sx) / d, (ny - sy) / d];
+            svg.appendChild(el('svg:line', { 'data-key': 'pred-null', x1: sx + ux * R, y1: sy + uy * R, x2: nx - ux * 17, y2: ny - uy * 17, stroke: 'var(--algo-pred)', 'stroke-width': 2.5, 'stroke-dasharray': '3 3' }));
+            svg.appendChild(el('svg:text', { 'data-key': 'null-label', x: nx, y: ny + 4, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--bs-secondary-color)', text: 'null' }));
+        }
+        // the variables' arrows, under the nodes; the labels come after them
+        const labels = [];
+        if (frame.focus && frame.focus !== 'null') {
+            const s = layout.nodeSpot[frame.focus];
+            svg.appendChild(pointer('pointer-node', 'var-node focus', [s.x + 22, s.y + 9], at[frame.focus]));
+            labels.push(...label('node', s.x, s.y));
+        } else if (frame.focus === 'null') labels.push(...label('node', layout.nodeAtNull.x, layout.nodeAtNull.y));
+        if (frame.neighbor) {
+            const s = layout.neighborSpot[frame.neighbor];
+            const w = 14 + 7.5 * 'neighbor'.length;
+            svg.appendChild(pointer('pointer-neighbor', `var-neighbor node-${frame.neighbor}`, [s.x + w / 2, s.y + 9], at[frame.neighbor]));
+            labels.push(...label('neighbor', s.x, s.y));
+            if (frame.fresh !== undefined) labels.push(...valueBox('new', s.x + (w - valueBoxWidth('new', frame.fresh)) / 2, s.y + 22, frame.fresh));
+        }
+        const inRow = new Set(frame.entries.filter((e) => !e.stale).map((e) => e.node));
+        const taken = new Set(frame.taken);
+        for (const [id, [x, y]] of Object.entries(at)) {
+            const fill = taken.has(id) ? 'var(--algo-done)' : inRow.has(id) ? 'var(--algo-frontier)' : 'var(--algo-paper)';
+            const ring = id === start ? 'var(--algo-start)' : id === goal ? 'var(--algo-goal)' : 'var(--algo-ink)';
+            svg.appendChild(el('svg:circle', { 'data-key': `node-${id}`, cx: x, cy: y, r: R, fill, stroke: ring, 'stroke-width': id === start || id === goal ? 3.5 : 1.5 }));
+            svg.appendChild(el('svg:text', { 'data-key': `label-${id}`, x, y: y + 5, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: id }));
+            if (frame.dist && id in frame.dist) svg.appendChild(el('svg:text', { 'data-key': `dist-${id}`, x, y: y - 24, 'text-anchor': 'middle', 'font-size': 12,
+                'font-weight': frame.changed === id ? 700 : 400, fill: frame.changed === id ? 'var(--algo-accent)' : 'var(--algo-ink)', text: String(frame.dist[id]) }));
+            if (kind === 'astar') svg.appendChild(el('svg:text', { 'data-key': `h-${id}`, x, y: y + 32, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: `h ${straight(graph, id, goal)}` }));
+        }
+        if (frame.focus && frame.focus !== 'null') svg.appendChild(el('svg:circle', { 'data-key': 'focus', cx: at[frame.focus][0], cy: at[frame.focus][1], r: 22, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 3 }));
+        for (const node of labels) svg.appendChild(node);
+        // the row under the graph: the queue, the stack (its top on the
+        // right) or the priority queue (the smallest first), each entry a
+        // token that comes out of its node and goes back into it
+        const name = { bfs: 'queue', dfs: 'stack' }[kind] || 'pq';
+        const token = (prefix, n, x, y, extra = []) => [
+            el('svg:circle', { 'data-key': prefix, 'data-from': `node-${n}`, 'data-to': `node-${n}`, 'data-merge': '', cx: x, cy: y, r: 14, fill: 'var(--algo-frontier)', stroke: 'var(--algo-ink)', 'stroke-width': 1.5 }),
+            el('svg:text', { 'data-key': `${prefix}-label`, 'data-from': `label-${n}`, 'data-to': `label-${n}`, 'data-merge': '', x, y: y + 5, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: n }),
+            ...extra];
+        const rowLeft = 30 + 7.5 * name.length;
+        svg.appendChild(el('svg:text', { 'data-key': 'row-name', x: 14, y: rowY + 4, 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: name }));
+        frame.entries.forEach((e, i) => {
+            const x = rowLeft + 18 + i * 36;
+            const extra = [];
+            if (shortest) extra.push(el('svg:text', { 'data-key': `entry-${e.key}-priority`, x, y: rowY - 20, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--algo-ink)', text: String(e.priority) }));
+            if (e.stale) extra.push(el('svg:line', { 'data-key': `entry-${e.key}-strike`, x1: x - 15, y1: rowY + 15, x2: x + 15, y2: rowY - 15, stroke: 'var(--algo-goal)', 'stroke-width': 2 }));
+            for (const node of token(`entry-${e.key}`, e.node, x, rowY, extra)) svg.appendChild(node);
+            if (e.stale) svg.querySelector(`[data-key="entry-${e.key}"]`).setAttribute('fill', 'var(--algo-paper)');
+        });
+        if (!frame.entries.length) svg.appendChild(el('svg:text', { 'data-key': 'row-empty', x: rowLeft + 4, y: rowY + 4, 'font-size': 12, fill: 'var(--bs-secondary-color)', text: 'leer' }));
+        // path_back's list, filled from the front
+        if (frame.path) {
+            const pathY = rowY + 50;
+            svg.appendChild(el('svg:text', { 'data-key': 'path-name', x: 14, y: pathY + 4, 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'path' }));
+            frame.path.forEach((n, i) => {
+                for (const node of token(`path-${n}`, n, rowLeft + 18 + i * 36, pathY)) svg.appendChild(node);
+                svg.querySelector(`[data-key="path-${n}"]`).setAttribute('fill', frame.done ? 'var(--algo-accent)' : 'var(--algo-paper)');
+                if (frame.done) svg.querySelector(`[data-key="path-${n}-label"]`).setAttribute('fill', 'var(--algo-paper)');
+            });
+        }
+        svg.setAttribute('viewBox', `0 0 ${width} ${rowY + 70}`);
+        svg.dataset.natural = width;
     }
 
     // ---- The heap: an array; the children of index i are 2i + 1 and 2i + 2.
@@ -790,6 +946,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 d: `M${centre[0]} ${centre[1]} Q${(centre[0] + end[0]) / 2} ${(centre[1] + end[1]) / 2} ${end[0]} ${end[1]}`, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 1.5, 'marker-end': `url(#${marker}-accent)` }));
         });
         group.boxes.forEach((box) => {
+            if (box.value !== undefined) { out.push(...valueBox(box.name, box.x - box.width / 2, y, box.value)); return; }
             out.push(el('svg:rect', { 'data-solid': '', 'data-key': `var-${box.name}`, x: box.x - box.width / 2, y, width: box.width, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
             out.push(el('svg:text', { 'data-key': `var-${box.name}-label`, x: box.x, y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: box.text || box.name }));
         });
@@ -1056,12 +1213,13 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             svg.appendChild(el('svg:text', { 'data-key': 'var-value-label', x: x + cell - 2 + w / 2, y: 25, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'value' }));
         }
         const labelTop = top + 90;
-        const vars = (frame.vars || []).map((v) => (v.name === 'size' ? { ...v, index: `b${v.index}`, text: `size = ${v.index}`, border: top - 6 } : v));
+        const vars = (frame.vars || []).map((v) => (v.name === 'size' ? { ...v, index: `b${v.index}`, value: v.index, border: top - 6 } : v));
         const at = (index) => (typeof index === 'string' ? border(Number(index.slice(1))) : left + index * cell + (cell - 6) / 2);
         const placed = indexLabels(vars, at, left * 2 + (most + 1) * cell);
         // all lines under all boxes: the border moves past other boxes
         const labels = placed.flatMap((label) => indexLabel(label, labelTop + label.row * 24, top + 36, top + 66, marker));
-        for (const node of [...labels.filter((n) => n.tagName !== 'rect' && n.tagName !== 'text'), ...labels.filter((n) => n.tagName === 'rect' || n.tagName === 'text')]) svg.appendChild(node);
+        const under = (n) => /^(pointer|border)-/.test(n.dataset.key);
+        for (const node of [...labels.filter(under), ...labels.filter((n) => !under(n))]) svg.appendChild(node);
         svg.appendChild(el('svg:text', { 'data-key': 'capacity', x: left + (most + 1) * cell - 6, y: 24, 'text-anchor': 'end', 'font-size': 12, fill: 'var(--bs-secondary-color)', text: `capacity ${frame.capacity}` }));
         // the picture keeps its size: room for the new array when the example grows
         svg.setAttribute('viewBox', `0 0 ${left * 2 + (most + 1) * cell} ${grows ? bigTop + 54 : labelTop + 3 * 24}`);
@@ -2108,12 +2266,12 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             byIndex.get(v.index).push(v);
         }
         const groups = [...byIndex.entries()].sort((a, b) => x(a[0]) - x(b[0])).map(([index, names]) => {
-            const widths = names.map((v) => 14 + 7.5 * (v.text || v.name).length);
+            const widths = names.map((v) => (v.value !== undefined ? valueBoxWidth(v.name, v.value) : 14 + 7.5 * (v.text || v.name).length));
             const width = widths.reduce((s, w) => s + w, 0) + GAP * (names.length - 1);
             // inside the picture: pushed in at the edges, the arrows then slant
             let left = Math.min(Math.max(2, x(index) - width / 2), maxX - width - 2);
             const centre = left + width / 2;
-            const boxes = names.map((v, k) => { const box = { name: v.name, text: v.text, border: v.border, x: left + widths[k] / 2, width: widths[k] }; left += widths[k] + GAP; return box; });
+            const boxes = names.map((v, k) => { const box = { name: v.name, text: v.text, value: v.value, border: v.border, x: left + widths[k] / 2, width: widths[k] }; left += widths[k] + GAP; return box; });
             return { index, x: x(index), centre, width, boxes };
         });
         const rows = [];
@@ -2303,13 +2461,12 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             const graph = GRAPHS[widget.dataset.graph || 'stadt'];
             const start = widget.dataset.start || 'A';
             const goal = widget.dataset.goal || 'H';
-            frames = algo === 'bfs' || algo === 'dfs' ? traceSearch(graph, start, goal, algo) : traceShortest(graph, start, goal, algo);
-            svg.setAttribute('viewBox', '0 0 540 340');
+            frames = traceGraph(graph, start, goal, algo);
+            const marker = `algo-arrow-${++widgetCount}`;
+            const layout = graphLayout(graph, start, algo);
             svg.setAttribute('aria-label', `Der Beispielgraph mit Knoten A bis H; ${start} ist der Start, ${goal} das Ziel`);
-            draw = (frame) => {
-                drawGraph(svg, graph, frame, start, goal, algo);
-                sideGraph(side, graph, frame, algo, goal);
-            };
+            // the calls: the search, and path_back at the end
+            draw = (frame) => { drawGraph(svg, graph, frame, start, goal, algo, marker, layout); listSide(frame, 2); };
         }
         const button = (go, icon, label) => el('button', { class: 'btn btn-sm btn-success', 'data-go': go, 'aria-label': label, type: 'button' },
             [el('i', { class: `bi ${icon}`, style: 'margin-right: 0;' })]);
@@ -2319,8 +2476,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         const message = el('div', { class: 'algo-message', 'aria-live': 'polite' });
         picture.setAttribute('aria-label', svg.getAttribute('aria-label'));
         // the operations in their order: done, the current one, what comes
-        const opsText = widget.dataset.ops && frames.some((f) => f.op !== undefined)
-            ? widget.dataset.ops.split(/,(?![^(]*\))/).map((s) => s.trim()).filter(Boolean) : null;
+        // (a graph search names its own: the node that comes out)
+        const opsText = frames.opNames || (widget.dataset.ops && frames.some((f) => f.op !== undefined)
+            ? widget.dataset.ops.split(/,(?![^(]*\))/).map((s) => s.trim()).filter(Boolean) : null);
         // The timeline: every step a mark, the steps of one operation a
         // section with its name at its start; done ones coloured, the
         // current one marked. A tap or a drag on it goes to that step.
