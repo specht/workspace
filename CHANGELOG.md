@@ -129,6 +129,29 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   glänzenden Boden, mit seinem Spiegelbild darunter (in jedem Browser),
   und schließt oben mit dem Text ab; Text und Bild teilen sich die Breite
   7 : 5. Auf schmalen Bildschirmen steht das Bild schlicht unter dem Text.
+- Galerien: Ein Bild mit der Klasse `inspect` lässt sich im großen Bild
+  vergrößern und verschieben (Mausrad, zwei Finger, Doppelklick), auch auf
+  dem Handy; vergrößert füllt es den ganzen Bildschirm, und ein Doppelklick
+  oder doppeltes Tippen gleitet hinein und zurück. Backrooms Level 3 zeigt so
+  die ganze Lightmap des eigenen Levels, Punkt für Punkt.
+- Galerien: Schließen und Blättern im großen Bild sind runde Knöpfe mit
+  Bootstrap-Icons, ihr Zeichen genau in der Mitte; nach einem Klick zeigen
+  sie keinen Fokusrahmen mehr. <kbd>Esc</kbd> schließt das Bild auch dann,
+  wenn Chrome sein eigenes Schließen nicht mehr meldet.
+- Backrooms: Das Licht backt mehrfach schneller, bei einem Level wie am
+  Ende von Level 3 (16 Räume, 39 Leuchten) etwa viermal so schnell. Die
+  feineren Stücke der Lightmap an Modellen und Blöcken nehmen nur noch einen
+  Strahl je Leuchte und Durchgang statt bis zu acht; dafür ist jede Leuchte
+  in 8 × 8 Felder geteilt, und jeder Punkt trifft in den 64 Durchgängen jedes
+  Feld einmal, sodass die Halbschatten so glatt bleiben wie vorher. Wurden
+  beim direkten Licht die Stücke kleiner, weil ein Bild zu lange dauerte,
+  fängt jede Reflexion wieder mit großen an. Level 3 erklärt die Felder.
+- Backrooms: <kbd>R</kbd> bringt an die Stelle kurz vor dem letzten Sturz
+  zurück, <kbd>Shift</kbd> <kbd>R</kbd> wie bisher an den Anfang. Der
+  Kasten oben links hat ein − zum Ausblenden und ordnet die Schalter in
+  Gruppen (Walk, Light, Effects); auf Handy und Tablet ist er zuerst zu,
+  zeigt geöffnet nur Walk, bis man »More« antippt, und erklärt die Daumen
+  statt Maus und WASD.
 - Galerien: Ein vergrößertes Bild lässt sich auf dem Tablet zur Seite
   wischen, zum nächsten oder vorigen Bild der Galerie; es folgt dabei dem
   Finger, gleitet hinaus, und das nächste gleitet herein, ohne Überblenden. Zwei Finger zoomen wie bisher.
@@ -1456,6 +1479,17 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Terminal«, Notiz für Lehrkräfte.
 
 ### Behoben
+
+- Backrooms: Die Wand des Schachts unter einem Loch im Boden endet am Boden
+  des Raums darüber; vorher stand dort eine gelbe Platte vor der Wand. Stößt
+  das Loch an eine Wand des Raums darüber, steht diese Wand bis an den Rand,
+  und an allen Seiten des Lochs ist der Boden dazwischen roher Beton. Das
+  Gesims schließt an Ecken, die in den Raum ragen (an Türen), ohne Lücke.
+  Level 3 zeigt in der Lightmap weiche Schatten, die an einer Kante scharf
+  beginnen (an der Treppe im Bad, um eine Kiste auf dem Dachboden), statt
+  eines groben Ausschnitts, und hohe Rechtecke quer.
+- Der Knopf zur Nachtschicht am Ende von Backrooms Level 3 hat wieder weiße
+  Schrift statt blasser blauer.
 
 - Handbuch: Unter »Wird verwendet in« stehen keine Seiten mehr aus verborgenen
   Bereichen; die Seite »Workspace« nannte bisher eine Aktivität, zu der kein

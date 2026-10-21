@@ -100,8 +100,14 @@ export default {
                 await page.goto(url.href);
                 await page.waitForSelector('#status');
             }
-            await waitForStatus(page, 'Baking light: bounce 1', lightTimeout);
-            await page.evaluate(() => { window.requestAnimationFrame = () => 0; });
+            // checked every frame and frozen in the same one: on a fast card
+            // »bounce 1« stands there only for a few frames, and a check every
+            // 250 ms (waitForStatus) missed it and waited until the timeout
+            await page.waitForFunction(() => {
+                if (!/Baking light: bounce 1/.test(document.getElementById('status')?.textContent ?? '')) return false;
+                window.requestAnimationFrame = () => 0;
+                return true;
+            }, null, { timeout: lightTimeout, polling: 'raf' });
             await page.waitForTimeout(300);
         },
 

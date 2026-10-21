@@ -59,7 +59,7 @@ Danach liegt die Vorlage in `/workspace/backrooms-starter`:
 # Klonen wie im Handbuch »Workspace« (oben eingebunden), dann die
 # geöffnete Vorlage im Explorer, level.ini im Editor
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ c50c53e0e2747a3c73b81e00b072d4ad4d7c3130
+clone-start: https://github.com/specht/backrooms-starter.git @ f19e4cd775bc42e8338fc1c9645a016b49e44cdf
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -121,7 +121,7 @@ Klick ins Bild, dann siehst du dich mit der Maus um. <kbd>Esc</kbd> gibt die Mau
 
 Wo du stehst, merkt sich die Adresse der Seite, eine offene Automap auch, so gedreht und gezoomt, wie sie ist. Lädst du neu, stehst du wieder dort, solange sich der Grundriss nicht geändert hat: Ändere einen Raum, lade neu und sieh dir dieselbe Stelle noch einmal an.
 
-Auf dem Handy oder Tablet läufst du mit dem linken Daumen: Wo er das Bild berührt, erscheint ein Ring, und schiebst du ihn aus dessen Mitte, läufst du in diese Richtung, ganz hinaus geschoben rennst du. Der rechte Daumen wischt, um dich umzusehen. In der Automap dreht ein Finger die Karte, zwei Finger zoomen und verschieben sie. <span class='bi bi-list'></span> oben rechts blendet den Kasten oben links aus und wieder ein.
+Auf dem Handy oder Tablet läufst du mit dem linken Daumen: Wo er das Bild berührt, erscheint ein Ring, und schiebst du ihn aus dessen Mitte, läufst du in diese Richtung, ganz hinaus geschoben rennst du. Der rechte Daumen wischt, um dich umzusehen. In der Automap dreht ein Finger die Karte, zwei Finger zoomen und verschieben sie. Dort ist der Kasten oben links zuerst zu: <span class='bi bi-list'></span> an seiner Stelle öffnet ihn, − darin schließt ihn wieder, »More« zeigt alle Schalter.
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Drück <kbd>M</kbd>. Die Automap zeigt das Bauwerk als Drahtgitter, jeden Raum mit seinem Namen, die Leuchten als gelbe Punkte; der rote Pfeil bist du. Zieh mit der Maus, um die Karte zu drehen, mit <kbd>Shift</kbd>, um sie zu verschieben, und zoom mit dem Mausrad. Lauf ein paar Schritte, während sie offen ist, und schau nach unten: Was macht die Karte? <kbd>V</kbd> zeigt statt des Drahtgitters die Räume selbst von oben, ohne Decken, mit ihrem Licht. <kbd>Esc</kbd> schließt die Karte.
@@ -809,7 +809,7 @@ hook: info off
 <p><strong>Ausprobieren:</strong> Mit einer zweiten Zahl wird der Bogen schmaler als die Tür, und daneben bleibt Wand: <code>arch = 2.9, 1.2</code> ist nur 1,2 m breit. Wie sieht <code>arch = 2.4, 0.9</code> aus, ein schmaler, hoher Durchgang? Stell danach <code>arch = 2.9</code> wieder her.</p>
 </div>
 
-### Unten anders
+### Ein Lambris
 
 Die Wand soll unten aus Holz sein und oben Tapete bleiben:
 
@@ -833,7 +833,7 @@ hook: info off
 
 <img class='full fit-width' src='salon-3.webp' alt='Der Salon mit dunklem Holz an den Wänden bis auf Hüfthöhe, darüber grüne Tapete; der Bogen und das Sofa wie vorher.'>
 
-### Eine Leiste darauf
+### Eine Stuhlleiste
 
 Wo Holz und Tapete sich treffen, kommt eine helle Leiste:
 
@@ -856,7 +856,7 @@ hook: info off
 
 <img class='full fit-width' src='salon-4.webp' alt='Der Salon mit einer hellen Leiste auf der Oberkante des Holzes, die ringsum an allen Wänden entlangläuft und am Bogen endet.'>
 
-### Oben
+### Ein Gesims
 
 Zuletzt die Kante, an der die Wand die Decke trifft:
 
