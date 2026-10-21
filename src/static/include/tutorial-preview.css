@@ -173,22 +173,48 @@
     z-index: 1;
     transform: translateY(-50%);
 
-    width: 3rem;
-    height: 4.5rem;
+    /* round, the chevron (Bootstrap Icons) exactly in the middle */
+    place-items: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    padding: 0;
     border: 0;
-    border-radius: 8px;
+    border-radius: 50%;
     background: rgba(0, 0, 0, 0.35);
     color: white;
-
-    font-family: 'PT Sans', sans-serif;
-    font-size: 3rem;
-    line-height: 1;
     cursor: pointer;
+}
+
+.tutorial-preview-lightbox-close .bi,
+.tutorial-preview-lightbox-step .bi {
+    display: block;
+    /* alone in the button: without the gap default.css puts after an icon in front of text */
+    margin: 0;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+/* Bootstrap Icons lower the glyph for text (vertical-align); in the round
+   buttons it sits exactly in the middle */
+.tutorial-preview-lightbox-close .bi::before,
+.tutorial-preview-lightbox-step .bi::before {
+    display: block;
+    vertical-align: 0;
 }
 
 .tutorial-preview-lightbox-step:hover,
 .tutorial-preview-lightbox-step:focus-visible {
     background: rgba(0, 0, 0, 0.6);
+}
+
+/* no ring after a click (it stayed around the box); with the keyboard the
+   box shows a light edge instead */
+.tutorial-preview-lightbox-step:focus {
+    outline: none;
+}
+
+.tutorial-preview-lightbox-step:focus-visible {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
 }
 
 .tutorial-preview-lightbox-prev {
@@ -200,7 +226,7 @@
 }
 
 .tutorial-preview-lightbox.is-gallery.has-steps .tutorial-preview-lightbox-step {
-    display: block;
+    display: grid;
 }
 
 /* At the bottom, in the middle, a dot for each picture of the gallery
@@ -286,6 +312,62 @@
     }
 }
 
+/* A picture to inspect (class 'inspect' in a gallery): zoomed and moved
+   inside its frame by tutorial-preview.js, the page itself does not zoom */
+.tutorial-preview-lightbox-inspect {
+    overflow: hidden;
+    border-radius: 6px;
+    box-shadow: 0 0.8rem 3rem rgba(0, 0, 0, 0.45);
+    touch-action: none;
+    cursor: zoom-in;
+}
+
+.tutorial-preview-lightbox-inspect.is-zoomed {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 0;
+    background: #000;
+    cursor: grab;
+}
+
+.tutorial-preview-lightbox-inspect.is-zoomed img {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+/* zoomed in: no transform on the way up, else fixed would be relative to it */
+.tutorial-preview-lightbox.is-visible.is-zoomed .tutorial-preview-lightbox-content {
+    transform: none;
+    transition: none;
+}
+
+.tutorial-preview-lightbox.is-zoomed .tutorial-preview-lightbox-close {
+    z-index: 3;
+}
+
+.tutorial-preview-lightbox-inspect:active {
+    cursor: grabbing;
+}
+
+.tutorial-preview-lightbox.is-gallery .tutorial-preview-lightbox-inspect img {
+    border-radius: 0;
+    box-shadow: none;
+    transform-origin: 0 0;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.tutorial-preview-lightbox-hint {
+    display: block;
+    margin-top: 0.25rem;
+    opacity: 0.65;
+    font-size: 0.85rem;
+}
+
 /* One finger swipes to the next picture (tutorial-preview.js), two zoom */
 .tutorial-preview-lightbox.is-gallery.has-steps {
     touch-action: pinch-zoom;
@@ -311,10 +393,24 @@
     background: transparent;
     color: white;
 
-    font-family: 'PT Sans', sans-serif;
-    font-size: 3rem;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 1.6rem;
     line-height: 1;
     cursor: pointer;
+}
+
+.tutorial-preview-lightbox-close:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.7);
+    outline-offset: 2px;
+}
+
+.tutorial-preview-lightbox:focus {
+    outline: none;
 }
 
 @media (max-width: 760px) {
