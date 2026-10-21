@@ -1504,6 +1504,8 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
     }
 
     let widgetCount = 0;
+    // the height of one call in the stack box, in its own em
+    const STACK_LINE = 1.62;
 
     // Labels for index variables under a row of places: each variable its
     // own box; the boxes of one place side by side as a group, and the groups
@@ -1639,6 +1641,8 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             frames = traceTree(parseOps(widget.dataset.ops), algo === 'avl', parseOps(widget.dataset.setup || ''));
             svg.setAttribute('aria-label', 'Der Baum: links die kleineren, rechts die größeren Werte');
             const shapes = frames.map(treeShape);
+            // the stack keeps the height of its deepest moment, so that the code below does not jump
+            const deepest = Math.max(0, ...frames.map((f) => (f.stack || []).length));
             const most = { count: Math.max(...shapes.map((t) => t.count)), depth: Math.max(...shapes.map((t) => t.depth)), marker: `algo-arrow-${++widgetCount}` };
             // beside the tree the pseudocode of what runs, its line marked
             draw = (frame) => {
@@ -1646,7 +1650,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 // the calls that run, each one deeper indented; on the way
                 // back up they return one after another, the deepest first
                 const stack = frame.stack || [];
-                const calls = stack.length ? [el('h5', { text: 'Aufrufe' }), el('ol', { class: 'algo-stack' }, stack.map((entry, i) => {
+                const calls = deepest ? [el('h5', { text: 'Aufrufe' }), el('ol', { class: 'algo-stack', style: `min-height: ${deepest * STACK_LINE}em;` }, stack.map((entry, i) => {
                     const li = el('li', { class: !frame.returning && i === stack.length - 1 ? 'current' : '', style: `margin-left: ${i * 1.2}em;`, ...(entry.node !== null && entry.node !== undefined ? { 'data-node': entry.node } : {}),
                         text: entry.returns ? `${entry.call} → ${entry.returns}` : entry.call });
                     if (frame.returning) li.style.animationDelay = `${((stack.length - 1 - i) / (stack.length + 1)) * (frame.duration || MOTION_TIME) / 1000}s`;
@@ -1668,10 +1672,12 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             const kind = widget.dataset.sort;
             frames = traceSort(values, kind);
             const marker = `algo-arrow-${++widgetCount}`;
+            // the stack keeps the height of its deepest moment, so that the code below does not jump
+            const deepest = Math.max(0, ...frames.map((f) => (f.stack || []).length));
             svg.setAttribute('aria-label', 'Die Zahlen als Balken, Höhe nach Wert, darunter die Indizes');
             draw = (frame) => {
                 drawSort(svg, frame, marker);
-                const stack = frame.stack.length ? [el('h5', { text: 'Aufrufe' }), el('ol', { class: 'algo-stack' }, frame.stack.map((entry, i) =>
+                const stack = deepest ? [el('h5', { text: 'Aufrufe' }), el('ol', { class: 'algo-stack', style: `min-height: ${deepest * STACK_LINE}em;` }, frame.stack.map((entry, i) =>
                     el('li', { class: i === frame.stack.length - 1 ? 'current' : '', style: `margin-left: ${i * 1.2}em;`, text: entry.call })))] : [];
                 side.replaceChildren(el('h5', { text: 'Gezählt' }),
                     el('table', { class: 'algo-table' }, [
@@ -1830,6 +1836,10 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         if (links) window.addEventListener('resize', () => follow(0));
         widget.setAttribute('data-stepper', '');
         let index = 0;
+        // a step without code (the start) shows the code of the first
+        // operation, no line marked, so that the code box stays where it is
+        const firstCode = frames.find((f) => f.code && f.code.lines);
+        for (const frame of frames) if (!frame.code && firstCode) frame.code = { lines: firstCode.code.lines, at: -1 };
         // animate: a step forward or back moves; a jump shows the step at once
         const show = (animate) => {
             const frame = frames[index];

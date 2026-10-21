@@ -96,6 +96,10 @@ the next with their eyes.
   parameter `node`, and the label `node` is always beside it. It moves from
   node to node, and while it fades in or out it stays on its node, even when
   that node moves (`data-follow`).
+- **Nothing jumps.** The call stack keeps the height of its deepest moment
+  over the whole timeline, and the start (before any operation) already shows
+  the code of the first one, no line marked: the code box stays where it is
+  in every step.
 - **The calls that run** stand above the code box, each one deeper indented
   (`remove(node: 50, value: 20)`), the current one marked. On the way back
   each shows what it returns (`→ 30`) and they return one after another, the
