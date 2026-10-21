@@ -18,6 +18,8 @@ reference: [sql, datensaetze]
 In diesem Kapitel lernst du, wie du MySQL-Da­ten­ban­ken abfragen kannst. Dazu verwenden wir SQL, die Structured Query Language. Wir beginnen mit einfachen Abfragen und kombinieren die einzelnen Bausteine anschließend zu eigenen Fragen an die Daten.
 </p>
 
+_person(widenius)
+
 ## Vorbereitung
 
 ### Einen Ordner anlegen

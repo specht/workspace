@@ -240,6 +240,8 @@ _task(ebenen)
 
 Die Blätter liegen außerdem der Reihe nach nebeneinander. Darum hilft der Index nicht nur bei `=`, sondern auch bei Bereichen: `phone BETWEEN … AND …` oder `phone LIKE '0151 95%'` springt zum ersten passenden Blatt und liest von dort aus weiter, bis es nicht mehr passt.
 
+_person(bayer-mccreight)
+
 ## Der Primärschlüssel ist schon ein Index
 
 Sieh dir an, was `EXPLAIN` zur Suche nach der Nummer einer Zeile sagt:

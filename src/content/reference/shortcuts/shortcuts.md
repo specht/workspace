@@ -60,6 +60,11 @@ Auf einem Mac nimmst du <kbd>Cmd</kbd> statt <kbd>Strg</kbd> und <kbd>Option</kb
 <tr><td><kbd>Strg</kbd><kbd>C</kbd> <kbd>Strg</kbd><kbd>X</kbd> <kbd>Strg</kbd><kbd>V</kbd></td><td>kopieren, ausschneiden, einfügen; in VS Code ohne Markierung die ganze Zeile</td><td>überall</td></tr>
 <tr><td><kbd>Strg</kbd><kbd>S</kbd></td><td>speichern; ein Punkt im Tab heißt »noch nicht gespeichert«</td><td>überall</td></tr>
 </table>
+
+Ausschneiden, Kopieren und Einfügen kennt heute fast jedes Programm; erfunden wurden sie in den 1970er Jahren.
+
+_person(tesler)
+
 <!-- /part -->
 
 <!-- part: zeilen -->

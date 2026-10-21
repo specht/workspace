@@ -16,6 +16,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 ## Geboren vor 1920
 
+<!-- year: 1707 -->
+<!-- part: euler -->
+### Leonhard Euler
+
+<div class='person'>
+<img src='euler.webp' alt='Leonhard Euler 1753, Gemälde von Jakob Emanuel Handmann: ein Mann mit einem weißen, um den Kopf gewickelten Tuch und einem blau gestreiften Mantel, das rechte Auge halb geschlossen.'>
+<p><strong>Leonhard Euler</strong> (1707–1783), Schweizer Mathematiker. 1736 zeigte er, dass es keinen Spaziergang durch Königsberg gibt, der jede der sieben Brücken genau einmal überquert. Dafür kam es nur darauf an, welche Ufer und Inseln durch welche Brücken verbunden sind, nicht auf Straßen und Entfernungen: die Idee hinter jedem Graphen, auch hinter dem Stadtplan im <a href='/routenplaner'>Routenplaner</a>. Mit diesem Beweis beginnt die Graphentheorie.</p>
+<p>Ab 1738 sah er auf dem rechten Auge fast nichts mehr, ab 1766 war er fast blind. Er arbeitete trotzdem weiter und diktierte: 1775 entstand im Schnitt jede Woche eine neue mathematische Arbeit.</p>
+<p class='person-credit'>Gemälde: Jakob Emanuel Handmann, 1753, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Leonhard_Euler_-_Jakob_Emanuel_Handmann_(Kunstmuseum_Basel).jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1896 -->
 <!-- part: luhn -->
 ### Hans Peter Luhn
@@ -248,6 +260,16 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <!-- /part -->
 
 <!-- year: 1939 -->
+<!-- part: bayer-mccreight -->
+### Rudolf Bayer und Edward M. McCreight
+
+<div class='person'>
+<p><strong>Rudolf Bayer</strong> (geboren 1939), deutscher Informatiker, und <strong>Edward M. McCreight</strong>, amerikanischer Informatiker, erfanden den B-Baum 1970, als beide beim Flugzeugbauer Boeing forschten. Jeder Index, den du mit <code>CREATE INDEX</code> anlegst, ist so ein Baum. Bayer ging 1972 an die TU München, McCreight baute später bei Xerox PARC den Computer Alto mit.</p>
+<p>Wofür das B steht, ist bis heute offen: Boeing, <em>balanced</em>, Bayer? McCreight erzählte, sie hätten den Namen Boeing nicht benutzen dürfen, ohne erst mit den Anwälten zu reden. Und Bayer sagte gern: Je länger man darüber nachdenkt, wofür das B steht, desto besser versteht man B-Bäume.</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1939 -->
 <!-- part: welch -->
 ### Terry Welch
 
@@ -289,6 +311,30 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Ken Thompson</strong> (geboren 1943). Du suchst im Terminal mit <code>grep</code>? Das hat er 1973 geschrieben; der Name kommt aus seinem Texteditor, wo der Befehl <code>g/re/p</code> hieß: global, <em>regular expression</em>, print. Den Automaten dahinter baute er nach der Thompson-Konstruktion.</p>
 <p>Das Terminal selbst läuft unter Linux, und Linux funktioniert wie Unix, das er ab 1969 mit Dennis Ritchie schrieb. Unten rechts in VS Code steht <em>UTF-8</em>: Die Kodierung hat er 1992 mit Rob Pike auf ein Tischset in einem Diner gezeichnet. Und die Sprache <a href='/go'>Go</a> hat er mit erfunden.</p>
 <p class='person-credit'>Foto: A. C. Diller, 2019, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Brian_Kernighan_and_Ken_Thompson.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1945 -->
+<!-- part: tesler -->
+### Larry Tesler
+
+<div class='person'>
+<img src='tesler.webp' alt='Larry Tesler 2007: ein älterer Mann mit weißem Haar, der breit lächelt, vorn eine weiße Calla-Blüte.'>
+<p><strong>Larry Tesler</strong> (1945–2020), amerikanischer Informatiker. Du kopierst mit <kbd>Strg</kbd><kbd>C</kbd> und fügst mit <kbd>Strg</kbd><kbd>V</kbd> ein? Die Namen <em>cut</em>, <em>copy</em> und <em>paste</em> dafür hat er vorgeschlagen, und ab 1974 baute er die Befehle mit Kollegen bei Xerox PARC in Texteditoren ein, etwa in Gypsy, den er mit Tim Mott schrieb. 1980 ging er zu Apple, wo die Befehle in die Computer Lisa und Macintosh kamen.</p>
+<p>Die Editoren damals hatten Modi: In einem Modus war jede Taste ein Befehl, in einem anderen schrieb sie Text, wie heute noch in <code>vim</code>, wo du erst <kbd>I</kbd> drückst. Tesler fand das furchtbar. »Don't mode me in« war sein Spruch, und auf dem Nummernschild seines Autos stand <code>NOMODES</code>.</p>
+<p class='person-credit'>Foto: Yahoo! Blog, 2007, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Larry_Tesler_Smiles_at_Whisper.jpeg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1945 -->
+<!-- part: rivest-shamir-adleman -->
+### Ron Rivest, Adi Shamir und Leonard Adleman
+
+<div class='person pair'>
+<div class='portraits'><img src='rivest.webp' alt='Ron Rivest: ein lächelnder Mann mit grauem Bart in einem hellblauen Hemd und dunklem Sakko.'><img src='shamir.webp' alt='Adi Shamir 2013: ein Mann mit Halbglatze, Brille und grauem Bart in einem hellblauen Hemd.'><img src='adleman.webp' alt='Leonard Adleman: ein lächelnder Mann mit dunklem, lockigem Haar vor einer roten Wand.'></div>
+<p><strong>Ron Rivest</strong> (geboren 1947), <strong>Adi Shamir</strong> (geboren 1952) und <strong>Leonard Adleman</strong> (geboren 1945), damals am MIT. Das Schlüsselpaar, das du mit <code>openssl genpkey -algorithm RSA</code> erzeugst, trägt ihre Anfangsbuchstaben: RSA veröffentlichten sie 1977. Rivest und Shamir schlugen eine Idee nach der anderen vor, und Adleman, der Mathematiker, suchte in jeder die Schwachstelle.</p>
+<p>1977 feierten sie Pessach bei einem Studenten, mit viel Wein. Rivest konnte danach nicht schlafen, legte sich mit einem Mathebuch aufs Sofa und hatte bis zum Morgen den größten Teil des Aufsatzes geschrieben. In der gedruckten Fassung von 1978 tauchen zum ersten Mal Alice und Bob auf, die seitdem in fast jedem Beispiel zur Verschlüsselung Nachrichten tauschen. 2002 bekamen die drei den Turing Award, den wichtigsten Preis der Informatik.</p>
+<p class='person-credit'>Fotos: Ronald L. Rivest, 2015, CC BY-SA 4.0 (<a href='https://commons.wikimedia.org/wiki/File:Ronald_L_Rivest_photo.jpg'>Wikimedia Commons</a>); Erik Tews, 2013, CC BY-SA 3.0 (<a href='https://commons.wikimedia.org/wiki/File:Adi_Shamir_at_TU_Darmstadt_(2013).jpg'>Wikimedia Commons</a>); Leonard Adleman, CC BY-SA 3.0 (<a href='https://commons.wikimedia.org/wiki/File:Len-mankin-pic.jpg'>Wikimedia Commons</a>), alle zugeschnitten</p>
 </div>
 <!-- /part -->
 
@@ -419,6 +465,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1959 -->
+<!-- part: fox -->
+### Brian Fox
+
+<div class='person'>
+<img src='fox.webp' alt='Brian Fox 2008: ein Mann mit sehr kurzem dunklem Haar und Bart in einem schwarzen T-Shirt, die Arme verschränkt, ernst in die Kamera blickend.'>
+<p><strong>Brian Fox</strong> (geboren 1959), amerikanischer Programmierer. Die Shell, die im Terminal deine Befehle liest, ist Bash: Er schrieb sie für das GNU-Projekt von Richard Stallman als freien Ersatz für die alte Bourne Shell und stellte sie im Juni 1989 vor. Dass <kbd>Tab</kbd> Dateinamen ergänzt und <kbd>↑</kbd> frühere Befehle zurückholt, erledigt Readline, eine Bibliothek, die er ebenfalls geschrieben hat.</p>
+<p>Der Name ist ein Wortspiel: Die alte Shell hatte Stephen Bourne geschrieben, die neue heißt <em>Bourne-Again Shell</em>, gesprochen wie <em>born again</em>, »wiedergeboren«.</p>
+<p class='person-credit'>Foto: Lissa Liggett, 2008, CC BY 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:BrianJFox.png'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 ## Geboren ab 1960
 
 <!-- year: 1960 -->
@@ -464,6 +522,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <p><strong>Erich Gamma</strong> (geboren 1961), Schweizer Informatiker. Der Editor im Workspace ist VS Code: Dessen Entwicklung leitete er ab 2011 bei Microsoft in Zürich, 2015 erschien die erste Fassung.</p>
 <p>Vorher schrieb er mit Kent Beck JUnit, mit dem Java-Programme sich selbst testen, und mit drei anderen das Buch <em>Design Patterns</em> (1994), das bis heute zeigt, wie man größere Programme ordnet.</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1962 -->
+<!-- part: widenius -->
+### Michael »Monty« Widenius
+
+<div class='person'>
+<img src='widenius.webp' alt='Michael Widenius 2019 am Wasser: ein Mann mit grauem, zerzaustem Haar in einem dunklen T-Shirt, leicht lächelnd.'>
+<p><strong>Michael »Monty« Widenius</strong> (geboren 1962), finnischer Programmierer. Die Datenbank MySQL, die du mit <code>mycli</code> abfragst, begann er 1995 mit David Axmark zu schreiben. Das »My« im Namen ist seine Tochter My.</p>
+<p>2008 kaufte Sun Microsystems die Firma hinter MySQL für eine Milliarde Dollar, und bald darauf kaufte Oracle Sun. Widenius fürchtete, dass MySQL dort nicht frei bleibt, und machte 2009 aus dem freien Quellcode eine eigene Fassung: MariaDB, benannt nach seiner jüngeren Tochter Maria. Auch sein Sohn Max hat eine Datenbank: MaxDB.</p>
+<p class='person-credit'>Foto: Dan Stromberg, 2019, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Michael_%22Monty%22_Widenius,_Maria_DB_och_Open_Ocean.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 
@@ -566,6 +636,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <p><strong>Ramon Santamaria</strong>, Programmierer aus Barcelona, begann raylib 2013, um Studierenden ohne Programmiererfahrung beizubringen, wie man Spiele programmiert. Dafür sollte die Bibliothek einfach bleiben: ohne fremde Abhängigkeiten, und alle Funktionen passen auf ein Cheatsheet.</p>
 <p>Er pflegt raylib bis heute, mit Hunderten Helfenden auf GitHub.</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1984 -->
+<!-- part: munroe -->
+### Randall Munroe
+
+<div class='person'>
+<img src='munroe.webp' alt='Randall Munroe 2023 bei einem Vortrag: ein Mann mit braunem Haar in einem grauen Pullover hinter einem Mikrofon.'>
+<p><strong>Randall Munroe</strong> (geboren 1984), amerikanischer Zeichner. Bevor er 2006 nur noch Comics zeichnete, programmierte er Roboter für die NASA. Sein Webcomic xkcd handelt von Mathematik, Naturwissenschaft und Programmieren; im Oktober 2007 erschien Nummer 327, »Exploits of a Mom«, mit der Mutter, die ihren Sohn <code>Robert'); DROP TABLE Students;--</code> genannt hat. »Little Bobby Tables« ist seitdem eines der bekanntesten Beispiele für SQL Injection.</p>
+<p>Der Name xkcd bedeutet nichts: Munroe wollte ein Wort, das sich nicht abnutzt. Fahr auf xkcd.com mit der Maus über einen Comic: Jeder hat einen zweiten, versteckten Witz. Bei Nummer 327 heißt die Tochter »Help I'm trapped in a driver's license factory«.</p>
+<p class='person-credit'>Foto: Σ, 2023, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Randall_Munroe_portrait_2023.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 

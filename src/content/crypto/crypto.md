@@ -273,6 +273,8 @@ crop-terminal-lines: auto
 
 Aus 27 Bytes sind 256 geworden, so groß wie der Schlüssel. Mehr als gut 200 Bytes passen auf einmal nicht hinein, und RSA ist viel langsamer als AES. Darum arbeiten echte Programme **hybrid**: Sie würfeln einen zufälligen AES-Schlüssel aus, verschlüsseln damit die eigentlichen Daten und schicken nur diesen kurzen Schlüssel mit RSA oder einem verwandten Verfahren. Genau so beginnt jede Verbindung mit `https://`.
 
+_person(rivest-shamir-adleman)
+
 _task(welcher-schluessel)
 
 ### Ein Geheimnis für jemand anderen

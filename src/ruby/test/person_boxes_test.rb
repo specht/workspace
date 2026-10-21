@@ -89,4 +89,14 @@ class PersonBoxesTest < Minitest::Test
         people = File.read(File.join(CONTENT, 'reference', 'personen', 'personen.md')).scan(ContentParts::PART_MARKER).flatten
         assert_empty people - placed, 'people on the Personen page without a visible page that places them'
     end
+
+    # A box right after a part marker would stand inside that part, before its
+    # heading: the heading would lose the part's anchor, and an _include of
+    # the part would bring the box along.
+    def test_no_box_starts_a_part
+        Dir[File.join(CONTENT, '**', '*.md')].each do |path|
+            text = File.read(path)
+            refute_match(/<!--\s*part:[^\n]*-->\n(?:<!--\s*short:[^\n]*-->\n)?\s*_person\(/, text, path)
+        end
+    end
 end

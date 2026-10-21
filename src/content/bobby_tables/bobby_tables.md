@@ -396,3 +396,6 @@ Ein Vergleich zum Schluss: Es ist in Ordnung, mit einem Lockpicking-Set dein eig
 <img class='full' src='xkcd-327-full.webp' alt='Die Schule fragt eine Mutter, ob ihr Sohn „Robert’); DROP TABLE Students;--“ heißt; sie bestätigt „Little Bobby Tables“ und mahnt, Datenbankeingaben zu bereinigen.'>
 
 <em>Cartoon von Randall Munroe, [xkcd.com](https://xkcd.com/327/).</em>
+
+
+_person(munroe)

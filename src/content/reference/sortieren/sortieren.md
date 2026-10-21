@@ -129,10 +129,10 @@ Merge Sort braucht immer etwa \\(n \log_2 n\\) Vergleiche, auch im schlechtesten
 **Typische Fehler:** `≤` statt `<` beim Zusammenführen vergessen (dann ist es nicht mehr stabil); eine Hälfte ist leer, und man liest trotzdem `list[j]` hinter dem Ende.
 <!-- /part -->
 
-<!-- part: quick-sort -->
-<!-- short: Quick Sort: ein Pivot wählen, kleinere nach links, größere nach rechts, beide Seiten rekursiv; meist am schnellsten, bei ungünstigem Pivot n². -->
 _person(neumann)
 
+<!-- part: quick-sort -->
+<!-- short: Quick Sort: ein Pivot wählen, kleinere nach links, größere nach rechts, beide Seiten rekursiv; meist am schnellsten, bei ungünstigem Pivot n². -->
 ## Quick Sort
 
 Wähle eine Zahl, das **Pivot**, hier die letzte des Bereichs. Bringe alle kleineren nach links und alle anderen nach rechts, und setze das Pivot dazwischen: Jetzt steht es an seinem endgültigen Platz. Sortiere dann links und rechts davon auf dieselbe Weise.
@@ -158,10 +158,10 @@ Rot ist das Pivot, die rote gestrichelte Linie die Grenze: Links von ihr stehen 
 Quick Sort ist in der Praxis meist das schnellste der fünf: Es braucht keinen Zwischenspeicher, und bei zufälligen Zahlen teilt das Pivot den Bereich ungefähr in der Mitte, das gibt etwa \\(n \log_2 n\\) Vergleiche. Ist die Liste aber schon sortiert, ist das letzte Element immer das größte, die eine Seite bleibt leer, und es werden \\(\frac{n(n-1)}{2}\\). Darum wählt man das Pivot in der Praxis zufällig oder nimmt den mittleren von drei Werten.
 <!-- /part -->
 
-<!-- part: sortieren-vergleich -->
-<!-- short: Vergleiche bei 100 Zahlen: Selection, Insertion, Bubble etwa 2500 bis 5000, Merge und Quick etwa 550; sortiert und umgekehrt sortiert sieht es anders aus. -->
 _person(hoare)
 
+<!-- part: sortieren-vergleich -->
+<!-- short: Vergleiche bei 100 Zahlen: Selection, Insertion, Bubble etwa 2500 bis 5000, Merge und Quick etwa 550; sortiert und umgekehrt sortiert sieht es anders aus. -->
 ## Wie viele Vergleiche?
 
 Die Zahl der Vergleiche für 100 Zahlen, gezählt mit genau den Verfahren oben:

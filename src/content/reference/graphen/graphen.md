@@ -24,6 +24,10 @@ Ein Graph besteht aus Knoten und Kanten zwischen ihnen: Kreuzungen und Straßen,
 
 Ein **Graph** besteht aus **Knoten** und **Kanten**. Eine Kante verbindet zwei Knoten. Sie kann eine Richtung haben (eine Einbahnstraße, ein Pfeil in einem Automaten) oder in beide Richtungen gelten (eine Straße, eine Freundschaft). Oft hat sie eine Zahl, ihr **Gewicht**: die Länge einer Straße in Metern, die Zeit, die man für sie braucht, die Kosten einer Verbindung.
 
+Graphen gibt es seit 1736: Damals fragte Leonhard Euler, ob man durch Königsberg spazieren kann und dabei jede der sieben Brücken der Stadt genau einmal überquert.
+
+_person(euler)
+
 Das Beispiel auf dieser Seite hat acht Knoten, A bis H, und zwölf Kanten mit ihren Längen. Von A nach H gibt es einen Weg über wenige Kanten, über C und G, und einen kürzeren über mehr Kanten. Welche Suche welche findet, zeigen die Abschnitte unten.
 
 ### Die Adjazenzliste
@@ -208,10 +212,10 @@ A* findet denselben Weg wie Dijkstra, ist aber nach sechs statt acht Knoten fert
 **Wann stimmt der Weg?** Wenn die Schätzung **nie größer ist** als der wirkliche Rest. Die Luftlinie erfüllt das, kein Weg auf der Straße ist kürzer. Je näher die Schätzung am wirklichen Rest liegt, desto weniger Knoten besucht A*; ist sie 0, ist A* genau Dijkstra. Zählt der Graph Sekunden statt Meter, teilt man die Luftlinie durch das größte Tempo, das es gibt, damit sie auch in Sekunden nie zu groß ist.
 <!-- /part -->
 
-<!-- part: rundreise -->
-<!-- short: Die beste Reihenfolge für eine Rundreise: alle ausprobieren ((n − 1)! viele), der nächste Nachbar (schnell, oft schlecht), 2-opt (umdrehen, solange es kürzer wird). -->
 _person(hart-nilsson-raphael)
 
+<!-- part: rundreise -->
+<!-- short: Die beste Reihenfolge für eine Rundreise: alle ausprobieren ((n − 1)! viele), der nächste Nachbar (schnell, oft schlecht), 2-opt (umdrehen, solange es kürzer wird). -->
 ## Eine Rundreise
 
 Soll eine Reise durch mehrere Orte gehen und am Ende zurück zum Anfang, ist die beste Reihenfolge gesucht: das **Problem des Handlungsreisenden** (*Traveling Salesperson Problem*). Man rechnet zuerst mit einer der Suchen oben aus, wie weit es von jedem Ort zu jedem anderen ist, und schreibt das in eine Tabelle `distance[i][j]`. Danach braucht man den Graphen nicht mehr.

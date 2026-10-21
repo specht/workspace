@@ -179,6 +179,11 @@ Im Terminal gibt es keinen Papierkorb: Was <code>rm</code> löscht, ist weg. Has
 <tr><td><code>*</code></td><td>steht für beliebige Zeichen: <code>ls *.txt</code>, <code>file *</code></td></tr>
 <tr><td><code>./zork</code></td><td>startet ein Programm im aktuellen Verzeichnis</td></tr>
 </table>
+
+Diese Tasten gehören zur Shell, dem Programm, das im Terminal deine Befehle liest und ausführt; im Workspace ist das Bash.
+
+_person(fox)
+
 <!-- /part -->
 
 ## Zum Nachschlagen
