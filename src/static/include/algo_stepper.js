@@ -286,100 +286,237 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         side.appendChild(table);
     }
 
-    // The heap: an array; the children of index i are 2i + 1 and 2i + 2.
-    function traceHeap(ops) {
-        const items = [];
+    // ---- The heap: an array; the children of index i are 2i + 1 and 2i + 2.
+    // Every step is a line of the Handbuch's pseudocode (HEAP_CODE,
+    // reference/heap). An entry has an id, so that a swap moves the two
+    // entries, in the tree and in the array at once. A frame: slots (the ids
+    // in array order), values (id -> value), aside (entries a variable holds
+    // outside the heap: top, last), vars (index variables: i, parent,
+    // smallest, child), compare (indices), at (the index i), code, message,
+    // out (what pop gave so far).
+    const HEAP_CODE = {
+        push: ['push(heap, entry):', '    append entry to the back of heap', '    i ← the last index of heap', '    while i > 0:',
+            '        parent ← (i - 1) / 2, rounded down', '        if heap[parent] ≤ heap[i]: done', '        swap heap[parent] and heap[i]', '        i ← parent'],
+        pop: ['pop(heap):', '    if heap empty: nothing to pop', '    top ← heap[0]', '    last ← take the last entry from heap', '    if heap not empty:',
+            '        heap[0] ← last', '        i ← 0', '        repeat:', '            smallest ← i', '            for each child in (2i + 1, 2i + 2):',
+            '                if child < length of heap and heap[child] < heap[smallest]:', '                    smallest ← child',
+            '            if smallest = i: done', '            swap heap[smallest] and heap[i]', '            i ← smallest', '    return top'],
+    };
+
+    function traceHeap(ops, setup = []) {
+        const slots = [];
+        const values = {};
+        let nextId = 0;
+        let out = [];
+        let current = -1;
         const frames = [];
-        const snapshot = (message, marks = {}) => frames.push({ items: [...items], message, ...marks });
-        snapshot('Ein leerer Heap.');
-        for (const op of ops) {
-            if (op.type === 'push') {
-                items.push(op.value);
-                let i = items.length - 1;
-                snapshot(`push ${op.value}: hinten anhängen, an Index ${i}.`, { focus: [i] });
-                while (i > 0) {
-                    const parent = Math.floor((i - 1) / 2);
-                    if (items[parent] <= items[i]) {
-                        snapshot(`${items[i]} ist nicht kleiner als sein Elternteil ${items[parent]} (Index ${parent}): Es passt.`, { focus: [i], compare: [parent, i] });
-                        break;
-                    }
-                    snapshot(`${items[i]} ist kleiner als sein Elternteil ${items[parent]} (Index ${parent}): tauschen.`, { focus: [i], compare: [parent, i] });
-                    [items[parent], items[i]] = [items[i], items[parent]];
-                    i = parent;
-                    snapshot(`${items[i]} steht jetzt an Index ${i}.`, { focus: [i] });
+        let aside = {};
+        const snapshot = (message, marks = {}) => frames.push({ slots: [...slots], values: { ...values }, aside: { ...aside }, out: [...out], message, op: current, ...marks });
+        const code = (name, at) => ({ lines: HEAP_CODE[name], at });
+        const v = (i) => values[slots[i]];
+        const push = (value, quiet) => {
+            const id = nextId++;
+            values[id] = value;
+            slots.push(id);
+            if (quiet) {
+                for (let i = slots.length - 1; i > 0 && v(Math.floor((i - 1) / 2)) > v(i); i = Math.floor((i - 1) / 2)) {
+                    const p = Math.floor((i - 1) / 2);
+                    [slots[p], slots[i]] = [slots[i], slots[p]];
                 }
+                return;
+            }
+            snapshot(`push ${value}: ${value} kommt hinten an das Array, an Index ${slots.length - 1}, die erste freie Stelle des Baums.`, { fresh: id, code: code('push', 1) });
+            let i = slots.length - 1;
+            snapshot(`i ← ${i}, der letzte Index.`, { at: i, vars: [{ name: 'i', index: i }], code: code('push', 2) });
+            for (;;) {
+                if (i === 0) {
+                    snapshot(`while i > 0: i ist 0, ${v(0)} ist oben angekommen. Fertig.`, { at: i, vars: [{ name: 'i', index: i }], code: code('push', 3) });
+                    break;
+                }
+                snapshot(`while i > 0: i ist ${i}, weiter.`, { at: i, vars: [{ name: 'i', index: i }], code: code('push', 3) });
+                const parent = Math.floor((i - 1) / 2);
+                const both = [{ name: 'i', index: i }, { name: 'parent', index: parent }];
+                snapshot(`parent ← (${i} - 1) / 2, abgerundet: ${parent}.`, { at: i, vars: both, code: code('push', 4) });
+                if (v(parent) <= v(i)) {
+                    snapshot(`heap[parent] ≤ heap[i]: ${v(parent)} ≤ ${v(i)}, der Elternteil ist nicht größer. Fertig.`, { at: i, vars: both, compare: [parent, i], code: code('push', 5) });
+                    break;
+                }
+                snapshot(`heap[parent] ≤ heap[i]? ${v(parent)} ist größer als ${v(i)}, also nicht fertig.`, { at: i, vars: both, compare: [parent, i], code: code('push', 5) });
+                [slots[parent], slots[i]] = [slots[i], slots[parent]];
+                snapshot(`swap heap[parent] and heap[i]: ${v(parent)} und ${v(i)} tauschen die Plätze.`, { at: i, vars: both, compare: [parent, i], swap: true, code: code('push', 6) });
+                i = parent;
+                snapshot(`i ← parent: i ist jetzt ${i}.`, { at: i, vars: [{ name: 'i', index: i }, { name: 'parent', index: parent }], code: code('push', 7) });
+            }
+        };
+        const pop = () => {
+            const P = (at) => code('pop', at);
+            if (!slots.length) {
+                snapshot('if heap empty: Der Heap ist leer, es kommt nichts heraus.', { code: P(1) });
+                return;
+            }
+            const top = slots[0];
+            snapshot(`top ← heap[0]: Die Variable top hält ${values[top]}, den kleinsten Eintrag.`, { holders: [{ name: 'top', id: top }], code: P(2) });
+            const last = slots.pop();
+            if (last === top) {
+                aside = { [top]: 'top' };
+                snapshot(`last ← take the last entry: Das ist ${values[top]} selbst, der Heap ist jetzt leer.`, { holders: [{ name: 'top', id: top }], code: P(3) });
             } else {
-                if (!items.length) {
-                    snapshot('pop: Der Heap ist leer, es kommt nichts heraus.');
-                    continue;
-                }
-                const top = items[0];
-                const last = items.pop();
-                if (!items.length) {
-                    snapshot(`pop: ${top} kommt heraus, der Heap ist jetzt leer.`, { out: top });
-                    continue;
-                }
-                items[0] = last;
-                snapshot(`pop: ${top} kommt heraus. Der letzte Eintrag, ${last}, kommt an seine Stelle, Index 0.`, { out: top, focus: [0] });
+                aside = { [last]: 'last' };
+                snapshot(`last ← take the last entry from heap: ${values[last]} kommt hinten aus dem Array, das Array ist eins kürzer.`,
+                    { holders: [{ name: 'top', id: top }, { name: 'last', id: last }], code: P(3) });
+                snapshot('if heap not empty: Es sind noch Einträge da.', { holders: [{ name: 'top', id: top }, { name: 'last', id: last }], code: P(4) });
+                slots[0] = last;
+                aside = { [top]: 'top' };
+                snapshot(`heap[0] ← last: ${values[last]} kommt an die Spitze, an Index 0. ${values[top]} hängt jetzt nur noch an der Variablen top.`,
+                    { holders: [{ name: 'top', id: top }], at: 0, code: P(5) });
                 let i = 0;
+                const holders = [{ name: 'top', id: top }];
+                snapshot('i ← 0.', { holders, at: i, vars: [{ name: 'i', index: i }], code: P(6) });
                 for (;;) {
-                    const kids = [2 * i + 1, 2 * i + 2].filter((k) => k < items.length);
-                    if (!kids.length) {
-                        snapshot(`${items[i]} hat keine Kinder mehr: Es passt.`, { focus: [i], out: top });
+                    let smallest = i;
+                    const vars = () => [{ name: 'i', index: i }, { name: 'smallest', index: smallest }];
+                    snapshot(`smallest ← i: smallest ist ${i}.`, { holders, at: i, vars: vars(), code: P(8) });
+                    for (const child of [2 * i + 1, 2 * i + 2]) {
+                        const withChild = () => [...vars(), { name: 'child', index: child }];
+                        if (child >= slots.length) {
+                            snapshot(`child ${child}: Index ${child} gibt es nicht, der Heap hat nur ${slots.length} Einträge.`, { holders, at: i, vars: vars(), code: P(10) });
+                            continue;
+                        }
+                        if (v(child) < v(smallest)) {
+                            snapshot(`child ${child}: ${v(child)} < ${v(smallest)}, also smallest ← ${child}.`, { holders, at: i, vars: withChild(), compare: [smallest, child], code: P(11) });
+                            smallest = child;
+                        } else {
+                            snapshot(`child ${child}: ${v(child)} ist nicht kleiner als ${v(smallest)}, smallest bleibt ${smallest}.`, { holders, at: i, vars: withChild(), compare: [smallest, child], code: P(10) });
+                        }
+                    }
+                    if (smallest === i) {
+                        snapshot(`smallest = i: Kein Kind ist kleiner als ${v(i)}. Fertig.`, { holders, at: i, vars: vars(), code: P(12) });
                         break;
                     }
-                    const small = kids.reduce((a, b) => (items[b] < items[a] ? b : a));
-                    if (items[small] >= items[i]) {
-                        snapshot(`Kein Kind von ${items[i]} ist kleiner: Es passt.`, { focus: [i], compare: [i, ...kids], out: top });
-                        break;
-                    }
-                    snapshot(`Das kleinere Kind ${items[small]} (Index ${small}) ist kleiner als ${items[i]}: tauschen.`, { focus: [i], compare: [i, small], out: top });
-                    [items[small], items[i]] = [items[i], items[small]];
-                    i = small;
-                    snapshot(`${items[i]} steht jetzt an Index ${i}.`, { focus: [i], out: top });
+                    [slots[smallest], slots[i]] = [slots[i], slots[smallest]];
+                    snapshot(`swap heap[smallest] and heap[i]: ${v(smallest)} und ${v(i)} tauschen die Plätze.`, { holders, at: i, vars: vars(), compare: [i, smallest], swap: true, code: P(13) });
+                    i = smallest;
+                    snapshot(`i ← smallest: i ist jetzt ${i}.`, { holders, at: i, vars: [{ name: 'i', index: i }, { name: 'smallest', index: smallest }], code: P(14) });
                 }
             }
+            aside = {};
+            out = [...out, values[top]];
+            delete values[top];
+            snapshot(`return top: ${out[out.length - 1]} kommt heraus, der kleinste Eintrag. Oben steht jetzt der nächstkleinste.`, { code: P(15) });
+        };
+        for (const op of setup) if (op.type === 'push') push(op.value, true);
+        snapshot(setup.length ? 'Der Heap von oben. Jetzt der Reihe nach die Operationen darüber.' : 'Ein leerer Heap.');
+        for (const [number, op] of ops.entries()) {
+            current = number;
+            if (op.type === 'push') push(op.value);
+            else if (op.type === 'pop') pop();
         }
         return frames;
     }
 
-    function drawHeap(svg, frame, most) {
+    // The heap twice, the tree above and the array below, an entry in both
+    // as a group that moves (a swap on a small arc, so that the two pass each
+    // other). The index variables are labels under the array with an arrow up
+    // to their cell; top and last hold an entry beside the tree.
+    function drawHeap(svg, frame, most, marker) {
         svg.replaceChildren();
-        const n = frame.items.length;
+        const n = frame.slots.length;
         // as high as the biggest heap of the example, so the picture keeps its size
         const levels = Math.max(1, Math.ceil(Math.log2(most + 1)));
-        const width = 520;
+        const width = 560;
         const pos = (i) => {
             const level = Math.floor(Math.log2(i + 1));
             const first = 2 ** level - 1;
             const count = 2 ** level;
-            return [((i - first + 0.5) / count) * width, 30 + level * 62];
+            return [70 + ((i - first + 0.5) / count) * (width - 140), 40 + level * 62];
         };
         const compare = new Set(frame.compare || []);
-        const focus = new Set(frame.focus || []);
+        const arc = frame.swap ? { 'data-arc': 22 } : {};
+        svg.appendChild(arrowheads(marker));
+        // the tree's edges belong to the places, not to the entries
         for (let i = 1; i < n; i++) {
             const [x1, y1] = pos(Math.floor((i - 1) / 2));
             const [x2, y2] = pos(i);
-            svg.appendChild(el('svg:line', { x1, y1, x2, y2, stroke: 'var(--algo-line)', 'stroke-width': 2 }));
+            svg.appendChild(el('svg:line', { 'data-key': `slot-edge-${i}`, x1, y1, x2, y2, stroke: 'var(--algo-line)', 'stroke-width': 2 }));
         }
+        const fill = (id, i) => (frame.fresh === id ? 'var(--algo-frontier)' : i !== undefined && compare.has(i) ? 'var(--algo-frontier)' : 'var(--algo-paper)');
+        const entry = (id, x, y, i) => el('svg:g', { 'data-key': `tree-${id}`, transform: `translate(${x} ${y})`, ...arc }, [
+            el('svg:circle', { cx: 0, cy: 0, r: 17, fill: fill(id, i), stroke: i === frame.at ? 'var(--algo-accent)' : 'var(--algo-ink)', 'stroke-width': i === frame.at ? 3 : 1.5 }),
+            el('svg:text', { x: 0, y: 5, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.values[id]) }),
+        ]);
         for (let i = 0; i < n; i++) {
             const [x, y] = pos(i);
-            const fill = focus.has(i) ? 'var(--algo-frontier)' : 'var(--algo-paper)';
-            if (compare.has(i)) svg.appendChild(el('svg:circle', { cx: x, cy: y, r: 22, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 3 }));
-            svg.appendChild(el('svg:circle', { cx: x, cy: y, r: 17, fill, stroke: 'var(--algo-ink)', 'stroke-width': 1.5 }));
-            svg.appendChild(el('svg:text', { x, y: y + 5, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.items[i]) }));
-            svg.appendChild(el('svg:text', { x: x + 21, y: y - 14, 'font-size': 10, fill: 'var(--bs-secondary-color)', text: String(i) }));
+            svg.appendChild(el('svg:text', { 'data-key': `slot-index-${i}`, x: x + 21, y: y - 14, 'font-size': 10, fill: 'var(--bs-secondary-color)', text: String(i) }));
+            svg.appendChild(entry(frame.slots[i], x, y, i));
+        }
+        // entries a variable holds outside the heap: top on the left, last on the right
+        const [rootX, rootY] = pos(0);
+        const asidePlace = { top: [rootX - 150, rootY + 20], last: [rootX + 150, rootY + 20] };
+        for (const [id, name] of Object.entries(frame.aside)) {
+            const [x, y] = asidePlace[name];
+            svg.appendChild(entry(Number(id), x, y));
         }
         // the array below the tree
-        const top = 30 + levels * 62 + 10;
-        const cell = Math.min(44, (width - 20) / Math.max(most, 1));
+        const top = 40 + levels * 62 + 6;
+        const cell = Math.min(46, (width - 20) / Math.max(most, 1));
+        const cellX = (i) => 10 + i * cell;
         for (let i = 0; i < n; i++) {
-            const x = 10 + i * cell;
-            svg.appendChild(el('svg:rect', { x, y: top, width: cell - 3, height: 30, rx: 4, fill: focus.has(i) ? 'var(--algo-frontier)' : 'var(--algo-paper)', stroke: compare.has(i) ? 'var(--algo-accent)' : 'var(--algo-line)', 'stroke-width': compare.has(i) ? 3 : 1.5 }));
-            svg.appendChild(el('svg:text', { x: x + (cell - 3) / 2, y: top + 20, 'text-anchor': 'middle', 'font-size': 14, fill: 'var(--algo-ink)', text: String(frame.items[i]) }));
-            svg.appendChild(el('svg:text', { x: x + (cell - 3) / 2, y: top + 44, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: String(i) }));
+            svg.appendChild(el('svg:rect', { 'data-key': `slot-${i}`, x: cellX(i), y: top, width: cell - 3, height: 30, fill: 'none', stroke: 'none' }));
+            svg.appendChild(el('svg:text', { 'data-key': `cell-index-${i}`, x: cellX(i) + (cell - 3) / 2, y: top + 44, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: String(i) }));
         }
-        svg.setAttribute('viewBox', `0 0 ${width} ${top + 52}`);
+        for (let i = 0; i < n; i++) {
+            const id = frame.slots[i];
+            svg.appendChild(el('svg:g', { 'data-key': `cell-${id}`, 'data-from': `tree-${id}`, 'data-to': `tree-${id}`, transform: `translate(${cellX(i)} ${top})`, ...arc }, [
+                el('svg:rect', { x: 0, y: 0, width: cell - 3, height: 30, rx: 4, fill: fill(id, i), stroke: i === frame.at ? 'var(--algo-accent)' : compare.has(i) ? 'var(--algo-accent)' : 'var(--algo-line)', 'stroke-width': i === frame.at || compare.has(i) ? 3 : 1.5 }),
+                el('svg:text', { x: (cell - 3) / 2, y: 20, 'text-anchor': 'middle', 'font-size': 14, fill: 'var(--algo-ink)', text: String(frame.values[id]) }),
+            ]));
+        }
+        // the variables
+        const label = (name, x, y, target, inset, side) => {
+            const w = 14 + 7.5 * name.length;
+            const lx = side === 'left' ? x - w : side === 'right' ? x : x - w / 2;
+            const centre = [lx + w / 2, y + 9];
+            const out = [];
+            if (target) {
+                const [tx, ty] = target.at;
+                const d = Math.hypot(tx - centre[0], ty - centre[1]);
+                const s = d > inset ? (d - inset) / d : 0;
+                const [ex, ey] = [centre[0] + (tx - centre[0]) * s, centre[1] + (ty - centre[1]) * s];
+                out.push(el('svg:path', { 'data-key': `pointer-${name}`, 'data-ends': `var-${name} ${target.key}`, 'data-inset': inset, 'data-rigid': '',
+                    d: `M${centre[0]} ${centre[1]} Q${(centre[0] + ex) / 2} ${(centre[1] + ey) / 2} ${ex} ${ey}`, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'marker-end': `url(#${marker}-accent)` }));
+            }
+            out.push(el('svg:rect', { 'data-key': `var-${name}`, x: lx, y, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
+            out.push(el('svg:text', { 'data-key': `var-${name}-label`, x: centre[0], y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: name }));
+            return out;
+        };
+        // index variables under their cell, several on one cell one below the other
+        const below = new Map();
+        const labels = [];
+        for (const v of frame.vars || []) {
+            const k = below.get(v.index) || 0;
+            below.set(v.index, k + 1);
+            const cx = cellX(v.index) + (cell - 3) / 2;
+            labels.push(...label(v.name, cx, top + 56 + k * 24, { key: `slot-${v.index}`, at: [cx, top + 15] }, 17));
+        }
+        for (const h of frame.holders || []) {
+            const place = frame.aside[h.id] ? asidePlace[frame.aside[h.id]] : pos(frame.slots.indexOf(h.id));
+            labels.push(...label(h.name, place[0] - 26, place[1] - 40, null, 0, 'left'));
+        }
+        // the arrows of top and last go to the entry they hold (its circle is in a group)
+        for (const node of labels) svg.appendChild(node);
+        for (const h of frame.holders || []) {
+            const place = frame.aside[h.id] ? asidePlace[frame.aside[h.id]] : pos(frame.slots.indexOf(h.id));
+            const w = 14 + 7.5 * h.name.length;
+            const from = [place[0] - 26 - w / 2, place[1] - 31];
+            const d = Math.hypot(place[0] - from[0], place[1] - from[1]);
+            const s = (d - 19) / d;
+            const end = [from[0] + (place[0] - from[0]) * s, from[1] + (place[1] - from[1]) * s];
+            svg.insertBefore(el('svg:path', { 'data-key': `pointer-${h.name}`, 'data-ends': `var-${h.name} anchor-${h.id}`, 'data-inset': 19, 'data-rigid': '',
+                d: `M${from[0]} ${from[1]} Q${(from[0] + end[0]) / 2} ${(from[1] + end[1]) / 2} ${end[0]} ${end[1]}`, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'marker-end': `url(#${marker}-accent)` }),
+            svg.querySelector(`[data-key="var-${h.name}"]`));
+            svg.appendChild(el('svg:circle', { 'data-key': `anchor-${h.id}`, cx: place[0], cy: place[1], r: 0, fill: 'none' }));
+        }
+        svg.setAttribute('viewBox', `0 0 ${width} ${top + 56 + 3 * 24}`);
     }
 
     // Sorting: every comparison and every write is a step, counted like the
@@ -1082,8 +1219,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             return el('svg:path', { 'data-key': key, 'data-ends': ends, 'data-inset': INSET, d: `M${x1} ${y1} Q${(x1 + ex) / 2} ${(y1 + ey) / 2} ${ex} ${ey}`,
                 fill: 'none', stroke: 'var(--algo-line)', 'stroke-width': 2, 'marker-end': `url(#${most.marker})`, ...extra });
         };
-        svg.appendChild(el('svg:defs', {}, [el('svg:marker', { id: most.marker, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 9, markerHeight: 9,
-            markerUnits: 'userSpaceOnUse', orient: 'auto-start-reverse' }, [el('svg:path', { d: 'M0 0L10 5L0 10z', fill: 'var(--algo-line)' })])]));
+        svg.appendChild(arrowheads(most.marker));
         // a pointer is the left or right field of its node: when it changes,
         // the arrow lets go of its node and snaps onto the new one
         for (const [id, node] of Object.entries(graph)) {
@@ -1092,6 +1228,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 svg.appendChild(arrow(`edge-${id}-${side}`, `node-${id} node-${node[side]}`, point(Number(id)), point(node[side])));
             }
         }
+        // the pulses on the arrows, behind the nodes like the arrows themselves
+        const pulseLayer = pulseNodes(frame.pulses);
+        for (const node of pulseLayer) svg.appendChild(node);
         // the variables: root above the place of the root, coming in from
         // above; the others beside their node, on the side they ask for
         const rootAt = frame.rootAt !== undefined ? frame.rootAt : rootId;
@@ -1111,7 +1250,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 y = v.side === 'below' ? cy + 26 : cy - 9;
             }
             const centre = [x + w / 2, y + 9];
-            if (v.to !== null && v.to !== undefined) svg.appendChild(arrow(`pointer-${v.name}`, `var-${v.name} node-${v.to}`, centre, point(v.to), { stroke: 'var(--algo-accent)', ...(v.rigid ? { 'data-rigid': '' } : {}) }));
+            if (v.to !== null && v.to !== undefined) svg.appendChild(arrow(`pointer-${v.name}`, `var-${v.name} node-${v.to}`, centre, point(v.to), { stroke: 'var(--algo-accent)', 'marker-end': `url(#${most.marker}-accent)`, ...(v.rigid ? { 'data-rigid': '' } : {}) }));
             labels.push(el('svg:rect', { 'data-key': `var-${v.name}`, x, y, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
             labels.push(el('svg:text', { 'data-key': `var-${v.name}-label`, x: centre[0], y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: v.name }));
         }
@@ -1131,9 +1270,6 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             if (frame.avl) svg.appendChild(el('svg:text', { 'data-key': `height-${id}`, ...fromToken, x: sx(x), y: sy(d) + 32, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: `h${graph[id].height}` }));
         }
         for (const label of labels) svg.appendChild(label);
-        // a light that runs down a pointer once while the step moves
-        (frame.pulses || []).forEach((pulse, i) => svg.appendChild(el('svg:circle', { 'data-key': `pulse-${i}`, 'data-pulse': pulse.edge, 'data-delay': pulse.delay || 0, 'data-length': pulse.length || 0.4,
-            cx: 0, cy: 0, r: 5, opacity: 0, fill: 'var(--algo-accent)' })));
         // the value on its way: a token beside the node it is compared with
         const near = frame.incoming !== undefined && at.get(frame.focus);
         if (near) {
@@ -1216,6 +1352,29 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 
     let widgetCount = 0;
 
+    // Arrowheads in the colour of their line: id for the grey pointers of a
+    // structure, id-accent for the variables
+    const arrowheads = (id) => el('svg:defs', {}, [['', 'var(--algo-line)'], ['-accent', 'var(--algo-accent)']].map(([suffix, fill]) =>
+        el('svg:marker', { id: `${id}${suffix}`, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 9, markerHeight: 9, markerUnits: 'userSpaceOnUse', orient: 'auto-start-reverse' },
+            [el('svg:path', { d: 'M0 0L10 5L0 10z', fill })])));
+
+    // A pulse: the pointer swells a little, and the bulge travels down the
+    // arrow like a peristaltic wave (stepper_motion.js, data-pulse)
+    const pulseNodes = (pulses) => (pulses || []).map((pulse, i) =>
+        el('svg:path', { 'data-key': `pulse-${i}`, 'data-pulse': pulse.edge, 'data-delay': pulse.delay || 0, 'data-length': pulse.length || 0.4,
+            'data-swell': 2.5, d: 'M0 0', opacity: 0 }));
+
+    // The pseudocode that runs, its line marked; a long line wraps, its
+    // continuation two characters further in than the line itself
+    function codeBox(code) {
+        if (!code) return [el('h5', { text: 'Pseudocode' }), el('p', { class: 'algo-empty', text: 'Hier steht der Pseudocode der Operation, die gerade läuft, und ihre Zeile ist markiert.' })];
+        const line = (text, i) => {
+            const indent = text.match(/^ */)[0].length;
+            return el('span', { class: `line${i === code.at ? ' current' : ''}`, style: `padding-left: calc(0.6em + ${indent + 2}ch); text-indent: -2ch;` }, highlightPseudocode(text.trimStart()));
+        };
+        return [el('h5', { text: 'Pseudocode' }), el('pre', { class: 'algo-code code-pseudocode' }, code.lines.map(line))];
+    }
+
     // The pseudocode's tokens, as Rouge::Lexers::Pseudocode colours them on
     // the pages (pseudocode_lexer.rb): the same classes, the same colours
     const KEYWORDS = new Set(['if', 'else', 'while', 'for', 'each', 'in', 'of', 'return', 'not', 'and', 'or', 'repeat', 'until', 'break', 'continue', 'do', 'then', 'to', 'from', 'mod', 'div']);
@@ -1284,12 +1443,6 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             // beside the tree the pseudocode of what runs, its line marked
             draw = (frame) => {
                 drawTree(svg, frame, most);
-                // a long line wraps, its continuation two characters further in
-                // than the line itself
-                const codeLine = (line, i) => {
-                    const indent = line.match(/^ */)[0].length;
-                    return el('span', { class: `line${i === frame.code.at ? ' current' : ''}`, style: `padding-left: calc(0.6em + ${indent + 2}ch); text-indent: -2ch;` }, highlightPseudocode(line.trimStart()));
-                };
                 // the calls that run, each one deeper indented; on the way
                 // back up they return one after another, the deepest first
                 const stack = frame.stack || [];
@@ -1300,9 +1453,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                     if (frame.returning) li.classList.add('returning');
                     return li;
                 }))] : [];
-                side.replaceChildren(...calls, el('h5', { text: 'Pseudocode' }), frame.code
-                    ? el('pre', { class: 'algo-code code-pseudocode' }, frame.code.lines.map(codeLine))
-                    : el('p', { class: 'algo-empty', text: 'Hier steht der Pseudocode der Operation, die gerade läuft, und ihre Zeile ist markiert.' }));
+                side.replaceChildren(...calls, ...codeBox(frame.code));
             };
         } else if (algo === 'hash') {
             const mode = widget.dataset.mode || 'chain';
@@ -1329,20 +1480,19 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                     ]));
             };
         } else if (algo === 'heap') {
-            const ops = widget.dataset.ops.split(',').map((text) => text.trim().split(/\s+/))
+            const parse = (text) => (text || '').split(',').map((s) => s.trim()).filter(Boolean).map((s) => s.split(/\s+/))
                 .map(([type, value]) => ({ type, value: Number(value) }));
-            frames = traceHeap(ops);
-            const most = Math.max(...frames.map((frame) => frame.items.length));
+            const ops = parse(widget.dataset.ops);
+            frames = traceHeap(ops, parse(widget.dataset.setup));
+            const most = Math.max(...frames.map((frame) => frame.slots.length + Object.keys(frame.aside).length));
             const pops = ops.some((op) => op.type === 'pop');
+            const marker = `algo-arrow-${++widgetCount}`;
             svg.setAttribute('aria-label', 'Der Heap als Baum, darunter dasselbe als Array mit den Indizes');
-            if (!pops) side.hidden = true;
             draw = (frame) => {
-                drawHeap(svg, frame, most);
-                if (!pops) return;
-                side.replaceChildren(el('h5', { text: 'Heraus mit pop' }),
-                    el('div', { class: 'algo-items' }, [frame.out !== undefined
-                        ? el('span', { class: 'algo-item next', text: String(frame.out) })
-                        : el('span', { class: 'algo-empty', text: '–' })]));
+                drawHeap(svg, frame, most, marker);
+                side.replaceChildren(...(pops ? [el('h5', { text: 'Heraus mit pop' }), el('div', { class: 'algo-items' }, frame.out.length
+                    ? frame.out.map((value, i) => el('span', { class: `algo-item${i === frame.out.length - 1 ? ' next' : ''}`, text: String(value) }))
+                    : [el('span', { class: 'algo-empty', text: '–' })])] : []), ...codeBox(frame.code));
             };
         } else {
             const graph = GRAPHS[widget.dataset.graph || 'stadt'];

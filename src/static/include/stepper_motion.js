@@ -21,9 +21,12 @@
 // Such a line may be a path: then it bends while it moves and straightens when
 // its ends rest. data-follow='key' keeps an element that comes or goes on the
 // centre of that element while it fades. data-pulse='key' makes an element a
-// light that runs once along that line during the movement. data-rigid on a
+// light that runs once along that line during the movement: a path becomes a
+// bulge of the line that travels along it (wider by data-swell, in the line's
+// colour unless it has data-fill), a circle a point on it. data-rigid on a
 // line: when its target changes, it slides over with its owner instead of
-// letting go (a label that moves along with the node it points to). Elements without data-key
+// letting go (a label that moves along with the node it points to). data-arc
+// on a group that moves by translate: it goes on a small arc to the side. Elements without data-key
 // are replaced at once, so a widget that sets no keys looks as before. With
 // prefers-reduced-motion, or duration 0, the new step is shown at once. A new
 // morph first finishes the running one.
@@ -208,7 +211,16 @@
                 r.line.setAttribute('y2', round(end[1]));
             }
         };
+        // A step that assigns a pointer moves in two phases: first the pointer
+        // sprouts (or swings over) and snaps onto its target where it stands
+        // (t up to PHASE), only then does everything else move, the pointer
+        // staying on its target. Such a step takes STRETCH times as long.
+        const PHASE = 0.45;
+        const STRETCH = 1.7;
+        const assigning = ride.some((r) => (r.kind === 'grow' || r.kind === 'swing') && !('rigid' in r.line.dataset));
+        const later = (t) => (assigning ? part(t, PHASE, 1) : t);
         const attach = (t, now) => {
+            const u = assigning ? Math.min(1, t / PHASE) : t;
             for (const r of ride) {
                 const { line, from, to, kind } = r;
                 const base = centre(to[0]) || centre(from[0]);
@@ -218,22 +230,22 @@
                 if (kind === 'stay') tip = centre(to[1]);
                 else if (kind === 'grow') {
                     const target = centre(to[1]);
-                    tip = t < 0.72 ? toward(base, target, NEAR * out(part(t, 0.15, 0.72))) : toward(base, target, NEAR + (1 - NEAR) * part(t, 0.72, 0.84));
-                    snap = part(t, 0.8, 1);
+                    tip = u < 0.72 ? toward(base, target, NEAR * out(part(u, 0.15, 0.72))) : toward(base, target, NEAR + (1 - NEAR) * part(u, 0.72, 0.84));
+                    snap = part(u, 0.8, 1);
                 } else if (kind === 'cut') {
                     const target = centre(from[1]);
-                    tip = t < 0.15 ? toward(base, target, 1 - (1 - NEAR) * out(part(t, 0, 0.15))) : toward(base, target, NEAR * (1 - part(t, 0.15, 0.75) ** 2));
+                    tip = u < 0.15 ? toward(base, target, 1 - (1 - NEAR) * out(part(u, 0, 0.15))) : toward(base, target, NEAR * (1 - part(u, 0.15, 0.75) ** 2));
                 } else if (kind === 'swing') {
                     const before = centre(from[1]);
                     const after = centre(to[1]);
-                    if (t < 0.2) tip = toward(base, before, 1 - (1 - NEAR) * out(part(t, 0, 0.2)));
-                    else if (t < 0.74) tip = toward(toward(base, before, NEAR), toward(base, after, NEAR), ease(part(t, 0.2, 0.74)));
-                    else tip = toward(base, after, NEAR + (1 - NEAR) * part(t, 0.74, 0.86));
-                    snap = part(t, 0.82, 1);
+                    if (u < 0.2) tip = toward(base, before, 1 - (1 - NEAR) * out(part(u, 0, 0.2)));
+                    else if (u < 0.74) tip = toward(toward(base, before, NEAR), toward(base, after, NEAR), ease(part(u, 0.2, 0.74)));
+                    else tip = toward(base, after, NEAR + (1 - NEAR) * part(u, 0.74, 0.86));
+                    snap = part(u, 0.82, 1);
                 } else {
                     const before = centre(from[1]);
                     const after = centre(to[1]);
-                    tip = toward(before, after, ease(t));
+                    tip = toward(before, after, ease(later(t)));
                 }
                 if (!tip) continue;
                 if (t >= 1) tip = centre(to[1]) || tip;
@@ -247,8 +259,20 @@
         // data-follow='key': an element that comes or goes sits on the centre
         // of that element in every frame (a ring that fades on a moving node)
         const follow = [...leaving, ...shown].filter((node) => node.dataset.follow && !kept.has(node));
+        const arcs = tracks.filter((track) => track.name === 'transform' && track.node.dataset.arc && /^translate/.test(track.to));
         const paint = (t, now) => {
-            for (const track of tracks) track.node.setAttribute(track.name, t >= 1 ? track.to : mix(track.from, track.to, ease(t)));
+            for (const track of tracks) track.node.setAttribute(track.name, t >= 1 ? track.to : mix(track.from, track.to, ease(later(t))));
+            // data-arc: a group that moves by its translate goes on a small
+            // arc (that many units to the side at the middle), so that two
+            // that swap pass each other
+            for (const track of arcs) {
+                const [x0, y0] = track.from.match(NUMBER).map(Number);
+                const [x1, y1] = track.to.match(NUMBER).map(Number);
+                const e = t >= 1 ? 1 : ease(later(t));
+                const len = Math.hypot(x1 - x0, y1 - y0) || 1;
+                const bow = Number(track.node.dataset.arc) * Math.sin(Math.PI * e);
+                track.node.setAttribute('transform', `translate(${round(x0 + (x1 - x0) * e - ((y1 - y0) / len) * bow)} ${round(y0 + (y1 - y0) * e + ((x1 - x0) / len) * bow)})`);
+            }
             for (const node of follow) {
                 const c = centre(node.dataset.follow);
                 if (!c) continue;
@@ -256,18 +280,53 @@
             }
             attach(Math.min(1, t), now);
             for (const node of pulses) {
-                const path = lineByKey.get(node.dataset.pulse);
+                const line = lineByKey.get(node.dataset.pulse);
                 const delay = Number(node.dataset.delay || 0);
                 const length = Number(node.dataset.length || 0.4);
                 const f = Math.min(1, Math.max(0, (t - delay) / length));
-                if (!path || !path.getTotalLength || f <= 0 || f >= 1 || path.getAttribute('visibility') === 'hidden') {
+                if (!line || !line.getTotalLength || f <= 0 || f >= 1 || line.getAttribute('visibility') === 'hidden') {
                     node.setAttribute('opacity', 0);
                     continue;
                 }
-                const point = path.getPointAtLength(f * path.getTotalLength());
-                node.setAttribute('cx', round(point.x));
-                node.setAttribute('cy', round(point.y));
-                node.setAttribute('opacity', round(Math.sin(Math.PI * f)));
+                const total = line.getTotalLength();
+                const strength = Number(node.dataset.strength || 1);
+                if (node.tagName === 'path') {
+                    // a bulge of the line itself that travels from the owner
+                    // to the tip: the outline of the curve, wider by up to
+                    // data-swell around the place of the pulse, tapering into
+                    // the line on both sides (a Gaussian, sigma SPREAD)
+                    const SPREAD = 9;
+                    // it sets off slowly, runs, and comes to rest at the tip
+                    // (ease in and out, cubic), and swells up as it sets off
+                    // and down as it arrives
+                    const along = f < 0.5 ? 4 * f ** 3 : 1 - (2 - 2 * f) ** 3 / 2;
+                    const swell = Number(node.dataset.swell || 4) * Math.sin(Math.PI * f) ** 0.6;
+                    const half = Number(line.getAttribute('stroke-width') || 2) / 2;
+                    const at = along * total;
+                    const from = Math.max(0, at - 3 * SPREAD);
+                    const to = Math.min(total, at + 3 * SPREAD);
+                    const left = [];
+                    const right = [];
+                    for (let s = from; s <= to + 0.01; s += 1.5) {
+                        const p = line.getPointAtLength(Math.min(s, total));
+                        const q = line.getPointAtLength(Math.min(total, s + 0.5));
+                        const r = line.getPointAtLength(Math.max(0, s - 0.5));
+                        const tx = q.x - r.x;
+                        const ty = q.y - r.y;
+                        const length = Math.hypot(tx, ty) || 1;
+                        const w = half + swell * Math.exp(-(((s - at) / SPREAD) ** 2));
+                        left.push(`${round(p.x - (ty / length) * w)} ${round(p.y + (tx / length) * w)}`);
+                        right.push(`${round(p.x + (ty / length) * w)} ${round(p.y - (tx / length) * w)}`);
+                    }
+                    node.setAttribute('d', `M${left.join('L')}L${right.reverse().join('L')}Z`);
+                    if (!node.dataset.fill) node.setAttribute('fill', line.getAttribute('stroke') || 'currentColor');
+                    node.setAttribute('opacity', strength);
+                } else {
+                    const point = line.getPointAtLength(f * total);
+                    node.setAttribute('cx', round(point.x));
+                    node.setAttribute('cy', round(point.y));
+                    node.setAttribute('opacity', round(strength * Math.sin(Math.PI * f)));
+                }
             }
         };
         // data-moving on the picture while it moves (for tests)
@@ -283,7 +342,7 @@
         paint(0, performance.now());
         const frame = (now) => {
             if (start === null) start = now;
-            const t = (now - start) / duration;
+            const t = (now - start) / (assigning ? duration * STRETCH : duration);
             if (t >= 1) return finish();
             paint(t, now);
             frameId = requestAnimationFrame(frame);

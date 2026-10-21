@@ -113,9 +113,9 @@ pop(heap):
     return top
 ```
 
-Erst kommen 5, 3, 8, 1, 4 und 2 hinein, dann holt `pop` dreimal den kleinsten heraus:
+Derselbe Heap aus 5, 3, 8, 1, 4 und 2, und `pop` holt dreimal den kleinsten heraus:
 
-<div class='algo-stepper' data-algo='heap' data-ops='push 5, push 3, push 8, push 1, push 4, push 2, pop, pop, pop'></div>
+<div class='algo-stepper' data-algo='heap' data-setup='push 5, push 3, push 8, push 1, push 4, push 2' data-ops='pop, pop, pop'></div>
 
 **Typische Fehler**
 

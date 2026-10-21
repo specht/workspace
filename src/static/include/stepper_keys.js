@@ -34,3 +34,28 @@ document.addEventListener('keydown', (event) => {
     event.preventDefault();
     button.click();
 });
+
+// On a touch screen a swipe to the left or right across a widget steps it,
+// like turning a page: next to the left, back to the right. Not in a text
+// field, and not when the swipe is more up and down than sideways (that
+// scrolls the page).
+(() => {
+    let start = null;
+    document.addEventListener('pointerdown', (event) => {
+        if (event.pointerType !== 'touch') return;
+        const widget = event.target instanceof Element && event.target.closest('[data-stepper]');
+        if (!widget || event.target.closest('input, textarea, select, [contenteditable]')) return;
+        start = { widget, x: event.clientX, y: event.clientY, time: event.timeStamp };
+    });
+    document.addEventListener('pointerup', (event) => {
+        if (!start || event.pointerType !== 'touch') return;
+        const { widget, x, y, time } = start;
+        start = null;
+        const dx = event.clientX - x;
+        const dy = event.clientY - y;
+        if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx) * 0.6 || event.timeStamp - time > 700) return;
+        const button = widget.querySelector(`[data-go='${dx < 0 ? 'next' : 'prev'}']`);
+        if (button && !button.disabled) button.click();
+    });
+    document.addEventListener('pointercancel', () => { start = null; });
+})();

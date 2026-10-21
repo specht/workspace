@@ -55,12 +55,18 @@ the next with their eyes.
   near the end of the movement (the line is briefly thicker); one that is set
   to empty lets go with a jerk and shrinks back into its owner; one that is
   reassigned lets go of the old target, swings across and snaps onto the new
-  one. The owner's end never comes loose. One assignment per step.
+  one. The owner's end never comes loose. One assignment per step. In a step
+  that assigns a pointer, the pointer goes first: it sprouts (or swings over)
+  and snaps onto its target where the target stands, and only then does the
+  target move into its new place, the pointer staying on it (two phases, the
+  step 1.7 times as long).
 - **Arrows end on the border** of their node (`data-inset`), so the
   arrowhead stays visible, and they **bend while they move**: a path whose
   middle trails behind its ends like a rubber band and straightens when the
   nodes rest.
-- **A pulse runs down a pointer** (`data-pulse`) on the way back up of a
+- **A pulse runs down a pointer** (`data-pulse`): the arrow itself swells a
+  little and the bulge travels from the owner to the tip, like a peristaltic
+  wave, in the arrow's colour; no glow, no dot. It runs on the way back up of a
   recursive function, when the pointer is assigned the subtree its call
   returned (`node.left ← remove(node.left, value)`): one pointer after
   another, the lowest first, each with a pause before the next (650 ms each,
@@ -87,6 +93,9 @@ the next with their eyes.
   the value in the sorted order, which rotations keep, so nodes move up and
   down but not sideways. A node that only a variable still holds stands as a
   small tree of its own beside the node being worked on.
+- **Entries that swap** (heap, sorting) glide to each other's place on a
+  small arc (`data-arc`), so that they pass each other instead of
+  overlapping, in every view at once (the heap's tree and array).
 - **Nothing covers anything.** Labels, tokens and rings keep at least about
   20 px from nodes and from each other; labels of the smaller and the larger
   value go on opposite sides, `successor` below its node.
@@ -119,8 +128,10 @@ the next with their eyes.
 - `prefers-reduced-motion` shows every step at once. `?motion=slow` in the
   address makes every movement six times slower, to look at it closely.
 - Four buttons with `data-go` (first, prev, next, last) and ← → through
-  `stepper_keys.js` (`data-stepper` on the widget). On a narrow screen the
-  buttons share the whole width and the step count goes on its own line
+  `stepper_keys.js` (`data-stepper` on the widget); on a touch screen a
+  sideways swipe across the widget steps it too. On a touch screen (tablet,
+  phone) the buttons are finger-sized (44 px) and share the row; on a narrow
+  screen they take the whole width and the step count goes on its own line
   (`default.css`).
 - Colours come from the widget's CSS variables, so light and dark mode both
   work; no fixed colours in the drawing.
