@@ -360,6 +360,44 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         return { at, width, rowY, nodeSpot, neighborSpot, nullAt, nodeAtNull: { x: nullAt[0] - 14.5 - 6 - 44, y: nullAt[1] - 9 } };
     }
 
+    // Text that grows where the picture is shown small (a phone): every text
+    // by g, a variable's box (rect, dividing line, name, value: the keys
+    // var-name…) as one about its centre, so that it still fits its words;
+    // the picture gets a margin for boxes at its edge
+    function growText(svg, g) {
+        if (g <= 1.01) return;
+        const round = (v) => Math.round(v * 100) / 100;
+        const boxes = new Map();
+        for (const node of svg.children) {
+            const m = (node.dataset.key || '').match(/^var-(.+?)(-label|-value|-split)?$/);
+            if (!m) continue;
+            if (!boxes.has(m[1])) boxes.set(m[1], []);
+            boxes.get(m[1]).push(node);
+        }
+        const inBox = new Set([...boxes.values()].flat());
+        for (const text of svg.querySelectorAll('text[font-size]')) if (!inBox.has(text)) text.setAttribute('font-size', round(Number(text.getAttribute('font-size')) * g));
+        for (const nodes of boxes.values()) {
+            const rect = nodes.find((n) => n.tagName === 'rect');
+            if (!rect) {
+                for (const n of nodes) if (n.hasAttribute('font-size')) n.setAttribute('font-size', round(Number(n.getAttribute('font-size')) * g));
+                continue;
+            }
+            const [x, y, w, h] = ['x', 'y', 'width', 'height'].map((a) => Number(rect.getAttribute(a)));
+            const [cx, cy] = [x + w / 2, y + h / 2];
+            const at = (n, ax, ay) => { n.setAttribute(ax, round(cx + (Number(n.getAttribute(ax)) - cx) * g)); n.setAttribute(ay, round(cy + (Number(n.getAttribute(ay)) - cy) * g)); };
+            for (const n of nodes) {
+                if (n.tagName === 'rect') { at(n, 'x', 'y'); n.setAttribute('width', round(w * g)); n.setAttribute('height', round(h * g)); }
+                else if (n.tagName === 'line') { at(n, 'x1', 'y1'); at(n, 'x2', 'y2'); }
+                else if (n.tagName === 'text') { at(n, 'x', 'y'); if (n.hasAttribute('font-size')) n.setAttribute('font-size', round(Number(n.getAttribute('font-size')) * g)); }
+            }
+        }
+        const vb = (svg.getAttribute('viewBox') || '').split(/\s+/).map(Number);
+        if (vb.length === 4) {
+            const pad = 10 * (g - 1) / 0.35;
+            svg.setAttribute('viewBox', [vb[0] - pad, vb[1] - pad, vb[2] + 2 * pad, vb[3] + 2 * pad].map(round).join(' '));
+        }
+    }
+
     // A variable that holds a number: its name and, beside it, the value
     // (»new | 58«), no = sign between them
     const valueBox = (name, x, y, value) => {
@@ -2739,6 +2777,12 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             const moving = back ? frames[before] : frame;
             before = index;
             draw(frame);
+            // on a small screen the text grows: by as much as the picture is
+            // shown smaller than 0.75 of its size, at most by 0.35
+            const vbWidth = Number((svg.getAttribute('viewBox') || '0 0 0').split(/\s+/)[2]) || 0;
+            const room = picture.parentElement ? picture.parentElement.clientWidth : 0;
+            const shown = vbWidth && room ? Math.min(1, room / vbWidth) : 1;
+            growText(svg, Math.min(1.35, Math.max(1, 0.75 / shown)));
             // a list's cells keep their size across widgets: the picture at
             // most as wide as it is drawn (data-natural)
             if (svg.dataset.natural) picture.style.maxWidth = `${svg.dataset.natural}px`;
@@ -2791,6 +2835,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             speed = (speed + 1) % SPEEDS.length;
             speedButton.textContent = SPEEDS[speed][1];
         });
+        // the text's size follows the room: a turned phone draws the step again
+        let room = 0;
+        window.addEventListener('resize', () => { const now = picture.parentElement ? picture.parentElement.clientWidth : 0; if (Math.abs(now - room) > 20) { room = now; show(false); } });
         widget.stepperGo = (k) => { index = Math.max(0, Math.min(frames.length - 1, k)); show(false); };
         const go = { first: () => 0, prev: () => index - 1, next: () => index + 1, last: () => frames.length - 1 };
         for (const b of buttons) b.addEventListener('click', () => {

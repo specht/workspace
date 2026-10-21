@@ -291,6 +291,11 @@ only to look nice.
 - **What grows, grows from its middle** (`data-grow='22 21'` on a group
   drawn from its corner), and ends on its own transform, so that its next
   move slides instead of jumping.
+- **Text grows where the picture is small** (a phone): the Algo Stepper
+  measures how far its picture is scaled down and lets every text grow by
+  up to 1.35 (a variable's box with its name and value as one, about its
+  centre, keys `var-…`), so that labels stay readable; a turned phone draws
+  the step again.
 - **The same thing has the same size** across related widgets: a list's
   cells are as large in the widget that grows to 8 cells as in the one with
   4 (the picture at most as wide as drawn, `data-natural`).
