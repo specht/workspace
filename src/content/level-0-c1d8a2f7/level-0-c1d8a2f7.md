@@ -91,7 +91,7 @@ zoom: 1.5
 hook: baking
 -->
 
-<img class='full' src='backen.webp' alt='Das Zimmer, noch unfertig beleuchtet; oben links der Name des Levels, »Baking light« mit einem Fortschrittsbalken und darunter die Schalter.'>
+<img class='full fit-width' src='backen.webp' alt='Das Zimmer, noch unfertig beleuchtet; oben links der Name des Levels, »Baking light« mit einem Fortschrittsbalken und darunter die Schalter.'>
 
 Wie lange das dauert, hängt von der Grafikkarte deines Rechners ab. Ist es fertig, steht dort »Light baked in …«:
 
@@ -106,7 +106,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='zimmer.webp' alt='Das Zimmer im warmen Licht seiner Leuchte, gelbe Tapete, dunkle Sockelleiste, durch die offene Tür sieht man in den Gang.'>
+<img class='full fit-width' src='zimmer.webp' alt='Das Zimmer im warmen Licht seiner Leuchte, gelbe Tapete, dunkle Sockelleiste, durch die offene Tür sieht man in den Gang.'>
 
 Klick ins Bild, dann siehst du dich mit der Maus um. <kbd>Esc</kbd> gibt die Maus wieder frei.
 
@@ -141,7 +141,7 @@ hook: wheel 450
 hook: info off
 -->
 
-<img class='full' src='automap.webp' alt='Die Automap über dem ganzen Level: Zimmer, Gang, Blau und Rot als hellblaues Drahtgitter von schräg oben, jeder Raum mit seinem Namen, gelbe Punkte für die Leuchten, ein roter Pfeil mit Ring und Strahl im Zimmer; Linien hinter Wänden sind blass.'>
+<img class='full fit-width' src='automap.webp' alt='Die Automap über dem ganzen Level: Zimmer, Gang, Blau und Rot als hellblaues Drahtgitter von schräg oben, jeder Raum mit seinem Namen, gelbe Punkte für die Leuchten, ein roter Pfeil mit Ring und Strahl im Zimmer; Linien hinter Wänden sind blass.'>
 
 Und mit <kbd>V</kbd>, die Räume selbst:
 
@@ -156,7 +156,7 @@ hook: wheel 450
 hook: info off
 -->
 
-<img class='full' src='automap-raeume.webp' alt='Dieselbe Automap mit den Räumen von oben, ohne Decken: gelbe Tapete und Teppich im Zimmer und im Gang, der blaue Raum blau, der rote rot, darüber das hellblaue Drahtgitter und die Namen.'>
+<img class='full fit-width' src='automap-raeume.webp' alt='Dieselbe Automap mit den Räumen von oben, ohne Decken: gelbe Tapete und Teppich im Zimmer und im Gang, der blaue Raum blau, der rote rot, darüber das hellblaue Drahtgitter und die Namen.'>
 
 ## Kartografie
 
@@ -282,7 +282,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='kammer.webp' alt='Die Kammer: niedrig, mit dunklerer Tapete im orangefarbenen Licht ihrer Leuchte; durch die Tür in der Ecke fällt Licht aus dem Gang.'>
+<img class='full fit-width' src='kammer.webp' alt='Die Kammer: niedrig, mit dunklerer Tapete im orangefarbenen Licht ihrer Leuchte; durch die Tür in der Ecke fällt Licht aus dem Gang.'>
 
 Stimmt etwas nicht, steht oben links in Rot, in welcher Datei (und, wenn es eine Zeile ist, in welcher) das Programm hängen geblieben ist, auf Englisch, zum Beispiel `rooms/kammer.room: room kammer and room rot lie in the same place at the same height`. Das heißt: Der Raum läge auf dem Boden eines anderen; dahinter steht auch, an welchem Feld. Schieb die Tür an eine andere Stelle oder mach den Raum kleiner.
 
@@ -349,7 +349,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='saal-1.webp' alt='Der leere Saal von seiner Tür aus: gelbe Wände, eine flache Decke mit vier Leuchten in zwei Reihen, Teppich.'>
+<img class='full fit-width' src='saal-1.webp' alt='Der leere Saal von seiner Tür aus: gelbe Wände, eine flache Decke mit vier Leuchten in zwei Reihen, Teppich.'>
 
 ### Schräge Decken
 
@@ -378,7 +378,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='saal-2.webp' alt='Derselbe Saal unter einem Satteldach: Die Decke steigt von beiden Wänden zur Mitte hin an, die Leuchten liegen schräg in den Dachflächen, die Stirnwand ist fünfeckig.'>
+<img class='full fit-width' src='saal-2.webp' alt='Derselbe Saal unter einem Satteldach: Die Decke steigt von beiden Wänden zur Mitte hin an, die Leuchten liegen schräg in den Dachflächen, die Stirnwand ist fünfeckig.'>
 
 Eine Decke kann auch nur in eine Richtung ansteigen, wie ein Pultdach. Mit `slope = east` statt `gable` wird die Decke des Saals nach Osten immer höher, also nach rechts im Grundriss:
 
@@ -401,7 +401,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='saal-pult.webp' alt='Der leere Saal von der Seite: Die Decke steigt von rechts nach links gleichmäßig an, die Leuchten liegen schräg in ihr.'>
+<img class='full fit-width' src='saal-pult.webp' alt='Der leere Saal von der Seite: Die Decke steigt von rechts nach links gleichmäßig an, die Leuchten liegen schräg in ihr.'>
 
 <!-- /tutorial-scope -->
 
@@ -436,7 +436,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='saal-3.webp' alt='Der Saal mit vier Säulen, die bis in das Dach reichen; an Boden und Wänden ihre weichen Schatten.'>
+<img class='full fit-width' src='saal-3.webp' alt='Der Saal mit vier Säulen, die bis in das Dach reichen; an Boden und Wänden ihre weichen Schatten.'>
 
 Mit `shape = round` wird ein Block rund, eine Säule wie in einem alten Bad, so breit und tief wie der Block. So sähe der Saal damit aus; für die nächsten Schritte bleiben die Säulen eckig:
 
@@ -458,7 +458,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='saal-rund.webp' alt='Derselbe Saal mit vier runden Säulen, die bis in das Dach reichen; das Licht der Leuchten läuft weich um sie herum.'>
+<img class='full fit-width' src='saal-rund.webp' alt='Derselbe Saal mit vier runden Säulen, die bis in das Dach reichen; das Licht der Leuchten läuft weich um sie herum.'>
 
 <!-- /tutorial-scope -->
 
@@ -493,7 +493,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='saal-4.webp' alt='Der Saal mit einer roten Leuchte hinten rechts: Die rechte Wand, der Boden und die Säulen dort glühen rot, nach vorn wird es wieder gelb.'>
+<img class='full fit-width' src='saal-4.webp' alt='Der Saal mit einer roten Leuchte hinten rechts: Die rechte Wand, der Boden und die Säulen dort glühen rot, nach vorn wird es wieder gelb.'>
 
 <!-- /tutorial-scope -->
 
@@ -533,7 +533,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='saal-5.webp' alt='Athena aus weißem Marmor auf einem hellen Sockel in der Mitte des Saals, zwischen den Säulen, im warmen Licht der vier Leuchten.'>
+<img class='full fit-width' src='saal-5.webp' alt='Athena aus weißem Marmor auf einem hellen Sockel in der Mitte des Saals, zwischen den Säulen, im warmen Licht der vier Leuchten.'>
 
 Athena ist der 3D-Scan eines Gipsabgusses einer antiken Statue, aus dem [Statens Museum for Kunst](https://open.smk.dk/artwork/image/KAS255) in Kopenhagen, gemeinfrei. Ohne `material = marble` behält ein Modell seine eigenen Farben. Im Ordner `models` liegen außerdem Möbel; zwei davon stehen gleich im Salon.
 
@@ -558,7 +558,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='saal-6.webp' alt='Der fertige Saal: Wände und Boden aus weißem, geädertem Marmor, die Säulen hell, Athena auf ihrem Sockel.'>
+<img class='full fit-width' src='saal-6.webp' alt='Der fertige Saal: Wände und Boden aus weißem, geädertem Marmor, die Säulen hell, Athena auf ihrem Sockel.'>
 
 ### Andere Wände und Böden
 
@@ -776,7 +776,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='salon-1.webp' alt='Ein Salon mit grüner Tapete und Dielenboden, links ein Sofa und ein kleiner Tisch; in der Wand gegenüber eine breite, rechteckige Öffnung in den hellen Marmorsaal.'>
+<img class='full fit-width' src='salon-1.webp' alt='Ein Salon mit grüner Tapete und Dielenboden, links ein Sofa und ein kleiner Tisch; in der Wand gegenüber eine breite, rechteckige Öffnung in den hellen Marmorsaal.'>
 
 ### Ein runder Bogen
 
@@ -803,7 +803,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='salon-2.webp' alt='Derselbe Salon; die Öffnung zum Saal ist jetzt ein runder Bogen, durch den man den Marmor sieht.'>
+<img class='full fit-width' src='salon-2.webp' alt='Derselbe Salon; die Öffnung zum Saal ist jetzt ein runder Bogen, durch den man den Marmor sieht.'>
 
 <div class='hint try'>
 <p><strong>Ausprobieren:</strong> Mit einer zweiten Zahl wird der Bogen schmaler als die Tür, und daneben bleibt Wand: <code>arch = 2.9, 1.2</code> ist nur 1,2 m breit. Wie sieht <code>arch = 2.4, 0.9</code> aus, ein schmaler, hoher Durchgang? Stell danach <code>arch = 2.9</code> wieder her.</p>
@@ -831,7 +831,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='salon-3.webp' alt='Der Salon mit dunklem Holz an den Wänden bis auf Hüfthöhe, darüber grüne Tapete; der Bogen und das Sofa wie vorher.'>
+<img class='full fit-width' src='salon-3.webp' alt='Der Salon mit dunklem Holz an den Wänden bis auf Hüfthöhe, darüber grüne Tapete; der Bogen und das Sofa wie vorher.'>
 
 ### Eine Leiste darauf
 
@@ -854,7 +854,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='salon-4.webp' alt='Der Salon mit einer hellen Leiste auf der Oberkante des Holzes, die ringsum an allen Wänden entlangläuft und am Bogen endet.'>
+<img class='full fit-width' src='salon-4.webp' alt='Der Salon mit einer hellen Leiste auf der Oberkante des Holzes, die ringsum an allen Wänden entlangläuft und am Bogen endet.'>
 
 ### Oben
 
@@ -877,7 +877,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='salon-5.webp' alt='Der fertige Salon: oben an allen Wänden eine helle, schräge Leiste zur Decke, darunter grüne Tapete, eine helle Stuhlleiste, dunkles Holz und eine dunkle Sockelleiste; durch den Bogen der Marmorsaal.'>
+<img class='full fit-width' src='salon-5.webp' alt='Der fertige Salon: oben an allen Wänden eine helle, schräge Leiste zur Decke, darunter grüne Tapete, eine helle Stuhlleiste, dunkles Holz und eine dunkle Sockelleiste; durch den Bogen der Marmorsaal.'>
 ## Dein eigener Raum
 
 Jetzt bist du dran: Bau einen Raum nach deiner Idee und schließ ihn mit einer Tür an. Was du in `[room]` einstellen kannst:
@@ -969,7 +969,7 @@ hook: info off
 hook: key e t
 -->
 
-<img class='full' src='saal-kanten.webp' alt='Der Salon mit hellblauen Linien auf allen Kanten: wo die Wände auf Boden und Decke treffen, an den Leisten, um den Bogen, an Sofa und Tisch.'>
+<img class='full fit-width' src='saal-kanten.webp' alt='Der Salon mit hellblauen Linien auf allen Kanten: wo die Wände auf Boden und Decke treffen, an den Leisten, um den Bogen, an Sofa und Tisch.'>
 ### Texturen ohne ein einziges Bild
 
 Tapete, Teppich, Marmor, Holz, Fliesen und Samt sind keine Fotos: `textures.js` malt sie beim Laden, auf eine Leinwand des Browsers (ein `canvas`), mit Formen oder Punkt für Punkt. Man nennt das **prozedurale Texturen**: Gespeichert ist nicht das Bild, sondern das Rezept dafür. Die Vorlage braucht so keine Bilddateien, und jede Farbe in `wallpaper` oder `carpet` bekommt ihre eigene Textur.
@@ -1162,7 +1162,7 @@ hook: page textures.html?tile=marble&edges&bare
 crop-element: canvas
 -->
 
-<img class='full' src='textur-nahtlos.webp' alt='Ein großes Quadrat aus Marmor, durch feine rote Linien in drei mal drei Felder geteilt; die grauen Adern laufen über die roten Linien hinweg, ohne abzubrechen.'>
+<img class='full fit-width' src='textur-nahtlos.webp' alt='Ein großes Quadrat aus Marmor, durch feine rote Linien in drei mal drei Felder geteilt; die grauen Adern laufen über die roten Linien hinweg, ohne abzubrechen.'>
 
 <div class='hint try'>
 <p><strong>Ausprobieren:</strong> Öffne in der Vorschau statt <code>index.html</code> die Seite <code>textures.html?show=marble</code>. Ändere in <code>engine/textures.js</code> beim Marmor die Zahl in <code>vein / 0.08</code>, etwa auf 0.25, und lade neu: Wie ändern sich die Adern? Und was passiert mit <code>turbulence * 5</code>, wenn du 5 durch 12 ersetzt? Im Level ändert das nur den Marmor der Statuen: Wände und Böden aus Marmor rechnet <code>marble</code> in <code>engine/main.js</code>, dort steht dasselbe Rezept. Ersetze in <code>tiles</code> in <code>engine/main.js</code> jede <code>10.0</code> durch <code>5.0</code>, gib dem Saal <code>walls = tiles</code> und lade neu: Wie groß sind die Fliesen jetzt? Mit <code>git checkout engine/</code> ist alles wieder wie vorher.</p>

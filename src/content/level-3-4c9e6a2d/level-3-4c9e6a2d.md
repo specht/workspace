@@ -107,7 +107,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='kammer-lampen.webp' alt='Die Kammer, nur von zwei Wandlampen beleuchtet: an der linken und an der rechten Wand je eine ovale Lampe mit Gitter, dazwischen an der Südwand ein braunes Sofa mit gemusterten Kissen; die Decke ist hell.'>
+<img class='full fit-width' src='kammer-lampen.webp' alt='Die Kammer, nur von zwei Wandlampen beleuchtet: an der linken und an der rechten Wand je eine ovale Lampe mit Gitter, dazwischen an der Südwand ein braunes Sofa mit gemusterten Kissen; die Decke ist hell.'>
 
 ### Modelle von Poly Haven
 
@@ -142,7 +142,7 @@ hook: info off
 hook: key t g
 -->
 
-<img class='full' src='licht-punkte.webp' alt='Der Saal ganz in Hellgrau, übersät mit einem Raster aus dunklen Punkten auf Wänden, Boden, Säulen und Satteldach; vorn sind die Punkte groß und weit auseinander, hinten klein und dicht; um die Säulen und die Statue herum sind sie so fein, dass man sie kaum sieht.'>
+<img class='full fit-width' src='licht-punkte.webp' alt='Der Saal ganz in Hellgrau, übersät mit einem Raster aus dunklen Punkten auf Wänden, Boden, Säulen und Satteldach; vorn sind die Punkte groß und weit auseinander, hinten klein und dicht; um die Säulen und die Statue herum sind sie so fein, dass man sie kaum sieht.'>
 
 _task(lichtpunkte)
 
@@ -250,7 +250,7 @@ hook: info off
 hook: key t b
 -->
 
-<img class='full' src='licht-direkt.webp' alt='Der Saal in Grau, nur mit direktem Licht: helle Flecken auf dem Boden unter den Leuchten, die Säulen werfen weiche Schatten, das Satteldach und alles, was keine Leuchte sieht, fast schwarz.'>
+<img class='full fit-width' src='licht-direkt.webp' alt='Der Saal in Grau, nur mit direktem Licht: helle Flecken auf dem Boden unter den Leuchten, die Säulen werfen weiche Schatten, das Satteldach und alles, was keine Leuchte sieht, fast schwarz.'>
 
 Wie weich ein Schatten ist, hängt also davon ab, wie groß die Leuchte ist. Mit `size = 0.2` und mit `size = 2` (und `power` so, dass jede gleich viel Licht gibt, denn eine kleinere Leuchte gibt auch weniger):
 
@@ -386,7 +386,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='licht-alles.webp' alt='Der Saal aus Marmor im warmen Licht der Leuchten: helle Wände und heller Boden, die Säulen mit ihren weichen Schatten, Athena auf ihrem Sockel, das Satteldach hell.'>
+<img class='full fit-width' src='licht-alles.webp' alt='Der Saal aus Marmor im warmen Licht der Leuchten: helle Wände und heller Boden, die Säulen mit ihren weichen Schatten, Athena auf ihrem Sockel, das Satteldach hell.'>
 
 **Beim Zeichnen: Tone Mapping und Bloom.** Die Lightmap enthält das Licht, wie es wirklich ist: Unter einer Leuchte ist es viel heller als in einer Ecke, und die Leuchte selbst ist noch einmal viel heller. Ein Bildschirm kann das nicht zeigen, er kennt nur Helligkeiten von 0 bis 1. Das **Tone Mapping** drückt große Werte sanft zusammen, wie eine Kamera: Helles bleibt hell, ohne dass alles darüber gleich weiß wird. Davor kommt **Bloom** (<kbd>H</kbd>): Was viel heller ist als Weiß, die Leuchten vor allem, strahlt weich in seine Umgebung, so wie in einer Kamera oder im Auge, wenn man in eine Lampe schaut. Dafür verkleinert das Programm das Bild mehrmals auf die Hälfte, verwischt die hellsten Stellen und legt sie wieder vergrößert darüber. Das kostet bei jedem Bild ein wenig Zeit, darum fehlt Bloom mit der Rot-Cyan-Brille, in VR und in der Automap; dort hat jede Leuchte einen eigenen, einfachen Schein.
 

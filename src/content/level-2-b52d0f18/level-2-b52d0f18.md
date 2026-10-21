@@ -97,7 +97,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='bad-1.webp' alt='Eine Halle aus weißen Fliesen, unten an den Wänden dunkelgrün gefliest; im Boden ein langes, rechteckiges Becken voll hellem, blaugrünem Wasser, ohne Rand.'>
+<img class='full fit-width' src='bad-1.webp' alt='Eine Halle aus weißen Fliesen, unten an den Wänden dunkelgrün gefliest; im Boden ein langes, rechteckiges Becken voll hellem, blaugrünem Wasser, ohne Rand.'>
 
 _task(wassertiefe)
 
@@ -123,7 +123,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='bad-2.webp' alt='Dasselbe Becken mit einem niedrigen, gefliesten Rand und einem Geländer aus glänzendem Metall darauf, das an den Ecken in Bögen herumläuft.'>
+<img class='full fit-width' src='bad-2.webp' alt='Dasselbe Becken mit einem niedrigen, gefliesten Rand und einem Geländer aus glänzendem Metall darauf, das an den Ecken in Bögen herumläuft.'>
 
 ### Säulen im Wasser
 
@@ -156,7 +156,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='bad-3.webp' alt='Das Becken mit Rand und Geländer, darin eine runde, weiß geflieste Säule, die aus dem Wasser bis an die Decke reicht.'>
+<img class='full fit-width' src='bad-3.webp' alt='Das Becken mit Rand und Geländer, darin eine runde, weiß geflieste Säule, die aus dem Wasser bis an die Decke reicht.'>
 
 <div class='hint try'>
 <p><strong>Ausprobieren:</strong> Genauso hängt eine Leuchte über dem Wasser: ein eigener Buchstabe im Becken, mit <code>light = #e4f3ff</code> und <code>in = W</code>. Wie sieht ihr Licht im Wasser aus? Und was passiert, wenn du bei einer Säule <code>in = W</code> weglässt?</p>
@@ -321,7 +321,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='schacht-becken.webp' alt='Aus dem krummen Gang durch eine Tür steil hinunter in einen weiß gefliesten Schacht; ganz unten ein Becken voll blaugrünem Wasser hinter einem Geländer, daneben ein Plastikstuhl.'>
+<img class='full fit-width' src='schacht-becken.webp' alt='Aus dem krummen Gang durch eine Tür steil hinunter in einen weiß gefliesten Schacht; ganz unten ein Becken voll blaugrünem Wasser hinter einem Geländer, daneben ein Plastikstuhl.'>
 
 ## Im Maschinenraum: Wasser und was gezeichnet wird
 

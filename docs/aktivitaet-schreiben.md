@@ -75,7 +75,12 @@ Inhaltsverzeichnis am Rand.
 
 Bilder liegen im selben Ordner und werden mit `<img class='full' src='bild.webp'
 alt='…'>` eingebunden. Der `alt`-Text beschreibt, was zu sehen ist; leer
-(`alt=''`) nur, wenn das Bild nur schmückt.
+(`alt=''`) nur, wenn das Bild nur schmückt. `full` ist mindestens 1000 Pixel
+breit, damit Text in einem Screenshot (Editor, Terminal) auf dem Handy lesbar
+bleibt; man schiebt das Bild dann zur Seite. Ein Bild ohne kleine Schrift,
+etwa eine 3D-Szene oder ein Foto, bekommt dazu `fit-width`
+(`<img class='full fit-width' …>`): Es ist auf dem Handy so breit wie der
+Bildschirm.
 
 Screenshots aus dem Workspace macht man nicht von Hand: Ein Rezept
 `<!-- tutorial-screenshot … -->` direkt vor dem `<img>` beschreibt, was zu tun
