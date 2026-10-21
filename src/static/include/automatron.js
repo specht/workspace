@@ -697,4 +697,21 @@
     const api = { run, MAX_STATES, MAX_REGEX, accepts, _internals: { nfaFromRegex, compactIds, topoRelabel, subsetConstruction, minimize, grammarOf, simplify, grammarHtml, compactHtml } };
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
     else root.Automatron = api;
+
+    // In a page: <div class='automaton-drawing' data-regex='a|b'
+    // data-automaton='nfa'> draws what Automatron draws for that expression
+    // (nfa, dfa or min), so that a Handbuch page shows the same automata
+    if (typeof document === 'undefined') return;
+    const draw = () => document.querySelectorAll('.automaton-drawing[data-regex]').forEach((el) => {
+        if (el.dataset.drawn || !root.AutomatonLayout) return;
+        el.dataset.drawn = '1';
+        const r = run(el.dataset.regex);
+        if (r.error) return;
+        const which = el.dataset.automaton || 'nfa';
+        const a = which === 'min' ? r.min_dfa.implicit_sink.drawing : which === 'dfa' ? r.dfa.implicit_sink.drawing : r.nfa.drawing;
+        el.innerHTML = root.AutomatonLayout.svg(a);
+        if (el.querySelector('svg')) root.AutomatonLayout.hover(el.querySelector('svg'));
+    });
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', draw);
+    else draw();
 })(typeof window !== 'undefined' ? window : globalThis);

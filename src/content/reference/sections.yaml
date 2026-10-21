@@ -152,6 +152,17 @@
     - baeume
     - hash-tables
 
+- key: reference-automata
+  label: Automaten und reguläre Ausdrücke
+  icon: /images/key.png
+  description: |
+    Endliche Automaten, die ein Wort Zeichen für Zeichen lesen, und reguläre
+    Ausdrücke (Regex), die Muster für Text beschreiben: wie man beide
+    schreibt und benutzt, und wie aus dem einen das andere wird.
+  entries:
+    - automaten
+    - regex
+
 - key: reference-kartografie
   label: Kartografie
   icon: /images/book.png

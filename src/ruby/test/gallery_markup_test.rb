@@ -2,7 +2,8 @@ require 'minitest/autorun'
 
 # Pictures side by side are a gallery, one way on the whole site
 # (docs/aktivitaet-schreiben.md): <div class='gallery'> with one <figure>
-# per picture, each with an alt text and a <figcaption>. Not a Bootstrap row
+# per picture, each with an alt text (a drawing: role='img' and an
+# aria-label) and a <figcaption>. Not a Bootstrap row
 # of pictures, not the old class screen-gallery.
 class GalleryMarkupTest < Minitest::Test
     CONTENT = File.expand_path('../../content', __dir__)
@@ -20,7 +21,10 @@ class GalleryMarkupTest < Minitest::Test
         found = pages.flat_map do |name, text|
             galleries(text).flat_map do |gallery|
                 gallery.scan(%r{<figure>(.*?)</figure>}m).map(&:first).reject do |figure|
-                    figure =~ /<img\s[^>]*alt=['"][^'"]+['"]/ && figure.include?('<figcaption>')
+                    # a picture: an <img> with alt, or a drawing the page makes
+                    # (an automaton) with role='img' and an aria-label
+                    picture = figure =~ /<img\s[^>]*alt=['"][^'"]+['"]/ || figure =~ /role=['"]img['"][^>]*aria-label=['"][^'"]+['"]/
+                    picture && figure.include?('<figcaption>')
                 end.map { |figure| "#{name}: #{figure.strip[0, 100]}" }
             end
         end

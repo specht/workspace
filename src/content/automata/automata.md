@@ -728,8 +728,8 @@ _task(nea-oder-dea)
 
 ## Wie geht es weiter?
 
-- **Reguläre Ausdrücke.** In Ruby prüft `'121213'.match?(/\A[0-9]*1213\z/)` dasselbe wie dein Schloss, in Python `re.fullmatch('[0-9]*1213', '121213')`. Dahinter steckt die Idee dieser Seite: Ausdruck, Automat, Zeichen für Zeichen lesen.
-- **Automatron ganz.** Automatron macht mehr als die Potenzmengenkonstruktion: Erst baut es aus dem Ausdruck einen NEA mit ε-Übergängen (Thompson-Konstruktion), am Ende verkleinert es den DEA (Minimierung). Probier die Beispiele aus und lies die Erklärungen zwischen den Bildern.
+- **Reguläre Ausdrücke.** In Ruby prüft `'121213'.match?(/\A[0-9]*1213\z/)` dasselbe wie dein Schloss, in Python `re.fullmatch('[0-9]*1213', '121213')`. Dahinter steckt die Idee dieser Seite: Ausdruck, Automat, Zeichen für Zeichen lesen. Die Bausteine regulärer Ausdrücke und wie man sie in Ruby, Python und mit grep benutzt, stehen auf der Handbuch-Seite [Reguläre Ausdrücke](/reference/regex).
+- **Automatron ganz.** Automatron macht mehr als die Potenzmengenkonstruktion: Erst baut es aus dem Ausdruck einen NEA mit ε-Übergängen (Thompson-Konstruktion), am Ende verkleinert es den DEA (Minimierung). Probier die Beispiele aus und lies die Erklärungen zwischen den Bildern. Alle Verfahren Schritt für Schritt erklärt die Handbuch-Seite [Endliche Automaten](/reference/automaten).
 - **Mehr als endlich.** Klammern prüfen, ob jede `(` ein `)` hat, kann ein endlicher Automat nicht. Ein **Kellerautomat** kann es, mit einem [Stack](/reference/listen#stack) als Gedächtnis. So prüfen Compiler deinen Code.
 
 <!-- tutorial-screenshot

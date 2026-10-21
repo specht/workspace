@@ -605,7 +605,8 @@
     // the drawings in the page
     if (typeof document === 'undefined') return;
     const start = () => document.querySelectorAll('.automaton-drawing').forEach((el) => {
-        if (el.dataset.drawn) return;
+        // a box with data-regex is Automatron's (automatron.js draws it)
+        if (el.dataset.drawn || !el.dataset.states) return;
         el.dataset.drawn = '1';
         el.innerHTML = svg(fromData(el.dataset));
         if (el.querySelector('svg')) hover(el.querySelector('svg'));
