@@ -92,7 +92,13 @@ in doubt, do it the way it does.
   each operation starts.
 - **The message under the picture** says in one or two German sentences what
   this step did and why, with the values: »40 hängt nur noch an der
-  Variablen x.« Plain statements, no questions.
+  Variablen x.« Plain statements, no questions. Where the picture changes
+  its height from step to step (Huffman's forest with its table at the end,
+  the calculator's tree that shrinks to its result), the message stands
+  above it and the picture comes last: every part but the last keeps the
+  height of its tallest step (stepper_keys.js), so the last one may grow
+  and shrink without moving anything in the widget and without leaving a
+  gap on a phone.
 - **Variables are visible** when they matter: a label with the variable's
   English name (`root`, `node`, `x`, `y`, `successor`; not »Wurzel«) and an
   arrow to what it references. `root` comes in from above the tree. A temporary variable

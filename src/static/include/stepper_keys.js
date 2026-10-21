@@ -449,7 +449,9 @@ document.addEventListener('keydown', (event) => {
 // it keeps the height of its tallest step (min-height, in em, so that it
 // follows the text), measured by going through all steps once when the
 // page has loaded, again when the width changes or a text in the widget is
-// edited. Not in the lightbox, whose fit measures for itself.
+// edited. Not in the lightbox, whose fit measures for itself. The last
+// part (the message) keeps no height: when it changes, nothing in the
+// widget moves, and a phone shows no gap under a short message.
 // Going through hundreds of steps takes seconds, so it goes in slices of a
 // few milliseconds; each slice puts back the step that is shown and the
 // heights reserved so far, so the page stays usable and nothing flickers.
@@ -492,7 +494,7 @@ document.addEventListener('keydown', (event) => {
         if (typeof widget.stepperGo !== 'function' || widget.classList.contains('stepper-lightbox')) return;
         const steps = Number(widget.dataset.steps);
         if (!(steps > 1)) return;
-        const list = parts(widget);
+        const list = parts(widget).slice(0, -1);
         jobs.delete(widget);
         jobs.set(widget, { steps, list, next: 0, least: list.map(() => Infinity), most: list.map(() => 0) });
         if (!running) running = setTimeout(run, 0);

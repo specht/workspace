@@ -6182,7 +6182,7 @@ div[data-stepper] .stepper-word { display: none; }
 }
 .idct-stepper .idct-say {
     min-height: 3em;
-    margin-bottom: 0.6em;
+    margin-top: 0.6em;
 }
 .idct-stepper .idct-panels {
     --idct-cell: clamp(1.5em, calc((100cqi - 2px) / 8), 1.9em);

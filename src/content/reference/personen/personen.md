@@ -402,7 +402,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 <div class='person pair'>
 <div class='portraits'><img src='griesemer.webp' alt='Robert Griesemer bei einer Podiumsdiskussion: ein Mann mit rotblondem Haar und Brille in einem grünen T-Shirt.'><img src='pike.webp' alt='Rob Pike bei einer Podiumsdiskussion: ein Mann mit kurzem Haar und roter Brille, ein Mikrofon in der Hand.'></div>
-<p><strong>Robert Griesemer</strong> (geboren 1964), Schweizer Informatiker, und <strong>Rob Pike</strong> (geboren 1956), kanadischer Programmierer, erfanden 2007 bei Google mit Ken Thompson die Sprache Go. Pike ärgerte sich damals über C++-Programme, deren Übersetzen 45 Minuten dauerte; ein Programm wie deins übersetzt <code>go build</code> in einem Augenblick. Auch Docker, mit dem dein Workspace in einem Container läuft, ist in Go geschrieben.</p>
+<p><strong>Robert Griesemer</strong> (geboren 1964), Schweizer Informatiker, und <strong>Rob Pike</strong> (geboren 1956), kanadischer Programmierer, erfanden 2007 bei Google mit Ken Thompson die Sprache Go. Pike ärgerte sich damals über C++-Programme, deren Übersetzen 45 Minuten dauerte: Go sollte so schnell übersetzen, dass man darauf nicht warten muss. Auch Docker, mit dem dein Workspace in einem Container läuft, ist in Go geschrieben.</p>
 <p>Griesemer hatte an der ETH Zürich bei Niklaus Wirth promoviert, dem Erfinder von Pascal. Pike war 1992 dabei, als Ken Thompson UTF-8 auf ein Tischset in einem Diner zeichnete. Den Gopher, das Maskottchen von Go, hat Pikes Frau Renée French gezeichnet.</p>
 </div>
 <!-- /part -->

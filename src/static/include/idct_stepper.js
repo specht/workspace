@@ -72,13 +72,13 @@
                 <button class='btn btn-sm btn-success' data-go='last' aria-label='Zum Ende'><i class='bi bi-chevron-bar-right' style='margin-right: 0;'></i></button>
                 <span class='idct-count'></span>
             </div>
-            <div class='idct-say' aria-live='polite'></div>
             <div class='idct-panels'>
                 <figure><div class='idct-grid idct-coef'></div><figcaption>Koeffizienten</figcaption></figure>
                 <figure><div class='idct-grid idct-basis'></div><figcaption class='idct-basis-caption'></figcaption></figure>
                 <figure><div class='idct-grid idct-block'></div><figcaption>Der Block bisher, mit verstärktem Kontrast</figcaption></figure>
                 <figure><div class='idct-grid idct-numbers'></div><figcaption>Pixelwerte</figcaption></figure>
-            </div>`;
+            </div>
+            <div class='idct-say' aria-live='polite'></div>`;
         const say = element.querySelector('.idct-say');
         const count = element.querySelector('.idct-count');
         const go = (name) => element.querySelector(`[data-go='${name}']`);
