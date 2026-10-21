@@ -65,7 +65,7 @@ requires: [automata]
         stroke-width: 3;
     }
     .calc-tree rect.num.fresh {
-        stroke: #2e9e5b;
+        stroke: var(--bs-success);
         stroke-width: 3;
     }
     .calc-tree text {

@@ -6592,7 +6592,8 @@ tr.row-detail > td {
     --automaton-ink: var(--bs-body-color);
     --automaton-faint: var(--bs-secondary-color);
     --automaton-paper: var(--bs-body-bg);
-    --automaton-yes: color-mix(in srgb, #2f9e44 30%, var(--bs-body-bg));
+    /* the site's green, as on its buttons */
+    --automaton-yes: color-mix(in srgb, var(--bs-success) 30%, var(--bs-body-bg));
     margin: 1em 0 1.5em;
 }
 html[data-bs-theme="dark"] .automaton-stepper {
@@ -6624,11 +6625,11 @@ html[data-bs-theme="dark"] .automaton-stepper {
     min-height: 3em;
 }
 .automaton-stepper .automaton-say.yes {
-    color: color-mix(in srgb, #2f9e44 80%, var(--bs-body-color));
+    color: var(--bs-success-text-emphasis);
     font-weight: 600;
 }
 .automaton-stepper .automaton-say.no {
-    color: color-mix(in srgb, #e03131 80%, var(--bs-body-color));
+    color: var(--bs-danger-text-emphasis);
     font-weight: 600;
 }
 .automaton-stepper svg.automaton-picture {

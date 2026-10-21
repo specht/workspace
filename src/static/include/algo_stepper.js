@@ -31,7 +31,7 @@
 
     const STYLE = `
 .algo-stepper { margin: 1em 0 1.5em; --algo-accent: #6741d9; --algo-frontier: #ffe066; --algo-done: #b197fc;
-    --algo-line: #adb5bd; --algo-ink: var(--bs-body-color); --algo-paper: var(--bs-body-bg); --algo-start: #2f9e44; --algo-goal: #e03131;
+    --algo-line: #adb5bd; --algo-ink: var(--bs-body-color); --algo-paper: var(--bs-body-bg); --algo-start: var(--bs-success); --algo-goal: var(--bs-danger);
     --algo-pred: color-mix(in srgb, var(--algo-accent) 55%, var(--algo-paper)); }
 html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-frontier: #c9a227; --algo-done: #5f3dc4; --algo-line: #5c636e; }
 /* the pointers along which the calls on the stack went down */
