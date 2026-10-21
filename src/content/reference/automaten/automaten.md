@@ -194,7 +194,7 @@ Die Kleenesche Hülle einer Sprache L, geschrieben L<sup>&#42;</sup>, sind alle 
 
 <!-- part: potenzmenge -->
 <!-- short: Potenzmengenkonstruktion: jeder Zustand des DEA ist eine Menge von Zuständen des NEA; beim Start die ε-Hülle des Starts, je Zeichen die ε-Hülle aller Ziele; akzeptierend ist eine Menge mit einem akzeptierenden Zustand des NEA. -->
-Ein NEA lässt sich immer in einen DEA verwandeln, der dieselben Wörter annimmt. Die Idee steckt schon im Pseudocode des NEA, mit der [ε-Hülle](#uebergaenge) nach jedem Schritt: Er ist in einer Menge von Zuständen, und welche Menge nach dem nächsten Zeichen kommt, steht fest. Die **Potenzmengenkonstruktion** macht darum aus jeder Menge, die vorkommen kann, einen Zustand des DEA. (Die Potenzmenge ist die Menge aller Teilmengen; gebraucht werden meist nur wenige davon.)
+Ein NEA lässt sich immer in einen DEA verwandeln, der dieselben Wörter annimmt. Die Idee steckt schon im Pseudocode des NEA, mit der [ε-Hülle](#uebergaenge-und-huelle) nach jedem Schritt: Er ist in einer Menge von Zuständen, und welche Menge nach dem nächsten Zeichen kommt, steht fest. Die **Potenzmengenkonstruktion** macht darum aus jeder Menge, die vorkommen kann, einen Zustand des DEA. (Die Potenzmenge ist die Menge aller Teilmengen; gebraucht werden meist nur wenige davon.)
 
 ```pseudocode
 to_dea(nea):
