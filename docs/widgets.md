@@ -29,7 +29,8 @@ in doubt, do it the way it does.
   ```` ```pseudocode ```` block (`pseudocode_lexer.rb`), and the code box
   colours the same tokens the same way (`highlightPseudocode` in
   `algo_stepper.js`): dark, like every other code block on the site.
-- **A timeline** under the buttons: a dot for every step; the dot where an
+- **A timeline** under the buttons: a dot for every step, joined by a fine
+  line (coloured as far as the steps are done); the dot where an
   operation starts is ringed and carries the operation's name (`remove 20`,
   `remove 40`, `remove 50`); done dots coloured, the current one large. A tap or a drag
   on it goes to that step. The viewer always knows where they are and where

@@ -76,7 +76,12 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 .algo-stepper .algo-section.current .algo-section-name { color: var(--algo-ink); font-weight: 600; }
 .algo-stepper .algo-ticks { display: flex; height: 16px; }
 .algo-stepper .algo-tick { flex: 1 1 0; min-width: 3px; position: relative; }
-.algo-stepper .algo-tick::before { content: ''; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; transform: translate(-50%, -50%); border-radius: 50%;
+/* a fine line from each dot to the next, coloured where the steps are done */
+.algo-stepper .algo-tick::after { content: ''; position: absolute; left: 50%; top: 50%; width: 100%; height: 1px; z-index: 0;
+    background: color-mix(in srgb, var(--algo-line) 60%, transparent); transition: background-color 0.2s; }
+.algo-stepper .algo-tick.done::after { background: color-mix(in srgb, var(--algo-accent) 55%, transparent); }
+.algo-stepper .algo-tick:last-child:is(.algo-section:last-child *)::after { display: none; }
+.algo-stepper .algo-tick::before { content: ''; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; transform: translate(-50%, -50%); border-radius: 50%; z-index: 1;
     background: color-mix(in srgb, var(--algo-line) 60%, transparent); transition: width 0.2s, height 0.2s, background-color 0.2s; }
 .algo-stepper .algo-tick.start::before { width: 9px; height: 9px; background: var(--algo-paper); box-shadow: 0 0 0 2px var(--algo-accent); }
 .algo-stepper .algo-tick.done::before { background: color-mix(in srgb, var(--algo-accent) 55%, transparent); }
