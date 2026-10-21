@@ -40,11 +40,16 @@ jobs:
             exit 1
           }
 
-      # Neo4j and MySQL run as user 1000 (config.rb), the runner is 1001
+      # Neo4j and MySQL run as user 1000 (config.rb), the runner is 1001, and
+      # config.rb (as the runner) writes into data on every call: both must
+      # be able to write
       - name: Start the website
         run: |
-          sudo chown -R 1000:1000 data logs
-          ./config.rb up -d nginx neo4j
+          sudo chmod -R a+rwX data logs
+          ./config.rb up -d nginx neo4j > up.log 2>&1 || {
+            echo "::error title=Up failed::$(tail -40 up.log | sed 's/%/%25/g' | tr '\n' '\r' | sed 's/\r/%0A/g')"
+            exit 1
+          }
           for i in $(seq 1 60); do
             if curl -fsS -o /dev/null http://workspace.test:8025/; then echo "up after $((i * 5)) s"; exit 0; fi
             sleep 5
