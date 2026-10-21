@@ -34,6 +34,7 @@ address from `credentials.rb` and the code `123456`.
   may use the Workspace, what the DSB and the maintainer still have to decide
 - [docs/plan-datenschutz-schulen.md](docs/plan-datenschutz-schulen.md): the plan in German for non-specialists
   (Schulleitung, DSB, an attorney): who is approached when, which document goes to whom, the open questions
+- [docs/widgets.md](docs/widgets.md): how the step-by-step widgets look, move and are built (the AVL tree is the model)
 - [docs/teacher-access.md](docs/teacher-access.md): roles, groups, the roster import, /personen, what teachers see
 - [docs/test-workspace-packages.md](docs/test-workspace-packages.md): Workspace packages for Leistungsüberprüfungen
 - [docs/checkliste.md](docs/checkliste.md): every rule an activity must meet, why, and what checks it;
@@ -84,6 +85,9 @@ address from `credentials.rb` and the code `123456`.
   page renders as raw text.
 - Every activity has a teacher note (`lehrkraft.md`) whose first paragraph says
   what the students do (»Lernende …«); `teacher_note_test.rb` checks it.
+- Interactive widgets (steppers) follow [docs/widgets.md](docs/widgets.md): they start with
+  what they show, one step per line of the page's pseudocode with the code beside it, and
+  everything that stays the same thing moves instead of popping.
 - Invite optional experiments: where students have just got something
   working, a box `<div class='hint try'>` (»Ausprobieren:«) suggests a small
   change and what to watch for, so they see how it works by changing it.

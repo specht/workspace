@@ -24,6 +24,11 @@
         },
     };
 
+    // How long the movement from one step to the next takes, in ms; a step
+    // with pulses one after another takes PULSE_TIME for each
+    const MOTION_TIME = 550;
+    const PULSE_TIME = 650;
+
     const STYLE = `
 .algo-stepper { margin: 1em 0 1.5em; --algo-accent: #6741d9; --algo-frontier: #ffe066; --algo-done: #b197fc;
     --algo-line: #adb5bd; --algo-ink: var(--bs-body-color); --algo-paper: var(--bs-body-bg); --algo-start: #2f9e44; --algo-goal: #e03131; }
@@ -48,6 +53,23 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 .algo-stepper table.algo-table td.changed { background: color-mix(in srgb, var(--algo-frontier) 50%, transparent); }
 .algo-stepper .algo-message { margin-top: 0.6em; min-height: 3em; }
 .algo-stepper svg text { font-family: system-ui, sans-serif; }
+.algo-stepper svg [data-key] { transition: fill 0.3s, stroke 0.3s; }
+.algo-stepper pre.algo-code { font-size: 0.85em; margin: 0; padding: 0.4em 0; white-space: pre-wrap; }
+.algo-stepper pre.algo-code span.line { display: block; padding: 0.05em 0.6em; border-left: 3px solid transparent; transition: background-color 0.3s; }
+.algo-stepper pre.algo-code span.line.current { background: rgba(255, 255, 255, 0.13); border-left-color: #b197fc; }
+.algo-stepper ol.algo-stack { list-style: none; padding: 0; margin: 0 0 0.8em; font-family: '0xProto Nerd Font Mono', monospace; font-size: 0.82em; }
+.algo-stepper ol.algo-stack li { padding: 0.05em 0.5em; border-left: 2px solid var(--algo-line); }
+.algo-stepper ol.algo-stack li.current { background: color-mix(in srgb, var(--algo-accent) 18%, transparent); border-left-color: var(--algo-accent); font-weight: 600; }
+.algo-stepper ol.algo-stack li.returning { animation: algo-return 0.4s ease forwards; }
+@keyframes algo-return { to { opacity: 0.3; } }
+@media (prefers-reduced-motion: reduce) { .algo-stepper ol.algo-stack li.returning { animation: none; opacity: 0.3; } }
+.algo-stepper .algo-ops { display: flex; flex-wrap: wrap; gap: 0.3em; list-style: none; padding: 0; margin: 0 0 0.7em;
+    font-family: '0xProto Nerd Font Mono', monospace; font-size: 0.85em; }
+.algo-stepper .algo-ops li { padding: 0.05em 0.5em; border-radius: 0.3em; border: 1px solid color-mix(in srgb, var(--algo-line) 70%, transparent);
+    transition: background-color 0.3s, opacity 0.3s; }
+.algo-stepper .algo-ops li.done { opacity: 0.45; }
+.algo-stepper .algo-ops li.current { background: color-mix(in srgb, var(--algo-accent) 22%, transparent); border-color: var(--algo-accent); font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { .algo-stepper svg [data-key] { transition: none; } }
 `;
 
     function addStyle() {
@@ -362,14 +384,17 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 
     // Sorting: every comparison and every write is a step, counted like the
     // Sorting Sandbox counts them. sorted: indices already in their place.
+    // ids: which of the numbers stands where (they may repeat), so that the
+    // picture moves each bar to its new place.
     function traceSort(values, kind) {
         const a = [...values];
+        const ids = values.map((_, i) => i);
         const frames = [];
         let comparisons = 0;
         let writes = 0;
-        const snapshot = (message, marks = {}) => frames.push({ items: [...a], message, comparisons, writes, ...marks });
+        const snapshot = (message, marks = {}) => frames.push({ items: [...a], ids: [...ids], message, comparisons, writes, ...marks });
         const less = (i, j) => { comparisons += 1; return a[i] < a[j]; };
-        const swap = (i, j) => { [a[i], a[j]] = [a[j], a[i]]; writes += 2; };
+        const swap = (i, j) => { [a[i], a[j]] = [a[j], a[i]]; [ids[i], ids[j]] = [ids[j], ids[i]]; writes += 2; };
         const n = a.length;
         snapshot(`${n} Zahlen, unsortiert.`);
         if (kind === 'selection') {
@@ -386,6 +411,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         } else if (kind === 'insertion') {
             for (let i = 1; i < n; i++) {
                 const current = a[i];
+                const currentId = ids[i];
                 let j = i;
                 snapshot(`${current} (Index ${i}) wird einsortiert, links davon ist alles sortiert.`, { lifted: i, sortedTo: i });
                 while (j > 0) {
@@ -395,12 +421,15 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                         break;
                     }
                     a[j] = a[j - 1];
+                    ids[j] = ids[j - 1];
                     writes += 1;
                     a[j - 1] = current;
+                    ids[j - 1] = currentId;
                     snapshot(`${a[j]} ist größer als ${current} und rückt eins nach rechts.`, { compare: [j], lifted: j - 1, sortedTo: i });
                     j -= 1;
                 }
                 a[j] = current;
+                ids[j] = currentId;
                 writes += 1;
                 snapshot(`${current} steht an Index ${j}. Bis Index ${i} ist alles sortiert.`, { mark: [j], sortedTo: i + 1 });
             }
@@ -420,6 +449,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             }
         } else if (kind === 'merge') {
             const scratch = Array(n).fill(null);
+            const scratchIds = Array(n).fill(null);
             const sort = (lo, hi) => {
                 if (hi - lo < 2) return;
                 const mid = Math.floor((lo + hi) / 2);
@@ -435,11 +465,13 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                         take = a[i] <= a[j] ? i++ : j++;
                     } else take = i < mid ? i++ : j++;
                     scratch[k] = a[take];
+                    scratchIds[k] = ids[take];
                     writes += 1;
-                    snapshot(`Die kleinere der beiden vordersten, ${a[take]}, kommt in den Zwischenspeicher an Index ${k}.`, { range: [lo, hi], split: mid, compare: [take], scratch: [...scratch] });
+                    snapshot(`Die kleinere der beiden vordersten, ${a[take]}, kommt in den Zwischenspeicher an Index ${k}.`, { range: [lo, hi], split: mid, compare: [take], scratch: [...scratch], scratchIds: [...scratchIds] });
                 }
-                for (let k = lo; k < hi; k++) { a[k] = scratch[k]; writes += 1; }
+                for (let k = lo; k < hi; k++) { a[k] = scratch[k]; ids[k] = scratchIds[k]; writes += 1; }
                 scratch.fill(null, lo, hi);
+                scratchIds.fill(null, lo, hi);
                 snapshot(`${lo}–${hi - 1} ist sortiert und steht wieder in der Liste.`, { range: [lo, hi], mark: Array.from({ length: hi - lo }, (_, k) => lo + k) });
             };
             sort(0, n);
@@ -480,34 +512,44 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         const mark = new Set(frame.mark || []);
         const inRange = (i) => !frame.range || (i >= frame.range[0] && i < frame.range[1]);
         const isSorted = (i) => (frame.sortedTo !== undefined && i < frame.sortedTo) || (frame.sortedFrom !== undefined && i >= frame.sortedFrom);
+        // keys: a bar and its number by the number's id, so they move with it
         frame.items.forEach((value, i) => {
+            const id = frame.ids[i];
             const h = 20 + (value / most) * (height - 40);
             const x = i * cell + 4;
             const lifted = frame.lifted === i;
             const y = height - h - (lifted ? 18 : 0);
             const fill = frame.pivot === i ? 'var(--algo-goal)' : mark.has(i) || lifted ? 'var(--algo-accent)' : compare.has(i) ? 'var(--algo-frontier)'
                 : isSorted(i) ? 'var(--algo-done)' : 'color-mix(in srgb, var(--algo-line) 60%, transparent)';
-            svg.appendChild(el('svg:rect', { x, y, width: cell - 8, height: h, rx: 4, fill, opacity: inRange(i) ? 1 : 0.35,
+            svg.appendChild(el('svg:rect', { 'data-key': `bar-${id}`, x, y, width: cell - 8, height: h, rx: 4, fill, opacity: inRange(i) ? 1 : 0.35,
                 stroke: compare.has(i) ? 'var(--algo-ink)' : 'none', 'stroke-width': 2 }));
-            svg.appendChild(el('svg:text', { x: x + (cell - 8) / 2, y: y - 6, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(value) }));
-            svg.appendChild(el('svg:text', { x: x + (cell - 8) / 2, y: height + 16, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: String(i) }));
+            svg.appendChild(el('svg:text', { 'data-key': `value-${id}`, x: x + (cell - 8) / 2, y: y - 6, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(value) }));
+            svg.appendChild(el('svg:text', { 'data-key': `index-${i}`, x: x + (cell - 8) / 2, y: height + 16, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: String(i) }));
         });
         if (frame.split !== undefined) {
             const x = frame.split * cell;
-            svg.appendChild(el('svg:line', { x1: x, y1: 0, x2: x, y2: height, stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '5 4' }));
+            svg.appendChild(el('svg:line', { 'data-key': 'split', x1: x, y1: 0, x2: x, y2: height, stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '5 4' }));
         }
         if (frame.boundary !== undefined) {
             const x = frame.boundary * cell;
-            svg.appendChild(el('svg:line', { x1: x, y1: 0, x2: x, y2: height, stroke: 'var(--algo-goal)', 'stroke-width': 2, 'stroke-dasharray': '5 4' }));
+            svg.appendChild(el('svg:line', { 'data-key': 'boundary', x1: x, y1: 0, x2: x, y2: height, stroke: 'var(--algo-goal)', 'stroke-width': 2, 'stroke-dasharray': '5 4' }));
         }
         let bottom = height + 24;
-        if (frame.scratch) {
-            frame.scratch.forEach((value, i) => {
+        // merge sort keeps its (then empty) scratch row in every step
+        const scratch = frame.scratch || (frame.scratchSpace ? Array(n).fill(null) : null);
+        if (scratch) {
+            // a number flies from its bar into the scratch row, and from there
+            // back to its bar when the merged run is copied back
+            scratch.forEach((value, i) => {
                 const x = i * cell + 4;
-                svg.appendChild(el('svg:rect', { x, y: bottom + 6, width: cell - 8, height: 28, rx: 4, fill: value === null ? 'none' : 'var(--algo-frontier)', stroke: 'var(--algo-line)', 'stroke-width': 1.5 }));
-                if (value !== null) svg.appendChild(el('svg:text', { x: x + (cell - 8) / 2, y: bottom + 25, 'text-anchor': 'middle', 'font-size': 13, fill: 'var(--algo-ink)', text: String(value) }));
+                svg.appendChild(el('svg:rect', { 'data-key': `scratch-${i}`, x, y: bottom + 6, width: cell - 8, height: 28, rx: 4, fill: value === null ? 'none' : 'var(--algo-frontier)', stroke: 'var(--algo-line)', 'stroke-width': 1.5 }));
+                if (value !== null) {
+                    const id = frame.scratchIds[i];
+                    svg.appendChild(el('svg:text', { 'data-key': `scratch-value-${id}`, 'data-from': `value-${id}`, 'data-to': `value-${id}`,
+                        x: x + (cell - 8) / 2, y: bottom + 25, 'text-anchor': 'middle', 'font-size': 13, fill: 'var(--algo-ink)', text: String(value) }));
+                }
             });
-            svg.appendChild(el('svg:text', { x: 0, y: bottom + 50, 'font-size': 11, fill: 'var(--bs-secondary-color)', text: 'Zwischenspeicher' }));
+            svg.appendChild(el('svg:text', { 'data-key': 'scratch-label', x: 0, y: bottom + 50, 'font-size': 11, fill: 'var(--bs-secondary-color)', text: 'Zwischenspeicher' }));
             bottom += 56;
         }
         svg.setAttribute('viewBox', `0 0 ${width} ${frame.scratchSpace ? height + 80 : bottom}`);
@@ -702,157 +744,410 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
     }
 
     // ---- Search trees: a binary search tree, optionally AVL (heights and
-    // rotations after every insert). Nodes are { value, left, right, height }.
-    function traceTree(ops, avl) {
+    // rotations after every insert). Every step follows a line of the
+    // Handbuch's pseudocode (CODE, reference/baeume), and a frame holds the
+    // nodes as they are in memory: graph (id -> { value, left, right, height },
+    // the children as ids) and rootId. A node has an id apart from its value:
+    // remove copies a value into another node, and for a moment it is there
+    // twice.
+    const CODE = {
+        find: ['find(node, value):', '    if node empty: not found', '    if value = node.value: found',
+            '    if value < node.value: return find(node.left, value)', '    else: return find(node.right, value)'],
+        insert: ['insert(node, value):', '    if node empty: return a new node with value', '    if value < node.value: node.left ← insert(node.left, value)',
+            '    if value > node.value: node.right ← insert(node.right, value)', '    return node'],
+        remove: ['remove(node, value):', '    if node empty: return empty', '    if value < node.value: node.left ← remove(node.left, value)',
+            '    else if value > node.value: node.right ← remove(node.right, value)', '    else:', '        if node.left empty: return node.right',
+            '        if node.right empty: return node.left', '        successor ← node.right', '        while successor.left not empty: successor ← successor.left',
+            '        node.value ← successor.value', '        node.right ← remove(node.right, successor.value)', '    return node'],
+    };
+
+    // The nodes as they are in memory, by id
+    const toGraph = (n, graph = {}) => {
+        if (!n) return graph;
+        graph[n.id] = { value: n.value, left: n.left ? n.left.id : null, right: n.right ? n.right.id : null, height: n.height };
+        toGraph(n.left, graph);
+        toGraph(n.right, graph);
+        return graph;
+    };
+    const fromGraph = (graph, id) => (id === null || id === undefined ? null
+        : { id, value: graph[id].value, height: graph[id].height, left: fromGraph(graph, graph[id].left), right: fromGraph(graph, graph[id].right) });
+    const fixHeights = (n) => {
+        if (!n) return 0;
+        n.height = 1 + Math.max(fixHeights(n.left), fixHeights(n.right));
+        return n.height;
+    };
+
+    // setup: operations that build the tree the widget starts with, without
+    // steps of their own (a demo of remove starts with the finished tree)
+    function traceTree(ops, avl, setup = []) {
         let root = null;
+        let nextId = 0;
         const frames = [];
         const height = (n) => (n ? n.height : 0);
         const update = (n) => { n.height = 1 + Math.max(height(n.left), height(n.right)); };
-        const copy = (n) => (n ? { value: n.value, height: n.height, left: copy(n.left), right: copy(n.right) } : null);
-        const snapshot = (message, marks = {}) => frames.push({ root: copy(root), message, avl, ...marks });
-        const rotateRight = (y) => { const x = y.left; y.left = x.right; x.right = y; update(y); update(x); return x; };
-        const rotateLeft = (x) => { const y = x.right; x.right = y.left; y.left = x; update(x); update(y); return y; };
+        let current = -1;
+        // marks: focus, fresh, gone (ids); incoming (a value on its way, to
+        // the node incomingTo); vars (labels with an arrow); code; copied;
+        // pulses (a light running down a pointer when it is assigned the
+        // subtree its call returned; the way down shows the ring alone);
+        // stack (the calls that run, the deepest last: { call, returns }) and
+        // returning (they return one after another, the deepest first)
+        const snapshot = (message, marks = {}) => frames.push({ graph: toGraph(root), rootId: root ? root.id : null, message, avl, op: current, ...marks });
+        const code = (name, at) => ({ lines: CODE[name], at });
+        // node and successor travel with the node they point to: their arrow
+        // stays rigid instead of letting go and snapping on
+        const nodeVar = (n) => (n ? [{ name: 'node', to: n.id, side: 'left', rigid: true }] : []);
+        const sideWord = (side) => (side === 'left' ? 'links' : 'rechts');
+        const call = (name, n, value) => ({ call: `${name}(node: ${n ? n.value : 'empty'}, value: ${value})` });
+        const stackOf = (calls) => calls.map((c) => ({ ...c }));
+        // every call returns its node: the stack for the step back up
+        const returning = (calls, nodes) => calls.map((c, i) => ({ ...c, returns: c.returns || String(nodes[i].value) }));
+        // back up: every pointer of the way gets its subtree again, the
+        // lowest first, one after another with a pause between (the step
+        // takes PULSE_TIME for each)
+        // the last one: root ← insert(root, value) (or remove), the arrow of
+        // the variable root
+        const back = (edges) => [...edges].reverse().concat(['pointer-root']).map((edge, i, all) => ({ edge, delay: i / all.length, length: 0.6 / all.length }));
+        const backTime = (edges) => Math.max(MOTION_TIME, (edges.length + 1) * PULSE_TIME);
         snapshot(avl ? 'Ein leerer AVL-Baum.' : 'Ein leerer Suchbaum.');
-        let pending = [];
-        const insert = (node, value) => {
-            if (!node) return { value, left: null, right: null, height: 1 };
-            if (value === node.value) return node;
-            if (value < node.value) node.left = insert(node.left, value);
-            else node.right = insert(node.right, value);
-            update(node);
-            if (!avl) return node;
-            const balance = height(node.left) - height(node.right);
-            if (balance > 1 || balance < -1) {
-                const heavyLeft = balance > 1;
-                const child = heavyLeft ? node.left : node.right;
-                const outer = heavyLeft ? value < child.value : value > child.value;
-                const kind = heavyLeft ? (outer ? 'LL' : 'LR') : (outer ? 'RR' : 'RL');
-                pending.push({ at: node.value, kind, balance });
-                if (kind === 'LL') return rotateRight(node);
-                if (kind === 'RR') return rotateLeft(node);
-                if (kind === 'LR') { node.left = rotateLeft(node.left); return rotateRight(node); }
-                node.right = rotateRight(node.right); return rotateLeft(node);
-            }
-            return node;
-        };
-        const removeNode = (node, value) => {
-            if (!node) return null;
-            if (value < node.value) node.left = removeNode(node.left, value);
-            else if (value > node.value) node.right = removeNode(node.right, value);
-            else if (!node.left) return node.right;
-            else if (!node.right) return node.left;
-            else {
-                let next = node.right;
-                while (next.left) next = next.left;
-                node.value = next.value;
-                node.right = removeNode(node.right, next.value);
-            }
-            update(node);
-            return node;
-        };
-        const walkTo = (value, what) => {
+
+        const find = (value) => {
             let walk = root;
+            const calls = [];
             while (walk && walk.value !== value) {
                 const left = value < walk.value;
-                snapshot(`${what} ${value}: ${value} ${left ? '<' : '>'} ${walk.value}, also nach ${left ? 'links' : 'rechts'}.`, { focus: walk.value });
+                calls.push(call('find', walk, value));
+                snapshot(`find ${value}: ${value} ${left ? '<' : '>'} ${walk.value}, also nach ${left ? 'links' : 'rechts'}.`,
+                    { focus: walk.id, incoming: value, vars: nodeVar(walk), code: code('find', left ? 3 : 4), stack: stackOf(calls) });
                 walk = left ? walk.left : walk.right;
             }
-            return walk;
+            calls.push(call('find', walk, value));
+            if (walk) snapshot(`find ${value}: gefunden.`, { focus: walk.id, incoming: value, vars: nodeVar(walk), code: code('find', 2), stack: stackOf(calls) });
+            else snapshot(`find ${value}: Hier wäre ${value}, aber der Platz ist leer. ${value} ist nicht im Baum.`, { code: code('find', 1), stack: stackOf(calls) });
         };
-        for (const op of ops) {
-            if (op.type === 'find') {
-                const found = walkTo(op.value, 'find');
-                snapshot(found ? `find ${op.value}: gefunden.` : `find ${op.value}: Hier wäre ${op.value}, aber der Platz ist leer. ${op.value} ist nicht im Baum.`, { focus: found ? op.value : undefined });
-                continue;
-            }
-            if (op.type === 'remove') {
-                const node = walkTo(op.value, 'remove');
-                if (!node) { snapshot(`remove ${op.value}: ${op.value} ist nicht im Baum.`); continue; }
-                if (!node.left && !node.right) {
-                    snapshot(`remove ${op.value}: gefunden. Der Knoten hat keine Kinder und fällt einfach weg.`, { focus: op.value, gone: op.value });
-                } else if (!node.left || !node.right) {
-                    const child = (node.left || node.right).value;
-                    snapshot(`remove ${op.value}: gefunden. Der Knoten hat nur ein Kind, ${child}; es rückt mit seinem ganzen Teilbaum an seine Stelle.`, { focus: op.value, gone: op.value });
-                } else {
-                    let next = node.right;
-                    snapshot(`remove ${op.value}: gefunden, mit zwei Kindern. Sein Platz bekommt den nächstgrößeren Wert: einmal rechts, dann links, so weit es geht.`, { focus: op.value, gone: op.value });
-                    while (next.left) { snapshot(`Der nächstgrößere nach ${op.value}: bei ${next.value} weiter nach links.`, { focus: next.value, gone: op.value }); next = next.left; }
-                    snapshot(`${next.value} ist der nächstgrößere. Er kommt an die Stelle von ${op.value}, und sein alter Knoten wird entfernt; der hat höchstens ein rechtes Kind.`, { focus: next.value, gone: op.value });
-                }
-                root = removeNode(root, op.value);
-                snapshot(`${op.value} ist weg, und links stehen immer noch die kleineren, rechts die größeren Werte.`);
-                continue;
-            }
-            if (op.type !== 'insert') continue;
-            // the way down first, step by step
+
+        const insert = (value) => {
+            const id = nextId;
+            const path = [];
+            const calls = [];
             let walk = root;
             while (walk) {
-                const dir = op.value < walk.value ? 'links' : op.value > walk.value ? 'rechts' : null;
-                snapshot(dir ? `insert ${op.value}: ${op.value} ${dir === 'links' ? '<' : '>'} ${walk.value}, also nach ${dir}.` : `insert ${op.value}: ${op.value} ist schon da.`, { focus: walk.value });
-                if (!dir) break;
-                walk = dir === 'links' ? walk.left : walk.right;
+                const dir = value < walk.value ? 'left' : value > walk.value ? 'right' : null;
+                calls.push(call('insert', walk, value));
+                snapshot(dir ? `insert ${value}: ${value} ${dir === 'left' ? '<' : '>'} ${walk.value}, also nach ${sideWord(dir)}.` : `insert ${value}: ${value} ist schon da, nichts ändert sich.`,
+                    { focus: walk.id, incoming: value, incomingTo: id, vars: nodeVar(walk), code: code('insert', dir === 'left' ? 2 : dir === 'right' ? 3 : 4), stack: stackOf(calls) });
+                if (!dir) return;
+                path.push({ node: walk, side: dir });
+                walk = walk[dir];
             }
-            pending = [];
-            const before = copy(root);
-            root = insert(root, op.value);
-            if (pending.length) {
-                const r = pending[pending.length - 1];
-                // show the unbalanced tree, then the rotated one
-                const unbalanced = (() => { const t = copy(before); const add = (n) => { if (!n) return { value: op.value, left: null, right: null, height: 1 }; if (op.value < n.value) n.left = add(n.left); else n.right = add(n.right); n.height = 1 + Math.max(height(n.left), height(n.right)); return n; }; return add(t); })();
-                frames.push({ root: unbalanced, message: `${op.value} hängt jetzt unten. Beim Knoten ${r.at} unterscheiden sich die Höhen der Teilbäume um ${Math.abs(r.balance)}: zu viel. Das ist der Fall ${r.kind}.`, avl, focus: r.at, fresh: op.value });
-                const how = { LL: `eine Rotation nach rechts um ${r.at}`, RR: `eine Rotation nach links um ${r.at}`, LR: `erst eine Rotation nach links um das linke Kind, dann nach rechts um ${r.at}`, RL: `erst eine Rotation nach rechts um das rechte Kind, dann nach links um ${r.at}` }[r.kind];
-                snapshot(`Fall ${r.kind}: ${how}. Danach ist der Baum wieder ausgeglichen, und die Suchregel gilt immer noch.`, { fresh: op.value });
-            } else {
-                snapshot(before ? `${op.value} kommt dorthin, wo die Suche ins Leere gelaufen ist.` : `${op.value} wird die Wurzel.`, { fresh: op.value });
+            const bottom = { ...call('insert', null, value), returns: `neuer Knoten ${value}` };
+            nextId += 1;
+            const fresh = { id, value, left: null, right: null, height: 1 };
+            if (path.length) path[path.length - 1].node[path[path.length - 1].side] = fresh;
+            else root = fresh;
+            for (const { node } of [...path].reverse()) update(node);
+            const bad = avl && [...path].reverse().map((p) => p.node).find((n) => Math.abs(height(n.left) - height(n.right)) > 1);
+            if (!bad) {
+                snapshot(path.length ? `${value} kommt an die leere Stelle, an der die Suche geendet hat: if node empty: return a new node with value. Der Aufrufer trägt den neuen Knoten ein.` : `${value} wird die Wurzel: root ← insert(root, ${value}).`,
+                    { fresh: id, code: code('insert', 1), stack: stackOf([...calls, bottom]) });
+                if (path.length) snapshot('return node: Jeder Aufruf darüber gibt seinen Knoten zurück, und der Aufrufer trägt ihn wieder ein, von unten nach oben, zuletzt root ← insert(root, value). Die Zeiger zeigen danach auf dasselbe wie vorher, nur der unterste zeigt auf den neuen Knoten.',
+                    { fresh: id, code: code('insert', 4), pulses: back(path.map(({ node, side }) => `edge-${node.id}-${side}`)), duration: backTime(path),
+                        stack: returning(calls, path.map((p) => p.node)), returning: true });
+                return;
             }
+            // AVL: the lowest node whose subtrees differ by more than 1, and the case
+            const balance = height(bad.left) - height(bad.right);
+            const heavyLeft = balance > 1;
+            const child = heavyLeft ? bad.left : bad.right;
+            const outer = heavyLeft ? value < child.value : value > child.value;
+            const kind = heavyLeft ? (outer ? 'LL' : 'LR') : (outer ? 'RR' : 'RL');
+            // the calls down to the node that is out of balance: it rotates
+            const waiting = stackOf(calls.slice(0, path.findIndex((p) => p.node === bad) + 1));
+            snapshot(`${value} hängt jetzt unten. Beim Knoten ${bad.value} unterscheiden sich die Höhen der Teilbäume um ${Math.abs(balance)}: zu viel. Das ist der Fall ${kind}.`,
+                { fresh: id, focus: bad.id, vars: nodeVar(bad), code: code('insert', 1), stack: waiting });
+            const memory = toGraph(root);
+            let rootId = root.id;
+            const plan = { LL: [[bad.id, 'right']], RR: [[bad.id, 'left']], LR: [[child.id, 'left'], [bad.id, 'right']], RL: [[child.id, 'right'], [bad.id, 'left']] }[kind];
+            plan.forEach(([top, dir], k) => {
+                const prefix = plan.length > 1 ? `Fall ${kind}, ${k === 0 ? 'erste' : 'zweite'} Rotation: ` : `Fall ${kind}: `;
+                const after = k === plan.length - 1 ? 'Der Baum ist wieder ausgeglichen, und die Suchregel gilt immer noch.' : `Jetzt hängt alles auf einer Seite, wie im Fall ${kind === 'LR' ? 'LL' : 'RR'}.`;
+                rootId = rotationFrames(frames, memory, rootId, top, dir, { op: current, avl, fresh: id, stack: waiting }, prefix, after);
+            });
+            root = fromGraph(memory, rootId);
+        };
+
+        // remove, line by line: the way down, then one of the three cases;
+        // with two children the value of the successor is copied, and its old
+        // node is removed by the same function further down
+        const remove = (value) => {
+            const L = (at) => code('remove', at);
+            let target = value;
+            let n = root;
+            let parent = null;
+            let side = null;
+            let extra = [];
+            const followed = [];
+            // the calls that run, and the node each of them got
+            const calls = [];
+            const nodes = [];
+            for (;;) {
+                calls.push(call('remove', n, target));
+                nodes.push(n);
+                if (!n) {
+                    calls[calls.length - 1].returns = 'empty';
+                    snapshot(`remove ${target}: Der Platz ist leer, ${target} ist nicht im Baum: return empty.`, { code: L(1), vars: extra, stack: stackOf(calls) });
+                    calls.pop();
+                    nodes.pop();
+                    break;
+                }
+                if (target !== n.value) {
+                    const dir = target < n.value ? 'left' : 'right';
+                    snapshot(`remove ${target}: ${target} ${dir === 'left' ? '<' : '>'} ${n.value}, also weiter ${sideWord(dir)}: node.${dir} ← remove(node.${dir}, ${target}).`,
+                        { focus: n.id, incoming: target, vars: [...nodeVar(n), ...extra], code: L(dir === 'left' ? 2 : 3), stack: stackOf(calls) });
+                    followed.push(`edge-${n.id}-${dir}`);
+                    parent = n;
+                    side = dir;
+                    n = n[dir];
+                    continue;
+                }
+                snapshot(`remove ${target}: gefunden.`, { focus: n.id, gone: n.id, incoming: target, vars: [...nodeVar(n), ...extra], code: L(4), stack: stackOf(calls) });
+                if (!n.left || !n.right) {
+                    const missing = !n.left ? 'left' : 'right';
+                    const replacement = !n.left ? n.right : n.left;
+                    const where = parent ? `${parent.value}.${side}` : 'root';
+                    const gone = n;
+                    if (parent) parent[side] = replacement;
+                    else root = replacement;
+                    // this call returns at once; the ones above it wait
+                    calls[calls.length - 1].returns = replacement ? String(replacement.value) : 'empty';
+                    const deepest = stackOf(calls);
+                    calls.pop();
+                    nodes.pop();
+                    snapshot(replacement
+                        ? `node.${missing} ist leer: return node.${missing === 'left' ? 'right' : 'left'}. Der Aufrufer trägt ${replacement.value} ein, ${where} zeigt jetzt auf ${replacement.value}. ${gone.value} hängt an keinem Zeiger mehr und ist weg.`
+                        : `${gone.value} hat keine Kinder: return node.right gibt empty zurück, ${where} zeigt auf nichts mehr. ${gone.value} ist weg.`,
+                    // the pointer swings over, then gets its new subtree
+                    { code: L(missing === 'left' ? 5 : 6), vars: parent ? nodeVar(parent) : [], focus: parent ? parent.id : undefined, pulses: replacement && parent ? [{ edge: `edge-${parent.id}-${side}`, delay: 0.6 }] : [], stack: deepest });
+                    break;
+                }
+                let successor = n.right;
+                const successorVar = () => [{ name: 'successor', to: successor.id, side: 'below', rigid: true }];
+                snapshot(`Zwei Kinder: Der nächstgrößere Wert kommt an diese Stelle. successor ← node.right, das ist ${successor.value}.`,
+                    { focus: n.id, gone: n.id, vars: [...nodeVar(n), ...successorVar()], code: L(7), stack: stackOf(calls) });
+                while (successor.left) {
+                    successor = successor.left;
+                    snapshot(`successor.left ist nicht leer: successor ← successor.left, das ist ${successor.value}.`, { focus: n.id, gone: n.id, vars: [...nodeVar(n), ...successorVar()], code: L(8), stack: stackOf(calls) });
+                }
+                snapshot(`successor.left ist leer: ${successor.value} ist der kleinste Wert rechts von ${n.value}, der nächstgrößere.`, { focus: n.id, gone: n.id, vars: [...nodeVar(n), ...successorVar()], code: L(8), stack: stackOf(calls) });
+                const old = n.value;
+                n.value = successor.value;
+                snapshot(`node.value ← successor.value: ${successor.value} kommt in den Knoten, in dem ${old} stand. Jetzt steht ${successor.value} zweimal im Baum.`,
+                    { focus: n.id, copied: { into: n.id, from: successor.id }, vars: [...nodeVar(n), ...successorVar()], code: L(9), stack: stackOf(calls) });
+                extra = successorVar();
+                followed.push(`edge-${n.id}-right`);
+                snapshot(`node.right ← remove(node.right, ${successor.value}): Der alte Knoten von ${successor.value} muss noch weg; dieselbe Funktion sucht ihn im rechten Teilbaum.`,
+                    { focus: n.right.id, incoming: successor.value, vars: [...nodeVar(n.right), ...extra], code: L(10), stack: stackOf([...calls, call('remove', n.right, successor.value)]) });
+                target = successor.value;
+                parent = n;
+                side = 'right';
+                n = n.right;
+            }
+            snapshot('return node: Jeder Aufruf darüber gibt seinen Knoten zurück, und der Aufrufer trägt ihn wieder in seinen Zeiger ein, von unten nach oben, zuletzt root ← remove(root, value). Links stehen immer noch die kleineren, rechts die größeren Werte.',
+                { code: L(11), pulses: back(followed), duration: backTime(followed), stack: returning(calls, nodes), returning: true });
+        };
+
+        for (const op of setup) if (op.type === 'insert') insert(op.value);
+        if (setup.length) {
+            frames.length = 0;
+            snapshot('Der Baum von oben. Jetzt der Reihe nach die Operationen darüber.');
+        }
+        for (const [number, op] of ops.entries()) {
+            current = number;
+            if (op.type === 'find') find(op.value);
+            else if (op.type === 'insert') insert(op.value);
+            else if (op.type === 'remove') remove(op.value);
         }
         return frames;
     }
 
-    function treeShape(n, depth = 1) {
-        if (!n) return { count: 0, depth: depth - 1 };
-        const l = treeShape(n.left, depth + 1);
-        const r = treeShape(n.right, depth + 1);
-        return { count: 1 + l.count + r.count, depth: Math.max(depth, l.depth, r.depth) };
+    // One rotation, as the Handbuch writes it (rotate_right(y), rotate_left(x)):
+    // a step for every line, each moving one pointer. The picture follows the
+    // pointers (treeLayout): a node a variable alone still holds stands beside
+    // the node the rotation is about (loose: its depth). The variables point
+    // at their nodes like the pointers do. memory: id -> node; returns the
+    // root afterwards.
+    function rotationFrames(frames, memory, rootId, top, dir, base, prefix, after) {
+        const startRoot = rootId;
+        const val = (id) => memory[id].value;
+        let parent = null;
+        let loose = 0;
+        for (let v = rootId; v !== top; v = memory[v][val(top) < val(v) ? 'left' : 'right']) {
+            parent = { id: v, side: val(top) < val(v) ? 'left' : 'right' };
+            loose += 1;
+        }
+        const right = dir === 'right';
+        const [p, q] = right ? ['y', 'x'] : ['x', 'y'];
+        // a, b: the sides in the German sentences; A, B: in the code
+        const [a, b] = right ? ['links', 'rechts'] : ['rechts', 'links'];
+        const [A, B] = right ? ['left', 'right'] : ['right', 'left'];
+        const child = memory[top][A];
+        const middle = memory[child][B];
+        const title = right ? 'rotate_right(y)' : 'rotate_left(x)';
+        const lines = [`${title}:`, `    ${q} ← ${p}.${A}`, `    ${p}.${A} ← ${q}.${B}`, `    ${q}.${B} ← ${p}`, `    update the height of ${p}, then of ${q}`, `    return ${q}`];
+        const clone = () => JSON.parse(JSON.stringify(memory));
+        // the label of the smaller value on the left of its node, the other on
+        // the right: they never get in each other's way
+        const vp = { name: p, to: top, side: val(child) < val(top) ? 'right' : 'left' };
+        const vq = { name: q, to: child, side: val(child) < val(top) ? 'left' : 'right' };
+        const stack = [...(base.stack || []), { call: `${title.replace(/\(.\)/, `(${p}: ${val(top)})`)}` }];
+        const snap = (line, message, vars) => frames.push({ ...base, graph: clone(), rootId, rootAt: startRoot, loose, vars, code: { lines, at: line }, message, stack });
+        const h = (id) => (id === null ? 0 : memory[id].height);
+        snap(0, `${prefix}${title.replace(/\(.\)/, `(${val(top)})`)}. ${p} ist ${val(top)}, der Knoten, um den rotiert wird.`, [vp]);
+        snap(1, `${q} ← ${p}.${A}: Die Variable ${q} merkt sich ${val(child)}, das ${a === 'links' ? 'linke' : 'rechte'} Kind von ${val(top)}.`, [vp, vq]);
+        memory[top][A] = middle;
+        snap(2, middle !== null
+            ? `${p}.${A} ← ${q}.${B}: ${val(top)} zeigt ${a} jetzt auf ${val(middle)}. Zwei Zeiger führen gerade zu ${val(middle)}, und ${val(child)} hängt nur noch an der Variablen ${q}.`
+            : `${p}.${A} ← ${q}.${B}: ${q}.${B} ist leer, also zeigt ${val(top)} ${a} auf nichts mehr. ${val(child)} hängt nur noch an der Variablen ${q}.`, [vp, vq]);
+        memory[child][B] = top;
+        snap(3, `${q}.${B} ← ${p}: ${val(child)} zeigt ${b} auf ${val(top)}.${middle !== null ? ` Jetzt führt nur noch ein Zeiger zu ${val(middle)}, der von ${val(top)}.` : ''}`, [vp, vq]);
+        memory[top].height = 1 + Math.max(h(memory[top].left), h(memory[top].right));
+        memory[child].height = 1 + Math.max(h(memory[child].left), h(memory[child].right));
+        snap(4, `Erst die Höhe von ${p} (${val(top)}: h${memory[top].height}), dann die von ${q} (${val(child)}: h${memory[child].height}): ${val(child)} steht jetzt über ${val(top)}, seine Höhe hängt von der neuen Höhe von ${val(top)} ab.`, [vp, vq]);
+        if (parent) memory[parent.id][parent.side] = child;
+        else rootId = child;
+        snap(5, parent
+            ? `return ${q}: Der Aufrufer trägt ${val(child)} ein. ${val(parent.id)} zeigt ${parent.side === 'left' ? 'links' : 'rechts'} jetzt auf ${val(child)} statt auf ${val(top)}.`
+            : `return ${q}: Der Aufrufer trägt ${val(child)} als neue Wurzel ein, die Variable root zeigt jetzt auf ${val(child)}.`, [vp, vq]);
+        const tidy = fromGraph(memory, rootId);
+        fixHeights(tidy);
+        Object.assign(memory, toGraph(tidy));
+        frames.push({ ...base, graph: clone(), rootId, vars: [], message: `${val(child)} steht jetzt über ${val(top)}, die Höhen stimmen. ${after}` });
+        return rootId;
+    }
+
+    // Where the nodes stand: the column is the place of the value in the
+    // sorted order (a rotation keeps it; while a value is there twice, the
+    // older node first), the row one below the lowest node that points to it.
+    // A node no node points to stands in row 0 if it is the root, else in row
+    // loose (during a rotation: beside the node the rotation is about).
+    // id -> { x, depth }
+    function treeLayout(graph, rootId, loose = 0) {
+        const ids = Object.keys(graph).map(Number).sort((a, b) => graph[a].value - graph[b].value || a - b);
+        const owners = new Map(ids.map((id) => [id, []]));
+        for (const id of ids) for (const side of ['left', 'right']) if (graph[id][side] !== null) owners.get(graph[id][side]).push(id);
+        const depth = new Map();
+        const find = (id, seen) => {
+            if (depth.has(id)) return depth.get(id);
+            if (seen.has(id)) return 0;
+            seen.add(id);
+            const of = owners.get(id);
+            const d = of.length ? 1 + Math.max(...of.map((o) => find(o, seen))) : id === rootId ? 0 : loose;
+            depth.set(id, d);
+            return d;
+        };
+        for (const id of ids) find(id, new Set());
+        return new Map(ids.map((id, i) => [id, { x: i, depth: depth.get(id) }]));
+    }
+
+    function treeShape(frame) {
+        const layout = treeLayout(frame.graph, frame.rootId, frame.loose);
+        return { count: layout.size, depth: Math.max(0, ...[...layout.values()].map((p) => p.depth + 1)) };
     }
 
     // most: the most nodes and the deepest level of any frame, so that the
-    // picture keeps its size while the tree grows and shrinks
+    // picture keeps its size while the tree grows and shrinks. Pointers are
+    // arrows; the variables (root, node, and x and y in a rotation) are labels
+    // with an arrow to their node.
     function drawTree(svg, frame, most) {
         svg.replaceChildren();
-        const placed = [];
-        let column = 0;
-        const place = (n, depth) => {
-            if (!n) return;
-            place(n.left, depth + 1);
-            placed.push({ node: n, x: column++, depth });
-            place(n.right, depth + 1);
-        };
-        place(frame.root, 0);
-        const at = new Map(placed.map((p) => [p.node.value, p]));
+        const { graph, rootId } = frame;
+        const at = treeLayout(graph, rootId, frame.loose);
         const colW = 54;
+        const left = 76;
         const width = Math.max(300, most.count * colW);
-        const offset = (width - placed.length * colW) / 2;
+        const offset = left + (width - at.size * colW) / 2;
         const sx = (x) => offset + (x + 0.5) * colW;
-        const sy = (d) => 30 + d * 62;
-        const edges = (n) => {
-            if (!n) return;
-            for (const child of [n.left, n.right]) {
-                if (!child) continue;
-                const a = at.get(n.value); const b = at.get(child.value);
-                svg.appendChild(el('svg:line', { x1: sx(a.x), y1: sy(a.depth), x2: sx(b.x), y2: sy(b.depth), stroke: 'var(--algo-line)', 'stroke-width': 2 }));
-                edges(child);
-            }
+        // room above the root for the variable root
+        const top = 40;
+        const sy = (d) => top + 30 + d * 62;
+        const point = (id) => { const p = at.get(id); return [sx(p.x), sy(p.depth)]; };
+        const RADIUS = 18;
+        const INSET = RADIUS + 2;
+        // an arrow from (x1, y1) that stops at the border of the node it points
+        // to; a path, so that it can bend while the nodes move (stepper_motion.js)
+        const arrow = (key, ends, [x1, y1], [x2, y2], extra = {}) => {
+            const d = Math.hypot(x2 - x1, y2 - y1);
+            const s = d > INSET ? (d - INSET) / d : 0;
+            const [ex, ey] = [x1 + (x2 - x1) * s, y1 + (y2 - y1) * s];
+            return el('svg:path', { 'data-key': key, 'data-ends': ends, 'data-inset': INSET, d: `M${x1} ${y1} Q${(x1 + ex) / 2} ${(y1 + ey) / 2} ${ex} ${ey}`,
+                fill: 'none', stroke: 'var(--algo-line)', 'stroke-width': 2, 'marker-end': `url(#${most.marker})`, ...extra });
         };
-        edges(frame.root);
-        for (const { node, x, depth: d } of placed) {
-            const fill = frame.gone === node.value ? 'color-mix(in srgb, var(--algo-goal) 30%, var(--algo-paper))' : frame.fresh === node.value ? 'var(--algo-frontier)' : 'var(--algo-paper)';
-            if (frame.focus === node.value) svg.appendChild(el('svg:circle', { cx: sx(x), cy: sy(d), r: 23, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 3 }));
-            svg.appendChild(el('svg:circle', { cx: sx(x), cy: sy(d), r: 18, fill, stroke: 'var(--algo-ink)', 'stroke-width': 1.5 }));
-            svg.appendChild(el('svg:text', { x: sx(x), y: sy(d) + 5, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(node.value) }));
-            if (frame.avl) svg.appendChild(el('svg:text', { x: sx(x), y: sy(d) + 32, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: `h${node.height}` }));
+        svg.appendChild(el('svg:defs', {}, [el('svg:marker', { id: most.marker, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 9, markerHeight: 9,
+            markerUnits: 'userSpaceOnUse', orient: 'auto-start-reverse' }, [el('svg:path', { d: 'M0 0L10 5L0 10z', fill: 'var(--algo-line)' })])]));
+        // a pointer is the left or right field of its node: when it changes,
+        // the arrow lets go of its node and snaps onto the new one
+        for (const [id, node] of Object.entries(graph)) {
+            for (const side of ['left', 'right']) {
+                if (node[side] === null) continue;
+                svg.appendChild(arrow(`edge-${id}-${side}`, `node-${id} node-${node[side]}`, point(Number(id)), point(node[side])));
+            }
         }
-        svg.setAttribute('viewBox', `0 0 ${width} ${Math.max(100, most.depth * 62 + (frame.avl ? 8 : 0))}`);
+        // the variables: root above the place of the root, coming in from
+        // above; the others beside their node, on the side they ask for
+        const rootAt = frame.rootAt !== undefined ? frame.rootAt : rootId;
+        const vars = [{ name: 'root', to: rootId, at: rootAt, above: true }, ...(frame.vars || [])];
+        const labels = [];
+        for (const v of vars) {
+            const w = 14 + 7.5 * v.name.length;
+            let x;
+            let y;
+            if (v.above) {
+                const cx = v.at === null || v.at === undefined ? left + width / 2 : point(v.at)[0];
+                x = cx - w / 2;
+                y = 10;
+            } else {
+                const [cx, cy] = point(v.to);
+                x = v.side === 'right' ? cx + 40 : v.side === 'below' ? cx - w / 2 : cx - 40 - w;
+                y = v.side === 'below' ? cy + 26 : cy - 9;
+            }
+            const centre = [x + w / 2, y + 9];
+            if (v.to !== null && v.to !== undefined) svg.appendChild(arrow(`pointer-${v.name}`, `var-${v.name} node-${v.to}`, centre, point(v.to), { stroke: 'var(--algo-accent)', ...(v.rigid ? { 'data-rigid': '' } : {}) }));
+            labels.push(el('svg:rect', { 'data-key': `var-${v.name}`, x, y, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
+            labels.push(el('svg:text', { 'data-key': `var-${v.name}-label`, x: centre[0], y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: v.name }));
+        }
+        // a node by its id; a new node comes from the token that carried its
+        // value down the tree; a copied value flies over from the node it was
+        // copied from (its label has the value in its key)
+        for (const [id, { x, depth: d }] of at) {
+            const { value } = graph[id];
+            const fresh = frame.fresh === id;
+            const fill = frame.gone === id ? 'color-mix(in srgb, var(--algo-goal) 30%, var(--algo-paper))' : fresh ? 'var(--algo-frontier)' : 'var(--algo-paper)';
+            const fromToken = fresh ? { 'data-from': 'incoming-label' } : {};
+            const copied = frame.copied && frame.copied.into === id ? { 'data-from': `label-${frame.copied.from}-${value}` } : {};
+            // the ring stays on its node while it fades in or out
+            if (frame.focus === id) svg.appendChild(el('svg:circle', { 'data-key': 'focus', 'data-follow': `node-${id}`, cx: sx(x), cy: sy(d), r: 23, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 3 }));
+            svg.appendChild(el('svg:circle', { 'data-key': `node-${id}`, ...(fresh ? { 'data-from': 'incoming' } : {}), cx: sx(x), cy: sy(d), r: RADIUS, fill, stroke: 'var(--algo-ink)', 'stroke-width': 1.5 }));
+            svg.appendChild(el('svg:text', { 'data-key': `label-${id}-${value}`, ...fromToken, ...copied, x: sx(x), y: sy(d) + 5, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(value) }));
+            if (frame.avl) svg.appendChild(el('svg:text', { 'data-key': `height-${id}`, ...fromToken, x: sx(x), y: sy(d) + 32, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: `h${graph[id].height}` }));
+        }
+        for (const label of labels) svg.appendChild(label);
+        // a light that runs down a pointer once while the step moves
+        (frame.pulses || []).forEach((pulse, i) => svg.appendChild(el('svg:circle', { 'data-key': `pulse-${i}`, 'data-pulse': pulse.edge, 'data-delay': pulse.delay || 0, 'data-length': pulse.length || 0.4,
+            cx: 0, cy: 0, r: 5, opacity: 0, fill: 'var(--algo-accent)' })));
+        // the value on its way: a token beside the node it is compared with
+        const near = frame.incoming !== undefined && at.get(frame.focus);
+        if (near) {
+            // well clear of the node and its focus ring (radius 23), and of
+            // the edges below it
+            const cx = sx(near.x) + 58;
+            const cy = sy(near.depth) - 8;
+            const to = frame.incomingTo !== undefined ? { 'data-to': `node-${frame.incomingTo}` } : {};
+            const toLabel = frame.incomingTo !== undefined ? { 'data-to': `label-${frame.incomingTo}-${frame.incoming}` } : {};
+            svg.appendChild(el('svg:circle', { 'data-key': 'incoming', ...to, cx, cy, r: 13, fill: 'var(--algo-frontier)', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '4 3' }));
+            svg.appendChild(el('svg:text', { 'data-key': 'incoming-label', ...toLabel, x: cx, y: cy + 4, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.incoming) }));
+        }
+        // room on the left for the labels, on the right for the token
+        svg.setAttribute('viewBox', `0 0 ${left + width + 50} ${top + Math.max(100, most.depth * 62 + (frame.avl ? 8 : 0))}`);
     }
 
     // ---- Hash Table with 8 buckets, h(k) = k mod 8: chaining (a list per
@@ -919,11 +1214,43 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         svg.setAttribute('viewBox', `0 0 420 ${20 + size * rowH}`);
     }
 
+    let widgetCount = 0;
+
+    // The pseudocode's tokens, as Rouge::Lexers::Pseudocode colours them on
+    // the pages (pseudocode_lexer.rb): the same classes, the same colours
+    const KEYWORDS = new Set(['if', 'else', 'while', 'for', 'each', 'in', 'of', 'return', 'not', 'and', 'or', 'repeat', 'until', 'break', 'continue', 'do', 'then', 'to', 'from', 'mod', 'div']);
+    const CONSTANTS = new Set(['empty', 'none', 'null', 'true', 'false', 'found', 'done', 'full', 'error']);
+    const PSEUDOCODE = /(\((?=[^()\n]*\s[^()\n]*\s)[^()\n+\-*/=<>≤≥≠[\]]*\))|(←|≤|≥|≠|<|>|=|\+|-|\*|\/|%)|(\d+(?:\.\d+)?)|(\.)([\p{L}_][\p{L}\p{N}_]*)|(not found\b)|([\p{L}_][\p{L}\p{N}_]*)(\()?|([()[\]{},:])/gu;
+    function highlightPseudocode(line) {
+        const out = [];
+        let last = 0;
+        const span = (cls, text) => out.push(el('span', { class: cls, text }));
+        for (const m of line.matchAll(PSEUDOCODE)) {
+            if (m.index > last) out.push(document.createTextNode(line.slice(last, m.index)));
+            last = m.index + m[0].length;
+            if (m[1]) span('c1', m[1]);
+            else if (m[2]) span('o', m[2]);
+            else if (m[3]) span('mi', m[3]);
+            else if (m[4]) { span('p', m[4]); span('na', m[5]); }
+            else if (m[6]) span('kc', m[6]);
+            else if (m[7]) {
+                const word = m[7];
+                span(m[8] ? (KEYWORDS.has(word) ? 'k' : 'nf') : KEYWORDS.has(word) ? 'k' : CONSTANTS.has(word) ? 'kc' : 'n', word);
+                if (m[8]) span('p', m[8]);
+            } else span('p', m[9]);
+        }
+        if (last < line.length) out.push(document.createTextNode(line.slice(last)));
+        return out;
+    }
+
     function setUp(widget) {
         const algo = widget.dataset.algo;
         let frames;
         let draw;
-        const svg = el('svg:svg', { class: 'algo-picture', role: 'img' });
+        // Every step is drawn into svg, which is never shown; picture, the
+        // visible one, moves to it (stepper_motion.js)
+        const picture = el('svg:svg', { class: 'algo-picture', role: 'img' });
+        const svg = el('svg:svg');
         const side = el('div', { class: 'algo-side' });
         // »insert(1, 3), remove(0)« or »push 5, pop«: commas inside brackets stay
         const parseOps = (text) => text.split(/,(?![^(]*\))/).map((t) => t.trim()).filter(Boolean).map((t) => {
@@ -950,12 +1277,33 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             side.hidden = true;
             draw = (frame) => drawLinked(svg, frame, most);
         } else if (algo === 'bst' || algo === 'avl') {
-            frames = traceTree(parseOps(widget.dataset.ops), algo === 'avl');
+            frames = traceTree(parseOps(widget.dataset.ops), algo === 'avl', parseOps(widget.dataset.setup || ''));
             svg.setAttribute('aria-label', 'Der Baum: links die kleineren, rechts die größeren Werte');
-            side.hidden = true;
-            const shapes = frames.map((f) => treeShape(f.root));
-            const most = { count: Math.max(...shapes.map((t) => t.count)), depth: Math.max(...shapes.map((t) => t.depth)) };
-            draw = (frame) => drawTree(svg, frame, most);
+            const shapes = frames.map(treeShape);
+            const most = { count: Math.max(...shapes.map((t) => t.count)), depth: Math.max(...shapes.map((t) => t.depth)), marker: `algo-arrow-${++widgetCount}` };
+            // beside the tree the pseudocode of what runs, its line marked
+            draw = (frame) => {
+                drawTree(svg, frame, most);
+                // a long line wraps, its continuation two characters further in
+                // than the line itself
+                const codeLine = (line, i) => {
+                    const indent = line.match(/^ */)[0].length;
+                    return el('span', { class: `line${i === frame.code.at ? ' current' : ''}`, style: `padding-left: calc(0.6em + ${indent + 2}ch); text-indent: -2ch;` }, highlightPseudocode(line.trimStart()));
+                };
+                // the calls that run, each one deeper indented; on the way
+                // back up they return one after another, the deepest first
+                const stack = frame.stack || [];
+                const calls = stack.length ? [el('h5', { text: 'Aufrufe' }), el('ol', { class: 'algo-stack' }, stack.map((entry, i) => {
+                    const li = el('li', { class: !frame.returning && i === stack.length - 1 ? 'current' : '', style: `margin-left: ${i * 1.2}em;`,
+                        text: entry.returns ? `${entry.call} → ${entry.returns}` : entry.call });
+                    if (frame.returning) li.style.animationDelay = `${((stack.length - 1 - i) / (stack.length + 1)) * (frame.duration || MOTION_TIME) / 1000}s`;
+                    if (frame.returning) li.classList.add('returning');
+                    return li;
+                }))] : [];
+                side.replaceChildren(...calls, el('h5', { text: 'Pseudocode' }), frame.code
+                    ? el('pre', { class: 'algo-code code-pseudocode' }, frame.code.lines.map(codeLine))
+                    : el('p', { class: 'algo-empty', text: 'Hier steht der Pseudocode der Operation, die gerade läuft, und ihre Zeile ist markiert.' }));
+            };
         } else if (algo === 'hash') {
             const mode = widget.dataset.mode || 'chain';
             frames = traceHash(parseOps(widget.dataset.ops), mode, Number(widget.dataset.size || 8));
@@ -1014,23 +1362,41 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             button('next', 'bi-chevron-right', 'Nächster Schritt'), button('last', 'bi-chevron-bar-right', 'Zum Ende')];
         const count = el('span', { class: 'algo-count' });
         const message = el('div', { class: 'algo-message', 'aria-live': 'polite' });
-        widget.replaceChildren(el('div', { class: 'algo-controls' }, [...buttons, count]), el('div', { class: 'algo-body' }, [svg, side]), message);
+        picture.setAttribute('aria-label', svg.getAttribute('aria-label'));
+        // the operations in their order: done, the current one, what comes
+        const opsText = widget.dataset.ops && frames.some((f) => f.op !== undefined)
+            ? widget.dataset.ops.split(/,(?![^(]*\))/).map((s) => s.trim()).filter(Boolean) : null;
+        const strip = opsText && el('ol', { class: 'algo-ops', 'aria-label': 'Die Operationen der Reihe nach' }, opsText.map((text) => el('li', { text })));
+        widget.replaceChildren(el('div', { class: 'algo-controls' }, [...buttons, count]), ...(strip ? [strip] : []), el('div', { class: 'algo-body' }, [picture, side]), message);
         widget.setAttribute('data-stepper', '');
         let index = 0;
-        const show = () => {
+        // animate: a step forward or back moves; a jump shows the step at once
+        const show = (animate) => {
             const frame = frames[index];
             draw(frame);
+            if (window.StepperMotion) window.StepperMotion.morph(picture, svg, { duration: animate ? frame.duration || MOTION_TIME : 0 });
+            else {
+                picture.setAttribute('viewBox', svg.getAttribute('viewBox'));
+                picture.replaceChildren(...svg.childNodes);
+            }
             message.textContent = frame.message;
+            if (strip) [...strip.children].forEach((li, i) => {
+                const done = i < frame.op || (i === frame.op && index === frames.length - 1);
+                li.className = done ? 'done' : i === frame.op ? 'current' : '';
+                if (i === frame.op && !done) li.setAttribute('aria-current', 'step');
+                else li.removeAttribute('aria-current');
+            });
             count.textContent = `Schritt ${index} von ${frames.length - 1}`;
             buttons[0].disabled = buttons[1].disabled = index === 0;
             buttons[2].disabled = buttons[3].disabled = index === frames.length - 1;
         };
         const go = { first: () => 0, prev: () => index - 1, next: () => index + 1, last: () => frames.length - 1 };
         for (const b of buttons) b.addEventListener('click', () => {
+            const before = index;
             index = Math.max(0, Math.min(frames.length - 1, go[b.dataset.go]()));
-            show();
+            show(Math.abs(index - before) === 1);
         });
-        show();
+        show(false);
     }
 
     function start() {
