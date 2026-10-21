@@ -25,6 +25,12 @@ gespeichert wird.
   (`Main.pdf_font_css`; alle 48 Schriften kosteten neun Sekunden je PDF).
 - `/personen` (»Alle Personen«, »Aufräumen«): ein Konto mit allem, was
   dazugehört, löschen; Einladungen ohne Konto und Konten ohne Einladung.
+  Unter »Schulen« der Stand jeder Schule in der Übergangszeit (unten).
+
+Die Rechtslage in Berlin (§ 64 Abs. 11 Schulgesetz, DigLLV), die Wege, auf
+denen eine Schule den Workspace nutzen kann, und was mit der
+Datenschutzbeauftragten Stelle noch zu klären ist, stehen in
+`docs/handoff-datenschutz.md`.
 
 Alles kommt aus denselben Angaben: `src/ruby/include/privacy.rb` (die Fakten:
 was gespeichert wird, wer es sieht, wie lange, welche Dienste beteiligt sind,
@@ -88,20 +94,59 @@ bekommen die gewöhnlichen Unterlagen. Lehrkräfte finden den Link unter
 Hat die Schulleitung entschieden und die Vereinbarung unterschrieben, trägt
 die Administration beide Daten unter `/personen` ein; dann nennt die
 Datenschutzerklärung unter `/impressum` die Schule mit einem Link auf ihre
-Fassung. Bis dahin vermerken die Lehrkräfte ein schriftliches Einverständnis
-je Schülerin oder Schüler (Elternbrief mit Einverständniserklärung,
-`?einverstaendnis=1`). Gesperrt wird ohne beides niemand
-(teacher-access.md, »Zustimmung der Schule, Einverständnis, ungeklärt«).
+Fassung.
+
+## Die Übergangszeit
+
+Bis zum Stichtag, dem 12. April 2027 (`TRANSITION_DEADLINE`), sollen alle
+Schulen ihre Unterlagen beisammen haben. Bis dahin sperrt die Rechtslage
+einer Schule niemanden, und am Stichtag ändert sich nichts von selbst: Was
+danach geschieht, entscheidet der Betreiber (Vorschlag in
+`docs/handoff-datenschutz.md`). Der Stichtag ist ein Termin des Projekts,
+keine Ausnahme von der DSGVO.
+
+Unter `/personen` › Schulen hält die Administration fest, wie weit jede
+Schule ist: Stand des Gesprächs, letzter Kontakt, wann nachgefasst wird, die
+Schritte (Schulleitung angesprochen, Rechtsgrundlage geklärt,
+Datenschutzbeauftragte Stelle beteiligt, Entscheidung, Vereinbarung), offene
+Fragen und eine Notiz ohne Namen. Darüber stehen der Stichtag, die Tage bis
+dahin, was gerade ansteht, und wie viele Schulen fertig, in Arbeit, noch
+nicht angesprochen oder fällig sind. »Nachricht vorbereiten« füllt einen
+Text für die Schule aus, zum Kopieren in eine eigene E-Mail; der Workspace
+verschickt nichts. Der Stand ist kein Nachweis: Zugestimmt hat eine Schule
+nur mit den beiden Daten.
+
+Ein schriftliches Einverständnis je Schülerin oder Schüler (Elternbrief mit
+Einverständniserklärung, `?einverstaendnis=1`, von der Lehrkraft unter
+`/gruppen` vermerkt) trägt nur eine freiwillige Nutzung. Für den Unterricht
+taugt es nicht als Grundlage: Wer am Unterricht teilnehmen muss, kann nicht
+frei einwilligen (Erwägungsgrund 43 DSGVO). Dort ist der Weg die
+Entscheidung der Schule. Gesperrt wird ohne beides während der
+Übergangszeit niemand (teacher-access.md, »Zustimmung der Schule,
+Einverständnis, ungeklärt«); ein ausdrücklicher Widerspruch oder ein
+Widerruf wird sofort bearbeitet (Sperre unter `/personen`).
 
 ## Der Weg über die Schule
+
+In Berlin: § 64 Abs. 11 des Schulgesetzes und § 2 DigLLV. Eine Einwilligung
+jeder einzelnen Familie braucht es dann nicht, wohl aber eine Prüfung durch
+die Schule selbst. Für den Lernraum Berlin und Videokonferenzen hat die
+Berliner Datenschutzbeauftragte das am 17. September 2021 ausdrücklich
+gesagt; für andere digitale Lehr- und Lernmittel gilt dieselbe Vorschrift.
 
 1. Die Einstellungen eintragen, `LEGAL_BASIS` noch nicht.
 2. Der Schulleitung den Link `/datenschutz` geben, oder die Unterlagen
    gedruckt.
-3. Die Schulleitung unterschreibt die Entscheidung und die Vereinbarung zur
+3. Die Schule prüft mit ihrer Datenschutzbeauftragten Stelle
+   (§ 2 Abs. 2 DigLLV; dafür die Prüfübersicht); über den Einsatz im
+   Unterricht entscheiden die Konferenzen (Gesamtkonferenz für die
+   Grundsätze, § 79 Abs. 3 Nr. 8, Fachkonferenz für die Einführung, § 16
+   Abs. 2 Schulgesetz).
+4. Die Schulleitung unterschreibt die Entscheidung und die Vereinbarung zur
    Auftragsverarbeitung; der Eintrag für das Verzeichnis geht an die
    Datenschutzbeauftragte Stelle.
-4. `LEGAL_BASIS = :school` eintragen, den Elternbrief verteilen.
+5. `LEGAL_BASIS = :school` eintragen, den Elternbrief verteilen (zur
+   Information, nicht zur Einwilligung).
 
 Für die Vereinbarung braucht es Verträge zur Auftragsverarbeitung mit dem
 Rechenzentrum und dem E-Mail-Dienst; die meisten Anbieter bieten sie als

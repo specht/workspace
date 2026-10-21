@@ -187,7 +187,9 @@ module PrivacyDocuments
             ['Information', 'Art. 12–14 DSGVO', s[:partner] ? 'Datenschutzerklärung nach Art. 13/14, als PDF mit der Einladung an jede Schülerin und jeden Schüler; Elternbrief' : 'Datenschutzerklärung nach Art. 13/14, öffentlich unter /impressum und als PDF mit der Einladung; Elternbrief'],
             ['Rechte der Betroffenen', 'Art. 15–21 DSGVO', 'Eine E-Mail genügt; Antwort binnen eines Monats; Löschung in einem Schritt'],
             ['Auftragsverarbeitung', 'Art. 28 DSGVO' + (digllv?(s) ? '; § 2 Abs. 3 DigLLV' : ''), 'Vereinbarung Schule – Betreiber (Entwurf); Rechenzentrum und E-Mail-Dienst als Unterauftragnehmer mit deren Standardverträgen'],
-            ['Serverstandort', digllv?(s) ? '§ 2 Abs. 3 Satz 2 DigLLV' : 'Art. 44 ff. DSGVO', "EU: #{hosting(s)}; keine Übermittlung in Drittländer"],
+            # § 2 Abs. 3 Satz 2 DigLLV (nur im EWR) ist seit März 2024 gestrichen
+            # (Drs. 19/21945); die Server liegen trotzdem in der EU
+            ['Serverstandort', 'Art. 44 ff. DSGVO', "EU: #{hosting(s)}; keine Übermittlung in Drittländer"],
             ['Verzeichnis', 'Art. 30 DSGVO', 'Eintrag fertig zum Ablegen (VVT)'],
             ['Sicherheit', 'Art. 32 DSGVO', 'TOM: Zugang nur mit Einladung und Code, Trennung der Workspaces, Verschlüsselung, Transparenz bei Einsicht'],
             ['Endgeräte', '§ 25 TDDDG', 'Nur technisch notwendige Cookies, erst nach der Anmeldung'],
