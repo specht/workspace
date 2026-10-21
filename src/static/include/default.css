@@ -5395,7 +5395,8 @@ div[data-stepper].stepper-lightbox {
     border-radius: 0.75rem;
     overflow: auto;
     background: var(--bs-body-bg);
-    font-size: clamp(16px, 1.45vw, 26px);
+    /* the size is fitted by stepper_keys.js */
+    font-size: 18px;
 }
 /* black around the lightbox */
 html.stepper-lightbox-open::after {
@@ -5408,10 +5409,12 @@ html.stepper-lightbox-open::after {
 html.stepper-lightbox-open {
     overflow: hidden;
 }
+/* the picture as wide as it may be, but never taller than its share of the
+   window: a tall picture (a hash table) must not push the text down */
 div[data-stepper].stepper-lightbox .algo-body > svg.algo-picture {
     max-width: none !important;
-    flex: 3 1 40em;
-    max-height: 72vh;
+    flex: 3 1 28em;
+    max-height: 62vh;
 }
 .stepper-lightbox-nav {
     position: fixed;
@@ -5485,8 +5488,12 @@ div[data-stepper]::before {
     div[data-stepper] :has(> [data-go]) > [data-go='first'],
     div[data-stepper] :has(> [data-go]) > [data-go='last'] {
         flex: 0 0 2.75rem;
-        opacity: 0.7;
         font-size: 1.05rem;
+        /* quieter than the steps, but not faint: faint means disabled */
+        --bs-btn-bg: transparent;
+        --bs-btn-color: var(--bs-success);
+        --bs-btn-disabled-bg: transparent;
+        --bs-btn-disabled-color: var(--bs-success);
     }
     div[data-stepper] :has(> [data-go]) > [data-go='first'] {
         order: 1;

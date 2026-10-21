@@ -100,8 +100,29 @@ document.addEventListener('keydown', (event) => {
         button.addEventListener('click', () => move(go));
         return button;
     };
+    // as large as possible and everything visible: the largest font size at
+    // which the widget fits the lightbox without scrolling (a binary search;
+    // the pictures grow with the font). Again when the window changes or the
+    // widget redraws itself (a step).
+    let fitting = 0;
+    const fit = () => {
+        if (!open) return;
+        let lo = 12;
+        let hi = 48;
+        for (let i = 0; i < 8; i++) {
+            const mid = (lo + hi) / 2;
+            open.style.fontSize = `${mid}px`;
+            if (open.scrollHeight <= open.clientHeight + 1 && open.scrollWidth <= open.clientWidth + 1) lo = mid;
+            else hi = mid;
+        }
+        // a little below the limit, so that rounding leaves no scrolling
+        open.style.fontSize = `${Math.floor(lo * 0.98 * 10) / 10}px`;
+    };
+    const fitSoon = () => { cancelAnimationFrame(fitting); fitting = requestAnimationFrame(fit); };
+    const watch = new MutationObserver(fitSoon);
+    window.addEventListener('resize', fitSoon);
     const show = (widget) => {
-        if (open) { open.classList.remove('stepper-lightbox'); setLabel(open.querySelector(':scope > .stepper-full'), false); putBack(open); }
+        if (open) { open.classList.remove('stepper-lightbox'); open.style.fontSize = ''; setLabel(open.querySelector(':scope > .stepper-full'), false); putBack(open); }
         lift(widget);
         open = widget;
         widget.classList.add('stepper-lightbox');
@@ -118,11 +139,16 @@ document.addEventListener('keydown', (event) => {
         nav.querySelector('.stepper-nav-next').disabled = all.indexOf(widget) >= all.length - 1;
         nav.hidden = all.length < 2;
         widget.scrollTop = 0;
+        watch.disconnect();
+        watch.observe(widget, { childList: true, subtree: true });
         window.dispatchEvent(new Event('resize'));
+        fit();
     };
     const close = (fromHistory) => {
         if (!open) return;
         open.classList.remove('stepper-lightbox');
+        open.style.fontSize = '';
+        watch.disconnect();
         setLabel(open.querySelector(':scope > .stepper-full'), false);
         putBack(open);
         open.scrollIntoView({ block: 'center' });
