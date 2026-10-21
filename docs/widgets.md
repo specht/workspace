@@ -63,7 +63,9 @@ the next with their eyes.
 - **Arrows end on the border** of their node (`data-inset`), so the
   arrowhead stays visible, and they **bend while they move**: a path whose
   middle trails behind its ends like a rubber band and straightens when the
-  nodes rest.
+  nodes rest. Only as far as its two ends move differently: when the whole
+  picture shifts to make room, that is a change of view, and the arrows stay
+  straight.
 - **A pulse runs down a pointer** (`data-pulse`): the arrow itself swells a
   little and the bulge travels from the owner to the tip, like a peristaltic
   wave, in the arrow's colour; no glow, no dot. It runs on the way back up of a
@@ -80,14 +82,17 @@ the next with their eyes.
 - **A value on its way** is a token beside the node it is compared with, and
   it lands where it is inserted (`data-from`). A copied value flies from the
   node it is copied from.
-- **The focus ring** marks the node the running call works on, the
+- **The focus ring** is drawn in front of the nodes. It marks the node the running call works on, the
   parameter `node`, and the label `node` is always beside it. It moves from
   node to node, and while it fades in or out it stays on its node, even when
   that node moves (`data-follow`).
 - **The calls that run** stand above the code box, each one deeper indented
   (`remove(node: 50, value: 20)`), the current one marked. On the way back
   each shows what it returns (`→ 30`) and they return one after another, the
-  deepest first, in time with the pulses on the pointers.
+  deepest first, in time with the pulses on the pointers. A thin line joins
+  each call to the node it holds (strong for the current one, dashed and
+  faint for those that wait), behind the picture and the code: so it is
+  visible how many nodes are held at once.
 - **Layout keeps the structure readable at every step.** In a tree a child
   is always below every node that points to it; the column is the place of
   the value in the sorted order, which rotations keep, so nodes move up and

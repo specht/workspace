@@ -63,6 +63,10 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 .algo-stepper ol.algo-stack li.returning { animation: algo-return 0.4s ease forwards; }
 @keyframes algo-return { to { opacity: 0.3; } }
 @media (prefers-reduced-motion: reduce) { .algo-stepper ol.algo-stack li.returning { animation: none; opacity: 0.3; } }
+.algo-stepper .algo-body { position: relative; }
+/* the lines from the calls to their nodes lie behind the picture and the code */
+.algo-stepper svg.algo-links { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 0; }
+.algo-stepper .algo-body > svg.algo-picture, .algo-stepper .algo-body > .algo-side { position: relative; z-index: 1; }
 .algo-stepper .algo-ops { display: flex; flex-wrap: wrap; gap: 0.3em; list-style: none; padding: 0; margin: 0 0 0.7em;
     font-family: '0xProto Nerd Font Mono', monospace; font-size: 0.85em; }
 .algo-stepper .algo-ops li { padding: 0.05em 0.5em; border-radius: 0.3em; border: 1px solid color-mix(in srgb, var(--algo-line) 70%, transparent);
@@ -935,7 +939,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         // stays rigid instead of letting go and snapping on
         const nodeVar = (n) => (n ? [{ name: 'node', to: n.id, side: 'left', rigid: true }] : []);
         const sideWord = (side) => (side === 'left' ? 'links' : 'rechts');
-        const call = (name, n, value) => ({ call: `${name}(node: ${n ? n.value : 'empty'}, value: ${value})` });
+        const call = (name, n, value) => ({ call: `${name}(node: ${n ? n.value : 'empty'}, value: ${value})`, node: n ? n.id : null });
         const stackOf = (calls) => calls.map((c) => ({ ...c }));
         // every call returns its node: the stack for the step back up
         const returning = (calls, nodes) => calls.map((c, i) => ({ ...c, returns: c.returns || String(nodes[i].value) }));
@@ -1136,7 +1140,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         // the right: they never get in each other's way
         const vp = { name: p, to: top, side: val(child) < val(top) ? 'right' : 'left' };
         const vq = { name: q, to: child, side: val(child) < val(top) ? 'left' : 'right' };
-        const stack = [...(base.stack || []), { call: `${title.replace(/\(.\)/, `(${p}: ${val(top)})`)}` }];
+        const stack = [...(base.stack || []), { call: `${title.replace(/\(.\)/, `(${p}: ${val(top)})`)}`, node: top }];
         const snap = (line, message, vars) => frames.push({ ...base, graph: clone(), rootId, rootAt: startRoot, loose, vars, code: { lines, at: line }, message, stack });
         const h = (id) => (id === null ? 0 : memory[id].height);
         snap(0, `${prefix}${title.replace(/\(.\)/, `(${val(top)})`)}. ${p} ist ${val(top)}, der Knoten, um den rotiert wird.`, [vp]);
@@ -1257,18 +1261,21 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         // a node by its id; a new node comes from the token that carried its
         // value down the tree; a copied value flies over from the node it was
         // copied from (its label has the value in its key)
+        let ring = null;
         for (const [id, { x, depth: d }] of at) {
             const { value } = graph[id];
             const fresh = frame.fresh === id;
             const fill = frame.gone === id ? 'color-mix(in srgb, var(--algo-goal) 30%, var(--algo-paper))' : fresh ? 'var(--algo-frontier)' : 'var(--algo-paper)';
             const fromToken = fresh ? { 'data-from': 'incoming-label' } : {};
             const copied = frame.copied && frame.copied.into === id ? { 'data-from': `label-${frame.copied.from}-${value}` } : {};
-            // the ring stays on its node while it fades in or out
-            if (frame.focus === id) svg.appendChild(el('svg:circle', { 'data-key': 'focus', 'data-follow': `node-${id}`, cx: sx(x), cy: sy(d), r: 23, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 3 }));
+            // the ring stays on its node while it fades in or out; it is
+            // drawn in front of the nodes (after them)
+            if (frame.focus === id) ring = el('svg:circle', { 'data-key': 'focus', 'data-follow': `node-${id}`, cx: sx(x), cy: sy(d), r: 23, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 3 });
             svg.appendChild(el('svg:circle', { 'data-key': `node-${id}`, ...(fresh ? { 'data-from': 'incoming' } : {}), cx: sx(x), cy: sy(d), r: RADIUS, fill, stroke: 'var(--algo-ink)', 'stroke-width': 1.5 }));
             svg.appendChild(el('svg:text', { 'data-key': `label-${id}-${value}`, ...fromToken, ...copied, x: sx(x), y: sy(d) + 5, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(value) }));
             if (frame.avl) svg.appendChild(el('svg:text', { 'data-key': `height-${id}`, ...fromToken, x: sx(x), y: sy(d) + 32, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: `h${graph[id].height}` }));
         }
+        if (ring) svg.appendChild(ring);
         for (const label of labels) svg.appendChild(label);
         // the value on its way: a token beside the node it is compared with
         const near = frame.incoming !== undefined && at.get(frame.focus);
@@ -1447,7 +1454,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 // back up they return one after another, the deepest first
                 const stack = frame.stack || [];
                 const calls = stack.length ? [el('h5', { text: 'Aufrufe' }), el('ol', { class: 'algo-stack' }, stack.map((entry, i) => {
-                    const li = el('li', { class: !frame.returning && i === stack.length - 1 ? 'current' : '', style: `margin-left: ${i * 1.2}em;`,
+                    const li = el('li', { class: !frame.returning && i === stack.length - 1 ? 'current' : '', style: `margin-left: ${i * 1.2}em;`, ...(entry.node !== null && entry.node !== undefined ? { 'data-node': entry.node } : {}),
                         text: entry.returns ? `${entry.call} → ${entry.returns}` : entry.call });
                     if (frame.returning) li.style.animationDelay = `${((stack.length - 1 - i) / (stack.length + 1)) * (frame.duration || MOTION_TIME) / 1000}s`;
                     if (frame.returning) li.classList.add('returning');
@@ -1517,7 +1524,47 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         const opsText = widget.dataset.ops && frames.some((f) => f.op !== undefined)
             ? widget.dataset.ops.split(/,(?![^(]*\))/).map((s) => s.trim()).filter(Boolean) : null;
         const strip = opsText && el('ol', { class: 'algo-ops', 'aria-label': 'Die Operationen der Reihe nach' }, opsText.map((text) => el('li', { text })));
-        widget.replaceChildren(el('div', { class: 'algo-controls' }, [...buttons, count]), ...(strip ? [strip] : []), el('div', { class: 'algo-body' }, [picture, side]), message);
+        const body = el('div', { class: 'algo-body' }, [picture, side]);
+        widget.replaceChildren(el('div', { class: 'algo-controls' }, [...buttons, count]), ...(strip ? [strip] : []), body, message);
+        // Lines from each call on the stack to the node it holds (trees): the
+        // current one strong, the waiting ones faint; they follow the nodes
+        // while they move and fade with their call when it returns
+        const links = algo === 'bst' || algo === 'avl' ? el('svg:svg', { class: 'algo-links', 'aria-hidden': 'true' }) : null;
+        if (links) body.prepend(links);
+        let linking = 0;
+        const connect = () => {
+            const box = body.getBoundingClientRect();
+            links.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
+            const paths = [];
+            for (const li of side.querySelectorAll('li[data-node]')) {
+                const node = picture.querySelector(`[data-key="node-${li.dataset.node}"]`);
+                if (!node) continue;
+                const c = node.getBoundingClientRect();
+                const l = li.getBoundingClientRect();
+                const [cx, cy, r] = [c.left + c.width / 2 - box.left, c.top + c.height / 2 - box.top, c.width / 2];
+                const beside = l.left > c.right;
+                const [sx, sy] = beside ? [l.left - box.left - 2, l.top + l.height / 2 - box.top] : [l.left - box.left + 12, l.top - box.top - 2];
+                const d = Math.hypot(sx - cx, sy - cy) || 1;
+                const [ex, ey] = [cx + ((sx - cx) / d) * (r + 3), cy + ((sy - cy) / d) * (r + 3)];
+                const bend = beside ? `C${sx - 40} ${sy} ${ex + 30} ${ey}` : `C${sx} ${sy - 40} ${ex} ${ey + 30}`;
+                const current = li.classList.contains('current');
+                paths.push(el('svg:path', { d: `M${sx} ${sy} ${bend} ${ex} ${ey}`, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': current ? 1.8 : 1.2,
+                    'stroke-dasharray': current ? 'none' : '3 4', opacity: (current ? 0.9 : 0.45) * Number(getComputedStyle(li).opacity) }));
+                paths.push(el('svg:circle', { cx: ex, cy: ey, r: 2.5, fill: 'var(--algo-accent)', opacity: (current ? 0.9 : 0.45) * Number(getComputedStyle(li).opacity) }));
+            }
+            links.replaceChildren(...paths);
+        };
+        // redrawn every frame while the picture moves or the calls fade, then rest
+        const follow = (time) => {
+            cancelAnimationFrame(linking);
+            const until = performance.now() + time;
+            const loop = () => {
+                connect();
+                if (picture.hasAttribute('data-moving') || performance.now() < until) linking = requestAnimationFrame(loop);
+            };
+            loop();
+        };
+        if (links) window.addEventListener('resize', () => follow(0));
         widget.setAttribute('data-stepper', '');
         let index = 0;
         // animate: a step forward or back moves; a jump shows the step at once
@@ -1530,6 +1577,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 picture.replaceChildren(...svg.childNodes);
             }
             message.textContent = frame.message;
+            if (links) follow((frame.duration || MOTION_TIME) * 2 + 600);
             if (strip) [...strip.children].forEach((li, i) => {
                 const done = i < frame.op || (i === frame.op && index === frames.length - 1);
                 li.className = done ? 'done' : i === frame.op ? 'current' : '';

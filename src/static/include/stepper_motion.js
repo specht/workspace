@@ -180,7 +180,8 @@
         // A path bends while it moves: its middle is where the middle of the
         // straight line was a moment ago (a fifth of the movement), so it
         // trails behind its ends like a rubber band and is straight again when
-        // they rest. A line element stays straight.
+        // they rest; but only as far as its ends move differently. A line
+        // element stays straight.
         const LAG = duration / 5;
         const round = (v) => Math.round(v * 100) / 100;
         const draw = (r, base, tip, now, last) => {
@@ -188,7 +189,13 @@
             r.trail = (r.trail || []).filter((p) => p.at >= now - 4 * LAG);
             r.trail.push({ at: now, mid });
             const earlier = r.trail.find((p) => p.at >= now - LAG) || r.trail[0];
-            const bend = last ? mid : earlier.mid;
+            // only as far as the two ends move differently: a line whose
+            // ends shift alike (the whole picture making room, a change of
+            // view) stays straight
+            r.start = r.start || { base, tip };
+            const apart = Math.hypot(base[0] - r.start.base[0] - (tip[0] - r.start.tip[0]), base[1] - r.start.base[1] - (tip[1] - r.start.tip[1]));
+            const k = Math.min(1, apart / 24);
+            const bend = last ? mid : [mid[0] + (earlier.mid[0] - mid[0]) * k, mid[1] + (earlier.mid[1] - mid[1]) * k];
             // data-inset: the line stops that far before its end (an arrowhead
             // on the border of a node), and is hidden while shorter than that
             const inset = Number(r.line.dataset.inset || 0);
