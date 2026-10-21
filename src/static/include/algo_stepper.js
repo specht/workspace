@@ -1139,7 +1139,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             snapshot(`return value: ${out} kommt heraus.`, { vars: vars(), code: R(6) });
         };
         for (const op of setup) if (op.type === 'insert') { insert(op.index, op.value, true); }
-        snapshot(setup.length ? 'Die Liste von oben. Jetzt der Reihe nach die Operationen darüber.' : `Eine leere Array List: ein Array mit ${capacity} Zellen, size = 0.`, { vars: [{ name: 'size', index: size }] });
+        snapshot(setup.length ? 'Die Liste von oben. Jetzt der Reihe nach die Operationen darüber.' : `Eine leere Array List: ein Array mit ${capacity} Zellen, size ist 0.`, { vars: [{ name: 'size', index: size }] });
         for (const [number, op] of ops.entries()) {
             current = number;
             if (op.type === 'insert') insert(op.index, op.value);
@@ -1523,7 +1523,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             say(`return value: ${out} kommt heraus.`, { vars: vars(), code: D(5) });
         };
         for (const op of setup) { if (op.type === 'enqueue') enqueue(op.value, true); else if (op.type === 'dequeue') dequeue(true); }
-        snapshot(setup.length ? 'Die Queue von oben. Jetzt der Reihe nach die Operationen darüber.' : `Eine leere Queue in einem Array mit ${capacity} Zellen: head = 0, size = 0.`, { vars: vars() });
+        snapshot(setup.length ? 'Die Queue von oben. Jetzt der Reihe nach die Operationen darüber.' : `Eine leere Queue in einem Array mit ${capacity} Zellen: head und size sind 0.`, { vars: vars() });
         for (const [number, op] of ops.entries()) {
             current = number;
             if (op.type === 'enqueue') enqueue(op.value);
