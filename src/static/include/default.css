@@ -5445,7 +5445,8 @@ div[data-stepper] button .bi::before,
 .stepper-lightbox-nav button .bi::before {
     vertical-align: 0;
 }
-div[data-stepper] [data-go] {
+div[data-stepper] [data-go],
+div[data-stepper] [data-play] {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -5476,9 +5477,18 @@ div[data-stepper]::before {
         align-items: center;
         gap: 0.4em;
     }
-    div[data-stepper] :has(> [data-go]) > :not([data-go]) {
+    div[data-stepper] :has(> [data-go]) > :not([data-go]):not([data-play]):not([data-speed]) {
         order: 0;
         margin: 0 auto 0 0;
+    }
+    /* play and its speed on the left, before the step count */
+    div[data-stepper] :has(> [data-go]) > [data-play],
+    div[data-stepper] :has(> [data-go]) > [data-speed] {
+        order: 0;
+        min-height: 2.75rem;
+        flex: 0 0 2.75rem;
+        padding: 0;
+        margin: 0;
     }
     div[data-stepper] :has(> [data-go]) > [data-go] {
         min-height: 2.75rem;
@@ -5522,9 +5532,14 @@ div[data-stepper]::before {
         justify-content: flex-end;
         gap: 0.4em;
     }
-    div[data-stepper] :has(> [data-go]) > :not([data-go]) {
+    div[data-stepper] :has(> [data-go]) > :not([data-go]):not([data-play]):not([data-speed]) {
         flex-basis: 100%;
         margin-left: 0;
+    }
+    /* with play: the count, play and its speed on one line */
+    div[data-stepper] :has(> [data-play]) > :not([data-go]):not([data-play]):not([data-speed]) {
+        flex: 0 0 calc(100% - 5.5rem - 0.8em - 1px);
+        order: -1;
     }
 }
 

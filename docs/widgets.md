@@ -237,6 +237,12 @@ only to look nice.
   finger meant for next does not jump to the end (outlined, not paler: pale
   reads as disabled); the step count on the left, on a phone on a line
   of its own (`default.css`).
+- **Play** (`data-play`, beside the step buttons): one step after another
+  by itself, each movement and then a pause to read the message
+  (`READ_TIME`); the speed button beside it cycles 1×, 2× and ½× and changes
+  both. A step by hand (button, key, swipe, timeline) stops it; play at the
+  end starts again from the beginning. On a touch screen play and its speed
+  sit beside the step count.
 - **A lightbox for a demo**: every widget has a square button at its top
   right (`bi-fullscreen`, `stepper_keys.js`) that opens it larger in a
   lightbox on a black background, for the big screen. The keys and the

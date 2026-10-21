@@ -2472,6 +2472,11 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             [el('i', { class: `bi ${icon}`, style: 'margin-right: 0;' })]);
         const buttons = [button('first', 'bi-chevron-bar-left', 'Zum Anfang'), button('prev', 'bi-chevron-left', 'Einen Schritt zurück'),
             button('next', 'bi-chevron-right', 'Nächster Schritt'), button('last', 'bi-chevron-bar-right', 'Zum Ende')];
+        // play: one step after another by itself, at a speed to choose
+        const play = el('button', { class: 'btn btn-sm btn-outline-success', 'data-play': '', 'aria-label': 'Abspielen', type: 'button' }, [el('i', { class: 'bi bi-play-fill', style: 'margin-right: 0;' })]);
+        const SPEEDS = [[1, '1×'], [2, '2×'], [0.5, '½×']];
+        let speed = 0;
+        const speedButton = el('button', { class: 'btn btn-sm btn-outline-success', 'data-speed': '', 'aria-label': 'Tempo beim Abspielen', type: 'button', text: SPEEDS[0][1] });
         const count = el('span', { class: 'algo-count' });
         const message = el('div', { class: 'algo-message', 'aria-live': 'polite' });
         picture.setAttribute('aria-label', svg.getAttribute('aria-label'));
@@ -2578,7 +2583,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         const body = el('div', { class: 'algo-body' }, [picture, side]);
         // data-title: what the widget shows, above everything else
         const title = widget.dataset.title ? [el('div', { class: 'algo-title', text: widget.dataset.title })] : [];
-        widget.replaceChildren(...title, el('div', { class: 'algo-controls' }, [...buttons, count]), timelineBox, body, message);
+        widget.replaceChildren(...title, el('div', { class: 'algo-controls' }, [...buttons, play, speedButton, count]), timelineBox, body, message);
         requestAnimationFrame(placeNames);
         if (document.fonts) document.fonts.ready.then(placeNames);
         window.addEventListener('resize', placeNames);
@@ -2589,7 +2594,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             const tick = hit && hit.closest && hit.closest('.algo-tick');
             if (!tick) return;
             const to = Number(tick.dataset.step);
-            if (to !== index) { const before = index; index = to; show(Math.abs(index - before) === 1); }
+            if (to !== index) { const before = index; index = to; stop(); show(Math.abs(index - before) === 1); }
         };
         timeline.addEventListener('pointerdown', (event) => { dragging = true; timeline.setPointerCapture(event.pointerId); stepAt(event); });
         timeline.addEventListener('pointermove', (event) => { if (dragging) stepAt(event); });
@@ -2691,7 +2696,8 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             // a list's cells keep their size across widgets: the picture at
             // most as wide as it is drawn (data-natural)
             if (svg.dataset.natural) picture.style.maxWidth = `${svg.dataset.natural}px`;
-            if (window.StepperMotion) window.StepperMotion.morph(picture, svg, { duration: animate ? frame.duration || MOTION_TIME : 0 });
+            const rate = playing ? SPEEDS[speed][0] : 1;
+            if (window.StepperMotion) window.StepperMotion.morph(picture, svg, { duration: animate ? (frame.duration || MOTION_TIME) / rate : 0 });
             else {
                 picture.setAttribute('viewBox', svg.getAttribute('viewBox'));
                 picture.replaceChildren(...svg.childNodes);
@@ -2708,8 +2714,36 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             buttons[0].disabled = buttons[1].disabled = index === 0;
             buttons[2].disabled = buttons[3].disabled = index === frames.length - 1;
         };
+        // Playing: after each movement a pause to read the message, both
+        // shorter or longer with the speed; a step by hand stops it
+        let playing = null;
+        const READ_TIME = 1400;
+        const stop = () => {
+            clearTimeout(playing);
+            playing = null;
+            play.firstChild.className = 'bi bi-play-fill';
+            play.setAttribute('aria-label', 'Abspielen');
+        };
+        const tick = () => {
+            if (index >= frames.length - 1) { stop(); return; }
+            index += 1;
+            show(true);
+            playing = setTimeout(tick, ((frames[index].duration || MOTION_TIME) * ((window.StepperMotion && window.StepperMotion.slow) || 1) + READ_TIME) / SPEEDS[speed][0]);
+        };
+        play.addEventListener('click', () => {
+            if (playing) { stop(); return; }
+            play.firstChild.className = 'bi bi-pause-fill';
+            play.setAttribute('aria-label', 'Anhalten');
+            // at the end it starts again from the beginning
+            if (index >= frames.length - 1) { index = 0; show(false); playing = setTimeout(tick, READ_TIME / SPEEDS[speed][0]); } else tick();
+        });
+        speedButton.addEventListener('click', () => {
+            speed = (speed + 1) % SPEEDS.length;
+            speedButton.textContent = SPEEDS[speed][1];
+        });
         const go = { first: () => 0, prev: () => index - 1, next: () => index + 1, last: () => frames.length - 1 };
         for (const b of buttons) b.addEventListener('click', () => {
+            stop();
             const before = index;
             index = Math.max(0, Math.min(frames.length - 1, go[b.dataset.go]()));
             show(Math.abs(index - before) === 1);
