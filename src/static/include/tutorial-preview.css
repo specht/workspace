@@ -203,6 +203,89 @@
     display: block;
 }
 
+/* At the bottom, in the middle, a dot for each picture of the gallery
+   (tutorial-preview.js): at most seven slots, the open picture's dot in the
+   middle, the row sliding and the dots growing and shrinking when stepping */
+.tutorial-preview-lightbox-dots {
+    display: none;
+    position: fixed;
+    left: 50%;
+    bottom: 1.2rem;
+    z-index: 1;
+    transform: translateX(-50%);
+    width: calc(var(--slots, 1) * 1.2rem);
+    overflow: hidden;
+}
+
+.tutorial-preview-lightbox.is-gallery.has-steps .tutorial-preview-lightbox-dots {
+    display: block;
+}
+
+.tutorial-preview-lightbox-dots-track {
+    display: flex;
+    transform: translateX(calc(var(--shift, 0) * 1.2rem));
+    transition: transform 250ms ease;
+}
+
+.tutorial-preview-lightbox-dot {
+    flex: none;
+    width: 1.2rem;
+    height: 1.4rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.tutorial-preview-lightbox-dot::before {
+    content: '';
+    display: block;
+    width: 0.55rem;
+    height: 0.55rem;
+    margin: auto;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.35);
+    transform: scale(var(--size, 1));
+    transition: transform 250ms ease, background-color 250ms ease;
+}
+
+.tutorial-preview-lightbox-dot[aria-current='true']::before {
+    background: white;
+}
+
+/* On a phone the picture fills nearly the width: the arrows go below it, to
+   the corners, without a box over the picture; the dots between them */
+@media (max-width: 760px) {
+    .tutorial-preview-lightbox-step {
+        top: auto;
+        bottom: 1.5rem;
+        transform: none;
+        width: 4rem;
+        height: 4rem;
+        background: transparent;
+    }
+
+    /* after a tap :hover stays on a touch screen: no box then, only for the keyboard */
+    .tutorial-preview-lightbox-step:hover {
+        background: transparent;
+    }
+
+    .tutorial-preview-lightbox-step:focus-visible {
+        background: rgba(255, 255, 255, 0.12);
+    }
+
+    .tutorial-preview-lightbox-dots {
+        bottom: 2.8rem;
+    }
+
+    /* the picture nearly as wide as the phone (fit() in tutorial-preview.js
+       takes the padding as the margin) */
+    .tutorial-preview-lightbox.is-gallery {
+        padding: 0.4rem;
+    }
+}
+
 /* One finger swipes to the next picture (tutorial-preview.js), two zoom */
 .tutorial-preview-lightbox.is-gallery.has-steps {
     touch-action: pinch-zoom;
@@ -243,6 +326,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .tutorial-preview-lightbox-dots-track,
+    .tutorial-preview-lightbox-dot::before,
     .tutorial-preview,
     .tutorial-preview::before,
     .tutorial-preview-lightbox,
