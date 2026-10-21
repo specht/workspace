@@ -3,8 +3,9 @@
 // in a .gallery that is not a link, the grids of pictures with captions. A
 // gallery picture fills the window, shows its caption, and ← → (or the
 // buttons at the sides, or a swipe on a tablet) go through the pictures of
-// its gallery. On a phone the pictures already fill the width, so nothing
-// opens there.
+// its gallery. On a phone a preview already fills the width and does not
+// open; a gallery picture opens there too when it is clearly narrower than
+// the screen (two in a row).
 document.addEventListener('DOMContentLoaded', () => {
     const previews = document.querySelectorAll('.tutorial-preview');
     const galleryImages = [...document.querySelectorAll('.gallery figure img')].filter((image) => !image.closest('a'));
@@ -41,10 +42,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // The breakpoint of tutorial-preview.css, where previews go full width
     const narrow = window.matchMedia('(max-width: 760px)');
 
+    // a gallery picture opens large unless it already almost fills the screen
+    const zoomable = (image) => !narrow.matches || image.getBoundingClientRect().width < window.innerWidth * 0.75;
+
     function setupGallery() {
         galleryImages.forEach((image) => {
-            image.classList.toggle('gallery-zoom', !narrow.matches);
-            if (narrow.matches) {
+            const zoom = zoomable(image);
+            image.classList.toggle('gallery-zoom', zoom);
+            if (!zoom) {
                 image.removeAttribute('tabindex');
                 image.removeAttribute('role');
                 image.removeAttribute('aria-label');
@@ -57,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     setupGallery();
     narrow.addEventListener('change', setupGallery);
+    window.addEventListener('resize', setupGallery);
 
     function show() {
         // already open (the next picture of a gallery): stays visible, no fading
@@ -163,8 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.addEventListener('click', (event) => {
-        if (narrow.matches) return;
-        const preview = event.target.closest('.tutorial-preview');
+        const preview = !narrow.matches && event.target.closest('.tutorial-preview');
         if (preview) {
             event.preventDefault();
             openPreview(preview);
