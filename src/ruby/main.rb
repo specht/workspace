@@ -1,5 +1,4 @@
 require './include/helper.rb'
-require './include/automatron.rb'
 require './include/content_parts.rb'
 require './include/vscode_settings.rb'
 require './include/page_kinds.rb'
@@ -308,31 +307,6 @@ class Main < Sinatra::Base
             ".#{WEBSITE_HOST.split(':').first}",
         ],
     }
-
-    helpers do
-        def svg_from_dot(dot_str)
-            # Graphviz 'dot' turns DOT into SVG, at most 10 seconds per drawing.
-            # A drawing too large to draw or read becomes a note, so the rest of
-            # the result still arrives (DotRender::MAX_EDGES).
-            return DotRender.not_drawn_html(dot_str) unless DotRender.drawable?(dot_str)
-
-            svg, err, status = Open3.capture3('timeout', '10', 'dot', '-Tsvg', stdin_data: dot_str)
-            unless status.success?
-                STDERR.puts "Automatron: dot failed: #{err.to_s[0, 300]}"
-                return DotRender.not_drawn_html(dot_str)
-            end
-            DotRender.tidy_svg(svg)
-        end
-
-        def safe_regex(str)
-            # very lightweight guardrails for classroom use:
-            # - non-empty
-            # - length cap (avoid pathological inputs)
-            halt 400, { error: "regex must be a non-empty string" }.to_json if str.nil? || str.strip.empty?
-            halt 413, { error: "regex too long" }.to_json if str.length > AUTOMATRON_MAX_REGEX
-            str
-        end
-    end
 
     def self.fs_tag_for_email(email)
         Digest::SHA2.hexdigest(email).to_i(16).to_s(36)[0, 16]
@@ -7436,137 +7410,6 @@ class Main < Sinatra::Base
         respond(:yay => 'sure')
     end
 
-    # Automatron needs a login, like every tool (Tools). A regex can make the
-    # subset construction grow exponentially and Graphviz draw for minutes,
-    # so: short regexes, at most SubsetTrace::MAX_STATES states, a time limit
-    # for drawing, two at a time and a limit per person.
-    AUTOMATRON_MAX_REGEX = 200
-    AUTOMATRON_PER_PERSON = RateLimit.new(:limit => 60, :period => 600)
-    AUTOMATRON_SLOTS = Mutex.new
-    @@automatron_running = 0
-
-    def automatron_slot
-        taken = AUTOMATRON_SLOTS.synchronize do
-            next false if @@automatron_running >= 2
-
-            @@automatron_running += 1
-            true
-        end
-        unless taken
-            content_type :json
-            halt 429, { :error => 'busy' }.to_json
-        end
-        begin
-            yield
-        ensure
-            AUTOMATRON_SLOTS.synchronize { @@automatron_running -= 1 }
-        end
-    end
-
-    post '/api/automatron' do
-        halt 403 unless user_logged_in?
-        unless DEVELOPMENT || AUTOMATRON_PER_PERSON.allow?(@session_user[:email])
-            content_type :json
-            halt 429, { :error => 'rate_limited' }.to_json
-        end
-        data  = parse_request_data(:required_keys => [:regex])
-        regex = safe_regex(data[:regex])
-        automatron_slot do
-
-            # ε-NFA; a regex the parser cannot read is the student's typo, not a
-            # server error: say what is wrong (400).
-            begin
-                nfa = NFA.from_regex(regex)
-            rescue RuntimeError => e
-                content_type :json
-                problem = case e.message
-                    when /\AUnsupported character in regex: '(.)'/ then { :error => 'character', :character => $1 }
-                    when /parentheses/ then { :error => 'parentheses' }
-                    else { :error => 'incomplete' }
-                end
-                halt 400, problem.to_json
-            end
-            nfa.compact_ids!
-            nfa.topo_relabel!
-
-            # DFA (with subset trace)
-            dfa, subset_trace = SubsetTrace.build_with_trace(nfa)
-
-            # Minimized DFA (with table method trace)
-            min, min_trace = DFAMinimizer.minimize_with_trace(dfa)
-
-            # DOT
-            nfa_dot           = DotRender.nfa(nfa)
-            dfa_dot_explicit  = DotRender.dfa(dfa, title: 'DFA',                 sink_explicit: true,  q: 'r')
-            dfa_dot_implicit  = DotRender.dfa(dfa, title: 'DFA_ImplicitSink',    sink_explicit: false, q: 'r')
-            min_dot_explicit  = DotRender.dfa(min, title: 'MinDFA',              sink_explicit: true,  q: 's')
-            min_dot_implicit  = DotRender.dfa(min, title: 'MinDFA_ImplicitSink', sink_explicit: false, q: 's')
-
-            # SVG
-            nfa_svg           = svg_from_dot(nfa_dot)
-            dfa_svg           = svg_from_dot(dfa_dot_explicit)
-            dfa_implicit_svg  = svg_from_dot(dfa_dot_implicit)
-            min_svg           = svg_from_dot(min_dot_explicit)
-            min_implicit_svg  = svg_from_dot(min_dot_implicit)
-
-            # Grammar (build structure + pretty text)
-            gram_struct = RegularGrammar.build(min)
-            # Classic (step-by-step) grammar text (hides nonproductive targets)
-            grammar     = RegularGrammar.to_html(gram_struct, hide_nonproductive: true)
-            # Simplified / compact grammar (merging linear chains, e.g., S → ab)
-            gram_simpl   = RegularGrammar.simplify(gram_struct)
-            grammar_compact = RegularGrammar.to_html_compact(gram_simpl)
-
-            # Random samples (positives from grammar, negatives from DFA)
-            samples_mixed = GrammarSampler.sample_mixed(
-                min, gram_struct,
-                pos: 30,      # how many positives
-                neg: 30,      # how many negatives
-                max_steps: 30,
-                eps_bias: 1.0,
-                max_len: 20,
-                stop_prob: 0.25,
-                seed: Time.now.to_i      # remove/alter for fresh sets each call
-            )
-
-            # Unwrapped HTML snippets (each is a <section>…</section>)
-            subset_html        = HtmlNotes.subset(subset_trace)
-            minimization_html  = HtmlNotes.table_minimization(min_trace)
-
-            payload = {
-                input: { regex: regex },
-
-                nfa: { dot: nfa_dot, svg: nfa_svg },
-
-                dfa: {
-                    explicit_sink: { dot: dfa_dot_explicit, svg: dfa_svg },
-                    implicit_sink: { dot: dfa_dot_implicit, svg: dfa_implicit_svg, has_sink: !!DotRender.detect_sink(dfa) }
-                },
-
-                min_dfa: {
-                    explicit_sink: { dot: min_dot_explicit, svg: min_svg },
-                    implicit_sink: { dot: min_dot_implicit, svg: min_implicit_svg, has_sink: !!DotRender.detect_sink(min) }
-                },
-
-                grammar: grammar,
-                grammar_compact: grammar_compact,
-                samples_positive: samples_mixed[:positives],
-                samples_negative: samples_mixed[:negatives],
-
-                # Two separate, unwrapped sections for easy inclusion
-                notes_subset_html:       subset_html,
-                notes_minimization_html: minimization_html,
-
-                # If you still want raw trace data for custom UIs, you can add:
-                traces: { subset: subset_trace, minimization: min_trace }
-            }
-
-            respond(payload)
-        rescue SubsetTrace::TooLarge
-            content_type :json
-            halt 422, { :error => 'too_large', :max_states => SubsetTrace::MAX_STATES }.to_json
-        end
-    end
     # The school's mirror of Open-Meteo (WeatherMirror), for when Open-Meteo
     # refuses the school's address. Open without a login: the weather page
     # runs on the student's own subdomain, and Ruby in the Workspace has no

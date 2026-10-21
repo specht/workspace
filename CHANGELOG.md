@@ -21,6 +21,10 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Automatron rechnet und zeichnet im Browser: `/api/automatron` entfällt, der Server
+  braucht dafür keine Rechenzeit mehr, und das Ruby-Image kommt ohne Graphviz aus
+  (kleiner nach dem nächsten `./config.rb build`).
+
 ## 1.0.0 (21. Oktober 2026)
 
 Das erste getaggte Release. Die Einträge darunter sind über drei Jahre
