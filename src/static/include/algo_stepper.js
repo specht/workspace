@@ -36,10 +36,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 /* the pointers along which the calls on the stack went down */
 .algo-stepper svg path.on-stack { stroke-width: 2.4; stroke-dasharray: 7 4; animation: algo-march 0.9s linear infinite; }
 @keyframes algo-march { to { stroke-dashoffset: -11; } }
-/* on the way back: solid again once the pulse has passed (--settle); a
-   structure's pointer grey again, root's stays purple */
-.algo-stepper svg path.on-stack.settling { animation: algo-march 0.9s linear infinite, algo-settle 0.35s ease var(--settle) forwards; }
-@keyframes algo-settle { to { stroke-dasharray: 7 0; stroke-width: 2; stroke: var(--settled-colour, var(--algo-line)); marker-end: var(--settled-head, none); } }
+
 @media (prefers-reduced-motion: reduce) { .algo-stepper svg path.on-stack { animation: none; stroke-dasharray: none; } }
 .algo-stepper .algo-title { font-weight: 600; font-size: 1.05em; margin: 0 0 0.5em; }
 .algo-stepper .algo-controls { display: flex; gap: 0.3em; align-items: center; flex-wrap: wrap; margin-bottom: 0.6em; }
@@ -1478,8 +1475,11 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             const slow = (window.StepperMotion && window.StepperMotion.slow) || 1;
             for (const pulse of frame.pulses || []) settle.set(pulse.edge, ((pulse.delay || 0) + (pulse.length || 0.4)) * (frame.duration || MOTION_TIME) * slow / 1000);
         }
-        const onStack = (key) => (chain.has(key) ? { class: settle.has(key) ? 'on-stack settling' : 'on-stack', stroke: 'var(--algo-accent)', 'marker-end': `url(#${most.marker}-accent)`,
-            ...(settle.has(key) ? { style: `--settle: ${settle.get(key).toFixed(2)}s; --settled-head: url(#${most.marker});` } : {}) } : {});
+        // data-settle: after that many seconds the pointer is set back
+        // (setUp, settleLater): grey or purple, solid, its arrowhead to match
+        const settled = (key, stroke, head) => (settle.has(key) ? { 'data-settle': settle.get(key).toFixed(2), 'data-settled-stroke': stroke, 'data-settled-head': head } : {});
+        const onStack = (key) => (chain.has(key) ? { class: 'on-stack', stroke: 'var(--algo-accent)', 'marker-end': `url(#${most.marker}-accent)`,
+            ...settled(key, 'var(--algo-line)', `url(#${most.marker})`) } : {});
         // a pointer is the left or right field of its node: when it changes,
         // the arrow lets go of its node and snaps onto the new one
         for (const [id, node] of Object.entries(graph)) {
@@ -1511,7 +1511,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             }
             const centre = [x + w / 2, y + 9];
             if (v.to !== null && v.to !== undefined) svg.appendChild(arrow(`pointer-${v.name}`, `var-${v.name} node-${v.to}`, centre, point(v.to), { stroke: 'var(--algo-accent)', 'marker-end': `url(#${most.marker}-accent)`, ...(v.rigid ? { 'data-rigid': '' } : {}),
-                ...(chain.has(`pointer-${v.name}`) ? { class: settle.has(`pointer-${v.name}`) ? 'on-stack settling' : 'on-stack', ...(settle.has(`pointer-${v.name}`) ? { style: `--settle: ${settle.get(`pointer-${v.name}`).toFixed(2)}s; --settled-colour: var(--algo-accent); --settled-head: url(#${most.marker}-accent);` } : {}) } : {}) }));
+                ...(chain.has(`pointer-${v.name}`) ? { class: 'on-stack', ...settled(`pointer-${v.name}`, 'var(--algo-accent)', `url(#${most.marker}-accent)`) } : {}) }));
             labels.push(el('svg:rect', { 'data-solid': '', 'data-key': `var-${v.name}`, x, y, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
             labels.push(el('svg:text', { 'data-key': `var-${v.name}-label`, x: centre[0], y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: v.name }));
         }
@@ -2017,6 +2017,24 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         if (links) window.addEventListener('resize', () => follow(0));
         widget.setAttribute('data-stepper', '');
         let index = 0;
+        // On the way back the pointers of the stack's way settle one after
+        // another once their pulse has passed (data-settle, drawTree); a new
+        // step cancels what is still waiting. Without movement, at once.
+        let settling = [];
+        const settleLater = (animate) => {
+            for (const timer of settling) clearTimeout(timer);
+            settling = [];
+            for (const path of picture.querySelectorAll('[data-settle]')) {
+                const done = () => {
+                    path.classList.remove('on-stack');
+                    path.setAttribute('stroke', path.dataset.settledStroke);
+                    path.setAttribute('marker-end', path.dataset.settledHead);
+                };
+                const wait = Number(path.dataset.settle) * 1000;
+                if (!animate || matchMedia('(prefers-reduced-motion: reduce)').matches) done();
+                else settling.push(setTimeout(done, wait));
+            }
+        };
         // a step without code (the start) shows the code of the first
         // operation, no line marked, so that the code box stays where it is
         const firstCode = frames.find((f) => f.code && f.code.lines);
@@ -2032,6 +2050,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             }
             message.textContent = frame.message;
             if (links) follow((frame.duration || MOTION_TIME) * 2 + 600);
+            settleLater(animate);
             ticks.forEach((tick, i) => { tick.className = `algo-tick${'start' in tick.dataset ? ' start' : ''}${i < index ? ' done' : i === index ? ' current' : ''}`; });
             for (const { section, node } of names) node.classList.toggle('current', section.steps.includes(index));
             for (const part of parts) { part.node.classList.toggle('current', part.steps.includes(index)); part.bracket.classList.toggle('current', part.steps.includes(index)); }
