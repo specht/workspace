@@ -5398,7 +5398,8 @@ div[data-stepper] :not(pre) > code:not([class]),
 /* a person without a free photo: the text alone, no silhouette */
 .person:not(:has(img)) { display: block; }
 /* two people in one box (Lempel and Ziv, Adelson-Velski and Landis) */
-.person.pair { grid-template-columns: 13.4em minmax(0, 1fr); }
+/* as wide as its portraits: two or three */
+.person.pair { grid-template-columns: auto minmax(0, 1fr); }
 .person .portraits { display: flex; gap: 0.4em; }
 .person .portraits img { width: 6.5em; }
 .person .person-credit { font-size: 0.85em; color: var(--bs-secondary-color); margin: 0; }
