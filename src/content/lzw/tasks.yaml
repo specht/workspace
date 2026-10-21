@@ -9,10 +9,9 @@ tasks:
     title: Von Hand
     prediction: true
     prompt: |
-      Komprimiere `ABABABA` von Hand, nach den drei Regeln, bevor du es oben
-      in die Zeitlupe tippst. »A« ist das Byte 65, »B« das Byte 66.
-      Welche Codes kommen heraus? Schreib sie mit Leerzeichen dazwischen,
-      dann sieh in der Zeitlupe nach.
+      Komprimiere `ABABABA` von Hand, nach den drei Regeln. »A« ist das Byte
+      65, »B« das Byte 66. Welche Codes kommen heraus? Schreib sie mit
+      Leerzeichen dazwischen.
     check:
       type: answer
       compare: regex

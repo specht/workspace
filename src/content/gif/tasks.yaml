@@ -36,26 +36,26 @@ tasks:
   - id: neuer-code
     title: Ein Code, den es noch nicht gibt
     prompt: |
-      Bei der Diskette sind die ersten Codes 4, 1 und 6. Nach dem Clear Code 4
-      und dem Pixel 1 hat die Tabelle die Einträge 0 bis 5, aber noch keinen
-      Eintrag 6. Wofür steht der Code 6?
+      Ein anderes Bild mit vier Farben beginnt mit den Codes 4, 3 und 6. Nach
+      dem Clear Code 4 und dem Pixel 3 hat die Tabelle die Einträge 0 bis 5,
+      aber noch keinen Eintrag 6. Wofür steht der Code 6?
     prediction: true
     check:
       type: choice
       options:
-        - Für den Eintrag, der gerade entsteht, den vorigen Eintrag mit dessen erstem Pixel dahinter, also 1 1
+        - Für den Eintrag, der gerade entsteht, den vorigen Eintrag mit dessen erstem Pixel dahinter, also 3 3
         - Für die Farbe 6 der Farbtabelle
         - Für einen Fehler in der Datei, der Decoder muss abbrechen
         - Für ein Pixel, das übersprungen wird
       correct: 0
     feedback:
       - when: { picked: 1 }
-        say: Die Diskette hat nur vier Farben, 0 bis 3. Codes ab 6 stehen für Folgen von Pixeln.
+        say: Das Bild hat nur vier Farben, 0 bis 3. Codes ab 6 stehen für Folgen von Pixeln.
       - when: { picked: 2 }
         say: Ein Fehler wäre ein Code, der größer ist als der nächste freie Eintrag. Genau der nächste freie Eintrag ist erlaubt.
       - when: { picked: 3 }
         say: LZW überspringt nichts; jeder Code außer Clear und End steht für mindestens ein Pixel.
-    solution: 'Der Encoder hat nach dem ersten Pixel 1 den Eintrag 6 = 1 1 angelegt und ihn gleich benutzt, weil die nächsten beiden Pixel wieder 1 1 sind. Der Decoder kennt ihn noch nicht, kann ihn aber bauen: der vorige Eintrag (1) und dessen erstes Pixel (1).'
+    solution: 'Der Encoder hat nach dem ersten Pixel 3 den Eintrag 6 = 3 3 angelegt und ihn gleich benutzt, weil die nächsten beiden Pixel wieder 3 3 sind. Der Decoder kennt ihn noch nicht, kann ihn aber bauen: der vorige Eintrag (3) und dessen erstes Pixel (3). Die Zeitlupe oben zeigt dasselbe bei der Diskette.'
 
   - id: pruefsumme-diskette
     title: Die Diskette

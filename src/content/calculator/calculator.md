@@ -15,7 +15,7 @@ requires: [automata]
 </div>
 
 <style>
-    .calc-stepper input {
+    .calc-stepper select {
         font-family: '0xProto Nerd Font Mono', monospace;
         margin-bottom: 0.6em;
     }
@@ -109,9 +109,7 @@ open-site: /calculator
 tab: preview
 viewport: 1029x700
 zoom: 2
-click: selector:#calc-input
-press: Control+A
-type: 2 + 3 * 4
+select-option: #calc-input = 2 + 3 * 4
 hook: plain-tree
 sleep: 1
 crop-element: #calc-stepper .calc-tree svg
@@ -280,10 +278,10 @@ Den Ausdruck `2 + 3 * 4` schreibt der Rechner als Baum, in dem das, was zuerst g
 
 Jeder Knoten ist entweder eine Zahl, ein **Blatt**, oder eine Liste aus dem Rechenzeichen und den beiden Teilbäumen links und rechts. Ein Minus vor einer Zahl oder einer Klammer ist ein Vorzeichen mit nur einem Teilbaum: `-(1 + 2)` ist `["neg", ["+", 1, 2]]`. Klammern tauchen im Baum gar nicht mehr auf, sie stecken in seiner Form: `(2 + 3) * 4` ist `["*", ["+", 2, 3], 4]`.
 
-Probier es aus. Der Baum steht so, dass du den Ausdruck von links nach rechts lesen kannst. Mit den Pfeilen rechnest du ihn aus, einen Knoten nach dem anderen. Lila umrandet ist der Knoten, der als Nächstes drankommt: immer einer, unter dem nur noch Zahlen hängen.
+Probier es aus, mit einem der Ausdrücke oben. Der Baum steht so, dass du den Ausdruck von links nach rechts lesen kannst. Mit den Pfeilen rechnest du ihn aus, einen Knoten nach dem anderen. Lila umrandet ist der Knoten, der als Nächstes drankommt: immer einer, unter dem nur noch Zahlen hängen.
 
 <div class='calc-stepper' id='calc-stepper' data-stepper>
-<input class='form-control' type='text' id='calc-input' value='2 + 3 * (4 - 1)' aria-label='Ausdruck für den Baum' spellcheck='false' maxlength='60'>
+<select class='form-select' id='calc-input' aria-label='Ausdruck für den Baum'><option selected>2 + 3 * (4 - 1)</option><option>2 + 3 * 4</option><option>(2 + 3) * 4</option><option>12 + 3 * (4 - 1)</option><option>-(1 + 2) * 4</option><option>10 / 4 + 1</option></select>
 <div class='calc-controls'>
 <button class='btn btn-sm btn-success' data-go='first' aria-label='Zum Anfang'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
 <button class='btn btn-sm btn-success' data-go='prev' aria-label='Einen Schritt zurück'><i class='bi bi-chevron-left' style='margin-right: 0;'></i></button>

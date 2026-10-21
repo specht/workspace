@@ -23,7 +23,7 @@ duration: 2 Doppelstunden
         flex-wrap: wrap;
         margin-bottom: 0.6em;
     }
-    .lzw-input input {
+    .lzw-input select {
         flex: 1 1 16em;
         min-width: 0;
         font-family: '0xProto Nerd Font Mono', monospace;
@@ -132,11 +132,11 @@ Der Kompressor liest den Text Byte für Byte und merkt sich das **Präfix**, das
 2. Sonst gibt er den Code des Präfixes aus, trägt das Präfix mit dem neuen Byte als neuen Eintrag ein und beginnt ein neues Präfix, das nur aus dem neuen Byte besteht.
 3. Ist der Text zu Ende, gibt er den Code des letzten Präfixes aus.
 
-Probier es aus. Jeder Klick liest ein Byte; das gelbe ist das Präfix, das rot umrandete das nächste Byte. Du kannst auch einen eigenen Text eintippen.
+Probier es aus. Jeder Klick liest ein Byte; das gelbe ist das Präfix, das rot umrandete das nächste Byte. Oben kannst du einen anderen Text wählen.
 
 <div class='lzw-stepper' id='lzw-encode' data-stepper>
 <div class='lzw-input'>
-<input class='form-control' type='text' id='lzw-encode-input' value='RHABARBERBARBARABARBARBARENBARTBARBIER' aria-label='Text zum Komprimieren' spellcheck='false'>
+<select class='form-select' id='lzw-encode-input' aria-label='Text zum Komprimieren'><option selected>RHABARBERBARBARABARBARBARENBARTBARBIER</option><option>TOBEORNOTTOBEORTOBEORNOT</option><option>AAAAAAAA</option><option>MISSISSIPPI</option></select>
 </div>
 <div class='lzw-controls'>
 <button class='btn btn-sm btn-success' data-go='first' aria-label='Zum Anfang'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
@@ -268,7 +268,7 @@ _task(sonderfall)
 
 Der Kompressor kann einen Eintrag benutzen, den er gerade erst angelegt hat. Das passiert, wenn sich ein Präfix sofort wiederholt und dabei mit seinem eigenen ersten Byte weitergeht, wie bei `ABABABA`. Der Entpacker kennt diesen Eintrag noch nicht, aber er kann ihn ausrechnen: Es ist der vorige Eintrag mit dessen eigenem ersten Byte dahinter. Das ist die einzige Ausnahme von Regel 2.
 
-Hier entpackt die Zeitlupe die Codes des Texts, der oben im Feld steht; die Ausnahme ist rot markiert. Tipp oben `ABABABA` oder `AAAAAAAA` ein und sieh hier zu.
+Hier entpackt die Zeitlupe die Codes des Texts, der oben gewählt ist; die Ausnahme ist rot markiert. Wähle oben `AAAAAAAA` und sieh hier zu.
 
 <div class='lzw-stepper' id='lzw-decode' data-stepper>
 <div class='lzw-controls'>

@@ -17,7 +17,7 @@ duration: 2 Doppelstunden
     .hf-stepper {
         margin: 1em 0 1.5em;
     }
-    .hf-stepper input {
+    .hf-stepper select {
         font-family: '0xProto Nerd Font Mono', monospace;
         margin-bottom: 0.6em;
     }
@@ -150,10 +150,10 @@ Wie findet man die besten Codes, also die, mit denen ein Text so wenige Bits wie
 
 Den Code eines Bytes liest du auf dem Weg von oben zu seinem Blatt ab: links eine 0, rechts eine 1. Seltene Bytes werden früh zusammengefasst und landen tief unten, mit langen Codes; häufige kommen spät dazu und bleiben oben, mit kurzen. Und weil jedes Byte an einem Blatt hängt und nie auf dem Weg zu einem anderen liegt, ist die Tabelle von selbst präfixfrei.
 
-Probier es aus, mit dem Text unten oder einem eigenen. Lila umrandet sind die beiden Bäume, die als nächste zusammenkommen. Es zählen nur die Gewichte oben an den Bäumen: Sind zwei Bäume zusammengefasst, zählt ihre Summe, und ihre eigenen Zahlen werden blass.
+Probier es aus, mit einem der Texte oben. Lila umrandet sind die beiden Bäume, die als nächste zusammenkommen. Es zählen nur die Gewichte oben an den Bäumen: Sind zwei Bäume zusammengefasst, zählt ihre Summe, und ihre eigenen Zahlen werden blass.
 
 <div class='hf-stepper' id='hf-stepper' data-stepper>
-<input class='form-control' type='text' id='hf-input' value='RHABARBERBARBARA' aria-label='Text für den Huffman-Baum' spellcheck='false'>
+<select class='form-select' id='hf-input' aria-label='Text für den Huffman-Baum'><option selected>RHABARBERBARBARA</option><option>MISSISSIPPI</option><option>ANANAS</option><option>KOKOSNUSS</option><option>FISCHERS FRITZ FISCHT FRISCHE FISCHE</option></select>
 <div class='hf-controls'>
 <button class='btn btn-sm btn-success' data-go='first' aria-label='Zum Anfang'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
 <button class='btn btn-sm btn-success' data-go='prev' aria-label='Einen Schritt zurück'><i class='bi bi-chevron-left' style='margin-right: 0;'></i></button>
@@ -595,7 +595,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const say = root.querySelector('.hf-say');
         const forest = root.querySelector('.hf-forest');
         const table = root.querySelector('.hf-codes');
-        if (!step) { say.textContent = 'Tipp oben einen Text ein.'; forest.innerHTML = ''; live = null; table.innerHTML = ''; return; }
+        if (!step) { say.textContent = 'Wähle oben einen Text.'; forest.innerHTML = ''; live = null; table.innerHTML = ''; return; }
         const name = (t) => t.left ? `den Baum mit Gewicht ${t.weight}` : `»${esc(label(t.byte))}« (${t.weight})`;
         if (step.pick.length) {
             say.innerHTML = current === 0
