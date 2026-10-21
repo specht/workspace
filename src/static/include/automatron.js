@@ -643,7 +643,10 @@
     function nfaDrawing(nfa) {
         const edges = [];
         for (const [id, trans] of nfa.states) for (const [sym, set] of trans) for (const to of set) edges.push({ from: `q${id}`, to: `q${to}`, label: sym });
-        return { states: [...nfa.states.keys()].sort((x, y) => x - y).map((id) => ({ id: `q${id}`, label: `q${id}` })), start: `q${nfa.start}`, accept: [`q${nfa.accept}`], edges };
+        return { states: [...nfa.states.keys()].sort((x, y) => x - y).map((id) => ({ id: `q${id}`, label: `q${id}` })), start: `q${nfa.start}`, accept: [`q${nfa.accept}`], edges,
+            // numbered along its arrows: columns by the longest way, so that
+            // it reads as the construction built it
+            columns: 'order' };
     }
 
     // without the error state and the arrows into it

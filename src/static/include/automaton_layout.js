@@ -32,7 +32,66 @@
     const NAME = /^([A-Za-z])(\d+|F)$/;
     const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
+    // Several starts for the order inside the columns (the sweeps settle
+    // in the nearest good order, not always in the best), the drawing that
+    // reads best kept: fewest crossings, no arrows on top of each other or
+    // past a state, no label on an arrow
     function layout(a, options = {}) {
+        const tries = a.states.length <= 12 ? 16 : a.states.length <= 30 ? 8 : 3;
+        // the tries without their labels (placing those takes the time),
+        // the best one again with them
+        // a NEA numbered along its arrows tries both kinds of columns: the
+        // longest way reads best for most, the distance from the start where
+        // choices nest (the lock's ten digits)
+        const modes = a.columns === 'order' ? ['order', 'distance'] : ['distance'];
+        let best = null;
+        for (const mode of modes) for (let variant = 0; variant < tries; variant++) {
+            const L = layoutOnce(a, options, variant, false, mode);
+            if (!best || L.score < best.score) best = { score: L.score, variant, mode };
+            if (best.score === 0) break;
+        }
+        return layoutOnce(a, options, best.variant, true, best.mode);
+    }
+
+    // how well a drawing reads: crossings, arrows running along each other
+    // or past a state, labels on arrows (lower is better)
+    // the box around some points, grown by m
+    const boundsOf = (pts, m = 0) => {
+        let [x0, y0, x1, y1] = [Infinity, Infinity, -Infinity, -Infinity];
+        for (const [x, y] of pts) { x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); }
+        return { x0: x0 - m, y0: y0 - m, x1: x1 + m, y1: y1 + m };
+    };
+    const meet = (a, b) => a.x0 <= b.x1 && b.x0 <= a.x1 && a.y0 <= b.y1 && b.y0 <= a.y1;
+    const inside = (b, [x, y]) => x >= b.x0 && x <= b.x1 && y >= b.y0 && y <= b.y1;
+
+    function badness(paths, pos) {
+        const segX = (a, b, c, d) => { const o = (p, q, r) => Math.sign((q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])); return o(a, b, c) !== o(a, b, d) && o(c, d, a) !== o(c, d, b); };
+        const states = [...pos.values()];
+        const free = (pt) => states.every((st) => Math.hypot(pt[0] - st[0], pt[1] - st[1]) >= R + 10);
+        const lines = paths.map((p) => p.own);
+        const boxes = lines.map((l) => boundsOf(l, 6));
+        let score = 0;
+        for (let i = 0; i < lines.length; i++) for (let j = i + 1; j < lines.length; j++) {
+            if (!meet(boxes[i], boxes[j])) continue;
+            const P = lines[i];
+            const Q = lines[j];
+            for (let m = 0; m < P.length - 1; m++) for (let n = 0; n < Q.length - 1; n++) if (segX(P[m], P[m + 1], Q[n], Q[n + 1]) && free(P[m])) score += 1;
+            let along = 0;
+            for (const pt of P) if (free(pt) && Q.some((q) => Math.hypot(q[0] - pt[0], q[1] - pt[1]) < 6)) along++;
+            if (along >= 4) score += 10;
+        }
+        for (const path of paths) {
+            if (path.loop) continue;
+            const box = boundsOf(path.own, R + 6);
+            for (const [id, st] of pos) if (id !== path.e.from && id !== path.e.to && inside(box, st) && path.own.some((pt) => Math.hypot(pt[0] - st[0], pt[1] - st[1]) < R + 6)) score += 20;
+            const b = path.box;
+            if (!b) continue;
+            for (const o of paths) if (o !== path && o.own.some((pt) => pt[0] > b.x && pt[0] < b.x + b.w && pt[1] > b.y && pt[1] < b.y + b.h)) score += 5;
+        }
+        return score;
+    }
+
+    function layoutOnce(a, options, variant, labels, mode) {
         const ring = options.ring || 0;
         const ids = a.states.map((s) => s.id);
         // the arrows between the same two states as one, their labels joined
@@ -51,14 +110,25 @@
         const out = new Map(ids.map((id) => [id, []]));
         for (const e of edges) out.get(e.from).push(e);
         for (const list of out.values()) list.sort((x, y) => (x.label < y.label ? -1 : 1));
-        // columns: the distance from the start
+        // columns: the distance from the start (a DEA: the shortest word
+        // that gets there); with columns: 'order' (Thompson's NEA, numbered
+        // along its arrows) the longest way along the arrows that go forward
+        // in the numbering, so that the main path is one row and a skip (the
+        // ε past a star) an arc over it, not a short cut to the end
         const depth = new Map([[a.start, 0]]);
-        const order = [a.start];
-        for (let i = 0; i < order.length; i++) {
-            for (const e of out.get(order[i]) || []) if (!depth.has(e.to)) { depth.set(e.to, depth.get(order[i]) + 1); order.push(e.to); }
+        let order = [a.start];
+        if (mode === 'order') {
+            const index = new Map(ids.map((id, i) => [id, i]));
+            for (const id of ids) if (!depth.has(id)) depth.set(id, 0);
+            for (const id of ids) for (const e of out.get(id)) if (index.get(e.to) > index.get(id)) depth.set(e.to, Math.max(depth.get(e.to), depth.get(id) + 1));
+            order = [...ids].sort((x, y) => depth.get(x) - depth.get(y) || index.get(x) - index.get(y));
+        } else {
+            for (let i = 0; i < order.length; i++) {
+                for (const e of out.get(order[i]) || []) if (!depth.has(e.to)) { depth.set(e.to, depth.get(order[i]) + 1); order.push(e.to); }
+            }
+            let last = Math.max(0, ...depth.values());
+            for (const id of ids) if (!depth.has(id)) { depth.set(id, ++last); order.push(id); }
         }
-        let last = Math.max(0, ...depth.values());
-        for (const id of ids) if (!depth.has(id)) { depth.set(id, ++last); order.push(id); }
         const columns = [];
         for (const id of order) (columns[depth.get(id)] = columns[depth.get(id)] || []).push(id);
         // y: a column centred, then every state moved towards the states it
@@ -71,6 +141,10 @@
             GAPY = Math.max(GAPY, 2 * longest + 20);
         }
         const y = new Map();
+        // the first try as found, the others from a shuffled order
+        let seed = variant * 7919 + 1;
+        const random = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+        if (variant > 0) for (const col of columns) for (let k = col.length - 1; k > 0; k--) { const j = Math.floor(random() * (k + 1)); [col[k], col[j]] = [col[j], col[k]]; }
         columns.forEach((col) => col.forEach((id, k) => y.set(id, (k - (col.length - 1) / 2) * GAPY)));
         // sweeps from the left (towards the states a state is reached from)
         // and from the right (towards the states it leads to), so that
@@ -160,15 +234,19 @@
             const mine = inColumn.filter((e) => depth.get(e.from) === c);
             const leaving = (dir) => routed.filter((e) => !e.loop && ((depth.get(e.from) === c && Math.sign(depth.get(e.to) - c) === dir) || (depth.get(e.to) === c && Math.sign(depth.get(e.from) - c) === dir))).length;
             const side = leaving(-1) < leaving(1) ? -1 : 1;
-            // the narrower inside: by span, then the one going down
-            const order = [...mine].sort((x, y) => Math.abs(rowOf(x.to) - rowOf(x.from)) - Math.abs(rowOf(y.to) - rowOf(y.from)) || rowOf(y.to) - rowOf(x.to));
-            let height = 26;
-            for (const e of order) {
+            // the narrower inside: by span, then the one going down; an arc
+            // goes outside those it overlaps (and their labels), at least a
+            // third as high as it is long, so that it rounds out
+            const byLength = [...mine].sort((x, y) => Math.abs(rowOf(x.to) - rowOf(x.from)) - Math.abs(rowOf(y.to) - rowOf(y.from)) || rowOf(y.to) - rowOf(x.to));
+            const interval = (e) => [Math.min(rowOf(e.from), rowOf(e.to)), Math.max(rowOf(e.from), rowOf(e.to))];
+            const done = [];
+            for (const e of byLength) {
+                const [lo, hi] = interval(e);
+                const under = done.filter((o) => { const [olo, ohi] = interval(o); return olo < hi - 1 && lo < ohi - 1; });
                 e.column = side;
-                e.height = height;
+                e.height = Math.max(26, (hi - lo) * 0.3, ...under.map((o) => o.height + longest + 28));
                 e.n = [side, 0];
-                // the next one outside this one and its label
-                height += longest + 28;
+                done.push(e);
             }
         }
         // loops: on top, or below when a state is right above
@@ -181,6 +259,9 @@
         // point; on every state, ends closer than 22° are pushed apart (a
         // loop's ends stay where they are), so that heads do not pile up
         const angleOf = (o, to) => Math.atan2(to[1] - o[1], to[0] - o[0]);
+        let points;
+        let paths;
+        const shape = () => {
         const ends = new Map(ids.map((id) => [id, []]));
         // the arrow into the start comes from the left
         ends.get(a.start).push({ fixed: true, angle: Math.PI });
@@ -266,8 +347,8 @@
             }
         }
         // the points of every arrow, for the labels to keep clear of
-        const points = [];
-        const paths = routed.map((e) => {
+        points = [];
+        paths = routed.map((e) => {
             const p = pos.get(e.from);
             const q = pos.get(e.to);
             if (e.loop) {
@@ -302,9 +383,48 @@
             const end = (inset) => `M${s0[0]} ${s0[1]} C${c0[0]} ${c0[1]} ${c1[0]} ${c1[1]} ${q[0] + u1[0] * inset} ${q[1] + u1[1] * inset}`;
             return { e, own, d: end(R + 2), end, at, normal: e.n };
         });
+        };
+        // The curves as they are drawn (after the ends were spread) keep
+        // clear of the states they do not join: one that passes a state
+        // bends further, or as an arc rises higher, and all are shaped again
+        for (let round = 0; ; round++) {
+            shape();
+            const passing = paths.filter((path) => {
+                if (path.loop) return false;
+                const box = boundsOf(path.own, R + 8);
+                return [...pos].some(([id, o]) => id !== path.e.from && id !== path.e.to && inside(box, o) && path.own.some((pt) => near(pt, o) < R + 8));
+            });
+            if (!passing.length || round === 12) break;
+            for (const { e } of passing) {
+                if (e.arc || e.column) e.height += 16;
+                else {
+                    e.bend += 14;
+                    const p = pos.get(e.from);
+                    const q = pos.get(e.to);
+                    e.c = [(p[0] + q[0]) / 2 + e.n[0] * 2 * e.bend, (p[1] + q[1]) / 2 + e.n[1] * 2 * e.bend];
+                }
+            }
+        }
+        if (!labels) return { score: badness(paths, pos) };
         // labels: outside their arrow (to its left), moved out until clear;
         // else on the other side
         const placed = [];
+        // each arrow's bounding box: an arrow far from a label is not
+        // measured point by point
+        for (const path of paths) {
+            const xs = path.own.map((pt) => pt[0]);
+            const ys = path.own.map((pt) => pt[1]);
+            path.bounds = { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) };
+        }
+        const gap = (b, o) => Math.hypot(Math.max(0, o.x - b.x - b.w, b.x - o.x - o.w), Math.max(0, o.y - b.y - b.h, b.y - o.y - o.h));
+        const nearestOther = (path, b, enough) => {
+            let least = Infinity;
+            for (const o of paths) {
+                if (o === path || gap(b, o.bounds) >= Math.min(least, enough)) continue;
+                for (const pt of o.own) least = Math.min(least, distance(b, pt));
+            }
+            return least;
+        };
         const box = (cx, cy, w) => ({ x: cx - w / 2, y: cy - 8, w, h: 15 });
         const distance = (b, [px, py]) => Math.hypot(Math.max(b.x - px, 0, px - b.x - b.w), Math.max(b.y - py, 0, py - b.y - b.h));
         // side by side, two labels would read as one: more room sideways
@@ -315,10 +435,11 @@
             const w = 7.8 * path.e.label.length + 4;
             const h = 15;
             let best = null;
+            let margin = -Infinity;
             const ts = path.loop ? [0.5] : [0.5, 0.42, 0.58, 0.34, 0.66];
             for (const side of [1, -1]) {
                 for (const t of ts) {
-                    for (let off = 9; off <= 25 && !best; off += 4) {
+                    for (let off = 9; off <= 25; off += 4) {
                         const [mx, my] = path.at(t);
                         // out along the normal by the box's own extent too
                         const ext = Math.abs(path.normal[0]) * w / 2 + Math.abs(path.normal[1]) * h / 2;
@@ -326,13 +447,15 @@
                         // clear of everything, and clearly nearer to its own
                         // arrow than to any other, so that it is read as its
                         const mine = Math.min(...path.own.map((pt) => distance(b, pt)));
-                        const others = Math.min(Infinity, ...paths.filter((o) => o !== path).flatMap((o) => o.own.map((pt) => distance(b, pt))));
+                        const others = nearestOther(path, b, mine + 30);
                         const ok = mine >= 4 && others >= Math.max(4, mine + 6) && [...pos.values()].every((o) => distance(b, o) >= R + ring + 4) && placed.every((o) => !overlap(b, o));
-                        if (ok) best = b;
+                        // of the clear places the least ambiguous: furthest
+                        // from other arrows compared with its own, near the
+                        // middle, on the left (the first side)
+                        const value = Math.min(others - mine, 24) - Math.abs(t - 0.5) * 10 - off * 0.15 - (side < 0 ? 2 : 0);
+                        if (ok && value > margin) { margin = value; best = b; }
                     }
-                    if (best) break;
                 }
-                if (best) break;
             }
             // nowhere clear: the place with the most room, never on a state
             // or another label, as near its own arrow as it can be
@@ -343,7 +466,7 @@
                     const ext = Math.abs(path.normal[0]) * w / 2 + Math.abs(path.normal[1]) * h / 2;
                     const b = box(mx + path.normal[0] * (off + ext - 6) * side, my + path.normal[1] * (off + ext - 6) * side, w);
                     const mine = Math.min(...path.own.map((pt) => distance(b, pt)));
-                    const others = Math.min(Infinity, ...paths.filter((o) => o !== path).flatMap((o) => o.own.map((pt) => distance(b, pt))));
+                    const others = nearestOther(path, b, 13);
                     const states = Math.min(...[...pos.values()].map((o) => distance(b, o) - R - ring));
                     const free = placed.every((o) => !overlap(b, o));
                     const value = (states < 4 ? -1000 + states : 0) + (free ? 0 : -500) + Math.min(others, 12) * 2 + Math.min(mine, 4) - Math.max(0, mine - 8) - off * 0.1;
@@ -357,7 +480,7 @@
         const xs = [...[...pos.values()].map((p) => p[0] - R - 44), ...[...pos.values()].map((p) => p[0] + R + 6), ...points.map((p) => p[0]), ...placed.flatMap((b) => [b.x, b.x + b.w])];
         const ys = [...[...pos.values()].flatMap((p) => [p[1] - R - 6, p[1] + R + 6]), ...points.map((p) => p[1]), ...placed.flatMap((b) => [b.y, b.y + b.h])];
         const view = [Math.min(...xs) - 8, Math.min(...ys) - 8, Math.max(...xs) - Math.min(...xs) + 16, Math.max(...ys) - Math.min(...ys) + 16];
-        return { pos, paths, view, accept: new Set(a.accept), start: a.start, states: a.states };
+        return { pos, paths, view, accept: new Set(a.accept), start: a.start, states: a.states, score: badness(paths, pos) };
     }
 
     // ε stays ε; several symbols in a run: a–c, 0–9

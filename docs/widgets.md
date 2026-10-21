@@ -245,7 +245,12 @@ only to look nice.
   above, back below), arcs within a row nested as in an arc diagram, arcs
   within a column beside it, loops on top; the gaps grow with the longest
   label; ends of arrows to different states keep the order of those states,
-  so that neighbouring arrows do not cross; a dense automaton (more than 50
+  so that neighbouring arrows do not cross; every arrow is checked as it is
+  drawn and bends further where it would pass a state; several orders inside
+  the columns are tried and the drawing with the fewest crossings, no arrows
+  on top of each other and no label on an arrow is kept (Thompson's NEA also
+  tries columns by the longest way along its numbering: one row, skips as
+  arcs above, star loops below); a dense automaton (more than 50
   states, or more arrows than 45 and 1.4 per state) is its transition table
   instead (Automatron's DEA for ten digits); the ring for the state (a NEA: a ring for every state it can be
   in, a new one coming out of the state it is reached from), the arrow
