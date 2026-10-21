@@ -927,7 +927,7 @@ _task(eigener-raum)
 
 <kbd>3</kbd> schaltet auf ein Bild für eine Rot-Cyan-Brille um: Jedes Auge sieht die Räume von seinem eigenen Platz aus, und dein Gehirn macht daraus Tiefe. Wie das funktioniert, steht in der Aktivität [3D-Grafik mit Anaglyphen](/anaglyph). Auch die Automap ist dann räumlich, wie ein Modell auf dem Tisch.
 
-Öffnest du die Seite im Browser einer VR-Brille, steht unten »ENTER VR«. Dann gehst du mit dem linken Stick, und hältst du dazu die linke Grifftaste oder drückst den Stick ein, läufst du; mit dem rechten Stick drehst du dich. Statt der Automap zeigt die rechte Grifftaste über deinem rechten Handgelenk eine kleine Karte der Umgebung, so gedreht wie das Bauwerk: Ein Gang, der auf ihr nach links führt, führt auch wirklich nach links. Du bist der Ring in ihrer Mitte. Damit das geht, muss die Brille die Adresse deiner Vorschau öffnen können.
+Öffnest du die Seite im Browser einer VR-Brille, steht unten »ENTER VR«. Dann gehst du mit dem linken Stick, und hältst du dazu den linken Abzug unter dem Zeigefinger oder drückst den Stick ein, läufst du; mit dem rechten Stick drehst du dich. Statt der Automap zeigt der rechte Abzug über deinem rechten Handgelenk eine kleine Karte der Umgebung, so gedreht wie das Bauwerk: Ein Gang, der auf ihr nach links führt, führt auch wirklich nach links. Du bist der Ring in ihrer Mitte. Damit das geht, muss die Brille die Adresse deiner Vorschau öffnen können.
 
 ## Im Maschinenraum
 
