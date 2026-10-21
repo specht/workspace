@@ -15,6 +15,8 @@ kind: reference
 Handgriffe, die viele Aktivitäten brauchen: das Terminal öffnen, eine Vorlage aus einem Git-Repository klonen, eine neue Version davon holen und die Live-Vorschau starten. Aktivitäten binden diese Abschnitte ein, damit sie überall gleich aussehen.
 </p>
 
+_person(gamma)
+
 ## Erste Schritte
 
 <!-- part: terminal-oeffnen -->

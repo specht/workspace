@@ -287,6 +287,8 @@ Die Stärke des Automaten ist auch seine Grenze: Er weiß nur, in welchem Zustan
 
 _task(grenzen)
 
+_person(turing)
+
 ## Das Zahlenschloss
 
 Am Fahrradkeller hängt ein Zahlenschloss mit Tastenfeld. Es hat keine Enter-Taste: Es geht auf, sobald die letzten vier getippten Ziffern der Code sind, 1213. Als Automat merkt es sich, wie viel vom Code schon stimmt: In q<sub>0</sub> noch nichts, in q<sub>1</sub> die erste Ziffer, 1, in q<sub>2</sub> die ersten zwei, 12, und so weiter bis q<sub>4</sub>, dem ganzen Code:

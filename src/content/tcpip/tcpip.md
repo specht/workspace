@@ -231,6 +231,8 @@ Bisher ging es um Pakete, die von einer Adresse zu einer anderen reisen. Darum k
 
 Jede Schicht benutzt die darunter und weiß nichts von denen darüber: IP trägt ein Paket zum Ziel, ohne zu wissen, dass ein Stück einer Webseite darin steckt. Zwei dieser Adressen hat dir `ifconfig` schon gezeigt, `ether` und `inet`. Die beiden mittleren Schichten geben dem Ganzen seinen Namen: **TCP/IP**.
 
+_person(cerf-kahn)
+
 _task(schichten)
 
 ### Ports

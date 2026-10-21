@@ -19,6 +19,8 @@ reference: [terminal]
 Pakete im Internet brauchen eine IP-Adresse, Menschen merken sich Namen. Wer übersetzt zwischen beiden? Du fragst mit <code>dig</code> nach der Adresse von hackschule.de, gehst den Weg der Frage selbst ab, von den Root-Servern über die Server für .de bis zu dem einen, der die Antwort wirklich kennt, und siehst, warum die zweite Frage schneller beantwortet wird als die erste.
 </p>
 
+_person(mockapetris)
+
 ## Vorbereitung
 
 Diese Aktivität setzt [TCP/IP-Verbindungen](/tcpip) fort: Was eine IP-Adresse ist und was `ping` tut, solltest du kennen. Du brauchst nur ein Terminal.

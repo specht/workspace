@@ -236,9 +236,17 @@ die Seite neu zu laden. Vorbild sind `src/content/rle/`, `huffman/` und
 
 ### Menschen hinter einem Namen
 
-Nennt eine Seite einen Menschen (die Thompson-Konstruktion, die Kleenesche
-Hülle, die Erfinderin einer Sprache), steht nach dem Absatz, der den Namen
-nennt, ein Kasten mit einem freien Foto und zwei, drei Sätzen, wer das war.
+Hat ein Mensch die Sache gemacht, um die es auf einer Seite oder in einem
+ihrer Abschnitte geht (die Thompson-Konstruktion, die Kleenesche Hülle, HTML,
+Quick Sort, die Sprache selbst), steht dort ein Kasten mit einem freien Foto
+und zwei, drei Sätzen, wer das war: nach dem Absatz, der den Namen oder die
+Sache nennt, oder am Ende des Abschnitts, wenn ein Absatz in Code oder eine
+Aufgabe übergeht. Der Kasten verrät keine Aufgabe; steht er vor ihr nah an
+der Lösung, kommt er hinter die Aufgabe. Ein Name allein reicht nicht: Wer
+nur nebenbei vorkommt oder mit der Sache der Seite nichts zu tun hat, bekommt
+keinen Kasten, und eine Seite sucht sich keine Person, weil es von ihr ein
+schönes Foto gibt. Gibt es keine Seite, um deren Sache es geht (George Boole,
+Jack Bresenham), gibt es keinen Kasten.
 Die Sätze knüpfen an das an, was Lernende aus dem Workspace kennen: »Du suchst
 im Terminal mit `grep`? Das hat er geschrieben.« Sie sagen genau, was die
 Person gemacht hat, mit dem Namen der Sache (»Git«, »den Huffman-Code«), nie
@@ -253,7 +261,9 @@ Kasten und Foto im selben Ordner. Eine Seite setzt den Kasten mit
 Handbuch-Bausteins. Auf der Seite Personen steht in jedem Kasten von selbst,
 auf welchen Seiten die Person vorkommt; versteckte und zurückgestellte Seiten
 zählen nicht mit. Über die Überschriften findet die Suche im Handbuch jeden
-Namen.
+Namen. Die Seite ordnet die Personen nach dem Geburtsjahr, in Abschnitten
+(»Geboren vor 1920«, »1920 bis 1939« …), bei zweien oder dreien nach dem
+ältesten; innerhalb eines Jahrs nach dem Namen.
 
 ```html
 <!-- part: thompson -->
@@ -267,8 +277,15 @@ Namen.
 <!-- /part -->
 ```
 
+Gibt es kein freies Foto (David Huffman, Edgar F. Codd), steht der Kasten
+ohne Bild da, nur mit dem Text, ohne Silhouette und ohne Platzhalter: Ein
+Schattenriss sähe aus wie ein Bild, das nicht geladen hat. Ohne `<img>` zeigt
+der Kasten den Text über die ganze Breite.
+
 Zwei Menschen in einem Kasten: `<div class='person pair'>` mit
-`<div class='portraits'>` um die beiden Fotos. Das Foto ist frei
+`<div class='portraits'>` um die beiden Fotos. Haben mehrere eine Sache
+gemacht und nur einer ein Foto (A*: Hart, Nilsson, Raphael), steht dieses
+eine Foto im Kasten, und der Text sagt, wer darauf ist. Das Foto ist frei
 (gemeinfrei, CC0, CC BY, CC BY-SA), meist von Wikimedia Commons, die
 Zeile darunter nennt Urheber, Jahr und Lizenz. Jedes Porträt ist 4:5, die
 Augen auf etwa 40 % der Höhe, 320 × 400 Pixel als WebP. Der Kasten steht im

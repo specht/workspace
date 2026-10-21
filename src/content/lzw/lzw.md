@@ -156,6 +156,8 @@ Bei der Rhabarberbarbara stehen nach dem ersten »BAR« für »BA«, »AR« und 
 
 _task(von-hand)
 
+_person(welch)
+
 ## Einrichten
 
 Lege im Terminal (<kbd>Strg</kbd><kbd>J</kbd>) einen Ordner an und öffne ihn mit <kbd>Strg</kbd><kbd>K</kbd> <kbd>Strg</kbd><kbd>O</kbd>:

@@ -20,6 +20,8 @@ reference: [yaml, html, css]
 Eine einzelne Webseite schreibt man von Hand. Bei zehn Seiten, die alle denselben Kopf, dieselbe Navigation und denselben Fuß haben, wird das mühsam. Mit Hugo schreibst du die Inhalte in Markdown und das Aussehen einmal als Vorlage; Hugo macht daraus eine fertige Website aus lauter HTML-Dateien. Du baust ein kleines Lexikon über die Planeten mit Navigation, Startseite und Schlagwörtern und veröffentlichst es.
 </p>
 
+_person(gruber)
+
 ## Warum Hugo?
 
 In [Statische Webseiten mit HTML & CSS](/static-website) hast du eine einzelne Seite gebaut. Stell dir vor, du schreibst ein kleines Lexikon über die Planeten: eine Seite für den Mars, eine für den Jupiter, eine für den Saturn. Jede Seite braucht denselben Kopf mit derselben Navigation, die zu allen anderen Seiten führt. Kommt ein vierter Planet dazu, musst du die Navigation in allen Seiten ändern, und vergisst du eine, fehlt dort der Link.

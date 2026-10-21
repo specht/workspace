@@ -313,6 +313,8 @@ template_name: des PixelRAM-Starters
 Das Graphics Interchange Format (GIF) stammt von 1987 und ist eines der ältesten Bildformate, die heute noch jeder Browser anzeigt. Ein GIF-Bild hat höchstens 256 Farben und ist verlustfrei mit LZW komprimiert: Ein Decoder bekommt jedes Pixel genau so zurück, wie es gespeichert wurde. In diesem Labor schreibst du in C einen Decoder, der eine GIF-Datei Byte für Byte liest, die Bilddaten entpackt und das Bild mit PixelRAM zeigt.
 </p>
 
+_person(wilhite)
+
 ## Grundlagen
 
 Ein GIF-Bild speichert für jedes Pixel keine Farbe, sondern eine Nummer. Welche Farbe zu welcher Nummer gehört, steht einmal in einer **Farbtabelle** am Anfang der Datei, mit höchstens 256 Einträgen. Das kennst du aus PixelRAM: Im Modus `pixel_indexed8` ist jedes Pixel eine Nummer in der Palette. Ein GIF passt deshalb genau in diesen Modus.

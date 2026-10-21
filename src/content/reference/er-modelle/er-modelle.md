@@ -14,6 +14,8 @@ kind: reference
 Wie du ein ER-Modell in einer <code>.er</code>-Datei schreibst, was die ER-Werkstatt daraus macht und wie sie Beziehungen in Tabellen übersetzt. Zum Nachschlagen; ein Feld zum Ausprobieren steht gleich darunter.
 </p>
 
+_person(chen)
+
 <!-- part: ausprobieren -->
 ## Ausprobieren
 

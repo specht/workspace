@@ -15,6 +15,8 @@ kind: reference
 Mit CSS legst du fest, wie der Inhalt aussieht: Farben, Schrift, Abstände, Rahmen und die Größe von Bildern. Wie du Dinge nebeneinander anordnest, steht unter Layout.
 </p>
 
+_person(wium-lie)
+
 Alles auf dieser Seite gilt für Webseiten und für Folien mit Shower. Jedes Beispiel zeigt rechts, wie es aussieht; mit dem Knopf <svg class='icon-slide' viewBox='0 0 24 24' aria-hidden='true'><rect x='3' y='4' width='18' height='12' rx='1.5'/><path d='M12 16v3.5M8.5 21l3.5-1.5 3.5 1.5M7 8.5h6M7 11.5h9'/></svg> in der Ecke des Bildes siehst du es als Folie.
 
 ## Grundlagen

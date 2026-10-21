@@ -93,12 +93,17 @@ address from `credentials.rb` and the code `123456`.
   everything that stays the same thing moves instead of popping. A widget never solves a task of its
   activity: it shows other examples than the tasks ask about, and where its
   input can be edited, the task's input must not give the answer either.
-- A person a page names (a construction, a law, a language) gets a box:
-  a part of the Handbuch page `reference/personen` (heading, `<div class='person'>`,
-  a free photo with a credit line, two or three sentences that tie the
-  person to what students know from the Workspace, »Du suchst mit `grep`?
-  Das hat er geschrieben.«), placed with `_person(name)` after the paragraph
-  that names the person; docs/aktivitaet-schreiben.md.
+- A person who made what a page or one of its sections is about (a
+  construction, a format, a language, an algorithm) gets a box there; a name
+  mentioned in passing does not, and neither does a person no page is about.
+  The box is a part of the Handbuch page `reference/personen` (heading,
+  `<div class='person'>`, a free photo with a credit line, two or three
+  sentences that tie the person to what students know from the Workspace,
+  »Du suchst mit `grep`? Das hat er geschrieben.«), placed with
+  `_person(name)` after the paragraph that names the person or the thing,
+  never before a task it would give away. Without a free photo the box is
+  text only, no silhouette. The Personen page is sorted by year of birth;
+  docs/aktivitaet-schreiben.md.
 - Invite optional experiments: where students have just got something
   working, a box `<div class='hint try'>` (»Ausprobieren:«) suggests a small
   change and what to watch for, so they see how it works by changing it.

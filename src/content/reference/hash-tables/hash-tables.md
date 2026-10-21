@@ -45,6 +45,8 @@ Für Strings rechnet man aus allen Zeichen eine Zahl, zum Beispiel so, dass jede
 
 Zwei Schlüssel im selben Bucket sind eine **Kollision**. Sie lassen sich nicht vermeiden: Es gibt mehr mögliche Schlüssel als Buckets. Beim **Chaining** (separate chaining) hält jeder Bucket eine kleine Liste, und alle Schlüssel, die dort landen, kommen in diese Liste.
 
+_person(luhn)
+
 ```pseudocode
 insert(k):
     b ← h(k)

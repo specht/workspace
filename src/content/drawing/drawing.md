@@ -422,6 +422,8 @@ window.addEventListener('DOMContentLoaded', function() {
 
 _task(bezier)
 
+_person(bezier)
+
 Wir zeichnen drei kubische Bézierkurven in verschiedenen Grüntönen. Bei jeder sind der erste und der letzte Punkt die Enden der Kurve, die beiden mittleren ziehen sie in ihre Richtung. Schreib den Code unter `fill_rect`:
 
 ```ruby

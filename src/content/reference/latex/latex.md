@@ -14,6 +14,8 @@ kind: reference
 LaTeX zum Nachschlagen: wie ein Dokument aufgebaut ist, Gliederung, Text, Listen, Tabellen, Bilder, Formeln, Einheiten, Diagramme, Quellen und Querverweise, das Seitenlayout für eine Facharbeit, Schriftarten und was die häufigsten Fehlermeldungen bedeuten. Dazu fertige Vorlagen für Bewerbung, Lebenslauf, Ausarbeitung und ein ganzes Buch.
 </p>
 
+_person(knuth-lamport)
+
 ## Arbeiten im Workspace
 
 <!-- part: latex-workshop -->

@@ -14,6 +14,8 @@ kind: reference
 Die wichtigsten Befehle von raylib zum Nachschlagen: Fenster und Spielschleife, Kamera und Formen in 3D, Farben, Tastatur und Maus, Zeit, Vektoren, Zusammenstöße, eigene Flächen, Texturen und Shader für Licht. Die Beispiele sind in C und passen zur raylib-Vorlage, die im Workspace zu einer Webseite übersetzt wird.
 </p>
 
+_person(santamaria)
+
 ## Grundlagen
 
 <!-- part: uebersetzen -->

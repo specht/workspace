@@ -150,6 +150,8 @@ Wie findet man die besten Codes, also die, mit denen ein Text so wenige Bits wie
 
 Den Code eines Bytes liest du auf dem Weg von oben zu seinem Blatt ab: links eine 0, rechts eine 1. Seltene Bytes werden früh zusammengefasst und landen tief unten, mit langen Codes; häufige kommen spät dazu und bleiben oben, mit kurzen. Und weil jedes Byte an einem Blatt hängt und nie auf dem Weg zu einem anderen liegt, ist die Tabelle von selbst präfixfrei.
 
+_person(huffman)
+
 Probier es aus, mit einem der Texte oben. Lila umrandet sind die beiden Bäume, die als nächste zusammenkommen. Es zählen nur die Gewichte oben an den Bäumen: Sind zwei Bäume zusammengefasst, zählt ihre Summe, und ihre eigenen Zahlen werden blass.
 
 <div class='hf-stepper' id='hf-stepper' data-stepper>

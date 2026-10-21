@@ -246,6 +246,8 @@ sleep: 1
 
 Dein Decoder wird ein Programm in C, das das Bild mit PixelRAM zeigt. Hast du schon [eine GIF-Datei decodiert](/gif), kennst du den Weg: Datei lesen, Block für Block, Bits lesen, Bild zeichnen. JPEG ist schwerer, weil das Bild nicht nur gepackt, sondern umgerechnet ist.
 
+_person(ahmed)
+
 ## Vorbereitung
 
 ### Die PixelRAM-Vorlage

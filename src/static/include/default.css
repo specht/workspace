@@ -5382,8 +5382,8 @@ table.automaton-table tbody th { text-align: left; white-space: nowrap; }
     border-radius: 0.4em;
 }
 .person p { grid-column: 2; margin: 0 0 0.5em; text-align: left; }
-/* a person without a free photo: the text alone */
-.person.no-photo { display: block; }
+/* a person without a free photo: the text alone, no silhouette */
+.person:not(:has(img)) { display: block; }
 /* two people in one box (Lempel and Ziv, Adelson-Velski and Landis) */
 .person.pair { grid-template-columns: 13.4em minmax(0, 1fr); }
 .person .portraits { display: flex; gap: 0.4em; }

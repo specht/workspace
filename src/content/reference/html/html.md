@@ -15,6 +15,8 @@ kind: reference
 Mit HTML beschreibst du, was auf einer Webseite oder einer Folie steht: Überschriften, Absätze, Listen, Links und Bilder. Wie es aussieht, regelt CSS. Such dir die Stelle heraus, die du gerade brauchst.
 </p>
 
+_person(berners-lee)
+
 Alles auf dieser Seite gilt für Webseiten und für Folien mit Shower gleichermaßen. Auf einer Webseite steht der Code im `<body>` deiner Datei `index.html`, auf einer Folie zwischen `<section class="slide">` und `</section>`. Jedes Beispiel zeigt rechts, wie es aussieht; mit dem Knopf <svg class='icon-slide' viewBox='0 0 24 24' aria-hidden='true'><rect x='3' y='4' width='18' height='12' rx='1.5'/><path d='M12 16v3.5M8.5 21l3.5-1.5 3.5 1.5M7 8.5h6M7 11.5h9'/></svg> in der Ecke des Bildes siehst du es als Folie statt als Webseite.
 
 ## Aufbau einer Seite

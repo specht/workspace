@@ -14,6 +14,8 @@ kind: reference
 Abfragen und Änderungen für MySQL zum Nachschlagen: Daten auswählen, filtern, sortieren, zählen und verbinden, Tabellen anlegen und füllen, und wie ein Programm Werte sicher in eine Abfrage gibt. Die Beispiele stammen aus den Datensätzen der Aktivitäten: die Länder der Welt und die Filmdatenbank (siehe <a href='/reference/datensaetze'>Datensätze</a>).
 </p>
 
+_person(codd)
+
 ## Mit der Datenbank arbeiten
 
 <!-- part: mycli -->

@@ -14,6 +14,8 @@ kind: reference
 JSON ist eine Schreibweise für Daten, die fast jede Sprache lesen und schreiben kann: Objekte, Listen, Texte, Zahlen. Programme schicken sich JSON über HTTP und WebSockets, und viele Dateien von Werkzeugen sind JSON. Hier stehen die Regeln, die häufigen Fehler, wie Ruby, JavaScript und Python JSON lesen und schreiben, und wie <code>jq</code> es im Terminal zeigt.
 </p>
 
+_person(crockford)
+
 ## Aufbau
 
 <!-- part: json-aufbau -->

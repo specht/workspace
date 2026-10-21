@@ -210,6 +210,8 @@ A* findet denselben Weg wie Dijkstra, ist aber nach sechs statt acht Knoten fert
 
 <!-- part: rundreise -->
 <!-- short: Die beste Reihenfolge für eine Rundreise: alle ausprobieren ((n − 1)! viele), der nächste Nachbar (schnell, oft schlecht), 2-opt (umdrehen, solange es kürzer wird). -->
+_person(hart-nilsson-raphael)
+
 ## Eine Rundreise
 
 Soll eine Reise durch mehrere Orte gehen und am Ende zurück zum Anfang, ist die beste Reihenfolge gesucht: das **Problem des Handlungsreisenden** (*Traveling Salesperson Problem*). Man rechnet zuerst mit einer der Suchen oben aus, wie weit es von jedem Ort zu jedem anderen ist, und schreibt das in eine Tabelle `distance[i][j]`. Danach braucht man den Graphen nicht mehr.
