@@ -46,15 +46,33 @@
         }
         return runs.map(([a, b]) => (a === b ? a : b.charCodeAt(0) === a.charCodeAt(0) + 1 ? `${a}, ${b}` : `${a}–${b}`)).join(', ');
     };
-    // q0 as q with a small 0
-    const stateLabel = (name, x, y, key) => {
-        const m = name.match(/^([A-Za-z]+)(\w*)$/);
-        const text = make('text', { 'data-key': key, x, y: y + 5, 'text-anchor': 'middle', 'font-size': 15, fill: 'var(--automaton-ink)' });
-        if (m && m[2]) {
-            text.appendChild(document.createTextNode(m[1]));
-            text.appendChild(make('tspan', { dy: '0.3em', 'font-size': '0.7em', text: m[2] }));
-        } else text.textContent = name;
+    // Names of states as q with a small 0 and in italics, as names in
+    // mathematics; the symbols the automaton reads stay upright, as on the
+    // tape. In a text: every name in it ('q0, q1')
+    const names = (text, value) => {
+        let low = false;
+        for (const part of String(value).split(/([A-Za-z]+\d+)/)) {
+            const m = part.match(/^([A-Za-z]+)(\d+)$/);
+            if (m) {
+                text.appendChild(make('tspan', { 'font-style': 'italic', ...(low ? { dy: '-0.3em' } : {}), text: m[1] }));
+                text.appendChild(make('tspan', { 'font-style': 'italic', dy: '0.3em', 'font-size': '0.7em', text: m[2] }));
+                low = true;
+            } else if (part) {
+                text.appendChild(make('tspan', { ...(low ? { dy: '-0.3em' } : {}), text: part }));
+                low = false;
+            }
+        }
         return text;
+    };
+    const stateLabel = (name, x, y, key) => names(make('text', { 'data-key': key, x, y: y + 5, 'text-anchor': 'middle', 'font-size': 15, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--automaton-ink)' }), name);
+    // the same in a message, as in the page's text: q<sub>0</sub>
+    const withNames = (message, states) => {
+        let out = message.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+        for (const s of states) {
+            const m = s.match(/^([A-Za-z]+)(\d+)$/);
+            if (m) out = out.replace(new RegExp(`\\b${s}\\b`, 'g'), `${m[1]}<sub>${m[2]}</sub>`);
+        }
+        return out;
     };
     const sets = (list) => list.join(', ');
 
@@ -114,101 +132,38 @@
         return steps;
     }
 
-    // The automaton in a row: an arrow to the next state straight (a
-    // little bent when one comes back), arrows further on above, arrows
-    // back below, a loop above its state
-    const GAP = 120;
-    const LEFT = 70;
+    // The automaton drawn by automaton_layout.js, as the drawings in the
+    // page: columns by the distance from the start, arrows bent to their
+    // left, labels clear of everything, also of the rings
     // the variables on top, the tape under them, the states under that
     const VARS = 6;
     const TAPE = 38;
-    const TOP = 150;
-    const R = 24;
-    // the ring around a state the automaton is in
+    const TOP = 82;
+    const R = window.AutomatonLayout.R;
+    // the ring around a state the automaton is in (stroke 3)
     const RING = R + 6;
     function geometry(a) {
-        const x = (s) => LEFT + a.states.indexOf(s) * GAP;
-        const pairs = new Map();
+        const edges = [];
         for (const [key, to] of a.delta) {
             const [from, symbol] = key.split(' ');
-            for (const t of to) {
-                const k = `${from} ${t}`;
-                pairs.set(k, (pairs.get(k) || '') + symbol);
-            }
+            for (const t of to) edges.push({ from, to: t, label: symbol });
         }
-        const edges = [...pairs].map(([k, symbols]) => {
-            const [from, to] = k.split(' ');
-            const [x1, x2] = [x(from), x(to)];
-            const label = shorten(symbols);
-            let path;
-            let lx;
-            let ly;
-            // path(inset): the arrow ending inset from the centre of its
-            // target (further out when the target wears a ring)
-            if (from === to) {
-                const angle = Math.atan2(-(R - 2), 10);
-                path = (inset) => `M${x1 - 10} ${TOP - R + 2} C${x1 - 34} ${TOP - 78} ${x1 + 34} ${TOP - 78} ${x1 + Math.cos(angle) * inset} ${TOP + Math.sin(angle) * inset}`;
-                [lx, ly] = [x1, TOP - 68];
-            } else {
-                const forward = x2 > x1;
-                const back = pairs.has(`${to} ${from}`);
-                const span = Math.abs(x2 - x1) / GAP;
-                // above going forward, below going back; a neighbour with no
-                // arrow back straight
-                const bend = span === 1 && forward && !back ? 0 : (forward ? -1 : 1) * (span === 1 ? 22 : 30 + 14 * span);
-                const mx = (x1 + x2) / 2;
-                const my = TOP + bend;
-                if (bend === 0) {
-                    path = (inset) => `M${x1 + R} ${TOP} L${x2 - inset} ${TOP}`;
-                    [lx, ly] = [mx, TOP - 8];
-                } else {
-                    // a curve whose middle is at my: its control point twice
-                    // as far from the line; it leaves and enters the circles
-                    // on their borders, aimed at the control point, so that
-                    // the head follows the curve
-                    const cy = 2 * my - TOP;
-                    const towards = (xa, r) => { const l = Math.hypot(mx - xa, cy - TOP); return [xa + ((mx - xa) / l) * r, TOP + ((cy - TOP) / l) * r]; };
-                    const [sx, sy] = towards(x1, R);
-                    path = (inset) => { const [tx, ty] = towards(x2, inset); return `M${sx} ${sy} Q${mx} ${cy} ${tx} ${ty}`; };
-                    [lx, ly] = [mx, bend < 0 ? my - 6 : my + 16];
-                }
-            }
-            const d = path(R + 2);
-            return { from, to, d, path, label, lx, ly, out: from === to || (x2 > x1) || Math.abs(x2 - x1) === 0 ? -1 : 1, key: `edge-${from}-${to}` };
-        });
-        // The labels clear of every arrow: points along each arrow (read from
-        // its path), and a label moves away from its arrow, in steps, until
-        // it keeps 4 units from all of them and from the states
-        const points = [];
-        for (const e of edges) {
-            const n = e.d.match(/-?\d+(?:\.\d+)?/g).map(Number);
-            const at = (u) => {
-                const v = 1 - u;
-                if (e.d.includes('C')) return [v ** 3 * n[0] + 3 * v * v * u * n[2] + 3 * v * u * u * n[4] + u ** 3 * n[6], v ** 3 * n[1] + 3 * v * v * u * n[3] + 3 * v * u * u * n[5] + u ** 3 * n[7]];
-                if (e.d.includes('Q')) return [v * v * n[0] + 2 * v * u * n[2] + u * u * n[4], v * v * n[1] + 2 * v * u * n[3] + u * u * n[5]];
-                return [n[0] + (n[2] - n[0]) * u, n[1] + (n[3] - n[1]) * u];
-            };
-            for (let u = 0; u <= 1.0001; u += 0.02) points.push(at(u));
-        }
-        const circles = a.states.map((s) => [x(s), TOP]);
-        const clearance = (cx, baseline, w) => {
-            const box = { x: cx - w / 2, y: baseline - 11, w, h: 14 };
-            const to = ([px, py]) => Math.hypot(Math.max(box.x - px, 0, px - box.x - box.w), Math.max(box.y - py, 0, py - box.y - box.h));
-            let least = Infinity;
-            for (const p of points) least = Math.min(least, to(p));
-            for (const c of circles) least = Math.min(least, to(c) - R);
-            return least;
+        const L = window.AutomatonLayout.layout({ states: a.states.map((id) => ({ id, label: id })), start: a.start, accept: [...a.accept], edges }, { ring: RING + 1.5 - R });
+        const [vx, vy, vw, vh] = L.view;
+        // wide enough for the longest word on the tape (16, the input's
+        // maxlength), so that the picture keeps its size while it is edited
+        const width = Math.max(vw, 26 * 16 + 16);
+        const dx = (width - vw) / 2 - vx;
+        const dy = TOP - vy;
+        const move = (d) => { let k = 0; return d.replace(/-?\d+(?:\.\d+)?(?:e-?\d+)?/g, (n) => String(Math.round((Number(n) + (k++ % 2 === 0 ? dx : dy)) * 10) / 10)); };
+        const pos = new Map([...L.pos].map(([id, [x, y]]) => [id, [x + dx, y + dy]]));
+        return {
+            pos: (s) => pos.get(s),
+            edges: L.paths.map((p) => ({ from: p.e.from, to: p.e.to, label: p.e.label, d: move(p.d), path: (inset) => move(p.end(inset)),
+                lx: p.box.x + p.box.w / 2 + dx, ly: p.box.y + 12 + dy, key: `edge-${p.e.from}-${p.e.to}` })),
+            width,
+            height: TOP + vh,
         };
-        for (const e of edges) {
-            const w = 7.8 * e.label.length + 4;
-            let k = 0;
-            while (k < 12 && clearance(e.lx, e.ly + e.out * 3 * k, w) < 4) k++;
-            e.ly += e.out * 3 * k;
-        }
-        const width = LEFT * 2 + (a.states.length - 1) * GAP;
-        // room under the row for the arrows back
-        const below = edges.some((e) => a.states.indexOf(e.to) < a.states.indexOf(e.from)) ? 70 : 34;
-        return { x, edges, width, height: TOP + R + below };
     }
 
     function draw(svg, a, geo, word, step, marker) {
@@ -236,7 +191,8 @@
             svg.appendChild(make('rect', { 'data-key': `var-${name}`, x: vx, y: VARS, width: w, height: 20, rx: 4, fill: 'var(--automaton-paper)', stroke: 'var(--automaton-accent)', 'stroke-width': 1.5 }));
             svg.appendChild(make('line', { 'data-key': `var-${name}-split`, x1: split, y1: VARS, x2: split, y2: VARS + 20, stroke: 'var(--automaton-accent)', 'stroke-width': 1 }));
             svg.appendChild(make('text', { 'data-key': `var-${name}-label`, x: vx + 5 + 3.75 * name.length, y: VARS + 14, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--automaton-accent)', text: name }));
-            svg.appendChild(make('text', { 'data-key': `var-${name}-value`, x: split + (vx + w - split) / 2, y: VARS + 14, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 600, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--automaton-ink)', text: String(value) }));
+            const text = make('text', { 'data-key': `var-${name}-value`, x: split + (vx + w - split) / 2, y: VARS + 14, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 600, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--automaton-ink)' });
+            svg.appendChild(name === 'symbol' ? (text.textContent = value, text) : names(text, value));
             vx += w + 8;
         }
         // the arrows, the ones just taken purple
@@ -250,22 +206,22 @@
         step.used.forEach(([f, t], i) => svg.appendChild(make('path', { 'data-key': `pulse-${i}`, 'data-pulse': `edge-${f}-${t}`, 'data-delay': 0, 'data-length': 0.85, 'data-swell': 2.5, d: 'M0 0', opacity: 0 })));
         for (const e of geo.edges) svg.appendChild(make('text', { 'data-key': `label-${e.key}`, x: e.lx, y: e.ly, 'text-anchor': 'middle', 'font-size': 13, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: used.has(e.key) ? 'var(--automaton-accent)' : 'var(--automaton-ink)', 'font-weight': used.has(e.key) ? 700 : 400, text: e.label }));
         // the start: an arrow from the left
-        const sx = geo.x(a.start);
-        svg.appendChild(make('path', { 'data-key': 'start', d: `M${sx - R - 34} ${TOP} L${sx - R - 2} ${TOP}`, fill: 'none', stroke: 'var(--automaton-line)', 'stroke-width': 1.6, 'marker-end': `url(#${marker})` }));
+        const [sx, sy] = geo.pos(a.start);
+        svg.appendChild(make('path', { 'data-key': 'start', d: `M${sx - R - 34} ${sy} L${sx - (step.states.includes(a.start) ? RING + 3.5 : R + 2)} ${sy}`, fill: 'none', stroke: 'var(--automaton-line)', 'stroke-width': 1.6, 'marker-end': `url(#${marker})` }));
         // the states; at the end a state that accepts the word green
         for (const s of a.states) {
-            const x = geo.x(s);
+            const [x, y] = geo.pos(s);
             const won = step.end && step.accepted && step.states.includes(s) && a.accept.has(s);
-            svg.appendChild(make('circle', { 'data-key': `state-${s}`, cx: x, cy: TOP, r: R, fill: won ? 'var(--automaton-yes)' : 'var(--automaton-paper)', stroke: 'var(--automaton-ink)', 'stroke-width': 1.5 }));
-            if (a.accept.has(s)) svg.appendChild(make('circle', { 'data-key': `accept-${s}`, cx: x, cy: TOP, r: R - 4, fill: 'none', stroke: 'var(--automaton-ink)', 'stroke-width': 1.2 }));
-            svg.appendChild(stateLabel(s, x, TOP, `name-${s}`));
+            svg.appendChild(make('circle', { 'data-key': `state-${s}`, cx: x, cy: y, r: R, fill: won ? 'var(--automaton-yes)' : 'var(--automaton-paper)', stroke: 'var(--automaton-ink)', 'stroke-width': 1.5 }));
+            if (a.accept.has(s)) svg.appendChild(make('circle', { 'data-key': `accept-${s}`, cx: x, cy: y, r: R - 4, fill: 'none', stroke: 'var(--automaton-ink)', 'stroke-width': 1.2 }));
+            svg.appendChild(stateLabel(s, x, y, `name-${s}`));
         }
         // the rings: where the automaton is (a NEA: everywhere it can be);
         // a new one comes out of the state it is reached from
         for (const s of step.states) {
             const from = step.used.find(([, t]) => t === s);
             const key = a.nfa ? `ring-${s}` : 'ring';
-            svg.appendChild(make('circle', { 'data-key': key, 'data-grow': '', ...(a.nfa && from ? { 'data-from': `ring-${from[0]}` } : {}), cx: geo.x(s), cy: TOP, r: RING, fill: 'none', stroke: 'var(--automaton-accent)', 'stroke-width': 3 }));
+            svg.appendChild(make('circle', { 'data-key': key, 'data-grow': '', ...(a.nfa && from ? { 'data-from': `ring-${from[0]}` } : {}), cx: geo.pos(s)[0], cy: geo.pos(s)[1], r: RING, fill: 'none', stroke: 'var(--automaton-accent)', 'stroke-width': 3 }));
         }
         svg.setAttribute('viewBox', `0 0 ${geo.width} ${geo.height}`);
     }
@@ -294,7 +250,7 @@
             draw(next, a, geo, word, step, marker);
             if (window.StepperMotion) window.StepperMotion.morph(picture, next, { duration: animate ? 700 : 0 });
             else { picture.setAttribute('viewBox', next.getAttribute('viewBox')); picture.replaceChildren(...next.childNodes); }
-            say.textContent = step.message;
+            say.innerHTML = withNames(step.message, a.states);
             say.classList.toggle('yes', !!step.end && step.accepted);
             say.classList.toggle('no', !!step.end && !step.accepted);
             counter.textContent = `Schritt ${current} von ${steps.length - 1}`;

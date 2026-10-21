@@ -5267,6 +5267,40 @@ img.minicpu-shot.medium {
 .automaton .edge polygon { fill: var(--automaton-line); stroke: var(--automaton-line); }
 .automaton .edge text { fill: var(--automaton-label); }
 
+/* State diagrams from automaton_layout.js (drawings in pages, Automatron),
+   in the colours of the automaton stepper; the transition table for an
+   automaton too big to draw */
+.automaton-drawn {
+    --automaton-line: #868e96;
+    --automaton-ink: var(--bs-body-color);
+    --automaton-paper: var(--bs-body-bg);
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 1em auto;
+}
+html[data-bs-theme="dark"] .automaton-drawn { --automaton-line: #8b949e; }
+.automaton-drawn .automaton-arrow { fill: none; stroke: var(--automaton-line); stroke-width: 1.6; }
+.automaton-drawn .automaton-head { fill: var(--automaton-line); }
+.automaton-drawn .automaton-label,
+.automaton-drawn .automaton-name { fill: var(--automaton-ink); }
+.automaton-drawn .automaton-state { fill: var(--automaton-paper); stroke: var(--automaton-ink); stroke-width: 1.5; }
+.automaton-drawn .automaton-accepting { fill: none; stroke: var(--automaton-ink); stroke-width: 1.2; }
+.automaton-drawing { overflow-x: auto; }
+table.automaton-table {
+    border-collapse: collapse;
+    margin: 0.5em 0 1em;
+    font-variant-numeric: tabular-nums;
+}
+table.automaton-table th,
+table.automaton-table td {
+    border: 1px solid var(--bs-border-color);
+    padding: 0.15em 0.6em;
+    text-align: center;
+}
+table.automaton-table thead th { background: var(--bs-tertiary-bg); }
+table.automaton-table tbody th { text-align: left; white-space: nowrap; }
+
 /* The box that _tool(name) puts into a page (Tools in tools.rb); it opens
    the tool in a new tab. */
 

@@ -47,43 +47,8 @@ Alle Dateien dieser Aktivität kommen in diesen Ordner. Ein Programm startest du
 
 Das Drehkreuz am Eingang zum Schwimmbad ist erst zu. Wirfst du eine Münze ein, ist es offen; gehst du durch (»drücken«), ist es wieder zu. Drückst du, ohne zu zahlen, bleibt es zu, und eine zweite Münze in ein offenes Drehkreuz ist verschenkt. Als Bild, mit einem Kreis für jeden Zustand und einem Pfeil für jeden Übergang. Die Zustände heißen, wie in der Informatik üblich, q<sub>0</sub>, q<sub>1</sub> und so weiter; q<sub>0</sub> ist »zu«, q<sub>1</sub> ist »offen«:
 
-<svg class="automaton" role="img" aria-label="Zwei Kreise: q0 für zu und q1 für offen. Ein Pfeil ohne Anfang zeigt auf q0, dort beginnt das Drehkreuz. münze führt von q0 nach q1, drücken von q1 zurück nach q0. drücken in q0 und münze in q1 führen jeweils im Bogen zum selben Zustand zurück." style="max-width: 22em; width: 100%; margin: 1em auto;"
- viewBox="0.00 0.00 250.72 98.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 94)">
-<g id="node2" class="node state">
-<ellipse fill="white" stroke="black" cx="66.72" cy="-29" rx="29" ry="29"/>
-<text text-anchor="middle" x="66.72" y="-25.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">0</tspan></text>
-</g>
-<g id="edge1" class="edge">
-<path fill="none" stroke="black" d="M0.77,-29C1.68,-29 15.69,-29 30.46,-29"/>
-<polygon fill="black" stroke="black" points="30.72,-31.45 37.72,-29 30.72,-26.55 30.72,-31.45"/>
-</g>
-<g id="edge4" class="edge">
-<path fill="none" stroke="black" d="M58.11,-56.99C57.83,-67.42 60.7,-76 66.72,-76 71.23,-76 73.98,-71.17 74.95,-64.36"/>
-<polygon fill="black" stroke="black" points="77.41,-64.1 75.33,-56.99 72.52,-63.85 77.41,-64.1"/>
-<text text-anchor="middle" x="66.72" y="-79.6" font-size="13.00">drücken</text>
-</g>
-<g id="node3" class="node state">
-<ellipse fill="white" stroke="black" cx="213.72" cy="-29" rx="29" ry="29"/>
-<text text-anchor="middle" x="213.72" y="-25.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">1</tspan></text>
-</g>
-<g id="edge2" class="edge">
-<path fill="none" stroke="black" d="M96.02,-29C119.28,-29 152.34,-29 177.34,-29"/>
-<polygon fill="black" stroke="black" points="177.49,-31.45 184.49,-29 177.49,-26.55 177.49,-31.45"/>
-<text text-anchor="middle" x="140.22" y="-32.6" font-size="13.00">münze</text>
-</g>
-<g id="edge3" class="edge">
-<path fill="none" stroke="black" d="M186.95,-16.98C180.48,-14.51 173.46,-12.27 166.72,-11 143.57,-6.63 136.87,-6.63 113.72,-11 109.3,-11.83 104.75,-13.08 100.32,-14.54"/>
-<polygon fill="black" stroke="black" points="99.26,-12.32 93.49,-16.98 100.91,-16.94 99.26,-12.32"/>
-<text text-anchor="middle" x="140.22" y="-14.6" font-size="13.00">drücken</text>
-</g>
-<g id="edge5" class="edge">
-<path fill="none" stroke="black" d="M200.38,-55.1C199.29,-66.36 203.74,-76 213.72,-76 221.52,-76 225.94,-70.12 226.98,-62.17"/>
-<polygon fill="black" stroke="black" points="229.43,-62.13 227.06,-55.1 224.53,-62.07 229.43,-62.13"/>
-<text text-anchor="middle" x="213.72" y="-79.6" font-size="13.00">münze</text>
-</g>
-</g>
-</svg>
+<div class='automaton-drawing' role='img' aria-label='Zwei Kreise: q0 für zu und q1 für offen. Ein Pfeil ohne Anfang zeigt auf q0, dort beginnt das Drehkreuz. münze führt von q0 nach q1, drücken von q1 zurück nach q0. drücken in q0 und münze in q1 führen jeweils im Bogen zum selben Zustand zurück.' data-states='q0 q1' data-start='q0' data-accept='' data-transitions='q0 drücken q0, q0 münze q1, q1 drücken q0, q1 münze q1'></div>
+<script src='/include/automaton_layout.js'></script>
 
 <!-- language: ruby -->
 Lege `turnstile.rb` an:
@@ -201,58 +166,7 @@ Das Drehkreuz macht etwas. Viele Automaten beantworten stattdessen eine Frage ü
 
 Hier ist ein Automat, der Binärzahlen liest und annimmt, wenn sie durch 3 teilbar sind:
 
-<svg class="automaton" role="img" aria-label="Drei Kreise q0, q1 und q2 für die Reste 0, 1 und 2; q0 ist der Start und hat einen doppelten Rand, weil dort Zahlen enden, die durch 3 teilbar sind. Von q0 führt 0 zurück zu q0 und 1 zu q1. Von q1 führt 1 zu q0 und 0 zu q2. Von q2 führt 0 zu q1 und 1 zurück zu q2." style="max-width: 24em; width: 100%; margin: 1em auto;"
- viewBox="0.00 0.00 251.72 84.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 80)">
-<g id="node2" class="node accept">
-<ellipse fill="white" stroke="black" cx="59.72" cy="-22" rx="18" ry="18"/>
-<ellipse fill="none" stroke="black" cx="59.72" cy="-22" rx="22" ry="22"/>
-<text text-anchor="middle" x="59.72" y="-18.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">0</tspan></text>
-</g>
-<g id="edge1" class="edge">
-<path fill="none" stroke="black" d="M0.89,-22C2.56,-22 16.6,-22 30.43,-22"/>
-<polygon fill="black" stroke="black" points="30.58,-24.45 37.58,-22 30.58,-19.55 30.58,-24.45"/>
-</g>
-<g id="edge2" class="edge">
-<path fill="none" stroke="black" d="M52.4,-42.99C51.5,-53.09 53.94,-62 59.72,-62 64.06,-62 66.51,-56.99 67.09,-50.22"/>
-<polygon fill="black" stroke="black" points="69.54,-49.97 67.04,-42.99 64.64,-50.01 69.54,-49.97"/>
-<text text-anchor="middle" x="59.72" y="-65.6" font-size="13.00">0</text>
-</g>
-<g id="node3" class="node state">
-<ellipse fill="white" stroke="black" cx="144.72" cy="-22" rx="18" ry="18"/>
-<text text-anchor="middle" x="144.72" y="-18.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">1</tspan></text>
-</g>
-<g id="edge3" class="edge">
-<path fill="none" stroke="black" d="M82.09,-22C93.55,-22 107.71,-22 119.56,-22"/>
-<polygon fill="black" stroke="black" points="119.6,-24.45 126.6,-22 119.6,-19.55 119.6,-24.45"/>
-<text text-anchor="middle" x="104.22" y="-25.6" font-size="13.00">1</text>
-</g>
-<g id="edge4" class="edge">
-<path fill="none" stroke="black" d="M129,-12.46C122.97,-9.08 115.76,-5.7 108.72,-4 100.91,-2.11 92.63,-3.79 85.19,-6.77"/>
-<polygon fill="black" stroke="black" points="83.96,-4.64 78.63,-9.79 86.01,-9.09 83.96,-4.64"/>
-<text text-anchor="middle" x="104.22" y="-7.6" font-size="13.00">1</text>
-</g>
-<g id="node4" class="node state">
-<ellipse fill="white" stroke="black" cx="225.72" cy="-22" rx="18" ry="18"/>
-<text text-anchor="middle" x="225.72" y="-18.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">2</tspan></text>
-</g>
-<g id="edge5" class="edge">
-<path fill="none" stroke="black" d="M162.86,-22C173.84,-22 188.24,-22 200.39,-22"/>
-<polygon fill="black" stroke="black" points="200.61,-24.45 207.61,-22 200.61,-19.55 200.61,-24.45"/>
-<text text-anchor="middle" x="185.22" y="-25.6" font-size="13.00">0</text>
-</g>
-<g id="edge6" class="edge">
-<path fill="none" stroke="black" d="M210.81,-11.38C202.33,-6.16 191.15,-1.48 180.72,-4 175.99,-5.14 171.18,-7.05 166.71,-9.19"/>
-<polygon fill="black" stroke="black" points="165.52,-7.05 160.44,-12.46 167.78,-11.4 165.52,-7.05"/>
-<text text-anchor="middle" x="185.22" y="-7.6" font-size="13.00">0</text>
-</g>
-<g id="edge7" class="edge">
-<path fill="none" stroke="black" d="M218.69,-38.66C217.13,-48.62 219.47,-58 225.72,-58 230.41,-58 232.9,-52.73 233.19,-45.89"/>
-<polygon fill="black" stroke="black" points="235.62,-45.5 232.75,-38.66 230.73,-45.8 235.62,-45.5"/>
-<text text-anchor="middle" x="225.72" y="-61.6" font-size="13.00">1</text>
-</g>
-</g>
-</svg>
+<div class='automaton-drawing' role='img' aria-label='Drei Kreise q0, q1 und q2 für die Reste 0, 1 und 2; q0 ist der Start und hat einen doppelten Rand, weil dort Zahlen enden, die durch 3 teilbar sind. Von q0 führt 0 zurück zu q0 und 1 zu q1. Von q1 führt 1 zu q0 und 0 zu q2. Von q2 führt 0 zu q1 und 1 zurück zu q2.' data-states='q0 q1 q2' data-start='q0' data-accept='q0' data-transitions='q0 0 q0, q0 1 q1, q1 1 q0, q1 0 q2, q2 0 q1, q2 1 q2'></div>
 
 Wie kann er das, ohne zu rechnen? Sein Zustand ist der **Rest**, der bisher beim Teilen durch 3 bleibt: In q<sub>0</sub> ist der Rest 0, in q<sub>1</sub> ist er 1, in q<sub>2</sub> ist er 2. Liest er von links eine weitere Ziffer, verdoppelt sich die Zahl, und die Ziffer kommt dazu: Aus `11` (3) wird mit einer `0` die `110` (6), mit einer `1` die `111` (7). Mit dem Rest passiert dasselbe: Aus Rest `r` wird mit der Ziffer `d` der Rest von `2 · r + d`, und der Automat geht in den Zustand mit diesem Rest als Index. Mehr als den Rest muss sich der Automat nicht merken. Für `110`:
 
@@ -500,61 +414,7 @@ Automatron zeigt nacheinander drei Automaten und gibt jedem einen eigenen Buchst
 
 Beim Schloss steckte die Arbeit in den Pfeilen zurück. Es geht auch anders, wenn der Automat raten darf: In q<sub>0</sub> wartet er. Kommt eine 1, *könnte* hier der Code anfangen, oder auch nicht. Der Automat nimmt einfach beides: Er bleibt in q<sub>0</sub> und geht zugleich nach q<sub>1</sub>. Ab da folgt er dem Code; passt eine Ziffer nicht, endet dieser Weg im Fehlerzustand q<sub>F</sub>, den das Bild wie immer nicht zeigt.
 
-<svg class="automaton" role="img" aria-label="Fünf Kreise in einer Reihe: q0 bis q4, der letzte mit doppeltem Rand. q0 führt mit jeder Ziffer 0 bis 9 zu sich selbst zurück und mit 1 außerdem nach q1. Danach geht es mit 2 nach q2, mit 1 nach q3 und mit 3 nach q4." style="max-width: 36em; width: 100%; margin: 1em auto;"
- viewBox="0.00 0.00 483.72 94.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 90)">
-<g id="node2" class="node state">
-<ellipse fill="white" stroke="black" cx="62.72" cy="-29" rx="25" ry="25"/>
-<text text-anchor="middle" x="62.72" y="-25.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">0</tspan></text>
-</g>
-<g id="edge1" class="edge">
-<path fill="none" stroke="black" d="M0.76,-29C1.66,-29 15.93,-29 30.44,-29"/>
-<polygon fill="black" stroke="black" points="30.52,-31.45 37.52,-29 30.52,-26.55 30.52,-31.45"/>
-</g>
-<g id="edge2" class="edge">
-<path fill="none" stroke="black" d="M54.94,-52.88C54.3,-63.18 56.9,-72 62.72,-72 67.09,-72 69.64,-67.04 70.37,-60.21"/>
-<polygon fill="black" stroke="black" points="72.83,-59.92 70.5,-52.88 67.93,-59.83 72.83,-59.92"/>
-<text text-anchor="middle" x="62.72" y="-75.6" font-size="13.00">0–9</text>
-</g>
-<g id="node4" class="node state">
-<ellipse fill="white" stroke="black" cx="157.72" cy="-29" rx="25" ry="25"/>
-<text text-anchor="middle" x="157.72" y="-25.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">1</tspan></text>
-</g>
-<g id="edge3" class="edge">
-<path fill="none" stroke="black" d="M88.15,-29C99.47,-29 113.07,-29 125.15,-29"/>
-<polygon fill="black" stroke="black" points="125.45,-31.45 132.45,-29 125.45,-26.55 125.45,-31.45"/>
-<text text-anchor="middle" x="110.22" y="-32.6" font-size="13.00">1</text>
-</g>
-<g id="node3" class="node accept">
-<ellipse fill="white" stroke="black" cx="446.72" cy="-29" rx="25" ry="25"/>
-<ellipse fill="none" stroke="black" cx="446.72" cy="-29" rx="29" ry="29"/>
-<text text-anchor="middle" x="446.72" y="-25.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">4</tspan></text>
-</g>
-<g id="node5" class="node state">
-<ellipse fill="white" stroke="black" cx="252.72" cy="-29" rx="25" ry="25"/>
-<text text-anchor="middle" x="252.72" y="-25.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">2</tspan></text>
-</g>
-<g id="edge4" class="edge">
-<path fill="none" stroke="black" d="M183.15,-29C194.47,-29 208.07,-29 220.15,-29"/>
-<polygon fill="black" stroke="black" points="220.45,-31.45 227.45,-29 220.45,-26.55 220.45,-31.45"/>
-<text text-anchor="middle" x="205.22" y="-32.6" font-size="13.00">2</text>
-</g>
-<g id="node6" class="node state">
-<ellipse fill="white" stroke="black" cx="347.72" cy="-29" rx="25" ry="25"/>
-<text text-anchor="middle" x="347.72" y="-25.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">3</tspan></text>
-</g>
-<g id="edge5" class="edge">
-<path fill="none" stroke="black" d="M278.15,-29C289.47,-29 303.07,-29 315.15,-29"/>
-<polygon fill="black" stroke="black" points="315.45,-31.45 322.45,-29 315.45,-26.55 315.45,-31.45"/>
-<text text-anchor="middle" x="300.22" y="-32.6" font-size="13.00">1</text>
-</g>
-<g id="edge6" class="edge">
-<path fill="none" stroke="black" d="M373.2,-29C384.46,-29 398.03,-29 410.37,-29"/>
-<polygon fill="black" stroke="black" points="410.47,-31.45 417.47,-29 410.47,-26.55 410.47,-31.45"/>
-<text text-anchor="middle" x="395.22" y="-32.6" font-size="13.00">3</text>
-</g>
-</g>
-</svg>
+<div class='automaton-drawing' role='img' aria-label='Fünf Kreise in einer Reihe: q0 bis q4, der letzte mit doppeltem Rand. q0 führt mit jeder Ziffer 0 bis 9 zu sich selbst zurück und mit 1 außerdem nach q1. Danach geht es mit 2 nach q2, mit 1 nach q3 und mit 3 nach q4.' data-states='q0 q1 q2 q3 q4' data-start='q0' data-accept='q4' data-transitions='q0 0-9 q0, q0 1 q1, q1 2 q2, q2 1 q3, q3 3 q4'></div>
 
 So ein Automat heißt **nichtdeterministischer endlicher Automat**, kurz **NEA**. Die Automaten von vorhin, bei denen jeder Schritt feststeht, heißen **deterministisch**, kurz **DEA**. Ein NEA nimmt ein Wort an, wenn wenigstens einer seiner Wege in einem akzeptierenden Zustand endet.
 

@@ -108,7 +108,8 @@ only to look nice.
   ends outside the ring (`data-ring` on the ring, `stepper_motion.js`), at
   rest as well as while it moves.
 - **Edge labels keep clear of every edge**: the automaton places each label
-  where it keeps 4 units from all arrows and states.
+  where it keeps 4 units from all arrows, states and rings, and nearer to
+  its own arrow than to any other, so that it is read as its.
 - **Arrows end on the border** of their node (`data-inset`), so the
   arrowhead stays visible (a curve that would come in backwards is drawn
   straight for that moment, so the head never turns over), and they **bend
@@ -237,11 +238,18 @@ only to look nice.
   `stepper_motion.js`), so that its pointers sprout from something.
 - **Automata** (`automaton_stepper.js`, data attributes for states, start,
   accepting states, transitions, the word): the word as a tape with a head
-  over it, the states in a row, arrows to the next state straight, further
-  on above, back below, loops on top; the ring for the state (a NEA: a ring
-  for every state it can be in, a new one coming out of the state it is
-  reached from), the arrow taken purple with a pulse; at the end the
-  accepting state green or the verdict »abgelehnt«. The word can be edited.
+  over it, the automaton drawn by `automaton_layout.js` like every other
+  automaton on the site (the drawings in pages, `<div
+  class='automaton-drawing'>`, and Automatron): the states in columns by
+  their distance from the start, every arrow bent to its left (forward
+  above, back below), arcs within a row nested as in an arc diagram, loops
+  on top; the ring for the state (a NEA: a ring for every state it can be
+  in, a new one coming out of the state it is reached from), the arrow
+  taken purple with a pulse; at the end the accepting state green or the
+  verdict »abgelehnt«. The word can be edited. One font, the mono font of
+  the other widgets: state names in its italics with a small index
+  (q<sub>0</sub>, names as in mathematics), the symbols upright as on the
+  tape; in the message q<sub>0</sub> as in the page's text.
 - **What grows, grows from its middle** (`data-grow='22 21'` on a group
   drawn from its corner), and ends on its own transform, so that its next
   move slides instead of jumping.
