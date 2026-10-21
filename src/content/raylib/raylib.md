@@ -1746,9 +1746,17 @@ Die Schleife in `main` zeichnet die Blöcke in der Reihenfolge des Arrays, von `
 
 Die Grafikkarte merkt sich für jedes Pixel nicht nur seine Farbe, sondern auch, wie weit die Fläche, die dort gezeichnet wurde, von der Kamera entfernt ist: im **Tiefenpuffer** (englisch *Z-Buffer*). Kommt eine neue Fläche an dasselbe Pixel, vergleicht die Grafikkarte die beiden Entfernungen. Ist die neue weiter weg, bleibt das Pixel, wie es ist. In welcher Reihenfolge gezeichnet wird, spielt dann keine Rolle mehr. `BeginMode3D` schaltet diesen Vergleich ein, `EndMode3D` wieder aus; darum liegen Fadenkreuz und Leiste, die danach kommen, immer obenauf.
 
+_person(strasser)
+
+_person(catmull)
+
 ### Der Baum der Wände
 
 Grafikkarten mit Tiefenpuffer gab es für zu Hause erst ab 1996. DOOM (1993) musste ohne auskommen. Es zeichnete die Wände von vorne nach hinten, und ein Pixel, das schon gefüllt war, blieb, wie es war. Die richtige Reihenfolge holte es aus einem **BSP-Baum** (*Binary Space Partitioning*), einem [binären Baum](/reference/baeume): Eine Wand teilt die Karte in zwei Hälften, die vor ihr und die hinter ihr. Jede Hälfte wird von einer weiteren Wand geteilt, und so fort, bis jedes Stück nur noch Wände enthält, die sich nicht gegenseitig verdecken. Diesen Baum rechnete ein Programm einmal aus, bevor das Spiel startete. Beim Zeichnen ging DOOM ihn durch wie einen Suchbaum: an jedem Knoten erst in die Hälfte, in der die Kamera steht, dann in die andere. So kamen die Wände von vorne nach hinten heraus, von jedem Standort aus richtig, ohne dass das Spiel etwas sortieren musste.
+
+_person(carmack)
+
+_person(abrash)
 
 ## Wenn die Welt wächst
 

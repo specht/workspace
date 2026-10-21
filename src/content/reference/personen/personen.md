@@ -302,6 +302,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1941 -->
+<!-- part: strasser -->
+### Wolfgang Straßer
+
+<div class='person'>
+<img src='strasser.webp' alt='Wolfgang Straßer 2011: ein älterer Mann mit grauem Haar und grauem Bart, im Smoking mit silberner Fliege, lachend.'>
+<p><strong>Wolfgang Straßer</strong> (1941–2015), deutscher Informatiker. Er studierte an der TU Berlin und schrieb dort 1974 seine Doktorarbeit über schnelle Kurven und Flächen auf dem Bildschirm. Darin steht, einige Monate vor Edwin Catmull und unabhängig von ihm, der Tiefenpuffer: Für jeden Bildpunkt wird auch die Z-Koordinate gespeichert, und ein neuer Punkt wird nur gezeichnet, wenn er näher liegt. Diesen Vergleich schaltet <code>BeginMode3D</code> in der Klötzchenwelt ein.</p>
+<p>Die Idee steht ganz hinten, unter »Zukünftige Arbeiten«, mit dem Satz: »Beim augenblicklichen Stand der Preise und der Technologie der Halbleiterspeicher ist dieses Verfahren […] nicht realisierbar.« Heute hat jede Grafikkarte einen Tiefenpuffer, auch die in deinem Handy. Ab 1986 war Straßer Professor in Tübingen.</p>
+<p class='person-credit'>Foto: MA2710, 2011, CC BY-SA 3.0 de, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Wolfgang-Stra%C3%9Fer-2011.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1943 -->
 <!-- part: thompson -->
 ### Ken Thompson
@@ -311,6 +323,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Ken Thompson</strong> (geboren 1943). Du suchst im Terminal mit <code>grep</code>? Das hat er 1973 geschrieben; der Name kommt aus seinem Texteditor, wo der Befehl <code>g/re/p</code> hieß: global, <em>regular expression</em>, print. Den Automaten dahinter baute er nach der Thompson-Konstruktion.</p>
 <p>Das Terminal selbst läuft unter Linux, und Linux funktioniert wie Unix, das er ab 1969 mit Dennis Ritchie schrieb. Unten rechts in VS Code steht <em>UTF-8</em>: Die Kodierung hat er 1992 mit Rob Pike auf ein Tischset in einem Diner gezeichnet. Und die Sprache <a href='/go'>Go</a> hat er mit erfunden.</p>
 <p class='person-credit'>Foto: A. C. Diller, 2019, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Brian_Kernighan_and_Ken_Thompson.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1945 -->
+<!-- part: catmull -->
+### Edwin Catmull
+
+<div class='person'>
+<img src='catmull.webp' alt='Edwin Catmull 2015: ein älterer Mann mit Brille, grauem Bart und dunklem Sakko, lächelnd.'>
+<p><strong>Edwin Catmull</strong> (geboren 1945), amerikanischer Informatiker. In seiner Doktorarbeit an der University of Utah beschrieb er 1974 den Tiefenpuffer, unabhängig von Wolfgang Straßer, und dazu Texture Mapping: ein Bild auf eine Fläche legen, wie die Kacheln auf die Blöcke der Klötzchenwelt. 1986 gründete er mit Alvy Ray Smith und Steve Jobs Pixar, das 1995 mit Toy Story den ersten Kinofilm ganz aus dem Computer herausbrachte.</p>
+<p>Als Kind wollte er Trickfilmzeichner bei Disney werden. 1972 animierte er stattdessen am Computer seine eigene linke Hand, eine der ersten Computeranimationen in 3D. Und als Disney 2006 Pixar kaufte, leitete er bis 2019 auch die Trickfilmstudios von Disney.</p>
+<p class='person-credit'>Foto: Web Summit, 2015, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Ed_Catmull_at_Web_Summit_2015_(cropped).jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 
@@ -465,6 +489,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1957 -->
+<!-- part: abrash -->
+### Michael Abrash
+
+<div class='person'>
+<img src='abrash.webp' alt='Michael Abrash 2015 auf einer Bühne: ein Mann mit lockigem Haar und Headset-Mikrofon in einem rotbraunen Hemd, im Sprechen.'>
+<p><strong>Michael Abrash</strong> (geboren 1957), amerikanischer Programmierer. Seine Bücher über schnellen Code wie <em>Zen of Code Optimization</em> lasen in den 1990er Jahren alle, die Spiele programmierten. 1995 holte John Carmack ihn zu id Software, und zusammen brachten sie Quake (1996) auf PCs ohne 3D-Grafikkarte zum Laufen. Quake nutzt beide Ideen: Die Wände zeichnet es sortiert, jedes Pixel nur einmal, und schreibt dabei ihre Entfernung in einen Tiefenpuffer, an dem sich danach Monster und Waffen messen.</p>
+<p>Bill Gates selbst versuchte, ihn bei Microsoft zu halten. Wie Quake das alles macht, erklärt Abrash in seinem <em>Graphics Programming Black Book</em>, das er 2001 frei ins Netz stellte. Ab 2014 forschte er als Chefwissenschaftler von Oculus an VR-Brillen.</p>
+<p class='person-credit'>Foto: Maurizio Pesce, 2015, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Michael_Abrash_at_Facebook%27s_F8_2015.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1959 -->
 <!-- part: fox -->
 ### Brian Fox
@@ -581,6 +617,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Linus Torvalds</strong> (geboren 1969). Das Terminal im Workspace läuft unter Linux: Das hat er 1991 als Student in Helsinki angefangen, »nur ein Hobby«, schrieb er damals. Heute läuft Linux auf den meisten Servern der Welt und in jedem Android-Handy.</p>
 <p>2005 brauchte er für die Arbeit an Linux eine neue Versionsverwaltung und schrieb in wenigen Tagen die erste Fassung von Git.</p>
 <p class='person-credit'>Foto: Raysonho, 2018, CC0 (<a href='https://commons.wikimedia.org/wiki/File:LC3Beijing2018_(cropped).jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1970 -->
+<!-- part: carmack -->
+### John Carmack
+
+<div class='person'>
+<img src='carmack.webp' alt='John Carmack 2025: ein Mann mit kurzem blondem Haar, Brille und Dreitagebart in einem dunklen Polohemd, breit lächelnd.'>
+<p><strong>John Carmack</strong> (geboren 1970), amerikanischer Programmierer, Mitgründer der Spielefirma id Software. Er programmierte die Grafik von Wolfenstein 3D (1992), dessen Labyrinthe der Raycaster in der CPU Sandbox nachahmt, von DOOM (1993) und von Quake (1996). Den BSP-Baum hatten Grafikforscher schon 1980 beschrieben. Carmack griff zu ihm, als Wolfenstein 3D auf das Super Nintendo sollte und der Raycaster dort zu langsam war, und baute danach DOOM darauf.</p>
+<p>Im Dezember 1997 gab er den Quelltext von DOOM frei. Seitdem haben Leute es auf Taschenrechner und Drucker gebracht, und auch PixelRAM spielt DOOM.</p>
+<p class='person-credit'>Foto: RoboSabs, 2025, CC0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:John_Carmack_2025.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 
