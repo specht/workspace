@@ -117,7 +117,39 @@ class PrivacyDocumentsTest < Minitest::Test
         Privacy.measures(s).each_value { |items| items.each { |m| assert_includes tom, Privacy.h(m) } }
     end
 
+    # The documents for a school that treats the Workspace as a
+    # Lernmanagementsystem (§ 3 Abs. 3 DigLLV): roles, risks, a DPIA draft
+    def test_roles_risks_and_dpia
+        s = settings(FULL)
+        %w[rollenkonzept risikoanalyse dsfa].each { |slug| assert_includes PrivacyDocuments::PACKAGE, slug }
+        roles = PrivacyDocuments.body('rollenkonzept', s)
+        ['Schülerin oder Schüler', 'Lehrkraft einer Gruppe', 'Lehrkraft ohne Gruppe', 'Administration', 'Gast'].each { |role| assert_includes roles, role }
+        PrivacyDocuments::PERMISSIONS.each { |row| assert_includes roles, Privacy.h(row.first) }
+        risks = PrivacyDocuments.body('risikoanalyse', s)
+        dpia = PrivacyDocuments.body('dsfa', s)
+        PrivacyDocuments.risks(s).each do |risk, likely, severe, _, rest, _|
+            [likely, severe, rest].each { |level| assert_includes PrivacyDocuments::LEVELS, level }
+            assert_includes risks, Privacy.h(risk)
+            assert_includes dpia, Privacy.h(risk)
+        end
+        Privacy.records(s).each { |r| assert_includes dpia, Privacy.h(r[:data]) }
+        assert_includes dpia, 'Art. 35 Abs. 7'
+    end
+
+    # Only an installation that says so claims a server of its own
+    def test_a_dedicated_server_only_when_set
+        sentence = 'Der Server dient nur dem Workspace'
+        refute_includes PrivacyDocuments.body('tom', settings(FULL)), sentence
+        refute_includes PrivacyDocuments.body('risikoanalyse', settings(FULL)), 'läuft nichts anderes'
+        assert_includes PrivacyDocuments.body('tom', settings(FULL.merge('DEDICATED_SERVER' => true))), sentence
+        assert_includes PrivacyDocuments.body('risikoanalyse', settings(FULL.merge('DEDICATED_SERVER' => true))), 'läuft nichts anderes'
+    end
+
     def test_berlin_rules_only_where_configured
+        %w[rollenkonzept risikoanalyse dsfa].each do |slug|
+            assert_includes PrivacyDocuments.body(slug, settings(FULL)), 'DigLLV', slug
+            refute_includes PrivacyDocuments.body(slug, settings(FULL.merge('SCHOOL_LAW' => 'Schulgesetz NRW'))), 'DigLLV', slug
+        end
         assert_includes PrivacyDocuments.body('loeschkonzept', settings(FULL)), '§ 2 Abs. 6 DigLLV'
         assert_includes PrivacyDocuments.body('pruefuebersicht', settings(FULL)), 'Einordnung: digitales Lehr- und Lernmittel (§ 2 DigLLV)'
         assert_includes PrivacyDocuments.body('pruefuebersicht', settings(FULL)), 'Leistungsüberprüfungen'

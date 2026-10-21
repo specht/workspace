@@ -14,6 +14,9 @@ module PrivacyDocuments
         'vvt' => ['Eintrag für das Verzeichnis von Verarbeitungstätigkeiten', 'für die Akten der Schule (Art. 30 DSGVO)'],
         'tom' => ['Technische und organisatorische Maßnahmen', 'Anlage zum Verzeichnis und zur Vereinbarung (Art. 32 DSGVO)'],
         'loeschkonzept' => ['Löschkonzept', 'für die Schule und die Lehrkräfte'],
+        'rollenkonzept' => ['Rollen- und Berechtigungskonzept', 'für die Schule, die Datenschutzbeauftragte Stelle und die Schulaufsicht'],
+        'risikoanalyse' => ['Datenschutzrechtliche Risikoanalyse', 'für die Schule, die Datenschutzbeauftragte Stelle und die Schulaufsicht (Art. 32 DSGVO)'],
+        'dsfa' => ['Datenschutz-Folgenabschätzung (Entwurf)', 'für die Schule und ihre Datenschutzbeauftragte Stelle (Art. 35 DSGVO)'],
         'auftragsverarbeitung' => ['Vereinbarung zur Auftragsverarbeitung (Entwurf)', 'zwischen der Schule und der Person, die den Workspace betreibt (Art. 28 DSGVO)'],
         'elternbrief' => ['Elternbrief', 'für die Erziehungsberechtigten'],
         'nutzungsordnung' => ['Nutzungsordnung', 'für alle, die ein Konto haben'],
@@ -28,7 +31,7 @@ module PrivacyDocuments
 
     # The documents in the ZIP for the Schulleitung, in this order; the
     # webhosting agreement is an offer of its own.
-    PACKAGE = %w[schulleitung pruefuebersicht datenschutzerklaerung vvt tom loeschkonzept auftragsverarbeitung elternbrief nutzungsordnung].freeze
+    PACKAGE = %w[schulleitung pruefuebersicht datenschutzerklaerung vvt tom loeschkonzept rollenkonzept risikoanalyse dsfa auftragsverarbeitung elternbrief nutzungsordnung].freeze
 
     # A file name in plain ASCII, so that it survives any download header
     # and any file system: »Elternbrief - Ernst-Haeckel-Schule.pdf«.
@@ -333,6 +336,174 @@ module PrivacyDocuments
         END_OF_HTML
     end
 
+    # --- Rollen- und Berechtigungskonzept --------------------------------
+
+    # Who may do what (main.rb, groups_page.rb, people_page.rb, access.rb):
+    # [what, students, teacher of the group, teacher without a group, administration]
+    PERMISSIONS = [
+        ['Eigener Workspace, eigene Dateien und Datenbanken', 'ja', 'ja (eigene)', 'ja (eigene)', 'ja (eigene)'],
+        ['Eigene Antworten, Abgaben und Konto selbst löschen, alle eigenen Daten herunterladen', 'ja', 'ja', 'ja', 'ja'],
+        ['Notizen für Lehrkräfte zu den Aktivitäten', '–', 'ja', 'ja', 'ja'],
+        ['Einladungsliste der Gruppe: Personen aufnehmen und herausnehmen, Enddatum, Vermerk eines Einverständnisses', '–', 'nur eigene Gruppen', '–', 'alle Gruppen'],
+        ['Weitere Lehrkräfte derselben Schule zu einer Gruppe hinzunehmen', '–', 'nur eigene Gruppen', '–', 'alle Gruppen'],
+        ['Lernstand: Aufgaben, Ergebnisse der automatischen Prüfung, Abgaben', 'nur die eigenen', 'nur eigene Gruppen', '–', 'alle'],
+        ['Offene Anmelde-Codes der Gruppe sehen (zum Zeigen im Unterricht)', '–', 'nur eigene Gruppen', '–', 'alle'],
+        ['In einen Workspace sehen oder die Seite so sehen, wie die Person sie sieht (mit Begründung, die die Person sieht)', '–', 'nur eigene Gruppen, nie andere Lehrkräfte', '–', 'alle; zusätzlich ein Jahr protokolliert'],
+        ['Leistungsüberprüfungen anlegen und auswerten', '–', 'nur eigene Gruppen', '–', 'ja'],
+        ['Eine Person zur Lehrkraft machen, einer Schule zuordnen', '–', '–', '–', 'ja'],
+        ['Zugang sperren, Löschung ankündigen, Konten löschen', '–', '–', '–', 'ja'],
+        ['Schulen, Stand der Abstimmung mit den Schulen, Betrieb des Servers', '–', '–', '–', 'ja'],
+    ].freeze
+
+    def self.rollenkonzept_html(s)
+        <<~END_OF_HTML
+            <p>Wer im Workspace welche Rolle hat, wer sie vergibt und was jede Rolle sehen und tun darf#{digllv?(s) ? ' (Rollen- und Berechtigungskonzept nach § 3 Abs. 3 DigLLV)' : ''}.
+            Grundsatz: Jede Person sieht nur, was sie für den Unterricht braucht. Das Löschen regelt das Löschkonzept.</p>
+            <h2>Rollen</h2>
+            #{table(['Rolle', 'Wer', 'Vergeben durch'], [
+                ['Schülerin oder Schüler', 'wer in der Einladungsliste einer Gruppe steht', 'die Lehrkraft der Gruppe oder die Administration'],
+                ['Lehrkraft einer Gruppe', 'betreut eine oder mehrere Gruppen', 'Lehrkraft wird man nur durch die Administration; einer Gruppe kann die Lehrkraft weitere Lehrkräfte derselben Schule hinzufügen'],
+                ['Lehrkraft ohne Gruppe', 'sieht die Notizen für Lehrkräfte, betreut niemanden', 'die Administration'],
+                ['Testkonto einer Lehrkraft', 'ein Konto je Lehrkraft, allein in einer eigenen Gruppe, zum Ausprobieren dessen, was Lernende sehen', 'entsteht mit der Rolle der Lehrkraft'],
+                ['Administration', "wer den Workspace betreibt (#{operator(s)})", 'in den Einstellungen des Servers; ihr Konto lässt sich auf keinem Weg löschen'],
+                ['Gast', 'Erwachsene von außerhalb der Schule (Workshops, Ehemalige); nicht in der Verantwortung der Schule', 'die Administration; die Person stimmt bei der ersten Anmeldung der Nutzungsordnung zu'],
+            ])}
+            <h2>Berechtigungen</h2>
+            #{table(['', 'Schülerinnen und Schüler', 'Lehrkraft einer Gruppe', 'Lehrkraft ohne Gruppe', 'Administration'], PERMISSIONS.map { |row| row.map { |c| h(c) } })}
+            <h2>Grundsätze</h2>
+            #{list([
+                'Eine Lehrkraft sieht eine Person, sobald diese in einer ihrer Gruppen ist, und nur dann; die Konten anderer Lehrkräfte und der Administration sieht und öffnet sie nie.',
+                'Wer in einen Workspace sieht oder die Seite so sieht wie die Person, gibt vorher eine Begründung an (5 bis 300 Zeichen); die Person sieht beim nächsten Besuch, wer, wann und warum. Zugriffe der Administration stehen zusätzlich ein Jahr lang in einem Protokoll.',
+                'Nimmt eine Lehrkraft eine Person aus der letzten Gruppe, endet deren Sitzung, und ihr laufender Workspace ist nicht mehr erreichbar; die Daten bleiben bis zur Löschung nach dem Löschkonzept.',
+                'Die Administration kann einen Zugang sperren, ohne Daten zu löschen (etwa während ein Widerspruch geprüft wird); die Sperre steht mit Datum, Person und Grund am Konto.',
+                'Noten werden im Workspace nicht gespeichert; die automatische Prüfung von Aufgaben ist eine Rückmeldung an die Lernenden.',
+                'Rollen werden nicht automatisch vergeben: Die Rolle einer Lehrkraft trägt die Administration ein, die Einladung in eine Gruppe die Lehrkraft oder die Administration.',
+            ])}
+        END_OF_HTML
+    end
+
+    # --- Risikoanalyse ----------------------------------------------------
+
+    LEVELS = %w[geringfügig überschaubar substanziell groß].freeze
+
+    # The risks for the people whose data it is, with likelihood and
+    # severity before the measures, the measures, and what remains. The
+    # measures are those of Privacy.measures and the documents; the levels
+    # are the operator's assessment, for the school to check.
+    def self.risks(s)
+        backup = s[:backup] ? "Verschlüsselte Sicherungen (#{h(s[:backup])}); #{h(Privacy.backup_kept_sentence(s))}" : 'Sicherungen sind in den Einstellungen nicht eingetragen.'
+        [
+            ['Jemand meldet sich mit einem fremden Konto an (abgefangener Code, ein offener Rechner im Computerraum)', 'überschaubar', 'überschaubar',
+             "Anmeldung nur mit Einladung; Code per E-Mail, gültig #{Privacy.login_minutes} Minuten, höchstens 5 Versuche, nur im Browser, der ihn angefordert hat; Anfragen begrenzt; keine Passwörter; »überall abmelden« im Profil",
+             'geringfügig', 'Sitzungen gelten lange (Klassenräume); Lernende melden sich an fremden Rechnern ab'],
+            ['Eine Lehrkraft sieht mehr, als sie braucht, oder ohne Anlass', 'überschaubar', 'überschaubar',
+             'Nur eigene Gruppen; Begründung vor jedem Einblick, die die Person sieht; keine Noten im Workspace',
+             'geringfügig', ''],
+            ['Die Administration (der Betreiber) greift ohne Anlass zu', 'geringfügig', 'substanziell',
+             'Weisungsgebunden nach der Vereinbarung zur Auftragsverarbeitung; Begründung, die die Person sieht; Protokoll für ein Jahr; öffentlicher Quelltext',
+             'geringfügig', ''],
+            ['Ein Programm im Workspace gelangt an Daten anderer (fremde Workspaces, Datenbanken, der Server)', 'überschaubar', 'substanziell',
+             'Eigener Container je Person mit eingeschränkten Rechten; eigene Datenbanken mit eigenen Zugangsdaten; Workspaces erreichen einander im Netz nicht' + (s[:dedicated_server] ? '; auf dem Server läuft nichts anderes' : ''),
+             'überschaubar', 'Lernende führen eigenen Code aus; das ist der Zweck'],
+            ['Daten gelangen an Dritte oder in Drittländer', 'geringfügig', 'substanziell',
+             "Server bei #{hosting(s)} in der EU; nur die genannten Auftragsverarbeiter; kein Tracking, keine Werbung, die Seiten laden nichts von fremden Servern; automatische Tests prüfen das",
+             'geringfügig', ''],
+            ['Daten werden länger gespeichert als nötig', 'substanziell', 'überschaubar',
+             'Löschkonzept: Enddatum je Gruppe mit Erinnerung, Konten ohne Einladung werden zum Ende des Schuljahres gelöscht; Lernende löschen selbst; jede Löschung wird ohne Adresse vermerkt und nach einer Wiederherstellung wiederholt',
+             'überschaubar', 'hängt davon ab, dass Lehrkräfte ihre Listen pflegen; die Administration sieht offene Konten'],
+            ['Aus den Daten entsteht ein Leistungs- oder Verhaltensprofil', 'überschaubar', 'substanziell',
+             'Keine Noten; die automatische Prüfung ist Rückmeldung; von Aufgaben nur die letzte Antwort, Versuche ohne Text; keine Auswertung über die Gruppe hinaus; Zweckbindung' + (digllv?(s) ? ' (§ 2 Abs. 1 DigLLV)' : ''),
+             'überschaubar', 'Lehrkräfte sehen den Lernstand ihrer Gruppen; Leistungsüberprüfungen laden sie zur Korrektur herunter'],
+            ['Lernende veröffentlichen Daten über sich oder andere (geteilte Links, Web-Apps, eigene Website)', 'überschaubar', 'überschaubar',
+             'Teilen nur auf eigenen Wunsch; der Link zum Workspace gilt eine Woche; die Nutzungsordnung verbietet Daten anderer ohne deren Einverständnis; die Seite weist beim Teilen darauf hin',
+             'überschaubar', ''],
+            ['Daten gehen verloren oder sind nicht erreichbar', 'überschaubar', 'überschaubar',
+             backup + ' Lernende können alle Daten jederzeit herunterladen; Überwachung des Servers mit Benachrichtigung',
+             'überschaubar', 'ein einzelner Server; der Workspace ist ein Lernwerkzeug, kein Ort für die einzige Kopie von Noten'],
+            ['Eine Verletzung des Schutzes bleibt unbemerkt oder wird nicht gemeldet', 'geringfügig', 'substanziell',
+             'Überwachung des Betriebs; Meldung an die Schule unverzüglich (Art. 33 Abs. 2 DSGVO, Vereinbarung zur Auftragsverarbeitung)',
+             'geringfügig', ''],
+            ['Der Betrieb hängt an einer einzelnen Person', 'überschaubar', 'überschaubar',
+             'Vereinbarung zur Auftragsverarbeitung mit Rückgabe und Löschung am Ende; öffentlicher Quelltext; alle Daten lassen sich herunterladen' + (s[:dedicated_server] ? '; ein eigener Server nur für den Workspace' : ''),
+             'überschaubar', 'endet der Betrieb, nehmen die Lernenden ihre Daten mit; die Schule verlangt die Löschung'],
+        ]
+    end
+
+    # Four columns, so that it fits a printed page; the remark under the measures
+    def self.risk_table(s)
+        table(['Risiko', 'Vorher', 'Maßnahmen', 'Restrisiko'],
+            risks(s).map do |risk, likely, severe, measures, rest, note|
+                [h(risk), "Wahrscheinlichkeit: #{likely}<br>Schwere: #{severe}",
+                 h(measures) + (note.empty? ? '' : "<br><span class='note'>Bleibt: #{h(note)}</span>"), rest]
+            end)
+    end
+
+    def self.risikoanalyse_html(s)
+        <<~END_OF_HTML
+            <p>Die Risiken für die Rechte und Freiheiten der Schülerinnen, Schüler und Lehrkräfte, deren Daten der Workspace verarbeitet#{digllv?(s) ? ' (Risikoanalyse nach § 3 Abs. 3 DigLLV, falls die Schule den Workspace als Lernmanagementsystem einordnet)' : ''},
+            ihre Einschätzung vor und nach den Maßnahmen (Stand #{Privacy::CHECKED.strftime('%d.%m.%Y')}). Die Einschätzung stammt von #{operator(s)};
+            die Schule prüft sie mit ihrer Datenschutzbeauftragten Stelle.</p>
+            <h2>Vorgehen</h2>
+            <p>Für jedes Risiko: wie wahrscheinlich es ist und wie schwer es die Betroffenen träfe, jeweils als
+            #{LEVELS.join(', ')}; welche Maßnahmen es mindern (Einzelheiten: »Technische und organisatorische Maßnahmen«);
+            was danach bleibt.</p>
+            <h2>Risiken</h2>
+            #{risk_table(s)}
+            <h2>Ergebnis</h2>
+            <p>Nach Einschätzung des Betreibers bleibt mit den Maßnahmen kein großes Risiko. Am meisten hängt davon ab, dass die Lehrkräfte
+            ihre Gruppen zum Ende eines Kurses pflegen (Löschkonzept) und dass Lernende sich an gemeinsam genutzten Rechnern abmelden.
+            Ob eine Datenschutz-Folgenabschätzung nötig ist, entscheidet die Schule; ein Entwurf liegt bei.</p>
+            #{signature('Ort, Datum, Betreiber', 'Ort, Datum, Schulleitung')}
+        END_OF_HTML
+    end
+
+    # --- Datenschutz-Folgenabschätzung --------------------------------
+
+    def self.dsfa_html(s)
+        records = Privacy.records(s).map { |r| [h(r[:data]), h(r[:purpose]), h(r[:who]), h(r[:how_long])] }
+        dsb = s[:data_protection_officer] ? Privacy.lines_html(s[:data_protection_officer]) : 'die Datenschutzbeauftragte Stelle der Schule'
+        <<~END_OF_HTML
+            <p>Ein Entwurf für #{school(s)}, gegliedert nach Art. 35 Abs. 7 DSGVO. Die Schule ist verantwortlich, holt den Rat ihrer
+            Datenschutzbeauftragten Stelle ein (Art. 35 Abs. 2) und ergänzt oder ändert, was sie anders sieht.</p>
+            <h2>Warum eine Folgenabschätzung</h2>
+            <p>Der Workspace verarbeitet Daten von Kindern und Jugendlichen, also besonders schutzbedürftiger Personen, und Lehrkräfte sehen
+            den Lernstand ihrer Gruppen und werten Leistungsüberprüfungen aus. Das sind zwei der Merkmale, bei denen die europäischen
+            Aufsichtsbehörden eine Folgenabschätzung in der Regel erwarten (WP 248). Sie wird deshalb vorsorglich durchgeführt.</p>
+            <h2>1. Beschreibung der Verarbeitung (Buchst. a)</h2>
+            <p>Der Workspace ist eine Programmierumgebung für den Informatikunterricht: Jede Schülerin und jeder Schüler programmiert in
+            einer eigenen Umgebung im Browser, bearbeitet Aufgaben mit automatischer Rückmeldung, gibt Arbeiten ab und schreibt
+            Leistungsüberprüfungen; die Lehrkraft begleitet den Lernstand ihrer Gruppen. Er läuft auf einem Server bei #{hosting(s)},
+            betrieben von #{operator(s)} im Auftrag der Schule#{s[:dedicated_server] ? '; auf dem Server läuft nichts anderes' : ''}.</p>
+            #{table(['Daten', 'Zweck', 'Zugriff', 'Speicherdauer'], records)}
+            <h2>2. Notwendigkeit und Verhältnismäßigkeit (Buchst. b)</h2>
+            #{list([
+                'Zweck: der Informatikunterricht der Schule; eine andere Verwendung, insbesondere für Werbung oder Forschung, ist ausgeschlossen' + (digllv?(s) ? ' (§ 2 Abs. 1 DigLLV).' : '.'),
+                'Datenminimierung: nur E-Mail-Adresse, freiwillig ein Name, die Gruppe und was im Unterricht entsteht; keine Noten, kein Tracking, von Aufgaben nur die letzte Antwort; die Zugriffsprotokolle ohne IP-Adressen.',
+                'Speicherbegrenzung: nach dem Löschkonzept, spätestens zum Ende des Schuljahres, in dem der Kurs endet oder die Person die Schule verlässt.',
+                'Rechte der Betroffenen: Auskunft und Löschung per E-Mail; alle eigenen Daten im Profil herunterladen; Konto, Antworten und Abgaben selbst löschen; bei jedem Einblick sieht die Person, wer, wann und warum.',
+                'Information: Datenschutzerklärung und Elternbrief (Art. 13 DSGVO).',
+                'Auftragsverarbeitung: Vereinbarung nach Art. 28 DSGVO mit dem Betreiber; Rechenzentrum und E-Mail-Dienst als Unterauftragnehmer; keine Übermittlung in Drittländer.',
+                'Ohne den Workspace bräuchte jede Schülerin und jeder Schüler eine eingerichtete Programmierumgebung auf einem eigenen Gerät; eine Umgebung im Browser, die die Schule verantwortet, ist dafür das mildere Mittel.',
+            ])}
+            <h2>3. Risiken für die Rechte und Freiheiten (Buchst. c)</h2>
+            <p>Einschätzung vor und nach den Maßnahmen (wie in der »Datenschutzrechtlichen Risikoanalyse«):</p>
+            #{risk_table(s)}
+            <h2>4. Abhilfemaßnahmen (Buchst. d)</h2>
+            <p>Die Maßnahmen im Einzelnen stehen in der Anlage »Technische und organisatorische Maßnahmen«, die Rollen und Rechte im
+            »Rollen- und Berechtigungskonzept«, die Fristen im »Löschkonzept«.</p>
+            <h2>5. Ergebnis</h2>
+            <p>Nach dem Entwurf bleibt mit den Maßnahmen kein hohes Risiko; eine vorherige Konsultation der Aufsichtsbehörde
+            (Art. 36 DSGVO) wäre dann nicht nötig. Die Schule überprüft die Folgenabschätzung, wenn sich die Verarbeitung ändert,
+            spätestens nach zwei Jahren.</p>
+            <div class='keep-together'>
+            <h2>Stellungnahme der Datenschutzbeauftragten Stelle</h2>
+            <p>#{dsb}</p>
+            <div class='blank-lines'></div>
+            #{signature('Ort, Datum, Datenschutzbeauftragte Stelle', 'Ort, Datum, Schulleitung')}
+            </div>
+        END_OF_HTML
+    end
+
     # --- Auftragsverarbeitung -------------------------------------------
 
     def self.auftragsverarbeitung_html(s)
@@ -583,6 +754,9 @@ module PrivacyDocuments
         .text-body-secondary { color: #666; }
         .decision { border: 1px solid #888; padding: 0.2em 1em 1em 1em; margin-top: 2em; break-inside: avoid; }
         .signatures { display: flex; gap: 3em; margin-top: 3em; }
+        .blank-lines { height: 9em; border: 1px solid #bbb; border-radius: 3px; margin: 0.5em 0 1em; }
+        tr, .keep-together { break-inside: avoid; }
+        td .note { color: #555; font-size: 0.9em; }
         .signature { flex: 1; font-size: 0.85rem; color: #444; }
         .signature .line { border-bottom: 1px solid #333; height: 2.5em; margin-bottom: 0.3em; }
         .draft { border-left: 4px solid #c90; padding-left: 0.8em; color: #750; }
