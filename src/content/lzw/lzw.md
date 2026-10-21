@@ -67,7 +67,7 @@ duration: 2 Doppelstunden
         border-radius: 0.2em;
     }
     .lzw-text span.next {
-        outline: 2px solid #bc2326;
+        outline: 2px solid var(--stepper-current);
         outline-offset: -1px;
         border-radius: 0.2em;
     }
@@ -86,7 +86,7 @@ duration: 2 Doppelstunden
         font-family: inherit;
     }
     .lzw-steps tr.current td {
-        background-color: color-mix(in srgb, #ffe617 45%, transparent);
+        background-color: color-mix(in srgb, var(--stepper-current) 14%, transparent);
     }
     .lzw-steps .special {
         color: #bc2326;
@@ -99,9 +99,6 @@ duration: 2 Doppelstunden
     html[data-bs-theme="dark"] .lzw-text span.now,
     html[data-bs-theme="dark"] .lzw-codes span.now {
         background-color: color-mix(in srgb, #7a6a00 75%, transparent);
-    }
-    html[data-bs-theme="dark"] .lzw-steps tr.current td {
-        background-color: color-mix(in srgb, #7a6a00 60%, transparent);
     }
     html[data-bs-theme="dark"] .lzw-steps .special {
         color: #f384ae;
@@ -134,7 +131,7 @@ Der Kompressor liest den Text Byte für Byte und merkt sich das **Präfix**, das
 2. Sonst gibt er den Code des Präfixes aus, trägt das Präfix mit dem neuen Byte als neuen Eintrag ein und beginnt ein neues Präfix, das nur aus dem neuen Byte besteht.
 3. Ist der Text zu Ende, gibt er den Code des letzten Präfixes aus.
 
-Probier es aus. Jeder Klick liest ein Byte; das gelbe ist das Präfix, das rot umrandete das nächste Byte. Oben kannst du einen anderen Text wählen.
+Probier es aus. Jeder Klick liest ein Byte; das gelbe ist das Präfix, das lila umrandete das nächste Byte. Oben kannst du einen anderen Text wählen.
 
 <div class='lzw-stepper' id='lzw-encode' data-stepper>
 <div class='lzw-input'>

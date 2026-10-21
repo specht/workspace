@@ -1381,18 +1381,19 @@ Direkt auf die DC-Differenz folgen die AC-Koeffizienten. Schauen wir uns wieder 
   1111111111111110 -> 250 (0xFA)
 -->
 
-<div style='position: relative;' data-stepper>
+<div style='position: relative;' data-stepper id='ac-stepper'>
 <p>
 Hier wird die AC-Tabelle im Slot 0 verwendet, die insgesamt 162 Codes definiert, von denen wir für dieses Beispiel nur einen Auszug benötigen.
 Verwende die Buttons, um zu sehen, wie der Bitstream decodiert wird (die Bits des bereits decodierten DC-Koeffizienten sind weiterhin markiert):
 </p>
 <div style='margin: 0.6em 0;'>
-<button id='bu-first' data-go='first' class='btn btn-sm btn-success'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
-<button id='bu-prev' data-go='prev' class='btn btn-sm btn-success'><i class='bi bi-chevron-left' style='margin-right: 0;'></i></button>
-<button id='bu-next' data-go='next' class='btn btn-sm btn-success'><i class='bi bi-chevron-right' style='margin-right: 0;'></i></button>
-<button id='bu-last' data-go='last' class='btn btn-sm btn-success'><i class='bi bi-chevron-bar-right' style='margin-right: 0;'></i></button>
+<button id='bu-first' data-go='first' class='btn btn-sm btn-success' aria-label='Zum Anfang'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
+<button id='bu-prev' data-go='prev' class='btn btn-sm btn-success' aria-label='Einen Schritt zurück'><i class='bi bi-chevron-left' style='margin-right: 0;'></i></button>
+<button id='bu-next' data-go='next' class='btn btn-sm btn-success' aria-label='Nächster Schritt'><i class='bi bi-chevron-right' style='margin-right: 0;'></i></button>
+<button id='bu-last' data-go='last' class='btn btn-sm btn-success' aria-label='Zum Ende'><i class='bi bi-chevron-bar-right' style='margin-right: 0;'></i></button>
+<span id='ac-count'></span>
 </div>
-<div style='max-width: 100%; overflow-x: auto;'>
+<div style='max-width: 100%; overflow-x: auto;' id='ac-table-box'>
 <table class='table center' id='ac_table'>
 <tr>
 <th>Code</th>
@@ -1645,6 +1646,15 @@ function activateStep(step) {
     document.querySelector("#bu-prev").disabled = step <= step_min;
     document.querySelector("#bu-next").disabled = step >= step_max;
     document.querySelector('#bu-last').disabled = step >= step_max;
+    document.querySelector('#ac-count').textContent = `Schritt ${step - step_min + 1} von ${step_max - step_min + 1}`;
+    // for the timeline (stepper_keys.js)
+    const widget = document.querySelector('#ac-stepper');
+    widget.dataset.step = step - step_min;
+    widget.dataset.steps = step_max - step_min + 1;
+    // on a narrow screen the table scrolls sideways: the code just read in view
+    const box = document.querySelector('#ac-table-box');
+    const cell = [...box.querySelectorAll('td')].find((td) => td.querySelector('[class^="m"]') || [...td.classList].some((c) => /^m/.test(c)));
+    if (cell && box.scrollWidth > box.clientWidth) box.scrollLeft = cell.offsetLeft + cell.offsetWidth / 2 - box.clientWidth / 2;
     document.querySelector('.step0').style.display = (step > step_min) ? 'list-item' : 'none';
     document.querySelector('.step1').style.display = (step > step_min && (step) % 4 > 0) ? 'list-item' : 'none';
     document.querySelector('.step2').style.display = (step > step_min && (step) % 4 > 1) ? 'list-item' : 'none';
@@ -1859,6 +1869,10 @@ document.addEventListener('DOMContentLoaded', function() {
     steps = result.blocks[0].steps;
 
     activateStep(step)
+    document.querySelector('#ac-stepper').stepperGo = (k) => {
+        step = Math.max(step_min, Math.min(step_max, step_min + k));
+        activateStep(step);
+    };
 
     document.querySelector('#bu-first').addEventListener("click", function() {
         step = step_min;

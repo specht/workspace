@@ -55,6 +55,22 @@ in doubt, do it the way it does.
   (`.stepper-word`, from `stepper_keys.js`); on a touch screen large for
   the thumb (default.css, `pointer: coarse`). A button that cannot be used
   is grey.
+- **What is current is purple in every widget**: the code line, the table
+  row, the coefficient, the clause, the next byte (`--stepper-current` in
+  default.css, the Algo Stepper's `--algo-accent`). Red is for an error or
+  a goal, never for »this one«. Code in a widget's message is set like the
+  text around it on a faint purple ground, not in the pink of code in the
+  page text, which would read like an error.
+- **A variable is drawn in the picture.** An index or pointer is a label
+  with an arrow to its cell; a number that points at no cell is a box with
+  its name and value (`valueBox`: `capacity | 6`, `count | 1`), beside what
+  it describes; `size` shows what it counts (the border after the used
+  cells in the Array List, a bracket under the queue's cells in the ring
+  buffer). Never a line of plain text like »size 4, capacity 6«.
+- **The timeline names its parts** so that they can be told apart: the
+  operations with their values (»push 5«, »pop → 1«, »dequeue → 23«), a
+  sort's passes by its loop variable (»i = 0«, »end = 7«), Merge Sort's and
+  Quick Sort's calls by their range.
 - **The frame is a card like a task's**, in the widgets' own slate (tasks
   are blue, the Handbuch teal, a guess violet; a calm frame lets the
   widget's own colours speak), its label a pill like a task's number.

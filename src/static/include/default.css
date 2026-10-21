@@ -5348,6 +5348,19 @@ table.automaton-table td {
 table.automaton-table thead th { background: var(--bs-tertiary-bg); }
 table.automaton-table tbody th { text-align: left; white-space: nowrap; }
 
+/* What a step widget marks as current (the code line, the table row, the
+   coefficient, the clause) is one colour in every widget: the Algo
+   Stepper's purple; ink is for text on it */
+:root { --stepper-current: #6741d9; --stepper-current-ink: #fff; }
+html[data-bs-theme="dark"] { --stepper-current: #b197fc; --stepper-current-ink: #1b1530; }
+/* code inside a widget's message reads as code, not in the error-like
+   pink of code in the page text */
+div[data-stepper] :not(pre) > code:not([class]),
+.bitplane-widget :not(pre) > code:not([class]) {
+    color: inherit;
+    background: color-mix(in srgb, var(--stepper-current) 10%, transparent);
+}
+
 /* A person a page names (Thompson-Konstruktion, Kleenesche Hülle): a box
    in the flow of the page, after the paragraph that names the person, with
    a free photo beside who the person was in a few sentences and the photo's
@@ -5929,7 +5942,7 @@ div[data-stepper] .stepper-word { display: none; }
 /* The mark reaches a little beyond its text with shadows, not padding:
    padding would move the mirror's text out of line with the field's. */
 .query-stepper .qs-mirror mark {
-    --qs-mark: color-mix(in srgb, var(--bs-primary) 22%, var(--bs-body-bg));
+    --qs-mark: color-mix(in srgb, var(--stepper-current) 18%, var(--bs-body-bg));
     padding: 0;
     color: transparent;
     border-radius: 0.15em;
@@ -5957,9 +5970,9 @@ div[data-stepper] .stepper-word { display: none; }
     color: var(--bs-secondary-color);
 }
 .query-stepper .qs-clause.qs-current {
-    background: var(--bs-primary);
-    border-color: var(--bs-primary);
-    color: #fff;
+    background: var(--stepper-current);
+    border-color: var(--stepper-current);
+    color: var(--stepper-current-ink);
     font-weight: 600;
 }
 .query-stepper .qs-controls {
@@ -6222,8 +6235,8 @@ div[data-stepper] .stepper-word { display: none; }
     background: color-mix(in srgb, var(--bs-success) 18%, transparent);
 }
 .idct-stepper .idct-coef span.now {
-    background: var(--bs-primary);
-    color: #fff;
+    background: var(--stepper-current);
+    color: var(--stepper-current-ink);
     font-weight: 700;
 }
 .idct-stepper .idct-numbers span.changed {
