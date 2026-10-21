@@ -216,7 +216,9 @@ only to look nice.
   in the order their leaves have in the finished tree, so the two that come
   together are always neighbours and no tree jumps sides (`data-lift` would
   let a tree rise over others, where passing cannot be avoided). The two
-  lightest trees wear the purple ring, the counts clear of it.
+  lightest trees wear the purple ring, the counts clear of it. Only the
+  roots' weights count: the numbers under a node that has been joined go
+  pale while the sum appears.
 - **The calculator** (`calculator.md`): an operator is a round box, a number
   a box; when a node is computed, its numbers rise into it and merge, and
   the round box turns into the result's box; back, they come out of it

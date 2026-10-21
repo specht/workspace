@@ -150,7 +150,7 @@ Wie findet man die besten Codes, also die, mit denen ein Text so wenige Bits wie
 
 Den Code eines Bytes liest du auf dem Weg von oben zu seinem Blatt ab: links eine 0, rechts eine 1. Seltene Bytes werden früh zusammengefasst und landen tief unten, mit langen Codes; häufige kommen spät dazu und bleiben oben, mit kurzen. Und weil jedes Byte an einem Blatt hängt und nie auf dem Weg zu einem anderen liegt, ist die Tabelle von selbst präfixfrei.
 
-Probier es aus, mit dem Text unten oder einem eigenen. Lila umrandet sind die beiden Bäume, die als nächste zusammenkommen.
+Probier es aus, mit dem Text unten oder einem eigenen. Lila umrandet sind die beiden Bäume, die als nächste zusammenkommen. Es zählen nur die Gewichte oben an den Bäumen: Sind zwei Bäume zusammengefasst, zählt ihre Summe, und ihre eigenen Zahlen werden blass.
 
 <div class='hf-stepper' id='hf-stepper' data-stepper>
 <input class='form-control' type='text' id='hf-input' value='RHABARBERBARBARA' aria-label='Text für den Huffman-Baum' spellcheck='false'>
@@ -520,6 +520,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function draw(svg, placed, picks, size, lift = null) {
         svg.replaceChildren();
         const up = (k) => (lift && lift.keys.has(k) ? { 'data-lift': lift.by } : {});
+        // Only the weights of the roots count: a number under a node that has
+        // been joined is pale, its sum above it is what counts now (it fades
+        // while the sum appears, opacity moves)
+        const joined = new Set();
+        placed.pos.forEach((p) => { if (p.node.left) { joined.add(key(p.node.left)); joined.add(key(p.node.right)); } });
+        const counts = (k) => (joined.has(k) ? { opacity: 0.3 } : {});
         placed.pos.forEach((p) => {
             const n = p.node;
             if (!n.left) return;
@@ -534,9 +540,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const k = key(n);
             svg.appendChild(make('circle', { 'data-key': `node-${k}`, 'data-grow': '', ...up(k), class: n.left ? 'node' : 'leaf', cx: p.x, cy: p.y, r: n.left ? 14 : 15 }));
             // the label comes with its node
-            svg.appendChild(make('text', { 'data-key': `label-${k}`, 'data-grow': '', ...up(k), x: p.x, y: p.y }, n.left ? String(n.weight) : label(n.byte)));
+            svg.appendChild(make('text', { 'data-key': `label-${k}`, 'data-grow': '', ...up(k), ...(n.left ? counts(k) : {}), x: p.x, y: p.y }, n.left ? String(n.weight) : label(n.byte)));
             // the count under a leaf, clear of the ring around it
-            if (!n.left) svg.appendChild(make('text', { 'data-key': `weight-${k}`, ...up(k), class: 'weight', x: p.x, y: p.y + 33 }, String(n.weight)));
+            if (!n.left) svg.appendChild(make('text', { 'data-key': `weight-${k}`, ...up(k), ...counts(k), class: 'weight', x: p.x, y: p.y + 33 }, String(n.weight)));
         });
         // the rings in front, staying on their node while they fade
         picks.forEach((t) => {
