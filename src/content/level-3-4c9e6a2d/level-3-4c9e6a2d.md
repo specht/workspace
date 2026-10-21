@@ -524,7 +524,7 @@ Sie öffnet sich in einem neuen Tab, schon fertig gebacken. Das geht auch auf de
 <figcaption>das Parkdeck</figcaption>
 </figure>
 <figure>
-<img src='nachtschicht-notgang.webp' alt='Ein schmaler, hoher Gang mit kahlen, gelblichen Wänden, vorn eine Lampe an der Decke, weitere weit hinten; ganz am Ende, in einem kleinen warmen Lichtfleck, ein Schaukelstuhl.'>
+<img src='nachtschicht-notgang.webp' alt='Ein schmaler, hoher Gang mit kahlen, gelblichen Wänden, vorn eine Lampe an der Decke, dahinter eine Reihe weiterer bis ans Ende; dort, in einem kleinen warmen Lichtfleck, ein Schaukelstuhl.'>
 <figcaption>ein Gang, der nirgends hinführt</figcaption>
 </figure>
 </div>

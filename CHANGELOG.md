@@ -138,13 +138,24 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Bootstrap-Icons, ihr Zeichen genau in der Mitte; nach einem Klick zeigen
   sie keinen Fokusrahmen mehr. <kbd>Esc</kbd> schließt das Bild auch dann,
   wenn Chrome sein eigenes Schließen nicht mehr meldet.
-- Backrooms in VR: Die rechte Grifftaste zeigt eine Karte am Handgelenk,
-  ein kleines Hologramm über der rechten Hand: das Bauwerk um
+- Backrooms in VR: Das Wasser sieht aus wie Wasser, nicht mehr wie eine
+  halb durchsichtige Fläche: Was darunter liegt, wird mit dem Weg durch das
+  Wasser blaugrün, so dunkel wie am Rechner, und darüber liegt die
+  Spiegelung aus einem Rundumbild über dem Becken, von den Wellen verbogen;
+  ohne zusätzliche Bilder je Auge (`?vrwater` zeigt es am Rechner).
+  »ENTER VR« erscheint erst, wenn die Linien der Welt zu sehen sind. In der
+  Nachtschicht leuchten die Schreibtischlampen im Nachtbüro über den Tisch
+  statt an die Wand, der winzige Projektor im Kino ist weg, und der Notgang
+  hat mehr Deckenleuchten.
+- Backrooms in VR: Der rechte Abzug (Zeigefinger) zeigt eine Karte am
+  Handgelenk, ein kleines Hologramm über der rechten Hand: das Bauwerk um
   einen herum in cyanfarbenen Linien, bis 10 m ganz und bis 15 m auslaufend,
   Linien hinter Wänden dünner und blasser, so gedreht wie das Bauwerk selbst;
   man selbst ist ein Ring, der sich dreht. Sie ersetzt in VR die Automap als
-  Modell vor einem (bisher beide Grifftasten). Mit der linken Grifftaste oder
-  dem eingedrückten linken Stick läuft man, doppelt so schnell wie gehen.
+  Modell vor einem (bisher die Grifftasten). Mit dem linken Abzug oder dem
+  eingedrückten linken Stick läuft man, doppelt so schnell wie gehen. Die
+  Linien sind cyan und durchsichtig, nicht leuchtend: Addiert wurden sie
+  über hellen Wänden und übereinander weiß.
   `?wristmap` zeigt die Karte am Rechner. Level 0 erklärt beides bei der VR-Brille.
 - Backrooms: Das Licht backt mehrfach schneller, bei einem Level wie am
   Ende von Level 3 (16 Räume, 39 Leuchten) etwa viermal so schnell. Die
