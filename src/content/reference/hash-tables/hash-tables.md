@@ -61,7 +61,7 @@ remove(k):
 
 Gesucht wird nur in **einem** Bucket. Solange die Listen kurz sind, ist das fast so schnell wie ein Array. Sechs Schlüssel in acht Buckets, darunter drei, die alle in Bucket 5 landen:
 
-<div class='algo-stepper' data-title='Hash Table mit Verkettung: eine Liste pro Bucket' data-algo='hash' data-mode='chain' data-size='8' data-ops='insert 13, insert 21, insert 6, insert 29, insert 14, insert 40, find 29, find 37'></div>
+<div class='algo-stepper' data-title='Hash Table: Verkettung' data-algo='hash' data-mode='chain' data-size='8' data-ops='insert 13, insert 21, insert 6, insert 29, insert 14, insert 40, find 29, find 37'></div>
 <!-- /part -->
 
 <!-- part: hash-probing -->
@@ -89,7 +89,7 @@ find(k):
 
 Die Suche hört erst an einem **leeren** Bucket auf, denn bis dahin könnte \\(k\\) beim Einfügen weitergerutscht sein. Dieselben sechs Schlüssel wie oben:
 
-<div class='algo-stepper' data-title='Hash Table mit linearem Sondieren: der nächste freie Bucket' data-algo='hash' data-mode='probe' data-size='8' data-ops='insert 13, insert 21, insert 6, insert 29, insert 14, insert 40, find 29, find 37'></div>
+<div class='algo-stepper' data-title='Hash Table: lineares Sondieren' data-algo='hash' data-mode='probe' data-size='8' data-ops='insert 13, insert 21, insert 6, insert 29, insert 14, insert 40, find 29, find 37'></div>
 
 Die Kollisionen in Bucket 5 schieben andere Schlüssel weiter, die selbst gar nicht kollidiert hätten: 6 gehört in Bucket 6, doch dort steht schon 21. So wachsen lange belegte Strecken, **Cluster**, und die Suche nach 37 muss am Ende fast die ganze Tabelle ansehen.
 

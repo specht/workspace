@@ -68,7 +68,7 @@ Ist das Array voll, kommt ein neues, **doppelt** so großes, und alle Werte werd
 
 Probier es mit einem Array mit vier Zellen und den Aufrufen der [Data Structures Sandbox](/sandbox-datenstrukturen) aus, dann noch einem fünften Wert vorn und einem `remove`:
 
-<div class='algo-stepper' data-title='Array: einfügen und entfernen, das Array wächst' data-algo='array' data-capacity='4' data-ops='insert(0, 7), insert(1, 3), insert(1, 5), insert(3, 9), get(2), insert(0, 4), remove(1)'></div>
+<div class='algo-stepper' data-title='Array: einfügen und entfernen' data-algo='array' data-capacity='4' data-ops='insert(0, 7), insert(1, 3), insert(1, 5), insert(3, 9), get(2), insert(0, 4), remove(1)'></div>
 
 **Typische Fehler**
 
@@ -127,7 +127,7 @@ remove(i):
 
 Dieselben Aufrufe wie oben, jetzt auf einer Linked List. Die Knoten liegen irgendwo im Speicher; gezeichnet sind sie in der Reihenfolge der Liste:
 
-<div class='algo-stepper' data-title='Linked List: einfügen und entfernen über die Zeiger' data-algo='linked' data-ops='insert(0, 7), insert(1, 3), insert(1, 5), insert(3, 9), get(2), insert(0, 4), remove(1)'></div>
+<div class='algo-stepper' data-title='Linked List: einfügen und entfernen' data-algo='linked' data-ops='insert(0, 7), insert(1, 3), insert(1, 5), insert(3, 9), get(2), insert(0, 4), remove(1)'></div>
 
 **Typische Fehler**
 
@@ -219,7 +219,7 @@ dequeue():
 
 Sechs Zellen, und so viel hinein und heraus, dass die Queue einmal ganz herumläuft und zum Schluss voll ist:
 
-<div class='algo-stepper' data-title='Queue als Ringpuffer: enqueue und dequeue' data-algo='ring' data-capacity='6' data-ops='enqueue 4, enqueue 8, enqueue 15, dequeue, enqueue 16, dequeue, enqueue 23, enqueue 42, enqueue 7, dequeue, enqueue 1, enqueue 2, enqueue 3'></div>
+<div class='algo-stepper' data-title='Queue als Ringpuffer' data-algo='ring' data-capacity='6' data-ops='enqueue 4, enqueue 8, enqueue 15, dequeue, enqueue 16, dequeue, enqueue 23, enqueue 42, enqueue 7, dequeue, enqueue 1, enqueue 2, enqueue 3'></div>
 
 **Typische Fehler**
 

@@ -410,7 +410,9 @@
         frameId = requestAnimationFrame(frame);
     }
 
-    const api = { morph, mix };
+    // slow: how much slower every movement is (?motion=slow), for widgets
+    // that time CSS animations to a movement
+    const api = { morph, mix, slow };
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
     else root.StepperMotion = api;
 })(typeof window !== 'undefined' ? window : globalThis);

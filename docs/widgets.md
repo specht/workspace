@@ -13,9 +13,11 @@ in doubt, do it the way it does.
 
 ## What a widget shows
 
-- **A title says what can be seen** (`data-title`), above the buttons:
-  »AVL-Baum: entfernen, mit Rotationen auf zwei Ebenen«, »Heap: dreimal
-  pop, der letzte Eintrag sickert nach unten«.
+- **A title says what can be seen** (`data-title`), above the buttons, short
+  and not too specific: »Suchbaum: einfügen«, »AVL-Baum: entfernen«,
+  »Heap: pop«, »Merge Sort«.
+- **One kind of operation per widget**: insert in one, find in another
+  (with `data-setup` for the tree it starts with), not both in one.
 - **It starts with what it is about.** A demo of `remove` starts with the
   finished tree, not with the eight inserts that build it: `data-setup` holds
   the operations that build the start without steps of their own,
@@ -125,7 +127,8 @@ only to look nice.
   `root` through every waiting call's node to the current one are purple,
   their dashes flowing in the direction of the calls, so it is always clear
   along which way the stack will come back up (`on-stack`; without the
-  flowing under reduced motion).
+  flowing under reduced motion). On the way back each of these pointers
+  settles once its pulse has passed: solid and grey again, the lowest first.
 - **The calls that run** stand above the code box, each one deeper indented
   (`remove(node: 50, value: 20)`), the current one marked. On the way back
   each shows what it returns (`→ 30`) and they return one after another, the

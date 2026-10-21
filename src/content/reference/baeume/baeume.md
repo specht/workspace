@@ -50,9 +50,13 @@ insert(node, value):
 
 Dass `insert` den Knoten zurückgibt und der Aufrufer ihn wieder einträgt, ist der Trick: So braucht kein Knoten sein Elternteil zu kennen, und die leere Wurzel ist kein Sonderfall (`root ← insert(root, value)`).
 
-Acht Werte, dann zwei Suchen, eine erfolgreich und eine nicht:
+Acht Werte nacheinander:
 
-<div class='algo-stepper' data-title='Suchbaum: acht Werte einfügen, dann zweimal suchen' data-algo='bst' data-ops='insert 50, insert 30, insert 70, insert 20, insert 40, insert 60, insert 80, insert 35, find 35, find 65'></div>
+<div class='algo-stepper' data-title='Suchbaum: einfügen' data-algo='bst' data-ops='insert 50, insert 30, insert 70, insert 20, insert 40, insert 60, insert 80, insert 35'></div>
+
+Und im fertigen Baum zwei Suchen, eine erfolgreich und eine nicht:
+
+<div class='algo-stepper' data-title='Suchbaum: suchen' data-algo='bst' data-setup='insert 50, insert 30, insert 70, insert 20, insert 40, insert 60, insert 80, insert 35' data-ops='find 35, find 65'></div>
 <!-- /part -->
 
 <!-- part: suchbaum-entfernen -->
@@ -82,7 +86,7 @@ remove(node, value):
 
 Derselbe Baum, dann alle drei Fälle nacheinander: 20 ist ein Blatt, 40 hat ein Kind, 50 hat zwei:
 
-<div class='algo-stepper' data-title='Suchbaum: entfernen, ein Blatt, ein Knoten mit einem Kind, einer mit zwei' data-algo='bst' data-setup='insert 50, insert 30, insert 70, insert 20, insert 40, insert 60, insert 80, insert 35' data-ops='remove 20, remove 40, remove 50'></div>
+<div class='algo-stepper' data-title='Suchbaum: entfernen' data-algo='bst' data-setup='insert 50, insert 30, insert 70, insert 20, insert 40, insert 60, insert 80, insert 35' data-ops='remove 20, remove 40, remove 50'></div>
 
 **Typische Fehler**
 
@@ -124,7 +128,7 @@ height(node):
 
 Suchen, Einfügen und Entfernen laufen einen Weg von der Wurzel nach unten, sie brauchen also so viele Schritte, wie der Baum hoch ist. Ein gut gemischter Baum mit einer Million Werten ist etwa 20 Ebenen hoch. Kommen die Werte aber sortiert an, hängt jeder rechts am vorigen, und der Baum wird eine Kette:
 
-<div class='algo-stepper' data-title='Suchbaum: sortierte Werte machen ihn zur Kette' data-algo='bst' data-ops='insert 10, insert 20, insert 30, insert 40, insert 50, insert 60'></div>
+<div class='algo-stepper' data-title='Suchbaum: sortiert einfügen' data-algo='bst' data-ops='insert 10, insert 20, insert 30, insert 40, insert 50, insert 60'></div>
 
 Das ist eine Linked List mit Umwegen: Bei einer Million Werten braucht die Suche eine Million Schritte.
 
@@ -162,7 +166,7 @@ Welche Rotation nötig ist, hängt davon ab, wo der neue Wert gelandet ist, von 
 
 Diese acht Werte lösen alle vier Fälle aus, LL, RR, RL und LR in dieser Reihenfolge. Klein neben jedem Knoten steht seine Höhe:
 
-<div class='algo-stepper' data-title='AVL-Baum: einfügen, mit allen vier Rotationen LL, RR, RL und LR' data-algo='avl' data-ops='insert 50, insert 40, insert 30, insert 60, insert 70, insert 45, insert 20, insert 25'></div>
+<div class='algo-stepper' data-title='AVL-Baum: einfügen' data-algo='avl' data-ops='insert 50, insert 40, insert 30, insert 60, insert 70, insert 45, insert 20, insert 25'></div>
 
 ### Entfernen
 
@@ -190,7 +194,7 @@ rebalance(node):
 
 Hier löst schon das Entfernen der 50 zwei Reparaturen aus: erst eine Doppelrotation bei 60, dann eine Rotation bei der Wurzel:
 
-<div class='algo-stepper' data-title='AVL-Baum: entfernen, mit Rotationen auf zwei Ebenen' data-algo='avl' data-setup='insert 40, insert 20, insert 60, insert 10, insert 30, insert 50, insert 70, insert 5, insert 15, insert 25, insert 35, insert 65, insert 3' data-ops='remove 50'></div>
+<div class='algo-stepper' data-title='AVL-Baum: entfernen' data-algo='avl' data-setup='insert 40, insert 20, insert 60, insert 10, insert 30, insert 50, insert 70, insert 5, insert 15, insert 25, insert 35, insert 65, insert 3' data-ops='remove 50'></div>
 
 **Typische Fehler**
 

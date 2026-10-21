@@ -83,7 +83,7 @@ breadth_first_search(graph, start, goal):
 
 Probier es aus, von A nach H. Gelb sind die Knoten in der Queue, lila die schon besuchten, der schwarze Ring zeigt, wer gerade dran ist; die dicken Linien sind die Vorgänger:
 
-<div class='algo-stepper' data-title='Breitensuche von A nach H' data-algo='bfs' data-graph='stadt' data-start='A' data-goal='H'></div>
+<div class='algo-stepper' data-title='Breitensuche' data-algo='bfs' data-graph='stadt' data-start='A' data-goal='H'></div>
 
 Die Breitensuche findet A–C–G–H: drei Kanten, die wenigsten, die es gibt, aber 128 lang. Auf die Längen achtet sie nicht. Für einen Stadtplan ist das selten der kürzeste Weg, für ein Labyrinth, in dem jeder Schritt gleich lang ist, genau richtig.
 
@@ -116,7 +116,7 @@ depth_first_search(graph, start, goal):
     no path
 ```
 
-<div class='algo-stepper' data-title='Tiefensuche von A nach H' data-algo='dfs' data-graph='stadt' data-start='A' data-goal='H'></div>
+<div class='algo-stepper' data-title='Tiefensuche' data-algo='dfs' data-graph='stadt' data-start='A' data-goal='H'></div>
 
 Hier findet sie A–D–G–H, weil sie D als Letztes auf den Stack gelegt hat und dort weitermacht. Den kürzesten Weg findet die Tiefensuche im Allgemeinen nicht, und auch nicht den mit den wenigsten Kanten. Sie ist aber die richtige Suche für Fragen wie »Gibt es überhaupt einen Weg?«, »Welche Knoten erreicht man?« oder »Hat der Graph einen Kreis?«, und sie lässt sich ganz kurz rekursiv schreiben: Die Funktion ruft sich für jeden noch nicht gefundenen Nachbarn selbst auf, und der Stack ist der der Aufrufe.
 <!-- /part -->
@@ -149,7 +149,7 @@ dijkstra(graph, start, goal):
 
 Über jedem Knoten steht der beste bekannte Weg vom Start. Die Tabelle daneben zeigt, was sich in diesem Schritt geändert hat:
 
-<div class='algo-stepper' data-title='Dijkstra: der kürzeste Weg von A nach H' data-algo='dijkstra' data-graph='stadt' data-start='A' data-goal='H'></div>
+<div class='algo-stepper' data-title='Dijkstra' data-algo='dijkstra' data-graph='stadt' data-start='A' data-goal='H'></div>
 
 Dijkstra findet A–B–E–F–H mit 107, vier Kanten, aber kürzer als die 128 der Breitensuche. Ein Knoten kann mehrmals in der Priority Queue stehen: Findet die Suche einen kürzeren Weg zu ihm, legt sie ihn noch einmal hinein, statt den alten Eintrag zu suchen. Kommt der alte später heraus, ist der Knoten schon fertig, und die Suche überspringt ihn (durchgestrichen).
 
@@ -183,7 +183,7 @@ Auf einer Karte ist die Schätzung \\(h\\) die Luftlinie zum Ziel. Der Pseudocod
                 put (new + h(neighbor), neighbor) into pq
 ```
 
-<div class='algo-stepper' data-title='A*: der kürzeste Weg von A nach H, mit Luftlinie' data-algo='astar' data-graph='stadt' data-start='A' data-goal='H'></div>
+<div class='algo-stepper' data-title='A*' data-algo='astar' data-graph='stadt' data-start='A' data-goal='H'></div>
 
 A* findet denselben Weg wie Dijkstra, ist aber nach sechs statt acht Knoten fertig: C und G liegen weg vom Ziel, ihr Weg bis hier plus die Luftlinie ist größer als die 107, und sie kommen gar nicht erst dran. Auf einem Stadtplan mit hunderttausend Knoten macht das aus einem Kreis um den Start ein schmales Band zum Ziel.
 
