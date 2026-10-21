@@ -208,7 +208,7 @@ Keine neue Menge mehr: Der DEA hat drei Zustände. r<sub>1</sub> heißt »zuletz
 <!-- short: Minimierung: Zustände, die kein Wort voneinander unterscheidet, werden einer; Paare markieren, erst akzeptierend gegen nicht akzeptierend, dann jedes Paar, das mit einem Zeichen zu einem markierten Paar führt; was unmarkiert bleibt, wird zusammengelegt. -->
 ### Welche Zustände dasselbe tun
 
-Der DEA aus der Potenzmengenkonstruktion hat oft mehr Zustände als nötig. Zwei Zustände dürfen **einer werden**, wenn kein Wort sie unterscheidet: Von beiden aus nimmt der DEA genau dieselben Wörter an. Die **Minimierung** findet diese Zustände und legt sie zusammen. Heraus kommt der kleinste DEA für die Sprache; es gibt nur einen, bis auf die Namen der Zustände.
+Der DEA aus der Potenzmengenkonstruktion hat oft mehr Zustände als nötig. Zwei Zustände dürfen **einer werden**, wenn kein Wort sie unterscheidet: Von beiden aus nimmt der DEA genau dieselben Wörter an. Die **Minimierung** findet diese Zustände und legt sie zusammen. Heraus kommt der **minimierte DEA**, der DEA mit den wenigsten Zuständen für die Sprache; es gibt nur einen, bis auf die Namen der Zustände.
 
 ### Das Markierungsverfahren
 
@@ -240,9 +240,9 @@ Ein Paar wird markiert, wenn ein Zeichen es zu einem schon markierten Paar führ
 <tr><th>r<sub>2</sub></th><td></td><td></td><td><i class='bi bi-x-lg text-danger'></i></td></tr>
 </table>
 
-r<sub>0</sub> und r<sub>1</sub> werden ein Zustand s<sub>0</sub>, r<sub>2</sub> wird s<sub>1</sub>, r<sub>3</sub> wird s<sub>2</sub>. Der kleinste DEA hat drei Zustände:
+r<sub>0</sub> und r<sub>1</sub> werden ein Zustand s<sub>0</sub>, r<sub>2</sub> wird s<sub>1</sub>, r<sub>3</sub> wird s<sub>2</sub>. Der minimierte DEA hat drei Zustände:
 
-<div class='automaton-drawing' role='img' aria-label='Kleinster DEA mit drei Kreisen s0, s1, s2 in einer Reihe, s2 akzeptiert. b führt von s0 nach s1 und von s1 nach s2, in s2 bleibt er mit b; a führt von jedem Zustand nach s0.' data-regex='(a|b)*bb' data-automaton='min'></div>
+<div class='automaton-drawing' role='img' aria-label='Minimierter DEA mit drei Kreisen s0, s1, s2 in einer Reihe, s2 akzeptiert. b führt von s0 nach s1 und von s1 nach s2, in s2 bleibt er mit b; a führt von jedem Zustand nach s0.' data-regex='(a|b)*bb' data-automaton='min'></div>
 <!-- /part -->
 
 ## Zum Nachschlagen

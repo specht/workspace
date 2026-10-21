@@ -383,7 +383,7 @@ _task(schloss)
 
 ### Automatron zeichnet nach
 
-Für jede Ziffer in jedem Zustand die richtige Antwort zu finden, ist Denkarbeit. Ein Werkzeug kann sie dir abnehmen: [Automatron](/automatron) baut aus einem **regulären Ausdruck** einen Automaten. `(0|1|2|3|4|5|6|7|8|9)*1213` heißt: beliebig viele Ziffern (`|` ist »oder«, `*` »beliebig oft, auch keinmal«), danach `1213`. Gib den Ausdruck in Automatron ein. Unter »Minimierung« zeigt es den kleinsten Automaten, der dasselbe tut:
+Für jede Ziffer in jedem Zustand die richtige Antwort zu finden, ist Denkarbeit. Ein Werkzeug kann sie dir abnehmen: [Automatron](/automatron) baut aus einem **regulären Ausdruck** einen Automaten. `(0|1|2|3|4|5|6|7|8|9)*1213` heißt: beliebig viele Ziffern (`|` ist »oder«, `*` »beliebig oft, auch keinmal«), danach `1213`. Gib den Ausdruck in Automatron ein. Unter »Minimierung« zeigt es den minimierten DEA: den Automaten mit den wenigsten Zuständen, der dasselbe tut:
 
 _tool(automatron)
 
@@ -396,7 +396,7 @@ zoom: 2
 click: selector:#ti_input
 type: (0|1|2|3|4|5|6|7|8|9)*1213
 press: Enter
-wait-for-text: kleinster DEA
+wait-for-text: minimierter DEA
 sleep: 1
 crop-element: #automatron-min svg
 variants: dark
@@ -404,10 +404,10 @@ variants: dark
 <img class='drawing' style='width: 40em' src='automatron-schloss.webp' alt='Automatron zeichnet fünf Zustände s0 bis s4 in einer Reihe, s4 mit doppeltem Rand. Mit 1 geht es von s0 nach s1, mit 2 nach s2, mit 1 nach s3, mit 3 nach s4. Zurück führen: 1 von s1 nach s1, 2 von s3 nach s2, 1 von s3 nach s1, 1 von s4 nach s1, alle übrigen Ziffern nach s0.'>
 
 <!-- language: ruby -->
-Automatron zeigt nacheinander drei Automaten und gibt jedem einen eigenen Buchstaben: q für den ersten, r für den zweiten, s für den kleinsten. s<sub>0</sub> bis s<sub>4</sub> sind darum deine q<sub>0</sub> bis q<sub>4</sub>. Vergleiche die Pfeile mit deiner Tabelle: Automatron zeichnet auch die Pfeile zurück nach s<sub>0</sub>, die in `lock.rb` das `fetch` erledigt. Darüber steht, wie Automatron zu diesem Automaten gekommen ist. Einen Teil davon baust du gleich selbst.
+Automatron zeigt nacheinander drei Automaten und gibt jedem einen eigenen Buchstaben: q für den ersten, r für den zweiten, s für den minimierten. s<sub>0</sub> bis s<sub>4</sub> sind darum deine q<sub>0</sub> bis q<sub>4</sub>. Vergleiche die Pfeile mit deiner Tabelle: Automatron zeichnet auch die Pfeile zurück nach s<sub>0</sub>, die in `lock.rb` das `fetch` erledigt. Darüber steht, wie Automatron zu diesem Automaten gekommen ist. Einen Teil davon baust du gleich selbst.
 <!-- /language -->
 <!-- language: python -->
-Automatron zeigt nacheinander drei Automaten und gibt jedem einen eigenen Buchstaben: q für den ersten, r für den zweiten, s für den kleinsten. s<sub>0</sub> bis s<sub>4</sub> sind darum deine q<sub>0</sub> bis q<sub>4</sub>. Vergleiche die Pfeile mit deiner Tabelle: Automatron zeichnet auch die Pfeile zurück nach s<sub>0</sub>, die in `lock.py` das `get` erledigt. Darüber steht, wie Automatron zu diesem Automaten gekommen ist. Einen Teil davon baust du gleich selbst.
+Automatron zeigt nacheinander drei Automaten und gibt jedem einen eigenen Buchstaben: q für den ersten, r für den zweiten, s für den minimierten. s<sub>0</sub> bis s<sub>4</sub> sind darum deine q<sub>0</sub> bis q<sub>4</sub>. Vergleiche die Pfeile mit deiner Tabelle: Automatron zeichnet auch die Pfeile zurück nach s<sub>0</sub>, die in `lock.py` das `get` erledigt. Darüber steht, wie Automatron zu diesem Automaten gekommen ist. Einen Teil davon baust du gleich selbst.
 <!-- /language -->
 
 ## Ein Automat, der rät
@@ -733,7 +733,7 @@ _task(nea-oder-dea)
 - **Mehr als endlich.** Klammern prüfen, ob jede `(` ein `)` hat, kann ein endlicher Automat nicht. Ein **Kellerautomat** kann es, mit einem [Stack](/reference/listen#stack) als Gedächtnis. So prüfen Compiler deinen Code.
 
 <!-- tutorial-screenshot
-# Teaser: der kleinste DEA für »eine Dezimalzahl ist durch 3 teilbar«; der
+# Teaser: der minimierte DEA für »eine Dezimalzahl ist durch 3 teilbar«; der
 # Zustand ist die Quersumme modulo 3. Gezeichnet wie in Automatron, aber aus
 # dem Automaten selbst (hook divisible-by-3), nicht aus einem regulären Ausdruck.
 open-site: /automatron

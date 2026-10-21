@@ -173,7 +173,7 @@
             const [from, symbol] = key.split(' ');
             for (const t of to) edges.push({ from, to: t, label: symbol });
         }
-        const L = window.AutomatonLayout.layout({ states: a.states.map((id) => ({ id, label: id })), start: a.start, accept: [...a.accept], edges, columns: a.columns }, { ring: RING + 1.5 - R });
+        const L = window.AutomatonLayout.layout({ states: a.states.map((id) => ({ id, label: id })), start: a.start, accept: [...a.accept], edges, columns: a.columns }, { ring: window.AutomatonLayout.RING_ROOM });
         const [vx, vy, vw, vh] = L.view;
         // wide enough for the longest word on the tape (16, the input's
         // maxlength), so that the picture keeps its size while it is edited
@@ -284,7 +284,8 @@
         const counter = html('span', { class: 'automaton-count' });
         const say = html('div', { class: 'automaton-say', 'aria-live': 'polite' });
         const picture = make('svg', { class: 'automaton-picture', role: 'img', 'aria-label': `Der ${a.nfa ? 'NEA' : 'DEA'} mit den Zuständen ${a.states.join(', ')}; ${a.start} ist der Start, ${[...a.accept].join(', ')} ${a.accept.size === 1 ? 'nimmt' : 'nehmen'} an` });
-        picture.style.maxWidth = `${geo.width * 1.25}px`;
+        // at most as large as a drawing of the same automaton (1.2)
+        picture.style.maxWidth = `${geo.width * 1.2}px`;
         window.AutomatonLayout.hover(picture);
         el.replaceChildren(...(el.dataset.title ? [html('h4', { class: 'automaton-title', text: el.dataset.title })] : []),
             input, html('div', { class: 'automaton-controls' }, [...buttons, counter]), say, picture);

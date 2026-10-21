@@ -249,7 +249,7 @@ Zahlen kommen als Zahlen in die Liste, alles andere als String: `tokenize('12+3*
 Was eine Zahl ist, beschreibt ein endlicher Automat, wie du sie aus [Endliche Automaten](/automata) kennst. In [Automatron](/automatron) steht `z` für eine Ziffer und `p` für den Punkt: `z+(pz+)?` heißt »mindestens eine Ziffer, danach vielleicht ein Punkt und mindestens eine Ziffer«.
 
 <!-- tutorial-screenshot
-# Automatron: der kleinste DEA für eine Zahl
+# Automatron: der minimierte DEA für eine Zahl
 open-site: /automatron
 tab: preview
 viewport: 1029x700
@@ -257,7 +257,7 @@ zoom: 2
 click: selector:#ti_input
 type: z+(pz+)?
 press: Enter
-wait-for-text: kleinster DEA
+wait-for-text: minimierter DEA
 sleep: 1
 crop-element: #output_area svg:nth-of-type(3)
 variants: dark

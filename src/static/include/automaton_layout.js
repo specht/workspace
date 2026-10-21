@@ -26,6 +26,8 @@
 (function (root) {
     'use strict';
     const R = 22;
+    // how far the step widget's ring reaches beyond a state (automaton_stepper.js)
+    const RING_ROOM = 4;
     const BASE_GAPX = 116;
     const BASE_GAPY = 92;
     // a state's name: a letter and its index, q0, r12, qF (the error state)
@@ -53,10 +55,15 @@
         // labels hard to tell apart (as near to another arrow as to their
         // own): the same drawing with more room between its rows, if that
         // leaves fewer of them
-        const L = layoutOnce(a, options, best.variant, true, best.mode);
-        if (!L.ambiguous) return L;
-        const roomy = layoutOnce(a, { ...options, spread: 1.4 }, best.variant, true, best.mode);
-        return roomy.ambiguous < L.ambiguous && roomy.score <= L.score + 2 ? roomy : L;
+        // more room between the rows, between the columns or both: the one
+        // with the fewest such labels (and no more crossings)
+        let L = layoutOnce(a, options, best.variant, true, best.mode);
+        for (const room of [{ spread: 1.4 }, { spreadX: 1.3 }, { spread: 1.4, spreadX: 1.3 }]) {
+            if (!L.ambiguous) break;
+            const roomy = layoutOnce(a, { ...options, ...room }, best.variant, true, best.mode);
+            if (roomy.ambiguous < L.ambiguous && roomy.score <= L.score + 2) L = roomy;
+        }
+        return L;
     }
 
     // how well a drawing reads: crossings, arrows running along each other
@@ -111,7 +118,7 @@
         // long labels (0, 3, 6, 9) need room between the states: the gaps
         // grow with the longest
         const longest = Math.max(0, ...edges.map((e) => 7.8 * e.label.length + 4));
-        let GAPX = Math.max(BASE_GAPX, longest + 64);
+        let GAPX = Math.max(BASE_GAPX, longest + 64) * (options.spreadX || 1);
         let GAPY = Math.max(BASE_GAPY, longest + 40) * (options.spread || 1);
         const out = new Map(ids.map((id) => [id, []]));
         for (const e of edges) out.get(e.from).push(e);
@@ -529,7 +536,9 @@
     function svg(a) {
         const pairs = new Set(a.edges.map((e) => `${e.from} ${e.to}`));
         if (!drawable(a.states.length, pairs.size)) return table(a);
-        const L = layout(a);
+        // labels as far from the states as in the step widget (its rings),
+        // so that a drawing and its widget have the same layout
+        const L = layout(a, { ring: RING_ROOM });
         const head = `automaton-head-${++drawings}`;
         const parts = [];
         parts.push(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${L.view.map((v) => Math.round(v * 10) / 10).join(' ')}" style="max-width:${Math.round(L.view[2] * 1.2)}px;min-width:${Math.round(Math.min(L.view[2] * 0.8, 600))}px" class="automaton-drawn" aria-hidden="true">`);
@@ -615,7 +624,7 @@
     }
     if (typeof window !== 'undefined') window.addEventListener('resize', fitGalleries);
 
-    root.AutomatonLayout = { R, layout, svg, table, fromData, joinLabels, hover, fitGalleries };
+    root.AutomatonLayout = { R, RING_ROOM, layout, svg, table, fromData, joinLabels, hover, fitGalleries };
 
     // the drawings in the page
     if (typeof document === 'undefined') return;

@@ -129,9 +129,9 @@ Die anderen Schalter von grep (`-i`, `-n`, `-r`, …) stehen auf der Handbuch-Se
 
 <!-- part: automaten -->
 <!-- short: Jeder reguläre Ausdruck aus Zeichen, |, * und Klammern beschreibt eine Sprache, die ein endlicher Automat erkennt, und umgekehrt; Rückverweise wie \1 und richtig geschachtelte Klammern gehen darüber hinaus. -->
-Die Bausteine Zeichen, Hintereinander, `|` und `*` reichen für alles Reguläre; `+`, `?`, `{…}` und die Zeichenklassen sind Abkürzungen dafür. Aus jedem solchen Ausdruck lässt sich ein **endlicher Automat** bauen, der genau die passenden Wörter annimmt, und aus jedem endlichen Automaten ein Ausdruck: Beide beschreiben dieselben Sprachen, die **regulären Sprachen**. Wie der Automat entsteht (Thompson-Konstruktion, Potenzmengenkonstruktion, Minimierung), steht auf der Handbuch-Seite [Endliche Automaten](/reference/automaten). Für `(a|b)*abb`, »endet auf abb«, ist der kleinste DEA:
+Die Bausteine Zeichen, Hintereinander, `|` und `*` reichen für alles Reguläre; `+`, `?`, `{…}` und die Zeichenklassen sind Abkürzungen dafür. Aus jedem solchen Ausdruck lässt sich ein **endlicher Automat** bauen, der genau die passenden Wörter annimmt, und aus jedem endlichen Automaten ein Ausdruck: Beide beschreiben dieselben Sprachen, die **regulären Sprachen**. Wie der Automat entsteht (Thompson-Konstruktion, Potenzmengenkonstruktion, Minimierung), steht auf der Handbuch-Seite [Endliche Automaten](/reference/automaten). Für `(a|b)*abb`, »endet auf abb«, ist der minimierte DEA:
 
-<div class='automaton-drawing' role='img' aria-label='Der kleinste DEA zu (a|b)*abb: vier Kreise s0 bis s3 in einer Reihe, s3 akzeptiert. a führt nach s1, dann b nach s2, dann b nach s3; die übrigen Zeichen führen zurück nach s0 oder s1.' data-regex='(a|b)*abb' data-automaton='min'></div>
+<div class='automaton-drawing' role='img' aria-label='Der minimierte DEA zu (a|b)*abb: vier Kreise s0 bis s3 in einer Reihe, s3 akzeptiert. a führt nach s1, dann b nach s2, dann b nach s3; die übrigen Zeichen führen zurück nach s0 oder s1.' data-regex='(a|b)*abb' data-automaton='min'></div>
 
 So arbeiten die Suchfunktionen in Editoren und `grep` im Prinzip: Sie lesen den Text Zeichen für Zeichen und merken sich, in welchen Zuständen des Automaten sie gerade sind.
 

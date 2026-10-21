@@ -6785,7 +6785,8 @@ tr.row-detail > td {
    word, in the colours of the other step-by-step widgets */
 .automaton-stepper {
     --automaton-accent: #6741d9;
-    --automaton-line: #adb5bd;
+    /* the grey of the drawings (.automaton-drawn) */
+    --automaton-line: #868e96;
     --automaton-ink: var(--bs-body-color);
     --automaton-faint: var(--bs-secondary-color);
     --automaton-paper: var(--bs-body-bg);
@@ -6795,7 +6796,7 @@ tr.row-detail > td {
 }
 html[data-bs-theme="dark"] .automaton-stepper {
     --automaton-accent: #b197fc;
-    --automaton-line: #5c636e;
+    --automaton-line: #8b949e;
 }
 .automaton-stepper .automaton-title {
     font-size: 1.05em;

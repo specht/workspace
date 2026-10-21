@@ -50,8 +50,8 @@
   <h2>Automatron</h2>
   <p>
     Automatron baut aus einem regulären Ausdruck Schritt für Schritt endliche Automaten: zuerst einen NEA mit
-    ε-Übergängen, daraus mit der Potenzmengenkonstruktion einen DEA, und den verkleinert es zum kleinsten DEA,
-    der dieselben Wörter annimmt. Dazu kommen eine reguläre Grammatik und Wörter, die zur Sprache gehören und
+    ε-Übergängen, daraus mit der Potenzmengenkonstruktion einen DEA, und den minimiert es: Der
+    minimierte DEA nimmt dieselben Wörter an, mit so wenigen Zuständen wie möglich. Dazu kommen eine reguläre Grammatik und Wörter, die zur Sprache gehören und
     die nicht. Wie man solche Automaten selbst programmiert, zeigt <a href="/automata">Endliche Automaten in Python</a>.
   </p>
 
@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (a.states.length > TABLE_UP_TO) {
       return [el('div', 'alert alert-secondary automatron-not-drawn',
         'Diesen Automaten zeichnet Automatron nicht: Er hat ' + a.states.length + ' Zustände, zu viele für ein Bild oder eine Tabelle, '
-        + 'die man lesen kann. Die Schritte stimmen trotzdem, und der kleinste DEA weiter unten ist oft viel kleiner.')];
+        + 'die man lesen kann. Die Schritte stimmen trotzdem, und der minimierte DEA weiter unten ist oft viel kleiner.')];
     }
     const box = el('div', 'automaton-drawing');
     box.id = id;
@@ -214,10 +214,17 @@ document.addEventListener('DOMContentLoaded', function() {
         input: text,
         ...(a.columns ? { columns: a.columns } : {}),
       });
+      // the automaton stays where it was on the screen: the widget's parts
+      // above it (title, word, buttons, tape) push it down, and the page
+      // scrolls by as much
+      const drawn = box.querySelector('.automaton-state');
+      const before = drawn ? drawn.getBoundingClientRect().top : null;
       box.replaceWith(widget);
       open.remove();
       AutomatonStepper.mount(widget);
       steppers.set(id, widget);
+      const same = widget.querySelector(`[data-key="state-${CSS.escape(a.states[0].id)}"]`);
+      if (before !== null && same) window.scrollBy({ top: same.getBoundingClientRect().top - before, behavior: 'instant' });
       return widget;
     };
     // the cursor stays out of the word, so that the arrow keys step at once
@@ -267,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
     items.forEach((w) => {
       const b = el('button', `automatron-word ${kind}`, w === '' ? 'ε' : w);
       b.type = 'button';
-      b.title = w.length <= 16 ? 'Im kleinsten DEA Schritt für Schritt' : 'Zu lang für den Schritt-für-Schritt-Automaten';
+      b.title = w.length <= 16 ? 'Im minimierten DEA Schritt für Schritt' : 'Zu lang für den Schritt-für-Schritt-Automaten';
       b.disabled = w.length > 16;
       b.addEventListener('click', () => follow(w));
       p.append(b);
@@ -291,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     const nav = el('nav', 'automatron-toc');
     nav.setAttribute('aria-label', 'Teile des Ergebnisses');
-    for (const [id, text] of [['am-nfa', 'ε-NEA'], ['am-dfa', 'DEA'], ['am-min', 'kleinster DEA'], ['am-grammar', 'Grammatik'], ['am-words', 'Wörter']]) {
+    for (const [id, text] of [['am-nfa', 'ε-NEA'], ['am-dfa', 'DEA'], ['am-min', 'minimierter DEA'], ['am-grammar', 'Grammatik'], ['am-words', 'Wörter']]) {
       const a = el('a', '', text);
       a.href = '#' + id;
       a.addEventListener('click', (event) => { event.preventDefault(); document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' }); });
@@ -348,13 +355,13 @@ document.addEventListener('DOMContentLoaded', function() {
       out.append(...drawing(data.dfa.implicit_sink.drawing, 'automatron-dfa', 'Der DEA als Zustandsdiagramm', 'DEA', word));
       sink(data.dfa.implicit_sink.has_sink);
 
-      section('am-min', 'Minimierung (DEA → kleinster DEA)',
+      section('am-min', 'Minimierung (DEA → minimierter DEA)',
         'Zustände, die kein Wort voneinander unterscheidet, werden zu einem Zustand s zusammengefasst.');
       out.append(...$(data.notes_minimization_html).toArray());
-      out.append(...drawing(data.min_dfa.implicit_sink.drawing, 'automatron-min', 'Der kleinste DEA als Zustandsdiagramm', 'Kleinster DEA', word));
+      out.append(...drawing(data.min_dfa.implicit_sink.drawing, 'automatron-min', 'Der minimierte DEA als Zustandsdiagramm', 'Minimierter DEA', word));
       sink(data.min_dfa.implicit_sink.has_sink);
 
-      section('am-grammar', 'Reguläre Grammatik', 'Aus jedem Übergang des kleinsten DEA wird eine Regel.');
+      section('am-grammar', 'Reguläre Grammatik', 'Aus jedem Übergang des minimierten DEA wird eine Regel.');
       out.append($('<div>').html(data.grammar)[0]);
       if (!sameGrammar(data.grammar, data.grammar_compact)) {
         section('am-grammar-compact', 'Reguläre Grammatik, vereinfacht');
