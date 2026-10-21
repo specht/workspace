@@ -2205,6 +2205,8 @@ body.has-autotoc-secondary.autotoc-primary-visible {
    floats where the preview did, the preview fills it. */
 .media-variant-box-preview {
     float: right;
+    /* below the previous preview, like the preview itself */
+    clear: right;
     display: block;
     width: min(28rem, 45%);
     margin: 0.2rem 0 1.2rem 1.5rem;
