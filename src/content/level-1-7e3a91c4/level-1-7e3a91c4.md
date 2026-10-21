@@ -124,7 +124,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='rampe-1.webp' alt='Ein breiter Gang mit gelber Tapete; vorn ist der Boden eben, weiter hinten steigt er gleichmäßig an, und die Decke steigt mit.'>
+<img class='full fit-width' src='rampe-1.webp' alt='Ein breiter Gang mit gelber Tapete; vorn ist der Boden eben, weiter hinten steigt er gleichmäßig an, und die Decke steigt mit.'>
 
 ### Boden und Decke zusammen
 
@@ -150,7 +150,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='rampe-2.webp' alt='Derselbe Gang: vorn eben, dahinter steigt der Boden an, während die Decke fast waagerecht bleibt; ganz hinten treffen sich Boden und Decke beinahe.'>
+<img class='full fit-width' src='rampe-2.webp' alt='Derselbe Gang: vorn eben, dahinter steigt der Boden an, während die Decke fast waagerecht bleibt; ganz hinten treffen sich Boden und Decke beinahe.'>
 
 <!-- /tutorial-scope -->
 
@@ -174,7 +174,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='rampe-3.webp' alt='Vom ebenen Gang aus in einen Gang unter einem Satteldach, dessen Boden nach hinten abfällt; hinten, tief unten, endet er an einer Wand.'>
+<img class='full fit-width' src='rampe-3.webp' alt='Vom ebenen Gang aus in einen Gang unter einem Satteldach, dessen Boden nach hinten abfällt; hinten, tief unten, endet er an einer Wand.'>
 
 <!-- /tutorial-scope -->
 
@@ -196,7 +196,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='rampe.webp' alt='Vom ebenen Gang aus: Der Boden dahinter steigt an, während die Decke zur Seite kippt; die Leuchten hängen schief in ihr.'>
+<img class='full fit-width' src='rampe.webp' alt='Vom ebenen Gang aus: Der Boden dahinter steigt an, während die Decke zur Seite kippt; die Leuchten hängen schief in ihr.'>
 
 ### Ein krummer Gang
 
@@ -238,7 +238,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='krumm.webp' alt='Vom oberen Ende der Rampe in einen krummen Gang: Er knickt zur Seite und wieder zurück, die Decken kippen mal nach links, mal nach rechts, ganz hinten eine gelbe Wand.'>
+<img class='full fit-width' src='krumm.webp' alt='Vom oberen Ende der Rampe in einen krummen Gang: Er knickt zur Seite und wieder zurück, die Decken kippen mal nach links, mal nach rechts, ganz hinten eine gelbe Wand.'>
 
 Am Ende der Reihe wartet ein fertiges Level, die Nachtschicht, gebaut aus genau solchen Räumen.
 
@@ -282,7 +282,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='treppe-1.webp' alt='Ein hohes, leeres Treppenhaus mit gelber Tapete; an der rechten Wand steigt eine Holztreppe mit einem Geländer aus Metall zu einem Absatz in der Ecke, der im Nichts endet.'>
+<img class='full fit-width' src='treppe-1.webp' alt='Ein hohes, leeres Treppenhaus mit gelber Tapete; an der rechten Wand steigt eine Holztreppe mit einem Geländer aus Metall zu einem Absatz in der Ecke, der im Nichts endet.'>
 
 ### Um die Ecke
 
@@ -343,7 +343,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='treppe.webp' alt='Vom oberen Podest hinunter: die zweite Treppe führt an der Nordwand hinab zum Absatz in der Ecke, von dort die erste an der Ostwand weiter hinunter; ein Geländer aus Metall läuft ohne Unterbrechung an allem entlang, rechts unten die Tür zum Marmorsaal.'>
+<img class='full fit-width' src='treppe.webp' alt='Vom oberen Podest hinunter: die zweite Treppe führt an der Nordwand hinab zum Absatz in der Ecke, von dort die erste an der Ostwand weiter hinunter; ein Geländer aus Metall läuft ohne Unterbrechung an allem entlang, rechts unten die Tür zum Marmorsaal.'>
 
 <!-- tutorial-screenshot
 # Der Dachboden, von der Tür aus über die Kisten hinweg
@@ -355,7 +355,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full' src='dachboden.webp' alt='Der Dachboden: ein weiter, niedriger Raum mit Wänden und Boden aus Holz unter einem flachen Satteldach, ein paar Kisten, wenige gelbliche Leuchten.'>
+<img class='full fit-width' src='dachboden.webp' alt='Der Dachboden: ein weiter, niedriger Raum mit Wänden und Boden aus Holz unter einem flachen Satteldach, ein paar Kisten, wenige gelbliche Leuchten.'>
 
 <div class='hint try'>
 <p><strong>Ausprobieren:</strong> Stell im Treppenhaus mit <code>on = P</code> etwas auf das obere Podest, den Plastikstuhl zum Beispiel, in einem eigenen Feld: <code>[C]</code> mit <code>model = models/plastic_monobloc_chair_01/plastic_monobloc_chair_01_1k.gltf</code>, <code>height = 0.88</code> und <code>on = P</code>. Das Feld gehört dann zum Podest, und der Stuhl steht oben. Was passiert ohne <code>on = P</code>?</p>
