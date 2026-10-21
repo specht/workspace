@@ -450,30 +450,52 @@ document.addEventListener('keydown', (event) => {
 // follows the text), measured by going through all steps once when the
 // page has loaded, again when the width changes or a text in the widget is
 // edited. Not in the lightbox, whose fit measures for itself.
+// Going through hundreds of steps takes seconds, so it goes in slices of a
+// few milliseconds; each slice puts back the step that is shown and the
+// heights reserved so far, so the page stays usable and nothing flickers.
 (() => {
     const parts = (widget) => [...widget.children].filter((c) => !['absolute', 'fixed'].includes(getComputedStyle(c).position));
     const clear = (widget) => { for (const part of parts(widget)) part.style.minHeight = ''; };
+    const SLICE = 12;
+    const jobs = new Map();
+    let running = 0;
+    const run = () => {
+        running = 0;
+        const until = performance.now() + SLICE;
+        for (const [widget, job] of jobs) {
+            if (!widget.isConnected || widget.classList.contains('stepper-lightbox')) { jobs.delete(widget); continue; }
+            const at = Number(widget.dataset.step) || 0;
+            const kept = job.list.map((part) => part.style.minHeight);
+            clear(widget);
+            while (job.next < job.steps && performance.now() < until) {
+                widget.stepperGo(job.next++);
+                job.list.forEach((part, i) => {
+                    const h = part.getBoundingClientRect().height;
+                    job.least[i] = Math.min(job.least[i], h);
+                    job.most[i] = Math.max(job.most[i], h);
+                });
+            }
+            widget.stepperGo(at);
+            if (job.next < job.steps) {
+                job.list.forEach((part, i) => { part.style.minHeight = kept[i]; });
+                break;
+            }
+            job.list.forEach((part, i) => {
+                if (job.most[i] - job.least[i] > 1) part.style.minHeight = `${job.most[i] / (parseFloat(getComputedStyle(part).fontSize) || 16)}em`;
+            });
+            jobs.delete(widget);
+            if (performance.now() >= until) break;
+        }
+        if (jobs.size) running = setTimeout(run, 0);
+    };
     const reserve = (widget) => {
         if (typeof widget.stepperGo !== 'function' || widget.classList.contains('stepper-lightbox')) return;
         const steps = Number(widget.dataset.steps);
         if (!(steps > 1)) return;
-        const at = Number(widget.dataset.step) || 0;
         const list = parts(widget);
-        clear(widget);
-        const least = list.map(() => Infinity);
-        const most = list.map(() => 0);
-        for (let s = 0; s < steps; s++) {
-            widget.stepperGo(s);
-            list.forEach((part, i) => {
-                const h = part.getBoundingClientRect().height;
-                least[i] = Math.min(least[i], h);
-                most[i] = Math.max(most[i], h);
-            });
-        }
-        widget.stepperGo(at);
-        list.forEach((part, i) => {
-            if (most[i] - least[i] > 1) part.style.minHeight = `${most[i] / (parseFloat(getComputedStyle(part).fontSize) || 16)}em`;
-        });
+        jobs.delete(widget);
+        jobs.set(widget, { steps, list, next: 0, least: list.map(() => Infinity), most: list.map(() => 0) });
+        if (!running) running = setTimeout(run, 0);
     };
     const all = () => document.querySelectorAll('[data-stepper]').forEach(reserve);
     let waiting = 0;

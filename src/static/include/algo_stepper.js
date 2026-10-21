@@ -2987,7 +2987,14 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         // scrolls sideways and follows the current step by itself
         const timelineInner = el('div', { class: 'algo-timeline-inner', style: `--steps: ${frames.length};` }, [nameRow, timeline, phaseRow]);
         const timelineBox = el('div', { class: 'algo-timeline-box' }, [timelineInner]);
+        // in the next frame, once: reading the timeline's place right after
+        // drawing a step would lay out the page for every step
+        let keeping = 0;
         const keepInView = (smooth) => {
+            cancelAnimationFrame(keeping);
+            keeping = requestAnimationFrame(() => keepInViewNow(smooth));
+        };
+        const keepInViewNow = (smooth) => {
             const tick = ticks[index];
             if (!tick || timelineBox.scrollWidth <= timelineBox.clientWidth) return;
             const box = timelineBox.getBoundingClientRect();
@@ -3108,6 +3115,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         // A step back is the step forward played backwards, as long as that
         // took (StepperMotion, reverse)
         let before = 0;
+        let room = 0;
         const show = (animate) => {
             const frame = frames[index];
             const back = animate && index === before - 1;
@@ -3117,7 +3125,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             // on a small screen the text grows: by as much as the picture is
             // shown smaller than 0.75 of its size, at most by 0.35
             const vbWidth = Number((svg.getAttribute('viewBox') || '0 0 0').split(/\s+/)[2]) || 0;
-            const room = picture.parentElement ? picture.parentElement.clientWidth : 0;
+            if (!room && picture.parentElement) room = picture.parentElement.clientWidth;
             const shown = vbWidth && room ? Math.min(1, room / vbWidth) : 1;
             growText(svg, Math.min(1.35, Math.max(1, 0.75 / shown)));
             // a list's cells keep their size across widgets: the picture at
@@ -3172,8 +3180,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             speed = (speed + 1) % SPEEDS.length;
             speedButton.textContent = SPEEDS[speed][1];
         });
-        // the text's size follows the room: a turned phone draws the step again
-        let room = 0;
+        // the text's size follows the room: a turned phone draws the step
+        // again. The width is read here and once at the start, not for every
+        // step: that would lay out the page each time
         window.addEventListener('resize', () => { const now = picture.parentElement ? picture.parentElement.clientWidth : 0; if (Math.abs(now - room) > 20) { room = now; show(false); } });
         widget.stepperGo = (k) => { index = Math.max(0, Math.min(frames.length - 1, k)); show(false); };
         const go = { first: () => 0, prev: () => index - 1, next: () => index + 1, last: () => frames.length - 1 };
