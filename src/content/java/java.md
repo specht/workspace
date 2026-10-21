@@ -11,17 +11,11 @@ kind: steckbrief
 
 # Java <span style='font-size: 80%;'>(1995)</span>
 
-<div class='floatright' style='width: 16em;'>
-    <img src='gosling.webp' alt='Foto von James Gosling, der Java erfunden hat'>
-    <p>
-      James Gosling<br>
-      <span style='font-size: 90%; opacity: 0.7;'>(Foto von Yuichi Sakuraba)</span>
-    </p>
-</div>
-
 <p class='abstract'>
 Java, entwickelt von James Gosling und seinem Team bei Sun Microsystems und erstmals 1995 veröffentlicht, ist eine objektorientierte Programmiersprache, die für ihre Plattformunabhängigkeit bekannt ist.
 </p>
+
+_person(gosling)
 
 Java wird häufig für die Entwicklung von Unternehmensanwendungen, mobilen Anwendungen (insbesondere Android-Apps), Webanwendungen und großen Systemen verwendet. Bekannte Beispiele für Anwendungen und Plattformen, die in Java entwickelt wurden, sind die Android-Betriebssysteme, die Apache Hadoop-Frameworks für Big Data und die Unternehmenssoftware von Unternehmen wie LinkedIn und Netflix. Heutzutage ist Java immer noch äußerst relevant und weit verbreitet, da es eine robuste, skalierbare und sichere Umgebung für die Entwicklung bietet und eine große Entwickler-Community sowie eine Vielzahl von Bibliotheken und Frameworks unterstützt.
 

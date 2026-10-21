@@ -11,16 +11,11 @@ kind: steckbrief
 
 # C&#35; <span style='font-size: 80%;'>(2000)</span>
 
-<div class='floatright' style='width: 16em;'>
-    <img src='heijlsberg.webp' alt='Foto von Anders Hejlsberg, der C# entwickelt hat'>
-    <p>
-        Anders Hejlsberg
-    </p>
-</div>
-
 <p class='abstract'>
 C#, entwickelt von Anders Hejlsberg und seinem Team bei Microsoft und erstmals im Jahr 2000 veröffentlicht, ist eine moderne, objektorientierte Programmiersprache, die Teil des .NET-Frameworks ist.
 </p>
+
+_person(hejlsberg)
 
 C# wird häufig für die Entwicklung von Windows-Anwendungen, Webanwendungen und Spielen verwendet. Bekannte Beispiele für Anwendungen, die in C# entwickelt wurden, sind die Entwicklungsumgebung Visual Studio, die Webanwendungsplattform ASP.NET und Spiele, die mit der Unity-Engine erstellt wurden, wie »Hearthstone« und »Monument Valley«. Heutzutage ist C# immer noch äußerst relevant, da es eine breite Palette von Anwendungsbereichen abdeckt und durch die .NET-Plattform sowie die Unterstützung durch Microsoft kontinuierlich weiterentwickelt wird.
 

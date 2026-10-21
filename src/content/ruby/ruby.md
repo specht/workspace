@@ -11,17 +11,11 @@ kind: steckbrief
 
 # Ruby <span style='font-size: 80%;'>(1995)</span>
 
-<div class='floatright' style='width: 16em;'>
-    <img src='matz.webp' alt='Foto von Yukihiro Matsumoto, dem Erfinder von Ruby'>
-    <p>
-        Yukihiro Matsumoto<br>
-        <span style='font-size: 90%; opacity: 0.7;'>(Foto von Marcin Bajer)</span>
-    </p>
-</div>
-
 <p class='abstract'>
 Ruby, entwickelt Mitte der 1990er Jahre von Yukihiro "Matz" Matsumoto, ist eine dynamische, objektorientierte Programmiersprache, die für ihre Einfachheit und Produktivität bekannt ist.
 </p>
+
+_person(matsumoto)
 
 Ruby wird häufig für die Webentwicklung verwendet, insbesondere durch das populäre Web-Framework Ruby on Rails, das die Entwicklung von Webanwendungen erheblich beschleunigt. Bekannte Beispiele für Anwendungen, die mit Ruby on Rails entwickelt wurden, sind GitHub, Shopify und Basecamp. Heutzutage ist Ruby immer noch relevant, insbesondere in der Webentwicklung, da es eine aktive Community und eine Vielzahl von Bibliotheken und Tools bietet, die die Entwicklung effizienter und angenehmer machen.
 

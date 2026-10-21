@@ -11,14 +11,11 @@ kind: steckbrief
 
 # C++ <span style='font-size: 80%;'>(1983)</span>
 
-<div class='floatright' style='width: 16em;'>
-    <img src='stroustrup.webp' alt='Foto von Bjarne Stroustrup, dem Erfinder von C++'>
-    <p>Bjarne Stroustrup</p>
-</div>
-
 <p class='abstract'>
 C++ wurde in den frühen 1980er Jahren von Bjarne Stroustrup als Erweiterung der Programmiersprache C entwickelt, um objektorientierte Programmierkonzepte zu unterstützen und gleichzeitig die Effizienz und Leistungsfähigkeit von C beizubehalten. C++ wurde in zahlreichen bekannten Softwareprojekten verwendet, darunter die Entwicklung des Betriebssystems Microsoft Windows, der Webbrowser Mozilla Firefox, das Grafik-Rendering-Framework Unreal Engine und die Datenbanksoftware MySQL.
 </p>
+
+_person(stroustrup)
 
 Heutzutage ist C++ immer noch äußerst relevant und weit verbreitet, insbesondere in Bereichen wie Spieleentwicklung, Systemprogrammierung, Echtzeitanwendungen und Hochleistungssoftware. Die Sprache wird für ihre Effizienz, Flexibilität und die Fähigkeit geschätzt, sowohl auf niedriger als auch auf hoher Abstraktionsebene zu programmieren.
 

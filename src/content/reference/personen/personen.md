@@ -16,6 +16,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 ## Geboren vor 1920
 
+<!-- year: 1896 -->
 <!-- part: luhn -->
 ### Hans Peter Luhn
 
@@ -25,6 +26,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1903 -->
 <!-- part: neumann -->
 ### John von Neumann
 
@@ -36,6 +38,19 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1906 -->
+<!-- part: hopper -->
+### Grace Hopper
+
+<div class='person'>
+<img src='hopper.webp' alt='Grace Hopper 1984: eine ältere Frau mit Brille in dunkler Uniform der US Navy und Offiziersmütze, vor einer amerikanischen Flagge.'>
+<p><strong>Grace Hopper</strong> (1906–1992), amerikanische Informatikerin und Konteradmiralin der US Navy. Schon 1952 schrieb sie ein Programm, das aus kurzen Befehlen Maschinencode zusammensetzt, und nannte es Compiler; niemand glaubte ihr zunächst, dass ein Rechner so etwas kann. Sie wollte Programme in englischen Wörtern schreiben und hörte, Computer verstünden kein Englisch. Ihre Sprache FLOW-MATIC benutzte trotzdem englische Wörter, und COBOL übernahm das: <code>DIVIDE NUM BY 2 GIVING LIM</code>.</p>
+<p>1947 fand ihr Team in einem Relais des Rechners Mark II eine Motte und klebte sie ins Logbuch: »First actual case of bug being found«, der erste echte Fall eines Käfers. Fehler hießen schon vorher Bugs, aber Hopper erzählte die Geschichte so gern, dass sie berühmt wurde.</p>
+<p class='person-credit'>Foto: James S. Davis, 1984, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Commodore_Grace_M._Hopper,_USN_(covered)_head_and_shoulders_crop.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1909 -->
 <!-- part: kleene -->
 ### Stephen Cole Kleene
 
@@ -47,6 +62,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1910 -->
 <!-- part: bezier -->
 ### Pierre Bézier
 
@@ -56,6 +72,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1912 -->
 <!-- part: turing -->
 ### Alan Turing
 
@@ -67,6 +84,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1916 -->
 <!-- part: shannon -->
 ### Claude Shannon
 
@@ -80,6 +98,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 ## Geboren 1920 bis 1939
 
+<!-- year: 1921 -->
 <!-- part: adelson-velski-landis -->
 ### Georgi Adelson-Velski und Jewgeni Landis
 
@@ -91,6 +110,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1923 -->
 <!-- part: codd -->
 ### Edgar F. Codd
 
@@ -100,6 +120,19 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1924 -->
+<!-- part: backus -->
+### John Backus
+
+<div class='person'>
+<img src='backus.webp' alt='John Backus 1989: ein älterer Mann mit großer Brille und zurückgekämmtem grauem Haar, in Jackett und Krawatte.'>
+<p><strong>John Backus</strong> (1924–2007), amerikanischer Informatiker. Ab 1954 leitete er bei IBM das Team, das Fortran und den ersten Fortran-Compiler baute: Statt Maschinenbefehle schrieb man nun Formeln wie <code>x = a * b + c</code>, und der Compiler machte daraus ein Programm, das fast so schnell lief wie eines von Hand. Wettermodelle wie das des Deutschen Wetterdiensts rechnen bis heute in Fortran.</p>
+<p>»Vieles an meiner Arbeit kommt daher, dass ich faul war«, sagte er später: Er schrieb nicht gern Programme, also baute er etwas, das es leichter macht. Die Schreibweise, mit der man festlegt, wie eine Programmiersprache aussieht, heißt nach ihm Backus-Naur-Form.</p>
+<p class='person-credit'>Foto: Pierre Lescanne, 1989, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:John_Backus_2.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1925 -->
 <!-- part: huffman -->
 ### David A. Huffman
 
@@ -109,6 +142,29 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1926 -->
+<!-- part: kemeny-kurtz -->
+### John G. Kemeny und Thomas E. Kurtz
+
+<div class='person'>
+<p><strong>John G. Kemeny</strong> (1926–1992), in Budapest geborener Mathematiker, und <strong>Thomas E. Kurtz</strong> (1928–2024), amerikanischer Informatiker, erfanden BASIC 1964 am Dartmouth College in den USA. Der Rechner sollte allen Studierenden so offenstehen wie eine Bibliothek, nicht nur Mathematikern und Ingenieuren. Dazu bauten sie mit Studierenden ein System, an dem viele Menschen gleichzeitig an eigenen Terminals denselben Rechner benutzten: Wer ein Programm eintippte, bekam sofort eine Antwort, statt Lochkarten abzugeben und auf das Ergebnis zu warten.</p>
+<p>Das erste BASIC-Programm lief der Legende nach am 1. Mai 1964 um vier Uhr morgens. Kemeny war als Student Assistent von Albert Einstein gewesen und wurde später Präsident von Dartmouth.</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1927 -->
+<!-- part: mccarthy -->
+### John McCarthy
+
+<div class='person'>
+<img src='mccarthy.webp' alt='John McCarthy 2006 im Freien: ein älterer Mann mit weißem Bart, weißem Haar und schwarzer Brille, im karierten Hemd.'>
+<p><strong>John McCarthy</strong> (1927–2011), amerikanischer Informatiker am MIT und in Stanford. 1958 erfand er Lisp, in dem auch die Programme selbst Listen in Klammern sind. Dass Ruby oder Python Speicher, den dein Programm nicht mehr braucht, ohne dein Zutun wieder freigeben, geht ebenfalls auf ihn zurück: Diese Garbage Collection erfand er für Lisp.</p>
+<p>Den Begriff <em>Artificial Intelligence</em>, Künstliche Intelligenz, prägte er 1955 in einem Antrag für eine Sommerkonferenz. Und schon 1959 schlug er vor, dass viele Menschen an eigenen Terminals gleichzeitig denselben Rechner benutzen.</p>
+<p class='person-credit'>Foto: null0, 2006, CC BY-SA 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:John_McCarthy_Stanford.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1930 -->
 <!-- part: dijkstra -->
 ### Edsger W. Dijkstra
 
@@ -120,6 +176,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1931 -->
 <!-- part: lempel-ziv -->
 ### Abraham Lempel und Jacob Ziv
 
@@ -131,6 +188,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1933 -->
 <!-- part: hart-nilsson-raphael -->
 ### Peter Hart, Nils Nilsson und Bertram Raphael
 
@@ -142,6 +200,19 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1934 -->
+<!-- part: wirth -->
+### Niklaus Wirth
+
+<div class='person'>
+<img src='wirth.webp' alt='Niklaus Wirth 2005 bei einem Vortrag: ein älterer Mann mit weißem Bart, Halbglatze und Brille, in Anzug und roter Krawatte.'>
+<p><strong>Niklaus Wirth</strong> (1934–2024), Schweizer Informatiker an der ETH Zürich. Er entwarf Pascal als Sprache, an der man sauberes Programmieren lernt. Eines seiner Bücher heißt <em>Algorithms + Data Structures = Programs</em>: Ein Programm, das sind Algorithmen plus Datenstrukturen.</p>
+<p>1995 warb er für schlanke Software und schrieb, Software werde schneller langsamer, als die Hardware schneller wird. Der Satz heißt heute Wirthsches Gesetz. 1984 bekam er den Turing Award, den wichtigsten Preis der Informatik.</p>
+<p class='person-credit'>Foto: Tyomitch, 2005, frei verwendbar, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Niklaus_Wirth,_UrGU.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1934 -->
 <!-- part: hoare -->
 ### Tony Hoare
 
@@ -153,6 +224,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1938 -->
 <!-- part: knuth-lamport -->
 ### Donald Knuth und Leslie Lamport
 
@@ -164,6 +236,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1938 -->
 <!-- part: cerf-kahn -->
 ### Vint Cerf und Bob Kahn
 
@@ -175,6 +248,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1939 -->
 <!-- part: welch -->
 ### Terry Welch
 
@@ -186,6 +260,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 ## Geboren 1940 bis 1959
 
+<!-- year: 1940 -->
 <!-- part: ahmed -->
 ### Nasir Ahmed
 
@@ -195,6 +270,19 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1941 -->
+<!-- part: ritchie -->
+### Dennis Ritchie
+
+<div class='person'>
+<img src='ritchie.webp' alt='Dennis Ritchie 2011: ein älterer Mann mit grauem Bart und zurückgekämmtem grauem Haar, in Anzug und Krawatte vor dunklem Hintergrund.'>
+<p><strong>Dennis Ritchie</strong> (1941–2011), amerikanischer Informatiker bei den Bell Labs. Anfang der 1970er Jahre erfand er C, um darin mit Ken Thompson das Betriebssystem Unix zu schreiben. Das Terminal im Workspace läuft unter Linux, und auch dessen Kern ist in C geschrieben.</p>
+<p>1978 schrieb er mit Brian Kernighan das Buch <em>The C Programming Language</em>. Sein erstes Programm gibt <code>hello, world</code> aus, und seitdem beginnt fast jede Einführung in eine Programmiersprache so.</p>
+<p class='person-credit'>Foto: Denise Panyik-Dale, 2011, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Dennis_Ritchie_2011.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1943 -->
 <!-- part: thompson -->
 ### Ken Thompson
 
@@ -206,6 +294,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1947 -->
 <!-- part: chen -->
 ### Peter Chen
 
@@ -215,6 +304,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1948 -->
 <!-- part: mockapetris -->
 ### Paul Mockapetris
 
@@ -226,6 +316,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1948 -->
 <!-- part: wilhite -->
 ### Steve Wilhite
 
@@ -235,6 +326,19 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1950 -->
+<!-- part: stroustrup -->
+### Bjarne Stroustrup
+
+<div class='person'>
+<img src='stroustrup.webp' alt='Bjarne Stroustrup 2013: ein Mann mit Halbglatze, längerem grauem Haar und randloser Brille, in schwarzem Hemd, den Blick schräg nach oben.'>
+<p><strong>Bjarne Stroustrup</strong> (geboren 1950), dänischer Informatiker. Für seine Doktorarbeit in Cambridge hatte er in der Sprache Simula mit Klassen programmiert, doch die Programme liefen zu langsam. Ab 1979 baute er deshalb bei den Bell Labs Klassen in C ein, erst »C with Classes«, ab 1983 C++. Das <code>++</code> ist der Operator, der in C eine Variable um eins erhöht, wie <code>i++</code> in einer <code>for</code>-Schleife.</p>
+<p>Von ihm stammt der Satz: »C makes it easy to shoot yourself in the foot; C++ makes it harder, but when you do it blows your whole leg off.« In C schießt man sich leicht in den Fuß, in C++ schwerer, aber dann ist gleich das ganze Bein weg.</p>
+<p class='person-credit'>Foto: Victor Zavyalov (ICPC News), 2013, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1954 -->
 <!-- part: perlin -->
 ### Ken Perlin
 
@@ -246,6 +350,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1955 -->
 <!-- part: crockford -->
 ### Douglas Crockford
 
@@ -257,6 +362,19 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1955 -->
+<!-- part: gosling -->
+### James Gosling
+
+<div class='person'>
+<img src='gosling.webp' alt='James Gosling 2008: ein älterer Mann mit Brille, Halbglatze, langem grauem Haar und grauem Bart in einem schwarzen T-Shirt.'>
+<p><strong>James Gosling</strong> (geboren 1955), kanadischer Informatiker, entwarf Java ab 1991 bei der Firma Sun Microsystems und schrieb den ersten Compiler und die erste virtuelle Maschine, die Java-Programme ausführt. Minecraft ist in Java geschrieben, die Java Edition läuft bis heute damit.</p>
+<p>Zuerst hieß die Sprache Oak, nach einer Eiche vor seinem Büro. Später bekam sie den Namen einer Kaffeesorte von der indonesischen Insel Java; deshalb ist ihr Logo eine dampfende Tasse.</p>
+<p class='person-credit'>Foto: Peter Campbell, 2008, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:James_Gosling_2008.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1955 -->
 <!-- part: berners-lee -->
 ### Tim Berners-Lee
 
@@ -268,8 +386,69 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1956 -->
+<!-- part: van-rossum -->
+### Guido van Rossum
+
+<div class='person'>
+<img src='van-rossum.webp' alt='Guido van Rossum 2012: ein Mann mit Brille, lockigem braunem Haar und kurzem Bart in einem gestreiften Hemd, mit Umhängetasche, lächelnd.'>
+<p><strong>Guido van Rossum</strong> (geboren 1956), niederländischer Programmierer. Im Dezember 1989 suchte er ein Hobbyprojekt für die Woche um Weihnachten, wenn sein Büro am Forschungsinstitut CWI in Amsterdam geschlossen war, und begann Python; 1991 erschien die erste Fassung. Dass in Python die Einrückung bestimmt, welche Zeilen zu einer Schleife gehören, übernahm er aus der Sprache ABC, an der er vorher mitgearbeitet hatte.</p>
+<p>Den Namen hat Python nicht von der Schlange, sondern von der britischen Comedy-Truppe Monty Python. Bis 2018 entschied er als »Benevolent Dictator For Life«, wohlwollender Diktator auf Lebenszeit, über jede Änderung an der Sprache.</p>
+<p class='person-credit'>Foto: Mahmoud Hashemi, 2012, CC BY-SA 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Guido_van_Rossum_(6984267183)_(cropped).jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1956 -->
+<!-- part: griesemer-pike -->
+### Robert Griesemer und Rob Pike
+
+<div class='person pair'>
+<div class='portraits'><img src='griesemer.webp' alt='Robert Griesemer 2012: ein lächelnder Mann mit rötlichem Haar und Brille in einem grünen T-Shirt mit gezeichneten Gophern.'><img src='pike.webp' alt='Rob Pike 2010 bei einem Vortrag: ein Mann mit kurz geschorenem Haar und roter Brille in einem schwarzen T-Shirt, ein Mikrofon am Kragen.'></div>
+<p><strong>Robert Griesemer</strong> (geboren 1964), Schweizer Informatiker, und <strong>Rob Pike</strong> (geboren 1956), kanadischer Programmierer, erfanden 2007 bei Google mit Ken Thompson die Sprache Go. Pike ärgerte sich damals über C++-Programme, deren Übersetzen 45 Minuten dauerte; ein Programm wie deins übersetzt <code>go build</code> in einem Augenblick. Auch Docker, mit dem dein Workspace in einem Container läuft, ist in Go geschrieben.</p>
+<p>Griesemer hatte an der ETH Zürich bei Niklaus Wirth promoviert, dem Erfinder von Pascal. Pike war 1992 dabei, als Ken Thompson UTF-8 auf ein Tischset in einem Diner zeichnete. Den Gopher auf den T-Shirts der beiden, das Maskottchen von Go, hat Pikes Frau Renée French gezeichnet.</p>
+<p class='person-credit'>Fotos: Eugene Zelenko, 2012, CC BY-SA 4.0 (<a href='https://commons.wikimedia.org/wiki/File:Robert_Griesemer.jpg'>Wikimedia Commons</a>); Kevin Shockey, 2010, CC BY 2.0 (<a href='https://commons.wikimedia.org/wiki/File:Rob-pike-oscon.jpg'>Wikimedia Commons</a>), beide zugeschnitten</p>
+</div>
+<!-- /part -->
+
 ## Geboren ab 1960
 
+<!-- year: 1960 -->
+<!-- part: hejlsberg -->
+### Anders Hejlsberg
+
+<div class='person'>
+<img src='hejlsberg.webp' alt='Anders Hejlsberg 2008: ein lächelnder Mann mit graublondem Haar, randloser Brille und hellem, gestreiftem Hemd vor dunklem Hintergrund.'>
+<p><strong>Anders Hejlsberg</strong> (geboren 1960), dänischer Softwareentwickler. Bei Microsoft entwarf er C#, das 2000 erschien, und 2012 stellte er TypeScript vor, JavaScript mit Typen. VS Code, in dem du im Workspace schreibst, ist in TypeScript geschrieben.</p>
+<p>Als Student schrieb er einen Pascal-Compiler für den Heimcomputer Nascom. Die Firma Borland verkaufte ihn ab 1983 als Turbo Pascal für 49,99 Dollar, etwa ein Zehntel dessen, was andere Compiler kosteten, und er war berühmt dafür, wie schnell er übersetzte. 2025 kündigte Hejlsberg an, den TypeScript-Compiler in <a href='/go'>Go</a> neu zu schreiben, damit er etwa zehnmal schneller wird.</p>
+<p class='person-credit'>Foto: DBegley, 2008, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Anders_Hejlsberg.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1960 -->
+<!-- part: ierusalimschy-celes-figueiredo -->
+### Roberto Ierusalimschy, Waldemar Celes und Luiz Henrique de Figueiredo
+
+<div class='person'>
+<img src='ierusalimschy.webp' alt='Roberto Ierusalimschy 2017 bei einem Vortrag: ein Mann mit grauem, zerzaustem Haar und grauem Bart in einem grauen Pullover mit rotem Umhängeband, lächelnd zur Seite blickend.'>
+<p><strong>Roberto Ierusalimschy</strong> (geboren 1960, im Bild), <strong>Waldemar Celes</strong> und <strong>Luiz Henrique de Figueiredo</strong>, brasilianische Informatiker, entwarfen Lua 1993 in der Gruppe Tecgraf an der Katholischen Universität in Rio de Janeiro. Bis 1992 schottete Brasilien sich mit hohen Handelsschranken gegen Computer und Software aus dem Ausland ab, also bauten sie ihre Werkzeuge selbst. Wer in Roblox ein Spiel baut, schreibt Luau, eine Sprache, die aus Lua entstanden ist.</p>
+<p>Lua heißt auf Portugiesisch »Mond«: Eine der Sprachen, aus denen Lua hervorging, hieß SOL, »Sonne«.</p>
+<p class='person-credit'>Foto: Lua in Moscow Conference, 2017, CC BY 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Roberto_Ierusalimschy.png'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1961 -->
+<!-- part: eich -->
+### Brendan Eich
+
+<div class='person'>
+<img src='eich.webp' alt='Brendan Eich 2012: ein Mann mit kurzem grauem Haar und Brille in dunklem Sakko und weißem Hemd, breit lächelnd.'>
+<p><strong>Brendan Eich</strong> (geboren 1961), amerikanischer Programmierer. Jeder Button und jedes Menü, das auf einer Webseite aufklappt, läuft mit JavaScript: Die Sprache schrieb er 1995 bei der Firma Netscape für ihren Browser, die erste Fassung in zehn Tagen. Auch VS Code ist in TypeScript geschrieben, einer Erweiterung von JavaScript.</p>
+<p>Erst hieß die Sprache Mocha, dann LiveScript. Den Namen JavaScript bekam sie Ende 1995 als Werbung, weil Java gerade in Mode war; mit Java hat sie wenig gemeinsam. 1998 gründete Eich Mozilla mit, woraus später der Browser Firefox hervorging.</p>
+<p class='person-credit'>Foto: Darcy Padilla, 2012, CC BY-SA 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Brendan_Eich_Mozilla_Foundation_official_photo.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1961 -->
 <!-- part: gamma -->
 ### Erich Gamma
 
@@ -279,6 +458,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1965 -->
 <!-- part: wium-lie -->
 ### Håkon Wium Lie
 
@@ -290,6 +470,31 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1965 -->
+<!-- part: bak-lund -->
+### Lars Bak und Kasper Lund
+
+<div class='person'>
+<img src='bak.webp' alt='Lars Bak 2012 bei einem Vortrag: ein Mann mit kurzem Haar und Brille in einem hellblauen T-Shirt, ein Mikrofon am Kragen.'>
+<p><strong>Lars Bak</strong> (geboren 1965, im Bild), dänischer Programmierer, leitete bei Google die Entwicklung von V8, dem Programm, das in Chrome JavaScript ausführt. Auch Node.js ist um V8 gebaut, und darauf läuft VS Code im Workspace. Mit <strong>Kasper Lund</strong>, der V8 mit ihm begonnen hatte, erfand er die Sprache Dart, die Google 2011 vorstellte.</p>
+<p>Dart sollte JavaScript ablösen: Chrome sollte Dart-Programme selbst ausführen. 2015 schrieben Bak und Lund, dass daraus nichts wird; seitdem wird Dart für das Web in JavaScript übersetzt, und groß wurde es mit Flutter. Den Namen hat V8 von einem Automotor mit acht Zylindern.</p>
+<p class='person-credit'>Foto: Google Developers, 2012, CC BY 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Lars_Bak.png'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1965 -->
+<!-- part: matsumoto -->
+### Yukihiro Matsumoto
+
+<div class='person'>
+<img src='matsumoto.webp' alt='Yukihiro Matsumoto 2011 auf einer Konferenz: ein Mann mit Brille, dunklem Haar und kurzem Bart, mit einem Mikrofon in der Hand, im Sprechen.'>
+<p><strong>Yukihiro Matsumoto</strong> (geboren 1965), japanischer Programmierer, den alle »Matz« nennen, veröffentlichte Ruby 1995. Er wollte eine Sprache, mit der Programmieren Freude macht: »Ich hoffe, dass Ruby jedem Programmierer auf der Welt hilft, produktiv zu sein, Spaß am Programmieren zu haben und glücklich zu sein.« Auch die Website des Workspace läuft mit Ruby.</p>
+<p>Den Namen wählte er 1993 in einem Chat mit dem Programmierer Keiju Ishitsuka, noch bevor er eine Zeile der Sprache geschrieben hatte: Der Rubin war der Geburtsstein eines Kollegen.</p>
+<p class='person-credit'>Foto: Mathias Meyer, 2011, CC BY-SA 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Yukihiro_Matsumoto_EuRuKo_2011.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1969 -->
 <!-- part: torvalds -->
 ### Linus Torvalds
 
@@ -301,6 +506,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1973 -->
 <!-- part: gruber -->
 ### John Gruber
 
@@ -310,11 +516,44 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1977 -->
+<!-- part: graydon-hoare -->
+### Graydon Hoare
+
+<div class='person'>
+<p><strong>Graydon Hoare</strong>, kanadischer Programmierer. Als er 2006 nach Hause kam, war der Aufzug in seinem Haus in Vancouver kaputt: Dessen Software war abgestürzt. Er wohnte im 21. Stock und ärgerte sich auf der Treppe, dass Programmierer nicht einmal einen Aufzug bauen können, der nicht abstürzt. Solche Abstürze kommen oft von Fehlern im Umgang mit dem Speicher, und so begann er neben seiner Arbeit bei Mozilla Rust: eine Sprache, deren Compiler <code>rustc</code> solche Fehler gar nicht erst durchlässt.</p>
+<p>Den Namen hat Rust von Rostpilzen, die er »für das Überleben überentwickelt« nennt. Ab 2009 bezahlte Mozilla die Arbeit an Rust, 2013 gab Hoare das Projekt ab. Heute steckt Rust in Firefox und im Linux-Kernel.</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1977 -->
+<!-- part: tatham-hall -->
+### Simon Tatham und Julian Hall
+
+<div class='person'>
+<img src='tatham.webp' alt='Simon Tatham 2012 in Nahaufnahme: ein Mann mit kurzem hellem Haar und randloser Brille, ernst in die Kamera blickend.'>
+<p><strong>Simon Tatham</strong> (geboren 1977, im Bild), britischer Programmierer, schrieb 1996 mit Hilfe von <strong>Julian Hall</strong> NASM, den Netwide Assembler: einen freien Assembler, der aus Befehlen wie <code>mov</code> und <code>syscall</code> Maschinencode für x86-Prozessoren macht. Heute pflegen andere NASM weiter.</p>
+<p>Tatham schrieb auch PuTTY (1999), mit dem man sich von Windows aus über SSH in das Terminal eines Linux-Servers einloggt, und eine Sammlung kleiner Rätselspiele, die auch im Browser laufen.</p>
+<p class='person-credit'>Foto: Richard Kettlewell, 2012, CC BY-SA 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Simon_Tatham_in_2012.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1980 -->
 <!-- part: santamaria -->
 ### Ramon Santamaria
 
 <div class='person'>
 <p><strong>Ramon Santamaria</strong>, Programmierer aus Barcelona, begann raylib 2013, um Studierenden ohne Programmiererfahrung beizubringen, wie man Spiele programmiert. Dafür sollte die Bibliothek einfach bleiben: ohne fremde Abhängigkeiten, und alle Funktionen passen auf ein Cheatsheet.</p>
 <p>Er pflegt raylib bis heute, mit Hunderten Helfenden auf GitHub.</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1986 -->
+<!-- part: harris -->
+### Rich Harris
+
+<div class='person'>
+<p><strong>Rich Harris</strong>, britischer Journalist und Programmierer, baute interaktive Grafiken für Zeitungen, erst beim Guardian, dann bei der New York Times. 2016 schrieb er Svelte: keine Bibliothek, die im Browser mitläuft, sondern einen Compiler. Wenn du <code>npm run build</code> eingibst, übersetzt Svelte deine <code>.svelte</code>-Dateien in gewöhnliches JavaScript.</p>
+<p>Vorher hatte er schon Rollup geschrieben, ein Programm, das viele JavaScript-Dateien zu wenigen zusammenpackt. Ende 2021 ging er von der Zeitung zur Firma Vercel, um nur noch an Svelte zu arbeiten.</p>
 </div>
 <!-- /part -->

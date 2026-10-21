@@ -11,17 +11,11 @@ kind: steckbrief
 
 # JavaScript <span style='font-size: 80%;'>(1995)</span>
 
-<div class='floatright' style='width: 16em;'>
-    <img src='eich.webp' alt='Foto von Brendan Eich, dem Erfinder von JavaScript, an einem Rednerpult mit Mikrofon'>
-    <p>
-      Brendan Eich<br>
-      <span style='font-size: 90%; opacity: 0.7;'>(Foto von James Duncan Davidson)</span>
-    </p>
-</div>
-
 <p class='abstract'>
 JavaScript, entwickelt 1995 von Brendan Eich bei Netscape, ist eine dynamische Programmiersprache, die ursprünglich zur Erstellung interaktiver und dynamischer Inhalte auf Webseiten verwendet wurde.
 </p>
+
+_person(eich)
 
 JavaScript wird häufig für die Frontend-Webentwicklung eingesetzt, wobei bekannte Beispiele wie die Benutzeroberflächen von Google Maps, Facebook und YouTube hervorzuheben sind. Mit der Einführung von Node.js hat sich JavaScript auch auf die Backend-Entwicklung ausgeweitet, was es ermöglicht, serverseitige Anwendungen zu erstellen. Heutzutage ist JavaScript äußerst relevant und weit verbreitet, da es eine zentrale Rolle im modernen Web spielt und eine Vielzahl von Frameworks und Bibliotheken wie React, Angular und Vue.js bietet, die die Entwicklung von Webanwendungen erheblich erleichtern.
 

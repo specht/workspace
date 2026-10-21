@@ -11,16 +11,11 @@ kind: steckbrief
 
 # Dart <span style='font-size: 80%;'>(2011)</span>
 
-<div class='floatright' style='width: 24em;'>
-    <img src='dart-team.webp' alt='Fotos von Lars Bak und Kasper Lund, die Dart entwickelt haben'>
-    <p>
-        Lars Bak und Kasper Lund
-    </p>
-</div>
-
 <p class='abstract'>
 Dart, entwickelt von Lars Bak und Kasper Lund bei Google und erstmals 2011 veröffentlicht, ist eine objektorientierte Programmiersprache, die für die Entwicklung von Web- und mobilen Anwendungen konzipiert wurde. Dart wird häufig in Verbindung mit dem Framework Flutter verwendet, das es ermöglicht, plattformübergreifende mobile Anwendungen mit einer einzigen Codebasis zu erstellen.
 </p>
+
+_person(bak-lund)
 
 Bekannte Beispiele für Anwendungen, die mit Dart und Flutter entwickelt wurden, sind die mobilen Apps Google Pay, Google Earth, Google Classroom und die App von Alibaba. Heutzutage ist Dart immer noch relevant, insbesondere in der mobilen App-Entwicklung, da Flutter eine wachsende Popularität genießt und eine effiziente und konsistente Entwicklungserfahrung über verschiedene Plattformen hinweg bietet.
 

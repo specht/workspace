@@ -11,14 +11,11 @@ kind: steckbrief
 
 # Python <span style='font-size: 80%;'>(1991)</span>
 
-<div class='floatright' style='width: 16em;'>
-    <img src='guido.webp' alt='Foto von Guido van Rossum, dem Erfinder von Python, lachend mit einem Becher in der Hand'>
-    <p>Guido van Rossum</p>
-</div>
-
 <p class='abstract'>
 Python, entwickelt von Guido van Rossum und erstmals 1991 veröffentlicht, ist eine der beliebtesten Programmiersprachen der Welt. Python wird aufgrund seiner Einfachheit und Lesbarkeit in vielen Bereichen eingesetzt, darunter Webentwicklung, Datenanalyse, künstliche Intelligenz und maschinelles Lernen.
 </p>
+
+_person(van-rossum)
 
 Bekannte Beispiele für Anwendungen, die in Python entwickelt wurden, sind das Web-Framework Django, die Datenanalysebibliothek Pandas und das maschinelle Lernframework TensorFlow. Heutzutage ist Python äußerst relevant und weit verbreitet, da es eine aktive Community und eine Vielzahl von Bibliotheken und Frameworks bietet, die die Entwicklung in verschiedenen Domänen unterstützen.
 

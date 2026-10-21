@@ -11,14 +11,11 @@ kind: steckbrief
 
 # Pascal <span style='font-size: 80%;'>(1970)</span>
 
-<div class='floatright' style='width: 16em;'>
-    <img src='wirth.webp' alt='Foto von Niklaus Wirth, dem Erfinder von Pascal'>
-    <p>Niklaus Wirth</p>
-</div>
-
 <p class='abstract'>
 Die Programmiersprache Pascal wurde 1970 von Niklaus Wirth entwickelt und ist eine imperative und strukturierte Programmiersprache. Pascal wurde ursprünglich als Sprache für die Lehre entwickelt und hat eine klare und einfache Syntax. Die Sprache wurde nach dem französischen Mathematiker und Philosophen Blaise Pascal benannt.
 </p>
+
+_person(wirth)
 
 Pascal fand Anwendung in der Softwareentwicklung, insbesondere in den 1980er und 1990er Jahren, mit bekannten Entwicklungsumgebungen wie Turbo Pascal von Borland. Heutzutage ist Pascal weniger verbreitet als moderne Programmiersprachen, bleibt aber in bestimmten Nischen relevant, insbesondere in der Lehre und bei der Entwicklung von eingebetteten Systemen. Die Sprache hat auch zu Weiterentwicklungen wie Object Pascal geführt, das in der Delphi-Entwicklungsumgebung verwendet wird.
 

@@ -11,14 +11,11 @@ kind: steckbrief
 
 # COBOL <span style='font-size: 80%;'>(1959)</span>
 
-<div class='floatright' style='width: 16em;'>
-    <img src='hopper.webp' alt='Foto von Grace Hopper, die COBOL mitentwickelt hat'>
-    <p>Grace Hopper</p>
-</div>
-
 <p class='abstract'>
 COBOL (Common Business-Oriented Language) wurde 1959 von einem Ausschuss aus Firmen und Behörden (CODASYL) entworfen. Es baut stark auf FLOW-MATIC auf, einer Sprache von Grace Hopper, die darum oft »Großmutter von COBOL« genannt wird. Es war die erste Programmiersprache, die speziell für Geschäftsanwendungen entwickelt wurde. COBOL ist eine imperative Programmiersprache, die für die Verarbeitung von Daten in Form von Datensätzen optimiert ist. Trotz ihres hohen Alters wird die Programmiersprache COBOL immer noch in der Unternehmenssoftwareentwicklung eingesetzt.
 </p>
+
+_person(hopper)
 
 Die Sprache wurde hauptsächlich in Bereichen wie Banken, Versicherungen und Regierungsbehörden eingesetzt, um Transaktionsverarbeitung, Buchhaltung und andere geschäftskritische Anwendungen zu unterstützen. Heutzutage ist COBOL immer noch relevant, insbesondere in der Finanzbranche und bei großen Unternehmen, die auf stabile und zuverlässige Systeme angewiesen sind. Viele dieser Systeme laufen seit Jahrzehnten und werden weiterhin gepflegt und erweitert, da sie für den täglichen Betrieb unerlässlich sind.
 

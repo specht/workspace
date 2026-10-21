@@ -11,14 +11,11 @@ kind: steckbrief
 
 # Fortran <span style='font-size: 80%;'>(1957)</span>
 
-<div class='floatright' style='width: 16em;'>
-    <img src='backus.webp' alt='Foto von John Backus, der Fortran entwickelt hat'>
-    <p>John Backus</p>
-</div>
-
 <p class='abstract'>
 FORTRAN, kurz für "Formula Translation," wurde 1957 von John Backus bei IBM entwickelt und ist eine der ältesten Programmiersprachen. Sie wurde ursprünglich für wissenschaftliche und technische Anwendungen entwickelt und wird heute noch in diesen Bereichen eingesetzt. Fortran ist eine imperative Programmiersprache, die speziell für numerische Berechnungen optimiert ist. Sie bietet eine Vielzahl von Funktionen und Bibliotheken für mathematische und wissenschaftliche Berechnungen.
 </p>
+
+_person(backus)
 
 FORTRAN wurde vor allem in Bereichen eingesetzt, die intensive numerische Berechnungen erfordern, wie zum Beispiel in der Wettervorhersage, der numerischen Strömungsmechanik und der linearen Algebra. Ein bekanntes Softwareprojekt, das FORTRAN verwenden, ist das Weather Research and Forecasting (WRF) Model, das zur Wettervorhersage und Klimaforschung eingesetzt wird. FORTRAN wird auch in der Hochenergiephysik, der Astronomie und der Chemie eingesetzt.
 

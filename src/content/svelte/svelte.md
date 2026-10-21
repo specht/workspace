@@ -16,14 +16,11 @@ reference: [workspace, html, css, layout]
 
 # Frontend-Entwicklung mit Svelte
 
-<div class='floatright' style='width: 30em;'>
-    <img src='rich-harris.webp' alt='Foto von Rich Harris, dem Erfinder von Svelte, bei einem Vortrag vor einer Wand mit Svelte-Code'>
-    <p>Rich Harris</p>
-</div>
-
 <p class='abstract'>
 In diesem Projekt lernst du die Grundlagen von Svelte kennen und baust eine kleine Webanwendung: einen »Rubik's Cube Timer«, also eine Stoppuhr, die misst, wie lange du zum Lösen eines Zauberwürfels brauchst. Svelte ist ein modernes Frontend-Framework für interaktive Webseiten, von kleinen Spielen bis zu großen Anwendungen. Am Ende machst du daraus eine statische Webseite und gibst sie ab.
 </p>
+
+_person(harris)
 
 <p class='hint'>
 Bevor du anfängst, solltest du dich ein wenig mit HTML und CSS auskennen. Wenn du noch nie damit gearbeitet hast, mach zuerst <a href='/static-website'>Statische Webseiten mit HTML & CSS</a>.

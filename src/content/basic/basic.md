@@ -11,14 +11,11 @@ kind: steckbrief
 
 # BASIC <span style='font-size: 80%;'>(1964)</span>
 
-<div class='floatright' style='width: 24em;'>
-    <img src='kemeny-kurtz.webp' alt='Schwarzweißfoto von John G. Kemeny und Thomas E. Kurtz, die gemeinsam ein Buch in den Händen halten'>
-    <p>John G. Kemeny &amp; Thomas E. Kurtz</p>
-</div>
-
 <p class='abstract'>
 BASIC ist eine Programmiersprache, die in den 1960er Jahren von John G. Kemeny und Thomas E. Kurtz am Dartmouth College entwickelt wurde. Sie wurde ursprünglich für Anfänger entwickelt, um das Programmieren zu erlernen. Der Name BASIC steht für "Beginner's All-purpose Symbolic Instruction Code". BASIC wurde in den 1970er und 1980er Jahren auf vielen Heimcomputern eingesetzt. Es gibt viele verschiedene Versionen von BASIC, darunter Microsoft BASIC, Commodore BASIC und Sinclair BASIC.
 </p>
+
+_person(kemeny-kurtz)
 
 Heutzutage ist BASIC weniger relevant als moderne Programmiersprachen, wird aber immer noch in Bildungskontexten und von Enthusiasten verwendet, um die Grundlagen des Programmierens zu lehren und historische Computersysteme zu emulieren.
 

@@ -11,16 +11,11 @@ kind: steckbrief
 
 # Go <span style='font-size: 80%;'>(2009)</span>
 
-<div class='floatright' style='width: 24em;'>
-    <img src='go-team.webp' alt='Fotos von Robert Griesemer, Rob Pike und Ken Thompson, die Go entwickelt haben'>
-    <p>
-        Robert Griesemer, Rob Pike, Ken Thompson
-    </p>
-</div>
-
 <p class='abstract'>
 Go, auch bekannt als Golang, wurde 2009 von Robert Griesemer, Rob Pike und Ken Thompson bei Google entwickelt. Die Programmiersprache wurde für die Entwicklung von Systemsoftware und Webanwendungen konzipiert und zeichnet sich durch ihre einfache Syntax, effiziente Kompilierung und integrierte Unterstützung für Nebenläufigkeit aus.
 </p>
+
+_person(griesemer-pike)
 
 Bekannte Beispiele für Anwendungen, die in Go entwickelt wurden, sind Docker, Kubernetes und das Web-Framework Hugo. Heutzutage ist Go immer noch äußerst relevant, insbesondere in der Cloud- und Server-Backend-Entwicklung, da es eine hohe Leistung und Skalierbarkeit bietet und von einer aktiven Entwickler-Community unterstützt wird.
 
