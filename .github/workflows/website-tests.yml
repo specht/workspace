@@ -40,8 +40,10 @@ jobs:
             exit 1
           }
 
+      # Neo4j and MySQL run as user 1000 (config.rb), the runner is 1001
       - name: Start the website
         run: |
+          sudo chown -R 1000:1000 data logs
           ./config.rb up -d nginx neo4j
           for i in $(seq 1 60); do
             if curl -fsS -o /dev/null http://workspace.test:8025/; then echo "up after $((i * 5)) s"; exit 0; fi
