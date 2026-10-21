@@ -468,17 +468,19 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             if (e.stale) svg.querySelector(`[data-key="entry-${e.key}"]`).setAttribute('fill', 'var(--algo-paper)');
         });
         if (!frame.entries.length) svg.appendChild(el('svg:text', { 'data-key': 'row-empty', x: rowLeft + 4, y: rowY + 4, 'font-size': 12, fill: 'var(--bs-secondary-color)', text: 'leer' }));
-        // path_back's list, filled from the front
+        // path_back's list, filled from the front: beside the row when the
+        // row leaves room for it (layout.pathBeside), else under it
+        const pathY = layout.pathBeside ? rowY : rowY + 50;
+        const pathLeft = layout.pathBeside ? 330 : 14;
         if (frame.path) {
-            const pathY = rowY + 50;
-            svg.appendChild(el('svg:text', { 'data-key': 'path-name', x: 14, y: pathY + 4, 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'path' }));
+            svg.appendChild(el('svg:text', { 'data-key': 'path-name', x: pathLeft, y: pathY + 4, 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'path' }));
             frame.path.forEach((n, i) => {
-                for (const node of token(`path-${n}`, n, rowLeft + 18 + i * 36, pathY)) svg.appendChild(node);
+                for (const node of token(`path-${n}`, n, pathLeft + 52 + i * 36, pathY)) svg.appendChild(node);
                 svg.querySelector(`[data-key="path-${n}"]`).setAttribute('fill', frame.done ? 'var(--algo-accent)' : 'var(--algo-paper)');
                 if (frame.done) svg.querySelector(`[data-key="path-${n}-label"]`).setAttribute('fill', 'var(--algo-paper)');
             });
         }
-        svg.setAttribute('viewBox', `0 0 ${width} ${rowY + 70}`);
+        svg.setAttribute('viewBox', `0 0 ${width} ${pathY + 22}`);
         svg.dataset.natural = width;
     }
 
@@ -2464,6 +2466,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             frames = traceGraph(graph, start, goal, algo);
             const marker = `algo-arrow-${++widgetCount}`;
             const layout = graphLayout(graph, start, algo);
+            // the path beside the row if the longest row ends before it
+            const rowLeft = 30 + 7.5 * ({ bfs: 'queue', dfs: 'stack' }[algo] || 'pq').length;
+            layout.pathBeside = rowLeft + 18 + (Math.max(1, ...frames.map((f) => f.entries.length)) - 1) * 36 + 14 < 320;
             svg.setAttribute('aria-label', `Der Beispielgraph mit Knoten A bis H; ${start} ist der Start, ${goal} das Ziel`);
             // the calls: the search, and path_back at the end
             draw = (frame) => { drawGraph(svg, graph, frame, start, goal, algo, marker, layout); listSide(frame, 2); };

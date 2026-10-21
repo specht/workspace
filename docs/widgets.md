@@ -249,10 +249,16 @@ only to look nice.
   sideways swipe step it as before; the arrows at the bottom right, Page Up
   and Page Down, or a swipe up and down go to the previous or next widget of
   the page; Esc, the button again or the browser's back button close it.
-  Everything fits without scrolling, as large as the window allows: the
-  font size is found by halving (`stepper_keys.js`, `fit`), and the picture
-  is never taller than its share of the window (`max-height`), so a tall
-  picture does not push the text down to a tiny size.
+  Everything fits without scrolling, as large as the window allows (up to
+  32 px), the code nearly as large as the text: the font size is found by
+  halving (`stepper_keys.js`, `fit`) for three layouts, the code beside the
+  picture 24em or 32em wide or under it, and the layout with the larger text
+  wins (a tablet upright puts the code under the picture). The picture gives
+  up height only while its labels stay at least 70 % of the text size;
+  beside the code it keeps at least 60 % of its size across the whole width.
+  The size is measured when the picture rests, kept from step to step and
+  only made smaller when a step does not fit, so the text does not jump; a
+  new window size or another widget fits afresh.
 - Colours come from the widget's CSS variables, so light and dark mode both
   work; no fixed colours in the drawing.
 

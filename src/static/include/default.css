@@ -5387,16 +5387,20 @@ div[data-stepper] > .stepper-full {
 }
 div[data-stepper].stepper-lightbox {
     position: fixed;
-    inset: 2.5vh 2.5vw;
+    inset: 1.5vh 1.5vw;
     z-index: 2000;
     margin: 0;
-    padding: 2.5vh 4vw;
+    padding: 2vh 3vw;
     border: none;
     border-radius: 0.75rem;
     overflow: auto;
     background: var(--bs-body-bg);
     /* the size is fitted by stepper_keys.js */
     font-size: 18px;
+}
+/* the hint how to step is no use on the big screen */
+div[data-stepper].stepper-lightbox::before {
+    display: none;
 }
 /* black around the lightbox */
 html.stepper-lightbox-open::after {
@@ -5409,12 +5413,34 @@ html.stepper-lightbox-open::after {
 html.stepper-lightbox-open {
     overflow: hidden;
 }
-/* the picture as wide as it may be, but never taller than its share of the
-   window: a tall picture (a hash table) must not push the text down */
+/* The picture beside the calls and the code, which get 24em or 32em
+   (--stepper-side), so that few code lines wrap; or (stepper-stacked) the
+   picture across the whole width, the code under it. Which of the two, and how high the
+   picture may be, the fit decides (stepper_keys.js). */
+div[data-stepper].stepper-lightbox .algo-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) min(var(--stepper-side, 24em), 50%);
+    align-items: start;
+    gap: 1.2em 2em;
+}
 div[data-stepper].stepper-lightbox .algo-body > svg.algo-picture {
+    width: 100%;
     max-width: none !important;
-    flex: 3 1 28em;
-    max-height: 62vh;
+}
+/* the code is what has to be read: in the lightbox it is nearly as large
+   as the text */
+div[data-stepper].stepper-lightbox .algo-body > .algo-side {
+    min-width: 0;
+    font-size: 1em;
+}
+div[data-stepper].stepper-lightbox pre.algo-code {
+    font-size: 0.92em;
+}
+div[data-stepper].stepper-lightbox ol.algo-stack {
+    font-size: 0.88em;
+}
+div[data-stepper].stepper-lightbox.stepper-stacked .algo-body {
+    grid-template-columns: minmax(0, 1fr);
 }
 .stepper-lightbox-nav {
     position: fixed;

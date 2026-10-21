@@ -100,29 +100,106 @@ document.addEventListener('keydown', (event) => {
         button.addEventListener('click', () => move(go));
         return button;
     };
-    // as large as possible and everything visible: the largest font size at
-    // which the widget fits the lightbox without scrolling (a binary search;
-    // the pictures grow with the font). Again when the window changes or the
-    // widget redraws itself (a step).
+    // As large as possible and everything visible: the largest font size at
+    // which the widget fits the lightbox without scrolling (a binary search).
+    // The picture of an Algo Stepper gives up height for it only while its
+    // labels (12 units) stay at least 70 % of the font size: a
+    // picture that is small because it is wide stays as large as its width
+    // allows. Beside the code it keeps at least 60 % of the size it would
+    // have across the whole width (at most 60 % of the height). Both layouts
+    // are tried, the picture beside the code and above it; the one with the
+    // larger text wins.
+    // Again when the window changes or the widget redraws itself (a step).
     let fitting = 0;
-    const fit = () => {
-        if (!open) return;
+    const LABEL = 12;
+    const fits = (size, picture) => {
+        open.style.fontSize = `${size}px`;
+        if (!picture) return open.scrollHeight <= open.clientHeight + 0.5 && open.scrollWidth <= open.clientWidth + 0.5;
+        picture.style.maxHeight = 'none';
+        const view = picture.viewBox.baseVal;
+        const scaleOf = () => { const box = picture.getBoundingClientRect(); return view && view.width ? Math.min(box.width / view.width, box.height / view.height) : 1; };
+        const body = picture.parentElement.getBoundingClientRect();
+        const full = view && view.width ? Math.min(body.width / view.width, 0.6 * open.clientHeight / view.height) : 1;
+        const uncapped = scaleOf();
+        let over = open.scrollHeight - open.clientHeight;
+        if (over > 0.5) {
+            picture.style.maxHeight = `${Math.max(40, picture.getBoundingClientRect().height - over)}px`;
+            over = open.scrollHeight - open.clientHeight;
+        }
+        if (over > 0.5 || open.scrollWidth > open.clientWidth + 0.5) return false;
+        const scale = scaleOf();
+        return scale >= Math.min(uncapped, 0.7 * size / LABEL) - 0.001 && scale >= 0.6 * full - 0.001;
+    };
+    const largest = (picture, hi = 32) => {
         let lo = 12;
-        let hi = 48;
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < 9; i++) {
             const mid = (lo + hi) / 2;
-            open.style.fontSize = `${mid}px`;
-            if (open.scrollHeight <= open.clientHeight + 1 && open.scrollWidth <= open.clientWidth + 1) lo = mid;
+            if (fits(mid, picture)) lo = mid;
             else hi = mid;
         }
         // a little below the limit, so that rounding leaves no scrolling
-        open.style.fontSize = `${Math.floor(lo * 0.98 * 10) / 10}px`;
+        return Math.floor(lo * 0.98 * 10) / 10;
     };
-    const fitSoon = () => { cancelAnimationFrame(fitting); fitting = requestAnimationFrame(fit); };
-    const watch = new MutationObserver(fitSoon);
-    window.addEventListener('resize', fitSoon);
+    // the layouts: the code beside the picture, 24em or 32em wide (fewer
+    // lines wrap), or under it
+    const LAYOUTS = [['24em', false], ['32em', false], ['24em', true]];
+    const use = ([side, stacked]) => {
+        open.style.setProperty('--stepper-side', side);
+        open.classList.toggle('stepper-stacked', stacked);
+    };
+    // fitted: the size and layout chosen when the widget opened (or the
+    // window changed); a step keeps them as long as they fit, so that the
+    // text does not change its size from step to step, and only shrinks
+    let fitted = null;
+    const fit = (fresh = true) => {
+        if (!open) return;
+        const picture = open.querySelector('.algo-body > svg.algo-picture');
+        // a step that still fits keeps size and layout; one that does not
+        // gets the best layout again, at most as large as before
+        const keep = !fresh && fitted && fitted.widget === open;
+        if (keep && fits(fitted.size, picture)) return;
+        const hi = keep ? fitted.size : 32;
+        if (!picture) {
+            fitted = { widget: open, size: largest(null, hi) };
+            fits(fitted.size, null);
+            return;
+        }
+        let best = null;
+        for (const layout of LAYOUTS) {
+            use(layout);
+            const size = largest(picture, hi);
+            if (!best || size > best.size + 0.2) best = { layout, size };
+        }
+        use(best.layout);
+        fitted = { widget: open, size: best.size };
+        fits(best.size, picture);
+    };
+    const unfit = (widget) => {
+        widget.classList.remove('stepper-stacked');
+        widget.style.removeProperty('--stepper-side');
+        const picture = widget.querySelector('.algo-body > svg.algo-picture');
+        if (picture) picture.style.maxHeight = '';
+    };
+    // a step keeps the size if it can; a new window size fits afresh
+    let fresh = false;
+    // measured only when the picture rests: halfway through a movement its
+    // view is between two steps
+    const fitSoon = (again) => {
+        fresh = fresh || again;
+        cancelAnimationFrame(fitting);
+        clearTimeout(fitting);
+        const moving = open && open.querySelector('svg.algo-picture[data-moving]');
+        if (moving) { fitting = setTimeout(() => fitSoon(false), 80); return; }
+        fitting = requestAnimationFrame(() => { fit(fresh); fresh = false; });
+    };
+    // the lines from the calls to the nodes are redrawn while things move;
+    // they never change the size
+    const watch = new MutationObserver((records) => {
+        if (records.some((r) => !(r.target.closest && r.target.closest('svg.algo-links')))) fitSoon(false);
+    });
+    window.addEventListener('resize', () => fitSoon(true));
     const show = (widget) => {
-        if (open) { open.classList.remove('stepper-lightbox'); open.style.fontSize = ''; setLabel(open.querySelector(':scope > .stepper-full'), false); putBack(open); }
+        if (open) { open.classList.remove('stepper-lightbox'); open.style.fontSize = ''; unfit(open); setLabel(open.querySelector(':scope > .stepper-full'), false); putBack(open); }
         lift(widget);
         open = widget;
         widget.classList.add('stepper-lightbox');
@@ -148,6 +225,7 @@ document.addEventListener('keydown', (event) => {
         if (!open) return;
         open.classList.remove('stepper-lightbox');
         open.style.fontSize = '';
+        unfit(open);
         watch.disconnect();
         setLabel(open.querySelector(':scope > .stepper-full'), false);
         putBack(open);
