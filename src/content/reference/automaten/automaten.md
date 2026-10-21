@@ -123,7 +123,7 @@ Ein NEA ist oft kleiner und leichter aufzuschreiben als ein DEA für dieselbe Sp
 
 <!-- part: thompson -->
 <!-- short: Thompson-Konstruktion: für jedes Zeichen ein Pfeil, für Hintereinander, |, * (Kleenesche Hülle) und + (positive Hülle) je ein Baustein aus ε-Übergängen; daraus ein NEA mit einem Start und einem akzeptierenden Zustand. -->
-Ein [regulärer Ausdruck](/reference/regex) beschreibt eine Sprache, und die **Thompson-Konstruktion** baut daraus einen NEA, Stück für Stück aus wenigen **Bausteinen**. Jeder Baustein hat einen Start und einen akzeptierenden Zustand, und die Bausteine werden mit ε-Übergängen verbunden. Automatron baut genauso; ε-Übergänge, die nur ein Stück an das nächste hängen, lässt es weg. Die Bilder hier sind seine.
+Ein [regulärer Ausdruck](/reference/regex) beschreibt eine Sprache, und die **Thompson-Konstruktion** baut daraus einen NEA, Stück für Stück aus wenigen **Bausteinen**. Jeder Baustein hat einen Start und einen akzeptierenden Zustand, und die Bausteine werden mit ε-Übergängen verbunden. Die Bilder in diesem Abschnitt zeichnet Automatron, und genau so sehen die Automaten dort aus. Es baut nach dieser Konstruktion, lässt aber ε-Übergänge weg, die nur ein Stück an das nächste hängen.
 
 <div class='gallery columns-3'>
 <figure>
