@@ -234,6 +234,23 @@ stehen in der Seite, und der Schalter zeigt die eine oder die andere, ohne
 die Seite neu zu laden. Vorbild sind `src/content/rle/`, `huffman/` und
 `lzw/`.
 
+### Menschen hinter einem Namen
+
+Nennt eine Seite einen Menschen (die Thompson-Konstruktion, die Kleenesche
+Hülle, die Erfinderin einer Sprache), steht neben dem Text ein kleiner Kasten
+mit einem freien Foto und zwei, drei Sätzen, wer das war. Die Sätze knüpfen an
+das an, was Lernende aus dem Workspace kennen: »Du suchst im Terminal mit
+`grep`? Das hat er geschrieben.« Das Foto ist gemeinfrei oder CC0, von
+Wikimedia Commons, mit einer Zeile, woher es stammt:
+
+```html
+<div class='person'>
+<img src='thompson.webp' alt='Schwarzweißfoto von Ken Thompson: …'>
+<p><strong>Ken Thompson</strong> (geboren 1943). Du suchst im Terminal mit <code>grep</code>? …</p>
+<p class='person-credit'>Foto: aus dem Jargon File, gemeinfrei (<a href='…'>Wikimedia Commons</a>)</p>
+</div>
+```
+
 ### Zum Ausprobieren einladen
 
 Wie etwas funktioniert, versteht man oft erst, wenn man es ändert und sieht,

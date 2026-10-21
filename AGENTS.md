@@ -93,6 +93,11 @@ address from `credentials.rb` and the code `123456`.
   everything that stays the same thing moves instead of popping. A widget never solves a task of its
   activity: it shows other examples than the tasks ask about, and where its
   input can be edited, the task's input must not give the answer either.
+- A person a page names (a construction, a law, a language) gets a small box
+  `<div class='person'>`: a free photo (public domain or CC0, from Wikimedia
+  Commons, with a credit line) and two or three sentences that tie the
+  person to what students know from the Workspace (»Du suchst mit `grep`?
+  Das hat er geschrieben.«); docs/aktivitaet-schreiben.md.
 - Invite optional experiments: where students have just got something
   working, a box `<div class='hint try'>` (»Ausprobieren:«) suggests a small
   change and what to watch for, so they see how it works by changing it.
