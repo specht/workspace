@@ -261,7 +261,11 @@ Kasten und Foto im selben Ordner. Eine Seite setzt den Kasten mit
 Handbuch-Bausteins. Auf der Seite Personen steht in jedem Kasten von selbst,
 auf welchen Seiten die Person vorkommt; versteckte und zurückgestellte Seiten
 zählen nicht mit. Über die Überschriften findet die Suche im Handbuch jeden
-Namen. Die Seite ordnet die Personen nach dem Geburtsjahr, in Abschnitten
+Namen. Jede Person auf der Seite Personen steht auf mindestens einer sichtbaren
+Seite, damit ihr Kasten dort einen Link »Im Workspace« hat
+(`person_boxes_test.rb`). Eine Ausnahme sind versteckte Seiten: Ihr Kasten steht als
+`<div class='person'>` mit seinem Foto direkt in der Seite, nicht auf der Seite
+Personen, die sonst verriete, dass es sie gibt. Die Seite ordnet die Personen nach dem Geburtsjahr, in Abschnitten
 (»Geboren vor 1920«, »1920 bis 1939« …), bei zweien oder dreien nach dem
 ältesten; innerhalb eines Jahrs nach dem Namen.
 

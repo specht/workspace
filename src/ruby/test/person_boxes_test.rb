@@ -1,4 +1,5 @@
 require 'minitest/autorun'
+require 'yaml'
 require 'tmpdir'
 require 'fileutils'
 Dir.chdir(File.expand_path('..', __dir__))
@@ -60,7 +61,32 @@ class PersonBoxesTest < Minitest::Test
         end
     end
 
+    def test_a_box_without_a_credit_gets_the_line_at_its_end
+        page = PAGE.sub("<p class='person-credit'>Foto: gemeinfrei</p>\n", '')
+        uses = { 'thompson' => [{ :url => '/grep', :title => 'Suchen mit grep' }] }
+        assert_includes PersonBoxes.annotate(page, uses), "<p class='person-pages'>Im Workspace: <a href='/grep'>Suchen mit grep</a></p>\n</div>\n<!-- /part -->"
+    end
+
     def test_a_person_nobody_places_gets_no_line
         assert_equal PAGE, PersonBoxes.annotate(PAGE, Hash.new { |h, k| h[k] = [] })
+    end
+
+    # Every person on the Personen page stands on at least one page a reader
+    # may be led to (not hidden, not parked, not only in development), so
+    # that every box there has its line »Im Workspace«.
+    CONTENT = File.expand_path('../../content', __dir__)
+
+    def test_every_person_is_placed_on_a_visible_page
+        visible = []
+        YAML.load_file(File.join(CONTENT, 'sections.yaml')).each do |section|
+            next if %w[hidden parked].include?(section['key'])
+            Array(section['entries']).map(&:to_s).reject { |e| e.start_with?('.') }.each { |e| visible << File.join(CONTENT, e, "#{e}.md") }
+        end
+        YAML.load_file(File.join(CONTENT, 'reference', 'sections.yaml')).each do |section|
+            Array(section['entries']).map(&:to_s).reject { |e| e.start_with?('.') }.each { |e| visible << File.join(CONTENT, 'reference', e, "#{e}.md") }
+        end
+        placed = visible.select { |f| File.file?(f) }.flat_map { |f| File.read(f).scan(PersonBoxes::PERSON).flatten }.uniq
+        people = File.read(File.join(CONTENT, 'reference', 'personen', 'personen.md')).scan(ContentParts::PART_MARKER).flatten
+        assert_empty people - placed, 'people on the Personen page without a visible page that places them'
     end
 end

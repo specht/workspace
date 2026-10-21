@@ -38,6 +38,13 @@ Du bist durch eine Wand gefallen. Dahinter liegen die Backrooms: gelbe Tapete, f
 
 Die Backrooms sind eine Legende aus dem Internet. 2019 stellte jemand in einem Forum das Foto eines leeren Büroraums mit gelber Tapete ein, und jemand anderes schrieb dazu: Wer an der falschen Stelle aus der Wirklichkeit »noclippt«, landet hier, in endlosen leeren Räumen. Noclip heißt ein Cheat aus alten Ego-Shootern wie Quake: Mit ihm läuft man durch Wände. Seitdem haben unzählige Leute weitere Levels erfunden, Geschichten geschrieben und Videos gedreht.
 
+<div class='person'>
+<img src='parsons.webp' alt='Kane Parsons 2026 bei einem Interview: ein junger Mann mit dunklen Locken in einem grau melierten Pullover vor einer gelben Wand, mit einem leichten Lächeln.'>
+<p><strong>Kane Parsons</strong> (geboren 2005), amerikanischer Filmemacher, auf YouTube »Kane Pixels«. Im Januar 2022, mit 16, stellte er »The Backrooms (Found Footage)« online: neun Minuten, die aussehen wie eine alte Videokassette. 1991 tritt ein Kameramann einen Schritt zurück, fällt durch den Boden und flieht durch gelbe Gänge vor etwas Dunklem. Die Kassette, sagt das Video, tauchte erst fünf Jahre später wieder auf.</p>
+<p>Gefilmt ist daran nichts. Du baust deine Gänge aus Text, er baute seine im freien 3D-Programm Blender und rechnete das Wackeln der Kamera und das Rauschen der Kassette dazu. Mit diesem Video und rund zwei Dutzend weiteren wurden die Backrooms weltbekannt. Im Mai 2026 kam sein Kinofilm »Backrooms« heraus; mit 20 war er der jüngste Regisseur, dessen Film in Nordamerika am ersten Wochenende auf Platz 1 stand.</p>
+<p class='person-credit'>Foto: Lachlan und Austin Macfarlane, 2026, CC BY 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Kane_Parsons.jpg'>Wikimedia Commons</a>)</p>
+</div>
+
 Hier baust du deine eigenen Backrooms. Du beschreibst Räume in Textdateien: wo die Wände stehen, wo die Leuchten hängen, wo eine Tür in den nächsten Raum führt. Ein Programm im Browser liest sie, baut daraus ein Bauwerk in 3D und berechnet das Licht: wohin es fällt, wo Schatten liegen und wie es von Wänden, Boden und Decke zurückgeworfen wird. Programmieren musst du dafür nicht. Wer will, findet das ganze Programm im Ordner `engine/` und kann darin herumschrauben.
 
 ## Ausrüstung
@@ -164,6 +171,8 @@ hook: info off
 <p>Wir kartieren in Feldern. Ein Feld ist ein Meter. Eine Raute ist eine Wand, ein Punkt ist Teppich. Was nicht auf der Karte steht, gibt es nicht. Das ist die einzige Regel, auf die man sich hier verlassen kann.</p>
 <cite>Notiz, mit Kugelschreiber auf die Tapete geschrieben</cite>
 </div>
+
+_person(livingstone-jackson)
 
 ### Ein Raum
 

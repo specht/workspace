@@ -15,6 +15,8 @@ kind: reference
 Eine BIF-Geschichte besteht aus Markdown-Dateien mit ein paar eigenen Schreibweisen für Entscheidungen, Variablen und Bedingungen. Hier stehen sie zum Nachschlagen, wenn du deine eigene Geschichte schreibst. Wie alles zusammenspielt, zeigt die Aktivität <a href='/bif'>»Interaktive Geschichten schreiben«</a>.
 </p>
 
+_person(gruber)
+
 ## Eine Geschichte schreiben
 
 Seiten, Entscheidungen zwischen ihnen und ein Ende: mehr braucht eine Geschichte nicht.

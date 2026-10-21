@@ -48,17 +48,32 @@ module PersonBoxes
         result
     end
 
-    # On the Personen page: in each box, before the photo's source, the pages
-    # that place the person.
+    # On the Personen page: in each box, before the photo's source (or at its
+    # end when there is none), the pages that place the person.
     def self.annotate(markdown, uses)
+        out = []
         current = nil
-        markdown.lines.map do |line|
-            current = $1 if line =~ ContentParts::PART_MARKER
-            if current && line.start_with?("<p class='person-credit'>") && !uses[current].empty?
-                links = uses[current].map { |page| "<a href='#{CGI.escapeHTML(page[:url])}'>#{CGI.escapeHTML(page[:title])}</a>" }
-                line = "<p class='person-pages'>Im Workspace: #{links.join(', ')}</p>\n#{line}"
+        done = false
+        line_for = lambda do |name|
+            links = uses[name].map { |page| "<a href='#{CGI.escapeHTML(page[:url])}'>#{CGI.escapeHTML(page[:title])}</a>" }
+            "<p class='person-pages'>Im Workspace: #{links.join(', ')}</p>\n"
+        end
+        markdown.each_line do |line|
+            if line =~ ContentParts::PART_MARKER
+                current = $1
+                done = false
+            elsif current && !done && !uses[current].empty? && line.start_with?("<p class='person-credit'>")
+                out << line_for.call(current)
+                done = true
+            elsif current && line =~ ContentParts::PART_END
+                if !done && !uses[current].empty?
+                    last = out.rindex { |l| l.start_with?('</div>') }
+                    out.insert(last, line_for.call(current)) if last
+                end
+                current = nil
             end
-            line
-        end.join
+            out << line
+        end
+        out.join
     end
 end

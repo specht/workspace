@@ -324,6 +324,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1949 -->
+<!-- part: livingstone-jackson -->
+### Ian Livingstone und Steve Jackson
+
+<div class='person'>
+<img src='livingstone.webp' alt='Ian Livingstone 2006 bei den BAFTA Awards: ein Mann mit Halbglatze im Smoking mit Fliege, ernst zur Seite blickend.'>
+<p><strong>Ian Livingstone</strong> (geboren 1949, im Bild) und <strong>Steve Jackson</strong> (geboren 1951), britische Spieleautoren. 1982 erschien ihr Buch »The Warlock of Firetop Mountain«, das erste der Reihe <em>Fighting Fantasy</em>: Du bist der Held, würfelst deine Kämpfe aus und liest nicht von vorn nach hinten, sondern springst zwischen 400 nummerierten Abschnitten hin und her, je nachdem, welchen Gang du nimmst. Die Bücher rieten, beim Lesen eine Karte zu zeichnen, Gang für Gang.</p>
+<p>1975 hatten die beiden mit einem Schulfreund Games Workshop gegründet, die Firma, die heute Warhammer macht. Livingstone sah 1996 für die Spielefirma Eidos ein Studio an, das sie kaufen wollte, und dort zum ersten Mal Lara Croft auf einem Bildschirm: Tomb Raider. Jackson gehörte zu den Gründern von Lionhead, dem Studio hinter Fable. Und ein Bericht, den Livingstone 2011 mitschrieb, trug dazu bei, dass Schulen in England seit 2014 Informatik mit Programmieren unterrichten.</p>
+<p class='person-credit'>Foto: FrankBoyd, 2006, CC BY-SA 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Ian_Livingstone,_Paul_Gambaccini_-_Bafta_Awards_2006.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1950 -->
 <!-- part: stroustrup -->
 ### Bjarne Stroustrup
@@ -532,6 +544,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Simon Tatham</strong> (geboren 1977, im Bild), britischer Programmierer, schrieb 1996 mit Hilfe von <strong>Julian Hall</strong> NASM, den Netwide Assembler: einen freien Assembler, der aus Befehlen wie <code>mov</code> und <code>syscall</code> Maschinencode für x86-Prozessoren macht. Heute pflegen andere NASM weiter.</p>
 <p>Tatham schrieb auch PuTTY (1999), mit dem man sich von Windows aus über SSH in das Terminal eines Linux-Servers einloggt, und eine Sammlung kleiner Rätselspiele, die auch im Browser laufen.</p>
 <p class='person-credit'>Foto: Richard Kettlewell, 2012, CC BY-SA 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Simon_Tatham_in_2012.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1978 -->
+<!-- part: eifrem-svensson-neubauer -->
+### Emil Eifrem, Johan Svensson und Peter Neubauer
+
+<div class='person'>
+<img src='neubauer.webp' alt='Peter Neubauer 2015 bei einem Vortrag: ein Mann mit kurzem Haar und Bart in einem rot karierten Hemd, mit einem Mikrofon.'>
+<p><strong>Emil Eifrem</strong>, <strong>Johan Svensson</strong> und <strong>Peter Neubauer</strong> (im Bild), schwedische Programmierer, bauten um 2000 in Malmö ein System für die Inhalte von Websites, und ihre Datenbank aus Tabellen kam mit den vielen Verknüpfungen nicht mehr mit. Auf einem Flug nach Mumbai zeichnete Eifrem auf eine Serviette, wie man die Daten stattdessen speichern könnte: Knoten mit Eigenschaften und Beziehungen zwischen ihnen. Daraus wurde Neo4j; 2007 gründeten die drei dafür eine Firma.</p>
+<p>Die Abfragesprache Cypher erfand Andrés Taylor 2011 bei Neo4j. Ihre Muster sind ein Bild des Graphen aus Textzeichen: <code>(:Person)-[:DIRECTOR]->(:Movie)</code> ist ein Knoten, ein Pfeil und noch ein Knoten.</p>
+<p class='person-credit'>Foto: Wikimedia Finland, 2015, CC BY-SA 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Peter_Neubauer_(16263999000).jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 

@@ -92,6 +92,8 @@ Eine Beziehung verbindet zwei Knoten und zeigt in eine Richtung:
 
 Runde Klammern stehen für Knoten, eckige für Beziehungen. Der Name hinter dem Doppelpunkt ist bei einem Knoten sein Label, bei einer Beziehung ihr Typ. Das ist schon Cypher: Genau so schreibst du gleich deine Abfragen.
 
+_person(eifrem-svensson-neubauer)
+
 ## Loslegen
 
 ### Die Filmdaten laden

@@ -320,6 +320,8 @@ Im Handbuch: _uses(takte, maschinencode, stack, funktionen)
 
 Ab MiniCPU 8S kannst du Programme auch in MiniC schreiben, einer kleinen Variante von C, die schon beim Tippen übersetzt wird. Versteckt wird dabei nichts: Neben jeder C-Zeile stehen ihre Maschinenbytes, und der Reiter **Assembly** zeigt das erzeugte Programm. Du siehst, dass lokale Variablen auf dem Stack liegen, wie ein Funktionsaufruf sein Argument übergibt und wie das Ergebnis zurückkommt.
 
+_person(hopper)
+
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1600x900
