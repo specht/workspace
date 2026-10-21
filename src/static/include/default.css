@@ -5368,6 +5368,40 @@ div[data-stepper] {
     border-left: 3px solid color-mix(in srgb, var(--bs-primary) 55%, transparent);
     border-radius: 0 0.4em 0.4em 0;
 }
+/* full screen for a demo (stepper_keys.js): the button at the top right; the
+   widget larger on the screen, or as a lightbox where full screen is not
+   possible */
+div[data-stepper] {
+    position: relative;
+}
+div[data-stepper] > .stepper-full {
+    position: absolute;
+    top: 0.45em;
+    right: 0.6em;
+    padding: 0.1em 0.45em;
+    line-height: 1.2;
+}
+div[data-stepper]:fullscreen,
+div[data-stepper].stepper-lightbox {
+    margin: 0;
+    padding: 3vh 4vw;
+    border: none;
+    border-radius: 0;
+    overflow: auto;
+    background: var(--bs-body-bg);
+    font-size: clamp(16px, 1.45vw, 26px);
+}
+div[data-stepper].stepper-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+}
+div[data-stepper]:fullscreen .algo-body > svg.algo-picture,
+div[data-stepper].stepper-lightbox .algo-body > svg.algo-picture {
+    max-width: none;
+    flex: 3 1 40em;
+    max-height: 72vh;
+}
 div[data-stepper]::before {
     content: 'Zum Ausprobieren · ← → schalten weiter';
     display: block;

@@ -156,6 +156,9 @@ only to look nice.
   that no box overlaps another and none stands in an arrow's way (narrow
   groups first). A new box is there at once (`data-solid`), so it hides the
   start of its arrow.
+- **The same thing has the same size** across related widgets: a list's
+  cells are as large in the widget that grows to 8 cells as in the one with
+  4 (the picture at most as wide as drawn, `data-natural`).
 - **Nothing covers anything.** Labels, tokens and rings keep at least about
   20 px from nodes and from each other; labels of the smaller and the larger
   value go on opposite sides, `successor` below its node.
@@ -196,6 +199,11 @@ only to look nice.
   narrow, paler and set apart to their left, so that a finger meant for next
   does not jump to the end; the step count on the left, on a phone on a line
   of its own (`default.css`).
+- **Full screen for a demo**: every widget has a button at its top right
+  (`stepper_keys.js`) that shows it full screen, larger, for the big screen;
+  the keys and the swipe work as before, Esc or the button leaves. Where the
+  browser cannot show an element full screen (an iPhone), the widget fills
+  the window as a lightbox.
 - Colours come from the widget's CSS variables, so light and dark mode both
   work; no fixed colours in the drawing.
 

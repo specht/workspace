@@ -871,192 +871,430 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         svg.setAttribute('viewBox', `0 0 ${width + cell} ${bottom}`);
     }
 
-    // ---- Queue as a ring buffer: head, size, capacity; the next free cell
-    // is (head + size) mod capacity.
-    function traceRing(ops, capacity) {
-        const cells = Array(capacity).fill(null);
-        let head = 0;
-        let size = 0;
-        let out;
-        const frames = [];
-        const snapshot = (message, marks = {}) => frames.push({ cells: [...cells], head, size, capacity, message, out, ...marks });
-        snapshot(`Eine leere Queue in einem Array mit ${capacity} Zellen: head = 0, size = 0.`);
-        for (const op of ops) {
-            if (op.type === 'enqueue') {
-                if (size === capacity) { snapshot(`enqueue ${op.value}: Alle ${capacity} Zellen sind belegt, die Queue ist voll.`, { error: true }); continue; }
-                const at = (head + size) % capacity;
-                cells[at] = op.value;
-                size += 1;
-                snapshot(`enqueue ${op.value}: in die Zelle (head + size) mod ${capacity} = (${head} + ${size - 1}) mod ${capacity} = ${at}. size wird ${size}.`, { focus: at });
-            } else {
-                if (size === 0) { snapshot('dequeue: Die Queue ist leer.', { error: true }); continue; }
-                const value = cells[head];
-                cells[head] = null;
-                const old = head;
-                head = (head + 1) % capacity;
-                size -= 1;
-                out = value;
-                snapshot(`dequeue: ${value} aus Zelle head = ${old}. head wird (${old} + 1) mod ${capacity} = ${head}, size ${size}.`, { focus: old });
-            }
-        }
-        return frames;
-    }
+    // ---- Lists (reference/listen): the Array List, the Linked List and the
+    // Queue as a ring buffer, each step a line of the page's pseudocode
+    // (LIST_CODE). A value has an id, so that a copy is a new id flying from
+    // where it is copied from: for a moment it is there twice.
+    const LIST_CODE = {
+        arrayInsert: ['insert(i, value):', '    if i < 0 or i > size: error', '    if size = capacity: grow', '    for j from size - 1 down to i:',
+            '        cells[j + 1] ← cells[j]', '    cells[i] ← value', '    size ← size + 1'],
+        arrayRemove: ['remove(i):', '    if i < 0 or i ≥ size: error', '    value ← cells[i]', '    for j from i to size - 2:', '        cells[j] ← cells[j + 1]',
+            '    size ← size - 1', '    return value'],
+        linkedInsert: ['insert(i, value):', '    if i < 0 or i > size: error', '    new ← a node with value', '    if i = 0:', '        new.next ← head', '        head ← new',
+            '    else:', '        before ← node_at(i - 1)', '        new.next ← before.next', '        before.next ← new', '    size ← size + 1'],
+        linkedRemove: ['remove(i):', '    if i < 0 or i ≥ size: error', '    if i = 0:', '        value ← head.value', '        head ← head.next', '    else:',
+            '        before ← node_at(i - 1)', '        value ← before.next.value', '        before.next ← before.next.next', '    size ← size - 1', '    return value'],
+        nodeAt: ['node_at(i):', '    k ← head', '    repeat i times:', '        k ← k.next', '    return k'],
+        enqueue: ['enqueue(value):', '    if size = capacity: error, the queue is full', '    cells[(head + size) mod capacity] ← value', '    size ← size + 1'],
+        dequeue: ['dequeue():', '    if size = 0: error, the queue is empty', '    value ← cells[head]', '    head ← (head + 1) mod capacity', '    size ← size - 1', '    return value'],
+    };
 
-    function drawRing(svg, frame) {
-        svg.replaceChildren();
-        const cell = 56;
-        const left = 20;
-        frame.cells.forEach((value, i) => {
-            const x = left + i * cell;
-            svg.appendChild(el('svg:rect', { x, y: 50, width: cell - 6, height: 44, rx: 6, fill: value === null ? 'var(--algo-paper)' : 'var(--algo-frontier)', stroke: frame.focus === i ? 'var(--algo-accent)' : 'var(--algo-line)', 'stroke-width': frame.focus === i ? 3.5 : 1.5 }));
-            if (value !== null) svg.appendChild(el('svg:text', { x: x + (cell - 6) / 2, y: 78, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(value) }));
-            svg.appendChild(el('svg:text', { x: x + (cell - 6) / 2, y: 110, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--bs-secondary-color)', text: String(i) }));
-        });
-        const arrow = (i, label, y, up) => {
-            const x = left + i * cell + (cell - 6) / 2;
-            svg.appendChild(el('svg:text', { x, y: up ? y : y + 12, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 600, fill: 'var(--algo-accent)', text: label }));
-            svg.appendChild(el('svg:path', { d: up ? `M${x} ${y + 4} l0 12 m-5 -5 l5 5 l5 -5` : `M${x} ${y - 4} l0 -12 m-5 5 l5 -5 l5 5`, stroke: 'var(--algo-accent)', 'stroke-width': 2, fill: 'none' }));
-        };
-        arrow(frame.head, 'head', 26, true);
-        arrow((frame.head + frame.size) % frame.capacity, frame.size === frame.capacity ? 'voll' : 'nächste frei', 132, false);
-        svg.setAttribute('viewBox', `0 0 ${left * 2 + frame.capacity * cell} 150`);
-    }
-
-    // ---- Array List: the values in the first size cells of an array;
-    // insert and remove shift everything behind the index, a full array is
-    // copied into one twice as large.
-    function traceArray(ops, capacity) {
+    // A frame of an array: cells (ids or null), values (id -> value), size,
+    // capacity, bigger (while growing: the new array's cells), card (the
+    // variable value: { id, at } above a cell), vars (index variables),
+    // marks: focus, from (id -> the id a copy comes from), op, code, stack.
+    function traceArray(ops, capacity, setup = []) {
         let cells = Array(capacity).fill(null);
         let size = 0;
-        let moves = 0;
+        let bigger = null;
+        let card = null;
+        let nextId = 0;
+        const values = {};
+        let current = -1;
+        let phase = null;
         const frames = [];
-        const snapshot = (message, marks = {}) => frames.push({ cells: [...cells], size, moves, message, ...marks });
-        snapshot(`Eine leere Array List: ein Array mit ${capacity} Zellen, size = 0.`);
-        for (const { type, index, value } of ops) {
-            if (type === 'insert') {
-                if (index < 0 || index > size) { snapshot(`insert(${index}, ${value}): Index ${index} gibt es nicht, erlaubt ist 0 bis ${size}.`, { error: true }); continue; }
-                if (size === cells.length) {
-                    const bigger = Array(cells.length * 2).fill(null);
-                    cells.forEach((v, i) => { bigger[i] = v; });
-                    cells = bigger;
-                    moves += size;
-                    snapshot(`insert(${index}, ${value}): Das Array ist voll. Ein neues mit ${cells.length} Zellen, alle ${size} Werte werden hinüberkopiert.`, { copied: size });
-                }
-                for (let i = size; i > index; i--) {
-                    cells[i] = cells[i - 1];
-                    moves += 1;
-                    snapshot(`insert(${index}, ${value}): ${cells[i]} rückt von Index ${i - 1} nach ${i}.`, { focus: i, moved: true });
-                }
-                cells[index] = value;
-                size += 1;
-                snapshot(`insert(${index}, ${value}): ${value} kommt an Index ${index}. size wird ${size}.${size - 1 - index === 1 ? ' Dafür ist ein Wert gerückt.' : size - 1 - index ? ` Dafür sind ${size - 1 - index} Werte gerückt.` : ''}`, { focus: index, fresh: true });
-            } else if (type === 'remove') {
-                if (index < 0 || index >= size) { snapshot(`remove(${index}): Index ${index} gibt es nicht.`, { error: true }); continue; }
-                const gone = cells[index];
-                snapshot(`remove(${index}): ${gone} kommt heraus.`, { focus: index, gone: true });
-                for (let i = index; i < size - 1; i++) {
-                    cells[i] = cells[i + 1];
-                    moves += 1;
-                    snapshot(`remove(${index}): ${cells[i]} rückt von Index ${i + 1} nach ${i}.`, { focus: i, moved: true });
-                }
-                size -= 1;
-                cells[size] = null;
-                snapshot(`size wird ${size}.`);
-            } else if (type === 'get') {
-                if (index < 0 || index >= size) { snapshot(`get(${index}): Index ${index} gibt es nicht.`, { error: true }); continue; }
-                snapshot(`get(${index}): ${cells[index]}, sofort. Die Zelle liegt an einer bekannten Stelle im Speicher, nichts muss laufen.`, { focus: index });
+        const snapshot = (message, marks = {}) => frames.push({ cells: [...cells], values: { ...values }, size, capacity: cells.length, bigger: bigger && [...bigger], card: card && { ...card },
+            message, op: current, phase, ...marks });
+        const I = (at) => ({ lines: LIST_CODE.arrayInsert, at });
+        const R = (at) => ({ lines: LIST_CODE.arrayRemove, at });
+        const fresh = (value) => { const id = nextId++; values[id] = value; return id; };
+        const copy = (id) => fresh(values[id]);
+        const insert = (i, value, quiet) => {
+            const vars = (j) => [{ name: 'i', index: i }, { name: 'size', index: size }, ...(j !== undefined ? [{ name: 'j', index: j }] : [])];
+            const say = quiet ? () => {} : snapshot;
+            card = { id: fresh(value), at: i };
+            say(`insert(${i}, ${value}): Der neue Wert ${value} soll an Index ${i}.`, { vars: vars(), code: I(0) });
+            if (i < 0 || i > size) { card = null; say(`Index ${i} gibt es nicht: erlaubt ist 0 bis ${size}.`, { code: I(1) }); return; }
+            if (size === cells.length) {
+                phase = 'grow';
+                bigger = Array(cells.length * 2).fill(null);
+                say(`size = capacity: Alle ${cells.length} Zellen sind belegt. grow: ein neues Array mit ${bigger.length} Zellen.`, { vars: vars(), code: I(2) });
+                const from = {};
+                for (let k = 0; k < size; k++) { bigger[k] = copy(cells[k]); from[bigger[k]] = cells[k]; }
+                say(`Alle ${size} Werte werden ins neue Array kopiert, jeder einzeln.`, { vars: vars(), code: I(2), from });
+                cells = bigger;
+                bigger = null;
+                say(`Das neue Array ersetzt das alte, das jetzt niemand mehr braucht.`, { vars: vars(), code: I(2) });
+                phase = null;
             }
+            if (size > i) phase = 'shift';
+            for (let j = size - 1; j >= i; j--) {
+                const id = copy(cells[j]);
+                cells[j + 1] = id;
+                say(`cells[j + 1] ← cells[j]: ${values[id]} rückt von Index ${j} nach ${j + 1}. Jetzt steht ${values[id]} zweimal da.`, { vars: vars(j), code: I(4), from: { [id]: cells[j] } });
+            }
+            phase = null;
+            cells[i] = card.id;
+            card = null;
+            say(`cells[i] ← value: ${value} kommt an Index ${i}.`, { vars: vars(), code: I(5), focus: i });
+            size += 1;
+            say(`size ← size + 1: size ist jetzt ${size}.`, { vars: vars(), code: I(6) });
+        };
+        const remove = (i) => {
+            const vars = (j) => [{ name: 'i', index: i }, { name: 'size', index: size }, ...(j !== undefined ? [{ name: 'j', index: j }] : [])];
+            snapshot(`remove(${i}): Der Wert an Index ${i} soll heraus.`, { vars: vars(), code: R(0), focus: i });
+            if (i < 0 || i >= size) { snapshot(`Index ${i} gibt es nicht.`, { code: R(1) }); return; }
+            card = { id: copy(cells[i]), at: i };
+            snapshot(`value ← cells[i]: Die Variable value merkt sich ${values[card.id]}.`, { vars: vars(), code: R(2), from: { [card.id]: cells[i] } });
+            if (i < size - 1) phase = 'shift';
+            for (let j = i; j <= size - 2; j++) {
+                const id = copy(cells[j + 1]);
+                cells[j] = id;
+                snapshot(`cells[j] ← cells[j + 1]: ${values[id]} rückt von Index ${j + 1} nach ${j}.${j === size - 2 ? ` An Index ${j + 1} steht es noch, aber das gehört gleich nicht mehr zur Liste.` : ''}`, { vars: vars(j), code: R(4), from: { [id]: cells[j + 1] } });
+            }
+            phase = null;
+            size -= 1;
+            snapshot(`size ← size - 1: size ist jetzt ${size}. Was ab Index ${size} steht, zählt nicht mehr.`, { vars: vars(), code: R(5) });
+            const out = values[card.id];
+            card = null;
+            snapshot(`return value: ${out} kommt heraus.`, { vars: vars(), code: R(6) });
+        };
+        for (const op of setup) if (op.type === 'insert') { insert(op.index, op.value, true); }
+        snapshot(setup.length ? 'Die Liste von oben. Jetzt der Reihe nach die Operationen darüber.' : `Eine leere Array List: ein Array mit ${capacity} Zellen, size = 0.`, { vars: [{ name: 'size', index: size }] });
+        for (const [number, op] of ops.entries()) {
+            current = number;
+            if (op.type === 'insert') insert(op.index, op.value);
+            else if (op.type === 'remove') remove(op.index);
         }
         return frames;
     }
 
-    function drawArray(svg, frame, most) {
+    // The array: a row of cells, the cells from size on faint (they do not
+    // belong to the list); a value is a group that moves; the card of value
+    // above its cell; while growing the new array below.
+    function drawArray(svg, frame, most, marker, grows) {
         svg.replaceChildren();
         const cell = 50;
         const left = 14;
-        frame.cells.forEach((value, i) => {
+        const top = 46;
+        const below = top + 86;
+        svg.appendChild(arrowheads(marker));
+        const box = (key, x, y, used) => el('svg:rect', { 'data-key': key, x, y, width: cell - 6, height: 42, rx: 6, fill: used ? 'var(--algo-paper)' : 'transparent',
+            stroke: 'var(--algo-line)', 'stroke-width': 1.5, 'stroke-dasharray': used ? 'none' : '4 4' });
+        const value = (id, x, y, extra = {}) => el('svg:g', { 'data-key': `value-${id}`, 'data-grow': '', ...(frame.from && frame.from[id] !== undefined ? { 'data-from': `value-${frame.from[id]}` } : {}),
+            transform: `translate(${x} ${y})`, ...extra }, [
+            el('svg:rect', { x: 0, y: 0, width: cell - 6, height: 42, rx: 6, fill: extra.fill || 'var(--algo-paper)', stroke: extra.stroke || 'var(--algo-ink)', 'stroke-width': 1.5, ...(extra.dash ? { 'stroke-dasharray': extra.dash } : {}) }),
+            el('svg:text', { x: (cell - 6) / 2, y: 27, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.values[id]) })]);
+        frame.cells.forEach((id, i) => {
             const x = left + i * cell;
-            const used = i < frame.size || value !== null;
-            const fill = frame.gone && frame.focus === i ? 'color-mix(in srgb, var(--algo-goal) 30%, var(--algo-paper))'
-                : frame.focus === i ? 'var(--algo-frontier)' : used ? 'var(--algo-paper)' : 'transparent';
-            svg.appendChild(el('svg:rect', { x, y: 40, width: cell - 6, height: 42, rx: 6, fill, stroke: frame.focus === i ? 'var(--algo-accent)' : 'var(--algo-line)', 'stroke-width': frame.focus === i ? 3.5 : 1.5, 'stroke-dasharray': used || frame.focus === i ? null : '4 4' }));
-            if (value !== null) svg.appendChild(el('svg:text', { x: x + (cell - 6) / 2, y: 67, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(value) }));
-            svg.appendChild(el('svg:text', { x: x + (cell - 6) / 2, y: 98, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--bs-secondary-color)', text: String(i) }));
+            svg.appendChild(box(`cell-${i}`, x, top, i < frame.size));
+            svg.appendChild(el('svg:text', { 'data-key': `index-${i}`, x: x + (cell - 6) / 2, y: top + 58, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--bs-secondary-color)', text: String(i) }));
+            svg.appendChild(el('svg:rect', { 'data-key': `slot-${i}`, x: x + 2, y: top + 34, width: cell - 10, height: 4, fill: 'none', stroke: 'none' }));
         });
-        svg.appendChild(el('svg:text', { x: left, y: 24, 'font-size': 13, fill: 'var(--algo-ink)', text: `size = ${frame.size}, Kapazität ${frame.cells.length}` }));
-        svg.setAttribute('viewBox', `0 0 ${left * 2 + most * cell} 110`);
+        svg.appendChild(el('svg:rect', { 'data-key': `slot-${frame.cells.length}`, x: left + frame.cells.length * cell + 2, y: top + 34, width: cell - 10, height: 4, fill: 'none', stroke: 'none' }));
+        frame.cells.forEach((id, i) => {
+            if (id === null) return;
+            const out = i >= frame.size;
+            svg.appendChild(value(id, left + i * cell, top, out ? { fill: 'color-mix(in srgb, var(--algo-line) 18%, var(--algo-paper))', stroke: 'var(--algo-line)' }
+                : frame.focus === i ? { fill: 'var(--algo-frontier)' } : {}));
+        });
+        if (frame.bigger) {
+            frame.bigger.forEach((id, i) => {
+                const x = left + i * cell;
+                svg.appendChild(box(`big-${i}`, x, below + 30, true));
+                if (id !== null) svg.appendChild(value(id, x, below + 30));
+            });
+            svg.appendChild(el('svg:text', { 'data-key': 'big-label', x: left, y: below + 22, 'font-size': 11, fill: 'var(--bs-secondary-color)', text: `neues Array, ${frame.bigger.length} Zellen` }));
+        }
+        if (frame.card) {
+            const x = left + frame.card.at * cell;
+            svg.appendChild(value(frame.card.id, x, 0, { fill: 'color-mix(in srgb, var(--algo-accent) 25%, var(--algo-paper))', stroke: 'var(--algo-accent)', dash: '5 3' }));
+            const w = 14 + 7.5 * 5;
+            svg.appendChild(el('svg:rect', { 'data-solid': '', 'data-key': 'var-value', x: x + cell - 2, y: 12, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
+            svg.appendChild(el('svg:text', { 'data-key': 'var-value-label', x: x + cell - 2 + w / 2, y: 25, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'value' }));
+        }
+        const labelTop = top + 68;
+        const placed = indexLabels(frame.vars, (index) => left + index * cell + (cell - 6) / 2, left * 2 + (most + 1) * cell);
+        for (const label of placed) for (const node of indexLabel(label, labelTop + label.row * 24, top + 36, top + 62, marker)) svg.appendChild(node);
+        svg.appendChild(el('svg:text', { 'data-key': 'capacity', x: left + (most + 1) * cell - 6, y: 24, 'text-anchor': 'end', 'font-size': 12, fill: 'var(--bs-secondary-color)', text: `capacity ${frame.capacity}` }));
+        // the picture keeps its size: room for the new array when the example grows
+        svg.setAttribute('viewBox', `0 0 ${left * 2 + (most + 1) * cell} ${grows ? below + 84 : labelTop + 3 * 24}`);
+        svg.dataset.natural = left * 2 + (most + 1) * cell;
     }
 
-    // ---- Linked List: nodes with value and next; get, insert and remove walk
-    // from head to the node before the index.
-    function traceLinked(ops) {
-        let nodes = [];
+    // A frame of a Linked List: nodes (id -> { value, next }), head, order
+    // (the ids from head on), loose (a node no pointer of the list reaches:
+    // { id, at } above the gap at index at), vars (variables that point at a
+    // node: head always, new, before, k), card (value), marks.
+    function traceLinked(ops, setup = []) {
+        const nodes = {};
+        let head = null;
+        let nextId = 0;
+        let loose = null;
+        let card = null;
+        let current = -1;
+        let phase = null;
+        let stack = [];
         const frames = [];
-        const snapshot = (message, marks = {}) => frames.push({ nodes: nodes.map((n) => ({ ...n })), message, ...marks });
-        snapshot('Eine leere Linked List: head zeigt auf keinen Knoten.');
-        for (const op of ops) {
-            const { type, index, value } = op;
-            if (type === 'insert') {
-                if (index < 0 || index > nodes.length) { snapshot(`insert(${index}, ${value}): Index ${index} gibt es nicht.`, { error: true }); continue; }
-                if (index === 0) {
-                    nodes.unshift({ value, fresh: true });
-                    snapshot(`insert(0, ${value}): ein neuer Knoten, sein next zeigt auf den alten ersten, und head zeigt auf ihn. Nichts muss laufen.`, { focus: 0 });
-                } else {
-                    for (let i = 0; i < index; i++) snapshot(`insert(${index}, ${value}): Laufen zum Knoten vor Index ${index}, gerade bei Index ${i}.`, { walk: i });
-                    const last = index === nodes.length;
-                    nodes.splice(index, 0, { value, fresh: true });
-                    snapshot(last
-                        ? `Der Knoten davor zeigt jetzt auf den neuen, dessen next auf nichts zeigt: eine Referenz gesetzt, nichts verschoben.`
-                        : `Der neue Knoten zeigt auf den, der bisher an Index ${index} war, und der Knoten davor zeigt jetzt auf ihn: zwei Referenzen umgebogen, nichts verschoben.`, { focus: index, walk: index - 1 });
-                }
-                nodes.forEach((n) => delete n.fresh);
-            } else if (type === 'remove') {
-                if (index < 0 || index >= nodes.length) { snapshot(`remove(${index}): Index ${index} gibt es nicht.`, { error: true }); continue; }
-                for (let i = 0; i < index; i++) snapshot(`remove(${index}): Laufen zum Knoten vor Index ${index}, gerade bei Index ${i}.`, { walk: i });
-                const gone = nodes[index].value;
-                snapshot(index === 0 ? `remove(0): head zeigt jetzt auf den zweiten Knoten; ${gone} hängt an nichts mehr.` : `Der Knoten davor zeigt jetzt am Knoten mit ${gone} vorbei auf den nächsten.`, { focus: index, gone: index, walk: index - 1 });
-                nodes.splice(index, 1);
-                snapshot(`${gone} ist weg.`);
-            } else if (type === 'get') {
-                if (index < 0 || index >= nodes.length) { snapshot(`get(${index}): Index ${index} gibt es nicht.`, { error: true }); continue; }
-                for (let i = 0; i <= index; i++) snapshot(i < index ? `get(${index}): bei Index ${i}, weiter mit next.` : `get(${index}): ${nodes[i].value}. Dafür ist die Suche ${index} Knoten weit gelaufen.`, { walk: i, focus: i === index ? i : undefined });
+        const order = () => { const list = []; for (let k = head; k !== null && list.length < 50; k = nodes[k].next) list.push(k); return list; };
+        const snapshot = (message, marks = {}) => frames.push({ nodes: JSON.parse(JSON.stringify(nodes)), head, order: order(), loose: loose && { ...loose }, card: card && { ...card },
+            message, op: current, phase, stack: stack.map((s) => ({ ...s })), ...marks });
+        const I = (at) => ({ lines: LIST_CODE.linkedInsert, at });
+        const R = (at) => ({ lines: LIST_CODE.linkedRemove, at });
+        const N = (at) => ({ lines: LIST_CODE.nodeAt, at });
+        const size = () => order().length;
+        // node_at(i): k walks from head, one next at a time
+        const nodeAt = (i, vars, quiet) => {
+            const say = quiet ? () => {} : snapshot;
+            stack.push({ call: `node_at(i: ${i})`, node: null });
+            let k = head;
+            phase = 'node_at';
+            say(`node_at(${i}): k ← head, k zeigt auf ${nodes[k].value}.`, { vars: [...vars, { name: 'k', to: k }], code: N(1) });
+            for (let step = 0; step < i; step++) {
+                k = nodes[k].next;
+                say(`k ← k.next: k zeigt auf ${nodes[k].value}.`, { vars: [...vars, { name: 'k', to: k }], code: N(3) });
             }
+            say(`return k: der Knoten mit ${nodes[k].value}.`, { vars: [...vars, { name: 'k', to: k }], code: N(4) });
+            phase = null;
+            stack.pop();
+            return k;
+        };
+        const insert = (i, value, quiet) => {
+            const say = quiet ? () => {} : snapshot;
+            stack = [{ call: `insert(i: ${i}, value: ${value})`, node: null }];
+            if (i < 0 || i > size()) { say(`insert(${i}, ${value}): Index ${i} gibt es nicht.`, { code: I(1) }); stack = []; return; }
+            const id = nextId++;
+            nodes[id] = { value, next: null };
+            loose = { id, at: i };
+            say(`new ← a node with value: ein neuer Knoten mit ${value}, sein next zeigt noch auf nichts.`, { vars: [{ name: 'new', to: id }], code: I(2), fresh: id });
+            if (i === 0) {
+                nodes[id].next = head;
+                say(head !== null ? `new.next ← head: Der neue Knoten zeigt auf ${nodes[head].value}, den bisher ersten.` : 'new.next ← head: head zeigt auf nichts, also der neue Knoten auch.', { vars: [{ name: 'new', to: id }], code: I(4), fresh: id });
+                head = id;
+                loose = null;
+                say(`head ← new: head zeigt jetzt auf den neuen Knoten. Nichts musste laufen.`, { vars: [{ name: 'new', to: id }], code: I(5), fresh: id });
+            } else {
+                say(`i ist ${i}, nicht 0: Der Knoten davor muss gefunden werden.`, { vars: [{ name: 'new', to: id }], code: I(6), fresh: id });
+                const before = nodeAt(i - 1, [{ name: 'new', to: id }], quiet);
+                const both = [{ name: 'new', to: id }, { name: 'before', to: before }];
+                say(`before ← node_at(${i - 1}): before ist der Knoten mit ${nodes[before].value}.`, { vars: both, code: I(7), fresh: id });
+                nodes[id].next = nodes[before].next;
+                say(nodes[id].next !== null ? `new.next ← before.next: Der neue Knoten zeigt auf ${nodes[nodes[id].next].value}. Jetzt zeigen zwei Zeiger auf ${nodes[nodes[id].next].value}.` : 'new.next ← before.next: before.next ist leer, also zeigt der neue Knoten auf nichts.',
+                    { vars: both, code: I(8), fresh: id });
+                nodes[before].next = id;
+                loose = null;
+                say(`before.next ← new: ${nodes[before].value} zeigt jetzt auf den neuen Knoten. Der ist damit in der Liste, nichts wurde verschoben.`, { vars: both, code: I(9), fresh: id });
+            }
+            say(`size ← size + 1: size ist jetzt ${size()}.`, { code: I(10) });
+            stack = [];
+        };
+        const remove = (i) => {
+            stack = [{ call: `remove(i: ${i})`, node: null }];
+            if (i < 0 || i >= size()) { snapshot(`remove(${i}): Index ${i} gibt es nicht.`, { code: R(1) }); stack = []; return; }
+            let gone;
+            if (i === 0) {
+                gone = head;
+                snapshot(`remove(0): i ist 0, der erste Knoten soll heraus.`, { code: R(2), focus: gone });
+                card = { value: nodes[gone].value, from: gone };
+                snapshot(`value ← head.value: Die Variable value merkt sich ${card.value}.`, { code: R(3), focus: gone });
+                head = nodes[gone].next;
+                loose = { id: gone, at: 0 };
+                snapshot(`head ← head.next: head zeigt jetzt auf ${head !== null ? nodes[head].value : 'nichts'}. ${nodes[gone].value} hängt an keinem Zeiger der Liste mehr.`, { code: R(4), focus: gone });
+            } else {
+                snapshot(`remove(${i}): Der Knoten davor muss gefunden werden.`, { code: R(5) });
+                const before = nodeAt(i - 1, []);
+                gone = nodes[before].next;
+                snapshot(`before ← node_at(${i - 1}): before ist der Knoten mit ${nodes[before].value}.`, { vars: [{ name: 'before', to: before }], code: R(6), focus: gone });
+                card = { value: nodes[gone].value, from: gone };
+                snapshot(`value ← before.next.value: Die Variable value merkt sich ${card.value}.`, { vars: [{ name: 'before', to: before }], code: R(7), focus: gone });
+                nodes[before].next = nodes[gone].next;
+                loose = { id: gone, at: i };
+                snapshot(`before.next ← before.next.next: ${nodes[before].value} zeigt jetzt an ${nodes[gone].value} vorbei auf ${nodes[before].next !== null ? nodes[nodes[before].next].value : 'nichts'}. ${nodes[gone].value} hängt an keinem Zeiger der Liste mehr.`,
+                    { vars: [{ name: 'before', to: before }], code: R(8), focus: gone });
+            }
+            delete nodes[gone];
+            loose = null;
+            snapshot(`size ← size - 1: size ist jetzt ${size()}. Den Knoten erreicht niemand mehr, er ist weg.`, { code: R(9) });
+            const out = card.value;
+            card = null;
+            snapshot(`return value: ${out} kommt heraus.`, { code: R(10) });
+            stack = [];
+        };
+        for (const op of setup) if (op.type === 'insert') insert(op.index, op.value, true);
+        snapshot(setup.length ? 'Die Liste von oben. Jetzt der Reihe nach die Operationen darüber.' : 'Eine leere Linked List: head zeigt auf keinen Knoten.');
+        for (const [number, op] of ops.entries()) {
+            current = number;
+            if (op.type === 'insert') insert(op.index, op.value);
+            else if (op.type === 'remove') remove(op.index);
         }
         return frames;
     }
 
-    function drawLinked(svg, frame, most) {
+    // The Linked List: the nodes from head on in a row, each a box with its
+    // value and its next field; next is an arrow from that field to the next
+    // node, a pointer of its node (sprouting, swinging, shrinking); a node
+    // the list does not reach (new, or removed) stands above its gap.
+    function drawLinked(svg, frame, most, marker) {
         svg.replaceChildren();
         const box = 58;
-        const gap = 26;
-        const top = 46;
-        const x0 = 62;
-        svg.appendChild(el('svg:text', { x: 4, y: top + 26, 'font-size': 13, 'font-weight': 600, fill: 'var(--algo-ink)', text: 'head' }));
-        const headTarget = frame.nodes.length ? x0 : null;
-        if (headTarget !== null) svg.appendChild(el('svg:path', { d: `M40 ${top + 22} L${x0 - 4} ${top + 22} m-6 -5 l6 5 l-6 5`, stroke: 'var(--algo-ink)', 'stroke-width': 2, fill: 'none' }));
-        else svg.appendChild(el('svg:text', { x: 42, y: top + 26, 'font-size': 13, fill: 'var(--bs-secondary-color)', text: '→ nichts' }));
-        frame.nodes.forEach((node, i) => {
-            const x = x0 + i * (box + gap);
-            const fill = frame.gone === i ? 'color-mix(in srgb, var(--algo-goal) 30%, var(--algo-paper))' : frame.focus === i ? 'var(--algo-frontier)' : 'var(--algo-paper)';
-            svg.appendChild(el('svg:rect', { x, y: top, width: box, height: 44, rx: 6, fill, stroke: frame.walk === i ? 'var(--algo-accent)' : 'var(--algo-ink)', 'stroke-width': frame.walk === i ? 3.5 : 1.5 }));
-            svg.appendChild(el('svg:line', { x1: x + box * 0.62, y1: top, x2: x + box * 0.62, y2: top + 44, stroke: 'var(--algo-line)', 'stroke-width': 1.5 }));
-            svg.appendChild(el('svg:text', { x: x + box * 0.31, y: top + 28, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(node.value) }));
-            svg.appendChild(el('svg:text', { x: x + box * 0.31, y: top + 62, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--bs-secondary-color)', text: String(i) }));
-            const nx = x + box * 0.81;
-            if (i < frame.nodes.length - 1) {
-                const skip = frame.gone === i + 1 && i + 2 < frame.nodes.length;
-                if (skip) {
-                    const tx = x0 + (i + 2) * (box + gap);
-                    svg.appendChild(el('svg:path', { d: `M${nx} ${top + 10} C ${nx + 40} ${top - 40}, ${tx - 40} ${top - 40}, ${tx - 2} ${top + 8}`, stroke: 'var(--algo-accent)', 'stroke-width': 2, fill: 'none' }));
-                    svg.appendChild(el('svg:path', { d: `M${tx - 2} ${top + 8} l-1.6 -8.8 M${tx - 2} ${top + 8} l-8.3 -3.6`, stroke: 'var(--algo-accent)', 'stroke-width': 2, fill: 'none', 'stroke-linecap': 'round' }));
-                } else {
-                    svg.appendChild(el('svg:path', { d: `M${nx} ${top + 22} L${x + box + gap - 4} ${top + 22} m-6 -5 l6 5 l-6 5`, stroke: 'var(--algo-ink)', 'stroke-width': 2, fill: 'none' }));
-                }
-            } else {
-                svg.appendChild(el('svg:text', { x: nx, y: top + 27, 'text-anchor': 'middle', 'font-size': 13, fill: 'var(--bs-secondary-color)', text: '∅' }));
-            }
+        const gap = 34;
+        const top = 92;
+        const x0 = 78;
+        const place = new Map();
+        frame.order.forEach((id, i) => place.set(id, [x0 + i * (box + gap), top]));
+        if (frame.loose && frame.nodes[frame.loose.id]) place.set(frame.loose.id, [x0 + frame.loose.at * (box + gap) - (box + gap) / 2, top - 74]);
+        svg.appendChild(arrowheads(marker));
+        const arrow = (key, ends, [x1, y1], [x2, y2], extra = {}) => el('svg:path', { 'data-key': key, 'data-ends': ends, 'data-inset': 2,
+            d: `M${x1} ${y1} Q${(x1 + x2) / 2} ${(y1 + y2) / 2} ${x2} ${y2}`, fill: 'none', stroke: 'var(--algo-line)', 'stroke-width': 2, 'marker-end': `url(#${marker})`, ...extra });
+        // the next pointers, behind the nodes
+        for (const [id, [x, y]] of place) {
+            const node = frame.nodes[id];
+            if (node.next === null || !place.has(node.next)) continue;
+            const [tx, ty] = place.get(node.next);
+            svg.appendChild(arrow(`next-${id}`, `field-${id} in-${node.next}`, [x + box * 0.81, y + 22], [tx - 2, ty + 22]));
+        }
+        // the variables: head on the left, the others below their node
+        const headTo = frame.head !== null && place.has(frame.head) ? place.get(frame.head) : null;
+        const w = 14 + 7.5 * 4;
+        svg.appendChild(el('svg:rect', { 'data-solid': '', 'data-key': 'var-head', x: 4, y: top + 13, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
+        if (headTo) svg.insertBefore(arrow('pointer-head', `var-head in-${frame.head}`, [4 + w / 2, top + 22], [headTo[0] - 2, headTo[1] + 22], { stroke: 'var(--algo-accent)', 'marker-end': `url(#${marker}-accent)` }), svg.lastChild);
+        svg.appendChild(el('svg:text', { 'data-key': 'var-head-label', x: 4 + w / 2, y: top + 26, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'head' }));
+        if (!headTo) svg.appendChild(el('svg:text', { 'data-key': 'head-empty', x: 8 + w, y: top + 26, 'font-size': 13, fill: 'var(--bs-secondary-color)', text: 'nichts' }));
+        for (const [id, [x, y]] of place) {
+            const node = frame.nodes[id];
+            const fill = frame.focus === id ? 'color-mix(in srgb, var(--algo-goal) 30%, var(--algo-paper))' : frame.fresh === id ? 'var(--algo-frontier)' : 'var(--algo-paper)';
+            svg.appendChild(el('svg:g', { 'data-key': `node-${id}`, 'data-grow': '', transform: `translate(${x} ${y})` }, [
+                el('svg:rect', { x: 0, y: 0, width: box, height: 44, rx: 6, fill, stroke: 'var(--algo-ink)', 'stroke-width': 1.5 }),
+                el('svg:line', { x1: box * 0.62, y1: 0, x2: box * 0.62, y2: 44, stroke: 'var(--algo-line)', 'stroke-width': 1.5 }),
+                el('svg:text', { x: box * 0.31, y: 28, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(node.value) }),
+                ...(node.next === null ? [el('svg:text', { x: box * 0.81, y: 27, 'text-anchor': 'middle', 'font-size': 13, fill: 'var(--bs-secondary-color)', text: '∅' })] : []),
+            ]));
+            // anchors: the next field (where its arrow starts), the left side
+            // (where arrows arrive), the bottom (where variables point)
+            svg.appendChild(el('svg:circle', { 'data-key': `field-${id}`, cx: x + box * 0.81, cy: y + 22, r: 0, fill: 'none' }));
+            svg.appendChild(el('svg:circle', { 'data-key': `in-${id}`, cx: x - 2, cy: y + 22, r: 0, fill: 'none' }));
+            svg.appendChild(el('svg:rect', { 'data-key': `slot-${id}`, x: x + box * 0.31 - 2, y: y + 38, width: 4, height: 4, fill: 'none', stroke: 'none' }));
+        }
+        frame.order.forEach((id, i) => {
+            const [x, y] = place.get(id);
+            svg.appendChild(el('svg:text', { 'data-key': `index-${i}`, x: x + box * 0.31, y: y + 58, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--bs-secondary-color)', text: String(i) }));
         });
-        svg.setAttribute('viewBox', `0 0 ${x0 + Math.max(most, 1) * (box + gap) + 10} ${top + 80}`);
+        if (frame.card) {
+            const at = place.get(frame.card.from) || [x0, top];
+            svg.appendChild(el('svg:g', { 'data-key': 'card', 'data-grow': '', transform: `translate(${at[0]} ${top - 74})` }, [
+                el('svg:rect', { x: 0, y: 0, width: box * 0.62, height: 32, rx: 5, fill: 'color-mix(in srgb, var(--algo-accent) 25%, var(--algo-paper))', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '5 3' }),
+                el('svg:text', { x: box * 0.31, y: 22, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.card.value) })]));
+            svg.appendChild(el('svg:text', { 'data-key': 'card-label', x: at[0] + box * 0.62 + 6, y: top - 53, 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'value' }));
+        }
+        // a variable that points at the node outside the list stands to its
+        // left, its arrow to the node's left side
+        const isLoose = (id) => frame.loose && frame.loose.id === id;
+        for (const v of (frame.vars || []).filter((v) => isLoose(v.to))) {
+            const [nx, ny] = place.get(v.to);
+            const lw = 14 + 7.5 * v.name.length;
+            const lx = nx - 40 - lw;
+            svg.appendChild(arrow(`pointer-${v.name}`, `var-${v.name} in-${v.to}`, [lx + lw / 2, ny + 22], [nx - 2, ny + 22], { stroke: 'var(--algo-accent)', 'marker-end': `url(#${marker}-accent)`, 'data-rigid': '' }));
+            svg.appendChild(el('svg:rect', { 'data-solid': '', 'data-key': `var-${v.name}`, x: lx, y: ny + 13, width: lw, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
+            svg.appendChild(el('svg:text', { 'data-key': `var-${v.name}-label`, x: lx + lw / 2, y: ny + 26, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: v.name }));
+        }
+        const others = (frame.vars || []).filter((v) => !isLoose(v.to)).map((v) => ({ name: v.name, index: v.to }));
+        const labelTop = top + 68;
+        const placed = indexLabels(others, (id) => (place.get(id) || [0])[0] + box * 0.31, x0 + (most + 1) * (box + gap));
+        for (const label of placed) for (const node of indexLabel(label, labelTop + label.row * 24, top + 40, top + 62, marker)) svg.appendChild(node);
+        svg.setAttribute('viewBox', `0 0 ${x0 + Math.max(most + 1, 2) * (box + gap)} ${labelTop + 3 * 24}`);
+        svg.dataset.natural = x0 + Math.max(most + 1, 2) * (box + gap);
+    }
+
+    // A frame of the Queue in a ring buffer: cells (ids or null), values,
+    // head, size, capacity, card (value above a cell), vars, focus, from.
+    // The cells from head on, size of them (round the end), are the queue;
+    // the others are faint, even when a value still stands in them.
+    function traceRing(ops, capacity, setup = []) {
+        const cells = Array(capacity).fill(null);
+        const values = {};
+        let head = 0;
+        let size = 0;
+        let nextId = 0;
+        let card = null;
+        let current = -1;
+        const frames = [];
+        const snapshot = (message, marks = {}) => frames.push({ cells: [...cells], values: { ...values }, head, size, capacity, card: card && { ...card }, message, op: current, ...marks });
+        const E = (at) => ({ lines: LIST_CODE.enqueue, at });
+        const D = (at) => ({ lines: LIST_CODE.dequeue, at });
+        const vars = () => [{ name: 'head', index: head }];
+        const enqueue = (value, quiet) => {
+            const say = quiet ? () => {} : snapshot;
+            const at = (head + size) % capacity;
+            const id = nextId++;
+            values[id] = value;
+            card = { id, at };
+            say(`enqueue(${value}): ${value} soll hinten in die Queue.`, { vars: vars(), code: E(0) });
+            if (size === capacity) { card = null; say(`size = capacity: Alle ${capacity} Zellen gehören zur Queue, sie ist voll.`, { vars: vars(), code: E(1) }); return; }
+            cells[at] = id;
+            card = null;
+            say(`cells[(head + size) mod capacity] ← value: (${head} + ${size}) mod ${capacity} = ${at}. ${value} kommt in Zelle ${at}${head + size >= capacity ? ', vorn im Array: Der Ring geht weiter' : ''}.`, { vars: vars(), code: E(2), focus: at });
+            size += 1;
+            say(`size ← size + 1: size ist jetzt ${size}.`, { vars: vars(), code: E(3) });
+        };
+        const dequeue = (quiet) => {
+            const say = quiet ? () => {} : snapshot;
+            say('dequeue(): Der vorderste Wert soll heraus.', { vars: vars(), code: D(0), focus: head });
+            if (size === 0) { say('size = 0: Die Queue ist leer.', { vars: vars(), code: D(1) }); return; }
+            const id = nextId++;
+            values[id] = values[cells[head]];
+            card = { id, at: head };
+            say(`value ← cells[head]: Die Variable value merkt sich ${values[id]}.`, { vars: vars(), code: D(2), from: { [id]: cells[head] } });
+            const old = head;
+            head = (head + 1) % capacity;
+            say(`head ← (head + 1) mod capacity: (${old} + 1) mod ${capacity} = ${head}. In Zelle ${old} steht ${values[cells[old]]} noch, gehört aber nicht mehr zur Queue.`, { vars: vars(), code: D(3) });
+            size -= 1;
+            say(`size ← size - 1: size ist jetzt ${size}.`, { vars: vars(), code: D(4) });
+            const out = values[id];
+            card = null;
+            say(`return value: ${out} kommt heraus.`, { vars: vars(), code: D(5) });
+        };
+        for (const op of setup) { if (op.type === 'enqueue') enqueue(op.value, true); else if (op.type === 'dequeue') dequeue(true); }
+        snapshot(setup.length ? 'Die Queue von oben. Jetzt der Reihe nach die Operationen darüber.' : `Eine leere Queue in einem Array mit ${capacity} Zellen: head = 0, size = 0.`, { vars: vars() });
+        for (const [number, op] of ops.entries()) {
+            current = number;
+            if (op.type === 'enqueue') enqueue(op.value);
+            else if (op.type === 'dequeue') dequeue();
+        }
+        return frames;
+    }
+
+    function drawRing(svg, frame, marker) {
+        svg.replaceChildren();
+        const cell = 56;
+        const left = 20;
+        const top = 52;
+        svg.appendChild(arrowheads(marker));
+        const inQueue = (i) => (i - frame.head + frame.capacity) % frame.capacity < frame.size;
+        frame.cells.forEach((id, i) => {
+            const x = left + i * cell;
+            svg.appendChild(el('svg:rect', { 'data-key': `cell-${i}`, x, y: top, width: cell - 6, height: 44, rx: 6, fill: inQueue(i) ? 'var(--algo-paper)' : 'transparent', stroke: 'var(--algo-line)', 'stroke-width': 1.5, 'stroke-dasharray': inQueue(i) ? 'none' : '4 4' }));
+            svg.appendChild(el('svg:text', { 'data-key': `index-${i}`, x: x + (cell - 6) / 2, y: top + 60, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--bs-secondary-color)', text: String(i) }));
+            svg.appendChild(el('svg:rect', { 'data-key': `slot-${i}`, x: x + 2, y: top + 36, width: cell - 10, height: 4, fill: 'none', stroke: 'none' }));
+        });
+        const value = (id, x, y, extra = {}) => el('svg:g', { 'data-key': `value-${id}`, 'data-grow': '', ...(frame.from && frame.from[id] !== undefined ? { 'data-from': `value-${frame.from[id]}` } : {}), transform: `translate(${x} ${y})` }, [
+            el('svg:rect', { x: 0, y: 0, width: cell - 6, height: 44, rx: 6, fill: extra.fill || 'var(--algo-frontier)', stroke: extra.stroke || 'var(--algo-ink)', 'stroke-width': 1.5, ...(extra.dash ? { 'stroke-dasharray': extra.dash } : {}) }),
+            el('svg:text', { x: (cell - 6) / 2, y: 29, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.values[id]) })]);
+        frame.cells.forEach((id, i) => {
+            if (id === null) return;
+            svg.appendChild(value(id, left + i * cell, top, inQueue(i) ? (frame.focus === i ? { fill: 'var(--algo-frontier)' } : { fill: 'var(--algo-paper)' })
+                : { fill: 'color-mix(in srgb, var(--algo-line) 18%, var(--algo-paper))', stroke: 'var(--algo-line)' }));
+        });
+        if (frame.card) {
+            const x = left + frame.card.at * cell;
+            svg.appendChild(value(frame.card.id, x, 2, { fill: 'color-mix(in srgb, var(--algo-accent) 25%, var(--algo-paper))', stroke: 'var(--algo-accent)', dash: '5 3' }));
+            svg.appendChild(el('svg:text', { 'data-key': 'card-label', x: x + cell, y: 28, 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'value' }));
+        }
+        const labelTop = top + 70;
+        const placed = indexLabels(frame.vars, (index) => left + index * cell + (cell - 6) / 2, left * 2 + frame.capacity * cell);
+        for (const label of placed) for (const node of indexLabel(label, labelTop + label.row * 24, top + 38, top + 64, marker)) svg.appendChild(node);
+        svg.appendChild(el('svg:text', { 'data-key': 'size', x: left + frame.capacity * cell - 6, y: labelTop + 14, 'text-anchor': 'end', 'font-size': 13, fill: 'var(--algo-ink)', text: `size ${frame.size}, capacity ${frame.capacity}` }));
+        svg.setAttribute('viewBox', `0 0 ${left * 2 + frame.capacity * cell} ${labelTop + 2 * 24}`);
+        svg.dataset.natural = left * 2 + frame.capacity * cell;
     }
 
     // ---- Search trees: a binary search tree, optionally AVL (heights and
@@ -1632,7 +1870,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             if (!byIndex.has(v.index)) byIndex.set(v.index, []);
             byIndex.get(v.index).push(v.name);
         }
-        const groups = [...byIndex.entries()].sort((a, b) => a[0] - b[0]).map(([index, names]) => {
+        const groups = [...byIndex.entries()].sort((a, b) => x(a[0]) - x(b[0])).map(([index, names]) => {
             const widths = names.map((name) => 14 + 7.5 * name.length);
             const width = widths.reduce((s, w) => s + w, 0) + GAP * (names.length - 1);
             // inside the picture: pushed in at the edges, the arrows then slant
@@ -1733,22 +1971,30 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         });
         const sideText = (title, text) => side.replaceChildren(el('h5', { text: title }), el('div', { class: 'algo-items' }, [text === undefined
             ? el('span', { class: 'algo-empty', text: '–' }) : el('span', { class: 'algo-item next', text: String(text) })]));
+        // the calls that run (a list's node_at), above the code
+        const listSide = (frame, deepest) => side.replaceChildren(...(deepest ? [el('h5', { text: 'Aufrufe' }), el('ol', { class: 'algo-stack', style: `min-height: ${deepest * STACK_LINE}em;` },
+            (frame.stack || []).map((entry, i, all) => el('li', { class: i === all.length - 1 ? 'current' : '', style: `margin-left: ${i * 1.2}em;`, text: entry.call })))] : []), ...codeBox(frame.code));
+        const setupOps = parseOps(widget.dataset.setup || '');
         if (algo === 'ring') {
             const capacity = Number(widget.dataset.capacity || 6);
-            frames = traceRing(parseOps(widget.dataset.ops), capacity);
-            svg.setAttribute('aria-label', 'Die Zellen des Arrays mit head und der nächsten freien Zelle');
-            draw = (frame) => { drawRing(svg, frame); sideText('Zuletzt mit dequeue heraus', frame.out); };
+            frames = traceRing(parseOps(widget.dataset.ops), capacity, setupOps);
+            const marker = `algo-arrow-${++widgetCount}`;
+            svg.setAttribute('aria-label', 'Die Zellen des Arrays, die Queue ab head');
+            draw = (frame) => { drawRing(svg, frame, marker); listSide(frame, 0); };
         } else if (algo === 'array') {
-            frames = traceArray(parseOps(widget.dataset.ops), Number(widget.dataset.capacity || 4));
-            const most = Math.max(...frames.map((f) => f.cells.length));
-            svg.setAttribute('aria-label', 'Die Zellen des Arrays, die ersten size davon belegt');
-            draw = (frame) => { drawArray(svg, frame, most); sideText('Verschoben und kopiert', frame.moves); };
+            frames = traceArray(parseOps(widget.dataset.ops), Number(widget.dataset.capacity || 4), setupOps);
+            const most = Math.max(...frames.map((f) => Math.max(f.cells.length, f.bigger ? f.bigger.length : 0)));
+            const grows = frames.some((f) => f.bigger);
+            const marker = `algo-arrow-${++widgetCount}`;
+            svg.setAttribute('aria-label', 'Die Zellen des Arrays, die ersten size davon gehören zur Liste');
+            draw = (frame) => { drawArray(svg, frame, most, marker, grows); listSide(frame, 0); };
         } else if (algo === 'linked') {
-            frames = traceLinked(parseOps(widget.dataset.ops));
-            const most = Math.max(...frames.map((f) => f.nodes.length));
-            svg.setAttribute('aria-label', 'Die Knoten der Linked List mit ihren next-Referenzen');
-            side.hidden = true;
-            draw = (frame) => drawLinked(svg, frame, most);
+            frames = traceLinked(parseOps(widget.dataset.ops), setupOps);
+            const most = Math.max(...frames.map((f) => f.order.length + (f.loose ? 1 : 0)));
+            const deepest = Math.max(0, ...frames.map((f) => (f.stack || []).length));
+            const marker = `algo-arrow-${++widgetCount}`;
+            svg.setAttribute('aria-label', 'Die Knoten der Linked List mit ihren next-Zeigern');
+            draw = (frame) => { drawLinked(svg, frame, most, marker); listSide(frame, deepest); };
         } else if (algo === 'bst' || algo === 'avl') {
             frames = traceTree(parseOps(widget.dataset.ops), algo === 'avl', parseOps(widget.dataset.setup || ''));
             svg.setAttribute('aria-label', 'Der Baum: links die kleineren, rechts die größeren Werte');
@@ -2043,6 +2289,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         const show = (animate) => {
             const frame = frames[index];
             draw(frame);
+            // a list's cells keep their size across widgets: the picture at
+            // most as wide as it is drawn (data-natural)
+            if (svg.dataset.natural) picture.style.maxWidth = `${svg.dataset.natural}px`;
             if (window.StepperMotion) window.StepperMotion.morph(picture, svg, { duration: animate ? frame.duration || MOTION_TIME : 0 });
             else {
                 picture.setAttribute('viewBox', svg.getAttribute('viewBox'));

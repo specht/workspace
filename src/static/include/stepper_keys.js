@@ -59,3 +59,48 @@ document.addEventListener('keydown', (event) => {
     });
     document.addEventListener('pointercancel', () => { start = null; });
 })();
+
+// Every widget gets a button at its top right that shows it full screen, for
+// a demo on the big screen: larger, the keys and the swipe work as before; Esc
+// or the button again leaves. Where the browser cannot show an element full
+// screen (an iPhone), the widget fills the window as a lightbox instead.
+(() => {
+    const setLabel = (button, full) => {
+        button.replaceChildren(Object.assign(document.createElement('i'), { className: `bi ${full ? 'bi-fullscreen-exit' : 'bi-arrows-fullscreen'}` }));
+        button.setAttribute('aria-label', full ? 'Vollbild verlassen' : 'Im Vollbild zeigen');
+        button.title = button.getAttribute('aria-label');
+    };
+    const isFull = (widget) => document.fullscreenElement === widget || widget.classList.contains('stepper-lightbox');
+    const toggle = (widget) => {
+        if (isFull(widget)) {
+            if (document.fullscreenElement === widget) document.exitFullscreen();
+            widget.classList.remove('stepper-lightbox');
+        } else if (widget.requestFullscreen && document.fullscreenEnabled) widget.requestFullscreen().catch(() => widget.classList.add('stepper-lightbox'));
+        else widget.classList.add('stepper-lightbox');
+        setTimeout(() => window.dispatchEvent(new Event('resize')), 60);
+    };
+    const add = () => {
+        for (const widget of document.querySelectorAll('[data-stepper]')) {
+            if (widget.querySelector(':scope > .stepper-full')) continue;
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'btn btn-sm btn-outline-secondary stepper-full';
+            setLabel(button, false);
+            button.addEventListener('click', () => toggle(widget));
+            widget.appendChild(button);
+        }
+    };
+    const update = () => {
+        for (const button of document.querySelectorAll('.stepper-full')) setLabel(button, isFull(button.parentElement));
+        window.dispatchEvent(new Event('resize'));
+    };
+    document.addEventListener('fullscreenchange', update);
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        const box = document.querySelector('.stepper-lightbox');
+        if (box) { box.classList.remove('stepper-lightbox'); update(); }
+    });
+    // after the widgets have built themselves
+    if (document.readyState === 'complete') add();
+    else window.addEventListener('load', add);
+})();

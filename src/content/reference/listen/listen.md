@@ -66,9 +66,13 @@ remove(i):
 
 Ist das Array voll, kommt ein neues, **doppelt** so großes, und alle Werte werden hinüberkopiert. Das ist teuer, passiert aber selten: Nach dem Kopieren von 4 Werten ist Platz für 4 weitere, nach dem Kopieren von 8 für 8 weitere. Auf jeden angehängten Wert kommt so im Mittel weniger als eine Kopie. Wer das Array stattdessen jedes Mal nur um eine Zelle vergrößert, kopiert bei jedem Anhängen alles.
 
-Probier es mit einem Array mit vier Zellen und den Aufrufen der [Data Structures Sandbox](/sandbox-datenstrukturen) aus, dann noch einem fünften Wert vorn und einem `remove`:
+Probier es mit einem Array mit vier Zellen und den Aufrufen der [Data Structures Sandbox](/sandbox-datenstrukturen) aus; der fünfte Wert kommt vorn hin, und dafür muss das Array wachsen:
 
-<div class='algo-stepper' data-title='Array: einfügen und entfernen' data-algo='array' data-capacity='4' data-ops='insert(0, 7), insert(1, 3), insert(1, 5), insert(3, 9), get(2), insert(0, 4), remove(1)'></div>
+<div class='algo-stepper' data-title='Array List: einfügen' data-algo='array' data-capacity='4' data-ops='insert(0, 7), insert(1, 3), insert(1, 5), insert(3, 9), insert(0, 4)'></div>
+
+Und `remove` in derselben Liste, einmal in der Mitte, einmal vorn:
+
+<div class='algo-stepper' data-title='Array List: entfernen' data-algo='array' data-capacity='4' data-setup='insert(0, 7), insert(1, 3), insert(1, 5), insert(3, 9)' data-ops='remove(1), remove(0)'></div>
 
 **Typische Fehler**
 
@@ -127,7 +131,11 @@ remove(i):
 
 Dieselben Aufrufe wie oben, jetzt auf einer Linked List. Die Knoten liegen irgendwo im Speicher; gezeichnet sind sie in der Reihenfolge der Liste:
 
-<div class='algo-stepper' data-title='Linked List: einfügen und entfernen' data-algo='linked' data-ops='insert(0, 7), insert(1, 3), insert(1, 5), insert(3, 9), get(2), insert(0, 4), remove(1)'></div>
+<div class='algo-stepper' data-title='Linked List: einfügen' data-algo='linked' data-ops='insert(0, 7), insert(1, 3), insert(1, 5), insert(3, 9), insert(0, 4)'></div>
+
+Und `remove`, einmal in der Mitte, einmal vorn:
+
+<div class='algo-stepper' data-title='Linked List: entfernen' data-algo='linked' data-setup='insert(0, 7), insert(1, 3), insert(1, 5), insert(3, 9)' data-ops='remove(2), remove(0)'></div>
 
 **Typische Fehler**
 
@@ -217,9 +225,13 @@ dequeue():
     return value
 ```
 
-Sechs Zellen, und so viel hinein und heraus, dass die Queue einmal ganz herumläuft und zum Schluss voll ist:
+Sechs Zellen; vorn sind schon zwei Werte herausgekommen, deshalb steht head bei 2. Was jetzt hinten hineinkommt, läuft über das Ende des Arrays hinaus nach vorn:
 
-<div class='algo-stepper' data-title='Queue als Ringpuffer' data-algo='ring' data-capacity='6' data-ops='enqueue 4, enqueue 8, enqueue 15, dequeue, enqueue 16, dequeue, enqueue 23, enqueue 42, enqueue 7, dequeue, enqueue 1, enqueue 2, enqueue 3'></div>
+<div class='algo-stepper' data-title='Queue im Ringpuffer: enqueue' data-algo='ring' data-capacity='6' data-setup='enqueue 4, enqueue 8, enqueue 15, enqueue 16, dequeue, dequeue' data-ops='enqueue 23, enqueue 42, enqueue 7, enqueue 1'></div>
+
+Und `dequeue` aus der vollen Queue: head läuft hinterher, ebenfalls um das Ende herum:
+
+<div class='algo-stepper' data-title='Queue im Ringpuffer: dequeue' data-algo='ring' data-capacity='6' data-setup='enqueue 4, enqueue 8, enqueue 15, enqueue 16, dequeue, dequeue, enqueue 23, enqueue 42, enqueue 7, enqueue 1, dequeue, dequeue, dequeue' data-ops='dequeue, dequeue, dequeue'></div>
 
 **Typische Fehler**
 
