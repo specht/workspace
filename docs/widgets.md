@@ -21,15 +21,19 @@ in doubt, do it the way it does.
   Beside the picture a code box shows the function that runs, with the
   current line marked. A step that does not change the picture still gets its
   line when the line matters (`return node`).
+- **Short variable names** (`min`, not `smallest`): they fit in a label and
+  are read at a glance.
 - **Pseudocode is English, its comments German.** Names and keywords as on
   the Handbuch pages (`rotate_right(y)`, `node.left`, `if … :`, `return`,
   `empty`); a remark in parentheses may be German. On the pages it is a
   ```` ```pseudocode ```` block (`pseudocode_lexer.rb`), and the code box
   colours the same tokens the same way (`highlightPseudocode` in
   `algo_stepper.js`): dark, like every other code block on the site.
-- **The operations in their order** stand above the picture (`insert 50 ·
-  insert 40 · …`): done ones faded, the current one marked, what comes
-  next visible. The viewer always knows where they are.
+- **A timeline** under the buttons: a mark for every step, the steps of one
+  operation a section with its name at its start (`remove 20 | remove 40 |
+  remove 50`), done steps coloured, the current one marked. A tap or a drag
+  on it goes to that step. The viewer always knows where they are and where
+  each operation starts.
 - **The message under the picture** says in one or two German sentences what
   this step did and why, with the values: »40 hängt nur noch an der
   Variablen x.« Plain statements, no questions.
@@ -92,7 +96,8 @@ the next with their eyes.
   deepest first, in time with the pulses on the pointers. A thin line joins
   each call to the node it holds (strong for the current one, dashed and
   faint for those that wait), behind the picture and the code: so it is
-  visible how many nodes are held at once.
+  visible how many nodes are held at once. Only when the code stands beside
+  the picture; on a phone, where it stands below, there are no lines.
 - **Layout keeps the structure readable at every step.** In a tree a child
   is always below every node that points to it; the column is the place of
   the value in the sorted order, which rotations keep, so nodes move up and
@@ -101,6 +106,13 @@ the next with their eyes.
 - **Entries that swap** (heap, sorting) glide to each other's place on a
   small arc (`data-arc`), so that they pass each other instead of
   overlapping, in every view at once (the heap's tree and array).
+- **Index variables** are boxes under the places they hold, one box each.
+  The boxes of one place stand side by side, and their arrows aim at one
+  point inside the column near its bottom, stopping before the index number,
+  so the index stays readable and the tips end apart. Groups go into rows so
+  that no box overlaps another and none stands in an arrow's way (narrow
+  groups first). A new box is there at once (`data-solid`), so it hides the
+  start of its arrow.
 - **Nothing covers anything.** Labels, tokens and rings keep at least about
   20 px from nodes and from each other; labels of the smaller and the larger
   value go on opposite sides, `successor` below its node.
@@ -134,10 +146,12 @@ the next with their eyes.
   address makes every movement six times slower, to look at it closely.
 - Four buttons with `data-go` (first, prev, next, last) and ← → through
   `stepper_keys.js` (`data-stepper` on the widget); on a touch screen a
-  sideways swipe across the widget steps it too. On a touch screen (tablet,
-  phone) the buttons are finger-sized (44 px) and share the row; on a narrow
-  screen they take the whole width and the step count goes on its own line
-  (`default.css`).
+  sideways swipe across the picture steps it too (not on the timeline,
+  `data-no-swipe`). On a touch screen (tablet, phone) back and next are
+  large, finger-sized (44 px) and share the row, while to the start and to
+  the end are narrow, paler and set apart, so that a finger meant for next
+  does not jump to the end; on a narrow screen back and next take the whole
+  width and the step count goes on its own line (`default.css`).
 - Colours come from the widget's CSS variables, so light and dark mode both
   work; no fixed colours in the drawing.
 

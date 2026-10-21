@@ -25,7 +25,9 @@
 // bulge of the line that travels along it (wider by data-swell, in the line's
 // colour unless it has data-fill), a circle a point on it. data-rigid on a
 // line: when its target changes, it slides over with its owner instead of
-// letting go (a label that moves along with the node it points to). data-arc
+// letting go (a label that moves along with the node it points to).
+// data-solid: a new element is there at once, opaque, instead of fading in
+// (the box of a variable, which hides the start of its arrow). data-arc
 // on a group that moves by translate: it goes on a small arc to the side. Elements without data-key
 // are replaced at once, so a widget that sets no keys looks as before. With
 // prefers-reduced-motion, or duration 0, the new step is shown at once. A new
@@ -124,7 +126,7 @@
             if (anchor) {
                 const from = attributes(anchor);
                 for (const [name, value] of Object.entries(attributes(target))) move(target, name, from[name], value);
-            } else if (duration) move(target, 'opacity', '0', target.getAttribute('opacity') || '1');
+            } else if (duration && !('solid' in target.dataset)) move(target, 'opacity', '0', target.getAttribute('opacity') || '1');
             shown.push(target);
         }
         const leaving = ride.filter((r) => r.leaving).map((r) => r.line);
@@ -200,17 +202,26 @@
             // on the border of a node), and is hidden while shorter than that
             const inset = Number(r.line.dataset.inset || 0);
             let end = tip;
+            let control = bend;
             if (inset) {
-                const d = Math.hypot(tip[0] - bend[0], tip[1] - bend[1]);
-                if (Math.hypot(tip[0] - base[0], tip[1] - base[1]) <= inset + 1 || d <= inset) {
+                const d = Math.hypot(tip[0] - bend[0], tip[1] - bend[1]) || 1;
+                if (Math.hypot(tip[0] - base[0], tip[1] - base[1]) <= inset + 1) {
                     r.line.setAttribute('visibility', 'hidden');
                     end = base;
                 } else {
+                    // inset before the tip, in the direction the curve comes in;
+                    // when that would be before the bend, a straight line
+                    // (else the curve turns back and the arrowhead with it)
                     r.line.removeAttribute('visibility');
-                    end = toward(bend, tip, (d - inset) / d);
+                    if (d > inset + 2) end = [tip[0] - ((tip[0] - bend[0]) / d) * inset, tip[1] - ((tip[1] - bend[1]) / d) * inset];
+                    else {
+                        const total = Math.hypot(tip[0] - base[0], tip[1] - base[1]);
+                        end = toward(base, tip, (total - inset) / total);
+                        control = [(base[0] + end[0]) / 2, (base[1] + end[1]) / 2];
+                    }
                 }
             }
-            if (r.line.tagName === 'path') r.line.setAttribute('d', `M${round(base[0])} ${round(base[1])} Q${round(bend[0])} ${round(bend[1])} ${round(end[0])} ${round(end[1])}`);
+            if (r.line.tagName === 'path') r.line.setAttribute('d', `M${round(base[0])} ${round(base[1])} Q${round(control[0])} ${round(control[1])} ${round(end[0])} ${round(end[1])}`);
             else {
                 r.line.setAttribute('x1', round(base[0]));
                 r.line.setAttribute('y1', round(base[1]));

@@ -40,10 +40,10 @@ Suche die kleinste Zahl und tausche sie an Index 0. Suche unter den übrigen die
 ```pseudocode
 selection_sort(list):
     for i from 0 to length - 2:
-        smallest ← i
+        min ← i
         for j from i + 1 to length - 1:
-            if list[j] < list[smallest]: smallest ← j
-        swap list[i] and list[smallest]
+            if list[j] < list[min]: min ← j
+        swap list[i] and list[min]
 ```
 
 <div class='algo-stepper' data-algo='sort' data-sort='selection' data-values='5, 2, 8, 1, 9, 3, 7, 4'></div>

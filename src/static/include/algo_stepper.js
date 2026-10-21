@@ -67,12 +67,17 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 /* the lines from the calls to their nodes lie behind the picture and the code */
 .algo-stepper svg.algo-links { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 0; }
 .algo-stepper .algo-body > svg.algo-picture, .algo-stepper .algo-body > .algo-side { position: relative; z-index: 1; }
-.algo-stepper .algo-ops { display: flex; flex-wrap: wrap; gap: 0.3em; list-style: none; padding: 0; margin: 0 0 0.7em;
-    font-family: '0xProto Nerd Font Mono', monospace; font-size: 0.85em; }
-.algo-stepper .algo-ops li { padding: 0.05em 0.5em; border-radius: 0.3em; border: 1px solid color-mix(in srgb, var(--algo-line) 70%, transparent);
-    transition: background-color 0.3s, opacity 0.3s; }
-.algo-stepper .algo-ops li.done { opacity: 0.45; }
-.algo-stepper .algo-ops li.current { background: color-mix(in srgb, var(--algo-accent) 22%, transparent); border-color: var(--algo-accent); font-weight: 600; }
+.algo-stepper .algo-timeline { display: flex; gap: 3px; margin: 0 0 0.8em; cursor: pointer; touch-action: none; user-select: none; }
+.algo-stepper .algo-section { min-width: 0; display: flex; flex-direction: column; border-left: 2px solid color-mix(in srgb, var(--algo-line) 80%, transparent); padding-left: 2px; }
+.algo-stepper .algo-section.current { border-left-color: var(--algo-accent); }
+.algo-stepper .algo-section-name { font-family: '0xProto Nerd Font Mono', monospace; font-size: 0.72em; white-space: nowrap; overflow: hidden; text-overflow: clip;
+    color: var(--bs-secondary-color); height: 1.4em; }
+.algo-stepper .algo-section.current .algo-section-name { color: var(--algo-ink); font-weight: 600; }
+.algo-stepper .algo-ticks { display: flex; gap: 1px; height: 12px; align-items: flex-end; }
+.algo-stepper .algo-tick { flex: 1 1 0; min-width: 1px; height: 7px; border-radius: 1px; background: color-mix(in srgb, var(--algo-line) 45%, transparent); transition: background-color 0.2s, height 0.2s; }
+.algo-stepper .algo-tick.done { background: color-mix(in srgb, var(--algo-accent) 45%, transparent); }
+.algo-stepper .algo-tick.current { background: var(--algo-accent); height: 12px; }
+@media (pointer: coarse) { .algo-stepper .algo-ticks { height: 20px; } .algo-stepper .algo-tick { height: 12px; } .algo-stepper .algo-tick.current { height: 20px; } }
 @media (prefers-reduced-motion: reduce) { .algo-stepper svg [data-key] { transition: none; } }
 `;
 
@@ -296,15 +301,15 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
     // entries, in the tree and in the array at once. A frame: slots (the ids
     // in array order), values (id -> value), aside (entries a variable holds
     // outside the heap: top, last), vars (index variables: i, parent,
-    // smallest, child), compare (indices), at (the index i), code, message,
+    // min, child), compare (indices), at (the index i), code, message,
     // out (what pop gave so far).
     const HEAP_CODE = {
         push: ['push(heap, entry):', '    append entry to the back of heap', '    i ← the last index of heap', '    while i > 0:',
             '        parent ← (i - 1) / 2, rounded down', '        if heap[parent] ≤ heap[i]: done', '        swap heap[parent] and heap[i]', '        i ← parent'],
         pop: ['pop(heap):', '    if heap empty: nothing to pop', '    top ← heap[0]', '    last ← take the last entry from heap', '    if heap not empty:',
-            '        heap[0] ← last', '        i ← 0', '        repeat:', '            smallest ← i', '            for each child in (2i + 1, 2i + 2):',
-            '                if child < length of heap and heap[child] < heap[smallest]:', '                    smallest ← child',
-            '            if smallest = i: done', '            swap heap[smallest] and heap[i]', '            i ← smallest', '    return top'],
+            '        heap[0] ← last', '        i ← 0', '        repeat:', '            min ← i', '            for each child in (2i + 1, 2i + 2):',
+            '                if child < length of heap and heap[child] < heap[min]:', '                    min ← child',
+            '            if min = i: done', '            swap heap[min] and heap[i]', '            i ← min', '    return top'],
     };
 
     function traceHeap(ops, setup = []) {
@@ -377,30 +382,30 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 const holders = [{ name: 'top', id: top }];
                 snapshot('i ← 0.', { holders, at: i, vars: [{ name: 'i', index: i }], code: P(6) });
                 for (;;) {
-                    let smallest = i;
-                    const vars = () => [{ name: 'i', index: i }, { name: 'smallest', index: smallest }];
-                    snapshot(`smallest ← i: smallest ist ${i}.`, { holders, at: i, vars: vars(), code: P(8) });
+                    let min = i;
+                    const vars = () => [{ name: 'i', index: i }, { name: 'min', index: min }];
+                    snapshot(`min ← i: min ist ${i}.`, { holders, at: i, vars: vars(), code: P(8) });
                     for (const child of [2 * i + 1, 2 * i + 2]) {
                         const withChild = () => [...vars(), { name: 'child', index: child }];
                         if (child >= slots.length) {
                             snapshot(`child ${child}: Index ${child} gibt es nicht, der Heap hat nur ${slots.length} Einträge.`, { holders, at: i, vars: vars(), code: P(10) });
                             continue;
                         }
-                        if (v(child) < v(smallest)) {
-                            snapshot(`child ${child}: ${v(child)} < ${v(smallest)}, also smallest ← ${child}.`, { holders, at: i, vars: withChild(), compare: [smallest, child], code: P(11) });
-                            smallest = child;
+                        if (v(child) < v(min)) {
+                            snapshot(`child ${child}: ${v(child)} < ${v(min)}, also min ← ${child}.`, { holders, at: i, vars: withChild(), compare: [min, child], code: P(11) });
+                            min = child;
                         } else {
-                            snapshot(`child ${child}: ${v(child)} ist nicht kleiner als ${v(smallest)}, smallest bleibt ${smallest}.`, { holders, at: i, vars: withChild(), compare: [smallest, child], code: P(10) });
+                            snapshot(`child ${child}: ${v(child)} ist nicht kleiner als ${v(min)}, min bleibt ${min}.`, { holders, at: i, vars: withChild(), compare: [min, child], code: P(10) });
                         }
                     }
-                    if (smallest === i) {
-                        snapshot(`smallest = i: Kein Kind ist kleiner als ${v(i)}. Fertig.`, { holders, at: i, vars: vars(), code: P(12) });
+                    if (min === i) {
+                        snapshot(`min = i: Kein Kind ist kleiner als ${v(i)}. Fertig.`, { holders, at: i, vars: vars(), code: P(12) });
                         break;
                     }
-                    [slots[smallest], slots[i]] = [slots[i], slots[smallest]];
-                    snapshot(`swap heap[smallest] and heap[i]: ${v(smallest)} und ${v(i)} tauschen die Plätze.`, { holders, at: i, vars: vars(), compare: [i, smallest], swap: true, code: P(13) });
-                    i = smallest;
-                    snapshot(`i ← smallest: i ist jetzt ${i}.`, { holders, at: i, vars: [{ name: 'i', index: i }, { name: 'smallest', index: smallest }], code: P(14) });
+                    [slots[min], slots[i]] = [slots[i], slots[min]];
+                    snapshot(`swap heap[min] and heap[i]: ${v(min)} und ${v(i)} tauschen die Plätze.`, { holders, at: i, vars: vars(), compare: [i, min], swap: true, code: P(13) });
+                    i = min;
+                    snapshot(`i ← min: i ist jetzt ${i}.`, { holders, at: i, vars: [{ name: 'i', index: i }, { name: 'min', index: min }], code: P(14) });
                 }
             }
             aside = {};
@@ -465,7 +470,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         const cell = Math.min(46, (width - 20) / Math.max(most, 1));
         const cellX = (i) => 10 + i * cell;
         for (let i = 0; i < n; i++) {
-            svg.appendChild(el('svg:rect', { 'data-key': `slot-${i}`, x: cellX(i), y: top, width: cell - 3, height: 30, fill: 'none', stroke: 'none' }));
+            svg.appendChild(el('svg:rect', { 'data-key': `slot-${i}`, x: cellX(i), y: top + 22, width: cell - 3, height: 4, fill: 'none', stroke: 'none' }));
             svg.appendChild(el('svg:text', { 'data-key': `cell-index-${i}`, x: cellX(i) + (cell - 3) / 2, y: top + 44, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: String(i) }));
         }
         for (let i = 0; i < n; i++) {
@@ -489,19 +494,13 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 out.push(el('svg:path', { 'data-key': `pointer-${name}`, 'data-ends': `var-${name} ${target.key}`, 'data-inset': inset, 'data-rigid': '',
                     d: `M${centre[0]} ${centre[1]} Q${(centre[0] + ex) / 2} ${(centre[1] + ey) / 2} ${ex} ${ey}`, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'marker-end': `url(#${marker}-accent)` }));
             }
-            out.push(el('svg:rect', { 'data-key': `var-${name}`, x: lx, y, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
+            out.push(el('svg:rect', { 'data-solid': '', 'data-key': `var-${name}`, x: lx, y, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
             out.push(el('svg:text', { 'data-key': `var-${name}-label`, x: centre[0], y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: name }));
             return out;
         };
-        // index variables under their cell, several on one cell one below the other
-        const below = new Map();
+        // index variables under their cell, one label for each cell (indexLabels)
         const labels = [];
-        for (const v of frame.vars || []) {
-            const k = below.get(v.index) || 0;
-            below.set(v.index, k + 1);
-            const cx = cellX(v.index) + (cell - 3) / 2;
-            labels.push(...label(v.name, cx, top + 56 + k * 24, { key: `slot-${v.index}`, at: [cx, top + 15] }, 17));
-        }
+        for (const placed of indexLabels(frame.vars, (index) => cellX(index) + (cell - 3) / 2, width)) labels.push(...indexLabel(placed, top + 58 + placed.row * 24, top + 24, top + 50, marker));
         for (const h of frame.holders || []) {
             const place = frame.aside[h.id] ? asidePlace[frame.aside[h.id]] : pos(frame.slots.indexOf(h.id));
             labels.push(...label(h.name, place[0] - 26, place[1] - 40, null, 0, 'left'));
@@ -523,177 +522,310 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         svg.setAttribute('viewBox', `0 0 ${width} ${top + 56 + 3 * 24}`);
     }
 
-    // Sorting: every comparison and every write is a step, counted like the
-    // Sorting Sandbox counts them. sorted: indices already in their place.
-    // ids: which of the numbers stands where (they may repeat), so that the
-    // picture moves each bar to its new place.
-    function traceSort(values, kind) {
-        const a = [...values];
-        const ids = values.map((_, i) => i);
-        const frames = [];
+    // ---- Sorting: every step is a line of the Handbuch's pseudocode
+    // (SORT_CODE, reference/sortieren), comparisons and writes counted like
+    // the Sorting Sandbox counts them. A frame: slots (ids in list order),
+    // values (id -> value), lifted (insertion sort: the copy current holds,
+    // above the place j), scratch (merge sort: ids or null), vars (index
+    // variables: { name, index }), compare, range [start, stop), pivot,
+    // boundary, sortedTo / sortedFrom, swap (the two move on arcs), from (id ->
+    // the bar a copy comes from), stack (merge and quick sort), code. A copy is
+    // a new id: for a moment the value is there twice.
+    const SORT_CODE = {
+        selection: ['selection_sort(list):', '    for i from 0 to length - 2:', '        min ← i', '        for j from i + 1 to length - 1:',
+            '            if list[j] < list[min]: min ← j', '        swap list[i] and list[min]'],
+        insertion: ['insertion_sort(list):', '    for i from 1 to length - 1:', '        current ← list[i]', '        j ← i',
+            '        while j > 0 and list[j - 1] > current:', '            list[j] ← list[j - 1]        (eins nach rechts rücken)', '            j ← j - 1',
+            '        list[j] ← current'],
+        bubble: ['bubble_sort(list):', '    for end from length - 1 down to 1:', '        swapped ← false', '        for i from 0 to end - 1:',
+            '            if list[i] > list[i + 1]:', '                swap list[i] and list[i + 1]', '                swapped ← true', '        if not swapped: done'],
+        merge: ['merge_sort(list, start, stop):          (stop gehört nicht mehr dazu)', '    if stop - start < 2: done', '    middle ← (start + stop) / 2, rounded down',
+            '    merge_sort(list, start, middle)', '    merge_sort(list, middle, stop)', '    i ← start, j ← middle', '    for k from start to stop - 1:',
+            '        if i < middle and (j ≥ stop or list[i] ≤ list[j]):', '            scratch[k] ← list[i], i ← i + 1', '        else:',
+            '            scratch[k] ← list[j], j ← j + 1', '    copy scratch[start … stop - 1] back to list'],
+        quick: ['quick_sort(list, first, last):          (last gehört dazu)', '    if last ≤ first: done', '    pivot ← list[last]', '    boundary ← first',
+            '    for i from first to last - 1:', '        if list[i] < pivot:', '            swap list[i] and list[boundary]', '            boundary ← boundary + 1',
+            '    swap list[boundary] and list[last]     (das Pivot an seinen Platz)', '    quick_sort(list, first, boundary - 1)', '    quick_sort(list, boundary + 1, last)'],
+    };
+
+    function traceSort(start, kind) {
+        const n = start.length;
+        const values = {};
+        const slots = start.map((value, i) => { values[i] = value; return i; });
+        let nextId = n;
+        let lifted = null;
+        let scratch = kind === 'merge' ? Array(n).fill(null) : null;
         let comparisons = 0;
         let writes = 0;
-        const snapshot = (message, marks = {}) => frames.push({ items: [...a], ids: [...ids], message, comparisons, writes, ...marks });
-        const less = (i, j) => { comparisons += 1; return a[i] < a[j]; };
-        const swap = (i, j) => { [a[i], a[j]] = [a[j], a[i]]; [ids[i], ids[j]] = [ids[j], ids[i]]; writes += 2; };
-        const n = a.length;
-        snapshot(`${n} Zahlen, unsortiert.`);
+        const stack = [];
+        const frames = [];
+        const v = (i) => values[slots[i]];
+        const snapshot = (message, marks = {}) => frames.push({ slots: [...slots], values: { ...values }, lifted: lifted && { ...lifted }, scratch: scratch && [...scratch],
+            stack: stack.map((call) => ({ call })), comparisons, writes, message, code: { lines: SORT_CODE[kind], at: marks.line }, ...marks });
+        const swap = (a, b) => { [slots[a], slots[b]] = [slots[b], slots[a]]; writes += 2; };
+        const copyTo = (index, fromId) => {
+            const id = nextId++;
+            values[id] = values[fromId];
+            slots[index] = id;
+            writes += 1;
+            return id;
+        };
+        snapshot(`${n} Zahlen, unsortiert.`, { line: 0 });
         if (kind === 'selection') {
             for (let i = 0; i < n - 1; i++) {
+                snapshot(`for i: i ist ${i}. Bis Index ${i - 1} ist alles fertig.`, { line: 1, vars: [{ name: 'i', index: i }], sortedTo: i });
                 let min = i;
+                const vars = (j) => [{ name: 'i', index: i }, { name: 'min', index: min }, ...(j !== undefined ? [{ name: 'j', index: j }] : [])];
+                snapshot(`min ← i: Die kleinste bis hier steht an Index ${i}.`, { line: 2, vars: vars(), sortedTo: i });
                 for (let j = i + 1; j < n; j++) {
-                    const smaller = less(j, min);
-                    snapshot(`Kleinste ab Index ${i} gesucht: ${a[j]} ${smaller ? 'ist kleiner als' : 'ist nicht kleiner als'} ${a[min]}.`, { compare: [j, min], sortedTo: i, mark: [min] });
-                    if (smaller) min = j;
+                    comparisons += 1;
+                    if (v(j) < v(min)) {
+                        snapshot(`list[j] < list[min]: ${v(j)} < ${v(min)}, ja.`, { line: 4, vars: vars(j), compare: [j, min], sortedTo: i });
+                        min = j;
+                        snapshot(`min ← j: Die kleinste bis hier ist ${v(j)}, an Index ${j}.`, { line: 4, vars: vars(j), sortedTo: i });
+                    } else snapshot(`list[j] < list[min]: ${v(j)} ist nicht kleiner als ${v(min)}.`, { line: 4, vars: vars(j), compare: [j, min], sortedTo: i });
                 }
-                if (min !== i) swap(i, min);
-                snapshot(min !== i ? `Die kleinste, ${a[i]}, tauscht mit Index ${i}. Bis Index ${i} ist alles fertig.` : `${a[i]} steht schon richtig. Bis Index ${i} ist alles fertig.`, { sortedTo: i + 1, mark: [i] });
+                if (min !== i) {
+                    swap(i, min);
+                    snapshot(`swap list[i] and list[min]: ${v(i)} und ${v(min)} tauschen die Plätze. Bis Index ${i} ist alles fertig.`, { line: 5, vars: vars(), swap: true, sortedTo: i + 1 });
+                } else snapshot(`swap list[i] and list[min]: ${v(i)} steht schon richtig. Bis Index ${i} ist alles fertig.`, { line: 5, vars: vars(), sortedTo: i + 1 });
             }
         } else if (kind === 'insertion') {
             for (let i = 1; i < n; i++) {
-                const current = a[i];
-                const currentId = ids[i];
+                snapshot(`for i: i ist ${i}. Links davon ist alles sortiert.`, { line: 1, vars: [{ name: 'i', index: i }], sortedTo: i });
+                const cid = nextId++;
+                values[cid] = v(i);
+                lifted = { id: cid, at: i };
+                snapshot(`current ← list[i]: Die Variable current merkt sich ${values[cid]}; in der Liste steht es noch.`, { line: 2, vars: [{ name: 'i', index: i }], from: { [cid]: slots[i] }, sortedTo: i });
                 let j = i;
-                snapshot(`${current} (Index ${i}) wird einsortiert, links davon ist alles sortiert.`, { lifted: i, sortedTo: i });
-                while (j > 0) {
-                    comparisons += 1;
-                    if (!(a[j - 1] > current)) {
-                        snapshot(`${a[j - 1]} ist nicht größer als ${current}: Hier ist sein Platz.`, { compare: [j - 1], lifted: j, sortedTo: i });
+                const vars = () => [{ name: 'i', index: i }, { name: 'j', index: j }];
+                snapshot(`j ← i: j ist ${j}.`, { line: 3, vars: vars(), sortedTo: i });
+                for (;;) {
+                    if (j === 0) {
+                        snapshot('while j > 0: j ist 0, ganz links. Hier ist der Platz.', { line: 4, vars: vars(), sortedTo: i });
                         break;
                     }
-                    a[j] = a[j - 1];
-                    ids[j] = ids[j - 1];
-                    writes += 1;
-                    a[j - 1] = current;
-                    ids[j - 1] = currentId;
-                    snapshot(`${a[j]} ist größer als ${current} und rückt eins nach rechts.`, { compare: [j], lifted: j - 1, sortedTo: i });
+                    comparisons += 1;
+                    if (!(v(j - 1) > values[cid])) {
+                        snapshot(`list[j - 1] > current: ${v(j - 1)} ist nicht größer als ${values[cid]}. Hier ist der Platz.`, { line: 4, vars: vars(), compare: [j - 1], sortedTo: i });
+                        break;
+                    }
+                    snapshot(`list[j - 1] > current: ${v(j - 1)} > ${values[cid]}, ja.`, { line: 4, vars: vars(), compare: [j - 1], sortedTo: i });
+                    const copied = copyTo(j, slots[j - 1]);
+                    snapshot(`list[j] ← list[j - 1]: ${v(j)} rückt eins nach rechts. Jetzt steht ${v(j)} zweimal da, an Index ${j - 1} und ${j}.`, { line: 5, vars: vars(), from: { [copied]: slots[j - 1] }, sortedTo: i });
                     j -= 1;
+                    lifted.at = j;
+                    snapshot(`j ← j - 1: j ist ${j}.`, { line: 6, vars: vars(), sortedTo: i });
                 }
-                a[j] = current;
-                ids[j] = currentId;
+                slots[j] = cid;
                 writes += 1;
-                snapshot(`${current} steht an Index ${j}. Bis Index ${i} ist alles sortiert.`, { mark: [j], sortedTo: i + 1 });
+                lifted = null;
+                snapshot(`list[j] ← current: ${values[cid]} kommt an Index ${j}. Bis Index ${i} ist alles sortiert.`, { line: 7, vars: vars(), sortedTo: i + 1 });
             }
         } else if (kind === 'bubble') {
             for (let end = n - 1; end > 0; end--) {
+                snapshot(`for end: end ist ${end}. Rechts davon ist alles fertig.`, { line: 1, vars: [{ name: 'end', index: end }], sortedFrom: end + 1 });
                 let swapped = false;
+                snapshot('swapped ← false.', { line: 2, vars: [{ name: 'end', index: end }], sortedFrom: end + 1 });
                 for (let i = 0; i < end; i++) {
-                    const bigger = less(i + 1, i);
-                    if (bigger) { swap(i, i + 1); swapped = true; }
-                    snapshot(bigger ? `${a[i + 1]} ist größer als ${a[i]}: tauschen.` : `${a[i]} und ${a[i + 1]} stehen richtig herum.`, { compare: [i, i + 1], sortedFrom: end + 1 });
+                    const vars = [{ name: 'end', index: end }, { name: 'i', index: i }];
+                    comparisons += 1;
+                    if (v(i) > v(i + 1)) {
+                        snapshot(`list[i] > list[i + 1]: ${v(i)} > ${v(i + 1)}, ja.`, { line: 4, vars, compare: [i, i + 1], sortedFrom: end + 1 });
+                        swap(i, i + 1);
+                        swapped = true;
+                        snapshot(`swap list[i] and list[i + 1]: ${v(i + 1)} wandert eins nach rechts. swapped ← true.`, { line: 5, vars, swap: true, sortedFrom: end + 1 });
+                    } else snapshot(`list[i] > list[i + 1]: ${v(i)} ist nicht größer als ${v(i + 1)}.`, { line: 4, vars, compare: [i, i + 1], sortedFrom: end + 1 });
                 }
-                snapshot(`Ein Durchgang: Die größte bis hier, ${a[end]}, ist ganz nach rechts gewandert.`, { sortedFrom: end, mark: [end] });
                 if (!swapped) {
-                    snapshot('In diesem Durchgang wurde nichts getauscht: Alles ist sortiert.', { sortedFrom: 0 });
+                    snapshot('if not swapped: In diesem Durchgang wurde nichts getauscht. Alles ist sortiert.', { line: 7, sortedFrom: 0 });
                     break;
                 }
             }
         } else if (kind === 'merge') {
-            const scratch = Array(n).fill(null);
-            const scratchIds = Array(n).fill(null);
             const sort = (lo, hi) => {
-                if (hi - lo < 2) return;
+                stack.push(`merge_sort(start: ${lo}, stop: ${hi})`);
+                const ends = [{ name: 'start', index: lo }, { name: 'stop', index: hi }];
+                if (hi - lo < 2) {
+                    snapshot(`stop - start < 2: Von ${lo} bis ${hi - 1} steht nur eine Zahl, die ist schon sortiert.`, { line: 1, vars: ends, range: [lo, hi] });
+                    stack.pop();
+                    return;
+                }
                 const mid = Math.floor((lo + hi) / 2);
+                const three = [...ends, { name: 'middle', index: mid }];
+                snapshot(`middle ← (${lo} + ${hi}) / 2, abgerundet: ${mid}.`, { line: 2, vars: three, range: [lo, hi], split: mid });
+                snapshot(`merge_sort(list, start, middle): erst die linke Hälfte, ${lo} bis ${mid - 1}.`, { line: 3, vars: three, range: [lo, hi], split: mid });
                 sort(lo, mid);
+                snapshot(`merge_sort(list, middle, stop): dann die rechte, ${mid} bis ${hi - 1}.`, { line: 4, vars: three, range: [lo, hi], split: mid });
                 sort(mid, hi);
-                snapshot(`Die beiden sortierten Hälften ${lo}–${mid - 1} und ${mid}–${hi - 1} werden zusammengeführt.`, { range: [lo, hi], split: mid });
                 let i = lo;
                 let j = mid;
+                const vars = (k) => [{ name: 'i', index: i }, { name: 'j', index: j }, ...(k !== undefined ? [{ name: 'k', index: k }] : [])];
+                snapshot(`Beide Hälften sind sortiert. i ← ${lo}, j ← ${mid}: die vorderste von jeder.`, { line: 5, vars: vars(), range: [lo, hi], split: mid });
                 for (let k = lo; k < hi; k++) {
-                    let take;
-                    if (i < mid && j < hi) {
-                        comparisons += 1;
-                        take = a[i] <= a[j] ? i++ : j++;
-                    } else take = i < mid ? i++ : j++;
-                    scratch[k] = a[take];
-                    scratchIds[k] = ids[take];
+                    const left = i < mid && (j >= hi || v(i) <= v(j));
+                    if (i < mid && j < hi) comparisons += 1;
+                    const take = left ? i : j;
+                    const id = nextId++;
+                    values[id] = v(take);
+                    scratch[k] = id;
                     writes += 1;
-                    snapshot(`Die kleinere der beiden vordersten, ${a[take]}, kommt in den Zwischenspeicher an Index ${k}.`, { range: [lo, hi], split: mid, compare: [take], scratch: [...scratch], scratchIds: [...scratchIds] });
+                    const why = i < mid && j < hi ? `${v(i)} ${left ? '≤' : '>'} ${v(j)}` : left ? 'rechts ist nichts mehr' : 'links ist nichts mehr';
+                    if (left) i += 1;
+                    else j += 1;
+                    snapshot(`${why}: scratch[${k}] ← list[${take}], das ist ${values[id]}.`, { line: left ? 8 : 10, vars: vars(k), range: [lo, hi], split: mid, compare: [take], from: { [id]: slots[take] } });
                 }
-                for (let k = lo; k < hi; k++) { a[k] = scratch[k]; ids[k] = scratchIds[k]; writes += 1; }
-                scratch.fill(null, lo, hi);
-                scratchIds.fill(null, lo, hi);
-                snapshot(`${lo}–${hi - 1} ist sortiert und steht wieder in der Liste.`, { range: [lo, hi], mark: Array.from({ length: hi - lo }, (_, k) => lo + k) });
+                const from = {};
+                for (let k = lo; k < hi; k++) from[copyTo(k, scratch[k])] = scratch[k];
+                for (let k = lo; k < hi; k++) scratch[k] = null;
+                snapshot(`Zurück in die Liste: ${lo} bis ${hi - 1} ist sortiert.`, { line: 11, vars: ends, range: [lo, hi], from, fromScratch: true });
+                stack.pop();
             };
             sort(0, n);
         } else if (kind === 'quick') {
             const sort = (lo, hi) => {
-                if (hi - lo < 1) return;
-                const pivot = a[hi];
-                snapshot(`Bereich ${lo}–${hi}: Das Pivot ist der letzte, ${pivot}.`, { range: [lo, hi + 1], pivot: hi });
-                let store = lo;
+                stack.push(`quick_sort(first: ${lo}, last: ${hi})`);
+                const ends = [{ name: 'first', index: lo }, { name: 'last', index: hi }];
+                if (hi <= lo) {
+                    snapshot(`last ≤ first: Von ${lo} bis ${hi} steht ${hi === lo ? 'nur eine Zahl' : 'nichts'}, fertig.`, { line: 1, vars: ends.filter((e) => e.index >= 0 && e.index < n), range: [lo, hi + 1] });
+                    stack.pop();
+                    return;
+                }
+                const pivot = v(hi);
+                snapshot(`pivot ← list[last]: Das Pivot ist ${pivot}.`, { line: 2, vars: ends, range: [lo, hi + 1], pivot: hi });
+                let boundary = lo;
+                const vars = (i) => [...ends, { name: 'boundary', index: boundary }, ...(i !== undefined ? [{ name: 'i', index: i }] : [])];
+                snapshot(`boundary ← first: Links von boundary kommen die Zahlen, die kleiner sind als ${pivot}.`, { line: 3, vars: vars(), range: [lo, hi + 1], pivot: hi, boundary });
                 for (let i = lo; i < hi; i++) {
                     comparisons += 1;
-                    const small = a[i] < pivot;
-                    if (small) {
-                        if (i !== store) swap(i, store);
-                        store += 1;
-                    }
-                    snapshot(small ? `${a[store - 1]} ist kleiner als ${pivot} und kommt nach links (vor Index ${store}).` : `${a[i]} ist nicht kleiner als ${pivot} und bleibt rechts.`, { range: [lo, hi + 1], pivot: hi, compare: [i], boundary: store });
+                    if (v(i) < pivot) {
+                        snapshot(`list[i] < pivot: ${v(i)} < ${pivot}, ja.`, { line: 5, vars: vars(i), range: [lo, hi + 1], pivot: hi, boundary, compare: [i] });
+                        if (i !== boundary) {
+                            swap(i, boundary);
+                            snapshot(`swap list[i] and list[boundary]: ${v(boundary)} kommt nach links.`, { line: 6, vars: vars(i), range: [lo, hi + 1], pivot: hi, boundary, swap: true });
+                        } else snapshot(`swap list[i] and list[boundary]: i und boundary sind dieselbe Stelle, ${v(i)} bleibt.`, { line: 6, vars: vars(i), range: [lo, hi + 1], pivot: hi, boundary });
+                        boundary += 1;
+                        snapshot(`boundary ← boundary + 1: boundary ist ${boundary}.`, { line: 7, vars: vars(i), range: [lo, hi + 1], pivot: hi, boundary });
+                    } else snapshot(`list[i] < pivot: ${v(i)} ist nicht kleiner als ${pivot}, bleibt rechts.`, { line: 5, vars: vars(i), range: [lo, hi + 1], pivot: hi, boundary, compare: [i] });
                 }
-                swap(store, hi);
-                snapshot(`Das Pivot ${pivot} kommt an Index ${store}: Links stehen die kleineren, rechts die anderen. ${pivot} ist an seinem Platz.`, { range: [lo, hi + 1], mark: [store] });
-                sort(lo, store - 1);
-                sort(store + 1, hi);
+                if (boundary !== hi) swap(boundary, hi);
+                snapshot(`swap list[boundary] and list[last]: Das Pivot ${pivot} kommt an Index ${boundary}, an seinen Platz. Links die kleineren, rechts die anderen.`,
+                    { line: 8, vars: vars(), range: [lo, hi + 1], pivot: boundary, boundary, swap: boundary !== hi });
+                snapshot(`quick_sort(list, first, boundary - 1): links weiter, ${lo} bis ${boundary - 1}.`, { line: 9, vars: vars(), range: [lo, hi + 1], pivot: boundary });
+                sort(lo, boundary - 1);
+                snapshot(`quick_sort(list, boundary + 1, last): rechts weiter, ${boundary + 1} bis ${hi}.`, { line: 10, vars: vars(), range: [lo, hi + 1], pivot: boundary });
+                sort(boundary + 1, hi);
+                stack.pop();
             };
             sort(0, n - 1);
         }
-        snapshot(`Fertig: ${comparisons} Vergleiche, ${writes} Schreibzugriffe.`, { sortedTo: n });
+        lifted = null;
+        snapshot(`Fertig: ${comparisons} Vergleiche, ${writes} Schreibzugriffe.`, { line: 0, sortedTo: n });
         return frames;
     }
 
-    function drawSort(svg, frame) {
+    // The list as bars, under them the indices and the index variables (a
+    // label each, with an arrow up to its place); the copy that current
+    // holds above its place; merge sort's scratch row at the bottom.
+    // The boxes of one place (indexLabels), each with an arrow up to the
+    // place: it aims at aim (a point inside the column, near its bottom) and
+    // stops at the height stop, before the index number, so that arrows
+    // from boxes side by side end apart. A box is keyed by its variable, so
+    // that it moves with it.
+    function indexLabel(group, y, aim, stop, marker) {
+        const out = [];
+        group.boxes.forEach((box) => {
+            const centre = [box.x, y + 9];
+            const f = (centre[1] - stop) / (centre[1] - aim);
+            const end = [centre[0] + (group.x - centre[0]) * f, stop];
+            const inset = Math.hypot(group.x - end[0], aim - end[1]);
+            out.push(el('svg:path', { 'data-key': `pointer-${box.name}`, 'data-ends': `var-${box.name} slot-${group.index}`, 'data-inset': inset, 'data-rigid': '',
+                d: `M${centre[0]} ${centre[1]} Q${(centre[0] + end[0]) / 2} ${(centre[1] + end[1]) / 2} ${end[0]} ${end[1]}`, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 1.5, 'marker-end': `url(#${marker}-accent)` }));
+        });
+        group.boxes.forEach((box) => {
+            out.push(el('svg:rect', { 'data-solid': '', 'data-key': `var-${box.name}`, x: box.x - box.width / 2, y, width: box.width, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
+            out.push(el('svg:text', { 'data-key': `var-${box.name}-label`, x: box.x, y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: box.name }));
+        });
+        return out;
+    }
+
+    function drawSort(svg, frame, marker) {
         svg.replaceChildren();
-        const n = frame.items.length;
-        const most = Math.max(...frame.items);
+        const n = frame.slots.length;
+        const all = Object.values(frame.values);
+        const most = Math.max(...all);
         const width = 520;
         const cell = width / n;
-        const height = 200;
+        const height = 170;
+        // room above the bars for the card of current
+        const lift = 44;
+        const baseline = lift + height;
         const compare = new Set(frame.compare || []);
-        const mark = new Set(frame.mark || []);
         const inRange = (i) => !frame.range || (i >= frame.range[0] && i < frame.range[1]);
         const isSorted = (i) => (frame.sortedTo !== undefined && i < frame.sortedTo) || (frame.sortedFrom !== undefined && i >= frame.sortedFrom);
-        // keys: a bar and its number by the number's id, so they move with it
-        frame.items.forEach((value, i) => {
-            const id = frame.ids[i];
-            const h = 20 + (value / most) * (height - 40);
-            const x = i * cell + 4;
-            const lifted = frame.lifted === i;
-            const y = height - h - (lifted ? 18 : 0);
-            const fill = frame.pivot === i ? 'var(--algo-goal)' : mark.has(i) || lifted ? 'var(--algo-accent)' : compare.has(i) ? 'var(--algo-frontier)'
+        const barH = (value) => 20 + (value / most) * (height - 40);
+        const arc = frame.swap ? { 'data-arc': 26 } : {};
+        const from = frame.from || {};
+        const bar = (id, x, y, fill, extra = {}) => {
+            const h = barH(frame.values[id]);
+            const source = from[id] !== undefined ? from[id] : null;
+            const comes = source !== null ? { 'data-from': frame.fromScratch ? `scratch-value-${source}` : `bar-${source}` } : {};
+            const comesLabel = source !== null ? { 'data-from': frame.fromScratch ? `scratch-value-${source}` : `value-${source}` } : {};
+            return [
+                el('svg:g', { 'data-key': `bar-${id}`, ...comes, transform: `translate(${x} ${y - h})`, ...arc }, [
+                    el('svg:rect', { x: 0, y: 0, width: cell - 8, height: h, rx: 4, fill, ...extra })]),
+                el('svg:text', { 'data-key': `value-${id}`, ...comesLabel, x: x + (cell - 8) / 2, y: y - h - 6, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.values[id]) }),
+            ];
+        };
+        svg.appendChild(arrowheads(marker));
+        frame.slots.forEach((id, i) => {
+            const fill = frame.pivot === i ? 'var(--algo-goal)' : compare.has(i) ? 'var(--algo-frontier)'
                 : isSorted(i) ? 'var(--algo-done)' : 'color-mix(in srgb, var(--algo-line) 60%, transparent)';
-            svg.appendChild(el('svg:rect', { 'data-key': `bar-${id}`, x, y, width: cell - 8, height: h, rx: 4, fill, opacity: inRange(i) ? 1 : 0.35,
-                stroke: compare.has(i) ? 'var(--algo-ink)' : 'none', 'stroke-width': 2 }));
-            svg.appendChild(el('svg:text', { 'data-key': `value-${id}`, x: x + (cell - 8) / 2, y: y - 6, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(value) }));
-            svg.appendChild(el('svg:text', { 'data-key': `index-${i}`, x: x + (cell - 8) / 2, y: height + 16, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: String(i) }));
+            for (const node of bar(id, i * cell + 4, baseline, fill, { opacity: inRange(i) ? 1 : 0.35, stroke: compare.has(i) ? 'var(--algo-ink)' : 'none', 'stroke-width': 2 })) svg.appendChild(node);
+            svg.appendChild(el('svg:text', { 'data-key': `index-${i}`, x: i * cell + cell / 2, y: baseline + 16, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: String(i) }));
+            svg.appendChild(el('svg:rect', { 'data-key': `slot-${i}`, x: i * cell + 4, y: baseline - 10, width: cell - 8, height: 4, fill: 'none', stroke: 'none' }));
         });
-        if (frame.split !== undefined) {
-            const x = frame.split * cell;
-            svg.appendChild(el('svg:line', { 'data-key': 'split', x1: x, y1: 0, x2: x, y2: height, stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '5 4' }));
+        // the place just after the end (stop) has an anchor too
+        svg.appendChild(el('svg:rect', { 'data-key': `slot-${n}`, x: n * cell + 4, y: baseline - 10, width: cell - 8, height: 4, fill: 'none', stroke: 'none' }));
+        if (frame.lifted) {
+            // the copy that current holds: a card with its value above its
+            // place, the label current beside it; it flies out of the bar and
+            // back into the list
+            const { id, at } = frame.lifted;
+            const x = at * cell + 4;
+            const source = from[id];
+            svg.appendChild(el('svg:g', { 'data-key': `bar-${id}`, ...(source !== undefined ? { 'data-from': `bar-${source}` } : {}), transform: `translate(${x} 4)` }, [
+                el('svg:rect', { x: 0, y: 0, width: cell - 8, height: 28, rx: 4, fill: 'color-mix(in srgb, var(--algo-accent) 25%, var(--algo-paper))', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '5 3' }),
+                el('svg:text', { x: (cell - 8) / 2, y: 19, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.values[id]) })]));
+            const w = 14 + 7.5 * 'current'.length;
+            svg.appendChild(el('svg:rect', { 'data-solid': '', 'data-key': 'var-current', x: x + cell - 2, y: 9, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
+            svg.appendChild(el('svg:text', { 'data-key': 'var-current-label', x: x + cell - 2 + w / 2, y: 22, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'current' }));
         }
-        if (frame.boundary !== undefined) {
-            const x = frame.boundary * cell;
-            svg.appendChild(el('svg:line', { 'data-key': 'boundary', x1: x, y1: 0, x2: x, y2: height, stroke: 'var(--algo-goal)', 'stroke-width': 2, 'stroke-dasharray': '5 4' }));
-        }
-        let bottom = height + 24;
-        // merge sort keeps its (then empty) scratch row in every step
-        const scratch = frame.scratch || (frame.scratchSpace ? Array(n).fill(null) : null);
-        if (scratch) {
-            // a number flies from its bar into the scratch row, and from there
-            // back to its bar when the merged run is copied back
-            scratch.forEach((value, i) => {
+        if (frame.split !== undefined) svg.appendChild(el('svg:line', { 'data-key': 'split', x1: frame.split * cell, y1: lift - 10, x2: frame.split * cell, y2: baseline, stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '5 4' }));
+        if (frame.boundary !== undefined) svg.appendChild(el('svg:line', { 'data-key': 'boundary', x1: frame.boundary * cell, y1: lift - 10, x2: frame.boundary * cell, y2: baseline, stroke: 'var(--algo-goal)', 'stroke-width': 2, 'stroke-dasharray': '5 4' }));
+        // the index variables, one label for each place (indexLabels)
+        const labelTop = baseline + 28;
+        const placed = indexLabels(frame.vars, (index) => index * cell + cell / 2, width + cell);
+        for (const label of placed) for (const node of indexLabel(label, labelTop + 8 + label.row * 24, baseline - 8, baseline + 22, marker)) svg.appendChild(node);
+        let bottom = labelTop + 6 + Math.max(3, ...placed.map((l) => l.row + 1)) * 24;
+        if (frame.scratch) {
+            // a value flies from its bar into the scratch row, and from there
+            // back into the list when the merged run is copied back
+            frame.scratch.forEach((id, i) => {
                 const x = i * cell + 4;
-                svg.appendChild(el('svg:rect', { 'data-key': `scratch-${i}`, x, y: bottom + 6, width: cell - 8, height: 28, rx: 4, fill: value === null ? 'none' : 'var(--algo-frontier)', stroke: 'var(--algo-line)', 'stroke-width': 1.5 }));
-                if (value !== null) {
-                    const id = frame.scratchIds[i];
-                    svg.appendChild(el('svg:text', { 'data-key': `scratch-value-${id}`, 'data-from': `value-${id}`, 'data-to': `value-${id}`,
-                        x: x + (cell - 8) / 2, y: bottom + 25, 'text-anchor': 'middle', 'font-size': 13, fill: 'var(--algo-ink)', text: String(value) }));
+                svg.appendChild(el('svg:rect', { 'data-key': `scratch-${i}`, x, y: bottom + 6, width: cell - 8, height: 28, rx: 4, fill: 'none', stroke: 'var(--algo-line)', 'stroke-width': 1.5 }));
+                if (id !== null) {
+                    // a group, so that it flies from its bar (a group too) and back
+                    const source = from[id];
+                    svg.appendChild(el('svg:g', { 'data-key': `scratch-value-${id}`, ...(source !== undefined ? { 'data-from': `bar-${source}` } : {}), transform: `translate(${x} ${bottom + 6})` }, [
+                        el('svg:rect', { x: 0, y: 0, width: cell - 8, height: 28, rx: 4, fill: 'var(--algo-frontier)', stroke: 'var(--algo-line)', 'stroke-width': 1.5 }),
+                        el('svg:text', { x: (cell - 8) / 2, y: 19, 'text-anchor': 'middle', 'font-size': 13, fill: 'var(--algo-ink)', text: String(frame.values[id]) })]));
                 }
             });
-            svg.appendChild(el('svg:text', { 'data-key': 'scratch-label', x: 0, y: bottom + 50, 'font-size': 11, fill: 'var(--bs-secondary-color)', text: 'Zwischenspeicher' }));
+            svg.appendChild(el('svg:text', { 'data-key': 'scratch-label', x: 0, y: bottom + 50, 'font-size': 11, fill: 'var(--bs-secondary-color)', text: 'scratch' }));
             bottom += 56;
         }
-        svg.setAttribute('viewBox', `0 0 ${width} ${frame.scratchSpace ? height + 80 : bottom}`);
+        svg.setAttribute('viewBox', `0 0 ${width + cell} ${bottom}`);
     }
 
     // ---- Queue as a ring buffer: head, size, capacity; the next free cell
@@ -981,7 +1113,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 path.push({ node: walk, side: dir });
                 walk = walk[dir];
             }
-            const bottom = { ...call('insert', null, value), returns: `neuer Knoten ${value}` };
+            const bottom = { ...call('insert', null, value), returns: `${value} (neu)` };
             nextId += 1;
             const fresh = { id, value, left: null, right: null, height: 1 };
             if (path.length) path[path.length - 1].node[path[path.length - 1].side] = fresh;
@@ -1255,7 +1387,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             }
             const centre = [x + w / 2, y + 9];
             if (v.to !== null && v.to !== undefined) svg.appendChild(arrow(`pointer-${v.name}`, `var-${v.name} node-${v.to}`, centre, point(v.to), { stroke: 'var(--algo-accent)', 'marker-end': `url(#${most.marker}-accent)`, ...(v.rigid ? { 'data-rigid': '' } : {}) }));
-            labels.push(el('svg:rect', { 'data-key': `var-${v.name}`, x, y, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
+            labels.push(el('svg:rect', { 'data-solid': '', 'data-key': `var-${v.name}`, x, y, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
             labels.push(el('svg:text', { 'data-key': `var-${v.name}-label`, x: centre[0], y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: v.name }));
         }
         // a node by its id; a new node comes from the token that carried its
@@ -1359,6 +1491,53 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 
     let widgetCount = 0;
 
+    // Labels for index variables under a row of places: each variable its
+    // own box; the boxes of one place side by side as a group, and the groups
+    // in rows so that none overlaps another and none stands in the way of an
+    // arrow from a row further down (each arrow goes up from its box to its
+    // place). vars: { name, index }; x(index): the centre of the place.
+    // Returns groups { index, x, row, width, boxes: [{ name, x, width }] }.
+    const GAP = 5;
+    function indexLabels(vars, x, maxX = Infinity) {
+        const byIndex = new Map();
+        for (const v of vars || []) {
+            if (!byIndex.has(v.index)) byIndex.set(v.index, []);
+            byIndex.get(v.index).push(v.name);
+        }
+        const groups = [...byIndex.entries()].sort((a, b) => a[0] - b[0]).map(([index, names]) => {
+            const widths = names.map((name) => 14 + 7.5 * name.length);
+            const width = widths.reduce((s, w) => s + w, 0) + GAP * (names.length - 1);
+            // inside the picture: pushed in at the edges, the arrows then slant
+            let left = Math.min(Math.max(2, x(index) - width / 2), maxX - width - 2);
+            const centre = left + width / 2;
+            const boxes = names.map((name, k) => { const box = { name, x: left + widths[k] / 2, width: widths[k] }; left += widths[k] + GAP; return box; });
+            return { index, x: x(index), centre, width, boxes };
+        });
+        const rows = [];
+        // the arrows run from the boxes to x: a group must not cover the x of
+        // a group in a row further down, nor have its own x covered by one in
+        // a row further up
+        const covers = (o, x) => x > o.centre - o.width / 2 - 3 && x < o.centre + o.width / 2 + 3;
+        // the narrow groups first: a wide one goes down a row rather than
+        // into the way of a narrow one's arrow
+        for (const group of [...groups].sort((a, b) => a.width - b.width)) {
+            const left = group.centre - group.width / 2 - 4;
+            const right = group.centre + group.width / 2 + 4;
+            const free = (row) => (rows[row] || []).every((o) => right < o.centre - o.width / 2 || left > o.centre + o.width / 2);
+            const fits = (row) => free(row)
+                && rows.slice(0, row).every((above) => above.every((o) => !covers(o, group.x)))
+                && rows.slice(row + 1).every((under) => under.every((o) => !covers(group, o.x)));
+            // a few rows at most; if none is clear of arrows, the first without overlaps
+            const limit = groups.length + 1;
+            let row = 0;
+            while (row < limit && !fits(row)) row++;
+            if (row === limit) for (row = 0; !free(row); row++);
+            group.row = row;
+            (rows[row] = rows[row] || []).push(group);
+        }
+        return groups;
+    }
+
     // Arrowheads in the colour of their line: id for the grey pointers of a
     // structure, id-accent for the variables
     const arrowheads = (id) => el('svg:defs', {}, [['', 'var(--algo-line)'], ['-accent', 'var(--algo-accent)']].map(([suffix, fill]) =>
@@ -1384,7 +1563,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 
     // The pseudocode's tokens, as Rouge::Lexers::Pseudocode colours them on
     // the pages (pseudocode_lexer.rb): the same classes, the same colours
-    const KEYWORDS = new Set(['if', 'else', 'while', 'for', 'each', 'in', 'of', 'return', 'not', 'and', 'or', 'repeat', 'until', 'break', 'continue', 'do', 'then', 'to', 'from', 'mod', 'div']);
+    const KEYWORDS = new Set(['if', 'else', 'while', 'for', 'each', 'in', 'of', 'return', 'not', 'and', 'or', 'repeat', 'until', 'break', 'continue', 'do', 'then', 'to', 'from', 'down', 'mod', 'div']);
     const CONSTANTS = new Set(['empty', 'none', 'null', 'true', 'false', 'found', 'done', 'full', 'error']);
     const PSEUDOCODE = /(\((?=[^()\n]*\s[^()\n]*\s)[^()\n+\-*/=<>≤≥≠[\]]*\))|(←|≤|≥|≠|<|>|=|\+|-|\*|\/|%)|(\d+(?:\.\d+)?)|(\.)([\p{L}_][\p{L}\p{N}_]*)|(not found\b)|([\p{L}_][\p{L}\p{N}_]*)(\()?|([()[\]{},:])/gu;
     function highlightPseudocode(line) {
@@ -1474,17 +1653,17 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             const values = widget.dataset.values.split(',').map(Number);
             const kind = widget.dataset.sort;
             frames = traceSort(values, kind);
-            // the picture keeps its height when the scratch row comes and goes
-            const scratch = kind === 'merge';
-            for (const frame of frames) frame.scratchSpace = scratch;
+            const marker = `algo-arrow-${++widgetCount}`;
             svg.setAttribute('aria-label', 'Die Zahlen als Balken, Höhe nach Wert, darunter die Indizes');
             draw = (frame) => {
-                drawSort(svg, frame);
+                drawSort(svg, frame, marker);
+                const stack = frame.stack.length ? [el('h5', { text: 'Aufrufe' }), el('ol', { class: 'algo-stack' }, frame.stack.map((entry, i) =>
+                    el('li', { class: i === frame.stack.length - 1 ? 'current' : '', style: `margin-left: ${i * 1.2}em;`, text: entry.call })))] : [];
                 side.replaceChildren(el('h5', { text: 'Gezählt' }),
                     el('table', { class: 'algo-table' }, [
                         el('tr', {}, [el('th', { text: 'Vergleiche' }), el('td', { text: String(frame.comparisons) })]),
                         el('tr', {}, [el('th', { text: 'Schreibzugriffe' }), el('td', { text: String(frame.writes) })]),
-                    ]));
+                    ]), ...stack, ...codeBox(frame.code));
             };
         } else if (algo === 'heap') {
             const parse = (text) => (text || '').split(',').map((s) => s.trim()).filter(Boolean).map((s) => s.split(/\s+/))
@@ -1523,9 +1702,36 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         // the operations in their order: done, the current one, what comes
         const opsText = widget.dataset.ops && frames.some((f) => f.op !== undefined)
             ? widget.dataset.ops.split(/,(?![^(]*\))/).map((s) => s.trim()).filter(Boolean) : null;
-        const strip = opsText && el('ol', { class: 'algo-ops', 'aria-label': 'Die Operationen der Reihe nach' }, opsText.map((text) => el('li', { text })));
+        // The timeline: every step a mark, the steps of one operation a
+        // section with its name at its start; done ones coloured, the
+        // current one marked. A tap or a drag on it goes to that step.
+        const sections = [];
+        frames.forEach((frame, i) => {
+            const op = frame.op === undefined ? -1 : frame.op;
+            if (!sections.length || sections[sections.length - 1].op !== op) sections.push({ op, steps: [] });
+            sections[sections.length - 1].steps.push(i);
+        });
+        const ticks = [];
+        const timeline = el('div', { class: 'algo-timeline', 'data-no-swipe': '', role: 'slider', 'aria-label': 'Die Schritte', 'aria-valuemin': 0, 'aria-valuemax': frames.length - 1, tabindex: -1 },
+            sections.map((section) => el('div', { class: 'algo-section', style: `flex-grow: ${section.steps.length};` }, [
+                el('span', { class: 'algo-section-name', text: section.op >= 0 && opsText ? opsText[section.op] : '' }),
+                el('div', { class: 'algo-ticks' }, section.steps.map((i) => { const tick = el('span', { class: 'algo-tick', 'data-step': i }); ticks.push(tick); return tick; })),
+            ])));
         const body = el('div', { class: 'algo-body' }, [picture, side]);
-        widget.replaceChildren(el('div', { class: 'algo-controls' }, [...buttons, count]), ...(strip ? [strip] : []), body, message);
+        widget.replaceChildren(el('div', { class: 'algo-controls' }, [...buttons, count]), timeline, body, message);
+        let dragging = false;
+        const stepAt = (event) => {
+            const box = timeline.getBoundingClientRect();
+            const hit = document.elementFromPoint(Math.min(box.right - 1, Math.max(box.left + 1, event.clientX)), box.bottom - 6);
+            const tick = hit && hit.closest && hit.closest('.algo-tick');
+            if (!tick) return;
+            const to = Number(tick.dataset.step);
+            if (to !== index) { const before = index; index = to; show(Math.abs(index - before) === 1); }
+        };
+        timeline.addEventListener('pointerdown', (event) => { dragging = true; timeline.setPointerCapture(event.pointerId); stepAt(event); });
+        timeline.addEventListener('pointermove', (event) => { if (dragging) stepAt(event); });
+        timeline.addEventListener('pointerup', () => { dragging = false; });
+        timeline.addEventListener('pointercancel', () => { dragging = false; });
         // Lines from each call on the stack to the node it holds (trees): the
         // current one strong, the waiting ones faint; they follow the nodes
         // while they move and fade with their call when it returns
@@ -1535,6 +1741,12 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         const connect = () => {
             const box = body.getBoundingClientRect();
             links.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
+            // only when the code stands beside the picture; below it (a
+            // phone) the lines would cross the whole picture
+            if (side.getBoundingClientRect().left < picture.getBoundingClientRect().right) {
+                links.replaceChildren();
+                return;
+            }
             const paths = [];
             for (const li of side.querySelectorAll('li[data-node]')) {
                 const node = picture.querySelector(`[data-key="node-${li.dataset.node}"]`);
@@ -1542,11 +1754,10 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                 const c = node.getBoundingClientRect();
                 const l = li.getBoundingClientRect();
                 const [cx, cy, r] = [c.left + c.width / 2 - box.left, c.top + c.height / 2 - box.top, c.width / 2];
-                const beside = l.left > c.right;
-                const [sx, sy] = beside ? [l.left - box.left - 2, l.top + l.height / 2 - box.top] : [l.left - box.left + 12, l.top - box.top - 2];
+                const [sx, sy] = [l.left - box.left - 2, l.top + l.height / 2 - box.top];
                 const d = Math.hypot(sx - cx, sy - cy) || 1;
                 const [ex, ey] = [cx + ((sx - cx) / d) * (r + 3), cy + ((sy - cy) / d) * (r + 3)];
-                const bend = beside ? `C${sx - 40} ${sy} ${ex + 30} ${ey}` : `C${sx} ${sy - 40} ${ex} ${ey + 30}`;
+                const bend = `C${sx - 40} ${sy} ${ex + 30} ${ey}`;
                 const current = li.classList.contains('current');
                 paths.push(el('svg:path', { d: `M${sx} ${sy} ${bend} ${ex} ${ey}`, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': current ? 1.8 : 1.2,
                     'stroke-dasharray': current ? 'none' : '3 4', opacity: (current ? 0.9 : 0.45) * Number(getComputedStyle(li).opacity) }));
@@ -1578,12 +1789,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
             }
             message.textContent = frame.message;
             if (links) follow((frame.duration || MOTION_TIME) * 2 + 600);
-            if (strip) [...strip.children].forEach((li, i) => {
-                const done = i < frame.op || (i === frame.op && index === frames.length - 1);
-                li.className = done ? 'done' : i === frame.op ? 'current' : '';
-                if (i === frame.op && !done) li.setAttribute('aria-current', 'step');
-                else li.removeAttribute('aria-current');
-            });
+            ticks.forEach((tick, i) => { tick.className = `algo-tick${i < index ? ' done' : i === index ? ' current' : ''}`; });
+            for (const node of timeline.children) node.classList.toggle('current', node.contains(ticks[index]));
+            timeline.setAttribute('aria-valuenow', index);
             count.textContent = `Schritt ${index} von ${frames.length - 1}`;
             buttons[0].disabled = buttons[1].disabled = index === 0;
             buttons[2].disabled = buttons[3].disabled = index === frames.length - 1;

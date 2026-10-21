@@ -12,7 +12,7 @@ module Rouge
             desc 'The pseudocode of the Handbuch'
             tag 'pseudocode'
 
-            KEYWORDS = %w[if else while for each in of return not and or repeat until break continue do then to from mod div].freeze
+            KEYWORDS = %w[if else while for each in of return not and or repeat until break continue do then to from down mod div].freeze
             CONSTANTS = %w[empty none null true false found done full error].freeze
             IDENT = /[\p{L}_][\p{L}\p{N}_]*/
 

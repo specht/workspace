@@ -5383,7 +5383,7 @@ div[data-stepper]::before {
    swipe steps too (stepper_keys.js) */
 @media (pointer: coarse) {
     div[data-stepper]::before {
-        content: 'Zum Ausprobieren · wischen oder tippen schaltet weiter';
+        content: 'Zum Ausprobieren · Tasten tippen oder über das Bild wischen';
     }
     div[data-stepper] :has(> [data-go]) {
         display: flex;
@@ -5392,11 +5392,25 @@ div[data-stepper]::before {
         gap: 0.4em;
     }
     div[data-stepper] :has(> [data-go]) > [data-go] {
-        flex: 1 1 0;
-        max-width: 7.5rem;
+        flex: 2 1 0;
+        max-width: 9rem;
         min-height: 2.75rem;
         margin: 0;
         font-size: 1.25rem;
+    }
+    /* to the start and to the end: narrow, paler and set apart, so that a
+       finger meant for next does not jump to the end */
+    div[data-stepper] :has(> [data-go]) > [data-go='first'],
+    div[data-stepper] :has(> [data-go]) > [data-go='last'] {
+        flex: 0 0 2.75rem;
+        opacity: 0.7;
+        font-size: 1.05rem;
+    }
+    div[data-stepper] :has(> [data-go]) > [data-go='first'] {
+        margin-right: 0.9em;
+    }
+    div[data-stepper] :has(> [data-go]) > [data-go='last'] {
+        margin-left: 0.9em;
     }
 }
 /* On a narrow screen the step buttons share the whole width, so each is
@@ -5408,10 +5422,10 @@ div[data-stepper]::before {
         align-items: center;
         gap: 0.3em;
     }
-    div[data-stepper] :has(> [data-go]) > [data-go] {
-        flex: 1 1 0;
+    div[data-stepper] :has(> [data-go]) > [data-go='prev'],
+    div[data-stepper] :has(> [data-go]) > [data-go='next'] {
+        flex: 2 1 0;
         max-width: none;
-        margin: 0;
         font-size: 1.05rem;
     }
     /* the step count and the like on a line of their own */
