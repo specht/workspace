@@ -141,6 +141,7 @@ module ReferenceIndex
         io << '</div>'
         index = pages.map do |page|
             { :url => "/#{page[:slug]}", :page => strip_tags(page[:title]), :area => page[:section_label].to_s,
+              :words => page[:search_words] || [],
               :sections => (page[:sections] || []).map { |s| { :id => s[:id], :heading => s[:heading], :text => s[:text] } } }
         end
         # </script> inside the text must not end the script element.

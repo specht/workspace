@@ -2598,10 +2598,21 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     border-color: #b99ae0;
 }
 
-/* Long paths and names in tables wrap instead of making the page wider than
-   a phone screen (a table is only as narrow as its longest word). */
+/* Code in a table: one short word (code.whole, main.rb) stays in one
+   piece, it never breaks at a hyphen ([0-9]); longer code breaks at its
+   spaces, and only where it would overflow inside a word, without
+   squeezing its column. On a phone long paths and names may break
+   anywhere, so that a table is not wider than the screen. */
 .table code {
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
+}
+.table code.whole {
+    white-space: nowrap;
+}
+@media (max-width: 576px) {
+    .table code:not(.whole) {
+        overflow-wrap: anywhere;
+    }
 }
 
 /* The first column names things (light, block, door = …): only between

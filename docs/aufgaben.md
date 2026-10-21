@@ -98,6 +98,7 @@ image: tcpip.webp
 | `duration` | Freier Text, so wie er auf der Karte stehen soll |
 | `requires` | Aktivitäten, die vorher sinnvoll sind |
 | `reference` | Handbuch-Seiten, auf die `_uses()` verweist |
+| `search` | Nur Handbuch-Seiten: Wörter, mit Kommas getrennt, unter denen die Suche im Handbuch die Seite findet, ohne dass sie im Titel stehen (`search: Regex, Regexp` für »Reguläre Ausdrücke«); ein Treffer führt an den Anfang der Seite |
 | `template` | Adresse der Vorlage zum Klonen (`https://…`); andere Schulen können hier einen Spiegel eintragen. Im Text `${template}`; der Workspace sagt Lernenden, wenn es eine neue Version gibt (siehe unten) |
 | `template_name` | Name der Vorlage im Genitiv, für »Es gibt eine neue Version der CPU Sandbox!«; ohne das Feld: »… von `cpu-sandbox`« |
 | `class_repo` | Adresse des Klassen-Repositorys, zum Beispiel für die Sandboxes; im Text `${class_repo}` |

@@ -1906,6 +1906,14 @@ class Main < Sinatra::Base
             outline = parsed_sections.dig(section, :catalog) == 'reference' ? ReferenceIndex.anchor_headings(root) : nil
             search_sections = outline ? ReferenceIndex.search_sections(root) : nil
             inject_autotoc(root)
+            # Code in a table that is one short word ([0-9], \\d+, --force)
+            # stays in one piece instead of breaking at its hyphen when the
+            # table squeezes its column (default.css, .table code.whole)
+            root.css('table code').each do |code|
+                text = code.text
+                next if text =~ /\s/ || text.length > 24
+                code['class'] = [code['class'], 'whole'].compact.join(' ')
+            end
 
             # Scripts a page loads itself (the colour mixer) get a fresh
             # address with each version, like default.css: nginx lets
@@ -1944,6 +1952,9 @@ class Main < Sinatra::Base
                 :template => TemplateFreshness.from_meta(page_meta),
                 :outline => outline,
                 :search_sections => search_sections,
+                # search: words that find the page in the Handbuch search
+                # without standing in its title (Regex for »Reguläre Ausdrücke«)
+                :search_words => page_meta['search'].to_s.split(',').map(&:strip).reject(&:empty?),
             }
             if page_tasks
                 parsed_content[slug][:tasks] = page_tasks.merge(:on_page => task_slots & page_tasks[:by_id].keys)
@@ -5804,7 +5815,7 @@ class Main < Sinatra::Base
                         section[:entries].reject { |entry| (!DEVELOPMENT) && @@content[entry][:dev_only] }.map do |slug|
                             content = @@content[slug]
                             { :slug => slug, :title => content[:title],
-                              :outline => content[:outline], :sections => content[:search_sections],
+                              :outline => content[:outline], :sections => content[:search_sections], :search_words => content[:search_words],
                               :section_label => section[:label], :section_icon => section[:icon] }
                         end
                     end

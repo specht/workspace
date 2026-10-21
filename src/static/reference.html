@@ -63,6 +63,13 @@
         var words = query.toLowerCase().split(/\s+/).filter(Boolean);
         var hits = [];
         index.forEach(function (page, p) {
+            // a page's search words (search: in its meta block) find the page
+            // itself, once, at its top, before its sections
+            var words_ = (page.words || []).join(' ').toLowerCase();
+            if (words_ && words.every(function (w) { return (page.page.toLowerCase() + ' ' + words_).indexOf(w) >= 0; })
+                && words.some(function (w) { return words_.indexOf(w) >= 0; })) {
+                hits.push({ page: page, section: { id: '', heading: page.page, text: page.sections.length ? page.sections[0].text : '' }, score: 100, order: p * 1000 - 1 });
+            }
             page.sections.forEach(function (section, s) {
                 var heading = section.heading.toLowerCase();
                 var all = page.page.toLowerCase() + ' ' + heading + ' ' + section.text.toLowerCase();
@@ -89,7 +96,7 @@
         results.innerHTML = found.hits.length === 0
             ? "<p class='reference-results-empty'>Nichts gefunden. Versuch ein anderes Wort.</p>"
             : found.hits.map(function (hit) {
-                return "<a class='reference-result' href='" + esc(hit.page.url + '#' + hit.section.id) + "'>" +
+                return "<a class='reference-result' href='" + esc(hit.page.url + (hit.section.id ? '#' + hit.section.id : '')) + "'>" +
                     "<span class='reference-result-path'>" + esc(hit.page.page.indexOf(hit.page.area) === 0 ? hit.page.page : hit.page.area + ' · ' + hit.page.page) + '</span>' +
                     "<span class='reference-result-heading'>" + mark(hit.section.heading, found.words) + '</span>' +
                     (hit.section.text ? "<span class='reference-result-snippet'>" + snippet(hit.section.text, found.words) + '</span>' : '') +

@@ -1,5 +1,6 @@
 <div class='meta'>
 kind: reference
+search: DEA, NEA, DFA, NFA, Automat, Zustandsautomat, Potenzmengenkonstruktion, Minimierung, Automatron
 </div>
 
 <div
