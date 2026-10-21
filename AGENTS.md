@@ -29,6 +29,11 @@ address from `credentials.rb` and the code `123456`.
 - [docs/aufgaben.md](docs/aufgaben.md): every meta field, task type and placeholder
 - [docs/datenschutz.md](docs/datenschutz.md): Impressum, Datenschutzerklärung, the documents for the school, deleting accounts;
   change `src/ruby/include/privacy.rb` whenever what is stored changes
+- [docs/handoff-datenschutz.md](docs/handoff-datenschutz.md): the state of data protection for the next session:
+  the transition period up to 12 April 2027, the legal situation in Berlin with sources, the ways a school
+  may use the Workspace, what the DSB and the maintainer still have to decide
+- [docs/teacher-access.md](docs/teacher-access.md): roles, groups, the roster import, /personen, what teachers see
+- [docs/test-workspace-packages.md](docs/test-workspace-packages.md): Workspace packages for Leistungsüberprüfungen
 - [docs/checkliste.md](docs/checkliste.md): every rule an activity must meet, why, and what checks it;
   go through it for every new or changed activity. `src/scripts/audit-activities.rb` counts the countable part
 - [src/tutorial-screenshots/README.md](src/tutorial-screenshots/README.md): the recipe language for generated pictures

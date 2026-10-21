@@ -18,6 +18,21 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Übergangszeit für die Unterlagen der Schulen: Unter `/personen` › Schulen
+  hält die Administration fest, wie weit jede Schule ist (Stand des
+  Gesprächs, letzter Kontakt, wann nachgefasst wird, die Schritte von
+  »Schulleitung angesprochen« bis zur unterschriebenen Vereinbarung, offene
+  Fragen, eine Notiz ohne Namen). Darüber stehen der Stichtag, der 12. April
+  2027 (`TRANSITION_DEADLINE`), die Tage bis dahin, was gerade ansteht, und
+  wie viele Schulen fertig, in Arbeit, noch nicht angesprochen oder fällig
+  sind; »Nachricht vorbereiten« füllt einen Text zum Kopieren aus. Der Stand
+  ist kein Nachweis und ändert nichts an der Zustimmung, am Zugang oder an
+  E-Mails: Bis zum Stichtag wird niemand wegen der Unterlagen seiner Schule
+  gesperrt, und am Stichtag geschieht nichts von selbst. Betreibende:
+  nichts zu tun. `docs/handoff-datenschutz.md` fasst die Berliner Rechtslage
+  mit Quellen zusammen, die Wege, auf denen eine Schule den Workspace nutzen
+  kann, und einen Vorschlag für die Zeit nach dem Stichtag.
+
 - Die Backrooms sind jetzt eine Reihe aus vier versteckten Seiten, jede ein
   Level, das auf dem vorigen aufbaut; ein Link am Ende jeder Seite führt ins
   nächste, sonst finden Lernende sie nirgends. Jede Seite führt eine Sache
@@ -1498,6 +1513,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Terminal«, Notiz für Lehrkräfte.
 
 ### Behoben
+
+- Die Prüfübersicht für die Schule nennt für den Serverstandort Art. 44 ff.
+  DSGVO statt § 2 Abs. 3 Satz 2 DigLLV: Der Satz ist seit März 2024
+  gestrichen. Die Server liegen weiterhin in der EU.
 
 - Nachtschicht (`/nachtschicht-8ee59051/`): Seite, Skripte und die
   Textdateien des Levels fragt der Browser bei jedem Laden neu an (bei

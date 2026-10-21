@@ -72,9 +72,10 @@ kein Konto.
 ## Zustimmung der Schule, Einverständnis, ungeklärt
 
 Wer eingeladen ist, kann sich anmelden; ob die Schule zugestimmt hat,
-sperrt niemanden (Entscheidung des Betreibers: Während die Rechtslage
-geklärt wird, bleibt der Unterricht, wie er ist). Die Seiten zeigen, was
-offen ist:
+sperrt während der Übergangszeit niemanden (Entscheidung des Betreibers:
+bis zum 12. April 2027 werden die Unterlagen aller Schulen geklärt, der
+Unterricht bleibt, wie er ist; datenschutz.md, »Die Übergangszeit«, und
+handoff-datenschutz.md). Die Seiten zeigen, was offen ist:
 
 1. Die Schule hat zugestimmt: Die Lehrkraft schickt der Administration die
    unterschriebene Entscheidung der Schulleitung und die Vereinbarung zur
@@ -85,9 +86,17 @@ offen ist:
    `/datenschutz/elternbrief?einverstaendnis=1`), bewahrt die Lehrkraft es
    auf und trägt das Datum unter `/gruppen` ein (`consent_at`, `consent_by`
    an der Einladung). Dafür ist sie verantwortlich; die Administration hat
-   damit nichts zu tun.
-3. Weder noch: geduldet, aber sichtbar (»ungeklärt« auf `/personen`, »Einverständnis
-   für x von y« an der Gruppe), damit es geklärt wird.
+   damit nichts zu tun. Es trägt eine freiwillige Nutzung, nicht den
+   Unterricht: Dort ist die Entscheidung der Schule der Weg.
+3. Weder noch: während der Übergangszeit geduldet, aber sichtbar
+   (»ungeklärt« auf `/personen`, »Einverständnis für x von y« an der
+   Gruppe), damit es geklärt wird. Wie weit das Gespräch mit der Schule ist,
+   hält die Administration unter `/personen` › Schulen › »Übergang« fest;
+   das ändert nichts an der Zustimmung oder am Zugang.
+
+Ein ausdrücklicher Widerspruch oder der Widerruf einer Schule ist etwas
+anderes als fehlende Unterlagen: Er wird sofort bearbeitet (Sperre unter
+`/personen`), nicht erst zum Stichtag.
 
 ## Gruppen im Browser (Klassenseite und `/gruppen`)
 
