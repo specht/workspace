@@ -1,0 +1,17 @@
+{
+  "script": "src/scripts/nachtschicht-pictures.sh",
+  "command": "src/scripts/nachtschicht-pictures.sh ../nachtschicht-site   # the folder export.sh builds in the starter",
+  "inputs": [
+    "src/scripts/nachtschicht-pictures.mjs",
+    "src/scripts/nachtschicht-pictures.sh"
+  ],
+  "hash": "9d6487a21e41ebbc1ae7c47a0cf7477c94b2c44df26bc4c9bb98667f663de976",
+  "pictures": [
+    "nachtschicht-abfahrt.webp",
+    "nachtschicht-flucht1.webp",
+    "nachtschicht-flucht3.webp",
+    "nachtschicht-nachtbad.webp",
+    "nachtschicht-notgang.webp",
+    "nachtschicht-parkdeck.webp"
+  ]
+}

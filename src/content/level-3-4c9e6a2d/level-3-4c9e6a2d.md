@@ -485,6 +485,33 @@ Jetzt kennst du alles, was in einer Raumdatei stehen kann. Die Nachtschicht ist 
 
 Sie öffnet sich in einem neuen Tab, schon fertig gebacken. Das geht auch auf dem Handy, dem Tablet und mit einer VR-Brille: Öffne dieselbe Adresse im Browser der Brille und tippe auf »ENTER VR«.
 
+<div class='gallery columns-2'>
+<figure>
+<img src='nachtschicht-flucht3.webp' alt='Ein breiter Gang mit lila Wänden, unten dunkles Holz: Der Boden steigt nach rechts an, die Decke fällt nach hinten ab, vier Röhren an der Decke; ganz hinten eine schmale Tür.'>
+<figcaption>ein Gang, in dem nichts gerade ist</figcaption>
+</figure>
+<figure>
+<img src='nachtschicht-flucht1.webp' alt='Ein langer Gang mit grünen Wänden und grünen Teppichfliesen, eine Reihe Röhren an der Decke; der Boden hängt leicht zur Seite, hinten eine Tür in den nächsten Gang.'>
+<figcaption>hinter dem Wartezimmer</figcaption>
+</figure>
+<figure>
+<img src='nachtschicht-nachtbad.webp' alt='Ein Steg aus weißen Fliesen mit Geländern auf beiden Seiten führt durch eine Halle voller gekachelter Säulen, die in dunklem, grünblauem Wasser stehen; hinten eine Tür in einen dunklen Raum mit rotem Samt.'>
+<figcaption>das Nachtbad</figcaption>
+</figure>
+<figure>
+<img src='nachtschicht-abfahrt.webp' alt='Eine breite Rampe führt nach hinten hinab, Wände aus Sichtbeton mit den Löchern der Schalung, wenige Röhren an der Decke; hinten im Dunkeln eine Öffnung.'>
+<figcaption>die Abfahrt</figcaption>
+</figure>
+<figure>
+<img src='nachtschicht-parkdeck.webp' alt='Eine niedrige, weite Halle aus Beton im Dunkeln, Reihen von Säulen bis in die Ferne, nur ein paar Röhren an der Decke brennen, vorn eine hell über den Säulen.'>
+<figcaption>das Parkdeck</figcaption>
+</figure>
+<figure>
+<img src='nachtschicht-notgang.webp' alt='Ein schmaler, hoher Gang mit kahlen, gelblichen Wänden, vorn eine Lampe an der Decke, weitere weit hinten; ganz am Ende, kaum zu erkennen, ein Stuhl.'>
+<figcaption>ein Gang, der nirgends hinführt</figcaption>
+</figure>
+</div>
+
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Drück <kbd>C</kbd>. Jetzt sieht alles aus wie von einer alten Videokassette, mit Zeilen, verwaschenen Farben, einem Streifen Bandsalat und dem Datum und der Uhrzeit deines Rechners in der Ecke. Mit <kbd>X</kbd> dazu bekommt alles zum Rand hin farbige Säume, wie durch eine billige Linse.
 </div>
