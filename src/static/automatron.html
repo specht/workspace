@@ -220,7 +220,8 @@ document.addEventListener('DOMContentLoaded', function() {
       steppers.set(id, widget);
       return widget;
     };
-    open.addEventListener('click', () => become(word).querySelector('input').focus());
+    // the cursor stays out of the word, so that the arrow keys step at once
+    open.addEventListener('click', () => become(word));
     steppers.set(id, { become });
     return [box, open];
   }

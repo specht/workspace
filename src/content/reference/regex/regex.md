@@ -12,7 +12,7 @@ search: Regex, Regexp, regular expressions, Muster
 # Reguläre Ausdrücke
 
 <p class='abstract'>
-Ein regulärer Ausdruck ist ein Muster für Text: »eine Postleitzahl«, »ein Wort, das auf ing endet«, »eine Zeile mit einem Datum«. Hier stehen die Bausteine, mit denen man solche Muster schreibt, wie man sie in Ruby, Python, mit grep und in VS Code benutzt, und was sie mit endlichen Automaten zu tun haben: Jeder reguläre Ausdruck ist ein Automat, und Automatron zeichnet ihn.
+Ein regulärer Ausdruck ist ein Muster für Text: »eine Postleitzahl«, »ein Wort, das auf ing endet«, »eine Zeile mit einem Datum«. Hier stehen die Bausteine, mit denen man solche Muster schreibt, wie man sie in Ruby, Python, mit grep und in VS Code benutzt, und was sie mit endlichen Automaten zu tun haben: Hinter jedem regulären Ausdruck steckt ein Automat.
 </p>
 
 <script src='/include/automaton_layout.js'></script>
@@ -56,12 +56,10 @@ Reguläre Ausdrücke heißen auf Englisch *regular expressions*, kurz **Regex** 
 ## Ausprobieren
 
 <!-- part: ausprobieren -->
-<!-- short: Automatron zeichnet die Automaten zu einem Ausdruck aus |, *, +, ? und Klammern; in VS Code sucht Alt+R mit regulären Ausdrücken. -->
+<!-- short: In VS Code sucht Alt+R mit regulären Ausdrücken; Automatron zeichnet den Automaten zu einem Ausdruck aus |, *, +, ? und Klammern. -->
 Am schnellsten probierst du einen Ausdruck in **VS Code** aus: Strg+F öffnet die Suche, Alt+R (oder der Knopf `.*`) schaltet reguläre Ausdrücke ein, und jede Stelle, auf die er passt, wird markiert. Beim Ersetzen (Strg+H) steht `$1` für das, was die erste Klammer gefunden hat.
 
-**Automatron** zeigt, was hinter einem Ausdruck steckt: den Automaten, der genau die Wörter annimmt, die zu ihm passen, mit Wörtern, die dazugehören und die nicht. Es kennt die Bausteine aus der Theorie, Zeichen, `|`, `*`, `+`, `?` und Klammern, aber keine Zeichenklassen; `[0-9]` schreibst du dort als `(0|1|2|3|4|5|6|7|8|9)`.
-
-_tool(automatron)
+Den Automaten hinter einem Ausdruck zeichnet [Automatron](/automatron). Es kennt nur die Bausteine aus der Theorie, Zeichen, `|`, `*`, `+`, `?` und Klammern, keine Zeichenklassen; `[0-9]` schreibst du dort als `(0|1|2|3|4|5|6|7|8|9)`.
 <!-- /part -->
 
 ## In Ruby

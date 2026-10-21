@@ -1,6 +1,6 @@
 <div class='meta'>
 kind: reference
-search: DEA, NEA, DFA, NFA, Automat, Zustandsautomat, Potenzmengenkonstruktion, Minimierung, Automatron
+search: DEA, NEA, DFA, NFA, Automat, Zustandsautomat, Potenzmengenkonstruktion, Minimierung
 </div>
 
 <div
@@ -245,20 +245,9 @@ r<sub>0</sub> und r<sub>1</sub> werden ein Zustand s<sub>0</sub>, r<sub>2</sub> 
 <div class='automaton-drawing' role='img' aria-label='Kleinster DEA mit drei Kreisen s0, s1, s2 in einer Reihe, s2 akzeptiert. b führt von s0 nach s1 und von s1 nach s2, in s2 bleibt er mit b; a führt von jedem Zustand nach s0.' data-regex='(a|b)*bb' data-automaton='min'></div>
 <!-- /part -->
 
-## Automatron
-
-<!-- part: automatron -->
-<!-- short: Automatron macht aus einem regulären Ausdruck einen ε-NEA, einen DEA und den kleinsten DEA, mit allen Tabellen dazwischen, einer Grammatik und Beispielwörtern; jedes Wort Schritt für Schritt. -->
-**Automatron** macht alles auf dieser Seite für einen regulären Ausdruck, den du eingibst: den NEA aus den Bausteinen, die ε-Hüllen und die Tabelle der Potenzmengenkonstruktion, den DEA, die Tabelle der Minimierung und den kleinsten DEA, dazu eine reguläre Grammatik und Wörter, die zur Sprache gehören und die nicht. Jeden der drei Automaten kannst du ein Wort Schritt für Schritt lesen lassen, und der Link zu einem Ergebnis lässt sich teilen, zum Beispiel [»endet auf bb«](/automatron?regex=(a|b)*bb).
-
-_tool(automatron)
-
-Wie man solche Automaten selbst programmiert, zeigt die Aktivität [Endliche Automaten](/automata).
-<!-- /part -->
-
 ## Zum Nachschlagen
 
-Ein offizielles Handbuch gibt es für Automaten nicht; sie stehen in jedem Lehrbuch der theoretischen Informatik. Zum Weiterlesen:
+Wie man solche Automaten selbst programmiert, zeigt die Aktivität [Endliche Automaten](/automata); [Automatron](/automatron) rechnet alle Schritte dieser Seite für einen eigenen regulären Ausdruck durch. Ein offizielles Handbuch gibt es für Automaten nicht; sie stehen in jedem Lehrbuch der theoretischen Informatik. Zum Weiterlesen:
 
 - [Wikipedia: Endlicher Automat](https://de.wikipedia.org/wiki/Endlicher_Automat), mit [deterministischem](https://de.wikipedia.org/wiki/Deterministischer_endlicher_Automat) und [nichtdeterministischem](https://de.wikipedia.org/wiki/Nichtdeterministischer_endlicher_Automat) Automaten: die Definitionen, Beispiele und Beweise.
 - [Wikipedia: Thompson-Konstruktion](https://de.wikipedia.org/wiki/Thompson-Konstruktion), [Potenzmengenkonstruktion](https://de.wikipedia.org/wiki/Potenzmengenkonstruktion) und [Minimalautomat](https://de.wikipedia.org/wiki/Minimalautomat): die drei Verfahren dieser Seite ausführlich.
