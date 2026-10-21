@@ -32,6 +32,8 @@ address from `credentials.rb` and the code `123456`.
 - [docs/handoff-datenschutz.md](docs/handoff-datenschutz.md): the state of data protection for the next session:
   the transition period up to 12 April 2027, the legal situation in Berlin with sources, the ways a school
   may use the Workspace, what the DSB and the maintainer still have to decide
+- [docs/plan-datenschutz-schulen.md](docs/plan-datenschutz-schulen.md): the plan in German for non-specialists
+  (Schulleitung, DSB, an attorney): who is approached when, which document goes to whom, the open questions
 - [docs/teacher-access.md](docs/teacher-access.md): roles, groups, the roster import, /personen, what teachers see
 - [docs/test-workspace-packages.md](docs/test-workspace-packages.md): Workspace packages for Leistungsüberprüfungen
 - [docs/checkliste.md](docs/checkliste.md): every rule an activity must meet, why, and what checks it;

@@ -11,9 +11,13 @@ before an E2E test. `CHANGELOG.md` »Unreleased« lists every change in German.
 
 ## Git state
 
-- Branch `datenschutz-uebergang` (from `main` of 2026-10-21, not merged):
-  the transition tracking on /personen, this hand-off, the docs brought in
-  line, the outdated DigLLV reference in the Prüfübersicht.
+- Everything of 2026-10-21 is merged into `main` (the transition tracking
+  on /personen, the LMS documents, this hand-off).
+- `docs/plan-datenschutz-schulen.md` is the plan for non-specialists, in
+  German, to show to the Schulleitung, the DSB or an attorney: the steps,
+  who gets which document, the fallbacks, the open questions. Its master is
+  a Claude Doc of the maintainer; the file is a copy. Neutral voice, no
+  real names.
 - Merge or push only when the maintainer asks. Stage files by name, never
   `git add -A` (a swap file of `credentials.rb` was once committed that way).
 

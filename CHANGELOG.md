@@ -18,6 +18,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- `docs/plan-datenschutz-schulen.md`: der Plan für die Übergangszeit in
+  verständlicher Sprache, für Schulleitungen, Datenschutzbeauftragte und
+  rechtliche Beratung: wer wann angesprochen wird, welche Unterlage an wen
+  geht (mit Diagramm), was gilt, wenn eine Schule nicht mitmacht, und die
+  offenen Fragen.
 - Unter `/datenschutz` drei weitere Unterlagen für den Fall, dass eine
   Schule den Workspace als Lernmanagementsystem einordnet (§ 3 DigLLV): ein
   Rollen- und Berechtigungskonzept (wer welche Rolle hat, wer sie vergibt,
