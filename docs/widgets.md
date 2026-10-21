@@ -262,6 +262,16 @@ only to look nice.
   with its length (none under 40 px), so the head of an index arrow never
   tilts. A label that comes or goes follows its node (`data-follow` on a
   text), and what merges into an element keeps its own key.
+- **Subset construction and minimisation** (Algo Stepper, `data-algo='subset'`
+  and `'minimize'`, the automaton from Automatron with `data-regex` or written
+  out like a drawing): the page's pseudocode beside the picture, one step a
+  line. Subset construction: the NEA on top (`set` solid rings, `next`
+  dashed, the arrows taken pulse, the ε arrows after them), the DEA below,
+  growing, each state already where it is at the end with its set under it,
+  a table beside that fills cell by cell. Minimisation: the DEA with rings on
+  the pair being checked, dashed on the pair a symbol leads to, the table of
+  pairs with its marks and their reasons; at the end the states that become
+  one share a tint.
 - **Bit planes** (`bitplane_widget.js`, steganography): a slider with two
   handles over the bits 7 to 0, the bits between them kept, all others 0;
   »verstärken« stretches the rest to 0 to 255; one pixel's red value in

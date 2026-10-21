@@ -18,6 +18,7 @@ Ein endlicher Automat liest ein Wort Zeichen für Zeichen und weiß am Ende nur 
 <script src='/include/automaton_layout.js'></script>
 <script src='/include/automatron.js'></script>
 <script src='/include/automaton_stepper.js'></script>
+<script src='/include/algo_stepper.js'></script>
 
 ## Ein endlicher Automat
 
@@ -178,7 +179,11 @@ to_dea(nea):
     accepting: every set that contains an accepting state of the nea
 ```
 
-Ein Beispiel ohne ε: Dieser NEA nimmt die Wörter an, die auf **aa** enden.
+Schritt für Schritt für den NEA, den Automatron aus `a*b` baut: oben der NEA, die durchgezogenen Ringe sind `set`, die gestrichelten `next`; unten wächst der DEA, jeder Zustand mit seiner Menge darunter, an der Stelle, die er am Ende hat; daneben die Tabelle. Bei `a*` arbeitet die ε-Hülle mit.
+
+<div class='algo-stepper' data-title='Potenzmengenkonstruktion für a*b' data-algo='subset' data-regex='a*b'></div>
+
+Ein Beispiel ohne ε zum Nachrechnen: Dieser NEA nimmt die Wörter an, die auf **aa** enden.
 
 <div class='automaton-drawing' role='img' aria-label='NEA mit drei Kreisen: q0 ist der Start und führt mit a und b zu sich selbst und mit a nach q1; q1 führt mit a nach q2, q2 akzeptiert.' data-states='q0 q1 q2' data-start='q0' data-accept='q2' data-transitions='q0 a-b q0, q0 a q1, q1 a q2'></div>
 
@@ -224,6 +229,10 @@ minimize(dea):
                     mark (p, q)
     the states of every unmarked pair become one state
 ```
+
+Schritt für Schritt für den DEA, den Automatron aus `(a|b)*abb` baut, »endet auf abb«: Die beiden Ringe sind das Paar, das gerade dran ist, die gestrichelten das Paar, zu dem ein Zeichen führt; daneben die Tabelle der Paare.
+
+<div class='algo-stepper' data-title='Minimierung für (a|b)*abb' data-algo='minimize' data-regex='(a|b)*abb'></div>
 
 Ein Paar wird markiert, wenn ein Zeichen es zu einem schon markierten Paar führt: Dann gibt es ein Wort, das die beiden unterscheidet, dieses Zeichen und dahinter das Wort für das andere Paar. Automatron baut für `(a|b)*bb`, »endet auf bb«, diesen DEA:
 

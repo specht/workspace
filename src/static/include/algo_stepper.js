@@ -58,6 +58,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 .algo-stepper table.algo-table tr.done td { color: var(--bs-secondary-color); }
 .algo-stepper table.algo-table tr.current td { background: color-mix(in srgb, var(--algo-accent) 18%, transparent); font-weight: 600; }
 .algo-stepper table.algo-table td.changed { background: color-mix(in srgb, var(--algo-frontier) 50%, transparent); }
+.algo-stepper table.algo-table tr.current th, .algo-stepper table.algo-table td.current { outline: 2px solid var(--algo-accent); outline-offset: -2px; }
+.algo-stepper table.algo-table td.target { outline: 2px dashed var(--algo-accent); outline-offset: -2px; }
+.algo-stepper table.algo-pairs td { min-width: 2.6em; text-align: center; }
 .algo-stepper .algo-message { margin-top: 0.6em; min-height: 3em; }
 .algo-stepper svg text { font-family: system-ui, sans-serif; }
 .algo-stepper svg [data-key] { transition: fill 0.3s, stroke 0.3s; }
@@ -2424,6 +2427,327 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         return out;
     }
 
+    // ---- Automata: the subset construction and the minimisation ----------
+    // (the Handbuch page Endliche Automaten). The pseudocode is the page's,
+    // word for word; the automata come from Automatron (data-regex) or are
+    // written out like a drawing (data-states, data-transitions, …)
+    const SUBSET_CODE = [
+        'to_dea(nea):',
+        '    first ← closure({nea.start})',
+        '    states ← [first]',
+        '    todo ← [first]',
+        '    while todo not empty:',
+        '        set ← take one from todo',
+        '        for each symbol a:',
+        '            next ← closure(every target of (state, a) for each state in set)',
+        '            if next is empty: continue                 # Fehlerzustand',
+        '            if next not in states: add next to states and to todo',
+        '            delta[(set, a)] ← next',
+        '    accepting: every set that contains an accepting state of the nea',
+    ];
+    const MINIMIZE_CODE = [
+        'minimize(dea):',
+        '    mark every pair (p, q) where exactly one of p and q is accepting',
+        '    repeat until nothing changes:',
+        '        for each unmarked pair (p, q):',
+        '            for each symbol a:',
+        '                if the pair (delta[(p, a)], delta[(q, a)]) is marked:',
+        '                    mark (p, q)',
+        '    the states of every unmarked pair become one state',
+    ];
+    function automatonOf(widget, which) {
+        if (widget.dataset.regex && window.Automatron) {
+            const r = window.Automatron.run(widget.dataset.regex);
+            return which === 'dfa' ? r.dfa.implicit_sink.drawing : r.nfa.drawing;
+        }
+        return window.AutomatonLayout.fromData(widget.dataset);
+    }
+    const transitionsOf = (a) => {
+        const delta = new Map();
+        for (const e of a.edges) {
+            const k = `${e.from} ${e.label}`;
+            if (!delta.has(k)) delta.set(k, []);
+            if (!delta.get(k).includes(e.to)) delta.get(k).push(e.to);
+        }
+        return delta;
+    };
+    // q0 as q with a small 0, in italics, as in every automaton drawing
+    const stateName = (text, x, y, key, size = 15) => {
+        const m = String(text).match(/^([A-Za-z])(\d+|F)$/);
+        const node = el('svg:text', { 'data-key': key, x, y: y + size / 3, 'text-anchor': 'middle', 'font-size': size, 'font-style': 'italic', 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-ink)' });
+        if (m) node.append(el('svg:tspan', { text: m[1] }), el('svg:tspan', { dy: '0.3em', 'font-size': '0.7em', text: m[2] }));
+        else node.textContent = text;
+        return node;
+    };
+    // a layout's numbers moved by dx, dy (x and y alternate in a path)
+    const shiftPath = (d, dx, dy) => { let k = 0; return d.replace(/-?\d+(?:\.\d+)?(?:e-?\d+)?/g, (n) => String(Math.round((Number(n) + (k++ % 2 === 0 ? dx : dy)) * 10) / 10)); };
+    // An automaton into svg from its layout at dx, dy: states (only those
+    // shown), arrows with their labels (only those shown, a label as given),
+    // the arrows that are on purple; keys start with prefix
+    function automatonInto(svg, L, dx, dy, prefix, marker, show) {
+        const R = window.AutomatonLayout.R;
+        for (const p of L.paths) {
+            const s = show.edge(p.e);
+            if (!s) continue;
+            svg.appendChild(el('svg:path', { 'data-key': `${prefix}edge-${p.e.from}-${p.e.to}`, d: shiftPath(p.d, dx, dy), fill: 'none',
+                stroke: s.on ? 'var(--algo-accent)' : 'var(--algo-line)', 'stroke-width': s.on ? 2.5 : 1.6, 'marker-end': `url(#${marker}${s.on ? '-accent' : ''})` }));
+        }
+        for (const p of L.paths) {
+            const s = show.edge(p.e);
+            if (!s) continue;
+            svg.appendChild(el('svg:text', { 'data-key': `${prefix}label-${p.e.from}-${p.e.to}`, x: Math.round(p.box.x + p.box.w / 2 + dx), y: Math.round(p.box.y + 12 + dy), 'text-anchor': 'middle', 'font-size': 13,
+                'font-family': "'0xProto Nerd Font Mono', monospace", fill: s.on ? 'var(--algo-accent)' : 'var(--algo-ink)', 'font-weight': s.on ? 700 : 400, text: s.label || p.e.label }));
+        }
+        const [sx, sy] = L.pos.get(L.start);
+        if (show.state(L.start)) svg.appendChild(el('svg:path', { 'data-key': `${prefix}start`, d: `M${sx + dx - R - 34} ${sy + dy} L${sx + dx - R - 2} ${sy + dy}`, fill: 'none', stroke: 'var(--algo-line)', 'stroke-width': 1.6, 'marker-end': `url(#${marker})` }));
+        for (const st of L.states) {
+            const look = show.state(st.id);
+            if (!look) continue;
+            const [x, y] = L.pos.get(st.id);
+            svg.appendChild(el('svg:circle', { 'data-key': `${prefix}state-${st.id}`, 'data-grow': '', cx: x + dx, cy: y + dy, r: R, fill: look.fill || 'var(--algo-paper)', stroke: 'var(--algo-ink)', 'stroke-width': 1.5 }));
+            if (look.accept) svg.appendChild(el('svg:circle', { 'data-key': `${prefix}accept-${st.id}`, cx: x + dx, cy: y + dy, r: R - 4, fill: 'none', stroke: 'var(--algo-ink)', 'stroke-width': 1.2 }));
+            svg.appendChild(stateName(st.label, x + dx, y + dy, `${prefix}name-${st.id}`));
+            if (look.note) svg.appendChild(el('svg:text', { 'data-key': `${prefix}note-${st.id}`, x: x + dx, y: y + dy + R + 15, 'text-anchor': 'middle', 'font-size': 11, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-ink)', text: look.note }));
+        }
+    }
+    // a ring around a state (the widgets' purple; dashed: where it goes)
+    const stateRing = (key, L, id, dx, dy, dashed = false) => {
+        const [x, y] = L.pos.get(id);
+        return el('svg:circle', { 'data-key': key, cx: x + dx, cy: y + dy, r: window.AutomatonLayout.R + 6, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': dashed ? 2 : 3, ...(dashed ? { 'stroke-dasharray': '5 4' } : {}) });
+    };
+    const caption = (key, text, x, y) => el('svg:text', { 'data-key': key, x, y, 'font-size': 12, 'font-weight': 600, 'letter-spacing': '0.04em', fill: 'var(--algo-accent)', text });
+
+    // The subset construction, step by step: which sets of NEA states the DEA
+    // gets, and its arrows, in the order of the pseudocode
+    function traceSubset(nea) {
+        const ids = nea.states.map((s) => s.id);
+        const delta = transitionsOf(nea);
+        const symbols = [...new Set(nea.edges.map((e) => e.label).filter((l) => l !== 'ε'))].sort();
+        const order = (list) => [...list].sort((a, b) => ids.indexOf(a) - ids.indexOf(b));
+        const closure = (set) => {
+            const all = [...set];
+            const taken = [];
+            for (let i = 0; i < all.length; i++) for (const t of delta.get(`${all[i]} ε`) || []) if (!all.includes(t)) { all.push(t); taken.push([all[i], t]); }
+            return [order(all), taken];
+        };
+        const show = (set) => `{${set.join(', ')}}`;
+        const accepting = new Set(nea.accept);
+        const frames = [];
+        const dea = [];
+        const moves = [];
+        const index = (set) => dea.findIndex((s) => s.set.join(',') === set.join(','));
+        let op = -1;
+        const snap = (at, message, marks = {}) => frames.push({ code: { lines: SUBSET_CODE, at }, message, op, known: dea.length, moves: moves.length, ...marks });
+        const [first, firstEps] = closure([nea.start]);
+        snap(1, firstEps.length ? `first ← closure({${nea.start}}): ${nea.start} und alles, was ε von dort erreicht: ${show(first)}.` : `first ← closure({${nea.start}}): ${nea.start} hat keinen ε-Übergang, die Menge ist ${show(first)}.`,
+            { set: first, eps: firstEps, known: 0 });
+        dea.push({ set: first });
+        snap(2, `states ← [first]: ${show(first)} wird der erste Zustand des DEA, r0.`, { set: first, newState: 0 });
+        snap(3, 'todo ← [first]: Diese Menge ist noch durchzugehen.', { set: first });
+        const todo = [0];
+        while (todo.length) {
+            op = dea.length > 0 ? todo[0] : op;
+            snap(4, `while todo not empty: Noch ${todo.length === 1 ? 'eine Menge' : `${todo.length} Mengen`} durchzugehen.`, {});
+            const current = todo.shift();
+            const set = dea[current].set;
+            snap(5, `set ← take one from todo: r${current} = ${show(set)}.`, { set, current });
+            for (const a of symbols) {
+                snap(6, `for each symbol a: Jetzt mit ${a}.`, { set, current, symbol: a });
+                const used = [];
+                const moved = [];
+                for (const s of set) for (const t of delta.get(`${s} ${a}`) || []) { used.push([s, t]); if (!moved.includes(t)) moved.push(t); }
+                const [next, eps] = closure(moved);
+                if (!next.length) {
+                    snap(7, `next ← closure(…): Aus ${show(set)} führt kein Pfeil mit ${a}. next ist leer.`, { set, current, symbol: a });
+                    snap(8, `if next is empty: continue: Mit ${a} geht es aus r${current} in den Fehlerzustand, den der DEA nicht zeichnet.`, { set, current, symbol: a });
+                    continue;
+                }
+                snap(7, `next ← closure(…): Mit ${a} von ${show(set)} nach ${show(order(moved))}${eps.length ? `, mit ε dazu ${show(next.filter((q) => !moved.includes(q)))}` : ''}: next = ${show(next)}.`,
+                    { set, current, symbol: a, next, used, eps });
+                let target = index(next);
+                if (target < 0) {
+                    dea.push({ set: next });
+                    target = dea.length - 1;
+                    todo.push(target);
+                    snap(9, `if next not in states: ${show(next)} ist neu. Sie wird r${target} und kommt in todo.`, { set, current, symbol: a, next, newState: target });
+                } else snap(9, `if next not in states: ${show(next)} ist schon r${target}.`, { set, current, symbol: a, next });
+                moves.push([current, a, target]);
+                snap(10, `delta[(set, a)] ← next: Ein Pfeil ${a} von r${current} nach r${target}.`, { set, current, symbol: a, next, newMove: moves.length - 1 });
+            }
+        }
+        op = dea.length;
+        snap(4, 'while todo not empty: todo ist leer, jede Menge ist durchgegangen.', {});
+        const yes = dea.map((s, i) => (s.set.some((q) => accepting.has(q)) ? i : -1)).filter((i) => i >= 0);
+        snap(11, `accepting: ${yes.map((i) => `r${i}`).join(', ')} ${yes.length === 1 ? 'enthält' : 'enthalten'} einen akzeptierenden Zustand des NEA und ${yes.length === 1 ? 'akzeptiert' : 'akzeptieren'}. Der DEA ist fertig.`, { final: true });
+        frames.opNames = [...dea.map((_, i) => `r${i}`), 'fertig'];
+        frames.dea = { states: dea.map((s, i) => ({ id: `r${i}`, label: `r${i}`, set: s.set })), start: 'r0', accept: yes.map((i) => `r${i}`),
+            edges: moves.map(([f, a, t]) => ({ from: `r${f}`, to: `r${t}`, label: a })) };
+        frames.moves = moves;
+        frames.symbols = symbols;
+        return frames;
+    }
+
+    function setUpSubset(widget, svg, side, marker) {
+        const nea = automatonOf(widget, 'nfa');
+        const frames = traceSubset(nea);
+        const room = window.AutomatonLayout.RING_ROOM;
+        const L1 = window.AutomatonLayout.layout(nea, { ring: room });
+        const L2 = window.AutomatonLayout.layout(frames.dea, { ring: room });
+        const width = Math.max(L1.view[2], L2.view[2]) + 20;
+        const top1 = 26;
+        const top2 = top1 + L1.view[3] + 44;
+        const [dx1, dy1] = [(width - L1.view[2]) / 2 - L1.view[0], top1 - L1.view[1]];
+        const [dx2, dy2] = [(width - L2.view[2]) / 2 - L2.view[0], top2 - L2.view[1]];
+        const height = top2 + L2.view[3] + 22;
+        svg.setAttribute('aria-label', 'Oben der NEA, unten der DEA, der aus ihm entsteht; jeder Zustand des DEA ist eine Menge von Zuständen des NEA');
+        const draw = (frame) => {
+            svg.replaceChildren(arrowheads(marker));
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+            svg.appendChild(caption('cap-nea', 'NEA', 4, 14));
+            svg.appendChild(caption('cap-dea', 'DEA', 4, top2 - 16));
+            const used = new Set([...(frame.used || []), ...(frame.eps || [])].map(([f, t]) => `${f} ${t}`));
+            automatonInto(svg, L1, dx1, dy1, 'n-', marker, {
+                state: (id) => ({ accept: nea.accept.includes(id) }),
+                edge: (e) => ({ on: used.has(`${e.from} ${e.to}`) && (e.label === frame.symbol || e.label.includes('ε') || (frame.eps || []).some(([f, t]) => f === e.from && t === e.to)) }),
+            });
+            (frame.set || []).forEach((q) => svg.appendChild(stateRing(`set-${q}`, L1, q, dx1, dy1)));
+            (frame.next || []).forEach((q) => svg.appendChild(stateRing(`next-${q}`, L1, q, dx1, dy1, true)));
+            [...(frame.used || []).map((u) => ({ u, delay: 0 })), ...(frame.eps || []).map((u) => ({ u, delay: 0.45 }))].forEach(({ u: [f, t], delay }, i) =>
+                svg.appendChild(el('svg:path', { 'data-key': `pulse-${i}`, 'data-pulse': `n-edge-${f}-${t}`, 'data-delay': delay, 'data-length': 0.5, 'data-swell': 2.5, d: 'M0 0', opacity: 0 })));
+            // the DEA as far as it is known, each state in the place it has
+            // at the end, its set under it
+            const known = new Set(frames.dea.states.slice(0, frame.known).map((s) => s.id));
+            const moves = frames.moves.slice(0, frame.moves);
+            const labels = new Map();
+            for (const [f, a, t] of moves) { const k = `r${f} r${t}`; labels.set(k, [...(labels.get(k) || []), a]); }
+            automatonInto(svg, L2, dx2, dy2, 'd-', marker, {
+                state: (id) => known.has(id) && { accept: frame.final && frames.dea.accept.includes(id), note: `{${frames.dea.states.find((s) => s.id === id).set.join(',')}}`,
+                    fill: frame.newState !== undefined && `r${frame.newState}` === id ? 'color-mix(in srgb, var(--algo-frontier) 55%, var(--algo-paper))' : undefined },
+                edge: (e) => labels.has(`${e.from} ${e.to}`) && { label: window.AutomatonLayout.joinLabels(labels.get(`${e.from} ${e.to}`)),
+                    on: frame.newMove !== undefined && `r${frames.moves[frame.newMove][0]}` === e.from && `r${frames.moves[frame.newMove][2]}` === e.to },
+            });
+            if (frame.current !== undefined) svg.appendChild(stateRing('dea-current', L2, `r${frame.current}`, dx2, dy2));
+            // beside it the table, a row for each set found
+            const head = el('tr', {}, [el('th', { text: 'DEA' }), el('th', { text: 'Menge' }), ...frames.symbols.map((a) => el('th', { text: a }))]);
+            const rows = frames.dea.states.slice(0, frame.known).map((s, i) => el('tr', { class: i === frame.current ? 'current' : '' }, [
+                el('th', { html: `r<sub>${i}</sub>${frame.final && frames.dea.accept.includes(s.id) ? ' <i class="bi bi-check-lg"></i>' : ''}` }), el('td', { text: `{${s.set.join(', ')}}` }),
+                ...frames.symbols.map((a) => {
+                    const m = moves.findIndex(([f, sym]) => f === i && sym === a);
+                    return el('td', { class: m >= 0 && m === frame.newMove ? 'changed' : '', html: m >= 0 ? `r<sub>${moves[m][2]}</sub>` : (frame.moves > 0 && i < (frame.current ?? frame.known) ? '–' : '') });
+                })]));
+            side.replaceChildren(el('h5', { text: 'Tabelle' }), el('table', { class: 'algo-table' }, [head, ...rows]), ...codeBox(frame.code));
+        };
+        return { frames, draw };
+    }
+
+    // The table method, step by step: pairs that are surely different get
+    // marked, round after round, until nothing changes
+    function traceMinimize(dfa) {
+        const ids = dfa.states.map((s) => s.id);
+        const delta = transitionsOf(dfa);
+        const symbols = [...new Set(dfa.edges.map((e) => e.label))].sort();
+        const accepting = new Set(dfa.accept);
+        const go = (s, a) => (delta.get(`${s} ${a}`) || [null])[0];
+        const pair = (p, q) => (ids.indexOf(p) < ids.indexOf(q) ? `${p} ${q}` : `${q} ${p}`);
+        const marked = new Map();
+        const frames = [];
+        let op = -1;
+        const snap = (at, message, marks = {}) => frames.push({ code: { lines: MINIMIZE_CODE, at }, message, op, marked: new Map(marked), ...marks });
+        snap(0, `Der DEA hat ${ids.length} Zustände. Die Tabelle hat ein Feld für jedes Paar von ihnen.`, {});
+        op = 0;
+        const first = [];
+        for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) if (accepting.has(ids[i]) !== accepting.has(ids[j])) { marked.set(pair(ids[i], ids[j]), ''); first.push(`(${ids[i]}, ${ids[j]})`); }
+        snap(1, `mark every pair (p, q) where exactly one … is accepting: ${first.join(', ')}. Das leere Wort unterscheidet sie schon.`, { fresh: first.length ? [...marked.keys()] : [] });
+        let round = 0;
+        let changed = true;
+        while (changed) {
+            changed = false;
+            round += 1;
+            op = round;
+            snap(2, `repeat until nothing changes: Runde ${round}.`, {});
+            for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
+                const [p, q] = [ids[i], ids[j]];
+                if (marked.has(pair(p, q))) continue;
+                snap(3, `for each unmarked pair (p, q): (${p}, ${q}).`, { p, q });
+                for (const a of symbols) {
+                    const [tp, tq] = [go(p, a), go(q, a)];
+                    snap(4, `for each symbol a: ${a}. Von ${p} geht es mit ${a} nach ${tp}, von ${q} nach ${tq}.`, { p, q, a, tp, tq });
+                    const hit = tp !== tq && marked.has(pair(tp, tq));
+                    snap(5, tp === tq ? `if the pair (…) is marked: Beide kommen nach ${tp}, dasselbe Paar ist kein Unterschied.`
+                        : hit ? `if the pair (…) is marked: (${tp}, ${tq}) ist markiert. Also unterscheidet ${a} und dahinter ein Wort auch ${p} und ${q}.`
+                            : `if the pair (…) is marked: (${tp}, ${tq}) ist nicht markiert, ${a} unterscheidet sie (noch) nicht.`, { p, q, a, tp, tq, check: true });
+                    if (hit) {
+                        marked.set(pair(p, q), a);
+                        changed = true;
+                        snap(6, `mark (p, q): (${p}, ${q}) wird markiert, mit ${a} als Grund.`, { p, q, a, tp, tq, fresh: [pair(p, q)] });
+                        break;
+                    }
+                }
+            }
+            if (!changed) snap(2, `repeat until nothing changes: In Runde ${round} wurde nichts markiert. Fertig mit Markieren.`, {});
+        }
+        op = round + 1;
+        // the blocks: states of unmarked pairs together, in the order of
+        // their first state
+        const block = new Map();
+        const blocks = [];
+        for (const s of ids) {
+            if (block.has(s)) continue;
+            const b = [s, ...ids.filter((t) => t !== s && !block.has(t) && !marked.has(pair(s, t)))];
+            b.forEach((t) => block.set(t, blocks.length));
+            blocks.push(b);
+        }
+        snap(7, `the states of every unmarked pair become one state: ${blocks.map((b, i) => `s${i} = {${b.join(', ')}}`).join(', ')}. Der minimierte DEA hat ${blocks.length} Zustände.`, { blocks });
+        frames.opNames = ['markieren', ...Array.from({ length: round }, (_, i) => `Runde ${i + 1}`), 'Ende'];
+        frames.symbols = symbols;
+        frames.ids = ids;
+        return frames;
+    }
+
+    function setUpMinimize(widget, svg, side, marker) {
+        const dfa = automatonOf(widget, 'dfa');
+        const frames = traceMinimize(dfa);
+        const L = window.AutomatonLayout.layout(dfa, { ring: window.AutomatonLayout.RING_ROOM });
+        const [vx, vy, vw, vh] = L.view;
+        const width = vw + 20;
+        const height = vh + 20;
+        const [dx, dy] = [10 - vx, 10 - vy];
+        const ids = frames.ids;
+        const TINTS = ['var(--algo-frontier)', 'var(--algo-done)', '#8ce99a', '#99e9f2', '#ffc9c9'];
+        svg.setAttribute('aria-label', 'Der DEA; die beiden Zustände des Paars, das gerade dran ist, tragen einen Ring');
+        const draw = (frame) => {
+            svg.replaceChildren(arrowheads(marker));
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+            const on = new Set(frame.a ? [`${frame.p} ${frame.tp}`, `${frame.q} ${frame.tq}`] : []);
+            const blockOf = new Map((frame.blocks || []).flatMap((b, i) => b.map((s) => [s, i])));
+            automatonInto(svg, L, dx, dy, '', marker, {
+                state: (id) => ({ accept: dfa.accept.includes(id), fill: blockOf.has(id) && (frame.blocks[blockOf.get(id)].length > 1) ? `color-mix(in srgb, ${TINTS[blockOf.get(id) % TINTS.length]} 50%, var(--algo-paper))` : undefined,
+                    note: blockOf.has(id) ? `s${blockOf.get(id)}` : undefined }),
+                edge: (e) => ({ on: on.has(`${e.from} ${e.to}`) && e.label.split(', ').some((l) => l === frame.a || (l.includes('–') && l[0] <= frame.a && frame.a <= l[2])) }),
+            });
+            if (frame.p) { svg.appendChild(stateRing('ring-p', L, frame.p, dx, dy)); svg.appendChild(stateRing('ring-q', L, frame.q, dx, dy)); }
+            if (frame.check && frame.tp && frame.tq && frame.tp !== frame.tq) { svg.appendChild(stateRing('target-p', L, frame.tp, dx, dy, true)); svg.appendChild(stateRing('target-q', L, frame.tq, dx, dy, true)); }
+            if (frame.a) [[frame.p, frame.tp], [frame.q, frame.tq]].forEach(([f, t], i) => svg.appendChild(el('svg:path', { 'data-key': `pulse-${i}`, 'data-pulse': `edge-${f}-${t}`, 'data-delay': 0, 'data-length': 0.6, 'data-swell': 2.5, d: 'M0 0', opacity: 0 })));
+            // beside it the table of pairs: a row for each state but the
+            // first, a column for each but the last
+            const key = (p, q) => (ids.indexOf(p) < ids.indexOf(q) ? `${p} ${q}` : `${q} ${p}`);
+            const name = (s) => { const m = String(s).match(/^([A-Za-z])(\d+)$/); return m ? `${m[1]}<sub>${m[2]}</sub>` : s; };
+            const rows = ids.slice(1).map((r, i) => el('tr', {}, [el('th', { html: name(r) }), ...ids.slice(0, ids.length - 1).map((c, j) => {
+                if (j > i) return el('td', {});
+                const k = key(r, c);
+                const isCurrent = frame.p && key(frame.p, frame.q) === k;
+                const isTarget = frame.check && frame.tp !== frame.tq && key(frame.tp, frame.tq) === k;
+                const fresh = (frame.fresh || []).includes(k);
+                const mark = frame.marked.get(k);
+                const html = mark !== undefined ? `<i class="bi bi-x-lg text-danger"></i>${mark ? ` (${mark})` : ''}` : frame.blocks ? '<i class="bi bi-check-lg text-success"></i>' : '';
+                return el('td', { class: [isCurrent ? 'current' : '', isTarget ? 'target' : '', fresh ? 'changed' : ''].join(' ').trim(), html });
+            })]));
+            const head = el('tr', {}, [el('th', {}), ...ids.slice(0, ids.length - 1).map((c) => el('th', { html: name(c) }))]);
+            side.replaceChildren(el('h5', { text: 'Paare' }), el('table', { class: 'algo-table algo-pairs' }, [head, ...rows]), ...codeBox(frame.code));
+        };
+        return { frames, draw };
+    }
+
     function setUp(widget) {
         const algo = widget.dataset.algo;
         let frames;
@@ -2517,6 +2841,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
                         el('tr', {}, [el('th', { text: 'Schreibzugriffe' }), el('td', { text: String(frame.writes) })]),
                     ]), ...stack, ...codeBox(frame.code));
             };
+        } else if (algo === 'subset' || algo === 'minimize') {
+            const marker = `algo-arrow-${++widgetCount}`;
+            ({ frames, draw } = (algo === 'subset' ? setUpSubset : setUpMinimize)(widget, svg, side, marker));
         } else if (algo === 'heap') {
             const parse = (text) => (text || '').split(',').map((s) => s.trim()).filter(Boolean).map((s) => s.split(/\s+/))
                 .map(([type, value]) => ({ type, value: Number(value) }));
