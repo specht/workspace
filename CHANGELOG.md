@@ -1486,6 +1486,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- Backrooms: In der Automap verschiebt <kbd>Shift</kbd> und Ziehen das Level
+  über den Boden, in der Höhe der eigenen Füße. Vorher stieg die Mitte bei
+  schrägem Blick mit jedem Zug, und das Level kam der Maus immer langsamer
+  nach.
+
 - Backrooms: Die Wand des Schachts unter einem Loch im Boden endet am Boden
   des Raums darüber; vorher stand dort eine gelbe Platte vor der Wand. Stößt
   das Loch an eine Wand des Raums darüber, steht diese Wand bis an den Rand,
