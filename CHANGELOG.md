@@ -1563,6 +1563,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Galerien: Auf dem Handy öffnet ein Tipp auf ein Bild es groß, wenn zwei
+  Bilder nebeneinander stehen (`columns-3`, `columns-4`), mit Bildunterschrift
+  und Pfeilen zum nächsten; ein Bild, das schon fast so breit wie der
+  Bildschirm ist, bleibt, wie es ist. Bisher öffnete auf dem Handy nichts.
 - Datenstrukturen heißen auf allen Seiten so, wie man sie auch im Deutschen
   nennt: Queue, Priority Queue, Stack, Linked List, statt Warteschlange,
   Stapel und verkettete Liste.
