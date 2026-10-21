@@ -90,20 +90,23 @@ Dieser NEA nimmt die Wörter an, in denen **aa** vorkommt. In q<sub>0</sub> lies
 
 <div class='automaton-stepper' data-stepper data-title='NEA: enthält aa' data-states='q0 q1 q2' data-start='q0' data-accept='q2' data-alphabet='ab' data-transitions='q0 a-b q0, q0 a q1, q1 a q2, q2 a-b q2' data-input='abaab'></div>
 
-```pseudocode
-accepts(word):
-    states ← closure({start})
-    for each symbol in word:
-        next ← {}
-        for each state in states:
-            add every target of (state, symbol) to next
-        states ← closure(next)
-    return states contains an accepting state
-```
-
 ### ε-Übergänge
 
-Ein **ε-Übergang** (Epsilon) kostet kein Zeichen: Der NEA darf ihn jederzeit nehmen, auch mehrere hintereinander. Die Zustände, die er von einem Zustand aus über ε-Übergänge erreicht, samt diesem selbst, heißen seine **ε-Hülle**. Die Funktion `closure` oben bildet sie für eine ganze Menge; ein NEA ohne ε-Übergänge gibt seine Menge unverändert zurück.
+Ein **ε-Übergang** (Epsilon) kostet kein Zeichen: Der NEA darf ihn jederzeit nehmen, auch mehrere hintereinander. Die Zustände, die er von einem Zustand aus über ε-Übergänge erreicht, samt diesem selbst, heißen seine **ε-Hülle**. Die ε-Hülle einer Menge sind die ε-Hüllen ihrer Zustände zusammen; die Funktion `closure` bildet sie. Ein NEA ohne ε-Übergänge hat in jeder Hülle nur den Zustand selbst.
+
+Ein Beispiel: der NEA, den die [Thompson-Konstruktion](#vom-regulaeren-ausdruck-zum-nea) aus `a*b` baut. Von q<sub>0</sub> erreicht er ohne ein Zeichen q<sub>1</sub>, wo das a gelesen wird, und q<sub>3</sub>, wo das b gelesen wird, wenn kein a kommt; von q<sub>2</sub> aus geht es zurück zu q<sub>1</sub> (noch ein a) oder weiter zu q<sub>3</sub>:
+
+<div class='automaton-drawing' role='img' aria-label='Der NEA zu a*b: q0 führt mit ε nach q1 und im Bogen nach q3; q1 führt mit a nach q2; q2 führt mit ε zurück nach q1 und weiter nach q3; q3 führt mit b zum akzeptierenden q4.' data-regex='a*b' data-automaton='nfa'></div>
+
+<table class='table' style='width: auto;'>
+<tr><th>q</th><th>ε-Hülle E(q)</th></tr>
+<tr><td>q<sub>0</sub></td><td>{q<sub>0</sub>, q<sub>1</sub>, q<sub>3</sub>}</td></tr>
+<tr><td>q<sub>1</sub></td><td>{q<sub>1</sub>}</td></tr>
+<tr><td>q<sub>2</sub></td><td>{q<sub>1</sub>, q<sub>2</sub>, q<sub>3</sub>}</td></tr>
+<tr><td>q<sub>3</sub></td><td>{q<sub>3</sub>}</td></tr>
+<tr><td>q<sub>4</sub></td><td>{q<sub>4</sub>}</td></tr>
+</table>
+
 
 ```pseudocode
 closure(states):
@@ -115,6 +118,21 @@ closure(states):
             if target not in result:
                 add target to result and to todo
     return result
+```
+
+### Ein Wort lesen
+
+Mit der ε-Hülle liest ein NEA ein Wort so: am Anfang die Hülle des Starts, nach jedem Zeichen die Hülle aller Ziele.
+
+```pseudocode
+accepts(word):
+    states ← closure({start})
+    for each symbol in word:
+        next ← {}
+        for each state in states:
+            add every target of (state, symbol) to next
+        states ← closure(next)
+    return states contains an accepting state
 ```
 
 Ein NEA ist oft kleiner und leichter aufzuschreiben als ein DEA für dieselbe Sprache: Er beschreibt nur das Muster. Ein DEA ist leichter auszuführen: Er merkt sich einen Zustand statt einer Menge.
@@ -176,7 +194,7 @@ Die Kleenesche Hülle einer Sprache L, geschrieben L<sup>&#42;</sup>, sind alle 
 
 <!-- part: potenzmenge -->
 <!-- short: Potenzmengenkonstruktion: jeder Zustand des DEA ist eine Menge von Zuständen des NEA; beim Start die ε-Hülle des Starts, je Zeichen die ε-Hülle aller Ziele; akzeptierend ist eine Menge mit einem akzeptierenden Zustand des NEA. -->
-Ein NEA lässt sich immer in einen DEA verwandeln, der dieselben Wörter annimmt. Die Idee steckt schon im Pseudocode des NEA: Er ist in einer Menge von Zuständen, und welche Menge nach dem nächsten Zeichen kommt, steht fest. Die **Potenzmengenkonstruktion** macht darum aus jeder Menge, die vorkommen kann, einen Zustand des DEA. (Die Potenzmenge ist die Menge aller Teilmengen; gebraucht werden meist nur wenige davon.)
+Ein NEA lässt sich immer in einen DEA verwandeln, der dieselben Wörter annimmt. Die Idee steckt schon im Pseudocode des NEA, mit der [ε-Hülle](#uebergaenge) nach jedem Schritt: Er ist in einer Menge von Zuständen, und welche Menge nach dem nächsten Zeichen kommt, steht fest. Die **Potenzmengenkonstruktion** macht darum aus jeder Menge, die vorkommen kann, einen Zustand des DEA. (Die Potenzmenge ist die Menge aller Teilmengen; gebraucht werden meist nur wenige davon.)
 
 ```pseudocode
 to_dea(nea):
