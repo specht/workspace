@@ -37,13 +37,13 @@ Alle Beispiele sortieren dieselben acht Zahlen: 5, 2, 8, 1, 9, 3, 7, 4.
 
 Suche die kleinste Zahl und tausche sie an Index 0. Suche unter den übrigen die kleinste und tausche sie an Index 1. Und so weiter. **Invariante:** Links von Index i stehen die i kleinsten Zahlen, sortiert.
 
-```text
-selection_sort(liste):
-    für i von 0 bis länge - 2:
-        kleinste ← i
-        für j von i + 1 bis länge - 1:
-            wenn liste[j] < liste[kleinste]: kleinste ← j
-        liste[i] und liste[kleinste] tauschen
+```pseudocode
+selection_sort(list):
+    for i from 0 to length - 2:
+        smallest ← i
+        for j from i + 1 to length - 1:
+            if list[j] < list[smallest]: smallest ← j
+        swap list[i] and list[smallest]
 ```
 
 <div class='algo-stepper' data-algo='sort' data-sort='selection' data-values='5, 2, 8, 1, 9, 3, 7, 4'></div>
@@ -57,15 +57,15 @@ Selection Sort braucht immer gleich viele Vergleiche, \\(\frac{n(n-1)}{2}\\), ob
 
 So sortiert man Spielkarten in der Hand: Nimm die nächste Karte und schieb sie nach links, an allen größeren vorbei, bis sie passt. **Invariante:** Links von Index i ist alles sortiert, aber noch nicht unbedingt an seinem endgültigen Platz.
 
-```text
-insertion_sort(liste):
-    für i von 1 bis länge - 1:
-        aktuell ← liste[i]
+```pseudocode
+insertion_sort(list):
+    for i from 1 to length - 1:
+        current ← list[i]
         j ← i
-        solange j > 0 und liste[j - 1] > aktuell:
-            liste[j] ← liste[j - 1]        (eins nach rechts rücken)
+        while j > 0 and list[j - 1] > current:
+            list[j] ← list[j - 1]        (eins nach rechts rücken)
             j ← j - 1
-        liste[j] ← aktuell
+        list[j] ← current
 ```
 
 Das angehobene Element ist das, das gerade einsortiert wird:
@@ -74,29 +74,29 @@ Das angehobene Element ist das, das gerade einsortiert wird:
 
 Ist die Liste schon sortiert, braucht Insertion Sort nur \\(n - 1\\) Vergleiche, ist sie umgekehrt sortiert, \\(\frac{n(n-1)}{2}\\). Für fast sortierte Listen ist es deshalb sehr gut, und für kurze Listen auch: Viele schnelle Verfahren sortieren die kleinen Stücke am Ende mit Insertion Sort.
 
-**Typische Fehler:** `j` bis unter 0 laufen lassen (erst `j > 0` prüfen, dann `liste[j - 1]` lesen); `aktuell` erst nach dem Verschieben aus der Liste lesen, dann ist es schon überschrieben.
+**Typische Fehler:** `j` bis unter 0 laufen lassen (erst `j > 0` prüfen, dann `list[j - 1]` lesen); `current` erst nach dem Verschieben aus der Liste lesen, dann ist es schon überschrieben.
 <!-- /part -->
 
 <!-- part: bubble-sort -->
 <!-- short: Bubble Sort: Nachbarn vertauschen, wenn sie falsch herum stehen; nach jedem Durchgang steht die größte ganz rechts. -->
 ## Bubble Sort
 
-Geh durch die Liste und vertausche zwei Nachbarn, wenn der linke größer ist. Nach einem Durchgang ist die größte Zahl ganz rechts angekommen, wie eine Blase, die aufsteigt. Der nächste Durchgang muss sie nicht mehr ansehen. **Invariante:** Rechts von `ende` stehen die größten, an ihrem Platz.
+Geh durch die Liste und vertausche zwei Nachbarn, wenn der linke größer ist. Nach einem Durchgang ist die größte Zahl ganz rechts angekommen, wie eine Blase, die aufsteigt. Der nächste Durchgang muss sie nicht mehr ansehen. **Invariante:** Rechts von `end` stehen die größten, an ihrem Platz.
 
-```text
-bubble_sort(liste):
-    für ende von länge - 1 bis 1, rückwärts:
-        getauscht ← falsch
-        für i von 0 bis ende - 1:
-            wenn liste[i] > liste[i + 1]:
-                liste[i] und liste[i + 1] tauschen
-                getauscht ← wahr
-        wenn nicht getauscht: fertig
+```pseudocode
+bubble_sort(list):
+    for end from length - 1 down to 1:
+        swapped ← false
+        for i from 0 to end - 1:
+            if list[i] > list[i + 1]:
+                swap list[i] and list[i + 1]
+                swapped ← true
+        if not swapped: done
 ```
 
 <div class='algo-stepper' data-algo='sort' data-sort='bubble' data-values='5, 2, 8, 1, 9, 3, 7, 4'></div>
 
-Bubble Sort ist leicht zu verstehen und leicht richtig zu schreiben, aber langsam: Es tauscht viel öfter als die anderen. `getauscht` sorgt dafür, dass es bei einer sortierten Liste nach einem Durchgang aufhört.
+Bubble Sort ist leicht zu verstehen und leicht richtig zu schreiben, aber langsam: Es tauscht viel öfter als die anderen. `swapped` sorgt dafür, dass es bei einer sortierten Liste nach einem Durchgang aufhört.
 <!-- /part -->
 
 <!-- part: merge-sort -->
@@ -105,19 +105,19 @@ Bubble Sort ist leicht zu verstehen und leicht richtig zu schreiben, aber langsa
 
 Teile die Liste in zwei Hälften, sortiere jede Hälfte (mit Merge Sort, also rekursiv), und führe die beiden sortierten Hälften zusammen. Zum **Zusammenführen** schaut man nur auf die vordersten beiden Zahlen der Hälften und nimmt die kleinere. Eine Liste mit einer Zahl ist schon sortiert, dort hört die Rekursion auf.
 
-```text
-merge_sort(liste, von, bis):            (bis gehört nicht mehr dazu)
-    wenn bis - von < 2: fertig
-    mitte ← (von + bis) / 2, abgerundet
-    merge_sort(liste, von, mitte)
-    merge_sort(liste, mitte, bis)
-    i ← von, j ← mitte
-    für k von von bis bis - 1:
-        wenn i < mitte und (j ≥ bis oder liste[i] ≤ liste[j]):
-            zwischen[k] ← liste[i], i ← i + 1
-        sonst:
-            zwischen[k] ← liste[j], j ← j + 1
-    zwischen[von … bis - 1] zurück nach liste kopieren
+```pseudocode
+merge_sort(list, start, stop):          (stop gehört nicht mehr dazu)
+    if stop - start < 2: done
+    middle ← (start + stop) / 2, rounded down
+    merge_sort(list, start, middle)
+    merge_sort(list, middle, stop)
+    i ← start, j ← middle
+    for k from start to stop - 1:
+        if i < middle and (j ≥ stop or list[i] ≤ list[j]):
+            scratch[k] ← list[i], i ← i + 1
+        else:
+            scratch[k] ← list[j], j ← j + 1
+    copy scratch[start … stop - 1] back to list
 ```
 
 Unter den Balken steht der Zwischenspeicher; die gestrichelte Linie trennt die beiden Hälften, die gerade zusammengeführt werden:
@@ -126,7 +126,7 @@ Unter den Balken steht der Zwischenspeicher; die gestrichelte Linie trennt die b
 
 Merge Sort braucht immer etwa \\(n \log_2 n\\) Vergleiche, auch im schlechtesten Fall, und lässt gleiche Zahlen in ihrer Reihenfolge (es ist **stabil**). Dafür braucht es einen Zwischenspeicher so groß wie die Liste; in der Sandbox ist das `scratch`.
 
-**Typische Fehler:** `≤` statt `<` beim Zusammenführen vergessen (dann ist es nicht mehr stabil); eine Hälfte ist leer, und man liest trotzdem `liste[j]` hinter dem Ende.
+**Typische Fehler:** `≤` statt `<` beim Zusammenführen vergessen (dann ist es nicht mehr stabil); eine Hälfte ist leer, und man liest trotzdem `list[j]` hinter dem Ende.
 <!-- /part -->
 
 <!-- part: quick-sort -->
@@ -135,18 +135,18 @@ Merge Sort braucht immer etwa \\(n \log_2 n\\) Vergleiche, auch im schlechtesten
 
 Wähle eine Zahl, das **Pivot**, hier die letzte des Bereichs. Bringe alle kleineren nach links und alle anderen nach rechts, und setze das Pivot dazwischen: Jetzt steht es an seinem endgültigen Platz. Sortiere dann links und rechts davon auf dieselbe Weise.
 
-```text
-quick_sort(liste, von, bis):            (bis gehört dazu)
-    wenn bis ≤ von: fertig
-    pivot ← liste[bis]
-    grenze ← von
-    für i von von bis bis - 1:
-        wenn liste[i] < pivot:
-            liste[i] und liste[grenze] tauschen
-            grenze ← grenze + 1
-    liste[grenze] und liste[bis] tauschen     (das Pivot an seinen Platz)
-    quick_sort(liste, von, grenze - 1)
-    quick_sort(liste, grenze + 1, bis)
+```pseudocode
+quick_sort(list, first, last):          (last gehört dazu)
+    if last ≤ first: done
+    pivot ← list[last]
+    boundary ← first
+    for i from first to last - 1:
+        if list[i] < pivot:
+            swap list[i] and list[boundary]
+            boundary ← boundary + 1
+    swap list[boundary] and list[last]     (das Pivot an seinen Platz)
+    quick_sort(list, first, boundary - 1)
+    quick_sort(list, boundary + 1, last)
 ```
 
 Rot ist das Pivot, die rote gestrichelte Linie die Grenze: Links von ihr stehen die Zahlen, die kleiner sind als das Pivot.

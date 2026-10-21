@@ -28,27 +28,27 @@ Ein **binärer Suchbaum** hat eine Regel: Für jeden Knoten stehen in seinem lin
 
 Die Regel sagt bei jedem Knoten, wohin es weitergeht: Ist der gesuchte Wert kleiner, nach links, ist er größer, nach rechts. Endet der Weg an einer leeren Stelle, ist der Wert nicht im Baum.
 
-```text
-find(knoten, wert):
-    wenn knoten leer: nicht gefunden
-    wenn wert = knoten.wert: gefunden
-    wenn wert < knoten.wert: gib find(knoten.links, wert) zurück
-    sonst: gib find(knoten.rechts, wert) zurück
+```pseudocode
+find(node, value):
+    if node empty: not found
+    if value = node.value: found
+    if value < node.value: return find(node.left, value)
+    else: return find(node.right, value)
 ```
 
 ### Einfügen
 
 Einfügen ist Suchen: Man sucht den Wert, und an der leeren Stelle, an der die Suche endet, kommt der neue Knoten hin. Der Baum wächst immer unten.
 
-```text
-insert(knoten, wert):
-    wenn knoten leer: gib einen neuen Knoten mit wert zurück
-    wenn wert < knoten.wert: knoten.links ← insert(knoten.links, wert)
-    wenn wert > knoten.wert: knoten.rechts ← insert(knoten.rechts, wert)
-    gib knoten zurück
+```pseudocode
+insert(node, value):
+    if node empty: return a new node with value
+    if value < node.value: node.left ← insert(node.left, value)
+    if value > node.value: node.right ← insert(node.right, value)
+    return node
 ```
 
-Dass `insert` den Knoten zurückgibt und der Aufrufer ihn wieder einträgt, ist der Trick: So braucht kein Knoten sein Elternteil zu kennen, und die leere Wurzel ist kein Sonderfall (`wurzel ← insert(wurzel, wert)`).
+Dass `insert` den Knoten zurückgibt und der Aufrufer ihn wieder einträgt, ist der Trick: So braucht kein Knoten sein Elternteil zu kennen, und die leere Wurzel ist kein Sonderfall (`root ← insert(root, value)`).
 
 Acht Werte, dann zwei Suchen, eine erfolgreich und eine nicht:
 
@@ -65,24 +65,24 @@ Ein Knoten wird zuerst gesucht. Dann gibt es drei Fälle:
 2. **Ein Kind:** Das Kind rückt mit seinem ganzen Teilbaum an seine Stelle. Die Regel bleibt erfüllt, denn der ganze Teilbaum lag schon auf der richtigen Seite.
 3. **Zwei Kinder:** Hier passt kein Kind an seine Stelle. Stattdessen kommt der **nächstgrößere** Wert dorthin: der kleinste im rechten Teilbaum, einmal nach rechts und dann links, so weit es geht. Er ist größer als alles links und kleiner als alles andere rechts. Sein alter Knoten hat kein linkes Kind (sonst wäre er nicht der kleinste) und ist damit Fall 1 oder 2.
 
-```text
-remove(knoten, wert):
-    wenn knoten leer: gib leer zurück
-    wenn wert < knoten.wert: knoten.links ← remove(knoten.links, wert)
-    sonst wenn wert > knoten.wert: knoten.rechts ← remove(knoten.rechts, wert)
-    sonst:
-        wenn knoten.links leer: gib knoten.rechts zurück
-        wenn knoten.rechts leer: gib knoten.links zurück
-        nächster ← knoten.rechts
-        solange nächster.links nicht leer: nächster ← nächster.links
-        knoten.wert ← nächster.wert
-        knoten.rechts ← remove(knoten.rechts, nächster.wert)
-    gib knoten zurück
+```pseudocode
+remove(node, value):
+    if node empty: return empty
+    if value < node.value: node.left ← remove(node.left, value)
+    else if value > node.value: node.right ← remove(node.right, value)
+    else:
+        if node.left empty: return node.right
+        if node.right empty: return node.left
+        successor ← node.right
+        while successor.left not empty: successor ← successor.left
+        node.value ← successor.value
+        node.right ← remove(node.right, successor.value)
+    return node
 ```
 
 Derselbe Baum, dann alle drei Fälle nacheinander: 20 ist ein Blatt, 40 hat ein Kind, 50 hat zwei:
 
-<div class='algo-stepper' data-algo='bst' data-ops='insert 50, insert 30, insert 70, insert 20, insert 40, insert 60, insert 80, insert 35, remove 20, remove 40, remove 50'></div>
+<div class='algo-stepper' data-algo='bst' data-setup='insert 50, insert 30, insert 70, insert 20, insert 40, insert 60, insert 80, insert 35' data-ops='remove 20, remove 40, remove 50'></div>
 
 **Typische Fehler**
 
@@ -97,12 +97,12 @@ Derselbe Baum, dann alle drei Fälle nacheinander: 20 ist ein Blatt, 40 hat ein 
 
 Um jeden Knoten einmal zu besuchen, etwa zum Ausgeben oder Zählen, geht man rekursiv in beide Teilbäume. Die drei Arten unterscheiden sich nur darin, wann der Knoten selbst drankommt:
 
-```text
-inorder(knoten):
-    wenn knoten leer: fertig
-    inorder(knoten.links)
-    knoten besuchen
-    inorder(knoten.rechts)
+```pseudocode
+inorder(node):
+    if node empty: done
+    inorder(node.left)
+    visit node
+    inorder(node.right)
 ```
 
 - **Inorder** (links, Knoten, rechts) besucht die Werte eines Suchbaums **sortiert**. Für den Baum oben: 20, 30, 35, 40, 50, 60, 70, 80.
@@ -111,10 +111,10 @@ inorder(knoten):
 
 Die **Höhe** eines Baums ist die Zahl der Knoten auf dem längsten Weg von der Wurzel nach unten, ein leerer Baum hat die Höhe 0:
 
-```text
-höhe(knoten):
-    wenn knoten leer: gib 0 zurück
-    gib 1 + größere von höhe(knoten.links) und höhe(knoten.rechts) zurück
+```pseudocode
+height(node):
+    if node empty: return 0
+    return 1 + the larger of height(node.left) and height(node.right)
 ```
 <!-- /part -->
 
@@ -138,13 +138,13 @@ Nach jedem Einfügen geht man den Weg zurück nach oben, berechnet die Höhen ne
 
 Eine **Rotation nach rechts** um einen Knoten \\(y\\) mit linkem Kind \\(x\\) hebt \\(x\\) nach oben: \\(y\\) wird das rechte Kind von \\(x\\), und der rechte Teilbaum von \\(x\\) wechselt als linker Teilbaum zu \\(y\\). Die Suchregel bleibt erfüllt, denn dieser Teilbaum liegt zwischen \\(x\\) und \\(y\\). Die Rotation nach links ist dasselbe spiegelverkehrt.
 
-```text
-rotiere_rechts(y):
-    x ← y.links
-    y.links ← x.rechts
-    x.rechts ← y
-    höhe von y neu berechnen, dann die von x
-    gib x zurück
+```pseudocode
+rotate_right(y):
+    x ← y.left
+    y.left ← x.right
+    x.right ← y
+    update the height of y, then of x
+    return x
 ```
 
 Welche Rotation nötig ist, hängt davon ab, wo der neue Wert gelandet ist, von dem zu hohen Knoten aus gesehen:
@@ -169,7 +169,7 @@ Diese acht Werte lösen alle vier Fälle aus, LL, RR, RL und LR in dieser Reihen
 - Die Höhen in der falschen Reihenfolge neu berechnen: Erst der Knoten, der nach unten gerutscht ist, dann der, der jetzt oben ist.
 - Den neuen obersten Knoten nicht zurückgeben und eintragen: Die Rotation passiert, aber der Elternteil zeigt noch auf den alten.
 - LR und RL mit einer einzigen Rotation lösen: Dann ist der Baum danach genauso schief, nur zur anderen Seite.
-- Die Höhe eines leeren Teilbaums nicht als 0 behandeln: Ohne eine kleine Funktion `höhe(knoten)`, die bei leer 0 liefert, stürzt jede Rechnung an einem Blatt ab.
+- Die Höhe eines leeren Teilbaums nicht als 0 behandeln: Ohne eine kleine Funktion `height(node)`, die bei leer 0 liefert, stürzt jede Rechnung an einem Blatt ab.
 <!-- /part -->
 
 ## Zum Nachschlagen

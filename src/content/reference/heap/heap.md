@@ -70,15 +70,15 @@ Für jeden Eintrag gilt: **Kein Kind ist kleiner als sein Elternteil.** Daraus f
 
 Ein neuer Eintrag kommt **hinten** an das Array, an die erste freie Stelle des Baums. Dort verletzt er vielleicht die Heap-Eigenschaft: Er ist kleiner als sein Elternteil. Dann tauscht er mit ihm den Platz, und das so lange, bis sein Elternteil nicht mehr größer ist oder er oben angekommen ist. Er **sickert nach oben**.
 
-```text
-push(heap, eintrag):
-    eintrag hinten an heap anfügen
-    i ← letzter Index von heap
-    solange i > 0:
-        eltern ← (i - 1) / 2, abgerundet
-        wenn heap[eltern] ≤ heap[i]: fertig
-        heap[eltern] und heap[i] tauschen
-        i ← eltern
+```pseudocode
+push(heap, entry):
+    append entry to the back of heap
+    i ← the last index of heap
+    while i > 0:
+        parent ← (i - 1) / 2, rounded down
+        if heap[parent] ≤ heap[i]: done
+        swap heap[parent] and heap[i]
+        i ← parent
 ```
 
 Probier es aus mit 5, 3, 8, 1, 4 und 2. Oben steht der Heap als Baum, darunter dasselbe als Array, mit den Indizes klein daneben:
@@ -94,23 +94,23 @@ Ein Eintrag steigt höchstens so viele Stufen auf, wie der Baum hoch ist: bei \\
 
 Der kleinste Eintrag steht an Index 0. Ihn herauszunehmen, reißt ein Loch an der Spitze. Also kommt der **letzte** Eintrag des Arrays dorthin, und das Array wird um eins kürzer. Der neue an der Spitze ist meist zu groß. Er tauscht mit dem **kleineren** seiner beiden Kinder, solange dieses kleiner ist als er. Er **sickert nach unten**.
 
-```text
+```pseudocode
 pop(heap):
-    wenn heap leer: es gibt nichts
-    oben ← heap[0]
-    letzter ← den letzten Eintrag aus heap nehmen
-    wenn heap nicht leer:
-        heap[0] ← letzter
+    if heap empty: nothing to pop
+    top ← heap[0]
+    last ← take the last entry from heap
+    if heap not empty:
+        heap[0] ← last
         i ← 0
-        wiederholen:
-            kleinster ← i
-            für kind in (2i + 1, 2i + 2):
-                wenn kind < Länge von heap und heap[kind] < heap[kleinster]:
-                    kleinster ← kind
-            wenn kleinster = i: fertig
-            heap[kleinster] und heap[i] tauschen
-            i ← kleinster
-    gib oben zurück
+        repeat:
+            smallest ← i
+            for each child in (2i + 1, 2i + 2):
+                if child < length of heap and heap[child] < heap[smallest]:
+                    smallest ← child
+            if smallest = i: done
+            swap heap[smallest] and heap[i]
+            i ← smallest
+    return top
 ```
 
 Erst kommen 5, 3, 8, 1, 4 und 2 hinein, dann holt `pop` dreimal den kleinsten heraus:

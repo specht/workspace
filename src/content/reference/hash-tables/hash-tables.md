@@ -45,18 +45,18 @@ Für Strings rechnet man aus allen Zeichen eine Zahl, zum Beispiel so, dass jede
 
 Zwei Schlüssel im selben Bucket sind eine **Kollision**. Sie lassen sich nicht vermeiden: Es gibt mehr mögliche Schlüssel als Buckets. Beim **Chaining** (separate chaining) hält jeder Bucket eine kleine Liste, und alle Schlüssel, die dort landen, kommen in diese Liste.
 
-```text
+```pseudocode
 insert(k):
     b ← h(k)
-    wenn k schon in buckets[b]: fertig (oder Fehler, je nach Aufgabe)
-    k hinten an buckets[b] anhängen
-    anzahl ← anzahl + 1
+    if k already in buckets[b]: done (oder Fehler, je nach Aufgabe)
+    append k to the back of buckets[b]
+    count ← count + 1
 
 find(k):
-    gib zurück, ob k in buckets[b] steht, mit b ← h(k)
+    return whether k is in buckets[b], with b ← h(k)
 
 remove(k):
-    k aus buckets[h(k)] entfernen, wenn es da ist
+    remove k from buckets[h(k)] if it is there
 ```
 
 Gesucht wird nur in **einem** Bucket. Solange die Listen kurz sind, ist das fast so schnell wie ein Array. Sechs Schlüssel in acht Buckets, darunter drei, die alle in Bucket 5 landen:
@@ -70,21 +70,21 @@ Gesucht wird nur in **einem** Bucket. Solange die Listen kurz sind, ist das fast
 
 Ohne Listen geht es auch: Jeder Bucket hält höchstens einen Schlüssel. Ist der Bucket \\(h(k)\\) belegt, probiert man den nächsten, dann den übernächsten, und am Ende des Arrays geht es vorn weiter. Das heißt **Linear Probing** (open addressing).
 
-```text
+```pseudocode
 insert(k):
     b ← h(k)
-    solange buckets[b] belegt:
-        wenn buckets[b] = k: fertig
+    while buckets[b] occupied:
+        if buckets[b] = k: done
         b ← (b + 1) mod m
     buckets[b] ← k
-    anzahl ← anzahl + 1
+    count ← count + 1
 
 find(k):
     b ← h(k)
-    solange buckets[b] belegt:
-        wenn buckets[b] = k: gefunden
+    while buckets[b] occupied:
+        if buckets[b] = k: found
         b ← (b + 1) mod m
-    nicht gefunden
+    not found
 ```
 
 Die Suche hört erst an einem **leeren** Bucket auf, denn bis dahin könnte \\(k\\) beim Einfügen weitergerutscht sein. Dieselben sechs Schlüssel wie oben:
@@ -107,15 +107,15 @@ Der **Füllgrad** (load factor) ist die Zahl der Schlüssel geteilt durch die Za
 
 Deshalb wächst eine Hash Table, wenn der Füllgrad eine Grenze überschreitet, meist 0,75: Sie legt ein Array mit doppelt so vielen Buckets an und fügt **jeden** Schlüssel neu ein. Kopieren genügt nicht, denn mit \\(m\\) ändert sich \\(h(k) = k \bmod m\\), und jeder Schlüssel kommt in einen anderen Bucket. Das heißt **Rehashing**. Wie beim Vergrößern einer [Array List](/reference/listen#array-list) ist es teuer, aber selten.
 
-```text
+```pseudocode
 insert(k):
-    … wie oben …
-    wenn anzahl / m > 0,75:
-        alt ← buckets
+    … as above …
+    if count / m > 0.75:
+        old ← buckets
         m ← 2 · m
-        buckets ← m leere Buckets
-        anzahl ← 0
-        für jeden Schlüssel s in alt: insert(s)
+        buckets ← m empty buckets
+        count ← 0
+        for each key s in old: insert(s)
 ```
 
 ### Wofür

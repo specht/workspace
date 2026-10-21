@@ -5,6 +5,7 @@ require_relative 'cypher_lexer'
 require_relative 'anaglyph_scene_lexer'
 require_relative 'minicpu_lexer'
 require_relative 'backrooms_room_lexer'
+require_relative 'pseudocode_lexer'
 
 module CodeHighlight
     # From this many lines on, a code block is set a little smaller.
@@ -135,6 +136,10 @@ module CodeHighlight
                 # A whole file starts with <?php and may hold HTML around the
                 # PHP; a snippet is PHP from the first character.
                 lexer = Rouge::Lexers::PHP.new(:start_inline => !code.text.include?('<?'))
+            when 'pseudocode'
+                # The Handbuch's pseudocode (Rouge::Lexers::Pseudocode)
+                lexer = Rouge::Lexers::Pseudocode.new
+                pre['class'] = [pre['class'], 'code-pseudocode'].compact.join(' ')
             when 'python'
                 lexer = Rouge::Lexers::Python.new
             when 'room'

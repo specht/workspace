@@ -47,15 +47,15 @@ Gilt eine Kante in beide Richtungen, steht sie zweimal da: B bei A und A bei B. 
 
 Jede Suche auf dieser Seite merkt sich zu jedem Knoten, den sie findet, von welchem Knoten aus sie ihn gefunden hat: seinen **Vorgänger**. Der Start hat keinen. Ist das Ziel gefunden, liest man den Weg rückwärts ab: vom Ziel zu seinem Vorgänger, zu dessen Vorgänger und so weiter, bis zum Start.
 
-```text
-weg_zurück(vorgänger, ziel):
-    wenn ziel nicht in vorgänger: es gibt keinen Weg
-    weg ← leere Liste
-    knoten ← ziel
-    solange knoten nicht »keiner« ist:
-        knoten vorne an weg anfügen
-        knoten ← vorgänger[knoten]
-    gib weg zurück
+```pseudocode
+path_back(predecessor, goal):
+    if goal not in predecessor: no path
+    path ← empty list
+    node ← goal
+    while node is not none:
+        add node at the front of path
+        node ← predecessor[node]
+    return path
 ```
 
 Weil man rückwärts geht, kommt jeder Knoten **vorne** dazu. Wer hinten anfügt, bekommt den Weg vom Ziel zum Start und muss ihn am Ende umdrehen.
@@ -67,18 +67,18 @@ Weil man rückwärts geht, kommt jeder Knoten **vorne** dazu. Wer hinten anfügt
 
 Die **Breitensuche** geht vom Start aus wie eine Welle: erst zu allen Nachbarn des Starts, dann zu deren Nachbarn und so weiter. Die Knoten, die sie gefunden, aber noch nicht weiterverfolgt hat, stehen in einer **Queue**: Was zuerst hineinkommt, kommt zuerst wieder heraus (FIFO, *first in, first out*).
 
-```text
-breitensuche(graph, start, ziel):
-    vorgänger ← { start: keiner }
+```pseudocode
+breadth_first_search(graph, start, goal):
+    predecessor ← { start: none }
     queue ← [start]
-    solange queue nicht leer:
-        knoten ← vorne aus der queue nehmen
-        wenn knoten = ziel: gib weg_zurück(vorgänger, ziel) zurück
-        für jeden nachbar von knoten:
-            wenn nachbar nicht in vorgänger:
-                vorgänger[nachbar] ← knoten
-                nachbar hinten an die queue anfügen
-    es gibt keinen Weg
+    while queue not empty:
+        node ← take the front node from queue
+        if node = goal: return path_back(predecessor, goal)
+        for each neighbor of node:
+            if neighbor not in predecessor:
+                predecessor[neighbor] ← node
+                add neighbor at the back of queue
+    no path
 ```
 
 Probier es aus, von A nach H. Gelb sind die Knoten in der Queue, lila die schon besuchten, der schwarze Ring zeigt, wer gerade dran ist; die dicken Linien sind die Vorgänger:
@@ -102,18 +102,18 @@ Die Breitensuche findet A–C–G–H: drei Kanten, die wenigsten, die es gibt, 
 
 Die **Tiefensuche** nimmt statt einer Queue einen **Stack**: Was zuletzt hineinkommt, kommt zuerst wieder heraus (LIFO, *last in, first out*). Sie geht deshalb einen Weg erst ganz zu Ende, bevor sie umkehrt, wie jemand, der in einem Labyrinth immer der rechten Wand folgt. Der Pseudocode ist der der Breitensuche, nur mit einem Stack:
 
-```text
-tiefensuche(graph, start, ziel):
-    vorgänger ← { start: keiner }
+```pseudocode
+depth_first_search(graph, start, goal):
+    predecessor ← { start: none }
     stack ← [start]
-    solange stack nicht leer:
-        knoten ← oben vom stack nehmen
-        wenn knoten = ziel: gib weg_zurück(vorgänger, ziel) zurück
-        für jeden nachbar von knoten:
-            wenn nachbar nicht in vorgänger:
-                vorgänger[nachbar] ← knoten
-                nachbar oben auf den stack legen
-    es gibt keinen Weg
+    while stack not empty:
+        node ← take the top node from stack
+        if node = goal: return path_back(predecessor, goal)
+        for each neighbor of node:
+            if neighbor not in predecessor:
+                predecessor[neighbor] ← node
+                put neighbor on top of stack
+    no path
 ```
 
 <div class='algo-stepper' data-algo='dfs' data-graph='stadt' data-start='A' data-goal='H'></div>
@@ -127,24 +127,24 @@ Hier findet sie A–D–G–H, weil sie D als Letztes auf den Stack gelegt hat u
 
 Den kürzesten Weg nach Länge findet das Verfahren von **Edsger W. Dijkstra** (1959). Es nimmt als Nächstes immer den Knoten, der vom Start aus am nächsten liegt, auf dem besten Weg, den es bis jetzt kennt. Dafür hält es die gefundenen Knoten in einer **Priority Queue**: Man legt Einträge mit einer Priorität hinein und nimmt immer den mit der kleinsten heraus. Wie das schnell geht, steht unter [Heap](/reference/heap).
 
-```text
-dijkstra(graph, start, ziel):
-    weg ← { start: 0 }
-    vorgänger ← { start: keiner }
-    fertig ← leere Menge
-    pq ← Priority Queue mit (0, start)
-    solange pq nicht leer:
-        (abstand, knoten) ← kleinsten Eintrag aus pq nehmen
-        wenn knoten in fertig: weiter        (ein alter Eintrag)
-        knoten zu fertig hinzufügen
-        wenn knoten = ziel: gib weg_zurück(vorgänger, ziel) zurück
-        für jeden (nachbar, länge) von knoten:
-            neu ← abstand + länge
-            wenn nachbar nicht in weg oder neu < weg[nachbar]:
-                weg[nachbar] ← neu
-                vorgänger[nachbar] ← knoten
-                (neu, nachbar) in pq legen
-    es gibt keinen Weg
+```pseudocode
+dijkstra(graph, start, goal):
+    dist ← { start: 0 }
+    predecessor ← { start: none }
+    finished ← empty set
+    pq ← priority queue with (0, start)
+    while pq not empty:
+        (distance, node) ← take the smallest entry from pq
+        if node in finished: continue        (ein alter Eintrag)
+        add node to finished
+        if node = goal: return path_back(predecessor, goal)
+        for each (neighbor, length) of node:
+            new ← distance + length
+            if neighbor not in dist or new < dist[neighbor]:
+                dist[neighbor] ← new
+                predecessor[neighbor] ← node
+                put (new, neighbor) into pq
+    no path
 ```
 
 Über jedem Knoten steht der beste bekannte Weg vom Start. Die Tabelle daneben zeigt, was sich in diesem Schritt geändert hat:
@@ -171,16 +171,16 @@ Dijkstra findet A–B–E–F–H mit 107, vier Kanten, aber kürzer als die 128
 
 Dijkstra sucht in alle Richtungen gleich, auch weg vom Ziel. **A*** (»A-Stern«, 1968) weiß, wo das Ziel liegt, und sucht zuerst in seiner Richtung. Die Priorität eines Knotens ist der Weg vom Start bis zu ihm **plus eine Schätzung** für den Rest:
 
-$$f(\text{knoten}) = \text{weg}(\text{knoten}) + h(\text{knoten})$$
+$$f(\text{node}) = \text{dist}(\text{node}) + h(\text{node})$$
 
-Auf einer Karte ist die Schätzung \\(h\\) die Luftlinie zum Ziel. Der Pseudocode ist der von Dijkstra, mit zwei Änderungen: In die Priority Queue kommt \\(\text{neu} + h(\text{nachbar})\\) statt nur \\(\text{neu}\\), und der Weg eines Knotens steht in `weg`, nicht in der Priorität:
+Auf einer Karte ist die Schätzung \\(h\\) die Luftlinie zum Ziel. Der Pseudocode ist der von Dijkstra, mit zwei Änderungen: In die Priority Queue kommt \\(\text{new} + h(\text{neighbor})\\) statt nur \\(\text{new}\\), und der Weg eines Knotens steht in `dist`, nicht in der Priorität:
 
-```text
-        (_, knoten) ← kleinsten Eintrag aus pq nehmen
+```pseudocode
+        (_, node) ← take the smallest entry from pq
         …
-            neu ← weg[knoten] + länge
+            new ← dist[node] + length
             …
-                (neu + h(nachbar), nachbar) in pq legen
+                put (new + h(neighbor), neighbor) into pq
 ```
 
 <div class='algo-stepper' data-algo='astar' data-graph='stadt' data-start='A' data-goal='H'></div>
@@ -194,21 +194,21 @@ A* findet denselben Weg wie Dijkstra, ist aber nach sechs statt acht Knoten fert
 <!-- short: Die beste Reihenfolge für eine Rundreise: alle ausprobieren ((n − 1)! viele), der nächste Nachbar (schnell, oft schlecht), 2-opt (umdrehen, solange es kürzer wird). -->
 ## Eine Rundreise
 
-Soll eine Reise durch mehrere Orte gehen und am Ende zurück zum Anfang, ist die beste Reihenfolge gesucht: das **Problem des Handlungsreisenden** (*Traveling Salesperson Problem*). Man rechnet zuerst mit einer der Suchen oben aus, wie weit es von jedem Ort zu jedem anderen ist, und schreibt das in eine Tabelle `abstand[i][j]`. Danach braucht man den Graphen nicht mehr.
+Soll eine Reise durch mehrere Orte gehen und am Ende zurück zum Anfang, ist die beste Reihenfolge gesucht: das **Problem des Handlungsreisenden** (*Traveling Salesperson Problem*). Man rechnet zuerst mit einer der Suchen oben aus, wie weit es von jedem Ort zu jedem anderen ist, und schreibt das in eine Tabelle `distance[i][j]`. Danach braucht man den Graphen nicht mehr.
 
 **Alle ausprobieren.** Der erste Ort steht fest, die übrigen \\(n - 1\\) kommen in jeder möglichen Reihenfolge dahinter. Das sind \\((n-1)!\\) Reihenfolgen: bei 5 Orten 24, bei 10 schon 362 880, bei 20 mehr als \\(10^{17}\\). Für ein paar Orte ist das die sichere Wahl.
 
 **Der nächste Nachbar.** Vom Anfang aus immer zum nächsten Ort, an dem man noch nicht war:
 
-```text
-nächster_nachbar(abstand):
-    reihenfolge ← [0]
-    übrig ← alle Orte außer 0
-    solange übrig nicht leer:
-        letzter ← letzter Ort in reihenfolge
-        nächster ← der Ort in übrig mit dem kleinsten abstand[letzter][ort]
-        nächster an reihenfolge anfügen, aus übrig entfernen
-    gib reihenfolge zurück
+```pseudocode
+nearest_neighbor(distance):
+    order ← [0]
+    remaining ← all places except 0
+    while remaining not empty:
+        last ← the last place in order
+        next ← the place in remaining with the smallest distance[last][place]
+        append next to order, remove it from remaining
+    return order
 ```
 
 Das ist schnell, aber am Ende bleiben die weiten Wege übrig, und die Rundreise kreuzt sich oft selbst.
@@ -227,7 +227,7 @@ Eine Kreuzung verschwindet, wenn man das Stück zwischen ihren beiden Kanten umd
 
 Die Adjazenzliste ist in Ruby ein `Hash`, in Python ein `dict`. Die Queue der Breitensuche ist in Python `collections.deque`, in Ruby ein `Array` mit `push` und `shift`; den Stack der Tiefensuche gibt jedes Array mit `push` (Python: `append`) und `pop` her. Die Priority Queue für Dijkstra und A* ist in Python `heapq`; Ruby hat keine, dort programmierst du den [Heap](/reference/heap) selbst.
 
-- [Ruby: `Hash`](https://docs.ruby-lang.org/en/3.4/Hash.html): Schlüssel und Werte, für die Adjazenzliste und für `vorgänger` und `weg`.
+- [Ruby: `Hash`](https://docs.ruby-lang.org/en/3.4/Hash.html): Schlüssel und Werte, für die Adjazenzliste und für `predecessor` und `dist`.
 - [Python: `dict`](https://docs.python.org/3/library/stdtypes.html#typesmapping): dasselbe in Python.
 - [Python: `collections.deque`](https://docs.python.org/3/library/collections.html#collections.deque): die Queue für die Breitensuche.
 - [Python: `heapq`](https://docs.python.org/3/library/heapq.html): die Priority Queue für Dijkstra und A*.
