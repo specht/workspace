@@ -2729,15 +2729,21 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         // operation, no line marked, so that the code box stays where it is
         const firstCode = frames.find((f) => f.code && f.code.lines);
         for (const frame of frames) if (!frame.code && firstCode) frame.code = { lines: firstCode.code.lines, at: -1 };
-        // animate: a step forward or back moves; a jump shows the step at once
+        // animate: a step forward or back moves; a jump shows the step at once.
+        // A step back is the step forward played backwards, as long as that
+        // took (StepperMotion, reverse)
+        let before = 0;
         const show = (animate) => {
             const frame = frames[index];
+            const back = animate && index === before - 1;
+            const moving = back ? frames[before] : frame;
+            before = index;
             draw(frame);
             // a list's cells keep their size across widgets: the picture at
             // most as wide as it is drawn (data-natural)
             if (svg.dataset.natural) picture.style.maxWidth = `${svg.dataset.natural}px`;
             const rate = playing ? SPEEDS[speed][0] : 1;
-            if (window.StepperMotion) window.StepperMotion.morph(picture, svg, { duration: animate ? (frame.duration || MOTION_TIME) / rate : 0 });
+            if (window.StepperMotion) window.StepperMotion.morph(picture, svg, { duration: animate ? (moving.duration || MOTION_TIME) / rate : 0, reverse: back });
             else {
                 picture.setAttribute('viewBox', svg.getAttribute('viewBox'));
                 picture.replaceChildren(...svg.childNodes);

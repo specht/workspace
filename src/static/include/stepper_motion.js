@@ -37,6 +37,16 @@
 // are replaced at once, so a widget that sets no keys looks as before. With
 // prefers-reduced-motion, or duration 0, the new step is shown at once. A new
 // morph first finishes the running one.
+//
+// data-along='key' on a circle that moves: it travels along that line (an
+// automaton's arrow) instead of straight, in time with the pulse on it, from
+// its old centre to its new one (a loop: once around it), a third smaller
+// on its way.
+//
+// reverse: true, for a step back: the movement forward from the step shown
+// by next to the one shown now, played backwards, so that a step back looks
+// exactly like the step forward run in reverse (a pulse runs back along its
+// arrow, what came goes back where it came from, what grew shrinks).
 (function (root) {
     'use strict';
 
@@ -68,10 +78,27 @@
     function morph(live, next, options = {}) {
         running.get(live)?.();
         const duration = options.duration === 0 || reduced() ? 0 : (options.duration || 500) * slow;
+        // backwards: the step now shown is where the forward movement ends;
+        // it starts at the step shown by next, which is also where this one
+        // comes to rest
+        const backwards = !!options.reverse && !!duration;
+        const goal = next;
+        if (backwards) {
+            const after = live.cloneNode(true);
+            if (goal.getAttribute('viewBox')) live.setAttribute('viewBox', goal.getAttribute('viewBox'));
+            live.replaceChildren(...goal.cloneNode(true).childNodes);
+            next = after;
+        }
+        // at rest on the goal: backwards, the goal's own drawing
+        const rest = () => {
+            if (!backwards) return;
+            if (goal.getAttribute('viewBox')) live.setAttribute('viewBox', goal.getAttribute('viewBox'));
+            live.replaceChildren(...goal.childNodes);
+        };
         const old = new Map();
         for (const child of live.children) if (child.dataset.key && !child.dataset.ends && !old.has(child.dataset.key)) old.set(child.dataset.key, child);
-        const goal = new Map();
-        for (const child of next.children) if (child.dataset.key) goal.set(child.dataset.key, attributes(child));
+        const goals = new Map();
+        for (const child of next.children) if (child.dataset.key) goals.set(child.dataset.key, attributes(child));
         const tracks = [];
         // final: what the attribute is at the end, when it differs from to
         // only in its form (a group that grew: its transform without the scale)
@@ -163,7 +190,7 @@
         if (duration) {
             for (const node of old.values()) {
                 if (kept.has(node)) continue;
-                const to = node.dataset.to && goal.get(node.dataset.to);
+                const to = node.dataset.to && goals.get(node.dataset.to);
                 // only what can move: it keeps its own key and class
                 if (to) for (const [name, value] of Object.entries(to)) if (node.hasAttribute(name) && name !== 'opacity' && movable(name)) move(node, name, node.getAttribute(name), value);
                 // data-merge: it goes into the element it moves to, which
@@ -185,7 +212,7 @@
         const pulses = shown.filter((node) => node.dataset.pulse);
         // options.done: called when the movement has ended by itself (not
         // when the next one cut it short), for a step made of two movements
-        if (!tracks.length && !ride.length && !pulses.length) { if (options.done) options.done(); return; }
+        if (!tracks.length && !ride.length && !pulses.length) { rest(); if (options.done) options.done(); return; }
         // a pulse runs along a pointer or along any keyed path (a curved
         // edge of an automaton that does not move)
         const lineByKey = new Map([...leaving, ...shown].filter((node) => node.dataset.ends || (node.tagName === 'path' && node.dataset.key)).map((node) => [node.dataset.key, node]));
@@ -351,6 +378,46 @@
             const track = tracks.find((k) => k.node === node && k.name === name);
             return { node, name, track, base: Number(node.getAttribute(name)), lift: Number(node.dataset.lift) };
         });
+        // data-along: a circle that travels along a line (its pulse's timing)
+        // its old and new centre, fixed before the first frame (a value
+        // without a track is the same at both ends)
+        const along = shown.filter((node) => node.dataset.along && node.hasAttribute('cx')).map((node) => {
+            const ends = (name) => {
+                const track = tracks.find((k) => k.node === node && k.name === name);
+                return track ? [Number(track.from), Number(track.final)] : [Number(node.getAttribute(name)), Number(node.getAttribute(name))];
+            };
+            const [x, y] = [ends('cx'), ends('cy')];
+            return { node, from: [x[0], y[0]], to: [x[1], y[1]], r: Number(node.getAttribute('r')) };
+        });
+        const travel = (t) => {
+            for (const { node, from, to, r } of along) {
+                const line = lineByKey.get(node.dataset.along);
+                if (t >= 1 && r && !tracks.some((k) => k.node === node && k.name === 'r')) node.setAttribute('r', r);
+                if (t >= 1 || !line || !line.getTotalLength) continue;
+                const pulse = pulses.find((p) => p.dataset.pulse === node.dataset.along);
+                const delay = pulse ? Number(pulse.dataset.delay || 0) : 0;
+                const length = pulse ? Number(pulse.dataset.length || 0.4) : 1;
+                const f = Math.min(1, Math.max(0, (t - delay) / length));
+                const e = f < 0.5 ? 4 * f ** 3 : 1 - (2 - 2 * f) ** 3 / 2;
+                // on the way: from the old centre straight to where the line
+                // starts, along the line, straight into the new centre, so
+                // that the centre is on the line all the way
+                const total = line.getTotalLength();
+                const first = line.getPointAtLength(0);
+                const last = line.getPointAtLength(total);
+                const into = Math.hypot(first.x - from[0], first.y - from[1]);
+                const out = Math.hypot(to[0] - last.x, to[1] - last.y);
+                const way = e * (into + total + out);
+                let point;
+                if (way <= into) point = [from[0] + (first.x - from[0]) * (into ? way / into : 1), from[1] + (first.y - from[1]) * (into ? way / into : 1)];
+                else if (way <= into + total) { const p = line.getPointAtLength(way - into); point = [p.x, p.y]; }
+                else { const k = out ? (way - into - total) / out : 1; point = [last.x + (to[0] - last.x) * k, last.y + (to[1] - last.y) * k]; }
+                node.setAttribute('cx', round(point[0]));
+                node.setAttribute('cy', round(point[1]));
+                // smaller on its way, its own size again at the state
+                if (r && !tracks.some((k) => k.node === node && k.name === 'r')) node.setAttribute('r', round(r * (1 - 0.35 * Math.sin(Math.PI * e))));
+            }
+        };
         const paint = (t, now) => {
             for (const track of tracks) track.node.setAttribute(track.name, t >= 1 ? track.final : mix(track.from, track.to, ease(track.early ? early(t) : later(t))));
             // data-arc: a group that moves by its translate goes on a small
@@ -378,6 +445,7 @@
                 else if (node.tagName === 'text') { node.setAttribute('x', round(c[0])); node.setAttribute('y', round(c[1])); }
             }
             attach(Math.min(1, t), now);
+            travel(t);
             for (const node of pulses) {
                 const line = lineByKey.get(node.dataset.pulse);
                 const delay = Number(node.dataset.delay || 0);
@@ -435,19 +503,20 @@
         // data-moving on the picture while it moves (for tests)
         const finish = () => {
             cancelAnimationFrame(frameId);
-            paint(1, performance.now());
+            paint(backwards ? 0 : 1, performance.now());
             for (const node of leaving) node.remove();
+            rest();
             running.delete(live);
             live.removeAttribute('data-moving');
         };
         running.set(live, finish);
         live.setAttribute('data-moving', '');
-        paint(0, performance.now());
+        paint(backwards ? 1 : 0, performance.now());
         const frame = (now) => {
             if (start === null) start = now;
             const t = (now - start) / (assigning ? duration * STRETCH : duration);
             if (t >= 1) { finish(); if (options.done) options.done(); return; }
-            paint(t, now);
+            paint(backwards ? 1 - t : t, now);
             frameId = requestAnimationFrame(frame);
         };
         frameId = requestAnimationFrame(frame);

@@ -89,6 +89,17 @@ only to look nice.
   not fade either: it moves along under it and is gone at the end
   (`data-merge`), so two half-transparent shapes never lie on each other.
 
+- **A step back is the step forward played backwards.** Going back one step
+  replays the movement that led there in reverse (`StepperMotion.morph(…,
+  { reverse: true })`): a pulse runs back along its arrow, what came out of
+  something goes back into it, what grew shrinks, a two-part step (Huffman)
+  takes its parts in reverse order. Widgets without `stepper_motion.js` do
+  the same by hand (GIF: the pixels of the code undone shrink away, its
+  table entry lights up and goes). A jump shows the step at once.
+- **A ring travels along the arrow it takes** (`data-along='edge-key'` on
+  the ring, timed with the pulse on that arrow): its centre runs from the
+  state's centre along the arrow into the next state's centre, a third
+  smaller on its way; a ring that stays goes once around its loop.
 - **Identity by key.** Every element that lives on between steps has a
   `data-key`: a node by an id, not by its value, wherever a value can be in
   two places (remove copies a value into another node). Elements without a

@@ -1415,26 +1415,43 @@ document.addEventListener('DOMContentLoaded', function() {
         if (firstPaint) { strip.offsetWidth; strip.style.transition = ''; firstPaint = false; }
     }
     let current = 0, shownStep = -1;
+    // what a step back still shows while it goes (cancelled by the next step)
+    let going = [];
+    const still = () => !matchMedia('(prefers-reduced-motion: reduce)').matches;
     function render() {
         const step = steps[current];
         document.getElementById('lzw-count').textContent = `Code ${current + 1} von ${steps.length}`;
         slide(step);
         const forward = current === shownStep + 1;
+        // a step back is the step forward played backwards: the pixels of
+        // the code shrink away, its entry lights up and goes
+        const left = current === shownStep - 1 && still() ? steps[shownStep] : null;
         shownStep = current;
+        for (const animation of going) animation.cancel();
+        going = [];
+        const paint = (cell, i) => {
+            cell.style.background = PALETTE[pixels[i]];
+            cell.style.color = INK[pixels[i]];
+            cell.textContent = pixels[i];
+        };
+        const clear = (cell) => {
+            cell.style.background = '';
+            cell.style.color = '';
+            cell.textContent = '';
+        };
         grid.childNodes.forEach((cell, i) => {
-            if (i < step.to) {
-                cell.style.background = PALETTE[pixels[i]];
-                cell.style.color = INK[pixels[i]];
-                cell.textContent = pixels[i];
-            } else {
-                cell.style.background = '';
-                cell.style.color = '';
-                cell.textContent = '';
-            }
+            const leaving = left && i >= step.to && i < left.to;
+            if (i < step.to || leaving) paint(cell, i);
+            else clear(cell);
             cell.classList.toggle('new', i >= step.from && i < step.to);
             // One step forward: the new pixels pop up, as the code is read.
             cell.classList.remove('pop');
             if (forward && i >= step.from && i < step.to) { cell.offsetWidth; cell.classList.add('pop'); }
+            if (leaving) {
+                const shrink = cell.animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(0.2)', opacity: 0 }], { duration: 350, easing: 'ease-in' });
+                shrink.onfinish = () => clear(cell);
+                going.push(shrink);
+            }
         });
         const bits = step.code.toString(2).padStart(step.size, '0');
         let text = `<p>Bits ${step.start} bis ${step.start + step.size - 1}: <code>${bits}</code> = <strong>${step.code}</strong>, mit ${step.size} Bits gelesen.</p>`;
@@ -1457,12 +1474,25 @@ document.addEventListener('DOMContentLoaded', function() {
         const tableBox = document.getElementById('lzw-table');
         // From entry 0 on: the colours, Clear and End, then what the decoder
         // has added. A new entry scrolls into view.
-        tableBox.innerHTML = step.table.map((entry, index) => {
+        // the new entry flashes on the way forward only
+        const rows = (table, mark) => table.map((entry, index) => {
                 const shown = index === clearCode ? "<span class='lzw-special' title='Clear Code'>(CC)</span>" :
                     index === endCode ? "<span class='lzw-special' title='End of Information'>(EOI)</span>" : pix(entry);
-                return `<div class='${index === step.addedIndex ? 'new' : ''}'><span class='lzw-index'>${index}:</span>${shown}</div>`;
+                return `<div class='${index === mark ? 'new' : ''}'><span class='lzw-index'>${index}:</span>${shown}</div>`;
             }).join('');
-        const added = tableBox.querySelector('div.new');
+        let added = null;
+        if (left && left.addedIndex !== undefined) {
+            // back: the entry of the step undone lights up, then it goes
+            tableBox.innerHTML = rows(left.table, -1);
+            added = tableBox.children[left.addedIndex];
+            const light = getComputedStyle(added).getPropertyValue('--color-m0').trim();
+            const flash = added.animate([{ backgroundColor: 'transparent' }, { backgroundColor: light }], { duration: 900, easing: 'ease-in' });
+            flash.onfinish = () => { tableBox.innerHTML = rows(step.table, -1); };
+            going.push(flash);
+        } else {
+            tableBox.innerHTML = rows(step.table, forward ? step.addedIndex : -1);
+            added = tableBox.querySelector('div.new');
+        }
         tableBox.scrollTop = added ? added.offsetTop - tableBox.clientHeight + added.offsetHeight + 4 :
             step.table.length > clearCode + 2 ? tableBox.scrollHeight : 0;
         document.getElementById('lzw-first').disabled = current === 0;

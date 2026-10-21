@@ -557,7 +557,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // the step moves there first and only then to its own layout
     let live = null;
     let step2 = 0;
-    function show(box, placed, picks, size, animate, between, lift) {
+    function show(box, placed, picks, size, animate, between, lift, back = false) {
         if (!live || live.parentNode !== box) {
             box.replaceChildren();
             live = make('svg', { class: 'hf-svg' });
@@ -571,12 +571,13 @@ document.addEventListener('DOMContentLoaded', function() {
         draw(next, placed, picks, size, lift);
         step2 += 1;
         if (!window.StepperMotion) { live.setAttribute('viewBox', next.getAttribute('viewBox')); live.replaceChildren(...next.childNodes); return; }
-        if (!animate || !between) { window.StepperMotion.morph(live, next, { duration: animate ? 550 : 0 }); return; }
+        if (!animate || !between) { window.StepperMotion.morph(live, next, { duration: animate ? 550 : 0, reverse: back }); return; }
         const first = make('svg', {});
         draw(first, between, [], size);
         const mine = step2;
-        // the second movement only if no other step came in between
-        window.StepperMotion.morph(live, first, { duration: 550, done: () => { if (mine === step2) window.StepperMotion.morph(live, next, { duration: 550 }); } });
+        // the second movement only if no other step came in between; back,
+        // both played backwards (StepperMotion, reverse)
+        window.StepperMotion.morph(live, first, { duration: 550, reverse: back, done: () => { if (mine === step2) window.StepperMotion.morph(live, next, { duration: 550, reverse: back }); } });
     }
 
     function codes(t, prefix, table) {
@@ -606,14 +607,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 ? 'Nur ein einziges Byte: Der Baum ist ein Blatt, und sein Code ist 0.'
                 : `Fertig: ein einziger Baum. Die Codes stehen auf den Wegen von oben zu den Blättern.`;
         }
-        // forward after a merge: first the new node above the two trees
+        // forward after a merge: first the new node above the two trees;
+        // back, the same played backwards (the merge of the step after)
         let between = null;
-        if (animate && forward && step.made) {
-            const before = layout(built.steps[current - 1].forest, size.tall);
-            const [a, b] = [before.pos.get(key(step.made.left)), before.pos.get(key(step.made.right))];
-            between = { pos: new Map([...before.pos, [key(step.made), { x: (a.x + b.x) / 2, y: Math.min(a.y, b.y) - DY, node: step.made }]]) };
+        const made = forward ? step.made : built.steps[current + 1] && built.steps[current + 1].made;
+        if (animate && made) {
+            const before = layout(built.steps[forward ? current - 1 : current].forest, size.tall);
+            const [a, b] = [before.pos.get(key(made.left)), before.pos.get(key(made.right))];
+            between = { pos: new Map([...before.pos, [key(made), { x: (a.x + b.x) / 2, y: Math.min(a.y, b.y) - DY, node: made }]]) };
         }
-        show(forest, layout(step.forest, size.tall), step.pick, size, animate, between, null);
+        show(forest, layout(step.forest, size.tall), step.pick, size, animate, between, null, animate && !forward);
         if (!step.pick.length) {
             const tree = step.forest[0];
             const table_ = codes(tree, '', new Map());

@@ -121,7 +121,7 @@
                 });
                 message = `${symbol}: ${ways.join('; ')}. ${next.length ? `Jetzt in ${sets(next)}.` : 'Kein Weg geht weiter.'}`;
             }
-            steps.push({ at: i, symbol, states: next, used, ended, message });
+            steps.push({ at: i, symbol, states: next, before: current, used, ended, message });
             current = next;
         });
         // the end of the word: accepted if a state it can be in accepts
@@ -217,11 +217,20 @@
             svg.appendChild(stateLabel(s, x, y, `name-${s}`));
         }
         // the rings: where the automaton is (a NEA: everywhere it can be);
-        // a new one comes out of the state it is reached from
+        // a new one comes out of the state it is reached from; a ring travels
+        // along the arrow it takes, with its pulse (data-along): a DEA's from
+        // state to state, a NEA's new one from where it comes, one that stays
+        // around its loop
         for (const s of step.states) {
-            const from = step.used.find(([, t]) => t === s);
             const key = a.nfa ? `ring-${s}` : 'ring';
-            svg.appendChild(make('circle', { 'data-key': key, 'data-grow': '', ...(a.nfa && from ? { 'data-from': `ring-${from[0]}` } : {}), cx: geo.pos(s)[0], cy: geo.pos(s)[1], r: RING, fill: 'none', stroke: 'var(--automaton-accent)', 'stroke-width': 3 }));
+            const before = step.before || [];
+            const way = a.nfa
+                ? (before.includes(s) ? step.used.find(([f, t]) => f === s && t === s) : step.used.find(([, t]) => t === s))
+                : step.used[0];
+            svg.appendChild(make('circle', { 'data-key': key, 'data-grow': '',
+                ...(a.nfa && way && !before.includes(s) ? { 'data-from': `ring-${way[0]}` } : {}),
+                ...(way ? { 'data-along': `edge-${way[0]}-${way[1]}` } : {}),
+                cx: geo.pos(s)[0], cy: geo.pos(s)[1], r: RING, fill: 'none', stroke: 'var(--automaton-accent)', 'stroke-width': 3 }));
         }
         svg.setAttribute('viewBox', `0 0 ${geo.width} ${geo.height}`);
     }
@@ -244,11 +253,15 @@
         let steps = [];
         let current = 0;
         let word = '';
+        // a step back is the step forward played backwards
+        let before = 0;
         const show = (animate) => {
             const step = steps[current];
+            const back = animate && current === before - 1;
+            before = current;
             const next = make('svg', {});
             draw(next, a, geo, word, step, marker);
-            if (window.StepperMotion) window.StepperMotion.morph(picture, next, { duration: animate ? 700 : 0 });
+            if (window.StepperMotion) window.StepperMotion.morph(picture, next, { duration: animate ? 700 : 0, reverse: back });
             else { picture.setAttribute('viewBox', next.getAttribute('viewBox')); picture.replaceChildren(...next.childNodes); }
             say.innerHTML = withNames(step.message, a.states);
             say.classList.toggle('yes', !!step.end && step.accepted);

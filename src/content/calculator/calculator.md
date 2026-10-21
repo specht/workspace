@@ -754,31 +754,29 @@ python3 -c 'import ast; print(ast.dump(ast.parse("2 + 3 * 4", mode="eval"), inde
 
     // From one step to the next: forward, the numbers under the node that is
     // computed rise into it and merge into the result, which takes the
-    // operator's place; the edges shrink back into it. Back, the numbers
-    // come out of the result again. The rest glides to its new place.
+    // operator's place; the edges shrink back into it. The rest glides to its
+    // new place. Back, the same played backwards (StepperMotion, reverse):
+    // the numbers come out of the result again.
     let shownAt = null;
     function showStep(index) {
         const step = steps[index];
         const next = picture(step.tree, { pick: step.pick ? step.pick.id : null, fresh: step.done ? step.done.pick.id : null });
         const animate = shownAt !== null && Math.abs(index - shownAt) === 1;
+        const back = animate && index < shownAt;
         for (const node of svg.querySelectorAll('[data-to]')) { node.removeAttribute('data-to'); node.removeAttribute('data-merge'); }
-        if (animate && index > shownAt && steps[shownAt].pick) {
-            const pick = steps[shownAt].pick;
+        // the step forward: from the earlier picture (back: the new one)
+        const pick = animate && steps[Math.min(index, shownAt)].pick;
+        if (pick) {
+            const earlier = back ? next : svg;
             for (const kid of pick.kids) {
-                const box = svg.querySelector(`[data-key="node-${kid.id}"]`);
-                const text = svg.querySelector(`[data-key="num-${kid.id}"]`);
+                const box = earlier.querySelector(`[data-key="node-${kid.id}"]`);
+                const text = earlier.querySelector(`[data-key="num-${kid.id}"]`);
                 if (box) { box.dataset.to = `node-${pick.id}`; box.dataset.merge = ''; }
                 if (text) { text.dataset.to = `num-${pick.id}`; text.dataset.merge = ''; }
             }
         }
-        if (animate && index < shownAt && step.pick) {
-            for (const kid of step.pick.kids) {
-                next.querySelector(`[data-key="node-${kid.id}"]`).dataset.from = `node-${step.pick.id}`;
-                next.querySelector(`[data-key="num-${kid.id}"]`).dataset.from = `num-${step.pick.id}`;
-            }
-        }
         shownAt = index;
-        if (window.StepperMotion) window.StepperMotion.morph(svg, next, { duration: animate ? 550 : 0 });
+        if (window.StepperMotion) window.StepperMotion.morph(svg, next, { duration: animate ? 550 : 0, reverse: back });
         else svg.replaceChildren(...next.childNodes);
     }
 
