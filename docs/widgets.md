@@ -47,6 +47,12 @@ in doubt, do it the way it does.
   ```` ```pseudocode ```` block (`pseudocode_lexer.rb`), and the code box
   colours the same tokens the same way (`highlightPseudocode` in
   `algo_stepper.js`): dark, like every other code block on the site.
+- **The buttons on a desktop are one control**: to the start and back
+  joined, »Weiter« as the one filled button (the step taken most), to the
+  end joined to it, play and its speed as a pair; back and next with their
+  words (`.stepper-word`, from `stepper_keys.js`); a button that cannot be
+  used is grey. On a touch screen the large buttons sit at the edge for the
+  thumb (default.css, `pointer: coarse`).
 - **A timeline** under the buttons: a dot for every step, joined by a fine
   line (coloured as far as the steps are done); the dot where an
   operation starts is ringed and carries the operation's name (`remove 20`,
@@ -98,7 +104,7 @@ only to look nice.
   table entry lights up and goes). A jump shows the step at once.
 - **A ring travels along the arrow it takes** (`data-along='edge-key'` on
   the ring, timed with the pulse on that arrow): its centre runs from the
-  state's centre along the arrow into the next state's centre, a third
+  state's centre along the arrow into the next state's centre, a fifth
   smaller on its way; a ring that stays goes once around its loop.
 - **Identity by key.** Every element that lives on between steps has a
   `data-key`: a node by an id, not by its value, wherever a value can be in

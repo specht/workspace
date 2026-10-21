@@ -1380,17 +1380,16 @@ Direkt auf die DC-Differenz folgen die AC-Koeffizienten. Schauen wir uns wieder 
 -->
 
 <div style='position: relative;' data-stepper>
-<div style='float: right; margin-left: 1em; margin-top: 0.25em;'>
+<p>
+Hier wird die AC-Tabelle im Slot 0 verwendet, die insgesamt 162 Codes definiert, von denen wir für dieses Beispiel nur einen Auszug benötigen.
+Verwende die Buttons, um zu sehen, wie der Bitstream decodiert wird (die Bits des bereits decodierten DC-Koeffizienten sind weiterhin markiert):
+</p>
+<div style='margin: 0.6em 0;'>
 <button id='bu-first' data-go='first' class='btn btn-sm btn-success'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
 <button id='bu-prev' data-go='prev' class='btn btn-sm btn-success'><i class='bi bi-chevron-left' style='margin-right: 0;'></i></button>
 <button id='bu-next' data-go='next' class='btn btn-sm btn-success'><i class='bi bi-chevron-right' style='margin-right: 0;'></i></button>
 <button id='bu-last' data-go='last' class='btn btn-sm btn-success'><i class='bi bi-chevron-bar-right' style='margin-right: 0;'></i></button>
 </div>
-<p>
-Hier wird die AC-Tabelle im Slot 0 verwendet, die insgesamt 162 Codes definiert, von denen wir für dieses Beispiel nur einen Auszug benötigen.
-Verwende die Buttons, um zu sehen, wie der Bitstream decodiert wird (die Bits des bereits decodierten DC-Koeffizienten sind weiterhin markiert):
-</p>
-<div style='clear: both;'></div>
 <div style='max-width: 100%; overflow-x: auto;'>
 <table class='table center' id='ac_table'>
 <tr>

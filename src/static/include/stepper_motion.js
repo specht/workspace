@@ -40,7 +40,7 @@
 //
 // data-along='key' on a circle that moves: it travels along that line (an
 // automaton's arrow) instead of straight, in time with the pulse on it, from
-// its old centre to its new one (a loop: once around it), a third smaller
+// its old centre to its new one (a loop: once around it), a fifth smaller
 // on its way.
 //
 // reverse: true, for a step back: the movement forward from the step shown
@@ -415,7 +415,7 @@
                 node.setAttribute('cx', round(point[0]));
                 node.setAttribute('cy', round(point[1]));
                 // smaller on its way, its own size again at the state
-                if (r && !tracks.some((k) => k.node === node && k.name === 'r')) node.setAttribute('r', round(r * (1 - 0.35 * Math.sin(Math.PI * e))));
+                if (r && !tracks.some((k) => k.node === node && k.name === 'r')) node.setAttribute('r', round(r * (1 - 0.2 * Math.sin(Math.PI * e))));
             }
         };
         const paint = (t, now) => {

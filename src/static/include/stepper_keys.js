@@ -335,7 +335,14 @@ document.addEventListener('keydown', (event) => {
     const STEP_TIME = 2200;
     const add = (widget) => {
         const next = widget.querySelector("[data-go='next']");
-        if (!next || widget.querySelector('[data-play]')) return;
+        if (!next) return;
+        // back and next say so beside their arrows (on a desktop; the
+        // stylesheet hides the words where room is short)
+        const prev = widget.querySelector("[data-go='prev']");
+        const word = (text) => Object.assign(document.createElement('span'), { className: 'stepper-word', textContent: text });
+        if (prev && !prev.querySelector('.stepper-word')) prev.append(word('Zurück'));
+        if (!next.querySelector('.stepper-word')) next.prepend(word('Weiter'));
+        if (widget.querySelector('[data-play]')) return;
         const first = widget.querySelector("[data-go='first']");
         const row = next.parentElement;
         const last = [...row.querySelectorAll(':scope > [data-go]')].pop();
