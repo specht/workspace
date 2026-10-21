@@ -164,7 +164,8 @@
             for (const node of old.values()) {
                 if (kept.has(node)) continue;
                 const to = node.dataset.to && goal.get(node.dataset.to);
-                if (to) for (const [name, value] of Object.entries(to)) if (node.hasAttribute(name) && name !== 'opacity') move(node, name, node.getAttribute(name), value);
+                // only what can move: it keeps its own key and class
+                if (to) for (const [name, value] of Object.entries(to)) if (node.hasAttribute(name) && name !== 'opacity' && movable(name)) move(node, name, node.getAttribute(name), value);
                 // data-merge: it goes into the element it moves to, which
                 // covers it; it does not fade (two half-transparent shapes on
                 // top of each other), it is removed at the end
@@ -231,7 +232,10 @@
             // view) stays straight
             r.start = r.start || { base, tip };
             const apart = Math.hypot(base[0] - r.start.base[0] - (tip[0] - r.start.tip[0]), base[1] - r.start.base[1] - (tip[1] - r.start.tip[1]));
-            const k = Math.min(1, apart / 24);
+            // and only as far as the line is long: a short arrow (an index
+            // under its column) has no room for a bend, its head would tilt
+            const length = Math.hypot(tip[0] - base[0], tip[1] - base[1]);
+            const k = Math.min(1, apart / 24) * Math.min(1, Math.max(0, (length - 40) / 80));
             const bend = last ? mid : [mid[0] + (earlier.mid[0] - mid[0]) * k, mid[1] + (earlier.mid[1] - mid[1]) * k];
             // data-inset: the line stops that far before its end (an arrowhead
             // on the border of a node), and is hidden while shorter than that
@@ -301,6 +305,7 @@
                     snap = part(u, 0.8, 1);
                 } else if (kind === 'cut') {
                     const target = centre(from[1]);
+                    if (!target) continue;
                     tip = u < 0.15 ? toward(base, target, 1 - (1 - NEAR) * out(part(u, 0, 0.15))) : toward(base, target, NEAR * (1 - part(u, 0.15, 0.75) ** 2));
                 } else if (kind === 'swing') {
                     const before = centre(from[1]);
@@ -344,6 +349,7 @@
                 const c = centre(node.dataset.follow);
                 if (!c) continue;
                 if (node.hasAttribute('cx')) { node.setAttribute('cx', round(c[0])); node.setAttribute('cy', round(c[1])); }
+                else if (node.tagName === 'text') { node.setAttribute('x', round(c[0])); node.setAttribute('y', round(c[1])); }
             }
             attach(Math.min(1, t), now);
             for (const node of pulses) {

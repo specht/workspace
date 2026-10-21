@@ -197,6 +197,14 @@ only to look nice.
   two it joins; it grows in with its weight first, its edges sprout and snap
   onto the two roots, then the lower tree rises to meet it. The two
   lightest trees wear the purple ring.
+- **The calculator** (`calculator.md`): an operator is a round box, a number
+  a box; when a node is computed, its numbers rise into it and merge, and
+  the round box turns into the result's box; back, they come out of it
+  again. The node that comes next wears the purple ring.
+- **A short arrow does not bend**: the rubber band of a moving arrow grows
+  with its length (none under 40 px), so the head of an index arrow never
+  tilts. A label that comes or goes follows its node (`data-follow` on a
+  text), and what merges into an element keeps its own key.
 - **What grows comes first**: in a step that also sprouts a pointer, an
   element that grows in does so at the start (`early` in
   `stepper_motion.js`), so that its pointers sprout from something.

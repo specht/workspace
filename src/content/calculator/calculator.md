@@ -43,21 +43,28 @@ requires: [automata]
         display: block;
         margin: 0 auto;
     }
-    .calc-tree line {
+    .calc-stepper {
+        --calc-accent: #6741d9;
+    }
+    html[data-bs-theme="dark"] .calc-stepper {
+        --calc-accent: #b197fc;
+    }
+    .calc-tree path.edge {
+        fill: none;
         stroke: var(--bs-secondary-color);
         stroke-width: 1.5;
     }
-    .calc-tree .node circle, .calc-tree .node rect {
+    .calc-tree rect.op, .calc-tree rect.num {
         fill: var(--bs-body-bg);
         stroke: var(--bs-body-color);
         stroke-width: 1.5;
-        transition: stroke 0.3s;
     }
-    .calc-tree .node.pick circle {
-        stroke: #bc2326;
+    .calc-tree circle.pick {
+        fill: none;
+        stroke: var(--calc-accent);
         stroke-width: 3;
     }
-    .calc-tree .node.fresh rect {
+    .calc-tree rect.num.fresh {
         stroke: #2e9e5b;
         stroke-width: 3;
     }
@@ -110,7 +117,7 @@ sleep: 1
 crop-element: #calc-stepper .calc-tree svg
 variants: dark
 -->
-<img class='drawing' style='width: 18em' src='baum.webp' alt='Ein Baum: oben ein Kreis mit +, darunter links das Blatt 2 und rechts ein Kreis mit *, unter dem die Blätter 3 und 4 hängen. Der Kreis mit * ist rot umrandet.'>
+<img class='drawing' style='width: 18em' src='baum.webp' alt='Ein Baum: oben ein Kreis mit +, darunter links das Blatt 2 und rechts ein Kreis mit *, unter dem die Blätter 3 und 4 hängen. Der Kreis mit * ist lila umrandet.'>
 
 ## Einrichten
 
@@ -273,7 +280,7 @@ Den Ausdruck `2 + 3 * 4` schreibt der Rechner als Baum, in dem das, was zuerst g
 
 Jeder Knoten ist entweder eine Zahl, ein **Blatt**, oder eine Liste aus dem Rechenzeichen und den beiden Teilbäumen links und rechts. Ein Minus vor einer Zahl oder einer Klammer ist ein Vorzeichen mit nur einem Teilbaum: `-(1 + 2)` ist `["neg", ["+", 1, 2]]`. Klammern tauchen im Baum gar nicht mehr auf, sie stecken in seiner Form: `(2 + 3) * 4` ist `["*", ["+", 2, 3], 4]`.
 
-Probier es aus. Der Baum steht so, dass du den Ausdruck von links nach rechts lesen kannst. Mit den Pfeilen rechnest du ihn aus, einen Knoten nach dem anderen. Rot umrandet ist der Knoten, der als Nächstes drankommt: immer einer, unter dem nur noch Zahlen hängen.
+Probier es aus. Der Baum steht so, dass du den Ausdruck von links nach rechts lesen kannst. Mit den Pfeilen rechnest du ihn aus, einen Knoten nach dem anderen. Lila umrandet ist der Knoten, der als Nächstes drankommt: immer einer, unter dem nur noch Zahlen hängen.
 
 <div class='calc-stepper' id='calc-stepper' data-stepper>
 <input class='form-control' type='text' id='calc-input' value='2 + 3 * (4 - 1)' aria-label='Ausdruck für den Baum' spellcheck='false' maxlength='60'>
@@ -702,117 +709,84 @@ python3 -c 'import ast; print(ast.dump(ast.parse("2 + 3 * 4", mode="eval"), inde
     let current = 0;
     let svg = null;
 
-    // How far from its centre a node's outline is, in the direction ux, uy:
-    // a circle for an operator, a box for a number.
-    function reach(t, ux, uy) {
-        if (!isLeaf(t)) return 17;
-        const hw = width(t) / 2 - 4, hh = 15;
-        return Math.min(ux ? hw / Math.abs(ux) : Infinity, uy ? hh / Math.abs(uy) : Infinity);
-    }
-
-    // A picture of the tree: every node with its place and how visible it
-    // is, and the edges as pairs of ids.
-    function frameOf(tree) {
+    // One step drawn into an SVG that is never shown; the visible one moves
+    // to it (stepper_motion.js). An operator is a round box, a number a box,
+    // each keyed by its node, the edges lines from centre to centre under
+    // them. The node that comes next wears the purple ring, which glides
+    // from node to node; the number just computed has a green box.
+    const make = (tag, attrs, text) => {
+        const node = document.createElementNS(SVG, tag);
+        for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
+        if (text !== undefined) node.textContent = text;
+        return node;
+    };
+    function picture(tree, marks) {
+        const next = make('svg', {});
         const { pos } = layout(tree);
-        const nodes = new Map();
-        const edges = [];
-        (function walk(t) {
-            const p = pos.get(t.id);
-            nodes.set(t.id, { x: p.x, y: p.y, node: t, alpha: 1 });
+        (function edges(t) {
             if (isLeaf(t)) return;
-            t.kids.forEach((kid) => { edges.push([t.id, kid.id]); walk(kid); });
+            const p = pos.get(t.id);
+            t.kids.forEach((kid) => {
+                const q = pos.get(kid.id);
+                next.appendChild(make('path', { 'data-key': `edge-${t.id}-${kid.id}`, 'data-ends': `node-${t.id} node-${kid.id}`, class: 'edge', d: `M${p.x} ${p.y} L${q.x} ${q.y}` }));
+                edges(kid);
+            });
         })(tree);
-        return { nodes, edges };
-    }
-
-    function outline(t) {
-        if (!isLeaf(t)) return `<circle r='17'/>`;
-        const w = width(t);
-        return `<rect x='${-w / 2 + 4}' y='-15' width='${w - 8}' height='30' rx='6'/>`;
-    }
-
-    // Draws one frame whole: the edges from centre to centre, cut off where
-    // each shape ends, then the nodes over them.
-    function paint(frame, marks) {
-        const parts = [];
-        for (const [a, b] of frame.edges) {
-            const p = frame.nodes.get(a), q = frame.nodes.get(b);
-            if (!p || !q) continue;
-            const dx = q.x - p.x, dy = q.y - p.y, len = Math.hypot(dx, dy);
-            if (len < 1) continue;
-            const ux = dx / len, uy = dy / len;
-            const from = reach(p.node, ux, uy), to = reach(q.node, ux, uy);
-            if (from + to >= len) continue;
-            const f = (v) => v.toFixed(1);
-            parts.push(`<line x1='${f(p.x + ux * from)}' y1='${f(p.y + uy * from)}' x2='${f(q.x - ux * to)}' y2='${f(q.y - uy * to)}' opacity='${Math.min(p.alpha, q.alpha).toFixed(2)}'/>`);
-        }
-        frame.nodes.forEach((p, id) => {
-            const cls = ['node', marks.pick === id ? 'pick' : '', marks.fresh === id ? 'fresh' : ''].filter(Boolean).join(' ');
-            parts.push(`<g class='${cls}' transform='translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})' opacity='${p.alpha.toFixed(2)}'>${outline(p.node)}<text>${label(p.node)}</text></g>`);
-        });
-        svg.innerHTML = parts.join('');
-    }
-
-    // From one picture to the next, the nodes glide to their new places and
-    // the edges go with them. What is computed away slides into the node it
-    // becomes and fades; going back, it comes out of that node again.
-    // Without motion (prefers-reduced-motion), the next picture just
-    // replaces the last.
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const DURATION = 450;
-    let shown = null;
-    let animation = 0;
-
-    function parents(frame) {
-        const up = new Map();
-        frame.edges.forEach(([a, b]) => up.set(b, a));
-        return up;
-    }
-
-    // Where a node that only one of the two pictures has comes from or goes
-    // to: the nearest node above it that the other picture has.
-    function anchor(id, up, other) {
-        let k = up.get(id);
-        while (k !== undefined && !other.nodes.has(k)) k = up.get(k);
-        return k !== undefined ? other.nodes.get(k) : null;
-    }
-
-    function showFrame(target, marks) {
-        cancelAnimationFrame(animation);
-        const from = shown;
-        shown = target;
-        if (!from || reduceMotion.matches) { paint(target, marks); return; }
-        const upFrom = parents(from), upTo = parents(target);
-        const seen = new Set();
-        const edges = from.edges.concat(target.edges).filter(([a, b]) => !seen.has(a + '>' + b) && seen.add(a + '>' + b));
-        const begin = performance.now();
-        const frame = () => {
-            const t = Math.min(1, (performance.now() - begin) / DURATION);
-            const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-            const nodes = new Map();
-            target.nodes.forEach((p, id) => {
-                const q = from.nodes.get(id) || anchor(id, upTo, from) || p;
-                const node = from.nodes.has(id) && e < 0.5 ? from.nodes.get(id).node : p.node;
-                nodes.set(id, { x: q.x + (p.x - q.x) * e, y: q.y + (p.y - q.y) * e, node, alpha: from.nodes.has(id) ? 1 : e });
-            });
-            from.nodes.forEach((q, id) => {
-                if (target.nodes.has(id)) return;
-                const p = anchor(id, upFrom, target) || q;
-                nodes.set(id, { x: q.x + (p.x - q.x) * e, y: q.y + (p.y - q.y) * e, node: q.node, alpha: 1 - e });
-            });
-            if (t < 1) {
-                paint({ nodes, edges }, {});
-                animation = requestAnimationFrame(frame);
-            } else {
-                paint(target, marks);
+        (function nodes(t) {
+            const p = pos.get(t.id);
+            if (isLeaf(t)) {
+                const w = width(t) - 8;
+                next.appendChild(make('rect', { 'data-key': `node-${t.id}`, 'data-grow': '', class: marks.fresh === t.id ? 'num fresh' : 'num', x: p.x - w / 2, y: p.y - 15, width: w, height: 30, rx: 6 }));
+                // a label that comes or goes sits on its box while it moves
+                next.appendChild(make('text', { 'data-key': `num-${t.id}`, 'data-grow': '', 'data-follow': `node-${t.id}`, x: p.x, y: p.y }, label(t)));
+                return;
             }
-        };
-        animation = requestAnimationFrame(frame);
+            // a round box: the same element as the number it becomes, so
+            // that the operator turns into its result
+            next.appendChild(make('rect', { 'data-key': `node-${t.id}`, 'data-grow': '', class: 'op', x: p.x - 17, y: p.y - 17, width: 34, height: 34, rx: 17 }));
+            next.appendChild(make('text', { 'data-key': `op-${t.id}`, 'data-grow': '', 'data-follow': `node-${t.id}`, x: p.x, y: p.y }, label(t)));
+            t.kids.forEach(nodes);
+        })(tree);
+        if (marks.pick !== null) {
+            const p = pos.get(marks.pick);
+            next.appendChild(make('circle', { 'data-key': 'pick', 'data-follow': `node-${marks.pick}`, class: 'pick', cx: p.x, cy: p.y, r: 23 }));
+        }
+        return next;
+    }
+
+    // From one step to the next: forward, the numbers under the node that is
+    // computed rise into it and merge into the result, which takes the
+    // operator's place; the edges shrink back into it. Back, the numbers
+    // come out of the result again. The rest glides to its new place.
+    let shownAt = null;
+    function showStep(index) {
+        const step = steps[index];
+        const next = picture(step.tree, { pick: step.pick ? step.pick.id : null, fresh: step.done ? step.done.pick.id : null });
+        const animate = shownAt !== null && Math.abs(index - shownAt) === 1;
+        for (const node of svg.querySelectorAll('[data-to]')) { node.removeAttribute('data-to'); node.removeAttribute('data-merge'); }
+        if (animate && index > shownAt && steps[shownAt].pick) {
+            const pick = steps[shownAt].pick;
+            for (const kid of pick.kids) {
+                const box = svg.querySelector(`[data-key="node-${kid.id}"]`);
+                const text = svg.querySelector(`[data-key="num-${kid.id}"]`);
+                if (box) { box.dataset.to = `node-${pick.id}`; box.dataset.merge = ''; }
+                if (text) { text.dataset.to = `num-${pick.id}`; text.dataset.merge = ''; }
+            }
+        }
+        if (animate && index < shownAt && step.pick) {
+            for (const kid of step.pick.kids) {
+                next.querySelector(`[data-key="node-${kid.id}"]`).dataset.from = `node-${step.pick.id}`;
+                next.querySelector(`[data-key="num-${kid.id}"]`).dataset.from = `num-${step.pick.id}`;
+            }
+        }
+        shownAt = index;
+        if (window.StepperMotion) window.StepperMotion.morph(svg, next, { duration: animate ? 550 : 0 });
+        else svg.replaceChildren(...next.childNodes);
     }
 
     function draw() {
         const step = steps[current];
-        showFrame(frameOf(step.tree), { pick: step.pick ? step.pick.id : null, fresh: step.done ? step.done.pick.id : null });
+        showStep(current);
 
         const parts = [];
         if (step.done) parts.push(`<code>${phrase(step.done.pick.op, step.done.values, step.done.value)}</code>.`);
@@ -835,8 +809,7 @@ python3 -c 'import ast; print(ast.dump(ast.parse("2 + 3 * 4", mode="eval"), inde
     }
 
     function refresh() {
-        cancelAnimationFrame(animation);
-        shown = null;
+        shownAt = null;   // a new expression: no motion from the old tree
         box.replaceChildren();
         try {
             steps = build(input.value);

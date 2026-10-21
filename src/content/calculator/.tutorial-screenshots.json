@@ -11,10 +11,10 @@
     },
     "baum.webp": {
       "environment_fingerprint": "38969cf7edcb64d69c7503528c872dc915c02e8e64e13075466e5258fb6f442e",
-      "output_sha256": "8b16cbb4b0d47016f5fa2be5734687ccc3d599c2324945b51a414d305a64166d",
+      "output_sha256": "7213272458eb1d09e178a8257e6adc13ea2d0a1ca8b325c778424571c8e52e5c",
       "state_hash": "c6e0422c6cad5d5cd5fa73b9627cdcabc2d6b94dcb5303a2d1b58d71eee60fe5",
       "variants": {
-        "baum-dark.webp": "f34e9dfe3c47aa3d4ce4b7d07ed8ca605f8655ee9c01501881365c5de5cf0189"
+        "baum-dark.webp": "2fbfb81559415e058ce5e8fde234e34ebb5a6f67958230e424b8ab9ed3eda03a"
       },
       "workspace_look": "4.140.0-ls368"
     },
