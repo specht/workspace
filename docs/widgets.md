@@ -47,12 +47,17 @@ in doubt, do it the way it does.
   ```` ```pseudocode ```` block (`pseudocode_lexer.rb`), and the code box
   colours the same tokens the same way (`highlightPseudocode` in
   `algo_stepper.js`): dark, like every other code block on the site.
-- **The buttons on a desktop are one control**: to the start and back
-  joined, »Weiter« as the one filled button (the step taken most), to the
-  end joined to it, play and its speed as a pair; back and next with their
-  words (`.stepper-word`, from `stepper_keys.js`); a button that cannot be
-  used is grey. On a touch screen the large buttons sit at the edge for the
-  thumb (default.css, `pointer: coarse`).
+- **The buttons are in the same order everywhere**: »Zurück« and »Weiter«
+  together at the right edge, »Weiter« filled (the step taken most); to the
+  start and to the end quieter, set apart to the left of them; play and its
+  speed on the left, then the step count. On a desktop at the size of a
+  mouse, the pairs joined, back and next with their words
+  (`.stepper-word`, from `stepper_keys.js`); on a touch screen large for
+  the thumb (default.css, `pointer: coarse`). A button that cannot be used
+  is grey.
+- **The frame is a card like a task's**, in the widgets' own warm orange
+  (tasks are blue, the Handbuch teal, a guess violet), its label a pill like
+  a task's number.
 - **A timeline** under the buttons: a dot for every step, joined by a fine
   line (coloured as far as the steps are done); the dot where an
   operation starts is ringed and carries the operation's name (`remove 20`,

@@ -5444,17 +5444,33 @@ table.automaton-table tbody th { text-align: left; white-space: nowrap; }
     }
 }
 
-/* An interactive widget on a page (data-stepper, stepper_keys.js): set
-   apart from the text around it by a light band with a line on the left,
-   not a box, and a label that says it can be tried and stepped with the
-   arrow keys. div[…] outweighs the widgets' own margins. */
+/* An interactive widget on a page (data-stepper, stepper_keys.js): a card
+   like a task's (.task-card), in a colour of its own, a warm orange (tasks
+   are blue, the Handbuch is teal, a guess is violet), with a label like a
+   task's number that says it can be tried and stepped with the arrow
+   keys. div[…] outweighs the widgets' own margins. */
 div[data-stepper],
 .bitplane-widget {
-    margin: 1.6em 0 1.8em;
-    padding: 0.7em 1em 0.9em;
-    background: color-mix(in srgb, var(--bs-primary) 5%, transparent);
-    border-left: 3px solid color-mix(in srgb, var(--bs-primary) 55%, transparent);
-    border-radius: 0 0.4em 0.4em 0;
+    --widget: #d9480f;
+    --widget-ink: #a8380b;
+    --widget-chip: #fdebe0;
+    --widget-line: #f5dccd;
+    --widget-tint: #fffaf6;
+    margin: 1.75em 0;
+    padding: 0.9em 1.25em 0.9em;
+    border: 1px solid var(--widget-line);
+    border-left: 5px solid var(--widget);
+    border-radius: 0.6em;
+    background: var(--widget-tint);
+    box-shadow: 0 1px 3px rgba(217, 72, 15, 0.06);
+}
+html[data-bs-theme="dark"] div[data-stepper],
+html[data-bs-theme="dark"] .bitplane-widget {
+    --widget: #f57c45;
+    --widget-ink: #ffb48c;
+    --widget-chip: #3a2216;
+    --widget-line: #4a2f22;
+    --widget-tint: #1f1915;
 }
 /* the lightbox for a demo (stepper_keys.js): the square button at the top
    right; the widget larger over the page; arrows at the edges to the
@@ -5631,20 +5647,23 @@ div[data-stepper] [data-play] {
 }
 div[data-stepper]::before {
     content: 'Zum Ausprobieren · ← → schalten weiter';
-    display: block;
-    /* clear of the lightbox button at the top right */
-    padding-right: 3em;
-    font-size: 0.75em;
-    font-weight: 600;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    color: color-mix(in srgb, var(--bs-primary) 80%, var(--bs-body-color));
-    margin-bottom: 0.6em;
+    /* a pill like a task's number */
+    display: inline-block;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.7em;
 }
-/* With a mouse (a desktop): one control. To the start and back joined,
-   next as the one filled button (the step taken most), to the end joined
-   to it, play and its speed as a pair; back and next with their words.
-   A button that cannot be used is grey, not pale green. */
+/* With a mouse (a desktop): the same order as on a touch screen (below),
+   at the size of a mouse: back and next joined at the right edge, next
+   filled (the step taken most), both with their words; to the start and
+   to the end quieter, joined, set apart to the left of them; play and its
+   speed as a pair on the left, then the step count. A button that cannot
+   be used is grey, not pale green. */
 div[data-stepper] .stepper-word { display: none; }
 @media (pointer: fine) and (min-width: 577px) {
     div[data-stepper] :has(> [data-go]) {
@@ -5660,6 +5679,7 @@ div[data-stepper] .stepper-word { display: none; }
         min-width: 2.25rem;
         padding: 0 0.55rem;
         gap: 0.35rem;
+        margin: 0;
         font-size: 0.95rem;
         --bs-btn-bg: var(--bs-body-bg);
         --bs-btn-color: var(--bs-success-text-emphasis);
@@ -5676,7 +5696,26 @@ div[data-stepper] .stepper-word { display: none; }
         --bs-btn-disabled-opacity: 0.6;
         position: relative;
     }
+    /* the step count on the left, play and its speed before it */
+    div[data-stepper] :has(> [data-go]) > :not([data-go]):not([data-play]):not([data-speed]) {
+        order: 0;
+        margin: 0 auto 0 0.75rem;
+    }
+    div[data-stepper] [data-play],
+    div[data-stepper] [data-speed] { order: 0; }
+    div[data-stepper] [data-speed] { min-width: 2.6rem; font-variant-numeric: tabular-nums; }
+    /* to the start and to the end: quieter, set apart */
+    div[data-stepper] [data-go='first'] { order: 1; margin-left: auto; }
+    div[data-stepper] [data-go='last'] { order: 2; margin-right: 0.75rem; }
+    div[data-stepper] [data-go='first'],
+    div[data-stepper] [data-go='last'] {
+        --bs-btn-bg: transparent;
+        --bs-btn-disabled-bg: transparent;
+    }
+    /* back and next at the right edge */
+    div[data-stepper] [data-go='prev'] { order: 3; }
     div[data-stepper] [data-go='next'] {
+        order: 4;
         --bs-btn-bg: var(--bs-success);
         --bs-btn-color: #fff;
         --bs-btn-border-color: var(--bs-success);
@@ -5688,16 +5727,16 @@ div[data-stepper] .stepper-word { display: none; }
     }
     div[data-stepper] [data-go='prev'] .stepper-word,
     div[data-stepper] [data-go='next'] .stepper-word { display: inline; }
-    /* the pairs: joined, their inner corners square; the hovered or
+    /* the pairs joined, their inner corners square; the hovered or
        focused one in front, so that its border shows whole */
     div[data-stepper] [data-go='first'],
-    div[data-stepper] [data-go='next'],
+    div[data-stepper] [data-go='prev'],
     div[data-stepper] [data-play] {
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
     }
-    div[data-stepper] [data-go='prev'],
     div[data-stepper] [data-go='last'],
+    div[data-stepper] [data-go='next'],
     div[data-stepper] [data-speed] {
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
@@ -5706,11 +5745,6 @@ div[data-stepper] .stepper-word { display: none; }
     div[data-stepper] [data-go]:is(:hover, :focus-visible),
     div[data-stepper] [data-play]:is(:hover, :focus-visible),
     div[data-stepper] [data-speed]:is(:hover, :focus-visible) { z-index: 1; }
-    div[data-stepper] [data-go='next'] { margin-left: 0.5rem; }
-    div[data-stepper] [data-play] { margin-left: 1rem; }
-    div[data-stepper] [data-speed] { min-width: 2.6rem; font-variant-numeric: tabular-nums; }
-    /* the step count after the buttons */
-    div[data-stepper] :has(> [data-go]) > :not(button) { margin-left: 1rem; }
 }
 /* On a touch screen (a tablet, a phone) the step buttons sit on the right,
    where the thumb is: back and next large at the edge, next on the very
@@ -6810,13 +6844,15 @@ html[data-bs-theme="dark"] .automaton-stepper {
 /* the frame of the other widgets (div[data-stepper]), its hint for a slider */
 .bitplane-widget::before {
     content: 'Zum Ausprobieren · die Griffe ziehen';
-    display: block;
-    font-size: 0.75em;
-    font-weight: 600;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    color: color-mix(in srgb, var(--bs-primary) 80%, var(--bs-body-color));
-    margin-bottom: 0.6em;
+    display: inline-block;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.7em;
 }
 .bitplane-widget .bitplane-choice {
     width: auto;
