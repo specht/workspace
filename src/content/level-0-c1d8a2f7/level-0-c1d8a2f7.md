@@ -70,7 +70,7 @@ open-file: level.ini
 sleep: 1
 -->
 
-<img class='full' src='vorlage.webp' alt='Die geklonte Vorlage im Explorer: die Ordner engine, models, rooms und vendor, dazu export.sh, index.html, level.ini, README.md und textures.html; im Editor ist level.ini geöffnet.'>
+<img class='full' src='vorlage.webp' alt='Die geklonte Vorlage im Explorer: die Ordner engine, models, rooms und vendor, dazu .gitignore, export.sh, index.html, level.ini, README.md und textures.html; im Editor ist level.ini geöffnet.'>
 
 Darin liegt dein Level. Es beginnt klein, in `level.ini` und im Ordner `rooms`: ein Zimmer, ein Gang und zwei farbige Räume. Ein fertiges Level zum Durchlaufen wartet am Ende der Reihe.
 

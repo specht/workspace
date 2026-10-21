@@ -75,9 +75,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   im Kasten und `?stats`) zeigt Zahlen zur Leistung: Bilder pro Sekunde,
   Draw Calls, Dreiecke, wie viele Räume gezeichnet werden, die Größe der
   Lightmap und ungefähr, wie viel Speicher Texturen brauchen. Das Backen
-  läuft in Stücken, die klein anfangen und wachsen, solange die
-  Grafikkarte mitkommt; neue Arbeit bekommt sie erst, wenn die letzte
-  fertig ist. So bleibt die Seite beim Backen bedienbar, der Rechner
+  läuft in Stücken, so viele je Bild, wie die Grafikkarte schafft; neue
+  Arbeit bekommt sie erst, wenn die letzte fertig ist. So bleibt die Seite beim Backen bedienbar, der Rechner
   stockt nicht, und Tablets verlieren den GL-Kontext nicht mehr; die
   Lightmap ist höchstens 2048 × 2048 groß. Jede Modelldatei wird einmal
   geladen, auch wenn sie dreißigmal im Level steht, und beim Laden zeigt

@@ -179,9 +179,34 @@ hook: key t g
 </figure>
 </div>
 
-**Ein Bild für alle Flächen.** Alle Punkte aller Flächen liegen in einem einzigen Bild, der Lightmap. Jede Fläche ist darin ein Rechteck aus ihren Punkten: so viele breit und hoch, wie sie Meter breit und hoch ist, mal 16. Das Programm legt die Rechtecke dicht an dicht in das Bild, die großen zuerst, wie Kisten in einen Kofferraum, und macht das Bild nur so groß wie nötig, mit einer Zweierpotenz als Seite, etwa 1024 × 1024 Punkte. Jede Ecke einer Fläche weiß, wo im Bild ihr Rechteck liegt. Beim Zeichnen holt sich die Grafikkarte für jeden Pixel der Fläche die Helligkeit von der passenden Stelle im Rechteck: Das Rechteck wird auf die Fläche geklebt, wie ein Bild auf eine Wand. <kbd>Shift</kbd>+<kbd>G</kbd> zeigt die ganze Lightmap; `?show=atlas&face=saal,floor` in der Adresse zeigt nur das Rechteck des Bodens im Saal, Punkt für Punkt (`wall` statt `floor` für eine Wand, dazu `fine` für ihr feineres Stück):
+**Ein Bild für alle Flächen.** Alle Punkte aller Flächen liegen in einem einzigen Bild, der Lightmap. Jede Fläche ist darin ein Rechteck aus ihren Punkten: so viele breit und hoch, wie sie Meter breit und hoch ist, mal 16. Das Programm legt die Rechtecke dicht an dicht in das Bild, die großen zuerst, wie Kisten in einen Kofferraum, und macht das Bild nur so groß wie nötig, mit einer Zweierpotenz als Seite, etwa 1024 × 1024 Punkte. Jede Ecke einer Fläche weiß, wo im Bild ihr Rechteck liegt. Beim Zeichnen holt sich die Grafikkarte für jeden Pixel der Fläche die Helligkeit von der passenden Stelle im Rechteck: Das Rechteck wird auf die Fläche geklebt, wie ein Bild auf eine Wand. <kbd>Shift</kbd>+<kbd>G</kbd> zeigt die ganze Lightmap; `?show=atlas&face=kammer,floor` in der Adresse zeigt nur das Rechteck des Bodens in der Kammer, Punkt für Punkt (ein anderer Raum statt `kammer`, `wall` statt `floor` für seine größte Wand, dazu `fine` für ihr feineres Stück):
 
 <div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1536x864
+zoom: 1.5
+hook: open show=atlas&face=kammer,floor
+hook: light
+hook: info off
+-->
+<img src='lightmap-kammer.webp' alt='Ein Rechteck aus großen, gut erkennbaren Quadraten vor dunklem Grund, jedes ein Punkt der Lightmap: oben hell, unten in der Mitte ein dunkles Feld, der Schatten des Sofas, zu seiner Mitte hin am dunkelsten.'>
+<figcaption>der Boden der Kammer in der Lightmap</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1536x864
+zoom: 1.5
+hook: open view=16.20,16.60,158,-48
+hook: light
+hook: info off
+hook: key t
+-->
+<img src='lightmap-kammer-raum.webp' alt='Die Kammer schräg von oben, ohne Tapete und Teppich ganz in hellem Beige: ein heller Boden, an der Wand gegenüber das Sofa.'>
+<figcaption>derselbe Boden in der Kammer (<kbd>T</kbd>)</figcaption>
+</figure>
 <figure>
 <!-- tutorial-screenshot
 tab: preview
@@ -191,7 +216,7 @@ hook: open show=atlas&face=saal,floor
 hook: light
 hook: info off
 -->
-<img src='lightmap-boden.webp' alt='Ein großes Rechteck aus Punkten vor dunklem Grund, jeder Punkt ein kleines Quadrat: hell unter den vier Leuchten, dazwischen dunkler, mit den runden Schatten der Säulen und dem Schatten der Statue in der Mitte.'>
+<img src='lightmap-boden.webp' alt='Ein schmales, hohes Rechteck aus Punkten vor dunklem Grund, fast überall hell; darin drei blasse Schatten: oben und unten je ein spitzer von einer Säule, in der Mitte ein runder von der Statue auf ihrem Sockel.'>
 <figcaption>der Boden des Saals in der Lightmap</figcaption>
 </figure>
 <figure>
@@ -204,58 +229,8 @@ hook: light
 hook: info off
 hook: key t
 -->
-<img src='lightmap-boden-saal.webp' alt='Derselbe Boden im Saal, ohne Teppich ganz in Hellgrau: dieselben hellen Flecken unter den Leuchten und dieselben Schatten der Säulen und der Statue.'>
+<img src='lightmap-boden-saal.webp' alt='Derselbe Boden im Saal, ohne Teppich in hellem Beige: vorn weit und gleichmäßig hell, hinten die Säulen und die Statue auf ihrem Sockel mit blassen Schatten um sie herum.'>
 <figcaption>derselbe Boden im Saal (<kbd>T</kbd>)</figcaption>
-</figure>
-<figure>
-<!-- tutorial-screenshot
-tab: preview
-viewport: 1536x864
-zoom: 1.5
-hook: open show=atlas&face=saal,floor,fine
-hook: light
-hook: info off
--->
-<img src='lightmap-fein.webp' alt='Ein kleineres Rechteck aus viel kleineren Punkten: der Fuß einer Säule und ihr Schatten, so fein, dass die Kante des Schattens scharf ist.'>
-<figcaption>das feinere Stück um eine Säule</figcaption>
-</figure>
-<figure>
-<!-- tutorial-screenshot
-tab: preview
-viewport: 1536x864
-zoom: 1.5
-hook: open view=18.00,17.40,-94,-32
-hook: light
-hook: info off
-hook: key t g
--->
-<img src='lightmap-fein-saal.webp' alt='Der Saal ganz in Hellgrau mit den Punkten der Lightmap: Um die Säulen und die Statue auf dem Boden sind sie viel dichter als dazwischen.'>
-<figcaption>dort, wo es liegt (<kbd>T</kbd>, <kbd>G</kbd>)</figcaption>
-</figure>
-<figure>
-<!-- tutorial-screenshot
-tab: preview
-viewport: 1536x864
-zoom: 1.5
-hook: open show=atlas&face=saal,wall
-hook: light
-hook: info off
--->
-<img src='lightmap-wand.webp' alt='Ein breites, flaches Rechteck aus Punkten: oben dunkler, unten über dem Boden heller, mit den weichen Schatten von zwei Säulen.'>
-<figcaption>die längste Wand des Saals in der Lightmap</figcaption>
-</figure>
-<figure>
-<!-- tutorial-screenshot
-tab: preview
-viewport: 1536x864
-zoom: 1.5
-hook: open view=18.00,17.40,-94,7
-hook: light
-hook: info off
-hook: key t
--->
-<img src='lightmap-wand-saal.webp' alt='Die lange Wand des Saals ganz in Hellgrau: Über dem Boden ist sie heller, nach oben dunkler, mit den weichen Schatten der Säulen.'>
-<figcaption>dieselbe Wand im Saal (<kbd>T</kbd>)</figcaption>
 </figure>
 </div>
 
