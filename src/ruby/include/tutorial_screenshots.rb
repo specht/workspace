@@ -176,7 +176,9 @@ module TutorialScreenshots
 
         http = Net::HTTP.new(ENDPOINT.host, ENDPOINT.port)
         http.open_timeout = 1
-        http.read_timeout = async ? 10 : 3600
+        # a page whose 3D pictures each bake their light (the Backrooms) can
+        # take well over an hour
+        http.read_timeout = async ? 10 : 4 * 3600
         http.write_timeout = 5
         response = http.request(request)
 
