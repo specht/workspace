@@ -30,8 +30,9 @@ in doubt, do it the way it does.
   are read at a glance.
 - **Pseudocode is English, its comments German.** Names and keywords as on
   the Handbuch pages (`rotate_right(y)`, `node.left`, `if … :`, `return`);
-  a remark in parentheses may be German. `←` assigns, `==` and `!=` compare
-  (never a single `=`); `null` is a reference to nothing (`node == null`,
+  a remark in parentheses may be German. `←` assigns, `==` and `!=` compare,
+  `<`, `≤`, `>`, `≥` order; a single `=` never appears, so that nobody
+  confuses assignment and comparison; `null` is a reference to nothing (`node == null`,
   `return null`, in the picture too), `empty` is a collection without
   entries (`queue not empty`, `empty set`); words rather than symbols where
   a word is clear (`and`, `or`, `not`, `mod`). The code box and the pages
