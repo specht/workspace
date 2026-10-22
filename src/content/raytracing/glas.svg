@@ -1,24 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 250" width="500" height="250" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
-  <!-- Brechen: Beim Übergang von Luft (1,0) in Glas (1,5) knickt der Strahl zur Normalen hin, sin α = 1,5 · sin β (Snellius). Ein Teil wird gespiegelt, flach mehr als steil (Fresnel).
-       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg 1000 -->
-  <rect width="500" height="250" fill="#ffffff"/>
-  <rect x="30.0" y="118.0" width="440.0" height="122.0" fill="#eef3fb"/>
-  <line x1="30.0" y1="118.0" x2="470.0" y2="118.0" stroke="#1f2937" stroke-width="2.5"/>
-  <text x="42.0" y="106.0" font-size="15" fill="#6b7280" text-anchor="start">Luft</text>
-  <text x="42.0" y="142.0" font-size="15" fill="#6b7280" text-anchor="start">Glas, Brechungsindex 1,5</text>
-  <line x1="250.0" y1="18.0" x2="250.0" y2="232.0" stroke="#1f2937" stroke-width="1.2" stroke-dasharray="4 5"/>
-  <text x="258.0" y="26.0" font-size="15" fill="#1f2937" text-anchor="start">Normale</text>
-  <line x1="147.6" y1="46.3" x2="241.2" y2="111.8" stroke="#2b5fb4" stroke-width="2.5"/>
-  <polygon points="250.0,118.0 235.7,114.9 242.2,105.6" fill="#2b5fb4"/>
-  <text x="141.6" y="40.3" font-size="16" fill="#2b5fb4" text-anchor="end" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">dir</text>
-  <line x1="250.0" y1="118.0" x2="305.3" y2="202.8" stroke="#2b5fb4" stroke-width="2.5"/>
-  <polygon points="311.2,211.8 299.0,203.6 308.5,197.4" fill="#2b5fb4"/>
-  <text x="321.2" y="215.8" font-size="15" fill="#2b5fb4" text-anchor="start">gebrochen</text>
-  <line x1="250.0" y1="118.0" x2="320.0" y2="69.0" stroke="#6b7280" stroke-width="1.8" stroke-dasharray="6 5"/>
-  <polygon points="327.8,63.5 320.9,74.5 315.1,66.3" fill="#6b7280"/>
-  <text x="335.8" y="63.5" font-size="14" fill="#6b7280" text-anchor="start">ein Teil wird gespiegelt</text>
-  <path d="M250.0,66.0 A52.0,52.0 0 0 0 220.2,75.4" fill="none" stroke="#6b7280" stroke-width="1.5"/>
-  <text x="230.7" y="60.9" font-size="17" fill="#6b7280" text-anchor="middle">α</text>
-  <path d="M250.0,180.0 A62.0,62.0 0 0 0 283.9,169.9" fill="none" stroke="#6b7280" stroke-width="1.5"/>
-  <text x="271.6" y="196.9" font-size="17" fill="#6b7280" text-anchor="middle">β</text>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 464 250" width="464" height="250" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Ein Strahl dir kommt schräg aus der Luft und trifft auf Glas. Im Glas läuft er steiler weiter, zur Normalen hin geknickt: Der Winkel β danach ist kleiner als der Winkel α davor, sin α = 1,5 · sin β. Ein Teil des Lichts wird gespiegelt.
+       Gemacht von bilder/diagramme.py; auf der Seite mit style='width: 29em'.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/glas.svg 928 -->
+  <rect width="464" height="250" fill="#ffffff"/>
+  <rect x="30.0" y="116.0" width="404.0" height="124.0" fill="#eef3fb"/>
+  <line x1="30.0" y1="116.0" x2="434.0" y2="116.0" stroke="#1f2937" stroke-width="2.5"/>
+  <line x1="210.0" y1="14.0" x2="210.0" y2="240.0" stroke="#1f2937" stroke-width="1.4" stroke-dasharray="3 4"/>
+  <text x="218.0" y="28.0" font-size="16" fill="#1f2937" text-anchor="start" xml:space="preserve">Normale</text>
+  <line x1="107.6" y1="36.0" x2="202.7" y2="110.3" stroke="#2b5fb4" stroke-width="2.8"/>
+  <polygon points="210.0,116.0 202.9,103.7 196.4,112.0" fill="#2b5fb4"/>
+  <rect x='70.1' y='15.7' width='36.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='74.6' y='28.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">dir</text>
+  <line x1="210.0" y1="116.0" x2="273.5" y2="218.8" stroke="#2b5fb4" stroke-width="2.8"/>
+  <polygon points="278.3,226.6 275.9,212.7 266.9,218.2" fill="#2b5fb4"/>
+  <text x="288.3" y="230.6" font-size="16" fill="#2b5fb4" text-anchor="start" xml:space="preserve">gebrochen</text>
+  <line x1="210.0" y1="116.0" x2="263.8" y2="73.9" stroke="#6b7280" stroke-width="1.8" stroke-dasharray="6 4"/>
+  <polygon points="269.9,69.2 258.6,72.5 264.0,79.4" fill="#6b7280"/>
+  <text x="279.9" y="73.2" font-size="16" fill="#6b7280" text-anchor="start" xml:space="preserve">ein Teil wird gespiegelt</text>
+  <path d="M210.0,72.0 A44.0,44.0 0 0 0 175.3,88.9" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <g transform='translate(184.57 63.87) scale(1.7000) translate(-3.2050 0)' fill='#6b7280' stroke='none'><defs>
+<path id='m11-g0-11' d='M4.752179-2.351183C4.752179-3.915318 3.825654-4.403487 3.088418-4.403487C1.723537-4.403487 .408468-2.978829 .408468-1.574097C.408468-.647572 1.006227 .109589 2.022416 .109589C2.650062 .109589 3.367372-.119552 4.124533-.727273C4.254047-.199253 4.582814 .109589 5.031133 .109589C5.559153 .109589 5.867995-.438356 5.867995-.597758C5.867995-.667497 5.808219-.697385 5.748443-.697385C5.678705-.697385 5.648817-.667497 5.618929-.597758C5.439601-.109589 5.080946-.109589 5.061021-.109589C4.752179-.109589 4.752179-.886675 4.752179-1.125778C4.752179-1.334994 4.752179-1.354919 4.851806-1.474471C5.788294-2.650062 5.997509-3.805729 5.997509-3.815691C5.997509-3.835616 5.987547-3.915318 5.877958-3.915318C5.778331-3.915318 5.778331-3.88543 5.728518-3.706102C5.549191-3.078456 5.220423-2.321295 4.752179-1.733499V-2.351183ZM4.084682-.986301C3.20797-.219178 2.440847-.109589 2.042341-.109589C1.444583-.109589 1.145704-.557908 1.145704-1.195517C1.145704-1.683686 1.404732-2.759651 1.723537-3.267746C2.191781-3.995019 2.729763-4.184309 3.078456-4.184309C4.064757-4.184309 4.064757-2.879203 4.064757-2.102117C4.064757-1.733499 4.064757-1.155666 4.084682-.986301Z'/>
+</defs>
+<g id='m11-page1'>
+<use x='0' y='0' xlink:href='#m11-g0-11'/>
+</g>
+</g>
+  <path d="M233.1,153.4 A44.0,44.0 0 0 1 210.0,160.0" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <g transform='translate(226.38 179.72) scale(1.7000) translate(-3.0805 0)' fill='#6b7280' stroke='none'><defs>
+<path id='m12-g0-12' d='M5.728518-5.668742C5.728518-6.41594 5.180573-7.033624 4.373599-7.033624C3.795766-7.033624 3.516812-6.874222 3.16812-6.615193C2.620174-6.216687 2.072229-5.250311 1.882939-4.493151L.298879 1.833126C.288917 1.872976 .33873 1.932752 .418431 1.932752S.52802 1.912827 .537983 1.882939L1.235367-.86675C1.424658-.268991 1.863014 .099626 2.590286 .099626S4.064757-.249066 4.513076-.687422C4.991283-1.145704 5.310087-1.783313 5.310087-2.520548C5.310087-3.237858 4.941469-3.755915 4.582814-4.004981C5.160648-4.333748 5.728518-4.951432 5.728518-5.668742ZM3.935243-4.014944C3.805729-3.965131 3.696139-3.945205 3.457036-3.945205C3.317559-3.945205 3.118306-3.935243 3.01868-3.985056C3.038605-4.084682 3.39726-4.064757 3.506849-4.064757C3.716065-4.064757 3.805729-4.064757 3.935243-4.014944ZM5.17061-5.897883C5.17061-5.200498 4.79203-4.483188 4.273973-4.174346C4.004981-4.273973 3.805729-4.293898 3.506849-4.293898C3.297634-4.293898 2.739726-4.303861 2.739726-3.975093C2.729763-3.696139 3.247821-3.726027 3.427148-3.726027C3.795766-3.726027 3.945205-3.73599 4.244085-3.855542C4.622665-3.496887 4.672478-3.188045 4.682441-2.729763C4.702366-2.15193 4.463263-1.404732 4.184309-1.016189C3.795766-.478207 3.128269-.119552 2.560399-.119552C1.803238-.119552 1.424658-.697385 1.424658-1.404732C1.424658-1.504359 1.424658-1.653798 1.474471-1.843088L2.11208-4.363636C2.331258-5.220423 3.048568-6.804483 4.244085-6.804483C4.821918-6.804483 5.17061-6.495641 5.17061-5.897883Z'/>
+</defs>
+<g id='m12-page1'>
+<use x='0' y='0' xlink:href='#m12-g0-12'/>
+</g>
+</g>
+  <text x="40.0" y="104.0" font-size="16" fill="#6b7280" text-anchor="start" xml:space="preserve">Luft</text>
+  <text x="424.0" y="142.0" font-size="16" fill="#6b7280" text-anchor="end" xml:space="preserve">Glas, Brechungsindex 1,5</text>
 </svg>

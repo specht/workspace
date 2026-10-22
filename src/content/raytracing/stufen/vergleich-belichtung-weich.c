@@ -1,4 +1,4 @@
-// Zum Vergleich auf der Seite: Stufe 17, zweimal H gedrückt (Belichtung 2.25).
+// Zum Vergleich auf der Seite: Stufe 17, einmal H gedrückt (Belichtung 1.5).
 // Raytracer: Kugeln, ein Schachbrett, Spiegel, Glas, Lack, Metall und weiche Schatten.
 // Pfeiltasten links/rechts: um die Szene kreisen, hoch/runter: höher oder tiefer.
 // H heller, D dunkler belichten.
@@ -375,15 +375,15 @@ vec ray_dir(double x, double y)
 }
 
 // Belichtung: größer ist heller, wie eine weiter geöffnete Blende
-double exposure = 2.25;
+double exposure = 1.5;
 
-// Tone Mapping: bis 0.5 bleibt alles, wie es ist; was heller ist, wird
+// Tone Mapping: bis 0.7 bleibt alles, wie es ist; was heller ist, wird
 // weich zusammengedrückt und nähert sich 1, statt bei 1 abzubrechen
 double tone(double c)
 {
-    if (c < 0.5)
+    if (c < 0.7)
         return c;
-    return 0.5 + 0.5 * (1 - exp(-(c - 0.5) / 0.5));
+    return 0.7 + 0.3 * (1 - exp(-(c - 0.7) / 0.3));
 }
 
 // Farbwert 0 bis 1 zu 0 bis 255, mit Belichtung, Tone Mapping und Gamma

@@ -1,46 +1,74 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 515 210" width="515" height="210" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
-  <!-- Das Skalarprodukt zweier Pfeile der Länge 1: so lang, wie der eine in Richtung des anderen zeigt. Gleiche Richtung 1, rechter Winkel 0, von hinten negativ. Es ist der Kosinus des Winkels zwischen ihnen.
-       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg 1030 -->
-  <rect width="515" height="210" fill="#ffffff"/>
-  <line x1="60.0" y1="174.0" x2="60.0" y2="32.0" stroke="#d1d5db" stroke-width="1"/>
-  <line x1="60.0" y1="122.0" x2="60.0" y2="50.8" stroke="#1f2937" stroke-width="2.5"/>
-  <polygon points="60.0,40.0 65.7,53.5 54.3,53.5" fill="#1f2937"/>
-  <line x1="67.0" y1="122.0" x2="67.0" y2="50.8" stroke="#dc2626" stroke-width="2.5"/>
-  <polygon points="67.0,40.0 72.7,53.5 61.3,53.5" fill="#dc2626"/>
-  <line x1="52.0" y1="122.0" x2="52.0" y2="40.0" stroke="#2b5fb4" stroke-width="5" stroke-linecap="butt"/>
-  <circle cx="60.0" cy="122.0" r="3.5" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
-  <text x="60.0" y="26.0" font-size="14" fill="#1f2937" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">normal</text>
-  <text x="76.0" y="64.0" font-size="14" fill="#dc2626" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">sun_dir</text>
-  <text x="65.0" y="198.0" font-size="15" fill="#2b5fb4" text-anchor="middle">dot = 1</text>
-  <line x1="186.0" y1="174.0" x2="186.0" y2="32.0" stroke="#d1d5db" stroke-width="1"/>
-  <line x1="186.0" y1="122.0" x2="186.0" y2="50.8" stroke="#1f2937" stroke-width="2.5"/>
-  <polygon points="186.0,40.0 191.7,53.5 180.3,53.5" fill="#1f2937"/>
-  <line x1="186.0" y1="122.0" x2="247.7" y2="86.4" stroke="#dc2626" stroke-width="2.5"/>
-  <polygon points="257.0,81.0 248.2,92.7 242.5,82.8" fill="#dc2626"/>
-  <path d="M212.0,107.0 A30.0,30.0 0 0 0 186.0,92.0" fill="none" stroke="#6b7280" stroke-width="1.5"/>
-  <text x="208.0" y="88.9" font-size="13" fill="#6b7280" text-anchor="middle">60°</text>
-  <line x1="257.0" y1="81.0" x2="186.0" y2="81.0" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="4 4"/>
-  <line x1="178.0" y1="122.0" x2="178.0" y2="81.0" stroke="#2b5fb4" stroke-width="5" stroke-linecap="butt"/>
-  <circle cx="186.0" cy="122.0" r="3.5" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
-  <text x="191.0" y="198.0" font-size="15" fill="#2b5fb4" text-anchor="middle">dot = 0,5</text>
-  <line x1="312.0" y1="174.0" x2="312.0" y2="32.0" stroke="#d1d5db" stroke-width="1"/>
-  <line x1="312.0" y1="122.0" x2="312.0" y2="50.8" stroke="#1f2937" stroke-width="2.5"/>
-  <polygon points="312.0,40.0 317.7,53.5 306.3,53.5" fill="#1f2937"/>
-  <line x1="312.0" y1="122.0" x2="383.2" y2="122.0" stroke="#dc2626" stroke-width="2.5"/>
-  <polygon points="394.0,122.0 380.5,127.7 380.5,116.3" fill="#dc2626"/>
-  <path d="M342.0,122.0 A30.0,30.0 0 0 0 312.0,92.0" fill="none" stroke="#6b7280" stroke-width="1.5"/>
-  <text x="343.1" y="95.9" font-size="13" fill="#6b7280" text-anchor="middle">90°</text>
-  <circle cx="312.0" cy="122.0" r="3.5" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
-  <text x="317.0" y="198.0" font-size="15" fill="#2b5fb4" text-anchor="middle">dot = 0</text>
-  <line x1="438.0" y1="174.0" x2="438.0" y2="32.0" stroke="#d1d5db" stroke-width="1"/>
-  <line x1="438.0" y1="122.0" x2="438.0" y2="50.8" stroke="#1f2937" stroke-width="2.5"/>
-  <polygon points="438.0,40.0 443.7,53.5 432.3,53.5" fill="#1f2937"/>
-  <line x1="438.0" y1="122.0" x2="499.7" y2="157.6" stroke="#dc2626" stroke-width="2.5"/>
-  <polygon points="509.0,163.0 494.5,161.2 500.2,151.3" fill="#dc2626"/>
-  <path d="M464.0,137.0 A30.0,30.0 0 0 0 438.0,92.0" fill="none" stroke="#6b7280" stroke-width="1.5"/>
-  <text x="476.1" y="105.0" font-size="13" fill="#6b7280" text-anchor="middle">120°</text>
-  <line x1="509.0" y1="163.0" x2="438.0" y2="163.0" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="4 4"/>
-  <line x1="430.0" y1="122.0" x2="430.0" y2="163.0" stroke="#2b5fb4" stroke-width="5" stroke-linecap="butt"/>
-  <circle cx="438.0" cy="122.0" r="3.5" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
-  <text x="443.0" y="198.0" font-size="15" fill="#2b5fb4" text-anchor="middle">dot = −0,5</text>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 480 232" width="480" height="232" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Viermal normal nach oben und sun_dir derselben Länge 1, im Winkel 0°, 60°, 90° und 120° dazu. Fällt man von der Spitze von sun_dir das Lot auf normal, ist das Stück bis dorthin so lang wie dot(normal, sun_dir) (blau): 1, 0.5, 0 und -0.5, nach unten gezählt, wenn es auf der anderen Seite liegt.
+       Gemacht von bilder/diagramme.py; auf der Seite mit style='width: 30em'.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/skalarprodukt.svg 960 -->
+  <rect width="480" height="232" fill="#ffffff"/>
+  <line x1="44.0" y1="195.0" x2="44.0" y2="34.0" stroke="#d1d5db" stroke-width="1.2"/>
+  <line x1="35.0" y1="132.0" x2="35.0" y2="48.0" stroke="#2b5fb4" stroke-width="5" stroke-linecap="butt"/>
+  <line x1="44.0" y1="132.0" x2="44.0" y2="56.8" stroke="#1f2937" stroke-width="2.5"/>
+  <polygon points="44.0,48.0 39.0,60.5 49.0,60.5" fill="#1f2937"/>
+  <line x1="53.0" y1="132.0" x2="53.0" y2="56.8" stroke="#dc2626" stroke-width="2.5"/>
+  <polygon points="53.0,48.0 48.0,60.5 58.0,60.5" fill="#dc2626"/>
+  <circle cx="44.0" cy="132.0" r="4.0" fill="#1f2937"/>
+  <rect x='18.6' y='203.7' width='36.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='23.1' y='216.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">dot</text>
+  <text x="54.6" y="216.0" font-size="16" fill="#2b5fb4" text-anchor="start" xml:space="preserve"> = 1</text>
+  <line x1="162.0" y1="195.0" x2="162.0" y2="34.0" stroke="#d1d5db" stroke-width="1.2"/>
+  <line x1="234.7" y1="90.0" x2="162.0" y2="90.0" stroke="#6b7280" stroke-width="1.4" stroke-dasharray="4 3"/>
+  <path d='M 162.00 99.00 A 9.00 9.00 0 0 0 171.00 90.00' fill='none' stroke='#6b7280' stroke-width='1.2'/><circle cx='165.78' cy='93.78' r='1.6' fill='#6b7280'/>
+  <line x1="153.0" y1="132.0" x2="153.0" y2="90.0" stroke="#2b5fb4" stroke-width="5" stroke-linecap="butt"/>
+  <line x1="162.0" y1="132.0" x2="162.0" y2="56.8" stroke="#1f2937" stroke-width="2.5"/>
+  <polygon points="162.0,48.0 157.0,60.5 167.0,60.5" fill="#1f2937"/>
+  <line x1="162.0" y1="132.0" x2="227.2" y2="94.4" stroke="#dc2626" stroke-width="2.5"/>
+  <polygon points="234.7,90.0 221.4,91.9 226.4,100.6" fill="#dc2626"/>
+  <path d="M184.5,119.0 A26.0,26.0 0 0 0 162.0,106.0" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <g transform='translate(181.00 105.09) scale(1.5000) translate(0.5000 0)' fill='#6b7280' stroke='none'><defs>
+<path id='m5-g0-14' d='M3.535741-1.743462C3.535741-2.587298 2.859278-3.242839 2.036364-3.242839C1.199502-3.242839 .536986-2.566376 .536986-1.750436C.536986-.9066 1.21345-.251059 2.036364-.251059C2.873225-.251059 3.535741-.927522 3.535741-1.743462ZM2.036364-.592777C1.380822-.592777 .878705-1.12279 .878705-1.743462C.878705-2.39203 1.39477-2.901121 2.036364-2.901121C2.691905-2.901121 3.194022-2.371108 3.194022-1.750436C3.194022-1.101868 2.677958-.592777 2.036364-.592777Z'/>
+<path id='m5-g1-48' d='M4.582814-3.188045C4.582814-3.985056 4.533001-4.782067 4.184309-5.519303C3.726027-6.475716 2.909091-6.635118 2.49066-6.635118C1.892902-6.635118 1.165629-6.37609 .757161-5.449564C.438356-4.762142 .388543-3.985056 .388543-3.188045C.388543-2.440847 .428394-1.544209 .836862-.787049C1.265255 .019925 1.992528 .219178 2.480697 .219178C3.01868 .219178 3.775841 .009963 4.214197-.936488C4.533001-1.62391 4.582814-2.400996 4.582814-3.188045ZM2.480697 0C2.092154 0 1.504359-.249066 1.325031-1.205479C1.215442-1.803238 1.215442-2.719801 1.215442-3.307597C1.215442-3.945205 1.215442-4.60274 1.295143-5.140722C1.484433-6.326276 2.231631-6.41594 2.480697-6.41594C2.809465-6.41594 3.466999-6.236613 3.656289-5.250311C3.755915-4.692403 3.755915-3.935243 3.755915-3.307597C3.755915-2.560399 3.755915-1.882939 3.646326-1.24533C3.496887-.298879 2.929016 0 2.480697 0Z'/>
+<path id='m5-g1-54' d='M1.315068-3.267746V-3.506849C1.315068-6.027397 2.550436-6.386052 3.058531-6.386052C3.297634-6.386052 3.716065-6.326276 3.935243-5.987547C3.785803-5.987547 3.387298-5.987547 3.387298-5.539228C3.387298-5.230386 3.626401-5.080946 3.845579-5.080946C4.004981-5.080946 4.303861-5.17061 4.303861-5.559153C4.303861-6.156912 3.865504-6.635118 3.038605-6.635118C1.763387-6.635118 .418431-5.349938 .418431-3.148194C.418431-.488169 1.574097 .219178 2.500623 .219178C3.606476 .219178 4.552927-.71731 4.552927-2.032379C4.552927-3.297634 3.666252-4.254047 2.560399-4.254047C1.882939-4.254047 1.514321-3.745953 1.315068-3.267746ZM2.500623-.059776C1.872976-.059776 1.574097-.657534 1.514321-.806974C1.334994-1.275218 1.334994-2.072229 1.334994-2.251557C1.334994-3.028643 1.653798-4.024907 2.550436-4.024907C2.709838-4.024907 3.16812-4.024907 3.476961-3.407223C3.656289-3.038605 3.656289-2.530511 3.656289-2.042341C3.656289-1.564134 3.656289-1.066002 3.486924-.707347C3.188045-.109589 2.729763-.059776 2.500623-.059776Z'/>
+</defs>
+<g id='m5-page1'>
+<use x='0' y='0' xlink:href='#m5-g1-54'/>
+<use x='4.981339' y='0' xlink:href='#m5-g1-48'/>
+<use x='9.962678' y='-3.615364' xlink:href='#m5-g0-14'/>
+</g>
+</g>
+  <circle cx="162.0" cy="132.0" r="4.0" fill="#1f2937"/>
+  <rect x='129.6' y='203.7' width='36.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='134.1' y='216.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">dot</text>
+  <text x="165.6" y="216.0" font-size="16" fill="#2b5fb4" text-anchor="start" xml:space="preserve"> = 0.5</text>
+  <line x1="280.0" y1="195.0" x2="280.0" y2="34.0" stroke="#d1d5db" stroke-width="1.2"/>
+  <line x1="280.0" y1="132.0" x2="280.0" y2="56.8" stroke="#1f2937" stroke-width="2.5"/>
+  <polygon points="280.0,48.0 275.0,60.5 285.0,60.5" fill="#1f2937"/>
+  <line x1="280.0" y1="132.0" x2="355.2" y2="132.0" stroke="#dc2626" stroke-width="2.5"/>
+  <polygon points="364.0,132.0 351.5,127.0 351.5,137.0" fill="#dc2626"/>
+  <path d='M 280.00 118.00 A 14.00 14.00 0 0 1 294.00 132.00' fill='none' stroke='#6b7280' stroke-width='1.2'/><circle cx='285.88' cy='126.12' r='1.6' fill='#6b7280'/>
+  <circle cx="280.0" cy="132.0" r="4.0" fill="#1f2937"/>
+  <rect x='254.6' y='203.7' width='36.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='259.1' y='216.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">dot</text>
+  <text x="290.6" y="216.0" font-size="16" fill="#2b5fb4" text-anchor="start" xml:space="preserve"> = 0</text>
+  <line x1="398.0" y1="195.0" x2="398.0" y2="34.0" stroke="#d1d5db" stroke-width="1.2"/>
+  <line x1="470.7" y1="174.0" x2="398.0" y2="174.0" stroke="#6b7280" stroke-width="1.4" stroke-dasharray="4 3"/>
+  <path d='M 398.00 165.00 A 9.00 9.00 0 0 1 407.00 174.00' fill='none' stroke='#6b7280' stroke-width='1.2'/><circle cx='401.78' cy='170.22' r='1.6' fill='#6b7280'/>
+  <line x1="389.0" y1="132.0" x2="389.0" y2="174.0" stroke="#2b5fb4" stroke-width="5" stroke-linecap="butt"/>
+  <line x1="398.0" y1="132.0" x2="398.0" y2="56.8" stroke="#1f2937" stroke-width="2.5"/>
+  <polygon points="398.0,48.0 393.0,60.5 403.0,60.5" fill="#1f2937"/>
+  <line x1="398.0" y1="132.0" x2="463.2" y2="169.6" stroke="#dc2626" stroke-width="2.5"/>
+  <polygon points="470.7,174.0 462.4,163.4 457.4,172.1" fill="#dc2626"/>
+  <path d="M420.5,145.0 A26.0,26.0 0 0 0 398.0,106.0" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <g transform='translate(432.91 119.00) scale(1.5000) translate(0.5000 0)' fill='#6b7280' stroke='none'><defs>
+<path id='m6-g0-14' d='M3.535741-1.743462C3.535741-2.587298 2.859278-3.242839 2.036364-3.242839C1.199502-3.242839 .536986-2.566376 .536986-1.750436C.536986-.9066 1.21345-.251059 2.036364-.251059C2.873225-.251059 3.535741-.927522 3.535741-1.743462ZM2.036364-.592777C1.380822-.592777 .878705-1.12279 .878705-1.743462C.878705-2.39203 1.39477-2.901121 2.036364-2.901121C2.691905-2.901121 3.194022-2.371108 3.194022-1.750436C3.194022-1.101868 2.677958-.592777 2.036364-.592777Z'/>
+<path id='m6-g1-48' d='M4.582814-3.188045C4.582814-3.985056 4.533001-4.782067 4.184309-5.519303C3.726027-6.475716 2.909091-6.635118 2.49066-6.635118C1.892902-6.635118 1.165629-6.37609 .757161-5.449564C.438356-4.762142 .388543-3.985056 .388543-3.188045C.388543-2.440847 .428394-1.544209 .836862-.787049C1.265255 .019925 1.992528 .219178 2.480697 .219178C3.01868 .219178 3.775841 .009963 4.214197-.936488C4.533001-1.62391 4.582814-2.400996 4.582814-3.188045ZM2.480697 0C2.092154 0 1.504359-.249066 1.325031-1.205479C1.215442-1.803238 1.215442-2.719801 1.215442-3.307597C1.215442-3.945205 1.215442-4.60274 1.295143-5.140722C1.484433-6.326276 2.231631-6.41594 2.480697-6.41594C2.809465-6.41594 3.466999-6.236613 3.656289-5.250311C3.755915-4.692403 3.755915-3.935243 3.755915-3.307597C3.755915-2.560399 3.755915-1.882939 3.646326-1.24533C3.496887-.298879 2.929016 0 2.480697 0Z'/>
+<path id='m6-g1-49' d='M2.929016-6.37609C2.929016-6.615193 2.929016-6.635118 2.699875-6.635118C2.082192-5.997509 1.205479-5.997509 .886675-5.997509V-5.688667C1.085928-5.688667 1.673724-5.688667 2.191781-5.947696V-.787049C2.191781-.428394 2.161893-.308842 1.265255-.308842H.946451V0C1.295143-.029888 2.161893-.029888 2.560399-.029888S3.825654-.029888 4.174346 0V-.308842H3.855542C2.958904-.308842 2.929016-.418431 2.929016-.787049V-6.37609Z'/>
+<path id='m6-g1-50' d='M1.265255-.767123L2.321295-1.793275C3.875467-3.16812 4.473225-3.706102 4.473225-4.702366C4.473225-5.838107 3.576588-6.635118 2.361146-6.635118C1.235367-6.635118 .498132-5.718555 .498132-4.83188C.498132-4.273973 .996264-4.273973 1.026152-4.273973C1.195517-4.273973 1.544209-4.393524 1.544209-4.801993C1.544209-5.061021 1.364882-5.32005 1.016189-5.32005C.936488-5.32005 .916563-5.32005 .886675-5.310087C1.115816-5.957659 1.653798-6.326276 2.231631-6.326276C3.138232-6.326276 3.566625-5.519303 3.566625-4.702366C3.566625-3.905355 3.068493-3.118306 2.520548-2.500623L.607721-.368618C.498132-.259029 .498132-.239103 .498132 0H4.194271L4.473225-1.733499H4.224159C4.174346-1.43462 4.104608-.996264 4.004981-.846824C3.935243-.767123 3.277709-.767123 3.058531-.767123H1.265255Z'/>
+</defs>
+<g id='m6-page1'>
+<use x='0' y='0' xlink:href='#m6-g1-49'/>
+<use x='4.981339' y='0' xlink:href='#m6-g1-50'/>
+<use x='9.962678' y='0' xlink:href='#m6-g1-48'/>
+<use x='14.944017' y='-3.615364' xlink:href='#m6-g0-14'/>
+</g>
+</g>
+  <circle cx="398.0" cy="132.0" r="4.0" fill="#1f2937"/>
+  <rect x='362.5' y='203.7' width='36.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='367.0' y='216.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">dot</text>
+  <text x="398.5" y="216.0" font-size="16" fill="#2b5fb4" text-anchor="start" xml:space="preserve"> = -0.5</text>
+  <rect x='25.5' y='23.7' width='63.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='30.0' y='36.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">normal</text>
+  <rect x='61.5' y='79.7' width='72.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='66.0' y='92.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">sun_dir</text>
 </svg>

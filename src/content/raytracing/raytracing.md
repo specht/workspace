@@ -198,7 +198,7 @@ Einen Vektor kannst du dir als Pfeil vorstellen, der so weit nach rechts, oben u
 
 ### Vom Auge durch den Bildschirm
 
-<img class='drawing' style='width: 24em' src='bildebene.webp' alt='Schräg von hinten über das Auge gesehen: unten ein Punkt, das Auge im Nullpunkt, darüber eine Glasscheibe mit einem Gitter aus Pixeln, das Bild, eine Einheit vor dem Auge. Ein blauer Pfeil geht vom Auge zur Mitte der Scheibe, »1 nach vorn: −z«. Von dort führt ein roter Pfeil sx nach rechts und ein grüner Pfeil sy nach oben zu einem markierten Pixel. Ein blauer Strahl vom Auge durch diesen Pixel trifft dahinter eine Kugel; an ihm steht (sx, sy, −1).'>
+<img class='drawing' style='width: 24em' src='bildebene.webp' alt='Schräg von hinten und oben über das Auge gesehen: unten ein Punkt, das Auge im Nullpunkt, davor eine Glasscheibe mit einem Gitter aus Pixeln, das Bild, eine Einheit vor dem Auge. Ein blauer Pfeil geht vom Auge zur Mitte der Scheibe, »−z: 1 nach vorn«. Von dort führt ein roter Pfeil sx nach rechts und ein grüner Pfeil sy nach oben zu einem markierten Pixel. Ein blauer Strahl geht vom Auge durch diesen Pixel und gestrichelt weiter in die Szene; an ihm steht (sx, sy, -1). Unten rechts zeigen kleine Pfeile x nach rechts, y nach oben und z auf uns zu.'>
 
 Stell dir vor, das Auge sitzt im Nullpunkt und schaut in Richtung −z. Eine Einheit davor steht das Bild, wie eine Glasscheibe, auf der die Pixel liegen. Ein Strahl beginnt beim Auge und geht durch einen Pixel weiter in die Szene. `ray_dir` rechnet die Richtung dieses Strahls aus:
 
@@ -220,7 +220,7 @@ _task(sx)
 
 ### Wo trifft der Strahl die Kugel?
 
-<img class='drawing' style='width: 30em' src='treffer.webp' alt='Ein Strahl beginnt bei origin und läuft nach rechts in einen Kreis, die Kugel mit center und radius. Nach der Strecke t trifft er ihren Rand vorn, den Treffpunkt, und hinten noch einmal. Ein zweiter, gestrichelter Strahl geht oben an der Kugel vorbei: daneben. Links unten ein kurzer Pfeil dir der Länge 1, unten steht: Treffpunkt = origin + t · dir.'>
+<img class='drawing' style='width: 30em' src='treffer.webp' alt='Ein Strahl beginnt bei origin und läuft nach rechts in einen Kreis, die Kugel mit center und radius. Nach der Strecke t trifft er ihren Rand vorn, dort steht origin + t · dir, und hinten noch einmal. Ein zweiter, gestrichelter Strahl geht oben an der Kugel vorbei: daneben. Links unten ein kurzer Pfeil dir der Länge 1.'>
 
 Ein Strahl beginnt bei einem Punkt `origin` und läuft in Richtung `dir`. Nach der Strecke `t` ist er beim Punkt `origin + t · dir`. Eine Kugel besteht aus allen Punkten, die vom Mittelpunkt `center` genau `radius` entfernt sind. Gesucht ist also das `t`, für das gilt:
 
@@ -320,7 +320,7 @@ Sieh dir den Rand der roten Scheibe genau an: Er besteht aus Treppenstufen. Jede
 
 Die Abhilfe ist einfach und braucht Geduld: viele Strahlen je Pixel, jeder durch einen **zufälligen Punkt im Pixel**, und davon der Durchschnitt. Am Rand einer Kugel treffen dann manche Strahlen die Kugel und manche den Himmel, und der Pixel bekommt eine Mischfarbe. Statt alle Strahlen auf einmal zu rechnen, schickt das Programm in jedem Bild einen weiteren Strahl je Pixel, einen **Durchgang**, und zeigt den Durchschnitt aller bisherigen. So sieht man sofort ein Bild, das mit jeder Sekunde glatter wird.
 
-<img class='drawing' style='width: 31em' src='pixel.webp' alt='Zweimal dasselbe Gitter aus Pixeln, durch das der Rand einer Kugel als Bogen läuft. Links hat jeder Pixel einen Punkt in der Mitte; liegt er in der Kugel, ist der ganze Pixel rot, sonst weiß, und der Rand wird zur Treppe: ein Strahl je Pixel, durch die Mitte. Rechts sind die Pixel am Rand blassrot, umso kräftiger, je mehr von ihnen in der Kugel liegt; in einem Pixel sind zwölf zufällige Punkte eingezeichnet, rote in der Kugel, blaue daneben: viele Strahlen je Pixel, zufällig verteilt.'>
+<img class='drawing' style='width: 31em' src='pixel.webp' alt='Zweimal dasselbe Gitter aus Pixeln, durch das der Rand einer Kugel als Bogen läuft. Links hat jeder Pixel einen Punkt in der Mitte; liegt er in der Kugel, ist der ganze Pixel rot, sonst weiß, und der Rand wird zur Treppe: ein Strahl je Pixel, durch die Mitte. Rechts sind die Pixel am Rand blassrot, umso kräftiger, je mehr von ihnen in der Kugel liegt; in einem Pixel am Rand sind zufällige Punkte eingezeichnet, rote in der Kugel, blaue daneben: viele Strahlen je Pixel, zufällig.'>
 
 Für den Zufall gibt es eine kleine Funktion; `xorshift` heißt das Verfahren. Unter `mix`:
 
@@ -419,17 +419,17 @@ _task(rauschen)
 
 Eine Kugel wirkt rund, weil sie dort hell ist, wo die Sonne steil auf sie scheint, und dunkel, wo das Licht nur streift. Um das auszurechnen, braucht man an jedem Treffpunkt die Richtung, in die die Oberfläche dort zeigt: die **Normale**. Bei einer Kugel ist das einfach: Sie zeigt vom Mittelpunkt zum Treffpunkt. Geteilt durch den Radius hat sie die Länge 1.
 
-<img class='drawing' style='width: 23em' src='normale.webp' alt='Ein Kreis, die Kugel, mit dem Mittelpunkt center. Von ihm führt eine gestrichelte Linie zu einem blauen Punkt point auf dem Rand; dort zeigt ein schwarzer Pfeil normal, Länge 1, in derselben Richtung nach außen. An vier anderen Stellen des Randes zeigen graue Pfeile ebenso senkrecht nach außen. Unten steht: normal = (point − center) / radius.'>
+<img class='drawing' style='width: 23em' src='normale.webp' alt='Ein Kreis, die Kugel, mit dem Mittelpunkt center. Von ihm führt eine gestrichelte Linie zu einem blauen Punkt point auf dem Rand; dort zeigt ein schwarzer Pfeil normal, Länge 1, in derselben Richtung nach außen. An vier anderen Stellen des Randes zeigen graue Pfeile ebenso senkrecht nach außen. Unten steht, wie das Programm sie rechnet: scale(sub(point, center), 1 / radius).'>
 
 ### Wie hell?
 
-<img class='drawing' style='width: 33.5em' src='licht.webp' alt='Drei Bilder nebeneinander: ein Boden mit einem Pfeil normal nach oben, darauf fallen jeweils drei parallele rote Sonnenstrahlen, senkrecht, schräg und flach. Unter dem Boden ein roter Streifen, so breit wie die beleuchtete Fläche: senkrecht schmal (dot = 1), schräg breiter (dot ≈ 0,71), flach am breitesten (dot ≈ 0,34).'>
+<img class='drawing' style='width: 34.25em' src='licht.webp' alt='Drei Bilder nebeneinander: ein Boden mit einem Pfeil normal nach oben, darauf fallen jeweils drei parallele orange Sonnenstrahlen, senkrecht, schräg und flach. Unter dem Boden ein oranger Streifen, so breit wie die beleuchtete Fläche: senkrecht schmal (dot = 1), schräg breiter (dot ≈ 0.71), flach am breitesten (dot ≈ 0.34).'>
 
 Dasselbe Bündel Sonnenlicht verteilt sich auf eine umso größere Fläche, je flacher es einfällt. Jede Stelle bekommt dann weniger ab. Genau dieses Maß liefert das Skalarprodukt aus Normale und Richtung zur Sonne, `dot(normal, sun_dir)`: 1, wenn die Sonne senkrecht steht, 0, wenn sie streift, und negativ, wenn sie von hinten scheint; dann bekommt die Stelle gar kein Sonnenlicht.
 
 Warum gerade das Skalarprodukt? Für zwei Pfeile der Länge 1 sagt es, wie weit der eine in die Richtung des anderen zeigt: Fällt man von der Spitze des einen das Lot auf den anderen, ist das Stück bis dorthin so lang wie `dot`. Zeigen beide in dieselbe Richtung, ist das ganze Stück 1 lang; stehen sie im rechten Winkel, bleibt nichts übrig; zeigt einer nach hinten, liegt das Stück auf der anderen Seite und zählt negativ.
 
-<img class='drawing' style='width: 30em' src='skalarprodukt.webp' alt='Viermal ein schwarzer Pfeil normal nach oben und ein roter Pfeil sun_dir derselben Länge, im Winkel 0°, 60°, 90° und 120° zu ihm. Von der Spitze des roten Pfeils führt eine gestrichelte Linie waagrecht zur Linie der Normalen; ein blauer Balken daneben zeigt das Stück bis dorthin: bei 0° die ganze Länge, dot = 1; bei 60° die Hälfte, dot = 0,5; bei 90° nichts, dot = 0; bei 120° die Hälfte nach unten, dot = −0,5.'>
+<img class='drawing' style='width: 30em' src='skalarprodukt.webp' alt='Viermal ein schwarzer Pfeil normal nach oben und ein roter Pfeil sun_dir derselben Länge, im Winkel 0°, 60°, 90° und 120° zu ihm. Von der Spitze des roten Pfeils fällt eine gestrichelte Linie im rechten Winkel auf die Linie der Normalen; ein blauer Balken daneben zeigt das Stück bis dorthin: bei 0° die ganze Länge, dot = 1; bei 60° die Hälfte, dot = 0.5; bei 90°, mit dem Zeichen für den rechten Winkel, nichts, dot = 0; bei 120° die Hälfte nach unten, dot = -0.5.'>
 
 _person(lambert)
 
@@ -585,7 +585,7 @@ _task(boden)
 
 Ein Strahl kann mehrere Dinge treffen; zu sehen ist das vorderste. `nearest_hit` fragt den Boden und jede Kugel und behält das kleinste `t`.
 
-<img class='drawing' style='width: 31em' src='naechster.webp' alt='Ein Strahl beginnt links bei origin und läuft leicht abwärts nach rechts. Oben verfehlt er einen Kreis: t = INFINITY. Den zweiten Kreis trifft er bei t = 1,9, dort endet der blaue Pfeil; gestrichelt geht er weiter, trifft einen dritten Kreis bei t = 3,2 und den Boden bei t = 4,2. Oben steht: zu sehen: das kleinste t.'>
+<img class='drawing' style='width: 31em' src='naechster.webp' alt='Ein Strahl beginnt links bei origin und läuft leicht abwärts nach rechts. Oben verfehlt er einen Kreis: t = INFINITY. Den zweiten Kreis trifft er bei t = 1.9, dort endet der blaue Pfeil; gestrichelt geht er weiter, trifft einen dritten Kreis bei t = 3.2 und den Boden bei t = 4.2. Oben steht: zu sehen: das kleinste t.'>
 
 Was über den Treffer bekannt ist, sammelt es in einem `hit`:
 
@@ -686,7 +686,7 @@ Die Kugeln stehen auf dem Boden, aber sie schweben scheinbar: Es fehlen die Scha
 
 Ob ein Punkt im Schatten liegt, findet ein Raytracer genauso heraus wie alles andere: mit einem Strahl. Vom Treffpunkt aus geht er in Richtung Sonne. Trifft er unterwegs etwas, kommt kein Sonnenlicht an.
 
-<img class='drawing' style='width: 31em' src='schattenstrahl.webp' alt='Eine Kugel liegt auf dem Boden, rechts oben steht die Sonne. Von zwei Treffpunkten auf dem Boden geht je ein gestrichelter Strahl in Richtung sun_dir. Der linke, hinter der Kugel, trifft die Kugel und endet an einem roten Kreuz: Treffpunkt im Schatten. Der rechte kommt frei bis zur Sonne: Treffpunkt in der Sonne.'>
+<img class='drawing' style='width: 31em' src='schattenstrahl.webp' alt='Eine Kugel liegt auf dem Boden, rechts oben steht weit weg die Sonne. Von zwei Treffpunkten auf dem Boden geht je ein gestrichelter Strahl in Richtung sun_dir, beide parallel. Der linke, im Schatten, stößt an die Kugel und endet an einem roten Kreuz. Der rechte, in der Sonne, kommt frei durch.'>
 
 Ergänze `sunlight`:
 
@@ -725,7 +725,7 @@ Mit jedem Durchgang werden die Sprenkel blasser, denn im Durchschnitt fallen die
 
 Die Abhilfe: Treffer, die näher als eine kleine Zahl `EPS` am Anfang des Strahls liegen, zählen nicht.
 
-<img class='drawing' style='width: 27em' src='akne-lupe.webp' alt='Stark vergrößert: die Linie des Bodens, y = 0. Auf ihr ein leerer Kreis, eigentlich hier; ein winziges Stück darunter ein blauer Punkt, berechnet: ein winziges Stück zu tief. Von ihm geht ein gestrichelter Strahl zur Sonne, der gleich die Linie des Bodens kreuzt; dort ein rotes Kreuz: trifft den Boden selbst, t = 0,0000000000000002. Neben dem Anfang des Strahls eine grüne Klammer EPS, länger als dieses Stück.'>
+<img class='drawing' style='width: 27em' src='akne-lupe.webp' alt='Stark vergrößert: die Linie des Bodens, y = 0. Auf ihr ein leerer Kreis, eigentlich hier; ein winziges Stück darunter ein blauer Punkt, gerechnet: ein winziges Stück darunter. Von ihm geht ein gestrichelter Strahl zur Sonne, der gleich die Linie des Bodens kreuzt; dort ein rotes Kreuz: trifft gleich den Boden, t = 0.0000000000000002. Neben dem Anfang des Strahls eine grüne Klammer EPS, länger als dieses Stück.'>
 
 ```c
 ~ #define H 180
@@ -770,7 +770,7 @@ Bisher schaut das Auge immer in Richtung −z. Eine Kamera, die man bewegen kann
 - **right** steht senkrecht auf `forward` und auf »oben in der Welt«, `(0, 1, 0)`: `normalize(cross(forward, (0, 1, 0)))`.
 - **up** steht senkrecht auf `forward` und `right`: `cross(right, forward)`.
 
-<img class='drawing' style='width: 31em' src='kamera.webp' alt='Schräg von der Seite: links ein Punkt eye, rechts eine Kugel target. Ein blauer Pfeil forward zeigt vom Auge zum Bild, einem Rechteck eine Einheit davor; vom Mittelpunkt des Bildes ein roter Pfeil right zur Seite und ein grüner Pfeil up nach oben. Ein gestrichelter Strahl geht vom Auge durch einen Punkt des Bildes: forward + sx · right + sy · up.'>
+<img class='drawing' style='width: 31em' src='kamera.webp' alt='Schräg von der Seite: links ein Punkt eye, rechts eine Kugel target. Ein blauer Pfeil forward zeigt vom Auge zum Bild, einem Rechteck eine Einheit davor; von der Mitte des Bildes ein roter Pfeil right zur Seite, auf uns zu, und ein grüner Pfeil up nach oben. Ein Strahl geht vom Auge durch einen Punkt des Bildes und gestrichelt weiter: forward + sx · right + sy · up.'>
 
 Das Bild steht wieder eine Einheit vor dem Auge, jetzt in Richtung `forward`, und ein Pixel liegt `sx` Schritte in Richtung `right` und `sy` Schritte in Richtung `up` von seiner Mitte. Die Richtung durch den Pixel ist also `forward + sx · right + sy · up`.
 
@@ -970,7 +970,7 @@ crop-element: #canvas
 
 ### Abprallen
 
-<img class='drawing' style='width: 29em' src='spiegel.webp' alt='Ein blauer Strahl dir trifft schräg von links oben auf eine Spiegelfläche, an der die Normale n nach oben zeigt. Gestrichelt geht dir unter der Fläche weiter, wohin er ohne Spiegel ginge. Von dort führt ein grüner Pfeil senkrecht nach oben, −2 · dot(dir, n) · n, halb unter und halb über der Fläche, und endet an der Spitze des blauen Pfeils reflect(dir, n), der vom Treffpunkt nach rechts oben zeigt.'>
+<img class='drawing' style='width: 29em' src='spiegel.webp' alt='Ein blauer Strahl dir trifft schräg von links oben auf eine Spiegelfläche, an der die Normale n nach oben zeigt. Gestrichelt geht dir unter der Fläche weiter, wohin er ohne Spiegel ginge. Von dort führt ein grüner Pfeil senkrecht nach oben, −2 (dir · n) n, halb unter und halb über der Fläche, und endet an der Spitze des blauen Pfeils reflect(dir, n), der vom Treffpunkt nach rechts oben zeigt.'>
 
 Ein Spiegel schickt den Strahl weiter, und zwar so, dass er im selben Winkel abprallt, in dem er angekommen ist. Zerlegt man `dir` in einen Teil entlang der Normalen, `dot(dir, n) · n`, und den Rest, dann dreht sich beim Abprallen nur der Teil entlang der Normalen um. Zieht man ihn zweimal ab, ist er umgedreht:
 
@@ -1063,7 +1063,7 @@ Die Spiegelkugel zeigt die ganze Szene, gebogen wie in einer Christbaumkugel, un
 
 ### Brechen
 
-<img class='drawing' style='width: 29em' src='glas.webp' alt='Ein Strahl dir kommt schräg von links oben aus der Luft und trifft auf Glas. Im Glas läuft er steiler weiter, zur gestrichelten Normalen hin geknickt; der Winkel β zur Normalen ist kleiner als der Winkel α davor. Ein Teil des Lichts wird nach rechts oben gespiegelt.'>
+<img class='drawing' style='width: 29em' src='glas.webp' alt='Ein Strahl dir kommt schräg von links oben aus der Luft und trifft auf Glas. Im Glas läuft er steiler weiter, zur gepunkteten Normalen hin geknickt; der Winkel β zur Normalen ist kleiner als der Winkel α davor. Ein Teil des Lichts wird nach rechts oben gespiegelt.'>
 
 Fällt Licht schräg auf Glas, knickt es ab, zur Normalen hin. Wie stark, hängt vom **Brechungsindex** ab: Luft hat 1, Glas etwa 1,5. Für die Winkel α vor und β nach der Grenze gilt das Brechungsgesetz \\(\sin\alpha = 1{,}5 \cdot \sin\beta\\).
 
@@ -1253,7 +1253,7 @@ Links geht das Schachbrett fast gerade durch die hohle Kugel hindurch, wie bei W
 
 Die Schatten haben scharfe Ränder, weil die Sonne bisher ein Punkt ist: Ein Punkt sieht die Sonne oder sieht sie nicht. Die echte Sonne ist eine Scheibe am Himmel. Am Rand eines Schattens verdeckt eine Kugel nur einen Teil von ihr, und es ist nur ein bisschen dunkler, ein **Halbschatten**.
 
-<img class='drawing' style='width: 31em' src='halbschatten.webp' alt='Eine Kugel auf dem Boden, rechts oben die Sonne als Scheibe. Unter dem Boden ein Streifen, links von der Kugel dunkel, der nach links weich heller wird. Von drei Punkten auf dem Boden gehen je zwei Linien zum oberen und unteren Rand der Sonnenscheibe: Bei Schatten enden beide gestrichelt an der Kugel, bei Halbschatten erreicht eine die Sonne und eine endet an der Kugel, bei volle Sonne, rechts der Kugel, erreichen beide die Sonne.'>
+<img class='drawing' style='width: 31em' src='halbschatten.webp' alt='Eine Kugel auf dem Boden, rechts oben die Sonne als Scheibe. Unter dem Boden ein Streifen, unter der Kugel und links davon dunkel, weiter links weich heller. Von drei Punkten auf dem Boden gehen je zwei Linien zu den beiden Rändern der Sonnenscheibe: Bei Schatten enden beide gestrichelt an der Kugel, bei Halbschatten erreicht eine die Sonne und eine endet an der Kugel, bei volle Sonne, rechts der Kugel, erreichen beide die Sonne.'>
 
 Das kostet jetzt fast nichts mehr: Jeder Durchgang zielt mit dem Schattenstrahl auf einen anderen zufälligen Punkt der Sonnenscheibe, und der Durchschnitt über viele Durchgänge ergibt den Halbschatten von selbst. Vorgeschlagen haben das Robert Cook, Thomas Porter und Loren Carpenter 1984 bei Lucasfilm.
 
@@ -1366,7 +1366,7 @@ vec skylight(hit h)
 
 `normal + random_in_sphere()` zeigt immer in die Hälfte über der Oberfläche, und steil nach oben öfter als flach zur Seite, so wie auch der Himmel steil von oben mehr Licht gibt.
 
-<img class='drawing' style='width: 31em' src='himmel-strahlen.webp' alt='Zwei Punkte auf dem Boden. Über dem linken ein gestrichelter Kreis, der den Boden in diesem Punkt berührt, mit einigen zufälligen Punkten darin; durch jeden geht vom Bodenpunkt ein blauer Pfeil schräg oder steil nach oben, alle in den Himmel: sieht viel Himmel. Rechts liegt eine Kugel; vom Punkt dicht neben ihr gehen dieselben Richtungen aus, die Hälfte endet gestrichelt an der Kugel: sieht wenig Himmel.'>
+<img class='drawing' style='width: 31em' src='himmel-strahlen.webp' alt='Zwei Punkte auf dem Boden. Über jedem ein gestrichelter Kreis, der den Boden in diesem Punkt berührt, mit einigen zufälligen Punkten darin; durch jeden geht vom Bodenpunkt ein Strahl nach oben. Vom linken Punkt kommen alle in den Himmel: sieht viel Himmel. Der rechte liegt unter dem Rand einer Kugel; mehr als die Hälfte seiner Strahlen endet gestrichelt an ihr: sieht wenig Himmel. Unten steht: Punkte: normal + random_in_sphere().'>
 
 In `trace` heißt es dann:
 
@@ -1601,7 +1601,7 @@ _task(cover)
 
 Bisher kommen alle Strahlen aus einem einzigen Punkt, dem Auge. Darum ist alles gleich scharf, ganz nah wie ganz fern. Ein Fotoapparat hat eine Linse, und das Licht eines Punkts kommt durch die ganze Linse. Scharf ist nur, was im richtigen Abstand liegt, in der **Schärfeebene**; davor und dahinter verschwimmt es.
 
-<img class='drawing' style='width: 30.5em' src='schaerfe.webp' alt='Von der Seite: links eine Linse, die mit aperture beschriftet ist, rechts im Abstand focus eine gestrichelte senkrechte Linie, die Schärfeebene. Drei Strahlen von oben, Mitte und unten auf der Linse treffen sich auf ihr in einem Punkt, scharf, und laufen dahinter wieder auseinander. Auf halbem Weg liegen sie weit auseinander: unscharf.'>
+<img class='drawing' style='width: 30.5em' src='schaerfe.webp' alt='Von der Seite: links eine Linse, ihr Radius ist mit aperture beschriftet, rechts im Abstand focus eine gestrichelte senkrechte Linie, die Schärfeebene. Fünf Strahlen von verschiedenen Punkten der Linse treffen sich auf ihr in einem Punkt, scharf, und laufen dahinter wieder auseinander. Davor liegen sie weit auseinander: unscharf.'>
 
 Dein Raytracer macht das wieder mit Zufall: In jedem Durchgang beginnt der Strahl eines Pixels an einem anderen zufälligen Punkt der Linse, zielt aber auf denselben Punkt der Schärfeebene wie ohne Linse. Was dort liegt, treffen alle Strahlen des Pixels gleich; was davor oder dahinter liegt, treffen sie an verschiedenen Stellen, und der Durchschnitt verschwimmt. Einen zufälligen Punkt auf der Linse gibt `random_in_disc`, unter `random_in_sphere`:
 
@@ -1793,9 +1793,9 @@ Die Wände stehen in beiden Bildern in der Sonne und haben dieselben Farben. Ohn
 
 Ein Bildschirm kann nichts heller zeigen als 1, also ganz weiß, und `to_byte` schneidet alles darüber ab. Im fertigen Bild fällt das kaum auf, denn fast alles ist dunkler als 1. Anders, wenn du heller belichtest, wie mit einer weiter geöffneten Blende, damit man in den Schatten mehr sieht: Dann werden der Himmel, die weißen Felder und die Sonnenseiten der Kugeln heller als 1. Abgeschnitten werden sie zu glatten weißen Flächen, und Farben verlieren ihren Ton, weil jeder Farbkanal einzeln bei 1 aufhört.
 
-Eine Kamera schneidet nicht hart ab. Sie drückt, was zu hell ist, weich zusammen: Je heller, desto weniger wird es noch heller. So eine Kurve heißt **Tone Mapping**. Diese hier lässt bis 0,5 alles, wie es ist, und biegt dann sanft ab, sodass auch zwischen 1 und 2,5 noch Unterschiede bleiben:
+Eine Kamera schneidet nicht hart ab. Sie drückt, was zu hell ist, weich zusammen: Je heller, desto weniger wird es noch heller. So eine Kurve heißt **Tone Mapping**. Diese hier lässt bis 0,7 alles, wie es ist, und biegt dann sanft ab, sodass auch zwischen 1 und 2 noch Unterschiede bleiben:
 
-<img class='drawing' style='width: 30.5em' src='tone.webp' alt='Ein Graph: waagrecht die gerechnete Helligkeit von 0 bis 3, senkrecht, was auf den Bildschirm kommt, von 0 bis 1. Eine rot gestrichelte Linie steigt gerade bis 1 und bleibt dann flach: abgeschnitten. Eine blaue Linie ist bis 0,5 dieselbe, biegt dann weich ab und nähert sich 1: Tone Mapping.'>
+<img class='drawing' style='width: 30.5em' src='tone.webp' alt='Ein Graph: waagrecht die gerechnete Helligkeit c von 0 bis 3, senkrecht, was auf den Bildschirm kommt, von 0 bis 1. Eine rot gestrichelte Linie steigt gerade bis 1 und bleibt dann flach: abgeschnitten. Die blaue Linie tone(c) ist bis 0.7 dieselbe, biegt dann weich ab und nähert sich 1: Tone Mapping.'>
 
 Über `to_byte` kommen die Belichtung und die Kurve; `exp` ist die Exponentialfunktion, die Kurve nähert sich 1, erreicht sie aber nie:
 
@@ -1803,13 +1803,13 @@ Eine Kamera schneidet nicht hart ab. Sie drückt, was zu hell ist, weich zusamme
 // Belichtung: größer ist heller, wie eine weiter geöffnete Blende
 double exposure = 1;
 
-// Tone Mapping: bis 0.5 bleibt alles, wie es ist; was heller ist, wird
+// Tone Mapping: bis 0.7 bleibt alles, wie es ist; was heller ist, wird
 // weich zusammengedrückt und nähert sich 1, statt bei 1 abzubrechen
 double tone(double c)
 {
-    if (c < 0.5)
+    if (c < 0.7)
         return c;
-    return 0.5 + 0.5 * (1 - exp(-(c - 0.5) / 0.5));
+    return 0.7 + 0.3 * (1 - exp(-(c - 0.7) / 0.3));
 }
 ```
 
@@ -1849,8 +1849,8 @@ hook: open raytracer.html
 hook: frames 128
 crop-element: #canvas
 -->
-<img src='belichtung-weich.webp' alt='Das fertige Bild, heller belichtet, mit Tone Mapping: Der Himmel hat noch einen Verlauf, die Spiegelkugel zeigt ihn hellblau, der Planet behält seine Streifen.'>
-<figcaption>Zweimal <kbd>H</kbd>, mit Tone Mapping</figcaption>
+<img src='belichtung-weich.webp' alt='Das fertige Bild, einmal heller belichtet, mit Tone Mapping: Über dem Horizont geht der Himmel in einem Verlauf in Weiß über, der Horizont bleibt zu sehen, auch in der Spiegelkugel, und Kugeln und Boden behalten ihre Kontraste.'>
+<figcaption>Einmal <kbd>H</kbd>, mit Tone Mapping</figcaption>
 </figure>
 <figure>
 <!-- tutorial-screenshot
@@ -1866,12 +1866,12 @@ hook: open raytracer.html
 hook: frames 128
 crop-element: #canvas
 -->
-<img src='belichtung-hart.webp' alt='Dasselbe Bild, gleich hell belichtet, aber abgeschnitten: Der Himmel ist ein glattes Weiß, die obere Hälfte der Spiegelkugel ein heller, grünlich blauer Fleck, die hellen Streifen des Planeten sind ausgebrannt.'>
+<img src='belichtung-hart.webp' alt='Dasselbe Bild, gleich hell belichtet, aber abgeschnitten: Über dem Horizont liegt eine breite, glatt weiße Fläche, in der der Horizont verschwindet, auch in der Spiegelkugel; oben ist der Himmel grünlich grau.'>
 <figcaption>Dasselbe, hart bei 1 abgeschnitten</figcaption>
 </figure>
 </div>
 
-Abgeschnitten wird der Himmel zu einer glatten weißen Fläche, die Spiegelkugel oben zu einem grünlich blauen Fleck, weil Rot und Grün schon bei 1 aufhören, Blau aber noch nicht, und der Planet verliert seine hellen Streifen. Mit Tone Mapping bleibt in all dem ein Verlauf.
+Abgeschnitten wird der Himmel über dem Horizont zu einer glatten weißen Fläche, in der der Horizont verschwindet, auch in der Spiegelkugel, und oben bekommt er einen grünlichen Ton, weil Grün und Blau schon bei 1 aufhören, Rot aber noch nicht. Mit Tone Mapping bleibt dort ein Verlauf. Wo das Bild dunkler als 0,7 ist, sind beide gleich: Die Kurve ändert nur, was zu hell ist.
 
 ## Wie geht es weiter?
 

@@ -1,28 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 240" width="520" height="240" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
-  <!-- Ein Strahl origin + t · dir trifft die Kugel um center mit radius zweimal, vorn und hinten; sichtbar ist der vordere Treffpunkt, das kleinere t. Ein Strahl, der vorbeigeht, trifft sie gar nicht.
-       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg 1040 -->
-  <rect width="520" height="240" fill="#ffffff"/>
-  <circle cx="345.0" cy="118.0" r="72.0" fill="#eef3fb" stroke="#1f2937" stroke-width="2"/>
-  <line x1="40.0" y1="160.0" x2="368.9" y2="11.2" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="6 5"/>
-  <polygon points="377.1,7.5 368.8,16.5 364.8,7.8" fill="#6b7280"/>
-  <text x="387.1" y="21.5" font-size="15" fill="#6b7280" text-anchor="start">daneben</text>
-  <line x1="273.0" y1="117.2" x2="412.0" y2="91.7" stroke="#2b5fb4" stroke-width="2" stroke-dasharray="6 5"/>
-  <line x1="412.0" y1="91.7" x2="505.5" y2="74.5" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="6 5"/>
-  <line x1="40.0" y1="160.0" x2="262.4" y2="119.2" stroke="#2b5fb4" stroke-width="2.5"/>
-  <polygon points="273.0,117.2 260.8,125.2 258.7,114.1" fill="#2b5fb4"/>
-  <text x="156.5" y="160.6" font-size="17" fill="#2b5fb4" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">t</text>
-  <circle cx="273.0" cy="117.2" r="5.0" fill="#2b5fb4" stroke="#2b5fb4" stroke-width="1.5"/>
-  <circle cx="412.0" cy="91.7" r="5.0" fill="#ffffff" stroke="#2b5fb4" stroke-width="1.5"/>
-  <text x="267.0" y="143.2" font-size="15" fill="#2b5fb4" text-anchor="end">Treffpunkt</text>
-  <text x="420.0" y="79.7" font-size="15" fill="#6b7280" text-anchor="start">hinten</text>
-  <line x1="345.0" y1="118.0" x2="303.7" y2="59.0" stroke="#1f2937" stroke-width="1.5"/>
-  <text x="332.4" y="92.5" font-size="15" fill="#1f2937" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">radius</text>
-  <circle cx="345.0" cy="118.0" r="4.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
-  <text x="353.0" y="144.0" font-size="15" fill="#1f2937" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">center</text>
-  <circle cx="40.0" cy="160.0" r="6.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
-  <text x="40.0" y="144.0" font-size="15" fill="#1f2937" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">origin</text>
-  <line x1="40.0" y1="192.0" x2="77.5" y2="185.1" stroke="#1f2937" stroke-width="2"/>
-  <polygon points="87.2,183.3 76.0,190.7 74.1,180.4" fill="#1f2937"/>
-  <text x="28.0" y="216.0" font-size="15" fill="#1f2937" text-anchor="start">dir, Länge 1</text>
-  <text x="340.0" y="228.0" font-size="15" fill="#6b7280" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">Treffpunkt = origin + t · dir</text>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 480 250" width="480" height="250" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Ein Strahl beginnt bei origin und läuft in Richtung dir (Länge 1). Nach der Strecke t ist er bei origin + t · dir; dort trifft er den Rand der Kugel mit center und radius. Den Rand hinten trifft er auch, aber später; ein anderer Strahl geht an der Kugel vorbei.
+       Gemacht von bilder/diagramme.py; auf der Seite mit style='width: 30em'.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/treffer.svg 960 -->
+  <rect width="480" height="250" fill="#ffffff"/>
+  <circle cx="330.0" cy="112.0" r="70.0" fill="#eef3fb" stroke="#1f2937" stroke-width="2.5"/>
+  <line x1="330.0" y1="112.0" x2="330.0" y2="42.0" stroke="#1f2937" stroke-width="1.8"/>
+  <rect x='335.5' y='68.7' width='63.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='340.0' y='81.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">radius</text>
+  <circle cx="330.0" cy="112.0" r="4.0" fill="#1f2937"/>
+  <rect x='298.5' y='123.7' width='63.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='303.0' y='136.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">center</text>
+  <line x1="50.0" y1="140.0" x2="239.2" y2="22.7" stroke="#6b7280" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <polygon points="245.5,18.8 234.3,20.8 238.8,27.9" fill="#6b7280"/>
+  <text x="253.5" y="22.8" font-size="16" fill="#6b7280" text-anchor="start" xml:space="preserve">daneben</text>
+  <line x1="260.0" y1="110.6" x2="466.2" y2="81.7" stroke="#6b7280" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <line x1="50.0" y1="140.0" x2="245.6" y2="112.6" stroke="#2b5fb4" stroke-width="3"/>
+  <polygon points="255.1,111.3 240.8,107.8 242.3,118.6" fill="#2b5fb4"/>
+  <circle cx="260.0" cy="110.6" r="5.0" fill="#2b5fb4"/>
+  <circle cx="396.9" cy="91.4" r="5.0" fill="#ffffff" stroke="#2b5fb4" stroke-width="2"/>
+  <text x="406.9" y="81.4" font-size="16" fill="#6b7280" text-anchor="start" xml:space="preserve">hinten</text>
+  <rect x='146.0' y='101.0' width='18.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='150.5' y='113.3' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">t</text>
+  <line x1="30.0" y1="206.0" x2="61.4" y2="201.6" stroke="#1f2937" stroke-width="2.2"/>
+  <polygon points="69.6,200.5 57.2,197.4 58.5,206.8" fill="#1f2937"/>
+  <rect x='80.0' y='199.7' width='36.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='84.5' y='212.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">dir</text>
+  <text x="116.0" y="212.0" font-size="16" fill="#1f2937" text-anchor="start" xml:space="preserve">, Länge 1</text>
+  <circle cx="50.0" cy="140.0" r="6.0" fill="#1f2937"/>
+  <rect x='25.5' y='155.7' width='63.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='30.0' y='168.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">origin</text>
+  <rect x='101.5' y='136.3' width='153.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='106.0' y='148.6' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">origin + t · dir</text>
 </svg>

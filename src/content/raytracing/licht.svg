@@ -1,41 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 180" width="580" height="180" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
-  <!-- Je flacher das Licht auf eine Fläche fällt, desto mehr Fläche teilt sich dasselbe Bündel: dot(normal, sun_dir) ist 1, wenn die Sonne senkrecht steht, und wird kleiner, je flacher sie scheint.
-       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg 1160 -->
-  <rect width="580" height="180" fill="#ffffff"/>
-  <line x1="12.0" y1="120.0" x2="180.0" y2="120.0" stroke="#1f2937" stroke-width="2.5"/>
-  <line x1="24.0" y1="120.0" x2="24.0" y2="51.9" stroke="#1f2937" stroke-width="2"/>
-  <polygon points="24.0,42.0 29.2,54.4 18.8,54.4" fill="#1f2937"/>
-  <text x="24.0" y="32.0" font-size="14" fill="#1f2937" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">normal</text>
-  <line x1="82.0" y1="58.0" x2="82.0" y2="109.1" stroke="#dc2626" stroke-width="2"/>
-  <polygon points="82.0,119.0 76.8,106.6 87.2,106.6" fill="#dc2626"/>
-  <line x1="100.0" y1="58.0" x2="100.0" y2="109.1" stroke="#dc2626" stroke-width="2"/>
-  <polygon points="100.0,119.0 94.8,106.6 105.2,106.6" fill="#dc2626"/>
-  <line x1="118.0" y1="58.0" x2="118.0" y2="109.1" stroke="#dc2626" stroke-width="2"/>
-  <polygon points="118.0,119.0 112.8,106.6 123.2,106.6" fill="#dc2626"/>
-  <line x1="82.0" y1="130.0" x2="118.0" y2="130.0" stroke="#dc2626" stroke-width="5"/>
-  <text x="96.0" y="166.0" font-size="15" fill="#1f2937" text-anchor="middle">senkrecht: dot = 1</text>
-  <line x1="202.0" y1="120.0" x2="370.0" y2="120.0" stroke="#1f2937" stroke-width="2.5"/>
-  <line x1="214.0" y1="120.0" x2="214.0" y2="51.9" stroke="#1f2937" stroke-width="2"/>
-  <polygon points="214.0,42.0 219.2,54.4 208.8,54.4" fill="#1f2937"/>
-  <text x="214.0" y="32.0" font-size="14" fill="#1f2937" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">normal</text>
-  <line x1="308.4" y1="76.2" x2="271.6" y2="112.1" stroke="#dc2626" stroke-width="2"/>
-  <polygon points="264.5,119.0 269.8,106.6 277.1,114.1" fill="#dc2626"/>
-  <line x1="333.8" y1="76.2" x2="297.1" y2="112.1" stroke="#dc2626" stroke-width="2"/>
-  <polygon points="290.0,119.0 295.2,106.6 302.5,114.1" fill="#dc2626"/>
-  <line x1="359.3" y1="76.2" x2="322.6" y2="112.1" stroke="#dc2626" stroke-width="2"/>
-  <polygon points="315.5,119.0 320.7,106.6 328.0,114.1" fill="#dc2626"/>
-  <line x1="264.5" y1="130.0" x2="315.5" y2="130.0" stroke="#dc2626" stroke-width="5"/>
-  <text x="286.0" y="166.0" font-size="15" fill="#1f2937" text-anchor="middle">schräg: dot ≈ 0,71</text>
-  <line x1="392.0" y1="120.0" x2="560.0" y2="120.0" stroke="#1f2937" stroke-width="2.5"/>
-  <line x1="404.0" y1="120.0" x2="404.0" y2="51.9" stroke="#1f2937" stroke-width="2"/>
-  <polygon points="404.0,42.0 409.2,54.4 398.8,54.4" fill="#1f2937"/>
-  <text x="404.0" y="32.0" font-size="14" fill="#1f2937" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">normal</text>
-  <line x1="462.4" y1="102.9" x2="424.8" y2="115.8" stroke="#dc2626" stroke-width="2"/>
-  <polygon points="415.4,119.0 425.4,110.1 428.8,119.9" fill="#dc2626"/>
-  <line x1="515.0" y1="102.9" x2="477.4" y2="115.8" stroke="#dc2626" stroke-width="2"/>
-  <polygon points="468.0,119.0 478.0,110.1 481.4,119.9" fill="#dc2626"/>
-  <line x1="567.6" y1="102.9" x2="530.0" y2="115.8" stroke="#dc2626" stroke-width="2"/>
-  <polygon points="520.6,119.0 530.7,110.1 534.0,119.9" fill="#dc2626"/>
-  <line x1="415.4" y1="130.0" x2="520.6" y2="130.0" stroke="#dc2626" stroke-width="5"/>
-  <text x="476.0" y="166.0" font-size="15" fill="#1f2937" text-anchor="middle">flach: dot ≈ 0,34</text>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 548 200" width="548" height="200" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Dasselbe Bündel Sonnenlicht fällt senkrecht, schräg und flach auf den Boden: Je flacher, desto breiter die Fläche, auf die es sich verteilt, und desto weniger Licht bekommt jede Stelle. dot(normal, sun_dir) ist 1, etwa 0.71 und etwa 0.34.
+       Gemacht von bilder/diagramme.py; auf der Seite mit style='width: 34.25em'.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/licht.svg 1096 -->
+  <rect width="548" height="200" fill="#ffffff"/>
+  <line x1="10.0" y1="128.0" x2="170.0" y2="128.0" stroke="#1f2937" stroke-width="2.5"/>
+  <line x1="22.0" y1="128.0" x2="22.0" y2="66.3" stroke="#1f2937" stroke-width="2.2"/>
+  <polygon points="22.0,58.0 17.3,69.8 26.7,69.8" fill="#1f2937"/>
+  <rect x='9.5' y='33.7' width='63.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='14.0' y='46.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">normal</text>
+  <line x1="72.0" y1="80.0" x2="72.0" y2="120.0" stroke="#d97706" stroke-width="2"/>
+  <polygon points="72.0,128.0 76.6,116.6 67.4,116.6" fill="#d97706"/>
+  <line x1="90.0" y1="80.0" x2="90.0" y2="120.0" stroke="#d97706" stroke-width="2"/>
+  <polygon points="90.0,128.0 94.6,116.6 85.4,116.6" fill="#d97706"/>
+  <line x1="108.0" y1="80.0" x2="108.0" y2="120.0" stroke="#d97706" stroke-width="2"/>
+  <polygon points="108.0,128.0 112.6,116.6 103.4,116.6" fill="#d97706"/>
+  <line x1="72.0" y1="138.0" x2="108.0" y2="138.0" stroke="#d97706" stroke-width="5" stroke-linecap="round"/>
+  <text x="18.7" y="172.0" font-size="16" fill="#1f2937" text-anchor="start" xml:space="preserve">senkrecht: </text>
+  <rect x='98.6' y='159.7' width='36.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='103.1' y='172.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">dot</text>
+  <text x="134.6" y="172.0" font-size="16" fill="#1f2937" text-anchor="start" xml:space="preserve"> = 1</text>
+  <line x1="186.0" y1="128.0" x2="346.0" y2="128.0" stroke="#1f2937" stroke-width="2.5"/>
+  <line x1="198.0" y1="128.0" x2="198.0" y2="66.3" stroke="#1f2937" stroke-width="2.2"/>
+  <polygon points="198.0,58.0 193.3,69.8 202.7,69.8" fill="#1f2937"/>
+  <rect x='185.5' y='33.7' width='63.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='190.0' y='46.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">normal</text>
+  <line x1="274.5" y1="94.1" x2="246.2" y2="122.4" stroke="#d97706" stroke-width="2"/>
+  <polygon points="240.5,128.0 251.8,123.2 245.4,116.7" fill="#d97706"/>
+  <line x1="299.9" y1="94.1" x2="271.6" y2="122.4" stroke="#d97706" stroke-width="2"/>
+  <polygon points="266.0,128.0 277.3,123.2 270.8,116.7" fill="#d97706"/>
+  <line x1="325.4" y1="94.1" x2="297.1" y2="122.4" stroke="#d97706" stroke-width="2"/>
+  <polygon points="291.5,128.0 302.7,123.2 296.3,116.7" fill="#d97706"/>
+  <line x1="240.5" y1="138.0" x2="291.5" y2="138.0" stroke="#d97706" stroke-width="5" stroke-linecap="round"/>
+  <text x="194.8" y="172.0" font-size="16" fill="#1f2937" text-anchor="start" xml:space="preserve">schräg: </text>
+  <rect x='251.0' y='159.7' width='36.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='255.5' y='172.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">dot</text>
+  <text x="287.0" y="172.0" font-size="16" fill="#1f2937" text-anchor="start" xml:space="preserve"> ≈ 0.71</text>
+  <line x1="362.0" y1="128.0" x2="522.0" y2="128.0" stroke="#1f2937" stroke-width="2.5"/>
+  <line x1="374.0" y1="128.0" x2="374.0" y2="66.3" stroke="#1f2937" stroke-width="2.2"/>
+  <polygon points="374.0,58.0 369.3,69.8 378.7,69.8" fill="#1f2937"/>
+  <rect x='361.5' y='33.7' width='63.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='366.0' y='46.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">normal</text>
+  <line x1="434.5" y1="111.6" x2="396.9" y2="125.3" stroke="#d97706" stroke-width="2"/>
+  <polygon points="389.4,128.0 401.6,128.4 398.5,119.8" fill="#d97706"/>
+  <line x1="487.1" y1="111.6" x2="449.5" y2="125.3" stroke="#d97706" stroke-width="2"/>
+  <polygon points="442.0,128.0 454.3,128.4 451.2,119.8" fill="#d97706"/>
+  <line x1="539.7" y1="111.6" x2="502.1" y2="125.3" stroke="#d97706" stroke-width="2"/>
+  <polygon points="494.6,128.0 506.9,128.4 503.8,119.8" fill="#d97706"/>
+  <line x1="389.4" y1="138.0" x2="494.6" y2="138.0" stroke="#d97706" stroke-width="5" stroke-linecap="round"/>
+  <text x="377.0" y="172.0" font-size="16" fill="#1f2937" text-anchor="start" xml:space="preserve">flach: </text>
+  <rect x='420.7' y='159.7' width='36.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='425.2' y='172.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">dot</text>
+  <text x="456.7" y="172.0" font-size="16" fill="#1f2937" text-anchor="start" xml:space="preserve"> ≈ 0.34</text>
 </svg>

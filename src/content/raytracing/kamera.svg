@@ -1,26 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 215" width="540" height="215" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
-  <!-- Die Kamera: forward zeigt vom Auge zum Ziel, right steht senkrecht auf forward und auf oben, up senkrecht auf beiden. Das Bild steht 1 vor dem Auge, aufgespannt von right und up.
-       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg 1080 -->
-  <rect width="540" height="215" fill="#ffffff"/>
-  <polygon points="208.1,42.0 137.5,97.4 137.5,178.0 208.1,122.6" fill="#eef3fb" stroke="#1f2937" stroke-width="2" stroke-linejoin="round"/>
-  <text x="212.1" y="32.0" font-size="15" fill="#1f2937" text-anchor="middle">das Bild</text>
-  <circle cx="391.8" cy="113.4" r="26.9" fill="#eef3fb" stroke="#1f2937" stroke-width="2"/>
-  <text x="391.8" y="162.2" font-size="15" fill="#1f2937" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">target</text>
-  <line x1="44.0" y1="110.0" x2="364.9" y2="113.4" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="6 5"/>
-  <line x1="44.0" y1="110.0" x2="162.0" y2="110.0" stroke="#2b5fb4" stroke-width="2.5"/>
-  <polygon points="172.8,110.0 159.3,115.7 159.3,104.3" fill="#2b5fb4"/>
-  <text x="108.4" y="100.0" font-size="15" fill="#2b5fb4" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">forward</text>
-  <line x1="172.8" y1="110.0" x2="146.0" y2="131.0" stroke="#dc2626" stroke-width="2.5"/>
-  <polygon points="137.5,137.7 144.6,124.9 151.6,133.8" fill="#dc2626"/>
-  <text x="131.5" y="145.7" font-size="15" fill="#dc2626" text-anchor="end" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">right</text>
-  <line x1="172.8" y1="110.0" x2="172.8" y2="76.0" stroke="#16a34a" stroke-width="2.5"/>
-  <polygon points="172.8,65.2 178.5,78.7 167.1,78.7" fill="#16a34a"/>
-  <text x="164.8" y="71.2" font-size="15" fill="#16a34a" text-anchor="end" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">up</text>
-  <circle cx="172.8" cy="110.0" r="3.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
-  <line x1="44.0" y1="110.0" x2="363.5" y2="86.2" stroke="#2b5fb4" stroke-width="1.8" stroke-dasharray="6 5"/>
-  <polygon points="373.1,85.5 361.5,91.4 360.8,81.4" fill="#2b5fb4"/>
-  <circle cx="153.2" cy="101.9" r="3.5" fill="#ffffff" stroke="#2b5fb4" stroke-width="1.5"/>
-  <text x="373.1" y="73.5" font-size="15" fill="#2b5fb4" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">forward + sx · right + sy · up</text>
-  <circle cx="44.0" cy="110.0" r="6.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
-  <text x="44.0" y="136.0" font-size="15" fill="#1f2937" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">eye</text>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 496 236" width="496" height="236" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Schräg von der Seite: das Auge eye schaut zum Ziel target. Eine Einheit vor dem Auge steht das Bild, senkrecht zu forward; in seiner Mitte zeigt right nach rechts (hier auf uns zu) und up nach oben. Ein Pixel liegt sx Schritte nach right und sy Schritte nach up: Der Strahl durch ihn hat die Richtung forward + sx · right + sy · up.
+       Gemacht von bilder/diagramme.py; auf der Seite mit style='width: 31em'.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/kamera.svg 992 -->
+  <rect width="496" height="236" fill="#ffffff"/>
+  <polygon points="121.6,163.9 194.8,194.6 194.8,107.5 121.6,76.9" fill="#eef3fb" stroke="#1f2937" stroke-width="2" stroke-linejoin="round"/>
+  <text x="204.8" y="196.6" font-size="16" fill="#1f2937" text-anchor="start" xml:space="preserve">das Bild</text>
+  <line x1="158.2" y1="135.7" x2="362.6" y2="107.2" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <circle cx="362.6" cy="107.2" r="32.0" fill="#eef3fb" stroke="#1f2937" stroke-width="2"/>
+  <rect x='331.1' y='148.9' width='63.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='335.6' y='161.2' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">target</text>
+  <line x1="56.0" y1="150.0" x2="146.1" y2="137.4" stroke="#2b5fb4" stroke-width="2.8"/>
+  <polygon points="155.2,136.1 141.5,132.7 142.9,143.2" fill="#2b5fb4"/>
+  <rect x='85.1' y='154.6' width='72.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='89.6' y='166.9' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">forward</text>
+  <line x1="158.2" y1="135.7" x2="177.4" y2="143.8" stroke="#dc2626" stroke-width="2.4"/>
+  <polygon points="185.3,147.1 175.9,137.8 172.1,146.9" fill="#dc2626"/>
+  <rect x='188.8' y='148.8' width='54.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='193.3' y='161.1' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">right</text>
+  <line x1="158.2" y1="135.7" x2="158.2" y2="107.7" stroke="#16a34a" stroke-width="2.4"/>
+  <polygon points="158.2,99.1 153.3,111.4 163.1,111.4" fill="#16a34a"/>
+  <rect x='161.7' y='86.8' width='27.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='166.2' y='99.1' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">up</text>
+  <line x1="56.0" y1="150.0" x2="139.3" y2="100.3" stroke="#2b5fb4" stroke-width="1.8"/>
+  <line x1="139.3" y1="100.3" x2="253.5" y2="32.3" stroke="#2b5fb4" stroke-width="1.8" stroke-dasharray="5 4"/>
+  <polygon points="260.1,28.3 248.5,30.2 252.9,37.7" fill="#2b5fb4"/>
+  <circle cx="139.3" cy="100.3" r="4.0" fill="#ffffff" stroke="#2b5fb4" stroke-width="2"/>
+  <circle cx="158.2" cy="135.7" r="3.5" fill="#1f2937"/>
+  <rect x='203.5' y='15.7' width='279.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='208.0' y='28.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">forward + sx · right + sy · up</text>
+  <circle cx="56.0" cy="150.0" r="6.0" fill="#1f2937"/>
+  <rect x='38.0' y='165.7' width='36.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='42.5' y='178.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">eye</text>
 </svg>

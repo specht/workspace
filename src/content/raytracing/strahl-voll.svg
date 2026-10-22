@@ -1,10 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 190" width="320" height="190" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
-  <!-- Eine volle Glaskugel: Zwei waagrechte Strahlen knicken beim Eintreten und beim Austreten zur Mitte hin ab und kreuzen sich; oben und unten tauschen. Gerechnet mit dem Brechungsgesetz, Brechungsindex 1,5.
-       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg 640 -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 320 190" width="320" height="190" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Zwei waagrechte Strahlen durch eine volle Glaskugel: Beim Eintreten und beim Austreten knicken sie zur Mitte hin ab, kreuzen sich, und oben und unten tauschen.
+       Gemacht von bilder/diagramme.py; auf der Seite mit style='width: 20em'.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/strahl-voll.svg 640 -->
   <rect width="320" height="190" fill="#ffffff"/>
-  <circle cx="120.0" cy="95.0" r="64.0" fill="#eef3fb" stroke="#1f2937" stroke-width="2"/>
-  <polyline points="5.0,63.0 64.6,63.0 183.2,85.1 306.6,132.6" fill="none" stroke="#2b5fb4" stroke-width="2" stroke-linejoin="round"/>
-  <polygon points="315.0,135.8 302.0,136.2 305.6,126.8" fill="#2b5fb4"/>
-  <polyline points="5.0,127.0 64.6,127.0 183.2,104.9 306.6,57.4" fill="none" stroke="#dc2626" stroke-width="2" stroke-linejoin="round"/>
-  <polygon points="315.0,54.2 305.6,63.2 302.0,53.8" fill="#dc2626"/>
+  <circle cx="120.0" cy="95.0" r="64.0" fill="#eef3fb" stroke="#1f2937" stroke-width="2.5"/>
+  <polyline points="10.0,63.0 64.6,63.0 183.2,85.1 298.7,129.5" fill="none" stroke="#2b5fb4" stroke-width="2.4" stroke-linejoin="round"/>
+  <polygon points="308.0,133.1 297.7,123.6 294.0,133.3" fill="#2b5fb4"/>
+  <polyline points="10.0,127.0 64.6,127.0 183.2,104.9 298.7,60.5" fill="none" stroke="#dc2626" stroke-width="2.4" stroke-linejoin="round"/>
+  <polygon points="308.0,56.9 294.0,56.7 297.7,66.4" fill="#dc2626"/>
 </svg>

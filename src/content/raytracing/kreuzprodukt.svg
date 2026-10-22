@@ -1,21 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="400" height="250" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
-  <!-- Das Kreuzprodukt cross(a, b) steht senkrecht auf a und auf b. Vertauscht man a und b, zeigt es in die Gegenrichtung.
-       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg 800 -->
-  <rect width="400" height="250" fill="#ffffff"/>
-  <polygon points="19.2,182.2 240.2,219.6 382.8,109.2 161.8,71.8" fill="#eef3fb" stroke="#d1d5db" stroke-width="1.5" stroke-linejoin="round"/>
-  <polyline points="151.8,152.0 151.8,140.0 140.0,138.0" fill="none" stroke="#6b7280" stroke-width="1.2" stroke-linejoin="round"/>
-  <polyline points="149.5,142.7 149.5,130.7 140.0,138.0" fill="none" stroke="#6b7280" stroke-width="1.2" stroke-linejoin="round"/>
-  <line x1="140.0" y1="150.0" x2="140.0" y2="215.1" stroke="#6b7280" stroke-width="2" stroke-dasharray="6 5"/>
-  <polygon points="140.0,225.0 134.8,212.6 145.2,212.6" fill="#6b7280"/>
-  <text x="150.0" y="220.0" font-size="15" fill="#6b7280" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">cross(b, a)</text>
-  <line x1="140.0" y1="150.0" x2="259.4" y2="170.2" stroke="#2b5fb4" stroke-width="2.5"/>
-  <polygon points="270.0,172.0 255.7,175.3 257.6,164.2" fill="#2b5fb4"/>
-  <text x="274.0" y="194.0" font-size="16" fill="#2b5fb4" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">a</text>
-  <line x1="140.0" y1="150.0" x2="193.5" y2="108.6" stroke="#2b5fb4" stroke-width="2.5"/>
-  <polygon points="202.0,102.0 194.8,114.7 187.9,105.8" fill="#2b5fb4"/>
-  <text x="208.0" y="96.0" font-size="16" fill="#2b5fb4" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">b</text>
-  <line x1="140.0" y1="150.0" x2="140.0" y2="43.7" stroke="#1f2937" stroke-width="3"/>
-  <polygon points="140.0,32.0 146.1,46.6 133.9,46.6" fill="#1f2937"/>
-  <text x="150.0" y="44.0" font-size="15" fill="#1f2937" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">cross(a, b)</text>
-  <circle cx="140.0" cy="150.0" r="3.5" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 368 256" width="368" height="256" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Zwei Pfeile a und b in einer Fläche. cross(a, b) steht senkrecht auf beiden, auf a und auf b, zu sehen an den rechten Winkeln; cross(b, a) zeigt genau in die Gegenrichtung.
+       Gemacht von bilder/diagramme.py; auf der Seite mit style='width: 23em'.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/kreuzprodukt.svg 736 -->
+  <rect width="368" height="256" fill="#ffffff"/>
+  <polygon points="28.4,166.8 249.3,203.7 340.5,127.0 119.5,90.1" fill="#eef3fb" stroke="#d1d5db" stroke-width="1.5" stroke-linejoin="round"/>
+  <line x1="150.0" y1="146.0" x2="150.0" y2="206.2" stroke="#6b7280" stroke-width="1.8" stroke-dasharray="5 4"/>
+  <polygon points="150.0,213.8 154.4,202.9 145.6,202.9" fill="#6b7280"/>
+  <rect x='157.5' y='201.5' width='108.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='162.0' y='213.8' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">cross(b, a)</text>
+  <line x1="150.0" y1="146.0" x2="224.5" y2="177.2" stroke="#2b5fb4" stroke-width="2.5"/>
+  <polygon points="232.5,180.6 222.9,171.2 219.1,180.4" fill="#2b5fb4"/>
+  <line x1="150.0" y1="146.0" x2="207.1" y2="115.8" stroke="#2b5fb4" stroke-width="2.5"/>
+  <polygon points="214.8,111.7 201.4,113.2 206.1,122.0" fill="#2b5fb4"/>
+  <rect x='223.5' y='154.3' width='18.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='228.0' y='166.6' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">a</text>
+  <rect x='220.3' y='101.4' width='18.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='224.8' y='113.7' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">b</text>
+  <polyline points="167.3,153.3 167.1,150.0 166.7,146.8 166.0,143.5 165.0,140.2 163.7,137.1 162.2,134.1 160.5,131.3 158.6,128.8 156.6,126.5 154.5,124.6 152.3,123.1 150.0,121.9" fill="none" stroke="#6b7280" stroke-width="1.2" stroke-linejoin="round"/>
+  <circle cx="157.3" cy="138.9" r="1.6" fill="#6b7280"/>
+  <polyline points="173.2,133.7 173.0,129.0 172.4,124.5 171.4,120.4 170.1,116.8 168.4,113.6 166.4,111.0 164.1,109.0 161.6,107.7 158.9,106.9 156.0,106.9 153.0,107.5 150.0,108.8" fill="none" stroke="#6b7280" stroke-width="1.2" stroke-linejoin="round"/>
+  <circle cx="159.7" cy="125.2" r="1.6" fill="#6b7280"/>
+  <line x1="150.0" y1="146.0" x2="150.0" y2="54.9" stroke="#1f2937" stroke-width="3"/>
+  <polygon points="150.0,45.3 144.6,58.9 155.4,58.9" fill="#1f2937"/>
+  <rect x='157.5' y='39.0' width='108.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='162.0' y='51.3' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">cross(a, b)</text>
+  <circle cx="150.0" cy="146.0" r="4.5" fill="#1f2937"/>
 </svg>
