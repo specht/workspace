@@ -105,10 +105,12 @@ address from `credentials.rb` and the code `123456`.
   text only, no silhouette. The Personen page is sorted by year of birth;
   docs/aktivitaet-schreiben.md.
 - People, books and papers belong wherever they are relevant, in activities
-  and Handbuch pages alike: a paper with which something started (Whitted's
-  raytracing, Blinn's blobby objects, Perlin's noise) or a book that goes on
-  exactly where a section stops (Abrash's *Graphics Programming Black Book*)
-  gets a `<div class='book'>` box with `bi-file-earmark-text` or `bi-book`:
+  and Handbuch pages alike. A paper only where it is the historical first
+  description of the technique a section is about and a good match for it
+  (Whitted's raytracing 1980, Blinn's blobby objects 1982, Perlin's noise
+  1985), not a paper for every topic; a book only where it goes on exactly
+  where a section stops (Abrash's *Graphics Programming Black Book*). Both
+  get a `<div class='book'>` box with `bi-file-earmark-text` or `bi-book`:
   title, author, year, what is in it, a checked link
   (docs/aktivitaet-schreiben.md, »Bücher und Aufsätze zum Weiterlesen«).
   Look for them whenever a page is written or changed.

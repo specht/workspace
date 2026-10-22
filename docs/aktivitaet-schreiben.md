@@ -305,7 +305,9 @@ Mensch, mit einem Buch-Icon statt eines Fotos: Titel, Autor, Jahr, zwei
 Sätze, was darin steht, und wo man es lesen kann. Ein Cover steht nicht
 darin, denn Cover sind nicht frei. Ein Aufsatz, mit dem etwas angefangen
 hat (Whitteds Raytracing von 1980), bekommt denselben Kasten mit
-`bi-file-earmark-text` statt `bi-book`.
+`bi-file-earmark-text` statt `bi-book`: nur der historische Aufsatz, in dem
+das Verfahren des Abschnitts zum ersten Mal beschrieben ist, und nur, wo er
+gut zum Abschnitt passt, nicht zu jedem Thema irgendein Aufsatz.
 
 ```html
 <div class='book'>
