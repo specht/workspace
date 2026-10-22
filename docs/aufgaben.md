@@ -101,7 +101,7 @@ image: tcpip.webp
 | `search` | Nur Handbuch-Seiten: Wörter, mit Kommas getrennt, unter denen die Suche im Handbuch die Seite findet, ohne dass sie im Titel stehen (`search: Regex, Regexp` für »Reguläre Ausdrücke«); ein Treffer führt an den Anfang der Seite |
 | `template` | Adresse der Vorlage zum Klonen (`https://…`); andere Schulen können hier einen Spiegel eintragen. Im Text `${template}`; der Workspace sagt Lernenden, wenn es eine neue Version gibt (siehe unten) |
 | `template_name` | Name der Vorlage im Genitiv, für »Es gibt eine neue Version der CPU Sandbox!«; ohne das Feld: »… von `cpu-sandbox`« |
-| `class_repo` | Adresse des Klassen-Repositorys, zum Beispiel für die Sandboxes; im Text `${class_repo}` |
+| `class_repo` | `group`: Die Seite arbeitet mit einem Klassen-Repository, dessen Adresse die Lehrkraft je Gruppe auf der Klassenseite einträgt (die Sandboxes). Nie eine Adresse; siehe »Teile mit und ohne Klassen-Repository« |
 | `image` | Das Bild der Karte im Katalog, relativ zur Seite; `name.webp:30:0` setzt den Ausschnitt (x und y in Prozent), `name.webp:contain` zeigt eine Zeichnung ganz |
 | `image_alt` | Was das Bild der Karte zeigt, in Anführungszeichen (`image_alt: "Ein Huffman-Baum mit …"`); Pflicht zu `image`, `alt_text_test.rb` prüft es. Steht dasselbe Bild mit Alt-Text auf der Seite, gilt dieser |
 
@@ -131,6 +131,8 @@ Platzhalter ersetzt, bevor Redcarpet den Text liest.
 | `_include(gitlab#git-name, done: git-name)` | Wie oben; ist die Aufgabe `git-name` auf dieser Seite gelöst, zeigt der Kasten beim nächsten Laden nur noch eine Zeile | M7 |
 | `_uses(ifconfig, ping)` | Kleine Marken, die zu den Teilen `ifconfig` und `ping` der Handbuch-Seiten aus `reference` führen | M1 |
 | `${web_root}` | Die Adresse dieser Installation (`WEB_ROOT`), etwa für den Spiegel von Open-Meteo: `${web_root}/open-meteo/api/v1/forecast` | M7 |
+| `${class_repo}`, `${git_host}`, `${git_web}`, `${git_ssh}` | Auf einer Seite mit `class_repo: group` die Adresse des Klassen-Repositorys der Gruppe, ihr Server (`git.example.org`), dessen Webseite (`https://git.example.org/`) und was `ssh -T` braucht (`git@git.example.org`, mit `-p` bei anderem Port); erst beim Aufruf eingesetzt, je nach Person. Lehrkräfte, Administration und Besucher sehen Platzhalter (`[Adresse des Klassen-Repositorys]`, `git.example.org`), auf Handbuch-Seiten Lernende den Server ihrer Gruppe | M7 |
+| `${git_server_hint}` | Nur wer keine Adresse hat, liest hier » (das ist ein Beispiel: Welchen Server deine Klasse benutzt, sagt dir deine Lehrkraft)«; sonst nichts | M7 |
 | `${contact_email}` | Die Kontaktadresse der Installation (`CONTACT_EMAIL` in `credentials.rb`), etwa für »schreib eine E-Mail an«; nie eine Adresse fest in den Text schreiben | M7 |
 | `_tool(tcp-console)` | Ein Kasten mit Symbol, Name und Zweck eines Werkzeugs der Website (`tcp-console`, `automatron`, Liste in `tools.rb`), der es in einem neuen Tab öffnet; auf einer Zeile für sich. Die Werkzeuge stehen nicht im Menü, sondern dort im Text, wo man sie braucht, und brauchen eine Anmeldung | M7 |
 | `_person(thompson)` | Der Kasten einer Person (Foto, wer sie war, was sie gemacht hat) aus der Handbuch-Seite `reference/personen`, ohne Rahmen eines Baustein-Kastens; auf einer Zeile für sich. Die Seite Personen nennt in jedem Kasten die Seiten, auf denen er steht (docs/aktivitaet-schreiben.md, »Menschen hinter einem Namen«) | M7 |
@@ -145,6 +147,41 @@ bevor die Aufgabenkarten gesucht werden: Seine Aufgaben stehen dann weder auf
 der Seite noch in der Klassenübersicht. Bisher gibt es nur `case_server`, den
 Fallserver für »Ein Krimi im Terminal« ([entwicklung.md](entwicklung.md#der-fallserver)).
 Die Marken dürfen auch Zeilen einer HTML-Tabelle umschließen.
+
+### Teile mit und ohne Klassen-Repository
+
+Eine Seite mit `class_repo: group` im Meta-Block gibt es in zwei Fassungen.
+Was nur mit einem Klassen-Repository Sinn hat (Zugang zum Git-Server, das
+Klassen-Repository klonen, die Git-Aufgaben, Veröffentlichen), steht
+zwischen `<!-- if: class_repo -->` und `<!-- /if -->`; was nur ohne gilt
+(den Ordner selbst anlegen, die Arbeit bleibt im Workspace), zwischen
+`<!-- if: !class_repo -->` und `<!-- /if -->`. Was nur gilt, wenn die
+Adresse über SSH geht (`git@…`, `ssh://…`: der SSH-Schlüssel), steht in
+`<!-- if: class_repo_ssh -->`, was nur über HTTPS gilt (Zugangstoken), in
+`<!-- if: class_repo_https -->`. Jede Marke steht auf einer Zeile für
+sich; die Teile schachteln sich nicht, also endet ein `class_repo`-Teil vor
+einem `class_repo_ssh`-Teil und beginnt danach neu.
+
+Beim Laden wird die Seite in jeder Fassung gerendert (mit SSH, mit HTTPS,
+sofern sie die beiden unterscheidet, und ohne), mit eigenen
+Aufgabenkarten (`ContentParts.filter_conditions`, `ClassRepos` in
+`src/ruby/include/class_repos.rb`). Bei jedem Aufruf wählt der Server eine
+und setzt die Adresse ein:
+
+- Lernende sehen die Fassung **mit**, wenn eine ihrer Gruppen eine Adresse
+  für die Seite hat (die erste solche Gruppe in der Reihenfolge ihrer
+  Gruppen), und zwar die mit HTTPS bei einer `https://`-Adresse, sonst die
+  mit SSH; ohne Adresse die Fassung **ohne**.
+- Lehrkräfte, Administration und nicht Angemeldete sehen die Fassung mit
+  SSH, mit Platzhaltern statt der Adresse.
+
+Aufgaben, die in der Fassung einer Person fehlen, zählen für sie nirgends:
+nicht auf der Seite, nicht in »x von y Aufgaben« und »Weiter mit« auf der
+Startseite. Die Klassenübersicht zählt für jede Gruppe die Fassung, die ihre
+Lernenden sehen. Eine Aufgabe darf in beiden Fassungen stehen, aber in jeder
+nur einmal; `class_repos_test.rb` prüft die Sandboxes: jede Aufgabe aus
+`tasks.yaml` in einer Fassung, die Git-Aufgaben nur mit, die Fragen zum
+Thema in allen, `ssh-schluessel` nur mit SSH.
 
 ### Teile einer Handbuch-Seite
 

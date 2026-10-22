@@ -211,3 +211,15 @@ bekommt das Datum des Abgleichs. Die Tests helfen dabei:
   `NOT_OWNED`.
 - `privacy_documents_test.rb`: Jede Unterlage rendert, nennt alle Daten und
   Maßnahmen aus `privacy.rb` und sagt nirgends »du«.
+
+Nicht in `privacy.rb` steht, was eine Gruppe als Einstellung trägt und
+nichts über eine Person sagt: ihre Programmiersprache, die angehefteten
+Aktivitäten und die Adressen ihrer Klassen-Repositorys (`GroupSetting`,
+`Pin`; docs/teacher-access.md, »Klassen-Repository«). Eine solche Adresse
+kann den Benutzernamen der Lehrkraft auf ihrem Git-Server enthalten; sie
+ist eine Angabe der Lehrkraft für ihren Unterricht, wie ein Link im
+Arbeitsblatt, und geht mit der Gruppe. Den Git-Server selbst betreibt der
+Workspace nicht: Er schickt ihm nichts, legt dort keine Konten an, und die
+Aufgaben lesen nur das Repository im Workspace. Wer dort ein Konto
+bekommt, entscheidet die Lehrkraft mit ihrer Schule, wie bei jedem anderen
+Dienst, den sie im Unterricht einsetzt.

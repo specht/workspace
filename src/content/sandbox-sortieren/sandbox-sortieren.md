@@ -6,7 +6,7 @@ language: Dart / Python / JavaScript / Java
 topic: computing
 reference: [gitlab, sortieren, heap]
 template: https://github.com/specht/sorting-sandbox.git
-class_repo: git@git.nhcham.org:specht/sorting-sandbox-algorithms-2026.git
+class_repo: group
 template_name: der Sorting Sandbox
 </div>
 
@@ -28,7 +28,12 @@ In der Sorting Sandbox schreibst du Sortieralgorithmen in Dart, Python, JavaScri
 
 ## Worum es geht
 
+<!-- if: class_repo -->
 Deine Klasse hat ein gemeinsames Repository, in dem alle eure Algorithmen liegen. Was du veröffentlichst, erscheint ohne Neustart bei allen anderen und muss sich dort im Rennen und in der Messung bewähren.
+<!-- /if -->
+<!-- if: !class_repo -->
+Deine Algorithmen schreibst du in deinem Workspace, und die App zeigt sie, sobald du sie speicherst, ohne Neustart. Sie bleiben in deinem Workspace: Im Rennen und in der Messung treten sie gegeneinander an.
+<!-- /if -->
 
 Dein Algorithmus ist ganz gewöhnlicher Code: Es gibt keine Befehle zum Zeichnen und keine Hilfsfunktionen, die du aufrufen musst, damit etwas sichtbar wird. Ein vollständiger Insertion Sort in Dart sieht so aus:
 
@@ -56,6 +61,7 @@ class InsertionSort extends SortingAlgorithm {
 
 Eine Besonderheit: Die Zahlen selbst sieht dein Algorithmus **nicht**. Elemente lassen sich nur vergleichen, lesen, schreiben und vertauschen. Jeder Algorithmus in der Sandbox sortiert also nur durch Vergleichen. Für Verfahren wie Merge Sort steht eine zweite, gleich lange Liste `scratch` als Zwischenspeicher bereit.
 
+<!-- if: class_repo -->
 Du arbeitest mit **zwei Git-Repositories**. Im Workspace ist `~` dein Ordner `/workspace`.
 
 <table class='table'>
@@ -63,22 +69,36 @@ Du arbeitest mit **zwei Git-Repositories**. Im Workspace ist `~` dein Ordner `/w
 <tr><td><code>~/sorting-sandbox/</code></td><td>die App</td><td>nur deine Lehrkraft</td></tr>
 <tr><td><code>~/sorting-sandbox/algorithms/</code></td><td>das Klassen-Repository mit euren Algorithmen</td><td>ihr, jede und jeder im eigenen Ordner</td></tr>
 </table>
+<!-- /if -->
+<!-- if: !class_repo -->
+Im Workspace ist `~` dein Ordner `/workspace`. Die App liegt in `~/sorting-sandbox/`, deine Algorithmen darin im Ordner `algorithms/`, in einem Ordner mit deinem Namen.
+<!-- /if -->
 
 Die Karten auf dieser Seite schauen in deinem Workspace nach und sagen dir, was sie finden. Sie ändern nichts.
 
 ## Einrichten
 
-### Einmalig: Zugang zu GitLab
+<!-- if: class_repo -->
+### Einmalig: Zugang zum Git-Server
 
-Das Klassen-Repository liegt auf dem GitLab-Server [git.nhcham.org](https://git.nhcham.org/). Dort kann man sich nicht selbst registrieren: Dein Konto bekommst du von deiner Lehrkraft.
+Das Klassen-Repository liegt auf dem Git-Server [${git_host}](${git_web}). Deine Lehrkraft lädt dich dorthin ein; mit der Einladung kannst du dort mitmachen.
+<!-- /if -->
+<!-- if: class_repo_ssh -->
 
 _include(gitlab#ssh-schluessel)
 
 _task(ssh-schluessel)
+<!-- /if -->
+<!-- if: class_repo_https -->
+
+_include(gitlab#https-anmelden)
+<!-- /if -->
+<!-- if: class_repo -->
 
 _include(gitlab#git-name, done: git-name)
 
 _task(git-name)
+<!-- /if -->
 
 ### Einmalig: Klonen
 
@@ -88,6 +108,7 @@ Klone die App in dein Home-Verzeichnis:
 git clone ${template} ~/sorting-sandbox
 ```
 
+<!-- if: class_repo -->
 Klone das Klassen-Repository in ihren Ordner:
 
 ```bash_copy
@@ -95,22 +116,40 @@ git clone ${class_repo} ~/sorting-sandbox/algorithms
 ```
 
 Das Klassen-Repository muss **in** der App liegen und genau `algorithms` heißen. Gibt es `algorithms/` schon, klone es nicht noch einmal, sondern hol mit `git pull` darin den aktuellen Stand.
+<!-- /if -->
+<!-- if: !class_repo -->
+Deine Algorithmen kommen in der App in den Ordner `algorithms`. Lege ihn an:
+
+```bash
+mkdir ~/sorting-sandbox/algorithms
+```
+
+Der Ordner muss **in** der App liegen und genau `algorithms` heißen. Meldet `mkdir`, dass es ihn schon gibt, ist alles in Ordnung.
+<!-- /if -->
 
 _task(geklont)
 
+<!-- if: class_repo -->
 _task(klassen-repository)
+<!-- /if -->
 
 ## Arbeiten
 
 ### Die App starten
 
+<!-- if: class_repo -->
 Starte die App in einem Terminal und lass es offen. Für Git öffnest du ein zweites Terminal.
+<!-- /if -->
+<!-- if: !class_repo -->
+Starte die App in einem Terminal und lass es offen.
+<!-- /if -->
 
 ```bash
 cd ~/sorting-sandbox
 ./run
 ```
 
+<!-- if: class_repo -->
 Hol im zweiten Terminal zuerst den Stand der Klasse und lege dann im Ordner der App deinen Algorithmus an. Ersetze `DEIN_NAME` durch deinen Ordnernamen:
 
 ```bash
@@ -119,6 +158,15 @@ git pull
 cd ~/sorting-sandbox
 ./new-algorithm DEIN_NAME --lang python
 ```
+<!-- /if -->
+<!-- if: !class_repo -->
+Lege in einem zweiten Terminal im Ordner der App deinen Algorithmus an. Ersetze `DEIN_NAME` durch deinen Namen, ohne Leerzeichen:
+
+```bash
+cd ~/sorting-sandbox
+./new-algorithm DEIN_NAME --lang python
+```
+<!-- /if -->
 
 Das legt `algorithms/DEIN_NAME/bubble_sort.py` mit einem Bubble Sort als Ausgangspunkt an, mit Absicht noch nicht optimiert. Statt `python` geht auch `dart`, `javascript` oder `java`. Vorhandene Dateien werden nie überschrieben.
 
@@ -161,6 +209,10 @@ Fehler sind kein Drama, du siehst sie nur deutlich: Ein Übersetzungsfehler ersc
 
 Im Reiter **Race** treten zwei bis vier Algorithmen mit **genau derselben Eingabe** gegeneinander an. Jede Bahn macht pro Takt gleich viele Schritte; wer zuerst fertig ist, gewinnt. Als Eingabe gibt es zufällige, sortierte, umgekehrt sortierte und fast sortierte Listen sowie Listen mit wenigen verschiedenen Werten.
 
+<!-- if: !class_repo -->
+Ein Rennen braucht mindestens zwei Algorithmen, und die App zeigt nur die aus `algorithms`, also deine eigenen. Leg für den Insertion Sort von oben eine zweite Datei an, `./new-algorithm DEIN_NAME insertion_sort.dart`, und ersetze ihren Inhalt durch den Code von oben.
+<!-- /if -->
+
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1600x900
@@ -181,7 +233,7 @@ Das Rennen zeigt **Arbeitsschritte**, keine Laufzeit auf echter Hardware. Unter 
 
 ### Analyze: vom Gefühl zur Wachstumsfunktion
 
-**Analyze** lässt alle Algorithmen der Klasse auf Listen mit 32 bis 2048 Elementen laufen, alle mit denselben Eingaben, und zeichnet den Aufwand als Kurve. Gezählt werden Lesen, Schreiben und Vergleichen; ihre Summe heißt in der App **Sandbox-Score**. Die Kurven lassen sich durch *n*, *n* log *n* oder *n*² teilen und logarithmisch skalieren. Nebenbei prüft Analyze jeden Algorithmus auf Korrektheit und Stabilität.
+**Analyze** lässt alle Algorithmen aus `algorithms` auf Listen mit 32 bis 2048 Elementen laufen, alle mit denselben Eingaben, und zeichnet den Aufwand als Kurve. Gezählt werden Lesen, Schreiben und Vergleichen; ihre Summe heißt in der App **Sandbox-Score**. Die Kurven lassen sich durch *n*, *n* log *n* oder *n*² teilen und logarithmisch skalieren. Nebenbei prüft Analyze jeden Algorithmus auf Korrektheit und Stabilität.
 
 _task(verdoppeln)
 
@@ -257,6 +309,7 @@ _task(stabilitaet)
 
 Mehr zur App steht in ihrer [Anleitung](https://github.com/specht/sorting-sandbox#readme).
 
+<!-- if: class_repo -->
 ## Veröffentlichen
 
 Deine Klasse und deine Lehrkraft sehen deinen Algorithmus erst, wenn er committet **und** gepusht ist. Das machst du im Ordner `algorithms`, nicht im Ordner der App:
@@ -286,3 +339,14 @@ cd .. && ./run
 ```
 
 Und am Ende der Stunde: [»Committet und gepusht«](#aufgabe-veroeffentlicht) noch einmal prüfen.
+<!-- /if -->
+<!-- if: !class_repo -->
+## Beim nächsten Mal
+
+```bash
+cd ~/sorting-sandbox && git pull
+./run
+```
+
+`git pull` holt die neueste Version der App. Deine Algorithmen in `algorithms` bleiben dabei, wie sie sind: Das Repository der App lässt diesen Ordner aus.
+<!-- /if -->

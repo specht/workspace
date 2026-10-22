@@ -130,7 +130,14 @@ der Administration über alle Gruppen; Lehrkräfte landen von dort im Reiter
   (`welcomed_at` an der Einladung). Begrenzt auf 600 je Lehrkraft und Stunde.
 - Die Gruppe löschen (Name zur Bestätigung). Wer danach in keiner Gruppe
   mehr steht und keine Lehrkraft ist, ist nicht mehr eingeladen; ein Konto
-  löscht das nicht (»Personen und Schulen › Aufräumen«).
+  löscht das nicht (»Personen und Schulen › Aufräumen«). Mit der Gruppe
+  gehen ihre Einstellungen (`GroupSetting`: Sprache, Klassen-Repositorys)
+  und ihre angehefteten Aktivitäten (`Pin`); eine neue Gruppe gleichen
+  Namens beginnt leer. Ebenso, wenn eine Gruppe beim erneuten Lesen der
+  Einladungsdateien fehlt, und bevor eine Gruppe im Browser angelegt wird,
+  fallen Reste unter ihrem Namen weg; der Import der Dateien behält sie für
+  die importierten Gruppen, Testgruppen und Werkzeug-Gruppen und löscht die
+  übrigen (`include/group_data.rb`).
 - Der Link zu den Unterlagen für die eigene Schule (datenschutz.md,
   »Partnerschulen«).
 
@@ -149,7 +156,7 @@ die Gruppe (`managed_group!`) oder die Person (`not_your_student`); die unter
   Adressen.
 - Umbenennen (Lehrkräfte der Gruppe und Administration): Der Name ist auch
   Schlüssel der angehefteten Aktivitäten (`Pin`), der Programmiersprache
-  der Gruppe (`GroupSetting`) und der Auswahl auf der Klassenseite
+  und der Klassen-Repositorys der Gruppe (`GroupSetting`) und der Auswahl auf der Klassenseite
   (`User.class_prefs`); alles zieht in einer Transaktion mit
   (`/api/groups/rename`).
 - Hinzufügen mit Vorschlägen beim Tippen, nach Name oder Adresse
@@ -189,6 +196,43 @@ der eigene Workspace startet erst nach »Ich bin einverstanden«
 (`/api/accept_terms`, `User.terms_accepted_at` und `terms_version`).
 Administration und Testkonten sind ausgenommen; wer in einen Workspace
 hineinsieht, ist nicht betroffen.
+
+## Klassen-Repository
+
+Die Sandboxes (Sortieren, Datenstrukturen, CPU) können mit einem
+gemeinsamen Git-Repository der Klasse arbeiten. Welches das ist, trägt eine
+Lehrkraft je Gruppe ein: auf der Klassenseite neben »Sprache« der Knopf
+»Git« (»Git · 2«, wenn die Gruppe zwei Adressen hat). Er öffnet einen
+Dialog mit einem Feld je Seite, deren Meta-Block `class_repo: group` sagt,
+in der Reihenfolge des Katalogs (`class_board.js`,
+`/api/set_group_class_repos`).
+
+- Eintragen dürfen die Lehrkräfte der Gruppe und die Administration
+  (`teacher_or_admin!` und `class_groups`, sonst 403).
+- Angenommen werden nur `user@server:pfad(.git)`, `ssh://[user@]server[:port]/pfad`
+  und `https://server[:port]/pfad`; der Server ein einfacher Hostname, ohne
+  Leerzeichen, Anführungszeichen, `..` oder Zeichen, die in der Shell etwas
+  bedeuten, denn die Adresse steht in einem Befehl, den Lernende kopieren
+  (`ClassRepos.normalize`). Ist eine Adresse ungültig, speichert der Dialog
+  nichts und markiert das Feld. Ein leeres Feld entfernt die Adresse.
+- Gespeichert als JSON `{ slug => Adresse }` in `GroupSetting.class_repos`,
+  neben der Sprache der Gruppe: Umbenennen nimmt es mit, Löschen der Gruppe
+  löscht es.
+- Lernende sehen auf der Seite die Adresse der ersten ihrer Gruppen, die
+  eine für diese Seite hat, im Befehl zum Klonen, dazu den Server und die
+  Aufgaben zu SSH-Schlüssel, Git und Veröffentlichen. Bei einer
+  `https://`-Adresse fällt der SSH-Schlüssel samt Aufgabe weg; die Seite
+  erklärt stattdessen das Zugangstoken. Ohne Adresse sehen sie
+  die Seite ohne Git: nur die App klonen, den Ordner selbst anlegen, die
+  Arbeit bleibt im Workspace; die Git-Aufgaben fallen weg, auch in der
+  Klassenübersicht der Gruppe und auf ihrer Startseite (docs/aufgaben.md,
+  »Teile mit und ohne Klassen-Repository«).
+- Lehrkräfte sehen die Seite mit Platzhaltern und darüber eine Zeile mit
+  der Adresse jeder ihrer Gruppen oder »keins eingetragen«; jeder
+  Gruppenname führt zum Dialog auf der Klassenseite (`/klasse?group=…&repos=SLUG`).
+- Der Workspace legt auf dem Git-Server keine Konten an und lädt niemanden
+  ein; das macht die Lehrkraft dort selbst. Die Seite sagt den Lernenden:
+  »Deine Lehrkraft lädt dich dorthin ein«.
 
 ## Personen und Schulen (`/personen`, Administration)
 

@@ -1296,10 +1296,14 @@ class Main < Sinatra::Base
     end
 
     # The values for ${...} in a content page: its meta block, the site's
-    # contact address and its own address.
-    def self.content_variables(meta)
+    # contact address and its own address. The class repository's variables
+    # depend on who looks at the page: in the rendered page they are tokens
+    # that page_html fills in per request (ClassRepos); per_viewer: false
+    # leaves the placeholders (teacher notes).
+    def self.content_variables(meta, per_viewer: true)
         email = contact_email
-        ContentParts.page_variables(meta).merge('contact_email' => email.empty? ? nil : email, 'web_root' => WEB_ROOT)
+        values = ContentParts.page_variables(meta).merge('contact_email' => email.empty? ? nil : email, 'web_root' => WEB_ROOT)
+        per_viewer ? values.merge(ClassRepos::TOKENS) : values
     end
 
     # The features of this installation that pages may show parts for
@@ -1847,7 +1851,17 @@ class Main < Sinatra::Base
                 end
                 # Parts for one programming language (CodeLanguages), wrapped after rendering.
                 markdown = CodeLanguages.mark(markdown, :warn => content_warning)
-                markdown, task_slots = TaskCard.mark_slots(markdown)
+                # Parts for people with a class repository over SSH or HTTPS,
+                # or without one (<!-- if: class_repo -->, ClassRepos): the
+                # page is rendered once for each, and each request picks one
+                # (page_html).
+                page_conditions = ContentParts.conditions(markdown)
+                if !page_conditions.empty? && !ClassRepos.page?(page_meta)
+                    content_warning.call("<!-- if: class_repo --> on a page without class_repo: #{ClassRepos::META_VALUE}")
+                end
+                variant_markdowns = ClassRepos.variants(page_conditions).to_h do |variant|
+                    [variant, ContentParts.filter_conditions(markdown, ClassRepos::CONDITION_VALUES[variant], :warn => variant.nil? ? content_warning : nil)]
+                end
             else
                 kit = entry[:path]
                 markdown = StringIO.open do |io|
@@ -1884,45 +1898,54 @@ class Main < Sinatra::Base
             end
             slug = entry[:slug] || File.basename(path, '.md').sub(/^[0-9]+\-/, '').sub('+', '')
             parsed_content_paths[slug] = path unless entry[:kenney]
-            root = render_content_markdown(markdown, path, redcarpet) do |md|
-                if entry[:kenney]
-                    gallery = StringIO.open do |io|
-                        io.puts "<div class='gallery tiles'>"
-                        parsed_kenney[entry[:path]].each do |model|
-                            io.puts "<figure><img alt='Das Modell #{model}' src='/cache/kenney/#{entry[:path]}/#{model}.webp'><figcaption>#{model}</figcaption></figure>"
-                        end
-                        io.puts "</div>"
-                        io.string
-                    end
-                    md.sub!('__KENNEY_GALLERY__', gallery)
-                end
-                md
-            end
+            variant_markdowns = { nil => markdown } if entry[:kenney]
             page_languages = CodeLanguages.of_page(page_meta)
-            CodeLanguages.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
-            insert_task_cards(root, task_slots, page_tasks, redcarpet, path, page_languages) unless task_slots.empty?
-            # Reference pages: every h2 and h3 gets an anchor for the Handbuch index.
-            outline = parsed_sections.dig(section, :catalog) == 'reference' ? ReferenceIndex.anchor_headings(root) : nil
-            search_sections = outline ? ReferenceIndex.search_sections(root) : nil
-            # Optional chapters (<!-- extra --> before ##): badge, note, marks in the tables of contents
-            ExtraChapters.find(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
-            inject_autotoc(root)
-            ExtraChapters.mark(root)
-            # Code in a table that is one short word ([0-9], \\d+, --force)
-            # stays in one piece instead of breaking at its hyphen when the
-            # table squeezes its column (default.css, .table code.whole)
-            root.css('table code').each do |code|
-                text = code.text
-                next if text =~ /\s/ || text.length > 24
-                code['class'] = [code['class'], 'whole'].compact.join(' ')
-            end
+            variants = variant_markdowns.to_h do |variant, variant_markdown|
+                variant_markdown, task_slots = TaskCard.mark_slots(variant_markdown)
+                root = render_content_markdown(variant_markdown, path, redcarpet) do |md|
+                    if entry[:kenney]
+                        gallery = StringIO.open do |io|
+                            io.puts "<div class='gallery tiles'>"
+                            parsed_kenney[entry[:path]].each do |model|
+                                io.puts "<figure><img alt='Das Modell #{model}' src='/cache/kenney/#{entry[:path]}/#{model}.webp'><figcaption>#{model}</figcaption></figure>"
+                            end
+                            io.puts "</div>"
+                            io.string
+                        end
+                        md.sub!('__KENNEY_GALLERY__', gallery)
+                    end
+                    md
+                end
+                CodeLanguages.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
+                insert_task_cards(root, task_slots, page_tasks, redcarpet, path, page_languages) unless task_slots.empty?
+                # Reference pages: every h2 and h3 gets an anchor for the Handbuch index.
+                outline = parsed_sections.dig(section, :catalog) == 'reference' ? ReferenceIndex.anchor_headings(root) : nil
+                search_sections = outline ? ReferenceIndex.search_sections(root) : nil
+                # Optional chapters (<!-- extra --> before ##): badge, note, marks in the tables of contents
+                ExtraChapters.find(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
+                inject_autotoc(root)
+                ExtraChapters.mark(root)
+                # Code in a table that is one short word ([0-9], \\d+, --force)
+                # stays in one piece instead of breaking at its hyphen when the
+                # table squeezes its column (default.css, .table code.whole)
+                root.css('table code').each do |code|
+                    text = code.text
+                    next if text =~ /\s/ || text.length > 24
+                    code['class'] = [code['class'], 'whole'].compact.join(' ')
+                end
 
-            # Scripts a page loads itself (the colour mixer) get a fresh
-            # address with each version, like default.css: nginx lets
-            # browsers keep /include/*.js forever.
-            html = root.to_html.gsub(%r{(<script src=['"]/include/[a-z_]+\.js)(['"])}) do
-                "#{$1}?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}#{$2}"
+                # Scripts a page loads itself (the colour mixer) get a fresh
+                # address with each version, like default.css: nginx lets
+                # browsers keep /include/*.js forever.
+                html = root.to_html.gsub(%r{(<script src=['"]/include/[a-z_]+\.js)(['"])}) do
+                    "#{$1}?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}#{$2}"
+                end
+                [variant, { :root => root, :html => html, :task_slots => task_slots, :outline => outline, :search_sections => search_sections }]
             end
+            root, html, task_slots, outline, search_sections = variants[nil].values_at(:root, :html, :task_slots, :outline, :search_sections)
+            # The Handbuch search is the same for everyone: placeholders for
+            # the class repository's variables.
+            search_sections&.each { |section_entry| section_entry.transform_values! { |value| ClassRepos.neutral(value) } }
             # root.css('h2, h3, h4, h5, h6').each do |e|
             #     if slug == 'c'
             #         level = e.name.sub('h', '').to_i
@@ -1964,11 +1987,21 @@ class Main < Sinatra::Base
             if page_tasks
                 parsed_content[slug][:tasks] = page_tasks.merge(:on_page => task_slots & page_tasks[:by_id].keys)
             end
+            # class_repo: group (ClassRepos): the variant for people without a
+            # class repository, with its own HTML and tasks.
+            parsed_content[slug][:class_repo] = ClassRepos.page?(page_meta)
+            (variants.keys - [nil]).each do |variant|
+                v = variants[variant]
+                (parsed_content[slug][:variants] ||= {})[variant] = {
+                    :html => v[:html],
+                    :on_page => page_tasks ? v[:task_slots] & page_tasks[:by_id].keys : [],
+                }
+            end
             # Teacher note next to the page (docs/aufgaben.md): rendered like the
             # page, shown only to teachers by teacher_note_panel.
             note_path = File.join(File.dirname(path), ContentParts::NOTE_FILE)
             if !entry[:kenney] && File.file?(note_path)
-                note_markdown = ContentParts.fill_variables(File.read(note_path), Main.content_variables({}))
+                note_markdown = ContentParts.fill_variables(File.read(note_path), Main.content_variables({}, :per_viewer => false))
                 note_root = render_content_markdown(note_markdown, note_path, redcarpet)
                 parsed_content[slug][:teacher_note] = (note_root.at_css('body') || note_root).inner_html
             end
@@ -2104,6 +2137,17 @@ class Main < Sinatra::Base
             (teachers[teacher] ||= Set.new) << test_group
         end
 
+        # A group that is gone from the roster (an invitation file changed)
+        # takes its settings and pins along (GroupData).
+        gone = GroupData.vanished(defined?(@@group_members) ? @@group_members.keys : [], group_members.keys)
+        unless gone.empty?
+            begin
+                GroupData.drop!($neo4j, gone)
+                STDERR.puts "Groups gone from the roster, settings and pins dropped: #{gone.join(', ')}"
+            rescue StandardError => e
+                STDERR.puts "Dropping the settings of #{gone.join(', ')} failed: #{e.class}: #{e.message}"
+            end
+        end
         # Keep readers on the previous complete snapshot until parsing finishes.
         @@invitations = invitations
         @@user_groups = user_groups
@@ -4959,6 +5003,95 @@ class Main < Sinatra::Base
         groups.to_h { |group| [group, set[group]] }
     end
 
+    # --- Class repositories per group (ClassRepos) -----------------------------
+
+    # { group => { slug => address } } for the groups given, {} for a group
+    # without any.
+    def group_class_repos(groups)
+        return {} if groups.empty?
+
+        rows = neo4j_query(<<~END_OF_QUERY, :groups => groups).to_a
+            MATCH (g:GroupSetting) WHERE g.group IN $groups AND g.class_repos IS NOT NULL
+            RETURN g.group AS group, g.class_repos AS repos;
+        END_OF_QUERY
+        set = rows.to_h { |row| [row['group'], ClassRepos.parse(row['repos'])] }
+        groups.to_h { |group| [group, set[group] || {}] }
+    end
+
+    # Pages with class_repo: group, in the order of the catalog (pages
+    # outside it after them, by title).
+    def class_repo_slugs
+        slugs = @@content.select { |_, c| c[:class_repo] && (DEVELOPMENT || !c[:dev_only]) }.keys
+        order = @@section_order.flat_map { |key| (@@sections[key] || {})[:entries] || [] }
+        slugs.sort_by { |slug| [order.index(slug) || order.size, plain_title(slug).downcase] }
+    end
+
+    # Teachers, administrators and visitors see a page as it is with a
+    # class repository, with placeholders for the address.
+    def class_repo_placeholders?
+        !user_logged_in? || teacher_account_logged_in? || admin_logged_in?
+    end
+
+    def my_class_repos
+        @my_class_repos ||= class_repo_placeholders? ? {} : group_class_repos(my_groups)
+    end
+
+    # How this person sees a page: :variant is nil (with a class repository)
+    # or ClassRepos::WITHOUT, :address the address or nil (placeholders).
+    # Students see the address of the first of their groups that has one
+    # for this page, and without one the page's variant without; on other
+    # pages (the Handbuch) the first address of their groups.
+    def class_repo_view(slug)
+        @class_repo_view ||= {}
+        @class_repo_view[slug] ||= ClassRepos.view(slug, :per_group => (@@content[slug] || {})[:class_repo] == true,
+            :placeholders => class_repo_placeholders?, :groups => my_groups, :settings => my_class_repos)
+    end
+
+    # The variant of a page this person sees (nil: the page as it is);
+    # looks up the groups' addresses only on pages with class_repo: group.
+    def class_repo_variant(slug)
+        (@@content[slug] || {})[:class_repo] ? class_repo_view(slug)[:variant] : nil
+    end
+
+    # The variant of a page for a group (class board): the one its students
+    # see, after the group's address for the page (ClassRepos.variant).
+    def group_page_variant(slug, group)
+        return nil unless (@@content[slug] || {})[:class_repo]
+
+        @group_class_repos ||= {}
+        @group_class_repos[group] ||= group_class_repos([group])[group] || {}
+        ClassRepos.variant(@group_class_repos[group][slug])
+    end
+
+    # The tasks a page shows in a variant (nil: the page as it is).
+    def tasks_in_variant(content, variant)
+        ClassRepos.tasks(content, variant)
+    end
+
+    # For teachers on a page with class_repo: group, one line: which address
+    # their groups use, each linked to the class page, where it is set.
+    # Administrators see the groups they teach, not every group.
+    def class_repo_teacher_line(slug)
+        return '' unless (@@content[slug] || {})[:class_repo] && (teacher_account_logged_in? || admin_logged_in?)
+
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        groups = class_groups
+        if admin_logged_in?
+            own = @@teachers[@session_user[:email]] || Set.new
+            groups = groups.select { |g| own.include?(g) || @@test_groups.include?(g) }
+        end
+        repos = group_class_repos(groups)
+        link = ->(g) { "/klasse?group=#{CGI.escape(g)}&repos=#{CGI.escape(slug)}" }
+        items = groups.map do |g|
+            address = (repos[g] || {})[slug]
+            value = address ? "<code>#{h.(address)}</code>" : "<span class='class-repo-none'>keins eingetragen</span>"
+            "<a href='#{h.(link.(g))}'>#{h.(g)}</a>: #{value}"
+        end
+        text = items.empty? ? "Auf der <a href='/klasse'>Klassenseite</a> trägst du es je Gruppe ein." : items.join(' · ')
+        "<p class='class-repo-teacher'><i class='bi bi-hdd-network' aria-hidden='true'></i><strong>Klassen-Repository</strong> " \
+            "(ohne Adresse sehen Lernende die Seite ohne Git): #{text}</p>"
+    end
+
     # The language this person sees on a page that offers more than one,
     # nil on other pages: their own choice, else their class's, else Ruby.
     def page_code_language(slug)
@@ -5040,6 +5173,7 @@ class Main < Sinatra::Base
     # Hides the cards, or loads tasks.js, depending on who is looking.
     def task_page_setup(slug)
         tasks = (@@content[slug] || {})[:tasks]
+        tasks = tasks_in_variant(@@content[slug], class_repo_variant(slug)) if tasks
         return '' if tasks.nil? || tasks[:on_page].nil? || tasks[:on_page].empty?
         return "<style>.task-card, .tasks-on-only { display: none; }</style>" unless tasks_visible?
 
@@ -5431,10 +5565,13 @@ class Main < Sinatra::Base
 
     # Activities that place tasks on their page, with their tasks in page
     # order: [{ slug:, activity:, title:, tasks: [{ id:, title:, type:, version:, prediction: }] }]
-    def activities_with_tasks
+    # variant_of: slug -> the variant whose tasks count (ClassRepos), for
+    # a person or a group; nil counts the page as it is.
+    def activities_with_tasks(variant_of = nil)
         @@content.select { |_, c| c[:tasks] && !(c[:tasks][:on_page] || []).empty? && (DEVELOPMENT || !c[:dev_only]) && !c[:teacher_only] }
             .map do |slug, c|
-                tasks = c[:tasks][:on_page].map do |id|
+                on_page = tasks_in_variant(c, variant_of && variant_of.call(slug))[:on_page]
+                tasks = on_page.map do |id|
                     t = c[:tasks][:by_id][id]
                     { :id => id, :title => t['title'], :type => t['check']['type'],
                       :version => TaskSpec.check_version(t), :prediction => t['prediction'] == true }
@@ -5444,9 +5581,10 @@ class Main < Sinatra::Base
             end
     end
 
-    # Activities for the class board: [[activity, title, tasks]].
-    def class_activities
-        activities_with_tasks.map { |a| [a[:activity], a[:title], a[:tasks]] }.sort_by { |_, title, _| title.downcase }
+    # Activities for the class board of a group: [[activity, title, tasks]],
+    # the tasks as the group sees them.
+    def class_activities(group)
+        activities_with_tasks(->(slug) { group_page_variant(slug, group) }).map { |a| [a[:activity], a[:title], a[:tasks]] }.sort_by { |_, title, _| title.downcase }
     end
 
     # The logged-in person's TaskStates as { 'activity/id' => state }, once per request.
@@ -5460,7 +5598,7 @@ class Main < Sinatra::Base
     end
 
     def my_progress
-        @my_progress ||= StudentHome.progress(activities_with_tasks, my_task_states)
+        @my_progress ||= StudentHome.progress(activities_with_tasks(->(slug) { class_repo_variant(slug) }), my_task_states)
     end
 
     # Groups the logged-in person is a member of (all of them, not only the first).
@@ -5740,6 +5878,7 @@ class Main < Sinatra::Base
         io << "<script>document.querySelector('.class-code-language').addEventListener('change', function (e) {" \
             "api_call('/api/set_group_code_language', { group: e.target.dataset.group, language: e.target.value }, function () {}, { no_please_wait: true });" \
             "});</script>"
+        io << class_repos_button_html(group)
         io << "<noscript><button class='btn btn-primary'>Anzeigen</button></noscript>"
         # For the projector: the group's codes, big, names only (class_board.js).
         io << "<span class='class-board-actions'>#{new_group_button_html}" \
@@ -5761,11 +5900,31 @@ class Main < Sinatra::Base
         io
     end
 
+    # The class repositories of the group (ClassRepos): a button beside the
+    # language that opens a dialog with one field per activity that clones
+    # one (class_board.js); its count says how many are set.
+    def class_repos_button_html(group)
+        slugs = class_repo_slugs
+        return '' if slugs.empty?
+
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        set = group_class_repos([group])[group] || {}
+        entries = slugs.map do |slug|
+            { :slug => slug, :title => plain_title(slug), :address => set[slug],
+              :folder => ((@@content[slug] || {})[:template] || {})[:folder] || slug }
+        end
+        count = entries.count { |e| e[:address] }
+        state = "Klassen-Repositorys: #{count} von #{entries.size} eingetragen"
+        "<button type='button' class='btn btn-outline-secondary class-repos-open#{count > 0 ? ' has-repos' : ''}' data-group='#{h.(group)}' " \
+            "data-repos='#{h.(entries.to_json)}' aria-label='#{h.(state)}' title='#{h.(state)}'>" \
+            "<i class='bi bi-hdd-network' aria-hidden='true'></i>Git<span class='class-repos-count'>#{count > 0 ? "· #{count}" : ''}</span></button>"
+    end
+
     # The tab »Fortschritt«: the activity, a toolbar (look into the
     # Workspaces now, is the template current) and the board.
     def class_progress_html(group)
         h = ->(t) { CGI.escapeHTML(t.to_s) }
-        activities = class_activities
+        activities = class_activities(group)
         prefs = class_prefs
         wanted = [params['activity'], (prefs['activities'] || {})[group]]
         activity = wanted.compact.map { |key| activities.find { |a, _, _| a == key } }.compact.first || activities.first
@@ -6662,10 +6821,10 @@ class Main < Sinatra::Base
         assert(class_groups.include?(group))
         activity = data[:activity]
         assert(activity =~ /\A[a-z0-9_-]+\z/)
-        entry = @@content.values.find { |c| (c[:tasks] || {})[:activity] == activity }
+        slug, entry = @@content.find { |_, c| (c[:tasks] || {})[:activity] == activity }
         halt 404 if entry.nil?
 
-        tasks = OpenAnswers.task_ids(entry[:tasks]).to_h { |id| [id, { :version => TaskSpec.check_version(entry[:tasks][:by_id][id]) }] }
+        tasks = OpenAnswers.task_ids(tasks_in_variant(entry, group_page_variant(slug, group))).to_h { |id| [id, { :version => TaskSpec.check_version(entry[:tasks][:by_id][id]) }] }
         members = class_members(group)
         states = class_board_states(members.map { |m| m[:email] }, activity)
         respond(:group => group, :members => members.size, :answers => OpenAnswers.collect(members, tasks, states))
@@ -7432,6 +7591,45 @@ class Main < Sinatra::Base
         respond(:yay => 'sure')
     end
 
+    # The class repositories of a group (ClassRepos), from the dialog on the
+    # class page: { slug => address } for pages with class_repo: group, an
+    # empty address removes one. All or nothing: with one invalid address
+    # nothing is saved, and the answer names it.
+    post '/api/set_group_class_repos' do
+        teacher_or_admin!
+        data = parse_request_data(:required_keys => [:group, :repos], :types => { :repos => Hash },
+            :max_body_length => 16384, :max_value_lengths => { :group => 256 })
+        group = data[:group]
+        halt 403 unless class_groups.include?(group)
+        slugs = class_repo_slugs
+        changes = {}
+        errors = {}
+        data[:repos].each do |slug, address|
+            halt 400 unless slugs.include?(slug) && address.is_a?(String) && address.size <= 1000
+            text = address.strip
+            if text.empty? || ClassRepos.valid?(text)
+                changes[slug] = text
+            else
+                errors[slug] = 'invalid'
+            end
+        end
+        return respond(:ok => false, :errors => errors) unless errors.empty?
+
+        row = neo4j_query('MATCH (g:GroupSetting {group: $group}) RETURN g.class_repos AS repos;', :group => group).first
+        json = row && row['repos']
+        changes.each { |slug, address| json = ClassRepos.update(json, slug, address) }
+        if json
+            neo4j_query(<<~END_OF_QUERY, :group => group, :json => json)
+                MERGE (g:GroupSetting {group: $group})
+                SET g.class_repos = $json;
+            END_OF_QUERY
+        elsif row
+            neo4j_query('MATCH (g:GroupSetting {group: $group}) REMOVE g.class_repos;', :group => group)
+        end
+        STDERR.puts "Class repositories of #{group} set by #{@session_user[:email]}: #{json || '{}'}"
+        respond(:ok => true, :repos => ClassRepos.parse(json))
+    end
+
     post '/api/set_preferred_language' do
         assert(user_logged_in?)
         data = parse_request_data(:required_keys => [:language])
@@ -7671,8 +7869,17 @@ class Main < Sinatra::Base
 
     # A page's HTML for the person viewing it: the case files' address
     # carries their key (CaseServer.personal_archive_path).
+    # On a page with a class repository (ClassRepos), the variant for this
+    # person and the address of their group.
     def page_html(slug)
-        html = @@content[slug][:html]
+        content = @@content[slug]
+        html = content[:html]
+        # Only pages that use the class repository's variables look it up.
+        if content[:class_repo] || html.match?(ClassRepos::TOKEN)
+            view = class_repo_view(slug)
+            html = ((view[:variant] && (content[:variants] || {})[view[:variant]]) || content)[:html]
+            html = ClassRepos.fill(html, ClassRepos.values(view[:address]))
+        end
         return html unless slug == 'terminal-mystery' && CaseServer.enabled? && @session_user
 
         html.gsub(CaseServer::ARCHIVE_PATH, CaseServer.personal_archive_path(CaseServer.secret(LOGIN_CODE_SALT), @session_user[:email]))

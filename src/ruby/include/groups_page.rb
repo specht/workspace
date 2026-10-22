@@ -4,6 +4,8 @@
 # belong to the teacher's school, which only an administrator assigns
 # (/personen). Students of a school that has not agreed yet cannot log in
 # (Roster.from_records), their teachers can.
+require_relative 'group_data'
+
 class Main < Sinatra::Base
     GROUP_NAME_MAX = 60
     WELCOME_MAILS_PER_TEACHER = RateLimit.new(:limit => 600, :period => 3600)
@@ -324,7 +326,7 @@ class Main < Sinatra::Base
 
     # Renaming a group, by its teachers or an administrator. The name is also
     # the key of the pins on the start page (Pin, key »group|slug«), of the
-    # group's programming language (GroupSetting) and of the teachers' last
+    # group's programming language and class repositories (GroupSetting) and of the teachers' last
     # choice on the class page (User.class_prefs): all of them follow, in one
     # transaction.
     post '/api/groups/rename' do
@@ -366,6 +368,9 @@ class Main < Sinatra::Base
         end
         halt 400, { :error => 'no_school' }.to_json unless school
         now = Time.now.to_i
+        # Settings and pins left under this name by a group that is gone
+        # (GroupData): a new group starts empty.
+        GroupData.drop!($neo4j, [name])
         created = neo4j_query(<<~END_OF_QUERY, :name => name, :school => school, :now => now, :me => my_email).first
             MATCH (s:School {key: $school})
             CREATE (g:Group {name: $name, created_at: $now, created_by: $me})-[:AT]->(s)
@@ -394,6 +399,10 @@ class Main < Sinatra::Base
         name = managed_group!(data[:name])
         halt 400, { :error => 'confirmation_mismatch' }.to_json unless data[:confirmation].to_s.strip == name
         neo4j_query('MATCH (g:Group {name: $name}) DETACH DELETE g;', :name => name)
+        # What hangs on the name goes with the group (a new group of the same
+        # name starts empty): its settings (language, class repositories)
+        # and its pins (GroupData).
+        GroupData.drop!($neo4j, [name])
         drop_orphan_invitations
         Main.note_roster_change!
         STDERR.puts "Group #{name} deleted by #{my_email}"

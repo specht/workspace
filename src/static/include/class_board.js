@@ -601,3 +601,103 @@ document.addEventListener('click', function (e) {
     };
     window.load_groups();
 })();
+
+// The class repositories of the group (ClassRepos in main.rb): the button
+// beside »Sprache« opens a dialog with one field per activity that clones
+// one, in the order of the catalog. Saved together; the server checks
+// every address and saves nothing if one is not valid, and the dialog marks
+// that field. /klasse?repos=SLUG (the link on the activity page) opens the
+// dialog at that field.
+(function () {
+    const button = document.querySelector('.class-repos-open');
+    if (!button) return;
+    const esc = (t) => $('<div>').text(t === undefined || t === null ? '' : String(t)).html();
+    const group = button.dataset.group;
+
+    function entries() {
+        try { return JSON.parse(button.dataset.repos); } catch (e) { return []; }
+    }
+
+    // The button shows how many addresses the group has (»Git · 2«).
+    function show_count(list) {
+        const count = list.filter((e) => e.address).length;
+        button.querySelector('.class-repos-count').textContent = count > 0 ? `· ${count}` : '';
+        button.classList.toggle('has-repos', count > 0);
+        button.setAttribute('aria-label', `Klassen-Repositorys: ${count} von ${list.length} eingetragen`);
+        button.title = `Klassen-Repositorys der Gruppe: ${count} von ${list.length} eingetragen`;
+    }
+
+    function save() {
+        const repos = {};
+        document.querySelectorAll('.class-repo-input').forEach((input) => {
+            repos[input.dataset.slug] = input.value.trim();
+            input.classList.remove('is-invalid');
+            input.removeAttribute('aria-invalid');
+        });
+        const confirm = $('#__template_modal .modal-footer .btn-primary').prop('disabled', true);
+        api_call('/api/set_group_class_repos', { group: group, repos: repos }, function (r) {
+            confirm.prop('disabled', false);
+            if (!r.success) return;
+            if (!r.ok) {
+                let first = null;
+                Object.keys(r.errors || {}).forEach((slug) => {
+                    const input = document.querySelector(`.class-repo-input[data-slug="${CSS.escape(slug)}"]`);
+                    if (!input) return;
+                    input.classList.add('is-invalid');
+                    input.setAttribute('aria-invalid', 'true');
+                    first = first || input;
+                });
+                if (first) first.focus();
+                return;
+            }
+            const list = entries().map((e) => Object.assign(e, { address: (r.repos || {})[e.slug] || null }));
+            button.dataset.repos = JSON.stringify(list);
+            show_count(list);
+            $('#__template_modal').modal('hide');
+            const count = list.filter((e) => e.address).length;
+            show_success_message(`Gespeichert: ${count === 0 ? 'keine Adresse' : count === 1 ? 'eine Adresse' : `${count} Adressen`} für ${esc(group)}.`);
+        }, { no_please_wait: true });
+        return false;
+    }
+
+    function open(focus_slug) {
+        let body = `<p class='class-repos-intro'>Lernende der Gruppe sehen die Adresse im Befehl zum Klonen und bekommen die Aufgaben zu Git. `
+            + `Dafür lädst du sie auf den Git-Server ein.</p>`
+            + `<p class='class-repos-format' id='class-repos-format'>Zum Beispiel <code>git@git.example.org:lehrkraft/klasse.git</code>, `
+            + `auch <code>ssh://…</code> oder <code>https://…</code></p>`;
+        entries().forEach((e) => {
+            const id = `class-repo-${e.slug}`;
+            body += `<div class='class-repo-field'><label class='form-label' for='${esc(id)}'>${esc(e.title)}</label>`
+                + `<a class='class-repo-page' href='/${esc(e.slug)}' target='_blank' rel='noopener' aria-label='${esc(e.title)} in neuem Tab öffnen' title='Seite in neuem Tab öffnen'>`
+                + `<i class='bi bi-box-arrow-up-right' aria-hidden='true'></i></a>`
+                + `<input type='text' class='form-control class-repo-input' id='${esc(id)}' data-slug='${esc(e.slug)}' value='${esc(e.address || '')}' `
+                + `placeholder='keine Adresse' aria-describedby='class-repos-format ${esc(id)}-error' autocomplete='off' autocapitalize='off' spellcheck='false'>`
+                + `<div class='invalid-feedback' id='${esc(id)}-error'>Keine Adresse, die der Workspace annimmt: <code>git@server:pfad.git</code>, `
+                + `<code>ssh://server/pfad.git</code> oder <code>https://server/pfad.git</code>, ohne Leerzeichen.</div></div>`;
+        });
+        body += `<p class='class-repos-note'>Ein leeres Feld entfernt die Adresse. Ohne Adresse arbeiten die Lernenden nur in ihrem Workspace.</p>`;
+        // Before showing: without a fade, »shown« comes at once.
+        $('#__template_modal').one('shown.bs.modal', function () {
+            const input = document.querySelector(`.class-repo-input[data-slug="${CSS.escape(focus_slug || '')}"]`) || document.querySelector('.class-repo-input');
+            if (input) input.focus();
+        });
+        showTemplateModal(`<i class='bi bi-hdd-network' aria-hidden='true'></i>Klassen-Repositorys für ${esc(group)}`, body,
+            "<i class='bi bi-check-lg'></i>Speichern", 'btn-primary', "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-outline-secondary', save);
+        $('#__template_modal .modal-body').addClass('class-repos-dialog');
+        $('#__template_modal').one('hidden.bs.modal', function () { $('#__template_modal .modal-body').removeClass('class-repos-dialog'); });
+        $('#__template_modal .class-repo-input').on('keydown', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); save(); }
+        });
+    }
+
+    show_count(entries());
+    button.addEventListener('click', () => open());
+    const wanted = new URLSearchParams(location.search).get('repos');
+    if (wanted) {
+        // Once the address is in the dialog, the address bar forgets the wish.
+        const url = new URL(location.href);
+        url.searchParams.delete('repos');
+        history.replaceState(null, '', url);
+        $(function () { open(wanted); });
+    }
+})();

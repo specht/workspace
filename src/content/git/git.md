@@ -1323,7 +1323,7 @@ _task(rueckgaengig)
 <tr><th>Markieren</th><td><code>git tag -a</code>, <code>git push origin --tags</code></td></tr>
 </table>
 
-Mit diesem Wissen kannst du Git für deine eigenen Projekte nutzen. Wie du mit GitLab arbeitest, steht im Handbuch unter [Git und GitLab](/reference/gitlab).
+Mit diesem Wissen kannst du Git für deine eigenen Projekte nutzen. Wie du mit einem Git-Server wie GitLab, Gitea oder GitHub arbeitest, steht im Handbuch unter [Git-Server: Zugang und Veröffentlichen](/reference/gitlab).
 
 <div class='book'>
 <i class='bi bi-book'></i>

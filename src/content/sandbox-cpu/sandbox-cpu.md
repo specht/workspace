@@ -6,7 +6,7 @@ language: Assembler / C
 topic: computing
 reference: [gitlab, minicpu, minicpu-io, minicpu-c]
 template: https://github.com/specht/cpu-sandbox.git
-class_repo: git@git.nhcham.org:specht/cpu-sandbox-programs-2026.git
+class_repo: group
 template_name: der CPU Sandbox
 </div>
 
@@ -194,6 +194,7 @@ crop-element: #screen-box
 <figure><img src='gallery-landscape.webp' alt='Eine Landschaft mit grünen Hügeln, die sich in einem See spiegeln.'><figcaption><code>26-landscape.c</code>: Landschaft mit Wasserspiegelung</figcaption></figure>
 </div>
 
+<!-- if: class_repo -->
 Du arbeitest mit **zwei Git-Repositories**. Im Workspace ist `~` dein Ordner `/workspace`.
 
 <table class='table'>
@@ -201,22 +202,36 @@ Du arbeitest mit **zwei Git-Repositories**. Im Workspace ist `~` dein Ordner `/w
 <tr><td><code>~/cpu-sandbox/</code></td><td>die App mit den Beispielen</td><td>nur deine Lehrkraft</td></tr>
 <tr><td><code>~/cpu-sandbox/programs/</code></td><td>das Klassen-Repository mit euren Programmen</td><td>ihr, jede und jeder im eigenen Ordner</td></tr>
 </table>
+<!-- /if -->
+<!-- if: !class_repo -->
+Im Workspace ist `~` dein Ordner `/workspace`. Die App liegt in `~/cpu-sandbox/`, deine Programme darin im Ordner `programs/`, in einem Ordner mit deinem Namen. Sie bleiben in deinem Workspace.
+<!-- /if -->
 
 Die Karten auf dieser Seite schauen in deinem Workspace nach und sagen dir, was sie finden. Sie ändern nichts.
 
 ## Einrichten
 
-### Einmalig: Zugang zu GitLab
+<!-- if: class_repo -->
+### Einmalig: Zugang zum Git-Server
 
-Das Klassen-Repository liegt auf dem GitLab-Server [git.nhcham.org](https://git.nhcham.org/). Dort kann man sich nicht selbst registrieren: Dein Konto bekommst du von deiner Lehrkraft.
+Das Klassen-Repository liegt auf dem Git-Server [${git_host}](${git_web}). Deine Lehrkraft lädt dich dorthin ein; mit der Einladung kannst du dort mitmachen.
+<!-- /if -->
+<!-- if: class_repo_ssh -->
 
 _include(gitlab#ssh-schluessel)
 
 _task(ssh-schluessel)
+<!-- /if -->
+<!-- if: class_repo_https -->
+
+_include(gitlab#https-anmelden)
+<!-- /if -->
+<!-- if: class_repo -->
 
 _include(gitlab#git-name, done: git-name)
 
 _task(git-name)
+<!-- /if -->
 
 ### Einmalig: Klonen
 
@@ -226,6 +241,7 @@ Klone die App in dein Home-Verzeichnis:
 git clone ${template} ~/cpu-sandbox
 ```
 
+<!-- if: class_repo -->
 Klone das Klassen-Repository in ihren Ordner:
 
 ```bash_copy
@@ -233,16 +249,33 @@ git clone ${class_repo} ~/cpu-sandbox/programs
 ```
 
 Das Klassen-Repository muss **in** der App liegen und genau `programs` heißen. Gibt es `programs/` schon, klone es nicht noch einmal und lösche nichts, sondern frag nach.
+<!-- /if -->
+<!-- if: !class_repo -->
+Deine Programme kommen in der App in den Ordner `programs`. Lege ihn an:
+
+```bash
+mkdir ~/cpu-sandbox/programs
+```
+
+Der Ordner muss **in** der App liegen und genau `programs` heißen. Meldet `mkdir`, dass es ihn schon gibt, ist alles in Ordnung.
+<!-- /if -->
 
 _task(geklont)
 
+<!-- if: class_repo -->
 _task(klassen-repository)
+<!-- /if -->
 
 ## Arbeiten
 
 ### Die App starten
 
+<!-- if: class_repo -->
 Starte die App in einem Terminal und lass es offen. Für Git öffnest du ein zweites Terminal.
+<!-- /if -->
+<!-- if: !class_repo -->
+Starte die App in einem Terminal und lass es offen.
+<!-- /if -->
 
 ```bash
 cd ~/cpu-sandbox
@@ -355,7 +388,12 @@ Im Handbuch: _uses(c-sprache, c-anders, ports, display)
 
 Sechzehn Aufgaben prüfen sich selbst: vom Addieren zweier Bytes über Fibonacci, Multiplikation und Sortieren bis zu einem Schachbrettmuster, dazu Aufgaben speziell für C wie Fakultät, größter gemeinsamer Teiler, Primzahlsieb und Linienzeichnen. **+** legt ein Programm zu einer Aufgabe an, **Check** führt alle Testfälle aus und erklärt Fehler wie »0x82 should be 7, but it is 8«, und **Try it** lädt einen Testfall in die Maschine, damit du ihn Schritt für Schritt verfolgst.
 
+<!-- if: class_repo -->
 **Class progress** sammelt die funktionierenden Lösungen der Klasse und sortiert sie nach **Takten**; das kleinste Programm in Bytes wird zusätzlich markiert. Wer schafft es mit weniger Takten? Wer mit weniger Bytes? Und geht beides gleichzeitig?
+<!-- /if -->
+<!-- if: !class_repo -->
+**Class progress** sammelt die funktionierenden Lösungen aus `programs` und sortiert sie nach **Takten**; das kleinste Programm in Bytes wird zusätzlich markiert. Ohne Klassen-Repository steht dort nur dein eigener Ordner: Du trittst gegen dich selbst an. Schaffst du es mit weniger Takten? Mit weniger Bytes? Und geht beides gleichzeitig?
+<!-- /if -->
 
 Besonders lehrreich ist es, dieselbe Aufgabe zweimal zu lösen, einmal in Assembler und einmal in C. Mit geradlinigen Lösungen ergibt sich etwa:
 
@@ -373,6 +411,7 @@ Besonders lehrreich ist es, dieselbe Aufgabe zweimal zu lösen, einmal in Assemb
 
 Mehr zur App steht in ihrer [Anleitung](https://github.com/specht/cpu-sandbox#readme), alle Aufgaben in der [Aufgabenliste](https://github.com/specht/cpu-sandbox/blob/main/docs/tasks.md).
 
+<!-- if: class_repo -->
 ## Veröffentlichen
 
 Deine Lehrkraft sieht deine Programme erst, wenn sie committet **und** gepusht sind. Das machst du im Ordner `programs`, nicht im Ordner der App:
@@ -400,3 +439,14 @@ cd .. && ./run
 ```
 
 Und am Ende der Stunde: [»Committet und gepusht«](#aufgabe-veroeffentlicht) noch einmal prüfen.
+<!-- /if -->
+<!-- if: !class_repo -->
+## Beim nächsten Mal
+
+```bash
+cd ~/cpu-sandbox && git pull
+./run
+```
+
+`git pull` holt die neueste Version der App. Deine Programme in `programs` bleiben dabei, wie sie sind: Das Repository der App lässt diesen Ordner aus.
+<!-- /if -->

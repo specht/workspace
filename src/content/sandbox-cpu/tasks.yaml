@@ -24,7 +24,7 @@ tasks:
 
   - id: git-name
     title: Git kennt dich
-    prompt: Git kennt deinen Namen und die E-Mail-Adresse deines GitLab-Kontos.
+    prompt: Git kennt deinen Namen und die E-Mail-Adresse deines Kontos auf dem Git-Server.
     check:
       type: git
       expect:
@@ -38,7 +38,7 @@ tasks:
   - id: geklont
     title: Die Sandbox ist da
     prompt: |
-      Die App liegt in `~/cpu-sandbox`, das Klassen-Repository darin in `programs`.
+      Die App liegt in `~/cpu-sandbox`, darin der Ordner `programs`.
     check:
       type: files
       path: cpu-sandbox/programs
@@ -47,9 +47,9 @@ tasks:
     feedback:
       - when: { problem: missing }
         say: |
-          `cpu-sandbox/programs` gibt es nicht. Hast du das Klassen-Repository
-          geklont, und zwar **im** Ordner `cpu-sandbox` und unter dem Namen
-          `programs`?
+          `cpu-sandbox/programs` gibt es nicht. Liegt der Ordner **im** Ordner
+          `cpu-sandbox`, und heißt er genau `programs`? Mit Klassen-Repository
+          ist es das geklonte Repository, sonst ein Ordner, den du anlegst.
 
   - id: klassen-repository
     title: Ein eigenes Repository

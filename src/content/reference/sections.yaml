@@ -82,7 +82,7 @@
     - yaml
 
 - key: reference-git
-  label: Git und GitLab
+  label: Git und Git-Server
   icon: /images/git.png
   description: |
     Einmal einrichten und dann immer wieder brauchen: SSH-Schlüssel, Name und

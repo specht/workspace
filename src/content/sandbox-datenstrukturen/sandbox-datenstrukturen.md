@@ -6,7 +6,7 @@ language: Dart / Python / JavaScript / Java
 topic: computing
 reference: [gitlab, listen, baeume, heap, hash-tables]
 template: https://github.com/specht/data-structures-sandbox.git
-class_repo: git@git.nhcham.org:specht/data-structure-sandbox-structures-2026.git
+class_repo: group
 template_name: der Data Structures Sandbox
 </div>
 
@@ -32,6 +32,7 @@ Die meisten Programmiersprachen bringen fertige Listen, Mengen und Wörterbüche
 
 Jede Struktur gibt es als unfertigen **Starter** und als vollständiges **Referenzbeispiel**. Du schreibst nur die Logik, keinen Code zum Zeichnen. Ins Eingabefeld oben tippst du Methodenaufrufe wie `insert(30); insert(20)`, drückst Enter und spulst den Ablauf dann Schritt für Schritt vor und zurück.
 
+<!-- if: class_repo -->
 Du arbeitest mit **zwei Git-Repositories**. Im Workspace ist `~` dein Ordner `/workspace`.
 
 <table class='table'>
@@ -39,22 +40,36 @@ Du arbeitest mit **zwei Git-Repositories**. Im Workspace ist `~` dein Ordner `/w
 <tr><td><code>~/data-structures-sandbox/</code></td><td>die App</td><td>nur deine Lehrkraft</td></tr>
 <tr><td><code>~/data-structures-sandbox/structures/</code></td><td>das Klassen-Repository mit euren Implementierungen</td><td>ihr, jede und jeder im eigenen Ordner</td></tr>
 </table>
+<!-- /if -->
+<!-- if: !class_repo -->
+Im Workspace ist `~` dein Ordner `/workspace`. Die App liegt in `~/data-structures-sandbox/`, deine Implementierungen darin im Ordner `structures/`, in einem Ordner mit deinem Namen. Sie bleiben in deinem Workspace.
+<!-- /if -->
 
 Die Karten auf dieser Seite schauen in deinem Workspace nach und sagen dir, was sie finden. Sie ändern nichts.
 
 ## Einrichten
 
-### Einmalig: Zugang zu GitLab
+<!-- if: class_repo -->
+### Einmalig: Zugang zum Git-Server
 
-Das Klassen-Repository liegt auf dem GitLab-Server [git.nhcham.org](https://git.nhcham.org/). Dort kann man sich nicht selbst registrieren: Dein Konto bekommst du von deiner Lehrkraft.
+Das Klassen-Repository liegt auf dem Git-Server [${git_host}](${git_web}). Deine Lehrkraft lädt dich dorthin ein; mit der Einladung kannst du dort mitmachen.
+<!-- /if -->
+<!-- if: class_repo_ssh -->
 
 _include(gitlab#ssh-schluessel)
 
 _task(ssh-schluessel)
+<!-- /if -->
+<!-- if: class_repo_https -->
+
+_include(gitlab#https-anmelden)
+<!-- /if -->
+<!-- if: class_repo -->
 
 _include(gitlab#git-name, done: git-name)
 
 _task(git-name)
+<!-- /if -->
 
 ### Einmalig: Klonen
 
@@ -64,6 +79,7 @@ Klone die App in dein Home-Verzeichnis:
 git clone ${template} ~/data-structures-sandbox
 ```
 
+<!-- if: class_repo -->
 Klone das Klassen-Repository in ihren Ordner:
 
 ```bash_copy
@@ -71,16 +87,33 @@ git clone ${class_repo} ~/data-structures-sandbox/structures
 ```
 
 Das Klassen-Repository muss **in** der App liegen und genau `structures` heißen. Gibt es `structures/` schon, klone es nicht noch einmal und lösche nichts, sondern frag nach.
+<!-- /if -->
+<!-- if: !class_repo -->
+Deine Implementierungen kommen in der App in den Ordner `structures`. Lege ihn an:
+
+```bash
+mkdir ~/data-structures-sandbox/structures
+```
+
+Der Ordner muss **in** der App liegen und genau `structures` heißen. Meldet `mkdir`, dass es ihn schon gibt, ist alles in Ordnung.
+<!-- /if -->
 
 _task(geklont)
 
+<!-- if: class_repo -->
 _task(klassen-repository)
+<!-- /if -->
 
 ## Arbeiten
 
 ### Die App starten
 
+<!-- if: class_repo -->
 Starte die App in einem Terminal und lass es offen. Für Git öffnest du ein zweites Terminal.
+<!-- /if -->
+<!-- if: !class_repo -->
+Starte die App in einem Terminal und lass es offen.
+<!-- /if -->
 
 ```bash
 cd ~/data-structures-sandbox
@@ -214,6 +247,7 @@ _task(buckets-belegt)
 
 Neben den gezeigten Strukturen gibt es Stacks und Queues jeweils als Array und als Knotenkette sowie einen Min-Heap im Array. Mehr zur App steht in ihrer [Anleitung](https://github.com/specht/data-structures-sandbox#readme), was jede Struktur genau können muss in den [Verträgen](https://github.com/specht/data-structures-sandbox/blob/main/docs/contracts.md).
 
+<!-- if: class_repo -->
 ## Veröffentlichen
 
 Deine Lehrkraft sieht deine Arbeit erst, wenn sie committet **und** gepusht ist. Das machst du im Ordner `structures`, nicht im Ordner der App:
@@ -241,3 +275,14 @@ cd .. && ./run
 ```
 
 Und am Ende der Stunde: [»Committet und gepusht«](#aufgabe-veroeffentlicht) noch einmal prüfen.
+<!-- /if -->
+<!-- if: !class_repo -->
+## Beim nächsten Mal
+
+```bash
+cd ~/data-structures-sandbox && git pull
+./run
+```
+
+`git pull` holt die neueste Version der App. Deine Implementierungen in `structures` bleiben dabei, wie sie sind: Das Repository der App lässt diesen Ordner aus.
+<!-- /if -->

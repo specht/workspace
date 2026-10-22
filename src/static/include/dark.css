@@ -501,6 +501,12 @@ html[data-bs-theme="dark"] {
     .task-teacher-none,
     .task-teacher-count { color: #a3a29c; }
     .task-teacher-stale { color: #e0b050; }
+    .class-repo-teacher {
+        border-color: #4a3a63;
+        background-color: #221b2d;
+    }
+    .class-repo-teacher > .bi { color: #cdb0f2; }
+    .class-repo-teacher .class-repo-none { color: #a3a29c; }
     .teacher-note-toggle {
         border-color: #4a3a63;
         background-color: #221b2d;

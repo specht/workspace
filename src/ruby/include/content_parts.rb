@@ -1,6 +1,7 @@
 require 'cgi'
 require 'pathname'
 require 'yaml'
+require_relative 'class_repos'
 
 # Text-level building blocks of the content model (see docs/aufgaben.md):
 # finding a page's Markdown file, reference parts, _include() and _uses().
@@ -22,13 +23,14 @@ module ContentParts
     # ${...} in JavaScript or shell examples stays untouched.
     VARIABLES = {
         'template' => '[Adresse der Vorlage]',
-        'class_repo' => '[Adresse des Klassen-Repositorys]',
         # Not from the page, from the site's configuration (CONTACT_EMAIL,
         # WEB_ROOT).
         'contact_email' => '[Kontaktadresse]',
         'web_root' => '[Adresse des Workspaces]',
-    }.freeze
-    SITE_VARIABLES = %w[contact_email web_root].freeze
+    }.merge(ClassRepos::PLACEHOLDERS).freeze
+    # Not from the page's meta block: the site's, and the class repository's,
+    # which depends on the person viewing the page (ClassRepos).
+    SITE_VARIABLES = (%w[contact_email web_root] + ClassRepos::VARIABLES).freeze
 
     # The page's values for VARIABLES, from its meta block (not the site's).
     def self.page_variables(meta)
@@ -64,6 +66,45 @@ module ContentParts
         warn&.call('<!-- /feature --> without <!-- feature: … -->') if rest.match?(FEATURE_END)
         out << rest.gsub(FEATURE_END, '')
     end
+
+    # Parts of a page for one kind of viewer (docs/aufgaben.md): between
+    # <!-- if: class_repo --> (or <!-- if: !class_repo -->) and <!-- /if -->,
+    # each marker on a line of its own. The page is rendered once for each
+    # value, so tasks in a dropped part are neither on the page nor counted.
+    CONDITION_START = /^<!--\s*if:\s*(!?)\s*([a-z_]+)\s*-->[ \t]*\n?/
+    CONDITION_END = /^<!--\s*\/if\s*-->[ \t]*\n?/
+    CONDITIONS = ClassRepos::CONDITIONS
+
+    # The conditions a page's Markdown uses.
+    def self.conditions(markdown)
+        markdown.scan(CONDITION_START).map { |_, name| name }.uniq
+    end
+
+    # Keeps a part if its condition has the value in values (a missing
+    # condition counts as false) and drops it otherwise; the markers go.
+    # Parts do not nest.
+    def self.filter_conditions(markdown, values, warn: nil)
+        out = +''
+        rest = markdown
+        while (m = rest.match(CONDITION_START))
+            out << m.pre_match
+            negated, name = m[1] == '!', m[2]
+            warn&.call("<!-- if: #{m[1]}#{name} -->: unknown condition") unless CONDITIONS.include?(name)
+            keep = (values[name] == true) != negated
+            after = m.post_match
+            stop = after.match(CONDITION_END)
+            unless stop
+                warn&.call("<!-- if: #{m[1]}#{name} --> without <!-- /if -->")
+                return out + (keep ? after : '')
+            end
+            warn&.call("<!-- if: … --> inside <!-- if: #{m[1]}#{name} -->: parts do not nest") if stop.pre_match.match?(CONDITION_START)
+            out << stop.pre_match if keep
+            rest = stop.post_match
+        end
+        warn&.call('<!-- /if --> without <!-- if: … -->') if rest.match?(CONDITION_END)
+        out << rest.gsub(CONDITION_END, '')
+    end
+
     NOTE_FILE = 'lehrkraft.md'
 
     # The Markdown file that is the page of a content folder: <name>.md if it

@@ -21,6 +21,17 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Die Sandboxes (Sortieren, Datenstrukturen, CPU) haben kein festes Klassen-Repository mehr.
+  Lehrkräfte tragen die Adresse je Gruppe auf der Klassenseite ein (Knopf »Git« neben
+  »Sprache«); gespeichert wird sie an der Gruppe (`GroupSetting.class_repos`). Lernende einer
+  Gruppe ohne Adresse sehen die Seiten ohne Git: nur die App klonen, ohne Git-Aufgaben.
+  Beim Update: Wer die Sandboxes mit Klassen-Repository nutzt, trägt die Adressen für seine
+  Gruppen neu ein, bis dahin arbeiten die Lernenden ohne. Eine eigene Adresse in `class_repo`
+  im Meta-Block einer Seite gilt nicht mehr; dort steht jetzt `class_repo: group`.
+- Wird eine Gruppe gelöscht oder fehlt sie beim erneuten Lesen der Einladungsdateien, gehen
+  ihre Einstellungen (Sprache, Klassen-Repositorys) und ihre angehefteten Aktivitäten mit;
+  eine neue Gruppe gleichen Namens beginnt leer. Reste früher gelöschter Gruppen bleiben
+  liegen, bis eine Gruppe dieses Namens angelegt wird.
 - Automatron rechnet und zeichnet im Browser: `/api/automatron` entfällt, der Server
   braucht dafür keine Rechenzeit mehr, und das Ruby-Image kommt ohne Graphviz aus
   (kleiner nach dem nächsten `./config.rb build`).

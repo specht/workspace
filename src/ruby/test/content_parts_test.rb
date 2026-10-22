@@ -218,10 +218,31 @@ class ContentPartsTest < Minitest::Test
         assert_equal({}, ContentParts.meta('# ohne Meta'))
     end
     def test_page_variables
-        vars = ContentParts.page_variables('template' => ' https://x.git ', 'class_repo' => '', 'other' => 'y')
-        assert_equal({ 'template' => 'https://x.git', 'class_repo' => nil }, vars)
+        # class_repo in the meta block only switches the page to a class
+        # repository per group (ClassRepos); it is never the address.
+        vars = ContentParts.page_variables('template' => ' https://x.git ', 'class_repo' => 'group', 'other' => 'y')
+        assert_equal({ 'template' => 'https://x.git' }, vars)
         assert_equal 'git clone [Adresse des Klassen-Repositorys] structures',
             ContentParts.fill_variables('git clone ${class_repo} structures', vars)
+        assert_equal 'ssh -T git@git.example.org', ContentParts.fill_variables('ssh -T git@${git_host}', vars)
+    end
+
+    def test_condition_blocks_give_two_variants
+        page = "A\n<!-- if: class_repo -->\nB\n_task(push)\n<!-- /if -->\n<!-- if: !class_repo -->\nC\n<!-- /if -->\nD\n"
+        assert_equal ['class_repo'], ContentParts.conditions(page)
+        assert_equal "A\nB\n_task(push)\nD\n", ContentParts.filter_conditions(page, { 'class_repo' => true })
+        assert_equal "A\nC\nD\n", ContentParts.filter_conditions(page, { 'class_repo' => false })
+        assert_equal "A\nC\nD\n", ContentParts.filter_conditions(page, {})
+        assert_empty ContentParts.conditions("A\n<!-- feature: case_server -->\n")
+        warnings = []
+        warn = ->(w) { warnings << w }
+        ContentParts.filter_conditions("<!-- if: teleport -->\nX\n<!-- /if -->\n<!-- /if -->\n", {}, :warn => warn)
+        ContentParts.filter_conditions("<!-- if: class_repo -->\n<!-- if: !class_repo -->\nX\n<!-- /if -->\n", {}, :warn => warn)
+        ContentParts.filter_conditions("<!-- if: class_repo -->\nX\n", {}, :warn => warn)
+        assert_includes warnings, '<!-- if: teleport -->: unknown condition'
+        assert_includes warnings, '<!-- /if --> without <!-- if: … -->'
+        assert_includes warnings, '<!-- if: … --> inside <!-- if: class_repo -->: parts do not nest'
+        assert_includes warnings, '<!-- if: class_repo --> without <!-- /if -->'
     end
 
     def test_contact_email_comes_from_the_site

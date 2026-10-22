@@ -12,6 +12,8 @@
 # with what the files mean (Roster.content), all in one transaction: on any
 # difference nothing is written. The import is final (the maintainer's
 # decision): there is no way back to the files but a backup of Neo4j.
+require_relative 'group_data'
+
 class Main < Sinatra::Base
     ROSTER_SETTING = 'roster'
     HOME_SCHOOL = 'home'
@@ -196,6 +198,10 @@ class Main < Sinatra::Base
             differences = Roster.differences(before, after)
             raise RosterImportMismatch.new(differences) unless differences.empty?
 
+            # The imported groups keep their settings and pins, and so do the
+            # test groups and those of the tool files (still read); what
+            # hangs on any other name belonged to a group that is gone.
+            GroupData.drop_all_but!($neo4j, records[:groups].map { |g| g[:name] } | @@group_members.keys)
             $neo4j.neo4j_query(<<~END_OF_QUERY, :key => ROSTER_SETTING, :now => now, :by => by, :files => files)
                 CREATE (:Setting {key: $key, imported_at: $now, imported_by: $by, files: $files});
             END_OF_QUERY

@@ -2709,6 +2709,31 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     border-color: #b99ae0;
 }
 
+/* For teachers on an activity with a class repository per group
+   (class_repo_teacher_line): one line, which address each group has,
+   linked to the dialog on the class page. */
+.class-repo-teacher {
+    margin: 1em 0 0;
+    padding: 0.4em 0.9em;
+    text-align: left;
+    hyphens: manual;
+    border: 1px solid #d9c9ee;
+    border-radius: 0.5em;
+    background-color: #f7f2fc;
+    font-size: 90%;
+    overflow-wrap: anywhere;
+}
+
+.class-repo-teacher > .bi {
+    margin-right: 0.4em;
+    color: #5b2f8f;
+}
+
+.class-repo-teacher .class-repo-none {
+    color: #6c757d;
+    font-style: italic;
+}
+
 /* Code in a table: one short word (code.whole, main.rb) stays in one
    piece, it never breaks at a hyphen ([0-9]); longer code breaks at its
    spaces, and only where it would overflow inside a word, without
@@ -3644,6 +3669,89 @@ ul.task-teacher-list .task-teacher-answer {
 
 .class-welcome > div {
     flex: 1;
+}
+
+/* The button for the class repositories (class_repos_button_html):
+   »Git · 2« once the group has addresses; and its dialog (class_board.js). */
+.class-repos-count {
+    margin-left: 0.3em;
+}
+
+.class-repos-open.has-repos {
+    border-color: var(--bs-link-color);
+    color: var(--bs-link-color);
+}
+
+/* An icon before the title of the site's dialog (showTemplateModal). */
+#__template_modal .modal-title .bi {
+    margin-right: 0.45em;
+}
+
+.class-repos-dialog .class-repos-intro {
+    margin-bottom: 0.4em;
+}
+
+.class-repos-dialog .class-repos-format,
+.class-repos-dialog .class-repos-note {
+    font-size: 90%;
+    color: var(--bs-secondary-color);
+    overflow-wrap: anywhere;
+}
+
+.class-repos-dialog .class-repos-format {
+    margin-bottom: 1em;
+}
+
+.class-repos-dialog .class-repos-note {
+    margin: 0;
+}
+
+.class-repos-dialog .class-repo-field {
+    margin-bottom: 1em;
+}
+
+.class-repos-dialog .class-repo-field .form-label {
+    margin-bottom: 0.3em;
+}
+
+/* The link to the page beside its label: the icon alone, centred. */
+.class-repos-dialog .class-repo-page {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0.3em;
+    padding: 0 0.2em;
+    font-size: 85%;
+}
+
+.class-repos-dialog .class-repo-page .bi {
+    margin: 0;
+}
+
+.class-repos-dialog .class-repo-page .bi::before {
+    vertical-align: 0;
+}
+
+/* Entered addresses in monospace; an empty field says so in the page's
+   font, faint, so that it never looks filled in. */
+.class-repos-dialog .class-repo-input {
+    font-family: var(--bs-font-monospace);
+    font-size: 90%;
+}
+
+.class-repos-dialog .class-repo-input:placeholder-shown {
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.class-repos-dialog .class-repo-input::placeholder {
+    color: var(--bs-secondary-color);
+    opacity: 0.6;
+    font-style: italic;
+}
+
+.class-repos-dialog .invalid-feedback {
+    overflow-wrap: anywhere;
 }
 
 .class-board-select .class-board-actions {
