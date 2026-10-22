@@ -1,6 +1,6 @@
 <div class='meta'>
 image: raytracer.webp
-image_alt: "Ein gerendertes Bild: ein gestreifter Planet, eine Spiegelkugel, eine Glaskugel und kleine bunte Kugeln auf einem Schachbrett unter hellem Himmel, mit weichen Schatten"
+image_alt: "Ein gerendertes Bild: ein gestreifter Planet, eine Spiegelkugel, eine Glaskugel, glänzende bunte Kugeln und Kugeln aus Gold und Kupfer auf einem Schachbrett unter hellem Himmel, mit weichen Schatten"
 kind: projekt
 language: C
 duration: 4 Doppelstunden
@@ -19,10 +19,10 @@ template_name: des PixelRAM-Starters
 # Raytracing in C
 
 <p class='abstract'>
-Ein Raytracer schickt für jeden Pixel einen Strahl in eine Szene und rechnet aus, was der Strahl trifft. Du baust einen in C mit PixelRAM, Schritt für Schritt: eine Kugel, Licht, ein Schachbrett als Boden, Schatten, eine Kamera, die um die Szene kreist, einen gestreiften Planeten, eine Spiegelkugel, eine Glaskugel und am Ende ein Bild ohne Treppenstufen, mit weichen Schatten. Dafür brauchst du nur Vektoren: addieren, malnehmen und das Skalarprodukt.
+Ein Raytracer schickt für jeden Pixel einen Strahl in eine Szene und rechnet aus, was der Strahl trifft. Du baust einen in C mit PixelRAM, Schritt für Schritt: eine Kugel, Licht, ein Schachbrett als Boden, Schatten, eine Kamera, die um die Szene kreist, einen gestreiften Planeten, eine Spiegelkugel, eine Glaskugel, Lack und Metall und am Ende ein Bild ohne Treppenstufen, mit weichen Schatten. Dafür brauchst du nur Vektoren: addieren, malnehmen und das Skalarprodukt.
 </p>
 
-<img class='full fit-width' src='raytracer.webp' alt='Das fertige Bild: links ein gestreifter Planet mit rotem Fleck, in der Mitte eine Spiegelkugel, in der sich die ganze Szene spiegelt, rechts eine Glaskugel, durch die das Schachbrett verzerrt und auf dem Kopf zu sehen ist, davor kleine rote, blaue und gelbe Kugeln; alle werfen weiche Schatten auf das Schachbrett, das zum Horizont hin im Dunst verschwindet.'>
+<img class='full fit-width' src='raytracer.webp' alt='Das fertige Bild: links ein gestreifter Planet mit rotem Fleck, in der Mitte eine Spiegelkugel, in der sich die ganze Szene spiegelt, rechts eine Glaskugel, durch die das Schachbrett verzerrt und auf dem Kopf zu sehen ist, davor eine lackierte rote und eine blaue Kugel mit Glanzpunkten, rechts kleine Kugeln aus Gold und Kupfer; alle werfen weiche Schatten auf das Schachbrett, das zum Horizont hin im Dunst verschwindet.'>
 
 
 So sieht dein Raytracer am Ende aus. Kein Bild davon ist gemalt: Jeder Pixel ist das Ergebnis einer Rechnung, die einem Lichtstrahl rückwärts folgt, vom Auge in die Szene, dort vielleicht von einer Kugel zur nächsten und dann zur Sonne. Genau so, nur mit viel mehr Strahlen, entstehen die Bilder in Animationsfilmen, und seit einigen Jahren auch in Spielen, mit Grafikkarten, die Strahlen in eigener Hardware verfolgen.
@@ -751,7 +751,7 @@ Bisher hat jede Kugel eine einzige Farbe. Eine **Textur** gibt jedem Punkt der O
 - **Längengrad** `u = atan2(n.z, n.x)`: der Winkel rund um die Kugel, von −π bis π.
 - **Breitengrad** `v = asin(n.y)`: wie hoch der Punkt liegt, von −π/2 am Südpol bis π/2 am Nordpol.
 
-Mit `u` und `v` kann man rechnen wie mit `x` und `y` auf einem Bild. Der Planet hier bekommt Streifen wie Jupiter: Die Farbe wechselt mit dem Breitengrad hin und her, und damit die Streifen nicht wie mit dem Lineal gezogen aussehen, wellt der Längengrad sie ein wenig.
+Mit `u` und `v` kann man rechnen wie mit `x` und `y` auf einem Bild. Der Planet hier bekommt Streifen wie Jupiter: Die Farbe wechselt mit dem Breitengrad hin und her, in breiten und in feinen Streifen, und damit sie nicht wie mit dem Lineal gezogen aussehen, wellt der Längengrad sie ein wenig. Dazu kommt Jupiters großer roter Fleck, ein Sturm, größer als die Erde. `r` sagt, wie weit ein Punkt von seiner Mitte weg ist, gemessen in seiner Größe: 0 in der Mitte, 1 am Rand. Innen ist er rot, zum Rand hin dunkler, und weich geht er in einen hellen Ring über, wie auf den Fotos von Jupiter.
 
 ### Streifen und ein Fleck
 
@@ -780,16 +780,18 @@ vec planet_color(vec n)
     double u = atan2(n.z, n.x);  // Längengrad: -pi bis pi
     double v = asin(n.y);        // Breitengrad: -pi/2 bis pi/2
 
-    // Streifen nach dem Breitengrad, mit dem Längengrad gewellt
-    double band = 0.5 + 0.5 * sin(14 * v + 1.2 * sin(3 * u + 4 * v));
-    vec color = mix((vec){0.55, 0.27, 0.12}, (vec){0.85, 0.72, 0.52}, band);
+    // Streifen nach dem Breitengrad, breite und feine, leicht gewellt
+    double band = 0.5 + 0.5 * sin(13 * v + 0.3 * sin(5 * u + 8 * v)) + 0.12 * sin(45 * v + 2 * sin(3 * u));
+    vec color = mix((vec){0.58, 0.32, 0.16}, (vec){0.92, 0.84, 0.68}, band);
 
-    // der große rote Fleck
-    double du = u - 1.0;
-    double dv = 2.2 * (v + 0.35);
-    if (du * du + dv * dv < 0.12)
-        color = (vec){0.75, 0.25, 0.1};
-    return color;
+    // der große rote Fleck: r ist 0 in seiner Mitte und 1 an seinem Rand
+    double du = (u - 1.0) / 0.36;
+    double dv = (v + 0.38) / 0.15;
+    double r = sqrt(du * du + dv * dv);
+    // um ihn herum ein heller Ring, innen rot, zum Rand hin dunkler
+    color = mix(color, (vec){0.93, 0.86, 0.72}, fmax(0, 1 - fabs(r - 1.15) / 0.35));
+    vec spot = mix((vec){0.88, 0.47, 0.26}, (vec){0.62, 0.22, 0.1}, r * r);
+    return mix(color, spot, fmin(1, fmax(0, (1 - r) / 0.2)));
 }
 ```
 
@@ -813,7 +815,7 @@ viewport: 800x450
 hook: open raytracer.html
 crop-element: #canvas
 -->
-<img class='full fit-width' src='planet.webp' alt='Links steht statt der orangen Kugel ein Planet mit gewellten braunen und beigen Streifen und einem roten ovalen Fleck unten.'>
+<img class='full fit-width' src='planet.webp' alt='Links steht statt der orangen Kugel ein Planet wie Jupiter mit breiten und feinen braunen und cremefarbenen Streifen und unten einem roten ovalen Fleck in einem hellen Ring.'>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ersetze in <code>planet_color</code> die Zeile mit <code>band</code> durch <code>double band = ((int)floor(4 * u) + (int)floor(4 * v)) % 2 == 0;</code>. Dann liegt ein Schachbrett aus Längen- und Breitengraden auf der Kugel, und du siehst, wie <code>u</code> und <code>v</code> um sie herumlaufen: Zu den Polen werden die Felder immer schmaler. Stell die Zeile danach wieder zurück.
@@ -923,7 +925,7 @@ _person(snellius)
 
 Als Vektoren mit `eta` = Brechungsindex davor geteilt durch danach und `cos_in = −dot(dir, n)`:
 
-$$k = 1 - \eta^2 \,(1 - \cos^2_{\text{in}}), \qquad \text{gebrochen} = \eta \cdot \text{dir} + (\eta \cos_{\text{in}} - \sqrt{k})\, n$$
+$$k = 1 - \eta^2 \,(1 - \cos^2\_{\text{in}}), \qquad \text{gebrochen} = \eta \cdot \text{dir} + (\eta \cos\_{\text{in}} - \sqrt{k})\, n$$
 
 Kommt der Strahl von innen, aus dem Glas, ist alles umgekehrt: `eta` ist 1,5, und die Normale muss nach innen zeigen. Wird `k` negativ, gibt es keinen gebrochenen Strahl: Das Licht kommt so flach von innen an die Oberfläche, dass es ganz zurückgespiegelt wird, die **Totalreflexion**. Glasfasern leiten Licht so über Tausende Kilometer.
 
@@ -1286,6 +1288,154 @@ crop-element: #canvas
 
 Unter jeder Kugel ist der Boden jetzt dort dunkel, wo sie ihn fast berührt, und erst damit stehen sie richtig auf ihm. Die Schattenseiten bekommen das Blau des Himmels.
 
+## Glanz
+
+### Lack
+
+Die rote und die blaue Kugel sehen noch aus wie aus Ton. Eine lackierte Kugel hat in der Sonne einen hellen Punkt, den **Glanzpunkt**, und der ist nichts anderes als die Sonne, gespiegelt im Lack. Lack ist eine dünne, durchsichtige Schicht wie Glas: Er spiegelt ein wenig, wenn du steil von vorn schaust, und flach am Rand fast alles. Wie viel, rechnet die Formel von Schlick aus, die du schon für das Glas geschrieben hast. Damit `glass` und der Lack sie beide benutzen können, kommt sie in eine eigene Funktion über `glass`:
+
+```c
+// Fresnel nach Schlick: wie viel eine Oberfläche mit diesem Brechungsindex
+// spiegelt, flach mehr als steil
+double fresnel(double cos_in, double index)
+{
+    double r0 = (1 - index) / (1 + index);
+    r0 = r0 * r0;
+    return r0 + (1 - r0) * pow(1 - cos_in, 5);
+}
+```
+
+Am Ende von `glass` steht dann statt der vier Zeilen von Schlick nur noch:
+
+```c
+~    vec refracted = mul(trace(h.point, refracted_dir, depth + 1), h.mat.color);
+    return mix(refracted, reflected, fresnel(cos_in, h.mat.glass));
+~}
+```
+
+Das Material bekommt ein Feld für den Lack:
+
+```c
+~    double glass;   // Brechungsindex bei Glas, sonst 0
+    bool varnish;   // lackiert: spiegelt ein wenig, flach mehr als steil
+```
+
+In `trace` spiegelt jetzt ein Spiegel oder ein Lack. Beim Spiegel steht fest, wie viel er spiegelt, beim Lack rechnet es `fresnel` aus: `-dot(dir, h.normal)` ist der Kosinus des Winkels, unter dem der Strahl auftrifft, wie `cos_in` in `glass`, und 1,5 ist der Brechungsindex von Lack, etwa wie bei Glas.
+
+```c
+    // Spiegel und Lack: ein neuer Strahl vom Treffpunkt aus
+    double shine = h.mat.mirror;
+    if (h.mat.varnish)
+        shine = fresnel(-dot(dir, h.normal), 1.5);  // Lack ist wie eine dünne Schicht Glas
+    if (shine > 0)
+    {
+        vec reflected = trace(h.point, reflect(dir, h.normal), depth + 1);
+        color = mix(color, reflected, shine);
+    }
+```
+
+Lackiert werden die rote und die blaue Kugel:
+
+```c
+    {{-0.5, 0.45, 1.2}, 0.45, {.color = {0.9, 0.15, 0.1}, .varnish = true}},
+~    {{3.0, 0.4, -0.4}, 0.4, {.color = {0.95, 0.7, 0.1}}},
+    {{0.4, 0.3, 2.3}, 0.3, {.color = {0.1, 0.35, 0.9}, .varnish = true}},
+```
+
+_task(lack)
+
+Übersetzt du jetzt, siehst du kaum einen Glanzpunkt. Das liegt an der Sonnenscheibe: Sie ist bisher nur dreimal so hell wie `sun_color`, und davon spiegelt der Lack nur wenig. Wie hell ist sie wirklich? Das ganze Licht `sun_color` kommt aus einer winzigen Scheibe mit dem Radius `SUN_SIZE`. Ihre Fläche am Himmel ist \\(\pi \cdot 0{,}08^2 \approx 0{,}02\\), und so viel Licht aus so wenig Himmel heißt: Jeder Punkt der Scheibe ist etwa fünfzigmal so hell wie `sun_color`.
+
+```c
+~        if (dot(dir, sun_dir) > cos(SUN_SIZE))
+            // die Sonnenscheibe: ihr ganzes Licht kommt aus dieser kleinen Fläche
+            return scale(sun_color, 1 / (3.14159 * SUN_SIZE * SUN_SIZE));
+```
+
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/13-lack.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+hook: frames 128
+crop-element: #canvas
+-->
+<img class='full fit-width' src='lack.webp' alt='Die rote und die blaue Kugel glänzen jetzt: Auf jeder sitzt oben rechts ein kleiner weißer Glanzpunkt, die gespiegelte Sonne, und an ihren Rändern spiegeln sie schwach den Himmel und das Schachbrett.'>
+
+Jetzt hat jede lackierte Kugel einen weißen Glanzpunkt, dort, wo sie die Sonne zu deinem Auge spiegelt, und am Rand spiegelt sie das Schachbrett. Kreist du um die Szene, wandert der Glanzpunkt mit, denn er hängt davon ab, wo du stehst. Die helle Seite der Kugel bleibt, wo sie ist: Sie hängt nur von der Sonne ab.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Gib dem Boden Lack statt eines festen Spiegels: <code>material floor_mat = {.color = {0.75, 0.75, 0.75}, .varnish = true};</code>. Schau, wie stark er vorn spiegelt und wie stark zum Horizont hin, wo du ganz flach auf ihn schaust. Setz danach <code>.mirror = 0.1</code> wieder ein.
+</div>
+
+### Metall
+
+Eine Kugel aus Chrom und eine aus Gold spiegeln beide fast alles. Aber in der Goldkugel sieht alles golden aus: Ein Metall färbt, was es spiegelt. Gold spiegelt rotes Licht fast ganz, grünes etwas weniger und blaues nur zu einem Drittel. Lack dagegen spiegelt alle Farben gleich, darum ist der Glanzpunkt auf der roten Kugel weiß und nicht rot. Für ein Metall wird das Gespiegelte mit der Farbe des Materials malgenommen, mit `mul`, so wie das Licht auf einer farbigen Oberfläche.
+
+### Matt
+
+Gebürstetes Metall oder eine seidenmatte Farbe spiegeln auch, aber verschwommen: Winzige Unebenheiten lenken jeden Strahl ein wenig anders ab. Das ist wieder die Idee der weichen Schatten. In jedem Durchgang bekommt der gespiegelte Strahl einen zufälligen Vektor dazu, und im Mittel über viele Durchgänge verschwimmt das Spiegelbild. `rough` sagt, wie weit: Es ist der Radius der Kugel, aus der der zufällige Vektor kommt.
+
+<img class='full' src='matt.webp' alt='Ein Strahl dir trifft schräg auf eine Fläche. Die glatte Spiegelrichtung reflect(dir, n) ist gestrichelt und endet in der Mitte einer Kugel mit dem Radius rough. Fünf Pfeile gehen vom Treffpunkt zu verschiedenen Punkten in dieser Kugel, einer davon dick: die Richtung in einem Durchgang.'>
+
+Das Material bekommt zwei Felder:
+
+```c
+~    bool varnish;   // lackiert: spiegelt ein wenig, flach mehr als steil
+    bool metal;     // Metall färbt, was es spiegelt
+    double rough;   // wie matt die Spiegelung ist: 0 glatt, 0.3 matt
+```
+
+Und in `trace` wird der Strahl verschoben und, bei Metall, gefärbt. Zeigt er nach dem Verschieben unter die Oberfläche, nimmt `trace` die glatte Richtung:
+
+```c
+~    if (shine > 0)
+    {
+        vec r = reflect(dir, h.normal);
+        // matt: in jedem Durchgang ein wenig anders, im Mittel verschwommen
+        if (h.mat.rough > 0)
+        {
+            r = normalize(add(r, scale(random_in_sphere(), h.mat.rough)));
+            if (dot(r, h.normal) < 0)
+                r = reflect(dir, h.normal);
+        }
+        vec reflected = trace(h.point, r, depth + 1);
+        if (h.mat.metal)
+            reflected = mul(reflected, h.mat.color);
+        color = mix(color, reflected, shine);
+    }
+```
+
+Die gelbe Kugel wird Gold, leicht matt, dazu kommt eine matte Kugel aus Kupfer, und die blaue wird seidenmatt:
+
+```c
+    {{3.0, 0.4, -0.4}, 0.4, {.color = {1.0, 0.75, 0.3}, .mirror = 0.95, .metal = true, .rough = 0.12}},
+    {{2.1, 0.35, 1.7}, 0.35, {.color = {0.95, 0.55, 0.4}, .mirror = 0.95, .metal = true, .rough = 0.35}},
+    {{0.4, 0.3, 2.3}, 0.3, {.color = {0.1, 0.35, 0.9}, .varnish = true, .rough = 0.3}},
+```
+
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/14-metall.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+hook: frames 256
+crop-element: #canvas
+-->
+<img class='full fit-width' src='metall.webp' alt='Rechts hinten eine Goldkugel, in der sich Glaskugel und Schachbrett golden und leicht verschwommen spiegeln; vorn rechts eine Kupferkugel mit einem großen, weichen Glanzfleck und einem stark verschwommenen Spiegelbild; die blaue Kugel vorn hat statt eines scharfen Glanzpunkts einen weichen hellen Fleck.'>
+
+Auf einer matten Fläche ist der Glanzpunkt ein großer, weicher Fleck: Viele der verschobenen Strahlen treffen die Sonne, viele knapp daneben. Matte Spiegel brauchen viele Durchgänge, bis sie glatt sind, denn ein Strahl trifft die kleine, helle Sonne nur ab und zu.
+
 ## Das fertige Bild
 
 Zwei Kleinigkeiten machen das Bild zum fertigen Raytracer vom Anfang der Seite. Weit hinten verschwimmt das Schachbrett im **Dunst**: Je weiter ein Treffer entfernt ist, desto mehr mischt sich die Farbe des Himmels hinein. Am Ende von `trace`:
@@ -1317,7 +1467,7 @@ hook: open raytracer.html
 hook: frames 256
 crop-element: #canvas
 -->
-<img class='full fit-width' src='raytracer.webp' alt='Das fertige Bild nach 256 Durchgängen: der Planet, die Spiegelkugel, die Glaskugel und die kleinen Kugeln mit weichen Schatten, das Schachbrett verschwindet hinten im Dunst.'>
+<img class='full fit-width' src='raytracer.webp' alt='Das fertige Bild nach 256 Durchgängen: der Planet, die Spiegelkugel, die Glaskugel, die glänzende rote und blaue Kugel und die Kugeln aus Gold und Kupfer mit weichen Schatten, das Schachbrett verschwindet hinten im Dunst.'>
 
 Von einer anderen Stelle aus:
 
@@ -1329,18 +1479,144 @@ click: selector:#canvas
 hook: play ArrowRight 0.3 ArrowRight 0.3 ArrowRight 0.3 ArrowRight 0.3 ArrowRight 0.3 ArrowDown 0.3 ArrowDown 0.3 ArrowDown 6
 crop-element: #canvas
 -->
-<img class='full fit-width' src='gedreht.webp' alt='Der fertige Raytracer von rechts und tiefer: in der Mitte die Glaskugel, in der der Planet klein und auf dem Kopf zu sehen ist, dahinter die Spiegelkugel, rechts groß die gelbe Kugel, links die blaue.'>
+<img class='full fit-width' src='gedreht.webp' alt='Der fertige Raytracer von rechts und tiefer: in der Mitte die Glaskugel, in der der Planet auf dem Kopf zu sehen ist, dahinter die Spiegelkugel, davor die Kupferkugel mit einem hellen Glanzfleck, rechts groß die Goldkugel, links die blaue.'>
 
-Kreise mit den Pfeiltasten um die Szene. Solange du eine Taste hältst, rauscht das Bild; lässt du los, wird es in ein, zwei Sekunden glatt.
+Kreise mit den Pfeiltasten um die Szene. Solange du eine Taste hältst, rauscht das Bild; lässt du los, wird es in ein paar Sekunden glatt, die matte Kupferkugel zuletzt.
+
+## Tiefenschärfe
+
+### Eine Linse statt eines Punkts
+
+Bisher kommen alle Strahlen aus einem einzigen Punkt, dem Auge. Darum ist alles gleich scharf, ganz nah wie ganz fern. Ein Fotoapparat hat eine Linse, und das Licht eines Punkts kommt durch die ganze Linse. Scharf ist nur, was im richtigen Abstand liegt, in der **Schärfeebene**; davor und dahinter verschwimmt es.
+
+<img class='full' src='schaerfe.webp' alt='Von der Seite: links eine Linse, die mit aperture beschriftet ist, rechts im Abstand focus eine gestrichelte senkrechte Linie, die Schärfeebene. Drei Strahlen von oben, Mitte und unten auf der Linse treffen sich auf ihr in einem Punkt, scharf, und laufen dahinter wieder auseinander. Auf halbem Weg liegen sie weit auseinander: unscharf.'>
+
+Dein Raytracer macht das wieder mit Zufall: In jedem Durchgang beginnt der Strahl eines Pixels an einem anderen zufälligen Punkt der Linse, zielt aber auf denselben Punkt der Schärfeebene wie ohne Linse. Was dort liegt, treffen alle Strahlen des Pixels gleich; was davor oder dahinter liegt, treffen sie an verschiedenen Stellen, und der Durchschnitt verschwimmt. Einen zufälligen Punkt auf der Linse gibt `random_in_disc`, unter `random_in_sphere`:
+
+```c
+// ein zufälliger Punkt in einer Scheibe mit dem Radius 1, wie eine Linse
+vec random_in_disc(void)
+{
+    while (true)
+    {
+        vec p = {2 * random_double() - 1, 2 * random_double() - 1, 0};
+        if (dot(p, p) < 1)
+            return p;
+    }
+}
+```
+
+Über `ray_dir` stehen der Radius der Linse und der Abstand der Schärfeebene:
+
+```c
+// Tiefenschärfe: wie groß die Linse ist und wie weit weg alles scharf ist
+double aperture = 0.15;
+double focus = 4.2;
+```
+
+In `draw` beginnt der Strahl jetzt auf der Linse. `sharp` ist der Punkt, an dem der alte Strahl die Schärfeebene trifft: Er geht so weit, bis er `focus` weit vor dem Auge ist, und weil `dir` schräg ist, ist das etwas mehr als `focus`.
+
+```c
+            // der Strahl beginnt an einem zufälligen Punkt der Linse und
+            // zielt auf denselben Punkt in der Schärfeebene wie ohne Linse
+            vec dir = ray_dir(x + random_double(), y + random_double());
+            vec sharp = add(eye, scale(dir, focus / dot(dir, forward)));
+            vec lens = random_in_disc();
+            vec origin = add(eye, add(scale(right, aperture * lens.x), scale(up, aperture * lens.y)));
+            vec c = trace(origin, normalize(sub(sharp, origin)), 0);
+```
+
+Mit <kbd>W</kbd> und <kbd>S</kbd> schiebst du die Schärfe weiter weg oder näher heran:
+
+```c
+~        if (key_down(pixel_key_down) && height > 0.3) { height -= 0.05; passes = 0; }
+        // W/S: scharf weiter weg oder näher
+        if (key_down(pixel_key_w) && focus < 12) { focus += 0.05; passes = 0; }
+        if (key_down(pixel_key_s) && focus > 1)  { focus -= 0.05; passes = 0; }
+```
+
+Und der Titel sagt, wo es scharf ist:
+
+```c
+        snprintf(title, sizeof title, "Raytracer – %d Durchgänge, scharf bei %.1f", passes, focus);
+```
+
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/15-schaerfe.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+hook: frames 256
+crop-element: #canvas
+-->
+<img class='full fit-width' src='schaerfe-bild.webp' alt='Dieselbe Szene mit Tiefenschärfe: Die rote Kugel ist scharf. Die blaue Kugel davor, die Spiegelkugel, die Goldkugel und das Schachbrett zum Horizont hin verschwimmen weich.'>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Mach die Linse größer, <code>aperture = 0.3</code>: Wie weit reicht der scharfe Bereich jetzt noch nach vorn und nach hinten? Mit <code>aperture = 0</code> ist alles wieder scharf. Setz danach 0.15 wieder ein.
+</div>
+
+## Path Tracing
+
+### Licht von Kugel zu Kugel
+
+Licht kommt nicht nur von der Sonne und vom Himmel. Der helle Boden hellt die Unterseiten der Kugeln auf, und neben der roten Kugel ist der Boden ein wenig rötlich. `skylight` schickt schon in jedem Durchgang einen Strahl in eine zufällige Richtung, aber es zählt nur, ob er den Himmel sieht. Trifft er etwas, kann `trace` ausrechnen, wie hell es dort ist, und das ist das Licht, das von dort kommt. Dort schickt `trace` wieder einen zufälligen Strahl weiter, und so folgt jeder Durchgang einem Weg des Lichts durch die Szene, von Fläche zu Fläche. Das ist **Path Tracing**, so werden heute Animationsfilme gerechnet.
+
+`skylight` wird gelöscht. An seine Stelle kommt `bounce`, nach der Vorab-Deklaration von `trace`, denn es ruft `trace` auf:
+
+```c
+~vec trace(vec origin, vec dir, int depth);
+
+// Licht von allem rundherum: ein Strahl in eine zufällige Richtung über der
+// Oberfläche; trifft er etwas, bringt er mit, wie hell es dort ist, sonst
+// das Licht des Himmels
+vec bounce(hit h, int depth)
+{
+    vec d = normalize(add(h.normal, random_in_sphere()));
+    hit other;
+    if (!nearest_hit(h.point, d, &other))
+        return scale(sky(d), 0.3);
+    vec c = trace(h.point, d, depth + 1);
+    // über einen Spiegel kann der Strahl in die Sonne schauen; das Licht der
+    // Sonne zählt schon sunlight, so ein Ausreißer würde lange glitzern
+    return (vec){fmin(c.x, 1), fmin(c.y, 1), fmin(c.z, 1)};
+}
+```
+
+`depth + 1` sorgt dafür, dass der Weg irgendwann endet: Nach `MAX_DEPTH` Flächen gibt `trace` Schwarz zurück. In `trace` heißt es jetzt:
+
+```c
+    vec light = add(sunlight(h), bounce(h, depth));
+```
+
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/16-pathtracing.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+hook: frames 256
+crop-element: #canvas
+-->
+<img class='full fit-width' src='pathtracing.webp' alt='Die Szene mit Path Tracing und Tiefenschärfe: Die Unterseiten der Kugeln und ihre Schatten auf dem Boden sind heller als vorher, weil der helle Boden Licht zurückwirft.'>
+
+Jeder Durchgang dauert jetzt etwa doppelt so lange, denn fast jeder Strahl, der etwas trifft, schickt einen weiteren los. Dafür stimmt das Licht: Die Unterseiten der Kugeln und die Schatten sind heller, weil der helle Boden Licht zurückwirft, nicht nur der Himmel. Farbig wird dieses Licht neben kräftigen Farben; am deutlichsten siehst du es, wenn du eine große rote Kugel dicht neben eine weiße stellst.
 
 ## Wie geht es weiter?
 
 Dein Raytracer ist klein genug, um ihn ganz zu verstehen, und alles Weitere passt in dieselben Funktionen:
 
-- **Eine eigene Szene:** Kugeln verschieben, Farben ändern, eine zweite Glaskugel, ein Spiegel als Boden (`floor_mat` mit `.mirror = 0.8`).
+- **Eine eigene Szene:** Kugeln verschieben, Farben ändern, eine zweite Glaskugel, farbiges Glas (`.glass = 1.5` mit einer kräftigen `.color`), ein Spiegel als Boden (`floor_mat` mit `.mirror = 0.8`).
 - **Eine andere Textur:** Marmor mit `sin(x + 3 * sin(…))`, ein Planet mit Kontinenten, eine Holzmaserung für den Boden.
 - **Mehr Formen:** eine Scheibe (der Boden mit einem Radius), ein Würfel (drei Paare von Ebenen, wie der Boden), ein Ring.
-- **Tiefenschärfe:** Das Auge wackelt in jedem Durchgang ein wenig auf einer kleinen Scheibe, alle Strahlen zielen auf denselben Punkt in der Schärfeebene. Dann ist nur scharf, was dort liegt, wie bei einem Fotoapparat.
-- **Licht von Kugel zu Kugel:** Statt nur in den Himmel zu schauen, verfolgt `skylight` den zufälligen Strahl mit `trace` weiter. Dann färbt die rote Kugel den Boden neben sich rötlich. Das ist der Anfang von **Path Tracing**, so wie Animationsfilme heute gerechnet werden.
+- **Eine Lampe:** Eine Kugel, die selbst leuchtet: `trace` gibt für sie ihre Farbe zurück, mal einer Helligkeit über 1. Mit Path Tracing fällt ihr Licht auf alles in ihrer Nähe; dafür muss die Grenze von 1 in `bounce` höher. Ohne Sonne wird es Nacht.
 
 _task(eigene-szene)

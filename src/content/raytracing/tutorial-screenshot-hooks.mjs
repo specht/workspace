@@ -158,16 +158,25 @@ export default {
                         window.__rafQueue = [];
                         real((time) => { for (const callback of queue) callback(time); });
                     };
+                    // one more pass: the frames go through until the program
+                    // has presented once more; a pass may wait for more than
+                    // one frame (present, then the frame pacing), and a frame
+                    // held back would only go after the timeout of 10 s
                     window.__rafStep = () => new Promise((resolve) => {
                         const before = window.__presents;
-                        const queue = window.__rafQueue;
-                        window.__rafQueue = [];
-                        real((time) => {
-                            for (const callback of queue) callback(time);
-                            const started = performance.now();
-                            const wait = () => (window.__presents > before || performance.now() - started > 10000 ? resolve() : setTimeout(wait, 5));
-                            wait();
-                        });
+                        const started = performance.now();
+                        const flush = () => {
+                            const queue = window.__rafQueue;
+                            window.__rafQueue = [];
+                            real((time) => { for (const callback of queue) callback(time); });
+                        };
+                        const wait = () => {
+                            if (window.__presents > before || performance.now() - started > 10000) return resolve();
+                            if (window.__rafQueue.length) flush();
+                            setTimeout(wait, 5);
+                        };
+                        flush();
+                        wait();
                     });
                 });
                 page.__pixelramFramesScript = true;

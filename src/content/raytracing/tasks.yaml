@@ -178,6 +178,27 @@ tasks:
         say: '`EPS` ist eine feste Zahl.'
     solution: 'Ein Strahl sieht nur, was genau auf seinem Weg liegt. Viele Strahlen durch zufällige Punkte im Pixel decken die ganze Fläche des Pixels ab, und ihr Durchschnitt nähert sich der Farbe, die der Pixel im Mittel zeigen soll: am Rand einer Kugel eine Mischung aus Kugel und Himmel. Dasselbe Prinzip macht später die Schatten weich.'
 
+  - id: lack
+    title: Wie viel spiegelt Lack?
+    prompt: |
+      Du schaust senkrecht auf eine lackierte Kugel, der Strahl trifft also
+      genau entlang der Normalen auf (`cos_in = 1`). Welchen Anteil des Lichts
+      spiegelt der Lack mit dem Brechungsindex 1,5? Gib ihn als Zahl zwischen
+      0 und 1 an.
+    check:
+      type: number
+      expect: 0.04
+      tolerance: 0.001
+    feedback:
+      - when: { equals: 4 }
+        say: Das sind Prozent. Gefragt ist der Anteil, eine Zahl zwischen 0 und 1.
+      - when: { equals: -0.2 }
+        say: Das ist `(1 − 1.5) / (1 + 1.5)`. In `fresnel` kommt das noch ins Quadrat.
+      - when: { equals: 0.2 }
+        say: Das ist der Betrag von `(1 − 1.5) / (1 + 1.5)`. In `fresnel` kommt das noch ins Quadrat.
+    hint: 'Mit `cos_in = 1` ist `pow(1 − cos_in, 5) = 0`, und `fresnel` gibt nur `r0` zurück.'
+    solution: '`r0 = ((1 − 1.5) / (1 + 1.5))² = (−0.2)² = 0.04`: Steil von vorn spiegelt Lack nur 4 Prozent. Ein Glanzpunkt ist trotzdem hell, weil die Sonne so hell ist.'
+
   - id: eigene-szene
     title: Deine Szene
     prompt: |

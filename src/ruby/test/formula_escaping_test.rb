@@ -26,4 +26,17 @@ class FormulaEscapingTest < Minitest::Test
         end
         assert_empty found, "Inside \\( … \\) an underscore is \\_ or, in \\text{…}, \\\\\\_:\n#{found.join("\n")}"
     end
+
+    # Two bare underscores on one line are a pair for Markdown: it sets the
+    # text between them in italics and the formula breaks (\cos_{…} … \cos_{…}).
+    # Inside a formula they are \_ (Markdown makes a plain _ of it for KaTeX).
+    def test_no_pair_of_bare_underscores_in_formulas
+        found = Dir[File.join(CONTENT, '**', '*.md')].flat_map do |file|
+            File.readlines(file, encoding: 'UTF-8').each_with_index
+                .reject { |line, _| line =~ /<t[dhr][\s>]/ }
+                .select { |line, _| line.scan(/\$\$.*?\$\$|\\\\\(.*?\\\\\)/).sum { |f| f.scan(/(?<!\\)_/).size } >= 2 }
+                .map { |line, i| "#{file.sub(CONTENT + '/', '')}:#{i + 1}: #{line.strip[0, 80]}" }
+        end
+        assert_empty found, "Two bare underscores in the formulas of one line; write \\_:\n#{found.join("\n")}"
+    end
 end

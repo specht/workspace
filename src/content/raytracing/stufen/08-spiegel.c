@@ -134,16 +134,18 @@ vec planet_color(vec n)
     double u = atan2(n.z, n.x);  // Längengrad: -pi bis pi
     double v = asin(n.y);        // Breitengrad: -pi/2 bis pi/2
 
-    // Streifen nach dem Breitengrad, mit dem Längengrad gewellt
-    double band = 0.5 + 0.5 * sin(14 * v + 1.2 * sin(3 * u + 4 * v));
-    vec color = mix((vec){0.55, 0.27, 0.12}, (vec){0.85, 0.72, 0.52}, band);
+    // Streifen nach dem Breitengrad, breite und feine, leicht gewellt
+    double band = 0.5 + 0.5 * sin(13 * v + 0.3 * sin(5 * u + 8 * v)) + 0.12 * sin(45 * v + 2 * sin(3 * u));
+    vec color = mix((vec){0.58, 0.32, 0.16}, (vec){0.92, 0.84, 0.68}, band);
 
-    // der große rote Fleck
-    double du = u - 1.0;
-    double dv = 2.2 * (v + 0.35);
-    if (du * du + dv * dv < 0.12)
-        color = (vec){0.75, 0.25, 0.1};
-    return color;
+    // der große rote Fleck: r ist 0 in seiner Mitte und 1 an seinem Rand
+    double du = (u - 1.0) / 0.36;
+    double dv = (v + 0.38) / 0.15;
+    double r = sqrt(du * du + dv * dv);
+    // um ihn herum ein heller Ring, innen rot, zum Rand hin dunkler
+    color = mix(color, (vec){0.93, 0.86, 0.72}, fmax(0, 1 - fabs(r - 1.15) / 0.35));
+    vec spot = mix((vec){0.88, 0.47, 0.26}, (vec){0.62, 0.22, 0.1}, r * r);
+    return mix(color, spot, fmin(1, fmax(0, (1 - r) / 0.2)));
 }
 
 // alles über einen Treffer

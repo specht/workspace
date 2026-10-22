@@ -1,4 +1,4 @@
-// Raytracer: Kugeln, ein Schachbrett, Spiegel, Glas und weiche Schatten.
+// Raytracer: Kugeln, ein Schachbrett, Spiegel, Glas, Lack, Metall und weiche Schatten.
 // Pfeiltasten links/rechts: um die Szene kreisen, hoch/runter: höher oder tiefer.
 // Jedes Bild ist ein weiterer Durchgang; das Bild wird mit der Zeit glatter.
 #include "pixelram.h"
@@ -102,6 +102,9 @@ typedef struct
     vec color;
     double mirror;  // Anteil, der gespiegelt wird: 0 bis 1
     double glass;   // Brechungsindex bei Glas, sonst 0
+    bool varnish;   // lackiert: spiegelt ein wenig, flach mehr als steil
+    bool metal;     // Metall färbt, was es spiegelt
+    double rough;   // wie matt die Spiegelung ist: 0 glatt, 0.3 matt
     bool planet;    // mit Textur
 } material;
 
@@ -113,12 +116,13 @@ typedef struct
 } sphere;
 
 sphere spheres[] = {
-    {{-0.3, 1.2, -1.4}, 1.2, {.color = {0.9, 0.9, 0.95}, .mirror = 0.9}}, // Spiegelkugel
-    {{1.5, 0.8, 0.8}, 0.8, {.color = {0.95, 1.0, 0.97}, .glass = 1.5}},  // Glaskugel
-    {{-2.2, 0.9, 0.3}, 0.9, {.planet = true}},                           // Planet
-    {{-0.5, 0.45, 1.2}, 0.45, {.color = {0.9, 0.15, 0.1}}},              // rot
-    {{3.0, 0.4, -0.4}, 0.4, {.color = {0.95, 0.7, 0.1}}},                // gelb
-    {{0.4, 0.3, 2.3}, 0.3, {.color = {0.1, 0.35, 0.9}}},                 // blau
+    {{-0.3, 1.2, -1.4}, 1.2, {.color = {0.9, 0.9, 0.95}, .mirror = 0.9}},                                  // Spiegelkugel
+    {{1.5, 0.8, 0.8}, 0.8, {.color = {0.95, 1.0, 0.97}, .glass = 1.5}},                                    // Glaskugel
+    {{-2.2, 0.9, 0.3}, 0.9, {.planet = true}},                                                             // Planet
+    {{-0.5, 0.45, 1.2}, 0.45, {.color = {0.9, 0.15, 0.1}, .varnish = true}},                               // rot, lackiert
+    {{3.0, 0.4, -0.4}, 0.4, {.color = {1.0, 0.75, 0.3}, .mirror = 0.95, .metal = true, .rough = 0.12}},    // Gold
+    {{2.1, 0.35, 1.7}, 0.35, {.color = {0.95, 0.55, 0.4}, .mirror = 0.95, .metal = true, .rough = 0.35}},  // Kupfer, matt
+    {{0.4, 0.3, 2.3}, 0.3, {.color = {0.1, 0.35, 0.9}, .varnish = true, .rough = 0.3}},                    // blau, seidenmatt
 };
 // so viele Kugeln stehen in der Liste
 #define SPHERE_COUNT (int)(sizeof spheres / sizeof spheres[0])
@@ -164,16 +168,18 @@ vec planet_color(vec n)
     double u = atan2(n.z, n.x);  // Längengrad: -pi bis pi
     double v = asin(n.y);        // Breitengrad: -pi/2 bis pi/2
 
-    // Streifen nach dem Breitengrad, mit dem Längengrad gewellt
-    double band = 0.5 + 0.5 * sin(14 * v + 1.2 * sin(3 * u + 4 * v));
-    vec color = mix((vec){0.55, 0.27, 0.12}, (vec){0.85, 0.72, 0.52}, band);
+    // Streifen nach dem Breitengrad, breite und feine, leicht gewellt
+    double band = 0.5 + 0.5 * sin(13 * v + 0.3 * sin(5 * u + 8 * v)) + 0.12 * sin(45 * v + 2 * sin(3 * u));
+    vec color = mix((vec){0.58, 0.32, 0.16}, (vec){0.92, 0.84, 0.68}, band);
 
-    // der große rote Fleck
-    double du = u - 1.0;
-    double dv = 2.2 * (v + 0.35);
-    if (du * du + dv * dv < 0.12)
-        color = (vec){0.75, 0.25, 0.1};
-    return color;
+    // der große rote Fleck: r ist 0 in seiner Mitte und 1 an seinem Rand
+    double du = (u - 1.0) / 0.36;
+    double dv = (v + 0.38) / 0.15;
+    double r = sqrt(du * du + dv * dv);
+    // um ihn herum ein heller Ring, innen rot, zum Rand hin dunkler
+    color = mix(color, (vec){0.93, 0.86, 0.72}, fmax(0, 1 - fabs(r - 1.15) / 0.35));
+    vec spot = mix((vec){0.88, 0.47, 0.26}, (vec){0.62, 0.22, 0.1}, r * r);
+    return mix(color, spot, fmin(1, fmax(0, (1 - r) / 0.2)));
 }
 
 // alles über einen Treffer
@@ -265,6 +271,15 @@ vec skylight(hit h)
 
 vec trace(vec origin, vec dir, int depth);
 
+// Fresnel nach Schlick: wie viel eine Oberfläche mit diesem Brechungsindex
+// spiegelt, flach mehr als steil
+double fresnel(double cos_in, double index)
+{
+    double r0 = (1 - index) / (1 + index);
+    r0 = r0 * r0;
+    return r0 + (1 - r0) * pow(1 - cos_in, 5);
+}
+
 // Glas: ein Teil wird gespiegelt, der Rest gebrochen
 vec glass(hit h, vec dir, int depth)
 {
@@ -285,11 +300,7 @@ vec glass(hit h, vec dir, int depth)
     vec refracted_dir = add(scale(dir, eta), scale(n, eta * cos_in - sqrt(k)));
     vec refracted = mul(trace(h.point, refracted_dir, depth + 1), h.mat.color);
 
-    // Fresnel nach Schlick: wie viel gespiegelt wird, flach mehr als steil
-    double r0 = (1 - h.mat.glass) / (1 + h.mat.glass);
-    r0 = r0 * r0;
-    double r = r0 + (1 - r0) * pow(1 - cos_in, 5);
-    return mix(refracted, reflected, r);
+    return mix(refracted, reflected, fresnel(cos_in, h.mat.glass));
 }
 
 // die Farbe, die aus Richtung dir beim Punkt origin ankommt
@@ -302,7 +313,8 @@ vec trace(vec origin, vec dir, int depth)
     if (!nearest_hit(origin, dir, &h))
     {
         if (dot(dir, sun_dir) > cos(SUN_SIZE))
-            return scale(sun_color, 3);  // die Sonnenscheibe
+            // die Sonnenscheibe: ihr ganzes Licht kommt aus dieser kleinen Fläche
+            return scale(sun_color, 1 / (3.14159 * SUN_SIZE * SUN_SIZE));
         return sky(dir);
     }
 
@@ -312,11 +324,24 @@ vec trace(vec origin, vec dir, int depth)
     vec light = add(sunlight(h), skylight(h));
     vec color = mul(h.mat.color, light);
 
-    // Spiegel: ein neuer Strahl vom Treffpunkt aus
-    if (h.mat.mirror > 0)
+    // Spiegel und Lack: ein neuer Strahl vom Treffpunkt aus
+    double shine = h.mat.mirror;
+    if (h.mat.varnish)
+        shine = fresnel(-dot(dir, h.normal), 1.5);  // Lack ist wie eine dünne Schicht Glas
+    if (shine > 0)
     {
-        vec reflected = trace(h.point, reflect(dir, h.normal), depth + 1);
-        color = mix(color, reflected, h.mat.mirror);
+        vec r = reflect(dir, h.normal);
+        // matt: in jedem Durchgang ein wenig anders, im Mittel verschwommen
+        if (h.mat.rough > 0)
+        {
+            r = normalize(add(r, scale(random_in_sphere(), h.mat.rough)));
+            if (dot(r, h.normal) < 0)
+                r = reflect(dir, h.normal);
+        }
+        vec reflected = trace(h.point, r, depth + 1);
+        if (h.mat.metal)
+            reflected = mul(reflected, h.mat.color);
+        color = mix(color, reflected, shine);
     }
 
     // Dunst: was weit weg ist, verschwimmt mit dem Himmel
