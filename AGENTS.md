@@ -67,7 +67,9 @@ address from `credentials.rb` and the code `123456`.
   code as code (`dot`, `cross`, `hit.y = 1.35` with a decimal point), both
   from `src/scripts/diagram_labels.py`, which also draws the German right
   angle (a quarter arc with a dot). Axes as everywhere: in 3D x to the
-  right, y up, z towards the viewer; in 2D x to the right, y up. Keep the
+  right, y up, z towards the viewer; in 2D x to the right, y up, except
+  on a screen or a map drawn on it (the raycaster), where y goes down as in
+  the code; pure maths (a cosine curve) keeps y up. Keep the
   script that generates a diagram next to it (`bilder/`), not in a scratch
   folder.
 - Check marks are Bootstrap icons (`<i class='bi bi-check-lg'></i>`), never
