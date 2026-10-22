@@ -1,6 +1,9 @@
-// Raymarching: Tropfen, die ineinanderfließen, über einem Schachbrett
+// Raymarching: Tropfen, die ineinanderfließen, in einem dunklen Studio
 
-const vec3 SUN = vec3(0.6, 0.45, -0.66);   // Richtung zur Sonne, Länge 1
+const vec3 LAMP = vec3(-0.32, 0.9, -0.3);   // Richtung zur Lampe über der Szene, Länge 1
+const vec3 LEFT = vec3(-0.88, 0.30, -0.37);  // Richtung zum Leuchtstreifen links hinten, Länge 1
+const vec3 RIGHT = vec3(0.86, 0.38, -0.34);   // Richtung zum Leuchtstreifen rechts hinten, Länge 1
+const vec3 DARK = vec3(0.003, 0.004, 0.008); // die Farbe des Studios, wo kein Licht ist
 
 // glatte Vereinigung zweier Abstände: je größer k, desto weiter fließen sie ineinander
 float smin(float a, float b, float k)
@@ -75,26 +78,36 @@ vec3 normal(vec3 p)
                           map(p + e.yyx) - map(p - e.yyx)));
 }
 
-// weicher Schatten: wie knapp läuft der Strahl zur Sonne an etwas vorbei?
+// weicher Schatten: wie knapp läuft der Strahl zur Lampe an etwas vorbei?
 float shadow(vec3 p)
 {
     float light = 1.0;
     float t = 0.02;
     for (int i = 0; i < 48; i++)
     {
-        float d = map(p + SUN * t);
+        float d = map(p + LAMP * t);
         light = min(light, 10.0 * d / t);
         t += clamp(d, 0.02, 0.2);
         // über allen Tropfen kann nichts mehr Schatten werfen
-        if (light < 0.001 || p.y + SUN.y * t > 1.5) break;
+        if (light < 0.001 || p.y + LAMP.y * t > 1.5) break;
     }
     return clamp(light, 0.0, 1.0);
 }
 
-vec3 sky(vec3 dir)
+// das Studio: fast schwarz, links ein türkiser, rechts ein oranger Leuchtstreifen
+vec3 studio(vec3 dir)
 {
-    vec3 color = mix(vec3(0.9, 0.65, 0.45), vec3(0.05, 0.2, 0.6), pow(max(dir.y, 0.0), 0.3));
-    return color + vec3(1.0, 0.8, 0.5) * pow(max(dot(dir, SUN), 0.0), 400.0) * 6.0;
+    vec3 color = DARK;
+    color += vec3(0.1, 0.8, 1.0) * 4.0 * smoothstep(0.96, 0.985, dot(dir, LEFT));
+    color += vec3(1.0, 0.45, 0.1) * 4.0 * smoothstep(0.96, 0.985, dot(dir, RIGHT));
+    return color;
+}
+
+// das Licht der beiden Streifen auf einer Fläche, die in Richtung n zeigt
+vec3 strips(vec3 n)
+{
+    return vec3(0.1, 0.8, 1.0) * 0.4 * max(dot(n, LEFT), 0.0)
+         + vec3(1.0, 0.45, 0.1) * 0.4 * max(dot(n, RIGHT), 0.0);
 }
 
 // Raymarching: so weit gehen, wie der Abstand erlaubt; -1, wenn nichts kommt
@@ -117,11 +130,12 @@ vec3 shade(vec3 q, vec3 dir)
     vec3 n = normal(q);
     bool on_floor = blobs(q) > q.y;
     vec3 albedo = on_floor
-        ? vec3(0.08 + 0.3 * mod(floor(q.x) + floor(q.z), 2.0))
+        ? vec3(0.04)
         : blob_color(q);
 
-    float sun = max(dot(n, SUN), 0.0) * shadow(q + n * 0.002);
-    return albedo * (vec3(1.0, 0.8, 0.6) * 1.5 * sun + sky(n) * 0.25);
+    // die Lampe leuchtet einen Kreis auf dem Boden aus, mit weichen Schatten
+    float lamp = max(dot(n, LAMP), 0.0) * smoothstep(3.0, 0.3, length(q.xz)) * shadow(q + n * 0.002);
+    return albedo * (vec3(1.0, 0.95, 0.9) * 2.0 * lamp + strips(n));
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
@@ -129,7 +143,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     vec2 p = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
     move_blobs();
 
-    // die Kamera schwenkt vor den Tropfen hin und her, die Sonne im Rücken,
+    // die Kamera schwenkt vor den Tropfen hin und her
     // und schaut auf ihre Mitte
     float angle = 0.7 * sin(0.2 * iTime);
     vec3 eye = vec3(3.6 * sin(angle), 1.4, -3.6 * cos(angle));
@@ -138,14 +152,14 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     vec3 up = cross(forward, right);
     vec3 dir = normalize(p.x * right + p.y * up + 1.8 * forward);
 
-    vec3 color = sky(dir);
+    vec3 color = studio(dir);
     float t = march(eye, dir);
     if (t > 0.0)
     {
         color = shade(eye + dir * t, dir);
 
-        // Dunst: was weit weg ist, verschwindet im Himmel, bei 40 ganz
-        color = mix(color, sky(dir), smoothstep(0.0, 40.0, t));
+        // was weit weg ist, verschwindet im Dunkeln
+        color = mix(color, DARK, smoothstep(6.0, 16.0, t));
     }
 
     fragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);

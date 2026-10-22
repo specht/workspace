@@ -1,9 +1,9 @@
 <div class='meta'>
-image: glanz.webp
-image_alt: "Bunte, glänzende Tropfen, die ineinanderfließen, über einem polierten Schachbrett, in dem sie sich spiegeln, unter einem Abendhimmel"
+image: im-schwamm.webp
+image_alt: "Ein dunkler, schief gekippter Gang aus Stein mit Löchern in vielen Größen, in den aus der Ferne kaltes Licht fällt"
 kind: projekt
 language: GLSL
-duration: 3 Doppelstunden
+duration: 4 Doppelstunden
 reference: [glsl, prozedurale-texturen, workspace]
 template: https://github.com/specht/glsl-starter.git
 template_name: des GLSL-Starters
@@ -18,12 +18,12 @@ template_name: des GLSL-Starters
 # Shader in GLSL
 
 <p class='abstract'>
-Ein Shader ist ein kleines Programm, das die Grafikkarte für jeden Pixel gleichzeitig ausführt. Du schreibst Shader in GLSL, so wie auf Shadertoy: einen Farbverlauf, einen Kreis, leuchtende Kreise in Bewegung, ein Kaleidoskop, Wolken aus Rauschen und am Ende eine Welt aus Tropfen, die ineinanderfließen, mit weichen Schatten und einem Boden, in dem sie sich spiegeln. Es sind dieselben Strahlen wie im Raytracer, nur rechnet die Grafikkarte viele Bilder in der Sekunde.
+Ein Shader ist ein kleines Programm, das die Grafikkarte für jeden Pixel gleichzeitig ausführt. Du schreibst Shader in GLSL, so wie auf Shadertoy: einen Farbverlauf, einen Kreis, leuchtende Kreise in Bewegung, ein Kaleidoskop, Wolken aus Rauschen, Tropfen, die in einem dunklen Studio ineinanderfließen und sich im schwarzen Boden spiegeln, und am Ende einen Würfel mit Löchern in Löchern, durch dessen endlose Gänge du fliegst. Es sind Strahlen wie im Raytracer, aber sie finden Formen, für die der Raytracer keine Formel hätte, und die Grafikkarte rechnet viele Bilder in der Sekunde.
 </p>
 
-<img class='full fit-width' src='glanz.webp' alt='Bunte, glänzende Tropfen über einem polierten Schachbrett: vorn eine Kette aus drei Tropfen, die ineinandergeflossen sind, links orange, in der Mitte pink, rechts violett, mit schmalen Hälsen dazwischen; dahinter ein grüner und ein türkiser Tropfen. Auf allen sitzen helle Glanzpunkte, sie werfen weiche Schatten und spiegeln sich im Boden; dahinter verschwindet das Schachbrett im Dunst eines Abendhimmels.'>
+<img class='full fit-width' src='im-schwamm.webp' alt='Der Blick durch einen dunklen Gang im Inneren des Schwamms, die Kamera schief gekippt. Die Wände bestehen aus quadratischen Platten mit Löchern in mehreren Größen; vorn ist fast alles schwarz, weiter hinten fällt aus einem Raum kaltes Licht auf die Wände, und ganz hinten verliert sich der Gang im Dunkeln.'>
 
-So sieht deine Welt aus Tropfen am Ende aus, und sie bewegt sich: Die Tropfen wandern, fließen ineinander und reißen wieder auseinander, die Kamera schwenkt hin und her, und mit der Maus fliegst du um sie herum.
+So sieht dein letzter Shader aus, und er bewegt sich: Die Kamera fliegt langsam und schief durch die Gänge eines Würfels, der aus Löchern in Löchern besteht, von Raum zu Raum, und nur in manchen brennt ein Licht. Das ganze Programm hat gut hundert Zeilen.
 
 Bis hierher hat in der Hackschule bei Grafik immer der Prozessor gerechnet, ein Pixel nach dem anderen: in [Echtzeitgrafik mit C](/pixelram) in einer Schleife über alle Pixel, im [Raytracer](/raytracing) Durchgang für Durchgang, bis ein Bild glatt war. Jeder Rechner hat aber einen zweiten eingebaut, den Grafikchip. In Schulrechnern und Laptops sitzt er meist mit im Prozessor, und trotzdem hat er über hundert kleine Rechenwerke, eine große Grafikkarte Tausende. Sie führen alle dasselbe Programm aus, jedes für einen anderen Pixel, alle zugleich.
 
@@ -404,14 +404,17 @@ So tastet sich der Strahl vor: große Schritte im freien Raum, immer kleinere di
 Ersetze `shader.frag` durch dieses Programm:
 
 ```glsl_copy
-// Raymarching: eine Kugel über einem Schachbrett
+// Raymarching: eine Kugel in einem dunklen Studio
 
-const vec3 SUN = vec3(0.6, 0.45, -0.66);   // Richtung zur Sonne, Länge 1
+const vec3 LAMP = vec3(-0.32, 0.9, -0.3);   // Richtung zur Lampe über der Szene, Länge 1
+const vec3 LEFT = vec3(-0.88, 0.30, -0.37);  // Richtung zum Leuchtstreifen links hinten, Länge 1
+const vec3 RIGHT = vec3(0.86, 0.38, -0.34);   // Richtung zum Leuchtstreifen rechts hinten, Länge 1
+const vec3 DARK = vec3(0.003, 0.004, 0.008); // die Farbe des Studios, wo kein Licht ist
 
 // Abstand von p zur Kugel: zum Mittelpunkt, weniger den Radius
 float ball(vec3 p)
 {
-    return length(p - vec3(0.0, 0.8, 0.0)) - 0.5;
+    return length(p - vec3(0.0, 0.6, 0.0)) - 0.5;
 }
 
 // Abstand von p zur nächsten Oberfläche: die Kugel oder der Boden (y = 0)
@@ -429,10 +432,20 @@ vec3 normal(vec3 p)
                           map(p + e.yyx) - map(p - e.yyx)));
 }
 
-vec3 sky(vec3 dir)
+// das Studio: fast schwarz, links ein türkiser, rechts ein oranger Leuchtstreifen
+vec3 studio(vec3 dir)
 {
-    vec3 color = mix(vec3(0.9, 0.65, 0.45), vec3(0.05, 0.2, 0.6), pow(max(dir.y, 0.0), 0.3));
-    return color + vec3(1.0, 0.8, 0.5) * pow(max(dot(dir, SUN), 0.0), 400.0) * 6.0;
+    vec3 color = DARK;
+    color += vec3(0.1, 0.8, 1.0) * 4.0 * smoothstep(0.96, 0.985, dot(dir, LEFT));
+    color += vec3(1.0, 0.45, 0.1) * 4.0 * smoothstep(0.96, 0.985, dot(dir, RIGHT));
+    return color;
+}
+
+// das Licht der beiden Streifen auf einer Fläche, die in Richtung n zeigt
+vec3 strips(vec3 n)
+{
+    return vec3(0.1, 0.8, 1.0) * 0.4 * max(dot(n, LEFT), 0.0)
+         + vec3(1.0, 0.45, 0.1) * 0.4 * max(dot(n, RIGHT), 0.0);
 }
 
 // Raymarching: so weit gehen, wie der Abstand erlaubt; -1, wenn nichts kommt
@@ -454,14 +467,13 @@ vec3 shade(vec3 q, vec3 dir)
 {
     vec3 n = normal(q);
     bool on_floor = ball(q) > q.y;
-    vec3 albedo = on_floor
-        ? vec3(0.08 + 0.3 * mod(floor(q.x) + floor(q.z), 2.0))
-        : vec3(0.9, 0.12, 0.005);
+    vec3 albedo = on_floor ? vec3(0.04) : vec3(0.5);
 
-    // im Schatten, wenn ein Strahl zur Sonne etwas trifft
-    float sun = max(dot(n, SUN), 0.0);
-    if (march(q + n * 0.002, SUN) > 0.0) sun = 0.0;
-    return albedo * (vec3(1.0, 0.8, 0.6) * 1.5 * sun + sky(n) * 0.25);
+    // die Lampe leuchtet einen Kreis auf dem Boden aus;
+    // im Schatten, wenn ein Strahl zu ihr etwas trifft
+    float lamp = max(dot(n, LAMP), 0.0) * smoothstep(2.6, 0.3, length(q.xz));
+    if (march(q + n * 0.002, LAMP) > 0.0) lamp = 0.0;
+    return albedo * (vec3(1.0, 0.95, 0.9) * 2.0 * lamp + strips(n));
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
@@ -470,19 +482,19 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
     // die Kamera bei eye schaut auf die Kugel
     vec3 eye = vec3(0.0, 1.4, -3.6);
-    vec3 forward = normalize(vec3(0.0, 0.6, 0.0) - eye);
+    vec3 forward = normalize(vec3(0.0, 0.5, 0.0) - eye);
     vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), forward));
     vec3 up = cross(forward, right);
     vec3 dir = normalize(p.x * right + p.y * up + 1.8 * forward);
 
-    vec3 color = sky(dir);
+    vec3 color = studio(dir);
     float t = march(eye, dir);
     if (t > 0.0)
     {
         color = shade(eye + dir * t, dir);
 
-        // Dunst: was weit weg ist, verschwindet im Himmel, bei 40 ganz
-        color = mix(color, sky(dir), smoothstep(0.0, 40.0, t));
+        // was weit weg ist, verschwindet im Dunkeln
+        color = mix(color, DARK, smoothstep(6.0, 16.0, t));
     }
 
     fragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
@@ -496,17 +508,16 @@ viewport: 800x450
 hook: open 2.5
 crop-element: #canvas
 -->
-<img class='full fit-width' src='kugel.webp' alt='Eine rote Kugel über einem grau-schwarzen Schachbrett, das bis zum Horizont reicht, mit einem scharfen Schatten links neben ihr; darüber ein Abendhimmel, am Horizont hell und warm, oben bläulich.'>
+<img class='full fit-width' src='kugel.webp' alt='Eine helle Kugel in einem fast schwarzen Raum: Eine Lampe von oben links leuchtet einen runden, hellen Fleck auf den dunklen Boden, die Kugel wirft einen scharfen Schatten nach rechts; an ihrem linken Rand ein türkiser, am rechten ein oranger Schimmer.'>
 
-Vieles kennst du aus dem Raytracer, nur steht es hier in GLSL, wo `vec3` mit `+`, `*` und `dot` schon eingebaut ist:
+Vieles kennst du aus dem Raytracer, nur steht es hier in GLSL, wo `vec3` mit `+`, `*` und `dot` schon eingebaut ist. Die Welt sieht aber anders aus: kein Himmel und kein Schachbrett, sondern ein dunkles Studio, in dem nur Licht ist, wo eine Lampe hinleuchtet.
 
 - **Die Kamera.** `forward`, `right` und `up` sind die Richtungen nach vorn, rechts und oben, wie im Raytracer unter »Vorne, rechts und oben«. Der Strahl für den Pixel `p` geht `p.x` nach rechts, `p.y` nach oben und `1.8` nach vorn.
 - **`march`** ist der Strahl aus dem Bild oben: Er fragt `map` und geht so weit, wie der Abstand erlaubt. Ist der Abstand fast 0, ist er angekommen, und `t` ist die Strecke bis dorthin. Wie »fast 0« ist, wächst mit `t` mit: Weit hinten muss ein Treffer nicht so genau sein, denn ein Pixel bedeckt dort viel mehr.
 - **`normal`** braucht keine Formel für jede Form. Es fragt `map` an sechs Punkten dicht um den Treffer und sieht, in welche Richtung der Abstand am schnellsten wächst. Das ist die Richtung, in die die Fläche zeigt.
-- **Der Schatten** ist ein zweiter Strahl, vom Treffer zur Sonne. Kommt der irgendwo an, liegt etwas dazwischen.
-- **`pow(color, vec3(1.0 / 2.2))`** am Ende hellt die dunklen Töne auf, so wie Bildschirme es erwarten. Darum stehen in den Farben kleine Zahlen wie `0.12` oder `0.005`, die am Ende kräftiger aussehen, als sie klingen.
-
-Auch das Schachbrett braucht keine eigene Form: `mod(floor(q.x) + floor(q.z), 2.0)` ist auf jedem zweiten Feld 1 und dazwischen 0.
+- **Das Licht.** Die Lampe hängt über der Szene, und `smoothstep(2.6, 0.3, length(q.xz))` lässt ihr Licht zum Rand hin auslaufen, wie bei einem Scheinwerfer: Ein Kreis auf dem Boden wird hell. Links und rechts hinter der Kamera leuchten zwei farbige Streifen, die `studio` zeigt, wenn ein Strahl in ihre Richtung geht, und `strips` gibt ihr Licht auf die Flächen. Darum hat die Kugel einen türkisen und einen orangen Rand.
+- **Der Schatten** ist ein zweiter Strahl, vom Treffer zur Lampe. Kommt der irgendwo an, liegt etwas dazwischen.
+- **`pow(color, vec3(1.0 / 2.2))`** am Ende hellt die dunklen Töne auf, so wie Bildschirme es erwarten. Darum steht für den Boden eine kleine Zahl wie `0.04`, die am Ende heller aussieht, als sie klingt.
 
 _task(schritt)
 
@@ -526,7 +537,9 @@ _person(blinn)
 Lösche die Funktion `ball` und schreib an ihre Stelle das weiche Minimum und sechs Tropfen:
 
 ```glsl
-~ const vec3 SUN = vec3(0.6, 0.45, -0.66);   // Richtung zur Sonne, Länge 1
+~ const vec3 LEFT = vec3(-0.88, 0.30, -0.37);  // Richtung zum Leuchtstreifen links hinten, Länge 1
+~ const vec3 RIGHT = vec3(0.86, 0.38, -0.34);   // Richtung zum Leuchtstreifen rechts hinten, Länge 1
+~ const vec3 DARK = vec3(0.003, 0.004, 0.008); // die Farbe des Studios, wo kein Licht ist
 ~
 // glatte Vereinigung zweier Abstände: je größer k, desto weiter fließen sie ineinander
 float smin(float a, float b, float k)
@@ -612,32 +625,32 @@ vec3 blob_color(vec3 p)
 ~ {
 ```
 
-Die Schatten werden weich. Im Raytracer brauchte ein weicher Schatten viele Strahlen zu verschiedenen Punkten der Sonne, gemittelt über viele Durchgänge. Raymarching bekommt ihn fast umsonst: Der Strahl zur Sonne merkt sich, wie knapp er an etwas vorbeigekommen ist. Wer dicht an einem Tropfen vorbeiläuft, liegt im Halbschatten. Schreib unter `normal`:
+Die Schatten werden weich. Im Raytracer brauchte ein weicher Schatten viele Strahlen zu verschiedenen Punkten der Sonne, gemittelt über viele Durchgänge. Raymarching bekommt ihn fast umsonst: Der Strahl zur Lampe merkt sich, wie knapp er an etwas vorbeigekommen ist. Wer dicht an einem Tropfen vorbeiläuft, liegt im Halbschatten. Schreib unter `normal`:
 
 ```glsl
 ~                           map(p + e.yxy) - map(p - e.yxy),
 ~                           map(p + e.yyx) - map(p - e.yyx)));
 ~ }
 ~
-// weicher Schatten: wie knapp läuft der Strahl zur Sonne an etwas vorbei?
+// weicher Schatten: wie knapp läuft der Strahl zur Lampe an etwas vorbei?
 float shadow(vec3 p)
 {
     float light = 1.0;
     float t = 0.02;
     for (int i = 0; i < 48; i++)
     {
-        float d = map(p + SUN * t);
+        float d = map(p + LAMP * t);
         light = min(light, 10.0 * d / t);
         t += clamp(d, 0.02, 0.2);
         // über allen Tropfen kann nichts mehr Schatten werfen
-        if (light < 0.001 || p.y + SUN.y * t > 1.5) break;
+        if (light < 0.001 || p.y + LAMP.y * t > 1.5) break;
     }
     return clamp(light, 0.0, 1.0);
 }
 ~
-~ vec3 sky(vec3 dir)
+~ // das Studio: fast schwarz, links ein türkiser, rechts ein oranger Leuchtstreifen
+~ vec3 studio(vec3 dir)
 ~ {
-~     vec3 color = mix(vec3(0.9, 0.65, 0.45), vec3(0.05, 0.2, 0.6), pow(max(dir.y, 0.0), 0.3));
 ```
 
 `shade` fragt jetzt die Tropfen und den weichen Schatten:
@@ -649,11 +662,12 @@ vec3 shade(vec3 q, vec3 dir)
     vec3 n = normal(q);
     bool on_floor = blobs(q) > q.y;
     vec3 albedo = on_floor
-        ? vec3(0.08 + 0.3 * mod(floor(q.x) + floor(q.z), 2.0))
+        ? vec3(0.04)
         : blob_color(q);
 
-    float sun = max(dot(n, SUN), 0.0) * shadow(q + n * 0.002);
-    return albedo * (vec3(1.0, 0.8, 0.6) * 1.5 * sun + sky(n) * 0.25);
+    // die Lampe leuchtet einen Kreis auf dem Boden aus, mit weichen Schatten
+    float lamp = max(dot(n, LAMP), 0.0) * smoothstep(3.0, 0.3, length(q.xz)) * shadow(q + n * 0.002);
+    return albedo * (vec3(1.0, 0.95, 0.9) * 2.0 * lamp + strips(n));
 }
 ```
 
@@ -665,11 +679,11 @@ Zuletzt rechnet `mainImage` die Tropfen an ihren Platz, und die Kamera schwenkt:
 ~     vec2 p = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
     move_blobs();
 
-    // die Kamera schwenkt vor den Tropfen hin und her, die Sonne im Rücken,
+    // die Kamera schwenkt vor den Tropfen hin und her
     // und schaut auf ihre Mitte
     float angle = 0.7 * sin(0.2 * iTime);
     vec3 eye = vec3(3.6 * sin(angle), 1.4, -3.6 * cos(angle));
-~     vec3 forward = normalize(vec3(0.0, 0.6, 0.0) - eye);
+    vec3 forward = normalize(vec3(0.0, 0.6, 0.0) - eye);
 ~     vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), forward));
 ~     vec3 up = cross(forward, right);
 ```
@@ -681,13 +695,13 @@ viewport: 800x450
 hook: open 10
 crop-element: #canvas
 -->
-<img class='full fit-width' src='tropfen.webp' alt='Bunte Tropfen über dem Schachbrett: vorn eine Kette aus drei ineinandergeflossenen Tropfen, orange, pink und violett, mit schmalen Hälsen dazwischen, dahinter ein grüner und ein türkiser; ihre Schatten auf dem Boden haben weiche Ränder.'>
+<img class='full fit-width' src='tropfen.webp' alt='Im dunklen Studio eine Kette aus drei ineinandergeflossenen Tropfen, orange, pink und violett, mit schmalen Hälsen dazwischen, dahinter ein türkiser; sie stehen in einem hellen Lichtkreis auf dem dunklen Boden und werfen Schatten mit weichen Rändern.'>
 
 - **`smin`** mischt die beiden Abstände, wo sie weniger als `k` auseinanderliegen, und zieht dabei etwas ab. Darum wird der Abstand zwischen zwei nahen Tropfen kleiner, als jeder allein wäre: Dort ist schon Fläche, und es entsteht der Hals. Wie man darauf kommt, erklärt Íñigo Quílez in seinem Artikel über das [weiche Minimum](https://iquilezles.org/articles/smin/).
 - **`blob`** ist ein Array mit den sechs Mittelpunkten. Sie hängen nur von der Zeit ab, also rechnet `move_blobs` sie einmal für jeden Pixel aus, statt bei jeder Frage an `map` wieder mit `sin` und `cos`. `map` wird für einen Pixel bis zu einige hundert Mal gefragt.
 - **`bound`** spart noch mehr: Ist ein Punkt weit weg von allen Tropfen, reicht der Abstand zu einer großen Kugel um alle sechs. Er ist nie größer als der Abstand zu den Tropfen selbst, der Strahl springt also nie zu weit, und es müssen nicht sechs Tropfen gefragt werden.
 - **`blob_color`** gewichtet die Farben der Tropfen: Ein Tropfen, dessen Oberfläche 0,1 weiter weg ist, zählt nur noch ein Viertel so viel, `exp(-14 · 0.1)`.
-- **`shadow`** geht wie `march` zur Sonne, aber merkt sich in `light` das kleinste Verhältnis von Abstand zu Strecke. Läuft der Strahl knapp an einem Tropfen vorbei, ist es klein, und der Punkt liegt im Halbschatten. Die 10 bestimmt, wie weich: Mit 30 werden die Schatten härter. Mehr dazu bei Íñigo Quílez über [weiche Schatten](https://iquilezles.org/articles/rmshadows/).
+- **`shadow`** geht wie `march` zur Lampe, aber merkt sich in `light` das kleinste Verhältnis von Abstand zu Strecke. Läuft der Strahl knapp an einem Tropfen vorbei, ist es klein, und der Punkt liegt im Halbschatten. Die 10 bestimmt, wie weich: Mit 30 werden die Schatten härter. Mehr dazu bei Íñigo Quílez über [weiche Schatten](https://iquilezles.org/articles/rmshadows/).
 
 _task(smin)
 
@@ -695,7 +709,7 @@ _task(smin)
 <strong>Ausprobieren:</strong> Ändere in <code>blobs</code> die <code>0.6</code> in <code>smin</code> auf <code>0.1</code> und dann auf <code>1.2</code>. Achte darauf, wann zwei Tropfen anfangen, einander entgegenzufließen, und wie dick der Hals zwischen ihnen wird.
 </div>
 
-### Glanz und ein polierter Boden
+### Glanz und ein schwarzer Spiegel
 
 Drei Dinge fehlen noch: Glanz auf den Tropfen, ein Boden, in dem sie sich spiegeln, und dunklere Stellen, wo wenig Licht hinkommt, unter den Tropfen und in den Kehlen zwischen ihnen. Für das Letzte fragt der Shader `map` ein paar Mal entlang der Normale: Ist über der Fläche weniger Platz, als der Weg nach außen lang ist, liegt dort etwas, das Licht wegnimmt. Das heißt **Umgebungsverdeckung** (englisch Ambient Occlusion). Schreib unter `shadow`:
 
@@ -716,9 +730,9 @@ float occlusion(vec3 p, vec3 n)
     return clamp(1.0 - 1.2 * hidden, 0.0, 1.0);
 }
 ~
-~ vec3 sky(vec3 dir)
+~ // das Studio: fast schwarz, links ein türkiser, rechts ein oranger Leuchtstreifen
+~ vec3 studio(vec3 dir)
 ~ {
-~     vec3 color = mix(vec3(0.9, 0.65, 0.45), vec3(0.05, 0.2, 0.6), pow(max(dir.y, 0.0), 0.3));
 ```
 
 Dann wird `shade` noch einmal länger:
@@ -730,20 +744,21 @@ vec3 shade(vec3 q, vec3 dir)
     vec3 n = normal(q);
     bool on_floor = blobs(q) > q.y;
     vec3 albedo = on_floor
-        ? vec3(0.08 + 0.3 * mod(floor(q.x) + floor(q.z), 2.0))
+        ? vec3(0.04)
         : blob_color(q);
 
-    float sun = max(dot(n, SUN), 0.0) * shadow(q + n * 0.002);
+    // die Lampe leuchtet einen Kreis auf dem Boden aus, mit weichen Schatten
+    float lamp = max(dot(n, LAMP), 0.0) * smoothstep(3.0, 0.3, length(q.xz)) * shadow(q + n * 0.002);
     float ao = occlusion(q, n);
-    vec3 color = albedo * (vec3(1.0, 0.8, 0.6) * 1.5 * sun + sky(n) * 0.25 * ao);
+    vec3 color = albedo * (vec3(1.0, 0.95, 0.9) * 2.0 * lamp + strips(n) * ao);
 
     if (!on_floor)
     {
-        // Glanz: die Sonne als Lichtpunkt, der Himmel gespiegelt, am Rand mehr
-        vec3 h = normalize(SUN - dir);
+        // Glanz: die Lampe als Lichtpunkt, das Studio gespiegelt, am Rand mehr
+        vec3 h = normalize(LAMP - dir);
         float fresnel = 0.04 + 0.6 * pow(1.0 - max(dot(n, -dir), 0.0), 5.0);
-        color += vec3(1.0, 0.85, 0.65) * pow(max(dot(n, h), 0.0), 120.0) * 2.0 * sun;
-        color = mix(color, sky(reflect(dir, n)) * ao, fresnel);
+        color += vec3(1.0, 0.95, 0.9) * pow(max(dot(n, h), 0.0), 120.0) * 2.0 * lamp;
+        color = mix(color, studio(reflect(dir, n)) * ao, fresnel);
     }
     return color;
 }
@@ -752,25 +767,25 @@ vec3 shade(vec3 q, vec3 dir)
 Der Boden spiegelt mit einem zweiten Strahl, so wie die Spiegelkugel im Raytracer. In `mainImage`:
 
 ```glsl
-~     vec3 color = sky(dir);
+~     vec3 color = studio(dir);
 ~     float t = march(eye, dir);
 ~     if (t > 0.0)
 ~     {
         vec3 q = eye + dir * t;
         color = shade(q, dir);
 
-        // der Boden ist poliert: ein zweiter Strahl, gespiegelt
+        // der Boden ist schwarz poliert: ein zweiter Strahl, gespiegelt
         if (blobs(q) > q.y)
         {
             vec3 mirrored = reflect(dir, vec3(0.0, 1.0, 0.0));
             vec3 from = q + vec3(0.0, 0.002, 0.0);
             float s = march(from, mirrored);
-            vec3 seen = s > 0.0 ? shade(from + mirrored * s, mirrored) : sky(mirrored);
-            color = mix(color, seen, 0.3);
+            vec3 seen = s > 0.0 ? shade(from + mirrored * s, mirrored) : DARK;
+            color = mix(color, seen, 0.5);
         }
 ~ 
-~         // Dunst: was weit weg ist, verschwindet im Himmel, bei 40 ganz
-~         color = mix(color, sky(dir), smoothstep(0.0, 40.0, t));
+~         // was weit weg ist, verschwindet im Dunkeln
+~         color = mix(color, DARK, smoothstep(6.0, 16.0, t));
 ~     }
 ```
 
@@ -781,14 +796,14 @@ viewport: 800x450
 hook: open 10
 crop-element: #canvas
 -->
-<img class='full fit-width' src='glanz.webp' alt='Dieselben Tropfen wie eben, jetzt mit hellen Glanzpunkten und einem bläulichen Schimmer an den Rändern; der Boden ist poliert, und die Tropfen spiegeln sich darin; unter ihnen und in den Kehlen zwischen ihnen ist es dunkler.'>
+<img class='full fit-width' src='glanz.webp' alt='Dieselben Tropfen wie eben, jetzt mit hellen Glanzpunkten der Lampe und türkisen und orangen Lichtern an den Rändern; der schwarze Boden spiegelt sie, darunter liegt ihr Spiegelbild; in den Kehlen zwischen ihnen ist es dunkler.'>
 
 Vergleiche mit dem Bild davor, es ist derselbe Augenblick:
 
-- **Der Glanzpunkt** ist die Sonne, auf der glatten Oberfläche gespiegelt: Er ist dort, wo die Normale genau zwischen Sonne und Auge zeigt, `h`, und die hohe Potenz `120.0` macht ihn klein und scharf. Diese Rechnung mit der Richtung dazwischen stammt von Jim Blinn, 1977.
-- **Am Rand** spiegeln die Tropfen mehr vom Himmel als in der Mitte. Das ist dieselbe Formel von Schlick, die im Raytracer unter »Lack« ausrechnet, wie viel eine lackierte Kugel spiegelt.
-- **Der Boden** schickt einen zweiten Strahl los, gespiegelt an der Fläche nach oben, und mischt 30 Prozent von dem dazu, was der sieht. Dafür braucht es kein neues Programm, `march` und `shade` gibt es schon.
-- **`occlusion`** fragt `map` in fünf Abständen über der Fläche. Unter einem Tropfen ist dort weniger Platz als der Weg nach oben, und das Licht vom Himmel wird schwächer.
+- **Der Glanzpunkt** ist die Lampe, auf der glatten Oberfläche gespiegelt: Er ist dort, wo die Normale genau zwischen Lampe und Auge zeigt, `h`, und die hohe Potenz `120.0` macht ihn klein und scharf. Diese Rechnung mit der Richtung dazwischen stammt von Jim Blinn, 1977.
+- **Am Rand** spiegeln die Tropfen mehr vom Studio als in der Mitte, darum leuchten dort die farbigen Streifen auf. Das ist dieselbe Formel von Schlick, die im Raytracer unter »Lack« ausrechnet, wie viel eine lackierte Kugel spiegelt.
+- **Der Boden** schickt einen zweiten Strahl los, gespiegelt an der Fläche nach oben, und mischt die Hälfte von dem dazu, was der sieht. Auf schwarzem Lack sieht man fast nur das Spiegelbild. Dafür braucht es kein neues Programm, `march` und `shade` gibt es schon.
+- **`occlusion`** fragt `map` in fünf Abständen über der Fläche. Unter einem Tropfen ist dort weniger Platz als der Weg nach oben, und das Licht der Streifen wird schwächer.
 
 ### Mit der Maus
 
@@ -819,17 +834,440 @@ hook: open 10
 hook: drag 0.1 0.25
 crop-element: #canvas
 -->
-<img class='full fit-width' src='maus.webp' alt='Die Tropfen von schräg oben gesehen: Die Kamera steht höher, der Horizont liegt weiter oben im Bild, und das Schachbrett mit den Spiegelungen der Tropfen füllt den größten Teil.'>
+<img class='full fit-width' src='maus.webp' alt='Die Tropfen von schräg oben gesehen: Die Kamera steht höher, man sieht mehr vom schwarzen Boden mit dem Lichtkreis und den Spiegelbildern der Tropfen.'>
 
 Zieh mit gedrückter Maus nach links und rechts, dann fliegt die Kamera um die Tropfen herum, nach oben und unten steigt und sinkt sie. Lässt du los, schwenkt sie wieder von selbst.
 
+## Löcher in Löchern
+
+### Ein Teppich aus Quadraten
+
+Raymarching kann mehr, als Formen verschmelzen. Es kann eine Form ohne Ende wiederholen, und jede Wiederholung noch einmal in klein. Bevor es dreidimensional wird, erst einmal in der Ebene: Nimm ein Quadrat, teile es in drei mal drei Kacheln und mach die mittlere zu einem Loch. Mit jeder der acht anderen Kacheln machst du dasselbe, mit deren Kacheln wieder, ohne Ende. Das ist der **Sierpinski-Teppich**, 1916 von Wacław Sierpiński beschrieben.
+
+_person(sierpinski)
+
+Ersetze `shader.frag` durch dieses Programm:
+
+```glsl_copy
+// Der Sierpinski-Teppich: ein Quadrat, aus dem die Mitte fehlt, und aus jedem
+// der acht Quadrate drumherum wieder die Mitte, immer weiter
+
+// 1 auf dem Teppich, 0 in einem Loch; p läuft im Quadrat von 0 bis 1
+float carpet(vec2 p, int steps)
+{
+    for (int i = 0; i < 6; i++)
+    {
+        if (i >= steps) break;
+        // in drei mal drei Kacheln teilen: welche Kachel, und wo darin?
+        p *= 3.0;
+        vec2 cell = floor(p);
+        p = fract(p);
+        // die mittlere Kachel ist ein Loch
+        if (cell.x == 1.0 && cell.y == 1.0) return 0.0;
+    }
+    return 1.0;
+}
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord)
+{
+    vec2 p = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
+
+    // jede Sekunde eine Stufe mehr: 1, 2, 3, 4, 5, dann von vorn
+    int steps = 1 + int(mod(iTime, 5.0));
+
+    // das Quadrat von -0.9 bis 0.9 auf 0 bis 1 bringen
+    vec2 q = (p + 0.9) / 1.8;
+
+    vec3 color = vec3(0.01, 0.012, 0.018);
+    if (q.x > 0.0 && q.x < 1.0 && q.y > 0.0 && q.y < 1.0)
+    {
+        vec3 stone = vec3(0.45, 0.5, 0.55) * (0.85 + 0.15 * q.y);
+        vec3 hole = vec3(0.02, 0.03, 0.04);
+        color = mix(hole, stone, carpet(q, steps));
+    }
+    fragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
+}
+```
+
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+write-file: shader.frag <- file:stufen/10-teppich.frag
+tab: preview
+viewport: 800x450
+hook: open 0.5
+crop-element: #canvas
+-->
+<img src='teppich-1.webp' alt='Ein graues Quadrat auf dunklem Grund mit einem einzigen quadratischen Loch in der Mitte, ein Drittel so breit wie das Quadrat.'>
+<figcaption>Eine Stufe</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 800x450
+hook: open 1.5
+crop-element: #canvas
+-->
+<img src='teppich-2.webp' alt='Dasselbe Quadrat: um das große Loch herum acht kleinere Löcher, eins in der Mitte jeder Kachel.'>
+<figcaption>Zwei Stufen</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 800x450
+hook: open 2.5
+crop-element: #canvas
+-->
+<img src='teppich-3.webp' alt='Um jedes der acht kleineren Löcher noch einmal acht noch kleinere, ein regelmäßiges Muster aus Löchern in drei Größen.'>
+<figcaption>Drei Stufen</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 800x450
+hook: open 3.5
+crop-element: #canvas
+-->
+<img src='teppich-4.webp' alt='Löcher in vier Größen: Zwischen den großen Löchern liegt ein feines Gitter aus winzigen Quadraten.'>
+<figcaption>Vier Stufen</figcaption>
+</figure>
+</div>
+
+Jede Sekunde kommt eine Stufe dazu, nach fünf beginnt es von vorn:
+
+- **`p *= 3.0`** macht aus dem Quadrat von 0 bis 1 eines von 0 bis 3. `floor(p)` ist dann die Nummer der Kachel, 0, 1 oder 2 in jeder Richtung, und `fract(p)` die Lage in ihr, wieder von 0 bis 1. Das kennst du vom Kaleidoskop.
+- **Die mittlere Kachel** hat die Nummer `(1, 1)`. Liegt der Pixel darin, ist er in einem Loch, und die Schleife ist fertig.
+- **Sonst** geht es mit der Lage in der Kachel weiter, als wäre sie das ganze Quadrat: Die nächste Runde teilt sie wieder in neun, eine Stufe feiner. So entstehen Löcher in Löchern, mit einer Schleife aus vier Zeilen.
+- **`if (i >= steps) break;`** hält die Schleife nach `steps` Runden an. Die Grenze in `for` muss in GLSL eine feste Zahl sein, darum steht dort 6 und die eigentliche Grenze innen.
+
+_task(teppich)
+
+### Ein Schwamm aus Würfeln
+
+Dasselbe geht mit einem Würfel. Teile ihn in drei mal drei mal drei kleinere Würfel und nimm sieben davon weg: den in der Mitte und die sechs in der Mitte jeder Seite. Zusammen sind sie ein Kreuz aus drei Balken, die quer durch den Würfel gehen. Jeder der übrigen Würfel bekommt dasselbe Kreuz, und so weiter. Das ist der **Menger-Schwamm**, 1926 von Karl Menger beschrieben.
+
+_person(menger)
+
+Ersetze `shader.frag` durch dieses Programm:
+
+```glsl_copy
+// Der Menger-Schwamm: ein Würfel, aus dem in jeder Stufe ein Kreuz aus drei Balken
+// fehlt, und aus jedem der 20 Würfel drumherum wieder, immer kleiner
+
+// Abstand von p zu einem Würfel mit der halben Kantenlänge 1 um den Nullpunkt
+float box(vec3 p)
+{
+    vec3 q = abs(p) - 1.0;
+    return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0);
+}
+
+// Abstand zu drei unendlich langen Balken entlang x, y und z durch den Nullpunkt,
+// jeder w breit nach jeder Seite
+float bars(vec3 p, float w)
+{
+    vec3 a = abs(p);
+    return min(max(a.y, a.z), min(max(a.x, a.z), max(a.x, a.y))) - w;
+}
+
+// der Schwamm: der Würfel, weniger die Balken jeder Stufe
+float sponge(vec3 p)
+{
+    float d = box(p);
+    float size = 2.0;   // die Kantenlänge der Würfel dieser Stufe
+    for (int i = 0; i < 4; i++)
+    {
+        // die Lage im Würfel dieser Stufe, seine Mitte bei 0: mod wiederholt ihn
+        vec3 q = mod(p + size / 2.0, size) - size / 2.0;
+        // durch seine Mitte ein Kreuz ein Drittel so breit wie er wegnehmen
+        d = max(d, -bars(q, size / 6.0));
+        size /= 3.0;
+    }
+    return d;
+}
+
+mat2 rotate(float a)
+{
+    return mat2(cos(a), sin(a), -sin(a), cos(a));
+}
+
+// der Schwamm dreht sich langsam und steht schräg
+vec3 turn(vec3 p)
+{
+    p.xz = rotate(0.25 * iTime) * p.xz;
+    p.yz = rotate(0.6) * p.yz;
+    p.xy = rotate(0.5) * p.xy;
+    return p;
+}
+
+float map(vec3 p)
+{
+    return sponge(turn(p));
+}
+
+vec3 normal(vec3 p)
+{
+    vec2 e = vec2(0.0005, 0.0);
+    return normalize(vec3(map(p + e.xyy) - map(p - e.xyy),
+                          map(p + e.yxy) - map(p - e.yxy),
+                          map(p + e.yyx) - map(p - e.yyx)));
+}
+
+// Umgebungsverdeckung: tief in den Löchern kommt wenig Licht an
+float occlusion(vec3 p, vec3 n)
+{
+    float hidden = 0.0;
+    for (int i = 1; i <= 5; i++)
+    {
+        float h = 0.01 + 0.04 * float(i);
+        hidden += (h - map(p + n * h)) / float(i);
+    }
+    return clamp(1.0 - 3.0 * hidden, 0.0, 1.0);
+}
+
+// weicher Schatten in Richtung l, höchstens bis zur Entfernung far
+float shadow(vec3 p, vec3 l, float far)
+{
+    float light = 1.0;
+    float t = 0.01;
+    for (int i = 0; i < 32; i++)
+    {
+        float d = map(p + l * t);
+        light = min(light, 16.0 * d / t);
+        t += clamp(d, 0.01, 0.2);
+        if (light < 0.001 || t > far) break;
+    }
+    return clamp(light, 0.0, 1.0);
+}
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord)
+{
+    vec2 p = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
+
+    // von leicht unten: der Würfel ragt über der Kamera auf
+    vec3 eye = vec3(0.0, -1.0, -3.9);
+    vec3 forward = normalize(vec3(0.0, 0.05, 0.0) - eye);
+    vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), forward));
+    vec3 up = cross(forward, right);
+    vec3 dir = normalize(p.x * right + p.y * up + 1.7 * forward);
+
+    float t = 0.0;
+    bool hit = false;
+    float haze = 0.0;
+    for (int i = 0; i < 110; i++)
+    {
+        float d = map(eye + dir * t);
+        // Dunst: je knapper der Strahl am Würfel vorbeiläuft, desto mehr leuchtet die Luft
+        haze += 0.004 / (1.0 + 80.0 * d * d);
+        if (d < 0.0005 * t) { hit = true; break; }
+        t += d;
+        if (t > 8.0) break;
+    }
+
+    // fast schwarz, oben ein Hauch von kaltem Licht
+    vec3 color = vec3(0.003, 0.004, 0.007) + vec3(0.006, 0.012, 0.02) * smoothstep(-0.2, 1.0, p.y);
+    if (hit)
+    {
+        vec3 q = eye + dir * t;
+        vec3 n = normal(q);
+        float ao = occlusion(q, n);
+
+        // dunkler Stein, ein kaltes Licht von oben, ein schwacher Rand
+        vec3 stone = vec3(0.12, 0.13, 0.15);
+        vec3 top = normalize(vec3(-0.3, 1.0, -0.2));
+        float light = max(dot(n, top), 0.0) * shadow(q + n * 0.001, top, 3.0);
+        color = stone * vec3(0.55, 0.75, 1.0) * 2.0 * light * ao;
+        color += stone * vec3(0.05, 0.07, 0.1) * ao;
+        float rim = pow(1.0 - max(dot(n, -dir), 0.0), 5.0);
+        color += vec3(0.3, 0.55, 0.8) * rim * 0.25 * ao;
+
+        // aus dem Kern dringt eisblaues Licht: je näher an der Mitte, desto heller
+        vec3 inside = turn(q);
+        float core = exp(-6.0 * dot(inside, inside));
+        color += vec3(0.25, 0.8, 1.0) * 4.5 * core * (0.3 + 0.7 * max(dot(n, -normalize(inside)), 0.0));
+    }
+    color += vec3(0.2, 0.45, 0.6) * haze * 0.25;
+
+    // zum Rand dunkler, und sanft begrenzen statt abschneiden
+    color *= 1.0 - 0.4 * dot(p * 0.6, p * 0.6);
+    color = 1.0 - exp(-color * 1.3);
+    fragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
+}
+```
+
+<!-- tutorial-screenshot
+write-file: shader.frag <- file:stufen/11-schwamm.frag
+tab: preview
+viewport: 800x450
+hook: open 2
+crop-element: #canvas
+-->
+<img class='full fit-width' src='schwamm.webp' alt='Ein dunkler Würfel aus Stein schwebt schräg im Dunkeln, von leicht unten gesehen. Seine Seiten sind durchlöchert, große Löcher, darum kleinere, darum noch kleinere; aus dem großen Loch vorn dringt eisblaues Licht aus seinem Inneren, sonst ist er nur von oben schwach beleuchtet, und um ihn liegt ein kalter Dunst.'>
+
+- **`box`** ist der Abstand zu einem Würfel, so wie `length(p) - r` der zu einer Kugel ist. Die Formeln für viele andere Formen hat Íñigo Quílez [gesammelt](https://iquilezles.org/articles/distfunctions/).
+- **`bars`** ist der Abstand zu dem Kreuz aus drei Balken. Ein Balken entlang x ist alles, was in y und z nahe an der Mitte liegt: `max(a.y, a.z) - w`.
+- **`max(d, -bars(q, …))`** nimmt das Kreuz aus dem Würfel heraus. `min` vereinigt zwei Formen, `max` mit einem Minus davor zieht eine Form von der anderen ab.
+- **`mod(p + size / 2.0, size) - size / 2.0`** ist dasselbe wie `fract` im Teppich: Es macht aus jedem Punkt die Lage im kleinen Würfel dieser Stufe. So bekommt jeder Würfel sein Kreuz, ohne dass das Programm sie einzeln kennt. Mit jeder Runde wird `size` dreimal kleiner.
+- **`turn`** dreht den Schwamm mit Drehmatrizen, `rotate`, langsam um die senkrechte Achse und schräg gestellt.
+- **Das Licht im Inneren** hängt nur davon ab, wie nah ein Punkt an der Mitte des Würfels ist. Nach außen dringt es nur durch die großen Löcher, die bis in die Mitte reichen.
+- **`haze`** sammelt beim Marschieren, wie knapp der Strahl am Würfel vorbeikommt, und lässt die Luft um ihn herum leuchten. Das kostet nichts extra: Die Abstände sind ohnehin da.
+
+_task(schwamm)
+
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Schreib in <code>blobs</code> und in <code>blob_color</code> jeweils als erste Zeile <code>p.xz = mod(p.xz + 4.0, 8.0) - 4.0;</code>. Jetzt liegt jeder Punkt der Welt in einem Feld von 8 mal 8 Einheiten, und alle Felder fragen dieselben Tropfen. Achte darauf, wie viele Tropfen bis zum Horizont stehen und was das an Rechenzeit kostet: Sieh auf die Anzeige oben rechts.
+<strong>Ausprobieren:</strong> Lass die Schleife in <code>sponge</code> nur einmal laufen, dann zweimal, dann dreimal (<code>i &lt; 1</code>, <code>i &lt; 2</code>, …). Achte darauf, ab welcher Stufe du die feinsten Löcher in der Vorschau gar nicht mehr siehst.
+</div>
+
+### Im Schwamm
+
+Was passiert, wenn der Würfel fehlt? Ohne `box` ist überall Stein, und die Balken jeder Stufe fressen Gänge hinein, in alle Richtungen und ohne Ende. Wo sich drei Gänge kreuzen, entsteht ein Raum, und die kleineren Löcher werden zu einem Muster aus Platten an seinen Wänden. Ersetze `shader.frag` durch dieses Programm:
+
+```glsl_copy
+// Im Menger-Schwamm: ohne den äußeren Würfel füllt der Schwamm den ganzen Raum.
+// Aus den Löchern werden Gänge, wo sie sich kreuzen, Räume
+
+// Abstand zu drei unendlich langen Balken entlang x, y und z durch den Nullpunkt,
+// jeder w breit nach jeder Seite
+float bars(vec3 p, float w)
+{
+    vec3 a = abs(p);
+    return min(max(a.y, a.z), min(max(a.x, a.z), max(a.x, a.y))) - w;
+}
+
+// der Schwamm ohne Würfel: überall Stein, weniger die Balken jeder Stufe
+float sponge(vec3 p)
+{
+    float d = -100.0;
+    float size = 6.0;   // die Kantenlänge der Würfel dieser Stufe: ein Raum alle 6 Einheiten
+    for (int i = 0; i < 4; i++)
+    {
+        // die Lage im Würfel dieser Stufe, seine Mitte bei 0: mod wiederholt ihn
+        vec3 q = mod(p + size / 2.0, size) - size / 2.0;
+        // durch seine Mitte ein Kreuz ein Drittel so breit wie er wegnehmen
+        d = max(d, -bars(q, size / 6.0));
+        size /= 3.0;
+    }
+    return d;
+}
+
+mat2 rotate(float a)
+{
+    return mat2(cos(a), sin(a), -sin(a), cos(a));
+}
+
+float map(vec3 p)
+{
+    return sponge(p);
+}
+
+vec3 normal(vec3 p)
+{
+    vec2 e = vec2(0.0005, 0.0);
+    return normalize(vec3(map(p + e.xyy) - map(p - e.xyy),
+                          map(p + e.yxy) - map(p - e.yxy),
+                          map(p + e.yyx) - map(p - e.yyx)));
+}
+
+// Umgebungsverdeckung: tief in den Löchern kommt wenig Licht an
+float occlusion(vec3 p, vec3 n)
+{
+    float hidden = 0.0;
+    for (int i = 1; i <= 5; i++)
+    {
+        float h = 0.04 + 0.12 * float(i);
+        hidden += (h - map(p + n * h)) / float(i);
+    }
+    return clamp(1.0 - 1.5 * hidden, 0.0, 1.0);
+}
+
+// eine Zufallszahl von 0 bis 1 für jeden Punkt, immer dieselbe
+float hash(vec3 p)
+{
+    p = fract(p * 0.1031);
+    p += dot(p, p.zyx + 31.32);
+    return fract((p.x + p.y) * p.z);
+}
+
+// das Licht eines Raums mit der Mitte c auf einer Fläche bei q mit der Normale n:
+// nur in manchen Räumen brennt eines, kalt, ganz selten warm
+vec3 room(vec3 c, vec3 q, vec3 n)
+{
+    float r = hash(c * 0.37 + 11.0);
+    if (r < 0.7) return vec3(0.0);
+    vec3 tint = r < 0.95 ? vec3(0.55, 0.85, 1.0) : vec3(1.0, 0.6, 0.25);
+    vec3 to = c - q;
+    float d2 = dot(to, to);
+    return tint * 4.0 * max(dot(n, to / sqrt(d2)), 0.0) / (1.0 + 0.6 * d2 * d2 / 9.0);
+}
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord)
+{
+    vec2 p = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
+
+    // die Kamera ist gekippt, um gut 15 Grad, und schwankt langsam
+    float roll = 0.27 + 0.05 * sin(iTime * 0.21);
+    p = rotate(roll) * p;
+
+    // langsam durch einen Gang, von Raum zu Raum
+    vec3 eye = vec3(0.15 * sin(iTime * 0.3), 0.1 * cos(iTime * 0.23), iTime * 0.6);
+    vec3 dir = normalize(vec3(p, 1.3));
+    dir.xz = rotate(0.12 * sin(iTime * 0.17)) * dir.xz;
+
+    float t = 0.0;
+    bool hit = false;
+    for (int i = 0; i < 120; i++)
+    {
+        float d = map(eye + dir * t);
+        if (d < 0.0005 * t) { hit = true; break; }
+        t += d;
+        if (t > 30.0) break;
+    }
+
+    vec3 color = vec3(0.0);
+    if (hit)
+    {
+        vec3 q = eye + dir * t;
+        vec3 n = normal(q);
+        float ao = occlusion(q, n);
+
+        // das Licht des eigenen Raums und der sechs Nachbarn, durch die Gänge
+        vec3 home = floor(q / 6.0 + 0.5) * 6.0;
+        vec3 light = room(home, q, n);
+        light += room(home + vec3(6.0, 0.0, 0.0), q, n) + room(home - vec3(6.0, 0.0, 0.0), q, n);
+        light += room(home + vec3(0.0, 6.0, 0.0), q, n) + room(home - vec3(0.0, 6.0, 0.0), q, n);
+        light += room(home + vec3(0.0, 0.0, 6.0), q, n) + room(home - vec3(0.0, 0.0, 6.0), q, n);
+
+        color = (vec3(0.004, 0.006, 0.008) + light) * 0.6 * ao * ao;
+        // was weit weg ist, verschwindet im Dunkeln
+        color *= exp(-0.2 * t);
+    }
+
+    color *= 1.0 - 0.3 * dot(p * 0.6, p * 0.6);
+    color = 1.0 - exp(-color * 1.2);
+    fragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
+}
+```
+
+<!-- tutorial-screenshot
+write-file: shader.frag <- file:stufen/12-im-schwamm.frag
+tab: preview
+viewport: 800x450
+hook: open 9
+crop-element: #canvas
+-->
+<img class='full fit-width' src='im-schwamm.webp' alt='Der Blick durch einen dunklen Gang im Inneren des Schwamms, die Kamera schief gekippt. Die Wände bestehen aus quadratischen Platten mit Löchern in mehreren Größen; vorn ist fast alles schwarz, weiter hinten fällt aus einem Raum kaltes Licht auf die Wände, und ganz hinten verliert sich der Gang im Dunkeln.'>
+
+- **`d = -100.0`** am Anfang von `sponge` heißt: überall Stein. Es bleibt nur, was die Balken wegnehmen. Die ersten Balken stehen alle 6 Einheiten, so groß ist ein Raum.
+- **Die Kamera** fliegt mit `iTime` die z-Achse entlang, genau in der Mitte eines Gangs, und schwankt dabei ein wenig.
+- **`p = rotate(roll) * p`** kippt das ganze Bild um gut 15 Grad, bevor der Strahl losgeht. Mit schiefem Horizont wirkt ein Bild unheimlich, auch wenn sonst nichts geschieht.
+- **`room`** gibt jedem Raum mit `hash` eine Zufallszahl, die für ihn immer gleich bleibt. Nur wo sie über 0,7 liegt, brennt ein Licht, kalt, ganz selten warm. Jeder Punkt fragt seinen eigenen Raum und die sechs Nachbarn, durch deren Gänge ihr Licht hereinfällt; mit der Entfernung wird es schnell schwächer, und der Rest bleibt dunkel.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Setze <code>roll</code> auf 0 und sieh dir den Flug noch einmal an. Ändere dann in <code>room</code> die <code>0.7</code> auf <code>0.3</code>: Achte darauf, ob der Schwamm mit mehr Licht noch genauso wirkt.
 </div>
 
 ## Schnell genug für jeden Rechner
 
-Der Raytracer brauchte für ein glattes Bild viele Durchgänge. Dein Shader rechnet ein ganzes Bild, so oft der Bildschirm es zeigen kann, auf einem Grafikchip, der mit im Prozessor sitzt. Wie viel Arbeit das ist, kann man abschätzen: Für jeden Pixel geht ein Strahl mit bis zu 100 Schritten, dazu ein Strahl zur Sonne, die Normale, die Umgebungsverdeckung und auf dem Boden noch ein gespiegelter Strahl. `map` wird so für einen Pixel bis zu einige hundert Mal gefragt, und ein Fenster so groß wie ein Full-HD-Bildschirm hat zwei Millionen Pixel.
+Der Raytracer brauchte für ein glattes Bild viele Durchgänge. Dein Shader rechnet ein ganzes Bild, so oft der Bildschirm es zeigen kann, auf einem Grafikchip, der mit im Prozessor sitzt. Wie viel Arbeit das ist, kann man abschätzen: Für jeden Pixel geht ein Strahl mit bis zu 100 Schritten, dazu ein Strahl zur Lampe, die Normale, die Umgebungsverdeckung und auf dem Boden noch ein gespiegelter Strahl. `map` wird so für einen Pixel bis zu einige hundert Mal gefragt, und ein Fenster so groß wie ein Full-HD-Bildschirm hat zwei Millionen Pixel.
 
 Die Anzeige oben rechts zeigt, was dein Rechner schafft. Schafft er weniger als 40 Bilder in der Sekunde, rechnet die Seite weniger Pixel, bis zur halben Breite und Höhe, und streckt das Bild aufs Fenster. Es wird etwas weicher, bleibt aber flüssig. Mit `index.html?scale=0.5` in der Adresszeile legst du das selbst fest, mit `?scale=1` rechnet sie immer jeden Pixel.
 
@@ -840,7 +1278,7 @@ Was du selbst tun kannst, wenn ein Shader ruckelt:
 - **Weniger Strahlen.** Der gespiegelte Strahl ist auf dem Boden noch einmal ein ganzer Strahl, mit Schatten und Umgebungsverdeckung an seinem Ziel.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Schreib vor die Zeile <code>float s = march(from, mirrored);</code> zwei Schrägstriche und darunter <code>float s = -1.0;</code>. Dann spiegelt der Boden nur noch den Himmel. Achte auf die Bilder pro Sekunde, mit und ohne. Zeigt dein Rechner beide Male so viel, wie der Bildschirm kann, zieh das Vorschaufenster so groß wie möglich.
+<strong>Ausprobieren:</strong> Schreib in Stufe 8 vor die Zeile <code>float s = march(from, mirrored);</code> zwei Schrägstriche und darunter <code>float s = -1.0;</code>. Dann spiegelt der Boden nichts mehr. Achte auf die Bilder pro Sekunde, mit und ohne. Zeigt dein Rechner beide Male so viel, wie der Bildschirm kann, zieh das Vorschaufenster so groß wie möglich.
 </div>
 
 ## Dein eigener Shader
@@ -848,7 +1286,8 @@ Was du selbst tun kannst, wenn ein Shader ruckelt:
 Jetzt bist du dran. Ein paar Ideen:
 
 - **Eine eigene Welt.** Íñigo Quílez hat die Abstandsfunktionen für viele Formen [gesammelt](https://iquilezles.org/articles/distfunctions/): Quader, Ringe, Kapseln, Zylinder. Setz eine Szene aus ihnen zusammen, mit `min` für harte und `smin` für weiche Übergänge.
-- **Wolken über der Welt.** Nimm `fbm` aus den Wolken und mach damit den Himmel in `sky`.
+- **Stein mit Flecken.** Nimm `fbm` aus den Wolken und misch damit die Farbe des Steins im Schwamm: Die Wände bekommen Flecken, als wären sie alt.
+- **Andere Fraktale.** Nimm statt des Kreuzes aus Balken eine Kugel aus jedem Würfel heraus, oder teile in jeder Stufe in zwei statt in drei.
 - **Ein Muster, das tanzt.** Baue das Kaleidoskop um: andere Kacheln, eine andere Palette, Ringe, die mit der Maus wachsen.
 
 _task(abgabe)

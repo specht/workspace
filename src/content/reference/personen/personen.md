@@ -76,6 +76,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1882 -->
+<!-- part: sierpinski -->
+### Wacław Sierpiński
+
+<div class='person'>
+<img src='sierpinski.webp' alt='Wacław Sierpiński 1928: ein Mann mit hoher Stirn und runder Brille, in Anzug und Krawatte, ernst in die Kamera blickend.'>
+<p><strong>Wacław Sierpiński</strong> (1882–1969), polnischer Mathematiker in Warschau, mit über 700 Aufsätzen und 50 Büchern. 1916 beschrieb er ein Quadrat, aus dem die Mitte fehlt, und aus jedem der acht Quadrate drumherum wieder die Mitte, ohne Ende: den Sierpinski-Teppich. Auch ein Dreieck aus Dreiecken trägt seinen Namen.</p>
+<p>Ein Muster, das in jedem Ausschnitt wieder sich selbst enthält, heißt heute Fraktal. Dein Shader rechnet den Teppich mit einer Schleife aus vier Zeilen.</p>
+<p class='person-credit'>Foto: unbekannt, 1928, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Wac%C5%82aw_Sierpi%C5%84ski.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1896 -->
 <!-- part: luhn -->
 ### Hans Peter Luhn
@@ -83,6 +95,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <p><strong>Hans Peter Luhn</strong> (1896–1964), Ingenieur aus Barmen (heute Wuppertal), später bei IBM in den USA. 1953 schlug er in einer Notiz für IBM vor, Schlüssel mit einer Rechnung auf Buckets zu verteilen und Kollisionen in Listen zu sammeln: die erste Hash Table, mit Chaining.</p>
 <p>Von ihm stammt auch die letzte Ziffer jeder Kreditkartennummer, die Prüfziffer nach dem Luhn-Algorithmus: Mit ihr fällt eine falsch getippte Ziffer sofort auf.</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1902 -->
+<!-- part: menger -->
+### Karl Menger
+
+<div class='person'>
+<img src='menger.webp' alt='Karl Menger 1970: ein älterer Mann mit zurückgekämmtem grauem Haar in Anzug und gestreifter Krawatte, mit leichtem Lächeln.'>
+<p><strong>Karl Menger</strong> (1902–1985), österreichischer Mathematiker, ab 1937 in den USA. 1926 fragte er, was die Dimension einer Form eigentlich ist, und beschrieb dafür einen Würfel, aus dem in jeder Stufe Kreuze fehlen: den Menger-Schwamm, Sierpińskis Teppich in drei Dimensionen.</p>
+<p>Mit jeder Stufe schrumpft sein Volumen gegen null, und seine Oberfläche wächst ohne Grenze. Mathematisch ist er darum weder ein Körper noch eine Fläche, sondern eine Kurve.</p>
+<p class='person-credit'>Foto: Shimer College, 1970, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Karl_Menger_1970_Shimer_College_Wiki.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 

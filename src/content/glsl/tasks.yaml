@@ -96,20 +96,20 @@ tasks:
     prompt: |
       Jeder Strahl beginnt bei `eye = (0, 1.4, -3.6)`. Wie weit geht er beim
       ersten Schritt in `march`? Die Kugel hat ihren Mittelpunkt bei
-      `(0, 0.8, 0)` und den Radius 0.5.
+      `(0, 0.6, 0)` und den Radius 0.5.
     check:
       type: number
       expect: 1.4
       tolerance: 0.01
     feedback:
-      - when: { equals: 3.15 }
+      - when: { equals: 3.19 }
         say: Das ist der Abstand zur Kugel. `map` nimmt aber das Kleinere von Kugel und Boden.
-      - when: { equals: 3.65 }
+      - when: { equals: 3.69 }
         say: Das ist der Abstand zum Mittelpunkt der Kugel; der Radius kommt noch weg. Und ist der Boden nicht näher?
       - when: { equals: 3.6 }
         say: '`map` ist der Abstand zur nächsten Fläche, in jeder Richtung. Wie hoch steht das Auge über dem Boden?'
     hint: '`map(eye) = min(ball(eye), eye.y)`.'
-    solution: '`ball(eye) = length((0, 0.6, −3.6)) − 0.5 ≈ 3.65 − 0.5 = 3.15`, der Boden ist `eye.y = 1.4` entfernt. Der erste Schritt ist 1.4 lang, für jeden Strahl, egal in welche Richtung er geht: Der Boden ist am nächsten. Darum braucht ein Strahl, der flach über den Boden läuft, so viele Schritte.'
+    solution: '`ball(eye) = length((0, 0.8, −3.6)) − 0.5 ≈ 3.69 − 0.5 = 3.19`, der Boden ist `eye.y = 1.4` entfernt. Der erste Schritt ist 1.4 lang, für jeden Strahl, egal in welche Richtung er geht: Der Boden ist am nächsten. Darum braucht ein Strahl, der flach über den Boden läuft, so viele Schritte.'
 
   - id: smin
     title: Das weiche Minimum
@@ -129,6 +129,47 @@ tasks:
         say: Rechne `h` zuerst aus. Was ist `0.5 + 0.5 * (b - a) / k`, wenn `a` und `b` gleich sind?
     hint: 'Rechne erst `h = clamp(0.5 + 0.5 · (b − a) / k, 0, 1)`, dann `mix(b, a, h) − k · h · (1 − h)`.'
     solution: '`h = 0.5 + 0.5 · 0 / 0.6 = 0.5`, `mix(0.3, 0.3, 0.5) = 0.3`, `0.6 · 0.5 · 0.5 = 0.15`, also `0.3 − 0.15 = 0.15`. Der Punkt ist für `map` nur noch 0.15 von einer Fläche weg statt 0.3: Zwischen den Tropfen ist schon Fläche, der Hals.'
+
+  - id: teppich
+    title: Was vom Teppich bleibt
+    prompt: |
+      Teile das Quadrat in drei mal drei Kacheln und nimm die mittlere weg,
+      dann dasselbe mit jeder übrigen Kachel, und noch einmal. Nach diesen
+      drei Stufen ist das Quadrat in 27 mal 27 kleinste Kacheln geteilt. Wie
+      viele davon gehören noch zum Teppich?
+    check:
+      type: number
+      expect: 512
+      tolerance: 0
+    feedback:
+      - when: { equals: 729 }
+        say: So viele kleinste Kacheln gibt es, 27 mal 27. Ein Teil davon liegt in Löchern.
+      - when: { equals: 24 }
+        say: Mit jeder Stufe bleiben von jeder Kachel acht übrig, und jede davon wird wieder geteilt. Wird da addiert oder multipliziert?
+      - when: { equals: 665 }
+        say: Du hast nur die 64 Löcher der letzten Stufe abgezogen. Die großen Löcher der ersten beiden Stufen nehmen auch kleinste Kacheln weg.
+    hint: 'Nach einer Stufe bleiben 8 Kacheln. Jede davon wird wieder in 9 geteilt, und 8 bleiben.'
+    solution: '`8 · 8 · 8 = 512`. Mit jeder Stufe bleiben 8 von 9 Teilen, also wird der Teppich mit jeder Stufe um ein Neuntel leichter: Nach drei Stufen sind es 512 von 729 Kacheln, gut 70 Prozent.'
+
+  - id: schwamm
+    title: Würfel im Schwamm
+    prompt: |
+      Ein Würfel wird in 27 kleinere geteilt, und das Kreuz aus 7 Würfeln
+      fällt weg. Mit jedem der übrigen geschieht dasselbe. Aus wie vielen
+      kleinsten Würfeln besteht der Schwamm nach zwei Stufen?
+    check:
+      type: number
+      expect: 400
+      tolerance: 0
+    feedback:
+      - when: { equals: 729 }
+        say: So viele kleinste Würfel hätte der volle Würfel, 27 mal 27. Wie viele bleiben von 27, wenn das Kreuz fehlt?
+      - when: { equals: 40 }
+        say: In der zweiten Stufe wird jeder der 20 Würfel selbst geteilt. Wird da addiert oder multipliziert?
+      - when: { equals: 676 }
+        say: Das Kreuz besteht aus 7 Würfeln, nicht aus einem.
+    hint: 'Nach einer Stufe bleiben `27 − 7 = 20` Würfel.'
+    solution: '`20 · 20 = 400`. Mit jeder Stufe bleiben 20 von 27 Teilen, und das Volumen schrumpft mit jeder Stufe auf etwa drei Viertel. Nach vielen Stufen bleibt fast nichts übrig, aber die Oberfläche wächst mit jeder Stufe.'
 
   - id: abgabe
     title: Dein Shader

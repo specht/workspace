@@ -14,8 +14,14 @@
     },
     "glanz.webp": {
       "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
-      "output_sha256": "cc23317673bf9923236a5b731b8cbfa5a673a000a41f5d31142a20505a22067b",
-      "state_hash": "1febb561b84ed448265957f62f66073dc2bd2c1ca7e27a971a651c9d89f65043",
+      "output_sha256": "b4d368af1330a71eb119c388926464a49b955f406050b466a889ffdc55b7c5b4",
+      "state_hash": "d511a6542f12815b5898db11e32af42bf4b0316c837460eae7801f0c7c2735ab",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "im-schwamm.webp": {
+      "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
+      "output_sha256": "9755ea4fade3237bda1f48f6a377a415a63522556ad2f7ecb1d1c4a5ae1982da",
+      "state_hash": "9d48ccd493eadfe689348503659cd048dbad6d3db34246276e0b40f30570c173",
       "workspace_look": "4.140.0-ls368"
     },
     "kaleidoskop.webp": {
@@ -32,20 +38,50 @@
     },
     "kugel.webp": {
       "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
-      "output_sha256": "881de7097e879d332dff1e5efa385224db2da8d329f3a9a3a6243bd30b4537f3",
-      "state_hash": "c5281afecb5e44c69dce08b18710d1faea8e50282965ad6e1892bc6049582fef",
+      "output_sha256": "129b55249407b3244981e319199517782ef69d9d34210f6c9a4aee4432a132bd",
+      "state_hash": "577801d7a8d6e0e3343972d537a59b64e2a543fd2f9baead168eb2c49730fe56",
       "workspace_look": "4.140.0-ls368"
     },
     "maus.webp": {
       "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
-      "output_sha256": "53fceadc5cf9611207626ff8da6c1871b496ab27e5a7cc5238200e67086796ad",
-      "state_hash": "46f62867767ac4ee8bc1b3d1be6423ca0214bd96b71d78954df2fc2fb5f5c41f",
+      "output_sha256": "2fab31cf6ad643b48fcac317bcc041d040da62abb84a767b9a7f457c01c9ff8c",
+      "state_hash": "20329ba2c6c1901811e1a1b07e2fab956e5d8504af8c440eff8a1fe81771a967",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "schwamm.webp": {
+      "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
+      "output_sha256": "b6aa9d2e0ebd3fa612c6aab9c96af9408f2c2b2f66315c70d7235c5b12e5d534",
+      "state_hash": "d8aaad32e4eb1dcb332c71536abb5f29de0db70b4964ca90fab5369b154d5fff",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "teppich-1.webp": {
+      "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
+      "output_sha256": "c6319fee6e87c116c204b7ca925fe4d594c2bd26b5fc79270b290cc459aec189",
+      "state_hash": "904891bff30f8fbffa9c5b8c1c0dc54990cdcda06206b2489ba2160be6adb24f",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "teppich-2.webp": {
+      "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
+      "output_sha256": "dd42b3424cdd4b01bbe3ab2c083018425339a75a345946ad2d046da31f9ce90d",
+      "state_hash": "90f16ba0670865b032bfc13be8bdd9e89275886654a2d00ed853a8473220fb25",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "teppich-3.webp": {
+      "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
+      "output_sha256": "a1b14e56c347624bd1a65036da2c248cd75de4918663531549137d9bd8742f6e",
+      "state_hash": "ddc8698ba0509dbe43d630e387c3f9646d9c5b3f154c962d666447b5cd534369",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "teppich-4.webp": {
+      "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
+      "output_sha256": "544b393d9a71627f5fbd480ea243d76c7536cad935b13908f6a6fa3b655d6ad4",
+      "state_hash": "b2e65114f049b88a292c41aa4261f9c2e4dcf4c5be4f4983e44f7029b4c4e41d",
       "workspace_look": "4.140.0-ls368"
     },
     "tropfen.webp": {
       "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
-      "output_sha256": "f55bf368dc24b8a2c8980422a0b009276d75fbf8e16290cea7ee228c72a0f3cd",
-      "state_hash": "5152f7df6a40d87f5f3acdeef00319b9c0c7c93b1b3e936d677d998382deff70",
+      "output_sha256": "515289b0d786b87eeb8a893009b8b5fa093d77f4751aeef63c13466cfa06afa3",
+      "state_hash": "866f42e03562e8d7561761bf6804cb77906394f293df6118930c8d6250871814",
       "workspace_look": "4.140.0-ls368"
     },
     "verlauf.webp": {
