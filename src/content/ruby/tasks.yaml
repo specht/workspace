@@ -1,0 +1,145 @@
+# Aufgaben zum Steckbrief »Ruby«. Format: docs/aufgaben.md.
+# Die Dateien liegen ohne geöffneten Ordner direkt in /workspace (hello.rb,
+# factor.rb, bubblesort.rb), so wie die Seite sie speichern lässt.
+format: 1
+activity: ruby
+tasks:
+  - id: hallo
+    title: Hello, World!
+    prompt: |
+      Speichere dein erstes Programm als `/workspace/hello.rb` und führe es mit
+      `ruby hello.rb` aus.
+    file: hello.rb
+    check:
+      type: files
+      path: hello.rb
+      expect:
+        format: text
+        contains:
+          - pattern: '^\s*puts\s*\(?\s*["'']Hello, World!["'']'
+            say: 'In `hello.rb` finde ich noch kein `puts "Hello, World!"`. Steht es genau so da, mit Komma, Ausrufezeichen und Anführungszeichen?'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/hello.rb`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `hello.rb` eingegeben, mit `.rb` am Ende?
+      - when: { problem: wrong_format }
+        say: '`hello.rb` ist noch leer. Schreib `puts "Hello, World!"` hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
+    hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
+
+  - id: fehler
+    title: Die Art des Fehlers
+    prompt: |
+      Welche Art von Fehler meldet Ruby für `pust`? Sie steht in der Meldung in
+      Klammern.
+    check:
+      type: answer
+      compare: regex
+      expect: '(?i)^\W*NoMethodError\W*$'
+    feedback:
+      - when: { matches: '(?i)undefined' }
+        say: Das ist die Beschreibung des Fehlers. Gesucht ist das eine Wort in Klammern dahinter.
+      - when: { matches: '(?i)^\W*NameError\W*$' }
+        say: '`NameError` meldet Ruby, wenn hinter `pust` gar nichts steht. Steht in deiner Datei `pust "Hello, World!"`, mit dem Text dahinter?'
+      - when: { matches: '(?i)^\W*puts\W*$' }
+        say: 'Das ist Rubys Vorschlag hinter »Did you mean?«. Gesucht ist die Art des Fehlers, das Wort in Klammern.'
+    hint: Die Meldung beginnt mit dem Dateinamen und der Zeile, `hello.rb:1:in …`. Lies sie bis zum Ende der Zeile.
+    solution: |
+      `NoMethodError`: Ruby kennt keine Methode `pust`. Davor nennt die Meldung
+      die Datei und die Zeile (`hello.rb:1`), danach schlägt Ruby `puts` vor.
+      Ein Name, der auf `Error` endet, sagt dir die Art des Fehlers, und mit
+      ihm findest du im Netz Erklärungen.
+
+  - id: ohne-chmod
+    title: Ohne chmod
+    prediction: true
+    prompt: |
+      Das Shebang steht in der ersten Zeile, die Datei ist gespeichert. Was
+      passiert, wenn du jetzt `./hello.rb` eingibst? Überleg erst, dann probier
+      es aus.
+    check:
+      type: choice
+      options:
+        - 'Die Shell meldet `Permission denied`: Die Datei darf noch nicht als Programm laufen.'
+        - 'Es erscheint `Hello, World!`, denn das Shebang sagt, welcher Interpreter die Datei ausführt.'
+        - 'Ruby meldet einen Fehler in Zeile 1, weil es `#!` nicht kennt.'
+        - 'Die Shell meldet `command not found`, weil `hello.rb` kein Befehl ist.'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'Probier es aus. Das Shebang sagt, womit die Datei läuft, aber ob sie überhaupt als Programm laufen darf, steht woanders.'
+      - when: { picked: 2 }
+        say: 'Für Ruby ist `#` der Anfang eines Kommentars, die Zeile stört es nicht. Probier es aus: Bis zu Ruby kommt es gar nicht.'
+      - when: { picked: 3 }
+        say: 'Mit `./` vorn sucht die Shell nicht nach einem Befehl, sondern nimmt genau diese Datei. Probier es aus.'
+    solution: |
+      Die Shell meldet `bash: ./hello.rb: Permission denied`. Eine neue Datei ist
+      nicht ausführbar; das ändert `chmod +x`. Erst dann liest die Shell das
+      Shebang und startet `ruby` mit der Datei.
+
+  - id: ausfuehrbar
+    title: Ein ausführbares Skript
+    prompt: |
+      `hello.rb` hat ein Shebang und ist ausführbar, sodass `./hello.rb`
+      `Hello, World!` ausgibt.
+    file: hello.rb
+    check:
+      type: files
+      path: hello.rb
+      expect:
+        executable: true
+        contains:
+          - pattern: '^#!.*\bruby\b'
+            say: 'In `hello.rb` fehlt das Shebang. Die erste Zeile heißt `#!/usr/bin/env ruby`.'
+          - pattern: '^\s*puts\b'
+            say: 'Das Shebang ist da, aber `puts` fehlt. Steht noch `pust` in der Datei?'
+    feedback:
+      - when: { problem: not_executable }
+        say: '`hello.rb` ist noch nicht ausführbar. Im Terminal, im Ordner `/workspace`: `chmod +x hello.rb`.'
+    hint: '`ls -l hello.rb` zeigt die Rechte. Steht vorn `-rwxr-xr-x`, ist die Datei ausführbar, bei `-rw-r--r--` noch nicht.'
+
+  - id: grosse-zahl
+    title: Eine große Zahl
+    prompt: |
+      Stimmt das? Zerlege `123456789123456789` mit `factor.rb`. Wie heißt der
+      größte Primfaktor?
+    check:
+      type: number
+      expect: 52579
+      tolerance: 0
+    feedback:
+      - when: { equals: 3 }
+        say: Das ist der kleinste. Gesucht ist der letzte, der größte.
+      - when: { equals: 123456789123456789 }
+        say: 'Das ist die Zahl selbst. Starte `ruby factor.rb` und gib sie ein.'
+    hint: '`ruby factor.rb`, dann die Zahl eingeben und <kbd>Enter</kbd> drücken. Die Faktoren stehen der Größe nach da.'
+    solution: |
+      `123456789123456789` = 3 · 3 · 7 · 11 · 13 · 19 · 3607 · 3803 · 52579. Die
+      Schleife probiert jeden Teiler bis 52579 durch, das sind nur gut 50.000
+      Schritte. Ruby rechnet dabei mit ganzen Zahlen beliebiger Größe.
+
+  - id: durchlaeufe
+    title: Wie oft läuft die Schleife?
+    prompt: |
+      Angenommen, `numbers` ist am Anfang `[5, 4, 3, 2, 1]`. Wie oft läuft der
+      Block von `loop do` in `bubblesort.rb`, bis `break` die Schleife
+      beendet?
+    check:
+      type: number
+      expect: 5
+      tolerance: 0
+      unit: Durchläufe
+    feedback:
+      - when: { equals: 4 }
+        say: 'Nach vier Durchläufen ist die Liste sortiert. Aber woran merkt das Programm das? `break unless swapped` braucht einen Durchlauf, in dem nichts vertauscht wird.'
+      - when: { equals: 1 }
+        say: 'Ein Durchlauf schiebt nur die größte Zahl ans Ende. Danach steht `[4, 3, 2, 1, 5]` da.'
+      - when: { between: [10, 25] }
+        say: Das sind eher die Vergleiche. Gefragt ist, wie oft `loop do` von vorn beginnt.
+    hint: |
+      Schreib die Liste nach jedem Durchlauf auf, oder probier es aus: Ersetze
+      die Zeile mit `Array.new` durch `numbers = [5, 4, 3, 2, 1]` und schreib
+      `puts "Durchlauf"` als erste Zeile in den Block von `loop do`.
+    solution: |
+      5. Jeder Durchlauf schiebt die größte noch ungeordnete Zahl nach hinten:
+      `[4, 3, 2, 1, 5]`, `[3, 2, 1, 4, 5]`, `[2, 1, 3, 4, 5]`,
+      `[1, 2, 3, 4, 5]`. Erst im fünften Durchlauf wird nichts mehr
+      vertauscht, `swapped` bleibt `false`, und `break` beendet die Schleife.

@@ -1,0 +1,223 @@
+# Aufgaben zu »Echtzeitgrafik mit C«. Format: docs/aufgaben.md.
+# Die Vorlage liegt nach dem Klonen in /workspace/pixelram-starter; main.c
+# wächst von Abschnitt zu Abschnitt (stufen/ hat die Stände der Rezepte),
+# das Spiel steht in lichtspur.c daneben.
+format: 1
+activity: pixelram
+tasks:
+  - id: ecke
+    title: Eine Farbe ausrechnen
+    prompt: |
+      Welche Farbnummer gibt `color` für das Pixel x = 250, y = 175 zurück?
+    check:
+      type: number
+      expect: 4
+      tolerance: 0
+    feedback:
+      - when: { equals: 20 }
+        say: '12 + 8 = 20 stimmt, aber die Palette hat nur 16 Farben. Was macht `% 16` aus 20?'
+      - when: { between: [21, 21.5] }
+        say: '`x / 20` mit ganzen Zahlen hat keine Nachkommastellen: 250 / 20 ist 12, nicht 12,5.'
+      - when: { equals: 5 }
+        say: '`x / 20` mit ganzen Zahlen schneidet ab, statt zu runden: 175 / 20 ist 8.'
+    hint: Rechne `x / 20` und `y / 20` als ganze Zahlen, ohne Rest, zähle sie zusammen und nimm davon den Rest beim Teilen durch 16.
+    solution: |
+      250 / 20 = 12 und 175 / 20 = 8 (der Rest fällt weg), zusammen 20, und
+      20 % 16 = 4. Ohne `% 16` wäre es 20, und Farbe 20 gibt es in einer
+      Palette mit 16 Farben nicht.
+
+  - id: abstand
+    title: Abstand und Farbe
+    prompt: |
+      Welche Farbnummer bekommt das Pixel x = 220, y = 10 mit der neuen
+      Funktion `color`?
+    check:
+      type: number
+      expect: 0
+      tolerance: 0
+    feedback:
+      - when: { equals: 100 }
+        say: 'Das ist `distance`. Was macht `color` danach noch mit dem Abstand?'
+      - when: { equals: 16 }
+        say: '100 / 6 ist 16,67, `(int)` macht 16 daraus. Fehlt noch etwas in der letzten Zeile?'
+      - when: { between: [16.5, 16.8] }
+        say: '`(int)` schneidet die Nachkommastellen ab, und danach kommt noch `% 16`.'
+    hint: Die Mitte ist (160, 90). Also `dx = 220 - 160` und `dy = 10 - 90`; dann Pythagoras, durch 6, abschneiden und `% 16`.
+    solution: |
+      `dx = 60`, `dy = -80`, der Abstand ist `sqrt(3600 + 6400) = 100`. 100 / 6
+      sind 16,67, `(int)` macht 16 daraus und `% 16` die Farbe 0: Das Pixel
+      liegt genau am Anfang des 17. Rings, wo die Farben wieder von vorn
+      beginnen.
+
+  - id: bewegung
+    title: Die Wellen bewegen sich
+    prompt: |
+      Bau die Schleife mit `should_close`, `seconds` und `present` in `main.c`
+      ein, nimm `t` in die Sinusfunktion, übersetze mit `make` und sieh dir
+      die Wellen in der Vorschau an.
+    file: pixelram-starter/main.c
+    check:
+      type: files
+      path: pixelram-starter/main.c
+      expect:
+        format: text
+        contains:
+          - { pattern: 'should_close\s*\(', say: 'In `main.c` fehlt noch die Schleife `while (!should_close())`. Ohne sie rechnet das Programm ein Bild und ist fertig.' }
+          - { pattern: 'seconds\s*\(', say: 'Die Schleife ist da, aber `t = seconds();` fehlt: Ohne die Zeit ist jedes Bild dasselbe.' }
+          - { pattern: 'present\s*\(', say: 'Es fehlt `present();` am Ende der Schleife. Erst damit zeigt PixelRAM das fertige Bild.' }
+          - { pattern: 'sin\s*\(.*\bt\b', say: 'Die Zeit `t` wird gesetzt, aber `color` benutzt sie noch nicht: In `sin(...)` gehört `- t * 2.0`.' }
+    feedback:
+      - when: { problem: missing }
+        say: 'Ich finde `pixelram-starter/main.c` nicht. Hast du die Vorlage nach `/workspace/pixelram-starter` geklont?'
+
+  - id: richtung
+    title: Plus statt minus
+    prediction: true
+    prompt: |
+      Was passiert, wenn du in `color` `- t * 2.0` durch `+ t * 2.0` ersetzt?
+      Überleg erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - Die Wellen wandern nach innen, zur Mitte hin.
+        - Die Wellen wandern doppelt so schnell nach außen.
+        - Die Wellen bleiben stehen, nur die Farben wechseln.
+        - Die Ringe rücken enger zusammen und bleiben stehen.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'Die Zahl 2.0 bleibt dieselbe, also auch das Tempo. Was ändert das Vorzeichen? Probier es aus.'
+      - when: { picked: 2 }
+        say: 'Mit `+` wächst `t` genauso weiter wie mit `-`, also ändert sich das Bild auch weiter. Probier es aus.'
+      - when: { picked: 3 }
+        say: 'Wie eng die Ringe liegen, bestimmt `distance * 0.12`, das bleibt gleich. Probier es aus.'
+    solution: |
+      Sie wandern nach innen. Ein Wellenberg liegt dort, wo `sin` einen
+      bestimmten Wert bekommt. Mit `distance * 0.12 - t * 2.0` muss dafür
+      `distance` wachsen, wenn `t` wächst: Der Berg wandert nach außen. Mit
+      `+` muss `distance` kleiner werden, und der Berg wandert zur Mitte.
+
+  - id: interferenz
+    title: Oben und unten
+    prediction: true
+    prompt: |
+      An einem Pixel ist die eine Welle gerade ganz oben (`sin` ergibt 1) und
+      die andere ganz unten (−1). Welche Farbe bekommt das Pixel? Überleg
+      erst, dann übersetze und sieh dir das Bild an.
+    check:
+      type: choice
+      options:
+        - Eine Farbe aus der Mitte der Palette, als gäbe es dort keine Welle.
+        - Die Farbe der Welle, deren Quelle näher liegt.
+        - Schwarz, Farbe 0.
+        - Die hellste Farbe, 15.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: '`color` zählt die beiden Werte von `sin` einfach zusammen; wie weit eine Quelle weg ist, steckt schon in ihrem Wert. Was ist 1 + (−1)?'
+      - when: { picked: 2 }
+        say: 'Farbe 0 bekommt ein Pixel, wenn `wave` −2 ist, beide Wellen also ganz unten sind. Was ist 1 + (−1)?'
+      - when: { picked: 3 }
+        say: 'Farbe 15 bekommt ein Pixel, wenn beide Wellen ganz oben sind und `wave` 2 ist. Was ist 1 + (−1)?'
+    solution: |
+      `wave` ist 1 + (−1) = 0, und `(0 + 2) * 3.75` ergibt 7,5, also Farbe 7
+      aus der Mitte der Palette. Die beiden Wellen löschen sich dort aus.
+
+  - id: loslassen
+    title: Kurz gedrückt
+    prediction: true
+    prompt: |
+      Die Spur fährt nach rechts. Du drückst einmal kurz <kbd>↑</kbd> und
+      lässt die Taste wieder los. Was macht die Spur? Überleg erst, dann
+      probier es aus.
+    check:
+      type: choice
+      options:
+        - Sie fährt nach oben weiter, bis du eine andere Pfeiltaste drückst.
+        - Sie fährt einen Pixel nach oben und dann wieder nach rechts.
+        - Sie fährt nur so lange nach oben, wie du die Taste gedrückt hältst.
+        - Sie bleibt stehen, bis du wieder eine Taste drückst.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'Was ändert sich in dem Bild, in dem `key_pressed(pixel_key_up)` wahr ist? Und was setzt `dx` und `dy` danach wieder zurück? Probier es aus.'
+      - when: { picked: 2 }
+        say: 'Ob die Taste noch gedrückt ist, fragt das Programm gar nicht. `key_pressed` setzt nur `dx` und `dy`. Probier es aus.'
+      - when: { picked: 3 }
+        say: 'Keine Zeile setzt `dx` und `dy` auf 0. Probier es aus.'
+    solution: |
+      Sie fährt weiter nach oben. `key_pressed` ist nur in dem einen Bild wahr,
+      in dem die Taste heruntergeht; in diesem Bild bekommen `dx` und `dy` die
+      neue Richtung, und die behalten sie, bis eine andere Taste sie ändert.
+
+  - id: reihenfolge
+    title: Erst nachsehen, dann zeichnen
+    prediction: true
+    prompt: |
+      Was passiert, wenn du die Zeile mit `set_pixel` vor das `if` mit
+      `get_pixel` schiebst, die Spur also erst zeichnest und dann nachsiehst?
+      Überleg erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - Die Spur verunglückt gleich beim ersten Schritt.
+        - Nichts ändert sich, die Reihenfolge ist egal.
+        - Ein Zusammenstoß wird einen Schritt später erkannt.
+        - Die Wand wird erkannt, die eigene Spur nicht.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'Was steht an der Stelle `(x, y)`, wenn `get_pixel` nachsieht, direkt nachdem `set_pixel` sie gefärbt hat? Probier es aus.'
+      - when: { picked: 2 }
+        say: '`get_pixel` sieht an derselben Stelle nach, die `set_pixel` gerade gefärbt hat. Was findet es dort? Probier es aus.'
+      - when: { picked: 3 }
+        say: 'Für `get_pixel` sind Wand und Spur dasselbe: eine Farbe, die nicht 0 ist. Was steht an `(x, y)`, nachdem `set_pixel` dort gezeichnet hat? Probier es aus.'
+    solution: |
+      Die Spur verunglückt sofort: `get_pixel` findet an `(x, y)` die Farbe 11,
+      die `set_pixel` gerade dorthin geschrieben hat, und die ist nicht 0.
+      Deshalb sieht das Programm zuerst nach, ob das Feld frei ist, und
+      zeichnet erst danach.
+
+  - id: kollision
+    title: Wände und Zusammenstöße
+    prompt: |
+      Zeichne in `lichtspur.c` den Rahmen und prüfe mit `get_pixel`, ob die
+      Spur zusammenstößt. Übersetze mit `make PROGRAM=lichtspur` und fahr in
+      die Wand.
+    file: pixelram-starter/lichtspur.c
+    check:
+      type: files
+      path: pixelram-starter/lichtspur.c
+      expect:
+        format: text
+        contains:
+          - { pattern: 'get_pixel\s*\(', say: 'In `lichtspur.c` sieht noch nichts mit `get_pixel` nach, ob das nächste Feld frei ist.' }
+          - { pattern: '\bcrashed\b', say: 'Es fehlt noch die Variable `crashed`, die sich den Zusammenstoß merkt: `bool crashed = false;` vor der Schleife.' }
+    feedback:
+      - when: { problem: missing }
+        say: 'Ich finde `pixelram-starter/lichtspur.c` nicht. Das Spiel bekommt eine eigene Datei neben `main.c`.'
+
+  - id: unentschieden
+    title: Gleichzeitig
+    prompt: |
+      Beide Spuren fahren im selben Bild gegen eine Wand. Wer bekommt den
+      Punkt? Lies dazu die Schleife in `main`.
+    check:
+      type: choice
+      options:
+        - Niemand.
+        - Orange (`a`), weil `drive(&a)` zuerst aufgerufen wird.
+        - Türkis (`b`), weil sein Pixel zuletzt gesetzt wird.
+        - Beide.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: '`drive` merkt sich nur in `crashed`, ob es gekracht hat. Wer einen Punkt bekommt, entscheidet das `if` danach, für beide gleich.'
+      - when: { picked: 2 }
+        say: 'Wer einen Punkt bekommt, entscheidet nicht `set_pixel`, sondern das `if` mit `wins++`. Was steht dort?'
+      - when: { picked: 3 }
+        say: 'Lies `if (!a.crashed) a.wins++;` noch einmal: Wer bekommt einen Punkt, wenn `a.crashed` wahr ist?'
+    solution: |
+      Niemand. Erst fahren beide (`drive(&a)`, `drive(&b)`), dann entscheidet
+      das Programm: Einen Punkt bekommt nur, wer nicht `crashed` ist. Sind
+      beide verunglückt, geht `wins` bei keinem hoch.

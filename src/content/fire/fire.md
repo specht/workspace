@@ -163,6 +163,8 @@ Der Farbverlauf geht also von Dunkelrot (128, 0, 0) zu Orange (255, 128, 0). Fü
 set_palette(i + 16, i * 8 + 128, i * 8, 0)
 ```
 
+_task(farbe-20)
+
 Dein Farbverlauf sollte nun so aussehen:
 
 <!-- tutorial-screenshot
@@ -211,6 +213,8 @@ terminal-wait-for-prompt: 180
 image-file: fire-steps/step.png 8
 -->
 <img src='ramp4.webp' class='full' alt='Die fertige Feuerrampe verläuft von Schwarz über Rot, Orange und Gelb bis Weiß.'>
+
+_task(blau-63)
 
 ## Animations-Loop
 
@@ -367,6 +371,8 @@ end
 
 Das Programm geht Zeile für Zeile durch das Bild und in jeder Zeile durch jedes Pixel. Für jedes Pixel addiert es die Farbwerte der Nachbarn, das untere doppelt, und teilt die Summe durch 4. Dieser Mittelwert wird die neue Farbe des Pixels.
 
+_task(kernel)
+
 Deine Animation sollte nach einer kleinen Weile nun so aussehen:
 
 <!-- tutorial-screenshot
@@ -398,11 +404,9 @@ image-file: fire-steps/step.png 4
 -->
 <img src='fire3.webp' class='full' alt='Das erste verrauschte Feuer enthält noch unpassende bunte Farbflecken.'>
 
-### Den Wertebereich begrenzen
+_task(begrenzen)
 
-<div class='hint think'>
-Hast du eine Idee, woran es liegen könnte, dass in den hellen und dunklen Bereichen falsche Farben auftauchen?
-</div>
+### Den Wertebereich begrenzen
 
 Der Wert `c` ist direkt die Nummer einer Farbe in der Palette, aber nichts prüft, ob er zwischen 0 und 63 liegt. Mit dem Zufall wird aus einem schwarzen Pixel schnell −3 und aus einem weißen 66, und das sind keine Farben des Verlaufs. Füge darum vor der `set_pixel`-Zeile ein:
 
@@ -445,10 +449,14 @@ image-file: fire-steps/step.png 4
 -->
 <img src='fire5.webp' class='full' alt='Das fertige Pixelfeuer steigt vor schwarzem Hintergrund in gelben, orangefarbenen und roten Flammen auf.'>
 
+_task(feuer)
+
+_task(kaelter)
+
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Jetzt kannst du am Feuer drehen:
 <ul>
-<li>Ändere <code>rand(7) - 3</code> in <code>rand(7) - 4</code>: Im Mittel wird jetzt jeder Pixel bei jedem Bild ein wenig kälter. Wie hoch schlagen die Flammen jetzt? Und mit <code>rand(7) - 2</code>?</li>
+<li>Probier auch <code>rand(7) - 2</code>: Wie hoch schlagen die Flammen jetzt?</li>
 <li>Ändere die Glut: In <code>fire.rb</code> legen <code>set_color(63)</code> und <code>fill_rect(10, 126, 245, 127)</code> sie an den unteren Rand. Mit <code>fill_rect(100, 126, 155, 127)</code> wird sie schmaler, mit <code>set_color(40)</code> kühler. Wie sieht das Feuer dann aus?</li>
 <li>Vertausche in den vier <code>set_palette</code>-Zeilen jeweils den Wert für Rot und den für Blau. Warum brennt das Feuer jetzt blau, obwohl du an der Animation nichts geändert hast?</li>
 </ul>

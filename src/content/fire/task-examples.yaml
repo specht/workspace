@@ -1,0 +1,26 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: fire
+examples:
+  farbe-20:
+    pass:
+      - answer: 160, 32, 0
+      - answer: (160, 32, 0)
+      - answer: 160 32 0
+      - answer: rgb(160,32,0)
+    fail:
+      - answer: 288, 160, 0
+      - answer: 160, 0, 0
+      - answer: 160, 32, 0, 0
+      - answer: 1160, 32, 0
+  feuer:
+    pass:
+      - files: { fire.rb: fire.rb }
+    fail:
+      - files: { fire.rb: draft1.rb }
+        say: get_pixel(x, y + 1) * 2
+      - files: { fire.rb: stufen/fire3.rb }
+        say: clamp(0, 63)
+      - files: { fire.rb: stufen/fire4.rb }
+        say: if c > 0

@@ -1,0 +1,138 @@
+# Aufgaben zu »Feueranimation«. Format: docs/aufgaben.md.
+# fire.rb liegt ohne geöffneten Ordner direkt in /workspace; stufen/ hat die
+# Stände der Rezepte, fire.rb neben dieser Datei ist das ganze Programm.
+format: 1
+activity: fire
+tasks:
+  - id: farbe-20
+    title: Farbe 20
+    prompt: |
+      Welche Farbe bekommt die Nummer 20 mit der neuen Zeile? Schreib Rot,
+      Grün und Blau mit Kommas, zum Beispiel `255, 0, 0`.
+    check:
+      type: answer
+      compare: regex
+      expect: '^\D*160\s*[,;/ ]\s*32\s*[,;/ ]\s*0\D*$'
+    feedback:
+      - when: { matches: '^\D*288\D' }
+        say: '`i` ist hier nicht 20. Die Schleife läuft von 0 bis 15, und `set_palette(i + 16, …)` setzt die Farbe `i + 16`. Für welches `i` ist das 20?'
+      - when: { matches: '^\D*160\s*[,;/ ]\s*0\s*[,;/ ]\s*0\D*$' }
+        say: 'Rot stimmt. Und Grün? In der neuen Zeile steht für Grün `i * 8`.'
+    hint: Farbe 20 ist `i + 16` mit `i = 4`. Setz 4 für `i` in `i * 8 + 128`, `i * 8` und `0` ein.
+    solution: |
+      `(160, 32, 0)`: Farbe 20 ist `i + 16` mit `i = 4`, Rot ist 4 · 8 + 128 =
+      160, Grün 4 · 8 = 32, Blau 0. Ein dunkles Rot mit einem Hauch Grün auf
+      dem Weg zu Orange.
+
+  - id: blau-63
+    title: Ganz genau Weiß?
+    prompt: |
+      Welchen Blauwert hat die letzte Farbe des Verlaufs, Nummer 63, ganz genau?
+    check:
+      type: number
+      expect: 248
+      tolerance: 0
+    feedback:
+      - when: { equals: 255 }
+        say: 'So steht es im Text, aber rechne es nach: Welchen Wert hat `i` bei Farbe 63, und was ergibt dann `i * 8 + 128`?'
+      - when: { equals: 632 }
+        say: '`i` ist nicht 63: `set_palette(i + 48, …)` setzt die Farbe `i + 48`.'
+    hint: Farbe 63 ist `i + 48`. Wie groß ist `i` dann, und läuft die Schleife bis dorthin?
+    solution: |
+      248: Farbe 63 ist `i + 48` mit `i = 15`, und 15 · 8 + 128 = 248. Die
+      Schleife `(0...16)` hört bei 15 auf, deshalb erreicht keiner der vier
+      Abschnitte ganz sein Ziel. Das letzte Weiß ist (255, 255, 248); den
+      Unterschied sieht man nicht.
+
+  - id: kernel
+    title: Ein Pixel mit dem Kernel
+    prompt: |
+      Unter einem Pixel steht Farbe 40, links von ihm 20 und rechts 30. Welche
+      Farbe bekommt es, ohne Zufall?
+    check:
+      type: number
+      expect: 32
+      tolerance: 0
+    feedback:
+      - when: { between: [32.4, 32.6] }
+        say: '`c` ist eine ganze Zahl. Was macht `c /= 4` mit dem Rest?'
+      - when: { between: [22, 23] }
+        say: 'Der Pixel darunter zählt doppelt: `get_pixel(x, y + 1) * 2`.'
+      - when: { equals: 30 }
+        say: 'Das ist der Mittelwert der drei. Der Kernel zählt aber das untere Pixel doppelt und teilt durch 4.'
+    hint: 'Zähle 2 · 40 + 20 + 30 zusammen und teile durch 4, so wie Ruby mit ganzen Zahlen teilt.'
+    solution: |
+      32: 2 · 40 + 20 + 30 = 130, und 130 / 4 ist in Ruby 32, der Rest fällt
+      weg. Das Pixel wird etwas kühler als das darunter: So steigt die Hitze
+      und kühlt dabei ab.
+
+  - id: begrenzen
+    title: Falsche Farben
+    prompt: |
+      In den hellen und den dunklen Bereichen tauchen Farben auf, die nicht
+      zum Feuer passen. Woran liegt das?
+    check:
+      type: choice
+      options:
+        - '`c` gerät durch den Zufall unter 0 oder über 63, und solche Nummern gehören nicht zum Farbverlauf.'
+        - '`rand(7)` liefert manchmal Kommazahlen, und die sind keine Farbnummern.'
+        - 'Der Kernel teilt durch 4, obwohl er nur drei Pixel ansieht.'
+        - 'Zwischen den vier Abschnitten der Palette fehlen Farben.'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: '`rand(7)` liefert ganze Zahlen von 0 bis 6. Was wird aus einem schwarzen Pixel (0), wenn `rand(7) - 3` gerade −3 ergibt?'
+      - when: { picked: 2 }
+        say: 'Das untere Pixel zählt doppelt, also sind es vier Anteile. Vorher, ohne Zufall, sah alles richtig aus. Was ist seitdem dazugekommen?'
+      - when: { picked: 3 }
+        say: 'Die vier Abschnitte belegen die Farben 0 bis 63 lückenlos. Welche Nummern kann `c` mit dem Zufall bekommen?'
+    solution: |
+      Mit `rand(7) - 3` wird aus einem schwarzen Pixel (0) schnell −3 und aus
+      einem weißen (63) 66. Diese Nummern hat der Verlauf nicht festgelegt; dort
+      stehen andere Farben der Palette. `clamp(0, 63)` hält `c` im Verlauf.
+
+  - id: feuer
+    title: Das Feuer brennt
+    prompt: |
+      In `fire.rb` stehen der Kernel, der Zufall nur für Pixel, die nicht
+      schwarz sind, und die Grenzen 0 bis 63. Das Feuer lodert.
+    file: fire.rb
+    check:
+      type: files
+      path: fire.rb
+      expect:
+        format: text
+        contains:
+          - { pattern: 'get_pixel\s*\(\s*x\s*,\s*y\s*\+\s*1\s*\)\s*\*\s*2', say: 'In `fire.rb` finde ich den Kernel noch nicht: `c = get_pixel(x, y + 1) * 2`, das untere Pixel doppelt.' }
+          - { pattern: 'clamp\s*\(\s*0\s*,\s*63\s*\)', say: 'Noch hält nichts `c` zwischen 0 und 63: `c = c.clamp(0, 63)` vor `set_pixel`.' }
+          - { pattern: 'rand\s*\(.*\bif\s+c\s*>\s*0', say: 'Der Zufall kommt noch auch zu schwarzen Pixeln dazu, und die ganze Luft glüht. Häng `if c > 0` an die Zeile mit `rand`.' }
+    feedback:
+      - when: { problem: missing }
+        say: 'Ich finde `/workspace/fire.rb` nicht. Hast du die Datei unter dem Namen `fire.rb` gespeichert, ohne geöffneten Ordner?'
+
+  - id: kaelter
+    title: Ein wenig kälter
+    prediction: true
+    prompt: |
+      Was passiert mit dem Feuer, wenn du `rand(7) - 3` in `rand(7) - 4`
+      änderst? Überleg erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - Die Flammen werden deutlich niedriger.
+        - Die Flammen schlagen höher.
+        - Nichts Sichtbares, Zufall bleibt Zufall.
+        - Das ganze Bild wird nach und nach weiß.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'Welche Werte liefert `rand(7) - 4`, von wo bis wo? Kommt im Mittel etwas dazu oder geht etwas weg? Probier es aus.'
+      - when: { picked: 2 }
+        say: 'Bisher liegt der Zufall im Mittel bei 0. Wo liegt `rand(7) - 4` im Mittel? Probier es aus.'
+      - when: { picked: 3 }
+        say: 'Weiß wird es, wenn die Pixel im Mittel heißer werden. `rand(7) - 4` liefert −4 bis +2. Probier es aus.'
+    solution: |
+      Die Flammen werden viel niedriger. `rand(7) - 4` liefert −4 bis +2, im
+      Mittel −1: Jedes Pixel kühlt in jedem Bild ein wenig mehr ab, und das
+      summiert sich auf dem Weg nach oben. Mit `rand(7) - 2` füllt das Feuer
+      dagegen bald das ganze Bild.

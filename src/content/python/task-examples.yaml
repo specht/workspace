@@ -1,0 +1,40 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: python
+examples:
+  hallo:
+    pass:
+      - files: { hello.py: hello.py }
+      - files: { hello.py: hello-shebang.py }
+      - files: { hello.py: { text: "print('Hello, World!')\n" } }
+    fail:
+      - files: { hello.py: { text: "prin(\"Hello, World!\")\n" } }
+        say: print("Hello, World!")
+      - files: { hello.py: { text: "" } }
+      - files: { hallo.py: hello.py }
+  fehler:
+    pass:
+      - answer: NameError
+      - answer: 'NameError:'
+      - answer: nameerror
+    fail:
+      - answer: Traceback
+      - answer: name 'prin' is not defined
+      - answer: print
+  ausfuehrbar:
+    pass:
+      - files: { hello.py: { from: hello-shebang.py, executable: true } }
+    fail:
+      - files: { hello.py: hello-shebang.py }
+        say: nicht ausführbar
+      - files: { hello.py: { from: hello.py, executable: true } }
+        say: Shebang
+      - files: { hello.py: { text: "#!/usr/bin/env python3\nprin(\"Hello, World!\")\n", executable: true } }
+        say: prin
+  absteigend:
+    pass:
+      - files: { bubblesort.py: { text: "import random\n\ndef bubble_sort(array):\n    for i in range(len(array)):\n        for j in range(len(array) - 1):\n            if array[j] < array[j + 1]:\n                array[j], array[j + 1] = array[j + 1], array[j]\n\narray = [random.randint(1, 100) for _ in range(10)]\nprint(\"Original array:\", array)\nbubble_sort(array)\nprint(\"Sorted array:\", array)\n" } }
+    fail:
+      - files: { bubblesort.py: bubblesort.py }
+        say: aufsteigend

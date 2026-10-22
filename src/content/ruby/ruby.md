@@ -164,6 +164,8 @@ crop-terminal-lines: auto
 
 <img class='full' src='hello.webp' alt='Im Terminal gibt ruby hello.rb die Zeile Hello, World! aus.'>
 
+_task(hallo)
+
 ### Fehler finden und beheben
 
 Wenn du einen Fehler im Code machst, wird Ruby eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `puts` das Wort `pust` zu schreiben:
@@ -182,7 +184,9 @@ ruby hello.rb
 Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
-Ruby sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
+_task(fehler)
+
+Ruby gibt eine Fehlermeldung aus, die dir hilft, den Fehler zu finden:
 
 <!-- tutorial-screenshot
 # Der Fehler aus dem Text; die lange Meldung braucht das ganze Terminal
@@ -207,7 +211,11 @@ Bisher musst du, um dein Skript auszuführen, immer den Ruby-Interpreter explizi
 ~ puts "Hello, World!"
 ```
 
-Füge diese Zeile ganz oben in deinem Skript ein und speichere die Datei. Bevor wir das Skript ausführen können, müssen wir es noch ausführbar machen. Das machen wir mit dem Befehl `chmod`:
+Füge diese Zeile ganz oben in deinem Skript ein und speichere die Datei. Ein Programm startest du in der Shell mit seinem Pfad, hier `./hello.rb`.
+
+_task(ohne-chmod)
+
+Bevor die Shell das Skript ausführt, muss es ausführbar sein. Das machen wir mit dem Befehl `chmod`:
 
 ```bash
 chmod +x hello.rb
@@ -235,6 +243,8 @@ sleep: 0.5
 
 <img class='full' src='shebang.webp' alt='Oben hello.rb mit #!/usr/bin/env ruby in der ersten Zeile, unten im Terminal chmod +x hello.rb und ./hello.rb, das Hello, World! ausgibt.'>
 
+_task(ausfuehrbar)
+
 ## Primfaktorzerlegung
 
 Im zweiten Beispiel wollen wir eine Zahl in ihre Primfaktoren zerlegen.
@@ -259,6 +269,8 @@ crop-terminal-lines: auto
 <img class='full' src='try-factor.webp' alt='ruby factor.rb fragt nach einer Zahl und gibt für 123 die Primfaktoren 3 und 41 aus.'>
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann Ruby auch die Zahl 3000000000 in Sekundenbruchteilen zerlegen. Auch mit einer sehr großen Zahl wie 123456789123456789 kommt das Programm problemlos zurecht. Falls du auf eine Zahl stoßen solltest, die so groß ist, dass das Programm sehr lange braucht, kannst du das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen.
+
+_task(grosse-zahl)
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Gib statt einer Zahl <code>abc</code> ein. Was antwortet das Programm? Starte <code>irb</code> und probiere <code>"abc".to_i</code>, <code>"12abc".to_i</code> und <code>Integer("abc")</code>. Welche Variante würdest du nehmen, wenn das Programm falsche Eingaben bemerken soll? Mit <code>exit</code> beendest du <code>irb</code>.
@@ -287,6 +299,8 @@ crop-terminal-lines: auto
 <img class='full' src='bubblesort.webp' alt='ruby bubblesort.rb gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
+
+_task(durchlaeufe)
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ändere <code>bubblesort.rb</code> und starte das Skript noch einmal:

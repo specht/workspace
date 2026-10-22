@@ -153,6 +153,8 @@ crop-terminal-lines: auto
 
 <img class='full' src='hello.webp' alt='Im Terminal gibt python3 hello.py die Zeile Hello, World! aus.'>
 
+_task(hallo)
+
 ### Fehler finden und beheben
 
 Wenn du einen Fehler im Code machst, wird Python eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `print` das Wort `prin` zu schreiben:
@@ -171,7 +173,9 @@ python3 hello.py
 Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
-Python sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
+_task(fehler)
+
+Python gibt eine Fehlermeldung aus, die dir hilft, den Fehler zu finden:
 
 <!-- tutorial-screenshot
 write-file: hello.py <- code:prin(
@@ -195,7 +199,11 @@ Bisher musst du, um dein Skript auszuführen, immer den Python-Interpreter expli
 ~ print("Hello, World!")
 ```
 
-Füge diese Zeile ganz oben in deinem Skript ein und speichere die Datei. Bevor wir das Skript ausführen können, müssen wir es noch ausführbar machen. Das machen wir mit dem Befehl `chmod`:
+Füge diese Zeile ganz oben in deinem Skript ein und speichere die Datei. Ein Programm startest du in der Shell mit seinem Pfad, hier `./hello.py`.
+
+_task(ohne-chmod)
+
+Bevor die Shell das Skript ausführt, muss es ausführbar sein. Das machen wir mit dem Befehl `chmod`:
 
 ```bash
 chmod +x hello.py
@@ -222,6 +230,8 @@ sleep: 0.5
 -->
 
 <img class='full' src='shebang.webp' alt='Oben hello.py mit #!/usr/bin/env python3 in der ersten Zeile, unten im Terminal chmod +x hello.py und ./hello.py, das Hello, World! ausgibt.'>
+
+_task(ausfuehrbar)
 
 ## Python-Skripte direkt in Visual Studio Code ausführen
 
@@ -295,11 +305,14 @@ crop-terminal-lines: auto
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
 
+_task(vergleiche)
+
+_task(absteigend)
+
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ändere <code>bubblesort.py</code> und starte das Skript noch einmal:
 <ul>
 <li>Sortiere 100 Zahlen statt 10: Welche Zahl musst du dafür ändern?</li>
-<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
 <li>Ersetze die Zeile mit <code>random.randint</code> durch <code>array = ["Kiwi", "Apfel", "Birne"]</code>. Klappt das Sortieren auch mit Wörtern? Und was meldet Python bei <code>array = [3, "Apfel", 1]</code>?</li>
 </ul>
 </div>

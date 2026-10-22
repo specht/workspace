@@ -1,0 +1,34 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: ruby
+examples:
+  hallo:
+    pass:
+      - files: { hello.rb: hello.rb }
+      - files: { hello.rb: hello-shebang.rb }
+      - files: { hello.rb: { text: "puts('Hello, World!')\n" } }
+    fail:
+      - files: { hello.rb: hello-error.rb }
+        say: puts "Hello, World!"
+      - files: { hello.rb: { text: "" } }
+      - files: { hallo.rb: hello.rb }
+  fehler:
+    pass:
+      - answer: NoMethodError
+      - answer: (NoMethodError)
+      - answer: nomethoderror
+    fail:
+      - answer: NameError
+      - answer: undefined method 'pust' for main
+      - answer: puts
+  ausfuehrbar:
+    pass:
+      - files: { hello.rb: { from: hello-shebang.rb, executable: true } }
+    fail:
+      - files: { hello.rb: hello-shebang.rb }
+        say: nicht ausführbar
+      - files: { hello.rb: { from: hello.rb, executable: true } }
+        say: Shebang
+      - files: { hello.rb: { text: "#!/usr/bin/env ruby\npust \"Hello, World!\"\n", executable: true } }
+        say: pust

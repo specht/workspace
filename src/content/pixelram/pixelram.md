@@ -173,6 +173,8 @@ crop-element: #canvas
 
 `x / 20` ist eine Ganzzahldivision: Für x = 0 bis 19 kommt 0 heraus, für 20 bis 39 kommt 1 heraus, und so weiter. So entstehen Felder von 20 × 20 Pixeln. Dein Programm zeichnet keine Quadrate. Es beantwortet für jedes Pixel einzeln die Frage: **Welche Farbe hast du?** Darum geht es auf dieser ganzen Seite.
 
+_task(ecke)
+
 ### Formeln ausprobieren
 
 Ändere nur die Zeile mit `return` in `color`. Jede dieser Formeln ergibt ein ganz anderes Bild:
@@ -293,6 +295,8 @@ crop-element: #canvas
 <img class='full' src='color-circles.webp' alt='Konzentrische Kreise in kräftigen Regenbogenfarben.'>
 
 Pixel mit ungefähr demselben Abstand bekommen dieselbe Farbe. So entstehen Kreise, obwohl das Programm keinen einzigen Kreis zeichnet. Probiere aus, was passiert, wenn du `6.0` größer oder kleiner machst.
+
+_task(abstand)
 
 ### Kreiswellen
 
@@ -575,6 +579,10 @@ record: 3.14s
 
 Kein Kreis wird verschoben: Das Programm rechnet jedes Bild komplett neu, und weil `t` wächst, liefert `sin` jedes Mal ein wenig andere Werte. Die Kanten gleiten dabei ruhig nach außen, weil `draw` sie glättet.
 
+_task(bewegung)
+
+_task(richtung)
+
 ### Zwei Wellen treffen sich
 
 Die Quelle der Wellen muss nicht in der Mitte bleiben. Mit `cos` und `sin` der Zeit wandert ein Punkt in Schleifen über den Bildschirm. Nimm zwei solche Quellen, rechne für jedes Pixel beide Wellen aus und zähle sie zusammen. Die beiden Quellen stehen wie `t` außerhalb der Funktionen, `color` misst den Abstand zu beiden:
@@ -612,6 +620,8 @@ int color(double x, double y)
 ~         present();
 ~     }
 ```
+
+_task(interferenz)
 
 Wo beide Wellen gleichzeitig oben sind, verstärken sie sich, wo die eine oben und die andere unten ist, löschen sie sich aus. Das nennt man **Interferenz**. Die Summe liegt zwischen −2 und 2, deshalb rechnet die letzte Zeile von `color` `(wave + 2) * 3.75`.
 
@@ -686,6 +696,8 @@ int main(void)
 }
 ```
 
+_task(loslassen)
+
 Klicke in die Vorschau, damit sie die Tasten bekommt, und steuere mit den Pfeiltasten. Drei Dinge sind neu:
 
 - Das Spielfeld hat nur 160 × 90 Pixel, also große Pixel, und `set_target_fps(30)` macht 30 Schritte pro Sekunde.
@@ -749,9 +761,13 @@ set_pixel(x, y, crashed ? 2 : 11);
 
 Dazu gehören eine Variable `bool crashed = false;` vor der Schleife und ein `if (!crashed)` um alles, was in der Schleife lenkt und fährt, denn nach dem Zusammenstoß soll die Spur stehen bleiben. Die Unfallstelle wird rot (Farbe 2).
 
+_task(reihenfolge)
+
 <div class='hint think'>
-<strong>Zum Nachdenken:</strong> Warum musst du zuerst mit <code>get_pixel</code> nachsehen und erst danach <code>set_pixel</code> aufrufen? Und was passiert, wenn du direkt in die Gegenrichtung lenkst?
+<strong>Zum Nachdenken:</strong> Was passiert, wenn du direkt in die Gegenrichtung lenkst?
 </div>
+
+_task(kollision)
 
 ### Zu zweit
 
@@ -888,6 +904,8 @@ crop-element: #canvas
 -->
 <img class='full' src='lichtspur.webp' alt='Zweite Runde: Eine orange und eine türkise Spur haben sich durchs Spielfeld gewunden, bis eine verunglückt ist; die Unfallstelle leuchtet weiß. Links in der oberen Wand steht ein orangefarbener Siegpunkt.'>
 
+_task(unentschieden)
+
 Mit der <kbd>Leertaste</kbd> beginnt eine Runde. Beide Spuren fahren im selben Bild einen Schritt, und erst danach wird gezeichnet. Deshalb ist es gerecht, wenn beide gleichzeitig verunglücken: Dann gewinnt niemand. Die Punkte stehen als Pixel in der oberen Wand.
 
 <div class='hint task'>
@@ -902,6 +920,7 @@ Mit der <kbd>Leertaste</kbd> beginnt eine Runde. Beide Spuren fahren im selben B
 
 Die Maus fragst du mit `mouse_position(&x, &y)` und `mouse_button_down(pixel_mouse_left)` ab, alle weiteren Tasten heißen wie `pixel_key_a` oder `pixel_key_enter`. Die ganze Liste steht in der [Dokumentation](https://specht.github.io/pixelram/input.html).
 
+<!-- extra -->
 ## Mehr PixelRAM
 
 ### Beispiele im Starter

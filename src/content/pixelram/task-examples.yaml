@@ -1,0 +1,26 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Die Stände von main.c liegen in stufen/; lichtspur.c steht hier als Text,
+# einmal so, wie die Seite sie anfangen lässt, und einmal mit Rahmen und
+# Zusammenstoß.
+format: 1
+activity: pixelram
+examples:
+  bewegung:
+    pass:
+      - files: { pixelram-starter/main.c: stufen/bewegung.c }
+      - files: { pixelram-starter/main.c: stufen/interferenz.c }
+    fail:
+      - files: { pixelram-starter/main.c: stufen/glatt.c }
+        say: should_close
+      - files: { pixelram-starter/main.c: { text: "#include \"pixelram.h\"\n#include <math.h>\n\ndouble t;\n\nint color(double x, double y)\n{\n    return (int)((sin(hypot(x - 160, y - 90) * 0.12) + 1.0) * 7.5);\n}\n\nint main(void)\n{\n    screen_open(320, 180, pixel_rgb24, \"PixelRAM\");\n    while (!should_close())\n    {\n        t = seconds();\n        present();\n    }\n    return 0;\n}\n" } }
+        say: sin(...)
+      - files: {}
+  kollision:
+    pass:
+      - files: { pixelram-starter/lichtspur.c: { text: "#include \"pixelram.h\"\n\n#define W 160\n#define H 90\n\nint main(void)\n{\n    screen_open(W, H, pixel_indexed8, \"Lichtspur\");\n    use_palette(\"sweetie_16\");\n    set_target_fps(30);\n\n    for (int x = 0; x < W; x++)\n    {\n        set_pixel(x, 0, 14);\n        set_pixel(x, H - 1, 14);\n    }\n    for (int y = 0; y < H; y++)\n    {\n        set_pixel(0, y, 14);\n        set_pixel(W - 1, y, 14);\n    }\n\n    int x = 20, y = H / 2;\n    int dx = 1, dy = 0;\n    bool crashed = false;\n\n    while (!should_close())\n    {\n        if (!crashed)\n        {\n            if (key_pressed(pixel_key_up))    { dx = 0;  dy = -1; }\n            if (key_pressed(pixel_key_down))  { dx = 0;  dy = 1;  }\n            if (key_pressed(pixel_key_left))  { dx = -1; dy = 0;  }\n            if (key_pressed(pixel_key_right)) { dx = 1;  dy = 0;  }\n\n            x += dx;\n            y += dy;\n            if (get_pixel(x, y) != 0)\n                crashed = true;\n\n            set_pixel(x, y, crashed ? 2 : 11);\n        }\n        present();\n    }\n\n    screen_close();\n    return 0;\n}\n" } }
+    fail:
+      - files: { pixelram-starter/lichtspur.c: { text: "#include \"pixelram.h\"\n\n#define W 160\n#define H 90\n\nint main(void)\n{\n    screen_open(W, H, pixel_indexed8, \"Lichtspur\");\n    use_palette(\"sweetie_16\");\n    set_target_fps(30);\n\n    int x = 20, y = H / 2;   // Position\n    int dx = 1, dy = 0;      // Richtung: nach rechts\n\n    while (!should_close())\n    {\n        if (key_pressed(pixel_key_up))    { dx = 0;  dy = -1; }\n        if (key_pressed(pixel_key_down))  { dx = 0;  dy = 1;  }\n        if (key_pressed(pixel_key_left))  { dx = -1; dy = 0;  }\n        if (key_pressed(pixel_key_right)) { dx = 1;  dy = 0;  }\n\n        x += dx;\n        y += dy;\n        set_pixel(x, y, 11);\n\n        present();\n    }\n\n    screen_close();\n    return 0;\n}\n" } }
+        say: get_pixel
+      - files: { pixelram-starter/main.c: stufen/interferenz.c }
+        say: lichtspur.c
