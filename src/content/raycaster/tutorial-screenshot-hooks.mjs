@@ -151,10 +151,43 @@ export default {
         // hook: hold KEY SECONDS KEY SECONDS …: holds each key for so many
         // seconds, one after the other (Playwright key names); a key without
         // seconds is pressed once (Tab, KeyM). The raycaster moves with the
-        // time, so this walks about as far as the same keys in the program.
-        async hold({ page, args }) {
+        // time it measures, and real seconds depend on how busy the
+        // generator is; so the page is loaded again on a clock of its own:
+        // the animation frames are held back and let through one by one,
+        // each 1/60 s later. A walk ends at the same place on every render,
+        // as in the program at 60 frames per second.
+        async hold({ page, args, timeout }) {
             const tokens = args.trim().split(/\s+/).filter(Boolean);
             if (tokens.length === 0) throw new Error('hook: hold KEY SECONDS …');
+            if (!page.__pixelramWalkScript) {
+                await page.addInitScript(() => {
+                    if (!new URLSearchParams(window.location.search).has('pixelram-walk')) return;
+                    window.__walkNow = 0;
+                    performance.now = () => window.__walkNow;
+                    const real = window.requestAnimationFrame.bind(window);
+                    window.__walkQueue = [];
+                    window.requestAnimationFrame = (callback) => { window.__walkQueue.push(callback); return window.__walkQueue.length; };
+                    // one frame: the clock moves on by 1/60 s, everything
+                    // that waits for a frame runs
+                    window.__walkFrame = () => new Promise((resolve) => {
+                        window.__walkNow += 1000 / 60;
+                        const queue = window.__walkQueue;
+                        window.__walkQueue = [];
+                        real(() => { for (const callback of queue) callback(window.__walkNow); resolve(); });
+                    });
+                });
+                page.__pixelramWalkScript = true;
+            }
+            const url = new URL(page.url());
+            url.searchParams.set('pixelram-walk', '');
+            await page.goto(url.href, { waitUntil: 'domcontentloaded', timeout });
+            await page.waitForSelector('#canvas', { timeout });
+            const frames = async (count) => {
+                for (let k = 0; k < count; k++) await page.evaluate(() => window.__walkFrame());
+            };
+            await frames(30);
+            await page.click('#canvas');
+            await frames(2);
             for (let i = 0; i < tokens.length; i++) {
                 const key = tokens[i];
                 const next = tokens[i + 1];
@@ -162,19 +195,19 @@ export default {
                     const seconds = Number(next);
                     if (seconds > 20) throw new Error(`hook: hold at most 20 s, not ${next}`);
                     await page.keyboard.down(key);
-                    await sleep(seconds * 1000);
+                    await frames(Math.round(seconds * 60));
                     await page.keyboard.up(key);
                     i++;
                 } else {
-                    // held for a few frames: a press within one frame would
-                    // never reach the program's key_pressed
+                    // two frames, so that key_pressed sees it
                     await page.keyboard.down(key);
-                    await sleep(120);
+                    await frames(2);
                     await page.keyboard.up(key);
                 }
-                await sleep(100);
+                await frames(1);
             }
-            await sleep(300);
+            await frames(4);
+            await page.mouse.move(0, 0);
         },
 
         // hook: play TIMELINE: numbers wait that many seconds, keys between

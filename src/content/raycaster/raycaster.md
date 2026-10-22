@@ -1589,11 +1589,11 @@ tab: preview
 viewport: 800x450
 hook: open raycaster.html
 click: selector:#canvas
-hook: hold Tab KeyW 0.33 ArrowRight 0.63 KeyW 2.67 ArrowLeft 0.63 KeyW 5.7 KeyA 0.63 ArrowRight 1.1
+hook: hold Tab KeyW 0.33 ArrowRight 0.63 KeyW 2.67 ArrowLeft 0.63 KeyW 1.4
 crop-element: #canvas
 -->
-<img src='fertig-raum.webp' alt='Ein anderer Raum des Raycasters, mit Wänden und Boden aus anderen Materialien, nach hinten im Dunkel.'>
-<figcaption>Ein anderer Raum</figcaption>
+<img src='fertig-raum.webp' alt='Ein Raum mit Steinplatten auf dem Boden und Säulen aus Steinblöcken links und rechts, die vor allem unten und in den Fugen dicht mit Moos bewachsen sind; nach hinten wird es dunkel.'>
+<figcaption>Der Raum mit Moos</figcaption>
 </figure>
 </div>
 
@@ -1623,6 +1623,7 @@ terminal-open
 terminal-run: gem install chunky_png
 terminal-wait-for-prompt: 120
 terminal-run: ruby palette.rb textures.png
+wait-for-file-newer: raycaster/palette.h <- raycaster/textures.png
 terminal-wait-for-prompt
 terminal-expect-no-text: Error
 image-file: raycaster/2-rampen.png 4
@@ -1695,8 +1696,6 @@ Dann übersetzt du wie immer; `make` merkt auch, dass sich `palette.h` geändert
 ```bash
 make PROGRAM=raycaster
 ```
-
-Meldet `make`, es sei nichts zu tun, ist deine Vorlage älter; dann zwingt `make -B PROGRAM=raycaster` es dazu.
 
 <!-- tutorial-screenshot
 write-file: raycaster.c <- file:stufen/13-eigene-texturen.c
