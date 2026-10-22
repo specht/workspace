@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 250" width="540" height="250" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Schatten: Vom Treffpunkt geht ein Strahl in Richtung Sonne. Trifft er unterwegs etwas, liegt der Punkt im Schatten; sonst kommt Sonnenlicht an.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg 1080 -->
+  <rect width="540" height="250" fill="#ffffff"/>
+  <rect x="10.0" y="215.0" width="520.0" height="30.0" fill="#f3f4f6"/>
+  <line x1="10.0" y1="215.0" x2="530.0" y2="215.0" stroke="#1f2937" stroke-width="2"/>
+  <circle cx="505.0" cy="28.0" r="18.0" fill="#d97706" stroke="#d97706" stroke-width="2"/>
+  <text x="479.0" y="34.0" font-size="15" fill="#d97706" text-anchor="end">Sonne</text>
+  <circle cx="255.0" cy="160.0" r="55.0" fill="#eef3fb" stroke="#1f2937" stroke-width="2"/>
+  <line x1="172.0" y1="215.0" x2="202.6" y2="176.7" stroke="#d97706" stroke-width="2" stroke-dasharray="6 5"/>
+  <line x1="196.6" y1="170.7" x2="208.6" y2="182.7" stroke="#dc2626" stroke-width="2.5"/>
+  <line x1="196.6" y1="182.7" x2="208.6" y2="170.7" stroke="#dc2626" stroke-width="2.5"/>
+  <line x1="388.0" y1="215.0" x2="513.8" y2="57.7" stroke="#d97706" stroke-width="2" stroke-dasharray="6 5"/>
+  <polygon points="520.0,50.0 516.3,62.9 508.2,56.4" fill="#d97706"/>
+  <text x="472.6" y="134.2" font-size="15" fill="#d97706" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">sun_dir</text>
+  <circle cx="172.0" cy="215.0" r="5.0" fill="#2b5fb4" stroke="#2b5fb4" stroke-width="1.5"/>
+  <circle cx="388.0" cy="215.0" r="5.0" fill="#2b5fb4" stroke="#2b5fb4" stroke-width="1.5"/>
+  <text x="172.0" y="241.0" font-size="15" fill="#1f2937" text-anchor="middle">Treffpunkt im Schatten</text>
+  <text x="388.0" y="241.0" font-size="15" fill="#1f2937" text-anchor="middle">Treffpunkt in der Sonne</text>
+</svg>

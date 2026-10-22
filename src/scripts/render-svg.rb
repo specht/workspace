@@ -25,6 +25,8 @@ DARK = {
     '#f3f4f6' => '#202226', # a second pale area beside the pale blue (a ceiling over a floor)
     '#dc2626' => '#f87171', # red: the x axis
     '#16a34a' => '#4ade80', # green: the y axis
+    '#d97706' => '#fbbf24', # amber: the sun and rays towards it
+    '#0b0f19' => '#000000', # shadow on a floor: dark in both modes
 }.freeze
 
 svg_path = ARGV[0] or abort "usage: #{$PROGRAM_NAME} FILE.svg [WIDTH]"

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 470 200" width="470" height="200" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Shadow Acne, stark vergrößert: Der berechnete Treffpunkt liegt durch Rundung ein winziges Stück unter dem Boden. Der Schattenstrahl trifft den Boden selbst, gleich nach seinem Anfang, und der Punkt gilt als beschattet. Treffer näher als EPS zählen nicht.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg 940 -->
+  <rect width="470" height="200" fill="#ffffff"/>
+  <rect x="10.0" y="120.0" width="450.0" height="70.0" fill="#f3f4f6"/>
+  <line x1="10.0" y1="120.0" x2="460.0" y2="120.0" stroke="#1f2937" stroke-width="2.5"/>
+  <text x="452.0" y="110.0" font-size="15" fill="#1f2937" text-anchor="end">Boden, y = 0</text>
+  <text x="16.0" y="26.0" font-size="14" fill="#6b7280" text-anchor="start" font-style="italic">stark vergrößert</text>
+  <line x1="161.0" y1="128.3" x2="182.2" y2="89.7" stroke="#16a34a" stroke-width="2"/>
+  <line x1="156.6" y1="125.9" x2="165.4" y2="130.7" stroke="#16a34a" stroke-width="2"/>
+  <line x1="177.8" y1="87.3" x2="186.6" y2="92.1" stroke="#16a34a" stroke-width="2"/>
+  <text x="174.2" y="85.7" font-size="15" fill="#16a34a" text-anchor="end" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">EPS</text>
+  <line x1="175.0" y1="136.0" x2="227.1" y2="41.3" stroke="#d97706" stroke-width="2" stroke-dasharray="6 5"/>
+  <polygon points="231.9,32.6 230.5,46.0 221.3,41.0" fill="#d97706"/>
+  <text x="241.9" y="40.6" font-size="15" fill="#d97706" text-anchor="start">zur Sonne</text>
+  <circle cx="175.0" cy="120.0" r="5.0" fill="#ffffff" stroke="#6b7280" stroke-width="1.5"/>
+  <text x="115.0" y="112.0" font-size="14" fill="#6b7280" text-anchor="end">eigentlich hier</text>
+  <circle cx="175.0" cy="136.0" r="5.0" fill="#2b5fb4" stroke="#2b5fb4" stroke-width="1.5"/>
+  <text x="155.0" y="166.0" font-size="14" fill="#2b5fb4" text-anchor="start">berechnet: ein winziges Stück zu tief</text>
+  <line x1="178.8" y1="115.0" x2="188.8" y2="125.0" stroke="#dc2626" stroke-width="2.5"/>
+  <line x1="178.8" y1="125.0" x2="188.8" y2="115.0" stroke="#dc2626" stroke-width="2.5"/>
+  <text x="217.0" y="66.0" font-size="14" fill="#dc2626" text-anchor="start">trifft den Boden selbst,</text>
+  <text x="217.0" y="84.0" font-size="14" fill="#dc2626" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">t = 0,0000000000000002</text>
+</svg>

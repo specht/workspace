@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 545 205" width="545" height="205" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Vektoren als Pfeile: add setzt zwei Pfeile aneinander, scale macht einen Pfeil länger oder kürzer, normalize macht ihn genau 1 lang und behält die Richtung.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg 1090 -->
+  <rect width="545" height="205" fill="#ffffff"/>
+  <line x1="30.0" y1="150.0" x2="152.2" y2="32.5" stroke="#1f2937" stroke-width="2.5"/>
+  <polygon points="160.0,25.0 154.2,38.4 146.3,30.3" fill="#1f2937"/>
+  <line x1="30.0" y1="150.0" x2="115.9" y2="113.8" stroke="#2b5fb4" stroke-width="2"/>
+  <polygon points="125.0,110.0 115.6,119.6 111.6,110.0" fill="#2b5fb4"/>
+  <line x1="125.0" y1="110.0" x2="156.2" y2="34.2" stroke="#2b5fb4" stroke-width="2"/>
+  <polygon points="160.0,25.0 160.1,38.4 150.5,34.5" fill="#2b5fb4"/>
+  <text x="85.5" y="152.0" font-size="16" fill="#2b5fb4" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">a</text>
+  <text x="156.5" y="73.5" font-size="16" fill="#2b5fb4" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">b</text>
+  <text x="85.0" y="81.5" font-size="15" fill="#1f2937" text-anchor="end" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">add(a, b)</text>
+  <text x="95.0" y="195.0" font-size="15" fill="#6b7280" text-anchor="middle">add: aneinandersetzen</text>
+  <line x1="205.0" y1="50.0" x2="255.1" y2="50.0" stroke="#2b5fb4" stroke-width="2"/>
+  <polygon points="265.0,50.0 252.6,55.2 252.6,44.8" fill="#2b5fb4"/>
+  <text x="205.0" y="38.0" font-size="15" fill="#2b5fb4" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">a</text>
+  <line x1="205.0" y1="100.0" x2="314.2" y2="100.0" stroke="#1f2937" stroke-width="2.5"/>
+  <polygon points="325.0,100.0 311.5,105.7 311.5,94.3" fill="#1f2937"/>
+  <text x="205.0" y="88.0" font-size="15" fill="#1f2937" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">scale(a, 2)</text>
+  <line x1="205.0" y1="150.0" x2="224.2" y2="150.0" stroke="#1f2937" stroke-width="2.5"/>
+  <polygon points="235.0,150.0 221.5,155.7 221.5,144.3" fill="#1f2937"/>
+  <text x="205.0" y="138.0" font-size="15" fill="#1f2937" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">scale(a, 0.5)</text>
+  <text x="270.0" y="195.0" font-size="15" fill="#6b7280" text-anchor="middle">scale: länger, kürzer</text>
+  <circle cx="430.0" cy="100.0" r="55.0" fill="none" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 5"/>
+  <line x1="430.0" y1="100.0" x2="501.0" y2="44.5" stroke="#2b5fb4" stroke-width="2"/>
+  <polygon points="508.8,38.4 502.2,50.2 495.8,42.0" fill="#2b5fb4"/>
+  <line x1="430.0" y1="100.0" x2="464.1" y2="73.3" stroke="#1f2937" stroke-width="3"/>
+  <polygon points="473.3,66.1 465.6,80.0 458.1,70.3" fill="#1f2937"/>
+  <circle cx="430.0" cy="100.0" r="3.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <text x="514.8" y="34.4" font-size="16" fill="#2b5fb4" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">a</text>
+  <text x="450.0" y="130.0" font-size="15" fill="#1f2937" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">normalize(a)</text>
+  <text x="440.0" y="195.0" font-size="15" fill="#6b7280" text-anchor="middle">normalize: Länge 1</text>
+</svg>

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="400" height="250" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Das Kreuzprodukt cross(a, b) steht senkrecht auf a und auf b. Vertauscht man a und b, zeigt es in die Gegenrichtung.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg 800 -->
+  <rect width="400" height="250" fill="#ffffff"/>
+  <polygon points="19.2,182.2 240.2,219.6 382.8,109.2 161.8,71.8" fill="#eef3fb" stroke="#d1d5db" stroke-width="1.5" stroke-linejoin="round"/>
+  <polyline points="151.8,152.0 151.8,140.0 140.0,138.0" fill="none" stroke="#6b7280" stroke-width="1.2" stroke-linejoin="round"/>
+  <polyline points="149.5,142.7 149.5,130.7 140.0,138.0" fill="none" stroke="#6b7280" stroke-width="1.2" stroke-linejoin="round"/>
+  <line x1="140.0" y1="150.0" x2="140.0" y2="215.1" stroke="#6b7280" stroke-width="2" stroke-dasharray="6 5"/>
+  <polygon points="140.0,225.0 134.8,212.6 145.2,212.6" fill="#6b7280"/>
+  <text x="150.0" y="220.0" font-size="15" fill="#6b7280" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">cross(b, a)</text>
+  <line x1="140.0" y1="150.0" x2="259.4" y2="170.2" stroke="#2b5fb4" stroke-width="2.5"/>
+  <polygon points="270.0,172.0 255.7,175.3 257.6,164.2" fill="#2b5fb4"/>
+  <text x="274.0" y="194.0" font-size="16" fill="#2b5fb4" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">a</text>
+  <line x1="140.0" y1="150.0" x2="193.5" y2="108.6" stroke="#2b5fb4" stroke-width="2.5"/>
+  <polygon points="202.0,102.0 194.8,114.7 187.9,105.8" fill="#2b5fb4"/>
+  <text x="208.0" y="96.0" font-size="16" fill="#2b5fb4" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">b</text>
+  <line x1="140.0" y1="150.0" x2="140.0" y2="43.7" stroke="#1f2937" stroke-width="3"/>
+  <polygon points="140.0,32.0 146.1,46.6 133.9,46.6" fill="#1f2937"/>
+  <text x="150.0" y="44.0" font-size="15" fill="#1f2937" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">cross(a, b)</text>
+  <circle cx="140.0" cy="150.0" r="3.5" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+</svg>

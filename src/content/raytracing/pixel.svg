@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 220" width="540" height="220" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Glatte Kanten: Ein Strahl durch die Mitte jedes Pixels entscheidet über den ganzen Pixel, und der Rand wird zur Treppe. Viele Strahlen durch zufällige Punkte im Pixel ergeben im Durchschnitt eine Mischfarbe, so viel, wie die Kugel vom Pixel bedeckt.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg 1080 -->
+  <rect width="540" height="220" fill="#ffffff"/>
+  <rect x="112.0" y="112.0" width="46.0" height="46.0" fill="#dc2626" fill-opacity="0.6"/>
+  <rect x="158.0" y="66.0" width="46.0" height="46.0" fill="#dc2626" fill-opacity="0.6"/>
+  <rect x="158.0" y="112.0" width="46.0" height="46.0" fill="#dc2626" fill-opacity="0.6"/>
+  <rect x="204.0" y="20.0" width="46.0" height="46.0" fill="#dc2626" fill-opacity="0.6"/>
+  <rect x="204.0" y="66.0" width="46.0" height="46.0" fill="#dc2626" fill-opacity="0.6"/>
+  <rect x="204.0" y="112.0" width="46.0" height="46.0" fill="#dc2626" fill-opacity="0.6"/>
+  <clipPath id="c0"><rect x="20" y="20" width="230" height="138"/></clipPath>
+  <circle cx="270.0" cy="225.0" r="190" fill="none" stroke="#1f2937" stroke-width="2" clip-path="url(#c0)"/>
+  <line x1="20.0" y1="20.0" x2="20.0" y2="158.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="66.0" y1="20.0" x2="66.0" y2="158.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="112.0" y1="20.0" x2="112.0" y2="158.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="158.0" y1="20.0" x2="158.0" y2="158.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="204.0" y1="20.0" x2="204.0" y2="158.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="250.0" y1="20.0" x2="250.0" y2="158.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="20.0" y1="20.0" x2="250.0" y2="20.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="20.0" y1="66.0" x2="250.0" y2="66.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="20.0" y1="112.0" x2="250.0" y2="112.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="20.0" y1="158.0" x2="250.0" y2="158.0" stroke="#6b7280" stroke-width="1"/>
+  <circle cx="43.0" cy="43.0" r="3.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="43.0" cy="89.0" r="3.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="43.0" cy="135.0" r="3.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="89.0" cy="43.0" r="3.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="89.0" cy="89.0" r="3.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="89.0" cy="135.0" r="3.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="135.0" cy="43.0" r="3.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="135.0" cy="89.0" r="3.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="135.0" cy="135.0" r="3.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="181.0" cy="43.0" r="3.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="181.0" cy="89.0" r="3.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="181.0" cy="135.0" r="3.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="227.0" cy="43.0" r="3.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="227.0" cy="89.0" r="3.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="227.0" cy="135.0" r="3.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <text x="135.0" y="186.0" font-size="15" fill="#1f2937" text-anchor="middle">ein Strahl je Pixel,</text>
+  <text x="135.0" y="205.0" font-size="15" fill="#1f2937" text-anchor="middle">durch die Mitte</text>
+  <text x="242.0" y="148.0" font-size="14" fill="#1f2937" text-anchor="end">Kugel</text>
+  <rect x="336.0" y="112.0" width="46.0" height="46.0" fill="#dc2626" fill-opacity="0.118"/>
+  <rect x="382.0" y="66.0" width="46.0" height="46.0" fill="#dc2626" fill-opacity="0.258"/>
+  <rect x="382.0" y="112.0" width="46.0" height="46.0" fill="#dc2626" fill-opacity="0.595"/>
+  <rect x="428.0" y="20.0" width="46.0" height="46.0" fill="#dc2626" fill-opacity="0.113"/>
+  <rect x="428.0" y="66.0" width="46.0" height="46.0" fill="#dc2626" fill-opacity="0.594"/>
+  <rect x="428.0" y="112.0" width="46.0" height="46.0" fill="#dc2626" fill-opacity="0.6"/>
+  <rect x="474.0" y="20.0" width="46.0" height="46.0" fill="#dc2626" fill-opacity="0.333"/>
+  <rect x="474.0" y="66.0" width="46.0" height="46.0" fill="#dc2626" fill-opacity="0.6"/>
+  <rect x="474.0" y="112.0" width="46.0" height="46.0" fill="#dc2626" fill-opacity="0.6"/>
+  <clipPath id="c1"><rect x="290" y="20" width="230" height="138"/></clipPath>
+  <circle cx="540.0" cy="225.0" r="190" fill="none" stroke="#1f2937" stroke-width="2" clip-path="url(#c1)"/>
+  <line x1="290.0" y1="20.0" x2="290.0" y2="158.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="336.0" y1="20.0" x2="336.0" y2="158.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="382.0" y1="20.0" x2="382.0" y2="158.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="428.0" y1="20.0" x2="428.0" y2="158.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="474.0" y1="20.0" x2="474.0" y2="158.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="520.0" y1="20.0" x2="520.0" y2="158.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="290.0" y1="20.0" x2="520.0" y2="20.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="290.0" y1="66.0" x2="520.0" y2="66.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="290.0" y1="112.0" x2="520.0" y2="112.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="290.0" y1="158.0" x2="520.0" y2="158.0" stroke="#6b7280" stroke-width="1"/>
+  <rect x="474.0" y="20.0" width="46.0" height="46.0" fill="none" stroke="#1f2937" stroke-width="2.5"/>
+  <circle cx="490.3" cy="29.7" r="3.0" fill="#ffffff" stroke="#2b5fb4" stroke-width="1.5"/>
+  <circle cx="502.7" cy="26.8" r="3.0" fill="#ffffff" stroke="#2b5fb4" stroke-width="1.5"/>
+  <circle cx="498.4" cy="37.9" r="3.0" fill="#ffffff" stroke="#2b5fb4" stroke-width="1.5"/>
+  <circle cx="480.2" cy="43.3" r="3.0" fill="#ffffff" stroke="#2b5fb4" stroke-width="1.5"/>
+  <circle cx="479.4" cy="40.5" r="3.0" fill="#ffffff" stroke="#2b5fb4" stroke-width="1.5"/>
+  <circle cx="480.7" cy="27.4" r="3.0" fill="#ffffff" stroke="#2b5fb4" stroke-width="1.5"/>
+  <circle cx="494.1" cy="55.4" r="3.0" fill="#dc2626" stroke="#dc2626" stroke-width="1.5"/>
+  <circle cx="482.7" cy="32.5" r="3.0" fill="#ffffff" stroke="#2b5fb4" stroke-width="1.5"/>
+  <circle cx="501.8" cy="60.0" r="3.0" fill="#dc2626" stroke="#dc2626" stroke-width="1.5"/>
+  <circle cx="499.9" cy="39.1" r="3.0" fill="#ffffff" stroke="#2b5fb4" stroke-width="1.5"/>
+  <circle cx="515.1" cy="25.8" r="3.0" fill="#ffffff" stroke="#2b5fb4" stroke-width="1.5"/>
+  <circle cx="510.6" cy="35.0" r="3.0" fill="#ffffff" stroke="#2b5fb4" stroke-width="1.5"/>
+  <text x="405.0" y="186.0" font-size="15" fill="#1f2937" text-anchor="middle">viele Strahlen je Pixel,</text>
+  <text x="405.0" y="205.0" font-size="15" fill="#1f2937" text-anchor="middle">zufällig verteilt</text>
+  <text x="512.0" y="148.0" font-size="14" fill="#1f2937" text-anchor="end">Kugel</text>
+</svg>

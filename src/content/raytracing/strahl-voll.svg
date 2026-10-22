@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 190" width="320" height="190" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Eine volle Glaskugel: Zwei waagrechte Strahlen knicken beim Eintreten und beim Austreten zur Mitte hin ab und kreuzen sich; oben und unten tauschen. Gerechnet mit dem Brechungsgesetz, Brechungsindex 1,5.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg 640 -->
+  <rect width="320" height="190" fill="#ffffff"/>
+  <circle cx="120.0" cy="95.0" r="64.0" fill="#eef3fb" stroke="#1f2937" stroke-width="2"/>
+  <polyline points="5.0,63.0 64.6,63.0 183.2,85.1 306.6,132.6" fill="none" stroke="#2b5fb4" stroke-width="2" stroke-linejoin="round"/>
+  <polygon points="315.0,135.8 302.0,136.2 305.6,126.8" fill="#2b5fb4"/>
+  <polyline points="5.0,127.0 64.6,127.0 183.2,104.9 306.6,57.4" fill="none" stroke="#dc2626" stroke-width="2" stroke-linejoin="round"/>
+  <polygon points="315.0,54.2 305.6,63.2 302.0,53.8" fill="#dc2626"/>
+</svg>

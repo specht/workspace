@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 190" width="320" height="190" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Eine hohle Glaskugel: In jeder Wand knicken die Strahlen ab und gleich wieder zurück und gehen fast gerade hindurch. Gerechnet mit dem Brechungsgesetz; die Wand ist dicker gezeichnet als bei Whitted (0,84 statt 0,96 des Radius), damit man sie sieht.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg 640 -->
+  <rect width="320" height="190" fill="#ffffff"/>
+  <circle cx="120.0" cy="95.0" r="64.0" fill="#eef3fb" stroke="#1f2937" stroke-width="2"/>
+  <circle cx="120.0" cy="95.0" r="53.8" fill="#ffffff" stroke="#1f2937" stroke-width="1.5"/>
+  <polyline points="5.0,63.0 64.6,63.0 75.4,65.0 161.7,61.1 172.3,58.1 306.0,45.8" fill="none" stroke="#2b5fb4" stroke-width="2" stroke-linejoin="round"/>
+  <polygon points="315.0,45.0 303.5,51.1 302.6,41.1" fill="#2b5fb4"/>
+  <polyline points="5.0,127.0 64.6,127.0 75.4,125.0 161.7,128.9 172.3,131.9 306.0,144.2" fill="none" stroke="#dc2626" stroke-width="2" stroke-linejoin="round"/>
+  <polygon points="315.0,145.0 302.6,148.9 303.5,138.9" fill="#dc2626"/>
+</svg>

@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 515 210" width="515" height="210" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Das Skalarprodukt zweier Pfeile der Länge 1: so lang, wie der eine in Richtung des anderen zeigt. Gleiche Richtung 1, rechter Winkel 0, von hinten negativ. Es ist der Kosinus des Winkels zwischen ihnen.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg 1030 -->
+  <rect width="515" height="210" fill="#ffffff"/>
+  <line x1="60.0" y1="174.0" x2="60.0" y2="32.0" stroke="#d1d5db" stroke-width="1"/>
+  <line x1="60.0" y1="122.0" x2="60.0" y2="50.8" stroke="#1f2937" stroke-width="2.5"/>
+  <polygon points="60.0,40.0 65.7,53.5 54.3,53.5" fill="#1f2937"/>
+  <line x1="67.0" y1="122.0" x2="67.0" y2="50.8" stroke="#dc2626" stroke-width="2.5"/>
+  <polygon points="67.0,40.0 72.7,53.5 61.3,53.5" fill="#dc2626"/>
+  <line x1="52.0" y1="122.0" x2="52.0" y2="40.0" stroke="#2b5fb4" stroke-width="5" stroke-linecap="butt"/>
+  <circle cx="60.0" cy="122.0" r="3.5" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <text x="60.0" y="26.0" font-size="14" fill="#1f2937" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">normal</text>
+  <text x="76.0" y="64.0" font-size="14" fill="#dc2626" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">sun_dir</text>
+  <text x="65.0" y="198.0" font-size="15" fill="#2b5fb4" text-anchor="middle">dot = 1</text>
+  <line x1="186.0" y1="174.0" x2="186.0" y2="32.0" stroke="#d1d5db" stroke-width="1"/>
+  <line x1="186.0" y1="122.0" x2="186.0" y2="50.8" stroke="#1f2937" stroke-width="2.5"/>
+  <polygon points="186.0,40.0 191.7,53.5 180.3,53.5" fill="#1f2937"/>
+  <line x1="186.0" y1="122.0" x2="247.7" y2="86.4" stroke="#dc2626" stroke-width="2.5"/>
+  <polygon points="257.0,81.0 248.2,92.7 242.5,82.8" fill="#dc2626"/>
+  <path d="M212.0,107.0 A30.0,30.0 0 0 0 186.0,92.0" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <text x="208.0" y="88.9" font-size="13" fill="#6b7280" text-anchor="middle">60°</text>
+  <line x1="257.0" y1="81.0" x2="186.0" y2="81.0" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <line x1="178.0" y1="122.0" x2="178.0" y2="81.0" stroke="#2b5fb4" stroke-width="5" stroke-linecap="butt"/>
+  <circle cx="186.0" cy="122.0" r="3.5" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <text x="191.0" y="198.0" font-size="15" fill="#2b5fb4" text-anchor="middle">dot = 0,5</text>
+  <line x1="312.0" y1="174.0" x2="312.0" y2="32.0" stroke="#d1d5db" stroke-width="1"/>
+  <line x1="312.0" y1="122.0" x2="312.0" y2="50.8" stroke="#1f2937" stroke-width="2.5"/>
+  <polygon points="312.0,40.0 317.7,53.5 306.3,53.5" fill="#1f2937"/>
+  <line x1="312.0" y1="122.0" x2="383.2" y2="122.0" stroke="#dc2626" stroke-width="2.5"/>
+  <polygon points="394.0,122.0 380.5,127.7 380.5,116.3" fill="#dc2626"/>
+  <path d="M342.0,122.0 A30.0,30.0 0 0 0 312.0,92.0" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <text x="343.1" y="95.9" font-size="13" fill="#6b7280" text-anchor="middle">90°</text>
+  <circle cx="312.0" cy="122.0" r="3.5" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <text x="317.0" y="198.0" font-size="15" fill="#2b5fb4" text-anchor="middle">dot = 0</text>
+  <line x1="438.0" y1="174.0" x2="438.0" y2="32.0" stroke="#d1d5db" stroke-width="1"/>
+  <line x1="438.0" y1="122.0" x2="438.0" y2="50.8" stroke="#1f2937" stroke-width="2.5"/>
+  <polygon points="438.0,40.0 443.7,53.5 432.3,53.5" fill="#1f2937"/>
+  <line x1="438.0" y1="122.0" x2="499.7" y2="157.6" stroke="#dc2626" stroke-width="2.5"/>
+  <polygon points="509.0,163.0 494.5,161.2 500.2,151.3" fill="#dc2626"/>
+  <path d="M464.0,137.0 A30.0,30.0 0 0 0 438.0,92.0" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <text x="476.1" y="105.0" font-size="13" fill="#6b7280" text-anchor="middle">120°</text>
+  <line x1="509.0" y1="163.0" x2="438.0" y2="163.0" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <line x1="430.0" y1="122.0" x2="430.0" y2="163.0" stroke="#2b5fb4" stroke-width="5" stroke-linecap="butt"/>
+  <circle cx="438.0" cy="122.0" r="3.5" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <text x="443.0" y="198.0" font-size="15" fill="#2b5fb4" text-anchor="middle">dot = −0,5</text>
+</svg>

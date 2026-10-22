@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 330" width="420" height="330" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Das Bild als Glasscheibe eine Einheit vor dem Auge, schräg von hinten über das Auge gesehen. Der Strahl durch einen Pixel hat die Richtung (sx, sy, −1): eine Einheit nach vorn (−z), sx nach rechts, sy nach oben.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg 840 -->
+  <rect width="420" height="330" fill="#ffffff"/>
+  <circle cx="277.5" cy="28.4" r="36.0" fill="#eef3fb" stroke="#1f2937" stroke-width="2"/>
+  <text x="277.5" y="34.4" font-size="15" fill="#1f2937" text-anchor="middle">Kugel</text>
+  <line x1="225.6" y1="117.8" x2="249.9" y2="64.7" stroke="#2b5fb4" stroke-width="2"/>
+  <polygon points="254.1,55.6 253.6,69.1 244.2,64.8" fill="#2b5fb4"/>
+  <polygon points="55.0,106.0 265.0,106.0 265.0,224.0 55.0,224.0" fill="#eef3fb" stroke="#1f2937" stroke-width="2" fill-opacity="0.75" stroke-linejoin="round"/>
+  <line x1="81.2" y1="106.0" x2="81.2" y2="224.0" stroke="#d1d5db" stroke-width="1"/>
+  <line x1="107.5" y1="106.0" x2="107.5" y2="224.0" stroke="#d1d5db" stroke-width="1"/>
+  <line x1="133.7" y1="106.0" x2="133.7" y2="224.0" stroke="#d1d5db" stroke-width="1"/>
+  <line x1="160.0" y1="106.0" x2="160.0" y2="224.0" stroke="#d1d5db" stroke-width="1"/>
+  <line x1="186.3" y1="106.0" x2="186.3" y2="224.0" stroke="#d1d5db" stroke-width="1"/>
+  <line x1="212.5" y1="106.0" x2="212.5" y2="224.0" stroke="#d1d5db" stroke-width="1"/>
+  <line x1="238.8" y1="106.0" x2="238.8" y2="224.0" stroke="#d1d5db" stroke-width="1"/>
+  <line x1="55.0" y1="129.6" x2="265.0" y2="129.6" stroke="#d1d5db" stroke-width="1"/>
+  <line x1="55.0" y1="153.2" x2="265.0" y2="153.2" stroke="#d1d5db" stroke-width="1"/>
+  <line x1="55.0" y1="176.8" x2="265.0" y2="176.8" stroke="#d1d5db" stroke-width="1"/>
+  <line x1="55.0" y1="200.4" x2="265.0" y2="200.4" stroke="#d1d5db" stroke-width="1"/>
+  <polygon points="212.5,106.0 238.8,106.0 238.8,129.6 212.5,129.6" fill="#2b5fb4" fill-opacity="0.4" stroke-linejoin="round"/>
+  <text x="275.0" y="202.0" font-size="15" fill="#1f2937" text-anchor="start">Bild,</text>
+  <text x="275.0" y="220.0" font-size="15" fill="#1f2937" text-anchor="start">1 vor dem Auge</text>
+  <line x1="140.0" y1="305.0" x2="158.5" y2="175.7" stroke="#2b5fb4" stroke-width="2.5"/>
+  <polygon points="160.0,165.0 163.7,179.2 152.5,177.6" fill="#2b5fb4"/>
+  <text x="134.0" y="260.0" font-size="15" fill="#2b5fb4" text-anchor="end">1 nach vorn: −z</text>
+  <line x1="160.0" y1="165.0" x2="214.8" y2="165.0" stroke="#dc2626" stroke-width="2.5"/>
+  <polygon points="225.6,165.0 212.1,170.7 212.1,159.3" fill="#dc2626"/>
+  <text x="186.8" y="156.0" font-size="16" fill="#dc2626" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">sx</text>
+  <line x1="225.6" y1="165.0" x2="225.6" y2="128.6" stroke="#16a34a" stroke-width="2.5"/>
+  <polygon points="225.6,117.8 231.3,131.3 220.0,131.3" fill="#16a34a"/>
+  <text x="235.6" y="147.4" font-size="16" fill="#16a34a" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">sy</text>
+  <line x1="140.0" y1="305.0" x2="225.6" y2="117.8" stroke="#2b5fb4" stroke-width="2"/>
+  <circle cx="225.6" cy="117.8" r="3.5" fill="#ffffff" stroke="#2b5fb4" stroke-width="1.5"/>
+  <text x="251.9" y="94.7" font-size="15" fill="#2b5fb4" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">(sx, sy, −1)</text>
+  <circle cx="140.0" cy="305.0" r="7.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <text x="154.0" y="310.0" font-size="15" fill="#1f2937" text-anchor="start">Auge, im Nullpunkt</text>
+</svg>

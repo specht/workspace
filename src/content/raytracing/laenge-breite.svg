@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 268" width="460" height="268" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Längen- und Breitengrad aus der Normalen n, zweimal gezeichnet. Von oben: u = atan2(n.z, n.x) ist der Winkel rund um die Kugel, von x aus in Richtung z. Von der Seite: v = asin(n.y) ist, wie hoch n über dem Äquator liegt.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg 920 -->
+  <rect width="460" height="268" fill="#ffffff"/>
+  <text x="110.0" y="18.0" font-size="15" fill="#6b7280" text-anchor="middle">von oben</text>
+  <circle cx="110.0" cy="128.0" r="78.0" fill="#eef3fb" stroke="#1f2937" stroke-width="2"/>
+  <line x1="110.0" y1="128.0" x2="210.1" y2="128.0" stroke="#dc2626" stroke-width="2"/>
+  <polygon points="220.0,128.0 207.6,133.2 207.6,122.8" fill="#dc2626"/>
+  <text x="230.0" y="133.0" font-size="16" fill="#dc2626" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">x</text>
+  <line x1="110.0" y1="128.0" x2="110.0" y2="222.1" stroke="#2b5fb4" stroke-width="2"/>
+  <polygon points="110.0,232.0 104.8,219.6 115.2,219.6" fill="#2b5fb4"/>
+  <text x="122.0" y="228.0" font-size="16" fill="#2b5fb4" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">z</text>
+  <line x1="110.0" y1="128.0" x2="169.8" y2="178.1" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <line x1="110.0" y1="128.0" x2="150.7" y2="162.1" stroke="#1f2937" stroke-width="2.5"/>
+  <polygon points="158.9,169.1 145.0,164.7 152.2,156.0" fill="#1f2937"/>
+  <text x="156.9" y="191.1" font-size="16" fill="#1f2937" text-anchor="end" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">n</text>
+  <path d="M136.0,149.9 A34.0,34.0 0 0 0 144.0,128.0" fill="none" stroke="#1f2937" stroke-width="1.8"/>
+  <text x="153.2" y="149.7" font-size="17" fill="#1f2937" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">u</text>
+  <circle cx="110.0" cy="128.0" r="3.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <text x="110.0" y="258.0" font-size="15" fill="#1f2937" text-anchor="middle">u: Längengrad</text>
+  <text x="340.0" y="18.0" font-size="15" fill="#6b7280" text-anchor="middle">von der Seite</text>
+  <circle cx="340.0" cy="128.0" r="78.0" fill="#eef3fb" stroke="#1f2937" stroke-width="2"/>
+  <line x1="262.0" y1="128.0" x2="418.0" y2="128.0" stroke="#6b7280" stroke-width="1.5"/>
+  <text x="268.0" y="146.0" font-size="14" fill="#6b7280" text-anchor="start">Äquator</text>
+  <line x1="340.0" y1="128.0" x2="340.0" y2="41.9" stroke="#16a34a" stroke-width="2"/>
+  <polygon points="340.0,32.0 345.2,44.4 334.8,44.4" fill="#16a34a"/>
+  <text x="350.0" y="42.0" font-size="16" fill="#16a34a" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">y</text>
+  <line x1="340.0" y1="128.0" x2="395.0" y2="89.5" stroke="#1f2937" stroke-width="2.5"/>
+  <polygon points="403.9,83.3 396.1,95.6 389.6,86.4" fill="#1f2937"/>
+  <circle cx="403.9" cy="83.3" r="4.5" fill="#2b5fb4" stroke="#2b5fb4" stroke-width="1.5"/>
+  <text x="413.9" y="79.3" font-size="16" fill="#1f2937" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">n</text>
+  <path d="M380.0,128.0 A40.0,40.0 0 0 0 372.8,105.1" fill="none" stroke="#1f2937" stroke-width="1.8"/>
+  <text x="389.6" y="118.4" font-size="17" fill="#1f2937" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">v</text>
+  <circle cx="340.0" cy="128.0" r="3.0" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <text x="340.0" y="258.0" font-size="15" fill="#1f2937" text-anchor="middle">v: Breitengrad</text>
+</svg>

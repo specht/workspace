@@ -8,14 +8,14 @@
     },
     "belichtung-hart.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
-      "output_sha256": "6e41ad864ae6ae0fe278d995dfd36db78ba9a65a056d82db240e3a1bda563cbf",
-      "state_hash": "7aa40a38b3bd2478ca2cd9d5524c9942179d523c633e6e8b6b7ced06fd19a3a4",
+      "output_sha256": "a66ae4386baa9b9e113b494e381bb8aebc26dd0760c3334bd732f55025c16a5c",
+      "state_hash": "bb5afbb7bfb5b0fb3accd776762b6a6a5d42cd1f7f2d0d90285fdab7ee16b856",
       "workspace_look": "4.140.0-ls368"
     },
     "belichtung-weich.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
-      "output_sha256": "8ae7f1d393a8fbade309e72b97e54cfe4c8481303cfd719a4d777dcf257f521b",
-      "state_hash": "ebc357bbc8af244d29e0f3363120e8db0b8e5604a16dd1a9a99c982630d281d3",
+      "output_sha256": "5bbe1268c76666c99a4675d08056f42c8f3d3dda7b19358374c0e9a2ef295bc4",
+      "state_hash": "40c4d6a32a3cca3504dcc65e2318460ce00a184a55c15352573bb2caaa492f32",
       "workspace_look": "4.140.0-ls368"
     },
     "boden.webp": {
@@ -26,8 +26,8 @@
     },
     "gedreht.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
-      "output_sha256": "8797ca1de1aae4a56bfa54fb43bfd6f87c08afafa2ba2e0f351629a0020c3042",
-      "state_hash": "6bb337e636d320d052096b7d856e12bf770f9b5e745423373f970b4965b7a6de",
+      "output_sha256": "d54399165357244f594e4f04c1296e8bde46dc0b27682e73635d736032cbd16a",
+      "state_hash": "331d42752c6ae77929bca71257f5e16accee9f8ebe1013ab1175fb3f6331ff83",
       "workspace_look": "4.140.0-ls368"
     },
     "glas-bild.webp": {
@@ -56,8 +56,14 @@
     },
     "himmelslicht.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
-      "output_sha256": "b354a140956a6af071b2f1fc0c311295146bf85ed5af14dde04d73d0cbf96598",
-      "state_hash": "e8f16cd109d68d0056b969571436987c4d781e6816304adfa3ee6b3f81b22b61",
+      "output_sha256": "45090d8ceef44269e66fdd3d727970342bf8310dc71ddafb8cd70af9a6de60fc",
+      "state_hash": "f38c20a1df09760fde175b1ee6afb8de2e20f4c642a97ef91b0c344a1ff54504",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "hohl-bild.webp": {
+      "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
+      "output_sha256": "f06ffaf953dfda7ace6f7d259b4d4c0212388759f726922ed3d218edb850cd6a",
+      "state_hash": "73b9a168a7c070d288de55cc1192c876eef59d07e7ac5c735c8f144517b749ac",
       "workspace_look": "4.140.0-ls368"
     },
     "kamera-gedreht.webp": {
@@ -80,8 +86,8 @@
     },
     "lack.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
-      "output_sha256": "b6573de69cd8f847f952a1ba2ed8d4cb8bdda3bda6b463c3e68a4c41f1dcaa5f",
-      "state_hash": "4ef120d5c61b0f6862f78981edaa027f65cc9552c8c96cc98c12236622f8fe4e",
+      "output_sha256": "5b437e89e70aaebd48934821fac1932c0b49e0b3e0b6a2836b6b568fed1734d5",
+      "state_hash": "9407313f482036ecfab7ea34cb4293e5624d5009c8865f35858d8d602040cc08",
       "workspace_look": "4.140.0-ls368"
     },
     "licht-kugel.webp": {
@@ -99,8 +105,8 @@
     },
     "metall.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
-      "output_sha256": "e057ead28ab60e65c5cafced8e899be8e8355196b1e98ce837ee047b8c70f3ff",
-      "state_hash": "9a1d3844d2ed0808f6d55c44dab5bb35e31fc2b5abf989d023c4b951dda13e4a",
+      "output_sha256": "7bc5529c9185c71dc786e881014261e852a6c54325584d5ec82a73d9683729e9",
+      "state_hash": "a6caa2fb701f213640853f3fc197aa21401dd0883181a8022c467d2b8130916a",
       "workspace_look": "4.140.0-ls368"
     },
     "planet.webp": {
@@ -112,25 +118,25 @@
     "pt-mit.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
       "output_sha256": "dc70d6f6522c59c4a860ef204ed22ce465681d8edcf7965bd442a29fa8d3d2e4",
-      "state_hash": "693763fa4b7c9519e84ba806ec840af7a5e2775ed15e1c03a6486106869e7f92",
+      "state_hash": "5db165937681058ee486f7dbf96be283b2a4c9ae1c36654bfb0ee2dd30709663",
       "workspace_look": "4.140.0-ls368"
     },
     "pt-ohne.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
       "output_sha256": "4b69104be07cafb30dad85a680457cf7caea5eb86045c6368eb98abfe55c87d2",
-      "state_hash": "71927b3450d285c59587ff3f7d45f9d91d48e356546d65cf89000d83aa0424fc",
+      "state_hash": "f6dbc9821b552a4afd673b46b871a1292ccabc2ec6f7b4a8c9ee59580d42ec89",
       "workspace_look": "4.140.0-ls368"
     },
     "raytracer.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
-      "output_sha256": "9d07f4bcea555c7d3aeb29ebee5988cb659b5b3644e3289eb96e54e6a169498b",
-      "state_hash": "7dfc2d6acc67099ccdc9f94250c201b44dc203f21d552014c9d20def7583836f",
+      "output_sha256": "d9b18c06ee525bd8cdc3f8e68170b7ac533197ba2dc9feae572c8ede8f6131da",
+      "state_hash": "68324ff24b638c2e39b478cf545b532b1c1f204d69e4abe96ec8e8edbfc6a5b1",
       "workspace_look": "4.140.0-ls368"
     },
     "schaerfe-bild.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
-      "output_sha256": "4f8b14c026c680ba90df78ccf10a777d87a8311b557699d773b1edd0d5590ef2",
-      "state_hash": "34bdc84691fec1ed5f62826bfcf6e01856ec3dad41cc539521f5aa457ee1b34a",
+      "output_sha256": "768dbf51f70cd7d13aa3594cf86f000ce3bc6efe88136e7b2ca3760d7df2f02d",
+      "state_hash": "7de35e4f784cbeb34f0389a18122fada0bc60a34921005294096be20a40da247",
       "workspace_look": "4.140.0-ls368"
     },
     "schatten.webp": {
@@ -147,14 +153,14 @@
     },
     "weich-1.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
-      "output_sha256": "7e4a1ad0dafe45ec736e1806e149989ac2e18d9ca39c33606b109cb826be4c7d",
-      "state_hash": "6d2ba7bad4f4cc2a1466724a045b81737cea5892d2996dcbc1f57d09ee84cb24",
+      "output_sha256": "889c5cff211b0a60dfe4854e04ab9f00c4235fa5abb76536c9ab8d40ec65282e",
+      "state_hash": "d696a91e45dc13a2f37c259cc8f06dff22bac27ab541f22b2f912c69ad65962d",
       "workspace_look": "4.140.0-ls368"
     },
     "weich-64.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
-      "output_sha256": "57f4634661e4a68459c4072201bd19269c3cb0bd71132be77fd2546450520804",
-      "state_hash": "9a488e192f32c55d6eabe79eaeb081cd7b84e5d18462819c6283a372161c5462",
+      "output_sha256": "45eb2ae910cd8b98b1d866cdbbf654cc07260e95c6f3874ba412c4157242c98b",
+      "state_hash": "d90487664eb220793896ac5cb78ed699d7710fdb0d5a9859d812ac424aa76292",
       "workspace_look": "4.140.0-ls368"
     }
   },

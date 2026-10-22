@@ -114,6 +114,9 @@ typedef struct
 sphere spheres[] = {
     {{-0.3, 1.2, -1.4}, 1.2, {.color = {0.9, 0.9, 0.95}, .mirror = 0.9}},
     {{1.5, 0.8, 0.8}, 0.8, {.color = {0.95, 1.0, 0.97}, .glass = 1.5}},
+    // hohle Glaskugel: außen Glas, innen eine etwas kleinere Kugel aus Luft
+    {{-1.5, 0.5, 2.4}, 0.5, {.color = {0.95, 1.0, 0.97}, .glass = 1.5}},
+    {{-1.5, 0.5, 2.4}, 0.48, {.color = {1, 1, 1}, .glass = 1 / 1.5}},
     {{-2.2, 0.9, 0.3}, 0.9, {.planet = true}},
     {{-0.5, 0.45, 1.2}, 0.45, {.color = {0.9, 0.15, 0.1}, .varnish = true}},
     {{3.0, 0.4, -0.4}, 0.4, {.color = {1.0, 0.75, 0.3}, .mirror = 0.95, .metal = true, .rough = 0.12}},

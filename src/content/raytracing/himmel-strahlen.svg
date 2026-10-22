@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 262" width="540" height="262" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Licht vom Himmel: Jeder Durchgang schickt vom Treffpunkt einen Strahl in die Richtung normal + random_in_sphere(), immer über der Oberfläche, steil öfter als flach. Unter einer Kugel trifft er oft die Kugel statt des Himmels.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg 1080 -->
+  <rect width="540" height="262" fill="#ffffff"/>
+  <rect x="10.0" y="200.0" width="520.0" height="55.0" fill="#f3f4f6"/>
+  <line x1="10.0" y1="200.0" x2="530.0" y2="200.0" stroke="#1f2937" stroke-width="2"/>
+  <circle cx="415.0" cy="138.0" r="62.0" fill="#eef3fb" stroke="#1f2937" stroke-width="2"/>
+  <circle cx="140.0" cy="148.0" r="52.0" fill="none" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <circle cx="140.0" cy="148.0" r="2.5" fill="#6b7280" stroke="#6b7280" stroke-width="1.5"/>
+  <line x1="140.0" y1="200.0" x2="140.0" y2="84.2" stroke="#2b5fb4" stroke-width="1.6"/>
+  <polygon points="140.0,75.0 144.8,86.5 135.2,86.5" fill="#2b5fb4"/>
+  <circle cx="168.6" cy="132.4" r="2.5" fill="#6b7280" stroke="#6b7280" stroke-width="1.5"/>
+  <line x1="140.0" y1="200.0" x2="185.1" y2="93.4" stroke="#2b5fb4" stroke-width="1.6"/>
+  <polygon points="188.7,84.9 188.7,97.4 179.8,93.6" fill="#2b5fb4"/>
+  <circle cx="108.8" cy="140.2" r="2.5" fill="#6b7280" stroke="#6b7280" stroke-width="1.5"/>
+  <line x1="140.0" y1="200.0" x2="86.4" y2="97.3" stroke="#2b5fb4" stroke-width="1.6"/>
+  <polygon points="82.2,89.2 91.8,97.2 83.2,101.6" fill="#2b5fb4"/>
+  <circle cx="155.6" cy="174.0" r="2.5" fill="#6b7280" stroke="#6b7280" stroke-width="1.5"/>
+  <line x1="140.0" y1="200.0" x2="199.6" y2="100.7" stroke="#2b5fb4" stroke-width="1.6"/>
+  <polygon points="204.3,92.8 202.5,105.2 194.2,100.2" fill="#2b5fb4"/>
+  <circle cx="121.8" cy="176.6" r="2.5" fill="#6b7280" stroke="#6b7280" stroke-width="1.5"/>
+  <line x1="140.0" y1="200.0" x2="68.9" y2="108.6" stroke="#2b5fb4" stroke-width="1.6"/>
+  <polygon points="63.3,101.3 74.1,107.5 66.5,113.4" fill="#2b5fb4"/>
+  <circle cx="179.0" cy="163.6" r="2.5" fill="#6b7280" stroke="#6b7280" stroke-width="1.5"/>
+  <line x1="140.0" y1="200.0" x2="224.6" y2="121.0" stroke="#2b5fb4" stroke-width="1.6"/>
+  <polygon points="231.4,114.7 226.3,126.1 219.7,119.0" fill="#2b5fb4"/>
+  <circle cx="98.4" cy="168.8" r="2.5" fill="#6b7280" stroke="#6b7280" stroke-width="1.5"/>
+  <line x1="140.0" y1="200.0" x2="47.4" y2="130.5" stroke="#2b5fb4" stroke-width="1.6"/>
+  <polygon points="40.0,125.0 52.1,128.0 46.3,135.8" fill="#2b5fb4"/>
+  <circle cx="147.8" cy="109.0" r="2.5" fill="#6b7280" stroke="#6b7280" stroke-width="1.5"/>
+  <line x1="140.0" y1="200.0" x2="149.9" y2="84.6" stroke="#2b5fb4" stroke-width="1.6"/>
+  <polygon points="150.7,75.5 154.5,87.3 144.9,86.5" fill="#2b5fb4"/>
+  <line x1="330.0" y1="200.0" x2="330.0" y2="84.2" stroke="#2b5fb4" stroke-width="1.6"/>
+  <polygon points="330.0,75.0 334.8,86.5 325.2,86.5" fill="#2b5fb4"/>
+  <line x1="330.0" y1="200.0" x2="353.4" y2="144.8" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <circle cx="353.4" cy="144.8" r="2.5" fill="#6b7280" stroke="#6b7280" stroke-width="1.5"/>
+  <line x1="330.0" y1="200.0" x2="276.4" y2="97.3" stroke="#2b5fb4" stroke-width="1.6"/>
+  <polygon points="272.2,89.2 281.8,97.2 273.2,101.6" fill="#2b5fb4"/>
+  <line x1="330.0" y1="200.0" x2="355.9" y2="156.8" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <circle cx="355.9" cy="156.8" r="2.5" fill="#6b7280" stroke="#6b7280" stroke-width="1.5"/>
+  <line x1="330.0" y1="200.0" x2="258.9" y2="108.6" stroke="#2b5fb4" stroke-width="1.6"/>
+  <polygon points="253.3,101.3 264.1,107.5 256.5,113.4" fill="#2b5fb4"/>
+  <line x1="330.0" y1="200.0" x2="362.0" y2="170.1" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <circle cx="362.0" cy="170.1" r="2.5" fill="#6b7280" stroke="#6b7280" stroke-width="1.5"/>
+  <line x1="330.0" y1="200.0" x2="237.4" y2="130.5" stroke="#2b5fb4" stroke-width="1.6"/>
+  <polygon points="230.0,125.0 242.1,128.0 236.3,135.8" fill="#2b5fb4"/>
+  <line x1="330.0" y1="200.0" x2="339.9" y2="84.6" stroke="#2b5fb4" stroke-width="1.6"/>
+  <polygon points="340.7,75.5 344.5,87.3 334.9,86.5" fill="#2b5fb4"/>
+  <circle cx="140.0" cy="200.0" r="4.5" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="330.0" cy="200.0" r="4.5" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <text x="140.0" y="224.0" font-size="15" fill="#1f2937" text-anchor="middle">sieht viel Himmel</text>
+  <text x="140.0" y="244.0" font-size="13" fill="#6b7280" text-anchor="middle">gestrichelt: normal + random_in_sphere()</text>
+  <text x="330.0" y="224.0" font-size="15" fill="#1f2937" text-anchor="middle">sieht wenig Himmel</text>
+</svg>
