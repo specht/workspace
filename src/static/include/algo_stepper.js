@@ -344,14 +344,16 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             return best;
         };
         // the numbers beside a node: dist above, h below (A*)
-        const marks = Object.values(at).flatMap(([x, y]) => [...(shortest ? [{ x: x - 14, y: y - 36, w: 28, h: 15 }] : []), ...(kind === 'astar' ? [{ x: x - 18, y: y + 21, w: 36, h: 14 }] : [])]);
+        const marks = Object.values(at).flatMap(([x, y]) => [...(shortest ? [{ x: x - 14, y: y - 40, w: 28, h: 15 }] : []), ...(kind === 'astar' ? [{ x: x - 18, y: y + 21, w: 36, h: 14 }] : [])]);
         const weights = shortest ? segments.map(([p, q]) => ({ x: (p[0] + q[0]) / 2 - 12, y: (p[1] + q[1]) / 2 - 9, w: 24, h: 18 })) : [];
+        // the start's null and its stub, once placed
+        const taken = [];
         const clear = (r, own) => {
             if (r.x < 4 || r.y < 4 || r.x + r.w > width - 4 || r.y + r.h > rowY - 34) return -Infinity;
             let score = Infinity;
             for (const [id, p] of Object.entries(at)) score = Math.min(score, rectPoint(r, p) - (id === own ? 0 : 22));
             for (const s of segments) score = Math.min(score, rectSegment(r, s) + 2);
-            for (const m of [...marks, ...weights]) score = Math.min(score, Math.max(m.x - r.x - r.w, r.x - m.x - m.w, m.y - r.y - r.h, r.y - m.y - m.h, 0) + 1);
+            for (const m of [...marks, ...weights, ...taken]) score = Math.min(score, Math.max(m.x - r.x - r.w, r.x - m.x - m.w, m.y - r.y - r.h, r.y - m.y - m.h, 0) + 1);
             return score;
         };
         // a box of w × h at gap from the node's centre, in the clearest of
@@ -364,20 +366,33 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
                 const [dx, dy] = [Math.cos(a), Math.sin(a)];
                 const d = gap + Math.abs(dx) * w / 2 + Math.abs(dy) * h / 2;
                 const r = { x: cx + dx * d - w / 2, y: cy + dy * d - h / 2, w, h };
-                const score = clear(r, id) + 4 * Math.abs(dx);
+                // its arrow, too, passes clear of the numbers and the null
+                let line = Infinity;
+                for (let s = 0.5; s <= 1; s += 0.05) {
+                    const [px, py] = [cx + dx * d * s, cy + dy * d * s];
+                    if (Math.hypot(px - cx, py - cy) < 18) continue;
+                    for (const m of [...marks, ...weights, ...taken]) line = Math.min(line, rectPoint(m, [px, py]) - 2);
+                }
+                const score = Math.min(clear(r, id), line) + 4 * Math.abs(dx);
                 if (!best || score > best.score) best = { score, x: r.x, y: r.y, dx, dy };
             }
             return best;
         };
+        // null: the start's predecessor, at the end of a short stub; placed
+        // first, and the labels beside the start keep clear of it and its stub
+        const stub = spot(start, 30, 16, 40);
+        const nullAt = [stub.x + 15, stub.y + 8];
+        taken.push({ x: stub.x, y: stub.y, w: 30, h: 16 });
+        for (let s = 0.3; s < 1; s += 0.15) {
+            const [sx, sy] = at[start];
+            taken.push({ x: sx + (nullAt[0] - sx) * s - 3, y: sy + (nullAt[1] - sy) * s - 3, w: 6, h: 6 });
+        }
         const nodeSpot = {};
         const neighborSpot = {};
         for (const id of Object.keys(at)) {
             nodeSpot[id] = spot(id, 44, 18, 48);
             neighborSpot[id] = spot(id, 74, shortest ? 40 : 18, 40);
         }
-        // null: the start's predecessor, at the end of a short stub
-        const stub = spot(start, 30, 16, 40);
-        const nullAt = [stub.x + 15, stub.y + 8];
         return { at, width, rowY, nodeSpot, neighborSpot, nullAt, nodeAtNull: { x: nullAt[0] - 14.5 - 6 - 44, y: nullAt[1] - 9 } };
     }
 
@@ -427,7 +442,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         return [
             el('svg:rect', { 'data-solid': '', 'data-key': `var-${name}`, x, y, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }),
             el('svg:line', { 'data-key': `var-${name}-split`, x1: split, y1: y, x2: split, y2: y + 18, stroke: 'var(--algo-accent)', 'stroke-width': 1 }),
-            el('svg:text', { 'data-key': `var-${name}-label`, x: x + 5 + 3.75 * name.length, y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: name }),
+            el('svg:text', { 'data-solid': '', 'data-key': `var-${name}-label`, x: x + 5 + 3.75 * name.length, y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: name }),
             el('svg:text', { 'data-key': `var-${name}-value`, x: split + (x + w - split) / 2, y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 600, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-ink)', text: String(value) }),
         ];
     };
@@ -440,7 +455,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         const R = 16;
         const label = (name, x, y) => [
             el('svg:rect', { 'data-solid': '', 'data-key': `var-${name}`, x, y, width: 14 + 7.5 * name.length, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }),
-            el('svg:text', { 'data-key': `var-${name}-label`, x: x + (14 + 7.5 * name.length) / 2, y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: name }),
+            el('svg:text', { 'data-solid': '', 'data-key': `var-${name}-label`, x: x + (14 + 7.5 * name.length) / 2, y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: name }),
         ];
         // an arrow lets go and snaps onto its new node when it changes: the
         // variable (node, neighbor) holds another node now, a predecessor
@@ -525,7 +540,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             const ring = id === start ? 'var(--algo-start)' : id === goal ? 'var(--algo-goal)' : 'var(--algo-ink)';
             svg.appendChild(el('svg:circle', { 'data-key': `node-${id}`, cx: x, cy: y, r: R, fill, stroke: ring, 'stroke-width': id === start || id === goal ? 3.5 : 1.5 }));
             svg.appendChild(el('svg:text', { 'data-key': `label-${id}`, x, y: y + 5, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: id }));
-            if (frame.dist && id in frame.dist) svg.appendChild(el('svg:text', { 'data-key': `dist-${id}`, x, y: y - 24, 'text-anchor': 'middle', 'font-size': 12,
+            if (frame.dist && id in frame.dist) svg.appendChild(el('svg:text', { 'data-key': `dist-${id}`, x, y: y - 28, 'text-anchor': 'middle', 'font-size': 12,
                 'font-weight': frame.changed === id ? 700 : 400, fill: frame.changed === id ? 'var(--algo-accent)' : 'var(--algo-ink)', text: String(frame.dist[id]) }));
             if (kind === 'astar') svg.appendChild(el('svg:text', { 'data-key': `h-${id}`, x, y: y + 32, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: `h ${straight(graph, id, goal)}` }));
         }
@@ -775,7 +790,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
                     d: `M${centre[0]} ${centre[1]} Q${(centre[0] + ex) / 2} ${(centre[1] + ey) / 2} ${ex} ${ey}`, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'marker-end': `url(#${marker}-accent)` }));
             }
             out.push(el('svg:rect', { 'data-solid': '', 'data-key': `var-${name}`, x: lx, y, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
-            out.push(el('svg:text', { 'data-key': `var-${name}-label`, x: centre[0], y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: name }));
+            out.push(el('svg:text', { 'data-solid': '', 'data-key': `var-${name}-label`, x: centre[0], y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: name }));
             return out;
         };
         // index variables under their cell, one label for each cell (indexLabels)
@@ -1042,7 +1057,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         group.boxes.forEach((box) => {
             if (box.value !== undefined) { out.push(...valueBox(box.name, box.x - box.width / 2, y, box.value)); return; }
             out.push(el('svg:rect', { 'data-solid': '', 'data-key': `var-${box.name}`, x: box.x - box.width / 2, y, width: box.width, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
-            out.push(el('svg:text', { 'data-key': `var-${box.name}-label`, x: box.x, y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: box.text || box.name }));
+            out.push(el('svg:text', { 'data-solid': '', 'data-key': `var-${box.name}-label`, x: box.x, y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: box.text || box.name }));
         });
         return out;
     }
@@ -1114,7 +1129,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
                 el('svg:text', { x: (cell - 8) / 2, y: 19, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.values[id]) })]));
             const w = 14 + 7.5 * 'current'.length;
             svg.appendChild(el('svg:rect', { 'data-solid': '', 'data-key': 'var-current', x: x + cell - 2, y: 9, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
-            svg.appendChild(el('svg:text', { 'data-key': 'var-current-label', x: x + cell - 2 + w / 2, y: 22, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'current' }));
+            svg.appendChild(el('svg:text', { 'data-solid': '', 'data-key': 'var-current-label', x: x + cell - 2 + w / 2, y: 22, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'current' }));
         }
         if (frame.split !== undefined) svg.appendChild(el('svg:line', { 'data-key': 'split', x1: frame.split * cell, y1: lift - 10, x2: frame.split * cell, y2: baseline, stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '5 4' }));
         if (frame.boundary !== undefined) svg.appendChild(el('svg:line', { 'data-key': 'boundary', x1: frame.boundary * cell, y1: lift - 10, x2: frame.boundary * cell, y2: baseline, stroke: 'var(--algo-goal)', 'stroke-width': 2, 'stroke-dasharray': '5 4' }));
@@ -1304,7 +1319,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             svg.appendChild(value(frame.card.id, x, 0, { fill: 'color-mix(in srgb, var(--algo-accent) 25%, var(--algo-paper))', stroke: 'var(--algo-accent)', dash: '5 3' }));
             const w = 14 + 7.5 * 5;
             svg.appendChild(el('svg:rect', { 'data-solid': '', 'data-key': 'var-value', x: x + cell - 2, y: 12, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
-            svg.appendChild(el('svg:text', { 'data-key': 'var-value-label', x: x + cell - 2 + w / 2, y: 25, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'value' }));
+            svg.appendChild(el('svg:text', { 'data-solid': '', 'data-key': 'var-value-label', x: x + cell - 2 + w / 2, y: 25, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'value' }));
         }
         const labelTop = top + 90;
         const vars = (frame.vars || []).map((v) => (v.name === 'size' ? { ...v, index: `b${v.index}`, value: v.index, border: top - 6 } : v));
@@ -1523,7 +1538,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         svg.appendChild(el('svg:rect', { 'data-solid': '', 'data-key': 'var-head', x: 4, y: top + 13, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
         if (headTo) svg.insertBefore(arrow('pointer-head', `var-head in-${frame.head}`, [4 + w / 2, top + 22], [headTo[0] - 2, headTo[1] + 22], { stroke: 'var(--algo-accent)', 'marker-end': `url(#${marker}-accent)`, ...marked('pointer-head', false) }), svg.lastChild);
         for (const node of pulseNodes(frame.pulses)) svg.insertBefore(node, svg.lastChild);
-        svg.appendChild(el('svg:text', { 'data-key': 'var-head-label', x: 4 + w / 2, y: top + 26, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'head' }));
+        svg.appendChild(el('svg:text', { 'data-solid': '', 'data-key': 'var-head-label', x: 4 + w / 2, y: top + 26, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'head' }));
         if (!headTo) svg.appendChild(nullBeside('head-empty', 4 + w, top + 13));
         for (const [id, [x, y]] of place) {
             const node = frame.nodes[id];
@@ -1560,7 +1575,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             const lx = nx - 40 - lw;
             svg.appendChild(arrow(`pointer-${v.name}`, `var-${v.name} in-${v.to}`, [lx + lw / 2, ny + 22], [nx - 2, ny + 22], { stroke: 'var(--algo-accent)', 'marker-end': `url(#${marker}-accent)`, 'data-rigid': '' }));
             svg.appendChild(el('svg:rect', { 'data-solid': '', 'data-key': `var-${v.name}`, x: lx, y: ny + 13, width: lw, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
-            svg.appendChild(el('svg:text', { 'data-key': `var-${v.name}-label`, x: lx + lw / 2, y: ny + 26, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: v.name }));
+            svg.appendChild(el('svg:text', { 'data-solid': '', 'data-key': `var-${v.name}-label`, x: lx + lw / 2, y: ny + 26, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: v.name }));
         }
         const others = (frame.vars || []).filter((v) => !isLoose(v.to)).map((v) => ({ name: v.name, index: v.to }));
         const labelTop = top + 90;
@@ -2177,7 +2192,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             if (v.to !== null && v.to !== undefined && v.to !== 'null') svg.appendChild(arrow(`pointer-${v.name}`, `var-${v.name} node-${v.to}`, centre, point(v.to), { stroke: 'var(--algo-accent)', 'marker-end': `url(#${most.marker}-accent)`, ...(v.rigid ? { 'data-rigid': '' } : {}),
                 ...(chain.has(`pointer-${v.name}`) ? { class: 'on-stack', ...settled(`pointer-${v.name}`, 'var(--algo-accent)', `url(#${most.marker}-accent)`) } : {}) }));
             labels.push(el('svg:rect', { 'data-solid': '', 'data-key': `var-${v.name}`, x, y, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
-            labels.push(el('svg:text', { 'data-key': `var-${v.name}-label`, x: centre[0], y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: v.name }));
+            labels.push(el('svg:text', { 'data-solid': '', 'data-key': `var-${v.name}-label`, x: centre[0], y: y + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: v.name }));
             // root of an empty tree: null after it, like head of an empty list
             if (v.above && (v.to === null || v.to === undefined)) labels.push(nullBeside(`${v.name}-null`, x + w, y));
         }
@@ -2370,7 +2385,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             svg.appendChild(el('svg:path', { 'data-key': 'pointer-b', 'data-ends': `var-b bin-${frame.b}`, 'data-inset': 2, 'data-rigid': '',
                 d: `M${8 + w / 2} ${y} Q${(8 + w / 2 + bx - 34) / 2} ${y} ${bx - 34} ${y}`, fill: 'none', stroke: 'var(--algo-accent)', 'stroke-width': 1.5, 'marker-end': `url(#${marker}-accent)` }));
             svg.appendChild(el('svg:rect', { 'data-solid': '', 'data-key': 'var-b', x: 8, y: y - 9, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
-            svg.appendChild(el('svg:text', { 'data-key': 'var-b-label', x: 8 + w / 2, y: y + 4, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'b' }));
+            svg.appendChild(el('svg:text', { 'data-solid': '', 'data-key': 'var-b-label', x: 8 + w / 2, y: y + 4, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'b' }));
         }
         const width = bx + bw + 22 + Math.max(1, longest) * step + 30;
         // count and m are variables: boxes with their value; the fill is

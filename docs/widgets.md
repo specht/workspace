@@ -122,7 +122,9 @@ only to look nice.
   circle by its radius, a group by its scale), and shrinks away when it goes;
   a fade would let the lines behind it show through. The arrows that end on
   it follow its current size (`data-inset='auto'`). Fading is for what covers
-  nothing (text, rings); a variable's box is there at once (`data-solid`).
+  nothing (text, rings). A variable's box and its name are there at once
+  (`data-solid`); when they go, they stay opaque until the arrow has shrunk
+  back into the box, then fade together, so the arrowhead never shows through.
   What goes into something else (the token into the node it becomes) does
   not fade either: it moves along under it and is gone at the end
   (`data-merge`), so two half-transparent shapes never lie on each other.

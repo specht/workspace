@@ -706,6 +706,7 @@ python3 -c 'import ast; print(ast.dump(ast.parse("2 + 3 * 4", mode="eval"), inde
     let steps = [];
     let current = 0;
     let svg = null;
+    let area = null;   // the size of the first tree, the largest
 
     // One step drawn into an SVG that is never shown; the visible one moves
     // to it (stepper_motion.js). An operator is a round box, a number a box,
@@ -718,9 +719,14 @@ python3 -c 'import ast; print(ast.dump(ast.parse("2 + 3 * 4", mode="eval"), inde
         if (text !== undefined) node.textContent = text;
         return node;
     };
+    // The tree stands in the middle of the area, so that it moves to the
+    // middle as it shrinks and the result ends up there, not at the top.
     function picture(tree, marks) {
         const next = make('svg', {});
-        const { pos } = layout(tree);
+        const { pos, width: w, height: h } = layout(tree);
+        const dx = (area.width - w) / 2;
+        const dy = (area.height - h) / 2;
+        for (const p of pos.values()) { p.x += dx; p.y += dy; }
         (function edges(t) {
             if (isLeaf(t)) return;
             const p = pos.get(t.id);
@@ -819,7 +825,8 @@ python3 -c 'import ast; print(ast.dump(ast.parse("2 + 3 * 4", mode="eval"), inde
             root.querySelectorAll('[data-go]').forEach((button) => { button.disabled = true; });
             return;
         }
-        const { width: w, height: h } = layout(steps[0].tree);
+        area = layout(steps[0].tree);
+        const { width: w, height: h } = area;
         svg = document.createElementNS(SVG, 'svg');
         svg.setAttribute('width', w);
         svg.setAttribute('height', h);

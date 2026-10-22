@@ -31,7 +31,8 @@
 // colour unless it has data-fill), a circle a point on it. data-rigid on a
 // line: when its target changes, it slides over with its owner instead of
 // letting go (a label that moves along with the node it points to).
-// data-solid: a new element is there at once, opaque, instead of fading in
+// data-solid: a new element is there at once, opaque, instead of fading in,
+// and one that goes stays until the lines from it have shrunk back, then fades
 // (the box of a variable, which hides the start of its arrow). data-arc
 // on a group that moves by translate: it goes on a small arc to the side. Elements without data-key
 // are replaced at once, so a widget that sets no keys looks as before. With
@@ -106,9 +107,11 @@
         // only in its form (a group that grew: its transform without the scale)
         // early: it runs at the start, before pointers sprout (an element
         // that grows in: its pointers sprout from it)
-        const move = (node, name, from, to, final = to, early = false) => {
+        // late: it runs at the end, after the lines leaving from it have
+        // shrunk back into it (the box of a variable that goes)
+        const move = (node, name, from, to, final = to, early = false, late = false) => {
             if (duration && from !== undefined && from !== to && movable(name) && mix(from, to, 0) !== null) {
-                tracks.push({ node, name, from, to, final, early });
+                tracks.push({ node, name, from, to, final, early, late });
                 node.setAttribute(name, from);
             } else node.setAttribute(name, final);
         };
@@ -200,6 +203,10 @@
                 // top of each other), it is removed at the end
                 if (to && 'merge' in node.dataset) { /* stays as it is */ }
                 else if (!to && 'grow' in node.dataset) grow(node, false);
+                // a box that hides the start of its arrow stays opaque until
+                // the arrow has shrunk back into it, else the head shows
+                // through the fading box
+                else if ('solid' in node.dataset) move(node, 'opacity', node.getAttribute('opacity') || '1', '0', '0', false, true);
                 else move(node, 'opacity', node.getAttribute('opacity') || '1', '0');
                 leaving.push(node);
             }
@@ -430,7 +437,7 @@
             }
         };
         const paint = (t, now) => {
-            for (const track of tracks) track.node.setAttribute(track.name, t >= 1 ? track.final : mix(track.from, track.to, ease(track.early ? early(t) : later(t))));
+            for (const track of tracks) track.node.setAttribute(track.name, t >= 1 ? track.final : mix(track.from, track.to, ease(track.early ? early(t) : track.late ? part(t, assigning ? 0.8 * PHASE : 0.8, 1) : later(t))));
             // data-arc: a group that moves by its translate goes on a small
             // arc (that many units to the side at the middle), so that two
             // that swap pass each other
