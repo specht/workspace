@@ -15,6 +15,7 @@ require './include/group_visibility.rb'
 require './include/look_in.rb'
 require './include/test_accounts.rb'
 require './include/reference_index.rb'
+require './include/extra_chapters.rb'
 require './include/person_boxes.rb'
 require './include/template_freshness.rb'
 require './include/anaglyph_viewer.rb'
@@ -1903,7 +1904,10 @@ class Main < Sinatra::Base
             # Reference pages: every h2 and h3 gets an anchor for the Handbuch index.
             outline = parsed_sections.dig(section, :catalog) == 'reference' ? ReferenceIndex.anchor_headings(root) : nil
             search_sections = outline ? ReferenceIndex.search_sections(root) : nil
+            # Optional chapters (<!-- extra --> before ##): badge, note, marks in the tables of contents
+            ExtraChapters.find(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
             inject_autotoc(root)
+            ExtraChapters.mark(root)
             # Code in a table that is one short word ([0-9], \\d+, --force)
             # stays in one piece instead of breaking at its hyphen when the
             # table squeezes its column (default.css, .table code.whole)

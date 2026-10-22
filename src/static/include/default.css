@@ -1719,6 +1719,53 @@ div.floatright > p {
     }
 }
 
+/* Optional chapters (ExtraChapters, <!-- extra --> before ##): a small
+   violet badge in the heading, a note under the first one of a run, the
+   same stars in both tables of contents. */
+
+h2 .extra-badge {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.5em;
+    padding: 0.2em 0.65em;
+    border-radius: 1em;
+    vertical-align: 0.3em;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    color: #5b3fa6;
+    background-color: #efeafb;
+}
+
+h2 .extra-badge .bi {
+    margin-right: 0.35em;
+}
+
+p.extra-note {
+    margin: -0.25em 0 1em;
+    font-size: 90%;
+    color: #6c6780;
+    text-align: left;
+}
+
+.extra-mark .bi {
+    color: #7a5cc9;
+}
+
+.autotoc > .items > button .extra-mark .bi {
+    margin-right: 0.4em;
+}
+
+.autotoc > .progress_spots_sm > div.extra {
+    opacity: 0.45;
+}
+
+.autotoc-secondary a .extra-mark .bi {
+    margin-left: 0.35em;
+    font-size: 0.9em;
+}
+
 /* Secondary auto-TOC */
 
 body.has-autotoc-secondary {

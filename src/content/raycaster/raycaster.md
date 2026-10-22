@@ -1428,6 +1428,7 @@ crop-element: #canvas
 
 Im Standbild ist der Unterschied klein, in Bewegung groß: Lauf durch die Halle und schalte mit <kbd>M</kbd> hin und her. Ohne Mipmaps flimmert hinten jeder Schritt.
 
+<!-- extra -->
 ## Das fertige Programm
 
 Vier Dinge machen aus dem Raycaster das Programm vom Anfang der Seite.
@@ -1573,6 +1574,7 @@ crop-element: #canvas
 </figure>
 </div>
 
+<!-- extra -->
 ## Nach Wolfenstein: DOOM
 
 Ein Jahr später, 1993, kam DOOM, wieder mit der Grafik von John Carmack, und es sieht ganz anders aus: Treppen, Fenster, hohe Hallen und niedrige Gänge, Wände in jedem Winkel, flackerndes Licht. Ein Gitter aus Kästchen gibt es nicht mehr. Die Karte besteht aus **Wänden**, Strecken zwischen zwei Punkten in jeder Richtung und Länge, und aus **Sektoren**: Flächen mit einer eigenen Höhe für Boden und Decke und einer eigenen Helligkeit.

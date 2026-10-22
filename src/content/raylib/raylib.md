@@ -1738,6 +1738,7 @@ Die Welt gehört jetzt dir. Ein paar Ideen, von leicht bis schwer:
 
 _task(abgabe)
 
+<!-- extra -->
 ## Was vorne liegt
 
 Die Schleife in `main` zeichnet die Blöcke in der Reihenfolge des Arrays, von `x = 0` an, ganz gleich, wo du stehst. Trotzdem verdeckt ein naher Block immer den fernen dahinter, auch wenn der ferne erst danach gezeichnet wird. Welche Fläche an einem Pixel zu sehen ist, heißt in der Computergrafik *Visible Surface Determination*. Zwei Ideen dafür stecken in fast jedem Spiel.
@@ -1771,6 +1772,7 @@ Drei Jahre später, in Quake, kamen beide Ideen zusammen, der Baum und der Tiefe
 
 _person(abrash)
 
+<!-- extra -->
 ## Wenn die Welt wächst
 
 Unsere Welt hat 48 × 24 × 48 = 55 296 Felder. In jedem Bild geht die Schleife in `main` alle durch, fragt bei jedem Block die Nachbarn ab und schickt die Seiten, an die Luft grenzt, neu an die Grafikkarte, 60-mal in der Sekunde. Zwei Dinge sparen dabei schon Arbeit: Seiten zwischen zwei Blöcken zeichnen wir nicht, und die Grafikkarte lässt Rückseiten weg. Gezeichnet wird aber alles andere, auch was hinter dir liegt und was der Nebel längst verschluckt hat.

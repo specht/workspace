@@ -339,6 +339,40 @@ unveränderten Code weiter. Darum endet der Kasten mit »Stell … wieder
 zurück«, wenn die Änderung im Weg wäre. Für eine Frage zum Nachdenken ohne
 Änderung gibt es `hint think`.
 
+### Extras für Schnelle
+
+Eine lange Seite hat oft Kapitel, die nicht alle brauchen: einen Ausblick
+nach der Abgabe, eine Verfeinerung des fertigen Programms, Hintergrund zum
+Lesen. Damit Lernende sehen, was dazugehört und was nicht, steht vor so
+einem Kapitel `<!-- extra -->` auf der Zeile direkt vor der Überschrift:
+
+```markdown
+<!-- extra -->
+## Tiefenschärfe
+```
+
+Die Überschrift bekommt dann ein kleines Schild »Extra« mit Sternen
+(`bi-stars`), und in beiden Inhaltsverzeichnissen, der Leiste oben und der
+Liste am Rand, stehen dieselben Sterne neben dem Kapitel; auf dem Handy ist
+sein Strich in der Leiste blasser. Unter dem ersten von mehreren
+aufeinanderfolgenden Extras steht eine Zeile, die die Seite selbst
+ausrechnet: Gehen die Extras bis zum Ende, »Ab hier Extras für Schnelle: Die
+Seite ist ohne sie vollständig.«; kommt danach noch ein Kapitel für alle,
+»Extras für Schnelle: dieses und das nächste Kapitel. Wer sie auslässt,
+springt zu …« mit einem Link dorthin (`src/ruby/include/extra_chapters.rb`).
+
+Ein Kapitel ist nur dann ein Extra, wenn die Seite ohne es vollständig ist:
+Kein späteres Kapitel, das nicht selbst ein Extra ist, baut auf seinem Code
+oder seinen Begriffen auf (in den Stufen nachsehen: Steht sein Code in der
+Stufe eines späteren Kapitels für alle, gehört es dazu), und die Dauer im
+Meta-Block reicht ohne die Extras. Am besten sind es die letzten Kapitel vor
+»Zeigen und veröffentlichen« oder »Wie geht es weiter?«. Ein Extra hat keine
+Aufgabe, sonst käme »x von y Aufgaben« für alle, die es auslassen, nie ans
+Ende; `extra_chapters_test.rb` prüft beides, die Stelle der Marke und dass
+kein `_task()` in einem Extra steht. Markiert werden nur ganze Kapitel
+(`##`), keine Abschnitte, und die Notiz für Lehrkräfte nennt die Extras im
+Ablauf.
+
 ## 3. Aufgaben schreiben
 
 Aufgaben stehen in `tasks.yaml` neben der Seite und werden mit

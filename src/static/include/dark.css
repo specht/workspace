@@ -93,6 +93,16 @@ html[data-bs-theme="dark"] {
     .autotoc > .items > button.active::after {
         background-color: rgba(255, 255, 255, 0.4);
     }
+    h2 .extra-badge {
+        color: #cdbcf5;
+        background-color: #2c2540;
+    }
+    p.extra-note {
+        color: #a8a3b8;
+    }
+    .extra-mark .bi {
+        color: #b49ef0;
+    }
     div.floatright {
         border: none;
     }

@@ -385,6 +385,9 @@ function install_autotoc() {
         div.data('autotoc-index', i);
         autotoc_containers.push(div[0]);
         let item = $('<button>', { type: 'button' }).text(div.data('label'));
+        // An optional chapter (ExtraChapters): its mark before the label,
+        // which the bar may cut off, and a fainter spot on phones.
+        if (div.hasClass('extra')) item.addClass('extra').prepend(extra_chapter_mark());
         item.data('autotoc-index', i);
         item[0].addEventListener('click', function(e) {
             $('html')[0].scrollTop = $(containers[i]).find('h2')[0].offsetTop - 80;
@@ -394,10 +397,28 @@ function install_autotoc() {
         $('.autotoc > .items').append(item);
         observer.observe(div[0]);
         let spot_sm = $('<div>');
+        if (div.hasClass('extra')) spot_sm.addClass('extra');
         spot_sm.css('width', `${100.0 / containers.length}%`);
         spot_sm.appendTo($('.autotoc > .progress_spots_sm'));
     }
     $('.autotoc .progress_sm').css('width', `calc(${100.0 / autotoc_containers.length}% - 0.3em)`);
+}
+
+// The mark of an optional chapter (ExtraChapters) in both tables of
+// contents; the heading's own badge stays out of their labels.
+function extra_chapter_mark(after) {
+    let mark = document.createElement('span');
+    mark.className = 'extra-mark';
+    mark.innerHTML = after ?
+        "<i class='bi bi-stars' aria-hidden='true'></i><span class='visually-hidden'> (Extra)</span>" :
+        "<i class='bi bi-stars' aria-hidden='true'></i><span class='visually-hidden'>Extra: </span>";
+    return mark;
+}
+
+function heading_label(heading) {
+    let copy = heading.cloneNode(true);
+    copy.querySelectorAll('.extra-badge').forEach(badge => badge.remove());
+    return copy.textContent.trim();
 }
 
 var autotoc_secondary = null;
@@ -449,7 +470,7 @@ function install_secondary_autotoc() {
     function ensure_id(heading, index) {
         if (heading.id) return heading.id;
 
-        let base = slugify(heading.textContent) || `abschnitt-${index + 1}`;
+        let base = slugify(heading_label(heading)) || `abschnitt-${index + 1}`;
         let id = base;
         let counter = 2;
 
@@ -483,7 +504,11 @@ function install_secondary_autotoc() {
         let link = document.createElement('a');
         link.href = `#${id}`;
         link.className = `level-${level}`;
-        link.textContent = heading.textContent.trim();
+        link.textContent = heading_label(heading);
+        if (heading.classList.contains('extra')) {
+            link.classList.add('extra');
+            link.append(extra_chapter_mark(true));
+        }
         link.dataset.autotocSecondaryIndex = index;
 
         link.addEventListener('click', function(e) {

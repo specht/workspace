@@ -1510,6 +1510,7 @@ In den 1980er Jahren waren glänzende Kugeln über einem Schachbrett das Bild f�
 
 _task(cover)
 
+<!-- extra -->
 ## Tiefenschärfe
 
 ### Eine Linse statt eines Punkts
@@ -1587,6 +1588,7 @@ crop-element: #canvas
 <strong>Ausprobieren:</strong> Mach die Linse größer, <code>aperture = 0.2</code>: Wie weit reicht der scharfe Bereich jetzt noch nach vorn und nach hinten? Mit <code>aperture = 0</code> ist alles wieder scharf. Setz danach 0.06 wieder ein.
 </div>
 
+<!-- extra -->
 ## Path Tracing
 
 ### Licht von Kugel zu Kugel
@@ -1698,6 +1700,7 @@ Die Wände stehen in beiden Bildern in der Sonne und haben dieselben Farben. Ohn
 <strong>Ausprobieren:</strong> Mach die linke Wand rot, <code>.color = {0.85, 0.1, 0.05}</code>, und sieh dir die große weiße Kugel an. Schieb sie danach ein Stück von der Wand weg, ihr Mittelpunkt bei <code>x = 0</code>: Wie viel Farbe bekommt sie dann noch ab? Stell danach beides zurück.
 </div>
 
+<!-- extra -->
 ## Belichtung
 
 ### Zu hell für den Bildschirm
