@@ -154,7 +154,8 @@ tasks:
     solution: TCP nummeriert jedes Byte und wartet auf Bestätigungen. Was nicht bestätigt wird, schickt es noch einmal; HTTP darüber merkt davon nichts.
 
   - id: port
-    title: Adresse und Port
+    title: Zwei Programme, eine Adresse
+    prediction: true
     prompt: |
       Auf einem Server laufen ein Webserver und ein SSH-Server. Woran erkennt
       der Rechner, für welches der beiden Programme ein ankommendes Paket ist?

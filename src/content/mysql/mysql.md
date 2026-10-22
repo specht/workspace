@@ -18,10 +18,6 @@ reference: [sql, datensaetze]
 In diesem Kapitel lernst du, wie du MySQL-Da­ten­ban­ken abfragen kannst. Dazu verwenden wir SQL, die Structured Query Language. Wir beginnen mit einfachen Abfragen und kombinieren die einzelnen Bausteine anschließend zu eigenen Fragen an die Daten.
 </p>
 
-_person(widenius)
-
-_person(chamberlin-boyce)
-
 ## Vorbereitung
 
 ### Einen Ordner anlegen
@@ -212,6 +208,10 @@ _schema(countries-basic)
 
 Unterstrichen ist der **Primärschlüssel**: die Spalte, deren Wert jede Zeile eindeutig macht, in `country` das Kürzel `code`, in `city` eine Nummer, `id`. Der Name reicht bei Städten nicht, denn er kommt mehrfach vor: Springfield gibt es in den Vereinigten Staaten gleich dreimal. Der Pfeil ↑ markiert einen **Fremdschlüssel**, eine Spalte, die auf eine Zeile einer anderen Tabelle verweist: `country_code` in `city` nennt das Land, in dem die Stadt liegt, mit seinem Kürzel; `continent` in `country` den Kontinent mit seinem Namen. `is_capital` in `city` ist `1`, wenn die Stadt die Hauptstadt ihres Landes ist, sonst `0`.
 
+Diese Tabellen liegen in einer MySQL-Datenbank; `mycli` ist nur das Programm, mit dem du sie abfragst.
+
+_person(widenius)
+
 ## Abfragen mit SELECT
 
 ### Spalten auswählen
@@ -326,6 +326,10 @@ sleep: 0.5
 -->
 
 <img class='full' src='select-country-where-or.webp' alt='Das Ergebnis listet die Namen der Länder in Europa und in Asien.'>
+
+Schon in der ersten Fassung von SQL, 1974, bestand eine Abfrage aus `SELECT`, `FROM` und `WHERE`:
+
+_person(chamberlin-boyce)
 
 ### Sortieren: ORDER BY
 

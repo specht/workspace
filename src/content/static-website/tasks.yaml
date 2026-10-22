@@ -58,18 +58,28 @@ tasks:
 
   - id: alt-text
     title: Ein guter Alt-Text
-    prompt: Welcher `alt`-Text passt am besten zu einem Foto eines Axolotls im Aquarium?
+    prompt: |
+      Auf deiner Seite steht der Abschnitt »Was frisst ein Axolotl?«. Darin ist
+      ein Foto: Ein Axolotl schnappt im Aquarium nach einem roten Wurm. Welcher
+      `alt`-Text passt am besten?
     check:
       type: choice
       options:
-        - '`alt="Ein schönes Bild für meine Seite über Tiere"`'
-        - '`alt="IMG_2034.jpg vom Ausflug ins Aquarium"`'
+        - '`alt="Bild von einem Axolotl, der in einem Aquarium einen Wurm frisst"`'
         - '`alt="Ein rosa Axolotl mit Kiemenbüscheln in einem Aquarium"`'
+        - '`alt="Ein Axolotl schnappt nach einem roten Wurm"`'
+        - '`alt="axolotl-frisst-wurm-aquarium-2034.jpg"`'
         - '`alt=""`'
       correct: 2
     feedback:
+      - when: { picked: 0 }
+        say: Fast. Aber dass es ein Bild ist, weiß der Screenreader schon; »Bild von« liest er nur zusätzlich vor.
+      - when: { picked: 1 }
+        say: Das beschreibt das Tier, aber nicht, was dieses Foto zum Abschnitt beiträgt. Hier geht es ums Fressen.
       - when: { picked: 3 }
-        say: Ein leerer Alt-Text ist richtig für Bilder, die nur Schmuck sind. Dieses Foto zeigt, worum es auf der Seite geht.
+        say: Den Dateinamen liest der Screenreader vor, aber er sagt nicht, was zu sehen ist.
+      - when: { picked: 4 }
+        say: Ein leerer Alt-Text ist richtig für Bilder, die nur Schmuck sind. Dieses Foto zeigt, worum es im Abschnitt geht.
 
   - id: eigenes-bild
     title: Dein eigenes Bild

@@ -167,6 +167,10 @@ crop-terminal-skip-bottom: 1
 
 <img class='full' src='explain-all.webp' alt='EXPLAIN untereinander: type ALL, possible_keys und key leer, rows knapp eine Million, Extra Using where.'>
 
+Was heißt das? Überlege, bevor du weiterliest:
+
+_task(vollstaendig)
+
 Drei Zeilen sind wichtig:
 
 - **`type: ALL`** heißt: Die Datenbank liest die ganze Tabelle, Zeile für Zeile, und prüft bei jeder die Bedingung. Man nennt das einen *Full Table Scan*.
@@ -174,8 +178,6 @@ Drei Zeilen sind wichtig:
 - **`rows`** schätzt, wie viele Zeilen sie dafür anfassen muss: fast eine Million, um eine einzige zu finden.
 
 Stell dir ein Telefonbuch vor, in dem die Einträge in der Reihenfolge stehen, in der sich die Leute angemeldet haben. Eine Nummer findest du darin nur, indem du alles liest.
-
-_task(vollstaendig)
 
 ## Ein Index
 
@@ -268,9 +270,11 @@ crop-terminal-skip-bottom: 1
 
 <img class='full' src='explain-primary.webp' alt='EXPLAIN untereinander: type const, key PRIMARY, rows 1.'>
 
-`key: PRIMARY`: Für den Primärschlüssel legt MySQL von selbst einen Index an, und bei InnoDB ist die Tabelle sogar in diesem B-Baum gespeichert, sortiert nach `id`. `type: const` heißt, dass es höchstens eine passende Zeile geben kann: Ein Primärschlüssel kommt nie zweimal vor.
+Auch hier liest die Datenbank nur eine Zeile, `rows: 1`. Überlege, bevor du weiterliest:
 
 _task(primaerschluessel)
+
+`key: PRIMARY`: Für den Primärschlüssel legt MySQL beim Anlegen der Tabelle selbst einen Index an, und bei InnoDB ist die Tabelle sogar in diesem B-Baum gespeichert, sortiert nach `id`. `type: const` heißt, dass es höchstens eine passende Zeile geben kann: Ein Primärschlüssel kommt nie zweimal vor.
 
 ## Wann ein Index nicht hilft
 

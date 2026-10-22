@@ -14,7 +14,7 @@ language: Pixelflow Canvas / Ruby
 # Feueranimation
 
 <p class='abstract'>
-»Demos« nannte man in der 90er Jahren kleine Programme, die spektakuläre Grafiken und Musik auf dem Bildschirm darstellten und dabei die Grenzen der verfügbaren Hardware ausreizten. Die Demoszene ist eine Subkultur, die sich um die Entwicklung von Demos und die Organisation von Demopartys dreht. In diesem Tutorial programmieren wir eine kleine Feueranimation in Ruby, die in der Demoszene relativ beliebt ist.
+Du programmierst in Ruby ein Feuer aus Pixeln, das am unteren Rand glüht und nach oben lodert: zuerst einen Farbverlauf von Schwarz über Rot und Gelb bis Weiß, dann eine Animation und einen Filterkernel, der jedes Pixel aus seinen Nachbarn berechnet. Der Effekt stammt aus der Demoszene der 1990er Jahre, in der Leute kleine Programme mit spektakulärer Grafik und Musik schrieben, die das Letzte aus ihren Rechnern herausholten.
 </p>
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
@@ -22,12 +22,12 @@ Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, dr
 <img class='full' src='../reference/workspace/fresh-start.webp' alt='Der Workspace ohne geöffneten Ordner, links »No Folder Opened«, rechts die Willkommensseite mit »New File…«.'>
 
 <div class='hint books'>
-Dieses Tutorial geht davon aus, dass du bereits die Pixelflow Canvas-Erweiterung und das pixelflow_canvas rubygem installiert hast. Falls nicht, findest du die Anleitung hier in Abschnitt 1: <a href='/drawing'>»Pixelflow Canvas installieren«</a>.
+Dieses Tutorial geht davon aus, dass du die Erweiterung Pixelflow Canvas und das Rubygem <code>pixelflow_canvas</code> schon installiert hast. Falls nicht, steht im Abschnitt »Vorbereitung« von <a href='/drawing#1-vorbereitung'>»Pixelgrafik mit Ruby«</a>, wie es geht.
 </div>
 
 ## Farbverlauf erstellen
 
-Der Feuereffekt basiert auf einem Farbverlauf von Schwarz über Rot, Orange und Gelb bis Weiß. Wir verwenden das Pixelflow Canvas mit einer Palette von 64 Farben, wobei kleine Farben für kalte Pixel und große Farben für heiße Pixel stehen. Wir können den Farbverlauf in 4 Abschnitte unterteilen:
+Der Feuereffekt basiert auf einem Farbverlauf von Schwarz über Rot, Orange und Gelb bis Weiß. Du verwendest das Pixelflow Canvas mit einer Palette von 64 Farben: Kleine Farbnummern stehen für kalte Pixel, große für heiße. Der Farbverlauf lässt sich in vier Abschnitte teilen:
 
 - Schwarz bis Dunkelrot (Farben 0 bis 15)
 - Dunkelrot bis Orange (Farben 16 bis 31)
@@ -36,7 +36,7 @@ Der Feuereffekt basiert auf einem Farbverlauf von Schwarz über Rot, Orange und 
 
 ### Die Palette anzeigen
 
-Um den Farbverlauf zu programmieren, beginnen wir mit einem kleinen Programm, das uns die ersten 64 Farben ausgibt. So können wir kontrollieren, ob die Farben korrekt sind. Erstelle eine neue Datei namens `fire.rb` und füge folgenden Code ein:
+Am Anfang steht ein kleines Programm, das die ersten 64 Farben der Palette zeigt. So kannst du nach jedem Schritt kontrollieren, ob die Farben stimmen. Erstelle eine neue Datei namens `fire.rb` und füge folgenden Code ein:
 
 ```ruby
 require 'pixelflow_canvas'
@@ -50,7 +50,7 @@ end
 
 
 Starte das Pixelflow Canvas, indem du <kbd>Strg</kbd><kbd>Shift</kbd><kbd>P</kbd> oder <kbd>F1</kbd> drückst und dann »Show Pixelflow Canvas« eingibst.
-Führe das Programm aus, indem du im Terminal `ruby fire.rb` eingibst. Da standardmäßig die [VGA-Palette](https://specht.github.io/pixelflow_canvas_ruby/palettes.html#vga) verwendet wird, sehen wir die ersten 64 Farben der VGA-Palette:
+Führe das Programm aus, indem du im Terminal `ruby fire.rb` eingibst. Da standardmäßig die [VGA-Palette](https://specht.github.io/pixelflow_canvas_ruby/palettes.html#vga) verwendet wird, siehst du die ersten 64 Farben der VGA-Palette:
 
 <!-- tutorial-screenshot
 # Erweiterung, Gem und Zeichenfläche wie in »Zeichnen mit Pixelflow Canvas«
@@ -79,7 +79,7 @@ image-file: fire-steps/step.png 8
 -->
 <img src='ramp0.webp' class='full' alt='Die ersten 64 Farben der VGA-Palette.'>
 
-Diese 64 Farben sollen nun durch unseren Farbverlauf ersetzt werden. Dazu schauen wir uns den Farbverlauf im Detail an:
+Diese 64 Farben ersetzt du jetzt durch den Farbverlauf. Sieh ihn dir im Einzelnen an; die drei Linien zeigen, wie viel Rot, Grün und Blau in jeder Farbe steckt:
 
 <svg width="100%" viewBox="-0.3 -0.1 4.5 1.2">
     <defs>
@@ -124,7 +124,7 @@ Diese 64 Farben sollen nun durch unseren Farbverlauf ersetzt werden. Dazu schaue
 
 ### Schwarz bis Dunkelrot
 
-Im ersten Abschnitt sehen wir, dass Grün und Blau auf 0 gesetzt sind, während Rot von 0 auf 50% ansteigt. Da jeder Farbkanal einen Wert von 0 bis 255 annehmen kann, entspricht 50% einem Wert von ca. 128. Der Farbverlauf beginnt also bei Schwarz (0, 0, 0) und endet bei Dunkelrot (128, 0, 0). Der erste Abschnitt umfasst 16 Farben, wir müssen also den Rotwert in jedem Schritt um 8 erhöhen, um nach 16 Schritten bei 128 zu landen. Ändere den Code wie folgt:
+Im ersten Abschnitt bleiben Grün und Blau auf 0, während Rot von 0 auf 50 % ansteigt. Da jeder Farbkanal einen Wert von 0 bis 255 annehmen kann, entspricht 50 % einem Wert von etwa 128. Der Farbverlauf beginnt also bei Schwarz (0, 0, 0) und endet bei Dunkelrot (128, 0, 0). Der erste Abschnitt umfasst 16 Farben, also erhöhst du den Rotwert in jedem Schritt um 8 und landest nach 16 Schritten bei 128. Ändere den Code wie folgt:
 
 ```ruby
 require 'pixelflow_canvas'
@@ -140,7 +140,7 @@ end
 ```
 
 <div class='hint books'>
-Hinweis: Achte auf die drei Punkte im Bereich <code>(0...16)</code>. Der dritte Punkt schiebt die hintere Zahl aus dem Bereich heraus, sodass die Schleife nur von 0 bis 15 läuft. Alternativ könnten wir auch <code>(0..15)</code> schreiben (mit zwei Punkten).
+Hinweis: Achte auf die drei Punkte im Bereich <code>(0...16)</code>. Der dritte Punkt schiebt die hintere Zahl aus dem Bereich heraus, sodass die Schleife nur von 0 bis 15 läuft. Du könntest auch <code>(0..15)</code> schreiben, mit zwei Punkten.
 </div>
 
 Dein Bild sollte jetzt so aussehen:
@@ -160,7 +160,7 @@ Im zweiten Abschnitt steigt der Grünwert von 0 auf 50% an, während Rot weiter 
 Der Farbverlauf geht also von Dunkelrot (128, 0, 0) zu Orange (255, 128, 0). Füge folgenden Code direkt hinter dem `set_palette`-Aufruf ein:
 
 ```ruby
-set_palette(i + 16, i * 8 + 128, i * 8, 0);
+set_palette(i + 16, i * 8 + 128, i * 8, 0)
 ```
 
 Dein Farbverlauf sollte nun so aussehen:
@@ -179,7 +179,7 @@ image-file: fire-steps/step.png 8
 Im dritten Abschnitt steigt der Grünwert von 50% auf 100% an, während Blau von 0 auf 50% ansteigt. Rot bleibt bei 100%. Der Farbverlauf geht also von Orange (255, 128, 0) zu Gelb (255, 255, 128). Füge folgenden Code ein:
 
 ```ruby
-set_palette(i + 32, 255, i * 8 + 128, i * 8);
+set_palette(i + 32, 255, i * 8 + 128, i * 8)
 ```
 
 Dein Farbverlauf sollte nun so aussehen:
@@ -198,7 +198,7 @@ image-file: fire-steps/step.png 8
 Im vierten Abschnitt steigt der Blauwert von 50% auf 100% an, während Rot und Grün bei 100% bleiben. Der Farbverlauf geht also von Gelb (255, 255, 128) zu Weiß (255, 255, 255). Füge folgenden Code ein:
 
 ```ruby
-set_palette(i + 48, 255, 255, i * 8 + 128);
+set_palette(i + 48, 255, 255, i * 8 + 128)
 ```
 
 Geschafft! Dein Farbverlauf sollte nun so aussehen:
@@ -214,17 +214,17 @@ image-file: fire-steps/step.png 8
 
 ## Animations-Loop
 
-Wir schreiben nun unser Programm ein bisschen um, um das Grundgerüst für eine Animation zu erhalten, bei dem immer nur am unteren Rand des Bildschirms ein helles Rechteck erscheint, das wir anschließend animieren werden, so dass es wie ein Feuer aussieht. Ändere dein Programm wie folgt:
+Jetzt baust du das Programm zum Gerüst einer Animation um: Bild für Bild zeichnet es am unteren Rand ein helles Rechteck, aus dem danach das Feuer aufsteigt. Ändere dein Programm so:
 
 _include_file(draft1.rb, ruby)
 
 Anmerkungen:
 
-- In Zeile 3 legen wir die Größe für unsere Animation fest (256x128 Pixel).
-- In Zeile 5 wird »Double Buffering« aktiviert, damit wir dem Bildschirm nicht beim Zeichnen zuschauen müssen, sondern nur das fertige Ergebnis sehen, wenn wir fertig sind. Dafür ist es wichtig, dass wir in Zeile 22 den Befehl `flip()` aufrufen, damit der Bildschirm aktualisiert wird.
+- In Zeile 3 steht die Größe der Animation, 256 × 128 Pixel.
+- Zeile 5 schaltet »Double Buffering« ein: Du siehst nicht zu, wie ein Bild entsteht, sondern nur das fertige. Dafür ruft Zeile 22 `flip()` auf; erst dann zeigt die Zeichenfläche das neue Bild.
 - In Zeile 16 beginnt eine Endlosschleife, die die Animation Bild für Bild zeichnet. Da das Programm sich nun nicht mehr von selbst beendet, musst du es manuell abbrechen, indem du <kbd>Strg</kbd><kbd>C</kbd> drückst.
 
-Das Ergebnis sieht jetzt noch relativ unspektakulär aus, aber wir sehen schon das helle Rechteck am unteren Rand des Bildes (und auch wenn es noch nicht so aussieht, werden schon regelmäßig neue Frames gezeichnet):
+Das sieht noch unspektakulär aus, aber am unteren Rand ist schon das helle Rechteck zu sehen. Auch wenn es nicht so aussieht: Die Schleife zeichnet schon laufend neue Bilder.
 
 <!-- tutorial-screenshot
 # Das Gerüst der Animation, nach 150 Bildern
@@ -235,7 +235,7 @@ image-file: fire-steps/step.png 4
 -->
 <img src='fire1.webp' class='full' alt='Ein heller gelbweißer Streifen bildet die unterste Zeile einer schwarzen Fläche.'>
 
-Um einen Feuereffekt zu erzielen, verwenden wir eine Technik aus der Bildbearbeitung, die als »Filterkernel« (bzw. Convolution Matrix oder Faltungsmatrix) bezeichnet wird.
+Für das Feuer brauchst du eine Technik aus der Bildbearbeitung, den »Filterkernel« (auch Faltungsmatrix, englisch *Convolution Matrix*).
 
 ## Filterkernel
 
@@ -347,7 +347,7 @@ Der Filterkernel ist also sehr ähnlich zu einem »Box blur«-Filter, jedoch wir
 
 ### Den Filterkernel anwenden
 
-Wir können den Filterkernel in unserem Programm verwenden, um den Feuereffekt zu erzeugen. Dazu müssen wir den Filterkernel auf jeden Pixel anwenden und die Farben entsprechend anpassen. Füge folgenden Code über der `flip()`-Zeile ein:
+Für das Feuer wendet dein Programm den Filterkernel in jedem Bild auf jedes Pixel an. Füge folgenden Code über der `flip()`-Zeile ein:
 
 ```ruby
 # Filterkernel auf jedes Pixel anwenden
@@ -365,7 +365,7 @@ Wir können den Filterkernel in unserem Programm verwenden, um den Feuereffekt z
 end
 ```
 
-Wir gehen zeilenweise durch das Bild und in jeder Zeile betrachten wir jeden Pixel. Für jeden Pixel addieren wir die Farbwerte der umliegenden Pixel und teilen das Ergebnis durch 4, um den Mittelwert zu erhalten. Diesen Mittelwert setzen wir dann als neuen Farbwert für den betrachteten Pixel.
+Das Programm geht Zeile für Zeile durch das Bild und in jeder Zeile durch jedes Pixel. Für jedes Pixel addiert es die Farbwerte der Nachbarn, das untere doppelt, und teilt die Summe durch 4. Dieser Mittelwert wird die neue Farbe des Pixels.
 
 Deine Animation sollte nach einer kleinen Weile nun so aussehen:
 
@@ -380,14 +380,14 @@ image-file: fire-steps/step.png 4
 
 ### Zufällige Variation
 
-Wir sehen, dass die hellen Pixel langsam nach oben wandern und dabei abkühlen, wobei sie eine andere Farbe annehmen. Das Problem ist jedoch, dass das Ergebnis zu glatt und nicht wirklich wie ein Feuer aussieht. Um das zu beheben, fügen wir noch ein paar zufällige Farbvariationen hinzu. Füge folgenden Code vor der `set_pixel`-Zeile ein:
+Die hellen Pixel wandern langsam nach oben und kühlen dabei ab, sie nehmen also andere Farben an. Nur ist das Ergebnis zu glatt und sieht noch nicht nach Feuer aus. Dagegen hilft ein wenig Zufall. Füge folgenden Code vor der `set_pixel`-Zeile ein:
 
 ```ruby
 # Zufällige Variation hinzufügen
 c += rand(7) - 3
 ```
 
-Da uns `rand(7)` eine zufällige Zahl im Bereich von 0…6 zurückgibt, subtrahieren wir 3, um Werte von -3 bis +3 zu erhalten. Das Ergebnis wird dann auf den Mittelwert addiert, um eine zufällige Variation zu erzeugen. Das Ergebnis sieht schon vielversprechender aus:
+`rand(7)` gibt eine zufällige Zahl von 0 bis 6 zurück; minus 3 ergibt Werte von −3 bis +3. Sie kommt zum Mittelwert dazu, und so weicht jedes Pixel ein wenig ab. Das sieht schon vielversprechender aus:
 
 <!-- tutorial-screenshot
 # Mit Zufall, noch ohne Grenzen
@@ -401,10 +401,10 @@ image-file: fire-steps/step.png 4
 ### Den Wertebereich begrenzen
 
 <div class='hint think'>
-Hast du eine Idee, woran es liegen könnte, dass wir in den hellen und dunklen Bereichen falsche Farben bekommen?
+Hast du eine Idee, woran es liegen könnte, dass in den hellen und dunklen Bereichen falsche Farben auftauchen?
 </div>
 
-Das Problem ist, dass wir die Farben in der Palette direkt als Index verwenden, ohne zu überprüfen, ob sie im Bereich von 0 bis 63 liegen. Wenn wir also eine Farbe von -3 oder +3 erhalten, landen wir außerhalb des gültigen Bereichs und erhalten eine falsche Farbe. Um das zu beheben, fügen wir folgenden Code vor der `set_pixel`-Zeile ein:
+Der Wert `c` ist direkt die Nummer einer Farbe in der Palette, aber nichts prüft, ob er zwischen 0 und 63 liegt. Mit dem Zufall wird aus einem schwarzen Pixel schnell −3 und aus einem weißen 66, und das sind keine Farben des Verlaufs. Füge darum vor der `set_pixel`-Zeile ein:
 
 ```ruby
 # Wertebereich auf 0 bis 63 begrenzen
@@ -424,14 +424,14 @@ image-file: fire-steps/step.png 4
 
 ### Kalte Luft bleibt dunkel
 
-Wir sind nun fast fertig – wir müssen nur noch dafür sorgen, dass nicht die gesamte Luft »glüht« – wir können dies erreichen, in dem wir die zufällige Variation nur anwenden, wenn unser Pixel nicht schon ganz schwarz ist. Ändere die Zeile mit dem `rand`-Aufruf wie folgt:
+Fast fertig: Noch glüht die ganze Luft ein wenig. Das verhinderst du, indem du den Zufall nur dazugibst, wenn das Pixel nicht schon ganz schwarz ist. Ändere die Zeile mit dem `rand`-Aufruf so:
 
 ```ruby
 c += rand(7) - 3 if c > 0
 ```
 
 <div class='hint books'>
-In Ruby können wir statt der normalen <code>if</code>-Syntax auch die Kurzform <code>if</code> am Ende eines Ausdrucks verwenden, um den Ausdruck nur dann auszuführen, wenn die Bedingung erfüllt ist. Das ist besonders nützlich, wenn wir nur eine einfache Anweisung ausführen wollen.
+In Ruby darf <code>if</code> auch hinter einer Anweisung stehen: Sie wird nur ausgeführt, wenn die Bedingung erfüllt ist. Das ist praktisch, wenn von der Bedingung nur eine einzige Anweisung abhängt.
 </div>
 
 Dein Feuereffekt sollte nun so aussehen:
@@ -462,7 +462,7 @@ _include_file(fire.rb, ruby)
 
 ## Zusammenfassung
 
-In diesem Tutorial haben wir eine kleine Feueranimation in Ruby programmiert, die auf einem Farbverlauf basiert und einen speziellen Filterkernel verwendet, um die Farben zu animieren. Wir haben gesehen, wie Filterkernel in der Bildbearbeitung verwendet werden und wie sie in der Programmierung eingesetzt werden können, um Effekte zu erzielen. Die Feueranimation ist ein beliebter Effekt in der Demoszene und kann mit ein wenig Übung und Experimentieren noch weiter verbessert werden.
+Du hast eine Feueranimation in Ruby programmiert: Ein Farbverlauf legt fest, wie heiß jede Farbe aussieht, und ein Filterkernel lässt die Hitze in jedem Bild ein Stück nach oben steigen und abkühlen. Filterkernel stecken auch hinter dem Weichzeichnen und dem Finden von Kanten in der Bildbearbeitung. Das Feuer war ein beliebter Effekt der Demoszene, und mit ein wenig Experimentieren machst du es noch besser.
 
 Hier sind ein paar Vorschläge, wie du die Animation weiter verbessern könntest:
 

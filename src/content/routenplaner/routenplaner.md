@@ -204,9 +204,11 @@ Für den kürzesten Weg braucht dein Programm Abstände in Metern. Die Koordinat
 
 $$1° = \frac{2\pi \cdot 6\,371\,000\ \text{m}}{360} \approx 111\,195\ \text{m}$$
 
-Das gilt für die Breite, nach Norden. Nach Osten stimmt es nur am Äquator: Die Längengrade laufen an den Polen zusammen, und je weiter nördlich man ist, desto näher liegen sie beieinander, um den Faktor \\(\cos(\text{Breite})\\). In Berlin ist ein Grad Länge nur gut 67 km lang.
+Das gilt für die Breite, nach Norden. Nach Osten stimmt es nur am Äquator: In Berlin ist ein Grad Länge nur gut 67 km lang. Überlege, bevor du weiterliest:
 
 _task(grad)
+
+Die Längengrade laufen an den Polen zusammen, und je weiter nördlich man ist, desto näher liegen sie beieinander, um den Faktor \\(\cos(\text{Breite})\\).
 
 Auf den paar Kilometern einer Stadt ist die Erde fast flach. Du rechnest beide Unterschiede in Meter um und nimmst den Satz des Pythagoras:
 
@@ -369,9 +371,11 @@ hook: route Gymnasium Steglitz | Botanischer Garten | bfs
 
 <!-- /tutorial-scope -->
 
-Die Welle breitet sich nach Kanten aus, nicht nach Metern: Im Botanischen Garten, wo die Wege viele kurze Kanten haben, kommt sie langsam voran, auf langen geraden Straßen schnell. Darum macht ihr Weg Zacken und Umwege.
+Sieh dir an, wie sich die Welle ausbreitet: Im Botanischen Garten kommt sie langsam voran, auf langen geraden Straßen schnell, und ihr Weg macht Zacken und Umwege.
 
 _task(kanten)
+
+Die Welle breitet sich nach Kanten aus, nicht nach Metern: Im Botanischen Garten haben die Wege viele kurze Kanten, eine lange gerade Straße ist oft nur eine einzige.
 
 ## Dijkstra
 

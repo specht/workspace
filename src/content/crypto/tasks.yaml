@@ -83,7 +83,8 @@ tasks:
     hint: '`openssl enc -aes-256-cbc -pbkdf2 -in letter.txt -out letter.enc`, im Ordner `crypto`.'
 
   - id: schluesselproblem
-    title: Das Passwort verabreden
+    title: Ein Brief in eine andere Stadt
+    prediction: true
     prompt: |
       Du willst einer Freundin in einer anderen Stadt einen mit AES
       verschlüsselten Brief schicken. Was ist das Problem?

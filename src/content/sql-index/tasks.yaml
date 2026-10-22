@@ -33,7 +33,8 @@ tasks:
 
   - id: vollstaendig
     title: Was ALL bedeutet
-    prompt: "Ohne Index zeigt `EXPLAIN` bei der Suche nach einer Nummer `type: ALL`. Was macht die Datenbank?"
+    prediction: true
+    prompt: "`EXPLAIN` zeigt bei der Suche nach einer Nummer `type: ALL`, bei `key` nichts und bei `rows` fast eine Million. Was macht die Datenbank?"
     check:
       type: choice
       options:
@@ -81,6 +82,7 @@ tasks:
 
   - id: primaerschluessel
     title: Schon schnell
+    prediction: true
     prompt: Warum findet `WHERE id = 500000` die Zeile schnell, obwohl du nie einen Index auf `id` angelegt hast?
     check:
       type: choice

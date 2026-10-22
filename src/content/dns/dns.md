@@ -19,13 +19,6 @@ reference: [terminal]
 Pakete im Internet brauchen eine IP-Adresse, Menschen merken sich Namen. Wer übersetzt zwischen beiden? Du fragst mit <code>dig</code> nach der Adresse von hackschule.de, gehst den Weg der Frage selbst ab, von den Root-Servern über die Server für .de bis zu dem einen, der die Antwort wirklich kennt, und siehst, warum die zweite Frage schneller beantwortet wird als die erste.
 </p>
 
-_person(mockapetris)
-
-<div class='book'>
-<i class='bi bi-file-earmark-text'></i>
-<p><strong>Domain Names – Concepts and Facilities</strong> (RFC 882) und <strong>Domain Names – Implementation and Specification</strong> (RFC 883), Paul Mockapetris, November 1983. Die beiden Texte, in denen das DNS zum ersten Mal beschrieben ist, als reiner Text wie damals üblich: <a href='https://www.rfc-editor.org/rfc/rfc882'>RFC 882</a> und <a href='https://www.rfc-editor.org/rfc/rfc883'>RFC 883</a>.</p>
-</div>
-
 ## Vorbereitung
 
 Diese Aktivität setzt [TCP/IP-Verbindungen](/tcpip) fort: Was eine IP-Adresse ist und was `ping` tut, solltest du kennen. Du brauchst nur ein Terminal.
@@ -141,6 +134,15 @@ _task(zustaendig)
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Frag einen Root-Server nach einem Namen mit einer Endung, die es nicht gibt: <code>dig @a.root-servers.net hackschule.xyzzy</code>. Was steht jetzt hinter <code>status:</code>? Warum kann der Root-Server diesmal selbst antworten, statt dich weiterzuschicken?
+</div>
+
+Dass kein Server alle Namen kennen muss, sondern jeder nur sein Stück, ist der Kern des DNS, wie Paul Mockapetris es 1983 entworfen hat:
+
+_person(mockapetris)
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Domain Names – Concepts and Facilities</strong> (RFC 882) und <strong>Domain Names – Implementation and Specification</strong> (RFC 883), Paul Mockapetris, November 1983. Die beiden Texte, in denen das DNS zum ersten Mal beschrieben ist, als reiner Text wie damals üblich: <a href='https://www.rfc-editor.org/rfc/rfc882'>RFC 882</a> und <a href='https://www.rfc-editor.org/rfc/rfc883'>RFC 883</a>.</p>
 </div>
 
 ## Den ganzen Weg auf einmal

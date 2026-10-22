@@ -19,14 +19,15 @@ tasks:
 
   - id: versteckt
     title: Die versteckte Datei
-    prompt: Wie heißt die versteckte Datei im Ordner `working-with-files`?
+    prompt: Wie viele Bytes ist die versteckte Datei im Ordner `working-with-files` groß?
     check:
-      type: answer
-      expect: .hidden
+      type: number
+      expect: 41
+      unit: Bytes
     feedback:
-      - when: { equals: hidden }
-        say: Fast. Der Punkt am Anfang gehört zum Namen; er macht die Datei erst unsichtbar.
-    hint: '`ls` zeigt sie nicht, `ls -la` schon.'
+      - when: { equals: 4096 }
+        say: So groß ist ein Verzeichnis, `.` oder `..`. Gesucht ist die Datei, deren Name mit einem Punkt beginnt und danach weitergeht.
+    hint: '`ls` zeigt sie nicht, `ls -la` schon, mit ihrer Größe.'
 
   - id: zeilenende
     title: Windows oder Linux?
@@ -82,7 +83,7 @@ tasks:
         say: Das ist mit `-i`, also auch `ALICE`. Gefragt ist genau `Alice`.
       - when: { equals: 401 }
         say: Das ist, wie oft das Wort vorkommt. Gefragt ist, in wie vielen Zeilen; manche Zeilen enthalten es zweimal.
-    hint: '`grep` zeigt die Zeilen, `wc -l` zählt sie. Mit `|` verbindest du beides.'
+    hint: '`grep` zeigt die Zeilen, `wc -l` am Ende der Pipeline zählt sie.'
 
   - id: woerter
     title: Die Wortliste

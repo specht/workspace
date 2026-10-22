@@ -467,9 +467,9 @@ viewport: 720x405
 
 _include(css#regeln)
 
-Unser Bildnachweis hat die Klasse `credit` bekommen (`<p class="credit">`); die Regel `.credit` gilt deshalb nur für ihn.
-
 _task(selektor)
+
+Dein Bildnachweis hat die Klasse `credit` bekommen (`<p class="credit">`); die Regel `.credit` gilt deshalb nur für ihn.
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Bau absichtlich Fehler ein, einen nach dem anderen, und speichere jedes Mal:

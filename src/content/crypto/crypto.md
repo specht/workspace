@@ -218,9 +218,11 @@ _task(verschluesselt)
 Meldet <code>openssl</code> einen Fehler? Welcher Teil des Briefs ist kaputt, und welcher nicht? Probier es mit einer frischen Kopie und <code>seek=60</code>, in der letzten Zeile. Was heißt das für jemanden, der den verschlüsselten Brief unterwegs verändern kann, ohne das Passwort zu kennen?
 </div>
 
-Symmetrische Verschlüsselung ist schnell und sicher, hat aber ein Problem: Beide Seiten brauchen dasselbe Passwort. Wie verabredest du es mit jemandem, ohne dass es unterwegs mitgelesen wird?
+Symmetrische Verschlüsselung ist schnell und sicher. Überlege, bevor du weiterliest:
 
 _task(schluesselproblem)
+
+Das Problem: Beide Seiten brauchen dasselbe Passwort. Schickst du es mit, liest es mit, wer auch den Brief mitliest. Wie verabredest du es also, ohne dass es unterwegs mitgelesen wird?
 
 ## Zwei Schlüssel
 
@@ -273,6 +275,10 @@ crop-terminal-lines: auto
 
 Aus 27 Bytes sind 256 geworden, so groß wie der Schlüssel. Mehr als gut 200 Bytes passen auf einmal nicht hinein, und RSA ist viel langsamer als AES. Darum arbeiten echte Programme **hybrid**: Sie würfeln einen zufälligen AES-Schlüssel aus, verschlüsseln damit die eigentlichen Daten und schicken nur diesen kurzen Schlüssel mit RSA oder einem verwandten Verfahren. Genau so beginnt jede Verbindung mit `https://`.
 
+_task(welcher-schluessel)
+
+Öffentliche und private Schlüssel schlugen Whitfield Diffie und Martin Hellman 1976 vor, ohne schon ein Verfahren zu haben, mit dem man so verschlüsseln kann:
+
 _person(diffie-hellman)
 
 <div class='book'>
@@ -280,14 +286,14 @@ _person(diffie-hellman)
 <p><strong>New Directions in Cryptography</strong>, Whitfield Diffie und Martin Hellman, IEEE Transactions on Information Theory, 1976. Der Aufsatz, in dem öffentliche und private Schlüssel zum ersten Mal öffentlich beschrieben sind, dazu Unterschriften, die jeder prüfen kann, und der Schlüsseltausch, der ihre Namen trägt: <a href='https://ee.stanford.edu/~hellman/publications/24.pdf'>als PDF auf Hellmans Seite</a>.</p>
 </div>
 
+Ein solches Verfahren fanden ein Jahr später drei Forscher am MIT; RSA trägt ihre Anfangsbuchstaben:
+
 _person(rivest-shamir-adleman)
 
 <div class='book'>
 <i class='bi bi-file-earmark-text'></i>
 <p><strong>A Method for Obtaining Digital Signatures and Public-Key Cryptosystems</strong>, Ron Rivest, Adi Shamir und Leonard Adleman, Communications of the ACM, 1978. Das erste veröffentlichte Verfahren, das die Idee von Diffie und Hellman wahr macht, gebaut aus zwei großen Primzahlen: RSA. Rivest hat den Aufsatz <a href='https://people.csail.mit.edu/rivest/Rsapaper.pdf'>als PDF</a> auf seine Seite gestellt.</p>
 </div>
-
-_task(welcher-schluessel)
 
 ### Ein Geheimnis für jemand anderen
 

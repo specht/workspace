@@ -624,8 +624,6 @@ crop-terminal-lines: auto
 
 `grep` ist ein sehr mächtiges Programm mit einer Vielzahl von Optionen. Du kannst z. B. reguläre Ausdrücke verwenden, um nach komplexeren Mustern zu suchen. Gib `man grep` ein, um die manpage von `grep` zu lesen und mehr über die verschiedenen Optionen zu erfahren.
 
-_task(alice-zeilen)
-
 ### Pipelines: alle Wörter eines Buchs
 
 Wir wollen nun alle Wörter aus der Datei `alice.txt` extrahieren. Gib dazu den folgenden Befehl ein:
@@ -712,6 +710,8 @@ crop-terminal-lines: auto
 -->
 
 <img class='full' src='alice-sort-uniq-wc.webp' alt='Mit wc -l am Ende der Pipeline kommt 3002 heraus, so viele verschiedene Wörter.'>
+
+_task(alice-zeilen)
 
 Wir können unser Ergebnis auch in einer Datei speichern, indem wir die Ausgabe der gesamten Pipeline in eine Datei umleiten:
 

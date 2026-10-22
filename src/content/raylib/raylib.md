@@ -1746,7 +1746,11 @@ Die Schleife in `main` zeichnet die Blöcke in der Reihenfolge des Arrays, von `
 
 Die Grafikkarte merkt sich für jedes Pixel nicht nur seine Farbe, sondern auch, wie weit die Fläche, die dort gezeichnet wurde, von der Kamera entfernt ist: im **Tiefenpuffer** (englisch *Z-Buffer*). Kommt eine neue Fläche an dasselbe Pixel, vergleicht die Grafikkarte die beiden Entfernungen. Ist die neue weiter weg, bleibt das Pixel, wie es ist. In welcher Reihenfolge gezeichnet wird, spielt dann keine Rolle mehr. `BeginMode3D` schaltet diesen Vergleich ein, `EndMode3D` wieder aus; darum liegen Fadenkreuz und Leiste, die danach kommen, immer obenauf.
 
+Erfunden haben den Tiefenpuffer 1974 zwei Doktoranden unabhängig voneinander, zuerst Wolfgang Straßer in Berlin:
+
 _person(strasser)
+
+Wenige Monate später beschrieb ihn Edwin Catmull in Utah:
 
 _person(catmull)
 
@@ -1759,7 +1763,11 @@ Grafikkarten mit Tiefenpuffer gab es für zu Hause erst ab 1996. DOOM (1993) mus
 <p><strong>On Visible Surface Generation by A Priori Tree Structures</strong>, Henry Fuchs, Zvi M. Kedem und Bruce F. Naylor, SIGGRAPH 1980. Der Aufsatz, in dem der BSP-Baum zum ersten Mal beschrieben ist: einmal vorab ausgerechnet, liefert er für jeden Standort der Kamera die Reihenfolge der Flächen, ohne dass beim Zeichnen sortiert werden muss: <a href='https://doi.org/10.1145/800250.807481'>bei der ACM</a>.</p>
 </div>
 
+Für DOOM griff John Carmack zu diesem Baum:
+
 _person(carmack)
+
+Drei Jahre später, in Quake, kamen beide Ideen zusammen, der Baum und der Tiefenpuffer. Daran arbeitete Carmack mit Michael Abrash:
 
 _person(abrash)
 

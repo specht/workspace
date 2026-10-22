@@ -65,6 +65,7 @@ tasks:
 
   - id: grad
     title: Ein Grad ist nicht gleich ein Grad
+    prediction: true
     prompt: Warum ist in Berlin ein Grad Länge (nach Osten) kürzer als ein Grad Breite (nach Norden)?
     check:
       type: choice

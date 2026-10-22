@@ -244,9 +244,11 @@ _task(schichten)
 
 ### Ports
 
-Auf einem Rechner laufen viele Programme, die das Netz benutzen. Die IP-Adresse bringt ein Paket zum richtigen Rechner, der **Port** zum richtigen Programm: eine Zahl von 1 bis 65 535. Server warten an Ports, die alle kennen: 22 für SSH, 80 für HTTP, 443 für HTTPS. Die Seite, die du gerade liest, kam über Port 443. Der Client bekommt für jede Verbindung irgendeinen freien Port; an ihn gehen die Antworten zurück.
+Auf einem Rechner laufen viele Programme, die das Netz benutzen, und sie alle teilen sich seine IP-Adresse. Überlege, bevor du weiterliest:
 
 _task(port)
+
+Die IP-Adresse bringt ein Paket zum richtigen Rechner, der **Port** zum richtigen Programm: eine Zahl von 1 bis 65 535. Server warten an Ports, die alle kennen: 22 für SSH, 80 für HTTP, 443 für HTTPS. Die Seite, die du gerade liest, kam über Port 443. Der Client bekommt für jede Verbindung irgendeinen freien Port; an ihn gehen die Antworten zurück.
 
 ### Der Handshake
 
