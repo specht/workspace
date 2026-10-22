@@ -64,6 +64,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1837 -->
+<!-- part: ducos-du-hauron -->
+### Louis Ducos du Hauron
+
+<div class='person'>
+<img src='ducos-du-hauron.webp' alt='Louis Ducos du Hauron, eine alte Fotografie: ein Mann mit hoher Stirn, dunklem Vollbart und Krawatte, frontal.'>
+<p><strong>Louis Ducos du Hauron</strong> (1837–1920), französischer Erfinder, ließ sich 1891 Bilder patentieren, die zwei Ansichten einer Szene in Rot und Blau übereinander drucken; durch eine Brille mit einem roten und einem blauen Glas sieht jedes Auge nur seine: die Anaglyphen. Dein Viewer macht dasselbe mit Rot und Cyan.</p>
+<p>Schon 1868 hatte er beschrieben, wie man ein farbiges Bild aus drei Aufnahmen durch drei Farbfilter zusammensetzt, lange bevor es Farbfilme gab.</p>
+<p class='person-credit'>Foto: Atelier Nadar, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:M._Ducos_du_Hauron_-_btv1b531734525.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1896 -->
 <!-- part: luhn -->
 ### Hans Peter Luhn
@@ -730,6 +742,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <p><strong>Ramon Santamaria</strong>, Programmierer aus Barcelona, begann raylib 2013, um Studierenden ohne Programmiererfahrung beizubringen, wie man Spiele programmiert. Dafür sollte die Bibliothek einfach bleiben: ohne fremde Abhängigkeiten, und alle Funktionen passen auf ein Cheatsheet.</p>
 <p>Er pflegt raylib bis heute, mit Hunderten Helfenden auf GitHub.</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1980 -->
+<!-- part: coast -->
+### Steve Coast
+
+<div class='person'>
+<img src='coast.webp' alt='Steve Coast 2009: ein junger Mann mit braunem Haar und einer Sonnenbrille auf dem Kopf, in einem gestreiften Hemd, lächelt schief in die Kamera.'>
+<p><strong>Steve Coast</strong>, englischer Informatiker, gründete OpenStreetMap 2004 als Student in London. Gute Karten von Großbritannien gab es nur gegen Geld, also fuhr er mit einem GPS-Empfänger die Straßen ab und stellte, was er aufzeichnete, frei ins Netz, damit alle es benutzen und weiterzeichnen dürfen, wie bei Wikipedia.</p>
+<p>Heute zeichnen Millionen Freiwillige mit, auch jede Treppe und jeden Fußweg in Berlin. Der Graph, in dem dein Routenplaner sucht, kommt aus dieser Karte.</p>
+<p class='person-credit'>Foto: Lucamenini, 2009, CC BY-SA 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Steve_coast.JPG'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 
