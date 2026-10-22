@@ -658,6 +658,7 @@ class Main < Sinatra::Base
     require './include/server_health.rb'
     require './include/my_data.rb'
     require './include/login_sessions_page.rb'
+    require './include/cable_page.rb'
 
     def workspace_url()
         if user_logged_in?

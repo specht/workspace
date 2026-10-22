@@ -1,0 +1,15 @@
+{
+  "script": "e2e/tests/cable.pictures.ts",
+  "command": "cd e2e && HS_PICTURES=1 npx playwright test --project=pictures cable.pictures",
+  "inputs": [
+    "e2e/tests/cable.pictures.ts",
+    "src/static/include/cable.js",
+    "src/static/include/cable.css",
+    "src/static/ether.html"
+  ],
+  "hash": "5a81a0666d4d1ae2a3642e0cdd3e7d69e37b02106070695f1d39a53afc51964d",
+  "pictures": [
+    "teaser-dark.webp",
+    "teaser.webp"
+  ]
+}

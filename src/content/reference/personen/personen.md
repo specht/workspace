@@ -88,6 +88,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1845 -->
+<!-- part: baudot -->
+### Émile Baudot
+
+<div class='person'>
+<img src='baudot.webp' alt='Émile Baudot auf einem alten Stich: ein Mann mit kurzem, nach oben gekämmtem Haar und langem dunklem Vollbart, in dunklem Anzug.'>
+<p><strong>Émile Baudot</strong> (1845–1903), französischer Telegrafeningenieur, baute ab 1874 einen Telegrafen, der jeden Buchstaben als fünf Zeichen auf einmal schickte, jedes Strom an oder Strom aus: 32 Muster, genug für das Alphabet. Getippt wurde mit fünf Tasten, zwei für die linke und drei für die rechte Hand, wie ein Akkord auf dem Klavier.</p>
+<p>Nach ihm heißt das Baud: wie viele Zeichen eine Leitung in der Sekunde überträgt.</p>
+<p class='person-credit'>Bild: Stich von A. Delzers, vor 1903, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Emile_Baudot.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1882 -->
 <!-- part: sierpinski -->
 ### Wacław Sierpiński

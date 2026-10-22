@@ -1,0 +1,20 @@
+<link href="/include/cable.css?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}" rel="stylesheet">
+<style>
+  .ether-page { max-width: 56em; padding-top: 1.2em; padding-bottom: 2em; }
+  .ether-page h2 { text-align: center; margin: 0 0 0.2em; }
+  .ether-page .ether-lead { text-align: center; color: var(--bs-secondary-color); margin: 0 auto 0.5em; max-width: 34em; }
+  .ether-page .cable { margin-top: 1em; }
+</style>
+
+<!-- The lamps of »Datenübertragung per Kabel« on their own, without login,
+     for the second room and for phones: the short address the teacher writes
+     on the board (cable.js, src/ruby/include/cable_page.rb). -->
+<div class="container ether-page">
+  <h2>Das Kabel</h2>
+  <p class="ether-lead">
+    Stellt dieselbe Frequenz ein wie eure Partnerin oder euer Partner. Eine Lampe leuchtet, solange jemand auf der Frequenz ihren Knopf hält.
+    Worum es geht: <a href="/cable">Datenübertragung per Kabel</a>.
+  </p>
+  <div class="cable" data-cable></div>
+</div>
+<script src="/include/cable.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}"></script>

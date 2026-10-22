@@ -45,6 +45,11 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
   Hintergrund, sobald die Startseite zum ersten Mal aufgerufen wird (einige zehn Sekunden;
   bis dahin zeigen die Karten die Originale). Die alten `cache/*-1024.webp` braucht nichts
   mehr; sie können gelöscht werden.
+- Neue Aktivität »Datenübertragung per Kabel« (`/cable`) mit Lampen, die ohne Anmeldung unter
+  `/ether` laufen: ein öffentlicher WebSocket `/ws_cable` für die ganze Installation, nur von
+  Seiten der eigenen Adresse (Origin), höchstens 2000 Verbindungen und 300 je IP-Adresse.
+  Gespeichert wird nichts; Frequenzen, Lampen und die Zahl der Verbindungen je Adresse liegen
+  nur im Arbeitsspeicher. Die Zahl der Lampen stellen Lehrkräfte für alle auf der Installation ein.
 
 ## 1.0.0 (21. Oktober 2026)
 

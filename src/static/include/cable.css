@@ -1,0 +1,494 @@
+/* »Datenübertragung per Kabel« (cable.js): the device with dial, lamps and
+   buttons, dark in both colour schemes like the original simulator, and the
+   teacher's panel in the violet of the teacher note. */
+
+.cable {
+    --cable-panel: #262624;
+    --cable-panel-2: #1d1d1b;
+    --cable-edge: #3a3a37;
+    --cable-text: #e7e6e1;
+    --cable-dim: #a3a29c;
+    --cable-lcd: #121211;
+    margin: 1.5em 0;
+}
+
+.cable-device {
+    position: relative;
+    max-width: 34em;
+    margin: 0 auto;
+    padding: 1.4em 1.6em 1.5em;
+    border: 1px solid var(--cable-edge);
+    border-radius: 1.6em;
+    background: linear-gradient(180deg, var(--cable-panel), var(--cable-panel-2));
+    box-shadow: 0 0.8em 2.2em rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    color: var(--cable-text);
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.cable-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1em;
+    font-size: 0.85rem;
+    color: var(--cable-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.cable-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.cable-status::before {
+    content: '';
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 50%;
+    background: #6b6a65;
+}
+
+.cable-status.online::before { background: #73d216; box-shadow: 0 0 0.5em #73d216; }
+.cable-status.waiting::before { background: #e0b050; }
+
+/* The frequency: a display between − and +, two sliders below
+   (whole kHz and tenths), as in the original. */
+.cable-dial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8em;
+    margin: 0.7em 0 0.3em;
+}
+
+.cable-lcd {
+    min-width: 7.4em;
+    padding: 0.2em 0.6em;
+    border-radius: 0.4em;
+    background: var(--cable-lcd);
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 2.1rem;
+    line-height: 1.3;
+    text-align: center;
+    white-space: nowrap;
+    color: #f2f1ea;
+}
+
+.cable-lcd .cable-unit {
+    margin-left: 0.3em;
+    font-size: 0.55em;
+    color: var(--cable-dim);
+}
+
+.cable button.cable-step {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.6em;
+    height: 2.6em;
+    padding: 0;
+    border: 1px solid var(--cable-edge);
+    border-radius: 50%;
+    background: #33332f;
+    color: var(--cable-text);
+    touch-action: manipulation;
+}
+
+.cable button.cable-step .bi {
+    margin: 0;
+}
+
+.cable button.cable-step .bi::before {
+    vertical-align: 0;
+}
+
+.cable button.cable-step:hover { background: #3d3d39; }
+
+.cable-sliders {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.1em 0.8em;
+    margin: 0.4em 0 0;
+    font-size: 0.8rem;
+    color: var(--cable-dim);
+}
+
+.cable-sliders input[type='range'] {
+    width: 100%;
+    accent-color: #8db8f5;
+}
+
+/* The lamps: round, glowing when on, clearly dim when off; the buttons
+   below them are big enough for a thumb. */
+.cable-channels {
+    display: flex;
+    justify-content: center;
+    gap: clamp(0.3em, 2.5vw, 1.4em);
+    margin: 1.6em 0 0.4em;
+}
+
+.cable-channel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.9em;
+    flex: 0 1 4.2em;
+    min-width: 0;
+}
+
+.cable-channel[hidden] { display: none; }
+
+.cable-lamp {
+    --lamp: #73d216;
+    width: min(3.6em, 100%);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, 0.55);
+    background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.12), transparent 45%),
+                color-mix(in srgb, var(--lamp) 22%, #111);
+    box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.7);
+    transition: background-color 60ms, box-shadow 60ms;
+}
+
+.cable-lamp.on {
+    background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.85), transparent 30%),
+                radial-gradient(circle, color-mix(in srgb, var(--lamp) 60%, #fff), var(--lamp) 70%);
+    box-shadow: 0 0 1.4em 0.3em var(--lamp), 0 0 0.4em var(--lamp), inset 0 -3px 6px rgba(0, 0, 0, 0.25);
+}
+
+.cable-channel:nth-child(1) .cable-lamp { --lamp: #73d216; }
+.cable-channel:nth-child(2) .cable-lamp { --lamp: #fad31c; }
+.cable-channel:nth-child(3) .cable-lamp { --lamp: #e8352a; }
+.cable-channel:nth-child(4) .cable-lamp { --lamp: #2d93e0; }
+.cable-channel:nth-child(5) .cable-lamp { --lamp: #c53ee0; }
+
+.cable button.cable-key {
+    width: min(3.4em, 100%);
+    aspect-ratio: 1;
+    padding: 0;
+    border: 1px solid #4a4a46;
+    border-radius: 0.8em;
+    background: linear-gradient(180deg, #45453f, #34342f);
+    box-shadow: 0 0.25em 0 #161615, 0 0.35em 0.6em rgba(0, 0, 0, 0.4);
+    color: var(--cable-text);
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 1.3rem;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    transition: transform 40ms, box-shadow 40ms;
+}
+
+.cable button.cable-key:focus-visible {
+    outline: 2px solid #8db8f5;
+    outline-offset: 3px;
+}
+
+.cable button.cable-key.pressed {
+    transform: translateY(0.2em);
+    box-shadow: 0 0.05em 0 #161615, 0 0.1em 0.3em rgba(0, 0, 0, 0.4);
+    background: linear-gradient(180deg, #34342f, #3d3d38);
+}
+
+/* A lamp that goes away when the countdown ends. */
+.cable-channel.leaving .cable-lamp {
+    outline: 2px dashed #e0b050;
+    outline-offset: 4px;
+}
+
+.cable-banner {
+    margin: 1.2em 0 0;
+    padding: 0.55em 0.9em;
+    border-radius: 0.7em;
+    background: rgba(224, 176, 80, 0.14);
+    border: 1px solid rgba(224, 176, 80, 0.45);
+    color: #f0d49a;
+    text-align: center;
+}
+
+.cable-banner .bi { margin-right: 0.4em; }
+
+.cable-banner.done {
+    background: rgba(141, 184, 245, 0.12);
+    border-color: rgba(141, 184, 245, 0.4);
+    color: #cfe0fa;
+}
+
+.cable-notice {
+    margin: 1em 0 0;
+    font-size: 0.9rem;
+    color: var(--cable-dim);
+    text-align: center;
+}
+
+.cable-notice .bi { margin-right: 0.35em; }
+
+.cable-keys-hint {
+    margin: 1em 0 0;
+    font-size: 0.8rem;
+    color: var(--cable-dim);
+    text-align: center;
+}
+
+@media (max-width: 480px) {
+    .cable-device { padding: 1.1em 0.9em 1.2em; border-radius: 1.2em; }
+    .cable-lcd { font-size: 1.8rem; min-width: 6.4em; }
+    .cable-keys-hint { display: none; }
+}
+
+/* For teachers: the number of lamps for everyone, the frequencies in use,
+   the words, the address for the projector. */
+.cable-teacher {
+    max-width: 52em;
+    margin: 1.4em auto 0;
+    padding: 0.9em 1em 1em;
+    border: 1px solid #d9c9ee;
+    border-radius: 0.7em;
+    background: #f7f2fc;
+}
+
+.cable-teacher[hidden] { display: none; }
+
+.cable-teacher-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4em 1em;
+    color: #5b2f8f;
+    font-weight: 600;
+}
+
+.cable-teacher-head .bi { margin-right: 0.4em; }
+
+.cable-teacher-note {
+    margin: 0.3em 0 0.8em;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+.cable-teacher-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15em, 1fr));
+    gap: 0.8em;
+}
+
+.cable-card {
+    padding: 0.7em 0.8em;
+    border: 1px solid #e3d7f2;
+    border-radius: 0.55em;
+    background: var(--bs-body-bg);
+    min-width: 0;
+}
+
+.cable-card h3 {
+    margin: 0 0 0.5em;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.cable-counts {
+    display: flex;
+    gap: 0.35em;
+    margin: 0.5em 0;
+}
+
+.cable-counts button {
+    flex: 1;
+    min-width: 0;
+    padding: 0.3em 0;
+    font-family: '0xProto Nerd Font Mono', monospace;
+}
+
+.cable-counts button.current {
+    font-weight: 700;
+}
+
+.cable-delay {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 0 0.6em;
+    font-size: 0.9rem;
+}
+
+.cable-delay input { grid-column: 1 / -1; width: 100%; }
+
+.cable-pending {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5em;
+    margin-top: 0.4em;
+    font-size: 0.9rem;
+}
+
+.cable-pending[hidden] { display: none; }
+
+.cable-freqs {
+    max-height: 16em;
+    overflow-y: auto;
+    font-size: 0.9rem;
+}
+
+.cable-freqs table { width: 100%; margin: 0; border-collapse: collapse; }
+
+.cable-freqs td, .cable-freqs th { padding: 0.2em 0.3em; border-bottom: 1px solid var(--bs-border-color); text-align: left; }
+
+.cable-freqs th { font-weight: 600; }
+
+.cable-freqs td:first-child { font-family: '0xProto Nerd Font Mono', monospace; white-space: nowrap; }
+
+.cable-freqs tr.crowded td:nth-child(2) { color: #b35c00; font-weight: 600; }
+
+.cable-freqs tr.mine td:first-child::after {
+    content: ' (du)';
+    font-family: 'IBM Plex Sans', sans-serif;
+    color: var(--bs-secondary-color);
+}
+
+.cable-dots { display: inline-flex; gap: 0.2em; }
+
+.cable-dot {
+    width: 0.8em;
+    height: 0.8em;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.35);
+    background: color-mix(in srgb, var(--lamp) 18%, #ddd);
+}
+
+.cable-dot.on { background: var(--lamp); box-shadow: 0 0 0.35em var(--lamp); }
+
+.cable-total, .cable-empty { font-size: 0.85rem; color: var(--bs-secondary-color); }
+
+.cable-word {
+    margin: 0.2em 0 0.4em;
+    padding: 0.3em 0.2em;
+    border-radius: 0.4em;
+    background: var(--bs-tertiary-bg);
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: clamp(1.4rem, 5vw, 2.1rem);
+    letter-spacing: 0.08em;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.cable-word-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4em 0.6em;
+    font-size: 0.9rem;
+}
+
+.cable-word-count { color: var(--bs-secondary-color); margin-right: auto; }
+
+/* For the projector: the address and its QR code over the whole window. */
+.cable-projector {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3vh;
+    padding: 4vh 4vw;
+    background: #1d1d1b;
+    color: #f2f1ea;
+    text-align: center;
+}
+
+.cable-projector[hidden] { display: none; }
+
+.cable-projector-address {
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: clamp(1.6rem, 6vw, 5rem);
+    overflow-wrap: anywhere;
+}
+
+.cable-projector img {
+    width: min(48vh, 70vw);
+    height: auto;
+    border-radius: 0.6em;
+    background: #fff;
+    image-rendering: pixelated;
+}
+
+.cable-projector p { font-size: clamp(1rem, 2.4vw, 1.8rem); margin: 0; color: #cfcec8; }
+
+.cable-projector button.cable-close {
+    position: absolute;
+    top: 1em;
+    right: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.8em;
+    height: 2.8em;
+    padding: 0;
+    border-radius: 50%;
+}
+
+.cable-projector button.cable-close .bi { margin: 0; }
+.cable-projector button.cable-close .bi::before { vertical-align: 0; }
+
+html[data-bs-theme='dark'] .cable {
+    --cable-edge: #45453f;
+}
+
+html[data-bs-theme='dark'] .cable-teacher {
+    border-color: #4a3a63;
+    background: #221b2d;
+}
+
+html[data-bs-theme='dark'] .cable-teacher-head { color: #cdb0f2; }
+html[data-bs-theme='dark'] .cable-card { border-color: #3a2f4d; background: #151514; }
+html[data-bs-theme='dark'] .cable-freqs tr.crowded td:nth-child(2) { color: #e0b050; }
+html[data-bs-theme='dark'] .cable-dot { border-color: rgba(255, 255, 255, 0.25); background: color-mix(in srgb, var(--lamp) 22%, #222); }
+html[data-bs-theme='dark'] .cable-dot.on { background: var(--lamp); }
+
+/* The two rooms on the activity page: who sits where, joined by the cable. */
+.cable-rooms {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 0.6em;
+    margin: 1.2em 0;
+}
+
+.cable-room {
+    padding: 0.8em 0.9em;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.7em;
+    background: var(--bs-tertiary-bg);
+}
+
+.cable-room strong { display: block; margin-bottom: 0.2em; }
+.cable-room .bi { margin-right: 0.35em; }
+
+.cable-wire {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--bs-secondary-color);
+    white-space: nowrap;
+}
+
+.cable-wire .cable-wire-line {
+    width: 5em;
+    border-top: 3px dashed var(--bs-secondary-color);
+    margin: 0.3em 0;
+}
+
+@media (max-width: 575px) {
+    .cable-rooms { grid-template-columns: 1fr; }
+    .cable-wire .cable-wire-line { width: 0; height: 2em; border-top: none; border-left: 3px dashed var(--bs-secondary-color); }
+}

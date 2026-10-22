@@ -1,0 +1,48 @@
+# Aufgaben zu »Datenübertragung per Kabel«. Format: docs/aufgaben.md
+format: 1
+activity: cable
+tasks:
+  - id: protokoll
+    title: Euer Protokoll
+    prompt: >-
+      Beschreibt euer Protokoll so, dass ein anderes Paar damit übertragen
+      könnte: wie ein Buchstabe aussieht, wie Anfang und Ende erkennbar sind
+      und was ihr bei einem Fehler tut. Jede Person schreibt es selbst auf.
+    check:
+      type: reflection
+      min_words: 30
+    examples:
+      - |
+        Wir zählen die Buchstaben von A = 1 bis Z = 26 und zeigen die Zahl als
+        Muster auf Lampe 1 bis 5 (1, 2, 4, 8, 16). Die Senderseite zeigt ein
+        Muster, die Empfängerseite antwortet mit Lampe 5 kurz an, dann kommt
+        der nächste Buchstabe. Alle fünf Lampen zusammen heißen »fertig«.
+        Kommt etwas Unsinniges an, blinkt die Empfängerseite dreimal mit
+        Lampe 1, und der letzte Buchstabe kommt noch einmal.
+      - |
+        Lampe 1 ist unser Takt: Solange sie an ist, gilt das Muster auf Lampe 2
+        bis 5. Weil das nur 16 Muster sind, schicken wir jeden Buchstaben in
+        zwei Hälften. Zwischen zwei Buchstaben gehen alle Lampen aus, damit
+        man bei doppelten Buchstaben zwei Zeichen sieht. Am Ende kommt das
+        Muster mit allen Lampen an. Die Empfängerseite bestätigt jeden
+        Buchstaben mit Lampe 1.
+
+  - id: weniger-lampen
+    title: Weniger Lampen
+    prompt: >-
+      Was hat sich an eurer Übertragung geändert, als Lampen weggefallen
+      sind? Wie habt ihr euer Protokoll angepasst, und was hat es gekostet?
+    check:
+      type: reflection
+      min_words: 25
+    examples:
+      - |
+        Mit vier Lampen gibt es nur noch 16 Muster, also haben wir jeden
+        Buchstaben in zwei Teilen geschickt. Die Übertragung hat ungefähr
+        doppelt so lange gedauert. Weil wir das vorher abgesprochen hatten,
+        konnten wir einfach weitermachen.
+      - |
+        Als nur noch drei Lampen da waren, fiel unsere Lampe für »fertig« weg.
+        Wir haben stattdessen zweimal hintereinander alle Lampen eingeschaltet.
+        Mit weniger Lampen braucht jeder Buchstabe mehr Schritte, und es passieren
+        mehr Fehler, weil man länger aufpassen muss.
