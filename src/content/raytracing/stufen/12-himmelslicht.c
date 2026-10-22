@@ -30,7 +30,7 @@ vec scale(vec a, double s)
     return (vec){a.x * s, a.y * s, a.z * s};
 }
 
-// Farben mischen: jede Komponente einzeln malnehmen
+// Farben mischen: jede Komponente einzeln multiplizieren
 vec mul(vec a, vec b)
 {
     return (vec){a.x * b.x, a.y * b.y, a.z * b.z};

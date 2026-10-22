@@ -19,7 +19,7 @@ template_name: des PixelRAM-Starters
 # Raytracing in C
 
 <p class='abstract'>
-Ein Raytracer schickt für jeden Pixel einen Strahl in eine Szene und rechnet aus, was der Strahl trifft. Du baust einen in C mit PixelRAM, Schritt für Schritt: eine Kugel, Licht, ein Schachbrett als Boden, Schatten, eine Kamera, die um die Szene kreist, einen gestreiften Planeten, eine Spiegelkugel, eine Glaskugel, Lack und Metall und am Ende ein Bild ohne Treppenstufen, mit weichen Schatten. Dafür brauchst du nur Vektoren: addieren, malnehmen und das Skalarprodukt.
+Ein Raytracer schickt für jeden Pixel einen Strahl in eine Szene und rechnet aus, was der Strahl trifft. Du baust einen in C mit PixelRAM, Schritt für Schritt: eine Kugel, Licht, ein Schachbrett als Boden, Schatten, eine Kamera, die um die Szene kreist, einen gestreiften Planeten, eine Spiegelkugel, eine Glaskugel, Lack und Metall und am Ende ein Bild ohne Treppenstufen, mit weichen Schatten. Dafür brauchst du nur Vektoren: addieren, multiplizieren und das Skalarprodukt.
 </p>
 
 <img class='full fit-width' src='raytracer.webp' alt='Das fertige Bild: links ein gestreifter Planet mit rotem Fleck, in der Mitte eine Spiegelkugel, in der sich die ganze Szene spiegelt, rechts eine Glaskugel, durch die das Schachbrett verzerrt und auf dem Kopf zu sehen ist, davor eine lackierte rote und eine blaue Kugel mit Glanzpunkten, rechts kleine Kugeln aus Gold und Kupfer; alle werfen weiche Schatten auf das Schachbrett, das zum Horizont hin im Dunst verschwindet.'>
@@ -28,6 +28,13 @@ Ein Raytracer schickt für jeden Pixel einen Strahl in eine Szene und rechnet au
 So sieht dein Raytracer am Ende aus. Kein Bild davon ist gemalt: Jeder Pixel ist das Ergebnis einer Rechnung, die einem Lichtstrahl rückwärts folgt, vom Auge in die Szene, dort vielleicht von einer Kugel zur nächsten und dann zur Sonne. Genau so, nur mit viel mehr Strahlen, entstehen die Bilder in Animationsfilmen, und seit einigen Jahren auch in Spielen, mit Grafikkarten, die Strahlen in eigener Hardware verfolgen.
 
 Die Idee, Strahlen auch an Spiegeln und durch Glas weiterzuverfolgen, ist von 1979. Das Bild, mit dem sie bekannt wurde, zeigt Kugeln über einem Schachbrett, wie deins.
+
+<img class='drawing' src='whitted-1979.webp' alt='Ein altes Bild in Graustufen, gedruckt im Rasterdruck mit sichtbaren Punkten: eine Glaskugel und eine Spiegelkugel schweben über einem schwarz-weißen Schachbrett vor grauem Grund; in der Glaskugel steht das Schachbrett verkleinert auf dem Kopf, in der Spiegelkugel spiegelt es sich.'>
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>An Improved Illumination Model for Shaded Display</strong>, Turner Whitted, Communications of the ACM, 1980. Auf sieben Seiten steht, was du hier baust: Strahlen, die an Spiegeln abprallen und durch Glas gehen, Strahlen zum Licht für die Schatten und mehr Strahlen an den Kanten gegen Treppenstufen. Das Bild oben ist aus diesem Aufsatz: <a href='https://www.cs.drexel.edu/~deb39/Classes/Papers/p343-whitted.pdf'>PDF</a>, auch bei der <a href='https://doi.org/10.1145/358876.358882'>ACM</a>.</p>
+</div>
 
 _person(whitted)
 
@@ -293,6 +300,105 @@ Eine rote Scheibe. Dass sie eine Kugel ist, sieht man noch nicht: Jeder Strahl, 
 
 _task(treffer)
 
+## Glatte Kanten
+
+### Zufall im Pixel
+
+Sieh dir den Rand der roten Scheibe genau an: Er besteht aus Treppenstufen. Jeder Pixel schickt genau einen Strahl durch seine Mitte, und ob der die Kugel trifft oder knapp daneben geht, entscheidet über den ganzen Pixel. Was zwischen zwei Mitten liegt, sieht der Raytracer nie.
+
+Die Abhilfe ist einfach und braucht Geduld: viele Strahlen je Pixel, jeder durch einen **zufälligen Punkt im Pixel**, und davon der Durchschnitt. Am Rand einer Kugel treffen dann manche Strahlen die Kugel und manche den Himmel, und der Pixel bekommt eine Mischfarbe. Statt alle Strahlen auf einmal zu rechnen, schickt das Programm in jedem Bild einen weiteren Strahl je Pixel, einen **Durchgang**, und zeigt den Durchschnitt aller bisherigen. So sieht man sofort ein Bild, das mit jeder Sekunde glatter wird.
+
+Für den Zufall gibt es eine kleine Funktion; `xorshift` heißt das Verfahren. Unter `mix`:
+
+```c
+// Zufall (xorshift): eine Zahl von 0 bis unter 1
+uint32_t seed = 2463534242u;
+
+double random_double(void)
+{
+    seed ^= seed << 13;
+    seed ^= seed >> 17;
+    seed ^= seed << 5;
+    return seed / 4294967296.0;
+}
+```
+
+`draw` addiert in jedem Durchgang die neue Farbe zur Summe des Pixels und zeigt die Summe geteilt durch die Zahl der Durchgänge:
+
+```c
+// für jeden Pixel: die Summe der Farben aus allen Durchgängen
+vec sum[H][W];
+
+// ein Durchgang: ein Strahl je Pixel, durch einen zufälligen Punkt im Pixel
+void draw(int passes)
+{
+    for (int y = 0; y < H; y++)
+    {
+        for (int x = 0; x < W; x++)
+        {
+            vec c = trace(eye, ray_dir(x + random_double(), y + random_double()));
+            if (passes == 1)
+                sum[y][x] = c;  // der erste Durchgang: neu anfangen
+            else
+                sum[y][x] = add(sum[y][x], c);
+
+            // gezeigt wird der Durchschnitt aller Durchgänge
+            vec avg = scale(sum[y][x], 1.0 / passes);
+            set_pixel_rgb(x, y, to_byte(avg.x), to_byte(avg.y), to_byte(avg.z));
+        }
+    }
+}
+```
+
+In `main` zeichnet die Schleife jetzt in jedem Bild einen weiteren Durchgang, und `passes` zählt sie mit:
+
+```c
+~     screen_open(W, H, pixel_rgb24, "Raytracer");
+    int passes = 0;
+    while (!should_close())
+    {
+        // jedes Bild ein weiterer Durchgang: das Bild wird immer glatter
+        passes++;
+        draw(passes);
+        present();
+    }
+```
+
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/03-glatt.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+hook: frames 1
+crop-element: #canvas
+-->
+<img src='glatt-1.webp' alt='Die rote Scheibe nach einem Durchgang: Ihr Rand ist ausgefranst, als wäre er zerkrümelt.'>
+<figcaption>Nach einem Durchgang</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+hook: frames 64
+crop-element: #canvas
+-->
+<img src='glatt-64.webp' alt='Dieselbe Scheibe nach 64 Durchgängen: ein glatter, runder Rand.'>
+<figcaption>Nach 64 Durchgängen, gut zwei Sekunden</figcaption>
+</figure>
+</div>
+
+Nach einem Durchgang ist der Rand ausgefranst, weil jeder Strahl irgendwo im Pixel landet. Nach 64 ist er glatt: Ein Pixel am Rand ist so rot, wie viel von ihm die Kugel bedeckt. Alles, was ab jetzt dazukommt, wird von selbst glatt gerechnet, auch das Schachbrett, das später zum Horizont hin in ein gleichmäßiges Grau übergeht.
+
+_task(rauschen)
+
 ## Licht
 
 ### Die Normale
@@ -307,7 +413,7 @@ Dasselbe Bündel Sonnenlicht verteilt sich auf eine umso größere Fläche, je f
 
 _person(lambert)
 
-Dazu kommt ein wenig Licht, das vom ganzen Himmel kommt, `ambient`. Ohne es wäre die Schattenseite der Kugel völlig schwarz. Farben werden dabei Komponente für Komponente malgenommen: Rotes Material unter weißlichem Licht bleibt rot. Dafür gibt es `mul`:
+Dazu kommt ein wenig Licht, das vom ganzen Himmel kommt, `ambient`. Ohne es wäre die Schattenseite der Kugel völlig schwarz. Farben werden dabei Komponente für Komponente multipliziert: Rotes Material unter weißlichem Licht bleibt rot. Dafür gibt es `mul`:
 
 ```c
 ~ vec scale(vec a, double s)
@@ -315,7 +421,7 @@ Dazu kommt ein wenig Licht, das vom ganzen Himmel kommt, `ambient`. Ohne es wär
 ~     return (vec){a.x * s, a.y * s, a.z * s};
 ~ }
 ~
-// Farben mischen: jede Komponente einzeln malnehmen
+// Farben mischen: jede Komponente einzeln multiplizieren
 vec mul(vec a, vec b)
 {
     return (vec){a.x * b.x, a.y * b.y, a.z * b.z};
@@ -362,7 +468,7 @@ vec trace(vec origin, vec dir)
 ```c
 ~     screen_open(W, H, pixel_rgb24, "Raytracer");
     sun_dir = normalize((vec){1.4, 1.0, 0.3});
-~     draw();
+~     int passes = 0;
 ```
 
 Eine Kleinigkeit fehlt noch. Ein Bildschirm zeigt den Farbwert 128 nicht halb so hell wie 255, sondern nur etwa ein Fünftel so hell. Dein Programm rechnet aber mit echten Lichtmengen. Die **Gamma-Korrektur** gleicht das aus, in `to_byte`:
@@ -378,7 +484,7 @@ uint8_t to_byte(double c)
 ```
 
 <!-- tutorial-screenshot
-write-file: raytracer.c <- file:stufen/03-licht.c
+write-file: raytracer.c <- file:stufen/04-licht.c
 terminal-open
 terminal-run: make PROGRAM=raytracer
 terminal-wait-for-prompt
@@ -387,6 +493,7 @@ terminal-expect-no-text: ***
 tab: preview
 viewport: 800x450
 hook: open raytracer.html
+hook: frames 64
 crop-element: #canvas
 -->
 <img class='full fit-width' src='licht-kugel.webp' alt='Die rote Kugel ist jetzt rund: oben rechts hell, wo die Sonne auf sie scheint, nach links unten immer dunkler.'>
@@ -533,7 +640,7 @@ vec trace(vec origin, vec dir)
 ```
 
 <!-- tutorial-screenshot
-write-file: raytracer.c <- file:stufen/04-boden.c
+write-file: raytracer.c <- file:stufen/05-boden.c
 terminal-open
 terminal-run: make PROGRAM=raytracer
 terminal-wait-for-prompt
@@ -542,6 +649,7 @@ terminal-expect-no-text: ***
 tab: preview
 viewport: 800x450
 hook: open raytracer.html
+hook: frames 64
 crop-element: #canvas
 -->
 <img class='full fit-width' src='boden.webp' alt='Sechs Kugeln in verschiedenen Farben und Größen stehen auf einem schwarz-weißen Schachbrett, das bis zum Horizont reicht; die Kugeln sind auf der rechten Seite hell, Schatten gibt es keine.'>
@@ -567,7 +675,7 @@ Ob ein Punkt im Schatten liegt, findet ein Raytracer genauso heraus wie alles an
 _task(akne)
 
 <!-- tutorial-screenshot
-write-file: raytracer.c <- file:stufen/05-akne.c
+write-file: raytracer.c <- file:stufen/06-akne.c
 terminal-open
 terminal-run: make PROGRAM=raytracer
 terminal-wait-for-prompt
@@ -576,13 +684,16 @@ terminal-expect-no-text: ***
 tab: preview
 viewport: 800x450
 hook: open raytracer.html
+hook: frames 1
 crop-element: #canvas
 -->
-<img class='full fit-width' src='akne.webp' alt='Die Kugeln werfen jetzt Schatten auf das Schachbrett, aber auf den hellen Feldern vorn liegen dunkle Sprenkel, auch dort, wo die Sonne scheint.'>
+<img class='full fit-width' src='akne.webp' alt='Die Kugeln werfen jetzt Schatten auf das Schachbrett, aber nach dem ersten Durchgang liegen auf den hellen Feldern dunkle Sprenkel, auch dort, wo die Sonne scheint.'>
 
 ### Akne
 
 Die Schatten sind da, aber auf dem Boden liegen dunkle Sprenkel, vor allem auf den hellen Feldern vorn. Grafiker nennen das **Shadow Acne**. Der Schattenstrahl beginnt genau auf der Oberfläche, und genau heißt bei Kommazahlen: fast. Liegt der berechnete Treffpunkt durch einen Rundungsfehler ein winziges Stück unter dem Boden, trifft der Schattenstrahl den Boden selbst, bei einem `t` wie 0,0000000000000002, und hält den Punkt für beschattet.
+
+Mit jedem Durchgang werden die Sprenkel blasser, denn im Durchschnitt fallen die wenigen falschen Strahlen kaum noch auf. Weg ist der Fehler damit nicht, nur verdünnt: Ein Rauschen wird durch viele Durchgänge richtig, ein Fehler nicht. Das Bild oben zeigt den ersten Durchgang.
 
 Die Abhilfe: Treffer, die näher als eine kleine Zahl `EPS` am Anfang des Strahls liegen, zählen nicht.
 
@@ -601,7 +712,7 @@ In `hit_sphere` und `hit_floor` wird aus `t > 0` jeweils `t > EPS`:
 ```
 
 <!-- tutorial-screenshot
-write-file: raytracer.c <- file:stufen/05-schatten.c
+write-file: raytracer.c <- file:stufen/06-schatten.c
 terminal-open
 terminal-run: make PROGRAM=raytracer
 terminal-wait-for-prompt
@@ -610,6 +721,7 @@ terminal-expect-no-text: ***
 tab: preview
 viewport: 800x450
 hook: open raytracer.html
+hook: frames 64
 crop-element: #canvas
 -->
 <img class='full fit-width' src='schatten.webp' alt='Dieselbe Szene ohne Sprenkel: Jede Kugel wirft einen scharfen Schatten nach links hinten auf das Schachbrett.'>
@@ -676,7 +788,7 @@ vec ray_dir(double x, double y)
 
 ### Um die Szene kreisen
 
-In `main` fragt die Schleife jetzt die Pfeiltasten ab und rechnet das Bild nur dann neu, wenn sich die Kamera bewegt hat:
+In `main` fragt die Schleife jetzt die Pfeiltasten ab. Bewegt sich die Kamera, gelten die alten Durchgänge nicht mehr: `passes` fängt wieder bei 0 an, und der nächste Durchgang überschreibt die Summe.
 
 ```c
 int main(void)
@@ -685,23 +797,20 @@ int main(void)
     sun_dir = normalize((vec){1.4, 1.0, 0.3});
 
     double angle = 0.2, height = 1.8;
-    bool changed = true;
+    int passes = 0;
 
     while (!should_close())
     {
         // Pfeiltasten: um die Szene kreisen, höher oder tiefer
-        if (key_down(pixel_key_left))  { angle -= 0.03; changed = true; }
-        if (key_down(pixel_key_right)) { angle += 0.03; changed = true; }
-        if (key_down(pixel_key_up) && height < 6)     { height += 0.05; changed = true; }
-        if (key_down(pixel_key_down) && height > 0.3) { height -= 0.05; changed = true; }
+        if (key_down(pixel_key_left))  { angle -= 0.03; passes = 0; }
+        if (key_down(pixel_key_right)) { angle += 0.03; passes = 0; }
+        if (key_down(pixel_key_up) && height < 6)     { height += 0.05; passes = 0; }
+        if (key_down(pixel_key_down) && height > 0.3) { height -= 0.05; passes = 0; }
 
-        // nur neu rechnen, wenn sich die Kamera bewegt hat
-        if (changed)
-        {
-            set_camera(angle, height);
-            draw();
-            changed = false;
-        }
+        // jedes Bild ein weiterer Durchgang: das Bild wird immer glatter
+        set_camera(angle, height);
+        passes++;
+        draw(passes);
         present();
     }
     screen_close();
@@ -714,7 +823,7 @@ Klicke ins Bild und kreise mit den Pfeiltasten um die Kugeln.
 <div class='gallery columns-2'>
 <figure>
 <!-- tutorial-screenshot
-write-file: raytracer.c <- file:stufen/06-kamera.c
+write-file: raytracer.c <- file:stufen/07-kamera.c
 terminal-open
 terminal-run: make PROGRAM=raytracer
 terminal-wait-for-prompt
@@ -723,6 +832,7 @@ terminal-expect-no-text: ***
 tab: preview
 viewport: 800x450
 hook: open raytracer.html
+hook: frames 64
 crop-element: #canvas
 -->
 <img src='kamera-start.webp' alt='Die Szene von etwas höher: die Kugeln auf dem Schachbrett mit ihren Schatten, die Kamera schaut leicht von oben.'>
@@ -734,7 +844,7 @@ tab: preview
 viewport: 800x450
 hook: open raytracer.html
 click: selector:#canvas
-hook: play ArrowLeft 0.3 ArrowLeft 0.3 ArrowLeft 0.3 ArrowLeft 0.3 ArrowUp 0.3 ArrowUp 0.5
+hook: play ArrowLeft 0.3 ArrowLeft 0.3 ArrowLeft 0.3 ArrowLeft 0.3 ArrowUp 0.3 ArrowUp 4
 crop-element: #canvas
 -->
 <img src='kamera-gedreht.webp' alt='Dieselbe Szene von links und höher: die große orange Kugel steht jetzt vorn, das Schachbrett läuft schräg durchs Bild.'>
@@ -804,7 +914,7 @@ In `nearest_hit` holt sich eine Kugel mit `planet` ihre Farbe aus der Textur:
 ```
 
 <!-- tutorial-screenshot
-write-file: raytracer.c <- file:stufen/07-textur.c
+write-file: raytracer.c <- file:stufen/08-textur.c
 terminal-open
 terminal-run: make PROGRAM=raytracer
 terminal-wait-for-prompt
@@ -813,6 +923,7 @@ terminal-expect-no-text: ***
 tab: preview
 viewport: 800x450
 hook: open raytracer.html
+hook: frames 64
 crop-element: #canvas
 -->
 <img class='full fit-width' src='planet.webp' alt='Links steht statt der orangen Kugel ein Planet wie Jupiter mit breiten und feinen braunen und cremefarbenen Streifen und unten einem roten ovalen Fleck in einem hellen Ring.'>
@@ -892,13 +1003,13 @@ vec trace(vec origin, vec dir, int depth)
 In `draw` beginnt jeder Strahl vom Auge mit `depth` 0:
 
 ```c
-            vec c = trace(eye, ray_dir(x + 0.5, y + 0.5), 0);
+            vec c = trace(eye, ray_dir(x + random_double(), y + random_double()), 0);
 ```
 
 _task(spiegeln)
 
 <!-- tutorial-screenshot
-write-file: raytracer.c <- file:stufen/08-spiegel.c
+write-file: raytracer.c <- file:stufen/09-spiegel.c
 terminal-open
 terminal-run: make PROGRAM=raytracer
 terminal-wait-for-prompt
@@ -907,6 +1018,7 @@ terminal-expect-no-text: ***
 tab: preview
 viewport: 800x450
 hook: open raytracer.html
+hook: frames 64
 crop-element: #canvas
 -->
 <img class='full fit-width' src='spiegel-bild.webp' alt='Die große Kugel hinten ist ein Spiegel: In ihr sieht man verzerrt den Planeten, die kleinen Kugeln, das Schachbrett und den Himmel. Auch das Schachbrett spiegelt die Kugeln schwach.'>
@@ -1035,127 +1147,21 @@ In `trace` geht Glas einen eigenen Weg:
 ```
 
 <!-- tutorial-screenshot
-write-file: raytracer.c <- file:stufen/09-glas.c
+write-file: raytracer.c <- file:stufen/10-glas.c
 terminal-open
 terminal-run: make PROGRAM=raytracer
 terminal-wait-for-prompt
 terminal-expect-no-text: error:
 terminal-expect-no-text: ***
-tab: preview
-viewport: 800x450
-hook: open raytracer.html
-crop-element: #canvas
--->
-<img class='full fit-width' src='glas-bild.webp' alt='Rechts steht eine Glaskugel: Durch sie sieht man das Schachbrett verkleinert und auf dem Kopf, an ihrem Rand spiegelt sie den Himmel. Ihr Schatten auf dem Boden ist heller als der der anderen Kugeln.'>
-
-Durch die Glaskugel steht das Schachbrett auf dem Kopf, wie bei einer Lupe, die man weit vom Auge hält. Zum Rand hin spiegelt sie immer mehr.
-
-## Glatte Kanten
-
-### Zufall im Pixel
-
-Sieh dir die Ränder der Kugeln und das Schachbrett hinten genau an: Treppenstufen, und am Horizont ein flimmerndes Muster. Jeder Pixel schickt genau einen Strahl durch seine Mitte, und was zwischen zwei Mitten liegt, sieht der Raytracer nie.
-
-Die Abhilfe ist einfach und braucht Geduld: viele Strahlen je Pixel, jeder durch einen **zufälligen Punkt im Pixel**, und davon der Durchschnitt. Am Rand einer Kugel treffen dann manche Strahlen die Kugel und manche den Himmel, und der Pixel bekommt eine Mischfarbe. Statt alle Strahlen auf einmal zu rechnen, schickt das Programm in jedem Bild einen weiteren Strahl je Pixel, einen **Durchgang**, und zeigt den Durchschnitt aller bisherigen. So sieht man sofort ein Bild, das mit jeder Sekunde glatter wird.
-
-Für den Zufall gibt es eine kleine Funktion; `xorshift` heißt das Verfahren. Unter `mix`:
-
-```c
-// Zufall (xorshift): eine Zahl von 0 bis unter 1
-uint32_t seed = 2463534242u;
-
-double random_double(void)
-{
-    seed ^= seed << 13;
-    seed ^= seed >> 17;
-    seed ^= seed << 5;
-    return seed / 4294967296.0;
-}
-```
-
-`draw` addiert in jedem Durchgang die neue Farbe zur Summe des Pixels und zeigt die Summe geteilt durch die Zahl der Durchgänge:
-
-```c
-// für jeden Pixel: die Summe der Farben aus allen Durchgängen
-vec sum[H][W];
-
-// ein Durchgang: ein Strahl je Pixel, durch einen zufälligen Punkt im Pixel
-void draw(int passes)
-{
-    for (int y = 0; y < H; y++)
-    {
-        for (int x = 0; x < W; x++)
-        {
-            vec c = trace(eye, ray_dir(x + random_double(), y + random_double()), 0);
-            if (passes == 1)
-                sum[y][x] = c;  // der erste Durchgang: neu anfangen
-            else
-                sum[y][x] = add(sum[y][x], c);
-
-            // gezeigt wird der Durchschnitt aller Durchgänge
-            vec avg = scale(sum[y][x], 1.0 / passes);
-            set_pixel_rgb(x, y, to_byte(avg.x), to_byte(avg.y), to_byte(avg.z));
-        }
-    }
-}
-```
-
-In `main` zählt `passes` die Durchgänge. Bewegt sich die Kamera, fängt es wieder bei 0 an:
-
-```c
-~     double angle = 0.2, height = 1.8;
-    int passes = 0;
-
-~     while (!should_close())
-~     {
-~         // Pfeiltasten: um die Szene kreisen, höher oder tiefer
-        if (key_down(pixel_key_left))  { angle -= 0.03; passes = 0; }
-        if (key_down(pixel_key_right)) { angle += 0.03; passes = 0; }
-        if (key_down(pixel_key_up) && height < 6)     { height += 0.05; passes = 0; }
-        if (key_down(pixel_key_down) && height > 0.3) { height -= 0.05; passes = 0; }
-
-        // jedes Bild ein weiterer Durchgang: das Bild wird immer glatter
-        set_camera(angle, height);
-        passes++;
-        draw(passes);
-~         present();
-~     }
-```
-
-<div class='gallery columns-2'>
-<figure>
-<!-- tutorial-screenshot
-write-file: raytracer.c <- file:stufen/10-glatt.c
-terminal-open
-terminal-run: make PROGRAM=raytracer
-terminal-wait-for-prompt
-terminal-expect-no-text: error:
-terminal-expect-no-text: ***
-tab: preview
-viewport: 800x450
-hook: open raytracer.html
-hook: frames 1
-crop-element: #canvas
--->
-<img src='glatt-1.webp' alt='Die Szene nach einem Durchgang: Die Kanten sind ausgefranst, als wären sie zerkrümelt, und der Horizont flimmert.'>
-<figcaption>Nach einem Durchgang</figcaption>
-</figure>
-<figure>
-<!-- tutorial-screenshot
 tab: preview
 viewport: 800x450
 hook: open raytracer.html
 hook: frames 64
 crop-element: #canvas
 -->
-<img src='glatt-64.webp' alt='Dieselbe Szene nach 64 Durchgängen: glatte Kanten, und das Schachbrett geht am Horizont in ein gleichmäßiges Grau über.'>
-<figcaption>Nach 64 Durchgängen, gut zwei Sekunden</figcaption>
-</figure>
-</div>
+<img class='full fit-width' src='glas-bild.webp' alt='Rechts steht eine Glaskugel: Durch sie sieht man das Schachbrett verkleinert und auf dem Kopf, an ihrem Rand spiegelt sie den Himmel. Ihr Schatten auf dem Boden ist heller als der der anderen Kugeln.'>
 
-Nach einem Durchgang sind die Kanten ausgefranst, weil jeder Strahl irgendwo im Pixel landet. Nach 64 sind sie glatt, und das Schachbrett geht zum Horizont hin in Grau über, wie es soll: Dort liegen in einem Pixel so viele Felder, dass sie sich mischen.
-
-_task(rauschen)
+Durch die Glaskugel steht das Schachbrett auf dem Kopf, wie bei einer Lupe, die man weit vom Auge hält. Zum Rand hin spiegelt sie immer mehr.
 
 ## Weiche Schatten
 
@@ -1352,6 +1358,27 @@ _task(lack)
             return scale(sun_color, 1 / (3.14159 * SUN_SIZE * SUN_SIZE));
 ```
 
+Mit einer so hellen Sonne stößt `to_byte` an seine Grenze: Alles über 1 schneidet es ab. Ein Pixel, den die gespiegelte Sonne nur zu einem Zehntel bedeckt, ist im Durchschnitt immer noch etwa 7 hell und wird ganz weiß, und der Glanzpunkt wird zu einem harten weißen Kästchen. Zwei Änderungen helfen. In `draw` wird jeder Strahl bei 4 gekappt, bevor er zur Summe kommt; dann bekommt der Rand eines Glanzpunkts eine Mischfarbe wie jede andere Kante:
+
+```c
+~            vec c = trace(eye, ray_dir(x + random_double(), y + random_double()), 0);
+            // sehr helle Strahlen (die Sonne im Spiegel) bei 4 kappen, damit
+            // auch der Rand eines Glanzpunkts eine Mischfarbe bekommt
+            c = (vec){fmin(c.x, 4), fmin(c.y, 4), fmin(c.z, 4)};
+```
+
+Und `to_byte` schneidet nicht mehr hart ab, sondern drückt alles über 0,8 weich zusammen, sodass es sich 1 nähert, ohne es zu erreichen. So eine Kurve heißt **Tone Mapping**; Kameras und Spiele machen das auch, mit ähnlichen Kurven. `fmin` gibt die kleinere von zwei Zahlen, `exp` die Exponentialfunktion.
+
+```c
+// Farbwert 0 bis 1 zu 0 bis 255, mit Gamma für den Bildschirm
+uint8_t to_byte(double c)
+{
+    // Tone Mapping: bis 0.8 bleibt alles, wie es ist, was heller ist, wird
+    // weich zusammengedrückt und nähert sich 1, statt bei 1 abzubrechen
+    if (c > 0.8)
+        c = 0.8 + 0.2 * (1 - exp(-(c - 0.8) / 0.2));
+```
+
 <!-- tutorial-screenshot
 write-file: raytracer.c <- file:stufen/13-lack.c
 terminal-open
@@ -1375,7 +1402,7 @@ Jetzt hat jede lackierte Kugel einen weißen Glanzpunkt, dort, wo sie die Sonne 
 
 ### Metall
 
-Eine Kugel aus Chrom und eine aus Gold spiegeln beide fast alles. Aber in der Goldkugel sieht alles golden aus: Ein Metall färbt, was es spiegelt. Gold spiegelt rotes Licht fast ganz, grünes etwas weniger und blaues nur zu einem Drittel. Lack dagegen spiegelt alle Farben gleich, darum ist der Glanzpunkt auf der roten Kugel weiß und nicht rot. Für ein Metall wird das Gespiegelte mit der Farbe des Materials malgenommen, mit `mul`, so wie das Licht auf einer farbigen Oberfläche.
+Eine Kugel aus Chrom und eine aus Gold spiegeln beide fast alles. Aber in der Goldkugel sieht alles golden aus: Ein Metall färbt, was es spiegelt. Gold spiegelt rotes Licht fast ganz, grünes etwas weniger und blaues nur zu einem Drittel. Lack dagegen spiegelt alle Farben gleich, darum ist der Glanzpunkt auf der roten Kugel weiß und nicht rot. Für ein Metall wird das Gespiegelte mit der Farbe des Materials multipliziert, mit `mul`, so wie das Licht auf einer farbigen Oberfläche.
 
 ### Matt
 
@@ -1483,6 +1510,14 @@ crop-element: #canvas
 
 Kreise mit den Pfeiltasten um die Szene. Solange du eine Taste hältst, rauscht das Bild; lässt du los, wird es in ein paar Sekunden glatt, die matte Kupferkugel zuletzt.
 
+### Kugeln auf Plattencovern
+
+In den 1980er Jahren waren glänzende Kugeln über einem Schachbrett das Bild für Computergrafik schlechthin. Whitteds Bild von 1979 zeigte genau das, und bald tauchten solche Kugeln auch auf Plattencovern auf. Dieses ist von 1985, das zweite Album von Modern Talking, hier in der Ausgabe von Amiga, dem Plattenlabel der DDR. Ob das Bild gemalt, fotografiert oder gerechnet ist, steht nirgends. Mit dem, was du über Strahlen weißt, siehst du aber, was daran nicht stimmen kann.
+
+<img class='drawing' src='modern-talking.webp' alt='Ein Plattencover: oben in geschwungener Schrift »Modern Talking« und »Let’s Talk About Love«, darunter ein schwarz-weiß-goldenes Schachbrett, das als schmaler Streifen nach hinten in den Himmel läuft, mit sechs glänzenden Kugeln in Blau, Orange und Rosa darauf, unten »The 2nd Album«.'>
+
+_task(cover)
+
 ## Tiefenschärfe
 
 ### Eine Linse statt eines Punkts
@@ -1510,7 +1545,7 @@ vec random_in_disc(void)
 
 ```c
 // Tiefenschärfe: wie groß die Linse ist und wie weit weg alles scharf ist
-double aperture = 0.15;
+double aperture = 0.06;
 double focus = 4.2;
 ```
 
@@ -1557,7 +1592,7 @@ crop-element: #canvas
 <img class='full fit-width' src='schaerfe-bild.webp' alt='Dieselbe Szene mit Tiefenschärfe: Die rote Kugel ist scharf. Die blaue Kugel davor, die Spiegelkugel, die Goldkugel und das Schachbrett zum Horizont hin verschwimmen weich.'>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Mach die Linse größer, <code>aperture = 0.3</code>: Wie weit reicht der scharfe Bereich jetzt noch nach vorn und nach hinten? Mit <code>aperture = 0</code> ist alles wieder scharf. Setz danach 0.15 wieder ein.
+<strong>Ausprobieren:</strong> Mach die Linse größer, <code>aperture = 0.2</code>: Wie weit reicht der scharfe Bereich jetzt noch nach vorn und nach hinten? Mit <code>aperture = 0</code> ist alles wieder scharf. Setz danach 0.06 wieder ein.
 </div>
 
 ## Path Tracing
@@ -1566,7 +1601,7 @@ crop-element: #canvas
 
 Licht kommt nicht nur von der Sonne und vom Himmel. Der helle Boden hellt die Unterseiten der Kugeln auf, und neben der roten Kugel ist der Boden ein wenig rötlich. `skylight` schickt schon in jedem Durchgang einen Strahl in eine zufällige Richtung, aber es zählt nur, ob er den Himmel sieht. Trifft er etwas, kann `trace` ausrechnen, wie hell es dort ist, und das ist das Licht, das von dort kommt. Dort schickt `trace` wieder einen zufälligen Strahl weiter, und so folgt jeder Durchgang einem Weg des Lichts durch die Szene, von Fläche zu Fläche. Das ist **Path Tracing**, so werden heute Animationsfilme gerechnet.
 
-`skylight` wird gelöscht. An seine Stelle kommt `bounce`, nach der Vorab-Deklaration von `trace`, denn es ruft `trace` auf:
+Path Tracing baut wie die Tiefenschärfe auf dem fertigen Programm auf, nicht auf ihr; beide passen aber auch zusammen. `skylight` wird gelöscht. An seine Stelle kommt `bounce`, nach der Vorab-Deklaration von `trace`, denn es ruft `trace` auf:
 
 ```c
 ~vec trace(vec origin, vec dir, int depth);
@@ -1593,6 +1628,8 @@ vec bounce(hit h, int depth)
     vec light = add(sunlight(h), bounce(h, depth));
 ```
 
+<div class='gallery columns-2'>
+<figure>
 <!-- tutorial-screenshot
 write-file: raytracer.c <- file:stufen/16-pathtracing.c
 terminal-open
@@ -1603,12 +1640,34 @@ terminal-expect-no-text: ***
 tab: preview
 viewport: 800x450
 hook: open raytracer.html
-hook: frames 256
+hook: frames 512
+hook: view 0.12 0.4 0.5
 crop-element: #canvas
 -->
-<img class='full fit-width' src='pathtracing.webp' alt='Die Szene mit Path Tracing und Tiefenschärfe: Die Unterseiten der Kugeln und ihre Schatten auf dem Boden sind heller als vorher, weil der helle Boden Licht zurückwirft.'>
+<img src='pt-mit.webp' alt='Ein Ausschnitt mit Path Tracing, unten der Planet, die rote und die blaue Kugel auf dem Schachbrett: Die Unterseiten der Kugeln sind heller, weil der Boden sie anstrahlt, und der Boden neben dem Planeten und der roten Kugel hat einen warmen Schimmer.'>
+<figcaption>Mit Path Tracing: dazu das Licht vom Boden und von den Kugeln</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/raytracer.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+hook: frames 256
+hook: view 0.12 0.4 0.5
+crop-element: #canvas
+-->
+<img src='pt-ohne.webp' alt='Derselbe Ausschnitt ohne Path Tracing: der untere Teil des Planeten, die rote und die blaue Kugel auf dem Schachbrett. Ihre Unterseiten sind dunkel, der Boden neben ihnen ist grau.'>
+<figcaption>Ohne Path Tracing: Licht nur von der Sonne und vom Himmel</figcaption>
+</figure>
+</div>
 
-Jeder Durchgang dauert jetzt etwa doppelt so lange, denn fast jeder Strahl, der etwas trifft, schickt einen weiteren los. Dafür stimmt das Licht: Die Unterseiten der Kugeln und die Schatten sind heller, weil der helle Boden Licht zurückwirft, nicht nur der Himmel. Farbig wird dieses Licht neben kräftigen Farben; am deutlichsten siehst du es, wenn du eine große rote Kugel dicht neben eine weiße stellst.
+Jeder Durchgang dauert jetzt etwa doppelt so lange, denn fast jeder Strahl, der etwas trifft, schickt einen weiteren los. Dafür stimmt das Licht: Die Unterseiten der Kugeln werden hell, weil der Boden unter ihnen Licht zurückwirft, und neben dem Planeten und der roten Kugel bekommt der Boden etwas von ihrer Farbe. Am deutlichsten siehst du es, wenn du eine große rote Kugel dicht neben eine weiße stellst.
 
 ## Wie geht es weiter?
 

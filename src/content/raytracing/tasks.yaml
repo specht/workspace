@@ -46,6 +46,28 @@ tasks:
     hint: 'Rechne `oc = origin − center`, dann `b = dot(oc, dir)`, `c = dot(oc, oc) − radius²`, `d = b² − c` und `t = −b − sqrt(d)`.'
     solution: '`oc = (0, 0, 5)`, `b = 5 · (−1) = −5`, `c = 25 − 1 = 24`, `d = 25 − 24 = 1`, `t = 5 − 1 = 4`. Der Strahl trifft die Kugel bei `(0, 0, −4)`, eine Einheit vor ihrem Mittelpunkt.'
 
+  - id: rauschen
+    title: Warum rauscht es?
+    prompt: |
+      Nach dem ersten Durchgang sind die Kanten ausgefranst, nach 64 glatt.
+      Warum wird das Bild mit jedem Durchgang glatter?
+    check:
+      type: choice
+      options:
+        - 'Jeder Durchgang trifft einen anderen zufälligen Punkt im Pixel; der Durchschnitt vieler Strahlen ist die Mischfarbe, die der Pixel wirklich zeigt.'
+        - Jeder Durchgang rechnet mit einer höheren Auflösung.
+        - PixelRAM weichzeichnet das Bild mit jedem Aufruf von present() ein wenig.
+        - Die Strahlen werden mit jedem Durchgang genauer, weil EPS kleiner wird.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: '`W` und `H` bleiben gleich. Was sich ändert, ist die Zahl der Strahlen, über die ein Pixel mittelt.'
+      - when: { picked: 2 }
+        say: PixelRAM zeigt die Pixel genau so, wie `draw` sie setzt.
+      - when: { picked: 3 }
+        say: '`EPS` ist eine feste Zahl.'
+    solution: 'Ein Strahl sieht nur, was genau auf seinem Weg liegt. Viele Strahlen durch zufällige Punkte im Pixel decken die ganze Fläche des Pixels ab, und ihr Durchschnitt nähert sich der Farbe, die der Pixel im Mittel zeigen soll: am Rand einer Kugel eine Mischung aus Kugel und Himmel. Dasselbe Prinzip macht später die Schatten weich.'
+
   - id: hell
     title: Wie viel Sonne?
     prompt: |
@@ -58,9 +80,9 @@ tasks:
       tolerance: 0.001
     feedback:
       - when: { equals: 0.6 }
-        say: Das ist die x-Komponente von `sun_dir`. Das Skalarprodukt nimmt jede Komponente mit der von `normal` mal und addiert.
+        say: Das ist die x-Komponente von `sun_dir`. Das Skalarprodukt multipliziert jede Komponente mit der von `normal` und addiert.
       - when: { equals: 1.4 }
-        say: Beim Skalarprodukt werden die Komponenten erst malgenommen, dann addiert, nicht einfach zusammengezählt.
+        say: Beim Skalarprodukt werden die Komponenten erst multipliziert, dann addiert, nicht einfach zusammengezählt.
     hint: '`dot(a, b) = a.x · b.x + a.y · b.y + a.z · b.z`.'
     solution: '`0 · 0.6 + 1 · 0.8 + 0 · 0 = 0.8`. Die Sonne steht etwa 53° über dem Horizont, und die Stelle bekommt 80 % des Lichts, das sie bei senkrechter Sonne bekäme.'
 
@@ -77,7 +99,7 @@ tasks:
       - when: { equals: -4 }
         say: Das Minus in `t = −origin.y / dir.y` gehört dazu. Ein Strahl, der nach unten zeigt, trifft den Boden vor sich, bei positivem `t`.
       - when: { equals: 0.36 }
-        say: Geteilt wird durch `dir.y`, nicht malgenommen.
+        say: Geteilt wird durch `dir.y`, nicht multipliziert.
     hint: '`t = −origin.y / dir.y`. Die anderen Komponenten spielen keine Rolle.'
     solution: '`t = −1.2 / (−0.3) = 4`. Nach 4 Einheiten ist der Strahl 4 · 0.3 = 1.2 tiefer, genau auf dem Boden.'
 
@@ -156,28 +178,6 @@ tasks:
     hint: 'Draußen streift der Strahl die Oberfläche, wenn der Winkel dort 90° ist. Mit `1,5 · sin β = 1 · sin 90°` bekommst du β.'
     solution: '`sin β = 1 / 1,5 ≈ 0,667`, also `β ≈ 41,8°`. In `glass` wird `k` genau dann negativ. Glasfasern leiten Licht, weil es flacher als dieser Winkel auf ihre Wand trifft.'
 
-  - id: rauschen
-    title: Warum rauscht es?
-    prompt: |
-      Nach dem ersten Durchgang sind die Kanten ausgefranst, nach 64 glatt.
-      Warum wird das Bild mit jedem Durchgang glatter?
-    check:
-      type: choice
-      options:
-        - 'Jeder Durchgang trifft einen anderen zufälligen Punkt im Pixel; der Durchschnitt vieler Strahlen ist die Mischfarbe, die der Pixel wirklich zeigt.'
-        - Jeder Durchgang rechnet mit einer höheren Auflösung.
-        - PixelRAM weichzeichnet das Bild mit jedem Aufruf von present() ein wenig.
-        - Die Strahlen werden mit jedem Durchgang genauer, weil EPS kleiner wird.
-      correct: 0
-    feedback:
-      - when: { picked: 1 }
-        say: '`W` und `H` bleiben gleich. Was sich ändert, ist die Zahl der Strahlen, über die ein Pixel mittelt.'
-      - when: { picked: 2 }
-        say: PixelRAM zeigt die Pixel genau so, wie `draw` sie setzt.
-      - when: { picked: 3 }
-        say: '`EPS` ist eine feste Zahl.'
-    solution: 'Ein Strahl sieht nur, was genau auf seinem Weg liegt. Viele Strahlen durch zufällige Punkte im Pixel decken die ganze Fläche des Pixels ab, und ihr Durchschnitt nähert sich der Farbe, die der Pixel im Mittel zeigen soll: am Rand einer Kugel eine Mischung aus Kugel und Himmel. Dasselbe Prinzip macht später die Schatten weich.'
-
   - id: lack
     title: Wie viel spiegelt Lack?
     prompt: |
@@ -198,6 +198,30 @@ tasks:
         say: Das ist der Betrag von `(1 − 1.5) / (1 + 1.5)`. In `fresnel` kommt das noch ins Quadrat.
     hint: 'Mit `cos_in = 1` ist `pow(1 − cos_in, 5) = 0`, und `fresnel` gibt nur `r0` zurück.'
     solution: '`r0 = ((1 − 1.5) / (1 + 1.5))² = (−0.2)² = 0.04`: Steil von vorn spiegelt Lack nur 4 Prozent. Ein Glanzpunkt ist trotzdem hell, weil die Sonne so hell ist.'
+
+  - id: cover
+    title: Was stimmt hier nicht?
+    prompt: |
+      Sieh dir das Cover von »Let's Talk About Love« genau an und vergleiche
+      es mit deinem Raytracer: mit den Spiegelkugeln, den Schatten und dem
+      Schachbrett. Was kann so nicht stimmen? Nenne mindestens drei Dinge und
+      sag jeweils, wie es richtig aussehen müsste.
+    check:
+      type: reflection
+      min_words: 30
+    examples:
+      - |
+        Die Kugeln spiegeln das Schachbrett nicht, auf dem sie liegen: Ihre
+        untere Hälfte müsste schwarze und weiße Felder zeigen, wie bei meiner
+        Spiegelkugel. Sie werfen auch keine Schatten, darum scheinen sie zu
+        schweben. Und die hellen Glanzpunkte sitzen bei jeder Kugel woanders,
+        als hätte jede ihre eigene Sonne.
+      - |
+        Das Schachbrett ist nur ein ausgeschnittener Streifen, der in den
+        Himmel läuft, kein Boden bis zum Horizont, und sein linker und
+        rechter Rand passen nicht zusammen: Sie laufen nicht auf denselben
+        Punkt zu. Die Spiegelungen in den Kugeln zeigen weder das Brett noch
+        die anderen Kugeln, nur dunkle Flecken.
 
   - id: eigene-szene
     title: Deine Szene

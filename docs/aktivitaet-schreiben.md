@@ -296,14 +296,16 @@ Augen auf etwa 40 % der Höhe, 320 × 400 Pixel als WebP. Der Kasten steht im
 Fluss der Seite, Foto links, Text rechts, und ist so hoch wie das Größere von
 beiden.
 
-### Bücher zum Weiterlesen
+### Bücher und Aufsätze zum Weiterlesen
 
 Ein Buch, das genau dort weitermacht, wo ein Abschnitt aufhört (Abrashs
 *Graphics Programming Black Book* nach den Texture Mappern, Sanglards
 *Game Engine Black Book* nach Wolfenstein 3D), bekommt einen Kasten wie ein
 Mensch, mit einem Buch-Icon statt eines Fotos: Titel, Autor, Jahr, zwei
 Sätze, was darin steht, und wo man es lesen kann. Ein Cover steht nicht
-darin, denn Cover sind nicht frei.
+darin, denn Cover sind nicht frei. Ein Aufsatz, mit dem etwas angefangen
+hat (Whitteds Raytracing von 1980), bekommt denselben Kasten mit
+`bi-file-earmark-text` statt `bi-book`.
 
 ```html
 <div class='book'>

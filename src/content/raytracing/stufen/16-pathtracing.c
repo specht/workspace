@@ -1,6 +1,5 @@
 // Raytracer: Kugeln, ein Schachbrett, Spiegel, Glas, Lack, Metall und weiche Schatten.
 // Pfeiltasten links/rechts: um die Szene kreisen, hoch/runter: höher oder tiefer.
-// W/S: die Schärfe weiter weg oder näher.
 // Jedes Bild ist ein weiterer Durchgang; das Bild wird mit der Zeit glatter.
 #include "pixelram.h"
 #include <math.h>
@@ -35,7 +34,7 @@ vec scale(vec a, double s)
     return (vec){a.x * s, a.y * s, a.z * s};
 }
 
-// Farben mischen: jede Komponente einzeln malnehmen
+// Farben mischen: jede Komponente einzeln multiplizieren
 vec mul(vec a, vec b)
 {
     return (vec){a.x * b.x, a.y * b.y, a.z * b.z};
@@ -86,17 +85,6 @@ vec random_in_sphere(void)
     while (true)
     {
         vec p = {2 * random_double() - 1, 2 * random_double() - 1, 2 * random_double() - 1};
-        if (dot(p, p) < 1)
-            return p;
-    }
-}
-
-// ein zufälliger Punkt in einer Scheibe mit dem Radius 1, wie eine Linse
-vec random_in_disc(void)
-{
-    while (true)
-    {
-        vec p = {2 * random_double() - 1, 2 * random_double() - 1, 0};
         if (dot(p, p) < 1)
             return p;
     }
@@ -380,10 +368,6 @@ void set_camera(double angle, double height)
     up = cross(right, forward);
 }
 
-// Tiefenschärfe: wie groß die Linse ist und wie weit weg alles scharf ist
-double aperture = 0.15;
-double focus = 4.2;
-
 // die Richtung vom Auge durch den Pixel (x, y)
 vec ray_dir(double x, double y)
 {
@@ -395,8 +379,10 @@ vec ray_dir(double x, double y)
 // Farbwert 0 bis 1 zu 0 bis 255, mit Gamma für den Bildschirm
 uint8_t to_byte(double c)
 {
-    if (c > 1)
-        c = 1;
+    // Tone Mapping: bis 0.8 bleibt alles, wie es ist, was heller ist, wird
+    // weich zusammengedrückt und nähert sich 1, statt bei 1 abzubrechen
+    if (c > 0.8)
+        c = 0.8 + 0.2 * (1 - exp(-(c - 0.8) / 0.2));
     return (uint8_t)(pow(c, 1 / 2.2) * 255 + 0.5);
 }
 
@@ -410,13 +396,10 @@ void draw(int passes)
     {
         for (int x = 0; x < W; x++)
         {
-            // der Strahl beginnt an einem zufälligen Punkt der Linse und
-            // zielt auf denselben Punkt in der Schärfeebene wie ohne Linse
-            vec dir = ray_dir(x + random_double(), y + random_double());
-            vec sharp = add(eye, scale(dir, focus / dot(dir, forward)));
-            vec lens = random_in_disc();
-            vec origin = add(eye, add(scale(right, aperture * lens.x), scale(up, aperture * lens.y)));
-            vec c = trace(origin, normalize(sub(sharp, origin)), 0);
+            vec c = trace(eye, ray_dir(x + random_double(), y + random_double()), 0);
+            // sehr helle Strahlen (die Sonne im Spiegel) bei 4 kappen, damit
+            // auch der Rand eines Glanzpunkts eine Mischfarbe bekommt
+            c = (vec){fmin(c.x, 4), fmin(c.y, 4), fmin(c.z, 4)};
             if (passes == 1)
                 sum[y][x] = c;  // der erste Durchgang: neu anfangen
             else
@@ -444,9 +427,6 @@ int main(void)
         if (key_down(pixel_key_right)) { angle += 0.03; passes = 0; }
         if (key_down(pixel_key_up) && height < 6)     { height += 0.05; passes = 0; }
         if (key_down(pixel_key_down) && height > 0.3) { height -= 0.05; passes = 0; }
-        // W/S: scharf weiter weg oder näher
-        if (key_down(pixel_key_w) && focus < 12) { focus += 0.05; passes = 0; }
-        if (key_down(pixel_key_s) && focus > 1)  { focus -= 0.05; passes = 0; }
 
         // jedes Bild ein weiterer Durchgang: das Bild wird immer glatter
         set_camera(angle, height);
@@ -454,7 +434,7 @@ int main(void)
         draw(passes);
 
         char title[64];
-        snprintf(title, sizeof title, "Raytracer – %d Durchgänge, scharf bei %.1f", passes, focus);
+        snprintf(title, sizeof title, "Raytracer – %d Durchgänge", passes);
         set_title(title);
         present();
     }

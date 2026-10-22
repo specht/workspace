@@ -30,7 +30,7 @@ vec scale(vec a, double s)
     return (vec){a.x * s, a.y * s, a.z * s};
 }
 
-// Farben mischen: jede Komponente einzeln malnehmen
+// Farben mischen: jede Komponente einzeln multiplizieren
 vec mul(vec a, vec b)
 {
     return (vec){a.x * b.x, a.y * b.y, a.z * b.z};
@@ -353,8 +353,10 @@ vec ray_dir(double x, double y)
 // Farbwert 0 bis 1 zu 0 bis 255, mit Gamma für den Bildschirm
 uint8_t to_byte(double c)
 {
-    if (c > 1)
-        c = 1;
+    // Tone Mapping: bis 0.8 bleibt alles, wie es ist, was heller ist, wird
+    // weich zusammengedrückt und nähert sich 1, statt bei 1 abzubrechen
+    if (c > 0.8)
+        c = 0.8 + 0.2 * (1 - exp(-(c - 0.8) / 0.2));
     return (uint8_t)(pow(c, 1 / 2.2) * 255 + 0.5);
 }
 
@@ -369,6 +371,9 @@ void draw(int passes)
         for (int x = 0; x < W; x++)
         {
             vec c = trace(eye, ray_dir(x + random_double(), y + random_double()), 0);
+            // sehr helle Strahlen (die Sonne im Spiegel) bei 4 kappen, damit
+            // auch der Rand eines Glanzpunkts eine Mischfarbe bekommt
+            c = (vec){fmin(c.x, 4), fmin(c.y, 4), fmin(c.z, 4)};
             if (passes == 1)
                 sum[y][x] = c;  // der erste Durchgang: neu anfangen
             else

@@ -25,7 +25,7 @@ vec scale(vec a, double s)
     return (vec){a.x * s, a.y * s, a.z * s};
 }
 
-// Farben mischen: jede Komponente einzeln malnehmen
+// Farben mischen: jede Komponente einzeln multiplizieren
 vec mul(vec a, vec b)
 {
     return (vec){a.x * b.x, a.y * b.y, a.z * b.z};
@@ -51,6 +51,17 @@ vec normalize(vec a)
 vec mix(vec a, vec b, double t)
 {
     return add(scale(a, 1 - t), scale(b, t));
+}
+
+// Zufall (xorshift): eine Zahl von 0 bis unter 1
+uint32_t seed = 2463534242u;
+
+double random_double(void)
+{
+    seed ^= seed << 13;
+    seed ^= seed >> 17;
+    seed ^= seed << 5;
+    return seed / 4294967296.0;
 }
 
 // der Himmel: am Horizont hell, nach oben tiefblau
@@ -202,14 +213,25 @@ uint8_t to_byte(double c)
     return (uint8_t)(pow(c, 1 / 2.2) * 255 + 0.5);
 }
 
-void draw(void)
+// für jeden Pixel: die Summe der Farben aus allen Durchgängen
+vec sum[H][W];
+
+// ein Durchgang: ein Strahl je Pixel, durch einen zufälligen Punkt im Pixel
+void draw(int passes)
 {
     for (int y = 0; y < H; y++)
     {
         for (int x = 0; x < W; x++)
         {
-            vec c = trace(eye, ray_dir(x + 0.5, y + 0.5));
-            set_pixel_rgb(x, y, to_byte(c.x), to_byte(c.y), to_byte(c.z));
+            vec c = trace(eye, ray_dir(x + random_double(), y + random_double()));
+            if (passes == 1)
+                sum[y][x] = c;  // der erste Durchgang: neu anfangen
+            else
+                sum[y][x] = add(sum[y][x], c);
+
+            // gezeigt wird der Durchschnitt aller Durchgänge
+            vec avg = scale(sum[y][x], 1.0 / passes);
+            set_pixel_rgb(x, y, to_byte(avg.x), to_byte(avg.y), to_byte(avg.z));
         }
     }
 }
@@ -218,9 +240,14 @@ int main(void)
 {
     screen_open(W, H, pixel_rgb24, "Raytracer");
     sun_dir = normalize((vec){1.4, 1.0, 0.3});
-    draw();
+    int passes = 0;
     while (!should_close())
+    {
+        // jedes Bild ein weiterer Durchgang: das Bild wird immer glatter
+        passes++;
+        draw(passes);
         present();
+    }
     screen_close();
     return 0;
 }

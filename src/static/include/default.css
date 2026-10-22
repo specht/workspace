@@ -5424,7 +5424,8 @@ h3:has(+ .person) {
     .person .portraits img { width: 5em; }
 }
 
-/* A book to read on (the Black Books of Abrash and Sanglard): a book icon
+/* A book or a paper to read on (the Black Books of Abrash and Sanglard,
+   Whitted's paper): a book or document icon
    beside its title, author and year, two sentences on what is in it and
    where to read it; like a person box, without a photo (covers are not free) */
 .book {
