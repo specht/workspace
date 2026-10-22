@@ -1,0 +1,143 @@
+# Aufgaben zu »Shader in GLSL«.
+# Format: docs/aufgaben.md. Gearbeitet wird in /workspace/glsl-starter.
+# Die Aufgaben prüfen Antworten: Rechnungen mit den Formeln der Seite und
+# eine Vorhersage; die Zahlen sind von Hand gerechnet, mit den Stufen in
+# stufen/. Am Ende wird der eigene Shader abgegeben.
+format: 1
+activity: glsl
+tasks:
+  - id: ecke
+    title: Die Ecke links unten
+    prediction: true
+    prompt: |
+      In der Ecke links unten ist `uv = (0, 0)`. Welche Farbe hat sie in dem
+      Augenblick, in dem `sin(iTime)` gerade −1 ist? Überleg erst, dann sieh
+      in der Vorschau eine Weile auf diese Ecke.
+    check:
+      type: choice
+      options:
+        - Schwarz
+        - Blau
+        - Weiß
+        - Rot
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Blau ist `0.5 + 0.5 * sin(iTime)`. Was ergibt das, wenn `sin(iTime)` −1 ist?
+      - when: { picked: 2 }
+        say: Weiß braucht Rot, Grün und Blau auf 1. Rot ist dort `uv.x`, und das ist in der linken Ecke 0.
+      - when: { picked: 3 }
+        say: Rot ist `uv.x`, und das ist ganz links 0.
+    solution: 'Rot ist `uv.x = 0`, Grün `uv.y = 0`, Blau `0.5 + 0.5 · (−1) = 0`: Schwarz. In der Vorschau wird die Ecke darum regelmäßig dunkel und wieder blau.'
+
+  - id: rand
+    title: Wie weit nach rechts?
+    prompt: |
+      Die Vorschau ist 800 Pixel breit und 600 hoch. Welchen Wert hat `p.x` am
+      rechten Rand des Bildes, bei `fragCoord.x = 800`?
+    check:
+      type: number
+      expect: 1.3333
+      tolerance: 0.005
+    feedback:
+      - when: { equals: 1 }
+        say: Das wäre richtig, wenn durch die Breite geteilt würde. Geteilt wird durch `iResolution.y`, die Höhe.
+      - when: { equals: -1.3333 }
+        say: Der Betrag stimmt, aber rechts ist `p.x` positiv.
+      - when: { equals: 2 }
+        say: Erst wird `iResolution.x` abgezogen, dann geteilt.
+    hint: '`p.x = (2 · fragCoord.x − iResolution.x) / iResolution.y`.'
+    solution: '`(2 · 800 − 800) / 600 = 800 / 600 ≈ 1.333`. Oben und unten reicht `p.y` von −1 bis 1, nach links und rechts reicht `p.x` weiter, so viel, wie das Bild breiter als hoch ist. Darum bleibt ein Kreis rund.'
+
+  - id: schein
+    title: Heller, wo sie sich treffen
+    prompt: |
+      Wo sich zwei Kreise nahe kommen, leuchtet der Hintergrund zwischen
+      ihnen heller als um einen einzelnen Kreis. Warum?
+    check:
+      type: choice
+      options:
+        - 'Der Schein jedes Kreises wird zur Farbe addiert, `color +=`. Zwischen zwei nahen Kreisen kommen zwei Anteile zusammen.'
+        - '`smoothstep` macht den Rand breiter, wenn sich zwei Kreise nähern.'
+        - '`palette` gibt Kreisen, die sich nahe sind, hellere Farben.'
+        - '`mix` mischt die Farben zweier naher Kreise zu Weiß.'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: '`smoothstep` rechnet nur den Rand eines Kreises, mit festen Zahlen. Es weiß nichts von den anderen Kreisen.'
+      - when: { picked: 2 }
+        say: '`palette` bekommt nur die Nummer des Kreises und die Zeit, nicht seine Position.'
+      - when: { picked: 3 }
+        say: '`mix` legt den Kreis über die Farbe, die schon da ist. Den Schein drumherum macht eine andere Zeile.'
+    solution: 'In der Schleife kommt für jeden Kreis `c * 0.012 / d` dazu, für jeden Pixel. Zwischen zwei nahen Kreisen ist `d` für beide klein, beide Anteile sind groß, und ihre Summe ist heller als jeder allein.'
+
+  - id: lagen
+    title: Wie hell kann es werden?
+    prompt: |
+      `fbm` zählt sechs Lagen Rauschen zusammen, mit den Stärken 0.5, 0.25,
+      0.125 und so weiter. `noise` gibt höchstens 1 zurück. Welchen Wert
+      kann `fbm` höchstens erreichen?
+    check:
+      type: number
+      expect: 0.984375
+      tolerance: 0.002
+    feedback:
+      - when: { equals: 1 }
+        say: Fast. Mit unendlich vielen Lagen wäre es 1, hier hört die Schleife nach sechs auf.
+      - when: { equals: 0.5 }
+        say: Das ist nur die erste Lage. Es kommen fünf weitere dazu, jede halb so stark wie die vorige.
+      - when: { equals: 3 }
+        say: Jede Lage ist halb so stark wie die vorige, nicht gleich stark.
+    hint: '0.5 + 0.25 + 0.125 + 0.0625 + 0.03125 + 0.015625.'
+    solution: '0.5 + 0.25 + 0.125 + 0.0625 + 0.03125 + 0.015625 = 0.984375, also 1 − 1/64. Darum passt `smoothstep(0.45, 0.75, clouds)`: Das Rauschen liegt zwischen 0 und knapp 1, meist um die Mitte.'
+
+  - id: schritt
+    title: Der erste Schritt
+    prompt: |
+      Jeder Strahl beginnt bei `eye = (0, 1.4, -3.6)`. Wie weit geht er beim
+      ersten Schritt in `march`? Die Kugel hat ihren Mittelpunkt bei
+      `(0, 0.8, 0)` und den Radius 0.5.
+    check:
+      type: number
+      expect: 1.4
+      tolerance: 0.01
+    feedback:
+      - when: { equals: 3.15 }
+        say: Das ist der Abstand zur Kugel. `map` nimmt aber das Kleinere von Kugel und Boden.
+      - when: { equals: 3.65 }
+        say: Das ist der Abstand zum Mittelpunkt der Kugel; der Radius kommt noch weg. Und ist der Boden nicht näher?
+      - when: { equals: 3.6 }
+        say: '`map` ist der Abstand zur nächsten Fläche, in jeder Richtung. Wie hoch steht das Auge über dem Boden?'
+    hint: '`map(eye) = min(ball(eye), eye.y)`.'
+    solution: '`ball(eye) = length((0, 0.6, −3.6)) − 0.5 ≈ 3.65 − 0.5 = 3.15`, der Boden ist `eye.y = 1.4` entfernt. Der erste Schritt ist 1.4 lang, für jeden Strahl, egal in welche Richtung er geht: Der Boden ist am nächsten. Darum braucht ein Strahl, der flach über den Boden läuft, so viele Schritte.'
+
+  - id: smin
+    title: Das weiche Minimum
+    prompt: |
+      Ein Punkt liegt genau zwischen zwei Tropfen: Bis zum einen ist es 0.3,
+      bis zum anderen auch. Was gibt `smin(0.3, 0.3, 0.6)` zurück?
+    check:
+      type: number
+      expect: 0.15
+      tolerance: 0.005
+    feedback:
+      - when: { equals: 0.3 }
+        say: So viel gäbe `min(0.3, 0.3)`. `smin` zieht noch `k * h * (1.0 - h)` ab.
+      - when: { equals: 0.45 }
+        say: '`k * h * (1.0 - h)` wird abgezogen, nicht addiert.'
+      - when: { equals: 0 }
+        say: Rechne `h` zuerst aus. Was ist `0.5 + 0.5 * (b - a) / k`, wenn `a` und `b` gleich sind?
+    hint: 'Rechne erst `h = clamp(0.5 + 0.5 · (b − a) / k, 0, 1)`, dann `mix(b, a, h) − k · h · (1 − h)`.'
+    solution: '`h = 0.5 + 0.5 · 0 / 0.6 = 0.5`, `mix(0.3, 0.3, 0.5) = 0.3`, `0.6 · 0.5 · 0.5 = 0.15`, also `0.3 − 0.15 = 0.15`. Der Punkt ist für `map` nur noch 0.15 von einer Fläche weg statt 0.3: Zwischen den Tropfen ist schon Fläche, der Hals.'
+
+  - id: abgabe
+    title: Dein Shader
+    prompt: |
+      Gib deinen eigenen Shader ab: eine Welt, ein Muster oder etwas ganz
+      anderes. Wähle die Datei aus `glsl-starter`. Du kannst jederzeit einen
+      neuen abgeben oder deine Abgabe löschen.
+    check:
+      type: submit
+      pick: glsl-starter/*.frag
+      max_size: 200kB
+      gallery: false

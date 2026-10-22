@@ -1,0 +1,6 @@
+{
+    // GLSL sieht aus wie C: so färbt der Editor Shader wie C-Code
+    "files.associations": {
+        "*.frag": "c"
+    }
+}
