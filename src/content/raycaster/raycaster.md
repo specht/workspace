@@ -28,7 +28,7 @@ Die Welt dieses Spiels ist eine Karte aus Kästchen, wie Karopapier: Jedes Käst
 
 _person(carmack)
 
-Du solltest [Echtzeitgrafik mit C](/pixelram) bis »Ein Bild aus einer Formel« kennen: wie PixelRAM ein Bild zeigt, wie eine Palette funktioniert und wie ein Programm Tasten abfragt. Gerechnet wird mit Vektoren in zwei Dimensionen, mit Sinus und Kosinus und dem Skalarprodukt.
+Du solltest [Echtzeitgrafik mit C](/pixelram) bis »Ein Spiel: Lichtspur« kennen: wie PixelRAM ein Bild zeigt, wie eine Palette funktioniert und wie ein Programm Tasten abfragt. Gerechnet wird mit Vektoren in zwei Dimensionen, mit Sinus und Kosinus und dem Skalarprodukt.
 
 ## Einrichten
 

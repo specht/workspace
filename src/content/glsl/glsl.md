@@ -517,7 +517,7 @@ crop-element: #canvas
 
 Vieles kennst du aus dem Raytracer, nur steht es hier in GLSL, wo `vec3` mit `+`, `*` und `dot` schon eingebaut ist. Die Welt sieht aber anders aus: kein Himmel und kein Schachbrett, sondern ein dunkles Studio, in dem nur Licht ist, wo eine Lampe hinleuchtet.
 
-- **Die Kamera.** `forward`, `right` und `up` sind die Richtungen nach vorn, rechts und oben, wie im Raytracer unter »Vorne, rechts und oben«. Der Strahl für den Pixel `p` geht `p.x` nach rechts, `p.y` nach oben und `1.8` nach vorn.
+- **Die Kamera.** `forward` zeigt vom Auge zu dem Punkt, auf den die Kamera schaut. `right` steht quer dazu, waagrecht nach rechts: Das Kreuzprodukt `cross` zweier Richtungen steht auf beiden senkrecht. `up` steht auf `forward` und `right` senkrecht und zeigt nach oben. Der Strahl für den Pixel `p` geht `p.x` nach rechts, `p.y` nach oben und `1.8` nach vorn. Wer den Raytracer gebaut hat, kennt das aus »Vorne, rechts und oben«.
 - **`march`** ist der Strahl aus dem Bild oben: Er fragt `map` und geht so weit, wie der Abstand erlaubt. Ist der Abstand fast 0, ist er angekommen, und `t` ist die Strecke bis dorthin. Wie »fast 0« ist, wächst mit `t` mit: Weit hinten muss ein Treffer nicht so genau sein, denn ein Pixel bedeckt dort viel mehr.
 - **`normal`** braucht keine Formel für jede Form. Es fragt `map` an sechs Punkten dicht um den Treffer und sieht, in welche Richtung der Abstand am schnellsten wächst. Das ist die Richtung, in die die Fläche zeigt.
 - **Das Licht.** Die Lampe hängt über der Szene, und `smoothstep(2.6, 0.3, length(q.xz))` lässt ihr Licht zum Rand hin auslaufen, wie bei einem Scheinwerfer: Ein Kreis auf dem Boden wird hell. Links und rechts hinter der Kamera leuchten zwei farbige Streifen, die `studio` zeigt, wenn ein Strahl in ihre Richtung geht, und `strips` gibt ihr Licht auf die Flächen. Darum hat die Kugel einen türkisen und einen orangen Rand.
@@ -809,6 +809,10 @@ Vergleiche mit dem Bild davor, es ist derselbe Augenblick:
 - **Am Rand** spiegeln die Tropfen mehr vom Studio als in der Mitte, darum leuchten dort die farbigen Streifen auf. Das ist dieselbe Formel von Schlick, die im Raytracer unter »Lack« ausrechnet, wie viel eine lackierte Kugel spiegelt.
 - **Der Boden** schickt einen zweiten Strahl los, gespiegelt an der Fläche nach oben, und mischt die Hälfte von dem dazu, was der sieht. Auf schwarzem Lack sieht man fast nur das Spiegelbild. Dafür braucht es kein neues Programm, `march` und `shade` gibt es schon.
 - **`occlusion`** fragt `map` in fünf Abständen über der Fläche. Unter einem Tropfen ist dort weniger Platz als der Weg nach oben, und das Licht der Streifen wird schwächer.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Der gespiegelte Strahl kostet Rechenzeit. Schreib vor die Zeile <code>float s = march(from, mirrored);</code> zwei Schrägstriche und darunter <code>float s = -1.0;</code>. Dann spiegelt der Boden nichts mehr. Achte auf die Bilder pro Sekunde oben rechts, mit und ohne. Zeigt dein Rechner beide Male so viel, wie der Bildschirm kann, zieh das Vorschaufenster so groß wie möglich. Nimm die Änderung danach wieder zurück.
+</div>
 
 ### Mit der Maus
 
@@ -1280,11 +1284,7 @@ Was du selbst tun kannst, wenn ein Shader ruckelt:
 
 - **Weniger fragen.** Was teuer ist, einmal ausrechnen, so wie `move_blobs` die Mittelpunkte. Weit weg genügt eine grobe Antwort, so wie `bound`.
 - **Weniger Schritte.** 100 Schritte für `march` und 48 für den Schatten reichen hier. Wo der Strahl am Horizont den Boden streift, braucht er die meisten: Der Boden ist dort immer nah, und die Schritte bleiben klein.
-- **Weniger Strahlen.** Der gespiegelte Strahl ist auf dem Boden noch einmal ein ganzer Strahl, mit Schatten und Umgebungsverdeckung an seinem Ziel.
-
-<div class='hint try'>
-<strong>Ausprobieren:</strong> Schreib in Stufe 8 vor die Zeile <code>float s = march(from, mirrored);</code> zwei Schrägstriche und darunter <code>float s = -1.0;</code>. Dann spiegelt der Boden nichts mehr. Achte auf die Bilder pro Sekunde, mit und ohne. Zeigt dein Rechner beide Male so viel, wie der Bildschirm kann, zieh das Vorschaufenster so groß wie möglich.
-</div>
+- **Weniger Strahlen.** Der gespiegelte Strahl ist auf dem Boden noch einmal ein ganzer Strahl, mit Schatten und Umgebungsverdeckung an seinem Ziel. Wie viel er kostet, kannst du unter »Glanz und ein schwarzer Spiegel« ausprobieren.
 
 ## Dein eigener Shader
 

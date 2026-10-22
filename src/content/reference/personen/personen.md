@@ -852,7 +852,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 <div class='person'>
 <img src='carmack.webp' alt='John Carmack 2025: ein Mann mit kurzem blondem Haar, Brille und Dreitagebart in einem dunklen Polohemd, breit lächelnd.'>
-<p><strong>John Carmack</strong> (geboren 1970), amerikanischer Programmierer, Mitgründer der Spielefirma id Software. Er programmierte die Grafik von Wolfenstein 3D (1992), dessen Labyrinthe der Raycaster in der CPU Sandbox nachahmt, von DOOM (1993) und von Quake (1996). Den BSP-Baum hatten Grafikforscher schon 1980 beschrieben. Carmack griff zu ihm, als Wolfenstein 3D auf das Super Nintendo sollte und der Raycaster dort zu langsam war, und baute danach DOOM darauf.</p>
+<p><strong>John Carmack</strong> (geboren 1970), amerikanischer Programmierer, Mitgründer der Spielefirma id Software. Er programmierte die Grafik von Wolfenstein 3D (1992), mit einem Raycaster, wie du ihn in »Raycasting in C« selbst baust, von DOOM (1993) und von Quake (1996). Den BSP-Baum hatten Grafikforscher schon 1980 beschrieben. Carmack griff zu ihm, als Wolfenstein 3D auf das Super Nintendo sollte und der Raycaster dort zu langsam war, und baute danach DOOM darauf.</p>
 <p>Im Dezember 1997 gab er den Quelltext von DOOM frei. Seitdem haben Leute es auf Taschenrechner und Drucker gebracht, und auch PixelRAM spielt DOOM.</p>
 <p class='person-credit'>Foto: RoboSabs, 2025, CC0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:John_Carmack_2025.jpg'>Wikimedia Commons</a>)</p>
 </div>

@@ -184,6 +184,12 @@ crop-element: #canvas
 
 Das Programm hat für jeden der 57.600 Pixel eine Richtung ausgerechnet und gefragt: Welche Farbe hat der Himmel in dieser Richtung? Wer nach oben schaut, sieht Blau, wer geradeaus schaut, das helle Licht am Horizont. Die untere Hälfte ist auch Himmel, nur hell: Einen Boden gibt es noch nicht.
 
+Drei Dinge im Programm sind vielleicht neu:
+
+- `typedef struct { double x, y, z; } vec;` legt einen eigenen Typ an: drei Kommazahlen unter einem Namen. Ist `a` ein `vec`, liest du sie mit `a.x`, `a.y` und `a.z`.
+- `(vec){a.x + b.x, a.y + b.y, a.z + b.z}` schreibt einen solchen Wert direkt hin, so wie `3` eine Zahl hinschreibt. `add` gibt ihn gleich zurück.
+- `pixel_rgb24` öffnet den Bildschirm ohne Palette: `set_pixel_rgb` setzt einen Pixel aus Rot, Grün und Blau, jedes von 0 bis 255.
+
 ### Vom Auge durch den Bildschirm
 
 <img class='full' src='strahl.webp' alt='Seitenansicht: links ein Punkt, das Auge, davor eine senkrechte Linie mit Strichen, das Bild. Vom Auge gehen drei Strahlen durch Punkte auf dem Bild; zwei treffen rechts eine Kugel, der dritte geht oben gestrichelt in den Himmel.'>
