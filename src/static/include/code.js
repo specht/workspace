@@ -4,10 +4,30 @@ window.addEventListener('beforeinstallprompt', function(event) {
     event.preventDefault();
 });
 
+// A link to the login comes back to this page afterwards: /login?next=
+// the path, the query, and the task card it stands in (»Melde dich an« on a
+// card) or the page's anchor. Set as the link is about to be used, so links
+// written later (tcp-console) get it too; the login page takes only a path
+// on this site (Authentication.safe_next_path). Not from /qr-login: its
+// secret was in the anchor and is gone, the page alone shows nothing.
+function add_login_next(e) {
+    const link = e.target && e.target.closest && e.target.closest('a[href="/login"], a[data-login-next]');
+    if (!link || ['/login', '/qr-login'].includes(window.location.pathname)) return;
+    const card = link.closest('.task-card');
+    const hash = card && card.id ? '#' + card.id : window.location.hash;
+    const next = window.location.pathname + window.location.search + hash;
+    link.dataset.loginNext = '1';
+    link.setAttribute('href', next === '/' ? '/login' : '/login?next=' + encodeURIComponent(next));
+}
+for (const type of ['mousedown', 'focusin', 'click'])
+    document.addEventListener(type, add_login_next, true);
+
+// The text keeps room on both sides for the close button in the corner,
+// so it never runs under it and stays centred (.api-message-text).
 function show_error_message(message) {
-    var div = $('<div>').css('text-align', 'center').css('padding', '15px').addClass('bg-light text-danger').html(message);
+    var div = $('<div>').addClass('api-message-text bg-light text-danger').html(message);
     $('.api_messages').empty();
-    let button = $("<button class='text-stone-400 btn pull-right form-control' style='width: unset; margin: 8px;' ><i class='bi bi-x-lg'></i></button>");
+    let button = $("<button type='button' class='api-message-close btn' aria-label='Schließen' title='Schließen'><i class='bi bi-x-lg' aria-hidden='true'></i></button>");
     $('.api_messages').append(button).append(div).show();
     button.on('click', function(e) { e.preventDefault(); $('.api_messages').hide(); });
 }

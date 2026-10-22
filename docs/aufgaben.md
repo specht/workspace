@@ -95,8 +95,8 @@ image: tcpip.webp
 | `kind` | `projekt`, `labor`, `grundlagen`, `galerie`, `uebung`, `steckbrief` oder `reference`; steht als Etikett auf der Karte im Katalog |
 | `language` | Die Sprache, in der man auf der Seite programmiert oder schreibt, zum Beispiel `Ruby` oder `C / raylib`; steht in Klammern hinter der Art: »Projekt (Ruby)«. Nur bei Seiten mit einer festen Sprache |
 | `topic` | Schlüssel eines Abschnitts aus `sections.yaml`, für die Sortierung nach Thema |
-| `duration` | Freier Text, so wie er auf der Karte stehen soll |
-| `requires` | Aktivitäten, die vorher sinnvoll sind |
+| `duration` | Freier Text, zum Beispiel »2 Doppelstunden«; nur Lehrkräfte sehen ihn, im Streifen über der Seite (zum Planen von Stunden, Lernende brauchen ihn nicht) |
+| `requires` | Aktivitäten, die vorher sinnvoll sind (Slugs); Lernende sehen sie als »Baut auf … auf« im Streifen über der Seite und auf der Karte im Katalog. Ein Hinweis, keine Bedingung: nichts wird gesperrt oder umsortiert. Aktivitäten, die nicht im Katalog stehen, fallen weg; `page_kinds_test.rb` prüft, dass jeder Slug im Katalog steht |
 | `reference` | Handbuch-Seiten, auf die `_uses()` verweist |
 | `search` | Nur Handbuch-Seiten: Wörter, mit Kommas getrennt, unter denen die Suche im Handbuch die Seite findet, ohne dass sie im Titel stehen (`search: Regex, Regexp` für »Reguläre Ausdrücke«); ein Treffer führt an den Anfang der Seite |
 | `template` | Adresse der Vorlage zum Klonen (`https://…`); andere Schulen können hier einen Spiegel eintragen. Im Text `${template}`; der Workspace sagt Lernenden, wenn es eine neue Version gibt (siehe unten) |
@@ -108,8 +108,9 @@ image: tcpip.webp
 Über jeder Seite steht ein schmaler Streifen, der sagt, was sie ist:
 
 - **Aktivität:** die Art aus `kind` (ohne `kind`: »Aktivität«), mit der Sprache
-  aus `language` in Klammern, die Dauer aus
-  `duration` und Links zu den Handbuch-Seiten aus `reference` und aus
+  aus `language` in Klammern, die Dauer aus `duration` (nur für
+  Lehrkräfte), »Baut auf … auf« mit Links zu den Aktivitäten aus
+  `requires` und Links zu den Handbuch-Seiten aus `reference` und aus
   jedem `_include()` der Seite.
 - **Handbuch-Seite:** »Handbuch › Abschnitt« und »Wird verwendet in«
   mit allen Aktivitäten, die die Seite nennen oder Teile daraus einbinden.
@@ -1055,27 +1056,39 @@ prüfbar, z. B. Workspace aus; zählt nicht).
 
 ## Startseite
 
-Angemeldete Lernende sehen oben auf der Startseite »Weitermachen«: die
-Aktivitäten, in denen sie schon etwas geprüft haben, mit einem Balken pro
-Aufgabe (grün erledigt, gelb noch falsch, orange geändert, grau offen) und
-einem Link zur nächsten offenen Aufgabe. Fertige Aktivitäten stehen darunter.
-Im Katalog trägt jede Karte ihre Art (`kind`) und, wenn angefangen, den Stand
-(»2/5«).
+Über dem Katalog stehen für angemeldete Lernende (nicht für Konten von
+Lehrkräften; deren Testkonto ist ein Konto für Lernende) bis zu drei
+schmale Teile (`StudentHome`):
 
-Lernende probieren viel aus; nicht alles, was sie anfangen, soll ewig oben
-stehen. Mit dem Auge-Symbol blenden sie eine Aktivität aus »Weitermachen« aus.
-Sie kommt von selbst zurück, sobald sie dort wieder etwas prüfen; »Wieder
-zeigen« holt alle ausgeblendeten zurück.
+- **Von deiner Lehrkraft:** was eine Lehrkraft in der Klassenübersicht für
+  eine Gruppe der Person angeheftet hat, mit einem Balken pro Aufgabe (grün
+  erledigt, gelb noch falsch, orange geändert, grau offen), »2 von 5
+  erledigt« und einem Link zur ersten offenen Aufgabe. Angeheftetes steht
+  immer zuerst, auch wenn noch nichts angefangen ist. Das geht mit jeder
+  Aktivität aus dem Katalog, auch ohne Aufgaben. Gespeichert wird das als
+  `(:Pin {key, group, slug, by, ts})`. Lehrkräfte sehen diesen Teil auch,
+  wenn sie Mitglied einer Gruppe mit angehefteten Aktivitäten sind.
+- **Weiter mit:** bis zu drei Aktivitäten, in denen die Person zuletzt etwas
+  geprüft hat (nach der Zeit der letzten Antwort), die noch nicht fertig
+  und nicht angeheftet sind, mit Balken und »1 von 7 Aufgaben«; der Link
+  führt zur ersten offenen Aufgabe (`#aufgabe-…`). Nur Aktivitäten aus dem
+  Katalog, keine aus versteckten Abschnitten.
+- **So geht’s:** solange die Person noch keine Aufgabe geprüft hat, vier
+  kurze Schritte: womit anfangen (das Angeheftete, sonst »Such dir unten
+  eine Aktivität aus oder frag deine Lehrkraft«; es wird keine bestimmte
+  Aktivität empfohlen), »Workspace öffnen«, »Prüfen« und das Handbuch,
+  dazu eine Zeile, was Grundlagen, Übung, Labor und Projekt bedeuten. Nach
+  der ersten geprüften Aufgabe verschwindet der Teil.
 
-Lehrkräfte heften in der Klassenübersicht Aktivitäten für eine Gruppe an.
-Angeheftetes steht bei allen in der Gruppe ganz oben unter »Von deiner
-Lehrkraft«, auch wenn sie noch nichts angefangen haben, und lässt sich nicht
-ausblenden. Das geht mit jeder Aktivität aus dem Katalog, auch ohne Aufgaben.
-Gespeichert wird das als `(:Pin {key, group, slug, by, ts})` und bei den
-Lernenden als Liste `home_hidden` am `User`.
+Im Katalog trägt jede Karte ihre Art (`kind`; der Tooltip erklärt sie),
+aber keinen Stand: Der Katalog bleibt ruhig, den Stand zeigen die Seite der
+Aktivität und »Weiter mit«.
+Wer etwas aus `requires` braucht, hat unten auf der Karte eine Zeile »Baut
+auf … auf«; die sehen alle, auch ohne Anmeldung.
 
-Über allem steht »Deine Aktivitäten«, ohne Begrüßung mit Namen. Ohne `TASKS_ENABLED` sieht die Startseite für Lernende aus wie
-bisher; nur die Etiketten der Art kommen dazu.
+Ohne `TASKS_ENABLED` sieht die Startseite für Lernende aus wie bisher, ohne
+diese Teile; nur die Etiketten der Art und »Baut auf … auf« kommen dazu.
+Während einer Leistungsüberprüfung zeigt die Startseite nur sie.
 
 ## Klassenübersicht
 

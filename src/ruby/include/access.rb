@@ -29,10 +29,19 @@ class Main < Sinatra::Base
         !(user || {})[:deletion_at].to_s.empty?
     end
 
+    # Not logged in: to the login, which comes back to this page afterwards
+    # (/login?next=/profil; login.html, Authentication.safe_next_path).
     def this_is_a_page_for_logged_in_users!
         if @session_user.nil?
-            redirect "#{WEB_ROOT}/login", 302
+            redirect "#{WEB_ROOT}/login#{Main.login_next_query(request.fullpath)}", 302
         end
+    end
+
+    # »?next=…« for a link to the login that comes back to path, or nothing
+    # for the start page and for paths the login would not go back to.
+    def self.login_next_query(path)
+        path = Authentication.safe_next_path(path.to_s)
+        path == '/' ? '' : "?next=#{CGI.escape(path)}"
     end
 
     # A page someone may not open: the page in the frame of the site

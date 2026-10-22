@@ -25,7 +25,8 @@ test('a logged-in phone can approve a QR login on another computer', async ({
 
     await loginAsE2eUser(phone, e2eEmail, testInfo);
 
-    await desktop.goto('/login');
+    // The QR login, too, comes back to the page that asked for it.
+    await desktop.goto('/login?next=%2Fprofil');
     const qrPanel = desktop.locator('#qr_login_panel');
     const qrImage = desktop.locator('#qr_code');
     await expect(qrPanel).toBeHidden();
@@ -63,7 +64,7 @@ test('a logged-in phone can approve a QR login on another computer', async ({
     await phone.locator('#bu_approve_qr_login').click();
     await expect(phone.locator('#qr_login_success')).toBeVisible();
 
-    await desktop.waitForURL(url => url.pathname === '/');
+    await desktop.waitForURL(url => url.pathname === '/profil');
     await expect(desktop.locator('#bu_launch')).toBeVisible();
 
     const sessionCookie = async (context: BrowserContext) => (

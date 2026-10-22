@@ -404,8 +404,22 @@ html[data-bs-theme="dark"] {
     .student-home-finished {
         color: #adb5bd;
     }
-    .card-kind {
+    .card-kind,
+    .tutorial_card3 .card-content .card-requires,
+    .student-continue-list .sc-count,
+    .student-howto li::marker,
+    .student-howto-kinds {
         color: #9aa3ab;
+    }
+    .student-continue-list a,
+    .student-howto {
+        border-color: #33332f;
+    }
+    .student-continue-list a:hover {
+        border-color: #4d8ff0;
+    }
+    .student-continue-list .bi {
+        color: #8db8f5;
     }
     .lang-tile {
         border-color: #33332f;

@@ -112,6 +112,30 @@ class PageKindsTest < Minitest::Test
         end
     end
 
+    # requires: is information on the strip, linked by title, without the
+    # pages a student cannot find in the catalog.
+    def test_activity_names_what_it_builds_on
+        c = content.merge('raytracing' => { :title => 'Raytracing', :kind => 'projekt',
+                                            :requires => %w[tcpip showerjs secret draft level-x nope] })
+        html = PageKinds.header('raytracing', c, sections)
+        assert_includes html, "Baut auf <a href='/tcpip'>TCP/IP-Verbindungen</a> und <a href='/showerjs'>Eine Präsentation in HTML erstellen</a> auf"
+        %w[secret draft level-x nope].each { |s| refute_includes html, "/#{s}'" }
+        assert_equal %w[tcpip showerjs draft], PageKinds.requires_of('raytracing', c, development: true).map(&:first)
+        refute_includes PageKinds.header('showerjs', content, sections), 'Baut auf'
+    end
+
+    def test_real_requires_name_activities_in_the_catalog
+        root = File.expand_path('../../content', __dir__)
+        catalog = YAML.safe_load(File.read(File.join(root, 'sections.yaml'), encoding: 'UTF-8'))
+        listed = catalog.flat_map { |s| s['entries'] || [] }.map { |e| e.delete_prefix('.') }
+        Dir[File.join(root, '*/*.md')].each do |path|
+            next if File.basename(path) == ContentParts::NOTE_FILE
+            Array(ContentParts.meta(File.read(path, encoding: 'UTF-8'))['requires']).each do |name|
+                assert_includes listed, name.to_s, "#{path}: requires unknown activity #{name}"
+            end
+        end
+    end
+
     def test_reference_does_not_give_away_hidden_pages
         html = PageKinds.header('reference/workspace', content, sections)
         refute_includes html, 'Verborgen'

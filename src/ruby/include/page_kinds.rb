@@ -2,8 +2,8 @@ require_relative 'code_languages'
 require 'cgi'
 
 # The strip above a content page that says what kind of page it is
-# (docs/aufgaben.md): an activity shows its kind, its duration and the
-# reference pages it uses; a reference page shows where it sits in
+# (docs/aufgaben.md): an activity shows its kind, its duration (teachers
+# only), the activities it builds on and the reference pages it uses; a reference page shows where it sits in
 # Handbuch and which activities use it.
 #
 # Works on the plain hashes in @@content, so it can be tested on its own.
@@ -46,6 +46,27 @@ module PageKinds
         names += markdown.scan(include_pattern).map { |m| m.first.to_s }
         names = names.reject(&:empty?).uniq
         names.each_with_index.sort_by { |name, i| [catalog.index(name) || catalog.size, i] }.map(&:first)
+    end
+
+    # Activities a page builds on (requires: in its meta block), as
+    # [slug, title] in the order named. Information, not a rule: nothing is
+    # blocked or reordered by it. Only activities a student can find in the
+    # catalog; hidden, teacher-only and (outside development) dev-only pages
+    # are left out, as in used_by.
+    def self.requires_of(slug, content, development: false)
+        (content.dig(slug, :requires) || []).uniq.filter_map do |name|
+            entry = content[name]
+            next nil if entry.nil? || reference?(name)
+            next nil if entry[:teacher_only] || entry[:hidden_section]
+            next nil if entry[:dev_only] && !development
+            title = plain_title(entry)
+            [name, title.empty? ? name : title]
+        end
+    end
+
+    # »A«, »A und B«, »A, B und C«
+    def self.join_and(items)
+        items.size <= 1 ? items.join : "#{items[0..-2].join(', ')} und #{items[-1]}"
     end
 
     # Pages that use a reference page, as [slug, title], sorted by title.
@@ -105,6 +126,12 @@ module PageKinds
             html << CodeLanguages.switch_html(languages, code_language) if languages.include?(code_language)
             if show_duration && entry[:duration].is_a?(String) && !entry[:duration].strip.empty?
                 html << "<span class='page-kind-duration'><i class='bi bi-clock'></i>#{h.(entry[:duration].strip)}</span>"
+            end
+            required = requires_of(slug, content, development: development)
+            unless required.empty?
+                # titles are HTML already (»HTML &amp; CSS«): unescaped first
+                links = required.map { |s, title| "<a href='/#{h.(s)}'>#{h.(CGI.unescapeHTML(title.to_s))}</a>" }
+                html << "<span class='page-kind-requires'><i class='bi bi-layers'></i>Baut auf #{join_and(links)} auf</span>"
             end
             refs = (entry[:references] || []).map do |name|
                 ref_slug = "#{REFERENCE_PREFIX}#{name}"

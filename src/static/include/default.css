@@ -605,6 +605,26 @@ input.error {
     vertical-align: top;
 }
 
+/* Abmelden beside the name: an icon alone, centred in its button, as high
+   as the name button. */
+.btn-menu-logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: top;
+    min-width: calc(1.5em + 0.75rem + 2px);
+    min-height: calc(1.5em + 0.75rem + 2px);
+}
+
+.menu .btn-menu-logout .bi {
+    margin: 0;
+    line-height: 1;
+}
+
+.menu .btn-menu-logout .bi::before {
+    vertical-align: 0;
+}
+
 .menu a:hover,
 a.btn:hover {
     text-decoration: none;
@@ -769,6 +789,36 @@ a.btn.btn-primary:focus {
     position: absolute;
     right: 0;
     box-shadow: none;
+}
+
+/* An error message with its close button in the top right corner: the text
+   keeps the button's width free on both sides, so it stays centred and
+   never runs under the button. */
+.api-message-text {
+    padding: 15px 3.25rem;
+    text-align: center;
+}
+
+.api_messages .api-message-close {
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin: 0.35rem;
+    padding: 0;
+    border: none;
+    color: #6c757d;
+}
+
+.api-message-close .bi {
+    margin: 0;
+    line-height: 1;
+}
+
+.api-message-close .bi::before {
+    vertical-align: 0;
 }
 
 .please-reload {
@@ -1276,22 +1326,23 @@ div.floatright > p {
             border-top: 1px solid #eee;
             color: #222;
 
+            /* A long title wraps to a second line instead of being cut. */
             h4 {
                 display: -webkit-box;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                -webkit-line-clamp: 1;
+                -webkit-line-clamp: 2;
                 -webkit-box-orient: vertical;
             }
 
-            /* Justified like a column under the title's row. */
+            /* Left-aligned: justified, a narrow column gets wide gaps. */
             .abstract {
                 display: -webkit-box;
                 overflow: hidden;
                 color: #555;
                 font-size: 0.95rem;
                 line-height: 1.4;
-                text-align: justify;
+                text-align: left;
                 text-overflow: ellipsis;
                 -webkit-line-clamp: 3;
                 -webkit-box-orient: vertical;
@@ -1341,12 +1392,19 @@ div.floatright > p {
 
                 .card-title-row h4 {
                     font-size: 1.05rem;
+                    line-height: 1.3;
                 }
 
                 .abstract {
                     font-size: 0.88rem;
                     text-align: left;
                     -webkit-line-clamp: 2;
+                }
+
+                /* With »Baut auf … auf« below, one line of text, so the
+                   row stays about as high as its picture. */
+                &:has(.card-requires) .abstract {
+                    -webkit-line-clamp: 1;
                 }
             }
         }
@@ -2778,6 +2836,11 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     white-space: nowrap;
 }
 
+/* »Baut auf … auf«: information, not a condition. */
+.page-kind-requires a {
+    white-space: nowrap;
+}
+
 .page-kind-activity .page-kind-links a,
 .reference-include-link a {
     color: #0f766e;
@@ -2796,7 +2859,7 @@ body.has-autotoc-secondary.autotoc-primary-visible {
    belong to the activity, teal stays for the Handbuch. */
 
 /* The section bar (.autotoc) is fixed at the top; jumps to a task or a
-   heading (»Weitermachen«, #aufgabe-…) must land below it. */
+   heading (»Weiter mit«, #aufgabe-…) must land below it. */
 .task-card,
 .reference-part,
 h2[id],
@@ -4158,6 +4221,108 @@ ul.task-teacher-list .task-teacher-answer {
 .shc-template-current { color: #146c43; }
 .shc-template-outdated { color: #8a5300; font-weight: 500; }
 
+/* »Weiter mit«: the few activities a student worked on last, each a
+   small box with its bar, linked to the first open task. */
+.student-continue {
+    margin: 1.5em 0 1em;
+}
+
+.student-continue-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16em, 1fr));
+    gap: 0.6em 0.8em;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.student-continue-list a {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.3em 0.6em;
+    height: 100%;
+    padding: 0.6em 0.5em 0.6em 0.9em;
+    border: 1px solid #e3e3e3;
+    border-radius: 0.75em;
+    color: inherit;
+    text-decoration: none;
+}
+
+.student-continue-list a:hover {
+    border-color: #0b5ed7;
+    text-decoration: none;
+}
+
+.student-continue-list .sc-title {
+    grid-column: 1;
+    overflow: hidden;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.student-continue-list .sc-meta {
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    min-width: 0;
+}
+
+.student-continue-list .shc-bar {
+    flex: 1 1 auto;
+    max-width: 9em;
+}
+
+.student-continue-list .sc-count {
+    flex: none;
+    font-size: 85%;
+    color: #5c636a;
+}
+
+.student-continue-list .bi {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    margin: 0;
+    font-size: 1.4rem;
+    color: #0b5ed7;
+}
+
+/* »So geht's« for a student who has not checked anything yet: four
+   short steps and what the labels on the cards mean. */
+.student-howto {
+    margin: 1.5em 0 1em;
+    padding: 0.9em 1.2em 0.8em;
+    border: 1px solid #e3e3e3;
+    border-radius: 0.75em;
+}
+
+.student-howto ol {
+    margin: 0 0 0.5em;
+    padding-left: 1.4em;
+    text-align: left;
+    hyphens: manual;
+}
+
+.student-howto li {
+    margin-bottom: 0.25em;
+    padding-left: 0.2em;
+}
+
+.student-howto li::marker {
+    color: #5c636a;
+    font-weight: 600;
+}
+
+.student-howto-kinds {
+    margin: 0;
+    font-size: 90%;
+    color: #5c636a;
+    text-align: left;
+    hyphens: manual;
+}
+
 .student-home-empty,
 .student-home-finished {
     color: #5c636a;
@@ -4175,9 +4340,24 @@ ul.task-teacher-list .task-teacher-answer {
    however long the title is. */
 .tutorial_card3 .card-content .card-badges {
     display: flex;
+    align-items: baseline;
     gap: 0.35em;
     margin-bottom: 0.1em;
     line-height: 1.2;
+}
+
+
+/* What an activity builds on, quietly at the foot of its card. */
+.tutorial_card3 .card-content .card-requires {
+    margin-top: 0.4em;
+    color: #6b7680;
+    font-size: 0.8rem;
+    line-height: 1.3;
+    hyphens: manual;
+}
+
+.card-requires .bi {
+    margin-right: 0.35em;
 }
 
 .tutorial_card3 .card-content .card-title-row {

@@ -242,14 +242,14 @@ test('teacher profile shows the permission-protected teacher section', async ({
   await testButton.click();
   const testDemoModal = page.locator('#__template_modal');
   await expect(testDemoModal).toContainText(
-    'vollständig von deinem normalen Workspace',
+    'von deinem Workspace und von den Workspaces der Teilnehmenden getrennt',
   );
   await expect(testDemoModal).toContainText(
     'nur deine bisherigen Vorschau-Dateien und Vorschau-Datenbanken zurückgesetzt',
   );
   expect(demoStartRequests).toBe(0);
 
-  await testDemoModal.getByRole('button', { name: 'Abbruch' }).click();
+  await testDemoModal.getByRole('button', { name: 'Abbrechen' }).click();
   expect(demoStartRequests).toBe(0);
 
   await testButton.click();

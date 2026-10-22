@@ -1960,6 +1960,9 @@ class Main < Sinatra::Base
                 # Programming languages the page offers (CodeLanguages), [] for one.
                 :languages => page_languages,
                 :duration => page_meta['duration'],
+                # Activities this one builds on (requires:), information
+                # for the strip above the page and the catalog card.
+                :requires => Array(page_meta['requires']).map(&:to_s).reject(&:empty?),
                 :references => page_references,
                 # Reference parts the page includes ('slug#part'), so a box
                 # can shrink once someone has been through it elsewhere.
@@ -5505,7 +5508,15 @@ class Main < Sinatra::Base
         CGI.unescapeHTML((@@content[slug] || {})[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '')).strip
     end
 
-    # Start page for logged-in students: activities a teacher pinned (M5).
+    # Who gets the student's parts of the start page (StudentHome: »Weiter
+    # mit«, »So geht's«, the progress on the cards): logged in, tasks on, no
+    # teacher account (their start page stays as it was) and no test running.
+    def student_home_visible?
+        user_logged_in? && tasks_visible? && !teacher_account_logged_in? && my_running_tests.empty?
+    end
+
+    # Start page for logged-in students: activities a teacher pinned, where
+    # to continue, how the site works (M5).
     def student_home
         return '' unless user_logged_in? && tasks_visible?
         return '' unless my_running_tests.empty?
@@ -5515,7 +5526,8 @@ class Main < Sinatra::Base
             { :slug => p[:slug], :title => plain_title(p[:slug]), :abstract => @@content[p[:slug]][:abstract], :group => p[:group],
               :template_folder => (@@content[p[:slug]][:template] || {})[:folder] }
         end
-        html = StudentHome.html(:progress => my_progress, :pinned => pinned)
+        html = StudentHome.html(:progress => my_progress, :pinned => pinned, :listed => allowed,
+                                :guide => student_home_visible?)
         html += "<script src='/include/home_templates.js?#{CACHE_BUSTER}'></script>" if pinned.any? { |p| p[:template_folder] }
         html
     end
@@ -5910,11 +5922,15 @@ class Main < Sinatra::Base
                         io.puts "<div class='shade'></div>"
                         io.puts "<div class='card-content'>"
                         # The kind on its own line above the title (default.css).
+                        # With it, for a student who solved a task here, how many (»3/7«).
                         io.puts StudentHome.card_badges(content[:kind], content[:language]) if catalog == :student
                         io.puts "<div class='card-title-row'>"
                         io.puts "#{content[:dev_only] ? '<span class="badge badge-sm bg-danger">dev</span> ' : ''}<h4>#{content[:title]}</h4>"
                         io.puts "</div>"
                         io.puts "<div class='abstract'>#{content[:abstract]}</div>"
+                        if catalog == :student
+                            io.puts StudentHome.card_requires(PageKinds.requires_of(slug, @@content, :development => DEVELOPMENT).map(&:last))
+                        end
                         io.puts "</div>"
                         io.puts "</div>"
                         io.puts "</a>"
@@ -7725,7 +7741,7 @@ class Main < Sinatra::Base
     # agreement: everyone logged in, a partner school's version only its
     # people. Everything else: teachers of that school and administrators.
     def document_access!(slug, key)
-        redirect "#{WEB_ROOT}/login", 302 unless user_logged_in?
+        this_is_a_page_for_logged_in_users!
         return if admin_logged_in?
 
         key = key.to_s

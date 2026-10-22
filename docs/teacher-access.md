@@ -69,6 +69,15 @@ der Anmeldung; wer den Code nie eingibt, erscheint unter `/personen` als
 »nicht bekannt«. Eine Einladung ist
 kein Konto.
 
+Nach der Anmeldung (mit Code oder QR-Code) geht es dorthin zurück, wo die
+Person war: `/login?next=/rle#aufgabe-von-hand`. So verlinken »Melde dich
+an« auf einer Aufgabenkarte und »Anmelden« in der Navigation (`code.js`),
+und so leitet eine Seite nur für Angemeldete (`/profil`, `/klasse` …) zur
+Anmeldung weiter. `next` gilt nur als Pfad auf dieser Seite
+(`Authentication.safe_next_path`), alles andere führt zur Startseite. Eine
+Anmeldung gilt ein Jahr (`SESSION_LIFETIME_DAYS`); »Abmelden« steht auf
+jeder Seite neben dem Namen.
+
 ## Zustimmung der Schule, Einverständnis, ungeklärt
 
 Wer eingeladen ist, kann sich anmelden; ob die Schule zugestimmt hat,
@@ -233,6 +242,8 @@ als eine gibt; Testgruppen und Gruppen ohne Schule zuletzt.
 | Workspace öffnen, Nachahmen | | | ✓ eigene Gruppen | ✓ alle |
 | Leistungsüberprüfungen | | | ✓ eigene Gruppen | ✓ |
 | Verwaltungsseite `/admin` (Server, alle Workspaces) | | | | ✓ |
+| Dauer einer Aktivität (`duration`, im Streifen über der Seite) | | | ✓ | ✓ |
+| Startseite: »Weiter mit«, »So geht’s« | ✓ (auch Testkonten) | | | |
 
 Eine Lehrkraft sieht eine Person, sobald sie **eine** ihrer Gruppen betreut,
 nicht nur die erste der Person (`GroupVisibility`). Andere Lehrkräfte und

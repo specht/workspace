@@ -18,6 +18,31 @@
         font-size: 1.35rem;
         letter-spacing: 0.15em;
     }
+    /* On a phone the field gets the whole width and the buttons go below
+       it; beside two buttons it was too narrow for an address. */
+    @media (max-width: 575.98px) {
+        .login-step {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .login-step > .form-control {
+            flex: 1 1 100%;
+            width: 100%;
+        }
+        .login-step > .form-control,
+        .login-step > .btn {
+            margin-left: 0 !important;
+            border-radius: var(--bs-border-radius) !important;
+        }
+        .login-step > .btn-primary {
+            flex: 1 1 auto;
+        }
+    }
+    .login-again {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
     @media (max-width: 767.98px) {
         #qr_code {
             float: none;
@@ -33,6 +58,62 @@
     var qr_login_poll_timer = null;
     var qr_login_starting = false;
     var qr_login_visible = false;
+    // Where to go after the login: a path on this site, checked by the
+    // server (Authentication.safe_next_path), »/« without one.
+    var login_next = #{Authentication.safe_next_path(params['next']).to_json};
+    // The server sends the code again only after this many seconds
+    // (Authentication::LOGIN_REQUEST_RESEND_SECONDS); before, it answers
+    // without a new e-mail, so the button waits as long.
+    var resend_seconds = #{Authentication::LOGIN_REQUEST_RESEND_SECONDS};
+    var resend_at = 0;
+    var resend_timer = null;
+    var requested_email = null;
+
+    function update_resend_button() {
+        let left = Math.ceil((resend_at - Date.now()) / 1000);
+        if (left > 0) {
+            $('#bu_resend_code').prop('disabled', true);
+            $('#resend_wait').text(`(${left} s)`);
+            return;
+        }
+        clearInterval(resend_timer);
+        resend_timer = null;
+        $('#bu_resend_code').prop('disabled', false);
+        $('#resend_wait').text('');
+    }
+
+    function start_resend_wait() {
+        resend_at = Date.now() + resend_seconds * 1000;
+        clearInterval(resend_timer);
+        update_resend_button();
+        resend_timer = setInterval(update_resend_button, 1000);
+    }
+
+    function show_request_error(data) {
+        if (data.error === 'login_request_rate_limited') {
+            show_error_message('Bitte warte einen Moment, bevor du einen neuen Anmeldecode anforderst.');
+        } else if (data.error === 'no_invitation_found') {
+            show_error_message('Für diese E-Mail-Adresse gibt es keine Einladung. Prüf die Schreibweise oder frag deine Lehrkraft, mit welcher Adresse du eingeladen bist.');
+        } else if (data.error === 'suspended') {
+            show_error_message('Der Zugang zu diesem Konto ist gesperrt. Deine Daten sind erhalten; frag deine Lehrkraft oder die Administration.');
+        }
+    }
+
+    // Back to the first step: the address can be changed again.
+    function enter_other_address() {
+        code_requested = false;
+        tag = null;
+        requested_email = null;
+        clearInterval(resend_timer);
+        resend_timer = null;
+        $('.api_messages').hide();
+        $('#part1, #part1_hint, #login_again').stop(true, true).slideUp();
+        $('#ti_code').val('');
+        $('#ti_email').prop('readonly', false).prop('disabled', false);
+        $('#bu_submit_email').prop('disabled', $('#ti_email').val().trim().length === 0);
+        $('#bu_qr_login').prop('disabled', false);
+        $('#ti_email').focus().select();
+    }
 
     function schedule_qr_login_poll(delay) {
         clearTimeout(qr_login_poll_timer);
@@ -86,7 +167,7 @@
         }, function(data) {
             if (request !== qr_login_request) return;
             if (data.success && data.status === 'approved') {
-                window.location.href = '/';
+                window.location.href = login_next;
                 return;
             }
             if (data.success && data.status === 'expired') {
@@ -158,8 +239,11 @@
             api_call('/api/request_login', {email: email}, function(data) {
                 if (data.success) {
                     tag = data.tag;
+                    requested_email = email;
                     $('#part1').slideDown();
                     $('#part1_hint').slideDown();
+                    $('#login_again').slideDown();
+                    start_resend_wait();
                     $('#ti_code').focus();
                     return;
                 }
@@ -168,13 +252,30 @@
                 $('#ti_email').prop('readonly', false).prop('disabled', false);
                 $('#bu_submit_email').prop('disabled', false);
                 $('#bu_qr_login').prop('disabled', false);
-                if (data.error === 'login_request_rate_limited') {
-                    show_error_message('Bitte warte einen Moment, bevor du einen neuen Anmeldecode anforderst.');
-                } else if (data.error === 'no_invitation_found') {
-                    show_error_message('Für diese E-Mail-Adresse gibt es keine Einladung. Prüf die Schreibweise oder frag deine Lehrkraft, mit welcher Adresse du eingeladen bist.');
-                } else if (data.error === 'suspended') {
-                    show_error_message('Der Zugang zu diesem Konto ist gesperrt. Deine Daten sind erhalten; frag deine Lehrkraft oder die Administration.');
+                show_request_error(data);
+            });
+        });
+        $('#bu_other_address').on('click', function(e) {
+            e.preventDefault();
+            enter_other_address();
+        });
+        // The same request as the first: the server sends the code of the
+        // open request again, or a new one when it is used up, or answers
+        // with its rate limit.
+        $('#bu_resend_code').on('click', function(e) {
+            e.preventDefault();
+            if (!requested_email) return;
+            $('#bu_resend_code').prop('disabled', true);
+            api_call('/api/request_login', {email: requested_email}, function(data) {
+                start_resend_wait();
+                if (data.success) {
+                    tag = data.tag;
+                    show_success_message('Die E-Mail mit dem Code ist noch einmal unterwegs.');
+                    $('#ti_code').prop('disabled', false).val('').focus();
+                    $('#bu_submit_code').prop('disabled', false);
+                    return;
                 }
+                show_request_error(data);
             });
         });
         $('#bu_submit_code').on('click', function(e) {
@@ -188,7 +289,7 @@
 
             api_call('/api/complete_login', {tag: tag, code: code}, function(data) {
                 if (data.success) {
-                    window.location.href = '/';
+                    window.location.href = login_next;
                     return;
                 }
 
@@ -198,7 +299,7 @@
                     show_error_message('Zu viele Versuche in kurzer Zeit. Bitte warte ein paar Minuten.');
                     return;
                 }
-                show_error_message('Der Anmeldecode ist falsch oder nicht mehr gültig. Bitte versuche es erneut oder fordere einen neuen Code an.');
+                show_error_message('Der Anmeldecode ist falsch oder nicht mehr gültig. Bitte versuche es erneut oder lass dir den Code erneut senden.');
             }, {no_please_wait: true});
         });
         $('#ti_email').on('keydown', function(e) {
@@ -229,8 +330,8 @@
                             Bitte gib deine E-Mail-Adresse ein.
                             Du bekommst dann eine E-Mail mit einem Code, den du im nächsten Schritt eingeben musst, um angemeldet zu werden.
                         </p>
-                        <div id='part0' class="input-group mb-3">
-                            <input type="email" id='ti_email' class="form-control" placeholder="Bitte gib deine E-Mail-Adresse ein" autocomplete='on'>
+                        <div id='part0' class="input-group login-step mb-3">
+                            <input type="email" id='ti_email' class="form-control" placeholder="E-Mail-Adresse" aria-label='E-Mail-Adresse' autocomplete='email'>
                             <button id='bu_submit_email' class="btn btn-primary" disabled><i class="bi bi-send-fill"></i>Code zusenden</button>
                             <button id='bu_qr_login' type='button' class="btn btn-outline-secondary" aria-expanded='false' aria-controls='qr_login_panel' aria-label='Mit QR-Code anmelden' title='Mit QR-Code anmelden'><i class="bi bi-qr-code" style="margin-right: 0;"></i></button>
                         </div>
@@ -258,13 +359,17 @@
                             </div>
                         </div>
 
-                        <div id='part1' class="input-group mb-3" style="display: none;">
-                            <input type="text" id='ti_code' class="form-control" placeholder="Bitte gib deinen 6-stelligen Code ein." inputmode='numeric' maxlength='6' pattern='[0-9]{6}' autocomplete='one-time-code'>
+                        <div id='part1' class="input-group login-step mb-3" style="display: none;">
+                            <input type="text" id='ti_code' class="form-control" placeholder="6-stelliger Code" aria-label='Anmeldecode' inputmode='numeric' maxlength='6' pattern='[0-9]{6}' autocomplete='one-time-code'>
                             <button id='bu_submit_code' class="btn btn-primary"><i class="bi bi-box-arrow-in-right"></i>Anmelden</button>
                         </div>
                         <p id='part1_hint' class='text-secondary small' style='display: none;'>
                             Die E-Mail mit dem Code ist unterwegs. Kommt keine, sieh im Spam-Ordner nach.
                         </p>
+                        <div id='login_again' class='login-again mb-3' style='display: none;'>
+                            <button type='button' id='bu_other_address' class='btn btn-sm btn-outline-secondary'><i class='bi bi-pencil'></i>Andere Adresse</button>
+                            <button type='button' id='bu_resend_code' class='btn btn-sm btn-outline-secondary' disabled><i class='bi bi-arrow-repeat'></i>Code erneut senden <span id='resend_wait'></span></button>
+                        </div>
                         <div class='api_messages' style='display: none;'></div>
                     </form>
                 </div>

@@ -2,11 +2,33 @@ require 'cgi'
 require_relative 'icons'
 require_relative 'page_kinds'
 
-# The student's part of the start page (M5): activities a teacher pinned,
-# with progress built from the stored TaskStates. The catalog cards show no
-# progress; an activity shows it on its own page. Plain Ruby, tested on its own.
+# The student's part of the start page (M5), built from the stored
+# TaskStates: activities a teacher pinned (first, with their progress),
+# »Weiter mit« (the few activities the person worked on last, not finished,
+# not pinned), »So geht's« for someone who has not checked anything yet, and
+# on the catalog cards a small »3/7« once a task of the activity is solved.
+# Plain Ruby, tested on its own.
 module StudentHome
     DONE = %w[correct sent].freeze
+    CONTINUE_MAX = 3
+
+    # What the kinds on the cards mean, as parts of one sentence: the legend
+    # in »So geht's«, and (capitalised, without tags) the tooltip of a
+    # card's label.
+    KIND_HINTS = {
+        'grundlagen' => '<strong>Grundlagen</strong> führen dich in ein Werkzeug oder Thema ein',
+        'uebung' => 'eine <strong>Übung</strong> trainiert eine Fertigkeit',
+        'labor' => 'in einem <strong>Labor</strong> untersuchst du, wie etwas funktioniert',
+        'projekt' => 'in einem <strong>Projekt</strong> baust du Schritt für Schritt etwas Eigenes',
+    }.freeze
+
+    def self.kind_hint(kind)
+        hint = KIND_HINTS[kind.to_s]
+        return nil unless hint
+
+        text = hint.gsub(/<[^>]*>/, '')
+        text[0].upcase + text[1..]
+    end
 
     # activities: [{ slug:, activity:, title:, tasks: [{ id:, title:, version: }] }]
     #             tasks in page order
@@ -40,21 +62,90 @@ module StudentHome
         CGI.escapeHTML(text.to_s)
     end
 
-    # Activities a teacher pinned for one of the person's groups, at the top
-    # of the start page. Nothing else: progress shows on the catalog cards.
+    # The top of the start page for a student, in this order:
+    # - activities a teacher pinned for one of the person's groups, with how
+    #   far the person got; they keep the first place;
+    # - »Weiter mit«: up to CONTINUE_MAX activities the person checked
+    #   something in, most recent first, not finished and not pinned (those
+    #   show their progress above), each linked to its first open task;
+    # - »So geht's« while the person has not checked anything yet.
     # pinned: [{ slug:, title:, abstract:, group:, template_folder: }]; with a
     # template, home_templates.js fills in whether the person's clone is current
-    # progress: as from progress(), to show how far the person got
-    def self.html(progress:, pinned: [])
-        return '' if pinned.empty?
-        by_slug = progress.to_h { |p| [p[:slug], p] }
-        io = +"<section class='student-home' aria-labelledby='student-home-title'>"
-        io << "<h2 id='student-home-title' class='student-home-label'>#{Icons.tabler('pin')} Von deiner Lehrkraft</h2><div class='student-home-cards'>"
-        pinned.each do |p|
-            io << card(p[:slug], p[:title], by_slug[p[:slug]], :abstract => p[:abstract], :pinned => p[:group],
-                       :template_folder => p[:template_folder])
+    # progress: as from progress()
+    # listed: slugs a student can find in the catalog; others (hidden
+    #         sections) never show up here
+    # guide: false shows only the pinned activities (teacher accounts)
+    def self.html(progress:, pinned: [], listed: nil, guide: true)
+        io = +''
+        unless pinned.empty?
+            by_slug = progress.to_h { |p| [p[:slug], p] }
+            io << "<section class='student-home' aria-labelledby='student-home-title'>"
+            io << "<h2 id='student-home-title' class='student-home-label'>#{Icons.tabler('pin')} Von deiner Lehrkraft</h2><div class='student-home-cards'>"
+            pinned.each do |p|
+                io << card(p[:slug], p[:title], by_slug[p[:slug]], :abstract => p[:abstract], :pinned => p[:group],
+                           :template_folder => p[:template_folder])
+            end
+            io << '</div></section>'
         end
-        io << '</div></section>'
+        return io unless guide
+
+        io << continue_html(progress, :pinned => pinned.map { |p| p[:slug] }, :listed => listed)
+        io << howto_html(:pinned => !pinned.empty?) if progress.empty?
+        io
+    end
+
+    # Activities for »Weiter mit«: started, not finished, not pinned, most
+    # recently checked first.
+    def self.continue_entries(progress, pinned: [], listed: nil)
+        progress.reject { |p| p[:done] == p[:total] || pinned.include?(p[:slug]) }
+            .select { |p| listed.nil? || listed.include?(p[:slug]) }
+            .sort_by { |p| -p[:updated].to_i }
+            .first(CONTINUE_MAX)
+    end
+
+    def self.continue_html(progress, pinned: [], listed: nil)
+        entries = continue_entries(progress, :pinned => pinned, :listed => listed)
+        return '' if entries.empty?
+
+        io = +"<section class='student-continue' aria-labelledby='student-continue-title'>"
+        io << "<h2 id='student-continue-title' class='student-home-label'>Weiter mit</h2><ul class='student-continue-list'>"
+        entries.each do |e|
+            link = e[:next] ? "/#{h(e[:slug])}#aufgabe-#{h(e[:next][:id])}" : "/#{h(e[:slug])}"
+            io << "<li><a href='#{link}'>"
+            io << "<span class='sc-title'>#{h(e[:title])}</span>"
+            io << "<span class='sc-meta'><span class='shc-bar' aria-hidden='true'>"
+            e[:marks].each { |m| io << "<span class='shc-mark shc-#{m}'></span>" }
+            io << '</span>'
+            io << "<span class='sc-count'>#{e[:done]} von #{e[:total]} #{e[:total] == 1 ? 'Aufgabe' : 'Aufgaben'}</span></span>"
+            io << "<i class='bi bi-arrow-right-short' aria-hidden='true'></i>"
+            io << '</a></li>'
+        end
+        io << '</ul></section>'
+        io
+    end
+
+    # How the site works, for someone who has not checked a task yet. It
+    # names no activity to start with: what a class works on is the
+    # teacher's choice (pins), or the person's own.
+    def self.howto_html(pinned: false)
+        start = if pinned
+            'Fang mit den Aktivitäten an, die deine Lehrkraft oben für deine Klasse ausgewählt hat.'
+        else
+            'Such dir unten eine Aktivität aus oder frag deine Lehrkraft.'
+        end
+        steps = [
+            start,
+            '<strong>Workspace öffnen</strong> (oben) startet dein eigenes VS Code im Browser.',
+            'Auf den Seiten stehen Aufgaben: <strong>Prüfen</strong> sieht nach, ob deine Antwort oder dein Programm stimmt, ' \
+                'und merkt sich das Ergebnis. Deine Lehrkraft sieht, wie weit du bist.',
+            "Befehle, Tastenkürzel und Syntax schlägst du im <a href='/reference'>Handbuch</a> nach.",
+        ]
+        io = +"<section class='student-howto' aria-labelledby='student-howto-title'>"
+        io << "<h2 id='student-howto-title' class='student-home-label'>So geht’s</h2><ol>"
+        steps.each { |s| io << "<li>#{s}</li>" }
+        io << '</ol>'
+        io << "<p class='student-howto-kinds'>Auf den Karten: #{PageKinds.join_and(KIND_HINTS.values)}.</p>"
+        io << '</section>'
         io
     end
 
@@ -81,9 +172,26 @@ module StudentHome
         io
     end
 
-    # Small label for a catalog card: its kind, as in the strip above the page.
+    # Small label for a catalog card: its kind, as in the strip above the
+    # page. Cards show no progress (the catalog stays calm; an activity shows
+    # it on its own page, and »Weiter mit« on the start page).
     def self.card_badges(kind, language = nil)
         label = PageKinds.kind_label(kind, language)
-        label ? "<div class='card-badges'><span class='card-kind'>#{h(label)}</span></div>" : ''
+        parts = []
+        if label
+            hint = kind_hint(kind)
+            title = hint ? " title='#{h(hint)}'" : ''
+            parts << "<span class='card-kind'#{title}>#{h(label)}</span>"
+        end
+        parts.empty? ? '' : "<div class='card-badges'>#{parts.join}</div>"
+    end
+
+    # The line at the foot of a catalog card: what the activity builds on.
+    # titles: plain titles of the required activities (PageKinds.requires_of)
+    def self.card_requires(titles)
+        return '' if titles.empty?
+
+        "<div class='card-requires'><i class='bi bi-layers' aria-hidden='true'></i>" \
+            "Baut auf #{PageKinds.join_and(titles.map { |t| h(CGI.unescapeHTML(t.to_s)) })} auf</div>"
     end
 end

@@ -83,6 +83,27 @@ module Authentication
         true
     end
 
+    # Where the login page goes after a login (/login?next=/rle#aufgabe-…):
+    # a path on this site and nothing else. One »/«, then no second »/« or
+    # »\« (»//host« and »/\host« are another site to a browser), only
+    # characters a URL keeps as they are (no spaces, tabs, line breaks,
+    # quotes, angle brackets: a browser drops tabs and line breaks, so
+    # »/<tab>/host« would become »//host«), no ».« or »..« segments, and never
+    # the login or logout itself. Anything else gives »/«.
+    NEXT_PATH_PATTERN = %r{\A/(?![/\\])[A-Za-z0-9\-._~!$&()*+,;=:@%/?#]*\z}
+    NEXT_PATH_MAX_LENGTH = 1000
+
+    def self.safe_next_path(value)
+        return '/' unless value.is_a?(String) && value.size <= NEXT_PATH_MAX_LENGTH
+        return '/' unless value.match?(NEXT_PATH_PATTERN)
+
+        path = value[/\A[^?#]*/]
+        return '/' if path.match?(%r{/(?:\.|%2e){1,2}(?:/|\z)}i)
+        return '/' if path.match?(%r{\A/(?:login(?:\.html)?\z|logout|l/)})
+
+        value
+    end
+
     def self.normalize_origin(value)
         uri = URI.parse(value.to_s)
         return nil unless uri.is_a?(URI::HTTP) && uri.host && uri.userinfo.nil?

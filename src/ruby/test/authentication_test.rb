@@ -104,4 +104,25 @@ class AuthenticationTest < Minitest::Test
             :expected_origin => 'http://workspace.example:8025',
         )
     end
+
+    # /login?next=…: a path on this site, else »/«.
+    def test_next_path_keeps_paths_on_this_site
+        ['/', '/rle', '/rle#aufgabe-von-hand', '/profil', '/klasse?tab=lernende',
+         '/reference/git#zum-nachschlagen', '/%2F%2Fevil.example', '/login-hilfe',
+        ].each do |path|
+            assert_equal path, Authentication.safe_next_path(path), path
+        end
+    end
+
+    def test_next_path_rejects_other_sites_and_loops
+        ['//evil.example', '//evil.example/rle', '/\\evil.example', '/\\/evil.example',
+         'https://evil.example', 'http:/evil.example', 'javascript:alert(1)', 'evil.example',
+         "/\t/evil.example", "/\n/evil.example", "/ /evil.example", '/rle\\x',
+         '/<script>', '/"quoted"', '', nil, 42, ['/rle'], '/' + 'a' * 1000,
+         '/login', '/login.html', '/login?next=/rle', '/logout', '/logout?x=1', '/l/abc',
+         '/./logout', '/x/../logout', '/%2e%2e/logout', '/.', '/rle/..',
+        ].each do |path|
+            assert_equal '/', Authentication.safe_next_path(path), path.inspect
+        end
+    end
 end

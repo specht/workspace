@@ -234,3 +234,118 @@ test('login codes are bounded, one-time and visible to the teacher', async ({
     await teacherContext.close();
   }
 });
+
+// Fills in the login form on the current /login page and waits until the
+// page has left it.
+async function loginHere(page: Page, email: string) {
+  const emailInput = page.locator('#ti_email');
+  await emailInput.fill(email);
+  await emailInput.press('Tab');
+  await page.locator('#bu_submit_email').click();
+  await expect(page.locator('#ti_code')).toBeVisible();
+  await expect(page.locator('#part1')).not.toHaveAttribute('style', /overflow:\s*hidden/);
+  const codeInput = page.locator('#ti_code');
+  await codeInput.fill(E2E_LOGIN_CODE);
+  await codeInput.press('Tab');
+  await page.locator('#bu_submit_code').click();
+  await page.waitForURL(url => url.pathname !== '/login');
+}
+
+test('the login comes back to the page that asked for it, and only on this site', async ({
+  browser,
+  e2eEmail,
+}, testInfo) => {
+  const fresh = async () => {
+    const context = await browser.newContext({baseURL: baseUrl(testInfo)});
+    return {context, page: await context.newPage()};
+  };
+
+  // »Melde dich an« on a task card: back on the page, at the card.
+  {
+    const {context, page} = await fresh();
+    try {
+      await page.goto('/rle');
+      await page.locator('#aufgabe-von-hand .task-login-note a').click();
+      await page.waitForURL(url => url.pathname === '/login');
+      expect(new URL(page.url()).searchParams.get('next')).toBe('/rle#aufgabe-von-hand');
+      await loginHere(page, e2eEmail);
+      expect(new URL(page.url()).pathname).toBe('/rle');
+      expect(new URL(page.url()).hash).toBe('#aufgabe-von-hand');
+    } finally {
+      await context.close();
+    }
+  }
+
+  // A page for logged-in users: the server sends to the login with the page.
+  {
+    const {context, page} = await fresh();
+    try {
+      await page.goto('/profil');
+      await page.waitForURL(url => url.pathname === '/login');
+      expect(new URL(page.url()).searchParams.get('next')).toBe('/profil');
+      await loginHere(page, e2eEmail);
+      expect(new URL(page.url()).pathname).toBe('/profil');
+    } finally {
+      await context.close();
+    }
+  }
+
+  // Anything but a path on this site gives the start page.
+  {
+    const {context, page} = await fresh();
+    try {
+      for (const next of ['//evil.example', '/\\evil.example', 'https://evil.example',
+        '/\t/evil.example', 'javascript:alert(1)', '/logout', '/login']) {
+        await page.goto(`/login?next=${encodeURIComponent(next)}`);
+        expect(await page.evaluate(() =>
+          (window as typeof window & {login_next: string}).login_next,
+        ), next).toBe('/');
+      }
+      await page.goto(`/login?next=${encodeURIComponent('//evil.example')}`);
+      await loginHere(page, e2eEmail);
+      expect(page.url()).toBe(new URL('/', baseUrl(testInfo)).href);
+    } finally {
+      await context.close();
+    }
+  }
+});
+
+test('after the code is sent, the address can be changed and the code sent again', async ({
+  page,
+  e2eEmail,
+}) => {
+  await page.clock.install();
+  await page.goto('/login');
+  await page.locator('#ti_email').fill(e2eEmail);
+  await page.locator('#ti_email').press('Tab');
+  await page.locator('#bu_submit_email').click();
+  await expect(page.locator('#ti_code')).toBeVisible();
+
+  const resend = page.getByRole('button', {name: /Code erneut senden/});
+  await expect(resend).toBeDisabled();
+  await page.clock.runFor(61_000);
+  await expect(resend).toBeEnabled();
+  const request = page.waitForResponse(response =>
+    response.url().endsWith('/api/request_login'));
+  await resend.click();
+  expect((await request).status()).toBe(200);
+  await expect(page.locator('.api_messages')).toContainText('noch einmal unterwegs');
+  await expect(resend).toBeDisabled();
+
+  await page.getByRole('button', {name: 'Andere Adresse'}).click();
+  await expect(page.locator('#ti_email')).toBeEditable();
+  await expect(page.locator('#ti_code')).toBeHidden();
+  await expect(page.locator('#bu_submit_email')).toBeEnabled();
+});
+
+test('»Abmelden« is beside the name on every page', async ({page, e2eEmail}) => {
+  await page.goto('/login?next=%2Freference');
+  await loginHere(page, e2eEmail);
+  expect(new URL(page.url()).pathname).toBe('/reference');
+  const logout = page.locator('.menu').getByRole('link', {name: 'Abmelden'});
+  await expect(logout).toBeVisible();
+  await logout.click();
+  await page.waitForURL(url => url.pathname === '/');
+  await expect(page.locator('.menu a.btn[href="/login"]')).toBeVisible();
+  await expect(page.locator('.menu').getByRole('link', {name: 'Abmelden'})).toBeHidden();
+});
