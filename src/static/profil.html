@@ -1292,13 +1292,17 @@ vscode_config: {}</pre>
                 return false;
             });
         });
+        // Hell, Auto, Dunkel: gleich umschalten, ohne Neuladen (update_dark_mode im Template)
         $('.bu-set-brightness').on('click', function(e) {
-            let brightness = $(e.target.closest('.btn')).data('brightness');
-            api_call(`/api/set_brightness/${brightness}`, {}, function(data) {
-                if (data.success) {
-                    window.location.reload();
-                }
-            });
+            let button = $(e.target.closest('.btn'));
+            let choice = button.data('brightness');
+            api_call(`/api/set_brightness/${choice}`, {}, function(data) {
+                if (!data.success) return;
+                brightness = choice;
+                update_dark_mode();
+                $('.bu-set-brightness .bi-check-lg').remove();
+                button.append(' ').append($('<i>').addClass('bi bi-check-lg'));
+            }, {no_please_wait: true});
         });
         $('#bu_upload_test_archive').on('click', function(e) {
             const fileInput = document.createElement('input');

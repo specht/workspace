@@ -284,3 +284,34 @@ test('showing a tool in the menu does not reload the profile', async ({
   }
   expect(await page.evaluate(() => (window as any).__notReloaded)).toBe(true);
 });
+
+test('choosing light or dark in the profile switches at once, without reloading', async ({
+  page,
+  e2eEmail,
+}, testInfo) => {
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/profil');
+  await page.evaluate(() => { (window as any).__notReloaded = true; });
+  const html = page.locator('html');
+
+  await page.locator(".bu-set-brightness[data-brightness='dark']").click();
+  await expect(html).toHaveAttribute('data-bs-theme', 'dark');
+  await expect(page.locator(".bu-set-brightness[data-brightness='dark'] .bi-check-lg")).toHaveCount(1);
+  await expect(page.locator('.bu-set-brightness .bi-check-lg')).toHaveCount(1);
+
+  await page.locator(".bu-set-brightness[data-brightness='light']").click();
+  await expect(html).toHaveAttribute('data-bs-theme', 'light');
+  await expect(page.locator(".bu-set-brightness[data-brightness='light'] .bi-check-lg")).toHaveCount(1);
+
+  await page.locator(".bu-set-brightness[data-brightness='auto']").click();
+  await expect(page.locator(".bu-set-brightness[data-brightness='auto'] .bi-check-lg")).toHaveCount(1);
+  expect(await page.evaluate(() => (window as any).__notReloaded)).toBe(true);
+
+  // the choice is stored: after a reload the page starts with it
+  await page.locator(".bu-set-brightness[data-brightness='dark']").click();
+  await expect(html).toHaveAttribute('data-bs-theme', 'dark');
+  await page.reload();
+  await expect(html).toHaveAttribute('data-bs-theme', 'dark');
+  await page.locator(".bu-set-brightness[data-brightness='auto']").click();
+  await expect(page.locator(".bu-set-brightness[data-brightness='auto'] .bi-check-lg")).toHaveCount(1);
+});
