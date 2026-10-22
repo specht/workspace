@@ -107,7 +107,7 @@ hook: open main.html
 hook: settle
 crop-element: #canvas
 -->
-<img class='full' src='start.webp' alt='Ein orangefarbener Würfel steht auf einem Gitter vor hellblauem Himmel, oben links steht »Hallo, 3D!«.'>
+<img class='full fit-width' src='start.webp' alt='Ein orangefarbener Würfel steht auf einem Gitter vor hellblauem Himmel, oben links steht »Hallo, 3D!«.'>
 
 <div class='hint'>
 <strong>So arbeitest du ab jetzt:</strong> Datei ändern und speichern, im Terminal <code>make</code>, dann die Vorschau neu laden, falls sie es nicht von selbst tut. Findet <code>make</code> einen Fehler, nennt es die Zeile in deiner Datei, und <code>main.html</code> bleibt, wie sie war. Lies die erste Fehlermeldung zuerst, die übrigen sind oft nur Folgefehler. Was dein Programm mit <code>printf</code> ausgibt, steht in der Konsole der Seite: Fahre mit der Maus über das Bild und klicke unten rechts auf das Terminal-Symbol.
@@ -384,7 +384,7 @@ hook: play 3
 hook: settle
 crop-element: #canvas
 -->
-<img class='full' src='insel.webp' alt='Die ganze Welt von schräg oben: Hügel aus Gras, ein Sandstrand, Bäume, am Rand Erd- und Steinschichten.'>
+<img class='full fit-width' src='insel.webp' alt='Die ganze Welt von schräg oben: Hügel aus Gras, ein Sandstrand, Bäume, am Rand Erd- und Steinschichten.'>
 
 Jeder Block bekommt dunkle Kanten, wieder ein Hundertstel größer als der Block selbst, gegen das Z-Fighting. Oben links zählt das Programm, wie viele Blöcke es zeichnet, und wie viele Bilder pro Sekunde (FPS) es schafft. Behalte die Zahl im Auge: Später zeichnen wir die Welt viel geschickter.
 
@@ -580,7 +580,7 @@ hook: settle
 crop-element: #canvas
 check-task-fails: figur
 -->
-<img class='full' src='geist.webp' alt='Blick aus Augenhöhe über die Wiese, rechts ein Baum, die Blöcke mit dunklen Kanten.'>
+<img class='full fit-width' src='geist.webp' alt='Blick aus Augenhöhe über die Wiese, rechts ein Baum, die Blöcke mit dunklen Kanten.'>
 
 Lauf ein wenig herum. Du merkst schnell: Du bist ein Geist. Du gehst durch Hügel und Bäume hindurch, und wenn das Land abfällt, schwebst du in der Luft.
 
@@ -710,7 +710,7 @@ crop-element: #canvas
 check-task: figur
 check-task-fails: bauen
 -->
-<img class='full' src='laufen.webp' alt='Blick über die Wiese aus Augenhöhe; die Hügel steigen in Stufen an, hinten ein Baum.'>
+<img class='full fit-width' src='laufen.webp' alt='Blick über die Wiese aus Augenhöhe; die Hügel steigen in Stufen an, hinten ein Baum.'>
 
 _task(sprunghoehe)
 
@@ -907,7 +907,7 @@ crop-element: #canvas
 check-task: bauen
 check-task-fails: licht
 -->
-<img class='full' src='bauen.webp' alt='Ein paar gesetzte Steinblöcke auf der Wiese, einer ist schwarz umrandet, unten die Leiste mit sechs Blockarten.'>
+<img class='full fit-width' src='bauen.webp' alt='Ein paar gesetzte Steinblöcke auf der Wiese, einer ist schwarz umrandet, unten die Leiste mit sechs Blockarten.'>
 
 _task(bauen)
 
@@ -1170,7 +1170,7 @@ crop-element: #canvas
 check-task: licht
 check-task-fails: fackeln
 -->
-<img class='full' src='licht.webp' alt='Dieselbe Welt mit Licht: Oberseiten hell, Seiten dunkler, die Bäume haben deutliche Schattenseiten.'>
+<img class='full fit-width' src='licht.webp' alt='Dieselbe Welt mit Licht: Oberseiten hell, Seiten dunkler, die Bäume haben deutliche Schattenseiten.'>
 
 Vergleiche die Zahl der Seiten und die FPS mit vorher.
 
@@ -1448,7 +1448,7 @@ crop-element: #canvas
 check-task: fackeln
 check-task-fails: texturen
 -->
-<img class='full' src='fackeln.webp' alt='Blick über die Wiese, drei Fackeln stehen im Gras; im dunklen Modus bei Nacht, die Fackeln leuchten.'>
+<img class='full fit-width' src='fackeln.webp' alt='Blick über die Wiese, drei Fackeln stehen im Gras; im dunklen Modus bei Nacht, die Fackeln leuchten.'>
 
 Drück <kbd>N</kbd>: Es wird Nacht, und deine Fackeln leuchten. Auf dieser Seite zeigt der dunkle Modus die Bilder ebenfalls bei Nacht.
 
@@ -1684,7 +1684,7 @@ variants: dark
 crop-element: #canvas
 check-task: texturen
 -->
-<img class='full' src='tag.webp' alt='Blick über eine hügelige Welt aus Blöcken mit Gras-, Erd- und Holztexturen, ein paar Fackeln stehen im Gras.'>
+<img class='full fit-width' src='tag.webp' alt='Blick über eine hügelige Welt aus Blöcken mit Gras-, Erd- und Holztexturen, ein paar Fackeln stehen im Gras.'>
 
 _task(texturen)
 
