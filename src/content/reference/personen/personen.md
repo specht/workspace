@@ -464,6 +464,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1949 -->
+<!-- part: blinn -->
+### Jim Blinn
+
+<div class='person'>
+<img src='blinn.webp' alt='Jim Blinn 2015 auf der SIGGRAPH: ein Mann mit langem grauem Bart, Brille und NASA-Mütze in grüner Strickjacke, lachend, in den Händen eine blaue Teekanne aus dem 3D-Drucker.'>
+<p><strong>Jim Blinn</strong> (geboren 1949), amerikanischer Informatiker. Am Jet Propulsion Laboratory der NASA machte er die Animationen der Vorbeiflüge der Voyager-Sonden und Bilder für Carl Sagans Fernsehserie <em>Cosmos</em> (1980). Um dort Atome zu zeigen, die sich zu Molekülen verbinden, erfand er Formen, die mit ihren Nachbarn verschmelzen: die Blobby Objects, heute Metaballs.</p>
+<p>Auch der Glanzpunkt auf deinen Tropfen kommt von ihm: Die Richtung genau zwischen Licht und Auge ist seine Verbesserung des Phong-Modells von 1977. Und nach »Blinns Gesetz« dauert ein Bild immer gleich lange, egal wie schnell die Computer werden: Man rechnet einfach schönere Bilder.</p>
+<p class='person-credit'>Foto: Eric Haines, 2015, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:SIGGRAPH_2015_(20424362159).jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1950 -->
 <!-- part: stroustrup -->
 ### Bjarne Stroustrup

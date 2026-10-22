@@ -300,7 +300,18 @@ crop-element: #canvas
 
 ### Wolken aus Rauschen
 
-Zufall gibt es auf dem Grafikchip nicht, jeder Pixel muss bei jedem Bild dasselbe ausrechnen. Wolken entstehen trotzdem, aus **Rauschen**: einer Zufallszahl für jeden Punkt eines Gitters, die immer dieselbe ist, und weichen Übergängen dazwischen. Wie das genau geht, steht im Handbuch unter [Prozedurale Texturen](/reference/prozedurale-texturen); hier ist das ganze Programm:
+Zufall gibt es auf dem Grafikchip nicht, jeder Pixel muss bei jedem Bild dasselbe ausrechnen. Wolken entstehen trotzdem, aus **Rauschen**: einer Zufallszahl für jeden Punkt eines Gitters, die immer dieselbe ist, und weichen Übergängen dazwischen.
+
+Die Idee stammt von Ken Perlin. Nach der Arbeit an den Computerbildern für den Film *Tron* störte ihn, wie glatt und sauber alles aussah, was aus dem Computer kam, und 1985 beschrieb er das Rauschen, das heute seinen Namen trägt. Hier steht die einfachere Form, **Value Noise**: Auf den Gitterpunkten liegen Zahlen. Perlin legte dort Richtungen ab, das gibt ein gleichmäßigeres Rauschen.
+
+_person(perlin)
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>An Image Synthesizer</strong>, Ken Perlin, SIGGRAPH 1985. Der Aufsatz mit dem Rauschen, aus dem Marmor, Feuer und Wolken werden, alles aus wenigen Zeilen: <a href='https://doi.org/10.1145/325165.325247'>bei der ACM</a>.</p>
+</div>
+
+Wie das Rauschen genau geht, steht im Handbuch unter [Prozedurale Texturen](/reference/prozedurale-texturen); hier ist das ganze Programm:
 
 ```glsl_copy
 // Rauschen: Zufall, der weich ist. Daraus Wolken über einem Himmel.
@@ -502,6 +513,15 @@ _task(schritt)
 ### Tropfen, die ineinanderfließen
 
 Mit einer Kugel ist der Shader nicht besser als der Raytracer. Raymarching kann aber, was der Raytracer nicht kann: Formen weich ineinanderfließen lassen. Dafür nimmt `map` nicht das kleinere von zwei Abständen, `min`, sondern ein **weiches Minimum**, `smin`. Wo zwei Formen weit auseinander sind, ist es dasselbe wie `min`. Wo beide fast gleich nah sind, wird es kleiner als beide, und zwischen den Formen wächst ein Hals, der sie verbindet.
+
+Kugeln, die so ineinanderfließen, heißen **Metaballs**. Erfunden hat sie Jim Blinn um 1980, für Bilder von Atomen in einer Fernsehserie. Bei ihm hat jede Kugel ein Feld, das mit dem Abstand schwächer wird, so wie das Licht einer Lampe. Die Felder aller Kugeln werden addiert, und die Oberfläche liegt dort, wo die Summe einen bestimmten Wert erreicht. Kommen sich zwei Kugeln nahe, ist die Summe zwischen ihnen groß, und die Oberfläche wölbt sich hinüber. Das weiche Minimum macht dasselbe mit Abständen, so wie Raymarching sie braucht.
+
+_person(blinn)
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>A Generalization of Algebraic Surface Drawing</strong>, James F. Blinn, ACM Transactions on Graphics, 1982. Der Aufsatz, in dem die Blobby Objects zum ersten Mal beschrieben sind, mit Bildern von Molekülen: <a href='https://doi.org/10.1145/357306.357310'>bei der ACM</a>.</p>
+</div>
 
 Lösche die Funktion `ball` und schreib an ihre Stelle das weiche Minimum und sechs Tropfen:
 
@@ -765,7 +785,7 @@ crop-element: #canvas
 
 Vergleiche mit dem Bild davor, es ist derselbe Augenblick:
 
-- **Der Glanzpunkt** ist die Sonne, auf der glatten Oberfläche gespiegelt: Er ist dort, wo die Normale genau zwischen Sonne und Auge zeigt, `h`, und die hohe Potenz `120.0` macht ihn klein und scharf.
+- **Der Glanzpunkt** ist die Sonne, auf der glatten Oberfläche gespiegelt: Er ist dort, wo die Normale genau zwischen Sonne und Auge zeigt, `h`, und die hohe Potenz `120.0` macht ihn klein und scharf. Diese Rechnung mit der Richtung dazwischen stammt von Jim Blinn, 1977.
 - **Am Rand** spiegeln die Tropfen mehr vom Himmel als in der Mitte. Das ist dieselbe Formel von Schlick, die im Raytracer unter »Lack« ausrechnet, wie viel eine lackierte Kugel spiegelt.
 - **Der Boden** schickt einen zweiten Strahl los, gespiegelt an der Fläche nach oben, und mischt 30 Prozent von dem dazu, was der sieht. Dafür braucht es kein neues Programm, `march` und `shade` gibt es schon.
 - **`occlusion`** fragt `map` in fünf Abständen über der Fläche. Unter einem Tropfen ist dort weniger Platz als der Weg nach oben, und das Licht vom Himmel wird schwächer.
