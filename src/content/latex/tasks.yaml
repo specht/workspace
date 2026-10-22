@@ -112,7 +112,7 @@ tasks:
       - when: { between: [0.38, 0.40] }
         say: Das ist die Wurzel aus l / g. Es fehlt noch der Faktor 2π.
       - when: { between: [0.95, 0.97] }
-        say: Hast du vor dem Malnehmen mit 2π die Wurzel gezogen?
+        say: Hast du vor dem Multiplizieren mit 2π die Wurzel gezogen?
     solution: T = 2π · √(1,50 / 9,81) ≈ 2π · 0,391 ≈ 2,46 s.
 
   - id: bild

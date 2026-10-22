@@ -80,12 +80,12 @@ requires: [automata]
 # Ein Rechner für Ausdrücke
 
 <p class='abstract'>
-Tipp <code>2 + 3 * (4 - 1)</code> in einen Taschenrechner, und er weiß, dass erst die Klammer drankommt, dann das Malnehmen und zuletzt das Plus. Woher eigentlich? Du baust einen Rechner, der Ausdrücke versteht, in Ruby oder Python: Er zerlegt den Text in Stücke, baut daraus einen Baum und rechnet den Baum von unten nach oben aus. Genauso fangen Compiler an, die aus deinem Programm Maschinencode machen.
+Tipp <code>2 + 3 * (4 - 1)</code> in einen Taschenrechner, und er weiß, dass erst die Klammer drankommt, dann das Multiplizieren und zuletzt das Plus. Woher eigentlich? Du baust einen Rechner, der Ausdrücke versteht, in Ruby oder Python: Er zerlegt den Text in Stücke, baut daraus einen Baum und rechnet den Baum von unten nach oben aus. Genauso fangen Compiler an, die aus deinem Programm Maschinencode machen.
 </p>
 
 ## Punkt vor Strich
 
-Ein Ausdruck wie `2 + 3 * 4` ist für einen Computer zuerst nur Text, eine Reihe von Zeichen. Von links nach rechts ausgerechnet käme 20 heraus: 2 + 3 ist 5, mal 4 ist 20. Richtig ist 14, denn Malnehmen bindet stärker als Plus. Für Ausdrücke gelten ein paar Regeln, die du aus der Mathematik kennst:
+Ein Ausdruck wie `2 + 3 * 4` ist für einen Computer zuerst nur Text, eine Reihe von Zeichen. Von links nach rechts ausgerechnet käme 20 heraus: 2 + 3 ist 5, mal 4 ist 20. Richtig ist 14, denn Multiplizieren bindet stärker als Plus. Für Ausdrücke gelten ein paar Regeln, die du aus der Mathematik kennst:
 
 - Klammern zuerst.
 - Punkt vor Strich: `*` und `/` vor `+` und `-`.
@@ -385,7 +385,7 @@ _task(fehler)
 
 ## Hoch
 
-Als Nächstes kommt `^` für »hoch« dazu: `2 ^ 3` ist 8. Hoch bindet noch stärker als Malnehmen, `2 * 3 ^ 2` ist 18. Und es hat eine Eigenart:
+Als Nächstes kommt `^` für »hoch« dazu: `2 ^ 3` ist 8. Hoch bindet noch stärker als Multiplizieren, `2 * 3 ^ 2` ist 18. Und es hat eine Eigenart:
 
 _task(hoch-vorhersage)
 

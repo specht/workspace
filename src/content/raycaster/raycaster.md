@@ -666,7 +666,7 @@ _task(fischauge)
 
 Steht die Figur gerade vor einer Wand, ist der Strahl zur Mitte am kürzesten. Ein Strahl zum Rand des Bildes ist länger, obwohl er dieselbe gerade Wand trifft, und so zeichnet das Programm die Wand dort niedriger. Unser Auge misst aber nicht den Weg zum Punkt, sondern wie weit er **vor** uns liegt: den Abstand **entlang der Blickrichtung**.
 
-Den liefert das Skalarprodukt. Der Vektor von der Figur zum Treffpunkt, malgenommen mit `dir`, das die Länge 1 hat, ergibt genau den Anteil dieses Vektors, der in Blickrichtung zeigt. In `draw_view` ändert sich eine einzige Rechnung:
+Den liefert das Skalarprodukt. Der Vektor von der Figur zum Treffpunkt, multipliziert mit `dir`, das die Länge 1 hat, ergibt genau den Anteil dieses Vektors, der in Blickrichtung zeigt. In `draw_view` ändert sich eine einzige Rechnung:
 
 ```c
         // der Abstand entlang der Blickrichtung: das Skalarprodukt

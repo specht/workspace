@@ -1515,7 +1515,7 @@ Du kannst folgende Formel für die iDCT verwenden:
 
 Da die resultierenden Werte nach der iDCT noch im Bereich von -128 bis 127 liegen, müssen wir sie um 128 verschieben, um den Bereich von 0 bis 255 zu erhalten.
 
-Was die Formel tut, siehst du, wenn du sie Koeffizient für Koeffizient ausrechnest. Jeder Koeffizient gehört zu einem **Basisbild**, einem Muster aus Kosinuswellen: (0, 0) ist überall gleich hell, (1, 0) ein Verlauf von links nach rechts, (0, 1) einer von oben nach unten, und je größer u und v, desto feiner das Muster. Der Block ist die Summe aller Basisbilder, jedes mit seinem Koeffizienten malgenommen. Unten wird der Block aus dem Beispiel so zusammengesetzt, in der Zick-Zack-Reihenfolge, mit den Koeffizienten nach der Dequantisierung von oben. Die meisten sind 0 und tragen nichts bei:
+Was die Formel tut, siehst du, wenn du sie Koeffizient für Koeffizient ausrechnest. Jeder Koeffizient gehört zu einem **Basisbild**, einem Muster aus Kosinuswellen: (0, 0) ist überall gleich hell, (1, 0) ein Verlauf von links nach rechts, (0, 1) einer von oben nach unten, und je größer u und v, desto feiner das Muster. Der Block ist die Summe aller Basisbilder, jedes mit seinem Koeffizienten multipliziert. Unten wird der Block aus dem Beispiel so zusammengesetzt, in der Zick-Zack-Reihenfolge, mit den Koeffizienten nach der Dequantisierung von oben. Die meisten sind 0 und tragen nichts bei:
 
 <div class='idct-stepper' data-stepper data-coef='-600 27 9 0 7 0 0 0 -88 -12 4 6 0 0 0 0 24 -20 -10 0 0 0 0 0 8 5 -14 -9 0 0 0 0 0 7 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'></div>
 

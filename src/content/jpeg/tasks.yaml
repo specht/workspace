@@ -83,7 +83,7 @@ tasks:
       expect: -48
     feedback:
       - when: { equals: -16 }
-        say: Das ist der DC-Koeffizient, wie er in der Datei steht. Nach der Dequantisierung ist er mit dem ersten Wert der Quantisierungstabelle malgenommen.
+        say: Das ist der DC-Koeffizient, wie er in der Datei steht. Nach der Dequantisierung ist er mit dem ersten Wert der Quantisierungstabelle multipliziert.
       - when: { equals: 48 }
         say: Fast, aber das Vorzeichen stimmt nicht. Ist das höchste der gelesenen Bits 0, ist die Zahl negativ.
     hint: Der erste Wert der Quantisierungstabelle von `91-baseline.jpg` für Y ist nicht 5 wie in `44-baseline.jpg`. Er steht im DQT-Segment.
