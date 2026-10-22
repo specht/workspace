@@ -1,6 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 282" width="440" height="282" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 440 300" width="440" height="300" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
   <!-- Von oben: Eine Bildzeile zeigt den Boden auf einer Strecke quer vor der Figur, parallel zur Kamera-Ebene, im Abstand distance. Ihr linkes Ende liegt bei distance · (dir − plane), ihr rechtes bei distance · (dir + plane); dazwischen folgen die Pixel in gleichen Schritten.
-       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raycaster/NAME.svg 880 -->
+       Gemacht von bilder/diagramme.py; als Bild, hell und dunkel:
+       src/scripts/render-svg.rb src/content/raycaster/boden-zeile.svg 880 -->
   <defs>
     <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
     <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker>
@@ -8,38 +9,38 @@
     <marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
     <marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
   </defs>
-  <rect width="440" height="282" fill="#ffffff"/>
-  <line x1="230.0" y1="252.0" x2="57.0" y2="57.6" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
-  <line x1="230.0" y1="252.0" x2="403.0" y2="57.6" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
-  <line x1="165.9" y1="180.0" x2="294.1" y2="180.0" stroke="#dc2626" stroke-width="2.5"/>
-  <circle cx="165.9" cy="180.0" r="4.0" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
-  <circle cx="294.1" cy="180.0" r="4.0" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
-  <text x="155.9" y="185.0" font-size="15" fill="#dc2626" text-anchor="end" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">dir − plane</text>
-  <text x="304.1" y="185.0" font-size="15" fill="#dc2626" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">dir + plane</text>
-  <line x1="230.0" y1="252.0" x2="230.0" y2="181.0" stroke="#2b5fb4" stroke-width="2.5" marker-end="url(#a-blue)"/>
-  <text x="238.0" y="222.0" font-size="16" fill="#2b5fb4" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">dir</text>
-  <line x1="20.0" y1="252.0" x2="20.0" y2="57.6" stroke="#6b7280" stroke-width="1.5"/>
-  <line x1="14.0" y1="252.0" x2="26.0" y2="252.0" stroke="#6b7280" stroke-width="1.5"/>
-  <line x1="14.0" y1="57.6" x2="26.0" y2="57.6" stroke="#6b7280" stroke-width="1.5"/>
-  <line x1="28.0" y1="252.0" x2="218.0" y2="252.0" stroke="#6b7280" stroke-width="1" stroke-dasharray="2 4"/>
-  <text x="28.0" y="159.8" font-size="15" fill="#6b7280" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">distance</text>
-  <line x1="57.0" y1="57.6" x2="403.0" y2="57.6" stroke="#2b5fb4" stroke-width="3"/>
-  <circle cx="76.2" cy="57.6" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="114.7" cy="57.6" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="153.1" cy="57.6" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="191.6" cy="57.6" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="230.0" cy="57.6" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="268.4" cy="57.6" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="306.9" cy="57.6" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="345.3" cy="57.6" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="383.8" cy="57.6" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="57.0" cy="57.6" r="5.0" fill="#ffffff" stroke="#2b5fb4" stroke-width="2"/>
-  <text x="53.0" y="43.6" font-size="15" fill="#2b5fb4" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">left_x, left_y</text>
-  <text x="407.0" y="43.6" font-size="16" fill="#2b5fb4" text-anchor="end">eine Bildzeile</text>
-  <line x1="268.4" y1="71.6" x2="306.9" y2="71.6" stroke="#6b7280" stroke-width="1.5"/>
-  <line x1="268.4" y1="76.6" x2="268.4" y2="66.6" stroke="#6b7280" stroke-width="1.5"/>
-  <line x1="306.9" y1="76.6" x2="306.9" y2="66.6" stroke="#6b7280" stroke-width="1.5"/>
-  <text x="287.7" y="92.8" font-size="15" fill="#6b7280" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">step</text>
-  <circle cx="230.0" cy="252.0" r="7.0" fill="#1f2937" stroke="#1f2937" stroke-width="2"/>
-  <text x="244.0" y="257.0" font-size="16" fill="#1f2937" text-anchor="start">Spielfigur</text>
+  <rect width="440" height="300" fill="#ffffff"/>
+  <line x1="230.0" y1="266.0" x2="63.4" y2="78.8" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <line x1="230.0" y1="266.0" x2="396.6" y2="78.8" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <line x1="165.9" y1="194.0" x2="294.1" y2="194.0" stroke="#dc2626" stroke-width="2.5"/>
+  <circle cx="165.9" cy="194.0" r="4.0" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+  <circle cx="294.1" cy="194.0" r="4.0" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+  <rect x='50.4' y='186.7' width='108.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='54.9' y='199.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">dir - plane</text>
+  <rect x='301.6' y='186.7' width='108.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='306.1' y='199.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">dir + plane</text>
+  <line x1="230.0" y1="266.0" x2="230.0" y2="195.0" stroke="#2b5fb4" stroke-width="2.5" marker-end="url(#a-blue)"/>
+  <rect x='235.5' y='223.7' width='36.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='240.0' y='236.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">dir</text>
+  <line x1="22.0" y1="266.0" x2="22.0" y2="78.8" stroke="#6b7280" stroke-width="1.5"/>
+  <line x1="16.0" y1="266.0" x2="28.0" y2="266.0" stroke="#6b7280" stroke-width="1.5"/>
+  <line x1="16.0" y1="78.8" x2="28.0" y2="78.8" stroke="#6b7280" stroke-width="1.5"/>
+  <line x1="30.0" y1="266.0" x2="218.0" y2="266.0" stroke="#6b7280" stroke-width="1" stroke-dasharray="2 4"/>
+  <rect x='29.5' y='165.1' width='81.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='34.0' y='177.4' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">distance</text>
+  <line x1="63.4" y1="78.8" x2="396.6" y2="78.8" stroke="#2b5fb4" stroke-width="3"/>
+  <circle cx="81.9" cy="78.8" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="118.9" cy="78.8" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="156.0" cy="78.8" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="193.0" cy="78.8" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="230.0" cy="78.8" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="267.0" cy="78.8" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="304.0" cy="78.8" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="341.1" cy="78.8" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="378.1" cy="78.8" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="63.4" cy="78.8" r="5.0" fill="#ffffff" stroke="#2b5fb4" stroke-width="2"/>
+  <rect x='54.9' y='50.5' width='135.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='59.4' y='62.8' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">left_x, left_y</text>
+  <text x="400.6" y="62.8" font-size="16" fill="#2b5fb4" text-anchor="end">eine Bildzeile</text>
+  <line x1="267.0" y1="92.8" x2="304.0" y2="92.8" stroke="#6b7280" stroke-width="1.5"/>
+  <line x1="267.0" y1="97.8" x2="267.0" y2="87.8" stroke="#6b7280" stroke-width="1.5"/>
+  <line x1="304.0" y1="97.8" x2="304.0" y2="87.8" stroke="#6b7280" stroke-width="1.5"/>
+  <rect x='218.0' y='106.5' width='135.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='222.5' y='118.8' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">step_x, step_y</text>
+  <circle cx="230.0" cy="266.0" r="7.0" fill="#1f2937" stroke="#1f2937" stroke-width="2"/>
+  <text x="244.0" y="271.0" font-size="16" fill="#1f2937" text-anchor="start">Spielfigur</text>
 </svg>

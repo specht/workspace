@@ -1,6 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 410 326" width="410" height="326" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
-  <!-- Von oben: Die Spielfigur mit dem Quadrat um sie herum, an jeder Ecke ein Punkt, dicht vor einer Wand rechts. Sie will schräg nach rechts oben. Nur in x verschoben stünden zwei Ecken in der Wand, also bleibt x, wie es ist; nur in y verschoben ist alles frei, also bewegt sie sich nach oben: Sie gleitet an der Wand entlang.
-       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raycaster/NAME.svg 820 -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 410 326" width="410" height="326" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Von oben: die Spielfigur mit dem Quadrat um sie herum, an jeder Ecke ein Punkt, dicht vor einer Wand rechts. Sie will schräg nach rechts oben. Nur in x verschoben stünden zwei Ecken in der Wand, also bleibt x, wie es ist; nur in y verschoben ist alles frei, also bewegt sie sich nach oben: Sie gleitet an der Wand entlang.
+       Gemacht von bilder/diagramme.py; als Bild, hell und dunkel:
+       src/scripts/render-svg.rb src/content/raycaster/gleiten.svg 820 -->
   <defs>
     <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
     <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker>
@@ -37,8 +38,8 @@
   <circle cx="244.0" cy="172.1" r="4.5" fill="#ffffff" stroke="#1f2937" stroke-width="1.5"/>
   <circle cx="244.0" cy="237.1" r="4.5" fill="#ffffff" stroke="#1f2937" stroke-width="1.5"/>
   <circle cx="211.5" cy="204.6" r="4.0" fill="#1f2937" stroke="#1f2937" stroke-width="2"/>
-  <text x="169.0" y="116.0" font-size="16" fill="#16a34a" text-anchor="end">nur y: frei</text>
-  <text x="169.0" y="209.6" font-size="16" fill="#1f2937" text-anchor="end">Spielfigur</text>
+  <text x="167.0" y="116.0" font-size="16" fill="#16a34a" text-anchor="end">nur y: frei</text>
+  <text x="167.0" y="209.6" font-size="16" fill="#1f2937" text-anchor="end">Spielfigur</text>
   <text x="289.5" y="310.0" font-size="16" fill="#dc2626" text-anchor="middle">nur x: zwei Ecken in der Wand</text>
   <text x="335.0" y="57.5" font-size="16" fill="#1f2937" text-anchor="middle">Wand</text>
 </svg>

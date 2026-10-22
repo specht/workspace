@@ -235,9 +235,9 @@ crop-element: #canvas
 -->
 <img class='full fit-width' src='karte.webp' alt='Die Karte von oben als Gitter aus kleinen Kästchen: dunkler Boden, Wände in Rot, Grau, Braun, Blau und Grün bilden mehrere Räume; links oben im ersten Raum ein gelber Punkt mit einem weißen Strich nach rechts, die Spielfigur.'>
 
-Jedes Kästchen ist hier 11 Pixel groß, und die Farbe zeigt die Wandart: Rot sind Ziegel, Grau Stein, Braun Holz, Blau Metall, Grün Moos. Der gelbe Punkt ist die Spielfigur, der weiße Strich ihre Blickrichtung: `cos(player_angle)` nach rechts und `sin(player_angle)` nach unten. y zeigt hier wie auf dem Bildschirm nach unten; ein größerer Winkel dreht deshalb im Uhrzeigersinn.
+Jedes Kästchen ist hier 11 Pixel groß, und die Farbe zeigt die Wandart: Rot sind Ziegel, Grau Stein, Braun Holz, Blau Metall, Grün Moos. Der gelbe Punkt ist die Spielfigur, der weiße Strich ihre Blickrichtung: Ist α der Winkel `player_angle`, zeigt sie cos α nach rechts und sin α nach unten, im Programm `cos(player_angle)` und `sin(player_angle)`. y zeigt hier wie auf dem Bildschirm nach unten; ein größerer Winkel dreht deshalb im Uhrzeigersinn.
 
-<img class='drawing' style='width: 25em' src='richtung.webp' alt='Von der Spielfigur geht ein blauer Pfeil der Länge 1 schräg nach rechts unten. Von der Figur aus waagrecht nach rechts liegt rot sein Anteil cos(player_angle), von dort senkrecht nach unten bis zur Pfeilspitze grün sein Anteil sin(player_angle); ein grauer Bogen zwischen der Waagrechten und dem Pfeil ist der Winkel player_angle. Oben rechts zeigt ein roter Pfeil x nach rechts, ein grüner y nach unten.'>
+<img class='drawing' style='width: 25em' src='richtung.webp' alt='Von der Spielfigur geht ein blauer Pfeil der Länge 1 schräg nach rechts unten. Von der Figur aus waagrecht nach rechts liegt rot sein Anteil cos α, von dort senkrecht nach unten bis zur Pfeilspitze grün sein Anteil sin α, mit einem rechten Winkel dazwischen; ein grauer Bogen zwischen der Waagrechten und dem Pfeil ist der Winkel α. Oben rechts zeigt ein Pfeil x nach rechts, einer y nach unten.'>
 
 ## Bewegen
 
@@ -332,7 +332,7 @@ Die Bildspalten liegen gleichmäßig verteilt auf dieser Strecke: die linke Spal
 
 $$\text{ray} = \text{dir} + \text{plane} \cdot \text{camera\\_x}$$
 
-<img class='drawing' style='width: 25em' src='strahl-summe.webp' alt='Von der Spielfigur geht ein blauer Pfeil dir nach oben bis zur gestrichelten Kamera-Ebene, von seiner Spitze ein roter Pfeil plane · camera_x nach rechts bis zum Punkt camera_x = 0,5. Ein schwarzer Pfeil ray führt von der Figur direkt zu diesem Punkt, gestrichelt geht der Strahl dahinter weiter.'>
+<img class='drawing' style='width: 25em' src='strahl-summe.webp' alt='Von der Spielfigur geht ein blauer Pfeil dir nach oben bis zur gestrichelten Kamera-Ebene, von seiner Spitze ein roter Pfeil plane · camera_x nach rechts bis zum Punkt camera_x = 0.5. Ein schwarzer Pfeil ray führt von der Figur direkt zu diesem Punkt, gestrichelt geht der Strahl dahinter weiter.'>
 
 Mehr braucht es nicht, keine Winkel für jeden Strahl, nur eine Summe von zwei Vektoren. Wie lang die Kamera-Ebene ist, legt fest, wie viel die Figur sieht: `PLANE` 0,89 ergibt etwa 83 Grad.
 
@@ -441,17 +441,17 @@ crop-element: #canvas
 
 Das funktioniert, ist aber ungenau und langsam: Ein Strahl, der zehn Kästchen weit kommt, braucht 500 Schritte, und eine Ecke, die er zwischen zwei Schritten streift, übersieht er.
 
-<img class='drawing' style='width: 24.5em' src='schritte.webp' alt='Ein Gitter, oben eine Reihe grauer Wandkästchen, in der Mitte ein einzelnes graues Kästchen. Von der Spielfigur unten links geht ein blauer Strahl schräg nach rechts oben, mit Punkten in gleichen Schritten. Er streift die linke obere Ecke des einzelnen Kästchens, rot umkreist und »übersehen«, weil kein Punkt dort liegt, und endet erst in der Wand oben.'>
+<img class='drawing' style='width: 30.25em' src='schritte.webp' alt='Ein Gitter, oben und rechts graue Wandkästchen wie die Ecke eines Raums, frei davor ein einzelnes graues Kästchen. Von der Spielfigur unten links geht ein blauer Strahl schräg nach rechts oben, mit Punkten in gleichen Schritten. Er streift die linke obere Ecke des einzelnen Kästchens; das kurze Stück darin ist rot, »übersehen«, denn ein Punkt liegt davor und der nächste schon dahinter. Der Strahl endet erst in der Wand oben rechts.'>
 
 ### Von Kästchen zu Kästchen
 
-<img class='drawing' style='width: 26.5em' src='dda.webp' alt='Ein Gitter, rechts eine graue Wand. Von der Spielfigur unten links geht ein blauer Strahl schräg nach rechts oben bis zur Wand. Überall, wo er eine Gitterlinie kreuzt, sitzt ein Punkt: rot auf senkrechten Linien (next_x, side 0), grün auf waagrechten (next_y, side 1).'>
+<img class='drawing' style='width: 30.25em' src='dda.webp' alt='Dasselbe Gitter mit demselben Strahl. Überall, wo er eine Gitterlinie kreuzt, sitzt ein Punkt: rot auf senkrechten Linien (next_x, side = 0), grün auf waagrechten (next_y, side = 1). Der letzte rote Punkt liegt an der linken Seite des einzelnen Kästchens, knapp unter seiner Ecke: Das Kästchen ist rot umrandet, »getroffen«, und dort hört der Strahl auf.'>
 
 Genauer und schneller geht es mit einem Gedanken: In eine Wand kann ein Strahl nur dort geraten, wo er ein Kästchen verlässt, und das geschieht an einer **Gitterlinie**. Also springt man von Gitterlinie zu Gitterlinie, immer zur nächsten, und prüft nur dort, ob das neue Kästchen eine Wand ist. Das Verfahren heißt **DDA** (Digital Differential Analyzer).
 
 Ein Punkt auf dem Strahl ist \\((\text{player\\\_x} + t \cdot \text{ray\\\_x},\ \text{player\\\_y} + t \cdot \text{ray\\\_y})\\). Um von einer senkrechten Gitterlinie zur nächsten zu kommen, muss x um 1 wachsen, also t um \\(|1 / \text{ray\\\_x}|\\): Das ist `delta_x`. Ebenso `delta_y` für die waagrechten Linien. `next_x` und `next_y` sind die t-Werte der nächsten Linie in jeder Richtung; der kleinere gewinnt.
 
-<img class='drawing' style='width: 27em' src='dda-t.webp' alt='Ein Gitter. Von der Spielfigur unten links geht ein kurzer blauer Pfeil ray schräg nach rechts oben, gestrichelt geht der Strahl weiter, mit Strichen bei t = 1, 2, 3 und 4; der Pfeil reicht genau bis t = 1. Rote Punkte sitzen, wo der Strahl senkrechte Gitterlinien kreuzt, grüne auf waagrechten. Eine rote Klammer delta_x reicht von einem roten Punkt zum nächsten, eine längere grüne Klammer delta_y von einem grünen zum nächsten.'>
+<img class='drawing' style='width: 30.25em' src='dda-t.webp' alt='Dasselbe Gitter und derselbe Strahl. Von der Spielfigur geht ein kurzer blauer Pfeil ray, der genau bis t = 1 reicht; gestrichelt geht der Strahl weiter, mit Strichen bei t = 2, 3 und 4. Rote Punkte sitzen auf senkrechten Gitterlinien, grüne auf waagrechten. Zwischen den letzten beiden roten Punkten ein rotes Dreieck: Ein waagrechter Schritt der Länge 1 nach rechts gehört zu dem Stück Strahl dazwischen, an dem eine rote Klammer delta_x steht. Zwischen den beiden grünen Punkten ebenso ein grünes Dreieck mit einem senkrechten Schritt der Länge 1 und der Klammer delta_y. Darunter: x wächst um 1, t um delta_x; y ändert sich um 1, t wächst um delta_y.'>
 
 _task(delta)
 
@@ -667,10 +667,10 @@ tab: preview
 viewport: 800x450
 hook: open raycaster.html
 click: selector:#canvas
-hook: hold Tab KeyW 6
+hook: hold Tab KeyW 0.5
 crop-element: #canvas
 -->
-<img class='full fit-width' src='waende-rund.webp' alt='Der Blick der Spielfigur auf eine lange graue Wand dicht vor ihr: Die Ober- und die Unterkante der Wand sind nicht gerade, sondern biegen sich zu den Rändern hin zur Mitte, wie durch ein Fischauge.'>
+<img class='full fit-width' src='waende-rund.webp' alt='Der Blick der Spielfigur auf die Wand ihres Raums, zwei Kästchen vor ihr: außen rote Ziegel, in der Mitte zwei blaue Metallblöcke an einer Tür. Durch die Tür sieht man einen Gang entlang in die Halle, mit roten Säulen und einer grauen Wand am Ende. Die Ober- und Unterkanten der Wand sind nicht gerade, sondern biegen sich zu den Rändern hin zur Mitte, wie durch ein Fischauge.'>
 
 Da ist sie, die dritte Dimension. Aber etwas stimmt nicht: Die Wände sind krumm.
 
@@ -720,10 +720,10 @@ tab: preview
 viewport: 800x450
 hook: open raycaster.html
 click: selector:#canvas
-hook: hold Tab KeyW 6
+hook: hold Tab KeyW 0.5
 crop-element: #canvas
 -->
-<img class='full fit-width' src='waende-gerade.webp' alt='Derselbe Blick auf dieselbe Wand: Ober- und Unterkante verlaufen jetzt als gerade waagrechte Linien.'>
+<img class='full fit-width' src='waende-gerade.webp' alt='Derselbe Blick auf dieselbe Wand mit der Tür: Die Ober- und Unterkanten der Ziegel und der Metallblöcke verlaufen jetzt als gerade waagrechte Linien.'>
 
 Die Wände sind gerade, und das Bild sieht aus wie ein Blick durch einen Raum.
 
@@ -760,7 +760,7 @@ Am Ende von `move_player` bewegt sich die Figur in x und in y getrennt, und nur,
 
 Läuft die Figur schräg gegen eine Wand, ist eine der beiden Richtungen blockiert, die andere nicht: Sie gleitet an der Wand entlang, statt hängen zu bleiben. So fühlt es sich in Spielen an.
 
-<img class='drawing' style='width: 25.5em' src='gleiten.webp' alt='Von oben: die Spielfigur als Kreis in einem Quadrat mit einem Punkt an jeder Ecke, dicht vor einer grauen Wand rechts; ein gestrichelter Pfeil schräg nach rechts oben zeigt, wohin sie will. Ein roter Pfeil nach rechts führt zum rot gestrichelten Quadrat, nur in x verschoben: Seine beiden rechten Ecken stehen rot in der Wand, »nur x: zwei Ecken in der Wand«. Ein grüner Pfeil nach oben führt zum grün gestrichelten Quadrat, nur in y verschoben, alle Ecken frei, »nur y: frei«.'>
+<img class='drawing' style='width: 25.6em' src='gleiten.webp' alt='Von oben: die Spielfigur als Kreis in einem Quadrat mit einem Punkt an jeder Ecke, dicht vor einer grauen Wand rechts; ein gestrichelter Pfeil schräg nach rechts oben zeigt, wohin sie will. Ein roter Pfeil nach rechts führt zum rot gestrichelten Quadrat, nur in x verschoben: Seine beiden rechten Ecken stehen rot in der Wand, »nur x: zwei Ecken in der Wand«. Ein grüner Pfeil nach oben führt zum grün gestrichelten Quadrat, nur in y verschoben, alle Ecken frei, »nur y: frei«.'>
 
 Eine Kleinigkeit in `main`: Ruckelt der Browser, etwa weil der Tab im Hintergrund war, ist `dt` auf einmal eine ganze Sekunde, und die Figur macht einen Riesenschritt, vielleicht durch eine dünne Wand hindurch. Darum höchstens eine Zehntelsekunde:
 
@@ -919,7 +919,7 @@ double row_distance(int y)
 }
 ```
 
-<img class='drawing' style='width: 27.5em' src='boden-seite.webp' alt='Von der Seite: links ein Auge 0,5 über dem Boden, 1 davor senkrecht das Bild, auf Augenhöhe gestrichelt der Horizont. Ein blauer Strahl geht durch einen Punkt des Bildes (y − H/2) / H unter dem Horizont und trifft den Boden bei row_distance(y). Zwei ähnliche Dreiecke: ein kleines mit den Seiten 1 und (y − H/2) / H bis zum Bild, ein großes mit row_distance(y) und 0,5 bis zum Boden.'>
+<img class='drawing' style='width: 27.5em' src='boden-seite.webp' alt='Von der Seite: links ein Auge 0,5 über dem Boden, 1 davor senkrecht das Bild, auf Augenhöhe gestrichelt der Horizont. Ein blauer Strahl geht durch einen Punkt des Bildes (y − H/2) / H unter dem Horizont und trifft den Boden bei row_distance(y). Zwei ähnliche Dreiecke, jedes mit einem rechten Winkel: ein kleines mit den Seiten 1 und (y − H/2) / H bis zum Bild, ein großes mit 0,5 und, als Maßlinie am Boden, row_distance(y).'>
 
 `row_distance` folgt aus ähnlichen Dreiecken: Die Augen sind 0,5 über dem Boden, das Bild steht eine Einheit vor ihnen. Eine Bildzeile, die `y − H/2` Pixel unter dem Horizont liegt, sieht den Boden dort, wo der Strahl auf seinem Weg um 0,5 gesunken ist. Weil das Bild im Abstand 1 genau `H` Pixel hoch ist, liegt sie dort `(y − H/2) / H` unter dem Horizont: Der Strahl sinkt auf dem Weg 1 um so viel, auf dem Weg `row_distance` um 0,5.
 
@@ -1109,7 +1109,7 @@ Boden und Decke bekommen erst im nächsten Abschnitt Texturen; bis dahin nehmen 
 
 Um eine Textur auf eine Wand zu legen, braucht jedes Pixel der Wand zwei Zahlen: `u`, wie weit links oder rechts es auf dem Kästchen liegt, und `v`, wie weit oben oder unten. `v` hat `draw_wall_column` schon. `u` steckt im Treffpunkt: Trifft der Strahl eine Wand quer zur x-Achse, sagt der Nachkommateil von `hit.y`, wo auf dem Kästchen, sonst der von `hit.x`.
 
-<img class='drawing' style='width: 24.5em' src='textur-u.webp' alt='Von oben: ein Gitter mit den Koordinaten 0 bis 3 an den Rändern, in der Mitte ein graues Wandkästchen von 1 bis 2. Ein blauer Strahl von links unten trifft seine linke Seite bei hit.y = 1,35, also u = 0,35; ein grüner Strahl von rechts unten trifft seine untere Seite bei hit.x = 1,6, also u = 0,6. Graue Pfeile innen an beiden Seiten zeigen, in welche Richtung u von 0 bis 1 wächst.'>
+<img class='drawing' style='width: 28.1em' src='textur-u.webp' alt='Von oben: ein Gitter mit den Koordinaten 0 bis 3 an den Rändern, x nach rechts, y nach unten, in der Mitte ein graues Wandkästchen von 1 bis 2. Ein blauer Strahl von links unten trifft seine linke Seite bei hit.y = 1.35, also u = 0.35; ein grüner Strahl von rechts unten trifft seine untere Seite bei hit.x = 1.6, also u = 0.6. Graue Pfeile innen an beiden Seiten zeigen, in welche Richtung u von 0 bis 1 wächst.'>
 
 `texel` holt die Farbe aus der Textur:
 
@@ -1273,11 +1273,11 @@ Warum zeichnet das Programm die Wände Spalte für Spalte, Boden und Decke aber 
 
 <div class='gallery columns-2'>
 <figure>
-<img src='tiefe-gerade.webp' alt='Blick einen Gang entlang in eine Halle mit einem Pfeiler: Auf den beiden Wänden des Gangs stehen senkrechte blaue Linien, auf Boden und Decke liegen waagrechte grüne Linien, alle in gleichen Abständen. Die Wände, die gerade vor einem stehen, haben keine blauen Linien.'>
+<img src='tiefe-gerade.webp' alt='Blick einen Gang entlang in eine Halle mit einem Pfeiler: Auf allen Wänden stehen senkrechte blaue Linien, auf Boden und Decke liegen waagrechte grüne Linien, ein schlichtes Streifenmuster mit überall demselben Abstand auf dem Bild.'>
 <figcaption>Geradeaus: blau, was in einer Bildspalte gleich weit weg ist, grün, was in einer Bildzeile gleich weit weg ist.</figcaption>
 </figure>
 <figure>
-<img src='tiefe-gedreht.webp' alt='Derselbe Ort, nach links gedreht: Die linke Wand des Gangs läuft groß und schräg durchs Bild, der Pfeiler steht schräg in der Halle. Die blauen Linien auf den Wänden sind weiter senkrecht, die grünen auf Boden und Decke weiter waagrecht.'>
+<img src='tiefe-gedreht.webp' alt='Derselbe Ort, nach links gedreht: Die linke Wand des Gangs läuft groß und schräg durchs Bild, der Pfeiler steht schräg in der Halle. Die blauen Linien auf den Wänden sind weiter senkrecht, die grünen auf Boden und Decke weiter waagrecht, im selben gleichmäßigen Abstand.'>
 <figcaption>Nach links gedreht: Die Wände stehen schräg, die Linien bleiben senkrecht und waagrecht.</figcaption>
 </figure>
 </div>

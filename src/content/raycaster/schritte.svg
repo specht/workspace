@@ -1,6 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 320" width="390" height="320" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
-  <!-- Schritt für Schritt: Die Punkte liegen einen Schritt auseinander. Der Strahl streift die Ecke einer Wand zwischen zwei Punkten, das Programm merkt es nicht und läuft weiter bis zur Wand dahinter.
-       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raycaster/NAME.svg 780 -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 484 356" width="484" height="356" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Schritt für Schritt: Die Punkte liegen einen Schritt auseinander. Der Strahl streift die Ecke eines Wandkästchens zwischen zwei Punkten, das Programm merkt es nicht und läuft weiter bis zur Wand dahinter. Dieselbe Karte, dieselbe Figur und derselbe Strahl wie in dda und dda-t.
+       Gemacht von bilder/diagramme.py; als Bild, hell und dunkel:
+       src/scripts/render-svg.rb src/content/raycaster/schritte.svg 968 -->
   <defs>
     <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
     <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker>
@@ -8,41 +9,59 @@
     <marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
     <marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
   </defs>
-  <rect width="390" height="320" fill="#ffffff"/>
-  <rect x="20.0" y="20.0" width="70.0" height="70.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
-  <rect x="90.0" y="20.0" width="70.0" height="70.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
-  <rect x="160.0" y="20.0" width="70.0" height="70.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
-  <rect x="230.0" y="20.0" width="70.0" height="70.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
-  <rect x="300.0" y="20.0" width="70.0" height="70.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
-  <rect x="20.0" y="90.0" width="70.0" height="70.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-  <rect x="90.0" y="90.0" width="70.0" height="70.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-  <rect x="160.0" y="90.0" width="70.0" height="70.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-  <rect x="230.0" y="90.0" width="70.0" height="70.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-  <rect x="300.0" y="90.0" width="70.0" height="70.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-  <rect x="20.0" y="160.0" width="70.0" height="70.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-  <rect x="90.0" y="160.0" width="70.0" height="70.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-  <rect x="160.0" y="160.0" width="70.0" height="70.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-  <rect x="230.0" y="160.0" width="70.0" height="70.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
-  <rect x="300.0" y="160.0" width="70.0" height="70.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-  <rect x="20.0" y="230.0" width="70.0" height="70.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-  <rect x="90.0" y="230.0" width="70.0" height="70.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-  <rect x="160.0" y="230.0" width="70.0" height="70.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-  <rect x="230.0" y="230.0" width="70.0" height="70.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-  <rect x="300.0" y="230.0" width="70.0" height="70.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-  <line x1="68.3" y1="282.5" x2="350.3" y2="81.1" stroke="#2b5fb4" stroke-width="2.5"/>
-  <circle cx="93.9" cy="264.2" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="119.6" cy="245.9" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="145.2" cy="227.6" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="170.8" cy="209.3" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="196.5" cy="191.0" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="222.1" cy="172.6" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="247.7" cy="154.3" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="273.4" cy="136.0" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="299.0" cy="117.7" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="324.6" cy="99.4" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="350.3" cy="81.1" r="4.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
-  <circle cx="234.9" cy="163.5" r="15.0" fill="none" stroke="#dc2626" stroke-width="2"/>
-  <text x="256.9" y="203.5" font-size="16" fill="#dc2626" text-anchor="start">übersehen</text>
-  <circle cx="68.3" cy="282.5" r="7.0" fill="#1f2937" stroke="#1f2937" stroke-width="2"/>
-  <text x="82.3" y="289.5" font-size="16" fill="#1f2937" text-anchor="start">Spielfigur</text>
+  <rect width="484" height="356" fill="#ffffff"/>
+  <rect x="18.0" y="18.0" width="64.0" height="64.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="82.0" y="18.0" width="64.0" height="64.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="146.0" y="18.0" width="64.0" height="64.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="210.0" y="18.0" width="64.0" height="64.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="274.0" y="18.0" width="64.0" height="64.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="338.0" y="18.0" width="64.0" height="64.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="402.0" y="18.0" width="64.0" height="64.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="18.0" y="82.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="82.0" y="82.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="146.0" y="82.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="210.0" y="82.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="274.0" y="82.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="338.0" y="82.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="402.0" y="82.0" width="64.0" height="64.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="18.0" y="146.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="82.0" y="146.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="146.0" y="146.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="210.0" y="146.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="274.0" y="146.0" width="64.0" height="64.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="338.0" y="146.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="402.0" y="146.0" width="64.0" height="64.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="18.0" y="210.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="82.0" y="210.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="146.0" y="210.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="210.0" y="210.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="274.0" y="210.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="338.0" y="210.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="402.0" y="210.0" width="64.0" height="64.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="18.0" y="274.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="82.0" y="274.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="146.0" y="274.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="210.0" y="274.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="274.0" y="274.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="338.0" y="274.0" width="64.0" height="64.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="402.0" y="274.0" width="64.0" height="64.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <line x1="54.5" y1="306.6" x2="384.4" y2="74.9" stroke="#2b5fb4" stroke-width="2.5"/>
+  <line x1="274.0" y1="152.5" x2="283.2" y2="146.0" stroke="#dc2626" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="78.0" cy="290.1" r="4.5" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="101.6" cy="273.5" r="4.5" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="125.2" cy="257.0" r="4.5" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="148.7" cy="240.4" r="4.5" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="172.3" cy="223.9" r="4.5" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="195.9" cy="207.3" r="4.5" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="219.5" cy="190.8" r="4.5" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="243.0" cy="174.2" r="4.5" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="266.6" cy="157.7" r="4.5" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="290.2" cy="141.1" r="4.5" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="313.7" cy="124.6" r="4.5" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="337.3" cy="108.0" r="4.5" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="360.9" cy="91.4" r="4.5" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="384.4" cy="74.9" r="4.5" fill="#2b5fb4" stroke="#ffffff" stroke-width="1.5"/>
+  <text x="306.0" y="232.0" font-size="16" fill="#dc2626" text-anchor="middle">übersehen</text>
+  <circle cx="54.5" cy="306.6" r="7.0" fill="#1f2937" stroke="#1f2937" stroke-width="2"/>
+  <text x="70.5" y="330.6" font-size="16" fill="#1f2937" text-anchor="start">Spielfigur</text>
 </svg>

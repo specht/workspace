@@ -1,6 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 206" width="440" height="206" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 440 212" width="440" height="212" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
   <!-- Von der Seite: Das Bild steht 1 vor dem Auge und ist H Pixel hoch; eine Wand der Höhe 1 im Abstand 1 füllt es genau. Steht sie doppelt so weit weg, treffen die Strahlen zu ihrer Ober- und Unterkante das Bild nur halb so weit auseinander: H / 2.
-       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raycaster/NAME.svg 880 -->
+       Gemacht von bilder/diagramme.py; als Bild, hell und dunkel:
+       src/scripts/render-svg.rb src/content/raycaster/wandhoehe.svg 880 -->
   <defs>
     <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
     <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker>
@@ -8,27 +9,55 @@
     <marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
     <marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
   </defs>
-  <rect width="440" height="206" fill="#ffffff"/>
-  <line x1="20.0" y1="166.0" x2="420.0" y2="166.0" stroke="#1f2937" stroke-width="2.5"/>
-  <line x1="50.0" y1="106.0" x2="420.0" y2="106.0" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="5 5"/>
-  <line x1="170.0" y1="46.0" x2="170.0" y2="166.0" stroke="#1f2937" stroke-width="3"/>
-  <text x="170.0" y="36.0" font-size="16" fill="#1f2937" text-anchor="middle">Bild: H Pixel</text>
-  <rect x="290.0" y="46.0" width="16.0" height="120.0" fill="#d1d5db" stroke="#1f2937" stroke-width="1.5"/>
-  <text x="316.0" y="64.0" font-size="16" fill="#1f2937" text-anchor="start">Wand, Höhe 1</text>
-  <line x1="50.0" y1="106.0" x2="290.0" y2="46.0" stroke="#2b5fb4" stroke-width="2"/>
-  <circle cx="170.0" cy="76.0" r="4.0" fill="#ffffff" stroke="#2b5fb4" stroke-width="2"/>
-  <line x1="50.0" y1="106.0" x2="290.0" y2="166.0" stroke="#2b5fb4" stroke-width="2"/>
-  <circle cx="170.0" cy="136.0" r="4.0" fill="#ffffff" stroke="#2b5fb4" stroke-width="2"/>
-  <line x1="182.0" y1="76.0" x2="182.0" y2="136.0" stroke="#2b5fb4" stroke-width="1.5"/>
-  <line x1="177.0" y1="76.0" x2="187.0" y2="76.0" stroke="#2b5fb4" stroke-width="1.5"/>
-  <line x1="177.0" y1="136.0" x2="187.0" y2="136.0" stroke="#2b5fb4" stroke-width="1.5"/>
-  <text x="192.0" y="130.0" font-size="16" fill="#2b5fb4" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">H / 2</text>
-  <circle cx="50.0" cy="106.0" r="7.0" fill="#1f2937" stroke="#1f2937" stroke-width="2"/>
-  <text x="46.0" y="92.0" font-size="16" fill="#1f2937" text-anchor="middle">Auge</text>
-  <line x1="170.0" y1="166.0" x2="170.0" y2="172.0" stroke="#1f2937" stroke-width="1.5"/>
-  <text x="170.0" y="192.0" font-size="16" fill="#6b7280" text-anchor="middle">Abstand 1</text>
-  <line x1="290.0" y1="166.0" x2="290.0" y2="172.0" stroke="#1f2937" stroke-width="1.5"/>
-  <text x="290.0" y="192.0" font-size="16" fill="#6b7280" text-anchor="middle">Abstand 2</text>
-  <line x1="50.0" y1="166.0" x2="50.0" y2="172.0" stroke="#1f2937" stroke-width="1.5"/>
-  <text x="50.0" y="192.0" font-size="16" fill="#6b7280" text-anchor="middle">0</text>
+  <rect width="440" height="212" fill="#ffffff"/>
+  <line x1="20.0" y1="170.0" x2="420.0" y2="170.0" stroke="#1f2937" stroke-width="2.5"/>
+  <line x1="50.0" y1="110.0" x2="420.0" y2="110.0" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="5 5"/>
+  <line x1="170.0" y1="50.0" x2="170.0" y2="170.0" stroke="#1f2937" stroke-width="3"/>
+  <text x="106.4" y="38.0" font-size="16" fill="#1f2937" xml:space="preserve">Bild, </text>
+  <rect x='140.4' y='25.7' width='18.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='144.9' y='38.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">H</text>
+  <text x="156.1" y="38.0" font-size="16" fill="#1f2937" xml:space="preserve"> Pixel hoch</text>
+  <rect x="290.0" y="50.0" width="16.0" height="120.0" fill="#d1d5db" stroke="#1f2937" stroke-width="1.5"/>
+  <text x="316.0" y="68.0" font-size="16" fill="#1f2937" xml:space="preserve">Wand, Höhe </text>
+  <g transform='translate(407.08 68.00) scale(1.7000) translate(0.5000 0)' fill='#1f2937' stroke='none'><defs>
+<path id='m26-g0-49' d='M2.929016-6.37609C2.929016-6.615193 2.929016-6.635118 2.699875-6.635118C2.082192-5.997509 1.205479-5.997509 .886675-5.997509V-5.688667C1.085928-5.688667 1.673724-5.688667 2.191781-5.947696V-.787049C2.191781-.428394 2.161893-.308842 1.265255-.308842H.946451V0C1.295143-.029888 2.161893-.029888 2.560399-.029888S3.825654-.029888 4.174346 0V-.308842H3.855542C2.958904-.308842 2.929016-.418431 2.929016-.787049V-6.37609Z'/>
+</defs>
+<g id='m26-page1'>
+<use x='0' y='0' xlink:href='#m26-g0-49'/>
+</g>
+</g>
+  <line x1="50.0" y1="110.0" x2="290.0" y2="50.0" stroke="#2b5fb4" stroke-width="2"/>
+  <circle cx="170.0" cy="80.0" r="4.0" fill="#ffffff" stroke="#2b5fb4" stroke-width="2"/>
+  <line x1="50.0" y1="110.0" x2="290.0" y2="170.0" stroke="#2b5fb4" stroke-width="2"/>
+  <circle cx="170.0" cy="140.0" r="4.0" fill="#ffffff" stroke="#2b5fb4" stroke-width="2"/>
+  <line x1="182.0" y1="80.0" x2="182.0" y2="140.0" stroke="#2b5fb4" stroke-width="1.5"/>
+  <line x1="177.0" y1="80.0" x2="187.0" y2="80.0" stroke="#2b5fb4" stroke-width="1.5"/>
+  <line x1="177.0" y1="140.0" x2="187.0" y2="140.0" stroke="#2b5fb4" stroke-width="1.5"/>
+  <rect x='191.5' y='123.7' width='54.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='196.0' y='136.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">H / 2</text>
+  <circle cx="50.0" cy="110.0" r="7.0" fill="#1f2937" stroke="#1f2937" stroke-width="2"/>
+  <text x="50.0" y="96.0" font-size="16" fill="#1f2937" text-anchor="middle">Auge</text>
+  <line x1="50.0" y1="170.0" x2="50.0" y2="176.0" stroke="#1f2937" stroke-width="1.5"/>
+  <g transform='translate(50.00 196.00) scale(1.7000) translate(-2.4907 0)' fill='#6b7280' stroke='none'><defs>
+<path id='m27-g0-48' d='M4.582814-3.188045C4.582814-3.985056 4.533001-4.782067 4.184309-5.519303C3.726027-6.475716 2.909091-6.635118 2.49066-6.635118C1.892902-6.635118 1.165629-6.37609 .757161-5.449564C.438356-4.762142 .388543-3.985056 .388543-3.188045C.388543-2.440847 .428394-1.544209 .836862-.787049C1.265255 .019925 1.992528 .219178 2.480697 .219178C3.01868 .219178 3.775841 .009963 4.214197-.936488C4.533001-1.62391 4.582814-2.400996 4.582814-3.188045ZM2.480697 0C2.092154 0 1.504359-.249066 1.325031-1.205479C1.215442-1.803238 1.215442-2.719801 1.215442-3.307597C1.215442-3.945205 1.215442-4.60274 1.295143-5.140722C1.484433-6.326276 2.231631-6.41594 2.480697-6.41594C2.809465-6.41594 3.466999-6.236613 3.656289-5.250311C3.755915-4.692403 3.755915-3.935243 3.755915-3.307597C3.755915-2.560399 3.755915-1.882939 3.646326-1.24533C3.496887-.298879 2.929016 0 2.480697 0Z'/>
+</defs>
+<g id='m27-page1'>
+<use x='0' y='0' xlink:href='#m27-g0-48'/>
+</g>
+</g>
+  <line x1="170.0" y1="170.0" x2="170.0" y2="176.0" stroke="#1f2937" stroke-width="1.5"/>
+  <g transform='translate(170.00 196.00) scale(1.7000) translate(-2.4907 0)' fill='#6b7280' stroke='none'><defs>
+<path id='m28-g0-49' d='M2.929016-6.37609C2.929016-6.615193 2.929016-6.635118 2.699875-6.635118C2.082192-5.997509 1.205479-5.997509 .886675-5.997509V-5.688667C1.085928-5.688667 1.673724-5.688667 2.191781-5.947696V-.787049C2.191781-.428394 2.161893-.308842 1.265255-.308842H.946451V0C1.295143-.029888 2.161893-.029888 2.560399-.029888S3.825654-.029888 4.174346 0V-.308842H3.855542C2.958904-.308842 2.929016-.418431 2.929016-.787049V-6.37609Z'/>
+</defs>
+<g id='m28-page1'>
+<use x='0' y='0' xlink:href='#m28-g0-49'/>
+</g>
+</g>
+  <line x1="290.0" y1="170.0" x2="290.0" y2="176.0" stroke="#1f2937" stroke-width="1.5"/>
+  <g transform='translate(290.00 196.00) scale(1.7000) translate(-2.4907 0)' fill='#6b7280' stroke='none'><defs>
+<path id='m29-g0-50' d='M1.265255-.767123L2.321295-1.793275C3.875467-3.16812 4.473225-3.706102 4.473225-4.702366C4.473225-5.838107 3.576588-6.635118 2.361146-6.635118C1.235367-6.635118 .498132-5.718555 .498132-4.83188C.498132-4.273973 .996264-4.273973 1.026152-4.273973C1.195517-4.273973 1.544209-4.393524 1.544209-4.801993C1.544209-5.061021 1.364882-5.32005 1.016189-5.32005C.936488-5.32005 .916563-5.32005 .886675-5.310087C1.115816-5.957659 1.653798-6.326276 2.231631-6.326276C3.138232-6.326276 3.566625-5.519303 3.566625-4.702366C3.566625-3.905355 3.068493-3.118306 2.520548-2.500623L.607721-.368618C.498132-.259029 .498132-.239103 .498132 0H4.194271L4.473225-1.733499H4.224159C4.174346-1.43462 4.104608-.996264 4.004981-.846824C3.935243-.767123 3.277709-.767123 3.058531-.767123H1.265255Z'/>
+</defs>
+<g id='m29-page1'>
+<use x='0' y='0' xlink:href='#m29-g0-50'/>
+</g>
+</g>
+  <text x="320.0" y="196.0" font-size="16" fill="#6b7280" text-anchor="start">Abstand</text>
 </svg>

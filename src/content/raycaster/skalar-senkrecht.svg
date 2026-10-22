@@ -1,6 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 165" width="200" height="165" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
-  <!-- Skalarprodukt zweier Vektoren der Länge 1: a steht senkrecht auf dir, die Projektion ist ein Punkt: 0.
-       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raycaster/NAME.svg 400 -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 250 206" width="250" height="206" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Skalarprodukt zweier Vektoren der Länge 1: a steht senkrecht auf dir, der Schatten ist ein Punkt: 0.
+       Gemacht von bilder/diagramme.py; als Bild, hell und dunkel:
+       src/scripts/render-svg.rb src/content/raycaster/skalar-senkrecht.svg 500 -->
   <defs>
     <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
     <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker>
@@ -8,12 +9,12 @@
     <marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
     <marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
   </defs>
-  <rect width="200" height="165" fill="#ffffff"/>
-  <line x1="30.0" y1="20.0" x2="30.0" y2="140.0" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="4 4"/>
-  <circle cx="30.0" cy="154.0" r="3.5" fill="#16a34a" stroke="#16a34a" stroke-width="1"/>
-  <line x1="30.0" y1="140.0" x2="150.0" y2="140.0" stroke="#2b5fb4" stroke-width="3" marker-end="url(#a-blue)"/>
-  <text x="154.0" y="146.0" font-size="20" fill="#2b5fb4" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">dir</text>
-  <line x1="30.0" y1="140.0" x2="30.0" y2="20.0" stroke="#1f2937" stroke-width="3" marker-end="url(#a-ink)"/>
-  <text x="38.0" y="26.0" font-size="20" fill="#1f2937" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">a</text>
-  <circle cx="30.0" cy="140.0" r="3.5" fill="#1f2937" stroke="#1f2937" stroke-width="1"/>
+  <rect width="250" height="206" fill="#ffffff"/>
+  <path d='M 46.00 176.00 A 16.00 16.00 0 0 0 30.00 160.00' fill='none' stroke='#6b7280' stroke-width='1.2'/><circle cx='36.72' cy='169.28' r='1.6' fill='#6b7280'/>
+  <circle cx="30.0" cy="190.0" r="3.5" fill="#16a34a" stroke="#16a34a" stroke-width="1"/>
+  <line x1="30.0" y1="176.0" x2="190.0" y2="176.0" stroke="#2b5fb4" stroke-width="3" marker-end="url(#a-blue)"/>
+  <rect x='193.5' y='168.7' width='36.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='198.0' y='181.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">dir</text>
+  <line x1="30.0" y1="176.0" x2="30.0" y2="16.0" stroke="#1f2937" stroke-width="3" marker-end="url(#a-ink)"/>
+  <rect x='35.5' y='9.7' width='18.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='40.0' y='22.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">a</text>
+  <circle cx="30.0" cy="176.0" r="3.5" fill="#1f2937" stroke="#1f2937" stroke-width="1"/>
 </svg>

@@ -1,6 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 222" width="440" height="222" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
-  <!-- Von oben, die Spielfigur schaut nach oben: dir mit der Länge 1, quer davor die Kamera-Ebene; plane reicht von ihrer Mitte 0,89 nach rechts. Jeder Strahl geht durch einen Punkt der Ebene, camera_x von −1 (linker Bildrand) bis +1 (rechter Bildrand); zusammen etwa 83 Grad.
-       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raycaster/NAME.svg 880 -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 440 236" width="440" height="236" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Von oben, die Spielfigur schaut nach oben: dir mit der Länge 1, an seiner Spitze senkrecht dazu die Kamera-Ebene; plane reicht von ihrer Mitte bis zu ihrem rechten Ende. Jeder Strahl geht durch einen Punkt der Ebene, camera_x von -1 (linker Bildrand) bis 1 (rechter Bildrand); zusammen etwa 83 Grad.
+       Gemacht von bilder/diagramme.py; als Bild, hell und dunkel:
+       src/scripts/render-svg.rb src/content/raycaster/ebene.svg 880 -->
   <defs>
     <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
     <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker>
@@ -8,28 +9,40 @@
     <marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
     <marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
   </defs>
-  <rect width="440" height="222" fill="#ffffff"/>
-  <line x1="220.0" y1="196.0" x2="76.5" y2="34.8" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
-  <line x1="220.0" y1="196.0" x2="148.3" y2="34.8" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
-  <line x1="220.0" y1="196.0" x2="220.0" y2="34.8" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
-  <line x1="220.0" y1="196.0" x2="291.7" y2="34.8" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
-  <line x1="220.0" y1="196.0" x2="363.5" y2="34.8" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
-  <path d="M193.4,166.1 A40,40 0 0 1 246.6,166.1" fill="none" stroke="#6b7280" stroke-width="1.5"/>
-  <text x="180.0" y="162.0" font-size="15" fill="#6b7280" text-anchor="end">83°</text>
-  <line x1="109.6" y1="72.0" x2="330.4" y2="72.0" stroke="#dc2626" stroke-width="3.5"/>
-  <circle cx="109.6" cy="72.0" r="4.5" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
-  <circle cx="164.8" cy="72.0" r="4.5" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
-  <circle cx="220.0" cy="72.0" r="4.5" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
-  <circle cx="275.2" cy="72.0" r="4.5" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
-  <circle cx="330.4" cy="72.0" r="4.5" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
-  <line x1="220.0" y1="26.0" x2="330.4" y2="26.0" stroke="#dc2626" stroke-width="2.5" marker-end="url(#a-red)"/>
-  <line x1="220.0" y1="20.0" x2="220.0" y2="32.0" stroke="#dc2626" stroke-width="2"/>
-  <text x="275.2" y="16.0" font-size="16" fill="#dc2626" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">plane</text>
-  <line x1="220.0" y1="196.0" x2="220.0" y2="78.5" stroke="#2b5fb4" stroke-width="3" marker-end="url(#a-blue)"/>
-  <text x="212.0" y="140.2" font-size="16" fill="#2b5fb4" text-anchor="end" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">dir</text>
-  <text x="118.6" y="96.0" font-size="15" fill="#6b7280" text-anchor="end" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">camera_x = −1</text>
-  <text x="229.0" y="96.0" font-size="15" fill="#6b7280" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">0</text>
-  <text x="321.4" y="96.0" font-size="15" fill="#6b7280" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">+1</text>
-  <circle cx="220.0" cy="196.0" r="7.0" fill="#1f2937" stroke="#1f2937" stroke-width="2"/>
-  <text x="234.0" y="201.0" font-size="16" fill="#1f2937" text-anchor="start">Spielfigur</text>
+  <rect width="440" height="236" fill="#ffffff"/>
+  <line x1="220.0" y1="208.0" x2="74.3" y2="44.3" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <line x1="220.0" y1="208.0" x2="147.2" y2="44.3" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <line x1="220.0" y1="208.0" x2="220.0" y2="44.3" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <line x1="220.0" y1="208.0" x2="292.8" y2="44.3" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <line x1="220.0" y1="208.0" x2="365.7" y2="44.3" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <path d="M192.1,176.6 A42,42 0 0 1 247.9,176.6" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <g transform='translate(180.00 188.00) scale(1.7000) translate(-15.0427 0)' fill='#6b7280' stroke='none'><defs>
+<path id='m15-g0-14' d='M3.535741-1.743462C3.535741-2.587298 2.859278-3.242839 2.036364-3.242839C1.199502-3.242839 .536986-2.566376 .536986-1.750436C.536986-.9066 1.21345-.251059 2.036364-.251059C2.873225-.251059 3.535741-.927522 3.535741-1.743462ZM2.036364-.592777C1.380822-.592777 .878705-1.12279 .878705-1.743462C.878705-2.39203 1.39477-2.901121 2.036364-2.901121C2.691905-2.901121 3.194022-2.371108 3.194022-1.750436C3.194022-1.101868 2.677958-.592777 2.036364-.592777Z'/>
+<path id='m15-g1-51' d='M2.889166-3.506849C3.706102-3.775841 4.283935-4.473225 4.283935-5.260274C4.283935-6.07721 3.407223-6.635118 2.450809-6.635118C1.444583-6.635118 .687422-6.03736 .687422-5.280199C.687422-4.951432 .9066-4.762142 1.195517-4.762142C1.504359-4.762142 1.703611-4.98132 1.703611-5.270237C1.703611-5.768369 1.235367-5.768369 1.085928-5.768369C1.39477-6.256538 2.052304-6.386052 2.410959-6.386052C2.819427-6.386052 3.367372-6.166874 3.367372-5.270237C3.367372-5.150685 3.347447-4.572852 3.088418-4.134496C2.789539-3.656289 2.450809-3.626401 2.201743-3.616438C2.122042-3.606476 1.882939-3.58655 1.8132-3.58655C1.733499-3.576588 1.663761-3.566625 1.663761-3.466999C1.663761-3.35741 1.733499-3.35741 1.902864-3.35741H2.34122C3.158157-3.35741 3.526775-2.67995 3.526775-1.703611C3.526775-.348692 2.839352-.059776 2.400996-.059776C1.972603-.059776 1.225405-.229141 .876712-.816936C1.225405-.767123 1.534247-.986301 1.534247-1.364882C1.534247-1.723537 1.265255-1.92279 .976339-1.92279C.737235-1.92279 .418431-1.783313 .418431-1.344956C.418431-.438356 1.344956 .219178 2.430884 .219178C3.646326 .219178 4.552927-.687422 4.552927-1.703611C4.552927-2.520548 3.92528-3.297634 2.889166-3.506849Z'/>
+<path id='m15-g1-56' d='M1.62391-4.552927C1.165629-4.851806 1.125778-5.190535 1.125778-5.3599C1.125778-5.967621 1.77335-6.386052 2.480697-6.386052C3.20797-6.386052 3.845579-5.867995 3.845579-5.150685C3.845579-4.582814 3.457036-4.104608 2.859278-3.755915L1.62391-4.552927ZM3.078456-3.606476C3.795766-3.975093 4.283935-4.493151 4.283935-5.150685C4.283935-6.067248 3.39726-6.635118 2.49066-6.635118C1.494396-6.635118 .687422-5.897883 .687422-4.971357C.687422-4.79203 .707347-4.343711 1.125778-3.875467C1.235367-3.755915 1.603985-3.506849 1.853051-3.337484C1.275218-3.048568 .418431-2.49066 .418431-1.504359C.418431-.448319 1.43462 .219178 2.480697 .219178C3.606476 .219178 4.552927-.607721 4.552927-1.673724C4.552927-2.032379 4.443337-2.480697 4.064757-2.899128C3.875467-3.108344 3.716065-3.20797 3.078456-3.606476ZM2.082192-3.188045L3.307597-2.410959C3.58655-2.221669 4.054795-1.92279 4.054795-1.315068C4.054795-.577833 3.307597-.059776 2.49066-.059776C1.633873-.059776 .916563-.67746 .916563-1.504359C.916563-2.082192 1.235367-2.719801 2.082192-3.188045Z'/>
+</defs>
+<g id='m15-page1'>
+<use x='0' y='0' xlink:href='#m15-g1-56'/>
+<use x='4.981339' y='0' xlink:href='#m15-g1-51'/>
+<use x='9.962678' y='-3.615364' xlink:href='#m15-g0-14'/>
+</g>
+</g>
+  <line x1="109.6" y1="84.0" x2="330.4" y2="84.0" stroke="#dc2626" stroke-width="3.5"/>
+  <path d='M 220.00 97.00 A 13.00 13.00 0 0 0 233.00 84.00' fill='none' stroke='#1f2937' stroke-width='1.2'/><circle cx='225.46' cy='89.46' r='1.6' fill='#1f2937'/>
+  <circle cx="109.6" cy="84.0" r="4.5" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+  <circle cx="164.8" cy="84.0" r="4.5" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+  <circle cx="220.0" cy="84.0" r="4.5" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+  <circle cx="275.2" cy="84.0" r="4.5" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+  <circle cx="330.4" cy="84.0" r="4.5" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+  <line x1="220.0" y1="40.0" x2="330.4" y2="40.0" stroke="#dc2626" stroke-width="2.5" marker-end="url(#a-red)"/>
+  <line x1="220.0" y1="34.0" x2="220.0" y2="46.0" stroke="#dc2626" stroke-width="2"/>
+  <rect x='248.2' y='15.7' width='54.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='252.7' y='28.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">plane</text>
+  <line x1="220.0" y1="208.0" x2="220.0" y2="85.5" stroke="#2b5fb4" stroke-width="3" marker-end="url(#a-blue)"/>
+  <rect x='176.5' y='143.6' width='36.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='181.0' y='155.9' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">dir</text>
+  <rect x='19.1' y='76.7' width='81.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='23.6' y='89.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">camera_x</text>
+  <rect x='79.1' y='97.7' width='27.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='83.6' y='110.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">-1</text>
+  <rect x='196.5' y='97.7' width='18.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='201.0' y='110.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">0</text>
+  <rect x='333.9' y='97.7' width='18.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='338.4' y='110.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">1</text>
+  <circle cx="220.0" cy="208.0" r="7.0" fill="#1f2937" stroke="#1f2937" stroke-width="2"/>
+  <text x="234.0" y="213.0" font-size="16" fill="#1f2937" text-anchor="start">Spielfigur</text>
 </svg>
