@@ -208,23 +208,6 @@ export default {
             await settleFrames(page, 2);
         },
 
-        // hook: view X Y SIZE: only a part of the screen, enlarged to the
-        // whole canvas: its left upper corner at X, Y and as wide and as high
-        // as SIZE, all in fractions of the width and the height (0 0 1 is
-        // all of it), so the picture keeps its shape; for a detail that the
-        // whole picture shows too small
-        async view({ page, args }) {
-            const [x, y, size] = String(args).trim().split(/\s+/).map(Number);
-            if (![x, y, size].every((v) => v >= 0 && v <= 1) || size <= 0 || x + size > 1 || y + size > 1) {
-                throw new Error('hook: view X Y SIZE (fractions, X + SIZE and Y + SIZE at most 1)');
-            }
-            const inset = [y, 1 - x - size, 1 - y - size, x].map((v) => `${(v * 100).toFixed(2)}%`).join(' ');
-            await page.addStyleTag({ content: `#canvas { object-view-box: inset(${inset}) !important; }` });
-            // not settleFrames: after hook: frames the animation frames are
-            // held back and would never come; the style needs none
-            await sleep(300);
-        },
-
         // hook: freeze: stops the clock where it is. The program keeps its
         // last picture, so a variant shows the same moment as the shot.
         async freeze({ page }) {

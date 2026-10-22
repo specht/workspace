@@ -1358,27 +1358,6 @@ _task(lack)
             return scale(sun_color, 1 / (3.14159 * SUN_SIZE * SUN_SIZE));
 ```
 
-Mit einer so hellen Sonne stößt `to_byte` an seine Grenze: Alles über 1 schneidet es ab. Ein Pixel, den die gespiegelte Sonne nur zu einem Zehntel bedeckt, ist im Durchschnitt immer noch etwa 7 hell und wird ganz weiß, und der Glanzpunkt wird zu einem harten weißen Kästchen. Zwei Änderungen helfen. In `draw` wird jeder Strahl bei 4 gekappt, bevor er zur Summe kommt; dann bekommt der Rand eines Glanzpunkts eine Mischfarbe wie jede andere Kante:
-
-```c
-~            vec c = trace(eye, ray_dir(x + random_double(), y + random_double()), 0);
-            // sehr helle Strahlen (die Sonne im Spiegel) bei 4 kappen, damit
-            // auch der Rand eines Glanzpunkts eine Mischfarbe bekommt
-            c = (vec){fmin(c.x, 4), fmin(c.y, 4), fmin(c.z, 4)};
-```
-
-Und `to_byte` schneidet nicht mehr hart ab, sondern drückt alles über 0,8 weich zusammen, sodass es sich 1 nähert, ohne es zu erreichen. So eine Kurve heißt **Tone Mapping**; Kameras und Spiele machen das auch, mit ähnlichen Kurven. `fmin` gibt die kleinere von zwei Zahlen, `exp` die Exponentialfunktion.
-
-```c
-// Farbwert 0 bis 1 zu 0 bis 255, mit Gamma für den Bildschirm
-uint8_t to_byte(double c)
-{
-    // Tone Mapping: bis 0.8 bleibt alles, wie es ist, was heller ist, wird
-    // weich zusammengedrückt und nähert sich 1, statt bei 1 abzubrechen
-    if (c > 0.8)
-        c = 0.8 + 0.2 * (1 - exp(-(c - 0.8) / 0.2));
-```
-
 <!-- tutorial-screenshot
 write-file: raytracer.c <- file:stufen/13-lack.c
 terminal-open
@@ -1628,8 +1607,6 @@ vec bounce(hit h, int depth)
     vec light = add(sunlight(h), bounce(h, depth));
 ```
 
-<div class='gallery columns-2'>
-<figure>
 <!-- tutorial-screenshot
 write-file: raytracer.c <- file:stufen/16-pathtracing.c
 terminal-open
@@ -1641,15 +1618,16 @@ tab: preview
 viewport: 800x450
 hook: open raytracer.html
 hook: frames 512
-hook: view 0.12 0.4 0.5
 crop-element: #canvas
 -->
-<img src='pt-mit.webp' alt='Ein Ausschnitt mit Path Tracing, unten der Planet, die rote und die blaue Kugel auf dem Schachbrett: Die Unterseiten der Kugeln sind heller, weil der Boden sie anstrahlt, und der Boden neben dem Planeten und der roten Kugel hat einen warmen Schimmer.'>
-<figcaption>Mit Path Tracing: dazu das Licht vom Boden und von den Kugeln</figcaption>
-</figure>
+<img class='full fit-width' src='pathtracing.webp' alt='Die Szene mit Path Tracing: Die Unterseiten der Kugeln sind etwas heller als vorher, sonst sieht sie aus wie das fertige Bild.'>
+
+Jeder Durchgang dauert jetzt etwa doppelt so lange, denn fast jeder Strahl, der etwas trifft, schickt einen weiteren los. Viel heller wird es dabei nicht: Bei Tag kommt das meiste Licht von der Sonne und vom Himmel, das Licht von Fläche zu Fläche ist nur ein kleiner Teil. Wie viel es ist, siehst du, wenn der Himmel kein Licht gibt:
+
+<div class='gallery columns-2'>
 <figure>
 <!-- tutorial-screenshot
-write-file: raytracer.c <- file:stufen/raytracer.c
+write-file: raytracer.c <- file:stufen/vergleich-ohne-pathtracing.c
 terminal-open
 terminal-run: make PROGRAM=raytracer
 terminal-wait-for-prompt
@@ -1658,16 +1636,36 @@ terminal-expect-no-text: ***
 tab: preview
 viewport: 800x450
 hook: open raytracer.html
-hook: frames 256
-hook: view 0.12 0.4 0.5
+hook: frames 512
 crop-element: #canvas
 -->
-<img src='pt-ohne.webp' alt='Derselbe Ausschnitt ohne Path Tracing: der untere Teil des Planeten, die rote und die blaue Kugel auf dem Schachbrett. Ihre Unterseiten sind dunkel, der Boden neben ihnen ist grau.'>
-<figcaption>Ohne Path Tracing: Licht nur von der Sonne und vom Himmel</figcaption>
+<img src='pt-ohne.webp' alt='Das fertige Bild ohne Licht vom Himmel: Wo die Sonne nicht hinscheint, ist es fast schwarz, auf den Schattenseiten der Kugeln und in ihren Schatten auf dem Schachbrett.'>
+<figcaption>Ohne Path Tracing: was die Sonne nicht trifft, ist fast schwarz</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/vergleich-mit-pathtracing.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+hook: frames 512
+crop-element: #canvas
+-->
+<img src='pt-mit.webp' alt='Dieselbe Szene mit Path Tracing, ebenfalls ohne Licht vom Himmel: Die Schattenseiten und die Schatten sind hell, weil der sonnige Boden sie anstrahlt, und neben der roten Kugel liegt ein roter Schimmer auf dem Boden.'>
+<figcaption>Mit Path Tracing: der sonnige Boden strahlt alles an</figcaption>
 </figure>
 </div>
 
-Jeder Durchgang dauert jetzt etwa doppelt so lange, denn fast jeder Strahl, der etwas trifft, schickt einen weiteren los. Dafür stimmt das Licht: Die Unterseiten der Kugeln werden hell, weil der Boden unter ihnen Licht zurückwirft, und neben dem Planeten und der roten Kugel bekommt der Boden etwas von ihrer Farbe. Am deutlichsten siehst du es, wenn du eine große rote Kugel dicht neben eine weiße stellst.
+Ohne Path Tracing ist fast schwarz, was die Sonne nicht direkt trifft; nur die Spiegelungen im Boden und in den Metallkugeln bringen dort noch etwas Licht hin. Mit Path Tracing strahlt der sonnige Boden die Unterseiten der Kugeln an, die Schatten werden hell, und die rote Kugel färbt den Boden neben sich rot.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Schalte das Licht vom Himmel selbst ab: In <code>bounce</code> wird aus <code>scale(sky(d), 0.3)</code> ein <code>scale(sky(d), 0)</code>. Woher kommt das Licht in den Schatten jetzt? Setz danach 0.3 wieder ein.
+</div>
 
 ## Wie geht es weiter?
 
