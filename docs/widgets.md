@@ -67,6 +67,11 @@ in doubt, do it the way it does.
   it describes; `size` shows what it counts (the border after the used
   cells in the Array List, a bracket under the queue's cells in the ring
   buffer). Never a line of plain text like »size 4, capacity 6«.
+- **A small legend under the picture** says what its colours mean, only
+  those that occur in this widget's steps and in its words (»in der
+  Queue«, »Pivot«, »wird entfernt«; `legendOf` in algo_stepper.js): gold
+  is waiting, compared or new, violet done, red the goal, the pivot or what
+  is removed, green the start.
 - **The timeline names its parts** so that they can be told apart: the
   operations with their values (»push 5«, »pop → 1«, »dequeue → 23«), a
   sort's passes by its loop variable (»i = 0«, »end = 7«), Merge Sort's and

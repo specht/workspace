@@ -45,9 +45,24 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 .algo-stepper .algo-title { font-weight: 600; font-size: 1.05em; margin: 0 0 0.5em; }
 .algo-stepper .algo-controls { display: flex; gap: 0.3em; align-items: center; flex-wrap: wrap; margin-bottom: 0.6em; }
 .algo-stepper .algo-count { margin-left: 0.6em; color: var(--bs-secondary-color); }
-.algo-stepper .algo-body { display: flex; gap: 1.2em; flex-wrap: wrap; align-items: flex-start; }
-.algo-stepper svg.algo-picture { flex: 1 1 22em; max-width: 34em; min-width: 0; height: auto; }
-.algo-stepper .algo-side { flex: 1 1 14em; min-width: 12em; font-size: 0.92em; }
+.algo-stepper .algo-legend { display: flex; flex-wrap: wrap; gap: 0.25em 1.1em; margin: 0.4em 0 0; position: relative; z-index: 1; font-size: 0.8em; color: var(--bs-secondary-color); }
+.algo-stepper .algo-key { white-space: nowrap; display: inline-flex; align-items: center; gap: 0.4em; }
+.algo-stepper .algo-swatch { display: inline-block; width: 0.95em; height: 0.95em; border-radius: 0.2em; background: var(--swatch); border: 1px solid var(--algo-line); }
+.algo-stepper .algo-swatch.ring { background: transparent; border: 2.5px solid var(--swatch); border-radius: 50%; }
+.algo-stepper .algo-swatch.line { height: 0; width: 1.3em; border: 0; border-top: 2.5px solid var(--swatch); border-radius: 0; }
+.algo-stepper .algo-body { display: grid; grid-template-columns: minmax(0, 34em) minmax(12em, 1fr); grid-template-rows: auto 1fr; gap: 0 1.2em; align-items: start; }
+/* the picture with its legend under it on the left, the calls and the code
+   beside both; on a phone (and in a stacked lightbox) one under the other */
+.algo-stepper .algo-body > svg.algo-picture { grid-column: 1; grid-row: 1; }
+.algo-stepper .algo-body > .algo-legend { grid-column: 1; grid-row: 2; }
+.algo-stepper .algo-body > .algo-side { grid-column: 2; grid-row: 1 / span 2; }
+@media (max-width: 640px) {
+    .algo-stepper .algo-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; gap: 0; }
+    .algo-stepper .algo-body > .algo-side { grid-column: 1; grid-row: 3; margin-top: 1em; }
+}
+div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { grid-column: 1; grid-row: 3; }
+.algo-stepper svg.algo-picture { width: 100%; max-width: 34em; min-width: 0; height: auto; }
+.algo-stepper .algo-side { min-width: 0; font-size: 0.92em; }
 .algo-stepper .algo-side h5 { font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.04em; color: var(--bs-secondary-color); margin: 0 0 0.3em; }
 .algo-stepper .algo-items { display: flex; flex-wrap: wrap; gap: 0.25em; min-height: 1.9em; margin-bottom: 0.8em; }
 .algo-stepper .algo-item { font-family: '0xProto Nerd Font Mono', monospace; padding: 0.1em 0.45em; border-radius: 0.3em;
@@ -2809,6 +2824,50 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         return { frames, draw };
     }
 
+    // A small legend under the picture: what its colours mean, only those
+    // that occur in this widget's steps, in its own words (a graph search's
+    // gold is »in der Queue«, a sort's »verglichen«). Swatches: a filled
+    // square, a ring, a line.
+    function legendOf(algo, sortKind, frames) {
+        const any = (test) => frames.some(test);
+        const items = [];
+        const add = (kind, color, text) => items.push({ kind, color, text });
+        if (['bfs', 'dfs', 'dijkstra', 'astar'].includes(algo)) {
+            const shortest = algo === 'dijkstra' || algo === 'astar';
+            add('ring', 'var(--algo-start)', 'Start');
+            add('ring', 'var(--algo-goal)', 'Ziel');
+            add('fill', 'var(--algo-frontier)', algo === 'bfs' ? 'in der Queue' : algo === 'dfs' ? 'auf dem Stack' : 'in der pq');
+            add('fill', 'var(--algo-done)', shortest ? 'fertig' : 'schon dran gewesen');
+            add('line', 'var(--algo-pred)', 'predecessor');
+            if (any((f) => (f.entries || []).some((e) => e.stale))) add('line', 'var(--algo-goal)', 'alter Eintrag, durchgestrichen');
+        } else if (algo === 'sort') {
+            if (any((f) => (f.compare || []).length)) add('fill', 'var(--algo-frontier)', sortKind === 'merge' ? 'verglichen, in scratch' : 'verglichen');
+            if (any((f) => f.pivot !== undefined)) add('fill', 'var(--algo-goal)', 'Pivot');
+            if (any((f) => f.boundary !== undefined)) add('line', 'var(--algo-goal)', 'boundary');
+            if (any((f) => f.sortedTo !== undefined || f.sortedFrom !== undefined)) add('fill', 'var(--algo-done)', 'fertig sortiert');
+        } else if (algo === 'heap') {
+            const compared = any((f) => (f.compare || []).length);
+            const fresh = any((f) => f.fresh !== undefined);
+            if (compared || fresh) add('fill', 'var(--algo-frontier)', compared && fresh ? 'neu oder verglichen' : fresh ? 'neu' : 'verglichen');
+        } else if (algo === 'array') {
+            if (any((f) => f.focus !== undefined)) add('fill', 'var(--algo-frontier)', 'wird geschrieben');
+        } else if (algo === 'ring') {
+            if (any((f) => f.focus !== undefined)) add('fill', 'var(--algo-frontier)', 'wird geschrieben oder gelesen');
+        } else if (algo === 'linked') {
+            if (any((f) => f.fresh !== undefined)) add('fill', 'var(--algo-frontier)', 'neu');
+            if (any((f) => f.focus !== undefined)) add('fill', 'color-mix(in srgb, var(--algo-goal) 30%, var(--algo-paper))', 'wird entfernt');
+        } else if (algo === 'bst' || algo === 'avl') {
+            if (any((f) => f.fresh !== undefined || f.incoming !== undefined)) add('fill', 'var(--algo-frontier)', 'neu');
+            if (any((f) => f.gone !== undefined)) add('fill', 'color-mix(in srgb, var(--algo-goal) 30%, var(--algo-paper))', 'wird entfernt');
+        } else if (algo === 'hash') {
+            const parts = [any((f) => f.fresh !== undefined) && 'neu', any((f) => f.compare !== undefined) && 'verglichen', any((f) => f.found !== undefined) && 'gefunden'].filter(Boolean);
+            if (parts.length) add('fill', 'var(--algo-frontier)', parts.join(', '));
+        }
+        if (!items.length) return null;
+        return el('div', { class: 'algo-legend', 'aria-hidden': 'true' }, items.map((item) => el('span', { class: 'algo-key' }, [
+            el('i', { class: `algo-swatch ${item.kind}`, style: `--swatch: ${item.color};` }), el('span', { text: item.text })])));
+    }
+
     function setUp(widget) {
         const algo = widget.dataset.algo;
         let frames;
@@ -3056,6 +3115,9 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
         const body = el('div', { class: 'algo-body' }, [picture, side]);
         // data-title: what the widget shows, above everything else
         const title = widget.dataset.title ? [el('div', { class: 'algo-title', text: widget.dataset.title })] : [];
+        // the legend under the picture, the message last (it keeps no reserved height)
+        const legend = legendOf(algo, widget.dataset.sort, frames);
+        if (legend) body.appendChild(legend);
         widget.replaceChildren(...title, el('div', { class: 'algo-controls' }, [...buttons, play, speedButton, count]), timelineBox, body, message);
         requestAnimationFrame(placeNames);
         if (document.fonts) document.fonts.ready.then(placeNames);

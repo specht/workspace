@@ -135,6 +135,7 @@ Plus, from the review:
 
 * [ ] **Query stepper, further**: subqueries and `UNION`; the music data (Discogs) once it has a chapter
 * [ ] **»Wie sicher ist ein Passwort?«**: not written; »Zwei Faktoren« fills the place in Netze & Sicherheit. The local branch `passwords` keeps solutions, starters, a list and tasks from a first attempt
+* [ ] **Raytracing and raycasting**: an activity each, with good illustrations; the pages `raytracing` (commented out in the catalog, nearly empty) and the CPU Sandbox's Wolfenstein-style raycaster are where they start. Person boxes are written and waiting for a visible page: Turner Whitted (raytracing), Béla Julesz and Christopher Tyler (autostereograms, `sirds`), William Reeves (particle systems, `feuerwerk` is parked), Yann LeCun (`digits-experiment` is in no catalog)
 * [ ] **JPEG, further**: a widget for the MCU (four Y blocks, Cb and Cr enlarged, the colours) and for the colour conversion; a check that runs the student's decoder instead of asking for numbers
 
 #### Flutter
