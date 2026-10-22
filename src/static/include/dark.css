@@ -138,7 +138,9 @@ html[data-bs-theme="dark"] {
     img.invert-dark {
         filter: invert(0.915) hue-rotate(180deg);
     }
-    .scroll-x {
+    /* a screenshot stands off the page; a diagram drawn on the page's own
+       background (.diagram, main.rb) does not */
+    .scroll-x:not(.diagram) {
         box-shadow: 0 0 1em rgba(0,0,0,0.5);
     }
     .input-with-text-mod .input-group-text {

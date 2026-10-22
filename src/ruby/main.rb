@@ -1524,7 +1524,11 @@ class Main < Sinatra::Base
                     add_media_variants(img, image_path) { |variant_path| "/cache/#{convert_image(variant_path)}.webp" }
                 end
                 if img.classes.include?('full')
-                    img.wrap("<div class='scroll-x'>")
+                    # a picture made from a drawing beside it (x.svg next to
+                    # x.webp) has the page as its background: no shadow in
+                    # dark mode, unlike a screenshot (dark.css)
+                    diagram = File.exist?(image_path.sub(/\.[a-z]+\z/i, '.svg'))
+                    img.wrap(diagram ? "<div class='scroll-x diagram'>" : "<div class='scroll-x'>")
                 end
             rescue
                 STDERR.puts img.to_s
