@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width="960" height="440" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Die Kamera: forward zeigt vom Auge zum Ziel, right steht senkrecht auf forward und auf oben, up senkrecht auf beiden. Das Bild steht 1 vor dem Auge, aufgespannt von right und up.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg -->
+  <defs>
+    <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
+    <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker>
+    <marker id="a-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker>
+    <marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+    <marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
+  </defs>
+  <rect width="960" height="440" fill="#ffffff"/>
+  <polygon points="443.0,128.5 317.0,227.5 317.0,371.5 443.0,272.5" fill="#eef3fb" stroke="#1f2937" stroke-width="2"/>
+  <text x="453.0" y="114.5" font-size="20" fill="#1f2937" text-anchor="middle">das Bild</text>
+  <circle cx="771.0" cy="256.0" r="48.0" fill="#eef3fb" stroke="#1f2937" stroke-width="2"/>
+  <text x="771.0" y="338.0" font-size="20" fill="#1f2937" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">target</text>
+  <line x1="150.0" y1="250.0" x2="723.0" y2="256.0" stroke="#6b7280" stroke-width="2" stroke-dasharray="7 5"/>
+  <line x1="150.0" y1="250.0" x2="380.0" y2="250.0" stroke="#2b5fb4" stroke-width="3" marker-end="url(#a-blue)"/>
+  <text x="265.0" y="236.0" font-size="20" fill="#2b5fb4" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">forward</text>
+  <line x1="380.0" y1="250.0" x2="317.0" y2="299.5" stroke="#dc2626" stroke-width="3" marker-end="url(#a-red)"/>
+  <text x="303.0" y="305.5" font-size="20" fill="#dc2626" text-anchor="end" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">right</text>
+  <line x1="380.0" y1="250.0" x2="380.0" y2="178.0" stroke="#16a34a" stroke-width="3" marker-end="url(#a-green)"/>
+  <text x="368.0" y="182.0" font-size="20" fill="#16a34a" text-anchor="end" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">up</text>
+  <circle cx="380.0" cy="250.0" r="4.0" fill="#1f2937" stroke="#1f2937" stroke-width="2"/>
+  <circle cx="345.0" cy="235.5" r="4.5" fill="#ffffff" stroke="#2b5fb4" stroke-width="2"/>
+  <line x1="150.0" y1="250.0" x2="598.5" y2="216.7" stroke="#2b5fb4" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#a-blue)"/>
+  <text x="608.5" y="200.7" font-size="18" fill="#2b5fb4" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">forward + sx · right + sy · up</text>
+  <circle cx="150.0" cy="250.0" r="9.0" fill="#1f2937" stroke="#1f2937" stroke-width="2"/>
+  <text x="146.0" y="288.0" font-size="20" fill="#1f2937" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">eye</text>
+</svg>

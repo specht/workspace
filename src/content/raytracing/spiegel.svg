@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 400" width="960" height="400" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Spiegeln: Der Anteil von dir entlang der Normalen kehrt sich um, der Rest bleibt. reflect(dir, n) = dir − 2 · dot(dir, n) · n; Einfallswinkel gleich Ausfallswinkel.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg -->
+  <defs>
+    <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
+    <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker>
+    <marker id="a-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker>
+    <marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+    <marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
+  </defs>
+  <rect width="960" height="400" fill="#ffffff"/>
+  <rect x="140" y="320" width="680" height="40" fill="#eef3fb"/>
+  <line x1="140.0" y1="320.0" x2="820.0" y2="320.0" stroke="#1f2937" stroke-width="3"/>
+  <line x1="296.1" y1="165.7" x2="480.0" y2="320.0" stroke="#2b5fb4" stroke-width="3" marker-end="url(#a-blue)"/>
+  <text x="286.1" y="153.7" font-size="20" fill="#2b5fb4" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">dir</text>
+  <line x1="480.0" y1="320.0" x2="663.9" y2="165.7" stroke="#2b5fb4" stroke-width="3" marker-end="url(#a-blue)"/>
+  <text x="673.9" y="153.7" font-size="20" fill="#2b5fb4" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">reflect(dir, n)</text>
+  <line x1="480.0" y1="320.0" x2="480.0" y2="150.0" stroke="#1f2937" stroke-width="2.5" marker-end="url(#a-ink)"/>
+  <text x="492.0" y="144.0" font-size="22" fill="#1f2937" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">n</text>
+  <path d="M426.4,275.0 A70,70 0 0 1 480.0,250.0" fill="none" stroke="#6b7280" stroke-width="2"/>
+  <path d="M480.0,250.0 A70,70 0 0 1 533.6,275.0" fill="none" stroke="#6b7280" stroke-width="2"/>
+  <text x="440.0" y="235.0" font-size="22" fill="#6b7280" text-anchor="middle">α</text>
+  <text x="520.0" y="235.0" font-size="22" fill="#6b7280" text-anchor="middle">α</text>
+  <text x="480.0" y="385.0" font-size="20" fill="#6b7280" text-anchor="middle">Einfallswinkel = Ausfallswinkel</text>
+</svg>

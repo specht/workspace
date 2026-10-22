@@ -1,9 +1,1346 @@
 <div class='meta'>
-image: title.webp
+image: raytracer.webp
+image_alt: "Ein gerendertes Bild: ein gestreifter Planet, eine Spiegelkugel, eine Glaskugel und kleine bunte Kugeln auf einem Schachbrett unter hellem Himmel, mit weichen Schatten"
+kind: projekt
+language: C
+duration: 4 Doppelstunden
+requires: [pixelram]
+reference: [pixelram, workspace]
+template: https://github.com/specht/pixelram-starter.git
+template_name: des PixelRAM-Starters
 </div>
 
-# Raytracing
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3">
+</div>
+
+# Raytracing in C
 
 <p class='abstract'>
-Raytracing ist eine Technik zur Erzeugung von Bildern, die in der Computergrafik eingesetzt wird. Raytracing wird z. B. in der Filmproduktion und in der Spieleentwicklung verwendet.
+Ein Raytracer schickt für jeden Pixel einen Strahl in eine Szene und rechnet aus, was der Strahl trifft. Du baust einen in C mit PixelRAM, Schritt für Schritt: eine Kugel, Licht, ein Schachbrett als Boden, Schatten, eine Kamera, die um die Szene kreist, einen gestreiften Planeten, eine Spiegelkugel, eine Glaskugel und am Ende ein Bild ohne Treppenstufen, mit weichen Schatten. Dafür brauchst du nur Vektoren: addieren, malnehmen und das Skalarprodukt.
 </p>
+
+<img class='full fit-width' src='raytracer.webp' alt='Das fertige Bild: links ein gestreifter Planet mit rotem Fleck, in der Mitte eine Spiegelkugel, in der sich die ganze Szene spiegelt, rechts eine Glaskugel, durch die das Schachbrett verzerrt und auf dem Kopf zu sehen ist, davor kleine rote, blaue und gelbe Kugeln; alle werfen weiche Schatten auf das Schachbrett, das zum Horizont hin im Dunst verschwindet.'>
+
+
+So sieht dein Raytracer am Ende aus. Kein Bild davon ist gemalt: Jeder Pixel ist das Ergebnis einer Rechnung, die einem Lichtstrahl rückwärts folgt, vom Auge in die Szene, dort vielleicht von einer Kugel zur nächsten und dann zur Sonne. Genau so, nur mit viel mehr Strahlen, entstehen die Bilder in Animationsfilmen, und seit einigen Jahren auch in Spielen, mit Grafikkarten, die Strahlen in eigener Hardware verfolgen.
+
+Die Idee, Strahlen auch an Spiegeln und durch Glas weiterzuverfolgen, ist von 1979. Das Bild, mit dem sie bekannt wurde, zeigt Kugeln über einem Schachbrett, wie deins.
+
+_person(whitted)
+
+Du solltest [Echtzeitgrafik mit C](/pixelram) bis »Ein Bild aus einer Formel« kennen: wie PixelRAM ein Bild zeigt und wie ein Programm für jeden Pixel eine Farbe ausrechnet. Mehr C brauchst du nicht; was neu ist, wird erklärt, wenn es vorkommt.
+
+## Einrichten
+
+### Die Vorlage klonen
+
+Du arbeitest wieder mit der Vorlage von PixelRAM, diesmal in einem eigenen Ordner `raytracer`. Öffne ein Terminal und gib ein:
+
+```bash
+git clone ${template} ~/raytracer
+```
+
+Öffne danach den Ordner: <kbd>Strg</kbd><kbd>K</kbd>, dann <kbd>Strg</kbd><kbd>O</kbd>, wähle `raytracer` und bestätige mit »OK«. Lege darin die Datei `raytracer.c` an. Der Raytracer wird eine einzige Datei; jeder Schritt auf dieser Seite fügt ihr etwas hinzu.
+
+### Ein Bild aus Strahlen
+
+Ein Raytracer braucht Punkte, Richtungen und Farben, und alle drei sind drei Zahlen. Darum gibt es dafür einen einzigen Typ, `vec`, mit ein paar Funktionen zum Rechnen. Schreib dieses Programm in `raytracer.c` und übersetze es im Terminal mit `make PROGRAM=raytracer`:
+
+```c_copy
+#include "pixelram.h"
+#include <math.h>
+
+#define W 320
+#define H 180
+
+// ein Vektor: ein Punkt, eine Richtung oder eine Farbe (x, y, z = rot, grün, blau)
+typedef struct
+{
+    double x, y, z;
+} vec;
+
+vec add(vec a, vec b)
+{
+    return (vec){a.x + b.x, a.y + b.y, a.z + b.z};
+}
+
+vec scale(vec a, double s)
+{
+    return (vec){a.x * s, a.y * s, a.z * s};
+}
+
+double dot(vec a, vec b)
+{
+    return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
+double length(vec a)
+{
+    return sqrt(dot(a, a));
+}
+
+// gleiche Richtung, Länge 1
+vec normalize(vec a)
+{
+    return scale(a, 1 / length(a));
+}
+
+// überblenden: t = 0 ergibt a, t = 1 ergibt b
+vec mix(vec a, vec b, double t)
+{
+    return add(scale(a, 1 - t), scale(b, t));
+}
+
+// der Himmel: am Horizont hell, nach oben tiefblau
+vec sky(vec dir)
+{
+    double up = dir.y > 0 ? sqrt(dir.y) : 0;
+    return mix((vec){0.95, 0.9, 0.85}, (vec){0.15, 0.4, 0.9}, up);
+}
+
+// die Richtung vom Auge durch den Pixel (x, y)
+vec ray_dir(double x, double y)
+{
+    double sx = (x - W / 2.0) / H;
+    double sy = (H / 2.0 - y) / H;
+    return normalize((vec){sx, sy, -1});
+}
+
+// Farbwert 0 bis 1 zu 0 bis 255
+uint8_t to_byte(double c)
+{
+    if (c > 1)
+        c = 1;
+    return (uint8_t)(c * 255 + 0.5);
+}
+
+void draw(void)
+{
+    for (int y = 0; y < H; y++)
+    {
+        for (int x = 0; x < W; x++)
+        {
+            vec c = sky(ray_dir(x + 0.5, y + 0.5));
+            set_pixel_rgb(x, y, to_byte(c.x), to_byte(c.y), to_byte(c.z));
+        }
+    }
+}
+
+int main(void)
+{
+    screen_open(W, H, pixel_rgb24, "Raytracer");
+    draw();
+    while (!should_close())
+        present();
+    screen_close();
+    return 0;
+}
+```
+
+<!-- tutorial-screenshot
+# Wie der Leser: im Terminal klonen, den Ordner öffnen, die erste Stufe
+show-left-sidebar
+terminal-open
+terminal-run: git clone -q https://github.com/specht/pixelram-starter.git ~/raytracer && git -C ~/raytracer checkout -q 8eeadbc0bf5b46ccd4e0527f4bcda13b3c0b947d
+press: Control+K
+press: Control+O
+wait-for-input-value: /workspace/
+type: raytracer
+press: Enter
+wait-for-input-value: /workspace/raytracer/
+press: Enter
+wait-for-text: main.c
+write-file: raytracer.c <- previous-code
+open-file: raytracer.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt: 180
+move-mouse: selector:.terminal
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+-->
+<img class='full' src='make.webp' alt='Der Workspace mit dem Ordner raytracer: links die Dateien, oben raytracer.c im Editor, unten im Terminal hat make die Datei raytracer.html erzeugt.'>
+
+Öffne über »Go Live« die Datei `raytracer.html`. Du siehst einen Himmel:
+
+<!-- tutorial-screenshot
+go-live
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+crop-element: #canvas
+-->
+<img class='full fit-width' src='himmel.webp' alt='Ein Himmel: unten ein heller, fast weißer Streifen, nach oben ein Verlauf in ein tiefes Blau.'>
+
+Das Programm hat für jeden der 57.600 Pixel eine Richtung ausgerechnet und gefragt: Welche Farbe hat der Himmel in dieser Richtung? Wer nach oben schaut, sieht Blau, wer geradeaus schaut, das helle Licht am Horizont. Die untere Hälfte ist auch Himmel, nur hell: Einen Boden gibt es noch nicht.
+
+### Vom Auge durch den Bildschirm
+
+<img class='full' src='strahl.webp' alt='Seitenansicht: links ein Punkt, das Auge, davor eine senkrechte Linie mit Strichen, das Bild. Vom Auge gehen drei Strahlen durch Punkte auf dem Bild; zwei treffen rechts eine Kugel, der dritte geht oben gestrichelt in den Himmel.'>
+
+Stell dir vor, das Auge sitzt im Nullpunkt und schaut in Richtung −z. Eine Einheit davor steht das Bild, wie eine Glasscheibe, auf der die Pixel liegen. Ein Strahl beginnt beim Auge und geht durch einen Pixel weiter in die Szene. `ray_dir` rechnet die Richtung dieses Strahls aus:
+
+- `sx` und `sy` sagen, wo der Pixel auf der Scheibe liegt: In der Mitte ist beides 0, nach rechts wird `sx` größer, nach oben `sy`. Beide werden durch die Höhe `H` geteilt, damit die Pixel quadratisch bleiben.
+- Die Richtung ist dann `(sx, sy, -1)`: so weit nach rechts und oben, und eine Einheit nach vorn.
+- `normalize` macht daraus eine Richtung der Länge 1. Das brauchen die Rechnungen gleich.
+
+`x + 0.5` zielt auf die Mitte des Pixels, nicht auf seine linke obere Ecke.
+
+_task(sx)
+
+`sky` mischt mit `mix` zwei Farben: das helle Weiß am Horizont und das Blau ganz oben. Wie viel von welcher, entscheidet `dir.y`, wie steil der Strahl nach oben zeigt. Farben sind hier Zahlen von 0 bis 1 für Rot, Grün und Blau; erst `to_byte` macht daraus die Werte 0 bis 255 für PixelRAM.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Tausche in <code>sky</code> die beiden Farben gegen ein Orange am Horizont und ein dunkles Violett oben: ein Abendhimmel. Stell sie danach wieder zurück.
+</div>
+
+## Die erste Kugel
+
+### Wo trifft der Strahl die Kugel?
+
+<img class='full' src='treffer.webp' alt='Ein Strahl beginnt bei origin und läuft nach rechts in einen Kreis, die Kugel mit center und radius. Er trifft ihren Rand vorn bei t und hinten noch einmal; daneben ein kurzer Pfeil dir der Länge 1. Unten steht: Treffpunkt: origin + t · dir.'>
+
+Ein Strahl beginnt bei einem Punkt `origin` und läuft in Richtung `dir`. Nach der Strecke `t` ist er beim Punkt `origin + t · dir`. Eine Kugel besteht aus allen Punkten, die vom Mittelpunkt `center` genau `radius` entfernt sind. Gesucht ist also das `t`, für das gilt:
+
+$$|\text{origin} + t \cdot \text{dir} - \text{center}| = \text{radius}$$
+
+Mit `oc = origin − center` und weil `dir` die Länge 1 hat, wird daraus eine quadratische Gleichung für `t`:
+
+$$t^2 + 2b\,t + c = 0 \quad\text{mit}\quad b = \text{oc} \cdot \text{dir}, \quad c = \text{oc} \cdot \text{oc} - \text{radius}^2$$
+
+Sie hat die Lösungen \\(t = -b \pm \sqrt{b^2 - c}\\). Ist \\(b^2 - c\\) negativ, gibt es keine: Der Strahl geht an der Kugel vorbei. Sonst trifft er sie zweimal, vorn und hinten, und sichtbar ist der vordere Treffpunkt mit dem kleineren `t`.
+
+Schreib die Kugel in dein Programm. Zum Abziehen von Vektoren kommt `sub` dazu:
+
+```c
+~ vec add(vec a, vec b)
+~ {
+~     return (vec){a.x + b.x, a.y + b.y, a.z + b.z};
+~ }
+~
+vec sub(vec a, vec b)
+{
+    return (vec){a.x - b.x, a.y - b.y, a.z - b.z};
+}
+```
+
+Unter `sky` kommen die Kugel, das Auge und die Rechnung:
+
+```c
+typedef struct
+{
+    vec center;
+    double radius;
+    vec color;
+} sphere;
+
+sphere ball = {{0, 1, 0}, 1, {0.9, 0.15, 0.1}};
+
+// hier steht das Auge, es schaut in Richtung -z
+vec eye = {0, 1.2, 5.5};
+
+// Abstand t, in dem der Strahl origin + t * dir die Kugel trifft, sonst INFINITY
+double hit_sphere(vec origin, vec dir, sphere s)
+{
+    vec oc = sub(origin, s.center);
+    double b = dot(oc, dir);
+    double c = dot(oc, oc) - s.radius * s.radius;
+    double d = b * b - c;
+    if (d < 0)
+        return INFINITY;  // daneben
+    double t = -b - sqrt(d);
+    if (t > 0)
+        return t;
+    return INFINITY;      // die Kugel liegt hinter dem Auge
+}
+
+// die Farbe, die aus Richtung dir beim Punkt origin ankommt
+vec trace(vec origin, vec dir)
+{
+    if (hit_sphere(origin, dir, ball) < INFINITY)
+        return ball.color;
+    return sky(dir);
+}
+```
+
+`INFINITY` aus `math.h` ist eine Zahl, die größer ist als jede andere; sie steht hier für »kein Treffer«. Das Auge steht jetzt nicht mehr im Nullpunkt, sondern bei `eye`, etwas zurück und auf Augenhöhe der Kugel. In `draw` fragt das Programm statt des Himmels jetzt `trace`, was der Strahl vom Auge aus sieht:
+
+```c
+~         for (int x = 0; x < W; x++)
+~         {
+            vec c = trace(eye, ray_dir(x + 0.5, y + 0.5));
+~             set_pixel_rgb(x, y, to_byte(c.x), to_byte(c.y), to_byte(c.z));
+```
+
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/02-kugel.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+crop-element: #canvas
+-->
+<img class='full fit-width' src='kugel.webp' alt='Vor dem Himmel eine rote, gleichmäßig gefärbte Scheibe in der Mitte des Bildes.'>
+
+Eine rote Scheibe. Dass sie eine Kugel ist, sieht man noch nicht: Jeder Strahl, der sie trifft, bekommt dieselbe Farbe.
+
+_task(treffer)
+
+## Licht
+
+### Die Normale
+
+Eine Kugel wirkt rund, weil sie dort hell ist, wo die Sonne steil auf sie scheint, und dunkel, wo das Licht nur streift. Um das auszurechnen, braucht man an jedem Treffpunkt die Richtung, in die die Oberfläche dort zeigt: die **Normale**. Bei einer Kugel ist das einfach: Sie zeigt vom Mittelpunkt zum Treffpunkt. Geteilt durch den Radius hat sie die Länge 1.
+
+### Wie hell?
+
+<img class='full' src='licht.webp' alt='Drei Bilder nebeneinander: ein Boden mit einem Pfeil normal nach oben, darauf fallen jeweils drei parallele rote Sonnenstrahlen, senkrecht, schräg und flach. Unter dem Boden ein roter Streifen, so breit wie die beleuchtete Fläche: senkrecht schmal (dot = 1), schräg breiter (dot ≈ 0,71), flach am breitesten (dot ≈ 0,34).'>
+
+Dasselbe Bündel Sonnenlicht verteilt sich auf eine umso größere Fläche, je flacher es einfällt. Jede Stelle bekommt dann weniger ab. Genau dieses Maß liefert das Skalarprodukt aus Normale und Richtung zur Sonne, `dot(normal, sun_dir)`: 1, wenn die Sonne senkrecht steht, 0, wenn sie streift, und negativ, wenn sie von hinten scheint; dann bekommt die Stelle gar kein Sonnenlicht.
+
+_person(lambert)
+
+Dazu kommt ein wenig Licht, das vom ganzen Himmel kommt, `ambient`. Ohne es wäre die Schattenseite der Kugel völlig schwarz. Farben werden dabei Komponente für Komponente malgenommen: Rotes Material unter weißlichem Licht bleibt rot. Dafür gibt es `mul`:
+
+```c
+~ vec scale(vec a, double s)
+~ {
+~     return (vec){a.x * s, a.y * s, a.z * s};
+~ }
+~
+// Farben mischen: jede Komponente einzeln malnehmen
+vec mul(vec a, vec b)
+{
+    return (vec){a.x * b.x, a.y * b.y, a.z * b.z};
+}
+```
+
+Unter die Kugel kommen die Sonne und das Himmelslicht:
+
+```c
+~ sphere ball = {{0, 1, 0}, 1, {0.9, 0.15, 0.1}};
+~
+// die Richtung zur Sonne (Länge 1) und ihre Farbe
+vec sun_dir;
+vec sun_color = {1.4, 1.2, 0.9};
+// Licht vom Himmel: kommt von überall, damit die Schattenseite nicht schwarz ist
+vec ambient = {0.12, 0.15, 0.22};
+```
+
+`trace` rechnet jetzt den Treffpunkt aus, die Normale und das Licht:
+
+```c
+// die Farbe, die aus Richtung dir beim Punkt origin ankommt
+vec trace(vec origin, vec dir)
+{
+    double t = hit_sphere(origin, dir, ball);
+    if (t == INFINITY)
+        return sky(dir);
+
+    vec point = add(origin, scale(dir, t));
+    // die Normale steht senkrecht auf der Oberfläche, Länge 1
+    vec normal = scale(sub(point, ball.center), 1 / ball.radius);
+
+    // je steiler die Sonne auf die Oberfläche scheint, desto heller
+    double d = dot(normal, sun_dir);
+    if (d < 0)
+        d = 0;
+    vec light = add(scale(sun_color, d), ambient);
+    return mul(ball.color, light);
+}
+```
+
+`sun_dir` bekommt seinen Wert in `main`, weil `normalize` erst dort aufgerufen werden kann:
+
+```c
+~     screen_open(W, H, pixel_rgb24, "Raytracer");
+    sun_dir = normalize((vec){1.4, 1.0, 0.3});
+~     draw();
+```
+
+Eine Kleinigkeit fehlt noch. Ein Bildschirm zeigt den Farbwert 128 nicht halb so hell wie 255, sondern nur etwa ein Fünftel so hell. Dein Programm rechnet aber mit echten Lichtmengen. Die **Gamma-Korrektur** gleicht das aus, in `to_byte`:
+
+```c
+// Farbwert 0 bis 1 zu 0 bis 255, mit Gamma für den Bildschirm
+uint8_t to_byte(double c)
+{
+    if (c > 1)
+        c = 1;
+    return (uint8_t)(pow(c, 1 / 2.2) * 255 + 0.5);
+}
+```
+
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/03-licht.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+crop-element: #canvas
+-->
+<img class='full fit-width' src='licht-kugel.webp' alt='Die rote Kugel ist jetzt rund: oben rechts hell, wo die Sonne auf sie scheint, nach links unten immer dunkler.'>
+
+Jetzt ist sie rund. Die Sonne steht rechts oben, ein wenig vor der Kugel.
+
+_task(hell)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Setz <code>sun_dir</code> auf <code>(vec){-1, 0.2, 0}</code>: Die Sonne steht dann tief links. Setz danach <code>ambient</code> auf <code>(vec){0, 0, 0}</code> und sieh dir die Schattenseite an. Stell beides wieder zurück.
+</div>
+
+## Kugeln und ein Boden
+
+### Material und Treffer
+
+Mit mehr Dingen in der Szene braucht das Programm etwas Ordnung. Jede Oberfläche bekommt ein **Material**; im Moment ist das nur eine Farbe, bald kommen Spiegel und Glas dazu. Statt einer Kugel gibt es eine Liste. Ersetze `sphere` und `ball` durch:
+
+```c
+typedef struct
+{
+    vec color;
+} material;
+
+typedef struct
+{
+    vec center;
+    double radius;
+    material mat;
+} sphere;
+
+sphere spheres[] = {
+    {{-0.3, 1.2, -1.4}, 1.2, {.color = {0.6, 0.6, 0.65}}},
+    {{1.5, 0.8, 0.8}, 0.8, {.color = {0.9, 0.9, 0.9}}},
+    {{-2.2, 0.9, 0.3}, 0.9, {.color = {0.9, 0.6, 0.3}}},
+    {{-0.5, 0.45, 1.2}, 0.45, {.color = {0.9, 0.15, 0.1}}},
+    {{3.0, 0.4, -0.4}, 0.4, {.color = {0.95, 0.7, 0.1}}},
+    {{0.4, 0.3, 2.3}, 0.3, {.color = {0.1, 0.35, 0.9}}},
+};
+// so viele Kugeln stehen in der Liste
+#define SPHERE_COUNT (int)(sizeof spheres / sizeof spheres[0])
+
+material floor_mat = {.color = {0.75, 0.75, 0.75}};
+```
+
+`{.color = …}` setzt im Material nur das Feld `color`; alle anderen Felder, die später dazukommen, sind dann 0. `sizeof spheres / sizeof spheres[0]` zählt die Kugeln in der Liste: die Größe der ganzen Liste geteilt durch die Größe einer Kugel. Kommt eine Kugel dazu, stimmt `SPHERE_COUNT` von selbst.
+
+### Der Boden
+
+Der Boden ist die Ebene `y = 0`. Ein Strahl erreicht sie, wenn `origin.y + t · dir.y = 0` ist, also bei `t = −origin.y / dir.y`. Ist `t` negativ, liegt der Boden hinter dem Strahl:
+
+```c
+~     return INFINITY;      // die Kugel liegt hinter dem Auge
+~ }
+~
+// Abstand t, in dem der Strahl den Boden y = 0 trifft, sonst INFINITY
+double hit_floor(vec origin, vec dir)
+{
+    double t = -origin.y / dir.y;
+    if (t > 0)
+        return t;
+    return INFINITY;
+}
+```
+
+_task(boden)
+
+### Der nächste Treffer
+
+Ein Strahl kann mehrere Dinge treffen; zu sehen ist das vorderste. `nearest_hit` fragt den Boden und jede Kugel und behält das kleinste `t`. Was über den Treffer bekannt ist, sammelt es in einem `hit`:
+
+```c
+// alles über einen Treffer
+typedef struct
+{
+    double t;     // Abstand vom Anfang des Strahls
+    vec point;    // Treffpunkt
+    vec normal;   // steht senkrecht auf der Oberfläche, Länge 1
+    material mat;
+} hit;
+
+// sucht den nächsten Treffer; false, wenn der Strahl in den Himmel geht
+bool nearest_hit(vec origin, vec dir, hit *h)
+{
+    h->t = hit_floor(origin, dir);
+    int nearest = -1;  // -1: der Boden
+    for (int i = 0; i < SPHERE_COUNT; i++)
+    {
+        double t = hit_sphere(origin, dir, spheres[i]);
+        if (t < h->t)
+        {
+            h->t = t;
+            nearest = i;
+        }
+    }
+    if (h->t == INFINITY)
+        return false;
+
+    h->point = add(origin, scale(dir, h->t));
+    if (nearest == -1)
+    {
+        h->normal = (vec){0, 1, 0};
+        h->mat = floor_mat;
+        // Schachbrett: jedes zweite Feld dunkel
+        if ((int)(floor(h->point.x) + floor(h->point.z)) % 2 == 0)
+            h->mat.color = (vec){0.05, 0.06, 0.08};
+    }
+    else
+    {
+        sphere s = spheres[nearest];
+        h->normal = scale(sub(h->point, s.center), 1 / s.radius);
+        h->mat = s.mat;
+    }
+    return true;
+}
+```
+
+`hit *h` ist ein Zeiger: `nearest_hit` schreibt seine Ergebnisse in den `hit`, den der Aufrufer bereitstellt, und gibt selbst nur `true` oder `false` zurück. `h->t` heißt »das Feld `t` in dem `hit`, auf den `h` zeigt«.
+
+Das Schachbrett entsteht ohne ein einziges Bild: `floor` rundet die Koordinaten ab, auf welchem Feld der Treffpunkt liegt, und ist die Summe beider Feldnummern gerade, ist das Feld dunkel. Die Normale des Bodens zeigt überall nach oben.
+
+Das Licht der Sonne bekommt eine eigene Funktion, und `trace` wird kurz:
+
+```c
+// Licht von der Sonne: je steiler sie auf die Oberfläche scheint, desto heller
+vec sunlight(hit h)
+{
+    double d = dot(h.normal, sun_dir);
+    if (d <= 0)
+        return (vec){0, 0, 0};
+    return scale(sun_color, d);
+}
+
+// die Farbe, die aus Richtung dir beim Punkt origin ankommt
+vec trace(vec origin, vec dir)
+{
+    hit h;
+    if (!nearest_hit(origin, dir, &h))
+        return sky(dir);
+
+    vec light = add(sunlight(h), ambient);
+    return mul(h.mat.color, light);
+}
+```
+
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/04-boden.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+crop-element: #canvas
+-->
+<img class='full fit-width' src='boden.webp' alt='Sechs Kugeln in verschiedenen Farben und Größen stehen auf einem schwarz-weißen Schachbrett, das bis zum Horizont reicht; die Kugeln sind auf der rechten Seite hell, Schatten gibt es keine.'>
+
+Die Kugeln stehen auf dem Boden, aber sie schweben scheinbar: Es fehlen die Schatten. Und weit hinten, am Horizont, flimmern die Felder des Schachbretts zu einem Muster, das es dort gar nicht gibt. Darum kümmern wir uns am Ende.
+
+## Schatten
+
+### Ein Strahl zur Sonne
+
+Ob ein Punkt im Schatten liegt, findet ein Raytracer genauso heraus wie alles andere: mit einem Strahl. Vom Treffpunkt aus geht er in Richtung Sonne. Trifft er unterwegs etwas, kommt kein Sonnenlicht an. Ergänze `sunlight`:
+
+```c
+~     if (d <= 0)
+~         return (vec){0, 0, 0};
+    // Schatten: liegt etwas zwischen dem Punkt und der Sonne?
+    hit blocker;
+    if (nearest_hit(h.point, sun_dir, &blocker))
+        return (vec){0, 0, 0};
+~     return scale(sun_color, d);
+```
+
+_task(akne)
+
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/05-akne.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+crop-element: #canvas
+-->
+<img class='full fit-width' src='akne.webp' alt='Die Kugeln werfen jetzt Schatten auf das Schachbrett, aber auf den hellen Feldern vorn liegen dunkle Sprenkel, auch dort, wo die Sonne scheint.'>
+
+### Akne
+
+Die Schatten sind da, aber auf dem Boden liegen dunkle Sprenkel, vor allem auf den hellen Feldern vorn. Grafiker nennen das **Shadow Acne**. Der Schattenstrahl beginnt genau auf der Oberfläche, und genau heißt bei Kommazahlen: fast. Liegt der berechnete Treffpunkt durch einen Rundungsfehler ein winziges Stück unter dem Boden, trifft der Schattenstrahl den Boden selbst, bei einem `t` wie 0,0000000000000002, und hält den Punkt für beschattet.
+
+Die Abhilfe: Treffer, die näher als eine kleine Zahl `EPS` am Anfang des Strahls liegen, zählen nicht.
+
+```c
+~ #define H 180
+~
+// Treffer, die näher als EPS am Anfang des Strahls liegen, zählen nicht
+#define EPS 1e-4
+```
+
+In `hit_sphere` und `hit_floor` wird aus `t > 0` jeweils `t > EPS`:
+
+```c
+    if (t > EPS)
+        return t;
+```
+
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/05-schatten.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+crop-element: #canvas
+-->
+<img class='full fit-width' src='schatten.webp' alt='Dieselbe Szene ohne Sprenkel: Jede Kugel wirft einen scharfen Schatten nach links hinten auf das Schachbrett.'>
+
+Jetzt stehen die Kugeln auf dem Boden.
+
+## Die Kamera
+
+### Vorne, rechts und oben
+
+Bisher schaut das Auge immer in Richtung −z. Eine Kamera, die man bewegen kann, braucht drei Richtungen: wohin sie schaut, wo rechts ist und wo oben. Ohne Matrizen, nur mit einem neuen Werkzeug, dem **Kreuzprodukt**: `cross(a, b)` ist ein Vektor, der senkrecht auf `a` und auf `b` steht.
+
+<img class='full' src='kamera.webp' alt='Schräg von der Seite: links ein Punkt eye, rechts eine Kugel target. Ein blauer Pfeil forward zeigt vom Auge zum Bild, einem Rechteck eine Einheit davor; vom Mittelpunkt des Bildes ein roter Pfeil right zur Seite und ein grüner Pfeil up nach oben. Ein gestrichelter Strahl geht vom Auge durch einen Punkt des Bildes: forward + sx · right + sy · up.'>
+
+- **forward** zeigt vom Auge `eye` zum Ziel `target`: `normalize(target − eye)`.
+- **right** steht senkrecht auf `forward` und auf »oben in der Welt«, `(0, 1, 0)`: `normalize(cross(forward, (0, 1, 0)))`.
+- **up** steht senkrecht auf `forward` und `right`: `cross(right, forward)`.
+
+Das Bild steht wieder eine Einheit vor dem Auge, jetzt in Richtung `forward`, und ein Pixel liegt `sx` Schritte in Richtung `right` und `sy` Schritte in Richtung `up` von seiner Mitte. Die Richtung durch den Pixel ist also `forward + sx · right + sy · up`.
+
+Das Kreuzprodukt kommt zu den anderen Rechnungen:
+
+```c
+~ double dot(vec a, vec b)
+~ {
+~     return a.x * b.x + a.y * b.y + a.z * b.z;
+~ }
+~
+// steht senkrecht auf a und auf b
+vec cross(vec a, vec b)
+{
+    return (vec){a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x};
+}
+```
+
+_task(right)
+
+Lösche die Zeilen mit `vec eye = {0, 1.2, 5.5};`. Über `ray_dir` kommt die Kamera, und `ray_dir` benutzt sie:
+
+```c
+// die Kamera: wo das Auge steht und wohin vorne, rechts und oben ist
+vec eye, forward, right, up;
+
+// die Kamera kreist im Abstand 5 um die Mitte und schaut auf target
+void set_camera(double angle, double height)
+{
+    eye = (vec){5 * sin(angle), height, 5 * cos(angle)};
+    vec target = {0, 0.8, 0};
+    forward = normalize(sub(target, eye));
+    right = normalize(cross(forward, (vec){0, 1, 0}));
+    up = cross(right, forward);
+}
+
+// die Richtung vom Auge durch den Pixel (x, y)
+vec ray_dir(double x, double y)
+{
+    double sx = (x - W / 2.0) / H;
+    double sy = (H / 2.0 - y) / H;
+    return normalize(add(forward, add(scale(right, sx), scale(up, sy))));
+}
+```
+
+`5 * sin(angle)` und `5 * cos(angle)` legen das Auge auf einen Kreis mit Radius 5 um die Mitte der Szene; `angle` sagt, wo auf dem Kreis.
+
+### Um die Szene kreisen
+
+In `main` fragt die Schleife jetzt die Pfeiltasten ab und rechnet das Bild nur dann neu, wenn sich die Kamera bewegt hat:
+
+```c
+int main(void)
+{
+    screen_open(W, H, pixel_rgb24, "Raytracer");
+    sun_dir = normalize((vec){1.4, 1.0, 0.3});
+
+    double angle = 0.2, height = 1.8;
+    bool changed = true;
+
+    while (!should_close())
+    {
+        // Pfeiltasten: um die Szene kreisen, höher oder tiefer
+        if (key_down(pixel_key_left))  { angle -= 0.03; changed = true; }
+        if (key_down(pixel_key_right)) { angle += 0.03; changed = true; }
+        if (key_down(pixel_key_up) && height < 6)     { height += 0.05; changed = true; }
+        if (key_down(pixel_key_down) && height > 0.3) { height -= 0.05; changed = true; }
+
+        // nur neu rechnen, wenn sich die Kamera bewegt hat
+        if (changed)
+        {
+            set_camera(angle, height);
+            draw();
+            changed = false;
+        }
+        present();
+    }
+    screen_close();
+    return 0;
+}
+```
+
+Klicke ins Bild und kreise mit den Pfeiltasten um die Kugeln.
+
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/06-kamera.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+crop-element: #canvas
+-->
+<img src='kamera-start.webp' alt='Die Szene von etwas höher: die Kugeln auf dem Schachbrett mit ihren Schatten, die Kamera schaut leicht von oben.'>
+<figcaption>Die Kamera beim Start</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+click: selector:#canvas
+hook: play ArrowLeft 0.3 ArrowLeft 0.3 ArrowLeft 0.3 ArrowLeft 0.3 ArrowUp 0.3 ArrowUp 0.5
+crop-element: #canvas
+-->
+<img src='kamera-gedreht.webp' alt='Dieselbe Szene von links und höher: die große orange Kugel steht jetzt vorn, das Schachbrett läuft schräg durchs Bild.'>
+<figcaption>Ein Stück nach links gekreist und höher</figcaption>
+</figure>
+</div>
+
+## Ein Planet
+
+### Länge und Breite
+
+Bisher hat jede Kugel eine einzige Farbe. Eine **Textur** gibt jedem Punkt der Oberfläche eine eigene. Dafür braucht man für jeden Punkt der Kugel zwei Zahlen, wie die Längen- und Breitengrade auf einem Globus. Die Normale zeigt vom Mittelpunkt zum Punkt; aus ihr kommen beide:
+
+- **Längengrad** `u = atan2(n.z, n.x)`: der Winkel rund um die Kugel, von −π bis π.
+- **Breitengrad** `v = asin(n.y)`: wie hoch der Punkt liegt, von −π/2 am Südpol bis π/2 am Nordpol.
+
+Mit `u` und `v` kann man rechnen wie mit `x` und `y` auf einem Bild. Der Planet hier bekommt Streifen wie Jupiter: Die Farbe wechselt mit dem Breitengrad hin und her, und damit die Streifen nicht wie mit dem Lineal gezogen aussehen, wellt der Längengrad sie ein wenig.
+
+### Streifen und ein Fleck
+
+Das Material bekommt ein Feld `planet`:
+
+```c
+~ typedef struct
+~ {
+~     vec color;
+    bool planet;  // mit Textur
+~ } material;
+```
+
+Die orange Kugel wird zum Planeten:
+
+```c
+    {{-2.2, 0.9, 0.3}, 0.9, {.planet = true}},
+```
+
+Unter `hit_floor` kommt die Textur:
+
+```c
+// Textur: die Farbe an dem Punkt der Kugel, in den die Normale n zeigt
+vec planet_color(vec n)
+{
+    double u = atan2(n.z, n.x);  // Längengrad: -pi bis pi
+    double v = asin(n.y);        // Breitengrad: -pi/2 bis pi/2
+
+    // Streifen nach dem Breitengrad, mit dem Längengrad gewellt
+    double band = 0.5 + 0.5 * sin(14 * v + 1.2 * sin(3 * u + 4 * v));
+    vec color = mix((vec){0.55, 0.27, 0.12}, (vec){0.85, 0.72, 0.52}, band);
+
+    // der große rote Fleck
+    double du = u - 1.0;
+    double dv = 2.2 * (v + 0.35);
+    if (du * du + dv * dv < 0.12)
+        color = (vec){0.75, 0.25, 0.1};
+    return color;
+}
+```
+
+In `nearest_hit` holt sich eine Kugel mit `planet` ihre Farbe aus der Textur:
+
+```c
+~         h->mat = s.mat;
+        if (s.mat.planet)
+            h->mat.color = planet_color(h->normal);
+```
+
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/07-textur.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+crop-element: #canvas
+-->
+<img class='full fit-width' src='planet.webp' alt='Links steht statt der orangen Kugel ein Planet mit gewellten braunen und beigen Streifen und einem roten ovalen Fleck unten.'>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ersetze in <code>planet_color</code> die Zeile mit <code>band</code> durch <code>double band = ((int)floor(4 * u) + (int)floor(4 * v)) % 2 == 0;</code>. Dann liegt ein Schachbrett aus Längen- und Breitengraden auf der Kugel, und du siehst, wie <code>u</code> und <code>v</code> um sie herumlaufen: Zu den Polen werden die Felder immer schmaler. Stell die Zeile danach wieder zurück.
+</div>
+
+## Spiegel
+
+### Abprallen
+
+<img class='full' src='spiegel.webp' alt='Ein Strahl dir trifft schräg von links oben auf eine Fläche und prallt nach rechts oben ab, reflect(dir, n). Zwischen beiden steht senkrecht die Normale n; die beiden Winkel α zu ihr sind gleich groß.'>
+
+Ein Spiegel schickt den Strahl weiter, und zwar so, dass er im selben Winkel abprallt, in dem er angekommen ist. Zerlegt man `dir` in einen Teil entlang der Normalen, `dot(dir, n) · n`, und den Rest, dann dreht sich beim Abprallen nur der Teil entlang der Normalen um. Zieht man ihn zweimal ab, ist er umgedreht:
+
+$$\text{reflect}(\text{dir}, n) = \text{dir} - 2\,(\text{dir} \cdot n)\, n$$
+
+Wie ein gespiegelter Strahl weitergeht, weiß `trace` schon: Es ist dieselbe Frage wie beim Strahl vom Auge. `trace` ruft sich also selbst auf. Damit ein Strahl zwischen zwei Spiegeln nicht ewig hin und her springt, zählt `depth` mit, wie oft schon gespiegelt wurde. Oben in die Datei:
+
+```c
+~ #define EPS 1e-4
+// wie oft ein Strahl höchstens gespiegelt wird
+#define MAX_DEPTH 6
+```
+
+Das Material sagt, wie stark eine Oberfläche spiegelt:
+
+```c
+~     vec color;
+    double mirror;  // Anteil, der gespiegelt wird: 0 bis 1
+~     bool planet;    // mit Textur
+```
+
+Die große Kugel hinten wird ein Spiegel, und der Boden glänzt ein wenig:
+
+```c
+    {{-0.3, 1.2, -1.4}, 1.2, {.color = {0.9, 0.9, 0.95}, .mirror = 0.9}},
+```
+
+```c
+material floor_mat = {.color = {0.75, 0.75, 0.75}, .mirror = 0.1};
+```
+
+Dann `reflect` und das neue `trace`:
+
+```c
+// der Strahl dir prallt an der Oberfläche mit der Normalen n ab
+vec reflect(vec dir, vec n)
+{
+    return sub(dir, scale(n, 2 * dot(dir, n)));
+}
+
+// die Farbe, die aus Richtung dir beim Punkt origin ankommt
+vec trace(vec origin, vec dir, int depth)
+{
+    if (depth > MAX_DEPTH)
+        return (vec){0, 0, 0};  // zu oft gespiegelt
+
+    hit h;
+    if (!nearest_hit(origin, dir, &h))
+        return sky(dir);
+
+    vec light = add(sunlight(h), ambient);
+    vec color = mul(h.mat.color, light);
+
+    // Spiegel: ein neuer Strahl vom Treffpunkt aus
+    if (h.mat.mirror > 0)
+    {
+        vec reflected = trace(h.point, reflect(dir, h.normal), depth + 1);
+        color = mix(color, reflected, h.mat.mirror);
+    }
+    return color;
+}
+```
+
+In `draw` beginnt jeder Strahl vom Auge mit `depth` 0:
+
+```c
+            vec c = trace(eye, ray_dir(x + 0.5, y + 0.5), 0);
+```
+
+_task(spiegeln)
+
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/08-spiegel.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+crop-element: #canvas
+-->
+<img class='full fit-width' src='spiegel-bild.webp' alt='Die große Kugel hinten ist ein Spiegel: In ihr sieht man verzerrt den Planeten, die kleinen Kugeln, das Schachbrett und den Himmel. Auch das Schachbrett spiegelt die Kugeln schwach.'>
+
+Die Spiegelkugel zeigt die ganze Szene, gebogen wie in einer Christbaumkugel, und im Boden spiegeln sich die Kugeln ganz leicht.
+
+## Glas
+
+### Brechen
+
+<img class='full' src='glas.webp' alt='Ein Strahl dir kommt schräg von links oben aus der Luft und trifft auf Glas. Im Glas läuft er steiler weiter, zur gestrichelten Normalen hin geknickt; der Winkel β zur Normalen ist kleiner als der Winkel α davor. Ein Teil des Lichts wird nach rechts oben gespiegelt.'>
+
+Fällt Licht schräg auf Glas, knickt es ab, zur Normalen hin. Wie stark, hängt vom **Brechungsindex** ab: Luft hat 1, Glas etwa 1,5. Für die Winkel α vor und β nach der Grenze gilt das Brechungsgesetz \\(\sin\alpha = 1{,}5 \cdot \sin\beta\\).
+
+_person(snellius)
+
+Als Vektoren mit `eta` = Brechungsindex davor geteilt durch danach und `cos_in = −dot(dir, n)`:
+
+$$k = 1 - \eta^2 \,(1 - \cos^2_{\text{in}}), \qquad \text{gebrochen} = \eta \cdot \text{dir} + (\eta \cos_{\text{in}} - \sqrt{k})\, n$$
+
+Kommt der Strahl von innen, aus dem Glas, ist alles umgekehrt: `eta` ist 1,5, und die Normale muss nach innen zeigen. Wird `k` negativ, gibt es keinen gebrochenen Strahl: Das Licht kommt so flach von innen an die Oberfläche, dass es ganz zurückgespiegelt wird, die **Totalreflexion**. Glasfasern leiten Licht so über Tausende Kilometer.
+
+_task(grenzwinkel)
+
+### Wie viel wird gespiegelt?
+
+Glas bricht nicht nur, es spiegelt auch, und wie viel, hängt vom Winkel ab: Schaut man senkrecht auf eine Scheibe, sieht man fast nur hindurch, schaut man flach darüber, spiegelt sie wie ein Spiegel. Christophe Schlick fand 1994 eine einfache Formel, die dem genauen Gesetz sehr nahe kommt.
+
+_person(fresnel)
+
+Das Material bekommt einen Brechungsindex:
+
+```c
+~     double mirror;  // Anteil, der gespiegelt wird: 0 bis 1
+    double glass;   // Brechungsindex bei Glas, sonst 0
+```
+
+Die weiße Kugel rechts wird Glas:
+
+```c
+    {{1.5, 0.8, 0.8}, 0.8, {.color = {0.95, 1.0, 0.97}, .glass = 1.5}},
+```
+
+Ein gebrochener Strahl beginnt im Glas, und von innen trifft er die Kugel ein zweites Mal, hinten. `hit_sphere` braucht dafür auch die zweite Lösung:
+
+```c
+~     double t = -b - sqrt(d);
+~     if (t > EPS)
+~         return t;
+    t = -b + sqrt(d);     // der Strahl startet in der Kugel (Glas)
+    if (t > EPS)
+        return t;
+~     return INFINITY;      // die Kugel liegt hinter dem Auge
+```
+
+Glas wirft auch einen Schatten, aber einen helleren: Es lässt einen Teil des Lichts durch. Statt `nearest_hit` fragt `sunlight` darum jetzt `light_through`:
+
+```c
+// wie viel Licht von point aus in Richtung dir durchkommt: 1, 0 oder dazwischen
+double light_through(vec point, vec dir)
+{
+    double light = 1;
+    for (int i = 0; i < SPHERE_COUNT; i++)
+    {
+        if (hit_sphere(point, dir, spheres[i]) < INFINITY)
+        {
+            if (spheres[i].mat.glass == 0)
+                return 0;
+            light *= 0.6;  // Glas lässt etwas durch
+        }
+    }
+    return light;
+}
+
+// Licht von der Sonne: je steiler sie auf die Oberfläche scheint, desto heller
+vec sunlight(hit h)
+{
+    double d = dot(h.normal, sun_dir);
+    if (d <= 0)
+        return (vec){0, 0, 0};
+    return scale(sun_color, d * light_through(h.point, sun_dir));
+}
+```
+
+Unter `reflect` kommt das Glas. Weil `glass` `trace` aufruft und `trace` erst danach steht, sagt die erste Zeile dem Compiler vorab, dass es `trace` gibt:
+
+```c
+vec trace(vec origin, vec dir, int depth);
+
+// Glas: ein Teil wird gespiegelt, der Rest gebrochen
+vec glass(hit h, vec dir, int depth)
+{
+    vec n = h.normal;
+    double eta = 1 / h.mat.glass;  // von der Luft ins Glas
+    if (dot(dir, n) > 0)
+    {
+        n = scale(n, -1);          // von innen nach außen
+        eta = h.mat.glass;
+    }
+    double cos_in = -dot(dir, n);
+    vec reflected = trace(h.point, reflect(dir, n), depth + 1);
+
+    // Brechung nach Snellius; k < 0: Totalreflexion
+    double k = 1 - eta * eta * (1 - cos_in * cos_in);
+    if (k < 0)
+        return reflected;
+    vec refracted_dir = add(scale(dir, eta), scale(n, eta * cos_in - sqrt(k)));
+    vec refracted = mul(trace(h.point, refracted_dir, depth + 1), h.mat.color);
+
+    // Fresnel nach Schlick: wie viel gespiegelt wird, flach mehr als steil
+    double r0 = (1 - h.mat.glass) / (1 + h.mat.glass);
+    r0 = r0 * r0;
+    double r = r0 + (1 - r0) * pow(1 - cos_in, 5);
+    return mix(refracted, reflected, r);
+}
+```
+
+In `trace` geht Glas einen eigenen Weg:
+
+```c
+~     if (!nearest_hit(origin, dir, &h))
+~         return sky(dir);
+~
+    if (h.mat.glass > 0)
+        return glass(h, dir, depth);
+```
+
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/09-glas.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+crop-element: #canvas
+-->
+<img class='full fit-width' src='glas-bild.webp' alt='Rechts steht eine Glaskugel: Durch sie sieht man das Schachbrett verkleinert und auf dem Kopf, an ihrem Rand spiegelt sie den Himmel. Ihr Schatten auf dem Boden ist heller als der der anderen Kugeln.'>
+
+Durch die Glaskugel steht das Schachbrett auf dem Kopf, wie bei einer Lupe, die man weit vom Auge hält. Zum Rand hin spiegelt sie immer mehr.
+
+## Glatte Kanten
+
+### Zufall im Pixel
+
+Sieh dir die Ränder der Kugeln und das Schachbrett hinten genau an: Treppenstufen, und am Horizont ein flimmerndes Muster. Jeder Pixel schickt genau einen Strahl durch seine Mitte, und was zwischen zwei Mitten liegt, sieht der Raytracer nie.
+
+Die Abhilfe ist einfach und braucht Geduld: viele Strahlen je Pixel, jeder durch einen **zufälligen Punkt im Pixel**, und davon der Durchschnitt. Am Rand einer Kugel treffen dann manche Strahlen die Kugel und manche den Himmel, und der Pixel bekommt eine Mischfarbe. Statt alle Strahlen auf einmal zu rechnen, schickt das Programm in jedem Bild einen weiteren Strahl je Pixel, einen **Durchgang**, und zeigt den Durchschnitt aller bisherigen. So sieht man sofort ein Bild, das mit jeder Sekunde glatter wird.
+
+Für den Zufall gibt es eine kleine Funktion; `xorshift` heißt das Verfahren. Unter `mix`:
+
+```c
+// Zufall (xorshift): eine Zahl von 0 bis unter 1
+uint32_t seed = 2463534242u;
+
+double random_double(void)
+{
+    seed ^= seed << 13;
+    seed ^= seed >> 17;
+    seed ^= seed << 5;
+    return seed / 4294967296.0;
+}
+```
+
+`draw` addiert in jedem Durchgang die neue Farbe zur Summe des Pixels und zeigt die Summe geteilt durch die Zahl der Durchgänge:
+
+```c
+// für jeden Pixel: die Summe der Farben aus allen Durchgängen
+vec sum[H][W];
+
+// ein Durchgang: ein Strahl je Pixel, durch einen zufälligen Punkt im Pixel
+void draw(int passes)
+{
+    for (int y = 0; y < H; y++)
+    {
+        for (int x = 0; x < W; x++)
+        {
+            vec c = trace(eye, ray_dir(x + random_double(), y + random_double()), 0);
+            if (passes == 1)
+                sum[y][x] = c;  // der erste Durchgang: neu anfangen
+            else
+                sum[y][x] = add(sum[y][x], c);
+
+            // gezeigt wird der Durchschnitt aller Durchgänge
+            vec avg = scale(sum[y][x], 1.0 / passes);
+            set_pixel_rgb(x, y, to_byte(avg.x), to_byte(avg.y), to_byte(avg.z));
+        }
+    }
+}
+```
+
+In `main` zählt `passes` die Durchgänge. Bewegt sich die Kamera, fängt es wieder bei 0 an:
+
+```c
+~     double angle = 0.2, height = 1.8;
+    int passes = 0;
+
+~     while (!should_close())
+~     {
+~         // Pfeiltasten: um die Szene kreisen, höher oder tiefer
+        if (key_down(pixel_key_left))  { angle -= 0.03; passes = 0; }
+        if (key_down(pixel_key_right)) { angle += 0.03; passes = 0; }
+        if (key_down(pixel_key_up) && height < 6)     { height += 0.05; passes = 0; }
+        if (key_down(pixel_key_down) && height > 0.3) { height -= 0.05; passes = 0; }
+
+        // jedes Bild ein weiterer Durchgang: das Bild wird immer glatter
+        set_camera(angle, height);
+        passes++;
+        draw(passes);
+~         present();
+~     }
+```
+
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/10-glatt.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+hook: frames 1
+crop-element: #canvas
+-->
+<img src='glatt-1.webp' alt='Die Szene nach einem Durchgang: Die Kanten sind ausgefranst, als wären sie zerkrümelt, und der Horizont flimmert.'>
+<figcaption>Nach einem Durchgang</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+hook: frames 64
+crop-element: #canvas
+-->
+<img src='glatt-64.webp' alt='Dieselbe Szene nach 64 Durchgängen: glatte Kanten, und das Schachbrett geht am Horizont in ein gleichmäßiges Grau über.'>
+<figcaption>Nach 64 Durchgängen, gut zwei Sekunden</figcaption>
+</figure>
+</div>
+
+Nach einem Durchgang sind die Kanten ausgefranst, weil jeder Strahl irgendwo im Pixel landet. Nach 64 sind sie glatt, und das Schachbrett geht zum Horizont hin in Grau über, wie es soll: Dort liegen in einem Pixel so viele Felder, dass sie sich mischen.
+
+_task(rauschen)
+
+## Weiche Schatten
+
+### Die Sonne ist eine Scheibe
+
+Die Schatten haben scharfe Ränder, weil die Sonne bisher ein Punkt ist: Ein Punkt sieht die Sonne oder sieht sie nicht. Die echte Sonne ist eine Scheibe am Himmel. Am Rand eines Schattens verdeckt eine Kugel nur einen Teil von ihr, und es ist nur ein bisschen dunkler, ein **Halbschatten**.
+
+Das kostet jetzt fast nichts mehr: Jeder Durchgang zielt mit dem Schattenstrahl auf einen anderen zufälligen Punkt der Sonnenscheibe, und der Durchschnitt über viele Durchgänge ergibt den Halbschatten von selbst. Dafür braucht es einen zufälligen Punkt in einer Kugel um den Nullpunkt; `random_in_sphere` würfelt so lange, bis ein Punkt im Würfel auch in der Kugel liegt:
+
+```c
+// ein zufälliger Punkt in der Kugel mit Radius 1 um den Nullpunkt
+vec random_in_sphere(void)
+{
+    while (true)
+    {
+        vec p = {2 * random_double() - 1, 2 * random_double() - 1, 2 * random_double() - 1};
+        if (dot(p, p) < 1)
+            return p;
+    }
+}
+```
+
+Bei der Sonne steht, wie groß sie ist:
+
+```c
+~ vec sun_color = {1.4, 1.2, 0.9};
+// wie groß die Sonne am Himmel ist (im Bogenmaß)
+#define SUN_SIZE 0.08
+```
+
+`sunlight` wackelt die Richtung zur Sonne ein wenig:
+
+```c
+// Licht von der Sonne: zu einem zufälligen Punkt der Sonnenscheibe
+vec sunlight(hit h)
+{
+    vec to_sun = normalize(add(sun_dir, scale(random_in_sphere(), SUN_SIZE)));
+    double d = dot(h.normal, to_sun);
+    if (d <= 0)
+        return (vec){0, 0, 0};
+    return scale(sun_color, d * light_through(h.point, to_sun));
+}
+```
+
+Und damit man die Sonne im Spiegel sieht, zeichnet `trace` sie in den Himmel:
+
+```c
+~     if (!nearest_hit(origin, dir, &h))
+    {
+        if (dot(dir, sun_dir) > cos(SUN_SIZE))
+            return scale(sun_color, 3);  // die Sonnenscheibe
+        return sky(dir);
+    }
+```
+
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/11-weich.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+hook: frames 1
+crop-element: #canvas
+-->
+<img src='weich-1.webp' alt='Nach einem Durchgang: Die Ränder der Schatten sind gesprenkelt, hell und dunkel durcheinander.'>
+<figcaption>Nach einem Durchgang</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+hook: frames 64
+crop-element: #canvas
+-->
+<img src='weich-64.webp' alt='Nach 64 Durchgängen: Die Schatten haben weiche Ränder, die nach außen heller werden; in der Spiegelkugel ist die Sonne als heller Fleck zu sehen.'>
+<figcaption>Nach 64 Durchgängen</figcaption>
+</figure>
+</div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Setz <code>SUN_SIZE</code> auf 0.3: Die Sonne wird riesig, und die Schatten werden so weich wie an einem trüben Tag. Bei 0.01 sind sie fast wieder scharf. Stell den Wert danach wieder zurück.
+</div>
+
+## Licht vom Himmel
+
+### Ein Strahl in eine zufällige Richtung
+
+Eine Sache stimmt noch nicht: Das Himmelslicht `ambient` kommt überall gleich stark an, auch unter einer Kugel, dort, wo sie fast auf dem Boden aufliegt. In Wirklichkeit sieht ein Punkt dort kaum Himmel. Mit derselben Idee wie bei der Sonne lässt sich auch das ausrechnen: Jeder Durchgang schickt vom Treffpunkt einen Strahl in eine zufällige Richtung über der Oberfläche. Sieht er den Himmel, kommt dessen Farbe als Licht an; trifft er etwas, nicht.
+
+`ambient` wird gelöscht, an seine Stelle tritt `skylight`, unter `reflect`:
+
+```c
+// Licht vom Himmel: aus einer zufälligen Richtung über der Oberfläche
+vec skylight(hit h)
+{
+    vec d = normalize(add(h.normal, random_in_sphere()));
+    if (d.y < 0)
+        return (vec){0, 0, 0};  // nach unten ist der Boden im Weg
+    return scale(sky(d), 0.3 * light_through(h.point, d));
+}
+```
+
+`normal + random_in_sphere()` zeigt immer in die Hälfte über der Oberfläche, und steil nach oben öfter als flach zur Seite, so wie auch der Himmel steil von oben mehr Licht gibt. In `trace` heißt es dann:
+
+```c
+    vec light = add(sunlight(h), skylight(h));
+```
+
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/12-himmelslicht.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+hook: frames 128
+crop-element: #canvas
+-->
+<img class='full fit-width' src='himmelslicht.webp' alt='Die Szene nach 128 Durchgängen: Unter jeder Kugel ist der Boden dort dunkel, wo sie ihn fast berührt, die Unterseiten der Kugeln sind dunkler, und der Himmel färbt die Schattenseiten leicht bläulich.'>
+
+Unter jeder Kugel ist der Boden jetzt dort dunkel, wo sie ihn fast berührt, und erst damit stehen sie richtig auf ihm. Die Schattenseiten bekommen das Blau des Himmels.
+
+## Das fertige Bild
+
+Zwei Kleinigkeiten machen das Bild zum fertigen Raytracer vom Anfang der Seite. Weit hinten verschwimmt das Schachbrett im **Dunst**: Je weiter ein Treffer entfernt ist, desto mehr mischt sich die Farbe des Himmels hinein. Am Ende von `trace`:
+
+```c
+    // Dunst: was weit weg ist, verschwimmt mit dem Himmel
+    double haze = exp(-0.0004 * h.t * h.t);
+    return mix(sky(dir), color, haze);
+```
+
+Und im Titel des Fensters steht, wie viele Durchgänge schon gerechnet sind. Dafür braucht es oben `#include <stdio.h>` und in der Schleife nach `draw`:
+
+```c
+        char title[64];
+        snprintf(title, sizeof title, "Raytracer – %d Durchgänge", passes);
+        set_title(title);
+```
+
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/raytracer.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+hook: frames 256
+crop-element: #canvas
+-->
+<img class='full fit-width' src='raytracer.webp' alt='Das fertige Bild nach 256 Durchgängen: der Planet, die Spiegelkugel, die Glaskugel und die kleinen Kugeln mit weichen Schatten, das Schachbrett verschwindet hinten im Dunst.'>
+
+Von einer anderen Stelle aus:
+
+<!-- tutorial-screenshot
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+click: selector:#canvas
+hook: play ArrowRight 0.3 ArrowRight 0.3 ArrowRight 0.3 ArrowRight 0.3 ArrowRight 0.3 ArrowDown 0.3 ArrowDown 0.3 ArrowDown 6
+crop-element: #canvas
+-->
+<img class='full fit-width' src='gedreht.webp' alt='Der fertige Raytracer von rechts und tiefer: in der Mitte die Glaskugel, in der der Planet klein und auf dem Kopf zu sehen ist, dahinter die Spiegelkugel, rechts groß die gelbe Kugel, links die blaue.'>
+
+Kreise mit den Pfeiltasten um die Szene. Solange du eine Taste hältst, rauscht das Bild; lässt du los, wird es in ein, zwei Sekunden glatt.
+
+## Wie geht es weiter?
+
+Dein Raytracer ist klein genug, um ihn ganz zu verstehen, und alles Weitere passt in dieselben Funktionen:
+
+- **Eine eigene Szene:** Kugeln verschieben, Farben ändern, eine zweite Glaskugel, ein Spiegel als Boden (`floor_mat` mit `.mirror = 0.8`).
+- **Eine andere Textur:** Marmor mit `sin(x + 3 * sin(…))`, ein Planet mit Kontinenten, eine Holzmaserung für den Boden.
+- **Mehr Formen:** eine Scheibe (der Boden mit einem Radius), ein Würfel (drei Paare von Ebenen, wie der Boden), ein Ring.
+- **Tiefenschärfe:** Das Auge wackelt in jedem Durchgang ein wenig auf einer kleinen Scheibe, alle Strahlen zielen auf denselben Punkt in der Schärfeebene. Dann ist nur scharf, was dort liegt, wie bei einem Fotoapparat.
+- **Licht von Kugel zu Kugel:** Statt nur in den Himmel zu schauen, verfolgt `skylight` den zufälligen Strahl mit `trace` weiter. Dann färbt die rote Kugel den Boden neben sich rötlich. Das ist der Anfang von **Path Tracing**, so wie Animationsfilme heute gerechnet werden.
+
+_task(eigene-szene)

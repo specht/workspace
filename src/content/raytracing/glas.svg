@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" width="960" height="460" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Brechen: Beim Übergang von Luft (1,0) in Glas (1,5) knickt der Strahl zur Normalen hin, sin α = 1,5 · sin β (Snellius). Ein Teil wird gespiegelt, flach mehr als steil (Fresnel).
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/NAME.svg -->
+  <defs>
+    <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
+    <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker>
+    <marker id="a-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker>
+    <marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+    <marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
+  </defs>
+  <rect width="960" height="460" fill="#ffffff"/>
+  <rect x="140" y="220" width="680" height="220" fill="#eef3fb"/>
+  <line x1="140.0" y1="220.0" x2="820.0" y2="220.0" stroke="#1f2937" stroke-width="3"/>
+  <text x="170.0" y="200.0" font-size="20" fill="#6b7280" text-anchor="start">Luft</text>
+  <text x="170.0" y="260.0" font-size="20" fill="#6b7280" text-anchor="start">Glas, Brechungsindex 1,5</text>
+  <line x1="316.2" y1="105.3" x2="480.0" y2="220.0" stroke="#2b5fb4" stroke-width="3" marker-end="url(#a-blue)"/>
+  <text x="306.2" y="93.3" font-size="20" fill="#2b5fb4" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">dir</text>
+  <line x1="480.0" y1="220.0" x2="589.2" y2="387.5" stroke="#2b5fb4" stroke-width="3" marker-end="url(#a-blue)"/>
+  <text x="603.2" y="393.5" font-size="20" fill="#2b5fb4" text-anchor="start">gebrochen</text>
+  <line x1="480.0" y1="220.0" x2="602.9" y2="134.0" stroke="#6b7280" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#a-grey)"/>
+  <text x="612.9" y="124.0" font-size="18" fill="#6b7280" text-anchor="start">ein Teil wird gespiegelt</text>
+  <line x1="480.0" y1="50.0" x2="480.0" y2="420.0" stroke="#1f2937" stroke-width="1.5" stroke-dasharray="4 5"/>
+  <text x="490.0" y="44.0" font-size="18" fill="#1f2937" text-anchor="start">Normale</text>
+  <path d="M422.7,179.8 A70,70 0 0 1 480.0,150.0" fill="none" stroke="#6b7280" stroke-width="2"/>
+  <text x="442.0" y="138.0" font-size="22" fill="#6b7280" text-anchor="middle">α</text>
+  <path d="M526.4,291.2 A85,85 0 0 1 480.0,305.0" fill="none" stroke="#6b7280" stroke-width="2"/>
+  <text x="502.0" y="326.0" font-size="22" fill="#6b7280" text-anchor="middle">β</text>
+</svg>

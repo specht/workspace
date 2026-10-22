@@ -27,10 +27,11 @@
     # - .drawing (koch curve)
     - fire
     - pixelram
+    - raytracing
+    - raycaster
     - tic80
     - raylib
   #  - .sirds
-  # - .raytracing
   # - .p5js
   # - .glsl
   # - .gif

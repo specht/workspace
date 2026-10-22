@@ -16,6 +16,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 ## Geboren vor 1920
 
+<!-- year: 1580 -->
+<!-- part: snellius -->
+### Willebrord Snellius
+
+<div class='person'>
+<img src='snellius.webp' alt='Willebrord Snellius, Kupferstich von 1625: ein Mann mit kurzem Haar, Schnurrbart und Kinnbart, mit einer großen weißen Halskrause, in einem ovalen Rahmen.'>
+<p><strong>Willebrord Snellius</strong> (1580–1626), niederländischer Mathematiker, Professor in Leiden. Trifft ein Strahl auf die Glaskugel, knickt er ab, und dein Raytracer rechnet die neue Richtung mit dem Brechungsgesetz aus: Wie stark der Strahl abknickt, hängt vom Winkel ab, unter dem er auftrifft, und davon, wie stark das Glas Licht bricht. Snellius fand das Gesetz 1621, veröffentlichte es aber nie; gedruckt hat es 1637 René Descartes. Aufgeschrieben hatte es schon um 984 Ibn Sahl in Bagdad.</p>
+<p>Vorher hatte Snellius die Erde vermessen, ohne die Niederlande zu verlassen: Er peilte von Kirchturm zu Kirchturm, legte ein Netz aus Dreiecken über das Land, maß eine Grundlinie von Hand und rechnete alle anderen Strecken aus den Winkeln aus. So bekam er heraus, wie lang ein Grad auf dem Weg von Nord nach Süd ist, und damit den Umfang der Erde (<em>Eratosthenes Batavus</em>, 1617). Mit solchen Dreiecksnetzen haben Landvermesser bis ins 20. Jahrhundert ihre Karten gemacht.</p>
+<p class='person-credit'>Stich: Werkstatt de Passe, 1625, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Portret_van_Willebrordus_Snellius,_RP-P-OB-15.345.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1707 -->
 <!-- part: euler -->
 ### Leonhard Euler
@@ -25,6 +37,30 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Leonhard Euler</strong> (1707–1783), Schweizer Mathematiker. 1736 zeigte er, dass es keinen Spaziergang durch Königsberg gibt, der jede der sieben Brücken genau einmal überquert. Dafür kam es nur darauf an, welche Ufer und Inseln durch welche Brücken verbunden sind, nicht auf Straßen und Entfernungen: die Idee hinter jedem Graphen, auch hinter dem Stadtplan im <a href='/routenplaner'>Routenplaner</a>. Mit diesem Beweis beginnt die Graphentheorie.</p>
 <p>Ab 1738 sah er auf dem rechten Auge fast nichts mehr, ab 1766 war er fast blind. Er arbeitete trotzdem weiter und diktierte: 1775 entstand im Schnitt jede Woche eine neue mathematische Arbeit.</p>
 <p class='person-credit'>Gemälde: Jakob Emanuel Handmann, 1753, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Leonhard_Euler_-_Jakob_Emanuel_Handmann_(Kunstmuseum_Basel).jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1728 -->
+<!-- part: lambert -->
+### Johann Heinrich Lambert
+
+<div class='person'>
+<img src='lambert.webp' alt='Johann Heinrich Lambert im Profil nach links, Lithografie: ein Mann mit gelockter Perücke und Halsbinde in einem runden Bildfeld.'>
+<p><strong>Johann Heinrich Lambert</strong> (1728–1777), Mathematiker, Physiker und Astronom aus Mülhausen im Elsass. Wie hell eine matte Kugel an einer Stelle ist, rechnet dein Raytracer mit <code>dot(normal, sun_dir)</code>: dem Kosinus des Winkels zwischen der Normalen und der Richtung zur Sonne. Dieses Kosinusgesetz schrieb Lambert 1760 in seinem Buch <em>Photometria</em> auf; matte Flächen heißen in der Computergrafik bis heute »lambertsch«.</p>
+<p>Sein Vater war Schneider, und mit zwölf musste Lambert die Schule verlassen, um in der Werkstatt zu helfen; alles Weitere brachte er sich in seiner freien Zeit selbst bei. Später arbeitete er an der Akademie in Berlin, und in einer Arbeit, die 1768 erschien, bewies er als Erster, dass π irrational ist: Seine Nachkommastellen hören nie auf und wiederholen sich nie.</p>
+<p class='person-credit'>Lithografie: Godefroy Engelmann, 1829, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Johann_Heinrich_Lambert_1829_Engelmann.png'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1788 -->
+<!-- part: fresnel -->
+### Augustin-Jean Fresnel
+
+<div class='person'>
+<img src='fresnel.webp' alt='Augustin-Jean Fresnel, Stich: ein junger Mann mit dunklem, wirrem Haar, hohem Kragen und weißer Halsbinde, ernst zum Betrachter blickend.'>
+<p><strong>Augustin-Jean Fresnel</strong> (1788–1827), französischer Ingenieur und Physiker. Wie viel Licht die Glaskugel spiegelt und wie viel sie durchlässt, hängt vom Winkel ab: Von vorn spiegelt Glas nur etwa 4 Prozent, am Rand der Kugel fast alles. Die Formeln dafür, die Fresnel-Gleichungen, stellte er Anfang der 1820er Jahre auf; dein Raytracer nimmt die kurze Näherung, die Christophe Schlick 1994 für die Computergrafik fand.</p>
+<p>Damit Leuchttürme weiter zu sehen sind, baute Fresnel eine Linse aus Glasringen, die das Licht bündelt wie eine dicke Linse, aber dünn und leicht bleibt. Die erste leuchtete ab dem 25. Juli 1823 im Leuchtturm von Cordouan an der Mündung der Gironde und war über 30 Kilometer weit zu sehen; die Spiegel davor warfen nur etwa die Hälfte des Lichts zurück. Fresnel-Linsen stecken heute in Overheadprojektoren, Ampeln und Rücklichtern von Autos.</p>
+<p class='person-credit'>Stich: E. Rosette nach Ambroise Tardieu, 19. Jahrhundert, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Augustin_Fresnel.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 
@@ -369,6 +405,16 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <p><strong>Peter Chen</strong> (geboren 1947), Informatiker aus Taiwan, veröffentlichte 1976 am MIT das Entity-Relationship-Modell: Rechtecke für Entitäten, Rauten für Beziehungen, Ellipsen für Attribute. Die Chen-Notation heißt nach ihm.</p>
 <p>Er wollte eine Sprache, in der man eine Datenbank planen kann, bevor man an Tabellen denkt.</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1947 -->
+<!-- part: whitted -->
+### Turner Whitted
+
+<div class='person'>
+<p><strong>Turner Whitted</strong>, amerikanischer Informatiker. Bei den Bell Labs zeigte er 1979, wie Raytracing Spiegelungen, Glas und Schatten berechnet: Trifft ein Strahl eine spiegelnde oder durchsichtige Fläche, schickt das Programm von dort neue Strahlen weiter, und von deren Treffpunkten wieder neue, rekursiv. Darum spiegeln sich in einer Kugel aus Chrom auch die anderen Kugeln.</p>
+<p>Sein berühmtes Bild, eine Glaskugel und eine spiegelnde Kugel über einem Schachbrett, 640 × 480 Pixel groß, rechnete ein Computer vom Typ VAX-11/780 74 Minuten lang. 2014 ging Whitted zu Nvidia, deren Grafikkarten seit 2018 Raytracing in Echtzeit können, viele Bilder in der Sekunde.</p>
 </div>
 <!-- /part -->
 

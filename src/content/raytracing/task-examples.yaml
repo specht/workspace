@@ -1,0 +1,14 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: raytracing
+examples:
+  right:
+    pass:
+      - answer: (1, 0, 0)
+      - answer: 1, 0, 0
+      - answer: (1.0; 0.0; 0.0)
+    fail:
+      - answer: (-1, 0, 0)
+      - answer: (0, 0, 1)
+      - answer: (0, 1, 0)

@@ -1,0 +1,188 @@
+# Aufgaben zu »Raytracing in C«.
+# Format: docs/aufgaben.md. Gearbeitet wird in /workspace/raytracer.
+# Alle Aufgaben prüfen Antworten: Rechnungen mit den Formeln der Seite, eine
+# Vorhersage und eine Rückmeldung zum eigenen Bild. Die Zahlen sind von Hand
+# gerechnet; das Programm in stufen/ ist dasselbe wie auf der Seite.
+format: 1
+activity: raytracing
+tasks:
+  - id: sx
+    title: Ganz links
+    prompt: |
+      Der Pixel ganz links in der mittleren Zeile hat `x = 0`; `ray_dir`
+      bekommt `x + 0.5`. Welchen Wert hat `sx` für ihn? Das Bild ist
+      `W = 320` Pixel breit und `H = 180` hoch.
+    check:
+      type: number
+      expect: -0.8861
+      tolerance: 0.002
+    feedback:
+      - when: { equals: -0.8889 }
+        say: Fast. Das ist der Wert für `x = 0`, die linke Kante des Pixels. `ray_dir` bekommt `0.5`, die Mitte des Pixels.
+      - when: { equals: -0.4986 }
+        say: Geteilt wird durch die Höhe `H`, nicht durch die Breite, damit die Pixel quadratisch bleiben.
+      - when: { equals: 0.8861 }
+        say: Der Betrag stimmt, aber links ist `sx` negativ.
+    hint: '`sx = (x - W / 2.0) / H`, mit `x = 0.5`.'
+    solution: '`(0.5 − 160) / 180 = −159.5 / 180 ≈ −0.886`. Der Pixel liegt also knapp 0,9 Einheiten links von der Mitte des Bildes, das eine Einheit vor dem Auge steht.'
+
+  - id: treffer
+    title: Wo trifft der Strahl?
+    prompt: |
+      Ein Strahl beginnt bei `origin = (0, 0, 0)` und läuft in Richtung
+      `dir = (0, 0, -1)`. Eine Kugel hat den Mittelpunkt `center = (0, 0, -5)`
+      und den Radius 1. Welches `t` gibt `hit_sphere` zurück?
+    check:
+      type: number
+      expect: 4
+      tolerance: 0.001
+    feedback:
+      - when: { equals: 6 }
+        say: Das ist der hintere Treffpunkt, `−b + sqrt(d)`. Sichtbar ist der vordere.
+      - when: { equals: 5 }
+        say: 5 ist der Abstand zum Mittelpunkt. Die Oberfläche ist einen Radius näher.
+      - when: { equals: -4 }
+        say: Das Vorzeichen stimmt nicht. Rechne `b = dot(oc, dir)` mit `oc = origin − center = (0, 0, 5)` noch einmal.
+    hint: 'Rechne `oc = origin − center`, dann `b = dot(oc, dir)`, `c = dot(oc, oc) − radius²`, `d = b² − c` und `t = −b − sqrt(d)`.'
+    solution: '`oc = (0, 0, 5)`, `b = 5 · (−1) = −5`, `c = 25 − 1 = 24`, `d = 25 − 24 = 1`, `t = 5 − 1 = 4`. Der Strahl trifft die Kugel bei `(0, 0, −4)`, eine Einheit vor ihrem Mittelpunkt.'
+
+  - id: hell
+    title: Wie viel Sonne?
+    prompt: |
+      An einem Treffpunkt zeigt die Normale gerade nach oben,
+      `normal = (0, 1, 0)`. Die Richtung zur Sonne ist
+      `sun_dir = (0.6, 0.8, 0)`. Welchen Wert hat `d` in `trace`?
+    check:
+      type: number
+      expect: 0.8
+      tolerance: 0.001
+    feedback:
+      - when: { equals: 0.6 }
+        say: Das ist die x-Komponente von `sun_dir`. Das Skalarprodukt nimmt jede Komponente mit der von `normal` mal und addiert.
+      - when: { equals: 1.4 }
+        say: Beim Skalarprodukt werden die Komponenten erst malgenommen, dann addiert, nicht einfach zusammengezählt.
+    hint: '`dot(a, b) = a.x · b.x + a.y · b.y + a.z · b.z`.'
+    solution: '`0 · 0.6 + 1 · 0.8 + 0 · 0 = 0.8`. Die Sonne steht etwa 53° über dem Horizont, und die Stelle bekommt 80 % des Lichts, das sie bei senkrechter Sonne bekäme.'
+
+  - id: boden
+    title: Wann kommt der Boden?
+    prompt: |
+      Ein Strahl beginnt beim Auge `(0, 1.2, 5.5)`. Seine Richtung hat die
+      y-Komponente `dir.y = −0.3`. Bei welchem `t` trifft er den Boden?
+    check:
+      type: number
+      expect: 4
+      tolerance: 0.001
+    feedback:
+      - when: { equals: -4 }
+        say: Das Minus in `t = −origin.y / dir.y` gehört dazu. Ein Strahl, der nach unten zeigt, trifft den Boden vor sich, bei positivem `t`.
+      - when: { equals: 0.36 }
+        say: Geteilt wird durch `dir.y`, nicht malgenommen.
+    hint: '`t = −origin.y / dir.y`. Die anderen Komponenten spielen keine Rolle.'
+    solution: '`t = −1.2 / (−0.3) = 4`. Nach 4 Einheiten ist der Strahl 4 · 0.3 = 1.2 tiefer, genau auf dem Boden.'
+
+  - id: akne
+    title: Ein Strahl, der auf der Oberfläche beginnt
+    prediction: true
+    prompt: |
+      Der Schattenstrahl beginnt genau beim Treffpunkt auf der Oberfläche.
+      Was erwartest du, bevor du das Programm startest?
+    check:
+      type: choice
+      options:
+        - 'Alles sieht aus wie erwartet: scharfe Schatten hinter den Kugeln.'
+        - Auch Stellen in der Sonne werden zum Teil dunkel, gesprenkelt.
+        - Das ganze Bild wird schwarz.
+        - Die Schatten fehlen, weil der Strahl bei der Sonne nichts trifft.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Starte es und sieh dir die hellen Felder vorn genau an.
+      - when: { picked: 2 }
+        say: So schlimm wird es nicht; die meisten Punkte bekommen ihr Licht.
+      - when: { picked: 3 }
+        say: Der Strahl sucht mit `nearest_hit` alles, was zwischen dem Punkt und der Sonne liegt, nicht die Sonne selbst.
+    solution: 'Ein Treffpunkt ist nie genau auf der Oberfläche, sondern durch Rundung ein winziges Stück davor oder dahinter. Liegt er dahinter, trifft der Schattenstrahl die eigene Oberfläche bei einem `t` wie 1e-16, und der Punkt gilt als beschattet: Shadow Acne.'
+
+  - id: right
+    title: Rechts
+    prompt: |
+      Die Kamera schaut genau in Richtung −z, `forward = (0, 0, -1)`. Welcher
+      Vektor ist dann `right = normalize(cross(forward, (0, 1, 0)))`? Gib ihn
+      als `(x, y, z)` ein.
+    check:
+      type: answer
+      compare: regex
+      expect: '^\s*\(?\s*1(\.0*)?\s*[,;]\s*0(\.0*)?\s*[,;]\s*0(\.0*)?\s*\)?\s*$'
+    feedback:
+      - when: { matches: '^\s*\(?\s*-\s*1' }
+        say: Die Richtung stimmt fast, aber umgedreht. Rechne das Kreuzprodukt Komponente für Komponente.
+    hint: '`cross(a, b) = (a.y · b.z − a.z · b.y, a.z · b.x − a.x · b.z, a.x · b.y − a.y · b.x)` mit `a = (0, 0, −1)` und `b = (0, 1, 0)`.'
+    solution: '`(0 · 0 − (−1) · 1, (−1) · 0 − 0 · 0, 0 · 1 − 0 · 0) = (1, 0, 0)`. Rechts ist +x, wie bei den ersten Schritten ohne Kamera.'
+
+  - id: spiegeln
+    title: Abgeprallt
+    prompt: |
+      Ein Strahl mit der Richtung `dir = (0.6, −0.8, 0)` trifft den Boden mit
+      der Normalen `n = (0, 1, 0)`. Welche y-Komponente hat
+      `reflect(dir, n)`?
+    check:
+      type: number
+      expect: 0.8
+      tolerance: 0.001
+    feedback:
+      - when: { equals: -0.8 }
+        say: Das ist die y-Komponente vor dem Abprallen. Beim Spiegeln dreht sich der Teil entlang der Normalen um.
+      - when: { equals: 2.4 }
+        say: '`dot(dir, n)` ist −0.8; `dir − 2 · (−0.8) · n` ergibt für y −0.8 + 1.6.'
+    hint: '`reflect(dir, n) = dir − 2 · dot(dir, n) · n`. Rechne zuerst `dot(dir, n)`.'
+    solution: '`dot(dir, n) = −0.8`, also `dir − 2 · (−0.8) · (0, 1, 0) = (0.6, −0.8 + 1.6, 0) = (0.6, 0.8, 0)`: nach rechts oben, im selben Winkel, wie der Strahl kam.'
+
+  - id: grenzwinkel
+    title: Wann wird alles gespiegelt?
+    prompt: |
+      Ein Strahl läuft im Glas (Brechungsindex 1,5) auf die Oberfläche zu.
+      Ab welchem Winkel zur Normalen, in Grad, gibt es keinen gebrochenen
+      Strahl mehr, sondern nur noch Totalreflexion?
+    check:
+      type: number
+      expect: 41.8
+      tolerance: 0.3
+    feedback:
+      - when: { equals: 90 }
+        say: Schon vorher. Rechne mit dem Brechungsgesetz aus, bei welchem Winkel im Glas der Winkel draußen 90° wird.
+      - when: { equals: 48.2 }
+        say: Das ist der Winkel zur Oberfläche. Gefragt ist der Winkel zur Normalen.
+    hint: 'Draußen streift der Strahl die Oberfläche, wenn der Winkel dort 90° ist. Mit `1,5 · sin β = 1 · sin 90°` bekommst du β.'
+    solution: '`sin β = 1 / 1,5 ≈ 0,667`, also `β ≈ 41,8°`. In `glass` wird `k` genau dann negativ. Glasfasern leiten Licht, weil es flacher als dieser Winkel auf ihre Wand trifft.'
+
+  - id: rauschen
+    title: Warum rauscht es?
+    prompt: |
+      Nach dem ersten Durchgang sind die Kanten ausgefranst, nach 64 glatt.
+      Warum wird das Bild mit jedem Durchgang glatter?
+    check:
+      type: choice
+      options:
+        - 'Jeder Durchgang trifft einen anderen zufälligen Punkt im Pixel; der Durchschnitt vieler Strahlen ist die Mischfarbe, die der Pixel wirklich zeigt.'
+        - Jeder Durchgang rechnet mit einer höheren Auflösung.
+        - PixelRAM weichzeichnet das Bild mit jedem Aufruf von present() ein wenig.
+        - Die Strahlen werden mit jedem Durchgang genauer, weil EPS kleiner wird.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: '`W` und `H` bleiben gleich. Was sich ändert, ist die Zahl der Strahlen, über die ein Pixel mittelt.'
+      - when: { picked: 2 }
+        say: PixelRAM zeigt die Pixel genau so, wie `draw` sie setzt.
+      - when: { picked: 3 }
+        say: '`EPS` ist eine feste Zahl.'
+    solution: 'Ein Strahl sieht nur, was genau auf seinem Weg liegt. Viele Strahlen durch zufällige Punkte im Pixel decken die ganze Fläche des Pixels ab, und ihr Durchschnitt nähert sich der Farbe, die der Pixel im Mittel zeigen soll: am Rand einer Kugel eine Mischung aus Kugel und Himmel. Dasselbe Prinzip macht später die Schatten weich.'
+
+  - id: eigene-szene
+    title: Deine Szene
+    prompt: |
+      Bau dir eine eigene Szene: andere Kugeln, Farben, eine eigene Textur
+      oder eine der Ideen von oben. Beschreibe in zwei, drei Sätzen, was du
+      geändert hast und was dabei überraschend war.
+    check:
+      type: reflection
