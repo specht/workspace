@@ -5724,6 +5724,75 @@ div[data-stepper].stepper-lightbox ol.algo-stack {
 div[data-stepper].stepper-lightbox.stepper-stacked .algo-body {
     grid-template-columns: minmax(0, 1fr);
 }
+/* beside: the code in the second column also where the page's layout for a
+   narrow window (algo_stepper.js) puts it under the picture */
+div[data-stepper].stepper-lightbox:not(.stepper-stacked) .algo-body > .algo-side {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    margin-top: 0;
+}
+/* Too small a window to show everything at once (a phone): the lightbox
+   scrolls (stepper_keys.js, scroll). In one column the step's message
+   comes between the picture and the code: the body's parts become the
+   widget's own rows. The button that closes it and the arrows to the
+   other widgets stand in a strip of their own, below the lightbox upright
+   and to its right across, so that they cover nothing. */
+div[data-stepper].stepper-lightbox.stepper-scroll.stepper-stacked.algo-stepper {
+    display: flex;
+    flex-direction: column;
+}
+div[data-stepper].stepper-lightbox.stepper-scroll.stepper-stacked .algo-body {
+    display: contents;
+}
+/* the rows keep their height: the lightbox scrolls */
+div[data-stepper].stepper-lightbox.stepper-scroll.stepper-stacked > *,
+div[data-stepper].stepper-lightbox.stepper-scroll.stepper-stacked .algo-body > * {
+    flex-shrink: 0;
+}
+div[data-stepper].stepper-lightbox.stepper-scroll.stepper-stacked .algo-message {
+    order: 1;
+    min-height: 0;
+}
+div[data-stepper].stepper-lightbox.stepper-scroll.stepper-stacked .algo-body > .algo-side {
+    order: 2;
+    margin-top: 1em;
+}
+html.stepper-lightbox-scroll {
+    --stepper-strip: calc(2.75rem + 1.2rem);
+}
+html.stepper-lightbox-scroll div[data-stepper].stepper-lightbox {
+    bottom: var(--stepper-strip);
+}
+html.stepper-lightbox-scroll div[data-stepper].stepper-lightbox > .stepper-full {
+    position: fixed;
+    top: auto;
+    right: auto;
+    left: 0.6rem;
+    bottom: 0.6rem;
+    z-index: 2001;
+    width: 2.75rem;
+    height: 2.75rem;
+    font-size: 1rem;
+    background: var(--bs-body-bg);
+}
+html.stepper-lightbox-scroll .stepper-lightbox-nav {
+    right: 0.6rem;
+    bottom: 0.6rem;
+}
+@media (orientation: landscape) {
+    html.stepper-lightbox-scroll div[data-stepper].stepper-lightbox {
+        bottom: 1.5vh;
+        right: var(--stepper-strip);
+    }
+    html.stepper-lightbox-scroll div[data-stepper].stepper-lightbox > .stepper-full {
+        left: auto;
+        right: 0.6rem;
+        top: 0.6rem;
+    }
+    html.stepper-lightbox-scroll .stepper-lightbox-nav {
+        flex-direction: column;
+    }
+}
 .stepper-lightbox-nav {
     position: fixed;
     z-index: 2001;

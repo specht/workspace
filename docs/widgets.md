@@ -415,6 +415,14 @@ only to look nice.
   new window size or another widget fits afresh. The content stands in the
   middle of the window, for the classroom: moved down by half the room its
   tallest step leaves, so it does not move up and down from step to step.
+  On a window too small for that even at 12 px (a phone), the lightbox
+  scrolls instead (`stepper-scroll`): the text at 15 px, the picture across
+  the whole width and at most 85 % of the window high, the code beside it
+  only where the picture keeps its labels readable (as above), otherwise
+  everything in one column with the step message between picture and code.
+  The close button and the arrows to the other widgets stand in a strip of
+  their own below the lightbox (upright) or to its right (sideways), so they
+  cover nothing.
 - Colours come from the widget's CSS variables, so light and dark mode both
   work; no fixed colours in the drawing.
 

@@ -110,7 +110,8 @@ document.addEventListener('keydown', (event) => {
     // allows. Beside the code it keeps at least 60 % of the size it would
     // have across the whole width (at most 60 % of the height). Both layouts
     // are tried, the picture beside the code and above it; the one with the
-    // larger text wins.
+    // larger text wins. Where nothing fits at 12 px (a phone), the lightbox
+    // scrolls instead (scroll, below).
     // Again when the window changes or the widget redraws itself (a step).
     let fitting = 0;
     const LABEL = 12;
@@ -133,15 +134,17 @@ document.addEventListener('keydown', (event) => {
         const scale = scaleOf();
         return scale >= Math.min(uncapped, 0.7 * size / LABEL) - 0.001 && scale >= 0.6 * full - 0.001;
     };
+    // 0 when not even the smallest size fits
     const largest = (picture, hi = 32) => {
         let lo = 12;
+        let found = false;
         for (let i = 0; i < 9; i++) {
             const mid = (lo + hi) / 2;
-            if (fits(mid, picture)) lo = mid;
+            if (fits(mid, picture)) { lo = mid; found = true; }
             else hi = mid;
         }
         // a little below the limit, so that rounding leaves no scrolling
-        return Math.floor(lo * 0.98 * 10) / 10;
+        return found ? Math.floor(lo * 0.98 * 10) / 10 : 0;
     };
     // the layouts: the code beside the picture, 24em or 32em wide (fewer
     // lines wrap), or under it
@@ -149,6 +152,43 @@ document.addEventListener('keydown', (event) => {
     const use = ([side, stacked]) => {
         open.style.setProperty('--stepper-side', side);
         open.classList.toggle('stepper-stacked', stacked);
+    };
+    // Too small a window to show everything at once (a phone, upright or
+    // across): no fitting, the lightbox scrolls. The text at a fixed size,
+    // the picture as wide as the lightbox and at most 85 % as high, so that
+    // it is seen whole; the code beside it only where the picture keeps its
+    // labels at least 70 % of the text size and 60 % of the size it has
+    // across the whole width, else everything in one column, the step's
+    // message between the picture and the code (default.css). The button
+    // that closes it and the arrows to the other widgets get a strip of
+    // their own beside the lightbox (below it upright, to its right across),
+    // so that they cover nothing and do not scroll away. A step keeps the
+    // layout.
+    const SCROLL_SIZE = 15;
+    const scrolling = (on) => {
+        open.classList.toggle('stepper-scroll', on);
+        document.documentElement.classList.toggle('stepper-lightbox-scroll', on);
+    };
+    const scroll = (picture, layout) => {
+        scrolling(true);
+        open.style.setProperty('--lightbox-shift', '0px');
+        open.style.fontSize = `${SCROLL_SIZE}px`;
+        fitted = { widget: open, scroll: true, layout };
+        if (!picture) return;
+        const view = picture.viewBox.baseVal;
+        const cap = () => { picture.style.maxHeight = `${Math.floor(0.85 * open.clientHeight)}px`; };
+        const scaleOf = () => { const box = picture.getBoundingClientRect(); return view && view.width ? Math.min(box.width / view.width, box.height / view.height) : 1; };
+        if (!layout) {
+            use(LAYOUTS[2]);
+            cap();
+            const full = scaleOf();
+            use(LAYOUTS[0]);
+            cap();
+            const beside = scaleOf();
+            fitted.layout = beside * LABEL >= 0.7 * SCROLL_SIZE && beside >= 0.6 * full ? LAYOUTS[0] : LAYOUTS[2];
+        }
+        use(fitted.layout);
+        cap();
     };
     // fitted: the size and layout chosen when the widget opened (or the
     // window changed); a step keeps them as long as they fit, so that the
@@ -160,6 +200,8 @@ document.addEventListener('keydown', (event) => {
         // a step that still fits keeps size and layout; one that does not
         // gets the best layout again, at most as large as before
         const keep = !fresh && fitted && fitted.widget === open;
+        if (keep && fitted.scroll) { scroll(picture, fitted.layout); return; }
+        scrolling(false);
         // In the middle of the window, for the classroom: the content moved
         // down by half the room its tallest step leaves (measured with the
         // size, at the same steps); never so far that a step scrolls
@@ -201,7 +243,9 @@ document.addEventListener('keydown', (event) => {
             shift();
         };
         if (!picture) {
-            fitted = { widget: open, size: probe(() => largest(null, hi)) };
+            const size = probe(() => largest(null, hi));
+            if (!size) { scroll(null); return; }
+            fitted = { widget: open, size };
             center();
             return;
         }
@@ -211,12 +255,14 @@ document.addEventListener('keydown', (event) => {
             const size = probe(() => largest(picture, hi));
             if (!best || size > best.size + 0.2) best = { layout, size };
         }
+        if (!best.size) { scroll(picture); return; }
         use(best.layout);
         fitted = { widget: open, size: best.size };
         center();
     };
     const unfit = (widget) => {
-        widget.classList.remove('stepper-stacked');
+        widget.classList.remove('stepper-stacked', 'stepper-scroll');
+        document.documentElement.classList.remove('stepper-lightbox-scroll');
         widget.style.removeProperty('--lightbox-shift');
         widget.style.removeProperty('--stepper-side');
         const picture = widget.querySelector('.algo-body > svg.algo-picture');
