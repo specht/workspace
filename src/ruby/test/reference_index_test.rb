@@ -53,6 +53,36 @@ class ReferenceIndexTest < Minitest::Test
         assert_equal '', sections[2][:text]
     end
 
+    def test_search_sections_leave_out_what_the_page_does_not_show
+        root = Nokogiri::HTML(<<~HTML)
+            <h2 id='terminal'>Terminal öffnen</h2>
+            <!-- tutorial-screenshot
+            hide-left-sidebar
+            crop-bottom: 300
+            -->
+            <p>Öffne das Terminal mit <code>Strg</code>+<code>J</code>.<!-- inline note --></p>
+            <!-- part: grundlagen -->
+            <div class='widget'><script>var steps = [];</script><style>.widget { color: red; }</style><template><p>Vorlage</p></template>Schritt 1</div>
+            <noscript>Ohne JavaScript</noscript>
+            <pre><code>ls -l</code></pre>
+            <p>Mit <code>ls</code> siehst du die Dateien, mit <code>ls</code> <code>-a</code> auch die versteckten.</p>
+            <h2 id='leer'>Leer</h2>
+            <!-- nur ein Kommentar -->
+        HTML
+        sections = ReferenceIndex.search_sections(root)
+        text = sections[0][:text]
+        %w[tutorial-screenshot hide-left-sidebar crop-bottom inline part: steps color Vorlage JavaScript].each do |hidden|
+            refute_includes text, hidden
+        end
+        assert_equal 'Öffne das Terminal mit Strg+J. Schritt 1 ls -l Mit ls siehst du die Dateien, mit ls -a auch die versteckten.', text
+        assert_equal 'Strg J ls -a', sections[0][:code], 'inline code once each, code blocks not'
+        assert_equal '', sections[1][:text]
+        assert_equal '', sections[1][:code]
+        index = JSON.parse(Nokogiri::HTML(ReferenceIndex.html([{ :slug => 'reference/workspace', :title => 'Workspace',
+            :section_label => 'Workspace', :outline => [], :sections => sections }])).at_css('#reference-search-index').text)
+        assert_equal 'Strg J ls -a', index[0]['sections'][0]['code']
+    end
+
     def test_lead_sentence
         assert_nil ReferenceIndex.lead_sentence('')
         assert_equal 'Kurz: so.', ReferenceIndex.lead_sentence('Kurz: so. Und weiter.')

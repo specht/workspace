@@ -5,9 +5,12 @@
 </div>
 <script>
 // Handbuch search: while something is typed, the sections that contain every
-// word replace the cards, those with the words in their heading first. Each
-// result links to its section and shows where the words occur. The query
-// stays in the address (?q=), so »back« from a result returns to the list.
+// word replace the cards. A page whose name is the query comes first, then
+// the sections with the words in their heading, in code, as whole words;
+// »als« is no hit for »ls«. A long word found nowhere also finds its start
+// and its parts (»zuschneiden« finds »Zuschnitt«). Each result links to its
+// section and shows where the words occur. The query stays in the address
+// (?q=), so »back« from a result returns to the list.
 (function () {
     var input = document.getElementById('reference-filter');
     var data = document.getElementById('reference-search-index');
@@ -21,12 +24,177 @@
         });
     };
 
-    // The text with every occurrence of the words in <mark>.
-    var mark = function (text, words) {
-        var lower = text.toLowerCase();
+    // Lower case, ä ö ü as a o u (»Baum« finds »Bäume«, »binar« finds
+    // »binär«), one character for one, so positions stay those of the text.
+    var umlauts = { 'ä': 'a', 'ö': 'o', 'ü': 'u' };
+    var fold = function (s) {
+        var lower = s.toLowerCase();
+        if (lower.length !== s.length) lower = s.split('').map(function (c) { var l = c.toLowerCase(); return l.length === 1 ? l : c; }).join('');
+        return lower.replace(/[äöü]/g, function (c) { return umlauts[c]; });
+    };
+    var wordChar = /[\p{L}\p{N}_]/u;
+    var isWord = function (c) { return c !== undefined && c !== '' && wordChar.test(c); };
+
+    // Where a term stands in a text: 3 a whole word (»ls -l«), 2 the start
+    // of a word (»Tabellen« for »tabelle«), 1 inside a word (»als« for
+    // »ls«), 0 not at all; with the position of its best occurrence.
+    var locate = function (hay, term) {
+        var best = { q: 0, i: -1 };
+        var open = !isWord(term[0]), close = !isWord(term[term.length - 1]);
+        for (var i = hay.indexOf(term); i >= 0; i = hay.indexOf(term, i + 1)) {
+            var start = open || !isWord(hay[i - 1]);
+            var q = start ? (close || !isWord(hay[i + term.length]) ? 3 : 2) : 1;
+            if (q > best.q) best = { q: q, i: i };
+            if (q === 3) break;
+        }
+        return best;
+    };
+
+    // How much a match counts where it stands. A short term (ls, rm, for)
+    // inside a word is nearly nothing: »als« is no hit for »ls«.
+    var WEIGHT = { heading: 10, code: 5, title: 4, text: 2 };
+    var quality = function (q, short) {
+        return q === 3 ? 1 : q === 2 ? (short ? 0.3 : 0.8) : q === 1 ? (short ? 0.05 : 0.4) : 0;
+    };
+
+    // German words the Handbuch writes in English, as its code does.
+    var SYNONYMS = [['zentrier', ['center']], ['mittig', ['center']], ['tabell', ['table']]];
+
+    index.forEach(function (page) {
+        page.folded = { title: fold(page.page), words: (page.words || []).map(fold) };
+        page.sections.forEach(function (section) {
+            section.folded = { heading: fold(section.heading), text: fold(section.text), code: fold(section.code || '') };
+        });
+    });
+
+    var occurs = function (term) {
+        return index.some(function (page) {
+            return page.folded.title.indexOf(term) >= 0 || page.sections.some(function (section) {
+                return section.folded.heading.indexOf(term) >= 0 || section.folded.text.indexOf(term) >= 0;
+            });
+        });
+    };
+
+    // Every word of the Handbuch, sorted, built the first time a word is
+    // found nowhere.
+    var vocabulary = null;
+    var words = function () {
+        if (vocabulary) return vocabulary;
+        var seen = {};
+        index.forEach(function (page) {
+            var all = [page.folded.title].concat(page.sections.map(function (s) { return s.folded.heading + ' ' + s.folded.text; }));
+            all.join(' ').split(/[^\p{L}\p{N}_]+/u).forEach(function (w) { if (w.length > 1) seen[w] = true; });
+        });
+        vocabulary = { has: seen, sorted: Object.keys(seen).sort() };
+        return vocabulary;
+    };
+    var hasPrefix = function (prefix) {
+        var sorted = words().sorted, lo = 0, hi = sorted.length;
+        while (lo < hi) {
+            var mid = (lo + hi) >> 1;
+            if (sorted[mid] < prefix) lo = mid + 1; else hi = mid;
+        }
+        return lo < sorted.length && sorted[lo].indexOf(prefix) === 0;
+    };
+
+    // What a word of the query may match: the word itself and its English
+    // name in code. A long word found nowhere also matches its parts
+    // (»Binärbaum«: »binär« and »Baum«) and its start (»zuschneiden«:
+    // »zuschn«, as in »Zuschnitt«); those count less.
+    var expand = function (word) {
+        var alternatives = [{ terms: [word], factor: 1 }];
+        SYNONYMS.forEach(function (synonym) {
+            if (word.indexOf(synonym[0]) === 0) synonym[1].forEach(function (term) { alternatives.push({ terms: [term], factor: 0.8 }); });
+        });
+        if (word.length < 6 || !/^[\p{L}]+$/u.test(word) || alternatives.some(function (a) { return occurs(a.terms[0]); })) return alternatives;
+        for (var i = 4; i <= word.length - 4; i++) {
+            var left = word.slice(0, i), right = word.slice(i), stem = right.replace(/(en|es|er|e|n|s)$/, '');
+            var head = words().has[right] ? right : stem.length >= 4 && words().has[stem] ? stem : null;
+            if (head && hasPrefix(left)) {
+                alternatives.push({ terms: [left, head], factor: 0.7 });
+                break;
+            }
+        }
+        for (var n = word.length - 1; n >= 5; n--) {
+            if (hasPrefix(word.slice(0, n))) {
+                alternatives.push({ terms: [word.slice(0, n)], factor: 0.6 });
+                break;
+            }
+        }
+        return alternatives;
+    };
+
+    // How well a section answers one term: a heading counts most, then code
+    // (`ls`, `<table>`), the page's title, the text.
+    var termScore = function (page, section, term) {
+        var short = term.length <= 3;
+        var headingQ = locate(section.folded.heading, term).q, titleQ = locate(page.folded.title, term).q;
+        var codeQ = locate(section.folded.code, term).q, textQ = locate(section.folded.text, term).q;
+        if (!headingQ && !titleQ && !textQ) return -1;
+        return WEIGHT.heading * quality(headingQ, short) + WEIGHT.code * quality(codeQ, short) +
+            WEIGHT.title * quality(titleQ, short) + WEIGHT.text * quality(textQ, short);
+    };
+
+    var search = function (query) {
+        var queryWords = fold(query).split(/\s+/).filter(Boolean);
+        var expanded = queryWords.map(expand);
+        var terms = [];
+        expanded.forEach(function (alternatives) {
+            alternatives.forEach(function (a) { a.terms.forEach(function (t) { if (terms.indexOf(t) < 0) terms.push(t); }); });
+        });
+        var joined = queryWords.join(' ');
+        var hits = [];
+        index.forEach(function (page, p) {
+            var top = { id: '', heading: page.page, text: page.sections.length ? page.sections[0].text : '' };
+            top.folded = page.sections.length ? page.sections[0].folded : { heading: '', text: '', code: '' };
+            // The query is the page's name (»Personen«) or one of its search
+            // words (search: in its meta block, »Regex«): the page itself,
+            // at its top, before everything else.
+            if (page.folded.title === joined || page.folded.words.indexOf(joined) >= 0) {
+                hits.push({ page: page, section: top, score: 1000, order: p * 1000 - 1 });
+            } else if (page.folded.words.length) {
+                var both = page.folded.title + ' ' + page.folded.words.join(' ');
+                var inWords = page.folded.words.join(' ');
+                if (queryWords.every(function (w) { return both.indexOf(w) >= 0; }) && queryWords.some(function (w) { return inWords.indexOf(w) >= 0; })) {
+                    hits.push({ page: page, section: top, score: 500, order: p * 1000 - 1 });
+                }
+            }
+            page.sections.forEach(function (section, s) {
+                var score = 0;
+                for (var k = 0; k < expanded.length; k++) {
+                    var best = -1;
+                    expanded[k].forEach(function (a) {
+                        var sum = 0;
+                        for (var t = 0; t < a.terms.length; t++) {
+                            var one = termScore(page, section, a.terms[t]);
+                            if (one < 0) return;
+                            sum += one;
+                        }
+                        best = Math.max(best, a.factor * sum / a.terms.length);
+                    });
+                    if (best < 0) return;
+                    score += best;
+                }
+                hits.push({ page: page, section: section, score: score, order: p * 1000 + s });
+            });
+        });
+        hits.sort(function (a, b) { return b.score - a.score || a.order - b.order; });
+        return { terms: terms, hits: hits.slice(0, 40) };
+    };
+
+    // The text with the terms in <mark>. A short term only where it starts a
+    // word, if it does that anywhere in the text (»ls«, not the »ls« in »als«).
+    var mark = function (text, terms) {
+        var lower = fold(text);
         var ranges = [];
-        words.forEach(function (w) {
-            for (var i = lower.indexOf(w); i >= 0; i = lower.indexOf(w, i + w.length)) ranges.push([i, i + w.length]);
+        terms.forEach(function (term) {
+            var found = [], starts = [];
+            var open = !isWord(term[0]);
+            for (var i = lower.indexOf(term); i >= 0; i = lower.indexOf(term, i + 1)) {
+                found.push([i, i + term.length]);
+                if (open || !isWord(lower[i - 1])) starts.push([i, i + term.length]);
+            }
+            ranges = ranges.concat(term.length <= 3 && starts.length ? starts : found);
         });
         ranges.sort(function (a, b) { return a[0] - b[0]; });
         var out = '', at = 0;
@@ -38,13 +206,15 @@
         return out + esc(text.slice(at));
     };
 
-    // About two lines of text around the first word found.
-    var snippet = function (text, words) {
-        var lower = text.toLowerCase();
-        var first = Math.min.apply(null, words.map(function (w) {
-            var i = lower.indexOf(w);
-            return i < 0 ? Infinity : i;
-        }));
+    // About two lines of text around the best place a term stands: a whole
+    // word before the start of one before the inside of one.
+    var snippet = function (text, terms) {
+        var lower = fold(text);
+        var first = Infinity, bestQ = 0;
+        terms.forEach(function (term) {
+            var at = locate(lower, term);
+            if (at.q > bestQ || (at.q === bestQ && at.q > 0 && at.i < first)) { bestQ = at.q; first = at.i; }
+        });
         if (first === Infinity) first = 0;
         var start = Math.max(0, first - 60);
         if (start > 0) start = text.indexOf(' ', start) + 1;
@@ -56,30 +226,7 @@
         var open = text.lastIndexOf('\\(', end);
         var close = text.indexOf('\\)', open);
         if (open >= start && close >= end) end = close + 2;
-        return (start > 0 ? '… ' : '') + mark(text.slice(start, end), words) + (end < text.length ? ' …' : '');
-    };
-
-    var search = function (query) {
-        var words = query.toLowerCase().split(/\s+/).filter(Boolean);
-        var hits = [];
-        index.forEach(function (page, p) {
-            // a page's search words (search: in its meta block) find the page
-            // itself, once, at its top, before its sections
-            var words_ = (page.words || []).join(' ').toLowerCase();
-            if (words_ && words.every(function (w) { return (page.page.toLowerCase() + ' ' + words_).indexOf(w) >= 0; })
-                && words.some(function (w) { return words_.indexOf(w) >= 0; })) {
-                hits.push({ page: page, section: { id: '', heading: page.page, text: page.sections.length ? page.sections[0].text : '' }, score: 100, order: p * 1000 - 1 });
-            }
-            page.sections.forEach(function (section, s) {
-                var heading = section.heading.toLowerCase();
-                var all = page.page.toLowerCase() + ' ' + heading + ' ' + section.text.toLowerCase();
-                if (!words.every(function (w) { return all.indexOf(w) >= 0; })) return;
-                var score = words.filter(function (w) { return heading.indexOf(w) >= 0; }).length;
-                hits.push({ page: page, section: section, score: score, order: p * 1000 + s });
-            });
-        });
-        hits.sort(function (a, b) { return b.score - a.score || a.order - b.order; });
-        return { words: words, hits: hits.slice(0, 40) };
+        return (start > 0 ? '… ' : '') + mark(text.slice(start, end), terms) + (end < text.length ? ' …' : '');
     };
 
     var show = function () {
@@ -98,8 +245,8 @@
             : found.hits.map(function (hit) {
                 return "<a class='reference-result' href='" + esc(hit.page.url + (hit.section.id ? '#' + hit.section.id : '')) + "'>" +
                     "<span class='reference-result-path'>" + esc(hit.page.page.indexOf(hit.page.area) === 0 ? hit.page.page : hit.page.area + ' · ' + hit.page.page) + '</span>' +
-                    "<span class='reference-result-heading'>" + mark(hit.section.heading, found.words) + '</span>' +
-                    (hit.section.text ? "<span class='reference-result-snippet'>" + snippet(hit.section.text, found.words) + '</span>' : '') +
+                    "<span class='reference-result-heading'>" + mark(hit.section.heading, found.terms) + '</span>' +
+                    (hit.section.text ? "<span class='reference-result-snippet'>" + snippet(hit.section.text, found.terms) + '</span>' : '') +
                     '</a>';
             }).join('');
         // the formulas in the snippets, as on the pages (the template renders

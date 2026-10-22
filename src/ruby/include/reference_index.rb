@@ -51,21 +51,39 @@ module ReferenceIndex
     end
 
     # The text of each h2 and h3 section of an anchored page, for the search:
-    # [{ id:, heading:, text: }]. A section runs to the next h2 or h3.
+    # [{ id:, heading:, text:, code:, lead: }]. A section runs to the next h2
+    # or h3. code holds the inline code of the section (`ls`, `<table>`), one
+    # piece each, so the search ranks a section that names a command above
+    # one where the letters stand inside a word (»als«).
     def self.search_sections(root)
         root.css('h2, h3').map do |heading|
             id = heading['id'] || part_id(heading)
             next nil unless id
             text = +''
+            code = []
             lead = nil
             node = heading.next_sibling
             while node && !(node.element? && %w[h2 h3].include?(node.name))
-                text << ' ' << plain_text(node) unless node.element? && %w[script style].include?(node.name)
+                text << ' ' << plain_text(node)
+                code.concat(inline_code(node))
                 lead ||= clean(node.text) if node.element? && node.name == 'p' && !clean(node.text).empty?
                 node = node.next_sibling
             end
-            { :id => id, :heading => heading_text(heading), :text => clean(text)[0, 4000], :lead => lead }
+            { :id => id, :heading => heading_text(heading), :text => clean(text)[0, 4000],
+              :code => code.uniq.join(' ')[0, 1000], :lead => lead }
         end.compact
+    end
+
+    # What a reader never sees: the recipes of the screenshots and other
+    # comments, scripts, styles, templates.
+    INVISIBLE = %w[script style template noscript].freeze
+
+    # The texts of the code elements in a node that are not in a code block.
+    def self.inline_code(node)
+        return [] unless node.element?
+        codes = node.name == 'code' ? [node] : node.css('code')
+        codes.reject { |c| c.ancestors('pre').any? || c.ancestors(INVISIBLE.join(', ')).any? }
+            .map { |c| clean(c.text) }.reject(&:empty?)
     end
 
     def self.clean(text)
@@ -86,9 +104,13 @@ module ReferenceIndex
 
     # Text of a node with a space after each block, so table cells and list
     # items do not run into each other (»falsch BOOLEAN«, not »falschBOOLEAN«).
+    # Only what the page shows: a comment (the recipe of a screenshot, a
+    # part marker) or a script gives nothing.
     def self.plain_text(node)
-        return node.text unless node.element?
+        return node.text if node.text? || node.cdata?
+        return '' unless node.element? && !INVISIBLE.include?(node.name)
         copy = node.dup
+        copy.css(INVISIBLE.join(', ')).remove
         copy.css(BLOCKS.join(', ')).each { |block| block.add_next_sibling(Nokogiri::XML::Text.new(' ', block.document)) }
         copy.text
     end
@@ -142,7 +164,7 @@ module ReferenceIndex
         index = pages.map do |page|
             { :url => "/#{page[:slug]}", :page => strip_tags(page[:title]), :area => page[:section_label].to_s,
               :words => page[:search_words] || [],
-              :sections => (page[:sections] || []).map { |s| { :id => s[:id], :heading => s[:heading], :text => s[:text] } } }
+              :sections => (page[:sections] || []).map { |s| { :id => s[:id], :heading => s[:heading], :text => s[:text], :code => s[:code].to_s } } }
         end
         # </script> inside the text must not end the script element.
         io << "<script type='application/json' id='reference-search-index'>#{index.to_json.gsub('</', '<\\/')}</script>"
