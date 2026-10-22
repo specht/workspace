@@ -926,17 +926,95 @@ Nach hinten wird es dunkel. Sieh dir die Verläufe an Boden und Decke genau an: 
 
 ## Texturen
 
-### Bilder aus Code
+### Texturen aus dem 2D Game Studio
 
-Eine Wand aus einer Farbe ist langweilig. Eine **Textur** ist ein kleines Bild, hier 64 × 64 **Texel** (Bildpunkte einer Textur), das auf die Wand gelegt wird. Die Texturen dieses Raycasters sind nicht gemalt: Das Programm erzeugt sie beim Start, Ziegel mit Fugen, Steinblöcke, Bretter mit Maserung, Metallplatten mit Nieten, Moos, Bodenfliesen und eine Decke mit Balken. Jedes Texel ist eine Nummer der Palette.
+Eine Wand aus einer Farbe ist langweilig. Eine **Textur** ist ein kleines Bild, hier 64 × 64 **Texel** (Bildpunkte einer Textur), das auf die Wand gelegt wird. Jedes Texel ist eine Nummer der Palette, und genau da hilft die Palette mit 16 Farbtönen nicht mehr: Gezeichnete Texturen haben Farben, die keiner vorher geplant hat.
 
-Wie die Texturen entstehen, ist eine eigene kleine Kunst und nicht das Thema hier; kopiere den Code unter `wall_color`:
+In echten Spielen war es deshalb umgekehrt: Grafiker zeichneten die Texturen, und ein Werkzeug suchte danach eine Palette von 256 Farben, mit der alle Texturen möglichst gut aussehen. Die Schattentabelle rechnete es auch aus: für jede Farbe und jede Helligkeit die Farbe der Palette, die am nächsten liegt. Bei DOOM heißen die beiden PLAYPAL und COLORMAP.
 
-```c_copy
+So ein Werkzeug bekommst du fertig, `palette.rb`, dazu ein Bild mit sieben Texturen: Boden, fünf Wandarten und Decke. Lade beide in deinen Ordner, installiere einmal das Rubygem `chunky_png`, das PNG-Bilder liest und schreibt, und lass das Werkzeug laufen:
+
+```bash
+wget https://github.com/specht/workspace-files/raw/main/raycaster/palette.rb
+wget https://github.com/specht/workspace-files/raw/main/raycaster/textures.png
+gem install chunky_png
+ruby palette.rb textures.png
+```
+
+Es schreibt `palette.h` mit der Palette, der Schattentabelle und den Texturen als Farbnummern, und für jeden Schritt ein Bild. Öffne sie im Explorer.
+
+<!-- tutorial-screenshot
+write-file: palette.rb <- file:werkzeug/palette.rb
+write-file: textures.png <- file:werkzeug/textures.png
+terminal-open
+terminal-run: gem install chunky_png
+terminal-wait-for-prompt: 120
+terminal-run: ruby palette.rb textures.png
+wait-for-file-newer: raycaster/palette.h <- raycaster/textures.png
+terminal-wait-for-prompt
+terminal-expect-no-text: Error
+image-file: raycaster/2-rampen.png 2
+-->
+<img class='full' src='palette-rampen.webp' alt='Ein breites Band aus Farbfeldern: jede Spalte eine Grundfarbe aus den Texturen, Ziegelrot, Holzbraun, Steingrau, Metallblau, Moosgrün und andere, oben in voller Helligkeit, nach unten bis Schwarz.'>
+
+Erst bringt es alle Texturen auf 40 Grundfarben und macht aus jeder eine Rampe mit 16 Helligkeiten, oben hell, unten schwarz. Aus diesen 640 Farben sucht es 240 aus, dazu kommen 16 für die Karte und die Anzeige, in der ersten Zeile:
+
+<!-- tutorial-screenshot
+image-file: raycaster/3-palette.png 2
+-->
+<img class='drawing' src='palette-256.webp' style='width: 18em; image-rendering: pixelated;' alt='256 Farbfelder in 16 Zeilen: oben schwarz, Grau, Gelb, Blau, Rot und Weiß für die Karte, dann sehr viele fast schwarze Farben, Grautöne, Rot- und Brauntöne, Grün und Blau, jeweils von dunkel nach hell.'>
+
+Sieh dir die Palette genau an: Viele Farben sind fast schwarz und fast grau. Ganz dunkel sehen Ziegelrot, Moosgrün und Metallblau beinahe gleich aus, und die Palette fasst sie zusammen. Darum werden Farben in dunklen Gängen grauer, so wie in DOOM.
+
+Damit ersetzt `palette.h` deine Palette: Die Farbtöne (das `enum` mit `GREY` bis `DEEP_BLUE`), `ramp_rgb` und `COLOR` kannst du löschen, `LEVELS` bleibt. Oben, unter `#include <math.h>`:
+
+```c
+// Palette, Schattentabelle und Texturen, gemacht von palette.rb
+#include "palette.h"
+```
+
+`setup_palette` kopiert jetzt nur noch:
+
+```c
+// die Farben und die Schattentabelle aus palette.h
+void setup_palette(void)
+{
+    for (int i = 0; i < 256; i++)
+        set_palette(i, palette_rgb[i][0], palette_rgb[i][1], palette_rgb[i][2]);
+
+    for (int light = 0; light < LEVELS; light++)
+        for (int color = 0; color < 256; color++)
+            shade[light][color] = palette_shade[light][color];
+}
+```
+
+Die Farben der Karte sind die reservierten 0 bis 15, und eine Wand zeigt auf der Karte die mittlere Farbe ihrer Textur:
+
+```c
+// die Farben für die Karte: die reservierten Farben 0 bis 15 der Palette
+enum
+{
+    BLACK = UI_BLACK,
+    MAP_FLOOR = UI_MAP_FLOOR,
+    VIEW = UI_VIEW,
+    PLAYER = UI_PLAYER,
+    RAY = UI_RAY,
+    RAY_SIDE = UI_RAY_SIDE,
+    CAMERA_PLANE = UI_CAMERA_PLANE
+};
+```
+
+```c
+    return palette_average[cell - '0'];
+```
+
+Unter `wall_color` kommen die Texturen, in der Reihenfolge der Kacheln im Bild:
+
+```c
 // Texturen: 64 x 64 Texel, jedes Texel ist eine Farbnummer der Palette
 #define TEX 64
-#define PI 3.14159265358979
 
+// die Texturen in der Reihenfolge der Kacheln in textures.png
 enum
 {
     TEX_FLOOR,
@@ -951,179 +1029,21 @@ enum
 
 uint8_t texture[TEXTURES][TEX][TEX];
 
-// ein kleiner Zufallsgenerator: eine Zahl von 0 bis n - 1, auf jedem
-// Rechner dieselbe Folge, so sehen die Texturen überall gleich aus
-unsigned int seed = 1;
-
-int random_below(int n)
-{
-    seed = seed * 1103515245 + 12345;
-    return (seed >> 16) % n;
-}
-
-// eine Zufallszahl von -amount bis amount
-int noise(int amount)
-{
-    return random_below(2 * amount + 1) - amount;
-}
-
-// setzt ein Texel; was über den Rand hinausgeht, kommt auf der anderen
-// Seite wieder herein, so passen die Kacheln nahtlos aneinander
-void put_texel(int t, int x, int y, int ramp, int level)
-{
-    if (level < 0)
-        level = 0;
-    if (level > LEVELS - 1)
-        level = LEVELS - 1;
-    texture[t][y & (TEX - 1)][x & (TEX - 1)] = COLOR(ramp, level);
-}
-
-// Ziegel 16 x 8 mit Fugen, jede zweite Reihe versetzt
-void make_bricks(int t)
-{
-    for (int y = 0; y < TEX; y++)
-        for (int x = 0; x < TEX; x++)
-        {
-            int row = y / 8;
-            int shifted = (x + row % 2 * 8) % TEX;
-            int bx = shifted % 16, by = y % 8;
-            int brick = row * 4 + shifted / 16;
-            int level = 11 + brick * 5 % 3 + noise(1);
-            if (by == 0)
-                level += 1; // Licht von oben
-            if (by == 6)
-                level -= 2; // Schatten unten
-            if (bx == 15 || by == 7)
-                put_texel(t, x, y, MORTAR, 8 + noise(1));
-            else
-                put_texel(t, x, y, brick * 7 % 5 == 0 ? TERRACOTTA : BRICK, level);
-        }
-}
-
-// Steinblöcke 32 x 16: oben und links heller, unten und rechts dunkler
-void make_blocks(int t, int ramp)
-{
-    for (int y = 0; y < TEX; y++)
-        for (int x = 0; x < TEX; x++)
-        {
-            int row = y / 16;
-            int shifted = (x + row % 2 * 16) % TEX;
-            int bx = shifted % 32, by = y % 16;
-            int block = row * 2 + shifted / 32;
-            int level = 10 + block % 3 + noise(1);
-            if (bx >= 30 || by >= 14)
-                level = 4 + noise(1);
-            else if (bx < 2 || by < 2)
-                level += 2;
-            else if (bx >= 27 || by >= 11)
-                level -= 2;
-            if (random_below(16) == 0)
-                level -= 3;
-            put_texel(t, x, y, ramp, level);
-        }
-}
-
-// senkrechte Bretter, 16 breit, mit Maserung und einem Stoß je Brett
-void make_planks(int t)
-{
-    for (int y = 0; y < TEX; y++)
-        for (int x = 0; x < TEX; x++)
-        {
-            int plank = x / 16, px = x % 16;
-            double wave = sin((y + plank * 19) * 2 * PI / 32) * 2.5;
-            int level = 11 + plank % 2 + (int)(sin(px * 1.5 + wave) * 1.4);
-            if (px == 15)
-                put_texel(t, x, y, DARK_WOOD, 3);
-            else if (y == (plank * 23 + 9) % TEX)
-                put_texel(t, x, y, DARK_WOOD, 6);
-            else
-                put_texel(t, x, y, WOOD, px == 0 ? level + 2 : level);
-        }
-}
-
-// Metalltafel mit Rahmen, zwei Rippen und Nieten
-void make_metal(int t)
-{
-    for (int y = 0; y < TEX; y++)
-        for (int x = 0; x < TEX; x++)
-        {
-            int edge = fmin(fmin(x, TEX - 1 - x), fmin(y, TEX - 1 - y));
-            int level = (x % 3 == 0) ? 10 : 9; // gebürstet: feine Streifen
-            if (edge < 3)
-                level = 6;
-            else if (edge == 3 || y % 21 == 20)
-                level = 13;
-            else if (y % 21 == 0)
-                level = 5;
-            put_texel(t, x, y, METAL, level);
-        }
-    for (int y = 8; y < TEX; y += 21)
-        for (int x = 8; x < TEX; x += 47)
-        {
-            put_texel(t, x, y, GREY, 14);
-            put_texel(t, x + 1, y + 1, DEEP_BLUE, 4);
-        }
-}
-
-// Steinblöcke mit Moosflecken, unten mehr als oben
-void make_moss(int t)
-{
-    make_blocks(t, STONE);
-    for (int i = 0; i < 24; i++)
-    {
-        int cx = random_below(TEX);
-        int cy = (i < 16) ? 36 + random_below(28) : random_below(TEX);
-        int r = 3 + random_below(6);
-        for (int dy = -r; dy <= r; dy++)
-            for (int dx = -r; dx <= r; dx++)
-                // innen dicht, zum Rand hin immer lückenhafter
-                if (random_below(r * r) > dx * dx + dy * dy)
-                    put_texel(t, cx + dx, cy + dy, MOSS, 7 + random_below(6));
-    }
-}
-
-// Bodenfliesen 16 x 16 wie ein Schachbrett
-void make_tiles(int t)
-{
-    for (int y = 0; y < TEX; y++)
-        for (int x = 0; x < TEX; x++)
-        {
-            int tx = x / 16, ty = y / 16;
-            int level = 11 + (tx * 5 + ty * 3) % 3;
-            if (x % 16 == 0 || y % 16 == 0)
-                put_texel(t, x, y, MORTAR, 5);
-            else
-                put_texel(t, x, y, (tx + ty) % 2 == 0 ? SAND : TERRACOTTA, level);
-        }
-}
-
-// Decke: Putzfelder zwischen Holzbalken
-void make_ceiling(int t)
-{
-    for (int y = 0; y < TEX; y++)
-        for (int x = 0; x < TEX; x++)
-        {
-            int bx = x % 32, by = y % 32;
-            if (bx < 4 || by < 4)
-                put_texel(t, x, y, DARK_WOOD, (bx == 3 || by == 3) ? 5 : 9 + noise(1));
-            else
-                put_texel(t, x, y, PLASTER, 8 + noise(1));
-        }
-}
-
+// die Texturen aus palette.h
 void make_textures(void)
 {
-    make_tiles(TEX_FLOOR);
-    make_bricks(TEX_BRICK);
-    make_blocks(TEX_STONE, STONE);
-    make_planks(TEX_WOOD);
-    make_metal(TEX_METAL);
-    make_moss(TEX_MOSS);
-    make_ceiling(TEX_CEILING);
+    for (int t = 0; t < TEXTURES; t++)
+        for (int y = 0; y < TEX; y++)
+            for (int x = 0; x < TEX; x++)
+                texture[t][y][x] = palette_texture[t][y][x];
 }
 ```
 
-`random_below` ist ein eigener kleiner Zufallsgenerator: `rand()` aus C liefert auf verschiedenen Rechnern verschiedene Folgen, so sehen die Texturen überall gleich aus.
+Boden und Decke bekommen erst im nächsten Abschnitt Texturen; bis dahin nehmen sie die mittlere Farbe ihrer Textur:
+
+```c
+        int color = palette_average[(y < H / 2) ? TEX_CEILING : TEX_FLOOR];
+```
 
 ### Wo trifft der Strahl die Wand?
 
@@ -1177,6 +1097,7 @@ Und `main` erzeugt die Texturen nach der Palette:
 
 <!-- tutorial-screenshot
 write-file: raycaster.c <- file:stufen/09-texturen.c
+write-file: palette.h <- file:stufen/palette.h
 terminal-open
 terminal-run: make PROGRAM=raycaster
 terminal-wait-for-prompt
@@ -1190,6 +1111,23 @@ hook: hold Tab KeyW 1.97 ArrowRight 0.08
 crop-element: #canvas
 -->
 <img class='full fit-width' src='texturen.webp' alt='Die Wände sind jetzt aus roten Ziegeln mit hellen Fugen, nach hinten dunkler; Boden und Decke sind noch einfarbig.'>
+
+### Eigene Texturen zeichnen
+
+Zeichne deine eigenen Texturen im [2D Game Studio](https://2d.hackschule.de/), wie die Kacheln der [Klötzchenwelt](/raylib):
+
+1. Lege ein neues Sprite an, zum Beispiel »Wände«. Unter »Funktionen« › »Sprite« › »Größe ändern« stellst du 64 × 64 Pixel ein; 16 oder 32 gehen auch, das Werkzeug vergrößert sie auf 64.
+2. Zeichne sieben Frames desselben Zustands, in dieser Reihenfolge: Boden, die Wandarten 1 bis 5 (in der Karte Ziegel, Stein, Holz, Metall, Moos) und die Decke.
+3. Wähle »Funktionen« › »Sprite« › »Als Bild speichern« › »alle Frames dieses Zustands nebeneinander«.
+4. Ziehe die Datei in den Explorer, in den Ordner `raycaster`, und nenne sie `textures.png`.
+
+Dann `ruby palette.rb textures.png` und `make PROGRAM=raycaster`, und deine Welt hat deine Texturen.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Lass das Werkzeug mit <code>ruby palette.rb textures.png --dither</code> laufen und vergleiche <code>4-texturen.png</code> mit vorher: Wo eine Farbe nicht in der Palette ist, setzt das Werkzeug Pixel aus zwei Farben nebeneinander, die zusammen aussehen wie die fehlende. Bei Texturen mit weichen Verläufen sieht man das am deutlichsten.
+</div>
+
+_task(palette)
 
 ## Boden und Decke
 
@@ -1231,6 +1169,7 @@ _task(zeile)
 
 <!-- tutorial-screenshot
 write-file: raycaster.c <- file:stufen/10-boden.c
+write-file: palette.h <- file:stufen/palette.h
 terminal-open
 terminal-run: make PROGRAM=raycaster
 terminal-wait-for-prompt
@@ -1422,6 +1361,7 @@ In `main` kommen `make_mipmaps();` nach `make_textures();` und die Taste <kbd>M<
 <figure>
 <!-- tutorial-screenshot
 write-file: raycaster.c <- file:stufen/11-mipmaps.c
+write-file: palette.h <- file:stufen/palette.h
 terminal-open
 terminal-run: make PROGRAM=raycaster
 terminal-wait-for-prompt
@@ -1568,6 +1508,7 @@ Zwei Sinuswellen mit Frequenzen, die nicht zueinander passen, wiederholen sich s
 <figure>
 <!-- tutorial-screenshot
 write-file: raycaster.c <- file:stufen/12-fertig.c
+write-file: palette.h <- file:stufen/palette.h
 terminal-open
 terminal-run: make PROGRAM=raycaster
 terminal-wait-for-prompt
@@ -1596,136 +1537,6 @@ crop-element: #canvas
 <figcaption>Der Raum mit Moos</figcaption>
 </figure>
 </div>
-
-## Eigene Texturen
-
-### Eine Palette für alle Texturen
-
-Deine Palette ist so gebaut, dass jede Farbe 16 Helligkeiten hat, und die Texturen kommen aus dem Code. In echten Spielen war es umgekehrt: Grafiker zeichneten die Texturen, und ein Werkzeug suchte danach eine Palette von 256 Farben, mit der alle Texturen möglichst gut aussehen. Die Schattentabelle rechnete es auch aus: Für jede Farbe und jede Helligkeit die Farbe der Palette, die am nächsten liegt. Bei DOOM heißen die beiden PLAYPAL und COLORMAP.
-
-So ein Werkzeug bekommst du fertig, `palette.rb`, dazu ein Bild mit den sieben Texturen deines Raycasters. Lade beide in deinen Ordner, installiere einmal das Rubygem `chunky_png`, das PNG-Bilder liest und schreibt, und lass das Werkzeug laufen:
-
-```bash
-wget https://github.com/specht/workspace-files/raw/main/raycaster/palette.rb
-wget https://github.com/specht/workspace-files/raw/main/raycaster/textures.png
-gem install chunky_png
-ruby palette.rb textures.png
-```
-
-Es schreibt `palette.h` mit der Palette, der Schattentabelle und den Texturen als Farbnummern, und für jeden Schritt ein Bild. Öffne sie im Explorer.
-
-<!-- tutorial-screenshot
-write-file: palette.rb <- file:werkzeug/palette.rb
-write-file: textures.png <- file:werkzeug/textures.png
-terminal-open
-terminal-run: gem install chunky_png
-terminal-wait-for-prompt: 120
-terminal-run: ruby palette.rb textures.png
-wait-for-file-newer: raycaster/palette.h <- raycaster/textures.png
-terminal-wait-for-prompt
-terminal-expect-no-text: Error
-image-file: raycaster/2-rampen.png 2
--->
-<img class='full' src='palette-rampen.webp' alt='Ein breites Band aus Farbfeldern: jede Spalte eine Grundfarbe aus den Texturen, Ziegelrot, Holzbraun, Steingrau, Metallblau, Moosgrün und andere, oben in voller Helligkeit, nach unten bis Schwarz.'>
-
-Erst bringt es alle Texturen auf 40 Grundfarben und macht aus jeder eine Rampe mit 16 Helligkeiten, oben hell, unten schwarz. Aus diesen 640 Farben sucht es 240 aus, dazu kommen 16 für die Karte und die Anzeige, in der ersten Zeile:
-
-<!-- tutorial-screenshot
-image-file: raycaster/3-palette.png 2
--->
-<img class='drawing' src='palette-256.webp' style='width: 18em; image-rendering: pixelated;' alt='256 Farbfelder in 16 Zeilen: oben schwarz, Grau, Gelb, Blau, Rot und Weiß für die Karte, dann sehr viele fast schwarze Farben, Grautöne, Rot- und Brauntöne, Grün und Blau, jeweils von dunkel nach hell.'>
-
-Sieh dir die Palette genau an: Viele Farben sind fast schwarz und fast grau. Ganz dunkel sehen Ziegelrot, Moosgrün und Metallblau beinahe gleich aus, und die Palette fasst sie zusammen. Darum werden Farben in dunklen Gängen grauer, so wie in DOOM.
-
-`raycaster.c` holt sich jetzt alles aus `palette.h`. Oben, unter `#include <math.h>`:
-
-```c
-// Palette, Schattentabelle und Texturen, gemacht von palette.rb
-#include "palette.h"
-```
-
-`setup_palette` und `make_textures` kopieren nur noch, statt zu rechnen; die Funktionen, die die Texturen zeichnen, brauchst du nicht mehr:
-
-```c
-// die Farben und die Schattentabelle aus palette.h
-void setup_palette(void)
-{
-    for (int i = 0; i < 256; i++)
-        set_palette(i, palette_rgb[i][0], palette_rgb[i][1], palette_rgb[i][2]);
-
-    for (int light = 0; light < LEVELS; light++)
-        for (int color = 0; color < 256; color++)
-            shade[light][color] = palette_shade[light][color];
-}
-```
-
-```c
-// die Texturen aus palette.h
-void make_textures(void)
-{
-    for (int t = 0; t < TEXTURES; t++)
-        for (int y = 0; y < TEX; y++)
-            for (int x = 0; x < TEX; x++)
-                texture[t][y][x] = palette_texture[t][y][x];
-}
-```
-
-Die Farben der Karte sind die reservierten 0 bis 15, und eine Wand zeigt auf der Karte die mittlere Farbe ihrer Textur:
-
-```c
-    BLACK = UI_BLACK,
-    MAP_FLOOR = UI_MAP_FLOOR,
-    VIEW = UI_VIEW,
-    PLAYER = UI_PLAYER,
-    RAY = UI_RAY,
-    RAY_SIDE = UI_RAY_SIDE,
-    CAMERA_PLANE = UI_CAMERA_PLANE
-```
-
-```c
-    return palette_average[cell - '0'];
-```
-
-Dann übersetzt du wie immer; `make` merkt auch, dass sich `palette.h` geändert hat:
-
-```bash
-make PROGRAM=raycaster
-```
-
-<!-- tutorial-screenshot
-write-file: raycaster.c <- file:stufen/13-eigene-texturen.c
-terminal-open
-terminal-run: make -B PROGRAM=raycaster
-terminal-wait-for-prompt
-terminal-expect-no-text: error:
-terminal-expect-no-text: ***
-tab: preview
-viewport: 800x450
-hook: open raycaster.html
-click: selector:#canvas
-hook: hold KeyW 6 KeyA 0.63 ArrowRight 1.03
-crop-element: #canvas
--->
-<img class='full fit-width' src='palette-halle.webp' alt='Die Halle wie vorher, mit Ziegelsäulen, Fliesenboden und Balkendecke, jetzt mit der Palette aus palette.rb; die Wände auf der Karte haben die mittlere Farbe ihrer Textur.'>
-
-Fast wie vorher, aber jetzt kann jede Textur aussehen, wie du willst.
-
-### Im 2D Game Studio zeichnen
-
-Zeichne deine eigenen Texturen im [2D Game Studio](https://2d.hackschule.de/), wie die Kacheln der [Klötzchenwelt](/raylib):
-
-1. Lege ein neues Sprite an, zum Beispiel »Wände«. Unter »Funktionen« › »Sprite« › »Größe ändern« stellst du 64 × 64 Pixel ein; 16 oder 32 gehen auch, das Werkzeug vergrößert sie auf 64.
-2. Zeichne sieben Frames desselben Zustands, in dieser Reihenfolge: Boden, die Wandarten 1 bis 5 (in der Karte Ziegel, Stein, Holz, Metall, Moos) und die Decke.
-3. Wähle »Funktionen« › »Sprite« › »Als Bild speichern« › »alle Frames dieses Zustands nebeneinander«.
-4. Ziehe die Datei in den Explorer, in den Ordner `raycaster`, und nenne sie `textures.png`.
-
-Dann `ruby palette.rb textures.png` und `make PROGRAM=raycaster`, und deine Welt hat deine Texturen.
-
-<div class='hint try'>
-<strong>Ausprobieren:</strong> Lass das Werkzeug mit <code>ruby palette.rb textures.png --dither</code> laufen und vergleiche <code>4-texturen.png</code> mit vorher: Wo eine Farbe nicht in der Palette ist, setzt das Werkzeug Pixel aus zwei Farben nebeneinander, die zusammen aussehen wie die fehlende. Bei Texturen mit weichen Verläufen sieht man das am deutlichsten.
-</div>
-
-_task(palette)
 
 ## Nach Wolfenstein: DOOM
 

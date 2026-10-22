@@ -8,8 +8,8 @@
     },
     "boden.webp": {
       "environment_fingerprint": "9d2d20c911253748bb8c90b65fcb62bdc29e7b68eabfb8b50fddaf8e7c2dc8d3",
-      "output_sha256": "26f83b8fc9bb3aa7eb8190d53fbee757631d957450e091af1817f7495fb32a34",
-      "state_hash": "daaf8023b2800f5405572a950b3c2d1d48e3586a0ee29ca5cd7f0c7a5a88c760",
+      "output_sha256": "be9ce4ae8e2026b2163cb06fd42e7a78e7dc537a4fa1e58d81939db85b90bda5",
+      "state_hash": "bd9afd6a2b67071670a180828fb6ce8b17447c974120d0e99616677b6d2f9100",
       "workspace_look": "4.140.0-ls368"
     },
     "dda.webp": {
@@ -20,14 +20,14 @@
     },
     "fertig-raum.webp": {
       "environment_fingerprint": "9d2d20c911253748bb8c90b65fcb62bdc29e7b68eabfb8b50fddaf8e7c2dc8d3",
-      "output_sha256": "3ccce6a2974eda5579b36eec5c79fbf824e84023045a2743a8808ffa869ecff8",
-      "state_hash": "a95ed1f9da4a9d39aec0707b90b15f88afc0767be748215b1a9267b483f604ea",
+      "output_sha256": "a7edad2a508c7012780aea3ca3f1e24ca4ec63c741465f1409870b56bb547d11",
+      "state_hash": "eee8b3fb27ebfb3998d19625e72b6758d5b9bda8582653beb38728f0babfae5a",
       "workspace_look": "4.140.0-ls368"
     },
     "fertig.webp": {
       "environment_fingerprint": "9d2d20c911253748bb8c90b65fcb62bdc29e7b68eabfb8b50fddaf8e7c2dc8d3",
-      "output_sha256": "6e43e1f49f391cff544ef684f063b177d9c1fa2e467d7e4ed54dd16da26561c1",
-      "state_hash": "82b7ee40429d91f87c539b4e02ed7d524898b8d557f983cbb6b46e89857688d6",
+      "output_sha256": "13f809dae9f0b4d10f1448e83f58f963a900fde1a60f002f9b230e9ef35844f1",
+      "state_hash": "9594840b08f193f4ba8a6f3c0b07b54bca85134bb19b2f43a287185fef337d76",
       "workspace_look": "4.140.0-ls368"
     },
     "karte.webp": {
@@ -57,32 +57,26 @@
     },
     "mipmaps-an.webp": {
       "environment_fingerprint": "9d2d20c911253748bb8c90b65fcb62bdc29e7b68eabfb8b50fddaf8e7c2dc8d3",
-      "output_sha256": "341e71c5d430d3078b88bcb141852bae9f30737b39cb1f6dddbd11ade36b3146",
-      "state_hash": "fe45e7f3d6c109b40aa782bf7e34020ae74ca50947fc90188fa416e44a919531",
+      "output_sha256": "92e8cdc0e6062b616a885405b6c9b0b33aca277869b07c7b06ce420095e51a7e",
+      "state_hash": "65583ca1bfe8f8d4760071831d0d89c8ef5d45214c013845fa7e1d6b14885fc7",
       "workspace_look": "4.140.0-ls368"
     },
     "mipmaps-aus.webp": {
       "environment_fingerprint": "9d2d20c911253748bb8c90b65fcb62bdc29e7b68eabfb8b50fddaf8e7c2dc8d3",
-      "output_sha256": "a9a9b39ae2a90dbc6b1a372ffff656ba7b6937bf726ebc0477446c1f014b0f43",
-      "state_hash": "252d41f0c6c8b6acc476670a278b0cb43c862cf14f000bdd26697816a1cd18f1",
+      "output_sha256": "16713413094b275c6107bfd16f5e121086d71e17cc92c2e6597c174e305e3472",
+      "state_hash": "966e66ae21f0e204a1c529cb90f093ec4108622dd6180d841cdb6880b8e149ff",
       "workspace_look": "4.140.0-ls368"
     },
     "palette-256.webp": {
       "environment_fingerprint": "9d2d20c911253748bb8c90b65fcb62bdc29e7b68eabfb8b50fddaf8e7c2dc8d3",
       "output_sha256": "f3e40933b6baa0e5506e2a4c9bd980ca9e1b60199f636e9662f9c4818915c534",
-      "state_hash": "2b749b8b34623873fa2c18349765da4e1edaf32c8b159f68e8968549b9f39f78",
-      "workspace_look": "4.140.0-ls368"
-    },
-    "palette-halle.webp": {
-      "environment_fingerprint": "9d2d20c911253748bb8c90b65fcb62bdc29e7b68eabfb8b50fddaf8e7c2dc8d3",
-      "output_sha256": "13f809dae9f0b4d10f1448e83f58f963a900fde1a60f002f9b230e9ef35844f1",
-      "state_hash": "3f33202fa5d146af2ca604d188009c2cbec3508704c63f8f3ebd0d6d68315aa0",
+      "state_hash": "8ab5b4c122fa34f38e8703bf90cb18c0b6fbff265ba2cb0f7a044860d03e89e4",
       "workspace_look": "4.140.0-ls368"
     },
     "palette-rampen.webp": {
       "environment_fingerprint": "9d2d20c911253748bb8c90b65fcb62bdc29e7b68eabfb8b50fddaf8e7c2dc8d3",
       "output_sha256": "a3a370be0acb309ca22e90f0df82868099a2982bce187184ca010ab6b066426b",
-      "state_hash": "cf05f60010b8beedc2131c9bbc424b800dcb443487c1fb3b6e0a6ec36815f786",
+      "state_hash": "31455c0f852074f37dc0834c4be5a2b2d074740666e9f42e56fdb4e55800b87b",
       "workspace_look": "4.140.0-ls368"
     },
     "strahlen.webp": {
@@ -93,8 +87,8 @@
     },
     "texturen.webp": {
       "environment_fingerprint": "9d2d20c911253748bb8c90b65fcb62bdc29e7b68eabfb8b50fddaf8e7c2dc8d3",
-      "output_sha256": "dc044f8f12e0fe9d8dc4bb8b33c5b919508ea69cddadc9de9d0d4118d7755f38",
-      "state_hash": "2185d10b0b229b925a0d716245f872f4de1f7110d2974cdc5ebc87ba3a962c1c",
+      "output_sha256": "d58c87f331c687575f0799a4588b525b2fab437f18bd8b50049cd3cbcdda60e7",
+      "state_hash": "92331906edad0f9de49946e73803387a9961c50359a6e7d1bc83ace803044d03",
       "workspace_look": "4.140.0-ls368"
     },
     "waende-gerade.webp": {

@@ -4,7 +4,7 @@
 //   gcc -O2 -std=c11 -I PIXELRAM -o dump dump.c PIXELRAM/pixelram.c STUB.c -lm && ./dump
 // dann python3 transparent.py (magenta wird durchsichtig, als WebP).
 #define main stage_main
-#include "../stufen/11-mipmaps.c"
+#include "texturen-aus-code.c"
 #undef main
 #include <stdio.h>
 static void rgb(int c, uint8_t *r, uint8_t *g, uint8_t *b) { get_palette(c, r, g, b); }

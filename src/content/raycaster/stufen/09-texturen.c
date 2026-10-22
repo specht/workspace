@@ -1,5 +1,7 @@
 #include "pixelram.h"
 #include <math.h>
+// Palette, Schattentabelle und Texturen, gemacht von palette.rb
+#include "palette.h"
 
 #define W 320
 #define H 180
@@ -28,65 +30,19 @@ const char *map[MAP_H] = {
     "333333335555555555555555",
 };
 
-// Die Palette: 16 Farbtöne mit je 16 Helligkeiten. Die Farbe Nummer
-// ramp * 16 + level hat den Farbton ramp und die Helligkeit level
-// (0 schwarz, 15 volle Helligkeit).
+// so viele Helligkeiten hat die Schattentabelle
 #define LEVELS 16
-#define COLOR(ramp, level) ((ramp) * LEVELS + (level))
 
-// die Farbtöne; 1 bis 5 sind die Wandarten
+// die Farben für die Karte: die reservierten Farben 0 bis 15 der Palette
 enum
 {
-    GREY,
-    BRICK,
-    STONE,
-    WOOD,
-    METAL,
-    MOSS,
-    SAND,
-    PLASTER,
-    TERRACOTTA,
-    YELLOW,
-    CYAN,
-    RED,
-    MORTAR,
-    DARK_WOOD,
-    WARM_WHITE,
-    DEEP_BLUE
-};
-
-// jeder Farbton in voller Helligkeit
-const uint8_t ramp_rgb[16][3] = {
-    {200, 200, 200}, // GREY
-    {190, 86, 60},   // BRICK
-    {150, 156, 172}, // STONE
-    {176, 118, 64},  // WOOD
-    {110, 156, 190}, // METAL
-    {104, 152, 76},  // MOSS
-    {196, 176, 140}, // SAND
-    {150, 140, 128}, // PLASTER
-    {176, 96, 64},   // TERRACOTTA
-    {255, 214, 64},  // YELLOW
-    {80, 190, 230},  // CYAN
-    {255, 92, 92},   // RED
-    {120, 112, 104}, // MORTAR
-    {120, 70, 40},   // DARK_WOOD
-    {255, 240, 210}, // WARM_WHITE
-    {60, 70, 120},   // DEEP_BLUE
-};
-
-// die Farben für die Karte
-enum
-{
-    BLACK = COLOR(GREY, 0),
-    MAP_FLOOR = COLOR(GREY, 3),
-    VIEW = COLOR(GREY, 15),
-    PLAYER = COLOR(YELLOW, 15),
-    RAY = COLOR(YELLOW, 10),
-    RAY_SIDE = COLOR(CYAN, 12),
-    CAMERA_PLANE = COLOR(RED, 15),
-    CEILING = COLOR(PLASTER, 15),
-    FLOOR = COLOR(SAND, 15)
+    BLACK = UI_BLACK,
+    MAP_FLOOR = UI_MAP_FLOOR,
+    VIEW = UI_VIEW,
+    PLAYER = UI_PLAYER,
+    RAY = UI_RAY,
+    RAY_SIDE = UI_RAY_SIDE,
+    CAMERA_PLANE = UI_CAMERA_PLANE
 };
 
 // die Schattentabelle: shade[light][color] ist dieselbe Farbe wie color,
@@ -121,28 +77,21 @@ void update_camera(void)
 #define MOVE_SPEED 3.0
 #define TURN_SPEED 2.5
 
+// die Farben und die Schattentabelle aus palette.h
 void setup_palette(void)
 {
-    for (int ramp = 0; ramp < 16; ramp++)
-        for (int level = 0; level < LEVELS; level++)
-        {
-            const uint8_t *rgb = ramp_rgb[ramp];
-            set_palette(COLOR(ramp, level), rgb[0] * level / 15, rgb[1] * level / 15, rgb[2] * level / 15);
-        }
+    for (int i = 0; i < 256; i++)
+        set_palette(i, palette_rgb[i][0], palette_rgb[i][1], palette_rgb[i][2]);
 
     for (int light = 0; light < LEVELS; light++)
         for (int color = 0; color < 256; color++)
-        {
-            int ramp = color / LEVELS;
-            int level = color % LEVELS;
-            shade[light][color] = COLOR(ramp, level * light / 15);
-        }
+            shade[light][color] = palette_shade[light][color];
 }
 
 // Texturen: 64 x 64 Texel, jedes Texel ist eine Farbnummer der Palette
 #define TEX 64
-#define PI 3.14159265358979
 
+// die Texturen in der Reihenfolge der Kacheln in textures.png
 enum
 {
     TEX_FLOOR,
@@ -157,175 +106,13 @@ enum
 
 uint8_t texture[TEXTURES][TEX][TEX];
 
-// ein kleiner Zufallsgenerator: eine Zahl von 0 bis n - 1, auf jedem
-// Rechner dieselbe Folge, so sehen die Texturen überall gleich aus
-unsigned int seed = 1;
-
-int random_below(int n)
-{
-    seed = seed * 1103515245 + 12345;
-    return (seed >> 16) % n;
-}
-
-// eine Zufallszahl von -amount bis amount
-int noise(int amount)
-{
-    return random_below(2 * amount + 1) - amount;
-}
-
-// setzt ein Texel; was über den Rand hinausgeht, kommt auf der anderen
-// Seite wieder herein, so passen die Kacheln nahtlos aneinander
-void put_texel(int t, int x, int y, int ramp, int level)
-{
-    if (level < 0)
-        level = 0;
-    if (level > LEVELS - 1)
-        level = LEVELS - 1;
-    texture[t][y & (TEX - 1)][x & (TEX - 1)] = COLOR(ramp, level);
-}
-
-// Ziegel 16 x 8 mit Fugen, jede zweite Reihe versetzt
-void make_bricks(int t)
-{
-    for (int y = 0; y < TEX; y++)
-        for (int x = 0; x < TEX; x++)
-        {
-            int row = y / 8;
-            int shifted = (x + row % 2 * 8) % TEX;
-            int bx = shifted % 16, by = y % 8;
-            int brick = row * 4 + shifted / 16;
-            int level = 11 + brick * 5 % 3 + noise(1);
-            if (by == 0)
-                level += 1; // Licht von oben
-            if (by == 6)
-                level -= 2; // Schatten unten
-            if (bx == 15 || by == 7)
-                put_texel(t, x, y, MORTAR, 8 + noise(1));
-            else
-                put_texel(t, x, y, brick * 7 % 5 == 0 ? TERRACOTTA : BRICK, level);
-        }
-}
-
-// Steinblöcke 32 x 16: oben und links heller, unten und rechts dunkler
-void make_blocks(int t, int ramp)
-{
-    for (int y = 0; y < TEX; y++)
-        for (int x = 0; x < TEX; x++)
-        {
-            int row = y / 16;
-            int shifted = (x + row % 2 * 16) % TEX;
-            int bx = shifted % 32, by = y % 16;
-            int block = row * 2 + shifted / 32;
-            int level = 10 + block % 3 + noise(1);
-            if (bx >= 30 || by >= 14)
-                level = 4 + noise(1);
-            else if (bx < 2 || by < 2)
-                level += 2;
-            else if (bx >= 27 || by >= 11)
-                level -= 2;
-            if (random_below(16) == 0)
-                level -= 3;
-            put_texel(t, x, y, ramp, level);
-        }
-}
-
-// senkrechte Bretter, 16 breit, mit Maserung und einem Stoß je Brett
-void make_planks(int t)
-{
-    for (int y = 0; y < TEX; y++)
-        for (int x = 0; x < TEX; x++)
-        {
-            int plank = x / 16, px = x % 16;
-            double wave = sin((y + plank * 19) * 2 * PI / 32) * 2.5;
-            int level = 11 + plank % 2 + (int)(sin(px * 1.5 + wave) * 1.4);
-            if (px == 15)
-                put_texel(t, x, y, DARK_WOOD, 3);
-            else if (y == (plank * 23 + 9) % TEX)
-                put_texel(t, x, y, DARK_WOOD, 6);
-            else
-                put_texel(t, x, y, WOOD, px == 0 ? level + 2 : level);
-        }
-}
-
-// Metalltafel mit Rahmen, zwei Rippen und Nieten
-void make_metal(int t)
-{
-    for (int y = 0; y < TEX; y++)
-        for (int x = 0; x < TEX; x++)
-        {
-            int edge = fmin(fmin(x, TEX - 1 - x), fmin(y, TEX - 1 - y));
-            int level = (x % 3 == 0) ? 10 : 9; // gebürstet: feine Streifen
-            if (edge < 3)
-                level = 6;
-            else if (edge == 3 || y % 21 == 20)
-                level = 13;
-            else if (y % 21 == 0)
-                level = 5;
-            put_texel(t, x, y, METAL, level);
-        }
-    for (int y = 8; y < TEX; y += 21)
-        for (int x = 8; x < TEX; x += 47)
-        {
-            put_texel(t, x, y, GREY, 14);
-            put_texel(t, x + 1, y + 1, DEEP_BLUE, 4);
-        }
-}
-
-// Steinblöcke mit Moosflecken, unten mehr als oben
-void make_moss(int t)
-{
-    make_blocks(t, STONE);
-    for (int i = 0; i < 24; i++)
-    {
-        int cx = random_below(TEX);
-        int cy = (i < 16) ? 36 + random_below(28) : random_below(TEX);
-        int r = 3 + random_below(6);
-        for (int dy = -r; dy <= r; dy++)
-            for (int dx = -r; dx <= r; dx++)
-                // innen dicht, zum Rand hin immer lückenhafter
-                if (random_below(r * r) > dx * dx + dy * dy)
-                    put_texel(t, cx + dx, cy + dy, MOSS, 7 + random_below(6));
-    }
-}
-
-// Bodenfliesen 16 x 16 wie ein Schachbrett
-void make_tiles(int t)
-{
-    for (int y = 0; y < TEX; y++)
-        for (int x = 0; x < TEX; x++)
-        {
-            int tx = x / 16, ty = y / 16;
-            int level = 11 + (tx * 5 + ty * 3) % 3;
-            if (x % 16 == 0 || y % 16 == 0)
-                put_texel(t, x, y, MORTAR, 5);
-            else
-                put_texel(t, x, y, (tx + ty) % 2 == 0 ? SAND : TERRACOTTA, level);
-        }
-}
-
-// Decke: Putzfelder zwischen Holzbalken
-void make_ceiling(int t)
-{
-    for (int y = 0; y < TEX; y++)
-        for (int x = 0; x < TEX; x++)
-        {
-            int bx = x % 32, by = y % 32;
-            if (bx < 4 || by < 4)
-                put_texel(t, x, y, DARK_WOOD, (bx == 3 || by == 3) ? 5 : 9 + noise(1));
-            else
-                put_texel(t, x, y, PLASTER, 8 + noise(1));
-        }
-}
-
+// die Texturen aus palette.h
 void make_textures(void)
 {
-    make_tiles(TEX_FLOOR);
-    make_bricks(TEX_BRICK);
-    make_blocks(TEX_STONE, STONE);
-    make_planks(TEX_WOOD);
-    make_metal(TEX_METAL);
-    make_moss(TEX_MOSS);
-    make_ceiling(TEX_CEILING);
+    for (int t = 0; t < TEXTURES; t++)
+        for (int y = 0; y < TEX; y++)
+            for (int x = 0; x < TEX; x++)
+                texture[t][y][x] = palette_texture[t][y][x];
 }
 
 // das Texel beim Punkt (u, v) der Textur t; u und v laufen von 0 bis 1
@@ -347,7 +134,7 @@ int is_wall(double x, double y)
 // die Farbe einer Wandart ('1' bis '5')
 int wall_color(char cell)
 {
-    return COLOR(cell - '0', 15);
+    return palette_average[cell - '0'];
 }
 
 void fill_rect(int x, int y, int width, int height, int color)
@@ -582,7 +369,7 @@ void draw_view(void)
     for (int y = 0; y < H; y++)
     {
         double light = light_at(row_distance(y));
-        int color = (y < H / 2) ? CEILING : FLOOR;
+        int color = palette_average[(y < H / 2) ? TEX_CEILING : TEX_FLOOR];
         fill_rect(0, y, W, 1, shaded(color, light));
     }
 

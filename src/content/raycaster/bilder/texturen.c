@@ -4,7 +4,7 @@
 //   gcc -O2 -std=c11 -I PIXELRAM -o texturen texturen.c PIXELRAM/pixelram.c STUB.c -lm && ./texturen
 // dann: python3 -c "from PIL import Image; Image.open('textures.ppm').save('textures.png')"
 #define main stage_main
-#include "../stufen/12-fertig.c"
+#include "texturen-aus-code.c"
 #undef main
 #include <stdio.h>
 int main(void)
