@@ -541,7 +541,7 @@ click: selector:#canvas
 hook: hold KeyW 1.88 ArrowLeft 0.12
 crop-element: #canvas
 -->
-<img class='full fit-width' src='dda.webp' alt='Derselbe Fächer von Strahlen, jetzt in zwei Farben: gelb die, die auf eine senkrechte Wandkante treffen, blau die auf eine waagrechte.'>
+<img class='full fit-width' src='dda-strahlen.webp' alt='Derselbe Fächer von Strahlen, jetzt in zwei Farben: gelb die, die auf eine senkrechte Wandkante treffen, blau die auf eine waagrechte.'>
 
 ## Wände
 

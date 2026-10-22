@@ -12,10 +12,10 @@
       "state_hash": "50827199ffe81a1206f790695e50fbdea1207c576640ed1d62a100c215a9cf0b",
       "workspace_look": "4.140.0-ls368"
     },
-    "dda.webp": {
+    "dda-strahlen.webp": {
       "environment_fingerprint": "28fdad9a4d69737ef8b6da1573dec1310763a740673393e81fbc5743cc8c3b17",
-      "output_sha256": "914990a826c21a6a0b12546490075ab20199870200656fea248f1f12cfb5bfd2",
-      "state_hash": "ab3701120d19e8fad0964f47167ed7a126c2469453143e80777fd1747ff018ce",
+      "output_sha256": "f7557b269d45e3202f447da8ed5513ad0feeaf0561ac709f3d27a87b7cce8653",
+      "state_hash": "099cd943b36a9a46984e2b44caca60eb6e11659ace19e08b059c400cf20ac241",
       "workspace_look": "4.140.0-ls368"
     },
     "fertig-raum.webp": {
