@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 290" width="400" height="290" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Ein Strahl für camera_x = 0,5: von der Spielfigur erst dir, dann das 0,5-Fache von plane; ray ist die Summe der beiden Pfeile.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raycaster/NAME.svg 800 -->
+  <defs>
+    <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
+    <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker>
+    <marker id="a-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker>
+    <marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+    <marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
+  </defs>
+  <rect width="400" height="290" fill="#ffffff"/>
+  <line x1="36.5" y1="102.0" x2="303.5" y2="102.0" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <text x="36.5" y="126.0" font-size="15" fill="#dc2626" text-anchor="start">Kamera-Ebene</text>
+  <line x1="236.8" y1="102.0" x2="280.1" y2="4.5" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <line x1="170.0" y1="252.0" x2="170.0" y2="103.0" stroke="#2b5fb4" stroke-width="3" marker-end="url(#a-blue)"/>
+  <text x="160.0" y="177.0" font-size="16" fill="#2b5fb4" text-anchor="end" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">dir</text>
+  <line x1="170.0" y1="102.0" x2="230.2" y2="102.0" stroke="#dc2626" stroke-width="3" marker-end="url(#a-red)"/>
+  <text x="228.8" y="88.0" font-size="15" fill="#dc2626" text-anchor="end" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">plane · camera_x</text>
+  <line x1="170.0" y1="252.0" x2="234.1" y2="107.9" stroke="#1f2937" stroke-width="2.5" marker-end="url(#a-ink)"/>
+  <text x="215.4" y="183.0" font-size="16" fill="#1f2937" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">ray</text>
+  <circle cx="236.8" cy="102.0" r="4.5" fill="#ffffff" stroke="#1f2937" stroke-width="2"/>
+  <text x="246.8" y="126.0" font-size="15" fill="#6b7280" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">camera_x = 0,5</text>
+  <circle cx="170.0" cy="252.0" r="7.0" fill="#1f2937" stroke="#1f2937" stroke-width="2"/>
+  <text x="184.0" y="257.0" font-size="16" fill="#1f2937" text-anchor="start">Spielfigur</text>
+</svg>

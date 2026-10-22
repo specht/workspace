@@ -153,7 +153,7 @@ end
 # nach dem Farbton sortiert; die Felder sind breiter als hoch, so wird das
 # Bild ein flaches Band, viermal so breit wie hoch
 columns = (0...base.size).sort_by { |i| order(base[i]) }
-save('2-rampen.png', base.size, LEVELS, 16, 10) { |x, y| ramps[columns[x] * LEVELS + LEVELS - 1 - y][0] }
+save('2-rampen.png', base.size, LEVELS, 16) { |x, y| ramps[columns[x] * LEVELS + LEVELS - 1 - y][0] }
 
 # --- 3. die Palette: 16 reservierte Farben und 240 aus den Rampen -----------
 

@@ -67,7 +67,7 @@ Jahr steht dafür im Titel der Seite in Klammern.
 | `reference` | Handbuch-Seiten, die die Aktivität braucht; erscheinen oben auf der Seite |
 | `template` | Adresse einer Vorlage zum Klonen (`https://…`); im Text `${template}`. Der Workspace sagt Lernenden, wenn ihr Klon veraltet ist |
 | `template_name` | Name der Vorlage im Genitiv, z. B. `der CPU Sandbox` |
-| `class_repo` | Adresse eines Klassen-Repositorys; im Text `${class_repo}` |
+| `class_repo` | `group`, wenn die Seite mit einem Klassen-Repository arbeitet: Die Lehrkraft trägt die Adresse je Gruppe auf der Klassenseite ein, im Text steht `${class_repo}`, und die Seite braucht Teile mit und ohne Klassen-Repository (`<!-- if: class_repo -->`, docs/aufgaben.md). Nie eine feste Adresse |
 
 Danach: ein Titel (`# …`), ein kurzer Absatz `<p class='abstract'>` für die
 Karte, dann Abschnitte mit `## …`. Jeder Abschnitt erscheint im
@@ -124,7 +124,8 @@ Ohne weitere Klasse verteilen sich die Bilder nach Platz. `columns-2`,
 man vergleicht (auf dem Handy zwei, bei `columns-2` eins); `portrait` ist
 für hohe Bilder wie einen Handybildschirm, `tiles` für viele kleine wie die
 Modelle eines Kenney-Kits, `centered` für wenige kleine Bilder wie zwei Diagramme
-(höchstens 16em breit, in der Mitte, immer in einer Reihe). Mit `hide-lone` fällt von vier Bildern das vierte
+(höchstens 16em breit, in der Mitte, immer in einer Reihe; mit `small` höchstens
+11em, für Skizzen mit wenigen großen Beschriftungen). Mit `hide-lone` fällt von vier Bildern das vierte
 weg, wenn drei in eine Reihe passen und es allein in der nächsten stünde: für
 Beispiele, bei denen drei genügen. Ein Bild mit der Klasse `inspect`
 (`<img class='inspect' …>`) ist zum genauen Hinsehen da, etwa eine ganze

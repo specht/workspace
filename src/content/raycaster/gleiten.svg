@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 410 326" width="410" height="326" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Von oben: Die Spielfigur mit dem Quadrat um sie herum, an jeder Ecke ein Punkt, dicht vor einer Wand rechts. Sie will schräg nach rechts oben. Nur in x verschoben stünden zwei Ecken in der Wand, also bleibt x, wie es ist; nur in y verschoben ist alles frei, also bewegt sie sich nach oben: Sie gleitet an der Wand entlang.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raycaster/NAME.svg 820 -->
+  <defs>
+    <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
+    <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker>
+    <marker id="a-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker>
+    <marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+    <marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
+  </defs>
+  <rect width="410" height="326" fill="#ffffff"/>
+  <rect x="10.0" y="20.0" width="130.0" height="130.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="140.0" y="20.0" width="130.0" height="130.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="270.0" y="20.0" width="130.0" height="130.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="10.0" y="150.0" width="130.0" height="130.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="140.0" y="150.0" width="130.0" height="130.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="270.0" y="150.0" width="130.0" height="130.0" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <circle cx="211.5" cy="204.6" r="32.5" fill="#eef3fb" stroke="#1f2937" stroke-width="1.5"/>
+  <line x1="211.5" y1="204.6" x2="286.9" y2="114.1" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a-grey)"/>
+  <line x1="211.5" y1="204.6" x2="285.5" y2="204.6" stroke="#dc2626" stroke-width="2.5" marker-end="url(#a-red)"/>
+  <line x1="211.5" y1="204.6" x2="211.5" y2="115.0" stroke="#16a34a" stroke-width="2.5" marker-end="url(#a-green)"/>
+  <rect x="257.0" y="172.1" width="65.0" height="65.0" fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <circle cx="257.0" cy="172.1" r="4.5" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <circle cx="257.0" cy="237.1" r="4.5" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <circle cx="322.0" cy="172.1" r="4.5" fill="#dc2626" stroke="#dc2626" stroke-width="1.5"/>
+  <circle cx="322.0" cy="237.1" r="4.5" fill="#dc2626" stroke="#dc2626" stroke-width="1.5"/>
+  <circle cx="289.5" cy="204.6" r="3.0" fill="#dc2626" stroke="#dc2626" stroke-width="1"/>
+  <rect x="179.0" y="78.5" width="65.0" height="65.0" fill="none" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <circle cx="179.0" cy="78.5" r="4.5" fill="#ffffff" stroke="#16a34a" stroke-width="1.5"/>
+  <circle cx="179.0" cy="143.5" r="4.5" fill="#ffffff" stroke="#16a34a" stroke-width="1.5"/>
+  <circle cx="244.0" cy="78.5" r="4.5" fill="#ffffff" stroke="#16a34a" stroke-width="1.5"/>
+  <circle cx="244.0" cy="143.5" r="4.5" fill="#ffffff" stroke="#16a34a" stroke-width="1.5"/>
+  <circle cx="211.5" cy="111.0" r="3.0" fill="#16a34a" stroke="#16a34a" stroke-width="1"/>
+  <rect x="179.0" y="172.1" width="65.0" height="65.0" fill="none" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="179.0" cy="172.1" r="4.5" fill="#ffffff" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="179.0" cy="237.1" r="4.5" fill="#ffffff" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="244.0" cy="172.1" r="4.5" fill="#ffffff" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="244.0" cy="237.1" r="4.5" fill="#ffffff" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="211.5" cy="204.6" r="4.0" fill="#1f2937" stroke="#1f2937" stroke-width="2"/>
+  <text x="169.0" y="116.0" font-size="16" fill="#16a34a" text-anchor="end">nur y: frei</text>
+  <text x="169.0" y="209.6" font-size="16" fill="#1f2937" text-anchor="end">Spielfigur</text>
+  <text x="289.5" y="310.0" font-size="16" fill="#dc2626" text-anchor="middle">nur x: zwei Ecken in der Wand</text>
+  <text x="335.0" y="57.5" font-size="16" fill="#1f2937" text-anchor="middle">Wand</text>
+</svg>

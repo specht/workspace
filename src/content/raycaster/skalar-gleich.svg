@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 165" width="200" height="165" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Skalarprodukt zweier Vektoren der Länge 1: a zeigt wie dir, die Projektion von a auf dir ist ganz lang: 1.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raycaster/NAME.svg 400 -->
+  <defs>
+    <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
+    <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker>
+    <marker id="a-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker>
+    <marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+    <marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
+  </defs>
+  <rect width="200" height="165" fill="#ffffff"/>
+  <line x1="30.0" y1="154.0" x2="150.0" y2="154.0" stroke="#16a34a" stroke-width="5" stroke-linecap="round"/>
+  <line x1="30.0" y1="140.0" x2="150.0" y2="140.0" stroke="#2b5fb4" stroke-width="3" marker-end="url(#a-blue)"/>
+  <text x="154.0" y="154.0" font-size="20" fill="#2b5fb4" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">dir</text>
+  <line x1="30.0" y1="126.0" x2="150.0" y2="126.0" stroke="#1f2937" stroke-width="3" marker-end="url(#a-ink)"/>
+  <text x="154.0" y="132.0" font-size="20" fill="#1f2937" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">a</text>
+  <circle cx="30.0" cy="140.0" r="3.5" fill="#1f2937" stroke="#1f2937" stroke-width="1"/>
+</svg>

@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 432 328" width="432" height="328" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Ein Punkt auf dem Strahl ist Spielfigur + t · ray. Markiert sind t = 1, 2, 3, 4. Von einer senkrechten Gitterlinie zur nächsten wächst t immer um gleich viel, delta_x; von einer waagrechten zur nächsten um delta_y.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raycaster/NAME.svg 864 -->
+  <defs>
+    <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
+    <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker>
+    <marker id="a-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker>
+    <marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+    <marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
+  </defs>
+  <rect width="432" height="328" fill="#ffffff"/>
+  <rect x="24.0" y="20.0" width="96.0" height="96.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="120.0" y="20.0" width="96.0" height="96.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="216.0" y="20.0" width="96.0" height="96.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="312.0" y="20.0" width="96.0" height="96.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="24.0" y="116.0" width="96.0" height="96.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="120.0" y="116.0" width="96.0" height="96.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="216.0" y="116.0" width="96.0" height="96.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="312.0" y="116.0" width="96.0" height="96.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="24.0" y="212.0" width="96.0" height="96.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="120.0" y="212.0" width="96.0" height="96.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="216.0" y="212.0" width="96.0" height="96.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="312.0" y="212.0" width="96.0" height="96.0" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <line x1="28.8" y1="298.4" x2="327.8" y2="63.4" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <line x1="28.8" y1="298.4" x2="96.0" y2="245.6" stroke="#2b5fb4" stroke-width="3" marker-end="url(#a-blue)"/>
+  <text x="70.4" y="292.0" font-size="16" fill="#2b5fb4" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">ray</text>
+  <line x1="99.7" y1="250.3" x2="92.3" y2="240.9" stroke="#6b7280" stroke-width="2"/>
+  <text x="86.1" y="233.0" font-size="14" fill="#6b7280" text-anchor="end" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">t = 1</text>
+  <line x1="166.9" y1="197.5" x2="159.5" y2="188.1" stroke="#6b7280" stroke-width="2"/>
+  <text x="153.3" y="180.2" font-size="14" fill="#6b7280" text-anchor="end" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">t = 2</text>
+  <line x1="234.1" y1="144.7" x2="226.7" y2="135.3" stroke="#6b7280" stroke-width="2"/>
+  <text x="220.5" y="127.4" font-size="14" fill="#6b7280" text-anchor="end" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">t = 3</text>
+  <line x1="301.3" y1="91.9" x2="293.9" y2="82.5" stroke="#6b7280" stroke-width="2"/>
+  <text x="287.7" y="74.6" font-size="14" fill="#6b7280" text-anchor="end" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">t = 4</text>
+  <circle cx="120.0" cy="226.7" r="5.0" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="216.0" cy="151.3" r="5.0" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="312.0" cy="75.9" r="5.0" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="138.8" cy="212.0" r="5.0" fill="#16a34a" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="260.9" cy="116.0" r="5.0" fill="#16a34a" stroke="#ffffff" stroke-width="1.5"/>
+  <line x1="227.1" y1="165.5" x2="323.1" y2="90.0" stroke="#dc2626" stroke-width="1.5"/>
+  <line x1="230.2" y1="169.4" x2="224.0" y2="161.5" stroke="#dc2626" stroke-width="1.5"/>
+  <line x1="326.2" y1="94.0" x2="320.0" y2="86.1" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="287.5" y="149.1" font-size="16" fill="#dc2626" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">delta_x</text>
+  <line x1="170.9" y1="252.9" x2="293.1" y2="156.9" stroke="#16a34a" stroke-width="1.5"/>
+  <line x1="174.0" y1="256.8" x2="167.8" y2="249.0" stroke="#16a34a" stroke-width="1.5"/>
+  <line x1="296.2" y1="160.8" x2="290.0" y2="153.0" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="244.3" y="226.2" font-size="16" fill="#16a34a" text-anchor="middle" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">delta_y</text>
+  <circle cx="28.8" cy="298.4" r="7.0" fill="#1f2937" stroke="#1f2937" stroke-width="2"/>
+</svg>

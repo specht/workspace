@@ -1,23 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width="960" height="440" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
-  <!-- Eine gerade Wand vor der Spielfigur. Der direkte Abstand ist für einen Strahl am Rand länger als für den in der Mitte, die Wand wird dort niedriger gezeichnet: Sie wölbt sich. Gemessen entlang dir (Skalarprodukt mit dir) ist der Abstand überall gleich.
-       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raycaster/NAME.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 280" width="440" height="280" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Eine gerade Wand vor der Spielfigur. Der Strahl zur Mitte und der zum Rand treffen dieselbe Wand; der zum Rand ist länger. Entlang dir gemessen (grün, der Schatten wie beim Skalarprodukt) sind beide Treffpunkte gleich weit vor der Figur.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raycaster/NAME.svg 880 -->
   <defs>
-    <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
-    <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker>
-    <marker id="a-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker>
-    <marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
-    <marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
+    <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
+    <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker>
+    <marker id="a-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker>
+    <marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+    <marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
   </defs>
-  <rect width="960" height="440" fill="#ffffff"/>
-  <rect x="80" y="84" width="800" height="26" fill="#d1d5db"/>
-  <line x1="80.0" y1="110.0" x2="880.0" y2="110.0" stroke="#1f2937" stroke-width="3"/>
-  <text x="860.0" y="74.0" font-size="20" fill="#6b7280" text-anchor="end">eine gerade Wand</text>
-  <line x1="480.0" y1="380.0" x2="480.0" y2="112.0" stroke="#2b5fb4" stroke-width="3" marker-end="url(#a-blue)"/>
-  <text x="492.0" y="285.0" font-size="22" fill="#2b5fb4" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">dir</text>
-  <line x1="480.0" y1="380.0" x2="820.0" y2="112.0" stroke="#6b7280" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#a-grey)"/>
-  <text x="680.0" y="275.0" font-size="20" fill="#6b7280" text-anchor="start">direkt: länger</text>
-  <line x1="820.0" y1="110.0" x2="480.0" y2="110.0" stroke="#2b5fb4" stroke-width="2" stroke-dasharray="3 5"/>
-  <text x="466.0" y="150.0" font-size="20" fill="#2b5fb4" text-anchor="end">entlang dir: gleich weit</text>
-  <circle cx="480.0" cy="380.0" r="10.0" fill="#1f2937" stroke="#1f2937" stroke-width="2"/>
-  <text x="480.0" y="420.0" font-size="20" fill="#1f2937" text-anchor="middle">Spielfigur</text>
+  <rect width="440" height="280" fill="#ffffff"/>
+  <rect x="20.0" y="32.0" width="400.0" height="18.0" fill="#d1d5db" stroke="none" stroke-width="1.5"/>
+  <line x1="20.0" y1="50.0" x2="420.0" y2="50.0" stroke="#1f2937" stroke-width="2.5"/>
+  <text x="416.0" y="24.0" font-size="16" fill="#6b7280" text-anchor="end">eine gerade Wand</text>
+  <line x1="120.0" y1="240.0" x2="120.0" y2="50.0" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <line x1="120.0" y1="240.0" x2="364.8" y2="53.9" stroke="#6b7280" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#a-grey)"/>
+  <circle cx="370.0" cy="50.0" r="4.5" fill="#ffffff" stroke="#1f2937" stroke-width="2"/>
+  <circle cx="120.0" cy="50.0" r="4.5" fill="#ffffff" stroke="#1f2937" stroke-width="2"/>
+  <polyline points="120.0,61.0 131.0,61.0 131.0,50.0" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <text x="267.5" y="149.5" font-size="16" fill="#6b7280" text-anchor="start">direkt: länger</text>
+  <line x1="104.0" y1="240.0" x2="104.0" y2="50.0" stroke="#16a34a" stroke-width="5" stroke-linecap="round"/>
+  <text x="94.0" y="139.0" font-size="16" fill="#16a34a" text-anchor="end">entlang dir:</text>
+  <text x="94.0" y="159.0" font-size="16" fill="#16a34a" text-anchor="end">gleich weit</text>
+  <line x1="120.0" y1="240.0" x2="120.0" y2="176.0" stroke="#2b5fb4" stroke-width="3" marker-end="url(#a-blue)"/>
+  <text x="130.0" y="206.0" font-size="16" fill="#2b5fb4" text-anchor="start" font-family="0xProto Nerd Font Mono, DejaVu Sans Mono, monospace">dir</text>
+  <circle cx="120.0" cy="240.0" r="7.0" fill="#1f2937" stroke="#1f2937" stroke-width="2"/>
+  <text x="134.0" y="245.0" font-size="16" fill="#1f2937" text-anchor="start">Spielfigur</text>
 </svg>

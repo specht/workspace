@@ -237,6 +237,8 @@ crop-element: #canvas
 
 Jedes Kästchen ist hier 11 Pixel groß, und die Farbe zeigt die Wandart: Rot sind Ziegel, Grau Stein, Braun Holz, Blau Metall, Grün Moos. Der gelbe Punkt ist die Spielfigur, der weiße Strich ihre Blickrichtung: `cos(player_angle)` nach rechts und `sin(player_angle)` nach unten. y zeigt hier wie auf dem Bildschirm nach unten; ein größerer Winkel dreht deshalb im Uhrzeigersinn.
 
+<img class='drawing' style='width: 25em' src='richtung.webp' alt='Von der Spielfigur geht ein blauer Pfeil der Länge 1 schräg nach rechts unten. Von der Figur aus waagrecht nach rechts liegt rot sein Anteil cos(player_angle), von dort senkrecht nach unten bis zur Pfeilspitze grün sein Anteil sin(player_angle); ein grauer Bogen zwischen der Waagrechten und dem Pfeil ist der Winkel player_angle. Oben rechts zeigt ein roter Pfeil x nach rechts, ein grüner y nach unten.'>
+
 ## Bewegen
 
 ### Mit der Zeit
@@ -250,6 +252,10 @@ Die Spielfigur soll mit den Tasten laufen und sich drehen. Wie weit sie in einem
 ```
 
 Vor `main` kommt die Bewegung. Vorwärts geht es in Blickrichtung, seitwärts um 90 Grad gedreht: Aus der Richtung `(x, y)` wird nach rechts `(−y, x)`.
+
+<img class='drawing' style='width: 27.5em' src='seitwaerts.webp' alt='Von der Spielfigur gehen zwei Pfeile gleicher Länge im rechten Winkel zueinander aus: blau »vorwärts: (x, y)« schräg nach rechts unten, rot »nach rechts: (−y, x)« schräg nach links unten. Gestrichelt ihre Anteile: beim blauen x nach rechts und y nach unten, beim roten −y nach links und x nach unten, dasselbe Dreieck, um 90 Grad gedreht.'>
+
+Dreht man das Dreieck aus `x` und `y` um 90 Grad im Uhrzeigersinn, geht der Teil, der nach rechts zeigte, nach unten, und der Teil, der nach unten zeigte, nach links, daher das Minus.
 
 ```c
 // bewegt die Spielfigur, dt ist die Zeit seit dem letzten Bild in Sekunden
@@ -318,13 +324,15 @@ crop-element: #canvas
 
 ### Die Kamera-Ebene
 
-Jetzt soll die Figur sehen. Dafür schickt sie für jede Spalte des Bildes einen Strahl los. In welche Richtung, bestimmt die **Kamera**: die Blickrichtung `dir` mit der Länge 1 und quer dazu die **Kamera-Ebene** `plane`, eine Strecke, die ein Kästchen vor der Figur liegt.
+Jetzt soll die Figur sehen. Dafür schickt sie für jede Spalte des Bildes einen Strahl los. In welche Richtung, bestimmt die **Kamera**: die Blickrichtung `dir` mit der Länge 1 und quer dazu die **Kamera-Ebene**, eine Strecke, die ein Kästchen vor der Figur liegt. `plane` reicht von ihrer Mitte bis zu ihrem rechten Ende.
 
-<img class='full' src='ebene.webp' alt='Von oben: die Spielfigur, ein blauer Pfeil dir ein Stück nach rechts, an seiner Spitze quer eine rote Strecke plane. Von der Figur gehen gestrichelte Strahlen durch gleichmäßig verteilte Punkte der Strecke; ihre Enden heißen camera_x = −1 oben und +1 unten.'>
+<img class='drawing' style='width: 27.5em' src='ebene.webp' alt='Von oben, die Spielfigur schaut nach oben: ein blauer Pfeil dir nach oben, an seiner Spitze quer eine rote Strecke, die Kamera-Ebene. Darüber ein roter Pfeil plane von ihrer Mitte bis zu ihrem rechten Ende. Von der Figur gehen gestrichelte Strahlen durch fünf gleichmäßig verteilte Punkte der Strecke: camera_x = −1 am linken Ende, 0 in der Mitte, +1 am rechten Ende. Ein Bogen zwischen den äußeren Strahlen zeigt 83°.'>
 
 Die Bildspalten liegen gleichmäßig verteilt auf dieser Strecke: die linke Spalte bei `camera_x = −1`, die mittlere bei 0, die rechte bei +1. Der Strahl durch eine Spalte ist dann
 
 $$\text{ray} = \text{dir} + \text{plane} \cdot \text{camera\\_x}$$
+
+<img class='drawing' style='width: 25em' src='strahl-summe.webp' alt='Von der Spielfigur geht ein blauer Pfeil dir nach oben bis zur gestrichelten Kamera-Ebene, von seiner Spitze ein roter Pfeil plane · camera_x nach rechts bis zum Punkt camera_x = 0,5. Ein schwarzer Pfeil ray führt von der Figur direkt zu diesem Punkt, gestrichelt geht der Strahl dahinter weiter.'>
 
 Mehr braucht es nicht, keine Winkel für jeden Strahl, nur eine Summe von zwei Vektoren. Wie lang die Kamera-Ebene ist, legt fest, wie viel die Figur sieht: `PLANE` 0,89 ergibt etwa 83 Grad.
 
@@ -433,13 +441,17 @@ crop-element: #canvas
 
 Das funktioniert, ist aber ungenau und langsam: Ein Strahl, der zehn Kästchen weit kommt, braucht 500 Schritte, und eine Ecke, die er zwischen zwei Schritten streift, übersieht er.
 
+<img class='drawing' style='width: 24.5em' src='schritte.webp' alt='Ein Gitter, oben eine Reihe grauer Wandkästchen, in der Mitte ein einzelnes graues Kästchen. Von der Spielfigur unten links geht ein blauer Strahl schräg nach rechts oben, mit Punkten in gleichen Schritten. Er streift die linke obere Ecke des einzelnen Kästchens, rot umkreist und »übersehen«, weil kein Punkt dort liegt, und endet erst in der Wand oben.'>
+
 ### Von Kästchen zu Kästchen
 
-<img class='full' src='dda.webp' alt='Ein Gitter, rechts eine graue Wand. Von der Spielfigur unten links geht ein blauer Strahl schräg nach rechts oben bis zur Wand. Überall, wo er eine Gitterlinie kreuzt, sitzt ein Punkt: rot auf senkrechten Linien, grün auf waagrechten.'>
+<img class='drawing' style='width: 26.5em' src='dda.webp' alt='Ein Gitter, rechts eine graue Wand. Von der Spielfigur unten links geht ein blauer Strahl schräg nach rechts oben bis zur Wand. Überall, wo er eine Gitterlinie kreuzt, sitzt ein Punkt: rot auf senkrechten Linien (next_x, side 0), grün auf waagrechten (next_y, side 1).'>
 
-Genauer und schneller geht es mit einem Gedanken: Ein Strahl kann seine Richtung nur dort ändern, wo er ein Kästchen verlässt, und das geschieht an einer **Gitterlinie**. Also springt man von Gitterlinie zu Gitterlinie, immer zur nächsten, und prüft nur dort, ob das neue Kästchen eine Wand ist. Das Verfahren heißt **DDA** (Digital Differential Analyzer).
+Genauer und schneller geht es mit einem Gedanken: In eine Wand kann ein Strahl nur dort geraten, wo er ein Kästchen verlässt, und das geschieht an einer **Gitterlinie**. Also springt man von Gitterlinie zu Gitterlinie, immer zur nächsten, und prüft nur dort, ob das neue Kästchen eine Wand ist. Das Verfahren heißt **DDA** (Digital Differential Analyzer).
 
 Ein Punkt auf dem Strahl ist \\((\text{player\\\_x} + t \cdot \text{ray\\\_x},\ \text{player\\\_y} + t \cdot \text{ray\\\_y})\\). Um von einer senkrechten Gitterlinie zur nächsten zu kommen, muss x um 1 wachsen, also t um \\(|1 / \text{ray\\\_x}|\\): Das ist `delta_x`. Ebenso `delta_y` für die waagrechten Linien. `next_x` und `next_y` sind die t-Werte der nächsten Linie in jeder Richtung; der kleinere gewinnt.
+
+<img class='drawing' style='width: 27em' src='dda-t.webp' alt='Ein Gitter. Von der Spielfigur unten links geht ein kurzer blauer Pfeil ray schräg nach rechts oben, gestrichelt geht der Strahl weiter, mit Strichen bei t = 1, 2, 3 und 4; der Pfeil reicht genau bis t = 1. Rote Punkte sitzen, wo der Strahl senkrechte Gitterlinien kreuzt, grüne auf waagrechten. Eine rote Klammer delta_x reicht von einem roten Punkt zum nächsten, eine längere grüne Klammer delta_y von einem grünen zum nächsten.'>
 
 _task(delta)
 
@@ -548,6 +560,10 @@ crop-element: #canvas
 ### Eine Wandscheibe für jede Spalte
 
 Jetzt kommt der Blick der Figur. Für jede der 320 Spalten des Bildes geht ein Strahl los, und an der Stelle der Spalte zeichnet das Programm ein senkrechtes Stück Wand: je weiter weg, desto niedriger, nämlich `H / distance` Pixel hoch, mittig um den Horizont. Darüber ist die Decke, darunter der Boden.
+
+<img class='drawing' style='width: 27.5em' src='wandhoehe.webp' alt='Von der Seite: links ein Auge auf halber Höhe über dem Boden, im Abstand 1 davor senkrecht das Bild, H Pixel hoch, im Abstand 2 eine Wand der Höhe 1. Zwei blaue Strahlen vom Auge zur Ober- und Unterkante der Wand kreuzen das Bild nur halb so weit auseinander, wie es hoch ist: H / 2.'>
+
+Warum gerade `H / distance`? Denk dir das Bild ein Kästchen vor dem Auge, dort ist es `H` Pixel hoch, und eine Wand der Höhe 1 im Abstand 1 füllt es genau aus. Steht sie doppelt so weit weg, treffen die Strahlen zu ihrer Ober- und Unterkante das Bild nur halb so weit auseinander.
 
 Die Farben bekommen Decke, Boden und eine dunklere Fassung jeder Wand, damit man an Ecken sieht, wo eine Wand aufhört:
 
@@ -662,11 +678,30 @@ _task(fischauge)
 
 ### Gerade Wände
 
-<img class='full' src='fischauge.webp' alt='Von oben: eine gerade Wand, darunter die Spielfigur. Ein blauer Pfeil dir geht senkrecht zur Wand; ein gestrichelter Strahl geht schräg zur Wand und ist länger. Entlang dir gemessen sind beide Punkte der Wand gleich weit.'>
+<img class='drawing' style='width: 27.5em' src='fischauge.webp' alt='Von oben: eine gerade Wand, darunter die Spielfigur mit einem kurzen blauen Pfeil dir senkrecht zur Wand. Ein gestrichelter Strahl geht geradeaus zur Wand und trifft sie im rechten Winkel, ein zweiter schräg nach rechts, »direkt: länger«. Neben dem geraden Strahl eine grüne Linie von der Figur bis zur Wand, »entlang dir: gleich weit«: In Blickrichtung liegen beide Treffpunkte gleich weit vor der Figur.'>
 
 Steht die Figur gerade vor einer Wand, ist der Strahl zur Mitte am kürzesten. Ein Strahl zum Rand des Bildes ist länger, obwohl er dieselbe gerade Wand trifft, und so zeichnet das Programm die Wand dort niedriger. Unser Auge misst aber nicht den Weg zum Punkt, sondern wie weit er **vor** uns liegt: den Abstand **entlang der Blickrichtung**.
 
-Den liefert das Skalarprodukt. Der Vektor von der Figur zum Treffpunkt, multipliziert mit `dir`, das die Länge 1 hat, ergibt genau den Anteil dieses Vektors, der in Blickrichtung zeigt. In `draw_view` ändert sich eine einzige Rechnung:
+Den liefert das Skalarprodukt. Der Vektor `a` von der Figur zum Treffpunkt, multipliziert mit `dir`, das die Länge 1 hat, ergibt genau den Anteil dieses Vektors, der in Blickrichtung zeigt.
+
+<div class='gallery centered small'>
+<figure>
+<img src='skalar-gleich.webp' alt='Zwei gleich lange Pfeile übereinander nach rechts, a und dir; darunter eine grüne Linie so lang wie beide.'>
+<figcaption>Gleiche Richtung<br><code>a · dir</code> = 1</figcaption>
+</figure>
+<figure>
+<img src='skalar-schraeg.webp' alt='Ein Pfeil dir nach rechts, ein gleich langer Pfeil a schräg nach rechts oben, 60 Grad dazwischen. Von der Spitze von a fällt eine gestrichelte Linie senkrecht auf dir; darunter eine grüne Linie, halb so lang wie dir.'>
+<figcaption>60° dazwischen<br><code>a · dir</code> = cos 60° = 0,5</figcaption>
+</figure>
+<figure>
+<img src='skalar-senkrecht.webp' alt='Ein Pfeil dir nach rechts, ein gleich langer Pfeil a senkrecht nach oben; unter ihrem gemeinsamen Anfang nur ein grüner Punkt.'>
+<figcaption>Senkrecht<br><code>a · dir</code> = 0</figcaption>
+</figure>
+</div>
+
+Für zwei Vektoren der Länge 1 ist das Skalarprodukt der Kosinus des Winkels zwischen ihnen: 1, wenn sie in dieselbe Richtung zeigen, 0, wenn sie senkrecht aufeinander stehen, und dazwischen etwas zwischen 0 und 1. Das ist genau die Länge des Schattens, den `a` auf `dir` wirft (grün). Ist `a` doppelt so lang, ist es auch sein Schatten; mit `dir` der Länge 1 ist das Skalarprodukt also der Weg, den der Treffpunkt in Blickrichtung vor der Figur liegt.
+
+In `draw_view` ändert sich eine einzige Rechnung; das Skalarprodukt ist die Summe aus den multiplizierten x-Anteilen und den multiplizierten y-Anteilen:
 
 ```c
         // der Abstand entlang der Blickrichtung: das Skalarprodukt
@@ -724,6 +759,8 @@ Am Ende von `move_player` bewegt sich die Figur in x und in y getrennt, und nur,
 ```
 
 Läuft die Figur schräg gegen eine Wand, ist eine der beiden Richtungen blockiert, die andere nicht: Sie gleitet an der Wand entlang, statt hängen zu bleiben. So fühlt es sich in Spielen an.
+
+<img class='drawing' style='width: 25.5em' src='gleiten.webp' alt='Von oben: die Spielfigur als Kreis in einem Quadrat mit einem Punkt an jeder Ecke, dicht vor einer grauen Wand rechts; ein gestrichelter Pfeil schräg nach rechts oben zeigt, wohin sie will. Ein roter Pfeil nach rechts führt zum rot gestrichelten Quadrat, nur in x verschoben: Seine beiden rechten Ecken stehen rot in der Wand, »nur x: zwei Ecken in der Wand«. Ein grüner Pfeil nach oben führt zum grün gestrichelten Quadrat, nur in y verschoben, alle Ecken frei, »nur y: frei«.'>
 
 Eine Kleinigkeit in `main`: Ruckelt der Browser, etwa weil der Tab im Hintergrund war, ist `dt` auf einmal eine ganze Sekunde, und die Figur macht einen Riesenschritt, vielleicht durch eine dünne Wand hindurch. Darum höchstens eine Zehntelsekunde:
 
@@ -882,9 +919,9 @@ double row_distance(int y)
 }
 ```
 
-<img class='full' src='boden-seite.webp' alt='Von der Seite: links ein Auge 0,5 über dem Boden, davor senkrecht das Bild, auf Augenhöhe gestrichelt der Horizont. Ein blauer Strahl durch eine Bildzeile knapp unter dem Horizont trifft den Boden weit weg, ein roter durch eine Zeile weiter unten trifft ihn viel näher.'>
+<img class='drawing' style='width: 27.5em' src='boden-seite.webp' alt='Von der Seite: links ein Auge 0,5 über dem Boden, 1 davor senkrecht das Bild, auf Augenhöhe gestrichelt der Horizont. Ein blauer Strahl geht durch einen Punkt des Bildes (y − H/2) / H unter dem Horizont und trifft den Boden bei row_distance(y). Zwei ähnliche Dreiecke: ein kleines mit den Seiten 1 und (y − H/2) / H bis zum Bild, ein großes mit row_distance(y) und 0,5 bis zum Boden.'>
 
-`row_distance` folgt aus ähnlichen Dreiecken: Die Augen sind 0,5 über dem Boden, das Bild steht eine Einheit vor ihnen. Eine Bildzeile, die `y − H/2` Pixel unter dem Horizont liegt, sieht den Boden dort, wo der Strahl auf seinem Weg um 0,5 gesunken ist.
+`row_distance` folgt aus ähnlichen Dreiecken: Die Augen sind 0,5 über dem Boden, das Bild steht eine Einheit vor ihnen. Eine Bildzeile, die `y − H/2` Pixel unter dem Horizont liegt, sieht den Boden dort, wo der Strahl auf seinem Weg um 0,5 gesunken ist. Weil das Bild im Abstand 1 genau `H` Pixel hoch ist, liegt sie dort `(y − H/2) / H` unter dem Horizont: Der Strahl sinkt auf dem Weg 1 um so viel, auf dem Weg `row_distance` um 0,5.
 
 In `draw_view` werden Decke und Boden Zeile für Zeile gezeichnet, und jede Wand bekommt ihr Licht:
 
@@ -958,6 +995,10 @@ ruby palette.rb textures.png
 
 Es schreibt `palette.h` mit der Palette, der Schattentabelle und den Texturen als Farbnummern, und für jeden Schritt ein Bild. Öffne sie im Explorer.
 
+Erst bringt es alle Texturen auf 40 Grundfarben und macht aus jeder eine Rampe mit 16 Helligkeiten, oben hell, unten schwarz (`2-rampen.png`). Aus diesen 640 Farben sucht es 240 aus, dazu kommen 16 für die Karte und die Anzeige, in der ersten Zeile der Palette (`3-palette.png`):
+
+<div class='gallery' style='grid-template-columns: 40fr 16fr; gap: 1.2em 0.6em;'>
+<figure>
 <!-- tutorial-screenshot
 write-file: palette.rb <- file:werkzeug/palette.rb
 write-file: textures.png <- file:werkzeug/textures.png
@@ -970,14 +1011,17 @@ terminal-wait-for-prompt
 terminal-expect-no-text: Error
 image-file: raycaster/2-rampen.png 2
 -->
-<img class='full' src='palette-rampen.webp' style='image-rendering: pixelated;' alt='Ein flaches Band aus Farbfeldern, viermal so breit wie hoch: jede Spalte eine Grundfarbe aus den Texturen, nach Farbton geordnet, erst Grautöne, dann Ziegelrot und Holzbraun, Moosgrün und Metallblau, oben in voller Helligkeit, nach unten bis Schwarz.'>
-
-Erst bringt es alle Texturen auf 40 Grundfarben und macht aus jeder eine Rampe mit 16 Helligkeiten, oben hell, unten schwarz. Aus diesen 640 Farben sucht es 240 aus, dazu kommen 16 für die Karte und die Anzeige, in der ersten Zeile:
-
+<img src='palette-rampen.webp' style='image-rendering: pixelated;' alt='Ein Band aus quadratischen Farbfeldern, 40 Spalten und 16 Zeilen: jede Spalte eine Grundfarbe aus den Texturen, nach Farbton geordnet, erst Grautöne, dann Ziegelrot und Holzbraun, Moosgrün und Metallblau, oben in voller Helligkeit, nach unten bis Schwarz.'>
+<figcaption>40 Grundfarben mit je 16 Helligkeiten</figcaption>
+</figure>
+<figure>
 <!-- tutorial-screenshot
 image-file: raycaster/3-palette.png 2
 -->
-<img class='drawing' src='palette-256.webp' style='width: 18em; image-rendering: pixelated;' alt='256 Farbfelder in 16 Zeilen: oben schwarz, Grau, Gelb, Blau, Rot und Weiß für die Karte, dann sehr viele fast schwarze Farben, Grautöne, Rot- und Brauntöne, Grün und Blau, jeweils von dunkel nach hell.'>
+<img src='palette-256.webp' style='image-rendering: pixelated;' alt='256 Farbfelder in 16 Zeilen: oben schwarz, Grau, Gelb, Blau, Rot und Weiß für die Karte, dann sehr viele fast schwarze Farben, Grautöne, Rot- und Brauntöne, Grün und Blau, jeweils von dunkel nach hell.'>
+<figcaption>Die Palette mit 256 Farben</figcaption>
+</figure>
+</div>
 
 Sieh dir die Palette genau an: Viele Farben sind fast schwarz und fast grau. Ganz dunkel sehen Ziegelrot, Moosgrün und Metallblau beinahe gleich aus, und die Palette fasst sie zusammen. Darum werden Farben in dunklen Gängen grauer, so wie in DOOM.
 
@@ -1063,7 +1107,11 @@ Boden und Decke bekommen erst im nächsten Abschnitt Texturen; bis dahin nehmen 
 
 ### Wo trifft der Strahl die Wand?
 
-Um eine Textur auf eine Wand zu legen, braucht jedes Pixel der Wand zwei Zahlen: `u`, wie weit links oder rechts es auf dem Kästchen liegt, und `v`, wie weit oben oder unten. `v` hat `draw_wall_column` schon. `u` steckt im Treffpunkt: Trifft der Strahl eine Wand quer zur x-Achse, sagt der Nachkommateil von `hit.y`, wo auf dem Kästchen, sonst der von `hit.x`. `texel` holt die Farbe aus der Textur:
+Um eine Textur auf eine Wand zu legen, braucht jedes Pixel der Wand zwei Zahlen: `u`, wie weit links oder rechts es auf dem Kästchen liegt, und `v`, wie weit oben oder unten. `v` hat `draw_wall_column` schon. `u` steckt im Treffpunkt: Trifft der Strahl eine Wand quer zur x-Achse, sagt der Nachkommateil von `hit.y`, wo auf dem Kästchen, sonst der von `hit.x`.
+
+<img class='drawing' style='width: 24.5em' src='textur-u.webp' alt='Von oben: ein Gitter mit den Koordinaten 0 bis 3 an den Rändern, in der Mitte ein graues Wandkästchen von 1 bis 2. Ein blauer Strahl von links unten trifft seine linke Seite bei hit.y = 1,35, also u = 0,35; ein grüner Strahl von rechts unten trifft seine untere Seite bei hit.x = 1,6, also u = 0,6. Graue Pfeile innen an beiden Seiten zeigen, in welche Richtung u von 0 bis 1 wächst.'>
+
+`texel` holt die Farbe aus der Textur:
 
 ```c
 // das Texel beim Punkt (u, v) der Textur t; u und v laufen von 0 bis 1
@@ -1163,6 +1211,8 @@ _task(palette)
 ### Zeile für Zeile
 
 Boden und Decke bekommen auch Texturen, und das geht anders als bei den Wänden. In einer Bildzeile ist der Boden überall gleich weit weg, `row_distance(y)` weiß schon wie weit. Der Strahl durch das linke Bildende ist `dir − plane`, der durch das rechte `dir + plane`. Der Bodenpunkt am linken Rand ist also die Figur plus `distance · (dir − plane)`, und mit jedem Pixel nach rechts geht es ein gleich großes Stück weiter. Wo man auf dem Boden ist, sagt, welches Texel: wieder der Nachkommateil, diesmal von beiden Koordinaten.
+
+<img class='drawing' style='width: 27.5em' src='boden-zeile.webp' alt='Von oben, die Spielfigur schaut nach oben: dir und quer davor rot die Kamera-Ebene mit den Enden dir − plane und dir + plane, gestrichelt die Strahlen durch diese Enden. Weiter vorn liegt blau eine Bildzeile auf dem Boden, parallel zur Kamera-Ebene von einem Strahl zum anderen, mit Punkten in gleichen Abständen: links beginnt sie bei left_x, left_y, von Punkt zu Punkt ist es ein step. Eine graue Maßlinie am Rand zeigt distance, den Abstand von der Figur bis zur Zeile.'>
 
 In `draw_view` wird die Schleife für Decke und Boden zu:
 
@@ -1271,7 +1321,7 @@ _person(williams)
 <p><strong>Pyramidal Parametrics</strong>, Lance Williams, SIGGRAPH 1983. Der Aufsatz, in dem die Mipmaps zum ersten Mal beschrieben sind: eine Pyramide aus immer kleineren Fassungen derselben Textur, aus der das Programm für jeden Pixel die passende Stufe nimmt: <a href='https://doi.org/10.1145/800059.801126'>bei der ACM</a>.</p>
 </div>
 
-<img class='full' src='mipmaps.webp' alt='Die Ziegeltextur fünfmal nebeneinander in gleicher Größe: ganz links mit 64 mal 64 Texeln und scharfen Fugen, dann 32, 16, 8 und 4 Texel, immer gröber, bis ganz rechts nur noch große rotbraune Flecken bleiben.'>
+<img class='drawing' style='width: 40.6em; image-rendering: pixelated;' src='mipmaps.webp' alt='Die Ziegeltextur fünfmal nebeneinander in gleicher Größe: ganz links mit 64 mal 64 Texeln und scharfen Fugen, dann 32, 16, 8 und 4 Texel, immer gröber, bis ganz rechts nur noch große rotbraune Flecken bleiben.'>
 
 Mischen heißt in einer Palette: die Rot-, Grün- und Blauwerte der vier Farben mitteln und dann die Nummer der Palette suchen, deren Farbe dem Mittel am nächsten kommt. Das dauert, aber nur einmal beim Start. Ersetze `texel` durch:
 

@@ -2138,6 +2138,12 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     text-align: center;
 }
 
+/* .centered.small: at most 11em, for sketches with few large labels that
+   would look oversized at 16em (raycaster: the dot product) */
+.gallery.centered.small figure {
+    flex-basis: 11em;
+}
+
 .gallery.tiles {
     grid-template-columns: repeat(auto-fill, minmax(9em, 1fr));
     gap: 1em;
