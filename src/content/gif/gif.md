@@ -227,6 +227,17 @@ template_name: des PixelRAM-Starters
         flex: none;
         background: color-mix(in srgb, var(--bs-secondary-color) 22%, transparent);
     }
+    /* on a phone the grid takes the width there is, square cells */
+    @media (max-width: 640px) {
+        .lzw-grid {
+            width: 100%;
+            grid-template-columns: repeat(16, minmax(0, 1fr));
+            grid-auto-rows: auto;
+        }
+        .lzw-grid div {
+            aspect-ratio: 1;
+        }
+    }
     .lzw-grid div {
         font-size: 0.7em;
         display: flex;

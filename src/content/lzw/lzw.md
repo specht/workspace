@@ -75,6 +75,14 @@ duration: 2 Doppelstunden
         max-height: 24em;
         overflow-y: auto;
     }
+    /* on a phone a few rows, scrolled to the current one: the widget keeps
+       the height of its tallest step, and the full table left a screen of
+       empty room under the short ones */
+    @media (max-width: 640px) {
+        .lzw-steps {
+            max-height: 13em;
+        }
+    }
     .lzw-steps table {
         margin: 0;
     }
