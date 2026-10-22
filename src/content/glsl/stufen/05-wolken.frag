@@ -3,7 +3,9 @@
 // eine Zufallszahl von 0 bis 1 für jeden Punkt eines Gitters, immer dieselbe
 float hash(vec2 p)
 {
-    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+    vec3 q = fract(vec3(p.xyx) * 0.1031);
+    q += dot(q, q.yzx + 33.33);
+    return fract((q.x + q.y) * q.z);
 }
 
 // Value Noise: zwischen den Gitterpunkten weich überblenden

@@ -15,7 +15,7 @@
     "glanz.webp": {
       "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
       "output_sha256": "cc23317673bf9923236a5b731b8cbfa5a673a000a41f5d31142a20505a22067b",
-      "state_hash": "f7cdd0fed7fee35cee6067089de5822697edf784c79eb27d1d64659f4e7db77b",
+      "state_hash": "1febb561b84ed448265957f62f66073dc2bd2c1ca7e27a971a651c9d89f65043",
       "workspace_look": "4.140.0-ls368"
     },
     "kaleidoskop.webp": {
@@ -33,19 +33,19 @@
     "kugel.webp": {
       "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
       "output_sha256": "881de7097e879d332dff1e5efa385224db2da8d329f3a9a3a6243bd30b4537f3",
-      "state_hash": "0eac0e3bc105c97c0c36ae6397a15bed1d1687cdf8f6b49bc7e288803101a128",
+      "state_hash": "c5281afecb5e44c69dce08b18710d1faea8e50282965ad6e1892bc6049582fef",
       "workspace_look": "4.140.0-ls368"
     },
     "maus.webp": {
       "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
       "output_sha256": "53fceadc5cf9611207626ff8da6c1871b496ab27e5a7cc5238200e67086796ad",
-      "state_hash": "b44a693044c66364072f40dc4f564572a029ff9b3910189ec52d7d4670987e80",
+      "state_hash": "46f62867767ac4ee8bc1b3d1be6423ca0214bd96b71d78954df2fc2fb5f5c41f",
       "workspace_look": "4.140.0-ls368"
     },
     "tropfen.webp": {
       "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
       "output_sha256": "f55bf368dc24b8a2c8980422a0b009276d75fbf8e16290cea7ee228c72a0f3cd",
-      "state_hash": "98cd8050435742f965fcf6bdee33bc9c45c3b9bbc865b1ac866c86abfb7be1a3",
+      "state_hash": "5152f7df6a40d87f5f3acdeef00319b9c0c7c93b1b3e936d677d998382deff70",
       "workspace_look": "4.140.0-ls368"
     },
     "verlauf.webp": {
@@ -63,8 +63,8 @@
     },
     "wolken.webp": {
       "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
-      "output_sha256": "6350a195c78195cd0897288edc2b6caf9df3aec6a5189689e4c9fc80061245f9",
-      "state_hash": "6430c91868985a057c950de07b986f0dd2a0badbb3aba66a49153f5ad462f84a",
+      "output_sha256": "f327ed67886811352f22b4980df3f236dace47d6c83cab19ef3c5f281deb1c32",
+      "state_hash": "1259fdef7fd3edd16f5bdd8e99fe937cff845f127a0a1014bd25f1b4bbb73b3b",
       "workspace_look": "4.140.0-ls368"
     }
   },

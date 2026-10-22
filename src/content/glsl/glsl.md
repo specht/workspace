@@ -308,7 +308,9 @@ Zufall gibt es auf dem Grafikchip nicht, jeder Pixel muss bei jedem Bild dasselb
 // eine Zufallszahl von 0 bis 1 für jeden Punkt eines Gitters, immer dieselbe
 float hash(vec2 p)
 {
-    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+    vec3 q = fract(vec3(p.xyx) * 0.1031);
+    q += dot(q, q.yzx + 33.33);
+    return fract((q.x + q.y) * q.z);
 }
 
 // Value Noise: zwischen den Gitterpunkten weich überblenden
@@ -363,7 +365,7 @@ crop-element: #canvas
 -->
 <img class='full fit-width' src='wolken.webp' alt='Ein blauer Himmel, oben tiefer, unten heller, mit weißen, ausgefransten Wolken in verschiedenen Größen.'>
 
-- `hash` macht aus einem Gitterpunkt eine Zahl, die zufällig aussieht, aber für denselben Punkt immer gleich ist.
+- `hash` macht aus einem Gitterpunkt eine Zahl, die zufällig aussieht, aber für denselben Punkt immer gleich ist. Sie ist dieselbe wie im Handbuch, von Dave Hoskins. Viele Beispiele im Netz nehmen stattdessen `fract(sin(…) * 43758.5)`; das gibt auf manchen Grafikchips Kästchen statt Wolken.
 - `noise` liest die Zahlen der vier Gitterpunkte um `p` und mischt weich zwischen ihnen.
 - `fbm` legt sechs Lagen Rauschen übereinander, jede doppelt so fein und halb so stark wie die vorige. Erst damit sehen die Ränder der Wolken ausgefranst aus.
 - `smoothstep(0.45, 0.75, clouds)` macht daraus Wolken mit Lücken: Wo das Rauschen unter 0,45 bleibt, ist Himmel.
