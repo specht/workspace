@@ -34,12 +34,18 @@ export default {
         // Server reloads the page by itself once a file was written,
         // sometimes only after this navigation: the page has to stay put for
         // two seconds, otherwise the reloaded page is waited for again.
+        //
+        // hook: open SECONDS ss=N renders N × N times as many pixels and
+        // scales them down for the picture: smooth edges (antialiasing) where
+        // a pixel holds more than one hole of the sponge.
         async open({ page, args, timeout }) {
             const words = args.trim().split(/\s+/).filter(Boolean);
             const expectError = words.includes('error');
-            const seconds = Number(words.find((w) => w !== 'error') ?? 2.5);
-            if (!(seconds >= 0 && seconds <= 600)) throw new Error('hook: open [SECONDS] [error]');
-            const scale = await page.evaluate(() => window.devicePixelRatio || 1);
+            const supersample = Number((words.find((w) => w.startsWith('ss=')) ?? 'ss=1').slice(3));
+            const seconds = Number(words.find((w) => w !== 'error' && !w.startsWith('ss=')) ?? 2.5);
+            if (!(seconds >= 0 && seconds <= 600)) throw new Error('hook: open [SECONDS] [error] [ss=N]');
+            if (!(Number.isInteger(supersample) && supersample >= 1 && supersample <= 4)) throw new Error('hook: open: ss=N with N from 1 to 4');
+            const scale = await page.evaluate(() => window.devicePixelRatio || 1) * supersample;
             const url = new URL(`/index.html?t=${seconds}&scale=${scale}`, page.url()).href;
             for (let attempt = 0; ; attempt += 1) {
                 await page.goto(url, { waitUntil: 'domcontentloaded', timeout });
@@ -58,6 +64,30 @@ export default {
             if (expectError && !error) throw new Error('hook: open error: the shader compiled without an error');
             if (!expectError && error) throw new Error(`hook: open: the shader reports an error:\n${error}`);
             await settleFrames(page, 3);
+            if (supersample > 1) {
+                // In the next animation frame, right after index.html has drawn
+                // (its callback was queued first), the big picture goes scaled
+                // down with the browser's best filter into a canvas of screen
+                // size that lies on top of the WebGL canvas.
+                await page.evaluate(() => new Promise((resolve) => {
+                    requestAnimationFrame(() => {
+                        const source = document.getElementById('canvas');
+                        const box = source.getBoundingClientRect();
+                        const small = document.createElement('canvas');
+                        small.width = Math.round(box.width * devicePixelRatio);
+                        small.height = Math.round(box.height * devicePixelRatio);
+                        const context = small.getContext('2d');
+                        context.imageSmoothingEnabled = true;
+                        context.imageSmoothingQuality = 'high';
+                        context.drawImage(source, 0, 0, small.width, small.height);
+                        small.style.cssText = `position: fixed; left: ${box.left}px; top: ${box.top}px; ` +
+                            `width: ${box.width}px; height: ${box.height}px; z-index: 10;`;
+                        document.body.appendChild(small);
+                        resolve();
+                    });
+                }));
+                await settleFrames(page, 2);
+            }
         },
 
         // hook: drag FX FY: presses the mouse in the middle of the picture

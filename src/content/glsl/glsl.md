@@ -1205,7 +1205,7 @@ vec3 room(vec3 c, vec3 q, vec3 n)
     vec3 tint = r < 0.95 ? vec3(0.55, 0.85, 1.0) : vec3(1.0, 0.6, 0.25);
     vec3 to = c - q;
     float d2 = dot(to, to);
-    return tint * 4.0 * max(dot(n, to / sqrt(d2)), 0.0) / (1.0 + 0.6 * d2 * d2 / 9.0);
+    return tint * 8.0 * max(dot(n, to / sqrt(d2)), 0.0) / (1.0 + 0.6 * d2 * d2 / 9.0);
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
@@ -1247,7 +1247,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
         color = (vec3(0.004, 0.006, 0.008) + light) * 0.6 * ao * ao;
         // was weit weg ist, verschwindet im Dunkeln
-        color *= exp(-0.2 * t);
+        color *= exp(-0.12 * t);
     }
 
     color *= 1.0 - 0.3 * dot(p * 0.6, p * 0.6);
@@ -1259,8 +1259,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 <!-- tutorial-screenshot
 write-file: shader.frag <- file:stufen/12-im-schwamm.frag
 tab: preview
-viewport: 800x450
-hook: open 9
+viewport: 1067x600
+hook: open 9 ss=3
 crop-element: #canvas
 -->
 <img class='full fit-width' src='im-schwamm.webp' alt='Der Blick durch einen dunklen Gang im Inneren des Schwamms, die Kamera schief gekippt. Die Wände bestehen aus quadratischen Platten mit Löchern in mehreren Größen; vorn ist fast alles schwarz, weiter hinten fällt aus einem Raum kaltes Licht auf die Wände, und ganz hinten verliert sich der Gang im Dunkeln.'>
