@@ -1138,13 +1138,17 @@ vscode_config: {}</pre>
                 .toggleClass('bi-eye', !reveal)
                 .toggleClass('bi-eye-slash', reveal);
         });
+        // Ein- und ausblenden ohne Neuladen: der Knopf hier und der Eintrag im Menü
         $('.bu-toggle-module').on('click', function(e) {
-            let key = $(e.target).closest('button').data('module');
-            api_call('/api/toggle_show_module', {module: key}, function(data) {
-                if (data.success) {
-                    window.location.reload();
-                }
-            });
+            let button = $(e.target).closest('button');
+            api_call('/api/toggle_show_module', {module: button.data('module')}, function(data) {
+                if (!data.success) return;
+                button.toggleClass('btn-success', data.shown).toggleClass('btn-outline-secondary', !data.shown);
+                button.empty()
+                    .append($('<i>').addClass('bi').addClass(data.shown ? 'bi-check-lg' : 'bi-x-lg'))
+                    .append(document.createTextNode(`${data.label} im Menü ${data.shown ? '' : 'nicht'} anzeigen`));
+                $(`[data-menu-module='${data.module}']`).css('display', data.shown ? '' : 'none');
+            }, {no_please_wait: true});
         });
         $('#bu_restart_workspace').on('click', function() {
             const content = `

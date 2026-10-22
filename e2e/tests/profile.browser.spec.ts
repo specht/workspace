@@ -262,3 +262,25 @@ test('teacher profile shows the permission-protected teacher section', async ({
     page.locator('.autotoc-secondary a[href="#for-teachers"]'),
   ).toHaveCount(1);
 });
+test('showing a tool in the menu does not reload the profile', async ({
+  page,
+  e2eEmail,
+}, testInfo) => {
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/profil');
+  // A reload would lose this mark.
+  await page.evaluate(() => { (window as any).__notReloaded = true; });
+
+  for (const key of ['tic80', 'phpmyadmin', 'neo4j'] as const) {
+    const button = page.locator(`.bu-toggle-module[data-module='${key}']`);
+    const menuEntry = page.locator(`[data-menu-module='${key}']`);
+    const shownBefore = await button.evaluate(b => b.classList.contains('btn-success'));
+    for (const shown of [!shownBefore, shownBefore]) {
+      await button.click();
+      await expect(button).toHaveClass(shown ? /btn-success/ : /btn-outline-secondary/);
+      await expect(button).toContainText(shown ? 'im Menü anzeigen' : 'im Menü nicht anzeigen');
+      await expect(menuEntry).toHaveCSS('display', shown ? /^(?!none$)/ : 'none');
+    }
+  }
+  expect(await page.evaluate(() => (window as any).__notReloaded)).toBe(true);
+});

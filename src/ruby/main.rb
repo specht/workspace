@@ -6266,7 +6266,8 @@ class Main < Sinatra::Base
             RETURN u;
         END_OF_STRING
 
-        respond(:yay => 'sure')
+        # the page changes the button and the menu itself, without reloading
+        respond(:module => key, :shown => new_flag, :label => MODULE_LABELS[key])
     end
 
     # Checks an answer and, if it counts, remembers it (docs/aufgaben.md).
