@@ -17,6 +17,8 @@ Go, auch bekannt als Golang, wurde 2009 von Robert Griesemer, Rob Pike und Ken T
 
 _person(griesemer-pike)
 
+_person(thompson)
+
 Bekannte Beispiele für Anwendungen, die in Go entwickelt wurden, sind Docker, Kubernetes und das Web-Framework Hugo. Heutzutage ist Go immer noch äußerst relevant, insbesondere in der Cloud- und Server-Backend-Entwicklung, da es eine hohe Leistung und Skalierbarkeit bietet und von einer aktiven Entwickler-Community unterstützt wird.
 
 <!-- ## Eigenschaften

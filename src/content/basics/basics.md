@@ -51,6 +51,8 @@ wait-for-text: Deine Dateien bleiben
 
 <img class='full' src='vs-code-welcome.webp' data alt='Visual Studio Code ohne geöffneten Ordner, links der Explorer mit »Open Folder« und »Clone Repository«, rechts die Einführung »Willkommen im Hackschule Workspace« mit dem ersten Schritt »Deine Dateien bleiben« und dem Knopf »Ordner öffnen«.'>
 
+_person(gamma)
+
 ## Die Benutzeroberfläche
 
 Am linken Rand siehst du einige Icons, die wichtig sind:

@@ -17,6 +17,11 @@ Lisp, entwickelt 1958 von John McCarthy am Massachusetts Institute of Technology
 
 _person(mccarthy)
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Recursive Functions of Symbolic Expressions and Their Computation by Machine, Part I</strong>, John McCarthy, Communications of the ACM, 1960. Der Aufsatz, in dem Lisp zum ersten Mal beschrieben ist: Listen, Funktionen, die sich selbst aufrufen, und eine Funktion <code>apply</code>, die jedes Lisp-Programm ausrechnen kann und selbst in Lisp geschrieben ist: <a href='https://doi.org/10.1145/367177.367199'>frei bei der ACM</a>.</p>
+</div>
+
 <!-- ## Eigenschaften
 
 - **Funktional**: Common Lisp ist eine funktionale Programmiersprache, die auf der rekursiven Funktionstheorie basiert.

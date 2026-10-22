@@ -20,6 +20,8 @@ In diesem Kapitel lernst du, wie du MySQL-Da­ten­ban­ken abfragen kannst. Daz
 
 _person(widenius)
 
+_person(chamberlin-boyce)
+
 ## Vorbereitung
 
 ### Einen Ordner anlegen

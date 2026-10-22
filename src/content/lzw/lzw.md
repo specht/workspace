@@ -277,6 +277,11 @@ _task(sonderfall)
 
 Der Kompressor kann einen Eintrag benutzen, den er gerade erst angelegt hat. Das passiert, wenn sich ein Präfix sofort wiederholt und dabei mit seinem eigenen ersten Byte weitergeht, wie bei `ABABABA`. Der Entpacker kennt diesen Eintrag noch nicht, aber er kann ihn ausrechnen: Es ist der vorige Eintrag mit dessen eigenem ersten Byte dahinter. Das ist die einzige Ausnahme von Regel 2.
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>A Technique for High-Performance Data Compression</strong>, Terry A. Welch, IEEE Computer, 1984. Der Aufsatz, in dem LZW beschrieben ist: ein Wörterbuch, das Kompressor und Entpacker beim Lesen gleich aufbauen, so einfach, dass es schnell genug für Festplatten war: <a href='https://courses.cs.duke.edu/spring03/cps296.5/papers/welch_1984_technique_for.pdf'>PDF</a>, auch beim <a href='https://doi.org/10.1109/MC.1984.1659158'>IEEE</a>.</p>
+</div>
+
 Hier entpackt die Zeitlupe die Codes des Texts, der oben gewählt ist; die Ausnahme ist rot markiert. Wähle oben `AAAAAAAA` und sieh hier zu.
 
 <div class='lzw-stepper' id='lzw-decode' data-stepper>

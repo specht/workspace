@@ -32,6 +32,8 @@ In einem Textprogramm wie Word formatierst du, während du schreibst: Du markier
 
 In LaTeX schreibst du, **was** etwas ist: `\section{Theorie}` ist eine Überschrift, `\caption{…}` die Unterschrift einer Abbildung, `\parencite{…}` eine Quellenangabe. Wie es aussieht, entscheidet LaTeX, für das ganze Dokument einheitlich. Nummern, Inhaltsverzeichnis, Literaturverzeichnis und Verweise wie »siehe Tabelle 1« stimmen immer, und Formeln sehen aus wie im Mathebuch. Deshalb schreibt man an Universitäten in Mathematik, Naturwissenschaften und Informatik fast alles mit LaTeX.
 
+_person(knuth-lamport)
+
 Deine Facharbeit ist eine reine Textdatei. LaTeX macht daraus ein PDF. Alle Befehle aus dieser Aktivität und viele mehr findest du im [Handbuch LaTeX](/reference/latex).
 
 ## Einrichten

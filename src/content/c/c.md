@@ -258,3 +258,7 @@ Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
 
 In diesem Kapitel hast du an drei Beispielen gesehen, wie man ein einfaches C-Programm schreiben, kompilieren und ausführen kann. Das ist natürlich nur ein erster Eindruck. Um C wirklich zu beherrschen, musst du noch viel mehr lernen – am besten, indem du eigene Programme schreibst und ausprobierst. Die Buchhandlungen, Bibliotheken und Youtube sind voll von Material für dich. Viel Spaß beim Programmieren!
 
+<div class='book'>
+<i class='bi bi-book'></i>
+<p><strong>The C Programming Language</strong>, Brian Kernighan und Dennis Ritchie, Prentice Hall, 1978, zweite Auflage 1988. Das Buch des Erfinders von C selbst, kurz und mit vielen Übungen. Seit diesem Buch beginnt man eine neue Sprache mit »hello, world«, wie auf dieser Seite. Die zweite Auflage gibt es beim <a href='https://www.informit.com/store/c-programming-language-9780131103627'>Verlag</a> und in fast jeder Bibliothek.</p>
+</div>

@@ -97,6 +97,8 @@ crop-terminal-lines: auto
 
 Die Angabe hinter `time` ist die **Roundtrip-Zeit**: wie viele Millisekunden ein Paket zum Ziel und zurück gebraucht hat. Zu Google sind es nur wenige Millisekunden. Google beantwortet die Adresse `8.8.8.8` von vielen Rechenzentren auf der Welt aus, und dir antwortet ein nahes.
 
+_person(muuss)
+
 Pingst du deinen eigenen Rechner an, verlassen die Pakete ihn gar nicht:
 
 ```bash
@@ -232,6 +234,11 @@ Bisher ging es um Pakete, die von einer Adresse zu einer anderen reisen. Darum k
 Jede Schicht benutzt die darunter und weiß nichts von denen darüber: IP trägt ein Paket zum Ziel, ohne zu wissen, dass ein Stück einer Webseite darin steckt. Zwei dieser Adressen hat dir `ifconfig` schon gezeigt, `ether` und `inet`. Die beiden mittleren Schichten geben dem Ganzen seinen Namen: **TCP/IP**.
 
 _person(cerf-kahn)
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>A Protocol for Packet Network Intercommunication</strong>, Vinton G. Cerf und Robert E. Kahn, IEEE Transactions on Communications, 1974. Der Aufsatz, mit dem TCP/IP anfing: wie ein Gateway Pakete zwischen ganz verschiedenen Netzen weiterreicht; TCP und IP sind darin noch ein einziges Protokoll: <a href='https://www.cs.princeton.edu/courses/archive/fall06/cos561/papers/cerf74.pdf'>als PDF</a>.</p>
+</div>
 
 _task(schichten)
 
@@ -421,6 +428,8 @@ crop-terminal-lines: auto
 <img class='full' src='http-von-hand.webp' alt='Nach nc -C info.cern.ch 80 und den getippten Zeilen HEAD /hypertext/WWW/TheProject.html HTTP/1.0 und Host: info.cern.ch antwortet der Server mit HTTP/1.1 200 OK, Server: Apache, Last-Modified: Thu, 03 Dec 1992, Content-Length: 2217 und Content-Type: text/html.'>
 
 Die Antwort beginnt mit der **Status-Line** `HTTP/1.1 200 OK`: Die Seite gibt es. Danach kommen Header, zum Beispiel `Last-Modified`: Diese Seite wurde zuletzt im Dezember 1992 geändert. `nc` wartet danach weiter auf deine Eingabe; beende es mit <kbd>Strg</kbd><kbd>C</kbd>.
+
+_person(berners-lee)
 
 Hol jetzt die Seite selbst: dieselben Zeilen, nur mit `GET` statt `HEAD`. Nach der leeren Zeile unter den Headern kommt diesmal das HTML der ersten Webseite der Welt.
 
@@ -627,6 +636,8 @@ _task(webserver)
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Dreh es um und sieh dir an, was <code>curl</code> schickt. Starte in einem Terminal <code>nc -C -l -p 1234</code> und im zweiten <code>curl http://localhost:1234/hallo</code>. Was steht im ersten Terminal? <code>curl</code> wartet jetzt auf eine Antwort: Tippe im ersten Terminal <code>HTTP/1.0 200 OK</code>, eine leere Zeile und <code>Hallo zurück!</code> und beende <code>nc</code> dann mit <kbd>Strg</kbd><kbd>C</kbd>. Was gibt <code>curl</code> aus? Gerade warst du ein Webserver.
 </div>
+
+_person(stenberg)
 
 Eine API ist eine Adresse, die keine Seite für Menschen liefert, sondern Daten für Programme. Die »Cat Facts«-API zum Beispiel gibt zufällige Fakten über Katzen zurück:
 

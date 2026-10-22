@@ -291,3 +291,8 @@ Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
 ## Zusammenfassung
 
 In diesem Kapitel hast du an drei Beispielen gesehen, wie man ein einfaches Lua-Skript schreiben und ausführen kann. Das ist natürlich nur ein erster Eindruck. Um Lua wirklich zu beherrschen, musst du noch viel mehr lernen – am besten, indem du eigene Skripte schreibst und ausprobierst. Die Buchhandlungen, Bibliotheken und Youtube sind voll von Material für dich. Viel Spaß beim Programmieren!
+
+<div class='book'>
+<i class='bi bi-book'></i>
+<p><strong>Programming in Lua</strong>, Roberto Ierusalimschy, 2003. Das Buch über Lua von einem der drei, die Lua erfunden haben, mit allem, was nach den ersten Skripten kommt: Tabellen, Funktionen als Werte, Coroutinen. Die erste Auflage, für Lua 5.0, ist frei <a href='https://www.lua.org/pil/contents.html'>online zu lesen</a>; neuere Auflagen gibt es gedruckt.</p>
+</div>

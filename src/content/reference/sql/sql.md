@@ -16,6 +16,11 @@ Abfragen und Änderungen für MySQL zum Nachschlagen: Daten auswählen, filtern,
 
 _person(codd)
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>A Relational Model of Data for Large Shared Data Banks</strong>, E. F. Codd, Communications of the ACM, 1970. Der Aufsatz, in dem Codd das relationale Modell vorschlägt: Daten stehen in Tabellen, die er Relationen nennt, und wer sie abfragt, muss nicht wissen, wie sie im Rechner gespeichert sind: <a href='https://www.engineering.upenn.edu/~zives/03f/cis550/codd.pdf'>als PDF</a>, auch bei der <a href='https://doi.org/10.1145/362384.362685'>ACM</a>.</p>
+</div>
+
 ## Mit der Datenbank arbeiten
 
 <!-- part: mycli -->
@@ -67,6 +72,13 @@ SELECT name, population / area AS density FROM country;
 
 Nach `SELECT` stehen die Spalten, die das Ergebnis haben soll, nach `FROM` die Tabelle. `*` heißt »alle Spalten«. Eine Spalte kann auch ein berechneter Wert sein; `AS` gibt ihr einen Namen.
 <!-- /part -->
+
+_person(chamberlin-boyce)
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>SEQUEL: A Structured English Query Language</strong>, Donald Chamberlin und Raymond Boyce, Workshop der ACM SIGFIDET, 1974. Der Aufsatz, mit dem SQL beginnt: Abfragen als Block aus <code>SELECT</code>, <code>FROM</code> und <code>WHERE</code>, alle Beispiele aus der Datenbank eines Kaufhauses, mit seinen Angestellten und Abteilungen: <a href='https://s3.us.cloud-object-storage.appdomain.cloud/res-files/2705-sequel-1974.pdf'>als PDF</a>.</p>
+</div>
 
 <!-- part: where -->
 <!-- short: `WHERE` filtert Zeilen: `=`, `<>`, `<`, `AND`, `OR`, `IN (…)`, `BETWEEN`, `LIKE`, `IS NULL`. -->

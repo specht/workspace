@@ -1324,3 +1324,8 @@ _task(rueckgaengig)
 </table>
 
 Mit diesem Wissen kannst du Git für deine eigenen Projekte nutzen. Wie du mit GitLab arbeitest, steht im Handbuch unter [Git und GitLab](/reference/gitlab).
+
+<div class='book'>
+<i class='bi bi-book'></i>
+<p><strong>Pro Git</strong>, Scott Chacon und Ben Straub, Apress, 2. Auflage 2014. Alles, was hier fehlt: Rebase, Git auf einem Server, die Arbeit mit GitHub und wie Git seine Commits intern speichert. Frei lesbar, auch auf Deutsch: <a href='https://git-scm.com/book/de/v2'>auf git-scm.com</a>.</p>
+</div>

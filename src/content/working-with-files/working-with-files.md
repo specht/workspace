@@ -527,6 +527,8 @@ crop-terminal-lines: 99
 
 _task(vim)
 
+_person(moolenaar)
+
 ### Dateien bearbeiten mit `emacs`
 
 Gib den Befehl `emacs hello-emacs.txt` ein, um eine neue Datei zu öffnen. Im Gegensatz zu `vim` kannst du hier einfach anfangen, Text einzugeben. Wenn du fertig bist, speichere deine Änderungen mit <kbd>Strg</kbd><kbd>X</kbd> und dann <kbd>Strg</kbd><kbd>S</kbd> (für »save«). Um `emacs` zu beenden, drücke <kbd>Strg</kbd><kbd>X</kbd> und dann <kbd>Strg</kbd><kbd>C</kbd>.
@@ -595,6 +597,8 @@ crop-terminal-lines: auto
 -->
 
 <img class='full' src='grep-everybody.webp' alt='grep everybody alice.txt gibt fünf Zeilen aus, das Wort everybody jeweils rot hervorgehoben.'>
+
+_person(thompson)
 
 Mit der Option `-i` können wir `grep` anweisen, die Groß- und Kleinschreibung zu ignorieren. Gib `grep -i everybody alice.txt` ein und drücke die Eingabetaste:
 
@@ -764,6 +768,8 @@ crop-terminal-lines: auto
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Mit <code>-c</code> schreibt <code>uniq</code> vor jede Zeile, wie oft sie hintereinander vorkam, <code>sort -n</code> sortiert nach dieser Zahl, und <code>tail</code> zeigt die letzten zehn. Welche zehn Wörter kommen in <code>alice.txt</code> am häufigsten vor? Das sagt <code>grep -o -E "[A-Za-z]+" alice.txt | sort | uniq -ic | sort -n | tail</code>. Hast du mit diesen Wörtern gerechnet? Was ändert sich, wenn du das <code>sort</code> vor <code>uniq</code> weglässt, und warum?
 </div>
+
+_person(mcilroy)
 
 ## Archive entpacken und packen
 
@@ -1447,3 +1453,8 @@ Diese Befehle hast du in diesem Kapitel kennengelernt:
 <tr><th>Aufräumen</th><td><code>mkdir</code>, <code>cp</code>, <code>mv</code>, <code>rmdir</code>, <code>rm</code></td></tr>
 <tr><th>Verbinden</th><td><code>|</code> (Pipeline), <code>&gt;</code> (Ausgabe in eine Datei)</td></tr>
 </table>
+
+<div class='book'>
+<i class='bi bi-book'></i>
+<p><strong>The Linux Command Line</strong>, William Shotts, 3. Auflage 2026. Macht weiter, wo diese Seite aufhört: Rechte und Prozesse, reguläre Ausdrücke, Textverarbeitung und am Ende eigene Shell-Skripte. Auf Englisch und als PDF frei: <a href='https://linuxcommand.org/tlcl.php'>auf linuxcommand.org</a>.</p>
+</div>

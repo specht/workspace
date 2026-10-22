@@ -420,6 +420,8 @@ Beim Schloss steckte die Arbeit in den Pfeilen zurück. Es geht auch anders, wen
 
 So ein Automat heißt **nichtdeterministischer endlicher Automat**, kurz **NEA**. Die Automaten von vorhin, bei denen jeder Schritt feststeht, heißen **deterministisch**, kurz **DEA**. Ein NEA nimmt ein Wort an, wenn wenigstens einer seiner Wege in einem akzeptierenden Zustand endet.
 
+_person(rabin-scott)
+
 <!-- language: ruby -->
 Ruby kann nicht raten, aber es kann alle Wege zugleich verfolgen: Statt eines Zustands merkt sich `opens` eine **Menge** von Zuständen, nämlich alle, in denen der NEA gerade sein könnte. Die Tabelle führt darum zu Mengen. Lege `lock_nfa.rb` an:
 

@@ -274,3 +274,7 @@ Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
 
 In diesem Kapitel hast du an drei Beispielen gesehen, wie man ein einfaches Rust-Programm schreiben, kompilieren und ausführen kann. Das ist natürlich nur ein erster Eindruck. Um Rust wirklich zu beherrschen, musst du noch viel mehr lernen – am besten, indem du eigene Programme schreibst und ausprobierst. Die Buchhandlungen, Bibliotheken und Youtube sind voll von Material für dich. Viel Spaß beim Programmieren!
 
+<div class='book'>
+<i class='bi bi-book'></i>
+<p><strong>The Rust Programming Language</strong>, Steve Klabnik, Carol Nichols und Chris Krycho. Das offizielle Buch über Rust, oft einfach »the book« genannt: von einem Ratespiel über Ownership, das, was Rust von anderen Sprachen unterscheidet, bis zu einem eigenen Webserver. Es ist frei <a href='https://doc.rust-lang.org/book/'>online zu lesen</a>.</p>
+</div>

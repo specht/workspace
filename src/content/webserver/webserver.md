@@ -24,6 +24,8 @@ Jedes Mal, wenn du eine Webseite öffnest, schickt dein Browser eine Anfrage an 
 
 Auf der Seite [TCP/IP](/tcpip) hast du mit `nc -l` an einem Port auf eine Verbindung gewartet und mit `nc -C info.cern.ch 80` eine HTTP-Anfrage von Hand getippt. Ein Webserver ist die andere Seite davon: Er wartet an einem Port auf eine TCP-Verbindung, liest Text und schickt Text zurück. Damit Browser und Server sich verstehen, folgt der Text einer festen Form, dem **HTTP**-Protokoll. Der Live Server, mit dem du sonst Webseiten ansiehst, ist genau so ein Programm. Hier baust du ihn selbst und siehst, was er tut.
 
+_person(berners-lee)
+
 ## Einrichten
 
 Lege im Terminal (<kbd>Strg</kbd><kbd>J</kbd>) einen Ordner an und öffne ihn mit <kbd>Strg</kbd><kbd>K</kbd> <kbd>Strg</kbd><kbd>O</kbd>:

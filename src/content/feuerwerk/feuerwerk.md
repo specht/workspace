@@ -21,6 +21,13 @@ Ein Feuerwerk besteht aus tausenden Funken, und jeder einzelne folgt denselben e
 
 <img class='full' src='feuerwerk.webp' alt='Feuerwerk über einer nächtlichen Stadt: Rote und goldene Funkenkreise leuchten über den Dächern, Raketen steigen auf, in den Häusern brennen einzelne Fenster.'>
 
+Viele kleine Teilchen, die alle denselben einfachen Regeln folgen, heißen in der Computergrafik **Partikelsystem**. Erfunden hat es William Reeves bei Lucasfilm für den Film »Star Trek II: Der Zorn des Khan« (1982), in dem eine Feuerwand über einen ganzen Planeten rast.
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Particle Systems—a Technique for Modeling a Class of Fuzzy Objects</strong>, William T. Reeves, ACM Transactions on Graphics, 1983. Der Aufsatz, in dem die Partikelsysteme zum ersten Mal beschrieben sind: wie Teilchen entstehen, fliegen und nach ihrer Lebenszeit verlöschen, mit Bildern der Feuerwand aus dem Film und in einem eigenen Abschnitt mit Feuerwerk: <a href='https://cal.cs.umbc.edu/Courses/CS6967-F08/Papers/Reeves-1983-PSA.pdf'>PDF</a>, auch bei der <a href='https://doi.org/10.1145/357318.357320'>ACM</a>.</p>
+</div>
+
 Dieses Projekt baut auf [Echtzeitgrafik mit C](/pixelram) auf. Von dort kennst du die Vorlage, `make PROGRAM=…`, die Vorschau und die Schleife mit `present()`. Arbeite in einer eigenen Datei `feuerwerk.c` neben `main.c` und übersetze sie mit:
 
 ```bash

@@ -29,6 +29,8 @@ TIC-80 ist eine »Fantasy-Konsole«: ein ausgedachter Computer im Stil der Heimc
 
 Programmiert wird in Lua, einer kleinen Sprache, die auch in vielen großen Spielen steckt. Was du über Variablen, `if` und Schleifen aus anderen Sprachen kennst, findest du hier wieder.
 
+_person(ierusalimschy-celes-figueiredo)
+
 ### TIC-80 starten
 
 <a class='btn btn-primary' href='/tic80/' target='_blank'><svg class='bi' width='16' height='16' viewBox='0 0 16 16' fill='currentColor' aria-hidden='true' style='width: 1em; height: 1em; vertical-align: -0.125em; margin-right: 0.55em;'><path fill-rule='evenodd' d='M2 .5h11A1.5 1.5 0 0 1 14.5 2v9a1.5 1.5 0 0 1-1.5 1.5H2A1.5 1.5 0 0 1 .5 11V2A1.5 1.5 0 0 1 2 .5Zm0 1a.5.5 0 0 0-.5.5v1h12V2a.5.5 0 0 0-.5-.5H2Zm11.5 2.5h-12v7a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5V4Z'/><path d='M5 5.5h1V8H5zM9 5.5h1V8H9zM4.5 9h1v.5h4V9h1v1.5h-6z'/><path d='M3 12.5h2V15H3zM10 12.5h2V15h-2z'/><path d='M14.5 5H16v3h-1.5V7h.5V6h-.5z'/></svg>TIC-80 öffnen</a>

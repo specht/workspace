@@ -1754,6 +1754,11 @@ _person(catmull)
 
 Grafikkarten mit Tiefenpuffer gab es für zu Hause erst ab 1996. DOOM (1993) musste ohne auskommen. Es zeichnete die Wände von vorne nach hinten, und ein Pixel, das schon gefüllt war, blieb, wie es war. Die richtige Reihenfolge holte es aus einem **BSP-Baum** (*Binary Space Partitioning*), einem [binären Baum](/reference/baeume): Eine Wand teilt die Karte in zwei Hälften, die vor ihr und die hinter ihr. Jede Hälfte wird von einer weiteren Wand geteilt, und so fort, bis jedes Stück nur noch Wände enthält, die sich nicht gegenseitig verdecken. Diesen Baum rechnete ein Programm einmal aus, bevor das Spiel startete. Beim Zeichnen ging DOOM ihn durch wie einen Suchbaum: an jedem Knoten erst in die Hälfte, in der die Kamera steht, dann in die andere. So kamen die Wände von vorne nach hinten heraus, von jedem Standort aus richtig, ohne dass das Spiel etwas sortieren musste.
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>On Visible Surface Generation by A Priori Tree Structures</strong>, Henry Fuchs, Zvi M. Kedem und Bruce F. Naylor, SIGGRAPH 1980. Der Aufsatz, in dem der BSP-Baum zum ersten Mal beschrieben ist: einmal vorab ausgerechnet, liefert er für jeden Standort der Kamera die Reihenfolge der Flächen, ohne dass beim Zeichnen sortiert werden muss: <a href='https://doi.org/10.1145/800250.807481'>bei der ACM</a>.</p>
+</div>
+
 _person(carmack)
 
 _person(abrash)

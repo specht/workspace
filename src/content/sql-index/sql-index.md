@@ -242,6 +242,11 @@ Die Blätter liegen außerdem der Reihe nach nebeneinander. Darum hilft der Inde
 
 _person(bayer-mccreight)
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Organization and Maintenance of Large Ordered Indexes</strong>, Rudolf Bayer und Edward M. McCreight, Acta Informatica, 1972; eine erste Fassung erschien schon 1970 im Band eines Workshops der ACM. Darin steht der B-Baum, für Indexe, die nicht in den Arbeitsspeicher passen: Jeder Knoten ist ein Block auf der Platte, und eine Suche liest nur wenige davon. Der Aufsatz steht <a href='https://doi.org/10.1007/BF00288683'>bei Springer</a>.</p>
+</div>
+
 ## Der Primärschlüssel ist schon ein Index
 
 Sieh dir an, was `EXPLAIN` zur Suche nach der Nummer einer Zeile sagt:

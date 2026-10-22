@@ -220,6 +220,8 @@ _task(abstand)
 
 Ein Routenplaner sucht nicht in Wegen, sondern in einem **Graphen**: Punkte, die **Knoten**, und Verbindungen zwischen ihnen, die **Kanten**. Jede Kante hat eine Länge in Metern. Aus jedem Weg werden so viele Kanten, wie er Abschnitte hat: zwischen dem ersten und dem zweiten Punkt, dem zweiten und dem dritten und so weiter. Ein Fußweg, der zwei Straßen verbindet, wird zu Kanten, die über die gemeinsamen Punkte an beide anschließen.
 
+_person(euler)
+
 <!-- language: ruby -->
 `build_graph` bekommt die Wege und gibt zwei Hashes zurück: `nodes` mit der Lage jedes Punktes, `edges` mit seinen Nachbarn und dem Abstand zu jedem. Kanten gelten erst einmal in beide Richtungen; um Einbahnstraßen kümmerst du dich später:
 
@@ -376,6 +378,11 @@ _task(kanten)
 Den kürzesten Weg in Metern findet die Suche von [Edsger W. Dijkstra](https://de.wikipedia.org/wiki/Edsger_W._Dijkstra) aus dem Jahr 1959. Sie nimmt als Nächstes nicht den Knoten, der am längsten wartet, sondern den, der vom Start aus am nächsten liegt. Dafür merkt sie sich für jeden gefundenen Knoten, wie weit es bis zu ihm ist, auf dem besten Weg, den sie bis jetzt kennt:
 
 _person(dijkstra)
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>A Note on Two Problems in Connexion with Graphs</strong>, Edsger W. Dijkstra, Numerische Mathematik, 1959. Drei Seiten mit zwei Problemen; das zweite ist der kürzeste Weg zwischen zwei Knoten, gelöst mit dem Verfahren dieses Abschnitts: <a href='https://ir.cwi.nl/pub/9256/9256D.pdf'>als PDF beim CWI</a> in Amsterdam, wo Dijkstra damals arbeitete; es hieß noch Mathematisch Centrum.</p>
+</div>
 
 1. `metres` sagt, wie weit jeder gefundene Knoten vom Start weg ist, `previous` wieder seinen Vorgänger, `frontier` die Knoten, die gefunden, aber noch nicht dran waren, mit ihrem Abstand. Am Anfang steht in allen dreien nur der Start, mit 0 Metern und ohne Vorgänger.
 2. Nimm aus `frontier` den Knoten mit dem kleinsten Abstand und schreib ihn in `visited`. Ist es das Ziel, bist du fertig.
@@ -538,6 +545,11 @@ sleep: 2
 Dijkstra sucht in alle Richtungen gleich, auch weg vom Ziel. Dabei weiß die Karte, wo das Ziel liegt. **A*** (gesprochen »A-Stern«) nutzt das: Die Priorität eines Knotens ist nicht nur der Weg bis zu ihm, sondern der Weg bis zu ihm plus eine **Schätzung** für den Rest, die Luftlinie zum Ziel. Knoten in Richtung des Ziels kommen so früher dran, Knoten in der falschen Richtung später oder nie.
 
 _person(hart-nilsson-raphael)
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>A Formal Basis for the Heuristic Determination of Minimum Cost Paths</strong>, Peter Hart, Nils Nilsson und Bertram Raphael, IEEE Transactions on Systems Science and Cybernetics, 1968. Der Aufsatz, in dem A* zum ersten Mal steht, mit dem Beweis, dass der gefundene Weg der kürzeste ist, solange die Schätzung nie zu groß ist: <a href='https://doi.org/10.1109/TSSC.1968.300136'>bei IEEE</a>.</p>
+</div>
 
 $$\text{Priorität} = \text{Weg vom Start bis zum Knoten} + \text{Luftlinie vom Knoten zum Ziel}$$
 

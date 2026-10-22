@@ -21,6 +21,11 @@ Pakete im Internet brauchen eine IP-Adresse, Menschen merken sich Namen. Wer üb
 
 _person(mockapetris)
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Domain Names – Concepts and Facilities</strong> (RFC 882) und <strong>Domain Names – Implementation and Specification</strong> (RFC 883), Paul Mockapetris, November 1983. Die beiden Texte, in denen das DNS zum ersten Mal beschrieben ist, als reiner Text wie damals üblich: <a href='https://www.rfc-editor.org/rfc/rfc882'>RFC 882</a> und <a href='https://www.rfc-editor.org/rfc/rfc883'>RFC 883</a>.</p>
+</div>
+
 ## Vorbereitung
 
 Diese Aktivität setzt [TCP/IP-Verbindungen](/tcpip) fort: Was eine IP-Adresse ist und was `ping` tut, solltest du kennen. Du brauchst nur ein Terminal.

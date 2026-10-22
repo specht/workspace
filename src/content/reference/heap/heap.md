@@ -59,6 +59,11 @@ Ein **binärer Heap** ist ein Array, das man sich als Baum denkt. Ganz oben steh
 
 Der Baum ist immer von oben nach unten und in jeder Zeile von links nach rechts gefüllt, ohne Lücken. Deshalb braucht er keine Zeiger: Das Array ist der Baum.
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Algorithm 232: Heapsort</strong>, J. W. J. Williams, Communications of the ACM, 1964. Zwei Seiten, auf denen der binäre Heap zum ersten Mal steht, als Array, das man sich als Baum denkt, und mit ihm ein neues Sortierverfahren: <a href='https://doi.org/10.1145/512274.3734138'>bei der ACM</a>.</p>
+</div>
+
 ### Die Heap-Eigenschaft
 
 Für jeden Eintrag gilt: **Kein Kind ist kleiner als sein Elternteil.** Daraus folgt, dass ganz oben, an Index 0, der kleinste Eintrag steht. Geschwister sind dabei nicht geordnet, und eine Zeile weiter unten kann kleinere Zahlen haben als eine weiter oben, nur eben nicht unter demselben Elternteil. Ein Heap ist also **nicht** sortiert, er ist gerade so geordnet, dass man den kleinsten Eintrag sofort findet.

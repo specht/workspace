@@ -160,6 +160,11 @@ Quick Sort ist in der Praxis meist das schnellste der fünf: Es braucht keinen Z
 
 _person(hoare)
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Quicksort</strong>, C. A. R. Hoare, The Computer Journal, 1962. Hoare beschreibt sein Verfahren ausführlich und untersucht, wie schnell es ist; 1961 hatte er es schon als kurzes Programm in den Communications of the ACM gedruckt. Er teilt anders als der Pseudocode oben: Zwei Zeiger laufen von beiden Enden aufeinander zu und tauschen, was auf der falschen Seite steht. Die Fassung oben, mit dem letzten Element als Pivot, geht auf Nico Lomuto zurück. Der Aufsatz steht frei <a href='https://doi.org/10.1093/comjnl/5.1.10'>bei Oxford University Press</a>.</p>
+</div>
+
 <!-- part: sortieren-vergleich -->
 <!-- short: Vergleiche bei 100 Zahlen: Selection, Insertion, Bubble etwa 2500 bis 5000, Merge und Quick etwa 550; sortiert und umgekehrt sortiert sieht es anders aus. -->
 ## Wie viele Vergleiche?

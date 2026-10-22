@@ -236,6 +236,11 @@ Merkt man sich den Abstand zum nächsten Punkt (`f1`) und zum zweitnächsten (`f
 
 Steven Worley hat diese Art Rauschen 1996 beschrieben; es heißt nach ihm **Worley Noise** oder zelluläres Rauschen. Mit `return vec3(f1);` sieht man die Abstände selbst: In jeder Zelle wird es zur Mitte hin dunkel, wie bei Zellen unter dem Mikroskop, Schuppen oder Kieseln. Mit `return vec3(f2 - f1);` bleiben nur die Kanten.
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>A Cellular Texture Basis Function</strong>, Steven Worley, SIGGRAPH 1996. Auf vier Seiten das zelluläre Rauschen als Ergänzung zu Perlins Rauschen, mit Bildern von Fliesen, Haut, zerknülltem Papier, Eis und Gestein: <a href='https://doi.org/10.1145/237170.237267'>bei der ACM</a>.</p>
+</div>
+
 Ändere `0.2` in `step(0.2, f2 - f1)`: Bei 0.05 liegen die Steinchen dicht an dicht, bei 0.5 schwimmen sie im Zement. Was passiert, wenn du in `at` statt `vec2(hash(c), hash(c + 17.0))` nur `vec2(0.5)` schreibst?
 
 ## Formen

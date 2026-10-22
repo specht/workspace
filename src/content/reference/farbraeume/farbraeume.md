@@ -190,6 +190,8 @@ Dass drei Zahlen für eine Farbe reichen, liegt nicht am Licht, sondern am Auge.
 
 Um 1802 vermutete der englische Arzt Thomas Young, dass das Auge drei Arten von Empfängern hat, jede für einen anderen Teil des Spektrums empfindlich. Hermann von Helmholtz baute die Idee in den 1850er Jahren aus. James Clerk Maxwell, der später die Gleichungen für Elektrizität und Magnetismus aufschrieb, ließ Versuchspersonen Farben aus drei Lichtern nachmischen und zeigte 1861 das erste Farbfoto: drei Schwarzweißaufnahmen einer karierten Schleife, durch ein rotes, ein grünes und ein blaues Filter aufgenommen und mit denselben Filtern übereinander an die Wand geworfen. Das ist RGB, fast hundert Jahre vor dem ersten Farbfernseher. Dass es im Auge tatsächlich drei Arten von Zapfen gibt, empfindlich für kurze, mittlere und lange Wellenlängen, konnte man erst 1964 direkt messen.
 
+_person(maxwell)
+
 ### Farben messen: XYZ von 1931
 
 Um eine Farbe aufschreiben zu können, statt eine Probe herumzuschicken, brauchte man Zahlen, auf die sich alle einigen. Ende der 1920er Jahre ließen William David Wright und John Guild in England zusammen 17 Versuchspersonen jede Farbe des Spektrums aus einem roten, einem grünen und einem blauen Licht nachmischen. Manche Farben ließen sich so nicht treffen: Ein reines Türkis aus dem Spektrum war jeder Mischung zu kräftig. Dann gab man Rot zur *Vorlage* hinzu, bis beide gleich aussahen, und schrieb das als negative Menge Rot auf. Aus diesen Messungen beschloss die Internationale Beleuchtungskommission CIE 1931 den Farbraum **XYZ**: drei Grundwerte, die man so umgerechnet hat, dass jede sichtbare Farbe positive Werte bekommt und Y die Helligkeit ist, gewichtet nach der Empfindlichkeit des Auges für jede Wellenlänge. Diese Grundwerte sind keine Lichter, die es gibt, sondern Rechengrößen. Bis heute rechnet man über XYZ von einem Farbraum in einen anderen; auch die Formel für CIELab oben geht diesen Weg.
@@ -214,7 +216,14 @@ Die dritte Zutat war eine Helligkeitsskala, wie Menschen sie empfinden. Der Male
 
 ### Malprogramme: HSV
 
-HSV ist der einzige Farbraum hier, der für Computer erfunden wurde. 1978 suchte Alvy Ray Smith, der an einem der ersten Malprogramme arbeitete und später Pixar mitgründete, einen Weg, Farben so auszuwählen, wie Malerinnen und Maler denken: welcher Farbton, wie kräftig, wie hell. Er sah den RGB-Würfel entlang seiner grauen Diagonale an, von Weiß nach Schwarz. Von dort ist sein Umriss ein Sechseck, um das herum die Farbtöne liegen, und daraus wurde der Farbkreis von H. HSV rechnet nichts über das Auge aus, es ordnet nur den Würfel um. Darum ist ein Gelb mit V = 1 so viel heller als ein Blau mit V = 1.
+HSV ist der einzige Farbraum hier, der für Computer erfunden wurde. Mitte der 1970er Jahre suchte Alvy Ray Smith, der an einem der ersten Malprogramme arbeitete und später Pixar mitgründete, einen Weg, Farben so auszuwählen, wie Malerinnen und Maler denken: welcher Farbton, wie kräftig, wie hell. Er sah den RGB-Würfel entlang seiner grauen Diagonale an, von Weiß nach Schwarz. Von dort ist sein Umriss ein Sechseck, um das herum die Farbtöne liegen, und daraus wurde der Farbkreis von H. HSV rechnet nichts über das Auge aus, es ordnet nur den Würfel um. Darum ist ein Gelb mit V = 1 so viel heller als ein Blau mit V = 1.
+
+_person(smith-alvy)
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Color Gamut Transform Pairs</strong>, Alvy Ray Smith, SIGGRAPH 1978. Der Aufsatz, in dem HSV zum ersten Mal beschrieben ist: das Sechseck, das der RGB-Würfel entlang seiner grauen Diagonale zeigt, und die Rechnungen von RGB nach HSV und zurück, die damals schon seit etwa vier Jahren in Malprogrammen liefen: <a href='https://alvyray.com/Papers/CG/color78.pdf'>PDF</a>, auch bei der <a href='https://doi.org/10.1145/965139.807361'>ACM</a>.</p>
+</div>
 
 ### sRGB: die Werte in jeder Bilddatei
 

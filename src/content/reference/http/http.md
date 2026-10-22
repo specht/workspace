@@ -18,6 +18,13 @@ Wie Browser und Webserver miteinander reden: Anfrage und Antwort, Methoden, Stat
 
 HTTP ist ein Protokoll aus Text. Der Browser (oder `curl`, oder ein Programm) öffnet eine TCP-Verbindung zum Server, meist auf Port 80, schickt eine **Anfrage** (Request) und bekommt eine **Antwort** (Response). Beide haben dieselbe Form: eine erste Zeile, Header, eine leere Zeile, dann vielleicht ein Inhalt (Body).
 
+_person(berners-lee)
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>The Original HTTP as defined in 1991</strong>, Tim Berners-Lee, CERN, 1991. Die erste Beschreibung von HTTP, heute HTTP/0.9 genannt, kaum eine Seite lang: Die Anfrage ist eine einzige Zeile mit <code>GET</code> und dem Pfad, es gibt keine Header und keinen Statuscode, der Server schickt das HTML und schließt die Verbindung: <a href='https://www.w3.org/Protocols/HTTP/AsImplemented.html'>beim W3C</a>.</p>
+</div>
+
 <!-- part: http-anfrage -->
 <!-- short: Request-Line `GET /time HTTP/1.1`, dann Header wie `Host:`, dann eine leere Zeile. -->
 ### Die Anfrage

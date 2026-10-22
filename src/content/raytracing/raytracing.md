@@ -1169,7 +1169,14 @@ Durch die Glaskugel steht das Schachbrett auf dem Kopf, wie bei einer Lupe, die 
 
 Die Schatten haben scharfe Ränder, weil die Sonne bisher ein Punkt ist: Ein Punkt sieht die Sonne oder sieht sie nicht. Die echte Sonne ist eine Scheibe am Himmel. Am Rand eines Schattens verdeckt eine Kugel nur einen Teil von ihr, und es ist nur ein bisschen dunkler, ein **Halbschatten**.
 
-Das kostet jetzt fast nichts mehr: Jeder Durchgang zielt mit dem Schattenstrahl auf einen anderen zufälligen Punkt der Sonnenscheibe, und der Durchschnitt über viele Durchgänge ergibt den Halbschatten von selbst. Dafür braucht es einen zufälligen Punkt in einer Kugel um den Nullpunkt; `random_in_sphere` würfelt so lange, bis ein Punkt im Würfel auch in der Kugel liegt:
+Das kostet jetzt fast nichts mehr: Jeder Durchgang zielt mit dem Schattenstrahl auf einen anderen zufälligen Punkt der Sonnenscheibe, und der Durchschnitt über viele Durchgänge ergibt den Halbschatten von selbst. Vorgeschlagen haben das Robert Cook, Thomas Porter und Loren Carpenter 1984 bei Lucasfilm.
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Distributed Ray Tracing</strong>, Robert L. Cook, Thomas Porter und Loren Carpenter, SIGGRAPH 1984. Statt eines Strahls viele, deren Richtungen gewürfelt werden: über die Fläche der Lampe verteilt für Halbschatten, über die Linse für Tiefenschärfe, über die Zeit für Bewegungsunschärfe, dazu unscharfe Spiegelungen und trübes Glas: <a href='https://doi.org/10.1145/800031.808590'>bei der ACM</a>.</p>
+</div>
+
+Dafür braucht es einen zufälligen Punkt in einer Kugel um den Nullpunkt; `random_in_sphere` würfelt so lange, bis ein Punkt im Würfel auch in der Kugel liegt:
 
 ```c
 // ein zufälliger Punkt in der Kugel mit Radius 1 um den Nullpunkt
@@ -1578,7 +1585,14 @@ crop-element: #canvas
 
 ### Licht von Kugel zu Kugel
 
-Licht kommt nicht nur von der Sonne und vom Himmel. Der helle Boden hellt die Unterseiten der Kugeln auf, und neben der roten Kugel ist der Boden ein wenig rötlich. `skylight` schickt schon in jedem Durchgang einen Strahl in eine zufällige Richtung, aber es zählt nur, ob er den Himmel sieht. Trifft er etwas, kann `trace` ausrechnen, wie hell es dort ist, und das ist das Licht, das von dort kommt. Dort schickt `trace` wieder einen zufälligen Strahl weiter, und so folgt jeder Durchgang einem Weg des Lichts durch die Szene, von Fläche zu Fläche. Das ist **Path Tracing**, so werden heute Animationsfilme gerechnet.
+Licht kommt nicht nur von der Sonne und vom Himmel. Der helle Boden hellt die Unterseiten der Kugeln auf, und neben der roten Kugel ist der Boden ein wenig rötlich. `skylight` schickt schon in jedem Durchgang einen Strahl in eine zufällige Richtung, aber es zählt nur, ob er den Himmel sieht. Trifft er etwas, kann `trace` ausrechnen, wie hell es dort ist, und das ist das Licht, das von dort kommt. Dort schickt `trace` wieder einen zufälligen Strahl weiter, und so folgt jeder Durchgang einem Weg des Lichts durch die Szene, von Fläche zu Fläche. Das ist **Path Tracing**, so werden heute Animationsfilme gerechnet. Beschrieben hat es Jim Kajiya 1986.
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>The Rendering Equation</strong>, James T. Kajiya, SIGGRAPH 1986. Eine Gleichung für alles Licht in einer Szene, und dazu der Vorschlag, statt eines ganzen Baums von Strahlen an jeder Fläche nur einem zufälligen Weg zu folgen. Das ist das Path Tracing, das du hier einbaust: <a href='https://www.cse.chalmers.se/edu/year/2011/course/TDA361/2007/rend_eq.pdf'>PDF</a>, auch bei der <a href='https://doi.org/10.1145/15922.15902'>ACM</a>.</p>
+</div>
+
+_person(kajiya)
 
 Path Tracing baut wie die Tiefenschärfe auf dem fertigen Programm auf, nicht auf ihr; beide passen aber auch zusammen. `skylight` wird gelöscht. An seine Stelle kommt `bounce`, nach der Vorab-Deklaration von `trace`, denn es ruft `trace` auf:
 
@@ -1774,3 +1788,10 @@ Dein Raytracer ist klein genug, um ihn ganz zu verstehen, und alles Weitere pass
 - **Eine Lampe:** Eine Kugel, die selbst leuchtet: `trace` gibt für sie ihre Farbe zurück, mal einer Helligkeit über 1. Mit Path Tracing fällt ihr Licht auf alles in ihrer Nähe; dafür muss die Grenze von 1 in `bounce` höher. Ohne Sonne wird es Nacht.
 
 _task(eigene-szene)
+
+Wie es weitergeht, mit Texturen, Lampen und Nebel, steht in einer Buchreihe, die einen Raytracer ebenfalls Schritt für Schritt baut, in C++:
+
+<div class='book'>
+<i class='bi bi-book'></i>
+<p><strong>Ray Tracing in One Weekend</strong>, Peter Shirley, Trevor David Black und Steve Hollasch, seit 2016. Drei kurze Bücher: Im ersten entsteht ein Path Tracer mit Glas und Tiefenschärfe wie deiner, im zweiten kommen Texturen, Lampen, Rauch und Bewegungsunschärfe dazu, im dritten geht es darum, die richtigen Strahlen zu würfeln. Frei online, ohne Urheberrechte (CC0): <a href='https://raytracing.github.io/'>raytracing.github.io</a>.</p>
+</div>

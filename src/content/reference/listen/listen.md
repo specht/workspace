@@ -198,6 +198,8 @@ Ein **Stack** kann nur an einem Ende arbeiten, oben:
 
 Was zuletzt hineinkam, kommt zuerst heraus: **LIFO**, last in, first out. Ein Stack steckt in jedem Programm, das Funktionen aufruft: Jeder Aufruf legt fest, wohin es danach zurückgeht, und `return` nimmt das wieder vom Stack. Die [Tiefensuche](/reference/graphen#tiefensuche) benutzt einen, und jedes »Rückgängig« in einem Editor auch.
 
+_person(bauer-samelson)
+
 Mit einem Array ist das obere Ende das **hintere**: `push` hängt an Index size an, `pop` nimmt den an size − 1. Nichts muss rücken. Mit Knoten ist das obere Ende der **Anfang**: `push` ist `insert(0, …)`, `pop` ist `remove_at(0)`, und auch da muss nichts laufen.
 
 ```pseudocode

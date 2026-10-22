@@ -146,6 +146,11 @@ Ein [regulärer Ausdruck](/reference/regex) beschreibt eine Sprache, und die **T
 
 _person(thompson)
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Regular Expression Search Algorithm</strong>, Ken Thompson, Communications of the ACM, 1968. Auf vier Seiten baut Thompson aus einem regulären Ausdruck einen NEA und verfolgt beim Suchen alle Zustände zugleich, in denen er sein könnte; sein Programm übersetzt den Ausdruck dafür gleich in Maschinencode für den Rechner IBM 7094: <a href='https://doi.org/10.1145/363347.363387'>frei bei der ACM</a>.</p>
+</div>
+
 <div class='gallery columns-3'>
 <figure>
 <div class='automaton-drawing' role='img' aria-label='Zwei Kreise: a führt vom Start q0 zum akzeptierenden q1.' data-regex='a' data-automaton='nfa'></div>
@@ -177,6 +182,11 @@ Symbol, Verkettung, Alternative und Kleenesche Hülle reichen für jeden regulä
 
 _person(kleene)
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Representation of Events in Nerve Nets and Finite Automata</strong>, Stephen C. Kleene, Forschungsbericht RM-704 der RAND Corporation, 1951; 1956 gedruckt im Buch <em>Automata Studies</em>, herausgegeben von Claude Shannon und John McCarthy. Hier stehen die regulären Ausdrücke zum ersten Mal, noch als <em>regular events</em>, mit dem Stern und dem Beweis, dass sie und endliche Automaten dieselben Sprachen beschreiben: <a href='https://www.rand.org/pubs/research_memoranda/RM704.html'>frei bei RAND</a>.</p>
+</div>
+
 Die Kleenesche Hülle einer Sprache L, geschrieben L<sup>&#42;</sup>, sind alle Wörter, die sich aus beliebig vielen Wörtern von L zusammensetzen lassen, auch aus keinem: Das leere Wort ε gehört immer dazu. Die positive Hülle L<sup>+</sup> lässt das leere Zusammensetzen weg: mindestens ein Wort von L; L<sup>+</sup> ist dasselbe wie L L<sup>&#42;</sup>. Größere Ausdrücke werden aus diesen Bausteinen zusammengesetzt, von innen nach außen; für `(a|b)*aa` steckt der Baustein für `a|b` im Baustein für `*`, und danach kommen zwei a:
 
 <div class='automaton-drawing' role='img' aria-label='Der NEA zu (a|b)*aa: in einer Reihe der Baustein für a oder b, umschlossen von einem ε-Bogen zurück und einem ε-Bogen vorbei, danach a und noch einmal a bis zum akzeptierenden q9.' data-regex='(a|b)*aa' data-automaton='nfa'></div>
@@ -187,6 +197,13 @@ Die Kleenesche Hülle einer Sprache L, geschrieben L<sup>&#42;</sup>, sind alle 
 <!-- part: potenzmenge -->
 <!-- short: Potenzmengenkonstruktion: jeder Zustand des DEA ist eine Menge von Zuständen des NEA; beim Start die ε-Hülle des Starts, je Zeichen die ε-Hülle aller Ziele; akzeptierend ist eine Menge mit einem akzeptierenden Zustand des NEA. -->
 Ein NEA lässt sich immer in einen DEA verwandeln, der dieselben Wörter annimmt. Die Idee steckt schon im Pseudocode des NEA, mit der [ε-Hülle](#uebergaenge-und-huelle) nach jedem Schritt: Er ist in einer Menge von Zuständen, und welche Menge nach dem nächsten Zeichen kommt, steht fest. Die **Potenzmengenkonstruktion** macht darum aus jeder Menge, die vorkommen kann, einen Zustand des DEA. (Die Potenzmenge ist die Menge aller Teilmengen; gebraucht werden meist nur wenige davon.)
+
+_person(rabin-scott)
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Finite Automata and Their Decision Problems</strong>, Michael O. Rabin und Dana Scott, IBM Journal of Research and Development, 1959. Der Aufsatz, in dem endliche Automaten zum ersten Mal raten dürfen, mit dem Beweis, dass es zu jedem NEA einen DEA gibt, der dieselben Wörter annimmt, gebaut aus Mengen von Zuständen wie hier: <a href='https://www.cse.chalmers.se/~coquand/AUTOMATA/rs.pdf'>als PDF</a>, auch bei <a href='https://doi.org/10.1147/rd.32.0114'>IEEE Xplore</a>.</p>
+</div>
 
 ```pseudocode
 to_dea(nea):

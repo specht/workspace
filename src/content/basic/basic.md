@@ -17,6 +17,11 @@ BASIC ist eine Programmiersprache, die in den 1960er Jahren von John G. Kemeny u
 
 _person(kemeny-kurtz)
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>BASIC: Instruction Manual, First Draft</strong>, Dartmouth College Computation Center, Mai 1964. Die erste Anleitung für BASIC, aus dem Monat, in dem das erste BASIC-Programm lief, nur wenige Seiten lang. Dartmouth hat sie 2000 nachgedruckt, mit ein paar Zeilen von Thomas Kurtz davor: <a href='https://www.dartmouth.edu/basicfifty/basicmanual_1964.pdf'>als PDF bei Dartmouth</a>.</p>
+</div>
+
 Heutzutage ist BASIC weniger relevant als moderne Programmiersprachen, wird aber immer noch in Bildungskontexten und von Enthusiasten verwendet, um die Grundlagen des Programmierens zu lehren und historische Computersysteme zu emulieren.
 
 ## Hello, World!

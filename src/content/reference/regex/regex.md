@@ -123,6 +123,8 @@ grep -E -v "^\s*$" notizen.md            # alle Zeilen, die nicht leer sind
 ```
 
 Die anderen Schalter von grep (`-i`, `-n`, `-r`, …) stehen auf der Handbuch-Seite [Terminal](/reference/terminal#grep).
+
+_person(thompson)
 <!-- /part -->
 
 ## Reguläre Ausdrücke und Automaten
@@ -134,6 +136,8 @@ Die Bausteine Zeichen, Hintereinander, `|` und `*` reichen für alles Reguläre;
 <div class='automaton-drawing' role='img' aria-label='Der minimierte DEA zu (a|b)*abb: vier Kreise s0 bis s3 in einer Reihe, s3 akzeptiert. a führt nach s1, dann b nach s2, dann b nach s3; die übrigen Zeichen führen zurück nach s0 oder s1.' data-regex='(a|b)*abb' data-automaton='min'></div>
 
 So arbeiten die Suchfunktionen in Editoren und `grep` im Prinzip: Sie lesen den Text Zeichen für Zeichen und merken sich, in welchen Zuständen des Automaten sie gerade sind.
+
+_person(kleene)
 
 Was ein endlicher Automat nicht kann, kann auch kein regulärer Ausdruck aus diesen Bausteinen: zählen ohne Grenze. »Gleich viele a wie b« oder »jede öffnende Klammer hat eine schließende« ist keine reguläre Sprache. Ruby und Python können trotzdem etwas mehr, zum Beispiel **Rückverweise**: `(\w+) \1` passt auf ein Wort, das zweimal hintereinander steht. Dafür reicht kein endlicher Automat mehr, und solche Muster können bei langen Texten sehr langsam werden.
 <!-- /part -->

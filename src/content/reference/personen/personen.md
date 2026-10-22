@@ -64,6 +64,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1831 -->
+<!-- part: maxwell -->
+### James Clerk Maxwell
+
+<div class='person'>
+<img src='maxwell.webp' alt='James Clerk Maxwell um 1870, Schwarzweißfoto: ein Mann mit Halbglatze, lockigem Haar an den Seiten und einem dichten, krausen Vollbart, in dunklem Anzug, den Blick zur Seite.'>
+<p><strong>James Clerk Maxwell</strong> (1831–1879), schottischer Physiker. Er ließ Menschen Farben aus drei Lichtern nachmischen und stützte so Youngs Idee von drei Empfängern im Auge; aus drei Lichtern mischt auch jedes Pixel deines Bildschirms seine Farbe. Das Farbfoto von 1861 nahm der Fotograf Thomas Sutton für ihn auf. Seine Platten waren für Rot fast blind, und warum das rote Bild trotzdem etwas zeigte, fanden Forscher erst 1961 heraus: Der rote Farbstoff der Schleife warf auch ultraviolettes Licht zurück.</p>
+<p>Berühmt ist Maxwell vor allem für seine Gleichungen von 1865. Aus ihnen schloss er, dass Licht eine Welle aus elektrischen und magnetischen Feldern ist.</p>
+<p class='person-credit'>Foto: unbekannt, um 1870, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:James-Clerk-Maxwell-1831-1879.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1837 -->
 <!-- part: ducos-du-hauron -->
 ### Louis Ducos du Hauron
@@ -179,6 +191,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1918 -->
+<!-- part: bauer-samelson -->
+### Friedrich L. Bauer und Klaus Samelson
+
+<div class='person'>
+<img src='bauer-samelson.webp' alt='Friedrich L. Bauer 1995: ein älterer Mann mit Halbglatze und großer Brille in dunklem Sakko, Hemd und Krawatte, beim Sprechen eine Hand am Kopf.'>
+<p><strong>Friedrich L. Bauer</strong> (1924–2015, im Bild) und <strong>Klaus Samelson</strong> (1918–1980), Mathematiker in München, überlegten, wie ein Rechner eine Formel selbst in seine Befehle übersetzen kann. Dafür schlugen sie 1955 einen Speicher vor, bei dem nur zählt, was zuletzt hineinkam, und meldeten ihn 1957 als »Keller« zum Patent an: den Stack.</p>
+<p>Sie waren überzeugt, dass auch Programme mit Funktionen so einen Keller brauchen, und behielten recht: Wohin dein Programm nach einem Aufruf zurückkehrt, liegt auf einem Stack. Bauer hielt 1967 an der TU München die erste Vorlesung über Informatik in Deutschland.</p>
+<p class='person-credit'>Foto: Rolf Kickuth, 1995, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:FriedrichLBauer29-05-1995.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 ## Geboren 1920 bis 1939
 
 <!-- year: 1921 -->
@@ -268,6 +292,30 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Abraham Lempel</strong> (1936–2023) und <strong>Jacob Ziv</strong> (1931–2023), Informatiker am Technion in Haifa. Ihre Idee, dass ein Text sich selbst als Wörterbuch nimmt, steckt in jedem GIF, und ihre andere Fassung von 1977 zusammen mit Huffman-Codes in ZIP, PNG und gzip.</p>
 <p>Viele Webseiten kommen so gepackt in deinen Browser.</p>
 <p class='person-credit'>Fotos: Staelin, 2007, CC BY 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Abraham_Lempel.JPG'>Wikimedia Commons</a>); gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:Jacob_Ziv.jpeg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1931 -->
+<!-- part: rabin-scott -->
+### Michael O. Rabin und Dana Scott
+
+<div class='person'>
+<img src='rabin-scott.webp' alt='Michael O. Rabin 2004: ein älterer Mann mit Halbglatze und Brille in hellblauem Hemd, gemusterter Krawatte und dunklem Sakko, lachend.'>
+<p><strong>Michael O. Rabin</strong> (1931–2026, im Bild), in Breslau geboren und in Haifa aufgewachsen, und <strong>Dana Scott</strong> (geboren 1932), amerikanischer Logiker, schrieben 1959 als junge Forscher bei IBM einen Aufsatz über endliche Automaten. Darin darf ein Automat zum ersten Mal raten: der NEA. Sie zeigten auch, wie man aus jedem NEA einen DEA baut, der dieselben Wörter annimmt; die Potenzmengenkonstruktion heißt darum auch Rabin-Scott-Konstruktion.</p>
+<p>1976 bekamen beide dafür den Turing Award, den wichtigsten Preis der Informatik. Rabin fand später einen schnellen Test, ob eine große Zahl eine Primzahl ist: Wenn <code>openssl</code> ein RSA-Schlüsselpaar erzeugt, prüft es seine Primzahlen mit dem Test von Miller und Rabin.</p>
+<p class='person-credit'>Foto: Andrej Bauer, 2004, CC BY-SA 2.5 si, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Michael_O._Rabin_2004.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1932 -->
+<!-- part: mcilroy -->
+### Douglas McIlroy
+
+<div class='person'>
+<img src='mcilroy.webp' alt='Douglas McIlroy 2011: ein älterer Mann mit grauem Haar und Brille in grauem Sakko und weißem Hemd, lächelnd.'>
+<p><strong>Douglas McIlroy</strong> (geboren 1932), amerikanischer Mathematiker und Informatiker bei den Bell Labs. Du verkettest Befehle mit <code>|</code>? Die Idee ist von ihm: Schon 1964 schrieb er in einer Notiz, man solle Programme verbinden können wie die Stücke eines Gartenschlauchs. 1973 baute Ken Thompson die Pipes in einer Nacht in Unix ein.</p>
+<p>1986 schrieb Donald Knuth ein Programm über mehrere Seiten, das die häufigsten Wörter eines Texts zählt. McIlroy antwortete mit einer Pipeline aus sechs Befehlen, darunter <code>sort</code>, <code>uniq -c</code> und <code>sort -rn</code>.</p>
+<p class='person-credit'>Foto: Denise Panyik-Dale, 2011, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Douglas_McIlroy.jpeg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 
@@ -398,6 +446,42 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1943 -->
+<!-- part: smith-alvy -->
+### Alvy Ray Smith
+
+<div class='person'>
+<img src='smith-alvy.webp' alt='Alvy Ray Smith 2019: ein älterer Mann mit weißem Haar und weißem Bart in grauem Sakko und blauem Hemd, im Gespräch.'>
+<p><strong>Alvy Ray Smith</strong> (geboren 1943), amerikanischer Informatiker. Ab 1974 arbeitete er bei Xerox PARC an SuperPaint, einem der ersten Malprogramme mit Farbe, und danach am New York Institute of Technology an weiteren. Damit man dort Farben nach Farbton, Sättigung und Helligkeit aussuchen konnte, ordnete er den RGB-Würfel zu HSV um. Als er es 1978 veröffentlichte, lief die Umrechnung schon seit etwa vier Jahren in Malprogrammen.</p>
+<p>Mit Edwin Catmull erfand er Ende der 1970er Jahre den Alphakanal, das A in RGBA, das sagt, wie deckend ein Pixel ist. 1986 gründete er mit Catmull und Steve Jobs Pixar.</p>
+<p class='person-credit'>Foto: Christopher Michel, 2019, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Alvy_Ray_Smith_in_2019_02_(cropped).jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1944 -->
+<!-- part: chamberlin-boyce -->
+### Donald Chamberlin und Raymond Boyce
+
+<div class='person'>
+<img src='chamberlin-boyce.webp' alt='Donald Chamberlin 2009: ein älterer Mann mit grauem Haar und Brille im Smoking mit Fliege und einer roten Rose am Revers, lächelnd.'>
+<p><strong>Donald Chamberlin</strong> (geboren 1944, im Bild) und <strong>Raymond Boyce</strong> (1946–1974), amerikanische Informatiker bei IBM, stellten 1974 eine Sprache für Codds Tabellen vor, die sich fast wie Englisch liest: SEQUEL, die <em>Structured English Query Language</em>. Schon ihr erstes Beispiel hat die Form, in der du heute jede Abfrage schreibst: <code>SELECT NAME FROM EMP WHERE DEPT = 'TOY'</code>.</p>
+<p>Weil der Name SEQUEL schon einer britischen Flugzeugfirma gehörte, wurde daraus SQL. Viele sprechen es trotzdem »Sequel« aus, Chamberlin auch. Boyce starb noch im selben Jahr, mit 27 Jahren.</p>
+<p class='person-credit'>Foto: Dicklyon, 2009, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Don_Chamberlin.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1944 -->
+<!-- part: diffie-hellman -->
+### Whitfield Diffie und Martin Hellman
+
+<div class='person'>
+<img src='diffie-hellman.webp' alt='Whitfield Diffie 2017: ein Mann mit langem weißem Haar und weißem Vollbart in einem dunklen Nadelstreifenanzug mit gemusterter Krawatte, lächelnd.'>
+<p><strong>Whitfield Diffie</strong> (geboren 1944, im Bild) und <strong>Martin Hellman</strong> (geboren 1945), amerikanische Kryptografen in Stanford, schlugen 1976 vor, mit zwei Schlüsseln zu verschlüsseln, einem öffentlichen und einem privaten. Im selben Aufsatz zeigten sie, wie zwei Menschen über eine Leitung, die jeder mitlesen kann, ein gemeinsames Geheimnis verabreden, ohne es je zu schicken: den Diffie-Hellman-Schlüsseltausch. Mit einer Fassung davon verabreden Browser und Server bei <code>https://</code> heute meist ihren Schlüssel.</p>
+<p>Beim britischen Geheimdienst GCHQ hatten James Ellis, Clifford Cocks und Malcolm Williamson dieselben Ideen schon einige Jahre früher, aber das blieb bis 1997 geheim. Diffie und Hellman bekamen 2015 den Turing Award, den wichtigsten Preis der Informatik.</p>
+<p class='person-credit'>Foto: Duncan.Hull, 2017, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Whitfield_Diffie_Royal_Society.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1945 -->
 <!-- part: catmull -->
 ### Edwin Catmull
@@ -512,6 +596,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1951 -->
+<!-- part: kajiya -->
+### Jim Kajiya
+
+<div class='person'>
+<img src='kajiya.webp' alt='Jim Kajiya 2009 in seinem Büro: ein Mann mit Brille, langem dunklem Haar, das an den Seiten grau ist, und hellblauem Hemd, mit leichtem Lächeln; hinter ihm Bildschirme.'>
+<p><strong>Jim Kajiya</strong> (geboren 1951), amerikanischer Informatiker, von 1979 bis 1994 am Caltech, danach bei Microsoft Research. 1986 schrieb er in einer Gleichung auf, wie viel Licht von einem Punkt einer Fläche ausgeht: was sie selbst leuchtet und was aus allen Richtungen auf sie fällt und weitergeworfen wird, die Rendering Equation. Genau lösen kann sie kein Computer. Kajiya kam ihr mit dem Zufall nahe, mit einem einzigen Strahl von Fläche zu Fläche statt eines ganzen Baums von Strahlen, und nannte das Path Tracing: Das macht <code>bounce</code> in deinem Raytracer.</p>
+<p>1989 zeigten er und Timothy Kay, wie man Fell rechnet, ein Problem, an dem die Computergrafik lange festhing. Kay baute damit in seiner Doktorarbeit bei Kajiya einen Teddybären.</p>
+<p class='person-credit'>Foto: Dcoetzee, 2009, CC0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Jim_Kajiya.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1954 -->
 <!-- part: perlin -->
 ### Ken Perlin
@@ -595,6 +691,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1958 -->
+<!-- part: muuss -->
+### Mike Muuss
+
+<div class='person'>
+<img src='muuss.webp' alt='Mike Muuss 1999: ein Mann mit braunem Haar und Schnurrbart in einem weißen Hemd, lachend, vor einem grauen Hintergrund.'>
+<p><strong>Mike Muuss</strong> (1958–2000), amerikanischer Informatiker am Ballistic Research Laboratory der US-Armee. Du prüfst mit <code>ping</code>, ob ein Rechner antwortet? Das Programm schrieb er im Dezember 1983 an einem Abend, weil sich das Netz in seinem Labor seltsam verhielt. Den Namen hat es vom Geräusch eines Sonars, das am Echo misst, wie weit etwas entfernt ist.</p>
+<p>Er schrieb auch BRL-CAD, ein Programm für 3D-Modelle, und das erste Programm, das Bilder interaktiv mit Raytracing berechnete.</p>
+<p class='person-credit'>Foto: Lee Butler, 1999, CC0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Mike_Muuss.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1959 -->
 <!-- part: fox -->
 ### Brian Fox
@@ -652,6 +760,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <p><strong>Erich Gamma</strong> (geboren 1961), Schweizer Informatiker. Der Editor im Workspace ist VS Code: Dessen Entwicklung leitete er ab 2011 bei Microsoft in Zürich, 2015 erschien die erste Fassung.</p>
 <p>Vorher schrieb er mit Kent Beck JUnit, mit dem Java-Programme sich selbst testen, und mit drei anderen das Buch <em>Design Patterns</em> (1994), das bis heute zeigt, wie man größere Programme ordnet.</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1961 -->
+<!-- part: moolenaar -->
+### Bram Moolenaar
+
+<div class='person'>
+<img src='moolenaar.webp' alt='Bram Moolenaar 2007: ein Mann mit grauem, lockigem Haar in einem schwarzen T-Shirt, leicht lächelnd.'>
+<p><strong>Bram Moolenaar</strong> (1961–2023), niederländischer Programmierer. Du hast mit <code>vim</code> eine Datei geschrieben? Weil es den Editor vi für seinen Amiga nicht gab, baute er ab 1988 einen nach. Am 2. November 1991 war die erste Fassung fertig, damals »Vi IMitation«, später »Vi IMproved«.</p>
+<p>Vim kostet nichts, aber wer es mag, wird gebeten, für Kinder in Uganda zu spenden, für die er eine Hilfsorganisation gegründet hatte. Mehr als 30 Jahre lang pflegte er Vim selbst.</p>
+<p class='person-credit'>Foto: Sebastian Bergmann, 2007, CC BY-SA 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Bram_Moolenaar_in_2007.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 
@@ -723,6 +843,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>John Carmack</strong> (geboren 1970), amerikanischer Programmierer, Mitgründer der Spielefirma id Software. Er programmierte die Grafik von Wolfenstein 3D (1992), dessen Labyrinthe der Raycaster in der CPU Sandbox nachahmt, von DOOM (1993) und von Quake (1996). Den BSP-Baum hatten Grafikforscher schon 1980 beschrieben. Carmack griff zu ihm, als Wolfenstein 3D auf das Super Nintendo sollte und der Raycaster dort zu langsam war, und baute danach DOOM darauf.</p>
 <p>Im Dezember 1997 gab er den Quelltext von DOOM frei. Seitdem haben Leute es auf Taschenrechner und Drucker gebracht, und auch PixelRAM spielt DOOM.</p>
 <p class='person-credit'>Foto: RoboSabs, 2025, CC0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:John_Carmack_2025.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1970 -->
+<!-- part: stenberg -->
+### Daniel Stenberg
+
+<div class='person'>
+<img src='stenberg.webp' alt='Daniel Stenberg 2021: ein Mann mit kurzem Haar in einem grauen T-Shirt vor grünem Laub, leicht lächelnd.'>
+<p><strong>Daniel Stenberg</strong> (geboren 1970), schwedischer Programmierer. Du holst mit <code>curl</code> Webseiten und Daten aus APIs? Ende 1996 wollte er einem Chat-Bot beibringen, Wechselkurse aus dem Web zu holen, und erweiterte dafür ein kleines Programm namens HttpGet. Am 20. März 1998 bekam es den Namen curl.</p>
+<p>Er arbeitet bis heute daran. curl steckt inzwischen in Milliarden Geräten, in Handys, Autos und Satelliten.</p>
+<p class='person-credit'>Foto: Daniel Stenberg, 2021, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Daniel_Stenberg_casually_green_(cropped).jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 

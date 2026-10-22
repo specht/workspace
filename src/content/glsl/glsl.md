@@ -399,6 +399,11 @@ Ein Shader fragt die Szene etwas Einfacheres: Wie weit ist es von diesem Punkt b
 
 So tastet sich der Strahl vor: große Schritte im freien Raum, immer kleinere dicht an einer Fläche, bis der Abstand fast 0 ist. Das heißt **Raymarching**. Eine Formel für den Treffer braucht es nicht mehr, nur eine für den Abstand, und Abstände lassen sich kombinieren: Der Abstand zu zwei Dingen ist der kleinere der beiden Abstände.
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Sphere Tracing: A Geometric Method for the Antialiased Ray Tracing of Implicit Surfaces</strong>, John C. Hart, The Visual Computer, 1996. Der Aufsatz beschreibt, wie ein Strahl mit einer Abstandsfunktion vorangeht, in Schritten, die nie in eine Fläche hineinreichen. Hart nennt das Sphere Tracing, nach den Kugeln um jeden Punkt, in denen nichts liegt, im Bild oben die Kreise: <a href='https://doi.org/10.1007/s003710050084'>bei Springer</a>.</p>
+</div>
+
 ### Eine Kugel
 
 Ersetze `shader.frag` durch dieses Programm:

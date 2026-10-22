@@ -17,6 +17,11 @@ Mit CSS legst du fest, wie der Inhalt aussieht: Farben, Schrift, Abstände, Rahm
 
 _person(wium-lie)
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Cascading HTML style sheets – a proposal</strong>, Håkon W Lie, CERN, 10. Oktober 1994. Der Vorschlag, mit dem CSS anfing: Regeln, die einem HTML-Element Eigenschaften wie Schrift und Farbe geben, und Stylesheets von Leser und Autor, die übereinander gelegt werden: <a href='https://www.w3.org/People/howcome/p/cascade.html'>beim W3C</a>.</p>
+</div>
+
 Alles auf dieser Seite gilt für Webseiten und für Folien mit Shower. Jedes Beispiel zeigt rechts, wie es aussieht; mit dem Knopf <svg class='icon-slide' viewBox='0 0 24 24' aria-hidden='true'><rect x='3' y='4' width='18' height='12' rx='1.5'/><path d='M12 16v3.5M8.5 21l3.5-1.5 3.5 1.5M7 8.5h6M7 11.5h9'/></svg> in der Ecke des Bildes siehst du es als Folie.
 
 ## Grundlagen

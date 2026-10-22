@@ -293,3 +293,8 @@ Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
 ## Zusammenfassung
 
 In diesem Kapitel hast du an drei Beispielen gesehen, wie man ein einfaches JavaScript-Programm schreiben und ausführen kann. Das ist natürlich nur ein erster Eindruck. Um JavaScript wirklich zu beherrschen, musst du noch viel mehr lernen – am besten, indem du eigene Skripte schreibst und ausprobierst. Die Buchhandlungen, Bibliotheken und Youtube sind voll von Material für dich. Viel Spaß beim Programmieren!
+
+<div class='book'>
+<i class='bi bi-book'></i>
+<p><strong>Eloquent JavaScript</strong>, Marijn Haverbeke, vierte Auflage 2024. Ein Buch über JavaScript und das Programmieren überhaupt, mit Projekten zwischen den Kapiteln: ein Roboter, eine eigene kleine Programmiersprache, ein Jump-and-Run-Spiel im Browser. Es ist frei <a href='https://eloquentjavascript.net/'>online zu lesen</a>.</p>
+</div>

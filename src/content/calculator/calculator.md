@@ -544,6 +544,11 @@ ruby -e 'pp RubyVM::AbstractSyntaxTree.parse("2 + 3 * 4")'
 python3 -c 'import ast; print(ast.dump(ast.parse("2 + 3 * 4", mode="eval"), indent=2))'
 ```
 
+<div class='book'>
+<i class='bi bi-book'></i>
+<p><strong>Crafting Interpreters</strong>, Robert Nystrom, 2021. Das Buch macht genau hier weiter: Mit einem Parser im rekursiven Abstieg und einem Baum wie deinem baut es eine ganze Programmiersprache mit Variablen, Funktionen und Klassen, erst als Interpreter in Java, dann noch einmal in C als schnelle Maschine für Bytecode. Das ganze Buch ist frei <a href='https://craftinginterpreters.com/'>online zu lesen</a>.</p>
+</div>
+
 <script>
 (function () {
     const root = document.getElementById('calc-stepper');

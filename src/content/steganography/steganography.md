@@ -388,6 +388,11 @@ Aus 83.003 Bytes werden gut 20.000. Zurück geht es mit `zlib.decompress`. Damit
 
 Ist die Botschaft damit unauffindbar? Nein, und gerade weil ihre Bits so gleichmäßig sind. Andreas Westfeld und Andreas Pfitzmann haben 1999 gezeigt, wie man das merkt.
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Attacks on Steganographic Systems</strong>, Andreas Westfeld und Andreas Pfitzmann, Workshop Information Hiding, Dresden 1999. Zwei Arten von Angriffen auf Programme, die im untersten Bit verstecken: einer fürs Auge, das in den untersten Bits Muster statt Rauschen erkennt, und statistische, die ein Programm rechnen kann, darunter der Test, um den es hier geht: <a href='https://doi.org/10.1007/10719724_5'>bei Springer</a>.</p>
+</div>
+
 Ersetzt man das unterste Bit, wird aus einer 208 entweder 208 oder 209, aus einer 209 ebenso. Die Werte 208 und 209 bilden ein **Paar**, und dasselbe gilt für 0 und 1, 2 und 3, bis 254 und 255. Sind die versteckten Bits zufällig, landet jeder Wert eines Paares mit gleicher Wahrscheinlichkeit auf dem einen oder dem anderen. Nach dem Verstecken kommen deshalb beide Werte eines Paares **gleich oft** vor. In einem gewöhnlichen Foto ist das nicht so: Dort ist 208 vielleicht 300-mal da und 209 nur 250-mal.
 
 Der **Chi-Quadrat-Test** misst, wie weit die Paare von »gleich oft« entfernt sind. Zuerst zählst du in den Zeilen, die du untersuchst, wie oft jeder Wert von 0 bis 255 vorkommt, in allen drei Kanälen zusammen. Für jedes Paar heißen seine beiden Anzahlen \\( a \\) und \\( b \\): Beim Paar 208 und 209 ist \\( a \\), wie oft 208 vorkommt, und \\( b \\), wie oft 209 vorkommt.

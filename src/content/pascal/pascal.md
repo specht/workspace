@@ -17,6 +17,11 @@ Die Programmiersprache Pascal wurde 1970 von Niklaus Wirth entwickelt und ist ei
 
 _person(wirth)
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>The Programming Language Pascal</strong>, Niklaus Wirth, Bericht der ETH Zürich, 1970. Der Bericht, in dem Pascal zum ersten Mal beschrieben ist, 1971 auch in der Zeitschrift Acta Informatica erschienen; der Compiler, von dem er erzählt, ist selbst in Pascal geschrieben. Die ETH Zürich hat ihn <a href='https://doi.org/10.3929/ethz-a-004150844'>frei ins Netz gestellt</a>.</p>
+</div>
+
 Pascal fand Anwendung in der Softwareentwicklung, insbesondere in den 1980er und 1990er Jahren, mit bekannten Entwicklungsumgebungen wie Turbo Pascal von Borland. Heutzutage ist Pascal weniger verbreitet als moderne Programmiersprachen, bleibt aber in bestimmten Nischen relevant, insbesondere in der Lehre und bei der Entwicklung von eingebetteten Systemen. Die Sprache hat auch zu Weiterentwicklungen wie Object Pascal geführt, das in der Delphi-Entwicklungsumgebung verwendet wird.
 
 <!-- ## Eigenschaften

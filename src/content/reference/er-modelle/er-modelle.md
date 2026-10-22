@@ -16,6 +16,11 @@ Wie du ein ER-Modell in einer <code>.er</code>-Datei schreibst, was die ER-Werks
 
 _person(chen)
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>The Entity-Relationship Model: Toward a Unified View of Data</strong>, Peter Chen, ACM Transactions on Database Systems, 1976. Der Aufsatz, mit dem das ER-Modell bekannt wurde, mit Diagrammen aus Rechtecken für Entitäten und Rauten für Beziehungen: <a href='https://doi.org/10.1145/320434.320440'>bei der ACM</a>.</p>
+</div>
+
 <!-- part: ausprobieren -->
 ## Ausprobieren
 

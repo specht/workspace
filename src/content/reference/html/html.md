@@ -17,6 +17,11 @@ Mit HTML beschreibst du, was auf einer Webseite oder einer Folie steht: Übersch
 
 _person(berners-lee)
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>HTML Tags</strong>, Tim Berners-Lee, CERN, 1991. Die erste öffentliche Beschreibung von HTML, eine kurze Liste der Tags von damals: Titel, Links, Absätze, Überschriften und Listen. Erhalten ist sie in einer Fassung vom November 1992: <a href='https://www.w3.org/History/19921103-hypertext/hypertext/WWW/MarkUp/Tags.html'>beim W3C</a>.</p>
+</div>
+
 Alles auf dieser Seite gilt für Webseiten und für Folien mit Shower gleichermaßen. Auf einer Webseite steht der Code im `<body>` deiner Datei `index.html`, auf einer Folie zwischen `<section class="slide">` und `</section>`. Jedes Beispiel zeigt rechts, wie es aussieht; mit dem Knopf <svg class='icon-slide' viewBox='0 0 24 24' aria-hidden='true'><rect x='3' y='4' width='18' height='12' rx='1.5'/><path d='M12 16v3.5M8.5 21l3.5-1.5 3.5 1.5M7 8.5h6M7 11.5h9'/></svg> in der Ecke des Bildes siehst du es als Folie statt als Webseite.
 
 ## Aufbau einer Seite

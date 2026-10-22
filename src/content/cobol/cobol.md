@@ -17,6 +17,11 @@ COBOL (Common Business-Oriented Language) wurde 1959 von einem Ausschuss aus Fir
 
 _person(hopper)
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Initial Specifications for a Common Business Oriented Language (COBOL)</strong>, Conference on Data Systems Languages, US-Verteidigungsministerium, April 1960. Die erste Beschreibung von COBOL, vom Ausschuss im Januar 1960 angenommen und dann vom Verteidigungsministerium gedruckt: <a href='https://archive.org/details/bitsavers_codasylCOB_6843924'>eingescannt im Internet Archive</a>.</p>
+</div>
+
 Die Sprache wurde hauptsächlich in Bereichen wie Banken, Versicherungen und Regierungsbehörden eingesetzt, um Transaktionsverarbeitung, Buchhaltung und andere geschäftskritische Anwendungen zu unterstützen. Heutzutage ist COBOL immer noch relevant, insbesondere in der Finanzbranche und bei großen Unternehmen, die auf stabile und zuverlässige Systeme angewiesen sind. Viele dieser Systeme laufen seit Jahrzehnten und werden weiterhin gepflegt und erweitert, da sie für den täglichen Betrieb unerlässlich sind.
 
 ## Hello, world!

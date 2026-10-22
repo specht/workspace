@@ -334,3 +334,8 @@ Das Programm hat eine Liste von 10 Zahlen sortiert.
 ## Zusammenfassung
 
 In diesem Kapitel hast du an drei Beispielen gesehen, wie man ein einfaches Smalltalk-Skript schreiben und ausführen kann. Das ist natürlich nur ein erster Eindruck. Um Smalltalk wirklich zu beherrschen, musst du noch viel mehr lernen – am besten, indem du eigene Skripte schreibst und ausprobierst. Die Buchhandlungen, Bibliotheken und Youtube sind voll von Material für dich. Viel Spaß beim Programmieren!
+
+<div class='book'>
+<i class='bi bi-book'></i>
+<p><strong>Smalltalk-80: The Language and its Implementation</strong>, Adele Goldberg und David Robson, Addison-Wesley, 1983, unter Smalltalk-Leuten das »Blue Book«. Die erste ausführliche Beschreibung von Smalltalk-80: erst die Sprache und ihre Klassen, dann Beispielprogramme und am Ende, wie die virtuelle Maschine darunter funktioniert. Es gibt das Buch frei <a href='http://stephane.ducasse.free.fr/FreeBooks/BlueBook/Bluebook.pdf'>als PDF</a>.</p>
+</div>

@@ -334,6 +334,10 @@ _uses(paletten)
 
 Die Nummern der Pixel sind mit **LZW** komprimiert, benannt nach Abraham Lempel, Jacob Ziv und Terry Welch. Während der Decoder liest, baut er sich eine Tabelle von Pixelfolgen, die schon einmal vorkamen, und genau dieselbe Tabelle hat vorher der Encoder gebaut. Mitgeschickt wird die Tabelle nie. Wie das geht, ist das Herzstück dieses Labors.
 
+_person(lempel-ziv)
+
+_person(welch)
+
 Das Format ist in einem einzigen Text beschrieben, den die Firma CompuServe 1990 auf der Schreibmaschine verfasst hat: der [Spezifikation GIF89a](https://www.w3.org/Graphics/GIF/spec-gif89a.txt). Sie ist gut lesbar und erstaunlich kurz. Die Diagramme der Blöcke auf dieser Seite stammen von dort, und unter jeder Überschrift steht, wo der Block in der Spezifikation beschrieben ist.
 
 ## Vorbereitung

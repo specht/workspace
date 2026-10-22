@@ -273,7 +273,19 @@ crop-terminal-lines: auto
 
 Aus 27 Bytes sind 256 geworden, so groß wie der Schlüssel. Mehr als gut 200 Bytes passen auf einmal nicht hinein, und RSA ist viel langsamer als AES. Darum arbeiten echte Programme **hybrid**: Sie würfeln einen zufälligen AES-Schlüssel aus, verschlüsseln damit die eigentlichen Daten und schicken nur diesen kurzen Schlüssel mit RSA oder einem verwandten Verfahren. Genau so beginnt jede Verbindung mit `https://`.
 
+_person(diffie-hellman)
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>New Directions in Cryptography</strong>, Whitfield Diffie und Martin Hellman, IEEE Transactions on Information Theory, 1976. Der Aufsatz, in dem öffentliche und private Schlüssel zum ersten Mal öffentlich beschrieben sind, dazu Unterschriften, die jeder prüfen kann, und der Schlüsseltausch, der ihre Namen trägt: <a href='https://ee.stanford.edu/~hellman/publications/24.pdf'>als PDF auf Hellmans Seite</a>.</p>
+</div>
+
 _person(rivest-shamir-adleman)
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>A Method for Obtaining Digital Signatures and Public-Key Cryptosystems</strong>, Ron Rivest, Adi Shamir und Leonard Adleman, Communications of the ACM, 1978. Das erste veröffentlichte Verfahren, das die Idee von Diffie und Hellman wahr macht, gebaut aus zwei großen Primzahlen: RSA. Rivest hat den Aufsatz <a href='https://people.csail.mit.edu/rivest/Rsapaper.pdf'>als PDF</a> auf seine Seite gestellt.</p>
+</div>
 
 _task(welcher-schluessel)
 

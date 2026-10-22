@@ -90,6 +90,8 @@ Pfade mit Leerzeichen brauchen Anführungszeichen oder einen Backslash vor jedem
 </table>
 <!-- /part -->
 
+_person(thompson)
+
 <!-- part: pipelines -->
 ### Pipelines und Umleitungen
 
@@ -109,6 +111,8 @@ Mit `|` wird die Ausgabe eines Befehls zur Eingabe des nächsten, mit `>` landet
 grep -o -E "[A-Za-z]+" alice.txt | sort | uniq -i | wc -l
 ```
 <!-- /part -->
+
+_person(mcilroy)
 
 <!-- part: du -->
 ### Wie viel Platz?

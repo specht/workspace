@@ -152,6 +152,11 @@ Den Code eines Bytes liest du auf dem Weg von oben zu seinem Blatt ab: links ein
 
 _person(huffman)
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>A Method for the Construction of Minimum-Redundancy Codes</strong>, David A. Huffman, Proceedings of the IRE, 1952. Auf vier Seiten der Baum, den du hier von unten baust, immer aus den beiden seltensten Zeichen: <a href='http://compression.ru/download/articles/huff/huffman_1952_minimum-redundancy-codes.pdf'>PDF</a>, auch beim <a href='https://doi.org/10.1109/JRPROC.1952.273898'>IEEE</a>.</p>
+</div>
+
 Probier es aus, mit einem der Texte oben. Lila umrandet sind die beiden Bäume, die als nächste zusammenkommen. Es zählen nur die Gewichte oben an den Bäumen: Sind zwei Bäume zusammengefasst, zählt ihre Summe, und ihre eigenen Zahlen werden blass.
 
 <div class='hf-stepper' id='hf-stepper' data-stepper>

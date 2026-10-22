@@ -386,6 +386,8 @@ _task(bilddatei)
 
 Bis jetzt haben wir mit HTML beschrieben, **was** auf der Seite steht. Der Browser entscheidet noch weitgehend selbst, wie Überschriften, Listen und Links aussehen. Dafür gibt es CSS: **Cascading Style Sheets**. Mit CSS legst du Farben, Schriftarten, Größen, Abstände und das Layout fest. Wir schreiben das CSS in eine eigene Datei, damit Inhalt und Gestaltung getrennt bleiben.
 
+_person(wium-lie)
+
 ### CSS-Datei erstellen
 
 Erstelle im Explorer neben `index.html` eine neue Datei namens `styles.css`.

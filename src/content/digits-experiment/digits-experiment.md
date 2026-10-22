@@ -200,6 +200,12 @@ Versuche, die Grenze zwischen zwei Ziffern zu finden, um zu sehen, wie das Model
 
 Um unser Modell zu verbessern, können wir ein [Convolutional Neural Network](https://de.wikipedia.org/wiki/Convolutional_Neural_Network) (CNN) verwenden. Dabei werden die Pixel nicht mehr unabhängig voneinander betrachtet, sondern unter Berücksichtigung ihrer Lage zueinander.
 
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Backpropagation Applied to Handwritten Zip Code Recognition</strong>, Yann LeCun und andere, Neural Computation, 1989. Der Aufsatz, in dem ein Netz mit Faltungsschichten die Filter für Bilder handgeschriebener Ziffern selbst lernt, statt dass jemand sie von Hand festlegt: <a href='http://yann.lecun.com/exdb/publis/pdf/lecun-89e.pdf'>als PDF auf LeCuns Seite</a>.</p>
+</div>
+
 ### Die neue Architektur
 
 Um ein CNN zu verwenden, scrolle nach oben zum Abschnitt »Architektur des Modells« und setze die Variable `use_model` auf den Wert 2. Führe dann diesen und alle folgenden Codeblöcke erneut aus.
