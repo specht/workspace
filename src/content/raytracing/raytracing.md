@@ -337,7 +337,7 @@ double random_double(void)
 }
 ```
 
-`draw` addiert in jedem Durchgang die neue Farbe zur Summe des Pixels und zeigt die Summe geteilt durch die Zahl der Durchgänge:
+`draw` addiert in jedem Durchgang die neue Farbe zur Summe des Pixels und zeigt die Summe geteilt durch die Zahl der Durchgänge. Ersetze `draw` durch:
 
 ```c
 // für jeden Pixel: die Summe der Farben aus allen Durchgängen
@@ -364,10 +364,12 @@ void draw(int passes)
 }
 ```
 
-In `main` zeichnet die Schleife jetzt in jedem Bild einen weiteren Durchgang, und `passes` zählt sie mit:
+In `main` zeichnet die Schleife jetzt in jedem Bild einen weiteren Durchgang, und `passes` zählt sie mit. Das `draw();` vor der Schleife fällt weg. Ersetze `main` durch:
 
 ```c
-~     screen_open(W, H, pixel_rgb24, "Raytracer");
+int main(void)
+{
+    screen_open(W, H, pixel_rgb24, "Raytracer");
     int passes = 0;
     while (!should_close())
     {
@@ -376,6 +378,9 @@ In `main` zeichnet die Schleife jetzt in jedem Bild einen weiteren Durchgang, un
         draw(passes);
         present();
     }
+    screen_close();
+    return 0;
+}
 ```
 
 <div class='gallery columns-2'>
@@ -460,7 +465,7 @@ vec sun_color = {1.4, 1.2, 0.9};
 vec ambient = {0.12, 0.15, 0.22};
 ```
 
-`trace` rechnet jetzt den Treffpunkt aus, die Normale und das Licht:
+`trace` rechnet jetzt den Treffpunkt aus, die Normale und das Licht. Ersetze `trace` durch:
 
 ```c
 // die Farbe, die aus Richtung dir beim Punkt origin ankommt
@@ -491,7 +496,7 @@ vec trace(vec origin, vec dir)
 ~     int passes = 0;
 ```
 
-Eine Kleinigkeit fehlt noch. Ein Bildschirm zeigt den Farbwert 128 nicht halb so hell wie 255, sondern nur etwa ein Fünftel so hell. Dein Programm rechnet aber mit echten Lichtmengen. Die **Gamma-Korrektur** gleicht das aus, in `to_byte`:
+Eine Kleinigkeit fehlt noch. Ein Bildschirm zeigt den Farbwert 128 nicht halb so hell wie 255, sondern nur etwa ein Fünftel so hell. Dein Programm rechnet aber mit echten Lichtmengen. Die **Gamma-Korrektur** gleicht das aus, in der letzten Zeile von `to_byte`. Ersetze `to_byte` durch:
 
 ```c
 // Farbwert 0 bis 1 zu 0 bis 255, mit Gamma für den Bildschirm
@@ -587,7 +592,7 @@ Ein Strahl kann mehrere Dinge treffen; zu sehen ist das vorderste. `nearest_hit`
 
 <img class='drawing' style='width: 31em' src='naechster.webp' alt='Ein Strahl beginnt links bei origin und läuft leicht abwärts nach rechts. Oben verfehlt er einen Kreis: t = INFINITY. Den zweiten Kreis trifft er bei t = 1.9, dort endet der blaue Pfeil; gestrichelt geht er weiter, trifft einen dritten Kreis bei t = 3.2 und den Boden bei t = 4.2. Oben steht: zu sehen: das kleinste t.'>
 
-Was über den Treffer bekannt ist, sammelt es in einem `hit`:
+Was über den Treffer bekannt ist, sammelt es in einem `hit`. Beides kommt unter `hit_floor`:
 
 ```c
 // alles über einen Treffer
@@ -639,7 +644,7 @@ bool nearest_hit(vec origin, vec dir, hit *h)
 
 Das Schachbrett entsteht ohne ein einziges Bild: `floor` rundet die Koordinaten ab, auf welchem Feld der Treffpunkt liegt, und ist die Summe beider Feldnummern gerade, ist das Feld dunkel. Die Normale des Bodens zeigt überall nach oben.
 
-Das Licht der Sonne bekommt eine eigene Funktion, und `trace` wird kurz:
+Das Licht der Sonne bekommt eine eigene Funktion, `sunlight`, und `trace` wird kurz. Ersetze `trace` durch die beiden:
 
 ```c
 // Licht von der Sonne: je steiler sie auf die Oberfläche scheint, desto heller
@@ -791,7 +796,7 @@ vec cross(vec a, vec b)
 
 _task(right)
 
-Lösche die Zeilen mit `vec eye = {0, 1.2, 5.5};`. Über `ray_dir` kommt die Kamera, und `ray_dir` benutzt sie:
+Lösche die Zeilen mit `vec eye = {0, 1.2, 5.5};`. Über `ray_dir` kommt die Kamera, und `ray_dir` benutzt sie. Ersetze `ray_dir` durch die beiden:
 
 ```c
 // die Kamera: wo das Auge steht und wohin vorne, rechts und oben ist
@@ -820,7 +825,7 @@ vec ray_dir(double x, double y)
 
 ### Um die Szene kreisen
 
-In `main` fragt die Schleife jetzt die Pfeiltasten ab. Bewegt sich die Kamera, gelten die alten Durchgänge nicht mehr: `passes` fängt wieder bei 0 an, und der nächste Durchgang überschreibt die Summe.
+In `main` fragt die Schleife jetzt die Pfeiltasten ab. Bewegt sich die Kamera, gelten die alten Durchgänge nicht mehr: `passes` fängt wieder bei 0 an, und der nächste Durchgang überschreibt die Summe. Ersetze `main` durch:
 
 ```c
 int main(void)
@@ -909,7 +914,7 @@ Das Material bekommt ein Feld `planet`:
 ~ } material;
 ```
 
-Die orange Kugel wird zum Planeten:
+Die orange Kugel wird zum Planeten. Ersetze in `spheres` ihre Zeile, die mit `{.color = {0.9, 0.6, 0.3}}`, durch:
 
 ```c
     {{-2.2, 0.9, 0.3}, 0.9, {.planet = true}},
@@ -992,7 +997,7 @@ Das Material sagt, wie stark eine Oberfläche spiegelt:
 ~     bool planet;    // mit Textur
 ```
 
-Die große Kugel hinten wird ein Spiegel, und der Boden glänzt ein wenig:
+Die große Kugel hinten wird ein Spiegel, und der Boden glänzt ein wenig. Ersetze in `spheres` die erste Zeile, die große graue Kugel, und `floor_mat` durch:
 
 ```c
     {{-0.3, 1.2, -1.4}, 1.2, {.color = {0.9, 0.9, 0.95}, .mirror = 0.9}},
@@ -1002,7 +1007,7 @@ Die große Kugel hinten wird ein Spiegel, und der Boden glänzt ein wenig:
 material floor_mat = {.color = {0.75, 0.75, 0.75}, .mirror = 0.1};
 ```
 
-Dann `reflect` und das neue `trace`:
+Dann `reflect` und das neue `trace`. Ersetze `trace` durch die beiden:
 
 ```c
 // der Strahl dir prallt an der Oberfläche mit der Normalen n ab
@@ -1034,7 +1039,7 @@ vec trace(vec origin, vec dir, int depth)
 }
 ```
 
-In `draw` beginnt jeder Strahl vom Auge mit `depth` 0:
+In `draw` beginnt jeder Strahl vom Auge mit `depth` 0; die Zeile mit `trace` wird zu:
 
 ```c
             vec c = trace(eye, ray_dir(x + random_double(), y + random_double()), 0);
@@ -1090,7 +1095,7 @@ Das Material bekommt einen Brechungsindex:
     double glass;   // Brechungsindex bei Glas, sonst 0
 ```
 
-Die weiße Kugel rechts wird Glas:
+Die weiße Kugel rechts wird Glas. Ersetze in `spheres` ihre Zeile, die mit `{.color = {0.9, 0.9, 0.9}}`, durch:
 
 ```c
     {{1.5, 0.8, 0.8}, 0.8, {.color = {0.95, 1.0, 0.97}, .glass = 1.5}},
@@ -1108,7 +1113,7 @@ Ein gebrochener Strahl beginnt im Glas, und von innen trifft er die Kugel ein zw
 ~     return INFINITY;      // die Kugel liegt hinter dem Auge
 ```
 
-Glas wirft auch einen Schatten, aber einen helleren: Es lässt einen Teil des Lichts durch. Statt `nearest_hit` fragt `sunlight` darum jetzt `light_through`:
+Glas wirft auch einen Schatten, aber einen helleren: Es lässt einen Teil des Lichts durch. Statt `nearest_hit` fragt `sunlight` darum jetzt `light_through`. Ersetze `sunlight` durch die beiden:
 
 ```c
 // wie viel Licht von point aus in Richtung dir durchkommt: 1, 0 oder dazwischen
@@ -1262,7 +1267,7 @@ Das kostet jetzt fast nichts mehr: Jeder Durchgang zielt mit dem Schattenstrahl 
 <p><strong>Distributed Ray Tracing</strong>, Robert L. Cook, Thomas Porter und Loren Carpenter, SIGGRAPH 1984. Statt eines Strahls viele, deren Richtungen gewürfelt werden: über die Fläche der Lampe verteilt für Halbschatten, über die Linse für Tiefenschärfe, über die Zeit für Bewegungsunschärfe, dazu unscharfe Spiegelungen und trübes Glas: <a href='https://doi.org/10.1145/800031.808590'>bei der ACM</a>.</p>
 </div>
 
-Dafür braucht es einen zufälligen Punkt in einer Kugel um den Nullpunkt; `random_in_sphere` würfelt so lange, bis ein Punkt im Würfel auch in der Kugel liegt:
+Dafür braucht es einen zufälligen Punkt in einer Kugel um den Nullpunkt; `random_in_sphere` würfelt so lange, bis ein Punkt im Würfel auch in der Kugel liegt. Unter `random_double`:
 
 ```c
 // ein zufälliger Punkt in der Kugel mit Radius 1 um den Nullpunkt
@@ -1285,7 +1290,7 @@ Bei der Sonne steht, wie groß sie ist:
 #define SUN_SIZE 0.08
 ```
 
-`sunlight` wackelt die Richtung zur Sonne ein wenig:
+`sunlight` wackelt die Richtung zur Sonne ein wenig. Ersetze `sunlight` durch:
 
 ```c
 // Licht von der Sonne: zu einem zufälligen Punkt der Sonnenscheibe
@@ -1299,7 +1304,7 @@ vec sunlight(hit h)
 }
 ```
 
-Und damit man die Sonne im Spiegel sieht, zeichnet `trace` sie in den Himmel:
+Und damit man die Sonne im Spiegel sieht, zeichnet `trace` sie in den Himmel; aus `return sky(dir);` unter `if (!nearest_hit(…))` wird:
 
 ```c
 ~     if (!nearest_hit(origin, dir, &h))
@@ -1368,7 +1373,7 @@ vec skylight(hit h)
 
 <img class='drawing' style='width: 31em' src='himmel-strahlen.webp' alt='Zwei Punkte auf dem Boden. Über jedem ein gestrichelter Kreis, der den Boden in diesem Punkt berührt, mit einigen zufälligen Punkten darin; durch jeden geht vom Bodenpunkt ein Strahl nach oben. Vom linken Punkt kommen alle in den Himmel: sieht viel Himmel. Der rechte liegt unter dem Rand einer Kugel; mehr als die Hälfte seiner Strahlen endet gestrichelt an ihr: sieht wenig Himmel. Unten steht: Punkte: normal + random_in_sphere().'>
 
-In `trace` heißt es dann:
+In `trace` wird die Zeile mit `ambient` zu:
 
 ```c
     vec light = add(sunlight(h), skylight(h));
@@ -1411,19 +1416,19 @@ double fresnel(double cos_in, double index)
 Am Ende von `glass` steht dann statt der vier Zeilen von Schlick nur noch:
 
 ```c
-~    vec refracted = mul(trace(h.point, refracted_dir, depth + 1), h.mat.color);
+~     vec refracted = mul(trace(h.point, refracted_dir, depth + 1), h.mat.color);
     return mix(refracted, reflected, fresnel(cos_in, h.mat.glass));
-~}
+~ }
 ```
 
 Das Material bekommt ein Feld für den Lack:
 
 ```c
-~    double glass;   // Brechungsindex bei Glas, sonst 0
+~     double glass;   // Brechungsindex bei Glas, sonst 0
     bool varnish;   // lackiert: spiegelt ein wenig, flach mehr als steil
 ```
 
-In `trace` spiegelt jetzt ein Spiegel oder ein Lack. Beim Spiegel steht fest, wie viel er spiegelt, beim Lack rechnet es `fresnel` aus: `-dot(dir, h.normal)` ist der Kosinus des Winkels, unter dem der Strahl auftrifft, wie `cos_in` in `glass`, und 1,5 ist der Brechungsindex von Lack, etwa wie bei Glas.
+In `trace` spiegelt jetzt ein Spiegel oder ein Lack. Beim Spiegel steht fest, wie viel er spiegelt, beim Lack rechnet es `fresnel` aus: `-dot(dir, h.normal)` ist der Kosinus des Winkels, unter dem der Strahl auftrifft, wie `cos_in` in `glass`, und 1,5 ist der Brechungsindex von Lack, etwa wie bei Glas. Ersetze in `trace` den Teil, der mit `// Spiegel:` beginnt, durch:
 
 ```c
     // Spiegel und Lack: ein neuer Strahl vom Treffpunkt aus
@@ -1437,20 +1442,20 @@ In `trace` spiegelt jetzt ein Spiegel oder ein Lack. Beim Spiegel steht fest, wi
     }
 ```
 
-Lackiert werden die rote und die blaue Kugel:
+Lackiert werden die rote und die blaue Kugel; ihre Zeilen in `spheres` werden zu:
 
 ```c
     {{-0.5, 0.45, 1.2}, 0.45, {.color = {0.9, 0.15, 0.1}, .varnish = true}},
-~    {{3.0, 0.4, -0.4}, 0.4, {.color = {0.95, 0.7, 0.1}}},
+~     {{3.0, 0.4, -0.4}, 0.4, {.color = {0.95, 0.7, 0.1}}},
     {{0.4, 0.3, 2.3}, 0.3, {.color = {0.1, 0.35, 0.9}, .varnish = true}},
 ```
 
 _task(lack)
 
-Übersetzt du jetzt, siehst du kaum einen Glanzpunkt. Das liegt an der Sonnenscheibe: Sie ist bisher nur dreimal so hell wie `sun_color`, und davon spiegelt der Lack nur wenig. Wie hell ist sie wirklich? Das ganze Licht `sun_color` kommt aus einer winzigen Scheibe mit dem Radius `SUN_SIZE`. Ihre Fläche am Himmel ist \\(\pi \cdot 0{,}08^2 \approx 0{,}02\\), und so viel Licht aus so wenig Himmel heißt: Jeder Punkt der Scheibe ist etwa fünfzigmal so hell wie `sun_color`.
+Übersetzt du jetzt, siehst du kaum einen Glanzpunkt. Das liegt an der Sonnenscheibe: Sie ist bisher nur dreimal so hell wie `sun_color`, und davon spiegelt der Lack nur wenig. Wie hell ist sie wirklich? Das ganze Licht `sun_color` kommt aus einer winzigen Scheibe mit dem Radius `SUN_SIZE`. Ihre Fläche am Himmel ist \\(\pi \cdot 0{,}08^2 \approx 0{,}02\\), und so viel Licht aus so wenig Himmel heißt: Jeder Punkt der Scheibe ist etwa fünfzigmal so hell wie `sun_color`. In `trace` wird aus `return scale(sun_color, 3);`:
 
 ```c
-~        if (dot(dir, sun_dir) > cos(SUN_SIZE))
+~         if (dot(dir, sun_dir) > cos(SUN_SIZE))
             // die Sonnenscheibe: ihr ganzes Licht kommt aus dieser kleinen Fläche
             return scale(sun_color, 1 / (3.14159 * SUN_SIZE * SUN_SIZE));
 ```
@@ -1489,15 +1494,15 @@ Gebürstetes Metall oder eine seidenmatte Farbe spiegeln auch, aber verschwommen
 Das Material bekommt zwei Felder:
 
 ```c
-~    bool varnish;   // lackiert: spiegelt ein wenig, flach mehr als steil
+~     bool varnish;   // lackiert: spiegelt ein wenig, flach mehr als steil
     bool metal;     // Metall färbt, was es spiegelt
     double rough;   // wie matt die Spiegelung ist: 0 glatt, 0.3 matt
 ```
 
-Und in `trace` wird der Strahl verschoben und, bei Metall, gefärbt. Zeigt er nach dem Verschieben unter die Oberfläche, nimmt `trace` die glatte Richtung:
+Und in `trace` wird der Strahl verschoben und, bei Metall, gefärbt. Zeigt er nach dem Verschieben unter die Oberfläche, nimmt `trace` die glatte Richtung. Der Block unter `if (shine > 0)` wird zu:
 
 ```c
-~    if (shine > 0)
+~     if (shine > 0)
     {
         vec r = reflect(dir, h.normal);
         // matt: in jedem Durchgang ein wenig anders, im Mittel verschwommen
@@ -1514,7 +1519,7 @@ Und in `trace` wird der Strahl verschoben und, bei Metall, gefärbt. Zeigt er na
     }
 ```
 
-Die gelbe Kugel wird Gold, leicht matt, dazu kommt eine matte Kugel aus Kupfer, und die blaue wird seidenmatt:
+Die gelbe Kugel wird Gold, leicht matt, dazu kommt eine matte Kugel aus Kupfer, und die blaue wird seidenmatt. Ersetze die beiden letzten Zeilen in `spheres`, die gelbe und die blaue Kugel, durch diese drei:
 
 ```c
     {{3.0, 0.4, -0.4}, 0.4, {.color = {1.0, 0.75, 0.3}, .mirror = 0.95, .metal = true, .rough = 0.12}},
@@ -1541,7 +1546,7 @@ Auf einer matten Fläche ist der Glanzpunkt ein großer, weicher Fleck: Viele de
 
 ## Das fertige Bild
 
-Zwei Kleinigkeiten machen das Bild zum fertigen Raytracer vom Anfang der Seite. Weit hinten verschwimmt das Schachbrett im **Dunst**: Je weiter ein Treffer entfernt ist, desto mehr mischt sich die Farbe des Himmels hinein. Am Ende von `trace`:
+Zwei Kleinigkeiten machen das Bild zum fertigen Raytracer vom Anfang der Seite. Weit hinten verschwimmt das Schachbrett im **Dunst**: Je weiter ein Treffer entfernt ist, desto mehr mischt sich die Farbe des Himmels hinein. Am Ende von `trace` wird aus `return color;`:
 
 ```c
     // Dunst: was weit weg ist, verschwimmt mit dem Himmel
@@ -1626,7 +1631,7 @@ double aperture = 0.06;
 double focus = 4.2;
 ```
 
-In `draw` beginnt der Strahl jetzt auf der Linse. `sharp` ist der Punkt, an dem der alte Strahl die Schärfeebene trifft: Er geht so weit, bis er `focus` weit vor dem Auge ist, und weil `dir` schräg ist, ist das etwas mehr als `focus`.
+In `draw` beginnt der Strahl jetzt auf der Linse. `sharp` ist der Punkt, an dem der alte Strahl die Schärfeebene trifft: Er geht so weit, bis er `focus` weit vor dem Auge ist, und weil `dir` schräg ist, ist das etwas mehr als `focus`. Die Zeile mit `trace` in `draw` wird zu:
 
 ```c
             // der Strahl beginnt an einem zufälligen Punkt der Linse und
@@ -1641,13 +1646,13 @@ In `draw` beginnt der Strahl jetzt auf der Linse. `sharp` ist der Punkt, an dem 
 Mit <kbd>W</kbd> und <kbd>S</kbd> schiebst du die Schärfe weiter weg oder näher heran:
 
 ```c
-~        if (key_down(pixel_key_down) && height > 0.3) { height -= 0.05; passes = 0; }
+~         if (key_down(pixel_key_down) && height > 0.3) { height -= 0.05; passes = 0; }
         // W/S: scharf weiter weg oder näher
         if (key_down(pixel_key_w) && focus < 12) { focus += 0.05; passes = 0; }
         if (key_down(pixel_key_s) && focus > 1)  { focus -= 0.05; passes = 0; }
 ```
 
-Und der Titel sagt, wo es scharf ist:
+Und der Titel sagt, wo es scharf ist; die Zeile mit `snprintf` wird zu:
 
 ```c
         snprintf(title, sizeof title, "Raytracer – %d Durchgänge, scharf bei %.1f", passes, focus);
@@ -1691,7 +1696,7 @@ _person(kajiya)
 Path Tracing baut wie die Tiefenschärfe auf dem fertigen Programm auf, nicht auf ihr; beide passen aber auch zusammen. `skylight` wird gelöscht. An seine Stelle kommt `bounce`, nach der Vorab-Deklaration von `trace`, denn es ruft `trace` auf:
 
 ```c
-~vec trace(vec origin, vec dir, int depth);
+~ vec trace(vec origin, vec dir, int depth);
 
 // Licht von allem rundherum: ein Strahl in eine zufällige Richtung über der
 // Oberfläche; trifft er etwas, bringt er mit, wie hell es dort ist, sonst
@@ -1709,7 +1714,7 @@ vec bounce(hit h, int depth)
 }
 ```
 
-`depth + 1` sorgt dafür, dass der Weg irgendwann endet: Nach `MAX_DEPTH` Flächen gibt `trace` Schwarz zurück. In `trace` heißt es jetzt:
+`depth + 1` sorgt dafür, dass der Weg irgendwann endet: Nach `MAX_DEPTH` Flächen gibt `trace` Schwarz zurück. In `trace` wird die Zeile mit `skylight` zu:
 
 ```c
     vec light = add(sunlight(h), bounce(h, depth));
@@ -1727,13 +1732,13 @@ sphere spheres[] = {
 };
 ```
 
-Alles hier ist matt, auch der Boden: Spiegelungen würden die Farben der Wände ebenfalls zeigen, und dann sähe man nicht, was vom Path Tracing kommt.
+Alles hier ist matt, auch der Boden: Spiegelungen würden die Farben der Wände ebenfalls zeigen, und dann sähe man nicht, was vom Path Tracing kommt. Ersetze `floor_mat` durch:
 
 ```c
 material floor_mat = {.color = {0.75, 0.75, 0.75}};  // ohne Spiegelanteil
 ```
 
-Die Wände sind so hoch wie breit, fast 1000, und würden eine Sonne hinter ihnen ganz verdecken. Darum ist der Hof rechts offen, und die Sonne kommt von rechts oben und ein wenig von vorn; so stehen beide Wände in der Sonne. In `main`:
+Die Wände sind so hoch wie breit, fast 1000, und würden eine Sonne hinter ihnen ganz verdecken. Darum ist der Hof rechts offen, und die Sonne kommt von rechts oben und ein wenig von vorn; so stehen beide Wände in der Sonne. In `main` werden die Zeilen mit `sun_dir` und `angle` zu:
 
 ```c
     sun_dir = normalize((vec){1.0, 1.3, 0.6});
@@ -1813,7 +1818,7 @@ double tone(double c)
 }
 ```
 
-`to_byte` belichtet und drückt zusammen, bevor die Gamma-Korrektur kommt:
+`to_byte` belichtet und drückt zusammen, bevor die Gamma-Korrektur kommt. Ersetze `to_byte` durch:
 
 ```c
 // Farbwert 0 bis 1 zu 0 bis 255, mit Belichtung, Tone Mapping und Gamma
@@ -1824,14 +1829,21 @@ uint8_t to_byte(double c)
 }
 ```
 
-Mit <kbd>H</kbd> belichtest du heller, mit <kbd>D</kbd> dunkler, jedes Mal um das Anderthalbfache. Die Durchgänge bleiben dabei, denn die Belichtung ändert nur, wie die Summe angezeigt wird:
+Mit <kbd>H</kbd> belichtest du heller, mit <kbd>D</kbd> dunkler, jedes Mal um das Anderthalbfache. Die Durchgänge bleiben dabei, denn die Belichtung ändert nur, wie die Summe angezeigt wird. In der Schleife in `main`, unter den Pfeiltasten:
 
 ```c
+~         if (key_down(pixel_key_down) && height > 0.3) { height -= 0.05; passes = 0; }
         // H heller, D dunkler: nur die Anzeige ändert sich, die Durchgänge bleiben
         if (key_pressed(pixel_key_h))
             exposure *= 1.5;
         if (key_pressed(pixel_key_d))
             exposure /= 1.5;
+```
+
+Und der Titel zeigt, wie hell belichtet ist; die Zeile mit `snprintf` wird zu:
+
+```c
+        snprintf(title, sizeof title, "Raytracer – %d Durchgänge, Belichtung %.2f", passes, exposure);
 ```
 
 <div class='gallery columns-2'>
