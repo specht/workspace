@@ -104,6 +104,14 @@ address from `credentials.rb` and the code `123456`.
   never before a task it would give away. Without a free photo the box is
   text only, no silhouette. The Personen page is sorted by year of birth;
   docs/aktivitaet-schreiben.md.
+- People, books and papers belong wherever they are relevant, in activities
+  and Handbuch pages alike: a paper with which something started (Whitted's
+  raytracing, Blinn's blobby objects, Perlin's noise) or a book that goes on
+  exactly where a section stops (Abrash's *Graphics Programming Black Book*)
+  gets a `<div class='book'>` box with `bi-file-earmark-text` or `bi-book`:
+  title, author, year, what is in it, a checked link
+  (docs/aktivitaet-schreiben.md, »Bücher und Aufsätze zum Weiterlesen«).
+  Look for them whenever a page is written or changed.
 - Invite optional experiments: where students have just got something
   working, a box `<div class='hint try'>` (»Ausprobieren:«) suggests a small
   change and what to watch for, so they see how it works by changing it.

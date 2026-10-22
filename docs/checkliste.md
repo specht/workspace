@@ -65,6 +65,7 @@ Repository arbeitet, liest sie also ohnehin.
 | Jede Prüfung, die Dateien liest, hat Beispiele in `task-examples.yaml`: eine Lösung, die sie annimmt, einen Anfang, den sie ablehnt | Sonst merkt niemand, wenn eine Prüfung zu streng oder zu lasch ist | `task_examples_test.rb` |
 | Rezepte prüfen mit `check-task` und `check-task-fails`, dass die Schritte der Seite zur gelösten Aufgabe führen, in jeder Sprache | Die Seite und die Prüfung passen zusammen | Rezepte beim Rendern |
 | Prüfungen lesen nur, sie ändern nichts im Workspace | Die fünf Regeln in aktivitaet-schreiben.md | Lesen |
+| Menschen, Bücher und Aufsätze stehen dort, wo sie hingehören: Wer erfunden hat, worum es in einem Abschnitt geht, bekommt einen Kasten (`_person(name)`), ein Aufsatz, mit dem etwas angefangen hat, oder ein Buch, das genau dort weitermacht, einen Kasten `book` mit geprüftem Link | Hinter jeder Erfindung stehen Menschen, und wer weiterlesen will, findet die Quelle | Lesen (aktivitaet-schreiben.md, »Bücher und Aufsätze zum Weiterlesen«) |
 | Wo etwas gerade läuft, lädt ein Kasten `hint try` (»Ausprobieren:«) zu einer kleinen Änderung ein und sagt, worauf man achten soll; ungeprüft, die Seite geht mit dem unveränderten Code weiter | Wie etwas funktioniert, versteht man, wenn man es ändert und sieht, was passiert | Lesen |
 
 ## Bilder
