@@ -63,6 +63,108 @@ tasks:
       expect:
         has_remote: true
 
+  - id: lifo-fifo
+    title: Wer kommt zuletzt heraus?
+    prompt: |
+      Ein leerer Stack und eine leere Queue bekommen diese Aufrufe:
+
+      - Stack: `push(4); push(7); push(2); pop(); push(9); pop(); pop()`
+      - Queue: `enqueue(4); enqueue(7); enqueue(2); dequeue(); enqueue(9); dequeue(); dequeue()`
+
+      Was gibt jeweils der letzte Aufruf zurück?
+    check:
+      type: choice
+      options:
+        - 'Stack: 7, Queue: 2'
+        - 'Stack: 2, Queue: 7'
+        - 'Stack: 9, Queue: 4'
+        - 'Stack: 7, Queue: 7'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: |
+          Andersherum: Der Stack gibt zuerst heraus, was zuletzt hineinkam
+          (LIFO), die Queue das, was am längsten wartet (FIFO).
+      - when: { picked: 2 }
+        say: Das sind Werte aus früheren Aufrufen. Schreib nach jedem Aufruf auf, was noch drin ist.
+      - when: { picked: 3 }
+        say: Beim Stack stimmt es. Die Queue gibt die Werte in der Reihenfolge zurück, in der sie ankamen.
+    solution: |
+      Der Stack gibt 2, dann 9, dann 7 zurück, immer den obersten Wert; die 4
+      bleibt drin. Die Queue gibt 4, dann 7, dann 2 zurück, immer den, der am
+      längsten wartet; die 9 bleibt drin.
+
+  - id: einfuegen-verschieben
+    title: Platz machen im Array
+    prompt: |
+      Eine Array-Liste enthält die fünf Werte `7, 5, 3, 9, 4` in den Zellen 0
+      bis 4. Wie viele dieser Werte müssen in eine andere Zelle rücken, damit
+      `insert(2, 6)` die 6 an Index 2 schreiben kann?
+    check:
+      type: number
+      expect: 3
+    feedback:
+      - when: { equals: 0 }
+        say: So ist es bei der Linked List, dort wird nur eine Referenz umgebogen. Im Array muss erst eine Zelle frei werden.
+      - when: { equals: 5 }
+        say: Nicht alle. Was vor Index 2 steht, bleibt, wo es ist.
+      - when: { equals: 4 }
+        say: Die 6 selbst zählt nicht mit; gefragt sind die Werte, die schon in der Liste waren.
+    solution: |
+      Drei: 4, 9 und 3 rücken je eine Zelle nach hinten, von hinten angefangen,
+      damit nichts überschrieben wird. Danach steht in den Zellen
+      `7, 5, 6, 3, 9, 4`. In der Linked List rückt nichts; dort muss man
+      stattdessen erst zwei Knoten weit laufen.
+
+  - id: avl-rotation
+    title: Welche Rotation rettet ihn?
+    prediction: true
+    prompt: |
+      Ein leerer AVL-Baum bekommt `insert(30); insert(20); insert(10)`. Was
+      passiert nach dem dritten Einfügen?
+    check:
+      type: choice
+      options:
+        - Eine Rotation nach rechts um die 30; danach ist 20 die Wurzel.
+        - Eine Rotation nach links um die 30; danach ist 10 die Wurzel.
+        - Erst nach links um die 20, dann nach rechts um die 30; danach ist 10 die Wurzel.
+        - Keine Rotation; ein Baum aus drei Knoten ist immer ausgeglichen.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Bei der 30 ist links zu viel, nicht rechts. Nach links rotiert man, wenn der rechte Teilbaum zu hoch ist.
+      - when: { picked: 2 }
+        say: |
+          Eine Doppelrotation braucht es, wenn der neue Wert innen liegt,
+          rechts vom linken Kind. Die 10 liegt links vom linken Kind, außen.
+      - when: { picked: 3 }
+        say: Ohne Rotation hängen die drei als Kette untereinander. Der linke Teilbaum der 30 ist dann 2 hoch, der rechte 0.
+    solution: |
+      Das ist der Fall LL: Die 10 liegt links vom linken Kind der 30, und links
+      ist die 30 um 2 höher als rechts. Eine Rotation nach rechts um die 30
+      hebt die 20 nach oben: 20 in der Wurzel, 10 links, 30 rechts.
+
+  - id: buckets-belegt
+    title: Verschenkte Buckets
+    prompt: |
+      Eine Hash Table hat 12 Buckets und die Hashfunktion *k* mod 12. Alle
+      Schlüssel sind Vielfache von 3: 3, 6, 9, 12, 15, … In wie vielen der 12
+      Buckets kann überhaupt etwas landen, egal wie viele Schlüssel kommen?
+    check:
+      type: number
+      expect: 4
+    feedback:
+      - when: { equals: 12 }
+        say: Rechne ein paar aus, 3 mod 12, 6 mod 12, 9 mod 12, 12 mod 12, 15 mod 12 … Welche Reste kommen vor?
+      - when: { equals: 3 }
+        say: Fast. Vergiss Bucket 0 nicht, 12 mod 12 ist 0.
+    solution: |
+      Vier: Die Reste sind nur 3, 6, 9 und 0, danach wiederholen sie sich. Zwei
+      Drittel der Tabelle bleiben leer, und die Ketten in den übrigen Buckets
+      werden dreimal so lang. Haben die Schlüssel und die Bucketzahl einen
+      gemeinsamen Teiler, verschenkt man Buckets; eine Primzahl wie 11 oder
+      13 teilt sich mit solchen Schlüsseln keinen.
+
   - id: nur-dein-ordner
     title: Was gehört in deinen Commit?
     prompt: |

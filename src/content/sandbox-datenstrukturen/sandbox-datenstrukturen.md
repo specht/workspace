@@ -46,6 +46,8 @@ Die Karten auf dieser Seite schauen in deinem Workspace nach und sagen dir, was 
 
 ### Einmalig: Zugang zu GitLab
 
+Das Klassen-Repository liegt auf dem GitLab-Server [git.nhcham.org](https://git.nhcham.org/). Dort kann man sich nicht selbst registrieren: Dein Konto bekommst du von deiner Lehrkraft.
+
 _include(gitlab#ssh-schluessel)
 
 _task(ssh-schluessel)
@@ -98,7 +100,11 @@ Das legt `structures/DEIN_NAME/my_array_stack.py` an. Vorhandene Dateien werden 
 
 _uses(array-list, linked-list, stack, queue)
 
-Ein **Stack** arbeitet nach dem LIFO-, eine **Queue** nach dem FIFO-Prinzip. Dasselbe Verhalten lässt sich aber mit einem festen Array, einem Ring Buffer oder verketteten Knoten erreichen. Besonders ergiebig sind die **vier Listen**: unsortiert oder sortiert, jeweils als Array oder als verkettete Knoten. Alle vier haben dieselbe Schnittstelle, und du kannst dieselbe Folge von Aufrufen auf alle vier loslassen. Hier eine Folge von Einfügungen auf einer einfach verketteten Linked List, in Java implementiert:
+Ein **Stack** arbeitet nach dem LIFO-, eine **Queue** nach dem FIFO-Prinzip. Dasselbe Verhalten lässt sich aber mit einem festen Array, einem Ring Buffer oder verketteten Knoten erreichen.
+
+_task(lifo-fifo)
+
+Besonders ergiebig sind die **vier Listen**: unsortiert oder sortiert, jeweils als Array oder als verkettete Knoten. Alle vier haben dieselbe Schnittstelle, und du kannst dieselbe Folge von Aufrufen auf alle vier loslassen. Hier eine Folge von Einfügungen auf einer einfach verketteten Linked List, in Java implementiert:
 
 <!-- tutorial-screenshot
 terminal-open
@@ -129,6 +135,8 @@ sleep: 1
 <div class='hint task'>
 <strong>Dieselben Aufrufe, zwei Welten.</strong> Lass <code>insert(0,7); insert(1,3); insert(1,5); insert(3,9)</code> zuerst auf der Array-Liste und dann auf der Linked List laufen. Welche Operation verschiebt Werte, welche biegt nur Referenzen um? Warum geht <code>get(i)</code> beim Array in konstanter Zeit, während die Linked List dafür bis zu <em>n</em> Knoten ablaufen muss? Und was kostet umgekehrt das Einfügen ganz vorne?
 </div>
+
+_task(einfuegen-verschieben)
 
 Die Tests sind streng, und das ist gewollt: Eine Liste gilt erst dann als richtig, wenn sie sich nach außen richtig verhält **und** ihr Inneres stimmt, etwa wenn `size` wirklich der Zahl der gespeicherten Werte entspricht oder die Knotenkette keinen Kreis enthält. Ungültige Indizes, volle Arrays und doppelte Werte gehören fest zur Prüfung.
 
@@ -161,6 +169,8 @@ sleep: 1
 <strong>Erst skizzieren, dann rotieren.</strong> Skizziere nach <code>insert(30); insert(20); insert(10)</code> zuerst den unbalancierten Baum und begründe, welche Rotation ihn rettet. Dann lass die Sandbox nachrechnen. Zum Vergleich: Was passiert mit einem gewöhnlichen Suchbaum, wenn du 1, 2, 3, … 10 der Reihe nach einfügst?
 </div>
 
+_task(avl-rotation)
+
 ### Hash Tables: Du entscheidest
 
 _uses(hash-funktion, hash-chaining, hash-fuellgrad)
@@ -189,6 +199,8 @@ sleep: 1
 <div class='hint task'>
 <strong>Kollisionen provozieren.</strong> Finde fünf Schlüssel, die alle im selben Bucket landen. Was passiert mit der Suche? Ändere dann die Zahl der Buckets von 8 auf 7 oder 11 und wiederhole die Folge. Welche Bucketzahlen sind eine schlechte Idee, wenn die Schlüssel zum Beispiel alle gerade sind?
 </div>
+
+_task(buckets-belegt)
 
 <div class='hint think'>
 <strong>Zum Weiterdenken:</strong> Wohin gehört der Schlüssel −7 bei acht Buckets? Die Antwort hängt von der Sprache ab: In Dart und Python ergibt <code>-7 % 8</code> den Wert 1, in Java und JavaScript −7, also einen ungültigen Index. Die Referenzbeispiele der Sandbox lösen das in jeder Sprache anders (<code>Math.floorMod</code> in Java, eine kleine Formel in JavaScript). Was ist eigentlich ein »Rest«?

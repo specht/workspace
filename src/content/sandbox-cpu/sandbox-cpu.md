@@ -208,6 +208,8 @@ Die Karten auf dieser Seite schauen in deinem Workspace nach und sagen dir, was 
 
 ### Einmalig: Zugang zu GitLab
 
+Das Klassen-Repository liegt auf dem GitLab-Server [git.nhcham.org](https://git.nhcham.org/). Dort kann man sich nicht selbst registrieren: Dein Konto bekommst du von deiner Lehrkraft.
+
 _include(gitlab#ssh-schluessel)
 
 _task(ssh-schluessel)
@@ -271,9 +273,13 @@ loop:   ADD B, A
         HLT
 ```
 
+_task(schleife-verdoppeln)
+
 <div class='hint think'>
 <strong>Zum Weiterdenken:</strong> Das Programm addiert 5 + 4 + 3 + 2 + 1. Was passiert, wenn A mit 0 statt mit 5 startet, und warum steht danach ausgerechnet 128 in B? Wer das beantworten kann, hat Überlauf, Flags und 8-Bit-Arithmetik verstanden.
 </div>
+
+_task(ueberlauf)
 
 Im Handbuch: _uses(stufen, regeln, flags, befehle-8)
 
@@ -302,6 +308,8 @@ click: selector:#step-next
 <div class='hint task'>
 <strong>Takte vorhersagen.</strong> Warum braucht <code>LDA A, [0x80]</code> einen Takt mehr als <code>LDI A, 0x80</code>? Was schreibt <code>CALL</code> in den Speicher, und wohin? Warum kostet ein <code>JZ</code>, das springt, einen Takt mehr als eines, das nicht springt? Stell erst Vermutungen auf und prüf sie dann im Taktmodus.
 </div>
+
+_task(takte-schleife)
 
 Ein paar Dinge, die du in der Sandbox fast von selbst entdeckst:
 

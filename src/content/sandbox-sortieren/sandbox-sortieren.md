@@ -70,6 +70,8 @@ Die Karten auf dieser Seite schauen in deinem Workspace nach und sagen dir, was 
 
 ### Einmalig: Zugang zu GitLab
 
+Das Klassen-Repository liegt auf dem GitLab-Server [git.nhcham.org](https://git.nhcham.org/). Dort kann man sich nicht selbst registrieren: Dein Konto bekommst du von deiner Lehrkraft.
+
 _include(gitlab#ssh-schluessel)
 
 _task(ssh-schluessel)
@@ -151,6 +153,8 @@ click: selector:#step-next
 <strong>Erst vorhersagen, dann klicken.</strong> Bevor du auf <em>Weiter</em> klickst: Welche zwei Elemente werden als Nächstes verglichen? Wird getauscht? Wo stehen <code>i</code> und <code>j</code> danach? Nach ein paar Runden kommt die eigentliche Frage: Muss die innere Schleife wirklich jedes Mal bis ganz nach hinten laufen? Und muss die äußere Schleife weiterlaufen, wenn in einem Durchgang gar nichts mehr getauscht wurde?
 </div>
 
+_task(fehlstaende)
+
 Fehler sind kein Drama, du siehst sie nur deutlich: Ein Übersetzungsfehler erscheint mit Zeilennummer unter dem Editor, ein Laufzeitfehler (etwa ein Index außerhalb der Liste) in der Konsole, und eine Endlosschleife wird nach wenigen Sekunden gestoppt. Ausgaben mit `print(...)` landen ebenfalls in der Konsole.
 
 ### Race: gleicher Auftrag, ungleiche Arbeit
@@ -171,11 +175,15 @@ wait-for-text: 1st
 <strong>Wetten abschließen.</strong> Sag vor jedem Rennen voraus, wer gewinnt, und begründe es: erst für eine zufällige Liste, dann für eine schon sortierte und eine umgekehrt sortierte. Und dann: Für welche Eingabe könnte dein eigener Algorithmus das Rennen gewinnen? Bau sie!
 </div>
 
+_task(rennen-sortiert)
+
 Das Rennen zeigt **Arbeitsschritte**, keine Laufzeit auf echter Hardware. Unter jeder Bahn stehen deshalb auch die gezählten Lese-, Schreib- und Vergleichsoperationen. Schritte, Lesen, Schreiben und Vergleichen können zu unterschiedlichen Ranglisten führen. Was heißt dann eigentlich »schneller«?
 
 ### Analyze: vom Gefühl zur Wachstumsfunktion
 
 **Analyze** lässt alle Algorithmen der Klasse auf Listen mit 32 bis 2048 Elementen laufen, alle mit denselben Eingaben, und zeichnet den Aufwand als Kurve. Gezählt werden Lesen, Schreiben und Vergleichen; ihre Summe heißt in der App **Sandbox-Score**. Die Kurven lassen sich durch *n*, *n* log *n* oder *n*² teilen und logarithmisch skalieren. Nebenbei prüft Analyze jeden Algorithmus auf Korrektheit und Stabilität.
+
+_task(verdoppeln)
 
 <!-- tutorial-screenshot
 tab: preview
@@ -235,8 +243,12 @@ sleep: 1
 -->
 <img class='full' src='sorting-check.webp' alt='Check eines Selection Sort in Python: alle Testgruppen bestanden, aber nicht stabil, mit Gegenbeispiel.'>
 
+Das Gegenbeispiel kennzeichnet gleiche Werte mit Buchstaben, sodass man sieht, wer an wem vorbeigesprungen ist.
+
+_task(stabilitaet)
+
 <div class='hint think'>
-<strong>Zum Weiterdenken:</strong> Das Gegenbeispiel kennzeichnet gleiche Werte mit Buchstaben, sodass man sieht, wer an wem vorbeigesprungen ist. Welche Zeile ist schuld? Lässt sich Selection Sort stabil machen, ohne die Idee des Verfahrens aufzugeben, und was kostet das? Wichtig ist auch, was der Test <em>nicht</em> leistet: »stable (tested)« heißt nur, dass kein Gegenbeispiel gefunden wurde. Ein Beweis ist das nicht.
+<strong>Zum Weiterdenken:</strong> Lässt sich Selection Sort stabil machen, ohne die Idee des Verfahrens aufzugeben, und was kostet das? Wichtig ist auch, was der Test <em>nicht</em> leistet: »stable (tested)« heißt nur, dass kein Gegenbeispiel gefunden wurde. Ein Beweis ist das nicht.
 </div>
 
 <div class='hint try'>

@@ -61,6 +61,90 @@ tasks:
       expect:
         has_remote: true
 
+  - id: schleife-verdoppeln
+    title: Was steht in B?
+    prompt: |
+      Die Schleife von oben, zwei Zeilen sind anders. Welche Zahl steht in B,
+      wenn die CPU bei `HLT` anhält?
+
+      ```minicpu
+              LDI A, 4
+              LDI B, 1
+      loop:   ADD B, B
+              DEC A
+              JNZ loop
+              HLT
+      ```
+    check:
+      type: number
+      expect: 16
+    feedback:
+      - when: { equals: 8 }
+        say: Einmal zu wenig. A zählt von 4 herunter, und `JNZ` springt zurück, solange A nach `DEC` nicht 0 ist. Wie oft läuft die Schleife?
+      - when: { equals: 32 }
+        say: Einmal zu oft. Nach dem vierten `DEC` ist A 0, und `JNZ` springt nicht mehr.
+      - when: { between: [10, 11] }
+        say: 'So rechnet `ADD B, A`. Hier steht `ADD B, B`: B wird zu B + B.'
+    solution: |
+      16: B verdoppelt sich in jedem Durchgang, 1 → 2 → 4 → 8 → 16, und es
+      gibt vier Durchgänge, weil A von 4 bis 0 zählt.
+
+  - id: ueberlauf
+    title: Zu groß für ein Byte
+    prompt: |
+      Was steht nach diesem Programm in A, und welchen Wert hat CF?
+
+      ```minicpu
+              LDI A, 200
+              LDI B, 100
+              ADD A, B
+              HLT
+      ```
+    check:
+      type: choice
+      options:
+        - A = 44, CF = 1
+        - A = 300, CF = 0
+        - A = 255, CF = 1
+        - A = 44, CF = 0
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 300 passt nicht in ein Register; es hat 8 Bit, also Platz für 0 bis 255.
+      - when: { picked: 2 }
+        say: Die MiniCPU bleibt nicht bei 255 stehen. Sie rechnet weiter und fängt dabei wieder bei 0 an.
+      - when: { picked: 3 }
+        say: A stimmt. Aber es gab einen Übertrag aus dem obersten Bit, und den merkt sich ein Flag.
+    solution: |
+      200 + 100 = 300 = 256 + 44. In A bleibt 44, der Übertrag von 256 landet
+      in CF. Mit `ADC` lässt er sich in ein zweites Byte weiterrechnen.
+
+  - id: takte-schleife
+    title: Wie viele Takte?
+    prediction: true
+    prompt: |
+      Wie viele Takte braucht die Schleife von oben (`LDI A, 5` bis `HLT`, wie
+      in `02-loop.asm`) vom ersten Befehl bis einschließlich `HLT`? Die Takte
+      jedes Befehls stehen in der Befehlstabelle im Handbuch. Prüf deine
+      Vermutung danach in der Sandbox: Die Statuszeile zeigt die verbrauchten
+      Takte.
+    check:
+      type: number
+      expect: 41
+    feedback:
+      - when: { equals: 18 }
+        say: 18 ist die Zahl der Befehle, die die CPU ausführt. Gefragt sind die Takte, und die sind je nach Befehl verschieden.
+      - when: { equals: 42 }
+        say: Fast. Der letzte `JNZ` springt nicht mehr und braucht deshalb einen Takt weniger.
+      - when: { equals: 40 }
+        say: Fast. Auch `HLT` braucht einen Takt.
+      - when: { equals: 37 }
+        say: Ein `JNZ`, der springt, braucht einen Takt mehr als einer, der nicht springt.
+    solution: |
+      41: `LDI A, 5` und `LDI B, 0` je 3 Takte (6), dann fünf Durchgänge mit
+      `ADD` und `DEC` zu je 2 Takten (20), viermal `JNZ` mit Sprung zu 3 Takten
+      (12), einmal ohne Sprung (2), zuletzt `HLT` (1).
+
   - id: nur-dein-ordner
     title: Was gehört in deinen Commit?
     prompt: |

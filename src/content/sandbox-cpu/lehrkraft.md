@@ -1,16 +1,18 @@
-Lernende programmieren in der CPU Sandbox einen kleinen 8-Bit-Computer, erst in Assembler, später in C, und sehen dabei Register, Flags, Speicher und Bildschirm. Die Sandbox ist ein eigenes Programm im Browser; die Seite hier zeigt, wie sie ihre Programme im Workspace mit Git ablegen und veröffentlichen.
+Lernende programmieren in der CPU Sandbox einen kleinen 8-Bit-Computer, erst in Assembler, später in C, und sehen dabei Register, Flags, Speicher und Bildschirm. Die Sandbox ist ein eigenes Programm im Browser; die Seite hier zeigt, wie sie ihre Programme im Workspace mit Git ablegen und veröffentlichen, und fragt dazwischen ab, ob sie verstanden haben, was sie in der Sandbox sehen.
 
 Diese Seite begleitet die CPU Sandbox, ersetzt sie aber nicht. Sie ist für alle gedacht, die Git noch nicht kennen, zum Beispiel neue Lernende in einem Kurs.
 
 <table class='table'>
 <tr><th>Klassen-Repository</th><td>steht im Meta-Block als <code>class_repo</code> und gehört jedes Schuljahr angepasst, wie in der Anleitung der Sandbox</td></tr>
 <tr><th>Was gelesen wird</th><td><code>~/.ssh/id_ed25519.pub</code> (nur ob es ihn gibt), der Ordner <code>programs</code> und <code>git status</code> darin, im laufenden Workspace der Person</td></tr>
+<tr><th>Fragen zum Thema</th><td>»Was steht in B?« (eine Schleife, die verdoppelt: 16), »Zu groß für ein Byte« (200 + 100: A = 44, CF = 1) und die Vermutung »Wie viele Takte?« (die Schleife von der Seite: 41 Takte, in der Statuszeile der Sandbox nachzuprüfen). Sie lesen nichts im Workspace; bei der Vermutung zählt fürs Klassenboard der erste Versuch</td></tr>
+<tr><th>GitLab-Konten</th><td>Auf <code>git.nhcham.org</code> kann man sich nicht selbst registrieren; die Seite sagt den Lernenden, dass sie ihr Konto von ihrer Lehrkraft bekommen. Die Konten müssen also angelegt sein, bevor die Klasse mit dem Einrichten beginnt</td></tr>
 <tr><th>Was nie passiert</th><td>Der Workspace committet, pusht oder zieht nichts. Der private Schlüssel wird nicht geöffnet.</td></tr>
 </table>
 
-**Aufgabe 6** (»Committet und gepusht«) ist die wichtige. Sie meldet, was fehlt, mit den echten Dateinamen und den Befehlen dafür: nicht committete Dateien, kein Push, ein Branch ohne Verbindung zum Server, oder dass Git den Namen der Person noch nicht kennt. »Gepusht« heißt: so weit das Repository es weiß; die Prüfung holt nichts vom Server.
+**»Committet und gepusht«**, die letzte Aufgabe der Seite, ist die wichtige. Sie meldet, was fehlt, mit den echten Dateinamen und den Befehlen dafür: nicht committete Dateien, kein Push, ein Branch ohne Verbindung zum Server, oder dass Git den Namen der Person noch nicht kennt. »Gepusht« heißt: so weit das Repository es weiß; die Prüfung holt nichts vom Server.
 
-Am Ende jeder Stunde lohnt eine Minute: alle prüfen Aufgabe 6. Wer dabei hängen bleibt, ist genau die Person, die sonst nach zwei Wochen ohne einen einzigen Push auffällt.
+Am Ende jeder Stunde lohnt eine Minute: alle prüfen »Committet und gepusht«. Wer dabei hängen bleibt, ist genau die Person, die sonst nach zwei Wochen ohne einen einzigen Push auffällt.
 
 **Im Unterricht.** Eine Stunde mit einem der Beispielprogramme zu beginnen, wirkt Wunder: Erst sehen, was die Maschine kann, dann verstehen, wie. Der Kasten »Takte vorhersagen« eignet sich als Impuls für die ganze Klasse, die Tabelle Assembler gegen C als Gesprächsanlass über den Preis der Abstraktion. **Class progress** in der App zeigt alle Lösungen, nach Bytes und Takten verglichen.
 

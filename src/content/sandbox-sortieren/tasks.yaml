@@ -61,6 +61,120 @@ tasks:
       expect:
         has_remote: true
 
+  - id: fehlstaende
+    title: Wie oft wird getauscht?
+    prompt: |
+      Bubble Sort sortiert die Liste `[4, 2, 5, 1, 3]`. Wie oft vertauscht er
+      zwei Elemente, bis die Liste sortiert ist?
+    check:
+      type: number
+      expect: 6
+    hint: |
+      Spiel die Durchgänge auf Papier durch, wie in Explore: Im ersten
+      Durchgang wandert die 5 nach hinten.
+    feedback:
+      - when: { equals: 20 }
+        say: |
+          20 ist die Zahl der Vergleiche des Bubble Sort aus `new-algorithm`:
+          5 Durchgänge mit je 4 Vergleichen. Gefragt sind die Vertauschungen.
+      - when: { equals: 10 }
+        say: |
+          10 ist die Zahl aller Paare in der Liste. So oft tauscht Bubble Sort
+          nur, wenn jedes Paar falsch herum steht, bei einer umgekehrt sortierten Liste.
+    solution: |
+      Sechsmal. Erster Durchgang: 4↔2, 5↔1, 5↔3, danach `[2, 4, 1, 3, 5]`.
+      Zweiter: 4↔1, 4↔3, danach `[2, 1, 3, 4, 5]`. Dritter: 2↔1. Danach
+      tauscht er nichts mehr. Jede Vertauschung bringt genau ein Paar in die
+      richtige Reihenfolge, und falsch herum standen sechs: (4, 2), (4, 1),
+      (4, 3), (2, 1), (5, 1) und (5, 3).
+
+  - id: rennen-sortiert
+    title: Deine erste Wette
+    prediction: true
+    prompt: |
+      Bubble Sort, so wie `new-algorithm` ihn anlegt, tritt gegen den Insertion
+      Sort von oben an, auf einer Liste, die schon **sortiert** ist. Wer ist
+      zuerst fertig? Prüf deine Wette danach im Race mit der Eingabe »Sorted«.
+    check:
+      type: choice
+      options:
+        - Insertion Sort, mit großem Abstand, weil er jedes Element nur einmal mit seinem Vorgänger vergleicht.
+        - Bubble Sort, weil er auf einer sortierten Liste nie tauschen muss und einfach durchläuft.
+        - Beide gleichzeitig, weil auf einer sortierten Liste keiner von beiden etwas bewegen muss.
+        - Insertion Sort, aber nur knapp, weil beide etwa gleich oft vergleichen müssen.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: |
+          Tauschen muss er nicht, vergleichen schon: Der Bubble Sort aus
+          `new-algorithm` läuft in jedem Durchgang die ganze Liste ab, auch wenn
+          längst alles stimmt.
+      - when: { picked: 2 }
+        say: Bewegen muss keiner etwas. Aber wie oft vergleicht jeder, bis er weiß, dass alles stimmt?
+      - when: { picked: 3 }
+        say: Wie oft läuft die innere `while`-Schleife des Insertion Sort, wenn jedes Element schon größer ist als sein Vorgänger?
+    solution: |
+      Insertion Sort braucht auf einer sortierten Liste mit *n* Elementen nur
+      *n* − 1 Vergleiche: Die innere Schleife bricht jedes Mal sofort ab. Der
+      Bubble Sort aus `new-algorithm` macht *n* Durchgänge mit je *n* − 1
+      Vergleichen, bei 48 Elementen also 2256 statt 47.
+
+  - id: verdoppeln
+    title: Doppelt so viele Elemente
+    prediction: true
+    prompt: |
+      Analyze misst auf zufälligen Listen. Was passiert mit dem Sandbox-Score
+      von Bubble Sort, wenn *n* sich von 512 auf 1024 verdoppelt?
+    check:
+      type: choice
+      options:
+        - Er wird etwa doppelt so groß.
+        - Er wird etwa viermal so groß.
+        - Er wird etwa achtmal so groß.
+        - Er wird nur ein wenig größer.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: |
+          So wächst ein Verfahren, das jedes Element ein paar Mal anfasst.
+          Bei Bubble Sort heißt doppelt so viele Elemente: doppelt so viele
+          Durchgänge, und jeder davon ist doppelt so lang.
+      - when: { picked: 2 }
+        say: Achtmal so viel wären drei ineinander geschachtelte Schleifen über die Liste. Wie viele hat Bubble Sort?
+      - when: { picked: 3 }
+        say: Bubble Sort vergleicht in jedem Durchgang Nachbarn über die ganze Liste. Wie viele Durchgänge gibt es bei doppelt so vielen Elementen?
+    solution: |
+      Etwa viermal: Bubble Sort braucht ungefähr *n*² Schritte, der aus
+      `new-algorithm` genau *n* · (*n* − 1) Vergleiche. Doppelt so viele
+      Elemente heißt doppelt so viele Durchgänge, jeder doppelt so lang.
+      Darum wird in Analyze die Kurve bei *score / n²* flach.
+
+  - id: stabilitaet
+    title: Wer springt vorbei?
+    prompt: |
+      Welche Zeile des Selection Sort oben macht ihn instabil?
+    check:
+      type: choice
+      options:
+        - '`elements.swap(i, smallest)`'
+        - '`if elements[j] < elements[smallest]:`'
+        - '`for j in range(i + 1, n):`'
+        - '`smallest = i`'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: |
+          Mit `<` bleibt bei gleichen Werten das vordere als Kleinstes
+          gewählt. Das schont die Reihenfolge schon. Wo wird ein Element bewegt?
+      - when: { picked: 2 }
+        say: Diese Zeile sucht nur, sie bewegt kein Element. Instabil wird es dort, wo ein Element seinen Platz wechselt.
+      - when: { picked: 3 }
+        say: Diese Zeile merkt sich nur einen Index, sie bewegt kein Element. Instabil wird es dort, wo ein Element seinen Platz wechselt.
+    solution: |
+      Der Tausch. Dabei springt `elements[i]` weit nach hinten, an den alten
+      Platz des Kleinsten, und kann an einem gleichen Wert vorbeispringen. In
+      `[2a, 2b, 1]` tauscht die 1 mit 2a, und es entsteht `[1, 2b, 2a]`.
+
   - id: nur-dein-ordner
     title: Was gehört in deinen Commit?
     prompt: |

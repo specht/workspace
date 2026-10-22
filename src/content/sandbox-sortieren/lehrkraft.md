@@ -1,16 +1,18 @@
-Lernende schreiben in der Sorting Sandbox Sortieralgorithmen (in Dart, Python, JavaScript oder Java), sehen ihrem eigenen Code beim Sortieren zu, lassen Verfahren gegeneinander antreten und messen ihren Aufwand. Die Sandbox ist ein eigenes Programm im Browser; die Seite hier zeigt, wie sie ihre Programme im Workspace mit Git ablegen und veröffentlichen.
+Lernende schreiben in der Sorting Sandbox Sortieralgorithmen (in Dart, Python, JavaScript oder Java), sehen ihrem eigenen Code beim Sortieren zu, lassen Verfahren gegeneinander antreten und messen ihren Aufwand. Die Sandbox ist ein eigenes Programm im Browser; die Seite hier zeigt, wie sie ihre Programme im Workspace mit Git ablegen und veröffentlichen, und fragt dazwischen ab, ob sie verstanden haben, was sie in der Sandbox sehen.
 
 Diese Seite begleitet die Sorting Sandbox, ersetzt sie aber nicht. Sie ist für alle gedacht, die Git noch nicht kennen, zum Beispiel neue Lernende in einem Kurs.
 
 <table class='table'>
 <tr><th>Klassen-Repository</th><td>steht im Meta-Block als <code>class_repo</code> und gehört jedes Schuljahr angepasst, wie in der Anleitung der Sandbox</td></tr>
 <tr><th>Was gelesen wird</th><td><code>~/.ssh/id_ed25519.pub</code> (nur ob es ihn gibt), der Ordner <code>algorithms</code> und <code>git status</code> darin, im laufenden Workspace der Person</td></tr>
+<tr><th>Fragen zum Thema</th><td>»Wie oft wird getauscht?« (Vertauschungen von Bubble Sort auf <code>[4, 2, 5, 1, 3]</code>: 6), die Vermutungen »Deine erste Wette« (Bubble Sort gegen Insertion Sort auf einer sortierten Liste) und »Doppelt so viele Elemente« (der Aufwand vervierfacht sich) vor Race und Analyze, »Wer springt vorbei?« (welche Zeile Selection Sort instabil macht). Sie lesen nichts im Workspace; bei den Vermutungen zählt fürs Klassenboard der erste Versuch</td></tr>
+<tr><th>GitLab-Konten</th><td>Auf <code>git.nhcham.org</code> kann man sich nicht selbst registrieren; die Seite sagt den Lernenden, dass sie ihr Konto von ihrer Lehrkraft bekommen. Die Konten müssen also angelegt sein, bevor die Klasse mit dem Einrichten beginnt</td></tr>
 <tr><th>Was nie passiert</th><td>Der Workspace committet, pusht oder zieht nichts. Der private Schlüssel wird nicht geöffnet.</td></tr>
 </table>
 
-**Aufgabe 6** (»Committet und gepusht«) ist die wichtige. Sie meldet, was fehlt, mit den echten Dateinamen und den Befehlen dafür: nicht committete Dateien, kein Push, ein Branch ohne Verbindung zum Server, oder dass Git den Namen der Person noch nicht kennt. »Gepusht« heißt: so weit das Repository es weiß; die Prüfung holt nichts vom Server.
+**»Committet und gepusht«**, die letzte Aufgabe der Seite, ist die wichtige. Sie meldet, was fehlt, mit den echten Dateinamen und den Befehlen dafür: nicht committete Dateien, kein Push, ein Branch ohne Verbindung zum Server, oder dass Git den Namen der Person noch nicht kennt. »Gepusht« heißt: so weit das Repository es weiß; die Prüfung holt nichts vom Server.
 
-Am Ende jeder Stunde lohnt eine Minute: alle prüfen Aufgabe 6. Wer dabei hängen bleibt, ist genau die Person, die sonst nach zwei Wochen ohne einen einzigen Push auffällt.
+Am Ende jeder Stunde lohnt eine Minute: alle prüfen »Committet und gepusht«. Wer dabei hängen bleibt, ist genau die Person, die sonst nach zwei Wochen ohne einen einzigen Push auffällt.
 
 **Im Unterricht.** Sortieren ist oft schnell »erledigt«: Bubble Sort an der Tafel, ein Arbeitsblatt, fertig. Die Sandbox macht daraus ein kleines Forschungsfeld. Weil die Zahlen für die Algorithmen unsichtbar sind, ist jedes Verfahren vergleichsbasiert: genau das Modell, in dem man die untere Schranke von *n* log *n* Vergleichen beweist. Die Kästen »Erst vorhersagen«, »Wetten abschließen« und »Eine Wachstumsvermutung belegen« auf der Seite eignen sich als Impulse für die ganze Klasse.
 
