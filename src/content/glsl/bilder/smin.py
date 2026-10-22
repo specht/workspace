@@ -157,9 +157,10 @@ def contours(field, xs, ys, limit=20000):
 def metaballs():
     w, h = 528, 128
     s = head(w, h, 'Zwei Tropfen in 2D, mit smin wie im Shader (Radius 0.42, k = 0.6), gestrichelt die Kreise allein. '
-             'Auseinander: genau zwei Kreise. Fast verbunden: Beide wölben sich zueinander, ein schmaler Spalt bleibt. '
+             'Auseinander: genau zwei Kreise. Fast verbunden: Beide ziehen sich spitz zueinander aus, bis auf einen haarfeinen Spalt. '
              'Verbunden: Ein Hals verbindet sie.', 'metaballs')
-    cases = [(1.7, 'auseinander'), (1.26, 'fast verbunden'), (0.98, 'verbunden')]
+    # fast verbunden: just above 2r + k/2 = 1.14, the gap is about 0.07 (4.7 px)
+    cases = [(1.7, 'auseinander'), (1.144, 'fast verbunden'), (0.98, 'verbunden')]
     widths = [dist + 2 * R + 0.2 for dist, _ in cases]          # each panel as wide as its case
     gap = 22
     scale = (w - 2 * gap - 8) / sum(widths)

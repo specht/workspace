@@ -536,7 +536,7 @@ Auf einer Linie durch zwei Tropfen sieht man, was `smin` tut:
 
 In 2D, mit den Zahlen aus dem Shader, sieht das so aus: Sind sich zwei Tropfen nah genug, wölben sie sich einander entgegen, und kommen sie noch näher, wächst der Hals.
 
-<img class='drawing' style='width: 33em' src='metaballs.webp' alt='Dreimal zwei Tropfen in 2D, gestrichelt jeweils die beiden Kreise allein. Auseinander: genau zwei Kreise. Fast verbunden: Beide wölben sich zueinander, ein schmaler Spalt bleibt. Verbunden: Ein Hals verbindet sie zu einer Form wie eine Erdnuss.'>
+<img class='drawing' style='width: 33em' src='metaballs.webp' alt='Dreimal zwei Tropfen in 2D, gestrichelt jeweils die beiden Kreise allein. Auseinander: genau zwei Kreise. Fast verbunden: Beide ziehen sich spitz zueinander aus, bis auf einen haarfeinen Spalt. Verbunden: Ein Hals verbindet sie zu einer Form wie eine Erdnuss.'>
 
 Kugeln, die so ineinanderfließen, heißen **Metaballs**. Erfunden hat sie Jim Blinn um 1980, für Bilder von Atomen in einer Fernsehserie. Bei ihm hat jede Kugel ein Feld, das mit dem Abstand schwächer wird, so wie das Licht einer Lampe. Die Felder aller Kugeln werden addiert, und die Oberfläche liegt dort, wo die Summe einen bestimmten Wert erreicht. Kommen sich zwei Kugeln nahe, ist die Summe zwischen ihnen groß, und die Oberfläche wölbt sich hinüber. Das weiche Minimum macht dasselbe mit Abständen, so wie Raymarching sie braucht.
 
