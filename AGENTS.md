@@ -63,6 +63,13 @@ address from `credentials.rb` and the code `123456`.
   arrow arrives on the line towards the centre: its last control point lies on
   that line, so the head follows the curve (`dns/dns-tree.svg`,
   `sql-index/b-tree.svg`).
+  Labels read like the page: formulas typeset by LaTeX (cos α, n⃗),
+  code as code (`dot`, `cross`, `hit.y = 1.35` with a decimal point), both
+  from `src/scripts/diagram_labels.py`, which also draws the German right
+  angle (a quarter arc with a dot). Axes as everywhere: in 3D x to the
+  right, y up, z towards the viewer; in 2D x to the right, y up. Keep the
+  script that generates a diagram next to it (`bilder/`), not in a scratch
+  folder.
 - Check marks are Bootstrap icons (`<i class='bi bi-check-lg'></i>`), never
   Unicode characters; `no_check_marks_test.rb` enforces this.
 - Icons come from what the site already has, Bootstrap Icons

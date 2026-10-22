@@ -16,6 +16,8 @@ require 'open3'
 require 'tmpdir'
 
 DARK = {
+    '#e5185d' => '#e5185d', # code, as on the page (diagram_labels.py)
+    '#f384af' => '#f384af', # the pale pink behind code (with fill-opacity)
     '#ffffff' => '#151514', # background and white boxes: the page in dark mode
     '#eef3fb' => '#1e2836', # pale blue boxes
     '#1f2937' => '#e3e6ea', # text, borders, edges
