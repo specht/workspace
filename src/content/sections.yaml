@@ -14,12 +14,13 @@
 
 - key: graphics
   compact: true
-  label: Grafik & Spiele
+  label: Grafik
   icon: /images/palette.png
   description: |
-    Erzeuge Bilder, Animationen, Spiele und räumliche Szenen mit selbst
-    geschriebenem Code. Dabei beschäftigst du dich mit Pixeln, Farben, Formen,
-    Koordinaten und 3D-Geometrie.
+    Erzeuge Bilder und Animationen mit selbst geschriebenem Code: aus Kurven
+    und Kreisen, Pixel für Pixel aus Formeln, mit Strahlen durch eine Szene
+    oder räumlich für die 3D-Brille. Dabei beschäftigst du dich mit Pixeln,
+    Farben, Koordinaten und Vektoren.
   entries:
     - anaglyph
     - drawing
@@ -28,13 +29,23 @@
     - fire
     - pixelram
     - raytracing
-    - raycaster
-    - tic80
-    - raylib
   #  - .sirds
   # - .p5js
   # - .glsl
   # - .gif
+
+- key: games
+  compact: true
+  label: Spiele & 3D-Welten
+  icon: /images/joystick.png
+  description: |
+    Programmiere Spiele und Welten, durch die du selbst läufst: ein Spiel auf
+    einem kleinen Computer mit 64 KB, die Technik hinter Wolfenstein 3D und
+    eine Welt aus Blöcken mit Tag und Nacht.
+  entries:
+    - tic80
+    - raycaster
+    - raylib
 
 - key: writing
   compact: true
