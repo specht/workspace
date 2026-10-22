@@ -584,6 +584,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1949 -->
+<!-- part: williams -->
+### Lance Williams
+
+<div class='person'>
+<img src='williams.webp' alt='Lance Williams, lächelnd mit Brille, mehrmals im selben Bild: unten groß, darüber kleiner, oben links immer kleiner, jede Stufe halb so groß wie die vorige.'>
+<p><strong>Lance Williams</strong> (1949–2017), amerikanischer Grafikforscher. Am New York Institute of Technology erfand er die Mipmaps: jede Textur noch einmal in halber Größe, in Viertelgröße und so weiter, damit weit entfernte Wände nicht flimmern. Jede Grafikkarte rechnet heute so, und auch die Schatten mit einer Tiefenkarte, den Shadow Maps, hat er 1978 beschrieben.</p>
+<p>Auf diesem Foto ist er selbst in Stufen zu sehen, jede halb so groß wie die vorige.</p>
+<p class='person-credit'>Foto: Amberesque, 2004, CC BY-SA 3.0 (<a href='https://commons.wikimedia.org/wiki/File:Lance_Williams.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1950 -->
 <!-- part: stroustrup -->
 ### Bjarne Stroustrup

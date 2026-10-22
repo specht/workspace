@@ -8,6 +8,9 @@
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Where Live Server serves the folder, from the last hook: open.
+let liveRoot = null;
+
 // Two animation frames after the clock moved, the program has drawn and
 // presented the frame for the new time.
 async function settleFrames(page, count) {
@@ -70,7 +73,12 @@ export default {
         async open({ page, args, timeout }) {
             const file = args.trim();
             if (!/^[\w./-]+\.html$/.test(file) || file.includes('..')) throw new Error('hook: open FILE.html');
-            const url = new URL(file, new URL('/', page.url())).href;
+            // After a shot of the 2D Game Studio the preview tab is a new one
+            // (open-site), on 2d.hackschule.de: go back to where Live Server was.
+            let root = new URL('/', page.url()).href;
+            if (new URL(page.url()).hostname === '2d.hackschule.de' && liveRoot) root = liveRoot;
+            liveRoot = root;
+            const url = new URL(file, root).href;
             // make may still be writing the file: Live Server answers 404
             // until it is there.
             const deadline = Date.now() + timeout;
@@ -237,6 +245,62 @@ export default {
                 }
             }
             await flush();
+        },
+        // hook: studio FILE [NAME]: the 2D Game Studio (2d.hackschule.de) in
+        // the preview tab, with FILE (below src/content, the strip of
+        // textures) imported as the frames of a sprite NAME (»Wände«), the
+        // way a student would have drawn them. Nothing is saved. As in
+        // raylib/tutorial-screenshot-hooks.mjs.
+        async studio({ page, args, timeout }) {
+            const [file, ...rest] = args.trim().split(/\s+/);
+            const name = rest.join(' ') || 'Wände';
+            if (!/^[\w./-]+\.png$/.test(file) || file.includes('..')) throw new Error('hook: studio FILE.png [NAME]');
+            // The studio keeps unsaved work in this browser (rescue.js,
+            // IndexedDB »2d-studio«) and asks about it on the next visit: the
+            // import of the last render would block the menu. Start empty,
+            // like a first visit.
+            if (!page.__studioFresh) {
+                await page.addInitScript(() => {
+                    if (location.hostname === '2d.hackschule.de') indexedDB.deleteDatabase('2d-studio');
+                });
+                page.__studioFresh = true;
+            }
+            await page.goto('https://2d.hackschule.de/', { waitUntil: 'networkidle', timeout });
+            await page.waitForSelector('#functions_dropdown .item', { timeout });
+            await sleep(1000);
+            await page.locator('#functions_dropdown .item', { hasText: 'Sprite' }).first().click();
+            const [chooser] = await Promise.all([
+                page.waitForEvent('filechooser', { timeout }),
+                page.locator('.context-menu').getByText('Bilder öffnen …', { exact: true }).click(),
+            ]);
+            await chooser.setFiles(`/content/${file}`);
+            await page.waitForSelector('#image_import_cols', { state: 'visible', timeout });
+            // a strip of square tiles: one pixel per pixel, the tiles side by side
+            const height = await page.evaluate(() => window.image_import_dialog.image.height);
+            const width = await page.evaluate(() => window.image_import_dialog.image.width);
+            for (const [field, value] of [['#image_import_scale', 1], ['#image_import_cols', width / height], ['#image_import_rows', 1]]) {
+                await page.fill(field, String(value));
+                await page.locator(field).dispatchEvent('change');
+            }
+            await sleep(500);
+            await page.locator('.modal-footer button', { hasText: 'Einfügen' }).click();
+            await sleep(800);
+            const title = page.locator('input:visible').first();
+            await title.fill(name);
+            await title.press('Enter');
+            await page.mouse.move(0, 0);
+            await sleep(500);
+        },
+
+        // hook: studio-menu: Funktionen › Sprite › Als Bild speichern, open,
+        // the pointer on »alle Frames dieses Zustands nebeneinander«.
+        async 'studio-menu'({ page }) {
+            await page.locator('#functions_dropdown .item', { hasText: 'Sprite' }).first().click();
+            await sleep(300);
+            await page.locator('.context-menu').getByText('Als Bild speichern', { exact: true }).hover();
+            await sleep(400);
+            await page.locator('.context-menu').getByText('alle Frames dieses Zustands nebeneinander', { exact: true }).hover();
+            await sleep(600);
         },
     },
 };

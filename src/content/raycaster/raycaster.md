@@ -754,7 +754,7 @@ crop-element: #canvas
 
 Weit entfernte Wände sollen dunkler sein, als verlöre sich das Licht. Im Modus `pixel_indexed8` gibt es aber keine Farben zum Abdunkeln, nur 256 Nummern einer Palette. Spiele der Neunzigerjahre lösten das mit einer geschickt gebauten Palette: **16 Farbtöne mit je 16 Helligkeiten**. Die Farbe mit der Nummer `ramp · 16 + level` hat den Farbton `ramp` und die Helligkeit `level`, von 0 (schwarz) bis 15 (volle Farbe).
 
-<img class='full' src='palette.webp' alt='Die Palette als Gitter aus 16 mal 16 Feldern: Jede Zeile ist ein Farbton, Grau, Ziegelrot, Stein, Holz, Blau, Grün, Sand und so weiter, und läuft von links schwarz nach rechts zur vollen Farbe.'>
+<img class='drawing' src='palette.webp' style='width: 18em; image-rendering: pixelated;' alt='Die Palette als Gitter aus 16 mal 16 Feldern: Jede Zeile ist ein Farbton, Grau, Ziegelrot, Stein, Holz, Blau, Grün, Sand und so weiter, und läuft von links schwarz nach rechts zur vollen Farbe.'>
 
 Jede Zeile ist ein Farbton, von links dunkel nach rechts hell. Eine Farbe abzudunkeln heißt jetzt: in ihrer Zeile ein paar Felder nach links gehen. Damit das Programm dafür nicht rechnen muss, schlägt es nach, in einer **Schattentabelle**: `shade[light][color]` ist die Nummer derselben Farbe mit der Helligkeit `light`. Für jedes Pixel ein einziger Blick in eine Tabelle, keine Multiplikation. DOOM machte es 1993 genauso; seine Tabelle hieß COLORMAP.
 
@@ -932,7 +932,22 @@ Eine Wand aus einer Farbe ist langweilig. Eine **Textur** ist ein kleines Bild, 
 
 In echten Spielen war es deshalb umgekehrt: Grafiker zeichneten die Texturen, und ein Werkzeug suchte danach eine Palette von 256 Farben, mit der alle Texturen möglichst gut aussehen. Die Schattentabelle rechnete es auch aus: für jede Farbe und jede Helligkeit die Farbe der Palette, die am nächsten liegt. Bei DOOM heißen die beiden PLAYPAL und COLORMAP.
 
-So ein Werkzeug bekommst du fertig, `palette.rb`, dazu ein Bild mit sieben Texturen: Boden, fünf Wandarten und Decke. Lade beide in deinen Ordner, installiere einmal das Rubygem `chunky_png`, das PNG-Bilder liest und schreibt, und lass das Werkzeug laufen:
+So ein Werkzeug bekommst du fertig, `palette.rb`, dazu ein Bild mit sieben Texturen: Boden, fünf Wandarten und Decke. Gezeichnet sind sie im [2D Game Studio](https://2d.hackschule.de/), wie die Kacheln der [Klötzchenwelt](/raylib): jede 64 × 64 Pixel groß, als sieben Frames eines Sprites.
+
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Das 2D Game Studio mit den Texturen als sieben Frames (eingefügt wie mit
+# »Bilder öffnen …«, nichts wird gespeichert)
+open-site: /
+tab: preview
+viewport: 1400x820
+hook: studio raycaster/werkzeug/textures.png Wände
+-->
+<img class='full' src='texturen-studio.webp' alt='Das 2D Game Studio: ein Sprite »Wände« mit 64 × 64 Pixeln, auf der Zeichenfläche die erste Textur, ein Boden aus hellen und rötlichen Fliesen; darunter die sieben Texturen als Frames: Boden, Ziegel, Stein, Holz, Metall, Moos und Decke.'>
+
+<!-- /tutorial-scope -->
+
+Lade das Werkzeug und das Bild in deinen Ordner, installiere einmal das Rubygem `chunky_png`, das PNG-Bilder liest und schreibt, und lass das Werkzeug laufen:
 
 ```bash
 wget https://github.com/specht/workspace-files/raw/main/raycaster/palette.rb
@@ -955,7 +970,7 @@ terminal-wait-for-prompt
 terminal-expect-no-text: Error
 image-file: raycaster/2-rampen.png 2
 -->
-<img class='full' src='palette-rampen.webp' alt='Ein breites Band aus Farbfeldern: jede Spalte eine Grundfarbe aus den Texturen, Ziegelrot, Holzbraun, Steingrau, Metallblau, Moosgrün und andere, oben in voller Helligkeit, nach unten bis Schwarz.'>
+<img class='full' src='palette-rampen.webp' style='image-rendering: pixelated;' alt='Ein flaches Band aus Farbfeldern, viermal so breit wie hoch: jede Spalte eine Grundfarbe aus den Texturen, nach Farbton geordnet, erst Grautöne, dann Ziegelrot und Holzbraun, Moosgrün und Metallblau, oben in voller Helligkeit, nach unten bis Schwarz.'>
 
 Erst bringt es alle Texturen auf 40 Grundfarben und macht aus jeder eine Rampe mit 16 Helligkeiten, oben hell, unten schwarz. Aus diesen 640 Farben sucht es 240 aus, dazu kommen 16 für die Karte und die Anzeige, in der ersten Zeile:
 
@@ -1118,7 +1133,20 @@ Zeichne deine eigenen Texturen im [2D Game Studio](https://2d.hackschule.de/), w
 
 1. Lege ein neues Sprite an, zum Beispiel »Wände«. Unter »Funktionen« › »Sprite« › »Größe ändern« stellst du 64 × 64 Pixel ein; 16 oder 32 gehen auch, das Werkzeug vergrößert sie auf 64.
 2. Zeichne sieben Frames desselben Zustands, in dieser Reihenfolge: Boden, die Wandarten 1 bis 5 (in der Karte Ziegel, Stein, Holz, Metall, Moos) und die Decke.
-3. Wähle »Funktionen« › »Sprite« › »Als Bild speichern« › »alle Frames dieses Zustands nebeneinander«.
+3. Wähle »Funktionen« › »Sprite« › »Als Bild speichern« › »alle Frames dieses Zustands nebeneinander«. Dein Browser speichert die sieben Frames nebeneinander als ein PNG-Bild.
+
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+open-site: /
+tab: preview
+viewport: 1400x820
+hook: studio raycaster/werkzeug/textures.png Wände
+hook: studio-menu
+-->
+<img class='full' src='texturen-speichern.webp' alt='Im 2D Game Studio ist das Menü »Funktionen« › »Sprite« › »Als Bild speichern« offen, ausgewählt ist »alle Frames dieses Zustands nebeneinander«.'>
+
+<!-- /tutorial-scope -->
+
 4. Ziehe die Datei in den Explorer, in den Ordner `raycaster`, und nenne sie `textures.png`.
 
 Dann `ruby palette.rb textures.png` und `make PROGRAM=raycaster`, und deine Welt hat deine Texturen.
@@ -1233,7 +1261,14 @@ _person(abrash)
 
 Lauf langsam durch einen Raum und sieh dir den Boden weit hinten an: Er flimmert, die Fugen zerfallen zu zackigen Linien, die bei jedem Schritt anders aussehen. In der Ferne fallen auf ein Pixel viele Texel, aber das Programm nimmt nur eines davon, je nach Pixel mal eine Fuge, mal eine Fliese.
 
-Die Abhilfe: Jede Textur wird beim Start noch einmal in halber Größe gespeichert, dann in Viertelgröße und so weiter, jedes Texel einer kleineren Stufe gemischt aus vier Texeln der größeren. Diese Stufen heißen **Mipmaps**. Für eine Wand weit weg nimmt das Programm eine kleine Stufe, in der die Fugen schon zu einer Mischfarbe verschwommen sind.
+Die Abhilfe: Jede Textur wird beim Start noch einmal in halber Größe gespeichert, dann in Viertelgröße und so weiter, jedes Texel einer kleineren Stufe gemischt aus vier Texeln der größeren. Diese Stufen heißen **Mipmaps**. Für eine Wand weit weg nimmt das Programm eine kleine Stufe, in der die Fugen schon zu einer Mischfarbe verschwommen sind. Erfunden hat sie Lance Williams.
+
+_person(williams)
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Pyramidal Parametrics</strong>, Lance Williams, SIGGRAPH 1983. Der Aufsatz, in dem die Mipmaps zum ersten Mal beschrieben sind: eine Pyramide aus immer kleineren Fassungen derselben Textur, aus der das Programm für jeden Pixel die passende Stufe nimmt: <a href='https://doi.org/10.1145/800059.801126'>bei der ACM</a>.</p>
+</div>
 
 <img class='full' src='mipmaps.webp' alt='Die Ziegeltextur fünfmal nebeneinander in gleicher Größe: ganz links mit 64 mal 64 Texeln und scharfen Fugen, dann 32, 16, 8 und 4 Texel, immer gröber, bis ganz rechts nur noch große rotbraune Flecken bleiben.'>
 

@@ -105,12 +105,13 @@ def nearest(palette, rgb, from = 0)
   best
 end
 
-def save(name, width, height, cell)
-  png = ChunkyPNG::Image.new(width * cell, height * cell, ChunkyPNG::Color::BLACK)
+# ein Bild aus width × height Feldern, jedes cell Pixel breit und cell_height hoch
+def save(name, width, height, cell, cell_height = cell)
+  png = ChunkyPNG::Image.new(width * cell, height * cell_height, ChunkyPNG::Color::BLACK)
   height.times do |y|
     width.times do |x|
       r, g, b = yield(x, y)
-      cell.times { |dy| cell.times { |dx| png[x * cell + dx, y * cell + dy] = ChunkyPNG::Color.rgb(r, g, b) } }
+      cell_height.times { |dy| cell.times { |dx| png[x * cell + dx, y * cell_height + dy] = ChunkyPNG::Color.rgb(r, g, b) } }
     end
   end
   png.save(name)
@@ -133,11 +134,6 @@ ramps = []
 base.each_with_index do |c, i|
   LEVELS.times { |level| ramps << [c.map { |v| v * level / (LEVELS - 1) }, base_count[i] + 1] }
 end
-# jede Grundfarbe eine Spalte, oben in voller Helligkeit, unten schwarz
-save('2-rampen.png', base.size, LEVELS, 12) { |x, y| ramps[x * LEVELS + LEVELS - 1 - y][0] }
-
-# --- 3. die Palette: 16 reservierte Farben und 240 aus den Rampen -----------
-
 # sortiert, damit man das Bild lesen kann: erst die Grautöne, dann nach dem
 # Farbton, innerhalb davon von dunkel nach hell
 def order(c)
@@ -151,6 +147,15 @@ def order(c)
         end
   [1, (hue * 2).floor, light]
 end
+
+# jede Grundfarbe eine Spalte, oben in voller Helligkeit, unten schwarz,
+# nach dem Farbton sortiert; die Felder sind breiter als hoch, so wird das
+# Bild ein flaches Band, viermal so breit wie hoch
+columns = (0...base.size).sort_by { |i| order(base[i]) }
+save('2-rampen.png', base.size, LEVELS, 16, 10) { |x, y| ramps[columns[x] * LEVELS + LEVELS - 1 - y][0] }
+
+# --- 3. die Palette: 16 reservierte Farben und 240 aus den Rampen -----------
+
 
 reserved = Array.new(RESERVED) { |i| UI[i] ? UI[i][1] : [0, 0, 0] }
 palette = reserved + median_cut(ramps, 256 - RESERVED).sort_by { |c| order(c) }
