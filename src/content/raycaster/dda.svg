@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" width="960" height="480" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Grid-DDA: Der Strahl geht von Gitterlinie zu Gitterlinie, immer über die nähere: rote Punkte auf senkrechten Linien (next_x), grüne auf waagrechten (next_y), bis das Kästchen eine Wand ist.
+       Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raycaster/NAME.svg -->
+  <defs>
+    <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
+    <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker>
+    <marker id="a-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker>
+    <marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+    <marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
+  </defs>
+  <rect width="960" height="480" fill="#ffffff"/>
+  <rect x="120" y="40" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="210" y="40" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="300" y="40" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="390" y="40" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="480" y="40" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="570" y="40" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="660" y="40" width="90" height="90" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="750" y="40" width="90" height="90" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="120" y="130" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="210" y="130" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="300" y="130" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="390" y="130" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="480" y="130" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="570" y="130" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="660" y="130" width="90" height="90" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="750" y="130" width="90" height="90" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="120" y="220" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="210" y="220" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="300" y="220" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="390" y="220" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="480" y="220" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="570" y="220" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="660" y="220" width="90" height="90" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="750" y="220" width="90" height="90" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="120" y="310" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="210" y="310" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="300" y="310" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="390" y="310" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="480" y="310" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="570" y="310" width="90" height="90" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="660" y="310" width="90" height="90" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="750" y="310" width="90" height="90" fill="#d1d5db" stroke="#d1d5db" stroke-width="1.5"/>
+  <line x1="160.5" y1="337.0" x2="660.0" y2="135.2" stroke="#2b5fb4" stroke-width="3" marker-end="url(#a-blue)"/>
+  <circle cx="210.0" cy="317.0" r="7.0" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="227.3" cy="310.0" r="7.0" fill="#16a34a" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="300.0" cy="280.6" r="7.0" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="390.0" cy="244.3" r="7.0" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="450.1" cy="220.0" r="7.0" fill="#16a34a" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="480.0" cy="207.9" r="7.0" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="570.0" cy="171.6" r="7.0" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="660.0" cy="135.2" r="7.0" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="160.5" cy="337.0" r="10.0" fill="#1f2937" stroke="#1f2937" stroke-width="2"/>
+  <text x="160.5" y="373.0" font-size="20" fill="#1f2937" text-anchor="middle">Spielfigur</text>
+  <text x="672.0" y="169.2" font-size="20" fill="#1f2937" text-anchor="start">Treffer: eine Wand</text>
+  <circle cx="160.0" cy="450.0" r="7.0" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
+  <text x="176.0" y="456.0" font-size="18" fill="#1f2937" text-anchor="start">senkrechte Linie (next_x, side 0)</text>
+  <circle cx="560.0" cy="450.0" r="7.0" fill="#16a34a" stroke="#ffffff" stroke-width="2"/>
+  <text x="576.0" y="456.0" font-size="18" fill="#1f2937" text-anchor="start">waagrechte Linie (next_y, side 1)</text>
+</svg>

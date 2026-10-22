@@ -1,0 +1,21 @@
+Lernende schreiben in C mit PixelRAM einen Raycaster wie Wolfenstein 3D, Schritt für Schritt: eine Karte aus Kästchen von oben, Bewegung mit der Zeit, Strahlen über eine Kamera-Ebene (Vektoren, keine Matrizen), erst in kleinen Schritten, dann mit der Grid-DDA, Wände mit dem direkten Abstand (Fischauge) und mit dem Skalarprodukt (gerade), Kollision mit Gleiten an Wänden, eine Palette aus 16 Farbtönen mit je 16 Helligkeiten und eine Schattentabelle wie DOOMs COLORMAP, Wandtexturen, Boden und Decke Zeile für Zeile, Mipmaps und zum Schluss Dithering, Böden aus der Karte und eine durchsichtige Karte über die Schattentabelle. Vorausgesetzt werden die ersten Abschnitte von [Echtzeitgrafik mit C](/pixelram) bis »Ein Bild aus einer Formel«; aus der Mathematik Vektoren in der Ebene, Sinus und Kosinus und das Skalarprodukt.
+
+<table class='table'>
+<tr><th>Ablauf</th><td>Erste Doppelstunde: Karte, Bewegung, Kamera-Ebene, Strahlen in Schritten. Zweite Doppelstunde: DDA, Wände, Fischauge und Skalarprodukt, Kollision. Dritte Doppelstunde: Palette und Schattentabelle, Wandtexturen, Boden und Decke. Vierte Doppelstunde: Mipmaps, das fertige Programm, eine eigene Welt.</td></tr>
+<tr><th>Dateien</th><td>Alles in <code>/workspace/raycaster</code> (ein eigener Klon des PixelRAM-Starters), eine einzige Datei <code>raycaster.c</code>, übersetzt mit <code>make PROGRAM=raycaster</code>. Jede Stufe liegt vollständig im Repository unter <a href='https://github.com/specht/workspace/tree/main/src/content/raycaster/stufen'><code>src/content/raycaster/stufen</code></a>, von <code>01-karte.c</code> bis <code>12-fertig.c</code> (knapp 780 Zeilen, davon gut 200 für die Texturen, die auf der Seite mit Kopierknopf stehen). Wer den Anschluss verliert, macht mit der passenden Stufe weiter.</td></tr>
+<tr><th>Prüfung</th><td>Die Aufgaben prüfen Antworten, nichts im Workspace: <code>delta_x</code> eines Strahls, eine Vorhersage, warum sich die Wände wölben, ein Nachschlagen in der Schattentabelle und der Abstand einer Bodenzeile. Am Ende beschreiben die Lernenden ihre eigene Welt (Klassenboard).</td></tr>
+<tr><th>Steuerung</th><td><kbd>W</kbd> <kbd>S</kbd> oder <kbd>↑</kbd> <kbd>↓</kbd> vor und zurück, <kbd>A</kbd> <kbd>D</kbd> seitwärts, <kbd>←</kbd> <kbd>→</kbd> drehen; ab Stufe 5 <kbd>Tab</kbd> für die Karte, ab Stufe 11 <kbd>M</kbd> für die Mipmaps. Vorher einmal ins Bild klicken, damit es die Tasten bekommt.</td></tr>
+</table>
+
+**Was schiefgeht.**
+
+- **y zeigt nach unten.** Wie auf dem Bildschirm wächst y nach unten; ein größerer Winkel dreht im Uhrzeigersinn, und »rechts« von `(x, y)` ist `(−y, x)`. Wer y nach oben denkt, bekommt an genau diesen Stellen Vorzeichenfehler.
+- **Die Karte ist nicht geschlossen.** Die DDA liest die Karte ohne Prüfung am Rand; ein Loch im Rand lässt einen Strahl aus dem Array laufen.
+- **Division durch null.** Ein Strahl parallel zu einer Achse hat `ray_x == 0`. `1 / 0.0` ist unendlich, aber `0 · unendlich` keine Zahl; darum `1e30`.
+- **Textur gespiegelt.** Ohne die Zeile mit `u = 1 - u` erscheinen Texturen auf zwei der vier Seiten eines Kästchens spiegelverkehrt; bei symmetrischen Mustern fällt es kaum auf, bei Schrift sofort.
+- **Kollision.** Die Vier-Ecken-Prüfung reicht, solange `PLAYER_RADIUS` unter 0,5 bleibt. Ohne die Grenze für `dt` springt die Figur nach einem Ruckler (Tab im Hintergrund) durch dünne Wände.
+- **`light_at` und `shaded` stehen zu weit unten.** In Stufe 9 benutzt `draw_wall_column` `shaded`; die beiden Funktionen müssen darüberstehen, sonst meldet der Compiler einen Fehler.
+
+**Mathematik.** Warum `H / distance` passt: `PLANE` ist 0,89 ≈ W / (2H); dann ist ein Stück Wand im Abstand 1 auf dem Bild so breit wie hoch. Wer `PLANE` ändert, staucht oder streckt die Wände. Das Skalarprodukt in Stufe 6 ist übrigens genau das `t` der DDA, weil `dir` die Länge 1 hat und senkrecht auf `plane` steht; wer mag, lässt die Lernenden das entdecken. Die Wahl der Mipmap-Stufe für den Boden (geometrisches Mittel quer und in die Tiefe) ist ein Kompromiss: das Maximum, wie Grafikkarten es nehmen, macht den Boden verwaschen, die quere Richtung allein flimmert noch.
+
+**Weiter.** Türen, Sprites mit einem Abstandspuffer je Spalte, die Maus zum Umsehen, Licht je Kästchen. Das Gegenstück ohne Echtzeit und mit echten Farben ist der [Raytracer](/raytracing).

@@ -1,0 +1,87 @@
+# Aufgaben zu »Raycasting in C«.
+# Format: docs/aufgaben.md. Gearbeitet wird in /workspace/raycaster.
+# Alle Aufgaben prüfen Antworten: Rechnungen mit den Formeln der Seite, eine
+# Vorhersage zur Wölbung der Wände und eine Rückmeldung zur eigenen Welt.
+format: 1
+activity: raycaster
+tasks:
+  - id: delta
+    title: Von Linie zu Linie
+    prompt: |
+      Ein Strahl hat `ray_x = 0.5`. Um wie viel wächst `t`, bis er von einer
+      senkrechten Gitterlinie zur nächsten kommt? Das ist `delta_x`.
+    check:
+      type: number
+      expect: 2
+      tolerance: 0.001
+    feedback:
+      - when: { equals: 0.5 }
+        say: Das ist `ray_x` selbst. Mit `t` wächst x um `t · ray_x`; damit x um 1 wächst, muss `t` um `1 / ray_x` wachsen.
+    hint: 'Ein Punkt auf dem Strahl hat die x-Koordinate `player_x + t · ray_x`. Wie groß muss `t` werden, damit sie um genau 1 wächst?'
+    solution: '`delta_x = |1 / ray_x| = 1 / 0.5 = 2`. Der Strahl ist flach in x-Richtung unterwegs; er braucht ein `t` von 2 für jedes Kästchen nach rechts.'
+
+  - id: fischauge
+    title: Warum biegen sich die Wände?
+    prediction: true
+    prompt: |
+      Die Figur steht gerade vor einer geraden Wand, aber im Bild biegt sich
+      die Wand zu den Rändern hin nach unten. Woran liegt das?
+    check:
+      type: choice
+      options:
+        - 'Der direkte Abstand zum Treffpunkt ist für die Strahlen am Rand größer als für den in der Mitte, also wird die Wand dort niedriger gezeichnet.'
+        - 'Die DDA rundet beim Springen von Linie zu Linie, und die Fehler werden zum Rand hin größer.'
+        - 'Die Kamera-Ebene ist zu lang; mit einem kleineren PLANE wären die Wände gerade.'
+        - '`H / distance` ist die falsche Formel; richtig wäre `H / (distance · distance)`.'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Die DDA rechnet den Treffpunkt genau aus, ohne zu runden. Sieh dir an, wie lang die Strahlen zur Mitte und zum Rand derselben Wand sind.
+      - when: { picked: 2 }
+        say: Mit kleinerem `PLANE` ist die Wölbung schwächer, aber sie bleibt. Der Grund liegt im Abstand selbst.
+      - when: { picked: 3 }
+        say: Etwas, das doppelt so weit weg ist, erscheint halb so groß, nicht ein Viertel so groß.
+    solution: 'Der direkte Abstand wächst zum Rand hin, auch wenn die Wand überall gleich weit vor der Figur steht. Unser Auge misst, wie weit etwas vor uns liegt: den Abstand entlang der Blickrichtung. Den liefert das Skalarprodukt mit `dir`.'
+
+  - id: lut
+    title: Nachgeschlagen
+    prompt: |
+      Ziegel ist der Farbton `BRICK` = 1, die volle Ziegelfarbe also
+      `COLOR(1, 15)` = 31. Welche Nummer steht in `shade[8][31]`?
+    check:
+      type: number
+      expect: 24
+    feedback:
+      - when: { equals: 8 }
+        say: 8 ist die Helligkeit, die Farbe hat aber auch ihren Farbton. Die Nummer ist `ramp · 16 + level`.
+      - when: { equals: 23 }
+        say: Fast. `level * light / 15` ist `15 * 8 / 15 = 8`, also `COLOR(1, 8)`.
+      - when: { equals: 248 }
+        say: Rechne `COLOR(1, 8) = 1 · 16 + 8`.
+    hint: 'In `setup_palette`: `ramp = color / LEVELS`, `level = color % LEVELS`, und `shade[light][color] = COLOR(ramp, level * light / 15)`.'
+    solution: '`31 / 16 = 1` (Ziegel), `31 % 16 = 15`, also `COLOR(1, 15 · 8 / 15) = COLOR(1, 8) = 16 + 8 = 24`: derselbe Ziegel mit etwa halber Helligkeit.'
+
+  - id: zeile
+    title: Wie weit ist der Boden?
+    prompt: |
+      Das Bild ist `H = 180` Pixel hoch. Wie weit ist der Boden in der
+      Bildzeile `y = 135` von der Figur entfernt, also `row_distance(135)`?
+      Gib den Abstand in Kästchen an.
+    check:
+      type: number
+      expect: 1.978
+      tolerance: 0.01
+    feedback:
+      - when: { between: [2, 2.0001] }
+        say: Fast. `row_distance` rechnet mit der Mitte der Zeile, `y + 0.5`.
+    hint: '`row_distance(y) = 0.5 · H / |y + 0.5 − H/2|`.'
+    solution: '`0.5 · 180 / |135.5 − 90| = 90 / 45.5 ≈ 1.98`: Diese Zeile, ein Viertel des Bildes über dem unteren Rand, zeigt den Boden knapp zwei Kästchen vor der Figur.'
+
+  - id: eigene-welt
+    title: Deine Welt
+    prompt: |
+      Bau dir eine eigene Welt: eine andere Karte, eine neue Wandart, eine
+      eigene Textur oder eine der Ideen von oben. Beschreibe in zwei, drei
+      Sätzen, was du gebaut hast und was dabei schwierig war.
+    check:
+      type: reflection
