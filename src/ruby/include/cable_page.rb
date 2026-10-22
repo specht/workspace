@@ -12,6 +12,10 @@ class Main < Sinatra::Base
     CABLE_ETHER = CableEther.new
     CABLE_ADDRESS_PATH = '/ether'
 
+    def self.cable_parked?
+        (@@sections['parked'] || {})[:entries].to_a.include?('cable')
+    end
+
     get '/ws_cable' do
         halt 400 unless Faye::WebSocket.websocket?(request.env)
         origin = request.env['HTTP_ORIGIN'].to_s
@@ -19,6 +23,9 @@ class Main < Sinatra::Base
 
         Main.load_invitations()
         teacher = teacher_logged_in? || teacher_account_logged_in?
+        # While the activity is parked (sections.yaml), the ether is open to
+        # logged-in people only, not to everyone on the internet.
+        halt 403 if Main.cable_parked? && !user_logged_in?
         address = client_ip
         # Faye pings every 25 s: nginx ends a websocket that stays silent for a minute.
         ws = Faye::WebSocket.new(request.env, nil, :ping => 25)

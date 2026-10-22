@@ -6,6 +6,10 @@ import { loginAsE2eUser } from './workspace';
 // login. Two people on the same frequency see each other's lamps, someone on
 // another frequency does not; a teacher changes the number of lamps for
 // everyone (src/ruby/include/cable_ether.rb, src/static/include/cable.js).
+//
+// Parked for now (sections.yaml, »parked«): the ether then answers 403 to
+// visitors without a login, so these tests wait until it is back.
+test.skip(true, 'Datenübertragung per Kabel ist zurückgestellt');
 
 function baseUrl(testInfo: TestInfo): string {
   const value = testInfo.project.use.baseURL;

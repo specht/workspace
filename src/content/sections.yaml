@@ -78,13 +78,11 @@
   label: Netze & Sicherheit
   icon: /images/handshake.png
   description: |
-    Wie Rechner über das Netz miteinander reden, vom Lichtzeichen über das
-    Paket bis zur Webseite: ein Protokoll für ein Kabel mit fünf Lampen,
+    Wie Rechner über das Netz miteinander reden, vom Paket bis zur Webseite:
     TCP/IP, ein eigener Webserver, eine Pixelwand für die ganze Klasse. Und wie
     man Daten schützt, mit Verschlüsselung, Signaturen und einem zweiten
     Faktor bei der Anmeldung.
   entries:
-    - cable
     - tcpip
     - dns
     - webserver
@@ -163,6 +161,7 @@
   label: Zurückgestellt
   icon: /images/bookmark.png
   entries:
+    - cable
     - feuerwerk
     - hugo
     - cobol

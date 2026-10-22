@@ -98,7 +98,7 @@ Vor 150 Jahren hatten Telegrafen dasselbe Problem: Über eine Leitung gingen nur
 <figure><img src='baudot-keyboard.webp' alt='Eine alte Zeichnung: ein Holzkasten mit aufgeklapptem Deckel, vorn fünf breite weiße Tasten, zwei links und drei rechts mit einer Lücke dazwischen, links ein kleines Gestell mit einer Spule.'><figcaption>Baudots Tastatur mit fünf Tasten, 1884 (Zeichnung von M. Rothen, gemeinfrei, <a href='https://commons.wikimedia.org/wiki/File:Clavier_Baudot.jpg'>Wikimedia Commons</a>)</figcaption></figure>
 </div>
 
-_person(baudot)
+<!-- Die Aktivität ist zurückgestellt: die Personenbox für Émile Baudot (part baudot, baudot.webp) steht in Commit 6bc97d13 der Seite reference/personen und kommt mit _person(baudot) zurück, wenn die Aktivität in den Katalog geht. -->
 
 Wie viel durch eine Leitung passt, wenn man so geschickt wie möglich codiert, und wie man trotz Störungen fehlerfrei überträgt, hat Claude Shannon 1948 ausgerechnet.
 
