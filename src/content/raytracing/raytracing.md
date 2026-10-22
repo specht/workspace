@@ -1607,26 +1607,30 @@ vec bounce(hit h, int depth)
     vec light = add(sunlight(h), bounce(h, depth));
 ```
 
-Jeder Durchgang dauert jetzt etwa doppelt so lange, denn fast jeder Strahl, der etwas trifft, schickt einen weiteren los. In der Szene von vorhin bringt das wenig: Bei Tag kommt fast alles Licht von der Sonne und vom Himmel. Am schönsten zeigt sich Path Tracing in einem Hof mit farbigen Wänden. Eine Wand ist hier eine Kugel mit dem Radius 1000: so groß, dass sie in der Nähe der Szene fast eben ist. Kevin Beasons »smallpt«, ein Path Tracer in 99 Zeilen C++, baut seine ganze Szene so. Ersetze die Kugeln:
+Jeder Durchgang dauert jetzt etwa doppelt so lange, denn fast jeder Strahl, der etwas trifft, schickt einen weiteren los. In der Szene von vorhin bringt das wenig: Bei Tag kommt fast alles Licht von der Sonne und vom Himmel. Am deutlichsten zeigt sich Path Tracing neben farbigen Wänden in der Sonne: Sie werfen ihr Licht weiter, und was vor ihnen steht, bekommt ihre Farbe ab. Eine Wand ist hier eine Kugel mit dem Radius 1000: so groß, dass sie in der Nähe der Szene fast eben ist. Kevin Beasons »smallpt«, ein Path Tracer in 99 Zeilen C++, baut seine ganze Szene so. Ersetze die Kugeln:
 
 ```c
 sphere spheres[] = {
-    {{-1003, 0, 0}, 1000, {.color = {0.75, 0.12, 0.1}}},                // Wand links, rot
-    {{1003, 0, 0}, 1000, {.color = {0.15, 0.6, 0.2}}},                  // Wand rechts, grün
-    {{0, 0, -1003}, 1000, {.color = {0.8, 0.8, 0.8}}},                  // Wand hinten, weiß
-    {{-1.1, 1.0, -1.0}, 1.0, {.color = {0.85, 0.85, 0.85}}},            // weiß
-    {{1.3, 0.8, -1.3}, 0.8, {.color = {0.9, 0.9, 0.95}, .mirror = 0.9}}, // Spiegelkugel
-    {{0.7, 0.6, 0.9}, 0.6, {.color = {0.95, 1.0, 0.97}, .glass = 1.5}}, // Glaskugel
-    {{-1.6, 0.45, 1.4}, 0.45, {.color = {0.85, 0.85, 0.85}}},           // weiß, klein
+    {{-1003, 0, 0}, 1000, {.color = {0.04, 0.42, 0.45}}},              // Wand links, petrol
+    {{0, 0, -1003}, 1000, {.color = {0.95, 0.45, 0.05}}},               // Wand hinten, orange
+    {{-1.8, 1.0, -0.9}, 1.0, {.color = {0.85, 0.85, 0.85}}},            // weiß, dicht an der Wand
+    {{0.4, 0.75, -1.2}, 0.75, {.color = {0.85, 0.85, 0.85}}},           // weiß
+    {{-2.2, 0.45, 1.3}, 0.45, {.color = {0.85, 0.85, 0.85}}},           // weiß, klein
 };
 ```
 
-Die Wände sind so hoch wie breit, fast 1000. Damit sie die Sonne nicht verdecken, kommt sie jetzt von vorn oben, und die Kamera schaut gerade in den Hof hinein. In `main`:
+Alles hier ist matt, auch der Boden: Spiegelungen würden die Farben der Wände ebenfalls zeigen, und dann sähe man nicht, was vom Path Tracing kommt.
 
 ```c
-    sun_dir = normalize((vec){0, 1.6, 0.7});
+material floor_mat = {.color = {0.75, 0.75, 0.75}};  // ohne Spiegelanteil
+```
+
+Die Wände sind so hoch wie breit, fast 1000, und würden eine Sonne hinter ihnen ganz verdecken. Darum ist der Hof rechts offen, und die Sonne kommt von rechts oben und ein wenig von vorn; so stehen beide Wände in der Sonne. In `main`:
+
+```c
+    sun_dir = normalize((vec){1.0, 1.3, 0.6});
 ~
-    double angle = 0, height = 1.6;
+    double angle = 0.25, height = 1.6;
 ```
 
 Kreist du zu weit, stehst du hinter einer Wand und siehst ihre Rückseite.
@@ -1646,8 +1650,8 @@ hook: open raytracer.html
 hook: frames 512
 crop-element: #canvas
 -->
-<img src='pt-mit.webp' alt='Ein Hof mit Path Tracing: links eine leuchtend rote, rechts eine grüne Wand, hinten eine weiße; auf dem Schachbrett zwei weiße Kugeln, eine Spiegelkugel und eine Glaskugel. Die Wände sind hell, die Kugeln auch von unten beleuchtet.'>
-<figcaption>Mit Path Tracing: der sonnige Boden strahlt die Wände und die Kugeln an</figcaption>
+<img src='pt-mit.webp' alt='Mit Path Tracing: links eine petrolfarbene Wand, hinten eine orange, beide in der Sonne, davor drei matte weiße Kugeln auf dem Schachbrett. Die Kugeln schimmern auf der Seite zur linken Wand petrol, der Boden vor der hinteren Wand gelblich, die Schatten sind hell.'>
+<figcaption>Mit Path Tracing: Das Licht der Wände fällt auf die Kugeln und auf den Boden; die Kugeln schimmern zur linken Wand hin petrol, der Boden vor der hinteren Wand gelblich, und die Schatten werden hell.</figcaption>
 </figure>
 <figure>
 <!-- tutorial-screenshot
@@ -1663,16 +1667,102 @@ hook: open raytracer.html
 hook: frames 512
 crop-element: #canvas
 -->
-<img src='pt-ohne.webp' alt='Derselbe Hof ohne Path Tracing: Die rote und die grüne Wand sind fast schwarz, die Unterseiten der weißen Kugeln dunkel.'>
-<figcaption>Ohne Path Tracing: die Sonne streift die Wände nur, sie bleiben dunkel</figcaption>
+<img src='pt-ohne.webp' alt='Dieselbe Szene ohne Path Tracing: Die Wände haben dieselben Farben, aber die Kugeln und der Boden sind weiß und grau, ohne einen Hauch davon, und die Schatten sind dunkel.'>
+<figcaption>Ohne Path Tracing: Die Wände behalten ihr Licht; Kugeln und Boden bleiben weiß und grau, die Schatten dunkel.</figcaption>
 </figure>
 </div>
 
-Die Sonne steht vor dem Hof und streift die Seitenwände nur; ohne Path Tracing bleiben sie dunkel. Mit Path Tracing wirft der sonnige Boden sein Licht an die Wände, die leuchten rot und grün, und die Kugeln bekommen Licht von unten.
+Die Wände stehen in beiden Bildern in der Sonne und haben dieselben Farben. Ohne Path Tracing bleibt ihr Licht bei ihr: Die Schattenseiten der weißen Kugeln, der Boden und die weiße Wand bekommen nur das Grau des Himmels. Mit Path Tracing trägt jeder Strahl, der von einer Kugel oder vom Boden aus eine Wand trifft, ihr Licht zurück: Die Seiten der Kugeln, die zur linken Wand zeigen, schimmern petrol, der Boden vor der hinteren Wand gelblich, und die Schatten werden hell. Das ist nicht gespiegelt, alles hier ist matt; es ist Licht, das von der Wand auf eine matte Fläche fällt und von dort in dein Auge.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Schieb die kleine weiße Kugel dicht an die rote Wand, ihr Mittelpunkt bei <code>x = -2.4</code>. Welche Seite der Kugel wird rötlich, und warum gerade diese? Schieb sie danach zurück.
+<strong>Ausprobieren:</strong> Mach die linke Wand rot, <code>.color = {0.85, 0.1, 0.05}</code>, und sieh dir die große weiße Kugel an. Schieb sie danach ein Stück von der Wand weg, ihr Mittelpunkt bei <code>x = 0</code>: Wie viel Farbe bekommt sie dann noch ab? Stell danach beides zurück.
 </div>
+
+## Belichtung
+
+### Zu hell für den Bildschirm
+
+Ein Bildschirm kann nichts heller zeigen als 1, also ganz weiß, und `to_byte` schneidet alles darüber ab. Im fertigen Bild fällt das kaum auf, denn fast alles ist dunkler als 1. Anders, wenn du heller belichtest, wie mit einer weiter geöffneten Blende, damit man in den Schatten mehr sieht: Dann werden der Himmel, die weißen Felder und die Sonnenseiten der Kugeln heller als 1. Abgeschnitten werden sie zu glatten weißen Flächen, und Farben verlieren ihren Ton, weil jeder Farbkanal einzeln bei 1 aufhört.
+
+Eine Kamera schneidet nicht hart ab. Sie drückt, was zu hell ist, weich zusammen: Je heller, desto weniger wird es noch heller. So eine Kurve heißt **Tone Mapping**. Diese hier lässt bis 0,5 alles, wie es ist, und biegt dann sanft ab, sodass auch zwischen 1 und 2,5 noch Unterschiede bleiben:
+
+<img class='full' src='tone.webp' alt='Ein Graph: waagrecht die gerechnete Helligkeit von 0 bis 3, senkrecht, was auf den Bildschirm kommt, von 0 bis 1. Eine rot gestrichelte Linie steigt gerade bis 1 und bleibt dann flach: abgeschnitten. Eine blaue Linie ist bis 0,5 dieselbe, biegt dann weich ab und nähert sich 1: Tone Mapping.'>
+
+Über `to_byte` kommen die Belichtung und die Kurve; `exp` ist die Exponentialfunktion, die Kurve nähert sich 1, erreicht sie aber nie:
+
+```c
+// Belichtung: größer ist heller, wie eine weiter geöffnete Blende
+double exposure = 1;
+
+// Tone Mapping: bis 0.5 bleibt alles, wie es ist; was heller ist, wird
+// weich zusammengedrückt und nähert sich 1, statt bei 1 abzubrechen
+double tone(double c)
+{
+    if (c < 0.5)
+        return c;
+    return 0.5 + 0.5 * (1 - exp(-(c - 0.5) / 0.5));
+}
+```
+
+`to_byte` belichtet und drückt zusammen, bevor die Gamma-Korrektur kommt:
+
+```c
+// Farbwert 0 bis 1 zu 0 bis 255, mit Belichtung, Tone Mapping und Gamma
+uint8_t to_byte(double c)
+{
+    c = tone(c * exposure);
+    return (uint8_t)(pow(c, 1 / 2.2) * 255 + 0.5);
+}
+```
+
+Mit <kbd>H</kbd> belichtest du heller, mit <kbd>D</kbd> dunkler, jedes Mal um das Anderthalbfache. Die Durchgänge bleiben dabei, denn die Belichtung ändert nur, wie die Summe angezeigt wird:
+
+```c
+        // H heller, D dunkler: nur die Anzeige ändert sich, die Durchgänge bleiben
+        if (key_pressed(pixel_key_h))
+            exposure *= 1.5;
+        if (key_pressed(pixel_key_d))
+            exposure /= 1.5;
+```
+
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/vergleich-belichtung-weich.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+hook: frames 128
+crop-element: #canvas
+-->
+<img src='belichtung-weich.webp' alt='Das fertige Bild, heller belichtet, mit Tone Mapping: Der Himmel hat noch einen Verlauf, die Spiegelkugel zeigt ihn hellblau, der Planet behält seine Streifen.'>
+<figcaption>Zweimal <kbd>H</kbd>, mit Tone Mapping</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: raytracer.c <- file:stufen/vergleich-belichtung-hart.c
+terminal-open
+terminal-run: make PROGRAM=raytracer
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raytracer.html
+hook: frames 128
+crop-element: #canvas
+-->
+<img src='belichtung-hart.webp' alt='Dasselbe Bild, gleich hell belichtet, aber abgeschnitten: Der Himmel ist ein glattes Weiß, die obere Hälfte der Spiegelkugel ein heller, grünlich blauer Fleck, die hellen Streifen des Planeten sind ausgebrannt.'>
+<figcaption>Dasselbe, hart bei 1 abgeschnitten</figcaption>
+</figure>
+</div>
+
+Abgeschnitten wird der Himmel zu einer glatten weißen Fläche, die Spiegelkugel oben zu einem grünlich blauen Fleck, weil Rot und Grün schon bei 1 aufhören, Blau aber noch nicht, und der Planet verliert seine hellen Streifen. Mit Tone Mapping bleibt in all dem ein Verlauf.
 
 ## Wie geht es weiter?
 

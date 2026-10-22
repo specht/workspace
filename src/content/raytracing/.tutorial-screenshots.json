@@ -6,6 +6,18 @@
       "state_hash": "1e4e42f24230cdbef125699442ac8e4e0f540e2f190640555b6f62dcc6b9d46b",
       "workspace_look": "4.140.0-ls368"
     },
+    "belichtung-hart.webp": {
+      "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
+      "output_sha256": "6e41ad864ae6ae0fe278d995dfd36db78ba9a65a056d82db240e3a1bda563cbf",
+      "state_hash": "7aa40a38b3bd2478ca2cd9d5524c9942179d523c633e6e8b6b7ced06fd19a3a4",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "belichtung-weich.webp": {
+      "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
+      "output_sha256": "8ae7f1d393a8fbade309e72b97e54cfe4c8481303cfd719a4d777dcf257f521b",
+      "state_hash": "ebc357bbc8af244d29e0f3363120e8db0b8e5604a16dd1a9a99c982630d281d3",
+      "workspace_look": "4.140.0-ls368"
+    },
     "boden.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
       "output_sha256": "cdd3cd88e4eb5307ffa9c72ec3e7d7f3bad9a1f116c0736655758e8654a172ac",
@@ -99,14 +111,14 @@
     },
     "pt-mit.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
-      "output_sha256": "ea1b1e1a0be5bd560db9a4ba239c55192d870eac31cb14e1049ca60797271983",
-      "state_hash": "8c79a3c83445bed65ac2e050b6b0420c58bd089e19ec4a47ac5ffdb55adcd1db",
+      "output_sha256": "dc70d6f6522c59c4a860ef204ed22ce465681d8edcf7965bd442a29fa8d3d2e4",
+      "state_hash": "693763fa4b7c9519e84ba806ec840af7a5e2775ed15e1c03a6486106869e7f92",
       "workspace_look": "4.140.0-ls368"
     },
     "pt-ohne.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
-      "output_sha256": "bb7e6debc82d61c1c9b6c5d59f0c8bab1ac81bc96e33a7e1698f3d3f163763b6",
-      "state_hash": "3d027e00ed22e8107fa37bdf28b713b3d3458d34e12a4f14c1aeb4fb265c5389",
+      "output_sha256": "4b69104be07cafb30dad85a680457cf7caea5eb86045c6368eb98abfe55c87d2",
+      "state_hash": "71927b3450d285c59587ff3f7d45f9d91d48e356546d65cf89000d83aa0424fc",
       "workspace_look": "4.140.0-ls368"
     },
     "raytracer.webp": {

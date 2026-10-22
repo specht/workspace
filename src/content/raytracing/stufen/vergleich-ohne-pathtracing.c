@@ -1,4 +1,4 @@
-// Zum Vergleich auf der Seite: der Hof aus Stufe 16, aber ohne Path Tracing (mit skylight).
+// Zum Vergleich auf der Seite: die Szene aus Stufe 16, aber ohne Path Tracing (mit skylight).
 // Raytracer: Kugeln, ein Schachbrett, Spiegel, Glas, Lack, Metall und weiche Schatten.
 // Pfeiltasten links/rechts: um die Szene kreisen, hoch/runter: höher oder tiefer.
 // Jedes Bild ist ein weiterer Durchgang; das Bild wird mit der Zeit glatter.
@@ -117,18 +117,16 @@ typedef struct
 } sphere;
 
 sphere spheres[] = {
-    {{-1003, 0, 0}, 1000, {.color = {0.75, 0.12, 0.1}}},                // Wand links, rot
-    {{1003, 0, 0}, 1000, {.color = {0.15, 0.6, 0.2}}},                  // Wand rechts, grün
-    {{0, 0, -1003}, 1000, {.color = {0.8, 0.8, 0.8}}},                  // Wand hinten, weiß
-    {{-1.1, 1.0, -1.0}, 1.0, {.color = {0.85, 0.85, 0.85}}},            // weiß
-    {{1.3, 0.8, -1.3}, 0.8, {.color = {0.9, 0.9, 0.95}, .mirror = 0.9}}, // Spiegelkugel
-    {{0.7, 0.6, 0.9}, 0.6, {.color = {0.95, 1.0, 0.97}, .glass = 1.5}}, // Glaskugel
-    {{-1.6, 0.45, 1.4}, 0.45, {.color = {0.85, 0.85, 0.85}}},           // weiß, klein
+    {{-1003, 0, 0}, 1000, {.color = {0.04, 0.42, 0.45}}},              // Wand links, petrol
+    {{0, 0, -1003}, 1000, {.color = {0.95, 0.45, 0.05}}},               // Wand hinten, orange
+    {{-1.8, 1.0, -0.9}, 1.0, {.color = {0.85, 0.85, 0.85}}},            // weiß, dicht an der Wand
+    {{0.4, 0.75, -1.2}, 0.75, {.color = {0.85, 0.85, 0.85}}},           // weiß
+    {{-2.2, 0.45, 1.3}, 0.45, {.color = {0.85, 0.85, 0.85}}},           // weiß, klein
 };
 // so viele Kugeln stehen in der Liste
 #define SPHERE_COUNT (int)(sizeof spheres / sizeof spheres[0])
 
-material floor_mat = {.color = {0.75, 0.75, 0.75}, .mirror = 0.1};
+material floor_mat = {.color = {0.75, 0.75, 0.75}};  // ohne Spiegelanteil
 
 // die Richtung zur Sonne (Länge 1) und ihre Farbe
 vec sun_dir;
@@ -405,9 +403,9 @@ void draw(int passes)
 int main(void)
 {
     screen_open(W, H, pixel_rgb24, "Raytracer");
-    sun_dir = normalize((vec){0, 1.6, 0.7});
+    sun_dir = normalize((vec){1.0, 1.3, 0.6});
 
-    double angle = 0, height = 1.6;
+    double angle = 0.25, height = 1.6;
     int passes = 0;
 
     while (!should_close())
