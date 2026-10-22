@@ -78,7 +78,7 @@ address from `credentials.rb` and the code `123456`.
   `src/scripts/code-context.rb PAGE.md` proposes them from the recipes'
   stage files (read each proposal before `--apply`).
 - Formulas: KaTeX renders `\(…\)` and `$$…$$`, not single `$…$`. In Markdown write
-  `\\(`…`\\)` and `\_` for an underscore inside them: Markdown eats a single
+  `\\(`…`\\)` and `\_` for an underscore inside them (`\\\_` inside `\text{…}`): Markdown eats a single
   backslash before a bracket and turns two underscores into emphasis.
   Raw HTML (table cells) is not Markdown: there it is a single `\(`…`\)`
   (`formula_escaping_test.rb`).
