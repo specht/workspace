@@ -281,6 +281,7 @@ als eine gibt; Testgruppen und Gruppen ohne Schule zuletzt.
 | | Lernende | Lehrkraft (`*`) | Lehrkraft (`+`) | Admin |
 | --- | --- | --- | --- | --- |
 | Notizen für Lehrkräfte (auf den Aktivitäten) | | ✓ | ✓ | ✓ |
+| Der ganze Code an jedem Schritt (Knopf »Code bis hier«, nicht beim Nachahmen) | | ✓ | ✓ | ✓ |
 | Klassenseite `/klasse` für die eigenen Gruppen | | | ✓ | ✓ alle |
 | Anmelde-Codes der eigenen Gruppen (Klassenseite) | | | ✓ | ✓ |
 | Workspace öffnen, Nachahmen | | | ✓ eigene Gruppen | ✓ alle |

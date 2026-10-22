@@ -6,6 +6,7 @@ require './include/task_spec.rb'
 require './include/code_languages.rb'
 require './include/task_check.rb'
 require './include/task_card.rb'
+require './include/stage_code.rb'
 require './include/task_store.rb'
 require './include/class_board.rb'
 require './include/open_answers.rb'
@@ -1904,6 +1905,11 @@ class Main < Sinatra::Base
             page_languages = CodeLanguages.of_page(page_meta)
             variants = variant_markdowns.to_h do |variant, variant_markdown|
                 variant_markdown, task_slots = TaskCard.mark_slots(variant_markdown)
+                # At each step, the whole code for teachers (StageCode), on activities.
+                stage_points = []
+                if !entry[:kenney] && parsed_sections.dig(section, :catalog) != 'reference'
+                    variant_markdown, stage_points = StageCode.mark(variant_markdown, File.dirname(path))
+                end
                 root = render_content_markdown(variant_markdown, path, redcarpet) do |md|
                     if entry[:kenney]
                         gallery = StringIO.open do |io|
@@ -1920,6 +1926,7 @@ class Main < Sinatra::Base
                 end
                 CodeLanguages.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
                 insert_task_cards(root, task_slots, page_tasks, redcarpet, path, page_languages) unless task_slots.empty?
+                StageCode.insert(root, stage_points) unless stage_points.empty?
                 # Reference pages: every h2 and h3 gets an anchor for the Handbuch index.
                 outline = parsed_sections.dig(section, :catalog) == 'reference' ? ReferenceIndex.anchor_headings(root) : nil
                 search_sections = outline ? ReferenceIndex.search_sections(root) : nil
@@ -7884,6 +7891,8 @@ class Main < Sinatra::Base
     def page_html(slug)
         content = @@content[slug]
         html = content[:html]
+        # the whole code at each step only for teachers, not while they see the page as a student
+        html = StageCode.strip(html) unless teacher_logged_in? && @impersonated_by.nil?
         # Only pages that use the class repository's variables look it up.
         if content[:class_repo] || html.match?(ClassRepos::TOKEN)
             view = class_repo_view(slug)

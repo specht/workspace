@@ -501,6 +501,16 @@ html[data-bs-theme="dark"] {
     .task-teacher-none,
     .task-teacher-count { color: #a3a29c; }
     .task-teacher-stale { color: #e0b050; }
+    .stage-code-copy {
+        border-color: #4a3a63;
+        background-color: #221b2d;
+        color: #cdb0f2;
+    }
+    .stage-code-copy:hover,
+    .stage-code-copy.copied {
+        background-color: #2e2440;
+        border-color: #6b5590;
+    }
     .class-repo-teacher {
         border-color: #4a3a63;
         background-color: #221b2d;

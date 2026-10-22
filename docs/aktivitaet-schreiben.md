@@ -97,6 +97,17 @@ Code, den Bilder und Beispiele testen. Ein Block, der mit Absicht anders ist,
 etwa ein Gerüst, das die Lernenden ausbauen, steht mit
 `<!-- page-code: own -->` in der Zeile vor dem Codeblock.
 
+Dieselben Rezepte geben Lehrkräften an jedem Schritt den ganzen Code: Unter
+dem Bild eines Rezepts, das Textdateien aus `stufen/` schreibt, steht für sie
+ein kleiner Knopf »Code bis hier«, der die ganze Datei kopiert, in einer
+Galerie nach der Galerie (`stage_code.rb`). Eine Datei kommt nur dort, wo sie
+sich seit dem letzten Mal geändert hat; Bilder, Archive und Beispiele aus
+anderen Ordnern sind keine Schritte. Ein Schritt ohne Rezept bekommt den
+Knopf mit einer Zeile für sich, die auf eine Textdatei im Ordner der
+Aktivität zeigt: `<!-- stage: stufen/10-glas.c -->`, oder unter anderem
+Namen `<!-- stage: stufen/licht.fs as light.fs -->`. Lernende bekommen weder
+den Knopf noch den Code; der Server lässt beides für sie weg.
+
 Rezepte können auch prüfen, ob die Schritte der Seite aufgehen:
 `check-task: lock` führt die Prüfung einer Aufgabe aus wie der Knopf »Prüfen«,
 `check-task-fails: lock` verlangt, dass sie an dieser Stelle noch scheitert,

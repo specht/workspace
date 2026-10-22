@@ -2712,6 +2712,37 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 /* For teachers on an activity with a class repository per group
    (class_repo_teacher_line): one line, which address each group has,
    linked to the dialog on the class page. */
+/* For teachers, at each step (stage_code.rb): small buttons at the side
+   that copy the whole code of this step. */
+.stage-code {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.4em;
+    margin: -0.4em 0 1em;
+}
+
+.stage-code-copy {
+    padding: 0.1em 0.7em;
+    border: 1px solid #d9c9ee;
+    border-radius: 1em;
+    background-color: #f7f2fc;
+    color: #5b2f8f;
+    font-size: 85%;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.stage-code-copy .bi {
+    margin-right: 0.4em;
+}
+
+.stage-code-copy:hover,
+.stage-code-copy.copied {
+    background-color: #ece1f8;
+    border-color: #b99ae0;
+}
+
 .class-repo-teacher {
     margin: 1em 0 0;
     padding: 0.4em 0.9em;

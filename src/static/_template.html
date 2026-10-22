@@ -205,6 +205,21 @@ function install_code_copy() {
             button.innerHTML = "<i class='bi bi-copy'></i>";
         }, 1200);
     });
+    // For teachers, at each step (stage_code.rb): the whole file, which
+    // waits in the <template> right after the button.
+    let stageCopy = new ClipboardJS('.stage-code-copy', {
+        text: function(trigger) { return trigger.nextElementSibling.content.textContent; },
+    });
+    stageCopy.on('success', function(e) {
+        let icon = e.trigger.querySelector('.bi');
+        e.clearSelection();
+        e.trigger.classList.add('copied');
+        icon.className = 'bi bi-check-lg';
+        setTimeout(function() {
+            e.trigger.classList.remove('copied');
+            icon.className = 'bi bi-copy';
+        }, 1200);
+    });
 }
 
 // Bootstrap icons (<i class="bi …">) draw their symbol with CSS, and the
