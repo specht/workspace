@@ -88,8 +88,9 @@ void setup_palette(void)
             shade[light][color] = palette_shade[light][color];
 }
 
-// Texturen: 64 x 64 Texel, jedes Texel ist eine Farbnummer der Palette
-#define TEX 64
+// Texturen: TEX x TEX Texel, so groß wie die Kacheln in textures.png;
+// jedes Texel ist eine Farbnummer der Palette
+#define TEX PALETTE_TEX
 
 // die Texturen in der Reihenfolge der Kacheln in textures.png
 enum

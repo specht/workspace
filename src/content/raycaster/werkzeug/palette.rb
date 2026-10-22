@@ -9,7 +9,8 @@
 #
 # textures.png ist ein Streifen aus sieben quadratischen Kacheln nebeneinander,
 # wie ihn das 2D Game Studio speichert: Boden, die fünf Wandarten 1 bis 5,
-# Decke. Kacheln mit 8, 16 oder 32 Pixeln werden auf 64 vergrößert.
+# Decke. Die Kacheln sind 16, 32 oder 64 Pixel groß; so groß bleiben sie auch
+# in palette.h (PALETTE_TEX).
 #
 # So entsteht die Palette, und jeder Schritt speichert ein Bild:
 #   1. alle Texturen zusammen auf wenige Grundfarben bringen (1-grundfarben.png)
@@ -21,7 +22,6 @@
 
 require 'chunky_png'
 
-TEX = 64
 TEXTURES = 7
 LEVELS = 16
 BASE_COLORS = 40
@@ -45,16 +45,17 @@ dither = ARGV.include?('--dither')
 # --- die Kacheln lesen -----------------------------------------------------
 
 image = ChunkyPNG::Image.from_file(file)
-size = image.height
-abort "#{file}: #{image.width} x #{size} Pixel; erwartet sind #{TEXTURES} quadratische Kacheln nebeneinander" unless image.width == TEXTURES * size
-abort "#{file}: Kacheln mit #{size} Pixeln; erlaubt sind 8, 16, 32 oder 64" unless [8, 16, 32, 64].include?(size)
-scale = TEX / size
+TEX = image.height
+abort "#{file}: #{image.width} x #{TEX} Pixel; erwartet sind #{TEXTURES} quadratische Kacheln nebeneinander" unless image.width == TEXTURES * TEX
+abort "#{file}: Kacheln mit #{TEX} Pixeln; erlaubt sind 16, 32 oder 64" unless [16, 32, 64].include?(TEX)
+# die Bilder der Schritte gleich groß, wie groß die Kacheln auch sind
+ZOOM = 64 / TEX
 
-# tiles[t][y][x] = [r, g, b], auf 64 x 64 vergrößert; Durchsichtiges wird schwarz
+# tiles[t][y][x] = [r, g, b]; Durchsichtiges wird schwarz
 tiles = Array.new(TEXTURES) do |t|
   Array.new(TEX) do |y|
     Array.new(TEX) do |x|
-      c = image[t * size + x / scale, y / scale]
+      c = image[t * TEX + x, y]
       a = ChunkyPNG::Color.a(c)
       a < 128 ? [0, 0, 0] : [ChunkyPNG::Color.r(c), ChunkyPNG::Color.g(c), ChunkyPNG::Color.b(c)]
     end
@@ -124,7 +125,7 @@ counts = Hash.new(0)
 tiles.each { |tile| tile.each { |row| row.each { |c| counts[c] += 1 } } }
 base = median_cut(counts.to_a, BASE_COLORS)
 puts "#{counts.size} verschiedene Farben in #{file}, #{base.size} Grundfarben"
-save('1-grundfarben.png', TEXTURES * TEX, TEX, 2) { |x, y| base[nearest(base, tiles[x / TEX][y][x % TEX])] }
+save('1-grundfarben.png', TEXTURES * TEX, TEX, 2 * ZOOM) { |x, y| base[nearest(base, tiles[x / TEX][y][x % TEX])] }
 
 # --- 2. Rampen: jede Grundfarbe in 16 Helligkeiten -------------------------
 
@@ -187,7 +188,7 @@ texture = tiles.map do |tile|
     end
   end
 end
-save('4-texturen.png', TEXTURES * TEX, TEX, 2) { |x, y| palette[texture[x / TEX][y][x % TEX]] }
+save('4-texturen.png', TEXTURES * TEX, TEX, 2 * ZOOM) { |x, y| palette[texture[x / TEX][y][x % TEX]] }
 
 # --- die Schattentabelle: dieselbe Farbe mit der Helligkeit light / 15 -----
 
@@ -198,7 +199,7 @@ shade = Array.new(LEVELS) do |light|
   end
 end
 lights = [15, 11, 7, 4]
-save('5-schatten.png', TEXTURES * TEX, lights.size * TEX, 1) do |x, y|
+save('5-schatten.png', TEXTURES * TEX, lights.size * TEX, ZOOM) do |x, y|
   palette[shade[lights[y / TEX]][texture[x / TEX][y % TEX][x % TEX]]]
 end
 

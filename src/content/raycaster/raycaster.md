@@ -1026,8 +1026,9 @@ enum
 Unter `wall_color` kommen die Texturen, in der Reihenfolge der Kacheln im Bild:
 
 ```c
-// Texturen: 64 x 64 Texel, jedes Texel ist eine Farbnummer der Palette
-#define TEX 64
+// Texturen: TEX x TEX Texel, so groß wie die Kacheln in textures.png;
+// jedes Texel ist eine Farbnummer der Palette
+#define TEX PALETTE_TEX
 
 // die Texturen in der Reihenfolge der Kacheln in textures.png
 enum
@@ -1074,7 +1075,7 @@ int texel(int t, double u, double v)
 }
 ```
 
-`& (TEX - 1)` hält die Zahl zwischen 0 und 63, auch wenn `u` einmal genau 1 ist. Die Wandscheibe bekommt die Textur und `u` statt einer Farbe:
+`PALETTE_TEX` schreibt `palette.rb` in `palette.h`: so viele Pixel, wie deine Kacheln breit sind, bei den mitgelieferten 64. `& (TEX - 1)` hält die Zahl zwischen 0 und `TEX - 1`, auch wenn `u` einmal genau 1 ist. Die Wandscheibe bekommt die Textur und `u` statt einer Farbe:
 
 ```c
 // eine senkrechte Wandscheibe: je weiter weg, desto niedriger;
@@ -1131,7 +1132,7 @@ crop-element: #canvas
 
 Zeichne deine eigenen Texturen im [2D Game Studio](https://2d.hackschule.de/), wie die Kacheln der [Klötzchenwelt](/raylib):
 
-1. Lege ein neues Sprite an, zum Beispiel »Wände«. Unter »Funktionen« › »Sprite« › »Größe ändern« stellst du 64 × 64 Pixel ein; 16 oder 32 gehen auch, das Werkzeug vergrößert sie auf 64.
+1. Lege ein neues Sprite an, zum Beispiel »Wände«. Unter »Funktionen« › »Sprite« › »Größe ändern« stellst du 64 × 64 Pixel ein, oder 32 × 32 oder 16 × 16. In dieser Größe kommen die Texturen in `palette.h` und in den Raycaster: Kleine Kacheln sehen aus der Nähe gröber aus.
 2. Zeichne sieben Frames desselben Zustands, in dieser Reihenfolge: Boden, die Wandarten 1 bis 5 (in der Karte Ziegel, Stein, Holz, Metall, Moos) und die Decke.
 3. Wähle »Funktionen« › »Sprite« › »Als Bild speichern« › »alle Frames dieses Zustands nebeneinander«. Dein Browser speichert die sieben Frames nebeneinander als ein PNG-Bild.
 
@@ -1276,7 +1277,7 @@ Mischen heißt in einer Palette: die Rot-, Grün- und Blauwerte der vier Farben 
 
 ```c
 // Mipmaps: jede Textur noch einmal in halber Größe, in Viertelgröße ...
-// Stufe 0 ist das Original mit 64 Texeln, dann 32, 16, 8 und 4
+// Stufe 0 ist das Original, bei 64 Texeln dann 32, 16, 8 und 4
 #define MIP_LEVELS 5
 uint8_t mip[TEXTURES][MIP_LEVELS][TEX][TEX];
 
@@ -1357,7 +1358,7 @@ int texel(int t, int level, double u, double v)
 }
 ```
 
-`TEX >> level` ist `TEX` durch 2 hoch `level`: 64, 32, 16, 8, 4. Welche Stufe passt, hängt davon ab, wie viele Texel auf ein Pixel fallen. Bei einer Wand sind das `TEX / wall_height`, in `draw_wall_column`:
+`TEX >> level` ist `TEX` durch 2 hoch `level`, bei 64 Texeln 64, 32, 16, 8, 4. Welche Stufe passt, hängt davon ab, wie viele Texel auf ein Pixel fallen. Bei einer Wand sind das `TEX / wall_height`, in `draw_wall_column`:
 
 ```c
 ~     double wall_top = H / 2.0 - wall_height / 2;
