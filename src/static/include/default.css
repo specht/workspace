@@ -5424,6 +5424,36 @@ h3:has(+ .person) {
     .person .portraits img { width: 5em; }
 }
 
+/* A book to read on (the Black Books of Abrash and Sanglard): a book icon
+   beside its title, author and year, two sentences on what is in it and
+   where to read it; like a person box, without a photo (covers are not free) */
+.book {
+    display: grid;
+    grid-template-columns: 2.2em minmax(0, 1fr);
+    gap: 0 0.9em;
+    align-items: start;
+    margin: 1.5em 0;
+    padding: 0.9em 1.1em;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.6em;
+    background: var(--bs-tertiary-bg);
+    font-size: 0.92em;
+    line-height: 1.5;
+    text-align: left;
+    hyphens: auto;
+}
+.book > .bi {
+    grid-column: 1;
+    grid-row: 1 / span 20;
+    margin: 0;
+    font-size: 1.9em;
+    line-height: 1;
+    color: var(--bs-secondary-color);
+}
+.book > .bi::before { vertical-align: 0; }
+.book p { grid-column: 2; margin: 0 0 0.5em; text-align: left; }
+.book p:last-child { margin-bottom: 0; }
+
 /* The box that _tool(name) puts into a page (Tools in tools.rb); it opens
    the tool in a new tab. */
 

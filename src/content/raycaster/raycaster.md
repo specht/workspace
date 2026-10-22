@@ -1249,6 +1249,45 @@ crop-element: #canvas
 <strong>Ausprobieren:</strong> Ersetze in <code>light_at</code> die 0.04 durch 0.2: Es wird eng und düster wie in einem Keller mit einer Fackel. Mit 0.005 ist alles hell erleuchtet. Stell den Wert danach wieder zurück.
 </div>
 
+### Linien gleicher Tiefe
+
+Warum zeichnet das Programm die Wände Spalte für Spalte, Boden und Decke aber Zeile für Zeile? Es kommt darauf an, wo im Bild alles gleich weit weg ist.
+
+<div class='gallery columns-2'>
+<figure>
+<img src='tiefe-gerade.webp' alt='Blick einen Gang entlang in eine Halle mit einem Pfeiler: Auf den beiden Wänden des Gangs stehen senkrechte blaue Linien, nach hinten immer dichter; auf Boden und Decke liegen waagrechte grüne Linien. Die Wände, die gerade vor einem stehen, haben keine blauen Linien.'>
+<figcaption>Geradeaus: blau, was in einer Bildspalte gleich weit weg ist, grün, was in einer Bildzeile gleich weit weg ist.</figcaption>
+</figure>
+<figure>
+<img src='tiefe-gedreht.webp' alt='Derselbe Ort, nach links gedreht: Die linke Wand des Gangs läuft groß und schräg durchs Bild, der Pfeiler steht schräg in der Halle. Die blauen Linien auf den Wänden sind weiter senkrecht, die grünen auf Boden und Decke weiter waagrecht.'>
+<figcaption>Nach links gedreht: Die Wände stehen schräg, die Linien bleiben senkrecht und waagrecht.</figcaption>
+</figure>
+</div>
+
+Eine Wand steht senkrecht: In einer Bildspalte ist sie von oben bis unten gleich weit von dir weg, und die Textur wird dort gleichmäßig gestreckt; `v` wächst von Pixel zu Pixel um gleich viel. Der Boden liegt waagrecht: In einer Bildzeile ist er überall gleich weit weg, und von Pixel zu Pixel kommt dasselbe Stück `step_x`, `step_y` dazu. Entlang einer solchen **Linie gleicher Tiefe** ist eine Textur nur ein gleichmäßiger Schritt nach dem anderen, ohne eine eigene Division für jeden Pixel.
+
+Das bleibt so, wenn du dich drehst: Eine Bildspalte zeigt immer eine senkrechte Linie in der Welt, eine Bildzeile immer eine waagrechte, quer zum Blick. Nur wer nach oben oder unten schaut, kippt das.
+
+Wolfenstein 3D und DOOM haben nur senkrechte Wände und waagrechte Böden und lassen dich nicht nach oben oder unten schauen, und das ist kein Zufall. Auf einer schrägen Fläche, einer Rampe oder einer gekippten Wand, laufen die Linien gleicher Tiefe schräg durchs Bild. Erst Quake (1996) zeichnet Flächen in jedem Winkel: Es rechnet die Textur alle 16 Pixel genau aus und geht dazwischen in gleichmäßigen Schritten.
+
+### Jeder Takt zählte
+
+Dein Programm rechnet mit `double`, ruft für jeden Pixel `texel` und `shaded` auf und ist trotzdem schnell genug, denn ein Rechner von heute schafft Milliarden Rechenschritte in der Sekunde. 1992 war es ein 386er mit 33 MHz, 33 Millionen Takte in der Sekunde. Ein Bild mit 320 × 200 Pixeln hat 64 000 davon; sollen es 30 Bilder in der Sekunde sein, bleiben für jeden Pixel etwa 17 Takte, für alles: das Texel holen, abdunkeln, schreiben, weiterzählen. Kommazahlen konnte ein 386er ohne einen zusätzlichen Chip gar nicht rechnen. Darum rechnete man mit ganzen Zahlen in Festkomma und schrieb die innerste Schleife in Assembler, Takt für Takt gezählt. Wolfenstein 3D erzeugte beim Start für jede mögliche Höhe einer Wandscheibe ein eigenes Stück Maschinencode, ganz ohne Schleife.
+
+Michael Abrash erzählt in seinem *Graphics Programming Black Book*, wie das ging. Sein Texture Mapper brauchte 44 Takte für jeden Pixel, als ihm der Programmierer John Miles schrieb, er schaffe es in 9, »Hmph!«. Abrash nahm die Herausforderung an, Kapitel 58 heißt »The 9-Cycle Dare«. Den entscheidenden Einfall hatte sein Freund Chris Hecker: Spalten statt Zeilen zu zeichnen, wie deine Wandscheiben, weil die Grafikkarte dann nicht bei jedem Pixel umgeschaltet werden musste. Das halbierte die Zeit, und am Ende waren es 5,5 Takte.
+
+_person(abrash)
+
+<div class='book'>
+<i class='bi bi-book'></i>
+<p><strong>Graphics Programming Black Book</strong>, Michael Abrash, 1997. Über tausend Seiten darüber, wie Grafik schnell wird, vom Zählen der Takte bis zu Quake; Kapitel 58 ist die Geschichte mit den 9 Takten. Abrash hat das Buch 2001 frei ins Netz gestellt: <a href='https://www.jagregory.com/abrash-black-book/'>online lesen</a>.</p>
+</div>
+
+<div class='book'>
+<i class='bi bi-book'></i>
+<p><strong>Game Engine Black Book: Wolfenstein 3D</strong>, Fabien Sanglard, 2017. Wie Wolfenstein 3D auf den Rechnern von 1992 lief: die Hardware, der Raycaster, die Wandscheiben aus Maschinencode, mit vielen Bildern. Das PDF gibt es kostenlos auf <a href='https://fabiensanglard.net/gebbwolf3d/'>fabiensanglard.net</a>.</p>
+</div>
+
 ## Mipmaps
 
 ### Flimmern in der Ferne
@@ -1556,6 +1595,19 @@ crop-element: #canvas
 <img src='fertig-raum.webp' alt='Ein anderer Raum des Raycasters, mit Wänden und Boden aus anderen Materialien, nach hinten im Dunkel.'>
 <figcaption>Ein anderer Raum</figcaption>
 </figure>
+</div>
+
+## Nach Wolfenstein: DOOM
+
+Ein Jahr später, 1993, kam DOOM, wieder mit der Grafik von John Carmack, und es sieht ganz anders aus: Treppen, Fenster, hohe Hallen und niedrige Gänge, Wände in jedem Winkel, flackerndes Licht. Ein Gitter aus Kästchen gibt es nicht mehr. Die Karte besteht aus **Wänden**, Strecken zwischen zwei Punkten in jeder Richtung und Länge, und aus **Sektoren**: Flächen mit einer eigenen Höhe für Boden und Decke und einer eigenen Helligkeit.
+
+Strahlen über ein Gitter zu schicken geht damit nicht mehr. Stattdessen sortiert DOOM die Wände: Ein **BSP-Baum**, beim Bauen der Karte einmal ausgerechnet, sagt für jeden Standort, welche Wand vor welcher liegt; die Klötzchenwelt erklärt ihn im Abschnitt »Der Baum der Wände« ([Klötzchenwelt](/raylib)), die Bäume selbst stehen im Handbuch unter [Bäume](/reference/baeume). DOOM zeichnet die Wände von vorn nach hinten, jede Bildspalte nur so weit, wie sie noch frei ist, und hört auf, sobald alle Spalten voll sind.
+
+Vieles kennst du trotzdem: Jede Wand wird Spalte für Spalte gezeichnet, Boden und Decke Zeile für Zeile, entlang der Linien gleicher Tiefe, und das Licht kommt aus einer Schattentabelle wie deiner, der COLORMAP. Auch DOOM bleibt dabei, dass Wände senkrecht stehen und Böden waagrecht liegen, und nach oben oder unten schauen kann man nicht. Ganz in 3D ging es erst mit Quake.
+
+<div class='book'>
+<i class='bi bi-book'></i>
+<p><strong>Game Engine Black Book: DOOM</strong>, Fabien Sanglard, 2018. Die Fortsetzung des Buchs über Wolfenstein 3D: wie DOOM den BSP-Baum, die Sektoren und das Licht auf einem 386er und einem 486er zum Laufen brachte. Auch dieses PDF gibt es kostenlos auf <a href='https://fabiensanglard.net/gebbdoom/'>fabiensanglard.net</a>, und wer lieber in den Quelltext schaut: Sanglard hat ihn auch Stück für Stück <a href='https://fabiensanglard.net/doomIphone/doomClassicRenderer.php'>erklärt</a>.</p>
 </div>
 
 ## Wie geht es weiter?

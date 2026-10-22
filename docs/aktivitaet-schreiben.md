@@ -296,6 +296,25 @@ Augen auf etwa 40 % der Höhe, 320 × 400 Pixel als WebP. Der Kasten steht im
 Fluss der Seite, Foto links, Text rechts, und ist so hoch wie das Größere von
 beiden.
 
+### Bücher zum Weiterlesen
+
+Ein Buch, das genau dort weitermacht, wo ein Abschnitt aufhört (Abrashs
+*Graphics Programming Black Book* nach den Texture Mappern, Sanglards
+*Game Engine Black Book* nach Wolfenstein 3D), bekommt einen Kasten wie ein
+Mensch, mit einem Buch-Icon statt eines Fotos: Titel, Autor, Jahr, zwei
+Sätze, was darin steht, und wo man es lesen kann. Ein Cover steht nicht
+darin, denn Cover sind nicht frei.
+
+```html
+<div class='book'>
+<i class='bi bi-book'></i>
+<p><strong>Titel</strong>, Autor, Jahr. Was darin steht. Wo es zu lesen ist: <a href='…'>…</a>.</p>
+</div>
+```
+
+Nur Bücher, die man lesen kann, ohne sie zu kaufen, oder die so bekannt
+sind, dass eine Bibliothek sie hat; jeder Link ist geprüft.
+
 ### Zum Ausprobieren einladen
 
 Wie etwas funktioniert, versteht man oft erst, wenn man es ändert und sieht,

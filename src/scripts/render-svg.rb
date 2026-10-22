@@ -22,6 +22,7 @@ DARK = {
     '#2b5fb4' => '#6ea2f2', # the blue of the way, pointers, headings
     '#6b7280' => '#9aa1ac', # grey notes and dashed arrows
     '#d1d5db' => '#3a3f47', # separating lines
+    '#f3f4f6' => '#202226', # a second pale area beside the pale blue (a ceiling over a floor)
     '#dc2626' => '#f87171', # red: the x axis
     '#16a34a' => '#4ade80', # green: the y axis
 }.freeze
