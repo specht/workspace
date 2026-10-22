@@ -85,7 +85,9 @@ module PageKinds
             html << "<span class='page-kind-sep' aria-hidden='true'>›</span>#{h.(label)}" unless label.empty?
             html << '</span>'
             unless used.empty?
-                links = used.map { |s, title| "<a href='/#{h.(s)}'>#{h.(title)}</a>" }.join(' ')
+                # titles are HTML already (»HTML &amp; CSS«): unescaped first
+                links = used.map { |s, title| "<a href='/#{h.(s)}'>#{h.(CGI.unescapeHTML(title.to_s))}</a>" }
+                            .join("<span class='page-kind-sep' aria-hidden='true'>·</span>")
                 html << "<span class='page-kind-links'>Wird verwendet in: #{links}</span>"
             end
             html << extra.to_s

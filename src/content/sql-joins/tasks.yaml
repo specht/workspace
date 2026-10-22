@@ -31,7 +31,7 @@ tasks:
       type: sql
       expect_query: SELECT continent, COUNT(*) FROM country GROUP BY continent
       tables: { country: 197 }
-      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+      setup: Lade zuerst die ganze Datenbank, wie oben unter »Die ganze Datenbank laden« beschrieben.
     feedback:
       - when: { same_result_as: "SELECT COUNT(*) FROM country" }
         say: Das sind alle Länder zusammen. Mit `GROUP BY continent` zählt die Datenbank für jeden Kontinent einzeln.
@@ -47,7 +47,7 @@ tasks:
       expect_query: SELECT continent, SUM(population) FROM country GROUP BY continent ORDER BY SUM(population) DESC
       sorted_by: 2 DESC
       tables: { country: 197 }
-      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+      setup: Lade zuerst die ganze Datenbank, wie oben unter »Die ganze Datenbank laden« beschrieben.
     feedback:
       - when: { same_result_as: "SELECT continent, COUNT(*) FROM country GROUP BY continent" }
         say: "`COUNT(*)` zählt die Länder. Die Einwohner zählt `SUM(population)` zusammen."
@@ -60,7 +60,7 @@ tasks:
       type: sql
       expect_query: SELECT continent, COUNT(*) FROM country GROUP BY continent HAVING COUNT(*) > 40
       tables: { country: 197 }
-      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+      setup: Lade zuerst die ganze Datenbank, wie oben unter »Die ganze Datenbank laden« beschrieben.
     feedback:
       - when: { same_result_as: "SELECT continent, COUNT(*) FROM country GROUP BY continent" }
         say: Das sind alle Kontinente. Welche Gruppen übrig bleiben, entscheidet `HAVING`, nach `GROUP BY`.
@@ -146,7 +146,7 @@ tasks:
       type: sql
       expect_query: SELECT country.name, COUNT(*) FROM country JOIN city ON city.country_code = country.code GROUP BY country.code, country.name ORDER BY COUNT(*) DESC LIMIT 1
       tables: { country: 197, city: 4748 }
-      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+      setup: Lade zuerst die ganze Datenbank, wie oben unter »Die ganze Datenbank laden« beschrieben.
     feedback:
       - when: { same_result_as: "SELECT country_code, COUNT(*) FROM city GROUP BY country_code ORDER BY COUNT(*) DESC LIMIT 1" }
         say: Das Kürzel stimmt. Für den Namen kommt `country` mit einem `JOIN` dazu.

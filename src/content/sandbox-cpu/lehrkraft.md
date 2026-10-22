@@ -8,9 +8,9 @@ Diese Seite begleitet die CPU Sandbox, ersetzt sie aber nicht. Sie ist für alle
 <tr><th>Was nie passiert</th><td>Der Workspace committet, pusht oder zieht nichts. Der private Schlüssel wird nicht geöffnet.</td></tr>
 </table>
 
-**Aufgabe 5** ist die wichtige. Sie meldet, was fehlt, mit den echten Dateinamen und den Befehlen dafür: nicht committete Dateien, kein Push, ein Branch ohne Verbindung zum Server, oder dass Git den Namen der Person noch nicht kennt. »Gepusht« heißt: so weit das Repository es weiß; die Prüfung holt nichts vom Server.
+**Aufgabe 6** (»Committet und gepusht«) ist die wichtige. Sie meldet, was fehlt, mit den echten Dateinamen und den Befehlen dafür: nicht committete Dateien, kein Push, ein Branch ohne Verbindung zum Server, oder dass Git den Namen der Person noch nicht kennt. »Gepusht« heißt: so weit das Repository es weiß; die Prüfung holt nichts vom Server.
 
-Am Ende jeder Stunde lohnt eine Minute: alle prüfen Aufgabe 5. Wer dabei hängen bleibt, ist genau die Person, die sonst nach zwei Wochen ohne einen einzigen Push auffällt.
+Am Ende jeder Stunde lohnt eine Minute: alle prüfen Aufgabe 6. Wer dabei hängen bleibt, ist genau die Person, die sonst nach zwei Wochen ohne einen einzigen Push auffällt.
 
 **Im Unterricht.** Eine Stunde mit einem der Beispielprogramme zu beginnen, wirkt Wunder: Erst sehen, was die Maschine kann, dann verstehen, wie. Der Kasten »Takte vorhersagen« eignet sich als Impuls für die ganze Klasse, die Tabelle Assembler gegen C als Gesprächsanlass über den Preis der Abstraktion. **Class progress** in der App zeigt alle Lösungen, nach Bytes und Takten verglichen.
 

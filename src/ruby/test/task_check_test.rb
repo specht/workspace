@@ -78,6 +78,20 @@ class TaskCheckTest < Minitest::Test
         refute TaskCheck.check(task, 'keine Ahnung', variables: {}).counts?
     end
 
+    # A German thousands dot: 57.596 bytes is 57596, as the pages write it;
+    # 0.111 stays a decimal, and a comma is always the decimal comma.
+    def test_number_with_a_thousands_dot
+        task = { 'id' => 'x', 'check' => { 'type' => 'number', 'expect' => 57596 } }
+        ['57596', '57.596', 'Es sind 57.596 Bytes', '57 596'].each do |given|
+            assert_equal :correct, TaskCheck.check(task, given, variables: {}).status, given
+        end
+        ['57,596', '57.6'].each do |given|
+            assert_equal :wrong, TaskCheck.check(task, given, variables: {}).status, given
+        end
+        small = { 'id' => 'y', 'check' => { 'type' => 'number', 'expect' => 0.111 } }
+        assert_equal :correct, TaskCheck.check(small, '0.111', variables: {}).status
+    end
+
     def test_parse_number
         {
             '111' => 111.0, '0,111' => 0.111, '0.111' => 0.111, '11 100 km' => 11100.0,

@@ -258,9 +258,9 @@ Wie VS Code aussieht, bestimmst du selbst. Ein **Farbschema** (englisch *Color T
 Drücke <kbd>Strg</kbd><kbd>K</kbd> und danach <kbd>Strg</kbd><kbd>T</kbd>. Es erscheint eine Liste aller Farbschemata, die installiert sind. Mit den Pfeiltasten wanderst du durch die Liste, und VS Code zeigt dir sofort, wie das jeweilige Schema aussieht. Du kannst auch einen Namen tippen, um die Liste zu filtern. Mit <kbd>Enter</kbd> übernimmst du ein Schema, mit <kbd>Esc</kbd> bleibt alles, wie es war.
 
 <!-- tutorial-screenshot
-# farben.py öffnen, die Liste der Farbschemata zeigt Monokai als Vorschau
-write-file: checkpoint-test/farben.py <- file:farben.py.txt
-open-file: farben.py
+# colors.py öffnen, die Liste der Farbschemata zeigt Monokai als Vorschau
+write-file: checkpoint-test/colors.py <- file:colors.py.txt
+open-file: colors.py
 click: Checkpoints
 press: Control+K
 press: Control+T
@@ -344,7 +344,7 @@ Ein paar beliebte Farbschemata zur Inspiration. Nach dem Namen unter jedem Bild 
 <!-- tutorial-screenshot
 # Farbschema Dracula Theme
 hook: install dracula-theme.theme-dracula
-open-file: farben.py
+open-file: colors.py
 press: Control+K
 press: Control+T
 type: Dracula Theme
@@ -356,7 +356,7 @@ sleep: 1.5
 <!-- tutorial-screenshot
 # Farbschema Gruvbox, warm und erdig
 hook: install jdinhlife.gruvbox
-open-file: farben.py
+open-file: colors.py
 press: Control+K
 press: Control+T
 type: Gruvbox Dark Medium
@@ -368,7 +368,7 @@ sleep: 1.5
 <!-- tutorial-screenshot
 # Farbschema GitHub Light, hell
 hook: install GitHub.github-vscode-theme
-open-file: farben.py
+open-file: colors.py
 press: Control+K
 press: Control+T
 type: GitHub Light Default
@@ -380,7 +380,7 @@ sleep: 1.5
 <!-- tutorial-screenshot
 # Farbschema Cobalt2, kräftiges Blau
 hook: install wesbos.theme-cobalt2
-open-file: farben.py
+open-file: colors.py
 press: Control+K
 press: Control+T
 type: Cobalt2

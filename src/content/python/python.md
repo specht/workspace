@@ -50,7 +50,7 @@ crop-terminal-lines: auto
 
 <img class='full' src='python-repl.webp' alt='Im Terminal läuft python3, zeigt seine Version und wartet mit &gt;&gt;&gt; auf Python-Code.'>
 
-Jetzt kannst du Python-Code direkt in der Shell eingeben und ausführen. Schreibe einfach `print("Hello, world!")` und drücke <kbd>Enter</kbd>. Du solltest die Ausgabe `Hello, world!` sehen.
+Jetzt kannst du Python-Code direkt in der Shell eingeben und ausführen. Schreibe einfach `print("Hello, World!")` und drücke <kbd>Enter</kbd>. Du solltest die Ausgabe `Hello, World!` sehen.
 
 Du kannst die Python-Shell wieder beenden, indem du `exit()` eingibst und <kbd>Enter</kbd> drückst oder einfach <kbd>Strg</kbd><kbd>D</kbd> drückst.
 

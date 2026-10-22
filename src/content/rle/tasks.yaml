@@ -13,9 +13,10 @@ tasks:
     check:
       type: answer
       compare: regex
-      expect: '^\s*4A\s*3B\s*2C\s*1D\s*$'
+      # auch 4×A, 4 x A, 4*A, mit Leerzeichen oder Kommas dazwischen
+      expect: '(?i)^\s*4\s*[×x*]?\s*A[\s,;]*3\s*[×x*]?\s*B[\s,;]*2\s*[×x*]?\s*C[\s,;]*1\s*[×x*]?\s*D\s*$'
     feedback:
-      - when: { matches: '^\s*4A\s*3B\s*2C\s*D\s*$' }
+      - when: { matches: '(?i)^\s*4\s*[×x*]?\s*A[\s,;]*3\s*[×x*]?\s*B[\s,;]*2\s*[×x*]?\s*C[\s,;]*D\s*$' }
         say: Auch ein Lauf der Länge 1 bekommt seine Zahl, sonst weiß man beim Lesen nicht, ob vor dem D eine Zahl fehlt.
       - when: { matches: 'A4' }
         say: Die Zahl kommt vor das Zeichen, so wie »4 × A«.

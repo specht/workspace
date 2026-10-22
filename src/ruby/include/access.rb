@@ -35,6 +35,18 @@ class Main < Sinatra::Base
         end
     end
 
+    # A page someone may not open: the page in the frame of the site
+    # (_forbidden.html) instead of an empty 403, as a missing page gets
+    # _not_found.html. The template reads the locals path and running_tests.
+    def halt_forbidden_page!
+        path = request.path
+        running_tests = my_running_tests()
+        template = File.read(File.join(@@static_dir, '_template.html'))
+        content = File.read(File.join(@@static_dir, '_forbidden.html'))
+        html = Main.inject_page_metadata(TrustedTemplate.render_page(template, content, binding), request.path)
+        halt 403, { 'Content-Type' => 'text/html; charset=utf-8' }, html
+    end
+
     def user_logged_in?
         return (!@session_user.nil?)
     end

@@ -1,0 +1,33 @@
+<style>
+    .forbidden {
+        max-width: 36em;
+        margin: 4em auto 6em auto;
+        text-align: center;
+    }
+    .forbidden-icon {
+        font-size: 4rem;
+        line-height: 1;
+        color: var(--bs-secondary-color);
+    }
+    .forbidden-icon::before {
+        vertical-align: 0;
+    }
+    .forbidden h1 {
+        margin: 0.4em 0 0.8em 0;
+    }
+    .forbidden p {
+        text-align: center;
+        hyphens: manual;
+    }
+</style>
+<div class='container'>
+    <div class='forbidden'>
+        <i class='bi bi-lock forbidden-icon' aria-hidden='true'></i>
+        <h1>Diese Seite ist nicht für dich</h1>
+        <p>Diese Seite können nur Lehrkräfte oder die Administration öffnen. Wenn du einen Link hierher bekommen hast, frag die Person, die ihn dir geschickt hat.</p>
+        <p>
+            <a class='btn btn-primary' href='/'>Zur Startseite</a>
+            <a class='btn btn-outline-secondary' href='/reference'>Zum Handbuch</a>
+        </p>
+    </div>
+</div>

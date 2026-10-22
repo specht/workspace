@@ -7,9 +7,14 @@ examples:
     pass:
       - answer: 4A3B2C1D
       - answer: 4A 3B 2C 1D
+      - answer: 4×A 3×B 2×C 1×D
+      - answer: 4 A, 3 B, 2 C, 1 D
+      - answer: 4a3b2c1d
     fail:
       - answer: AAAABBBCCD
       - answer: 4A3B2C
+      - answer: 4A3B2CD
+      - answer: A4B3C2D1
   rle:
     pass:
       - files: { rle/rle.rb: loesung/rle.rb }

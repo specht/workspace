@@ -7827,7 +7827,7 @@ class Main < Sinatra::Base
             (@@content[requested_slug] || {})[:teacher_only])
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
-            halt 403 unless teacher_account_logged_in?
+            halt_forbidden_page! unless teacher_account_logged_in?
         end
         if DEVELOPMENT && path =~ /^\/(reference\/)?[a-zA-Z0-9_-]+$/
             Main.refresh_tutorial(path[1, path.size - 1])
@@ -7873,7 +7873,7 @@ class Main < Sinatra::Base
         if path == '/admin'
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
-            halt 403 unless admin_logged_in?
+            halt_forbidden_page! unless admin_logged_in?
         end
         # How a screenshot pass is going (recreate-screenshots.rb), with the
         # files as they are captured: development only.
@@ -7895,12 +7895,12 @@ class Main < Sinatra::Base
         if path == '/personen'
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
-            halt 403 unless admin_logged_in?
+            halt_forbidden_page! unless admin_logged_in?
         end
         if path == '/gruppen'
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
-            halt 403 unless teacher_account_logged_in? || admin_logged_in?
+            halt_forbidden_page! unless teacher_account_logged_in? || admin_logged_in?
             # Teachers manage their groups on the class page (tab »Gruppe«);
             # /gruppen is the administration's overview of all groups.
             redirect "#{WEB_ROOT}/klasse?tab=lernende", 302 unless admin_logged_in?
@@ -7909,7 +7909,7 @@ class Main < Sinatra::Base
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
             # Every teacher, also one without a group yet: »Neue Gruppe«.
-            halt 403 if class_groups.empty? && !teacher_account_logged_in? && !admin_logged_in?
+            halt_forbidden_page! if class_groups.empty? && !teacher_account_logged_in? && !admin_logged_in?
         end
         if path == '/tic80/'
             s = File.read(File.join(@@static_dir, '/tic80/index.html'))

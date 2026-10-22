@@ -391,4 +391,4 @@ cd programs && git pull
 cd .. && ./run
 ```
 
-Und am Ende der Stunde: Aufgabe 5 noch einmal prüfen.
+Und am Ende der Stunde: [»Committet und gepusht«](#aufgabe-veroeffentlicht) noch einmal prüfen.

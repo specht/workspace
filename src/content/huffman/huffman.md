@@ -606,7 +606,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const forest = root.querySelector('.hf-forest');
         const table = root.querySelector('.hf-codes');
         if (!step) { say.textContent = 'Wähle oben einen Text.'; forest.innerHTML = ''; live = null; table.innerHTML = ''; return; }
-        const name = (t) => t.left ? `den Baum mit Gewicht ${t.weight}` : `»${esc(label(t.byte))}« (${t.weight})`;
+        const name = (t) => t.left ? `der Baum mit Gewicht ${t.weight}` : `»${esc(label(t.byte))}« (${t.weight})`;
         if (step.pick.length) {
             say.innerHTML = current === 0
                 ? `Jedes Byte ist ein Blatt, mit seiner Häufigkeit als Gewicht. Die beiden leichtesten sind ${name(step.pick[0])} und ${name(step.pick[1])}.`

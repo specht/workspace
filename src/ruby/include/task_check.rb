@@ -403,14 +403,30 @@ module TaskCheck
             return Result.new(:status => :invalid, :message => 'Ich finde in deiner Antwort keine Zahl.')
         end
         tolerance = check['tolerance'] || 0
-        return Result.new(:status => :correct) if (value - check['expect']).abs <= tolerance + 1e-9
+        # »57.596« may be 57,596 or, written the German way, 57596: either
+        # reading counts.
+        values = [value, thousands_reading(answer)].compact
+        return Result.new(:status => :correct) if values.any? { |v| (v - check['expect']).abs <= tolerance + 1e-9 }
 
         say = (task['feedback'] || []).find do |entry|
             w = entry['when']
-            (w.key?('equals') && (value - w['equals'].to_f).abs < 1e-9) ||
-                (w.key?('between') && value >= w['between'][0].to_f && value <= w['between'][1].to_f)
+            values.any? do |v|
+                (w.key?('equals') && (v - w['equals'].to_f).abs < 1e-9) ||
+                    (w.key?('between') && v >= w['between'][0].to_f && v <= w['between'][1].to_f)
+            end
         end
         Result.new(:status => :wrong, :message => say && say['say'])
+    end
+
+    # The number with a single dot before exactly three digits read as a
+    # thousands separator (57.596 as 57596), or nil if it has no such dot.
+    def self.thousands_reading(text)
+        m = text.to_s.match(/[-+−]?\d{1,3}\.\d{3}(?![\d.,])/)
+        return nil unless m && text.to_s.scan(/\d[.,]\d/).size == 1
+
+        Float(m[0].tr('−', '-').delete('.'))
+    rescue ArgumentError
+        nil
     end
 
     # The first number in a text. Accepts 111, 0,111, 0.111, 11 100,

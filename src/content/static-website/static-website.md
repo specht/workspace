@@ -460,7 +460,7 @@ viewport: 720x405
 -->
 
 <button class='tutorial-preview' type='button'>
-    <img src='website-styled.webp' alt='Die Axolotl-Webseite hat jetzt einen dunklen grünlichen Hintergrund, helle Schrift, türkisfarbene Links und ein Bild mit abgerundeten Ecken.'>
+    <img src='website-styled.webp' alt='Die Axolotl-Webseite hat jetzt einen dunklen, auberginefarbenen Hintergrund, fast weiße Schrift, rosa Links und ein Bild mit abgerundeten Ecken.'>
 </button>
 
 ### Wie eine CSS-Regel funktioniert

@@ -607,7 +607,7 @@
             const what = join.type === 'LEFT' ?
                 `Jede Zeile bleibt; wo ${join.name}${extra} nichts Passendes hat, stehen dort NULL-Werte (${unmatched} Zeilen).` :
                 `Nur Zeilen, zu denen es in ${join.name}${extra} etwas Passendes gibt${unmatched ? `; ${unmatched} Zeilen ohne Partner fallen weg` : ''}.`;
-            steps.push({ clause: join.type === 'LEFT' ? 'LEFT JOIN' : 'JOIN', text: `${code(join.source)}: Jede Zeile wird mit jeder Zeile aus ${join.name} verbunden, für die die Bedingung gilt. ${what} Jetzt sind es ${rows.length} Zeilen.`, table: view(columns, rows, null, { highlight: used(join.on) }) });
+            steps.push({ clause: join.type === 'LEFT' ? 'LEFT JOIN' : 'JOIN', text: `${code(join.source)}: Jede Zeile wird mit jeder Zeile aus ${join.name} verbunden, für die die Bedingung gilt. ${what} ${rows.length === 1 ? 'Jetzt ist es 1 Zeile' : `Jetzt sind es ${rows.length} Zeilen`}.`, table: view(columns, rows, null, { highlight: used(join.on) }) });
         }
 
         // WHERE
@@ -622,7 +622,7 @@
             });
             const kept = rows.filter((_, i) => marks[i] === 'keep');
             const nulls = marks.filter((m) => m === 'null').length;
-            steps.push({ clause: 'WHERE', text: `${code(query.sources.where)}: Die Bedingung wird für jede Zeile geprüft. ${kept.length} von ${rows.length} Zeilen bleiben.${nulls ? ` Bei ${nulls} ist das Ergebnis NULL, weil ein Wert fehlt; auch sie fallen weg.` : ''}`, table: view(columns, rows, marks, { highlight: used(query.where) }) });
+            steps.push({ clause: 'WHERE', text: `${code(query.sources.where)}: Die Bedingung wird für jede Zeile geprüft. ${kept.length} von ${rows.length} Zeilen ${kept.length === 1 ? 'bleibt' : 'bleiben'}.${nulls ? ` Bei ${nulls} ist das Ergebnis NULL, weil ein Wert fehlt; auch sie fallen weg.` : ''}`, table: view(columns, rows, marks, { highlight: used(query.where) }) });
             rows = kept;
         }
 
@@ -722,7 +722,7 @@
         const resultView = (list, marks) => lazyView(outColumns.map((o) => o.label), [], list.length, (i) => list[i].values.map(show), marks, null);
         steps.push({ clause: 'SELECT', text: groups ?
             `${code(query.sources.select)}: Aus jeder Gruppe wird eine Zeile, mit den Spalten aus SELECT. ${results.length} ${results.length === 1 ? 'Zeile' : 'Zeilen'}.` :
-            `${code(query.sources.select)}: Erst jetzt werden die Spalten ausgewählt und ausgerechnet${outColumns.some((o) => o.alias) ? ', und sie bekommen ihre Namen aus AS' : ''}. ${results.length} Zeilen, ${outColumns.length} ${outColumns.length === 1 ? 'Spalte' : 'Spalten'}.`,
+            `${code(query.sources.select)}: Erst jetzt werden die Spalten ausgewählt und ausgerechnet${outColumns.some((o) => o.alias) ? ', und sie bekommen ihre Namen aus AS' : ''}. ${results.length} ${results.length === 1 ? 'Zeile' : 'Zeilen'}, ${outColumns.length} ${outColumns.length === 1 ? 'Spalte' : 'Spalten'}.`,
             table: resultView(results) });
 
         // DISTINCT

@@ -60,7 +60,7 @@ crop-terminal-lines: auto
 
 <img class='full' src='irb.webp' data-scroll='5%' alt='Im Terminal läuft irb und wartet mit irb(main):001&gt; auf Ruby-Code.'>
 
-Jetzt kannst du Ruby-Code direkt in der Shell eingeben und ausführen. Schreibe einfach `puts "Hello, world!"` und drücke <kbd>Enter</kbd>. Du solltest die Ausgabe `Hello, world!` sehen.
+Jetzt kannst du Ruby-Code direkt in der Shell eingeben und ausführen. Schreibe einfach `puts "Hello, World!"` und drücke <kbd>Enter</kbd>. Du solltest die Ausgabe `Hello, World!` sehen.
 
 Du kannst die Ruby-Shell wieder beenden, indem du `exit` eingibst und <kbd>Enter</kbd> drückst oder einfach <kbd>Strg</kbd><kbd>D</kbd> drückst.
 

@@ -8,9 +8,9 @@ Diese Seite begleitet die Data Structures Sandbox, ersetzt sie aber nicht. Sie i
 <tr><th>Was nie passiert</th><td>Der Workspace committet, pusht oder zieht nichts. Der private Schlüssel wird nicht geöffnet.</td></tr>
 </table>
 
-**Aufgabe 5** ist die wichtige. Sie meldet, was fehlt, mit den echten Dateinamen und den Befehlen dafür: nicht committete Dateien, kein Push, ein Branch ohne Verbindung zum Server, oder dass Git den Namen der Person noch nicht kennt. »Gepusht« heißt: so weit das Repository es weiß; die Prüfung holt nichts vom Server.
+**Aufgabe 6** (»Committet und gepusht«) ist die wichtige. Sie meldet, was fehlt, mit den echten Dateinamen und den Befehlen dafür: nicht committete Dateien, kein Push, ein Branch ohne Verbindung zum Server, oder dass Git den Namen der Person noch nicht kennt. »Gepusht« heißt: so weit das Repository es weiß; die Prüfung holt nichts vom Server.
 
-Am Ende jeder Stunde lohnt eine Minute: alle prüfen Aufgabe 5. Wer dabei hängen bleibt, ist genau die Person, die sonst nach zwei Wochen ohne einen einzigen Push auffällt.
+Am Ende jeder Stunde lohnt eine Minute: alle prüfen Aufgabe 6. Wer dabei hängen bleibt, ist genau die Person, die sonst nach zwei Wochen ohne einen einzigen Push auffällt.
 
 **Im Unterricht.** Es gibt kein fertiges `add()` und keinen doppelten Boden: Die Darstellung zeigt den Speicher, den die Lernenden selbst verwalten. Die Kästen »Dieselben Aufrufe, zwei Welten«, »Erst skizzieren, dann rotieren« und »Kollisionen provozieren« auf der Seite eignen sich als Impulse für die ganze Klasse. **Class progress** in der App zeigt eine Tabelle aller Lernenden und Strukturen mit ihrem Teststand.
 

@@ -1,0 +1,19 @@
+# Ein kleines Programm, um Farbschemata zu vergleichen
+import random
+
+colors = ["Rot", "Grün", "Blau", "Lila"]
+points = {"Ada": 42, "Linus": 17, "Grace": 23}
+
+
+def greet(name, age=15):
+    """Begrüßt jemanden freundlich."""
+    if age >= 16 and name != "":
+        print(f"Hallo {name}, schön, dass du da bist!")
+    else:
+        print("Hi " + name + "!")
+    return len(name) * 2
+
+
+for i, color in enumerate(colors):
+    number = random.randint(1, 100) + i * 3.5
+    greet(color.upper(), age=number)
