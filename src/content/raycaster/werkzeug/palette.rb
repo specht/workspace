@@ -13,7 +13,7 @@
 #
 # So entsteht die Palette, und jeder Schritt speichert ein Bild:
 #   1. alle Texturen zusammen auf wenige Grundfarben bringen (1-grundfarben.png)
-#   2. jede Grundfarbe in 16 Helligkeiten, von schwarz bis voll (2-rampen.png)
+#   2. jede Grundfarbe in 16 Helligkeiten, von voll bis schwarz (2-rampen.png)
 #   3. diese Rampen auf 240 Farben bringen; die Farben 0 bis 15 bleiben für
 #      die Karte und die Anzeige reserviert (3-palette.png)
 #   4. die Texturen in der neuen Palette (4-texturen.png) und abgedunkelt
@@ -133,7 +133,8 @@ ramps = []
 base.each_with_index do |c, i|
   LEVELS.times { |level| ramps << [c.map { |v| v * level / (LEVELS - 1) }, base_count[i] + 1] }
 end
-save('2-rampen.png', LEVELS, base.size, 12) { |x, y| ramps[y * LEVELS + x][0] }
+# jede Grundfarbe eine Spalte, oben in voller Helligkeit, unten schwarz
+save('2-rampen.png', base.size, LEVELS, 12) { |x, y| ramps[x * LEVELS + LEVELS - 1 - y][0] }
 
 # --- 3. die Palette: 16 reservierte Farben und 240 aus den Rampen -----------
 

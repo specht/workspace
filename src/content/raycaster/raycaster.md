@@ -1614,8 +1614,6 @@ ruby palette.rb textures.png
 
 Es schreibt `palette.h` mit der Palette, der Schattentabelle und den Texturen als Farbnummern, und für jeden Schritt ein Bild. Öffne sie im Explorer.
 
-<div class='gallery columns-2'>
-<figure>
 <!-- tutorial-screenshot
 write-file: palette.rb <- file:werkzeug/palette.rb
 write-file: textures.png <- file:werkzeug/textures.png
@@ -1626,19 +1624,16 @@ terminal-run: ruby palette.rb textures.png
 wait-for-file-newer: raycaster/palette.h <- raycaster/textures.png
 terminal-wait-for-prompt
 terminal-expect-no-text: Error
-image-file: raycaster/2-rampen.png 4
+image-file: raycaster/2-rampen.png 2
 -->
-<img src='palette-rampen.webp' alt='Ein Gitter aus Farbfeldern: jede Zeile eine Grundfarbe aus den Texturen, Ziegelrot, Holzbraun, Steingrau, Metallblau, Moosgrün und andere, von links schwarz nach rechts in voller Helligkeit.'>
-<figcaption>Erst bringt es alle Texturen auf 40 Grundfarben und macht aus jeder eine Rampe mit 16 Helligkeiten.</figcaption>
-</figure>
-<figure>
+<img class='full' src='palette-rampen.webp' alt='Ein breites Band aus Farbfeldern: jede Spalte eine Grundfarbe aus den Texturen, Ziegelrot, Holzbraun, Steingrau, Metallblau, Moosgrün und andere, oben in voller Helligkeit, nach unten bis Schwarz.'>
+
+Erst bringt es alle Texturen auf 40 Grundfarben und macht aus jeder eine Rampe mit 16 Helligkeiten, oben hell, unten schwarz. Aus diesen 640 Farben sucht es 240 aus, dazu kommen 16 für die Karte und die Anzeige, in der ersten Zeile:
+
 <!-- tutorial-screenshot
-image-file: raycaster/3-palette.png 8
+image-file: raycaster/3-palette.png 2
 -->
-<img src='palette-256.webp' alt='256 Farbfelder in 16 Zeilen: oben schwarz, Grau, Gelb, Blau, Rot und Weiß für die Karte, dann sehr viele fast schwarze Farben, Grautöne, Rot- und Brauntöne, Grün und Blau, jeweils von dunkel nach hell.'>
-<figcaption>Aus den 640 Farben der Rampen werden 240, dazu 16 für die Karte und die Anzeige.</figcaption>
-</figure>
-</div>
+<img class='drawing' src='palette-256.webp' style='width: 18em; image-rendering: pixelated;' alt='256 Farbfelder in 16 Zeilen: oben schwarz, Grau, Gelb, Blau, Rot und Weiß für die Karte, dann sehr viele fast schwarze Farben, Grautöne, Rot- und Brauntöne, Grün und Blau, jeweils von dunkel nach hell.'>
 
 Sieh dir die Palette genau an: Viele Farben sind fast schwarz und fast grau. Ganz dunkel sehen Ziegelrot, Moosgrün und Metallblau beinahe gleich aus, und die Palette fasst sie zusammen. Darum werden Farben in dunklen Gängen grauer, so wie in DOOM.
 

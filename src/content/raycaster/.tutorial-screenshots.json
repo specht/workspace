@@ -69,20 +69,20 @@
     },
     "palette-256.webp": {
       "environment_fingerprint": "9d2d20c911253748bb8c90b65fcb62bdc29e7b68eabfb8b50fddaf8e7c2dc8d3",
-      "output_sha256": "58d73cb99f179fc9b42d13cf7ff403b24bcfd4dec2a0cfdacb64fa4b9cb58c6f",
-      "state_hash": "9b809fd5e7c34ebbfe02f1fee900f8ead7b5dd1adc2f58b05b0611b175ecbde9",
+      "output_sha256": "f3e40933b6baa0e5506e2a4c9bd980ca9e1b60199f636e9662f9c4818915c534",
+      "state_hash": "2b749b8b34623873fa2c18349765da4e1edaf32c8b159f68e8968549b9f39f78",
       "workspace_look": "4.140.0-ls368"
     },
     "palette-halle.webp": {
       "environment_fingerprint": "9d2d20c911253748bb8c90b65fcb62bdc29e7b68eabfb8b50fddaf8e7c2dc8d3",
-      "output_sha256": "b5aef265ff4ef3d49ad0285b029c567ec7d36d3b0890ca5c2aa82a24e35d92b7",
-      "state_hash": "143f2bd4cfe1d9e37201b3c5e6fb80ceb77f46c268df4077e98c08e5d6fdfb9d",
+      "output_sha256": "13f809dae9f0b4d10f1448e83f58f963a900fde1a60f002f9b230e9ef35844f1",
+      "state_hash": "3f33202fa5d146af2ca604d188009c2cbec3508704c63f8f3ebd0d6d68315aa0",
       "workspace_look": "4.140.0-ls368"
     },
     "palette-rampen.webp": {
       "environment_fingerprint": "9d2d20c911253748bb8c90b65fcb62bdc29e7b68eabfb8b50fddaf8e7c2dc8d3",
-      "output_sha256": "e63b91423b81b32315e46ef777f31f41692e02cc0f211e723fc9eed44ac275bb",
-      "state_hash": "2d98a0cf427849ae86a56ca99be82d9fa3cac7516a88c4b6f81b0e394d2a7ed2",
+      "output_sha256": "a3a370be0acb309ca22e90f0df82868099a2982bce187184ca010ab6b066426b",
+      "state_hash": "cf05f60010b8beedc2131c9bbc424b800dcb443487c1fb3b6e0a6ec36815f786",
       "workspace_look": "4.140.0-ls368"
     },
     "strahlen.webp": {
