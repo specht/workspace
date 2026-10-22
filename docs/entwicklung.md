@@ -240,6 +240,25 @@ Screenshot vom eigenen Rechner (Pfade stehen im Skript, je nach Hostname),
 `src/scripts/replace-screenshot.rb` ersetzt eine Bilddatei in allen
 Tutorials, die dieselbe Datei verwenden.
 
+### Bilder auf den Karten
+
+Die Karten der Startseite und die Sprach-Kacheln zeigen ihr Bild (`image:`
+im Meta-Block) nicht im Original, sondern in 480 und 960 px Breite
+(`src/ruby/include/card_images.rb`, getestet in `test/card_images_test.rb`):
+verlustbehaftetes WebP, nie breiter als das Original, im Bildcache neben dem
+Original als `HASH-480.webp` und `HASH-960.webp`. Die Karte nennt beide in
+`srcset`; der Browser nimmt die, die zu Breite und Pixeldichte passt. Nur die
+ersten drei Karten laden sofort, alle anderen mit `loading='lazy'`, wenn sie in
+die Nähe des Bildschirms kommen; von einem hellen und dunklen Bild lädt so nur
+das sichtbare.
+
+Fehlt eine Größe oder ist sie älter als das Original, erzeugt sie ein Thread
+des Ruby-Dienstes im Hintergrund (ImageMagick, etwa 0,1 s je Bild); die Seite
+wartet nicht darauf, ihr `srcset` nennt nur, was es schon gibt, und ohne
+beides zeigt die Karte das Original. Nach einem neuen Bild zeigt also der
+erste Aufruf das Original, ein späterer die kleinen Dateien. Ein geändertes
+Bild bekommt einen neuen Hash und damit neue Dateien; zu tun ist nichts.
+
 ## VS-Code-Erweiterungen
 
 Die eigenen Erweiterungen liegen in `src/vscode-extensions/`. Jede baut ihre

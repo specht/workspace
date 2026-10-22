@@ -46,6 +46,7 @@ require './include/account_deletion.rb'
 require './include/account_export.rb'
 require './include/mail_texts.rb'
 require './include/health.rb'
+require './include/card_images.rb'
 require 'base64'
 require 'cgi'
 require 'digest'
@@ -1334,26 +1335,6 @@ class Main < Sinatra::Base
             STDERR.puts "...padding of #{image_path} failed!" unless ok
         end
         image_sha1
-    end
-
-    # Width-specific variants are only needed by overview cards. Restrict this
-    # to normal converted cache entries; data-noconvert images use a different key.
-    def self.ensure_image_width(image_url, width)
-        match = image_url&.match(%r{\A/cache/([0-9a-f]{16})\.webp\z})
-        return unless match
-
-        source_path = "/webcache/#{match[1]}.webp"
-        return unless File.exist?(source_path)
-
-        target_path = "/webcache/#{match[1]}-#{width}.webp"
-        return if FileUtils.uptodate?(target_path, [source_path])
-
-        command = "convert #{source_path} -resize #{width}x #{target_path}"
-        system(command)
-        if $? != 0
-            STDERR.puts command
-            STDERR.puts "...conversion of #{source_path} failed!"
-        end
     end
 
     def self.inject_autotoc(root, options = {})
@@ -5851,6 +5832,7 @@ class Main < Sinatra::Base
                     io.puts ReferenceIndex.html(pages)
                     section_order = []
                 end
+                card_index = 0
                 section_order.each do |section_key|
                     section = @@sections[section_key]
                     # hidden: true in sections.yaml: the pages exist, the
@@ -5878,13 +5860,14 @@ class Main < Sinatra::Base
                             year = title[/\((\d{4})\)/, 1]
                             image = content[:image] || '/images/white.webp'
                             dark = content[:image_dark]
-                            [image, dark].compact.each { |url| Main.ensure_image_width(url, 1024) if url.start_with?('/cache/') }
+                            # Small variants, loaded when near the screen (CardImages).
+                            tile_image = ->(url) { "#{CardImages.attributes(url, :sizes => CardImages::TILE_SIZES)} loading='lazy' decoding='async'" }
                             # A logo with a dark variant (pascal-logo-dark.png) shows it in dark mode.
                             logo = if dark
-                                "<img alt='' class='theme-image-light' src='#{image.sub('.webp', '-1024.webp')}'>" \
-                                    "<img alt='' class='theme-image-dark' src='#{dark.sub('.webp', '-1024.webp')}'>"
+                                "<img alt='' class='theme-image-light' #{tile_image.(image)}>" \
+                                    "<img alt='' class='theme-image-dark' #{tile_image.(dark)}>"
                             else
-                                "<img alt='' src='#{image.sub('.webp', '-1024.webp')}'>"
+                                "<img alt='' #{tile_image.(image)}>"
                             end
                             io.puts "<a class='lang-tile' href='/#{slug}'>" \
                                 "<span class='lang-tile-logo'>#{logo}</span>" \
@@ -5906,18 +5889,21 @@ class Main < Sinatra::Base
                         if content[:needs_contrast] == 'light'
                             additional_classes << 'dark-only-bg-contrast-light'
                         end
-                        [content[:image], content[:image_dark]].compact.each do |image_url|
-                            Main.ensure_image_width(image_url, 1024)
-                        end
+                        # Small variants (CardImages). Only the first row loads
+                        # at once; the rest when it comes near the screen, and
+                        # of a light and a dark picture only the one shown.
+                        card_index += 1
+                        loading = card_index <= 3 && !content[:image_dark] ? '' : " loading='lazy'"
+                        card_image = ->(url) { "#{CardImages.attributes(url)}#{loading} decoding='async'" }
                         image_style = "object-position: #{content[:image_x]}% #{content[:image_y]}%;"
                         # What the picture shows (image_alt); the title next to
                         # it is no alt text, so without one it stays empty.
                         card_alt = CGI.escapeHTML(content[:image_alt].to_s)
                         if content[:image_dark]
-                            io.puts "<img alt='#{card_alt}' class='#{(additional_classes + ['theme-image-light']).join(' ')}' src='#{content[:image].sub('.webp', '-1024.webp')}' style='#{image_style}'>"
-                            io.puts "<img alt='#{card_alt}' class='#{(additional_classes + ['theme-image-dark']).join(' ')}' src='#{content[:image_dark].sub('.webp', '-1024.webp')}' style='#{image_style}'>"
+                            io.puts "<img alt='#{card_alt}' class='#{(additional_classes + ['theme-image-light']).join(' ')}' #{card_image.(content[:image])} style='#{image_style}'>"
+                            io.puts "<img alt='#{card_alt}' class='#{(additional_classes + ['theme-image-dark']).join(' ')}' #{card_image.(content[:image_dark])} style='#{image_style}'>"
                         else
-                            io.puts "<img alt='#{card_alt}' class='#{additional_classes.join(' ')}' src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='#{image_style}'>"
+                            io.puts "<img alt='#{card_alt}' class='#{additional_classes.join(' ')}' #{card_image.(content[:image] || '/images/white.webp')} style='#{image_style}'>"
                         end
                         io.puts "<div class='shade'></div>"
                         io.puts "<div class='card-content'>"

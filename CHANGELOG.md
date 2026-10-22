@@ -24,6 +24,11 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 - Automatron rechnet und zeichnet im Browser: `/api/automatron` entfällt, der Server
   braucht dafür keine Rechenzeit mehr, und das Ruby-Image kommt ohne Graphviz aus
   (kleiner nach dem nächsten `./config.rb build`).
+- Die Karten der Startseite laden ihre Bilder verzögert und in 480 bzw. 960 px Breite
+  (`HASH-480.webp`, `HASH-960.webp` im Bildcache `cache/`). Der Ruby-Dienst erzeugt sie im
+  Hintergrund, sobald die Startseite zum ersten Mal aufgerufen wird (einige zehn Sekunden;
+  bis dahin zeigen die Karten die Originale). Die alten `cache/*-1024.webp` braucht nichts
+  mehr; sie können gelöscht werden.
 
 ## 1.0.0 (21. Oktober 2026)
 
