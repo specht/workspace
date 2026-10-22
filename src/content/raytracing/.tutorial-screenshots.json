@@ -91,12 +91,6 @@
       "state_hash": "9a1d3844d2ed0808f6d55c44dab5bb35e31fc2b5abf989d023c4b951dda13e4a",
       "workspace_look": "4.140.0-ls368"
     },
-    "pathtracing.webp": {
-      "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
-      "output_sha256": "3f7eb503058dcf068a8f97bf4f25e794ea38fec9e4c5d211bbd5c7c0c23017d5",
-      "state_hash": "a7b2f190aa99ff63a5554fcc04115efe306d9446c0012538c1539582aa94c0c5",
-      "workspace_look": "4.140.0-ls368"
-    },
     "planet.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
       "output_sha256": "11ee35ba145737cf1ea8d19b1fbf1879cbef912d76f6a381f2a3b9be31d05497",
@@ -105,14 +99,14 @@
     },
     "pt-mit.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
-      "output_sha256": "34aed75ed3fc735f4f4ddd2d5ff7b8cd99bf9263ef1d44b7c97690d9d0b7fc05",
-      "state_hash": "6e57ffa1560f6dbae6b2c530f25a6def254c133fa4e581d37d3d6a9ea68bf519",
+      "output_sha256": "ea1b1e1a0be5bd560db9a4ba239c55192d870eac31cb14e1049ca60797271983",
+      "state_hash": "8c79a3c83445bed65ac2e050b6b0420c58bd089e19ec4a47ac5ffdb55adcd1db",
       "workspace_look": "4.140.0-ls368"
     },
     "pt-ohne.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
-      "output_sha256": "a655c6c57cdd5287259f281bfd03612ce551afd55b8173a37e43c46bdabd7747",
-      "state_hash": "bf78acc89def5c65aa1cdb1fc9e86e0381d443e19574f607877c0aae26471dda",
+      "output_sha256": "bb7e6debc82d61c1c9b6c5d59f0c8bab1ac81bc96e33a7e1698f3d3f163763b6",
+      "state_hash": "3d027e00ed22e8107fa37bdf28b713b3d3458d34e12a4f14c1aeb4fb265c5389",
       "workspace_look": "4.140.0-ls368"
     },
     "raytracer.webp": {

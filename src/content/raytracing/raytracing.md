@@ -1607,6 +1607,32 @@ vec bounce(hit h, int depth)
     vec light = add(sunlight(h), bounce(h, depth));
 ```
 
+Jeder Durchgang dauert jetzt etwa doppelt so lange, denn fast jeder Strahl, der etwas trifft, schickt einen weiteren los. In der Szene von vorhin bringt das wenig: Bei Tag kommt fast alles Licht von der Sonne und vom Himmel. Am schönsten zeigt sich Path Tracing in einem Hof mit farbigen Wänden. Eine Wand ist hier eine Kugel mit dem Radius 1000: so groß, dass sie in der Nähe der Szene fast eben ist. Kevin Beasons »smallpt«, ein Path Tracer in 99 Zeilen C++, baut seine ganze Szene so. Ersetze die Kugeln:
+
+```c
+sphere spheres[] = {
+    {{-1003, 0, 0}, 1000, {.color = {0.75, 0.12, 0.1}}},                // Wand links, rot
+    {{1003, 0, 0}, 1000, {.color = {0.15, 0.6, 0.2}}},                  // Wand rechts, grün
+    {{0, 0, -1003}, 1000, {.color = {0.8, 0.8, 0.8}}},                  // Wand hinten, weiß
+    {{-1.1, 1.0, -1.0}, 1.0, {.color = {0.85, 0.85, 0.85}}},            // weiß
+    {{1.3, 0.8, -1.3}, 0.8, {.color = {0.9, 0.9, 0.95}, .mirror = 0.9}}, // Spiegelkugel
+    {{0.7, 0.6, 0.9}, 0.6, {.color = {0.95, 1.0, 0.97}, .glass = 1.5}}, // Glaskugel
+    {{-1.6, 0.45, 1.4}, 0.45, {.color = {0.85, 0.85, 0.85}}},           // weiß, klein
+};
+```
+
+Die Wände sind so hoch wie breit, fast 1000. Damit sie die Sonne nicht verdecken, kommt sie jetzt von vorn oben, und die Kamera schaut gerade in den Hof hinein. In `main`:
+
+```c
+    sun_dir = normalize((vec){0, 1.6, 0.7});
+~
+    double angle = 0, height = 1.6;
+```
+
+Kreist du zu weit, stehst du hinter einer Wand und siehst ihre Rückseite.
+
+<div class='gallery columns-2'>
+<figure>
 <!-- tutorial-screenshot
 write-file: raytracer.c <- file:stufen/16-pathtracing.c
 terminal-open
@@ -1620,11 +1646,9 @@ hook: open raytracer.html
 hook: frames 512
 crop-element: #canvas
 -->
-<img class='full fit-width' src='pathtracing.webp' alt='Die Szene mit Path Tracing: Die Unterseiten der Kugeln sind etwas heller als vorher, sonst sieht sie aus wie das fertige Bild.'>
-
-Jeder Durchgang dauert jetzt etwa doppelt so lange, denn fast jeder Strahl, der etwas trifft, schickt einen weiteren los. Viel heller wird es dabei nicht: Bei Tag kommt das meiste Licht von der Sonne und vom Himmel, das Licht von Fläche zu Fläche ist nur ein kleiner Teil. Wie viel es ist, siehst du, wenn der Himmel kein Licht gibt:
-
-<div class='gallery columns-2'>
+<img src='pt-mit.webp' alt='Ein Hof mit Path Tracing: links eine leuchtend rote, rechts eine grüne Wand, hinten eine weiße; auf dem Schachbrett zwei weiße Kugeln, eine Spiegelkugel und eine Glaskugel. Die Wände sind hell, die Kugeln auch von unten beleuchtet.'>
+<figcaption>Mit Path Tracing: der sonnige Boden strahlt die Wände und die Kugeln an</figcaption>
+</figure>
 <figure>
 <!-- tutorial-screenshot
 write-file: raytracer.c <- file:stufen/vergleich-ohne-pathtracing.c
@@ -1639,32 +1663,15 @@ hook: open raytracer.html
 hook: frames 512
 crop-element: #canvas
 -->
-<img src='pt-ohne.webp' alt='Das fertige Bild ohne Licht vom Himmel: Wo die Sonne nicht hinscheint, ist es fast schwarz, auf den Schattenseiten der Kugeln und in ihren Schatten auf dem Schachbrett.'>
-<figcaption>Ohne Path Tracing: was die Sonne nicht trifft, ist fast schwarz</figcaption>
-</figure>
-<figure>
-<!-- tutorial-screenshot
-write-file: raytracer.c <- file:stufen/vergleich-mit-pathtracing.c
-terminal-open
-terminal-run: make PROGRAM=raytracer
-terminal-wait-for-prompt
-terminal-expect-no-text: error:
-terminal-expect-no-text: ***
-tab: preview
-viewport: 800x450
-hook: open raytracer.html
-hook: frames 512
-crop-element: #canvas
--->
-<img src='pt-mit.webp' alt='Dieselbe Szene mit Path Tracing, ebenfalls ohne Licht vom Himmel: Die Schattenseiten und die Schatten sind hell, weil der sonnige Boden sie anstrahlt, und neben der roten Kugel liegt ein roter Schimmer auf dem Boden.'>
-<figcaption>Mit Path Tracing: der sonnige Boden strahlt alles an</figcaption>
+<img src='pt-ohne.webp' alt='Derselbe Hof ohne Path Tracing: Die rote und die grüne Wand sind fast schwarz, die Unterseiten der weißen Kugeln dunkel.'>
+<figcaption>Ohne Path Tracing: die Sonne streift die Wände nur, sie bleiben dunkel</figcaption>
 </figure>
 </div>
 
-Ohne Path Tracing ist fast schwarz, was die Sonne nicht direkt trifft; nur die Spiegelungen im Boden und in den Metallkugeln bringen dort noch etwas Licht hin. Mit Path Tracing strahlt der sonnige Boden die Unterseiten der Kugeln an, die Schatten werden hell, und die rote Kugel färbt den Boden neben sich rot.
+Die Sonne steht vor dem Hof und streift die Seitenwände nur; ohne Path Tracing bleiben sie dunkel. Mit Path Tracing wirft der sonnige Boden sein Licht an die Wände, die leuchten rot und grün, und die Kugeln bekommen Licht von unten.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Schalte das Licht vom Himmel selbst ab: In <code>bounce</code> wird aus <code>scale(sky(d), 0.3)</code> ein <code>scale(sky(d), 0)</code>. Woher kommt das Licht in den Schatten jetzt? Setz danach 0.3 wieder ein.
+<strong>Ausprobieren:</strong> Schieb die kleine weiße Kugel dicht an die rote Wand, ihr Mittelpunkt bei <code>x = -2.4</code>. Welche Seite der Kugel wird rötlich, und warum gerade diese? Schieb sie danach zurück.
 </div>
 
 ## Wie geht es weiter?

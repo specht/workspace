@@ -1,4 +1,4 @@
-// Zum Vergleich auf der Seite: das fertige Programm ohne Licht vom Himmel.
+// Zum Vergleich auf der Seite: der Hof aus Stufe 16, aber ohne Path Tracing (mit skylight).
 // Raytracer: Kugeln, ein Schachbrett, Spiegel, Glas, Lack, Metall und weiche Schatten.
 // Pfeiltasten links/rechts: um die Szene kreisen, hoch/runter: höher oder tiefer.
 // Jedes Bild ist ein weiterer Durchgang; das Bild wird mit der Zeit glatter.
@@ -117,13 +117,13 @@ typedef struct
 } sphere;
 
 sphere spheres[] = {
-    {{-0.3, 1.2, -1.4}, 1.2, {.color = {0.9, 0.9, 0.95}, .mirror = 0.9}},                                  // Spiegelkugel
-    {{1.5, 0.8, 0.8}, 0.8, {.color = {0.95, 1.0, 0.97}, .glass = 1.5}},                                    // Glaskugel
-    {{-2.2, 0.9, 0.3}, 0.9, {.planet = true}},                                                             // Planet
-    {{-0.5, 0.45, 1.2}, 0.45, {.color = {0.9, 0.15, 0.1}, .varnish = true}},                               // rot, lackiert
-    {{3.0, 0.4, -0.4}, 0.4, {.color = {1.0, 0.75, 0.3}, .mirror = 0.95, .metal = true, .rough = 0.12}},    // Gold
-    {{2.1, 0.35, 1.7}, 0.35, {.color = {0.95, 0.55, 0.4}, .mirror = 0.95, .metal = true, .rough = 0.35}},  // Kupfer, matt
-    {{0.4, 0.3, 2.3}, 0.3, {.color = {0.1, 0.35, 0.9}, .varnish = true, .rough = 0.3}},                    // blau, seidenmatt
+    {{-1003, 0, 0}, 1000, {.color = {0.75, 0.12, 0.1}}},                // Wand links, rot
+    {{1003, 0, 0}, 1000, {.color = {0.15, 0.6, 0.2}}},                  // Wand rechts, grün
+    {{0, 0, -1003}, 1000, {.color = {0.8, 0.8, 0.8}}},                  // Wand hinten, weiß
+    {{-1.1, 1.0, -1.0}, 1.0, {.color = {0.85, 0.85, 0.85}}},            // weiß
+    {{1.3, 0.8, -1.3}, 0.8, {.color = {0.9, 0.9, 0.95}, .mirror = 0.9}}, // Spiegelkugel
+    {{0.7, 0.6, 0.9}, 0.6, {.color = {0.95, 1.0, 0.97}, .glass = 1.5}}, // Glaskugel
+    {{-1.6, 0.45, 1.4}, 0.45, {.color = {0.85, 0.85, 0.85}}},           // weiß, klein
 };
 // so viele Kugeln stehen in der Liste
 #define SPHERE_COUNT (int)(sizeof spheres / sizeof spheres[0])
@@ -267,7 +267,7 @@ vec skylight(hit h)
     vec d = normalize(add(h.normal, random_in_sphere()));
     if (d.y < 0)
         return (vec){0, 0, 0};  // nach unten ist der Boden im Weg
-    return scale(sky(d), 0 * light_through(h.point, d));
+    return scale(sky(d), 0.3 * light_through(h.point, d));
 }
 
 vec trace(vec origin, vec dir, int depth);
@@ -405,9 +405,9 @@ void draw(int passes)
 int main(void)
 {
     screen_open(W, H, pixel_rgb24, "Raytracer");
-    sun_dir = normalize((vec){1.4, 1.0, 0.3});
+    sun_dir = normalize((vec){0, 1.6, 0.7});
 
-    double angle = 0.2, height = 1.8;
+    double angle = 0, height = 1.6;
     int passes = 0;
 
     while (!should_close())
