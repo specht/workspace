@@ -1255,7 +1255,7 @@ Warum zeichnet das Programm die Wände Spalte für Spalte, Boden und Decke aber 
 
 <div class='gallery columns-2'>
 <figure>
-<img src='tiefe-gerade.webp' alt='Blick einen Gang entlang in eine Halle mit einem Pfeiler: Auf den beiden Wänden des Gangs stehen senkrechte blaue Linien, nach hinten immer dichter; auf Boden und Decke liegen waagrechte grüne Linien. Die Wände, die gerade vor einem stehen, haben keine blauen Linien.'>
+<img src='tiefe-gerade.webp' alt='Blick einen Gang entlang in eine Halle mit einem Pfeiler: Auf den beiden Wänden des Gangs stehen senkrechte blaue Linien, auf Boden und Decke liegen waagrechte grüne Linien, alle in gleichen Abständen. Die Wände, die gerade vor einem stehen, haben keine blauen Linien.'>
 <figcaption>Geradeaus: blau, was in einer Bildspalte gleich weit weg ist, grün, was in einer Bildzeile gleich weit weg ist.</figcaption>
 </figure>
 <figure>
