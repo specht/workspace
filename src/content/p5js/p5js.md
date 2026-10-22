@@ -39,6 +39,10 @@ function draw() {
     triangle(200, 150, 120, 300, 280, 300);
     fill(lerpColor(c6, c8, y));
     triangle(200, 150, 280, 300, 290, 270);
-    phi += 0.01;
+    // 0.6 im Bogenmaß pro Sekunde: deltaTime ist die Zeit seit dem letzten Bild in Millisekunden
+    phi += 0.6 * deltaTime / 1000;
 }
 ```
+
+Wie weit sich `phi` in einem Bild ändert, hängt von `deltaTime` ab, der Zeit seit dem letzten Bild. So bewegt sich alles gleich schnell, ob der Rechner 60 Bilder in der Sekunde schafft, 144 oder nur 20.
+

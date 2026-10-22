@@ -421,14 +421,21 @@ int main(void)
 
     double angle = 0.2, height = 1.8;
     int passes = 0;
+    double last = seconds();
 
     while (!should_close())
     {
-        // Pfeiltasten: um die Szene kreisen, höher oder tiefer
-        if (key_down(pixel_key_left))  { angle -= 0.03; passes = 0; }
-        if (key_down(pixel_key_right)) { angle += 0.03; passes = 0; }
-        if (key_down(pixel_key_up) && height < 6)     { height += 0.05; passes = 0; }
-        if (key_down(pixel_key_down) && height > 0.3) { height -= 0.05; passes = 0; }
+        // die Zeit seit dem letzten Bild, höchstens eine Zehntelsekunde
+        double now = seconds();
+        double dt = fmin(now - last, 0.1);
+        last = now;
+
+        // Pfeiltasten: um die Szene kreisen, höher oder tiefer, so schnell
+        // pro Sekunde, egal wie viele Bilder der Rechner schafft
+        if (key_down(pixel_key_left))  { angle -= 1.2 * dt; passes = 0; }
+        if (key_down(pixel_key_right)) { angle += 1.2 * dt; passes = 0; }
+        if (key_down(pixel_key_up) && height < 6)     { height += 2 * dt; passes = 0; }
+        if (key_down(pixel_key_down) && height > 0.3) { height -= 2 * dt; passes = 0; }
         // H heller, D dunkler: nur die Anzeige ändert sich, die Durchgänge bleiben
         if (key_pressed(pixel_key_h))
             exposure *= 1.5;

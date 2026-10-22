@@ -200,7 +200,7 @@ tasks:
   - id: unentschieden
     title: Gleichzeitig
     prompt: |
-      Beide Spuren fahren im selben Bild gegen eine Wand. Wer bekommt den
+      Beide Spuren fahren im selben Schritt gegen eine Wand. Wer bekommt den
       Punkt? Lies dazu die Schleife in `main`.
     check:
       type: choice

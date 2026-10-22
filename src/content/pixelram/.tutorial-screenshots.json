@@ -12,7 +12,7 @@
     "crystal-caves.webp": {
       "environment_fingerprint": "bf62809f37f0549c624ab0b8bcd9f6c1cd154127b1e0b78d33392c058b5e0730",
       "output_sha256": "09e2b16a48fc24f7553fe6dd70a95d0824996d798bca141a08ac283a7f7783c2",
-      "state_hash": "29917d17289479c6f284a606fd9839b87dbd60951b1670f26d7490bc52baad62",
+      "state_hash": "1a98846c9ae7d6cf4162402c0042d731d3c612bc66169da95355b965fb9afe54",
       "variants": {
         "crystal-caves-crt.webp": "5fbd7668b4c29031f47e10d3d549b62a3f016d2def86bb12df486b5b5c4031d1"
       },
@@ -75,7 +75,7 @@
     "julia.webp": {
       "environment_fingerprint": "bf62809f37f0549c624ab0b8bcd9f6c1cd154127b1e0b78d33392c058b5e0730",
       "output_sha256": "b65929685098ca3476e11084397957a6141be8bc9eb8d10131541cb24051e395",
-      "state_hash": "947c1249464d03e4be91ce0d7253bd72c1e705d4b212a6b730d0e84582d2d37b",
+      "state_hash": "8938df1a6f8077b3c1156243177d56db78da4e096ec55698d59296ce74ee182d",
       "variants": {
         "julia-crt.webp": "b37e2a2bb957543bae3ec2308c6810b6e232b9af125215b70828adb8c205dd62"
       },
@@ -83,28 +83,28 @@
     },
     "lichtspur-fahren.webp": {
       "environment_fingerprint": "bf62809f37f0549c624ab0b8bcd9f6c1cd154127b1e0b78d33392c058b5e0730",
-      "output_sha256": "503d5823d02429164dc7964d58cf6805f26f9abd1bba35ace02826b79a1cd51a",
-      "state_hash": "7df4cdf5203e33aa1b704c5e7b355f65b240493cf8d7e123bc137729a3bacfc8",
+      "output_sha256": "9b68a78de3f5487d04a8a749a5a902508a136cc9415c1c6cd290b4b17f09a8d4",
+      "state_hash": "2846a411075b2fddc15044917c0ab5dc28037dc808be571caf9ed0c89596f276",
       "variants": {
-        "lichtspur-fahren-crt.webp": "b4ea668aec708cf43238550282f8ff627bf3c3ef9fa4d7c63dbf428449b0502a"
+        "lichtspur-fahren-crt.webp": "373ecb8fb6200518f77e7c2e6ba12893e60df674cf8d7040255ee9e9f92020ca"
       },
       "workspace_look": "4.140.0-ls368"
     },
     "lichtspur.webp": {
       "environment_fingerprint": "bf62809f37f0549c624ab0b8bcd9f6c1cd154127b1e0b78d33392c058b5e0730",
-      "output_sha256": "ddc8d1359dcc80c9d7b8fbadd5d2fa50ac4af436c87f7e343c762e1d3fc54a55",
-      "state_hash": "7437ed0542379e8d4c302ca0cd2610d0d9ef649fb4b59a04c02e132c790a0735",
+      "output_sha256": "7993c16526fac533cfff61b9c0c0f1e198d255cc3c0383cd03682c6fa241a3b5",
+      "state_hash": "d9486a909d0e09d4f7c874000a7542312951843792db1747d45dd205d42a9f93",
       "variants": {
-        "lichtspur-crt.webp": "f7b1365e7727eb7c9ef3e0b4cd13f62c04c543bfd3300a529d7631d191121bd3"
+        "lichtspur-crt.webp": "146ba10c399f86a014b0f9668e996b52f37826bdded9402ed668927508caa4c3"
       },
       "workspace_look": "4.140.0-ls368"
     },
     "magic.webp": {
       "environment_fingerprint": "bf62809f37f0549c624ab0b8bcd9f6c1cd154127b1e0b78d33392c058b5e0730",
-      "output_sha256": "69cd00c7490deeeb99037bf379151f94d5aff0f1303edca6d0639dbeb2310e11",
-      "state_hash": "744fa9a575fd15b3f4a58dfaafd01aaac8c3fd3a334499b39f7b77430edf9bf6",
+      "output_sha256": "ac8943dc91583d4355ac3ccd2a4ce22787293d21b066012eaf32587613b10ca8",
+      "state_hash": "ac366f0b9d8d3e6ef8ae9b7f0ac672f78f2b2b94ec0c391e555d62b6be2f135e",
       "variants": {
-        "magic-crt.webp": "768b5005d0ffadaca473ee312d4990e746d63ccbbbb7c65fa5b6510c97614315"
+        "magic-crt.webp": "6450a4b834a0b0e8898f1362392177c65124151a36b909e11e034ccf86169b5c"
       },
       "workspace_look": "4.140.0-ls368"
     },
@@ -136,7 +136,7 @@
     "tunnel.webp": {
       "environment_fingerprint": "bf62809f37f0549c624ab0b8bcd9f6c1cd154127b1e0b78d33392c058b5e0730",
       "output_sha256": "02e9ba631007bdcf6724aaa25eb5f43d5590b76744c323a6bac1b7ad2d7eee3a",
-      "state_hash": "46a8419a1bc1184e4efb167ed08523ee2e1d1dc2f876b639ecffece693f4d7f2",
+      "state_hash": "2465fbf761b2c10b637d489aa9c5224b75d3bff0cd49efbf0bf8d0f047b5144e",
       "variants": {
         "tunnel-crt.webp": "259d17a311bb8ef0477be63e5095eab9c50cd03cbcf2a7bf9f933770a86f3850"
       },

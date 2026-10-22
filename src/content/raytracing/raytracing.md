@@ -835,14 +835,21 @@ int main(void)
 
     double angle = 0.2, height = 1.8;
     int passes = 0;
+    double last = seconds();
 
     while (!should_close())
     {
-        // Pfeiltasten: um die Szene kreisen, höher oder tiefer
-        if (key_down(pixel_key_left))  { angle -= 0.03; passes = 0; }
-        if (key_down(pixel_key_right)) { angle += 0.03; passes = 0; }
-        if (key_down(pixel_key_up) && height < 6)     { height += 0.05; passes = 0; }
-        if (key_down(pixel_key_down) && height > 0.3) { height -= 0.05; passes = 0; }
+        // die Zeit seit dem letzten Bild, höchstens eine Zehntelsekunde
+        double now = seconds();
+        double dt = fmin(now - last, 0.1);
+        last = now;
+
+        // Pfeiltasten: um die Szene kreisen, höher oder tiefer, so schnell
+        // pro Sekunde, egal wie viele Bilder der Rechner schafft
+        if (key_down(pixel_key_left))  { angle -= 1.2 * dt; passes = 0; }
+        if (key_down(pixel_key_right)) { angle += 1.2 * dt; passes = 0; }
+        if (key_down(pixel_key_up) && height < 6)     { height += 2 * dt; passes = 0; }
+        if (key_down(pixel_key_down) && height > 0.3) { height -= 2 * dt; passes = 0; }
 
         // jedes Bild ein weiterer Durchgang: das Bild wird immer glatter
         set_camera(angle, height);
@@ -854,6 +861,8 @@ int main(void)
     return 0;
 }
 ```
+
+Wie weit die Kamera in einem Bild kreist, rechnet das Programm aus der Zeit seit dem letzten Bild aus, `dt`: 1,2 im Bogenmaß pro Sekunde, egal ob der Rechner 60 Bilder in der Sekunde schafft oder nur 10. `fmin` begrenzt `dt` auf eine Zehntelsekunde, damit die Kamera nach einer Pause, etwa mit dem Tab im Hintergrund, nicht springt.
 
 Klicke ins Bild und kreise mit den Pfeiltasten um die Kugeln.
 
@@ -1646,10 +1655,10 @@ In `draw` beginnt der Strahl jetzt auf der Linse. `sharp` ist der Punkt, an dem 
 Mit <kbd>W</kbd> und <kbd>S</kbd> schiebst du die Schärfe weiter weg oder näher heran:
 
 ```c
-~         if (key_down(pixel_key_down) && height > 0.3) { height -= 0.05; passes = 0; }
+~         if (key_down(pixel_key_down) && height > 0.3) { height -= 2 * dt; passes = 0; }
         // W/S: scharf weiter weg oder näher
-        if (key_down(pixel_key_w) && focus < 12) { focus += 0.05; passes = 0; }
-        if (key_down(pixel_key_s) && focus > 1)  { focus -= 0.05; passes = 0; }
+        if (key_down(pixel_key_w) && focus < 12) { focus += 3 * dt; passes = 0; }
+        if (key_down(pixel_key_s) && focus > 1)  { focus -= 3 * dt; passes = 0; }
 ```
 
 Und der Titel sagt, wo es scharf ist; die Zeile mit `snprintf` wird zu:
@@ -1832,7 +1841,7 @@ uint8_t to_byte(double c)
 Mit <kbd>H</kbd> belichtest du heller, mit <kbd>D</kbd> dunkler, jedes Mal um das Anderthalbfache. Die Durchgänge bleiben dabei, denn die Belichtung ändert nur, wie die Summe angezeigt wird. In der Schleife in `main`, unter den Pfeiltasten:
 
 ```c
-~         if (key_down(pixel_key_down) && height > 0.3) { height -= 0.05; passes = 0; }
+~         if (key_down(pixel_key_down) && height > 0.3) { height -= 2 * dt; passes = 0; }
         // H heller, D dunkler: nur die Anzeige ändert sich, die Durchgänge bleiben
         if (key_pressed(pixel_key_h))
             exposure *= 1.5;

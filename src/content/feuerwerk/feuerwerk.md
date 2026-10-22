@@ -48,7 +48,7 @@ git clone ${template} ~/feuerwerk
 
 Ein Funke hat eine Position `x`, `y` und eine Geschwindigkeit `vx`, `vy`: wie viele Pixel er pro Sekunde nach rechts und nach unten fliegt. Ein negatives `vy` heißt: nach oben. Beides fasst ein `struct` zusammen.
 
-In jedem Bild fragt das Programm, wie viel Zeit seit dem letzten Bild vergangen ist, `dt`, meistens etwa eine Sechzigstelsekunde. Dann gelten zwei Regeln:
+In jedem Bild fragt das Programm, wie viel Zeit seit dem letzten Bild vergangen ist, `dt`, meistens etwa eine Sechzigstelsekunde. Liegt der Tab eine Weile im Hintergrund, kommt kein Bild, und `dt` wäre danach mehrere Sekunden groß; darum nimmt das Programm höchstens eine Zehntelsekunde. Dann gelten zwei Regeln:
 
 - Die Schwerkraft ändert die Geschwindigkeit: `vy += GRAVITY * dt`. Jede Sekunde fällt der Funke 40 Pixel pro Sekunde schneller.
 - Die Geschwindigkeit ändert die Position: `x += vx * dt` und `y += vy * dt`.
@@ -95,6 +95,8 @@ int main(void)
     {
         double now = seconds();
         double dt = now - last;   // Sekunden seit dem letzten Bild
+        if (dt > 0.1)   // nach einer Pause keinen Riesensprung
+            dt = 0.1;
         last = now;
 
         spark.vy += GRAVITY * dt;   // die Schwerkraft zieht nach unten
@@ -243,6 +245,8 @@ int main(void)
     {
         double now = seconds();
         double dt = now - last;
+        if (dt > 0.1)   // nach einer Pause keinen Riesensprung
+            dt = 0.1;
         last = now;
 
         if (now > next_explosion)
@@ -573,6 +577,8 @@ int main(void)
     {
         double now = seconds();
         double dt = now - last;
+        if (dt > 0.1)   // nach einer Pause keinen Riesensprung
+            dt = 0.1;
         last = now;
 
         if (now > next_rocket)

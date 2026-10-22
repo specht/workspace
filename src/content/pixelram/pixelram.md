@@ -579,9 +579,15 @@ record: 3.14s
 
 Kein Kreis wird verschoben: Das Programm rechnet jedes Bild komplett neu, und weil `t` wächst, liefert `sin` jedes Mal ein wenig andere Werte. Die Kanten gleiten dabei ruhig nach außen, weil `draw` sie glättet.
 
+Wie schnell die Wellen wandern, hängt dabei nur an der Uhr, nicht daran, wie viele Bilder pro Sekunde der Rechner schafft: Nach einer Sekunde ist `t` um 1 größer, ob in dieser Sekunde 144 Bilder gezeigt wurden, 60 oder nur 20. Auf einem langsamen Rechner springen die Wellen von Bild zu Bild ein größeres Stück, kommen aber in einer Sekunde genauso weit. Würde das Programm dagegen in jedem Bild ein festes Stück weiterrechnen, liefen die Wellen auf jedem Bildschirm anders schnell.
+
 _task(bewegung)
 
 _task(richtung)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Schreib <code>set_target_fps(10);</code> unter <code>use_palette("sweetie_16");</code>, übersetze mit <code>make</code> und lade die Vorschau neu. Jetzt zeigt PixelRAM höchstens 10 Bilder pro Sekunde statt 60. Achte darauf, wie weit ein Ring in einer Sekunde kommt, und wie gleichmäßig er dabei wandert. Nimm die Zeile danach wieder heraus.
+</div>
 
 ### Zwei Wellen treffen sich
 
@@ -667,15 +673,18 @@ Das ergibt `lichtspur.html`, die du in der Vorschau öffnest. So kann jedes Prog
 
 #define W 160
 #define H 90
+#define STEP (1.0 / 30)   // ein Schritt alle 1/30 Sekunde
 
 int main(void)
 {
     screen_open(W, H, pixel_indexed8, "Lichtspur");
     use_palette("sweetie_16");
-    set_target_fps(30);
 
     int x = 20, y = H / 2;   // Position
     int dx = 1, dy = 0;      // Richtung: nach rechts
+
+    double last = seconds();
+    double lag = 0;          // Zeit, für die noch Schritte fehlen
 
     while (!should_close())
     {
@@ -684,9 +693,19 @@ int main(void)
         if (key_pressed(pixel_key_left))  { dx = -1; dy = 0;  }
         if (key_pressed(pixel_key_right)) { dx = 1;  dy = 0;  }
 
-        x += dx;
-        y += dy;
-        set_pixel(x, y, 11);
+        double now = seconds();
+        lag += now - last;
+        last = now;
+        if (lag > 0.25)   // nach einer Pause nicht davonrasen
+            lag = 0.25;
+
+        while (lag >= STEP)
+        {
+            x += dx;
+            y += dy;
+            set_pixel(x, y, 11);
+            lag -= STEP;
+        }
 
         present();
     }
@@ -700,9 +719,9 @@ _task(loslassen)
 
 Klicke in die Vorschau, damit sie die Tasten bekommt, und steuere mit den Pfeiltasten. Drei Dinge sind neu:
 
-- Das Spielfeld hat nur 160 × 90 Pixel, also große Pixel, und `set_target_fps(30)` macht 30 Schritte pro Sekunde.
-- `key_pressed` ist in genau dem Bild wahr, in dem eine Taste heruntergedrückt wurde. `dx` und `dy` merken sich die Richtung, und jedes Bild geht die Spur einen Pixel weiter.
-- Das Programm löscht den Bildschirm nie. Jedes gesetzte Pixel bleibt stehen, so entsteht die Spur von selbst.
+- Das Spielfeld hat nur 160 × 90 Pixel, also große Pixel.
+- `key_pressed` ist in genau dem Bild wahr, in dem eine Taste heruntergedrückt wurde. `dx` und `dy` merken sich die Richtung, und bei jedem Schritt geht die Spur einen Pixel weiter.
+- Das Programm löscht den Bildschirm nie. Jedes gesetzte Pixel bleibt stehen, so entsteht die Spur.
 
 <!-- tutorial-screenshot
 write-file: lichtspur.c <- previous-code
@@ -723,8 +742,19 @@ crop-element: #canvas
 -->
 <img class='full' src='lichtspur-fahren.webp' alt='Eine türkise Linie fährt nach rechts, macht eine Schleife und kreuzt dabei ihre eigene Spur.'>
 
+### Ein fester Takt
+
+Die Spur fährt einen Pixel nach dem anderen, sie kann nicht wie die Wellen einfach ein krummes Stück weiterrücken. Würde sie in jedem Bild einen Schritt machen, wäre sie auf jedem Bildschirm anders schnell: Viele zeigen 60 Bilder pro Sekunde, manche 120 oder 144, ein langsamer Rechner schafft vielleicht nur 20, und ein Tab im Hintergrund zeigt gar keine. Deshalb fährt die Spur in einem festen Takt, nach der Uhr: alle `STEP` Sekunden, also 30-mal pro Sekunde, einen Schritt.
+
+`lag` sammelt die Zeit, die seit dem letzten Bild vergangen ist. Die innere `while`-Schleife macht für jede volle Dreißigstelsekunde darin einen Schritt und zieht sie von `lag` ab; der Rest wartet auf das nächste Bild. Bei 60 Bildern pro Sekunde fährt die Spur so etwa in jedem zweiten Bild einen Schritt, bei 10 Bildern pro Sekunde drei Schritte pro Bild. Gelenkt wird dagegen in jedem Bild, denn `key_pressed` ist nur in einem einzigen Bild wahr, und kein Tastendruck soll verloren gehen. War das Programm eine Weile angehalten, zum Beispiel weil der Tab im Hintergrund lag, holt es höchstens eine Viertelsekunde nach, statt Hunderte Schritte auf einmal zu fahren.
+
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Schreib <code>clear(0);</code> als erste Zeile in die <code>while</code>-Schleife, übersetze mit <code>make PROGRAM=lichtspur</code> und lade die Vorschau neu. Was bleibt von der Spur übrig, und warum? Ändere auch <code>set_target_fps(30)</code> in <code>set_target_fps(10)</code> oder <code>set_target_fps(60)</code>: Was ändert sich am Spiel? Nimm <code>clear(0);</code> danach wieder heraus und stell 30 wieder ein.
+<strong>Ausprobieren:</strong> Schreib <code>set_target_fps(10);</code> unter <code>use_palette("sweetie_16");</code>, übersetze mit <code>make PROGRAM=lichtspur</code> und lade die Vorschau neu. Jetzt zeigt PixelRAM höchstens 10 Bilder pro Sekunde. Achte darauf, wie schnell die Spur über das Feld kommt und in welchen Sprüngen sie wächst. Ändere danach <code>STEP</code> in <code>(1.0 / 60)</code>. Schreib zuletzt <code>clear(0);</code> als erste Zeile in die innere <code>while</code>-Schleife: Was bleibt von der Spur übrig, und warum? Nimm alles danach wieder heraus.
+</div>
+
+<div class='book'>
+<i class='bi bi-book'></i>
+<p><strong>Game Programming Patterns</strong>, Robert Nystrom, 2014. Das Kapitel »Game Loop« macht genau hier weiter: Es vergleicht Spielschleifen, die in jedem Bild einen Schritt machen, mit solchen, die mit der vergangenen Zeit rechnen, und landet beim festen Takt mit derselben Variable <code>lag</code>. Das ganze Buch ist frei <a href='https://gameprogrammingpatterns.com/game-loop.html'>online zu lesen</a>.</p>
 </div>
 
 Noch kannst du deine eigene Spur kreuzen und aus dem Bild fahren. Das ändert sich jetzt.
@@ -748,18 +778,22 @@ for (int y = 0; y < H; y++)
 }
 ```
 
-Und prüfe nach jedem Schritt, bevor das neue Pixel gesetzt wird:
+Und prüfe bei jedem Schritt, bevor das neue Pixel gesetzt wird:
 
 ```c
-x += dx;
-y += dy;
-if (get_pixel(x, y) != 0)
-    crashed = true;
+while (!crashed && lag >= STEP)
+{
+    x += dx;
+    y += dy;
+    if (get_pixel(x, y) != 0)
+        crashed = true;
 
-set_pixel(x, y, crashed ? 2 : 11);
+    set_pixel(x, y, crashed ? 2 : 11);
+    lag -= STEP;
+}
 ```
 
-Dazu gehören eine Variable `bool crashed = false;` vor der Schleife und ein `if (!crashed)` um alles, was in der Schleife lenkt und fährt, denn nach dem Zusammenstoß soll die Spur stehen bleiben. Die Unfallstelle wird rot (Farbe 2).
+Dazu gehört eine Variable `bool crashed = false;` vor der äußeren Schleife. `!crashed` in der Bedingung hält die Spur nach dem Zusammenstoß an, auch mitten in einem Bild, in dem sie noch mehrere Schritte vor sich hätte. Die Unfallstelle wird rot (Farbe 2).
 
 _task(reihenfolge)
 
@@ -780,6 +814,7 @@ Für zwei Spuren bräuchtest du alle Variablen doppelt: `x1`, `y1`, `dx1`, `x2`,
 #define H 90
 #define WALL 14
 #define CRASH 12
+#define STEP (1.0 / 30)   // ein Schritt alle 1/30 Sekunde
 
 typedef struct
 {
@@ -841,7 +876,6 @@ int main(void)
 {
     screen_open(W, H, pixel_indexed8, "Lichtspur");
     use_palette("sweetie_16");
-    set_target_fps(30);
 
     Player a = { .color = 3 };    // Orange, fährt mit WASD
     Player b = { .color = 11 };   // Türkis, fährt mit den Pfeiltasten
@@ -849,13 +883,34 @@ int main(void)
     bool running = false;   // Die Leertaste startet jede Runde.
     draw_field(&a, &b);
 
+    double last = seconds();
+    double lag = 0;         // Zeit, für die noch Schritte fehlen
+
     while (!should_close())
     {
+        double now = seconds();
+        lag += now - last;
+        last = now;
+        if (lag > 0.25)   // nach einer Pause nicht davonrasen
+            lag = 0.25;
+
         if (running)
         {
             steer(&a, pixel_key_w, pixel_key_s, pixel_key_a, pixel_key_d);
             steer(&b, pixel_key_up, pixel_key_down, pixel_key_left, pixel_key_right);
+        }
+        else if (key_pressed(pixel_key_space))
+        {
+            draw_field(&a, &b);
+            start(&a, 20, 1);
+            start(&b, W - 21, -1);
+            running = true;
+            lag = 0;   // die Runde beginnt ohne Rückstand
+        }
 
+        // beide Spuren fahren im selben Takt: immer beide einen Schritt
+        while (running && lag >= STEP)
+        {
             drive(&a);
             drive(&b);
             if (a.x == b.x && a.y == b.y)   // frontal ineinander
@@ -870,13 +925,7 @@ int main(void)
                 if (!a.crashed) a.wins++;
                 if (!b.crashed) b.wins++;
             }
-        }
-        else if (key_pressed(pixel_key_space))
-        {
-            draw_field(&a, &b);
-            start(&a, 20, 1);
-            start(&b, W - 21, -1);
-            running = true;
+            lag -= STEP;
         }
 
         present();
@@ -906,12 +955,12 @@ crop-element: #canvas
 
 _task(unentschieden)
 
-Mit der <kbd>Leertaste</kbd> beginnt eine Runde. Beide Spuren fahren im selben Bild einen Schritt, und erst danach wird gezeichnet. Deshalb ist es gerecht, wenn beide gleichzeitig verunglücken: Dann gewinnt niemand. Die Punkte stehen als Pixel in der oberen Wand.
+Mit der <kbd>Leertaste</kbd> beginnt eine Runde. Gelenkt wird in jedem Bild, gefahren im festen Takt: Bei jedem Schritt fahren beide Spuren, und erst danach wird gezeichnet. Deshalb ist es gerecht, wenn beide gleichzeitig verunglücken: Dann gewinnt niemand. Die Punkte stehen als Pixel in der oberen Wand.
 
 <div class='hint task'>
 <strong>Bau das Spiel aus.</strong> Ein paar Ideen, von leicht bis knifflig:
 <ul>
-<li><strong>Schneller werden:</strong> Erhöhe mit <code>set_target_fps</code> das Tempo, je länger eine Runde dauert.</li>
+<li><strong>Schneller werden:</strong> Mach aus <code>STEP</code> eine Variable, die mit jedem Schritt ein wenig kleiner wird: Je länger eine Runde dauert, desto schneller fahren beide Spuren.</li>
 <li><strong>Hindernisse:</strong> Setze in <code>draw_field</code> ein paar Blöcke in Wandfarbe ins Feld, mit <code>rand()</code> aus <code>&lt;stdlib.h&gt;</code> jedes Mal woanders.</li>
 <li><strong>Lücken:</strong> Lass jede Spur ab und zu ein paar Pixel nicht zeichnen. Durch die Lücken kann man hindurchfahren.</li>
 <li><strong>Computergegner:</strong> Spur b lenkt selbst. Sie schaut mit <code>get_pixel(b.x + b.dx, b.y + b.dy)</code> ein Feld voraus und biegt ab, wenn dort etwas ist. Wie kann sie auch weiter vorausschauen?</li>
