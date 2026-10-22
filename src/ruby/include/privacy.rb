@@ -13,11 +13,11 @@ require_relative 'authentication'
 # Each heading names the point of Art. 13/14 DSGVO it answers, so that a
 # reviewer can tick them off.
 #
-# The facts were checked in the code on 2026-10-18. Whoever changes what is
+# The facts were checked in the code on 2026-10-22. Whoever changes what is
 # stored, who sees it or which outside service is used changes it here too.
 module Privacy
     # When the facts were last checked against the code; the page says so.
-    CHECKED = Date.new(2026, 10, 21)
+    CHECKED = Date.new(2026, 10, 22)
 
     LEGAL_BASES = [:school, :consent].freeze
 
@@ -224,11 +224,14 @@ module Privacy
                 :how_long => "#{login_minutes} Minuten (Anmeldung per QR-Code: #{qr_minutes} Minuten) oder bis zur Anmeldung",
             },
             {
-                :data => 'Sitzungen: eine zufällige Kennung je angemeldetem Browser',
-                :categories => [:account],
-                :purpose => 'angemeldet bleiben',
-                :who => 'niemand',
-                :how_long => "#{session_days} Tage oder bis zur Abmeldung",
+                :data => 'Sitzungen: eine zufällige Kennung je angemeldetem Browser; dazu der Tag der Anmeldung und der Tag der letzten Nutzung ' \
+                    '(nur das Datum, ohne Uhrzeit; nicht, während jemand anderes in das Konto sieht) und eine grobe Angabe des Geräts, ' \
+                    'die bei der Anmeldung aus der Kennung des Browsers gebildet wird (etwa »Firefox auf Windows«); ' \
+                    'die vollständige Kennung des Browsers und die IP-Adresse werden nicht gespeichert',
+                :categories => [:account, :traffic],
+                :purpose => 'angemeldet bleiben; der Person im Profil zeigen, wo sie angemeldet ist, damit sie eine Anmeldung beenden kann',
+                :who => 'die Person selbst (im Profil)',
+                :how_long => "#{session_days} Tage, bis zur Abmeldung (auch aus einem anderen Browser über das Profil) oder bis zur Löschung des Kontos",
             },
             {
                 :data => 'Einstellungen: Helligkeit, Programmiersprache, Sprache der Seiten',
@@ -383,6 +386,7 @@ module Privacy
                 'Schriften, Skripte und Symbole kommen vom Server selbst; die Seiten des Workspace laden nichts von fremden Servern.',
                 'Die Zugriffsprotokolle enthalten keine IP-Adressen und keine Namen; geheime Teile von Adressen (Links zum Teilen, Anmeldelinks) werden unkenntlich gemacht. Sie werden nach 7 Tagen gelöscht.',
                 'Von Aufgaben wird nur die letzte Antwort gespeichert; Versuche werden ohne Text gezählt.',
+                'Von einer Sitzung werden nur die Tage der Anmeldung und der letzten Nutzung und eine grobe Angabe des Geräts (Browser und Betriebssystem) gespeichert, nicht die vollständige Kennung des Browsers und keine IP-Adresse.',
             ],
             'Verschlüsselung' => [
                 'Alle Verbindungen zur Seite und zu den Workspaces sind verschlüsselt (HTTPS mit Zertifikat von Let’s Encrypt).',
@@ -574,6 +578,8 @@ module Privacy
             Bei der Anmeldung merkt sich der Browser eine zufällige Kennung, und ein Code wird per E-Mail verschickt.
             Angemeldet wird nur, wer beides hat: den Code und den Browser, der ihn angefordert hat. Der E-Mail-Dienst sieht den Code,
             mit dem Code allein ist aber keine Anmeldung möglich. Der Code gilt #{login_minutes} Minuten und höchstens 5 Versuche lang.
+            Im Profil sieht die Person, in welchen Browsern sie angemeldet ist (Tag der Anmeldung, Tag der letzten Nutzung und eine
+            grobe Angabe des Geräts wie »Firefox auf Windows«), und beendet dort jede Anmeldung einzeln oder alle anderen zugleich.
             Damit sich Schülerinnen und Schüler im Unterricht auch ohne Zugriff auf ihre E-Mails anmelden können, sieht die Lehrkraft
             die offenen Codes ihrer Gruppe auf ihrer Klassenseite; anmelden kann sie sich damit selbst nicht.
             </p>

@@ -657,6 +657,7 @@ class Main < Sinatra::Base
     require './include/people_page.rb'
     require './include/server_health.rb'
     require './include/my_data.rb'
+    require './include/login_sessions_page.rb'
 
     def workspace_url()
         if user_logged_in?
@@ -2369,9 +2370,12 @@ class Main < Sinatra::Base
                     # The day of the last visit, without a time, at most one write
                     # a day; not while someone else looks in. For the overview of
                     # who still uses the Workspace (/personen; Löschkonzept).
+                    # The same for the session, for the list in the profile
+                    # (login_sessions.rb): at most one write a day per session.
                     today = Date.today.to_s
-                    if @impersonated_by.nil? && @session_user[:last_seen] != today
-                        neo4j_query('MATCH (u:User {email: $email}) SET u.last_seen = $today;', :email => email, :today => today)
+                    if @impersonated_by.nil? && (@session_user[:last_seen] != today || session[:last_used_on] != today)
+                        neo4j_query('MATCH (s:Session {sid: $sid})-[:FOR]->(u:User {email: $email}) SET u.last_seen = $today, s.last_used_on = $today;',
+                            :sid => sid, :email => email, :today => today)
                         @session_user[:last_seen] = today
                     end
 
@@ -2722,6 +2726,7 @@ class Main < Sinatra::Base
                 :email => row['approved_email'],
                 :sid => sid,
                 :session_expires => session_expires,
+                :session_info => new_session_fields,
             )
             login_result = neo4j_query(<<~END_OF_QUERY, complete_params).to_a.first
                 MATCH (q:QrLoginRequest {
@@ -2732,6 +2737,7 @@ class Main < Sinatra::Base
                 DETACH DELETE q
                 WITH u
                 CREATE (s:Session {sid: $sid, expires: $session_expires})-[:FOR]->(u)
+                SET s += $session_info
                 RETURN s.sid AS sid, u.email AS email, u.server_sid AS server_sid;
             END_OF_QUERY
             next { :status => :expired } unless login_result
@@ -3106,6 +3112,7 @@ class Main < Sinatra::Base
                 :max_attempts => Authentication::LOGIN_REQUEST_MAX_ATTEMPTS,
                 :sid => sid,
                 :session_expires => session_expires,
+                :session_info => new_session_fields,
             }
             neo4j_query_expect_one(<<~END_OF_QUERY, complete_params)
                 MATCH (r:LoginRequest {tag: $tag, code: $code})-[:FOR]->(u:User)
@@ -3115,6 +3122,7 @@ class Main < Sinatra::Base
                 WITH u
                 REMOVE u.login_request_created_at
                 CREATE (s:Session {sid: $sid, expires: $session_expires})-[:FOR]->(u)
+                SET s += $session_info
                 RETURN s.sid AS sid, u.email AS email, u.server_sid AS server_sid;
             END_OF_QUERY
         end
@@ -4559,6 +4567,7 @@ class Main < Sinatra::Base
                 :attempts => neo4j_query('MATCH (a:TaskAttempt)-[:BY]->(:User {email: $email}) RETURN a ORDER BY a.ts;', :email => email).map { |r| r['a'] },
                 :look_ins => neo4j_query('MATCH (l:LookIn)-[:FOR]->(:User {email: $email}) RETURN l ORDER BY l.ts;', :email => email).map { |r| r['l'] },
                 :live_apps => neo4j_query('MATCH (:User {email: $email})-[:SHARES_LIVE_APP]->(s:LiveAppShare) RETURN s;', :email => email).map { |r| r['s'] },
+                :sessions => neo4j_query('MATCH (s:Session)-[:FOR]->(:User {email: $email}) WHERE s.impersonated_by IS NULL RETURN s;', :email => email).map { |r| r['s'] },
             }
             File.write(File.join(dir, 'konto.json'), AccountExport.account_json(rows))
             File.write(File.join(dir, 'LIESMICH.txt'), AccountExport::README)

@@ -394,7 +394,7 @@ module PrivacyDocuments
         backup = s[:backup] ? "Verschlüsselte Sicherungen (#{h(s[:backup])}); #{h(Privacy.backup_kept_sentence(s))}" : 'Sicherungen sind in den Einstellungen nicht eingetragen.'
         [
             ['Jemand meldet sich mit einem fremden Konto an (abgefangener Code, ein offener Rechner im Computerraum)', 'überschaubar', 'überschaubar',
-             "Anmeldung nur mit Einladung; Code per E-Mail, gültig #{Privacy.login_minutes} Minuten, höchstens 5 Versuche, nur im Browser, der ihn angefordert hat; Anfragen begrenzt; keine Passwörter; »überall abmelden« im Profil",
+             "Anmeldung nur mit Einladung; Code per E-Mail, gültig #{Privacy.login_minutes} Minuten, höchstens 5 Versuche, nur im Browser, der ihn angefordert hat; Anfragen begrenzt; keine Passwörter; im Profil die Liste der angemeldeten Browser mit Tag und Gerät, jede Anmeldung einzeln oder alle anderen zugleich beenden",
              'geringfügig', 'Sitzungen gelten lange (Klassenräume); Lernende melden sich an fremden Rechnern ab'],
             ['Eine Lehrkraft sieht mehr, als sie braucht, oder ohne Anlass', 'überschaubar', 'überschaubar',
              'Nur eigene Gruppen; Begründung vor jedem Einblick, die die Person sieht; keine Noten im Workspace',

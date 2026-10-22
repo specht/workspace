@@ -21,6 +21,11 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Je Sitzung speichert der Workspace jetzt den Tag der Anmeldung, den Tag der letzten Nutzung
+  und eine grobe Angabe des Geräts aus dem User-Agent (»Firefox auf Windows«), nicht den
+  User-Agent selbst und keine IP-Adresse; das Profil zeigt damit, wo man angemeldet ist, und
+  beendet einzelne Sitzungen. Ältere Sitzungen erscheinen ohne Tag der Anmeldung und Gerät.
+  Die Datenschutzerklärung nennt es (Stand 22.10.2026).
 - Die Sandboxes (Sortieren, Datenstrukturen, CPU) haben kein festes Klassen-Repository mehr.
   Lehrkräfte tragen die Adresse je Gruppe auf der Klassenseite ein (Knopf »Git« neben
   »Sprache«); gespeichert wird sie an der Gruppe (`GroupSetting.class_repos`). Lernende einer

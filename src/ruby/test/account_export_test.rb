@@ -16,6 +16,7 @@ class AccountExportTest < Minitest::Test
             :attempts => [{ :task => 'sql/1', :status => 'wrong', :ts => 1 }],
             :look_ins => [{ :ts => 2, :kind => 'workspace', :reason => 'Abgabe', :by_name => 'Frau Berger', :by_email => 'b@example.org' }],
             :live_apps => [{ :port => 3000, :active => true, :tag => 'secret' }],
+            :sessions => [{ :sid => 'secret', :created_on => '2026-10-03', :last_used_on => '2026-10-17', :device => 'Firefox auf Windows' }],
         }
         json = AccountExport.account_json(rows, :now => NOW)
         refute_includes json, 'secret'
@@ -24,6 +25,7 @@ class AccountExportTest < Minitest::Test
         assert_equal({ 'email' => 'lena@example.org', 'name' => 'Lena', 'brightness' => 'dark' }, data['konto'])
         assert_equal 'SELECT 1', data['aufgaben'].first['last_answer']
         assert_equal 'Frau Berger', data['einsicht'].first['by_name']
+        assert_equal [{ 'created_on' => '2026-10-03', 'last_used_on' => '2026-10-17', 'device' => 'Firefox auf Windows' }], data['anmeldungen']
         assert_equal '2026-10-18T12:00:00Z', data['exportiert']
     end
 

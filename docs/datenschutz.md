@@ -183,6 +183,16 @@ Standardvertrag an (bei Hetzner in der Console).
 - Abgelaufene Sitzungen löscht der Server selbst, Zugriffsprotokolle
   logrotate nach 7 Tagen (`bootstrap/03-setup-storage.rb`), die Ausgaben der
   Dienste Docker nach 3 × 10 MB.
+- Eine Sitzung (`Session`) hält neben der Kennung den Tag der Anmeldung
+  (`created_on`), den Tag der letzten Nutzung (`last_used_on`, höchstens
+  einmal am Tag geschrieben, nicht beim Nachahmen) und eine grobe Angabe des
+  Geräts (`device`, etwa »Firefox auf Windows«), die bei der Anmeldung aus
+  dem User-Agent gebildet wird (`include/login_sessions.rb`); den User-Agent
+  selbst und die IP-Adresse speichert der Workspace nicht. Die Person sieht
+  die Liste im Profil unter »Konto & Darstellung« und beendet dort einzelne
+  Sitzungen; die Seite kennt sie nur unter einem Hashwert der Kennung. Die
+  Angaben gehen mit der Sitzung: bei der Abmeldung, nach einem Jahr, mit dem
+  Konto. Sitzungen von vor dieser Änderung haben sie nicht und sagen das.
 - Sicherungen werden nicht nachträglich verändert; gelöschte Daten
   verschwinden aus ihnen, wenn sie ablaufen. Jede Löschung steht deshalb
   ohne Adresse (Hashwert und Datum) in `/internal/deleted-accounts.jsonl`.

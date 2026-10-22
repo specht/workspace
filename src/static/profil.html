@@ -283,6 +283,77 @@
     .exam-table td:first-child {
         min-width: 12rem;
     }
+    .login-sessions {
+        list-style: none;
+        margin: 0 0 0.5rem;
+        padding: 0;
+        max-width: 42rem;
+        border: 1px solid var(--bs-border-color);
+        border-radius: var(--bs-border-radius-lg);
+    }
+    .login-session {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.6rem 0.85rem;
+    }
+    .login-session + .login-session {
+        border-top: 1px solid var(--bs-border-color-translucent);
+    }
+    .login-session-icon {
+        font-size: 1.35rem;
+        color: var(--bs-secondary-color);
+        flex: none;
+    }
+    .login-session.current .login-session-icon {
+        color: var(--bs-primary);
+    }
+    .login-session-text {
+        flex: 1;
+        min-width: 0;
+    }
+    .login-session-device {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.15rem 0.45rem;
+        font-weight: 500;
+    }
+    .login-session-device .badge {
+        font-weight: normal;
+    }
+    .login-session-when {
+        font-size: 0.875rem;
+        color: var(--bs-secondary-color);
+    }
+    .login-session .btn {
+        flex: none;
+        white-space: nowrap;
+    }
+    /* On a phone the button shows only its icon, in its middle. */
+    @media (max-width: 575.98px) {
+        .login-session {
+            gap: 0.7rem;
+            padding: 0.55rem 0.65rem;
+        }
+        .login-session .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.25rem;
+            height: 2.25rem;
+            padding: 0;
+        }
+        .login-session .btn .bi {
+            margin: 0;
+        }
+        .login-session .btn .bi::before {
+            vertical-align: 0;
+        }
+        .login-session-label {
+            display: none;
+        }
+    }
 </style>
 <div class="modal" id="test_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style='z-index: 200000;'>
     <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered" role="document">
@@ -484,11 +555,13 @@
                     <button type="button" class="bu-set-brightness btn btn-dark" data-brightness="dark"><i class='bi bi-moon-fill'></i>Dunkel #{(@session_user[:brightness] || 'auto') == 'dark' ? "<i class='bi bi-check-lg'></i>" : ''}</button>
                 </div>
                 #{look_ins_profile_html}
-                <div class='d-flex flex-wrap gap-2 align-items-center'>
-                    <a class="btn btn-secondary" href="/logout"><i class='bi bi-box-arrow-right'></i>Abmelden</a>
-                    #{(n = other_sessions_count) > 0 && !@impersonated_by ? "<button type='button' id='bu_sign_out_elsewhere' class='btn btn-outline-secondary'><i class='bi bi-pc-display'></i>In allen anderen Browsern abmelden (#{n})</button>" : ''}
+                #{@impersonated_by ? '' : "<h3 class='mt-4' id='login-sessions'>Wo du angemeldet bist</h3>"}
+                #{login_sessions_html}
+                <div class='d-flex flex-wrap gap-2 align-items-center mt-2'>
+                    #{@impersonated_by ? "<a class='btn btn-secondary' href='/logout'><i class='bi bi-box-arrow-right'></i>Abmelden</a>" : ''}
+                    #{(n = other_sessions_count) > 0 && !@impersonated_by ? "<button type='button' id='bu_sign_out_elsewhere' class='btn btn-outline-secondary'><i class='bi bi-pc-display'></i>In allen anderen Browsern abmelden (<span class='other-sessions-count'>#{n}</span>)</button>" : ''}
                 </div>
-                <p class='small text-body-secondary mt-2'>Eine Anmeldung gilt ein Jahr lang im jeweiligen Browser. Warst du an einem fremden Rechner angemeldet, meldest du dich hier dort ab.</p>
+                <p class='small text-body-secondary mt-2'>Eine Anmeldung gilt ein Jahr lang im jeweiligen Browser. Warst du an einem fremden Rechner angemeldet, meldest du dich hier dort ab. Das Gerät erkennt der Workspace grob an der Kennung, die der Browser mitschickt; ein iPad nennt sich dabei oft Mac.</p>
             </section>
 
             <section class="profile-section" aria-labelledby="my-data">
@@ -1211,6 +1284,28 @@ vscode_config: {}</pre>
             api_call('/api/sign_out_elsewhere', {}, function (data) {
                 if (!data.success) return;
                 $('#bu_sign_out_elsewhere').replaceWith(`<span class='text-success'><i class='bi bi-check-lg'></i>${data.ended} ${data.ended === 1 ? 'anderer Browser' : 'andere Browser'} abgemeldet</span>`);
+                $('#login_sessions .login-session:not(.current)').remove();
+                $('#bu_all_sessions').remove();
+            });
+        });
+        // One other browser at a time (login_sessions_page.rb); the page
+        // knows a session only by its public id, never by its sid.
+        $(document).on('click', '.bu-end-session', function () {
+            const row = $(this).closest('.login-session');
+            const button = $(this).prop('disabled', true);
+            api_call('/api/end_login_session', { id: row.data('id') }, function (data) {
+                if (!data.success) { button.prop('disabled', false); return; }
+                row.remove();
+                if (data.others > 0) $('.other-sessions-count').text(data.others);
+                else $('#bu_sign_out_elsewhere').remove();
+            }, { no_please_wait: true });
+        });
+        $('#bu_all_sessions').on('click', function () {
+            const button = $(this).prop('disabled', true);
+            api_call('/api/login_sessions', {}, function (data) {
+                if (!data.success) { button.prop('disabled', false); return; }
+                $('#login_sessions').replaceWith(data.html);
+                button.remove();
             });
         });
         $('#bu_delete_my_account').on('click', function() {
