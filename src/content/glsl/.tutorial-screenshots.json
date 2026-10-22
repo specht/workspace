@@ -1,0 +1,72 @@
+{
+  "screenshots": {
+    "bewegung.webp": {
+      "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
+      "output_sha256": "37b4dcdfa297284f6996ca98a82ec8bd17f890be8433acfe2288dc5306fe21d4",
+      "state_hash": "e7c38c6199e3716654069f18683ff8bca656f8eff5a8df2f3121ac88113b9300",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "fehler.webp": {
+      "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
+      "output_sha256": "1887be9c3f8e105cd488136a433709f2220dd953b5f6b3e1230ceccd12ca88e9",
+      "state_hash": "fceaae1adc9a33ff1264dd92c5be23d4084a2f11b2f10026683651bf360abeee",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "glanz.webp": {
+      "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
+      "output_sha256": "cc23317673bf9923236a5b731b8cbfa5a673a000a41f5d31142a20505a22067b",
+      "state_hash": "f7cdd0fed7fee35cee6067089de5822697edf784c79eb27d1d64659f4e7db77b",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "kaleidoskop.webp": {
+      "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
+      "output_sha256": "7dbdb2f86af10dfeace925b4dbfdcc73a046918c8e21c9069ee6131f87255d62",
+      "state_hash": "f76d76eefadefac9f73032ce1c2fa5320b4b2be05212233d4a1e388607066c33",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "kreis.webp": {
+      "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
+      "output_sha256": "a4b7167a84990474594c71b58e82c1c7216231f7fb53b972f77f92e85c1233e6",
+      "state_hash": "91c00e0fdfa8fdc617d01acc4be00e747a783deb662c3b4a66e30d4c88cf6cb5",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "kugel.webp": {
+      "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
+      "output_sha256": "881de7097e879d332dff1e5efa385224db2da8d329f3a9a3a6243bd30b4537f3",
+      "state_hash": "0eac0e3bc105c97c0c36ae6397a15bed1d1687cdf8f6b49bc7e288803101a128",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "maus.webp": {
+      "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
+      "output_sha256": "53fceadc5cf9611207626ff8da6c1871b496ab27e5a7cc5238200e67086796ad",
+      "state_hash": "b44a693044c66364072f40dc4f564572a029ff9b3910189ec52d7d4670987e80",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "tropfen.webp": {
+      "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
+      "output_sha256": "f55bf368dc24b8a2c8980422a0b009276d75fbf8e16290cea7ee228c72a0f3cd",
+      "state_hash": "98cd8050435742f965fcf6bdee33bc9c45c3b9bbc865b1ac866c86abfb7be1a3",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "verlauf.webp": {
+      "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
+      "output_sha256": "57eee8122283750236c2e40e1d3afc7800c6b9f6d729d3cb13d86465419ef787",
+      "state_hash": "6dc224fa7c37f0f7f8b1de1da91abb6d237160cf3702dcaeafaaae4730454671",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "vorlage.webp": {
+      "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
+      "output_sha256": "24c586959e3be697e556e9f9e8a2008ea268d81ee9fb34e586c6613d924a3328",
+      "state_hash": "22e47a41a41698ff9dec616bd3756d9801ee8fe32743c40c89b6894b1ced0900",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
+    "wolken.webp": {
+      "environment_fingerprint": "eee79f5f235a50961d6ede51db04185397f91284c0549609320229be6d550739",
+      "output_sha256": "6350a195c78195cd0897288edc2b6caf9df3aec6a5189689e4c9fc80061245f9",
+      "state_hash": "6430c91868985a057c950de07b986f0dd2a0badbb3aba66a49153f5ad462f84a",
+      "workspace_look": "4.140.0-ls368"
+    }
+  },
+  "version": 1
+}

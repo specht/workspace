@@ -18,7 +18,7 @@ void move_blobs()
     {
         float f = float(i);
         float t = iTime * (0.4 + 0.1 * f) + f * 1.7;
-        blob[i] = vec3(1.0 * sin(t), 0.8 + 0.45 * sin(t * 1.3 + f), 0.7 * cos(t * 0.9 + f));
+        blob[i] = vec3(1.3 * sin(t), 0.6 + 0.12 * sin(t * 1.3 + f), 0.9 * cos(t * 0.9 + f));
     }
 }
 
@@ -37,7 +37,7 @@ vec3 blob_paint(int i)
 float blobs(vec3 p)
 {
     // weit weg genügt der Abstand zu einer Kugel, die alle Tropfen umschließt
-    float bound = length(p - vec3(0.0, 0.8, 0.0)) - 2.0;
+    float bound = length(p - vec3(0.0, 0.6, 0.0)) - 2.2;
     if (bound > 0.5) return bound;
 
     float d = 100.0;
@@ -86,7 +86,7 @@ float shadow(vec3 p)
         light = min(light, 10.0 * d / t);
         t += clamp(d, 0.02, 0.2);
         // über allen Tropfen kann nichts mehr Schatten werfen
-        if (light < 0.001 || p.y + SUN.y * t > 2.5) break;
+        if (light < 0.001 || p.y + SUN.y * t > 1.5) break;
     }
     return clamp(light, 0.0, 1.0);
 }
@@ -156,7 +156,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     // und schaut auf ihre Mitte
     float angle = 0.7 * sin(0.2 * iTime);
     vec3 eye = vec3(3.6 * sin(angle), 1.4, -3.6 * cos(angle));
-    vec3 forward = normalize(vec3(0.0, 0.7, 0.0) - eye);
+    vec3 forward = normalize(vec3(0.0, 0.6, 0.0) - eye);
     vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), forward));
     vec3 up = cross(forward, right);
     vec3 dir = normalize(p.x * right + p.y * up + 1.8 * forward);
@@ -178,8 +178,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
             color = mix(color, seen, 0.3);
         }
 
-        // Dunst: was weit weg ist, verschwindet im Himmel
-        color = mix(color, sky(dir), 1.0 - exp(-0.0015 * t * t));
+        // Dunst: was weit weg ist, verschwindet im Himmel, bei 40 ganz
+        color = mix(color, sky(dir), smoothstep(0.0, 40.0, t));
     }
 
     fragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);

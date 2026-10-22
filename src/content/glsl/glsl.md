@@ -21,7 +21,7 @@ template_name: des GLSL-Starters
 Ein Shader ist ein kleines Programm, das die Grafikkarte für jeden Pixel gleichzeitig ausführt. Du schreibst Shader in GLSL, so wie auf Shadertoy: einen Farbverlauf, einen Kreis, leuchtende Kreise in Bewegung, ein Kaleidoskop, Wolken aus Rauschen und am Ende eine Welt aus Tropfen, die ineinanderfließen, mit weichen Schatten und einem Boden, in dem sie sich spiegeln. Es sind dieselben Strahlen wie im Raytracer, nur rechnet die Grafikkarte viele Bilder in der Sekunde.
 </p>
 
-<img class='full fit-width' src='glanz.webp' alt='Bunte, glänzende Tropfen über einem polierten Schachbrett: links ein länglicher Tropfen, halb orange, halb violett, rechts einer, der oben gelb, in der Mitte grün und unten türkis ist, weil drei Tropfen zu einem verschmolzen sind. Auf beiden sitzen helle Glanzpunkte, sie werfen weiche Schatten und spiegeln sich im Boden; dahinter verschwindet das Schachbrett im Dunst eines Abendhimmels.'>
+<img class='full fit-width' src='glanz.webp' alt='Bunte, glänzende Tropfen über einem polierten Schachbrett: vorn eine Kette aus drei Tropfen, die ineinandergeflossen sind, links orange, in der Mitte pink, rechts violett, mit schmalen Hälsen dazwischen; dahinter ein grüner und ein türkiser Tropfen. Auf allen sitzen helle Glanzpunkte, sie werfen weiche Schatten und spiegeln sich im Boden; dahinter verschwindet das Schachbrett im Dunst eines Abendhimmels.'>
 
 So sieht deine Welt aus Tropfen am Ende aus, und sie bewegt sich: Die Tropfen wandern, fließen ineinander und reißen wieder auseinander, die Kamera schwenkt hin und her, und mit der Maus fliegst du um sie herum.
 
@@ -457,7 +457,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
     // die Kamera bei eye schaut auf die Kugel
     vec3 eye = vec3(0.0, 1.4, -3.6);
-    vec3 forward = normalize(vec3(0.0, 0.7, 0.0) - eye);
+    vec3 forward = normalize(vec3(0.0, 0.6, 0.0) - eye);
     vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), forward));
     vec3 up = cross(forward, right);
     vec3 dir = normalize(p.x * right + p.y * up + 1.8 * forward);
@@ -468,8 +468,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     {
         color = shade(eye + dir * t, dir);
 
-        // Dunst: was weit weg ist, verschwindet im Himmel
-        color = mix(color, sky(dir), 1.0 - exp(-0.0015 * t * t));
+        // Dunst: was weit weg ist, verschwindet im Himmel, bei 40 ganz
+        color = mix(color, sky(dir), smoothstep(0.0, 40.0, t));
     }
 
     fragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
@@ -522,7 +522,7 @@ void move_blobs()
     {
         float f = float(i);
         float t = iTime * (0.4 + 0.1 * f) + f * 1.7;
-        blob[i] = vec3(1.0 * sin(t), 0.8 + 0.45 * sin(t * 1.3 + f), 0.7 * cos(t * 0.9 + f));
+        blob[i] = vec3(1.3 * sin(t), 0.6 + 0.12 * sin(t * 1.3 + f), 0.9 * cos(t * 0.9 + f));
     }
 }
 
@@ -541,7 +541,7 @@ vec3 blob_paint(int i)
 float blobs(vec3 p)
 {
     // weit weg genügt der Abstand zu einer Kugel, die alle Tropfen umschließt
-    float bound = length(p - vec3(0.0, 0.8, 0.0)) - 2.0;
+    float bound = length(p - vec3(0.0, 0.6, 0.0)) - 2.2;
     if (bound > 0.5) return bound;
 
     float d = 100.0;
@@ -608,7 +608,7 @@ float shadow(vec3 p)
         light = min(light, 10.0 * d / t);
         t += clamp(d, 0.02, 0.2);
         // über allen Tropfen kann nichts mehr Schatten werfen
-        if (light < 0.001 || p.y + SUN.y * t > 2.5) break;
+        if (light < 0.001 || p.y + SUN.y * t > 1.5) break;
     }
     return clamp(light, 0.0, 1.0);
 }
@@ -647,7 +647,7 @@ Zuletzt rechnet `mainImage` die Tropfen an ihren Platz, und die Kamera schwenkt:
     // und schaut auf ihre Mitte
     float angle = 0.7 * sin(0.2 * iTime);
     vec3 eye = vec3(3.6 * sin(angle), 1.4, -3.6 * cos(angle));
-~     vec3 forward = normalize(vec3(0.0, 0.7, 0.0) - eye);
+~     vec3 forward = normalize(vec3(0.0, 0.6, 0.0) - eye);
 ~     vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), forward));
 ~     vec3 up = cross(forward, right);
 ```
@@ -656,10 +656,10 @@ Zuletzt rechnet `mainImage` die Tropfen an ihren Platz, und die Kamera schwenkt:
 write-file: shader.frag <- file:stufen/07-tropfen.frag
 tab: preview
 viewport: 800x450
-hook: open 12
+hook: open 10
 crop-element: #canvas
 -->
-<img class='full fit-width' src='tropfen.webp' alt='Bunte Tropfen über dem Schachbrett: links ein länglicher, halb orange, halb violett, rechts einer, der oben gelb, in der Mitte grün und unten türkis ist; ihre Schatten auf dem Boden haben weiche Ränder.'>
+<img class='full fit-width' src='tropfen.webp' alt='Bunte Tropfen über dem Schachbrett: vorn eine Kette aus drei ineinandergeflossenen Tropfen, orange, pink und violett, mit schmalen Hälsen dazwischen, dahinter ein grüner und ein türkiser; ihre Schatten auf dem Boden haben weiche Ränder.'>
 
 - **`smin`** mischt die beiden Abstände, wo sie weniger als `k` auseinanderliegen, und zieht dabei etwas ab. Darum wird der Abstand zwischen zwei nahen Tropfen kleiner, als jeder allein wäre: Dort ist schon Fläche, und es entsteht der Hals. Wie man darauf kommt, erklärt Íñigo Quílez in seinem Artikel über das [weiche Minimum](https://iquilezles.org/articles/smin/).
 - **`blob`** ist ein Array mit den sechs Mittelpunkten. Sie hängen nur von der Zeit ab, also rechnet `move_blobs` sie einmal für jeden Pixel aus, statt bei jeder Frage an `map` wieder mit `sin` und `cos`. `map` wird für einen Pixel bis zu einige hundert Mal gefragt.
@@ -747,8 +747,8 @@ Der Boden spiegelt mit einem zweiten Strahl, so wie die Spiegelkugel im Raytrace
             color = mix(color, seen, 0.3);
         }
 ~ 
-~         // Dunst: was weit weg ist, verschwindet im Himmel
-~         color = mix(color, sky(dir), 1.0 - exp(-0.0015 * t * t));
+~         // Dunst: was weit weg ist, verschwindet im Himmel, bei 40 ganz
+~         color = mix(color, sky(dir), smoothstep(0.0, 40.0, t));
 ~     }
 ```
 
@@ -756,7 +756,7 @@ Der Boden spiegelt mit einem zweiten Strahl, so wie die Spiegelkugel im Raytrace
 write-file: shader.frag <- file:stufen/08-glanz.frag
 tab: preview
 viewport: 800x450
-hook: open 12
+hook: open 10
 crop-element: #canvas
 -->
 <img class='full fit-width' src='glanz.webp' alt='Dieselben Tropfen wie eben, jetzt mit hellen Glanzpunkten und einem bläulichen Schimmer an den Rändern; der Boden ist poliert, und die Tropfen spiegeln sich darin; unter ihnen und in den Kehlen zwischen ihnen ist es dunkler.'>
@@ -786,14 +786,14 @@ Zum Schluss steuerst du die Kamera selbst. Solange die Maus gedrückt ist, ist `
         height = 0.3 + 4.0 * iMouse.y / iResolution.y;
     }
     vec3 eye = vec3(3.6 * sin(angle), height, -3.6 * cos(angle));
-~     vec3 forward = normalize(vec3(0.0, 0.7, 0.0) - eye);
+~     vec3 forward = normalize(vec3(0.0, 0.6, 0.0) - eye);
 ```
 
 <!-- tutorial-screenshot
 write-file: shader.frag <- file:stufen/09-maus.frag
 tab: preview
 viewport: 800x450
-hook: open 12
+hook: open 10
 hook: drag 0.1 0.25
 crop-element: #canvas
 -->

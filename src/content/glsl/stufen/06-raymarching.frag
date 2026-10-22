@@ -75,8 +75,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     {
         color = shade(eye + dir * t, dir);
 
-        // Dunst: was weit weg ist, verschwindet im Himmel
-        color = mix(color, sky(dir), 1.0 - exp(-0.0015 * t * t));
+        // Dunst: was weit weg ist, verschwindet im Himmel, bei 40 ganz
+        color = mix(color, sky(dir), smoothstep(0.0, 40.0, t));
     }
 
     fragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
