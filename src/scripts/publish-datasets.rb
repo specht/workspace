@@ -66,7 +66,8 @@ OTHER_FILES = {
     'terra1.sql' => 'the old country database of the *Einführung in SQL* (until October 2026), kept for old links',
     'users.sql' => 'a table of users with passwords for *Bobby Tables* (SQL injection)',
     'working-with-files.tar.gz' => 'the files to explore in *Arbeiten mit Dateien*',
-    'snake.c' => 'a small game in C, not used by an activity at the moment'
+    'snake.c' => 'a small game in C, not used by an activity at the moment',
+    'raycaster' => '`palette.rb` (a palette of 256 colours, the shade table and the textures as `palette.h`, from seven tiles drawn in the 2D Game Studio) and `textures.png` (the seven tiles of the raycaster) for *Raycasting in C*; copied from `src/content/raycaster/werkzeug/`'
 }.freeze
 
 # What every dataset has, by its name

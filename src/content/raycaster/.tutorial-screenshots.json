@@ -67,6 +67,24 @@
       "state_hash": "252d41f0c6c8b6acc476670a278b0cb43c862cf14f000bdd26697816a1cd18f1",
       "workspace_look": "4.140.0-ls368"
     },
+    "palette-256.webp": {
+      "environment_fingerprint": "acaf5ba0a1b194a47c43623eb85dde0df7224f76c53b0814047638030e1fcdd9",
+      "output_sha256": "58d73cb99f179fc9b42d13cf7ff403b24bcfd4dec2a0cfdacb64fa4b9cb58c6f",
+      "state_hash": "4e9aee68d979ef671f860979416a63e63bc09945235e8bb9541ab979eecb0271",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "palette-halle.webp": {
+      "environment_fingerprint": "acaf5ba0a1b194a47c43623eb85dde0df7224f76c53b0814047638030e1fcdd9",
+      "output_sha256": "e96654e4cd1177c773eac4ab0836699d8754881f499fc6f8b37756c2e3ed00c5",
+      "state_hash": "4472b20ed4eec235cabc4647f9a8c7ac659499a42c6cbd38dc26d1b3d9e8e36d",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "palette-rampen.webp": {
+      "environment_fingerprint": "acaf5ba0a1b194a47c43623eb85dde0df7224f76c53b0814047638030e1fcdd9",
+      "output_sha256": "e63b91423b81b32315e46ef777f31f41692e02cc0f211e723fc9eed44ac275bb",
+      "state_hash": "2384813aa0cfa970ec542dde9030a09b40fed8c6ea08a1d7ab038e90d5009566",
+      "workspace_look": "4.140.0-ls368"
+    },
     "strahlen.webp": {
       "environment_fingerprint": "acaf5ba0a1b194a47c43623eb85dde0df7224f76c53b0814047638030e1fcdd9",
       "output_sha256": "c591fea045187d03ab0f7ecf0cc535b9a1fff909e7fb2d47dd8b6f36aff958bb",

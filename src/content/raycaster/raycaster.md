@@ -1597,6 +1597,142 @@ crop-element: #canvas
 </figure>
 </div>
 
+## Eigene Texturen
+
+### Eine Palette für alle Texturen
+
+Deine Palette ist so gebaut, dass jede Farbe 16 Helligkeiten hat, und die Texturen kommen aus dem Code. In echten Spielen war es umgekehrt: Grafiker zeichneten die Texturen, und ein Werkzeug suchte danach eine Palette von 256 Farben, mit der alle Texturen möglichst gut aussehen. Die Schattentabelle rechnete es auch aus: Für jede Farbe und jede Helligkeit die Farbe der Palette, die am nächsten liegt. Bei DOOM heißen die beiden PLAYPAL und COLORMAP.
+
+So ein Werkzeug bekommst du fertig, `palette.rb`, dazu ein Bild mit den sieben Texturen deines Raycasters. Lade beide in deinen Ordner, installiere einmal das Rubygem `chunky_png`, das PNG-Bilder liest und schreibt, und lass das Werkzeug laufen:
+
+```bash
+wget https://github.com/specht/workspace-files/raw/main/raycaster/palette.rb
+wget https://github.com/specht/workspace-files/raw/main/raycaster/textures.png
+gem install chunky_png
+ruby palette.rb textures.png
+```
+
+Es schreibt `palette.h` mit der Palette, der Schattentabelle und den Texturen als Farbnummern, und für jeden Schritt ein Bild. Öffne sie im Explorer.
+
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+write-file: palette.rb <- file:werkzeug/palette.rb
+write-file: textures.png <- file:werkzeug/textures.png
+terminal-open
+terminal-run: gem install chunky_png
+terminal-wait-for-prompt: 120
+terminal-run: ruby palette.rb textures.png
+terminal-wait-for-prompt
+terminal-expect-no-text: Error
+image-file: raycaster/2-rampen.png 4
+-->
+<img src='palette-rampen.webp' alt='Ein Gitter aus Farbfeldern: jede Zeile eine Grundfarbe aus den Texturen, Ziegelrot, Holzbraun, Steingrau, Metallblau, Moosgrün und andere, von links schwarz nach rechts in voller Helligkeit.'>
+<figcaption>Erst bringt es alle Texturen auf 40 Grundfarben und macht aus jeder eine Rampe mit 16 Helligkeiten.</figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+image-file: raycaster/3-palette.png 8
+-->
+<img src='palette-256.webp' alt='256 Farbfelder in 16 Zeilen: oben schwarz, Grau, Gelb, Blau, Rot und Weiß für die Karte, dann sehr viele fast schwarze Farben, Grautöne, Rot- und Brauntöne, Grün und Blau, jeweils von dunkel nach hell.'>
+<figcaption>Aus den 640 Farben der Rampen werden 240, dazu 16 für die Karte und die Anzeige.</figcaption>
+</figure>
+</div>
+
+Sieh dir die Palette genau an: Viele Farben sind fast schwarz und fast grau. Ganz dunkel sehen Ziegelrot, Moosgrün und Metallblau beinahe gleich aus, und die Palette fasst sie zusammen. Darum werden Farben in dunklen Gängen grauer, so wie in DOOM.
+
+`raycaster.c` holt sich jetzt alles aus `palette.h`. Oben, unter `#include <math.h>`:
+
+```c
+// Palette, Schattentabelle und Texturen, gemacht von palette.rb
+#include "palette.h"
+```
+
+`setup_palette` und `make_textures` kopieren nur noch, statt zu rechnen; die Funktionen, die die Texturen zeichnen, brauchst du nicht mehr:
+
+```c
+// die Farben und die Schattentabelle aus palette.h
+void setup_palette(void)
+{
+    for (int i = 0; i < 256; i++)
+        set_palette(i, palette_rgb[i][0], palette_rgb[i][1], palette_rgb[i][2]);
+
+    for (int light = 0; light < LEVELS; light++)
+        for (int color = 0; color < 256; color++)
+            shade[light][color] = palette_shade[light][color];
+}
+```
+
+```c
+// die Texturen aus palette.h
+void make_textures(void)
+{
+    for (int t = 0; t < TEXTURES; t++)
+        for (int y = 0; y < TEX; y++)
+            for (int x = 0; x < TEX; x++)
+                texture[t][y][x] = palette_texture[t][y][x];
+}
+```
+
+Die Farben der Karte sind die reservierten 0 bis 15, und eine Wand zeigt auf der Karte die mittlere Farbe ihrer Textur:
+
+```c
+    BLACK = UI_BLACK,
+    MAP_FLOOR = UI_MAP_FLOOR,
+    VIEW = UI_VIEW,
+    PLAYER = UI_PLAYER,
+    RAY = UI_RAY,
+    RAY_SIDE = UI_RAY_SIDE,
+    CAMERA_PLANE = UI_CAMERA_PLANE
+```
+
+```c
+    return palette_average[cell - '0'];
+```
+
+Dann übersetzt du wie immer; `make` merkt auch, dass sich `palette.h` geändert hat:
+
+```bash
+make PROGRAM=raycaster
+```
+
+Meldet `make`, es sei nichts zu tun, ist deine Vorlage älter; dann zwingt `make -B PROGRAM=raycaster` es dazu.
+
+<!-- tutorial-screenshot
+write-file: raycaster.c <- file:stufen/13-eigene-texturen.c
+terminal-open
+terminal-run: make -B PROGRAM=raycaster
+terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+tab: preview
+viewport: 800x450
+hook: open raycaster.html
+click: selector:#canvas
+hook: hold KeyW 6 KeyA 0.63 ArrowRight 1.03
+crop-element: #canvas
+-->
+<img class='full fit-width' src='palette-halle.webp' alt='Die Halle wie vorher, mit Ziegelsäulen, Fliesenboden und Balkendecke, jetzt mit der Palette aus palette.rb; die Wände auf der Karte haben die mittlere Farbe ihrer Textur.'>
+
+Fast wie vorher, aber jetzt kann jede Textur aussehen, wie du willst.
+
+### Im 2D Game Studio zeichnen
+
+Zeichne deine eigenen Texturen im [2D Game Studio](https://2d.hackschule.de/), wie die Kacheln der [Klötzchenwelt](/raylib):
+
+1. Lege ein neues Sprite an, zum Beispiel »Wände«. Unter »Funktionen« › »Sprite« › »Größe ändern« stellst du 64 × 64 Pixel ein; 16 oder 32 gehen auch, das Werkzeug vergrößert sie auf 64.
+2. Zeichne sieben Frames desselben Zustands, in dieser Reihenfolge: Boden, die Wandarten 1 bis 5 (in der Karte Ziegel, Stein, Holz, Metall, Moos) und die Decke.
+3. Wähle »Funktionen« › »Sprite« › »Als Bild speichern« › »alle Frames dieses Zustands nebeneinander«.
+4. Ziehe die Datei in den Explorer, in den Ordner `raycaster`, und nenne sie `textures.png`.
+
+Dann `ruby palette.rb textures.png` und `make PROGRAM=raycaster`, und deine Welt hat deine Texturen.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Lass das Werkzeug mit <code>ruby palette.rb textures.png --dither</code> laufen und vergleiche <code>4-texturen.png</code> mit vorher: Wo eine Farbe nicht in der Palette ist, setzt das Werkzeug Pixel aus zwei Farben nebeneinander, die zusammen aussehen wie die fehlende. Bei Texturen mit weichen Verläufen sieht man das am deutlichsten.
+</div>
+
+_task(palette)
+
 ## Nach Wolfenstein: DOOM
 
 Ein Jahr später, 1993, kam DOOM, wieder mit der Grafik von John Carmack, und es sieht ganz anders aus: Treppen, Fenster, hohe Hallen und niedrige Gänge, Wände in jedem Winkel, flackerndes Licht. Ein Gitter aus Kästchen gibt es nicht mehr. Die Karte besteht aus **Wänden**, Strecken zwischen zwei Punkten in jeder Richtung und Länge, und aus **Sektoren**: Flächen mit einer eigenen Höhe für Boden und Decke und einer eigenen Helligkeit.
