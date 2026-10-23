@@ -8,8 +8,8 @@
   <circle cx="232.0" cy="134.0" r="62.0" fill="#eef3fb" stroke="#1f2937" stroke-width="2.5"/>
   <line x1="150.0" y1="196.0" x2="187.7" y2="177.4" stroke="#d97706" stroke-width="2.2" stroke-dasharray="6 4"/>
   <line x1="187.7" y1="177.4" x2="447.3" y2="49.7" stroke="#6b7280" stroke-width="1.4" stroke-dasharray="3 4"/>
-  <line x1="181.7" y1="171.4" x2="193.7" y2="183.4" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/>
-  <line x1="181.7" y1="183.4" x2="193.7" y2="171.4" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="179.7" y1="174.7" x2="195.8" y2="180.2" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="185.0" y1="185.5" x2="190.5" y2="169.4" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/>
   <circle cx="150.0" cy="196.0" r="5.5" fill="#2b5fb4"/>
   <text x="144.0" y="218.0" font-size="16" fill="#1f2937" text-anchor="end" xml:space="preserve">im Schatten</text>
   <line x1="350.0" y1="196.0" x2="448.8" y2="64.2" stroke="#d97706" stroke-width="2.2" stroke-dasharray="6 4"/>

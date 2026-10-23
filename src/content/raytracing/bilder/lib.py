@@ -268,9 +268,14 @@ class Svg:
         sweep = 0 if a1 > a0 else 1
         self.path('M%s,%s A%s,%s 0 %d %d %s,%s' % (f(p0[0]), f(p0[1]), f(r), f(r), large, sweep, f(p1[0]), f(p1[1])), col, w)
 
-    def cross(self, c, r=6, col=RED, w=2.5):
-        self.line((c[0] - r, c[1] - r), (c[0] + r, c[1] + r), col, w, cap='round')
-        self.line((c[0] - r, c[1] + r), (c[0] + r, c[1] - r), col, w, cap='round')
+    def cross(self, c, r=6, col=RED, w=2.5, along=None):
+        """A cross at c; along: the direction of a line through it, so that its
+        arms stand 45 degrees on either side of that line and none lies on it."""
+        d = unit(along) if along else (1, 0)
+        k = 1 / math.sqrt(2)
+        for a in ((d[0] * k - d[1] * k, d[0] * k + d[1] * k), (d[0] * k + d[1] * k, -d[0] * k + d[1] * k)):
+            arm = (a[0] * r * math.sqrt(2), a[1] * r * math.sqrt(2))
+            self.line(sub(c, arm), add(c, arm), col, w, cap='round')
 
     def right_angle(self, corner, u, v, radius=13, col=INK):
         """The German mark at corner between the screen directions u and v."""

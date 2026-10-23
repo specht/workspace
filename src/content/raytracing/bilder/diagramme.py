@@ -367,7 +367,7 @@ def schattenstrahl():
     s.line(p1, q1, AMBER, 2.2, dash='6 4')
     # where it would have gone: on to the sun, thin and grey, through the ball
     s.line(q1, sub(sun_c, mul(to_sun, sun_r + 4)), GREY, 1.4, dash='3 4')
-    s.cross(q1, 6, RED)
+    s.cross(q1, 6, RED, along=to_sun)
     s.dot(p1, 5.5, BLUE)
     s.text((p1[0] - 6, fy + 22), 'im Schatten', INK, 'end')
     # in the sun: free all the way
