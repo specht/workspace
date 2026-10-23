@@ -813,7 +813,7 @@ python3 -c 'import ast; print(ast.dump(ast.parse("2 + 3 * 4", mode="eval"), inde
             parts.push(`Fertig: Der Ausdruck ergibt <strong>${show(step.tree.value)}</strong>.`);
         }
         say.innerHTML = parts.join(' ');
-        count.textContent = `Schritt ${current + 1} von ${steps.length}`;
+        count.textContent = `Schritt ${current} von ${steps.length - 1}`;
         root.querySelector("[data-go='first']").disabled = current <= 0;
         root.querySelector("[data-go='prev']").disabled = current <= 0;
         root.querySelector("[data-go='next']").disabled = current >= steps.length - 1;

@@ -412,7 +412,12 @@ only to look nice.
   narrow, outlined instead of filled and set apart to their left, so that a
   finger meant for next does not jump to the end (outlined, not paler: pale
   reads as disabled); the step count on the left, on a phone on a line
-  of its own (`default.css`).
+  of its own (`default.css`). Where the first picture is the input before
+  anything has happened (the Algo Stepper, the Automatron, Huffman, the
+  calculator), it is »Schritt 0«, and the count says how many steps the
+  algorithm takes; where the first picture is already a step (the Query
+  Stepper's `FROM`, LZW's first byte, the iDCT's first basis function), the
+  count starts at 1.
 - **Play** (`data-play`, beside the step buttons): one step after another
   by itself, each movement and then a pause to read the message
   (`READ_TIME`); the speed button beside it cycles 1×, 2× and ½× and changes

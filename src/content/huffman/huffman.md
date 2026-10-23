@@ -602,7 +602,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function render(animate = false, forward = false) {
         const step = built.steps[current];
         const count = built.steps.length;
-        root.querySelector('.hf-count').textContent = count ? `Schritt ${current + 1} von ${count}` : '';
+        root.querySelector('.hf-count').textContent = count ? `Schritt ${current} von ${count - 1}` : '';
         const say = root.querySelector('.hf-say');
         const forest = root.querySelector('.hf-forest');
         const table = root.querySelector('.hf-codes');
