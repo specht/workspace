@@ -172,8 +172,6 @@ hook: info off
 <cite>Notiz, mit Kugelschreiber auf die Tapete geschrieben</cite>
 </div>
 
-_person(livingstone-jackson)
-
 ### Ein Raum
 
 Öffne `rooms/zimmer.room`. Das ist der Raum, in dem du aufgewacht bist:
