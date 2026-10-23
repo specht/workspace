@@ -408,18 +408,12 @@ _task(wartungspasswort)
 
 Mit dem Passwort der Wartung bist du drin, zwei Rechner weit weg: dein Workspace, darin eine Verbindung zum Museum, darin eine zur Alarmanlage. Jedes `exit` geht einen Schritt zurück.
 
-Für diesen Weg gibt es eine Abkürzung. `-J` (»jump«) springt über den ersten Rechner zum zweiten, in einem Befehl. Das Passwort fragt `ssh` dann für beide, erst deins für das Museum, dann das der Wartung:
-
-```bash
-ssh -J e123@museum.bitstein e123@alarmanlage.bitstein
-```
-
 <!-- tutorial-screenshot
-# Mit -J über das Museum auf die Alarmanlage
-terminal-run: exit
-wait-for-text: Connection to museum.bitstein closed
+# Von museum.bitstein weiter auf die Alarmanlage, mit dem Passwort der Wartung
 terminal-run: clear
-terminal-run: ssh -J $CASE_USER@museum.bitstein $CASE_USER@alarmanlage.bitstein
+terminal-run: ssh alarmanlage.bitstein
+wait-for-text: password:
+terminal-run: Leuchtturm-2024
 wait-for-text: @alarmanlage:~$
 terminal-run: hostname
 terminal-run: ls -a /home/wartung
@@ -427,7 +421,7 @@ wait-for-text: .bash_history
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='ssh-alarmanlage.webp' alt='Im Terminal: ssh -J über museum.bitstein zu alarmanlage.bitstein, die Begrüßung der Alarmanlage, hostname gibt alarmanlage aus, und ls -a /home/wartung zeigt die versteckte Datei .bash_history.'>
+<img class='full' src='ssh-alarmanlage.webp' alt='Im Terminal auf museum.bitstein: ssh alarmanlage.bitstein, die Frage nach dem Passwort, die Begrüßung der Alarmanlage, hostname gibt alarmanlage aus, und ls -a /home/wartung zeigt die versteckte Datei .bash_history.'>
 
 ### Nicht allein
 
@@ -450,7 +444,7 @@ crop-terminal-lines: auto
 
 _task(eindringling)
 
-Die Adresse kennst du aus `geraete.txt`. `rm -i` fragt vor dem Löschen nach, und die Antwort ist noch nicht gekommen. Löschen könnte er die Datei ohnehin nicht: Sie gehört `root`, so wie das Verzeichnis, das zeigt `ls -l /home/wartung`. Beenden kannst du seinen Prozess auch nicht; `kill` darf nur Prozesse des eigenen Benutzers beenden. Verlass dich trotzdem nicht darauf und sichere die Datei, bevor er einen anderen Weg findet.
+Die Adresse kennst du aus `geraete.txt`. `rm -i` fragt vor dem Löschen nach, und die Antwort ist noch nicht gekommen. Löschen könnte er die Datei ohnehin nicht: Sie gehört `root`, so wie das Verzeichnis. Das zeigt `ls -la /home/wartung`, wo `.` für das Verzeichnis selbst steht. Beenden kannst du seinen Prozess auch nicht; `kill` darf nur Prozesse des eigenen Benutzers beenden. Verlass dich trotzdem nicht darauf: Hol dir eine Kopie der Datei in deinen Workspace, bevor er einen anderen Weg findet. Wie das geht, steht gleich unter »Beweise sichern«.
 
 Die Steuerung kennst du schon: `/srv/alarmanlage` ist das Repository aus deinen Akten. Neu ist `/home/wartung`. Die Bash schreibt in die versteckte Datei `.bash_history`, was jemand getippt hat, Befehl für Befehl. Über jedem Befehl steht, wann er kam, als Zeile mit `#` und den Sekunden seit dem 1. Januar 1970. `date -d @1773526140` macht daraus eine Uhrzeit.
 
@@ -458,7 +452,7 @@ _task(loeschbefehl)
 
 ### Beweise sichern
 
-`scp` (»secure copy«) kopiert Dateien über `ssh`, auch über einen Sprung. Vor dem `:` steht der Rechner, dahinter der Pfad dort, und das Letzte ist das Ziel bei dir:
+`scp` (»secure copy«) kopiert Dateien über `ssh`. Vor dem `:` steht der Rechner, dahinter der Pfad dort, und das Letzte ist das Ziel bei dir. Aus deinem Workspace erreichst du die Alarmanlage nicht direkt, darum springt `scp` mit `-J` (»jump«) über das Museum. Das Passwort fragt es dann für beide Rechner, erst deins für das Museum, dann das der Wartung:
 
 ```bash
 scp -J e123@museum.bitstein e123@alarmanlage.bitstein:/home/wartung/.bash_history ~/bitstein/beweis.txt
@@ -469,9 +463,12 @@ Das kommt in deinem Workspace an, nicht auf einem der Server. Führ den Befehl d
 _task(beweis)
 
 <!-- tutorial-step
-# Zurück im Workspace: die Beweise kopieren, die Aufgaben lösen
+# Zurück im Workspace (von der Alarmanlage über das Museum): die Beweise
+# kopieren, die Aufgaben lösen
 terminal-run: exit
-wait-for-text: Connection to alarmanlage.bitstein closed
+wait-for-text: logout
+terminal-run: exit
+wait-for-text: Connection to museum.bitstein closed
 terminal-run: scp -J $CASE_USER@museum.bitstein $CASE_USER@alarmanlage.bitstein:/home/wartung/.bash_history ~/bitstein/beweis.txt
 terminal-wait-for-prompt: 30
 check-task: beweis
@@ -574,7 +571,7 @@ Die Adresse aus dem VPN, das Gerät dazu, die Befehle aus der Nacht, minutengena
 <tr><td><code>git log -p --author=name</code></td><td>die Commits einer Person mit allem, was sie geändert haben</td></tr>
 <!-- feature: case_server -->
 <tr><td><code>ssh name@rechner</code>, <code>exit</code></td><td>ein Terminal auf einem anderen Rechner; zurück</td></tr>
-<tr><td><code>ssh -J name@a name@b</code></td><td>über den Rechner a zum Rechner b</td></tr>
+<tr><td><code>scp -J name@a name@b:pfad ziel</code></td><td>eine Datei vom Rechner b holen, über den Rechner a</td></tr>
 <tr><td><code>scp name@rechner:pfad ziel</code></td><td>eine Datei von dort zu dir kopieren</td></tr>
 <tr><td><code>scp 'name@rechner:ordner/a*' ziel</code></td><td>alle Dateien, deren Name mit a anfängt</td></tr>
 <!-- /feature -->
