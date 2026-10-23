@@ -486,7 +486,7 @@ check-task: eindringling <- 0
 
 ### Die Kameras
 
-Bleibt Reuters Ausrede, er sei die ganze Nacht zu Hause gewesen. Im Museum hängen drei Kameras, in der Ausstellung, am Hintereingang und am Parkplatz. Sie nehmen auf, sobald sich etwas bewegt, dann alle drei Sekunden ein Bild, und laut `LIESMICH.txt` liegen ihre Bilder aus der Nacht in `kameras/`. Melde dich am Museum an und sieh nach, wie viele es sind:
+Offen ist noch Reuters Ausrede, er sei die ganze Nacht zu Hause gewesen. Im Museum hängen drei Kameras, in der Ausstellung, am Hintereingang und am Parkplatz. Sie nehmen auf, sobald sich etwas bewegt, dann alle drei Sekunden ein Bild, und laut `LIESMICH.txt` liegen ihre Bilder aus der Nacht in `kameras/`. Melde dich am Museum an und sieh nach, wie viele es sind:
 
 ```bash
 ls kameras | head -n 4
