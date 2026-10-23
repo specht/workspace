@@ -21,6 +21,16 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Die Neo4j-Datenbank der Anwendung liegt jetzt in einem eigenen Docker-Netz, das nur der
+  Ruby-Container mit ihr teilt. Nach dem Update `./config.rb up -d`, damit `neo4japp` und
+  `ruby` neu angelegt werden.
+- Der Docker-Wächter (`docker_guard`) startet Container nur noch mit Grenzen für CPU, Speicher
+  (ohne Swap) und Prozesse, höchstens so viel wie ein Workspace (4 CPUs, 4 GB, 256 Prozesse;
+  anders mit `GUARD_MAX_CPUS`, `GUARD_MAX_MEMORY`, `GUARD_MAX_PIDS`). Nach dem Update
+  `./config.rb up -d`, damit er die neuen Regeln liest.
+- Löschungen nach dem Zurückspielen einer Sicherung wiederholt der Workspace jetzt von selbst
+  (kurz nach dem Start und alle fünf Minuten), sobald seit dem Update mindestens ein Konto
+  gelöscht wurde; für ältere Sicherungen wie bisher unter »Nach einer Wiederherstellung«.
 - Fallserver: Die Alarmanlage startete nach einem Neustart des Containers immer wieder neu
   (`mkfifo: … File exists`). Mit `CASE_SERVER = true` nach dem Update
   `./config.rb build case_museum case_alarm` und `./config.rb up -d case_museum case_alarm`.
