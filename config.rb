@@ -254,6 +254,15 @@ docker_compose[:networks] = {
     service[:labels] ||= []
     service[:labels] << 'hackschule.workspace.peer_firewall.infrastructure=true'
 end
+# The application's own Neo4j (accounts, sessions, groups) has no password:
+# it shares a network with the backend only, not with nginx or the students'
+# databases on `internal`, which face student traffic.
+if docker_compose[:services][:neo4japp]
+    # (not internal: the development port of the Neo4j browser needs a gateway)
+    docker_compose[:networks][:app] = { :driver => 'bridge' }
+    docker_compose[:services][:neo4japp][:networks] = ['app']
+    docker_compose[:services][:ruby][:networks] << 'app'
+end
 
 # The case server of »Ein Krimi im Terminal« (docs/entwicklung.md, »Der
 # Fallserver«), only with CASE_SERVER = true in credentials.rb: museum.bitstein
