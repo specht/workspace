@@ -353,7 +353,7 @@ def schattenstrahl():
     s.line((10, fy), (w - 10, fy), INK, 2.5)
     c, r = (232, fy - 62), 62
     s.circle(c, r, PALE, INK, 2.5)
-    sun = unit((0.78, -0.62))
+    sun = unit((0.6, -0.8))
     # in the shadow: the ray meets the ball
     p1 = (150, fy)
     t1 = ray_circle(p1, sun, c, r)
@@ -363,15 +363,17 @@ def schattenstrahl():
     s.dot(p1, 5.5, BLUE)
     s.text((p1[0] - 6, fy + 22), 'im Schatten', INK, 'end')
     # in the sun: free all the way
-    p2 = (360, fy)
-    q2 = add(p2, mul(sun, 150))
-    s.arrow(p2, q2, AMBER, 2.2, dash='6 4')
+    # in the sun: free all the way, the arrow ends at the sun, which lies
+    # in that direction (far away: the left ray is parallel to it)
+    p2 = (350, fy)
+    sun_r = 18
+    sun_c = add(p2, mul(sun, (fy - 40) / -sun[1]))
+    s.arrow(p2, sun_c, AMBER, 2.2, dash='6 4', gap=sun_r + 4)
     s.dot(p2, 5.5, BLUE)
     s.text((p2[0] + 8, fy + 22), 'in der Sonne', INK, 'start')
-    s.code(add(lerp(p2, q2, 0.55), (-12, -6)), 'sun_dir', 'end')
-    # the sun, far away in that direction
-    s.circle((w - 40, 36), 18, AMBER, None)
-    s.text((w - 66, 42), 'Sonne, weit weg', AMBER, 'end')
+    s.code(add(lerp(p2, sun_c, 0.5), (-12, -6)), 'sun_dir', 'end')
+    s.circle(sun_c, sun_r, AMBER, None)
+    s.text((sun_c[0] - sun_r - 8, sun_c[1] + 6), 'Sonne, weit weg', AMBER, 'end')
     return s
 
 

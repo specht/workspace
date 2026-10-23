@@ -6,16 +6,16 @@
   <rect x="10.0" y="196.0" width="476.0" height="30.0" fill="#f3f4f6"/>
   <line x1="10.0" y1="196.0" x2="486.0" y2="196.0" stroke="#1f2937" stroke-width="2.5"/>
   <circle cx="232.0" cy="134.0" r="62.0" fill="#eef3fb" stroke="#1f2937" stroke-width="2.5"/>
-  <line x1="150.0" y1="196.0" x2="182.0" y2="170.6" stroke="#d97706" stroke-width="2.2" stroke-dasharray="6 4"/>
-  <line x1="176.0" y1="164.6" x2="188.0" y2="176.6" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/>
-  <line x1="176.0" y1="176.6" x2="188.0" y2="164.6" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="150.0" y1="196.0" x2="176.2" y2="161.1" stroke="#d97706" stroke-width="2.2" stroke-dasharray="6 4"/>
+  <line x1="170.2" y1="155.1" x2="182.2" y2="167.1" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="170.2" y1="167.1" x2="182.2" y2="155.1" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/>
   <circle cx="150.0" cy="196.0" r="5.5" fill="#2b5fb4"/>
   <text x="144.0" y="218.0" font-size="16" fill="#1f2937" text-anchor="end" xml:space="preserve">im Schatten</text>
-  <line x1="360.0" y1="196.0" x2="470.9" y2="107.8" stroke="#d97706" stroke-width="2.2" stroke-dasharray="6 4"/>
-  <polygon points="477.4,102.7 465.2,106.3 471.1,113.7" fill="#d97706"/>
-  <circle cx="360.0" cy="196.0" r="5.5" fill="#2b5fb4"/>
-  <text x="368.0" y="218.0" font-size="16" fill="#1f2937" text-anchor="start" xml:space="preserve">in der Sonne</text>
-  <rect x='345.1' y='126.4' width='72.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='349.6' y='138.7' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">sun_dir</text>
-  <circle cx="456.0" cy="36.0" r="18.0" fill="#d97706"/>
-  <text x="430.0" y="42.0" font-size="16" fill="#d97706" text-anchor="end" xml:space="preserve">Sonne, weit weg</text>
+  <line x1="350.0" y1="196.0" x2="448.8" y2="64.2" stroke="#d97706" stroke-width="2.2" stroke-dasharray="6 4"/>
+  <polygon points="453.8,57.6 442.9,64.2 450.5,69.9" fill="#d97706"/>
+  <circle cx="350.0" cy="196.0" r="5.5" fill="#2b5fb4"/>
+  <text x="358.0" y="218.0" font-size="16" fill="#1f2937" text-anchor="start" xml:space="preserve">in der Sonne</text>
+  <rect x='329.0' y='99.7' width='72.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='333.5' y='112.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">sun_dir</text>
+  <circle cx="467.0" cy="40.0" r="18.0" fill="#d97706"/>
+  <text x="441.0" y="46.0" font-size="16" fill="#d97706" text-anchor="end" xml:space="preserve">Sonne, weit weg</text>
 </svg>
