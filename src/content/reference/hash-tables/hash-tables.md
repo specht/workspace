@@ -119,6 +119,10 @@ remove(k):
 ```
 
 Ein Grabstein zählt in `insert` und `find` oben als belegt, die Suche läuft also über ihn hinweg. Wer den Platz wieder nutzen will, merkt sich in `insert` den ersten Grabstein auf dem Weg und schreibt \\(k\\) dorthin, aber erst am leeren Bucket, wenn feststeht, dass \\(k\\) nicht weiter hinten schon steht. Beim Rehashing verschwinden alle Grabsteine, denn dort werden nur die Schlüssel neu eingefügt.
+
+Dieselben sechs Schlüssel; 13 kommt heraus, dann wird 29 gesucht. 29 ist beim Einfügen von Bucket 5 bis in Bucket 0 gerutscht. Wäre Bucket 5 jetzt einfach leer, hörte die Suche dort auf:
+
+<div class='algo-stepper' data-title='Hash Table mit linearem Sondieren: entfernen' data-algo='hash' data-mode='probe' data-size='8' data-setup='insert 13, insert 21, insert 6, insert 29, insert 14, insert 40' data-ops='remove 13, find 29'></div>
 <!-- /part -->
 
 <!-- part: hash-fuellgrad -->

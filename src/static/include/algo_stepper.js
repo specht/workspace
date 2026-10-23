@@ -54,6 +54,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 .algo-stepper .algo-swatch { display: inline-block; width: 0.95em; height: 0.95em; border-radius: 0.2em; background: var(--swatch); border: 1px solid var(--algo-line); }
 .algo-stepper .algo-swatch.ring { background: transparent; border: 2.5px solid var(--swatch); border-radius: 50%; }
 .algo-stepper .algo-swatch.line { height: 0; width: 1.3em; border: 0; border-top: 2.5px solid var(--swatch); border-radius: 0; }
+.algo-stepper .algo-swatch.dashed { background: transparent; border: 1.5px dashed var(--swatch); }
 .algo-stepper .algo-body { display: grid; grid-template-columns: minmax(0, 34em) minmax(12em, 1fr); grid-template-rows: auto 1fr; gap: 0 1.2em; align-items: start; }
 /* the picture with its legend under it on the left, the calls and the code
    beside both. Where the widget is too narrow for the code to keep about
@@ -2295,7 +2296,13 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         chainFind: ['find(k):', '    b ← h(k)', '    return whether k is in buckets[b]'],
         probeInsert: ['insert(k):', '    b ← h(k)', '    while buckets[b] occupied:', '        if buckets[b] == k: done', '        b ← (b + 1) mod m', '    buckets[b] ← k', '    count ← count + 1'],
         probeFind: ['find(k):', '    b ← h(k)', '    while buckets[b] occupied:', '        if buckets[b] == k: found', '        b ← (b + 1) mod m', '    not found'],
+        probeRemove: ['remove(k):', '    b ← h(k)', '    while buckets[b] occupied:', '        if buckets[b] == k:', '            buckets[b] ← deleted        (der Grabstein)',
+            '            count ← count - 1', '            done', '        b ← (b + 1) mod m'],
     };
+    // a bucket whose key was removed with linear probing: a tombstone, which
+    // counts as occupied, so that a search goes on past it
+    const DELETED = 'deleted';
+    const holds = (bucket) => (bucket === DELETED ? 'ein Grabstein' : String(bucket));
 
     function traceHash(ops, mode, m, setup = []) {
         const chain = mode === 'chain';
@@ -2323,7 +2330,8 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             } else {
                 let tries = 0;
                 while (table[b] !== null && tries < m) {
-                    say(`while buckets[b] occupied: In Bucket ${b} steht ${table[b]}.`, { token: k, b, compare: table[b], code: C(name, 2) });
+                    say(table[b] === DELETED ? `while buckets[b] occupied: In Bucket ${b} liegt ein Grabstein. Er zählt als belegt.` : `while buckets[b] occupied: In Bucket ${b} steht ${table[b]}.`,
+                        { token: k, b, compare: table[b], code: C(name, 2) });
                     if (table[b] === k) { say(`buckets[b] == k: ${k} steht schon da, nichts zu tun.`, { token: k, b, code: C(name, 3) }); return; }
                     const old = b;
                     b = (b + 1) % m;
@@ -2353,7 +2361,9 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             }
             let tries = 0;
             while (table[b] !== null && tries < m) {
-                snapshot(`while buckets[b] occupied: In Bucket ${b} steht ${table[b]}.`, { token: k, b, compare: table[b], code: C(name, 2) });
+                snapshot(table[b] === DELETED
+                    ? `while buckets[b] occupied: In Bucket ${b} liegt ein Grabstein. Er zählt als belegt, die Suche geht weiter: ${k} kann dahinter liegen.`
+                    : `while buckets[b] occupied: In Bucket ${b} steht ${table[b]}.`, { token: k, b, compare: table[b], code: C(name, 2) });
                 if (table[b] === k) { snapshot(`buckets[b] == k: gefunden, in Bucket ${b}.`, { token: k, b, compare: k, found: k, code: C(name, 3) }); return; }
                 const old = b;
                 b = (b + 1) % m;
@@ -2362,12 +2372,38 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             }
             snapshot(`while buckets[b] occupied: Bucket ${b} ist leer. Wäre ${k} da, stünde es spätestens hier: not found.`, { token: k, b, code: C(name, 5) });
         };
+        // linear probing only: the key's bucket becomes a tombstone
+        const remove = (k) => {
+            const name = 'probeRemove';
+            snapshot(`remove(${k}): Der Schlüssel ${k} soll aus der Hash Table.`, { token: k, code: C(name, 0) });
+            let b = hash(k);
+            snapshot(`b ← h(k): h(${k}) = ${k} mod ${m} = ${b}.`, { token: k, b, code: C(name, 1) });
+            let tries = 0;
+            while (table[b] !== null && tries < m) {
+                snapshot(`while buckets[b] occupied: In Bucket ${b} ${table[b] === DELETED ? 'liegt ein Grabstein' : `steht ${table[b]}`}.`, { token: k, b, compare: table[b], code: C(name, 2) });
+                if (table[b] === k) {
+                    snapshot(`if buckets[b] == k: ${k} steht in Bucket ${b}.`, { token: k, b, compare: k, found: k, code: C(name, 3) });
+                    table[b] = DELETED;
+                    snapshot(`buckets[b] ← deleted: Statt ${k} liegt jetzt ein Grabstein in Bucket ${b}. Ein leerer Bucket würde jede Suche hier anhalten, auch die nach Schlüsseln, die beim Einfügen über Bucket ${b} hinaus gerutscht sind.`,
+                        { b, code: C(name, 4) });
+                    count -= 1;
+                    snapshot(`count ← count - 1: ${count} Schlüssel in ${m} Buckets.`, { b, code: C(name, 5) });
+                    return;
+                }
+                const old = b;
+                b = (b + 1) % m;
+                tries += 1;
+                snapshot(`b ← (b + 1) mod m: (${old} + 1) mod ${m} = ${b}.`, { token: k, b, code: C(name, 7) });
+            }
+            snapshot(`while buckets[b] occupied: Bucket ${b} ist leer. ${k} ist nicht in der Hash Table, nichts zu tun.`, { token: k, b, code: C(name, 2) });
+        };
         for (const op of setup) if (op.type === 'insert') insert(op.value, true);
         snapshot(setup.length ? 'Die Hash Table von oben. Jetzt der Reihe nach die Operationen darüber.' : `Eine leere Hash Table mit ${m} Buckets. Der Hash eines Schlüssels k ist k mod ${m}.`);
         for (const [number, op] of ops.entries()) {
             current = number;
             if (op.type === 'insert') insert(op.value);
             else if (op.type === 'find') find(op.value);
+            else if (op.type === 'remove' && !chain) remove(op.value);
         }
         return frames;
     }
@@ -2411,6 +2447,12 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
                     svg.appendChild(el('svg:circle', { 'data-key': `kfield-${k}`, cx: x + keyW - 2, cy: y + 16, r: 0, fill: 'none' }));
                     svg.appendChild(key(k, x, y + 1, look(k)));
                 });
+            } else if (bucket === DELETED) {
+                // the tombstone: a quiet dashed box with the word the code uses
+                svg.appendChild(el('svg:g', { 'data-key': `grave-${i}`, 'data-grow': `${keyW / 2} ${(rowH - 10) / 2}`, transform: `translate(${bx + (bw - keyW) / 2} ${y + 1})` }, [
+                    el('svg:rect', { x: 0, y: 0, width: keyW, height: rowH - 10, rx: 5, fill: frame.compare === DELETED && frame.b === i ? 'var(--algo-frontier)' : 'var(--algo-paper)',
+                        stroke: 'var(--algo-line)', 'stroke-width': 1.5, 'stroke-dasharray': '4 3' }),
+                    el('svg:text', { x: keyW / 2, y: 19, 'text-anchor': 'middle', 'font-size': 10.5, fill: 'var(--bs-secondary-color)', 'font-family': "'0xProto Nerd Font Mono', monospace", text: DELETED })]));
             } else if (bucket !== null) svg.appendChild(key(bucket, bx + (bw - keyW) / 2, y + 1, look(bucket)));
         });
         // the key on its way, where it would go
@@ -2421,7 +2463,9 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
                 el('svg:rect', { x: 0, y: 0, width: keyW, height: rowH - 10, rx: 5, fill: 'var(--algo-frontier)', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '4 3' }),
                 el('svg:text', { x: keyW / 2, y: 20, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.token) })]));
         } else if (frame.token !== undefined) {
-            svg.appendChild(el('svg:g', { 'data-key': 'token', 'data-grow': `${keyW / 2} ${(rowH - 10) / 2}`, transform: `translate(${bx + bw + 24} 0)` }, [
+            // before b is known: left of the buckets, where b's label comes
+            // later (on the right it would cover the counts above the table)
+            svg.appendChild(el('svg:g', { 'data-key': 'token', 'data-grow': `${keyW / 2} ${(rowH - 10) / 2}`, transform: `translate(8 ${top + 1})` }, [
                 el('svg:rect', { x: 0, y: 0, width: keyW, height: rowH - 10, rx: 5, fill: 'var(--algo-frontier)', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '4 3' }),
                 el('svg:text', { x: keyW / 2, y: 20, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.token) })]));
         }
@@ -2924,6 +2968,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         } else if (algo === 'hash') {
             const parts = [any((f) => f.fresh !== undefined) && 'neu', any((f) => f.compare !== undefined) && 'verglichen', any((f) => f.found !== undefined) && 'gefunden'].filter(Boolean);
             if (parts.length) add('fill', 'var(--algo-frontier)', parts.join(', '));
+            if (any((f) => f.table.includes(DELETED))) add('dashed', 'var(--algo-line)', 'Grabstein (deleted)');
         }
         if (!items.length) return null;
         return el('div', { class: 'algo-legend', 'aria-hidden': 'true' }, items.map((item) => el('span', { class: 'algo-key' }, [
