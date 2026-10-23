@@ -346,28 +346,30 @@ def naechster():
 def schattenstrahl():
     w, h = 496, 236
     s = Svg('schattenstrahl', w, h, 'Eine Kugel auf dem Boden, die Sonne weit weg rechts oben. Von zwei Treffpunkten auf '
-            'dem Boden geht je ein Strahl in Richtung sun_dir, beide parallel, denn die Sonne ist so weit weg, dass sie '
-            'von überall in derselben Richtung steht. Der linke stößt an die Kugel: Schatten. Der rechte kommt frei durch.')
+            'dem Boden geht je ein Strahl zur Sonne, in Richtung sun_dir. Der linke stößt an die Kugel: Schatten. Der '
+            'rechte kommt frei bis zur Sonne.')
     fy = 196
     s.rect(10, fy, w - 20, 30, LIGHT)
     s.line((10, fy), (w - 10, fy), INK, 2.5)
     c, r = (232, fy - 62), 62
     s.circle(c, r, PALE, INK, 2.5)
     sun = unit((0.6, -0.8))
-    # in the shadow: the ray meets the ball
+    # Both rays aim at the sun (diagram rule: an arrow points at what it
+    # goes to); it lies in the direction sun_dir from the right point.
+    p2 = (350, fy)
+    sun_r = 18
+    sun_c = add(p2, mul(sun, (fy - 40) / -sun[1]))
+    # in the shadow: the ray towards the sun meets the ball
     p1 = (150, fy)
-    t1 = ray_circle(p1, sun, c, r)
-    q1 = add(p1, mul(sun, t1))
+    to_sun = unit(sub(sun_c, p1))
+    t1 = ray_circle(p1, to_sun, c, r)
+    q1 = add(p1, mul(to_sun, t1))
     s.line(p1, q1, AMBER, 2.2, dash='6 4')
     s.cross(q1, 6, RED)
     s.dot(p1, 5.5, BLUE)
     s.text((p1[0] - 6, fy + 22), 'im Schatten', INK, 'end')
     # in the sun: free all the way
-    # in the sun: free all the way, the arrow ends at the sun, which lies
-    # in that direction (far away: the left ray is parallel to it)
-    p2 = (350, fy)
-    sun_r = 18
-    sun_c = add(p2, mul(sun, (fy - 40) / -sun[1]))
+    # in the sun: free all the way, the arrow ends at the sun
     s.arrow(p2, sun_c, AMBER, 2.2, dash='6 4', gap=sun_r + 4)
     s.dot(p2, 5.5, BLUE)
     s.text((p2[0] + 8, fy + 22), 'in der Sonne', INK, 'start')

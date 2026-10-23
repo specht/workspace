@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 496 236" width="496" height="236" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
-  <!-- Eine Kugel auf dem Boden, die Sonne weit weg rechts oben. Von zwei Treffpunkten auf dem Boden geht je ein Strahl in Richtung sun_dir, beide parallel, denn die Sonne ist so weit weg, dass sie von überall in derselben Richtung steht. Der linke stößt an die Kugel: Schatten. Der rechte kommt frei durch.
+  <!-- Eine Kugel auf dem Boden, die Sonne weit weg rechts oben. Von zwei Treffpunkten auf dem Boden geht je ein Strahl zur Sonne, in Richtung sun_dir. Der linke stößt an die Kugel: Schatten. Der rechte kommt frei bis zur Sonne.
        Gemacht von bilder/diagramme.py; auf der Seite mit style='width: 31em'.
        Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/schattenstrahl.svg 992 -->
   <rect width="496" height="236" fill="#ffffff"/>
   <rect x="10.0" y="196.0" width="476.0" height="30.0" fill="#f3f4f6"/>
   <line x1="10.0" y1="196.0" x2="486.0" y2="196.0" stroke="#1f2937" stroke-width="2.5"/>
   <circle cx="232.0" cy="134.0" r="62.0" fill="#eef3fb" stroke="#1f2937" stroke-width="2.5"/>
-  <line x1="150.0" y1="196.0" x2="176.2" y2="161.1" stroke="#d97706" stroke-width="2.2" stroke-dasharray="6 4"/>
-  <line x1="170.2" y1="155.1" x2="182.2" y2="167.1" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/>
-  <line x1="170.2" y1="167.1" x2="182.2" y2="155.1" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="150.0" y1="196.0" x2="187.7" y2="177.4" stroke="#d97706" stroke-width="2.2" stroke-dasharray="6 4"/>
+  <line x1="181.7" y1="171.4" x2="193.7" y2="183.4" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="181.7" y1="183.4" x2="193.7" y2="171.4" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/>
   <circle cx="150.0" cy="196.0" r="5.5" fill="#2b5fb4"/>
   <text x="144.0" y="218.0" font-size="16" fill="#1f2937" text-anchor="end" xml:space="preserve">im Schatten</text>
   <line x1="350.0" y1="196.0" x2="448.8" y2="64.2" stroke="#d97706" stroke-width="2.2" stroke-dasharray="6 4"/>

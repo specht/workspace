@@ -691,7 +691,7 @@ Die Kugeln stehen auf dem Boden, aber sie schweben scheinbar: Es fehlen die Scha
 
 Ob ein Punkt im Schatten liegt, findet ein Raytracer genauso heraus wie alles andere: mit einem Strahl. Vom Treffpunkt aus geht er in Richtung Sonne. Trifft er unterwegs etwas, kommt kein Sonnenlicht an.
 
-<img class='drawing' style='width: 31em' src='schattenstrahl.webp' alt='Eine Kugel liegt auf dem Boden, rechts oben steht weit weg die Sonne. Von zwei Treffpunkten auf dem Boden geht je ein gestrichelter Strahl in Richtung sun_dir, beide parallel. Der linke, im Schatten, stößt an die Kugel und endet an einem roten Kreuz. Der rechte, in der Sonne, kommt frei durch.'>
+<img class='drawing' style='width: 31em' src='schattenstrahl.webp' alt='Eine Kugel liegt auf dem Boden, rechts oben steht weit weg die Sonne. Von zwei Treffpunkten auf dem Boden geht je ein gestrichelter Strahl zur Sonne, in Richtung sun_dir. Der linke, im Schatten, stößt an die Kugel und endet an einem roten Kreuz. Der rechte, in der Sonne, kommt frei durch.'>
 
 Ergänze `sunlight`:
 
