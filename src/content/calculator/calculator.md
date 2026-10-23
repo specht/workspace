@@ -170,7 +170,11 @@ end
 ```
 
 <!-- tutorial-step
-# Das Gerüst von der Seite läuft, und noch löst es keine Aufgabe (ruby)
+# Das Gerüst von der Seite läuft, und noch löst es keine Aufgabe (ruby);
+# die Prüfung führt es im Workspace aus, der dafür laufen muss. Die
+# Seitenleiste geht vorher zu, solange Strg+B noch nicht im Terminal landet.
+hide-left-sidebar
+terminal-open
 write-file: calculator/calculator.rb <- previous-code
 check-task-fails: zerlegen
 check-task-fails: baum
@@ -220,7 +224,9 @@ while True:
 ```
 
 <!-- tutorial-step
-# Das Gerüst von der Seite läuft, und noch löst es keine Aufgabe (python)
+# Das Gerüst von der Seite läuft, und noch löst es keine Aufgabe (python);
+# die Prüfung führt es im Workspace aus, der dafür laufen muss
+terminal-open
 write-file: calculator/calculator.py <- previous-code
 check-task-fails: zerlegen python
 check-task-fails: baum python
@@ -259,10 +265,11 @@ type: z+(pz+)?
 press: Enter
 wait-for-text: minimierter DEA
 sleep: 1
-crop-element: #output_area svg:nth-of-type(3)
+# the third drawing: the minimized DFA (each drawing stands in its own div)
+crop-element: #output_area svg >> nth=2
 variants: dark
 -->
-<img class='drawing' style='width: 30em' src='automatron-zahl.webp' alt='Automatron zeichnet vier Zustände s0 bis s3. Mit z geht es von s0 nach s1, s1 ist grün mit doppeltem Rand und hat eine Schleife mit z. Mit p geht es von s1 nach s2, mit z von s2 nach s3, s3 ist grün und hat eine Schleife mit z.'>
+<img class='drawing' style='width: 30em' src='automatron-zahl.webp' alt='Automatron zeichnet vier Zustände s0 bis s3; ein Pfeil zeigt auf s0, den Start. Mit z geht es von s0 nach s1, s1 hat einen doppelten Rand, ist also ein Endzustand, und eine Schleife mit z. Mit p geht es von s1 nach s2, mit z von s2 nach s3, s3 hat ebenfalls einen doppelten Rand und eine Schleife mit z.'>
 
 Die Schleifen in `tokenize` sind dieser Automat: Die erste läuft in s1 im Kreis, solange Ziffern kommen. Ein Punkt führt nach s2, und nur wenn danach wieder eine Ziffer kommt, geht es nach s3 weiter. Hört die Zahl in s2 auf, wie in `3.`, hat der Automat keine Zahl gelesen. Dein Tokenizer nimmt dann nur die `3` und meldet den Punkt als Zeichen, das nicht passt.
 
@@ -436,7 +443,8 @@ Fehlt noch die Zuweisung. Sie gehört nicht in die Grammatik, sondern in den Rec
 `variables = {}` steht vor der Schleife, damit es sich von Zeile zu Zeile hält.
 
 <!-- tutorial-screenshot
-# Der fertige Rechner zum Tippen (ruby)
+# Der fertige Rechner zum Tippen (ruby), im Workspace (das Bild davor zeigt die Website)
+tab: workspace
 write-file: calculator/calculator.rb <- file:loesung/calculator.rb
 hide-left-sidebar
 terminal-maximize
@@ -483,7 +491,8 @@ Fehlt noch die Zuweisung. Sie gehört nicht in die Grammatik, sondern in den Rec
 `import re` gehört an den Anfang und `variables = {}` vor die Schleife, damit es sich von Zeile zu Zeile hält.
 
 <!-- tutorial-screenshot
-# Der fertige Rechner zum Tippen (python)
+# Der fertige Rechner zum Tippen (python), im Workspace (das Bild davor zeigt die Website)
+tab: workspace
 write-file: calculator/calculator.py <- file:loesung/calculator.py
 terminal-maximize
 terminal-run: cd /workspace/calculator && clear

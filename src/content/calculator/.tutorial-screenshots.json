@@ -2,10 +2,10 @@
   "screenshots": {
     "automatron-zahl.webp": {
       "environment_fingerprint": "38969cf7edcb64d69c7503528c872dc915c02e8e64e13075466e5258fb6f442e",
-      "output_sha256": "02a24564cd39455d5ad9476f45be306779be2e99b908b18d703df06dbeca8db6",
-      "state_hash": "9458fde06323fd9aa831bb934da504d6310956320ee1934ada50dbf19a40aeee",
+      "output_sha256": "a91c675f351c99e98ec13ea1bb92809d8e0d0c6b0c316e61251ec5f2bad6a7ca",
+      "state_hash": "9c983143c25acbcb687bfc755e77f52d79344ae637ba44b62477ab36e7aa23be",
       "variants": {
-        "automatron-zahl-dark.webp": "438b6e4556f44f108bb907182576e6c83afe71b96adcd039864c65fba223c71c"
+        "automatron-zahl-dark.webp": "963e0da3c3fa54dfa02b4fababca60d5dd57a88dcf58e0167321062836cb9c2a"
       },
       "workspace_look": "4.140.0-ls368"
     },
@@ -21,14 +21,14 @@
     "rechner-python.webp": {
       "environment_fingerprint": "38969cf7edcb64d69c7503528c872dc915c02e8e64e13075466e5258fb6f442e",
       "output_sha256": "68c217c9f0e59f2e357da081a9017a7c2fcb686c11082a3e82a0e4c22ca74f50",
-      "state_hash": "9c4a0547b8ce519ecb8c724c2f8fe4e6848216e6dce03515aff6bc6aa1ad8d2b",
+      "state_hash": "226c63b4734fff7e97fbb8148817cf63447ad02923a1da36f5e4b89d27d7c544",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "rechner.webp": {
       "environment_fingerprint": "38969cf7edcb64d69c7503528c872dc915c02e8e64e13075466e5258fb6f442e",
       "output_sha256": "f7366418d115475d9e471ec1c61be2d568f4ed22d7799c6e9ccc657eaaab9d5d",
-      "state_hash": "e68d64913c70c02b22c4640bd222efc3d4d720908e8bcd28441b3e47fd9a28eb",
+      "state_hash": "240f24d5dcc0f2c1fac3c084bc4e1ba5a39985b0b43b206e9bd45ea48663ee53",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     }
