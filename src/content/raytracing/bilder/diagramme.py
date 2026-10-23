@@ -305,7 +305,7 @@ def skalarprodukt():
 
 def naechster():
     w, h = 496, 210
-    s = Svg('naechster', w, h, 'Ein Strahl von origin: Eine Kugel verfehlt er (t = INFINITY), zwei trifft er bei t = 1.9 '
+    s = Svg('naechster', w, h, 'Ein Strahl von origin: Eine Kugel verfehlt er (kein Treffer), zwei trifft er bei t = 1.9 '
             'und t = 3.2, den Boden bei t = 4.2. Zu sehen ist der Treffer mit dem kleinsten t.')
     fy = 172
     s.rect(10, fy, w - 20, 24, LIGHT)
@@ -334,7 +334,7 @@ def naechster():
     pf = add(o, mul(d, t_floor))
     s.hollow(pf, 4.5, GREY)
     s.code(add(pf, (-12, 20)), 't = 4.2', 'end')
-    s.code((180 + 38, 38 + 6), 't = INFINITY')
+    s.text((180 - 38, 38 + 6), 'kein Treffer', INK, 'end')
     s.dot(o, 6)
     s.code((o[0] - 8, o[1] - 16), 'origin')
     s.label((w - 14, 30), ['zu sehen: das kleinste ', ('c', 't')], BLUE, 'end')

@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 496 210" width="496" height="210" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
-  <!-- Ein Strahl von origin: Eine Kugel verfehlt er (t = INFINITY), zwei trifft er bei t = 1.9 und t = 3.2, den Boden bei t = 4.2. Zu sehen ist der Treffer mit dem kleinsten t.
+  <!-- Ein Strahl von origin: Eine Kugel verfehlt er (kein Treffer), zwei trifft er bei t = 1.9 und t = 3.2, den Boden bei t = 4.2. Zu sehen ist der Treffer mit dem kleinsten t.
        Gemacht von bilder/diagramme.py; auf der Seite mit style='width: 31em'.
        Als Bild, hell und dunkel: src/scripts/render-svg.rb src/content/raytracing/naechster.svg 992 -->
   <rect width="496" height="210" fill="#ffffff"/>
@@ -18,7 +18,7 @@
   <rect x='311.5' y='102.4' width='72.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='316.0' y='114.7' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">t = 3.2</text>
   <circle cx="430.0" cy="172.0" r="4.5" fill="#ffffff" stroke="#6b7280" stroke-width="2"/>
   <rect x='350.5' y='179.7' width='72.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='355.0' y='192.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">t = 4.2</text>
-  <rect x='213.5' y='31.7' width='117.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='218.0' y='44.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">t = INFINITY</text>
+  <text x="142.0" y="44.0" font-size="16" fill="#1f2937" text-anchor="end" xml:space="preserve">kein Treffer</text>
   <circle cx="30.0" cy="90.0" r="6.0" fill="#1f2937"/>
   <rect x='17.5' y='61.7' width='63.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='22.0' y='74.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">origin</text>
   <text x="301.8" y="30.0" font-size="16" fill="#2b5fb4" text-anchor="start" xml:space="preserve">zu sehen: das kleinste </text>

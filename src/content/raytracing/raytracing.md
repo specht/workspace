@@ -590,7 +590,7 @@ _task(boden)
 
 Ein Strahl kann mehrere Dinge treffen; zu sehen ist das vorderste. `nearest_hit` fragt den Boden und jede Kugel und behält das kleinste `t`.
 
-<img class='drawing' style='width: 31em' src='naechster.webp' alt='Ein Strahl beginnt links bei origin und läuft leicht abwärts nach rechts. Oben verfehlt er einen Kreis: t = INFINITY. Den zweiten Kreis trifft er bei t = 1.9, dort endet der blaue Pfeil; gestrichelt geht er weiter, trifft einen dritten Kreis bei t = 3.2 und den Boden bei t = 4.2. Oben steht: zu sehen: das kleinste t.'>
+<img class='drawing' style='width: 31em' src='naechster.webp' alt='Ein Strahl beginnt links bei origin und läuft leicht abwärts nach rechts. Oben verfehlt er einen Kreis: kein Treffer. Den zweiten Kreis trifft er bei t = 1.9, dort endet der blaue Pfeil; gestrichelt geht er weiter, trifft einen dritten Kreis bei t = 3.2 und den Boden bei t = 4.2. Oben steht: zu sehen: das kleinste t.'>
 
 Was über den Treffer bekannt ist, sammelt es in einem `hit`. Beides kommt unter `hit_floor`:
 
