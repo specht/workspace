@@ -104,6 +104,19 @@ Und im fertigen Bucket-Array zwei Suchen, eine erfolgreich und eine nicht:
 Die Kollisionen in Bucket 5 schieben andere Schlüssel weiter, die selbst gar nicht kollidiert hätten: 6 gehört in Bucket 6, doch dort steht schon 21. So wachsen lange belegte Strecken, **Cluster**, und die Suche nach 37 muss am Ende fast die ganze Tabelle ansehen.
 
 **Entfernen** ist bei Linear Probing heikel: Wird ein Bucket einfach geleert, endet die Suche nach einem Schlüssel, der hinter ihm liegt, zu früh. Man markiert ihn deshalb als **gelöscht** (einen »Grabstein«): Beim Suchen läuft man darüber hinweg, beim Einfügen darf er wieder belegt werden.
+
+```pseudocode
+remove(k):
+    b ← h(k)
+    while buckets[b] occupied:
+        if buckets[b] == k:
+            buckets[b] ← deleted        (der Grabstein)
+            count ← count - 1
+            done
+        b ← (b + 1) mod m
+```
+
+Ein Grabstein zählt in `insert` und `find` oben als belegt, die Suche läuft also über ihn hinweg. Wer den Platz wieder nutzen will, merkt sich in `insert` den ersten Grabstein auf dem Weg und schreibt \\(k\\) dorthin, aber erst am leeren Bucket, wenn feststeht, dass \\(k\\) nicht weiter hinten schon steht. Beim Rehashing verschwinden alle Grabsteine, denn dort werden nur die Schlüssel neu eingefügt.
 <!-- /part -->
 
 <!-- part: hash-fuellgrad -->
