@@ -126,7 +126,7 @@ Lies die fünf Hinweise genau. Jeder führt in einen anderen Teil der Akten.
 
 ## Die Zeugin
 
-In `strassen/` liegt eine Datei für jede Straße. Jede Zeile ist ein Haus, in der Reihenfolge der Hausnummern: Zeile 1 ist Hausnummer 1, Zeile 2 Hausnummer 2. Die ersten drei Häuser der Hafenstraße:
+In `strassen/` liegt eine Datei für jede Straße. Jede Zeile ist ein Haus, in der Reihenfolge der Hausnummern: Zeile 1 ist Hausnummer 1, Zeile 2 Hausnummer 2. Jede Straße fängt bei 1 an, keine Nummer fehlt, auch wenn niemand zu Hause war, und es gibt kein 1a oder 1b: Hausnummer 23 steht also in Zeile 23. Die ersten drei Häuser der Hafenstraße:
 
 ```bash
 head -n 3 strassen/hafenstrasse.txt
