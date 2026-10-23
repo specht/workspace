@@ -4397,17 +4397,26 @@ class Main < Sinatra::Base
         halt 400, { :error => 'admin_account' }.to_json if ADMIN_USERS.include?(email)
         halt 404, { :error => 'no_account' }.to_json if neo4j_query('MATCH (u:User {email: $email}) RETURN u.email;', :email => email).empty?
         date = Date.today + DELETION_NOTICE_DAYS
-        neo4j_query('MATCH (u:User {email: $email}) SET u.deletion_at = $date, u.deletion_announced_at = $now, u.deletion_announced_by = $me;',
-            :email => email, :date => date.to_s, :now => Time.now.to_i, :me => @session_user[:email])
         mail_subject, html = MailTexts.deletion_notice(:web_root => WEB_ROOT, :date => date, :signature => mail_signature)
         reply = defined?(CONTACT_EMAIL) ? CONTACT_EMAIL.to_s : ''
-        deliver_mail do
-            to email
-            from SMTP_FROM
-            reply_to reply unless reply.empty?
-            subject mail_subject
-            html
+        # The notice first: the deletion is set only once the mail server took
+        # the mail, so nobody is deleted without the two weeks' notice. (Taken
+        # is not read: a bounce still has to be noticed in the mailbox of
+        # SMTP_FROM.)
+        begin
+            deliver_mail do
+                to email
+                from SMTP_FROM
+                reply_to reply unless reply.empty?
+                subject mail_subject
+                html
+            end
+        rescue StandardError => e
+            STDERR.puts "Deletion of #{email} not announced, the mail failed: #{e.class}: #{e.message}"
+            halt 502, { :error => 'mail_failed' }.to_json
         end
+        neo4j_query('MATCH (u:User {email: $email}) SET u.deletion_at = $date, u.deletion_announced_at = $now, u.deletion_announced_by = $me;',
+            :email => email, :date => date.to_s, :now => Time.now.to_i, :me => @session_user[:email])
         STDERR.puts "Deletion of #{email} announced by #{@session_user[:email]} for #{date}"
         respond(:email => email, :deletion_at => date.to_s)
     end
