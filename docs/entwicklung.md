@@ -404,11 +404,17 @@ CASE_SERVER = true
   Übergabeprotokoll auf dem Museumsserver finden (`make_case.rb`,
   `ALARM_PASSWORD`). Teilen sich zwei Personen ein Konto, schadet das nicht:
   Schreiben kann dort niemand etwas.
-- **Der Zettel:** Die Akten liefert die Website selbst. Wer angemeldet ist,
-  bekommt auf der Seite eine eigene Adresse,
+- **Der Zettel:** Den Zugang (Benutzer und Passwort) zeigt die Seite selbst,
+  im Zettel von Kommissarin Weber im Kapitel »Beweise vom Server«: Wer
+  angemeldet ist, sieht dort seinen eigenen (`CaseServer.fill_note`), wer
+  nicht angemeldet ist, ein Beispiel und den Hinweis, dass nach dem Anmelden
+  der eigene dasteht. Die Akten liefert die Website ebenfalls selbst. Wer
+  angemeldet ist, bekommt auf der Seite eine eigene Adresse,
   `/terminal-mystery/akten/SCHLÜSSEL/bitstein.tar.gz` (`CaseServer.archive_key`);
   im Archiv liegt dann zusätzlich `bitstein/zugang-museum.txt` mit dem Zugang
-  dieser Person, egal woher die Anfrage kommt. Unter
+  dieser Person, egal woher die Anfrage kommt. Die Seite verlässt sich nicht
+  darauf: Wer die Akten früher oder ohne eigene Adresse geholt hat, hat die
+  Datei nicht. Unter
   `/terminal-mystery/bitstein.tar.gz` und ohne gültigen Schlüssel sucht die
   Website den Workspace an der Adresse der Anfrage. Das klappt nur, wenn der
   Workspace sie direkt erreicht: Über die öffentliche Adresse kommt die

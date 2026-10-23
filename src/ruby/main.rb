@@ -8068,7 +8068,13 @@ class Main < Sinatra::Base
         # the page as a student; after the variant is chosen, which has the
         # buttons too
         html = StageCode.strip(html) unless teacher_logged_in? && @impersonated_by.nil?
-        return html unless slug == 'terminal-mystery' && CaseServer.enabled? && @session_user
+        return html unless slug == 'terminal-mystery' && CaseServer.enabled?
+
+        # the note with the person's own access to the case server, written
+        # into the page for them (CaseServer.note_values); a visitor sees an
+        # example and how to get theirs
+        html = CaseServer.fill_note(html, @session_user && CaseServer.note_values(CaseServer.secret(LOGIN_CODE_SALT), @session_user[:email]))
+        return html unless @session_user
 
         html.gsub(CaseServer::ARCHIVE_PATH, CaseServer.personal_archive_path(CaseServer.secret(LOGIN_CODE_SALT), @session_user[:email]))
     end

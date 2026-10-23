@@ -39,6 +39,22 @@ class CaseServerTest < Minitest::Test
         end
     end
 
+    # The note on the page: a logged-in person sees their own access, the
+    # same as in the Workspace's variables; a visitor an example and a word
+    # that theirs comes after logging in
+    def test_the_note_on_the_page
+        html = '<pre>Benutzer   CASE_NOTE_USER\nPasswort   CASE_NOTE_PASSWORD\n\nssh CASE_NOTE_USER@museum.bitstein</pre>'
+        env = CaseServer.workspace_environment(SECRET, 'lena@example.org')
+        mine = CaseServer.fill_note(html, CaseServer.note_values(SECRET, 'lena@example.org'))
+        assert_includes mine, "Benutzer   #{env['CASE_USER']}"
+        assert_includes mine, "Passwort   #{env['CASE_PASSWORD']}"
+        assert_includes mine, "ssh #{env['CASE_USER']}@museum.bitstein"
+        visitor = CaseServer.fill_note(html, nil)
+        assert_includes visitor, 'Benutzer   e123'
+        assert_includes visitor, 'nach dem Anmelden'
+        refute_includes visitor, 'CASE_NOTE'
+    end
+
     def test_workspace_environment
         env = CaseServer.workspace_environment(SECRET, 'lena@example.org')
         assert_equal %w[CASE_USER CASE_PASSWORD], env.keys

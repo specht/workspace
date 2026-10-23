@@ -2713,6 +2713,33 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 /* For teachers on an activity with a class repository per group
    (class_repo_teacher_line): one line, which address each group has,
    linked to the dialog on the class page. */
+/* »Ein Krimi im Terminal«: the inspector's note with the person's own
+   access to the case server (CaseServer.fill_note), a slip of paper. */
+.case-note {
+    max-width: 34em;
+    margin: 1.2em 0;
+    padding: 0.9em 1.2em;
+    border: 1px solid var(--bs-border-color);
+    border-left: 4px solid #c9a227;
+    border-radius: 0.3em;
+    background: var(--bs-tertiary-bg);
+}
+
+.case-note p {
+    margin: 0 0 0.5em;
+}
+
+.case-note p:first-child {
+    font-weight: 600;
+}
+
+.case-note pre {
+    margin: 0.4em 0 0.6em;
+    padding: 0.6em 0.9em;
+    border-radius: 0.3em;
+    font-size: 95%;
+}
+
 /* For teachers, at each step (stage_code.rb): small buttons at the side
    that copy the whole code of this step. */
 .stage-code {

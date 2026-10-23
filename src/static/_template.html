@@ -180,7 +180,8 @@ function install_code_copy() {
     // code block of the page, not those inside another (line numbers).
     if (document.body.dataset.copyAllCode === 'true') {
         document.querySelectorAll('pre:not(.copy-code)').forEach(function(pre) {
-            if (!pre.parentElement.closest('pre')) blocks.push(pre);
+            // not inside another (line numbers), not the inspector's note
+            if (!pre.parentElement.closest('pre, .case-note')) blocks.push(pre);
         });
     }
     blocks.forEach(function(pre) {

@@ -338,17 +338,17 @@ Am Nachmittag des 15. März klingelt Kommissarin Weber an einer Tür in Bitstein
 <!-- feature: case_server -->
 ## Beweise vom Server
 
-Konstantin Reuter streitet alles ab. Er sei die ganze Nacht zu Hause gewesen, und an die Alarmanlage komme man ohnehin nur im Museum heran. Ganz stimmt das nicht: Das Museum hat einen Server, über den man sich von außen verbinden kann, und es hat der Polizei einen Zugang gegeben. Für dich gibt es einen eigenen, und Kommissarin Weber hat den Zettel dazu zu deinen Akten gelegt:
+Konstantin Reuter streitet alles ab. Er sei die ganze Nacht zu Hause gewesen, und an die Alarmanlage komme man ohnehin nur im Museum heran. Ganz stimmt das nicht: Das Museum hat einen Server, über den man sich von außen verbinden kann, und es hat der Polizei einen Zugang gegeben. Für dich gibt es einen eigenen, und Kommissarin Weber hat dir den Zettel dazu gegeben:
 
-```bash
-cat ~/bitstein/zugang-museum.txt
-```
+<div class='case-note'>
+<p>Kriminalpolizei Bitstein, Kommissarin Weber</p>
+<p>Das Stadtmuseum hat uns einen Zugang zu seinem Server gegeben, <code>museum.bitstein</code>. Dieser ist für dich:</p>
+<pre>Benutzer   CASE_NOTE_USER
+Passwort   CASE_NOTE_PASSWORD
 
-Fehlt die Datei, hast du die Akten nicht in deinem Workspace heruntergeladen, oder der Server war damals noch aus. Dann hol dir nur diese eine Datei noch einmal:
-
-```bash_copy
-cd ~ && wget -q -O - ${web_root}/terminal-mystery/bitstein.tar.gz | tar xzf - bitstein/zugang-museum.txt
-```
+ssh CASE_NOTE_USER@museum.bitstein</pre>
+<p>Gib ihn nicht weiter.</p>
+</div>
 
 ### Anmelden mit ssh
 

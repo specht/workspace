@@ -1,3 +1,4 @@
+require 'cgi'
 require 'openssl'
 require 'open3'
 require 'tmpdir'
@@ -74,6 +75,29 @@ module CaseServer
     end
 
     NOTE_PATH = 'bitstein/zugang-museum.txt'
+
+    # The note on the page (terminal-mystery.md, »Beweise vom Server«): one
+    # person's user and password in place of CASE_NOTE_USER and
+    # CASE_NOTE_PASSWORD. The page holds it, not only the case files: those
+    # carry it only when they were fetched with the person's own address
+    # while the case server was on.
+    NOTE_USER = 'CASE_NOTE_USER'
+    NOTE_PASSWORD = 'CASE_NOTE_PASSWORD'
+    EXAMPLE_USER = 'e123'
+    NOT_LOGGED_IN = '(nach dem Anmelden steht hier deins)'
+
+    def self.note_values(secret, email)
+        login = login(secret, email)
+        { :user => login, :password => password(secret, login) }
+    end
+
+    # html with values (from note_values) in the note, or for nil the example
+    # user and where the password will be.
+    def self.fill_note(html, values)
+        user = values ? values[:user] : EXAMPLE_USER
+        password = values ? values[:password] : NOT_LOGGED_IN
+        html.gsub(NOTE_USER, CGI.escapeHTML(user)).gsub(NOTE_PASSWORD, CGI.escapeHTML(password))
+    end
 
     # The note in the case files, from the inspector: one person's access
     # to museum.bitstein.
