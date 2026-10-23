@@ -27,7 +27,7 @@
     },
     "included-workspace-git-clone.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "b34660152b8207b8d9d63656f66257cd1376490f7ada48b363a1a60776a3f6c2",
+      "output_sha256": "00be5e1943730f3468a896e60436e754a9fb9f7e0a9a89cf6c8aa49bdb94da86",
       "state_hash": "5340175e991287be7b3f38885ed6dc034b988e2273a47b57beb38ab81a1ca124",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
