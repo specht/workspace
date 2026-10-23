@@ -73,10 +73,11 @@
   label: Netzwerk und Daten
   icon: /images/handshake.png
   description: |
-    Wie Browser und Server miteinander reden (HTTP), und die beiden
-    Schreibweisen für Daten, die dabei und in Einstellungen vorkommen: JSON
-    und YAML.
+    Die Befehle fürs Netz im Terminal (ping, nc, dig, ssh), wie Browser und
+    Server miteinander reden (HTTP), und die beiden Schreibweisen für Daten,
+    die dabei und in Einstellungen vorkommen: JSON und YAML.
   entries:
+    - netzwerk
     - http
     - json
     - yaml

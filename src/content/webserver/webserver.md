@@ -7,7 +7,7 @@ languages: [ruby, python]
 topic: networks
 duration: 2 Doppelstunden
 requires: [tcpip]
-reference: [http]
+reference: [netzwerk, http]
 </div>
 
 <div

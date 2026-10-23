@@ -4,7 +4,7 @@ image_alt: "Ein Baum der Domainnamen: die Wurzel, darunter de, com und org, daru
 kind: labor
 language: Bash
 requires: [tcpip]
-reference: [terminal]
+reference: [netzwerk, terminal]
 </div>
 
 <div

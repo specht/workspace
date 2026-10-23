@@ -5,7 +5,7 @@ kind: labor
 language: Bash
 duration: 2 Doppelstunden
 requires: [tcpip]
-reference: [terminal]
+reference: [netzwerk, terminal]
 </div>
 
 <div
