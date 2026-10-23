@@ -48,7 +48,11 @@ module PageCode
                 end
             elsif (m = line.match(STAGE))
                 source = File.join(dir, m[1])
-                if LANGUAGES[File.extname(m[1])] && File.exist?(source)
+                if !File.file?(source)
+                    # a typo in a marker would only make the teacher's button go missing
+                    mismatches << Mismatch.new(:page => page_path, :line => i + 1, :source => m[1],
+                        :reason => 'the stage marker names a file that does not exist')
+                elsif LANGUAGES[File.extname(m[1])]
                     mismatches.concat(unmatched(page_path, blocks, [[m[1], File.read(source)]]))
                 end
                 blocks = []

@@ -60,6 +60,8 @@ class PageCodeTest < Minitest::Test
             assert_equal 1, PageCode.check(page).size
             File.write(page, "```c\n    return 0;\n```\n\n<!-- stage: stufen/01.c as main.c -->\n")
             assert_empty PageCode.check(page)
+            File.write(page, "<!-- stage: stufen/02.c as main.c -->\n")
+            assert_match(/does not exist/, PageCode.check(page).first&.reason.to_s)
         end
     end
 end
