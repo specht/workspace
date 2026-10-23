@@ -18,8 +18,10 @@ in doubt, do it the way it does.
   the tasks on digits), and where its input can be edited, typing a task's
   input must not give the task's answer.
 - **Presets instead of free input** (Algo Stepper, `data-presets='gemischt:
-  5, 2, 8, 1 | schon sortiert: 1, 2, 5, 8'`, for `data-values` of a sort,
-  `data-ops` otherwise, or the attribute `data-preset-of` names): a few
+  5, 2, 8, 1 | schon sortiert: 1, 2, 5, 8'`, for `data-values` where a
+  widget has values and no operations (the sorts, Heapsort), `data-ops`
+  otherwise, or the attribute `data-preset-of` names; a preset of the form
+  `start=A goal=D` sets several attributes, as the graph searches do): a few
   inputs to choose above the buttons, so that a student can try what the
   page asks (Quick Sort on a sorted list, the AVL tree on sorted values,
   only even keys in a hash table). The author picks them; none may be the

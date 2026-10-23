@@ -87,7 +87,7 @@ breadth_first_search(graph, start, goal):
 
 Probier es aus, von A nach H. Gelb sind die Knoten in der Queue, lila die schon herausgenommenen, der Ring ist `node`; jeder Pfeil zeigt von einem Knoten auf seinen Vorgänger. Unter dem Graphen steht die Queue, vorne links:
 
-<div class='algo-stepper' data-title='Breitensuche' data-algo='bfs' data-graph='stadt' data-start='A' data-goal='H'></div>
+<div class='algo-stepper' data-title='Breitensuche' data-algo='bfs' data-graph='stadt' data-start='A' data-goal='H' data-presets='von A nach H: start=A goal=H | von A nach D, wo es eine direkte Straße gibt: start=A goal=D | von E nach C: start=E goal=C | von H nach A: start=H goal=A'></div>
 
 Die Breitensuche findet A–C–G–H: drei Kanten, die wenigsten, die es gibt, aber 128 lang. Auf die Längen achtet sie nicht. Für einen Stadtplan ist das selten der kürzeste Weg, für ein Labyrinth, in dem jeder Schritt gleich lang ist, genau richtig.
 
@@ -122,7 +122,7 @@ depth_first_search(graph, start, goal):
 
 Unter dem Graphen steht der Stack, sein oberes Ende rechts:
 
-<div class='algo-stepper' data-title='Tiefensuche' data-algo='dfs' data-graph='stadt' data-start='A' data-goal='H'></div>
+<div class='algo-stepper' data-title='Tiefensuche' data-algo='dfs' data-graph='stadt' data-start='A' data-goal='H' data-presets='von A nach H: start=A goal=H | von A nach D, wo es eine direkte Straße gibt: start=A goal=D | von E nach C: start=E goal=C | von H nach A: start=H goal=A'></div>
 
 Hier findet sie A–D–G–H, weil sie D als Letztes auf den Stack gelegt hat und dort weitermacht. Den kürzesten Weg findet die Tiefensuche im Allgemeinen nicht, und auch nicht den mit den wenigsten Kanten. Sie ist aber die richtige Suche für Fragen wie »Gibt es überhaupt einen Weg?«, »Welche Knoten erreicht man?« oder »Hat der Graph einen Kreis?«, und sie lässt sich ganz kurz rekursiv schreiben: Die Funktion ruft sich für jeden noch nicht gefundenen Nachbarn selbst auf, und der Stack ist der der Aufrufe.
 <!-- /part -->
@@ -157,9 +157,13 @@ dijkstra(graph, start, goal):
 
 Über jedem Knoten steht `dist`, der beste bekannte Weg vom Start. Unter dem Graphen steht die Priority Queue, die kleinste Priorität vorne, die Priorität über dem Eintrag:
 
-<div class='algo-stepper' data-title='Dijkstra' data-algo='dijkstra' data-graph='stadt' data-start='A' data-goal='H'></div>
+<div class='algo-stepper' data-title='Dijkstra' data-algo='dijkstra' data-graph='stadt' data-start='A' data-goal='H' data-presets='von A nach H: start=A goal=H | von A nach D, wo es eine direkte Straße gibt: start=A goal=D | von E nach C: start=E goal=C | von H nach A: start=H goal=A'></div>
 
 Dijkstra findet A–B–E–F–H mit 107, vier Kanten, aber kürzer als die 128 der Breitensuche. Ein Knoten kann mehrmals in der Priority Queue stehen: Findet die Suche einen kürzeren Weg zu ihm, legt sie ihn noch einmal hinein, statt den alten Eintrag zu suchen. Kommt der alte später heraus, ist der Knoten schon fertig, und die Suche überspringt ihn (durchgestrichen).
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Wähle im Auswahlfeld über dem Widget »von A nach D, wo es eine direkte Straße gibt«, hier und bei der Breitensuche. Welchen Weg nimmt jede, und wie lang ist er? Wie oft liegt D in der Priority Queue, bevor es herauskommt?
+</div>
 
 **Warum stimmt das?** Kommt ein Knoten heraus, ist alles andere in der Priority Queue mindestens so weit weg. Jeder andere Weg zu ihm müsste über einen dieser Knoten gehen und wäre damit nicht kürzer, solange keine Kante eine negative Länge hat. Deshalb darf die Suche aufhören, wenn das **Ziel herauskommt**, nicht schon, wenn es hineingelegt wird.
 
@@ -205,7 +209,7 @@ a_star(graph, start, goal):
 
 Unter jedem Knoten steht seine Luftlinie zum Ziel, \\(h\\):
 
-<div class='algo-stepper' data-title='A*' data-algo='astar' data-graph='stadt' data-start='A' data-goal='H'></div>
+<div class='algo-stepper' data-title='A*' data-algo='astar' data-graph='stadt' data-start='A' data-goal='H' data-presets='von A nach H: start=A goal=H | von A nach D, wo es eine direkte Straße gibt: start=A goal=D | von E nach C: start=E goal=C | von H nach A: start=H goal=A'></div>
 
 A* findet denselben Weg wie Dijkstra, ist aber nach sechs statt acht Knoten fertig: C und G liegen weg vom Ziel, ihr Weg bis hier plus die Luftlinie ist größer als die 107, und sie kommen gar nicht erst dran. Auf einem Stadtplan mit hunderttausend Knoten macht das aus einem Kreis um den Start ein schmales Band zum Ziel.
 

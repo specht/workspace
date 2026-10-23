@@ -3982,11 +3982,16 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             return { label: s.slice(0, at).trim(), value: s.slice(at + 1).trim() };
         });
         const same = (a, b) => a.replace(/\s+/g, ' ').trim() === b.replace(/\s+/g, ' ').trim();
+        // a preset of several attributes: »start=A goal=H« (the graph searches)
+        const pairs = (value) => (/^(\w+=\S+\s*)+$/.test(value) ? value.trim().split(/\s+/).map((pair) => pair.split('=')) : null);
+        const chosen = (preset) => (pairs(preset.value) ? pairs(preset.value).every(([name, value]) => widget.dataset[name] === value) : same(preset.value, widget.dataset[key] || ''));
         const select = el('select', { class: 'form-select form-select-sm', 'aria-label': 'Beispiel' },
             presets.map((preset, i) => el('option', { value: String(i), text: preset.label })));
-        select.value = String(Math.max(0, presets.findIndex((preset) => same(preset.value, widget.dataset[key] || ''))));
+        select.value = String(Math.max(0, presets.findIndex(chosen)));
         select.addEventListener('change', () => {
-            widget.dataset[key] = presets[Number(select.value)].value;
+            const preset = presets[Number(select.value)];
+            if (pairs(preset.value)) for (const [name, value] of pairs(preset.value)) widget.dataset[name] = value;
+            else widget.dataset[key] = preset.value;
             setUp(widget);
             // the lightbox button, the words beside the arrows and the
             // reserved heights come back (stepper_keys.js)
