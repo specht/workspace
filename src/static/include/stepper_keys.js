@@ -335,7 +335,9 @@ document.addEventListener('keydown', (event) => {
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'btn btn-sm btn-outline-secondary stepper-full';
-            setLabel(button, false);
+            // a widget set up anew while it is open (another preset) gets
+            // the button that closes
+            setLabel(button, open === widget);
             button.addEventListener('click', () => {
                 if (open === widget) close(false);
                 else {

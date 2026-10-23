@@ -190,9 +190,9 @@ rebalance(node):
 
 `rotate_left(x)` ist `rotate_right` spiegelverkehrt: `y ← x.right`, `x.right ← y.left`, `y.left ← x`, die Höhen von x und y, `return y`. Nach dem Einfügen braucht höchstens ein Knoten eine Rotation. Sie macht seinen Teilbaum wieder so hoch wie vorher, darüber bleibt deshalb alles, wie es war.
 
-Diese acht Werte lösen alle vier Fälle aus, LL, RR, RL und LR in dieser Reihenfolge. Klein neben jedem Knoten steht seine Höhe:
+Diese acht Werte lösen alle vier Fälle aus, LL, RR, RL und LR in dieser Reihenfolge. Klein neben jedem Knoten steht seine Höhe. Wähl über dem Beispiel auch die sortierten Werte von oben, aufsteigend oder absteigend: Wie hoch wird der AVL-Baum, wo der Suchbaum eine Kette wurde?
 
-<div class='algo-stepper' data-title='AVL-Baum: einfügen' data-algo='avl' data-ops='insert 50, insert 40, insert 30, insert 60, insert 70, insert 45, insert 20, insert 25'></div>
+<div class='algo-stepper' data-title='AVL-Baum: einfügen' data-algo='avl' data-ops='insert 50, insert 40, insert 30, insert 60, insert 70, insert 45, insert 20, insert 25' data-presets='alle vier Fälle: insert 50, insert 40, insert 30, insert 60, insert 70, insert 45, insert 20, insert 25 | aufsteigend: insert 10, insert 20, insert 30, insert 40, insert 50, insert 60, insert 70 | absteigend: insert 70, insert 60, insert 50, insert 40, insert 30, insert 20, insert 10'></div>
 
 ### Entfernen
 

@@ -17,6 +17,14 @@ in doubt, do it the way it does.
   activity's tasks (the DEA and NEA of the automata page work on `a` and `b`,
   the tasks on digits), and where its input can be edited, typing a task's
   input must not give the task's answer.
+- **Presets instead of free input** (Algo Stepper, `data-presets='gemischt:
+  5, 2, 8, 1 | schon sortiert: 1, 2, 5, 8'`, for `data-values` of a sort,
+  `data-ops` otherwise, or the attribute `data-preset-of` names): a few
+  inputs to choose above the buttons, so that a student can try what the
+  page asks (Quick Sort on a sorted list, the AVL tree on sorted values,
+  only even keys in a hash table). The author picks them; none may be the
+  input of a task. Choosing one sets the widget up anew (`setUp`, the old
+  listeners and timers go with `algoTeardown`).
 
 - **A title says what can be seen** (`data-title`), above the buttons, short
   and not too specific: »Suchbaum: einfügen«, »AVL-Baum: entfernen«,

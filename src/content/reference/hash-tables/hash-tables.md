@@ -63,7 +63,9 @@ remove(k):
 
 Gesucht wird nur in **einem** Bucket. Solange die Listen kurz sind, ist das fast so schnell wie ein Array. Sechs Schlüssel in acht Buckets, darunter drei, die alle in Bucket 5 landen:
 
-<div class='algo-stepper' data-title='Hash Table mit Verkettung: einfügen' data-algo='hash' data-mode='chain' data-size='8' data-ops='insert 13, insert 21, insert 6, insert 29, insert 14, insert 40'></div>
+<div class='algo-stepper' data-title='Hash Table mit Verkettung: einfügen' data-algo='hash' data-mode='chain' data-size='8' data-ops='insert 13, insert 21, insert 6, insert 29, insert 14, insert 40' data-presets='gemischt: insert 13, insert 21, insert 6, insert 29, insert 14, insert 40 | nur gerade Schlüssel: insert 2, insert 10, insert 4, insert 18, insert 12, insert 26 | ohne Kollision: insert 9, insert 2, insert 19, insert 4, insert 13, insert 30'></div>
+
+Über dem Beispiel kannst du andere Schlüssel wählen: nur gerade, wie unter »Was eine gute Hashfunktion kann«, oder sechs, die sich keinen Bucket teilen.
 
 Und im fertigen Bucket-Array zwei Suchen, eine erfolgreich und eine nicht:
 
@@ -95,7 +97,7 @@ find(k):
 
 Die Suche hört erst an einem **leeren** Bucket auf, denn bis dahin könnte \\(k\\) beim Einfügen weitergerutscht sein. Dieselben sechs Schlüssel wie oben:
 
-<div class='algo-stepper' data-title='Hash Table mit linearem Sondieren: einfügen' data-algo='hash' data-mode='probe' data-size='8' data-ops='insert 13, insert 21, insert 6, insert 29, insert 14, insert 40'></div>
+<div class='algo-stepper' data-title='Hash Table mit linearem Sondieren: einfügen' data-algo='hash' data-mode='probe' data-size='8' data-ops='insert 13, insert 21, insert 6, insert 29, insert 14, insert 40' data-presets='gemischt: insert 13, insert 21, insert 6, insert 29, insert 14, insert 40 | nur gerade Schlüssel: insert 2, insert 10, insert 4, insert 18, insert 12, insert 26 | ohne Kollision: insert 9, insert 2, insert 19, insert 4, insert 13, insert 30'></div>
 
 Und im fertigen Bucket-Array zwei Suchen, eine erfolgreich und eine nicht:
 

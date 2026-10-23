@@ -45,6 +45,8 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 
 @media (prefers-reduced-motion: reduce) { .algo-stepper svg path.on-stack { animation: none; stroke-dasharray: none; } }
 .algo-stepper .algo-title { font-weight: 600; font-size: 1.05em; margin: 0 0 0.5em; }
+.algo-stepper .algo-presets { margin: 0 0 0.6em; }
+.algo-stepper .algo-presets select { width: auto; max-width: 100%; }
 .algo-stepper .algo-controls { display: flex; gap: 0.3em; align-items: center; flex-wrap: wrap; margin-bottom: 0.6em; }
 .algo-stepper .algo-count { margin-left: 0.6em; color: var(--bs-secondary-color); }
 .algo-stepper .algo-legend { display: flex; flex-wrap: wrap; gap: 0.25em 1.1em; margin: 0.4em 0 0; position: relative; z-index: 1; font-size: 0.8em; color: var(--bs-secondary-color); }
@@ -875,7 +877,11 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             writes += 1;
             return id;
         };
-        snapshot(`${n} Zahlen, unsortiert.`, { line: 0 });
+        // the start says what the input is like (the presets: sorted, reversed)
+        const ascending = start.every((x, i) => i === 0 || start[i - 1] <= x);
+        const descending = start.every((x, i) => i === 0 || start[i - 1] >= x);
+        snapshot(ascending ? `${n} Zahlen, schon sortiert. Das Verfahren weiß das nicht und prüft trotzdem.`
+            : descending ? `${n} Zahlen, umgekehrt sortiert.` : `${n} Zahlen, unsortiert.`, { line: 0 });
         if (kind === 'selection') {
             for (let i = 0; i < n - 1; i++) {
                 // each pass of the outer loop is a phase of the timeline
@@ -2925,6 +2931,10 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
     }
 
     function setUp(widget) {
+        // set up again (another preset): the old widget's listeners, timers
+        // and observer go first
+        if (widget.algoTeardown) widget.algoTeardown();
+        const lifetime = new AbortController();
         const algo = widget.dataset.algo;
         let frames;
         let draw;
@@ -3174,7 +3184,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         // the legend under the picture, the message last (it keeps no reserved height)
         const legend = legendOf(algo, widget.dataset.sort, frames);
         if (legend) body.appendChild(legend);
-        widget.replaceChildren(...title, el('div', { class: 'algo-controls' }, [...buttons, play, speedButton, count]), timelineBox, body, message);
+        widget.replaceChildren(...title, ...presetChoice(widget), el('div', { class: 'algo-controls' }, [...buttons, play, speedButton, count]), timelineBox, body, message);
         // One under the other where the code would get less than about 20em
         // beside the picture (34em, the gap 1.2em): measured on the widget,
         // not the window, so that a narrow column of a wide window counts too
@@ -3193,12 +3203,14 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
                     document.dispatchEvent(new CustomEvent('stepper-layout', { detail: widget }));
                 }
             };
-            new ResizeObserver(narrow).observe(widget);
+            const observer = new ResizeObserver(narrow);
+            observer.observe(widget);
+            lifetime.signal.addEventListener('abort', () => observer.disconnect());
             narrow();
         }
         requestAnimationFrame(placeNames);
         if (document.fonts) document.fonts.ready.then(placeNames);
-        window.addEventListener('resize', placeNames);
+        window.addEventListener('resize', placeNames, { signal: lifetime.signal });
         let dragging = false;
         const stepAt = (event) => {
             const box = timeline.getBoundingClientRect();
@@ -3276,7 +3288,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             };
             loop();
         };
-        if (links) window.addEventListener('resize', () => follow(0));
+        if (links) window.addEventListener('resize', () => follow(0), { signal: lifetime.signal });
         widget.setAttribute('data-stepper', '');
         let index = 0;
         // On the way back the pointers of the stack's way settle one after
@@ -3382,7 +3394,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         // the text's size follows the room: a turned phone draws the step
         // again. The width is read here and once at the start, not for every
         // step: that would lay out the page each time
-        window.addEventListener('resize', () => { const now = roomOf(); if (Math.abs(now - room) > 20) { room = now; show(false); } });
+        window.addEventListener('resize', () => { const now = roomOf(); if (Math.abs(now - room) > 20) { room = now; show(false); } }, { signal: lifetime.signal });
         widget.stepperGo = (k) => { index = Math.max(0, Math.min(frames.length - 1, k)); show(false); };
         const go = { first: () => 0, prev: () => index - 1, next: () => index + 1, last: () => frames.length - 1 };
         for (const b of buttons) b.addEventListener('click', () => {
@@ -3391,7 +3403,45 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             index = Math.max(0, Math.min(frames.length - 1, go[b.dataset.go]()));
             show(Math.abs(index - before) === 1);
         });
+        widget.algoTeardown = () => {
+            lifetime.abort();
+            stop();
+            cancelAnimationFrame(linking);
+            for (const timer of settling) clearTimeout(timer);
+        };
         show(false);
+    }
+
+    // Other inputs to choose from, above the buttons:
+    //   data-presets='gemischt: 5, 2, 8, 1 | schon sortiert: 1, 2, 5, 8'
+    // each a label and a value for data-values (sorting) or data-ops
+    // (data-preset-of names another attribute). The page's own input is one
+    // of them. The author picks them so that none is the input of a task
+    // (docs/widgets.md); the widget is set up anew with the one chosen.
+    function presetChoice(widget) {
+        const text = widget.dataset.presets;
+        if (!text) return [];
+        const key = widget.dataset.presetOf || (widget.dataset.algo === 'sort' ? 'values' : 'ops');
+        const presets = text.split('|').map((s) => s.trim()).filter(Boolean).map((s) => {
+            const at = s.indexOf(':');
+            return { label: s.slice(0, at).trim(), value: s.slice(at + 1).trim() };
+        });
+        const same = (a, b) => a.replace(/\s+/g, ' ').trim() === b.replace(/\s+/g, ' ').trim();
+        const select = el('select', { class: 'form-select form-select-sm', 'aria-label': 'Beispiel' },
+            presets.map((preset, i) => el('option', { value: String(i), text: preset.label })));
+        select.value = String(Math.max(0, presets.findIndex((preset) => same(preset.value, widget.dataset[key] || ''))));
+        select.addEventListener('change', () => {
+            widget.dataset[key] = presets[Number(select.value)].value;
+            setUp(widget);
+            // the lightbox button, the words beside the arrows and the
+            // reserved heights come back (stepper_keys.js)
+            document.dispatchEvent(new CustomEvent('stepper-added', { detail: widget }));
+            // in the lightbox the new content is fitted to the window again
+            if (widget.classList.contains('stepper-lightbox')) window.dispatchEvent(new Event('resize'));
+            const again = widget.querySelector('.algo-presets select');
+            if (again) again.focus();
+        });
+        return [el('div', { class: 'algo-presets' }, [select])];
     }
 
     function start() {

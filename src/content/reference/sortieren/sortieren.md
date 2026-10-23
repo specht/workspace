@@ -28,7 +28,7 @@ Alle Verfahren auf dieser Seite sortieren nur, indem sie zwei Elemente **verglei
 
 Jedes Verfahren hat einen Satz, der nach jedem Schritt stimmt, die **Invariante**: »Links von Index i ist alles sortiert«, »Rechts von end stehen die größten, an ihrem Platz«. Wer seinen Code so schreibt, dass dieser Satz nie falsch wird, findet die meisten Fehler, bevor sie passieren. Im Beispiel zum Durchklicken ist der Teil lila, für den die Invariante schon gilt.
 
-Alle Beispiele sortieren dieselben acht Zahlen: 5, 2, 8, 1, 9, 3, 7, 4.
+Alle Beispiele sortieren dieselben acht Zahlen: 5, 2, 8, 1, 9, 3, 7, 4. Über jedem Beispiel kannst du andere acht wählen: schon sortiert, fast sortiert, umgekehrt sortiert oder mit vielen gleichen. Sieh am Ende auf die Zahl der Vergleiche: Bei welchen Verfahren ändert sie sich, bei welchen nicht?
 <!-- /part -->
 
 <!-- part: selection-sort -->
@@ -46,7 +46,7 @@ selection_sort(list):
         swap list[i] and list[min]
 ```
 
-<div class='algo-stepper' data-title='Selection Sort' data-algo='sort' data-sort='selection' data-values='5, 2, 8, 1, 9, 3, 7, 4'></div>
+<div class='algo-stepper' data-title='Selection Sort' data-algo='sort' data-sort='selection' data-values='5, 2, 8, 1, 9, 3, 7, 4' data-presets='gemischt: 5, 2, 8, 1, 9, 3, 7, 4 | schon sortiert: 1, 2, 3, 4, 5, 7, 8, 9 | fast sortiert: 1, 2, 4, 3, 5, 7, 9, 8 | umgekehrt sortiert: 9, 8, 7, 5, 4, 3, 2, 1 | viele gleiche: 3, 1, 3, 2, 1, 3, 2, 1'></div>
 
 Selection Sort braucht immer gleich viele Vergleiche, \\(\frac{n(n-1)}{2}\\), ob die Liste schon sortiert ist oder nicht: Bei 8 Zahlen 28, bei 100 schon 4 950. Dafür tauscht es höchstens \\(n - 1\\)-mal, das wenigste von allen.
 <!-- /part -->
@@ -70,7 +70,7 @@ insertion_sort(list):
 
 Das angehobene Element ist das, das gerade einsortiert wird:
 
-<div class='algo-stepper' data-title='Insertion Sort' data-algo='sort' data-sort='insertion' data-values='5, 2, 8, 1, 9, 3, 7, 4'></div>
+<div class='algo-stepper' data-title='Insertion Sort' data-algo='sort' data-sort='insertion' data-values='5, 2, 8, 1, 9, 3, 7, 4' data-presets='gemischt: 5, 2, 8, 1, 9, 3, 7, 4 | schon sortiert: 1, 2, 3, 4, 5, 7, 8, 9 | fast sortiert: 1, 2, 4, 3, 5, 7, 9, 8 | umgekehrt sortiert: 9, 8, 7, 5, 4, 3, 2, 1 | viele gleiche: 3, 1, 3, 2, 1, 3, 2, 1'></div>
 
 Ist die Liste schon sortiert, braucht Insertion Sort nur \\(n - 1\\) Vergleiche, ist sie umgekehrt sortiert, \\(\frac{n(n-1)}{2}\\). Für fast sortierte Listen ist es deshalb sehr gut, und für kurze Listen auch: Viele schnelle Verfahren sortieren die kleinen Stücke am Ende mit Insertion Sort.
 
@@ -94,7 +94,7 @@ bubble_sort(list):
         if not swapped: done
 ```
 
-<div class='algo-stepper' data-title='Bubble Sort' data-algo='sort' data-sort='bubble' data-values='5, 2, 8, 1, 9, 3, 7, 4'></div>
+<div class='algo-stepper' data-title='Bubble Sort' data-algo='sort' data-sort='bubble' data-values='5, 2, 8, 1, 9, 3, 7, 4' data-presets='gemischt: 5, 2, 8, 1, 9, 3, 7, 4 | schon sortiert: 1, 2, 3, 4, 5, 7, 8, 9 | fast sortiert: 1, 2, 4, 3, 5, 7, 9, 8 | umgekehrt sortiert: 9, 8, 7, 5, 4, 3, 2, 1 | viele gleiche: 3, 1, 3, 2, 1, 3, 2, 1'></div>
 
 Bubble Sort ist leicht zu verstehen und leicht richtig zu schreiben, aber langsam: Es tauscht viel öfter als die anderen. `swapped` sorgt dafür, dass es bei einer sortierten Liste nach einem Durchgang aufhört.
 <!-- /part -->
@@ -122,7 +122,7 @@ merge_sort(list, start, stop):          (stop gehört nicht mehr dazu)
 
 Unter den Balken steht der Zwischenspeicher; die gestrichelte Linie trennt die beiden Hälften, die gerade zusammengeführt werden:
 
-<div class='algo-stepper' data-title='Merge Sort' data-algo='sort' data-sort='merge' data-values='5, 2, 8, 1, 9, 3, 7, 4'></div>
+<div class='algo-stepper' data-title='Merge Sort' data-algo='sort' data-sort='merge' data-values='5, 2, 8, 1, 9, 3, 7, 4' data-presets='gemischt: 5, 2, 8, 1, 9, 3, 7, 4 | schon sortiert: 1, 2, 3, 4, 5, 7, 8, 9 | fast sortiert: 1, 2, 4, 3, 5, 7, 9, 8 | umgekehrt sortiert: 9, 8, 7, 5, 4, 3, 2, 1 | viele gleiche: 3, 1, 3, 2, 1, 3, 2, 1'></div>
 
 Merge Sort braucht immer etwa \\(n \log_2 n\\) Vergleiche, auch im schlechtesten Fall, und lässt gleiche Zahlen in ihrer Reihenfolge (es ist **stabil**). Dafür braucht es einen Zwischenspeicher so groß wie die Liste; in der Sandbox ist das `scratch`.
 
@@ -153,7 +153,7 @@ quick_sort(list, first, last):          (last gehört dazu)
 
 Rot ist das Pivot, die rote gestrichelte Linie die Grenze: Links von ihr stehen die Zahlen, die kleiner sind als das Pivot.
 
-<div class='algo-stepper' data-title='Quick Sort' data-algo='sort' data-sort='quick' data-values='5, 2, 8, 1, 9, 3, 7, 4'></div>
+<div class='algo-stepper' data-title='Quick Sort' data-algo='sort' data-sort='quick' data-values='5, 2, 8, 1, 9, 3, 7, 4' data-presets='gemischt: 5, 2, 8, 1, 9, 3, 7, 4 | schon sortiert: 1, 2, 3, 4, 5, 7, 8, 9 | fast sortiert: 1, 2, 4, 3, 5, 7, 9, 8 | umgekehrt sortiert: 9, 8, 7, 5, 4, 3, 2, 1 | viele gleiche: 3, 1, 3, 2, 1, 3, 2, 1'></div>
 
 Quick Sort ist in der Praxis meist das schnellste der fünf: Es braucht keinen Zwischenspeicher, und bei zufälligen Zahlen teilt das Pivot den Bereich ungefähr in der Mitte, das gibt etwa \\(n \log_2 n\\) Vergleiche. Ist die Liste aber schon sortiert, ist das letzte Element immer das größte, die eine Seite bleibt leer, und es werden \\(\frac{n(n-1)}{2}\\). Darum wählt man das Pivot in der Praxis zufällig oder nimmt den mittleren von drei Werten.
 <!-- /part -->
