@@ -5,7 +5,7 @@ kind: labor
 language: C
 duration: 4 Doppelstunden
 requires: [pixelram]
-reference: [pixelram, workspace, farbraeume]
+reference: [c, pixelram, workspace, farbraeume]
 template: https://github.com/specht/pixelram-starter.git
 template_name: des PixelRAM-Starters
 </div>

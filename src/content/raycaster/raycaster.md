@@ -5,7 +5,7 @@ kind: projekt
 language: C
 duration: 4 Doppelstunden
 requires: [pixelram]
-reference: [pixelram, workspace]
+reference: [c, pixelram, workspace]
 template: https://github.com/specht/pixelram-starter.git
 template_name: des PixelRAM-Starters
 </div>

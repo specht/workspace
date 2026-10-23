@@ -3,7 +3,7 @@ image: interference.webp
 image_alt: "Bunte, ineinander verschlungene Farbringe mit weichen Kanten"
 kind: projekt
 language: PixelRAM / C
-reference: [pixelram]
+reference: [c, pixelram]
 template: https://github.com/specht/pixelram-starter.git
 template_name: des PixelRAM-Starters
 </div>
