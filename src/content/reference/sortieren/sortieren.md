@@ -178,7 +178,7 @@ Die Zahl der Vergleiche für 100 Zahlen, gezählt mit genau den Verfahren oben:
 <tr><td>Insertion Sort</td><td>2 374</td><td>99</td><td>4 950</td><td>\(n^2\), sortiert \(n\)</td></tr>
 <tr><td>Bubble Sort</td><td>4 779</td><td>99</td><td>4 950</td><td>\(n^2\), sortiert \(n\)</td></tr>
 <tr><td>Merge Sort</td><td>542</td><td>316</td><td>356</td><td>\(n \log n\)</td></tr>
-<tr><td>Quick Sort (letztes als Pivot)</td><td>584</td><td>4 898</td><td>4 945</td><td>\(n \log n\), schlimmstenfalls \(n^2\)</td></tr>
+<tr><td>Quick Sort (letztes als Pivot)</td><td>584</td><td>4 950</td><td>4 950</td><td>\(n \log n\), schlimmstenfalls \(n^2\)</td></tr>
 <tr><td><a href='/reference/heap#heapsort'>Heapsort</a></td><td colspan='3'>etwa \(2 n \log_2 n\), in jedem Fall</td><td>\(n \log n\)</td></tr>
 </tbody>
 </table>
