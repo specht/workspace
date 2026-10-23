@@ -16,6 +16,7 @@ import {
     validateCropDirectives,
 } from './crop.js';
 import { resetScreenshotDatabases } from './workspace-reset.js';
+import { expandIncludedRecipes, fillRecipeVariables, pageMeta, sourceLine } from './includes.js';
 import {
     chainStateHashes,
     checkGitGraphForTarget,
@@ -282,11 +283,18 @@ const TRAILING_STEPS = Symbol('tutorial-screenshot-trailing-steps');
 // The tutorial-scope a shot lies in (an index), and how many of its first
 // actions are steps from before the scope (they run even if it is skipped).
 const SCOPE = Symbol('tutorial-scope');
+// A scope that holds a part of a Handbuch page put in for this page
+// (includes.js): at its end the folders its clone made go again.
+const SCOPE_INCLUDED = Symbol('tutorial-scope-included');
 const SCOPE_ENTRY = Symbol('tutorial-scope-entry');
 // A Workspace shot in the default Workspace window (no viewport: of its
 // own): its state hash says »the Workspace window«, not the height, so a
 // taller window does not change the chain of the shots after it (plan.js).
 const DEFAULT_WORKSPACE_VIEWPORT = Symbol('tutorial-default-workspace-viewport');
+
+// A page with parts of Handbuch pages put in (includes.js), by its path: its
+// lines are counted back to where they were written.
+const pageExpansions = new Map();
 
 function markdownSourceLocation(markdown, markdownPath, offset) {
     const boundedOffset = Math.max(0, Math.min(offset, markdown.length));
@@ -299,9 +307,11 @@ function markdownSourceLocation(markdown, markdownPath, offset) {
     const nextNewline = markdown.indexOf('\n', boundedOffset);
     const lineEnd = nextNewline < 0 ? markdown.length : nextNewline;
 
+    const expansion = pageExpansions.get(markdownPath);
+    const written = expansion?.markdown === markdown ? sourceLine(expansion, line) : null;
     return {
-        markdownPath,
-        line,
+        markdownPath: written ? written.path : markdownPath,
+        line: written ? written.line : line,
         text: markdown.slice(lineStart, lineEnd),
     };
 }
@@ -972,17 +982,17 @@ async function resolveWriteFileSource(blocks, recipeStart, selector, markdownPat
 // not walked at all. Scopes do not nest.
 function tutorialScopes(markdown, markdownPath) {
     const scopes = [];
-    const marker = /<!--\s*(\/?)tutorial-scope\s*-->/g;
+    const marker = /<!--\s*(\/?)tutorial-scope(\s+included)?\s*-->/g;
     let open = null;
     let match;
     while ((match = marker.exec(markdown)) !== null) {
         const source = markdownSourceLocation(markdown, markdownPath, match.index);
         if (!match[1]) {
             if (open) throw withSourceError(new Error('tutorial-scope inside another tutorial-scope'), source);
-            open = { start: match.index, source };
+            open = { start: match.index, source, included: Boolean(match[2]) };
         } else {
             if (!open) throw withSourceError(new Error('/tutorial-scope without tutorial-scope'), source);
-            scopes.push({ start: open.start, end: match.index, source: open.source });
+            scopes.push({ start: open.start, end: match.index, source: open.source, included: open.included });
             open = null;
         }
     }
@@ -1138,6 +1148,7 @@ async function parseTutorial(markdown, markdownPath) {
         if (scope >= 0) {
             resolved[SCOPE] = scope;
             if (entryActions > 0) resolved[SCOPE_ENTRY] = entryActions;
+            if (scopes[scope].included) resolved[SCOPE_INCLUDED] = true;
         }
         shots.push(resolved);
     }
@@ -2323,6 +2334,26 @@ async function previewReload(reset = false, hooks = null) {
 // noted with what it held before (null: it was not there), so the end of the
 // scope can put it back (restoreScopeFiles).
 let scopeJournal = null;
+
+// The top-level entries of /workspace when an included scope began
+// (includes.js). Its part clones the page's repository just as the page's
+// own recipe does next, so at its end the question after the clone is
+// cancelled and the folders it made go again.
+let includedScopeEntries = null;
+
+async function leaveIncludedScope() {
+    const before = includedScopeEntries;
+    includedScopeEntries = null;
+    if (!before) return;
+    await workspace.keyboard.press('Escape');
+    await workspace.locator('.monaco-dialog-box').waitFor({ state: 'hidden', timeout: 5_000 }).catch(() => {});
+    const root = screenshotWorkspaceRoot();
+    for (const entry of await fs.readdir(root)) {
+        if (before.has(entry) || entry.startsWith('.')) continue;
+        await fs.rm(path.join(root, entry), { recursive: true, force: true });
+        console.log(`  end of included tutorial-scope: removed /workspace/${entry}`);
+    }
+}
 
 async function restoreScopeFiles() {
     const journal = scopeJournal;
@@ -3784,6 +3815,16 @@ function generationStatusItem(shot, stale, missing, previous) {
     };
 }
 
+// A Handbuch page for _include(slug#part): { markdown, path } or null.
+function readReferencePage(slug) {
+    const relative = path.join('reference', slug, `${slug}.md`);
+    try {
+        return { markdown: fsSync.readFileSync(path.join(CONTENT_ROOT, relative), 'utf8'), path: relative };
+    } catch {
+        return null;
+    }
+}
+
 async function buildGenerationPlan(payload) {
     const force = payload?.force === true;
     const relativeMarkdown = safeRelativePath(payload?.markdown_path);
@@ -3795,7 +3836,16 @@ async function buildGenerationPlan(payload) {
         throw new Error('markdown_path escaped /content');
     }
 
-    const markdown = await fs.readFile(markdownPath, 'utf8');
+    // Parts of Handbuch pages whose recipes depend on this page go in at
+    // their _include, and ${template} in recipes takes the page's value.
+    const written = await fs.readFile(markdownPath, 'utf8');
+    const expansion = expandIncludedRecipes(written, relativeMarkdown, readReferencePage);
+    const markdown = fillRecipeVariables(expansion.markdown, pageMeta(written), written);
+    if (expansion.regions.length > 0) {
+        pageExpansions.set(relativeMarkdown, { ...expansion, markdown });
+    } else {
+        pageExpansions.delete(relativeMarkdown);
+    }
     const shots = await parseTutorial(markdown, relativeMarkdown);
     const tutorialDirectory = path.dirname(markdownPath);
 
@@ -4072,6 +4122,7 @@ async function generateTutorial(payload, progressJob = null) {
 
     let generated = 0;
     scopeJournal = null; // a render that failed inside a scope left it behind
+    includedScopeEntries = null;
     for (let index = 0; index < shots.length; index += 1) {
         const shot = shots[index];
 
@@ -4104,6 +4155,9 @@ async function generateTutorial(payload, progressJob = null) {
                 continue;
             }
             journalFrom = entry;
+            if (shot[SCOPE_INCLUDED]) {
+                includedScopeEntries = new Set(await fs.readdir(screenshotWorkspaceRoot()).catch(() => []));
+            }
         }
 
         console.log(`Tutorial screenshot ${relativeMarkdown} -> ${shot.target}`);
@@ -4229,6 +4283,7 @@ async function generateTutorial(payload, progressJob = null) {
         if (scopeEnd) {
             if (journalFrom === shot.actions.length) scopeJournal = scopeJournal || new Map();
             await restoreScopeFiles();
+            if (shot[SCOPE_INCLUDED]) await leaveIncludedScope();
             if (preview && !preview.isClosed()) {
                 // As in a recipe (write-file, sleep: 1): Live Server reloads
                 // by itself first; a reload right away would cross it.

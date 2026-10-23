@@ -54,6 +54,19 @@ RECIPE = '<!-- tutorial-screenshot'
 # A page with steps only (no pictures) can still be walked through.
 STEP = '<!-- tutorial-step'
 
+require_relative '../ruby/include/content_parts'
+# Does a page render pictures? Its own recipes, or a part of a Handbuch page
+# it includes whose recipes depend on it (${template}): the generator renders
+# that part once for every page (src/tutorial-screenshots/includes.js).
+renders = lambda do |text|
+    text.include?(RECIPE) || ContentParts.included_parts(text).any? do |included|
+        slug, part = included.split('#')
+        file = ContentParts.reference_file(File.join(content_root, 'reference'), slug)
+        body = file && ContentParts.parts(File.read(file))[part]
+        body && body.scan(/<!--\s*tutorial-(?:screenshot|step)\s*\n.*?-->/m).any? { |recipe| recipe.include?('${template') }
+    end
+end
+
 relative_of = lambda do |path|
     Pathname.new(path).realpath.relative_path_from(content_path).to_s
 end
@@ -81,7 +94,7 @@ resolve = lambda do |argument|
         abort "Tutorial Markdown must be below #{content_root}: #{markdown_path}"
     end
     text = File.read(File.join(content_root, relative_markdown))
-    if mode != :status && !text.include?(RECIPE) && !(mode == :force && text.include?(STEP))
+    if mode != :status && !renders.call(text) && !(mode == :force && text.include?(STEP))
         abort "Tutorial contains no generated screenshots: #{relative_markdown}"
     end
     relative_markdown
@@ -101,7 +114,7 @@ tutorials = if !args.empty?
 elsif mode == :status
     pages
 else
-    pages.select { |page| File.read(File.join(content_root, page)).include?(RECIPE) }
+    pages.select { |page| renders.call(File.read(File.join(content_root, page))) }
 end
 abort 'No tutorial contains generated screenshots.' if tutorials.empty?
 
@@ -175,7 +188,7 @@ overview = lambda do |relative_paths|
         end
         puts JSON.generate(plans)
     INNER_RUBY
-    with_recipes = relative_paths.select { |page| File.read(File.join(content_root, page)).include?(RECIPE) }
+    with_recipes = relative_paths.select { |page| renders.call(File.read(File.join(content_root, page))) }
     plans = {}
     unless with_recipes.empty?
         output = IO.popen([*compose, '--project-name', 'workspace', 'exec', '-T', 'ruby', 'ruby', '-e', plan_runner, '--', *with_recipes],

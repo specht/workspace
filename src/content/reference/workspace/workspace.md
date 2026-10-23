@@ -78,11 +78,12 @@ ${template}
 ```
 
 <!-- tutorial-screenshot
-# Beispiel: die Anaglyph-Vorlage
+# Die Vorlage der Seite, die diesen Teil einbindet (ihr template:, geklont
+# wie in ihrem eigenen Rezept); hier im Handbuch die Anaglyph-Vorlage
 press: Control+Shift+E
 wait-for-text: Clone Repository
 hide-bottom-panel
-clone-start: https://github.com/specht/anaglyph.git @ ec080795f88b538b382398fb91a8e234df3e0c0c
+clone-start: ${template:-https://github.com/specht/anaglyph.git @ ec080795f88b538b382398fb91a8e234df3e0c0c}
 crop-bottom: 67%
 -->
 

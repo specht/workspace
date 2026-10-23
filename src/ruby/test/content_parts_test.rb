@@ -111,6 +111,16 @@ class ContentPartsTest < Minitest::Test
         assert_match(/data-label='[^']+ › Repository klonen'/, out)
     end
 
+    # A picture the generator rendered for this page from the part's recipe
+    # (included-<slug>-<name>, src/tutorial-screenshots/includes.js) is shown
+    # instead of the part's own; without it, the part's own.
+    def test_include_prefers_the_picture_rendered_for_the_page
+        include = ->() { ContentParts.expand_includes("_include(workspace#klonen)", page_dir: @page, reference_root: @reference) }
+        assert_includes include.call, "src='../reference/workspace/git-clone.webp'"
+        File.write(File.join(@page, 'included-workspace-git-clone.webp'), '')
+        assert_includes include.call, "src='included-workspace-git-clone.webp'"
+    end
+
     # A part's sub-headings come out as h4 whether the part is an h2 or an
     # h3 on its reference page; code blocks are left alone.
     def test_included_sub_headings_are_h4_however_deep_the_part_sits

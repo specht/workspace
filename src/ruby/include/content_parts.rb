@@ -36,6 +36,7 @@ module ContentParts
     def self.page_variables(meta)
         (VARIABLES.keys - SITE_VARIABLES).to_h { |name| [name, meta[name].is_a?(String) && !meta[name].strip.empty? ? meta[name].strip : nil] }
     end
+    INCLUDED_PREFIX = 'included-'
     VARIABLE = /\$\{(#{VARIABLES.keys.join('|')})\}/
     # Parts of a page that only exist where the installation has a feature
     # switched on (docs/aufgaben.md): <!-- feature: case_server --> … <!-- /feature -->.
@@ -216,10 +217,18 @@ module ContentParts
     # or in `code` shows a path to copy and stays as it is written.
     CODE_SPANS = /(^```.*?^```[^\n]*$|<pre\b.*?<\/pre>|`[^`\n]+`)/m
     MEDIA_SRC = /(<(?:img|video|audio|source|track|iframe|embed)\b[^>]*?\bsrc=)(['"])([^'"]+)\2/
-    def self.rewrite_relative_sources(text, from_dir:, to_dir:)
+    # included: the slug of the Handbuch page the text comes from; a picture
+    # the generator rendered for this page from that part's recipe
+    # (included-<slug>-<name> next to the page, src/tutorial-screenshots/includes.js)
+    # is shown instead of the part's own.
+    def self.rewrite_relative_sources(text, from_dir:, to_dir:, included: nil)
         fix = lambda do |src|
             return src if src.start_with?('/', '#') || src =~ /\A[a-z]+:/i
 
+            if included && !src.include?('/')
+                local = "#{INCLUDED_PREFIX}#{included}-#{src}"
+                return local if File.file?(File.join(to_dir, local))
+            end
             Pathname.new(File.expand_path(src, from_dir)).relative_path_from(Pathname.new(to_dir)).to_s
         end
         # Capture the groups first: fix runs its own regex and resets $1..$3.
@@ -259,7 +268,7 @@ module ContentParts
             level = heading_level(text)
             text = strip_leading_heading(text)
             text = shift_headings(text, INCLUDED_SUB_LEVEL - (level + 1)) if level
-            text = rewrite_relative_sources(text, from_dir: File.dirname(file), to_dir: page_dir)
+            text = rewrite_relative_sources(text, from_dir: File.dirname(file), to_dir: page_dir, included: slug)
             text.scan(VARIABLE).flatten.uniq.each do |name|
                 warn&.call("_include(#{slug}##{part}): ${#{name}} has no value on this page") if variables[name].nil?
             end

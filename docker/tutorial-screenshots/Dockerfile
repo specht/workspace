@@ -20,6 +20,7 @@ COPY crop.js ./crop.js
 COPY plan.js ./plan.js
 COPY git-graph.js ./git-graph.js
 COPY workspace-reset.js ./workspace-reset.js
+COPY includes.js ./includes.js
 COPY fontconfig-rendering.conf /etc/fonts/conf.d/99-tutorial-screenshot-rendering.conf
 
 CMD ["node", "server.js"]

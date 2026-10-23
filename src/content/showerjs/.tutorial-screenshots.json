@@ -7,6 +7,27 @@
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
+    "included-workspace-choose-folder.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "538bc57c6348a7dc09ab4e4200caa70d5b6d9a549a98b0483368152c8bc74ae5",
+      "state_hash": "7d42ba59320f142b59d865a9f5463b1303004f2845c8b62d180b88ca27fbd8aa",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
+    "included-workspace-git-clone.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "7f5f37eb783acf69ca2d4223a9d0c3d5056adea8494fc4f800d78466e720493d",
+      "state_hash": "0d9e0889acecf5136269ca64d66622ce8a0377a9ef9a105b06e1750db50e3dda",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
+    "included-workspace-open-yes-or-no.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "75dca9b8c201e3c1f96a96202047b87562db0046959e1c9363b9d25ee3ca7c22",
+      "state_hash": "504513a8800fe4f26955289e97ae2d5d266dff9039b9f8f1969cbc3387a00779",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
     "live-preview.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "1cec160c55f025b3261071f5eb99c8e93ad5e40e06f5b42d07a4a7460d45b4b3",

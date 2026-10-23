@@ -654,6 +654,36 @@ opens, no setting it changes, no file it creates other than with
 `write-file` is needed later. Files a program in the scope writes
 (`step.png`) may stay. Scopes do not nest.
 
+### Parts of the Handbuch that depend on the page
+
+A part of a Handbuch page that pages include with `_include(slug#part)`
+shows the Handbuch page's own pictures, the same on every page. A part whose
+recipes use `${template}` is different: its pictures must show the
+repository of the page that includes it (»Repository klonen« in
+`reference/workspace`). `${template:-VALUE}` gives the value for a page
+without a `template:` of its own, the Handbuch page itself:
+
+```markdown
+<!-- tutorial-screenshot
+clone-start: ${template:-https://github.com/specht/anaglyph.git @ ec080795…}
+-->
+```
+
+- The generator puts such a part into every page that includes it, at the
+  `_include`, in a scope of its own (`includes.js`), and renders its
+  pictures next to that page as `included-<slug>-<name>`
+  (`included-workspace-git-clone.webp`). The site shows them there instead
+  of the part's own (`ContentParts.expand_includes`).
+- `clone-start: ${template}` takes the commit the page's own
+  `clone-start` of the same repository is pinned to; a page without one
+  clones it unpinned.
+- At the end of the scope the question after the clone is cancelled and the
+  folders the part created in `/workspace` are removed again, so the page's
+  own recipes clone as before.
+- Error messages for lines of the part name the Handbuch page and its line.
+- `recreate-screenshots.rb` counts a page with such an include even if it
+  has no recipes of its own.
+
 ### Pictures a program saved
 
 `image-file: PATH [SCALE]` makes the recipe's image from a picture file below
