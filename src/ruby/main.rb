@@ -2273,6 +2273,22 @@ class Main < Sinatra::Base
             end
         end
 
+        # A restored backup brings deleted accounts back: noticed soon after
+        # the start (Neo4j needs a moment) and every few minutes, also when a
+        # dump is loaded while the server runs (repeat_deletions_after_restore:
+        # one query and a small file).
+        Thread.new do
+            sleep 20
+            loop do
+                begin
+                    Main.new!.repeat_deletions_after_restore
+                rescue => e
+                    STDERR.puts "Repeating deletions after a restore failed: #{e.class}: #{e.message}"
+                end
+                sleep(DEVELOPMENT ? 60 : 300)
+            end
+        end
+
         # Announced deletions whose date has come, expired share links, the
         # disk, ended groups and »Betrieb« (include/server_health.rb), once
         # an hour (the first time a minute after start in development, to
@@ -4325,18 +4341,47 @@ class Main < Sinatra::Base
     end
 
     DELETION_LOG = '/internal/deleted-accounts.jsonl'
+    LAST_DELETION = 'last_deletion'
     @@deletion_log_mutex = Mutex.new
 
     # So that a restored backup does not bring a deleted account back
-    # (AccountDeletion, »Deletions after a restore«).
+    # (AccountDeletion, »Deletions after a restore«): the log outside Neo4j,
+    # and the time in Neo4j, which a restore sets back.
     def note_deletion(email)
         months = defined?(BACKUP_RETENTION_MONTHS) ? BACKUP_RETENTION_MONTHS : nil
+        now = Time.now
         @@deletion_log_mutex.synchronize do
             entries = AccountDeletion.parse_log(File.exist?(DELETION_LOG) ? File.read(DELETION_LOG) : '')
             kept = AccountDeletion.prune(entries, months)
-            text = kept.map { |e| JSON.generate(e) + "\n" }.join + AccountDeletion.log_line(email, LOGIN_CODE_SALT)
+            text = kept.map { |e| JSON.generate(e) + "\n" }.join + AccountDeletion.log_line(email, LOGIN_CODE_SALT, :now => now)
             AtomicFile.write(DELETION_LOG, text)
         end
+        neo4j_query('MERGE (s:Setting {key: $key}) SET s.at = $at;', :key => LAST_DELETION, :at => now.to_i)
+    end
+
+    # After a restore, by itself: every account deleted after the backup is
+    # deleted again (AccountDeletion.to_delete_after_restore), soon after the
+    # start and then every few minutes. Before the first deletion that
+    # noted its time in Neo4j, only »Löschungen wiederholen« with the date of
+    # the backup can do it. Returns the addresses.
+    def repeat_deletions_after_restore
+        last = neo4j_query('MATCH (s:Setting {key: $key}) RETURN s.at AS at;', :key => LAST_DELETION).first
+        return [] unless last && last['at']
+
+        entries = AccountDeletion.parse_log(File.exist?(DELETION_LOG) ? File.read(DELETION_LOG) : '')
+        later = AccountDeletion.entries_after(entries, last['at'])
+        return [] if later.empty?
+
+        emails = neo4j_query('MATCH (u:User) RETURN u.email AS email;').map { |row| row['email'].to_s }
+        again = AccountDeletion.to_delete_after_restore(entries, emails, LOGIN_CODE_SALT, last['at'])
+        Main.load_invitations()
+        again.each { |email| delete_account(email) }
+        # Neo4j is up to date again, also when none of them came back (only
+        # forward: deleting again has just noted a later time)
+        neo4j_query('MERGE (s:Setting {key: $key}) SET s.at = CASE WHEN s.at > $at THEN s.at ELSE $at END;',
+            :key => LAST_DELETION, :at => later.map { |e| e['deleted_at'].to_i }.max)
+        STDERR.puts "Restore noticed (#{later.size} deletion(s) after #{Time.at(last['at'].to_i)} missing in Neo4j): #{again.size} account(s) deleted again"
+        again
     end
 
     # After restoring a backup made at backup_time: delete again every

@@ -51,6 +51,26 @@ class AccountDeletionTest < Minitest::Test
         assert_equal [], AccountDeletion.to_delete_again(entries, emails, 'other salt', t0)
     end
 
+    # Without a date: Neo4j's own last deletion time says where the restored
+    # backup ends.
+    def test_after_a_restore_neo4j_says_which_deletions_it_misses
+        salt = 'salz'
+        t = Time.at(1_800_000_000)
+        log = [
+            JSON.parse(AccountDeletion.log_line('early@example.com', salt, :now => t)),
+            JSON.parse(AccountDeletion.log_line('again@example.com', salt, :now => t + 10)),
+            JSON.parse(AccountDeletion.log_line('late@example.com', salt, :now => t + 100)),
+        ]
+        # The backup was made after the second deletion: Neo4j knows t + 10.
+        # again@ was made anew after its deletion and is in the backup; late@
+        # was deleted after the backup and came back with it.
+        existing = ['again@example.com', 'late@example.com', 'kept@example.com']
+        assert_equal ['late@example.com'], AccountDeletion.to_delete_after_restore(log, existing, salt, (t + 10).to_i)
+        assert_equal 1, AccountDeletion.entries_after(log, (t + 10).to_i).size
+        # Nothing restored: Neo4j knows the last deletion, nothing to do
+        assert_empty AccountDeletion.to_delete_after_restore(log, existing, salt, (t + 100).to_i)
+    end
+
     def test_old_entries_go_once_no_backup_is_older
         now = Time.at(100_000_000)
         entries = [{ 'hash' => 'a', 'deleted_at' => now.to_i - 8 * 31 * 86_400 }, { 'hash' => 'b', 'deleted_at' => now.to_i - 86_400 }]

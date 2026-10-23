@@ -196,10 +196,15 @@ Standardvertrag an (bei Hetzner in der Console).
 - Sicherungen werden nicht nachträglich verändert; gelöschte Daten
   verschwinden aus ihnen, wenn sie ablaufen. Jede Löschung steht deshalb
   ohne Adresse (Hashwert und Datum) in `/internal/deleted-accounts.jsonl`.
-  Nach dem Zurückspielen einer Sicherung: die aktuelle Datei behalten (vorher
-  wegkopieren, wenn `/internal` mit zurückgespielt wird) und unter
-  »Administration › Nach einer Wiederherstellung« mit dem Datum der Sicherung
-  »Löschungen wiederholen«.
+  Jede Löschung schreibt ihre Zeit auch in Neo4j (`Setting last_deletion`).
+  Nach dem Zurückspielen einer Sicherung kennt Neo4j nur die letzte Löschung
+  vor der Sicherung; jedes Konto, das danach gelöscht wurde und mit der
+  Sicherung zurückkam, löscht der Workspace von selbst wieder, kurz nach dem
+  Start und danach alle fünf Minuten (im Log: »Restore noticed«). Dafür die
+  aktuelle Datei behalten (vorher wegkopieren, wenn `/internal` mit
+  zurückgespielt wird). Für Sicherungen von vor der ersten Löschung mit
+  dieser Zeit bleibt »Administration › Nach einer Wiederherstellung« mit dem
+  Datum der Sicherung, »Löschungen wiederholen«.
 - Traefik vor dem Workspace (`docker/traefik/docker-compose.yaml`) schreibt
   bewusst kein Zugriffsprotokoll (kein `--accesslog`): Die
   Datenschutzerklärung sagt, dass die Protokolle keine IP-Adressen enthalten.

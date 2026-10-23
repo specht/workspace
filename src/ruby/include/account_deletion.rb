@@ -77,6 +77,21 @@ module AccountDeletion
         emails.select { |email| hashes.include?(address_hash(email, salt)) }
     end
 
+    # Without a date: every deletion also notes its time in Neo4j (Setting
+    # last_deletion, Main#note_deletion). A restored Neo4j still holds the
+    # time of the last deletion before its backup, so every entry after it
+    # is an account the backup brought back; an account made again after its
+    # deletion is not in that backup. Strictly after: an account deleted and
+    # made again before the backup keeps its later life.
+    def self.entries_after(entries, time)
+        entries.select { |e| e['deleted_at'].to_i > time.to_i }
+    end
+
+    def self.to_delete_after_restore(entries, emails, salt, last_deletion)
+        hashes = Set.new(entries_after(entries, last_deletion).map { |e| e['hash'] })
+        emails.select { |email| hashes.include?(address_hash(email, salt)) }
+    end
+
     # Entries older than the oldest backup can be; months: the retention,
     # plus one month for safety.
     def self.prune(entries, months, now: Time.now)
