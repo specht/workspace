@@ -2,7 +2,7 @@
 image: git-logo.png
 image_alt: "Das Logo von Git"
 kind: grundlagen
-reference: [workspace, terminal]
+reference: [workspace, terminal, git, gitlab]
 </div>
 
 <div
@@ -1323,7 +1323,7 @@ _task(rueckgaengig)
 <tr><th>Markieren</th><td><code>git tag -a</code>, <code>git push origin --tags</code></td></tr>
 </table>
 
-Mit diesem Wissen kannst du Git für deine eigenen Projekte nutzen. Wie du mit einem Git-Server wie GitLab, Gitea oder GitHub arbeitest, steht im Handbuch unter [Git-Server: Zugang und Veröffentlichen](/reference/gitlab).
+Mit diesem Wissen kannst du Git für deine eigenen Projekte nutzen. Zum Nachschlagen stehen diese Befehle und ein paar weitere im Handbuch unter [Git: Versionen verwalten](/reference/git). Wie du mit einem Git-Server wie GitLab, Gitea oder GitHub arbeitest, steht im Handbuch unter [Git-Server: Zugang und Veröffentlichen](/reference/gitlab).
 
 <div class='book'>
 <i class='bi bi-book'></i>

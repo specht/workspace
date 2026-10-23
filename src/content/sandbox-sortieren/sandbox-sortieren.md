@@ -4,7 +4,7 @@ image_alt: "Die Sortier-Sandbox mit dem Code von Bubblesort links und den zu sor
 kind: projekt
 language: Dart / Python / JavaScript / Java
 topic: computing
-reference: [gitlab, sortieren, heap]
+reference: [gitlab, git, sortieren, heap]
 template: https://github.com/specht/sorting-sandbox.git
 class_repo: group
 template_name: der Sorting Sandbox

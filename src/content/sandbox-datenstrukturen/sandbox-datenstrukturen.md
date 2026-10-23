@@ -4,7 +4,7 @@ image_alt: "Die Datenstruktur-Sandbox mit Python-Code eines AVL-Baums links und 
 kind: projekt
 language: Dart / Python / JavaScript / Java
 topic: computing
-reference: [gitlab, listen, baeume, heap, hash-tables]
+reference: [gitlab, git, listen, baeume, heap, hash-tables]
 template: https://github.com/specht/data-structures-sandbox.git
 class_repo: group
 template_name: der Data Structures Sandbox

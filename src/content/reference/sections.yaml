@@ -85,9 +85,12 @@
   label: Git und Git-Server
   icon: /images/git.png
   description: |
-    Einmal einrichten und dann immer wieder brauchen: SSH-Schlüssel, Name und
-    E-Mail für Git, und was zu tun ist, wenn ein Push abgelehnt wird.
+    Die Befehle für jeden Tag: Commits, die Geschichte, Branches, Konflikte,
+    Teilen und Rückgängigmachen. Dazu, was du einmal einrichtest:
+    SSH-Schlüssel, Name und E-Mail, und was zu tun ist, wenn ein Push
+    abgelehnt wird.
   entries:
+    - git
     - gitlab
 
 - key: reference-databases

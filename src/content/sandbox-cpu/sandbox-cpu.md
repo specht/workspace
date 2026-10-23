@@ -4,7 +4,7 @@ image_alt: "Die CPU-Sandbox mit Maschinencode, dem Quelltext, den Registern, dem
 kind: projekt
 language: Assembler / C
 topic: computing
-reference: [gitlab, minicpu, minicpu-io, minicpu-c]
+reference: [gitlab, git, minicpu, minicpu-io, minicpu-c]
 template: https://github.com/specht/cpu-sandbox.git
 class_repo: group
 template_name: der CPU Sandbox

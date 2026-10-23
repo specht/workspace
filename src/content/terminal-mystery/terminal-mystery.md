@@ -5,7 +5,7 @@ kind: projekt
 language: Bash
 duration: 2 Doppelstunden
 requires: [working-with-files, git]
-reference: [terminal]
+reference: [terminal, git]
 </div>
 
 <div
