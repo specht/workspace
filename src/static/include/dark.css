@@ -134,6 +134,15 @@ html[data-bs-theme="dark"] {
     .table th, .table td {
         color: #e7e6e1;
     }
+    /* Tables and boxes lie on the page: a dark veil over its background,
+       not Bootstrap's solid slate (#212529, #2b3035), which stands out
+       bluish against #151514. */
+    .table {
+        --bs-table-bg: rgba(0, 0, 0, 0.2);
+    }
+    .person, .book, .case-note {
+        background: rgba(0, 0, 0, 0.25);
+    }
     .dark-only-bg-contrast-light {
         /* background: none; */
         /* filter: invert(0.5); */
