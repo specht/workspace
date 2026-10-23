@@ -113,6 +113,10 @@ inorder(node):
 - **Preorder** (Knoten, links, rechts) besucht jeden Knoten vor seinen Kindern: 50, 30, 20, 40, 35, 70, 60, 80. Wer die Werte in dieser Reihenfolge in einen leeren Suchbaum einfügt, bekommt genau denselben Baum zurück, deshalb speichert man Bäume so.
 - **Postorder** (links, rechts, Knoten) besucht jeden Knoten nach seinen Kindern: 20, 35, 40, 30, 60, 80, 70, 50. So berechnet man, was von den Teilbäumen abhängt, etwa die Höhe, oder gibt einen Baum frei.
 
+Inorder am Baum von oben, Aufruf für Aufruf. Unter dem Baum sammeln sich die besuchten Werte:
+
+<div class='algo-stepper' data-title='Suchbaum: inorder durchlaufen' data-algo='bst' data-setup='insert 50, insert 30, insert 70, insert 20, insert 40, insert 60, insert 80, insert 35' data-ops='inorder'></div>
+
 Die **Höhe** eines Baums ist die Zahl der Knoten auf dem längsten Weg von der Wurzel nach unten, ein leerer Baum hat die Höhe 0:
 
 ```pseudocode

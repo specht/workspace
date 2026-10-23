@@ -320,6 +320,16 @@ only to look nice.
   the pair being checked, dashed on the pair a symbol leads to, the table of
   pairs with its marks and their reasons; at the end the states that become
   one share a tint.
+- **Binary search** (Algo Stepper, `data-algo='bsearch'`, `data-values` and
+  `data-ops='find_position 34'`): `find_position` from `reference/listen`,
+  `left` and `right` as index arrows (`right` may point behind the last
+  cell), the range still in question on a band, the cells outside it faint.
+- **Traversal** (`data-ops='inorder'` on a search tree): the calls go down
+  with the ring and the stack as in `remove`, a null child gets its
+  `if node == null: done`, and each visited node flies out of the tree into
+  the row »besucht« under it.
+- **Tombstones** (`data-mode='probe'`, `remove k`): the bucket keeps a dashed
+  box with the word `deleted`; `find` and `insert` count it as occupied.
 - **Bit planes** (`bitplane_widget.js`, steganography): a slider with two
   handles over the bits 7 to 0, the bits between them kept, all others 0;
   »verstärken« stretches the rest to 0 to 255; one pixel's red value in

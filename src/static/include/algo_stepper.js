@@ -1844,6 +1844,9 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         // call sets its node's height and rebalances it
         avlInsert: ['insert(node, value):', '    if node == null: return a new node with value', '    if value < node.value: node.left ← insert(node.left, value)',
             '    if value > node.value: node.right ← insert(node.right, value)', '    update the height of node', '    return rebalance(node)'],
+        // a traversal, as on the page: the calls go down, visit is the line
+        // where the node is seen
+        inorder: ['inorder(node):', '    if node == null: done', '    inorder(node.left)', '    visit node', '    inorder(node.right)'],
         rebalance: ['rebalance(node):', '    if height(node.left) - height(node.right) > 1:', '        if height(node.left.left) < height(node.left.right):',
             '            node.left ← rotate_left(node.left)', '        return rotate_right(node)', '    if height(node.right) - height(node.left) > 1:',
             '        if height(node.right.right) < height(node.right.left):', '            node.right ← rotate_right(node.right)', '        return rotate_left(node)', '    return node'],
@@ -2127,6 +2130,36 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             snapshot(`root ← remove(root, value): Der Baum ist ausgeglichen, und links stehen immer noch die kleineren, rechts die größeren Werte.`, { code: A(12) });
         };
 
+        // inorder: left subtree, the node, right subtree; visited collects the
+        // nodes in the order they are seen (the row under the tree)
+        const inorder = () => {
+            const T = (at) => code('inorder', at);
+            const visited = [];
+            const calls = [];
+            const walk = (n, parent, side) => {
+                const here = { call: `inorder(node: ${n ? n.value : 'null'})`, node: n ? n.id : null };
+                calls.push(here);
+                if (!n) {
+                    const spot = atNull(calls, parent, side);
+                    snapshot(`${parent ? `${parent.value}.${side}` : 'root'} ist null: if node == null: done. Dieser Aufruf ist sofort fertig.`, { code: T(1), visited: [...visited], ...spot });
+                    calls.pop();
+                    return;
+                }
+                snapshot(n.left ? `inorder(node.left): Bevor ${n.value} drankommt, der ganze linke Teilbaum, ab ${n.left.value}.` : `inorder(node.left): Links von ${n.value} hängt nichts; der Aufruf bekommt null.`,
+                    { focus: n.id, vars: nodeVar(n), code: T(2), stack: stackOf(calls), visited: [...visited] });
+                walk(n.left, n, 'left');
+                visited.push(n.id);
+                snapshot(`visit node: Links ist alles besucht, jetzt ${n.value}. Bisher: ${visited.map((id) => findById(root, id).value).join(', ')}.`,
+                    { focus: n.id, vars: nodeVar(n), code: T(3), stack: stackOf(calls), visited: [...visited], visit: n.id });
+                snapshot(n.right ? `inorder(node.right): Danach der rechte Teilbaum, ab ${n.right.value}.` : `inorder(node.right): Rechts von ${n.value} hängt nichts; der Aufruf bekommt null.`,
+                    { focus: n.id, vars: nodeVar(n), code: T(4), stack: stackOf(calls), visited: [...visited] });
+                walk(n.right, n, 'right');
+                calls.pop();
+            };
+            walk(root, null, null);
+            const order = visited.map((id) => findById(root, id).value);
+            snapshot(`Fertig: ${order.join(', ')}. Inorder besucht die Werte eines Suchbaums sortiert.`, { visited: [...visited] });
+        };
         for (const op of setup) if (op.type === 'insert') insert(op.value);
         if (setup.length) {
             frames.length = 0;
@@ -2137,6 +2170,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             if (op.type === 'find') find(op.value);
             else if (op.type === 'insert') insert(op.value);
             else if (op.type === 'remove') remove(op.value);
+            else if (op.type === 'inorder') inorder();
         }
         return frames;
     }
@@ -2349,7 +2383,8 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         for (const [id, { x, depth: d }] of at) {
             const { value } = graph[id];
             const fresh = frame.fresh === id;
-            const fill = frame.gone === id ? 'color-mix(in srgb, var(--algo-goal) 30%, var(--algo-paper))' : fresh ? 'var(--algo-frontier)' : 'var(--algo-paper)';
+            const seen = frame.visited && frame.visited.includes(id);
+            const fill = frame.gone === id ? 'color-mix(in srgb, var(--algo-goal) 30%, var(--algo-paper))' : fresh || frame.visit === id ? 'var(--algo-frontier)' : seen ? 'var(--algo-done)' : 'var(--algo-paper)';
             const fromToken = fresh ? { 'data-from': 'incoming-label' } : {};
             const copied = frame.copied && frame.copied.into === id ? { 'data-from': `label-${frame.copied.from}-${value}` } : {};
             // the ring stays on its node while it fades in or out; it is
@@ -2379,8 +2414,21 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             svg.appendChild(el('svg:circle', { 'data-key': 'incoming', 'data-grow': '', ...to, cx, cy, r: 13, fill: 'var(--algo-frontier)', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '4 3' }));
             svg.appendChild(el('svg:text', { 'data-key': 'incoming-label', ...toLabel, x: cx, y: cy + 4, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.incoming) }));
         }
+        // a traversal: the nodes seen so far as a row under the tree, each
+        // one flying out of its node when it is visited
+        const bottom = top + Math.max(100, most.depth * 62 + (frame.avl ? 8 : 0));
+        if (most.visits) {
+            const y = bottom + 14;
+            svg.appendChild(el('svg:text', { 'data-key': 'visited-label', x: 8, y: y + 17, 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'besucht' }));
+            (frame.visited || []).forEach((id, i) => {
+                const x = 76 + i * 40;
+                svg.appendChild(el('svg:g', { 'data-key': `visit-${id}`, 'data-grow': '16 13', ...(frame.visit === id ? { 'data-from': `node-${id}` } : {}), transform: `translate(${x} ${y})` }, [
+                    el('svg:rect', { x: 0, y: 0, width: 32, height: 26, rx: 5, fill: frame.visit === id ? 'var(--algo-frontier)' : 'var(--algo-paper)', stroke: 'var(--algo-ink)', 'stroke-width': 1.5 }),
+                    el('svg:text', { x: 16, y: 18, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(graph[id].value) })]));
+            });
+        }
         // room on the left for the labels, on the right for the token
-        svg.setAttribute('viewBox', `0 0 ${left + width + 50} ${top + Math.max(100, most.depth * 62 + (frame.avl ? 8 : 0))}`);
+        svg.setAttribute('viewBox', `0 0 ${Math.max(left + width + 50, most.visits ? 76 + most.count * 40 + 8 : 0)} ${bottom + (most.visits ? 54 : 0)}`);
     }
 
     // ---- Hash Table (reference/hash-tables): m buckets, h(k) = k mod m;
@@ -3066,6 +3114,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         } else if (algo === 'bst' || algo === 'avl') {
             if (any((f) => f.fresh !== undefined || f.incoming !== undefined)) add('fill', 'var(--algo-frontier)', 'neu');
             if (any((f) => f.gone !== undefined)) add('fill', 'color-mix(in srgb, var(--algo-goal) 30%, var(--algo-paper))', 'wird entfernt');
+            if (any((f) => f.visited)) { add('fill', 'var(--algo-frontier)', 'wird besucht'); add('fill', 'var(--algo-done)', 'schon besucht'); }
         } else if (algo === 'hash') {
             const parts = [any((f) => f.fresh !== undefined) && 'neu', any((f) => f.compare !== undefined) && 'verglichen', any((f) => f.found !== undefined) && 'gefunden'].filter(Boolean);
             if (parts.length) add('fill', 'var(--algo-frontier)', parts.join(', '));
@@ -3137,7 +3186,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             const shapes = frames.map(treeShape);
             // the stack keeps the height of its deepest moment, so that the code below does not jump
             const deepest = Math.max(0, ...frames.map((f) => (f.stack || []).length));
-            const most = { count: Math.max(...shapes.map((t) => t.count)), depth: Math.max(...shapes.map((t) => t.depth)), marker: `algo-arrow-${++widgetCount}` };
+            const most = { count: Math.max(...shapes.map((t) => t.count)), depth: Math.max(...shapes.map((t) => t.depth)), marker: `algo-arrow-${++widgetCount}`, visits: frames.some((f) => f.visited) };
             // beside the tree the pseudocode of what runs, its line marked
             draw = (frame) => {
                 drawTree(svg, frame, most);
