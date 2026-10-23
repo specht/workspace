@@ -390,7 +390,9 @@ class Main < Sinatra::Base
     # Run a shell command with a hard timeout. We keep shell strings here because
     # the existing code already builds commands that rely on shell syntax and
     # environment interpolation.
-    def self.shell_capture(command, timeout: nil, allow_failure: false, log_command: true)
+    # env: variables for the command (passwords, which must not stand in
+    # the command: it goes to the log when the command fails).
+    def self.shell_capture(command, timeout: nil, allow_failure: false, log_command: true, env: {})
         timeout ||= shell_timeout(:default)
         timeout = Integer(timeout)
 
@@ -402,7 +404,7 @@ class Main < Sinatra::Base
         status = nil
         timed_out = false
 
-        Open3.popen3(command, :pgroup => true) do |stdin, stdout, stderr, wait_thr|
+        Open3.popen3(env, command, :pgroup => true) do |stdin, stdout, stderr, wait_thr|
             stdin.close
 
             stdout_thread = Thread.new { stdout.read }
@@ -466,8 +468,8 @@ class Main < Sinatra::Base
         stdout_data
     end
 
-    def self.shell_ok(command, timeout: nil, allow_failure: false)
-        shell_capture(command, :timeout => timeout, :allow_failure => allow_failure)
+    def self.shell_ok(command, timeout: nil, allow_failure: false, env: {})
+        shell_capture(command, :timeout => timeout, :allow_failure => allow_failure, :env => env)
         true
     end
 

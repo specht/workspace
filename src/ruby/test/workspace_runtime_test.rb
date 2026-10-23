@@ -108,7 +108,33 @@ class WorkspaceRuntimeTest < Minitest::Test
         assert_includes command, '--cap-drop NET_RAW'
         assert_includes command, '--security-opt no-new-privileges'
         assert command.end_with?('--name hs_code_abcdefghijklmnop hs_code_server')
-        assert_equal({:timeout => 60}, options)
+        assert_equal 60, options[:timeout]
+    end
+
+    # A failed start writes the command to the log (Main.shell_capture): the
+    # passwords go to docker through its environment, the command only
+    # names them.
+    def test_start_workspace_keeps_passwords_out_of_the_command
+        env = {
+            'MYSQL_HOST' => 'mysql', 'MYSQL_USER' => 'student', 'MYSQL_PASSWORD' => 'mysql-secret',
+            'MYSQL_DATABASE' => 'student', 'NEO4J_URI' => 'neo4j://neo4j:7687', 'NEO4J_USERNAME' => 'student',
+            'NEO4J_PASSWORD' => 'neo4j-secret', 'NEO4J_DATABASE' => 'student',
+        }
+        @runtime.start_workspace(
+            :fs_tag => 'abcdefghijklmnop', :workspace_login => 'max.mustermann',
+            :database_environment => env, :host_data_path => '/srv/workspace', :test_mode => false,
+            :timeout => 60, :extra_environment => { 'CASE_USER' => 'e042', 'CASE_PASSWORD' => 'case-secret' },
+        )
+        command, options = @oks.first
+        %w[mysql-secret neo4j-secret case-secret].each { |secret| refute_includes command, secret }
+        assert_includes command, '-e MYSQL_PASSWORD -e'
+        assert_includes command, '-e NEO4J_PASSWORD -e'
+        assert_includes command, '-e CASE_USER -e CASE_PASSWORD '
+        assert_equal(
+            { 'MYSQL_PASSWORD' => 'mysql-secret', 'NEO4J_PASSWORD' => 'neo4j-secret',
+              'CASE_USER' => 'e042', 'CASE_PASSWORD' => 'case-secret' },
+            options[:env],
+        )
     end
 
     def test_stop_workspace_is_best_effort_like_current_code

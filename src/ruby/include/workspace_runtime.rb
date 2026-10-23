@@ -89,9 +89,16 @@ module WorkspaceRuntime
 
         # extra_environment: more variables for the Workspace, such as the
         # account on the case server (CaseServer.workspace_environment).
+        # Passwords never stand in the command, which a failed start writes
+        # to the log: the command names them (-e MYSQL_PASSWORD), and docker
+        # takes their values from its own environment (env).
         def start_workspace(fs_tag:, workspace_login:, database_environment:,
             host_data_path:, test_mode:, timeout: nil, extra_environment: {})
-            extra = extra_environment.map { |k, v| "-e #{Shellwords.escape("#{k}=#{v}")} " }.join
+            secrets = {
+                'MYSQL_PASSWORD' => database_environment['MYSQL_PASSWORD'].to_s,
+                'NEO4J_PASSWORD' => database_environment['NEO4J_PASSWORD'].to_s,
+            }.merge(extra_environment.to_h { |k, v| [k.to_s, v.to_s] })
+            extra = extra_environment.keys.map { |k| "-e #{Shellwords.escape(k.to_s)} " }.join
             if test_mode
                 begin
                     hosts = database_host_entries(:timeout => timeout)
@@ -102,8 +109,8 @@ module WorkspaceRuntime
                     STDERR.puts "Exam Workspace #{fs_tag}: database addresses unknown (#{e.message})"
                 end
             end
-            command = "docker run --cpus=4 --memory=4g --memory-swap=4g --pids-limit=256 #{HARDENING} -d --rm --hostname workspace -e PUID=1000 -e PGID=1000 -e TZ=Europe/Berlin -e WORKSPACE_USER=#{Shellwords.escape(workspace_login)} -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace #{TOOL_ENVIRONMENT} -e MYSQL_HOST=\"#{database_environment['MYSQL_HOST']}\" -e MYSQL_USER=\"#{database_environment['MYSQL_USER']}\" -e MYSQL_PASSWORD=\"#{database_environment['MYSQL_PASSWORD']}\" -e MYSQL_DATABASE=\"#{database_environment['MYSQL_DATABASE']}\" -e NEO4J_URI=\"#{database_environment['NEO4J_URI']}\" -e NEO4J_USERNAME=\"#{database_environment['NEO4J_USERNAME']}\" -e NEO4J_PASSWORD=\"#{database_environment['NEO4J_PASSWORD']}\" -e NEO4J_DATABASE=\"#{database_environment['NEO4J_DATABASE']}\" #{extra}-v #{host_data_path}/user/#{fs_tag}/config:/config -v #{host_data_path}/user/#{fs_tag}/workspace:/workspace --network #{WORKSPACE_NETWORK} #{test_mode ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{fs_tag} #{WORKSPACE_IMAGE}"
-            @ok.call(command, :timeout => timeout)
+            command = "docker run --cpus=4 --memory=4g --memory-swap=4g --pids-limit=256 #{HARDENING} -d --rm --hostname workspace -e PUID=1000 -e PGID=1000 -e TZ=Europe/Berlin -e WORKSPACE_USER=#{Shellwords.escape(workspace_login)} -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace #{TOOL_ENVIRONMENT} -e MYSQL_HOST=\"#{database_environment['MYSQL_HOST']}\" -e MYSQL_USER=\"#{database_environment['MYSQL_USER']}\" -e MYSQL_PASSWORD -e MYSQL_DATABASE=\"#{database_environment['MYSQL_DATABASE']}\" -e NEO4J_URI=\"#{database_environment['NEO4J_URI']}\" -e NEO4J_USERNAME=\"#{database_environment['NEO4J_USERNAME']}\" -e NEO4J_PASSWORD -e NEO4J_DATABASE=\"#{database_environment['NEO4J_DATABASE']}\" #{extra}-v #{host_data_path}/user/#{fs_tag}/config:/config -v #{host_data_path}/user/#{fs_tag}/workspace:/workspace --network #{WORKSPACE_NETWORK} #{test_mode ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{fs_tag} #{WORKSPACE_IMAGE}"
+            @ok.call(command, :timeout => timeout, :env => secrets)
         end
 
         def stop_workspace(fs_tag, timeout: nil)
