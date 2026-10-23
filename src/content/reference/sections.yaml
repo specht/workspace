@@ -100,10 +100,12 @@
   label: Datenbanken
   icon: /images/card-file-box.png
   description: |
-    SQL für MySQL nachschlagen, ER-Modelle als Text schreiben und in
-    Tabellen übersetzen, und was in den Datensätzen der Aktivitäten steht.
+    SQL für MySQL und Cypher für Neo4j nachschlagen, ER-Modelle als Text
+    schreiben und in Tabellen übersetzen, und was in den Datensätzen der
+    Aktivitäten steht.
   entries:
     - sql
+    - cypher
     - er-modelle
     - datensaetze
 

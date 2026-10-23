@@ -6,7 +6,7 @@ language: Cypher
 topic: databases
 duration: 2 Doppelstunden
 requires: [filmdatenbank]
-reference: [datensaetze]
+reference: [cypher, datensaetze]
 </div>
 
 <div
