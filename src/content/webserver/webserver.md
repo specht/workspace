@@ -610,6 +610,8 @@ progress::-moz-progress-bar {
 }
 ```
 
+### Zu jedem Pfad eine Datei
+
 Der Server sucht jetzt zu jedem Pfad eine Datei in `public`. `/` steht für `/index.html`. Am Dateinamen erkennt er, welcher `Content-Type` dazugehört, damit der Browser weiß, ob er HTML, CSS oder ein Bild bekommt:
 
 <!-- language: ruby -->
@@ -812,6 +814,8 @@ sleep: 1
 <img class='full border' src='browser-seite.webp' alt='Im Browser die Seite »Mein eigener Webserver« mit vier Links: Uhrzeit, Ada begrüßen, Besuch zählen und eine Seite, die es nicht gibt.'>
 
 _task(webseite)
+
+### Ein Angriff mit `..`
 
 <!-- language: ruby -->
 Probier den Angriff aus, gegen den die Prüfung mit `start_with?` schützt. Browser und `curl` räumen ein `..` in der Adresse normalerweise auf, bevor sie fragen; `curl -v localhost:8000/../server.rb` zeigt, dass in Wirklichkeit `GET /server.rb` geschickt wird. Mit `--path-as-is` geht der Pfad so hinaus, wie er dasteht:
@@ -1114,6 +1118,8 @@ Bisher hat der Browser nur gefragt. Ein Formular kann auch etwas schicken, zum B
 </html>
 ```
 
+### Was ein Formular schickt
+
 Wegen `method="post"` stehen die Felder nicht in der Adresse wie bei `/hello?name=Ada`. Sie kommen nach den Headern und der leeren Zeile, im **Body** der Anfrage. Wählt jemand »Curry« und klickt auf »Abstimmen«, schickt der Browser:
 
 ```text
@@ -1409,6 +1415,8 @@ Was neu ist:
 <!-- /language -->
 
 Nach einer Stimme zeigt der Server nicht gleich das Ergebnis, sondern antwortet mit **`303 See Other`** und dem Header `Location: /results`: »Sieh dort nach.« Der Browser holt dann `/results` mit `GET`. Der Umweg hat einen Grund: Wäre das Ergebnis die Antwort auf das `POST`, würde der Browser beim Neuladen das Formular noch einmal schicken, und die Stimme zählte doppelt. So lädt er nur die Ergebnisseite neu. Das Muster heißt **Post/Redirect/Get**.
+
+### Abstimmen
 
 Starte den Server neu und stimme im zweiten Terminal mit `curl` ab. `-d` schickt Daten mit `POST`, wie das Formular:
 

@@ -32,7 +32,7 @@ Repository arbeitet, liest sie also ohnehin.
 | --- | --- | --- |
 | Meta-Block mit `image`, `kind`, `topic`, `duration`; `language` oder `languages`, wenn programmiert wird | Die Karte im Katalog braucht sie | `page_kinds_test.rb`, Audit |
 | Ein Absatz `<p class='abstract'>`, der sagt, was man baut, in der Du-Form | Er steht auf der Karte | Audit |
-| Das Inhaltsverzeichnis ist nicht flach: längere Seiten gliedern ihre Kapitel (`##`) in Abschnitte (`###`) | Am Rand findet man sich in langen Seiten nur so zurecht | Audit (Spalte »Gliederung«) |
+| Das Inhaltsverzeichnis ist nicht flach: lange Kapitel (`##`, im Audit mehr als 800 Wörter Text) gliedern sich in Abschnitte (`###`) | Am Rand findet man sich in langen Seiten nur so zurecht | Audit (Spalte »Gliederung«) |
 | Ein Bild für die Karte (`teaser.webp` oder das erste Bild), aus einem Rezept, wo es ein Bildschirmfoto ist, mit dunkler Fassung (`NAME-dark.webp`, aus `variants: dark` oder `src/scripts/render-svg.rb`, nicht invertiert), wenn die Seite dunkel werden kann | Der Katalog ist das Erste, was man sieht; ein invertiertes Bild verdreht die Farben | Audit (Spalte »Karte«) |
 | Kapitel, ohne die die Seite vollständig ist (ein Ausblick, eine Verfeinerung am Ende), sind mit `<!-- extra -->` vor dem `##` als Extra markiert; kein späteres Kapitel für alle baut auf ihnen auf, die Dauer reicht ohne sie, und sie haben keine Aufgabe | Lernende sehen auf langen Seiten, was dazugehört und was für Schnelle ist | `extra_chapters_test.rb` (Stelle, keine Aufgabe), Lesen |
 | Tabellen sind HTML (`<table class='table'>`), `</table>` und `</div>` auf eigener Zeile | Die Seite kennt keine Markdown-Tabellen | `no_pipe_tables_test.rb` |
@@ -60,7 +60,7 @@ Repository arbeitet, liest sie also ohnehin.
 
 | Regel | Warum | Geprüft durch |
 | --- | --- | --- |
-| Es gibt Aufgaben, und sie stehen dort, wo die Lernenden gerade etwas getan haben, nicht gesammelt am Ende | Lehrkräfte sehen den Fortschritt der Klasse; Lernende wissen, ob es stimmt | Audit (Spalte »Aufgaben«), Lesen |
+| Es gibt Aufgaben, und sie stehen dort, wo die Lernenden gerade etwas getan haben, nicht gesammelt am Ende. Ausgenommen sind `about` und `basics`: Sie erklären den Workspace, da gibt es nichts zu prüfen | Lehrkräfte sehen den Fortschritt der Klasse; Lernende wissen, ob es stimmt | Audit (Spalte »Aufgaben«), Lesen |
 | Der Text verrät die Antwort nicht: Was eine Aufgabe fragt, steht nicht in den Sätzen direkt davor, und das Bild davor zeigt nicht das Ergebnis, nach dem gefragt wird. Eine Vorhersage (`prediction: true`) kommt vor dem Ausprobieren | Sonst lernt man nur Abschreiben | Lesen |
 | Rückmeldungen (`feedback`, `say`) für die typischen Fehler, die Lösung (`solution`) erst nach dem Lösen | Die Rückmeldung soll weiterhelfen | Lesen |
 | Jede Prüfung, die Dateien liest, hat Beispiele in `task-examples.yaml`: eine Lösung, die sie annimmt, einen Anfang, den sie ablehnt | Sonst merkt niemand, wenn eine Prüfung zu streng oder zu lasch ist | `task_examples_test.rb` |

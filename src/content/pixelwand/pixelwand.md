@@ -1048,6 +1048,8 @@ with serve(handle, '0.0.0.0', 8000, process_request=page) as server:
 - `painted` zählt die Pixel: lesen, speichern, um eins erhöhen. `global painted` erlaubt `work`, die Variable außerhalb der Funktion zu ändern.
 <!-- /language -->
 
+### 200 Pixel auf einmal
+
 Damit es spannend wird, malen jetzt sehr viele Leute gleichzeitig. Lege `flood.js` an; es schickt 200 Pixel auf einmal an deinen eigenen Server auf `localhost` und wartet, bis der Server alle an alle verteilt hat:
 
 ```js
@@ -1133,6 +1135,8 @@ check-task-fails: lock python
 -->
 <img class='full' src='threads-python.webp' alt='Links zählt der Python-Server, aber am Ende steht weit weniger als »Pixel Nr. 200«, rechts meldet flood.js »200 Pixel geschickt.« und »200 Pixel zurückbekommen.«'>
 <!-- /language -->
+
+### Ein Lock
 
 <!-- language: ruby -->
 200 Pixel, und der Zähler kommt nicht annähernd bis 200. Jeder der vier Threads liest `$painted`, speichert das Bild und schreibt dann seinen Wert plus eins zurück. Während einer speichert, lesen die anderen denselben alten Wert; vier Threads schreiben dieselbe Zahl, und drei Pixel sind beim Zählen verloren. Dasselbe Problem hatte der Besuchszähler deines Webservers; dort war die Lücke zwischen Lesen und Schreiben nur so kurz, dass man den Fehler selten sieht. Hier dauert das Speichern, und der Fehler passiert jedes Mal.

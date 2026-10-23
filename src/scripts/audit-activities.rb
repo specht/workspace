@@ -5,8 +5,9 @@
 #   src/scripts/audit-activities.rb             # every activity in the catalog
 #   src/scripts/audit-activities.rb routenplaner calculator
 #
-# Columns: Aufgaben (tasks in tasks.yaml), Gliederung (## and ### headings;
-# »flach« when a long page has no ###), Sprachen (languages of the page),
+# Columns: Aufgaben (tasks in tasks.yaml; not for the pages in TASKLESS),
+# Gliederung (## and ### headings; »flach« when a chapter of more than
+# LONG_CHAPTER words of prose has no ###), Sprachen (languages of the page),
 # Notiz (lehrkraft.md opens with »Lernende«), generiert / von Hand (pictures
 # from recipes and others; »von Hand« counts photos and diagrams too),
 # dunkel (dark variants among the generated pictures), Karte (whether the card
@@ -17,6 +18,9 @@ require 'yaml'
 
 ROOT = File.expand_path('../..', __dir__)
 CONTENT = File.join(ROOT, 'src/content')
+# what the Workspace is and how to work in it: pages to read, nothing to check
+TASKLESS = %w[about basics].freeze
+LONG_CHAPTER = 800
 
 def catalog
     YAML.load_file(File.join(CONTENT, 'sections.yaml')).reject { |section| section['hidden'] }
@@ -43,10 +47,13 @@ def audit(slug)
 
     tasks_file = File.join(dir, 'tasks.yaml')
     tasks = File.file?(tasks_file) ? ((YAML.load_file(tasks_file) || {})['tasks'] || []) : []
-    prose = markdown.gsub(/^[ \t]*```.*?^[ \t]*```/m, '')
+    # what a reader reads: no code, no widget scripts, no recipes
+    prose = markdown.gsub(/^[ \t]*```.*?^[ \t]*```/m, '').gsub(%r{<(script|style)\b.*?</\1>}m, '').gsub(/<!--.*?-->/m, '')
     h2 = prose.scan(/^## /).size
     h3 = prose.scan(/^### /).size
-    words = prose.gsub(/<[^>]+>/, ' ').split.size
+    flat = prose.split(/^(?=## )/).any? do |chapter|
+        chapter.start_with?('## ') && !chapter.match?(/^### /) && chapter.gsub(/<[^>]+>/, ' ').split.size > LONG_CHAPTER
+    end
     languages = meta[/^languages:\s*\[(.*?)\]/, 1]&.split(',')&.map(&:strip) || [meta[/^language:\s*(.+)$/, 1].to_s.strip].reject(&:empty?)
     note = File.join(dir, 'lehrkraft.md')
     note_ok = File.file?(note) && File.read(note).strip.split(/\n\s*\n/).first.to_s.include?('Lernende')
@@ -59,7 +66,7 @@ def audit(slug)
     {
         slug: slug, kind: kind.to_s,
         tasks: tasks.size,
-        outline: "#{h2}/#{h3}#{h3.zero? && words > 1500 ? ' flach!' : ''}",
+        outline: "#{h2}/#{h3}#{flat ? ' flach!' : ''}",
         languages: languages.join(', '),
         note: note_ok ? 'ja' : 'fehlt!',
         generated: generated.size, manual: manual.size,
@@ -82,7 +89,7 @@ line = ->(cells) { cells.map { |key, value| value.to_s.ljust(widths[key]) }.join
 puts line.(columns)
 puts line.(columns.to_h { |key, _| [key, '-' * widths[key]] })
 rows.each do |row|
-    row = row.merge(tasks: row[:tasks].zero? ? '0!' : row[:tasks])
+    row = row.merge(tasks: row[:tasks].zero? && !TASKLESS.include?(row[:slug]) ? '0!' : row[:tasks])
     puts line.(row)
 end
 puts
