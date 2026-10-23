@@ -169,6 +169,15 @@
     background: transparent;
 }
 
+/* A key in a caption adds no height to its line */
+.tutorial-preview-lightbox-content figcaption kbd {
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: inherit;
+    vertical-align: baseline;
+    top: 0;
+}
+
 .tutorial-preview-lightbox-step {
     display: none;
     position: fixed;

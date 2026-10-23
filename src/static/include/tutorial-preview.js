@@ -278,7 +278,26 @@ document.addEventListener('DOMContentLoaded', () => {
         showDots(siblings, source);
         content.replaceChildren(...parts);
         show();
+        equalCaptions(siblings, parts[1]);
         if (image.complete) fit(image);
+    }
+
+    // Every picture of a gallery gets the room of its tallest caption, so
+    // that stepping through it keeps the pictures the same size: a caption
+    // with a second line would make its picture smaller (fit), and it would
+    // jump. Measured in the lightbox itself, at its width.
+    function equalCaptions(siblings, caption) {
+        if (!caption || siblings.length < 2) return;
+        const own = caption.innerHTML;
+        caption.style.minHeight = '';
+        let tallest = 0;
+        for (const other of siblings) {
+            const text = other.closest('figure')?.querySelector('figcaption');
+            caption.innerHTML = text ? text.innerHTML : '';
+            tallest = Math.max(tallest, caption.offsetHeight);
+        }
+        caption.innerHTML = own;
+        caption.style.minHeight = `${tallest}px`;
     }
 
     // At the bottom a dot for each picture of the gallery, the open one
