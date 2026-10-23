@@ -29,6 +29,10 @@ Alle Verfahren auf dieser Seite sortieren nur, indem sie zwei Elemente **verglei
 Jedes Verfahren hat einen Satz, der nach jedem Schritt stimmt, die **Invariante**: »Links von Index i ist alles sortiert«, »Rechts von end stehen die größten, an ihrem Platz«. Wer seinen Code so schreibt, dass dieser Satz nie falsch wird, findet die meisten Fehler, bevor sie passieren. Im Beispiel zum Durchklicken ist der Teil lila, für den die Invariante schon gilt.
 
 Alle Beispiele sortieren dieselben acht Zahlen: 5, 2, 8, 1, 9, 3, 7, 4. Über jedem Beispiel kannst du andere acht wählen: schon sortiert, fast sortiert, umgekehrt sortiert oder mit vielen gleichen. Sieh am Ende auf die Zahl der Vergleiche: Bei welchen Verfahren ändert sie sich, bei welchen nicht?
+
+### Stabil
+
+Ein Verfahren ist **stabil**, wenn gleiche Elemente danach in derselben Reihenfolge stehen wie vorher. Bei Zahlen allein sieht man davon nichts, bei Datensätzen schon: Wer eine nach Namen sortierte Liste stabil nach Noten sortiert, hat bei gleicher Note die Namen noch alphabetisch. In den Beispielen ab Insertion Sort tragen gleiche Zahlen deshalb einen Buchstaben, 3a, 3b, 3c, in ihrer Reihenfolge vom Anfang, und am Ende steht da, ob sie die behalten haben.
 <!-- /part -->
 
 <!-- part: selection-sort -->
@@ -46,7 +50,7 @@ selection_sort(list):
         swap list[i] and list[min]
 ```
 
-<div class='algo-stepper' data-title='Selection Sort' data-algo='sort' data-sort='selection' data-values='5, 2, 8, 1, 9, 3, 7, 4' data-presets='gemischt: 5, 2, 8, 1, 9, 3, 7, 4 | schon sortiert: 1, 2, 3, 4, 5, 7, 8, 9 | fast sortiert: 1, 2, 4, 3, 5, 7, 9, 8 | umgekehrt sortiert: 9, 8, 7, 5, 4, 3, 2, 1 | viele gleiche: 3, 1, 3, 2, 1, 3, 2, 1'></div>
+<div class='algo-stepper' data-title='Selection Sort' data-algo='sort' data-sort='selection' data-no-letters data-values='5, 2, 8, 1, 9, 3, 7, 4' data-presets='gemischt: 5, 2, 8, 1, 9, 3, 7, 4 | schon sortiert: 1, 2, 3, 4, 5, 7, 8, 9 | fast sortiert: 1, 2, 4, 3, 5, 7, 9, 8 | umgekehrt sortiert: 9, 8, 7, 5, 4, 3, 2, 1 | viele gleiche: 3, 1, 3, 2, 1, 3, 2, 1'></div>
 
 Selection Sort braucht immer gleich viele Vergleiche, \\(\frac{n(n-1)}{2}\\), ob die Liste schon sortiert ist oder nicht: Bei 8 Zahlen 28, bei 100 schon 4 950. Dafür tauscht es höchstens \\(n - 1\\)-mal, das wenigste von allen.
 <!-- /part -->

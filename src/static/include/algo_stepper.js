@@ -953,10 +953,19 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             '    swap list[boundary] and list[last]     (das Pivot an seinen Platz)', '    quick_sort(list, first, boundary - 1)', '    quick_sort(list, boundary + 1, last)'],
     };
 
-    function traceSort(start, kind) {
+    function traceSort(start, kind, letters = true) {
         const n = start.length;
         const values = {};
         const slots = start.map((value, i) => { values[i] = value; return i; });
+        // equal values are told apart by a letter, in their order at the
+        // start (3a, 3b): whether a sort keeps that order (stable) can be seen;
+        // a copy is the same value as the one it comes from
+        const origin = Object.fromEntries(start.map((_, i) => [i, i]));
+        const tags = {};
+        start.forEach((value, i) => {
+            const before = start.slice(0, i).filter((x) => x === value).length;
+            if (letters && start.filter((x) => x === value).length > 1) tags[i] = String.fromCharCode(97 + before);
+        });
         let nextId = n;
         let lifted = null;
         let scratch = kind === 'merge' ? Array(n).fill(null) : null;
@@ -968,11 +977,12 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         // phase: a part of the work (merge, partition), for the timeline
         let phase = null;
         const snapshot = (message, marks = {}) => frames.push({ slots: [...slots], values: { ...values }, lifted: lifted && { ...lifted }, scratch: scratch && [...scratch],
-            stack: stack.map((entry) => ({ ...entry })), comparisons, writes, message, phase, code: { lines: SORT_CODE[kind], at: marks.line }, ...marks });
+            stack: stack.map((entry) => ({ ...entry })), comparisons, writes, message, phase, code: { lines: SORT_CODE[kind], at: marks.line }, origin: { ...origin }, tags, ...marks });
         const swap = (a, b) => { [slots[a], slots[b]] = [slots[b], slots[a]]; writes += 2; };
         const copyTo = (index, fromId) => {
             const id = nextId++;
             values[id] = values[fromId];
+            origin[id] = origin[fromId];
             slots[index] = id;
             writes += 1;
             return id;
@@ -1010,6 +1020,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
                 snapshot(`for i: i ist ${i}. Links davon ist alles sortiert.`, { line: 1, vars: [{ name: 'i', index: i }], sortedTo: i });
                 const cid = nextId++;
                 values[cid] = v(i);
+                origin[cid] = origin[slots[i]];
                 lifted = { id: cid, at: i };
                 snapshot(`current ← list[i]: Die Variable current merkt sich ${values[cid]}; in der Liste steht es noch.`, { line: 2, vars: [{ name: 'i', index: i }], from: { [cid]: slots[i] }, sortedTo: i });
                 let j = i;
@@ -1087,6 +1098,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
                     const take = left ? i : j;
                     const id = nextId++;
                     values[id] = v(take);
+                    origin[id] = origin[slots[take]];
                     scratch[k] = id;
                     writes += 1;
                     const why = i < mid && j < hi ? `${v(i)} ${left ? '≤' : '>'} ${v(j)}` : left ? 'rechts ist nichts mehr' : 'links ist nichts mehr';
@@ -1142,7 +1154,15 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             sort(0, n - 1);
         }
         lifted = null;
-        snapshot(`Fertig: ${comparisons} Vergleiche, ${writes} Schreibzugriffe.`, { line: 0, sortedTo: n });
+        // with equal values: did they keep their order?
+        let order = '';
+        if (Object.keys(tags).length) {
+            const name = (id) => `${values[id]}${tags[origin[id]]}`;
+            const swapped = slots.find((id, i) => i > 0 && values[slots[i - 1]] === values[id] && origin[slots[i - 1]] > origin[id]);
+            order = swapped === undefined ? ' Gleiche Zahlen stehen noch in ihrer Reihenfolge vom Anfang: In diesem Beispiel war das Sortieren stabil.'
+                : ` ${name(slots[slots.indexOf(swapped) - 1])} steht jetzt vor ${name(swapped)}: Gleiche Zahlen haben ihre Reihenfolge getauscht, das Sortieren war nicht stabil.`;
+        }
+        snapshot(`Fertig: ${comparisons} Vergleiche, ${writes} Schreibzugriffe.${order}`, { line: 0, sortedTo: n });
         return frames;
     }
 
@@ -1193,6 +1213,12 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         const barH = (value) => 20 + (value / most) * (height - 40);
         const arc = frame.swap ? { 'data-arc': 26 } : {};
         const from = frame.from || {};
+        // the value, and for equal values their letter, small and low
+        const valueText = (id) => {
+            const tag = frame.tags && frame.origin ? frame.tags[frame.origin[id]] : undefined;
+            return [document.createTextNode(String(frame.values[id])),
+                ...(tag ? [el('svg:tspan', { dx: 1, dy: 3, 'font-size': 10, 'font-weight': 400, fill: 'var(--bs-secondary-color)', text: tag })] : [])];
+        };
         const bar = (id, x, y, fill, extra = {}) => {
             const h = barH(frame.values[id]);
             const source = from[id] !== undefined ? from[id] : null;
@@ -1201,7 +1227,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             return [
                 el('svg:g', { 'data-key': `bar-${id}`, ...comes, transform: `translate(${x} ${y - h})`, ...arc }, [
                     el('svg:rect', { x: 0, y: 0, width: cell - 8, height: h, rx: 4, fill, ...extra })]),
-                el('svg:text', { 'data-key': `value-${id}`, ...comesLabel, x: x + (cell - 8) / 2, y: y - h - 6, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.values[id]) }),
+                el('svg:text', { 'data-key': `value-${id}`, ...comesLabel, x: x + (cell - 8) / 2, y: y - h - 6, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)' }, valueText(id)),
             ];
         };
         svg.appendChild(arrowheads(marker));
@@ -1240,7 +1266,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             const source = from[id];
             svg.appendChild(el('svg:g', { 'data-key': `bar-${id}`, ...(source !== undefined ? { 'data-from': `bar-${source}` } : {}), transform: `translate(${x} 4)` }, [
                 el('svg:rect', { x: 0, y: 0, width: cell - 8, height: 28, rx: 4, fill: 'color-mix(in srgb, var(--algo-accent) 25%, var(--algo-paper))', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '5 3' }),
-                el('svg:text', { x: (cell - 8) / 2, y: 19, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.values[id]) })]));
+                el('svg:text', { x: (cell - 8) / 2, y: 19, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)' }, valueText(id))]));
             const w = 14 + 7.5 * 'current'.length;
             svg.appendChild(el('svg:rect', { 'data-solid': '', 'data-key': 'var-current', x: x + cell - 2, y: 9, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
             svg.appendChild(el('svg:text', { 'data-solid': '', 'data-key': 'var-current-label', x: x + cell - 2 + w / 2, y: 22, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'current' }));
@@ -1263,7 +1289,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
                     const source = from[id];
                     svg.appendChild(el('svg:g', { 'data-key': `scratch-value-${id}`, ...(source !== undefined ? { 'data-from': `bar-${source}` } : {}), transform: `translate(${x} ${bottom + 6})` }, [
                         el('svg:rect', { x: 0, y: 0, width: cell - 8, height: 28, rx: 4, fill: 'var(--algo-frontier)', stroke: 'var(--algo-line)', 'stroke-width': 1.5 }),
-                        el('svg:text', { x: (cell - 8) / 2, y: 19, 'text-anchor': 'middle', 'font-size': 13, fill: 'var(--algo-ink)', text: String(frame.values[id]) })]));
+                        el('svg:text', { x: (cell - 8) / 2, y: 19, 'text-anchor': 'middle', 'font-size': 13, fill: 'var(--algo-ink)' }, valueText(id))]));
                 }
             });
             svg.appendChild(el('svg:text', { 'data-key': 'scratch-label', x: 0, y: bottom + 50, 'font-size': 11, fill: 'var(--bs-secondary-color)', text: 'scratch' }));
@@ -3562,7 +3588,9 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         } else if (algo === 'sort') {
             const values = widget.dataset.values.split(',').map(Number);
             const kind = widget.dataset.sort;
-            frames = traceSort(values, kind);
+            // data-no-letters: equal values without their letters (Selection
+            // Sort, whose instability a task of the Sorting Sandbox asks about)
+            frames = traceSort(values, kind, widget.dataset.noLetters === undefined);
             const marker = `algo-arrow-${++widgetCount}`;
             // the stack keeps the height of its deepest moment, so that the code below does not jump
             const deepest = Math.max(0, ...frames.map((f) => (f.stack || []).length));

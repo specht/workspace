@@ -339,6 +339,11 @@ only to look nice.
   out one by one, each flying to its new bucket (the token is the key
   itself, `key-k`). The calls show the `insert(s)` the loop makes. The fill
   note is left out while count and m do not belong together.
+- **Equal values in a sort** carry a letter in their order at the start
+  (3a, 3b, 3c, a small subscript; a copy keeps the letter of what it was
+  copied from), and the last step says whether they kept that order:
+  stable or not. Not on Selection Sort (`data-no-letters`): a task of the
+  Sorting Sandbox asks which of its lines makes it unstable.
 - **Round trip** (`data-algo='tour'`, `data-mode='nearest'` or `'2opt'`,
   `data-points='x y; x y; …'`): `nearest_neighbor` and `two_opt` from
   `reference/graphen` on places in the plane (y up), the distance the
