@@ -17,6 +17,10 @@ test('a teacher copies the whole program of a step', async ({ page, context }, t
   await expect(first).toHaveText('Code bis hier');
   await first.click();
   await expect(first).toHaveClass(/copied/);
+  // Visible: »Kopiert« for a moment, then the label again
+  await expect(first).toHaveText('Kopiert');
+  await expect(first).toHaveText('Code bis hier', { timeout: 5_000 });
+  await expect(first).not.toHaveClass(/copied/);
   const copied = await page.evaluate(() => navigator.clipboard.readText());
   expect(copied).toContain('#include "pixelram.h"');
   expect(copied).toContain('int main(void)');

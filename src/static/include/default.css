@@ -2737,10 +2737,28 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     margin-right: 0.4em;
 }
 
-.stage-code-copy:hover,
-.stage-code-copy.copied {
+.stage-code-copy:hover {
     background-color: #ece1f8;
     border-color: #b99ae0;
+}
+
+/* Copied: green, »Kopiert«, and the checkmark of the code blocks' copy
+   button (code-copy-done) */
+.stage-code-copy.copied {
+    background-color: #e6f6ec;
+    border-color: #7fcf9f;
+    color: #1e7a45;
+}
+
+.stage-code-copy.copied .bi {
+    display: inline-block;
+    animation: code-copy-done 0.6s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .stage-code-copy.copied .bi {
+        animation: none;
+    }
 }
 
 .class-repo-teacher {

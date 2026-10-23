@@ -31,9 +31,9 @@ test('an administrator sees every person box with its sources', async ({ page },
   await expect(snellius.locator('.ps-sources a').first()).toHaveAttribute('href', /^https:\/\//);
 
   // A filter keeps only the sentences in that state.
-  await page.locator(".ps-filters button[data-filter='partly']").click();
-  await expect(page.locator('.ps-sentence:visible').first()).toHaveAttribute('data-state', 'partly');
-  expect(await page.locator(".ps-sentence:visible:not([data-state='partly'])").count()).toBe(0);
+  await page.locator(".ps-filters button[data-filter='sourced']").click();
+  await expect(page.locator('.ps-sentence:visible').first()).toHaveAttribute('data-state', 'sourced');
+  expect(await page.locator(".ps-sentence:visible:not([data-state='sourced'])").count()).toBe(0);
 });
 
 test('a student does not get the page', async ({ page }, testInfo) => {

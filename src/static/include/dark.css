@@ -506,10 +506,14 @@ html[data-bs-theme="dark"] {
         background-color: #221b2d;
         color: #cdb0f2;
     }
-    .stage-code-copy:hover,
-    .stage-code-copy.copied {
+    .stage-code-copy:hover {
         background-color: #2e2440;
         border-color: #6b5590;
+    }
+    .stage-code-copy.copied {
+        background-color: #14301f;
+        border-color: #2f7a4c;
+        color: #6fdc9b;
     }
     .class-repo-teacher {
         border-color: #4a3a63;

@@ -210,15 +210,31 @@ function install_code_copy() {
     let stageCopy = new ClipboardJS('.stage-code-copy', {
         text: function(trigger) { return trigger.nextElementSibling.content.textContent; },
     });
+    // Copied: green, a checkmark and »Kopiert« for a moment; the button keeps
+    // its width, so the row does not jump.
     stageCopy.on('success', function(e) {
-        let icon = e.trigger.querySelector('.bi');
+        let button = e.trigger;
+        let icon = button.querySelector('.bi');
+        let label = button.lastChild;
         e.clearSelection();
-        e.trigger.classList.add('copied');
+        if (!button.dataset.label) {
+            button.dataset.label = label.textContent;
+            button.style.minWidth = button.offsetWidth + 'px';
+        }
+        clearTimeout(button.copiedTimer);
+        // again from the start when clicked twice
+        button.classList.remove('copied');
+        void button.offsetWidth;
+        button.classList.add('copied');
         icon.className = 'bi bi-check-lg';
-        setTimeout(function() {
-            e.trigger.classList.remove('copied');
+        label.textContent = 'Kopiert';
+        button.copiedTimer = setTimeout(function() {
+            button.classList.remove('copied');
             icon.className = 'bi bi-copy';
-        }, 1200);
+            label.textContent = button.dataset.label;
+            delete button.dataset.label;
+            button.style.minWidth = '';
+        }, 1500);
     });
 }
 
