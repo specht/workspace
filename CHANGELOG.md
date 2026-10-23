@@ -21,6 +21,10 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Fallserver: Die Eingabeaufforderung beginnt farbig mit dem Namen des Servers (`[museum]` gelb,
+  `[alarmanlage]` rot), die Alarmanlage begrüßt mit der Werbung von Elektro Reuter. Mit
+  `CASE_SERVER = true` nach dem Update `./config.rb build case_museum case_alarm` und
+  `./config.rb up -d case_museum case_alarm`.
 - Die Neo4j-Datenbank der Anwendung liegt jetzt in einem eigenen Docker-Netz, das nur der
   Ruby-Container mit ihr teilt. Nach dem Update `./config.rb up -d`, damit `neo4japp` und
   `ruby` neu angelegt werden.

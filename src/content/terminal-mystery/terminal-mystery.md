@@ -379,16 +379,16 @@ terminal-expect-no-text: Permission denied
 # Angemeldet auf museum.bitstein
 terminal-run: clear
 terminal-run: ssh $CASE_USER@museum.bitstein
-wait-for-text: @museum:~$
+wait-for-text: [museum]
 terminal-run: ls
 terminal-run: cat LIESMICH.txt
 wait-for-text: Ingrid Hollerbach
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='ssh-museum.webp' alt='Im Terminal: ssh mit dem eigenen Zugang zu museum.bitstein, die Begrüßung des Servers der Verwaltung, die Eingabeaufforderung mit @museum, darunter ls mit LIESMICH.txt, geraete.txt, kameras, logs, netzplan.txt und wartung und der Inhalt von LIESMICH.txt.'>
+<img class='full' src='ssh-museum.webp' alt='Im Terminal: ssh mit dem eigenen Zugang zu museum.bitstein, die Begrüßung des Servers der Verwaltung, die Eingabeaufforderung mit einem gelben [museum], darunter ls mit LIESMICH.txt, geraete.txt, kameras, logs, netzplan.txt und wartung und der Inhalt von LIESMICH.txt.'>
 
-Die Eingabeaufforderung zeigt jetzt `@museum`: Jeder Befehl läuft dort, nicht in deinem Workspace. `hostname` sagt, auf welchem Rechner du bist, `whoami`, wer du dort bist. Schreiben kannst du hier nichts, lesen alles, mit denselben Werkzeugen wie in Bitstein. `exit` oder <kbd>Strg</kbd><kbd>D</kbd> bringt dich zurück.
+Die Eingabeaufforderung sieht jetzt anders aus und sagt doch dasselbe. In deinem Workspace steht `student@workspace:~$`: wer du bist, nach dem `@` auf welchem Rechner, nach dem `:` in welchem Ordner. Auf dem Museum steht `[museum] e123:~$`: der Rechner vorn, gelb und in Klammern, damit du ihn nicht übersiehst, dann wieder du und der Ordner. Das `~` ist jetzt dein Home auf dem Museum, nicht das im Workspace, und jeder Befehl läuft dort. Auf der Alarmanlage steht später ein rotes `[alarmanlage]`. `hostname` sagt, auf welchem Rechner du bist, `whoami`, wer du dort bist. Schreiben kannst du hier nichts, lesen alles, mit denselben Werkzeugen wie in Bitstein. `exit` oder <kbd>Strg</kbd><kbd>D</kbd> bringt dich zurück.
 
 _task(vpn)
 
@@ -414,7 +414,7 @@ terminal-run: clear
 terminal-run: ssh alarmanlage.bitstein
 wait-for-text: password:
 terminal-run: Leuchtturm-2024
-wait-for-text: @alarmanlage:~$
+wait-for-text: [alarmanlage]
 terminal-run: hostname
 terminal-run: ls -a /home/wartung
 wait-for-text: .bash_history
@@ -497,7 +497,7 @@ ls kameras | wc -l
 # Die Bilder der Kameras auf museum.bitstein
 terminal-run: clear
 terminal-run: ssh $CASE_USER@museum.bitstein
-wait-for-text: @museum:~$
+wait-for-text: [museum]
 terminal-run: clear
 terminal-run: ls kameras | head -n 4
 terminal-run: ls kameras | wc -l
