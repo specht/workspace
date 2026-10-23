@@ -159,6 +159,10 @@ sift_down(list, i, size):                    (der Heap sind die ersten size Eint
 ```
 
 `sift_down` ist die Schleife aus `pop`, nur mit `>` statt `<` und mit `size` statt der Länge der Liste: Was rechts von `size` steht, ist schon sortiert und gehört nicht mehr zum Heap. Die erste Schleife baut den Heap von hinten auf. Ein Blatt ist allein schon ein Heap, also beginnt sie beim letzten Eintrag, der Kinder hat.
+
+<div class='algo-stepper' data-title='Heapsort' data-algo='heap' data-mode='sort' data-values='5, 2, 8, 1, 9, 3, 7, 4' data-presets='gemischt: 5, 2, 8, 1, 9, 3, 7, 4 | schon sortiert: 1, 2, 3, 4, 5, 7, 8, 9 | umgekehrt sortiert: 9, 8, 7, 5, 4, 3, 2, 1 | viele gleiche: 3, 1, 3, 2, 1, 3, 2, 1'></div>
+
+Was hinter `size` steht, gehört nicht mehr zum Heap: Es fällt aus dem Baum und bleibt im Array, sortiert. Probier »schon sortiert«: Für Heapsort ist eine sortierte Liste keine Hilfe, der Heap muss sie erst ganz umbauen.
 <!-- /part -->
 
 ## Zum Nachschlagen

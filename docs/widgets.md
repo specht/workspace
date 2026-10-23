@@ -330,6 +330,13 @@ only to look nice.
   the row »besucht« under it.
 - **Tombstones** (`data-mode='probe'`, `remove k`): the bucket keeps a dashed
   box with the word `deleted`; `find` and `insert` count it as occupied.
+- **Heapsort** (`data-algo='heap' data-mode='sort'`, `data-values`):
+  `heap_sort` and `sift_down` from `reference/heap`, a heap in which no child
+  is greater than its parent. The heap's picture with the calls beside the
+  code; `size` is a border under the array, and what lies behind it has left
+  the heap: out of the tree, in the array in the colour of »fertig
+  sortiert«. A leaf's two missing children are one step, not two. The
+  timeline names each round by what goes to the end (»9 ans Ende«).
 - **Bit planes** (`bitplane_widget.js`, steganography): a slider with two
   handles over the bits 7 to 0, the bits between them kept, all others 0;
   »verstärken« stretches the rest to 0 to 255; one pixel's red value in

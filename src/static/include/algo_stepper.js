@@ -607,7 +607,98 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             '        heap[0] ← last', '        i ← 0', '        repeat:', '            min ← i', '            for each child in (2i + 1, 2i + 2):',
             '                if child < length of heap and heap[child] < heap[min]:', '                    min ← child',
             '            if min == i: done', '            swap heap[min] and heap[i]', '            i ← min', '    return top'],
+        sort: ['heap_sort(list):', '    n ← length of list', '    for i from n / 2 - 1 down to 0:          (n / 2 abgerundet)', '        sift_down(list, i, n)',
+            '    for end from n - 1 down to 1:', '        swap list[0] and list[end]           (das größte ans Ende)', '        sift_down(list, 0, end)', '',
+            'sift_down(list, i, size):                    (der Heap sind die ersten size Einträge)', '    repeat:', '        max ← i',
+            '        for each child in (2i + 1, 2i + 2):', '            if child < size and list[child] > list[max]:', '                max ← child',
+            '        if max == i: done', '        swap list[max] and list[i]', '        i ← max'],
     };
+
+    // Heapsort in place, as heap_sort on reference/heap: a heap in which no
+    // child is greater than its parent, built from the back, then the
+    // greatest to the end again and again. The same picture as the heap; the
+    // entries from size on have left the heap: no longer in the tree, in the
+    // array sorted. A frame also has size (the entries that are the heap) and
+    // stack (heap_sort and the sift_down it calls).
+    function traceHeapSort(start) {
+        const values = {};
+        const slots = start.map((value, i) => { values[i] = value; return i; });
+        const n = slots.length;
+        const frames = [];
+        let size = n;
+        let current = 0;
+        const names = ['Heap bauen'];
+        const v = (i) => values[slots[i]];
+        const C = (at) => ({ lines: HEAP_CODE.sort, at });
+        let stack = [{ call: 'heap_sort(list)' }];
+        const snapshot = (message, marks = {}) => frames.push({ slots: [...slots], values: { ...values }, aside: {}, out: [], size, stack: stack.map((e) => ({ ...e })),
+            message, op: current, ...marks });
+        const siftDown = (top, limit, outer) => {
+            stack = [...stack, { call: `sift_down(list, ${top}, ${limit})` }];
+            let i = top;
+            const sizeVar = { name: 'size', index: limit };
+            snapshot(`sift_down(list, ${top}, ${limit}): ${v(top)} sinkt, bis kein Kind größer ist. Der Heap sind die ersten ${limit} Einträge.`, { at: i, vars: [{ name: 'i', index: i }, sizeVar], code: C(8) });
+            for (;;) {
+                let max = i;
+                const vars = () => [{ name: 'i', index: i }, { name: 'max', index: max }, sizeVar];
+                snapshot(`max ← i: max ist ${i}.`, { at: i, vars: vars(), code: C(10) });
+                for (const child of [2 * i + 1, 2 * i + 2]) {
+                    const withChild = () => [...vars(), { name: 'child', index: child }];
+                    if (child >= limit) {
+                        // a leaf: both children at once, in one step
+                        const both = child === 2 * i + 1;
+                        snapshot(both ? `child ${child} und ${child + 1}: beide nicht < size. ${v(i)} hat im Heap keine Kinder.`
+                            : `child ${child}: ${child} < size ist falsch, ${child < n ? `Index ${child} gehört nicht mehr zum Heap` : `Index ${child} gibt es nicht`}.`, { at: i, vars: vars(), code: C(12) });
+                        if (both) break;
+                        continue;
+                    }
+                    if (v(child) > v(max)) {
+                        snapshot(`child ${child}: ${v(child)} > ${v(max)}, also max ← ${child}.`, { at: i, vars: withChild(), compare: [max, child], code: C(13) });
+                        max = child;
+                    } else {
+                        snapshot(`child ${child}: ${v(child)} ist nicht größer als ${v(max)}, max bleibt ${max}.`, { at: i, vars: withChild(), compare: [max, child], code: C(12) });
+                    }
+                }
+                if (max === i) {
+                    snapshot(`max == i: Kein Kind ist größer als ${v(i)}. Fertig, zurück nach heap_sort.`, { at: i, vars: vars(), code: C(14) });
+                    break;
+                }
+                [slots[max], slots[i]] = [slots[i], slots[max]];
+                snapshot(`swap list[max] and list[i]: ${v(max)} und ${v(i)} tauschen die Plätze.`, { at: i, vars: vars(), compare: [i, max], swap: true, code: C(15) });
+                i = max;
+                snapshot(`i ← max: i ist jetzt ${i}.`, { at: i, vars: [{ name: 'i', index: i }, { name: 'max', index: max }, sizeVar], code: C(16) });
+            }
+            stack = stack.slice(0, -1);
+            return outer;
+        };
+        snapshot('Die Liste, als Baum gelesen: Index 0 oben, die Kinder von i bei 2i + 1 und 2i + 2. Noch ist sie kein Heap.', { code: C(-1) });
+        snapshot(`n ← length of list: n ist ${n}.`, { code: C(1) });
+        for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+            snapshot(i === Math.floor(n / 2) - 1
+                ? `for i from n / 2 - 1 down to 0: i ist ${i}, der letzte Eintrag mit Kindern. Die Blätter dahinter sind allein schon ein Heap.`
+                : `for i …: i ist ${i}. Die Teilbäume darunter sind schon Heaps.`, { at: i, vars: [{ name: 'i', index: i }], code: C(2) });
+            siftDown(i, n);
+        }
+        snapshot(`Die Schleife ist durch, der Heap ist gebaut: Kein Kind ist größer als sein Elternteil, oben steht das größte, ${v(0)}.`, { code: C(2) });
+        for (let end = n - 1; end >= 1; end--) {
+            current = names.length;
+            names.push(`${v(0)} ans Ende`);
+            const endVar = { name: 'end', index: end };
+            snapshot(`for end from n - 1 down to 1: end ist ${end}.`, { vars: [endVar], code: C(4) });
+            [slots[0], slots[end]] = [slots[end], slots[0]];
+            snapshot(`swap list[0] and list[end]: ${v(end)}, das größte im Heap, kommt an Index ${end}. Dort bleibt es: Ab hier ist die Liste sortiert.`,
+                { vars: [endVar], compare: [0, end], swap: true, code: C(5) });
+            size = end;
+            snapshot(`sift_down(list, 0, end): Der Heap ist jetzt nur noch ${end} ${end === 1 ? 'Eintrag' : 'Einträge'} lang, und oben steht ${v(0)}, das nicht dorthin gehört.`, { vars: [endVar], code: C(6) });
+            siftDown(0, end);
+        }
+        current = names.length;
+        names.push('fertig');
+        size = 0;
+        snapshot(`Die Schleife ist durch: Was an Index 0 übrig ist, ist das kleinste. Die Liste ist sortiert, ${slots.map((id) => values[id]).join(', ')}.`, { code: C(4) });
+        frames.opNames = names;
+        return frames;
+    }
 
     function traceHeap(ops, setup = []) {
         const slots = [];
@@ -736,6 +827,8 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
     function drawHeap(svg, frame, most, marker) {
         svg.replaceChildren();
         const n = frame.slots.length;
+        // heapsort: the entries from size on have left the heap (sorted)
+        const inHeap = frame.size === undefined ? n : frame.size;
         // as high as the biggest heap of the example, so the picture keeps its size
         const levels = Math.max(1, Math.ceil(Math.log2(most + 1)));
         const width = 560;
@@ -749,7 +842,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         const arc = frame.swap ? { 'data-arc': 22 } : {};
         svg.appendChild(arrowheads(marker));
         // the tree's edges belong to the places, not to the entries
-        for (let i = 1; i < n; i++) {
+        for (let i = 1; i < inHeap; i++) {
             const [x1, y1] = pos(Math.floor((i - 1) / 2));
             const [x2, y2] = pos(i);
             svg.appendChild(el('svg:line', { 'data-key': `slot-edge-${i}`, x1, y1, x2, y2, stroke: 'var(--algo-line)', 'stroke-width': 2 }));
@@ -759,7 +852,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             el('svg:circle', { cx: 0, cy: 0, r: 17, fill: fill(id, i), stroke: i === frame.at ? 'var(--algo-accent)' : 'var(--algo-ink)', 'stroke-width': i === frame.at ? 3 : 1.5 }),
             el('svg:text', { x: 0, y: 5, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.values[id]) }),
         ]);
-        for (let i = 0; i < n; i++) {
+        for (let i = 0; i < inHeap; i++) {
             const [x, y] = pos(i);
             svg.appendChild(el('svg:text', { 'data-key': `slot-index-${i}`, x: x + 21, y: y - 14, 'font-size': 10, fill: 'var(--bs-secondary-color)', text: String(i) }));
             svg.appendChild(entry(frame.slots[i], x, y, i));
@@ -782,7 +875,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         for (let i = 0; i < n; i++) {
             const id = frame.slots[i];
             svg.appendChild(el('svg:g', { 'data-key': `cell-${id}`, 'data-from': `tree-${id}`, 'data-to': `tree-${id}`, transform: `translate(${cellX(i)} ${top})`, ...arc }, [
-                el('svg:rect', { x: 0, y: 0, width: cell - 3, height: 30, rx: 4, fill: fill(id, i), stroke: i === frame.at ? 'var(--algo-accent)' : compare.has(i) ? 'var(--algo-accent)' : 'var(--algo-line)', 'stroke-width': i === frame.at || compare.has(i) ? 3 : 1.5 }),
+                el('svg:rect', { x: 0, y: 0, width: cell - 3, height: 30, rx: 4, fill: i >= inHeap && !compare.has(i) ? 'var(--algo-done)' : fill(id, i), stroke: i === frame.at ? 'var(--algo-accent)' : compare.has(i) ? 'var(--algo-accent)' : 'var(--algo-line)', 'stroke-width': i === frame.at || compare.has(i) ? 3 : 1.5 }),
                 el('svg:text', { x: (cell - 3) / 2, y: 20, 'text-anchor': 'middle', 'font-size': 14, fill: 'var(--algo-ink)', text: String(frame.values[id]) }),
             ]));
         }
@@ -806,13 +899,18 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         };
         // index variables under their cell, one label for each cell (indexLabels)
         const labels = [];
-        for (const placed of indexLabels(frame.vars, (index) => cellX(index) + (cell - 3) / 2, width)) labels.push(...indexLabel(placed, top + 74 + placed.row * 24, top + 24, top + 50, marker));
+        // size is no cell but the border after the heap's entries (as in drawArray)
+        const vars = (frame.vars || []).map((v) => (v.name === 'size' ? { ...v, index: `b${v.index}`, value: v.index, border: top - 4 } : v));
+        const at = (index) => (typeof index === 'string' ? cellX(Number(index.slice(1))) - 1.5 : cellX(index) + (cell - 3) / 2);
+        for (const placed of indexLabels(vars, at, width)) labels.push(...indexLabel(placed, top + 74 + placed.row * 24, top + 24, top + 50, marker));
         for (const h of frame.holders || []) {
             const place = frame.aside[h.id] ? asidePlace[frame.aside[h.id]] : pos(frame.slots.indexOf(h.id));
             labels.push(...label(h.name, place[0] - 26, place[1] - 40, null, 0, 'left'));
         }
         // the arrows of top and last go to the entry they hold (its circle is in a group)
-        for (const node of labels) svg.appendChild(node);
+        // all lines under all boxes: the border of size moves past other boxes
+        const under = (node) => /^(pointer|border)-/.test(node.dataset.key);
+        for (const node of [...labels.filter(under), ...labels.filter((node) => !under(node))]) svg.appendChild(node);
         for (const h of frame.holders || []) {
             const place = frame.aside[h.id] ? asidePlace[frame.aside[h.id]] : pos(frame.slots.indexOf(h.id));
             const w = 14 + 7.5 * h.name.length;
@@ -2713,7 +2811,8 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         if (!code) return [el('h5', { text: 'Pseudocode' }), el('p', { class: 'algo-empty', text: 'Hier steht der Pseudocode der Operation, die gerade läuft, und ihre Zeile ist markiert.' })];
         const line = (text, i) => {
             const indent = text.match(/^ */)[0].length;
-            return el('span', { class: `line${i === code.at ? ' current' : ''}`, style: `padding-left: calc(0.6em + ${indent + 2}ch); text-indent: -2ch;` }, highlightPseudocode(text.trimStart()));
+            // an empty line keeps its height, between two functions
+            return el('span', { class: `line${i === code.at ? ' current' : ''}`, style: `padding-left: calc(0.6em + ${indent + 2}ch); text-indent: -2ch;` }, text.trim() ? highlightPseudocode(text.trimStart()) : [document.createTextNode('\u00a0')]);
         };
         return [el('h5', { text: 'Pseudocode' }), el('pre', { class: 'algo-code code-pseudocode' }, code.lines.map(line))];
     }
@@ -3101,6 +3200,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             const compared = any((f) => (f.compare || []).length);
             const fresh = any((f) => f.fresh !== undefined);
             if (compared || fresh) add('fill', 'var(--algo-frontier)', compared && fresh ? 'neu oder verglichen' : fresh ? 'neu' : 'verglichen');
+            if (any((f) => f.size !== undefined && f.size < f.slots.length)) add('fill', 'var(--algo-done)', 'fertig sortiert, nicht mehr im Heap');
         } else if (algo === 'bsearch') {
             add('fill', 'color-mix(in srgb, var(--algo-accent) 10%, var(--algo-paper))', 'kommt noch in Frage');
             add('fill', 'var(--algo-frontier)', 'cells[middle], verglichen');
@@ -3233,13 +3333,16 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         } else if (algo === 'heap') {
             const parse = (text) => (text || '').split(',').map((s) => s.trim()).filter(Boolean).map((s) => s.split(/\s+/))
                 .map(([type, value]) => ({ type, value: Number(value) }));
-            const ops = parse(widget.dataset.ops);
-            frames = traceHeap(ops, parse(widget.dataset.setup));
+            const sorting = widget.dataset.mode === 'sort';
+            const ops = sorting ? [] : parse(widget.dataset.ops);
+            frames = sorting ? traceHeapSort(widget.dataset.values.split(',').map((t) => Number(t.trim()))) : traceHeap(ops, parse(widget.dataset.setup));
             const most = Math.max(...frames.map((frame) => frame.slots.length + Object.keys(frame.aside).length));
             const pops = ops.some((op) => op.type === 'pop');
             const marker = `algo-arrow-${++widgetCount}`;
-            svg.setAttribute('aria-label', 'Der Heap als Baum, darunter dasselbe als Array mit den Indizes');
-            draw = (frame) => {
+            svg.setAttribute('aria-label', sorting ? 'Die Liste als Baum gelesen, darunter als Array; was hinter size steht, ist schon sortiert'
+                : 'Der Heap als Baum, darunter dasselbe als Array mit den Indizes');
+            if (sorting) draw = (frame) => { drawHeap(svg, frame, most, marker); listSide(frame, 2); };
+            else draw = (frame) => {
                 drawHeap(svg, frame, most, marker);
                 side.replaceChildren(...(pops ? [el('h5', { text: 'Heraus mit pop' }), el('div', { class: 'algo-items' }, frame.out.length
                     ? frame.out.map((value, i) => el('span', { class: `algo-item${i === frame.out.length - 1 ? ' next' : ''}`, text: String(value) }))
