@@ -55,6 +55,7 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 .algo-stepper .algo-swatch.ring { background: transparent; border: 2.5px solid var(--swatch); border-radius: 50%; }
 .algo-stepper .algo-swatch.line { height: 0; width: 1.3em; border: 0; border-top: 2.5px solid var(--swatch); border-radius: 0; }
 .algo-stepper .algo-swatch.dashed { background: transparent; border: 1.5px dashed var(--swatch); }
+.algo-stepper .algo-swatch.dashline { height: 0; width: 1.3em; border: 0; border-top: 2.5px dashed var(--swatch); border-radius: 0; }
 .algo-stepper .algo-body { display: grid; grid-template-columns: minmax(0, 34em) minmax(12em, 1fr); grid-template-rows: auto 1fr; gap: 0 1.2em; align-items: start; }
 /* the picture with its legend under it on the left, the calls and the code
    beside both. Where the widget is too narrow for the code to keep about
@@ -1448,6 +1449,175 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         const wide = Math.max(left * 2 + (most + 1) * cell, left + most * cell + 6 + valueBoxWidth('capacity', most) + 6);
         svg.setAttribute('viewBox', `0 0 ${wide} ${grows ? bigTop + 54 : labelTop + 3 * 24}`);
         svg.dataset.natural = wide;
+    }
+
+    // ---- A round trip through places in the plane, as on reference/graphen:
+    // the nearest neighbour builds an order, 2-opt reverses pieces of it while
+    // that makes the trip shorter. The distance is the straight line. A
+    // frame: order (place ids), remaining, last, candidates (nearest: the
+    // dashed lines from last with their lengths), check (2-opt: the edges a
+    // reversal takes out and puts in), closed (the way back to 0 drawn),
+    // range [i, j] in the order, vars, code.
+    const TOUR_CODE = {
+        nearest: ['nearest_neighbor(distance):', '    order ← [0]', '    remaining ← all places except 0', '    while remaining not empty:',
+            '        last ← the last place in order', '        next ← the place in remaining with the smallest distance[last][place]',
+            '        append next to order, remove it from remaining', '    return order'],
+        twoOpt: ['two_opt(distance, order):', '    improved ← true', '    while improved:', '        improved ← false', '        for i from 1 to n - 2:',
+            '            for j from i + 1 to n - 1:', '                if reversing order[i … j] makes the tour shorter:', '                    reverse order[i … j]',
+            '                    improved ← true', '    return order'],
+    };
+    const decimal = (x, places = 1) => x.toFixed(places).replace('.', ',');
+
+    function traceTour(points, kind) {
+        const n = points.length;
+        const dist = (a, b) => Math.hypot(points[a][0] - points[b][0], points[a][1] - points[b][1]);
+        const length = (o) => o.reduce((sum, p, k) => sum + dist(p, o[(k + 1) % o.length]), 0);
+        const frames = [];
+        let current = -1;
+        const names = [];
+        const snapshot = (message, marks) => frames.push({ order: [...order], remaining: [...remaining], message, op: current, ...marks });
+        // the nearest neighbour first: 2-opt starts from its order
+        let order = [0];
+        let remaining = points.map((_, i) => i).slice(1);
+        const C = (at) => ({ lines: TOUR_CODE[kind === 'nearest' ? 'nearest' : 'twoOpt'], at });
+        const nearest = (quiet) => {
+            const say = quiet ? () => {} : snapshot;
+            say(`${n} Orte. Die Entfernung zwischen zwei Orten ist die Luftlinie. Die Rundreise beginnt und endet bei 0.`, { code: C(-1) });
+            say('order ← [0]: Die Reise beginnt bei 0.', { code: C(1) });
+            say(`remaining ← all places except 0: ${remaining.join(', ')}.`, { code: C(2) });
+            while (remaining.length) {
+                if (!quiet) { current = names.length; }
+                say(`while remaining not empty: noch ${remaining.length === 1 ? 'ein Ort' : `${remaining.length} Orte`}.`, { code: C(3) });
+                const last = order[order.length - 1];
+                say(`last ← the last place in order: last ist ${last}.`, { last, code: C(4) });
+                const candidates = remaining.map((to) => ({ to, d: dist(last, to) })).sort((a, b) => a.d - b.d);
+                const next = candidates[0].to;
+                say(`next ← …: Von ${last} aus ist ${next} am nächsten, ${decimal(candidates[0].d)} entfernt${candidates.length > 1 ? `; der zweitnächste, ${candidates[1].to}, ist ${decimal(candidates[1].d)} entfernt` : ''}.`,
+                    { last, next, candidates, code: C(5) });
+                order.push(next);
+                remaining = remaining.filter((r) => r !== next);
+                if (!quiet) names.push(`→ ${next}`);
+                say(`append next to order, remove it from remaining: ${next} kommt in order, der Weg ${last}–${next} ist ${decimal(candidates[0].d)} lang.`, { last: next, code: C(6) });
+            }
+            if (!quiet) current = names.length;
+            say('while remaining not empty: remaining ist leer, alle Orte sind in order.', { code: C(3) });
+            if (!quiet) names.push('return');
+            const back = dist(order[order.length - 1], 0);
+            say(`return order: [${order.join(', ')}]. Zurück zu 0 sind es noch ${decimal(back)}; die ganze Rundreise ist ${decimal(length(order))} lang. Die langen Wege sind für den Schluss übrig geblieben.`,
+                { closed: true, code: C(7) });
+        };
+        if (kind === 'nearest') {
+            nearest(false);
+            frames.opNames = names;
+            return frames;
+        }
+        nearest(true);
+        snapshot(`Die Rundreise des nächsten Nachbarn, [${order.join(', ')}], ist ${decimal(length(order))} lang. 2-opt soll sie kürzer machen. n ist ${n}.`, { closed: true, code: C(-1) });
+        let improved = true;
+        snapshot('improved ← true: damit die Schleife einmal läuft.', { closed: true, code: C(1) });
+        let pass = 0;
+        while (improved) {
+            pass += 1;
+            current = names.length;
+            names.push(`Durchgang ${pass}`);
+            snapshot(`while improved: Durchgang ${pass}.`, { closed: true, code: C(2) });
+            improved = false;
+            snapshot('improved ← false: Noch hat in diesem Durchgang nichts geholfen.', { closed: true, code: C(3) });
+            for (let i = 1; i <= n - 2; i++) {
+                for (let j = i + 1; j <= n - 1; j++) {
+                    const [a, b, c, e] = [order[i - 1], order[i], order[j], order[(j + 1) % n]];
+                    const before = dist(a, b) + dist(c, e);
+                    const after = dist(a, c) + dist(b, e);
+                    const vars = [{ name: 'i', index: i }, { name: 'j', index: j }];
+                    const check = { out: [[a, b], [c, e]], in: [[a, c], [b, e]] };
+                    const piece = order.slice(i, j + 1).join(', ');
+                    // two places, so that the sums add up as written
+                    const ways = `die Wege ${a}–${b} und ${c}–${e} (${decimal(dist(a, b), 2)} + ${decimal(dist(c, e), 2)} = ${decimal(before, 2)}) durch ${a}–${c} und ${b}–${e} (${decimal(dist(a, c), 2)} + ${decimal(dist(b, e), 2)} = ${decimal(after, 2)})`;
+                    if (after < before - 1e-9) {
+                        snapshot(`i = ${i}, j = ${j}: order[${i} … ${j}] (${piece}) umzudrehen ersetzt ${ways}. Das ist ${decimal(before - after, 2)} kürzer.`, { closed: true, vars, range: [i, j], check, code: C(6) });
+                        order = [...order.slice(0, i), ...order.slice(i, j + 1).reverse(), ...order.slice(j + 1)];
+                        snapshot(`reverse order[${i} … ${j}]: Das Stück steht jetzt andersherum. Die Rundreise ist ${decimal(length(order))} lang.`, { closed: true, vars, range: [i, j], code: C(7) });
+                        improved = true;
+                        snapshot('improved ← true: Nach diesem Durchgang kommt noch einer.', { closed: true, vars, code: C(8) });
+                    } else {
+                        snapshot(`i = ${i}, j = ${j}: order[${i} … ${j}] (${piece}) umzudrehen ersetzte ${ways}. ${Math.abs(after - before) < 1e-9 ? 'Das ist gleich lang' : 'Das ist länger'}, also nicht.`,
+                            { closed: true, vars, range: [i, j], check, code: C(6) });
+                    }
+                }
+            }
+        }
+        current = names.length;
+        names.push('return');
+        snapshot(`while improved: improved ist false, im letzten Durchgang hat kein Umdrehen mehr geholfen.`, { closed: true, code: C(2) });
+        snapshot(`return order: [${order.join(', ')}], die Rundreise ist ${decimal(length(order))} lang. Ob es die kürzeste ist, weiß 2-opt nicht; sicher ist nur, dass kein einzelnes Umdrehen sie noch kürzer macht.`, { closed: true, code: C(9) });
+        frames.opNames = names;
+        return frames;
+    }
+
+    // The places as circles in the plane (y up), the trip as lines between
+    // them, under it the order as a row of cells, each place a cell that
+    // moves when a piece is reversed.
+    function drawTour(svg, frame, points, most, marker) {
+        svg.replaceChildren();
+        svg.appendChild(arrowheads(marker));
+        const maxX = Math.max(...points.map((p) => p[0]));
+        const maxY = Math.max(...points.map((p) => p[1]));
+        const unit = Math.min(48, 480 / Math.max(1, maxX));
+        const width = 40 + maxX * unit + 40;
+        const at = (id) => [40 + points[id][0] * unit, 30 + (maxY - points[id][1]) * unit];
+        const key = (a, b) => `edge-${Math.min(a, b)}-${Math.max(a, b)}`;
+        const line = (a, b, attrs) => {
+            const [x1, y1] = at(a);
+            const [x2, y2] = at(b);
+            return el('svg:line', { 'data-key': attrs.key || key(a, b), x1, y1, x2, y2, 'stroke-linecap': 'round', ...attrs.style });
+        };
+        const out = new Set((frame.check ? frame.check.out : []).map(([a, b]) => key(a, b)));
+        const tour = frame.order.map((p, k) => [p, frame.order[k + 1]]).filter(([, q]) => q !== undefined);
+        if (frame.closed && frame.order.length > 1) tour.push([frame.order[frame.order.length - 1], frame.order[0]]);
+        for (const [a, b] of tour) {
+            const gone = out.has(key(a, b));
+            svg.appendChild(line(a, b, { style: gone ? { stroke: 'var(--algo-goal)', 'stroke-width': 2.5, 'stroke-dasharray': '6 5' } : { stroke: 'var(--algo-accent)', 'stroke-width': 2.5 } }));
+        }
+        if (frame.check) for (const [a, b] of frame.check.in) svg.appendChild(line(a, b, { key: `try-${key(a, b)}`, style: { stroke: 'var(--algo-frontier)', 'stroke-width': 3, 'stroke-dasharray': '6 5' } }));
+        for (const c of frame.candidates || []) {
+            svg.appendChild(line(frame.last, c.to, { key: `cand-${c.to}`, style: { stroke: c.to === frame.next ? 'var(--algo-accent)' : 'var(--algo-line)', 'stroke-width': c.to === frame.next ? 2 : 1.5, 'stroke-dasharray': '4 4' } }));
+            const [x1, y1] = at(frame.last);
+            const [x2, y2] = at(c.to);
+            const [mx, my] = [(x1 + x2) / 2, (y1 + y2) / 2];
+            svg.appendChild(el('svg:text', { 'data-key': `cand-label-${c.to}`, x: mx, y: my + 4, 'text-anchor': 'middle', 'font-size': 11.5, 'font-weight': c.to === frame.next ? 700 : 400,
+                fill: c.to === frame.next ? 'var(--algo-accent)' : 'var(--bs-secondary-color)', stroke: 'var(--algo-paper)', 'stroke-width': 4, 'paint-order': 'stroke', text: decimal(c.d) }));
+        }
+        const inOrder = new Set(frame.order);
+        points.forEach((_, id) => {
+            const [x, y] = at(id);
+            const fill = id === frame.next ? 'var(--algo-frontier)' : inOrder.has(id) ? 'color-mix(in srgb, var(--algo-accent) 18%, var(--algo-paper))' : 'var(--algo-paper)';
+            const ring = id === frame.last;
+            svg.appendChild(el('svg:g', { 'data-key': `pt-${id}`, transform: `translate(${x} ${y})` }, [
+                el('svg:circle', { cx: 0, cy: 0, r: 15, fill, stroke: ring ? 'var(--algo-accent)' : 'var(--algo-ink)', 'stroke-width': ring ? 3 : 1.5 }),
+                el('svg:text', { x: 0, y: 5, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(id) })]));
+        });
+        // the order: a row of cells, the piece i … j marked
+        const top = 30 + maxY * unit + 40;
+        const cell = 46;
+        const left = (width - most * cell) / 2;
+        svg.appendChild(el('svg:text', { 'data-key': 'order-label', x: left - 8, y: top + 20, 'text-anchor': 'end', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'order' }));
+        for (let k = 0; k < most; k++) {
+            const inRange = frame.range && k >= frame.range[0] && k <= frame.range[1];
+            svg.appendChild(el('svg:rect', { 'data-key': `slot-${k}`, x: left + k * cell, y: top, width: cell - 4, height: 30, rx: 4,
+                fill: inRange ? 'color-mix(in srgb, var(--algo-frontier) 45%, var(--algo-paper))' : 'none', stroke: k < frame.order.length ? 'var(--algo-line)' : 'color-mix(in srgb, var(--algo-line) 40%, transparent)', 'stroke-width': 1.5,
+                ...(k < frame.order.length ? {} : { 'stroke-dasharray': '3 3' }) }));
+            svg.appendChild(el('svg:text', { 'data-key': `slot-index-${k}`, x: left + k * cell + (cell - 4) / 2, y: top + 44, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--bs-secondary-color)', text: String(k) }));
+        }
+        frame.order.forEach((id, k) => svg.appendChild(el('svg:text', { 'data-key': `place-${id}`, x: left + k * cell + (cell - 4) / 2, y: top + 20, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(id) })));
+        const labels = [];
+        for (const placed of indexLabels(frame.vars, (index) => left + index * cell + (cell - 4) / 2, width)) labels.push(...indexLabel(placed, top + 60 + placed.row * 24, top + 32, top + 50, marker));
+        const under = (node) => /^(pointer|border)-/.test(node.dataset.key);
+        for (const node of [...labels.filter(under), ...labels.filter((node) => !under(node))]) svg.appendChild(node);
+        // the trip's length so far, once it is closed
+        const length = frame.order.reduce((sum, p, k) => (k + 1 < frame.order.length || frame.closed ? sum + Math.hypot(points[p][0] - points[frame.order[(k + 1) % frame.order.length]][0], points[p][1] - points[frame.order[(k + 1) % frame.order.length]][1]) : sum), 0);
+        svg.appendChild(el('svg:text', { 'data-key': 'length', x: left + most * cell - 4, y: top - 8, 'text-anchor': 'end', 'font-size': 12, fill: 'var(--bs-secondary-color)', text: frame.order.length > 1 ? `${frame.closed ? 'Rundreise' : 'bisher'} ${decimal(length)}` : '' }));
+        svg.setAttribute('viewBox', `0 0 ${width} ${top + 60 + 2 * 24}`);
+        svg.dataset.natural = width;
     }
 
     // Binary search in a sorted array, as find_position on reference/listen:
@@ -3280,6 +3450,10 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             if (any((f) => f.fresh !== undefined || f.incoming !== undefined)) add('fill', 'var(--algo-frontier)', 'neu');
             if (any((f) => f.gone !== undefined)) add('fill', 'color-mix(in srgb, var(--algo-goal) 30%, var(--algo-paper))', 'wird entfernt');
             if (any((f) => f.visited)) { add('fill', 'var(--algo-frontier)', 'wird besucht'); add('fill', 'var(--algo-done)', 'schon besucht'); }
+        } else if (algo === 'tour') {
+            if (any((f) => f.next !== undefined)) add('fill', 'var(--algo-frontier)', 'der nächste');
+            add('fill', 'color-mix(in srgb, var(--algo-accent) 18%, var(--algo-paper))', 'schon in order');
+            if (any((f) => f.check)) { add('dashline', 'var(--algo-goal)', 'fiele weg'); add('dashline', 'var(--algo-frontier)', 'käme dazu'); }
         } else if (algo === 'hash') {
             const parts = [any((f) => f.fresh !== undefined) && 'neu', any((f) => f.compare !== undefined) && 'verglichen', any((f) => f.found !== undefined) && 'gefunden'].filter(Boolean);
             if (parts.length) add('fill', 'var(--algo-frontier)', parts.join(', '));
@@ -3326,6 +3500,12 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             const marker = `algo-arrow-${++widgetCount}`;
             svg.setAttribute('aria-label', 'Die Zellen des Arrays, die Queue ab head');
             draw = (frame) => { drawRing(svg, frame, marker); listSide(frame, 0); };
+        } else if (algo === 'tour') {
+            const points = widget.dataset.points.split(';').map((t) => t.trim().split(/\s+/).map(Number));
+            frames = traceTour(points, widget.dataset.mode || 'nearest');
+            const marker = `algo-arrow-${++widgetCount}`;
+            svg.setAttribute('aria-label', 'Die Orte in der Ebene mit der Rundreise, darunter die Reihenfolge order');
+            draw = (frame) => { drawTour(svg, frame, points, points.length, marker); listSide(frame, 0); };
         } else if (algo === 'bsearch') {
             frames = traceSearch(widget.dataset.values.split(',').map((s) => Number(s.trim())), parseOps(widget.dataset.ops));
             const marker = `algo-arrow-${++widgetCount}`;

@@ -337,6 +337,16 @@ only to look nice.
   out one by one, each flying to its new bucket (the token is the key
   itself, `key-k`). The calls show the `insert(s)` the loop makes. The fill
   note is left out while count and m do not belong together.
+- **Round trip** (`data-algo='tour'`, `data-mode='nearest'` or `'2opt'`,
+  `data-points='x y; x y; …'`): `nearest_neighbor` and `two_opt` from
+  `reference/graphen` on places in the plane (y up), the distance the
+  straight line. The nearest neighbour shows dashed lines from `last` to
+  every remaining place with their lengths; 2-opt starts from its order and
+  shows, for each `i`, `j`, the two ways a reversal takes out (dashed red)
+  and the two it puts in (dashed yellow), the sums with two decimals so
+  that they add up as written. Under the places the order as cells that
+  move when a piece is reversed. The `for` lines of 2-opt get no steps of
+  their own: `i` and `j` stand under the order and in the message.
 - **Heapsort** (`data-algo='heap' data-mode='sort'`, `data-values`):
   `heap_sort` and `sift_down` from `reference/heap`, a heap in which no child
   is greater than its parent. The heap's picture with the calls beside the

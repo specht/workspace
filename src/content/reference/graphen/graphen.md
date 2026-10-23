@@ -235,6 +235,8 @@ nearest_neighbor(distance):
     return order
 ```
 
+<div class='algo-stepper' data-title='Der nächste Nachbar' data-algo='tour' data-mode='nearest' data-points='3 1; 1 3; 8 6; 4 5; 0 0; 6 1; 6 4'></div>
+
 Das ist schnell, aber am Ende bleiben die weiten Wege übrig, und die Rundreise kreuzt sich oft selbst.
 
 **2-opt.** Man nimmt ein Stück der Reihenfolge und dreht es um. Wird die Rundreise dadurch kürzer, bleibt es dabei. Das probiert man für jedes Stück, und so lange, bis kein Umdrehen mehr hilft:
@@ -243,6 +245,25 @@ Das ist schnell, aber am Ende bleiben die weiten Wege übrig, und die Rundreise 
 [0, 3, 2, 1, 4]   das Stück 2, 1, 4 umdrehen
 [0, 3, 4, 1, 2]
 ```
+
+Ob das Umdrehen von `order[i … j]` die Rundreise kürzer macht, sagt am einfachsten ihre ganze Länge vorher und nachher. Ist jeder Weg hin so lang wie zurück, wie bei der Luftlinie, geht es schneller: Dann ändern sich nur zwei Wege, der in das Stück hinein und der heraus, und es genügen vier Entfernungen. So rechnet das Beispiel unten.
+
+```pseudocode
+two_opt(distance, order):
+    improved ← true
+    while improved:
+        improved ← false
+        for i from 1 to n - 2:
+            for j from i + 1 to n - 1:
+                if reversing order[i … j] makes the tour shorter:
+                    reverse order[i … j]
+                    improved ← true
+    return order
+```
+
+Hier beginnt 2-opt mit der Reihenfolge des nächsten Nachbarn von oben. Gestrichelt rot die beiden Wege, die wegfielen, gestrichelt gelb die beiden, die dazukämen:
+
+<div class='algo-stepper' data-title='2-opt' data-algo='tour' data-mode='2opt' data-points='3 1; 1 3; 8 6; 4 5; 0 0; 6 1; 6 4'></div>
 
 Eine Kreuzung verschwindet, wenn man das Stück zwischen ihren beiden Kanten umdreht. 2-opt findet nicht immer die beste Rundreise, aber meist eine, die nur wenig länger ist, in einem Bruchteil der Zeit. Für viele Orte kennt niemand ein schnelles Verfahren, das sicher die beste findet; Paketdienste und Routenplaner arbeiten deshalb mit Verfahren wie diesem.
 <!-- /part -->
