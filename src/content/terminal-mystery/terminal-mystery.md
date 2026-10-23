@@ -308,6 +308,12 @@ terminal-expect-no-text: fatal:
 
 <img class='full' src='git-show.webp' alt='Zwei Commits von Ingrid Hollerbach. Darunter der Commit »Die Diskette ist weg« vom 15. März, 8:31 Uhr, der die Datei NOTIZ.txt mit einer Zeile anlegt.'>
 
+Beides auf einmal zeigt `git log -p` (»patch«, die Änderung): jeden Commit mit dem, was er geändert hat, ohne dass du Hashs abschreiben musst. Mit `--author=…` bleiben auch hier nur die Commits einer Person. Die Ausgabe kommt wieder in `less`; dort suchst du mit <kbd>/</kbd>, einem Wort und <kbd>Enter</kbd>, mit <kbd>n</kbd> springst du zur nächsten Stelle.
+
+```bash
+git log -p --author=Hollerbach
+```
+
 Eine Commit-Nachricht schreibt, wer committet, und sie kann behaupten, was sie will. Was der Commit wirklich geändert hat, zeigt erst `git show`. Schau dir an, was in der Nacht passiert ist. In `zugaenge.log` steht heute nichts Verdächtiges mehr, aber Git vergisst nichts, was einmal committet war.
 
 _task(karte)
@@ -565,6 +571,7 @@ Die Adresse aus dem VPN, das Gerät dazu, die Befehle aus der Nacht, minutengena
 <tr><td><code>befehl &gt; datei</code>, <code>&gt;&gt; datei</code></td><td>Ausgabe in eine Datei schreiben; an sie anhängen</td></tr>
 <tr><td><code>git log --oneline --author=name</code></td><td>die Commits einer Person, jeder in einer Zeile</td></tr>
 <tr><td><code>git show hash</code></td><td>ein Commit mit allem, was er geändert hat</td></tr>
+<tr><td><code>git log -p --author=name</code></td><td>die Commits einer Person mit allem, was sie geändert haben</td></tr>
 <!-- feature: case_server -->
 <tr><td><code>ssh name@rechner</code>, <code>exit</code></td><td>ein Terminal auf einem anderen Rechner; zurück</td></tr>
 <tr><td><code>ssh -J name@a name@b</code></td><td>über den Rechner a zum Rechner b</td></tr>
