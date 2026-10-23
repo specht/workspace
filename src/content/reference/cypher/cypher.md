@@ -21,8 +21,9 @@ Cypher zum Nachschlagen, so wie in <a href='/neo4j-filmdatenbank'>Filmdatenbank 
 <!-- short: (m:Movie {title: '…'}) ist ein Knoten, -[:ACTOR]-> eine Beziehung; ein Muster beschreibt, was gefunden werden soll. -->
 Eine Abfrage beschreibt, wie das Gesuchte im Graphen aussieht, als Zeichnung aus Text:
 
-<table class='table table-sm reference-table'>
-<tr><th>Muster</th><th>Bedeutung</th></tr>
+<div class='scroll-x'><table class='table table-sm reference-table'>
+<thead><tr><th>Muster</th><th>Bedeutung</th></tr></thead>
+<tbody>
 <tr><td><code>(m)</code></td><td>ein Knoten, irgendeiner; <code>m</code> ist sein Name in dieser Abfrage</td></tr>
 <tr><td><code>(m:Movie)</code></td><td>ein Knoten mit dem Label <code>Movie</code></td></tr>
 <tr><td><code>(m:Movie {year: 1985})</code></td><td>mit einer Eigenschaft, die genau diesen Wert hat</td></tr>
@@ -31,7 +32,9 @@ Eine Abfrage beschreibt, wie das Gesuchte im Graphen aussieht, als Zeichnung aus
 <tr><td><code>(p)-[r]-&gt;(m)</code></td><td>eine Beziehung irgendeines Typs, mit dem Namen <code>r</code>; <code>type(r)</code> nennt ihren Typ</td></tr>
 <tr><td><code>(a)-[:ACTOR]-&gt;(m)&lt;-[:ACTOR]-(b)</code></td><td>zwei Personen, die im selben Film spielen</td></tr>
 <tr><td><code>(a)-[:ACTOR*..8]-(b)</code></td><td>ein Weg aus höchstens 8 Beziehungen, in beliebiger Richtung (ohne Pfeilspitze)</td></tr>
+</tbody>
 </table>
+</div>
 
 Labels schreibt man groß (`Movie`), Beziehungstypen ganz groß (`IN_GENRE`), Eigenschaften klein (`title`). Groß- und Kleinschreibung zählt: `:movie` findet nichts.
 <!-- /part -->
@@ -48,14 +51,17 @@ ORDER BY p.birth_year DESC, p.name
 LIMIT 10;
 ```
 
-<table class='table table-sm reference-table'>
-<tr><th>Teil</th><th>Was er tut</th><th>In SQL</th></tr>
+<div class='scroll-x'><table class='table table-sm reference-table'>
+<thead><tr><th>Teil</th><th>Was er tut</th><th>In SQL</th></tr></thead>
+<tbody>
 <tr><td><code>MATCH muster</code></td><td>sucht alle Stellen im Graphen, auf die das Muster passt</td><td><code>FROM</code> und <code>JOIN</code></td></tr>
 <tr><td><code>WHERE bedingung</code></td><td>behält nur die, für die sie gilt: <code>=</code>, <code>&lt;&gt;</code>, <code>&lt;</code>, <code>AND</code>, <code>OR</code>, <code>NOT</code>, <code>IS NULL</code></td><td><code>WHERE</code></td></tr>
 <tr><td><code>RETURN a, b.name AS name</code></td><td>was ausgegeben wird; <code>DISTINCT</code> ohne Wiederholungen</td><td><code>SELECT</code></td></tr>
 <tr><td><code>ORDER BY x DESC, y</code></td><td>sortiert, <code>DESC</code> absteigend; bei gleichem <code>x</code> nach <code>y</code></td><td><code>ORDER BY</code></td></tr>
 <tr><td><code>LIMIT 10</code>, <code>SKIP 10</code></td><td>nur die ersten 10, die ersten 10 überspringen</td><td><code>LIMIT</code>, <code>OFFSET</code></td></tr>
+</tbody>
 </table>
+</div>
 
 Texte stehen in einfachen oder doppelten Anführungszeichen. `WHERE m.title CONTAINS 'Future'`, `STARTS WITH` und `ENDS WITH` suchen Teile von Texten, `=~ '(?i).*zukunft.*'` mit einem regulären Ausdruck, ohne Groß- und Kleinschreibung. Im Neo4j Browser zeigt `RETURN m` den Graphen, `RETURN m.title` eine Tabelle.
 <!-- /part -->
@@ -108,15 +114,21 @@ Ein Weg mit offener Länge (`*`) ohne Obergrenze kann in einem großen Graphen s
 
 <!-- part: cypher-aendern -->
 <!-- short: CREATE legt an, MERGE nur, wenn es das noch nicht gibt, SET ändert, DELETE löscht; DETACH DELETE mit allen Beziehungen. -->
-<table class='table table-sm reference-table'>
-<tr><th>Abfrage</th><th>Was sie tut</th></tr>
-<tr><td><code>CREATE (:Genre {id: 99, name: 'Heimatfilm'})</code></td><td>legt einen Knoten an</td></tr>
-<tr><td><code>MATCH (m:Movie {id: 233}), (g:Genre {id: 99})</code><br><code>CREATE (m)-[:IN_GENRE]-&gt;(g)</code></td><td>legt eine Beziehung zwischen zwei gefundenen Knoten an</td></tr>
-<tr><td><code>MERGE (g:Genre {name: 'Heimatfilm'})</code></td><td>findet den Knoten, oder legt ihn an, wenn es ihn noch nicht gibt</td></tr>
-<tr><td><code>MATCH (m:Movie {id: 233}) SET m.runtime = 116</code></td><td>ändert eine Eigenschaft oder legt sie an</td></tr>
-<tr><td><code>MATCH (g:Genre {id: 99}) DELETE g</code></td><td>löscht einen Knoten, aber nur, wenn keine Beziehung mehr an ihm hängt</td></tr>
-<tr><td><code>MATCH (g:Genre {id: 99}) DETACH DELETE g</code></td><td>löscht ihn mit allen seinen Beziehungen</td></tr>
-</table>
+```cypher
+// einen Knoten anlegen
+CREATE (:Genre {id: 99, name: 'Heimatfilm'});
+// eine Beziehung zwischen zwei gefundenen Knoten anlegen
+MATCH (m:Movie {id: 233}), (g:Genre {id: 99})
+CREATE (m)-[:IN_GENRE]->(g);
+// den Knoten finden, oder anlegen, wenn es ihn noch nicht gibt
+MERGE (g:Genre {name: 'Heimatfilm'});
+// eine Eigenschaft ändern oder anlegen
+MATCH (m:Movie {id: 233}) SET m.runtime = 116;
+// einen Knoten löschen, aber nur, wenn keine Beziehung mehr an ihm hängt
+MATCH (g:Genre {id: 99}) DELETE g;
+// ihn mit allen seinen Beziehungen löschen
+MATCH (g:Genre {id: 99}) DETACH DELETE g;
+```
 
 <div class='hint warning'>
 <code>MATCH (n) DETACH DELETE n</code> löscht den ganzen Graphen, ohne Rückfrage. Die Filmdaten holst du danach nur zurück, indem du sie <a href='/neo4j-filmdatenbank#die-filmdaten-laden'>neu lädst</a>.
@@ -141,14 +153,17 @@ Ein **Schlüssel** verlangt, dass jeder Knoten mit dem Label die Eigenschaft hat
 
 <!-- part: cypher-sql -->
 <!-- short: Dieselben Fragen in SQL und in Cypher nebeneinander. -->
-<table class='table table-sm reference-table'>
-<tr><th>Frage</th><th>SQL</th><th>Cypher</th></tr>
+<div class='scroll-x'><table class='table table-sm reference-table'>
+<thead><tr><th>Frage</th><th>SQL</th><th>Cypher</th></tr></thead>
+<tbody>
 <tr><td>ein Film</td><td><code>SELECT * FROM movie WHERE title = '…'</code></td><td><code>MATCH (m:Movie {title: '…'}) RETURN m</code></td></tr>
 <tr><td>die Genres eines Films</td><td><code>movie JOIN movie_genre JOIN genre</code></td><td><code>(m:Movie)-[:IN_GENRE]-&gt;(g:Genre)</code></td></tr>
 <tr><td>Filme je Genre</td><td><code>GROUP BY genre.name</code></td><td><code>RETURN g.name, count(m)</code></td></tr>
 <tr><td>nur große Gruppen</td><td><code>HAVING count(*) &gt;= 3</code></td><td><code>WITH …, count(m) AS n WHERE n &gt;= 3</code></td></tr>
 <tr><td>ein Weg über viele Schritte</td><td>ein <code>JOIN</code> je Schritt, oder rekursiv</td><td><code>shortestPath((a)-[*..8]-(b))</code></td></tr>
+</tbody>
 </table>
+</div>
 <!-- /part -->
 
 ## Zum Nachschlagen

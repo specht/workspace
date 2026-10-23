@@ -27,29 +27,34 @@ Ein **Vektor** sind zwei oder drei Zahlen. Dieselben Zahlen können verschiedene
 
 Im Raum zeigt x nach rechts, y nach oben und z zum Betrachter; wer geradeaus in die Szene schaut, schaut in Richtung −z. Auf dem Bildschirm und in der Karte des Raycasters zeigt y dagegen nach unten, wie die Pixelzeilen. `gl_FragCoord` in einem Shader zählt von unten links.
 
-<table class='table table-sm reference-table'>
-<tr><th></th><th>Raytracing (C)</th><th>raylib (C)</th><th>GLSL</th></tr>
-<tr><td>Typ</td><td><code>vec</code>, eigenes <code>struct</code></td><td><code>Vector2</code>, <code>Vector3</code></td><td><code>vec2</code>, <code>vec3</code>, <code>vec4</code></td></tr>
-<tr><td>ein Vektor</td><td><code>(vec){1, 2, 3}</code></td><td><code>(Vector3){1, 2, 3}</code></td><td><code>vec3(1.0, 2.0, 3.0)</code></td></tr>
-<tr><td>eine Komponente</td><td><code>v.x</code></td><td><code>v.x</code></td><td><code>v.x</code>, für Farben auch <code>v.r</code>; <code>v.xy</code> sind zwei auf einmal</td></tr>
-<tr><td>rechnen</td><td>mit Funktionen: <code>add(a, b)</code></td><td>mit Funktionen aus <code>raymath.h</code>: <code>Vector3Add(a, b)</code></td><td>mit Zeichen: <code>a + b</code></td></tr>
+<div class='scroll-x'><table class='table table-sm reference-table reference-table-wide'>
+<thead><tr><th></th><th>Raytracing (C)</th><th>raylib (C)</th><th>GLSL</th></tr></thead>
+<tbody>
+<tr><th>Typ</th><td><code>vec</code>, eigenes <code>struct</code></td><td><code>Vector2</code>, <code>Vector3</code></td><td><code>vec2</code>, <code>vec3</code>, <code>vec4</code></td></tr>
+<tr><th>ein Vektor</th><td><code>(vec){1, 2, 3}</code></td><td><code>(Vector3){1, 2, 3}</code></td><td><code>vec3(1.0, 2.0, 3.0)</code></td></tr>
+<tr><th>eine Komponente</th><td><code>v.x</code></td><td><code>v.x</code></td><td><code>v.x</code>, für Farben auch <code>v.r</code>; <code>v.xy</code> sind zwei auf einmal</td></tr>
+<tr><th>rechnen</th><td>mit Funktionen: <code>add(a, b)</code></td><td>mit Funktionen aus <code>raymath.h</code>: <code>Vector3Add(a, b)</code></td><td>mit Zeichen: <code>a + b</code></td></tr>
+</tbody>
 </table>
+</div>
 <!-- /part -->
 
 ## Rechnen
 
 <!-- part: rechnen -->
 <!-- short: a + b verschiebt, b − a zeigt von a nach b, s · a streckt; Länge mit Pythagoras, normalize macht die Länge 1. -->
-<div class='scroll-x'><table class='table table-sm reference-table'>
-<tr><th>Rechnung</th><th>Bedeutung</th><th>Raytracing</th><th>raylib</th><th>GLSL</th></tr>
-<tr><td><code>a + b</code></td><td>Punkt plus Richtung: der Punkt, verschoben</td><td><code>add</code></td><td><code>Vector3Add</code></td><td><code>a + b</code></td></tr>
-<tr><td><code>b − a</code></td><td>Punkt minus Punkt: die Richtung von <code>a</code> nach <code>b</code></td><td><code>sub(b, a)</code></td><td><code>Vector3Subtract(b, a)</code></td><td><code>b - a</code></td></tr>
-<tr><td><code>s · a</code></td><td>streckt die Richtung auf das <code>s</code>-fache, negativ dreht sie um</td><td><code>scale</code></td><td><code>Vector3Scale</code></td><td><code>s * a</code></td></tr>
-<tr><td>jede Komponente mal die andere</td><td>Farben mischen: rotes Licht auf einer weißen Wand</td><td><code>mul</code></td><td><code>Vector3Multiply</code></td><td><code>a * b</code></td></tr>
-<tr><td><code>|a|</code></td><td>Länge</td><td><code>length</code></td><td><code>Vector3Length</code></td><td><code>length(a)</code></td></tr>
-<tr><td><code>a / |a|</code></td><td>dieselbe Richtung mit Länge 1</td><td><code>normalize</code></td><td><code>Vector3Normalize</code></td><td><code>normalize(a)</code></td></tr>
-<tr><td><code>|b − a|</code></td><td>Abstand zweier Punkte</td><td><code>length(sub(b, a))</code></td><td><code>Vector3Distance</code></td><td><code>distance(a, b)</code></td></tr>
-<tr><td><code>a + t · (b − a)</code></td><td>überblenden: <code>a</code> bei <code>t = 0</code>, <code>b</code> bei <code>t = 1</code>, die Mitte bei 0,5</td><td><code>mix</code></td><td><code>Vector3Lerp</code></td><td><code>mix(a, b, t)</code></td></tr>
+<div class='scroll-x'><table class='table table-sm reference-table reference-table-wide'>
+<thead><tr><th>Rechnung</th><th>Bedeutung</th><th>Raytracing</th><th>raylib</th><th>GLSL</th></tr></thead>
+<tbody>
+<tr><th><code>a + b</code></th><td>Punkt plus Richtung: der Punkt, verschoben</td><td><code>add</code></td><td><code>Vector3Add</code></td><td><code>a + b</code></td></tr>
+<tr><th><code>b − a</code></th><td>Punkt minus Punkt: die Richtung von <code>a</code> nach <code>b</code></td><td><code>sub(b, a)</code></td><td><code>Vector3Subtract(b, a)</code></td><td><code>b - a</code></td></tr>
+<tr><th><code>s · a</code></th><td>streckt die Richtung auf das <code>s</code>-fache, negativ dreht sie um</td><td><code>scale</code></td><td><code>Vector3Scale</code></td><td><code>s * a</code></td></tr>
+<tr><th>jede Komponente mal die andere</th><td>Farben mischen: rotes Licht auf einer weißen Wand</td><td><code>mul</code></td><td><code>Vector3Multiply</code></td><td><code>a * b</code></td></tr>
+<tr><th><code>|a|</code></th><td>Länge</td><td><code>length</code></td><td><code>Vector3Length</code></td><td><code>length(a)</code></td></tr>
+<tr><th><code>a / |a|</code></th><td>dieselbe Richtung mit Länge 1</td><td><code>normalize</code></td><td><code>Vector3Normalize</code></td><td><code>normalize(a)</code></td></tr>
+<tr><th><code>|b − a|</code></th><td>Abstand zweier Punkte</td><td><code>length(sub(b, a))</code></td><td><code>Vector3Distance</code></td><td><code>distance(a, b)</code></td></tr>
+<tr><th><code>a + t · (b − a)</code></th><td>überblenden: <code>a</code> bei <code>t = 0</code>, <code>b</code> bei <code>t = 1</code>, die Mitte bei 0,5</td><td><code>mix</code></td><td><code>Vector3Lerp</code></td><td><code>mix(a, b, t)</code></td></tr>
+</tbody>
 </table>
 </div>
 
@@ -70,13 +75,16 @@ $$a \cdot b = a\_x b\_x + a\_y b\_y + a\_z b\_z = |a|\ |b| \cos \theta$$
 
 \\(\theta\\) ist der Winkel zwischen den beiden. Für zwei Einheitsvektoren bleibt nur \\(\cos \theta\\), und daran sieht man, wie sie zueinander stehen:
 
-<table class='table table-sm reference-table'>
-<tr><th><code>dot(a, b)</code></th><th>Winkel</th><th>heißt</th></tr>
+<div class='scroll-x'><table class='table table-sm reference-table'>
+<thead><tr><th><code>dot(a, b)</code></th><th>Winkel</th><th>heißt</th></tr></thead>
+<tbody>
 <tr><td>1</td><td>0°</td><td>dieselbe Richtung</td></tr>
 <tr><td>zwischen 0 und 1</td><td>unter 90°</td><td>ungefähr in dieselbe Richtung</td></tr>
 <tr><td>0</td><td>90°</td><td>senkrecht zueinander</td></tr>
 <tr><td>negativ</td><td>über 90°</td><td>eher entgegengesetzt; −1 genau entgegengesetzt</td></tr>
+</tbody>
 </table>
+</div>
 
 Ein Beispiel ohne Einheitsvektoren: \\((2, 1, -2) \cdot (1, 2, 2) = 2 + 2 - 4 = 0\\), die beiden stehen also senkrecht aufeinander. Wofür man es braucht:
 
@@ -136,13 +144,16 @@ Im Raycaster setzt sich die Richtung jedes Strahls aus zwei Vektoren zusammen, d
 
 <!-- part: drehen -->
 <!-- short: Die Richtung zum Winkel α ist (cos α, sin α), der Winkel einer Richtung atan2(y, x); drehen um α mit cos und sin. -->
-<table class='table table-sm reference-table'>
-<tr><th>Was</th><th>Wie</th></tr>
+<div class='scroll-x'><table class='table table-sm reference-table'>
+<thead><tr><th>Was</th><th>Wie</th></tr></thead>
+<tbody>
 <tr><td>die Richtung zum Winkel <code>α</code>, Länge 1</td><td><code>(cos(α), sin(α))</code></td></tr>
 <tr><td>der Winkel einer Richtung</td><td><code>atan2(y, x)</code>, von −π bis π; die Reihenfolge ist y, x</td></tr>
 <tr><td><code>(x, y)</code> um <code>α</code> gedreht</td><td><code>(x · cos(α) − y · sin(α), x · sin(α) + y · cos(α))</code>, in raylib <code>Vector2Rotate(v, α)</code></td></tr>
 <tr><td>um 90° gedreht</td><td><code>(−y, x)</code>, in die andere Richtung <code>(y, −x)</code></td></tr>
+</tbody>
 </table>
+</div>
 
 Winkel stehen im Bogenmaß: Eine ganze Umdrehung ist \\(2\pi\\), 90° sind \\(\pi / 2\\), und aus Grad wird Bogenmaß mal \\(\pi / 180\\). Ein wachsender Winkel dreht gegen den Uhrzeigersinn, wenn y nach oben zeigt, und im Uhrzeigersinn, wenn y wie auf dem Bildschirm nach unten zeigt.
 <!-- /part -->

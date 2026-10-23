@@ -54,8 +54,9 @@ _person(ritchie)
 <!-- short: int für ganze Zahlen, double für Kommazahlen, uint8_t für ein Byte, bool für wahr oder falsch. -->
 ### Typen
 
-<table class='table table-sm reference-table'>
-<tr><th>Typ</th><th>Was darin steht</th><th>Beispiel</th></tr>
+<div class='scroll-x'><table class='table table-sm reference-table'>
+<thead><tr><th>Typ</th><th>Was darin steht</th><th>Beispiel</th></tr></thead>
+<tbody>
 <tr><td><code>int</code></td><td>ganze Zahl, im Workspace 32 Bit: etwa ±2,1 Milliarden</td><td><code>int x = 160;</code></td></tr>
 <tr><td><code>long</code></td><td>ganze Zahl, mindestens 32 Bit; Dateigrößen</td><td><code>long pos = 0;</code></td></tr>
 <tr><td><code>double</code></td><td>Kommazahl mit etwa 16 Stellen</td><td><code>double t = 0.5;</code></td></tr>
@@ -64,7 +65,9 @@ _person(ritchie)
 <tr><td><code>uint16_t</code>, <code>uint32_t</code></td><td>16 und 32 Bit ohne Vorzeichen; <code>int16_t</code>, <code>int32_t</code> mit</td><td><code>uint32_t color = 0xff8800;</code></td></tr>
 <tr><td><code>bool</code></td><td><code>true</code> oder <code>false</code></td><td><code>bool hit = false;</code></td></tr>
 <tr><td><code>char</code></td><td>ein Zeichen, eigentlich ein Byte; Text ist ein Array davon</td><td><code>char *name = "Kugel";</code></td></tr>
+</tbody>
 </table>
+</div>
 
 Eine Variable, die in einer Funktion steht, gilt nur bis zum Ende ihres Blocks, und ihr Wert ist unbestimmt, bis du ihr einen gibst. Eine Variable außerhalb aller Funktionen gilt überall in der Datei und beginnt bei 0.
 <!-- /part -->
@@ -73,8 +76,9 @@ Eine Variable, die in einer Funktion steht, gilt nur bis zum Ende ihres Blocks, 
 <!-- short: Ganze Zahlen teilen ganzzahlig (7 / 2 ist 3); ein Cast wie (double) oder (int) wandelt um; % ist der Rest. -->
 ### Rechnen
 
-<table class='table table-sm reference-table'>
-<tr><th>Ausdruck</th><th>Ergebnis</th><th>Warum</th></tr>
+<div class='scroll-x'><table class='table table-sm reference-table'>
+<thead><tr><th>Ausdruck</th><th>Ergebnis</th><th>Warum</th></tr></thead>
+<tbody>
 <tr><td><code>7 / 2</code></td><td><code>3</code></td><td>zwei ganze Zahlen: ganzzahlige Division, der Rest fällt weg</td></tr>
 <tr><td><code>7 / 2.0</code></td><td><code>3.5</code></td><td>sobald eine Kommazahl beteiligt ist, wird mit Kommazahlen gerechnet</td></tr>
 <tr><td><code>(double)x / W</code></td><td>zwischen 0 und 1</td><td>der Cast macht aus <code>x</code> vorher eine Kommazahl</td></tr>
@@ -83,7 +87,9 @@ Eine Variable, die in einer Funktion steht, gilt nur bis zum Ende ihres Blocks, 
 <tr><td><code>-7 % 3</code></td><td><code>-1</code></td><td>der Rest hat das Vorzeichen der linken Zahl; für einen Index, der nach vorn umläuft: <code>((i % n) + n) % n</code></td></tr>
 <tr><td><code>x += 5</code>, <code>x++</code></td><td></td><td>kurz für <code>x = x + 5</code> und <code>x = x + 1</code></td></tr>
 <tr><td><code>a &gt; b ? a : b</code></td><td>die größere</td><td>Bedingung, dann der Wert für wahr, dann der für falsch</td></tr>
+</tbody>
 </table>
+</div>
 
 Wird ein Wert in einen kleineren Typ geschrieben, geht der Rest verloren: `uint8_t c = 300;` ergibt 44, denn nur die unteren 8 Bit passen hinein (300 − 256). Wo ein Farbwert über 255 kommen kann, begrenze ihn vorher, etwa mit `v > 255 ? 255 : v`.
 <!-- /part -->
@@ -92,8 +98,9 @@ Wird ein Wert in einen kleineren Typ geschrieben, geht der Rest verloren: `uint8
 <!-- short: math.h: sqrt, fabs, floor, fmod, sin, cos und atan2 im Bogenmaß, pow, fmin, fmax, INFINITY. -->
 ### `math.h`
 
-<table class='table table-sm reference-table'>
-<tr><th>Funktion</th><th>Was sie liefert</th></tr>
+<div class='scroll-x'><table class='table table-sm reference-table'>
+<thead><tr><th>Funktion</th><th>Was sie liefert</th></tr></thead>
+<tbody>
 <tr><td><code>sqrt(x)</code></td><td>die Wurzel</td></tr>
 <tr><td><code>fabs(x)</code></td><td>den Betrag einer Kommazahl; <code>abs(n)</code> aus <code>stdlib.h</code> für ganze Zahlen</td></tr>
 <tr><td><code>floor(x)</code>, <code>ceil(x)</code>, <code>round(x)</code></td><td>ab-, auf- und gerundet, als Kommazahl</td></tr>
@@ -103,7 +110,9 @@ Wird ein Wert in einen kleineren Typ geschrieben, geht der Rest verloren: `uint8
 <tr><td><code>pow(x, y)</code></td><td>x hoch y</td></tr>
 <tr><td><code>fmin(a, b)</code>, <code>fmax(a, b)</code></td><td>die kleinere, die größere Kommazahl</td></tr>
 <tr><td><code>INFINITY</code></td><td>unendlich: größer als jede Zahl, gut als »noch nichts getroffen«</td></tr>
+</tbody>
 </table>
+</div>
 
 π steht nicht in C selbst: `#define PI 3.14159265358979` oben in die Datei; raylib bringt `PI` schon mit.
 <!-- /part -->
@@ -183,15 +192,18 @@ Ein `struct` fasst Werte unter einem Namen zusammen, mit `typedef` bekommt er ei
 <!-- short: printf mit %d, %ld, %f, %.2f, %x, %02x, %s, %c; Text ist ein Array von char mit einer 0 am Ende. -->
 ### Text ausgeben
 
-<table class='table table-sm reference-table'>
-<tr><th>Platzhalter</th><th>für</th><th>Beispiel und Ausgabe</th></tr>
+<div class='scroll-x'><table class='table table-sm reference-table'>
+<thead><tr><th>Platzhalter</th><th>für</th><th>Beispiel und Ausgabe</th></tr></thead>
+<tbody>
 <tr><td><code>%d</code></td><td><code>int</code></td><td><code>printf("%d x %d\n", w, h);</code> → <code>320 x 180</code></td></tr>
 <tr><td><code>%ld</code></td><td><code>long</code></td><td><code>printf("%ld Bytes\n", size);</code></td></tr>
 <tr><td><code>%f</code>, <code>%.2f</code></td><td><code>double</code>, mit 2 Nachkommastellen</td><td><code>printf("%.2f\n", 3.14159);</code> → <code>3.14</code></td></tr>
 <tr><td><code>%x</code>, <code>%02x</code>, <code>%08x</code></td><td>hexadezimal, mit führenden Nullen auf 2 oder 8 Stellen</td><td><code>printf("%02x\n", 10);</code> → <code>0a</code></td></tr>
 <tr><td><code>%s</code></td><td>Text</td><td><code>printf("Kann %s nicht öffnen.\n", path);</code></td></tr>
 <tr><td><code>%c</code></td><td>ein Zeichen</td><td><code>printf("%c\n", 'G');</code></td></tr>
+</tbody>
 </table>
+</div>
 
 `\n` beendet die Zeile. Passt ein Platzhalter nicht zum Typ, druckt `printf` Unsinn; der Compiler warnt davor. In PixelRAM erscheint die Ausgabe in der Konsole der Seite (Handbuch [PixelRAM](/reference/pixelram#uebersetzen)).
 
@@ -202,8 +214,9 @@ Text ist ein Array von `char`, dessen letztes Zeichen eine 0 ist: `"GIF"` belegt
 
 <!-- part: c-bits -->
 <!-- short: & maskiert, | setzt zusammen, << und >> schieben; zwei Bytes im Little Endian: low | (high << 8). -->
-<table class='table table-sm reference-table'>
-<tr><th>Ausdruck</th><th>Was er tut</th><th>Beispiel</th></tr>
+<div class='scroll-x'><table class='table table-sm reference-table'>
+<thead><tr><th>Ausdruck</th><th>Was er tut</th><th>Beispiel</th></tr></thead>
+<tbody>
 <tr><td><code>a &amp; b</code></td><td>Und, Bit für Bit: lässt nur die Bits stehen, die in beiden gesetzt sind</td><td><code>0xb6 &amp; 0x0f</code> → <code>0x06</code>, die unteren vier Bits</td></tr>
 <tr><td><code>a | b</code></td><td>Oder, Bit für Bit: setzt zusammen</td><td><code>low | (high &lt;&lt; 8)</code></td></tr>
 <tr><td><code>a ^ b</code></td><td>exklusives Oder: kippt die Bits, die in <code>b</code> gesetzt sind</td><td><code>x ^ 1</code> wechselt zwischen gerade und ungerade</td></tr>
@@ -212,7 +225,9 @@ Text ist ein Array von `char`, dessen letztes Zeichen eine 0 ist: `"GIF"` belegt
 <tr><td><code>a &gt;&gt; n</code></td><td>schiebt nach rechts: ganzzahlig durch 2<sup>n</sup></td><td><code>0xb6 &gt;&gt; 4</code> → <code>0x0b</code>, die oberen vier Bits</td></tr>
 <tr><td><code>(a &gt;&gt; n) &amp; 1</code></td><td>das Bit Nummer <code>n</code>, von rechts ab 0 gezählt</td><td><code>(0xb6 &gt;&gt; 7) &amp; 1</code> → <code>1</code></td></tr>
 <tr><td><code>(1 &lt;&lt; n) - 1</code></td><td>eine Maske mit den unteren <code>n</code> Bits</td><td><code>(1 &lt;&lt; 5) - 1</code> → <code>0x1f</code></td></tr>
+</tbody>
 </table>
+</div>
 
 `0x` schreibt eine Zahl hexadezimal: `0xff` ist 255, jede Ziffer steht für vier Bits. Eine Zahl aus mehreren Bytes steht in GIF im **Little Endian** (das niedrige Byte zuerst, `low | (high << 8)`), in JPEG im **Big Endian** (das hohe zuerst, `(high << 8) | low`). Klammern lohnen sich: `<<` bindet schwächer als `+`, `&` sogar schwächer als `==`. `1 << n + 1` heißt `1 << (n + 1)`, und `x & 1 == 0` heißt `x & (1 == 0)`.
 <!-- /part -->
@@ -271,16 +286,13 @@ fclose(f);
 <!-- short: Die erste Fehlermeldung zuerst lesen; die häufigsten Meldungen des Compilers und was sie bedeuten. -->
 Der Compiler nennt Datei, Zeile und Spalte: `main.c:12:5: error: …`. Lies die **erste** Meldung zuerst; die folgenden sind oft nur Folgen von ihr. Warnungen (`warning:`) verhindern das Übersetzen nicht, zeigen aber fast immer einen echten Fehler.
 
-<table class='table table-sm reference-table'>
-<tr><th>Meldung</th><th>Was meistens los ist</th></tr>
-<tr><td><code>expected ';' at end of declaration</code>, <code>expected ';' after expression</code></td><td>an der genannten Stelle fehlt ein Semikolon; zeigt sie auf den Anfang einer Zeile, fehlt es am Ende der Zeile davor</td></tr>
-<tr><td><code>use of undeclared identifier 'x'</code></td><td>Tippfehler im Namen, oder <code>x</code> ist in einem anderen Block deklariert</td></tr>
-<tr><td><code>call to undeclared library function 'sqrt'</code>, <code>call to undeclared function</code></td><td>das <code>#include</code> fehlt, oder die Funktion steht weiter unten als ihr Aufruf</td></tr>
-<tr><td><code>expected '}'</code>, <code>expected expression</code></td><td>eine Klammer fehlt oder ist zu viel; von der genannten Zeile aus nach oben suchen</td></tr>
-<tr><td><code>format specifies type 'int' but the argument has type 'double'</code></td><td>der Platzhalter in <code>printf</code> passt nicht: <code>%f</code> statt <code>%d</code></td></tr>
-<tr><td><code>unused variable</code></td><td>eine Warnung: die Variable wird nie benutzt, oft ein Tippfehler an der Stelle, an der sie gebraucht wird</td></tr>
-<tr><td><code>Segmentation fault</code> im Terminal, <code>memory access out of bounds</code> in der Konsole einer PixelRAM-Seite</td><td>kein Compilerfehler: ein Index außerhalb eines Arrays, ein <code>NULL</code>-Zeiger oder Speicher nach <code>free</code>. In einer Webseite stürzt so ein Fehler oft gar nicht ab, sondern rechnet still mit falschen Werten weiter.</td></tr>
-</table>
+- `expected ';' at end of declaration`, `expected ';' after expression` – An der genannten Stelle fehlt ein Semikolon. Zeigt sie auf den Anfang einer Zeile, fehlt es am Ende der Zeile davor.
+- `use of undeclared identifier 'x'` – Ein Tippfehler im Namen, oder `x` ist in einem anderen Block deklariert.
+- `call to undeclared library function 'sqrt'`, `call to undeclared function` – Das `#include` fehlt, oder die Funktion steht weiter unten als ihr Aufruf.
+- `expected '}'`, `expected expression` – Eine Klammer fehlt oder ist zu viel. Such von der genannten Zeile aus nach oben.
+- `format specifies type 'int' but the argument has type 'double'` – Der Platzhalter in `printf` passt nicht zum Wert, hier `%f` statt `%d`.
+- `unused variable` – Eine Warnung: Die Variable wird nie benutzt, oft wegen eines Tippfehlers an der Stelle, an der sie gebraucht wird.
+- `Segmentation fault` im Terminal, `memory access out of bounds` in der Konsole einer PixelRAM-Seite – Kein Fehler des Compilers, sondern des laufenden Programms: ein Index außerhalb eines Arrays, ein `NULL`-Zeiger oder Speicher nach `free`. In einer Webseite stürzt so ein Fehler oft gar nicht ab, sondern rechnet still mit falschen Werten weiter.
 
 Rechnet das Programm falsch, ohne abzustürzen, hilft ein `printf` an der verdächtigen Stelle mehr als langes Hinsehen: Gib die Werte aus, die du dort erwartest, und vergleiche.
 <!-- /part -->
