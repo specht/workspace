@@ -159,11 +159,19 @@ class StageCodeTest < Minitest::Test
     def test_examples_in_included_handbuch_parts_are_no_steps
         block = "```html\n<p>1</p>\n<p>2</p>\n<p>3</p>\n<p>4</p>\n<p>5</p>\n```\n\n"
         md = "\n<div class='reference-include-begin'></div>\n\n" + block + recipe('index.html <- previous-code') +
-             "<img src='a.webp' alt=''>\n\n<div class='reference-include-end' data-part='html#tags'></div>\n\n" +
+             "<img src='a.webp' alt=''>\n\n<div class='reference-include-end' data-part='html#tags'></div>\n"
+        _, points = StageCode.mark(md, @dir)
+        assert_empty points, 'the example in the part gives no button'
+    end
+
+    def test_previous_code_skips_the_blocks_of_included_parts
+        own = "```html\n<h1>eigene</h1>\n<p>1</p>\n<p>2</p>\n<p>3</p>\n<p>4</p>\n```\n\n"
+        part = "```html\n<h1>aus dem Handbuch</h1>\n<p>1</p>\n<p>2</p>\n<p>3</p>\n<p>4</p>\n```\n\n"
+        md = own + "\n<div class='reference-include-begin'></div>\n\n" + part +
+             "<div class='reference-include-end' data-part='html#tags'></div>\n\n" +
              recipe('seite/index.html <- previous-code') + "<img src='b.webp' alt=''>\n"
         _, points = StageCode.mark(md, @dir)
-        assert_equal ['seite/index.html'], points.map { |f| f.first.target },
-                     'the example in the part gives no button; the page itself may still write that block'
+        assert_includes points.first.first.text, 'eigene', 'as the generator, which reads the page without its included parts'
     end
 
     def test_short_programs_are_no_steps

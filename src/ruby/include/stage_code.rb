@@ -94,7 +94,9 @@ module StageCode
             stripped = line.strip
             if fence
                 if stripped.start_with?('```')
-                    blocks << [fence[0], fence[1].reject { |l| l =~ /\A~( |$)/ }.join]
+                    # the generator reads the page's own file, without the
+                    # Handbuch parts it includes: their blocks are not code sources
+                    blocks << [fence[0], fence[1].reject { |l| l =~ /\A~( |$)/ }.join] unless included
                     fence = nil
                 else
                     fence[1] << line

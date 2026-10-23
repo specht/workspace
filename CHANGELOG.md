@@ -21,6 +21,9 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Fallserver: Die Alarmanlage startete nach einem Neustart des Containers immer wieder neu
+  (`mkfifo: … File exists`). Mit `CASE_SERVER = true` nach dem Update
+  `./config.rb build case_museum case_alarm` und `./config.rb up -d case_museum case_alarm`.
 - Je Sitzung speichert der Workspace jetzt den Tag der Anmeldung, den Tag der letzten Nutzung
   und eine grobe Angabe des Geräts aus dem User-Agent (»Firefox auf Windows«), nicht den
   User-Agent selbst und keine IP-Adresse; das Profil zeigt damit, wo man angemeldet ist, und
