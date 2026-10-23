@@ -9,12 +9,17 @@
 # A block that is meant to differ, a starting point the student changes or
 # an example that has nothing to do with the recipe after it, says so on
 # the line before its fence: <!-- page-code: own -->
+#
+# A step marker for teachers (<!-- stage: stufen/03.c as main.c -->,
+# StageCode) counts like a recipe that writes that file.
 module PageCode
     LANGUAGES = {
         '.rb' => %w[ruby], '.py' => %w[python], '.html' => %w[html css js javascript], '.js' => %w[js javascript],
         '.c' => %w[c], '.css' => %w[css], '.yaml' => %w[yaml], '.yml' => %w[yaml], '.tex' => %w[tex latex],
         '.fs' => %w[glsl], '.vs' => %w[glsl], '.md' => %w[markdown md], '.svelte' => %w[svelte html css js javascript],
+        '.frag' => %w[glsl], '.lua' => %w[lua], '.h' => %w[c],
     }.freeze
+    STAGE = /^<!--\s*stage:\s*(\S+)/
     FENCE = /^```([A-Za-z0-9]*)(?:_[a-z]+)*[ \t]*$/
     ELISION = /\A\s*(?:#|\/\/|<!--|--|%)?\s*(?:…|\.\.\.)\s*(?:-->)?\s*\z/
 
@@ -41,6 +46,12 @@ module PageCode
                     blocks = []
                     written = []
                 end
+            elsif (m = line.match(STAGE))
+                source = File.join(dir, m[1])
+                if LANGUAGES[File.extname(m[1])] && File.exist?(source)
+                    mismatches.concat(unmatched(page_path, blocks, [[m[1], File.read(source)]]))
+                end
+                blocks = []
             elsif line.start_with?('<!-- tutorial-screenshot')
                 in_recipe = !line.include?('-->')
                 blocks = [] unless in_recipe

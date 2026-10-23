@@ -171,6 +171,8 @@ crop-element: #canvas
 -->
 <img class='full' src='patches.webp' alt='Diagonale Bänder aus bunten quadratischen Farbfeldern füllen die Fläche.'>
 
+<!-- stage: stufen/felder.c as main.c -->
+
 `x / 20` ist eine Ganzzahldivision: Für x = 0 bis 19 kommt 0 heraus, für 20 bis 39 kommt 1 heraus, und so weiter. So entstehen Felder von 20 × 20 Pixeln. Dein Programm zeichnet keine Quadrate. Es beantwortet für jedes Pixel einzeln die Frage: **Welche Farbe hast du?** Darum geht es auf dieser ganzen Seite.
 
 _task(ecke)
@@ -294,6 +296,8 @@ crop-element: #canvas
 -->
 <img class='full' src='color-circles.webp' alt='Konzentrische Kreise in kräftigen Regenbogenfarben.'>
 
+<!-- stage: stufen/abstand.c as main.c -->
+
 Pixel mit ungefähr demselben Abstand bekommen dieselbe Farbe. So entstehen Kreise, obwohl das Programm keinen einzigen Kreis zeichnet. Probiere aus, was passiert, wenn du `6.0` größer oder kleiner machst.
 
 _task(abstand)
@@ -324,6 +328,8 @@ hook: open main.html
 crop-element: #canvas
 -->
 <img class='full' src='sinus-rings.webp' alt='Viele konzentrische Ringe mit weichen Farbverläufen.'>
+
+<!-- stage: stufen/kreiswellen.c as main.c -->
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Eine eigene Palette. Schreib in <code>main</code> unter <code>use_palette</code> die Zeile <code>for (int i = 0; i &lt; 16; i++) set_palette(i, i * 17, 0, 255 - i * 17);</code>. Jetzt geht Farbe 0 (Blau) in 16 gleichen Schritten zu Farbe 15 (Rot), und aus den bunten Ringen werden weiche Wellenberge. Wie sieht ein Verlauf von Schwarz über Rot und Gelb bis Weiß aus, wie im <a href='/fire'>Feuer</a>? Dort steht, wie man ihn aus mehreren Abschnitten baut.
@@ -742,6 +748,8 @@ crop-element: #canvas
 -->
 <img class='full' src='lichtspur-fahren.webp' alt='Eine türkise Linie fährt nach rechts, macht eine Schleife und kreuzt dabei ihre eigene Spur.'>
 
+<!-- stage: stufen/lichtspur-1.c as lichtspur.c -->
+
 ### Ein fester Takt
 
 Die Spur fährt einen Pixel nach dem anderen, sie kann nicht wie die Wellen einfach ein krummes Stück weiterrücken. Würde sie in jedem Bild einen Schritt machen, wäre sie auf jedem Bildschirm anders schnell: Viele zeigen 60 Bilder pro Sekunde, manche 120 oder 144, ein langsamer Rechner schafft vielleicht nur 20, und ein Tab im Hintergrund zeigt gar keine. Deshalb fährt die Spur in einem festen Takt, nach der Uhr: alle `STEP` Sekunden, also 30-mal pro Sekunde, einen Schritt.
@@ -794,6 +802,8 @@ while (!crashed && lag >= STEP)
 ```
 
 Dazu gehört eine Variable `bool crashed = false;` vor der äußeren Schleife. `!crashed` in der Bedingung hält die Spur nach dem Zusammenstoß an, auch mitten in einem Bild, in dem sie noch mehrere Schritte vor sich hätte. Die Unfallstelle wird rot (Farbe 2).
+
+<!-- stage: stufen/lichtspur-2.c as lichtspur.c -->
 
 _task(reihenfolge)
 
@@ -952,6 +962,8 @@ hook: play Space 0.5 ArrowUp 2.5 Space 0.3 KeyW ArrowDown 0.8 KeyD ArrowLeft 0.9
 crop-element: #canvas
 -->
 <img class='full' src='lichtspur.webp' alt='Zweite Runde: Eine orange und eine türkise Spur haben sich durchs Spielfeld gewunden, bis eine verunglückt ist; die Unfallstelle leuchtet weiß. Links in der oberen Wand steht ein orangefarbener Siegpunkt.'>
+
+<!-- stage: stufen/lichtspur-3.c as lichtspur.c -->
 
 _task(unentschieden)
 

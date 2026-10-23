@@ -50,4 +50,16 @@ class PageCodeTest < Minitest::Test
             assert_empty PageCode.check(page)
         end
     end
+
+    def test_a_stage_marker_counts_like_a_recipe
+        Dir.mktmpdir do |dir|
+            Dir.mkdir(File.join(dir, 'stufen'))
+            File.write(File.join(dir, 'stufen', '01.c'), "int main(void)\n{\n    return 0;\n}\n")
+            page = File.join(dir, 'demo.md')
+            File.write(page, "```c\n    return 1;\n```\n\n<!-- stage: stufen/01.c as main.c -->\n")
+            assert_equal 1, PageCode.check(page).size
+            File.write(page, "```c\n    return 0;\n```\n\n<!-- stage: stufen/01.c as main.c -->\n")
+            assert_empty PageCode.check(page)
+        end
+    end
 end
