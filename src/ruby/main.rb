@@ -7891,14 +7891,16 @@ class Main < Sinatra::Base
     def page_html(slug)
         content = @@content[slug]
         html = content[:html]
-        # the whole code at each step only for teachers, not while they see the page as a student
-        html = StageCode.strip(html) unless teacher_logged_in? && @impersonated_by.nil?
         # Only pages that use the class repository's variables look it up.
         if content[:class_repo] || html.match?(ClassRepos::TOKEN)
             view = class_repo_view(slug)
             html = ((view[:variant] && (content[:variants] || {})[view[:variant]]) || content)[:html]
             html = ClassRepos.fill(html, ClassRepos.values(view[:address]))
         end
+        # the whole code at each step only for teachers, not while they see
+        # the page as a student; after the variant is chosen, which has the
+        # buttons too
+        html = StageCode.strip(html) unless teacher_logged_in? && @impersonated_by.nil?
         return html unless slug == 'terminal-mystery' && CaseServer.enabled? && @session_user
 
         html.gsub(CaseServer::ARCHIVE_PATH, CaseServer.personal_archive_path(CaseServer.secret(LOGIN_CODE_SALT), @session_user[:email]))

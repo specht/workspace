@@ -40,3 +40,19 @@ test('a visitor gets neither the buttons nor the code', async ({ page }) => {
   expect(html).not.toContain('class="stage-code"');
   expect(html).not.toContain('Code bis hier');
 });
+
+// Pages with a class repository serve one of several rendered variants
+// (ClassRepos); the variant has the buttons too and must be cut as well.
+test('a student on a page with a class repository gets no buttons either', async ({ page }, testInfo) => {
+  await loginAsE2eUser(page, 'e2e-0@example.com', testInfo);
+  await page.goto('/sandbox-sortieren');
+  await expect(page.locator('h1')).toBeVisible();
+  await expect(page.locator('.stage-code-copy')).toHaveCount(0);
+  expect(await page.content()).not.toContain('class="stage-code"');
+});
+
+test('a teacher gets the buttons on a page with a class repository', async ({ page }, testInfo) => {
+  await loginAsE2eUser(page, 'e2e-teacher@example.com', testInfo);
+  await page.goto('/sandbox-sortieren');
+  expect(await page.locator('.stage-code-copy').count()).toBeGreaterThanOrEqual(1);
+});
