@@ -5878,6 +5878,7 @@ h3:has(+ .person) {
 
 .lang-tile:hover {
     color: var(--bs-body-color);
+    text-decoration: none;
     box-shadow: 0 0.2em 0.7em rgba(0, 0, 0, 0.18);
 }
 
