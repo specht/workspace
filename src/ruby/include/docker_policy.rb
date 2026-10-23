@@ -9,7 +9,9 @@ require 'uri'
 #
 # - start containers named hs_code_* from the Workspace image, with folders
 #   only under the user data, no privileges, no host modes, no extra
-#   capabilities, no published ports;
+#   capabilities, no published ports, and limits no larger than a
+#   Workspace's (CPUs, memory without swap, processes), so that it cannot
+#   start containers that eat the server either;
 # - exec into hs_code_* and the database containers, never privileged;
 # - read (ps, inspect, stats, network inspect, image inspect), kill and wait
 #   for hs_code_*, and HUP to nginx (reload).
@@ -21,7 +23,13 @@ module DockerPolicy
     # live on the host (PATH_TO_HOST_DATA/user/); networks: what a Workspace
     # may join; exec_containers: the database containers; hup_containers:
     # those that may get a HUP (nginx).
-    Config = Struct.new(:images, :bind_prefix, :networks, :exec_containers, :hup_containers, :name_prefix, keyword_init: true)
+    # max_cpus, max_memory (bytes), max_pids: the largest limits a container
+    # may ask for; nil means a Workspace's (workspace_runtime.rb).
+    Config = Struct.new(:images, :bind_prefix, :networks, :exec_containers, :hup_containers, :name_prefix,
+        :max_cpus, :max_memory, :max_pids, keyword_init: true)
+    MAX_CPUS = 4
+    MAX_MEMORY = 4 * 1024**3
+    MAX_PIDS = 256
 
     def self.config_from_env(env = ENV)
         list = ->(key) { env[key].to_s.split(',').map(&:strip).reject(&:empty?) }
@@ -31,7 +39,10 @@ module DockerPolicy
             :networks => list.call('GUARD_NETWORKS'),
             :exec_containers => list.call('GUARD_EXEC_CONTAINERS'),
             :hup_containers => list.call('GUARD_HUP_CONTAINERS'),
-            :name_prefix => env['GUARD_NAME_PREFIX'].to_s.empty? ? 'hs_code_' : env['GUARD_NAME_PREFIX']
+            :name_prefix => env['GUARD_NAME_PREFIX'].to_s.empty? ? 'hs_code_' : env['GUARD_NAME_PREFIX'],
+            :max_cpus => env['GUARD_MAX_CPUS'].to_s.empty? ? nil : env['GUARD_MAX_CPUS'].to_f,
+            :max_memory => env['GUARD_MAX_MEMORY'].to_s.empty? ? nil : env['GUARD_MAX_MEMORY'].to_i,
+            :max_pids => env['GUARD_MAX_PIDS'].to_s.empty? ? nil : env['GUARD_MAX_PIDS'].to_i
         )
     end
 
@@ -127,6 +138,8 @@ module DockerPolicy
         return [false, 'sysctls'] unless (host['Sysctls'] || {}).empty?
         return [false, 'cgroup parent'] unless host['CgroupParent'].to_s.empty?
         return [false, "runtime #{host['Runtime']}"] unless ['', 'runc'].include?(host['Runtime'].to_s)
+        problem = limits_problem(host, config)
+        return [false, problem] if problem
 
         sources = Array(host['Binds']).map { |b| b.to_s.split(':').first.to_s } +
             Array(host['Mounts']).map do |m|
@@ -138,6 +151,23 @@ module DockerPolicy
         return [false, "folders not allowed: #{bad.join(', ')}"] unless bad.empty?
 
         [true]
+    end
+
+    # Every limit set, none larger than a Workspace's; memory without swap
+    # (MemorySwap, memory plus swap, equal to Memory). nil when all is well.
+    def self.limits_problem(host, config)
+        max_cpus = config.max_cpus || MAX_CPUS
+        max_memory = config.max_memory || MAX_MEMORY
+        max_pids = config.max_pids || MAX_PIDS
+        cpus = host['NanoCpus'].to_i
+        return "CPU limit missing or above #{max_cpus}" unless cpus > 0 && cpus <= max_cpus * 1_000_000_000
+        memory = host['Memory'].to_i
+        return "memory limit missing or above #{max_memory} bytes" unless memory > 0 && memory <= max_memory
+        return 'swap' unless host['MemorySwap'].to_i == memory
+        pids = host['PidsLimit'].to_i
+        return "process limit missing or above #{max_pids}" unless pids > 0 && pids <= max_pids
+
+        nil
     end
 
     # Under the user data, or /dev/null (an exam Workspace has no DNS).

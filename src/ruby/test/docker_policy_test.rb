@@ -15,6 +15,7 @@ class DockerPolicyTest < Minitest::Test
             'HostConfig' => {
                 'Binds' => ['/srv/data/user/abc/config:/config', '/srv/data/user/abc/workspace:/workspace'],
                 'NetworkMode' => 'workspace_user', 'AutoRemove' => true, 'NanoCpus' => 4_000_000_000, 'Memory' => 4 * 1024**3,
+                'MemorySwap' => 4 * 1024**3, 'PidsLimit' => 256,
             }.merge(host_overrides),
         }.merge(overrides).to_json
     end
@@ -31,7 +32,8 @@ class DockerPolicyTest < Minitest::Test
             'SecurityOpt' => ['no-new-privileges'])
         assert_equal [true], create(hardened)
         sandbox = workspace({}, 'Binds' => ['/srv/data/user/abc/workspace:/workspace:ro'], 'NetworkMode' => 'none',
-            'CapDrop' => ['ALL'], 'SecurityOpt' => ['no-new-privileges'], 'ReadonlyRootfs' => true)
+            'CapDrop' => ['ALL'], 'SecurityOpt' => ['no-new-privileges'], 'ReadonlyRootfs' => true,
+            'NanoCpus' => 1_000_000_000, 'Memory' => 256 * 1024**2, 'MemorySwap' => 256 * 1024**2, 'PidsLimit' => 64)
         assert_equal [true], create(sandbox, :name => 'hs_code_offline_1a2b')
     end
 
@@ -52,6 +54,21 @@ class DockerPolicyTest < Minitest::Test
         refute create(workspace({}, 'SecurityOpt' => ['seccomp=unconfined'])).first
         refute create(workspace({}, 'Devices' => [{ 'PathOnHost' => '/dev/sda' }])).first
         refute create(workspace({}, 'PortBindings' => { '22/tcp' => [{ 'HostPort' => '2222' }] })).first
+    end
+
+    # A backend taken over must not start containers that eat the server
+    def test_every_container_has_limits_no_larger_than_a_workspace
+        refute create(workspace({}, 'NanoCpus' => nil)).first
+        refute create(workspace({}, 'NanoCpus' => 8_000_000_000)).first
+        refute create(workspace({}, 'Memory' => nil, 'MemorySwap' => nil)).first
+        refute create(workspace({}, 'Memory' => 16 * 1024**3, 'MemorySwap' => 16 * 1024**3)).first
+        refute create(workspace({}, 'MemorySwap' => -1)).first
+        refute create(workspace({}, 'MemorySwap' => 8 * 1024**3)).first
+        refute create(workspace({}, 'PidsLimit' => nil)).first
+        refute create(workspace({}, 'PidsLimit' => -1)).first
+        refute create(workspace({}, 'PidsLimit' => 100_000)).first
+        roomy = CONFIG.dup.tap { |c| c.max_pids = 512 }
+        assert_equal [true], DockerPolicy.decide('POST', '/containers/create', 'name=hs_code_a', workspace({}, 'PidsLimit' => 512), roomy)
     end
 
     def test_exec_only_into_workspaces_and_the_databases_never_privileged

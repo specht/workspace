@@ -221,7 +221,7 @@ module WorkspaceRuntime
             # Named hs_code_offline_*: the Docker guard only starts containers
             # with the Workspace prefix (docker_policy.rb).
             ['docker', 'run', '--rm', '--name', "hs_code_offline_#{SecureRandom.hex(4)}", '--network', 'none', '--read-only', '--tmpfs', '/tmp',
-             '--cpus', '1', '--memory', '256m', '--pids-limit', '64',
+             '--cpus', '1', '--memory', '256m', '--memory-swap', '256m', '--pids-limit', '64',
              '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
              '-u', uid, '-e', 'HOME=/workspace',
              '-v', "#{host_data_path}/user/#{fs_tag}/workspace:/workspace:ro",
