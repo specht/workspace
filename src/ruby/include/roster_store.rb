@@ -217,12 +217,16 @@ class Main < Sinatra::Base
     # Every change in the browser notes the time, shown on /admin.
     def self.note_roster_change!
         $neo4j.neo4j_query('MATCH (s:Setting {key: $key}) SET s.changed_at = $now;', :key => ROSTER_SETTING, :now => Time.now.to_i)
-        before = Set.new(@@invitations.keys)
+        # load_invitations puts new hashes in place, so the old ones stay as they were
+        state = -> { [Set.new(@@invitations.keys), @@teachers, @@group_members] }
+        before = state.call
         roster_changed!
         load_invitations
         # Someone no longer invited loses a running Workspace at once
-        # (may_use_workspace?), not when it is stopped for being idle.
-        Thread.new { refresh_nginx_config } unless Set.new(@@invitations.keys) == before
+        # (may_use_workspace?), not when it is stopped for being idle; a
+        # teacher who no longer has the group loses a watched Workspace
+        # (may_still_look_in?).
+        Thread.new { refresh_nginx_config } unless state.call == before
     end
 
     # The state of the roster for the administration page, as long as the

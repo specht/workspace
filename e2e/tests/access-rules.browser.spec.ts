@@ -18,6 +18,7 @@ test.describe.configure({ mode: 'serial' });
 
 const RUN = Date.now().toString(36);
 const created: string[] = [];
+const teachers: string[] = [];
 
 function address(role: string): string {
   const email = `e2e-access-${RUN}-${role}@example.com`;
@@ -136,6 +137,8 @@ test.beforeAll(async ({ browser }, testInfo) => {
 test.afterAll(async () => {
   if (!admin)
     return;
+  for (const email of teachers)
+    await post(admin, '/api/people/remove_teacher', { email });
   for (const email of created)
     await post(admin, '/api/admin/delete_account', { email, confirmation: email });
   for (const name of groups)
@@ -315,6 +318,62 @@ test('a deleted account that comes back with a backup is deleted again', async (
   const repeated = await postOk(admin, '/api/admin/repeat_deletions', { backup_date: before });
   expect(repeated.deleted).toEqual([student]);
   expect((await person(admin, student))?.account).toBe(false);
+});
+
+// A teacher of groupA, made through the administration's API.
+async function newTeacher(role: string): Promise<string> {
+  const teacher = address(role);
+  teachers.push(teacher);
+  await postOk(admin, '/api/people/save_teacher', { email: teacher, school: schoolA });
+  await postOk(admin, '/api/groups/add_teacher', { name: groupA, email: teacher });
+  return teacher;
+}
+
+test('a teacher taken off the group while imitating a student is logged out at once', async ({ browser }, testInfo) => {
+  const teacher = await newTeacher('imitating-teacher');
+  const student = address('imitated');
+  await addMembers(groupA, student);
+  const context = await signIn(browser, testInfo, teacher);
+  try {
+    await postOk(context.request, '/api/impersonate', { email: student, reason: 'E2E: Nachahmen' });
+    expect(await loggedIn(context.request)).toBe(true);
+
+    await postOk(admin, '/api/groups/remove_teacher', { name: groupA, email: teacher });
+
+    expect(await loggedIn(context.request)).toBe(false);
+  } finally {
+    await context.close();
+  }
+});
+
+test('a teacher taken off the group no longer sees the Workspace it watched', async ({ browser }, testInfo) => {
+  test.setTimeout(300_000);
+  const teacher = await newTeacher('watching-teacher');
+  const student = address('watched');
+  await addMembers(groupA, student);
+  const studentContext = await signIn(browser, testInfo, student);
+  const context = await signIn(browser, testInfo, teacher);
+  try {
+    const started = await postOk(studentContext.request, '/api/start_server');
+    const url = workspaceUrl(testInfo, started.server_tag as string);
+    await expect.poll(() => workspaceStatus(studentContext.request, url), { timeout: 180_000, intervals: [2_000] })
+      .toBeLessThan(400);
+    // The teacher reaches it under the watch tag (its own address, with hs_watch_tag)
+    const watched = await postOk(context.request, '/api/start_server_as_admin', { email: student, reason: 'E2E: Zuschauen' });
+    const watchUrl = workspaceUrl(testInfo, watched.watch_tag as string);
+    await expect.poll(() => workspaceStatus(context.request, watchUrl), { timeout: 60_000, intervals: [2_000] })
+      .toBeLessThan(400);
+
+    await postOk(admin, '/api/groups/remove_teacher', { name: groupA, email: teacher });
+
+    // nginx is reloaded in the background; the watch is gone, the student keeps the Workspace.
+    await expect.poll(() => workspaceStatus(context.request, watchUrl), { timeout: 30_000 })
+      .toBeGreaterThanOrEqual(403);
+    expect(await workspaceStatus(studentContext.request, url)).toBeLessThan(400);
+  } finally {
+    await context.close();
+    await studentContext.close();
+  }
 });
 
 test('an administrator gives a reason before looking into a Workspace', async () => {

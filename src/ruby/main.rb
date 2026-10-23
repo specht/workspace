@@ -765,6 +765,9 @@ class Main < Sinatra::Base
             demo_tag = test_demo_tag(user[:email], test[:tag])
             fs_tag = fs_tag_for_email("#{user[:email]}#{demo_tag}")
             next unless running_servers.include?(fs_tag)
+            # Only while its teacher still is one, with its own access
+            next unless may_use_workspace?(user[:email].to_s, user) &&
+                        (ADMIN_USERS.include?(user[:email].to_s) || @@teachers.include?(user[:email].to_s))
 
             running_servers[fs_tag][:server_sid] = user[:server_sid]
             running_servers[fs_tag][:server_tag] = "#{user[:server_tag]}#{demo_tag}"
@@ -774,6 +777,10 @@ class Main < Sinatra::Base
 
         # watch_tag_ip_pairs = []
 
+        # A watched Workspace only while the watcher still may look into it
+        # (its groups and its own access as they are now); a watch it may no
+        # longer have is removed.
+        stale_watches = []
         $neo4j.neo4j_query(<<~END_OF_QUERY).each do |row|
             MATCH (w:User)-[r:WATCHING]->(u:User)
             RETURN r.watch_tag, u, w;
@@ -782,11 +789,19 @@ class Main < Sinatra::Base
             user = row['u']
             watcher = row['w']
             next unless may_use_workspace?(user[:email].to_s, user)
+            unless may_still_look_in?(watcher[:email].to_s, user[:email].to_s, watcher)
+                stale_watches << watch_tag
+                next
+            end
             fs_tag = fs_tag_for_email(user[:email])
             if running_servers.include?(fs_tag)
                 # watch_tag_ip_pairs << "#{watch_tag} #{running_servers[fs_tag][:ip]}:8443;"
                 running_servers[fs_tag][:watch_tags][watch_tag] = watcher[:server_sid]
             end
+        end
+        unless stale_watches.empty?
+            $neo4j.neo4j_query('MATCH (:User)-[r:WATCHING]->(:User) WHERE r.watch_tag IN $tags DELETE r;', :tags => stale_watches)
+            STDERR.puts ">>> Removed #{stale_watches.size} watch(es) no longer allowed"
         end
 
         $neo4j.neo4j_query(<<~END_OF_QUERY).each do |row|
@@ -2363,6 +2378,12 @@ class Main < Sinatra::Base
                 if session_expiry && session_expiry > DateTime.now && !Main.may_use_workspace?(results.first['u'][:email].to_s.downcase, results.first['u'])
                     # No longer invited: the session ends now, not in a year.
                     STDERR.puts "Session ended: #{results.first['u'][:email]} is no longer invited"
+                    neo4j_query('MATCH (s:Session {sid: $sid}) DETACH DELETE s;', :sid => sid)
+                elsif session_expiry && session_expiry > DateTime.now && session[:impersonated_by] &&
+                      !Main.may_still_look_in?(session[:impersonated_by], results.first['u'][:email].to_s.downcase)
+                    # A teacher imitating a student who left its groups, or who lost its
+                    # own access meanwhile: the session ends, not at »Zurück«.
+                    STDERR.puts "Session ended: #{session[:impersonated_by]} may no longer imitate #{results.first['u'][:email]}"
                     neo4j_query('MATCH (s:Session {sid: $sid}) DETACH DELETE s;', :sid => sid)
                 elsif session_expiry && session_expiry > DateTime.now
                     email = results.first['u'][:email]

@@ -302,6 +302,11 @@ Auf der Klassenseite stehen bei jeder Person zwei Knöpfe:
 - **Nachahmen** zeigt die Website so, wie die Person sie sieht. Eine Leiste
   oben sagt das und führt mit »Zurück zu deinem Konto« zurück.
 
+Beides gilt nur, solange die Lehrkraft hineinschauen darf: Verliert sie die
+Gruppe, ihre Rolle oder ihren eigenen Zugang, endet das Nachahmen mit der
+nächsten Anfrage (sie ist abgemeldet), und den geöffneten Workspace sieht sie
+nach dem nächsten Neuladen von nginx nicht mehr (`Main.may_still_look_in?`).
+
 Vorher fragt ein Dialog nach einem Satz, warum (»Ich sehe mir deine Abgabe zu
 Aufgabe 3 an.«). Der letzte Satz ist vorausgefüllt; beim Durchsehen einer
 ganzen Klasse genügt er also einmal. Die Person findet den Satz bei der

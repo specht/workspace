@@ -83,6 +83,17 @@ class Main < Sinatra::Base
             :admins => ADMIN_USERS, :teachers => @@teachers, :group_members => @@group_members)
     end
 
+    # The same for what a look-in leaves behind (an imitated session, a
+    # watched Workspace): may viewer still look into target, with its own
+    # access (invitation, suspension) and its groups as they are now, not as
+    # they were when it began. viewer_user: viewer's User node, if at hand.
+    def self.may_still_look_in?(viewer, target, viewer_user = nil)
+        load_invitations()
+        viewer_user ||= $neo4j.neo4j_query('MATCH (u:User {email: $email}) RETURN u;', :email => viewer.to_s).first&.[]('u')
+        may_use_workspace?(viewer.to_s, viewer_user) &&
+            LookIn.allowed?(viewer, target, :admins => ADMIN_USERS, :teachers => @@teachers, :group_members => @@group_members)
+    end
+
     # Guests (adults in a group of the guests' school: workshops, companies,
     # former students who keep their account) agree to the Nutzungsordnung
     # once, before their own Workspace starts; it is their legal basis
