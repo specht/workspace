@@ -718,7 +718,8 @@ function prepare_reference_tables() {
             let col = 0;
             Array.from(tr.children).forEach(function (cell) {
                 const short = longest[col] <= 18;
-                if (cell.tagName === 'TD' && col > 0 && heads[col] && (rowHead || short)) cell.dataset.label = heads[col];
+                // a cell over several columns (»in beiden gleich«) belongs to none of them
+                if (cell.tagName === 'TD' && col > 0 && heads[col] && (rowHead || short) && (cell.colSpan || 1) === 1) cell.dataset.label = heads[col];
                 if (cell.tagName === 'TD' && col > 0 && short && !rowHead) cell.classList.add('reference-cell-inline');
                 col += cell.colSpan || 1;
             });

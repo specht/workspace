@@ -5132,6 +5132,11 @@ ul.task-teacher-list .task-teacher-answer {
         font-weight: 600;
     }
 
+    /* the name in the first column too: as a line of its own it may wrap */
+    .table.reference-table.reference-table-prepared tr > td:first-child {
+        white-space: normal;
+    }
+
     .table.reference-table-prepared td.reference-cell-inline {
         display: inline-block;
         margin-right: 1.1em;
@@ -5150,6 +5155,57 @@ ul.task-teacher-list .task-teacher-answer {
         padding: 0.3em 0.4em;
         margin-top: 0.6em;
         background-color: var(--bs-tertiary-bg);
+    }
+}
+
+/* A comparison with three or more columns of code side by side
+   (reference-table-wide: Ruby beside Python, C beside raylib beside GLSL)
+   becomes that list already below 992px, where its columns would be
+   squeezed to a word a line or scroll sideways. Its rows begin with a
+   heading (th), so every value is labelled with its column. */
+@media (max-width: 991.98px) {
+    .table.reference-table-wide.reference-table-prepared,
+    .reference-table-wide.reference-table-prepared tbody,
+    .reference-table-wide.reference-table-prepared tr,
+    .reference-table-wide.reference-table-prepared td,
+    .reference-table-wide.reference-table-prepared th {
+        display: block;
+        width: auto;
+    }
+
+    .reference-table-wide.reference-table-prepared thead {
+        display: none;
+    }
+
+    .reference-table-wide.reference-table-prepared tr {
+        padding: 0.45em 0;
+        border-bottom: 1px solid var(--bs-border-color);
+    }
+
+    .table.reference-table-wide.reference-table-prepared tr > td,
+    .table.reference-table-wide.reference-table-prepared tr > th {
+        padding: 0.1em 0;
+        border: 0;
+        white-space: normal;
+        text-align: left;
+        background: transparent;
+    }
+
+    .table.reference-table-wide.reference-table-prepared tr > th {
+        font-weight: 600;
+    }
+
+    .table.reference-table.reference-table-wide.reference-table-prepared tr > td:first-child {
+        white-space: normal;
+    }
+
+    .reference-table-wide.reference-table-prepared td:empty {
+        display: none;
+    }
+
+    .reference-table-wide.reference-table-prepared td[data-label]::before {
+        content: attr(data-label) ": ";
+        color: var(--bs-secondary-color);
     }
 }
 

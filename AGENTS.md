@@ -94,7 +94,14 @@ address from `credentials.rb` and the code `123456`.
 - Tables are HTML (`<table class='table'>`); the site's Markdown has no pipe
   tables (`no_pipe_tables_test.rb`). In HTML tables inside Markdown,
   `</table>` and `</div>` go on lines of their own, otherwise the rest of the
-  page renders as raw text.
+  page renders as raw text. A Handbuch table (`table table-sm reference-table`
+  in `<div class='scroll-x'>`) has `<thead>` and `<tbody>`: on a phone it
+  becomes a list, labelled with the head (`prepare_reference_tables` in
+  `_template.html`). Its first column does not wrap, so long commands and
+  error messages go into a code block or a list instead. A comparison with
+  three or more columns of code (Ruby beside Python) gets
+  `reference-table-wide`, a list already below 992px, and a `<th>` at the
+  start of each row, so that every value carries its column's name.
 - Every activity has a teacher note (`lehrkraft.md`) whose first paragraph says
   what the students do (»Lernende …«); `teacher_note_test.rb` checks it.
 - Interactive widgets (steppers) follow [docs/widgets.md](docs/widgets.md): they start with
