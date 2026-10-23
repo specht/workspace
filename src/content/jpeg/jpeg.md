@@ -794,7 +794,7 @@ Diese Werte sind die Symbole, die den Codes zugeordnet werden. Das erste Symbol 
 </div>
 
 <div class='hint'>
-Du findest in der JPEG-Datei keinen kompletten Huffman-Baum, sondern nur eine Art Bauanleitung für einen »kanonischen Huffman-Baum«. Anhand der Anzahl der Codes pro Code-Länge kannst du die Struktur des Baumes rekonstruieren und die Symbole den entsprechenden Codes zuordnen.
+Du findest in der JPEG-Datei keinen kompletten Huffman-Baum, sondern nur eine Art Bauanleitung für einen »kanonischen Huffman-Baum«. Anhand der Anzahl der Codes pro Code-Länge kannst du die Struktur des Baumes rekonstruieren und die Symbole den entsprechenden Codes zuordnen. Wie ein Huffman-Baum entsteht und wie aus den Längen seiner Codes kanonische Codes werden, aus genau diesen Angaben (wie viele Codes je Länge, welche Symbole), programmierst du in <a href='/huffman'>Komprimieren mit Huffman</a> selbst, an Text statt an Koeffizienten.
 </div>
 
 **Implementierungshinweis:**

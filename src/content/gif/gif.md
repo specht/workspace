@@ -968,6 +968,8 @@ Er liest die nächsten `size` Bits aus den Bilddaten und gibt sie als Zahl zurü
 
 <p class='expl'>GIF89a, Anhang F, Seite 30, und das Deckblatt</p>
 
+Wie LZW packt und entpackt, kannst du vorher in [Komprimieren mit LZW](/lzw) an Text ausprobieren und selbst programmieren. Hier kommt dazu, was GIF anders macht: Die Codes stehen Bit für Bit in der Datei, ihre Länge wächst mit der Tabelle, und zwei Codes haben eine besondere Bedeutung.
+
 Jeder Code steht für einen **Eintrag in einer Tabelle**, und jeder Eintrag ist eine Folge von Pixelnummern. Am Anfang enthält die Tabelle nur die einzelnen Farben, bei der Diskette die Einträge 0, 1, 2 und 3. Danach kommen zwei besondere Codes:
 
 - **Clear Code**: 2<sup>n</sup>, wenn n die LZW Minimum Code Size ist, bei der Diskette 2<sup>2</sup> = 4. Die Tabelle beginnt von vorn, nur mit den Farben, und die Codes haben wieder ihre Anfangslänge. Ein Encoder schickt ihn als ersten Code.
