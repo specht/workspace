@@ -5120,10 +5120,31 @@ ul.task-teacher-list .task-teacher-answer {
     }
 }
 
-/* A task card at work (tasks.js setBusy): the spinner where the icon was. */
-.task-submit .spinner-border {
-    margin-right: 0.4em;
-    vertical-align: -0.1em;
+/* A task card at work (tasks.js setBusy): the label stays, invisible, so
+   the button keeps its size; the spinner sits in its middle. */
+.task-submit.is-busy {
+    position: relative;
+}
+
+.task-submit.is-busy > :not(.task-submit-busy) {
+    visibility: hidden;
+}
+
+.task-submit.is-busy {
+    color: transparent;
+}
+
+.task-submit-busy {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bs-btn-color, #fff);
+}
+
+.task-submit-busy .spinner-border {
+    margin: 0;
 }
 
 /* Phones: the page margin is room enough. Boxes inside it keep only a little

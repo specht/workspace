@@ -304,18 +304,25 @@
     }
 
     // While a check or hand-in runs, the card cannot be used, and its
-    // button says that something is happening.
+    // button says that something is happening: a spinner in its middle, its
+    // label kept but invisible, so that it keeps its size and nothing jumps;
+    // a screen reader hears what happens.
     function setBusy(card, busy) {
         setDisabled(card, busy);
         const button = card.querySelector('.task-submit');
         if (!button) return;
-        if (busy && !button.dataset.idle) {
-            button.dataset.idle = button.innerHTML;
-            button.innerHTML = "<span class='spinner-border spinner-border-sm' aria-hidden='true'></span>" +
-                (card.dataset.type === 'submit' ? 'Wird abgegeben …' : 'Wird geprüft …');
-        } else if (!busy && button.dataset.idle) {
-            button.innerHTML = button.dataset.idle;
-            delete button.dataset.idle;
+        if (busy && !button.classList.contains('is-busy')) {
+            button.classList.add('is-busy');
+            button.setAttribute('aria-busy', 'true');
+            const spinner = document.createElement('span');
+            spinner.className = 'task-submit-busy';
+            spinner.innerHTML = "<span class='spinner-border spinner-border-sm' aria-hidden='true'></span>" +
+                "<span class='visually-hidden'>" + (card.dataset.type === 'submit' ? 'Wird abgegeben …' : 'Wird geprüft …') + '</span>';
+            button.appendChild(spinner);
+        } else if (!busy && button.classList.contains('is-busy')) {
+            button.classList.remove('is-busy');
+            button.removeAttribute('aria-busy');
+            button.querySelectorAll('.task-submit-busy').forEach((el) => el.remove());
         }
     }
 
