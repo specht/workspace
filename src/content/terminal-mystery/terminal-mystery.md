@@ -553,8 +553,21 @@ check-task-fails: kamera-auto <- 1
 check-task: kamera-auto <- 0
 -->
 
-Die Adresse aus dem VPN, das Gerät dazu, die Befehle aus der Nacht, minutengenau neben den Commits, und ein gelber Kombi auf dem Parkplatz: Jetzt ist der Fall wasserdicht.
+Im Verhör bleibt Konstantin Reuter dabei: Er war die ganze Nacht zu Hause. Kommissarin Weber legt ihm ein Blatt nach dem anderen hin. Sein Laptop, um 23:02 im VPN des Museums. Ein gelber Kombi, um 23:38 ohne Licht vom Parkplatz. Dann seine eigenen Befehle aus der Nacht, Zeile für Zeile. Bei `sed -i '/4471/d' zugaenge.log` sieht er lange auf das Blatt. »Die Karte«, sagt er schließlich, »hätte ich zurückgeben sollen.«
+
+Sein `rm -i` auf der Alarmanlage wartet übrigens noch immer auf ein »yes«.
 <!-- /feature -->
+
+## Fall abgeschlossen
+
+Zwei Wochen später liegt die Goldene Diskette wieder in ihrer Vitrine. Zur Wiedereröffnung kommen auch die, die 1987 in der Computer-AG der Hafenschule das Programm darauf geschrieben haben, heute um die fünfzig. Und bei dir liegt ein letzter Zettel:
+
+<div class='case-note'>
+<p>Kriminalpolizei Bitstein, Kommissarin Weber</p>
+<p>1265 Zeilen Bericht, 1503 Befragungen, 1515 Autos, 1800 Leute. Durchgelesen hast du davon kaum etwas, und am Ende stand trotzdem ein einziger Name. Danke für deine Hilfe, der Fall ist abgeschlossen.</p>
+</div>
+
+Jeder Schritt war ein Sieb: `grep '^HINWEIS'` machte aus 1265 Zeilen fünf, eine einzige Zeile in einer Straßendatei aus 1503 Befragungen eine Zeugin, eine Kette aus `grep` aus 1515 Autos vier, `sort | uniq -d` aus zwei Vereinen sechs Leute, von denen zwei eins der Autos haben, und eine gelöschte Zeile in Git aus zwei Verdächtigen einen Täter. So geht man mit Dateien um, die zu groß zum Lesen sind, mit den Logdateien eines Servers genauso wie mit einer Tabelle für ein Referat: nicht durchlesen, sondern fragen, und jede Antwort führt zur nächsten Frage.
 
 ## Spickzettel
 
