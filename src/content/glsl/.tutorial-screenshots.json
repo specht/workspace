@@ -24,6 +24,27 @@
       "state_hash": "e166cfe672b98a1770902547cb7584ef4bfaa33099e92b3631a4c145296d193e",
       "workspace_look": "4.140.0-ls368"
     },
+    "included-workspace-choose-folder.webp": {
+      "environment_fingerprint": "f4cca0f2e0e7abc1e224056eadb452b2d199eed7d77a0a02ba0f6678de94cc07",
+      "output_sha256": "4685261fba2e34ebd110e5e4d33a494730a09ecaaff7500b53d20b366e71b21e",
+      "state_hash": "25a7a2a252f6efb98e3f4d2034657ff473bf72eb2738995f0eda2d3090737f4d",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
+    "included-workspace-git-clone.webp": {
+      "environment_fingerprint": "f4cca0f2e0e7abc1e224056eadb452b2d199eed7d77a0a02ba0f6678de94cc07",
+      "output_sha256": "8f759f5e08fba518622079389aeb64a150a31992cc6e2dd585419e1f3a9571a4",
+      "state_hash": "d0128ed16013f261412cfede9e99c37982209b0bc5bb0e04bc52e097537dca26",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
+    "included-workspace-open-yes-or-no.webp": {
+      "environment_fingerprint": "f4cca0f2e0e7abc1e224056eadb452b2d199eed7d77a0a02ba0f6678de94cc07",
+      "output_sha256": "519fa486ac24566b375c25511276b4396a841e522d316f19ca7e98dbb46fd040",
+      "state_hash": "cbb5bddf800d07896725328663c874f900ac1c597eb7d6cb1e0d0c21e3eb0551",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
     "kaleidoskop.webp": {
       "environment_fingerprint": "f4cca0f2e0e7abc1e224056eadb452b2d199eed7d77a0a02ba0f6678de94cc07",
       "output_sha256": "7dbdb2f86af10dfeace925b4dbfdcc73a046918c8e21c9069ee6131f87255d62",
