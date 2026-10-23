@@ -1352,6 +1352,104 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         svg.dataset.natural = wide;
     }
 
+    // Binary search in a sorted array, as find_position on reference/listen:
+    // the first index whose value is not smaller than value. left and right
+    // are index variables (right may point behind the last cell, the place
+    // where size ends); the range still in question, left up to before right,
+    // lies on a band, the cells outside it faint.
+    const SEARCH_CODE = ['find_position(cells, size, value):', '    left ← 0', '    right ← size', '    while left < right:',
+        '        middle ← (left + right) / 2, rounded down', '        if cells[middle] < value: left ← middle + 1', '        else: right ← middle', '    return left'];
+
+    function traceSearch(cells, ops) {
+        const frames = [];
+        let current = -1;
+        const n = cells.length;
+        const snapshot = (message, marks = {}) => frames.push({ cells, size: n, message, op: current, ...marks });
+        const C = (at) => ({ lines: SEARCH_CODE, at });
+        const search = (value) => {
+            let left = 0;
+            let right = n;
+            let comparisons = 0;
+            const vars = (extra = {}) => [{ name: 'left', index: left }, { name: 'right', index: right }, ...(extra.middle !== undefined ? [{ name: 'middle', index: extra.middle }] : [])];
+            const base = (extra = {}) => ({ value, comparisons, range: [left, right], ...extra });
+            snapshot(`find_position(cells, ${n}, ${value}): An welcher Stelle steht ${value}, oder wohin gehört es?`, base({ code: C(0), vars: [], range: [0, n] }));
+            snapshot(`left ← 0: Der Bereich, in dem ${value} stehen kann, beginnt vorn.`, base({ code: C(1), vars: [{ name: 'left', index: 0 }], range: [0, n] }));
+            snapshot(`right ← size: right zeigt hinter den letzten Wert. In Frage kommt alles von left bis vor right, noch alle ${n} Stellen.`, base({ code: C(2), vars: vars() }));
+            for (;;) {
+                if (!(left < right)) {
+                    snapshot(`while left < right: left und right sind beide ${left}, der Bereich ist leer.`, base({ code: C(3), vars: vars() }));
+                    break;
+                }
+                snapshot(`while left < right: ${left} < ${right}, noch ${right - left} Stelle${right - left === 1 ? '' : 'n'} in Frage.`, base({ code: C(3), vars: vars() }));
+                const middle = Math.floor((left + right) / 2);
+                snapshot(`middle ← (left + right) / 2, rounded down: (${left} + ${right}) / 2 = ${middle}${(left + right) % 2 ? ' (abgerundet)' : ''}.`, base({ code: C(4), vars: vars({ middle }), middle }));
+                comparisons += 1;
+                if (cells[middle] < value) {
+                    const old = left;
+                    left = middle + 1;
+                    snapshot(`if cells[middle] < value: ${cells[middle]} < ${value}, also gehört ${value} rechts von Stelle ${middle}. left ← middle + 1 = ${left}; ${old === middle ? `Stelle ${middle} ist` : `die Stellen ${old} bis ${middle} sind`} aus dem Rennen.`,
+                        base({ code: C(5), vars: vars({ middle }), middle, compare: middle }));
+                } else {
+                    snapshot(`if cells[middle] < value: ${cells[middle]} ist nicht kleiner als ${value}. Die Stelle ist ${middle} oder weiter links.`, base({ code: C(5), vars: vars({ middle }), middle, compare: middle }));
+                    right = middle;
+                    snapshot(`else: right ← middle = ${middle}. Rechts davon muss niemand mehr nachsehen.`, base({ code: C(6), vars: vars({ middle }), middle }));
+                }
+            }
+            const found = left < n && cells[left] === value;
+            snapshot(found
+                ? `return left: ${left}. cells[${left}] ist ${value}: gefunden, nach ${comparisons} Vergleichen statt bis zu ${n} beim Durchlaufen.`
+                : left < n
+                    ? `return left: ${left}. ${value} steht nicht in der Liste; cells[${left}] = ${cells[left]} ist der erste Wert, der nicht kleiner ist. Hier würde ${value} eingefügt. ${comparisons} Vergleiche.`
+                    : `return left: ${left}, die Stelle hinter dem letzten Wert: Alle Werte sind kleiner als ${value}. ${comparisons} Vergleiche.`,
+            base({ code: C(7), vars: [{ name: 'left', index: left }], result: left, found, range: null }));
+        };
+        snapshot(`Eine sortierte Liste mit ${n} Werten. Jetzt der Reihe nach die Suchen darüber.`);
+        for (const [number, op] of ops.entries()) {
+            current = number;
+            search(op.value);
+        }
+        return frames;
+    }
+
+    function drawSearch(svg, frame, marker) {
+        svg.replaceChildren();
+        const cell = 46;
+        const left = 14;
+        const top = 40;
+        const n = frame.cells.length;
+        svg.appendChild(arrowheads(marker));
+        const at = (i) => left + i * cell + (cell - 6) / 2;
+        const [lo, hi] = frame.range || [0, n];
+        // the range still in question: a band behind its cells (none before
+        // a search and at its end)
+        if (frame.range) svg.appendChild(el('svg:rect', { 'data-key': 'range', x: left + lo * cell - 4, y: top - 6, width: Math.max(0, (hi - lo) * cell + 2), height: 54, rx: 8,
+            fill: 'color-mix(in srgb, var(--algo-accent) 10%, transparent)', stroke: hi > lo ? 'color-mix(in srgb, var(--algo-accent) 45%, transparent)' : 'none', 'stroke-width': 1.5 }));
+        frame.cells.forEach((v, i) => {
+            const x = left + i * cell;
+            const inside = i >= lo && i < hi;
+            const hit = frame.result === i && frame.found;
+            const fill = frame.compare === i || hit ? 'var(--algo-frontier)' : 'var(--algo-paper)';
+            svg.appendChild(el('svg:g', { 'data-key': `cell-${i}`, opacity: inside || hit || !frame.range ? 1 : 0.4 }, [
+                el('svg:rect', { x, y: top, width: cell - 6, height: 42, rx: 6, fill, stroke: hit ? 'var(--algo-accent)' : 'var(--algo-ink)', 'stroke-width': hit ? 2.5 : 1.5 }),
+                el('svg:text', { x: x + (cell - 6) / 2, y: top + 27, 'text-anchor': 'middle', 'font-size': 16, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(v) })]));
+            svg.appendChild(el('svg:text', { 'data-key': `index-${i}`, x: at(i), y: top + 58, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--bs-secondary-color)', text: String(i) }));
+        });
+        // the places index arrows aim at, one more behind the last cell (right
+        // starts there, and left may end there)
+        for (let i = 0; i <= n; i++) svg.appendChild(el('svg:rect', { 'data-key': `slot-${i}`, x: left + i * cell + 2, y: top + 34, width: cell - 10, height: 4, fill: 'none', stroke: 'none' }));
+        svg.appendChild(el('svg:text', { 'data-key': 'index-end', x: at(n), y: top + 58, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--bs-secondary-color)', text: String(n) }));
+        const width = left * 2 + (n + 1) * cell;
+        if (frame.value !== undefined) {
+            for (const node of valueBox('value', left, 8, frame.value)) svg.appendChild(node);
+            for (const node of valueBox('size', left + valueBoxWidth('value', frame.value) + 10, 8, frame.size)) svg.appendChild(node);
+        }
+        const labelTop = top + 76;
+        const placed = indexLabels(frame.vars || [], at, width);
+        for (const node of placed.flatMap((label) => indexLabel(label, labelTop + label.row * 24, top + 36, top + 66, marker))) svg.appendChild(node);
+        svg.setAttribute('viewBox', `0 0 ${width} ${labelTop + 3 * 24}`);
+        svg.dataset.natural = width;
+    }
+
     // A frame of a Linked List: nodes (id -> { value, next }), head, order
     // (the ids from head on), loose (a node no pointer of the list reaches:
     // { id, at } above the gap at index at), vars (variables that point at a
@@ -2955,6 +3053,9 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             const compared = any((f) => (f.compare || []).length);
             const fresh = any((f) => f.fresh !== undefined);
             if (compared || fresh) add('fill', 'var(--algo-frontier)', compared && fresh ? 'neu oder verglichen' : fresh ? 'neu' : 'verglichen');
+        } else if (algo === 'bsearch') {
+            add('fill', 'color-mix(in srgb, var(--algo-accent) 10%, var(--algo-paper))', 'kommt noch in Frage');
+            add('fill', 'var(--algo-frontier)', 'cells[middle], verglichen');
         } else if (algo === 'array') {
             if (any((f) => f.focus !== undefined)) add('fill', 'var(--algo-frontier)', 'wird geschrieben');
         } else if (algo === 'ring') {
@@ -3011,6 +3112,11 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             const marker = `algo-arrow-${++widgetCount}`;
             svg.setAttribute('aria-label', 'Die Zellen des Arrays, die Queue ab head');
             draw = (frame) => { drawRing(svg, frame, marker); listSide(frame, 0); };
+        } else if (algo === 'bsearch') {
+            frames = traceSearch(widget.dataset.values.split(',').map((s) => Number(s.trim())), parseOps(widget.dataset.ops));
+            const marker = `algo-arrow-${++widgetCount}`;
+            svg.setAttribute('aria-label', 'Die sortierte Liste, der Bereich, in dem der Wert noch stehen kann, und left, right, middle');
+            draw = (frame) => { drawSearch(svg, frame, marker); listSide(frame, 0); };
         } else if (algo === 'array') {
             frames = traceArray(parseOps(widget.dataset.ops), Number(widget.dataset.capacity || 4), setupOps);
             const most = Math.max(...frames.map((f) => Math.max(f.cells.length, f.bigger ? f.bigger.length : 0)));

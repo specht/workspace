@@ -184,6 +184,10 @@ find_position(cells, size, value):
 ```
 
 `find_position` gibt den ersten Index zurück, an dem ein Wert steht, der nicht kleiner ist als `value`. Genau dort wird eingefügt, und genau dort steht der Wert, wenn man ihn sucht. Ob doppelte Werte erlaubt sind, legt die Aufgabe fest; die Sandbox prüft es.
+
+Zwölf sortierte Werte, zwei Suchen: 34 steht in der Liste, 35 nicht. Hell hinterlegt ist der Bereich, in dem der Wert noch stehen kann; mit jedem Vergleich wird er halb so groß:
+
+<div class='algo-stepper' data-title='Binäre Suche' data-algo='bsearch' data-values='3, 8, 12, 17, 21, 30, 34, 41, 47, 55, 62, 70' data-ops='find_position 34, find_position 35'></div>
 <!-- /part -->
 
 <!-- part: stack -->
