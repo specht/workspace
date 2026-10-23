@@ -70,15 +70,17 @@
     - farbraeume
 
 - key: reference-network
-  label: Netzwerk und Daten
+  label: Netzwerk, Daten und Sicherheit
   icon: /images/handshake.png
   description: |
     Die Befehle fürs Netz im Terminal (ping, nc, dig, ssh), wie Browser und
-    Server miteinander reden (HTTP), und die beiden Schreibweisen für Daten,
-    die dabei und in Einstellungen vorkommen: JSON und YAML.
+    Server miteinander reden (HTTP), Hashes, Schlüssel und Unterschriften,
+    und die beiden Schreibweisen für Daten, die dabei und in Einstellungen
+    vorkommen: JSON und YAML.
   entries:
     - netzwerk
     - http
+    - kryptographie
     - json
     - yaml
 
