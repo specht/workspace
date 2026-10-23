@@ -167,10 +167,15 @@ Welche der 1500 Befragungen die des Nachtwächters ist, hat niemand notiert. `gr
 grep Hamburg befragungen/*
 ```
 
-Das `*` setzt die Shell ein, bevor `grep` überhaupt startet: `befragungen/*` wird zu den Namen aller 1500 Dateien im Ordner. Vor jede Fundstelle schreibt `grep` dann, aus welcher Datei sie stammt. Mit `-l` (»list«) gibt es nur noch die Dateinamen aus, jeden einmal. Und `wc -l` zählt sie:
+Das `*` setzt die Shell ein, bevor `grep` überhaupt startet: `befragungen/*` wird zu den Namen aller 1500 Dateien im Ordner. Vor jede Fundstelle schreibt `grep` dann, aus welcher Datei sie stammt. Mit `-l` (»list«) gibt es nur noch die Dateinamen aus, jeden einmal; `head -n 5` zeigt die ersten fünf davon:
 
 ```bash
 grep -l Hamburg befragungen/* | head -n 5
+```
+
+Wie viele es sind, zählt `wc -l`, wenn du die Ausgabe statt an `head` an `wc` schickst:
+
+```bash
 grep -l Hamburg befragungen/* | wc -l
 ```
 
@@ -183,6 +188,10 @@ crop-terminal-lines: auto
 -->
 
 <img class='full' src='grep-l.webp' alt='Fünf Dateinamen von befragungen/befragung-1221.txt bis befragung-1435.txt, darunter 145: So viele Befragungen erwähnen Hamburg.'>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> <code>grep -rl Hamburg befragungen | wc -l</code> zählt dieselben 145 Dateien. Mit <code>-r</code> öffnet <code>grep</code> den Ordner selbst und durchsucht alles darin, auch Unterordner, und die Shell muss keine 1500 Namen in die Zeile einsetzen. Das zählt bei sehr vielen Dateien: Wird die Zeile, die die Shell aus <code>befragungen/*</code> macht, zu lang, bricht sie mit »Argument list too long« ab; <code>grep -r</code> nicht.
+</div>
 
 Such so nach dem Nachtwächter. Ein Name mit Leerzeichen gehört in Anführungszeichen, sonst sucht `grep` nach dem Vornamen in einer Datei, die so heißt wie der Nachname. Nicht jede Datei, in der er vorkommt, ist seine eigene Befragung: Wer befragt wurde, steht in der zweiten Zeile.
 
