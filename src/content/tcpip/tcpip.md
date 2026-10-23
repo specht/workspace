@@ -3,7 +3,7 @@ image: teaser.webp
 image_alt: "Ein Terminal, in dem nc eine HTTP-Anfrage an info.cern.ch schickt, darunter die Antwort des Servers"
 kind: labor
 duration: 2 Doppelstunden
-reference: [http, json]
+reference: [http, json, terminal]
 </div>
 
 <div
