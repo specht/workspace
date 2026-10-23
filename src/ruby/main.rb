@@ -5999,10 +5999,12 @@ class Main < Sinatra::Base
         # Copy buttons on every code block for the group's students, or only
         # where the page has them (group_copy_all_code?); saved at once.
         copy_all = group_copy_all_code?([group])
-        io << "<label class='class-copy-all' title='Aus: Kopierknöpfe nur dort, wo Abtippen nichts bringt (Adressen, Befehle, große Dateien); alles andere tippen die Lernenden ab. An: an jedem Codeblock ein Kopierknopf.'>" \
-            "<input type='checkbox' class='form-check-input class-copy-all-code' data-group='#{h.(group)}'#{copy_all ? ' checked' : ''}>Alle Codeblöcke kopierbar</label>"
+        io << "<label title='Wo sinnvoll: nur dort, wo Abtippen nichts lehrt (Adressen, Befehle, große Dateien); alles andere tippen die Lernenden ab. An jedem Codeblock: überall ein Kopierknopf.'>" \
+            "Kopierknöpfe <select class='form-select class-copy-all-code' data-group='#{h.(group)}'>" \
+            "<option value='marked'#{copy_all ? '' : ' selected'}>Wo sinnvoll</option>" \
+            "<option value='all'#{copy_all ? ' selected' : ''}>An jedem Codeblock</option></select></label>"
         io << "<script>document.querySelector('.class-copy-all-code').addEventListener('change', function (e) {" \
-            "api_call('/api/set_group_copy_all_code', { group: e.target.dataset.group, on: e.target.checked }, function () {}, { no_please_wait: true });" \
+            "api_call('/api/set_group_copy_all_code', { group: e.target.dataset.group, on: e.target.value === 'all' }, function () {}, { no_please_wait: true });" \
             "});</script>"
         io << class_repos_button_html(group)
         io << "<noscript><button class='btn btn-primary'>Anzeigen</button></noscript>"

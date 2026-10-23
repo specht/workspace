@@ -3660,11 +3660,6 @@ ul.task-teacher-list .task-teacher-answer {
     max-width: 100%;
 }
 
-.class-board-select .class-copy-all .form-check-input {
-    margin: 0;
-    flex: none;
-}
-
 /* A group name can carry the school's name: the menu never gets wider
    than the page, and the browser shortens its text. */
 .class-board-select .form-select {

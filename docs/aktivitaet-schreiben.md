@@ -166,7 +166,7 @@ trotzdem im Text, Zeile für Zeile. Weitere Endungen: `_wrap` (lange Zeilen
 umbrechen) und `_lineno` (Zeilennummern), in beliebiger Reihenfolge.
 
 Das ist die Voreinstellung. Eine Lehrkraft kann auf der Klassenseite für eine
-Gruppe »Alle Codeblöcke kopierbar« ankreuzen; deren Lernende bekommen dann an
+Gruppe »Kopierknöpfe: An jedem Codeblock« wählen; deren Lernende bekommen dann an
 jedem Codeblock einen Kopierknopf. Die Seite schreibt man trotzdem so, als
 tippten sie ab.
 
