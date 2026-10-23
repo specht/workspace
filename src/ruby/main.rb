@@ -1846,7 +1846,7 @@ class Main < Sinatra::Base
                 # on the Personen page, the pages that place each person (before
                 # the part markers become anchors)
                 if path == PersonBoxes.file(REFERENCE_ROOT)
-                    markdown = PersonBoxes.annotate(markdown, PersonBoxes.uses(person_pages))
+                    markdown = PersonBoxes.annotate(markdown, PersonBoxes.uses(person_pages), PersonBoxes.sources(path))
                 end
                 markdown = ContentParts.mark_parts(markdown)
                 # _person(name): a person box from the Handbuch page Personen.

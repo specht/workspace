@@ -1,5 +1,6 @@
 require 'cgi'
 require './include/content_parts.rb'
+require './include/person_sources.rb'
 
 # Person boxes (docs/aktivitaet-schreiben.md): who a page names, with a photo
 # and a few sentences. Every person is a part of the Handbuch page Personen
@@ -28,9 +29,37 @@ module PersonBoxes
                 warn&.call("_person(#{name}): no such person on the page #{PAGE}")
                 next "<div class='hint'>Person fehlt: #{name}</div>"
             end
-            text = ContentParts.strip_leading_heading(text)
+            text = with_sources(ContentParts.strip_leading_heading(text), sources_html(name, sources(source)))
             "\n#{ContentParts.rewrite_relative_sources(text, from_dir: File.dirname(source), to_dir: page_dir)}\n"
         end
+    end
+
+    # The checked sources next to the Personen page (sources.yaml,
+    # PersonSources), { name => claims }.
+    def self.sources(source)
+        source ? PersonSources.read_sources(File.dirname(source)) : {}
+    end
+
+    # A small info icon in the box's corner; behind it »Mehr dazu«, the
+    # sources its sentences were checked against, for whoever wants to read
+    # on. Nothing when a box has none.
+    def self.sources_html(name, sources)
+        links = PersonSources.reading(sources[name])
+        return '' if links.empty?
+
+        items = links.map do |l|
+            "<li><a href='#{CGI.escapeHTML(l[:url])}' target='_blank' rel='noopener'>#{CGI.escapeHTML(l[:label])}</a></li>"
+        end.join
+        "<details class='person-sources'><summary title='Mehr dazu' aria-label='Mehr dazu: Quellen'>" \
+            "<i class='bi bi-info-circle' aria-hidden='true'></i></summary>" \
+            "<div class='person-sources-list'><strong>Mehr dazu</strong><ul>#{items}</ul></div></details>\n"
+    end
+
+    # html right after the box's opening line
+    def self.with_sources(text, html)
+        return text if html.empty?
+
+        text.sub(/^<div class=['"]person\b[^>]*>[ \t]*\n/) { |line| line + html }
     end
 
     # name => [{ url:, title: }] of the pages that place each person, in the
@@ -50,7 +79,7 @@ module PersonBoxes
 
     # On the Personen page: in each box, before the photo's source (or at its
     # end when there is none), the pages that place the person.
-    def self.annotate(markdown, uses)
+    def self.annotate(markdown, uses, sources = {})
         out = []
         current = nil
         done = false
@@ -59,6 +88,11 @@ module PersonBoxes
             "<p class='person-pages'>Im Workspace: #{links.join(', ')}</p>\n"
         end
         markdown.each_line do |line|
+            if current && line =~ /^<div class=['"]person\b/
+                out << line
+                out << sources_html(current, sources)
+                next
+            end
             if line =~ ContentParts::PART_MARKER
                 current = $1
                 done = false

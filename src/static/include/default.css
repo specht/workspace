@@ -5798,6 +5798,44 @@ div[data-stepper] :not(pre) > code:not([class]),
    box is there for the search and the table of contents, the box shows the
    name already */
 .person .person-pages { font-size: 0.92em; }
+
+/* »Mehr dazu« (person_boxes.rb): a faint info icon in the box's corner, the
+   checked sources behind it, over the box; it takes no room in the box. */
+.person { position: relative; }
+.person:has(> .person-sources) { padding-right: 2.2em; }
+.person-sources { position: absolute; top: 0.55em; right: 0.6em; }
+.person-sources summary {
+    display: flex;
+    list-style: none;
+    padding: 0.1em;
+    color: var(--bs-secondary-color);
+    opacity: 0.55;
+    cursor: pointer;
+    line-height: 1;
+}
+.person-sources summary::-webkit-details-marker { display: none; }
+.person-sources summary .bi { margin: 0; }
+.person-sources summary .bi::before { vertical-align: 0; }
+.person-sources summary:hover,
+.person-sources summary:focus-visible,
+.person-sources[open] summary { opacity: 1; }
+.person-sources-list {
+    position: absolute;
+    top: 1.5em;
+    right: 0;
+    z-index: 5;
+    width: max-content;
+    max-width: min(24em, 80vw);
+    padding: 0.55em 0.9em 0.6em;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5em;
+    background: var(--bs-body-bg);
+    box-shadow: 0 0.3em 1em rgba(0, 0, 0, 0.15);
+    font-size: 0.95em;
+}
+.person-sources-list strong { font-size: 0.9em; }
+.person-sources-list ul { margin: 0.25em 0 0; padding-left: 1.1em; }
+.person-sources-list li { margin: 0.1em 0; }
 h3:has(+ .person) {
     position: absolute;
     width: 1px;

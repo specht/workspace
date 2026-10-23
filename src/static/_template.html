@@ -156,6 +156,21 @@ function install_clipboard_handler(selector) {
     });
 }
 
+// »Mehr dazu« in person boxes (person_boxes.rb): a click elsewhere or
+// Escape closes the list again.
+document.addEventListener('click', function(e) {
+    document.querySelectorAll('details.person-sources[open]').forEach(function(d) {
+        if (!d.contains(e.target)) d.open = false;
+    });
+});
+document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Escape') return;
+    document.querySelectorAll('details.person-sources[open]').forEach(function(d) {
+        d.open = false;
+        d.querySelector('summary').focus();
+    });
+});
+
 // ```bash_copy blocks (code_highlight.rb): a button that copies the code,
 // without line numbers. On blocks that are no use to type and on big blocks
 // that go into a file.

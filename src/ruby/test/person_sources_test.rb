@@ -77,6 +77,26 @@ class PersonSourcesTest < Minitest::Test
         refute overview.first[:paragraphs].flatten.any? { |s| s[:text].include?('gemeinfrei') }
     end
 
+    # For readers: each page once (another #anchor is the same page), the
+    # most cited first, with a name a reader recognises
+    def test_reading_lists_each_page_once_with_a_name
+        claims = [
+            { 'sources' => [{ 'url' => 'https://en.wikipedia.org/wiki/Snell%27s_law#History' },
+                            { 'url' => 'https://mathshistory.st-andrews.ac.uk/Biographies/Snell/' }] },
+            { 'sources' => [{ 'url' => 'https://mathshistory.st-andrews.ac.uk/Biographies/Snell/' }] },
+            { 'sources' => [{ 'url' => 'https://en.wikipedia.org/wiki/Snell%27s_law' },
+                            { 'url' => 'https://de.wikipedia.org/wiki/Willebrord_van_Roijen_Snell' },
+                            { 'url' => 'https://www.example.org/papers/rendering.pdf' }] },
+            { 'none' => 'Workspace' },
+        ]
+        assert_equal [
+            "Wikipedia: Snell's law", 'MacTutor: Snell', 'Wikipedia (de): Willebrord van Roijen Snell', 'example.org (PDF)',
+        ], PersonSources.reading(claims).map { |l| l[:label] }
+        # cited twice each: the one cited first comes first, with the address as first given
+        assert_equal 'https://en.wikipedia.org/wiki/Snell%27s_law#History', PersonSources.reading(claims)[0][:url]
+        assert_empty PersonSources.reading(nil)
+    end
+
     def test_a_claim_without_sources_leaves_the_sentence_open
         assert_equal 'open', PersonSources.state([{ 'text' => 'x' }])
         assert_equal 'sourced', PersonSources.state([{ 'text' => 'x', 'sources' => [{ 'url' => 'u' }] }])

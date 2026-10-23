@@ -41,3 +41,17 @@ test('a student does not get the page', async ({ page }, testInfo) => {
   const response = await page.goto('/person-sources');
   expect(response?.status()).toBe(403);
 });
+
+// Readers get the sources too, behind a small info icon in each box
+// (»Mehr dazu«, person_boxes.rb); a click elsewhere closes the list.
+test('a reader opens the sources of a person box', async ({ page }) => {
+  await page.goto('/raytracing');
+  const box = page.locator('.person', { hasText: 'Willebrord Snellius' }).first();
+  const list = box.locator('.person-sources-list');
+  await expect(list).toBeHidden();
+  await box.getByRole('group').locator('summary').click();
+  await expect(list).toBeVisible();
+  await expect(list.getByRole('link', { name: 'MacTutor: Snell' })).toHaveAttribute('href', /mathshistory\.st-andrews\.ac\.uk/);
+  await page.locator('h1').click();
+  await expect(list).toBeHidden();
+});

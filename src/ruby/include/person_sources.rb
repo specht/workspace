@@ -73,9 +73,71 @@ module PersonSources
 
     def self.load
         markdown = File.read(File.join(DIR, 'personen.md'))
-        file = File.join(DIR, 'sources.yaml')
-        sources = File.file?(file) ? (YAML.safe_load(File.read(file), aliases: false) || {}) : {}
-        overview(markdown, sources)
+        overview(markdown, read_sources(DIR))
+    end
+
+    def self.read_sources(dir)
+        file = File.join(dir, 'sources.yaml')
+        File.file?(file) ? (YAML.safe_load(File.read(file), aliases: false) || {}) : {}
+    end
+
+    # --- For readers (PersonBoxes): »Mehr dazu« behind the info icon -------
+
+    # Names a reader recognises, by host
+    HOSTS = {
+        'mathshistory.st-andrews.ac.uk' => 'MacTutor',
+        'computerhistory.org' => 'Computer History Museum',
+        'amturing.acm.org' => 'ACM Turing Award',
+        'plato.stanford.edu' => 'Stanford Encyclopedia of Philosophy',
+        'britannica.com' => 'Britannica',
+        'technologyreview.com' => 'MIT Technology Review',
+        'spectrum.ieee.org' => 'IEEE Spectrum',
+        'archive.org' => 'Internet Archive',
+    }.freeze
+
+    # Good for checking, not for reading on: answers of an API, raw data,
+    # a text dump of a scanned book, readers' notes, a logo collection.
+    NOT_FOR_READING = [%r{//api\.}, %r{/api/}, /\.json(\?|\z)/, /djvu\.txt\z/, /goodreads\.com/, /1000logos\.net/].freeze
+
+    # The distinct sources of a box (the same page with another #anchor is
+    # one), the most cited first: [{ url:, label: }]
+    def self.reading(claims)
+        urls = Array(claims).flat_map { |c| Array(c['sources']).map { |s| s['url'].to_s } }.reject(&:empty?)
+        urls = urls.reject { |url| NOT_FOR_READING.any? { |pattern| url.match?(pattern) } }
+        key = ->(url) { url.sub(/#.*/, '') }
+        counts = urls.map(&key).tally
+        first = urls.uniq(&key)
+        order = first.sort_by { |url| [-counts[key.(url)], first.index(url)] }
+        same_host = order.map { |url| host(url) }.tally
+        order.map { |url| { :url => url, :label => label(url, same_host[host(url)] > 1) } }
+    end
+
+    # Addresses as written in sources.yaml may hold »ß« or [ ]
+    def self.parse(url)
+        URI.parse(url)
+    rescue URI::InvalidURIError
+        URI.parse(URI::DEFAULT_PARSER.escape(url).gsub('[', '%5B').gsub(']', '%5D')) rescue nil
+    end
+
+    def self.host(url)
+        parse(url)&.host.to_s.sub(/\Awww\./, '')
+    end
+
+    # »Wikipedia: Snell's law«, »MacTutor: Snell«, »curl.se«; the page's
+    # name too when one host has several pages for the box; »(PDF)«.
+    def self.label(url, several)
+        path = parse(url)&.path.to_s
+        name = HOSTS.find { |h, _| host(url) == h || host(url).end_with?(".#{h}") }&.last
+        text = if (m = host(url).match(/\A([a-z]+)\.wikipedia\.org\z/))
+            title = URI.decode_www_form_component(path.sub(%r{\A/wiki/}, '')).tr('_', ' ')
+            "Wikipedia#{m[1] == 'en' ? '' : " (#{m[1]})"}: #{title}"
+        elsif name || several
+            segment = URI.decode_www_form_component(path.split('/').reject(&:empty?).last.to_s).sub(/\.(html?|php|pdf)\z/i, '').tr('_-', '  ')
+            [name || host(url), segment.empty? || segment.match?(/\A[\d.]+\z/) ? nil : segment].compact.join(': ')
+        else
+            host(url)
+        end
+        path.downcase.end_with?('.pdf') ? "#{text} (PDF)" : text
     end
 
     def self.h(text)

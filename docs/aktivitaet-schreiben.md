@@ -311,7 +311,10 @@ Kastens, wörtlich, mit Link und der Stelle aus der Quelle, die es belegt
 der Entwicklung, für Administratoren) zeigt jeden Satz aller Kästen mit seinen
 Quellen und färbt, was noch offen ist, was die Quellen nur teilweise stützen
 oder widerlegen und welche Aussagen der Kasten nicht mehr enthält. Ein neuer
-oder geänderter Kasten bekommt dort seine Belege.
+oder geänderter Kasten bekommt dort seine Belege. Lesende finden die Quellen hinter einem
+kleinen Info-Symbol oben rechts im Kasten (»Mehr dazu«, `person_boxes.rb`):
+jede Seite einmal, die meistgenutzten zuerst; Datenquellen wie API-Antworten
+stehen nur auf `/person-sources`.
 
 Gibt es kein freies Foto (David Huffman, Edgar F. Codd), steht der Kasten
 ohne Bild da, nur mit dem Text, ohne Silhouette und ohne Platzhalter: Ein
