@@ -169,6 +169,15 @@
     - glsl
     - prozedurale-texturen
 
+- key: reference-tic80
+  label: TIC-80
+  icon: /images/tic80.png
+  description: |
+    Die Fantasy-Konsole: Konsole und Editoren, zeichnen, Sprites und Karte,
+    Knöpfe und Töne, und Lua mit Tabellen und Fehlermeldungen.
+  entries:
+    - tic80
+
 - key: reference-algorithms
   label: Algorithmen und Datenstrukturen
   icon: /images/brain.png

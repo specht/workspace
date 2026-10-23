@@ -4,7 +4,7 @@ image_alt: "Ein Retro-Spiel: eine kleine Figur auf grünem Boden, von oben falle
 kind: projekt
 language: TIC-80 / Lua
 duration: 3 Doppelstunden
-reference: [workspace]
+reference: [tic80, workspace]
 </div>
 
 <div
