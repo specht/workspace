@@ -28,6 +28,8 @@
     // with pulses one after another takes PULSE_TIME for each
     const MOTION_TIME = 550;
     const PULSE_TIME = 650;
+    // below this width (in em of the widget) the code goes under the picture
+    const NARROW_EM = 56;
 
     const STYLE = `
 .algo-stepper { margin: 1em 0 1.5em; --algo-accent: #6741d9; --algo-frontier: #ffe066; --algo-done: #b197fc;
@@ -52,14 +54,20 @@ html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-fronti
 .algo-stepper .algo-swatch.line { height: 0; width: 1.3em; border: 0; border-top: 2.5px solid var(--swatch); border-radius: 0; }
 .algo-stepper .algo-body { display: grid; grid-template-columns: minmax(0, 34em) minmax(12em, 1fr); grid-template-rows: auto 1fr; gap: 0 1.2em; align-items: start; }
 /* the picture with its legend under it on the left, the calls and the code
-   beside both; on a phone (and in a stacked lightbox) one under the other */
+   beside both. Where the widget is too narrow for the code to keep about
+   20em beside the full picture (algo-narrow, set from the widget's own
+   width: a tablet upright, half a screen beside VS Code, a phone), one under
+   the other, the step's message right under the picture and the code last,
+   so that picture and message are seen together; as in a stacked lightbox */
 .algo-stepper .algo-body > svg.algo-picture { grid-column: 1; grid-row: 1; }
 .algo-stepper .algo-body > .algo-legend { grid-column: 1; grid-row: 2; }
 .algo-stepper .algo-body > .algo-side { grid-column: 2; grid-row: 1 / span 2; }
-@media (max-width: 640px) {
-    .algo-stepper .algo-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; gap: 0; }
-    .algo-stepper .algo-body > .algo-side { grid-column: 1; grid-row: 3; margin-top: 1em; }
-}
+.algo-stepper.algo-narrow:not(.stepper-lightbox) { display: flex; flex-direction: column; }
+.algo-stepper.algo-narrow:not(.stepper-lightbox) .algo-body { display: contents; }
+.algo-stepper.algo-narrow:not(.stepper-lightbox) svg.algo-links { display: none; }
+.algo-stepper.algo-narrow:not(.stepper-lightbox) svg.algo-picture { align-self: center; }
+.algo-stepper.algo-narrow:not(.stepper-lightbox) > .algo-message { order: 1; }
+.algo-stepper.algo-narrow:not(.stepper-lightbox) .algo-body > .algo-side { order: 2; margin-top: 1em; }
 div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { grid-column: 1; grid-row: 3; }
 .algo-stepper svg.algo-picture { width: 100%; max-width: 34em; min-width: 0; height: auto; }
 .algo-stepper .algo-side { min-width: 0; font-size: 0.92em; }
@@ -3167,6 +3175,27 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         const legend = legendOf(algo, widget.dataset.sort, frames);
         if (legend) body.appendChild(legend);
         widget.replaceChildren(...title, el('div', { class: 'algo-controls' }, [...buttons, play, speedButton, count]), timelineBox, body, message);
+        // One under the other where the code would get less than about 20em
+        // beside the picture (34em, the gap 1.2em): measured on the widget,
+        // not the window, so that a narrow column of a wide window counts too
+        if (window.ResizeObserver) {
+            const narrow = () => {
+                const em = parseFloat(getComputedStyle(widget).fontSize) || 16;
+                const was = widget.classList.contains('algo-narrow');
+                const now = widget.clientWidth < NARROW_EM * em;
+                if (now === was) return;
+                widget.classList.toggle('algo-narrow', now);
+                // the parts are others now: their heights are measured again
+                // (stepper_keys.js), the text size for the picture's new room
+                if (widget.dataset.steps) {
+                    room = 0;
+                    show(false);
+                    document.dispatchEvent(new CustomEvent('stepper-layout', { detail: widget }));
+                }
+            };
+            new ResizeObserver(narrow).observe(widget);
+            narrow();
+        }
         requestAnimationFrame(placeNames);
         if (document.fonts) document.fonts.ready.then(placeNames);
         window.addEventListener('resize', placeNames);
@@ -3277,6 +3306,15 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         // took (StepperMotion, reverse)
         let before = 0;
         let room = 0;
+        // the width the picture can have: its column, or, where the body only
+        // groups (algo-narrow, display: contents), the widget's inner width
+        const roomOf = () => {
+            const parent = picture.parentElement;
+            if (!parent) return 0;
+            if (getComputedStyle(parent).display !== 'contents') return parent.clientWidth;
+            const style = getComputedStyle(widget);
+            return widget.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+        };
         const show = (animate) => {
             const frame = frames[index];
             const back = animate && index === before - 1;
@@ -3286,7 +3324,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             // on a small screen the text grows: by as much as the picture is
             // shown smaller than 0.75 of its size, at most by 0.35
             const vbWidth = Number((svg.getAttribute('viewBox') || '0 0 0').split(/\s+/)[2]) || 0;
-            if (!room && picture.parentElement) room = picture.parentElement.clientWidth;
+            if (!room) room = roomOf();
             const shown = vbWidth && room ? Math.min(1, room / vbWidth) : 1;
             growText(svg, Math.min(1.35, Math.max(1, 0.75 / shown)));
             // a list's cells keep their size across widgets: the picture at
@@ -3344,7 +3382,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         // the text's size follows the room: a turned phone draws the step
         // again. The width is read here and once at the start, not for every
         // step: that would lay out the page each time
-        window.addEventListener('resize', () => { const now = picture.parentElement ? picture.parentElement.clientWidth : 0; if (Math.abs(now - room) > 20) { room = now; show(false); } });
+        window.addEventListener('resize', () => { const now = roomOf(); if (Math.abs(now - room) > 20) { room = now; show(false); } });
         widget.stepperGo = (k) => { index = Math.max(0, Math.min(frames.length - 1, k)); show(false); };
         const go = { first: () => 0, prev: () => index - 1, next: () => index + 1, last: () => frames.length - 1 };
         for (const b of buttons) b.addEventListener('click', () => {

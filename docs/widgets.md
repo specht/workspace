@@ -104,6 +104,17 @@ in doubt, do it the way it does.
   height of its tallest step (stepper_keys.js), so the last one may grow
   and shrink without moving anything in the widget and without leaving a
   gap on a phone.
+- **The code beside the picture only where it has room.** The Algo Stepper
+  puts the calls and the code beside the picture while the widget is at
+  least 56em wide (`NARROW_EM`): the picture's 34em, the gap and about 20em
+  for the code, so that its lines do not break inside words. Narrower (a
+  tablet upright, the Handbuch in half a screen beside VS Code, a phone),
+  the widget gets `algo-narrow`: one column, the message right under the
+  picture and its legend, the calls and the code last, so that picture and
+  message are seen together. It is measured on the widget (ResizeObserver),
+  not the window. Then every part keeps the height of its tallest step,
+  the code too (stepper_keys.js counts the parts in the order they are
+  seen), and the lines from the calls to their nodes are not drawn.
 - **Variables are visible** when they matter: a label with the variable's
   English name (`root`, `node`, `x`, `y`, `successor`; not »Wurzel«) and an
   arrow to what it references. `root` comes in from above the tree. A temporary variable

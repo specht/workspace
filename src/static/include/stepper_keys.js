@@ -497,13 +497,35 @@ document.addEventListener('keydown', (event) => {
 // page has loaded, again when the width changes or a text in the widget is
 // edited. Not in the lightbox, whose fit measures for itself. The last
 // part (the message) keeps no height: when it changes, nothing in the
-// widget moves, and a phone shows no gap under a short message.
+// widget moves, and a phone shows no gap under a short message. Where a
+// layout puts the message higher up (the narrow Algo Stepper), all parts
+// keep their height.
 // Going through hundreds of steps takes seconds, so it goes in slices of a
 // few milliseconds; each slice puts back the step that is shown and the
 // heights reserved so far, so the page stays usable and nothing flickers.
 (() => {
-    const parts = (widget) => [...widget.children].filter((c) => !['absolute', 'fixed'].includes(getComputedStyle(c).position));
-    const clear = (widget) => { for (const part of parts(widget)) part.style.minHeight = ''; };
+    // The parts in the order they are seen: a child that only groups
+    // (display: contents, the Algo Stepper's body where it is narrow) counts
+    // by its children, and a flex order moves a part (the message between
+    // picture and code), so that the last part is the last on the page.
+    const parts = (widget) => {
+        const found = [];
+        const add = (box) => {
+            for (const child of box.children) {
+                const style = getComputedStyle(child);
+                if (style.display === 'contents') add(child);
+                else if (style.display !== 'none' && !['absolute', 'fixed'].includes(style.position)) found.push([child, Number(style.order) || 0]);
+            }
+        };
+        add(widget);
+        return found.map((entry, i) => [...entry, i]).sort((a, b) => a[1] - b[1] || a[2] - b[2]).map(([child]) => child);
+    };
+    // what got a height, also from a layout the widget no longer has
+    const held = new WeakMap();
+    const clear = (widget) => {
+        for (const part of new Set([...parts(widget), ...(held.get(widget) || [])])) part.style.minHeight = '';
+        held.delete(widget);
+    };
     const SLICE = 12;
     const jobs = new Map();
     let running = 0;
@@ -531,6 +553,7 @@ document.addEventListener('keydown', (event) => {
             job.list.forEach((part, i) => {
                 if (job.most[i] - job.least[i] > 1) part.style.minHeight = `${job.most[i] / (parseFloat(getComputedStyle(part).fontSize) || 16)}em`;
             });
+            held.set(widget, job.list);
             jobs.delete(widget);
             if (performance.now() >= until) break;
         }
@@ -540,7 +563,12 @@ document.addEventListener('keydown', (event) => {
         if (typeof widget.stepperGo !== 'function' || widget.classList.contains('stepper-lightbox')) return;
         const steps = Number(widget.dataset.steps);
         if (!(steps > 1)) return;
-        const list = parts(widget).slice(0, -1);
+        // the message, the widget's last child, keeps no height where it is
+        // last on the page; where a layout moves it up (between picture and
+        // code), every part keeps its height, the code under it too
+        const seen = parts(widget);
+        const flow = [...widget.children].filter((c) => !['absolute', 'fixed'].includes(getComputedStyle(c).position));
+        const list = seen[seen.length - 1] === flow[flow.length - 1] ? seen.slice(0, -1) : seen;
         jobs.delete(widget);
         jobs.set(widget, { steps, list, next: 0, least: list.map(() => Infinity), most: list.map(() => 0) });
         if (!running) running = setTimeout(run, 0);
@@ -559,4 +587,7 @@ document.addEventListener('keydown', (event) => {
     if (document.readyState === 'complete') start();
     else window.addEventListener('load', start);
     document.addEventListener('stepper-added', (event) => setTimeout(() => reserve(event.detail), 50));
+    // a widget that changed its layout without the window changing (the
+    // Algo Stepper going narrow) measures again
+    document.addEventListener('stepper-layout', (event) => setTimeout(() => reserve(event.detail), 50));
 })();
