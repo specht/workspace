@@ -6272,8 +6272,6 @@ class Main < Sinatra::Base
                         data[:disk_user_total] = bytes_to_str(disk_total).sub('B', '').gsub(' ', '').gsub(/([A-Za-z]+)/, '<span class=\'unit\'>\1</span>')
                         data[:disk_user_used] = bytes_to_str(disk_used).sub('B', '').gsub(' ', '').gsub(/([A-Za-z]+)/, '<span class=\'unit\'>\1</span>')
                         data[:disk_user_percent] = (disk_used * 100.0 / disk_total * 100).to_i.to_f / 100
-                        # What can still be written there (df's »Available«).
-                        data[:disk_user_free] = bytes_to_str(disk_free).sub('B', '').gsub(' ', '').gsub(/([A-Za-z]+)/, '<span class=\'unit\'>\1</span>')
 
                         ws.send({:server_stats => data}.to_json)
 

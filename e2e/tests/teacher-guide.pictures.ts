@@ -115,8 +115,9 @@ const LOADS: [number, number][] = [
   [0.4, 312], [3.1, 486], [0.9, 271], [12.6, 655], [1.7, 398], [0.2, 244], [5.4, 517], [0.7, 289], [2.2, 431],
   [27.8, 803], [0.8, 302], [1.3, 356], [0.3, 259], [7.9, 590], [1.1, 337], [0.5, 281], [4.0, 472], [0.6, 266],
 ];
-// The real server's figures at a lesson, with the unit marked up as the
-// server sends it
+// Made-up figures of a server during a lesson, never this machine's: every
+// value the server sends is here, or the development machine's shows
+// through; with the unit marked up as the server sends it
 const G = (value: number) => `${value.toFixed(1)}<span class='unit'>G</span>`;
 const SERVER = {
   cpu_usage: 8.95, num_cores: 16, ram_percent: 46.53, ram_used: G(14.1), ram_total: G(30.3),
