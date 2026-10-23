@@ -34,6 +34,10 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
   Gelingt das beim Start auch nach fünf Versuchen nicht, startet der Workspace nicht (502);
   was dann zu tun ist und der Notausgang `internal/skip-deletion-replay` stehen in
   docs/datenschutz.md, »Wenn der Workspace nicht startet«.
+- Die Löschliste (`internal/deleted-accounts.jsonl`) geht nach jeder Änderung als E-Mail mit der
+  ganzen Liste im Anhang an die Adressen in `ADMIN_USERS` (Betreff »Löschliste des Workspace …:
+  aufbewahren«; die neueste genügt). Sie hilft, wenn der Server verloren geht oder eine Sicherung
+  die Datei überschreibt: docs/datenschutz.md, »Löschen«.
 - Fallserver: Die Alarmanlage startete nach einem Neustart des Containers immer wieder neu
   (`mkfifo: … File exists`). Mit `CASE_SERVER = true` nach dem Update
   `./config.rb build case_museum case_alarm` und `./config.rb up -d case_museum case_alarm`.

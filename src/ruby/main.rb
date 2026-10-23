@@ -2285,6 +2285,11 @@ class Main < Sinatra::Base
                 rescue => e
                     STDERR.puts "Repeating deletions after a restore failed: #{e.class}: #{e.message}"
                 end
+                begin
+                    Main.new!.mail_deletion_log
+                rescue => e
+                    STDERR.puts "Mailing the deletion log failed (tried again in a few minutes): #{e.class}: #{e.message}"
+                end
             end
         end
 
@@ -4358,6 +4363,37 @@ class Main < Sinatra::Base
             AtomicFile.write(DELETION_LOG, text)
             neo4j_query('MERGE (s:Setting {key: $key}) SET s.at = $at, s.seq = $seq;', :key => LAST_DELETION, :at => now.to_i, :seq => seq)
         end
+    end
+
+    # A copy of the deletion log off the server, to the administrators
+    # (ADMIN_USERS, like the mail when someone deletes its own account): the
+    # whole log in each mail, so the newest one is enough
+    # (MailTexts.deletion_log). Sent when the log
+    # changed since the last mail, from the check every few minutes; a mail
+    # that fails is tried again there. DELETION_LOG_MAILED holds the
+    # checksum of what went out last.
+    DELETION_LOG_MAILED = '/internal/deleted-accounts.mailed'
+
+    def mail_deletion_log
+        return if ADMIN_USERS.empty? || !File.exist?(DELETION_LOG)
+
+        text = File.read(DELETION_LOG)
+        digest = Digest::SHA256.hexdigest(text)
+        return if File.exist?(DELETION_LOG_MAILED) && File.read(DELETION_LOG_MAILED).strip == digest
+
+        entries = AccountDeletion.parse_log(text)
+        mail_subject, html = MailTexts.deletion_log(:web_root => WEB_ROOT, :time => Time.now, :count => entries.size,
+            :last_seq => entries.map { |e| e['seq'].to_i }.max.to_i, :signature => mail_signature)
+        ADMIN_USERS.each do |admin|
+            deliver_mail(:attachments => [{ :filename => 'deleted-accounts.jsonl', :content => text }]) do
+                to admin
+                from SMTP_FROM
+                subject mail_subject
+                html
+            end
+        end
+        AtomicFile.write(DELETION_LOG_MAILED, digest + "\n")
+        STDERR.puts "Deletion log mailed to the administrators (#{entries.size} entries)"
     end
 
     # After a restore, by itself: every account deleted after the backup is

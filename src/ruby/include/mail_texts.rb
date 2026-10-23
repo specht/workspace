@@ -43,6 +43,30 @@ module MailTexts
         ["Konto gelöscht: #{email}", body + "\n" + closing(signature)]
     end
 
+    # To the administrators (ADMIN_USERS), whenever the deletion log changed:
+    # the whole log as an attachment, so that the newest of these mails is
+    # enough when the server is lost or a restore overwrites the file.
+    def self.deletion_log(web_root:, time:, count:, last_seq:, signature:)
+        stand = time.strftime('%d.%m.%Y, %H:%M Uhr')
+        body = +"<p>Im Anhang steht die Löschliste des Workspace #{link(web_root)}, Stand #{stand}: " \
+            "#{count} #{count == 1 ? 'Eintrag' : 'Einträge'}, zuletzt Nummer #{last_seq}.</p>\n"
+        body << '<p><strong>Was das ist:</strong> Jedes gelöschte Konto als Hashwert der Adresse, mit Datum und laufender Nummer; ' \
+            'keine Adressen, keine Namen. Auf dem Server liegt die Liste in <code>internal/deleted-accounts.jsonl</code> im Datenordner. ' \
+            'Diese Kopie gibt es, damit sie auch dann noch da ist, wenn der Server verloren geht oder eine Sicherung die Datei überschreibt.</p>' + "\n"
+        body << '<p><strong>Diese E-Mail aufbewahren.</strong> Sie enthält die ganze Liste. Alle früheren E-Mails mit dem Betreff ' \
+            '»Löschliste« können gelöscht werden. Nach der nächsten Löschung kommt eine neue.</p>' + "\n"
+        body << '<p><strong>Wann sie wichtig wird:</strong> nur, wenn der Workspace aus einer Sicherung wiederhergestellt wird und die Datei ' \
+            '<code>internal/deleted-accounts.jsonl</code> dabei verloren geht oder älter ist als diese E-Mail. Ohne die Liste kämen Konten ' \
+            'wieder, die nach der Sicherung gelöscht wurden.</p>' + "\n"
+        body << '<p><strong>Was dann zu tun ist:</strong> Vor dem Start des Workspace den Anhang im Datenordner als ' \
+            '<code>internal/deleted-accounts.jsonl</code> ablegen. Liegt dort schon eine Datei, gilt die mit der höheren Nummer in der ' \
+            'letzten Zeile; diese hier endet mit Nummer ' + last_seq.to_s + '. Beim Start löscht der Workspace jedes Konto aus der Liste, ' \
+            'das die Sicherung zurückgebracht hat, bevor er die erste Anfrage beantwortet. Läuft er schon: danach ' \
+            '<code>./config.rb restart ruby</code>. Mehr in <code>docs/datenschutz.md</code>, Abschnitt »Löschen«.</p>' + "\n"
+        body << closing(signature)
+        ["Löschliste des Workspace (#{h(web_root.sub(%r{\Ahttps?://}, ''))}), Stand #{time.strftime('%d.%m.%Y')}: aufbewahren", body]
+    end
+
     # Before the administration deletes an account: the date, what the
     # person can do until then, and that doing nothing is fine. Replies go
     # to the contact address.

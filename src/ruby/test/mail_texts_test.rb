@@ -43,6 +43,20 @@ class MailTextsTest < Minitest::Test
         assert_includes html, 'musst du nichts tun'
     end
 
+    # The copy of the deletion log: what it is, keep the newest, when it
+    # matters, how it goes back
+    def test_deletion_log_says_what_to_keep_and_how_to_feed_it_back
+        subject, html = MailTexts.deletion_log(:web_root => WEB, :time => Time.new(2026, 10, 23, 14, 5), :count => 14, :last_seq => 42, :signature => 'Workspace')
+        assert_equal 'Löschliste des Workspace (code.example.org), Stand 23.10.2026: aufbewahren', subject
+        assert_includes html, '14 Einträge, zuletzt Nummer 42'
+        assert_includes html, 'Diese E-Mail aufbewahren'
+        assert_includes html, 'Alle früheren E-Mails'
+        assert_includes html, 'internal/deleted-accounts.jsonl'
+        assert_includes html, 'endet mit Nummer 42'
+        assert_includes html, './config.rb restart ruby'
+        refute_includes html, '@'
+    end
+
     def test_deletion_texts
         _, html = MailTexts.account_deleted(:web_root => WEB, :signature => 'X', :still_invited => false)
         assert_includes html, 'nicht mehr eingeladen'

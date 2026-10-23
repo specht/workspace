@@ -217,6 +217,25 @@ Standardvertrag an (bei Hetzner in der Console).
   Wer die Schule verlässt und das Konto behalten möchte, kommt in eine eigene
   Gruppe (etwa »Ehemalige«) und unterschreibt die Nutzungsordnung.
 
+Die Löschliste liegt im selben Datenordner wie die Datenbanken. Geht der
+Server verloren, oder spielt man den ganzen Datenordner zurück, fehlt mit ihr
+alles, was nach der Sicherung gelöscht wurde. Darum geht sie nach jeder
+Änderung als Kopie per E-Mail an die Administration (`ADMIN_USERS`): eine
+E-Mail »Löschliste des Workspace …: aufbewahren« mit der ganzen Liste als
+Anhang `deleted-accounts.jsonl`, nur Hashwerte, Datum und Nummer. Die neueste
+genügt, ältere können weg. Der Workspace prüft alle fünf Minuten, ob sich die
+Liste seit der letzten E-Mail geändert hat (die Prüfsumme der zuletzt
+verschickten steht in `internal/deleted-accounts.mailed`), auch nach einem
+Neustart; scheitert der Versand, versucht er es bei der nächsten Prüfung
+wieder. Zum Zurückspielen den Anhang vor dem Start als
+`internal/deleted-accounts.jsonl` in den Datenordner legen; von zwei Dateien
+gilt die mit der höheren Nummer in der letzten Zeile.
+
+Bewusst in Kauf genommen: Geht der Server verloren, bevor die E-Mail nach
+einer Löschung ankam, oder geht die E-Mail verloren, kann ein Konto
+zurückkommen, das danach gelöscht wurde (höchstens seit der letzten
+angekommenen Löschliste). Dann löscht man es noch einmal von Hand.
+
 ### Wenn der Workspace nicht startet
 
 Bevor der Workspace nach dem Start die erste Anfrage beantwortet, wiederholt
