@@ -235,7 +235,7 @@ check-task-fails: autos <- grep '^BS-K' fahrzeuge.txt | grep gelb
 check-task: autos <- grep '^BS-K' fahrzeuge.txt | grep gelb | grep '7 '
 -->
 
-Vier Autos, vier Leute. Eine davon könnte es gewesen sein.
+Vier Autos, vier Leute: Wer von ihnen könnte es gewesen sein?
 
 ## Die Vereine
 
