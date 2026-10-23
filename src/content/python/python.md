@@ -1,6 +1,7 @@
 <div class='meta'>
 image: python-logo.png
 kind: steckbrief
+reference: [ruby-python]
 </div>
 
 <div

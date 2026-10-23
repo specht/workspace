@@ -6,7 +6,7 @@ language: Ruby / Python
 languages: [ruby, python]
 duration: 2 Doppelstunden
 requires: [crypto]
-reference: [kryptographie, bits-und-bytes]
+reference: [kryptographie, bits-und-bytes, ruby-python]
 </div>
 
 <div

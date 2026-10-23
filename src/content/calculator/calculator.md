@@ -6,7 +6,7 @@ language: Ruby / Python
 languages: [ruby, python]
 duration: 2 Doppelstunden
 requires: [automata]
-reference: [listen, baeume]
+reference: [listen, baeume, ruby-python]
 </div>
 
 <div

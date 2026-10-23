@@ -7,7 +7,7 @@ languages: [ruby, python]
 topic: networks
 duration: 2 Doppelstunden
 requires: [webserver]
-reference: [http, json]
+reference: [http, json, ruby-python]
 </div>
 
 <div

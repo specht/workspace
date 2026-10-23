@@ -38,6 +38,16 @@
   entries:
     - bits-und-bytes
 
+- key: reference-ruby-python
+  label: Ruby und Python
+  icon: /images/parrot.png
+  description: |
+    Dasselbe in beiden Sprachen nebeneinander: Ausgabe, Zahlen, Text,
+    Listen, Hashes und Dictionaries, Funktionen, Dateien und Bytes, und was
+    die Fehlermeldungen sagen.
+  entries:
+    - ruby-python
+
 - key: reference-web
   label: HTML und CSS
   icon: /images/pen.png

@@ -5,7 +5,7 @@ kind: projekt
 language: Ruby / Python
 languages: [ruby, python]
 duration: 2 Doppelstunden
-reference: [automaten, regex]
+reference: [automaten, regex, ruby-python]
 </div>
 
 <div

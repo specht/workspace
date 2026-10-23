@@ -5,6 +5,7 @@ kind: labor
 language: Ruby / Python
 languages: [ruby, python]
 duration: 2 Doppelstunden
+reference: [bits-und-bytes, ruby-python]
 </div>
 
 <div

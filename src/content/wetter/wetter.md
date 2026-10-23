@@ -7,7 +7,7 @@ languages: [ruby, python]
 topic: web
 duration: 2 Doppelstunden
 requires: [tcpip]
-reference: [http, json]
+reference: [http, json, ruby-python]
 </div>
 
 <div

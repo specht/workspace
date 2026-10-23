@@ -8,7 +8,7 @@ topic: computing
 duration: 6 Doppelstunden
 template: https://github.com/specht/routenplaner-starter.git
 template_name: der Vorlage des Routenplaners
-reference: [graphen, heap]
+reference: [graphen, heap, ruby-python]
 </div>
 
 <div

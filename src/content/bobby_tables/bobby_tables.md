@@ -6,7 +6,7 @@ language: Ruby / Python / SQL
 languages: [ruby, python]
 duration: 1 Doppelstunde
 requires: [mysql]
-reference: [sql]
+reference: [sql, ruby-python]
 </div>
 
 <div
