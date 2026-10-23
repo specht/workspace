@@ -71,7 +71,8 @@ module PersonBoxes
             next unless path && File.file?(path)
 
             markdown = File.read(path, encoding: 'UTF-8')
-            title = ContentParts.page_title(markdown) || url
+            # as text: a title may be written with entities (C&#35;)
+            title = CGI.unescapeHTML(ContentParts.page_title(markdown) || url)
             markdown.scan(PERSON).flatten.uniq.each { |name| result[name] << { :url => url, :title => title } }
         end
         result

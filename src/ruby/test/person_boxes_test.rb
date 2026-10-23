@@ -61,6 +61,16 @@ class PersonBoxesTest < Minitest::Test
         end
     end
 
+    # A title written with an entity (C&#35;) is escaped once, not twice.
+    def test_a_title_with_an_entity_is_shown_as_text
+        with_content do |root|
+            File.write(File.join(root, 'grep', 'grep.md'), "# C&#35; <span style='font-size: 80%;'>(2000)</span>\n\n_person(thompson)\n")
+            uses = PersonBoxes.uses([['/cs', File.join(root, 'grep', 'grep.md')]])
+            html = PersonBoxes.annotate(PAGE, uses)
+            assert_includes html, "<a href='/cs'>C# (2000)</a>"
+        end
+    end
+
     def test_a_box_without_a_credit_gets_the_line_at_its_end
         page = PAGE.sub("<p class='person-credit'>Foto: gemeinfrei</p>\n", '')
         uses = { 'thompson' => [{ :url => '/grep', :title => 'Suchen mit grep' }] }
