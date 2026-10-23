@@ -249,6 +249,8 @@ Und `dequeue` aus der vollen Queue: head läuft hinterher, ebenfalls um das Ende
 
 <div class='algo-stepper' data-title='Queue im Ringpuffer: dequeue' data-algo='ring' data-capacity='6' data-setup='enqueue 4, enqueue 8, enqueue 15, enqueue 16, dequeue, dequeue, enqueue 23, enqueue 42, enqueue 7, enqueue 1, dequeue, dequeue, dequeue' data-ops='dequeue, dequeue, dequeue'></div>
 
+Vorn einfügen geht genauso schnell: head rückt eins zurück, `head ← (head - 1 + capacity) mod capacity`, der neue Wert kommt in `cells[head]`, und size wächst um eins. Eine Queue, die an beiden Enden einfügen und herausnehmen kann, heißt **Deque** (double-ended queue), wie `collections.deque` in Python.
+
 **Typische Fehler**
 
 - Statt size ein zweites Ende `tail` speichern und »voll« mit »leer« verwechseln: Bei beiden ist `head == tail`. Mit size gibt es das Problem nicht.
