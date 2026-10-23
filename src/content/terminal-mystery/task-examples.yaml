@@ -11,6 +11,17 @@ examples:
       - files: { bitstein.tar.gz: { text: "" } }
         say: tar xzf
 
+  gross-klein:
+    pass:
+      - answer: '181'
+      - answer: 181 Zeilen
+    fail:
+      - answer: '6'
+        say: Mit `-i`
+      # der Befehl statt der Zahl: ausführen, die Zahl eintragen
+      - answer: grep -i hinweis tatort.txt | wc -l
+        say: Führe ihn im Terminal aus
+
   hinweise:
     pass:
       - archive: beispiele/bitstein.tar.gz

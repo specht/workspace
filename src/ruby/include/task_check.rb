@@ -397,7 +397,23 @@ module TaskCheck
 
     # --- number -------------------------------------------------------------
 
+    # Commands an answer may start with when it is the command that finds
+    # the number, not the number (»grep -i hinweis tatort.txt | wc -l«). The
+    # check never runs it; it says what to do instead, before looking for a
+    # number (»head -n 5 … | wc -l« is not the answer 5).
+    COMMANDS = %w[grep egrep wc cat head tail sort uniq cut tr awk sed find ls echo printf expr bc seq less file
+                  du df ps stat python python3 ruby node sqlite3 mysql].freeze
+
+    def self.command?(answer)
+        words = answer.to_s.strip.split(/\s+/)
+        answer.to_s.include?('|') || (words.size > 1 && COMMANDS.include?(words.first))
+    end
+
     def self.check_number(task, check, answer, _variables)
+        if command?(answer)
+            return Result.new(:status => :invalid,
+                :message => 'Das ist der Befehl, der die Zahl findet. Führe ihn im Terminal aus und gib hier die Zahl ein, die er ausgibt.')
+        end
         value = parse_number(answer)
         if value.nil?
             return Result.new(:status => :invalid, :message => 'Ich finde in deiner Antwort keine Zahl.')

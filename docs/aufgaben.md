@@ -372,6 +372,15 @@ check: { type: number, expect: 111, tolerance: 6, unit: ms }
 check: { type: reflection, min_words: 20 }
 ```
 
+Bei `number` trägt man die Zahl ein, nicht den Befehl, der sie findet. Sieht
+die Antwort wie ein Befehl aus (eine Pipe `|` oder am Anfang ein Befehl wie
+`grep`, `wc`, `cat`, `echo` mit etwas dahinter, `TaskCheck::COMMANDS`), sagt
+die Prüfung: »Das ist der Befehl, der die Zahl findet. Führe ihn im Terminal
+aus und gib hier die Zahl ein …«, ohne ihn auszuführen und ohne dass es als
+falscher Versuch zählt. So wird auch `head -n 5 … | wc -l` nicht als 5
+gelesen. Soll ein Befehl die Antwort sein, ist `command` die richtige Art
+(unten).
+
 Eine Reflexion hat keine Lösung, aber Beispielantworten: zwei kurze, gute
 Antworten, wie sie eine Schülerin oder ein Schüler geben könnte, mit den
 Begriffen der Seite. Sie ändern die Version der Aufgabe nicht.

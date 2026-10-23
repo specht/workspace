@@ -92,6 +92,23 @@ class TaskCheckTest < Minitest::Test
         assert_equal :correct, TaskCheck.check(small, '0.111', variables: {}).status
     end
 
+    # A command that finds the number is not the number: the check says to
+    # run it, and it does not count as a wrong answer
+    def test_a_command_instead_of_the_number
+        task = { 'id' => 'x', 'check' => { 'type' => 'number', 'expect' => 181 } }
+        ['grep -i hinweis tatort.txt | wc -l', 'grep -ic hinweis tatort.txt', 'head -n 5 tatort.txt | wc -l', 'wc -l tatort.txt', 'echo 181'].each do |given|
+            result = TaskCheck.check(task, given, variables: {})
+            assert_equal :invalid, result.status, given
+            assert_match(/Führe ihn im Terminal aus/, result.message)
+            refute result.counts?
+        end
+        ['181', '181 Zeilen', 'es sind 181'].each do |given|
+            assert_equal :correct, TaskCheck.check(task, given, variables: {}).status, given
+        end
+        # a single word is no command: still »keine Zahl«
+        assert_match(/keine Zahl/, TaskCheck.check(task, 'grep', variables: {}).message)
+    end
+
     def test_parse_number
         {
             '111' => 111.0, '0,111' => 0.111, '0.111' => 0.111, '11 100 km' => 11100.0,
