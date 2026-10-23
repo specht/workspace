@@ -28,6 +28,16 @@
   entries:
     - terminal
 
+- key: reference-bits
+  label: Bits und Bytes
+  icon: /images/hacker.png
+  description: |
+    Was in jeder Datei steckt: Zahlen binär und hexadezimal, Hexdumps lesen,
+    Text als Bytes, Little und Big Endian, negative Zahlen und Operationen
+    auf einzelnen Bits.
+  entries:
+    - bits-und-bytes
+
 - key: reference-web
   label: HTML und CSS
   icon: /images/pen.png
