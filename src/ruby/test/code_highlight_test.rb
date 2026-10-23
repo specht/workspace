@@ -70,6 +70,16 @@ class CodeHighlightTest < Minitest::Test
         refute_includes html("<pre><code class='bash'>ls</code></pre>"), 'copy-code'
     end
     # Long listings get the smaller font of the _include_file listings.
+    # Context that starts with the »}« of a function the block does not show:
+    # the lexer calls it an error, but it is a brace like every other one.
+    def test_a_lone_closing_brace_is_punctuation
+        out = html("<pre><code class='c'>~ }\n~\nint main(void)\n{\n    return 0;\n}\n</code></pre>")
+        refute_includes out, 'class="err"'
+        assert_equal 3, out.scan('<span class="p">}</span>').size + out.scan('<span class="p">{</span>').size
+        css = html("<pre><code class='css'>}\nbody { color: red; }\n</code></pre>")
+        refute_includes css, 'class="err"'
+    end
+
     def test_long_code
         long = (1..20).map { |i| "x = #{i}" }.join("\n")
         short = (1..19).map { |i| "x = #{i}" }.join("\n")

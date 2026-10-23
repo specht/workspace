@@ -16,6 +16,18 @@ module CodeHighlight
     # out. »~ …« stands for code in between (docs/aktivitaet-schreiben.md).
     CONTEXT = /\A~(?: |$)/
 
+    # A piece of a file starts or ends in the middle of something: a lone
+    # »}« that closes what the block does not show is an error to the lexer
+    # (C, CSS) and would look unlike every other brace. Brackets on their own
+    # are punctuation.
+    LONE_BRACKETS = /\A[\]\)\}\[\(\{]+\z/
+
+    def self.tokens(lexer, text)
+        lexer.lex(text).map do |token, value|
+            token == Rouge::Token::Tokens::Error && value =~ LONE_BRACKETS ? [Rouge::Token::Tokens::Punctuation, value] : [token, value]
+        end
+    end
+
     # [text without the markers, line numbers (from 1) that are context]
     def self.split_context(text)
         context = []
@@ -168,11 +180,11 @@ module CodeHighlight
             text, context = split_context(code.text)
             pre.content = ''
             if context.empty? || lineno
-                pre << formatter.format(lexer.lex(text))
+                pre << formatter.format(tokens(lexer, text))
             else
                 # One span per line, those with context marked
                 pre['class'] = [pre['class'], 'has-code-context'].compact.join(' ')
-                lines = Rouge::Formatters::HTMLLinewise.new(formatter, :class => 'code-line-%i').format(lexer.lex(text))
+                lines = Rouge::Formatters::HTMLLinewise.new(formatter, :class => 'code-line-%i').format(tokens(lexer, text))
                 fragment = Nokogiri::HTML::DocumentFragment.parse(lines)
                 fragment.css('div').each do |div|
                     div.name = 'span'

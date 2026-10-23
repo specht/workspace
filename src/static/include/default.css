@@ -270,7 +270,8 @@ pre .code-cut {
     user-select: none;
 }
 
-/* A piece of a file confuses the lexer: a lone »}« is no error here */
+/* A piece of a file can confuse the lexer (an open string, a comment cut
+   off); a lone bracket is already punctuation (code_highlight.rb) */
 pre.has-code-context .err {
     background: none !important;
     color: inherit !important;
