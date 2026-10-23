@@ -142,6 +142,10 @@ html[data-bs-theme="dark"] {
     }
     .person, .book, .case-note {
         background: rgba(0, 0, 0, 0.25);
+        border-color: transparent;
+    }
+    .case-note {
+        border-left-color: #c9a227;
     }
     .dark-only-bg-contrast-light {
         /* background: none; */
