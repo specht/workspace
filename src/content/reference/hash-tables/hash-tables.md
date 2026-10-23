@@ -136,9 +136,14 @@ Der **Füllgrad** (load factor) ist die Zahl der Schlüssel geteilt durch die Za
 
 Deshalb wächst eine Hash Table, wenn der Füllgrad eine Grenze überschreitet, meist 0,75: Sie legt ein Array mit doppelt so vielen Buckets an und fügt **jeden** Schlüssel neu ein. Kopieren genügt nicht, denn mit \\(m\\) ändert sich \\(h(k) = k \bmod m\\), und jeder Schlüssel kommt in einen anderen Bucket. Das heißt **Rehashing**. Wie beim Vergrößern einer [Array List](/reference/listen#array-list) ist es teuer, aber selten.
 
+Mit Verkettung sieht `insert` damit so aus; bei Linear Probing kommen dieselben Zeilen unter das `insert` von dort:
+
 ```pseudocode
 insert(k):
-    … as above …
+    b ← h(k)
+    if k already in buckets[b]: done
+    append k to the back of buckets[b]
+    count ← count + 1
     if count / m > 0.75:
         old ← buckets
         m ← 2 · m
@@ -146,6 +151,10 @@ insert(k):
         count ← 0
         for each key s in old: insert(s)
 ```
+
+<div class='algo-stepper' data-title='Hash Table mit Verkettung: wachsen' data-algo='hash' data-mode='chain' data-size='4' data-grow data-ops='insert 13, insert 6, insert 17, insert 4, insert 10'></div>
+
+Beim vierten Schlüssel wird die Tabelle zu voll. Achte beim Neueinfügen auf 13 und 17: Mit 4 Buckets teilen sie sich Bucket 1, mit 8 nicht mehr. Das neue `insert(s)` prüft danach auch wieder den Füllgrad; weil die Tabelle gerade doppelt so groß geworden ist, wächst sie dabei nie ein zweites Mal.
 
 ### Wofür
 

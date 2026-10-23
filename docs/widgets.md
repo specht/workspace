@@ -330,6 +330,13 @@ only to look nice.
   the row »besucht« under it.
 - **Tombstones** (`data-mode='probe'`, `remove k`): the bucket keeps a dashed
   box with the word `deleted`; `find` and `insert` count it as occupied.
+- **Rehashing** (`data-mode='chain' data-grow`, `data-size='4'`): `insert`
+  with the fill check from `reference/hash-tables`. `old ← buckets` puts the
+  label `old` above the same buckets; at `buckets ← m empty buckets` the
+  keys go into a column under `old` on the right, and the loop takes them
+  out one by one, each flying to its new bucket (the token is the key
+  itself, `key-k`). The calls show the `insert(s)` the loop makes. The fill
+  note is left out while count and m do not belong together.
 - **Heapsort** (`data-algo='heap' data-mode='sort'`, `data-values`):
   `heap_sort` and `sift_down` from `reference/heap`, a heap in which no child
   is greater than its parent. The heap's picture with the calls beside the

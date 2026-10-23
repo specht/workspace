@@ -2538,6 +2538,8 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
     const HASH_CODE = {
         chainInsert: ['insert(k):', '    b ← h(k)', '    if k already in buckets[b]: done', '    append k to the back of buckets[b]', '    count ← count + 1'],
         chainFind: ['find(k):', '    b ← h(k)', '    return whether k is in buckets[b]'],
+        chainGrow: ['insert(k):', '    b ← h(k)', '    if k already in buckets[b]: done', '    append k to the back of buckets[b]', '    count ← count + 1',
+            '    if count / m > 0.75:', '        old ← buckets', '        m ← 2 · m', '        buckets ← m empty buckets', '        count ← 0', '        for each key s in old: insert(s)'],
         probeInsert: ['insert(k):', '    b ← h(k)', '    while buckets[b] occupied:', '        if buckets[b] == k: done', '        b ← (b + 1) mod m', '    buckets[b] ← k', '    count ← count + 1'],
         probeFind: ['find(k):', '    b ← h(k)', '    while buckets[b] occupied:', '        if buckets[b] == k: found', '        b ← (b + 1) mod m', '    not found'],
         probeRemove: ['remove(k):', '    b ← h(k)', '    while buckets[b] occupied:', '        if buckets[b] == k:', '            buckets[b] ← deleted        (der Grabstein)',
@@ -2548,18 +2550,59 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
     const DELETED = 'deleted';
     const holds = (bucket) => (bucket === DELETED ? 'ein Grabstein' : String(bucket));
 
-    function traceHash(ops, mode, m, setup = []) {
+    // grow: chaining that doubles the buckets above a fill of 0.75 and puts
+    // every key in again (chainGrow); old holds the keys still to go, the
+    // stack the insert called from the loop
+    function traceHash(ops, mode, m, setup = [], grow = false) {
         const chain = mode === 'chain';
-        const table = Array.from({ length: m }, () => (chain ? [] : null));
+        let table = Array.from({ length: m }, () => (chain ? [] : null));
         let count = 0;
         let current = -1;
         const frames = [];
-        const snapshot = (message, marks = {}) => frames.push({ table: table.map((b) => (Array.isArray(b) ? [...b] : b)), mode, m, count, message, op: current, ...marks });
+        let old = null;
+        let stack = [];
+        const snapshot = (message, marks = {}) => frames.push({ table: table.map((b) => (Array.isArray(b) ? [...b] : b)), mode, m, count, message, op: current,
+            ...(old ? { old: [...old] } : {}), ...(grow ? { stack: stack.map((e) => ({ ...e })) } : {}), ...marks });
         const C = (name, at) => ({ lines: HASH_CODE[name], at });
         const hash = (k) => ((k % m) + m) % m;
+        // a key from old, put in again by the loop of the rehashing
+        const reinsert = (s) => {
+            const C2 = (at) => C('chainGrow', at);
+            stack.push({ call: `insert(${s})` });
+            const moving = true;
+            const b = hash(s);
+            const before = s % (m / 2);
+            snapshot(`insert(${s}): b ← h(${s}) = ${s} mod ${m} = ${b}. Vorher war es ${s} mod ${m / 2} = ${before}${b === before ? ', derselbe Bucket' : ''}.`,
+                { token: s, moving, b, code: C2(1) });
+            if (table[b].length) snapshot(`if k already in buckets[b]: In Bucket ${b} steht schon ${table[b].join(', ')}, nicht ${s}.`, { token: s, moving, b, compare: table[b][0], code: C2(2) });
+            table[b].push(s);
+            snapshot(`append k to the back of buckets[b]: ${s} kommt in Bucket ${b}.`, { b, fresh: s, moving, code: C2(3) });
+            count += 1;
+            snapshot(`count ← count + 1: ${count}. Die Prüfung danach, ${count} / ${m}, bleibt unter 0,75: zurück in die Schleife.`, { b, code: C2(4) });
+            stack.pop();
+        };
+        const rehash = () => {
+            const C2 = (at) => C('chainGrow', at);
+            snapshot('old ← buckets: old ist ein zweiter Name für dieselben Buckets, mit allen Schlüsseln darin.', { oldSame: true, code: C2(6) });
+            m *= 2;
+            snapshot(`m ← 2 · m: m ist ${m}. Damit ändert sich h(k) = k mod ${m} für jeden Schlüssel. Die Buckets sind noch die alten.`, { oldSame: true, code: C2(7) });
+            old = table.flat();
+            table = Array.from({ length: m }, () => []);
+            snapshot(`buckets ← m empty buckets: ${m} neue, leere Buckets. Die alten mit ihren Schlüsseln hängen jetzt nur noch an old, rechts Bucket für Bucket.`, { code: C2(8) });
+            count = 0;
+            snapshot('count ← 0: Die neuen Buckets sind noch leer.', { code: C2(9) });
+            while (old.length) {
+                const s = old.shift();
+                snapshot(`for each key s in old: s ist ${s}.`, { token: s, moving: true, code: C2(10) });
+                reinsert(s);
+            }
+            old = null;
+            snapshot(`Alle Schlüssel sind neu verteilt: ${count} in ${m} Buckets, der Füllgrad ist ${Math.round((count / m) * 100)} %. Die Listen sind kürzer geworden.`, { code: C2(10) });
+        };
         const insert = (k, quiet) => {
             const say = quiet ? () => {} : snapshot;
-            const name = chain ? 'chainInsert' : 'probeInsert';
+            const name = grow ? 'chainGrow' : chain ? 'chainInsert' : 'probeInsert';
+            if (!quiet) stack = [{ call: `insert(${k})` }];
             say(`insert(${k}): Der Schlüssel ${k} soll in die Hash Table.`, { token: k, code: C(name, 0) });
             let b = hash(k);
             say(`b ← h(k): h(${k}) = ${k} mod ${m} = ${b}.`, { token: k, b, code: C(name, 1) });
@@ -2589,6 +2632,14 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             }
             count += 1;
             say(`count ← count + 1: ${count} Schlüssel in ${m} Buckets, der Füllgrad ist ${Math.round((count / m) * 100)} %.`, { b, code: C(name, chain ? 4 : 6) });
+            if (grow && !quiet) {
+                const fill = String(Math.round((count / m) * 1000) / 1000).replace('.', ',');
+                if (count / m > 0.75) {
+                    snapshot(`if count / m > 0.75: ${count} / ${m} = ${fill}, mehr als 0,75. Die Listen würden lang: Die Tabelle wächst.`, { code: C(name, 5) });
+                    rehash();
+                } else snapshot(`if count / m > 0.75: ${count} / ${m} = ${fill}, nicht mehr als 0,75. Die Tabelle bleibt, wie sie ist.`, { code: C(name, 5) });
+                stack = [];
+            }
         };
         const find = (k) => {
             const name = chain ? 'chainFind' : 'probeFind';
@@ -2657,7 +2708,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
     // key is appended); the key on its way as a dashed token where it would
     // go (after the list of bucket b, or right of bucket b); b as a label on
     // the left with an arrow to its bucket.
-    function drawHash(svg, frame, longest, marker) {
+    function drawHash(svg, frame, longest, marker, rows = frame.m, oldColumn = false) {
         svg.replaceChildren();
         const rowH = 40;
         const top = 30;
@@ -2667,7 +2718,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         const step = 72;
         svg.appendChild(arrowheads(marker));
         const rowY = (i) => top + i * rowH;
-        const key = (k, x, y, extra = {}) => el('svg:g', { 'data-key': `key-${k}`, 'data-grow': `${keyW / 2} ${(rowH - 10) / 2}`, ...(frame.fresh === k ? { 'data-from': 'token' } : {}), transform: `translate(${x} ${y})` }, [
+        const key = (k, x, y, extra = {}) => el('svg:g', { 'data-key': `key-${k}`, 'data-grow': `${keyW / 2} ${(rowH - 10) / 2}`, ...(frame.fresh === k && !frame.moving ? { 'data-from': 'token' } : {}), transform: `translate(${x} ${y})` }, [
             el('svg:rect', { x: 0, y: 0, width: keyW, height: rowH - 10, rx: 5, fill: extra.fill || 'var(--algo-paper)', stroke: extra.stroke || 'var(--algo-ink)', 'stroke-width': extra.width || 1.5 }),
             el('svg:text', { x: keyW / 2, y: 20, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(k) })]);
         const look = (k) => (frame.found === k ? { fill: 'var(--algo-frontier)', stroke: 'var(--algo-accent)', width: 2.5 } : frame.compare === k ? { fill: 'var(--algo-frontier)' } : frame.fresh === k ? { fill: 'var(--algo-frontier)' } : {});
@@ -2703,13 +2754,13 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         if (frame.token !== undefined && frame.b !== undefined) {
             const y = rowY(frame.b);
             const x = frame.mode === 'chain' ? bx + bw + 22 + frame.table[frame.b].length * step : bx + bw + 24;
-            svg.appendChild(el('svg:g', { 'data-key': 'token', 'data-grow': `${keyW / 2} ${(rowH - 10) / 2}`, 'data-merge': '', transform: `translate(${x} ${y + 1})` }, [
+            svg.appendChild(el('svg:g', { 'data-key': frame.moving ? `key-${frame.token}` : 'token', 'data-grow': `${keyW / 2} ${(rowH - 10) / 2}`, ...(frame.moving ? {} : { 'data-merge': '' }), transform: `translate(${x} ${y + 1})` }, [
                 el('svg:rect', { x: 0, y: 0, width: keyW, height: rowH - 10, rx: 5, fill: 'var(--algo-frontier)', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '4 3' }),
                 el('svg:text', { x: keyW / 2, y: 20, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.token) })]));
         } else if (frame.token !== undefined) {
             // before b is known: left of the buckets, where b's label comes
             // later (on the right it would cover the counts above the table)
-            svg.appendChild(el('svg:g', { 'data-key': 'token', 'data-grow': `${keyW / 2} ${(rowH - 10) / 2}`, transform: `translate(8 ${top + 1})` }, [
+            svg.appendChild(el('svg:g', { 'data-key': frame.moving ? `key-${frame.token}` : 'token', 'data-grow': `${keyW / 2} ${(rowH - 10) / 2}`, transform: `translate(8 ${top + 1})` }, [
                 el('svg:rect', { x: 0, y: 0, width: keyW, height: rowH - 10, rx: 5, fill: 'var(--algo-frontier)', stroke: 'var(--algo-accent)', 'stroke-width': 2, 'stroke-dasharray': '4 3' }),
                 el('svg:text', { x: keyW / 2, y: 20, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 600, fill: 'var(--algo-ink)', text: String(frame.token) })]));
         }
@@ -2722,17 +2773,31 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             svg.appendChild(el('svg:rect', { 'data-solid': '', 'data-key': 'var-b', x: 8, y: y - 9, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
             svg.appendChild(el('svg:text', { 'data-solid': '', 'data-key': 'var-b-label', x: 8 + w / 2, y: y + 4, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'b' }));
         }
-        const width = bx + bw + 22 + Math.max(1, longest) * step + 30;
+        const chainsEnd = bx + bw + 22 + Math.max(1, longest) * step + 30;
+        // rehashing: old, the keys still to go in again, a column on the right
+        const oldX = chainsEnd + 4;
+        // old ← buckets: first a second name above the same buckets, then,
+        // when buckets gets new ones, the label with the old keys on the right
+        if (frame.old || frame.oldSame) {
+            const w = 14 + 7.5 * 3;
+            const [lx, ly] = frame.old ? [oldX + (keyW - w) / 2, top] : [bx + (bw - w) / 2, top - 24];
+            svg.appendChild(el('svg:rect', { 'data-solid': '', 'data-key': 'var-old', x: lx, y: ly, width: w, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }));
+            svg.appendChild(el('svg:text', { 'data-solid': '', 'data-key': 'var-old-label', x: lx + w / 2, y: ly + 13, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--algo-accent)', text: 'old' }));
+            if (frame.old) frame.old.forEach((k, i) => svg.appendChild(key(k, oldX, top + 26 + i * rowH, {})));
+        }
+        const width = oldColumn ? oldX + keyW + 12 : chainsEnd;
         // count and m are variables: boxes with their value; the fill is
         // computed from them, a note beside them
-        const fill = `Füllgrad ${Math.round((frame.count / frame.m) * 100)} %`;
-        const fillW = 6.6 * fill.length;
+        // while the table grows, count and m do not belong together
+        const fill = frame.old || frame.oldSame ? '' : `Füllgrad ${Math.round((frame.count / frame.m) * 100)} %`;
+        // as wide as the longest note, so that count and m keep their places
+        const fillW = 6.6 * 'Füllgrad 100 %'.length;
         const mW = valueBoxWidth('m', frame.m);
         const countW = valueBoxWidth('count', frame.count);
         svg.appendChild(el('svg:text', { 'data-key': 'fill', x: width - 8, y: 18, 'text-anchor': 'end', 'font-size': 12, fill: 'var(--bs-secondary-color)', text: fill }));
         for (const node of valueBox('m', width - 8 - fillW - 10 - mW, 5, frame.m)) svg.appendChild(node);
         for (const node of valueBox('count', width - 8 - fillW - 10 - mW - 8 - countW, 5, frame.count)) svg.appendChild(node);
-        svg.setAttribute('viewBox', `0 0 ${width} ${top + frame.m * rowH + 6}`);
+        svg.setAttribute('viewBox', `0 0 ${width} ${top + rows * rowH + 6}`);
         svg.dataset.natural = width;
     }
 
@@ -3304,11 +3369,16 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             };
         } else if (algo === 'hash') {
             const mode = widget.dataset.mode || 'chain';
-            frames = traceHash(parseOps(widget.dataset.ops), mode, Number(widget.dataset.size || 8), setupOps);
+            const grows = widget.dataset.grow !== undefined;
+            frames = traceHash(parseOps(widget.dataset.ops), mode, Number(widget.dataset.size || 8), setupOps, grows);
             const longest = Math.max(1, ...frames.map((f) => (mode === 'chain' ? Math.max(...f.table.map((b) => b.length + 1)) : 1)));
+            // the picture keeps the height of the most buckets, the width of the old column
+            const rows = Math.max(...frames.map((f) => Math.max(f.m, f.old ? f.old.length + 1 : 0)));
+            const oldColumn = frames.some((f) => f.old);
             const marker = `algo-arrow-${++widgetCount}`;
-            svg.setAttribute('aria-label', 'Die Buckets der Hash Table mit ihren Schlüsseln');
-            draw = (frame) => { drawHash(svg, frame, longest, marker); listSide(frame, 0); };
+            svg.setAttribute('aria-label', grows ? 'Die Buckets der Hash Table mit ihren Schlüsseln; beim Wachsen rechts old, die Schlüssel, die noch neu eingefügt werden'
+                : 'Die Buckets der Hash Table mit ihren Schlüsseln');
+            draw = (frame) => { drawHash(svg, frame, longest, marker, rows, oldColumn); listSide(frame, grows ? 2 : 0); };
         } else if (algo === 'sort') {
             const values = widget.dataset.values.split(',').map(Number);
             const kind = widget.dataset.sort;
