@@ -501,14 +501,14 @@ wait-for-text: [museum]
 terminal-run: clear
 terminal-run: ls kameras | head -n 4
 terminal-run: ls kameras | wc -l
-terminal-run: ls kameras/cam3_20260314_2301*
-wait-for-text: cam3_20260314_230103.jpg
+terminal-run: ls kameras/cam2_*
+wait-for-text: cam2_20260314_233810.jpg
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='kameras.webp' alt='Im Terminal auf museum.bitstein: die ersten vier Bilder in kameras, von Kamera 1 ab 23:30:58, dann 66 Bilder insgesamt, und ls mit cam3_20260314_2301* nennt zwei Bilder der Kamera 3 aus der Minute 23:01.'>
+<img class='full' src='kameras.webp' alt='Im Terminal auf museum.bitstein: die ersten vier Bilder in kameras, von Kamera 1 ab 23:30:58, dann 66 Bilder insgesamt, und ls mit cam2_* nennt die zehn Bilder der Kamera 2, vier von 23:12 und sechs von 23:37 und 23:38.'>
 
-Der Name jedes Bildes sagt, welche Kamera es wann aufgenommen hat: `cam3_20260314_230100.jpg` ist Kamera 3 am 14. März um 23:01:00. Darum passt `cam3_20260314_2301*` auf alle Bilder der Kamera 3 aus der Minute 23:01: Das `*` steht für jeden Rest des Namens, hier die Sekunden und `.jpg`.
+Der Name jedes Bildes sagt, welche Kamera es wann aufgenommen hat: `cam2_20260314_231202.jpg` ist Kamera 2 am 14. März um 23:12:02. Darum zeigt `ls kameras/cam2_*` alle Bilder der Kamera 2 am Hintereingang: Das `*` steht für jeden Rest des Namens, hier Datum, Zeit und `.jpg`. Sie hat zweimal aufgenommen, um 23:12 und kurz vor 23:38, genau als die Karte 4471 die Tür geöffnet hat.
 
 Ein Bild kann das Terminal nicht zeigen, und der Server hat keinen Bildschirm. Hol die Bilder darum mit `scp` in deinen Workspace, wieder mit `exit` zurück und ohne Verbindung zum Museum. Mit einem `*` kommen viele auf einmal, alle Bilder der Kamera 1 etwa:
 
@@ -541,7 +541,7 @@ hide-bottom-panel
 
 <img class='full' src='kamera-bild.webp' alt='VS Code mit einem Bild der Kamera 1 im Editor, schwarzweiß, oben 14.03.2026 23:31:18, unten CAM 1 AUSSTELLUNG: neben der Vitrine kauert eine Person mit Kapuze an ihrer Tasche, die Glashaube steht daneben auf dem Boden.'>
 
-Kamera 3 am Parkplatz springt auch bei Regen an, darum hat sie so viele Bilder. Die Karte hat den Hintereingang um 23:38 geöffnet. Hol von Kamera 3 nur die Bilder aus dieser Minute.
+Kamera 3 am Parkplatz springt auch bei Regen an, darum hat sie 49 Bilder über die ganze Stunde. Statt alle durchzuklicken: Die Karte hat den Hintereingang um 23:38 geöffnet. Hol von Kamera 3 nur die Bilder aus dieser Minute.
 
 _task(kamera-auto)
 

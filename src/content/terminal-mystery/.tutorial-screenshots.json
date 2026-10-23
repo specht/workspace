@@ -37,28 +37,28 @@
     },
     "kamera-bild.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "d01e0334287196913a0bbfd1aab4cced4fc4b45cfd4a0d1d262bc410fea45b97",
-      "state_hash": "b9654eeba9cf806815e820106253d3fdc406a420d7dc3d53ca86e65ef3d593d5",
+      "output_sha256": "b94342353efa5551c160f7c46fdb7ba80716cb44ee9657b6bfc0427f652553c4",
+      "state_hash": "b56c4a644801fb534e4af84982ab81467f4fc75457c64518bc50a7efc20d5e27",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "kameras.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "b1f6e0317281964add70622bd9d4625fb6a27d4f1617890a7fdda5fa4935f927",
-      "state_hash": "5e753bb5389a5a9780cc8435e9106bfaf7f473996b4aa217a254217a9e935305",
+      "output_sha256": "bfadec3ad5102bbccd4d82951fad3183a10504128e5d9c1d71f4588b943dc298",
+      "state_hash": "cef3978b6b7b749eba3ed3f8b428a4e62636f70913376824041f57dedd7b71dd",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "liesmich.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "a22836cb142ce884cd78bc5b9e168d1a55f7ae63381a778502bc67d9a5c4cf79",
+      "output_sha256": "13ddf6fb8755623ddaa33a4ca901e2c15ff2bb52082fef1000a891ea13769a86",
       "state_hash": "f7f7f867dce766aac0294ffd92e29ad3fef13b7f42ac969605b45addd826062e",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "nicht-allein.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "a85a6038007341ddc73e654c8005a413507159f5e6013c761776ea38601f81cd",
+      "output_sha256": "440e5bbc10b7b974c83894668aca74f60ae4ce1c15e09652185e7f10b743ebbb",
       "state_hash": "161a8606979a2b09860d3cdc4764efde0afdeaf84a51e943269430a58473f553",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
