@@ -1,4 +1,4 @@
-// Zum Vergleich auf der Seite: Belichtung 1.5, aber hart bei 1 abgeschnitten.
+// Zum Vergleich auf der Seite: Belichtung 2.25, aber hart bei 1 abgeschnitten.
 // Pfeiltasten links/rechts: um die Szene kreisen, hoch/runter: höher oder tiefer.
 // H heller, D dunkler belichten.
 // Jedes Bild ist ein weiterer Durchgang; das Bild wird mit der Zeit glatter.
@@ -373,8 +373,9 @@ vec ray_dir(double x, double y)
     return normalize(add(forward, add(scale(right, sx), scale(up, sy))));
 }
 
-// Belichtung: größer ist heller, wie eine weiter geöffnete Blende
-double exposure = 1.5;
+// Belichtung: größer ist heller, wie eine weiter geöffnete Blende; 1.5,
+// weil tone() alles etwas dunkler macht, auch die Mitten
+double exposure = 1.5 * 1.5;   // für den Vergleich: einmal H
 
 // ohne Tone Mapping: was heller als 1 ist, wird hart abgeschnitten
 double tone(double c)

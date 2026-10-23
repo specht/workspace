@@ -373,16 +373,15 @@ vec ray_dir(double x, double y)
     return normalize(add(forward, add(scale(right, sx), scale(up, sy))));
 }
 
-// Belichtung: größer ist heller, wie eine weiter geöffnete Blende
-double exposure = 1;
+// Belichtung: größer ist heller, wie eine weiter geöffnete Blende; 1.5,
+// weil tone() alles etwas dunkler macht, auch die Mitten
+double exposure = 1.5;
 
-// Tone Mapping: bis 0.7 bleibt alles, wie es ist; was heller ist, wird
-// weich zusammengedrückt und nähert sich 1, statt bei 1 abzubrechen
+// Tone Mapping: je heller, desto stärker zusammengedrückt; die Kurve
+// nähert sich 1, erreicht sie aber nie, auch ganz Helles bleibt verschieden
 double tone(double c)
 {
-    if (c < 0.7)
-        return c;
-    return 0.7 + 0.3 * (1 - exp(-(c - 0.7) / 0.3));
+    return 1 - exp(-c);
 }
 
 // Farbwert 0 bis 1 zu 0 bis 255, mit Belichtung, Tone Mapping und Gamma

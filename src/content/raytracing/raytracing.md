@@ -428,7 +428,7 @@ Eine Kugel wirkt rund, weil sie dort hell ist, wo die Sonne steil auf sie schein
 
 ### Wie hell?
 
-<img class='drawing' style='width: 34.25em' src='licht.webp' alt='Drei Bilder nebeneinander: ein Boden mit einem Pfeil normal nach oben, darauf fallen jeweils drei parallele orange Sonnenstrahlen, senkrecht, schräg und flach. Unter dem Boden ein oranger Streifen, so breit wie die beleuchtete Fläche: senkrecht schmal (dot = 1), schräg breiter (dot ≈ 0.71), flach am breitesten (dot ≈ 0.34).'>
+<img class='drawing' style='width: 34.25em' src='licht.webp' alt='Drei Bilder nebeneinander: ein Boden mit einem Pfeil normal nach oben, darauf fallen jeweils drei parallele orange Sonnenstrahlen, senkrecht, schräg und flach; sie beginnen auf einer Linie quer zu ihrer Richtung und haben überall denselben Abstand. Unter dem Boden ein oranger Streifen, so breit wie die beleuchtete Fläche: senkrecht schmal (dot = 1), schräg breiter (dot ≈ 0.71), flach am breitesten (dot ≈ 0.34).'>
 
 Dasselbe Bündel Sonnenlicht verteilt sich auf eine umso größere Fläche, je flacher es einfällt. Jede Stelle bekommt dann weniger ab. Genau dieses Maß liefert das Skalarprodukt aus Normale und Richtung zur Sonne, `dot(normal, sun_dir)`: 1, wenn die Sonne senkrecht steht, 0, wenn sie streift, und negativ, wenn sie von hinten scheint; dann bekommt die Stelle gar kein Sonnenlicht.
 
@@ -691,7 +691,7 @@ Die Kugeln stehen auf dem Boden, aber sie schweben scheinbar: Es fehlen die Scha
 
 Ob ein Punkt im Schatten liegt, findet ein Raytracer genauso heraus wie alles andere: mit einem Strahl. Vom Treffpunkt aus geht er in Richtung Sonne. Trifft er unterwegs etwas, kommt kein Sonnenlicht an.
 
-<img class='drawing' style='width: 31em' src='schattenstrahl.webp' alt='Eine Kugel liegt auf dem Boden, rechts oben steht weit weg die Sonne. Von zwei Treffpunkten auf dem Boden geht je ein gestrichelter Strahl zur Sonne, in Richtung sun_dir. Der linke, im Schatten, stößt an die Kugel und endet an einem roten Kreuz. Der rechte, in der Sonne, kommt frei durch.'>
+<img class='drawing' style='width: 31em' src='schattenstrahl.webp' alt='Eine Kugel liegt auf dem Boden, rechts oben steht weit weg die Sonne. Von zwei Treffpunkten auf dem Boden geht je ein gestrichelter Strahl zur Sonne, in Richtung sun_dir. Der linke, im Schatten, stößt an die Kugel und endet an einem roten Kreuz; dünn und grau gestrichelt geht es weiter, wie er zur Sonne ginge. Der rechte, in der Sonne, kommt frei durch.'>
 
 Ergänze `sunlight`:
 
@@ -1807,23 +1807,22 @@ Die Wände stehen in beiden Bildern in der Sonne und haben dieselben Farben. Ohn
 
 Ein Bildschirm kann nichts heller zeigen als 1, also ganz weiß, und `to_byte` schneidet alles darüber ab. Im fertigen Bild fällt das kaum auf, denn fast alles ist dunkler als 1. Anders, wenn du heller belichtest, wie mit einer weiter geöffneten Blende, damit man in den Schatten mehr sieht: Dann werden der Himmel, die weißen Felder und die Sonnenseiten der Kugeln heller als 1. Abgeschnitten werden sie zu glatten weißen Flächen, und Farben verlieren ihren Ton, weil jeder Farbkanal einzeln bei 1 aufhört.
 
-Eine Kamera schneidet nicht hart ab. Sie drückt, was zu hell ist, weich zusammen: Je heller, desto weniger wird es noch heller. So eine Kurve heißt **Tone Mapping**. Diese hier lässt bis 0,7 alles, wie es ist, und biegt dann sanft ab, sodass auch zwischen 1 und 2 noch Unterschiede bleiben:
+Eine Kamera schneidet nicht hart ab. Sie drückt alles weich zusammen, je heller, desto stärker: Je heller etwas ist, desto weniger wird es noch heller. So eine Kurve heißt **Tone Mapping**. Diese hier beginnt so steil wie die gerade Linie, biegt dann immer weiter ab und nähert sich 1, ohne sie je zu erreichen. So bleiben auch zwischen 1 und 3 noch Unterschiede:
 
-<img class='drawing' style='width: 30.5em' src='tone.webp' alt='Ein Graph: waagrecht die gerechnete Helligkeit c von 0 bis 3, senkrecht, was auf den Bildschirm kommt, von 0 bis 1. Eine rot gestrichelte Linie steigt gerade bis 1 und bleibt dann flach: abgeschnitten. Die blaue Linie tone(c) ist bis 0.7 dieselbe, biegt dann weich ab und nähert sich 1: Tone Mapping.'>
+<img class='drawing' style='width: 30.5em' src='tone.webp' alt='Ein Graph: waagrecht die gerechnete Helligkeit c von 0 bis 5, senkrecht, was auf den Bildschirm kommt, von 0 bis 1. Eine rot gestrichelte Linie steigt gerade bis 1 und bleibt dann flach: abgeschnitten. Die blaue Linie tone(c) beginnt genauso steil, biegt dann immer weiter ab und nähert sich 1, ohne sie zu erreichen: Tone Mapping.'>
 
-Über `to_byte` kommen die Belichtung und die Kurve; `exp` ist die Exponentialfunktion, die Kurve nähert sich 1, erreicht sie aber nie:
+Über `to_byte` kommen die Belichtung und die Kurve; `exp` ist die Exponentialfunktion, die Kurve nähert sich 1, erreicht sie aber nie. Die Belichtung beginnt bei 1,5: Die Kurve macht alles etwas dunkler, auch die Mitten, und 1,5 gleicht das ungefähr aus.
 
 ```c
-// Belichtung: größer ist heller, wie eine weiter geöffnete Blende
-double exposure = 1;
+// Belichtung: größer ist heller, wie eine weiter geöffnete Blende; 1.5,
+// weil tone() alles etwas dunkler macht, auch die Mitten
+double exposure = 1.5;
 
-// Tone Mapping: bis 0.7 bleibt alles, wie es ist; was heller ist, wird
-// weich zusammengedrückt und nähert sich 1, statt bei 1 abzubrechen
+// Tone Mapping: je heller, desto stärker zusammengedrückt; die Kurve
+// nähert sich 1, erreicht sie aber nie, auch ganz Helles bleibt verschieden
 double tone(double c)
 {
-    if (c < 0.7)
-        return c;
-    return 0.7 + 0.3 * (1 - exp(-(c - 0.7) / 0.3));
+    return 1 - exp(-c);
 }
 ```
 
@@ -1870,7 +1869,7 @@ hook: open raytracer.html
 hook: frames 128
 crop-element: #canvas
 -->
-<img src='belichtung-weich.webp' alt='Das fertige Bild, einmal heller belichtet, mit Tone Mapping: Über dem Horizont geht der Himmel in einem Verlauf in Weiß über, der Horizont bleibt zu sehen, auch in der Spiegelkugel, und Kugeln und Boden behalten ihre Kontraste.'>
+<img src='belichtung-weich.webp' alt='Das fertige Bild, einmal heller belichtet, mit Tone Mapping: Der Himmel bleibt hellgrau mit einem Verlauf bis zum Horizont, der Horizont ist zu sehen, auch in der Spiegelkugel, und die weißen Felder unterscheiden sich noch voneinander.'>
 <figcaption>Einmal <kbd>H</kbd>, mit Tone Mapping</figcaption>
 </figure>
 <figure>
@@ -1887,12 +1886,12 @@ hook: open raytracer.html
 hook: frames 128
 crop-element: #canvas
 -->
-<img src='belichtung-hart.webp' alt='Dasselbe Bild, gleich hell belichtet, aber abgeschnitten: Über dem Horizont liegt eine breite, glatt weiße Fläche, in der der Horizont verschwindet, auch in der Spiegelkugel; oben ist der Himmel grünlich grau.'>
+<img src='belichtung-hart.webp' alt='Dasselbe Bild, gleich hell belichtet, aber abgeschnitten: Über dem Horizont liegt eine breite, glatt weiße Fläche, in der der Horizont verschwindet; die Spiegelkugel zeigt dort nur einen blassen türkisen Fleck, und die weißen Felder sind alle gleich weiß.'>
 <figcaption>Dasselbe, hart bei 1 abgeschnitten</figcaption>
 </figure>
 </div>
 
-Abgeschnitten wird der Himmel über dem Horizont zu einer glatten weißen Fläche, in der der Horizont verschwindet, auch in der Spiegelkugel, und oben bekommt er einen grünlichen Ton, weil Grün und Blau schon bei 1 aufhören, Rot aber noch nicht. Mit Tone Mapping bleibt dort ein Verlauf. Wo das Bild dunkler als 0,7 ist, sind beide gleich: Die Kurve ändert nur, was zu hell ist.
+Abgeschnitten wird der Himmel über dem Horizont zu einer glatten weißen Fläche, in der der Horizont verschwindet. Die Spiegelkugel zeigt dort nur einen türkisen Fleck, weil Grün und Blau schon bei 1 aufhören, Rot aber noch nicht. Mit Tone Mapping bleibt der Verlauf, der Horizont ist zu sehen, und auch die weißen Felder unterscheiden sich noch. Dafür wirkt das ganze Bild etwas weicher: Die Kurve drückt nicht nur das Helle zusammen, sondern ein wenig auch alles andere.
 
 ## Wie geht es weiter?
 

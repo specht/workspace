@@ -855,38 +855,34 @@ def pfad():
 
 def tone():
     w, h = 488, 246
-    s = Svg('tone', w, h, 'Ein Graph: waagrecht die gerechnete Helligkeit c von 0 bis 3, senkrecht, was auf den Bildschirm '
+    s = Svg('tone', w, h, 'Ein Graph: waagrecht die gerechnete Helligkeit c von 0 bis 5, senkrecht, was auf den Bildschirm '
             'kommt, von 0 bis 1. Rot gestrichelt steigt die Linie gerade bis 1 und bleibt dann flach: abgeschnitten. '
-            'Blau ist tone(c): bis 0.7 dieselbe Linie, dann biegt sie weich ab und nähert sich 1.')
+            'Blau ist tone(c): Sie steigt flacher, biegt immer weiter ab und nähert sich 1, ohne sie zu erreichen.')
     x0, y0 = 54, 206           # the origin
-    sx, sy = 136, 168          # pixels per unit
+    sx, sy = 76, 168           # pixels per unit
     X = lambda c: x0 + c * sx
     Y = lambda v: y0 - v * sy
-    for c in (1, 2, 3):
+    for c in (1, 2, 3, 4, 5):
         s.line((X(c), y0), (X(c), Y(1.05)), LINE, 1)
-    s.line((x0, Y(1)), (X(3.1), Y(1)), LINE, 1)
-    s.arrow((x0, y0), (X(3.25), y0), INK, 2)
+    s.line((x0, Y(1)), (X(5.1), Y(1)), LINE, 1)
+    s.arrow((x0, y0), (X(5.3), y0), INK, 2)
     s.arrow((x0, y0), (x0, Y(1.18)), INK, 2)
-    for c in (0, 1, 2, 3):
+    for c in (0, 1, 2, 3, 4, 5):
         s.tex((X(c), y0 + 24), str(c), INK, 'middle', 16)
     s.tex((x0 - 10, Y(1) + 6), '1', INK, 'end', 16)
-    s.label((X(3.25), y0 - 12), ['gerechnet: ', ('c', 'c')], GREY, 'end')
+    s.label((X(5.3), y0 - 12), ['gerechnet: ', ('c', 'c')], GREY, 'end')
     s.text((x0 + 10, Y(1.18) + 5), 'auf dem Bildschirm', GREY, 'start')
-    # the bend at 0.7
-    k = 0.7
-    s.line((X(k), y0), (X(k), Y(k)), GREY, 1.2, dash='3 3')
-    s.code((X(k), y0 + 24), '0.7', 'middle')
     # clipped
-    s.polyline([(X(0), Y(0)), (X(1), Y(1)), (X(3.1), Y(1))], RED, 2.4, dash='7 5')
-    s.text((X(1.6), Y(1) - 12), 'abgeschnitten', RED, 'middle')
-    # tone(c)
+    s.polyline([(X(0), Y(0)), (X(1), Y(1)), (X(5.1), Y(1))], RED, 2.4, dash='7 5')
+    s.text((X(2.5), Y(1) - 12), 'abgeschnitten', RED, 'middle')
+    # tone(c) = 1 - exp(-c): towards 1, never there
     pts = []
-    for i in range(0, 311):
+    for i in range(0, 511):
         c = i / 100
-        v = c if c < k else k + (1 - k) * (1 - math.exp(-(c - k) / (1 - k)))
+        v = 1 - math.exp(-c)
         pts.append((X(c), Y(v)))
     s.polyline(pts, BLUE, 3)
-    s.label((X(1.55), Y(0.78)), ['Tone Mapping, ', ('c', 'tone(c)')], BLUE, 'start')
+    s.label((X(1.6), Y(0.6)), ['Tone Mapping, ', ('c', 'tone(c)')], BLUE, 'start')
     return s
 
 

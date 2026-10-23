@@ -8,14 +8,14 @@
     },
     "belichtung-hart.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
-      "output_sha256": "c73cae1403b77b380bb9d372842e44ad44ae6e6254fdf323f570bb3796c666c8",
-      "state_hash": "25fde33ee80385466bb2269fa12d2cb7627e12c86d0d8290b10ebc862e58170b",
+      "output_sha256": "a66ae4386baa9b9e113b494e381bb8aebc26dd0760c3334bd732f55025c16a5c",
+      "state_hash": "620fe5f83b03a77e6ad3525e0efbae3ea4f3e537de525e75365dc4a6d9f41f91",
       "workspace_look": "4.140.0-ls368"
     },
     "belichtung-weich.webp": {
       "environment_fingerprint": "ac980b3336a11a1096c4596a136ce8173562f653f11d7e5dca7635b302cb0ad5",
-      "output_sha256": "61a69ae6dbb8c2d6fb7585308c4f50694d4a50eea1fab32641510b1d1501e4f5",
-      "state_hash": "6ac0836d7192a7604796a0a561c620fc44fdc68f1851ed1b0b79a289f9569c35",
+      "output_sha256": "8446363351c48da0768f428bc27e167f29d53fb3530d05d0cd2349eafdcd73fe",
+      "state_hash": "2903c6dfe35d1cca26ca1915573a1c1fd36ff482eb63bc1051d6a830652c09dd",
       "workspace_look": "4.140.0-ls368"
     },
     "boden.webp": {
