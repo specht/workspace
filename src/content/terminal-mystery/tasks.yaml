@@ -210,6 +210,7 @@ tasks:
         say: Mit `nano` wurden die Einstellungen geändert. Gesucht ist der Befehl, der die Zeilen mit der Karte löscht.
       - when: { matches: '^\s*git' }
         say: Das ist der Commit danach. Gesucht ist der Befehl davor, der die Zeilen löscht.
+    hint: Vor und nach dem Löschen hat er mit `tail -n 3 zugaenge.log` nachgesehen. Dazwischen steht der Befehl, der `zugaenge.log` ändert, auch wenn du ihn noch nicht kennst.
     solution: "`sed -i '/4471/d' zugaenge.log` um 23:40 Uhr: `sed` löscht (`d`) jede Zeile, in der 4471 steht, und schreibt die Datei gleich zurück (`-i`)."
 
   - id: wartungspasswort

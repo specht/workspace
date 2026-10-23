@@ -450,6 +450,8 @@ Die Steuerung kennst du schon: `/srv/alarmanlage` ist das Repository aus deinen 
 
 _task(loeschbefehl)
 
+`sed` (»stream editor«) bearbeitet eine Datei Zeile für Zeile, ganz ohne Editor: `/4471/` wählt jede Zeile, in der `4471` steht, `d` (»delete«) löscht sie, und `-i` (»in place«) schreibt das Ergebnis gleich in die Datei zurück, statt es nur auszugeben. Mit `tail -n 3 zugaenge.log` hat er davor und danach nachgesehen, ob die Zeilen weg sind.
+
 ### Beweise sichern
 
 `scp` (»secure copy«) kopiert Dateien über `ssh`. Vor dem `:` steht der Rechner, dahinter der Pfad dort, und das Letzte ist das Ziel bei dir. Aus deinem Workspace erreichst du die Alarmanlage nicht direkt, darum springt `scp` mit `-J` (»jump«) über das Museum. Das Passwort fragt es dann für beide Rechner, erst deins für das Museum, dann das der Wartung:
