@@ -137,6 +137,28 @@ Derselbe Heap aus 5, 3, 8, 1, 4 und 2, und `pop` holt dreimal den kleinsten hera
 Legt man alle Zahlen mit `push` in einen Heap und holt sie mit `pop` wieder heraus, kommen sie sortiert heraus, die kleinste zuerst. Das ist **Heapsort**. Es braucht für \\(n\\) Zahlen \\(n\\)-mal `push` und \\(n\\)-mal `pop`, jedes höchstens \\(\log_2 n\\) Schritte: zusammen \\(O(n \log n)\\), so schnell wie die besten Sortierverfahren, auch im schlechtesten Fall.
 
 Ohne zweites Array geht es auch: Man baut den Heap im Array selbst auf und legt den jeweils größten Eintrag (mit einem Heap, in dem kein Kind *größer* ist als sein Elternteil) ans Ende, in den Teil, der schon sortiert ist. In der [Sorting Sandbox](/sandbox-sortieren) kannst du Heapsort selbst programmieren und mit den anderen Verfahren vergleichen.
+
+```pseudocode
+heap_sort(list):
+    n ← length of list
+    for i from n / 2 - 1 down to 0:          (n / 2 abgerundet)
+        sift_down(list, i, n)
+    for end from n - 1 down to 1:
+        swap list[0] and list[end]           (das größte ans Ende)
+        sift_down(list, 0, end)
+
+sift_down(list, i, size):                    (der Heap sind die ersten size Einträge)
+    repeat:
+        max ← i
+        for each child in (2i + 1, 2i + 2):
+            if child < size and list[child] > list[max]:
+                max ← child
+        if max == i: done
+        swap list[max] and list[i]
+        i ← max
+```
+
+`sift_down` ist die Schleife aus `pop`, nur mit `>` statt `<` und mit `size` statt der Länge der Liste: Was rechts von `size` steht, ist schon sortiert und gehört nicht mehr zum Heap. Die erste Schleife baut den Heap von hinten auf. Ein Blatt ist allein schon ein Heap, also beginnt sie beim letzten Eintrag, der Kinder hat.
 <!-- /part -->
 
 ## Zum Nachschlagen
