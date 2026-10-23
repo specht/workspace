@@ -8346,9 +8346,29 @@ end
 
 # Before the first request (config.ru starts the server only after this
 # file): accounts a restored backup brought back go again. Here, not in
-# configure, which runs while the class is still being read.
-begin
-    Main.new!.repeat_deletions_after_restore
-rescue => e
-    STDERR.puts "Repeating deletions after a restore failed at the start: #{e.class}: #{e.message}"
+# configure, which runs while the class is still being read. It fails
+# closed: when it cannot finish (Neo4j still starting: a few tries), the
+# server does not start, rather than serve accounts that should be gone.
+# Normally there is nothing to do, and what it needs (Neo4j, the deletion
+# log) the rest of the site needs too. The way out for the operator, until
+# the cause is fixed: the file SKIP_START_REPLAY (docs/datenschutz.md,
+# »Wenn der Workspace nicht startet«).
+START_REPLAY_TRIES = 5
+SKIP_START_REPLAY = '/internal/skip-deletion-replay'
+if File.exist?(SKIP_START_REPLAY)
+    STDERR.puts "!!! Deletions after a restore NOT repeated at the start: #{SKIP_START_REPLAY} exists. Restored accounts may be usable. " \
+        'Fix the cause, remove the file, restart (docs/datenschutz.md, »Wenn der Workspace nicht startet«).'
+else
+    1.upto(START_REPLAY_TRIES) do |attempt|
+        Main.new!.repeat_deletions_after_restore
+        break
+    rescue => e
+        STDERR.puts "Repeating deletions after a restore failed at the start (#{attempt}/#{START_REPLAY_TRIES}): #{e.class}: #{e.message}"
+        if attempt == START_REPLAY_TRIES
+            abort "Not starting: the deletions after a restore could not be repeated (cause above). What to do: " \
+                "docs/datenschutz.md, »Wenn der Workspace nicht startet«. To start anyway: create internal/skip-deletion-replay " \
+                "in the data folder and restart."
+        end
+        sleep 3 * attempt
+    end
 end

@@ -217,6 +217,36 @@ Standardvertrag an (bei Hetzner in der Console).
   Wer die Schule verlässt und das Konto behalten möchte, kommt in eine eigene
   Gruppe (etwa »Ehemalige«) und unterschreibt die Nutzungsordnung.
 
+### Wenn der Workspace nicht startet
+
+Bevor der Workspace nach dem Start die erste Anfrage beantwortet, wiederholt
+er die Löschungen nach einer Wiederherstellung (oben). Klappt das auch nach
+fünf Versuchen nicht, startet er nicht: lieber keine Website als Konten, die
+gelöscht sein sollten. Die Website antwortet dann mit 502, und im Log
+(`./config.rb logs ruby`) steht über »Not starting« in den Zeilen
+»Repeating deletions after a restore failed at the start« der Grund:
+
+- **Neo4j nicht erreichbar** (`Connection refused`, Zeitüberschreitung):
+  `./config.rb ps` und `./config.rb logs neo4japp`. Läuft `neo4japp`
+  wieder, `./config.rb restart ruby`.
+- **Die Löschliste ist nicht lesbar** (`Is a directory`, `Permission
+  denied`): `internal/deleted-accounts.jsonl` im Datenordner (`DATA_PATH` in
+  `config.rb`) muss eine lesbare Datei sein. Fehlt sie, ist das kein Fehler:
+  dann gibt es nichts zu wiederholen. Wurde sie mit der Sicherung
+  überschrieben, die vorher weggelegte aktuelle Datei zurücklegen.
+- **Ein Konto lässt sich nicht löschen** (ein Fehler aus MySQL, Neo4j oder
+  Docker beim Löschen): den genannten Dienst in Ordnung bringen, dann
+  `./config.rb restart ruby`.
+
+Notausgang, bis der Grund behoben ist: im Datenordner die Datei
+`internal/skip-deletion-replay` anlegen (`touch`) und `./config.rb restart
+ruby`. Der Workspace startet dann ohne die Prüfung und schreibt das bei jedem
+Start ins Log; Konten aus der Sicherung, die gelöscht sein sollten, sind so
+lange benutzbar. Danach die Datei löschen und neu starten, oder unter
+»Administration › Nach einer Wiederherstellung« mit dem Datum der Sicherung
+»Löschungen wiederholen«. Die Prüfung alle fünf Minuten läuft auch mit der
+Datei weiter und schreibt ihre Fehler ins Log.
+
 ## Wer am Code ändert, was gespeichert wird
 
 Dann ändern sich auch die Fakten in `privacy.rb`, und `Privacy::CHECKED`
