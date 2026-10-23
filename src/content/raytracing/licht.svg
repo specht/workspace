@@ -7,11 +7,11 @@
   <line x1="22.0" y1="128.0" x2="22.0" y2="66.3" stroke="#1f2937" stroke-width="2.2"/>
   <polygon points="22.0,58.0 17.3,69.8 26.7,69.8" fill="#1f2937"/>
   <rect x='9.5' y='33.7' width='63.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='14.0' y='46.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">normal</text>
-  <line x1="72.0" y1="80.0" x2="72.0" y2="120.0" stroke="#d97706" stroke-width="2"/>
+  <line x1="72.0" y1="86.0" x2="72.0" y2="120.0" stroke="#d97706" stroke-width="2"/>
   <polygon points="72.0,128.0 76.6,116.6 67.4,116.6" fill="#d97706"/>
-  <line x1="90.0" y1="80.0" x2="90.0" y2="120.0" stroke="#d97706" stroke-width="2"/>
+  <line x1="90.0" y1="86.0" x2="90.0" y2="120.0" stroke="#d97706" stroke-width="2"/>
   <polygon points="90.0,128.0 94.6,116.6 85.4,116.6" fill="#d97706"/>
-  <line x1="108.0" y1="80.0" x2="108.0" y2="120.0" stroke="#d97706" stroke-width="2"/>
+  <line x1="108.0" y1="86.0" x2="108.0" y2="120.0" stroke="#d97706" stroke-width="2"/>
   <polygon points="108.0,128.0 112.6,116.6 103.4,116.6" fill="#d97706"/>
   <line x1="72.0" y1="138.0" x2="108.0" y2="138.0" stroke="#d97706" stroke-width="5" stroke-linecap="round"/>
   <text x="18.7" y="172.0" font-size="16" fill="#1f2937" text-anchor="start" xml:space="preserve">senkrecht: </text>
@@ -21,11 +21,11 @@
   <line x1="198.0" y1="128.0" x2="198.0" y2="66.3" stroke="#1f2937" stroke-width="2.2"/>
   <polygon points="198.0,58.0 193.3,69.8 202.7,69.8" fill="#1f2937"/>
   <rect x='185.5' y='33.7' width='63.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='190.0' y='46.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">normal</text>
-  <line x1="274.5" y1="94.1" x2="246.2" y2="122.4" stroke="#d97706" stroke-width="2"/>
+  <line x1="295.7" y1="72.8" x2="246.2" y2="122.4" stroke="#d97706" stroke-width="2"/>
   <polygon points="240.5,128.0 251.8,123.2 245.4,116.7" fill="#d97706"/>
-  <line x1="299.9" y1="94.1" x2="271.6" y2="122.4" stroke="#d97706" stroke-width="2"/>
+  <line x1="308.4" y1="85.6" x2="271.6" y2="122.4" stroke="#d97706" stroke-width="2"/>
   <polygon points="266.0,128.0 277.3,123.2 270.8,116.7" fill="#d97706"/>
-  <line x1="325.4" y1="94.1" x2="297.1" y2="122.4" stroke="#d97706" stroke-width="2"/>
+  <line x1="321.2" y1="98.3" x2="297.1" y2="122.4" stroke="#d97706" stroke-width="2"/>
   <polygon points="291.5,128.0 302.7,123.2 296.3,116.7" fill="#d97706"/>
   <line x1="240.5" y1="138.0" x2="291.5" y2="138.0" stroke="#d97706" stroke-width="5" stroke-linecap="round"/>
   <text x="194.8" y="172.0" font-size="16" fill="#1f2937" text-anchor="start" xml:space="preserve">schräg: </text>
@@ -35,11 +35,11 @@
   <line x1="374.0" y1="128.0" x2="374.0" y2="66.3" stroke="#1f2937" stroke-width="2.2"/>
   <polygon points="374.0,58.0 369.3,69.8 378.7,69.8" fill="#1f2937"/>
   <rect x='361.5' y='33.7' width='63.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='366.0' y='46.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">normal</text>
-  <line x1="434.5" y1="111.6" x2="396.9" y2="125.3" stroke="#d97706" stroke-width="2"/>
+  <line x1="521.8" y1="79.8" x2="396.9" y2="125.3" stroke="#d97706" stroke-width="2"/>
   <polygon points="389.4,128.0 401.6,128.4 398.5,119.8" fill="#d97706"/>
-  <line x1="487.1" y1="111.6" x2="449.5" y2="125.3" stroke="#d97706" stroke-width="2"/>
+  <line x1="527.9" y1="96.7" x2="449.5" y2="125.3" stroke="#d97706" stroke-width="2"/>
   <polygon points="442.0,128.0 454.3,128.4 451.2,119.8" fill="#d97706"/>
-  <line x1="539.7" y1="111.6" x2="502.1" y2="125.3" stroke="#d97706" stroke-width="2"/>
+  <line x1="534.1" y1="113.6" x2="502.1" y2="125.3" stroke="#d97706" stroke-width="2"/>
   <polygon points="494.6,128.0 506.9,128.4 503.8,119.8" fill="#d97706"/>
   <line x1="389.4" y1="138.0" x2="494.6" y2="138.0" stroke="#d97706" stroke-width="5" stroke-linecap="round"/>
   <text x="377.0" y="172.0" font-size="16" fill="#1f2937" text-anchor="start" xml:space="preserve">flach: </text>

@@ -248,14 +248,17 @@ def licht():
         s.line((x0, fy), (x0 + 160, fy), INK, 2.5)
         s.arrow((x0 + 12, fy), (x0 + 12, fy - 70), INK, 2.2)
         s.code((x0 + 4, fy - 82), 'normal')
-        # three parallel rays, 18 apart across the bundle
-        # three parallel rays from the upper right, the bundle 36 wide across
+        # three parallel rays from the upper right, 18 apart across the
+        # bundle, so 36 wide in every picture: they start on one line across
+        # their direction, and the flatter they fall, the longer the far ones
         width = 36 / math.cos(math.radians(ang))
         start = x0 + 80 - width / 2
-        for q in range(3):
-            hit_x = start + q * width / 2
-            top = (hit_x + math.sin(math.radians(ang)) * 48, fy - math.cos(math.radians(ang)) * 48)
-            s.arrow(top, (hit_x, fy), AMBER, 2)
+        d = (-math.sin(math.radians(ang)), math.cos(math.radians(ang)))   # towards the floor
+        hits = [(start + q * width / 2, fy) for q in range(3)]
+        along = [dot(sub(p, hits[1]), d) for p in hits]
+        reach = max(-a for a in along) + 42   # the shortest arrow is 42 long
+        for p, a in zip(hits, along):
+            s.arrow(sub(p, mul(d, reach + a)), p, AMBER, 2)
         s.line((start, fy + 10), (start + width, fy + 10), AMBER, 5, cap='round')
         word = ['senkrecht', 'schräg', 'flach'][k]
         s.label((x0 + 80, fy + 44), [word + ': ', ('c', 'dot'), (' = ' if val == '1' else ' ≈ ') + val], INK, 'middle')
