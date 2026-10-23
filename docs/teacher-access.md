@@ -199,13 +199,14 @@ hineinsieht, ist nicht betroffen.
 
 ## Kopierknöpfe
 
-Kurzen Code tippen Lernende ab; einen Kopierknopf haben nur Blöcke, bei denen
-Abtippen nichts lehrt (docs/aktivitaet-schreiben.md). Auf der Klassenseite
-neben »Sprache« macht »Kopierknöpfe: An jedem Codeblock« jeden Codeblock für die
-Lernenden dieser Gruppe kopierbar (`GroupSetting.copy_all_code`, gespeichert
-sofort). Wer in mehreren Gruppen ist, bekommt die Knöpfe, sobald eine davon es
-erlaubt. Lehrkräfte selbst sehen die Seiten wie geschrieben, beim Nachahmen
-wie die Person.
+Voreingestellt hat jeder Codeblock einen Kopierknopf, für alle. Auf der
+Klassenseite neben »Sprache« stellt »Kopierknöpfe: Wo sinnvoll« eine Gruppe
+um: Ihre Lernenden bekommen Kopierknöpfe nur an Blöcken, bei denen Abtippen
+nichts lehrt (docs/aktivitaet-schreiben.md), und tippen kurzen Code ab
+(`GroupSetting.copy_all_code = false`, sofort gespeichert). Wer in mehreren
+Gruppen ist, bekommt alle Knöpfe, solange nicht jede seiner Gruppen »Wo
+sinnvoll« gewählt hat. Lehrkräfte und Besucher haben die Voreinstellung,
+beim Nachahmen sieht die Lehrkraft die Seite wie die Person.
 
 ## Klassen-Repository
 

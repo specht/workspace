@@ -5143,22 +5143,25 @@ class Main < Sinatra::Base
 
     # --- Copy buttons per group ---------------------------------------------------
 
-    # Off (the default), a code block has a copy button only where the page
-    # gives it one (_copy: what is no use to type, big blocks that go into a
-    # file), because typing is learning. A teacher can make every block
-    # copyable for a group (class page); its students get a button on each.
+    # By default every code block has a copy button. A teacher can choose
+    # »Wo sinnvoll« for a group (class page, copy_all_code = false): then a
+    # block has one only where the page gives it one (_copy: what is no use
+    # to type, big blocks that go into a file), and the rest is typed. A
+    # person in several groups gets every button as soon as one allows it:
+    # false only when each of the groups chose »Wo sinnvoll«.
     def group_copy_all_code?(groups)
-        return false if groups.empty?
+        return true if groups.empty?
 
-        neo4j_query('MATCH (g:GroupSetting) WHERE g.group IN $groups AND g.copy_all_code = true RETURN count(g) AS n;',
-            :groups => groups).first['n'].to_i > 0
+        marked = neo4j_query('MATCH (g:GroupSetting) WHERE g.group IN $groups AND g.copy_all_code = false RETURN count(DISTINCT g.group) AS n;',
+            :groups => groups).first['n'].to_i
+        marked < groups.uniq.size
     end
 
-    # For the page (<body data-copy-all-code>): a student in such a group,
-    # also while a teacher imitates it; teachers themselves see the pages as
-    # written.
+    # For the page (<body data-copy-all-code>): everyone, visitors and
+    # teachers too, except a student whose groups all chose »Wo sinnvoll«,
+    # also while a teacher imitates that student.
     def copy_all_code?
-        return false unless user_logged_in? && !teacher_logged_in?
+        return true unless user_logged_in? && !teacher_logged_in?
 
         @copy_all_code = group_copy_all_code?(my_groups) if @copy_all_code.nil?
         @copy_all_code
@@ -6042,10 +6045,10 @@ class Main < Sinatra::Base
         # Copy buttons on every code block for the group's students, or only
         # where the page has them (group_copy_all_code?); saved at once.
         copy_all = group_copy_all_code?([group])
-        io << "<label title='Wo sinnvoll: nur dort, wo Abtippen nichts lehrt (Adressen, Befehle, große Dateien); alles andere tippen die Lernenden ab. An jedem Codeblock: überall ein Kopierknopf.'>" \
+        io << "<label title='An jedem Codeblock (Voreinstellung): überall ein Kopierknopf. Wo sinnvoll: nur dort, wo Abtippen nichts lehrt (Adressen, Befehle, große Dateien); alles andere tippen die Lernenden ab.'>" \
             "Kopierknöpfe <select class='form-select class-copy-all-code' data-group='#{h.(group)}'>" \
-            "<option value='marked'#{copy_all ? '' : ' selected'}>Wo sinnvoll</option>" \
-            "<option value='all'#{copy_all ? ' selected' : ''}>An jedem Codeblock</option></select></label>"
+            "<option value='all'#{copy_all ? ' selected' : ''}>An jedem Codeblock</option>" \
+            "<option value='marked'#{copy_all ? '' : ' selected'}>Wo sinnvoll</option></select></label>"
         io << "<script>document.querySelector('.class-copy-all-code').addEventListener('change', function (e) {" \
             "api_call('/api/set_group_copy_all_code', { group: e.target.dataset.group, on: e.target.value === 'all' }, function () {}, { no_please_wait: true });" \
             "});</script>"
@@ -7760,18 +7763,15 @@ class Main < Sinatra::Base
         respond(:yay => 'sure')
     end
 
-    # Every code block copyable for a group's students (class page), or only
-    # those the page marks (group_copy_all_code?).
+    # Every code block copyable for a group's students (the default), or only
+    # those the page marks (group_copy_all_code?); stored as given, also
+    # true, so that the choice stays when the default changes.
     post '/api/set_group_copy_all_code' do
         assert(teacher_logged_in?)
         data = parse_request_data(:required_keys => [:group, :on], :types => { :on => Object })
         group = data[:group]
         assert(class_groups.include?(group))
-        if data[:on] == true
-            neo4j_query('MERGE (g:GroupSetting {group: $group}) SET g.copy_all_code = true;', :group => group)
-        else
-            neo4j_query('MATCH (g:GroupSetting {group: $group}) REMOVE g.copy_all_code;', :group => group)
-        end
+        neo4j_query('MERGE (g:GroupSetting {group: $group}) SET g.copy_all_code = $on;', :group => group, :on => data[:on] == true)
         respond(:on => data[:on] == true)
     end
 
