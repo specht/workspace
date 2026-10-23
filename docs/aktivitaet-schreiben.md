@@ -98,15 +98,21 @@ etwa ein Gerüst, das die Lernenden ausbauen, steht mit
 `<!-- page-code: own -->` in der Zeile vor dem Codeblock.
 
 Dieselben Rezepte geben Lehrkräften an jedem Schritt den ganzen Code: Unter
-dem Bild eines Rezepts, das Textdateien aus `stufen/` schreibt, steht für sie
-ein kleiner Knopf »Code bis hier«, der die ganze Datei kopiert, in einer
-Galerie nach der Galerie (`stage_code.rb`). Eine Datei kommt nur dort, wo sie
-sich seit dem letzten Mal geändert hat; Bilder, Archive und Beispiele aus
-anderen Ordnern sind keine Schritte. Ein Schritt ohne Rezept bekommt den
-Knopf mit einer Zeile für sich, die auf eine Textdatei im Ordner der
-Aktivität zeigt: `<!-- stage: stufen/10-glas.c -->`, oder unter anderem
-Namen `<!-- stage: stufen/licht.fs as light.fs -->`. Lernende bekommen weder
-den Knopf noch den Code; der Server lässt beides für sie weg.
+dem Bild eines Rezepts (bei `tutorial-step` gleich danach, in einer Galerie
+nach der Galerie) steht für sie ein kleiner Knopf »Code bis hier«, der die
+ganze Datei kopiert (`stage_code.rb`). Das Programm eines Schritts ist, was
+das Rezept schreibt: eine Textdatei aus `stufen/` oder die fertige aus
+`loesung/`, ein Codeblock der Seite (`previous-code`, `code:…`) oder eine
+andere Datei im Ordner der Aktivität, wenn die Seite dieselbe Datei mehr als
+einmal schreibt (ein Programm, das wächst). Eine Datei kommt nur dort, wo
+sie sich seit dem letzten Mal geändert hat; Bilder, Archive, einmalige
+Beispiele, Beispiele aus eingebundenen Teilen des Handbuchs und Programme
+unter fünf Zeilen sind keine Schritte. Ein Schritt, den die Seite nur in
+Stücken zeigt, bekommt seine Datei in `stufen/` und eine Zeile für sich,
+`<!-- stage: stufen/lichtspur-2.c as lichtspur.c -->`; `page_code_test.rb`
+prüft, dass der Code der Seite seit dem letzten Schritt darin steht.
+Lernende bekommen weder den Knopf noch den Code; der Server lässt beides für
+sie weg.
 
 Rezepte können auch prüfen, ob die Schritte der Seite aufgehen:
 `check-task: lock` führt die Prüfung einer Aufgabe aus wie der Knopf »Prüfen«,

@@ -9,10 +9,19 @@ require 'nokogiri'
 # each step's complete program in stufen/, and the page's screenshot recipes
 # write it into the Workspace where the page has built it up to (write-file:
 # raytracer.c <- file:stufen/05-boden.c). So wherever a recipe writes a text
-# file from stufen/, that file is the program at this point of the page;
-# pictures, archives and examples from other folders are not steps. A step
-# without a recipe says so on a line of its own, with any text file in the
-# page's folder:
+# file from stufen/ (or the finished program from loesung/), that file is
+# the program at this point of the page. Some pages keep their steps
+# elsewhere in their folder (page-start.svelte, step2.lua, lehrkraft/): a
+# file counts there when the page writes its target more than once, a
+# program that grows. Pictures, archives, one-off examples and programs of
+# fewer than MIN_LINES lines (shown whole on the page anyway, a typo to show
+# an error) are not steps. A step without a picture
+# (<!-- tutorial-step … -->) gets its button right after it. A recipe
+# that writes a code block of the page (write-file: lichtspur.c <-
+# previous-code, previous-code (LABEL), code:A||B, chosen as the screenshot
+# generator chooses it) has the program in that block. A step without a
+# recipe says so on a line of its own, with any text file in the page's
+# folder:
 #
 #   <!-- stage: stufen/10-glas.c -->
 #   <!-- stage: stufen/shader.fs as light.fs -->
@@ -29,8 +38,16 @@ require 'nokogiri'
 # (Nachahmen).
 module StageCode
     WRITE = /\Awrite-file:\s*(\S+)\s*<-\s*file:(\S+)\s*\z/
+    WRITE_CODE = /\Awrite-file:\s*(\S+)\s*<-\s*(previous-code(?:\s+\([^)]+\))?|code:.+)\z/
+    FENCE = /\A```[^`]*\z/
+    LABEL = /\A<!--\s*screenshot-code:\s*(.+?)\s*-->\z/
+    # files a code block can be a whole program of (not notes, data, Markdown)
+    CODE = %w[.c .h .frag .vert .fs .vs .glsl .rb .py .js .mjs .html .css .lua .svelte .sql .tex .bib .room .ini
+              .cbl .f90 .pas .java .cs .go .dart .rs .cpp .bas .lisp .st .asm .sh .ts].freeze
     MARKER = /\A<!--\s*stage:\s*(\S+)(?:\s+as\s+(\S+))?\s*-->\s*\z/
-    RECIPE = '<!-- tutorial-screenshot'
+    RECIPE = /\A<!-- tutorial-(screenshot|step)\b/
+    FOLDERS = %w[stufen/ loesung/].freeze
+    MIN_LINES = 5
     # the buttons' wrapper; the code in it is escaped, so no </div> inside
     # ends it early (HTML comments as markers do not survive the rendering)
     STRIP = %r{<div class=["']stage-code["']>.*?</div>}m
@@ -42,14 +59,22 @@ module StageCode
     # [markdown with a slot at each step, [[File_, …] per slot]]
     def self.mark(markdown, page_dir)
         lines = markdown.lines
+        # how often the page writes each target: more than once, it grows
+        writes = Hash.new(0)
+        lines.each { |l| (m = l.strip.match(/\Awrite-file:\s*(\S+)\s*<-/)) && writes[m[1]] += 1 }
         out = []
         points = []
         last = {}             # target => text written there last
         pending = nil         # files waiting for their place
         wait = nil            # :image (after the next picture) or :gallery (after its end)
         in_recipe = false
+        step = false          # the recipe is a tutorial-step, without a picture
+        included = false      # inside a Handbuch part (_include): its examples are not steps
         in_gallery = false
         written = []
+        blocks = []           # the page's code blocks so far: [label, text without context lines]
+        fence = nil           # the block being read
+        label = nil           # a screenshot-code label right before a fence
         place = lambda do
             next if pending.nil? || pending.empty?
 
@@ -67,22 +92,52 @@ module StageCode
         end
         lines.each do |line|
             stripped = line.strip
+            if fence
+                if stripped.start_with?('```')
+                    blocks << [fence[0], fence[1].reject { |l| l =~ /\A~( |$)/ }.join]
+                    fence = nil
+                else
+                    fence[1] << line
+                end
+                out << line
+                next
+            end
+            if !in_recipe && line.start_with?('```') && stripped =~ FENCE
+                fence = [label, []]
+                label = nil
+                out << line
+                next
+            end
+            label = (m = stripped.match(LABEL)) ? m[1] : (stripped.empty? ? label : nil)
+            included = true if stripped.start_with?("<div class='reference-include-begin'>")
+            included = false if stripped.start_with?("<div class='reference-include-end'")
             if in_recipe
-                if (m = stripped.match(WRITE)) && m[2].start_with?('stufen/') && (file = read(page_dir, m[2], m[1]))
-                    written << file
+                if included
+                    # a Handbuch example, not a step of this page
+                elsif (m = stripped.match(WRITE)) && (file = read(page_dir, m[2], m[1]))
+                    step_folder = FOLDERS.any? { |f| m[2].start_with?(f) }
+                    grows = writes[m[1]] > 1 && CODE.include?(File.extname(m[1]).downcase) && long?(file.text)
+                    written << file if step_folder || grows
+                elsif (m = stripped.match(WRITE_CODE)) && CODE.include?(File.extname(m[1]).downcase) &&
+                      (text = code_source(blocks, m[2])) && long?(text)
+                    written << File_.new(:target => m[1], :source => nil, :text => text.end_with?("\n") ? text : text + "\n")
                 end
                 if stripped.include?('-->')
                     in_recipe = false
                     collect.call(written)
                     written = []
                     wait = in_gallery ? :gallery : :image if pending
+                    out << line
+                    place.call if step && !in_gallery    # no picture follows a tutorial-step
+                    next
                 end
                 out << line
                 next
             end
-            if stripped.start_with?(RECIPE)
+            if (r = stripped.match(RECIPE))
                 # the step before gets its box before the next recipe starts
                 place.call if pending && wait == :image
+                step = r[1] == 'step'
                 in_recipe = !stripped.end_with?('-->')
                 out << line
                 next
@@ -107,6 +162,23 @@ module StageCode
         end
         place.call
         [out.join, points]
+    end
+
+    def self.long?(text)
+        text.lines.count { |l| !l.strip.empty? } >= MIN_LINES
+    end
+
+    # The block a code source names, as the screenshot generator finds it
+    # (src/tutorial-screenshots/server.js, findCodeSource), or nil.
+    def self.code_source(blocks, selector)
+        if selector == 'previous-code'
+            blocks.last&.last
+        elsif (m = selector.match(/\Aprevious-code\s+\((.+)\)\z/))
+            blocks.find { |l, _| l == m[1].strip }&.last
+        else
+            needles = selector.delete_prefix('code:').split('||').map(&:strip).reject(&:empty?)
+            blocks.reverse.find { |_, text| needles.all? { |n| text.include?(n) } }&.last
+        end
     end
 
     BINARY = %w[.png .jpg .jpeg .gif .webp .bmp .ico .pdf .gz .tgz .zip .tar .wav .mp3 .ogg .mp4 .ttf .woff .woff2 .bin].freeze

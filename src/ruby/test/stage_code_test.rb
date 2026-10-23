@@ -118,6 +118,63 @@ class StageCodeTest < Minitest::Test
         page = File.expand_path('../../content/raytracing/raytracing.md', __dir__)
         _, points = StageCode.mark(File.read(page), File.dirname(page))
         assert_operator points.size, :>=, 15
-        assert(points.all? { |files| files.all? { |f| f.source.start_with?('stufen/') } })
+        assert(points.all? { |files| files.all? { |f| f.source.nil? || f.source.start_with?('stufen/') } })
+    end
+
+    def test_a_recipe_that_writes_a_code_block_has_its_program
+        long = "x;\n" * 5
+        md = "```c\nint a;\n#{long}```\n\n" + recipe('main.c <- previous-code') + "<img src='a.webp' alt=''>\n\n" +
+             "<!-- screenshot-code: zwei -->\n```c\n~ int a;\nint b;\n#{long}```\n\n```c\nint c;\n#{long}```\n\n" +
+             recipe('main.c <- previous-code (zwei)') + "<img src='b.webp' alt=''>\n\n" +
+             recipe('main.c <- code:int c') + "<img src='c.webp' alt=''>\n\n" +
+             recipe('main.c <- code:int c') + "<img src='d.webp' alt=''>\n"
+        _, points = StageCode.mark(md, @dir)
+        assert_equal ["int a;\n", "int b;\n", "int c;\n"], points.map { |files| files.first.text.lines.first },
+                     'the block before, the labelled one without its context line, the one with the text; the same again gets no button'
+        assert_nil points.first.first.source
+    end
+
+    def test_a_step_without_a_picture_and_the_solution
+        FileUtils.mkdir_p(File.join(@dir, 'loesung'))
+        File.write(File.join(@dir, 'loesung', 'calc.py'), "print(42)\n")
+        md = "```python\nprint(0)\n#{"x = 1\n" * 5}```\n\n<!-- tutorial-step\nwrite-file: calc.py <- previous-code\n-->\nText.\n\n" +
+             "<!-- tutorial-step\nwrite-file: calc.py <- file:loesung/calc.py\n-->\n"
+        out, points = StageCode.mark(md, @dir)
+        assert_equal ["print(0)\n", "print(42)\n"], points.map { |f| f.first.text.lines.first }
+        assert out.index("data-stage='0'") < out.index('Text.'), 'right after the step'
+    end
+
+    def test_a_file_outside_stufen_counts_when_the_page_writes_it_again
+        five = "a = 1\nb = 2\nc = 3\nd = 4\ne = 5\n"
+        File.write(File.join(@dir, 'step1.lua'), five)
+        File.write(File.join(@dir, 'step2.lua'), five + "f = 6\n")
+        File.write(File.join(@dir, 'beispiel.lua'), five + "g = 7\n")
+        md = recipe('stars.lua <- file:step1.lua') + "<img src='a.webp' alt=''>\n\n" +
+             recipe('stars.lua <- file:step2.lua') + "<img src='b.webp' alt=''>\n\n" +
+             recipe('other.lua <- file:beispiel.lua') + "<img src='c.webp' alt=''>\n"
+        _, points = StageCode.mark(md, @dir)
+        assert_equal %w[step1.lua step2.lua], points.map { |f| f.first.source }, 'a one-off example is no step'
+    end
+
+    def test_examples_in_included_handbuch_parts_are_no_steps
+        block = "```html\n<p>1</p>\n<p>2</p>\n<p>3</p>\n<p>4</p>\n<p>5</p>\n```\n\n"
+        md = "\n<div class='reference-include-begin'></div>\n\n" + block + recipe('index.html <- previous-code') +
+             "<img src='a.webp' alt=''>\n\n<div class='reference-include-end' data-part='html#tags'></div>\n\n" +
+             recipe('seite/index.html <- previous-code') + "<img src='b.webp' alt=''>\n"
+        _, points = StageCode.mark(md, @dir)
+        assert_equal ['seite/index.html'], points.map { |f| f.first.target },
+                     'the example in the part gives no button; the page itself may still write that block'
+    end
+
+    def test_short_programs_are_no_steps
+        md = "```python\nprin('hallo')\n```\n\n" + recipe('hello.py <- previous-code') + "<img src='a.webp' alt=''>\n"
+        _, points = StageCode.mark(md, @dir)
+        assert_empty points
+    end
+
+    def test_a_code_block_written_as_notes_is_no_program
+        md = "```markdown\n# Seite\n```\n\n" + recipe('pages/1.md <- previous-code') + "<img src='a.webp' alt=''>\n"
+        _, points = StageCode.mark(md, @dir)
+        assert_empty points
     end
 end
