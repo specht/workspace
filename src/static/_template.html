@@ -160,7 +160,15 @@ function install_clipboard_handler(selector) {
 // without line numbers. On blocks that are no use to type and on big blocks
 // that go into a file.
 function install_code_copy() {
-    document.querySelectorAll('pre.copy-code').forEach(function(pre) {
+    let blocks = Array.from(document.querySelectorAll('pre.copy-code'));
+    // A group whose teacher made every block copyable (class page): every
+    // code block of the page, not those inside another (line numbers).
+    if (document.body.dataset.copyAllCode === 'true') {
+        document.querySelectorAll('pre:not(.copy-code)').forEach(function(pre) {
+            if (!pre.parentElement.closest('pre')) blocks.push(pre);
+        });
+    }
+    blocks.forEach(function(pre) {
         let box = document.createElement('div');
         box.className = 'code-copy-box';
         pre.parentNode.insertBefore(box, pre);
@@ -1064,7 +1072,7 @@ window.addEventListener('load', function() {
 });
 </script>
 
-<body >
+<body#{copy_all_code? ? " data-copy-all-code='true'" : ''}>
     <div class="modal" id="__template_modal" tabindex="-1" role="dialog" aria-labelledby="__template_modal_title" aria-hidden="true" style='z-index: 200000;'>
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">

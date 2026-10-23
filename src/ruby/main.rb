@@ -5098,6 +5098,29 @@ class Main < Sinatra::Base
         groups.to_h { |group| [group, set[group]] }
     end
 
+    # --- Copy buttons per group ---------------------------------------------------
+
+    # Off (the default), a code block has a copy button only where the page
+    # gives it one (_copy: what is no use to type, big blocks that go into a
+    # file), because typing is learning. A teacher can make every block
+    # copyable for a group (class page); its students get a button on each.
+    def group_copy_all_code?(groups)
+        return false if groups.empty?
+
+        neo4j_query('MATCH (g:GroupSetting) WHERE g.group IN $groups AND g.copy_all_code = true RETURN count(g) AS n;',
+            :groups => groups).first['n'].to_i > 0
+    end
+
+    # For the page (<body data-copy-all-code>): a student in such a group,
+    # also while a teacher imitates it; teachers themselves see the pages as
+    # written.
+    def copy_all_code?
+        return false unless user_logged_in? && !teacher_logged_in?
+
+        @copy_all_code = group_copy_all_code?(my_groups) if @copy_all_code.nil?
+        @copy_all_code
+    end
+
     # --- Class repositories per group (ClassRepos) -----------------------------
 
     # { group => { slug => address } } for the groups given, {} for a group
@@ -5972,6 +5995,14 @@ class Main < Sinatra::Base
         io << "</select></label>"
         io << "<script>document.querySelector('.class-code-language').addEventListener('change', function (e) {" \
             "api_call('/api/set_group_code_language', { group: e.target.dataset.group, language: e.target.value }, function () {}, { no_please_wait: true });" \
+            "});</script>"
+        # Copy buttons on every code block for the group's students, or only
+        # where the page has them (group_copy_all_code?); saved at once.
+        copy_all = group_copy_all_code?([group])
+        io << "<label class='class-copy-all' title='Aus: Kopierknöpfe nur dort, wo Abtippen nichts bringt (Adressen, Befehle, große Dateien); alles andere tippen die Lernenden ab. An: an jedem Codeblock ein Kopierknopf.'>" \
+            "<input type='checkbox' class='form-check-input class-copy-all-code' data-group='#{h.(group)}'#{copy_all ? ' checked' : ''}>Alle Codeblöcke kopierbar</label>"
+        io << "<script>document.querySelector('.class-copy-all-code').addEventListener('change', function (e) {" \
+            "api_call('/api/set_group_copy_all_code', { group: e.target.dataset.group, on: e.target.checked }, function () {}, { no_please_wait: true });" \
             "});</script>"
         io << class_repos_button_html(group)
         io << "<noscript><button class='btn btn-primary'>Anzeigen</button></noscript>"
@@ -7682,6 +7713,21 @@ class Main < Sinatra::Base
             END_OF_STRING
         end
         respond(:yay => 'sure')
+    end
+
+    # Every code block copyable for a group's students (class page), or only
+    # those the page marks (group_copy_all_code?).
+    post '/api/set_group_copy_all_code' do
+        assert(teacher_logged_in?)
+        data = parse_request_data(:required_keys => [:group, :on], :types => { :on => Object })
+        group = data[:group]
+        assert(class_groups.include?(group))
+        if data[:on] == true
+            neo4j_query('MERGE (g:GroupSetting {group: $group}) SET g.copy_all_code = true;', :group => group)
+        else
+            neo4j_query('MATCH (g:GroupSetting {group: $group}) REMOVE g.copy_all_code;', :group => group)
+        end
+        respond(:on => data[:on] == true)
     end
 
     # The class repositories of a group (ClassRepos), from the dialog on the

@@ -197,6 +197,16 @@ der eigene Workspace startet erst nach »Ich bin einverstanden«
 Administration und Testkonten sind ausgenommen; wer in einen Workspace
 hineinsieht, ist nicht betroffen.
 
+## Kopierknöpfe
+
+Kurzen Code tippen Lernende ab; einen Kopierknopf haben nur Blöcke, bei denen
+Abtippen nichts lehrt (docs/aktivitaet-schreiben.md). Auf der Klassenseite
+neben »Sprache« macht »Alle Codeblöcke kopierbar« jeden Codeblock für die
+Lernenden dieser Gruppe kopierbar (`GroupSetting.copy_all_code`, gespeichert
+sofort). Wer in mehreren Gruppen ist, bekommt die Knöpfe, sobald eine davon es
+erlaubt. Lehrkräfte selbst sehen die Seiten wie geschrieben, beim Nachahmen
+wie die Person.
+
 ## Klassen-Repository
 
 Die Sandboxes (Sortieren, Datenstrukturen, CPU) können mit einem
