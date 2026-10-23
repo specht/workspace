@@ -108,6 +108,8 @@ if [ "$ROLE" = alarmanlage ]; then
     # opened read and write so it never ends. Its output goes to rm, which
     # waits for an answer that never comes.
     cd /home/wartung
+    # a restart keeps the container's /run: the FIFO of the last start is still there
+    rm -f /run/wartung-tty
     mkfifo -m 0600 /run/wartung-tty
     chown 2500:2500 /run/wartung-tty
     # Unquoted on purpose: the words of the command, and no shell in between
