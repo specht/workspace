@@ -23,6 +23,8 @@ test('an administrator sees every person box with its sources', async ({ page },
   await loginAsE2eUser(page, adminEmail(), testInfo);
   await page.goto('/person-sources');
   await expect(page.locator('h1')).toHaveText('Belege für die Personen');
+  // The Administration menu leads there, in development
+  await expect(page.locator(".dropdown-menu a.dropdown-item[href='/person-sources']")).toHaveClass(/active/);
   expect(await page.locator('.ps-person').count()).toBeGreaterThan(50);
   const snellius = page.locator('.ps-person', { has: page.locator("a[href='/reference/personen#snellius']") });
   await expect(snellius.locator('.ps-sourced').first()).toBeVisible();
