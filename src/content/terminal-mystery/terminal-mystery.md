@@ -388,7 +388,7 @@ crop-terminal-lines: auto
 
 <img class='full' src='ssh-museum.webp' alt='Im Terminal: ssh mit dem eigenen Zugang zu museum.bitstein, die Begrüßung des Servers der Verwaltung, die Eingabeaufforderung mit einem gelben [museum], darunter ls mit LIESMICH.txt, geraete.txt, kameras, logs, netzplan.txt und wartung und der Inhalt von LIESMICH.txt.'>
 
-Die Eingabeaufforderung sieht jetzt anders aus und sagt doch dasselbe. In deinem Workspace steht `student@workspace:~$`: wer du bist, nach dem `@` auf welchem Rechner, nach dem `:` in welchem Ordner. Auf dem Museum steht `[museum] e123:~$`: der Rechner vorn, gelb und in Klammern, damit du ihn nicht übersiehst, dann wieder du und der Ordner. Das `~` ist jetzt dein Home auf dem Museum, nicht das im Workspace, und jeder Befehl läuft dort. Auf der Alarmanlage steht später ein rotes `[alarmanlage]`. `hostname` sagt, auf welchem Rechner du bist, `whoami`, wer du dort bist. Schreiben kannst du hier nichts, lesen alles, mit denselben Werkzeugen wie in Bitstein. `exit` oder <kbd>Strg</kbd><kbd>D</kbd> bringt dich zurück.
+Die Eingabeaufforderung sieht jetzt anders aus und sagt doch dasselbe. In deinem Workspace steht `student@workspace:~$`: wer du bist, nach dem `@` auf welchem Rechner, nach dem `:` in welchem Ordner. Auf dem Museum steht `[museum] e123:~$`: der Rechner vorn, gelb und in Klammern, damit du ihn nicht übersiehst, dann wieder du und der Ordner. Das `~` ist jetzt dein Home auf dem Museum, nicht das im Workspace, und jeder Befehl läuft dort. `hostname` sagt, auf welchem Rechner du bist, `whoami`, wer du dort bist. Schreiben kannst du hier nichts, lesen alles, mit denselben Werkzeugen wie in Bitstein. `exit` oder <kbd>Strg</kbd><kbd>D</kbd> bringt dich zurück.
 
 _task(vpn)
 
@@ -406,7 +406,7 @@ Ohne Namen vor dem `@` nimmt `ssh` den, unter dem du gerade angemeldet bist, und
 
 _task(wartungspasswort)
 
-Mit dem Passwort der Wartung bist du drin, zwei Rechner weit weg: dein Workspace, darin eine Verbindung zum Museum, darin eine zur Alarmanlage. Jedes `exit` geht einen Schritt zurück.
+Mit dem Passwort der Wartung bist du drin, zwei Rechner weit weg: dein Workspace, darin eine Verbindung zum Museum, darin eine zur Alarmanlage. Die Eingabeaufforderung beginnt jetzt mit einem roten `[alarmanlage]`. Jedes `exit` geht einen Schritt zurück.
 
 <!-- tutorial-screenshot
 # Von museum.bitstein weiter auf die Alarmanlage, mit dem Passwort der Wartung
