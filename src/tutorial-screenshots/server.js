@@ -2003,6 +2003,9 @@ async function cloneStart(action) {
         { timeout: 5_000 },
     ).catch(() => {});
     await input.click();
+    // The click lands in the middle of the field: on a long address the
+    // cursor would stand inside it, not after it as after typing.
+    await input.press('End');
     await workspace.waitForTimeout(100);
 }
 
