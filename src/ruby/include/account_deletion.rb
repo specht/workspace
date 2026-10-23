@@ -58,8 +58,19 @@ module AccountDeletion
         Digest::SHA256.hexdigest("deleted-account:#{salt}:#{email}")
     end
 
-    def self.log_line(email, salt, now: Time.now)
-        JSON.generate({ 'hash' => address_hash(email, salt), 'deleted_at' => now.to_i }) + "\n"
+    # seq: the deletion's number, counted up across the log and Neo4j
+    # (Main#note_deletion), so that two deletions in the same second keep
+    # their order.
+    def self.log_line(email, salt, now: Time.now, seq: nil)
+        entry = { 'hash' => address_hash(email, salt), 'deleted_at' => now.to_i }
+        entry['seq'] = seq.to_i if seq
+        JSON.generate(entry) + "\n"
+    end
+
+    # The number for the next deletion: above every one in the log and the
+    # one Neo4j knows (the log forgets old entries, Neo4j may hold a later one).
+    def self.next_seq(entries, neo4j_seq)
+        ([neo4j_seq.to_i] + entries.map { |e| e['seq'].to_i }).max + 1
     end
 
     def self.parse_log(text)
@@ -82,14 +93,32 @@ module AccountDeletion
     # time of the last deletion before its backup, so every entry after it
     # is an account the backup brought back; an account made again after its
     # deletion is not in that backup. Strictly after: an account deleted and
-    # made again before the backup keeps its later life.
-    def self.entries_after(entries, time)
-        entries.select { |e| e['deleted_at'].to_i > time.to_i }
+    # made again before the backup keeps its later life. By number where both
+    # have one (two deletions in the same second), else by time (entries from
+    # before the numbers).
+    def self.entries_after(entries, time, seq = nil)
+        entries.select do |e|
+            seq && e['seq'] ? e['seq'].to_i > seq.to_i : e['deleted_at'].to_i > time.to_i
+        end
     end
 
-    def self.to_delete_after_restore(entries, emails, salt, last_deletion)
-        hashes = Set.new(entries_after(entries, last_deletion).map { |e| e['hash'] })
+    def self.to_delete_after_restore(entries, emails, salt, last_deletion, seq = nil)
+        hashes = Set.new(entries_after(entries, last_deletion, seq).map { |e| e['hash'] })
         emails.select { |email| hashes.include?(address_hash(email, salt)) }
+    end
+
+    # Announcing a deletion: the notice first (send), the deletion only once
+    # it went out (schedule); a failed mail schedules nothing. Returns
+    # :announced or :mail_failed.
+    def self.announce(send:, schedule:, on_error: nil)
+        begin
+            send.call
+        rescue StandardError => e
+            on_error&.call(e)
+            return :mail_failed
+        end
+        schedule.call
+        :announced
     end
 
     # Entries older than the oldest backup can be; months: the retention,

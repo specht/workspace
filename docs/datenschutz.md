@@ -199,8 +199,12 @@ Standardvertrag an (bei Hetzner in der Console).
   Jede Löschung schreibt ihre Zeit auch in Neo4j (`Setting last_deletion`).
   Nach dem Zurückspielen einer Sicherung kennt Neo4j nur die letzte Löschung
   vor der Sicherung; jedes Konto, das danach gelöscht wurde und mit der
-  Sicherung zurückkam, löscht der Workspace von selbst wieder, kurz nach dem
-  Start und danach alle fünf Minuten (im Log: »Restore noticed«). Dafür die
+  Sicherung zurückkam, löscht der Workspace von selbst wieder, bevor er nach
+  dem Start die erste Anfrage beantwortet, und danach alle fünf Minuten (im
+  Log: »Restore noticed«). Darum eine Sicherung bei gestopptem Workspace
+  zurückspielen; ein im Betrieb geladener Dump wird erst bei der nächsten
+  Prüfung bereinigt. Jede Löschung hat dazu eine laufende Nummer (`seq`), auch
+  zwei in derselben Sekunde behalten ihre Reihenfolge. Dafür die
   aktuelle Datei behalten (vorher wegkopieren, wenn `/internal` mit
   zurückgespielt wird). Für Sicherungen von vor der ersten Löschung mit
   dieser Zeit bleibt »Administration › Nach einer Wiederherstellung« mit dem

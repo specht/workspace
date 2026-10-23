@@ -29,7 +29,7 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
   anders mit `GUARD_MAX_CPUS`, `GUARD_MAX_MEMORY`, `GUARD_MAX_PIDS`). Nach dem Update
   `./config.rb up -d`, damit er die neuen Regeln liest.
 - Löschungen nach dem Zurückspielen einer Sicherung wiederholt der Workspace jetzt von selbst
-  (kurz nach dem Start und alle fünf Minuten), sobald seit dem Update mindestens ein Konto
+  (vor der ersten Anfrage nach dem Start und alle fünf Minuten), sobald seit dem Update mindestens ein Konto
   gelöscht wurde; für ältere Sicherungen wie bisher unter »Nach einer Wiederherstellung«.
 - Fallserver: Die Alarmanlage startete nach einem Neustart des Containers immer wieder neu
   (`mkfifo: … File exists`). Mit `CASE_SERVER = true` nach dem Update

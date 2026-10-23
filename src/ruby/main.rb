@@ -2273,19 +2273,18 @@ class Main < Sinatra::Base
             end
         end
 
-        # A restored backup brings deleted accounts back: noticed soon after
-        # the start (Neo4j needs a moment) and every few minutes, also when a
-        # dump is loaded while the server runs (repeat_deletions_after_restore:
-        # one query and a small file).
+        # A restored backup brings deleted accounts back: they go again before
+        # the server answers its first request (at the end of this file), and
+        # then every few minutes, also when a dump is loaded while the server
+        # runs (repeat_deletions_after_restore: one query and a small file).
         Thread.new do
-            sleep 20
             loop do
+                sleep(DEVELOPMENT ? 60 : 300)
                 begin
                     Main.new!.repeat_deletions_after_restore
                 rescue => e
                     STDERR.puts "Repeating deletions after a restore failed: #{e.class}: #{e.message}"
                 end
-                sleep(DEVELOPMENT ? 60 : 300)
             end
         end
 
@@ -4352,34 +4351,39 @@ class Main < Sinatra::Base
         now = Time.now
         @@deletion_log_mutex.synchronize do
             entries = AccountDeletion.parse_log(File.exist?(DELETION_LOG) ? File.read(DELETION_LOG) : '')
+            known = neo4j_query('MATCH (s:Setting {key: $key}) RETURN s.seq AS seq;', :key => LAST_DELETION).first
+            seq = AccountDeletion.next_seq(entries, known && known['seq'])
             kept = AccountDeletion.prune(entries, months)
-            text = kept.map { |e| JSON.generate(e) + "\n" }.join + AccountDeletion.log_line(email, LOGIN_CODE_SALT, :now => now)
+            text = kept.map { |e| JSON.generate(e) + "\n" }.join + AccountDeletion.log_line(email, LOGIN_CODE_SALT, :now => now, :seq => seq)
             AtomicFile.write(DELETION_LOG, text)
+            neo4j_query('MERGE (s:Setting {key: $key}) SET s.at = $at, s.seq = $seq;', :key => LAST_DELETION, :at => now.to_i, :seq => seq)
         end
-        neo4j_query('MERGE (s:Setting {key: $key}) SET s.at = $at;', :key => LAST_DELETION, :at => now.to_i)
     end
 
     # After a restore, by itself: every account deleted after the backup is
-    # deleted again (AccountDeletion.to_delete_after_restore), soon after the
-    # start and then every few minutes. Before the first deletion that
+    # deleted again (AccountDeletion.to_delete_after_restore), before the
+    # first request after the start and then every few minutes. Before the first deletion that
     # noted its time in Neo4j, only »Löschungen wiederholen« with the date of
     # the backup can do it. Returns the addresses.
     def repeat_deletions_after_restore
-        last = neo4j_query('MATCH (s:Setting {key: $key}) RETURN s.at AS at;', :key => LAST_DELETION).first
+        last = neo4j_query('MATCH (s:Setting {key: $key}) RETURN s.at AS at, s.seq AS seq;', :key => LAST_DELETION).first
         return [] unless last && last['at']
 
         entries = AccountDeletion.parse_log(File.exist?(DELETION_LOG) ? File.read(DELETION_LOG) : '')
-        later = AccountDeletion.entries_after(entries, last['at'])
+        later = AccountDeletion.entries_after(entries, last['at'], last['seq'])
         return [] if later.empty?
 
         emails = neo4j_query('MATCH (u:User) RETURN u.email AS email;').map { |row| row['email'].to_s }
-        again = AccountDeletion.to_delete_after_restore(entries, emails, LOGIN_CODE_SALT, last['at'])
+        again = AccountDeletion.to_delete_after_restore(entries, emails, LOGIN_CODE_SALT, last['at'], last['seq'])
         Main.load_invitations()
         again.each { |email| delete_account(email) }
         # Neo4j is up to date again, also when none of them came back (only
-        # forward: deleting again has just noted a later time)
-        neo4j_query('MERGE (s:Setting {key: $key}) SET s.at = CASE WHEN s.at > $at THEN s.at ELSE $at END;',
-            :key => LAST_DELETION, :at => later.map { |e| e['deleted_at'].to_i }.max)
+        # forward: deleting again has just noted a later time and number)
+        neo4j_query(<<~END_OF_QUERY, :key => LAST_DELETION, :at => later.map { |e| e['deleted_at'].to_i }.max, :seq => later.map { |e| e['seq'].to_i }.max)
+            MERGE (s:Setting {key: $key})
+            SET s.at = CASE WHEN s.at > $at THEN s.at ELSE $at END,
+                s.seq = CASE WHEN s.seq > $seq THEN s.seq ELSE $seq END;
+        END_OF_QUERY
         STDERR.puts "Restore noticed (#{later.size} deletion(s) after #{Time.at(last['at'].to_i)} missing in Neo4j): #{again.size} account(s) deleted again"
         again
     end
@@ -4445,23 +4449,26 @@ class Main < Sinatra::Base
         mail_subject, html = MailTexts.deletion_notice(:web_root => WEB_ROOT, :date => date, :signature => mail_signature)
         reply = defined?(CONTACT_EMAIL) ? CONTACT_EMAIL.to_s : ''
         # The notice first: the deletion is set only once the mail server took
-        # the mail, so nobody is deleted without the two weeks' notice. (Taken
-        # is not read: a bounce still has to be noticed in the mailbox of
-        # SMTP_FROM.)
-        begin
-            deliver_mail do
-                to email
-                from SMTP_FROM
-                reply_to reply unless reply.empty?
-                subject mail_subject
-                html
-            end
-        rescue StandardError => e
-            STDERR.puts "Deletion of #{email} not announced, the mail failed: #{e.class}: #{e.message}"
-            halt 502, { :error => 'mail_failed' }.to_json
-        end
-        neo4j_query('MATCH (u:User {email: $email}) SET u.deletion_at = $date, u.deletion_announced_at = $now, u.deletion_announced_by = $me;',
-            :email => email, :date => date.to_s, :now => Time.now.to_i, :me => @session_user[:email])
+        # the mail, so nobody is deleted without the two weeks' notice
+        # (AccountDeletion.announce). Taken is not read: a bounce still has to
+        # be noticed in the mailbox of SMTP_FROM.
+        result = AccountDeletion.announce(
+            :send => lambda do
+                deliver_mail do
+                    to email
+                    from SMTP_FROM
+                    reply_to reply unless reply.empty?
+                    subject mail_subject
+                    html
+                end
+            end,
+            :schedule => lambda do
+                neo4j_query('MATCH (u:User {email: $email}) SET u.deletion_at = $date, u.deletion_announced_at = $now, u.deletion_announced_by = $me;',
+                    :email => email, :date => date.to_s, :now => Time.now.to_i, :me => @session_user[:email])
+            end,
+            :on_error => ->(e) { STDERR.puts "Deletion of #{email} not announced, the mail failed: #{e.class}: #{e.message}" }
+        )
+        halt 502, { :error => 'mail_failed' }.to_json if result == :mail_failed
         STDERR.puts "Deletion of #{email} announced by #{@session_user[:email]} for #{date}"
         respond(:email => email, :deletion_at => date.to_s)
     end
@@ -8335,4 +8342,13 @@ class Main < Sinatra::Base
             end
         end
     end
+end
+
+# Before the first request (config.ru starts the server only after this
+# file): accounts a restored backup brought back go again. Here, not in
+# configure, which runs while the class is still being read.
+begin
+    Main.new!.repeat_deletions_after_restore
+rescue => e
+    STDERR.puts "Repeating deletions after a restore failed at the start: #{e.class}: #{e.message}"
 end

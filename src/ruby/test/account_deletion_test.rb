@@ -71,6 +71,44 @@ class AccountDeletionTest < Minitest::Test
         assert_empty AccountDeletion.to_delete_after_restore(log, existing, salt, (t + 100).to_i)
     end
 
+    # Two deletions in the same second, the backup between them: the
+    # numbers keep them apart where the time cannot.
+    def test_same_second_deletions_are_told_apart_by_their_number
+        salt = 'salz'
+        t = Time.at(1_800_000_000)
+        log = [
+            JSON.parse(AccountDeletion.log_line('first@example.com', salt, :now => t, :seq => 7)),
+            JSON.parse(AccountDeletion.log_line('second@example.com', salt, :now => t, :seq => 8)),
+        ]
+        existing = ['first@example.com', 'second@example.com']
+        # Neo4j from the backup knows the first deletion: time t, number 7
+        assert_equal ['second@example.com'], AccountDeletion.to_delete_after_restore(log, existing, salt, t.to_i, 7)
+        # by time alone the second would be missed
+        assert_empty AccountDeletion.to_delete_after_restore(log, existing, salt, t.to_i)
+    end
+
+    def test_numbers_count_on_from_the_log_and_neo4j
+        log = [{ 'seq' => 3 }, { 'seq' => 5 }, { 'deleted_at' => 1 }]
+        assert_equal 6, AccountDeletion.next_seq(log, 4)
+        assert_equal 10, AccountDeletion.next_seq(log, 9)
+        assert_equal 1, AccountDeletion.next_seq([], nil)
+    end
+
+    # The notice first; a failed mail schedules nothing
+    def test_a_deletion_is_scheduled_only_after_the_mail_went_out
+        scheduled = []
+        errors = []
+        failed = AccountDeletion.announce(:send => -> { raise IOError, 'SMTP down' }, :schedule => -> { scheduled << :x },
+            :on_error => ->(e) { errors << e.message })
+        assert_equal :mail_failed, failed
+        assert_empty scheduled
+        assert_equal ['SMTP down'], errors
+        order = []
+        ok = AccountDeletion.announce(:send => -> { order << :mail }, :schedule => -> { order << :deletion })
+        assert_equal :announced, ok
+        assert_equal %i[mail deletion], order
+    end
+
     def test_old_entries_go_once_no_backup_is_older
         now = Time.at(100_000_000)
         entries = [{ 'hash' => 'a', 'deleted_at' => now.to_i - 8 * 31 * 86_400 }, { 'hash' => 'b', 'deleted_at' => now.to_i - 86_400 }]
