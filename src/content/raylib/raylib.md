@@ -6,7 +6,7 @@ language: raylib / C
 topic: graphics
 duration: 5 Doppelstunden
 requires: [pixelram]
-reference: [c, raylib, glsl]
+reference: [c, raylib, glsl, vektoren]
 template: https://github.com/specht/raylib-starter.git
 template_name: der raylib-Vorlage
 </div>

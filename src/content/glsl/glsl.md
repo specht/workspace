@@ -4,7 +4,7 @@ image_alt: "Ein dunkler, schief gekippter Gang aus Stein mit Löchern in vielen 
 kind: projekt
 language: GLSL
 duration: 4 Doppelstunden
-reference: [glsl, prozedurale-texturen, workspace]
+reference: [glsl, prozedurale-texturen, workspace, vektoren]
 template: https://github.com/specht/glsl-starter.git
 template_name: des GLSL-Starters
 </div>

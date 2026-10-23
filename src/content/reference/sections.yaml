@@ -146,12 +146,14 @@
   icon: /images/star.png
   description: |
     C selbst zum Nachschlagen: Typen, Rechnen, Arrays, Structs, Bits, Zeiger,
-    Dateien und Fehlermeldungen. PixelRAM für Bilder aus einzelnen Pixeln,
+    Dateien und Fehlermeldungen. Vektoren für Punkte, Richtungen, Licht und
+    Strahlen. PixelRAM für Bilder aus einzelnen Pixeln,
     raylib für Spiele in 3D mit Kamera, Licht, Texturen und Shadern; dazu
     Tastatur, Maus und Zeit. GLSL für die Shader selbst, prozedurale Texturen
     für Holz, Fliesen und Marmor ohne ein einziges Bild.
   entries:
     - c
+    - vektoren
     - pixelram
     - raylib
     - glsl
