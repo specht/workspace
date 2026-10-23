@@ -166,19 +166,13 @@ Welche Rotation nötig ist, hängt davon ab, wo der neue Wert gelandet ist, von 
 </table>
 </div>
 
-Diese acht Werte lösen alle vier Fälle aus, LL, RR, RL und LR in dieser Reihenfolge. Klein neben jedem Knoten steht seine Höhe:
-
-<div class='algo-stepper' data-title='AVL-Baum: einfügen' data-algo='avl' data-ops='insert 50, insert 40, insert 30, insert 60, insert 70, insert 45, insert 20, insert 25'></div>
-
-### Entfernen
-
-Entfernt wird wie im Suchbaum. Danach kann ein Teilbaum um eins zu niedrig sein, und das zeigt sich auf dem Weg zurück nach oben: Jeder Aufruf berechnet die Höhe seines Knotens neu und repariert ihn, wenn die Regel verletzt ist. Welche Rotation nötig ist, sagt hier nicht der entfernte Wert, sondern das **schwerere Kind**: Ist sein innerer Teilbaum höher als sein äußerer, braucht es die Doppelrotation.
-
-Anders als beim Einfügen ist mit einer Rotation nicht unbedingt Schluss. Die Rotation macht den Teilbaum um eins niedriger, und dann kann der Knoten darüber schief sein, bis hinauf zur Wurzel.
+Im Code ist das `insert` aus dem Suchbaum mit zwei neuen Zeilen am Ende: Auf dem Weg zurück berechnet jeder Aufruf die Höhe seines Knotens neu und gibt ihn durch `rebalance` zurück. `rebalance` lässt einen Knoten, der die Regel erfüllt, wie er ist. Sonst schaut es auf das **schwerere Kind**: Ist dessen innerer Teilbaum höher als der äußere, braucht es die Doppelrotation. Nach dem Einfügen ist der höhere Teilbaum genau der, in dem der neue Wert gelandet ist, das ergibt die vier Fälle der Tabelle.
 
 ```pseudocode
-remove(node, value):
-    (wie im Suchbaum)
+insert(node, value):
+    if node == null: return a new node with value
+    if value < node.value: node.left ← insert(node.left, value)
+    if value > node.value: node.right ← insert(node.right, value)
     update the height of node
     return rebalance(node)
 
@@ -192,6 +186,25 @@ rebalance(node):
             node.right ← rotate_right(node.right)
         return rotate_left(node)
     return node
+```
+
+`rotate_left(x)` ist `rotate_right` spiegelverkehrt: `y ← x.right`, `x.right ← y.left`, `y.left ← x`, die Höhen von x und y, `return y`. Nach dem Einfügen braucht höchstens ein Knoten eine Rotation. Sie macht seinen Teilbaum wieder so hoch wie vorher, darüber bleibt deshalb alles, wie es war.
+
+Diese acht Werte lösen alle vier Fälle aus, LL, RR, RL und LR in dieser Reihenfolge. Klein neben jedem Knoten steht seine Höhe:
+
+<div class='algo-stepper' data-title='AVL-Baum: einfügen' data-algo='avl' data-ops='insert 50, insert 40, insert 30, insert 60, insert 70, insert 45, insert 20, insert 25'></div>
+
+### Entfernen
+
+Entfernt wird wie im Suchbaum, und es endet wie `insert`: Danach kann ein Teilbaum um eins zu niedrig sein, und das zeigt sich auf dem Weg zurück nach oben. Jeder Aufruf berechnet die Höhe seines Knotens neu und gibt ihn durch dasselbe `rebalance` zurück. Einen neuen Wert, der sagt, wo es schief ist, gibt es hier nicht; das schwerere Kind sagt es trotzdem.
+
+Anders als beim Einfügen ist mit einer Rotation nicht unbedingt Schluss. Die Rotation macht den Teilbaum um eins niedriger, und dann kann der Knoten darüber schief sein, bis hinauf zur Wurzel.
+
+```pseudocode
+remove(node, value):
+    (wie im Suchbaum)
+    update the height of node
+    return rebalance(node)
 ```
 
 Hier fehlt nach dem Entfernen der 10 links ein Stockwerk. Auf dem Weg zurück ist die Wurzel schief, und weil beim schwereren Kind 60 der innere Teilbaum höher ist, braucht sie die Doppelrotation: erst 60 rechts, dann die Wurzel links. In einem größeren Baum könnte danach der Knoten darüber schief sein und die nächste Reparatur brauchen:

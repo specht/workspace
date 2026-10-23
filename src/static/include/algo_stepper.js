@@ -1727,6 +1727,10 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             '    else if value > node.value: node.right ← remove(node.right, value)', '    else:', '        if node.left == null: return node.right',
             '        if node.right == null: return node.left', '        successor ← node.right', '        while successor.left != null: successor ← successor.left',
             '        node.value ← successor.value', '        node.right ← remove(node.right, successor.value)', '    update the height of node', '    return rebalance(node)'],
+        // in an AVL tree insert ends the same way: on the way back up every
+        // call sets its node's height and rebalances it
+        avlInsert: ['insert(node, value):', '    if node == null: return a new node with value', '    if value < node.value: node.left ← insert(node.left, value)',
+            '    if value > node.value: node.right ← insert(node.right, value)', '    update the height of node', '    return rebalance(node)'],
         rebalance: ['rebalance(node):', '    if height(node.left) - height(node.right) > 1:', '        if height(node.left.left) < height(node.left.right):',
             '            node.left ← rotate_left(node.left)', '        return rotate_right(node)', '    if height(node.right) - height(node.left) > 1:',
             '        if height(node.right.right) < height(node.right.left):', '            node.right ← rotate_right(node.right)', '        return rotate_left(node)', '    return node'],
@@ -1808,6 +1812,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         };
 
         const insert = (value) => {
+            const I = (at) => code(avl ? 'avlInsert' : 'insert', at);
             const id = nextId;
             const path = [];
             const calls = [];
@@ -1816,7 +1821,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
                 const dir = value < walk.value ? 'left' : value > walk.value ? 'right' : null;
                 calls.push(call('insert', walk, value));
                 snapshot(dir ? `insert ${value}: ${value} ${dir === 'left' ? '<' : '>'} ${walk.value}, also nach ${sideWord(dir)}.` : `insert ${value}: ${value} ist schon da, nichts ändert sich.`,
-                    { focus: walk.id, incoming: value, incomingTo: id, vars: nodeVar(walk), code: code('insert', dir === 'left' ? 2 : dir === 'right' ? 3 : 4), stack: stackOf(calls) });
+                    { focus: walk.id, incoming: value, incomingTo: id, vars: nodeVar(walk), code: I(dir === 'left' ? 2 : dir === 'right' ? 3 : avl ? 5 : 4), stack: stackOf(calls) });
                 if (!dir) return;
                 path.push({ node: walk, side: dir });
                 walk = walk[dir];
@@ -1826,35 +1831,63 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             const fresh = { id, value, left: null, right: null, height: 1 };
             if (path.length) path[path.length - 1].node[path[path.length - 1].side] = fresh;
             else root = fresh;
+            snapshot(path.length ? `${value} kommt an die leere Stelle, an der die Suche geendet hat: if node == null: return a new node with value. Der Aufrufer trägt den neuen Knoten ein.` : `${value} wird die Wurzel: root ← insert(root, ${value}).`,
+                { fresh: id, code: I(1), stack: stackOf([...calls, bottom]) });
+            if (!path.length) return;
+            if (avl) { avlInsertBack(calls, path, id); return; }
             for (const { node } of [...path].reverse()) update(node);
-            const bad = avl && [...path].reverse().map((p) => p.node).find((n) => Math.abs(height(n.left) - height(n.right)) > 1);
-            if (!bad) {
-                snapshot(path.length ? `${value} kommt an die leere Stelle, an der die Suche geendet hat: if node == null: return a new node with value. Der Aufrufer trägt den neuen Knoten ein.` : `${value} wird die Wurzel: root ← insert(root, ${value}).`,
-                    { fresh: id, code: code('insert', 1), stack: stackOf([...calls, bottom]) });
-                if (path.length) snapshot('return node: Jeder Aufruf darüber gibt seinen Knoten zurück, und der Aufrufer trägt ihn wieder ein, von unten nach oben, zuletzt root ← insert(root, value). Die Zeiger zeigen danach auf dasselbe wie vorher, nur der unterste zeigt auf den neuen Knoten.',
-                    { fresh: id, code: code('insert', 4), pulses: back(path.map(({ node, side }) => `edge-${node.id}-${side}`)), duration: backTime(path),
-                        stack: returning(calls, path.map((p) => p.node)), returning: true });
-                return;
+            snapshot('return node: Jeder Aufruf darüber gibt seinen Knoten zurück, und der Aufrufer trägt ihn wieder ein, von unten nach oben, zuletzt root ← insert(root, value). Die Zeiger zeigen danach auf dasselbe wie vorher, nur der unterste zeigt auf den neuen Knoten.',
+                { fresh: id, code: I(4), pulses: back(path.map(({ node, side }) => `edge-${node.id}-${side}`)), duration: backTime(path),
+                    stack: returning(calls, path.map((p) => p.node)), returning: true });
+        };
+
+        // AVL insert on the way back up, as in remove (avlBack): each call,
+        // from the deepest, has its pointer set to the subtree the call below
+        // returned, sets its node's height and returns rebalance(node). After
+        // insert at most one node needs a rotation; it makes its subtree as
+        // high as before, so the calls above it find nothing to repair, but
+        // they still run their two lines.
+        const avlInsertBack = (calls, path, id) => {
+            const I = (at) => code('avlInsert', at);
+            const R = (at) => code('rebalance', at);
+            let rotated = false;
+            for (let k = path.length - 1; k >= 0; k--) {
+                const n = findById(root, path[k].node.id);
+                const side = path[k].side;
+                const stack = stackOf(calls.slice(0, k + 1));
+                update(n);
+                snapshot(`${k === path.length - 1 ? 'Zurück nach oben: ' : ''}${n.value}.${side} hat den Teilbaum bekommen, den der Aufruf darunter zurückgegeben hat. update the height of node: ${n.value} hat jetzt die Höhe h${n.height}.`,
+                    { fresh: id, focus: n.id, vars: nodeVar(n), code: I(4), stack, pulses: [{ edge: `edge-${n.id}-${side}`, delay: 0, length: 0.5 }] });
+                const balance = height(n.left) - height(n.right);
+                const withRebalance = [...stack, { call: `rebalance(node: ${n.value})`, node: n.id }];
+                if (Math.abs(balance) <= 1) {
+                    snapshot(`return rebalance(node): Bei ${n.value} unterscheiden sich die Höhen der Teilbäume um ${Math.abs(balance)}, das ist erlaubt. rebalance gibt ${n.value} unverändert zurück.${rotated ? ' Nach der Rotation unten ist hier nichts mehr zu tun.' : ''}`,
+                        { fresh: id, focus: n.id, vars: nodeVar(n), code: R(9), stack: withRebalance });
+                    continue;
+                }
+                // the heavier child decides; after an insert that is the
+                // side where the new value landed (the table on the page)
+                const heavyLeft = balance > 1;
+                const child = heavyLeft ? n.left : n.right;
+                const inner = heavyLeft ? height(child.left) < height(child.right) : height(child.right) < height(child.left);
+                const kind = heavyLeft ? (inner ? 'LR' : 'LL') : (inner ? 'RL' : 'RR');
+                const where = `${inner ? (heavyLeft ? 'rechts' : 'links') : (heavyLeft ? 'links' : 'rechts')} vom ${heavyLeft ? 'linken' : 'rechten'} Kind`;
+                snapshot(`rebalance: Bei ${n.value} unterscheiden sich die Höhen um ${Math.abs(balance)}: zu viel. Das ${heavyLeft ? 'linke' : 'rechte'} Kind ${child.value} entscheidet: Fall ${kind}, der neue Wert liegt ${where}.`,
+                    { fresh: id, focus: n.id, vars: nodeVar(n), code: R(heavyLeft ? (inner ? 2 : 4) : (inner ? 6 : 8)), stack: withRebalance });
+                const memory = toGraph(root);
+                let rootId = root.id;
+                const plan = { LL: [[n.id, 'right']], RR: [[n.id, 'left']], LR: [[child.id, 'left'], [n.id, 'right']], RL: [[child.id, 'right'], [n.id, 'left']] }[kind];
+                plan.forEach(([top, dir], i) => {
+                    const prefix = plan.length > 1 ? `Fall ${kind}, ${i === 0 ? 'erste' : 'zweite'} Rotation: ` : `Fall ${kind}: `;
+                    const after = i === plan.length - 1
+                        ? (k > 0 ? 'Der Teilbaum ist wieder so hoch wie vor dem Einfügen. Die Aufrufe darüber prüfen trotzdem noch einmal.' : 'Der Baum ist wieder ausgeglichen.')
+                        : `Jetzt hängt alles auf einer Seite, wie im Fall ${kind === 'LR' ? 'LL' : 'RR'}.`;
+                    rootId = rotationFrames(frames, memory, rootId, top, dir, { op: current, avl, fresh: id, stack: withRebalance }, prefix, after);
+                });
+                root = fromGraph(memory, rootId);
+                rotated = true;
             }
-            // AVL: the lowest node whose subtrees differ by more than 1, and the case
-            const balance = height(bad.left) - height(bad.right);
-            const heavyLeft = balance > 1;
-            const child = heavyLeft ? bad.left : bad.right;
-            const outer = heavyLeft ? value < child.value : value > child.value;
-            const kind = heavyLeft ? (outer ? 'LL' : 'LR') : (outer ? 'RR' : 'RL');
-            // the calls down to the node that is out of balance: it rotates
-            const waiting = stackOf(calls.slice(0, path.findIndex((p) => p.node === bad) + 1));
-            snapshot(`${value} hängt jetzt unten. Beim Knoten ${bad.value} unterscheiden sich die Höhen der Teilbäume um ${Math.abs(balance)}: zu viel. Das ist der Fall ${kind}.`,
-                { fresh: id, focus: bad.id, vars: nodeVar(bad), code: code('insert', 1), stack: waiting });
-            const memory = toGraph(root);
-            let rootId = root.id;
-            const plan = { LL: [[bad.id, 'right']], RR: [[bad.id, 'left']], LR: [[child.id, 'left'], [bad.id, 'right']], RL: [[child.id, 'right'], [bad.id, 'left']] }[kind];
-            plan.forEach(([top, dir], k) => {
-                const prefix = plan.length > 1 ? `Fall ${kind}, ${k === 0 ? 'erste' : 'zweite'} Rotation: ` : `Fall ${kind}: `;
-                const after = k === plan.length - 1 ? 'Der Baum ist wieder ausgeglichen, und die Suchregel gilt immer noch.' : `Jetzt hängt alles auf einer Seite, wie im Fall ${kind === 'LR' ? 'LL' : 'RR'}.`;
-                rootId = rotationFrames(frames, memory, rootId, top, dir, { op: current, avl, fresh: id, stack: waiting }, prefix, after);
-            });
-            root = fromGraph(memory, rootId);
+            snapshot('root ← insert(root, value): Der Baum ist ausgeglichen, und links stehen immer noch die kleineren, rechts die größeren Werte.', { fresh: id, code: I(5) });
         };
 
         // remove, line by line: the way down, then one of the three cases;
