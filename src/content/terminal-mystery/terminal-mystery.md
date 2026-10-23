@@ -241,7 +241,9 @@ Vier Autos, vier Leute: Wer von ihnen könnte es gewesen sein?
 
 In `vereine/` liegen die Mitgliederlisten von vier Vereinen, ein Name pro Zeile, in der Reihenfolge, in der die Leute eingetreten sind.
 
-`sort` sortiert Zeilen. Gibst du ihm zwei Dateien, sortiert es beide zusammen. Wer in beiden Vereinen ist, steht danach zweimal, direkt untereinander. `uniq -d` gibt genau solche Zeilen aus, die doppelt hintereinander stehen, jede einmal. Wer singt im Chor und kegelt?
+`sort` sortiert Zeilen. Gibst du ihm zwei Dateien, sortiert es beide zusammen. Wer in beiden Vereinen ist, steht danach zweimal, direkt untereinander.
+
+`uniq` (von »unique«, einmalig) fasst gleiche Zeilen, die direkt untereinander stehen, zu einer zusammen: Aus der sortierten Liste wird eine, in der jeder Name nur einmal vorkommt. Mit `-d` (»duplicate«, doppelt; ausgeschrieben `--repeated`) gibt `uniq` nur die Zeilen aus, die mehr als einmal hintereinander standen, jede einmal: hier also genau die Leute, die in beiden Vereinen sind. Wer singt im Chor und kegelt?
 
 ```bash
 sort vereine/chor.txt vereine/kegelclub.txt | uniq -d
