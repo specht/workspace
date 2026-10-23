@@ -26,13 +26,8 @@ snellius:
     sources:
       - url: https://en.wikipedia.org/wiki/Snell%27s_law#History
         quote: "In 1621, the Dutch astronomer Willebrord Snellius (1580–1626)—Snell—derived a mathematically equivalent form, that remained unpublished during his lifetime."
-  - text: gedruckt hat es 1637 René Descartes
-    verdict: partly
-    note: >-
-      Descartes leitete das Gesetz selbst her und veröffentlichte es 1637 in La Dioptrique;
-      Snellius' eigene Fassung machte erst Christiaan Huygens 1703 in Dioptrica bekannt.
-      »gedruckt hat es« klingt, als hätte Descartes Snellius' Ergebnis gedruckt. Vorschlag:
-      »Unabhängig von ihm veröffentlichte es 1637 René Descartes.«
+  - text: "René Descartes fand es unabhängig von ihm und druckte es 1637"
+    note: "Korrigiert; vorher: »gedruckt hat es 1637 René Descartes«"
     sources:
       - url: https://en.wikipedia.org/wiki/Snell%27s_law#History
         quote: "René Descartes independently derived the law using heuristic momentum conservation arguments in terms of sines in his 1637 essay La Dioptrique."
@@ -379,14 +374,8 @@ menger:
     sources:
       - url: https://en.wikipedia.org/wiki/Menger_sponge
         quote: "Therefore, the construction's volume approaches zero while its surface area increases without bound."
-  - text: Mathematisch ist er darum weder ein Körper noch eine Fläche, sondern eine Kurve.
-    verdict: partly
-    note: >-
-      Dass er eine Kurve ist, stimmt: Er hat die topologische Dimension 1, Menger zeigte 1926 sogar,
-      dass er eine »universelle Kurve« ist. Das »darum« stimmt aber nicht: Aus Volumen null und
-      unbegrenzter Oberfläche folgt nicht, dass er eine Kurve ist (eine zerknitterte Fläche könnte
-      das auch). Der Grund ist seine Dimension. Vorschlag: »Mathematisch hat er die Dimension 1:
-      Er ist weder ein Körper noch eine Fläche, sondern eine Kurve.«
+  - text: "Mathematisch hat er trotzdem die Dimension 1: Er ist weder ein Körper noch eine Fläche, sondern eine Kurve."
+    note: "Korrigiert; vorher: »Mathematisch ist er darum weder ein Körper noch eine Fläche, sondern eine Kurve.«"
     sources:
       - url: https://en.wikipedia.org/wiki/Menger_sponge
         quote: "it has a topological dimension of 1 and is accordingly identified as a curve. … Menger showed, in the 1926 construction, that the sponge is a universal curve"
@@ -400,16 +389,8 @@ neumann:
     sources:
       - url: https://mathshistory.st-andrews.ac.uk/Biographies/Von_Neumann/
         quote: "In 1930 von Neumann became a visiting lecturer at Princeton University, being appointed professor there in 1931."
-  - text: Merge Sort schrieb er 1945 auf, als eines der ersten Programme für einen Rechner, der sein Programm im Speicher hält.
-    verdict: partly
-    note: >-
-      Von Neumanns Manuskript von 1945 für den EDVAC enthält nur das Zusammenfügen
-      (»meshing«) zweier sortierter Folgen, gedacht als Teil eines größeren Merge-Sort-Programms;
-      eine vollständige Beschreibung von Merge Sort erschien erst 1948 in einem Bericht von
-      Goldstine und von Neumann. Die Idee von Merge Sort gilt aber als seine (1945).
-      Vorschlag: »Merge Sort dachte er sich 1945 aus. Den Teil, der zwei sortierte Folgen
-      zusammenfügt, schrieb er als eines der ersten Programme für einen Rechner auf, der sein
-      Programm im Speicher hält.«
+  - text: "Merge Sort dachte er sich 1945 aus; den Teil, der zwei sortierte Folgen zusammenfügt, schrieb er als eines der ersten Programme für einen Rechner auf, der sein Programm im Speicher hält."
+    note: "Korrigiert; vorher: »Merge Sort schrieb er 1945 auf, als eines der ersten Programme für einen Rechner, der sein Programm im Speicher hält.«"
     sources:
       - url: https://bgb-online.e-bookshelf.de/routines-of-substitution-11594746.html
         quote: "the earliest known surviving example of von Neumann’s coding … a routine written in 1945 to ‘mesh’ two sequences of data … intended to be part of a larger program implementing the algorithm now known as mergesort."
@@ -552,13 +533,8 @@ bezier:
     sources:
       - url: https://en.wikipedia.org/wiki/B%C3%A9zier_curve
         quote: "TrueType fonts use composite Bézier curves composed of quadratic Bézier curves."
-  - text: und jede Form in SVG auch
-    verdict: partly
-    note: >-
-      SVG-Pfade kennen neben quadratischen und kubischen Bézierkurven auch Ellipsenbögen (Befehl A),
-      und dazu gibt es eigene Formen wie circle und ellipse; ein Kreis in SVG ist also keine
-      Bézierkurve. »jede Form« ist zu viel. Vorschlag: »Jeder Buchstabe einer Schrift auf deinem
-      Bildschirm ist aus Bézierkurven gebaut, und die meisten Kurven in SVG auch.«
+  - text: "und die meisten Kurven in SVG auch"
+    note: "Korrigiert; vorher: »und jede Form in SVG auch«"
     sources:
       - url: https://www.w3.org/TR/SVG2/paths.html
         quote: "A cubic Bézier segment is defined by a start point, an end point, and two control points. … An elliptical arc segment draws a segment of an ellipse."
@@ -638,20 +614,14 @@ shannon:
         quote: "But Shannon’s electromechanical toy was able to “remember” its path with the help of telephone relay switches. … The mouse, which was featured in Popular Science, Time, and Life magazines the same year the AT&T film was made, learned purely through trial and error."
       - url: https://news.mit.edu/2001/shannon
         quote: "Claude Shannon's electromechanical mouse, which he called Theseus"
-  - text: Einen Code mit so wenigen Bits wie möglich suchte er mit Robert Fano.
-    verdict: partly
-    note: >-
-      Shannon und Fano arbeiteten nicht zusammen: Shannon beschrieb sein Verfahren 1948 in »A Mathematical
-      Theory of Communication«, Fano unabhängig davon ein ähnliches 1949 in einem Bericht des MIT; Shannon
-      schreibt selbst, Fano habe es »independently« gefunden. Den gemeinsamen Namen tragen die beiden
-      verwandten Verfahren erst nachträglich. Vorschlag: »Einen Code mit so wenigen Bits wie möglich fanden
-      er und Robert Fano fast gleichzeitig, unabhängig voneinander.«
+  - text: "Einen Code mit so wenigen Bits wie möglich suchten er und Robert Fano fast gleichzeitig, jeder für sich."
+    note: "Korrigiert; vorher: »Einen Code mit so wenigen Bits wie möglich suchte er mit Robert Fano.«"
     sources:
       - url: https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf
         quote: "This method of encoding is substantially the same as one found independently by R. M. Fano."
       - url: https://en.wikipedia.org/wiki/Shannon%E2%80%93Fano_coding
         quote: "Around 1948, both Claude E. Shannon (1948) and Robert M. Fano (1949) independently proposed two different source coding algorithms"
-  - text: Ihr Shannon-Fano-Code kam nah heran, aber nicht immer ganz.
+  - text: Der Shannon-Fano-Code kam nah heran, aber nicht immer ganz.
     sources:
       - url: https://en.wikipedia.org/wiki/Shannon%E2%80%93Fano_coding
         quote: "they do not always achieve the lowest possible expected codeword length, as Huffman coding does"
@@ -685,17 +655,8 @@ bauer-samelson:
         quote: "ANMELDETAG: 30.MÄRZ1957 … in einen Speicher (Keller) eingeführt"
       - url: https://badw.de/fileadmin/nachrufe/Bauer%20Friedrich%20L..pdf
         quote: "Bauer und Samelson melden 1957 das Kellerprinzip für beliebig geklammerte arithmetische Terme zum Patent an."
-  - text: Sie waren überzeugt, dass auch Programme mit Funktionen so einen Keller brauchen, und behielten recht
-    verdict: partly
-    note: >-
-      Bauer und Samelson schrieben 1962 selbst, der Keller sei für Prozeduren »conceptually« die
-      naheliegende Antwort. In ihren ALCOR-Übersetzern gaben sie jeder Prozedur aber festen
-      Speicher, was rekursive Prozeduren ausschloss, und rekursive Funktionen hielten sie für
-      »of very little value«; Bauer protestierte sogar gegen die Rekursion in ALGOL 60
-      (»Amsterdam plot«). »überzeugt … und behielten recht« stellt sie als Vorkämpfer des
-      Aufrufkellers dar, das trifft so nicht zu. Vorschlag: »Sie sahen schon, dass der Keller auch
-      für Funktionsaufrufe passt, und heute ist es so: Wohin dein Programm nach einem Aufruf
-      zurückkehrt, liegt auf einem Stack.«
+  - text: "Sie sahen schon, dass der Keller auch zu Funktionsaufrufen passt"
+    note: "Korrigiert; vorher: »Sie waren überzeugt, dass auch Programme mit Funktionen so einen Keller brauchen, und behielten recht«"
     sources:
       - url: https://softwarepreservation.computerhistory.org/ALGOL/paper/Samelson_Bauer-The_ALCOR_Project-1962.pdf
         quote: "Handling of blocks immediately leads us to the delicate problem of how to handle procedures. Conceptually, dynamic stacking again is the immediate answer to the problem of data storage … Therefore it was decided, to assign static data storage to each procedure separately within the block containing the procedure, which of course rules out recursive procedures. The waste of static storage, in conflict with our original cellar principle, was considered regrettable. There was no great concern, however, over recursive procedures. … They were considered by us to be of very little value"
@@ -1026,14 +987,8 @@ lempel-ziv:
         quote: "Jacob Ziv (Hebrew: יעקב זיו; 27 November 1931 – 25 March 2023) was an Israeli electrical engineer"
       - url: https://spectrum.ieee.org/remembering-jacob-ziv
         quote: "died on 26 March at the age of 91."
-  - text: Informatiker am Technion in Haifa
-    verdict: partly
-    note: >-
-      Lempel war Informatiker und Professor am Technion. Ziv war aber Elektroingenieur
-      (Informationstheorie), Professor für Elektrotechnik am Technion. Kleinigkeit; die Quellen
-      schwanken außerdem beim Todestag Zivs (25. oder 26. März 2023), das Jahr stimmt.
-      Vorschlag: »Abraham Lempel (1936–2023), Informatiker, und Jacob Ziv (1931–2023),
-      Elektroingenieur, beide Professoren am Technion in Haifa.«
+  - text: "Elektroingenieur, beide Professoren am Technion in Haifa"
+    note: "Korrigiert; vorher: »Informatiker am Technion in Haifa«"
     sources:
       - url: https://en.wikipedia.org/wiki/Abraham_Lempel
         quote: "Since 1977 he held the title of full professor, and was a professor emeritus at Technion."
@@ -1093,14 +1048,8 @@ rabin-scott:
         quote: "He received the 1976 ACM A.M. Turing Award with Dana S. Scott for their joint paper"
       - url: https://en.wikipedia.org/wiki/Dana_Scott
         quote: "Along with Michael O. Rabin he received the 1976 ACM Turing Award for their joint work on automata theory."
-  - text: Rabin fand später einen schnellen Test, ob eine große Zahl eine Primzahl ist
-    verdict: partly
-    note: >-
-      Den Test fand Gary Miller 1976; seine Fassung ist deterministisch, hängt aber an der unbewiesenen
-      erweiterten Riemannschen Vermutung. Rabin machte daraus 1980 einen Zufallstest, der ohne diese
-      Vermutung funktioniert. »Rabin fand« unterschlägt Millers Anteil. Vorschlag: »Rabin machte später
-      aus einem Primzahltest von Gary Miller einen schnellen Zufallstest: Wenn openssl ein
-      RSA-Schlüsselpaar erzeugt, prüft es seine Primzahlen mit dem Test von Miller und Rabin.«
+  - text: "Rabin machte später aus einem Primzahltest von Gary Miller einen schnellen Zufallstest"
+    note: "Korrigiert; vorher: »Rabin fand später einen schnellen Test, ob eine große Zahl eine Primzahl ist«"
     sources:
       - url: https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test
         quote: "Gary L. Miller discovered the test in 1976. … Miller's version of the test is deterministic, but its correctness relies on the unproven extended Riemann hypothesis. … Michael O. Rabin modified it to obtain an unconditional probabilistic algorithm in 1980."
@@ -1191,13 +1140,8 @@ wirth:
     sources:
       - url: https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs
         quote: "algorithms and data structures are inherently related"
-  - text: 1995 warb er für schlanke Software und schrieb, Software werde schneller langsamer, als die Hardware schneller wird.
-    verdict: partly
-    note: >-
-      Den Satz schrieb Wirth 1995 in »A Plea for Lean Software«, aber er schrieb ihn ausdrücklich Martin Reiser zu
-      (aus dessen Vorwort zum Buch über das Oberon-System). Die Box klingt, als stamme er von Wirth.
-      Vorschlag: »1995 warb er für schlanke Software und zitierte einen Kollegen: Software werde schneller langsamer,
-      als die Hardware schneller wird.«
+  - text: "1995 warb er für schlanke Software und zitierte einen Kollegen: Software werde schneller langsamer, als die Hardware schneller wird."
+    note: "Korrigiert; vorher: »1995 warb er für schlanke Software und schrieb, Software werde schneller langsamer, als die Hardware schneller wird.«"
     sources:
       - url: https://en.wikipedia.org/wiki/Niklaus_Wirth
         quote: "software is getting slower more rapidly than hardware becomes faster"
@@ -1472,14 +1416,8 @@ ritchie:
         quote: "Dennis MacAlistair Ritchie (September 9, 1941 – c. October 12, 2011) was an American computer scientist."
       - url: https://www.cs.princeton.edu/~bwk/dmr.html
         quote: "joined Bell Labs in 1967 … died on October 12, 2011, at the age of 70."
-  - text: Anfang der 1970er Jahre erfand er C, um darin mit Ken Thompson das Betriebssystem Unix zu schreiben.
-    verdict: partly
-    note: >-
-      C stammt von Anfang der 1970er Jahre, aber Unix gab es da schon: Thompson und Ritchie
-      hatten es 1969 in Assembler geschrieben; mit C schrieben sie es bis 1973 neu. Der Satz
-      klingt, als sei C vor Unix entstanden. Vorschlag: »Anfang der 1970er Jahre erfand er C,
-      und damit schrieben er und Ken Thompson ihr Betriebssystem Unix neu, das es bis dahin nur
-      in Assembler gab.«
+  - text: "Anfang der 1970er Jahre erfand er C, und damit schrieben er und Ken Thompson ihr Betriebssystem Unix neu, das es bis dahin nur in Assembler gab."
+    note: "Korrigiert; vorher: »Anfang der 1970er Jahre erfand er C, um darin mit Ken Thompson das Betriebssystem Unix zu schreiben.«"
     sources:
       - url: https://www.cs.princeton.edu/~bwk/dmr.html
         quote: "the two of them created the first recognizable version in late 1969. … dates from very early in the 1970s … By 1973, Unix had been converted from its original assembly-language form into C."
@@ -1526,16 +1464,14 @@ strasser:
   - text: Diesen Vergleich schaltet BeginMode3D in der Klötzchenwelt ein.
     none: Workspace
   - text: Die Idee steht ganz hinten, unter »Zukünftige Arbeiten«, mit dem Satz
-    note: >-
-      Keine Quelle gefunden: Die Dissertation liegt als Scan bei der Uni Bremen
-      (https://cgvr.cs.uni-bremen.de/miscellaneous/strasser/Wolfgang_Strasser_Schnelle_Kurven-_und_Flaechendarstellung_auf_grafischen_Sichtgeraeten.pdf,
-      23 MB), war aber zu groß zum Abrufen; eine Suche nach dem Wortlaut fand nichts. Abschnitt, Stelle und Zitat
-      bitte im PDF prüfen. Der Nachruf der Uni Tübingen zitiert eine andere Stelle der Arbeit
-      (»hier kann nur die Entfernung der verdeckten Flächen Abhilfe schaffen. Dies ist theoretisch in Echtzeit möglich.«).
+    note: Kapitel 6 ist das letzte vor dem Literaturverzeichnis (S. 82 des Scans).
+    sources:
+      - url: https://cgvr.cs.uni-bremen.de/miscellaneous/strasser/Wolfgang_Strasser_Schnelle_Kurven-_und_Flaechendarstellung_auf_grafischen_Sichtgeraeten.pdf#page=82
+        quote: "6. Zukünftige Arbeiten … Hier kann nur die Entfernung der verdeckten Flächen Abhilfe schaffen. Dies ist theoretisch in Echtzeit möglich"
   - text: »Beim augenblicklichen Stand der Preise und der Technologie der Halbleiterspeicher ist dieses Verfahren […] nicht realisierbar.«
-    note: >-
-      Keine Quelle gefunden: Wortlaut nur in der Dissertation selbst zu prüfen (PDF zu groß für den Abruf,
-      Websuche nach dem Satz ohne Treffer).
+    sources:
+      - url: https://cgvr.cs.uni-bremen.de/miscellaneous/strasser/Wolfgang_Strasser_Schnelle_Kurven-_und_Flaechendarstellung_auf_grafischen_Sichtgeraeten.pdf#page=82
+        quote: "Beim augenblicklichen Stand der Preise und der Technologie der Halbleiterspeicher ist dieses Verfahren zur Unterdrückung der verdeckten Flächen nicht realisierbar."
   - text: Heute hat jede Grafikkarte einen Tiefenpuffer, auch die in deinem Handy.
     sources:
       - url: https://uni-tuebingen.de/de/62821
@@ -1568,14 +1504,8 @@ thompson:
         quote: "Its name comes from the ed command g/re/p (global, regular expression, print)."
       - url: https://swtch.com/~rsc/regexp/regexp1.html
         quote: "Thompson chose not to use his algorithm when implementing the text editor ed, which appeared in First Edition Unix (1971)"
-  - text: Den Automaten dahinter baute er nach der Thompson-Konstruktion.
-    verdict: wrong
-    note: >-
-      Die Thompson-Konstruktion (regulärer Ausdruck → NFA, 1968 in seinem CACM-Aufsatz, eingebaut in
-      seinen Editor QED) stammt von ihm, aber ed und grep benutzten sie gerade nicht: Sie suchten
-      mit rekursivem Backtracking. Erst egrep arbeitete mit einem Automaten (DFA).
-      Vorschlag: »Wie man aus einem regulären Ausdruck einen Automaten baut, hatte er schon 1968
-      beschrieben: die Thompson-Konstruktion.«
+  - text: "Wie man aus einem regulären Ausdruck einen Automaten baut, hatte er schon 1968 beschrieben: die Thompson-Konstruktion."
+    note: "Korrigiert; vorher: »Den Automaten dahinter baute er nach der Thompson-Konstruktion.«"
     sources:
       - url: https://swtch.com/~rsc/regexp/regexp1.html
         quote: "Thompson chose not to use his algorithm when implementing the text editor ed, which appeared in First Edition Unix (1971) … or in its descendant grep, which first appeared in the Fourth Edition (1973) … Instead, these venerable Unix tools used recursive backtracking!"
@@ -1635,12 +1565,8 @@ smith-alvy:
         quote: "Ed Catmull and I invented the notion of the integral alpha in the 1970s at New York Tech. This is the notion that opacity (or, equivalently, transparency) of an image is as fundamental as its color and should therefore be included as part of the image, not as a secondary accompaniment. … We coined the term “alpha” for the new channel. We called the resulting full-color pixel an “RGBA” pixel."
       - url: https://en.wikipedia.org/wiki/Alpha_compositing
         quote: "The concept of an alpha channel was introduced by Alvy Ray Smith and Ed Catmull in the late 1970s … at the New York Institute of Technology Computer Graphics Lab"
-  - text: "1986 gründete er mit Catmull und Steve Jobs Pixar."
-    verdict: partly
-    note: >-
-      Gegründet haben Pixar 1986 Smith und Catmull; Steve Jobs gab das Geld, um die Gruppe von
-      Lucasfilm abzuspalten. Smith selbst führt »Steve Jobs co-founded Pixar« als einen von vier
-      Mythen auf. Vorschlag: »1986 gründete er mit Catmull Pixar, mit dem Geld von Steve Jobs.«
+  - text: "1986 gründete er mit Catmull Pixar, mit dem Geld von Steve Jobs."
+    note: "Korrigiert; vorher: »1986 gründete er mit Catmull und Steve Jobs Pixar.«"
     sources:
       - url: http://alvyray.com/Pixar/PixarHistoryRevisited.htm
         quote: "Four Steve Jobs Myths about Pixar … Steve Jobs co-founded Pixar. … Then in 1986, Steve Jobs came on the scene, providing the investment money so that they could form Pixar"
@@ -1697,13 +1623,8 @@ chamberlin-boyce:
         quote: "Regardless, many English-speaking database professionals (including Donald Chamberlin himself … use the acronym-like pronunciation of"
       - url: https://patorjk.com/blog/2012/01/26/pronouncing-sql-s-q-l-or-sequel/
         quote: "Since the language was originally named SEQUEL, many people continued to pronounce the name that way … Both pronunciations are widely used and recognized."
-  - text: Boyce starb noch im selben Jahr, mit 27 Jahren.
-    verdict: partly
-    note: >-
-      Dass Boyce 1974 starb, einen Monat nach dem Vortrag über SEQUEL, an einem Aneurysma im Gehirn, ist gut
-      belegt. Das Alter widerspricht sich: Chamberlin schreibt »at the age of 26«, die Wikipedia gibt als
-      Geburtstag den 27. August 1946 an und damit 27 Jahre. Vorschlag: »Boyce starb noch im selben Jahr,
-      keine 30 Jahre alt.«
+  - text: "Boyce starb noch im selben Jahr, keine 30 Jahre alt."
+    note: "Korrigiert; vorher: »Boyce starb noch im selben Jahr, mit 27 Jahren.«"
     sources:
       - url: https://disciplinas.uvv.br/assets/disciplinas/bd1/early_history_of_sql.pdf
         quote: "In 1974, about one month after presenting a paper on Sequel at a technical conference in Ann Arbor, Michigan, Ray Boyce died suddenly of a ruptured brain aneurysm at the age of 26, leaving behind a wife of five years and a 10-month-old daughter."
@@ -1795,12 +1716,8 @@ catmull:
     sources:
       - url: https://continuum.utah.edu/features/the-imaginer/
         quote: "When Disney acquired Pixar Animation Studios in 2006, Catmull became president of both Disney Animation Studios and Pixar."
-  - text: leitete er bis 2019 auch die Trickfilmstudios von Disney
-    verdict: partly
-    note: >-
-      Als Präsident von Walt Disney Animation Studios (und Pixar) trat er Ende 2018 zurück; bis Juli 2019
-      blieb er nur noch als Berater. Vorschlag: »Und als Disney 2006 Pixar kaufte, leitete er bis 2018
-      auch die Trickfilmstudios von Disney.«
+  - text: "leitete er bis 2018 auch die Trickfilmstudios von Disney"
+    note: "Korrigiert; vorher: »leitete er bis 2019 auch die Trickfilmstudios von Disney«"
     sources:
       - url: https://www.awn.com/news/pixar-co-founder-ed-catmull-retiring-after-40-years
         quote: "stepping down from his current role at the end of 2018 … staying on as an employee in an advisory role through July 2019"
@@ -1944,25 +1861,20 @@ chen:
         quote: "The Entity-Relationship Model-Toward a Unified View of Data PETER PIN-SHAN CHEN Massachusetts Institute of Technology … ACM Transactions on Database Systems, Vol. 1, No. 1. March 1976, Pages 9-36."
       - url: https://en.wikipedia.org/wiki/Peter_Chen
         quote: "From 1974 to 1978 Chen was an assistant professor at the MIT Sloan School of Management."
-  - text: "Rechtecke für Entitäten, Rauten für Beziehungen, Ellipsen für Attribute."
-    verdict: partly
-    note: >-
-      In Chens Aufsatz von 1976 stehen im ER-Diagramm nur Rechtecke (Entitätsmengen) und Rauten (Beziehungsmengen);
-      Attribute zeichnet er dort nicht als Ellipsen, sondern als Abbildungen auf Wertemengen (Kreise, Fig. 2) und
-      in Tabellen. Die Ellipsen gehören zur heute gelehrten Chen-Notation, nicht zum Aufsatz von 1976.
-      Vorschlag: »… veröffentlichte 1976 am MIT das Entity-Relationship-Modell: Rechtecke für Entitäten, Rauten für
-      Beziehungen.« und im nächsten Satz: »Die Chen-Notation, in der Attribute als Ellipsen dazukommen, heißt nach ihm.«
+  - text: Rechtecke für Entitäten, Rauten für Beziehungen.
+    note: "Korrigiert; vorher: »Rechtecke für Entitäten, Rauten für Beziehungen, Ellipsen für Attribute.« Im Aufsatz von 1976 gibt es keine Ellipsen."
     sources:
       - url: https://www.comp.nus.edu.sg/~lingtw/papers/tods76.chen.pdf
         quote: "Each entity set is represented by a rectangular box, and each relationship set is represented by a diamond-shaped box."
-      - url: https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model
-        quote: "Attributes are drawn as ovals and connected with a line to exactly one entity or relationship set."
-  - text: Die Chen-Notation heißt nach ihm.
+  - text: "Die Chen-Notation, in der Attribute als Ellipsen dazukommen, heißt nach ihm."
+    note: >-
+      Korrigiert; vorher: »Die Chen-Notation heißt nach ihm.« Der Wikipedia-Artikel spricht von »Chen's notation«;
+      ein wörtlicher Satz »heißt nach ihm« wurde nicht gefunden.
     sources:
       - url: https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model
+        quote: "Attributes are drawn as ovals and connected with a line to exactly one entity or relationship set."
+      - url: https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model
         quote: "rectangles to represent entity sets, and diamonds to represent relationships"
-    note: >-
-      Der Wikipedia-Artikel spricht von »Chen's notation«; ein wörtlicher Satz »heißt nach ihm« wurde nicht gefunden.
   - text: Er wollte eine Sprache, in der man eine Datenbank planen kann, bevor man an Tabellen denkt.
     sources:
       - url: https://www.csc.lsu.edu/~chen/pdf/erd-5-pages.pdf
@@ -2034,13 +1946,8 @@ mockapetris:
         quote: "Currently hosts in the ARPA Internet are registered with the Network Information Center (NIC) … (available as the file <NETINFO>HOSTS.TXT on the SRI-NIC host). … The size of this table, and especially the frequency of updates to the table are near the limit of manageability."
       - url: https://en.wikipedia.org/wiki/Hosts_(file)
         quote: "Originally a file named HOSTS.TXT was manually maintained and made available via file sharing by Stanford Research Institute"
-  - text: "Mit Tausenden Rechnern ging das nicht mehr."
-    verdict: partly
-    note: >-
-      Als Mockapetris das DNS 1983 entwarf, hatte das Internet erst gut 500 Rechner (August 1983: 562),
-      im Oktober 1984 waren es 1024. RFC 882 begründet das DNS mit der Größe der Tabelle, den häufigen
-      Änderungen und dem erwarteten Wachstum, nicht mit Tausenden Rechnern. Vorschlag: »Das Netz wuchs
-      schnell, und bald ging das nicht mehr.«
+  - text: "Das Netz wuchs schnell, und bald ging das nicht mehr."
+    note: "Korrigiert; vorher: »Mit Tausenden Rechnern ging das nicht mehr.«"
     sources:
       - url: https://www.rfc-editor.org/rfc/rfc1296.html
         quote: "08/83              562 … 10/84            1,024"
@@ -2305,12 +2212,6 @@ kajiya:
         quote: "From geometry to texture : experiments towards realism in computer graphics … Kay, Timothy L. … Kajiya, James Thomas … This thesis presents a solution to the problem of creating fur. … As an example, a Teddy bear is modeled and rendered."
 
 perlin:
-  - text: Ken Perlin (geboren 1954)
-    note: >-
-      Keine Quelle gefunden: Wikipedia (en, de), seine NYU-Biografien (cs.nyu.edu/~perlin/doc/bio.html),
-      die Whitney-Seite und Wikidata (nur »20. Jahrhundert«) nennen kein Geburtsjahr; der Eintrag der
-      Library of Congress antwortete mit 403. Er machte 1979 seinen B.A. in Harvard, was zu 1954 nicht
-      recht passt, aber nichts beweist. Bitte prüfen oder das Jahr weglassen.
   - text: Informatiker in New York
     sources:
       - url: https://en.wikipedia.org/wiki/Ken_Perlin
@@ -2379,13 +2280,8 @@ crockford:
         quote: "Obviously, JavaScript was a huge influence, because JSON is JavaScript."
       - url: https://nofluffjuststuff.com/blog/douglas_crockford/2008/01/the_discovery_of_json
         quote: "The earliest claim that I am aware of for the use of JavaScript literals for data transport was Slava Galperin"
-  - text: "Um 2001 gab er dem Format seinen Namen und schrieb es auf json.org auf."
-    verdict: partly
-    note: >-
-      Den Namen gab er 2001 (»I made my discovery in the spring of 2001«), die Seite json.org kaufte
-      er nach eigener Aussage aber erst »very late in 2002« (so auch die englische Wikipedia;
-      der Artikel »JSON« nennt dagegen 2001). »Um 2001« für beides ist knapp daneben.
-      Vorschlag: »2001 gab er dem Format seinen Namen, Ende 2002 schrieb er es auf json.org auf.«
+  - text: "2001 gab er dem Format seinen Namen, Ende 2002 schrieb er es auf json.org auf."
+    note: "Korrigiert; vorher: »Um 2001 gab er dem Format seinen Namen und schrieb es auf json.org auf.«"
     sources:
       - url: https://nofluffjuststuff.com/blog/douglas_crockford/2008/01/the_discovery_of_json
         quote: "I made my discovery in the spring of 2001. … I identified it, gave it a name, and showed how it was useful."
@@ -2653,14 +2549,8 @@ muuss:
         quote: "I'm the architect of BRL-CAD, a substantial third-generation CSG solid modeling system available free of charge"
       - url: https://en.wikipedia.org/wiki/BRL-CAD
         quote: "BRL software developers – led by Mike Muuss – began assembling a suite of utilities"
-  - text: das erste Programm, das Bilder interaktiv mit Raytracing berechnete
-    verdict: partly
-    note: >-
-      Der englische Wikipedia-Artikel über Muuss nennt es »the first interactive ray tracing program«, der Artikel über
-      Raytracing aber nennt als ersten interaktiven Raytracer das System LINKS-1 (Universität Osaka, 1982); Muuss'
-      Werkzeuge REMRT/RT von 1986 waren der nächste und der erste, der »real-time« genannt wurde. LINKS-1 war ein
-      Spezialrechner mit 514 Prozessoren, insofern ist »erstes Programm« vertretbar, aber umstritten.
-      Vorschlag: »… und eines der ersten Programme, die Bilder interaktiv mit Raytracing berechneten.«
+  - text: "eines der ersten Programme, die Bilder interaktiv mit Raytracing berechneten"
+    note: "Korrigiert; vorher: »das erste Programm, das Bilder interaktiv mit Raytracing berechnete«"
     sources:
       - url: https://en.wikipedia.org/wiki/Mike_Muuss
         quote: "as well as the first interactive ray tracing program"
@@ -2742,11 +2632,8 @@ hejlsberg:
         quote: "released on 20 November 1983 … was based on the Blue Label Pascal compiler originally produced for the NasSys cassette-based operating system"
       - url: https://www.welcometothejungle.com/en/articles/anders-hejlsberg-microsoft-career
         quote: "We ended up actually doing a royalty contract and that’s how Borland ended up producing Turbo Pascal."
-  - text: "für 49,99 Dollar"
-    verdict: wrong
-    note: >-
-      Der Preis war 49,95 Dollar, nicht 49,99. Vorschlag: »… als Turbo Pascal für 49,95 Dollar, etwa ein
-      Zehntel dessen, was andere Compiler kosteten, …«
+  - text: "für 49,95 Dollar"
+    note: "Korrigiert; vorher: »für 49,99 Dollar«"
     sources:
       - url: https://www.welcometothejungle.com/en/articles/anders-hejlsberg-microsoft-career
         quote: "We lowered the price to just $49.95."
@@ -2846,14 +2733,8 @@ gamma:
         quote: "Swiss computer scientist (born 1961) … Erich Gamma is a Swiss computer scientist and one of the four co-authors"
   - text: Der Editor im Workspace ist VS Code
     none: Workspace
-  - text: Dessen Entwicklung leitete er ab 2011 bei Microsoft in Zürich
-    verdict: partly
-    note: >-
-      2011 kam Gamma zu Microsoft und leitete dort ein neues Team in Zürich; es baute zuerst »Monaco«,
-      einen Code-Editor im Browser für Azure. Erst als der kaum Nutzer fand, wurde daraus der
-      Desktop-Editor VS Code. »Dessen Entwicklung ab 2011« klingt, als gäbe es VS Code schon seit 2011.
-      Vorschlag: »Ab 2011 leitete er bei Microsoft in Zürich das Team, das zuerst einen Editor im
-      Browser baute und daraus VS Code machte; 2015 erschien die erste Fassung.«
+  - text: "Ab 2011 leitete er bei Microsoft in Zürich das Team, das zuerst einen Editor im Browser baute und daraus VS Code machte"
+    note: "Korrigiert; vorher: »Dessen Entwicklung leitete er ab 2011 bei Microsoft in Zürich«"
     sources:
       - url: https://heise.de/-1256167
         quote: "Erich Gamma, einer der bekanntesten Softwareentwickler der Welt, wechselt von IBM zu Microsoft ins Visual-Studio-Team. … Er darf sich dort \"Microsoft Distinguished Engineer\" nennen und ein neues Entwicklungsteam mit Sitz in Zürich führen"
@@ -2937,12 +2818,8 @@ widenius:
         quote: "born 3 March 1962 … Finnish software programmer"
   - text: Die Datenbank MySQL, die du mit mycli abfragst
     none: Workspace
-  - text: begann er 1995 mit David Axmark zu schreiben
-    verdict: partly
-    note: >-
-      Laut Wikipedia begannen Widenius und Axmark 1994 mit MySQL; 1995 (23. Mai) erschien
-      die erste Fassung. Vorschlag: »Die Datenbank MySQL, die du mit mycli abfragst, begann er
-      1994 mit David Axmark zu schreiben; 1995 erschien die erste Fassung.«
+  - text: "begann er 1994 mit David Axmark zu schreiben; 1995 erschien die erste Fassung"
+    note: "Korrigiert; vorher: »begann er 1995 mit David Axmark zu schreiben«"
     sources:
       - url: https://en.wikipedia.org/wiki/MySQL
         quote: "Original development of MySQL by Widenius and Axmark began in 1994. … The first version of MySQL appeared on 23 May 1995."
@@ -3258,13 +3135,10 @@ gruber:
     none: Workspace
 
 graydon-hoare:
-  - text: Graydon Hoare, kanadischer Programmierer.
-    note: >-
-      Keine Quelle gefunden für »kanadisch«: MIT Technology Review, der Wikipedia-Artikel zu
-      Rust (»Graydon Hoare« leitet dorthin weiter), das InfoQ-Interview von 2012 und mehrere
-      Suchen nennen keine Staatsangehörigkeit; belegt ist nur, dass er 2006 in Vancouver wohnte
-      und als Programmierer bei Mozilla arbeitete (siehe nächste Behauptungen). Wenn kein Beleg
-      auftaucht, Vorschlag: »Graydon Hoare, Programmierer aus Vancouver in Kanada.«
+  - text: Graydon Hoare, Programmierer in Kanada.
+    sources:
+      - url: https://usesthis.com/interviews/graydon.hoare/
+        quote: "My name is Graydon Hoare, I’m a middle-aged socialist boring cishet white guy who lives in Vancouver, Canada."
   - text: Als er 2006 nach Hause kam, war der Aufzug in seinem Haus in Vancouver kaputt
     sources:
       - url: https://www.technologyreview.com/2023/02/14/1067869/rust-worlds-fastest-growing-programming-language/
@@ -3362,22 +3236,15 @@ tatham-hall:
         quote: "This page contains a collection of small computer programs which implement one-player puzzle games. … The 'js' link (and also the puzzle image itself) links to a version based on JavaScript and WebAssembly."
 
 eifrem-svensson-neubauer:
-  - text: Emil Eifrem, Johan Svensson und Peter Neubauer (im Bild), schwedische Programmierer
+  - text: Emil Eifrem, Johan Svensson und Peter Neubauer (im Bild), Programmierer in Schweden
     note: >-
-      Die Quellen sagen, dass die Firma in Schweden gegründet wurde und Neubauer in Malmö lebt; seine
-      Staatsangehörigkeit wurde nicht gefunden.
+      Korrigiert; vorher: »schwedische Programmierer«. Die Quellen sagen, dass die Firma in Schweden
+      gegründet wurde und Neubauer in Malmö lebt; seine Staatsangehörigkeit wurde nicht gefunden.
     sources:
       - url: https://en.wikipedia.org/wiki/Neo4j
         quote: "The company was founded in 2007 in Sweden as an open source project by Emil Eifrem, Johan Svensson, and Peter Neubauer"
-  - text: bauten um 2000 in Malmö ein System für die Inhalte von Websites
-    verdict: partly
-    note: >-
-      Eifrem nennt es ein »enterprise content management system (ECM)«, also ein System, mit dem
-      Firmen ihre Inhalte und Dokumente verwalten, nicht ausdrücklich die Inhalte von Websites
-      (Wikipedia zitiert einen Tweet: »CMS SaaS 2000-2007«). Dass das um 2000 in Malmö war, steht in
-      keiner gefundenen Quelle; belegt ist nur, dass die Firma 2007 in Malmö gegründet wurde.
-      Vorschlag: »bauten um 2000 ein System, mit dem Firmen ihre Inhalte verwalten, und ihre
-      Datenbank aus Tabellen kam mit den vielen Verknüpfungen nicht mehr mit.«
+  - text: "bauten um 2000 ein System, mit dem Firmen ihre Inhalte verwalten"
+    note: "Korrigiert; vorher: »bauten um 2000 in Malmö ein System für die Inhalte von Websites«"
     sources:
       - url: https://neo4j.com/blog/emil-eifrem/db-engines-informix-neo4j/
         quote: "It all started when Peter, Johan and I were working on an enterprise content management system (ECM). … This was a very standard architecture in the late 90s and early 2000s."
@@ -3490,21 +3357,16 @@ coast:
         quote: "Just like Wikipedia was building an encyclopedia in a very similar way, I copied many of the ways Wikipedia was built with"
       - url: https://en.wikipedia.org/wiki/OpenStreetMap
         quote: "freely licensed under the Open Database License"
-  - text: Heute zeichnen Millionen Freiwillige mit
-    verdict: partly
-    note: >-
-      Registriert sind über 10 Millionen Konten, irgendwann etwas eingetragen haben rund 2,25 Millionen
-      (2025). Wer in einem Monat tatsächlich zeichnet, sind weit weniger. »Heute zeichnen Millionen mit«
-      übertreibt etwas. Vorschlag: »Über zwei Millionen Freiwillige haben schon mitgezeichnet, auch jede
-      Treppe und jeden Fußweg in Berlin.«
+  - text: "Über zwei Millionen Freiwillige haben schon mitgezeichnet"
+    note: "Korrigiert; vorher: »Heute zeichnen Millionen Freiwillige mit«"
     sources:
       - url: https://wiki.openstreetmap.org/wiki/Stats
         quote: "10 million registered users (2025-Q2) … 2.25 million different user contributors (2025-Q2)"
       - url: https://techcrunch.com/2024/08/10/one-man-decided-to-take-on-google-maps-20-years-later-openstreetmap-is-still-going-strong/
         quote: "Today, OpenStreetMap claims more than 10 million contributors."
-  - text: auch jede Treppe und jeden Fußweg in Berlin
+  - text: auch die Treppen und Fußwege in Berlin
     note: >-
-      »jede« lässt sich nicht prüfen; belegt ist, dass die Berliner Daten rund 11.000 Treppen und über
+      Korrigiert; vorher: »auch jede Treppe und jeden Fußweg in Berlin«, »jede« lässt sich nicht prüfen. Belegt ist, dass die Berliner Daten rund 11.000 Treppen und über
       200.000 Fußwege enthalten (Taginfo, Oktober 2026).
     sources:
       - url: https://taginfo.geofabrik.de/europe:germany:berlin/api/4/tag/stats?key=highway&value=steps

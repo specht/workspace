@@ -22,7 +22,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 <div class='person'>
 <img src='snellius.webp' alt='Willebrord Snellius, Kupferstich von 1625: ein Mann mit kurzem Haar, Schnurrbart und Kinnbart, mit einer großen weißen Halskrause, in einem ovalen Rahmen.'>
-<p><strong>Willebrord Snellius</strong> (1580–1626), niederländischer Mathematiker, Professor in Leiden. Trifft ein Strahl auf die Glaskugel, knickt er ab, und dein Raytracer rechnet die neue Richtung mit dem Brechungsgesetz aus: Wie stark der Strahl abknickt, hängt vom Winkel ab, unter dem er auftrifft, und davon, wie stark das Glas Licht bricht. Snellius fand das Gesetz 1621, veröffentlichte es aber nie; gedruckt hat es 1637 René Descartes. Aufgeschrieben hatte es schon um 984 Ibn Sahl in Bagdad.</p>
+<p><strong>Willebrord Snellius</strong> (1580–1626), niederländischer Mathematiker, Professor in Leiden. Trifft ein Strahl auf die Glaskugel, knickt er ab, und dein Raytracer rechnet die neue Richtung mit dem Brechungsgesetz aus: Wie stark der Strahl abknickt, hängt vom Winkel ab, unter dem er auftrifft, und davon, wie stark das Glas Licht bricht. Snellius fand das Gesetz 1621, veröffentlichte es aber nie; René Descartes fand es unabhängig von ihm und druckte es 1637. Aufgeschrieben hatte es schon um 984 Ibn Sahl in Bagdad.</p>
 <p>Vorher hatte Snellius die Erde vermessen, ohne die Niederlande zu verlassen: Er peilte von Kirchturm zu Kirchturm, legte ein Netz aus Dreiecken über das Land, maß eine Grundlinie von Hand und rechnete alle anderen Strecken aus den Winkeln aus. So bekam er heraus, wie lang ein Grad auf dem Weg von Nord nach Süd ist, und damit den Umfang der Erde (<em>Eratosthenes Batavus</em>, 1617). Mit solchen Dreiecksnetzen haben Landvermesser bis ins 20. Jahrhundert ihre Karten gemacht.</p>
 <p class='person-credit'>Stich: Werkstatt de Passe, 1625, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Portret_van_Willebrordus_Snellius,_RP-P-OB-15.345.jpg'>Wikimedia Commons</a>)</p>
 </div>
@@ -118,7 +118,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <img src='menger.webp' alt='Karl Menger 1970: ein älterer Mann mit zurückgekämmtem grauem Haar in Anzug und gestreifter Krawatte, mit leichtem Lächeln.'>
 <p><strong>Karl Menger</strong> (1902–1985), österreichischer Mathematiker, ab 1937 in den USA. 1926 fragte er, was die Dimension einer Form eigentlich ist, und beschrieb dafür einen Würfel, aus dem in jeder Stufe Kreuze fehlen: den Menger-Schwamm, Sierpińskis Teppich in drei Dimensionen.</p>
-<p>Mit jeder Stufe schrumpft sein Volumen gegen null, und seine Oberfläche wächst ohne Grenze. Mathematisch ist er darum weder ein Körper noch eine Fläche, sondern eine Kurve.</p>
+<p>Mit jeder Stufe schrumpft sein Volumen gegen null, und seine Oberfläche wächst ohne Grenze. Mathematisch hat er trotzdem die Dimension 1: Er ist weder ein Körper noch eine Fläche, sondern eine Kurve.</p>
 <p class='person-credit'>Foto: Shimer College, 1970, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Karl_Menger_1970_Shimer_College_Wiki.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
@@ -129,7 +129,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 <div class='person'>
 <img src='neumann.webp' alt='Schwarzweißes Ausweisfoto von John von Neumann aus den 1940er Jahren: ein Mann mit hoher Stirn in Anzug und Krawatte.'>
-<p><strong>John von Neumann</strong> (1903–1957), Mathematiker aus Budapest, ab 1930 in den USA. Merge Sort schrieb er 1945 auf, als eines der ersten Programme für einen Rechner, der sein Programm im Speicher hält.</p>
+<p><strong>John von Neumann</strong> (1903–1957), Mathematiker aus Budapest, ab 1930 in den USA. Merge Sort dachte er sich 1945 aus; den Teil, der zwei sortierte Folgen zusammenfügt, schrieb er als eines der ersten Programme für einen Rechner auf, der sein Programm im Speicher hält.</p>
 <p>Wie ein solcher Rechner gebaut ist, beschrieb er im selben Jahr: Programm und Daten im selben Speicher. So sind Computer bis heute gebaut, auch die MiniCPU der <a href='/sandbox-cpu'>CPU Sandbox</a>.</p>
 <p class='person-credit'>Foto: Los Alamos National Laboratory, 1940er Jahre, frei mit Namensnennung, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Vonneumann-john_r.jpg'>Wikimedia Commons</a>)</p>
 </div>
@@ -164,7 +164,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 <div class='person'>
 <p><strong>Pierre Bézier</strong> (1910–1999), französischer Ingenieur bei Renault. Ab den 1960er Jahren beschrieb er die Formen von Autokarosserien mit diesen Kurven, damit Maschinen sie fräsen können. Paul de Casteljau hatte sie bei Citroën schon 1959 gefunden, aber Citroën hielt sie geheim; darum heißen sie nach Bézier.</p>
-<p>Jeder Buchstabe einer Schrift auf deinem Bildschirm ist aus Bézierkurven gebaut, und jede Form in SVG auch.</p>
+<p>Jeder Buchstabe einer Schrift auf deinem Bildschirm ist aus Bézierkurven gebaut, und die meisten Kurven in SVG auch.</p>
 </div>
 <!-- /part -->
 
@@ -187,7 +187,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <img src='shannon.webp' alt='Schwarzweißporträt von Claude Shannon als junger Mann in Anzug und Krawatte.'>
 <p><strong>Claude Shannon</strong> (1916–2001). Wie viele Bits eine Nachricht mindestens braucht, rechnete er 1948 aus und gründete damit die Informationstheorie; das Wort <em>Bit</em> machte er bekannt. Er fuhr Einrad, jonglierte und baute die Maus Theseus, die selbst lernte, durch ein Labyrinth zu finden.</p>
-<p>Einen Code mit so wenigen Bits wie möglich suchte er mit Robert Fano. Ihr Shannon-Fano-Code kam nah heran, aber nicht immer ganz.</p>
+<p>Einen Code mit so wenigen Bits wie möglich suchten er und Robert Fano fast gleichzeitig, jeder für sich. Der Shannon-Fano-Code kam nah heran, aber nicht immer ganz.</p>
 <p class='person-credit'>Foto: Tekniska museet, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:C.E._Shannon._Tekniska_museet_43069_(cropped).jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
@@ -199,7 +199,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <img src='bauer-samelson.webp' alt='Friedrich L. Bauer 1995: ein älterer Mann mit Halbglatze und großer Brille in dunklem Sakko, Hemd und Krawatte, beim Sprechen eine Hand am Kopf.'>
 <p><strong>Friedrich L. Bauer</strong> (1924–2015, im Bild) und <strong>Klaus Samelson</strong> (1918–1980), Mathematiker in München, überlegten, wie ein Rechner eine Formel selbst in seine Befehle übersetzen kann. Dafür schlugen sie 1955 einen Speicher vor, bei dem nur zählt, was zuletzt hineinkam, und meldeten ihn 1957 als »Keller« zum Patent an: den Stack.</p>
-<p>Sie waren überzeugt, dass auch Programme mit Funktionen so einen Keller brauchen, und behielten recht: Wohin dein Programm nach einem Aufruf zurückkehrt, liegt auf einem Stack. Bauer hielt 1967 an der TU München die erste Vorlesung über Informatik in Deutschland.</p>
+<p>Sie sahen schon, dass der Keller auch zu Funktionsaufrufen passt, und heute ist es so: Wohin dein Programm nach einem Aufruf zurückkehrt, liegt auf einem Stack. Bauer hielt 1967 an der TU München die erste Vorlesung über Informatik in Deutschland.</p>
 <p class='person-credit'>Foto: Rolf Kickuth, 1995, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:FriedrichLBauer29-05-1995.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
@@ -290,7 +290,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 <div class='person pair'>
 <div class='portraits'><img src='lempel.webp' alt='Abraham Lempel 2007: ein Mann mit Brille, weißem Bart und Glatze, lächelnd.'><img src='ziv.webp' alt='Jacob Ziv bei einem Vortrag: ein älterer Mann mit Brille und weißem Haar.'></div>
-<p><strong>Abraham Lempel</strong> (1936–2023) und <strong>Jacob Ziv</strong> (1931–2023), Informatiker am Technion in Haifa. Ihre Idee, dass ein Text sich selbst als Wörterbuch nimmt, steckt in jedem GIF, und ihre andere Fassung von 1977 zusammen mit Huffman-Codes in ZIP, PNG und gzip.</p>
+<p><strong>Abraham Lempel</strong> (1936–2023), Informatiker, und <strong>Jacob Ziv</strong> (1931–2023), Elektroingenieur, beide Professoren am Technion in Haifa. Ihre Idee, dass ein Text sich selbst als Wörterbuch nimmt, steckt in jedem GIF, und ihre andere Fassung von 1977 zusammen mit Huffman-Codes in ZIP, PNG und gzip.</p>
 <p>Viele Webseiten kommen so gepackt in deinen Browser.</p>
 <p class='person-credit'>Fotos: Staelin, 2007, CC BY 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Abraham_Lempel.JPG'>Wikimedia Commons</a>); gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:Jacob_Ziv.jpeg'>Wikimedia Commons</a>)</p>
 </div>
@@ -303,7 +303,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <img src='rabin-scott.webp' alt='Michael O. Rabin 2004: ein älterer Mann mit Halbglatze und Brille in hellblauem Hemd, gemusterter Krawatte und dunklem Sakko, lachend.'>
 <p><strong>Michael O. Rabin</strong> (1931–2026, im Bild), in Breslau geboren und in Haifa aufgewachsen, und <strong>Dana Scott</strong> (geboren 1932), amerikanischer Logiker, schrieben 1959 als junge Forscher bei IBM einen Aufsatz über endliche Automaten. Darin darf ein Automat zum ersten Mal raten: der NEA. Sie zeigten auch, wie man aus jedem NEA einen DEA baut, der dieselben Wörter annimmt; die Potenzmengenkonstruktion heißt darum auch Rabin-Scott-Konstruktion.</p>
-<p>1976 bekamen beide dafür den Turing Award, den wichtigsten Preis der Informatik. Rabin fand später einen schnellen Test, ob eine große Zahl eine Primzahl ist: Wenn <code>openssl</code> ein RSA-Schlüsselpaar erzeugt, prüft es seine Primzahlen mit dem Test von Miller und Rabin.</p>
+<p>1976 bekamen beide dafür den Turing Award, den wichtigsten Preis der Informatik. Rabin machte später aus einem Primzahltest von Gary Miller einen schnellen Zufallstest: Wenn <code>openssl</code> ein RSA-Schlüsselpaar erzeugt, prüft es seine Primzahlen mit dem Test von Miller und Rabin.</p>
 <p class='person-credit'>Foto: Andrej Bauer, 2004, CC BY-SA 2.5 si, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Michael_O._Rabin_2004.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
@@ -339,7 +339,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <img src='wirth.webp' alt='Schwarzweißfoto des jungen Niklaus Wirth: ein lachender Mann mit hellem Haar, zur Seite blickend.'>
 <p><strong>Niklaus Wirth</strong> (1934–2024), Schweizer Informatiker an der ETH Zürich. Er entwarf Pascal als Sprache, an der man sauberes Programmieren lernt. Eines seiner Bücher heißt <em>Algorithms + Data Structures = Programs</em>: Ein Programm, das sind Algorithmen plus Datenstrukturen.</p>
-<p>1995 warb er für schlanke Software und schrieb, Software werde schneller langsamer, als die Hardware schneller wird. Der Satz heißt heute Wirthsches Gesetz. 1984 bekam er den Turing Award, den wichtigsten Preis der Informatik.</p>
+<p>1995 warb er für schlanke Software und zitierte einen Kollegen: Software werde schneller langsamer, als die Hardware schneller wird. Der Satz heißt heute Wirthsches Gesetz. 1984 bekam er den Turing Award, den wichtigsten Preis der Informatik.</p>
 <p class='person-credit'>Foto: Robert M. McClure, CC BY-SA 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Niklaus_Wirth_large.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
@@ -418,7 +418,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 <div class='person'>
 <img src='ritchie.webp' alt='Dennis Ritchie: ein Mann mit grauem Bart und zurückgekämmtem Haar in einem blau gestreiften Hemd.'>
-<p><strong>Dennis Ritchie</strong> (1941–2011), amerikanischer Informatiker bei den Bell Labs. Anfang der 1970er Jahre erfand er C, um darin mit Ken Thompson das Betriebssystem Unix zu schreiben. Das Terminal im Workspace läuft unter Linux, und auch dessen Kern ist in C geschrieben.</p>
+<p><strong>Dennis Ritchie</strong> (1941–2011), amerikanischer Informatiker bei den Bell Labs. Anfang der 1970er Jahre erfand er C, und damit schrieben er und Ken Thompson ihr Betriebssystem Unix neu, das es bis dahin nur in Assembler gab. Das Terminal im Workspace läuft unter Linux, und auch dessen Kern ist in C geschrieben.</p>
 <p>1978 schrieb er mit Brian Kernighan das Buch <em>The C Programming Language</em>. Sein erstes Programm gibt <code>hello, world</code> aus, und seitdem beginnt fast jede Einführung in eine Programmiersprache so.</p>
 </div>
 <!-- /part -->
@@ -441,7 +441,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 <div class='person'>
 <img src='thompson.webp' alt='Ken Thompson 2019: ein Mann mit Brille, weißem Bart und Halbglatze in einem schwarzen T-Shirt.'>
-<p><strong>Ken Thompson</strong> (geboren 1943). Du suchst im Terminal mit <code>grep</code>? Das hat er 1973 geschrieben; der Name kommt aus seinem Texteditor, wo der Befehl <code>g/re/p</code> hieß: global, <em>regular expression</em>, print. Den Automaten dahinter baute er nach der Thompson-Konstruktion.</p>
+<p><strong>Ken Thompson</strong> (geboren 1943). Du suchst im Terminal mit <code>grep</code>? Das hat er 1973 geschrieben; der Name kommt aus seinem Texteditor, wo der Befehl <code>g/re/p</code> hieß: global, <em>regular expression</em>, print. Wie man aus einem regulären Ausdruck einen Automaten baut, hatte er schon 1968 beschrieben: die Thompson-Konstruktion.</p>
 <p>Das Terminal selbst läuft unter Linux, und Linux funktioniert wie Unix, das er ab 1969 mit Dennis Ritchie schrieb. Unten rechts in VS Code steht <em>UTF-8</em>: Die Kodierung hat er 1992 mit Rob Pike auf ein Tischset in einem Diner gezeichnet. Und die Sprache <a href='/go'>Go</a> hat er mit erfunden.</p>
 <p class='person-credit'>Foto: A. C. Diller, 2019, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Brian_Kernighan_and_Ken_Thompson.jpg'>Wikimedia Commons</a>)</p>
 </div>
@@ -454,7 +454,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <img src='smith-alvy.webp' alt='Alvy Ray Smith 2019: ein älterer Mann mit weißem Haar und weißem Bart in grauem Sakko und blauem Hemd, im Gespräch.'>
 <p><strong>Alvy Ray Smith</strong> (geboren 1943), amerikanischer Informatiker. Ab 1974 arbeitete er bei Xerox PARC an SuperPaint, einem der ersten Malprogramme mit Farbe, und danach am New York Institute of Technology an weiteren. Damit man dort Farben nach Farbton, Sättigung und Helligkeit aussuchen konnte, ordnete er den RGB-Würfel zu HSV um. Als er es 1978 veröffentlichte, lief die Umrechnung schon seit etwa vier Jahren in Malprogrammen.</p>
-<p>Mit Edwin Catmull erfand er Ende der 1970er Jahre den Alphakanal, das A in RGBA, das sagt, wie deckend ein Pixel ist. 1986 gründete er mit Catmull und Steve Jobs Pixar.</p>
+<p>Mit Edwin Catmull erfand er Ende der 1970er Jahre den Alphakanal, das A in RGBA, das sagt, wie deckend ein Pixel ist. 1986 gründete er mit Catmull Pixar, mit dem Geld von Steve Jobs.</p>
 <p class='person-credit'>Foto: Christopher Michel, 2019, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Alvy_Ray_Smith_in_2019_02_(cropped).jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
@@ -466,7 +466,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <img src='chamberlin-boyce.webp' alt='Donald Chamberlin 2009: ein älterer Mann mit grauem Haar und Brille im Smoking mit Fliege und einer roten Rose am Revers, lächelnd.'>
 <p><strong>Donald Chamberlin</strong> (geboren 1944, im Bild) und <strong>Raymond Boyce</strong> (1946–1974), amerikanische Informatiker bei IBM, stellten 1974 eine Sprache für Codds Tabellen vor, die sich fast wie Englisch liest: SEQUEL, die <em>Structured English Query Language</em>. Schon ihr erstes Beispiel hat die Form, in der du heute jede Abfrage schreibst: <code>SELECT NAME FROM EMP WHERE DEPT = 'TOY'</code>.</p>
-<p>Weil der Name SEQUEL schon einer britischen Flugzeugfirma gehörte, wurde daraus SQL. Viele sprechen es trotzdem »Sequel« aus, Chamberlin auch. Boyce starb noch im selben Jahr, mit 27 Jahren.</p>
+<p>Weil der Name SEQUEL schon einer britischen Flugzeugfirma gehörte, wurde daraus SQL. Viele sprechen es trotzdem »Sequel« aus, Chamberlin auch. Boyce starb noch im selben Jahr, keine 30 Jahre alt.</p>
 <p class='person-credit'>Foto: Dicklyon, 2009, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Don_Chamberlin.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
@@ -490,7 +490,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <img src='catmull.webp' alt='Edwin Catmull 2015: ein älterer Mann mit Brille, grauem Bart und dunklem Sakko, lächelnd.'>
 <p><strong>Edwin Catmull</strong> (geboren 1945), amerikanischer Informatiker. In seiner Doktorarbeit an der University of Utah beschrieb er 1974 den Tiefenpuffer, unabhängig von Wolfgang Straßer, und dazu Texture Mapping: ein Bild auf eine Fläche legen, wie die Kacheln auf die Blöcke der Klötzchenwelt. 1986 gründete er mit Alvy Ray Smith und Steve Jobs Pixar, das 1995 mit Toy Story den ersten Kinofilm ganz aus dem Computer herausbrachte.</p>
-<p>Als Kind wollte er Trickfilmzeichner bei Disney werden. 1972 animierte er stattdessen am Computer seine eigene linke Hand, eine der ersten Computeranimationen in 3D. Und als Disney 2006 Pixar kaufte, leitete er bis 2019 auch die Trickfilmstudios von Disney.</p>
+<p>Als Kind wollte er Trickfilmzeichner bei Disney werden. 1972 animierte er stattdessen am Computer seine eigene linke Hand, eine der ersten Computeranimationen in 3D. Und als Disney 2006 Pixar kaufte, leitete er bis 2018 auch die Trickfilmstudios von Disney.</p>
 <p class='person-credit'>Foto: Web Summit, 2015, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Ed_Catmull_at_Web_Summit_2015_(cropped).jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
@@ -524,7 +524,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 ### Peter Chen
 
 <div class='person'>
-<p><strong>Peter Chen</strong> (geboren 1947), Informatiker aus Taiwan, veröffentlichte 1976 am MIT das Entity-Relationship-Modell: Rechtecke für Entitäten, Rauten für Beziehungen, Ellipsen für Attribute. Die Chen-Notation heißt nach ihm.</p>
+<p><strong>Peter Chen</strong> (geboren 1947), Informatiker aus Taiwan, veröffentlichte 1976 am MIT das Entity-Relationship-Modell: Rechtecke für Entitäten, Rauten für Beziehungen. Die Chen-Notation, in der Attribute als Ellipsen dazukommen, heißt nach ihm.</p>
 <p>Er wollte eine Sprache, in der man eine Datenbank planen kann, bevor man an Tabellen denkt.</p>
 </div>
 <!-- /part -->
@@ -545,7 +545,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 <div class='person'>
 <img src='mockapetris.webp' alt='Paul Mockapetris 2003 in seinem Büro: ein Mann mit Brille und gestreiftem Hemd, lachend.'>
-<p><strong>Paul Mockapetris</strong> (geboren 1948), amerikanischer Informatiker, entwarf 1983 das DNS. Vorher stand jeder Rechner des Internets mit seiner Adresse in einer einzigen Datei, <code>HOSTS.TXT</code>, die alle immer wieder herunterluden. Mit Tausenden Rechnern ging das nicht mehr.</p>
+<p><strong>Paul Mockapetris</strong> (geboren 1948), amerikanischer Informatiker, entwarf 1983 das DNS. Vorher stand jeder Rechner des Internets mit seiner Adresse in einer einzigen Datei, <code>HOSTS.TXT</code>, die alle immer wieder herunterluden. Das Netz wuchs schnell, und bald ging das nicht mehr.</p>
 <p>Eine solche Datei hat jeder Rechner bis heute, für Namen, die er selbst kennt: <code>cat /etc/hosts</code> im Terminal zeigt sie.</p>
 <p class='person-credit'>Foto: Andreu Veà, 2003, CC BY-SA 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:With_Paul_Mockapetris.jpg'>Wikimedia Commons</a>)</p>
 </div>
@@ -627,7 +627,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 <div class='person'>
 <img src='perlin.webp' alt='Ken Perlin 2007 auf einem Podium: ein Mann mit dunklem Haar in blauem Hemd, lächelnd zur Seite.'>
-<p><strong>Ken Perlin</strong> (geboren 1954), Informatiker in New York. Nach den Computerbildern für den Film <em>Tron</em> (1982) störte ihn, wie glatt und sauber Oberflächen aus dem Computer aussahen, und er erfand das Rauschen, das seinen Namen trägt. Dafür bekam er 1997 einen Oscar für technische Leistungen.</p>
+<p><strong>Ken Perlin</strong>, Informatiker in New York. Nach den Computerbildern für den Film <em>Tron</em> (1982) störte ihn, wie glatt und sauber Oberflächen aus dem Computer aussahen, und er erfand das Rauschen, das seinen Namen trägt. Dafür bekam er 1997 einen Oscar für technische Leistungen.</p>
 <p>Wolken, Feuer und ganze Landschaften in Spielen wie Minecraft entstehen aus Perlin-Rauschen und seinen Verwandten.</p>
 <p class='person-credit'>Foto: Ambuj Saxena, 2007, CC BY 2.5, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Ken_Perlin.jpg'>Wikimedia Commons</a>)</p>
 </div>
@@ -639,7 +639,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 <div class='person'>
 <img src='crockford.webp' alt='Douglas Crockford 2007: ein Mann mit grauem Bart, Brille und Umhängeband, lächelnd.'>
-<p><strong>Douglas Crockford</strong> (geboren 1955), amerikanischer Programmierer. Die Einstellungen von VS Code im Workspace stehen in einer Datei <code>settings.json</code>, in JSON. Erfunden habe er JSON nicht, sagt er, sondern entdeckt: Es steckte schon in JavaScript. Um 2001 gab er dem Format seinen Namen und schrieb es auf json.org auf.</p>
+<p><strong>Douglas Crockford</strong> (geboren 1955), amerikanischer Programmierer. Die Einstellungen von VS Code im Workspace stehen in einer Datei <code>settings.json</code>, in JSON. Erfunden habe er JSON nicht, sagt er, sondern entdeckt: Es steckte schon in JavaScript. 2001 gab er dem Format seinen Namen, Ende 2002 schrieb er es auf json.org auf.</p>
 <p>Seine eigene Lizenz für ein Programm zu JSON enthält den Satz »The Software shall be used for Good, not Evil.«</p>
 <p class='person-credit'>Foto: Franco Folini, 2007, CC BY-SA 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Douglas_Crockford.jpg'>Wikimedia Commons</a>)</p>
 </div>
@@ -711,7 +711,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <img src='muuss.webp' alt='Mike Muuss 1999: ein Mann mit braunem Haar und Schnurrbart in einem weißen Hemd, lachend, vor einem grauen Hintergrund.'>
 <p><strong>Mike Muuss</strong> (1958–2000), amerikanischer Informatiker am Ballistic Research Laboratory der US-Armee. Du prüfst mit <code>ping</code>, ob ein Rechner antwortet? Das Programm schrieb er im Dezember 1983 an einem Abend, weil sich das Netz in seinem Labor seltsam verhielt. Den Namen hat es vom Geräusch eines Sonars, das am Echo misst, wie weit etwas entfernt ist.</p>
-<p>Er schrieb auch BRL-CAD, ein Programm für 3D-Modelle, und das erste Programm, das Bilder interaktiv mit Raytracing berechnete.</p>
+<p>Er schrieb auch BRL-CAD, ein Programm für 3D-Modelle, und eines der ersten Programme, die Bilder interaktiv mit Raytracing berechneten.</p>
 <p class='person-credit'>Foto: Lee Butler, 1999, CC0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Mike_Muuss.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
@@ -737,7 +737,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <img src='hejlsberg.webp' alt='Anders Hejlsberg 2008: ein lächelnder Mann mit graublondem Haar, randloser Brille und hellem, gestreiftem Hemd vor dunklem Hintergrund.'>
 <p><strong>Anders Hejlsberg</strong> (geboren 1960), dänischer Softwareentwickler. Bei Microsoft entwarf er C#, das 2000 erschien, und 2012 stellte er TypeScript vor, JavaScript mit Typen. VS Code, in dem du im Workspace schreibst, ist in TypeScript geschrieben.</p>
-<p>Als Student schrieb er einen Pascal-Compiler für den Heimcomputer Nascom. Die Firma Borland verkaufte ihn ab 1983 als Turbo Pascal für 49,99 Dollar, etwa ein Zehntel dessen, was andere Compiler kosteten, und er war berühmt dafür, wie schnell er übersetzte. 2025 kündigte Hejlsberg an, den TypeScript-Compiler in <a href='/go'>Go</a> neu zu schreiben, damit er etwa zehnmal schneller wird.</p>
+<p>Als Student schrieb er einen Pascal-Compiler für den Heimcomputer Nascom. Die Firma Borland verkaufte ihn ab 1983 als Turbo Pascal für 49,95 Dollar, etwa ein Zehntel dessen, was andere Compiler kosteten, und er war berühmt dafür, wie schnell er übersetzte. 2025 kündigte Hejlsberg an, den TypeScript-Compiler in <a href='/go'>Go</a> neu zu schreiben, damit er etwa zehnmal schneller wird.</p>
 <p class='person-credit'>Foto: DBegley, 2008, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Anders_Hejlsberg.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
@@ -771,7 +771,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 ### Erich Gamma
 
 <div class='person'>
-<p><strong>Erich Gamma</strong> (geboren 1961), Schweizer Informatiker. Der Editor im Workspace ist VS Code: Dessen Entwicklung leitete er ab 2011 bei Microsoft in Zürich, 2015 erschien die erste Fassung.</p>
+<p><strong>Erich Gamma</strong> (geboren 1961), Schweizer Informatiker. Der Editor im Workspace ist VS Code: Ab 2011 leitete er bei Microsoft in Zürich das Team, das zuerst einen Editor im Browser baute und daraus VS Code machte; 2015 erschien die erste Fassung.</p>
 <p>Vorher schrieb er mit Kent Beck JUnit, mit dem Java-Programme sich selbst testen, und mit drei anderen das Buch <em>Design Patterns</em> (1994), das bis heute zeigt, wie man größere Programme ordnet.</p>
 </div>
 <!-- /part -->
@@ -794,7 +794,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 <div class='person'>
 <img src='widenius.webp' alt='Michael Widenius 2019 am Wasser: ein Mann mit grauem, zerzaustem Haar in einem dunklen T-Shirt, leicht lächelnd.'>
-<p><strong>Michael »Monty« Widenius</strong> (geboren 1962), finnischer Programmierer. Die Datenbank MySQL, die du mit <code>mycli</code> abfragst, begann er 1995 mit David Axmark zu schreiben. Das »My« im Namen ist seine Tochter My.</p>
+<p><strong>Michael »Monty« Widenius</strong> (geboren 1962), finnischer Programmierer. Die Datenbank MySQL, die du mit <code>mycli</code> abfragst, begann er 1994 mit David Axmark zu schreiben; 1995 erschien die erste Fassung. Das »My« im Namen ist seine Tochter My.</p>
 <p>2008 kaufte Sun Microsystems die Firma hinter MySQL für eine Milliarde Dollar, und bald darauf kaufte Oracle Sun. Widenius fürchtete, dass MySQL dort nicht frei bleibt, und machte 2009 aus dem freien Quellcode eine eigene Fassung: MariaDB, benannt nach seiner jüngeren Tochter Maria. Auch sein Sohn Max hat eine Datenbank: MaxDB.</p>
 <p class='person-credit'>Foto: Dan Stromberg, 2019, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Michael_%22Monty%22_Widenius,_Maria_DB_och_Open_Ocean.jpg'>Wikimedia Commons</a>)</p>
 </div>
@@ -887,7 +887,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 <div class='person'>
 <img src='graydon-hoare.webp' alt='Graydon Hoare: ein Mann mit Brille und dunklem Haar in einem blauen Hemd, auf einer Straße, nach unten blickend.'>
-<p><strong>Graydon Hoare</strong>, kanadischer Programmierer. Als er 2006 nach Hause kam, war der Aufzug in seinem Haus in Vancouver kaputt: Dessen Software war abgestürzt. Er wohnte im 21. Stock und ärgerte sich auf der Treppe, dass Programmierer nicht einmal einen Aufzug bauen können, der nicht abstürzt. Solche Abstürze kommen oft von Fehlern im Umgang mit dem Speicher, und so begann er neben seiner Arbeit bei Mozilla Rust: eine Sprache, deren Compiler <code>rustc</code> solche Fehler gar nicht erst durchlässt.</p>
+<p><strong>Graydon Hoare</strong>, Programmierer in Kanada. Als er 2006 nach Hause kam, war der Aufzug in seinem Haus in Vancouver kaputt: Dessen Software war abgestürzt. Er wohnte im 21. Stock und ärgerte sich auf der Treppe, dass Programmierer nicht einmal einen Aufzug bauen können, der nicht abstürzt. Solche Abstürze kommen oft von Fehlern im Umgang mit dem Speicher, und so begann er neben seiner Arbeit bei Mozilla Rust: eine Sprache, deren Compiler <code>rustc</code> solche Fehler gar nicht erst durchlässt.</p>
 <p>Den Namen hat Rust von Rostpilzen, die er »für das Überleben überentwickelt« nennt. Ab 2009 bezahlte Mozilla die Arbeit an Rust, 2013 gab Hoare das Projekt ab. Heute steckt Rust in Firefox und im Linux-Kernel.</p>
 </div>
 <!-- /part -->
@@ -910,7 +910,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 <div class='person'>
 <img src='neubauer.webp' alt='Peter Neubauer 2015 bei einem Vortrag: ein Mann mit kurzem Haar und Bart in einem rot karierten Hemd, mit einem Mikrofon.'>
-<p><strong>Emil Eifrem</strong>, <strong>Johan Svensson</strong> und <strong>Peter Neubauer</strong> (im Bild), schwedische Programmierer, bauten um 2000 in Malmö ein System für die Inhalte von Websites, und ihre Datenbank aus Tabellen kam mit den vielen Verknüpfungen nicht mehr mit. Auf einem Flug nach Mumbai zeichnete Eifrem auf eine Serviette, wie man die Daten stattdessen speichern könnte: Knoten mit Eigenschaften und Beziehungen zwischen ihnen. Daraus wurde Neo4j; 2007 gründeten die drei dafür eine Firma.</p>
+<p><strong>Emil Eifrem</strong>, <strong>Johan Svensson</strong> und <strong>Peter Neubauer</strong> (im Bild), Programmierer in Schweden, bauten um 2000 ein System, mit dem Firmen ihre Inhalte verwalten, und ihre Datenbank aus Tabellen kam mit den vielen Verknüpfungen nicht mehr mit. Auf einem Flug nach Mumbai zeichnete Eifrem auf eine Serviette, wie man die Daten stattdessen speichern könnte: Knoten mit Eigenschaften und Beziehungen zwischen ihnen. Daraus wurde Neo4j; 2007 gründeten die drei dafür eine Firma.</p>
 <p>Die Abfragesprache Cypher erfand Andrés Taylor 2011 bei Neo4j. Ihre Muster sind ein Bild des Graphen aus Textzeichen: <code>(:Person)-[:DIRECTOR]->(:Movie)</code> ist ein Knoten, ein Pfeil und noch ein Knoten.</p>
 <p class='person-credit'>Foto: Wikimedia Finland, 2015, CC BY-SA 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Peter_Neubauer_(16263999000).jpg'>Wikimedia Commons</a>)</p>
 </div>
@@ -933,7 +933,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <img src='coast.webp' alt='Steve Coast 2009: ein junger Mann mit braunem Haar und einer Sonnenbrille auf dem Kopf, in einem gestreiften Hemd, lächelt schief in die Kamera.'>
 <p><strong>Steve Coast</strong>, englischer Informatiker, gründete OpenStreetMap 2004 als Student in London. Gute Karten von Großbritannien gab es nur gegen Geld, also fuhr er mit einem GPS-Empfänger die Straßen ab und stellte, was er aufzeichnete, frei ins Netz, damit alle es benutzen und weiterzeichnen dürfen, wie bei Wikipedia.</p>
-<p>Heute zeichnen Millionen Freiwillige mit, auch jede Treppe und jeden Fußweg in Berlin. Der Graph, in dem dein Routenplaner sucht, kommt aus dieser Karte.</p>
+<p>Über zwei Millionen Freiwillige haben schon mitgezeichnet, auch die Treppen und Fußwege in Berlin. Der Graph, in dem dein Routenplaner sucht, kommt aus dieser Karte.</p>
 <p class='person-credit'>Foto: Lucamenini, 2009, CC BY-SA 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Steve_coast.JPG'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
