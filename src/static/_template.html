@@ -627,7 +627,10 @@ function install_secondary_autotoc() {
 
             if (items) {
                 let padding = 12;
-                let link_top = active_link.offsetTop;
+                // measured in the list's own scrolled content (offsetTop
+                // would count from the whole sidebar, its title included)
+                let link_top = active_link.getBoundingClientRect().top
+                    - items.getBoundingClientRect().top + items.scrollTop;
                 let link_bottom = link_top + active_link.offsetHeight;
 
                 let visible_top = items.scrollTop;
