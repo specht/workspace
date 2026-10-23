@@ -68,9 +68,12 @@ $y$j9T$mL3J0fX…$k8bH…
 ### Mit einem Schlüssel: AES
 
 ```bash
-openssl enc -aes-256-cbc -pbkdf2 -in letter.txt -out letter.enc   # fragt nach einem Passwort
-openssl enc -d -aes-256-cbc -pbkdf2 -in letter.enc                 # zurück, zeigt den Text
-xxd letter.enc | head                                              # die Bytes ansehen
+# verschlüsseln, fragt nach einem Passwort
+openssl enc -aes-256-cbc -pbkdf2 -in letter.txt -out letter.enc
+# die Bytes ansehen: nichts mehr zu erkennen
+xxd letter.enc | head
+# zurück, mit demselben Passwort
+openssl enc -d -aes-256-cbc -pbkdf2 -in letter.enc
 ```
 
 `-pbkdf2` macht aus dem Passwort einen Schlüssel, langsam und mit Salz, wie bei Passwort-Hashes. Wer entschlüsseln will, braucht dasselbe Passwort und dieselben Angaben. Mit `-a` kommt das Ergebnis als Text in Base64 heraus, das man in eine Nachricht kopieren kann; beim Entschlüsseln dann ebenfalls `-a`.
