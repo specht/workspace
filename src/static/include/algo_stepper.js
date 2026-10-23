@@ -3974,7 +3974,9 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
     function presetChoice(widget) {
         const text = widget.dataset.presets;
         if (!text) return [];
-        const key = widget.dataset.presetOf || (widget.dataset.algo === 'sort' ? 'values' : 'ops');
+        // what a preset replaces: the values where the widget has only those
+        // (the sorts, Heapsort), otherwise the operations
+        const key = widget.dataset.presetOf || (widget.dataset.values !== undefined && widget.dataset.ops === undefined ? 'values' : 'ops');
         const presets = text.split('|').map((s) => s.trim()).filter(Boolean).map((s) => {
             const at = s.indexOf(':');
             return { label: s.slice(0, at).trim(), value: s.slice(at + 1).trim() };
