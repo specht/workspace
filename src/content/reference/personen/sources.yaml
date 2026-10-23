@@ -1,0 +1,60 @@
+# Sources for the claims in the person boxes (personen.md), shown on the
+# development page /person-sources (src/ruby/include/person_sources.rb).
+#
+# Per box (the name of its part) a list of claims. text is a piece of the
+# box as it reads on the page, without markup; a sentence of the box that
+# contains it counts as covered. Each claim has
+#
+#   sources:  links with the passage that backs the claim (quote, verbatim
+#             from the source, in its language)
+#   verdict:  partly or wrong, when the sources say something else than the
+#             box (note: what they say, a proposal for the box)
+#   none:     instead of sources, why the sentence needs none (it is about
+#             the Workspace, not about the person)
+#
+# A claim whose text no longer occurs in the box is listed on the page as
+# missing: the box was changed after it was checked.
+
+snellius:
+  - text: (1580–1626), niederländischer Mathematiker, Professor in Leiden
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Snell/
+        quote: "Born: 13 June 1580, Leiden, Netherlands. Died: 30 October 1626, Leiden, Netherlands … On 8 February 1613 he succeeded his father as professor of mathematics at the University of Leiden."
+  - text: dein Raytracer rechnet die neue Richtung mit dem Brechungsgesetz aus
+    none: Workspace
+  - text: Snellius fand das Gesetz 1621, veröffentlichte es aber nie
+    sources:
+      - url: https://en.wikipedia.org/wiki/Snell%27s_law#History
+        quote: "In 1621, the Dutch astronomer Willebrord Snellius (1580–1626)—Snell—derived a mathematically equivalent form, that remained unpublished during his lifetime."
+  - text: gedruckt hat es 1637 René Descartes
+    verdict: partly
+    note: >-
+      Descartes leitete das Gesetz selbst her und veröffentlichte es 1637 in La Dioptrique;
+      Snellius' eigene Fassung machte erst Christiaan Huygens 1703 in Dioptrica bekannt.
+      »gedruckt hat es« klingt, als hätte Descartes Snellius' Ergebnis gedruckt. Vorschlag:
+      »Unabhängig von ihm veröffentlichte es 1637 René Descartes.«
+    sources:
+      - url: https://en.wikipedia.org/wiki/Snell%27s_law#History
+        quote: "René Descartes independently derived the law using heuristic momentum conservation arguments in terms of sines in his 1637 essay La Dioptrique."
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Snell/
+        quote: "he did not publish it and only in 1703 did it become known when Christiaan Huygens published Snell's result in Dioptrica."
+  - text: Aufgeschrieben hatte es schon um 984 Ibn Sahl in Bagdad
+    sources:
+      - url: https://en.wikipedia.org/wiki/Snell%27s_law#History
+        quote: "first discovered by the Persian scientist Ibn Sahl, at Baghdad court in 984."
+  - text: Er peilte von Kirchturm zu Kirchturm, legte ein Netz aus Dreiecken über das Land, maß eine Grundlinie von Hand
+    sources:
+      - url: https://en.wikipedia.org/wiki/Willebrord_Snellius
+        quote: "Snellius's high points were nearly all church spires … a network of fourteen measure points to make a total of 53 triangulation measurements"
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Snell/
+        quote: "He used as a baseline the distance from his house to the local church spire, then built a system of triangles."
+  - text: wie lang ein Grad auf dem Weg von Nord nach Süd ist, und damit den Umfang der Erde (Eratosthenes Batavus, 1617)
+    sources:
+      - url: https://en.wikipedia.org/wiki/Willebrord_Snellius
+        quote: "in modern units 107.37 km for one degree of latitude … gives a circumference of the Earth of 38,653 km"
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Snell/
+        quote: "Eratosthenes Batavus … which contains his methods for measuring the Earth."
+  - text: bis ins 20. Jahrhundert ihre Karten gemacht
+    sources:
+      - url: https://en.wikipedia.org/wiki/Triangulation_(surveying)
+        quote: "were used for accurate large-scale land surveying until the rise of global navigation satellite systems in the 1980s"

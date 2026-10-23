@@ -1,0 +1,114 @@
+#{ assert(admin_logged_in?) }
+<style>
+    /* Every sentence of the person boxes with what backs it (development
+       only, person_sources.rb): a coloured edge says what is still to do. */
+    .ps-page {
+        --ps-sourced: #2e7d32;
+        --ps-open: #9e9e9e;
+        --ps-partly: #e09400;
+        --ps-wrong: #c62828;
+        --ps-none: #78909c;
+        --ps-missing: #6a1b9a;
+        max-width: 60rem;
+    }
+    .ps-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin: 1rem 0 0.5rem;
+    }
+    .ps-summary {
+        color: var(--bs-secondary-color);
+    }
+    .ps-person {
+        margin: 2rem 0;
+    }
+    .ps-person h2 {
+        font-size: 1.3rem;
+    }
+    .ps-person h2 a {
+        color: inherit;
+    }
+    .ps-paragraph {
+        margin-bottom: 0.9rem;
+    }
+    .ps-sentence {
+        border-left: 4px solid var(--ps-open);
+        padding: 0.3rem 0 0.3rem 0.7rem;
+        margin-bottom: 0.25rem;
+    }
+    .ps-sentence .bi {
+        margin-right: 0.45rem;
+    }
+    .ps-sourced { border-left-color: var(--ps-sourced); }
+    .ps-sourced .ps-text .bi { color: var(--ps-sourced); }
+    .ps-open { border-left-color: var(--ps-open); background: var(--bs-tertiary-bg); }
+    .ps-partly { border-left-color: var(--ps-partly); }
+    .ps-partly .ps-text .bi { color: var(--ps-partly); }
+    .ps-wrong { border-left-color: var(--ps-wrong); }
+    .ps-wrong .ps-text .bi { color: var(--ps-wrong); }
+    .ps-none { border-left-color: var(--ps-none); color: var(--bs-secondary-color); }
+    .ps-missing { border-left-color: var(--ps-missing); }
+    .ps-missing .ps-text .bi { color: var(--ps-missing); }
+    .ps-sources {
+        list-style: none;
+        padding: 0;
+        margin: 0.3rem 0 0;
+        font-size: 0.9rem;
+    }
+    .ps-sources li {
+        margin-bottom: 0.35rem;
+    }
+    .ps-url {
+        color: var(--bs-secondary-color);
+        font-size: 0.8rem;
+        word-break: break-all;
+    }
+    .ps-sources blockquote {
+        margin: 0.15rem 0 0;
+        padding-left: 0.6rem;
+        border-left: 2px solid var(--bs-border-color);
+        font-style: italic;
+    }
+    .ps-note {
+        margin: 0.3rem 0 0;
+        font-size: 0.9rem;
+    }
+    p.ps-none {
+        margin: 0.2rem 0 0;
+        font-size: 0.85rem;
+    }
+    .ps-credit {
+        font-size: 0.85rem;
+        color: var(--bs-secondary-color);
+    }
+    [data-bs-theme='dark'] .ps-page {
+        --ps-sourced: #66bb6a;
+        --ps-partly: #ffb300;
+        --ps-wrong: #ef5350;
+        --ps-missing: #ba68c8;
+    }
+</style>
+<div class='container ps-page'>
+    <h1>Belege für die Personen</h1>
+    <p class='abstract'>
+        Jeder Satz der Personenkästen mit den Quellen, die ihn belegen (<code>reference/personen/sources.yaml</code>).
+        Nur in der Entwicklung.
+    </p>
+    #{PersonSources.page_html}
+</div>
+<script>
+    // Show only the sentences of one state, and only the persons that have one.
+    document.querySelectorAll('.ps-filters button').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const filter = button.dataset.filter;
+            document.querySelectorAll('.ps-filters button').forEach(function (b) { b.classList.toggle('active', b === button); });
+            document.querySelectorAll('.ps-person').forEach(function (person) {
+                person.hidden = filter !== 'all' && !person.dataset.states.split(' ').includes(filter);
+                person.querySelectorAll('.ps-sentence').forEach(function (sentence) {
+                    sentence.hidden = filter !== 'all' && sentence.dataset.state !== filter;
+                });
+            });
+        });
+    });
+</script>

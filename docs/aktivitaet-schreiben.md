@@ -299,6 +299,15 @@ Personen, die sonst verriete, dass es sie gibt. Die Seite ordnet die Personen na
 <!-- /part -->
 ```
 
+Was in einem Kasten steht, belegen Quellen in
+`src/content/reference/personen/sources.yaml`: je Aussage ein Stück des
+Kastens, wörtlich, mit Link und der Stelle aus der Quelle, die es belegt
+(der Kopf der Datei erklärt das Format). Die Seite `/person-sources` (nur in
+der Entwicklung, für Administratoren) zeigt jeden Satz aller Kästen mit seinen
+Quellen und färbt, was noch offen ist, was die Quellen nur teilweise stützen
+oder widerlegen und welche Aussagen der Kasten nicht mehr enthält. Ein neuer
+oder geänderter Kasten bekommt dort seine Belege.
+
 Gibt es kein freies Foto (David Huffman, Edgar F. Codd), steht der Kasten
 ohne Bild da, nur mit dem Text, ohne Silhouette und ohne Platzhalter: Ein
 Schattenriss sähe aus wie ein Bild, das nicht geladen hat. Ohne `<img>` zeigt
