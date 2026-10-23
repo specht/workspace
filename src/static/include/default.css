@@ -235,13 +235,20 @@ pre.wrap-code {
     overflow-wrap: anywhere;
 }
 
-/* ```bash_copy: a copy button in the corner, only on blocks that are no
-   use to type (code_highlight.rb). The block keeps room for it. */
+/* A copy button in the corner (_template.html, install_code_copy): on
+   blocks marked _copy, or on every block for groups that want it. The
+   block keeps room for it; --code-bg is the block's background, for the
+   fade behind the button. */
 .code-copy-box {
     position: relative;
+    --code-bg: rgb(40, 40, 40);
 }
 
-pre.copy-code {
+html[data-bs-theme="dark"] .code-copy-box {
+    --code-bg: rgb(10, 10, 10);
+}
+
+.code-copy-box pre {
     padding-right: 3em;
 }
 
@@ -277,7 +284,7 @@ pre.has-code-context .err {
     color: inherit !important;
 }
 
-pre.copy-code .code-cut {
+.code-copy-box pre .code-cut {
     margin-right: -3em;
 }
 
@@ -318,8 +325,8 @@ pre .code-line:not(.code-context):has(+ .code-cut)::after {
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8' preserveAspectRatio='none'%3E%3Cpath d='M0 1.5L8 6.5L16 1.5V8H0Z'/%3E%3C/svg%3E") left top / 0.8rem 0.4rem repeat-x, linear-gradient(#000, #000) left bottom / 100% calc(100% - 0.4rem + 1px) no-repeat;
 }
 
-pre.copy-code .code-cut + .code-line:not(.code-context)::before,
-pre.copy-code .code-line:not(.code-context):has(+ .code-cut)::after {
+.code-copy-box pre .code-cut + .code-line:not(.code-context)::before,
+.code-copy-box pre .code-line:not(.code-context):has(+ .code-cut)::after {
     right: -3em;
 }
 
@@ -329,24 +336,44 @@ pre.copy-code .code-line:not(.code-context):has(+ .code-cut)::after {
     position: absolute;
     /* With context, _template.html moves it next to the first line of new code */
     top: calc(0.465rem + 0.6975rem - 1rem);
-    right: 0.3rem;
-    width: 2em;
+    /* up to the block's edge, the icon 0.3rem from it: no text shows
+       between button and edge */
+    right: 0;
+    width: calc(2em + 0.3rem);
     height: 2em;
-    padding: 0;
+    padding: 0 0.3rem 0 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     border: none;
-    background: none;
+    border-radius: 0 0.35rem 0 0;
+    /* A line that runs on under the button fades out behind it (::before),
+       so the button stays readable, on one line as on many */
+    background: var(--code-bg);
     color: #e7e6e1;
-    opacity: 0.45;
     line-height: 1;
+}
+
+.code-copy::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 100%;
+    bottom: 0;
+    width: 1.5em;
+    background: linear-gradient(to right, transparent, var(--code-bg));
+    pointer-events: none;
+}
+
+/* faint until wanted: the icon, not the button, so the fade stays solid */
+.code-copy .bi {
+    opacity: 0.45;
     transition: opacity 0.15s;
 }
 
-.code-copy:hover,
-.code-copy:focus-visible,
-.code-copy.copied {
+.code-copy:hover .bi,
+.code-copy:focus-visible .bi,
+.code-copy.copied .bi {
     opacity: 0.9;
 }
 
@@ -5180,7 +5207,7 @@ ul.task-teacher-list .task-teacher-answer {
         padding-right: 0.6em;
     }
 
-    pre.copy-code {
+    .code-copy-box pre {
         padding-right: 2.6em;
     }
 
@@ -5189,7 +5216,7 @@ ul.task-teacher-list .task-teacher-answer {
         margin-right: -0.6em;
     }
 
-    pre.copy-code .code-cut {
+    .code-copy-box pre .code-cut {
         margin-right: -2.6em;
     }
 
@@ -5199,8 +5226,8 @@ ul.task-teacher-list .task-teacher-answer {
         right: -0.6em;
     }
 
-    pre.copy-code .code-cut + .code-line:not(.code-context)::before,
-    pre.copy-code .code-line:not(.code-context):has(+ .code-cut)::after {
+    .code-copy-box pre .code-cut + .code-line:not(.code-context)::before,
+    .code-copy-box pre .code-line:not(.code-context):has(+ .code-cut)::after {
         right: -2.6em;
     }
 
