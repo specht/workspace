@@ -346,8 +346,8 @@ def naechster():
 def schattenstrahl():
     w, h = 496, 236
     s = Svg('schattenstrahl', w, h, 'Eine Kugel auf dem Boden, die Sonne weit weg rechts oben. Von zwei Treffpunkten auf '
-            'dem Boden geht je ein Strahl zur Sonne, in Richtung sun_dir. Der linke stößt an die Kugel: Schatten. Der '
-            'rechte kommt frei bis zur Sonne.')
+            'dem Boden geht je ein Strahl zur Sonne, in Richtung sun_dir. Der linke stößt an die Kugel: Schatten; dünn '
+            'gestrichelt, wie er weiter zur Sonne ginge. Der rechte kommt frei bis zur Sonne.')
     fy = 196
     s.rect(10, fy, w - 20, 30, LIGHT)
     s.line((10, fy), (w - 10, fy), INK, 2.5)
@@ -365,6 +365,8 @@ def schattenstrahl():
     t1 = ray_circle(p1, to_sun, c, r)
     q1 = add(p1, mul(to_sun, t1))
     s.line(p1, q1, AMBER, 2.2, dash='6 4')
+    # where it would have gone: on to the sun, thin and grey, through the ball
+    s.line(q1, sub(sun_c, mul(to_sun, sun_r + 4)), GREY, 1.4, dash='3 4')
     s.cross(q1, 6, RED)
     s.dot(p1, 5.5, BLUE)
     s.text((p1[0] - 6, fy + 22), 'im Schatten', INK, 'end')
@@ -373,7 +375,7 @@ def schattenstrahl():
     s.arrow(p2, sun_c, AMBER, 2.2, dash='6 4', gap=sun_r + 4)
     s.dot(p2, 5.5, BLUE)
     s.text((p2[0] + 8, fy + 22), 'in der Sonne', INK, 'start')
-    s.code(add(lerp(p2, sun_c, 0.5), (-12, -6)), 'sun_dir', 'end')
+    s.code(add(lerp(p2, sun_c, 0.5), (12, 6)), 'sun_dir', 'start')
     s.circle(sun_c, sun_r, AMBER, None)
     s.text((sun_c[0] - sun_r - 8, sun_c[1] + 6), 'Sonne, weit weg', AMBER, 'end')
     return s
