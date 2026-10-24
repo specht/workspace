@@ -1,7 +1,8 @@
 # Aufgaben zu »Raycasting in C«.
 # Format: docs/aufgaben.md. Gearbeitet wird in /workspace/raycaster.
-# Alle Aufgaben prüfen Antworten: Rechnungen mit den Formeln der Seite, eine
-# Vorhersage zur Wölbung der Wände und eine Rückmeldung zur eigenen Welt.
+# Alle Aufgaben prüfen Antworten: Rechnungen mit den Formeln der Seite,
+# Vorhersagen und eine Rückmeldung zur eigenen Welt. Den Code an den Stellen
+# »Erst selbst« schreiben die Lernenden selbst; geprüft wird er nicht.
 format: 1
 activity: raycaster
 tasks:
@@ -43,6 +44,31 @@ tasks:
         say: Etwas, das doppelt so weit weg ist, erscheint halb so groß, nicht ein Viertel so groß.
     solution: 'Der direkte Abstand wächst zum Rand hin, auch wenn die Wand überall gleich weit vor der Figur steht. Unser Auge misst, wie weit etwas vor uns liegt: den Abstand entlang der Blickrichtung. Den liefert das Skalarprodukt mit `dir`.'
 
+  - id: gleiten
+    title: Schräg gegen die Wand
+    prediction: true
+    prompt: |
+      `move_player` könnte den neuen Ort auch auf einmal prüfen:
+      `if (is_free(player_x + dx, player_y + dy))` und dann beide
+      Koordinaten ändern. Was passiert dann, wenn die Figur schräg gegen eine
+      Wand läuft?
+    check:
+      type: choice
+      options:
+        - Sie bleibt an der Wand stehen, solange du schräg dagegen läufst.
+        - Sie gleitet an der Wand entlang.
+        - Sie läuft durch die Wand hindurch.
+        - Sie prallt von der Wand zurück.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'Der neue Ort liegt schräg vor der Figur, ein Stück in der Wand. `is_free` sagt also für den ganzen Schritt nein. Welche Koordinate ändert sich dann?'
+      - when: { picked: 2 }
+        say: '`is_free` prüft den neuen Ort, bevor sich die Figur bewegt; liegt er in der Wand, bewegt sie sich gar nicht.'
+      - when: { picked: 3 }
+        say: 'Nichts in `move_player` bewegt die Figur rückwärts. Sie macht entweder den Schritt oder keinen.'
+    solution: 'Der schräge Schritt führt ein Stück in die Wand, also lehnt `is_free` ihn ab, und die Figur bewegt sich gar nicht, obwohl ein Teil der Bewegung, entlang der Wand, frei wäre. Darum prüft `move_player` x und y getrennt: Dann wird nur der Teil abgelehnt, der in die Wand führt.'
+
   - id: lut
     title: Nachgeschlagen
     prompt: |
@@ -60,6 +86,30 @@ tasks:
         say: Rechne `COLOR(1, 8) = 1 · 16 + 8`.
     hint: 'In `setup_palette`: `ramp = color / LEVELS`, `level = color % LEVELS`, und `shade[light][color] = COLOR(ramp, level * light / 15)`.'
     solution: '`31 / 16 = 1` (Ziegel), `31 % 16 = 15`, also `COLOR(1, 15 · 8 / 15) = COLOR(1, 8) = 16 + 8 = 24`: derselbe Ziegel mit etwa halber Helligkeit.'
+
+  - id: stufen
+    title: Wie dunkel wird es?
+    prediction: true
+    prompt: |
+      Boden und Decke werden jetzt zum Horizont hin dunkler, jede Bildzeile
+      mit `shaded(color, light)`. Wie sieht der Übergang aus, wenn du das
+      Programm gleich startest?
+    check:
+      type: choice
+      options:
+        - Ein glatter Verlauf ohne sichtbare Grenzen.
+        - Streifen mit deutlichen Kanten zwischen den Helligkeiten.
+        - Nur zwei Helligkeiten, hell vorn und schwarz hinten.
+        - Jede Bildzeile hat eine andere Farbe.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: 'Wie viele verschiedene Helligkeiten kann `shaded` aus der Schattentabelle holen?'
+      - when: { picked: 2 }
+        say: '`light_at` liefert Werte zwischen 0 und 1, und `shaded` macht daraus eine von 16 Stufen, nicht nur zwei.'
+      - when: { picked: 3 }
+        say: 'Es gibt mehr Bildzeilen als Helligkeiten. Was macht `shaded` mit zwei fast gleichen Werten von `light`?'
+    solution: '`shaded` rundet `light` auf eine von 16 Stufen der Palette. Viele Bildzeilen nebeneinander bekommen dieselbe Stufe, und wo die nächste beginnt, sieht man eine Kante. Am Ende der Seite verschwinden die Stufen.'
 
   - id: zeile
     title: Wie weit ist der Boden?
