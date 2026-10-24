@@ -1,9 +1,9 @@
 // Tips in steps (HintSteps in src/ruby/include/hint_steps.rb,
-// docs/didaktik.md). At the start only the first tip is there. Opening a
-// tip brings the title of the next one, but it opens only data-delay
-// seconds after the one before was opened, so there is time to think about
-// each tip instead of clicking through to the last. The waiting time shows
-// only to someone who tries to open the next step too early.
+// docs/didaktik.md). At the start only the first tip is there. The next one
+// appears data-delay seconds after the one before was opened, so there is
+// time to work with each tip instead of clicking through to the last. There
+// is no countdown: a clock draws the eye away from the tip, and »Tipp 1 von
+// 2« already says that more is to come.
 //
 // What has been opened is kept in this browser only (localStorage), so a
 // reload does not start the waiting again. Nothing is sent to the server: no
@@ -14,7 +14,7 @@
 // The tips of a »Jetzt bist du dran« box are followed by the page's code
 // (details.solution, SolutionBlocks). It is the last step and waits like a
 // tip. Has the box a check of the student's own code (data-check='task-id'),
-// solving that task opens the way to it at once.
+// solving that task brings it at once.
 (function () {
     const PREFIX = 'hint-steps:';
 
@@ -30,10 +30,6 @@
         try {
             window.localStorage.setItem(key, JSON.stringify(value));
         } catch (e) { /* no storage here: the steps still work until a reload */ }
-    }
-
-    function clock(seconds) {
-        return Math.floor(seconds / 60) + ':' + String(seconds % 60).padStart(2, '0');
     }
 
     // The task cards of the check under a box, one per language.
@@ -59,54 +55,24 @@
         // at: when the last of them was opened
         const saved = load(key);
         const state = { opened: Math.min(Math.max(saved ? saved.opened : 0, 0), steps.length), at: saved ? saved.at || 0 : 0 };
-
-        const wait = document.createElement('p');
-        wait.className = 'hint-wait';
-        wait.setAttribute('aria-live', 'polite');
-        wait.hidden = true;
         let timer = null;
 
-        function left() {
-            return state.at + delay - Date.now();
-        }
-
-        function stopWaiting() {
-            window.clearInterval(timer);
-            timer = null;
-            wait.hidden = true;
-        }
-
-        // The next step was asked for too early: say how long it takes.
-        function tick() {
-            const step = steps[state.opened];
-            const ms = left();
-            if (!step || ms <= 0) {
-                stopWaiting();
-                if (step) step.classList.add('hint-step-new');
-                return;
-            }
-            const what = step === solution ? 'Die Lösung' : 'Tipp ' + (state.opened + 1);
-            const about = state.opened === 1 ? 'den Tipp' : 'Tipp ' + state.opened;
-            wait.textContent = what + ' kannst du in ' + clock(Math.ceil(ms / 1000)) +
-                ' aufklappen. Denk so lange über ' + about + ' nach und probier ihn aus.';
-            wait.hidden = false;
-        }
-
+        // The opened steps are there, and the next one once its time has come.
         function render() {
-            // the opened steps and the title of the next one
-            steps.forEach((step, i) => { step.hidden = i > state.opened; });
-            stopWaiting();
+            window.clearTimeout(timer);
+            timer = null;
+            const left = state.at + delay - Date.now();
+            const next = state.opened === 0 || left <= 0 ? state.opened : state.opened - 1;
+            steps.forEach((step, i) => { step.hidden = i > next; });
+            if (next < state.opened && state.opened < steps.length) {
+                timer = window.setTimeout(() => {
+                    render();
+                    steps[state.opened].classList.add('hint-step-new');
+                }, left);
+            }
         }
 
         steps.forEach((step, i) => {
-            step.querySelector('summary').addEventListener('click', (event) => {
-                if (step.open || i < state.opened || i > state.opened || i === 0 || left() <= 0) return;
-                event.preventDefault();
-                step.insertAdjacentElement('afterend', wait);
-                window.clearInterval(timer);
-                timer = window.setInterval(tick, 1000);
-                tick();
-            });
             step.addEventListener('toggle', () => {
                 if (!step.open) return;
                 step.classList.remove('hint-step-new');
@@ -123,7 +89,7 @@
         // with the page's at once.
         const cards = solution ? checkCards(box) : [];
         function unlockIfSolved() {
-            if (state.opened >= steps.length - 1 && left() <= 0) return;
+            if (!solution.hidden) return;
             if (!cards.some((c) => c.dataset.status === 'correct')) return;
             state.opened = Math.max(state.opened, steps.length - 1);
             state.at = 0;
@@ -137,7 +103,7 @@
         }
 
         render();
-        unlockIfSolved();
+        if (cards.length > 0) unlockIfSolved();
     }
 
     function start() {

@@ -152,7 +152,7 @@ address from `credentials.rb` and the code `123456`.
   tasks.yaml, or `<!-- hint -->` … `<!-- /hint -->` blocks before the
   solution of a »Jetzt bist du dran« box (`HintSteps`). From understanding
   to strategy to a scaffold, never the complete solution; one step at a time with a pause
-  of a minute, the waiting time shown only to someone who tries too early; nothing is stored on the server and no teacher sees who used
+  of a minute, the next step hidden until then and no countdown; nothing is stored on the server and no teacher sees who used
   which tip (docs/didaktik.md, »Tipps in Stufen«).
 - A Handbuch page holds the basics and the most important things, not
   everything, and links to the official reference or manual for the rest

@@ -1238,16 +1238,10 @@ details.solution[open] > summary {
     margin-left: 1.2em;
 }
 
-/* a step that can be opened now */
+/* a step that has just appeared */
 .hint-steps > details.hint-step-new > summary,
 details.solution.hint-step-new > summary {
     font-weight: 600;
-}
-
-.hint-wait {
-    margin: 0.2em 0 0;
-    font-size: 90%;
-    color: #6c757d;
 }
 
 .hint.handshake::before {

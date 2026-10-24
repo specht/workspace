@@ -88,12 +88,13 @@ haben. Entschieden ist:
   dem Kasten den eigenen Code (`data-check`), bringt das Lösen ihn sofort:
   Wer es selbst geschafft hat, darf vergleichen. Zuerst ließ sich dieser
   Code jederzeit aufklappen; das hat das eigene Schreiben übersprungen.
-- **Eine Pause zwischen den Stufen.** Wer einen Tipp aufklappt, sieht den
-  Titel des nächsten, aber der lässt sich erst eine Minute später öffnen
-  (`HintSteps::DELAY_SECONDS`), damit man über jeden Tipp nachdenkt, statt bis
-  zum letzten durchzuklicken. Die Wartezeit erscheint erst, wenn jemand zu
-  früh aufklappen will, nicht schon vorher als Uhr, die zum Warten statt
-  zum Probieren einlädt.
+- **Eine Pause zwischen den Stufen, ohne Uhr.** Die nächste Stufe erscheint
+  erst eine Minute, nachdem die vorige aufgeklappt wurde
+  (`HintSteps::DELAY_SECONDS`), damit man mit jedem Tipp arbeitet, statt bis
+  zum letzten durchzuklicken. Bis dahin ist sie nicht zu sehen, und keine Uhr
+  zählt herunter: Wer eine Uhr sieht, schaut auf die Uhr statt auf den Tipp
+  und den eigenen Code. Dass mehr kommt, sagt der Titel (»Tipp 1 von 2«);
+  ist die Stufe da, steht ihr Titel fett, ohne Bewegung und ohne Ton.
 - **Niemand sieht, wer welchen Tipp gebraucht hat.** Was aufgeklappt wurde,
   merkt sich nur der Browser (lokaler Speicher), damit ein Neuladen die Pause
   nicht neu beginnt; zum Server geht nichts, und Lehrkräfte sehen es nicht,

@@ -465,10 +465,9 @@ double hit_floor(vec origin, vec dir)
 …
 ````
 
-Die Stufen kommen nacheinander: Wer eine aufklappt, sieht den Titel der
-nächsten, die sich aber erst eine Minute später öffnen lässt, damit man über
-jeden Tipp nachdenkt. Wie lange es noch dauert, steht erst da, wenn jemand zu
-früh aufklappen will. Nach dem letzten Tipp eines Kastens kommt so die
+Die Stufen kommen nacheinander: Die nächste erscheint erst eine Minute,
+nachdem die vorige aufgeklappt wurde, ohne Uhr bis dahin, damit man mit
+jedem Tipp arbeitet. Nach dem letzten Tipp eines Kastens kommt so die
 Lösung. Niemand außer der Person selbst sieht, welche Stufen sie aufgeklappt
 hat. Warum es so entschieden ist, steht in
 [didaktik.md](didaktik.md).
