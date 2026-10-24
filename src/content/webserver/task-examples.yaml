@@ -20,6 +20,8 @@ examples:
       - files: { webserver/public/style.css: stufen/public/style.css }
       - files: { webserver/public/index.html: { text: "Hallo\n" } }
         say: "<html"
+  hallo:
+    skip: Der Befehl fragt den Server, der dafür im Workspace laufen muss. Dass die Schritte der Seite die Aufgabe lösen, prüfen die Rezepte mit check-task.
   umfrage:
     pass:
       - files: { webserver/server.rb: stufen/6.rb }

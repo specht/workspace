@@ -141,8 +141,9 @@ tasks:
 
   - id: parameter
     title: Ein Name in der Adresse
+    prediction: true
     prompt: |
-      Was antwortet dein Server auf `/hello?name=Ada%20Lovelace`?
+      Was wird dein Server gleich auf `/hello?name=Ada%20Lovelace` antworten?
     check:
       type: choice
       options:
@@ -165,6 +166,33 @@ tasks:
         - when: { picked: 3 }
           say: Der Parameter `name` ist da, also gibt es einen Namen.
       solution: '`%20` ist ein kodiertes Leerzeichen. `parse_qsl` wandelt es zurück, und der Server begrüßt »Ada Lovelace«.'
+
+  - id: hallo
+    title: Dein Server grüßt
+    prompt: |
+      Frag deinen laufenden Server mit `curl -s` nach
+      `/hello?name=Ada%20Lovelace` und trag den Befehl hier ein. Der
+      Workspace führt ihn aus und sieht nach, was dein Server antwortet.
+    check:
+      type: command
+      timeout: 10
+      output:
+        matching: '^Hallo, Ada Lovelace!$'
+    feedback:
+      - when: { output_matches: '(Failed to connect|Couldn.t connect|Connection refused)' }
+        say: Unter Port 8000 antwortet gerade niemand. Starte deinen Server im linken Terminal und prüfe dann noch einmal.
+      - when: { output_matches: '% Total' }
+        say: Ohne `-s` schreibt `curl` hier eine Fortschrittsanzeige dazu. Schreib `curl -s …`.
+      - when: { output_matches: 'gibt es nicht' }
+        say: Dein Server kennt `/hello` noch nicht und sucht eine Datei. Hast du ihn nach der Änderung neu gestartet?
+      - when: { output_matches: 'Unbekannt' }
+        say: Dein Server antwortet, findet aber den Namen nicht. Fragt `/hello` in `params` nach `name`?
+      - when: { output_matches: '%20' }
+        say: Im Namen steht noch `%20`. Nimm den Namen aus `params`, dort ist er schon dekodiert.
+      - when: { output_matches: '^Hallo, Ada!' }
+        say: Gefragt ist nach `name=Ada%20Lovelace`, mit Nachnamen.
+    hint: 'Setz die Adresse in Anführungszeichen, wie oben. Läuft dein Server nicht, gibt `curl -s` gar nichts aus.'
+    solution: '`curl -s "localhost:8000/hello?name=Ada%20Lovelace"` ergibt `Hallo, Ada Lovelace!`: Dein Server hat den Parameter gelesen und `%20` wieder in ein Leerzeichen verwandelt.'
 
   - id: mutex
     title: Zwei auf einmal

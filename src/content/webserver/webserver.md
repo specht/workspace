@@ -612,11 +612,13 @@ progress::-moz-progress-bar {
 
 ### Zu jedem Pfad eine Datei
 
-Der Server sucht jetzt zu jedem Pfad eine Datei in `public`. `/` steht für `/index.html`. Am Dateinamen erkennt er, welcher `Content-Type` dazugehört, damit der Browser weiß, ob er HTML, CSS oder ein Bild bekommt:
+Der Server sucht jetzt zu jedem Pfad eine Datei in `public`. `/` steht für `/index.html`. Am Dateinamen erkennt er, welcher `Content-Type` dazugehört, damit der Browser weiß, ob er HTML, CSS oder ein Bild bekommt.
 
 <!-- language: ruby -->
-```ruby_copy
-require 'socket'
+Unter `require 'socket'` kommen eine Tabelle, welcher `Content-Type` zu welcher Endung gehört, und der Ordner:
+
+```ruby
+~ require 'socket'
 
 # Welcher Content-Type zu welcher Endung gehört
 TYPES = {
@@ -629,17 +631,13 @@ TYPES = {
 }
 
 PUBLIC_DIR = File.expand_path('public', __dir__)
+```
 
-# Schickt eine vollständige HTTP-Antwort und schließt die Verbindung
-def respond(client, status, type, body)
-  client.print "HTTP/1.1 #{status}\r\n"
-  client.print "Content-Type: #{type}\r\n"
-  client.print "Content-Length: #{body.bytesize}\r\n"
-  client.print "Connection: close\r\n"
-  client.print "\r\n"
-  client.print body
-  client.close
-end
+Unter `respond` kommt eine Funktion, die eine Datei ausliefert:
+
+```ruby
+~   client.close
+~ end
 
 # Eine Datei aus dem Ordner public, aber nie etwas außerhalb davon
 def serve_file(client, path)
@@ -653,36 +651,40 @@ def serve_file(client, path)
             "Die Seite #{path} gibt es nicht.\n")
   end
 end
+```
 
-server = TCPServer.new(8000)
-puts "Der Server wartet auf Port 8000 ..."
+Wichtig ist die Zeile mit `start_with?`. `File.expand_path` macht aus dem Pfad einen vollständigen Dateinamen, und der muss im Ordner `public` liegen. Ohne diese Prüfung könnte jemand nach `/../server.rb` fragen und bekäme deinen Quelltext, oder jede andere Datei, die dein Workspace lesen kann.
 
-loop do
-  Thread.new(server.accept) do |client|
-    request_line = client.gets.to_s
-    method, path, version = request_line.split(' ')
-    puts "#{method} #{path}"
-    while (line = client.gets) && line != "\r\n"
-    end
+<div class='hint own'>
+<strong>Erst selbst:</strong> Die Antwort für <code>/</code> und die für unbekannte Pfade übernimmt jetzt <code>serve_file</code>. Ändere die Auswahl in der Schleife: <code>/time</code> bleibt, wie es ist, und jeder andere Pfad geht an <code>serve_file</code>.
+</div>
 
+<!-- solution -->
+```ruby
+~     while (line = client.gets) && line != "\r\n"
+~     end
+~
     if path == '/time'
       respond(client, '200 OK', 'text/plain; charset=utf-8',
               "Es ist #{Time.now.strftime('%H:%M:%S')} Uhr.\n")
     else
       serve_file(client, path.to_s)
     end
-  end
-end
+~   end
+~ end
 ```
 
-Wichtig ist die Zeile mit `start_with?`. `File.expand_path` macht aus dem Pfad einen vollständigen Dateinamen, und der muss im Ordner `public` liegen. Ohne diese Prüfung könnte jemand nach `/../server.rb` fragen und bekäme deinen Quelltext, oder jede andere Datei, die dein Workspace lesen kann.
+`path.to_s` steht da für eine leere Anfrage: Dann ist `path` gleich `nil`, und `'.' + path` in `serve_file` würde abbrechen.
+<!-- /solution -->
 <!-- /language -->
 <!-- language: python -->
-```python_copy
+Ganz oben kommt `import os` dazu, unter den Imports eine Tabelle, welcher `Content-Type` zu welcher Endung gehört, und der Ordner:
+
+```python
 import os
-import socket
-import threading
-import time
+~ import socket
+~ import threading
+~ import time
 
 # Welcher Content-Type zu welcher Endung gehört
 TYPES = {
@@ -695,17 +697,12 @@ TYPES = {
 }
 
 PUBLIC_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), 'public'))
+```
 
+Unter `respond` kommt eine Funktion, die eine Datei ausliefert:
 
-def respond(client, status, content_type, body):
-    """Schickt eine vollständige HTTP-Antwort."""
-    data = body.encode() if isinstance(body, str) else body
-    head = (f'HTTP/1.1 {status}\r\n'
-            f'Content-Type: {content_type}\r\n'
-            f'Content-Length: {len(data)}\r\n'
-            'Connection: close\r\n'
-            '\r\n')
-    client.sendall(head.encode() + data)
+```python
+~     client.sendall(head.encode() + data)
 
 
 def serve_file(client, path):
@@ -720,34 +717,27 @@ def serve_file(client, path):
     else:
         respond(client, '404 Not Found', 'text/plain; charset=utf-8',
                 f'Die Seite {path} gibt es nicht.\n')
+```
 
+Wichtig ist die Zeile mit `startswith`. `os.path.realpath` macht aus dem Pfad einen vollständigen Dateinamen, ohne `..`, und der muss im Ordner `public` liegen. Ohne diese Prüfung könnte jemand nach `/../server.py` fragen und bekäme deinen Quelltext, oder jede andere Datei, die dein Workspace lesen kann.
 
-def handle(client):
-    with client, client.makefile('rb') as reader:
-        request_line = reader.readline().decode()
-        method, _, rest = request_line.partition(' ')
-        path, _, version = rest.partition(' ')
-        print(method, path)
-        for line in reader:
-            if line == b'\r\n':
-                break
+<div class='hint own'>
+<strong>Erst selbst:</strong> Die Antwort für <code>/</code> und die für unbekannte Pfade übernimmt jetzt <code>serve_file</code>. Ändere die Auswahl in <code>handle</code>: <code>/time</code> bleibt, wie es ist, und jeder andere Pfad geht an <code>serve_file</code>.
+</div>
 
+<!-- solution -->
+```python
+~         for line in reader:
+~             if line == b'\r\n':
+~                 break
+~
         if path == '/time':
             respond(client, '200 OK', 'text/plain; charset=utf-8',
                     f'Es ist {time.strftime("%H:%M:%S")} Uhr.\n')
         else:
             serve_file(client, path)
-
-
-server = socket.create_server(('', 8000))
-print('Der Server wartet auf Port 8000 ...')
-
-while True:
-    client, address = server.accept()
-    threading.Thread(target=handle, args=(client,), daemon=True).start()
 ```
-
-Wichtig ist die Zeile mit `startswith`. `os.path.realpath` macht aus dem Pfad einen vollständigen Dateinamen, ohne `..`, und der muss im Ordner `public` liegen. Ohne diese Prüfung könnte jemand nach `/../server.py` fragen und bekäme deinen Quelltext, oder jede andere Datei, die dein Workspace lesen kann.
+<!-- /solution -->
 <!-- /language -->
 
 Starte den Server neu (<kbd>Strg</kbd><kbd>C</kbd>, dann <kbd>↑</kbd> und <kbd>Enter</kbd>) und prüfe im zweiten Terminal, ob die CSS-Datei mit dem richtigen Content-Type kommt. Mit `-I` fragt `curl` nur nach den Headern, mit der Methode `HEAD` statt `GET`:
@@ -777,6 +767,7 @@ sleep: 1
 terminal-run: curl -I localhost:8000/style.css
 sleep: 2
 check-task: webseite
+check-task-fails: hallo <- curl -s "localhost:8000/hello?name=Ada%20Lovelace"
 -->
 <img class='full' src='css-antwort.webp' alt='Rechts zeigt curl -I die Header der Antwort auf /style.css: 200 OK, Content-Type text/css und Content-Length; links steht die Anfrage HEAD /style.css.'>
 <!-- /language -->
@@ -799,6 +790,7 @@ sleep: 1
 terminal-run: curl -I localhost:8000/style.css
 sleep: 2
 expect-no-text: Traceback
+check-task-fails: hallo <- curl -s "localhost:8000/hello?name=Ada%20Lovelace"
 -->
 <img class='full' src='css-antwort-python.webp' alt='Rechts zeigt curl -I die Header der Antwort auf /style.css: 200 OK, Content-Type text/css und Content-Length; links steht die Anfrage HEAD /style.css.'>
 <!-- /language -->
@@ -843,63 +835,32 @@ _task(sicherheit)
 <!-- language: ruby -->
 Adressen können Werte mitbringen: `/hello?name=Ada`. Nach dem `?` stehen **Parameter**, `name=wert`, mehrere getrennt durch `&`. Sonderzeichen wie Leerzeichen und Umlaute sind dort kodiert, `%20` ist ein Leerzeichen. `URI.decode_www_form` macht daraus wieder lesbare Werte.
 
-Dazu kommt ein Zähler, der mitzählt, wie oft `/visits` aufgerufen wurde. Er gehört dem ganzen Server, nicht einer einzelnen Verbindung, darum steht er in einer globalen Variable `$visits`:
+Dazu kommt ein Zähler, der mitzählt, wie oft `/visits` aufgerufen wurde. Er gehört dem ganzen Server, nicht einer einzelnen Verbindung, darum steht er in einer globalen Variable `$visits`. Oben kommt `require 'uri'` dazu:
 
-```ruby_copy
-require 'socket'
+```ruby
+~ require 'socket'
 require 'uri'
+```
 
-# Welcher Content-Type zu welcher Endung gehört
-TYPES = {
-  '.html' => 'text/html; charset=utf-8',
-  '.css'  => 'text/css; charset=utf-8',
-  '.js'   => 'text/javascript; charset=utf-8',
-  '.png'  => 'image/png',
-  '.jpg'  => 'image/jpeg',
-  '.txt'  => 'text/plain; charset=utf-8',
-}
+Unter `PUBLIC_DIR` kommt der Zähler, mit einem Lock:
 
-PUBLIC_DIR = File.expand_path('public', __dir__)
+```ruby
+~ PUBLIC_DIR = File.expand_path('public', __dir__)
 
 # Der Zähler gehört dem Server, nicht einer Verbindung: Alle Threads
 # benutzen ihn, darum zählt immer nur einer auf einmal (Mutex).
 $visits = 0
 $visits_lock = Mutex.new
+```
 
-# Schickt eine vollständige HTTP-Antwort und schließt die Verbindung
-def respond(client, status, type, body)
-  client.print "HTTP/1.1 #{status}\r\n"
-  client.print "Content-Type: #{type}\r\n"
-  client.print "Content-Length: #{body.bytesize}\r\n"
-  client.print "Connection: close\r\n"
-  client.print "\r\n"
-  client.print body
-  client.close
-end
+In der Schleife heißt, was nach der Methode kommt, jetzt `target`: Es enthält außer dem Pfad auch die Parameter. Daraus werden der Pfad `path` und ein Hash `params`, und ein neuer Fall `/visits` zählt mit:
 
-# Eine Datei aus dem Ordner public, aber nie etwas außerhalb davon
-def serve_file(client, path)
-  path = '/index.html' if path == '/'
-  file = File.expand_path('.' + path, PUBLIC_DIR)
-  if file.start_with?(PUBLIC_DIR + '/') && File.file?(file)
-    type = TYPES[File.extname(file)] || 'application/octet-stream'
-    respond(client, '200 OK', type, File.binread(file))
-  else
-    respond(client, '404 Not Found', 'text/plain; charset=utf-8',
-            "Die Seite #{path} gibt es nicht.\n")
-  end
-end
-
-server = TCPServer.new(8000)
-puts "Der Server wartet auf Port 8000 ..."
-
-loop do
-  Thread.new(server.accept) do |client|
-    request_line = client.gets.to_s
+```ruby
+~     request_line = client.gets.to_s
     method, target, version = request_line.split(' ')
     puts "#{method} #{target}"
-    while (line = client.gets) && line != "\r\n"
-    end
+~     while (line = client.gets) && line != "\r\n"
+~     end
 
     # /hello?name=Ada: der Pfad und die Parameter nach dem Fragezeichen
     path, query = target.to_s.split('?', 2)
@@ -909,87 +870,65 @@ loop do
     when '/time'
       respond(client, '200 OK', 'text/plain; charset=utf-8',
               "Es ist #{Time.now.strftime('%H:%M:%S')} Uhr.\n")
-    when '/hello'
-      name = params['name'] || 'Unbekannt'
-      respond(client, '200 OK', 'text/plain; charset=utf-8', "Hallo, #{name}!\n")
     when '/visits'
       count = $visits_lock.synchronize { $visits += 1 }
       respond(client, '200 OK', 'text/plain; charset=utf-8',
               "Du bist Besuch Nummer #{count}.\n")
-    else
-      serve_file(client, path)
-    end
-  end
-end
+~     else
 ```
 
 `$visits_lock` ist ein **Mutex**, ein Lock, den immer nur ein Thread auf einmal hält. `$visits += 1` sieht aus wie ein Schritt, sind aber drei: lesen, eins dazuzählen, zurückschreiben. Kommen zwei Threads gleichzeitig, könnten beide denselben alten Wert lesen, und ein Besuch ginge verloren.
+
+<div class='hint own'>
+<strong>Erst selbst:</strong> Füg einen Fall für <code>/hello</code> hinzu. <code>/hello?name=Ada</code> antwortet mit dem Text <code>Hallo, Ada!</code> und einem Zeilenende, <code>/hello</code> ohne Namen mit <code>Hallo, Unbekannt!</code>. Den Namen findest du im Hash <code>params</code>.
+</div>
+
+<!-- solution -->
+```ruby
+~               "Es ist #{Time.now.strftime('%H:%M:%S')} Uhr.\n")
+    when '/hello'
+      name = params['name'] || 'Unbekannt'
+      respond(client, '200 OK', 'text/plain; charset=utf-8', "Hallo, #{name}!\n")
+~     when '/visits'
+```
+
+Ohne Namen ist `params['name']` gleich `nil`, und `||` nimmt dann `'Unbekannt'`.
+<!-- /solution -->
 <!-- /language -->
 <!-- language: python -->
 Adressen können Werte mitbringen: `/hello?name=Ada`. Nach dem `?` stehen **Parameter**, `name=wert`, mehrere getrennt durch `&`. Sonderzeichen wie Leerzeichen und Umlaute sind dort kodiert, `%20` ist ein Leerzeichen. `parse_qsl` aus `urllib.parse` macht daraus wieder lesbare Werte, als Paare aus Name und Wert, und `dict(…)` ein `dict`.
 
-Dazu kommt ein Zähler, der mitzählt, wie oft `/visits` aufgerufen wurde. Er gehört dem ganzen Server, nicht einer einzelnen Verbindung, darum steht er außerhalb der Funktion in der Variable `visits`; mit `global visits` darf `handle` sie ändern:
+Dazu kommt ein Zähler, der mitzählt, wie oft `/visits` aufgerufen wurde. Er gehört dem ganzen Server, nicht einer einzelnen Verbindung, darum steht er außerhalb der Funktion in der Variable `visits`; mit `global visits` darf `handle` sie ändern. Unter die Imports kommt `parse_qsl`:
 
-```python_copy
-import os
-import socket
-import threading
-import time
+```python
+~ import time
 from urllib.parse import parse_qsl
+```
 
-# Welcher Content-Type zu welcher Endung gehört
-TYPES = {
-    '.html': 'text/html; charset=utf-8',
-    '.css': 'text/css; charset=utf-8',
-    '.js': 'text/javascript; charset=utf-8',
-    '.png': 'image/png',
-    '.jpg': 'image/jpeg',
-    '.txt': 'text/plain; charset=utf-8',
-}
+Unter `PUBLIC_DIR` kommt der Zähler, mit einem Lock:
 
-PUBLIC_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), 'public'))
+```python
+~ PUBLIC_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), 'public'))
 
 # Der Zähler gehört dem Server, nicht einer Verbindung: Alle Threads
 # benutzen ihn, darum zählt immer nur einer auf einmal (Lock).
 visits = 0
 visits_lock = threading.Lock()
+```
 
+In `handle` heißt, was nach der Methode kommt, jetzt `target`: Es enthält außer dem Pfad auch die Parameter. Daraus werden der Pfad `path` und ein `dict` `params`, und ein neuer Fall `/visits` zählt mit:
 
-def respond(client, status, content_type, body):
-    """Schickt eine vollständige HTTP-Antwort."""
-    data = body.encode() if isinstance(body, str) else body
-    head = (f'HTTP/1.1 {status}\r\n'
-            f'Content-Type: {content_type}\r\n'
-            f'Content-Length: {len(data)}\r\n'
-            'Connection: close\r\n'
-            '\r\n')
-    client.sendall(head.encode() + data)
-
-
-def serve_file(client, path):
-    """Eine Datei aus dem Ordner public, aber nie etwas außerhalb davon"""
-    if path == '/':
-        path = '/index.html'
-    file = os.path.realpath(os.path.join(PUBLIC_DIR, '.' + path))
-    if file.startswith(PUBLIC_DIR + '/') and os.path.isfile(file):
-        content_type = TYPES.get(os.path.splitext(file)[1], 'application/octet-stream')
-        with open(file, 'rb') as f:
-            respond(client, '200 OK', content_type, f.read())
-    else:
-        respond(client, '404 Not Found', 'text/plain; charset=utf-8',
-                f'Die Seite {path} gibt es nicht.\n')
-
-
-def handle(client):
+```python
+~ def handle(client):
     global visits
-    with client, client.makefile('rb') as reader:
-        request_line = reader.readline().decode()
-        method, _, rest = request_line.partition(' ')
+~     with client, client.makefile('rb') as reader:
+~         request_line = reader.readline().decode()
+~         method, _, rest = request_line.partition(' ')
         target, _, version = rest.partition(' ')
         print(method, target)
-        for line in reader:
-            if line == b'\r\n':
-                break
+~         for line in reader:
+~             if line == b'\r\n':
+~                 break
 
         # /hello?name=Ada: der Pfad und die Parameter nach dem Fragezeichen
         path, _, query = target.partition('?')
@@ -998,29 +937,35 @@ def handle(client):
         if path == '/time':
             respond(client, '200 OK', 'text/plain; charset=utf-8',
                     f'Es ist {time.strftime("%H:%M:%S")} Uhr.\n')
-        elif path == '/hello':
-            name = params.get('name', 'Unbekannt')
-            respond(client, '200 OK', 'text/plain; charset=utf-8', f'Hallo, {name}!\n')
         elif path == '/visits':
             with visits_lock:
                 visits += 1
                 count = visits
             respond(client, '200 OK', 'text/plain; charset=utf-8',
                     f'Du bist Besuch Nummer {count}.\n')
-        else:
-            serve_file(client, path)
-
-
-server = socket.create_server(('', 8000))
-print('Der Server wartet auf Port 8000 ...')
-
-while True:
-    client, address = server.accept()
-    threading.Thread(target=handle, args=(client,), daemon=True).start()
+~         else:
 ```
 
 `visits_lock` ist ein **Lock**, den immer nur ein Thread auf einmal hält: `with visits_lock:` wartet, bis er frei ist. `visits += 1` sieht aus wie ein Schritt, sind aber drei: lesen, eins dazuzählen, zurückschreiben. Kommen zwei Threads gleichzeitig, könnten beide denselben alten Wert lesen, und ein Besuch ginge verloren.
+
+<div class='hint own'>
+<strong>Erst selbst:</strong> Füg einen Fall für <code>/hello</code> hinzu. <code>/hello?name=Ada</code> antwortet mit dem Text <code>Hallo, Ada!</code> und einem Zeilenende, <code>/hello</code> ohne Namen mit <code>Hallo, Unbekannt!</code>. Den Namen findest du im <code>dict</code> <code>params</code>.
+</div>
+
+<!-- solution -->
+```python
+~                     f'Es ist {time.strftime("%H:%M:%S")} Uhr.\n')
+        elif path == '/hello':
+            name = params.get('name', 'Unbekannt')
+            respond(client, '200 OK', 'text/plain; charset=utf-8', f'Hallo, {name}!\n')
+~         elif path == '/visits':
+```
+
+`params.get('name', 'Unbekannt')` gibt den Namen, oder `'Unbekannt'`, wenn keiner mitkommt.
+<!-- /solution -->
 <!-- /language -->
+
+_task(parameter)
 
 Starte den Server neu und probiere es im zweiten Terminal aus:
 
@@ -1053,6 +998,7 @@ sleep: 1
 terminal-run: curl localhost:8000/visits
 sleep: 2
 check-task-fails: umfrage
+check-task: hallo <- curl -s "localhost:8000/hello?name=Ada%20Lovelace"
 -->
 <img class='full' src='parameter.webp' alt='Rechts antwortet der Server »Hallo, Ada Lovelace!«, dann »Du bist Besuch Nummer 1.« und »Du bist Besuch Nummer 2.«; links stehen die drei Anfragen.'>
 <!-- /language -->
@@ -1080,6 +1026,7 @@ terminal-run: curl localhost:8000/visits
 sleep: 2
 check-task-fails: umfrage python
 expect-no-text: Traceback
+check-task: hallo <- curl -s "localhost:8000/hello?name=Ada%20Lovelace"
 -->
 <img class='full' src='parameter-python.webp' alt='Rechts antwortet der Python-Server »Hallo, Ada Lovelace!«, dann »Du bist Besuch Nummer 1.« und »Du bist Besuch Nummer 2.«; links stehen die drei Anfragen.'>
 <!-- /language -->
@@ -1088,7 +1035,7 @@ Im Browser funktioniert es genauso: Hänge `/hello?name=…` an die Adresse aus 
 
 _uses(url)
 
-_task(parameter)
+_task(hallo)
 
 _task(mutex)
 
@@ -1132,99 +1079,34 @@ choice=curry
 ```
 
 <!-- language: ruby -->
-Hinter `choice=curry` steht kein Zeilenumbruch. Mit `client.gets` würde der Server auf ein Zeilenende warten, das nie kommt. Er muss wissen, wie viele Bytes er lesen soll, und das steht im Header `Content-Length`. Darum hebt er die Header jetzt in einem Hash auf, statt sie zu überspringen:
+Hinter `choice=curry` steht kein Zeilenumbruch. Mit `client.gets` würde der Server auf ein Zeilenende warten, das nie kommt. Er muss wissen, wie viele Bytes er lesen soll, und das steht im Header `Content-Length`. Darum hebt er die Header jetzt in einem Hash auf, statt sie zu überspringen. Ersetze die Schleife über die Header durch:
 
-```ruby_copy
-require 'socket'
-require 'uri'
-
-# Welcher Content-Type zu welcher Endung gehört
-TYPES = {
-  '.html' => 'text/html; charset=utf-8',
-  '.css'  => 'text/css; charset=utf-8',
-  '.js'   => 'text/javascript; charset=utf-8',
-  '.png'  => 'image/png',
-  '.jpg'  => 'image/jpeg',
-  '.txt'  => 'text/plain; charset=utf-8',
-}
-
-PUBLIC_DIR = File.expand_path('public', __dir__)
-
-# Der Zähler gehört dem Server, nicht einer Verbindung: Alle Threads
-# benutzen ihn, darum zählt immer nur einer auf einmal (Mutex).
-$visits = 0
-$visits_lock = Mutex.new
-
-# Die Umfrage: was im Formular steht, wie es auf der Seite heißt, und die
-# Stimmen dazu, ebenfalls geschützt durch einen Lock
-OPTIONS = { 'pizza' => 'Pizza', 'pasta' => 'Nudeln', 'curry' => 'Curry', 'salad' => 'Salat' }
-$votes = Hash.new(0)
-$votes_lock = Mutex.new
-
-# Schickt eine vollständige HTTP-Antwort und schließt die Verbindung
-def respond(client, status, type, body)
-  client.print "HTTP/1.1 #{status}\r\n"
-  client.print "Content-Type: #{type}\r\n"
-  client.print "Content-Length: #{body.bytesize}\r\n"
-  client.print "Connection: close\r\n"
-  client.print "\r\n"
-  client.print body
-  client.close
-end
-
-# Schickt den Browser weiter zu einer anderen Adresse: »Sieh dort nach«
-def redirect(client, location)
-  client.print "HTTP/1.1 303 See Other\r\n"
-  client.print "Location: #{location}\r\n"
-  client.print "Content-Length: 0\r\n"
-  client.print "Connection: close\r\n"
-  client.print "\r\n"
-  client.close
-end
-
-# Eine Datei aus dem Ordner public, aber nie etwas außerhalb davon
-def serve_file(client, path)
-  path = '/index.html' if path == '/'
-  file = File.expand_path('.' + path, PUBLIC_DIR)
-  if file.start_with?(PUBLIC_DIR + '/') && File.file?(file)
-    type = TYPES[File.extname(file)] || 'application/octet-stream'
-    respond(client, '200 OK', type, File.binread(file))
-  else
-    respond(client, '404 Not Found', 'text/plain; charset=utf-8',
-            "Die Seite #{path} gibt es nicht.\n")
-  end
-end
-
-server = TCPServer.new(8000)
-puts "Der Server wartet auf Port 8000 ..."
-
-loop do
-  Thread.new(server.accept) do |client|
-    request_line = client.gets.to_s
-    method, target, version = request_line.split(' ')
-    puts "#{method} #{target}"
+```ruby
+~     puts "#{method} #{target}"
     # Die Header in einen Hash: »Name: Wert«
     headers = {}
     while (line = client.gets) && line != "\r\n"
       name, value = line.split(':', 2)
       headers[name.strip.downcase] = value.to_s.strip
     end
+```
 
-    # /hello?name=Ada: der Pfad und die Parameter nach dem Fragezeichen
-    path, query = target.to_s.split('?', 2)
-    params = URI.decode_www_form(query.to_s).to_h
+Unter `$visits_lock` kommen die Antworten der Umfrage und ihre Stimmen:
 
-    case path
-    when '/time'
-      respond(client, '200 OK', 'text/plain; charset=utf-8',
-              "Es ist #{Time.now.strftime('%H:%M:%S')} Uhr.\n")
-    when '/hello'
-      name = params['name'] || 'Unbekannt'
-      respond(client, '200 OK', 'text/plain; charset=utf-8', "Hallo, #{name}!\n")
-    when '/visits'
-      count = $visits_lock.synchronize { $visits += 1 }
-      respond(client, '200 OK', 'text/plain; charset=utf-8',
-              "Du bist Besuch Nummer #{count}.\n")
+```ruby
+~ $visits_lock = Mutex.new
+
+# Die Umfrage: was im Formular steht, wie es auf der Seite heißt, und die
+# Stimmen dazu, ebenfalls geschützt durch einen Lock
+OPTIONS = { 'pizza' => 'Pizza', 'pasta' => 'Nudeln', 'curry' => 'Curry', 'salad' => 'Salat' }
+$votes = Hash.new(0)
+$votes_lock = Mutex.new
+```
+
+Vor `else` kommen zwei neue Fälle: `/vote` nimmt eine Stimme an, `/results` zeigt das Ergebnis.
+
+```ruby_copy
+~               "Du bist Besuch Nummer #{count}.\n")
     when '/vote'
       if method != 'POST'
         respond(client, '405 Method Not Allowed', 'text/plain; charset=utf-8',
@@ -1253,11 +1135,7 @@ loop do
       respond(client, '200 OK', 'text/html; charset=utf-8',
               "<!DOCTYPE html><meta charset='utf-8'><link rel='stylesheet' href='style.css'>" \
               "<h1>Ergebnis</h1><table>#{rows}</table><p><a href='poll.html'>Noch einmal abstimmen</a></p>\n")
-    else
-      serve_file(client, path)
-    end
-  end
-end
+~     else
 ```
 
 Was neu ist:
@@ -1269,104 +1147,35 @@ Was neu ist:
 - Die Ergebnisseite zeichnet für jede Antwort einen Balken mit `<progress>`: `value` ist die Zahl ihrer Stimmen, `max` die größte Zahl. Den Balken malt der Browser selbst, ganz ohne CSS.
 <!-- /language -->
 <!-- language: python -->
-Hinter `choice=curry` steht kein Zeilenumbruch. Mit `reader.readline()` würde der Server auf ein Zeilenende warten, das nie kommt. Er muss wissen, wie viele Bytes er lesen soll, und das steht im Header `Content-Length`. Darum hebt er die Header jetzt in einem `dict` auf, statt sie zu überspringen:
+Hinter `choice=curry` steht kein Zeilenumbruch. Mit `reader.readline()` würde der Server auf ein Zeilenende warten, das nie kommt. Er muss wissen, wie viele Bytes er lesen soll, und das steht im Header `Content-Length`. Darum hebt er die Header jetzt in einem `dict` auf, statt sie zu überspringen. Vor die Schleife über die Header kommt ein leeres `dict`, und jede Zeile trägt sich darin ein:
 
-```python_copy
-import os
-import socket
-import threading
-import time
-from urllib.parse import parse_qsl
+```python
+~         print(method, target)
+        # Die Header in ein dict: »Name: Wert«
+        headers = {}
+~         for line in reader:
+~             if line == b'\r\n':
+~                 break
+            name, _, value = line.decode().partition(':')
+            headers[name.strip().lower()] = value.strip()
+```
 
-# Welcher Content-Type zu welcher Endung gehört
-TYPES = {
-    '.html': 'text/html; charset=utf-8',
-    '.css': 'text/css; charset=utf-8',
-    '.js': 'text/javascript; charset=utf-8',
-    '.png': 'image/png',
-    '.jpg': 'image/jpeg',
-    '.txt': 'text/plain; charset=utf-8',
-}
+Unter `visits_lock` kommen die Antworten der Umfrage und ihre Stimmen:
 
-PUBLIC_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), 'public'))
-
-# Der Zähler gehört dem Server, nicht einer Verbindung: Alle Threads
-# benutzen ihn, darum zählt immer nur einer auf einmal (Lock).
-visits = 0
-visits_lock = threading.Lock()
+```python
+~ visits_lock = threading.Lock()
 
 # Die Umfrage: was im Formular steht, wie es auf der Seite heißt, und die
 # Stimmen dazu, ebenfalls geschützt durch einen Lock
 OPTIONS = {'pizza': 'Pizza', 'pasta': 'Nudeln', 'curry': 'Curry', 'salad': 'Salat'}
 votes = {key: 0 for key in OPTIONS}
 votes_lock = threading.Lock()
+```
 
+Vor `else` kommen zwei neue Fälle: `/vote` nimmt eine Stimme an, `/results` zeigt das Ergebnis.
 
-def respond(client, status, content_type, body):
-    """Schickt eine vollständige HTTP-Antwort."""
-    data = body.encode() if isinstance(body, str) else body
-    head = (f'HTTP/1.1 {status}\r\n'
-            f'Content-Type: {content_type}\r\n'
-            f'Content-Length: {len(data)}\r\n'
-            'Connection: close\r\n'
-            '\r\n')
-    client.sendall(head.encode() + data)
-
-
-def redirect(client, location):
-    """Schickt den Browser weiter zu einer anderen Adresse: »Sieh dort nach«"""
-    client.sendall((f'HTTP/1.1 303 See Other\r\n'
-                    f'Location: {location}\r\n'
-                    'Content-Length: 0\r\n'
-                    'Connection: close\r\n'
-                    '\r\n').encode())
-
-
-def serve_file(client, path):
-    """Eine Datei aus dem Ordner public, aber nie etwas außerhalb davon"""
-    if path == '/':
-        path = '/index.html'
-    file = os.path.realpath(os.path.join(PUBLIC_DIR, '.' + path))
-    if file.startswith(PUBLIC_DIR + '/') and os.path.isfile(file):
-        content_type = TYPES.get(os.path.splitext(file)[1], 'application/octet-stream')
-        with open(file, 'rb') as f:
-            respond(client, '200 OK', content_type, f.read())
-    else:
-        respond(client, '404 Not Found', 'text/plain; charset=utf-8',
-                f'Die Seite {path} gibt es nicht.\n')
-
-
-def handle(client):
-    global visits
-    with client, client.makefile('rb') as reader:
-        request_line = reader.readline().decode()
-        method, _, rest = request_line.partition(' ')
-        target, _, version = rest.partition(' ')
-        print(method, target)
-        # Die Header in ein dict: »Name: Wert«
-        headers = {}
-        for line in reader:
-            if line == b'\r\n':
-                break
-            name, _, value = line.decode().partition(':')
-            headers[name.strip().lower()] = value.strip()
-
-        # /hello?name=Ada: der Pfad und die Parameter nach dem Fragezeichen
-        path, _, query = target.partition('?')
-        params = dict(parse_qsl(query))
-
-        if path == '/time':
-            respond(client, '200 OK', 'text/plain; charset=utf-8',
-                    f'Es ist {time.strftime("%H:%M:%S")} Uhr.\n')
-        elif path == '/hello':
-            name = params.get('name', 'Unbekannt')
-            respond(client, '200 OK', 'text/plain; charset=utf-8', f'Hallo, {name}!\n')
-        elif path == '/visits':
-            with visits_lock:
-                visits += 1
-                count = visits
-            respond(client, '200 OK', 'text/plain; charset=utf-8',
-                    f'Du bist Besuch Nummer {count}.\n')
+```python_copy
+~                     f'Du bist Besuch Nummer {count}.\n')
         elif path == '/vote':
             if method != 'POST':
                 respond(client, '405 Method Not Allowed', 'text/plain; charset=utf-8',
@@ -1393,16 +1202,7 @@ def handle(client):
             respond(client, '200 OK', 'text/html; charset=utf-8',
                     "<!DOCTYPE html><meta charset='utf-8'><link rel='stylesheet' href='style.css'>"
                     f"<h1>Ergebnis</h1><table>{rows}</table><p><a href='poll.html'>Noch einmal abstimmen</a></p>\n")
-        else:
-            serve_file(client, path)
-
-
-server = socket.create_server(('', 8000))
-print('Der Server wartet auf Port 8000 ...')
-
-while True:
-    client, address = server.accept()
-    threading.Thread(target=handle, args=(client,), daemon=True).start()
+~         else:
 ```
 
 Was neu ist:
@@ -1414,7 +1214,50 @@ Was neu ist:
 - Die Ergebnisseite zeichnet für jede Antwort einen Balken mit `<progress>`: `value` ist die Zahl ihrer Stimmen, `max` die größte Zahl. Den Balken malt der Browser selbst, ganz ohne CSS.
 <!-- /language -->
 
-Nach einer Stimme zeigt der Server nicht gleich das Ergebnis, sondern antwortet mit **`303 See Other`** und dem Header `Location: /results`: »Sieh dort nach.« Der Browser holt dann `/results` mit `GET`. Der Umweg hat einen Grund: Wäre das Ergebnis die Antwort auf das `POST`, würde der Browser beim Neuladen das Formular noch einmal schicken, und die Stimme zählte doppelt. So lädt er nur die Ergebnisseite neu. Das Muster heißt **Post/Redirect/Get**.
+Nach einer Stimme zeigt `/vote` nicht gleich das Ergebnis, sondern ruft `redirect` auf: Der Server antwortet mit **`303 See Other`** und dem Header `Location: /results`, »Sieh dort nach.« Der Browser holt dann `/results` mit `GET`. Der Umweg hat einen Grund: Wäre das Ergebnis die Antwort auf das `POST`, würde der Browser beim Neuladen das Formular noch einmal schicken, und die Stimme zählte doppelt. So lädt er nur die Ergebnisseite neu. Das Muster heißt **Post/Redirect/Get**.
+
+<!-- language: ruby -->
+<div class='hint own'>
+<strong>Erst selbst:</strong> Schreib unter <code>respond</code> die Funktion <code>redirect(client, location)</code>. Sie schickt eine Antwort ohne Inhalt: die Status-Line mit <code>303 See Other</code>, die Header <code>Location</code>, <code>Content-Length: 0</code> und <code>Connection: close</code> und die leere Zeile. Danach schließt sie die Verbindung, so wie <code>respond</code>.
+</div>
+
+<!-- solution -->
+```ruby
+~   client.close
+~ end
+
+# Schickt den Browser weiter zu einer anderen Adresse: »Sieh dort nach«
+def redirect(client, location)
+  client.print "HTTP/1.1 303 See Other\r\n"
+  client.print "Location: #{location}\r\n"
+  client.print "Content-Length: 0\r\n"
+  client.print "Connection: close\r\n"
+  client.print "\r\n"
+  client.close
+end
+```
+<!-- /solution -->
+<!-- /language -->
+<!-- language: python -->
+<div class='hint own'>
+<strong>Erst selbst:</strong> Schreib unter <code>respond</code> die Funktion <code>redirect(client, location)</code>. Sie schickt eine Antwort ohne Inhalt: die Status-Line mit <code>303 See Other</code>, die Header <code>Location</code>, <code>Content-Length: 0</code> und <code>Connection: close</code> und die leere Zeile, als Bytes mit <code>sendall</code>, so wie <code>respond</code>.
+</div>
+
+<!-- solution -->
+```python
+~     client.sendall(head.encode() + data)
+
+
+def redirect(client, location):
+    """Schickt den Browser weiter zu einer anderen Adresse: »Sieh dort nach«"""
+    client.sendall((f'HTTP/1.1 303 See Other\r\n'
+                    f'Location: {location}\r\n'
+                    'Content-Length: 0\r\n'
+                    'Connection: close\r\n'
+                    '\r\n').encode())
+```
+<!-- /solution -->
+<!-- /language -->
 
 ### Abstimmen
 

@@ -67,6 +67,29 @@ class SolutionBlocksTest < Minitest::Test
         assert_equal %w[ruby python], root.css('details.solution > div.code-language').map { |b| b['data-language'] }
     end
 
+    def test_a_solution_inside_a_part_for_one_language
+        root = render(<<~MD)
+            <!-- language: ruby -->
+            Ein Satz für Ruby.
+
+            <!-- solution -->
+            ```ruby
+            def a; end
+            ```
+            <!-- /solution -->
+            <!-- /language -->
+            <!-- language: python -->
+            <!-- solution -->
+            ```python
+            def a(): pass
+            ```
+            <!-- /solution -->
+            <!-- /language -->
+        MD
+        assert_equal %w[ruby python], root.css('div.code-language > details.solution').map { |d| d.parent['data-language'] }
+        assert_includes root.at_css('div.code-language[data-language=ruby]').text, 'Ein Satz für Ruby.'
+    end
+
     def test_a_missing_end_is_reported
         messages = []
         markdown = SolutionBlocks.mark("<!-- solution -->\n\n```c\nint x;\n```\n")
