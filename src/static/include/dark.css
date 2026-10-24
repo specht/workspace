@@ -375,8 +375,12 @@ html[data-bs-theme="dark"] {
     }
     .task-hint > summary,
     .task-solution > summary,
-    details.solution > summary {
+    details.solution > summary,
+    .hint-steps > details.hint-step > summary {
         color: #8db8f5;
+    }
+    .hint-wait {
+        color: #9aa0a6;
     }
     .class-board th,
     .class-board td {

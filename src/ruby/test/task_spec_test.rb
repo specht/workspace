@@ -34,6 +34,16 @@ class TaskSpecTest < Minitest::Test
         assert_empty errors_for('type' => 'answer', 'expect' => '42')
     end
 
+    def test_hint_is_text_or_a_list_of_steps
+        check = { 'type' => 'answer', 'expect' => '42' }
+        assert_empty errors_for(check, 'hint' => 'Ein Tipp.')
+        assert_empty errors_for(check, 'hint' => ['Erst das.', 'Dann das.'])
+        refute_empty errors_for(check, 'hint' => ['Nur einer.'])
+        refute_empty errors_for(check, 'hint' => ['Eins.', ''])
+        refute_empty errors_for(check, 'hint' => Array.new(HintSteps::MAX_STEPS + 1, 'Tipp.'))
+        refute_empty errors_for(check, 'hint' => 3)
+    end
+
     def test_activity_must_match_folder
         errors = TaskSpec.validate(minimal('type' => 'answer', 'expect' => '42'), activity: 'other')
         assert errors.any? { |e| e.include?("activity must be 'other'") }

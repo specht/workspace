@@ -252,7 +252,7 @@ tasks:
 | `prompt` | ja | Die Aufgabe in Markdown |
 | `check` | ja | Wie geprüft wird; alles, was über richtig und falsch entscheidet, steht hier |
 | `file` | nein | Die Datei, in der gearbeitet wird, relativ zu `/workspace`; wird bei der Aufgabe angezeigt |
-| `hint` | nein | Hinweis, den man aufklappen kann |
+| `hint` | nein | Hinweis, den man aufklappen kann; oder eine Liste von 2 bis 5 Tipps in Stufen (siehe »Tipps in Stufen«) |
 | `feedback` | nein | Eigene Rückmeldungen für typische Fehler |
 | `prediction` | nein | `true`: Vorhersage; nur der erste Versuch zählt fürs Klassenboard, danach darf ausprobiert werden |
 | `solution` | nein | Lösung; nur Lehrkräfte sehen sie |
@@ -311,6 +311,37 @@ Mit `feedback` kommen Sätze für typische Fehler dazu. Die Bedingungen in
 `number` kennt `equals` und `between`, `choice` kennt `picked`, `command`
 kennt `output_matches`, `scene` kennt `found`, `missing`,
 `source_matches` und `problem`.
+
+### Tipps in Stufen
+
+Statt eines Tipps kann `hint` eine Liste sein. Die Karte zeigt dann »Tipp 1
+von 3«; die nächste Stufe erscheint erst eine Minute, nachdem die vorige
+aufgeklappt wurde (`HintSteps::DELAY_SECONDS`), mit einer Uhr bis dahin.
+
+````yaml
+hint:
+  - |
+    Rechne das erste Beispiel von Hand: A hat die Länge 1, B und C die Länge 2.
+    Welcher Code mit zwei Stellen ist der kleinste, der nicht mit `0` anfängt?
+  - |
+    Sortiere die Bytes nach der Länge … Wird die Länge größer, kommen hinten
+    Nullen dazu; das ist `<<`.
+  - |
+    Ein Gerüst:
+
+    ```ruby
+    def canonical(lengths)
+        …
+            # hier: hinten Nullen anhängen, wenn length größer als previous ist
+    ```
+````
+
+Die Stufen gehen vom Verstehen (ein Beispiel von Hand) über den Weg in Worten
+zu einem Gerüst mit Lücken. Keine Stufe enthält die ganze Lösung. Was jemand
+aufgeklappt hat, merkt sich nur der Browser (`hint_steps.js`); der Server
+erfährt es nicht, Lehrkräfte sehen es nicht. Die Gründe stehen in
+[didaktik.md](didaktik.md). Eine Variante für eine andere Sprache kann eine
+eigene Liste haben.
 
 ### Versionen
 

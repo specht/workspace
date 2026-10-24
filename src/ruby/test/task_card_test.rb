@@ -40,6 +40,16 @@ class TaskCardTest < Minitest::Test
         assert_includes html, 'task-login-note'
     end
 
+    def test_hint_in_steps
+        task = tasks['adresse'].merge('hint' => ['Erst das.', 'Dann `das`.', 'Zuletzt dies.'])
+        html = TaskCard.html(task, activity: 'tcpip', number: 1, render: RENDER)
+        assert_includes html, "<div class='hint-steps' data-delay='#{HintSteps::DELAY_SECONDS}'>"
+        assert_equal 3, html.scan("<details class='hint-step task-hint'>").size
+        assert_includes html, '<summary>Tipp 1 von 3</summary><p>Erst das.</p>'
+        assert_includes html, '<summary>Tipp 3 von 3</summary>'
+        refute_includes html, '<summary>Tipp</summary>'
+    end
+
     def test_cards_never_contain_what_is_checked
         tasks.each_value do |task|
             html = TaskCard.html(task, activity: 'tcpip', number: 1, render: RENDER)

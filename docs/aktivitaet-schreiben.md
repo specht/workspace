@@ -427,6 +427,43 @@ nicht, sag, wann (»Laufen lassen kannst du sie erst gleich mit
 (`prediction: true`) gut zusammen: erst vermuten, was der eigene Code tun
 wird, dann starten.
 
+### Tipps in Stufen
+
+Wo Lernende hängen bleiben können, helfen Tipps in Stufen besser als ein
+einziger: erst verstehen, was verlangt ist (ein kleines Beispiel von Hand),
+dann der Weg in Worten, dann ein Gerüst mit Lücken. Keine Stufe ist die ganze
+Lösung. Eine Aufgabe bekommt sie als Liste in `hint` ([aufgaben.md](aufgaben.md),
+»Tipps in Stufen«), ein Kasten »Erst selbst« vor seiner Lösung, jede Stufe
+zwischen zwei Markierungen auf eigenen Zeilen:
+
+````markdown
+<div class='hint own'>
+<strong>Erst selbst:</strong> Schreib unter <code>hit_sphere</code> die Funktion …
+</div>
+
+<!-- hint -->
+Stell `origin.y + t · dir.y = 0` nach `t` um; das steht schon oben.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```c
+double hit_floor(vec origin, vec dir)
+{
+    double t = …;   // hier: die Formel von oben
+    …
+```
+<!-- /hint -->
+
+<!-- solution -->
+…
+````
+
+Die Stufen erscheinen nacheinander, mit einer Minute Pause dazwischen, damit
+man über jeden Tipp nachdenkt. Niemand außer der Person selbst sieht, welche
+sie aufgeklappt hat. Warum es so entschieden ist, steht in
+[didaktik.md](didaktik.md).
+
 ### Extras für Schnelle
 
 Eine lange Seite hat oft Kapitel, die nicht alle brauchen: einen Ausblick

@@ -5,6 +5,7 @@ require './include/page_kinds.rb'
 require './include/task_spec.rb'
 require './include/code_languages.rb'
 require './include/solution_blocks.rb'
+require './include/hint_steps.rb'
 require './include/task_check.rb'
 require './include/task_card.rb'
 require './include/stage_code.rb'
@@ -1875,6 +1876,8 @@ class Main < Sinatra::Base
                 markdown = CodeLanguages.mark(markdown, :warn => content_warning)
                 # Code to write first, folded under »Lösung anzeigen« (SolutionBlocks), wrapped after rendering.
                 markdown = SolutionBlocks.mark(markdown)
+                # Tips in steps before it (HintSteps), wrapped after rendering as well.
+                markdown = HintSteps.mark(markdown)
                 # Parts for people with a class repository over SSH or HTTPS,
                 # or without one (<!-- if: class_repo -->, ClassRepos): the
                 # page is rendered once for each, and each request picks one
@@ -1947,6 +1950,7 @@ class Main < Sinatra::Base
                 end
                 CodeLanguages.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
                 SolutionBlocks.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
+                HintSteps.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
                 CodeLanguages.pair(root) if page_languages.empty?
                 insert_task_cards(root, task_slots, page_tasks, redcarpet, path, page_languages) unless task_slots.empty?
                 StageCode.insert(root, stage_points) unless stage_points.empty?

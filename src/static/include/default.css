@@ -1192,6 +1192,61 @@ details.solution[open] > summary {
     margin-bottom: 0.6em;
 }
 
+/* Tips in steps (HintSteps, hint_steps.js): one at a time, with a pause
+   before the next. In a task card they look like its »Tipp«; before an
+   »Erst selbst« solution like »Lösung anzeigen«. */
+.hint-steps {
+    margin: 0.4em 0 0.6em;
+}
+
+.hint-steps > details.hint-step {
+    margin: 0.2em 0;
+}
+
+.hint-steps > details.hint-step > summary {
+    display: inline-block;
+    cursor: pointer;
+    color: #0b4fb3;
+}
+
+.hint-steps > details.hint-step > summary::-webkit-details-marker {
+    display: none;
+}
+
+/* the same chevron as »Lösung anzeigen« */
+.hint-steps > details.hint-step > summary::before {
+    content: '\F285';
+    display: inline-block;
+    margin-right: 0.35em;
+    font-family: bootstrap-icons;
+    font-size: 80%;
+    vertical-align: 0.05em;
+    transition: transform 0.15s;
+}
+
+.hint-steps > details.hint-step[open] > summary::before {
+    transform: rotate(90deg);
+}
+
+.hint-steps > details.hint-step[open] {
+    padding-bottom: 0.3em;
+}
+
+.hint-steps > details.hint-step:not(.task-hint) > *:not(summary) {
+    margin-left: 1.2em;
+}
+
+/* a step that has just arrived */
+.hint-steps > details.hint-step-new > summary {
+    font-weight: 600;
+}
+
+.hint-wait {
+    margin: 0.2em 0 0;
+    font-size: 90%;
+    color: #6c757d;
+}
+
 .hint.handshake::before {
     background-image: url(/images/handshake.png);
 }

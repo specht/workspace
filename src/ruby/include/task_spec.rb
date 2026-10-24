@@ -12,6 +12,7 @@ require_relative 'scene_color'
 require_relative 'html_lite'
 require_relative 'python_check'
 require_relative 'c_check'
+require_relative 'hint_steps'
 require_relative 'ruby_check'
 require_relative 'code_languages'
 
@@ -182,9 +183,10 @@ module TaskSpec
         %w[title prompt].each do |key|
             errors << "#{key} is required" unless nonempty_string?(task[key])
         end
-        %w[hint solution file].each do |key|
+        %w[solution file].each do |key|
             errors << "#{key} must be text" if task.key?(key) && !nonempty_string?(task[key])
         end
+        errors.concat(hint_errors(task['hint'])) if task.key?('hint')
         %w[prediction exam].each do |key|
             errors << "#{key} must be true or false" if task.key?(key) && ![true, false].include?(task[key])
         end
@@ -614,6 +616,16 @@ module TaskSpec
         m = value.to_s.strip.match(/\A(\d+(?:\.\d+)?)\s*(B|kB|MB)\z/)
         return nil unless m
         (m[1].to_f * { 'B' => 1, 'kB' => 1000, 'MB' => 1_000_000 }[m[2]]).round
+    end
+
+    # A hint is a text, or a list of steps shown one at a time with a pause
+    # between them (HintSteps, docs/aufgaben.md »Tipps in Stufen«).
+    def self.hint_errors(hint)
+        return [] if nonempty_string?(hint)
+        if hint.is_a?(Array) && hint.size.between?(2, HintSteps::MAX_STEPS) && hint.all? { |step| nonempty_string?(step) }
+            return []
+        end
+        ["hint must be text or a list of 2 to #{HintSteps::MAX_STEPS} texts"]
     end
 
     def self.nonempty_string?(value)

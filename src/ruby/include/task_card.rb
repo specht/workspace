@@ -1,6 +1,7 @@
 require 'cgi'
 require 'digest'
 require_relative 'task_check'
+require_relative 'hint_steps'
 
 # HTML of a task card on an activity page (docs/aufgaben.md, »Aufgaben auf
 # der Seite«). The card never contains what is checked against (expect,
@@ -142,7 +143,9 @@ module TaskCard
             io << "<p class='task-later'><i class='bi bi-hourglass-split'></i>Diese Aufgabe kann der Workspace noch nicht selbst prüfen. Zeig dein Ergebnis deiner Lehrkraft.</p>"
         end
 
-        if task['hint']
+        if task['hint'].is_a?(Array)
+            io << HintSteps.html(task['hint'].map { |hint| render.(hint) }, :extra_class => 'task-hint')
+        elsif task['hint']
             io << "<details class='task-hint'><summary>Tipp</summary>#{render.(task['hint'])}</details>"
         end
         io << "<div class='task-feedback' aria-live='polite'></div>"

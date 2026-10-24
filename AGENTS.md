@@ -26,6 +26,8 @@ address from `credentials.rb` and the code `123456`.
 - [README.md](README.md): what the Workspace is, installation
 - [docs/entwicklung.md](docs/entwicklung.md): what to rebuild after a change, tests, screenshots, extensions, image
 - [docs/aktivitaet-schreiben.md](docs/aktivitaet-schreiben.md): writing an activity, with a template in `docs/vorlage-aktivitaet/`
+- [docs/didaktik.md](docs/didaktik.md): how activities make students think instead of copy, and the decisions
+  behind it (»Erst selbst«, changes instead of whole files, checks of behaviour, predictions, tips in steps)
 - [docs/aufgaben.md](docs/aufgaben.md): every meta field, task type and placeholder
 - [docs/datenschutz.md](docs/datenschutz.md): Impressum, Datenschutzerklärung, the documents for the school, deleting accounts;
   change `src/ruby/include/privacy.rb` whenever what is stored changes
@@ -143,6 +145,12 @@ address from `credentials.rb` and the code `123456`.
   continues with that code. Where possible a task under the solution checks
   the student's own version (check types ruby, python, c)
   (docs/aktivitaet-schreiben.md, »Erst selbst schreiben«).
+- Tips in steps where students can get stuck: `hint` as a list in
+  tasks.yaml, or `<!-- hint -->` … `<!-- /hint -->` blocks before an
+  »Erst selbst« solution (`HintSteps`). From understanding to strategy to a
+  scaffold, never the complete solution; one step at a time with a pause
+  of a minute; nothing is stored on the server and no teacher sees who used
+  which tip (docs/didaktik.md, »Tipps in Stufen«).
 - A Handbuch page holds the basics and the most important things, not
   everything, and links to the official reference or manual for the rest
   (specification, official docs, cheatsheet), in its parts or a closing

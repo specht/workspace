@@ -21,6 +21,8 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Tipps in Stufen: Welche Tipps einer Aufgabe aufgeklappt wurden, merkt sich nur der Browser (lokaler Speicher),
+  der Server speichert davon nichts; die Datenschutzerklärung nennt es bei »Cookies und Speicher im Browser«.
 - Fallserver: Die Eingabeaufforderung beginnt farbig mit dem Namen des Servers (`[museum]` gelb,
   `[alarmanlage]` rot), die Alarmanlage begrüßt mit der Werbung von Elektro Reuter. Mit
   `CASE_SERVER = true` nach dem Update `./config.rb build case_museum case_alarm` und
