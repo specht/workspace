@@ -11,6 +11,7 @@ require_relative 'story_check'
 require_relative 'scene_color'
 require_relative 'html_lite'
 require_relative 'python_check'
+require_relative 'c_check'
 require_relative 'ruby_check'
 require_relative 'code_languages'
 
@@ -50,6 +51,7 @@ module TaskSpec
         'keyboard' => 'M7',
         'python' => 'M7',
         'ruby' => 'M7',
+        'c' => 'M7',
     }.freeze
 
     # Check types that need the network; they are never used in exams.
@@ -92,6 +94,7 @@ module TaskSpec
         'keyboard' => %w[problem],
         'python' => [],
         'ruby' => [],
+        'c' => [],
     }.freeze
 
     class Error < StandardError
@@ -534,6 +537,11 @@ module TaskSpec
             allowed += %w[file cases timeout]
             errors.concat(path_errors(check['file'], 'file'))
             errors.concat(RubyCheck.spec_errors(check))
+        when 'c'
+            # Calls functions in the person's C file, compiled and run as the guest (CCheck).
+            allowed += %w[file cases timeout tolerance setup]
+            errors.concat(path_errors(check['file'], 'file'))
+            errors.concat(CCheck.spec_errors(check))
         when 'er'
             # Runs the ER-Werkstatt core on a .er file in the Workspace.
             allowed += %w[file entities relationships tables]

@@ -177,6 +177,9 @@ module TaskCard
         when 'python', 'ruby'
             n = (check['cases'] || []).size
             "Lädt #{path.(check['file'])} in deinem Workspace, als Gast, der nichts verändern kann, und probiert #{n == 1 ? 'einen Aufruf' : "#{n} Aufrufe"} aus"
+        when 'c'
+            n = (check['cases'] || []).size
+            "Übersetzt #{path.(check['file'])} in deinem Workspace, als Gast, der nichts verändern kann, startet nicht dein <code>main</code>, sondern probiert #{n == 1 ? 'einen Aufruf' : "#{n} Aufrufe"} aus"
         when 'schema' then 'Liest den Aufbau deiner MySQL-Datenbank, angemeldet als du, und ändert nichts'
         when 'submit'
             if check['pick']

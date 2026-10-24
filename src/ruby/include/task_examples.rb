@@ -39,12 +39,12 @@ require_relative 'workspace_files'
 #
 # Only checks that run without a Workspace container or a database are run
 # here (FAST_TYPES); ruby and python checks run with the local interpreters,
-# command checks with the local sh.
+# c checks with the local cc, command checks with the local sh.
 module TaskExamples
     FILE = 'task-examples.yaml'
-    FAST_TYPES = %w[files html css references ruby python command choice number answer].freeze
+    FAST_TYPES = %w[files html css references ruby python c command choice number answer].freeze
     # Checks that need examples to be tested at all.
-    NEEDS_EXAMPLES = %w[files html css references ruby python command].freeze
+    NEEDS_EXAMPLES = %w[files html css references ruby python c command].freeze
     # answer with compare: regex needs examples as well (see missing).
     CASE_KEYS = %w[archive files answer say].freeze
 

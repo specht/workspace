@@ -337,6 +337,7 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `command` | Ausgabe eines Befehls der Lernenden | Ausgabe | Workspace | M6 |
 | `python` | Funktionen aus einer Python-Datei der Lernenden: Aufrufe und ihre Ergebnisse | eine `.py`-Datei | Workspace, als Gast | M7 |
 | `ruby` | dasselbe für eine Ruby-Datei | eine `.rb`-Datei | Workspace, als Gast | M7 |
+| `c` | Funktionen aus einer C-Datei der Lernenden, übersetzt mit `cc`, ohne ihr `main` | eine `.c`-Datei | Workspace, als Gast | M7 |
 | `scene` | Szene des Anaglyph-Viewers, zu einem oder mehreren Zeitpunkten | eine `.ini`-Datei | Workspace | M6 |
 | `sql` | Ergebnis einer `SELECT`-Abfrage gegen das einer Musterabfrage | Abfrage | eigene MySQL-Datenbank, nur lesend | M6 |
 | `cypher` | Ergebnis einer Cypher-Abfrage gegen das einer Musterabfrage | Abfrage | eigene Neo4j-Datenbank, nur lesend | M7 |
@@ -742,6 +743,60 @@ check:
       expect: '[]'
       say: Ein leerer Text ergibt keinen einzigen Code.
 ```
+
+### c
+
+Ruft Funktionen aus einer C-Datei der Lernenden auf, wie `python` und `ruby`
+(`CCheck`). Ein Skript schreibt im Workspace, als Gast, ein Testprogramm nach
+`/tmp`, das die Datei mit `#include` einbindet, ihr `main` umbenennt und
+stattdessen die Aufrufe der Prüfung ausführt, und übersetzt es mit `cc`. Das
+Programm selbst läuft also nicht, und ein Fenster von PixelRAM geht nicht auf.
+`pixelram.h` kommt aus dem Ordner `.pixelram`, den `make` neben der Datei
+anlegt; fehlt er, sagt die Prüfung, dass einmal `make` laufen muss. Funktionen
+einer Bibliothek, die die Aufrufe nicht brauchen (`screen_open`,
+`set_pixel` …), lässt der Linker weg.
+
+```yaml
+check:
+  type: c
+  file: raytracer/raytracer.c
+  tolerance: 0.0001                       # für Kommazahlen; Standard 1e-6
+  setup: |                                # C-Code vor den Aufrufen, für Hilfsfunktionen
+    double floor_color(double x, double z)
+    {
+        hit h;
+        nearest_hit((vec){x, 1, z}, (vec){0, -1, 0}, &h);
+        return h.mat.color.x;
+    }
+  cases:
+    - hit_floor((vec){0, 1.2, 5.5}, (vec){0, -0.6, -0.8}): 2
+    - reflect((vec){0.6, -0.8, 0}, (vec){0, 1, 0}).y: 0.8   # ein Feld eines struct
+    - call: hit_floor((vec){0, 1, 0}, (vec){1, 0, 0})
+      expect: INFINITY
+      say: Ein waagrechter Strahl trifft den Boden nie.
+    - floor_color(0.5, 4.5) != floor_color(1.5, 4.5): true
+```
+
+Aufrufe und Ergebnisse sind C-Ausdrücke. Ein Aufruf muss eine Zahl
+(`int`, `double`, `bool`, `char` …) oder einen Text (`char *`) ergeben; gibt
+eine Funktion ein `struct` zurück, nennt der Aufruf ein Feld (`.y`). Globale
+Variablen lassen sich mit dem Komma-Operator setzen:
+`(player_angle = 0, update_camera(), plane_y)`. `true`, `false`, `~` und `.inf`
+aus YAML werden zu `true`, `false`, `NULL` und `INFINITY`. Zahlen werden als
+`double` verglichen, gleich bis auf `tolerance`; unendlich ist gleich
+unendlich mit demselben Vorzeichen. Texte vergleicht `strcmp`. Ein Vergleich
+in C ist ein `int`; mit `true` oder `false` als Ergebnis zeigt die Rückmeldung
+ihn als `true` oder `false`. `raises` gibt es in C nicht.
+
+Jeder Aufruf läuft in einem eigenen Prozess, höchstens zwei Sekunden: Ein
+Absturz (»greift auf Speicher zu, der ihm nicht gehört«), eine Endlosschleife
+oder ein `exit` trifft nur diesen Aufruf. Was das Programm ausgibt,
+verschwindet. Lässt sich die Datei nicht übersetzen, nennt die Rückmeldung die
+Zeile und die Meldung des Compilers; fehlt eine Funktion, heißt es »In
+`raytracer.c` gibt es `reflect` noch nicht«, passt ein Aufruf nicht zu ihr
+(andere Parameter), nennt sie den Aufruf. `setup` ist für Hilfsfunktionen, die
+mehrere Aufrufe lesbar machen; was darin nicht zum Programm passt, meldet die
+Prüfung als »Die Prüfung passt noch nicht zu deinem Programm«.
 
 ### sql
 
@@ -1390,11 +1445,11 @@ cd src/ruby && ruby test/task_examples_test.rb
 
 Der Test führt jedes Beispiel durch dieselbe Prüfung wie der Knopf »Prüfen«;
 `ruby`- und `python`-Prüfungen laufen mit den Interpretern auf dem Rechner,
-`command` mit seinem `sh`.
+`c` mit seinem `cc`, `command` mit seinem `sh`.
 Prüfungen, die einen Workspace oder eine Datenbank brauchen (`sql`, `cypher`,
 `git`, `measure`, `scene` …), testet er noch nicht; ob die Schritte einer Seite
 zu einer gelösten Aufgabe führen, prüfen `check-task` und `tutorial-step` in
 den Screenshot-Rezepten ([aktivitaet-schreiben.md](aktivitaet-schreiben.md)).
 Jede Prüfung vom Typ `files`, `html`, `css`, `references`, `ruby`, `python`,
-`command` und jede `answer` mit `compare: regex` braucht Beispiele, sonst
+`c`, `command` und jede `answer` mit `compare: regex` braucht Beispiele, sonst
 schlägt der Test fehl.

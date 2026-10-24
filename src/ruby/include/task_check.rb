@@ -10,6 +10,7 @@ require_relative 'sql_check'
 require_relative 'er_check'
 require_relative 'python_check'
 require_relative 'ruby_check'
+require_relative 'c_check'
 require_relative 'schema_check'
 require_relative 'keyboard_check'
 
@@ -27,7 +28,7 @@ module TaskCheck
     # read files or git status (/api/class/check_now).
     LIVE_TYPES = (FILE_TYPES + %w[git keyboard]).freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er schema keyboard python ruby]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er schema keyboard python ruby c]).freeze
 
     # status:
     #   :correct, :wrong   – checked; counts as an attempt
@@ -89,6 +90,7 @@ module TaskCheck
         return check_er(task, check, workspace, runner) if type == 'er'
         return check_calls(task, check, workspace, guest_runner, PythonCheck) if type == 'python'
         return check_calls(task, check, workspace, guest_runner, RubyCheck) if type == 'ruby'
+        return check_calls(task, check, workspace, guest_runner, CCheck) if type == 'c'
         return check_schema(task, check, sql, sql_env) if type == 'schema'
         return check_keyboard(task, check, workspace) if type == 'keyboard'
         return check_workspace(task, check, answer, workspace, git, runner) unless ANSWER_TYPES.include?(type)
@@ -191,8 +193,8 @@ module TaskCheck
 
     NOT_RUNNING_CALLS = 'Starte zuerst deinen Workspace. Dein Programm läuft zum Prüfen in deinem Workspace.'
 
-    # python, ruby: calls into the person's own file (PythonCheck,
-    # RubyCheck). The code is theirs, so it only ever runs as the guest
+    # python, ruby, c: calls into the person's own file (PythonCheck,
+    # RubyCheck, CCheck). The code is theirs, so it only ever runs as the guest
     # (rule 1).
     def self.check_calls(task, check, workspace, runner, language)
         return Result.new(:status => :unavailable, :message => NO_WORKSPACE) if workspace.nil?
@@ -204,7 +206,8 @@ module TaskCheck
             return Result.new(:status => :wrong, :problem => :missing, :message => "`#{file}` gibt es nicht.#{hint}")
         end
         seconds = check['timeout'] || 10
-        result = runner&.call(language.command(file, language.cases(check)), seconds)
+        command = language.respond_to?(:command_for_check) ? language.command_for_check(check) : language.command(file, language.cases(check))
+        result = runner&.call(command, seconds)
         return Result.new(:status => :unavailable, :message => NOT_RUNNING_CALLS) if result.nil?
 
         status, message, read = language.evaluate(task, check, result[:output], timed_out: result[:timed_out])
