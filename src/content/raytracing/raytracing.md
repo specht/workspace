@@ -568,8 +568,13 @@ material floor_mat = {.color = {0.75, 0.75, 0.75}};
 
 ### Der Boden
 
-Der Boden ist die Ebene `y = 0`. Ein Strahl erreicht sie, wenn `origin.y + t · dir.y = 0` ist, also bei `t = −origin.y / dir.y`. Ist `t` negativ, liegt der Boden hinter dem Strahl:
+Der Boden ist die Ebene `y = 0`. Ein Strahl erreicht sie, wenn `origin.y + t · dir.y = 0` ist, also bei `t = −origin.y / dir.y`. Ist `t` negativ, liegt der Boden hinter dem Strahl.
 
+<div class='hint own'>
+<strong>Erst selbst:</strong> Schreib unter <code>hit_sphere</code> die Funktion <code>double hit_floor(vec origin, vec dir)</code>. Sie gibt dieses <code>t</code> zurück, und <code>INFINITY</code>, wenn der Boden hinter dem Strahl liegt, so wie <code>hit_sphere</code> bei einer Kugel hinter dem Auge. Laufen lassen kannst du sie erst gleich mit <code>nearest_hit</code>; vergleiche sie vorher mit der Lösung.
+</div>
+
+<!-- solution -->
 ```c
 ~     return INFINITY;      // die Kugel liegt hinter dem Auge
 ~ }
@@ -583,6 +588,7 @@ double hit_floor(vec origin, vec dir)
     return INFINITY;
 }
 ```
+<!-- /solution -->
 
 _task(boden)
 
@@ -626,9 +632,6 @@ bool nearest_hit(vec origin, vec dir, hit *h)
     {
         h->normal = (vec){0, 1, 0};
         h->mat = floor_mat;
-        // Schachbrett: jedes zweite Feld dunkel
-        if ((int)(floor(h->point.x) + floor(h->point.z)) % 2 == 0)
-            h->mat.color = (vec){0.05, 0.06, 0.08};
     }
     else
     {
@@ -640,9 +643,7 @@ bool nearest_hit(vec origin, vec dir, hit *h)
 }
 ```
 
-`hit *h` ist ein Zeiger: `nearest_hit` schreibt seine Ergebnisse in den `hit`, den der Aufrufer bereitstellt, und gibt selbst nur `true` oder `false` zurück. `h->t` heißt »das Feld `t` in dem `hit`, auf den `h` zeigt«.
-
-Das Schachbrett entsteht ohne ein einziges Bild: `floor` rundet die Koordinaten ab, auf welchem Feld der Treffpunkt liegt, und ist die Summe beider Feldnummern gerade, ist das Feld dunkel. Die Normale des Bodens zeigt überall nach oben.
+`hit *h` ist ein Zeiger: `nearest_hit` schreibt seine Ergebnisse in den `hit`, den der Aufrufer bereitstellt, und gibt selbst nur `true` oder `false` zurück. `h->t` heißt »das Feld `t` in dem `hit`, auf den `h` zeigt«. Die Normale des Bodens zeigt überall nach oben.
 
 Das Licht der Sonne bekommt eine eigene Funktion, `sunlight`, und `trace` wird kurz. Ersetze `trace` durch die beiden:
 
@@ -667,6 +668,27 @@ vec trace(vec origin, vec dir)
     return mul(h.mat.color, light);
 }
 ```
+
+_task(schatten-da)
+
+Übersetze das Programm mit `make PROGRAM=raytracer` und sieh es dir an: Die Kugeln stehen auf einem grauen Boden, der bis zum Horizont reicht.
+
+<div class='hint own'>
+<strong>Erst selbst:</strong> Mach aus dem Boden ein Schachbrett aus Feldern der Größe 1, jedes zweite dunkel, <code>(vec){0.05, 0.06, 0.08}</code>. Der Platz dafür ist in <code>nearest_hit</code>, dort, wo der Boden sein Material bekommt. <code>floor(x)</code> aus <code>math.h</code> rundet ab, auf die ganze Zahl darunter: Für jeden Punkt sagt es, in welcher Spalte von Feldern er liegt. Probier es aus, bevor du nachsiehst.
+</div>
+
+<!-- solution -->
+```c
+~         h->normal = (vec){0, 1, 0};
+~         h->mat = floor_mat;
+        // Schachbrett: jedes zweite Feld dunkel
+        if ((int)(floor(h->point.x) + floor(h->point.z)) % 2 == 0)
+            h->mat.color = (vec){0.05, 0.06, 0.08};
+~     }
+```
+
+Das Schachbrett entsteht ohne ein einziges Bild: `floor` sagt, auf welchem Feld der Treffpunkt liegt, und ist die Summe beider Feldnummern gerade, ist das Feld dunkel. Darum steht dort `== 0` und nicht `== 1`: In C ist `-3 % 2` nicht 1, sondern −1, und mit `== 1` wären links und hinter der Mitte, wo die Feldnummern negativ sind, nur noch helle Felder.
+<!-- /solution -->
 
 <!-- tutorial-screenshot
 write-file: raytracer.c <- file:stufen/05-boden.c
@@ -693,8 +715,11 @@ Ob ein Punkt im Schatten liegt, findet ein Raytracer genauso heraus wie alles an
 
 <img class='drawing' style='width: 31em' src='schattenstrahl.webp' alt='Eine Kugel liegt auf dem Boden, rechts oben steht weit weg die Sonne. Von zwei Treffpunkten auf dem Boden geht je ein gestrichelter Strahl zur Sonne, in Richtung sun_dir. Der linke, im Schatten, stößt an die Kugel und endet an einem roten Kreuz; dünn und grau gestrichelt geht es weiter, wie er zur Sonne ginge. Der rechte, in der Sonne, kommt frei durch.'>
 
-Ergänze `sunlight`:
+<div class='hint own'>
+<strong>Erst selbst:</strong> Ergänze <code>sunlight</code> so, dass ein Punkt im Schatten kein Sonnenlicht bekommt. Dafür brauchst du nichts Neues: <code>nearest_hit</code> sagt dir, ob ein Strahl, der beim Treffpunkt <code>h.point</code> beginnt und in Richtung <code>sun_dir</code> läuft, unterwegs etwas trifft.
+</div>
 
+<!-- solution -->
 ```c
 ~     if (d <= 0)
 ~         return (vec){0, 0, 0};
@@ -704,6 +729,7 @@ Ergänze `sunlight`:
         return (vec){0, 0, 0};
 ~     return scale(sun_color, d);
 ```
+<!-- /solution -->
 
 _task(akne)
 
@@ -807,9 +833,7 @@ void set_camera(double angle, double height)
 {
     eye = (vec){5 * sin(angle), height, 5 * cos(angle)};
     vec target = {0, 0.8, 0};
-    forward = normalize(sub(target, eye));
-    right = normalize(cross(forward, (vec){0, 1, 0}));
-    up = cross(right, forward);
+    // hier: forward, right und up
 }
 
 // die Richtung vom Auge durch den Pixel (x, y)
@@ -817,9 +841,29 @@ vec ray_dir(double x, double y)
 {
     double sx = (x - W / 2.0) / H;
     double sy = (H / 2.0 - y) / H;
-    return normalize(add(forward, add(scale(right, sx), scale(up, sy))));
+    // hier: die Richtung durch den Pixel
 }
 ```
+
+<div class='hint own'>
+<strong>Erst selbst:</strong> Schreib die vier fehlenden Zeilen nach den Formeln oben: drei in <code>set_camera</code> für <code>forward</code>, <code>right</code> und <code>up</code>, eine in <code>ray_dir</code>, die die Richtung durch den Pixel zurückgibt, mit der Länge 1. »Oben in der Welt« ist <code>(vec){0, 1, 0}</code>. Laufen lassen kannst du es, sobald gleich <code>main</code> die Kamera einstellt.
+</div>
+
+<!-- solution -->
+```c
+~     vec target = {0, 0.8, 0};
+    forward = normalize(sub(target, eye));
+    right = normalize(cross(forward, (vec){0, 1, 0}));
+    up = cross(right, forward);
+~ }
+```
+
+```c
+~     double sy = (H / 2.0 - y) / H;
+    return normalize(add(forward, add(scale(right, sx), scale(up, sy))));
+~ }
+```
+<!-- /solution -->
 
 `5 * sin(angle)` und `5 * cos(angle)` legen das Auge auf einen Kreis mit Radius 5 um die Mitte der Szene; `angle` sagt, wo auf dem Kreis.
 
@@ -1016,8 +1060,13 @@ Die große Kugel hinten wird ein Spiegel, und der Boden glänzt ein wenig. Erset
 material floor_mat = {.color = {0.75, 0.75, 0.75}, .mirror = 0.1};
 ```
 
-Dann `reflect` und das neue `trace`. Ersetze `trace` durch die beiden:
+Jetzt fehlen `reflect` und das neue `trace`, das sich selbst aufruft.
 
+<div class='hint own'>
+<strong>Erst selbst:</strong> Schreib über <code>trace</code> die Funktion <code>vec reflect(vec dir, vec n)</code> nach der Formel oben. Dann bekommt <code>trace</code> einen dritten Parameter, <code>int depth</code>, und zwei neue Teile: Ist <code>depth</code> größer als <code>MAX_DEPTH</code>, gibt es Schwarz zurück. Und spiegelt das getroffene Material (<code>h.mat.mirror &gt; 0</code>), verfolgt <code>trace</code> vom Treffpunkt aus einen neuen Strahl in Richtung <code>reflect(dir, h.normal)</code>, eine Stufe tiefer, und mischt dessen Farbe mit <code>mix</code> im Anteil <code>mirror</code> unter die eigene.
+</div>
+
+<!-- solution -->
 ```c
 // der Strahl dir prallt an der Oberfläche mit der Normalen n ab
 vec reflect(vec dir, vec n)
@@ -1047,6 +1096,7 @@ vec trace(vec origin, vec dir, int depth)
     return color;
 }
 ```
+<!-- /solution -->
 
 In `draw` beginnt jeder Strahl vom Auge mit `depth` 0; die Zeile mit `trace` wird zu:
 
@@ -1072,6 +1122,8 @@ crop-element: #canvas
 <img class='full fit-width' src='spiegel-bild.webp' alt='Die große Kugel hinten ist ein Spiegel: In ihr sieht man verzerrt den Planeten, die kleinen Kugeln, das Schachbrett und den Himmel. Auch das Schachbrett spiegelt die Kugeln schwach.'>
 
 Die Spiegelkugel zeigt die ganze Szene, gebogen wie in einer Christbaumkugel, und im Boden spiegeln sich die Kugeln ganz leicht.
+
+_task(tiefe)
 
 ## Glas
 

@@ -1,8 +1,10 @@
 # Aufgaben zu »Raytracing in C«.
 # Format: docs/aufgaben.md. Gearbeitet wird in /workspace/raytracer.
-# Alle Aufgaben prüfen Antworten: Rechnungen mit den Formeln der Seite, eine
-# Vorhersage und eine Rückmeldung zum eigenen Bild. Die Zahlen sind von Hand
-# gerechnet; das Programm in stufen/ ist dasselbe wie auf der Seite.
+# Alle Aufgaben prüfen Antworten: Rechnungen mit den Formeln der Seite,
+# Vorhersagen und eine Rückmeldung zum eigenen Bild. Den Code an den Stellen
+# »Erst selbst« schreiben die Lernenden selbst; geprüft wird er nicht. Die
+# Zahlen sind von Hand gerechnet; das Programm in stufen/ ist dasselbe wie
+# auf der Seite.
 format: 1
 activity: raytracing
 tasks:
@@ -103,6 +105,30 @@ tasks:
     hint: '`t = −origin.y / dir.y`. Die anderen Komponenten spielen keine Rolle.'
     solution: '`t = −1.2 / (−0.3) = 4`. Nach 4 Einheiten ist der Strahl 4 · 0.3 = 1.2 tiefer, genau auf dem Boden.'
 
+  - id: schatten-da
+    title: Werfen die Kugeln Schatten?
+    prediction: true
+    prompt: |
+      `sunlight` rechnet nur aus der Normalen und `sun_dir` aus, wie hell
+      ein Punkt ist. Werfen die Kugeln einen Schatten auf den Boden, wenn du
+      das Programm gleich startest?
+    check:
+      type: choice
+      options:
+        - Ja, jede Kugel wirft einen Schatten auf die Seite, die von der Sonne weg liegt.
+        - Nein, der Boden ist überall gleich hell, auch hinter den Kugeln.
+        - Nur direkt unter jeder Kugel wird der Boden dunkel.
+        - Man sieht keine Kugeln, weil der Boden sie verdeckt.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Woher sollte `sunlight` wissen, dass eine Kugel zwischen dem Punkt und der Sonne steht? Es bekommt nur den Treffer `h`.
+      - when: { picked: 2 }
+        say: Dunkel wird ein Punkt nur, wenn `d` klein ist. Wie sieht die Normale des Bodens aus, und ändert sie sich unter einer Kugel?
+      - when: { picked: 3 }
+        say: '`nearest_hit` behält den nächsten Treffer, und vor dem Boden liegt die Kugel.'
+    solution: 'Die Normale des Bodens ist überall `(0, 1, 0)`, also ist `d = dot(normal, sun_dir)` an jeder Stelle des Bodens gleich, egal, was zwischen ihr und der Sonne steht. Darum scheinen die Kugeln zu schweben. Ob etwas im Weg ist, erfährt das Programm erst mit einem zweiten Strahl: im nächsten Kapitel.'
+
   - id: akne
     title: Ein Strahl, der auf der Oberfläche beginnt
     prediction: true
@@ -159,6 +185,30 @@ tasks:
         say: '`dot(dir, n)` ist −0.8; `dir − 2 · (−0.8) · n` ergibt für y −0.8 + 1.6.'
     hint: '`reflect(dir, n) = dir − 2 · dot(dir, n) · n`. Rechne zuerst `dot(dir, n)`.'
     solution: '`dot(dir, n) = −0.8`, also `dir − 2 · (−0.8) · (0, 1, 0) = (0.6, −0.8 + 1.6, 0) = (0.6, 0.8, 0)`: nach rechts oben, im selben Winkel, wie der Strahl kam.'
+
+  - id: tiefe
+    title: Ein Spiegel ohne Tiefe
+    prediction: true
+    prompt: |
+      Stell dir vor, `MAX_DEPTH` ist 0 statt 6. Was zeigt die Spiegelkugel
+      dann? Vermute erst, probier es danach aus, und stell `MAX_DEPTH`
+      wieder auf 6.
+    check:
+      type: choice
+      options:
+        - Sie sieht aus wie vorher; für einen Spiegel reicht ein Strahl.
+        - Sie wird fast schwarz.
+        - Sie wird grau wie vor diesem Kapitel, ohne Spiegelbild.
+        - Das Programm bleibt hängen.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: 'Der Strahl vom Auge hat `depth` 0. Mit welchem `depth` ruft `trace` sich für den gespiegelten Strahl auf, und was passiert dann in der ersten Zeile?'
+      - when: { picked: 2 }
+        say: 'Die Kugel spiegelt weiterhin zu 90 Prozent. Die Frage ist, was der gespiegelte Strahl mitbringt.'
+      - when: { picked: 3 }
+        say: 'Im Gegenteil: Mit 0 hört `trace` früher auf als vorher.'
+    solution: 'Der gespiegelte Strahl ruft `trace` mit `depth` 1 auf, und weil 1 größer als 0 ist, kommt sofort Schwarz zurück. Davon mischt die Kugel 90 Prozent unter ihre Farbe, also bleibt ein Zehntel übrig: fast schwarz. Der Boden mit `mirror = 0.1` wird ein wenig dunkler. `MAX_DEPTH` sagt also, wie viele Spiegel ein Strahl nacheinander treffen darf, bevor er aufgibt.'
 
   - id: grenzwinkel
     title: Wann wird alles gespiegelt?
