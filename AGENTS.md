@@ -140,16 +140,19 @@ address from `credentials.rb` and the code `123456`.
   explained what a small function does (often with its formula), a box
   `<div class='hint own'>` (»Jetzt bist du dran:«) says what to write and where,
   and the page's code follows between `<!-- solution -->` and
-  `<!-- /solution -->` on lines of their own, folded under »Lösung
-  anzeigen« (`SolutionBlocks`). Small, self-contained steps only; the page
+  `<!-- /solution -->` on lines of their own (`SolutionBlocks`). Tips in
+  steps come before it, and the solution is their last step: it opens only
+  after every tip and the pause after the last, never at once
+  (`solution_hints_test.rb`). Small, self-contained steps only; the page
   continues with that code. Where possible a task under the solution checks
-  the student's own version (check types ruby, python, c)
+  the student's own version (check types ruby, python, c), named by
+  `data-check='id'` on the box; solving it opens the solution at once
   (docs/aktivitaet-schreiben.md, »Jetzt bist du dran«).
 - Tips in steps where students can get stuck: `hint` as a list in
   tasks.yaml, or `<!-- hint -->` … `<!-- /hint -->` blocks before the
   solution of a »Jetzt bist du dran« box (`HintSteps`). From understanding
   to strategy to a scaffold, never the complete solution; one step at a time with a pause
-  of a minute; nothing is stored on the server and no teacher sees who used
+  of a minute, the waiting time shown only to someone who tries too early; nothing is stored on the server and no teacher sees who used
   which tip (docs/didaktik.md, »Tipps in Stufen«).
 - A Handbuch page holds the basics and the most important things, not
   everything, and links to the official reference or manual for the rest

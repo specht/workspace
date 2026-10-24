@@ -21,16 +21,18 @@ ausgearbeitete Beispiele, die die Seite erklärt.
 
 Wo die Seite gerade erklärt hat, was eine kleine Funktion tun soll, oft mit
 ihrer Formel, schreiben die Lernenden sie zuerst selbst: ein Kasten
-`hint own` (»Jetzt bist du dran:«) sagt, was und wo, der Code der Seite folgt
-zugeklappt unter »Lösung anzeigen«, und die Seite geht mit diesem Code weiter.
+`hint own` (»Jetzt bist du dran:«) sagt, was und wo, und die Seite geht
+danach mit ihrem eigenen Code weiter. Diesen Code (»Lösung anzeigen«) gibt es
+erst als letzte Stufe nach den Tipps (»Tipps in Stufen« unten).
 Der Kasten hieß zuerst »Erst selbst«; »Jetzt bist du dran« spricht die
 Lernenden an und klingt nach einer Einladung, nicht nach einer Bedingung.
 
 - Nur kleine, abgeschlossene Schritte, deren Idee schon erklärt ist; nichts,
   was erst eingeführt wird, und nichts, nach dem der Rest der Seite nicht mehr
   passt, wenn es anders aussieht.
-- Wer hängen bleibt, klappt auf und macht weiter. Niemand bleibt stecken,
-  nur weil ein Schritt nicht gelingt.
+- Wer hängen bleibt, nimmt die Tipps, einen nach dem anderen, und nach dem
+  letzten den Code der Seite. So bleibt niemand für immer stecken, aber
+  niemand kommt um das eigene Nachdenken herum.
 - Wo es geht, steht unter der Lösung eine Aufgabe, die den eigenen Code prüft
   (`ruby`, `python`, `c`), auch bevor das Programm ihn aufruft.
 - Eine Lücke im Gerüst (`// hier: forward, right und up`, in Python `...`) ist
@@ -78,14 +80,20 @@ haben. Entschieden ist:
 - **Die Stufen.** Erst verstehen, was verlangt ist (ein kleines Beispiel von
   Hand), dann der Weg in Worten oder Pseudocode, dann ein Gerüst mit Lücken.
   Zwei bis fünf Stufen.
-- **Nie die ganze Lösung.** Auch die letzte Stufe ist ein Gerüst oder die
-  eine fehlende Idee, nicht der fertige Code. Die Lösung einer Aufgabe
-  (`solution`) erscheint weiterhin erst nach dem Lösen. Der Code eines
-  Kastens »Jetzt bist du dran« ist davon ausgenommen: Die Seite baut auf ihm auf.
-- **Eine Pause zwischen den Stufen.** Die nächste Stufe erscheint erst eine
-  Minute, nachdem die vorige aufgeklappt wurde (`HintSteps::DELAY_SECONDS`),
-  damit man über jeden Tipp nachdenkt, statt bis zum letzten durchzuklicken.
-  Die Wartezeit steht da, als Uhr.
+- **Nie die ganze Lösung vorweg.** Auch der letzte Tipp ist ein Gerüst oder
+  die eine fehlende Idee, nicht der fertige Code. Die Lösung einer Aufgabe
+  (`solution`) erscheint erst nach dem Lösen. Den Code eines Kastens »Jetzt
+  bist du dran« braucht die Seite, um weiterzugehen; er ist deshalb die
+  letzte Stufe nach den Tipps und wartet wie sie. Prüft eine Aufgabe unter
+  dem Kasten den eigenen Code (`data-check`), bringt das Lösen ihn sofort:
+  Wer es selbst geschafft hat, darf vergleichen. Zuerst ließ sich dieser
+  Code jederzeit aufklappen; das hat das eigene Schreiben übersprungen.
+- **Eine Pause zwischen den Stufen.** Wer einen Tipp aufklappt, sieht den
+  Titel des nächsten, aber der lässt sich erst eine Minute später öffnen
+  (`HintSteps::DELAY_SECONDS`), damit man über jeden Tipp nachdenkt, statt bis
+  zum letzten durchzuklicken. Die Wartezeit erscheint erst, wenn jemand zu
+  früh aufklappen will, nicht schon vorher als Uhr, die zum Warten statt
+  zum Probieren einlädt.
 - **Niemand sieht, wer welchen Tipp gebraucht hat.** Was aufgeklappt wurde,
   merkt sich nur der Browser (lokaler Speicher), damit ein Neuladen die Pause
   nicht neu beginnt; zum Server geht nichts, und Lehrkräfte sehen es nicht,

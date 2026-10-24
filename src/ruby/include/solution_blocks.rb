@@ -16,7 +16,10 @@ require 'cgi'
 #   <!-- /solution -->
 #
 # Everything between the markers is folded away under »Lösung anzeigen«
-# (<details class='solution'>) until a student opens it. It stays in the
+# (<details class='solution'>). Tips in steps come before it (HintSteps),
+# and hint_steps.js makes it their last step: it opens only after every
+# tip and the pause after the last one, or once the task named by
+# data-check on the box is solved. It stays in the
 # Markdown as it was, so the recipes, the teacher's step code (StageCode)
 # and the check that the page shows the tested code (PageCode) see it as
 # before, and the page goes on with this code like with any other.

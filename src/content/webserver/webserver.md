@@ -906,7 +906,7 @@ In der Schleife heißt, was nach der Methode kommt, jetzt `target`: Es enthält 
 
 `$visits_lock` ist ein **Mutex**, ein Lock, den immer nur ein Thread auf einmal hält. `$visits += 1` sieht aus wie ein Schritt, sind aber drei: lesen, eins dazuzählen, zurückschreiben. Kommen zwei Threads gleichzeitig, könnten beide denselben alten Wert lesen, und ein Besuch ginge verloren.
 
-<div class='hint own'>
+<div class='hint own' data-check='hallo'>
 <strong>Jetzt bist du dran:</strong> Füg einen Fall für <code>/hello</code> hinzu. <code>/hello?name=Ada</code> antwortet mit dem Text <code>Hallo, Ada!</code> und einem Zeilenende, <code>/hello</code> ohne Namen mit <code>Hallo, Unbekannt!</code>. Den Namen findest du im Hash <code>params</code>.
 </div>
 
@@ -988,7 +988,7 @@ In `handle` heißt, was nach der Methode kommt, jetzt `target`: Es enthält auß
 
 `visits_lock` ist ein **Lock**, den immer nur ein Thread auf einmal hält: `with visits_lock:` wartet, bis er frei ist. `visits += 1` sieht aus wie ein Schritt, sind aber drei: lesen, eins dazuzählen, zurückschreiben. Kommen zwei Threads gleichzeitig, könnten beide denselben alten Wert lesen, und ein Besuch ginge verloren.
 
-<div class='hint own'>
+<div class='hint own' data-check='hallo'>
 <strong>Jetzt bist du dran:</strong> Füg einen Fall für <code>/hello</code> hinzu. <code>/hello?name=Ada</code> antwortet mit dem Text <code>Hallo, Ada!</code> und einem Zeilenende, <code>/hello</code> ohne Namen mit <code>Hallo, Unbekannt!</code>. Den Namen findest du im <code>dict</code> <code>params</code>.
 </div>
 

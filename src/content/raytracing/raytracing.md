@@ -571,7 +571,7 @@ material floor_mat = {.color = {0.75, 0.75, 0.75}};
 
 Der Boden ist die Ebene `y = 0`. Ein Strahl erreicht sie, wenn `origin.y + t · dir.y = 0` ist, also bei `t = −origin.y / dir.y`. Ist `t` negativ, liegt der Boden hinter dem Strahl.
 
-<div class='hint own'>
+<div class='hint own' data-check='hit-floor'>
 <strong>Jetzt bist du dran:</strong> Schreib unter <code>hit_sphere</code> die Funktion <code>double hit_floor(vec origin, vec dir)</code>. Sie gibt dieses <code>t</code> zurück, und <code>INFINITY</code>, wenn der Boden hinter dem Strahl liegt, so wie <code>hit_sphere</code> bei einer Kugel hinter dem Auge. Laufen lassen kannst du sie erst gleich mit <code>nearest_hit</code>, prüfen kann der Workspace sie schon jetzt: mit der Aufgabe unter der Lösung.
 </div>
 
@@ -692,7 +692,7 @@ _task(schatten-da)
 
 Übersetze das Programm mit `make PROGRAM=raytracer` und sieh es dir an: Die Kugeln stehen auf einem grauen Boden, der bis zum Horizont reicht.
 
-<div class='hint own'>
+<div class='hint own' data-check='schachbrett'>
 <strong>Jetzt bist du dran:</strong> Mach aus dem Boden ein Schachbrett aus Feldern der Größe 1, jedes zweite dunkel, <code>(vec){0.05, 0.06, 0.08}</code>. Der Platz dafür ist in <code>nearest_hit</code>, dort, wo der Boden sein Material bekommt. <code>floor(x)</code> aus <code>math.h</code> rundet ab, auf die ganze Zahl darunter: Für jeden Punkt sagt es, in welcher Spalte von Feldern er liegt. Probier es aus, bevor du nachsiehst.
 </div>
 
@@ -894,7 +894,7 @@ vec ray_dir(double x, double y)
 }
 ```
 
-<div class='hint own'>
+<div class='hint own' data-check='kamera'>
 <strong>Jetzt bist du dran:</strong> Schreib die vier fehlenden Zeilen nach den Formeln oben: drei in <code>set_camera</code> für <code>forward</code>, <code>right</code> und <code>up</code>, eine in <code>ray_dir</code>, die die Richtung durch den Pixel zurückgibt, mit der Länge 1. »Oben in der Welt« ist <code>(vec){0, 1, 0}</code>. Laufen lassen kannst du es, sobald gleich <code>main</code> die Kamera einstellt.
 </div>
 
@@ -1130,7 +1130,7 @@ material floor_mat = {.color = {0.75, 0.75, 0.75}, .mirror = 0.1};
 
 Jetzt fehlen `reflect` und das neue `trace`, das sich selbst aufruft.
 
-<div class='hint own'>
+<div class='hint own' data-check='reflect'>
 <strong>Jetzt bist du dran:</strong> Schreib über <code>trace</code> die Funktion <code>vec reflect(vec dir, vec n)</code> nach der Formel oben. Dann bekommt <code>trace</code> einen dritten Parameter, <code>int depth</code>, und zwei neue Teile: Ist <code>depth</code> größer als <code>MAX_DEPTH</code>, gibt es Schwarz zurück. Und spiegelt das getroffene Material (<code>h.mat.mirror &gt; 0</code>), verfolgt <code>trace</code> vom Treffpunkt aus einen neuen Strahl in Richtung <code>reflect(dir, h.normal)</code>, eine Stufe tiefer, und mischt dessen Farbe mit <code>mix</code> im Anteil <code>mirror</code> unter die eigene.
 </div>
 

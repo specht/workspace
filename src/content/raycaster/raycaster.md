@@ -353,7 +353,7 @@ void update_camera(void)
 }
 ```
 
-<div class='hint own'>
+<div class='hint own' data-check='kamera'>
 <strong>Jetzt bist du dran:</strong> Schreib den Rumpf von <code>update_camera</code>. <code>dir</code> ist die Blickrichtung mit der Länge 1, aus <code>player_angle</code> wie in <code>move_player</code>. <code>plane</code> steht senkrecht auf <code>dir</code>, um 90 Grad nach rechts gedreht wie beim Seitwärtslaufen, und ist <code>PLANE</code> lang. Laufen lassen kannst du es, sobald gleich die Strahlen gezeichnet werden; die Aufgabe unter der Lösung prüft es schon jetzt.
 </div>
 
@@ -788,7 +788,7 @@ Die Wände sind gerade, und das Bild sieht aus wie ein Blick durch einen Raum.
 
 Noch läuft die Figur durch Wände. Bevor sie sich bewegt, muss das Programm fragen: Passt sie an den neuen Ort? Die Figur ist kein Punkt, sie hat einen Halbmesser `PLAYER_RADIUS`. Es genügt, die vier Ecken des Quadrats um sie herum zu prüfen; steht keine davon in einer Wand, ist der Platz frei.
 
-<div class='hint own'>
+<div class='hint own' data-check='kollision'>
 <strong>Jetzt bist du dran:</strong> Schreib über <code>move_player</code> die Funktion <code>int is_free(double x, double y)</code>. Sie gibt 1 zurück, wenn keine der vier Ecken des Quadrats um <code>(x, y)</code> in einer Wand steht, sonst 0. Das Quadrat reicht in jede Richtung <code>PLAYER_RADIUS</code> weit, und <code>is_wall</code> gibt es schon.
 </div>
 

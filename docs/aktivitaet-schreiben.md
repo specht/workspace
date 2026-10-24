@@ -389,10 +389,10 @@ nachzudenken. Wo die Seite gerade erklärt hat, was eine kleine Funktion
 tun soll, oft mit der Formel dafür, schreiben die Lernenden sie erst
 selbst. Ein Kasten sagt, was zu schreiben ist und wo es hingehört; der Code
 der Seite folgt zwischen zwei Markierungen, jede auf einer eigenen Zeile,
-und ist bis zum Aufklappen unter »Lösung anzeigen« verborgen:
+unter »Lösung anzeigen«:
 
 ````markdown
-<div class='hint own'>
+<div class='hint own' data-check='hit-floor'>
 <strong>Jetzt bist du dran:</strong> Schreib unter <code>hit_sphere</code> die
 Funktion <code>double hit_floor(vec origin, vec dir)</code>. Sie gibt dieses
 <code>t</code> zurück, und <code>INFINITY</code>, wenn der Boden hinter dem
@@ -409,9 +409,15 @@ double hit_floor(vec origin, vec dir)
 
 Zwischen den Markierungen darf alles stehen: mehrere Codeblöcke, Teile für
 eine Sprache, ein Absatz, der die Lösung erklärt. Die Seite geht danach mit
-diesem Code weiter, so wie nach einem Kasten `hint try`; wer nicht
-weiterkommt, klappt auf und macht weiter. Rezepte, Stufen und
+diesem Code weiter, so wie nach einem Kasten `hint try`. Rezepte, Stufen und
 `page_code_test.rb` sehen den Code wie jeden anderen.
+
+Vor jeder Lösung stehen Tipps in Stufen (unten), und die Lösung ist ihre
+letzte Stufe: Sie lässt sich erst öffnen, wenn alle Tipps aufgeklappt sind
+und die Pause nach dem letzten vorbei ist. `solution_hints_test.rb` prüft,
+dass keine Lösung ohne Tipps dasteht. Prüft eine Aufgabe unter dem Kasten den
+eigenen Code, nennt `data-check` am Kasten ihre `id`; wer sie löst, kann die
+Lösung sofort öffnen und mit der eigenen vergleichen.
 
 Geeignet sind Stellen, die klein und abgeschlossen sind und deren Idee die
 Seite schon erklärt hat: eine Formel in eine Funktion übersetzen, eine
@@ -459,9 +465,12 @@ double hit_floor(vec origin, vec dir)
 …
 ````
 
-Die Stufen erscheinen nacheinander, mit einer Minute Pause dazwischen, damit
-man über jeden Tipp nachdenkt. Niemand außer der Person selbst sieht, welche
-sie aufgeklappt hat. Warum es so entschieden ist, steht in
+Die Stufen kommen nacheinander: Wer eine aufklappt, sieht den Titel der
+nächsten, die sich aber erst eine Minute später öffnen lässt, damit man über
+jeden Tipp nachdenkt. Wie lange es noch dauert, steht erst da, wenn jemand zu
+früh aufklappen will. Nach dem letzten Tipp eines Kastens kommt so die
+Lösung. Niemand außer der Person selbst sieht, welche Stufen sie aufgeklappt
+hat. Warum es so entschieden ist, steht in
 [didaktik.md](didaktik.md).
 
 ### Extras für Schnelle

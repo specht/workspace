@@ -315,8 +315,10 @@ kennt `output_matches`, `scene` kennt `found`, `missing`,
 ### Tipps in Stufen
 
 Statt eines Tipps kann `hint` eine Liste sein. Die Karte zeigt dann »Tipp 1
-von 3«; die nächste Stufe erscheint erst eine Minute, nachdem die vorige
-aufgeklappt wurde (`HintSteps::DELAY_SECONDS`), mit einer Uhr bis dahin.
+von 3«. Ist eine Stufe aufgeklappt, steht der Titel der nächsten da; öffnen
+lässt sie sich erst eine Minute, nachdem die vorige aufgeklappt wurde
+(`HintSteps::DELAY_SECONDS`). Wer es früher versucht, sieht, wie lange es
+noch dauert.
 
 ````yaml
 hint:

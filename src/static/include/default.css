@@ -1238,8 +1238,9 @@ details.solution[open] > summary {
     margin-left: 1.2em;
 }
 
-/* a step that has just arrived */
-.hint-steps > details.hint-step-new > summary {
+/* a step that can be opened now */
+.hint-steps > details.hint-step-new > summary,
+details.solution.hint-step-new > summary {
     font-weight: 600;
 }
 
