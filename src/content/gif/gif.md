@@ -1146,6 +1146,8 @@ An den Daten selbst ändert sich nichts: Die Pixel kommen wie immer heraus, nur 
 
 Schreib eine Funktion `int image_row(int i, int height, int interlaced)`, die für die i-te Zeile der Daten die Zeile im Bild ausrechnet, und benutze sie in `read_image` beim Setzen der Pixel.
 
+_task(image-row)
+
 _task(interlacing)
 
 ## Animationen
@@ -1545,6 +1547,7 @@ terminal-run: make PROGRAM=gif ARGS=diskette.gif
 terminal-wait-for-prompt: 180
 terminal-run: make PROGRAM=animation ARGS=flug.gif
 terminal-wait-for-prompt: 180
+check-task: image-row
 -->
 
 <!-- tutorial-step

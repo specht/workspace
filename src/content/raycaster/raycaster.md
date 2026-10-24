@@ -317,6 +317,7 @@ hook: open raycaster.html
 click: selector:#canvas
 hook: hold KeyW 1.5 ArrowRight 0.25 KeyW 0.58
 crop-element: #canvas
+check-task-fails: kamera
 -->
 <img class='full fit-width' src='bewegen.webp' alt='Dieselbe Karte, die Spielfigur ist ein Stück nach rechts gelaufen und schaut schräg nach rechts unten.'>
 
@@ -353,7 +354,7 @@ void update_camera(void)
 ```
 
 <div class='hint own'>
-<strong>Erst selbst:</strong> Schreib den Rumpf von <code>update_camera</code>. <code>dir</code> ist die Blickrichtung mit der Länge 1, aus <code>player_angle</code> wie in <code>move_player</code>. <code>plane</code> steht senkrecht auf <code>dir</code>, um 90 Grad nach rechts gedreht wie beim Seitwärtslaufen, und ist <code>PLANE</code> lang. Laufen lassen kannst du es, sobald gleich die Strahlen gezeichnet werden.
+<strong>Erst selbst:</strong> Schreib den Rumpf von <code>update_camera</code>. <code>dir</code> ist die Blickrichtung mit der Länge 1, aus <code>player_angle</code> wie in <code>move_player</code>. <code>plane</code> steht senkrecht auf <code>dir</code>, um 90 Grad nach rechts gedreht wie beim Seitwärtslaufen, und ist <code>PLANE</code> lang. Laufen lassen kannst du es, sobald gleich die Strahlen gezeichnet werden; die Aufgabe unter der Lösung prüft es schon jetzt.
 </div>
 
 <!-- solution -->
@@ -368,6 +369,8 @@ void update_camera(void)
 ~ }
 ```
 <!-- /solution -->
+
+_task(kamera)
 
 ### Schritt für Schritt
 
@@ -449,6 +452,7 @@ hook: open raycaster.html
 click: selector:#canvas
 hook: hold KeyW 1.88 ArrowLeft 0.12
 crop-element: #canvas
+check-task: kamera
 -->
 <img class='full fit-width' src='strahlen.webp' alt='Die Karte; von der Spielfigur geht ein Fächer gelber Strahlen aus, jeder endet an der ersten Wand; quer davor ist eine kurze rote Strecke, die Kamera-Ebene.'>
 
@@ -739,6 +743,7 @@ hook: open raycaster.html
 click: selector:#canvas
 hook: hold Tab KeyW 0.5
 crop-element: #canvas
+check-task-fails: kollision
 -->
 <img class='full fit-width' src='waende-gerade.webp' alt='Derselbe Blick auf dieselbe Wand mit der Tür: Die Ober- und Unterkanten der Ziegel und der Metallblöcke verlaufen jetzt als gerade waagrechte Linien.'>
 
@@ -770,6 +775,8 @@ int is_free(double x, double y)
 }
 ```
 <!-- /solution -->
+
+_task(kollision)
 
 _task(gleiten)
 
@@ -807,6 +814,7 @@ hook: open raycaster.html
 click: selector:#canvas
 hook: hold KeyW 2 ArrowLeft 0.25 KeyW 2.25 ArrowRight 0.2
 crop-element: #canvas
+check-task: kollision
 -->
 <img class='full fit-width' src='kollision.webp' alt='Die Spielfigur steht dicht an einer Wand; links eine helle Wand schräg im Bild, rechts eine rote. In der Karte oben links sieht man, dass sie an der Wand entlanggeglitten ist.'>
 

@@ -140,8 +140,9 @@ address from `credentials.rb` and the code `123456`.
   and the page's code follows between `<!-- solution -->` and
   `<!-- /solution -->` on lines of their own, folded under »Lösung
   anzeigen« (`SolutionBlocks`). Small, self-contained steps only; the page
-  continues with that code (docs/aktivitaet-schreiben.md, »Erst selbst
-  schreiben«).
+  continues with that code. Where possible a task under the solution checks
+  the student's own version (check types ruby, python, c)
+  (docs/aktivitaet-schreiben.md, »Erst selbst schreiben«).
 - A Handbuch page holds the basics and the most important things, not
   everything, and links to the official reference or manual for the rest
   (specification, official docs, cheatsheet), in its parts or a closing

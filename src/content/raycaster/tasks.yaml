@@ -6,6 +6,30 @@
 format: 1
 activity: raycaster
 tasks:
+  - id: kamera
+    title: Deine Kamera
+    prompt: |
+      Schreib den Rumpf von `update_camera` in `raycaster.c` und speichere.
+      Der Workspace dreht die Figur und sieht nach, wohin `dir` und `plane`
+      zeigen.
+    file: raycaster/raycaster.c
+    check:
+      type: c
+      file: raycaster/raycaster.c
+      tolerance: 0.001
+      cases:
+        - (player_angle = 0, update_camera(), dir_x): 1
+        - call: (player_angle = 0, update_camera(), plane_y)
+          expect: 0.89
+          say: '`plane` zeigt nach links, oder ist nicht `PLANE` lang. Nach rechts gedreht wird aus `(x, y)` der Vektor `(−y, x)`.'
+        - (player_angle = 0, update_camera(), plane_x): 0
+        - call: (player_angle = 1.5707963, update_camera(), plane_x)
+          expect: -0.89
+          say: Schaut die Figur nach unten (y wächst nach unten), zeigt rechts von ihr zu kleinerem x.
+        - call: (player_angle = 0.5, update_camera(), plane_x * dir_x + plane_y * dir_y)
+          expect: 0
+          say: '`plane` steht noch nicht senkrecht auf `dir`: Ihr Skalarprodukt müsste 0 sein.'
+
   - id: delta
     title: Von Linie zu Linie
     prompt: |
@@ -43,6 +67,31 @@ tasks:
       - when: { picked: 3 }
         say: Etwas, das doppelt so weit weg ist, erscheint halb so groß, nicht ein Viertel so groß.
     solution: 'Der direkte Abstand wächst zum Rand hin, auch wenn die Wand überall gleich weit vor der Figur steht. Unser Auge misst, wie weit etwas vor uns liegt: den Abstand entlang der Blickrichtung. Den liefert das Skalarprodukt mit `dir`.'
+
+  - id: kollision
+    title: Dein is_free
+    prompt: |
+      Schreib `is_free` in `raycaster.c` und speichere. Der Workspace stellt
+      die Figur an ein paar Stellen der Karte und fragt, ob sie dort passt.
+    file: raycaster/raycaster.c
+    check:
+      type: c
+      file: raycaster/raycaster.c
+      cases:
+        - is_free(3.5, 3.5) != 0: true
+        - call: is_free(1.2, 3.5) != 0
+          expect: false
+          say: Links ragt die Figur in die Wand am Rand.
+        - call: is_free(1.3, 3.5) != 0
+          expect: true
+          say: Die Figur reicht nur `PLAYER_RADIUS` weit; die Wand am Rand berührt sie hier noch nicht.
+        - call: is_free(10.8, 1.8) != 0
+          expect: false
+          say: Nur die Ecke rechts unten steht in der Säule. Prüfst du alle vier Ecken?
+        - call: is_free(12.2, 3.2) != 0
+          expect: false
+          say: Nur die Ecke links oben steht in der Säule. Prüfst du alle vier Ecken?
+        - is_free(11.5, 2.5) != 0: false
 
   - id: gleiten
     title: Schräg gegen die Wand

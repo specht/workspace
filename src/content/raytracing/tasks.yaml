@@ -88,6 +88,29 @@ tasks:
     hint: '`dot(a, b) = a.x · b.x + a.y · b.y + a.z · b.z`.'
     solution: '`0 · 0.6 + 1 · 0.8 + 0 · 0 = 0.8`. Die Sonne steht etwa 53° über dem Horizont, und die Stelle bekommt 80 % des Lichts, das sie bei senkrechter Sonne bekäme.'
 
+  - id: hit-floor
+    title: Dein hit_floor
+    prompt: |
+      Schreib `hit_floor` in `raytracer.c` und speichere. Der Workspace
+      übersetzt deine Datei und probiert die Funktion mit ein paar Strahlen
+      aus, auch wenn dein Programm sie noch gar nicht aufruft.
+    file: raytracer/raytracer.c
+    check:
+      type: c
+      file: raytracer/raytracer.c
+      tolerance: 0.0001
+      cases:
+        - hit_floor((vec){0, 1.2, 5.5}, (vec){0, -0.6, -0.8}): 2
+        - hit_floor((vec){0, 3, 0}, (vec){0.6, -0.8, 0}): 3.75
+        - call: hit_floor((vec){0, 1.2, 5.5}, (vec){0, 0.6, -0.8})
+          expect: INFINITY
+          say: Ein Strahl, der nach oben zeigt, trifft den Boden nie; sein `t` wäre negativ.
+        - call: hit_floor((vec){0, 1, 0}, (vec){1, 0, 0})
+          expect: INFINITY
+          say: Ein waagrechter Strahl trifft den Boden nie.
+    hint: '`t = −origin.y / dir.y`. Ist `t` nicht größer als 0, gibt die Funktion `INFINITY` zurück, wie `hit_sphere`.'
+    solution: 'Die Funktion auf der Seite unter »Lösung anzeigen«. Ein waagrechter Strahl hat `dir.y = 0`; dann ist `−origin.y / 0` minus unendlich, also nicht größer als 0, und es bleibt bei `INFINITY`.'
+
   - id: boden
     title: Wann kommt der Boden?
     prompt: |
@@ -129,6 +152,43 @@ tasks:
         say: '`nearest_hit` behält den nächsten Treffer, und vor dem Boden liegt die Kugel.'
     solution: 'Die Normale des Bodens ist überall `(0, 1, 0)`, also ist `d = dot(normal, sun_dir)` an jeder Stelle des Bodens gleich, egal, was zwischen ihr und der Sonne steht. Darum scheinen die Kugeln zu schweben. Ob etwas im Weg ist, erfährt das Programm erst mit einem zweiten Strahl: im nächsten Kapitel.'
 
+  - id: schachbrett
+    title: Ein Schachbrett
+    prompt: |
+      Mach den Boden in `raytracer.c` zum Schachbrett und speichere. Der
+      Workspace fragt mit `nearest_hit` nach der Farbe des Bodens an
+      Stellen nebeneinander, auch links der Mitte, wo die Koordinaten
+      negativ sind.
+    file: raytracer/raytracer.c
+    check:
+      type: c
+      file: raytracer/raytracer.c
+      setup: |
+        // die Farbe des Bodens an der Stelle (x, z), von oben gesehen
+        double floor_color(double x, double z)
+        {
+            hit h;
+            nearest_hit((vec){x, 1, z}, (vec){0, -1, 0}, &h);
+            return h.mat.color.x;
+        }
+      cases:
+        - call: floor_color(0.5, 4.5) != floor_color(1.5, 4.5)
+          expect: true
+          say: Zwei Felder nebeneinander, vorn rechts, haben dieselbe Farbe.
+        - call: floor_color(0.5, 4.5) != floor_color(0.5, 5.5)
+          expect: true
+          say: Zwei Felder hintereinander, vorn rechts, haben dieselbe Farbe.
+        - call: floor_color(-4.5, 4.5) != floor_color(-5.5, 4.5)
+          expect: true
+          say: Zwei Felder nebeneinander, weit links, haben dieselbe Farbe. Dort ist die Summe der Feldnummern negativ; was ergibt `%` in C für eine negative Zahl?
+        - call: floor_color(-4.25, 4.75) != floor_color(-3.75, 4.25)
+          expect: true
+          say: Zwei Felder nebeneinander, links, haben dieselbe Farbe. Rundest du jede Koordinate einzeln mit `floor` ab?
+        - call: floor_color(-0.5, 4.5) != floor_color(0.5, 4.5)
+          expect: true
+          say: Die Felder links und rechts von x = 0 haben dieselbe Farbe. `(int)` macht aus −0.5 eine 0; `floor` rundet ab, auf −1.
+    hint: '`floor(h->point.x)` und `floor(h->point.z)` sind die Nummern des Feldes. Ist ihre Summe gerade, ist das Feld dunkel.'
+
   - id: akne
     title: Ein Strahl, der auf der Oberfläche beginnt
     prediction: true
@@ -167,6 +227,51 @@ tasks:
         say: Die Richtung stimmt fast, aber umgedreht. Rechne das Kreuzprodukt Komponente für Komponente.
     hint: '`cross(a, b) = (a.y · b.z − a.z · b.y, a.z · b.x − a.x · b.z, a.x · b.y − a.y · b.x)` mit `a = (0, 0, −1)` und `b = (0, 1, 0)`.'
     solution: '`(0 · 0 − (−1) · 1, (−1) · 0 − 0 · 0, 0 · 1 − 0 · 0) = (1, 0, 0)`. Rechts ist +x, wie bei den ersten Schritten ohne Kamera.'
+
+  - id: kamera
+    title: Deine Kamera
+    prompt: |
+      Schreib die vier Zeilen der Kamera in `raytracer.c` und speichere. Der
+      Workspace stellt die Kamera mit `set_camera` ein und sieht nach, wohin
+      `forward`, `right`, `up` und `ray_dir` zeigen.
+    file: raytracer/raytracer.c
+    check:
+      type: c
+      file: raytracer/raytracer.c
+      tolerance: 0.001
+      cases:
+        - (set_camera(0, 1.8), forward.z): -0.9806
+        - call: (set_camera(0, 1.8), right.x)
+          expect: 1
+          say: '`right` zeigt nach links. Ist die Reihenfolge im Kreuzprodukt `cross(forward, (vec){0, 1, 0})`?'
+        - call: (set_camera(0, 1.8), up.y)
+          expect: 0.9806
+          say: '`up` zeigt nach unten. Ist die Reihenfolge im Kreuzprodukt `cross(right, forward)`?'
+        - (set_camera(1.5, 1.8), right.y): 0
+        - call: (set_camera(0, 1.8), ray_dir(W / 2.0, H / 2.0).z)
+          expect: -0.9806
+          say: Der Strahl durch die Mitte des Bildes geht genau in Richtung `forward`.
+        - call: (set_camera(0, 1.8), ray_dir(W, H / 2.0).x)
+          expect: 0.6644
+          say: Der Strahl zum rechten Rand ist `forward + sx · right`, mit der Länge 1 (`normalize`).
+
+  - id: reflect
+    title: Dein reflect
+    prompt: |
+      Schreib `reflect` in `raytracer.c` und speichere. Der Workspace
+      probiert die Funktion mit ein paar Strahlen und Normalen aus.
+    file: raytracer/raytracer.c
+    check:
+      type: c
+      file: raytracer/raytracer.c
+      tolerance: 0.0001
+      cases:
+        - reflect((vec){0.6, -0.8, 0}, (vec){0, 1, 0}).x: 0.6
+        - call: reflect((vec){0.6, -0.8, 0}, (vec){0, 1, 0}).y
+          expect: 0.8
+          say: Der Teil entlang der Normalen dreht sich um. Ziehst du ihn zweimal ab, `2 · dot(dir, n) · n`?
+        - reflect((vec){1, 0, 0}, (vec){-1, 0, 0}).x: -1
+        - reflect((vec){0, 0, -1}, (vec){0, 0.6, 0.8}).y: 0.96
 
   - id: spiegeln
     title: Abgeprallt

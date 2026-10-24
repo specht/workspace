@@ -520,6 +520,7 @@ viewport: 800x450
 hook: open raytracer.html
 hook: frames 64
 crop-element: #canvas
+check-task-fails: hit-floor
 -->
 <img class='full fit-width' src='licht-kugel.webp' alt='Die rote Kugel ist jetzt rund: oben rechts hell, wo die Sonne auf sie scheint, nach links unten immer dunkler.'>
 
@@ -571,7 +572,7 @@ material floor_mat = {.color = {0.75, 0.75, 0.75}};
 Der Boden ist die Ebene `y = 0`. Ein Strahl erreicht sie, wenn `origin.y + t · dir.y = 0` ist, also bei `t = −origin.y / dir.y`. Ist `t` negativ, liegt der Boden hinter dem Strahl.
 
 <div class='hint own'>
-<strong>Erst selbst:</strong> Schreib unter <code>hit_sphere</code> die Funktion <code>double hit_floor(vec origin, vec dir)</code>. Sie gibt dieses <code>t</code> zurück, und <code>INFINITY</code>, wenn der Boden hinter dem Strahl liegt, so wie <code>hit_sphere</code> bei einer Kugel hinter dem Auge. Laufen lassen kannst du sie erst gleich mit <code>nearest_hit</code>; vergleiche sie vorher mit der Lösung.
+<strong>Erst selbst:</strong> Schreib unter <code>hit_sphere</code> die Funktion <code>double hit_floor(vec origin, vec dir)</code>. Sie gibt dieses <code>t</code> zurück, und <code>INFINITY</code>, wenn der Boden hinter dem Strahl liegt, so wie <code>hit_sphere</code> bei einer Kugel hinter dem Auge. Laufen lassen kannst du sie erst gleich mit <code>nearest_hit</code>, prüfen kann der Workspace sie schon jetzt: mit der Aufgabe unter der Lösung.
 </div>
 
 <!-- solution -->
@@ -589,6 +590,8 @@ double hit_floor(vec origin, vec dir)
 }
 ```
 <!-- /solution -->
+
+_task(hit-floor)
 
 _task(boden)
 
@@ -690,6 +693,8 @@ _task(schatten-da)
 Das Schachbrett entsteht ohne ein einziges Bild: `floor` sagt, auf welchem Feld der Treffpunkt liegt, und ist die Summe beider Feldnummern gerade, ist das Feld dunkel. Darum steht dort `== 0` und nicht `== 1`: In C ist `-3 % 2` nicht 1, sondern −1, und mit `== 1` wären links und hinter der Mitte, wo die Feldnummern negativ sind, nur noch helle Felder.
 <!-- /solution -->
 
+_task(schachbrett)
+
 <!-- tutorial-screenshot
 write-file: raytracer.c <- file:stufen/05-boden.c
 terminal-open
@@ -702,6 +707,8 @@ viewport: 800x450
 hook: open raytracer.html
 hook: frames 64
 crop-element: #canvas
+check-task: hit-floor
+check-task: schachbrett
 -->
 <img class='full fit-width' src='boden.webp' alt='Sechs Kugeln in verschiedenen Farben und Größen stehen auf einem schwarz-weißen Schachbrett, das bis zum Horizont reicht; die Kugeln sind auf der rechten Seite hell, Schatten gibt es keine.'>
 
@@ -784,6 +791,7 @@ viewport: 800x450
 hook: open raytracer.html
 hook: frames 64
 crop-element: #canvas
+check-task-fails: kamera
 -->
 <img class='full fit-width' src='schatten.webp' alt='Dieselbe Szene ohne Sprenkel: Jede Kugel wirft einen scharfen Schatten nach links hinten auf das Schachbrett.'>
 
@@ -865,6 +873,8 @@ vec ray_dir(double x, double y)
 ```
 <!-- /solution -->
 
+_task(kamera)
+
 `5 * sin(angle)` und `5 * cos(angle)` legen das Auge auf einen Kreis mit Radius 5 um die Mitte der Szene; `angle` sagt, wo auf dem Kreis.
 
 ### Um die Szene kreisen
@@ -924,6 +934,7 @@ viewport: 800x450
 hook: open raytracer.html
 hook: frames 64
 crop-element: #canvas
+check-task: kamera
 -->
 <img src='kamera-start.webp' alt='Die Szene von etwas höher: die Kugeln auf dem Schachbrett mit ihren Schatten, die Kamera schaut leicht von oben.'>
 <figcaption>Die Kamera beim Start</figcaption>
@@ -1017,6 +1028,7 @@ viewport: 800x450
 hook: open raytracer.html
 hook: frames 64
 crop-element: #canvas
+check-task-fails: reflect
 -->
 <img class='full fit-width' src='planet.webp' alt='Links steht statt der orangen Kugel ein Planet wie Jupiter mit breiten und feinen braunen und cremefarbenen Streifen und unten einem roten ovalen Fleck in einem hellen Ring.'>
 
@@ -1104,6 +1116,8 @@ In `draw` beginnt jeder Strahl vom Auge mit `depth` 0; die Zeile mit `trace` wir
             vec c = trace(eye, ray_dir(x + random_double(), y + random_double()), 0);
 ```
 
+_task(reflect)
+
 _task(spiegeln)
 
 <!-- tutorial-screenshot
@@ -1118,6 +1132,7 @@ viewport: 800x450
 hook: open raytracer.html
 hook: frames 64
 crop-element: #canvas
+check-task: reflect
 -->
 <img class='full fit-width' src='spiegel-bild.webp' alt='Die große Kugel hinten ist ein Spiegel: In ihr sieht man verzerrt den Planeten, die kleinen Kugeln, das Schachbrett und den Himmel. Auch das Schachbrett spiegelt die Kugeln schwach.'>
 

@@ -417,9 +417,11 @@ Geeignet sind Stellen, die klein und abgeschlossen sind und deren Idee die
 Seite schon erklärt hat: eine Formel in eine Funktion übersetzen, eine
 Bedingung, ein Aufruf einer Funktion, die es schon gibt (ein Schattenstrahl
 mit `nearest_hit`), wenige Zeilen in einem Gerüst, das die Seite zeigt
-(`// hier: forward, right und up`). Nicht geeignet sind Stellen, an denen
-etwas Neues erst eingeführt wird, oder lange Blöcke, nach denen der Rest der
-Seite nicht mehr passt. Kann man den Code gleich ausprobieren, sag es; wenn
+(`// hier: forward, right und up`). Unter die Lösung gehört, wo es geht, eine
+Aufgabe, die den eigenen Code prüft (`ruby`, `python`, `c`): Dann wissen die
+Lernenden, ob ihre Fassung stimmt, auch bevor das Programm sie aufruft.
+Nicht geeignet sind Stellen, an denen etwas Neues erst eingeführt wird,
+oder lange Blöcke, nach denen der Rest der Seite nicht mehr passt. Kann man den Code gleich ausprobieren, sag es; wenn
 nicht, sag, wann (»Laufen lassen kannst du sie erst gleich mit
 `nearest_hit`«). Ein Kasten schließt mit einer Vorhersage
 (`prediction: true`) gut zusammen: erst vermuten, was der eigene Code tun
@@ -482,7 +484,7 @@ Welche Prüfart für welchen Zweck:
 | Abgeben | `submit` |
 | Schreibt der Befehl die richtige Ausgabe? | `command` |
 | Steht in der 3D-Szene, was verlangt ist? | `scene` |
-| Tut die Funktion im Workspace, was sie soll? | `ruby`, `python` |
+| Tut die Funktion im Workspace, was sie soll? | `ruby`, `python`, `c` |
 | Liefert die SQL-Abfrage das Richtige? | `sql` |
 
 Drei Faustregeln:

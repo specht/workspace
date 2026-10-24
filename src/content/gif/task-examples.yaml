@@ -1,0 +1,7 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: gif
+examples:
+  image-row:
+    skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Dass die Schritte der Seite die Aufgabe lösen, prüfen die Rezepte mit check-task; die Prüfart selbst testet c_check_test.rb.
