@@ -348,11 +348,10 @@ _task(handshake)
 ## An alle
 
 <!-- language: ruby -->
-Ein Echo ist noch langweilig. Spannend wird es, wenn eine Nachricht bei **allen** ankommt, die gerade verbunden sind. Dafür merkt sich der Server alle offenen Verbindungen in einer Liste `$clients`. Ersetze `server.rb` durch:
+Ein Echo ist noch langweilig. Spannend wird es, wenn eine Nachricht bei **allen** ankommt, die gerade verbunden sind. Dafür merkt sich der Server alle offenen Verbindungen in einer Liste `$clients`. Über `App` kommen die Liste und eine Funktion, die einen Text an alle schickt:
 
-```ruby_copy
-require 'faye/websocket'
-require 'rackup'
+```ruby
+~ require 'rackup'
 
 # Alle offenen Verbindungen. Faye ruft die on-Blöcke aller Verbindungen
 # nacheinander auf, nie zwei gleichzeitig: Die Liste braucht keinen Lock.
@@ -361,16 +360,25 @@ $clients = []
 def broadcast(text)
   $clients.each { |client| client.send(text) }
 end
+```
 
-App = lambda do |env|
-  if Faye::WebSocket.websocket?(env)
-    ws = Faye::WebSocket.new(env)
+In `App` kommt jede neue Verbindung in die Liste, sobald sie steht. Unter `ws = Faye::WebSocket.new(env)`:
+
+```ruby
+~     ws = Faye::WebSocket.new(env)
 
     ws.on(:open) do
       $clients << ws
       broadcast("Jemand ist dazugekommen. Jetzt sind wir #{$clients.size}.")
     end
+```
 
+<div class='hint own'>
+<strong>Erst selbst:</strong> Was in <code>ws.on(:message)</code> ankommt, soll an alle gehen, statt mit »Echo:« zurück. Und schließt jemand den Tab, läuft <code>ws.on(:close) do … end</code>: Schreib es unter <code>ws.on(:message)</code> so, dass die Verbindung aus <code>$clients</code> verschwindet und alle erfahren, wie viele es noch sind.
+</div>
+
+<!-- solution -->
+```ruby
     # Was kommt, geht an alle
     ws.on(:message) do |event|
       puts "Empfangen: #{event.data}"
@@ -381,33 +389,27 @@ App = lambda do |env|
       $clients.delete(ws)
       broadcast("Jemand ist gegangen. Jetzt sind wir #{$clients.size}.")
     end
-
-    ws.rack_response
-  else
-    [200, { 'content-type' => 'text/html; charset=utf-8' },
-     [File.read(File.join(__dir__, 'index.html'))]]
-  end
-end
-
-puts "Der Server wartet auf Port 8000 ..."
-Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Silent: true)
+~
+~     ws.rack_response
 ```
+<!-- /solution -->
 
 - `ws.on(:open)` läuft, sobald die Verbindung steht: Sie kommt in die Liste. `ws.on(:close)` läuft, wenn sie zu ist, weil jemand den Tab geschlossen hat: Sie fliegt wieder raus.
 - `broadcast` schickt eine Nachricht an jede Verbindung in der Liste, auch an die, von der sie kam.
 - Viele Verbindungen benutzen dieselbe Liste. Das geht gut, weil Faye die `on`-Blöcke aller Verbindungen nacheinander aufruft, nie zwei gleichzeitig. Was passiert, wenn das nicht so ist, siehst du am Ende in [Viele Threads](#7-viele-threads).
 <!-- /language -->
 <!-- language: python -->
-Ein Echo ist noch langweilig. Spannend wird es, wenn eine Nachricht bei **allen** ankommt, die gerade verbunden sind. Dafür merkt sich der Server alle offenen Verbindungen in einer Menge `clients`, einem `set`. Ersetze `server.py` durch:
+Ein Echo ist noch langweilig. Spannend wird es, wenn eine Nachricht bei **allen** ankommt, die gerade verbunden sind. Dafür merkt sich der Server alle offenen Verbindungen in einer Menge `clients`, einem `set`. Zu den Imports kommt ein Fehler, den `send` werfen kann:
 
-```python_copy
-from pathlib import Path
-from websockets.datastructures import Headers
+```python
+~ from websockets.datastructures import Headers
 from websockets.exceptions import ConnectionClosed
-from websockets.http11 import Response
-from websockets.sync.server import serve
+```
 
-PAGE = Path(__file__).with_name('index.html')
+Unter `PAGE` kommen die Menge und eine Funktion, die einen Text an alle schickt:
+
+```python
+~ PAGE = Path(__file__).with_name('index.html')
 
 # Alle offenen Verbindungen. Jede Verbindung hat ihren eigenen Thread, alle
 # benutzen dieselbe Menge.
@@ -421,17 +423,29 @@ def broadcast(text):
         try:
             client.send(text)
         except ConnectionClosed:
-            pass    # gerade gegangen; das Aufräumen erledigt ihr eigener Thread
+```
 
+Ersetze `handle` durch:
 
-def page(connection, request):
-    if request.path == '/ws':
-        return None
-    body = PAGE.read_bytes()
-    headers = Headers({'Content-Type': 'text/html; charset=utf-8',
-                       'Content-Length': str(len(body))})
-    return Response(200, 'OK', headers, body)
+```python
+def handle(ws):
+    clients.add(ws)
+    broadcast(f'Jemand ist dazugekommen. Jetzt sind wir {len(clients)}.')
+    try:
+        # Was kommt, geht an alle
+        for message in ws:
+            ...
+    finally:
+        # Die Verbindung ist zu, weil jemand den Tab geschlossen hat
+        ...
+```
 
+<div class='hint own'>
+<strong>Erst selbst:</strong> Füll die beiden Stellen mit <code>...</code>. In der Schleife geht jede Nachricht an alle, statt mit »Echo:« zurück. Im <code>finally</code> verschwindet die Verbindung aus <code>clients</code>, und alle erfahren, wie viele es noch sind. <code>...</code> ist in Python eine Anweisung, die nichts tut; sie hält nur den Platz frei.
+</div>
+
+<!-- solution -->
+```python
 
 def handle(ws):
     clients.add(ws)
@@ -443,14 +457,8 @@ def handle(ws):
             broadcast(message)
     finally:
         # Die Verbindung ist zu, weil jemand den Tab geschlossen hat
-        clients.discard(ws)
-        broadcast(f'Jemand ist gegangen. Jetzt sind wir {len(clients)}.')
-
-
-with serve(handle, '0.0.0.0', 8000, process_request=page) as server:
-    print('Der Server wartet auf Port 8000 ...')
-    server.serve_forever()
 ```
+<!-- /solution -->
 
 - Steht die Verbindung, nimmt `handle` sie in die Menge auf. Endet die Schleife, weil jemand den Tab geschlossen hat, fliegt sie im `finally` wieder raus. `finally` läuft auch dann, wenn die Verbindung mit einem Fehler endet.
 - `broadcast` schickt eine Nachricht an jede Verbindung in der Menge, auch an die, von der sie kam. Ist eine Verbindung gerade zugegangen, wirft `send` den Fehler `ConnectionClosed`, und `broadcast` macht mit den anderen weiter.
@@ -500,11 +508,7 @@ App = lambda do |env|
 
     ws.on(:message) do |event|
       # Jeder kann alles schicken: nur glauben, was passt
-      message = JSON.parse(event.data) rescue next
-      next unless message.is_a?(Hash)
-      x, y, color = message.values_at('x', 'y', 'color')
-      next unless [x, y, color].all?(Integer)
-      next unless x.between?(0, WIDTH - 1) && y.between?(0, HEIGHT - 1) && color.between?(0, 15)
+      # hier: die Nachricht lesen und prüfen; danach stehen x, y und color fest
 
       $pixels[y * WIDTH + x] = color
       broadcast({ 'type' => 'pixel', 'x' => x, 'y' => y, 'color' => color })
@@ -528,7 +532,26 @@ Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Sile
 
 - `JSON.generate` macht aus einem Hash Text, `JSON.parse` aus Text wieder einen Hash.
 - Jede Nachricht hat einen `type`: `picture` für das ganze Bild, `pixel` für einen einzelnen Pixel, `people` für die Zahl der Verbundenen.
-- **Jeder kann alles schicken**, nicht nur deine Webseite. Darum glaubt der Server keiner Nachricht: Kein JSON, keine ganzen Zahlen, ein Pixel außerhalb des Bildes, eine Farbe über 15? `next` überspringt die Nachricht. Ein Server, der fremden Eingaben traut, ist eine Einladung, ihn kaputt zu machen.
+- **Jeder kann alles schicken**, nicht nur deine Webseite. Darum glaubt der Server keiner Nachricht. Ein Server, der fremden Eingaben traut, ist eine Einladung, ihn kaputt zu machen.
+
+<div class='hint own'>
+<strong>Erst selbst:</strong> Schreib in <code>ws.on(:message)</code> die Prüfung. Lies die Nachricht mit <code>JSON.parse(event.data)</code> und überspring mit <code>next</code> alles, was nicht passt: Text, der kein JSON ist (dann wirft <code>JSON.parse</code> einen Fehler), JSON, das kein Hash ist, <code>x</code>, <code>y</code> oder <code>color</code>, die keine ganzen Zahlen sind, einen Pixel außerhalb des Bildes und eine Farbe außerhalb von 0 bis 15.
+</div>
+
+<!-- solution -->
+```ruby
+      # Jeder kann alles schicken: nur glauben, was passt
+      message = JSON.parse(event.data) rescue next
+      next unless message.is_a?(Hash)
+      x, y, color = message.values_at('x', 'y', 'color')
+      next unless [x, y, color].all?(Integer)
+      next unless x.between?(0, WIDTH - 1) && y.between?(0, HEIGHT - 1) && color.between?(0, 15)
+~
+~       $pixels[y * WIDTH + x] = color
+```
+
+`rescue next` fängt den Fehler von `JSON.parse` ab und überspringt die Nachricht. `values_at` holt drei Werte auf einmal aus dem Hash; fehlt einer, ist er `nil`, und `all?(Integer)` sagt nein.
+<!-- /solution -->
 <!-- /language -->
 <!-- language: python -->
 Ersetze `server.py` durch:
@@ -579,17 +602,8 @@ def handle(ws):
     try:
         for text in ws:
             # Jeder kann alles schicken: nur glauben, was passt
-            try:
-                message = json.loads(text)
-            except ValueError:
-                continue
-            if not isinstance(message, dict):
-                continue
-            x, y, color = message.get('x'), message.get('y'), message.get('color')
-            if not all(type(value) is int for value in (x, y, color)):
-                continue
-            if not (0 <= x < WIDTH and 0 <= y < HEIGHT and 0 <= color <= 15):
-                continue
+            # hier: die Nachricht lesen und prüfen; danach stehen x, y und color fest
+            ...
 
             pixels[y * WIDTH + x] = color
             broadcast({'type': 'pixel', 'x': x, 'y': y, 'color': color})
@@ -605,7 +619,32 @@ with serve(handle, '0.0.0.0', 8000, process_request=page) as server:
 
 - `json.dumps` macht aus einem Dictionary Text, `json.loads` aus Text wieder ein Dictionary.
 - Jede Nachricht hat einen `type`: `picture` für das ganze Bild, `pixel` für einen einzelnen Pixel, `people` für die Zahl der Verbundenen.
-- **Jeder kann alles schicken**, nicht nur deine Webseite. Darum glaubt der Server keiner Nachricht: Kein JSON, keine ganzen Zahlen, ein Pixel außerhalb des Bildes, eine Farbe über 15? `continue` überspringt die Nachricht. `type(value) is int` lässt nur ganze Zahlen durch, auch kein `true`, das in Python sonst als 1 zählen würde. Ein Server, der fremden Eingaben traut, ist eine Einladung, ihn kaputt zu machen.
+- **Jeder kann alles schicken**, nicht nur deine Webseite. Darum glaubt der Server keiner Nachricht. Ein Server, der fremden Eingaben traut, ist eine Einladung, ihn kaputt zu machen.
+
+<div class='hint own'>
+<strong>Erst selbst:</strong> Schreib in <code>handle</code> an der Stelle mit <code>...</code> die Prüfung. Lies die Nachricht mit <code>json.loads(text)</code> und überspring mit <code>continue</code> alles, was nicht passt: Text, der kein JSON ist (dann wirft <code>json.loads</code> einen <code>ValueError</code>), JSON, das kein <code>dict</code> ist, <code>x</code>, <code>y</code> oder <code>color</code>, die keine ganzen Zahlen sind, einen Pixel außerhalb des Bildes und eine Farbe außerhalb von 0 bis 15.
+</div>
+
+<!-- solution -->
+```python
+            # Jeder kann alles schicken: nur glauben, was passt
+            try:
+                message = json.loads(text)
+            except ValueError:
+                continue
+            if not isinstance(message, dict):
+                continue
+            x, y, color = message.get('x'), message.get('y'), message.get('color')
+            if not all(type(value) is int for value in (x, y, color)):
+                continue
+            if not (0 <= x < WIDTH and 0 <= y < HEIGHT and 0 <= color <= 15):
+                continue
+~
+~             pixels[y * WIDTH + x] = color
+```
+
+`message.get('x')` gibt `None`, wenn `x` fehlt, statt abzubrechen. `type(value) is int` lässt nur ganze Zahlen durch, auch kein `true`, das in Python sonst als 1 zählen würde.
+<!-- /solution -->
 <!-- /language -->
 
 Die neue `index.html` zeichnet das Bild in ein `<canvas>`, ein Element, in das JavaScript zeichnen kann. Es ist nur 64 × 40 Pixel groß. CSS zieht es so groß, wie das Fenster erlaubt, und legt ein feines Gitter darüber, damit man jeden Pixel der Wand sieht:
@@ -846,20 +885,10 @@ Vielleicht merkt ihr schnell, dass einige wenige das ganze Bild übermalen. Ein 
 <!-- language: ruby -->
 Ein Neustart des Servers löscht das Bild. Darum soll der Server es nach jedem Pixel in eine Datei schreiben, `picture.json`. Das dauert einen Moment, und solange Faye mit einer Nachricht beschäftigt ist, warten alle anderen. Die übliche Lösung: Mehrere **Threads** arbeiten die Nachrichten ab, während Faye schon neue annimmt. Dazu zählt der Server mit, wie viele Pixel schon gemalt wurden, und schreibt die Zahl ins Terminal.
 
-Ersetze `server.rb` durch:
+Unter `$clients = []` kommen der Zähler und eine Funktion, die das Bild speichert:
 
-```ruby_copy
-require 'faye/websocket'
-require 'rackup'
-require 'json'
-
-# Das Bild: 64 × 40 Pixel, jedes eine Farbnummer von 0 bis 15
-WIDTH = 64
-HEIGHT = 40
-$pixels = Array.new(WIDTH * HEIGHT, 0)
-
-# Alle offenen Verbindungen
-$clients = []
+```ruby
+~ $clients = []
 
 # Wie viele Pixel schon gemalt wurden
 $painted = 0
@@ -868,12 +897,11 @@ $painted = 0
 def save_picture
   File.write('picture.json', JSON.generate($pixels))
 end
+```
 
-def broadcast(message)
-  text = JSON.generate(message)
-  $clients.each { |client| client.send(text) }
-end
+Unter `broadcast` kommen die Queue und die Threads. Die Prüfung und das Malen ziehen aus `ws.on(:message)` hierher um, in die Schleife der Threads; dazu kommen das Speichern und der Zähler:
 
+```ruby_copy
 # Vier Threads arbeiten die Nachrichten ab, während Faye neue annimmt. Mehr
 # als ein paar sollten es nicht sein: Jeder Thread kostet Speicher, und ein
 # Workspace darf nicht beliebig viele starten.
@@ -899,36 +927,13 @@ $queue = Queue.new
     end
   end
 end
+```
 
-App = lambda do |env|
-  if Faye::WebSocket.websocket?(env)
-    ws = Faye::WebSocket.new(env)
+`ws.on(:message)` legt jede Nachricht jetzt nur noch in die Queue. Ersetze den ganzen Block durch:
 
-    # Wer neu ist, bekommt das ganze Bild, danach nur noch einzelne Pixel
-    ws.on(:open) do
-      $clients << ws
-      ws.send(JSON.generate({ 'type' => 'picture', 'width' => WIDTH,
-                              'height' => HEIGHT, 'pixels' => $pixels }))
-      broadcast({ 'type' => 'people', 'count' => $clients.size })
-    end
-
+```ruby
     # Jede Nachricht kommt in die Queue; Faye ist sofort frei
     ws.on(:message) { |event| $queue << event.data }
-
-    ws.on(:close) do
-      $clients.delete(ws)
-      broadcast({ 'type' => 'people', 'count' => $clients.size })
-    end
-
-    ws.rack_response
-  else
-    [200, { 'content-type' => 'text/html; charset=utf-8' },
-     [File.read(File.join(__dir__, 'index.html'))]]
-  end
-end
-
-puts "Der Server wartet auf Port 8000 ..."
-Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Silent: true)
 ```
 
 - `ws.on(:message)` legt jede Nachricht nur in eine **[Queue](/reference/listen#queue)**, `$queue`, und ist sofort frei für die nächste.
@@ -939,27 +944,18 @@ Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Sile
 <!-- language: python -->
 Ein Neustart des Servers löscht das Bild. Darum soll der Server es nach jedem Pixel in eine Datei schreiben, `picture.json`. Das dauert einen Moment, und solange der Thread einer Verbindung damit beschäftigt ist, warten die nächsten Nachrichten dieser Verbindung. Die übliche Lösung: Mehrere **Threads** arbeiten die Nachrichten ab, während die Verbindung schon neue annimmt. Dazu zählt der Server mit, wie viele Pixel schon gemalt wurden, und schreibt die Zahl ins Terminal.
 
-Ersetze `server.py` durch:
+Zu den Imports kommen `queue` und `threading`:
 
-```python_copy
-import json
+```python
+~ import json
 import queue
 import threading
-from pathlib import Path
-from websockets.datastructures import Headers
-from websockets.exceptions import ConnectionClosed
-from websockets.http11 import Response
-from websockets.sync.server import serve
+```
 
-PAGE = Path(__file__).with_name('index.html')
+Unter `clients = set()` kommen der Zähler und eine Funktion, die das Bild speichert:
 
-# Das Bild: 64 × 40 Pixel, jedes eine Farbnummer von 0 bis 15
-WIDTH = 64
-HEIGHT = 40
-pixels = [0] * (WIDTH * HEIGHT)
-
-# Alle offenen Verbindungen
-clients = set()
+```python
+~ clients = set()
 
 # Wie viele Pixel schon gemalt wurden
 painted = 0
@@ -968,17 +964,11 @@ painted = 0
 # Das Bild in eine Datei schreiben, damit es einen Neustart übersteht
 def save_picture():
     Path('picture.json').write_text(json.dumps(pixels))
+```
 
+Unter `broadcast` kommen die Threads mit ihrer Arbeit, `work`, und die Queue. Die Prüfung und das Malen ziehen aus `handle` hierher um, in die Schleife von `work`; dazu kommen das Speichern und der Zähler:
 
-def broadcast(message):
-    text = json.dumps(message)
-    for client in list(clients):
-        try:
-            client.send(text)
-        except ConnectionClosed:
-            pass
-
-
+```python_copy
 def work():
     global painted
     while True:
@@ -1011,35 +1001,16 @@ def work():
 messages = queue.Queue()
 for _ in range(4):
     threading.Thread(target=work, daemon=True).start()
+```
 
+In `handle` legt die Schleife jede Nachricht jetzt nur noch in die Queue. Ersetze sie durch:
 
-def page(connection, request):
-    if request.path == '/ws':
-        return None
-    body = PAGE.read_bytes()
-    headers = Headers({'Content-Type': 'text/html; charset=utf-8',
-                       'Content-Length': str(len(body))})
-    return Response(200, 'OK', headers, body)
-
-
-def handle(ws):
-    # Wer neu ist, bekommt das ganze Bild, danach nur noch einzelne Pixel
-    clients.add(ws)
-    ws.send(json.dumps({'type': 'picture', 'width': WIDTH,
-                        'height': HEIGHT, 'pixels': pixels}))
-    broadcast({'type': 'people', 'count': len(clients)})
-    try:
+```python
+~     try:
         # Jede Nachricht kommt in die Queue; die Verbindung ist sofort frei
         for text in ws:
             messages.put(text)
-    finally:
-        clients.discard(ws)
-        broadcast({'type': 'people', 'count': len(clients)})
-
-
-with serve(handle, '0.0.0.0', 8000, process_request=page) as server:
-    print('Der Server wartet auf Port 8000 ...')
-    server.serve_forever()
+~     finally:
 ```
 
 - `handle` legt jede Nachricht nur in eine **[Queue](/reference/listen#queue)**, `messages`, und ist sofort frei für die nächste.
