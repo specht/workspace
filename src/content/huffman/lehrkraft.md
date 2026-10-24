@@ -9,6 +9,8 @@ Huffman-Codes zum Selberbauen, in Ruby oder Python: vom Morsecode über präfixf
 
 **Die Aufgaben.** »Von Hand« (23) erkennt 88 (8 Bits pro Zeichen) und 33 (3 Bits für jedes). Dass verschiedene Bäume dieselbe Zahl ergeben, ist eine gute Frage an die Klasse: Die Zahl der Bits ist die Summe der Gewichte aller Knoten (2 + 4 + 6 + 11), und die hängt nicht davon ab, welchen von zwei gleich schweren Bäumen man nimmt. »Die Spezifikation von GIF« (45.240 Bytes) erkennt Bits statt Bytes. »Kanonische Codes« prüft fünf feste Fälle, darunter die DC-Tabelle aus `44-baseline.jpg`, die auf der JPEG-Seite steht.
 
+**Tipps in Stufen.** »Der Baum und die Codes«, »Codieren und decodieren« und »Kanonische Codes« haben je drei Tipps: ein Beispiel von Hand, den Weg in Worten, ein Gerüst mit Lücken. Die nächste Stufe erscheint eine Minute nach der vorigen, die ganze Lösung steht in keiner. Wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst; hängen viele an derselben Stelle, ist das ein Moment für die ganze Gruppe.
+
 **Was schiefgeht.**
 
 - **Nur einmal sortiert.** Wer die Liste nur am Anfang sortiert und neue Bäume hinten anhängt, nimmt später nicht immer die beiden leichtesten. Bei `ABRACADABRA` kommen dann 24 statt 23 Bits heraus; die Rückmeldung fragt genau danach.

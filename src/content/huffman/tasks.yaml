@@ -126,11 +126,43 @@ tasks:
           expect: "{65 => '0'}"
           say: Ein Text aus einem einzigen Byte ist ein Baum aus einem Blatt; dieses Byte bekommt den Code `0`.
         - code_table(build_tree({65 => 1, 66 => 1})).values.sort: "['0', '1']"
-    hint: |
-      Eine Liste von Paaren: `trees = counts.map { |byte, count| [count, byte] }`.
-      Solange mehr als eines darin ist: sortieren, die beiden ersten mit
-      `shift` herausnehmen, ein neues Paar aus der Summe der Gewichte und
-      `[left, right]` hinten anhängen.
+    hint:
+      - |
+        Mach es erst von Hand, wie in »Von Hand«: Am Anfang ist jedes Byte ein
+        eigener kleiner Baum, mit seiner Anzahl als Gewicht. Was passiert in
+        jedem Schritt mit den beiden leichtesten Bäumen, und wann bist du
+        fertig?
+      - |
+        Halte eine Liste von Paaren `[Gewicht, Baum]`, am Anfang `[count, byte]`
+        für jedes Byte. Solange mehr als ein Paar darin ist: nach dem Gewicht
+        sortieren, die beiden leichtesten herausnehmen und ein neues Paar
+        zurücklegen, aus der Summe ihrer Gewichte und `[linker Baum, rechter
+        Baum]`. Für `code_table` gehst du durch den Baum: links kommt eine
+        `0` an den Code, rechts eine `1`, bis du an einem Blatt bist.
+      - |
+        Ein Gerüst; was hinter `# hier` fehlt, schreibst du:
+
+        ```ruby
+        def build_tree(counts)
+            trees = counts.map { |byte, count| [count, byte] }
+            while trees.size > 1
+                trees.sort_by! { |weight, _| weight }
+                left = trees.shift
+                right = trees.shift
+                # hier: ein neues Paar zurück in trees
+            end
+            # hier: der Baum aus dem letzten Paar
+        end
+
+        def code_table(tree, prefix = '', table = {})
+            if tree.is_a?(Integer)
+                # hier: ein Blatt bekommt prefix als Code (ein einziges Blatt: '0')
+            else
+                # hier: links weiter mit prefix + '0', rechts mit prefix + '1'
+            end
+            table
+        end
+        ```
     solution: |
       ```ruby
       def build_tree(counts)
@@ -178,11 +210,39 @@ tasks:
             expect: "{65: '0'}"
             say: Ein Text aus einem einzigen Byte ist ein Baum aus einem Blatt; dieses Byte bekommt den Code `0`.
           - "sorted(code_table(build_tree({65: 1, 66: 1})).values())": "['0', '1']"
-      hint: |
-        Eine Liste von Paaren: `trees = [(count, byte) for byte, count in counts.items()]`.
-        Solange mehr als eines darin ist: sortieren, die beiden ersten mit
-        `pop(0)` herausnehmen, ein neues Paar aus der Summe der Gewichte und
-        `(left, right)` hinten anhängen.
+      hint:
+        - |
+          Mach es erst von Hand, wie in »Von Hand«: Am Anfang ist jedes Byte ein
+          eigener kleiner Baum, mit seiner Anzahl als Gewicht. Was passiert in
+          jedem Schritt mit den beiden leichtesten Bäumen, und wann bist du
+          fertig?
+        - |
+          Halte eine Liste von Paaren `(Gewicht, Baum)`, am Anfang `(count, byte)`
+          für jedes Byte. Solange mehr als ein Paar darin ist: nach dem Gewicht
+          sortieren, die beiden leichtesten herausnehmen und ein neues Paar
+          anhängen, aus der Summe ihrer Gewichte und `(linker Baum, rechter
+          Baum)`. Für `code_table` gehst du durch den Baum: links kommt eine
+          `0` an den Code, rechts eine `1`, bis du an einem Blatt bist.
+        - |
+          Ein Gerüst; was hinter `# hier` fehlt, schreibst du:
+
+          ```python
+          def build_tree(counts):
+              trees = [(count, byte) for byte, count in counts.items()]
+              while len(trees) > 1:
+                  trees.sort(key=lambda pair: pair[0])
+                  left = trees.pop(0)
+                  right = trees.pop(0)
+                  # hier: ein neues Paar an trees anhängen
+              # hier: den Baum aus dem letzten Paar zurückgeben
+
+          def code_table(tree, prefix=''):
+              if isinstance(tree, int):
+                  # hier: ein Blatt bekommt prefix als Code (ein einziges Blatt: '0')
+                  ...
+              # hier: die Codes links mit prefix + '0' und rechts mit prefix + '1'
+              # zusammen in ein dict
+          ```
       solution: |
         ```python
         def build_tree(counts):
@@ -226,7 +286,35 @@ tasks:
           expect: true
         - call: (t = 'Grüße aus Köln'; tree = build_tree(frequencies(t)); decode(encode(t, code_table(tree)), tree).force_encoding('UTF-8'))
           expect: "'Grüße aus Köln'"
-    hint: 'Beim Decodieren merkst du dir, wo du im Baum gerade bist: `node = tree` am Anfang, dann für jedes Bit `node = node[0]` oder `node = node[1]`. Ist `node` eine Zahl, ist ein Byte fertig.'
+    hint:
+      - |
+        `encode` hängt für jedes Byte seinen Code aus `table` aneinander. Für
+        `decode` probier es erst von Hand: Wo im Baum `[65, [[67, 68], [66, 82]]]`
+        landest du nach den Bits `1`, `1`, `0`, wenn `0` links heißt und `1`
+        rechts?
+      - |
+        Merk dir, wo du im Baum gerade bist: `node = tree` am Anfang, dann für
+        jedes Bit `node = node[0]` oder `node = node[1]`. Ist `node` eine Zahl,
+        ist ein Byte fertig: Merk es dir und fang wieder oben an. Ein Baum,
+        der nur ein Blatt ist, braucht einen Sonderfall: Dort steht jede `0`
+        für dieses Byte.
+      - |
+        Ein Gerüst für `decode`:
+
+        ```ruby
+        def decode(bits, tree)
+            # hier: der Sonderfall, tree ist nur ein Blatt
+            out = []
+            node = tree
+            bits.each_char do |bit|
+                # hier: node einen Schritt nach links oder rechts
+                if node.is_a?(Integer)
+                    # hier: ein Byte fertig
+                end
+            end
+            out.pack('C*')
+        end
+        ```
     solution: |
       ```ruby
       def encode(data, table)
@@ -270,7 +358,33 @@ tasks:
             expect: true
           - call: decode(encode(t := 'Grüße aus Köln'.encode(), code_table(tree := build_tree(frequencies(t)))), tree).decode()
             expect: "'Grüße aus Köln'"
-      hint: 'Beim Decodieren merkst du dir, wo du im Baum gerade bist: `node = tree` am Anfang, dann für jedes Bit `node = node[0]` oder `node = node[1]`. Ist `node` eine Zahl, ist ein Byte fertig.'
+      hint:
+        - |
+          `encode` hängt für jedes Byte seinen Code aus `table` aneinander. Für
+          `decode` probier es erst von Hand: Wo im Baum `(65, ((67, 68), (66, 82)))`
+          landest du nach den Bits `1`, `1`, `0`, wenn `0` links heißt und `1`
+          rechts?
+        - |
+          Merk dir, wo du im Baum gerade bist: `node = tree` am Anfang, dann für
+          jedes Bit `node = node[0]` oder `node = node[1]`. Ist `node` eine Zahl,
+          ist ein Byte fertig: Merk es dir und fang wieder oben an. Ein Baum,
+          der nur ein Blatt ist, braucht einen Sonderfall: Dort steht jede `0`
+          für dieses Byte.
+        - |
+          Ein Gerüst für `decode`:
+
+          ```python
+          def decode(bits, tree):
+              # hier: der Sonderfall, tree ist nur ein Blatt
+              out = []
+              node = tree
+              for bit in bits:
+                  # hier: node einen Schritt nach links oder rechts
+                  if isinstance(node, int):
+                      # hier: ein Byte fertig
+                      ...
+              return bytes(out)
+          ```
       solution: |
         ```python
         def encode(data, table):
@@ -351,7 +465,33 @@ tasks:
         - call: "canonical({0 => 2, 1 => 3, 2 => 3, 3 => 3, 4 => 3, 5 => 3, 6 => 4, 7 => 5, 8 => 6, 9 => 7, 10 => 8, 11 => 9})"
           expect: "{0 => '00', 1 => '010', 2 => '011', 3 => '100', 4 => '101', 5 => '110', 6 => '1110', 7 => '11110', 8 => '111110', 9 => '1111110', 10 => '11111110', 11 => '111111110'}"
           say: Das ist die DC-Tabelle aus `44-baseline.jpg`, wie sie auf der Seite zu JPEG steht.
-    hint: 'Merk dir den Code als Zahl und die Länge des vorigen. Für jedes Byte, sortiert mit `sort_by { |byte, length| [length, byte] }`: erst `code <<= length - previous`, dann den Code mit `code.to_s(2).rjust(length, ''0'')` eintragen, dann `code += 1`.'
+    hint:
+      - |
+        Rechne das erste Beispiel von Hand: A hat die Länge 1, B und C die
+        Länge 2. A bekommt `0`. Welcher Code mit zwei Stellen ist der kleinste,
+        der nicht mit `0` anfängt? Und der nächste danach?
+      - |
+        Sortiere die Bytes nach der Länge, bei gleicher Länge nach dem Byte.
+        Der Code ist eine Zahl: Der erste ist 0, jeder nächste ist der vorige
+        plus 1. Wird die Länge größer, kommen hinten Nullen dazu, eine für
+        jede Stelle mehr; das ist `<<`. Als Bits geschrieben, mit führenden
+        Nullen bis zur Länge, ist die Zahl der Code.
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def canonical(lengths)
+            table = {}
+            code = 0
+            previous = 0
+            lengths.sort_by { |byte, length| [length, byte] }.each do |byte, length|
+                # hier: hinten Nullen anhängen, wenn length größer als previous ist
+                table[byte] = code.to_s(2).rjust(length, '0')
+                # hier: der nächste Code, und previous merken
+            end
+            table
+        end
+        ```
     solution: |
       ```ruby
       def canonical(lengths)
@@ -383,7 +523,31 @@ tasks:
           - call: "canonical({0: 2, 1: 3, 2: 3, 3: 3, 4: 3, 5: 3, 6: 4, 7: 5, 8: 6, 9: 7, 10: 8, 11: 9})"
             expect: "{0: '00', 1: '010', 2: '011', 3: '100', 4: '101', 5: '110', 6: '1110', 7: '11110', 8: '111110', 9: '1111110', 10: '11111110', 11: '111111110'}"
             say: Das ist die DC-Tabelle aus `44-baseline.jpg`, wie sie auf der Seite zu JPEG steht.
-      hint: 'Merk dir den Code als Zahl und die Länge des vorigen. Für jedes Byte, sortiert nach `(length, byte)`: erst `code <<= length - previous`, dann den Code mit `format(code, ''b'').rjust(length, ''0'')` eintragen, dann `code += 1`.'
+      hint:
+        - |
+          Rechne das erste Beispiel von Hand: A hat die Länge 1, B und C die
+          Länge 2. A bekommt `0`. Welcher Code mit zwei Stellen ist der kleinste,
+          der nicht mit `0` anfängt? Und der nächste danach?
+        - |
+          Sortiere die Bytes nach der Länge, bei gleicher Länge nach dem Byte.
+          Der Code ist eine Zahl: Der erste ist 0, jeder nächste ist der vorige
+          plus 1. Wird die Länge größer, kommen hinten Nullen dazu, eine für
+          jede Stelle mehr; das ist `<<`. Als Bits geschrieben, mit führenden
+          Nullen bis zur Länge, ist die Zahl der Code.
+        - |
+          Ein Gerüst:
+
+          ```python
+          def canonical(lengths):
+              table = {}
+              code = 0
+              previous = 0
+              for byte, length in sorted(lengths.items(), key=lambda item: (item[1], item[0])):
+                  # hier: hinten Nullen anhängen, wenn length größer als previous ist
+                  table[byte] = format(code, 'b').rjust(length, '0')
+                  # hier: der nächste Code, und previous merken
+              return table
+          ```
       solution: |
         ```python
         def canonical(lengths):

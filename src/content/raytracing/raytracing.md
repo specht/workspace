@@ -575,6 +575,22 @@ Der Boden ist die Ebene `y = 0`. Ein Strahl erreicht sie, wenn `origin.y + t · 
 <strong>Erst selbst:</strong> Schreib unter <code>hit_sphere</code> die Funktion <code>double hit_floor(vec origin, vec dir)</code>. Sie gibt dieses <code>t</code> zurück, und <code>INFINITY</code>, wenn der Boden hinter dem Strahl liegt, so wie <code>hit_sphere</code> bei einer Kugel hinter dem Auge. Laufen lassen kannst du sie erst gleich mit <code>nearest_hit</code>, prüfen kann der Workspace sie schon jetzt: mit der Aufgabe unter der Lösung.
 </div>
 
+<!-- hint -->
+Stell `origin.y + t · dir.y = 0` nach `t` um; das steht schon oben. Wann liegt der Boden hinter dem Strahl, und was gibt `hit_sphere` in diesem Fall zurück?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```c
+double hit_floor(vec origin, vec dir)
+{
+    double t = …;   // hier: die Formel von oben
+    // hier: t zurückgeben, wenn der Boden vor dem Strahl liegt
+    return INFINITY;
+}
+```
+<!-- /hint -->
+
 <!-- solution -->
 ```c
 ~     return INFINITY;      // die Kugel liegt hinter dem Auge
@@ -680,6 +696,18 @@ _task(schatten-da)
 <strong>Erst selbst:</strong> Mach aus dem Boden ein Schachbrett aus Feldern der Größe 1, jedes zweite dunkel, <code>(vec){0.05, 0.06, 0.08}</code>. Der Platz dafür ist in <code>nearest_hit</code>, dort, wo der Boden sein Material bekommt. <code>floor(x)</code> aus <code>math.h</code> rundet ab, auf die ganze Zahl darunter: Für jeden Punkt sagt es, in welcher Spalte von Feldern er liegt. Probier es aus, bevor du nachsiehst.
 </div>
 
+<!-- hint -->
+Welche Feldnummern hat der Punkt `(2.5, 0, -1.3)`? `floor` gibt 2 und −2. Wie kannst du aus den beiden Nummern ablesen, ob ein Feld dunkel ist, sodass zwei Felder nebeneinander nie dieselbe Farbe haben?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst, in `nearest_hit` unter `h->mat = floor_mat;`:
+
+```c
+        if (…)   // hier: die Summe der beiden Feldnummern ist gerade
+            h->mat.color = (vec){0.05, 0.06, 0.08};
+```
+<!-- /hint -->
+
 <!-- solution -->
 ```c
 ~         h->normal = (vec){0, 1, 0};
@@ -725,6 +753,19 @@ Ob ein Punkt im Schatten liegt, findet ein Raytracer genauso heraus wie alles an
 <div class='hint own'>
 <strong>Erst selbst:</strong> Ergänze <code>sunlight</code> so, dass ein Punkt im Schatten kein Sonnenlicht bekommt. Dafür brauchst du nichts Neues: <code>nearest_hit</code> sagt dir, ob ein Strahl, der beim Treffpunkt <code>h.point</code> beginnt und in Richtung <code>sun_dir</code> läuft, unterwegs etwas trifft.
 </div>
+
+<!-- hint -->
+Der Strahl zur Sonne beginnt bei `h.point` und läuft in Richtung `sun_dir`. Was heißt es für den Punkt, wenn `nearest_hit` für diesen Strahl `true` zurückgibt?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst, in `sunlight` vor dem letzten `return`:
+
+```c
+    hit blocker;
+    if (…)   // hier: trifft der Strahl zur Sonne etwas?
+        return (vec){0, 0, 0};
+```
+<!-- /hint -->
 
 <!-- solution -->
 ```c
@@ -856,6 +897,21 @@ vec ray_dir(double x, double y)
 <div class='hint own'>
 <strong>Erst selbst:</strong> Schreib die vier fehlenden Zeilen nach den Formeln oben: drei in <code>set_camera</code> für <code>forward</code>, <code>right</code> und <code>up</code>, eine in <code>ray_dir</code>, die die Richtung durch den Pixel zurückgibt, mit der Länge 1. »Oben in der Welt« ist <code>(vec){0, 1, 0}</code>. Laufen lassen kannst du es, sobald gleich <code>main</code> die Kamera einstellt.
 </div>
+
+<!-- hint -->
+Jede Zeile ist eine der Formeln oben, geschrieben mit den Funktionen, die es schon gibt: `sub`, `normalize`, `cross`, `add` und `scale`. `target − eye` ist `sub(target, eye)`.
+<!-- /hint -->
+<!-- hint -->
+Die Lücken mit `…` füllst du:
+
+```c
+    forward = normalize(sub(…, …));
+    right = normalize(cross(…, (vec){0, 1, 0}));
+    up = cross(…, …);
+```
+
+und in `ray_dir` `forward + sx · right + sy · up`, mit `add` und `scale`, am Ende mit `normalize` auf die Länge 1.
+<!-- /hint -->
 
 <!-- solution -->
 ```c
@@ -1077,6 +1133,33 @@ Jetzt fehlen `reflect` und das neue `trace`, das sich selbst aufruft.
 <div class='hint own'>
 <strong>Erst selbst:</strong> Schreib über <code>trace</code> die Funktion <code>vec reflect(vec dir, vec n)</code> nach der Formel oben. Dann bekommt <code>trace</code> einen dritten Parameter, <code>int depth</code>, und zwei neue Teile: Ist <code>depth</code> größer als <code>MAX_DEPTH</code>, gibt es Schwarz zurück. Und spiegelt das getroffene Material (<code>h.mat.mirror &gt; 0</code>), verfolgt <code>trace</code> vom Treffpunkt aus einen neuen Strahl in Richtung <code>reflect(dir, h.normal)</code>, eine Stufe tiefer, und mischt dessen Farbe mit <code>mix</code> im Anteil <code>mirror</code> unter die eigene.
 </div>
+
+<!-- hint -->
+`reflect` ist eine einzige Zeile: die Formel oben mit `sub`, `scale` und `dot`. Für `trace`: An welcher Stelle im alten `trace` weißt du, welches Material getroffen wurde und wo?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst für `trace`:
+
+```c
+vec trace(vec origin, vec dir, int depth)
+{
+    // hier: zu oft gespiegelt? Dann Schwarz.
+
+    hit h;
+    if (!nearest_hit(origin, dir, &h))
+        return sky(dir);
+
+    vec light = add(sunlight(h), ambient);
+    vec color = mul(h.mat.color, light);
+    if (h.mat.mirror > 0)
+    {
+        // hier: trace für den gespiegelten Strahl vom Treffpunkt aus,
+        // eine Stufe tiefer, und seine Farbe mit mix unter color mischen
+    }
+    return color;
+}
+```
+<!-- /hint -->
 
 <!-- solution -->
 ```c
