@@ -42,7 +42,7 @@ class HintStepsTest < Minitest::Test
         boxes = root.css('div.hint-steps')
         assert_equal 1, boxes.size
         assert_equal HintSteps::DELAY_SECONDS.to_s, boxes.first['data-delay']
-        assert_equal ['Tipp 1 von 2', 'Tipp 2 von 2'], boxes.first.css('details.hint-step > summary').map(&:text)
+        assert_equal ['Tipp', 'Nächster Tipp'], boxes.first.css('details.hint-step > summary').map(&:text)
         assert_includes boxes.first.css('details.hint-step').last.at_css('pre').text, 'return sub(dir'
         assert_equal 1, root.css('details.solution').size
         assert_empty root.css('div.hint-start, div.hint-end')
@@ -54,6 +54,6 @@ class HintStepsTest < Minitest::Test
 
     def test_html_for_a_task
         html = HintSteps.html(['<p>A</p>', '<p>B</p>'], :extra_class => 'task-hint')
-        assert_includes html, "<details class='hint-step task-hint'><summary>Tipp 2 von 2</summary><p>B</p></details>"
+        assert_includes html, "<details class='hint-step task-hint'><summary>Nächster Tipp</summary><p>B</p></details>"
     end
 end

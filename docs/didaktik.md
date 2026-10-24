@@ -93,8 +93,16 @@ haben. Entschieden ist:
   (`HintSteps::DELAY_SECONDS`), damit man mit jedem Tipp arbeitet, statt bis
   zum letzten durchzuklicken. Bis dahin ist sie nicht zu sehen, und keine Uhr
   zählt herunter: Wer eine Uhr sieht, schaut auf die Uhr statt auf den Tipp
-  und den eigenen Code. Dass mehr kommt, sagt der Titel (»Tipp 1 von 2«);
-  ist die Stufe da, steht ihr Titel fett, ohne Bewegung und ohne Ton.
+  und den eigenen Code. Ist die Stufe da, steht ihr Titel fett, ohne
+  Bewegung und ohne Ton.
+- **Nicht verraten, wie viele Tipps es gibt.** Der erste heißt »Tipp«, jeder
+  weitere »Nächster Tipp«, ohne Nummer und ohne »von 2«. Wer weiß, dass der
+  letzte Tipp oder die Lösung gleich kommt, wartet darauf, statt mit dem Tipp
+  zu arbeiten, den er hat.
+- **Eine Einladung, kein Schloss.** Wer die Lösung unbedingt sucht, findet
+  sie im Quelltext der Seite, in `stufen/` oder im Git einer Vorlage. Das ist
+  in Ordnung: Die Pausen sollen das Nachdenken leicht machen, nicht das
+  Abschreiben unmöglich. Mehr Aufwand, die Lösung zu verstecken, lohnt nicht.
 - **Niemand sieht, wer welchen Tipp gebraucht hat.** Was aufgeklappt wurde,
   merkt sich nur der Browser (lokaler Speicher), damit ein Neuladen die Pause
   nicht neu beginnt; zum Server geht nichts, und Lehrkräfte sehen es nicht,

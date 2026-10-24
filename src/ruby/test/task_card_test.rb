@@ -45,9 +45,9 @@ class TaskCardTest < Minitest::Test
         html = TaskCard.html(task, activity: 'tcpip', number: 1, render: RENDER)
         assert_includes html, "<div class='hint-steps' data-delay='#{HintSteps::DELAY_SECONDS}'>"
         assert_equal 3, html.scan("<details class='hint-step task-hint'>").size
-        assert_includes html, '<summary>Tipp 1 von 3</summary><p>Erst das.</p>'
-        assert_includes html, '<summary>Tipp 3 von 3</summary>'
-        refute_includes html, '<summary>Tipp</summary>'
+        assert_includes html, '<summary>Tipp</summary><p>Erst das.</p>'
+        assert_includes html, '<summary>Nächster Tipp</summary>'
+        refute_includes html, "<details class='task-hint'><summary>Tipp</summary>"
     end
 
     def test_cards_never_contain_what_is_checked

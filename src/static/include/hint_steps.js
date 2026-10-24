@@ -2,8 +2,8 @@
 // docs/didaktik.md). At the start only the first tip is there. The next one
 // appears data-delay seconds after the one before was opened, so there is
 // time to work with each tip instead of clicking through to the last. There
-// is no countdown: a clock draws the eye away from the tip, and »Tipp 1 von
-// 2« already says that more is to come.
+// is no countdown, and the titles do not say how many tips there are
+// (»Tipp«, then »Nächster Tipp«): both draw the eye away from the tip.
 //
 // What has been opened is kept in this browser only (localStorage), so a
 // reload does not start the waiting again. Nothing is sent to the server: no

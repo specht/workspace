@@ -13,8 +13,9 @@ require 'cgi'
 #   Im Code: `double t = …;`, dann eine Bedingung wie in `hit_sphere`.
 #   <!-- /hint -->
 #
-# Both become the same markup: one <details> per step, »Tipp 1 von 3« and so
-# on, in a <div class='hint-steps'>. hint_steps.js shows only the first; the
+# Both become the same markup: one <details> per step, »Tipp« and then
+# »Nächster Tipp«, in a <div class='hint-steps'>. The titles do not say how
+# many there are: knowing that the last one is near invites waiting for it. hint_steps.js shows only the first; the
 # next appears DELAY_SECONDS after the one before was opened, so there is
 # time to think about each tip. What has been opened is kept in the
 # browser only (localStorage), so a reload does not start the waiting again;
@@ -29,8 +30,8 @@ module HintSteps
     START = /^[ \t]*<!--[ \t]*hint[ \t]*-->[ \t]*$/
     FINISH = /^[ \t]*<!--[ \t]*\/hint[ \t]*-->[ \t]*$/
 
-    def self.summary(index, count)
-        "Tipp #{index + 1} von #{count}"
+    def self.summary(index)
+        index.zero? ? 'Tipp' : 'Nächster Tipp'
     end
 
     # The steps, already rendered to HTML, as one block.
@@ -38,7 +39,7 @@ module HintSteps
         classes = ['hint-step', extra_class].compact.join(' ')
         io = +"<div class='hint-steps' data-delay='#{DELAY_SECONDS}'>"
         steps.each_with_index do |step, i|
-            io << "<details class='#{classes}'><summary>#{CGI.escapeHTML(summary(i, steps.size))}</summary>#{step}</details>"
+            io << "<details class='#{classes}'><summary>#{CGI.escapeHTML(summary(i))}</summary>#{step}</details>"
         end
         io << '</div>'
     end
@@ -95,7 +96,7 @@ module HintSteps
             step.add_previous_sibling(box)
             group.each_with_index do |member, i|
                 summary = Nokogiri::XML::Node.new('summary', root.document)
-                summary.content = summary(i, group.size)
+                summary.content = summary(i)
                 member.children.first ? member.children.first.add_previous_sibling(summary) : member.add_child(summary)
                 box.add_child(member)
             end

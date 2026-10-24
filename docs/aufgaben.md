@@ -314,8 +314,8 @@ kennt `output_matches`, `scene` kennt `found`, `missing`,
 
 ### Tipps in Stufen
 
-Statt eines Tipps kann `hint` eine Liste sein. Die Karte zeigt dann »Tipp 1
-von 3«; die nächste Stufe erscheint erst eine Minute, nachdem die vorige
+Statt eines Tipps kann `hint` eine Liste sein. Die Karte zeigt dann »Tipp«, danach
+»Nächster Tipp«, ohne zu sagen, wie viele es gibt; die nächste Stufe erscheint erst eine Minute, nachdem die vorige
 aufgeklappt wurde (`HintSteps::DELAY_SECONDS`), ohne Uhr bis dahin.
 
 ````yaml
