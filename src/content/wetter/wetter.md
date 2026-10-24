@@ -197,8 +197,7 @@ name = ARGV[0] || 'Berlin'
 # 1. Wo liegt der Ort?
 places = fetch_json(GEOCODING_API,
                     name: name, count: 1, language: 'de')
-place = (places['results'] || []).first
-abort "Keinen Ort namens #{name} gefunden." if place.nil?
+# hier: place, der erste Treffer, oder eine Meldung, wenn es keinen gibt
 
 # 2. Das Wetter an diesem Ort
 weather = fetch_json(WEATHER_API,
@@ -212,19 +211,42 @@ puts "#{place['name']} (#{place['admin1']}, #{place['country']})"
 puts "Jetzt: #{now['temperature_2m']} °C, #{describe(now['weather_code'])}"
 
 days = weather['daily']
-days['time'].each_with_index do |day, i|
-  puts "#{day}: #{days['temperature_2m_min'][i]} bis #{days['temperature_2m_max'][i]} °C, " \
-       "#{describe(days['weather_code'][i])}"
-end
+# hier: eine Zeile für jeden Tag
 ```
 
 - Die Adressen der beiden APIs stehen oben in Konstanten, `GEOCODING_API` und `WEATHER_API`. Warum, steht weiter unten unter »Wenn die API nicht mehr will«.
 - `fetch_json` ist für beide APIs da. `URI.encode_www_form` baut aus einem Hash die Query, mit allem richtig kodiert: Aus `München` wird `M%C3%BCnchen`.
 - Ist die Antwort kein Erfolg (`Net::HTTPSuccess`), steht in `reason`, warum. `abort` schreibt die Meldung und beendet das Programm.
 - `rescue SocketError, Net::OpenTimeout` fängt den Fall ab, dass gar keine Verbindung zustande kommt.
-- `places['results'] || []` ist eine leere Liste, wenn die API keine `results` schickt; `.first` ist dann `nil`.
 - `describe` übersetzt die Wettercodes in Wörter.
 - `ARGV[0]` ist das, was du beim Start hinter den Dateinamen schreibst.
+
+<div class='hint own'>
+<strong>Erst selbst:</strong> Zwei Stellen fehlen noch.
+<ul>
+<li>Findet die Geocoding-API keinen Ort, fehlt in ihrer Antwort <code>results</code> ganz; das hast du unter »Wenn etwas schiefgeht« gesehen. Dann meldet das Programm mit <code>abort</code> »Keinen Ort namens Xyzzy gefunden.« (mit dem gesuchten Namen); sonst ist <code>place</code> der erste Treffer.</li>
+<li>In <code>days</code> steht zu jedem Wert eine Liste mit einem Eintrag pro Tag: <code>days['time']</code> die Daten, <code>days['temperature_2m_min']</code> und <code>days['temperature_2m_max']</code> die Tiefst- und Höchstwerte, <code>days['weather_code']</code> die Codes. Derselbe Index ist derselbe Tag. Gib für jeden Tag eine Zeile aus, etwa <code>2026-10-24: 6.1 bis 12.4 °C, Regen</code>.</li>
+</ul>
+</div>
+
+<!-- solution -->
+```ruby
+~ places = fetch_json(GEOCODING_API,
+~                     name: name, count: 1, language: 'de')
+place = (places['results'] || []).first
+abort "Keinen Ort namens #{name} gefunden." if place.nil?
+```
+
+```ruby
+~ days = weather['daily']
+days['time'].each_with_index do |day, i|
+  puts "#{day}: #{days['temperature_2m_min'][i]} bis #{days['temperature_2m_max'][i]} °C, " \
+       "#{describe(days['weather_code'][i])}"
+end
+```
+
+`places['results'] || []` ist eine leere Liste, wenn die API keine `results` schickt; `.first` ist dann `nil`. `each_with_index` gibt zu jedem Datum seinen Index `i`, mit dem die anderen Listen denselben Tag liefern.
+<!-- /solution -->
 
 ```bash
 ruby wetter.rb München
@@ -286,10 +308,7 @@ name = sys.argv[1] if len(sys.argv) > 1 else 'Berlin'
 # 1. Wo liegt der Ort?
 places = fetch_json(GEOCODING_API,
                     {'name': name, 'count': 1, 'language': 'de'})
-results = places.get('results', [])
-if not results:
-    sys.exit(f'Keinen Ort namens {name} gefunden.')
-place = results[0]
+# hier: place, der erste Treffer, oder eine Meldung, wenn es keinen gibt
 
 # 2. Das Wetter an diesem Ort
 weather = fetch_json(WEATHER_API, {
@@ -304,18 +323,43 @@ print(f"{place['name']} ({place.get('admin1', '')}, {place['country']})")
 print(f"Jetzt: {now['temperature_2m']} °C, {describe(now['weather_code'])}")
 
 days = weather['daily']
-for i, day in enumerate(days['time']):
-    print(f"{day}: {days['temperature_2m_min'][i]} bis {days['temperature_2m_max'][i]} °C, "
-          f"{describe(days['weather_code'][i])}")
+# hier: eine Zeile für jeden Tag
 ```
 
 - Die Adressen der beiden APIs stehen oben in Konstanten, `GEOCODING_API` und `WEATHER_API`. Warum, steht weiter unten unter »Wenn die API nicht mehr will«.
 - `fetch_json` ist für beide APIs da. `urllib.parse.urlencode` baut aus einem Dictionary die Query, mit allem richtig kodiert: Aus `München` wird `M%C3%BCnchen`.
 - Ist die Antwort kein Erfolg, wirft `urlopen` einen `HTTPError`; seine `code` ist der Statuscode, und im Body steht in `reason`, warum. `sys.exit` schreibt die Meldung und beendet das Programm.
 - `URLError` fängt den Fall ab, dass gar keine Verbindung zustande kommt. `HTTPError` steht davor, weil auch er ein `URLError` ist.
-- `places.get('results', [])` ist eine leere Liste, wenn die API keine `results` schickt.
 - `describe` übersetzt die Wettercodes in Wörter.
 - `sys.argv[1]` ist das, was du beim Start hinter den Dateinamen schreibst; `sys.argv[0]` ist der Dateiname selbst.
+
+<div class='hint own'>
+<strong>Erst selbst:</strong> Zwei Stellen fehlen noch.
+<ul>
+<li>Findet die Geocoding-API keinen Ort, fehlt in ihrer Antwort <code>results</code> ganz; das hast du unter »Wenn etwas schiefgeht« gesehen. Dann meldet das Programm mit <code>sys.exit</code> »Keinen Ort namens Xyzzy gefunden.« (mit dem gesuchten Namen); sonst ist <code>place</code> der erste Treffer.</li>
+<li>In <code>days</code> steht zu jedem Wert eine Liste mit einem Eintrag pro Tag: <code>days['time']</code> die Daten, <code>days['temperature_2m_min']</code> und <code>days['temperature_2m_max']</code> die Tiefst- und Höchstwerte, <code>days['weather_code']</code> die Codes. Derselbe Index ist derselbe Tag. Gib für jeden Tag eine Zeile aus, etwa <code>2026-10-24: 6.1 bis 12.4 °C, Regen</code>.</li>
+</ul>
+</div>
+
+<!-- solution -->
+```python
+~ places = fetch_json(GEOCODING_API,
+~                     {'name': name, 'count': 1, 'language': 'de'})
+results = places.get('results', [])
+if not results:
+    sys.exit(f'Keinen Ort namens {name} gefunden.')
+place = results[0]
+```
+
+```python
+~ days = weather['daily']
+for i, day in enumerate(days['time']):
+    print(f"{day}: {days['temperature_2m_min'][i]} bis {days['temperature_2m_max'][i]} °C, "
+          f"{describe(days['weather_code'][i])}")
+```
+
+`places.get('results', [])` ist eine leere Liste, wenn die API keine `results` schickt. `enumerate` gibt zu jedem Datum seinen Index `i`, mit dem die anderen Listen denselben Tag liefern.
+<!-- /solution -->
 
 ```bash
 python3 wetter.py München
