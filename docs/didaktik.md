@@ -88,8 +88,11 @@ haben. Entschieden ist:
   Die Wartezeit steht da, als Uhr.
 - **Niemand sieht, wer welchen Tipp gebraucht hat.** Was aufgeklappt wurde,
   merkt sich nur der Browser (lokaler Speicher), damit ein Neuladen die Pause
-  nicht neu beginnt; zum Server geht nichts, und Lehrkräfte sehen es nicht.
-  Lernende sollen Hilfe nehmen, ohne sich zu fragen, wie das aussieht.
+  nicht neu beginnt; zum Server geht nichts, und Lehrkräfte sehen es nicht,
+  auch nicht beim Nachahmen. Der Browser merkt es sich für jedes Konto
+  getrennt: An einem Schulrechner, an dem nacheinander mehrere arbeiten,
+  findet niemand die Tipps der Person davor schon aufgeklappt. Lernende
+  sollen Hilfe nehmen, ohne sich zu fragen, wie das aussieht.
 - **Hängen alle, hilft die Lehrkraft der Gruppe.** Die Tipps ersetzen nicht
   den Unterricht; wo viele an derselben Stelle hängen, ist das ein Thema für
   alle.

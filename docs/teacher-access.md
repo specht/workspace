@@ -208,6 +208,17 @@ Gruppen ist, bekommt alle Knöpfe, solange nicht jede seiner Gruppen »Wo
 sinnvoll« gewählt hat. Lehrkräfte und Besucher haben die Voreinstellung,
 beim Nachahmen sieht die Lehrkraft die Seite wie die Person.
 
+## Tipps in Stufen
+
+Manche Aufgaben und Kästen »Jetzt bist du dran« haben Tipps in Stufen
+(docs/didaktik.md). Wer welchen Tipp aufgeklappt hat, sehen Lehrkräfte
+nicht, mit Absicht: Lernende sollen Hilfe nehmen, ohne sich zu fragen, wie
+das aussieht. Der Server erfährt es nicht; nur der Browser der Person merkt
+es sich, für jedes Konto getrennt. Auch »Nachahmen« zeigt es nicht, denn
+dort gilt, was der Browser der Lehrkraft gespeichert hat. Hängen viele an
+derselben Stelle, merkt die Lehrkraft das im Raum, und es ist ein Thema für
+die ganze Gruppe.
+
 ## Klassen-Repository
 
 Die Sandboxes (Sortieren, Datenstrukturen, CPU) können mit einem

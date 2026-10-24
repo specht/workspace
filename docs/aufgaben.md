@@ -338,8 +338,9 @@ hint:
 
 Die Stufen gehen vom Verstehen (ein Beispiel von Hand) über den Weg in Worten
 zu einem Gerüst mit Lücken. Keine Stufe enthält die ganze Lösung. Was jemand
-aufgeklappt hat, merkt sich nur der Browser (`hint_steps.js`); der Server
-erfährt es nicht, Lehrkräfte sehen es nicht. Die Gründe stehen in
+aufgeklappt hat, merkt sich nur der Browser (`hint_steps.js`), für jedes
+Konto getrennt (`data-hint-owner`, ein Hash); der Server erfährt es nicht,
+Lehrkräfte sehen es nicht. Die Gründe stehen in
 [didaktik.md](didaktik.md). Eine Variante für eine andere Sprache kann eine
 eigene Liste haben.
 

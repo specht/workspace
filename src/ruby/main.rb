@@ -5176,6 +5176,16 @@ class Main < Sinatra::Base
         @copy_all_code
     end
 
+    # Which tips in steps were opened is kept in the browser only
+    # (hint_steps.js), per account: on a shared school computer the next
+    # person must not find the tips of the one before already open. A hash,
+    # so the page does not carry the address; nil for visitors.
+    def hint_owner
+        return nil unless user_logged_in?
+
+        Digest::SHA2.hexdigest("hint-steps:#{@session_user[:email]}")[0, 16]
+    end
+
     # --- Class repositories per group (ClassRepos) -----------------------------
 
     # { group => { slug => address } } for the groups given, {} for a group

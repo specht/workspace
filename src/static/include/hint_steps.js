@@ -4,7 +4,9 @@
 // was opened, so there is time to think about each tip instead of clicking
 // through to the last. What has been opened is kept in this browser only
 // (localStorage), so a reload does not start the waiting again. Nothing is
-// sent to the server: no teacher sees who needed which tip.
+// sent to the server: no teacher sees who needed which tip. The state is kept
+// per account (data-hint-owner on body, a hash): on a shared school computer
+// the next person finds no tips of the one before already open.
 (function () {
     const PREFIX = 'hint-steps:';
 
@@ -31,7 +33,8 @@
         if (steps.length < 2) return;
         const delay = (parseInt(box.dataset.delay, 10) || 60) * 1000;
         const card = box.closest('[data-task]');
-        const key = PREFIX + window.location.pathname + '#' + (card ? card.dataset.task : 'box-' + index);
+        const owner = document.body.dataset.hintOwner || 'gast';
+        const key = PREFIX + owner + ':' + window.location.pathname + '#' + (card ? card.dataset.task : 'box-' + index);
         // shown: how many steps are there; opened: how many of them were
         // opened; at: when the last one was opened
         const state = load(key) || { shown: 1, opened: 0, at: 0 };
