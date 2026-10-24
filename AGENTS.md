@@ -168,8 +168,11 @@ address from `credentials.rb` and the code `123456`.
 - A new or changed check gets examples in `task-examples.yaml` (docs/aufgaben.md,
   »Beispiele für die Prüfungen«): a solution it must accept, a starting point it
   must reject.
-- Run the Ruby tests (`cd src/ruby; for f in test/*_test.rb; do ruby "$f" | tail -1; done`)
-  and, for the generator, `node --test src/tutorial-screenshots/test/*.test.js`.
+- Run the Ruby tests in the Ruby container, which has the gems the pages
+  need (`./config.rb exec ruby bash -c 'for f in test/*_test.rb; do echo "$f: $(ruby "$f" 2>&1 | tail -1)"; done'`);
+  outside it, only those without nokogiri, redcarpet or rouge run, and only
+  with `LANG=C.UTF-8` (docs/entwicklung.md, »Tests«). For the generator,
+  `node --test src/tutorial-screenshots/test/*.test.js`.
 - After a change to `src/tutorial-screenshots/server.js`, rebuild the service:
   `./config.rb build tutorial_screenshots && ./config.rb up -d tutorial_screenshots`.
 - CHANGELOG: a short German line under »Unreleased« only for what an

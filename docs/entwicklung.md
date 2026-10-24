@@ -152,14 +152,31 @@ Deshalb laufen höchstens `EXPORT_LIMIT` (2) gleichzeitig
 
 ## Tests
 
+Alle Ruby-Tests laufen im Ruby-Container, der die Gems der Website
+(nokogiri, redcarpet, rouge) und einen C-Compiler hat:
+
 ```bash
-cd src/ruby
-ruby test/task_spec_test.rb                       # ein Test
-for f in test/*_test.rb; do ruby "$f" | tail -1; done   # alle
+./config.rb exec ruby bash -c 'for f in test/*_test.rb; do echo "$f: $(ruby "$f" 2>&1 | tail -1)"; done'
+./config.rb exec ruby ruby test/hint_steps_test.rb          # ein Test
 ```
 
-`reference_index_test.rb` braucht nokogiri und läuft deshalb nur im
-Ruby-Container (`./config.rb exec ruby ruby test/reference_index_test.rb`).
+Auf dem eigenen Rechner geht es ohne Container, aber nur für die Tests, die
+keine dieser Gems brauchen:
+
+```bash
+cd src/ruby
+export LANG=C.UTF-8                               # sonst »invalid byte sequence in US-ASCII«
+ruby test/task_spec_test.rb                       # ein Test
+for f in test/*_test.rb; do echo "$f: $(ruby "$f" 2>&1 | tail -1)"; done   # alle
+```
+
+Dort brechen die Tests mit einem `LoadError` ab, die die Seiten rendern
+(nokogiri, redcarpet, rouge): `code_languages_test.rb`,
+`solution_blocks_test.rb`, `hint_steps_test.rb`, `content_parts_test.rb`,
+`task_card_test.rb`, `code_context_test.rb`, `stage_code_test.rb`,
+`reference_index_test.rb`, die Lexer-Tests und einige mehr (`grep -l
+"nokogiri\|redcarpet\|rouge" test/*_test.rb include/*.rb` zeigt sie).
+`c_check_test.rb` braucht `cc` und wird ohne übersprungen.
 `task_spec_test.rb` prüft alle `tasks.yaml` im Inhaltsordner, ein Test in
 `content_parts_test.rb` alle Kataloge und `_include(…, done: …)`.
 `task_examples_test.rb` führt die `ruby`- und `python`-Prüfungen mit den
