@@ -382,6 +382,49 @@ unveränderten Code weiter. Darum endet der Kasten mit »Stell … wieder
 zurück«, wenn die Änderung im Weg wäre. Für eine Frage zum Nachdenken ohne
 Änderung gibt es `hint think`.
 
+### Erst selbst schreiben
+
+Code, der auf der Seite steht, kann man abtippen, ohne über ihn
+nachzudenken. Wo die Seite gerade erklärt hat, was eine kleine Funktion
+tun soll, oft mit der Formel dafür, schreiben die Lernenden sie erst
+selbst. Ein Kasten sagt, was zu schreiben ist und wo es hingehört; der Code
+der Seite folgt zwischen zwei Markierungen, jede auf einer eigenen Zeile,
+und ist bis zum Aufklappen unter »Lösung anzeigen« verborgen:
+
+````markdown
+<div class='hint own'>
+<strong>Erst selbst:</strong> Schreib unter <code>hit_sphere</code> die
+Funktion <code>double hit_floor(vec origin, vec dir)</code>. Sie gibt dieses
+<code>t</code> zurück, und <code>INFINITY</code>, wenn der Boden hinter dem
+Strahl liegt.
+</div>
+
+<!-- solution -->
+```c
+double hit_floor(vec origin, vec dir)
+…
+```
+<!-- /solution -->
+````
+
+Zwischen den Markierungen darf alles stehen: mehrere Codeblöcke, Teile für
+eine Sprache, ein Absatz, der die Lösung erklärt. Die Seite geht danach mit
+diesem Code weiter, so wie nach einem Kasten `hint try`; wer nicht
+weiterkommt, klappt auf und macht weiter. Rezepte, Stufen und
+`page_code_test.rb` sehen den Code wie jeden anderen.
+
+Geeignet sind Stellen, die klein und abgeschlossen sind und deren Idee die
+Seite schon erklärt hat: eine Formel in eine Funktion übersetzen, eine
+Bedingung, ein Aufruf einer Funktion, die es schon gibt (ein Schattenstrahl
+mit `nearest_hit`), wenige Zeilen in einem Gerüst, das die Seite zeigt
+(`// hier: forward, right und up`). Nicht geeignet sind Stellen, an denen
+etwas Neues erst eingeführt wird, oder lange Blöcke, nach denen der Rest der
+Seite nicht mehr passt. Kann man den Code gleich ausprobieren, sag es; wenn
+nicht, sag, wann (»Laufen lassen kannst du sie erst gleich mit
+`nearest_hit`«). Ein Kasten schließt mit einer Vorhersage
+(`prediction: true`) gut zusammen: erst vermuten, was der eigene Code tun
+wird, dann starten.
+
 ### Extras für Schnelle
 
 Eine lange Seite hat oft Kapitel, die nicht alle brauchen: einen Ausblick

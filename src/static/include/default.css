@@ -1154,6 +1154,44 @@ div.floatright > p {
     background-image: url(/images/test-tube.png);
 }
 
+/* Write it yourself first: the page's code for it follows folded away
+   (<!-- solution -->, SolutionBlocks) */
+.hint.own::before {
+    background-image: url(/images/pen.png);
+}
+
+details.solution {
+    margin: -0.4em 0 1em;
+}
+
+details.solution > summary {
+    display: inline-block;
+    cursor: pointer;
+    color: #0b4fb3;
+}
+
+details.solution > summary::-webkit-details-marker {
+    display: none;
+}
+
+details.solution > summary::before {
+    content: '\F285';
+    display: inline-block;
+    margin-right: 0.35em;
+    font-family: bootstrap-icons;
+    font-size: 80%;
+    vertical-align: 0.05em;
+    transition: transform 0.15s;
+}
+
+details.solution[open] > summary::before {
+    transform: rotate(90deg);
+}
+
+details.solution[open] > summary {
+    margin-bottom: 0.6em;
+}
+
 .hint.handshake::before {
     background-image: url(/images/handshake.png);
 }

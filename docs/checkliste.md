@@ -52,7 +52,7 @@ Repository arbeitet, liest sie also ohnehin.
 | Eine Handbuch-Seite enthält die Grundlagen und das Wichtigste und verlinkt für den Rest die offizielle Referenz oder das Handbuch (»Zum Nachschlagen«) | Lernende finden das Nötige auf der Seite und wissen, wo die vollständige Antwort steht | Lesen |
 | »Index« oder »Zählvariable«, nicht »Stelle«, für die Position in einem Array oder eine Schleifenvariable | »Stelle« ist dafür ungenau | Lesen |
 | Ist die Sprache frei, gibt es die Aktivität in Ruby und Python (`languages: [ruby, python]`), sonst in Ruby. C bleibt C | Schulen unterrichten das eine oder das andere; die Klasse stellt es ein | Audit (Spalte »Sprachen«) |
-| Jeder Codeblock nennt seine Sprache. Ein Kopierknopf nur für Code, den man nicht tippen soll, und für große Blöcke | Abtippen ist Lernen; Abschreiben von Gerüsten nicht | `code_highlight_test.rb` (teilweise), Lesen |
+| Jeder Codeblock nennt seine Sprache. Ein Kopierknopf nur für Code, den man nicht tippen soll, und für große Blöcke | Abtippen hilft beim Lesen; Abschreiben von Gerüsten nicht | `code_highlight_test.rb` (teilweise), Lesen |
 | Neuer Code mitten in einer Datei hat Kontextzeilen (`~ `) | Man sieht, wohin er gehört | `src/scripts/code-context.rb` schlägt sie vor |
 | Der Code auf der Seite ist der Code in den Stufen der Rezepte | Bilder und Prüfungen testen, was die Seite zeigt | `page_code_test.rb` |
 
@@ -67,6 +67,7 @@ Repository arbeitet, liest sie also ohnehin.
 | Rezepte prüfen mit `check-task` und `check-task-fails`, dass die Schritte der Seite zur gelösten Aufgabe führen, in jeder Sprache | Die Seite und die Prüfung passen zusammen | Rezepte beim Rendern |
 | Prüfungen lesen nur, sie ändern nichts im Workspace | Die fünf Regeln in aktivitaet-schreiben.md | Lesen |
 | Menschen, Bücher und Aufsätze stehen dort, wo sie hingehören: Wer erfunden hat, worum es in einem Abschnitt geht, bekommt einen Kasten (`_person(name)`), ein historischer Aufsatz, in dem das Verfahren des Abschnitts zum ersten Mal beschrieben ist (nicht zu jedem Thema irgendein Aufsatz), oder ein Buch, das genau dort weitermacht, einen Kasten `book` mit geprüftem Link | Hinter jeder Erfindung stehen Menschen, und wer weiterlesen will, findet die Quelle | Lesen (aktivitaet-schreiben.md, »Bücher und Aufsätze zum Weiterlesen«) |
+| Wo die Seite erklärt hat, was eine kleine Funktion tun soll, schreiben die Lernenden sie erst selbst: ein Kasten `hint own` (»Erst selbst:«), der Code der Seite danach zwischen `<!-- solution -->` und `<!-- /solution -->`, verborgen bis zum Aufklappen | Beim Abtippen denkt man nicht nach; wer selbst schreibt, merkt, was er noch nicht verstanden hat | Lesen (aktivitaet-schreiben.md, »Erst selbst schreiben«) |
 | Wo etwas gerade läuft, lädt ein Kasten `hint try` (»Ausprobieren:«) zu einer kleinen Änderung ein und sagt, worauf man achten soll; ungeprüft, die Seite geht mit dem unveränderten Code weiter | Wie etwas funktioniert, versteht man, wenn man es ändert und sieht, was passiert | Lesen |
 
 ## Bilder

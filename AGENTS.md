@@ -134,6 +134,14 @@ address from `credentials.rb` and the code `123456`.
   working, a box `<div class='hint try'>` (»Ausprobieren:«) suggests a small
   change and what to watch for, so they see how it works by changing it.
   Not a task, nothing is checked; the page continues with the unchanged code.
+- Let students write code before showing it: where the page has just
+  explained what a small function does (often with its formula), a box
+  `<div class='hint own'>` (»Erst selbst:«) says what to write and where,
+  and the page's code follows between `<!-- solution -->` and
+  `<!-- /solution -->` on lines of their own, folded under »Lösung
+  anzeigen« (`SolutionBlocks`). Small, self-contained steps only; the page
+  continues with that code (docs/aktivitaet-schreiben.md, »Erst selbst
+  schreiben«).
 - A Handbuch page holds the basics and the most important things, not
   everything, and links to the official reference or manual for the rest
   (specification, official docs, cheatsheet), in its parts or a closing

@@ -374,7 +374,8 @@ html[data-bs-theme="dark"] {
         color: #cdb0f2;
     }
     .task-hint > summary,
-    .task-solution > summary {
+    .task-solution > summary,
+    details.solution > summary {
         color: #8db8f5;
     }
     .class-board th,
