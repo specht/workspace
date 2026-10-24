@@ -229,6 +229,27 @@ days = weather['daily']
 </ul>
 </div>
 
+<!-- hint -->
+Sieh dir die Antworten an, bevor du schreibst: Füge vorübergehend `p places`
+und `p days` ein und starte das Programm einmal mit `München` und einmal mit
+`Xyzzy`. Was fehlt in der Antwort ohne Treffer? Und welche Listen stehen in
+`days`, wie viele Einträge hat jede?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst für beide Stellen:
+
+```ruby
+results = places['results'] || []   # ohne Treffer gibt es results gar nicht
+# hier: abort mit der Meldung, wenn results leer ist; sonst ist place der erste Treffer
+```
+
+```ruby
+days['time'].each_with_index do |day, i|
+  # hier: eine Zeile mit day und den Werten an der Stelle i der anderen Listen
+end
+```
+<!-- /hint -->
+
 <!-- solution -->
 ```ruby
 ~ places = fetch_json(GEOCODING_API,
@@ -340,6 +361,27 @@ days = weather['daily']
 <li>In <code>days</code> steht zu jedem Wert eine Liste mit einem Eintrag pro Tag: <code>days['time']</code> die Daten, <code>days['temperature_2m_min']</code> und <code>days['temperature_2m_max']</code> die Tiefst- und Höchstwerte, <code>days['weather_code']</code> die Codes. Derselbe Index ist derselbe Tag. Gib für jeden Tag eine Zeile aus, etwa <code>2026-10-24: 6.1 bis 12.4 °C, Regen</code>.</li>
 </ul>
 </div>
+
+<!-- hint -->
+Sieh dir die Antworten an, bevor du schreibst: Füge vorübergehend
+`print(places)` und `print(days)` ein und starte das Programm einmal mit
+`München` und einmal mit `Xyzzy`. Was fehlt in der Antwort ohne Treffer? Und
+welche Listen stehen in `days`, wie viele Einträge hat jede?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst für beide Stellen:
+
+```python
+results = places.get('results', [])   # ohne Treffer gibt es results gar nicht
+# hier: sys.exit mit der Meldung, wenn results leer ist; sonst ist place der erste Treffer
+```
+
+```python
+for i, day in enumerate(days['time']):
+    # hier: eine Zeile mit day und den Werten an der Stelle i der anderen Listen
+    ...
+```
+<!-- /hint -->
 
 <!-- solution -->
 ```python

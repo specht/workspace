@@ -112,6 +112,11 @@ Aktivität ([widgets.md](widgets.md)).
 - »Erst selbst« mit Prüfungen darunter: Raytracer, Raycaster, Webserver,
   Pixelwand, Wetter; eine Prüfung `c` auch im GIF-Decoder.
 - Änderungen statt ganzer Dateien: Webserver, Pixelwand.
-- Tipps in Stufen: Huffman (Baum, Decodieren, kanonische Codes) und die
-  Kästen »Erst selbst« im Raytracer.
-- Noch nicht durchgesehen: glsl, raylib, tic80 und die übrigen Labs.
+- Tipps in Stufen: Huffman (Baum, Decodieren, kanonische Codes), alle
+  Aufgaben des Routenplaners, in denen eine Funktion entsteht, die
+  Steganographie und alle Kästen »Erst selbst« (Raytracer, Raycaster,
+  Webserver, Pixelwand, Wetter).
+- Als Nächstes für Tipps in Stufen: der Rechner (`baum` vor allem), LZW
+  (`entpacker`), TOTP, RLE, die Automaten und die schwereren SQL-Abfragen
+  (LEFT JOIN mit `IS NULL`, GROUP BY mit HAVING, Abstände).
+- Noch nicht durchgesehen: glsl, raylib, tic80.

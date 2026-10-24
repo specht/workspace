@@ -659,6 +659,20 @@ Wichtig ist die Zeile mit `start_with?`. `File.expand_path` macht aus dem Pfad e
 <strong>Erst selbst:</strong> Die Antwort für <code>/</code> und die für unbekannte Pfade übernimmt jetzt <code>serve_file</code>. Ändere die Auswahl in der Schleife: <code>/time</code> bleibt, wie es ist, und jeder andere Pfad geht an <code>serve_file</code>.
 </div>
 
+<!-- hint -->
+Welche Pfade beantwortet der Server jetzt noch selbst, und welche gehen an
+`serve_file`? Denk an `/`: Was soll dort jetzt kommen?
+<!-- /hint -->
+<!-- hint -->
+```ruby
+    if path == '/time'
+      … # die Antwort mit der Uhrzeit, wie bisher
+    else
+      … # serve_file mit client und dem Pfad
+    end
+```
+<!-- /hint -->
+
 <!-- solution -->
 ```ruby
 ~     while (line = client.gets) && line != "\r\n"
@@ -724,6 +738,19 @@ Wichtig ist die Zeile mit `startswith`. `os.path.realpath` macht aus dem Pfad ei
 <div class='hint own'>
 <strong>Erst selbst:</strong> Die Antwort für <code>/</code> und die für unbekannte Pfade übernimmt jetzt <code>serve_file</code>. Ändere die Auswahl in <code>handle</code>: <code>/time</code> bleibt, wie es ist, und jeder andere Pfad geht an <code>serve_file</code>.
 </div>
+
+<!-- hint -->
+Welche Pfade beantwortet der Server jetzt noch selbst, und welche gehen an
+`serve_file`? Denk an `/`: Was soll dort jetzt kommen?
+<!-- /hint -->
+<!-- hint -->
+```python
+        if path == '/time':
+            …   # die Antwort mit der Uhrzeit, wie bisher
+        else:
+            …   # serve_file mit client und dem Pfad
+```
+<!-- /hint -->
 
 <!-- solution -->
 ```python
@@ -883,6 +910,19 @@ In der Schleife heißt, was nach der Methode kommt, jetzt `target`: Es enthält 
 <strong>Erst selbst:</strong> Füg einen Fall für <code>/hello</code> hinzu. <code>/hello?name=Ada</code> antwortet mit dem Text <code>Hallo, Ada!</code> und einem Zeilenende, <code>/hello</code> ohne Namen mit <code>Hallo, Unbekannt!</code>. Den Namen findest du im Hash <code>params</code>.
 </div>
 
+<!-- hint -->
+Was steht in `params` für `/hello?name=Ada`, und was für `/hello` ohne
+Fragezeichen? Schreib vorübergehend `p params` vor `case path`, starte den
+Server neu und frag mit `curl`.
+<!-- /hint -->
+<!-- hint -->
+```ruby
+    when '/hello'
+      name = … # der Name aus params, sonst 'Unbekannt'
+      respond(client, '200 OK', 'text/plain; charset=utf-8', …)
+```
+<!-- /hint -->
+
 <!-- solution -->
 ```ruby
 ~               "Es ist #{Time.now.strftime('%H:%M:%S')} Uhr.\n")
@@ -951,6 +991,19 @@ In `handle` heißt, was nach der Methode kommt, jetzt `target`: Es enthält auß
 <div class='hint own'>
 <strong>Erst selbst:</strong> Füg einen Fall für <code>/hello</code> hinzu. <code>/hello?name=Ada</code> antwortet mit dem Text <code>Hallo, Ada!</code> und einem Zeilenende, <code>/hello</code> ohne Namen mit <code>Hallo, Unbekannt!</code>. Den Namen findest du im <code>dict</code> <code>params</code>.
 </div>
+
+<!-- hint -->
+Was steht in `params` für `/hello?name=Ada`, und was für `/hello` ohne
+Fragezeichen? Schreib vorübergehend `print(params)` vor `if path == '/time'`,
+starte den Server neu und frag mit `curl`.
+<!-- /hint -->
+<!-- hint -->
+```python
+        elif path == '/hello':
+            name = …   # der Name aus params, sonst 'Unbekannt'
+            respond(client, '200 OK', 'text/plain; charset=utf-8', …)
+```
+<!-- /hint -->
 
 <!-- solution -->
 ```python
@@ -1221,6 +1274,23 @@ Nach einer Stimme zeigt `/vote` nicht gleich das Ergebnis, sondern ruft `redirec
 <strong>Erst selbst:</strong> Schreib unter <code>respond</code> die Funktion <code>redirect(client, location)</code>. Sie schickt eine Antwort ohne Inhalt: die Status-Line mit <code>303 See Other</code>, die Header <code>Location</code>, <code>Content-Length: 0</code> und <code>Connection: close</code> und die leere Zeile. Danach schließt sie die Verbindung, so wie <code>respond</code>.
 </div>
 
+<!-- hint -->
+Leg `respond` daneben: Was davon braucht `redirect` auch, und was nicht? Eine
+Antwort ohne Inhalt hat trotzdem eine Status-Line, Header und die leere
+Zeile.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```ruby
+def redirect(client, location)
+  client.print "HTTP/1.1 303 See Other\r\n"
+  # hier: die Header Location, Content-Length: 0 und Connection: close,
+  # die leere Zeile, und die Verbindung schließen
+end
+```
+<!-- /hint -->
+
 <!-- solution -->
 ```ruby
 ~   client.close
@@ -1242,6 +1312,22 @@ end
 <div class='hint own'>
 <strong>Erst selbst:</strong> Schreib unter <code>respond</code> die Funktion <code>redirect(client, location)</code>. Sie schickt eine Antwort ohne Inhalt: die Status-Line mit <code>303 See Other</code>, die Header <code>Location</code>, <code>Content-Length: 0</code> und <code>Connection: close</code> und die leere Zeile, als Bytes mit <code>sendall</code>, so wie <code>respond</code>.
 </div>
+
+<!-- hint -->
+Leg `respond` daneben: Was davon braucht `redirect` auch, und was nicht? Eine
+Antwort ohne Inhalt hat trotzdem eine Status-Line, Header und die leere
+Zeile.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```python
+def redirect(client, location):
+    head = ('HTTP/1.1 303 See Other\r\n'
+            …)   # hier: Location, Content-Length: 0, Connection: close und die leere Zeile
+    client.sendall(head.encode())
+```
+<!-- /hint -->
 
 <!-- solution -->
 ```python

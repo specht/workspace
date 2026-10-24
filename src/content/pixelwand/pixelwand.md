@@ -377,6 +377,27 @@ In `App` kommt jede neue Verbindung in die Liste, sobald sie steht. Unter `ws = 
 <strong>Erst selbst:</strong> Was in <code>ws.on(:message)</code> ankommt, soll an alle gehen, statt mit »Echo:« zurück. Und schließt jemand den Tab, läuft <code>ws.on(:close) do … end</code>: Schreib es unter <code>ws.on(:message)</code> so, dass die Verbindung aus <code>$clients</code> verschwindet und alle erfahren, wie viele es noch sind.
 </div>
 
+<!-- hint -->
+Wer steht in `$clients`, wenn Ada und Bo die Seite offen haben? Was muss mit
+einer Nachricht von Ada passieren, damit beide sie sehen? Und was muss
+geschehen, wenn Bo den Tab schließt?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```ruby
+    ws.on(:message) do |event|
+      puts "Empfangen: #{event.data}"
+      … # die Nachricht an alle
+    end
+
+    ws.on(:close) do
+      … # ws aus $clients nehmen
+      … # allen sagen, wie viele es noch sind
+    end
+```
+<!-- /hint -->
+
 <!-- solution -->
 ```ruby
     # Was kommt, geht an alle
@@ -443,6 +464,24 @@ def handle(ws):
 <div class='hint own'>
 <strong>Erst selbst:</strong> Füll die beiden Stellen mit <code>...</code>. In der Schleife geht jede Nachricht an alle, statt mit »Echo:« zurück. Im <code>finally</code> verschwindet die Verbindung aus <code>clients</code>, und alle erfahren, wie viele es noch sind. <code>...</code> ist in Python eine Anweisung, die nichts tut; sie hält nur den Platz frei.
 </div>
+
+<!-- hint -->
+Wer steht in `clients`, wenn Ada und Bo die Seite offen haben? Was muss mit
+einer Nachricht von Ada passieren, damit beide sie sehen? Und was muss
+geschehen, wenn Bo den Tab schließt?
+<!-- /hint -->
+<!-- hint -->
+Die beiden Stellen:
+
+```python
+        for message in ws:
+            print(f'Empfangen: {message}')
+            …   # die Nachricht an alle
+    finally:
+        …   # ws aus clients nehmen (discard)
+        …   # allen sagen, wie viele es noch sind
+```
+<!-- /hint -->
 
 <!-- solution -->
 ```python
@@ -538,6 +577,23 @@ Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Sile
 <strong>Erst selbst:</strong> Schreib in <code>ws.on(:message)</code> die Prüfung. Lies die Nachricht mit <code>JSON.parse(event.data)</code> und überspring mit <code>next</code> alles, was nicht passt: Text, der kein JSON ist (dann wirft <code>JSON.parse</code> einen Fehler), JSON, das kein Hash ist, <code>x</code>, <code>y</code> oder <code>color</code>, die keine ganzen Zahlen sind, einen Pixel außerhalb des Bildes und eine Farbe außerhalb von 0 bis 15.
 </div>
 
+<!-- hint -->
+Welche dieser Nachrichten darf auf die Wand, und woran merkt dein Programm es
+bei den anderen? `{"x":0,"y":0,"color":4}`, `{"x":999,"y":0,"color":4}`,
+`{"x":0,"y":0,"color":99}`, `Hallo`, `[1, 2, 3]`, `{"x":"0","y":0,"color":4}`.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Bedingungen mit `…` schreibst du:
+
+```ruby
+      message = JSON.parse(event.data) rescue next   # kein JSON: überspringen
+      next unless …   # ein Hash?
+      x, y, color = message.values_at('x', 'y', 'color')
+      next unless …   # alle drei ganze Zahlen (Integer)?
+      next unless …   # im Bild, und die Farbe von 0 bis 15?
+```
+<!-- /hint -->
+
 <!-- solution -->
 ```ruby
       # Jeder kann alles schicken: nur glauben, was passt
@@ -624,6 +680,29 @@ with serve(handle, '0.0.0.0', 8000, process_request=page) as server:
 <div class='hint own'>
 <strong>Erst selbst:</strong> Schreib in <code>handle</code> an der Stelle mit <code>...</code> die Prüfung. Lies die Nachricht mit <code>json.loads(text)</code> und überspring mit <code>continue</code> alles, was nicht passt: Text, der kein JSON ist (dann wirft <code>json.loads</code> einen <code>ValueError</code>), JSON, das kein <code>dict</code> ist, <code>x</code>, <code>y</code> oder <code>color</code>, die keine ganzen Zahlen sind, einen Pixel außerhalb des Bildes und eine Farbe außerhalb von 0 bis 15.
 </div>
+
+<!-- hint -->
+Welche dieser Nachrichten darf auf die Wand, und woran merkt dein Programm es
+bei den anderen? `{"x":0,"y":0,"color":4}`, `{"x":999,"y":0,"color":4}`,
+`{"x":0,"y":0,"color":99}`, `Hallo`, `[1, 2, 3]`, `{"x":"0","y":0,"color":4}`.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Bedingungen mit `…` schreibst du:
+
+```python
+            try:
+                message = json.loads(text)
+            except ValueError:
+                continue                 # kein JSON: überspringen
+            if …:   # kein dict?
+                continue
+            x, y, color = message.get('x'), message.get('y'), message.get('color')
+            if …:   # nicht alle drei ganze Zahlen (type(value) is int)?
+                continue
+            if …:   # nicht im Bild, oder die Farbe nicht von 0 bis 15?
+                continue
+```
+<!-- /hint -->
 
 <!-- solution -->
 ```python

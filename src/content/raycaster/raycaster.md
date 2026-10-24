@@ -357,6 +357,24 @@ void update_camera(void)
 <strong>Erst selbst:</strong> Schreib den Rumpf von <code>update_camera</code>. <code>dir</code> ist die Blickrichtung mit der Länge 1, aus <code>player_angle</code> wie in <code>move_player</code>. <code>plane</code> steht senkrecht auf <code>dir</code>, um 90 Grad nach rechts gedreht wie beim Seitwärtslaufen, und ist <code>PLANE</code> lang. Laufen lassen kannst du es, sobald gleich die Strahlen gezeichnet werden; die Aufgabe unter der Lösung prüft es schon jetzt.
 </div>
 
+<!-- hint -->
+Schaut die Figur mit `player_angle = 0` nach rechts, ist `dir` der Vektor
+(1, 0). Wohin zeigt dann »rechts von ihr«, wenn y nach unten wächst? Vergleich
+es mit der Regel beim Seitwärtslaufen: Aus `(x, y)` wird nach rechts
+`(−y, x)`.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücken mit `…` füllst du:
+
+```c
+    dir_x = cos(…);
+    dir_y = sin(…);
+    // um 90 Grad nach rechts gedreht und PLANE lang
+    plane_x = … * PLANE;
+    plane_y = … * PLANE;
+```
+<!-- /hint -->
+
 <!-- solution -->
 ```c
 ~ void update_camera(void)
@@ -722,6 +740,17 @@ Für zwei Vektoren der Länge 1 ist das Skalarprodukt der Kosinus des Winkels zw
 <strong>Erst selbst:</strong> In <code>draw_view</code> ändert sich eine einzige Rechnung, die von <code>distance</code>. Rechne dort das Skalarprodukt aus dem Vektor von der Spielfigur zum Treffpunkt und <code>dir</code> aus: die Summe aus den multiplizierten x-Anteilen und den multiplizierten y-Anteilen. Danach sind die Wände gerade.
 </div>
 
+<!-- hint -->
+Der Vektor von der Figur zum Treffpunkt ist `(hit.x − player_x, hit.y −
+player_y)`. Das Skalarprodukt zweier Vektoren ist: x-Anteil mal x-Anteil plus
+y-Anteil mal y-Anteil.
+<!-- /hint -->
+<!-- hint -->
+```c
+        double distance = (…) * dir_x + (…) * dir_y;
+```
+<!-- /hint -->
+
 <!-- solution -->
 ```c
         // der Abstand entlang der Blickrichtung: das Skalarprodukt
@@ -762,6 +791,24 @@ Noch läuft die Figur durch Wände. Bevor sie sich bewegt, muss das Programm fra
 <div class='hint own'>
 <strong>Erst selbst:</strong> Schreib über <code>move_player</code> die Funktion <code>int is_free(double x, double y)</code>. Sie gibt 1 zurück, wenn keine der vier Ecken des Quadrats um <code>(x, y)</code> in einer Wand steht, sonst 0. Das Quadrat reicht in jede Richtung <code>PLAYER_RADIUS</code> weit, und <code>is_wall</code> gibt es schon.
 </div>
+
+<!-- hint -->
+Zeichne die Figur bei (10.8, 1.8) als Quadrat auf Karopapier, mit
+`PLAYER_RADIUS` 0.25 in jede Richtung: Wo liegen seine vier Ecken, und in
+welchen Kästchen der Karte? Steht eine davon in einer Wand, passt die Figur
+dort nicht hin.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```c
+int is_free(double x, double y)
+{
+    double r = PLAYER_RADIUS;
+    return !is_wall(x - r, y - r) && …;   // hier: die anderen drei Ecken
+}
+```
+<!-- /hint -->
 
 <!-- solution -->
 ```c
@@ -1177,6 +1224,19 @@ Weil `draw_wall_column` jetzt `shaded` benutzt, müssen `light_at` und `shaded` 
 <div class='hint own'>
 <strong>Erst selbst:</strong> Rechne in <code>draw_view</code> für jede Spalte ihr <code>u</code> aus, wie oben beschrieben: den Nachkommateil von <code>hit.y</code> bei einer Wand quer zur x-Achse (<code>hit.side == 0</code>), sonst den von <code>hit.x</code>. <code>floor</code> rundet ab.
 </div>
+
+<!-- hint -->
+Trifft ein Strahl eine Wand bei `hit.y = 3.35`, liegt der Treffpunkt 0.35
+weit auf dem Kästchen. Wie bekommst du aus einer Kommazahl ihren
+Nachkommateil, mit `floor`? Und welche Koordinate zählt bei `hit.side == 0`,
+welche bei 1?
+<!-- /hint -->
+<!-- hint -->
+```c
+        double wall_x = (hit.side == 0) ? … : …;
+        double u = wall_x - …;
+```
+<!-- /hint -->
 
 <!-- solution -->
 ```c
