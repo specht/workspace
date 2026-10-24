@@ -1943,6 +1943,7 @@ class Main < Sinatra::Base
                     md
                 end
                 CodeLanguages.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
+                CodeLanguages.pair(root) if page_languages.empty?
                 insert_task_cards(root, task_slots, page_tasks, redcarpet, path, page_languages) unless task_slots.empty?
                 StageCode.insert(root, stage_points) unless stage_points.empty?
                 # Reference pages: every h2 and h3 gets an anchor for the Handbuch index.

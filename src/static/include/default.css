@@ -82,6 +82,13 @@ code {
     border-radius: 0.3em;
 }
 
+/* Code in a sentence or a table cell without the font's ligatures: there
+   »::« became a wide sign with gaps (OpenSSL :: HMAC); blocks keep them. */
+:not(pre) > code {
+    font-variant-ligatures: none;
+    font-feature-settings: 'liga' 0, 'calt' 0;
+}
+
 pre {
     font-family: '0xProto Nerd Font Mono', monospace;
     /* font-weight: bold; */
@@ -2949,6 +2956,37 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 [data-code-language='ruby'] .code-language:not([data-language='ruby']),
 [data-code-language='python'] .code-language:not([data-language='python']) {
     display: none;
+}
+
+/* On a page in one language, a Ruby and a Python part right after each
+   other (CodeLanguages.pair): side by side where there is room, else one
+   under the other, each with its language above it. */
+.code-compare {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    column-gap: 1em;
+    margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+    .code-compare {
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(0, 1fr);
+    }
+}
+
+.code-compare > .code-language::before {
+    content: attr(data-language);
+    display: block;
+    text-transform: capitalize;
+    font-size: 0.8em;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+    margin-bottom: 0.15em;
+}
+
+.code-compare > .code-language > pre:last-child {
+    margin-bottom: 0.6rem;
 }
 
 .code-language-switch {

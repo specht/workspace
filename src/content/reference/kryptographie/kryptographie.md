@@ -141,18 +141,76 @@ Alle drei lassen sich ohne Schlüssel zurückverwandeln. Sie machen Bytes nur le
 
 <!-- part: krypto-programme -->
 <!-- short: SHA-256, HMAC, Base64 und Zufall in Ruby und Python. -->
-<div class='scroll-x'><table class='table table-sm reference-table reference-table-wide'>
-<thead><tr><th></th><th>Ruby</th><th>Python</th></tr></thead>
-<tbody>
-<tr><th>SHA-256</th><td><code>require 'digest'</code><br><code>Digest::SHA256.hexdigest(text)</code></td><td><code>import hashlib</code><br><code>hashlib.sha256(data).hexdigest()</code></td></tr>
-<tr><th>HMAC</th><td><code>require 'openssl'</code><br><code>OpenSSL::HMAC.digest('SHA1', key, data)</code></td><td><code>import hmac, hashlib</code><br><code>hmac.new(key, data, hashlib.sha1).digest()</code></td></tr>
-<tr><th>Base64</th><td><code>[data].pack('m0')</code>, zurück <code>text.unpack1('m0')</code></td><td><code>import base64</code><br><code>base64.b64encode(data)</code>, zurück <code>base64.b64decode(text)</code></td></tr>
-<tr><th>zufällige Bytes</th><td><code>require 'securerandom'</code><br><code>SecureRandom.random_bytes(20)</code></td><td><code>import secrets</code><br><code>secrets.token_bytes(20)</code></td></tr>
-</tbody>
-</table>
-</div>
+In Python sind `data` und `key` Bytes, kein Text: `"geheim".encode()` macht aus einem Text Bytes.
 
-In Python sind `data` und `key` Bytes, kein Text: `"geheim".encode()` macht aus einem Text Bytes. Für Schlüssel und Salz nimmst du `SecureRandom` und `secrets`, nie `rand` oder `random`: Deren Zahlen lassen sich vorhersagen.
+### SHA-256
+
+Der Hash von Bytes, als 64 Hexziffern.
+
+<!-- language: ruby -->
+```ruby
+require 'digest'
+Digest::SHA256.hexdigest(data)
+```
+<!-- /language -->
+<!-- language: python -->
+```python
+import hashlib
+hashlib.sha256(data).hexdigest()
+```
+<!-- /language -->
+
+### HMAC
+
+Eine Prüfsumme mit Schlüssel, wie sie eine Authenticator-App rechnet, hier mit SHA-1. Heraus kommen Bytes.
+
+<!-- language: ruby -->
+```ruby
+require 'openssl'
+OpenSSL::HMAC.digest('SHA1', key, data)
+```
+<!-- /language -->
+<!-- language: python -->
+```python
+import hmac, hashlib
+hmac.new(key, data, hashlib.sha1).digest()
+```
+<!-- /language -->
+
+### Base64
+
+Bytes als Text und zurück.
+
+<!-- language: ruby -->
+```ruby
+text = [data].pack('m0')
+data = text.unpack1('m0')
+```
+<!-- /language -->
+<!-- language: python -->
+```python
+import base64
+text = base64.b64encode(data)
+data = base64.b64decode(text)
+```
+<!-- /language -->
+
+### Zufällige Bytes
+
+Für Schlüssel und Salz, hier 20 Bytes. Nimm dafür nie `rand` oder `random`: Deren Zahlen lassen sich vorhersagen.
+
+<!-- language: ruby -->
+```ruby
+require 'securerandom'
+SecureRandom.random_bytes(20)
+```
+<!-- /language -->
+<!-- language: python -->
+```python
+import secrets
+secrets.token_bytes(20)
+```
+<!-- /language -->
 <!-- /part -->
 
 ## Zum Nachschlagen

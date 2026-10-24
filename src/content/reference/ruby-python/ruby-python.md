@@ -44,6 +44,7 @@ _person(matsumoto)
 
 Ein Block endet in Ruby mit `end`; die Einrückung ist nur für Menschen. In Python ist die Einrückung der Block: Nach `if`, `for`, `def` und `while` steht ein Doppelpunkt, und alles, was weiter eingerückt ist, gehört dazu.
 
+<!-- language: ruby -->
 ```ruby
 if count > 3
   puts 'viele'
@@ -51,13 +52,15 @@ else
   puts 'wenige'
 end
 ```
-
+<!-- /language -->
+<!-- language: python -->
 ```python
 if count > 3:
     print('viele')
 else:
     print('wenige')
 ```
+<!-- /language -->
 
 Ein `elsif` heißt in Python `elif`, `&&` `||` `!` heißen `and` `or` `not` (Ruby kennt beide Schreibweisen), `unless x` heißt `if not x`.
 <!-- /part -->
@@ -175,18 +178,21 @@ Eine **Menge** enthält jeden Wert höchstens einmal: in Ruby `Set['q0', 'q1']`,
 
 <!-- part: rp-funktionen -->
 <!-- short: def … end und def …:; Ruby gibt den letzten Wert zurück, Python ohne return None; Blöcke und lambda. -->
+<!-- language: ruby -->
 ```ruby
 def distance(a, b, scale = 1)
-  Math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2) * scale
+  Math.hypot(a[0] - b[0], a[1] - b[1]) * scale
 end
 ```
-
+<!-- /language -->
+<!-- language: python -->
 ```python
 import math
 
 def distance(a, b, scale=1):
-    return math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2) * scale
+    return math.hypot(a[0] - b[0], a[1] - b[1]) * scale
 ```
+<!-- /language -->
 
 <div class='scroll-x'><table class='table table-sm reference-table reference-table-wide'>
 <thead><tr><th>Was</th><th>Ruby</th><th>Python</th></tr></thead>

@@ -29,6 +29,10 @@ require 'cgi'
 # Which language a person sees: their own choice (u.code_language, set with
 # the switch), else that of the first of their classes a teacher has set one
 # for, else Ruby.
+#
+# A page without languages: in its meta (a Handbuch page) may use the same
+# markers to show both: a Ruby part and a Python part right after each other
+# stand side by side, each labelled with its language (pair).
 module CodeLanguages
     LANGUAGES = %w[ruby python].freeze
     NAMES = { 'ruby' => 'Ruby', 'python' => 'Python' }.freeze
@@ -90,6 +94,31 @@ module CodeLanguages
         root.css('div.code-language-end').each do |stray|
             warn&.call('<!-- /language --> without <!-- language: … -->')
             stray.remove
+        end
+        root
+    end
+
+    # On a page in one language (a Handbuch page), parts for different
+    # languages that follow each other directly stand side by side: they go
+    # into <div class='code-compare'>, and CSS labels each with its language.
+    # On a page with the switch only one of them is shown, so they stay apart.
+    def self.pair(root)
+        root.css('div.code-language').each do |box|
+            next if box.parent.nil? || box.parent['class'] == 'code-compare'
+
+            group = [box]
+            node = box.next_element
+            while node && node.name == 'div' && node['class'] == 'code-language' &&
+                  group.none? { |b| b['data-language'] == node['data-language'] }
+                group << node
+                node = node.next_element
+            end
+            next if group.size < 2
+
+            compare = Nokogiri::XML::Node.new('div', root.document)
+            compare['class'] = 'code-compare'
+            box.add_previous_sibling(compare)
+            group.each { |b| compare.add_child(b) }
         end
         root
     end

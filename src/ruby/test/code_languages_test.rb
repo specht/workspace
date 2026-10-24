@@ -49,6 +49,19 @@ class CodeLanguagesTest < Minitest::Test
         assert_includes texts, 'Wieder für alle.'
     end
 
+    def test_parts_right_after_each_other_stand_side_by_side
+        root = CodeLanguages.pair(render(PAGE))
+        compare = root.at_css('div.code-compare')
+        assert_equal %w[ruby python], compare.css('> div.code-language').map { |b| b['data-language'] }
+        assert_equal 1, root.css('div.code-compare').size
+    end
+
+    def test_parts_apart_or_alone_stay_as_they_are
+        root = CodeLanguages.pair(render("<!-- language: ruby -->\n\nA\n\n<!-- /language -->\n\nDazwischen.\n\n<!-- language: python -->\n\nB\n\n<!-- /language -->\n"))
+        refute root.at_css('div.code-compare')
+        assert_equal 2, root.css('div.code-language').size
+    end
+
     def test_markers_in_code_blocks_stay_text
         root = render(PAGE)
         assert_includes root.css('pre code').last.text, '<!-- language: ruby -->'

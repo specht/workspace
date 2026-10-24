@@ -258,6 +258,13 @@ stehen in der Seite, und der Schalter zeigt die eine oder die andere, ohne
 die Seite neu zu laden. Vorbild sind `src/content/rle/`, `huffman/` und
 `lzw/`.
 
+Auf einer Seite ohne `languages` (einer Handbuch-Seite) zeigen dieselben
+Kommentare beide Sprachen nebeneinander: Ein Teil für Ruby und einer für
+Python, die direkt aufeinander folgen, stehen auf breiten Bildschirmen in
+zwei Spalten, auf dem Handy untereinander, jeder mit dem Namen seiner Sprache
+darüber (`CodeLanguages.pair`). Vorbild sind »In Programmen« in
+`reference/kryptographie/` und die Funktionen in `reference/ruby-python/`.
+
 ### Menschen hinter einem Namen
 
 Hat ein Mensch die Sache gemacht, um die es auf einer Seite oder in einem
