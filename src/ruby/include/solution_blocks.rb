@@ -1,11 +1,11 @@
 require 'cgi'
 
 # Code the students write themselves first (docs/aktivitaet-schreiben.md,
-# »Erst selbst schreiben«). A box says what to write; the page's own code
+# »Jetzt bist du dran«). A box says what to write; the page's own code
 # for it follows between two markers on lines of their own:
 #
 #   <div class='hint own'>
-#   <strong>Erst selbst:</strong> Schreib <code>hit_floor</code> …
+#   <strong>Jetzt bist du dran:</strong> Schreib <code>hit_floor</code> …
 #   </div>
 #
 #   <!-- solution -->

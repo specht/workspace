@@ -2,7 +2,7 @@ require 'cgi'
 
 # Tips in steps (docs/didaktik.md, docs/aufgaben.md »Tipps in Stufen«).
 #
-# A task's hint may be a list instead of one text, and an »Erst selbst«
+# A task's hint may be a list instead of one text, and a »Jetzt bist du dran«
 # box (SolutionBlocks) may have tips before its solution, each between two
 # markers on lines of their own:
 #

@@ -354,7 +354,7 @@ void update_camera(void)
 ```
 
 <div class='hint own'>
-<strong>Erst selbst:</strong> Schreib den Rumpf von <code>update_camera</code>. <code>dir</code> ist die Blickrichtung mit der Länge 1, aus <code>player_angle</code> wie in <code>move_player</code>. <code>plane</code> steht senkrecht auf <code>dir</code>, um 90 Grad nach rechts gedreht wie beim Seitwärtslaufen, und ist <code>PLANE</code> lang. Laufen lassen kannst du es, sobald gleich die Strahlen gezeichnet werden; die Aufgabe unter der Lösung prüft es schon jetzt.
+<strong>Jetzt bist du dran:</strong> Schreib den Rumpf von <code>update_camera</code>. <code>dir</code> ist die Blickrichtung mit der Länge 1, aus <code>player_angle</code> wie in <code>move_player</code>. <code>plane</code> steht senkrecht auf <code>dir</code>, um 90 Grad nach rechts gedreht wie beim Seitwärtslaufen, und ist <code>PLANE</code> lang. Laufen lassen kannst du es, sobald gleich die Strahlen gezeichnet werden; die Aufgabe unter der Lösung prüft es schon jetzt.
 </div>
 
 <!-- hint -->
@@ -737,7 +737,7 @@ Den liefert das Skalarprodukt. Der Vektor `a` von der Figur zum Treffpunkt, mult
 Für zwei Vektoren der Länge 1 ist das Skalarprodukt der Kosinus des Winkels zwischen ihnen: 1, wenn sie in dieselbe Richtung zeigen, 0, wenn sie senkrecht aufeinander stehen, und dazwischen etwas zwischen 0 und 1. Das ist genau die Länge des Schattens, den `a` auf `dir` wirft (grün). Ist `a` doppelt so lang, ist es auch sein Schatten; mit `dir` der Länge 1 ist das Skalarprodukt also der Weg, den der Treffpunkt in Blickrichtung vor der Figur liegt.
 
 <div class='hint own'>
-<strong>Erst selbst:</strong> In <code>draw_view</code> ändert sich eine einzige Rechnung, die von <code>distance</code>. Rechne dort das Skalarprodukt aus dem Vektor von der Spielfigur zum Treffpunkt und <code>dir</code> aus: die Summe aus den multiplizierten x-Anteilen und den multiplizierten y-Anteilen. Danach sind die Wände gerade.
+<strong>Jetzt bist du dran:</strong> In <code>draw_view</code> ändert sich eine einzige Rechnung, die von <code>distance</code>. Rechne dort das Skalarprodukt aus dem Vektor von der Spielfigur zum Treffpunkt und <code>dir</code> aus: die Summe aus den multiplizierten x-Anteilen und den multiplizierten y-Anteilen. Danach sind die Wände gerade.
 </div>
 
 <!-- hint -->
@@ -789,7 +789,7 @@ Die Wände sind gerade, und das Bild sieht aus wie ein Blick durch einen Raum.
 Noch läuft die Figur durch Wände. Bevor sie sich bewegt, muss das Programm fragen: Passt sie an den neuen Ort? Die Figur ist kein Punkt, sie hat einen Halbmesser `PLAYER_RADIUS`. Es genügt, die vier Ecken des Quadrats um sie herum zu prüfen; steht keine davon in einer Wand, ist der Platz frei.
 
 <div class='hint own'>
-<strong>Erst selbst:</strong> Schreib über <code>move_player</code> die Funktion <code>int is_free(double x, double y)</code>. Sie gibt 1 zurück, wenn keine der vier Ecken des Quadrats um <code>(x, y)</code> in einer Wand steht, sonst 0. Das Quadrat reicht in jede Richtung <code>PLAYER_RADIUS</code> weit, und <code>is_wall</code> gibt es schon.
+<strong>Jetzt bist du dran:</strong> Schreib über <code>move_player</code> die Funktion <code>int is_free(double x, double y)</code>. Sie gibt 1 zurück, wenn keine der vier Ecken des Quadrats um <code>(x, y)</code> in einer Wand steht, sonst 0. Das Quadrat reicht in jede Richtung <code>PLAYER_RADIUS</code> weit, und <code>is_wall</code> gibt es schon.
 </div>
 
 <!-- hint -->
@@ -1222,7 +1222,7 @@ void draw_wall_column(int column, double distance, int tex, double u, double lig
 Weil `draw_wall_column` jetzt `shaded` benutzt, müssen `light_at` und `shaded` darüberstehen; verschiebe die beiden Funktionen vor `draw_wall_column`.
 
 <div class='hint own'>
-<strong>Erst selbst:</strong> Rechne in <code>draw_view</code> für jede Spalte ihr <code>u</code> aus, wie oben beschrieben: den Nachkommateil von <code>hit.y</code> bei einer Wand quer zur x-Achse (<code>hit.side == 0</code>), sonst den von <code>hit.x</code>. <code>floor</code> rundet ab.
+<strong>Jetzt bist du dran:</strong> Rechne in <code>draw_view</code> für jede Spalte ihr <code>u</code> aus, wie oben beschrieben: den Nachkommateil von <code>hit.y</code> bei einer Wand quer zur x-Achse (<code>hit.side == 0</code>), sonst den von <code>hit.x</code>. <code>floor</code> rundet ab.
 </div>
 
 <!-- hint -->

@@ -17,12 +17,14 @@ Selbstschreiben. Die Werkzeuge unten gleichen das aus, ohne das Geführte
 aufzugeben: Schwierige Teile (Brechung, Fresnel, Path Tracing) bleiben
 ausgearbeitete Beispiele, die die Seite erklärt.
 
-## Erst selbst schreiben
+## Jetzt bist du dran
 
 Wo die Seite gerade erklärt hat, was eine kleine Funktion tun soll, oft mit
 ihrer Formel, schreiben die Lernenden sie zuerst selbst: ein Kasten
-`hint own` (»Erst selbst:«) sagt, was und wo, der Code der Seite folgt
+`hint own` (»Jetzt bist du dran:«) sagt, was und wo, der Code der Seite folgt
 zugeklappt unter »Lösung anzeigen«, und die Seite geht mit diesem Code weiter.
+Der Kasten hieß zuerst »Erst selbst«; »Jetzt bist du dran« spricht die
+Lernenden an und klingt nach einer Einladung, nicht nach einer Bedingung.
 
 - Nur kleine, abgeschlossene Schritte, deren Idee schon erklärt ist; nichts,
   was erst eingeführt wird, und nichts, nach dem der Rest der Seite nicht mehr
@@ -70,7 +72,7 @@ dem unveränderten Code weiter.
 ## Tipps in Stufen
 
 Eine Aufgabe, an der man hängen bleiben kann, hat Tipps in Stufen statt eines
-einzigen Tipps, und ein Kasten »Erst selbst« kann vor seiner Lösung Tipps
+einzigen Tipps, und ein Kasten »Jetzt bist du dran« kann vor seiner Lösung Tipps
 haben. Entschieden ist:
 
 - **Die Stufen.** Erst verstehen, was verlangt ist (ein kleines Beispiel von
@@ -79,7 +81,7 @@ haben. Entschieden ist:
 - **Nie die ganze Lösung.** Auch die letzte Stufe ist ein Gerüst oder die
   eine fehlende Idee, nicht der fertige Code. Die Lösung einer Aufgabe
   (`solution`) erscheint weiterhin erst nach dem Lösen. Der Code eines
-  Kastens »Erst selbst« ist davon ausgenommen: Die Seite baut auf ihm auf.
+  Kastens »Jetzt bist du dran« ist davon ausgenommen: Die Seite baut auf ihm auf.
 - **Eine Pause zwischen den Stufen.** Die nächste Stufe erscheint erst eine
   Minute, nachdem die vorige aufgeklappt wurde (`HintSteps::DELAY_SECONDS`),
   damit man über jeden Tipp nachdenkt, statt bis zum letzten durchzuklicken.
@@ -94,7 +96,7 @@ haben. Entschieden ist:
 
 Mit Tipps in Stufen fängt man dort an, wo eine fehlende Funktion alles danach
 blockiert: in den Labs (Huffman, LZW, Routenplaner, Rechner) und bei den
-Kästen »Erst selbst«. Bei SQL leisten die Rückmeldungen schon viel davon.
+Kästen »Jetzt bist du dran«. Bei SQL leisten die Rückmeldungen schon viel davon.
 
 ## Kopierknöpfe
 
@@ -109,12 +111,12 @@ Aktivität ([widgets.md](widgets.md)).
 
 ## Wo es schon umgesetzt ist
 
-- »Erst selbst« mit Prüfungen darunter: Raytracer, Raycaster, Webserver,
+- Kästen »Jetzt bist du dran« mit Prüfungen darunter: Raytracer, Raycaster, Webserver,
   Pixelwand, Wetter; eine Prüfung `c` auch im GIF-Decoder.
 - Änderungen statt ganzer Dateien: Webserver, Pixelwand.
 - Tipps in Stufen: Huffman (Baum, Decodieren, kanonische Codes), alle
   Aufgaben des Routenplaners, in denen eine Funktion entsteht, die
-  Steganographie und alle Kästen »Erst selbst« (Raytracer, Raycaster,
+  Steganographie und alle Kästen »Jetzt bist du dran« (Raytracer, Raycaster,
   Webserver, Pixelwand, Wetter).
 - Als Nächstes für Tipps in Stufen: der Rechner (`baum` vor allem), LZW
   (`entpacker`), TOTP, RLE, die Automaten und die schwereren SQL-Abfragen

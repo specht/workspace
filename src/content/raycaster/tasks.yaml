@@ -1,8 +1,8 @@
 # Aufgaben zu »Raycasting in C«.
 # Format: docs/aufgaben.md. Gearbeitet wird in /workspace/raycaster.
 # Alle Aufgaben prüfen Antworten: Rechnungen mit den Formeln der Seite,
-# Vorhersagen und eine Rückmeldung zur eigenen Welt. Den Code an den Stellen
-# »Erst selbst« schreiben die Lernenden selbst; geprüft wird er nicht.
+# Vorhersagen und eine Rückmeldung zur eigenen Welt. Den Code in den Kästen
+# »Jetzt bist du dran« schreiben die Lernenden selbst; geprüft wird er nicht.
 format: 1
 activity: raycaster
 tasks:

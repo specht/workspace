@@ -382,7 +382,7 @@ unveränderten Code weiter. Darum endet der Kasten mit »Stell … wieder
 zurück«, wenn die Änderung im Weg wäre. Für eine Frage zum Nachdenken ohne
 Änderung gibt es `hint think`.
 
-### Erst selbst schreiben
+### Jetzt bist du dran
 
 Code, der auf der Seite steht, kann man abtippen, ohne über ihn
 nachzudenken. Wo die Seite gerade erklärt hat, was eine kleine Funktion
@@ -393,7 +393,7 @@ und ist bis zum Aufklappen unter »Lösung anzeigen« verborgen:
 
 ````markdown
 <div class='hint own'>
-<strong>Erst selbst:</strong> Schreib unter <code>hit_sphere</code> die
+<strong>Jetzt bist du dran:</strong> Schreib unter <code>hit_sphere</code> die
 Funktion <code>double hit_floor(vec origin, vec dir)</code>. Sie gibt dieses
 <code>t</code> zurück, und <code>INFINITY</code>, wenn der Boden hinter dem
 Strahl liegt.
@@ -433,12 +433,12 @@ Wo Lernende hängen bleiben können, helfen Tipps in Stufen besser als ein
 einziger: erst verstehen, was verlangt ist (ein kleines Beispiel von Hand),
 dann der Weg in Worten, dann ein Gerüst mit Lücken. Keine Stufe ist die ganze
 Lösung. Eine Aufgabe bekommt sie als Liste in `hint` ([aufgaben.md](aufgaben.md),
-»Tipps in Stufen«), ein Kasten »Erst selbst« vor seiner Lösung, jede Stufe
+»Tipps in Stufen«), ein Kasten »Jetzt bist du dran« vor seiner Lösung, jede Stufe
 zwischen zwei Markierungen auf eigenen Zeilen:
 
 ````markdown
 <div class='hint own'>
-<strong>Erst selbst:</strong> Schreib unter <code>hit_sphere</code> die Funktion …
+<strong>Jetzt bist du dran:</strong> Schreib unter <code>hit_sphere</code> die Funktion …
 </div>
 
 <!-- hint -->

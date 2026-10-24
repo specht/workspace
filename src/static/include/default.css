@@ -1195,8 +1195,8 @@ details.solution[open] > summary {
 }
 
 /* Tips in steps (HintSteps, hint_steps.js): one at a time, with a pause
-   before the next. In a task card they look like its »Tipp«; before an
-   »Erst selbst« solution like »Lösung anzeigen«. */
+   before the next. In a task card they look like its »Tipp«; before the
+   solution of a »Jetzt bist du dran« box like »Lösung anzeigen«. */
 .hint-steps {
     margin: 0.4em 0 0.6em;
 }

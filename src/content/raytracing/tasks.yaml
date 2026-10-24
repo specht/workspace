@@ -1,8 +1,8 @@
 # Aufgaben zu »Raytracing in C«.
 # Format: docs/aufgaben.md. Gearbeitet wird in /workspace/raytracer.
 # Alle Aufgaben prüfen Antworten: Rechnungen mit den Formeln der Seite,
-# Vorhersagen und eine Rückmeldung zum eigenen Bild. Den Code an den Stellen
-# »Erst selbst« schreiben die Lernenden selbst; geprüft wird er nicht. Die
+# Vorhersagen und eine Rückmeldung zum eigenen Bild. Den Code in den Kästen
+# »Jetzt bist du dran« schreiben die Lernenden selbst; geprüft wird er nicht. Die
 # Zahlen sind von Hand gerechnet; das Programm in stufen/ ist dasselbe wie
 # auf der Seite.
 format: 1

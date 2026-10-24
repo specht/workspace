@@ -7,7 +7,7 @@ require_relative '../include/hint_steps'
 class HintStepsTest < Minitest::Test
     PAGE = <<~MD
         <div class='hint own'>
-        <strong>Erst selbst:</strong> Schreib <code>reflect</code>.
+        <strong>Jetzt bist du dran:</strong> Schreib <code>reflect</code>.
         </div>
 
         <!-- hint -->

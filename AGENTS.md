@@ -27,7 +27,7 @@ address from `credentials.rb` and the code `123456`.
 - [docs/entwicklung.md](docs/entwicklung.md): what to rebuild after a change, tests, screenshots, extensions, image
 - [docs/aktivitaet-schreiben.md](docs/aktivitaet-schreiben.md): writing an activity, with a template in `docs/vorlage-aktivitaet/`
 - [docs/didaktik.md](docs/didaktik.md): how activities make students think instead of copy, and the decisions
-  behind it (»Erst selbst«, changes instead of whole files, checks of behaviour, predictions, tips in steps)
+  behind it (»Jetzt bist du dran«, changes instead of whole files, checks of behaviour, predictions, tips in steps)
 - [docs/aufgaben.md](docs/aufgaben.md): every meta field, task type and placeholder
 - [docs/datenschutz.md](docs/datenschutz.md): Impressum, Datenschutzerklärung, the documents for the school, deleting accounts;
   change `src/ruby/include/privacy.rb` whenever what is stored changes
@@ -138,17 +138,17 @@ address from `credentials.rb` and the code `123456`.
   Not a task, nothing is checked; the page continues with the unchanged code.
 - Let students write code before showing it: where the page has just
   explained what a small function does (often with its formula), a box
-  `<div class='hint own'>` (»Erst selbst:«) says what to write and where,
+  `<div class='hint own'>` (»Jetzt bist du dran:«) says what to write and where,
   and the page's code follows between `<!-- solution -->` and
   `<!-- /solution -->` on lines of their own, folded under »Lösung
   anzeigen« (`SolutionBlocks`). Small, self-contained steps only; the page
   continues with that code. Where possible a task under the solution checks
   the student's own version (check types ruby, python, c)
-  (docs/aktivitaet-schreiben.md, »Erst selbst schreiben«).
+  (docs/aktivitaet-schreiben.md, »Jetzt bist du dran«).
 - Tips in steps where students can get stuck: `hint` as a list in
-  tasks.yaml, or `<!-- hint -->` … `<!-- /hint -->` blocks before an
-  »Erst selbst« solution (`HintSteps`). From understanding to strategy to a
-  scaffold, never the complete solution; one step at a time with a pause
+  tasks.yaml, or `<!-- hint -->` … `<!-- /hint -->` blocks before the
+  solution of a »Jetzt bist du dran« box (`HintSteps`). From understanding
+  to strategy to a scaffold, never the complete solution; one step at a time with a pause
   of a minute; nothing is stored on the server and no teacher sees who used
   which tip (docs/didaktik.md, »Tipps in Stufen«).
 - A Handbuch page holds the basics and the most important things, not

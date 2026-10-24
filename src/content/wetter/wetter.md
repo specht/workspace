@@ -222,7 +222,7 @@ days = weather['daily']
 - `ARGV[0]` ist das, was du beim Start hinter den Dateinamen schreibst.
 
 <div class='hint own'>
-<strong>Erst selbst:</strong> Zwei Stellen fehlen noch.
+<strong>Jetzt bist du dran:</strong> Zwei Stellen fehlen noch.
 <ul>
 <li>Findet die Geocoding-API keinen Ort, fehlt in ihrer Antwort <code>results</code> ganz; das hast du unter »Wenn etwas schiefgeht« gesehen. Dann meldet das Programm mit <code>abort</code> »Keinen Ort namens Xyzzy gefunden.« (mit dem gesuchten Namen); sonst ist <code>place</code> der erste Treffer.</li>
 <li>In <code>days</code> steht zu jedem Wert eine Liste mit einem Eintrag pro Tag: <code>days['time']</code> die Daten, <code>days['temperature_2m_min']</code> und <code>days['temperature_2m_max']</code> die Tiefst- und Höchstwerte, <code>days['weather_code']</code> die Codes. Derselbe Index ist derselbe Tag. Gib für jeden Tag eine Zeile aus, etwa <code>2026-10-24: 6.1 bis 12.4 °C, Regen</code>.</li>
@@ -355,7 +355,7 @@ days = weather['daily']
 - `sys.argv[1]` ist das, was du beim Start hinter den Dateinamen schreibst; `sys.argv[0]` ist der Dateiname selbst.
 
 <div class='hint own'>
-<strong>Erst selbst:</strong> Zwei Stellen fehlen noch.
+<strong>Jetzt bist du dran:</strong> Zwei Stellen fehlen noch.
 <ul>
 <li>Findet die Geocoding-API keinen Ort, fehlt in ihrer Antwort <code>results</code> ganz; das hast du unter »Wenn etwas schiefgeht« gesehen. Dann meldet das Programm mit <code>sys.exit</code> »Keinen Ort namens Xyzzy gefunden.« (mit dem gesuchten Namen); sonst ist <code>place</code> der erste Treffer.</li>
 <li>In <code>days</code> steht zu jedem Wert eine Liste mit einem Eintrag pro Tag: <code>days['time']</code> die Daten, <code>days['temperature_2m_min']</code> und <code>days['temperature_2m_max']</code> die Tiefst- und Höchstwerte, <code>days['weather_code']</code> die Codes. Derselbe Index ist derselbe Tag. Gib für jeden Tag eine Zeile aus, etwa <code>2026-10-24: 6.1 bis 12.4 °C, Regen</code>.</li>

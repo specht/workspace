@@ -374,7 +374,7 @@ In `App` kommt jede neue Verbindung in die Liste, sobald sie steht. Unter `ws = 
 ```
 
 <div class='hint own'>
-<strong>Erst selbst:</strong> Was in <code>ws.on(:message)</code> ankommt, soll an alle gehen, statt mit »Echo:« zurück. Und schließt jemand den Tab, läuft <code>ws.on(:close) do … end</code>: Schreib es unter <code>ws.on(:message)</code> so, dass die Verbindung aus <code>$clients</code> verschwindet und alle erfahren, wie viele es noch sind.
+<strong>Jetzt bist du dran:</strong> Was in <code>ws.on(:message)</code> ankommt, soll an alle gehen, statt mit »Echo:« zurück. Und schließt jemand den Tab, läuft <code>ws.on(:close) do … end</code>: Schreib es unter <code>ws.on(:message)</code> so, dass die Verbindung aus <code>$clients</code> verschwindet und alle erfahren, wie viele es noch sind.
 </div>
 
 <!-- hint -->
@@ -462,7 +462,7 @@ def handle(ws):
 ```
 
 <div class='hint own'>
-<strong>Erst selbst:</strong> Füll die beiden Stellen mit <code>...</code>. In der Schleife geht jede Nachricht an alle, statt mit »Echo:« zurück. Im <code>finally</code> verschwindet die Verbindung aus <code>clients</code>, und alle erfahren, wie viele es noch sind. <code>...</code> ist in Python eine Anweisung, die nichts tut; sie hält nur den Platz frei.
+<strong>Jetzt bist du dran:</strong> Füll die beiden Stellen mit <code>...</code>. In der Schleife geht jede Nachricht an alle, statt mit »Echo:« zurück. Im <code>finally</code> verschwindet die Verbindung aus <code>clients</code>, und alle erfahren, wie viele es noch sind. <code>...</code> ist in Python eine Anweisung, die nichts tut; sie hält nur den Platz frei.
 </div>
 
 <!-- hint -->
@@ -574,7 +574,7 @@ Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Sile
 - **Jeder kann alles schicken**, nicht nur deine Webseite. Darum glaubt der Server keiner Nachricht. Ein Server, der fremden Eingaben traut, ist eine Einladung, ihn kaputt zu machen.
 
 <div class='hint own'>
-<strong>Erst selbst:</strong> Schreib in <code>ws.on(:message)</code> die Prüfung. Lies die Nachricht mit <code>JSON.parse(event.data)</code> und überspring mit <code>next</code> alles, was nicht passt: Text, der kein JSON ist (dann wirft <code>JSON.parse</code> einen Fehler), JSON, das kein Hash ist, <code>x</code>, <code>y</code> oder <code>color</code>, die keine ganzen Zahlen sind, einen Pixel außerhalb des Bildes und eine Farbe außerhalb von 0 bis 15.
+<strong>Jetzt bist du dran:</strong> Schreib in <code>ws.on(:message)</code> die Prüfung. Lies die Nachricht mit <code>JSON.parse(event.data)</code> und überspring mit <code>next</code> alles, was nicht passt: Text, der kein JSON ist (dann wirft <code>JSON.parse</code> einen Fehler), JSON, das kein Hash ist, <code>x</code>, <code>y</code> oder <code>color</code>, die keine ganzen Zahlen sind, einen Pixel außerhalb des Bildes und eine Farbe außerhalb von 0 bis 15.
 </div>
 
 <!-- hint -->
@@ -678,7 +678,7 @@ with serve(handle, '0.0.0.0', 8000, process_request=page) as server:
 - **Jeder kann alles schicken**, nicht nur deine Webseite. Darum glaubt der Server keiner Nachricht. Ein Server, der fremden Eingaben traut, ist eine Einladung, ihn kaputt zu machen.
 
 <div class='hint own'>
-<strong>Erst selbst:</strong> Schreib in <code>handle</code> an der Stelle mit <code>...</code> die Prüfung. Lies die Nachricht mit <code>json.loads(text)</code> und überspring mit <code>continue</code> alles, was nicht passt: Text, der kein JSON ist (dann wirft <code>json.loads</code> einen <code>ValueError</code>), JSON, das kein <code>dict</code> ist, <code>x</code>, <code>y</code> oder <code>color</code>, die keine ganzen Zahlen sind, einen Pixel außerhalb des Bildes und eine Farbe außerhalb von 0 bis 15.
+<strong>Jetzt bist du dran:</strong> Schreib in <code>handle</code> an der Stelle mit <code>...</code> die Prüfung. Lies die Nachricht mit <code>json.loads(text)</code> und überspring mit <code>continue</code> alles, was nicht passt: Text, der kein JSON ist (dann wirft <code>json.loads</code> einen <code>ValueError</code>), JSON, das kein <code>dict</code> ist, <code>x</code>, <code>y</code> oder <code>color</code>, die keine ganzen Zahlen sind, einen Pixel außerhalb des Bildes und eine Farbe außerhalb von 0 bis 15.
 </div>
 
 <!-- hint -->
