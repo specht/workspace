@@ -285,8 +285,10 @@ pre .code-cut {
 }
 
 /* A piece of a file can confuse the lexer (an open string, a comment cut
-   off); a lone bracket is already punctuation (code_highlight.rb) */
-pre.has-code-context .err {
+   off), and so can a scaffold in a tip with … for the gap (HintSteps); a
+   lone bracket is already punctuation (code_highlight.rb) */
+pre.has-code-context .err,
+.hint-steps pre .err {
     background: none !important;
     color: inherit !important;
 }
