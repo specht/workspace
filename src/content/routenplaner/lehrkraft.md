@@ -6,6 +6,8 @@ Lernende bauen einen Routenplaner für Berlin mit echten Karten von OpenStreetMa
 
 **Gebiete:** Die Vorlage hat Steglitz-Zehlendorf (45 181 Wege). Jeden anderen der zwölf Bezirke lädt `server.rb` mit `AREA=mitte` (und so weiter) beim ersten Start aus `specht/workspace-files`; ganz Berlin (`AREA=berlin`, 464 000 Wege) braucht etwa 25 Sekunden zum Start und gut 1,5 GB Speicher und ist erst mit schnellen Suchen sinnvoll.
 
+**Tipps in Stufen:** Jede Aufgabe, in der eine Funktion entsteht, hat zwei oder drei Tipps: ein Beispiel von Hand auf den Testkarten (oft mit dem Hinweis auf das Widget im Handbuch), den Weg in Worten, ein Gerüst mit Lücken. Die nächste Stufe erscheint eine Minute nach der vorigen, die ganze Lösung steht in keiner. Wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst; hängen viele an derselben Stelle, ist das ein Moment für die ganze Gruppe.
+
 **Stolpersteine:** Nach jeder Änderung an `routes.rb` muss der Server neu starten (<kbd>Strg</kbd><kbd>C</kbd>, dann `ruby server.rb`). Ein Fehler in einer Suche steht im Terminal, die Seite sagt nur, dass etwas schiefging. `Math.cos` rechnet im Bogenmaß; wer Grad hineingibt, bekommt nach Osten falsche Abstände, und die Prüfung sagt das.
 
 **Datenschutz:** Start und Ziel sind öffentliche Orte, Sehenswürdigkeiten, Plätze und Schulen (die Schulen aus dem Schulverzeichnis Berlins, nur Name und Lage); die Karte hat kein Feld für Adressen. Bitte keine Aufgabe »dein Weg nach Hause« stellen.

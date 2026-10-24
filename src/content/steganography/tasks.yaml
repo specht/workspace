@@ -22,6 +22,15 @@ tasks:
         - call: '[bit_plane(from_channels(3, 2, [0] * 18)).width, bit_plane(from_channels(3, 2, [0] * 18)).height]'
           expect: '[3, 2]'
           say: Die Bitebene ist so groß wie das Bild. Gibst du mit `from_channels(image.width, image.height, …)` ein neues Bild zurück?
+    hint:
+      - |
+        Rechne für die Werte 5, 2 und 255 von Hand: Wie sehen sie im Zweiersystem
+        aus, und ist ihr Bit 0 gesetzt, ihr Bit 1? Welche Werte bekommt die
+        Bitebene 0 dann an diesen drei Stellen, welche die Bitebene 1?
+      - |
+        `channels(image)` gibt alle Kanäle als ein Array. Mach daraus mit `map` ein
+        neues Array: 255, wo `v[bit]` gesetzt ist, sonst 0. Dieses Array gibst du
+        `from_channels` mit, zusammen mit Breite und Höhe des Bildes.
     python:
       prompt: |
         Schreib `bit_plane(image, bit)` in `stego.py`: Jeder Kanal wird 255,
@@ -40,6 +49,15 @@ tasks:
           - call: bit_plane(from_channels(3, 2, [0] * 18)).size
             expect: (3, 2)
             say: Die Bitebene ist so groß wie das Bild. Gibst du mit `from_channels(image.width, image.height, …)` ein neues Bild zurück?
+      hint:
+        - |
+          Rechne für die Werte 5, 2 und 255 von Hand: Wie sehen sie im Zweiersystem
+          aus, und ist ihr Bit 0 gesetzt, ihr Bit 1? Welche Werte bekommt die
+          Bitebene 0 dann an diesen drei Stellen, welche die Bitebene 1?
+        - |
+          `channels(image)` gibt alle Kanäle als eine Liste. Mach daraus eine neue
+          Liste: 255, wo `(v >> bit) & 1` gesetzt ist, sonst 0. Diese Liste gibst du
+          `from_channels` mit, zusammen mit Breite und Höhe des Bildes.
 
   - id: verstecken
     title: Verstecken und wiederfinden
@@ -63,6 +81,40 @@ tasks:
         - call: channels(hide(ChunkyPNG::Image.new(20, 10, ChunkyPNG::Color.rgb(201, 100, 51)), 'Hallo')).zip(channels(ChunkyPNG::Image.new(20, 10, ChunkyPNG::Color.rgb(201, 100, 51)))).map { |a, b| (a - b).abs }.max
           expect: '1'
           say: Kein Kanal darf sich um mehr als 1 ändern. `(v & ~1) | bit` setzt nur das unterste Bit.
+    hint:
+      - |
+        Schreib die Bits für die Botschaft »A« von Hand auf: zuerst die Länge, 1
+        Byte, als 32 Bits, dann 65 als 8 Bits, das höchste zuerst. Wie viele Bits
+        sind es zusammen, und in welche Kanäle der ersten Pixel kommen sie?
+      - |
+        Für `hide`: Die Bytes der Länge (`[länge].pack('N').bytes`) und die Bytes der
+        Botschaft (`message.b.bytes`) hintereinander, jedes Byte in 8 Bits zerlegt
+        (`7.downto(0).map { |i| byte[i] }`). Sind es mehr Bits als Kanäle, ist die
+        Botschaft zu lang. Dann setzt du Kanal für Kanal das unterste Bit mit
+        `(v & ~1) | bit`. `reveal` geht denselben Weg zurück: die untersten Bits aller
+        Kanäle, aus den ersten 32 die Länge, dann je 8 Bits ein Byte.
+      - |
+        Ein Gerüst; was hinter `# hier` fehlt, schreibst du:
+
+        ```ruby
+        def hide(image, message)
+            data = message.b.bytes
+            bits = ([data.length].pack('N').bytes + data).flat_map { |byte| 7.downto(0).map { |i| byte[i] } }
+            values = channels(image)
+            # hier: einen Fehler melden, wenn mehr Bits als Kanäle da sind
+            bits.each_with_index do |bit, i|
+                # hier: das unterste Bit von values[i] auf bit setzen
+            end
+            from_channels(image.width, image.height, values)
+        end
+
+        def reveal(image)
+            bits = channels(image).map { |v| v[0] }
+            number = ->(start, count) { bits[start, count].reduce(0) { |n, bit| (n << 1) | bit } }
+            length = number.(0, 32)
+            # hier: length Bytes ab Bit 32 lesen, je 8 Bits, und daraus wieder Text machen
+        end
+        ```
     python:
       prompt: |
         Schreib `hide(image, message)` und `reveal(image)` nach den drei Regeln
@@ -84,6 +136,47 @@ tasks:
           - call: max(abs(a - b) for a, b in zip(channels(hide(Image.new('RGB', (20, 10), (201, 100, 51)), 'Hallo')), channels(Image.new('RGB', (20, 10), (201, 100, 51)))))
             expect: '1'
             say: Kein Kanal darf sich um mehr als 1 ändern. `(v & ~1) | bit` setzt nur das unterste Bit.
+      hint:
+        - |
+          Schreib die Bits für die Botschaft »A« von Hand auf: zuerst die Länge, 1
+          Byte, als 32 Bits, dann 65 als 8 Bits, das höchste zuerst. Wie viele Bits
+          sind es zusammen, und in welche Kanäle der ersten Pixel kommen sie?
+        - |
+          Für `hide`: Die vier Bytes der Länge (`len(data).to_bytes(4, 'big')`) und die
+          Bytes der Botschaft (`message.encode()`) hintereinander, jedes Byte in 8 Bits
+          zerlegt, das höchste zuerst (`(byte >> i) & 1` für i von 7 bis 0). Sind es
+          mehr Bits als Kanäle, ist die Botschaft zu lang. Dann setzt du Kanal für
+          Kanal das unterste Bit mit `(v & ~1) | bit`. `reveal` geht denselben Weg
+          zurück: die untersten Bits aller Kanäle, aus den ersten 32 die Länge, dann je
+          8 Bits ein Byte.
+        - |
+          Ein Gerüst; was hinter `# hier` fehlt, schreibst du:
+
+          ```python
+          def hide(image, message):
+              data = message.encode()
+              data = len(data).to_bytes(4, 'big') + data
+              bits = [(byte >> i) & 1 for byte in data for i in range(7, -1, -1)]
+              values = channels(image)
+              # hier: einen Fehler melden, wenn mehr Bits als Kanäle da sind
+              for i, bit in enumerate(bits):
+                  # hier: das unterste Bit von values[i] auf bit setzen
+                  ...
+              return from_channels(image.width, image.height, values)
+
+
+          def reveal(image):
+              bits = [v & 1 for v in channels(image)]
+
+              def number(start, count):
+                  n = 0
+                  for bit in bits[start:start + count]:
+                      n = (n << 1) | bit
+                  return n
+
+              length = number(0, 32)
+              # hier: length Bytes ab Bit 32 lesen, je 8 Bits, und daraus wieder Text machen
+          ```
 
   - id: codewort
     title: Das Fundstück
@@ -161,6 +254,37 @@ tasks:
         - call: chi_square(from_channels(4, 2, [10] * 12 + [12] * 12), 1, 2).round(2)
           expect: '12.0'
           say: Nur die Zeilen von `top` bis `bottom`, hier die zweite Zeile mit den Werten 12.
+    hint:
+      - |
+        Rechne das zweite Beispiel der Prüfung von Hand: 12 Kanäle, alle mit dem Wert
+        10. Welches Paar ist das, wie groß sind a, b und e, und was kommt für dieses
+        Paar heraus? Alle anderen Paare haben e = 0: Zählen sie mit?
+      - |
+        Erst die Zeilen ausschneiden (`image.crop(0, top, image.width, bottom - top)`),
+        dann zählen: ein Array mit 256 Nullen, und für jeden Kanal wird die Stelle
+        seines Werts um 1 größer. Dann für jedes Paar k (die Werte 2k und 2k + 1):
+        e ausrechnen, Paare mit e < 5 überspringen, sonst die beiden Summanden
+        dazuzählen und mitzählen, wie viele Paare dabei waren. Am Ende teilst du die
+        Summe durch diese Zahl.
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def chi_square(image, top, bottom)
+            image = image.crop(0, top, image.width, bottom - top)
+            counts = Array.new(256, 0)
+            channels(image).each { |v| counts[v] += 1 }
+            total = 0.0
+            pairs = 0
+            128.times do |k|
+                a, b = counts[2 * k], counts[2 * k + 1]
+                e = (a + b) / 2.0
+                # hier: zu seltene Paare überspringen, sonst beide Summanden zu total,
+                # und pairs mitzählen
+            end
+            total / pairs
+        end
+        ```
     python:
       prompt: |
         Schreib `chi_square(image, top, bottom)`: der Test für die Zeilen
@@ -183,6 +307,35 @@ tasks:
           - call: round(chi_square(from_channels(4, 2, [10] * 12 + [12] * 12), 1, 2), 2)
             expect: '12.0'
             say: Nur die Zeilen von `top` bis `bottom`, hier die zweite Zeile mit den Werten 12.
+      hint:
+        - |
+          Rechne das zweite Beispiel der Prüfung von Hand: 12 Kanäle, alle mit dem Wert
+          10. Welches Paar ist das, wie groß sind a, b und e, und was kommt für dieses
+          Paar heraus? Alle anderen Paare haben e = 0: Zählen sie mit?
+        - |
+          Erst die Zeilen ausschneiden (`image.crop((0, top, image.width, bottom))`),
+          dann zählen: eine Liste mit 256 Nullen, und für jeden Kanal wird die Stelle
+          seines Werts um 1 größer. Dann für jedes Paar k (die Werte 2k und 2k + 1):
+          e ausrechnen, Paare mit e < 5 überspringen, sonst die beiden Summanden
+          dazuzählen und mitzählen, wie viele Paare dabei waren. Am Ende teilst du die
+          Summe durch diese Zahl.
+        - |
+          Ein Gerüst:
+
+          ```python
+          def chi_square(image, top, bottom):
+              image = image.crop((0, top, image.width, bottom))
+              counts = [0] * 256
+              for v in channels(image):
+                  counts[v] += 1
+              total, pairs = 0.0, 0
+              for k in range(128):
+                  a, b = counts[2 * k], counts[2 * k + 1]
+                  e = (a + b) / 2
+                  # hier: zu seltene Paare überspringen, sonst beide Summanden zu total,
+                  # und pairs mitzählen
+              return total / pairs
+          ```
 
   - id: komprimiert
     title: Gleichmäßig verrät
@@ -249,6 +402,56 @@ tasks:
         - call: capacity(ChunkyPNG::Image.new(30, 10, ChunkyPNG::Color.rgb(90, 160, 200)), BoxClasses.new(3)).round(1)
           expect: '1374.2'
           say: 'Jedes Pixel ab dem zwölften trägt log2(27) ≈ 4,75 Bits: 289 · 4,755 ≈ 1374,2.'
+    hint:
+      - |
+        Nimm die Farbe `0x5aa0c8`, also Rot 90, Grün 160 und Blau 200, und Würfel der
+        Breite 3: In welcher Klasse liegt sie, und welche Werte von Rot gehören zu
+        dieser Klasse? Wie viele Farben hat die Klasse? Und die Klasse 85 ganz am
+        Rand: Welche Werte hat sie, wenn es nur Werte bis 255 gibt?
+      - |
+        `cell` teilt jeden Kanal ganzzahlig durch die Breite. `members` nimmt für jeden
+        Kanal die Werte `c * width` bis `c * width + width - 1`, aber höchstens bis
+        255, und bildet alle Kombinationen (`product`), als `0xRRGGBB`, aufsteigend.
+        `embed` macht aus der Botschaft die große Zahl und geht ab dem zwölften Pixel
+        vor: `divmod` mit der Größe der Klasse gibt die nächste Zahl und die Ziffer,
+        die Ziffer wählt die Farbe aus `members`. Die Zahl der benutzten Pixel kommt
+        in die untersten Bits der ersten 11 Pixel. `extract` liest sie zuerst und geht
+        dann vom letzten benutzten Pixel zurück bis zum zwölften:
+        `number = number * Größe + Nummer der Farbe`.
+      - |
+        Ein Gerüst für die Klasse und `embed`; `extract` geht denselben Weg rückwärts:
+
+        ```ruby
+        class BoxClasses
+            def initialize(width)
+                @width = width
+            end
+
+            def cell(color)
+                [color >> 16, (color >> 8) & 255, color & 255].map { |v| v / @width }
+            end
+
+            def members(cell)
+                # hier: für jeden Kanal die Werte der Klasse, höchstens bis 255,
+                # dann alle Kombinationen als 0xRRGGBB, aufsteigend
+            end
+        end
+
+        def embed(image, message, classes)
+            number = ("\x01".b + message.b).unpack1('H*').to_i(16)
+            values = image.pixels.map { |c| c >> 8 }
+            used = 0
+            (11...values.length).each do |i|
+                break if number == 0
+
+                members = classes.members(classes.cell(values[i]))
+                # hier: mit divmod die nächste Zahl und die Ziffer, das Pixel bekommt
+                # die Farbe mit dieser Nummer, und used zählt mit
+            end
+            # hier: Fehler, wenn number noch nicht 0 ist; used als 33 Bits in die
+            # untersten Bits der ersten 11 Pixel; das Bild aus values zurückgeben
+        end
+        ```
     python:
       prompt: |
         Schreib `BoxClasses`, `embed`, `extract` und `capacity` in
@@ -276,6 +479,55 @@ tasks:
           - call: round(capacity(Image.new('RGB', (30, 10), (90, 160, 200)), BoxClasses(3)), 1)
             expect: '1374.2'
             say: 'Jedes Pixel ab dem zwölften trägt log2(27) ≈ 4,75 Bits: 289 · 4,755 ≈ 1374,2.'
+      hint:
+        - |
+          Nimm die Farbe `0x5aa0c8`, also Rot 90, Grün 160 und Blau 200, und Würfel der
+          Breite 3: In welcher Klasse liegt sie, und welche Werte von Rot gehören zu
+          dieser Klasse? Wie viele Farben hat die Klasse? Und die Klasse 85 ganz am
+          Rand: Welche Werte hat sie, wenn es nur Werte bis 255 gibt?
+        - |
+          `cell` teilt jeden Kanal ganzzahlig durch die Breite. `members` nimmt für jeden
+          Kanal die Werte `c * width` bis `c * width + width - 1`, aber höchstens bis
+          255, und bildet alle Kombinationen, als `0xRRGGBB`, aufsteigend. `embed`
+          macht aus der Botschaft die große Zahl und geht ab dem zwölften Pixel vor:
+          `divmod` mit der Größe der Klasse gibt die nächste Zahl und die Ziffer, die
+          Ziffer wählt die Farbe aus `members`. Die Zahl der benutzten Pixel kommt in
+          die untersten Bits der ersten 11 Pixel. `extract` liest sie zuerst und geht
+          dann vom letzten benutzten Pixel zurück bis zum zwölften:
+          `number = number * Größe + Nummer der Farbe`.
+        - |
+          Ein Gerüst für die Klasse und `embed`; `extract` geht denselben Weg rückwärts:
+
+          ```python
+          class BoxClasses:
+              def __init__(self, width):
+                  self.width = width
+
+              def cell(self, color):
+                  w = self.width
+                  return ((color >> 16) // w, ((color >> 8) & 255) // w, (color & 255) // w)
+
+              def members(self, cell):
+                  # hier: für jeden Kanal die Werte der Klasse, höchstens bis 255,
+                  # dann alle Kombinationen als 0xRRGGBB, aufsteigend
+                  ...
+
+
+          def embed(image, message, classes):
+              number = int.from_bytes(b'\x01' + message.encode(), 'big')
+              values = colors(image)   # jedes Pixel als 0xRRGGBB
+              used = 0
+              for i in range(11, len(values)):
+                  if number == 0:
+                      break
+                  members = classes.members(classes.cell(values[i]))
+                  # hier: mit divmod die nächste Zahl und die Ziffer, das Pixel bekommt
+                  # die Farbe mit dieser Nummer, und used zählt mit
+              # hier: Fehler, wenn number noch nicht 0 ist; used als 33 Bits in die
+              # untersten Bits der ersten 11 Pixel; das Bild aus values zurückgeben
+          ```
+
+          `colors` schreibst du dir selbst: jedes Pixel als `(r << 16) | (g << 8) | b`.
 
   - id: vorbei
     title: Am Test vorbei?
@@ -322,6 +574,18 @@ tasks:
         - call: chi_square(from_channels(4, 1, [10] * 12), 0, 1).round(2)
           expect: '12.0'
           say: Ohne `width` ist es der Test mit Paaren wie vorher.
+    hint:
+      - |
+        Rechne das zweite Beispiel der Prüfung von Hand: 15 Kanäle mit dem Wert 30,
+        Gruppen von 3. Welche Gruppe ist das, was sind ihre drei Zählungen, wie groß
+        ist e, und was ergibt die Summe, geteilt durch `width - 1`?
+      - |
+        Statt der Paare 2k und 2k + 1 gehst du die Gruppen k durch, die Werte
+        `k * width` bis `k * width + width - 1`, für k von 0 bis `256 / width - 1`.
+        e ist der Durchschnitt der Zählungen der Gruppe, und jede Zählung c trägt
+        `(c - e)² / e` bei. Eine Gruppe mit e < 5 lässt du weg, und jede Gruppe teilst
+        du durch `width - 1`. Mit `width = 2` muss das genau dein Test von vorher
+        sein.
     python:
       prompt: |
         Gib `chi_square` einen vierten Parameter `width` mit dem Standardwert
@@ -344,6 +608,18 @@ tasks:
           - call: round(chi_square(from_channels(4, 1, [10] * 12), 0, 1), 2)
             expect: '12.0'
             say: Ohne `width` ist es der Test mit Paaren wie vorher.
+      hint:
+        - |
+          Rechne das zweite Beispiel der Prüfung von Hand: 15 Kanäle mit dem Wert 30,
+          Gruppen von 3. Welche Gruppe ist das, was sind ihre drei Zählungen, wie groß
+          ist e, und was ergibt die Summe, geteilt durch `width - 1`?
+        - |
+          Statt der Paare 2k und 2k + 1 gehst du die Gruppen k durch, die Werte
+          `k * width` bis `k * width + width - 1`, für k von 0 bis `256 // width - 1`.
+          e ist der Durchschnitt der Zählungen der Gruppe, und jede Zählung c trägt
+          `(c - e) ** 2 / e` bei. Eine Gruppe mit e < 5 lässt du weg, und jede Gruppe
+          teilst du durch `width - 1`. Mit `width = 2` muss das genau dein Test von
+          vorher sein.
 
   - id: fundstueck-2
     title: Das zweite Fundstück

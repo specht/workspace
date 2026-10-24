@@ -41,6 +41,33 @@ tasks:
         - call: read_ways('routenplaner-starter/data/test.tsv')[1][:name]
           expect: "''"
           say: Ein Weg ohne Namen hat den leeren Text als Namen, zwei Tabulatoren hintereinander.
+    hint:
+      - |
+        Nimm dir eine Zeile aus `data/test.tsv` und teile sie von Hand: Was sind die
+        vier Teile zwischen den Tabulatoren? Wie zerfällt der letzte, die Punkte,
+        wenn du ihn an den Leerzeichen teilst, und welche zwei Teile gehören jeweils
+        zu einem Punkt?
+      - |
+        Für jede Zeile: `split("\t")` gibt Art, Einbahnstraße, Name und Punkte; zwei
+        Tabulatoren hintereinander ergeben den leeren Namen. Die Punkte teilst du an
+        den Leerzeichen und nimmst je zwei Teile zusammen, ID und Lage
+        (`each_slice(2)`). Die Lage teilst du noch einmal am Komma, und `to_f` macht
+        Zahlen daraus.
+      - |
+        Ein Gerüst; was hinter `# hier` fehlt, schreibst du:
+
+        ```ruby
+        def read_ways(path)
+            File.readlines(path, chomp: true).map do |line|
+                kind, oneway, name, points = line.split("\t")
+                points = points.split(' ').each_slice(2).map do |id, position|
+                    # hier: Länge und Breite aus position, als Zahlen
+                    [id, lon, lat]
+                end
+                # hier: der Hash für diesen Weg
+            end
+        end
+        ```
     python:
       prompt: Schreib `read_ways` in `routes.py`.
       check:
@@ -62,6 +89,36 @@ tasks:
           - call: 'read_ways(''routenplaner-starter/data/test.tsv'')[1][''name'']'
             expect: "''"
             say: 'Ein Weg ohne Namen hat den leeren Text als Namen, zwei Tabulatoren hintereinander.'
+      hint:
+        - |
+          Nimm dir eine Zeile aus `data/test.tsv` und teile sie von Hand: Was sind die
+          vier Teile zwischen den Tabulatoren? Wie zerfällt der letzte, die Punkte,
+          wenn du ihn an den Leerzeichen teilst, und welche zwei Teile gehören jeweils
+          zu einem Punkt?
+        - |
+          Für jede Zeile: `line.rstrip('\n').split('\t')` gibt Art, Einbahnstraße,
+          Name und Punkte; zwei Tabulatoren hintereinander ergeben den leeren Namen.
+          Die Punkte teilst du an den Leerzeichen; `items[0::2]` sind die IDs,
+          `items[1::2]` die Lagen, und `zip` nimmt beide zusammen. Die Lage teilst du
+          noch einmal am Komma, und `float` macht Zahlen daraus.
+        - |
+          Ein Gerüst; was hinter `# hier` fehlt, schreibst du:
+
+          ```python
+          def read_ways(path):
+              ways = []
+              with open(path, encoding='utf-8') as f:
+                  for line in f:
+                      kind, oneway, name, points = line.rstrip('\n').split('\t')
+                      items = points.split(' ')
+                      points = []
+                      for id, position in zip(items[0::2], items[1::2]):
+                          # hier: Länge und Breite aus position, als Zahlen,
+                          # und [id, lon, lat] an points anhängen
+                          ...
+                      # hier: das dict für diesen Weg an ways anhängen
+              return ways
+          ```
 
   - id: grad
     title: Ein Grad ist nicht gleich ein Grad
@@ -99,6 +156,28 @@ tasks:
         - call: distance(13.3, 52.45, 13.301, 52.451) == distance(13.301, 52.451, 13.3, 52.45)
           expect: true
           say: Hin ist es so weit wie zurück.
+    hint:
+      - |
+        Rechne zwei Fälle von Hand: Ein Tausendstel Grad nach Norden, wie viele
+        Meter sind das mit 111 195 m pro Grad? Und ein Tausendstel Grad nach Osten
+        in Berlin, bei 52,45 Grad Breite: Der Cosinus von 52,45° ist etwa 0,61.
+      - |
+        Die Formel auf der Seite in drei Schritten: der Unterschied der Längen,
+        verkürzt mit dem Cosinus der mittleren Breite; der Unterschied der Breiten;
+        beide ins Bogenmaß (mal `Math::PI / 180`). Dann Pythagoras, mal dem
+        Erdradius 6 371 000 Meter. `Math.cos` erwartet Bogenmaß, also gehört die
+        mittlere Breite vor dem Cosinus ebenfalls umgerechnet.
+      - |
+        Ein Gerüst; die Lücken mit `…` füllst du:
+
+        ```ruby
+        def distance(lon1, lat1, lon2, lat2)
+            radians = Math::PI / 180
+            x = …   # der Unterschied der Längen, im Bogenmaß, mal cos der mittleren Breite
+            y = …   # der Unterschied der Breiten, im Bogenmaß
+            Math.sqrt(x * x + y * y) * 6_371_000
+        end
+        ```
     python:
       prompt: Schreib `distance` in `routes.py`.
       check:
@@ -119,6 +198,27 @@ tasks:
           - call: 'distance(13.3, 52.45, 13.301, 52.451) == distance(13.301, 52.451, 13.3, 52.45)'
             expect: true
             say: 'Hin ist es so weit wie zurück.'
+      hint:
+        - |
+          Rechne zwei Fälle von Hand: Ein Tausendstel Grad nach Norden, wie viele
+          Meter sind das mit 111 195 m pro Grad? Und ein Tausendstel Grad nach Osten
+          in Berlin, bei 52,45 Grad Breite: Der Cosinus von 52,45° ist etwa 0,61.
+        - |
+          Die Formel auf der Seite in drei Schritten: der Unterschied der Längen,
+          verkürzt mit dem Cosinus der mittleren Breite; der Unterschied der Breiten;
+          beide ins Bogenmaß (mal `math.pi / 180`). Dann Pythagoras, mal dem
+          Erdradius 6 371 000 Meter. `math.cos` erwartet Bogenmaß, also gehört die
+          mittlere Breite vor dem Cosinus ebenfalls umgerechnet.
+        - |
+          Ein Gerüst; die Lücken mit `…` füllst du:
+
+          ```python
+          def distance(lon1, lat1, lon2, lat2):
+              radians = math.pi / 180
+              x = …   # der Unterschied der Längen, im Bogenmaß, mal cos der mittleren Breite
+              y = …   # der Unterschied der Breiten, im Bogenmaß
+              return math.sqrt(x * x + y * y) * 6_371_000
+          ```
 
   - id: graph
     title: Vom Weg zum Graphen
@@ -139,6 +239,32 @@ tasks:
         - call: (build_graph(read_ways('routenplaner-starter/data/test.tsv'))[:edges]['1'].first[1] - 67.8).abs < 0.5
           expect: true
           say: Zu jedem Nachbarn gehört, wie weit er entfernt ist, mit deiner Funktion distance.
+    hint:
+      - |
+        Nimm den Ahornweg aus `data/test.tsv` mit den Punkten 1, 2 und 3: Welche
+        Kanten entstehen aus ihm, in beide Richtungen? Wer sind dann die Nachbarn
+        von 2, wenn noch der Fußweg von 2 nach 4 dazukommt?
+      - |
+        Geh jeden Weg paarweise durch, immer zwei Punkte, die aufeinander folgen
+        (`each_cons(2)`). Beide kommen mit ihrer Lage in `nodes`. Den Abstand
+        rechnet dein `distance` aus, und in `edges` kommen zwei Einträge: b als
+        Nachbar von a und a als Nachbar von b, jeweils mit den Metern.
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def build_graph(ways)
+            nodes = {}
+            edges = Hash.new { |hash, id| hash[id] = [] }
+            ways.each do |way|
+                way[:points].each_cons(2) do |(a, lon1, lat1), (b, lon2, lat2)|
+                    # hier: a und b mit ihrer Lage in nodes
+                    # hier: der Abstand, und die Kante in beide Richtungen in edges
+                end
+            end
+            { nodes: nodes, edges: edges }
+        end
+        ```
     python:
       prompt: Schreib `build_graph` in `routes.py`.
       check:
@@ -158,6 +284,31 @@ tasks:
           - call: 'abs(build_graph(read_ways(''routenplaner-starter/data/test.tsv''))[''edges''][''1''][0][1] - 67.8) < 0.5'
             expect: true
             say: 'Zu jedem Nachbarn gehört, wie weit er entfernt ist, mit deiner Funktion distance.'
+      hint:
+        - |
+          Nimm den Ahornweg aus `data/test.tsv` mit den Punkten 1, 2 und 3: Welche
+          Kanten entstehen aus ihm, in beide Richtungen? Wer sind dann die Nachbarn
+          von 2, wenn noch der Fußweg von 2 nach 4 dazukommt?
+        - |
+          Geh jeden Weg paarweise durch, immer zwei Punkte, die aufeinander folgen
+          (`zip(points, points[1:])`). Beide kommen mit ihrer Lage in `nodes`. Den
+          Abstand rechnet dein `distance` aus, und in `edges` kommen zwei Einträge: b
+          als Nachbar von a und a als Nachbar von b, jeweils mit den Metern
+          (`edges.setdefault(a, []).append(…)`).
+        - |
+          Ein Gerüst:
+
+          ```python
+          def build_graph(ways):
+              nodes = {}
+              edges = {}
+              for way in ways:
+                  for (a, lon1, lat1), (b, lon2, lat2) in zip(way['points'], way['points'][1:]):
+                      # hier: a und b mit ihrer Lage in nodes
+                      # hier: der Abstand, und die Kante in beide Richtungen in edges
+                      ...
+              return {'nodes': nodes, 'edges': edges}
+          ```
 
   - id: weg
     title: Der Weg zurück
@@ -177,6 +328,31 @@ tasks:
         - call: path_to({ 'a' => nil, 'b' => 'a' }, 'x')
           expect: ~
           say: Hat die Suche das Ziel nie gefunden, steht es nicht in previous, und es gibt keinen Weg.
+    hint:
+      - |
+        Mit `previous = { 'a' => nil, 'b' => 'a', 'c' => 'b' }`: Von welchem Knoten
+        aus hat die Suche `c` gefunden? Und den davor? Schreib die Knoten in der
+        Reihenfolge auf, in der du sie so findest, und dreh sie dann um.
+      - |
+        Beginne beim Ziel und geh von Vorgänger zu Vorgänger, bis einer `nil` ist:
+        Das war der Start. Jeden Knoten setzt du vorne in den Weg (`unshift`), dann
+        steht er am Ende vom Start zum Ziel da. Steht das Ziel gar nicht in
+        `previous`, hat die Suche es nie gefunden: Dann gibt es keinen Weg, `nil`.
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def path_to(previous, goal)
+            return nil unless …   # hier: hat die Suche das Ziel gefunden?
+
+            path = []
+            node = goal
+            while node
+                # hier: node vorne in den Weg, dann weiter zu seinem Vorgänger
+            end
+            path
+        end
+        ```
     python:
       prompt: Schreib `path_to` in `routes.py`.
       check:
@@ -194,6 +370,31 @@ tasks:
           - call: 'path_to({''a'': None, ''b'': ''a''}, ''x'')'
             expect: ~
             say: 'Hat die Suche das Ziel nie gefunden, steht es nicht in previous, und es gibt keinen Weg.'
+      hint:
+        - |
+          Mit `previous = {'a': None, 'b': 'a', 'c': 'b'}`: Von welchem Knoten aus hat
+          die Suche `c` gefunden? Und den davor? Schreib die Knoten in der Reihenfolge
+          auf, in der du sie so findest, und dreh sie dann um.
+        - |
+          Beginne beim Ziel und geh von Vorgänger zu Vorgänger, bis einer `None` ist:
+          Das war der Start. Jeden Knoten setzt du vorne in den Weg
+          (`path.insert(0, node)`), dann steht er am Ende vom Start zum Ziel da. Steht
+          das Ziel gar nicht in `previous`, hat die Suche es nie gefunden: Dann gibt es
+          keinen Weg, `None`.
+        - |
+          Ein Gerüst:
+
+          ```python
+          def path_to(previous, goal):
+              if …:   # hier: hat die Suche das Ziel nicht gefunden?
+                  return None
+              path = []
+              node = goal
+              while node is not None:
+                  # hier: node vorne in den Weg, dann weiter zu seinem Vorgänger
+                  ...
+              return path
+          ```
 
   - id: breitensuche
     title: Breitensuche
@@ -216,6 +417,36 @@ tasks:
         - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')[:visited].sort
           expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
           say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
+    hint:
+      - |
+        Probier es auf der Testkarte `data/detour.tsv` von Hand, mit der Queue auf
+        Papier: Start ist 11. Welche Knoten stellst du hinten an, welcher kommt als
+        Nächster vorne heraus? Über welchen Vorgänger findest du 16? Im Handbuch
+        unter »Breitensuche« kannst du dasselbe an einem anderen Graphen Schritt für
+        Schritt durchklicken.
+      - |
+        Die Suche merkt sich drei Dinge: `previous` (am Anfang nur der Start, ohne
+        Vorgänger), die Queue (am Anfang nur der Start) und `visited` (am Anfang
+        leer). Einen Nachbarn, der schon gefunden ist, erkennst du daran, dass er in
+        `previous` steht. Am Ende baut dein `path_to` den Weg.
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def breadth_first(graph, start, goal)
+            previous = { start => nil }
+            queue = [start]
+            visited = []
+            until queue.empty?
+                node = queue.shift
+                # hier: node in visited, und beim Ziel aufhören
+                graph[:edges][node].each do |neighbour, _metres|
+                    # hier: einen neuen Nachbarn mit Vorgänger eintragen und hinten anstellen
+                end
+            end
+            { path: path_to(previous, goal), visited: visited }
+        end
+        ```
     python:
       prompt: Schreib `breadth_first` in `routes.py`.
       check:
@@ -236,6 +467,37 @@ tasks:
           - call: 'sorted(breadth_first(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'')[''visited''])'
             expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
             say: 'Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.'
+      hint:
+        - |
+          Probier es auf der Testkarte `data/detour.tsv` von Hand, mit der Queue auf
+          Papier: Start ist 11. Welche Knoten stellst du hinten an, welcher kommt als
+          Nächster vorne heraus? Über welchen Vorgänger findest du 16? Im Handbuch
+          unter »Breitensuche« kannst du dasselbe an einem anderen Graphen Schritt für
+          Schritt durchklicken.
+        - |
+          Die Suche merkt sich drei Dinge: `previous` (am Anfang nur der Start, ohne
+          Vorgänger), die Queue (am Anfang nur der Start, dazu `first = 0` für den
+          Knoten, der als Nächster dran ist) und `visited` (am Anfang leer). Einen
+          Nachbarn, der schon gefunden ist, erkennst du daran, dass er in `previous`
+          steht. Am Ende baut dein `path_to` den Weg.
+        - |
+          Ein Gerüst:
+
+          ```python
+          def breadth_first(graph, start, goal):
+              previous = {start: None}
+              queue = [start]
+              first = 0
+              visited = []
+              while first < len(queue):
+                  node = queue[first]
+                  first += 1
+                  # hier: node in visited, und beim Ziel aufhören
+                  for neighbour, _metres in graph['edges'].get(node, []):
+                      # hier: einen neuen Nachbarn mit Vorgänger eintragen und hinten anstellen
+                      ...
+              return {'path': path_to(previous, goal), 'visited': visited}
+          ```
 
   - id: kanten
     title: Wenige Kanten, langer Weg
@@ -276,6 +538,42 @@ tasks:
         - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].include?('22')
           expect: false
           say: Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.
+    hint:
+      - |
+        Auf `data/detour.tsv` von 11 nach 16: Die Lindenstraße hat fünf Kanten, der
+        Eichenweg drei. Welcher Weg ist kürzer in Metern? Im Handbuch unter
+        »Dijkstra« kannst du die Suche durchklicken; achte darauf, welcher Knoten
+        jeweils als Nächster drankommt und wann sich ein Abstand noch ändert.
+      - |
+        Gegenüber deiner Breitensuche ändern sich zwei Dinge. Statt der Queue gibt es
+        `frontier`, einen Hash von Knoten zu Metern, und als Nächstes kommt der mit
+        den wenigsten Metern (`min_by`). Und ein Nachbar wird nicht nur eingetragen,
+        wenn er neu ist, sondern auch, wenn der Weg über diesen Knoten kürzer ist als
+        der bisher beste, der in `metres` steht.
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def dijkstra(graph, start, goal)
+            metres = { start => 0 }
+            previous = { start => nil }
+            frontier = { start => 0 }
+            visited = []
+            until frontier.empty?
+                node, so_far = frontier.min_by { |_id, m| m }
+                frontier.delete(node)
+                visited << node
+                break if node == goal
+
+                graph[:edges][node].each do |neighbour, length|
+                    total = so_far + length
+                    # hier: ist neighbour neu, oder ist total kürzer als metres[neighbour]?
+                    # Dann neuer Abstand, neuer Vorgänger, und neighbour in frontier
+                end
+            end
+            { path: path_to(previous, goal), visited: visited }
+        end
+        ```
     python:
       prompt: Schreib `dijkstra` in `routes.py`.
       check:
@@ -298,6 +596,40 @@ tasks:
           - call: '''22'' in dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''visited'']'
             expect: false
             say: 'Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.'
+      hint:
+        - |
+          Auf `data/detour.tsv` von 11 nach 16: Die Lindenstraße hat fünf Kanten, der
+          Eichenweg drei. Welcher Weg ist kürzer in Metern? Im Handbuch unter
+          »Dijkstra« kannst du die Suche durchklicken; achte darauf, welcher Knoten
+          jeweils als Nächster drankommt und wann sich ein Abstand noch ändert.
+        - |
+          Gegenüber deiner Breitensuche ändern sich zwei Dinge. Statt der Queue gibt es
+          `frontier`, ein dict von Knoten zu Metern, und als Nächstes kommt der mit den
+          wenigsten Metern (`min(frontier, key=frontier.get)`). Und ein Nachbar wird
+          nicht nur eingetragen, wenn er neu ist, sondern auch, wenn der Weg über
+          diesen Knoten kürzer ist als der bisher beste, der in `metres` steht.
+        - |
+          Ein Gerüst:
+
+          ```python
+          def dijkstra(graph, start, goal):
+              metres = {start: 0}
+              previous = {start: None}
+              frontier = {start: 0}
+              visited = []
+              while frontier:
+                  node = min(frontier, key=frontier.get)
+                  so_far = frontier.pop(node)
+                  visited.append(node)
+                  if node == goal:
+                      break
+                  for neighbour, length in graph['edges'].get(node, []):
+                      total = so_far + length
+                      # hier: ist neighbour neu, oder ist total kürzer als metres[neighbour]?
+                      # Dann neuer Abstand, neuer Vorgänger, und neighbour in frontier
+                      ...
+              return {'path': path_to(previous, goal), 'visited': visited}
+          ```
 
   - id: heap
     title: Ein Heap
@@ -320,6 +652,54 @@ tasks:
         - call: 'h = MinHeap.new; (1..100).to_a.shuffle(random: Random.new(2)).each { |x| h.push(x, x) }; items = h.instance_variable_get(:@items); (1...items.size).all? { |i| items[(i - 1) / 2][0] <= items[i][0] }'
           expect: true
           say: Die Einträge in @items sollen ein Heap sein, kein sortiertes Array, keine Liste zum Durchsuchen. Jedes Elternteil (i - 1) / 2 ist höchstens so groß wie sein Kind i.
+    hint:
+      - |
+        Leg von Hand nacheinander 4, 7, 2 und 9 in einen leeren Heap und schreib das
+        Array nach jedem Schritt auf. Wo landet die 2, und mit wem wird sie
+        getauscht? Nimm dann einmal das Kleinste heraus: Was kommt an die Stelle 0,
+        und wohin sinkt es? Im Handbuch unter »push« und »pop« kannst du ein anderes
+        Beispiel durchklicken.
+      - |
+        `push`: hinten anhängen, dann mit dem Elternteil an der Stelle
+        `(i - 1) / 2` vergleichen und tauschen, solange das Elternteil größer ist.
+        `pop`: das Paar an der Stelle 0 merken, das letzte Paar an die Stelle 0 setzen
+        und nach unten tauschen, immer mit dem kleineren der beiden Kinder
+        `2 * i + 1` und `2 * i + 2`, solange eines kleiner ist. Verglichen wird nur
+        die Priorität, `[0]`. Und Vorsicht: War der herausgenommene Eintrag der
+        einzige, ist der Heap danach leer.
+      - |
+        Ein Gerüst für die beiden Methoden in `MinHeap`:
+
+        ```ruby
+        def push(priority, value)
+            @items << [priority, value]
+            i = @items.size - 1
+            while i > 0
+                parent = (i - 1) / 2
+                # hier: aufhören, wenn das Elternteil nicht größer ist, sonst tauschen
+                i = parent
+            end
+        end
+
+        def pop
+            return nil if @items.empty?
+
+            top = @items[0]
+            last = @items.pop
+            unless @items.empty?
+                @items[0] = last
+                i = 0
+                loop do
+                    smallest = i
+                    # hier: ist eines der Kinder 2 * i + 1 und 2 * i + 2, wenn es sie gibt, kleiner?
+                    break if smallest == i
+
+                    # hier: tauschen und beim Kind weitermachen
+                end
+            end
+            top
+        end
+        ```
     python:
       prompt: Schreib `push` und `pop` der Klasse `MinHeap` in `routes.py`.
       check:
@@ -340,6 +720,51 @@ tasks:
           - call: '(lambda h: [h.push((i * 37) % 101, i) for i in range(1, 101)] and all(h.items[(i - 1) // 2][0] <= h.items[i][0] for i in range(1, len(h.items))))(MinHeap())'
             expect: true
             say: 'Die Einträge in self.items sollen ein Heap sein, keine sortierte Liste, keine Liste zum Durchsuchen. Jedes Elternteil (i - 1) // 2 ist höchstens so groß wie sein Kind i.'
+      hint:
+        - |
+          Leg von Hand nacheinander 4, 7, 2 und 9 in einen leeren Heap und schreib die
+          Liste nach jedem Schritt auf. Wo landet die 2, und mit wem wird sie
+          getauscht? Nimm dann einmal das Kleinste heraus: Was kommt an die Stelle 0,
+          und wohin sinkt es? Im Handbuch unter »push« und »pop« kannst du ein anderes
+          Beispiel durchklicken.
+        - |
+          `push`: hinten anhängen, dann mit dem Elternteil an der Stelle
+          `(i - 1) // 2` vergleichen und tauschen, solange das Elternteil größer ist.
+          `pop`: das Paar an der Stelle 0 merken, das letzte Paar an die Stelle 0 setzen
+          und nach unten tauschen, immer mit dem kleineren der beiden Kinder
+          `2 * i + 1` und `2 * i + 2`, solange eines kleiner ist. Verglichen wird nur
+          die Priorität, `[0]`. Und Vorsicht: War der herausgenommene Eintrag der
+          einzige, ist der Heap danach leer.
+        - |
+          Ein Gerüst für die beiden Methoden in `MinHeap`:
+
+          ```python
+          def push(self, priority, value):
+              items = self.items
+              items.append((priority, value))
+              i = len(items) - 1
+              while i > 0:
+                  parent = (i - 1) // 2
+                  # hier: aufhören, wenn das Elternteil nicht größer ist, sonst tauschen
+                  i = parent
+
+          def pop(self):
+              items = self.items
+              if not items:
+                  return None
+              top = items[0]
+              last = items.pop()
+              if items:
+                  items[0] = last
+                  i = 0
+                  while True:
+                      smallest = i
+                      # hier: ist eines der Kinder 2 * i + 1 und 2 * i + 2, wenn es sie gibt, kleiner?
+                      if smallest == i:
+                          break
+                      # hier: tauschen und beim Kind weitermachen
+              return top
+          ```
 
   - id: astern
     title: A*
@@ -360,6 +785,47 @@ tasks:
           expect: "['11']"
         - call: a_star(build_graph(read_ways('routenplaner-starter/data/test.tsv')), '1', '5')[:path].size
           expect: 4
+    hint:
+      - |
+        Auf `data/detour.tsv` von 11 nach 16: Der Knoten 21 liegt nach Norden, weg
+        vom Ziel. Wie groß ist für ihn der Weg bis zu ihm plus die Luftlinie zum
+        Ziel, verglichen mit 12 auf der Lindenstraße? Im Handbuch unter »A-Stern«
+        siehst du an einem anderen Graphen, welche Knoten deshalb gar nicht erst
+        drankommen.
+      - |
+        Nimm dein `dijkstra` mit dem Heap als Vorlage. Neu sind zwei Dinge: eine
+        kleine Funktion `estimate`, die mit `distance` die Luftlinie von einem Knoten
+        zum Ziel ausrechnet (die Lage steht in `graph[:nodes]`), und beim Hineinlegen
+        ist die Priorität der Weg plus diese Schätzung. Den Weg bis zu einem Knoten
+        nimmst du darum aus `costs`, nicht aus der Priorität, die aus dem Heap
+        kommt.
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def a_star(graph, start, goal)
+            goal_lon, goal_lat = graph[:nodes][goal]
+            estimate = lambda do |id|
+                # hier: die Luftlinie von id zum Ziel, mit distance
+            end
+            costs = { start => 0 }
+            previous = { start => nil }
+            done = {}
+            heap = MinHeap.new
+            heap.push(estimate.(start), start)
+            visited = []
+            until heap.empty?
+                _priority, node = heap.pop
+                # hier: wie in dijkstra: überspringen, wenn fertig; sonst fertig,
+                # besucht und am Ziel aufhören
+                graph[:edges][node].each do |neighbour, length|
+                    total = costs[node] + length
+                    # hier: wie in dijkstra, nur mit total + estimate.(neighbour) als Priorität
+                end
+            end
+            { path: path_to(previous, goal), visited: visited }
+        end
+        ```
     python:
       prompt: Schreib `a_star` in `routes.py`.
       check:
@@ -378,6 +844,47 @@ tasks:
             expect: "['11']"
           - call: 'len(a_star(build_graph(read_ways(''routenplaner-starter/data/test.tsv'')), ''1'', ''5'')[''path''])'
             expect: 4
+      hint:
+        - |
+          Auf `data/detour.tsv` von 11 nach 16: Der Knoten 21 liegt nach Norden, weg
+          vom Ziel. Wie groß ist für ihn der Weg bis zu ihm plus die Luftlinie zum
+          Ziel, verglichen mit 12 auf der Lindenstraße? Im Handbuch unter »A-Stern«
+          siehst du an einem anderen Graphen, welche Knoten deshalb gar nicht erst
+          drankommen.
+        - |
+          Nimm dein `dijkstra` mit dem Heap als Vorlage. Neu sind zwei Dinge: eine
+          kleine Funktion `estimate`, die mit `distance` die Luftlinie von einem Knoten
+          zum Ziel ausrechnet (die Lage steht in `graph['nodes']`), und beim
+          Hineinlegen ist die Priorität der Weg plus diese Schätzung. Den Weg bis zu
+          einem Knoten nimmst du darum aus `costs`, nicht aus der Priorität, die aus
+          dem Heap kommt.
+        - |
+          Ein Gerüst:
+
+          ```python
+          def a_star(graph, start, goal):
+              goal_lon, goal_lat = graph['nodes'][goal]
+
+              def estimate(id):
+                  # hier: die Luftlinie von id zum Ziel, mit distance
+                  ...
+
+              costs = {start: 0}
+              previous = {start: None}
+              done = set()
+              heap = MinHeap()
+              heap.push(estimate(start), start)
+              visited = []
+              while not heap.empty():
+                  _priority, node = heap.pop()
+                  # hier: wie in dijkstra: überspringen, wenn fertig; sonst fertig,
+                  # besucht und am Ziel aufhören
+                  for neighbour, length in graph['edges'].get(node, []):
+                      total = costs[node] + length
+                      # hier: wie in dijkstra, nur mit total + estimate(neighbour) als Priorität
+                      ...
+              return {'path': path_to(previous, goal), 'visited': visited}
+          ```
 
   - id: reisen
     title: Zu Fuß, mit dem Rad, mit dem Auto
@@ -407,6 +914,45 @@ tasks:
         - call: build_travel_graph(read_ways('routenplaner-starter/data/test.tsv'), 'bike')[:edges]['4'].map(&:first)
           expect: "['5']"
           say: Auf dem Fußweg darf man nicht Rad fahren, die Einbahnstraße gilt für das Rad hier nicht.
+    hint:
+      - |
+        Geh die Testkarte `data/test.tsv` mit dem Auto durch: Welche der drei Wege
+        darf es fahren (`SPEEDS['car']`)? Der Birkenweg 3–5–4 ist eine
+        Einbahnstraße, `yes`: In welche Richtung gibt es seine Kanten? Und wie viele
+        Sekunden braucht ein Auto für 67,8 Meter mit 25 km/h?
+      - |
+        Fang mit einer Kopie von `build_graph` an. Davor holst du
+        `speeds = SPEEDS.fetch(mode)`, und ein Weg, dessen Art darin fehlt, wird
+        übersprungen. An die Kanten kommen Sekunden: die Meter geteilt durch das
+        Tempo in Metern je Sekunde, km/h geteilt durch 3,6. Nur für das Auto zählt
+        die Einbahnstraße: bei `yes` nur die Kante vorwärts, bei `-1` nur zurück. Am
+        Ende kommt `fastest` in den Hash, das größte Tempo in `speeds`, in Metern je
+        Sekunde.
+      - |
+        Ein Gerüst; die Lücken mit `…` füllst du:
+
+        ```ruby
+        def build_travel_graph(ways, mode)
+            speeds = SPEEDS.fetch(mode)
+            nodes = {}
+            edges = Hash.new { |hash, id| hash[id] = [] }
+            ways.each do |way|
+                speed = speeds[way[:kind]]
+                next unless speed
+
+                forward = …    # darf man vorwärts? Zu Fuß und mit dem Rad immer
+                backward = …   # und zurück?
+                way[:points].each_cons(2) do |(a, lon1, lat1), (b, lon2, lat2)|
+                    nodes[a] = [lon1, lat1]
+                    nodes[b] = [lon2, lat2]
+                    seconds = …   # die Meter geteilt durch das Tempo in Metern je Sekunde
+                    edges[a] << [b, seconds] if forward
+                    edges[b] << [a, seconds] if backward
+                end
+            end
+            { nodes: nodes, edges: edges, fastest: … }
+        end
+        ```
     python:
       prompt: Schreib `build_travel_graph` in `routes.py`.
       check:
@@ -434,6 +980,44 @@ tasks:
           - call: '[e[0] for e in build_travel_graph(read_ways(''routenplaner-starter/data/test.tsv''), ''bike'')[''edges''][''4'']]'
             expect: "['5']"
             say: 'Auf dem Fußweg darf man nicht Rad fahren, die Einbahnstraße gilt für das Rad hier nicht.'
+      hint:
+        - |
+          Geh die Testkarte `data/test.tsv` mit dem Auto durch: Welche der drei Wege
+          darf es fahren (`SPEEDS['car']`)? Der Birkenweg 3–5–4 ist eine
+          Einbahnstraße, `yes`: In welche Richtung gibt es seine Kanten? Und wie viele
+          Sekunden braucht ein Auto für 67,8 Meter mit 25 km/h?
+        - |
+          Fang mit einer Kopie von `build_graph` an. Davor holst du
+          `speeds = SPEEDS[mode]`, und ein Weg, dessen Art darin fehlt, wird
+          übersprungen (`speeds.get(way['kind'])`). An die Kanten kommen Sekunden: die
+          Meter geteilt durch das Tempo in Metern je Sekunde, km/h geteilt durch 3,6.
+          Nur für das Auto zählt die Einbahnstraße: bei `yes` nur die Kante vorwärts,
+          bei `-1` nur zurück. Am Ende kommt `'fastest'` ins dict, das größte Tempo in
+          `speeds`, in Metern je Sekunde.
+        - |
+          Ein Gerüst; die Lücken mit `…` füllst du:
+
+          ```python
+          def build_travel_graph(ways, mode):
+              speeds = SPEEDS[mode]
+              nodes = {}
+              edges = {}
+              for way in ways:
+                  speed = speeds.get(way['kind'])
+                  if not speed:
+                      continue
+                  forward = …    # darf man vorwärts? Zu Fuß und mit dem Rad immer
+                  backward = …   # und zurück?
+                  for (a, lon1, lat1), (b, lon2, lat2) in zip(way['points'], way['points'][1:]):
+                      nodes[a] = [lon1, lat1]
+                      nodes[b] = [lon2, lat2]
+                      seconds = …   # die Meter geteilt durch das Tempo in Metern je Sekunde
+                      if forward:
+                          edges.setdefault(a, []).append([b, seconds])
+                      if backward:
+                          edges.setdefault(b, []).append([a, seconds])
+              return {'nodes': nodes, 'edges': edges, 'fastest': …}
+          ```
 
   - id: rundfahrt
     title: Wie lang ist eine Rundfahrt?
@@ -450,6 +1034,16 @@ tasks:
         - call: tour_length([[0, 1], [3, 0]], [0, 1])
           expect: 4
           say: Hin ist nicht immer so weit wie zurück, etwa mit dem Auto und Einbahnstraßen. Nimm immer costs[von][nach].
+    hint:
+      - |
+        Rechne die Reihenfolge `[0, 3, 2, 1, 4]` mit der Tabelle auf der Seite
+        selbst nach: Welche fünf Strecken sind es, und welche Zahl steht jeweils in
+        `costs`? Vergiss den Weg zurück zum Anfang nicht.
+      - |
+        Häng den Anfang hinten noch einmal an die Reihenfolge an. Dann gehst du sie
+        paarweise durch, immer zwei aufeinanderfolgende Orte `a` und `b`
+        (`each_cons(2)`), und zählst `costs[a][b]` zusammen (`sum`). Erst `a`, dann
+        `b`: Hin ist nicht immer so weit wie zurück.
     python:
       prompt: Schreib `tour_length` in `routes.py`.
       check:
@@ -464,6 +1058,16 @@ tasks:
           - call: 'tour_length([[0, 1], [3, 0]], [0, 1])'
             expect: 4
             say: 'Hin ist nicht immer so weit wie zurück, etwa mit dem Auto und Einbahnstraßen. Nimm immer costs[von][nach].'
+      hint:
+        - |
+          Rechne die Reihenfolge `[0, 3, 2, 1, 4]` mit der Tabelle auf der Seite
+          selbst nach: Welche fünf Strecken sind es, und welche Zahl steht jeweils in
+          `costs`? Vergiss den Weg zurück zum Anfang nicht.
+        - |
+          Häng den Anfang hinten noch einmal an die Reihenfolge an. Dann gehst du sie
+          paarweise durch, immer zwei aufeinanderfolgende Orte `a` und `b`
+          (`zip(stops, stops[1:])`), und zählst `costs[a][b]` zusammen (`sum`). Erst
+          `a`, dann `b`: Hin ist nicht immer so weit wie zurück.
 
   - id: alle-reihenfolgen
     title: Alle Reihenfolgen
@@ -483,6 +1087,16 @@ tasks:
           say: Jeder Ort kommt genau einmal vor.
         - call: best_tour([[0]])
           expect: '[0]'
+    hint:
+      - |
+        Bei vier Orten 0, 1, 2 und 3 steht die 0 vorne fest. Schreib alle
+        Reihenfolgen der übrigen drei auf: Wie viele sind es? Für jede rechnet dein
+        `tour_length` die Länge aus, und du behältst die kürzeste.
+      - |
+        `(1...costs.size).to_a.permutation` gibt alle Reihenfolgen der übrigen Orte.
+        Setz vor jede die 0 und nimm mit `min_by` die mit der kleinsten
+        `tour_length`. Probier auch `best_tour([[0]])`: Bei einem einzigen Ort ist
+        die Rundfahrt nur `[0]`.
     python:
       prompt: Schreib `best_tour` in `routes.py`.
       check:
@@ -500,6 +1114,16 @@ tasks:
             say: 'Jeder Ort kommt genau einmal vor.'
           - call: 'list(best_tour([[0]]))'
             expect: '[0]'
+      hint:
+        - |
+          Bei vier Orten 0, 1, 2 und 3 steht die 0 vorne fest. Schreib alle
+          Reihenfolgen der übrigen drei auf: Wie viele sind es? Für jede rechnet dein
+          `tour_length` die Länge aus, und du behältst die kürzeste.
+        - |
+          `itertools.permutations(range(1, len(costs)))` gibt alle Reihenfolgen der
+          übrigen Orte, als Tupel. Setz vor jede die 0 (`[0] + list(rest)`) und nimm
+          mit `min(…, key=…)` die mit der kleinsten `tour_length`. Probier auch
+          `best_tour([[0]])`: Bei einem einzigen Ort ist die Rundfahrt nur `[0]`.
 
   - id: naechster-nachbar
     title: Der nächste Nachbar
@@ -513,6 +1137,16 @@ tasks:
           say: 'Von 0 ist 3 am nächsten (2), von 3 dann 2 (7), von 2 dann 1 (9), und übrig bleibt 4.'
         - call: nearest_tour([[0, 5, 1], [5, 0, 2], [1, 2, 0]])
           expect: '[0, 2, 1]'
+    hint:
+      - |
+        Mit der Tabelle auf der Seite: Welcher Ort ist von 0 aus am nächsten? Und
+        von dort aus, welcher der übrigen? Schreib die Reihenfolge auf, bis kein Ort
+        mehr übrig ist.
+      - |
+        Halte zwei Listen: die Reihenfolge, am Anfang `[0]`, und die Orte, die noch
+        übrig sind. Solange etwas übrig ist: Nimm von den übrigen den, für den
+        `costs[order.last][i]` am kleinsten ist (`min_by`), häng ihn an die
+        Reihenfolge an und streich ihn aus den übrigen.
     python:
       prompt: Schreib `nearest_tour` in `routes.py`.
       check:
@@ -524,6 +1158,16 @@ tasks:
             say: 'Von 0 ist 3 am nächsten (2), von 3 dann 2 (7), von 2 dann 1 (9), und übrig bleibt 4.'
           - call: 'list(nearest_tour([[0, 5, 1], [5, 0, 2], [1, 2, 0]]))'
             expect: '[0, 2, 1]'
+      hint:
+        - |
+          Mit der Tabelle auf der Seite: Welcher Ort ist von 0 aus am nächsten? Und
+          von dort aus, welcher der übrigen? Schreib die Reihenfolge auf, bis kein Ort
+          mehr übrig ist.
+        - |
+          Halte zwei Listen: die Reihenfolge, am Anfang `[0]`, und die Orte, die noch
+          übrig sind. Solange etwas übrig ist: Nimm von den übrigen den, für den
+          `costs[order[-1]][i]` am kleinsten ist (`min(left, key=…)`), häng ihn an die
+          Reihenfolge an und streich ihn aus den übrigen (`remove`).
 
   - id: zwei-opt
     title: Besser mit 2-opt
@@ -543,6 +1187,38 @@ tasks:
         - call: o = [0, 2, 4, 1, 3]; improve_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], o); o
           expect: '[0, 2, 4, 1, 3]'
           say: improve_tour gibt eine neue Reihenfolge zurück und lässt die übergebene, wie sie ist (dup).
+    hint:
+      - |
+        Dreh in `[0, 3, 2, 1, 4]` das Stück `2, 1, 4` um. Wie lang ist die neue
+        Rundfahrt, und ist sie kürzer als 36? Welche Stücke gibt es überhaupt, wenn
+        die 0 vorne an ihrem Platz bleibt? Im Handbuch unter »Eine Rundreise« kannst
+        du 2-opt an anderen Orten durchklicken.
+      - |
+        Zwei Schleifen geben jedes Stück: Es beginnt an der Stelle `i` (ab 1, denn
+        die 0 bleibt vorne) und endet an der Stelle `j` (nach `i`). Umgedreht wird
+        mit `order[0...i] + order[i..j].reverse + order[j + 1..]`. Ist das kürzer,
+        nimmst du es und merkst dir, dass sich etwas verbessert hat. Das Ganze
+        wiederholst du, bis ein ganzer Durchgang nichts mehr verbessert. Arbeite auf
+        einer Kopie (`dup`), damit die übergebene Reihenfolge bleibt, wie sie war.
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def improve_tour(costs, order)
+            order = order.dup
+            better = true
+            while better
+                better = false
+                (1...order.size - 1).each do |i|
+                    (i + 1...order.size).each do |j|
+                        turned = order[0...i] + order[i..j].reverse + order[j + 1..]
+                        # hier: ist turned kürzer als order? Dann übernehmen und better merken
+                    end
+                end
+            end
+            order
+        end
+        ```
     python:
       prompt: Schreib `improve_tour` in `routes.py`.
       check:
@@ -560,4 +1236,34 @@ tasks:
           - call: '(lambda o: (improve_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], o), o)[1])([0, 2, 4, 1, 3])'
             expect: '[0, 2, 4, 1, 3]'
             say: 'improve_tour gibt eine neue Reihenfolge zurück und lässt die übergebene, wie sie ist (list(order)).'
+      hint:
+        - |
+          Dreh in `[0, 3, 2, 1, 4]` das Stück `2, 1, 4` um. Wie lang ist die neue
+          Rundfahrt, und ist sie kürzer als 36? Welche Stücke gibt es überhaupt, wenn
+          die 0 vorne an ihrem Platz bleibt? Im Handbuch unter »Eine Rundreise« kannst
+          du 2-opt an anderen Orten durchklicken.
+        - |
+          Zwei Schleifen geben jedes Stück: Es beginnt an der Stelle `i` (ab 1, denn
+          die 0 bleibt vorne) und endet an der Stelle `j` (nach `i`). Umgedreht wird
+          mit `order[:i] + order[i:j + 1][::-1] + order[j + 1:]`. Ist das kürzer,
+          nimmst du es und merkst dir, dass sich etwas verbessert hat. Das Ganze
+          wiederholst du, bis ein ganzer Durchgang nichts mehr verbessert. Arbeite auf
+          einer Kopie (`list(order)`), damit die übergebene Reihenfolge bleibt, wie sie
+          war.
+        - |
+          Ein Gerüst:
+
+          ```python
+          def improve_tour(costs, order):
+              order = list(order)
+              better = True
+              while better:
+                  better = False
+                  for i in range(1, len(order) - 1):
+                      for j in range(i + 1, len(order)):
+                          turned = order[:i] + order[i:j + 1][::-1] + order[j + 1:]
+                          # hier: ist turned kürzer als order? Dann übernehmen und better merken
+                          ...
+              return order
+          ```
 
