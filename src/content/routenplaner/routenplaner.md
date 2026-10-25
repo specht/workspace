@@ -208,7 +208,9 @@ Das gilt für die Breite, nach Norden. Nach Osten stimmt es nur am Äquator: In 
 
 _task(grad)
 
+<!-- after: grad -->
 Die Längengrade laufen an den Polen zusammen, und je weiter nördlich man ist, desto näher liegen sie beieinander, um den Faktor \\(\cos(\text{Breite})\\).
+<!-- /after -->
 
 Auf den paar Kilometern einer Stadt ist die Erde fast flach. Du rechnest beide Unterschiede in Meter um und nimmst den Satz des Pythagoras:
 

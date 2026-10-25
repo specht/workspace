@@ -633,6 +633,7 @@ int color(double x, double y)
 
 _task(interferenz)
 
+<!-- after: interferenz -->
 Wo beide Wellen gleichzeitig oben sind, verstärken sie sich, wo die eine oben und die andere unten ist, löschen sie sich aus. Das nennt man **Interferenz**. Die Summe liegt zwischen −2 und 2, deshalb rechnet die letzte Zeile von `color` `(wave + 2) * 3.75`.
 
 <!-- tutorial-screenshot
@@ -651,6 +652,7 @@ hook: at 7.2
 crop-element: #canvas
 -->
 <img class='full' src='interference.webp' alt='Bunte Wellenringe von zwei Quellen überlagern sich zu einem verwickelten Muster mit weichen Kanten.'>
+<!-- /after -->
 
 Für jedes Bild rechnet `color` an 58.000 Ecken zwei Abstände und zwei Sinuswerte aus, und weil die Ringe hier dicht liegen, an vielen Kanten noch einmal: zusammen rund 200.000-mal pro Bild, bei 60 Bildern pro Sekunde rund **12 Millionen**-mal pro Sekunde. Für solche Rechnungen ist C gemacht.
 
@@ -721,6 +723,7 @@ int main(void)
 
 _task(loslassen)
 
+<!-- after: loslassen -->
 Klicke in die Vorschau, damit sie die Tasten bekommt, und steuere mit den Pfeiltasten. Drei Dinge sind neu:
 
 - Das Spielfeld hat nur 160 × 90 Pixel, also große Pixel.
@@ -745,6 +748,7 @@ hook: freeze
 crop-element: #canvas
 -->
 <img class='full' src='lichtspur-fahren.webp' alt='Eine türkise Linie fährt nach rechts, macht eine Schleife und kreuzt dabei ihre eigene Spur.'>
+<!-- /after -->
 
 ### Ein fester Takt
 

@@ -204,7 +204,9 @@ Um `traceroute` zu verstehen, musst du wissen, dass jedes IP-Paket eine »Time T
 
 _task(ttl-drei)
 
+<!-- after: ttl-drei -->
 `traceroute` schickt zuerst ein Paket mit TTL 1 los. Der erste Router verwirft es und schickt eine Fehlermeldung zurück, und damit kennt `traceroute` seine Adresse. Dann schickt es ein Paket mit TTL 2, das beim zweiten Router hängen bleibt, und so weiter, bis ein Paket das Ziel erreicht.
+<!-- /after -->
 
 Ein Stern `*` bedeutet, dass ein Router das Paket verworfen hat, ohne sich zu melden; seine Adresse bleibt darum unbekannt. Eine ausführlichere Erklärung findest du in diesem [Blogpost](https://blog.davidvarghese.dev/posts/traceroute-explained/) von David Varghese.
 
@@ -248,7 +250,9 @@ Auf einem Rechner laufen viele Programme, die das Netz benutzen, und sie alle te
 
 _task(port)
 
+<!-- after: port -->
 Die IP-Adresse bringt ein Paket zum richtigen Rechner, der **Port** zum richtigen Programm: eine Zahl von 1 bis 65 535. Server warten an Ports, die alle kennen: 22 für SSH, 80 für HTTP, 443 für HTTPS. Die Seite, die du gerade liest, kam über Port 443. Der Client bekommt für jede Verbindung irgendeinen freien Port; an ihn gehen die Antworten zurück.
+<!-- /after -->
 
 ### Der Handshake
 
@@ -289,6 +293,7 @@ curl -so /dev/null -w 'Verbindung: %{time_connect} s\n' https://www.anu.edu.au
 
 _task(handshake)
 
+<!-- after: handshake -->
 <!-- tutorial-screenshot
 terminal-run: clear
 terminal-run: curl -so /dev/null -w 'Verbindung: %{time_connect} s\n' https://www.anu.edu.au
@@ -301,6 +306,7 @@ crop-terminal-lines: auto
 <img class='full' src='curl-handshake.webp' alt='Zweimal curl mit -w: Die Verbindung zu www.anu.edu.au steht jeweils nach etwa 0,34 Sekunden, so lange wie ein ping.'>
 
 Die Verbindung steht nach etwa 0,34 Sekunden, so lange wie ein `ping` nach Canberra. Bei `https://` folgt danach noch die Verschlüsselung, mit weiteren Paketen hin und zurück. Darum fühlt sich ein Server am anderen Ende der Welt so viel langsamer an, als 0,3 Sekunden vermuten lassen.
+<!-- /after -->
 
 ## Eine eigene Verbindung: `netcat`
 
@@ -494,7 +500,9 @@ Verbinde dich jetzt mit `www.wikipedia.org`, Port 80, ohne TLS, und lass dir Zei
 
 _task(zu-langsam)
 
+<!-- after: zu-langsam -->
 Ein Server hält nicht jede Verbindung ewig offen. Jede offene Verbindung kostet ihn Speicher, und wer tausend Verbindungen öffnet und nie etwas schickt, könnte ihn sonst lahmlegen. Darum schließt er Verbindungen, über die eine Weile nichts kommt. Wie lange er wartet, legt jeder Server selbst fest: `www.wikipedia.org` nur wenige Sekunden, `example.com` etwa 15 Sekunden, `info.cern.ch` fast eine Minute. Wer trotzdem in Ruhe tippen möchte, schreibt die Anfrage vorher hin und fügt sie auf einmal ein; die Konsole schickt mehrere Zeilen nacheinander ab.
+<!-- /after -->
 
 ## Daten aus dem Netz holen
 

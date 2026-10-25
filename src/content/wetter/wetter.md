@@ -101,7 +101,9 @@ curl -s -i "https://api.open-meteo.com/v1/forecast?latitude=999&longitude=13.41&
 
 _task(kein-ort)
 
+<!-- after: kein-ort -->
 Für den Breitengrad 999 antwortet die API mit dem Statuscode `400 Bad Request` und erklärt in `reason`, was nicht stimmt. Ein Programm muss mit beidem umgehen können: mit einer leeren Antwort und mit einem Fehler.
+<!-- /after -->
 
 _uses(statuscodes)
 

@@ -39,6 +39,26 @@ class AfterTaskTest < Minitest::Test
         assert_empty wrong
     end
 
+    # The markers stand between blocks, not inside one: what lies between
+    # them opens and closes as many <div> as it has, and every part for a
+    # language (<!-- language: … -->) that starts there ends there too.
+    # Otherwise the wrapped box would swallow the rest of the page.
+    def test_markers_do_not_cut_through_a_block
+        wrong = []
+        pages.each do |path|
+            prose = AfterTask.prose(File.read(path, encoding: 'utf-8')).join("\n")
+            prose.scan(/^[ \t]*<!--[ \t]*after:[ \t]*([A-Za-z0-9_-]+)[ \t]*-->[ \t]*\n(.*?)^[ \t]*<!--[ \t]*\/after[ \t]*-->/m) do |id, inner|
+                opened = inner.scan(/<div\b/).size
+                closed = inner.scan(%r{</div>}).size
+                languages = inner.scan(/<!--\s*language:/).size
+                language_ends = inner.scan(%r{<!--\s*/language\s*-->}).size
+                wrong << "#{File.basename(path)}: after #{id} has #{opened} <div> and #{closed} </div>" unless opened == closed
+                wrong << "#{File.basename(path)}: after #{id} cuts through a language part" unless languages == language_ends
+            end
+        end
+        assert_empty wrong
+    end
+
     def test_mark_leaves_fenced_code_alone
         markdown = "```markdown\n<!-- after: x -->\n```\n\n<!-- after: x -->\nText\n<!-- /after -->\n"
         marked = AfterTask.mark(markdown)

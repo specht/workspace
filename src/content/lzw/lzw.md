@@ -276,7 +276,9 @@ Das Wörterbuch des Entpackers ist also immer einen Eintrag hinter dem des Kompr
 
 _task(sonderfall)
 
+<!-- after: sonderfall -->
 Der Kompressor kann einen Eintrag benutzen, den er gerade erst angelegt hat. Das passiert, wenn sich ein Präfix sofort wiederholt und dabei mit seinem eigenen ersten Byte weitergeht, wie bei `ABABABA`. Der Entpacker kennt diesen Eintrag noch nicht, aber er kann ihn ausrechnen: Es ist der vorige Eintrag mit dessen eigenem ersten Byte dahinter. Das ist die einzige Ausnahme von Regel 2.
+<!-- /after -->
 
 <div class='book'>
 <i class='bi bi-file-earmark-text'></i>
@@ -355,7 +357,9 @@ Und das Foto?
 
 _task(foto)
 
+<!-- after: foto -->
 _task(warum)
+<!-- /after -->
 
 ## Ein volles Wörterbuch
 

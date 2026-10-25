@@ -171,6 +171,7 @@ Was heißt das? Überlege, bevor du weiterliest:
 
 _task(vollstaendig)
 
+<!-- after: vollstaendig -->
 Drei Zeilen sind wichtig:
 
 - **`type: ALL`** heißt: Die Datenbank liest die ganze Tabelle, Zeile für Zeile, und prüft bei jeder die Bedingung. Man nennt das einen *Full Table Scan*.
@@ -178,6 +179,7 @@ Drei Zeilen sind wichtig:
 - **`rows`** schätzt, wie viele Zeilen sie dafür anfassen muss: fast eine Million, um eine einzige zu finden.
 
 Stell dir ein Telefonbuch vor, in dem die Einträge in der Reihenfolge stehen, in der sich die Leute angemeldet haben. Eine Nummer findest du darin nur, indem du alles liest.
+<!-- /after -->
 
 ## Ein Index
 
@@ -274,7 +276,9 @@ Auch hier liest die Datenbank nur eine Zeile, `rows: 1`. Überlege, bevor du wei
 
 _task(primaerschluessel)
 
+<!-- after: primaerschluessel -->
 `key: PRIMARY`: Für den Primärschlüssel legt MySQL beim Anlegen der Tabelle selbst einen Index an, und bei InnoDB ist die Tabelle sogar in diesem B-Baum gespeichert, sortiert nach `id`. `type: const` heißt, dass es höchstens eine passende Zeile geben kann: Ein Primärschlüssel kommt nie zweimal vor.
+<!-- /after -->
 
 ## Wann ein Index nicht hilft
 
@@ -290,7 +294,9 @@ EXPLAIN SELECT * FROM person WHERE phone LIKE '%500000'\G
 EXPLAIN SELECT * FROM person WHERE RIGHT(phone, 6) = '500000'\G
 ```
 
+<!-- after: welche-nutzt -->
 Nur die erste nutzt den Index, mit `type: range`: Alle Nummern, die mit `0151 95` anfangen, stehen im Index nebeneinander. Die Nummern, die mit `500000` enden, sind dagegen über den ganzen Index verstreut, so wie im Telefonbuch alle, deren Name auf »mann« endet. Und bei `RIGHT(phone, 6)` muss die Datenbank für jede Zeile erst ausrechnen, was dabei herauskommt; im Index stehen nur die Nummern selbst.
+<!-- /after -->
 
 <!-- tutorial-step
 press: Control+L

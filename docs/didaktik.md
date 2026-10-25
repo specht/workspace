@@ -150,8 +150,12 @@ Aktivität ([widgets.md](widgets.md)).
 - Als Nächstes für Tipps in Stufen: der Rechner (`baum` vor allem), LZW
   (`entpacker`), TOTP, RLE, die Automaten und die schwereren SQL-Abfragen
   (LEFT JOIN mit `IS NULL`, GROUP BY mit HAVING, Abstände).
-- Was eine Vorhersage verrät, wartet auf die Antwort: im Raycaster
-  (Fischauge, Gleiten, Licht mit 256 Farben) und im Raytracer (Akne). Die
-  übrigen rund 70 Vorhersagen aller Aktivitäten sind darauf noch nicht
-  durchgesehen; bei vielen folgt das Bild oder die Erklärung direkt.
+- Was eine Vorhersage verrät, wartet auf die Antwort: Alle 78 Vorhersagen
+  sind durchgesehen. Bei 42 folgte etwas, das die Antwort verriet (ein
+  Screenshot vom Ergebnis, der erklärende Absatz, ein Kasten), und steht
+  jetzt zwischen `<!-- after: … -->` und `<!-- /after -->`, in 26
+  Aktivitäten. Bei den übrigen folgt ein Kasten »Ausprobieren« oder etwas
+  anderes, das die Antwort nicht nennt. Hängen zwei Vorhersagen
+  aneinander (Neo4j: Zwischentabelle, Tätigkeit), wartet die zweite Karte
+  auf die erste.
 - Noch nicht durchgesehen: glsl, raylib, tic80.

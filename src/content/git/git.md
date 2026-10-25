@@ -384,6 +384,7 @@ Wir checken nun eine frühere Version des Repositories aus, nämlich die Version
 git checkout HEAD~2
 ```
 
+<!-- after: head-zwei -->
 <!-- tutorial-screenshot
 terminal-run: clear
 terminal-run: git checkout HEAD~2
@@ -408,6 +409,7 @@ crop-terminal-lines: auto
 -->
 
 <img class='full' src='old-hello-world.webp' alt='ls zeigt nur hello.txt, cat hello.txt gibt Hello, world! aus.'>
+<!-- /after -->
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
 

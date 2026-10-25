@@ -187,9 +187,11 @@ terminal-run: dig wikipedia.org
 terminal-wait-for-prompt
 -->
 
+<!-- after: zweimal -->
 Achte auf `Query time` und auf die TTL im ANSWER SECTION. Beim zweiten Mal kam die Antwort aus dem Speicher, in null oder einer Millisekunde, und die TTL ist um die Sekunden kleiner, die seitdem vergangen sind. Läuft sie ab, fragt der Server wieder ganz von vorn.
 
 Darum dauert es eine Weile, bis eine geänderte Adresse überall ankommt: Wer die alte noch gemerkt hat, benutzt sie, bis ihre TTL abgelaufen ist. Bei `hackschule.de` sind das höchstens fünf Minuten, die Server für `de` darf man sich zwei Tage merken (172800 Sekunden).
+<!-- /after -->
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Frag statt des DNS-Servers deines Workspace direkt einen der Nameserver, die für <code>hackschule.de</code> zuständig sind (<code>dig +short NS hackschule.de</code>), zum Beispiel <code>dig @joel.ns.cloudflare.com hackschule.de</code>, mehrmals hintereinander. Welche TTL nennt er jedes Mal? Warum zählt sie bei ihm nicht herunter, beim DNS-Server deines Workspace aber schon?

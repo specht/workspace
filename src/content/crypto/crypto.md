@@ -59,6 +59,7 @@ sha256sum letter.txt
 
 _task(lawine)
 
+<!-- after: lawine -->
 <!-- tutorial-screenshot
 # Ordner crypto mit dem Brief, Hash vor und nach der Änderung
 hide-left-sidebar
@@ -83,6 +84,7 @@ Eine gute Hashfunktion hat drei Eigenschaften:
 - **Kein Weg zurück.** Aus dem Hash lässt sich der Brief nicht berechnen, und niemand findet mit vertretbarem Aufwand zwei verschiedene Dateien mit demselben Hash.
 
 Darum taugt ein Hash als **Fingerabdruck**. Wer eine große Datei herunterlädt, zum Beispiel ein Betriebssystem, findet daneben oft ihren SHA-256-Hash. Stimmt der Hash der heruntergeladenen Datei damit überein, ist sie unterwegs nicht verändert worden. Auch [Git](/git) benennt jeden Commit und jede Datei nach ihrem Hash: Die Commit-IDs wie `a4a310c` sind der Anfang davon.
+<!-- /after -->
 
 _task(hash-berechnen)
 
@@ -108,6 +110,7 @@ mkpasswd -m yescrypt geheim
 
 _task(salz-vorhersage)
 
+<!-- after: salz-vorhersage -->
 <!-- tutorial-screenshot
 terminal-run: clear
 terminal-run: mkpasswd -m yescrypt geheim
@@ -119,6 +122,7 @@ crop-terminal-lines: auto
 <img class='full' src='salz.webp' alt='Zweimal mkpasswd -m yescrypt geheim mit zwei völlig verschiedenen Ergebnissen; beide beginnen mit $y$j9T$, danach unterscheiden sie sich.'>
 
 Jedes Ergebnis besteht aus Teilen, getrennt durch `$`: `y` steht für yescrypt, `j9T` für die Einstellungen, dann kommt ein zufälliges **Salz** und erst danach der eigentliche Hash. Das Salz wird jedes Mal neu ausgewürfelt und mit dem Passwort zusammen gehasht. So hat dasselbe Passwort bei jeder Person einen anderen Hash, und fertige Listen nützen nichts. Das Salz ist nicht geheim, es steht ja mit im Ergebnis; zur Prüfung rechnet der Server mit demselben Salz noch einmal.
+<!-- /after -->
 
 Der zweite Unterschied ist die Zeit. Mit `-R` stellst du ein, wie viel Arbeit yescrypt machen soll, und `time` misst, wie lange ein Befehl dauert:
 
@@ -223,7 +227,9 @@ Symmetrische Verschlüsselung ist schnell und sicher. Überlege, bevor du weiter
 
 _task(schluesselproblem)
 
+<!-- after: schluesselproblem -->
 Das Problem: Beide Seiten brauchen dasselbe Passwort. Schickst du es mit, liest es mit, wer auch den Brief mitliest. Wie verabredest du es also, ohne dass es unterwegs mitgelesen wird?
+<!-- /after -->
 
 ## Zwei Schlüssel
 
@@ -366,6 +372,7 @@ ssh-keygen -Y verify -f allowed_signers -I alice -n file -s letter.txt.sig < let
 
 _task(geaendert)
 
+<!-- after: geaendert -->
 <!-- tutorial-screenshot
 terminal-run: clear
 terminal-run: echo "alice $(cat key.pub)" > allowed_signers
@@ -380,6 +387,7 @@ crop-terminal-lines: auto
 <img class='full' src='unterschrift.webp' alt='Die erste Prüfung meldet Good "file" signature for alice with ED25519 key und den Fingerabdruck des Schlüssels. Nach der Änderung von 16 auf 17 Uhr meldet die zweite Prüfung Signature verification failed: incorrect signature.'>
 
 Unterschrieben wird nicht der ganze Brief, sondern sein Hash: Ändert sich eine Ziffer, passt der Hash nicht mehr zur Unterschrift. Die Unterschrift beweist also beides, wer unterschrieben hat und dass der Brief seitdem gleich geblieben ist. Geheim ist der Brief dadurch nicht, er liegt ja offen daneben.
+<!-- /after -->
 
 _task(unterschrift)
 

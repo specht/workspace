@@ -557,6 +557,7 @@ shape = box
 move = 100, 0, 0
 rotate = 0, 0, 45
 ```
+<!-- after: reihenfolge -->
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # erst verschieben, dann drehen
@@ -579,6 +580,7 @@ crop-bottom: 27%
 </div>
 
 Dieser Würfel schwebt jetzt über dem Gitter, weil er zuerst nach rechts verschoben wurde und danach erst um 45 Grad um die Z-Achse gedreht wurde, denn: jede Drehung findet immer um den Ursprung statt (und jede Skalierung auch).
+<!-- /after -->
 
 _task(reihenfolge-erklaeren)
 

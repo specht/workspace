@@ -204,6 +204,7 @@ Füge diese Zeile ganz oben in deinem Skript ein und speichere die Datei. Ein Pr
 
 _task(ohne-chmod)
 
+<!-- after: ohne-chmod -->
 Bevor die Shell das Skript ausführt, muss es ausführbar sein. Das machen wir mit dem Befehl `chmod`:
 
 ```bash
@@ -231,6 +232,7 @@ sleep: 0.5
 -->
 
 <img class='full' src='shebang.webp' alt='Oben hello.py mit #!/usr/bin/env python3 in der ersten Zeile, unten im Terminal chmod +x hello.py und ./hello.py, das Hello, World! ausgibt.'>
+<!-- /after -->
 
 _task(ausfuehrbar)
 

@@ -507,6 +507,7 @@ _task(kontinente-grosse-laender)
 
 _task(reihenfolge)
 
+<!-- after: reihenfolge -->
 Eine Abfrage schreibst du mit `SELECT` zuerst. Die Datenbank fängt aber woanders an: Sie holt zuerst die Zeilen der Tabelle aus `FROM`, wirft mit `WHERE` die weg, die nicht passen, und wählt erst danach mit `SELECT` die Spalten aus. Dann sortiert sie mit `ORDER BY` und schneidet mit `LIMIT` ab. Der Query Stepper unten führt eine Abfrage so aus, Teil für Teil, und zeigt nach jedem Schritt die Tabelle, die gerade entstanden ist. Mit <kbd>←</kbd> und <kbd>→</kbd> gehst du durch die Schritte; die Abfrage kannst du ändern.
 
 <div class='query-stepper' data-stepper data-query="SELECT name, ROUND(population / area) AS density
@@ -519,6 +520,7 @@ LIMIT 5;">
 <script src='/include/query_stepper.js'></script>
 
 `density` ist hier die Bevölkerungsdichte, die Zahl der Menschen pro Quadratkilometer, gerundet. Den Namen bekommt die Spalte mit `AS` bei `SELECT`, und weil `ORDER BY` danach kommt, darf es ihn schon benutzen.
+<!-- /after -->
 
 
 _task(dichte-where)

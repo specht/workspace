@@ -1028,6 +1028,7 @@ curl localhost:8000/visits
 curl localhost:8000/visits
 ```
 
+<!-- after: parameter -->
 <!-- language: ruby -->
 <!-- tutorial-screenshot
 # Stufe 5: Parameter und Zähler im Terminal
@@ -1083,6 +1084,7 @@ check-task: hallo <- curl -s "localhost:8000/hello?name=Ada%20Lovelace"
 -->
 <img class='full' src='parameter-python.webp' alt='Rechts antwortet der Python-Server »Hallo, Ada Lovelace!«, dann »Du bist Besuch Nummer 1.« und »Du bist Besuch Nummer 2.«; links stehen die drei Anfragen.'>
 <!-- /language -->
+<!-- /after -->
 
 Im Browser funktioniert es genauso: Hänge `/hello?name=…` an die Adresse aus »Forwarded Address«.
 

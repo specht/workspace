@@ -250,9 +250,11 @@ wait-for-text: 2 of 2 analyzed
 <strong>Eine Wachstumsvermutung belegen.</strong> Lies die Werte für <em>n</em> = 512, 1024 und 2048 ab: Was passiert mit dem Aufwand, wenn sich <em>n</em> verdoppelt? Stell dann die Anzeige auf <em>score / n²</em>. Wird die Kurve flach, stimmt deine Vermutung, und die Höhe, auf der sie flach wird, verrät noch mehr über den Algorithmus.
 </div>
 
+<!-- after: verdoppeln -->
 <div class='hint think'>
 <strong>Zum Weiterdenken:</strong> Für <em>n</em> = 2048 macht der unoptimierte Bubble Sort genau <em>n</em>·(<em>n</em>−1), also rund 4,2 Millionen Vergleiche, egal, wie die Liste aussieht. Bei den Schreibzugriffen wird es spannender: Jede Vertauschung bei Bubble Sort und jede Verschiebung bei Insertion Sort beseitigt genau einen <em>Fehlstand</em>, also ein Paar, das in falscher Reihenfolge steht. Auf derselben Eingabe tauscht Bubble Sort deshalb genau so oft, wie Insertion Sort verschiebt. Der große Unterschied liegt woanders. Wo?
 </div>
+<!-- /after -->
 
 ### Check: richtig, stabil oder nur zufällig richtig?
 

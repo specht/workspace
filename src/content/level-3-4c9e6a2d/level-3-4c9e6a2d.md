@@ -257,6 +257,7 @@ _task(decke)
 
 **Direktes Licht.** Für jeden Punkt nimmt das Programm einen Punkt auf jeder Leuchte und schickt einen Strahl dorthin. Steht etwas im Weg, eine Wand, eine Säule oder ein Modell, kommt von dieser Leuchte nichts an. Sonst kommt Licht an, umso weniger, je weiter die Leuchte weg ist (doppelt so weit: ein Viertel) und je schräger es auf die Fläche fällt. Das wiederholt es 64-mal, jedes Mal mit einem anderen Punkt auf der Leuchte, und nimmt den Durchschnitt. Ganz zufällig sind diese Punkte nicht: Das Programm teilt die Leuchte in 8 × 8 Felder, und jeder Punkt der Lightmap kommt in den 64 Durchgängen in jedes Feld genau einmal, darin an eine zufällige Stelle. So verteilen sich seine Strahlen gleichmäßig über die ganze Leuchte, und der Halbschatten wird glatter als mit Zufall allein. Ein Punkt, der eine Leuchte nur halb sieht, ist in etwa der Hälfte der Durchgänge beleuchtet: Er liegt im **Halbschatten**. Darum werfen große Leuchten weiche Schatten und kleine scharfe. Und der Halbschatten ist dort schmal, wo der Schatten an der Kante beginnt, die ihn wirft, und wird breiter, je weiter er von ihr weg fällt: wie an der Wand hinter der Treppe und um die Kiste. Nur mit direktem Licht sieht der Saal so aus:
 
+<!-- after: decke -->
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1536x864
@@ -268,6 +269,7 @@ hook: key t b
 -->
 
 <img class='full fit-width' src='licht-direkt.webp' alt='Der Saal in Grau, nur mit direktem Licht: helle Flecken auf dem Boden unter den Leuchten, die Säulen werfen weiche Schatten, das Satteldach und alles, was keine Leuchte sieht, fast schwarz.'>
+<!-- /after -->
 
 Wie weich ein Schatten ist, hängt also davon ab, wie groß die Leuchte ist. Mit `size = 0.2` und mit `size = 2` (und `power` so, dass jede gleich viel Licht gibt, denn eine kleinere Leuchte gibt auch weniger):
 

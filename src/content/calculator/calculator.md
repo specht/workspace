@@ -397,6 +397,7 @@ Als Nächstes kommt `^` für »hoch« dazu: `2 ^ 3` ist 8. Hoch bindet noch stä
 
 _task(hoch-vorhersage)
 
+<!-- after: hoch-vorhersage -->
 Hoch wird von rechts nach links gerechnet. Und ein Minus davor gilt erst nach dem Hoch: `-2 ^ 2` ist −4, so wie in der Mathematik −2² = −4 ist. Beides passt in eine neue Regel zwischen `factor` und `atom`:
 
 ```text
@@ -405,6 +406,7 @@ power      = atom [ "^" factor ]
 ```
 
 `[ … ]` heißt »vielleicht«. Weil nach dem `^` wieder `factor` kommt und nicht eine Schleife wie bei `+`, hängt `2 ^ 3 ^ 2` als `["^", 2, ["^", 3, 2]]` zusammen: rechts tiefer, also rechts zuerst. Und weil `factor` ein Vorzeichen erlaubt, geht auch `2 ^ -1`.
+<!-- /after -->
 
 _task(potenz)
 

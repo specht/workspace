@@ -216,6 +216,7 @@ Füge diese Zeile ganz oben in deinem Skript ein und speichere die Datei. Ein Pr
 
 _task(ohne-chmod)
 
+<!-- after: ohne-chmod -->
 Bevor die Shell das Skript ausführt, muss es ausführbar sein. Das machen wir mit dem Befehl `chmod`:
 
 ```bash
@@ -243,6 +244,7 @@ sleep: 0.5
 -->
 
 <img class='full' src='shebang.webp' alt='Oben hello.rb mit #!/usr/bin/env ruby in der ersten Zeile, unten im Terminal chmod +x hello.rb und ./hello.rb, das Hello, World! ausgibt.'>
+<!-- /after -->
 
 _task(ausfuehrbar)
 

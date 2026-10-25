@@ -41,8 +41,11 @@ Bevor du siehst, wie der Graph aussieht, rate:
 
 _task(zwischentabelle)
 
+<!-- after: zwischentabelle -->
 _task(taetigkeit)
+<!-- /after -->
 
+<!-- after: taetigkeit -->
 Im Graphen gibt es drei Arten von **Knoten**: `Movie`, `Person` und `Genre`. Zwischen ihnen liegen **Beziehungen**, und jede Beziehung hat einen **Typ**:
 
 ```cypher
@@ -58,6 +61,7 @@ Im Graphen gibt es drei Arten von **Knoten**: `Movie`, `Person` und `Genre`. Zwi
 ```
 
 Die Typen sind die Tätigkeiten aus der Tabelle `job`, nur in Großbuchstaben, so wie man sie in Cypher üblicherweise schreibt.
+<!-- /after -->
 
 <div class='hint'>
 Man muss eine relationale Datenbank nicht immer so in einen Graphen übersetzen. Wir wählen dieses Modell, weil bei unseren Filmdaten gerade die Verbindungen zwischen Filmen, Genres und Personen interessant sind.
@@ -396,7 +400,9 @@ ORDER BY together DESC
 LIMIT 10;
 ```
 
+<!-- after: paare -->
 Wie in SQL sorgt `a.id < b.id` dafür, dass jedes Paar einmal vorkommt und niemand mit sich selbst. Der Rest ist das Muster selbst: zwei Personen, ein Film, zweimal `ACTOR`. Vergleich das mit der SQL-Abfrage, die jede Tabelle zweimal brauchte.
+<!-- /after -->
 
 <!-- tutorial-screenshot
 # Neo4j Browser: die Schauspielpaare als Tabelle

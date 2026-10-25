@@ -316,7 +316,9 @@ _task(uhr)
 <strong>Ausprobieren:</strong> Lass die Uhr deines Programms nachgehen: Ersetze in der Schleife <code>totp(base32_decode(secret), now)</code> durch <code>totp(base32_decode(secret), now - 20)</code> und starte es neu. Beobachte eine halbe Minute lang Programm und App nebeneinander: Wie viele Sekunden lang zeigen beide denselben Code? Stell die Zeile danach wieder her.
 </div>
 
+<!-- after: uhr -->
 Server nehmen deshalb auch den Code des Zeitfensters davor und danach an, also insgesamt 90 Sekunden. Viele Apps zeigen den Code außerdem mit einem Leerzeichen in der Mitte, `287 082`; auch das soll nicht stören.
+<!-- /after -->
 
 _task(pruefen)
 

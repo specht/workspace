@@ -302,6 +302,7 @@ Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kle
 
 _task(punkt)
 
+<!-- after: punkt -->
 Der wichtige Unterschied ist der Punkt: `(.)` – er bedeutet, dass die Geschichte auf dieser Seite bleiben soll. Der eingerückte Text darunter erscheint erst, nachdem die Entscheidung ausgewählt wurde.
 
 <!-- tutorial-screenshot
@@ -328,6 +329,7 @@ variants: dark
 -->
 
 <img class='full full-shadow scroll-right' src='local-choice.webp' alt='Die Frage nach dem Materialschrank führt nicht zu einem Seitenwechsel, da es sich um eine lokale Entscheidung handelt.'>
+<!-- /after -->
 
 Die vier Leerzeichen vor der Antwort sind wichtig. Durch die Einrückung erkennt BIF, dass der eingerückte Text zur Entscheidung direkt darüber gehört. Alles, was nach dieser lokalen Entscheidung passieren soll, wird deshalb entsprechend eingerückt.
 

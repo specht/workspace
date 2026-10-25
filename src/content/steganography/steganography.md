@@ -337,6 +337,7 @@ Mehr passt hinein, wenn man mehr als ein Bit pro Kanal ersetzt. Gib `hide` und `
 
 _task(sichtbar)
 
+<!-- after: sichtbar -->
 So sieht der Himmel aus `moewen.png` aus, wenn alle untersten Bits voller Daten sind:
 
 <div class='gallery columns-4'>
@@ -347,6 +348,7 @@ So sieht der Himmel aus `moewen.png` aus, wenn alle untersten Bits voller Daten 
 </div>
 
 Mit 1 und 2 Bits sieht man nichts. Mit 4 Bits sieht man Rauschen und Streifen: Im glatten Verlauf des Himmels behält jeder Kanal nur noch seine oberen 4 Bits, also 16 Stufen statt 256, und der Verlauf zerfällt in **Bänder**. Gerade glatte Flächen verraten zu viele versteckte Daten; in Laub, Wellen oder Stoff fällt dasselbe Rauschen kaum auf.
+<!-- /after -->
 
 ## Entdecken
 
@@ -489,6 +491,7 @@ print(chi_square(hidden, 0, 40))
 ```
 <!-- /language -->
 
+<!-- after: vorbei -->
 Die Botschaft füllt die obersten gut 70 Zeilen, und trotzdem schlägt der Test nicht an. Er vergleicht die Paare 2k und 2k+1, weil das LSB-Verfahren genau diese beiden Werte gleich häufig macht. Würfel der Breite 3 machen aber Gruppen von drei Werten gleich häufig: 0, 1 und 2, dann 3, 4 und 5. Die Paare des Tests liegen quer dazu, 2 und 3 etwa gehören zu verschiedenen Gruppen. So geht es mit jeder ungeraden Breite. Bei der Breite 4 dagegen liegt jedes Paar in einer Gruppe, und der Test findet die Botschaft wieder.
 
 <div class='scroll-x'>
@@ -503,6 +506,7 @@ Die Botschaft füllt die obersten gut 70 Zeilen, und trotzdem schlägt der Test 
 <p class='expl'>Jede Farbe einer Gruppe kommt nach dem Verstecken gleich oft vor. Bei der Breite 4 liegen in jeder Gruppe zwei ganze Paare, also werden auch die Paare gleich. Bei der Breite 3 schneiden die Gruppen durch die Paare hindurch: 2 und 3, 8 und 9 liegen in verschiedenen Gruppen.</p>
 
 Der Test muss also wissen, wonach er sucht. Er lässt sich leicht verallgemeinern: Statt der Paare nimmt er Gruppen von `width` Werten, die Werte \\( k \cdot w \\) bis \\( k \cdot w + w - 1 \\). Für jede Gruppe ist \\( e \\) der Durchschnitt ihrer Zählungen, und sie trägt \\( \sum (c - e)^2 / e \\) bei, über ihre \\( w \\) Zählungen \\( c \\). Geteilt durch \\( w - 1 \\) ergibt eine Gruppe, die nur der Zufall gleichmacht, wieder etwa 1. Mit \\( w = 2 \\) ist das genau der Test von vorhin.
+<!-- /after -->
 
 _task(gruppen)
 

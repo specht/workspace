@@ -209,7 +209,9 @@ _task(unrle)
 
 _task(ziffern)
 
+<!-- after: ziffern -->
 Als Text geht es nur, solange der Text selbst keine Ziffern enthält: Sonst weiß niemand, welche Ziffern Längen sind und welche zum Text gehören. Echte Programme schreiben deshalb immer genau zwei Bytes für jeden Lauf, eins mit der Länge und eins mit dem Byte, das sich wiederholt. Dann ist klar, was was ist, egal was in der Datei steht. Weil ein Byte höchstens 255 sein kann, wird ein längerer Lauf geteilt: 300-mal A sind `[255, 65, 45, 65]`.
+<!-- /after -->
 
 <!-- language: ruby -->
 Schreib `rle_bytes`, das ein Array von Zahlen zurückgibt, und `unrle_bytes`, das daraus wieder den String macht.
@@ -251,6 +253,7 @@ _task(diskette)
 
 _task(text)
 
+<!-- after: text -->
 <div style='max-width: 100%; overflow-x: auto;'>
 <table class='table'>
 <thead>
@@ -265,6 +268,7 @@ _task(text)
 </div>
 
 In einem Text sind Läufe selten: Außer Leerzeichen und Linien aus `-` und `=` kommt kaum ein Zeichen zweimal hintereinander, und jedes einzelne kostet jetzt zwei Bytes. Im JPEG ist fast jedes Byte ein Lauf der Länge 1.
+<!-- /after -->
 
 <!-- language: ruby -->
 <div class='hint try'>

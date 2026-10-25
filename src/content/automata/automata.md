@@ -719,7 +719,9 @@ for i in range(1, N):
 
 _task(explosion)
 
+<!-- after: explosion -->
 Der DEA kann nicht raten, wo die 1 steht. Er muss sich darum alle letzten N Ziffern merken, und jede Möglichkeit ist ein eigener Zustand. Bei N = 30 wären das über eine Milliarde. Automatron zeigt unter den Beispielen den DEA für »drittletztes Symbol ist 1«; zähl seine Zustände.
+<!-- /after -->
 
 ## Zusammenfassung
 

@@ -1137,6 +1137,7 @@ node flood.js
 
 _task(counter)
 
+<!-- after: counter -->
 <!-- language: ruby -->
 <!-- tutorial-screenshot
 # Stufe 4: viele Threads, flood.js schickt 200 Pixel
@@ -1185,9 +1186,11 @@ check-task-fails: lock python
 -->
 <img class='full' src='threads-python.webp' alt='Links zählt der Python-Server, aber am Ende steht weit weniger als »Pixel Nr. 200«, rechts meldet flood.js »200 Pixel geschickt.« und »200 Pixel zurückbekommen.«'>
 <!-- /language -->
+<!-- /after -->
 
 ### Ein Lock
 
+<!-- after: counter -->
 <!-- language: ruby -->
 200 Pixel, und der Zähler kommt nicht annähernd bis 200. Jeder der vier Threads liest `$painted`, speichert das Bild und schreibt dann seinen Wert plus eins zurück. Während einer speichert, lesen die anderen denselben alten Wert; vier Threads schreiben dieselbe Zahl, und drei Pixel sind beim Zählen verloren. Dasselbe Problem hatte der Besuchszähler deines Webservers; dort war die Lücke zwischen Lesen und Schreiben nur so kurz, dass man den Fehler selten sieht. Hier dauert das Speichern, und der Fehler passiert jedes Mal.
 
@@ -1256,6 +1259,7 @@ with lock:
 ~ broadcast({'type': 'pixel', 'x': x, 'y': y, 'color': color})
 ```
 <!-- /language -->
+<!-- /after -->
 
 Starte den Server neu und schick noch einmal 200 Pixel:
 
