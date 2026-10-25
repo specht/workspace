@@ -42,6 +42,10 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 ARG BUNDLER_VERSION=4.0.17
 RUN gem install bundler --version "${BUNDLER_VERSION}"
 
+# Only for task_examples_test.rb: the steganography checks run the students'
+# Ruby, which reads PNGs with chunky_png (the website itself does not need it).
+RUN gem install chunky_png --version 1.4.0
+
 WORKDIR /app
 COPY Gemfile Gemfile.lock ./
 RUN bundle config set frozen true \

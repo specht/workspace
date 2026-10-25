@@ -163,9 +163,11 @@ class TaskCardTest < Minitest::Test
         assert_includes html, "placeholder='a&#39;b'"
     end
 
-    # docs/vorlage-aktivitaet is what authors copy; it must stay valid.
+    # docs/vorlage-aktivitaet is what authors copy; it must stay valid. The
+    # Ruby container mounts only src/, so there the test is skipped.
     def test_the_template_for_authors_is_valid
         dir = File.expand_path('../../../docs/vorlage-aktivitaet', __dir__)
+        skip "#{dir} missing (the Ruby container mounts only src/)" unless File.directory?(dir)
         tasks = TaskSpec.load_file(File.join(dir, 'tasks.yaml'))['tasks'].map { |t| t['id'] }
         _, ids = TaskCard.mark_slots(File.read(File.join(dir, 'vorlage-aktivitaet.md'), encoding: 'UTF-8'))
         assert_equal tasks, ids

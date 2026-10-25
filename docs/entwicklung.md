@@ -182,7 +182,11 @@ Dort brechen die Tests mit einem `LoadError` ab, die die Seiten rendern
 `task_examples_test.rb` führt die `ruby`- und `python`-Prüfungen mit den
 Interpretern auf dem Rechner aus; für »Geheime Botschaften in Bildern« braucht
 es dort die Bibliotheken, die auch die Lernenden installieren:
-`gem install chunky_png` und `pip install pillow`.
+`gem install chunky_png` und `pip install pillow`. Im Ruby-Container ist
+`chunky_png` installiert (`docker/ruby/Dockerfile`; nach einer Änderung
+`./config.rb build ruby && ./config.rb up -d ruby`). Der Container bindet nur
+`src/` ein; der Test der Vorlage in `task_card_test.rb` (`docs/vorlage-aktivitaet`)
+wird dort übersprungen und läuft nur auf dem eigenen Rechner.
 
 JavaScript-Tests laufen mit Node, ohne npm-Pakete:
 
