@@ -13,18 +13,17 @@
 # in palette.h (PALETTE_TEX).
 #
 # So entsteht die Palette, und jeder Schritt speichert ein Bild:
-#   1. alle Texturen zusammen auf wenige Grundfarben bringen (1-grundfarben.png)
-#   2. jede Grundfarbe in 16 Helligkeiten, von voll bis schwarz (2-rampen.png)
-#   3. diese Rampen auf 240 Farben bringen; die Farben 0 bis 15 bleiben für
-#      die Karte und die Anzeige reserviert (3-palette.png)
-#   4. die Texturen in der neuen Palette (4-texturen.png) und abgedunkelt
-#      über die Schattentabelle (5-schatten.png)
+#   1. jede Farbe der Texturen in 16 Helligkeiten, von voll bis schwarz
+#      (1-rampen.png)
+#   2. diese Rampen auf 240 Farben bringen; die Farben 0 bis 15 bleiben für
+#      die Karte und die Anzeige reserviert (2-palette.png)
+#   3. die Texturen in der neuen Palette (3-texturen.png) und abgedunkelt
+#      über die Schattentabelle (4-schatten.png)
 
 require 'chunky_png'
 
 TEXTURES = 7
 LEVELS = 16
-BASE_COLORS = 40
 RESERVED = 16
 
 # die reservierten Farben, in palette.h mit diesen Namen
@@ -119,21 +118,17 @@ def save(name, width, height, cell, cell_height = cell)
   puts "  #{name}"
 end
 
-# --- 1. Grundfarben --------------------------------------------------------
+# --- 1. Rampen: jede Farbe der Texturen in 16 Helligkeiten ----------------
+# Jede Farbe, die in den Texturen vorkommt, wird eine Rampe von voll bis
+# schwarz, und jede Stufe zählt so oft, wie die Farbe in den Texturen steht.
 
 counts = Hash.new(0)
 tiles.each { |tile| tile.each { |row| row.each { |c| counts[c] += 1 } } }
-base = median_cut(counts.to_a, BASE_COLORS)
-puts "#{counts.size} verschiedene Farben in #{file}, #{base.size} Grundfarben"
-save('1-grundfarben.png', TEXTURES * TEX, TEX, 2 * ZOOM) { |x, y| base[nearest(base, tiles[x / TEX][y][x % TEX])] }
-
-# --- 2. Rampen: jede Grundfarbe in 16 Helligkeiten -------------------------
-
-base_count = Hash.new(0)
-counts.each { |c, n| base_count[nearest(base, c)] += n }
+colors = counts.keys
+puts "#{colors.size} verschiedene Farben in #{file}"
 ramps = []
-base.each_with_index do |c, i|
-  LEVELS.times { |level| ramps << [c.map { |v| v * level / (LEVELS - 1) }, base_count[i] + 1] }
+colors.each do |c|
+  LEVELS.times { |level| ramps << [c.map { |v| v * level / (LEVELS - 1) }, counts[c]] }
 end
 # sortiert, damit man das Bild lesen kann: erst die Grautöne, dann nach dem
 # Farbton, innerhalb davon von dunkel nach hell
@@ -149,21 +144,22 @@ def order(c)
   [1, (hue * 2).floor, light]
 end
 
-# jede Grundfarbe eine Spalte, oben in voller Helligkeit, unten schwarz,
-# nach dem Farbton sortiert; die Felder sind breiter als hoch, so wird das
-# Bild ein flaches Band, viermal so breit wie hoch
-columns = (0...base.size).sort_by { |i| order(base[i]) }
-save('2-rampen.png', base.size, LEVELS, 16) { |x, y| ramps[columns[x] * LEVELS + LEVELS - 1 - y][0] }
+# jede Farbe eine Spalte, oben in voller Helligkeit, unten schwarz, nach dem
+# Farbton sortiert; bei vielen Farben werden die Spalten schmaler, damit das
+# Bild nicht breiter als 1024 Pixel wird
+columns = (0...colors.size).sort_by { |i| order(colors[i]) }
+width = (1024 / colors.size).clamp(1, 16)
+save('1-rampen.png', colors.size, LEVELS, width, 16) { |x, y| ramps[columns[x] * LEVELS + LEVELS - 1 - y][0] }
 
-# --- 3. die Palette: 16 reservierte Farben und 240 aus den Rampen -----------
+# --- 2. die Palette: 16 reservierte Farben und 240 aus den Rampen -----------
 
 
 reserved = Array.new(RESERVED) { |i| UI[i] ? UI[i][1] : [0, 0, 0] }
 palette = reserved + median_cut(ramps, 256 - RESERVED).sort_by { |c| order(c) }
 palette << [0, 0, 0] while palette.size < 256
-save('3-palette.png', 16, 16, 16) { |x, y| palette[y * 16 + x] }
+save('2-palette.png', 16, 16, 16) { |x, y| palette[y * 16 + x] }
 
-# --- 4. die Texturen in der Palette ---------------------------------------
+# --- 3. die Texturen in der Palette ---------------------------------------
 # Nur Farben ab 16, die reservierten bleiben der Anzeige. Mit --dither geht
 # der Fehler jedes Texels nach Floyd und Steinberg an die Nachbarn rechts
 # und darunter; über den Rand hinaus kommt er auf der anderen Seite herein,
@@ -188,7 +184,7 @@ texture = tiles.map do |tile|
     end
   end
 end
-save('4-texturen.png', TEXTURES * TEX, TEX, 2 * ZOOM) { |x, y| palette[texture[x / TEX][y][x % TEX]] }
+save('3-texturen.png', TEXTURES * TEX, TEX, 2 * ZOOM) { |x, y| palette[texture[x / TEX][y][x % TEX]] }
 
 # --- die Schattentabelle: dieselbe Farbe mit der Helligkeit light / 15 -----
 
@@ -199,7 +195,7 @@ shade = Array.new(LEVELS) do |light|
   end
 end
 lights = [15, 11, 7, 4]
-save('5-schatten.png', TEXTURES * TEX, lights.size * TEX, ZOOM) do |x, y|
+save('4-schatten.png', TEXTURES * TEX, lights.size * TEX, ZOOM) do |x, y|
   palette[shade[lights[y / TEX]][texture[x / TEX][y % TEX][x % TEX]]]
 end
 

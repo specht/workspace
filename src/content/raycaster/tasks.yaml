@@ -184,19 +184,19 @@ tasks:
     check:
       type: choice
       options:
-        - 'Jede der 40 Grundfarben bekommt 16 Helligkeiten bis hinunter zu Schwarz. Je dunkler, desto ähnlicher werden sich die Farben, und die Schattentabelle braucht für jede Helligkeit eine passende Farbe.'
+        - 'Jede der 67 Farben der Texturen bekommt 16 Helligkeiten bis hinunter zu Schwarz. Je dunkler, desto ähnlicher werden sich die Farben, und die Schattentabelle braucht für jede Helligkeit eine passende Farbe.'
         - 'Das Werkzeug füllt die Palette mit Schwarz auf, weil die Texturen weniger als 256 Farben haben.'
         - 'Die Karte braucht so viele dunkle Farben für ihren durchsichtigen Hintergrund.'
         - 'PixelRAM kann helle Farben nur ungenau darstellen und nimmt lieber dunkle.'
       correct: 0
     feedback:
       - when: { picked: 1 }
-        say: 'Aufgefüllt wird nur, wenn weniger als 240 Farben übrig bleiben. Aus den Rampen kommen aber 640 Farben, und davon bleiben 240.'
+        say: 'Aufgefüllt wird nur, wenn weniger als 240 Farben übrig bleiben. Aus den Rampen kommen aber 1072 Farben, und davon bleiben 240.'
       - when: { picked: 2 }
         say: Die Karte nimmt dafür `shade[4]`, also Farben, die schon in der Palette sind.
       - when: { picked: 3 }
         say: PixelRAM zeigt jede der 256 Farben genau so, wie sie in der Palette steht.
-    solution: 'In `2-rampen.png` hat jede Grundfarbe 16 Stufen, von Schwarz bis zur vollen Farbe. Die dunklen Stufen aller Farben liegen nah beieinander, und viele Texel in der Ferne zeigen genau diese Stufen. Die Palette bekommt deshalb viele dunkle Farben, und weil sich Ziegelrot und Moosgrün ganz dunkel kaum unterscheiden, fasst sie sie zu fast grauen zusammen.'
+    solution: 'In `1-rampen.png` hat jede Farbe der Texturen 16 Stufen, von Schwarz bis zur vollen Farbe. Die dunklen Stufen aller Farben liegen nah beieinander, und viele Texel in der Ferne zeigen genau diese Stufen. Die Palette bekommt deshalb viele dunkle Farben, und weil sich Ziegelrot und Moosgrün ganz dunkel kaum unterscheiden, fasst sie sie zu fast grauen zusammen.'
 
   - id: eigene-welt
     title: Deine Welt

@@ -1069,9 +1069,9 @@ ruby palette.rb textures.png
 
 Es schreibt `palette.h` mit der Palette, der Schattentabelle und den Texturen als Farbnummern, und für jeden Schritt ein Bild. Öffne sie im Explorer.
 
-Erst bringt es alle Texturen auf 40 Grundfarben und macht aus jeder eine Rampe mit 16 Helligkeiten, oben hell, unten schwarz (`2-rampen.png`). Aus diesen 640 Farben sucht es 240 aus, dazu kommen 16 für die Karte und die Anzeige, in der ersten Zeile der Palette (`3-palette.png`):
+Erst macht es aus jeder Farbe, die in den Texturen vorkommt, eine Rampe mit 16 Helligkeiten, oben hell, unten schwarz (`1-rampen.png`). Die Texturen hier haben 67 Farben, die Rampen also 1072. Daraus sucht es 240 aus: Je öfter eine Farbe in den Texturen steht, desto genauer trifft die Palette sie und ihre dunkleren Stufen. Dazu kommen 16 für die Karte und die Anzeige, in der ersten Zeile der Palette (`2-palette.png`):
 
-<div class='gallery' style='grid-template-columns: 40fr 16fr; gap: 1.2em 0.6em;'>
+<div class='gallery' style='grid-template-columns: 63fr 16fr; gap: 1.2em 0.6em;'>
 <figure>
 <!-- tutorial-screenshot
 write-file: palette.rb <- file:werkzeug/palette.rb
@@ -1083,14 +1083,14 @@ terminal-run: ruby palette.rb textures.png
 wait-for-file-newer: raycaster/palette.h <- raycaster/textures.png
 terminal-wait-for-prompt
 terminal-expect-no-text: Error
-image-file: raycaster/2-rampen.png 2
+image-file: raycaster/1-rampen.png 2
 -->
-<img src='palette-rampen.webp' style='image-rendering: pixelated;' alt='Ein Band aus quadratischen Farbfeldern, 40 Spalten und 16 Zeilen: jede Spalte eine Grundfarbe aus den Texturen, nach Farbton geordnet, erst Grautöne, dann Ziegelrot und Holzbraun, Moosgrün und Metallblau, oben in voller Helligkeit, nach unten bis Schwarz.'>
-<figcaption>40 Grundfarben mit je 16 Helligkeiten</figcaption>
+<img src='palette-rampen.webp' style='image-rendering: pixelated;' alt='Ein Band aus schmalen Farbfeldern, 67 Spalten und 16 Zeilen: jede Spalte eine Farbe aus den Texturen, nach Farbton geordnet, erst Grautöne, dann Ziegelrot und Holzbraun, Moosgrün und Metallblau, oben in voller Helligkeit, nach unten bis Schwarz.'>
+<figcaption>Die 67 Farben der Texturen mit je 16 Helligkeiten</figcaption>
 </figure>
 <figure>
 <!-- tutorial-screenshot
-image-file: raycaster/3-palette.png 2
+image-file: raycaster/2-palette.png 2
 -->
 <img src='palette-256.webp' style='image-rendering: pixelated;' alt='256 Farbfelder in 16 Zeilen: oben schwarz, Grau, Gelb, Blau, Rot und Weiß für die Karte, dann sehr viele fast schwarze Farben, Grautöne, Rot- und Brauntöne, Grün und Blau, jeweils von dunkel nach hell.'>
 <figcaption>Die Palette mit 256 Farben</figcaption>
@@ -1309,7 +1309,7 @@ hook: studio-menu
 Dann `ruby palette.rb textures.png` und `make PROGRAM=raycaster`, und deine Welt hat deine Texturen.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Lass das Werkzeug mit <code>ruby palette.rb textures.png --dither</code> laufen und vergleiche <code>4-texturen.png</code> mit vorher: Wo eine Farbe nicht in der Palette ist, setzt das Werkzeug Pixel aus zwei Farben nebeneinander, die zusammen aussehen wie die fehlende. Bei Texturen mit weichen Verläufen sieht man das am deutlichsten.
+<strong>Ausprobieren:</strong> Lass das Werkzeug mit <code>ruby palette.rb textures.png --dither</code> laufen und vergleiche <code>3-texturen.png</code> mit vorher: Wo eine Farbe nicht in der Palette ist, setzt das Werkzeug Pixel aus zwei Farben nebeneinander, die zusammen aussehen wie die fehlende. Bei Texturen mit weichen Verläufen sieht man das am deutlichsten.
 </div>
 
 _task(palette)
