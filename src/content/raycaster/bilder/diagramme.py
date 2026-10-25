@@ -691,6 +691,195 @@ def textur_u():
     return s + '</svg>\n'
 
 
+UV_ROOM = [
+    '##########',
+    '#....#...#',
+    '#........#',
+    '#........#',
+    '#........#',
+    '##########',
+]
+UV_FACE = (3, 0, 1)          # the bottom side of cell (3, 0): seen from below, side 1
+UV_GRID = 8                  # grid lines on the wall and on the texture
+UV_POINT = (0.625, 0.375)    # a point (u, v) shown on both
+UV_EYE = (2.3, 2.75)         # where the player stands
+UV_ANGLE = 38                # and looks, in degrees from north, clockwise
+
+
+def uv_view(w, h, px, py, angle_deg, plane=0.66):
+    """The view from (px, py), cast like the raycaster, one ray per column:
+    for each column its x, the depth t along dir, the face (mx, my, side) and
+    u on it, flipped as in the program, so that u grows to the right."""
+    a = math.radians(angle_deg)
+    dx, dy = math.sin(a), -math.cos(a)
+    qx, qy = -dy * plane, dx * plane       # to the right of dir (y down)
+    cols = []
+    for c in range(w + 1):
+        cam = 2 * c / w - 1
+        rx, ry = dx + qx * cam, dy + qy * cam
+        mx, my = int(px), int(py)
+        ddx = abs(1 / rx) if rx else 1e30
+        ddy = abs(1 / ry) if ry else 1e30
+        sx = 1 if rx > 0 else -1
+        sy = 1 if ry > 0 else -1
+        nx = (mx + (sx > 0) - px) * sx * ddx
+        ny = (my + (sy > 0) - py) * sy * ddy
+        while True:
+            if nx < ny:
+                t = nx; nx += ddx; mx += sx; side = 0
+            else:
+                t = ny; ny += ddy; my += sy; side = 1
+            if UV_ROOM[my][mx] == '#':
+                break
+        hx, hy = px + t * rx, py + t * ry
+        wall = hy if side == 0 else hx
+        u = wall - math.floor(wall)
+        if (side == 0 and rx < 0) or (side == 1 and ry > 0):
+            u = 1 - u
+        cols.append((c, t, (mx, my, side), u))
+    return cols, (w / 2) / plane
+
+
+def textur_uv():
+    """A wall in the room, seen as the raycaster sees it; on one of its
+    squares the grid of the texture, u to the right and v down."""
+    w, h = 560, 330
+    x0, y0 = 0, 0
+    cy = h / 2
+    s = head(w, h, 'Blick in einen Raum, so wie der Raycaster ihn zeichnet: Wände, Boden und Decke. Auf einem '
+             'Kästchen der Wand liegt das Gitter der Textur; u läuft auf ihm von links nach rechts von 0 bis 1 (rot), '
+             'v von oben nach unten von 0 bis 1 (grün), wie x und y auf dem Bildschirm. Ein Punkt bei u = 0.625, '
+             'v = 0.375.', 'textur-uv')
+    cols, f = uv_view(w, h, UV_EYE[0], UV_EYE[1], UV_ANGLE)
+
+    def big(label, x, y, anchor):
+        # larger than elsewhere: on a phone the picture is half as wide
+        return '  ' + code(label, x, y, 19, anchor) + '\n'
+
+    def top(t):
+        return cy - f * 0.5 / t
+
+    def bot(t):
+        return cy + f * 0.5 / t
+    s += rect(x0, y0, w, h, LIGHT)
+    s += rect(x0, cy, w, h - cy, PALE)
+    # the grid of the map on the floor, under the walls
+    a = math.radians(UV_ANGLE)
+    ddx, ddy = math.sin(a), -math.cos(a)
+
+    def floor_at(wx, wy):
+        rx, ry = wx - UV_EYE[0], wy - UV_EYE[1]
+        t = rx * ddx + ry * ddy
+        return w / 2 + f * (rx * -ddy + ry * ddx) / t, bot(t), t
+
+    def floor_line(xa, ya, xb, yb):
+        # cut off just in front of the eye, where the line would turn round
+        pa, pb = floor_at(xa, ya), floor_at(xb, yb)
+        if pa[2] < 0.2 and pb[2] < 0.2:
+            return ''
+        if pa[2] < 0.2 or pb[2] < 0.2:
+            if pa[2] < 0.2:
+                (xa, ya, pa), (xb, yb, pb) = (xb, yb, pb), (xa, ya, pa)
+            k = (pa[2] - 0.2) / (pa[2] - pb[2])
+            pb = floor_at(xa + k * (xb - xa), ya + k * (yb - ya))
+        return line(pa[0], pa[1], pb[0], pb[1], LINE, 1.5)
+    for k in range(1, len(UV_ROOM) - 1):
+        s += floor_line(1, k, len(UV_ROOM[0]) - 1, k)
+    for k in range(1, len(UV_ROOM[0]) - 1):
+        s += floor_line(k, 1, k, len(UV_ROOM) - 1)
+    pts = [(x, top(t)) for x, t, _, _ in cols] + [(x, bot(t)) for x, t, _, _ in reversed(cols)]
+    s += '  <polygon points="' + ' '.join(f'{x:.1f},{y:.1f}' for x, y in pts) + f'" fill="{LINE}"/>\n'
+
+    # the face with the grid: the columns that hit it
+    if not any(c[2] == UV_FACE for c in cols):
+        raise ValueError('the face is not in view')
+
+    def at(u, v):
+        """The point (u, v) of the face on the screen: the face is the line
+        y = my + 1 below its cell, seen from below, u growing with x."""
+        mx, my, _ = UV_FACE
+        a = math.radians(UV_ANGLE)
+        dx, dy = math.sin(a), -math.cos(a)
+        rx, ry = -dy, dx                      # to the right of dir, length 1
+        wx, wy = mx + u - UV_EYE[0], my + 1 - UV_EYE[1]
+        t = wx * dx + wy * dy
+        x = w / 2 + f * (wx * rx + wy * ry) / t
+        return x, top(t) + v * (bot(t) - top(t))
+    pts = [at(0, 0), at(1, 0), at(1, 1), at(0, 1)]
+    s += '  <polygon points="' + ' '.join(f'{x:.1f},{y:.1f}' for x, y in pts) + f'" fill="{WHITE}"/>\n'
+    for k in range(1, UV_GRID):
+        g = k / UV_GRID
+        (xa, ya), (xb, yb) = at(g, 0), at(g, 1)
+        s += line(xa, ya, xb, yb, GREY, 1)
+        (xa, ya), (xb, yb) = at(0, g), at(1, g)
+        s += line(xa, ya, xb, yb, GREY, 1)
+
+    # the outline of all walls: top and bottom, and the corners
+    pieces = [[cols[0]]]
+    for p, q in zip(cols, cols[1:]):
+        if p[2] != q[2] and (p[2][2] != q[2][2] or abs(p[1] - q[1]) > 0.05):
+            pieces.append([])
+        pieces[-1].append(q)
+    for piece in pieces:
+        for edge in (top, bot):
+            s += ('  <polyline points="' + ' '.join(f'{x:.1f},{edge(t):.1f}' for x, t, _, _ in piece[::2] + [piece[-1]])
+                  + f'" fill="none" stroke="{INK}" stroke-width="2"/>\n')
+    for (xa, ta, fa, _), (xb, tb, fb, _) in zip(cols, cols[1:]):
+        if fa != fb and (fa[2] != fb[2] or abs(ta - tb) > 0.05):
+            d = min(ta, tb)
+            x = xa if ta < tb else xb
+            s += line(x, top(d), x, bot(d), INK, 2)
+    # the face itself, a little stronger
+    for u in (0, 1):
+        (xa, ya), (xb, yb) = at(u, 0), at(u, 1)
+        s += line(xa, ya, xb, yb, INK, 2.5)
+
+    # u along the top, v down the left side, just outside the face
+    (ax, ay), (bx, by) = at(0, 0), at(1, 0)
+    n = math.hypot(bx - ax, by - ay)
+    ox, oy = (by - ay) / n * 14, -(bx - ax) / n * 14          # away from the face, upwards
+    s += arrow(ax + ox, ay + oy, bx + ox - (bx - ax) / n * 4, by + oy - (by - ay) / n * 4, RED, 2.5)
+    s += big('u = 0', ax + ox * 2.6, ay + oy * 2.6 + 5, 'middle')
+    s += big('u = 1', bx + ox * 2.6, by + oy * 2.6 + 5, 'middle')
+    (cx_, cy_), (dx_, dy_) = at(0, 0), at(0, 1)
+    s += arrow(cx_ - 14, cy_, dx_ - 14, dy_ - 4, GREEN, 2.5)
+    s += big('v = 0', cx_ - 24, cy_ + 14, 'end')
+    s += big('v = 1', dx_ - 24, dy_ - 2, 'end')
+
+    px_, py_ = at(*UV_POINT)
+    s += circle(px_, py_, 5, BLUE, WHITE, 2)
+    s += rect(x0, y0, w, h, 'none', INK, 2)
+    return s + '</svg>\n'
+
+
+def texturraum():
+    """The texture flat, in texture space: u to the right, v down, both from
+    0 to 1, like x and y on the screen."""
+    side = 200
+    gx, gy = 84, 46
+    w, h = gx + side + 16, gy + side + 18
+    s = head(w, h, 'Die Textur flach im Texturraum: ein Quadrat mit demselben Gitter, u läuft nach rechts von 0 bis 1 '
+             '(rot), v nach unten von 0 bis 1 (grün), wie x und y auf dem Bildschirm. Derselbe Punkt bei u = 0.625, '
+             'v = 0.375.', 'texturraum')
+    s += rect(gx, gy, side, side, WHITE, INK, 2)
+    for k in range(1, UV_GRID):
+        g = gx + k * side / UV_GRID
+        s += line(g, gy, g, gy + side, GREY, 1)
+        g = gy + k * side / UV_GRID
+        s += line(gx, g, gx + side, g, GREY, 1)
+    s += arrow(gx, gy - 14, gx + side - 4, gy - 14, RED, 2.5)
+    s += C('u = 0', gx, gy - 26, 'start')
+    s += C('u = 1', gx + side, gy - 26, 'end')
+    s += arrow(gx - 14, gy, gx - 14, gy + side - 4, GREEN, 2.5)
+    s += C('v = 0', gx - 24, gy + 12, 'end')
+    s += C('v = 1', gx - 24, gy + side - 2, 'end')
+    px_, py_ = gx + UV_POINT[0] * side, gy + UV_POINT[1] * side
+    s += line(gx, py_, px_, py_, BLUE, 1.5, '4 3')
+    s += line(px_, gy, px_, py_, BLUE, 1.5, '4 3')
+    s += circle(px_, py_, 5, BLUE, WHITE, 2)
+    return s + '</svg>\n'
+
+
 # ---------------------------------------------------------------- floor
 
 def boden_seite():
@@ -896,6 +1085,8 @@ PICTURES = {
                                        'senkrecht auf dir, der Schatten ist ein Punkt: 0.'),
     'gleiten': gleiten,
     'textur-u': textur_u,
+    'textur-uv': textur_uv,
+    'texturraum': texturraum,
     'boden-seite': boden_seite,
     'boden-zeile': boden_zeile,
     'tiefe-gerade': lambda: tiefe('tiefe-gerade', 0, 'Linien gleicher Tiefe, geradeaus: Jede Bildspalte zeigt eine '

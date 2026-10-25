@@ -1181,7 +1181,20 @@ Boden und Decke bekommen erst im nächsten Abschnitt Texturen; bis dahin nehmen 
 
 ### Wo trifft der Strahl die Wand?
 
-Um eine Textur auf eine Wand zu legen, braucht jedes Pixel der Wand zwei Zahlen: `u`, wie weit links oder rechts es auf dem Kästchen liegt, und `v`, wie weit oben oder unten. `v` hat `draw_wall_column` schon. `u` steckt im Treffpunkt: Trifft der Strahl eine Wand quer zur x-Achse, sagt der Nachkommateil von `hit.y`, wo auf dem Kästchen, sonst der von `hit.x`.
+Um eine Textur auf eine Wand zu legen, braucht jedes Pixel der Wand die Stelle der Textur, deren Farbe es bekommt. Dafür hat die Textur eigene Koordinaten, `u` und `v`, so wie das Bild `x` und `y` hat: `u` läuft nach rechts, `v` nach unten, beide von 0 bis 1, wie viele Texel die Textur auch hat. Sie liegen im **Texture Space**, so wie die Pixel des Bildes im **Screen Space** und die Karte mit der Spielfigur im **World Space**. Auf jedes Kästchen einer Wand kommt die Textur einmal: links oben sind `u` und `v` 0, rechts unten 1.
+
+<div class='gallery wide-narrow'>
+<figure>
+<img src='textur-uv.webp' alt='Blick in einen Raum, so wie der Raycaster ihn zeichnet: graue Wände, ein heller Boden mit den Linien der Karte, eine Ecke rechts. Auf einem Kästchen der Wand liegt ein Gitter aus 8 mal 8 Feldern, das mit der Wand nach hinten kleiner wird. Ein roter Pfeil läuft über seiner Oberkante von u = 0 links nach u = 1 rechts, ein grüner Pfeil an seiner linken Kante von v = 0 oben nach v = 1 unten. Ein blauer Punkt liegt bei u = 0.625 und v = 0.375.'>
+<figcaption>Auf einem Kästchen der Wand</figcaption>
+</figure>
+<figure>
+<img src='texturraum.webp' alt='Dasselbe Gitter flach als Quadrat, ohne Perspektive: der rote Pfeil u von 0 bis 1 nach rechts, der grüne Pfeil v von 0 bis 1 nach unten, wie x und y auf dem Bildschirm. Gestrichelte Linien führen zu dem blauen Punkt bei u = 0.625 und v = 0.375.'>
+<figcaption>Die Textur im Texture Space</figcaption>
+</figure>
+</div>
+
+`v` hat `draw_wall_column` schon: wie weit unten auf der Wand ein Pixel liegt. `u` steckt im Treffpunkt: Trifft der Strahl eine Wand quer zur x-Achse, sagt der Nachkommateil von `hit.y`, wo auf dem Kästchen, sonst der von `hit.x`.
 
 <img class='drawing' style='width: 28.1em' src='textur-u.webp' alt='Von oben: ein Gitter mit den Koordinaten 0 bis 3 an den Rändern, x nach rechts, y nach unten, in der Mitte ein graues Wandkästchen von 1 bis 2. Ein blauer Strahl von links unten trifft seine linke Seite bei hit.y = 1.35, also u = 0.35; ein grüner Strahl von rechts unten trifft seine untere Seite bei hit.x = 1.6, also u = 0.6. Graue Pfeile innen an beiden Seiten zeigen, in welche Richtung u von 0 bis 1 wächst.'>
 

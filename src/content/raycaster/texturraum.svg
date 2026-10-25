@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 264" width="300" height="264" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Die Textur flach im Texturraum: ein Quadrat mit demselben Gitter, u läuft nach rechts von 0 bis 1 (rot), v nach unten von 0 bis 1 (grün), wie x und y auf dem Bildschirm. Derselbe Punkt bei u = 0.625, v = 0.375.
+       Gemacht von bilder/diagramme.py; als Bild, hell und dunkel:
+       src/scripts/render-svg.rb src/content/raycaster/texturraum.svg 600 -->
+  <defs>
+    <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
+    <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker>
+    <marker id="a-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker>
+    <marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+    <marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
+  </defs>
+  <rect width="300" height="264" fill="#ffffff"/>
+  <rect x="84.0" y="46.0" width="200.0" height="200.0" fill="#ffffff" stroke="#1f2937" stroke-width="2"/>
+  <line x1="109.0" y1="46.0" x2="109.0" y2="246.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="84.0" y1="71.0" x2="284.0" y2="71.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="134.0" y1="46.0" x2="134.0" y2="246.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="84.0" y1="96.0" x2="284.0" y2="96.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="159.0" y1="46.0" x2="159.0" y2="246.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="84.0" y1="121.0" x2="284.0" y2="121.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="184.0" y1="46.0" x2="184.0" y2="246.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="84.0" y1="146.0" x2="284.0" y2="146.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="209.0" y1="46.0" x2="209.0" y2="246.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="84.0" y1="171.0" x2="284.0" y2="171.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="234.0" y1="46.0" x2="234.0" y2="246.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="84.0" y1="196.0" x2="284.0" y2="196.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="259.0" y1="46.0" x2="259.0" y2="246.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="84.0" y1="221.0" x2="284.0" y2="221.0" stroke="#6b7280" stroke-width="1"/>
+  <line x1="84.0" y1="32.0" x2="280.0" y2="32.0" stroke="#dc2626" stroke-width="2.5" marker-end="url(#a-red)"/>
+  <rect x='79.5' y='7.7' width='54.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='84.0' y='20.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">u = 0</text>
+  <rect x='234.5' y='7.7' width='54.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='239.0' y='20.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">u = 1</text>
+  <line x1="70.0" y1="46.0" x2="70.0" y2="242.0" stroke="#16a34a" stroke-width="2.5" marker-end="url(#a-green)"/>
+  <rect x='10.5' y='45.7' width='54.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='15.0' y='58.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">v = 0</text>
+  <rect x='10.5' y='231.7' width='54.0' height='17.2' rx='4.5' fill='#f384af' fill-opacity='0.2'/><text x='15.0' y='244.0' font-size='15' fill='#e5185d' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace">v = 1</text>
+  <line x1="84.0" y1="121.0" x2="209.0" y2="121.0" stroke="#2b5fb4" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <line x1="209.0" y1="46.0" x2="209.0" y2="121.0" stroke="#2b5fb4" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <circle cx="209.0" cy="121.0" r="5.0" fill="#2b5fb4" stroke="#ffffff" stroke-width="2"/>
+</svg>

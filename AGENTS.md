@@ -52,7 +52,7 @@ address from `credentials.rb` and the code `123456`.
   developers say in English stay English (Handshake, Lock, String, Header).
 - Every picture has an `alt` text that says what is to be seen.
 - Pictures side by side are a gallery: `<div class='gallery'>` (optionally
-  `columns-2`/`-3`/`-4`, `portrait`, `tiles`, `centered`) with one `<figure>` and
+  `columns-2`/`-3`/`-4`, `portrait`, `tiles`, `centered`, `wide-narrow`) with one `<figure>` and
   `<figcaption>` each, as single files; labels go in the caption, never into
   the picture (docs/aktivitaet-schreiben.md). `gallery_markup_test.rb` checks it.
 - Screenshots of the Workspace come from recipes (`<!-- tutorial-screenshot -->`
