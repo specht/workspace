@@ -147,6 +147,8 @@ Probiere auch andere Formen aus, indem du den Wert für `shape` änderst. Hier s
 - `teapot` für den [Utah Teapot](https://de.wikipedia.org/wiki/Utah_teapot)
 - `plane` für ein Quadrat
 
+Die Teekanne ist ein Star der Computergrafik. 1975 vermaß Martin Newell an der University of Utah eine echte Teekanne und beschrieb ihre Form mit Kurven, damit der Computer sie zeichnen kann. Seitdem taucht sie überall auf: in *Toy Story* bei einer Teegesellschaft, 1995 bei den *Simpsons*, als Homer in die dritte Dimension gerät, und in vielen Grafikprogrammen als eingebaute Form, so wie hier. Die echte Kanne steht heute im Computer History Museum in Kalifornien.
+
 Zusätzlich zu den geometrischen Körpern kannst auch ein Gitter anzeigen, indem du `shape = grid` einfügst:
 
 ```ini

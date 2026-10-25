@@ -332,6 +332,8 @@ Er hat aber Grenzen. Wer dein entsperrtes Handy in der Hand hat, hat beide Fakto
 
 _task(wovor)
 
+Alles hängt am Schlüssel. Bevor es Apps dafür gab, steckte er in kleinen Schlüsselanhängern mit einer Anzeige, etwa dem SecurID der Firma RSA, die viele Firmen für ihre Angestellten benutzten. 2011 brachen Angreifer bei RSA ein. Was sie mitnahmen, hat RSA nie genau gesagt, aber wenige Wochen später griffen sie mit dem Erbeuteten den Rüstungskonzern Lockheed Martin an, und RSA bot mehr als 30.000 Kunden an, ihre Anhänger auszutauschen.
+
 <!-- tutorial-step
 # Die Musterlösungen lösen jede Programmieraufgabe, in beiden Sprachen
 write-file: totp/totp.rb <- file:loesung/totp.rb

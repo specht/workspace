@@ -85,6 +85,8 @@ _uses(url, curl)
 
 _task(tage)
 
+Die Zahlen, die du bekommst, rechnen Computer aus Messungen und den Gleichungen für Luft, Wärme und Wasser aus. Versucht hat das als Erster Lewis Fry Richardson: 1922 veröffentlichte er eine Vorhersage für sechs Stunden und zwei Orte in Mitteleuropa, die er mindestens sechs Wochen lang von Hand gerechnet hatte, und sie lag weit daneben. 1950 gelang es einer Gruppe um Jule Charney und John von Neumann auf ENIAC, einem der ersten Computer: Für eine Vorhersage über 24 Stunden brauchte er fast 24 Stunden. Heute rechnen Wetterdienste auf einigen der größten Computer der Welt, und Open-Meteo nimmt ihre Ergebnisse.
+
 ## Wenn etwas schiefgeht
 
 Eine API antwortet nicht immer mit Daten. Probier zwei Fehler aus. Ein Ort, den es nicht gibt:

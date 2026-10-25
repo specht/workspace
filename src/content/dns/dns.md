@@ -215,6 +215,8 @@ Eine DNS-Antwort ist ein unverschlüsseltes UDP-Paket, und dein Rechner glaubt d
 
 _task(falsche-antwort)
 
+Wie ernst das ist, zeigte 2008 Dan Kaminsky. Ein DNS-Server, der weiterfragt, erkennt die passende Antwort an einer Nummer, die er der Frage mitgibt, und davon gibt es nur 65.536. Kaminsky fand einen Weg, gefälschte Antworten so oft zu schicken, bis eine die Nummer trifft, und das bei fast jedem DNS-Server der Welt. Im Geheimen arbeitete er mit den Herstellern zusammen, und am 8. Juli 2008 erschien die Abhilfe für alle gleichzeitig: Seitdem fragt ein Server von einem zufälligen Port aus, und ein Angreifer muss auch den erraten.
+
 Dagegen gibt es zweierlei. **DNSSEC** unterschreibt die Antworten, und wer nachprüft, merkt eine Fälschung; das sind die Einträge, die `+nodnssec` eben weggelassen hat. Und bei `https://` zeigt der Server ein Zertifikat für seinen Namen vor: Ein falscher Server, zu dem eine gefälschte Antwort führt, hat keins für `hackschule.de`, und der Browser warnt. Wie solche Zertifikate und Signaturen funktionieren, zeigt [Kryptographie im Terminal](/crypto).
 
 ## Zusammenfassung

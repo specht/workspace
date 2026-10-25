@@ -724,6 +724,8 @@ Wenn du weiterhin das Wikimedia-Bild per URL einbindest, liegt diese Datei natü
 
 _include(workspace#live-apps)
 
+Eine statische Seite hält lange, weil sie nur aus Dateien besteht. Die Website zum Film *Space Jam* ging 1996 online, mit vielen animierten GIFs, und blieb 25 Jahre lang unverändert erreichbar. Als 2021 der zweite Film kam, bekam die Adresse eine neue Seite, und die von 1996 steht noch immer daneben: [spacejam.com/1996](https://www.spacejam.com/1996/).
+
 ## Weiter ausprobieren
 
 Deine erste Webseite braucht nicht mehr als HTML und CSS. Genau das ist eine Stärke des Webs: Eine Datei `index.html` und eine Datei `styles.css` reichen schon für eine richtige Webseite. Wenn dein Projekt größer wird, gibt es aber Werkzeuge, die dir Arbeit abnehmen können. Einige davon sind im Workspace bereits installiert oder lassen sich direkt dort verwenden.
