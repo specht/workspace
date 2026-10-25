@@ -127,6 +127,38 @@ class CCheckTest < Minitest::Test
         assert_equal :correct, status, message
     end
 
+    # raylib's headers live in the Emscripten sysroot of the Workspace. The
+    # check finds them there, after the system's own headers, and raymath's
+    # functions, plain inline in C, become static inline, so they link.
+    def test_raylib_from_the_sysroot
+        include = File.join(@root, 'sysroot')
+        FileUtils.mkdir_p(include)
+        File.write(File.join(include, 'raylib.h'), "typedef struct Vector3 { float x, y, z; } Vector3;\n")
+        File.write(File.join(include, 'raymath.h'), <<~H)
+            #ifdef RAYMATH_STATIC_INLINE
+            #define RMAPI static inline
+            #else
+            #define RMAPI inline
+            #endif
+            RMAPI Vector3 Vector3Add(Vector3 a, Vector3 b) { return (Vector3){ a.x + b.x, a.y + b.y, a.z + b.z }; }
+        H
+        File.write(File.join(@root, 'p', 'main.c'), <<~C)
+            #include <raylib.h>
+            #include <raymath.h>
+            float sum(void) { return Vector3Add((Vector3){ 1, 2, 3 }, (Vector3){ 1, 1, 1 }).z; }
+        C
+        original = CCheck::RAYLIB_INCLUDE
+        CCheck.send(:remove_const, :RAYLIB_INCLUDE)
+        CCheck.const_set(:RAYLIB_INCLUDE, include)
+        status, message, = run_check(check([{ 'sum()' => 4.0 }]))
+        assert_equal :correct, status, message
+    ensure
+        if original
+            CCheck.send(:remove_const, :RAYLIB_INCLUDE)
+            CCheck.const_set(:RAYLIB_INCLUDE, original)
+        end
+    end
+
     def test_setup_helpers_and_their_errors
         status, message, = run_check(check([{ 'twice_square(3)' => 18 }], 'setup' => "int twice_square(int n)\n{\n    return 2 * square(n);\n}\n"))
         assert_equal :correct, status, message

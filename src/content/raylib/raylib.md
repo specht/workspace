@@ -248,7 +248,7 @@ _task(zellen)
 
 ### Hügel aus Wellen
 
-Noch ist die Welt leer: Ein globales Array ist in C am Anfang mit Nullen gefüllt, also mit `AIR`. Für die Landschaft berechnen wir für jede Stelle (x, z) eine Höhe und füllen die Säule darunter mit Blöcken: oben Gras, darunter drei Lagen Erde, ganz unten Stein. Die Höhe entsteht aus drei Sinuswellen mit verschiedenen Längen, die sich überlagern, so wie die Wellen bei [PixelRAM](/pixelram#3-wellen). Wo die Welt niedrig ist, liegt Sand.
+Noch ist die Welt leer: Ein globales Array ist in C am Anfang mit Nullen gefüllt, also mit `AIR`. Für die Landschaft berechnen wir für jede Stelle (x, z) eine Höhe und füllen die Säule darunter mit Blöcken: oben Gras, darunter zwei Lagen Erde, ganz unten Stein. Die Höhe entsteht aus drei Sinuswellen mit verschiedenen Längen, die sich überlagern, so wie die Wellen bei [PixelRAM](/pixelram#3-wellen). Wo die Welt niedrig ist, liegt Sand.
 
 ```c_copy
 ~         return AIR;
@@ -274,14 +274,7 @@ void generate_world(void)
             float h = 7.0f + 2.0f * sinf(x * 0.13f) + 1.5f * cosf(z * 0.11f)
                     + 1.5f * sinf((x + z) * 0.07f);
             int height = (int)h;
-            for (int y = 0; y < height; y++) {
-                if (y == height - 1)
-                    world[x][y][z] = height <= 5 ? SAND : GRASS;
-                else if (y >= height - 3)
-                    world[x][y][z] = DIRT;
-                else
-                    world[x][y][z] = STONE;
-            }
+            // hier: die Säule unter height füllen
         }
     }
     SetRandomSeed(7);
@@ -298,6 +291,48 @@ void generate_world(void)
 ```
 
 Am Ende stellt `generate_world` noch 14 Bäume an zufällige Stellen. `SetRandomSeed(7)` sorgt dafür, dass die »zufälligen« Stellen bei jedem Start dieselben sind. Mit einer anderen Zahl wächst ein anderer Wald. Ein Baum ist ein Stamm aus vier Holzblöcken und eine Krone aus Laub, die nach oben schmaler wird: `abs(dx) + abs(dz)` ist der Abstand vom Stamm, gemessen in Schritten entlang der Achsen.
+
+<div class='hint own' data-check='saeule'>
+<strong>Jetzt bist du dran:</strong> Füll in <code>generate_world</code> die Säule an der Stelle (x, z): Für jedes <code>y</code> von 0 bis unter <code>height</code> kommt ein Block nach <code>world[x][y][z]</code>. Ganz oben liegt Gras (wo <code>height</code> höchstens 5 ist, Sand), darunter zwei Lagen Erde, alles darunter ist Stein. Darüber bleibt Luft.
+</div>
+
+<!-- hint -->
+Nimm eine Säule mit `height = 6` und schreib die Blöcke von unten nach oben
+auf: Welche `y` gibt es? Welches ist das oberste, welche beiden liegen direkt
+darunter? Dann schreib dieselben Grenzen mit `height` statt mit 6.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücken mit `…` füllst du:
+
+```c
+            for (int y = 0; y < height; y++) {
+                if (y == …)
+                    world[x][y][z] = height <= 5 ? SAND : GRASS;
+                else if (y >= …)
+                    world[x][y][z] = DIRT;
+                else
+                    world[x][y][z] = …;
+            }
+```
+<!-- /hint -->
+
+<!-- solution -->
+```c
+~             int height = (int)h;
+            for (int y = 0; y < height; y++) {
+                if (y == height - 1)
+                    world[x][y][z] = height <= 5 ? SAND : GRASS;
+                else if (y >= height - 3)
+                    world[x][y][z] = DIRT;
+                else
+                    world[x][y][z] = STONE;
+            }
+~         }
+~     }
+```
+<!-- /solution -->
+
+_task(saeule)
 
 ### Was man sieht
 
@@ -383,6 +418,8 @@ hook: open main.html
 hook: play 3
 hook: settle
 crop-element: #canvas
+check-task: saeule
+check-task-fails: blickrichtung
 -->
 <img class='full fit-width' src='insel.webp' alt='Die ganze Welt von schräg oben: Hügel aus Gras, ein Sandstrand, Bäume, am Rand Erd- und Steinschichten.'>
 
@@ -398,7 +435,7 @@ Bis jetzt schwebt die Kamera über der Welt. Jetzt gehst du hinein: Die Kamera w
 
 ### Wohin schaust du?
 
-Eine Figur in der Welt hat eine Position und eine Blickrichtung. Die Position sind ihre Füße. Die Blickrichtung beschreiben wir mit zwei Winkeln: `yaw` dreht nach links und rechts, `pitch` nach oben und unten. Daraus berechnet `view_direction()` einen Vektor, der vom Auge aus nach vorne zeigt:
+Eine Figur in der Welt hat eine Position und eine Blickrichtung. Die Position sind ihre Füße. Die Blickrichtung beschreiben wir mit zwei Winkeln: `yaw` dreht nach links und rechts, `pitch` nach oben und unten. Daraus berechnet `view_direction()` einen Vektor, der vom Auge aus nach vorne zeigt. Schreib die Figur unter `visible`:
 
 ```c_copy
 ~         || block(x, y + 1, z) == AIR || block(x, y - 1, z) == AIR
@@ -415,15 +452,11 @@ float pitch = 0;       // nach oben und unten
 
 Vector3 view_direction(void)
 {
-    return (Vector3){
-        sinf(yaw) * cosf(pitch),
-        sinf(pitch),
-        cosf(yaw) * cosf(pitch),
-    };
+    // hier: die Blickrichtung aus yaw und pitch, 1 lang
 }
 ```
 
-Winkel misst C im **Bogenmaß**: Eine halbe Umdrehung ist π (etwa 3,14), eine ganze 2π. Ohne Neigung bleiben von `view_direction` nur Sinus und Kosinus der Drehung:
+Winkel misst C im **Bogenmaß**: Eine halbe Umdrehung ist π (etwa 3,14), eine ganze 2π. Ohne Neigung zeigt der Blick waagerecht, und es kommt nur auf die Drehung an:
 
 <div class='scroll-x'><table class='table table-sm reference-table'>
 <thead><tr><th><code>yaw</code></th><th>Blickrichtung (x, y, z)</th><th>du schaust …</th></tr></thead>
@@ -435,6 +468,45 @@ Winkel misst C im **Bogenmaß**: Eine halbe Umdrehung ist π (etwa 3,14), eine g
 </div>
 
 Ist die Neigung nicht 0, wird der Blick um `cosf(pitch)` kürzer in der Waagerechten, und `sinf(pitch)` gibt an, wie weit er nach oben zeigt. So hat der Vektor immer die Länge 1.
+
+<div class='hint own' data-check='blickrichtung'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>view_direction</code>: Es gibt den Vektor <code>(x, y, z)</code> der Blickrichtung zurück, wie in der Tabelle für die Drehung und mit der Neigung, wie sie der Absatz darüber beschreibt. <code>sinf</code> und <code>cosf</code> rechnen Sinus und Kosinus mit <code>float</code>. Einen Vektor schreibst du als <code>(Vector3){ x, y, z }</code>.
+</div>
+
+<!-- hint -->
+Schau dir die Tabelle ohne Neigung an: Bei `yaw = 0` ist x gleich 0 und z
+gleich 1, bei `yaw = π/2` ist es umgekehrt. Welche Funktion, `sinf` oder
+`cosf`, ist bei 0 gleich 0 und bei π/2 gleich 1? Und welche andersherum?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücken mit `…` füllst du:
+
+```c
+Vector3 view_direction(void)
+{
+    return (Vector3){
+        …(yaw) * cosf(pitch),
+        …,
+        …(yaw) * cosf(pitch),
+    };
+}
+```
+<!-- /hint -->
+
+<!-- solution -->
+```c
+Vector3 view_direction(void)
+{
+    return (Vector3){
+        sinf(yaw) * cosf(pitch),
+        sinf(pitch),
+        cosf(yaw) * cosf(pitch),
+    };
+}
+```
+<!-- /solution -->
+
+_task(blickrichtung)
 
 _task(blick)
 
@@ -579,6 +651,8 @@ hook: play 8 KeyW:0.3 ArrowLeft:0.1
 hook: settle
 crop-element: #canvas
 check-task-fails: figur
+check-task: blickrichtung
+check-task-fails: koerper
 -->
 <img class='full fit-width' src='geist.webp' alt='Blick aus Augenhöhe über die Wiese, rechts ein Baum, die Blöcke mit dunklen Kanten.'>
 
@@ -604,6 +678,42 @@ bool solid(int x, int y, int z)
 #define BODY_HEIGHT 1.7f
 #define EYE_HEIGHT 1.6f
 
+// Steckt eine Figur mit diesen Füßen in einem festen Block?
+bool collides(Vector3 f)
+{
+    // hier: alle Felder prüfen, die die Säule der Figur berührt
+}
+
+float vy = 0;          // Geschwindigkeit nach oben, in Blöcken pro Sekunde
+bool on_ground = false;
+```
+
+`solid` hat am Rand und unter der Welt unsichtbare Wände, damit du nicht [hinunterfällst](/unter-der-welt).
+
+<div class='hint own' data-check='koerper'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>collides</code>. <code>f</code> ist die Mitte der Fußsohlen. Die Säule der Figur reicht in x und z jeweils <code>RADIUS</code> nach beiden Seiten und von den Füßen <code>BODY_HEIGHT</code> nach oben. Geh mit drei Schleifen über alle Felder, die sie berührt; ist eines davon <code>solid</code>, steckt die Figur fest.
+</div>
+
+<!-- hint -->
+Rechne ein Beispiel von Hand: Die Füße stehen bei x = 10,75. Von wo bis wo
+reicht die Figur in x? In welchen Feldern liegen diese beiden Enden, und
+welche Felder liegen dazwischen? `floorf(10.45)` ist 10.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücken mit `…` füllst du:
+
+```c
+    for (int x = (int)floorf(f.x - RADIUS); x <= (int)floorf(…); x++)
+        for (int y = (int)floorf(…); y <= (int)floorf(…); y++)
+            for (int z = …; z <= …; z++)
+                if (solid(x, y, z))
+                    return true;
+    return false;
+```
+<!-- /hint -->
+
+<!-- solution -->
+```c
 bool collides(Vector3 f)
 {
     for (int x = (int)floorf(f.x - RADIUS); x <= (int)floorf(f.x + RADIUS); x++)
@@ -613,12 +723,10 @@ bool collides(Vector3 f)
                     return true;
     return false;
 }
-
-float vy = 0;          // Geschwindigkeit nach oben, in Blöcken pro Sekunde
-bool on_ground = false;
 ```
+<!-- /solution -->
 
-`solid` hat am Rand und unter der Welt unsichtbare Wände, damit du nicht [hinunterfällst](/unter-der-welt).
+_task(koerper)
 
 ### Eine Richtung nach der anderen
 
@@ -650,9 +758,40 @@ _task(einzeln)
 
 ### Fallen und springen
 
-Unter den Schritt in x und z kommt die Schwerkraft:
+Unter den Schritt in x und z kommt die Schwerkraft. `vy` ist die Geschwindigkeit nach oben. Die Schwerkraft verkleinert sie in jeder Sekunde um 22 Blöcke pro Sekunde, also wird die Figur immer schneller, je länger sie fällt. Ein Sprung setzt `vy` auf 7,5, und die Schwerkraft bremst ihn wieder ab. Stößt die Figur beim Fallen auf einen Block, steht sie auf dem Boden: `vy` wird 0, und die Füße kommen genau auf die Oberseite des Blocks.
 
-```c_copy
+<div class='hint own' data-check='fallen'>
+<strong>Jetzt bist du dran:</strong> Schreib die Schwerkraft ans Ende von <code>move_player</code>: Erst wird <code>vy</code> kleiner, und steht die Figur auf dem Boden (<code>on_ground</code>), setzt die Leertaste (<code>KEY_SPACE</code>) <code>vy</code> auf 7,5. Dann probierst du den Schritt in y aus wie die in x und z. Steckt die Figur danach in einem Block, bleibt <code>feet.y</code>, wie es ist, und <code>vy</code> wird 0; war sie dabei am Fallen, ist sie gelandet. Sonst macht sie den Schritt und steht nicht mehr auf dem Boden.
+</div>
+
+<!-- hint -->
+Spiel ein Bild mit `dt = 0.1` von Hand durch: Die Figur schwebt bei y = 8
+und hat `vy = 0`. Wie groß ist `vy` nach dem Bild, und wo sind die Füße?
+Wann setzt du `on_ground` auf `true`, wann auf `false`?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücken mit `…` füllst du:
+
+```c
+    vy -= …;
+    if (on_ground && IsKeyDown(KEY_SPACE)) vy = …;
+    next = feet;
+    next.y += …;
+    if (collides(next)) {
+        if (vy < 0) {
+            on_ground = …;
+            feet.y = floorf(next.y) + 1.0f;   // genau auf den Block stellen
+        }
+        vy = …;
+    } else {
+        feet.y = …;
+        on_ground = …;
+    }
+```
+<!-- /hint -->
+
+<!-- solution -->
+```c
 ~     next = feet;
 ~     next.z += move.z;
 ~     if (!collides(next)) feet.z = next.z;
@@ -677,8 +816,9 @@ Unter den Schritt in x und z kommt die Schwerkraft:
 ~ int main(void)
 ~ {
 ```
+<!-- /solution -->
 
-`vy` ist die Geschwindigkeit nach oben. Die Schwerkraft verkleinert sie in jeder Sekunde um 22 Blöcke pro Sekunde, also wird die Figur immer schneller, je länger sie fällt. Ein Sprung setzt `vy` auf 7,5, und die Schwerkraft bremst ihn wieder ab. Stößt die Figur beim Fallen auf einen Block, steht sie auf dem Boden: `vy` wird 0, und die Füße kommen genau auf die Oberseite des Blocks.
+_task(fallen)
 
 Zuletzt soll die Figur nicht mehr bei y = 9 in der Luft beginnen, sondern oben über der Welt, und dann auf den Boden fallen. Ändere die Startposition in `main`:
 
@@ -709,6 +849,9 @@ hook: settle
 crop-element: #canvas
 check-task: figur
 check-task-fails: bauen
+check-task: koerper
+check-task: fallen
+check-task-fails: zielen
 -->
 <img class='full fit-width' src='laufen.webp' alt='Blick über die Wiese aus Augenhöhe; die Hügel steigen in Stufen an, hinten ein Baum.'>
 
@@ -739,6 +882,48 @@ void aim(Vector3 eyes, Vector3 look)
 {
     hit = false;
     ax = (int)floorf(eyes.x); ay = (int)floorf(eyes.y); az = (int)floorf(eyes.z);
+    // hier: in kleinen Schritten den Blick entlang, bis ein Block im Weg ist
+}
+~
+~ int main(void)
+~ {
+~     SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_WINDOW_RESIZABLE);   // glatte Kanten, Größe wie die Seite
+~     InitWindow(960, 540, "Klötzchenwelt");
+```
+
+<div class='hint own' data-check='zielen'>
+<strong>Jetzt bist du dran:</strong> Schreib die Schleife in <code>aim</code>: <code>t</code> geht in Schritten von 0,02 von 0 bis unter 6. Der Punkt nach <code>t</code> Blöcken ist <code>eyes</code> plus <code>t</code>-mal <code>look</code> (<code>Vector3Add</code>, <code>Vector3Scale</code>), und <code>floorf</code> findet sein Feld. Ist dort keine Luft, hast du getroffen: <code>hit</code> wird <code>true</code>, das Feld kommt nach <code>hx</code>, <code>hy</code>, <code>hz</code>, und <code>aim</code> ist fertig. Sonst merkst du dir das Feld in <code>ax</code>, <code>ay</code>, <code>az</code>.
+</div>
+
+<!-- hint -->
+Geh von Hand ein Stück entlang: Das Auge ist bei (10,5; 5,5; 10,5), der Blick
+zeigt nach (1, 0, 0), und bei x = 12 steht ein Block. In welchem Feld ist der
+Punkt bei t = 0,4, bei t = 1,0, bei t = 1,5? Welches Feld war das letzte mit
+Luft?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücken mit `…` füllst du:
+
+```c
+    for (float t = 0; t < 6.0f; t += 0.02f) {
+        Vector3 p = Vector3Add(eyes, Vector3Scale(look, …));
+        int x = (int)floorf(p.x), y = …, z = …;
+        if (block(x, y, z) != AIR) {
+            hit = …;
+            hx = x; hy = y; hz = z;
+            return;
+        }
+        …   // das Feld mit Luft merken
+    }
+```
+<!-- /hint -->
+
+<!-- solution -->
+```c
+~ void aim(Vector3 eyes, Vector3 look)
+~ {
+~     hit = false;
+~     ax = (int)floorf(eyes.x); ay = (int)floorf(eyes.y); az = (int)floorf(eyes.z);
     // In kleinen Schritten den Blick entlang, bis ein Block im Weg ist
     for (float t = 0; t < 6.0f; t += 0.02f) {
         Vector3 p = Vector3Add(eyes, Vector3Scale(look, t));
@@ -750,13 +935,11 @@ void aim(Vector3 eyes, Vector3 look)
         }
         ax = x; ay = y; az = z;
     }
-}
-~
-~ int main(void)
-~ {
-~     SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_WINDOW_RESIZABLE);   // glatte Kanten, Größe wie die Seite
-~     InitWindow(960, 540, "Klötzchenwelt");
+~ }
 ```
+<!-- /solution -->
+
+_task(zielen)
 
 _task(schritte)
 
@@ -906,6 +1089,7 @@ hook: settle
 crop-element: #canvas
 check-task: bauen
 check-task-fails: licht
+check-task: zielen
 -->
 <img class='full fit-width' src='bauen.webp' alt='Ein paar gesetzte Steinblöcke auf der Wiese, einer ist schwarz umrandet, unten die Leiste mit sechs Blockarten.'>
 

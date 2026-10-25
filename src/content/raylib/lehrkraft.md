@@ -12,6 +12,11 @@ Ein 3D-Spiel, das auf die Lernenden reagiert: eine Welt aus Blöcken, durch die 
 </ul></td></tr>
 <tr><th>Vorlage</th><td><code>specht/raylib-starter</code> wird nach <code>/workspace/raylib-starter</code> geklont. <code>make</code> übersetzt <code>main.c</code> mit dem im Workspace installierten raylib zu <code>main.html</code> und bettet die Shader <code>light.vs</code> und <code>light.fs</code> und die Textur <code>textures.png</code> ein. Die Webseite um das Programm kommt beim ersten <code>make</code> von PixelRAM (Konsole für <code>printf</code>, Vollbild, CRT-Filter).</td></tr>
 <tr><th>Zwischenstände</th><td>Das Programm nach jedem Kapitel liegt in diesem Repository unter <code>src/content/raylib/stufen/</code> (<code>1.c</code> bis <code>8.c</code>, dazu <code>6.fs</code>, <code>7.fs</code>, <code>8.fs</code> und <code>8.vs</code>). Wer den Anschluss verloren hat, kann damit weitermachen; jede Stufe übersetzt ohne Warnung.</td></tr>
+<tr><th>Jetzt bist du dran</th><td><ul>
+<li>An fünf Stellen schreiben die Lernenden den Code zuerst selbst, nachdem die Seite erklärt hat, was er tun soll: die Säulen der Hügel in <code>generate_world</code>, <code>view_direction</code>, <code>collides</code>, die Schwerkraft in <code>move_player</code> und die Schleife in <code>aim</code>. Die Seite gibt dazu ein Gerüst mit einer Lücke (<code>// hier: …</code>) und geht danach mit ihrem eigenen Code weiter.</li>
+<li>Vor dem Code der Seite stehen Tipps, ein Beispiel von Hand und ein Gerüst mit Lücken. Jede Stufe erscheint erst eine Minute nach der vorigen, ohne Uhr; der Code der Seite ist die letzte Stufe. Wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst.</li>
+<li>Unter jedem Kasten prüft eine Aufgabe den eigenen Code; wer sie löst, kann den Code der Seite sofort öffnen und vergleichen.</li>
+</ul></td></tr>
 <tr><th>Abgabe</th><td>»Deine Welt« kopiert den Ordner <code>raylib-starter</code> ohne <code>.git</code>. Die abgegebene <code>main.html</code> enthält alles und lässt sich in der Klassenübersicht mit »Starten« spielen.</td></tr>
 </table>
 
@@ -35,6 +40,7 @@ Bis Kapitel »Licht« zeichnet das Programm jeden sichtbaren Block als ganzen W�
 #### Die Aufgaben
 
 - »Übersetzt« sieht nach, ob `main.html` entstanden ist.
+- »Deine Hügel«, »Deine Blickrichtung«, »Dein collides«, »Deine Schwerkraft« und »Dein aim« übersetzen `main.c` im Workspace, als Gast, mit den Headern von raylib, und rufen die Funktionen der Lernenden auf, ohne ihr `main` zu starten (Prüfart `c`). Statt Fenster, Tasten und Zufall stehen kleine Ersatzfunktionen in der Prüfung, und die Welt ist für jeden Fall eine eigene: leer mit einem einzelnen Stein, ein Boden aus Stein oder die Hügel von `generate_world`. Die Rückmeldung nennt den ersten Fall, der nicht passt, und was dort richtig wäre; für `collides` am Rand der Welt auch den Unterschied zwischen `(int)` und `floorf`.
 - »Ein Körper«, »Bauen und abbauen«, »Licht«, »Fackeln und Nebel« und »Texturen« lesen `main.c` beziehungsweise `light.fs` und suchen typische Bausteine (`collides`, `vy -=`, `aim`, `MOUSE_BUTTON_RIGHT`, `rlNormal3f`, `BeginShaderMode`, `torches[`, `LoadTexture`, `rlTexCoord2f`); die Karte nennt die Zeile, in der sie etwas gefunden hat.
 - »Von oben« und »Kleben oder gleiten?« sind Vorhersagen.
 - Die Rechenaufgaben (Felder des Arrays, Schritt pro Bild, Sprunghöhe, Seiten einer Wiese, Skalarprodukt der Sonne, Abfall des Fackellichts) haben eine Lösung mit Rechenweg.

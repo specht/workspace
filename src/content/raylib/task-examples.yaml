@@ -3,6 +3,16 @@
 format: 1
 activity: raylib
 examples:
+  saeule:
+    skip: Die Datei bindet raylib.h ein, das es nur im Workspace gibt. Dass die Stufen der Seite die Aufgabe lösen, prüfen die Rezepte mit check-task; die Prüfart selbst testet c_check_test.rb.
+  blickrichtung:
+    skip: Die Datei bindet raylib.h ein, das es nur im Workspace gibt. Dass die Stufen der Seite die Aufgabe lösen, prüfen die Rezepte mit check-task; die Prüfart selbst testet c_check_test.rb.
+  koerper:
+    skip: Die Datei bindet raylib.h ein, das es nur im Workspace gibt. Dass die Stufen der Seite die Aufgabe lösen, prüfen die Rezepte mit check-task; die Prüfart selbst testet c_check_test.rb.
+  fallen:
+    skip: Die Datei bindet raylib.h ein, das es nur im Workspace gibt. Dass die Stufen der Seite die Aufgabe lösen, prüfen die Rezepte mit check-task; die Prüfart selbst testet c_check_test.rb.
+  zielen:
+    skip: Die Datei bindet raylib.h ein, das es nur im Workspace gibt. Dass die Stufen der Seite die Aufgabe lösen, prüfen die Rezepte mit check-task; die Prüfart selbst testet c_check_test.rb.
   uebersetzt:
     skip: main.html entsteht erst, wenn emcc übersetzt.
   figur:

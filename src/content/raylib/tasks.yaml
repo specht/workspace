@@ -64,6 +64,97 @@ tasks:
         say: Das ist 48 + 24 + 48. Die Felder stehen in Reihen, Spalten und Schichten.
     solution: 48 × 24 × 48 = 55 296 Felder. Jedes ist ein `unsigned char`, ein Byte, also braucht die ganze Welt etwa 54 KB.
 
+  - id: saeule
+    title: Deine Hügel
+    prompt: |
+      Füll die Säulen in `generate_world` und speichere. Der Workspace baut
+      die Welt und sieht sich die Blöcke an.
+    file: raylib-starter/main.c
+    check:
+      type: c
+      file: raylib-starter/main.c
+      setup: |
+        // Bäume an fester Stelle, ohne raylib: alle bei (3, 3)
+        void SetRandomSeed(unsigned int seed) { (void)seed; }
+        int GetRandomValue(int min, int max) { (void)max; return min; }
+
+        int hs_height(int x, int z)
+        {
+            float h = 7.0f + 2.0f * sinf(x * 0.13f) + 1.5f * cosf(z * 0.11f)
+                    + 1.5f * sinf((x + z) * 0.07f);
+            return (int)h;
+        }
+
+        // Säulen, in denen ein Block nicht stimmt; der Baum bleibt außen vor
+        int hs_wrong_columns(void)
+        {
+            int wrong = 0;
+            for (int x = 0; x < WIDTH; x++)
+                for (int z = 0; z < DEPTH; z++) {
+                    if (abs(x - 3) <= 2 && abs(z - 3) <= 2)
+                        continue;
+                    int height = hs_height(x, z), ok = 1;
+                    for (int y = 0; y < HEIGHT; y++) {
+                        int want = y >= height ? AIR
+                                 : y == height - 1 ? (height <= 5 ? SAND : GRASS)
+                                 : y >= height - 3 ? DIRT : STONE;
+                        if (world[x][y][z] != want)
+                            ok = 0;
+                    }
+                    wrong += !ok;
+                }
+            return wrong;
+        }
+      cases:
+        - call: '({ generate_world(); world[20][6][20] == GRASS; })'
+          expect: true
+          say: 'Bei x = 20, z = 20 ist die Säule 7 hoch, also liegt bei y = 6 Gras: das oberste Feld ist `height - 1`.'
+        - call: '({ generate_world(); world[20][7][20] == AIR; })'
+          expect: true
+          say: 'Über der Säule soll Luft bleiben: Bei x = 20, z = 20 ist sie 7 hoch, y = 7 liegt schon darüber. Läuft die Schleife nur bis `y < height`?'
+        - call: '({ generate_world(); world[20][5][20] == DIRT && world[20][4][20] == DIRT; })'
+          expect: true
+          say: 'Unter dem Gras liegen zwei Lagen Erde, bei y = 5 und y = 4, wenn die Säule 7 hoch ist.'
+        - call: '({ generate_world(); world[20][3][20] == STONE && world[20][0][20] == STONE; })'
+          expect: true
+          say: 'Unter der Erde ist alles Stein, bis y = 0.'
+        - call: '({ generate_world(); world[26][2][32] == SAND; })'
+          expect: true
+          say: 'Bei x = 26, z = 32 ist die Säule nur 3 hoch: Oben liegt dort Sand statt Gras, weil `height` höchstens 5 ist.'
+        - call: '({ generate_world(); hs_wrong_columns(); })'
+          expect: 0
+          say: 'In so vielen Säulen stimmt mindestens ein Block noch nicht.'
+
+  - id: blickrichtung
+    title: Deine Blickrichtung
+    prompt: |
+      Schreib `view_direction` in `main.c` und speichere. Der Workspace stellt
+      die Winkel ein und fragt nach der Blickrichtung.
+    file: raylib-starter/main.c
+    check:
+      type: c
+      file: raylib-starter/main.c
+      tolerance: 0.0001
+      cases:
+        - call: '({ yaw = 0; pitch = 0; view_direction().z; })'
+          expect: 1.0
+          say: 'Mit `yaw = 0` und `pitch = 0` schaust du nach vorne, in z-Richtung: z soll 1 sein, cos(0) = 1.'
+        - call: '({ yaw = 0; pitch = 0; view_direction().x; })'
+          expect: 0.0
+          say: 'Mit `yaw = 0` zeigt der Blick nicht zur Seite: x soll 0 sein, sin(0) = 0.'
+        - call: '({ yaw = PI / 2; pitch = 0; view_direction().x; })'
+          expect: 1.0
+          say: 'Mit `yaw = π/2` schaust du nach rechts, in x-Richtung: x soll 1 sein.'
+        - call: '({ yaw = 0; pitch = 0.5f; view_direction().y; })'
+          expect: 0.4794255
+          say: 'Mit der Neigung 0,5 zeigt der Blick um sin(0,5) ≈ 0,479 nach oben.'
+        - call: '({ yaw = 0; pitch = 0.5f; view_direction().z; })'
+          expect: 0.8775826
+          say: 'Mit der Neigung 0,5 wird der Blick in der Waagerechten kürzer: z ist cos(0) · cos(0,5) ≈ 0,878.'
+        - call: '({ yaw = 1.0f; pitch = 0.7f; Vector3 d = view_direction(); sqrtf(d.x * d.x + d.y * d.y + d.z * d.z); })'
+          expect: 1.0
+          say: 'Die Blickrichtung soll immer 1 lang sein. Nimmst du x und z mit `cosf(pitch)` mal?'
+
   - id: blick
     title: Andersherum
     prompt: |
@@ -125,6 +216,121 @@ tasks:
       klappt der Teil entlang der Wand, nur der Teil in die Wand hinein wird
       verworfen: Die Figur gleitet.
 
+  - id: koerper
+    title: Dein collides
+    prompt: |
+      Schreib `collides` in `main.c` und speichere. Der Workspace stellt
+      einzelne Blöcke in eine leere Welt und die Figur daneben.
+    file: raylib-starter/main.c
+    check:
+      type: c
+      file: raylib-starter/main.c
+      setup: |
+        // eine leere Welt mit einem einzigen Stein bei (x, y, z)
+        void hs_only(int x, int y, int z)
+        {
+            for (int i = 0; i < WIDTH; i++)
+                for (int j = 0; j < HEIGHT; j++)
+                    for (int k = 0; k < DEPTH; k++)
+                        world[i][j][k] = AIR;
+            if (x >= 0)
+                world[x][y][z] = STONE;
+        }
+
+        bool hs_collides(int bx, int by, int bz, float x, float y, float z)
+        {
+            hs_only(bx, by, bz);
+            return collides((Vector3){ x, y, z });
+        }
+      cases:
+        - call: hs_collides(-1, 0, 0, 10.5f, 5, 10.5f)
+          expect: false
+          say: 'In einer leeren Welt steckt die Figur nirgends fest.'
+        - call: hs_collides(10, 5, 10, 10.5f, 5, 10.5f)
+          expect: true
+          say: 'Der Stein steht genau im Feld, in dem die Füße stehen.'
+        - call: hs_collides(10, 6, 10, 10.5f, 5, 10.5f)
+          expect: true
+          say: 'Der Stein steht in Kopfhöhe: Die Figur reicht von y = 5 bis 6,7, also auch ins Feld y = 6.'
+        - call: hs_collides(10, 7, 10, 10.5f, 5, 10.5f)
+          expect: false
+          say: 'Der Stein steht bei y = 7, die Figur reicht nur bis 6,7.'
+        - call: hs_collides(11, 5, 10, 10.5f, 5, 10.5f)
+          expect: false
+          say: 'Die Figur reicht in x von 10,2 bis 10,8, das Feld x = 11 berührt sie nicht.'
+        - call: hs_collides(11, 5, 10, 10.75f, 5, 10.5f)
+          expect: true
+          say: 'Die Figur reicht in x bis 11,05 und damit ins Feld x = 11. Läuft deine Schleife bis `<=` zum letzten Feld?'
+        - call: hs_collides(9, 5, 9, 10.2f, 5, 10.2f)
+          expect: true
+          say: 'Der Stein steht schräg links hinten: Die Figur reicht in x und z bis 9,9, also mit einer Ecke in sein Feld. Prüfst du alle Felder, nicht nur die Ränder?'
+        - call: hs_collides(-1, 0, 0, 0.1f, 5, 10.5f)
+          expect: true
+          say: 'Die Figur reicht in x bis −0,2, über den Rand der Welt: Dort steht eine unsichtbare Wand. `(int)(-0.2f)` ist 0, `floorf(-0.2f)` ist −1. Nimmst du `floorf` und `solid`?'
+
+  - id: fallen
+    title: Deine Schwerkraft
+    prompt: |
+      Schreib die Schwerkraft in `move_player` und speichere. Der Workspace
+      lässt die Figur über einem Boden aus Stein fallen und springen.
+    file: raylib-starter/main.c
+    check:
+      type: c
+      file: raylib-starter/main.c
+      tolerance: 0.0001
+      setup: |
+        // raylib ohne Fenster: keine Maus, nur die Taste in hs_key ist gedrückt
+        static int hs_key = -1;
+        bool IsCursorHidden(void) { return false; }
+        Vector2 GetMouseDelta(void) { return (Vector2){ 0, 0 }; }
+        bool IsKeyDown(int key) { return key == hs_key; }
+
+        // Ein Boden aus Stein bis y = 4, die Figur schwebt bei y darüber
+        void hs_ground(float y)
+        {
+            for (int i = 0; i < WIDTH; i++)
+                for (int j = 0; j < HEIGHT; j++)
+                    for (int k = 0; k < DEPTH; k++)
+                        world[i][j][k] = j < 5 ? STONE : AIR;
+            feet = (Vector3){ 10.5f, y, 10.5f };
+            vy = 0;
+            on_ground = false;
+            yaw = 0;
+            pitch = 0;
+        }
+
+        // so viele Bilder mit 60 Bildern pro Sekunde
+        void hs_frames(int n)
+        {
+            for (int i = 0; i < n; i++)
+                move_player(1.0f / 60);
+        }
+      cases:
+        - call: '({ hs_ground(8); move_player(0.1f); vy; })'
+          expect: -2.2
+          say: 'Die Schwerkraft verkleinert `vy` in jeder Sekunde um 22, nach 0,1 Sekunden ist `vy` also −2,2.'
+        - call: '({ hs_ground(8); move_player(0.1f); feet.y; })'
+          expect: 7.78
+          say: 'Mit dem neuen `vy` bewegen sich die Füße um `vy * dt`: 8 − 2,2 · 0,1 = 7,78. Rechnest du erst `vy` und dann den Schritt?'
+        - call: '({ hs_ground(8); hs_frames(120); feet.y; })'
+          expect: 5.0
+          say: 'Nach zwei Sekunden soll die Figur auf dem Boden stehen, genau auf den Steinen bei y = 5: `feet.y = floorf(next.y) + 1.0f`.'
+        - call: '({ hs_ground(8); hs_frames(120); on_ground; })'
+          expect: true
+          say: 'Nach der Landung steht die Figur auf dem Boden: `on_ground` soll `true` sein.'
+        - call: '({ hs_ground(8); hs_frames(120); vy; })'
+          expect: 0.0
+          say: 'Auf dem Boden fällt die Figur nicht weiter: Stößt der Schritt in y auf einen Block, wird `vy` 0.'
+        - call: '({ hs_ground(8); hs_frames(120); hs_key = KEY_SPACE; move_player(0.01f); vy; })'
+          expect: 7.5
+          say: 'Auf dem Boden setzt die Leertaste `vy` auf 7,5.'
+        - call: '({ hs_ground(8); hs_key = KEY_SPACE; move_player(0.01f); vy; })'
+          expect: -0.22
+          say: 'In der Luft springt die Figur nicht noch einmal: Die Leertaste wirkt nur, wenn `on_ground` gilt.'
+        - call: '({ hs_ground(8); hs_frames(120); world[10][7][10] = STONE; hs_key = KEY_SPACE; hs_frames(10); feet.y <= 5.3f && vy <= 0; })'
+          expect: true
+          say: 'Über der Figur steht ein Stein bei y = 7. Springt sie, stößt sie mit dem Kopf an: Sie macht den Schritt nicht, und `vy` wird 0.'
+
   - id: sprunghoehe
     title: Wie hoch springst du?
     prompt: |
@@ -163,6 +369,50 @@ tasks:
           - { pattern: 'bool\s+collides\s*\(', say: 'In `main.c` finde ich noch keine Funktion `collides`.' }
           - { pattern: 'vy\s*-=', say: 'Noch keine Schwerkraft: Wo wird `vy` in jedem Bild kleiner?' }
           - { pattern: 'KEY_SPACE', say: 'Noch kann die Figur nicht springen: Mit der Leertaste (`KEY_SPACE`) bekommt `vy` einen Wert nach oben.' }
+
+  - id: zielen
+    title: Dein aim
+    prompt: |
+      Schreib die Schleife in `aim` und speichere. Der Workspace stellt einen
+      Block in eine leere Welt und zielt aus der Nähe darauf.
+    file: raylib-starter/main.c
+    check:
+      type: c
+      file: raylib-starter/main.c
+      setup: |
+        // eine leere Welt mit einem Stein bei (x, y, z); das Auge bei
+        // (10,5; 5,5; 10,5) schaut in Richtung (dx, dy, dz)
+        void hs_aim(int x, int y, int z, float dx, float dy, float dz)
+        {
+            for (int i = 0; i < WIDTH; i++)
+                for (int j = 0; j < HEIGHT; j++)
+                    for (int k = 0; k < DEPTH; k++)
+                        world[i][j][k] = AIR;
+            world[x][y][z] = STONE;
+            aim((Vector3){ 10.5f, 5.5f, 10.5f }, Vector3Normalize((Vector3){ dx, dy, dz }));
+        }
+      cases:
+        - call: '({ hs_aim(12, 5, 10, 1, 0, 0); hit; })'
+          expect: true
+          say: 'Zwei Felder rechts vom Auge steht ein Stein, und der Blick zeigt dorthin: `hit` soll `true` sein.'
+        - call: '({ hs_aim(12, 5, 10, 1, 0, 0); hx * 100 + hy * 10 + hz; })'
+          expect: 1260
+          say: 'Getroffen ist der Stein bei (12, 5, 10): Das Feld des Punkts kommt nach `hx`, `hy`, `hz`.'
+        - call: '({ hs_aim(12, 5, 10, 1, 0, 0); ax * 100 + ay * 10 + az; })'
+          expect: 1160
+          say: 'Vor dem Stein ging der Strahl zuletzt durch das Feld (11, 5, 10): Das gehört nach `ax`, `ay`, `az`.'
+        - call: '({ hs_aim(12, 5, 10, -1, 0, 0); hit; })'
+          expect: false
+          say: 'Der Blick zeigt vom Stein weg, und sonst ist die Welt leer: `hit` soll `false` bleiben.'
+        - call: '({ hs_aim(16, 5, 10, 1, 0, 0); hit; })'
+          expect: true
+          say: 'Der Stein beginnt 5,5 Blöcke vor dem Auge, das ist noch in Reichweite: `t` geht bis 6.'
+        - call: '({ hs_aim(17, 5, 10, 1, 0, 0); hit; })'
+          expect: false
+          say: 'Der Stein beginnt 6,5 Blöcke vor dem Auge, zu weit: `t` geht nur bis 6.'
+        - call: '({ hs_aim(11, 4, 11, 1, -1, 1); hx * 100 + hy * 10 + hz; })'
+          expect: 1151
+          say: 'Schräg nach rechts, unten und vorne trifft der Strahl den Stein bei (11, 4, 11). Gibt jede der drei Koordinaten des Punkts ihr Feld?'
 
   - id: schritte
     title: Kleine Schritte

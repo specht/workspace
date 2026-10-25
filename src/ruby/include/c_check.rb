@@ -15,7 +15,11 @@ require_relative 'call_check'
 # still missing links as an empty address (--unresolved-symbols=ignore-all):
 # a call that reaches it crashes and is reported like any other crash.
 # pixelram.h comes from the .pixelram folder that make fills next to the
-# file; without it the check says to run make once.
+# file; without it the check says to run make once. raylib.h, raymath.h and
+# rlgl.h come from the Emscripten sysroot of the Workspace (RAYLIB_INCLUDE),
+# searched after the system's own headers, so stdio.h stays the native one;
+# raymath's functions become static inline there (RAYMATH_STATIC_INLINE),
+# since a plain inline function in C has no definition to link against.
 #
 # Every case runs in a child process of its own (fork) with a time limit of
 # CASE_SECONDS, so a crash, an endless loop or an exit() in one call costs
@@ -51,6 +55,8 @@ module CCheck
     CASE_MARK = '__HS_CASE__'
     COMPILE_MARK = '__HS_COMPILE__'
     CASE_SECONDS = 2
+    # where the Workspace image installs raylib (docker/code/Dockerfile)
+    RAYLIB_INCLUDE = '/opt/emsdk/upstream/emscripten/cache/sysroot/include'
     DEFAULT_TOLERANCE = 1e-6
     MAX_ERROR_LINES = 6
 
@@ -205,6 +211,8 @@ module CCheck
             d=$(dirname "$f")
             set -- -I"$d"
             for p in "$d"/.pixelram/*/; do [ -f "$p/pixelram.h" ] && set -- "$@" -I"$p"; done
+            r=#{Shellwords.escape(RAYLIB_INCLUDE)}
+            [ -f "$r/raylib.h" ] && set -- "$@" -idirafter "$r" -DRAYMATH_STATIC_INLINE
             if ! cc -std=gnu11 -O0 -DHS_FILE="\\"$f\\"" "$@" -Werror=implicit-function-declaration \\
                 -ffunction-sections -fdata-sections -Wl,--gc-sections -Wl,--unresolved-symbols=ignore-all \\
                 -o "$t/check" "$t/check.c" -lm 2> "$t/errors"; then

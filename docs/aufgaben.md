@@ -788,6 +788,13 @@ anlegt; fehlt er, sagt die Prüfung, dass einmal `make` laufen muss. Funktionen
 einer Bibliothek, die die Aufrufe nicht brauchen (`screen_open`,
 `set_pixel` …), lässt der Linker weg.
 
+`raylib.h`, `raymath.h` und `rlgl.h` kommen aus dem Sysroot von Emscripten im
+Workspace (`CCheck::RAYLIB_INCLUDE`); die Funktionen von raymath werden dabei
+`static inline`, damit sie ohne die Bibliothek laufen. Braucht eine Funktion
+der Lernenden etwas von raylib selbst, eine Taste oder den Zufall, schreibt
+`setup` eine kleine Ersatzfunktion mit demselben Namen
+(`bool IsKeyDown(int key) { return key == hs_key; }`, die Klötzchenwelt).
+
 ```yaml
 check:
   type: c
