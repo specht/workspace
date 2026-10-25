@@ -7,6 +7,7 @@ Lernende bauen ihr erstes Projekt mit einem Frontend-Framework: Aus HTML, CSS un
 <li><b>2. Doppelstunde:</b> Tasten, Zeitmessung, die fertige Stoppuhr.</li>
 <li><b>3. Doppelstunde:</b> Schriften, Reset-Button, Icons, Build und Abgabe; wer schneller ist, gestaltet weiter oder veröffentlicht auf einer eigenen Subdomain.</li>
 </ul></td></tr>
+<tr><th>Jetzt bist du dran</th><td>Nach <code>handleKeyDown</code> als Beispiel schreiben die Lernenden <code>handleKeyUp</code> selbst, aus dem Ablaufdiagramm. Davor stehen Tipps, eine Stufe nach der anderen mit einer Minute Pause und ohne Uhr; der Code der Seite und die ganze Datei sind die letzte Stufe. Ob die Stoppuhr richtig läuft, zeigt das Ausprobieren; keine Aufgabe prüft das JavaScript.</td></tr>
 <tr><th>Abgabe</th><td>»Dein Timer« kopiert den Ordner <code>rubik-timer/build</code> (höchstens 5 MB). In der Klassenübersicht startet ein Klick die gebaute Seite im Browser, ohne dass der Workspace der Person laufen muss; nach einem Klick in die Seite reagiert sie auf die Leertaste wie das Original.</td></tr>
 </table>
 

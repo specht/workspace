@@ -578,8 +578,35 @@ function handleKeyDown() {
 
 Im Zustand 0 springt sie in Zustand 1 und stellt mit `setTimeout` einen Wecker auf 500 ms. Klingelt er und ist der Zustand dann immer noch 1, geht es in Zustand 2, und die Anzeige bekommt die Klasse `ready`, die sie grün färbt. Im Zustand 3 hält ein Tastendruck die Stoppuhr an: Zustand 4.
 
-Auch `handleKeyUp` bekommt die ganze Logik:
+Auch `handleKeyUp` bekommt die ganze Logik, und die schreibst du selbst.
 
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>handleKeyUp</code> neu, so wie das Ablaufdiagramm es verlangt, nach dem Muster von <code>handleKeyDown</code>. Lässt du die Taste im Zustand 1 los, geht es zurück in Zustand 0, und der Wecker wird abgestellt: <code>clearTimeout(timeoutId)</code>. Im Zustand 2 beginnt die Messung: Zustand 3, die Startzeit kommt in <code>t0</code>, und <code>requestAnimationFrame(updateTimer)</code> ruft <code>updateTimer</code> zum ersten Mal auf. Probier es danach aus.
+</div>
+
+<!-- hint -->
+Schau im Ablaufdiagramm nach, welche Pfeile beim Loslassen der Leertaste
+benutzt werden: Aus welchen Zuständen gehen sie aus, und wohin führen sie?
+In allen anderen Zuständen passiert beim Loslassen nichts.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücken mit `…` füllst du:
+
+```js
+function handleKeyUp() {
+    if (state === 1) {
+        state = …;
+        clearTimeout(…);
+    } else if (state === …) {
+        state = 3;
+        t0 = …;
+        requestAnimationFrame(…);
+    }
+}
+```
+<!-- /hint -->
+
+<!-- solution -->
 ```js
 ~         state = 4;
 ~     }
@@ -601,11 +628,10 @@ function handleKeyUp() {
 ~         if (e.code === "Space") {
 ```
 
-Lässt du die Taste im Zustand 1 los, geht es zurück in Zustand 0, und der Wecker wird abgestellt. Im Zustand 2 beginnt die Messung: Zustand 3, die Startzeit kommt in `t0`, und `requestAnimationFrame(updateTimer)` ruft `updateTimer` zum ersten Mal auf.
-
 So sieht `src/routes/+page.svelte` jetzt aus:
 
 _include_file(+page.svelte, svelte)
+<!-- /solution -->
 
 <!-- tutorial-screenshot
 write-file: src/routes/+page.svelte <- file:+page.svelte

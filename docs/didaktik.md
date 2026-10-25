@@ -148,14 +148,15 @@ Aktivität ([widgets.md](widgets.md)).
   (`setup`).
 - Kästen »Jetzt bist du dran« ohne Prüfung des Verhaltens: GLSL (der Kreis,
   `march`, der Sierpinski-Teppich), weil es für Shader keine Prüfart gibt,
-  und TIC-80 (der fallende Stern), weil Lua im Workspace nicht läuft; ob es
-  stimmt, zeigt die Vorschau oder das Spiel.
+  TIC-80 (der fallende Stern), weil Lua im Workspace nicht läuft, und Svelte
+  (`handleKeyUp`); ob es stimmt, zeigt die Vorschau oder das Spiel. Steht
+  danach die ganze Datei auf der Seite, gehört sie mit zur Lösung.
 - Änderungen statt ganzer Dateien: Webserver, Pixelwand.
 - Tipps in Stufen: Huffman (Baum, Decodieren, kanonische Codes), alle
   Aufgaben des Routenplaners, in denen eine Funktion entsteht, die
   Steganographie, alle Kästen »Jetzt bist du dran« (Raytracer, Raycaster,
   Webserver, Pixelwand, Wetter, Echtzeitgrafik mit C, Klötzchenwelt, GLSL,
-  TIC-80), alle Programmieraufgaben des Rechners, von
+  TIC-80, Svelte), alle Programmieraufgaben des Rechners, von
   LZW, TOTP, RLE und den Automaten, und die schwereren SQL-Abfragen (GROUP BY
   mit HAVING, LEFT JOIN mit `IS NULL`, `JOIN` über eine Tabelle in der Mitte,
   in »Tabellen verbinden« und der Filmdatenbank). Die Abstände zwischen
