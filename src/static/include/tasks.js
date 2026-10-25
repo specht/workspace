@@ -559,10 +559,18 @@
     }
 
     // For teachers, under each open task (reflection): the example answers
-    // or the answers of the current group, or nothing. One choice for all
-    // cards, stored with the account, so the next page opens the same way.
+    // or the answers of a group, or nothing. One choice for all cards, stored
+    // with the account, so the next page opens the same way.
+    //
+    // Example answers only on a card that has some. A button for every group
+    // that has this activity pinned (and the current group), each with how
+    // many of the group have answered this task, »12/25«; other groups in a
+    // select. The counts and the answers shown are fetched again every
+    // REFRESH_SECONDS while the page is visible, so they keep up with a
+    // class that is writing.
     const teacher = page.teacher;
     const groupAnswers = {};
+    const REFRESH_SECONDS = 30;
 
     function escapeHtml(text) {
         const div = document.createElement('div');
@@ -574,16 +582,28 @@
         return Array.from(document.querySelectorAll('.task-teacher'));
     }
 
-    function viewLabel(view) {
-        if (view === 'examples') return 'Beispielantworten';
-        if (view === 'group') return 'Antworten aus ' + teacher.group;
-        return 'Ausblenden';
+    function hasExamples(card) {
+        return ((teacher.examples || {})[cardId(card)] || []).length > 0;
+    }
+
+    // The groups with a button: those that have the activity pinned, in the
+    // order of the select, and the current group.
+    function buttonGroups() {
+        const pinned = teacher.pinned || [];
+        const list = teacher.groups.map((g) => g.name).filter((name) => pinned.includes(name));
+        if (teacher.group && !list.includes(teacher.group)) list.push(teacher.group);
+        return list;
+    }
+
+    // How many of the group have answered this card: [answered, members], or null.
+    function groupCount(card, group) {
+        const data = groupAnswers[group];
+        if (!data) return null;
+        return [((data.answers || {})[cardId(card)] || []).length, data.members];
     }
 
     function examplesHtml(card) {
         const examples = (teacher.examples || {})[cardId(card)] || [];
-        if (examples.length === 0)
-            return "<p class='task-teacher-none'>Für diese Aufgabe gibt es noch keine Beispielantworten.</p>";
         return "<ol class='task-teacher-list'>" + examples.map((html) =>
             "<li class='task-teacher-answer task-teacher-example'>" + html + '</li>').join('') + '</ol>';
     }
@@ -607,83 +627,120 @@
         return io + '</ul>';
     }
 
-    function loadGroupAnswers(fresh) {
-        const group = teacher.group;
+    function loadGroupAnswers(group, fresh) {
         if (groupAnswers[group] && !fresh) return;
         api_call('/api/task/group_answers', { activity: page.activity, group: group }, function (data) {
             if (!data.success) return;
             groupAnswers[group] = data;
-            if (teacher.view === 'group' && teacher.group === group) showTeacherView();
+            showTeacherView();
         }, { no_please_wait: true });
     }
 
+    // The buttons of one card: example answers if it has some, a button per
+    // group, »Ausblenden«, and a select for the other groups.
+    function renderBar(panel, card) {
+        const views = panel.querySelector('.task-teacher-views');
+        let html = '';
+        if (hasExamples(card))
+            html += "<button type='button' class='btn btn-sm btn-outline-secondary task-teacher-view' data-view='examples'>Beispielantworten</button>";
+        buttonGroups().forEach((group) => {
+            html += "<button type='button' class='btn btn-sm btn-outline-secondary task-teacher-view' data-view='group' data-group='" +
+                escapeHtml(group) + "'>Antworten aus " + escapeHtml(group) + "<span class='task-teacher-tally'></span></button>";
+        });
+        html += "<button type='button' class='btn btn-sm btn-outline-secondary task-teacher-view' data-view='off'>Ausblenden</button>";
+        views.innerHTML = html;
+        const others = teacher.groups.filter((g) => !buttonGroups().includes(g.name));
+        const select = panel.querySelector('.task-teacher-group');
+        if (others.length === 0) {
+            if (select) select.remove();
+            return;
+        }
+        const options = "<option value=''>Andere Gruppe …</option>" +
+            others.map((g) => "<option value='" + escapeHtml(g.name) + "'>" + escapeHtml(g.name) + ' (' + g.size + ')</option>').join('');
+        if (select) {
+            select.innerHTML = options;
+        } else {
+            views.insertAdjacentHTML('afterend', "<select class='form-select form-select-sm task-teacher-group' aria-label='Andere Gruppe'>" + options + '</select>');
+        }
+    }
+
     function showTeacherView() {
-        if (teacher.view === 'group') loadGroupAnswers(false);
+        const groups = buttonGroups().join('\n');
         teacherPanels().forEach((panel) => {
             const card = panel.closest('.task-card');
+            if (panel.dataset.groups !== groups) {
+                renderBar(panel, card);
+                panel.dataset.groups = groups;
+            }
+            // a card without examples shows nothing while the others show theirs
+            const view = teacher.view === 'examples' && !hasExamples(card) ? 'off' : teacher.view;
             panel.querySelectorAll('.task-teacher-view').forEach((button) => {
-                const on = button.dataset.view === teacher.view;
+                const on = button.dataset.view === view && (view !== 'group' || button.dataset.group === teacher.group);
                 button.classList.toggle('active', on);
                 button.setAttribute('aria-pressed', on ? 'true' : 'false');
-                if (button.dataset.view === 'group') button.textContent = viewLabel('group');
+                const tally = button.querySelector('.task-teacher-tally');
+                if (tally) {
+                    const count = groupCount(card, button.dataset.group);
+                    tally.textContent = count ? count[0] + '/' + count[1] : '';
+                    button.setAttribute('aria-label', 'Antworten aus ' + button.dataset.group +
+                        (count ? ', ' + count[0] + ' von ' + count[1] + ' haben geantwortet' : ''));
+                }
             });
-            const select = panel.querySelector('.task-teacher-group');
-            if (select) {
-                select.hidden = teacher.view !== 'group';
-                select.value = teacher.group;
-            }
             const body = panel.querySelector('.task-teacher-body');
-            body.hidden = teacher.view === 'off';
-            if (teacher.view === 'examples') body.innerHTML = examplesHtml(card);
-            else if (teacher.view === 'group') body.innerHTML = groupHtml(card);
-            else body.innerHTML = '';
+            body.hidden = view === 'off';
+            const html = view === 'examples' ? examplesHtml(card) : view === 'group' ? groupHtml(card) : '';
+            // only when something changed, so a refresh does not jump
+            if (body.dataset.html !== html) {
+                body.innerHTML = html;
+                body.dataset.html = html;
+            }
         });
     }
 
     function chooseTeacherView(view, group) {
         teacher.view = view;
         if (group) teacher.group = group;
+        if (view === 'group') loadGroupAnswers(teacher.group, false);
         showTeacherView();
         const data = { view: view };
         if (view === 'group') data.group = teacher.group;
         api_call('/api/task/answer_view', data, function () {}, { no_please_wait: true });
     }
 
+    function refreshGroups() {
+        if (document.visibilityState !== 'visible') return;
+        buttonGroups().forEach((group) => loadGroupAnswers(group, true));
+    }
+
     function setupTeacherAnswers() {
         if (!teacher) return;
-        const views = [];
-        if (teacher.examples) views.push('examples');
-        if (teacher.group) views.push('group');
-        views.push('off');
-        cards().filter((card) => card.dataset.type === 'reflection').forEach((card) => {
+        const reflections = cards().filter((card) => card.dataset.type === 'reflection');
+        if (reflections.length === 0) return;
+        reflections.forEach((card) => {
             const panel = document.createElement('div');
             panel.className = 'task-teacher';
-            let bar = "<div class='task-teacher-bar'><span class='task-teacher-label'><i class='bi bi-person-video3' aria-hidden='true'></i>Für Lehrkräfte</span>" +
-                "<div class='task-teacher-views' role='group' aria-label='Unter der Aufgabe zeigen'>";
-            views.forEach((view) => {
-                bar += "<button type='button' class='btn btn-sm btn-outline-secondary task-teacher-view' data-view='" + view + "'>" + escapeHtml(viewLabel(view)) + '</button>';
-            });
-            bar += '</div>';
-            if (teacher.groups.length > 1) {
-                bar += "<select class='form-select form-select-sm task-teacher-group' aria-label='Gruppe'>" +
-                    teacher.groups.map((g) => "<option value='" + escapeHtml(g.name) + "'>" + escapeHtml(g.name) + ' (' + g.size + ')</option>').join('') +
-                    '</select>';
-            }
-            panel.innerHTML = bar + "</div><div class='task-teacher-body' aria-live='polite'></div>";
+            panel.innerHTML = "<div class='task-teacher-bar'><span class='task-teacher-label'><i class='bi bi-person-video3' aria-hidden='true'></i>Für Lehrkräfte</span>" +
+                "<div class='task-teacher-views' role='group' aria-label='Unter der Aufgabe zeigen'></div></div>" +
+                "<div class='task-teacher-body' aria-live='polite'></div>";
             const note = card.querySelector('.task-login-note');
             card.insertBefore(panel, note);
         });
         showTeacherView();
+        if (teacher.groups.length > 0) {
+            buttonGroups().forEach((group) => loadGroupAnswers(group, false));
+            setInterval(refreshGroups, REFRESH_SECONDS * 1000);
+            document.addEventListener('visibilitychange', refreshGroups);
+        }
     }
 
     document.addEventListener('click', function (e) {
         const button = e.target.closest('.task-teacher-view');
-        if (button) chooseTeacherView(button.dataset.view);
-        if (e.target.closest('.task-teacher-reload')) loadGroupAnswers(true);
+        if (button) chooseTeacherView(button.dataset.view, button.dataset.group);
+        if (e.target.closest('.task-teacher-reload')) loadGroupAnswers(teacher.group, true);
     });
 
     document.addEventListener('change', function (e) {
-        if (e.target.classList.contains('task-teacher-group')) chooseTeacherView('group', e.target.value);
+        if (e.target.classList.contains('task-teacher-group') && e.target.value) chooseTeacherView('group', e.target.value);
     });
 
     // »Details« and »Lösung« under a result: open below on request.

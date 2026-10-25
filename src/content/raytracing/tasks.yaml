@@ -386,3 +386,16 @@ tasks:
       geändert hast und was dabei überraschend war.
     check:
       type: reflection
+    examples:
+      - |
+        Ich habe aus der roten Kugel eine grüne Glaskugel gemacht, mit
+        `.glass = 1.5` und einer kräftigen `.color`, und den Boden mit
+        `floor_mat` zum Spiegel. Überrascht hat mich, dass im Boden jetzt alles noch
+        einmal auf dem Kopf steht, auch der Himmel, und dass die Glaskugel das
+        Schachbrett dahinter umgedreht zeigt, wie die volle Glaskugel auf der Seite.
+      - |
+        Ich habe zwei Spiegelkugeln dicht nebeneinander gestellt. In jeder sieht
+        man die andere, darin wieder die erste und so weiter, immer kleiner. Nach
+        ein paar Bildern hört es auf und die Kugel ist dort einfach dunkel: Da ist
+        `MAX_DEPTH` erreicht. Mit einer größeren Zahl gehen mehr Spiegelungen
+        weiter, aber das Bild braucht länger.

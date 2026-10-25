@@ -1324,23 +1324,27 @@ Wer was sieht:
 ### Antworten unter offenen Aufgaben
 
 Unter jeder Reflexion auf einer Aktivitätsseite steht für Lehrkräfte ein
-violetter Kasten »Für Lehrkräfte« mit drei Knöpfen:
+violetter Kasten »Für Lehrkräfte« mit Knöpfen:
 
-- **Beispielantworten:** die `examples` aus `tasks.yaml`. Lehrkräfte mit `*`
-  oder `+` und Administratorinnen sehen sie. Sie stehen nur in der
-  Konfiguration der Seite für Lehrkräfte (`window.TASK_PAGE.teacher`), nie in
-  der Karte selbst.
-- **Antworten aus ‹Gruppe›:** was die Mitglieder der aktuellen Gruppe
-  gespeichert haben, nach Namen sortiert, mit Datum. Nur für Lehrkräfte, die
-  die Klassenübersicht der Gruppe sehen dürfen. Wer mehrere Gruppen betreut,
-  wählt die Gruppe im Kasten; sie wird dann auch die aktuelle Gruppe unter
-  `/klasse`. »Neu laden« holt Antworten, die inzwischen
-  dazugekommen sind.
+- **Beispielantworten:** die `examples` aus `tasks.yaml`, nur bei einer
+  Aufgabe, die welche hat. Lehrkräfte mit `*` oder `+` und
+  Administratorinnen sehen sie. Sie stehen nur in der Konfiguration der Seite
+  für Lehrkräfte (`window.TASK_PAGE.teacher`), nie in der Karte selbst.
+  Jede Reflexion soll zwei haben (`examples`, oben).
+- **Antworten aus ‹Gruppe›:** was die Mitglieder der Gruppe gespeichert
+  haben, nach Namen sortiert, mit Datum. Einen Knopf hat jede Gruppe, für die
+  die Aktivität auf `/klasse` angeheftet ist, und die aktuelle Gruppe; auf
+  jedem steht, wie viele der Gruppe diese Aufgabe beantwortet haben, »12/25«.
+  Andere Gruppen wählt man unter »Andere Gruppe …«; die gewählte wird auch
+  die aktuelle Gruppe unter `/klasse`. Die Zahlen und die Antworten holt die
+  Seite alle 30 Sekunden neu, solange sie sichtbar ist; »Neu laden« sofort.
+  Nur für Lehrkräfte, die die Klassenübersicht der Gruppe sehen dürfen.
 - **Ausblenden:** Nur die Knopfleiste bleibt, etwa vor einem Beamer.
 
 Zu Beginn ist der Kasten zu, nur die Knopfleiste ist da; die Seite kann so,
 wie sie ist, an den Beamer. Die Wahl gilt für alle Aufgaben und wird am Konto
 gespeichert (`class_prefs`, `answer_view`): Die nächste Seite öffnet genauso.
+Zeigen die anderen Karten Beispielantworten, bleibt eine Karte ohne welche zu.
 
 ## Neue Version einer Vorlage
 

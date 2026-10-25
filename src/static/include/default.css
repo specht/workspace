@@ -3658,6 +3658,16 @@ h3[id] {
     max-width: 100%;
 }
 
+/* How many of the group have answered, on its button: »12/25« */
+.task-teacher-tally:not(:empty) {
+    margin-left: 0.45em;
+    padding: 0 0.4em;
+    border-radius: 1em;
+    font-size: 0.85em;
+    font-variant-numeric: tabular-nums;
+    background: rgba(var(--bs-body-color-rgb), 0.1);
+}
+
 .task-teacher-body {
     margin-top: 0.6em;
 }

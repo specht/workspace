@@ -206,3 +206,15 @@ tasks:
       Sätzen, was du gebaut hast und was dabei schwierig war.
     check:
       type: reflection
+    examples:
+      - |
+        Ich habe die Karte zu einem Labyrinth umgebaut und eine neue Wandart
+        mit einer eigenen Kachel aus dem 2D Game Studio dazugenommen; danach musste
+        ich `palette.rb` noch einmal laufen lassen. Schwierig war der Rand: Einmal
+        fehlte dort eine Wand, und ein Strahl lief aus der Karte heraus, bis das
+        Programm abstürzte.
+      - |
+        Ich habe eine Tür gebaut: eine eigene Wandart, die verschwindet, wenn
+        man davorsteht und eine Taste drückt. Schwierig war, dass `is_free` sie
+        danach auch als frei zählen muss, sonst sieht man durch die offene Tür,
+        kommt aber nicht hindurch.

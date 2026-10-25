@@ -2,8 +2,9 @@ import { expect, test } from './fixtures';
 import { loginAsE2eUser } from './workspace';
 
 // Under an open task (reflection), teachers see the example answers from
-// tasks.yaml or the answers of their current group, switchable; the choice
-// is stored with the account. Students see neither.
+// tasks.yaml or the answers of a group, switchable; each group's button says
+// how many have answered. The choice is stored with the account. Students
+// see neither.
 test('teachers see example answers and the answers of their group under open tasks', async ({ browser }, testInfo) => {
   test.setTimeout(120_000);
   const task = 'tcpip/traceroute-erklaeren';
@@ -27,9 +28,14 @@ test('teachers see example answers and the answers of their group under open tas
   await teacher.goto('/tcpip');
   const panel = teacher.locator(`${card} .task-teacher`);
   await expect(panel).toBeVisible();
-  await panel.locator(".task-teacher-view[data-view='group']").click();
-  await panel.locator('.task-teacher-group').selectOption('E2E');
-  await expect(panel.getByRole('button', { name: 'Antworten aus E2E' })).toHaveAttribute('aria-pressed', 'true');
+  // A group with the activity pinned, or the current one, has a button;
+  // any other comes from the select and then gets one.
+  const e2eButton = panel.getByRole('button', { name: 'Antworten aus E2E' });
+  if (await e2eButton.count() === 0) await panel.locator('.task-teacher-group').selectOption('E2E');
+  else await e2eButton.click();
+  await expect(e2eButton).toHaveAttribute('aria-pressed', 'true');
+  // the button says how many of the group have answered this task
+  await expect(e2eButton.locator('.task-teacher-tally')).toHaveText(/^[1-9]\d*\/\d+$/);
   const mine = panel.locator('.task-teacher-answer', { hasText: 'E2E Peer' });
   await expect(mine).toContainText(answer);
 

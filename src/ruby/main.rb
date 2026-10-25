@@ -5381,7 +5381,7 @@ class Main < Sinatra::Base
         # moves them; the values stay the original option numbers).
         if user_logged_in?
             config[:order] = TaskCard.option_orders(@session_user[:email], tasks[:activity], tasks[:on_page], tasks[:by_id])
-            answers = open_answers_config(tasks)
+            answers = open_answers_config(tasks, slug)
             config[:teacher] = answers if answers
         end
         # Text that only stands in for the cards (an exercise list) is hidden
@@ -5721,7 +5721,9 @@ class Main < Sinatra::Base
     # For teachers on an activity page: under each open task the example
     # answers or those of the current group, as chosen last (tasks.js).
     # The example answers go only into this config, never into the cards.
-    def open_answers_config(tasks)
+    # pinned: the groups that have this activity pinned (on /klasse); tasks.js
+    # gives each a button with how many have answered.
+    def open_answers_config(tasks, slug)
         ids = OpenAnswers.task_ids(tasks)
         return nil if ids.empty?
 
@@ -5730,10 +5732,12 @@ class Main < Sinatra::Base
         return nil unless examples || !groups.empty?
 
         prefs = class_prefs
+        pinned = pins_for_groups(groups).select { |p| p[:slug] == slug }.map { |p| p[:group] }
         {
             :view => OpenAnswers.view(prefs['answer_view'], :examples => examples, :groups => !groups.empty?),
             :groups => groups.map { |g| { :name => g, :size => (@@group_members[g] || []).size } },
-            :group => groups.include?(prefs['group']) ? prefs['group'] : groups.first,
+            :group => groups.include?(prefs['group']) ? prefs['group'] : (groups.find { |g| pinned.include?(g) } || groups.first),
+            :pinned => groups.select { |g| pinned.include?(g) },
             :examples => examples ? ids.to_h { |id| [id, (tasks[:by_id][id]['examples'] || []).map { |e| render_task_markdown(e) }] } : nil,
         }
     end
