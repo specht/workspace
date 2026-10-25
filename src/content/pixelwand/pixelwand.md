@@ -942,18 +942,20 @@ Welche davon landet auf der Wand? Welche Zeile im Server sorgt jeweils dafür, d
 
 Jetzt kommt der beste Teil. Gib in deinem [Profil](/profil) unter »Shared Live Apps« Port 8000 frei und sag deiner Klasse die Adresse. Alle, die sie öffnen, malen an **deinem** Bild, und jeder sieht sofort, was die anderen malen. Oben steht, wie viele gerade mitmalen.
 
+Eine Wand wie diese, nur viel größer, stellte Reddit am 1. April 2017 als Aprilscherz ins Netz: »r/place«, 1000 × 1000 Pixel in 16 Farben, und jedes Konto durfte nur alle paar Minuten einen Pixel setzen. In drei Tagen setzten über eine Million Menschen rund 16 Millionen Pixel; Gruppen verabredeten sich, malten Flaggen und Figuren und übermalten die der anderen. Die Idee hatte Josh Wardle, der später das Wortspiel *Wordle* erfand.
+
 Vielleicht merkt ihr schnell, dass einige wenige das ganze Bild übermalen. Ein paar Ideen, die Pixelwand weiterzubauen, von leicht bis schwer:
 
 <!-- language: ruby -->
 - **Eine größere Wand:** Ändere `WIDTH` und `HEIGHT` im Server und die Größe des `<canvas>` in der Seite.
-- **Wartezeit:** Jede Verbindung darf nur einen Pixel pro Sekunde setzen, wie bei »r/place«. Merke dir in einer Variable neben `ws`, wann die Verbindung zuletzt gemalt hat (`Time.now`), und überspringe in `ws.on(:message)` Pixel, die zu früh kommen.
+- **Wartezeit:** Jede Verbindung darf nur einen Pixel pro Sekunde setzen; bei »r/place« waren es 2017 sogar fünf bis zwanzig Minuten. Merke dir in einer Variable neben `ws`, wann die Verbindung zuletzt gemalt hat (`Time.now`), und überspringe in `ws.on(:message)` Pixel, die zu früh kommen.
 - **Das Bild laden:** Im nächsten Abschnitt speichert der Server das Bild in `picture.json`. Lies die Datei beim Start wieder ein (`File.exist?`, `JSON.parse`), dann übersteht das Bild einen Neustart.
 - **Ein Chat daneben:** Ein neuer `type` für Textnachrichten und ein Eingabefeld unter der Wand.
 - **Ein Spiel:** Zwei Teams mit zwei Farben, wer nach fünf Minuten mehr Pixel hat, gewinnt.
 <!-- /language -->
 <!-- language: python -->
 - **Eine größere Wand:** Ändere `WIDTH` und `HEIGHT` im Server und die Größe des `<canvas>` in der Seite.
-- **Wartezeit:** Jede Verbindung darf nur einen Pixel pro Sekunde setzen, wie bei »r/place«. Merke dir in `handle` in einer Variable, wann die Verbindung zuletzt gemalt hat (`time.monotonic()`), und überspringe Pixel, die zu früh kommen.
+- **Wartezeit:** Jede Verbindung darf nur einen Pixel pro Sekunde setzen; bei »r/place« waren es 2017 sogar fünf bis zwanzig Minuten. Merke dir in `handle` in einer Variable, wann die Verbindung zuletzt gemalt hat (`time.monotonic()`), und überspringe Pixel, die zu früh kommen.
 - **Das Bild laden:** Im nächsten Abschnitt speichert der Server das Bild in `picture.json`. Lies die Datei beim Start wieder ein (`Path('picture.json').exists()`, `json.loads`), dann übersteht das Bild einen Neustart.
 - **Ein Chat daneben:** Ein neuer `type` für Textnachrichten und ein Eingabefeld unter der Wand.
 - **Ein Spiel:** Zwei Teams mit zwei Farben, wer nach fünf Minuten mehr Pixel hat, gewinnt.
