@@ -312,6 +312,29 @@ tasks:
     feedback:
       - when: { query_matches: 'where[\s\S]*count\s*\(' }
         say: In `WHERE` kann noch nicht gezählt werden, dort wird zeilenweise gefiltert. Bedingungen an Gruppen gehören hinter `HAVING`.
+    hint:
+      - |
+        Welche Tabellen brauchst du für »diese Person hat bei einem Film Regie
+        geführt«? Geh den Weg im Tabellendiagramm von `crew` über `movie_crew` zu
+        `job`. Brauchst du `movie` dafür überhaupt, wenn nur gezählt wird?
+      - |
+        Verbinde `crew`, `movie_crew` und `job`, behalte mit `WHERE` nur die Zeilen
+        mit `director`, gruppiere nach der Person und zähle. `HAVING` behält die
+        Gruppen mit mindestens fünf Filmen, `ORDER BY` stellt die meisten nach
+        vorn.
+      - |
+        Ein Gerüst:
+
+        ```sql
+        SELECT crew.name, COUNT(*) AS films
+        FROM crew
+        JOIN movie_crew ON …
+        JOIN job ON …
+        WHERE …
+        GROUP BY crew.id, crew.name
+        HAVING …
+        ORDER BY …;
+        ```
 
   - id: neue-frage
     title: Was fehlt dem Modell?

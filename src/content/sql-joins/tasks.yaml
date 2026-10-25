@@ -65,6 +65,25 @@ tasks:
       - when: { same_result_as: "SELECT continent, COUNT(*) FROM country GROUP BY continent" }
         say: Das sind alle Kontinente. Welche Gruppen übrig bleiben, entscheidet `HAVING`, nach `GROUP BY`.
     solution: "`SELECT continent, COUNT(*) FROM country GROUP BY continent HAVING COUNT(*) > 40;` Afrika, Asien und Europa. Mit `WHERE COUNT(*) > 40` meldet MySQL einen Fehler: `WHERE` prüft einzelne Zeilen, bevor es Gruppen gibt."
+    hint:
+      - |
+        Zwei Schritte stecken darin: erst für jeden Kontinent die Zahl seiner Länder,
+        wie in der Aufgabe davor, dann davon nur die Kontinente mit mehr als 40.
+        Welche der beiden Bedingungen betrifft einzelne Länder, welche ganze
+        Gruppen?
+      - |
+        Schreib zuerst die Abfrage, die für jeden Kontinent zählt. Die Bedingung an
+        die Zahl kommt hinter `GROUP BY`, mit `HAVING`: `WHERE` prüft einzelne Zeilen,
+        bevor es Gruppen gibt.
+      - |
+        Ein Gerüst:
+
+        ```sql
+        SELECT continent, COUNT(*)
+        FROM country
+        GROUP BY …
+        HAVING …;
+        ```
 
   - id: waehrung-japan
     title: Die Währung Japans
@@ -122,6 +141,25 @@ tasks:
       - when: { same_result_as: "SELECT country_code FROM border GROUP BY country_code HAVING COUNT(*) > 8" }
         say: Die Länder stimmen, als Kürzel. Für die Namen kommt `country` mit einem `JOIN` dazu.
     solution: "`SELECT country.name FROM border JOIN country ON country.code = border.country_code GROUP BY country.code, country.name HAVING COUNT(*) > 8;` Brasilien, China, die Demokratische Republik Kongo, Deutschland, Frankreich, Russland und Serbien. China und Russland haben je 14."
+    hint:
+      - |
+        Wie viele Zeilen hat `border` für Deutschland, also mit `country_code = 'DEU'`?
+        Und was zählt `COUNT(*)`, wenn du die Zeilen von `border` nach `country_code`
+        gruppierst? Zum Nachprüfen: Deutschland hat neun Nachbarn.
+      - |
+        Gruppier `border` nach dem Land und behalte mit `HAVING` die Gruppen mit mehr
+        als acht Zeilen. Für die Namen statt der Kürzel verbindest du mit `country`
+        über `country_code` und gruppierst nach Kürzel und Name.
+      - |
+        Ein Gerüst:
+
+        ```sql
+        SELECT country.name
+        FROM border
+        JOIN country ON …
+        GROUP BY country.code, country.name
+        HAVING …;
+        ```
 
   - id: kontinent-ohne-laender
     title: Ein Kontinent ohne Länder
@@ -137,6 +175,25 @@ tasks:
       - when: { query_matches: '^\s*select[^;]*\bfrom\s+continent\s+(inner\s+)?join\b' }
         say: Ein `JOIN` lässt die Kontinente ohne Partner in `country` gerade weg. Sie behält nur ein `LEFT JOIN`.
     solution: "`SELECT continent.name FROM continent LEFT JOIN country ON country.continent = continent.name WHERE country.code IS NULL;` Antarktika: Dort gehört kein Land hin, auch wenn einige Länder Teile davon beanspruchen."
+    hint:
+      - |
+        Stell dir das Ergebnis von `continent LEFT JOIN country` vor: jeder Kontinent
+        mit jedem seiner Länder, eine Zeile pro Paar. Was steht in den Spalten von
+        `country` bei einem Kontinent, zu dem kein einziges Land gehört?
+      - |
+        Mit `JOIN` fiele genau dieser Kontinent weg. Mit `LEFT JOIN` bleibt er, mit
+        `NULL` in allen Spalten von `country`, und `WHERE … IS NULL` behält nur solche
+        Zeilen. `= NULL` geht nicht: Mit `NULL` ist nichts gleich, nicht einmal
+        `NULL`.
+      - |
+        Ein Gerüst:
+
+        ```sql
+        SELECT continent.name
+        FROM continent
+        LEFT JOIN country ON …
+        WHERE …;
+        ```
 
 
   - id: meiste-staedte
@@ -151,6 +208,26 @@ tasks:
       - when: { same_result_as: "SELECT country_code, COUNT(*) FROM city GROUP BY country_code ORDER BY COUNT(*) DESC LIMIT 1" }
         say: Das Kürzel stimmt. Für den Namen kommt `country` mit einem `JOIN` dazu.
     solution: "`SELECT country.name, COUNT(*) AS cities FROM country JOIN city ON city.country_code = country.code GROUP BY country.code, country.name ORDER BY cities DESC LIMIT 1;` Die Vereinigten Staaten mit 390 Städten ab 100.000 Einwohnern."
+    hint:
+      - |
+        Zerleg die Frage: für jedes Land die Zahl seiner Städte, davon das Land mit
+        der größten Zahl, und dazu sein Name statt des Kürzels. Was davon kann `city`
+        allein, und wofür brauchst du `country`?
+      - |
+        Verbinde `country` und `city` über das Kürzel, gruppiere nach dem Land und
+        zähle. Dann sortierst du nach der Zahl, die größte zuerst, und behältst nur
+        die erste Zeile.
+      - |
+        Ein Gerüst:
+
+        ```sql
+        SELECT country.name, COUNT(*) AS cities
+        FROM country
+        JOIN city ON …
+        GROUP BY country.code, country.name
+        ORDER BY …
+        LIMIT …;
+        ```
 
   - id: sprachen-schweiz
     title: Die Amtssprachen der Schweiz
@@ -177,6 +254,14 @@ tasks:
       - when: { query_matches: "'(German|deutsch|DEU)'" }
         say: "Die Sprachen stehen in `language` mit deutschem Namen (`'Deutsch'`) und einem Kürzel aus drei kleinen Buchstaben (`'deu'`)."
     solution: "`… WHERE language.name = 'Deutsch';` mit den beiden `JOIN`s über `country_language` ergibt Belgien, Deutschland, Liechtenstein, Luxemburg, Österreich und die Schweiz. Mit `WHERE country_language.language_code = 'deu'` geht es mit einem `JOIN` weniger."
+    hint:
+      - |
+        Schau dir die Abfrage für Singapur an: Welche Tabelle sagt, dass eine Sprache
+        in einem Land Amtssprache ist, und welche kennt den Namen `Deutsch`? Was
+        ändert sich, wenn du von einer Sprache aus fragst statt von einem Land aus?
+      - |
+        Dieselben beiden `JOIN`s wie für Singapur, nur steht die Bedingung jetzt an
+        der Sprache, nicht am Land, und ausgegeben werden die Namen der Länder.
 
   - id: englisch-amtssprache
     title: Englisch als Amtssprache

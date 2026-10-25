@@ -27,7 +27,29 @@ tasks:
           expect: false
           say: Nach dem Durchgehen kostet es wieder zwei Münzen.
         - run(['münze', 'münze', 'münze']): "'q1'"
-    hint: Der dritte Zustand `q2` heißt »eine Münze ist drin«. Er braucht wie die anderen einen Übergang für `münze` und einen für `drücken`.
+    hint:
+      - |
+        Spiel das neue Drehkreuz von Hand durch: Münze, drücken, Münze, Münze,
+        drücken. Schreib nach jedem Schritt auf, ob das Drehkreuz zu ist, ob schon
+        eine Münze drin ist oder ob es offen ist. Wie viele verschiedene Lagen gibt es,
+        und welche davon ist neu?
+      - |
+        Der neue Zustand `q2` heißt »eine Münze ist drin«. Er braucht wie die anderen
+        einen Übergang für `münze` und einen für `drücken`. Und die erste Münze in
+        `q0` führt jetzt nicht mehr gleich nach `q1`.
+      - |
+        Ein Gerüst; drei Ziele fehlen:
+
+        ```python
+        TRANSITIONS = {
+            ('q0', 'münze'): ...,
+            ('q0', 'drücken'): 'q0',
+            ('q2', 'münze'): ...,
+            ('q2', 'drücken'): ...,  # die Münze bleibt drin
+            ('q1', 'münze'): 'q1',
+            ('q1', 'drücken'): 'q0',
+        }
+        ```
     solution: |
       Der Zustand `q2` kommt dazu:
       `('q0', 'münze'): 'q2'`, `('q2', 'münze'): 'q1'`,
@@ -60,6 +82,29 @@ tasks:
         Der Zustand `q2` kommt dazu:
         `['q0', 'münze'] => 'q2'`, `['q2', 'münze'] => 'q1'`,
         `['q2', 'drücken'] => 'q2'`; die übrigen Übergänge bleiben.
+      hint:
+        - |
+          Spiel das neue Drehkreuz von Hand durch: Münze, drücken, Münze, Münze,
+          drücken. Schreib nach jedem Schritt auf, ob das Drehkreuz zu ist, ob schon
+          eine Münze drin ist oder ob es offen ist. Wie viele verschiedene Lagen gibt es,
+          und welche davon ist neu?
+        - |
+          Der neue Zustand `q2` heißt »eine Münze ist drin«. Er braucht wie die anderen
+          einen Übergang für `münze` und einen für `drücken`. Und die erste Münze in
+          `q0` führt jetzt nicht mehr gleich nach `q1`.
+        - |
+          Ein Gerüst; drei Ziele fehlen:
+
+          ```ruby
+          TRANSITIONS = {
+              ['q0', 'münze'] => …,
+              ['q0', 'drücken'] => 'q0',
+              ['q2', 'münze'] => …,
+              ['q2', 'drücken'] => …, # die Münze bleibt drin
+              ['q1', 'münze'] => 'q1',
+              ['q1', 'drücken'] => 'q0',
+          }
+          ```
 
   - id: rest
     title: Wo endet 1011?
@@ -98,7 +143,28 @@ tasks:
           expect: true
           say: 5 hoch 40 ist durch 5 teilbar, und dein Automat liest die Zahl nur einmal von links nach rechts.
         - accepts(bin(5 ** 40 + 1)[2:]): false
-    hint: Du brauchst fünf Zustände, `q0` bis `q4`, einen für jeden Rest von 0 bis 4. Aus Rest `r` wird mit der Ziffer `d` der Rest `(2 * r + d) % 5`. Statt zehn Zeilen von Hand geht das auch mit zwei `for`-Schleifen und einem f-String, `f'q{r}'`.
+    hint:
+      - |
+        Geh `1010` von links durch, das ist 10. Welchen Rest beim Teilen durch 5
+        haben `1`, `10`, `101` und `1010`? Schau dir an, wie jeder Rest mit dem davor
+        und der neuen Ziffer zusammenhängt: Was macht eine Ziffer mehr hinten aus
+        einer Binärzahl?
+      - |
+        Fünf Zustände, `q0` bis `q4`, einer für jeden Rest von 0 bis 4. Eine Ziffer
+        mehr hinten verdoppelt die Zahl und zählt die Ziffer dazu, also wird aus Rest
+        `r` mit der Ziffer `d` der Rest `(2 * r + d) % 5`. Statt zehn Zeilen von Hand
+        geht das mit zwei Schleifen.
+      - |
+        Ein Gerüst:
+
+        ```python
+        START = 'q0'
+        ACCEPTING = {...}  # welcher Rest heißt »teilbar durch 5«?
+        TRANSITIONS = {}
+        for r in range(5):
+            for d in '01':
+                TRANSITIONS[(f'q{r}', d)] = ...  # der neue Rest als Zustand
+        ```
     solution: |
       ```python
       TRANSITIONS = {}
@@ -130,7 +196,30 @@ tasks:
             expect: true
             say: 5 hoch 40 ist durch 5 teilbar, und dein Automat liest die Zahl nur einmal von links nach rechts.
           - accepts((5 ** 40 + 1).to_s(2)): false
-      hint: Du brauchst fünf Zustände, `q0` bis `q4`, einen für jeden Rest von 0 bis 4. Aus Rest `r` wird mit der Ziffer `d` der Rest `(2 * r + d) % 5`. Statt zehn Zeilen von Hand geht das auch mit zwei Schleifen, etwa `5.times do |r|` und `'01'.each_char do |d|`, und `"q#{r}"`.
+      hint:
+        - |
+          Geh `1010` von links durch, das ist 10. Welchen Rest beim Teilen durch 5
+          haben `1`, `10`, `101` und `1010`? Schau dir an, wie jeder Rest mit dem davor
+          und der neuen Ziffer zusammenhängt: Was macht eine Ziffer mehr hinten aus
+          einer Binärzahl?
+        - |
+          Fünf Zustände, `q0` bis `q4`, einer für jeden Rest von 0 bis 4. Eine Ziffer
+          mehr hinten verdoppelt die Zahl und zählt die Ziffer dazu, also wird aus Rest
+          `r` mit der Ziffer `d` der Rest `(2 * r + d) % 5`. Statt zehn Zeilen von Hand
+          geht das mit zwei Schleifen.
+        - |
+          Ein Gerüst:
+
+          ```ruby
+          START = 'q0'
+          ACCEPTING = [] # welcher Rest heißt »teilbar durch 5«?
+          TRANSITIONS = {}
+          5.times do |r|
+              '01'.each_char do |d|
+                  TRANSITIONS[["q#{r}", d]] = … # der neue Rest als Zustand; d.to_i ist die Ziffer
+              end
+          end
+          ```
       solution: |
         ```ruby
         TRANSITIONS = {}
@@ -187,7 +276,32 @@ tasks:
         - opens('12133'): false
         - opens('1213121'): false
         - opens('312121213'): true
-    hint: Frag dich in jedem Zustand für jede Ziffer, die nicht weiter zum Code führt, was vom bisher Getippten noch passt. Was ist das längste Ende davon, mit dem der Code beginnt?
+    hint:
+      - |
+        Tipp `121213` in Gedanken ein und schreib nach jeder Ziffer den Zustand auf.
+        An welcher Stelle geht es zurück nach `q0`, obwohl die letzten Ziffern schon
+        wieder der Anfang des Codes sind? In welchem Zustand müsste das Schloss dort
+        sein?
+      - |
+        Frag dich in jedem Zustand für jede Ziffer, die nicht weiter zum Code führt,
+        was vom bisher Getippten noch passt: Was ist das längste Ende davon, mit dem
+        der Code beginnt? In diesen Zustand führt der neue Pfeil. Nur die Ziffern 1, 2
+        und 3 kommen im Code vor; jede andere führt sicher zurück nach `q0`.
+      - |
+        Geh die Zustände der Reihe nach durch, jeweils mit 1, 2 und 3. Zwei davon
+        als Gerüst:
+
+        ```python
+        TRANSITIONS = {
+            ('q0', '1'): 'q1',
+            ('q1', '2'): 'q2',
+            ('q2', '1'): 'q3',
+            ('q3', '3'): 'q4',
+            ('q1', '1'): ...,  # getippt: 11
+            ('q3', '2'): ...,  # getippt: 1212
+            ...  # die übrigen, auch aus q4
+        }
+        ```
     solution: |
       Vier Übergänge kommen dazu: `('q1', '1'): 'q1'`, `('q3', '1'): 'q1'`,
       `('q3', '2'): 'q2'` und `('q4', '1'): 'q1'`. Alle anderen fehlenden
@@ -221,6 +335,32 @@ tasks:
         Vier Übergänge kommen dazu: `['q1', '1'] => 'q1'`, `['q3', '1'] => 'q1'`,
         `['q3', '2'] => 'q2'` und `['q4', '1'] => 'q1'`. Alle anderen
         fehlenden führen zu Recht zurück nach `q0`.
+      hint:
+        - |
+          Tipp `121213` in Gedanken ein und schreib nach jeder Ziffer den Zustand auf.
+          An welcher Stelle geht es zurück nach `q0`, obwohl die letzten Ziffern schon
+          wieder der Anfang des Codes sind? In welchem Zustand müsste das Schloss dort
+          sein?
+        - |
+          Frag dich in jedem Zustand für jede Ziffer, die nicht weiter zum Code führt,
+          was vom bisher Getippten noch passt: Was ist das längste Ende davon, mit dem
+          der Code beginnt? In diesen Zustand führt der neue Pfeil. Nur die Ziffern 1, 2
+          und 3 kommen im Code vor; jede andere führt sicher zurück nach `q0`.
+        - |
+          Geh die Zustände der Reihe nach durch, jeweils mit 1, 2 und 3. Zwei davon
+          als Gerüst:
+
+          ```ruby
+          TRANSITIONS = {
+              ['q0', '1'] => 'q1',
+              ['q1', '2'] => 'q2',
+              ['q2', '1'] => 'q3',
+              ['q3', '3'] => 'q4',
+              ['q1', '1'] => …, # getippt: 11
+              ['q3', '2'] => …, # getippt: 1212
+              # … die übrigen, auch aus q4
+          }
+          ```
 
   - id: nea-zustaende
     title: Drei Ziffern später
@@ -269,7 +409,25 @@ tasks:
         - opens('47121213'): true
         - opens('121213'): true
         - opens('4741711'): false
-    hint: Ein zweiter Weg aus `q0`, so wie der für 1213, über neue Zustände `q5` bis `q8`. `ACCEPTING` bekommt einen zweiten Zustand.
+    hint:
+      - |
+        Zeichne den NEA für 1213 ab und daneben einen zweiten Weg für 4711: Wo
+        beginnt er, über welche Zustände führt er, wo endet er? Was muss in `q0` bei
+        einer 4 passieren, damit der NEA trotzdem weiter auf 1213 warten kann?
+      - |
+        Ein zweiter Weg aus `q0`, so wie der für 1213, über neue Zustände `q5` bis
+        `q8`. Bei einer 4 rät `q0` wie bei einer 1: Er bleibt und geht zugleich nach
+        `q5`. `ACCEPTING` bekommt einen zweiten Zustand.
+      - |
+        Ein Gerüst; ein Schritt des neuen Wegs steht schon da:
+
+        ```python
+        ACCEPTING = {'q4', ...}  # der Zustand am Ende von 4711
+        ...
+        TRANSITIONS[('q0', '4')] = ...  # bleiben und raten, dass 4711 beginnt
+        TRANSITIONS[('q5', '7')] = {'q6'}
+        ...  # die beiden Schritte für 1 und 1
+        ```
     solution: |
       ```python
       ACCEPTING = {'q4', 'q8'}
@@ -307,6 +465,25 @@ tasks:
         TRANSITIONS[['q6', '1']] = Set['q7']
         TRANSITIONS[['q7', '1']] = Set['q8']
         ```
+      hint:
+        - |
+          Zeichne den NEA für 1213 ab und daneben einen zweiten Weg für 4711: Wo
+          beginnt er, über welche Zustände führt er, wo endet er? Was muss in `q0` bei
+          einer 4 passieren, damit der NEA trotzdem weiter auf 1213 warten kann?
+        - |
+          Ein zweiter Weg aus `q0`, so wie der für 1213, über neue Zustände `q5` bis
+          `q8`. Bei einer 4 rät `q0` wie bei einer 1: Er bleibt und geht zugleich nach
+          `q5`. `ACCEPTING` bekommt einen zweiten Zustand.
+        - |
+          Ein Gerüst; ein Schritt des neuen Wegs steht schon da:
+
+          ```ruby
+          ACCEPTING = Set['q4', …] # der Zustand am Ende von 4711
+          # …
+          TRANSITIONS[['q0', '4']] = … # bleiben und raten, dass 4711 beginnt
+          TRANSITIONS[['q5', '7']] = Set['q6']
+          # … die beiden Schritte für 1 und 1
+          ```
 
   - id: dea-generalschluessel
     title: Der DEA zum Generalschlüssel

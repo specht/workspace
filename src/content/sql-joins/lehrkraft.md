@@ -20,4 +20,6 @@ Die Fortsetzung der [Einführung in SQL](/mysql): Lernende laden die ganze Fassu
 - **Länge und Breite vertauscht.** `POINT` nimmt zuerst die Länge (`longitude`), dann die Breite; vertauscht kommen falsche Entfernungen heraus, und `ST_Distance_Sphere` rechnet in Metern.
 - **Daten neu laden.** Wer eine Tabelle geändert oder gelöscht hat, lädt `countries.sql` einfach noch einmal; die Datei legt alles neu an.
 
+**Tipps in Stufen.** »Kontinente mit vielen Ländern«, »Viele Nachbarn«, »Ein Kontinent ohne Länder«, »Die meisten Städte« und »Wo Deutsch Amtssprache ist« haben zwei oder drei Tipps: ein Beispiel von Hand, den Weg in Worten, meist ein Gerüst mit Lücken, nie die ganze Lösung. Die nächste Stufe erscheint eine Minute nach der vorigen, ohne Uhr, und wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst. Hängen viele an derselben Stelle, ist das ein Thema für die ganze Gruppe.
+
 **Weiter.** In der [Filmdatenbank](/filmdatenbank) entwerfen Lernende eine Datenbank selbst, als ER-Modell, und fragen sie mit vielen `JOIN`s ab; das Handbuch erklärt [ER-Modelle](/reference/er-modelle). [SQL Injection](/bobby_tables) zeigt, was passiert, wenn ein Programm Abfragen aus Eingaben zusammensetzt.

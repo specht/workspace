@@ -12,4 +12,6 @@ Endliche Automaten zum Programmieren, in Ruby oder Python: Lernende bauen einen 
 
 **Begriffe.** Die Seite sagt DEA und NEA und erwähnt ε-Übergänge, Thompson-Konstruktion und Minimierung nur als Ausblick; Automatron zeigt alle Schritte mit Erklärungen. Endliche Automaten mit Ausgabe (Mealy, Moore) kommen nicht vor; das Drehkreuz ist als Einstieg gedacht, nicht als Akzeptor.
 
+**Tipps in Stufen.** »Eintritt zwei Euro«, »Teilbar durch 5«, »Das Schloss reparieren« und »Ein Generalschlüssel« haben zwei oder drei Tipps: ein Beispiel von Hand, den Weg in Worten, meist ein Gerüst mit Lücken, nie die ganze Lösung. Die nächste Stufe erscheint eine Minute nach der vorigen, ohne Uhr, und wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst. Hängen viele an derselben Stelle, ist das ein Thema für die ganze Gruppe.
+
 **Weiter.** Kellerautomaten und kontextfreie Grammatiken (Klammern), reguläre Ausdrücke mit `re`, und die Frage, warum `a^n b^n` nicht regulär ist (Pumping-Lemma, wenn es zum Lehrplan passt).

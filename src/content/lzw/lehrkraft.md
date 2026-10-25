@@ -15,4 +15,6 @@ LZW zum Selberbauen, in Ruby oder Python: Lernende komprimieren einen Text von H
 - **Der Sonderfall fehlt.** `table[258]` ist dann `nil`, und `decompress` bricht bei `ABABABA` mit `NoMethodError` ab (»undefined method '[]' for nil«). Die Rückmeldung nennt die Zeile.
 - **Ein Vergleich mit `p`.** `decompress` gibt einen String mit den Bytes zurück; Ruby zeigt ihn mit `p` als `"ABABABA"` an, Umlaute aber als `"Gr\xC3\xBC\xC3\x9Fe"`. Das ist richtig: Erst `force_encoding('UTF-8')` macht wieder Text daraus.
 
+**Tipps in Stufen.** »Der Kompressor« und »Der Entpacker« haben zwei oder drei Tipps: ein Beispiel von Hand, den Weg in Worten, meist ein Gerüst mit Lücken, nie die ganze Lösung. Die nächste Stufe erscheint eine Minute nach der vorigen, ohne Uhr, und wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst. Hängen viele an derselben Stelle, ist das ein Thema für die ganze Gruppe.
+
 **Weiter.** Das volle Wörterbuch (Clear Code) ist die Brücke zu GIF, wo genau das in der Datei steht. Die Geschichte des LZW-Patents von Unisys und die Entstehung von PNG eignen sich für ein kurzes Referat.

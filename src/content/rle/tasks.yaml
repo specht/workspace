@@ -45,7 +45,37 @@ tasks:
           expect: "'2A1B'"
           say: Denk an den letzten Lauf, wenn der Text zu Ende ist.
         - rle('Hallo  Welt'): "'1H1a2l1o2 1W1e1l1t'"
-    hint: Merk dir das Zeichen des aktuellen Laufs und zähle. Kommt ein anderes Zeichen, hängst du `"#{count}#{char}"` an und beginnst neu. Nach der Schleife fehlt noch der letzte Lauf.
+    hint:
+      - |
+        Geh `WWWBBW` Zeichen für Zeichen durch und schreib nach jedem auf, was dein
+        Programm weiß: welches Zeichen der Lauf hat und wie lang er bisher ist. Wann
+        ist ein Lauf zu Ende, und was kommt dann ins Ergebnis? Was passiert mit dem
+        letzten Lauf, nach dem kein anderes Zeichen mehr kommt?
+      - |
+        Merk dir das Zeichen des aktuellen Laufs und zähle. Kommt ein anderes
+        Zeichen, hängst du `"#{count}#{char}"` an und beginnst neu. Nach der Schleife
+        fehlt noch der letzte Lauf, aber nur, wenn es überhaupt einen gab.
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def rle(text)
+            result = ''
+            char = nil
+            count = 0
+            text.each_char do |c|
+                if c == char
+                    … # der Lauf wird länger
+                else
+                    … # den Lauf davor anhängen, wenn es einen gab
+                    char = c
+                    count = 1
+                end
+            end
+            … # der letzte Lauf
+            result
+        end
+        ```
     solution: |
       ```ruby
       def rle(text)
@@ -80,7 +110,34 @@ tasks:
             expect: "'2A1B'"
             say: Denk an den letzten Lauf, wenn der Text zu Ende ist.
           - rle('Hallo  Welt'): "'1H1a2l1o2 1W1e1l1t'"
-      hint: Merk dir das Zeichen des aktuellen Laufs und zähle. Kommt ein anderes Zeichen, hängst du `f'{count}{char}'` an und beginnst neu. Nach der Schleife fehlt noch der letzte Lauf.
+      hint:
+        - |
+          Geh `WWWBBW` Zeichen für Zeichen durch und schreib nach jedem auf, was dein
+          Programm weiß: welches Zeichen der Lauf hat und wie lang er bisher ist. Wann
+          ist ein Lauf zu Ende, und was kommt dann ins Ergebnis? Was passiert mit dem
+          letzten Lauf, nach dem kein anderes Zeichen mehr kommt?
+        - |
+          Merk dir das Zeichen des aktuellen Laufs und zähle. Kommt ein anderes
+          Zeichen, hängst du `f'{count}{char}'` an und beginnst neu. Nach der Schleife
+          fehlt noch der letzte Lauf, aber nur, wenn es überhaupt einen gab.
+        - |
+          Ein Gerüst:
+
+          ```python
+          def rle(text):
+              result = ''
+              char = None
+              count = 0
+              for c in text:
+                  if c == char:
+                      ...  # der Lauf wird länger
+                  else:
+                      ...  # den Lauf davor anhängen, wenn es einen gab
+                      char = c
+                      count = 1
+              ...  # der letzte Lauf
+              return result
+          ```
       solution: |
         ```python
         def rle(text):
@@ -111,7 +168,14 @@ tasks:
         - unrle('1A1B1C'): "'ABC'"
         - unrle(rle('Hallo  Welt')): "'Hallo  Welt'"
         - unrle('100x') == 'x' * 100: true
-    hint: '`code.scan(/(\d+)(\D)/)` liefert Paare wie `[''6'', ''W'']`. `''W'' * 6` ist `''WWWWWW''`, `''6''.to_i` ist 6, und `join` hängt alles aneinander.'
+    hint:
+      - |
+        Zerleg `12A3B` von Hand in Paare aus Länge und Zeichen. Woran erkennst du, wo
+        eine Länge aufhört? Warum reicht es nicht, immer genau eine Ziffer zu lesen?
+      - |
+        `code.scan(/(\d+)(\D)/)` liefert Paare wie `['6', 'W']`: so viele Ziffern
+        wie möglich, dann ein Zeichen, das keine Ziffer ist. `'W' * 6` ist
+        `'WWWWWW'`, `'6'.to_i` ist 6, und `join` hängt alles aneinander.
     solution: |
       ```ruby
       def unrle(code)
@@ -134,10 +198,15 @@ tasks:
           - unrle('1A1B1C'): "'ABC'"
           - unrle(rle('Hallo  Welt')): "'Hallo  Welt'"
           - unrle('100x') == 'x' * 100: true
-      hint: |
-        `re.findall(r'(\d+)(\D)', code)` liefert Paare wie `('6', 'W')`.
-        `'W' * 6` ist `'WWWWWW'`, `int('6')` ist 6, und `''.join(...)` hängt
-        alles aneinander. Für `re` brauchst du oben `import re`.
+      hint:
+        - |
+          Zerleg `12A3B` von Hand in Paare aus Länge und Zeichen. Woran erkennst du, wo
+          eine Länge aufhört? Warum reicht es nicht, immer genau eine Ziffer zu lesen?
+        - |
+          `re.findall(r'(\d+)(\D)', code)` liefert Paare wie `('6', 'W')`: so viele
+          Ziffern wie möglich, dann ein Zeichen, das keine Ziffer ist. `'W' * 6` ist
+          `'WWWWWW'`, `int('6')` ist 6, und `''.join(...)` hängt alles aneinander. Für
+          `re` brauchst du oben `import re`.
       solution: |
         ```python
         import re
@@ -194,7 +263,35 @@ tasks:
         - call: (data = ((0..255).to_a * 2 + [0] * 1000).pack('C*'); unrle_bytes(rle_bytes(data)) == data)
           expect: true
           say: Mit allen Bytes von 0 bis 255 und einem langen Lauf von Nullen kommt etwas anderes heraus.
-    hint: '`data.each_byte` liefert Zahlen, `bytes.each_slice(2) { |count, byte| … }` geht ein Array paarweise durch, `[byte] * count` wiederholt, und `pack(''C*'')` macht aus Zahlen wieder einen String.'
+    hint:
+      - |
+        Was soll `rle_bytes('A' * 300)` ergeben? Warum passt 300 nicht als Länge, und
+        wie teilst du den Lauf auf? Und welche Paare stecken in
+        `unrle_bytes([3, 65, 1, 66])`?
+      - |
+        Wie bei `rle`, nur mit Zahlen statt Text: `data.each_byte` liefert die
+        Bytes. Ein neuer Lauf beginnt, wenn ein anderes Byte kommt oder der Lauf schon
+        255 lang ist. Zurück geht es mit `bytes.each_slice(2) { |count, byte| … }`,
+        `[byte] * count` wiederholt ein Byte, und `pack('C*')` macht aus den Zahlen
+        wieder einen String.
+      - |
+        Ein Gerüst für `rle_bytes`; die Bedingung schreibst du:
+
+        ```ruby
+        def rle_bytes(data)
+            result = []
+            data.each_byte do |byte|
+                if … # dasselbe Byte wie im Lauf davor, und der Lauf ist kürzer als 255
+                    result[-2] += 1
+                else
+                    result.push(1, byte)
+                end
+            end
+            result
+        end
+        ```
+
+        `result[-2]` ist die Länge des letzten Laufs, `result[-1]` sein Byte.
     solution: |
       ```ruby
       def rle_bytes(data)
@@ -234,10 +331,32 @@ tasks:
           - call: unrle_bytes(rle_bytes(bytes(list(range(256)) * 2 + [0] * 1000))) == bytes(list(range(256)) * 2 + [0] * 1000)
             expect: true
             say: Mit allen Bytes von 0 bis 255 und einem langen Lauf von Nullen kommt etwas anderes heraus.
-      hint: |
-        `for byte in data` liefert Zahlen, `zip(numbers[0::2], numbers[1::2])`
-        geht eine Liste paarweise durch, `[byte] * count` wiederholt, und
-        `bytes(numbers)` macht aus Zahlen wieder Bytes.
+      hint:
+        - |
+          Was soll `rle_bytes(b'A' * 300)` ergeben? Warum passt 300 nicht als Länge, und
+          wie teilst du den Lauf auf? Und welche Paare stecken in
+          `unrle_bytes([3, 65, 1, 66])`?
+        - |
+          Wie bei `rle`, nur mit Zahlen statt Text: `for byte in data` liefert die
+          Bytes. Ein neuer Lauf beginnt, wenn ein anderes Byte kommt oder der Lauf schon
+          255 lang ist. Zurück geht es paarweise mit
+          `zip(numbers[0::2], numbers[1::2])`, `[byte] * count` wiederholt ein Byte, und
+          `bytes(...)` macht aus den Zahlen wieder Bytes.
+        - |
+          Ein Gerüst für `rle_bytes`; die Bedingung schreibst du:
+
+          ```python
+          def rle_bytes(data):
+              result = []
+              for byte in data:
+                  if ...:  # dasselbe Byte wie im Lauf davor, und der Lauf ist kürzer als 255
+                      result[-2] += 1
+                  else:
+                      result += [1, byte]
+              return result
+          ```
+
+          `result[-2]` ist die Länge des letzten Laufs, `result[-1]` sein Byte.
       solution: |
         ```python
         def rle_bytes(data):

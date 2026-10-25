@@ -16,4 +16,6 @@ Die einfachste Kompression zuerst: Lauflängen, in Ruby oder Python. Lernende ma
 - **Läufe über 255.** In `rle_bytes` passt die Länge 300 nicht in ein Byte; als Ruby-Array fällt das nicht auf, beim Speichern in eine Datei schon. Die Aufgabe prüft es mit 300 und 510.
 - **`'6'` statt 6.** Ohne `to_i` ergibt `'W' * '6'` einen `TypeError`.
 
+**Tipps in Stufen.** »Lauflängen als Text«, »Zurück zum Text« und »Lauflängen als Bytes« haben zwei oder drei Tipps: ein Beispiel von Hand, den Weg in Worten, meist ein Gerüst mit Lücken, nie die ganze Lösung. Die nächste Stufe erscheint eine Minute nach der vorigen, ohne Uhr, und wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst. Hängen viele an derselben Stelle, ist das ein Thema für die ganze Gruppe.
+
 **Weiter.** PackBits (in TIFF) vermeidet das Verdoppeln bei Dateien ohne Läufe. Die Frage, ob `diskette.raw` spaltenweise kleiner wird, führt auf die Idee, die PNG mit seinen Filtern verfolgt: Erst die Daten so umformen, dass sie sich besser packen lassen.

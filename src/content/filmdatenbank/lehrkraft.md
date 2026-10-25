@@ -13,4 +13,6 @@ Lernende entwerfen eine Datenbank für Filme und ihre Mitwirkenden: ein ER-Model
 
 **Wo es hakt.** Die Kardinalität (`n:m`, und warum aus `n:1` eine Spalte statt einer Tabelle wird) und der zusammengesetzte Primärschlüssel. Die Vorhersage-Aufgabe »Was wäre bei n:1?« ist dafür da; es lohnt, sie gemeinsam aufzulösen. Bei den Abfragen ist es das fehlende `ON` und `COUNT` in `WHERE` statt `HAVING`; beides erkennt die Karte.
 
+**Tipps in Stufen.** »Viel Regie« hat zwei oder drei Tipps: ein Beispiel von Hand, den Weg in Worten, meist ein Gerüst mit Lücken, nie die ganze Lösung. Die nächste Stufe erscheint eine Minute nach der vorigen, ohne Uhr, und wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst. Hängen viele an derselben Stelle, ist das ein Thema für die ganze Gruppe.
+
 **Zum Weiterarbeiten.** Die letzte Aufgabe sammelt Ideen für Erweiterungen. Eine Videothek mit Kundinnen, Exemplaren und Ausleihen (mit Datum) ist ein gutes eigenes Modell: Es braucht eine 1:n-Beziehung und Attribute an einer Beziehung. Die Diagramme lassen sich mit »Als SVG speichern« für Präsentationen sichern.

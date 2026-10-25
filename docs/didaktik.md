@@ -145,11 +145,13 @@ Aktivität ([widgets.md](widgets.md)).
 - Änderungen statt ganzer Dateien: Webserver, Pixelwand.
 - Tipps in Stufen: Huffman (Baum, Decodieren, kanonische Codes), alle
   Aufgaben des Routenplaners, in denen eine Funktion entsteht, die
-  Steganographie und alle Kästen »Jetzt bist du dran« (Raytracer, Raycaster,
-  Webserver, Pixelwand, Wetter).
-- Als Nächstes für Tipps in Stufen: der Rechner (`baum` vor allem), LZW
-  (`entpacker`), TOTP, RLE, die Automaten und die schwereren SQL-Abfragen
-  (LEFT JOIN mit `IS NULL`, GROUP BY mit HAVING, Abstände).
+  Steganographie, alle Kästen »Jetzt bist du dran« (Raytracer, Raycaster,
+  Webserver, Pixelwand, Wetter), alle Programmieraufgaben des Rechners, von
+  LZW, TOTP, RLE und den Automaten, und die schwereren SQL-Abfragen (GROUP BY
+  mit HAVING, LEFT JOIN mit `IS NULL`, `JOIN` über eine Tabelle in der Mitte,
+  in »Tabellen verbinden« und der Filmdatenbank). Die Abstände zwischen
+  Städten bekommen keine: Dort ändert die Aufgabe nur einen Namen oder die
+  Richtung der Sortierung im Beispiel darüber.
 - Was eine Vorhersage verrät, wartet auf die Antwort: Alle 78 Vorhersagen
   sind durchgesehen. Bei 42 folgte etwas, das die Antwort verriet (ein
   Screenshot vom Ergebnis, der erklärende Absatz, ein Kasten), und steht

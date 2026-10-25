@@ -65,7 +65,33 @@ tasks:
           say: 'Fehlen am Ende Bits zu einer Gruppe von 5, kommen Nullen dazu.'
         - call: 'base32_encode(''12345678901234567890'')'
           expect: '''GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ'''
-    hint: 'Mach aus jedem Zeichen seine 5 Bits als Text aus Nullen und Einsen, häng alles aneinander und nimm dann je 8 davon.'
+    hint:
+      - |
+        Entschlüssle `MZXW6` von Hand. Welche Nummer hat jedes Zeichen in `ALPHABET`
+        (`M` ist 12)? Schreib die fünf Zahlen als je 5 Bits hin, häng sie aneinander
+        und teil sie in Stücke zu 8 Bits: Welche Bytes sind das, und was bleibt
+        übrig? Zum Nachprüfen: Es ist ein kurzes englisches Wort.
+      - |
+        `base32_decode`: erst alles groß, Leerzeichen und `=` weg. Jedes Zeichen
+        wird seine Nummer `ALPHABET.index(c)` als 5 Bits, alles hintereinander, und je
+        8 Bits sind ein Byte; was am Ende übrig bleibt, fällt weg. `base32_encode` ist
+        der Weg zurück: jedes Byte als 8 Bits, hinten Nullen dazu, bis die Länge durch
+        5 teilbar ist, und je 5 Bits ein Zeichen.
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def base32_decode(text)
+            bits = text.upcase.delete(' =').chars.map { |c| … }.join # je 5 Bits
+            bits.scan(/.{8}/).map { |byte| … }.pack('C*')
+        end
+
+        def base32_encode(data)
+            bits = data.bytes.map { |b| … }.join # je 8 Bits
+            bits += '0' * … # auffüllen, bis die Länge durch 5 teilbar ist
+            bits.scan(/.{5}/).map { |chunk| … }.join
+        end
+        ```
     python:
       prompt: 'Schreib `base32_decode` und `base32_encode` in `totp.py`.'
       check:
@@ -88,6 +114,32 @@ tasks:
             say: 'Fehlen am Ende Bits zu einer Gruppe von 5, kommen Nullen dazu.'
           - call: 'base32_encode(b''12345678901234567890'')'
             expect: '''GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ'''
+      hint:
+        - |
+          Entschlüssle `MZXW6` von Hand. Welche Nummer hat jedes Zeichen in `ALPHABET`
+          (`M` ist 12)? Schreib die fünf Zahlen als je 5 Bits hin, häng sie aneinander
+          und teil sie in Stücke zu 8 Bits: Welche Bytes sind das, und was bleibt
+          übrig? Zum Nachprüfen: Es ist ein kurzes englisches Wort.
+        - |
+          `base32_decode`: erst alles groß, Leerzeichen und `=` weg. Jedes Zeichen
+          wird seine Nummer `ALPHABET.index(c)` als 5 Bits, alles hintereinander, und je
+          8 Bits sind ein Byte; was am Ende übrig bleibt, fällt weg. `base32_encode` ist
+          der Weg zurück: jedes Byte als 8 Bits, hinten Nullen dazu, bis die Länge durch
+          5 teilbar ist, und je 5 Bits ein Zeichen.
+        - |
+          Ein Gerüst:
+
+          ```python
+          def base32_decode(text):
+              text = text.upper().replace(' ', '').replace('=', '')
+              bits = ''.join(...)  # je Zeichen 5 Bits
+              return bytes(...)  # je 8 Bits eine Zahl; was übrig bleibt, fällt weg
+
+          def base32_encode(data):
+              bits = ''.join(...)  # je Byte 8 Bits
+              bits += ...  # mit 0 auffüllen, bis die Länge durch 5 teilbar ist
+              return ''.join(...)  # je 5 Bits ein Zeichen
+          ```
 
   - id: hotp
     title: HOTP
@@ -109,7 +161,28 @@ tasks:
           expect: '''254676'''
         - call: 'hotp(''12345678901234567890'', 9)'
           expect: '''520489'''
-    hint: 'Der Zähler kommt als 8 Bytes in die HMAC, das höchste zuerst. Vom Ergebnis sagen die untersten 4 Bits des letzten Bytes, wo die 4 Bytes anfangen, aus denen der Code wird.'
+    hint:
+      - |
+        Rechne das Beispiel von der Seite nach, mit der HMAC
+        `75a48a19d4cbe100644e8ac1397eea747a2d33ab`: Zähl die Bytes ab, das erste hat
+        den Index 0. Welches ist Byte 11, welche 4 Bytes nimmst du ab dort, und was
+        macht `& 0x7fffffff` aus dem ersten von ihnen?
+      - |
+        Vier Zeilen, eine für jeden Schritt: der Zähler als 8 Bytes und daraus die
+        HMAC; der Offset, die untersten 4 Bits des letzten Bytes (`& 15`); die 4 Bytes
+        ab dem Offset als Zahl, ohne das oberste Bit; und der Rest beim Teilen durch
+        `10**digits`, als Text, vorn mit Nullen auf `digits` Stellen aufgefüllt.
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def hotp(key, counter, digits = 6)
+            hash = OpenSSL::HMAC.digest('SHA1', key, …) # der Zähler als 8 Bytes
+            offset = … # die untersten 4 Bits des letzten Bytes
+            number = hash[offset, 4].unpack1('N') & 0x7fffffff
+            … # die letzten digits Ziffern, vorn mit Nullen
+        end
+        ```
     python:
       prompt: 'Schreib `hotp` in `totp.py`. Die Codes sind die Testwerte aus RFC 4226.'
       check:
@@ -129,6 +202,28 @@ tasks:
             expect: '''254676'''
           - call: 'hotp(b''12345678901234567890'', 9)'
             expect: '''520489'''
+      hint:
+        - |
+          Rechne das Beispiel von der Seite nach, mit der HMAC
+          `75a48a19d4cbe100644e8ac1397eea747a2d33ab`: Zähl die Bytes ab, das erste hat
+          den Index 0. Welches ist Byte 11, welche 4 Bytes nimmst du ab dort, und was
+          macht `& 0x7fffffff` aus dem ersten von ihnen?
+        - |
+          Vier Zeilen, eine für jeden Schritt: der Zähler als 8 Bytes und daraus die
+          HMAC; der Offset, die untersten 4 Bits des letzten Bytes (`& 15`); die 4 Bytes
+          ab dem Offset als Zahl, ohne das oberste Bit; und der Rest beim Teilen durch
+          `10 ** digits`, als Text, vorn mit Nullen auf `digits` Stellen aufgefüllt
+          (`zfill`).
+        - |
+          Ein Gerüst:
+
+          ```python
+          def hotp(key, counter, digits=6):
+              hash = hmac.new(key, ..., hashlib.sha1).digest()  # der Zähler als 8 Bytes
+              offset = ...  # die untersten 4 Bits des letzten Bytes
+              number = int.from_bytes(hash[offset:offset + 4], 'big') & 0x7fffffff
+              return ...  # die letzten digits Ziffern, vorn mit Nullen
+          ```
 
   - id: totp
     title: TOTP
@@ -154,7 +249,13 @@ tasks:
         - call: 'totp(''12345678901234567890'', 89) == totp(''12345678901234567890'', 60)'
           expect: true
           say: 'Innerhalb von 30 Sekunden bleibt der Code derselbe.'
-    hint: 'Der Zähler ist die Unix-Zeit geteilt durch 30, abgerundet. Alles andere macht schon hotp.'
+    hint:
+      - |
+        Welchen Zähler haben die Unix-Zeiten 59, 60 und 89? Wann wird er um eins
+        größer, und wie lange bleibt er gleich?
+      - |
+        Eine Zeile genügt: `hotp` mit dem Zähler aus der Zeit. Für die aktuelle Zeit
+        als Standardwert schreib `time = Time.now.to_i` in die Parameter.
     python:
       prompt: 'Schreib `totp` in `totp.py`. Die Codes sind die Testwerte aus RFC 6238.'
       check:
@@ -178,6 +279,15 @@ tasks:
           - call: 'totp(b''12345678901234567890'', 89) == totp(b''12345678901234567890'', 60)'
             expect: true
             say: 'Innerhalb von 30 Sekunden bleibt der Code derselbe.'
+      hint:
+        - |
+          Welchen Zähler haben die Unix-Zeiten 59, 60 und 89? Wann wird er um eins
+          größer, und wie lange bleibt er gleich?
+        - |
+          Eine Zeile genügt: `hotp` mit dem Zähler aus der Zeit, `//` teilt mit
+          Abrunden. Für die aktuelle Zeit nimm `now=None` als Standardwert und dann
+          `int(time.time())`, wenn keine Zeit kam. Nenn den Parameter nicht `time`: So
+          heißt schon das Modul, das oben importiert ist.
 
   - id: uhr
     title: Wenn die Uhr nachgeht
@@ -223,7 +333,25 @@ tasks:
         - call: 'verify(''12345678901234567890'', totp(''12345678901234567890'', 1000).insert(3, '' ''), 1000)'
           expect: true
           say: 'Viele Apps zeigen den Code mit einem Leerzeichen in der Mitte. Das darf keinen Unterschied machen.'
-    hint: 'Rechne die Codes für die Zeit davor, jetzt und danach aus, jeweils 30 Sekunden auseinander, und schau, ob einer passt.'
+    hint:
+      - |
+        Die Uhr eines Handys geht 20 Sekunden nach. Für welche Zeiten muss der
+        Server den Code ausrechnen, damit er trotzdem passt? Und was soll mit einem
+        Code geschehen, den jemand mit Leerzeichen eintippt, `287 082`?
+      - |
+        Rechne `totp` für die Zeit 30 Sekunden davor, für die Zeit selbst und für 30
+        Sekunden danach aus und vergleich jeden dieser drei Codes mit dem
+        eingetippten, aus dem du vorher die Leerzeichen entfernst. Stimmt einer, ist
+        der Code gut.
+      - |
+        Ein Gerüst; so ruft die Prüfung `verify` auf:
+
+        ```ruby
+        def verify(key, code, time = Time.now.to_i)
+            code = … # ohne Leerzeichen
+            [-30, 0, 30].any? { |d| … }
+        end
+        ```
     python:
       prompt: 'Schreib `verify` in `totp.py`.'
       check:
@@ -246,6 +374,25 @@ tasks:
           - call: 'verify(b''12345678901234567890'', totp(b''12345678901234567890'', 1000)[:3] + '' '' + totp(b''12345678901234567890'', 1000)[3:], 1000)'
             expect: true
             say: 'Viele Apps zeigen den Code mit einem Leerzeichen in der Mitte. Das darf keinen Unterschied machen.'
+      hint:
+        - |
+          Die Uhr eines Handys geht 20 Sekunden nach. Für welche Zeiten muss der
+          Server den Code ausrechnen, damit er trotzdem passt? Und was soll mit einem
+          Code geschehen, den jemand mit Leerzeichen eintippt, `287 082`?
+        - |
+          Rechne `totp` für die Zeit 30 Sekunden davor, für die Zeit selbst und für 30
+          Sekunden danach aus und vergleich jeden dieser drei Codes mit dem
+          eingetippten, aus dem du vorher die Leerzeichen entfernst. Stimmt einer, ist
+          der Code gut.
+        - |
+          Ein Gerüst; so ruft die Prüfung `verify` auf:
+
+          ```python
+          def verify(key, code, now=None):
+              ...  # ohne Zeit: die aktuelle, wie in totp
+              code = ...  # ohne Leerzeichen
+              return any(... for d in (-30, 0, 30))
+          ```
 
   - id: einmal
     title: Nur einmal

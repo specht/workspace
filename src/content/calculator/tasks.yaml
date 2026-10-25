@@ -42,7 +42,42 @@ tasks:
         - call: 'tokenize(''7'').first.is_a?(Integer)'
           expect: true
           say: 'Eine Zahl ohne Punkt bleibt ein Integer: 7, nicht 7.0.'
-    hint: 'Eine while-Schleife mit einem Index i. Bei einer Ziffer läuft eine zweite Schleife weiter, solange Ziffern kommen; `text[start...i].to_i` macht daraus die Zahl.'
+    hint:
+      - |
+        Geh `12+3*(4-1)` von Hand durch, Zeichen für Zeichen, und schreib zu jedem
+        auf, was passiert: Welches Zeichen wird ein Token für sich, wo fängt eine
+        Zahl an, und woran merkst du, dass sie zu Ende ist? Was passiert mit dem
+        Leerzeichen in `1 + 2`?
+      - |
+        Ein Index `i` läuft in einer `while`-Schleife durch den Text, nicht in
+        `each`, weil eine Zahl ihn um mehrere Zeichen weiterschiebt. Bei einer Ziffer
+        merkst du dir `start = i` und gehst weiter, solange Ziffern kommen; kommen
+        danach ein Punkt und eine Ziffer, ebenso. `text[start...i]` ist dann die
+        ganze Zahl.
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def tokenize(text)
+            tokens = []
+            i = 0
+            while i < text.length
+                c = text[i]
+                if c == ' '
+                    i += 1
+                elsif '+-*/^()'.include?(c)
+                    … # ein Token für sich
+                elsif c =~ /[0-9]/
+                    start = i
+                    … # weiter, solange Ziffern kommen, vielleicht ein Punkt mit Ziffern
+                    … # to_i oder to_f, je nachdem, ob ein Punkt darin ist
+                else
+                    raise ArgumentError, "…" # welches Zeichen, an welcher Stelle
+                end
+            end
+            tokens
+        end
+        ```
     python:
       prompt: 'Schreib `tokenize` in `calculator.py`.'
       check:
@@ -67,7 +102,39 @@ tasks:
           - call: 'isinstance(tokenize(''7'')[0], int)'
             expect: true
             say: 'Eine Zahl ohne Punkt bleibt ein int: 7, nicht 7.0.'
-      hint: 'Eine while-Schleife mit einem Index i. Bei einer Ziffer läuft eine zweite Schleife weiter, solange Ziffern kommen; `int(text[start:i])` macht daraus die Zahl.'
+      hint:
+        - |
+          Geh `12+3*(4-1)` von Hand durch, Zeichen für Zeichen, und schreib zu jedem
+          auf, was passiert: Welches Zeichen wird ein Token für sich, wo fängt eine
+          Zahl an, und woran merkst du, dass sie zu Ende ist? Was passiert mit dem
+          Leerzeichen in `1 + 2`?
+        - |
+          Ein Index `i` läuft in einer `while`-Schleife durch den Text, nicht in
+          `for`, weil eine Zahl ihn um mehrere Zeichen weiterschiebt. Bei einer Ziffer
+          merkst du dir `start = i` und gehst weiter, solange Ziffern kommen; kommen
+          danach ein Punkt und eine Ziffer, ebenso. `text[start:i]` ist dann die ganze
+          Zahl.
+        - |
+          Ein Gerüst:
+
+          ```python
+          def tokenize(text):
+              tokens = []
+              i = 0
+              while i < len(text):
+                  c = text[i]
+                  if c == ' ':
+                      i += 1
+                  elif c in '+-*/^()':
+                      ...  # ein Token für sich
+                  elif c.isdigit():
+                      start = i
+                      ...  # weiter, solange Ziffern kommen, vielleicht ein Punkt mit Ziffern
+                      ...  # int oder float, je nachdem, ob ein Punkt darin ist
+                  else:
+                      raise ValueError('…')  # welches Zeichen, an welcher Stelle
+              return tokens
+          ```
 
   - id: klammern
     title: Was ein Automat nicht kann
@@ -110,7 +177,51 @@ tasks:
           expect: '["neg", ["+", 1, 2]]'
           say: 'Ein Minus vorn ist ein Vorzeichen: ["neg", …] mit einem einzigen Kind.'
         - 'parse(tokenize(''2*-3''))': '["*", 2, ["neg", 3]]'
-    hint: 'Eine Methode für jede Regel: `expression` ruft `term` auf, `term` ruft `factor` auf, und `factor` ruft für eine Klammer wieder `expression` auf.'
+    hint:
+      - |
+        Bau den Baum für `2 * (3 + 4)` von Hand mit der Grammatik. Schreib die
+        Aufrufe eingerückt untereinander, so wie sie ineinanderstecken:
+        `expression`, darin `term`, darin `factor`, darin `atom` … Bei welchem Aufruf
+        wird welches Token herausgenommen, und was gibt jeder Aufruf zurück?
+      - |
+        `term` ist gebaut wie `expression`, nur mit `*` und `/` und mit `factor`
+        statt `term`. `factor` schaut, ob ein `-` kommt: Dann nimmt es ihn heraus und
+        gibt `["neg", …]` mit dem nächsten Faktor zurück, sonst ruft es `atom` auf.
+        `atom` nimmt das nächste Token: Eine Zahl ist schon ihr Baum, bei `(` kommt
+        ein ganzer Ausdruck und danach das `)`.
+      - |
+        Ein Gerüst; `expression` steht schon auf der Seite:
+
+        ```ruby
+        def term(tokens)
+            tree = factor(tokens)
+            … # wie in expression, mit * und /
+            tree
+        end
+
+        def factor(tokens)
+            if tokens.first == '-'
+                tokens.shift
+                return … # ein Knoten mit "neg" und dem nächsten Faktor
+            end
+            atom(tokens)
+        end
+
+        def atom(tokens)
+            token = tokens.shift
+            if token == '('
+                … # ein ganzer Ausdruck, dann das ) herausnehmen
+            end
+            token # eine Zahl
+        end
+
+        def parse(tokens)
+            tokens = tokens.dup
+            tree = expression(tokens)
+            … # sind noch Tokens übrig, stimmt etwas nicht
+            tree
+        end
+        ```
     python:
       prompt: 'Schreib `parse` in `calculator.py`: aus Tokens einen Baum, mit `+`, `-`, `*`, `/`, Klammern und einem Minus als Vorzeichen.'
       check:
@@ -132,7 +243,49 @@ tasks:
             expect: '["neg", ["+", 1, 2]]'
             say: 'Ein Minus vorn ist ein Vorzeichen: ["neg", …] mit einem einzigen Kind.'
           - 'parse(tokenize(''2*-3''))': '["*", 2, ["neg", 3]]'
-      hint: 'Eine Funktion für jede Regel: `expression` ruft `term` auf, `term` ruft `factor` auf, und `factor` ruft für eine Klammer wieder `expression` auf.'
+      hint:
+        - |
+          Bau den Baum für `2 * (3 + 4)` von Hand mit der Grammatik. Schreib die
+          Aufrufe eingerückt untereinander, so wie sie ineinanderstecken:
+          `expression`, darin `term`, darin `factor`, darin `atom` … Bei welchem Aufruf
+          wird welches Token herausgenommen, und was gibt jeder Aufruf zurück?
+        - |
+          `term` ist gebaut wie `expression`, nur mit `*` und `/` und mit `factor`
+          statt `term`. `factor` schaut, ob ein `-` kommt: Dann nimmt es ihn heraus und
+          gibt `['neg', …]` mit dem nächsten Faktor zurück, sonst ruft es `atom` auf.
+          `atom` nimmt das nächste Token: Eine Zahl ist schon ihr Baum, bei `(` kommt
+          ein ganzer Ausdruck und danach das `)`. `first(tokens)` gibt `tokens[0]`
+          zurück, oder `None`, wenn die Liste leer ist.
+        - |
+          Ein Gerüst; `expression` steht schon auf der Seite:
+
+          ```python
+          def first(tokens):
+              return tokens[0] if tokens else None
+
+          def term(tokens):
+              tree = factor(tokens)
+              ...  # wie in expression, mit * und /
+              return tree
+
+          def factor(tokens):
+              if first(tokens) == '-':
+                  tokens.pop(0)
+                  return ...  # ein Knoten mit 'neg' und dem nächsten Faktor
+              return atom(tokens)
+
+          def atom(tokens):
+              token = tokens.pop(0)
+              if token == '(':
+                  ...  # ein ganzer Ausdruck, dann das ) herausnehmen
+              return token  # eine Zahl
+
+          def parse(tokens):
+              tokens = list(tokens)
+              tree = expression(tokens)
+              ...  # sind noch Tokens übrig, stimmt etwas nicht
+              return tree
+          ```
 
   - id: ausrechnen
     title: Ausrechnen
@@ -150,7 +303,33 @@ tasks:
         - call: 'calculate(''7/2'')'
           expect: '3.5'
           say: 'Teilen gibt immer eine Kommazahl. In Ruby ist 7 / 2 aber 3; mit to_f wird daraus 7.0 / 2.'
-    hint: 'Ein Blatt ist schon sein Wert. Sonst rechnest du erst die Kinder aus, mit `evaluate`, und verbindest dann ihre Werte.'
+    hint:
+      - |
+        Rechne `["+", 2, ["*", 3, 4]]` von Hand aus: Welcher Knoten kann zuerst
+        ausgerechnet werden, und was setzt du danach an seine Stelle? Was ist mit
+        `["neg", 5]`, das nur einen Teilbaum hat?
+      - |
+        Ist `tree` eine Zahl (`tree.is_a?(Numeric)`), ist sie schon der Wert. Sonst
+        nimmst du mit `op, *args = tree` das Rechenzeichen und die Teilbäume, rechnest
+        die Teilbäume mit `evaluate` aus und entscheidest mit `case op`, was mit den
+        Werten passiert. Beim Teilen: `to_f`.
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def evaluate(tree, variables = {})
+            return tree if tree.is_a?(Numeric)
+            op, *args = tree
+            values = args.map { |arg| evaluate(arg, variables) }
+            case op
+            when '+' then …
+            when '-' then …
+            when '*' then …
+            when '/' then … # immer eine Kommazahl
+            when 'neg' then … # nur ein Wert
+            end
+        end
+        ```
     python:
       prompt: 'Schreib `evaluate` in `calculator.py`.'
       check:
@@ -166,7 +345,31 @@ tasks:
           - call: 'calculate(''7/2'')'
             expect: '3.5'
             say: 'Teilen gibt immer eine Kommazahl: 7 / 2 ist 3.5.'
-      hint: 'Ein Blatt ist schon sein Wert. Sonst rechnest du erst die Kinder aus, mit `evaluate`, und verbindest dann ihre Werte.'
+      hint:
+        - |
+          Rechne `['+', 2, ['*', 3, 4]]` von Hand aus: Welcher Knoten kann zuerst
+          ausgerechnet werden, und was setzt du danach an seine Stelle? Was ist mit
+          `['neg', 5]`, das nur einen Teilbaum hat?
+        - |
+          Ist `tree` eine Zahl (`isinstance(tree, (int, float))`), ist sie schon der
+          Wert. Sonst nimmst du mit `op, *args = tree` das Rechenzeichen und die
+          Teilbäume, rechnest die Teilbäume mit `evaluate` aus und entscheidest mit
+          `if op == …`, was mit den Werten passiert.
+        - |
+          Ein Gerüst:
+
+          ```python
+          def evaluate(tree, variables={}):
+              if isinstance(tree, (int, float)):
+                  return tree
+              op, *args = tree
+              values = [evaluate(arg, variables) for arg in args]
+              if op == '+':
+                  return ...
+              if op == '-':
+                  return ...
+              ...  # *, / und 'neg', das nur einen Wert hat
+          ```
 
   - id: fehler
     title: Fehler
@@ -192,6 +395,35 @@ tasks:
         - call: 'calculate(''2*(3+4)'')'
           expect: '14'
           say: 'Richtige Ausdrücke gehen weiterhin.'
+    hint:
+      - |
+        Nimm die vier Beispiele von der Seite, `1 +`, `(1 + 2`, `) 3` und `1 2`, und
+        geh jedes in Gedanken durch deinen Parser: In welcher Methode merkt er als
+        Erstes, dass etwas nicht stimmt? Was tut er an dieser Stelle jetzt, und was
+        gibt `tokens.shift` zurück, wenn die Liste leer ist?
+      - |
+        Drei Stellen sind in `atom`: Ist kein Token mehr da (`nil`), hört der
+        Ausdruck zu früh auf. Ist das Token keine Zahl und keine `(`, passt es hier
+        nicht hin. Und nach dem Ausdruck in der Klammer muss das nächste Token ein
+        `)` sein, bevor du es herausnimmst. Die vierte Stelle ist `parse`: Sind danach
+        noch Tokens übrig, gehören sie zu keinem Ausdruck.
+      - |
+        Ein Gerüst für `atom`; die Bedingungen und die Meldungen schreibst du:
+
+        ```ruby
+        def atom(tokens)
+            token = tokens.shift
+            raise ArgumentError, '…' if … # kein Token mehr
+            if token == '('
+                tree = expression(tokens)
+                raise ArgumentError, '…' unless … # kommt ein )?
+                tokens.shift
+                return tree
+            end
+            raise ArgumentError, "…" unless … # eine Zahl?
+            token
+        end
+        ```
     python:
       prompt: 'Sorg dafür, dass `calculate` bei einem falschen Ausdruck mit einem Fehler abbricht (`raise`), statt irgendetwas auszurechnen.'
       check:
@@ -215,6 +447,36 @@ tasks:
           - call: 'calculate(''2*(3+4)'')'
             expect: '14'
             say: 'Richtige Ausdrücke gehen weiterhin.'
+      hint:
+        - |
+          Nimm die vier Beispiele von der Seite, `1 +`, `(1 + 2`, `) 3` und `1 2`, und
+          geh jedes in Gedanken durch deinen Parser: In welcher Funktion merkt er als
+          Erstes, dass etwas nicht stimmt? Was tut er an dieser Stelle jetzt, und was
+          passiert bei `tokens.pop(0)`, wenn die Liste leer ist?
+        - |
+          Drei Stellen sind in `atom`: Ist kein Token mehr da, hört der Ausdruck zu
+          früh auf. Ist das Token keine Zahl und keine `(`, passt es hier nicht hin. Und
+          nach dem Ausdruck in der Klammer muss das nächste Token ein `)` sein, bevor du
+          es herausnimmst. Die vierte Stelle ist `parse`: Sind danach noch Tokens
+          übrig, gehören sie zu keinem Ausdruck.
+        - |
+          Ein Gerüst für `atom`; die Bedingungen und die Meldungen schreibst du:
+
+          ```python
+          def atom(tokens):
+              if ...:  # kein Token mehr
+                  raise ValueError('…')
+              token = tokens.pop(0)
+              if token == '(':
+                  tree = expression(tokens)
+                  if ...:  # kommt kein )?
+                      raise ValueError('…')
+                  tokens.pop(0)
+                  return tree
+              if ...:  # keine Zahl?
+                  raise ValueError('…')
+              return token
+          ```
 
   - id: hoch-vorhersage
     title: Hoch und noch mal hoch
@@ -248,7 +510,33 @@ tasks:
         - call: 'calculate(''(2+1)^2*2'')'
           expect: '18'
           say: 'Hoch bindet stärker als Mal.'
-    hint: 'Eine neue Regel `power` zwischen `factor` und den Zahlen. Nach dem `^` ruft sie `factor` auf, nicht sich selbst in einer Schleife: So wird von rechts gerechnet.'
+    hint:
+      - |
+        Schreib die Bäume für `2 ^ 3 ^ 2` und `-2 ^ 2` von Hand auf, so wie sie
+        werden sollen: Was hängt tiefer, also was wird zuerst gerechnet? Vergleich mit
+        `8 - 3 - 2`: Warum hängt dort der linke Teil tiefer, und was in `expression`
+        sorgt dafür?
+      - |
+        `factor` ruft statt `atom` jetzt `power` auf. `power` holt sich erst ein
+        `atom`. Kommt danach ein `^`, nimmt es ihn heraus und ruft für den Rest
+        `factor` auf, einmal, nicht in einer Schleife: So hängt der rechte Teil
+        tiefer. In `evaluate` kommt `^` dazu, in Ruby `**`.
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def power(tokens)
+            tree = atom(tokens)
+            if tokens.first == '^'
+                tokens.shift
+                tree = … # ein Knoten mit "^", tree und dem nächsten Faktor
+            end
+            tree
+        end
+        ```
+
+        Dazu in `factor` `power(tokens)` statt `atom(tokens)`, und in `evaluate`
+        ein Fall für `'^'`.
     python:
       prompt: 'Bau `^` in `calculator.py` ein.'
       check:
@@ -268,7 +556,31 @@ tasks:
           - call: 'calculate(''(2+1)^2*2'')'
             expect: '18'
             say: 'Hoch bindet stärker als Mal.'
-      hint: 'Eine neue Regel `power` zwischen `factor` und den Zahlen. Nach dem `^` ruft sie `factor` auf, nicht sich selbst in einer Schleife: So wird von rechts gerechnet.'
+      hint:
+        - |
+          Schreib die Bäume für `2 ^ 3 ^ 2` und `-2 ^ 2` von Hand auf, so wie sie
+          werden sollen: Was hängt tiefer, also was wird zuerst gerechnet? Vergleich mit
+          `8 - 3 - 2`: Warum hängt dort der linke Teil tiefer, und was in `expression`
+          sorgt dafür?
+        - |
+          `factor` ruft statt `atom` jetzt `power` auf. `power` holt sich erst ein
+          `atom`. Kommt danach ein `^`, nimmt es ihn heraus und ruft für den Rest
+          `factor` auf, einmal, nicht in einer Schleife: So hängt der rechte Teil
+          tiefer. In `evaluate` kommt `^` dazu, in Python `**`.
+        - |
+          Ein Gerüst:
+
+          ```python
+          def power(tokens):
+              tree = atom(tokens)
+              if first(tokens) == '^':
+                  tokens.pop(0)
+                  tree = ...  # ein Knoten mit '^', tree und dem nächsten Faktor
+              return tree
+          ```
+
+          Dazu in `factor` `power(tokens)` statt `atom(tokens)`, und in `evaluate`
+          ein Fall für `'^'`.
 
   - id: variablen
     title: Variablen
@@ -290,6 +602,36 @@ tasks:
         - call: 'calculate(''y+1'', { ''x'' => 3 })'
           raises: true
           say: 'Ein Name ohne Wert ist ein Fehler.'
+    hint:
+      - |
+        Was soll `calculate('x * (x + 1)', { 'x' => 3 })` ergeben, und wie sieht der
+        Baum aus? Geh die drei Änderungen der Seite der Reihe nach durch: Wo entsteht
+        das Token `"x"`, wo wird es ein Blatt, und wo wird aus ihm die 3?
+      - |
+        In `tokenize` ein neuer Fall wie bei den Zahlen: Ein Buchstabe oder `_`
+        beginnt einen Namen, und er geht weiter, solange Buchstaben, Ziffern oder `_`
+        kommen. In `atom` ist ein Name erlaubt, wo eine Zahl erlaubt ist. In
+        `evaluate` ist ein Blatt, das ein String ist, ein Name: Steht er in
+        `variables`, ist das sein Wert, sonst ist es ein Fehler.
+      - |
+        Zwei Stellen als Gerüst:
+
+        ```ruby
+        # in tokenize, neben dem Fall für Ziffern
+        elsif c =~ /[a-z_]/i
+            start = i
+            … # weiter, solange Buchstaben, Ziffern oder _ kommen
+            tokens << text[start...i]
+
+        # in evaluate, ganz vorn
+        if tree.is_a?(String)
+            raise ArgumentError, "…" unless … # gibt es den Namen?
+            return …
+        end
+        ```
+
+        Und in `atom`: Auch ein Token, das mit einem Buchstaben oder `_` anfängt, ist
+        ein Blatt.
     python:
       prompt: 'Erweitere `calculator.py` um Namen, deren Werte in einem dict stehen.'
       check:
@@ -309,3 +651,33 @@ tasks:
           - call: 'calculate(''y+1'', {''x'': 3})'
             raises: true
             say: 'Ein Name ohne Wert ist ein Fehler.'
+      hint:
+        - |
+          Was soll `calculate('x * (x + 1)', {'x': 3})` ergeben, und wie sieht der
+          Baum aus? Geh die drei Änderungen der Seite der Reihe nach durch: Wo entsteht
+          das Token `'x'`, wo wird es ein Blatt, und wo wird aus ihm die 3?
+        - |
+          In `tokenize` ein neuer Fall wie bei den Zahlen: Ein Buchstabe oder `_`
+          beginnt einen Namen, und er geht weiter, solange Buchstaben, Ziffern oder `_`
+          kommen. In `atom` ist ein Name erlaubt, wo eine Zahl erlaubt ist. In
+          `evaluate` ist ein Blatt, das ein String ist, ein Name: Steht er in
+          `variables`, ist das sein Wert, sonst ist es ein Fehler.
+        - |
+          Zwei Stellen als Gerüst:
+
+          ```python
+          # in tokenize, neben dem Fall für Ziffern
+          elif c.isalpha() or c == '_':
+              start = i
+              ...  # weiter, solange Buchstaben, Ziffern oder _ kommen
+              tokens.append(text[start:i])
+
+          # in evaluate, ganz vorn
+          if isinstance(tree, str):
+              if ...:  # gibt es den Namen nicht?
+                  raise ValueError('…')
+              return ...
+          ```
+
+          Und in `atom`: Auch ein Token, das mit einem Buchstaben oder `_` anfängt, ist
+          ein Blatt.

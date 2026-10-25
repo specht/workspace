@@ -5,3 +5,5 @@ Lernende bauen einen Rechner, der Ausdrücke wie `2 + 3 * (4 - 1)` versteht, in 
 <tr><th>Voraussetzungen</th><td>»Endliche Automaten« und Grundlagen in Ruby oder Python: Funktionen, Arrays oder Listen, Rekursion zumindest gesehen.</td></tr>
 <tr><th>Dateien</th><td><code>/workspace/calculator/calculator.rb</code> oder <code>calculator.py</code>. Gerüst und Musterlösung beider Sprachen liegen unter <code>stufen/</code> und <code>loesung/</code>; die Prüfungen rufen <code>tokenize</code>, <code>parse</code> und <code>evaluate</code> auf.</td></tr>
 </table>
+
+**Tipps in Stufen.** »Zerlegen«, »Ein Baum aus Tokens«, »Ausrechnen«, »Fehler«, »Hoch« und »Variablen« haben zwei oder drei Tipps: ein Beispiel von Hand, den Weg in Worten, meist ein Gerüst mit Lücken, nie die ganze Lösung. Die nächste Stufe erscheint eine Minute nach der vorigen, ohne Uhr, und wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst. Hängen viele an derselben Stelle, ist das ein Thema für die ganze Gruppe.

@@ -46,10 +46,38 @@ tasks:
         - call: compress([0, 0, 255, 255, 0, 0].pack('C*'))
           expect: '[0, 0, 255, 255, 256]'
           say: Auch die Bytes 0 und 255 gehören ins Wörterbuch.
-    hint: |
-      Das Wörterbuch ist am Anfang `256.times { |i| table[[i]] = i }`, mit
-      `table = {}` davor. Ein Eintrag kommt immer dann dazu, wenn ein Code
-      ausgegeben wird, und zwar das Präfix mit dem neuen Byte dahinter.
+    hint:
+      - |
+        Komprimiere `ABAB` von Hand nach den drei Regeln. Schreib zu jedem Byte eine
+        Zeile: das Präfix davor, ob Präfix und Byte zusammen im Wörterbuch stehen,
+        welcher Code herauskommt und welcher Eintrag dazukommt. Am Ende stehen drei
+        Codes da.
+      - |
+        Vor der Schleife bekommt das Wörterbuch die 256 einzelnen Bytes. In der
+        Schleife ist `current` das Präfix: Steht `current + [byte]` schon drin, wird
+        es das neue Präfix. Sonst kommt der Code von `current` zu den Codes, `current +
+        [byte]` bekommt den nächsten freien Code, `table.size`, und das neue Präfix
+        ist nur `[byte]`. Nach der Schleife fehlt noch der Code des letzten Präfixes.
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def compress(data)
+            table = {}
+            256.times { |i| table[[i]] = i }
+            codes = []
+            current = []
+            data.each_byte do |byte|
+                if table.key?(current + [byte])
+                    … # das Präfix wird länger
+                else
+                    … # Code ausgeben, Eintrag anlegen, neues Präfix
+                end
+            end
+            … # der Code des letzten Präfixes, wenn es eins gibt
+            codes
+        end
+        ```
     solution: |
       ```ruby
       def compress(data)
@@ -93,10 +121,35 @@ tasks:
           - call: compress(bytes([0, 0, 255, 255, 0, 0]))
             expect: '[0, 0, 255, 255, 256]'
             say: Auch die Bytes 0 und 255 gehören ins Wörterbuch.
-      hint: |
-        Das Wörterbuch ist am Anfang `{bytes([i]): i for i in range(256)}`. Ein
-        Eintrag kommt immer dann dazu, wenn ein Code ausgegeben wird, und zwar
-        das Präfix mit dem neuen Byte dahinter.
+      hint:
+        - |
+          Komprimiere `ABAB` von Hand nach den drei Regeln. Schreib zu jedem Byte eine
+          Zeile: das Präfix davor, ob Präfix und Byte zusammen im Wörterbuch stehen,
+          welcher Code herauskommt und welcher Eintrag dazukommt. Am Ende stehen drei
+          Codes da.
+        - |
+          Vor der Schleife bekommt das Wörterbuch die 256 einzelnen Bytes. In der
+          Schleife ist `current` das Präfix: Steht `current + bytes([byte])` schon drin,
+          wird es das neue Präfix. Sonst kommt der Code von `current` zu den Codes,
+          `current + bytes([byte])` bekommt den nächsten freien Code, `len(table)`, und
+          das neue Präfix ist nur `bytes([byte])`. Nach der Schleife fehlt noch der Code
+          des letzten Präfixes.
+        - |
+          Ein Gerüst:
+
+          ```python
+          def compress(data):
+              table = {bytes([i]): i for i in range(256)}
+              codes = []
+              current = b''
+              for byte in data:
+                  if current + bytes([byte]) in table:
+                      ...  # das Präfix wird länger
+                  else:
+                      ...  # Code ausgeben, Eintrag anlegen, neues Präfix
+              ...  # der Code des letzten Präfixes, wenn es eins gibt
+              return codes
+          ```
       solution: |
         ```python
         def compress(data):
@@ -165,10 +218,37 @@ tasks:
           expect: true
           say: Bei 5000 Bytes mit vielen Wiederholungen geht noch etwas schief.
         - decompress(compress('Grüße aus Köln')).force_encoding('UTF-8'): "'Grüße aus Köln'"
-    hint: |
-      Merk dir den vorigen Eintrag. Steht ein Code noch nicht im Wörterbuch,
-      ist er genau `table.size`, und sein Eintrag ist der vorige mit dessen
-      erstem Byte dahinter: `previous + [previous[0]]`.
+    hint:
+      - |
+        Entpacke `65 66 256` von Hand: Schreib zu jedem Code auf, welchen Eintrag er
+        hat, was du hinschreibst und welchen Eintrag du danach einträgst. Mach dann
+        mit `65 66 256 258` weiter. Bei `258` steht noch nichts im Wörterbuch: Welcher
+        Eintrag muss es sein, wenn der Kompressor ihn gerade erst angelegt hat?
+      - |
+        Merk dir den vorigen Eintrag, `previous`. Für jeden Code nach dem ersten:
+        Steht er im Wörterbuch, ist das sein Eintrag. Steht er nicht drin, ist er
+        genau `table.size`, und sein Eintrag ist der vorige mit dessen erstem Byte
+        dahinter. Danach kommt der vorige Eintrag mit dem ersten Byte des jetzigen ins
+        Wörterbuch, und der jetzige wird der vorige.
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def decompress(codes)
+            return '' if codes.empty?
+            table = {}
+            256.times { |i| table[i] = [i] }
+            previous = table[codes[0]]
+            out = previous.dup
+            codes.drop(1).each do |code|
+                entry = … # nachschlagen, oder der Sonderfall
+                out.concat(entry)
+                table[table.size] = … # der vorige Eintrag mit dem ersten Byte des jetzigen
+                previous = entry
+            end
+            out.pack('C*')
+        end
+        ```
     solution: |
       ```ruby
       def decompress(codes)
@@ -213,7 +293,35 @@ tasks:
             expect: true
             say: Bei 5000 Bytes mit vielen Wiederholungen geht noch etwas schief.
           - decompress(compress('Grüße aus Köln'.encode())).decode(): "'Grüße aus Köln'"
-      hint: Merk dir den vorigen Eintrag. Steht ein Code noch nicht im Wörterbuch, ist er genau `len(table)`, und sein Eintrag ist der vorige mit dessen erstem Byte dahinter. `entry[:1]` ist das erste Byte als Bytes, `entry[0]` wäre eine Zahl.
+      hint:
+        - |
+          Entpacke `65 66 256` von Hand: Schreib zu jedem Code auf, welchen Eintrag er
+          hat, was du hinschreibst und welchen Eintrag du danach einträgst. Mach dann
+          mit `65 66 256 258` weiter. Bei `258` steht noch nichts im Wörterbuch: Welcher
+          Eintrag muss es sein, wenn der Kompressor ihn gerade erst angelegt hat?
+        - |
+          Merk dir den vorigen Eintrag, `previous`. Für jeden Code nach dem ersten:
+          Steht er im Wörterbuch, ist das sein Eintrag. Steht er nicht drin, ist er
+          genau `len(table)`, und sein Eintrag ist der vorige mit dessen erstem Byte
+          dahinter, `previous[:1]`. Danach kommt der vorige Eintrag mit dem ersten Byte
+          des jetzigen ins Wörterbuch, und der jetzige wird der vorige.
+        - |
+          Ein Gerüst:
+
+          ```python
+          def decompress(codes):
+              if not codes:
+                  return b''
+              table = {i: bytes([i]) for i in range(256)}
+              previous = table[codes[0]]
+              parts = [previous]
+              for code in codes[1:]:
+                  entry = ...  # nachschlagen, oder der Sonderfall
+                  parts.append(entry)
+                  table[len(table)] = ...  # der vorige Eintrag mit dem ersten Byte des jetzigen
+                  previous = entry
+              return b''.join(parts)
+          ```
       solution: |
         ```python
         def decompress(codes):
