@@ -166,29 +166,15 @@ Hit cast_ray(double ray_x, double ray_y)
     double delta_x = (ray_x == 0) ? 1e30 : fabs(1 / ray_x);
     double delta_y = (ray_y == 0) ? 1e30 : fabs(1 / ray_y);
 
-    // in welche Richtung es weitergeht, und t an der ersten Gitterlinie
-    int step_x, step_y;
-    double next_x, next_y;
-    if (ray_x < 0)
-    {
-        step_x = -1;
-        next_x = (player_x - cell_x) * delta_x;
-    }
-    else
-    {
-        step_x = 1;
-        next_x = (cell_x + 1 - player_x) * delta_x;
-    }
-    if (ray_y < 0)
-    {
-        step_y = -1;
-        next_y = (player_y - cell_y) * delta_y;
-    }
-    else
-    {
-        step_y = 1;
-        next_y = (cell_y + 1 - player_y) * delta_y;
-    }
+    // in welche Richtung es weitergeht
+    int step_x = (ray_x < 0) ? -1 : 1;
+    int step_y = (ray_y < 0) ? -1 : 1;
+
+    // t an der ersten Gitterlinie in dieser Richtung: nach rechts liegt sie
+    // bei cell_x + 1, nach links bei cell_x, und (step_x > 0) ist 1 oder 0;
+    // mal step_x wird der Abstand positiv. In y ebenso.
+    double next_x = (cell_x + (step_x > 0) - player_x) * step_x * delta_x;
+    double next_y = (cell_y + (step_y > 0) - player_y) * step_y * delta_y;
 
     // immer über die Gitterlinie, die näher liegt
     double t = 0;
