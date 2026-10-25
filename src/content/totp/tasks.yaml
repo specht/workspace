@@ -148,7 +148,7 @@ tasks:
 
   - id: hotp
     title: HOTP
-    prompt: 'Schreib `hotp` in `totp.rb`. Die Codes sind die Testwerte aus RFC 4226.'
+    prompt: 'Schreib `hotp` in `totp.rb`. Die Codes sind die [Testwerte aus RFC 4226](https://www.rfc-editor.org/rfc/rfc4226.html#appendix-D).'
     check:
       type: ruby
       file: totp/totp.rb
@@ -189,7 +189,7 @@ tasks:
         end
         ```
     python:
-      prompt: 'Schreib `hotp` in `totp.py`. Die Codes sind die Testwerte aus RFC 4226.'
+      prompt: 'Schreib `hotp` in `totp.py`. Die Codes sind die [Testwerte aus RFC 4226](https://www.rfc-editor.org/rfc/rfc4226.html#appendix-D).'
       check:
         type: python
         file: totp/totp.py
@@ -232,7 +232,7 @@ tasks:
 
   - id: totp
     title: TOTP
-    prompt: 'Schreib `totp` in `totp.rb`. Die Codes sind die Testwerte aus RFC 6238.'
+    prompt: 'Schreib `totp` in `totp.rb`. Die Codes sind die [Testwerte aus RFC 6238](https://www.rfc-editor.org/rfc/rfc6238.html#appendix-B).'
     check:
       type: ruby
       file: totp/totp.rb
@@ -262,7 +262,7 @@ tasks:
         Eine Zeile genügt: `hotp` mit dem Zähler aus der Zeit. Für die aktuelle Zeit
         als Standardwert schreib `time = Time.now.to_i` in die Parameter.
     python:
-      prompt: 'Schreib `totp` in `totp.py`. Die Codes sind die Testwerte aus RFC 6238.'
+      prompt: 'Schreib `totp` in `totp.py`. Die Codes sind die [Testwerte aus RFC 6238](https://www.rfc-editor.org/rfc/rfc6238.html#appendix-B).'
       check:
         type: python
         file: totp/totp.py

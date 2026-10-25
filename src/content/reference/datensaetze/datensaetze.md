@@ -42,10 +42,10 @@ _schema(countries)
 <thead><tr><th>Spalte</th><th>Bedeutung</th></tr></thead>
 <tbody>
 <tr><td><code>continent.name</code>, <code>area</code></td><td>einer der sieben Kontinente auf Deutsch, von <code>Afrika</code> bis <code>Südamerika</code>, und seine Fläche in km²</td></tr>
-<tr><td><code>country.code</code></td><td>das Kürzel aus drei Buchstaben nach ISO 3166 (<code>DEU</code>, <code>FRA</code>); Kosovo hat keines und bekommt <code>XKS</code></td></tr>
+<tr><td><code>country.code</code></td><td>das Kürzel aus drei Buchstaben nach <a href='https://de.wikipedia.org/wiki/ISO-3166-1-Kodierliste'>ISO 3166</a> (<code>DEU</code>, <code>FRA</code>); Kosovo hat keines und bekommt <code>XKS</code></td></tr>
 <tr><td><code>country.population</code>, <code>area</code></td><td>die Einwohnerzahl, die letzte, die Wikidata kennt, und die Fläche in km²</td></tr>
 <tr><td><code>country.continent</code></td><td>der Kontinent; ein Land auf zwei Kontinenten zählt dort, wo seine Hauptstadt liegt: Russland in Europa, die Türkei in Asien, Ägypten in Afrika</td></tr>
-<tr><td><code>country.currency_code</code></td><td>die Währung mit ihrem Kürzel nach ISO 4217 (<code>EUR</code>, <code>CHF</code>); ihr Name steht in <code>currency</code>, und viele Länder teilen sich eine: den Euro 27</td></tr>
+<tr><td><code>country.currency_code</code></td><td>die Währung mit ihrem Kürzel nach <a href='https://de.wikipedia.org/wiki/ISO_4217'>ISO 4217</a> (<code>EUR</code>, <code>CHF</code>); ihr Name steht in <code>currency</code>, und viele Länder teilen sich eine: den Euro 27</td></tr>
 <tr><td><code>country.tld</code></td><td>die Internet-Endung (<code>.de</code>, <code>.uk</code>); Kosovo hat keine eigene</td></tr>
 <tr><td><code>country.calling_code</code></td><td>die Vorwahl mit <code>+</code> (<code>+49</code>); die Vereinigten Staaten und Kanada teilen sich die <code>+1</code>, die Inseln der Karibik haben drei Ziffern dahinter (<code>+1268</code> für Antigua und Barbuda)</td></tr>
 <tr><td><code>country.driving_side</code></td><td><code>left</code> oder <code>right</code>: auf welcher Seite der Straße gefahren wird</td></tr>
@@ -55,7 +55,7 @@ _schema(countries)
 <tr><td><code>city.latitude</code>, <code>longitude</code></td><td>Breite und Länge in Grad; Norden und Osten positiv, Süden und Westen negativ</td></tr>
 <tr><td><code>city.is_capital</code></td><td><code>1</code> für die Hauptstadt, sonst <code>0</code>; jedes Land hat genau eine</td></tr>
 <tr><td><code>border</code></td><td>eine Landgrenze, in beide Richtungen: <code>('DEU', 'FRA')</code> und <code>('FRA', 'DEU')</code></td></tr>
-<tr><td><code>language.code</code>, <code>name</code></td><td>eine Sprache mit ihrem Kürzel nach ISO 639-3 (<code>deu</code>, <code>fra</code>, <code>roh</code> für Bündnerromanisch) und ihrem deutschen Namen</td></tr>
+<tr><td><code>language.code</code>, <code>name</code></td><td>eine Sprache mit ihrem Kürzel nach <a href='https://de.wikipedia.org/wiki/ISO_639'>ISO 639-3</a> (<code>deu</code>, <code>fra</code>, <code>roh</code> für Bündnerromanisch) und ihrem deutschen Namen</td></tr>
 <tr><td><code>country_language</code></td><td>welche Sprache in welchem Land Amtssprache ist: die Schweiz hat vier, Englisch ist es in 59 Ländern</td></tr>
 </tbody>
 </table>

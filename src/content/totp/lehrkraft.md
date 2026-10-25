@@ -1,4 +1,4 @@
-Lernende programmieren die Einmalcodes einer Authenticator-App selbst (TOTP), in Ruby oder Python: Base32, HOTP nach RFC 4226 (HMAC-SHA1, dynamisches Abschneiden), TOTP nach RFC 6238 (die Unix-Zeit durch 30 als Zähler), ein Prüfer mit Zeitfenster und zum Schluss ein eigener Schlüssel als QR-Code, den eine Authenticator-App auf dem Handy scannt. Danach zeigen App und Programm dieselben Codes.
+Lernende programmieren die Einmalcodes einer Authenticator-App selbst (TOTP), in Ruby oder Python: Base32, HOTP nach [RFC 4226](https://www.rfc-editor.org/rfc/rfc4226.html) (HMAC-SHA1, dynamisches Abschneiden), TOTP nach [RFC 6238](https://www.rfc-editor.org/rfc/rfc6238.html) (die Unix-Zeit durch 30 als Zähler), ein Prüfer mit Zeitfenster und zum Schluss ein eigener Schlüssel als QR-Code, den eine Authenticator-App auf dem Handy scannt. Danach zeigen App und Programm dieselben Codes.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Grundlagen in Ruby oder Python; »Kryptographie im Terminal« hilft beim Verständnis von Prüfsummen, HMAC erklärt die Seite selbst.</td></tr>
@@ -26,7 +26,7 @@ Die Seite bleibt auf der Seite der Verteidigung: was ein zweiter Faktor gegen ei
 
 #### Die Aufgaben
 
-»Base32«, »HOTP«, »TOTP« und »Einen Code prüfen« rufen die Funktionen mit den Testwerten aus RFC 4226 und RFC 6238 auf (Schlüssel 12345678901234567890). »Wie viele Bytes?« (20) erkennt 32 und 24 (Base64). »Wenn das Passwort bekannt ist« und »Wenn die Uhr nachgeht« sind Vermutungen, »Nur einmal« eine Auswahl, »Wovor schützt der zweite Faktor?« eine Reflexion.
+»Base32«, »HOTP«, »TOTP« und »Einen Code prüfen« rufen die Funktionen mit den Testwerten aus [RFC 4226](https://www.rfc-editor.org/rfc/rfc4226.html#appendix-D) und [RFC 6238](https://www.rfc-editor.org/rfc/rfc6238.html#appendix-B) auf (Schlüssel 12345678901234567890). »Wie viele Bytes?« (20) erkennt 32 und 24 (Base64). »Wenn das Passwort bekannt ist« und »Wenn die Uhr nachgeht« sind Vermutungen, »Nur einmal« eine Auswahl, »Wovor schützt der zweite Faktor?« eine Reflexion.
 
 #### Tipps in Stufen
 

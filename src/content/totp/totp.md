@@ -29,7 +29,7 @@ Wie kann das Handy einen Code kennen, den der Server nachprüfen kann, ohne dass
 
 _task(zweiter-faktor)
 
-Das Verfahren heißt **TOTP** (»Time-based One-Time Password«) und steht in zwei kurzen Standards, RFC 4226 und RFC 6238. Jede Authenticator-App kann es. Deshalb funktioniert dein eigenes Programm am Ende mit ihr zusammen.
+Das Verfahren heißt **TOTP** (»Time-based One-Time Password«) und steht in zwei kurzen Standards, [RFC 4226](https://www.rfc-editor.org/rfc/rfc4226.html) und [RFC 6238](https://www.rfc-editor.org/rfc/rfc6238.html). Jede Authenticator-App kann es. Deshalb funktioniert dein eigenes Programm am Ende mit ihr zusammen.
 
 ## Einrichten
 
@@ -159,7 +159,7 @@ _task(hotp)
 
 Ein Zähler, der nur bei jeder Anmeldung weiterzählt, hat einen Haken: Handy und Server müssen sich einig sein, wie weit er schon ist. TOTP nimmt stattdessen die Uhrzeit als Zähler. Computer zählen die Zeit in Sekunden seit dem 1. Januar 1970, der **Unix-Zeit**; `date +%s` im Terminal zeigt sie. Geteilt durch 30 und abgerundet ist das der Zähler: Er wird alle 30 Sekunden um 1 größer, und genau so oft wechselt der Code in deiner App.
 
-Schreib `totp(key, time)`, das mit deinem `hotp` den Code für eine Unix-Zeit ausrechnet; ohne Zeit nimmt es die aktuelle. Die Prüfung vergleicht mit den Testwerten aus RFC 6238.
+Schreib `totp(key, time)`, das mit deinem `hotp` den Code für eine Unix-Zeit ausrechnet; ohne Zeit nimmt es die aktuelle. Die Prüfung vergleicht mit den [Testwerten aus RFC 6238](https://www.rfc-editor.org/rfc/rfc6238.html#appendix-B).
 
 _task(totp)
 

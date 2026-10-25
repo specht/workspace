@@ -597,6 +597,18 @@ Nachschlagen«. Jeden Link vorher einmal öffnen. Eine Aktivität verweist auf
 die Handbuch-Seite, statt deren offizielle Links zu wiederholen: So gibt es
 jeden Link nur an einer Stelle, und er veraltet nicht doppelt.
 
+Wo eine Seite einen Standard oder ein Dokument nennt (RFC 6238, RFC 2324,
+ISO 3166, einen Aufsatz, eine Spezifikation), ist der Name ein Link darauf,
+auch im Fließtext, in einer Aufgabe und in der Notiz für Lehrkräfte: Wer
+nachsehen will, wie es dort wirklich steht, soll es mit einem Klick können.
+Für RFCs die Fassung beim RFC Editor
+(`https://www.rfc-editor.org/rfc/rfc6238.html`), mit Anker auf den
+Abschnitt, um den es geht (`#appendix-B`, die Testwerte). Links auf andere
+Seiten öffnen sich in einem neuen Tab, damit die Aktivität offen bleibt;
+das setzt der Server selbst (`ExternalLinks` in
+`src/ruby/include/external_links.rb`, für Seiten, Aufgabenkarten und die
+Antworten einer Prüfung), ein `target` im Markdown ist nicht nötig.
+
 ## 5. Eine Notiz für Lehrkräfte
 
 `lehrkraft.md` neben der Seite erscheint für Lehrkräfte als aufklappbare Notiz

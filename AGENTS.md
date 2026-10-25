@@ -137,6 +137,13 @@ address from `credentials.rb` and the code `123456`.
   title, author, year, what is in it, a checked link
   (docs/aktivitaet-schreiben.md, »Bücher und Aufsätze zum Weiterlesen«).
   Look for them whenever a page is written or changed.
+- A standard or document a page names (an RFC, an ISO standard, a paper,
+  a specification) is a checked link to it, in prose, task prompts and
+  teacher notes alike; RFCs at the RFC Editor
+  (`https://www.rfc-editor.org/rfc/rfc6238.html`, with an anchor such as
+  `#appendix-B` where one part is meant). Links to other sites open in a
+  new tab; the server sets that (`ExternalLinks`), so no `target` in the
+  Markdown (docs/aktivitaet-schreiben.md).
 - Invite optional experiments: where students have just got something
   working, a box `<div class='hint try'>` (»Ausprobieren:«) suggests a small
   change and what to watch for, so they see how it works by changing it.

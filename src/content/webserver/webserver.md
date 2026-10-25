@@ -476,7 +476,7 @@ _task(statuscodes)
 <strong>Ausprobieren:</strong> Schreib in der Antwort für <code>/</code> <code>text/plain; charset=utf-8</code> statt <code>text/html; charset=utf-8</code>, starte den Server neu und öffne <code>/</code> im Browser. Was siehst du jetzt, und warum? Der Inhalt ist doch derselbe. Stell den Typ danach wieder her.
 </div>
 
-Ein Statuscode ist ein Scherz geblieben: **418 I'm a teapot**. Am 1. April 1998 erschien als Aprilscherz RFC 2324, ein Protokoll für Kaffeemaschinen im Netz von Larry Masinter, und eine Teekanne, die Kaffee kochen soll, antwortet darin mit 418. Als 2017 vorgeschlagen wurde, den Code aus Node.js und Go zu streichen, startete der damals 15-jährige Shane Brunswick die Kampagne »Save 418«, und der Code blieb. Python kennt ihn seit Version 3.9 als `IM_A_TEAPOT`.
+Ein Statuscode ist ein Scherz geblieben: **418 I'm a teapot**. Am 1. April 1998 erschien als Aprilscherz [RFC 2324](https://www.rfc-editor.org/rfc/rfc2324.html), ein Protokoll für Kaffeemaschinen im Netz von Larry Masinter, und eine Teekanne, die Kaffee kochen soll, antwortet darin mit 418. Als 2017 vorgeschlagen wurde, den Code aus Node.js und Go zu streichen, startete der damals 15-jährige Shane Brunswick die Kampagne »Save 418«, und der Code blieb. Python kennt ihn seit Version 3.9 als `IM_A_TEAPOT`.
 
 ## Webseiten ausliefern
 
