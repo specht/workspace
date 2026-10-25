@@ -6,6 +6,10 @@
 format: 1
 activity: pixelram
 examples:
+  kreise:
+    skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Dass die Schritte der Seite die Aufgabe lösen, prüfen die Rezepte mit check-task; die Prüfart selbst testet c_check_test.rb.
+  wellen:
+    skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Dass die Schritte der Seite die Aufgabe lösen, prüfen die Rezepte mit check-task; die Prüfart selbst testet c_check_test.rb.
   bewegung:
     pass:
       - files: { pixelram-starter/main.c: stufen/bewegung.c }

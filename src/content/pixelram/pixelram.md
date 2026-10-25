@@ -262,8 +262,33 @@ Jetzt wird die Formel für `color` eine Rechnung mit Abständen und Winkelfunkti
 
 ### Abstand vom Mittelpunkt
 
-Wie weit ist ein Pixel von der Mitte des Bildschirms entfernt? Der Satz des Pythagoras sagt es: Mit `dx` und `dy`, dem Abstand nach rechts und nach unten, ist der Abstand `sqrt(dx * dx + dy * dy)`. Für `sqrt` brauchst du die Mathematik-Bibliothek: Schreib `#include <math.h>` unter die erste Zeile und ändere `color` so:
+Wie weit ist ein Pixel von der Mitte des Bildschirms entfernt? Der Satz des Pythagoras sagt es: Mit `dx` und `dy`, dem Abstand nach rechts und nach unten, ist der Abstand `sqrt(dx * dx + dy * dy)`. Für `sqrt` brauchst du die Mathematik-Bibliothek: Schreib `#include <math.h>` unter die erste Zeile.
 
+Dafür rechnet `color` mit Kommazahlen, `double`: `int color(double x, double y)`. Die Schleife in `main` gibt weiter ganze Zahlen hinein, aber `color` kann so auch die Farbe zwischen zwei Pixeln ausrechnen; das braucht das Programm gleich. Die Mitte ist `(W / 2.0, H / 2.0)`, denn mit `2.0` statt `2` rechnet C mit Kommazahlen. Am Ende schneidet `(int)` die Nachkommastellen ab, weil `%` nur mit ganzen Zahlen geht.
+
+<div class='hint own' data-check='kreise'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>color</code> neu: <code>dx</code> und <code>dy</code> sind der Abstand des Punkts <code>(x, y)</code> zur Mitte, <code>distance</code> ist der Abstand nach Pythagoras, und alle 6 Pixel Abstand kommt die nächste Farbe: <code>(int)(distance / 6.0) % 16</code>.
+</div>
+
+<!-- hint -->
+Rechne für den Punkt (190, 130) von Hand: Wie weit liegt er rechts und unterhalb der Mitte (160, 90), wie weit ist er insgesamt von ihr entfernt, und welche Farbe bekommt er?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```c
+int color(double x, double y)
+{
+    double dx = …;
+    double dy = …;
+    double distance = …;
+
+    return (int)(distance / 6.0) % 16;
+}
+```
+<!-- /hint -->
+
+<!-- solution -->
 ```c
 int color(double x, double y)
 {
@@ -274,8 +299,7 @@ int color(double x, double y)
     return (int)(distance / 6.0) % 16;
 }
 ```
-
-`double` ist eine Kommazahl. `W / 2.0` statt `W / 2` sorgt dafür, dass C mit Kommazahlen rechnet. `(int)` schneidet die Nachkommastellen ab, denn `%` geht nur mit ganzen Zahlen. Auch `x` und `y` sind jetzt Kommazahlen: Die Schleife in `main` gibt weiter ganze Zahlen hinein, aber `color` kann so auch die Farbe zwischen zwei Pixeln ausrechnen. Das braucht das Programm gleich.
+<!-- /solution -->
 
 <!-- tutorial-screenshot
 write-file: main.c <- code:int color(int x, int y)||return (x / 20 + y / 20) % 16;
@@ -286,6 +310,7 @@ terminal-run: make
 terminal-wait-for-prompt
 terminal-expect-no-text: error:
 terminal-expect-no-text: ***
+check-task: kreise
 tab: preview
 variants: crt
 viewport: 800x450
@@ -300,16 +325,40 @@ Pixel mit ungefähr demselben Abstand bekommen dieselbe Farbe. So entstehen Krei
 
 _task(abstand)
 
+_task(kreise)
+
 ### Kreiswellen
 
-Die Ringe haben harte Kanten. Weicher wird es mit der Sinusfunktion: `sin` liefert Werte, die gleichmäßig zwischen −1 und 1 hin- und herpendeln. Ersetze die letzte Zeile von `color`:
+Die Ringe haben harte Kanten. Weicher wird es mit der Sinusfunktion: `sin` liefert Werte, die gleichmäßig zwischen −1 und 1 hin- und herpendeln. `sin(distance * 0.12)` wird damit zu einer Welle um die Mitte, mit einem Berg alle gut 52 Pixel.
+
+<div class='hint own' data-check='wellen'>
+<strong>Jetzt bist du dran:</strong> Ersetze die letzte Zeile von <code>color</code> durch zwei: <code>double wave = sin(distance * 0.12);</code> und ein <code>return</code>, das aus <code>wave</code> eine Farbe von 0 bis 15 macht, 0 im Wellental, 15 auf dem Berg.
+</div>
+
+<!-- hint -->
+Welche Farbe soll ein Pixel bekommen, wenn `wave` −1 ist, welche bei 1 und welche bei 0? Wie machst du aus den Zahlen von −1 bis 1 erst Zahlen von 0 bis 2 und daraus welche von 0 bis 15?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
 
 ```c
-double wave = sin(distance * 0.12);
-return (int)((wave + 1.0) * 7.5);
+    double wave = sin(distance * 0.12);
+    return (int)(…);   // aus −1 bis 1 wird 0 bis 15
+```
+<!-- /hint -->
+
+<!-- solution -->
+```c
+~     double distance = sqrt(dx * dx + dy * dy);
+~
+    double wave = sin(distance * 0.12);
+    return (int)((wave + 1.0) * 7.5);
 ```
 
-`wave + 1.0` liegt zwischen 0 und 2, mal 7,5 ergibt das 0 bis 15: genau die 16 Farben der Palette. `distance * 0.20` statt `0.12` rückt die Wellen enger zusammen.
+`wave + 1.0` liegt zwischen 0 und 2, mal 7,5 ergibt das 0 bis 15: genau die 16 Farben der Palette.
+<!-- /solution -->
+
+`distance * 0.20` statt `0.12` rückt die Wellen enger zusammen.
 
 <!-- tutorial-screenshot
 terminal-open
@@ -319,6 +368,7 @@ terminal-run: make
 terminal-wait-for-prompt
 terminal-expect-no-text: error:
 terminal-expect-no-text: ***
+check-task: wellen
 tab: preview
 variants: crt
 viewport: 800x450
@@ -328,6 +378,8 @@ crop-element: #canvas
 <img class='full' src='sinus-rings.webp' alt='Viele konzentrische Ringe mit weichen Farbverläufen.'>
 
 <!-- stage: stufen/kreiswellen.c as main.c -->
+
+_task(wellen)
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Eine eigene Palette. Schreib in <code>main</code> unter <code>use_palette</code> die Zeile <code>for (int i = 0; i &lt; 16; i++) set_palette(i, i * 17, 0, 255 - i * 17);</code>. Jetzt geht Farbe 0 (Blau) in 16 gleichen Schritten zu Farbe 15 (Rot), und aus den bunten Ringen werden weiche Wellenberge. Wie sieht ein Verlauf von Schwarz über Rot und Gelb bis Weiß aus, wie im <a href='/fire'>Feuer</a>? Dort steht, wie man ihn aus mehreren Abschnitten baut.
@@ -815,7 +867,7 @@ _task(kollision)
 
 ### Zu zweit
 
-Für zwei Spuren bräuchtest du alle Variablen doppelt: `x1`, `y1`, `dx1`, `x2`, … Übersichtlicher ist ein `struct`, das alles zusammenfasst, was zu einer Spur gehört. Funktionen wie `drive` bekommen dann einen Zeiger auf eine Spur, `Player *p`, und erreichen ihre Teile mit `p->x`. So arbeitet derselbe Code für beide. Hier das ganze Spiel:
+Für zwei Spuren bräuchtest du alle Variablen doppelt: `x1`, `y1`, `dx1`, `x2`, … Übersichtlicher ist ein `struct`, das alles zusammenfasst, was zu einer Spur gehört. Funktionen wie `drive` bekommen dann einen Zeiger auf eine Spur, `Player *p`, und erreichen ihre Teile mit `p->x`. So arbeitet derselbe Code für beide. Hier das ganze Spiel, bis auf zwei Funktionen, die du kennst:
 
 ```c
 #include "pixelram.h"
@@ -867,19 +919,12 @@ void start(Player *p, int x, int dx)
 
 void steer(Player *p, pixel_key up, pixel_key down, pixel_key left, pixel_key right)
 {
-    // Umdrehen geht nicht: nur abbiegen
-    if (key_pressed(up)    && p->dy == 0) { p->dx = 0;  p->dy = -1; }
-    if (key_pressed(down)  && p->dy == 0) { p->dx = 0;  p->dy = 1;  }
-    if (key_pressed(left)  && p->dx == 0) { p->dx = -1; p->dy = 0;  }
-    if (key_pressed(right) && p->dx == 0) { p->dx = 1;  p->dy = 0;  }
+    // hier: lenken wie bisher, aber Umdrehen geht nicht
 }
 
 void drive(Player *p)
 {
-    p->x += p->dx;
-    p->y += p->dy;
-    if (get_pixel(p->x, p->y) != 0)
-        p->crashed = true;
+    // hier: einen Schritt fahren und merken, ob es kracht
 }
 
 int main(void)
@@ -946,8 +991,69 @@ int main(void)
 }
 ```
 
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>drive</code>: Die Spur <code>p</code> fährt einen Schritt in ihre Richtung, und steht auf dem neuen Feld schon etwas, ist sie verunglückt. Das hast du vorhin schon geschrieben, mit <code>x</code> statt <code>p-&gt;x</code>.
+</div>
+
+<!-- hint -->
+Welche Zeilen der inneren Schleife von vorhin machen genau das? Was wird aus `x`, `dx` und `crashed`, wenn sie jetzt zur Spur `p` gehören?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```c
+void drive(Player *p)
+{
+    p->x += …;
+    p->y += …;
+    if (…)   // steht auf dem neuen Feld schon etwas?
+        p->crashed = true;
+}
+```
+<!-- /hint -->
+
+<!-- solution -->
+```c
+~ void drive(Player *p)
+~ {
+    p->x += p->dx;
+    p->y += p->dy;
+    if (get_pixel(p->x, p->y) != 0)
+        p->crashed = true;
+~ }
+```
+<!-- /solution -->
+
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>steer</code>: Mit den vier Tasten, die es bekommt, lenkt es die Spur <code>p</code> wie vorhin mit den Pfeiltasten. Nur umdrehen darf sie nicht mehr, sonst führe sie sofort in ihre eigene Spur: Wer nach rechts fährt, kann nach oben oder unten abbiegen, aber nicht nach links.
+</div>
+
+<!-- hint -->
+Die Spur fährt nach rechts, also `dx = 1`, `dy = 0`. Welche der vier Tasten darf jetzt die Richtung ändern, welche nicht? Und wenn sie nach oben fährt? Was haben die erlaubten Fälle gemeinsam, wenn du auf `dx` und `dy` schaust?
+<!-- /hint -->
+<!-- hint -->
+Nach oben oder unten darf die Spur nur abbiegen, wenn sie gerade waagrecht fährt, also `p->dy == 0` ist. Eine Zeile als Muster:
+
+```c
+    if (key_pressed(up) && p->dy == 0) { p->dx = 0; p->dy = -1; }
+```
+<!-- /hint -->
+
+<!-- solution -->
+```c
+~ void steer(Player *p, pixel_key up, pixel_key down, pixel_key left, pixel_key right)
+~ {
+    // Umdrehen geht nicht: nur abbiegen
+    if (key_pressed(up)    && p->dy == 0) { p->dx = 0;  p->dy = -1; }
+    if (key_pressed(down)  && p->dy == 0) { p->dx = 0;  p->dy = 1;  }
+    if (key_pressed(left)  && p->dx == 0) { p->dx = -1; p->dy = 0;  }
+    if (key_pressed(right) && p->dx == 0) { p->dx = 1;  p->dy = 0;  }
+~ }
+```
+<!-- /solution -->
+
 <!-- tutorial-screenshot
-write-file: lichtspur.c <- previous-code
+write-file: lichtspur.c <- file:stufen/lichtspur-3.c
 terminal-open
 terminal-run: make PROGRAM=lichtspur
 terminal-wait-for-prompt

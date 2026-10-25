@@ -49,6 +49,49 @@ tasks:
       liegt genau am Anfang des 17. Rings, wo die Farben wieder von vorn
       beginnen.
 
+  - id: kreise
+    title: Dein color mit dem Abstand
+    prompt: |
+      Schreib `color` mit dem Abstand zur Mitte in `main.c` und speichere. Der
+      Workspace fragt die Farbe an ein paar Stellen ab.
+    file: pixelram-starter/main.c
+    check:
+      type: c
+      file: pixelram-starter/main.c
+      cases:
+        - call: color(160, 90)
+          expect: 0
+          say: 'In der Mitte ist der Abstand 0, also die Farbe 0.'
+        - call: color(166, 90)
+          expect: 1
+          say: '6 Pixel rechts der Mitte ist der Abstand 6, also die Farbe 1. Rechnest du mit `x - W / 2.0`?'
+        - call: color(190, 130)
+          expect: 8
+          say: '30 Pixel rechts und 40 unterhalb der Mitte ist der Abstand nach Pythagoras 50, und 50 durch 6 ist 8, abgeschnitten.'
+        - call: color(64, 90)
+          expect: 0
+          say: '96 Pixel links der Mitte ist der Abstand 96, und 96 durch 6 ist 16. `% 16` macht daraus wieder 0.'
+
+  - id: wellen
+    title: Deine Welle in 16 Farben
+    prompt: |
+      Mach in `color` aus `wave` eine Farbe von 0 bis 15 und speichere. Der
+      Workspace sieht sich die Farben aller Pixel an.
+    file: pixelram-starter/main.c
+    check:
+      type: c
+      file: pixelram-starter/main.c
+      cases:
+        - call: color(160, 90)
+          expect: 7
+          say: 'In der Mitte ist `wave` 0, genau zwischen Tal und Berg: Das ist die Farbe in der Mitte von 0 bis 15, 7 (7,5 abgeschnitten).'
+        - call: '({ int ok = 1; for (int y = 0; y < H; y++) for (int x = 0; x < W; x++) { int c = color(x, y); if (c < 0 || c > 15) ok = 0; } ok; })'
+          expect: true
+          say: 'Manche Pixel bekommen eine Farbe unter 0 oder über 15, die es in der Palette nicht gibt. Aus −1 bis 1 soll 0 bis 15 werden: erst 1 dazu, dann mal 7,5.'
+        - call: '({ int low = 99, high = -1; for (int y = 0; y < H; y++) for (int x = 0; x < W; x++) { int c = color(x, y); if (c < low) low = c; if (c > high) high = c; } high - low >= 14; })'
+          expect: true
+          say: 'Die Farben sollen vom Wellental bis zum Berg fast alle 16 durchlaufen. Mal 7,5 nimmst du die ganze Zahl von 0 bis 2, also nach dem Dazuzählen?'
+
   - id: bewegung
     title: Die Wellen bewegen sich
     prompt: |
