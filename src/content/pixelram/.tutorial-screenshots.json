@@ -12,7 +12,7 @@
     "crystal-caves.webp": {
       "environment_fingerprint": "bf62809f37f0549c624ab0b8bcd9f6c1cd154127b1e0b78d33392c058b5e0730",
       "output_sha256": "09e2b16a48fc24f7553fe6dd70a95d0824996d798bca141a08ac283a7f7783c2",
-      "state_hash": "1a98846c9ae7d6cf4162402c0042d731d3c612bc66169da95355b965fb9afe54",
+      "state_hash": "90717f6418b84e05f6d2472f8ac87344370143ca7a27925b8c07decc06a3cb00",
       "variants": {
         "crystal-caves-crt.webp": "5fbd7668b4c29031f47e10d3d549b62a3f016d2def86bb12df486b5b5c4031d1"
       },
@@ -63,27 +63,6 @@
       },
       "workspace_look": "4.140.0-ls368"
     },
-    "included-workspace-choose-folder.webp": {
-      "environment_fingerprint": "bf62809f37f0549c624ab0b8bcd9f6c1cd154127b1e0b78d33392c058b5e0730",
-      "output_sha256": "9d0799061e3c0b8f9f719b83b2bf99b27e7471b7053864475d78d7bff423557f",
-      "state_hash": "5df159e1f7c8c6c7ef29a5ef918f8e7242c69b46ff2057d307502a7c6239e12d",
-      "workspace_look": "4.140.0-ls368",
-      "workspace_window": 560
-    },
-    "included-workspace-git-clone.webp": {
-      "environment_fingerprint": "bf62809f37f0549c624ab0b8bcd9f6c1cd154127b1e0b78d33392c058b5e0730",
-      "output_sha256": "d2b99659c4c47e7edf95a6d889f1cf0cd1dbd26024abfa486e7f861327b75c91",
-      "state_hash": "2c181e36c19c0a4e48c422e683806effe0403336eee79ab48f0fdd1739c9ce36",
-      "workspace_look": "4.140.0-ls368",
-      "workspace_window": 560
-    },
-    "included-workspace-open-yes-or-no.webp": {
-      "environment_fingerprint": "bf62809f37f0549c624ab0b8bcd9f6c1cd154127b1e0b78d33392c058b5e0730",
-      "output_sha256": "75dca9b8c201e3c1f96a96202047b87562db0046959e1c9363b9d25ee3ca7c22",
-      "state_hash": "0355117d5721516ec8eb9d38642a7cf46b03369ed64b065ff64debe2988460f3",
-      "workspace_look": "4.140.0-ls368",
-      "workspace_window": 560
-    },
     "interference.webp": {
       "environment_fingerprint": "bf62809f37f0549c624ab0b8bcd9f6c1cd154127b1e0b78d33392c058b5e0730",
       "output_sha256": "a4681123eb93c682771e156d3394ad1cbe27ba1e56e1abea0c8b7a6ba128718d",
@@ -96,7 +75,7 @@
     "julia.webp": {
       "environment_fingerprint": "bf62809f37f0549c624ab0b8bcd9f6c1cd154127b1e0b78d33392c058b5e0730",
       "output_sha256": "b65929685098ca3476e11084397957a6141be8bc9eb8d10131541cb24051e395",
-      "state_hash": "8938df1a6f8077b3c1156243177d56db78da4e096ec55698d59296ce74ee182d",
+      "state_hash": "8c7d5c22f6fef87c35dd5b914a0cdc45bb77bebdbd751350aa5bcb93ae080bb3",
       "variants": {
         "julia-crt.webp": "b37e2a2bb957543bae3ec2308c6810b6e232b9af125215b70828adb8c205dd62"
       },
@@ -104,26 +83,26 @@
     },
     "lichtspur-fahren.webp": {
       "environment_fingerprint": "bf62809f37f0549c624ab0b8bcd9f6c1cd154127b1e0b78d33392c058b5e0730",
-      "output_sha256": "9b68a78de3f5487d04a8a749a5a902508a136cc9415c1c6cd290b4b17f09a8d4",
+      "output_sha256": "07a1c61705801154e0fdd8a2610f0fe25428cdd79d73b47e642173b37584d8e3",
       "state_hash": "2846a411075b2fddc15044917c0ab5dc28037dc808be571caf9ed0c89596f276",
       "variants": {
-        "lichtspur-fahren-crt.webp": "373ecb8fb6200518f77e7c2e6ba12893e60df674cf8d7040255ee9e9f92020ca"
+        "lichtspur-fahren-crt.webp": "418d19e0f39e05f2e0f2a27149a3aaff63683a92c63c1d2453b5eef013beae7d"
       },
       "workspace_look": "4.140.0-ls368"
     },
     "lichtspur.webp": {
       "environment_fingerprint": "bf62809f37f0549c624ab0b8bcd9f6c1cd154127b1e0b78d33392c058b5e0730",
-      "output_sha256": "7993c16526fac533cfff61b9c0c0f1e198d255cc3c0383cd03682c6fa241a3b5",
-      "state_hash": "d9486a909d0e09d4f7c874000a7542312951843792db1747d45dd205d42a9f93",
+      "output_sha256": "be8df8cef6d61f63b4a23e522255bf95855e002e6ca7ff7cd684dc01d3c8e11c",
+      "state_hash": "6fcf30ffbda8db9ec6430fa1d8a6736c2daf898c4ddca50a5873bc05c7ccbdae",
       "variants": {
-        "lichtspur-crt.webp": "146ba10c399f86a014b0f9668e996b52f37826bdded9402ed668927508caa4c3"
+        "lichtspur-crt.webp": "a5cfae5ebf5d8c8152eb8d4324ae404d986300db7901fa1e5e7cbd9e276a98fd"
       },
       "workspace_look": "4.140.0-ls368"
     },
     "magic.webp": {
       "environment_fingerprint": "bf62809f37f0549c624ab0b8bcd9f6c1cd154127b1e0b78d33392c058b5e0730",
       "output_sha256": "ac8943dc91583d4355ac3ccd2a4ce22787293d21b066012eaf32587613b10ca8",
-      "state_hash": "ac366f0b9d8d3e6ef8ae9b7f0ac672f78f2b2b94ec0c391e555d62b6be2f135e",
+      "state_hash": "558b1bd80375193ec079388d25404cad4c1ea9c3f75bdec396f299807a5b4690",
       "variants": {
         "magic-crt.webp": "6450a4b834a0b0e8898f1362392177c65124151a36b909e11e034ccf86169b5c"
       },
@@ -131,7 +110,7 @@
     },
     "make.webp": {
       "environment_fingerprint": "bf62809f37f0549c624ab0b8bcd9f6c1cd154127b1e0b78d33392c058b5e0730",
-      "output_sha256": "cb3e408f2ba91cf6bdf85a244a852214a548d7726299b43a1153efdf21af44fc",
+      "output_sha256": "8784e26d37cc6fd800211f610ac90d5ba01ba192b2bc589389ea3f1862f9df09",
       "state_hash": "c021526011ad00173cc90dcdace347da1fd55aa98aadf5afaa5ef0bd6262e8f6",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
@@ -157,7 +136,7 @@
     "tunnel.webp": {
       "environment_fingerprint": "bf62809f37f0549c624ab0b8bcd9f6c1cd154127b1e0b78d33392c058b5e0730",
       "output_sha256": "02e9ba631007bdcf6724aaa25eb5f43d5590b76744c323a6bac1b7ad2d7eee3a",
-      "state_hash": "2465fbf761b2c10b637d489aa9c5224b75d3bff0cd49efbf0bf8d0f047b5144e",
+      "state_hash": "e9c69b6a9c60ddd8b96bba774c6af5b84ecb1beeb50471caebf35d3a940498ed",
       "variants": {
         "tunnel-crt.webp": "259d17a311bb8ef0477be63e5095eab9c50cd03cbcf2a7bf9f933770a86f3850"
       },
@@ -165,10 +144,10 @@
     },
     "wellen.mp4": {
       "environment_fingerprint": "bf62809f37f0549c624ab0b8bcd9f6c1cd154127b1e0b78d33392c058b5e0730",
-      "output_sha256": "bef0138ef8967e788e014a2d6c6720874b5b8a7d31e7bf55b6eaf1dec6978f8d",
+      "output_sha256": "6b12ed26fb281eb62baf249a86159fcc334c959478516a2c7cd1e21f91a81273",
       "state_hash": "4c491f96d85352d3e30781324b67b2bf9da8376bcfa1fdcd6f60478d3507f2ae",
       "variants": {
-        "wellen-crt.mp4": "ef5f5c3c8c696054d20825844699258249b62fa7e30d4545db49eeb215c9564e"
+        "wellen-crt.mp4": "09833ef75f50ebb038aac1fd3aa99c3ad76e46c3c8c2c95222d1db071ae86844"
       },
       "workspace_look": "4.140.0-ls368"
     },
