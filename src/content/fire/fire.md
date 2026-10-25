@@ -243,109 +243,145 @@ Für das Feuer brauchst du eine Technik aus der Bildbearbeitung, den »Filterker
 
 ## Filterkernel
 
-Filterkernel werden für verschiedene Effekte verwendet, z. B. Weichzeichnen, Schärfen oder Kantenerkennung. Dabei wird ein kleines Quadrat von Pixeln um einen bestimmten Pixel herum betrachtet, und die Farben dieser Pixel werden mit einem bestimmten Gewicht multipliziert und addiert. Der resultierende Wert wird dann als neuer Farbwert für den betrachteten Pixel verwendet.
-
-Hier siehst du ein paar Beispiele:
-
 <style>
-.kernel-picture {
-    position: relative;
+.kernel-matrix {
+    border-collapse: separate;
+    border-spacing: 2px;
+    font-family: 'IBM Plex Mono', monospace;
+    margin: 0 auto;
 }
-.kernel-picture img {
-    display: block;
-    width: 100%;
-    image-rendering: pixelated;
+.kernel-matrix td {
+    width: 2.2em;
+    height: 2.2em;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 0.25em;
+    background: rgba(var(--bs-body-color-rgb), 0.08);
 }
-.kernel {
-    color: #000;
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    right: 0;
+.kernel-matrix td.zero {
+    color: rgba(var(--bs-body-color-rgb), 0.4);
+}
+.kernel-example {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    font-family: 'IBM Plex Mono';
-    flex-direction: column;
+    gap: 0.8em;
+    margin: 1em 0;
 }
-.kernel td {
-    width: 1.5em;
-    text-align: center;
+.kernel-example .kernel-matrix {
+    margin: 0;
 }
-[data-bs-theme=dark] {
-    .kernel {
-        color: #fff;
-    }
-    .kernel td {
-        color: #fff;
-    }
-    .kernel_img {
-        filter: invert(0.917);
-    }
+.kernel-example .kernel-matrix td {
+    box-shadow: inset 0 0 0 1px rgba(var(--bs-body-color-rgb), 0.25);
+}
+.kernel-example > span {
+    font-size: 1.3em;
+}
+.kernel-figure img {
+    display: block;
+    width: 100%;
+    margin-top: 0.6em;
+    border-radius: 0.3em;
+    image-rendering: pixelated;
 }
 </style>
 
+Ein Filterkernel ist eine kleine Tabelle mit Gewichten, meist 3 × 3 Zahlen. Um die neue Farbe eines Pixels auszurechnen, legst du die Tabelle so auf das Bild, dass ihre Mitte auf diesem Pixel liegt. Jede Zahl sagt, wie stark das Pixel darunter zählt: Du multiplizierst jeden Farbwert mit seinem Gewicht, zählst alles zusammen und teilst durch die Summe der Gewichte. Heraus kommt ein gewichteter Mittelwert der Nachbarschaft, und der ist die neue Farbe des Pixels in der Mitte.
+
+Ein Beispiel mit Farbnummern wie in deinem Feuer, 0 für Schwarz und 63 für Weiß. Der Kernel zählt alle neun Pixel gleich:
+
+<div class='kernel-example' role='img' aria-label='Links neun Pixel: oben und links schwarz mit 0, unten rechts vier weiße mit 63, das Pixel in der Mitte ist eines davon. Daneben der Kernel mit neun Einsen. Rechts das Ergebnis für das Pixel in der Mitte: 28, ein dunkles Orange.'>
+<table class='kernel-matrix'>
+<tr><td style='background: #000; color: #fff'>0</td><td style='background: #000; color: #fff'>0</td><td style='background: #000; color: #fff'>0</td></tr>
+<tr><td style='background: #000; color: #fff'>0</td><td style='background: #fffff8; color: #000; outline: 2px solid #e8590c'>63</td><td style='background: #fffff8; color: #000'>63</td></tr>
+<tr><td style='background: #000; color: #fff'>0</td><td style='background: #fffff8; color: #000'>63</td><td style='background: #fffff8; color: #000'>63</td></tr>
+</table>
+<span>mit</span>
+<table class='kernel-matrix'>
+<tr><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>1</td><td>1</td><td>1</td></tr>
+</table>
+<span><i class='bi bi-arrow-right'></i></span>
+<table class='kernel-matrix'>
+<tr><td style='background: #e06000; color: #fff; outline: 2px solid #e8590c'>28</td></tr>
+</table>
+</div>
+
+Die neun Werte ergeben zusammen 4 · 63 = 252, die neun Gewichte zusammen 9, und 252 / 9 = 28. Das weiße Pixel in der Mitte wird dunkelorange, weil die Hälfte seiner Nachbarschaft schwarz ist: Die harte Kante zwischen Weiß und Schwarz wird weich.
+
+Das rechnest du für jedes Pixel des Bildes aus. Was dabei herauskommt, hängt allein an den Gewichten. Hier wirken drei Kernel auf einen weißglühenden Ring, gezeichnet in den Farben deines Feuers:
+
 <div class='gallery columns-3'>
 <figure>
-    <div class='kernel-picture'>
-        <img class='kernel_img' src='kernel_identity.png' alt='Ein dunkler Ring auf hellem Grund, scharf wie vorher.'>
-        <div class='kernel'>
-            <table>
-                <tr><td>0</td><td>0</td><td>0</td></tr>
-                <tr><td>0</td><td>1</td><td>0</td></tr>
-                <tr><td>0</td><td>0</td><td>0</td></tr>
-            </table>
-        </div>
-    </div>
-    <figcaption>Identity</figcaption>
+<div class='kernel-figure'>
+<table class='kernel-matrix'>
+<tr><td class='zero'>0</td><td class='zero'>0</td><td class='zero'>0</td></tr>
+<tr><td class='zero'>0</td><td>1</td><td class='zero'>0</td></tr>
+<tr><td class='zero'>0</td><td class='zero'>0</td><td class='zero'>0</td></tr>
+</table>
+<img src='kernel-identity.webp' alt='Ein weißer Ring auf Schwarz, scharf wie vorher.'>
+</div>
+<figcaption>Identity: nur das Pixel selbst zählt, das Bild bleibt, wie es ist.</figcaption>
 </figure>
 <figure>
-    <div class='kernel-picture'>
-        <img class='kernel_img' src='kernel_boxblur.png' alt='Derselbe Ring, an den Rändern weichgezeichnet.'>
-        <div class='kernel'>
-            <table>
-                <tr><td>1</td><td>1</td><td>1</td></tr>
-                <tr><td>1</td><td>1</td><td>1</td></tr>
-                <tr><td>1</td><td>1</td><td>1</td></tr>
-            </table>
-        </div>
-    </div>
-    <figcaption>Box blur</figcaption>
+<div class='kernel-figure'>
+<table class='kernel-matrix'>
+<tr><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>1</td><td>1</td><td>1</td></tr>
+</table>
+<img src='kernel-weich.webp' alt='Derselbe Ring, innen weiß, an beiden Rändern mit einem orangefarbenen Saum.'>
+</div>
+<figcaption>Box blur: alle neun zählen gleich, die Ränder werden weich.</figcaption>
 </figure>
 <figure>
-    <div class='kernel-picture'>
-        <img class='kernel_img' src='kernel_edge.png' alt='Vom Ring bleiben nur seine Kanten als dünne Linien.'>
-        <div class='kernel'>
-            <table>
-                <tr><td>0</td><td>-1</td><td>0</td></tr>
-                <tr><td>-1</td><td>4</td><td>-1</td></tr>
-                <tr><td>0</td><td>-1</td><td>0</td></tr>
-            </table>
-        </div>
-    </div>
-    <figcaption>Edge detection</figcaption>
+<div class='kernel-figure'>
+<table class='kernel-matrix'>
+<tr><td class='zero'>0</td><td>−1</td><td class='zero'>0</td></tr>
+<tr><td>−1</td><td>4</td><td>−1</td></tr>
+<tr><td class='zero'>0</td><td>−1</td><td class='zero'>0</td></tr>
+</table>
+<img src='kernel-kanten.webp' alt='Vom Ring bleiben nur zwei dünne weiße Linien, sein innerer und sein äußerer Rand.'>
+</div>
+<figcaption>Edge detection: nur an den Kanten bleibt etwas übrig.</figcaption>
 </figure>
 </div>
 
-Im ersten Beispiel (»Identity«) wird der Pixelwert unverändert übernommen und alle umliegenden Pixel ignoriert. Im zweiten Beispiel (»Box blur«) wird der Pixelwert mit den Werten der umliegenden Pixel gemittelt, um einen Weichzeichnungseffekt zu erzielen. Im dritten Beispiel (»Edge detection«) wird der Pixelwert so berechnet, dass Kanten im Bild hervorgehoben werden.
+Der dritte Kernel ist ein besonderer: Seine Gewichte ergeben zusammen 0. Wo alle Pixel gleich hell sind, im Ring wie im Schwarz daneben, heben sich die vier abgezogenen Nachbarn und das vierfache Pixel genau auf. Nur wo sich die Helligkeit ändert, an den Rändern des Ringes, bleibt etwas übrig. Durch 0 teilen geht nicht; hier zählt einfach die Summe, ohne Vorzeichen.
 
 ### Der Filterkernel für Feuer
 
-Wird ein Filterkernel wiederholt auf ein Bild angewendet, entsteht ein Effekt, der sich über die gesamte Bildfläche ausbreitet. Der Feuereffekt verwendet einen speziellen Filterkernel, der die Farben von Pixeln nach oben bewegt und dabei abkühlt. Der Filterkernel sieht folgendermaßen aus:
+Für das Feuer zählt ein Pixel nicht selbst mit, aber sein linker und sein rechter Nachbar einfach und das Pixel darunter doppelt. Was darüber liegt, zählt gar nicht. Die Gewichte ergeben zusammen 4, also wird durch 4 geteilt:
 
-<div class='kernel-picture' style='max-width: 20em; margin-left: auto; margin-right: auto;'>
-    <img class='kernel_img' src='kernel_fire.png' alt='Der Ring nach dem Feuer-Kernel: weichgezeichnet und ein wenig nach oben verschoben.'>
-    <div class='kernel'>
-        <table>
-            <tr><td>0</td><td>0</td><td>0</td></tr>
-            <tr><td>1</td><td>0</td><td>1</td></tr>
-            <tr><td>0</td><td>2</td><td>0</td></tr>
-        </table>
-    </div>
+<div class='kernel-figure' style='max-width: 16em; margin: 1em auto'>
+<table class='kernel-matrix'>
+<tr><td class='zero'>0</td><td class='zero'>0</td><td class='zero'>0</td></tr>
+<tr><td>1</td><td class='zero'>0</td><td>1</td></tr>
+<tr><td class='zero'>0</td><td>2</td><td class='zero'>0</td></tr>
+</table>
+<img src='kernel-feuer-1.webp' alt='Der Ring nach einem Schritt: oben mit einem gelben, unten mit einem dunkelroten Rand, das Weiß ist ein wenig nach oben gerutscht.'>
 </div>
 
-Der Filterkernel ist also sehr ähnlich zu einem »Box blur«-Filter, jedoch wird hier der untere Pixel doppelt gewichtet und der obere Pixel weggelassen, so dass sich die Farbe minimal nach oben bewegt.
+Die neue Farbe eines Pixels kommt also zur Hälfte von dem Pixel darunter. Was unten heiß ist, ist einen Schritt später ein Stück weiter oben. Einmal angewendet, sieht man davon wenig. Dein Programm wendet den Kernel aber in jedem Bild wieder an und zeichnet dazu jedes Mal die Glut am unteren Rand neu. Bleibt der Ring genauso heiß, steigt die Hitze Schritt für Schritt nach oben:
+
+<div class='gallery columns-3'>
+<figure>
+<img src='kernel-feuer-4.webp' alt='Nach 4 Schritten: Der Ring ist breiter und heißer geworden, an seiner Oberseite wächst ein gelber Rand nach oben.'>
+<figcaption>Nach 4 Schritten</figcaption>
+</figure>
+<figure>
+<img src='kernel-feuer-12.webp' alt='Nach 12 Schritten: Das Loch im Ring füllt sich von unten mit Weiß, über dem Ring steht eine gelbe Kappe.'>
+<figcaption>Nach 12 Schritten</figcaption>
+</figure>
+<figure>
+<img src='kernel-feuer-40.webp' alt='Nach 40 Schritten: Über dem Ring steht eine breite gelbweiße Säule, die bis weit nach oben reicht.'>
+<figcaption>Nach 40 Schritten</figcaption>
+</figure>
+</div>
+
+Mit jedem Schritt wandert die Hitze im Mittel ein halbes Pixel nach oben: Das Gewicht 2 von unten ist die Hälfte der 4. Abkühlen tut sie dabei nur langsam. Ruby rundet beim Teilen von ganzen Zahlen ab, `125 / 4` ist 31, und so verliert die Hitze bei vielen Schritten ein klein wenig.
 
 ## Feueranimation
 
@@ -468,6 +504,222 @@ Das gesamte Programm sieht nun so aus:
 
 _include_file(fire.rb, ruby)
 
+<!-- extra -->
+## Eine Form, die brennt
+
+Das Feuer brennt überall, wo heiße Pixel sind, nicht nur am unteren Rand. Zeichne etwas anderes in Weiß, und es geht in Flammen auf, auch wenn es sich bewegt. Hier ist es ein Quadrat, das sich um seine Mitte dreht.
+
+Lösche dafür in `fire.rb` die Glut, also die beiden Zeilen mit `set_color(63)` und `fill_rect(10, 126, 245, 127)` samt ihrem Kommentar. Vor die Schleife kommt ein Winkel, der mit jedem Bild ein wenig wächst:
+
+```ruby
+~         set_palette(i + 48, 255, 255, i * 8 + 128)
+~     end
+~
+    # Winkel der Form, wächst mit jedem Bild
+    angle = 0.0
+
+~     # Endlosschleife
+~     loop do
+```
+
+Die vier Ecken des Quadrats liegen auf einem Kreis um die Mitte (128, 80) mit dem Radius 30, jede eine Vierteldrehung weiter als die vorige. Eine Vierteldrehung ist π/2, in Ruby `Math::PI / 2`. Für einen Punkt auf einem Kreis um (m<sub>x</sub>, m<sub>y</sub>) mit Radius r beim Winkel a gilt:
+
+$$x = m\_x + r \cdot \cos a \qquad y = m\_y + r \cdot \sin a$$
+
+Weil y auf dem Bildschirm nach unten wächst, dreht sich das Quadrat im Uhrzeigersinn, wenn `angle` größer wird.
+
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Berechne vor <code>flip()</code> die vier Ecken für den aktuellen Winkel, verbinde jede Ecke mit <code>draw_line</code> mit der nächsten und die letzte mit der ersten, alles mit Farbe 63. Danach erhöhst du <code>angle</code> um 0.03.
+</div>
+
+<!-- hint -->
+Für die Ecke Nummer `k` (0 bis 3) ist der Winkel `angle + k * Math::PI / 2`. Setz ihn in die beiden Formeln ein: `Math.cos(…)` und `Math.sin(…)`.
+<!-- /hint -->
+<!-- hint -->
+Sammle die vier Ecken in einem Array, dann kannst du für jedes `k` die Ecke `k` mit der Ecke `(k + 1) % 4` verbinden. Für `k = 3` ist das die Ecke 0.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücken mit `…` füllst du:
+
+```ruby
+        corners = (0...4).map do |k|
+            a = angle + k * …
+            [128 + 30 * …, 80 + 30 * …]
+        end
+        (0...4).each do |k|
+            x0, y0 = corners[k]
+            x1, y1 = corners[…]
+            draw_line(x0, y0, x1, y1)
+        end
+```
+<!-- /hint -->
+
+<!-- solution -->
+```ruby
+~                 set_pixel(x, y, c)
+~             end
+~         end
+~
+        # weißes Quadrat zeichnen, um seine Mitte gedreht
+        set_color(63)
+        corners = (0...4).map do |k|
+            a = angle + k * Math::PI / 2
+            [128 + 30 * Math.cos(a), 80 + 30 * Math.sin(a)]
+        end
+        (0...4).each do |k|
+            x0, y0 = corners[k]
+            x1, y1 = corners[(k + 1) % 4]
+            draw_line(x0, y0, x1, y1)
+        end
+        angle += 0.03
+
+~         # Bild anzeigen
+~         flip()
+```
+<!-- /solution -->
+
+Das Quadrat steht nach dem Kernel im Programm, direkt vor `flip()`. Zeichnest du es davor, verschmiert der Kernel es im selben Bild, und du siehst nur noch Flammen. So bleibt es als scharfe weiße Linie über seinen eigenen Flammen stehen, und im nächsten Bild steigt seine Hitze nach oben:
+
+<!-- tutorial-screenshot
+# Ein Quadrat, das sich dreht und brennt
+write-file: fire-steps/form.rb <- file:stufen/form.rb
+terminal-run: STEP_FRAMES=150 ruby -C /workspace/fire-steps -r ./save_step.rb form.rb
+terminal-wait-for-prompt: 180
+image-file: fire-steps/step.png 4
+-->
+<img src='form.webp' class='full' alt='Ein schräg stehendes weißes Quadrat auf Schwarz, aus dem Flammen nach oben schlagen; sein Inneres glüht rot und orange.'>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong>
+<ul>
+<li>Ein Dreieck statt des Quadrats: drei Ecken, jede eine Dritteldrehung (<code>2 * Math::PI / 3</code>) weiter. Mit <code>fill_triangle(x0, y0, x1, y1, x2, y2)</code> brennt die ganze Fläche statt nur des Randes.</li>
+<li>Ändere <code>angle += 0.03</code> in <code>angle += 0.2</code>: Wie sehen die Flammen aus, wenn sich die Form schneller dreht, als die Hitze aufsteigt?</li>
+<li>Hol die Glut am unteren Rand zurück: Jetzt brennen Boden und Quadrat zusammen.</li>
+</ul>
+</div>
+
+<!-- extra -->
+## Glühen statt Brennen
+
+Dass dein Feuer nach oben brennt, liegt allein am Kernel: Er holt die Hitze von unten. Zählt er dagegen alle vier Nachbarn gleich, oben, unten, links und rechts, hat die Hitze keine Richtung mehr. Sie breitet sich nach allen Seiten aus, und was heiß ist, glüht:
+
+<div class='gallery columns-2'>
+<figure>
+<div class='kernel-figure'>
+<table class='kernel-matrix'>
+<tr><td class='zero'>0</td><td class='zero'>0</td><td class='zero'>0</td></tr>
+<tr><td>1</td><td class='zero'>0</td><td>1</td></tr>
+<tr><td class='zero'>0</td><td>2</td><td class='zero'>0</td></tr>
+</table>
+<img src='kernel-feuer-40.webp' alt='Der Feuer-Kernel nach 40 Schritten: über dem Ring eine gelbweiße Säule.'>
+</div>
+<figcaption>Brennen: die Hitze kommt von unten.</figcaption>
+</figure>
+<figure>
+<div class='kernel-figure'>
+<table class='kernel-matrix'>
+<tr><td class='zero'>0</td><td>1</td><td class='zero'>0</td></tr>
+<tr><td>1</td><td class='zero'>0</td><td>1</td></tr>
+<tr><td class='zero'>0</td><td>1</td><td class='zero'>0</td></tr>
+</table>
+<img src='kernel-gluehen-40.webp' alt='Der Glüh-Kernel nach 40 Schritten: Der Ring ist breiter geworden und hat innen und außen einen orangeroten Schein, ohne Richtung.'>
+</div>
+<figcaption>Glühen: die Hitze kommt von allen Seiten.</figcaption>
+</figure>
+</div>
+
+Ändere in deinem Programm mit dem Quadrat die Zeilen, die die Nachbarn einsammeln. Die vier Gewichte ergeben wieder 4, das Teilen durch 4 bleibt:
+
+```ruby
+~                 # Farbwerte der Nachbarpixel einsammeln
+                c = get_pixel(x, y - 1)
+                c += get_pixel(x, y + 1)
+                c += get_pixel(x - 1, y)
+                c += get_pixel(x + 1, y)
+~                 # Summe durch vier teilen
+~                 c /= 4
+```
+
+<!-- tutorial-screenshot
+# Derselbe Kernel in alle Richtungen: das Quadrat glüht
+write-file: fire-steps/gluehen.rb <- file:stufen/gluehen.rb
+terminal-run: STEP_FRAMES=150 ruby -C /workspace/fire-steps -r ./save_step.rb gluehen.rb
+terminal-wait-for-prompt: 180
+image-file: fire-steps/step.png 4
+-->
+<img src='gluehen.webp' class='full' alt='Das gedrehte weiße Quadrat mit einem gelborangen Schein an allen Seiten, nach außen und nach innen; keine Flammen steigen auf.'>
+
+Achte auf die Ecken, während sich das Quadrat dreht: Hinter jeder zieht ein Schweif her. Die Hitze braucht ein paar Bilder, bis sie verglüht, und das Quadrat ist dann schon ein Stück weitergedreht.
+
+<!-- extra -->
+## Geheimnisvolles Leuchten
+
+Zwei Dinge machen den Effekt: der Kernel, der bestimmt, wohin die Hitze geht, und die Palette, die bestimmt, wie sie aussieht. Beides kannst du tauschen. Damit das bequemer geht, schreibst du den Kernel als Tabelle, so wie in den Bildern oben. Über `Pixelflow::Canvas.new` kommt:
+
+```ruby
+~ require 'pixelflow_canvas'
+~
+# Der Filterkernel als Tabelle: die Gewichte der Nachbarn von oben links
+# bis unten rechts, in der Mitte das Pixel selbst
+KERNEL = [
+    [1, 1, 1],
+    [1, 0, 1],
+    [1, 1, 1],
+]
+WEIGHT = KERNEL.flatten.sum
+
+~ Pixelflow::Canvas.new(256, 128, :palette) do
+```
+
+`KERNEL.flatten` macht aus den drei Zeilen eine Liste mit neun Zahlen, `sum` zählt sie zusammen. Dieser Kernel zählt alle acht Nachbarn, auch die schrägen. Die Zeilen, die die Nachbarn einsammeln und durch 4 teilen, ersetzt du durch zwei Schleifen über die Tabelle. Die Zeile `row` und die Spalte `col` laufen von 0 bis 2; minus 1 gerechnet, ergeben sie den Abstand zum Pixel in der Mitte:
+
+```ruby
+~             (0...256).each do |x|
+                # Nachbarn mit den Gewichten aus KERNEL zusammenzählen
+                c = 0
+                (0..2).each do |row|
+                    (0..2).each do |col|
+                        c += KERNEL[row][col] * get_pixel(x + col - 1, y + row - 1)
+                    end
+                end
+                # durch die Summe der Gewichte teilen
+                c /= WEIGHT
+~
+~                 # Zufällige Variation hinzufügen
+```
+
+Und eine neue Palette, von Schwarz über tiefes Blau und Violett bis zu einem blassen Rosa:
+
+```ruby
+~     # Farbverlauf von Schwarz über Violett bis Weiß
+    (0...16).each do |i|
+        set_palette(i, i * 4, 0, i * 8)
+        set_palette(i + 16, i * 4 + 64, i * 2, i * 8 + 128)
+        set_palette(i + 32, i * 8 + 128, i * 8 + 32, 255)
+        set_palette(i + 48, 255, i * 8 + 128, 255)
+    end
+```
+
+<!-- tutorial-screenshot
+# Kernel als Tabelle, acht Nachbarn, Palette in Violett
+write-file: fire-steps/leuchten.rb <- file:stufen/leuchten.rb
+terminal-run: STEP_FRAMES=150 ruby -C /workspace/fire-steps -r ./save_step.rb leuchten.rb
+terminal-wait-for-prompt: 180
+image-file: fire-steps/step.png 4
+-->
+<img src='leuchten.webp' class='full' alt='Das gedrehte Quadrat als dünne, fast weiße Linie mit einem violetten Schein ringsum auf Schwarz.'>
+
+Für jedes Pixel liest das Programm jetzt neun Werte statt drei, darum läuft die Animation ein wenig langsamer.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Jetzt änderst du nur noch Zahlen.
+<ul>
+<li>Trag den Feuer-Kernel in die Tabelle ein, <code>[0, 0, 0]</code>, <code>[1, 0, 1]</code>, <code>[0, 2, 0]</code>: Brennt das Quadrat wieder, diesmal in Violett?</li>
+<li>Dreh den Feuer-Kernel um, <code>[0, 2, 0]</code>, <code>[1, 0, 1]</code>, <code>[0, 0, 0]</code>. Wohin zieht die Hitze jetzt? Mit einer grünen Palette sieht das aus wie leuchtender Schleim, zum Beispiel <code>set_palette(i, 0, i * 6, i * 2)</code>, <code>set_palette(i + 16, 0, i * 8 + 96, i * 4 + 32)</code>, <code>set_palette(i + 32, i * 8, 224 + i * 2, i * 6 + 96)</code> und <code>set_palette(i + 48, i * 8 + 128, 255, i * 8 + 128)</code>.</li>
+<li>Was ändert eine 1 in der Mitte der Tabelle, wenn das Pixel also selbst mitzählt? Und eine 4?</li>
+</ul>
+</div>
+
 ## Zusammenfassung
 
 Du hast eine Feueranimation in Ruby programmiert: Ein Farbverlauf legt fest, wie heiß jede Farbe aussieht, und ein Filterkernel lässt die Hitze in jedem Bild ein Stück nach oben steigen und abkühlen. Filterkernel stecken auch hinter dem Weichzeichnen und dem Finden von Kanten in der Bildbearbeitung. Das Feuer war ein beliebter Effekt der Demoszene, und mit ein wenig Experimentieren machst du es noch besser.
@@ -481,5 +733,6 @@ Auch Spiele haben so gebrannt: In der Fassung von *Final DOOM* für die erste Pl
 
 Hier sind ein paar Vorschläge, wie du die Animation weiter verbessern könntest:
 
-- Versuche, andere Muster zu zeichnen, um die Quelle des Feuers zu verändern.
-- Experimentiere mit verschiedenen Farbverläufen und Filterkernels, um andere Effekte (z. B. einen Raucheffekt) zu erzielen.
+- Lass einen Text brennen: `draw_text(68, 70, "FEUER", "8x13B", 3)` zeichnet ihn in der aktuellen Farbe, links oben bei (68, 70), dreimal so groß wie die Schrift.
+- Rauch: eine zweite Palette in Grautönen und ein Kernel, der die Hitze langsamer nach oben trägt als das Feuer.
+- Lass die Glut flackern, indem du sie in jedem Bild an zufälligen Stellen unterbrichst.
