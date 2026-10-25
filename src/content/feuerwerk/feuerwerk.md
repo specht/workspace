@@ -158,6 +158,8 @@ void move_particle(Particle *p, double dt)
 show-left-sidebar
 terminal-open
 terminal-run: git clone -q https://github.com/specht/pixelram-starter.git ~/feuerwerk && git -C ~/feuerwerk checkout -q 8f36e382554999421d77687c69f7541ca2c4afb7
+# erst wenn der Klon fertig ist, den Ordner öffnen (sonst fehlt main.c im Explorer)
+terminal-wait-for-prompt: 120
 press: Control+K
 press: Control+O
 wait-for-input-value: /workspace/
