@@ -1,6 +1,7 @@
 require 'nokogiri'
 require 'redcarpet'
 require 'set'
+require_relative 'external_links'
 
 # Task texts as HTML for the browser: a check's message, its warnings, what
 # it read and the solution (the task card and the class page put them in
@@ -35,6 +36,7 @@ module TaskHtml
     def self.sanitize(html)
         fragment = Nokogiri::HTML5.fragment(html.to_s)
         clean(fragment)
+        ExternalLinks.mark(fragment)    # target and rel set after the filter
         fragment.to_html
     end
 

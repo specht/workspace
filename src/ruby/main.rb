@@ -40,6 +40,7 @@ require './include/workspace_credentials.rb'
 require './include/workspace_runtime.rb'
 require './include/tic80_storage.rb'
 require './include/user_files.rb'
+require './include/external_links.rb'
 require './include/task_html.rb'
 require './include/rate_limit.rb'
 require './include/tcp_console.rb'
@@ -1570,12 +1571,7 @@ class Main < Sinatra::Base
             video['src'] = cache_video(image_path)
             add_media_variants(video, image_path) { |variant_path| cache_video(variant_path) }
         end
-        root.css('a').each do |a|
-            href = a.attr('href')
-            if href.index('https://') == 0
-                a['target'] = '_blank'
-            end
-        end
+        ExternalLinks.mark(root)
         Tools.link_targets(root)
         highlight_code(root)
         root
@@ -1957,6 +1953,7 @@ class Main < Sinatra::Base
                 AfterTask.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
                 CodeLanguages.pair(root) if page_languages.empty?
                 insert_task_cards(root, task_slots, page_tasks, redcarpet, path, page_languages) unless task_slots.empty?
+                ExternalLinks.mark(root)    # also the links in the task cards
                 StageCode.insert(root, stage_points) unless stage_points.empty?
                 # Reference pages: every h2 and h3 gets an anchor for the Handbuch index.
                 outline = parsed_sections.dig(section, :catalog) == 'reference' ? ReferenceIndex.anchor_headings(root) : nil

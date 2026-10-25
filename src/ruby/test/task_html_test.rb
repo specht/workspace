@@ -42,6 +42,14 @@ class TaskHtmlTest < Minitest::Test
         refute_match(/<iframe|javascript:/i, out)
     end
 
+    # An RFC or a manual opens beside the activity; links within the site
+    # stay in the tab.
+    def test_links_to_other_sites_open_in_a_new_tab
+        out = html("[RFC 6238](https://www.rfc-editor.org/rfc/rfc6238.html) und [Handbuch](/handbuch/http)")
+        assert_includes out, '<a href="https://www.rfc-editor.org/rfc/rfc6238.html" target="_blank" rel="noopener">RFC 6238</a>'
+        assert_includes out, '<a href="/handbuch/http">Handbuch</a>'
+    end
+
     def test_unsafe_links_lose_their_address
         out = html("[klick](javascript:x()) <a href=\"data:text/html,x\">d</a> <a href=\"//evil.example\">e</a>")
         refute_match(/href="(javascript|data|\/\/)/i, out)
