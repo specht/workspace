@@ -8,6 +8,8 @@ Die Aufgaben folgen dem Weg durch das Tutorial: erst Alice allein, dann Alice un
 <tr><th>Zeitpunkt</th><td>Die Prüfungen lesen den Stand beim Klick. Wer bei »Zeitreise« noch auf <code>HEAD~2</code> steht, bekommt bei den späteren Aufgaben den Hinweis auf »detached HEAD«.</td></tr>
 </table>
 
-**Wo es hakt.** Die Staging Area (Aufgabe »Was macht git add?«) und die Konfliktmarkierungen. Bei »Konfliktmarkierungen« lohnt es, die Antwort zu besprechen, bevor Bob den Konflikt auflöst: Oben steht der eigene Stand (`HEAD`), unten der geholte.
+#### Wo es hakt
+
+Die Staging Area (Aufgabe »Was macht git add?«) und die Konfliktmarkierungen. Bei »Konfliktmarkierungen« lohnt es, die Antwort zu besprechen, bevor Bob den Konflikt auflöst: Oben steht der eigene Stand (`HEAD`), unten der geholte.
 
 »Feature gemergt« meldet die Datei `hello`, wenn `.gitignore` fehlt oder nicht committet ist. Das ist die Stelle, an der man sieht, wofür `.gitignore` gut ist.

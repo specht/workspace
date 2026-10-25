@@ -600,13 +600,31 @@ jeden Link nur an einer Stelle, und er veraltet nicht doppelt.
 ## 5. Eine Notiz für Lehrkräfte
 
 `lehrkraft.md` neben der Seite erscheint für Lehrkräfte als aufklappbare Notiz
-oben auf der Seite. Jede Aktivität im Katalog hat eine. Sie beginnt mit einem
-Absatz, der sagt, was die Lernenden tun: »Lernende bauen …, schreiben …,
-messen …«, so dass eine Lehrkraft nach drei Sätzen weiß, worum es geht und
-was vorausgesetzt wird. Danach, meist als Tabelle: der Ablauf über die
-Stunden, was erfahrungsgemäß schiefgeht, was die Aufgaben genau prüfen, die
-Abgabe. Lernende sehen die Notiz nicht. `teacher_note_test.rb` prüft, dass es
-die Notiz gibt und ihr erster Absatz »Lernende« nennt.
+oben auf der Seite. Jede Aktivität im Katalog hat eine; Lernende sehen sie
+nicht. Eine Lehrkraft liest sie beim Planen und schaut in der Stunde schnell
+nach, oft auf dem Handy. Darum ist sie ein Blatt zum Nachschlagen, kein
+Fließtext ([vorlage-aktivitaet/lehrkraft.md](vorlage-aktivitaet/lehrkraft.md)):
+
+- **Ein kurzer erster Absatz**, ein, zwei Sätze, der sagt, was die Lernenden
+  tun: »Lernende bauen …, schreiben …, messen …«. Keine Aufzählung jeder
+  Stufe; die steht im Ablauf.
+- **Eine Tabelle mit den Fakten**, je Zeile ein Stichwort: Voraussetzungen,
+  Sprache (bei Ruby und Python), Ablauf, Dateien, Prüfung, Abgabe, Lösung.
+  Hat eine Zelle mehr als zwei Sätze, wird sie eine Liste; der Ablauf ist
+  eine Liste mit einem Punkt je Doppelstunde (`<b>1. Doppelstunde:</b>`) und
+  einem für die Schnellen. Die Tabelle ist HTML, also in den Zellen `<code>`,
+  `<b>` und `<a href>`, keine Backticks und kein Markdown: Redcarpet ließe sie
+  stehen, wie sie sind.
+- **Abschnitte mit `####`** für das, was nicht in eine Zeile passt: Was
+  schiefgeht, Die Aufgaben (welche Rückmeldung welchen Fehler erkennt),
+  Tipps in Stufen, Weiter. Ihr Inhalt ist eine Liste, ein Punkt je Fehler
+  oder Aufgabe, mit dem Stichwort fett vorn (`- **Das Bild ist gespiegelt.**
+  …`).
+
+Auf dem Handy steht das Stichwort einer Zeile über ihrem Text, und kurzer
+Code (`01-karte.c`) bricht nicht am Bindestrich um. `teacher_note_test.rb`
+prüft, dass es die Notiz gibt, dass ihr erster Absatz »Lernende« nennt und
+dass in ihrer Tabelle kein Markdown steht.
 
 ## 6. Prüfen, bevor es live geht
 

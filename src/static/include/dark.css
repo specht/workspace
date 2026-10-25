@@ -505,6 +505,11 @@ html[data-bs-theme="dark"] {
         border-color: #4a3a63;
         background-color: #221b2d;
     }
+    .teacher-note-body h4,
+    .teacher-note-body .table th { color: #cdb0f2; }
+    .teacher-note-body .table,
+    .teacher-note-body .table th,
+    .teacher-note-body .table td { border-color: #3a2e4d; }
     .task-teacher {
         border-color: #4a3a63;
         background-color: #221b2d;

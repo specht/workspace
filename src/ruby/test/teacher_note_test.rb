@@ -28,4 +28,16 @@ class TeacherNoteTest < Minitest::Test
         end
         assert_empty vague, "The first paragraph of these teacher notes does not say what »Lernende« do:\n#{vague.join("\n")}"
     end
+
+    # The facts of a note are an HTML table, and Redcarpet leaves Markdown
+    # inside HTML as it is: `code`, **bold** and [links](…) would show with
+    # their backticks and brackets. In a cell they are <code>, <b> and <a>.
+    def test_no_markdown_in_the_table
+        found = Dir[File.join(CONTENT, '*', 'lehrkraft.md')].sort.flat_map do |path|
+            File.read(path).scan(%r{<table.*?</table>}m).flat_map do |table|
+                table.scan(/`[^`\n]+`|\*\*[^*\n]+\*\*|\[[^\]\n]+\]\([^)\n]+\)/)
+            end.map { |markdown| "#{File.basename(File.dirname(path))}: #{markdown}" }
+        end
+        assert_empty found, "Markdown inside the HTML table of a teacher note:\n#{found.join("\n")}"
+    end
 end

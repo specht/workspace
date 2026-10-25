@@ -1,22 +1,43 @@
-Ein GIF-Decoder in C, der mit PixelRAM zeichnet: Lernende lesen eine Datei Byte für Byte, Block für Block, setzen die Sub-blocks zusammen, lesen Codes mit wachsender Länge und entpacken sie mit LZW. Vorausgesetzt werden Grundlagen in C (Schleifen, Arrays, Funktionen, `printf`) und die ersten Abschnitte von [Echtzeitgrafik mit C](/pixelram): Palette, `set_pixel`, `make`. Zeiger kommen nur als `uint8_t *` für einen Speicher vor, `malloc` und `fopen` stehen fertig im Gerüst.
+Ein GIF-Decoder in C, der mit PixelRAM zeichnet: Lernende lesen eine Datei Byte für Byte, Block für Block, setzen die Sub-blocks zusammen, lesen Codes mit wachsender Länge und entpacken sie mit LZW.
 
 <table class='table'>
-<tr><th>Ablauf</th><td>Erste Doppelstunde: Vorbereitung, Hexdump der Diskette, die Blöcke bis zu den Bilddaten; am Ende meldet das Programm <code>Bild 16 x 16 bei (0, 0), 45 Bytes Daten</code>. Zweite Doppelstunde: Codes lesen, LZW mit der Zeitlupe auf der Seite, dann <code>decode_lzw</code> selbst schreiben, bis die Diskette erscheint. Dritte Doppelstunde: das Foto, das fast immer erst nach einer Fehlersuche klappt, dann Interlacing. Animationen sind für die, die schnell sind, oder eine vierte Doppelstunde.</td></tr>
-<tr><th>Dateien</th><td>Alles in <code>/workspace/gif</code> (ein eigener Klon des PixelRAM-Starters): <code>gif.c</code>, später <code>animation.c</code>, und die Beispiele, die die Lernenden mit <code>wget</code> von <code>${web_root}/gif/</code> laden. Als Code stehen auf der Seite nur das Gerüst (Datei lesen, <code>read_byte</code>, <code>read_word</code>) und die Prüfsumme, beide mit Kopierknopf. Jede weitere Funktion beschreibt die Seite mit Namen, Signatur und Aufgabe, dazu Zwischenstände, die das Programm ausgeben soll, und Hinweise zu den Fallen. Schreiben müssen die Lernenden alles selbst.</td></tr>
-<tr><th>Prüfung</th><td>»Welche Zeile?« übersetzt <code>gif.c</code> im Workspace, als Gast, und ruft <code>image_row</code> für Bilder mit 10, 3 und 427 Zeilen auf, ohne <code>main</code> zu starten (Prüfart <code>c</code>); bei 3 Zeilen hat Durchgang 2 keine Zeile, ein häufiger Fehler. Dafür muss <code>make</code> einmal gelaufen sein. Die übrigen Aufgaben prüfen Antworten, nichts im Workspace. Vier davon sind Prüfsummen (Adler-32 über Rot, Grün und Blau aller Pixel), die das Programm in der Konsole von PixelRAM ausgibt: Ein Pixel daneben ergibt eine andere Zahl. Sie lassen sich weitersagen; wer seine Prüfsumme nicht selbst gefunden hat, kann aber auch nicht erklären, warum die von <code>markt-interlaced.gif</code> dieselbe ist.</td></tr>
+<tr><th>Voraussetzungen</th><td>Grundlagen in C (Schleifen, Arrays, Funktionen, <code>printf</code>) und die ersten Abschnitte von <a href='/pixelram'>Echtzeitgrafik mit C</a>: Palette, <code>set_pixel</code>, <code>make</code>. Zeiger kommen nur als <code>uint8_t *</code> für einen Speicher vor, <code>malloc</code> und <code>fopen</code> stehen fertig im Gerüst.</td></tr>
+<tr><th>Ablauf</th><td><ul>
+<li><b>1. Doppelstunde:</b> Vorbereitung, Hexdump der Diskette, die Blöcke bis zu den Bilddaten; am Ende meldet das Programm <code>Bild 16 x 16 bei (0, 0), 45 Bytes Daten</code>.</li>
+<li><b>2. Doppelstunde:</b> Codes lesen, LZW mit der Zeitlupe auf der Seite, dann <code>decode_lzw</code> selbst schreiben, bis die Diskette erscheint.</li>
+<li><b>3. Doppelstunde:</b> das Foto, das fast immer erst nach einer Fehlersuche klappt, dann Interlacing.</li>
+<li><b>Für Schnelle</b> oder eine vierte Doppelstunde: Animationen.</li>
+</ul></td></tr>
+<tr><th>Dateien</th><td><ul>
+<li>Alles in <code>/workspace/gif</code> (ein eigener Klon des PixelRAM-Starters): <code>gif.c</code>, später <code>animation.c</code>, und die Beispiele, die die Lernenden mit <code>wget</code> von <code>${web_root}/gif/</code> laden.</li>
+<li>Als Code stehen auf der Seite nur das Gerüst (Datei lesen, <code>read_byte</code>, <code>read_word</code>) und die Prüfsumme, beide mit Kopierknopf.</li>
+<li>Jede weitere Funktion beschreibt die Seite mit Namen, Signatur und Aufgabe, dazu Zwischenstände, die das Programm ausgeben soll, und Hinweise zu den Fallen. Schreiben müssen die Lernenden alles selbst.</li>
+</ul></td></tr>
+<tr><th>Prüfung</th><td><ul>
+<li>»Welche Zeile?« übersetzt <code>gif.c</code> im Workspace, als Gast, und ruft <code>image_row</code> für Bilder mit 10, 3 und 427 Zeilen auf, ohne <code>main</code> zu starten (Prüfart <code>c</code>); bei 3 Zeilen hat Durchgang 2 keine Zeile, ein häufiger Fehler. Dafür muss <code>make</code> einmal gelaufen sein.</li>
+<li>Die übrigen Aufgaben prüfen Antworten, nichts im Workspace. Vier davon sind Prüfsummen (Adler-32 über Rot, Grün und Blau aller Pixel), die das Programm in der Konsole von PixelRAM ausgibt: Ein Pixel daneben ergibt eine andere Zahl.</li>
+<li>Prüfsummen lassen sich weitersagen; wer seine nicht selbst gefunden hat, kann aber auch nicht erklären, warum die von <code>markt-interlaced.gif</code> dieselbe ist.</li>
+</ul></td></tr>
 <tr><th>Lösung</th><td>Ein vollständiger Decoder, 280 Zeilen, liegt im Repository unter <a href='https://github.com/specht/workspace/blob/main/src/content/gif/loesung/gif.c'><code>src/content/gif/loesung/gif.c</code></a>, die Bilder der Seite sind mit ihm gemacht; der Player für Animationen daneben in <a href='https://github.com/specht/workspace/blob/main/src/content/gif/loesung/animation.c'><code>animation.c</code></a>. Die Lernenden sehen beide auf der Seite nicht; das Repository ist allerdings öffentlich.</td></tr>
 </table>
 
-**Das Heft.** Die Spezifikation GIF89a von 1990 gibt es als Heft im Format A5, Seite für Seite wie das Original, in Courier 10 Pitch:
+#### Das Heft
+
+Die Spezifikation GIF89a von 1990 gibt es als Heft im Format A5, Seite für Seite wie das Original, in Courier 10 Pitch:
 
 - [gif89a-zine-booklet-a4.pdf](${web_root}/gif/gif89a-zine-booklet-a4.pdf) zum Drucken: 10 Blätter A4, beidseitig, an der kurzen Kante gewendet; in der Mitte falten und zweimal heften.
 - [gif89a-zine-a5.pdf](${web_root}/gif/gif89a-zine-a5.pdf) zum Lesen am Bildschirm, 40 Seiten.
 
 Der Text ist englisch und unverändert. Die Seitenzahlen stehen wie im Original oben rechts, und unter jeder Überschrift der Seite steht, auf welcher Seite des Hefts der Block beschrieben ist. Es lohnt sich, die Diagramme der Seite mit denen im Heft zu vergleichen und Fragen wie »Was ist ein Sort Flag?« ins Heft zu schicken. Das Deckblatt (Cover Sheet) handelt vom Deferred Clear Code, Regel 5 auf der Seite. Die Quellen des Hefts liegen unter `src/content/gif/zine/`, `build.sh` setzt es neu.
 
-**Die Aufgaben.** »Die Farbtabelle des Fotos« (768) hat Rückmeldungen für 256 (Farben statt Bytes), 7 (das Feld selbst) und 247 (das ganze Byte). »Ein Code, den es noch nicht gibt« ist eine Vorhersage vor der Zeitlupe; nur der erste Versuch zählt für die Klassenübersicht. Die Prüfsummen: `8e1af5c5` für die Diskette, `4e5b2bc9` für das Foto, mit und ohne Interlacing. Wer bei `markt-interlaced.gif` `0cbf2bc9` angibt, hat die Zeilen in der Reihenfolge der Datei gesetzt und bekommt genau das gesagt. »Die Diskette im Flug« (`54236d34`) erkennt vier typische Fehler an ihrer Prüfsumme: keine Disposal Method (`8f94af25`, eine Spur), durchsichtige Pixel gezeichnet (`646c69be`), die Position vergessen (`51ccbc40`) und die Local Color Table in die eine Palette geschrieben (`79cfe7be`, der Himmel wird rot).
+#### Die Aufgaben
 
-**Was schiefgeht.**
+- »Die Farbtabelle des Fotos« (768) hat Rückmeldungen für 256 (Farben statt Bytes), 7 (das Feld selbst) und 247 (das ganze Byte).
+- »Ein Code, den es noch nicht gibt« ist eine Vorhersage vor der Zeitlupe; nur der erste Versuch zählt für die Klassenübersicht.
+- Die Prüfsummen: `8e1af5c5` für die Diskette, `4e5b2bc9` für das Foto, mit und ohne Interlacing. Wer bei `markt-interlaced.gif` `0cbf2bc9` angibt, hat die Zeilen in der Reihenfolge der Datei gesetzt und bekommt genau das gesagt.
+- »Die Diskette im Flug« (`54236d34`) erkennt vier typische Fehler an ihrer Prüfsumme: keine Disposal Method (`8f94af25`, eine Spur), durchsichtige Pixel gezeichnet (`646c69be`), die Position vergessen (`51ccbc40`) und die Local Color Table in die eine Palette geschrieben (`79cfe7be`, der Himmel wird rot).
+
+#### Was schiefgeht
 
 - **Bits in der falschen Reihenfolge.** Wer vom höchsten Bit an liest (wie bei JPEG), bekommt zufällig auch als ersten Code eine 4, danach aber 3, 1, 0 statt 1, 6, 3 und ein falsches Bild. Die ersten Codes der Diskette stehen auf der Seite: 4, 1, 6, 3, 8, 9, 9, 6, 0. Ein `printf` in `decode_lzw` zeigt, was das eigene Programm liest.
 - **Die Codelänge eins zu früh oder zu spät.** Wächst sie, bevor der neue Eintrag in der Tabelle steht, oder erst einen Code später, stimmen die ersten vier Codes und danach nichts mehr. Bei der Diskette sieht man das ab der ersten Zeile.
@@ -25,8 +46,14 @@ Der Text ist englisch und unverändert. Die Seitenzahlen stehen wie im Original 
 - **Das Bild stimmt, die Prüfsumme nicht.** Steht das `printf` mit der Prüfsumme vor der Schleife über die Blöcke, ist es die Prüfsumme der leeren Fläche. Liest `read_color_table` die Bytes als Blau, Grün, Rot, sieht man es dagegen sofort: Die Diskette ist dann braun.
 - **Nur eine Datei geht.** Steht `ARGS=` nicht beim `make`, startet das Programm ohne Datei. In der Konsole von PixelRAM kann man die Argumente ändern und mit »Run« neu starten; die Datei muss im selben Ordner wie `gif.html` liegen.
 
-**Begriffe.** Die Seite sagt Code, Eintrag und Tabelle; die Spezifikation sagt string table und code stream. LZW ist hier nur als Decoder ausgearbeitet; warum der Encoder genau so einen Eintrag früher ist als der Decoder, lohnt eine gemeinsame Überlegung an der Tafel, am besten mit der Diskette: 1 1 1 3 … ergibt die Codes 1, 6, 3. Dithering kommt nur in der Aufgabe »Körnig« vor.
+#### Begriffe
 
-**Bugs Bunny.** Die Animation mit Bugs Bunny und Daffy Duck (»Hard G« oder »Soft G«) ist eine Fan-Montage aus einem Looney-Tunes-Cartoon. Die Seite verlinkt sie bei Know Your Meme, statt sie selbst anzubieten, und es gibt keine Aufgabe dazu: Verschwindet die Adresse, fehlt nur der Spaß am Schluss. Mit `animation.c` ist die Prüfsumme nach dem letzten Bild `dfb07cbb`.
+Die Seite sagt Code, Eintrag und Tabelle; die Spezifikation sagt string table und code stream. LZW ist hier nur als Decoder ausgearbeitet; warum der Encoder genau so einen Eintrag früher ist als der Decoder, lohnt eine gemeinsame Überlegung an der Tafel, am besten mit der Diskette: 1 1 1 3 … ergibt die Codes 1, 6, 3. Dithering kommt nur in der Aufgabe »Körnig« vor.
 
-**Weiter.** JPEG als Gegenstück (verlustbehaftet, Huffman statt LZW, Big Endian, Bits vom höchsten an): [Eine JPEG-Datei decodieren](/jpeg). Ein GIF-Encoder ist ein gutes Projekt für Schnelle; der Decoder prüft ihn.
+#### Bugs Bunny
+
+Die Animation mit Bugs Bunny und Daffy Duck (»Hard G« oder »Soft G«) ist eine Fan-Montage aus einem Looney-Tunes-Cartoon. Die Seite verlinkt sie bei Know Your Meme, statt sie selbst anzubieten, und es gibt keine Aufgabe dazu: Verschwindet die Adresse, fehlt nur der Spaß am Schluss. Mit `animation.c` ist die Prüfsumme nach dem letzten Bild `dfb07cbb`.
+
+#### Weiter
+
+JPEG als Gegenstück (verlustbehaftet, Huffman statt LZW, Big Endian, Bits vom höchsten an): [Eine JPEG-Datei decodieren](/jpeg). Ein GIF-Encoder ist ein gutes Projekt für Schnelle; der Decoder prüft ihn.

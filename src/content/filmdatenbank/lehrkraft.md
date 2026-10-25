@@ -7,12 +7,22 @@ Lernende entwerfen eine Datenbank für Filme und ihre Mitwirkenden: ein ER-Model
 <tr><th>Was nie passiert</th><td>Die Prüfungen legen keine Tabellen an und laden keine Daten. Das tun die Lernenden selbst im Terminal.</td></tr>
 </table>
 
-**Feste Namen.** Die Datendateien schreiben mit `INSERT INTO movie (id, title, …)`. Deshalb verlangen die Aufgaben genau die Namen aus dem Text (`movie`, `genre`, `crew`, `job`, `movie_genre`, `movie_crew` und ihre Spalten). Wer anders benennt, bekommt beim Laden `Unknown column` und von der Karte einen Satz dazu, welche Spalte fehlt. Eigene Modelle (siehe letzte Aufgabe) sind frei.
+#### Feste Namen
 
-**Neu anlegen statt erweitern.** `film.sql` beginnt mit `DROP TABLE IF EXISTS`. Nach der Erweiterung um Personen müssen deshalb beide Datendateien noch einmal geladen werden; »Alles neu angelegt und geladen« meldet eine leere Tabelle mit genau diesem Hinweis. Der Unterschied zu einer echten Datenbank (`ALTER TABLE`) steht als Hinweis im Text und eignet sich für ein Unterrichtsgespräch.
+Die Datendateien schreiben mit `INSERT INTO movie (id, title, …)`. Deshalb verlangen die Aufgaben genau die Namen aus dem Text (`movie`, `genre`, `crew`, `job`, `movie_genre`, `movie_crew` und ihre Spalten). Wer anders benennt, bekommt beim Laden `Unknown column` und von der Karte einen Satz dazu, welche Spalte fehlt. Eigene Modelle (siehe letzte Aufgabe) sind frei.
 
-**Wo es hakt.** Die Kardinalität (`n:m`, und warum aus `n:1` eine Spalte statt einer Tabelle wird) und der zusammengesetzte Primärschlüssel. Die Vorhersage-Aufgabe »Was wäre bei n:1?« ist dafür da; es lohnt, sie gemeinsam aufzulösen. Bei den Abfragen ist es das fehlende `ON` und `COUNT` in `WHERE` statt `HAVING`; beides erkennt die Karte.
+#### Neu anlegen statt erweitern
 
-**Tipps in Stufen.** »Viel Regie« hat zwei oder drei Tipps: ein Beispiel von Hand, den Weg in Worten, meist ein Gerüst mit Lücken, nie die ganze Lösung. Die nächste Stufe erscheint eine Minute nach der vorigen, ohne Uhr, und wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst. Hängen viele an derselben Stelle, ist das ein Thema für die ganze Gruppe.
+`film.sql` beginnt mit `DROP TABLE IF EXISTS`. Nach der Erweiterung um Personen müssen deshalb beide Datendateien noch einmal geladen werden; »Alles neu angelegt und geladen« meldet eine leere Tabelle mit genau diesem Hinweis. Der Unterschied zu einer echten Datenbank (`ALTER TABLE`) steht als Hinweis im Text und eignet sich für ein Unterrichtsgespräch.
 
-**Zum Weiterarbeiten.** Die letzte Aufgabe sammelt Ideen für Erweiterungen. Eine Videothek mit Kundinnen, Exemplaren und Ausleihen (mit Datum) ist ein gutes eigenes Modell: Es braucht eine 1:n-Beziehung und Attribute an einer Beziehung. Die Diagramme lassen sich mit »Als SVG speichern« für Präsentationen sichern.
+#### Wo es hakt
+
+Die Kardinalität (`n:m`, und warum aus `n:1` eine Spalte statt einer Tabelle wird) und der zusammengesetzte Primärschlüssel. Die Vorhersage-Aufgabe »Was wäre bei n:1?« ist dafür da; es lohnt, sie gemeinsam aufzulösen. Bei den Abfragen ist es das fehlende `ON` und `COUNT` in `WHERE` statt `HAVING`; beides erkennt die Karte.
+
+#### Tipps in Stufen
+
+»Viel Regie« hat zwei oder drei Tipps: ein Beispiel von Hand, den Weg in Worten, meist ein Gerüst mit Lücken, nie die ganze Lösung. Die nächste Stufe erscheint eine Minute nach der vorigen, ohne Uhr, und wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst. Hängen viele an derselben Stelle, ist das ein Thema für die ganze Gruppe.
+
+#### Zum Weiterarbeiten
+
+Die letzte Aufgabe sammelt Ideen für Erweiterungen. Eine Videothek mit Kundinnen, Exemplaren und Ausleihen (mit Datum) ist ein gutes eigenes Modell: Es braucht eine 1:n-Beziehung und Attribute an einer Beziehung. Die Diagramme lassen sich mit »Als SVG speichern« für Präsentationen sichern.

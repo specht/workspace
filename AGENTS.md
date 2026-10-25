@@ -105,7 +105,12 @@ address from `credentials.rb` and the code `123456`.
   `reference-table-wide`, a list already below 992px, and a `<th>` at the
   start of each row, so that every value carries its column's name.
 - Every activity has a teacher note (`lehrkraft.md`) whose first paragraph says
-  what the students do (»Lernende …«); `teacher_note_test.rb` checks it.
+  in one or two sentences what the students do (»Lernende …«); then a table of
+  facts (Voraussetzungen, Ablauf with one item per Doppelstunde, Dateien,
+  Prüfung …), lists instead of long cells and HTML, not Markdown, in the
+  cells; then `####` sections (Was schiefgeht, Die Aufgaben) as lists
+  (docs/aktivitaet-schreiben.md, `docs/vorlage-aktivitaet/lehrkraft.md`);
+  `teacher_note_test.rb` checks the first paragraph and the cells.
 - Interactive widgets (steppers) follow [docs/widgets.md](docs/widgets.md): they start with
   what they show, one step per line of the page's pseudocode with the code beside it, and
   everything that stays the same thing moves instead of popping. A widget never solves a task of its

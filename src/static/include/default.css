@@ -2832,8 +2832,71 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     background-color: #f7f2fc;
 }
 
+/* The note reads like a sheet of facts: the opening paragraph a little
+   larger, the facts a table with their label in a column of its own
+   (above the text on a phone), the sections under small headings, and
+   short inline code that does not break at a hyphen (code.whole, set
+   in main.rb where the note is rendered). */
 .teacher-note-body {
-    padding: 0.8em 1em 0.5em;
+    padding: 1em 1.25em 0.6em;
+    line-height: 1.55;
+}
+
+.teacher-note-body > p:first-child {
+    font-size: 1.05em;
+}
+
+.teacher-note-body h4 {
+    margin: 1.4em 0 0.4em;
+    font-size: 1em;
+    font-weight: 700;
+    color: #5b2f8f;
+}
+
+.teacher-note-body .table {
+    margin: 1em 0 1.2em;
+    border-top: 1px solid #e3d6f3;
+}
+
+.teacher-note-body .table th,
+.teacher-note-body .table td {
+    padding: 0.55em 0.5em;
+    white-space: normal;
+    border-bottom: 1px solid #e3d6f3;
+    vertical-align: top;
+}
+
+.teacher-note-body .table th {
+    width: 10em;
+    padding-left: 0;
+    color: #5b2f8f;
+    font-weight: 600;
+}
+
+.teacher-note-body .table td > :last-child {
+    margin-bottom: 0;
+}
+
+.teacher-note-body .table td p {
+    margin-bottom: 0.5em;
+}
+
+.teacher-note-body ul,
+.teacher-note-body ol {
+    padding-left: 1.2em;
+}
+
+.teacher-note-body li + li {
+    margin-top: 0.3em;
+}
+
+.teacher-note-body .table ul,
+.teacher-note-body .table ol {
+    margin-bottom: 0;
+}
+
+.teacher-note-body code.whole {
+    white-space: nowrap;
 }
 
 /* The button for the teacher note: at the right end of the page strip,
@@ -2995,6 +3058,10 @@ body.has-autotoc-secondary.autotoc-primary-visible {
         border-right: none;
         border-radius: 0;
     }
+    .teacher-note-body {
+        padding-left: 1em;
+        padding-right: 1em;
+    }
     .teacher-note-body .table th,
     .teacher-note-body .table td {
         padding-left: 0;
@@ -3004,14 +3071,25 @@ body.has-autotoc-secondary.autotoc-primary-visible {
         display: block;
         overflow-x: auto;
     }
+    .teacher-note-body .table,
+    .teacher-note-body .table tbody,
     .teacher-note-body .table tr,
     .teacher-note-body .table th,
     .teacher-note-body .table td {
         display: block;
+        width: auto;
     }
     .teacher-note-body .table th {
-        padding-bottom: 0;
+        padding-top: 0.7em;
+        padding-bottom: 0.1em;
         border-bottom: none;
+        font-size: 0.85em;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+    }
+    .teacher-note-body .table td {
+        padding-top: 0;
+        padding-bottom: 0.7em;
     }
 }
 

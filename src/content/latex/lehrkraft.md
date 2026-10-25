@@ -1,14 +1,29 @@
 Lernende schreiben in LaTeX eine kurze Facharbeit von der leeren Datei bis zum PDF, mit allem, was Schulen für Facharbeiten, Seminararbeiten und Protokolle verlangen: Titelseite, Inhaltsverzeichnis, nummerierte Kapitel, Formel, Abbildung, Tabelle, Diagramm, Quellen und Selbstständigkeitserklärung. Das Thema (Schwingungsdauer eines Fadenpendels) ist bewusst aus dem Physikunterricht bekannt, damit es um das Schreiben geht und nicht um den Inhalt. Vorkenntnisse braucht es keine.
 
 <table class='table'>
-<tr><th>Ablauf</th><td>Erste Doppelstunde: LaTeX Workshop, das erste Dokument, Sonderzeichen, Gliederung mit Titelseite und Inhaltsverzeichnis. Zweite: Formel, Bild, Tabelle, Diagramm. Dritte: Quellen und Querverweise, Seitenlayout, Selbstständigkeitserklärung, Abgabe; wer schneller ist, schreibt über ein eigenes Thema.</td></tr>
+<tr><th>Ablauf</th><td><ul>
+<li><b>1. Doppelstunde:</b> LaTeX Workshop, das erste Dokument, Sonderzeichen, Gliederung mit Titelseite und Inhaltsverzeichnis.</li>
+<li><b>2. Doppelstunde:</b> Formel, Bild, Tabelle, Diagramm.</li>
+<li><b>3. Doppelstunde:</b> Quellen und Querverweise, Seitenlayout, Selbstständigkeitserklärung, Abgabe; wer schneller ist, schreibt über ein eigenes Thema.</li>
+</ul></td></tr>
 <tr><th>Dateien</th><td>Alles liegt in <code>/workspace/facharbeit</code>: <code>facharbeit.tex</code>, <code>literatur.bib</code>, ein Bild <code>aufbau.png</code> und das PDF. Eine Vorlage zum Klonen gibt es nicht; die Lernenden legen den Ordner selbst an. Die fertige Fassung liegt in diesem Repository unter <code>src/content/latex/stufen/</code>.</td></tr>
 <tr><th>Das Bild</th><td>Ein eigenes Foto, eine Zeichnung aus dem 2D Game Studio (»Als Bild speichern«) oder ein Bild aus dem Netz mit Quellenangabe; es wird per Ziehen in den Explorer hochgeladen. Wer keins hat, kann den Abschnitt zunächst überspringen.</td></tr>
 <tr><th>Abgabe</th><td>»Deine Facharbeit« nimmt ein PDF aus <code>facharbeit</code>. Die Reflexion »Word oder LaTeX?« eignet sich als Einstieg in ein Gespräch über Werkzeuge.</td></tr>
 </table>
 
-**Was schiefgeht.** Ohne die Zeile `% !TEX program = lualatex` übersetzt LaTeX Workshop mit pdfLaTeX, und `fontspec` bricht ab. `\parencite` vor dem Kapitel Quellen ergibt »Undefined control sequence«; die Seite sagt das an der Stelle. `%` oder `&` im Fließtext lassen Text verschwinden oder werfen »Misplaced alignment tab character«. Kommazahlen in TikZ-Koordinaten (`0,2` statt `0.2`) zerlegen eine Koordinate in zwei. Ein Bild mit Großbuchstaben in der Endung (`Aufbau.PNG`) wird unter `aufbau.png` nicht gefunden. Die häufigsten Meldungen erklärt das Handbuch unter »Fehlermeldungen«.
+#### Was schiefgeht
 
-**Die Aufgaben.** »Das erste PDF« prüft, ob `facharbeit/facharbeit.pdf` ein PDF ist. »Titelseite und Gliederung«, »Die Formel«, »Das Bild vom Aufbau«, »Die Messwerte«, »Das Diagramm« und »Die Quellen« lesen `facharbeit.tex` und suchen die typischen Befehle; die Karte nennt die Zeile, in der sie etwas gefunden hat. »Ein Kapitel mehr« ist eine Vorhersage, »Ein längerer Faden« eine Rechnung (2,46 s), »Prozent und Und« und »Zwei Fragezeichen« fragen nach typischen Stolpersteinen.
+- Ohne die Zeile `% !TEX program = lualatex` übersetzt LaTeX Workshop mit pdfLaTeX, und `fontspec` bricht ab.
+- `\parencite` vor dem Kapitel Quellen ergibt »Undefined control sequence«; die Seite sagt das an der Stelle.
+- `%` oder `&` im Fließtext lassen Text verschwinden oder werfen »Misplaced alignment tab character«.
+- Kommazahlen in TikZ-Koordinaten (`0,2` statt `0.2`) zerlegen eine Koordinate in zwei.
+- Ein Bild mit Großbuchstaben in der Endung (`Aufbau.PNG`) wird unter `aufbau.png` nicht gefunden.
+- Die häufigsten Meldungen erklärt das Handbuch unter »Fehlermeldungen«.
 
-**Weiter.** Das Handbuch LaTeX hat die Vorlagen für Bewerbung, Lebenslauf und Ausarbeitung, die vorher Teil dieser Seite waren, dazu die Schriftproben. Für eine echte Facharbeit lohnt es sich, das Gerüst dieser Seite zu kopieren und die Vorgaben der Schule (Ränder, Zitierweise) einzutragen.
+#### Die Aufgaben
+
+»Das erste PDF« prüft, ob `facharbeit/facharbeit.pdf` ein PDF ist. »Titelseite und Gliederung«, »Die Formel«, »Das Bild vom Aufbau«, »Die Messwerte«, »Das Diagramm« und »Die Quellen« lesen `facharbeit.tex` und suchen die typischen Befehle; die Karte nennt die Zeile, in der sie etwas gefunden hat. »Ein Kapitel mehr« ist eine Vorhersage, »Ein längerer Faden« eine Rechnung (2,46 s), »Prozent und Und« und »Zwei Fragezeichen« fragen nach typischen Stolpersteinen.
+
+#### Weiter
+
+Das Handbuch LaTeX hat die Vorlagen für Bewerbung, Lebenslauf und Ausarbeitung, die vorher Teil dieser Seite waren, dazu die Schriftproben. Für eine echte Facharbeit lohnt es sich, das Gerüst dieser Seite zu kopieren und die Vorgaben der Schule (Ränder, Zitierweise) einzutragen.

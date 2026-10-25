@@ -2043,6 +2043,13 @@ class Main < Sinatra::Base
             if !entry[:kenney] && File.file?(note_path)
                 note_markdown = ContentParts.fill_variables(File.read(note_path), Main.content_variables({}, :per_viewer => false))
                 note_root = render_content_markdown(note_markdown, note_path, redcarpet)
+                # Inline code that is one short word (01-karte.c, plane_x)
+                # stays in one piece, in the note's tables and lists alike,
+                # as in the tables of a page (.teacher-note-body code.whole)
+                note_root.css('code').each do |code|
+                    next if code.parent&.name == 'pre' || code.text =~ /\s/ || code.text.length > 24
+                    code.add_class('whole')
+                end
                 parsed_content[slug][:teacher_note] = (note_root.at_css('body') || note_root).inner_html
             end
             unless entry[:extra]

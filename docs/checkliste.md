@@ -89,8 +89,8 @@ Repository arbeitet, liest sie also ohnehin.
 
 | Regel | Warum | Geprüft durch |
 | --- | --- | --- |
-| Jede Aktivität im Katalog hat `lehrkraft.md`, und der erste Absatz sagt, was die Lernenden tun (»Lernende …«), mit Voraussetzungen | Nach drei Sätzen weiß eine Lehrkraft, worum es geht | `teacher_note_test.rb` |
-| Danach, meist als Tabelle: Ablauf über die Stunden, was die Aufgaben prüfen, Abgabe, typische Stolpersteine | Für die Planung und die Stunde selbst | Lesen |
+| Jede Aktivität im Katalog hat `lehrkraft.md`, und der erste Absatz sagt in ein, zwei Sätzen, was die Lernenden tun (»Lernende …«) | Nach zwei Sätzen weiß eine Lehrkraft, worum es geht | `teacher_note_test.rb` |
+| Danach eine Tabelle (Voraussetzungen, Ablauf je Doppelstunde, Dateien, Prüfung, Abgabe), mit Listen statt langer Zellen und HTML statt Markdown in den Zellen, dann Abschnitte mit `####` (Was schiefgeht, Die Aufgaben) als Listen | Ein Blatt zum Nachschlagen, auch auf dem Handy in der Stunde | `teacher_note_test.rb` (Markdown in der Tabelle), Lesen |
 | Eine neue oder geänderte Aktivität hat einen Eintrag im CHANGELOG, auf Deutsch, für Lernende, Lehrkräfte und Betreibende | Was sich ändert, soll man nachlesen können | Lesen |
 
 ## Vorlagen und Daten

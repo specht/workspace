@@ -3,17 +3,27 @@ Der Einstieg in Datenbanken: Lernende laden die Länder der Welt in ihre eigene 
 <table class='table'>
 <tr><th>Ablauf</th><td>Zwei Doppelstunden. Erste: Daten laden und erkunden, die Bausteine von <code>SELECT</code> bis <code>DISTINCT</code> mit ihren Aufgaben. Zweite: die Reihenfolge mit dem Query Stepper und die gemischten Aufgaben am Ende; wer schnell ist, fängt mit dem zweiten Teil an.</td></tr>
 <tr><th>Daten</th><td><code>countries-basic.sql</code> aus <a href='https://github.com/specht/workspace-files/tree/main/country-archive'><code>specht/workspace-files</code></a>, aus Wikidata vom Oktober 2026: 197 Länder, die Städte ab 100.000 Einwohnern und die Hauptstädte. Die Lernenden laden die Datei mit <code>wget</code> und <code>mysql &lt; …</code> in ihre eigene Datenbank; jede Person hat eine, und niemand sieht die der anderen. Die Seite zeigt nach dem Import die Tabellen mit ein paar Zeilen.</td></tr>
-<tr><th>Prüfung</th><td>Zwei Arten. Fragt eine Aufgabe nach einem Wert (eine Zahl, ein Name, eine Auswahl), tragen die Lernenden nur das Ergebnis ein. Soll eine Abfrage Zeilen ausgeben, kopieren sie die fertige Abfrage in die Karte: Der Server führt sie in ihrer eigenen Datenbank aus, angemeldet als sie, dort auch die Musterabfrage, und vergleicht die Ergebnisse, nicht den Text. <code>COUNT(name)</code> statt <code>COUNT(*)</code>, andere Spaltennamen oder eine Unterabfrage statt <code>ORDER BY … LIMIT 1</code> zählen genauso. Angenommen wird nur eine einzelne Abfrage mit <code>SELECT</code> oder <code>WITH</code>. Fehlen Tabellen oder Zeilen, sagt die Karte, dass zuerst die Beispieldaten geladen werden müssen.</td></tr>
+<tr><th>Prüfung</th><td>Zwei Arten:<ul>
+<li>Fragt eine Aufgabe nach einem Wert (eine Zahl, ein Name, eine Auswahl), tragen die Lernenden nur das Ergebnis ein.</li>
+<li>Soll eine Abfrage Zeilen ausgeben, kopieren sie die fertige Abfrage in die Karte: Der Server führt sie in ihrer eigenen Datenbank aus, angemeldet als sie, dort auch die Musterabfrage, und vergleicht die Ergebnisse, nicht den Text. <code>COUNT(name)</code> statt <code>COUNT(*)</code>, andere Spaltennamen oder eine Unterabfrage statt <code>ORDER BY … LIMIT 1</code> zählen genauso.</li>
+<li>Angenommen wird nur eine einzelne Abfrage mit <code>SELECT</code> oder <code>WITH</code>. Fehlen Tabellen oder Zeilen, sagt die Karte, dass zuerst die Beispieldaten geladen werden müssen.</li>
+</ul></td></tr>
 <tr><th>Lösung</th><td>Jede Aufgabe zeigt nach der richtigen Antwort eine Lösung; die Musterabfragen stehen in <a href='https://github.com/specht/workspace/blob/main/src/content/mysql/tasks.yaml'><code>tasks.yaml</code></a>.</td></tr>
 </table>
 
-**Ausprobieren, dann eintragen.** Ein Kasten vor der ersten Aufgabe sagt es den Lernenden: In `mycli` entwickeln sie ihre Abfrage, sehen jedes Ergebnis und ändern sie, so oft sie wollen; in die Karte kommt erst die fertige Abfrage oder der Wert. Wer direkt in der Karte tippt, sieht keine Zeilen und rät.
+#### Ausprobieren, dann eintragen
 
-**Die Aufgaben.** Die Fragen nach einem Wert verraten keine Abfrage: »Griechenland« will die Einwohnerzahl, »Mehr als 100 Millionen« eine Anzahl. Die Rückmeldungen erkennen häufige Fehler am Ergebnis, etwa aufsteigend statt absteigend sortiert oder eine fehlende Bedingung. Zwei Aufgaben sind Vorhersagen, die man vor dem Weiterlesen beantwortet: die Reihenfolge der Klauseln und ein Spaltenname aus `SELECT` in `WHERE`.
+Ein Kasten vor der ersten Aufgabe sagt es den Lernenden: In `mycli` entwickeln sie ihre Abfrage, sehen jedes Ergebnis und ändern sie, so oft sie wollen; in die Karte kommt erst die fertige Abfrage oder der Wert. Wer direkt in der Karte tippt, sieht keine Zeilen und rät.
 
-**Eigene Aufgaben.** Im selben Repository liegt eine sorgfältig zusammengestellte Musikdatenbank, <a href='https://github.com/specht/workspace-files/tree/main/music-archive'><code>music-archive/music.sql</code></a>: rund 3.100 Alben von gut 1.000 Künstlerinnen, Künstlern und Bands, mit Titeln, Genres und wer in welcher Band spielt, aus Discogs. Keine Aktivität benutzt sie; sie eignet sich für eigene Aufgaben, eine Klassenarbeit oder als zweiter Datensatz für dieselben Abfragen. Wie man sie lädt und was in den Spalten steht, steht im Handbuch unter [Datensätze](/reference/datensaetze).
+#### Die Aufgaben
 
-**Was schiefgeht.**
+Die Fragen nach einem Wert verraten keine Abfrage: »Griechenland« will die Einwohnerzahl, »Mehr als 100 Millionen« eine Anzahl. Die Rückmeldungen erkennen häufige Fehler am Ergebnis, etwa aufsteigend statt absteigend sortiert oder eine fehlende Bedingung. Zwei Aufgaben sind Vorhersagen, die man vor dem Weiterlesen beantwortet: die Reihenfolge der Klauseln und ein Spaltenname aus `SELECT` in `WHERE`.
+
+#### Eigene Aufgaben
+
+Im selben Repository liegt eine sorgfältig zusammengestellte Musikdatenbank, <a href='https://github.com/specht/workspace-files/tree/main/music-archive'><code>music-archive/music.sql</code></a>: rund 3.100 Alben von gut 1.000 Künstlerinnen, Künstlern und Bands, mit Titeln, Genres und wer in welcher Band spielt, aus Discogs. Keine Aktivität benutzt sie; sie eignet sich für eigene Aufgaben, eine Klassenarbeit oder als zweiter Datensatz für dieselben Abfragen. Wie man sie lädt und was in den Spalten steht, steht im Handbuch unter [Datensätze](/reference/datensaetze).
+
+#### Was schiefgeht
 
 - **Doppelte Anführungszeichen und Groß- und Kleinschreibung.** Texte stehen in SQL in einfachen Anführungszeichen; `WHERE name = 'deutschland'` findet trotzdem etwas, weil MySQL beim Vergleich nicht auf Groß und Klein achtet. Das überrascht, wenn man es von Programmiersprachen anders kennt.
 - **`LIKE` ohne `%`.** `name LIKE 'Ka'` sucht genau den Namen »Ka«. Erst `'Ka%'` heißt »fängt mit Ka an«.
