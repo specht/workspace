@@ -37,7 +37,7 @@ class CardImagesTest < Minitest::Test
         assert_nil CardImages.cache_hash('/images/white.webp')
         assert_nil CardImages.cache_hash('/cache/../etc/passwd.webp')
         assert_nil CardImages.cache_hash("/cache/#{HASH}.webp/../x.webp")
-        assert_nil CardImages.cache_hash("/cache/#{HASH}-480.webp")
+        assert_nil CardImages.cache_hash("/cache/#{HASH}-480x270.webp")
         assert_equal HASH, CardImages.cache_hash("/cache/#{HASH}.webp")
         assert_equal "src='/images/keyboard.png'", CardImages.attributes('/images/keyboard.png')
     end
@@ -54,8 +54,8 @@ class CardImagesTest < Minitest::Test
         assert_equal "src='#{url}'", CardImages.attributes(url)
         CardImages.drain
         attributes = CardImages.attributes(url)
-        assert_includes attributes, "src='/cache/#{HASH}-480.webp'"
-        assert_includes attributes, "srcset='/cache/#{HASH}-480.webp 480w, /cache/#{HASH}-960.webp 960w'"
+        assert_includes attributes, "src='/cache/#{HASH}-480x270.webp'"
+        assert_includes attributes, "srcset='/cache/#{HASH}-480x270.webp 480w, /cache/#{HASH}-960x540.webp 960w'"
         assert_includes attributes, "sizes='#{CardImages::CARD_SIZES}'"
         assert_equal [480, 270], size_of(CardImages.variant_path(HASH, 480))
         assert_equal [960, 540], size_of(CardImages.variant_path(HASH, 960))
@@ -71,6 +71,20 @@ class CardImagesTest < Minitest::Test
         assert_equal [360, 203], size_of(CardImages.variant_path(HASH, 960))
     end
 
+    # The card crops to 16:9; a wide picture keeps the height of that box
+    # (the torus of the anaglyphs, 1852 x 428), but is never scaled up.
+    def test_a_wide_picture_keeps_the_height_of_the_box
+        make_source(1852, 428)
+        CardImages.attributes("/cache/#{HASH}.webp", :wait => true)
+        assert_equal [1168, 270], size_of(CardImages.variant_path(HASH, 480))
+        assert_equal [1852, 428], size_of(CardImages.variant_path(HASH, 960))
+        # a tall picture is still scaled by its width
+        make_source(900, 1600)
+        File.utime(Time.now + 5, Time.now + 5, CardImages.source_path(HASH))
+        CardImages.attributes("/cache/#{HASH}.webp", :wait => true)
+        assert_equal [480, 853], size_of(CardImages.variant_path(HASH, 480))
+    end
+
     def test_a_variant_older_than_its_picture_is_made_again
         make_source(1600, 900)
         url = "/cache/#{HASH}.webp"
@@ -79,9 +93,9 @@ class CardImagesTest < Minitest::Test
         File.utime(Time.now - 3600, Time.now - 3600, variant)
         refute CardImages.variant_current?(HASH, 480)
         # until the new one is there, the srcset leaves the old one out
-        refute_includes CardImages.attributes(url), "#{HASH}-480.webp"
+        refute_includes CardImages.attributes(url), "#{HASH}-480x270.webp"
         CardImages.drain
         assert CardImages.variant_current?(HASH, 480)
-        assert_includes CardImages.attributes(url), "#{HASH}-480.webp 480w"
+        assert_includes CardImages.attributes(url), "#{HASH}-480x270.webp 480w"
     end
 end

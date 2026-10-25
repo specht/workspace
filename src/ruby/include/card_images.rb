@@ -5,11 +5,17 @@ require 'set'
 # picture at about 130 px (phone) to 420 px (desktop), the catalog has about
 # a hundred of them, so the full pictures would be megabytes for a class on
 # school WiFi. Beside each picture in the image cache (/webcache/HASH.webp,
-# Main.convert_image) lie HASH-480.webp and HASH-960.webp, lossy WebP,
-# never wider than the picture; the card names them in srcset and the
+# Main.convert_image) lie HASH-480x270.webp and HASH-960x540.webp, lossy
+# WebP, never larger than the picture; the card names them in srcset and the
 # browser takes the one that fits its width and pixel density: 480 for a
 # phone (130 px at three device pixels each) and a desktop, 960 for a desktop
 # or tablet with two device pixels per CSS pixel.
+#
+# A card crops its picture to 16:9 (object-fit: cover), so a variant fills a
+# 16:9 box of its width instead of matching only the width: a wide picture
+# (1852 x 428, the torus of the anaglyphs) keeps 270 px of height in the 480
+# variant, not 111 px that the card would stretch to 243. Such a variant is
+# wider than its w in srcset, which names the box it was made for.
 #
 # The hash is the picture's content, so a changed picture gets a new name
 # and new variants; a variant older than its picture is made again. Missing
@@ -18,6 +24,8 @@ require 'set'
 # card shows the picture itself.
 module CardImages
     WIDTHS = [480, 960].freeze
+    # The box of a card's picture (default.css): 16:9.
+    BOX = 9.0 / 16
     QUALITY = 82
     URL_PATTERN = %r{\A/cache/([0-9a-f]{16})\.webp\z}
 
@@ -48,8 +56,17 @@ module CardImages
             File.join(cache_dir, "#{hash}.webp")
         end
 
+        def box_height(width)
+            (width * BOX).round
+        end
+
+        # Named after the box, so a change of the box makes new variants.
+        def variant_name(hash, width)
+            "#{hash}-#{width}x#{box_height(width)}.webp"
+        end
+
         def variant_path(hash, width)
-            File.join(cache_dir, "#{hash}-#{width}.webp")
+            File.join(cache_dir, variant_name(hash, width))
         end
 
         def variant_current?(hash, width)
@@ -71,20 +88,21 @@ module CardImages
             end
             return "src='#{url}'" if ready.empty?
 
-            srcset = ready.map { |width| "/cache/#{hash}-#{width}.webp #{width}w" }.join(', ')
+            srcset = ready.map { |width| "/cache/#{variant_name(hash, width)} #{width}w" }.join(', ')
             # For a browser without srcset the smallest.
-            "src='/cache/#{hash}-#{ready.first}.webp' srcset='#{srcset}' sizes='#{sizes}'"
+            "src='/cache/#{variant_name(hash, ready.first)}' srcset='#{srcset}' sizes='#{sizes}'"
         end
 
-        # Scales the cached picture to width (never up), lossy WebP. Written
-        # under another name first, so nginx never serves half a file.
+        # Scales the cached picture down until it just covers the box of
+        # width (^: fill, >: never up), lossy WebP. Written under another
+        # name first, so nginx never serves half a file.
         def make_variant(hash, width)
             source = source_path(hash)
             return false unless File.file?(source)
 
             target = variant_path(hash, width)
             temporary = "#{target.delete_suffix('.webp')}.#{Process.pid}.#{Thread.current.object_id}.tmp.webp"
-            ok = system('convert', "#{source}[0]", '-resize', "#{width}x>", '-strip',
+            ok = system('convert', "#{source}[0]", '-resize', "#{width}x#{box_height(width)}^>", '-strip',
                 '-quality', QUALITY.to_s, '-define', 'webp:lossless=false', temporary,
                 [:out, :err] => File::NULL)
             if ok && File.file?(temporary)

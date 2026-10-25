@@ -266,9 +266,12 @@ Tutorials, die dieselbe Datei verwenden.
 Die Karten der Startseite und die Sprach-Kacheln zeigen ihr Bild (`image:`
 im Meta-Block) nicht im Original, sondern in 480 und 960 px Breite
 (`src/ruby/include/card_images.rb`, getestet in `test/card_images_test.rb`):
-verlustbehaftetes WebP, nie breiter als das Original, im Bildcache neben dem
-Original als `HASH-480.webp` und `HASH-960.webp`. Die Karte nennt beide in
-`srcset`; der Browser nimmt die, die zu Breite und Pixeldichte passt. Nur die
+verlustbehaftetes WebP, nie größer als das Original, im Bildcache neben dem
+Original als `HASH-480x270.webp` und `HASH-960x540.webp`. Die Karte schneidet
+ihr Bild auf 16:9 zu; darum füllt jede Größe ein 16:9-Feld ihrer Breite, und
+ein sehr breites Bild (der Ring der Anaglyphen, 1852 × 428) behält 270 px Höhe
+statt 111 px, die die Karte sonst unscharf auf 243 px streckt. Die Karte nennt
+beide in `srcset`; der Browser nimmt die, die zu Breite und Pixeldichte passt. Nur die
 ersten drei Karten laden sofort, alle anderen mit `loading='lazy'`, wenn sie in
 die Nähe des Bildschirms kommen; von einem hellen und dunklen Bild lädt so nur
 das sichtbare.
