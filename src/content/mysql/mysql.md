@@ -332,6 +332,17 @@ Schon in der ersten Fassung von SQL, 1974, bestand eine Abfrage aus `SELECT`, `F
 
 _person(chamberlin-boyce)
 
+<div class='hint task tasks-off-only'>
+<ul>
+<li>Welche Städte in Deutschland liegen nördlicher als Hamburg (53,55° Nord)?</li>
+<li>Welche Hauptstädte liegen auf der Südhalbkugel?</li>
+</ul>
+</div>
+
+_task(noerdlich-hamburg)
+
+_task(hauptstaedte-sueden)
+
 ### Sortieren: ORDER BY
 
 Mit `ORDER BY` sortierst du ein Abfrageergebnis. Ohne weitere Angabe wird aufsteigend sortiert:
@@ -370,6 +381,12 @@ _task(groesste-laender)
 <strong>Ausprobieren:</strong> Sortiere nach zwei Spalten: <code>SELECT name, continent, population FROM country ORDER BY continent, population DESC;</code> In welcher Reihenfolge stehen die Länder jetzt? Wann kommt die zweite Spalte überhaupt zum Zug? Und was ändert sich, wenn du die beiden Spalten hinter <code>ORDER BY</code> vertauschst?
 </div>
 
+<div class='hint task tasks-off-only'>
+Gib alle Länder mit Name, Einwohnerzahl und Fläche aus. Sortiere die Tabelle nach der Einwohnerzahl absteigend.
+</div>
+
+_task(laender-sortiert)
+
 ### Begrenzen: LIMIT
 
 Mit `LIMIT` begrenzt du die Anzahl der ausgegebenen Zeilen:
@@ -393,6 +410,17 @@ crop-terminal-skip-bottom: 1
 `ORDER BY` und `LIMIT` lassen sich gut kombinieren. Damit kannst du zum Beispiel nach einer Spalte sortieren und anschließend nur die ersten zehn Treffer ausgeben.
 
 _task(top5-laender)
+
+<div class='hint task tasks-off-only'>
+<ul>
+<li>Welche Stadt hat die meisten Einwohner, wie viele Einwohner hat sie und in welchem Land liegt sie?</li>
+<li>Gib die zehn bevölkerungsreichsten Städte Frankreichs aus.</li>
+</ul>
+</div>
+
+_task(groesste-stadt)
+
+_task(top10-frankreich)
 
 ## Zählen und suchen
 
@@ -432,6 +460,20 @@ crop-terminal-skip-bottom: 1
 
 _task(hundert-millionen)
 
+<div class='hint task tasks-off-only'>
+<ul>
+<li>Wie viele Länder gibt es in der Tabelle <code>country</code>?</li>
+<li>Wie viele Länder in Afrika haben mehr als 50 Millionen Einwohner?</li>
+<li>Wie viele Städte aus Frankreich sind in der Tabelle <code>city</code> gespeichert?</li>
+</ul>
+</div>
+
+_task(anzahl-laender)
+
+_task(afrika-grosse-laender)
+
+_task(staedte-frankreich)
+
 ### Text durchsuchen: LIKE
 
 Mit `LIKE` kannst du Text nach einem Muster durchsuchen. Das Prozentzeichen `%` steht dabei für beliebig viele Zeichen. Die folgende Abfrage findet Ländernamen, in denen `land` vorkommt:
@@ -460,6 +502,19 @@ _task(ka-laender)
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Neben <code>%</code> gibt es ein zweites Zeichen für Muster: Der Unterstrich <code>_</code> steht für genau ein Zeichen. Welche Länder findet <code>SELECT name FROM country WHERE name LIKE '____';</code> mit vier Unterstrichen? Und findet <code>LIKE '%LAND%'</code> in Großbuchstaben weniger Länder als <code>LIKE '%land%'</code>?
 </div>
+
+<div class='hint task tasks-off-only'>
+<ul>
+<li>Welche Länder haben die Zeichenfolge <code>arm</code> oder <code>bein</code> im Namen?</li>
+<li>Finde jeweils drei Städte, deren Name die Zeichenfolge <code>arm</code> beziehungsweise <code>heim</code> enthält.</li>
+</ul>
+</div>
+
+_task(arm-bein)
+
+_task(drei-arm)
+
+_task(drei-heim)
 
 ### Jeden Wert einmal: DISTINCT
 
@@ -562,50 +617,6 @@ Um <code>mycli</code> zu beenden, gib <code>exit</code> ein oder verwende <kbd>S
 </div>
 
 Die drei Tabellen sind die kleine Fassung der Länder der Welt. Im zweiten Teil unten lädst du die ganze, mit Grenzen, Währungen und Amtssprachen, und verbindest Tabellen miteinander.
-
-## Aufgaben
-
-Beantworte die folgenden Fragen mit geeigneten SQL-Abfragen. Gib möglichst nur die Spalten aus, die du für die Antwort tatsächlich brauchst.
-
-<div class='tasks-off-only'>
-<p>Notiere jeweils deine Abfrage und das Ergebnis.</p>
-<ol>
-<li>Gib alle Länder mit Name, Einwohnerzahl und Fläche aus. Sortiere die Tabelle nach der Einwohnerzahl absteigend.</li>
-<li>Wie viele Länder gibt es in der Tabelle <code>country</code>?</li>
-<li>Wie viele Länder in Afrika haben mehr als 50 Millionen Einwohner?</li>
-<li>Welche Länder haben die Zeichenfolge <code>arm</code> oder <code>bein</code> im Namen?</li>
-<li>Welche Stadt hat die meisten Einwohner, wie viele Einwohner hat sie und in welchem Land liegt sie?</li>
-<li>Wie viele Städte aus Frankreich sind in der Tabelle <code>city</code> gespeichert?</li>
-<li>Gib die zehn bevölkerungsreichsten Städte Frankreichs aus.</li>
-<li>Finde jeweils drei Städte, deren Name die Zeichenfolge <code>arm</code> beziehungsweise <code>heim</code> enthält.</li>
-<li>Welche Städte in Deutschland liegen nördlicher als Hamburg (53,55° Nord)?</li>
-<li>Welche Hauptstädte liegen auf der Südhalbkugel?</li>
-</ol>
-</div>
-
-<p class='tasks-on-only'>Wie vorhin: Probier in <code>mycli</code>, bis das Ergebnis stimmt. Ist nach einem Wert gefragt, trägst du ihn ein; soll die Abfrage Zeilen ausgeben, kommt die fertige Abfrage in das Feld der Aufgabe. Der Workspace führt sie dann in deiner eigenen Datenbank aus und sagt, ob es passt. Er liest dabei nur; deine Daten bleiben, wie sie sind.</p>
-
-_task(laender-sortiert)
-
-_task(anzahl-laender)
-
-_task(afrika-grosse-laender)
-
-_task(arm-bein)
-
-_task(groesste-stadt)
-
-_task(staedte-frankreich)
-
-_task(top10-frankreich)
-
-_task(drei-arm)
-
-_task(drei-heim)
-
-_task(noerdlich-hamburg)
-
-_task(hauptstaedte-sueden)
 
 <!-- tutorial-step
 # Jede SQL-Aufgabe nimmt ihre Lösung an und lehnt einen typischen Fehler ab, auf den Daten, die die Seite lädt

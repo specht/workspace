@@ -210,6 +210,11 @@ tasks:
     check:
       type: number
       expect: 43
+    feedback:
+      - when: { equals: 0 }
+        say: 'Keine einzige Stadt? Dann passt die Bedingung auf keine Zeile. In `country_code` steht Frankreich als `''FRA''`, mit drei Buchstaben, nicht `''FR''` oder `''Frankreich''`.'
+      - when: { equals: 4748 }
+        say: Das sind alle Städte der Tabelle. Mit `WHERE` zählst du nur die aus Frankreich.
     hint: In `country_code` steht das Kürzel mit drei Buchstaben, so wie in `country.code`. Für Frankreich findest du es mit `SELECT code FROM country WHERE name = 'Frankreich';`.
     solution: "`SELECT COUNT(*) FROM city WHERE country_code = 'FRA';` ergibt 43."
 

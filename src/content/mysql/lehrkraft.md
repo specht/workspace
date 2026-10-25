@@ -1,7 +1,11 @@
 Der Einstieg in Datenbanken: Lernende laden die Länder der Welt in ihre eigene MySQL-Datenbank und fragen sie mit SQL ab, in `mycli` im Terminal. Drei Tabellen (`country`, `city`, `continent`) reichen für `SELECT`, `WHERE`, `ORDER BY`, `LIMIT`, `COUNT`, `LIKE` und `DISTINCT`, dazu die Reihenfolge, in der die Datenbank eine Abfrage abarbeitet. Vorkenntnisse braucht es keine außer dem Terminal; [Mit Dateien arbeiten](/working-with-files) hilft. Weiter geht es mit [SQL: Gruppieren und Verbinden](/sql-joins), in derselben Datenbank.
 
 <table class='table'>
-<tr><th>Ablauf</th><td>Zwei Doppelstunden. Erste: Daten laden und erkunden, die Bausteine von <code>SELECT</code> bis <code>DISTINCT</code> mit ihren Aufgaben. Zweite: die Reihenfolge mit dem Query Stepper und die gemischten Aufgaben am Ende; wer schnell ist, fängt mit dem zweiten Teil an.</td></tr>
+<tr><th>Ablauf</th><td><ul>
+<li><b>1. Doppelstunde:</b> Daten laden und erkunden, <code>SELECT</code>, <code>WHERE</code>, <code>ORDER BY</code> und <code>LIMIT</code>, jeweils mit ihren Aufgaben.</li>
+<li><b>2. Doppelstunde:</b> <code>COUNT</code>, <code>LIKE</code>, <code>DISTINCT</code> mit ihren Aufgaben, dann die Reihenfolge mit dem Query Stepper.</li>
+<li>Unter jedem Abschnitt stehen erst die Aufgaben zu ihm allein, dann eine bis drei, die ihn mit dem Vorigen verbinden (»Nördlich von Hamburg« braucht <code>WHERE</code> mit <code>AND</code>, »Die zehn größten Städte Frankreichs« dazu <code>ORDER BY</code> und <code>LIMIT</code>). Wer schnell ist, löst sie gleich; die anderen holen sie nach, wenn die Bausteine sitzen.</li>
+</ul></td></tr>
 <tr><th>Daten</th><td><code>countries-basic.sql</code> aus <a href='https://github.com/specht/workspace-files/tree/main/country-archive'><code>specht/workspace-files</code></a>, aus Wikidata vom Oktober 2026: 197 Länder, die Städte ab 100.000 Einwohnern und die Hauptstädte. Die Lernenden laden die Datei mit <code>wget</code> und <code>mysql &lt; …</code> in ihre eigene Datenbank; jede Person hat eine, und niemand sieht die der anderen. Die Seite zeigt nach dem Import die Tabellen mit ein paar Zeilen.</td></tr>
 <tr><th>Prüfung</th><td>Zwei Arten:<ul>
 <li>Fragt eine Aufgabe nach einem Wert (eine Zahl, ein Name, eine Auswahl), tragen die Lernenden nur das Ergebnis ein.</li>
