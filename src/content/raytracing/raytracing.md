@@ -29,7 +29,9 @@ So sieht dein Raytracer am Ende aus. Kein Bild davon ist gemalt: Jeder Pixel ist
 
 Die Idee, Strahlen auch an Spiegeln und durch Glas weiterzuverfolgen, ist von 1979. Das Bild, mit dem sie bekannt wurde, zeigt Kugeln über einem Schachbrett, wie deins.
 
-<img class='drawing' src='whitted-1979.webp' alt='Ein altes Bild in Graustufen, gedruckt im Rasterdruck mit sichtbaren Punkten: Vorn rechts schwebt eine große Glaskugel über einem schwarz-weißen Schachbrett vor grauem Grund, dahinter links eine hellere Spiegelkugel, in deren unterer Hälfte sich das Schachbrett spiegelt. Die Glaskugel ist fast durchsichtig: ein dünner doppelter Rand, oben ein heller Glanzpunkt, dahinter kaum verschoben der graue Grund und der Rand der Spiegelkugel; unten in ihr liegt das Schachbrett aufrecht, nur gebogen und zusammengedrückt.'>
+<img class='drawing pixel-exact' src='whitted-1979.webp' alt='Ein altes Bild in Graustufen, gedruckt im Rasterdruck mit sichtbaren Punkten: Vorn rechts schwebt eine große Glaskugel über einem schwarz-weißen Schachbrett vor grauem Grund, dahinter links eine hellere Spiegelkugel, in deren unterer Hälfte sich das Schachbrett spiegelt. Die Glaskugel ist fast durchsichtig: ein dünner doppelter Rand, oben ein heller Glanzpunkt, dahinter kaum verschoben der graue Grund und der Rand der Spiegelkugel; unten in ihr liegt das Schachbrett aufrecht, nur gebogen und zusammengedrückt.'>
+<img class='drawing pixel-exact-small' src='whitted-1979-grau.webp' alt='Dasselbe Bild von Whitted, weich in Graustufen statt in Rasterpunkten: die Glaskugel über dem Schachbrett, dahinter die Spiegelkugel.' hidden>
+<script src='/include/pixel_exact.js'></script>
 
 Seine Glaskugel ist hohl, eine dünne Schale aus Glas; darum steht das Schachbrett in ihr nicht auf dem Kopf. Im Kapitel »Glas« baust du neben eine volle Glaskugel auch eine hohle.
 
