@@ -180,7 +180,9 @@ crop-terminal-skip-bottom: 1
 
 <img class='full' src='join-capitals.webp' alt='Die fünf Länder Europas mit mehr als 50 Millionen Einwohnern und ihre Hauptstädte: Deutschland und Berlin, Frankreich und Paris, das Vereinigte Königreich und London, Italien und Rom, Russland und Moskau.'>
 
-Weil es `name` in beiden Tabellen gibt, steht der Name der Tabelle davor: `country.name`, `city.name`. Die Bedingung hinter `ON` ist fast immer dieselbe Art: Ein Fremdschlüssel ist gleich dem Primärschlüssel, auf den er verweist. So kommt auch der Name der Währung dazu, über `country.currency_code` und `currency.code`.
+Weil es `name` in beiden Tabellen gibt, steht der Name der Tabelle davor: `country.name`, `city.name`. Die Bedingung hinter `ON` ist fast immer dieselbe Art: Ein Fremdschlüssel ist gleich dem Primärschlüssel, auf den er verweist. So kommt auch der Name der Währung dazu, über `country.currency_code` und `currency.code`. Daten so auf Tabellen zu verteilen und über Schlüssel wieder zusammenzusetzen, ist die Idee des **relationalen Modells**, auf dem jede SQL-Datenbank aufbaut.
+
+_person(codd)
 
 Wie ein `JOIN` arbeitet, zeigt der Query Stepper Schritt für Schritt: Nach `FROM` stehen alle Länder da, nach `JOIN` ist jedes Land so oft da, wie es Städte hat, und erst `WHERE` lässt die Hauptstädte übrig.
 

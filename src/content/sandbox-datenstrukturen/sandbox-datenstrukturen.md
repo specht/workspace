@@ -173,6 +173,10 @@ _task(einfuegen-verschieben)
 
 Die Tests sind streng, und das ist gewollt: Eine Liste gilt erst dann als richtig, wenn sie sich nach außen richtig verhält **und** ihr Inneres stimmt, etwa wenn `size` wirklich der Zahl der gespeicherten Werte entspricht oder die Knotenkette keinen Kreis enthält. Ungültige Indizes, volle Arrays und doppelte Werte gehören fest zur Prüfung.
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Bau in deine Linked List absichtlich einen Fehler ein: Lass in der Methode, die ein Element entfernt, die Zeile weg, die <code>size</code> verkleinert, und speichere. Lass dann <strong>Run tests</strong> laufen: Welchen Fall nennt die Sandbox, und woran hat sie den Fehler bemerkt? Nimm die Zeile danach wieder hinein.
+</div>
+
 ### Bäume, Rekursion und AVL-Rotationen
 
 _uses(suchbaum, suchbaum-entfernen, avl)
@@ -203,6 +207,8 @@ sleep: 1
 </div>
 
 _task(avl-rotation)
+
+_person(adelson-velski-landis)
 
 ### Hash Tables: Du entscheidest
 
