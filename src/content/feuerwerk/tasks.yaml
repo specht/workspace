@@ -3,6 +3,54 @@
 format: 1
 activity: feuerwerk
 tasks:
+  - id: bewegen
+    title: Dein move_particle
+    prompt: |
+      Schreib den Rumpf von `move_particle` in `feuerwerk.c` und speichere. Der
+      Workspace wirft einen Funken mit bekannter Geschwindigkeit und sieht
+      nach, wo er nach einem Schritt ist.
+    file: feuerwerk/feuerwerk.c
+    check:
+      type: c
+      file: feuerwerk/feuerwerk.c
+      tolerance: 0.01
+      cases:
+        - call: '({ Particle p = {0, 100, 10, -50}; move_particle(&p, 0.5); p.vy; })'
+          expect: -30
+          say: 'Die Schwerkraft macht `vy` in jeder Sekunde um `GRAVITY` größer, in einer halben Sekunde also um 20: aus −50 wird −30.'
+        - call: '({ Particle p = {0, 100, 10, -50}; move_particle(&p, 0.5); p.x; })'
+          expect: 5
+          say: '`x` ändert sich um `vx` mal `dt`: 10 Pixel pro Sekunde, eine halbe Sekunde lang.'
+        - call: '({ Particle p = {0, 100, 10, -50}; move_particle(&p, 0.01); p.y; })'
+          expect: 99.5
+          say: '`y` ändert sich um `vy` mal `dt`: Nach oben ist `vy` negativ, `y` wird kleiner.'
+        - call: '({ Particle p = {50, 20, 0, 0}; move_particle(&p, 1); p.vy; })'
+          expect: 40
+          say: 'Auch ein Funke, der stillsteht, fällt: Nach einer Sekunde ist `vy` so groß wie `GRAVITY`.'
+
+  - id: hinzufuegen
+    title: Dein add
+    prompt: |
+      Schreib `add` in `feuerwerk.c` und speichere. Der Workspace fügt Funken
+      hinzu und zählt nach, auch wenn das Array schon voll ist.
+    file: feuerwerk/feuerwerk.c
+    check:
+      type: c
+      file: feuerwerk/feuerwerk.c
+      cases:
+        - call: '({ add(1, 2, 3, 4, 5); count; })'
+          expect: 1
+          say: 'Nach dem ersten Funken lebt einer: `count` muss danach 1 sein.'
+        - call: '({ add(1, 2, 3, 4, 5); add(6, 7, 8, 9, 10); particles[1].x; })'
+          expect: 6
+          say: 'Der zweite Funke gehört an die Stelle 1, hinter den ersten: an die Stelle `count`, bevor es größer wird.'
+        - call: '({ add(1, 2, 3, 4, 5); particles[0].life; })'
+          expect: 5
+          say: 'Alle fünf Werte gehören in den Funken, auch `life`.'
+        - call: '({ for (int i = 0; i < MAX_PARTICLES + 5; i++) add(0, 0, 0, 0, 1); count; })'
+          expect: 2000
+          say: 'Ist das Array voll, kommt kein Funke mehr dazu: `count` darf nie größer als `MAX_PARTICLES` werden, sonst schreibt `add` hinter das Array.'
+
   - id: erster-funke
     title: Der erste Funke
     prompt: |

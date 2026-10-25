@@ -82,6 +82,12 @@ void throw_spark(Particle *p)
     p->vy = random_between(-110, -60);
 }
 
+// Ein Schritt der Zeit dt: erst die Schwerkraft, dann die Bewegung
+void move_particle(Particle *p, double dt)
+{
+    // hier: die zwei Regeln von oben
+}
+
 int main(void)
 {
     screen_open(W, H, pixel_indexed8, "Ein Funke");
@@ -99,9 +105,7 @@ int main(void)
             dt = 0.1;
         last = now;
 
-        spark.vy += GRAVITY * dt;   // die Schwerkraft zieht nach unten
-        spark.x += spark.vx * dt;
-        spark.y += spark.vy * dt;
+        move_particle(&spark, dt);
 
         if (spark.x >= W || spark.y >= H)
             throw_spark(&spark);
@@ -117,6 +121,38 @@ int main(void)
 
 `random_between` liefert eine zufällige Kommazahl zwischen zwei Grenzen: `rand()` gibt eine ganze Zahl von 0 bis `RAND_MAX` zurück, geteilt durch `RAND_MAX` liegt sie zwischen 0 und 1. Weil das Programm den Bildschirm nie löscht, bleibt jede Flugbahn stehen.
 
+<div class='hint own' data-check='bewegen'>
+<strong>Jetzt bist du dran:</strong> Schreib den Rumpf von <code>move_particle</code> nach den beiden Regeln oben. <code>p</code> zeigt auf den Funken; seine Felder erreichst du wie in <code>throw_spark</code> mit <code>p-&gt;vy</code>, <code>p-&gt;x</code> und <code>p-&gt;y</code>. Prüfen kann der Workspace die Funktion, sobald du das Programm einmal mit <code>make</code> übersetzt hast: mit der Aufgabe weiter unten.
+</div>
+
+<!-- hint -->
+Ein Funke ist bei `y = 100` und fliegt mit `vy = −50` nach oben. Wie schnell ist er nach einer halben Sekunde, und wo ist er dann? Rechne mit den beiden Regeln, erst die Geschwindigkeit, dann die Position.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```c
+void move_particle(Particle *p, double dt)
+{
+    p->vy += …;   // die Schwerkraft ändert die Geschwindigkeit
+    p->x += …;    // die Geschwindigkeit ändert die Position
+    p->y += …;
+}
+```
+<!-- /hint -->
+
+<!-- solution -->
+```c
+~ // Ein Schritt der Zeit dt: erst die Schwerkraft, dann die Bewegung
+~ void move_particle(Particle *p, double dt)
+~ {
+    p->vy += GRAVITY * dt;   // die Schwerkraft zieht nach unten
+    p->x += p->vx * dt;
+    p->y += p->vy * dt;
+~ }
+```
+<!-- /solution -->
+
 <!-- tutorial-screenshot
 # Die Vorlage im Terminal nach feuerwerk klonen, den Ordner öffnen, dann den Funken übersetzen
 show-left-sidebar
@@ -130,11 +166,12 @@ press: Enter
 wait-for-input-value: /workspace/feuerwerk/
 press: Enter
 wait-for-text: main.c
-write-file: feuerwerk.c <- previous-code
+write-file: feuerwerk.c <- file:stufen/01-funke.c
 open-file: feuerwerk.c
 terminal-open
 terminal-run: make PROGRAM=feuerwerk
 terminal-wait-for-prompt: 180
+check-task: bewegen
 -->
 <img class='full' src='funke-make.webp' alt='Der Workspace mit feuerwerk.c im Editor; im Terminal darunter hat make PROGRAM=feuerwerk die Datei feuerwerk.html erzeugt.'>
 
@@ -152,6 +189,8 @@ crop-element: #canvas
 <img class='full' src='funke.webp' alt='Mehrere gelbe Wurfparabeln steigen von links unten auf und fallen wieder.'>
 
 Jede Bahn ist eine Parabel, wie beim Wurf eines Balls. Das Programm rechnet sie nirgends aus: Sie entsteht von selbst aus den zwei Regeln.
+
+_task(bewegen)
 
 _task(erster-funke)
 
@@ -187,34 +226,57 @@ i--;   // den nachgerückten Funken auch noch bewegen
 
 _task(luecke)
 
-Jetzt löscht das Programm den Bildschirm in jedem Bild mit `clear(0)` und zeichnet alle Funken neu, sonst sähe man nur noch Streifen. Hier das ganze Programm:
+Jetzt kommt alles zusammen. Oben braucht das Programm `math.h` für `cos` und `sin`, dazu π und die größte Zahl von Funken. `M_PI` gibt es in strengem C nicht, deshalb steht π als `PI` im Programm:
 
 ```c
-#include "pixelram.h"
+~ #include "pixelram.h"
 #include <math.h>
-#include <stdlib.h>
-
-#define W 320
-#define H 180
-#define GRAVITY 40.0
+~ #include <stdlib.h>
+~
+~ #define W 320
+~ #define H 180
+~ #define GRAVITY 40.0
 #define PI 3.14159265358979
 #define MAX_PARTICLES 2000
+```
 
-typedef struct
-{
-    double x, y;     // Position in Pixeln
-    double vx, vy;   // Geschwindigkeit in Pixeln pro Sekunde
+Der Funke bekommt seine Lebenszeit, und unter dem `struct` stehen das Array und der Zähler:
+
+```c
+~     double vx, vy;   // Geschwindigkeit in Pixeln pro Sekunde
     double life;     // verbleibende Lebenszeit in Sekunden
-} Particle;
+~ } Particle;
 
 Particle particles[MAX_PARTICLES];
 int count = 0;
+```
 
-double random_between(double low, double high)
+<div class='hint own' data-check='hinzufuegen'>
+<strong>Jetzt bist du dran:</strong> Schreib unter <code>move_particle</code> die Funktion <code>void add(double x, double y, double vx, double vy, double life)</code>. Sie hängt einen Funken hinten an das Array an und zählt <code>count</code> hoch; ist das Array schon voll, tut sie nichts. <code>(Particle){ x, y, vx, vy, life }</code> baut einen ganzen Funken auf einmal, die Werte in der Reihenfolge der Felder im <code>struct</code>.
+</div>
+
+<!-- hint -->
+In `particles` leben 3 Funken, an den Stellen 0, 1 und 2, und `count` ist 3. An welche Stelle kommt der nächste, und was ist `count` danach? Was soll passieren, wenn schon `MAX_PARTICLES` Funken leben?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```c
+void add(double x, double y, double vx, double vy, double life)
 {
-    return low + (high - low) * rand() / (double)RAND_MAX;
+    if (…)   // das Array ist voll
+        return;
+    particles[count] = (Particle){ … };
+    …
 }
+```
+<!-- /hint -->
 
+<!-- solution -->
+```c
+~     p->y += p->vy * dt;
+~ }
+~
 void add(double x, double y, double vx, double vy, double life)
 {
     if (count == MAX_PARTICLES)
@@ -222,7 +284,14 @@ void add(double x, double y, double vx, double vy, double life)
     particles[count] = (Particle){ x, y, vx, vy, life };
     count++;
 }
+```
+<!-- /solution -->
 
+_task(hinzufuegen)
+
+Darunter wirft `explode` 100 Funken von derselben Stelle aus, mit den Zeilen von oben:
+
+```c
 void explode(double x, double y)
 {
     for (int i = 0; i < 100; i++)
@@ -232,7 +301,11 @@ void explode(double x, double y)
         add(x, y, cos(angle) * speed, sin(angle) * speed, random_between(1.5, 2.5));
     }
 }
+```
 
+Bleibt `main`. Jede Sekunde explodiert es an einer neuen Stelle, und das Programm löscht den Bildschirm in jedem Bild mit `clear(0)` und zeichnet alle Funken neu, sonst sähe man nur noch Streifen. Ersetze `main` durch dieses Gerüst; `throw_spark` brauchst du nicht mehr und kannst es löschen:
+
+```c
 int main(void)
 {
     screen_open(W, H, pixel_indexed8, "Explosion");
@@ -256,12 +329,48 @@ int main(void)
         }
 
         clear(0);
+        // hier: jeden Funken bewegen, verloschene entfernen, die anderen zeichnen
+
+        present();
+    }
+
+    screen_close();
+    return 0;
+}
+```
+
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Schreib an der Stelle mit <code>// hier</code> die Schleife über alle lebenden Funken. Jeder wird mit <code>move_particle</code> bewegt, und seine Lebenszeit wird um <code>dt</code> kürzer. Ist sie abgelaufen, rückt der letzte Funke an seine Stelle, wie oben; sonst wird er gezeichnet, in der Farbe 12.
+</div>
+
+<!-- hint -->
+Schreib in Worten untereinander, was mit jedem Funken in jedem Bild geschieht, in welcher Reihenfolge. Was passiert mit dem Index `i`, wenn an seine Stelle der letzte Funke rückt? Und warum darf ein verloschener Funke nicht mehr gezeichnet werden?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```c
         for (int i = 0; i < count; i++)
         {
             Particle *p = &particles[i];
-            p->vy += GRAVITY * dt;
-            p->x += p->vx * dt;
-            p->y += p->vy * dt;
+            …   // bewegen und die Lebenszeit verkürzen
+            if (p->life <= 0)
+            {
+                …   // die Lücke füllen, wie oben
+                continue;
+            }
+            set_pixel(…);
+        }
+```
+<!-- /hint -->
+
+<!-- solution -->
+```c
+~         clear(0);
+        for (int i = 0; i < count; i++)
+        {
+            Particle *p = &particles[i];
+            move_particle(p, dt);
             p->life -= dt;
 
             if (p->life <= 0)
@@ -276,21 +385,16 @@ int main(void)
             set_pixel((int)p->x, (int)p->y, 12);
         }
 
-        present();
-    }
-
-    screen_close();
-    return 0;
-}
 ```
-
-`(Particle){ x, y, vx, vy, life }` baut einen ganzen Funken auf einmal, die Werte in der Reihenfolge der Felder im `struct`. `M_PI` gibt es in strengem C nicht, deshalb steht π als `PI` oben im Programm.
+<!-- /solution -->
 
 <!-- tutorial-screenshot
-write-file: feuerwerk.c <- previous-code
+write-file: feuerwerk.c <- file:stufen/02-explosion.c
 terminal-open
 terminal-run: make PROGRAM=feuerwerk
 terminal-wait-for-prompt
+check-task: hinzufuegen
+check-task: bewegen
 tab: preview
 variants: crt
 viewport: 800x450
@@ -340,8 +444,34 @@ Nummer 0, der Himmel, ist damit Dunkelblau, und der ganze Bildschirm beginnt in 
 
 ### Leuchtspuren
 
-Echte Funken ziehen einen Schweif hinter sich her, weil das Auge ein Leuchten noch kurz sieht, wenn es schon weg ist. Das lässt sich mit dem Bildschirm selbst nachbauen: Statt ihn mit `clear(0)` zu löschen, wird jedes Pixel nur ein wenig dunkler, eine Stufe in seinem Farbverlauf. Ein Funke, der weiterfliegt, lässt so eine Spur zurück, die von selbst verglüht:
+Echte Funken ziehen einen Schweif hinter sich her, weil das Auge ein Leuchten noch kurz sieht, wenn es schon weg ist. Das lässt sich mit dem Bildschirm selbst nachbauen: Statt ihn mit `clear(0)` zu löschen, wird jedes Pixel nur ein wenig dunkler, eine Stufe in seinem Farbverlauf. Ein Funke, der weiterfliegt, lässt so eine Spur zurück, die von selbst verglüht.
 
+Die Helligkeit eines Pixels der Farbe `c` innerhalb seines Verlaufs ist `c % 16`. Ist sie schon 0, bleibt das Pixel dunkel; sonst rutscht es mit `c - 1` eine Farbe tiefer, im selben Verlauf.
+
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>void fade(void)</code>: Sie geht über alle Pixel des Bildschirms, liest jedes mit <code>get_pixel(x, y)</code> und macht es eine Stufe dunkler, wenn es noch nicht ganz dunkel ist. Laufen lassen kannst du sie erst gleich, im ganzen Feuerwerk.
+</div>
+
+<!-- hint -->
+Ein Pixel hat die Farbe 37. In welchem Verlauf liegt es, wie hell ist es, und welche Farbe hat es nach einem `fade`? Und eins mit der Farbe 32?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```c
+void fade(void)
+{
+    for (int y = 0; y < H; y++)
+        for (int x = 0; x < W; x++)
+        {
+            int c = get_pixel(x, y);
+            …   // eine Stufe dunkler, wenn die Helligkeit noch nicht 0 ist
+        }
+}
+```
+<!-- /hint -->
+
+<!-- solution -->
 ```c
 // Nachleuchten: jedes Pixel wird ein wenig dunkler
 void fade(void)
@@ -355,8 +485,7 @@ void fade(void)
         }
 }
 ```
-
-`c % 16` ist die Helligkeit innerhalb des Verlaufs. Ist sie schon 0, bleibt das Pixel schwarz, sonst rutscht es eine Farbe tiefer, im selben Verlauf.
+<!-- /solution -->
 
 ### Raketen
 
@@ -432,54 +561,46 @@ Eine Kleinigkeit fehlt noch: Kommen zwei Raketen nacheinander auf derselben Seit
 
 ### Das ganze Feuerwerk
 
-Mit der Maus kannst du selbst Raketen starten: `mouse_button_pressed` meldet einen Klick, `mouse_position` sagt, wohin. Die Rakete fliegt genau bis zu dieser Höhe. Hier das ganze Programm:
+Mit der Maus kannst du selbst Raketen starten: `mouse_button_pressed` meldet einen Klick, `mouse_position` sagt, wohin. Die Rakete fliegt genau bis zu dieser Höhe.
+
+Jetzt kommt alles zusammen. Oben kommen die Farben der Stadt dazu, und weil oft mehrere Explosionen zugleich in der Luft sind, darf es mehr Funken geben:
 
 ```c
-#include "pixelram.h"
-#include <math.h>
-#include <stdlib.h>
-
-#define W 320
-#define H 180
+~ #define GRAVITY 40.0
+~ #define PI 3.14159265358979
 #define MAX_PARTICLES 3000
-#define GRAVITY 40.0
-#define PI 3.14159265358979
 #define HOUSE 64     // Farbe der Häuser
 #define WINDOW 65    // 65 bis 67: drei Farben für Fenster
+```
 
-typedef struct
-{
-    double x, y;     // Position in Pixeln
-    double vx, vy;   // Geschwindigkeit in Pixeln pro Sekunde
-    double life;     // verbleibende Lebenszeit in Sekunden
+Jeder Funke bekommt seinen Farbverlauf und weiß, ob er eine Rakete ist; unter dem Zähler steht die Stadt:
+
+```c
+~     double life;     // verbleibende Lebenszeit in Sekunden
     int ramp;        // Farbverlauf 0 bis 3
     bool rocket;     // eine Rakete explodiert, wenn sie umkehrt
-} Particle;
-
-Particle particles[MAX_PARTICLES];
-int count = 0;
+~ } Particle;
+~
+~ Particle particles[MAX_PARTICLES];
+~ int count = 0;
 uint8_t city[H][W];   // die Stadt: 0 ist Himmel, sonst eine Farbe
+```
 
-double random_between(double low, double high)
-{
-    return low + (high - low) * rand() / (double)RAND_MAX;
-}
+`add` nimmt die beiden neuen Werte mit:
 
+```c
 void add(double x, double y, double vx, double vy, double life, int ramp, bool rocket)
-{
-    if (count == MAX_PARTICLES)
-        return;
+~ {
+~     if (count == MAX_PARTICLES)
+~         return;
     particles[count] = (Particle){ x, y, vx, vy, life, ramp, rocket };
-    count++;
-}
+~     count++;
+~ }
+```
 
-void launch(double x, double target_y)
-{
-    // so schnell, dass die Rakete genau bei target_y umkehrt
-    double vy = -sqrt(2 * GRAVITY * (H - target_y));
-    add(x, H - 1, random_between(-8, 8), vy, 10, rand() % 4, true);
-}
+Über `explode` kommt `launch` von oben. `explode` selbst bekommt jetzt die Rakete: Ihre Funken übernehmen ihre Stelle, ihre Geschwindigkeit und ihren Farbverlauf. Ersetze es durch:
 
+```c
 void explode(Particle *p)
 {
     // etwa gleich schnell: die Funken bilden eine Kugelschale, keine volle Scheibe
@@ -491,77 +612,11 @@ void explode(Particle *p)
             random_between(1.5, 2.5), p->ramp, false);
     }
 }
+```
 
-// Vier Farbverläufe zu je 16 Farben: 16 * ramp + Helligkeit
-void make_palette(void)
-{
-    const int sky[3] = {10, 12, 35};
-    const int colors[4][3] = { {255, 80, 60}, {80, 255, 120}, {90, 150, 255}, {255, 210, 80} };
-    for (int ramp = 0; ramp < 4; ramp++)
-        for (int b = 0; b < 16; b++)
-        {
-            double f = b / 15.0;
-            // vom Nachthimmel zur Farbe, ganz hell fast weiß
-            double white = f > 0.8 ? (f - 0.8) * 5 : 0;
-            int rgb[3];
-            for (int i = 0; i < 3; i++)
-                rgb[i] = (sky[i] + (colors[ramp][i] - sky[i]) * f) * (1 - white) + 255 * white;
-            set_palette(16 * ramp + b, rgb[0], rgb[1], rgb[2]);
-        }
-}
+Darunter kommen `make_palette`, `make_skyline`, `draw_skyline` und `fade` von oben. Und `main` wird zum ganzen Feuerwerk; ersetze es durch dieses Gerüst:
 
-// Häuser mit zufälliger Breite und Höhe, von links nach rechts. Jedes Haus
-// hat seinen eigenen Fensterabstand, und in jedem leuchtet ein anderer Teil
-// der Fenster. Die Stadt wird einmal ausgedacht und in city gemalt.
-void make_skyline(void)
-{
-    set_palette(HOUSE, 0, 0, 0);
-    set_palette(WINDOW, 255, 210, 120);       // Glühbirne
-    set_palette(WINDOW + 1, 255, 150, 70);    // warmes Licht
-    set_palette(WINDOW + 2, 140, 180, 255);   // Fernseher
-
-    int x = 0;
-    while (x < W)
-    {
-        int width = 10 + rand() % 20;
-        int top = H - 12 - rand() % 30;
-        int step = 2 + rand() % 2;                 // Fensterabstand
-        double lit = random_between(0.05, 0.4);    // Anteil der hellen Fenster
-
-        for (int i = x; i < x + width && i < W; i++)
-            for (int y = top; y < H; y++)
-                city[y][i] = HOUSE;
-
-        for (int y = top + 2; y < H - 1; y += 3)
-            for (int i = x + 2; i < x + width - 1 && i < W; i += step)
-                if (random_between(0, 1) < lit)
-                    city[y][i] = WINDOW + rand() % 3;
-
-        x += width;
-    }
-}
-
-// die Stadt vor den Himmel malen
-void draw_skyline(void)
-{
-    for (int y = 0; y < H; y++)
-        for (int x = 0; x < W; x++)
-            if (city[y][x] != 0)
-                set_pixel(x, y, city[y][x]);
-}
-
-// Nachleuchten: jedes Pixel wird ein wenig dunkler
-void fade(void)
-{
-    for (int y = 0; y < H; y++)
-        for (int x = 0; x < W; x++)
-        {
-            int c = get_pixel(x, y);
-            if (c % 16 > 0)
-                set_pixel(x, y, c - 1);
-        }
-}
-
+```c
 int main(void)
 {
     screen_open(W, H, pixel_indexed8, "Feuerwerk");
@@ -604,22 +659,17 @@ int main(void)
         for (int i = 0; i < count; i++)
         {
             Particle *p = &particles[i];
-            p->vy += GRAVITY * dt;
             if (!p->rocket)
             {
                 // Luftwiderstand bremst die Funken
                 p->vx -= p->vx * 1.5 * dt;
                 p->vy -= p->vy * 1.5 * dt;
             }
-            p->x += p->vx * dt;
-            p->y += p->vy * dt;
+            move_particle(p, dt);
             p->life -= dt;
 
-            if (p->rocket && p->vy >= 0)
-            {
-                explode(p);
-                p->life = 0;
-            }
+            // hier: eine Rakete, die umkehrt, explodiert
+
 
             if (p->life <= 0 || p->y >= H)
             {
@@ -644,8 +694,39 @@ int main(void)
 }
 ```
 
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Schreib an der Stelle mit <code>// hier</code>, was eine Rakete zur Rakete macht: Kehrt sie um, explodiert sie, und sie selbst verlischt.
+</div>
+
+<!-- hint -->
+Woran erkennst du im Programm, dass eine Rakete umkehrt? Denk an das Vorzeichen von `vy`, während sie steigt, und danach. Und was soll mit der Rakete selbst geschehen, sobald ihre Funken entstanden sind?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```c
+            if (…)   // eine Rakete, die nicht mehr steigt
+            {
+                explode(p);
+                …   // die Rakete selbst verlischt
+            }
+```
+<!-- /hint -->
+
+<!-- solution -->
+```c
+~             p->life -= dt;
+~
+            if (p->rocket && p->vy >= 0)
+            {
+                explode(p);
+                p->life = 0;
+            }
+```
+<!-- /solution -->
+
 <!-- tutorial-screenshot
-write-file: feuerwerk.c <- previous-code
+write-file: feuerwerk.c <- file:stufen/03-feuerwerk.c
 terminal-open
 terminal-run: make PROGRAM=feuerwerk
 terminal-wait-for-prompt

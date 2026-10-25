@@ -3,6 +3,10 @@
 format: 1
 activity: feuerwerk
 examples:
+  bewegen:
+    skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Dass die Schritte der Seite die Aufgabe lösen, prüfen die Rezepte mit check-task; die Prüfart selbst testet c_check_test.rb.
+  hinzufuegen:
+    skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Dass die Schritte der Seite die Aufgabe lösen, prüfen die Rezepte mit check-task; die Prüfart selbst testet c_check_test.rb.
   erster-funke:
     pass:
       - files: { feuerwerk/feuerwerk.html: { text: "<!DOCTYPE html>\n<html><body><canvas></canvas></body></html>\n" } }
