@@ -472,6 +472,13 @@ _include_file(fire.rb, ruby)
 
 Du hast eine Feueranimation in Ruby programmiert: Ein Farbverlauf legt fest, wie heiß jede Farbe aussieht, und ein Filterkernel lässt die Hitze in jedem Bild ein Stück nach oben steigen und abkühlen. Filterkernel stecken auch hinter dem Weichzeichnen und dem Finden von Kanten in der Bildbearbeitung. Das Feuer war ein beliebter Effekt der Demoszene, und mit ein wenig Experimentieren machst du es noch besser.
 
+Auch Spiele haben so gebrannt: In der Fassung von *Final DOOM* für die erste PlayStation lodert dasselbe Feuer über den Bildschirm, aus einer Palette von Schwarz bis Weiß, einer weißen untersten Zeile als Glut und Hitze, die mit ein wenig Zufall nach oben steigt und dabei abkühlt.
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>How DOOM fire was done</strong>, Fabien Sanglard, 2018. Wie das Feuer von <em>DOOM</em> auf der PlayStation funktioniert, in wenigen Zeilen Code mit Bildern zu jedem Schritt; der Zufall lässt die Flammen dort zusätzlich nach links und rechts wehen: <a href='https://fabiensanglard.net/doom_fire_psx/'>fabiensanglard.net</a>.</p>
+</div>
+
 Hier sind ein paar Vorschläge, wie du die Animation weiter verbessern könntest:
 
 - Versuche, andere Muster zu zeichnen, um die Quelle des Feuers zu verändern.

@@ -195,6 +195,8 @@ crop-element: #screen-box
 </div>
 
 <!-- if: class_repo -->
+Mit 8 Bit wie diese Maschine rechneten auch die Heimcomputer der 1980er Jahre. Der bekannteste Prozessor darin war der 6502 von 1975: Er steckte im Apple II, Varianten von ihm im Commodore 64 und im NES von Nintendo. Er hat es bis ins Kino geschafft: Im Film *Terminator* (1984) sieht der Roboter die Welt durch ein Bild, über das Code für den 6502 aus einem Apple II läuft, und in der Serie *Futurama* zeigt 1999 ein Röntgenbild, dass in Benders Kopf ein 6502 steckt.
+
 Du arbeitest mit **zwei Git-Repositories**. Im Workspace ist `~` dein Ordner `/workspace`.
 
 <table class='table'>
