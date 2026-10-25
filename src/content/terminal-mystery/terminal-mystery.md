@@ -116,7 +116,11 @@ Mit `>` landet die Ausgabe eines Befehls in einer Datei statt im Terminal. So ha
 grep '^HINWEIS' tatort.txt > notizen.txt
 ```
 
-`>` überschreibt die Datei, `>>` hängt an ihr Ende an. Was du später findest, kommt also mit `>>` dazu.
+_task(noch-einmal)
+
+<!-- after: noch-einmal -->
+Es bleiben fünf Zeilen. `>` schreibt die Datei jedes Mal neu und wirft weg, was vorher darin stand. `>>` hängt an ihr Ende an. Was du später findest, kommt also mit `>>` dazu.
+<!-- /after -->
 
 `grep` unterscheidet Groß- und Kleinschreibung: `HINWEIS` ist nicht `Hinweis`. Mit `-i` (»ignore case«) ist das egal, und mit `-c` (»count«) gibt `grep` statt der Zeilen nur ihre Zahl aus.
 

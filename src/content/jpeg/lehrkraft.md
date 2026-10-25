@@ -34,6 +34,7 @@ Lernende schreiben in C einen Decoder für Baseline-JPEG, der das Bild mit Pixel
 
 #### Die Aufgaben
 
+- »Ohne Dequantisierung« ist eine Vorhersage nach »Dequantisiert«: Ohne die Multiplikation ist jeder Koeffizient um seinen Tabellenwert zu klein, das Bild wird fast einheitlich grau, auch die Farben verschwinden fast. Die Erklärung erscheint erst nach der Antwort; wer mag, nimmt die Multiplikation im eigenen Decoder kurz heraus.
 - »Eigene Huffman-Tabellen« (58) hat Rückmeldungen für 162 (die Standardtabelle aus `44-baseline.jpg`), 77 (die Segmentlänge) und 75 (ohne die 17 Bytes davor).
 - »Der zweite Block« (−138) erkennt −18, die Differenz ohne den vorigen Wert.
 - »Wie viele MCUs?« (10500) erkennt 10375 (abgerundet) und 10421 (Pixel durch 64).

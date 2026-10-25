@@ -42,6 +42,7 @@ Wer mit `grep -r Reuter .` oder direkt in der Alarmanlage anfängt, findet schne
 
 #### Die Aufgaben
 
+- »Noch einmal in die Notizen« ist eine Vorhersage: Derselbe Befehl mit `>` zweimal lässt fünf Zeilen in `notizen.txt`, nicht zehn. Der Satz, dass `>` überschreibt und `>>` anhängt, erscheint erst nach der Antwort.
 - »Die Hinweise«, »Die Zeugin«, »Das gelbe Auto« und »In beiden Vereinen« sind Befehle, deren Ausgabe geprüft wird; die Rückmeldungen erkennen typische Fehler (das Schild, Hausnummer 32, ein Kennzeichen ohne 7, `uniq -c`).
 - »Groß oder klein« fragt 181 ab, »Der Nachtwächter« die Nummer 1290, »Zwei Verdächtige« ist eine Auswahl, »Die gelöschte Karte« fragt 4471 ab und »Wer war es?« den Namen, mit eigenen Rückmeldungen für Marlene Voss und die anderen Reuters.
 

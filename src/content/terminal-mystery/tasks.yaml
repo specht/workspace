@@ -38,6 +38,32 @@ tasks:
         say: Diese Datei gibt es nicht. Der Befehl läuft im Ordner `bitstein`, wie in deinem Terminal; schreib den Namen so, wie `ls` ihn dort zeigt.
     solution: "`grep '^HINWEIS' tatort.txt`"
 
+  - id: noch-einmal
+    title: Noch einmal in die Notizen
+    prediction: true
+    prompt: |
+      In `notizen.txt` stehen jetzt die fünf Hinweise. Du führst denselben
+      Befehl mit `>` gleich noch einmal aus. Wie viele Zeilen stehen danach in
+      `notizen.txt`? Überleg erst, dann probier es aus, etwa mit
+      `wc -l notizen.txt`.
+    check:
+      type: choice
+      options:
+        - '5'
+        - '10'
+        - '0'
+        - Keine, die Shell meldet, dass es die Datei schon gibt.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Das wäre so, wenn `>` an die Datei anhinge. Probier es aus und zähl mit `wc -l notizen.txt`.
+      - when: { picked: 2 }
+        say: '`grep` findet beim zweiten Mal dieselben fünf Zeilen. Was macht `>` mit dem, was vorher in der Datei stand?'
+      - when: { picked: 3 }
+        say: Manche Shells können so eingestellt werden, Bash ist es hier nicht. Probier es aus.
+    solution: |
+      Fünf: `>` schreibt die Datei jedes Mal neu. Anhängen würde `>>`.
+
   - id: gross-klein
     title: Groß oder klein
     prompt: In wie vielen Zeilen von `tatort.txt` steht `hinweis`, egal ob groß oder klein geschrieben?

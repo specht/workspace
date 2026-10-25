@@ -89,6 +89,34 @@ tasks:
     hint: Der erste Wert der Quantisierungstabelle von `91-baseline.jpg` für Y ist nicht 5 wie in `44-baseline.jpg`. Er steht im DQT-Segment.
     solution: 'In der Datei steht −16, der erste Wert der Quantisierungstabelle ist 3: −16 · 3 = −48.'
 
+  - id: ohne-dequant
+    title: Ohne Dequantisierung
+    prediction: true
+    prompt: |
+      Angenommen, dein Decoder vergisst die Dequantisierung und gibt die
+      Koeffizienten so, wie sie in der Datei stehen, in die iDCT. Wie sieht
+      das Bild dann aus?
+    check:
+      type: choice
+      options:
+        - Wie vorher, nur etwas unschärfer.
+        - Fast einheitlich grau, die Umrisse nur schwach zu ahnen.
+        - Viel zu kontrastreich, fast nur Schwarz und Weiß.
+        - Gar nicht, der Decoder bricht ab.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Die feinen Muster werden tatsächlich schwächer, aber nicht nur sie. Um welchen Faktor ist der DC-Koeffizient ohne Dequantisierung zu klein?
+      - when: { picked: 2 }
+        say: Ohne Dequantisierung sind die Koeffizienten kleiner, nicht größer. Was bedeutet das für die Abstände der Pixel zur Mitte 128?
+      - when: { picked: 3 }
+        say: Die iDCT rechnet mit jeder Zahl, auch mit zu kleinen. Was kommt heraus, wenn alle Koeffizienten um ihren Tabellenwert zu klein sind?
+    solution: |
+      Fast einheitlich grau: Jeder Koeffizient ist um seinen Wert in der
+      Quantisierungstabelle zu klein, der DC-Koeffizient um wenige Male, die
+      feinen Muster um viel mehr. Alle Pixel liegen darum nah bei 128, auch in
+      Cb und Cr.
+
   - id: idct
     title: Nach der iDCT
     prompt: |

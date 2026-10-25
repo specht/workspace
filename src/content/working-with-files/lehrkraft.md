@@ -14,3 +14,5 @@ Die Aufgaben prüfen, was im Ordner `/workspace/working-with-files` entstanden i
 </table>
 
 Die Rückmeldungen zu den Zahlen erkennen die typischen Verwechslungen: Zeilen statt Dateien, mit und ohne `-i`, Vorkommen statt Zeilen.
+
+»Wenn das Ziel schon da ist« ist eine Vorhersage nach dem Umbenennen mit `mv`: Die meisten erwarten eine Nachfrage oder einen Fehler, `mv` überschreibt aber ohne zu fragen. Ausprobiert wird mit zwei eigenen Dateien `a.txt` und `b.txt`, nicht mit den Beispieldateien, die spätere Aufgaben noch brauchen. Die Erklärung mit `mv -i` erscheint erst nach der Antwort.

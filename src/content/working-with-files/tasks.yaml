@@ -169,6 +169,32 @@ tasks:
       - when: { problem: missing }
         say: Sieh mit `tree working-with-files/sandbox` nach, wo `jay.webm` gerade liegt. `mv jay.webm nested` musst du im Ordner `sandbox` ausführen.
 
+  - id: mv-ziel-gibt-es
+    title: Wenn das Ziel schon da ist
+    prediction: true
+    prompt: |
+      In einem Ordner liegen `a.txt` mit dem Text `eins` und `b.txt` mit dem
+      Text `zwei`. Was passiert bei `mv a.txt b.txt`? Überleg erst, dann
+      probier es mit zwei eigenen Dateien aus: `echo eins > a.txt`,
+      `echo zwei > b.txt`, `mv a.txt b.txt`, `cat b.txt`.
+    check:
+      type: choice
+      options:
+        - '`mv` meldet einen Fehler, weil es `b.txt` schon gibt.'
+        - '`mv` fragt, ob `b.txt` überschrieben werden soll.'
+        - '`b.txt` wird ohne Nachfrage überschrieben: Darin steht jetzt `eins`, `a.txt` ist weg.'
+        - 'Beide bleiben: Die verschobene Datei bekommt einen neuen Namen wie `b (1).txt`.'
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Für `mv` ist ein vorhandenes Ziel kein Fehler. Probier es mit den beiden Dateien aus.
+      - when: { picked: 1 }
+        say: Fragen tut `mv` nur, wenn man es darum bittet. Probier es aus.
+      - when: { picked: 3 }
+        say: So machen es manche Dateimanager. Das Terminal ist da weniger vorsichtig. Probier es aus.
+    solution: |
+      `b.txt` wird ohne Nachfrage überschrieben. Mit `mv -i` fragt `mv` vorher.
+
   - id: papierkorb
     title: Und wenn rm danebengeht?
     prompt: Du hast mit `rm` die falsche Datei gelöscht. Was jetzt?

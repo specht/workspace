@@ -1503,6 +1503,12 @@ Der DC-Koeffizient −120 wird so zu −120 · 5 = −600, der erste AC-Koeffizi
 
 _task(dequant)
 
+_task(ohne-dequant)
+
+<!-- after: ohne-dequant -->
+Ohne Dequantisierung ist jeder Koeffizient um seinen Wert in der Tabelle zu klein: der DC-Koeffizient hier um den Faktor 5, die feinen Muster unten rechts oft um 50 und mehr. Nach der iDCT liegen darum alle Werte nah bei der Mitte, und nach dem Verschieben um 128 ist das Bild fast einheitlich grau; nur grobe Unterschiede von Hell und Dunkel sind schwach zu ahnen. Auch Cb und Cr bleiben nah bei der Mitte, die Farben verschwinden fast. Willst du es sehen, nimm in deinem Decoder die Multiplikation kurz heraus.
+<!-- /after -->
+
 ### iDCT
 
 Nachdem alle Koeffizienten eines Blocks decodiert wurden, müssen wir die inverse DCT (iDCT) anwenden, um die Pixelwerte zu erhalten. Die iDCT wird auf die 8x8-DCT-Matrix angewendet und liefert eine 8x8-Matrix mit den Pixelwerten zurück.

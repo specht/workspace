@@ -1344,6 +1344,12 @@ crop-terminal-lines: auto
 
 <img class='full' src='mv-alice.webp' alt='mv alice.txt alice-in-wonderland.txt benennt die Datei um; ls -l zeigt den neuen Namen.'>
 
+_task(mv-ziel-gibt-es)
+
+<!-- after: mv-ziel-gibt-es -->
+`mv` überschreibt `b.txt` ohne zu fragen: Danach steht darin `eins`, und `a.txt` ist weg. Was in `b.txt` stand, ist verloren; einen Papierkorb gibt es im Terminal nicht. Mit `mv -i` (»interactive«) fragt `mv` vorher nach, und `cp -i` tut dasselbe beim Kopieren.
+<!-- /after -->
+
 ### Löschen mit `rmdir` und `rm`
 
 Nutze den Befehl `rmdir`, um ein leeres Verzeichnis zu löschen. Der Befehl `rmdir` löscht nur leere Verzeichnisse. Bevor wir diesen Befehl testen können, legen wir uns ein leeres Verzeichnis namens `empty` an:
