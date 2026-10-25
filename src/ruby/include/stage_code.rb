@@ -27,7 +27,9 @@ require 'nokogiri'
 #   <!-- stage: stufen/shader.fs as light.fs -->
 #
 # A file shows up only where it differs from the last time the page wrote
-# it, so the same program does not come twice. A teacher gets a small button
+# it, so the same program does not come twice; a recipe that writes it more
+# than once (a version a check must reject, then the solution) counts with
+# its last version. A teacher gets a small button
 # at the side for each such file, after the step's picture (after a gallery
 # when the recipe is in one), never inside a task card; it copies the whole
 # file.
@@ -83,6 +85,12 @@ module StageCode
             pending = nil
             wait = nil
         end
+        # A recipe that writes a file twice (a check that must fail, then
+        # the solution) leaves the last version: that is the step.
+        keep = lambda do |file|
+            written.reject! { |f| f.target == file.target }
+            written << file
+        end
         collect = lambda do |files|
             changed = files.select { |f| last[f.target] != f.text }
             files.each { |f| last[f.target] = f.text }
@@ -119,10 +127,10 @@ module StageCode
                 elsif (m = stripped.match(WRITE)) && (file = read(page_dir, m[2], m[1]))
                     step_folder = FOLDERS.any? { |f| m[2].start_with?(f) }
                     grows = writes[m[1]] > 1 && CODE.include?(File.extname(m[1]).downcase) && long?(file.text)
-                    written << file if step_folder || grows
+                    keep.call(file) if step_folder || grows
                 elsif (m = stripped.match(WRITE_CODE)) && CODE.include?(File.extname(m[1]).downcase) &&
                       (text = code_source(blocks, m[2])) && long?(text)
-                    written << File_.new(:target => m[1], :source => nil, :text => text.end_with?("\n") ? text : text + "\n")
+                    keep.call(File_.new(:target => m[1], :source => nil, :text => text.end_with?("\n") ? text : text + "\n"))
                 end
                 if stripped.include?('-->')
                     in_recipe = false

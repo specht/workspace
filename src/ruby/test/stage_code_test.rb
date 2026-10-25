@@ -40,6 +40,16 @@ class StageCodeTest < Minitest::Test
         assert_equal 1, points.size
     end
 
+    # The checks at the end of the anaglyphs write each scene twice, first
+    # one a check must reject, then the solution: one button, the solution.
+    def test_a_file_written_twice_in_one_recipe_gets_one_button
+        md = "<!-- tutorial-step\nwrite-file: main.c <- file:stufen/01.c\ncheck-task-fails: a\n" \
+             "write-file: main.c <- file:stufen/02.c\ncheck-task: a\n-->\n"
+        _, points = StageCode.mark(md, @dir)
+        assert_equal 1, points.size
+        assert_equal ['stufen/02.c'], points[0].map(&:source)
+    end
+
     def test_only_the_changed_file_of_several
         md = recipe('main.c <- file:stufen/01.c', 'light.fs <- file:stufen/light.fs') + "<img src='a.webp' alt=''>\n\n" +
              recipe('main.c <- file:stufen/02.c', 'light.fs <- file:stufen/light.fs') + "<img src='b.webp' alt=''>\n"
