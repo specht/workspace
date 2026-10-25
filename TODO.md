@@ -122,6 +122,18 @@ generated screenshots:
 
 Do not turn PixelRAM into a second raylib by adding drawing primitives for convenience.
 
+### Students write first (October 2026)
+
+»Jetzt bist du dran« boxes with tips in steps, predictions that wait for
+the answer, explanations after solving (docs/didaktik.md). Open from that pass:
+
+* [ ] Try boxes and tips in class: is a minute between tips right (`HintSteps::DELAY_SECONDS`), do students work with a tip or wait for the next?
+* [ ] raylib's five `c` checks ran only against raylib 6.0's headers outside a Workspace; confirm them in a real one (the recipes on stages 2 to 5 run them with `check-task`)
+* [ ] Feuerwerk is parked (hidden in `sections.yaml`): before it goes into the catalog it needs a `lehrkraft.md`, a try in class, and its screenshots rendered
+* [ ] Web server »Eine Umfrage« still looks for words in `server.rb`; a `command` check against the running server (`curl -si -d choice=curry localhost:8000/vote`, expect `303` and `Location: /results`) needs an output mode where one line has to match, not all
+* [ ] Checks that only look for words where running the code is not possible yet: LaTeX, TIC-80 (no Lua in the Workspace), raylib's light, torches and textures, Pixelwand (a WebSocket client in the check), Wetter (network)
+* [ ] GLSL: no check looks at a shader; a compile check (`glslangValidator` in the Workspace) would at least catch errors before the preview does
+
 
 ### New instruments and pages
 
