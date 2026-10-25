@@ -260,7 +260,14 @@ html[data-bs-theme="dark"] .code-copy-box {
 }
 
 /* Context lines in a code block (code_highlight.rb, »~ «): already in the
-   file, faint, and left out when copying or selecting. */
+   file, faint, and left out when copying or selecting. One column as wide
+   as the longest line, and at least as wide as the block: scrolled to the
+   right on a phone, the cut and its shadow still reach across. */
+pre.has-code-context {
+    display: grid;
+    grid-template-columns: minmax(max-content, 1fr);
+}
+
 pre.has-code-context .code-line {
     display: block;
     min-height: 1lh;
