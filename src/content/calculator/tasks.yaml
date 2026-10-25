@@ -154,6 +154,12 @@ tasks:
         say: Von links nach rechts reicht, wenn man mitzählt. Das Zählen ist das Problem.
       - when: { picked: 3 }
         say: Ein Automat braucht für jedes Zeichen genau einen Schritt, schneller geht es kaum.
+    solution: |
+      Ein endlicher Automat kennt nur seinen Zustand. Um zu prüfen, ob die
+      Klammern zusammenpassen, müsste er zählen, wie viele gerade offen sind; bei
+      zehn Zuständen kann er höchstens bis zehn zählen, und ein Ausdruck mit elf
+      offenen Klammern ist schon zu viel. Der Parser zählt mit seinen Aufrufen:
+      Jede offene Klammer ruft ihn noch einmal auf.
 
   - id: baum
     title: Ein Baum aus Tokens

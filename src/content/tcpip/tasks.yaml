@@ -34,6 +34,10 @@ tasks:
         say: 'Ein Paket an `127.0.0.1` sieht kein Router. Es bleibt im eigenen Rechner.'
       - when: { picked: 3 }
         say: 'Dafür bräuchtest du die Adresse ihres Workspace. `127.0.0.1` ist immer der eigene Rechner.'
+    solution: |
+      `127.0.0.1` heißt Loopback: Der Rechner meint sich selbst. Das Paket geht
+      nie auf ein Kabel; darum antwortet `ping 127.0.0.1` in Bruchteilen einer
+      Millisekunde, auch ohne Netz.
 
   - id: entfernungen
     title: Drei Entfernungen
@@ -100,6 +104,11 @@ tasks:
     feedback:
       - when: { picked: 0 }
         say: TTL hat nichts mit Zeit zu tun, sondern mit Routern.
+    solution: |
+      Jeder Router zieht von der TTL eins ab. Beim dritten wird sie 0, und er
+      verwirft das Paket und schickt dem Absender eine Nachricht »Time Exceeded«
+      mit seiner Adresse. Genau damit findet `traceroute` die Router auf dem Weg:
+      mit TTL 1, 2, 3 und so weiter.
 
   - id: router-zaehlen
     title: Router zählen, ohne traceroute

@@ -97,6 +97,12 @@ tasks:
         say: 'Gedreht wird um den Ursprung, nicht um den Mittelpunkt des Würfels. Wo landet der Punkt (100, 0, 0), wenn du ihn um 45 Grad um die z-Achse drehst?'
       - when: { picked: 3 }
         say: 'Die 45 sind Grad, kein Weg. Wo landet (100, 0, 0) nach einer Drehung um 45 Grad um den Ursprung?'
+    solution: |
+      Erst verschoben liegt der Würfel bei (100, 0, 0). Die Drehung um 45 Grad um
+      die z-Achse dreht ihn danach um den Ursprung, nicht um seine eigene Mitte:
+      Er wandert auf einem Kreis nach (100 · cos 45°, 100 · sin 45°, 0) ≈ (71, 71,
+      0). Erst gedreht und dann verschoben bleibt er dagegen bei (100, 0, 0) und
+      ist nur in sich gedreht.
 
   - id: reihenfolge-erklaeren
     title: In eigenen Worten
@@ -129,6 +135,10 @@ tasks:
     check:
       type: number
       expect: 5
+    solution: |
+      Mit `step 50` nimmt `x` die Werte −100, −50, 0, 50 und 100 an, also fünf
+      Würfel. Die Grenze 100 gehört noch dazu, weil die Schleife bis
+      einschließlich `to 100` läuft.
 
   - id: wuerfelgitter
     title: Ein Würfel aus Würfeln
@@ -170,6 +180,9 @@ tasks:
       type: number
       expect: 8
       unit: s
+    solution: |
+      Eine ganze Drehung sind 360 Grad. Mit `t * 45` kommen in jeder Sekunde 45
+      Grad dazu, also dauert sie 360 ÷ 45 = 8 Sekunden.
 
   - id: sonnensystem
     title: Sonne, Erde, Mond

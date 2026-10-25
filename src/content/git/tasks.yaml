@@ -32,6 +32,10 @@ tasks:
     feedback:
       - when: { picked: 0 }
         say: Noch nicht. `git add` legt die Änderung bereit; in die Geschichte kommt sie erst mit `git commit`.
+    solution: |
+      `git add` legt die Änderung in die Staging Area: die Auswahl für den
+      nächsten Commit. In der Geschichte steht sie erst nach `git commit`.
+      `git status` zeigt sie bis dahin grün unter »Changes to be committed«.
 
   - id: drei-commits
     title: Umbenannt und geändert
@@ -58,6 +62,11 @@ tasks:
     feedback:
       - when: { picked: 2 }
         say: Gelöscht wird nichts. `main` zeigt weiter auf den neuesten Commit; mit `git checkout main` bist du wieder dort.
+    solution: |
+      `HEAD~2` ist der Commit zwei Schritte vor dem aktuellen. `git checkout` holt
+      seinen Stand ins Arbeitsverzeichnis, ohne einen Branch zu verschieben: Git
+      sagt »detached HEAD«, und `git checkout main` bringt dich zurück zum
+      neuesten Stand.
 
   - id: gitignore
     title: Warum .gitignore?
@@ -75,6 +84,12 @@ tasks:
         say: 'Git speichert jede Datei, auch Bilder und Programme. Aber woraus entsteht `hello`, und was passiert, wenn zwei Leute sie verschieden übersetzen?'
       - when: { picked: 2 }
         say: 'Darum geht es nicht. Woraus entsteht `hello`, und braucht man sie im Repository, wenn man sie jederzeit neu übersetzen kann?'
+    solution: |
+      Eine ausführbare Datei entsteht mit `gcc` jederzeit neu aus `hello.c`. Im
+      Repository würde sie nur Platz kosten und bei jeder Übersetzung als geändert
+      auftauchen, und auf einem anderen Rechner läuft sie vielleicht gar nicht.
+      Ins Repository gehört die Quelle, und `.gitignore` sorgt dafür, dass
+      `git status` das Ergebnis nicht mehr anzeigt.
 
   - id: gemergt
     title: Feature gemergt
@@ -158,6 +173,10 @@ tasks:
         say: '`git push` überträgt den Branch und seine Commits. Ein Tag ist ein eigener Name, den du ausdrücklich mitschicken musst.'
       - when: { picked: 2 }
         say: 'Ob annotiert oder nicht: Ein Tag wandert erst mit, wenn du ihn ausdrücklich pushst.'
+    solution: |
+      `git push` schickt nur den Branch. Tags gehen extra mit:
+      `git push origin v1.0` für einen oder `git push --tags` für alle. Erst dann
+      sieht man sie auch auf dem Server.
 
   - id: rueckgaengig
     title: Ganz zurück

@@ -28,6 +28,10 @@ tasks:
       - when: { equals: 4096 }
         say: So groß ist ein Verzeichnis, `.` oder `..`. Gesucht ist die Datei, deren Name mit einem Punkt beginnt und danach weitergeht.
     hint: '`ls` zeigt sie nicht, `ls -la` schon, mit ihrer Größe.'
+    solution: |
+      `ls -la` zeigt auch Dateien, deren Name mit einem Punkt beginnt. Die
+      versteckte Datei ist 41 Bytes groß; `.` und `..` mit 4096 sind keine
+      Dateien, sondern das Verzeichnis selbst und das darüber.
 
   - id: zeilenende
     title: Windows oder Linux?
@@ -45,6 +49,10 @@ tasks:
         say: Ein einzelnes `0a` ist das Zeilenende unter Linux. Windows schreibt davor noch `0d`.
       - when: { picked: 2 }
         say: "`20` ist das Leerzeichen, das gibt es in jeder Textdatei."
+    solution: |
+      Windows beendet jede Zeile mit zwei Bytes, `0d` (Carriage Return, CR) und
+      `0a` (Line Feed, LF). Linux und macOS nehmen nur `0a`. Im Hexdump stehen die
+      beiden am Ende jeder Zeile von `alice.txt` nebeneinander.
 
   - id: nano
     title: Eine Datei mit nano
@@ -84,6 +92,10 @@ tasks:
       - when: { equals: 401 }
         say: Das ist, wie oft das Wort vorkommt. Gefragt ist, in wie vielen Zeilen; manche Zeilen enthalten es zweimal.
     hint: '`grep` zeigt die Zeilen, `wc -l` am Ende der Pipeline zählt sie.'
+    solution: |
+      `grep Alice alice.txt | wc -l` ergibt 398: `grep` gibt jede passende Zeile
+      einmal aus, auch wenn `Alice` zweimal darin steht, und `wc -l` zählt die
+      Zeilen. `grep -c Alice alice.txt` zählt dasselbe in einem Schritt.
 
   - id: woerter
     title: Die Wortliste
@@ -119,6 +131,10 @@ tasks:
       type: number
       expect: 1993
     hint: Das Jahr steht im Dateinamen. Unter `music-releases/Germany` geht es weiter; die <kbd>Tab</kbd>-Taste hilft bei Leerzeichen und Umlauten.
+    solution: |
+      Unter `music-releases/Germany` liegt der Ordner von Die Ärzte, und in seinen
+      Alben beginnt jeder Dateiname mit dem Jahr: Das Album erschien 1993. Mit
+      <kbd>Tab</kbd> musst du weder die Leerzeichen noch das Ä selbst tippen.
 
   - id: welcome
     title: Dateien mit »welcome«
@@ -134,6 +150,10 @@ tasks:
       - when: { equals: 0 }
         say: Ohne `-i` findet `grep` nichts, denn »Welcome« steht überall groß geschrieben.
     hint: "`grep -ril welcome .` listet die Dateien, `wc -l` zählt die Zeilen der Ausgabe."
+    solution: |
+      `grep -ril welcome .` listet jede Datei einmal (`-l`), egal wie oft das Wort
+      darin steht, und ohne Rücksicht auf Groß und Klein (`-i`). `| wc -l` zählt
+      die Zeilen dieser Liste: 56.
 
   - id: sandbox
     title: Aufgeräumt
@@ -167,3 +187,8 @@ tasks:
         say: 'Eine solche Option gibt es nicht. Was `rm` gelöscht hat, ist weg.'
       - when: { picked: 3 }
         say: '`rmdir` löscht leere Ordner. Zurückholen kann es nichts.'
+    solution: |
+      `rm` löscht sofort, ohne Papierkorb und ohne Rückfrage. Was du mit `rm`
+      löschst, ist weg; zurück bekommst du es nur aus einer Kopie, etwa aus einem
+      Git-Repository oder einer Sicherung. Bei wichtigen Dateien fragt `rm -i` vor
+      jedem Löschen nach.

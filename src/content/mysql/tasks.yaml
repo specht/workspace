@@ -26,6 +26,11 @@ tasks:
         say: Der Name steht in der Tabelle `country` in der Spalte `name`. Sieh mit `SELECT * FROM city LIMIT 5;` nach, was in `city` steht.
       - when: { picked: 3 }
         say: Ob eine Stadt die Hauptstadt ist, steht in `is_capital`. Sieh mit `SELECT * FROM city LIMIT 5;` nach, was in `country_code` steht.
+    solution: |
+      `country_code` enthält das Kürzel des Landes aus drei Buchstaben, `DEU` für
+      Deutschland. Dasselbe Kürzel steht in `country` in der Spalte `code`: So
+      weiß jede Stadt, zu welchem Land sie gehört, ohne dass der Name des Landes
+      bei jeder Stadt noch einmal steht.
 
   - id: griechenland
     title: Griechenland
@@ -305,6 +310,11 @@ tasks:
         say: Fast. Wählt SELECT die Spalten aus, bevor WHERE die Zeilen prüft? Schau im Query Stepper, wann die Spalten verschwinden.
       - when: { picked: 3 }
         say: ORDER BY darf schon die Namen aus SELECT benutzen, etwa density. Also muss SELECT vorher drankommen.
+    solution: |
+      Die Datenbank nimmt zuerst die Tabelle (`FROM`), behält die passenden Zeilen
+      (`WHERE`), wählt die Spalten aus (`SELECT`), sortiert (`ORDER BY`) und
+      schneidet am Ende ab (`LIMIT`). Darum kann `WHERE` keinen Namen benutzen,
+      den erst `SELECT` mit `AS` vergibt, `ORDER BY` aber schon.
 
   - id: dichte-where
     title: Ein Name, den es noch nicht gibt

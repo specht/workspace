@@ -50,6 +50,11 @@ tasks:
         say: Es gibt noch gar keinen Index, `key` ist leer.
       - when: { picked: 3 }
         say: Woher wüsste sie, dass die Nummer nicht noch einmal vorkommt? Ohne Index muss sie bis zum Ende lesen.
+    solution: |
+      `type: ALL` heißt Full Table Scan: Ohne passenden Index (`key` ist leer)
+      liest die Datenbank alle fast eine Million Zeilen und prüft jede. Mit einem
+      Index auf der Spalte schlägt sie die Nummer nach wie in einem sortierten
+      Verzeichnis und liest nur wenige Zeilen.
 
   - id: index-telefon
     title: Ein Index auf die Nummer
@@ -99,6 +104,10 @@ tasks:
         say: Die Zeilen liegen nicht einfach nach Nummer in einer Datei. Was steht bei `key`?
       - when: { picked: 3 }
         say: Die Frage nach `id = 500000` war neu. Was steht bei `key`?
+    solution: |
+      Der Primärschlüssel muss eindeutig sein, und das prüft die Datenbank bei
+      jedem `INSERT` am schnellsten über einen Index. Darum legt MySQL für ihn
+      immer selbst einen an; `SHOW INDEX FROM person` zeigt ihn als `PRIMARY`.
 
   - id: welche-nutzt
     title: Welche Suche nutzt den Index?

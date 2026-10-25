@@ -80,6 +80,11 @@ tasks:
         say: Den Dateinamen liest der Screenreader vor, aber er sagt nicht, was zu sehen ist.
       - when: { picked: 4 }
         say: Ein leerer Alt-Text ist richtig für Bilder, die nur Schmuck sind. Dieses Foto zeigt, worum es im Abschnitt geht.
+    solution: |
+      Der `alt`-Text steht für Menschen, die das Bild nicht sehen, etwa mit einem
+      Vorleseprogramm. Er sagt, was zu sehen ist und was für den Abschnitt wichtig
+      ist: hier, was der Axolotl frisst. »Bild« oder der Dateiname helfen
+      niemandem.
 
   - id: eigenes-bild
     title: Dein eigenes Bild
@@ -144,6 +149,10 @@ tasks:
     feedback:
       - when: { picked: 2 }
         say: Eine `id` wählst du mit `#credit` aus. Der Punkt steht für eine Klasse.
+    solution: |
+      Ein Punkt vor dem Namen meint eine Klasse: `.credit` trifft jedes Element
+      mit `class="credit"`, ob `<p>`, `<span>` oder `<figcaption>`. Ohne Punkt
+      wäre `credit` ein Element namens `<credit>`, mit `#` eine `id`.
 
   - id: flexbox
     title: Bild und Text nebeneinander
@@ -212,6 +221,11 @@ tasks:
         say: '`max-width` heißt höchstens. Für mindestens gibt es `min-width`.'
       - when: { picked: 2 }
         say: 'Die Regel fragt nach der Breite des Fensters, nicht nach dem Gerät. Ein schmales Fenster am Computer zählt genauso.'
+    solution: |
+      `max-width: 700px` gilt, solange das Fenster höchstens 700 Pixel breit ist,
+      auf einem Handy also fast immer, auf einem Rechner nur, wenn du das Fenster
+      schmal ziehst. Dann gelten die Regeln darin zusätzlich zu den anderen und
+      überschreiben sie, wo sie dasselbe festlegen.
 
   - id: abgabe
     title: Abgabe

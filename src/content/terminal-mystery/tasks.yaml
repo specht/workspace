@@ -141,6 +141,11 @@ tasks:
         say: Emil Schütte ist im Schachclub, aber nicht im Fitnessstudio.
       - when: { picked: 3 }
         say: Ayşe Demir trainiert im Muskelkater, ist aber nicht im Schachclub.
+    solution: |
+      `sort` beide Mitgliederlisten zusammen und `uniq -d` lässt nur die Namen,
+      die doppelt vorkommen: die sechs, die in beiden Vereinen sind. Von ihnen
+      haben nur Konstantin Reuter und Marlene Voss eins der vier gelben Autos mit
+      `BS-K…` und einer 7 am Ende.
 
   - id: karte
     title: Die gelöschte Karte
@@ -186,6 +191,9 @@ tasks:
       - when: { matches: '10\.8\.0\.31' }
         say: Das war die echte Wartung, am 3. März um 10 Uhr morgens. Gesucht ist die Nacht vom 14. auf den 15. März.
     hint: '`grep wartung logs/vpn.log`'
+    solution: |
+      `logs/vpn.log` auf dem Museumsserver zeigt um 23:02 Uhr eine Verbindung der
+      Wartung von `10.8.0.23`, kurz vor der Karte 4471 an der Hintertür.
 
   - id: geraet
     title: Wessen Gerät?
@@ -197,6 +205,10 @@ tasks:
       - when: { matches: 'Nordlicht' }
         say: Nordlicht hat die Adresse 10.8.0.31. Welche hatte die Wartung in der Nacht?
     hint: Die Adressen der Geräte stehen in `geraete.txt`.
+    solution: |
+      In `geraete.txt` gehört `10.8.0.23` zum Laptop von Elektro Reuter, der
+      Firma, die die Alarmanlage eingebaut hat und noch immer ihr Wartungspasswort
+      kennt.
 
   - id: loeschbefehl
     title: Der Befehl aus der Nacht

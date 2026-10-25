@@ -25,6 +25,11 @@ tasks:
         say: Ohne zweiten Faktor wäre es so. Mit ihm fragt der Server nach dem Passwort auch nach einem Code, den nur dein Handy kennt.
       - when: { picked: 2 }
         say: Zweimal dasselbe ist kein zweiter Faktor. Der zweite muss etwas anderes sein, etwas, das du hast, nicht etwas, das du weißt.
+    solution: |
+      Das Passwort allein reicht nicht mehr. Er bräuchte auch den Code, den nur
+      deine App ausrechnen kann, weil nur sie den Schlüssel kennt, und der gilt
+      nur für das aktuelle Zeitfenster von 30 Sekunden. Ohne dein Handy kommt er
+      nicht hinein.
 
   - id: bytes
     title: Wie viele Bytes?
@@ -410,6 +415,11 @@ tasks:
         say: Rechnerisch stimmt der Code noch, bis sein Zeitfenster vorbei ist. Deshalb muss sich der Server merken, welcher schon benutzt wurde.
       - when: { picked: 3 }
         say: Dann hätte jemand, der den Code mitliest, bis zu einer Minute Zeit, ihn selbst zu benutzen.
+    solution: |
+      Ein Code gilt 30 Sekunden, mit dem Fenster davor und danach bis zu 90. Wer
+      ihn mitliest, über die Schulter oder auf einer gefälschten Seite, könnte ihn
+      in dieser Zeit noch einmal benutzen. Merkt sich der Server benutzte Codes,
+      ist der zweite Versuch wertlos.
 
   - id: wovor
     title: Wovor schützt der zweite Faktor?

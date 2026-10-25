@@ -24,6 +24,10 @@ tasks:
         say: Ein Knoten pro Zuordnung ginge, aber er hätte nichts Eigenes zu speichern. Die Zuordnung selbst ist eine Verbindung.
       - when: { picked: 2 }
         say: Dann stünden Genres wieder als Liste im Film, wie im JSON vom Anfang der Filmdatenbank. Wer fragt »Welche Filme sind Comedy?«, müsste in jedem Film suchen.
+    solution: |
+      Eine Zwischentabelle verbindet nur zwei andere Zeilen. Im Graphen übernehmen
+      das Beziehungen: Aus jeder Zeile von `movie_genre` wird eine Kante
+      `IN_GENRE` vom Film zu seinem Genre, und die Tabelle selbst verschwindet.
 
   - id: taetigkeit
     title: Wo steckt die Tätigkeit?
@@ -44,6 +48,10 @@ tasks:
         say: Dieselbe Person kann bei einem Film Regie führen und bei einem anderen schreiben. Die Tätigkeit gehört zur Verbindung von Person und Film, nicht zur Person.
       - when: { picked: 3 }
         say: Ein Label beschreibt, was ein Knoten ist. Robert Zemeckis ist eine Person, Regie hat er nur bei bestimmten Filmen geführt.
+    solution: |
+      In MySQL stand die Tätigkeit als Verweis auf `job` in `movie_crew`. Im
+      Graphen ist sie der Typ der Beziehung: `(:Person)-[:DIRECTOR]->(:Movie)`.
+      Wer mitgespielt hat, hängt mit `ACTOR` am Film.
 
   - id: koenig-der-loewen
     title: Der König der Löwen
@@ -193,6 +201,11 @@ tasks:
         say: Der Knoten am Ende von `DIRECTOR` hat keinen Namen, also kann es jede Person sein.
       - when: { picked: 3 }
         say: '`ACTOR|DIRECTOR` heißt »das eine oder das andere«. Gefragt sind beide Beziehungen.'
+    solution: |
+      `p` kommt im Muster zweimal vor, also muss es beide Male dieselbe Person
+      sein: einmal mit `ACTOR` zum Film `m` und einmal mit `DIRECTOR` zu demselben
+      `m`. Zwei verschiedene Variablen fänden dagegen jeden Film mit irgendeinem
+      Schauspieler und irgendeiner Regie.
 
   - id: paare
     title: Wie viele Paare?

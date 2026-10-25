@@ -57,6 +57,11 @@ tasks:
         say: 'Dann käme `status: NXDOMAIN`. Was steht im AUTHORITY SECTION?'
       - when: { picked: 3 }
         say: Das tut der DNS-Server deines Workspace für dich. Ein Root-Server beantwortet nur, was er selbst weiß.
+    solution: |
+      Ein Root-Server kennt keine einzelnen Adressen, nur die Zuständigen für jede
+      Endung. Für `hackschule.de` verweist er auf die Nameserver der DENIC für
+      `de`; die verweisen weiter auf die Nameserver von `hackschule.de`, und erst
+      die kennen die Adresse. `dig +trace` zeigt jeden dieser Schritte.
 
   - id: de-server
     title: Zuständig für de

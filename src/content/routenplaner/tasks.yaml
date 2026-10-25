@@ -134,6 +134,11 @@ tasks:
     feedback:
       - when: { picked: 1 }
         say: Die Erde ist am Äquator tatsächlich etwas dicker, aber nur um 0,3 Prozent. In Berlin ist ein Grad Länge fast 40 Prozent kürzer.
+    solution: |
+      Die Längengrade treffen sich an den Polen. Am Äquator ist ein Grad Länge
+      etwa 111 km breit, in Berlin (52,5° Nord) nur noch 111 km · cos 52,5° ≈ 68
+      km. Ein Grad Breite ist überall etwa 111 km. Darum rechnet `distance` die
+      Länge mit dem Kosinus der Breite um.
 
   - id: abstand
     title: Wie weit ist es?
@@ -514,6 +519,11 @@ tasks:
         say: Die Reihenfolge der Nachbarn ist fest, sie steht so in edges. Auch in anderer Reihenfolge fände sie einen Weg mit genauso wenigen Kanten.
       - when: { picked: 2 }
         say: Sie hört auf, wenn sie das Ziel aus der Queue nimmt, und dann gibt es wirklich keinen Weg mit weniger Kanten. Nur zählt sie Kanten, keine Meter.
+    solution: |
+      Die Breitensuche zählt Kanten, nicht Meter. Eine Straße ist auf der Karte
+      eine Kette vieler Punkte: eine kurze Kurve hat viele Kanten, eine lange
+      Gerade wenige. Dijkstra rechnet mit der Länge jeder Kante und findet darum
+      den kürzesten Weg in Metern.
 
   - id: dijkstra
     title: Dijkstra
