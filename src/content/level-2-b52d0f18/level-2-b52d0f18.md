@@ -2,7 +2,6 @@
 image: bad.webp
 image_alt: "Ein Bad ganz in Fliesen: ein Becken voll klarem, blaugrünem Wasser mit Rand und Geländer, darin eine runde Säule; dahinter führt eine weiße Treppe auf ein Podest mit einem Plastikstuhl."
 kind: projekt
-topic: hidden
 duration: 1 Doppelstunde
 reference: [workspace, kartografie]
 template: https://github.com/specht/backrooms-starter.git

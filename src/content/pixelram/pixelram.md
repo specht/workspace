@@ -2,6 +2,7 @@
 image: interference.webp
 image_alt: "Bunte, ineinander verschlungene Farbringe mit weichen Kanten"
 kind: projekt
+duration: 3 Doppelstunden
 language: PixelRAM / C
 reference: [c, pixelram]
 template: https://github.com/specht/pixelram-starter.git

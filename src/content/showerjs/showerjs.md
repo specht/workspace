@@ -3,7 +3,6 @@ image: showerjs.webp:0:80
 image_alt: "Eine orange Schreibmaschine, darunter der Platzhalter »Titel deiner Präsentation«"
 kind: projekt
 language: HTML
-topic: writing
 duration: 2 bis 3 Doppelstunden
 reference: [workspace, html, css, layout, shower]
 template: https://git.nhcham.org/specht/shower.js.git

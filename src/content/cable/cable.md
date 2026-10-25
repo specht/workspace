@@ -2,7 +2,6 @@
 image: teaser.webp
 image_alt: "Das Kabel: eine dunkle Tafel mit der Frequenz 42.7 kHz, darunter fünf runde Lampen in Grün, Gelb, Rot, Blau und Lila mit den Knöpfen 1 bis 5; Grün und Rot leuchten."
 kind: labor
-topic: networks
 duration: 1 Doppelstunde
 </div>
 

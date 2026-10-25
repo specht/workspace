@@ -2,6 +2,7 @@
 image: fire.webp:73:0
 image_alt: "Pixeliges Feuer, unten hellgelb, nach oben dunkelrot"
 kind: projekt
+duration: 2 Doppelstunden
 language: Pixelflow Canvas / Ruby
 </div>
 

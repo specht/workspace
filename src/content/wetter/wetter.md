@@ -4,7 +4,6 @@ image_alt: "Eine Wetter-App für Berlin: 12 Grad und bedeckt, darunter die Vorhe
 kind: projekt
 language: Ruby / Python / JavaScript
 languages: [ruby, python]
-topic: web
 duration: 2 Doppelstunden
 requires: [tcpip]
 reference: [http, json, ruby-python]

@@ -30,7 +30,7 @@ Repository arbeitet, liest sie also ohnehin.
 
 | Regel | Warum | Geprüft durch |
 | --- | --- | --- |
-| Meta-Block mit `image`, `kind`, `topic`, `duration`; `language` oder `languages`, wenn programmiert wird | Die Karte im Katalog braucht sie | `page_kinds_test.rb`, Audit |
+| Meta-Block mit `image`, `kind`, `duration`; `language` oder `languages`, wenn programmiert wird (das Thema kommt aus `sections.yaml`) | Die Karte im Katalog braucht sie | `page_kinds_test.rb`, Audit |
 | Ein Absatz `<p class='abstract'>`, der sagt, was man baut, in der Du-Form | Er steht auf der Karte | Audit |
 | Das Inhaltsverzeichnis ist nicht flach: lange Kapitel (`##`, im Audit mehr als 800 Wörter Text) gliedern sich in Abschnitte (`###`) | Am Rand findet man sich in langen Seiten nur so zurecht | Audit (Spalte »Gliederung«) |
 | Ein Bild für die Karte (`teaser.webp` oder das erste Bild), aus einem Rezept, wo es ein Bildschirmfoto ist, mit dunkler Fassung (`NAME-dark.webp`, aus `variants: dark` oder `src/scripts/render-svg.rb`, nicht invertiert), wenn die Seite dunkel werden kann | Der Katalog ist das Erste, was man sieht; ein invertiertes Bild verdreht die Farben | Audit (Spalte »Karte«) |

@@ -4,7 +4,6 @@ image_alt: "Ein Pixelbild auf einem Raster: ein Haus mit rotem Dach, ein Baum, e
 kind: projekt
 language: Ruby / Python
 languages: [ruby, python]
-topic: networks
 duration: 2 Doppelstunden
 requires: [webserver]
 reference: [http, json, ruby-python]

@@ -1,7 +1,6 @@
 <div class='meta'>
 image: vorlage-aktivitaet.webp
 kind: labor
-topic: networks
 duration: 1 Doppelstunde
 reference: [workspace]
 </div>

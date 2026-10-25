@@ -2,6 +2,7 @@
 image: working-with-files.webp
 image_alt: "Ein Terminal mit der Ausgabe von tree: zehn Dateien im Ordner working-with-files"
 kind: grundlagen
+duration: 3 Doppelstunden
 reference: [workspace, terminal, bits-und-bytes]
 </div>
 

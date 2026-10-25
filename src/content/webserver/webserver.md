@@ -4,7 +4,6 @@ image_alt: "Ein Abstimmungsergebnis als Balken: Pizza 5, Nudeln 2, Curry 4, Sala
 kind: projekt
 language: Ruby / Python
 languages: [ruby, python]
-topic: networks
 duration: 2 Doppelstunden
 requires: [tcpip]
 reference: [netzwerk, http, ruby-python]

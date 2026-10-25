@@ -2,6 +2,7 @@
 image: teaser.webp:contain
 image_alt: "Ein ER-Diagramm mit den Tabellen continent, country und city und ihren Spalten"
 kind: grundlagen
+duration: 2 Doppelstunden
 language: SQL
 reference: [sql, datensaetze]
 </div>

@@ -2,6 +2,12 @@ Lernende programmieren in C Grafik direkt in den Bildschirmspeicher (PixelRAM), 
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Variablen, Schleifen, Bedingungen in irgendeiner Sprache; C wird unterwegs erklärt. Beim Spiel kommen <code>struct</code> und Zeiger dazu, nur so weit wie nötig.</td></tr>
+<tr><th>Ablauf</th><td><ul>
+<li><b>1. Doppelstunde:</b> Einrichten, das erste Pixel, alle Pixel aus einer Formel, Farbpaletten.</li>
+<li><b>2. Doppelstunde:</b> Wellen: Abstand vom Mittelpunkt, Kreiswellen, glatte Kanten, Bewegung, zwei Wellen.</li>
+<li><b>3. Doppelstunde:</b> das Spiel Lichtspur, zuerst allein, dann zu zweit.</li>
+<li><b>Für Schnelle</b> (auf der Seite als »Extra« markiert): »Mehr PixelRAM« mit den Beispielen im Starter und ganzen Spielen.</li>
+</ul></td></tr>
 <tr><th>Arbeitsweise</th><td>Datei ändern, <code>make</code> (oder <code>make PROGRAM=lichtspur</code>), Vorschau neu laden. Die meisten Fragen in der ersten Stunde sind übersehene Compilerfehler: Die erste Meldung lesen lassen.</td></tr>
 <tr><th>Vorlage</th><td><a href='https://github.com/specht/pixelram-starter'>pixelram-starter</a>: <code>main.c</code>, fünf Beispiele in <code>beispiele/</code>, <code>make crystal</code> für Crystal Caves (ein, zwei Minuten, lädt den Quelltext von GitHub)</td></tr>
 <tr><th>Abkürzung</th><td>Wer die Wellen überspringen will, liest nach »Alle Pixel« noch die ersten Absätze von »Bewegung« (die Schleife mit <code>should_close()</code> und <code>present()</code>, die das Spiel ohne Erklärung verwendet) und macht dann mit dem Spiel weiter. Die Aufgaben bei den Wellen bleiben dann offen; das Spiel lässt sich trotzdem lösen.</td></tr>

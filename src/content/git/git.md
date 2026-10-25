@@ -2,6 +2,7 @@
 image: git-logo.png
 image_alt: "Das Logo von Git"
 kind: grundlagen
+duration: 3 Doppelstunden
 reference: [workspace, terminal, git, gitlab]
 </div>
 

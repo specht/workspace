@@ -2,8 +2,8 @@
 image: sorting-sandbox.webp
 image_alt: "Die Sortier-Sandbox mit dem Code von Bubblesort links und den zu sortierenden Zahlen als grüne Balken rechts"
 kind: projekt
+duration: 4 bis 6 Doppelstunden
 language: Dart / Python / JavaScript / Java
-topic: computing
 reference: [gitlab, git, sortieren, heap]
 template: https://github.com/specht/sorting-sandbox.git
 class_repo: group

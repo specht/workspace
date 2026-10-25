@@ -3,6 +3,10 @@ Lernende programmieren in der CPU Sandbox einen kleinen 8-Bit-Computer, erst in 
 Diese Seite begleitet die CPU Sandbox, ersetzt sie aber nicht. Sie ist für alle gedacht, die Git noch nicht kennen, zum Beispiel neue Lernende in einem Kurs.
 
 <table class='table'>
+<tr><th>Ablauf</th><td><ul>
+<li><b>1. Doppelstunde:</b> Einrichten (Schlüssel und Name, wenn es ein Klassen-Repository gibt), Vorlage klonen, App starten, die drei Ausbaustufen der Befehlssprache.</li>
+<li><b>Danach</b> je Doppelstunde ein Schritt der Reihe unter »Im Unterricht«. Am Ende jeder Stunde committen und pushen alle (»Committet und gepusht«).</li>
+</ul></td></tr>
 <tr><th>Klassen-Repository</th><td>trägst du je Gruppe auf der <a href='/klasse'>Klassenseite</a> ein: der Knopf »Git« neben »Sprache«, ein Feld je Sandbox (<code>git@server:pfad.git</code>, <code>ssh://server/pfad.git</code> oder <code>https://server/pfad.git</code>). Über dieser Seite steht für dich, welche Adresse deine Gruppen haben, mit einem Link zum Eintragen. Steht jemand in mehreren Gruppen, gilt die erste mit einer Adresse</td></tr>
 <tr><th>Git-Server</th><td>Die Lernenden müssen das Repository erreichen können: Lade sie auf den Git-Server ein und gib ihnen Schreibrechte im Klassen-Repository, bevor die Klasse mit dem Einrichten beginnt. Der Workspace legt dort keine Konten an. Die Seite nennt den Server aus der Adresse und sagt: »Deine Lehrkraft lädt dich dorthin ein«</td></tr>
 <tr><th>SSH oder HTTPS</th><td><ul>

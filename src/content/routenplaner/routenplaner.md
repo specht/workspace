@@ -4,7 +4,6 @@ image_alt: "Ein Stadtplan von Steglitz mit farbigen Straßen und einer Route vom
 kind: projekt
 language: Ruby / Python
 languages: [ruby, python]
-topic: computing
 duration: 6 Doppelstunden
 template: https://github.com/specht/routenplaner-starter.git
 template_name: der Vorlage des Routenplaners

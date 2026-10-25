@@ -2,6 +2,7 @@
 image: dns-tree.webp:contain
 image_alt: "Ein Baum der Domainnamen: die Wurzel, darunter de, com und org, darunter hackschule, wikipedia und google"
 kind: labor
+duration: 1 Doppelstunde
 language: Bash
 requires: [tcpip]
 reference: [netzwerk, terminal]

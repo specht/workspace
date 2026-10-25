@@ -80,7 +80,6 @@ ohne sie funktionieren unverändert weiter.
 ```html
 <div class='meta'>
 kind: labor
-topic: networks
 duration: 2 Doppelstunden
 requires: [working-with-files]
 reference: [netzwerk]
@@ -94,7 +93,6 @@ image: tcpip.webp
 | --- | --- |
 | `kind` | `projekt`, `labor`, `grundlagen`, `galerie`, `uebung`, `steckbrief` oder `reference`; steht als Etikett auf der Karte im Katalog |
 | `language` | Die Sprache, in der man auf der Seite programmiert oder schreibt, zum Beispiel `Ruby` oder `C / raylib`; steht in Klammern hinter der Art: »Projekt (Ruby)«. Nur bei Seiten mit einer festen Sprache |
-| `topic` | Schlüssel eines Abschnitts aus `sections.yaml`, für die Sortierung nach Thema |
 | `duration` | Freier Text, zum Beispiel »2 Doppelstunden«; nur Lehrkräfte sehen ihn, im Streifen über der Seite (zum Planen von Stunden, Lernende brauchen ihn nicht) |
 | `requires` | Aktivitäten, die vorher sinnvoll sind (Slugs); Lernende sehen sie als »Baut auf … auf« im Streifen über der Seite und auf der Karte im Katalog. Ein Hinweis, keine Bedingung: nichts wird gesperrt oder umsortiert. Aktivitäten, die nicht im Katalog stehen, fallen weg; `page_kinds_test.rb` prüft, dass jeder Slug im Katalog steht |
 | `reference` | Handbuch-Seiten, auf die `_uses()` verweist |

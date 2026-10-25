@@ -2,7 +2,6 @@
 image: saal-6.webp
 image_alt: "Ein Saal aus weißem, geädertem Marmor unter einem Satteldach, zwei Reihen Säulen, in der Mitte Athena auf einem Sockel"
 kind: projekt
-topic: hidden
 duration: 2 Doppelstunden
 reference: [workspace, kartografie]
 template: https://github.com/specht/backrooms-starter.git

@@ -3,6 +3,11 @@ Lernende üben Git im Terminal an zwei ausgedachten Personen: Erst arbeitet Alic
 Die Aufgaben folgen dem Weg durch das Tutorial: erst Alice allein, dann Alice und Bob mit einem gemeinsamen Remote im Ordner `git-tutorial/remote-repo`.
 
 <table class='table'>
+<tr><th>Ablauf</th><td><ul>
+<li><b>1. Doppelstunde:</b> alleine arbeiten: Repository, Staging Area, Commits, Dateien umbenennen und ändern, Zeitreise.</li>
+<li><b>2. Doppelstunde:</b> Branches anlegen, Dateien ignorieren, Branches zusammenführen, die Eingabeaufforderung mit dem Branch.</li>
+<li><b>3. Doppelstunde:</b> gemeinsam arbeiten: Remote, klonen, Änderungen holen, Merge-Konflikte; Tags und Fehler rückgängig machen.</li>
+</ul></td></tr>
 <tr><th>Was gelesen wird</th><td><code>git status</code> und die Commits in <code>/workspace/git-tutorial/alice</code> und <code>/workspace/git-tutorial/bob/remote-repo</code>, im laufenden Workspace der Person. Die Prüfung committet, pusht und zieht nichts.</td></tr>
 <tr><th>Commits zählen</th><td>Gezählt werden Commits mit der E-Mail-Adresse, die Git im Workspace kennt. Fehlt sie, sagt die Karte, wie man sie mit <code>git config --global</code> setzt.</td></tr>
 <tr><th>Zeitpunkt</th><td>Die Prüfungen lesen den Stand beim Klick. Wer bei »Zeitreise« noch auf <code>HEAD~2</code> steht, bekommt bei den späteren Aufgaben den Hinweis auf »detached HEAD«.</td></tr>

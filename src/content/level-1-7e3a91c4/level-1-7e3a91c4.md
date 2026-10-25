@@ -2,7 +2,6 @@
 image: treppe.webp
 image_alt: "Ein hohes Treppenhaus mit gelber Tapete: Eine Holztreppe steigt an der Wand zu einem Absatz in der Ecke, biegt um und führt weiter zu einer Tür hoch in der Wand, mit einem Geländer aus Metall."
 kind: projekt
-topic: hidden
 duration: 1 Doppelstunde
 reference: [workspace, kartografie]
 template: https://github.com/specht/backrooms-starter.git

@@ -1,6 +1,11 @@
 Lernende entwerfen eine Datenbank für Filme und ihre Mitwirkenden: ein ER-Modell, daraus Tabellen in MySQL, die echten Daten laden und mit SQL abfragen. Die Filmdatenbank löst die alte »Videothek« ab. Statt eines Diagramm-Editors mit Maus schreiben die Lernenden ihr ER-Modell als Text; die ER-Werkstatt (VS Code-Erweiterung im Workspace) zeichnet es als Chen-, Krähenfuß- und Tabellendiagramm und erzeugt das SQL. Ruby, ein Import-Skript und ein Programm mit Menüs braucht es nicht mehr.
 
 <table class='table'>
+<tr><th>Ablauf</th><td><ul>
+<li><b>1. Doppelstunde:</b> vom Datensatz zum Modell, mit der ER-Werkstatt (<code>film.er</code>).</li>
+<li><b>2. Doppelstunde:</b> vom Modell zur Datenbank (Tabellen anlegen, Daten laden) und der erste <code>JOIN</code>.</li>
+<li><b>3. Doppelstunde:</b> Menschen und Tätigkeiten, die Beziehung mit einer Rolle, und die Zusammenfassung.</li>
+</ul></td></tr>
 <tr><th>Ordner</th><td><code>/workspace/filmdatenbank</code>, von den Lernenden selbst angelegt; darin <code>film.er</code>, das erzeugte <code>film.sql</code> und die geladenen Datendateien</td></tr>
 <tr><th>Daten</th><td><code>movie-archive/movies-data-films.sql</code> und <code>movies-data-crew.sql</code> aus <code>specht/workspace-files</code>, gebaut mit <code>src/scripts/collect-movies</code>. Die Inhalte stammen aus Wikidata (CC0); die Auswahl der Filme steht in der <code>README.md</code> daneben</td></tr>
 <tr><th>Was gelesen wird</th><td>Aufgaben »Filme und Genres« und »Menschen und Tätigkeiten«: <code>film.er</code>, gelesen mit dem Kern der ER-Werkstatt im laufenden Workspace. Alle anderen: die eigene MySQL-Datenbank, angemeldet als die Person, nur lesend</td></tr>

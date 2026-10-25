@@ -2,6 +2,7 @@
 image: html-css-logo.png
 image_alt: "Die Logos von HTML5 und CSS"
 kind: projekt
+duration: 2 Doppelstunden
 language: HTML / CSS
 reference: [workspace, html, css, layout]
 </div>

@@ -2,6 +2,7 @@
 image: b-tree.webp:contain
 image_alt: "Ein B-Baum über Telefonnummern: oben die Wurzel, darunter drei Knoten, unten Blätter, die auf Zeilen der Tabelle zeigen"
 kind: labor
+duration: 1 Doppelstunde
 language: SQL
 requires: [mysql]
 reference: [sql]
