@@ -391,10 +391,11 @@ Für jede Ziffer in jedem Zustand die richtige Antwort zu finden, ist Denkarbeit
 _tool(automatron)
 
 <!-- tutorial-screenshot
-# Automatron: der minimierte DEA für das Schloss
+# Automatron: der minimierte DEA für das Schloss; breit genug für alle fünf
+# Zustände (bei 1029 px fehlte s4 rechts)
 open-site: /automatron
 tab: preview
-viewport: 1029x700
+viewport: 1400x700
 zoom: 2
 click: selector:#ti_input
 type: (0|1|2|3|4|5|6|7|8|9)*1213
@@ -404,7 +405,7 @@ sleep: 1
 crop-element: #automatron-min svg
 variants: dark
 -->
-<img class='drawing' style='width: 40em' src='automatron-schloss.webp' alt='Automatron zeichnet fünf Zustände s0 bis s4 in einer Reihe, s4 mit doppeltem Rand. Mit 1 geht es von s0 nach s1, mit 2 nach s2, mit 1 nach s3, mit 3 nach s4. Zurück führen: 1 von s1 nach s1, 2 von s3 nach s2, 1 von s3 nach s1, 1 von s4 nach s1, alle übrigen Ziffern nach s0.'>
+<img class='drawing full' src='automatron-schloss.webp' alt='Automatron zeichnet fünf Zustände s0 bis s4 in einer Reihe, s4 mit doppeltem Rand. Mit 1 geht es von s0 nach s1, mit 2 nach s2, mit 1 nach s3, mit 3 nach s4. Zurück führen: 1 von s1 nach s1, 2 von s3 nach s2, 1 von s3 nach s1, 1 von s4 nach s1, alle übrigen Ziffern nach s0.'>
 
 <!-- language: ruby -->
 Automatron zeigt nacheinander drei Automaten und gibt jedem einen eigenen Buchstaben: q für den ersten, r für den zweiten, s für den minimierten. s<sub>0</sub> bis s<sub>4</sub> sind darum deine q<sub>0</sub> bis q<sub>4</sub>. Vergleiche die Pfeile mit deiner Tabelle: Automatron zeichnet auch die Pfeile zurück nach s<sub>0</sub>, die in `lock.rb` das `fetch` erledigt. Darüber steht, wie Automatron zu diesem Automaten gekommen ist. Einen Teil davon baust du gleich selbst.
