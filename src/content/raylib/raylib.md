@@ -38,6 +38,8 @@ Du programmierst in C eine Welt aus Blöcken, durch die du selbst läufst: Mit d
 </figure>
 </div>
 
+Eine Welt aus Blöcken kennst du vermutlich aus *Minecraft*. Markus Persson begann es 2009 in Schweden, nachdem er *Infiniminer* gespielt hatte, ein Spiel von Zach Barth, das im April 2009 erschienen war: Zwei Teams graben darin in einer Welt aus Blöcken nach Erz, aber die Spieler bauten bald lieber, als zu graben. *Minecraft* wurde eines der meistverkauften Spiele überhaupt. Der Kern darunter ist überraschend klein: ein Array aus Blöcken, ein Strahl, mit dem du zielst, und ein Shader für das Licht. Genau das baust du hier.
+
 In der [Anaglyph-Aktivität](/anaglyph) beschreibst du eine Szene, und der Viewer zeigt sie. Bei [PixelRAM](/pixelram) setzt du jedes Pixel selbst. Hier schreibst du ein Programm, das 60-mal in der Sekunde reagiert: auf deine Tasten, auf deine Maus und auf eine Welt, die sich dabei verändert. Dafür verwenden wir **raylib**, eine Bibliothek für Spiele in C. Sie öffnet ein Fenster, liest Tastatur und Maus, zeichnet mit der Grafikkarte in 2D und 3D und spielt Töne ab. Übrigens bringt auch PixelRAM seine Pixel mit raylib auf den Bildschirm.
 
 Du brauchst etwas C: Variablen, Schleifen, Funktionen und `#define`. Wenn du [Echtzeitgrafik mit C](/pixelram) gemacht hast, kennst du alles, was du brauchst. Ein wenig Mathematik kommt dazu, Sinus und Kosinus für die Blickrichtung und Vektoren für Bewegung und Licht; beides wird an der Stelle erklärt, an der du es brauchst. Alle Befehle von raylib, die vorkommen, stehen im [Handbuch](/reference/raylib).

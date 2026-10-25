@@ -669,6 +669,16 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1955 -->
+<!-- part: hanrahan -->
+### Pat Hanrahan
+
+<div class='person'>
+<p><strong>Pat Hanrahan</strong> (geboren 1955), amerikanischer Informatiker. Als einer der ersten Mitarbeiter von Pixar entwarf er von 1986 bis 1989 RenderMan mit, das Programm, mit dem Pixar seine Filme rechnet, und mit Jim Lawson dessen Shading Language: Jede Oberfläche bekommt ein kleines Programm, das ihre Farbe ausrechnet, einen Shader. 2003 gründete er Tableau mit, ein Programm, das aus Daten Diagramme macht.</p>
+<p>Jeder Shader, den du schreibst, hat seinen Namen aus dieser Sprache. Für seine Arbeit an Computergrafik bekam Hanrahan drei Oscars für technische Leistungen und 2019 mit Edwin Catmull den Turing Award, den bekanntesten Preis der Informatik.</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1956 -->
 <!-- part: van-rossum -->
 ### Guido van Rossum

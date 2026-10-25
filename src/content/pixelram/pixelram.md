@@ -716,6 +716,8 @@ Für jedes Bild rechnet `color` an 58.000 Ecken zwei Abstände und zwei Sinuswer
 
 Zwei Spuren fahren über das Spielfeld und ziehen eine Linie hinter sich her. Wer in eine Linie oder an die Wand fährt, verliert die Runde. Gespielt wird zu zweit an einer Tastatur, mit <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> und mit den Pfeiltasten.
 
+Das Spiel ist älter als die Heimcomputer. 1976 stellte die Firma Gremlin den Spielautomaten *Blockade* in die Spielhallen: Zwei Spieler steuern je einen Pfeil, der eine Mauer aus Blöcken hinter sich herzieht, und wer gegen eine Mauer fährt, verliert. Berühmt wurde die Idee 1982 durch den Film *Tron*. Darin leben Programme in einem Computer und fahren auf leuchtenden Motorrädern, den Light Cycles, gegeneinander; wer die Lichtspur des anderen berührt, ist ausgelöscht. Und aus *Blockade* wurde *Snake*, die Schlange, die auf Handys von Nokia ab 1998 Millionen Menschen gespielt haben.
+
 Das Spiel bekommt eine eigene Datei. Lege `lichtspur.c` neben `main.c` an und übersetze sie mit:
 
 ```bash

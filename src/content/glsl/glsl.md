@@ -29,7 +29,18 @@ Bis hierher hat in der Hackschule bei Grafik immer der Prozessor gerechnet, ein 
 
 Dieses Programm heißt **Shader**, und du schreibst nur seinen Inhalt: was für einen Pixel passiert. Die Schleife über alle Pixel gibt es nicht mehr, der Grafikchip startet dein Programm für jeden Pixel selbst. Dafür weiß ein Pixel nichts von seinen Nachbarn und kann sich nichts merken: Er kennt nur seine eigene Position, die Größe des Bildes, die Uhrzeit und die Maus.
 
-Shader schreibt man in **GLSL**, einer Sprache, die aussieht wie C. Du schreibst sie so wie auf [Shadertoy](https://www.shadertoy.com), einer Seite, auf der Zehntausende Shader zum Ansehen und Lernen stehen; Pol Jeremias und Íñigo Quílez haben sie 2013 gestartet. Vorwissen brauchst du nicht. Wer [Echtzeitgrafik mit C](/pixelram) oder den [Raytracer](/raytracing) kennt, wird vieles wiedererkennen. Die Typen und Funktionen von GLSL stehen im Handbuch unter [GLSL](/reference/glsl).
+Der Name kommt aus dem Kino. *Shading* heißt Schattieren: ausrechnen, wie hell und in welcher Farbe eine Fläche erscheint. 1984 schlug Robert Cook bei Lucasfilm vor, das nicht fest in das Programm einzubauen, das die Bilder rechnet, sondern für jede Oberfläche ein eigenes kleines Programm schreiben zu lassen. Bei Pixar machten Pat Hanrahan und Jim Lawson daraus eine Sprache für RenderMan, und ein Programm in ihr hieß Shader. Mit RenderMan entstanden Pixars Kurzfilm *Tin Toy*, der 1989 einen Oscar bekam, und 1995 *Toy Story*, dazu die Effekte von Filmen wie *Terminator 2*, *Jurassic Park* und *Titanic*. Für ein einziges Bild durfte der Rechner dort Stunden brauchen.
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>A Language for Shading and Lighting Calculations</strong>, Pat Hanrahan und Jim Lawson, SIGGRAPH 1990. Die Sprache, in der Pixar seine Oberflächen und Lampen beschreibt: Shader für Flächen und für Licht, Typen für Punkte und Farben, eingebaute Funktionen wie heute in GLSL. Sie baut auf Robert Cooks <em>Shade Trees</em> von 1984 und Ken Perlins Rauschen auf: <a href='https://people.csail.mit.edu/ericchan/bib/pdf/p289-hanrahan.pdf'>PDF</a>, auch in der <a href='https://history.siggraph.org/?p=122073'>Geschichte der SIGGRAPH</a>.</p>
+</div>
+
+_person(hanrahan)
+
+In Echtzeit kamen Shader 2001 auf die Grafikkarten: Die GeForce 3 von Nvidia war die erste, auf der Spiele für jeden Pixel ein eigenes Programm laufen lassen konnten. Im selben Jahr zeigte John Carmack auf einer Messe neben Steve Jobs eine frühe Fassung von *Doom 3*, in der Shader das Licht für jeden Pixel rechneten.
+
+Shader schreibt man in **GLSL**, einer Sprache, die aussieht wie C und seit 2004 zu OpenGL gehört. Du schreibst sie so wie auf [Shadertoy](https://www.shadertoy.com), einer Seite, auf der Zehntausende Shader zum Ansehen und Lernen stehen; Pol Jeremias und Íñigo Quílez haben sie 2013 gestartet. Vorwissen brauchst du nicht. Wer [Echtzeitgrafik mit C](/pixelram) oder den [Raytracer](/raytracing) kennt, wird vieles wiedererkennen. Die Typen und Funktionen von GLSL stehen im Handbuch unter [GLSL](/reference/glsl).
 
 ## Einrichten
 

@@ -3466,3 +3466,29 @@ harris:
         quote: "Joining Vercel enables Rich to work on Svelte full-time, giving the project its first dedicated contributor."
       - url: https://svelte.dev/blog/accelerating-sveltes-development
         quote: "Rich Harris, Svelte’s creator, has joined Vercel to work on Svelte full-time."
+
+hanrahan:
+  - text: (geboren 1955), amerikanischer Informatiker
+    sources:
+      - url: https://en.wikipedia.org/wiki/Pat_Hanrahan
+        quote: "Patrick M. Hanrahan (born May 8, 1955)"
+  - text: Als einer der ersten Mitarbeiter von Pixar entwarf er von 1986 bis 1989 RenderMan mit
+    sources:
+      - url: https://en.wikipedia.org/wiki/Pat_Hanrahan
+        quote: "As a founding employee at Pixar Animation Studios, from 1986 to 1989 Hanrahan was part of the design of the RenderMan Interface Specification and the RenderMan Shading Language."
+  - text: mit Jim Lawson dessen Shading Language
+    sources:
+      - url: https://history.siggraph.org/?p=122073
+        quote: "“A language for shading and lighting calculations” by Hanrahan and Lawson"
+  - text: 2003 gründete er Tableau mit
+    sources:
+      - url: https://en.wikipedia.org/wiki/Pat_Hanrahan
+        quote: "In 2003 Hanrahan co-founded Tableau Software and remains its chief scientist."
+  - text: Jeder Shader, den du schreibst, hat seinen Namen aus dieser Sprache.
+    none: Workspace
+  - text: drei Oscars für technische Leistungen und 2019 mit Edwin Catmull den Turing Award
+    sources:
+      - url: https://en.wikipedia.org/wiki/Pat_Hanrahan
+        quote: "Hanrahan received three Academy Awards for his work in rendering and computer graphics research."
+      - url: https://en.wikipedia.org/wiki/Pat_Hanrahan
+        quote: "Hanrahan shared the 2019 ACM A.M. Turing Award with Catmull for their pioneering efforts on computer-generated imagery."
