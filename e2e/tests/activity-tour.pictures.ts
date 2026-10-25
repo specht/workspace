@@ -3,24 +3,26 @@
 //
 //   cd e2e && HS_PICTURES=1 npx playwright test --project=pictures activity-tour.pictures
 //
-// One e2e student opens »Raytracing in C« and is photographed at three
-// places, light and dark (NAME.webp, NAME-dark.webp):
+// One e2e student opens »Einführung in SQL«, »SQL: Gruppieren und
+// Verbinden« and »Ein eigener Webserver« and is photographed at a few places, light and dark (NAME.webp,
+// NAME-dark.webp):
 //
-// - tour-vorhersage: the prediction »akne« before an answer, with the line
-//   that stands in for what would give the answer away (AfterTask);
-// - tour-vorhersage-danach: the same card answered, and below it the picture
-//   that has appeared;
-// - tour-tipp: the »Jetzt bist du dran« box of hit_floor with its first tip
-//   open; the next tip and the solution are not there yet (HintSteps);
-// - tour-rueckmeldung: »Wann kommt der Boden?« answered with −4, the typical
-//   mistake, and its feedback;
-// - tour-menschen: Kajiya's paper on the rendering equation and the box on
-//   Kajiya himself, where the page comes to Path Tracing.
+// - tour-vorhersage: the prediction »reihenfolge« before an answer, with the
+//   line that stands in for what would give the answer away (AfterTask);
+// - tour-vorhersage-danach: the same card answered wrongly (the order in which
+//   a query is written), with its feedback, and below it the explanation that
+//   has appeared;
+// - tour-rueckmeldung: »Was bedeutet die Zahl?« answered with square metres,
+//   a typical mistake, and the feedback that names it;
+// - tour-tipp: »Viele Nachbarn« with its first tip open; the next one is not
+//   there yet (HintSteps);
+// - tour-menschen: the box on Tim Berners-Lee, on »Ein eigener Webserver«.
 //
-// Each picture is the cards' part of the page with a margin, at twice the
-// pixels, written as .webp next to the page (needs ImageMagick's convert).
-// The student's answers are deleted again afterwards; what the tips have
-// opened stays in this browser only and goes with it.
+// Each picture is that part of the page with a margin, at twice the pixels,
+// written as .webp next to the page (needs ImageMagick's convert). The
+// student's answers are deleted again afterwards; what the tips have opened
+// stays in this browser only and goes with it. None of the cards is checked
+// against a database, so the student needs no imported data.
 import { execFileSync } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
@@ -35,7 +37,9 @@ const REPO = path.resolve(__dirname, '../..');
 // src/scripts/recreate-screenshots.rb --status calls the pictures stale.
 const INPUTS = [
   'e2e/tests/activity-tour.pictures.ts',
-  'src/content/raytracing/raytracing.md', 'src/content/raytracing/tasks.yaml',
+  'src/content/mysql/mysql.md', 'src/content/mysql/tasks.yaml',
+  'src/content/sql-joins/sql-joins.md', 'src/content/sql-joins/tasks.yaml',
+  'src/content/webserver/webserver.md',
   'src/ruby/include/after_task.rb', 'src/ruby/include/hint_steps.rb', 'src/ruby/include/solution_blocks.rb',
   'src/ruby/include/task_card.rb', 'src/ruby/include/person_boxes.rb',
   'src/content/reference/personen/personen.md',
@@ -43,7 +47,7 @@ const INPUTS = [
   'src/static/include/default.css', 'src/static/include/dark.css', 'src/static/_template.html',
 ];
 const STUDENT = 'e2e-auth-student-0@example.com';
-const TASKS = ['raytracing/akne', 'raytracing/boden'];
+const TASKS = ['mysql/reihenfolge', 'mysql/flaeche-einheit'];
 const MARGIN = 16;
 
 function inputsHash(): string {
@@ -100,48 +104,52 @@ test('pictures for the activity tour', async ({ browser }, testInfo) => {
       const suffix = scheme === 'dark' ? '-dark' : '';
       await forget();
       await page.emulateMedia({ colorScheme: scheme });
-      await page.goto('/raytracing');
-      // a fresh start for the tips of every box on the page
+      await page.goto('/sql-joins');
+      // a fresh start for the tips of every card
       await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith('hint-steps:')).forEach((k) => localStorage.removeItem(k)));
-      await page.reload();
+      await page.goto('/mysql');
       await page.addStyleTag({ content: 'footer { display: none !important; }' });
 
       // A prediction: what would give the answer away waits for it.
-      const akne = page.locator("section.task-card[data-task='raytracing/akne']");
-      const wait = page.locator(".after-task[data-after='akne'] > .after-task-wait");
-      await expect(akne).toBeVisible();
+      const order = page.locator("section.task-card[data-task='mysql/reihenfolge']");
+      const wait = page.locator(".after-task[data-after='reihenfolge'] > .after-task-wait");
+      await expect(order).toBeVisible();
       await expect(wait).toBeVisible();
-      await shoot(page, akne, wait, 'tour-vorhersage' + suffix, out, taken);
+      await shoot(page, order, wait, 'tour-vorhersage' + suffix, out, taken);
 
-      await akne.locator("input.form-check-input[value='1']").check();
-      await akne.locator('button.task-submit').click();
-      await expect(akne.locator('.task-feedback')).toBeVisible({ timeout: 15_000 });
-      const revealed = page.locator(".after-task[data-after='akne'] > .after-task-body img").first();
-      await expect(revealed).toBeVisible();
-      await expect(revealed).toHaveJSProperty('complete', true);
-      await shoot(page, akne, revealed, 'tour-vorhersage-danach' + suffix, out, taken);
-
-      // »Jetzt bist du dran« with its first tip open: the next one waits.
-      const own = page.locator(".hint.own[data-check='hit-floor']");
-      const steps = own.locator('xpath=following-sibling::div[contains(@class, "hint-steps")][1]');
-      await expect(steps.locator('details.hint-step').first()).toBeVisible();
-      await steps.locator('details.hint-step').first().locator('summary').click();
-      await expect(steps.locator('details.hint-step').first()).toHaveAttribute('open', '');
-      await expect(steps.locator('details.hint-step').nth(1)).toBeHidden();
-      await shoot(page, own, steps, 'tour-tipp' + suffix, out, taken);
+      // Answered in the order a query is written: wrong, with the feedback
+      // for exactly that answer, and the explanation is there now.
+      await order.locator("input.form-check-input[value='1']").check();
+      await order.locator('button.task-submit').click();
+      await expect(order.locator('.task-feedback')).toContainText('So schreibt man die Abfrage', { timeout: 15_000 });
+      const explained = page.locator(".after-task[data-after='reihenfolge'] > .after-task-body > p").first();
+      await expect(explained).toBeVisible();
+      await shoot(page, order, explained, 'tour-vorhersage-danach' + suffix, out, taken);
 
       // A typical mistake and the feedback that names it.
-      const boden = page.locator("section.task-card[data-task='raytracing/boden']");
-      await boden.locator('input.task-input').fill('-4');
-      await boden.locator('button.task-submit').click();
-      await expect(boden.locator('.task-feedback')).toContainText('Minus', { timeout: 15_000 });
-      await shoot(page, boden, boden, 'tour-rueckmeldung' + suffix, out, taken);
+      const area = page.locator("section.task-card[data-task='mysql/flaeche-einheit']");
+      await area.locator("input.form-check-input[value='1']").check();
+      await area.locator('button.task-submit').click();
+      await expect(area.locator('.task-feedback')).toContainText('Stadtviertel', { timeout: 15_000 });
+      await shoot(page, area, area, 'tour-rueckmeldung' + suffix, out, taken);
 
-      // Path Tracing: Kajiya's paper and Kajiya himself.
-      const paper = page.locator('div.book', { hasText: 'The Rendering Equation' });
-      const person = page.locator('div.person', { hasText: 'Kajiya' }).first();
-      await expect(person.locator('img')).toHaveJSProperty('complete', true);
-      await shoot(page, paper, person, 'tour-menschen' + suffix, out, taken);
+      // Tips in steps: the first one open, the next one waits.
+      await page.goto('/sql-joins');
+      await page.addStyleTag({ content: 'footer { display: none !important; }' });
+      const neighbours = page.locator("section.task-card[data-task='sql-joins/viele-nachbarn']");
+      const steps = neighbours.locator('details.hint-step');
+      await expect(steps.first()).toBeVisible();
+      await steps.first().locator('summary').click();
+      await expect(steps.first()).toHaveAttribute('open', '');
+      await expect(steps.nth(1)).toBeHidden();
+      await shoot(page, neighbours, neighbours, 'tour-tipp' + suffix, out, taken);
+
+      // A person teachers know: Tim Berners-Lee on »Ein eigener Webserver«.
+      await page.goto('/webserver');
+      await page.addStyleTag({ content: 'footer { display: none !important; }' });
+      const person = page.locator('div.person', { hasText: 'Berners-Lee' }).first();
+      await expect(person.locator('img').first()).toHaveJSProperty('complete', true);
+      await shoot(page, person, person, 'tour-menschen' + suffix, out, taken);
     }
     fs.writeFileSync(path.join(ABOUT, '.pictures.json'), JSON.stringify({
       script: 'e2e/tests/activity-tour.pictures.ts',

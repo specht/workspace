@@ -3,8 +3,11 @@
   "command": "cd e2e && HS_PICTURES=1 npx playwright test --project=pictures activity-tour.pictures",
   "inputs": [
     "e2e/tests/activity-tour.pictures.ts",
-    "src/content/raytracing/raytracing.md",
-    "src/content/raytracing/tasks.yaml",
+    "src/content/mysql/mysql.md",
+    "src/content/mysql/tasks.yaml",
+    "src/content/sql-joins/sql-joins.md",
+    "src/content/sql-joins/tasks.yaml",
+    "src/content/webserver/webserver.md",
     "src/ruby/include/after_task.rb",
     "src/ruby/include/hint_steps.rb",
     "src/ruby/include/solution_blocks.rb",

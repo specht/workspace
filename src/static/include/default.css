@@ -1014,6 +1014,13 @@ img.full-shadow {
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+/* width: 100% plus the side margins and the border would be a few pixels
+   wider than the scroll-x box around it, which then scrolls sideways. */
+img.full.full-shadow {
+    width: calc(100% - 0.5em);
+    box-sizing: border-box;
+}
+
 img.fit-width {
     min-width: unset;
 }

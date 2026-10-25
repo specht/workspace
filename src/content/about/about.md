@@ -82,40 +82,43 @@ move-mouse: selector:.terminal
 
 ## Was eine Aktivität ausmacht
 
-Eine Aktivität ist kein Text mit ein paar Beispielen, sondern ein Projekt, das Lernende Schritt für Schritt in ihrem eigenen Workspace bauen: eine Webseite, einen Webserver, einen Raytracer. Die Seite erklärt, was neu ist, aber vor allem lässt sie die Lernenden etwas tun und sagt ihnen, ob es stimmt. Das Muster dahinter heißt in der Informatikdidaktik PRIMM: erst vermuten, dann ausführen, untersuchen, ändern und am Ende selbst schreiben (Predict, Run, Investigate, Modify, Make; [Sentance, Waite und Kallia 2019](https://doi.org/10.1080/08993408.2019.1608781)). Die Bilder in diesem Kapitel stammen aus [»Raytracing in C«](/raytracing).
+Eine Aktivität ist kein Text mit ein paar Beispielen, sondern eine Folge von Schritten, die Lernende in ihrem eigenen Workspace selbst gehen: eine Webseite bauen, einen Webserver schreiben, eine Datenbank abfragen. Die Seite erklärt, was neu ist, aber vor allem lässt sie die Lernenden etwas tun und sagt ihnen, ob es stimmt. Das Muster dahinter heißt in der Informatikdidaktik PRIMM: erst vermuten, dann ausführen, untersuchen, ändern und am Ende selbst schreiben (Predict, Run, Investigate, Modify, Make; [Sentance, Waite und Kallia 2019](https://doi.org/10.1080/08993408.2019.1608781)). Die meisten Bilder in diesem Kapitel stammen aus [»Einführung in SQL«](/mysql), die Tipps aus der Fortsetzung [»SQL: Gruppieren und Verbinden«](/sql-joins).
 
 ### Echte Dateien, echte Werkzeuge
 
-Gearbeitet wird in Visual Studio Code, mit Dateien, Terminal und Git, so wie in der Softwareentwicklung. Was entsteht, gehört den Lernenden: Sie arbeiten zu Hause daran weiter, und eine Abgabe ist eine Kopie, über die sie selbst bestimmen. Nichts wird versteckt: Pfade, Befehle und Adressen stehen im Text, wie sie sind. Was beim ersten Mal ausführlich erklärt wird, steht danach in einer Zeile mit einem Link ins Handbuch.
+Gearbeitet wird in Visual Studio Code, mit Dateien, Terminal und Git, so wie in der Softwareentwicklung; die Abfragen der SQL-Aktivitäten laufen in einer eigenen MySQL-Datenbank. Was entsteht, gehört den Lernenden: Sie arbeiten zu Hause daran weiter, und eine Abgabe ist eine Kopie, über die sie selbst bestimmen. Nichts wird versteckt: Pfade, Befehle und Adressen stehen im Text, wie sie sind. Was beim ersten Mal ausführlich erklärt wird, steht danach in einer Zeile mit einem Link ins Handbuch.
 
 ### Erst vermuten, dann ausprobieren
 
-Bevor ein Programm läuft, fragt die Seite oft, was gleich passieren wird. Was die Antwort verraten würde, ein Bild vom Ergebnis oder der Absatz, der es erklärt, erscheint erst, wenn die Vermutung abgegeben ist, ob richtig oder falsch. Wer sich erst festgelegt hat, schaut beim Ausprobieren genau hin. Lehrkräfte und Gäste sehen alles sofort; so wie unten sehen es nur Lernende.
+Bevor etwas ausgeführt wird, fragt die Seite oft, was gleich passieren wird, in der Einführung in SQL zum Beispiel, in welcher Reihenfolge die Datenbank die Teile einer Abfrage abarbeitet. Was die Antwort verraten würde, ein Bild vom Ergebnis oder der Absatz, der es erklärt, erscheint erst, wenn die Vermutung abgegeben ist, ob richtig oder falsch. Wer sich erst festgelegt hat, schaut beim Ausprobieren genau hin. Lehrkräfte und Gäste sehen alles sofort; so wie hier sehen es nur Lernende.
 
-<div class='gallery columns-2'>
-<figure><img src='tour-vorhersage.webp' alt='Die Aufgabe »Ein Strahl, der auf der Oberfläche beginnt« mit vier Antworten zur Wahl und dem Knopf »Vermutung abgeben«. Darunter statt des Ergebnisses nur die Zeile: Hier geht es weiter, sobald du deine Antwort oben abgegeben hast.'><figcaption>Vor der Antwort wartet das Ergebnis.</figcaption></figure>
-<figure><img src='tour-vorhersage-danach.webp' alt='Dieselbe Aufgabe nach der Antwort, mit der Erklärung, warum Stellen in der Sonne gesprenkelt werden. Darunter ist jetzt das Bild erschienen: Kugeln auf einem Schachbrett, auf den hellen Feldern dunkle Sprenkel.'><figcaption>Danach erscheinen Erklärung und Bild.</figcaption></figure>
-</div>
+<img class='full full-shadow' src='tour-vorhersage.webp' alt='Die Aufgabe »Die Reihenfolge«: In welcher Reihenfolge arbeitet die Datenbank SELECT, FROM, WHERE, ORDER BY und LIMIT ab? Vier Reihenfolgen zur Wahl und der Knopf »Vermutung abgeben«. Darunter statt der Erklärung nur die Zeile: Hier geht es weiter, sobald du deine Antwort oben abgegeben hast.'>
+
+Wer die Reihenfolge wählt, in der man eine Abfrage schreibt, bekommt eine Rückmeldung genau zu diesem Irrtum, und darunter erscheint die Erklärung:
+
+<img class='full full-shadow' src='tour-vorhersage-danach.webp' alt='Dieselbe Aufgabe, angekreuzt ist SELECT, FROM, WHERE, ORDER BY, LIMIT. Die Rückmeldung: So schreibt man die Abfrage, ausgeführt wird sie anders; der Query Stepper zeigt, womit die Datenbank anfängt. Darunter ist jetzt der Absatz erschienen, der die Reihenfolge erklärt.'>
 
 ### Selbst schreiben statt abtippen
 
-Hat die Seite erklärt, was eine kleine Funktion tun soll, schreiben die Lernenden sie zuerst selbst (»Jetzt bist du dran«). Wer hängen bleibt, holt sich Tipps in Stufen: erst zum Verstehen, dann zum Weg, dann ein Gerüst mit Lücken, nie die ganze Lösung. Der nächste Tipp erscheint erst eine Minute, nachdem der vorige aufgeklappt wurde, damit man mit jedem arbeitet, statt bis zum letzten durchzuklicken. Der Code der Seite kommt als letzte Stufe. Welche Tipps jemand gebraucht hat, merkt sich nur der eigene Browser; keine Lehrkraft sieht es.
+In den Programmierprojekten schreiben die Lernenden eine kleine Funktion zuerst selbst, sobald die Seite erklärt hat, was sie tun soll (»Jetzt bist du dran«); der Code der Seite kommt erst danach. Prüft eine Aufgabe die eigene Funktion, in Ruby, Python oder C, ruft der Workspace sie mit ein paar Eingaben auf, und wer sie so gelöst hat, kann den Code der Seite sofort aufklappen und vergleichen. Bei SQL schreiben die Lernenden ohnehin jede Abfrage selbst.
 
-<img class='full full-shadow' src='tour-tipp.webp' alt='Der Kasten »Jetzt bist du dran«: Schreib unter hit_sphere die Funktion hit_floor. Darunter ist der erste Tipp aufgeklappt; der nächste Tipp und die Lösung sind noch nicht zu sehen.'>
+Wer hängen bleibt, holt sich Tipps in Stufen: erst zum Verstehen, dann zum Weg, dann ein Gerüst mit Lücken, nie die ganze Lösung. Der nächste Tipp erscheint erst eine Minute, nachdem der vorige aufgeklappt wurde, ohne Uhr, damit man mit jedem arbeitet, statt bis zum letzten durchzuklicken. Welche Tipps jemand gebraucht hat, merkt sich nur der eigene Browser; keine Lehrkraft sieht es.
 
-Oft prüft eine Aufgabe darunter den eigenen Code: Beim Raytracer übersetzt der Workspace die Datei der Lernenden und ruft ihre Funktion `hit_floor` mit ein paar Strahlen auf, auch bevor das Programm sie selbst benutzt. Wer sie so gelöst hat, kann den Code der Seite sofort aufklappen und mit dem eigenen vergleichen.
+<img class='full full-shadow' src='tour-tipp.webp' alt='Die Aufgabe »Viele Nachbarn«: Welche Länder haben mehr als acht Nachbarn? Ein Feld für die Abfrage, darunter der erste Tipp aufgeklappt: Wie viele Zeilen hat border für Deutschland, und was zählt COUNT, wenn du nach country_code gruppierst? Einen nächsten Tipp gibt es noch nicht.'>
 
 ### Aufgaben, die nachsehen
 
-Aufgaben stehen dort, wo die Lernenden gerade etwas getan haben, nicht gesammelt am Ende. Viele vergleichen nicht nur eine Antwort, sondern sehen im Workspace nach: ob eine Datei richtig liegt, ob das HTML einer Seite stimmt, ob alles committet ist, was eine selbst geschriebene Funktion zurückgibt oder ob der eigene Server antwortet. Dabei lesen sie nur und ändern nichts. Die Rückmeldung nennt den typischen Fehler, nicht bloß »falsch«, und die Erklärung zur Lösung erscheint erst nach einer richtigen Antwort.
+Aufgaben stehen dort, wo die Lernenden gerade etwas getan haben, nicht gesammelt am Ende. Viele vergleichen nicht nur eine Antwort, sondern sehen nach: Eine SQL-Abfrage läuft in der eigenen Datenbank der Lernenden, und andere Aufgaben prüfen, ob eine Datei richtig liegt, ob das HTML einer Seite stimmt, ob alles committet ist, was eine selbst geschriebene Funktion zurückgibt oder ob der eigene Server antwortet. Dabei lesen sie nur und ändern nichts.
 
-<img class='full full-shadow' src='tour-rueckmeldung.webp' alt='Die Aufgabe »Wann kommt der Boden?« mit der Antwort −4. Die Rückmeldung sagt, dass das Minus in der Formel dazugehört und ein Strahl, der nach unten zeigt, den Boden bei positivem t trifft.'>
+Die Rückmeldung nennt den typischen Fehler, nicht bloß »falsch«. Wer bei den fünf größten Ländern das `DESC` vergisst, liest »Das sind die fünf kleinsten«, und auch beim Ankreuzen hat jede falsche Antwort ihre eigene Rückmeldung. Die Erklärung zur Lösung erscheint erst nach einer richtigen Antwort.
+
+<img class='full full-shadow' src='tour-rueckmeldung.webp' alt='Die Aufgabe »Was bedeutet die Zahl?«: Für Deutschland steht in der Spalte area die Zahl 357587.77. Angekreuzt ist 357.587,77 Quadratmeter. Die Rückmeldung: So groß ist ein Stadtviertel, kein Land. Ein Quadratkilometer hat eine Million Quadratmeter.'>
 
 ### Die Menschen hinter einer Sache
 
-Hinter jeder Erfindung stehen Menschen. Wer ein Verfahren, eine Sprache oder ein Format erfunden hat, um das es in einem Abschnitt geht, bekommt dort einen kurzen Kasten: ein freies Foto, wenn es eines gibt, und zwei, drei Sätze, die an das anknüpfen, was die Lernenden gerade tun. Wo ein Abschnitt mit einem berühmten Aufsatz anfängt, verweist die Seite auf ihn, und wo ein Buch genau dort weitermacht, wo die Seite aufhört, auch auf das Buch. Alle Personen stehen gesammelt im Handbuch unter [»Personen«](/reference/personen).
+Hinter jeder Erfindung stehen Menschen. Wer ein Verfahren, eine Sprache oder ein Format erfunden hat, um das es in einem Abschnitt geht, bekommt dort einen kurzen Kasten: ein freies Foto, wenn es eines gibt, und zwei, drei Sätze, die an das anknüpfen, was die Lernenden gerade tun. Wo ein Abschnitt mit einem berühmten Aufsatz anfängt, verweist die Seite auf ihn, beim Raytracer etwa auf den von Turner Whitted aus dem Jahr 1980, und wo ein Buch genau dort weitermacht, wo die Seite aufhört, auch auf das Buch. Alle Personen stehen gesammelt im Handbuch unter [»Personen«](/reference/personen).
 
-<img class='full full-shadow' src='tour-menschen.webp' alt='Ein Kasten mit einem Dokument-Symbol: The Rendering Equation, James T. Kajiya, SIGGRAPH 1986, mit Links zum Aufsatz. Darunter ein Kasten mit einem Foto von Jim Kajiya und zwei Sätzen dazu, wer er ist.'>
+<img class='full full-shadow' src='tour-menschen.webp' alt='Der Kasten zu Tim Berners-Lee in »Ein eigener Webserver«: links ein Foto von ihm auf einer Bühne, rechts, dass er 1989 am CERN das World Wide Web vorschlug, bis Ende 1990 HTML, HTTP, den ersten Webserver und den ersten Browser schrieb und das Web nicht patentieren ließ.'>
 
 ### Was die Lehrkraft davon hat
 
