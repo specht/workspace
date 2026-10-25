@@ -45,6 +45,32 @@ tasks:
         reicht ein richtiger Login allein nicht. `LIMIT 1` sorgt dafür, dass
         höchstens eine Zeile zurückkommt.
 
+  - id: apostroph
+    title: Ein Name mit Apostroph
+    prediction: true
+    prompt: |
+      Jemand heißt mit Login `o'brien` und tippt irgendein Passwort ein. Was
+      macht das Programm? Überleg erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - 'Es meldet »Fehler: Login oder Passwort falsch.«'
+        - 'Es bricht mit einem Fehler der Datenbank ab.'
+        - "Es meldet »Herzlich willkommen, o'brien.«"
+        - 'Es fragt noch einmal nach dem Login.'
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: 'Das wäre richtig, wenn das Programm den Namen nur vergliche. Setz `o''brien` einmal von Hand in die Abfrage ein, wie das Programm es tut: Wo endet der Text in den Apostrophen?'
+      - when: { picked: 2 }
+        say: Selbst wenn es diesen Benutzer gäbe, käme die Abfrage gar nicht so weit. Setz den Namen einmal von Hand in die Abfrage ein.
+      - when: { picked: 3 }
+        say: Das Programm fragt nur einmal; eine Schleife hat es nicht. Setz den Namen einmal von Hand in die Abfrage ein.
+    solution: |
+      Es bricht ab: Der Apostroph beendet den Text zu früh, und `brien' AND …`
+      ist kein gültiges SQL. Die Eingabe wird Teil der Abfrage, und genau das
+      nutzt die nächste Aufgabe aus.
+
   - id: admin
     title: Als admin, ohne Passwort
     prompt: |

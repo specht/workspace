@@ -5,7 +5,7 @@ Ein Labor zu SQL Injection: Lernende schreiben ein kleines Anmeldeprogramm in Ru
 <tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprache« ein, ohne Einstellung ist es Ruby; Lernende können auf der Seite selbst umschalten.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde:<ul>
 <li>Testdatenbank im Profil anlegen, <code>users.sql</code> importieren, <code>gem install mysql2</code> (Python braucht nichts)</li>
-<li>das Programm ausprobieren und die Abfrage verstehen</li>
+<li>das Programm ausprobieren und die Abfrage verstehen; die Vorhersage »Ein Name mit Apostroph« vor dem ersten Experiment</li>
 <li>die drei Experimente, dann das Prepared Statement und dieselben Versuche noch einmal</li>
 <li>zum Schluss der rechtliche Hinweis und die Frage, warum ein eigener Zugang den Schaden begrenzt.</li>
 </ul></td></tr>
@@ -27,6 +27,7 @@ Ein Labor zu SQL Injection: Lernende schreiben ein kleines Anmeldeprogramm in Ru
 #### Die Aufgaben
 
 - Die Experimente sind Reflexionen: Die Lernenden schreiben die entstandene SQL-Abfrage auf und erklären sie. Musterlösungen stehen bewusst nicht in den Karten, sondern hier und, für Lehrkräfte, als Beispielantworten unter jeder Aufgabe.
+- »Ein Name mit Apostroph« ist eine Vorhersage: Die meisten erwarten »Login oder Passwort falsch«, das Programm bricht aber mit einem Syntaxfehler der Datenbank ab. Der Absatz darunter, der das erklärt, erscheint erst nach der Antwort. Damit liegt die Idee für den Login als `admin` bereit, ohne ihn zu verraten.
 - Für den Login als `admin` genügt ein Login, der das Anführungszeichen schließt und den Rest der Abfrage, also die Prüfung des Passworts, mit `#` auskommentiert.
 - Die `UNION`-Abfrage liefert statt eines Logins die Adresse, weil das Programm die erste Spalte der ersten Zeile als Namen ausgibt; fragt die zweite Abfrage stattdessen nach der Spalte `password` des Administrators, gibt das Programm dessen Passwort aus.
 - »Ein Prepared Statement« prüft, ob in `login.rb` außerhalb von Kommentaren `prepare(` und `execute(` stehen, in `login.py` `prepared=True` und ein `execute(` mit einem Tupel oder einer Liste von Werten.

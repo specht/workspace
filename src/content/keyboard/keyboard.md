@@ -74,6 +74,10 @@ _uses(bewegen)
 
 _task(navigieren)
 
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Geh in eine eingerückte Zeile, ans Ende, und drück <kbd>Pos1</kbd>. Wo steht der Cursor? Drück <kbd>Pos1</kbd> gleich noch einmal: Wohin springt er jetzt? Beim Programmieren sparst du dir damit viele Pfeiltasten.
+</div>
+
 ### Text markieren
 
 Mit der Maus und mit <kbd>Shift</kbd> und den Pfeiltasten markieren, Wörter, Zeilen und alles auf einmal auswählen.
@@ -85,6 +89,12 @@ _task(markieren)
 ### Text bearbeiten
 
 Löschen, ersetzen, rückgängig machen, kopieren, ausschneiden und einfügen, ganze Zeilen verschieben und verdoppeln, mehrere Zeilen einrücken und speichern.
+
+_task(kopieren-ohne-markierung)
+
+<!-- after: kopieren-ohne-markierung -->
+Ohne Markierung kopiert <kbd>Strg</kbd><kbd>C</kbd> in Visual Studio Code die ganze Zeile, in der der Cursor steht. <kbd>Strg</kbd><kbd>V</kbd> fügt sie dann als eigene Zeile über der Zeile ein, in der der Cursor gerade steht, egal, wo in der Zeile er ist. So verdoppelst du schnell eine Zeile; mit <kbd>Strg</kbd><kbd>X</kbd> verschiebst du sie.
+<!-- /after -->
 
 _uses(bearbeiten, zeilen)
 

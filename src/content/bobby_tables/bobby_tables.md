@@ -249,6 +249,12 @@ _task(abfrage)
 
 _uses(select, where)
 
+_task(apostroph)
+
+<!-- after: apostroph -->
+Das Programm bricht mit einer Fehlermeldung der Datenbank ab: `You have an error in your SQL syntax`. Der Apostroph in `o'brien` beendet den Text in der Abfrage zu früh. Die Datenbank bekommt `WHERE login = 'o'brien' AND …`, und mit `brien' AND …` dahinter kann sie nichts anfangen. Was jemand als Login eintippt, wird also nicht nur verglichen, es wird Teil der Abfrage.
+<!-- /after -->
+
 Wie in vielen anderen Sprachen können in SQL Kommentare stehen: Mit `#` oder `--` beginnt ein Kommentar, der bis zum Ende der Zeile gilt und nicht ausgeführt wird.
 
 Das Programm setzt die Eingabe unverändert in die SQL-Abfrage ein. Damit kann, wer etwas eintippt, die Abfrage selbst verändern.
@@ -380,6 +386,10 @@ check-task: prepared python
 
 
 _task(behoben)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Melde dich im geänderten Programm als <code>o'brien</code> an, mit irgendeinem Passwort. Vorhin hat der Apostroph das Programm zum Absturz gebracht. Was passiert jetzt, und warum? Versuch es auch als <code>alice</code> mit dem Passwort <code>x' OR '1'='1</code>.
+</div>
 
 _task(warum-prepared)
 

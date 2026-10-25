@@ -27,6 +27,34 @@ tasks:
       type: keyboard
       section: Text markieren
 
+  - id: kopieren-ohne-markierung
+    title: Kopieren ohne Markierung
+    prediction: true
+    prompt: |
+      In Visual Studio Code steht der Cursor mitten in einer Zeile, nichts ist
+      markiert. Du drückst <kbd>Strg</kbd><kbd>C</kbd>, gehst zwei Zeilen
+      tiefer und drückst <kbd>Strg</kbd><kbd>V</kbd>. Was passiert?
+      Überleg erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - Nichts, weil nichts markiert war.
+        - Das Wort, in dem der Cursor stand, wird an der neuen Stelle eingefügt.
+        - Die ganze Zeile wird als eigene Zeile über der neuen Zeile eingefügt.
+        - Eingefügt wird, was vorher in der Zwischenablage war.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Viele Programme machen es so. Visual Studio Code nicht. Probier es aus.
+      - when: { picked: 1 }
+        say: Das Wort markiert erst ein Doppelklick oder <kbd>Strg</kbd><kbd>D</kbd>. Probier es aus.
+      - when: { picked: 3 }
+        say: Die Zwischenablage ändert sich, auch ohne Markierung. Probier es aus.
+    solution: |
+      Ohne Markierung kopiert Visual Studio Code die ganze Zeile, und
+      <kbd>Strg</kbd><kbd>V</kbd> fügt sie als eigene Zeile über der Zeile
+      mit dem Cursor ein.
+
   - id: bearbeiten
     title: Text bearbeiten
     prompt: Erledige das Kapitel »Text bearbeiten«.
