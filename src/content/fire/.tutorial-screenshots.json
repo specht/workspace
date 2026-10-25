@@ -30,6 +30,24 @@
       "state_hash": "fc7bff6eabc697ef19623cfad2a13f638d35b50707233d4c07f8ded5ac88c58c",
       "workspace_look": "4.140.0-ls368"
     },
+    "form.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "cb34136be75dd974ff8729294e0728d6f0577ab69d0a64f34e2c34969a1b2131",
+      "state_hash": "2472036b4b90078cff4f3f3b77697ed40cfcf37b3aa333ccd5836effacdea629",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "gluehen.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "dcccc84612c2e01b26208d7e38d438b0557e3c36d0a22a65aa4edac57b302865",
+      "state_hash": "fe3ed2849943b0d4efb0232e47f7d2d01573e9e53949b61b49c2c4172286f61e",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "leuchten.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "536e0975562f5791244d09f3e6b483618be133c917374ebadc2e564ac03a0343",
+      "state_hash": "48e417882f3377369f8dc251ec75d4b730192725ca7447f6303c9b0261725a85",
+      "workspace_look": "4.140.0-ls368"
+    },
     "ramp0.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "4122a582372b809c06b4d46bb14a9050052841cc704f082d5c6ae95ca70bc297",
