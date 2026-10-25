@@ -152,7 +152,8 @@ Aktivität ([widgets.md](widgets.md)).
   (`handleKeyUp`); ob es stimmt, zeigt die Vorschau oder das Spiel. Steht
   danach die ganze Datei auf der Seite, gehört sie mit zur Lösung.
 - Änderungen statt ganzer Dateien: Webserver, Pixelwand.
-- Tipps in Stufen: Huffman (Baum, Decodieren, kanonische Codes), alle
+- Tipps in Stufen: Huffman (Baum, Decodieren, kanonische Codes), die Zeile
+  beim Interlacing im GIF-Decoder (`image_row`), alle
   Aufgaben des Routenplaners, in denen eine Funktion entsteht, die
   Steganographie, alle Kästen »Jetzt bist du dran« (Raytracer, Raycaster,
   Webserver, Pixelwand, Wetter, Echtzeitgrafik mit C, Klötzchenwelt, GLSL,

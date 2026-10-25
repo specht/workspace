@@ -437,7 +437,7 @@ Bis jetzt schwebt die Kamera über der Welt. Jetzt gehst du hinein: Die Kamera w
 
 Eine Figur in der Welt hat eine Position und eine Blickrichtung. Die Position sind ihre Füße. Die Blickrichtung beschreiben wir mit zwei Winkeln: `yaw` dreht nach links und rechts, `pitch` nach oben und unten. Daraus berechnet `view_direction()` einen Vektor, der vom Auge aus nach vorne zeigt. Schreib die Figur unter `visible`:
 
-```c_copy
+```c
 ~         || block(x, y + 1, z) == AIR || block(x, y - 1, z) == AIR
 ~         || block(x, y, z + 1) == AIR || block(x, y, z - 1) == AIR;
 ~ }
@@ -867,7 +867,7 @@ Um einen Block abzubauen, musst du wissen, auf welchen Block du schaust. Dafür 
 
 Schreibe das über `main`:
 
-```c_copy
+```c
 ~         on_ground = false;
 ~     }
 ~ }

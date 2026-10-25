@@ -136,7 +136,37 @@ tasks:
           expect: 2
           say: Bei 3 Zeilen hat Durchgang 2 keine einzige Zeile; nach Zeile 0 kommt gleich Zeile 2.
         - image_row(426, 427, 1): 425
-    hint: 'Durchgang für Durchgang: Wie viele Zeilen hat er bei `height` Zeilen? Ist `i` kleiner, liegt die Zeile in diesem Durchgang; sonst zieh seine Zeilen von `i` ab.'
+    hint:
+      - |
+        Schreib für ein Bild mit 10 Zeilen die Zeilen jedes Durchgangs auf:
+        Durchgang 1 beginnt bei 0 und geht in Schritten von 8, Durchgang 2
+        beginnt bei 4 und so weiter. In welcher Reihenfolge stehen die Zeilen
+        dann in den Daten? Die wievielte ist Zeile 4?
+      - |
+        Durchgang für Durchgang: Wie viele Zeilen hat er bei `height` Zeilen?
+        Ist `i` kleiner, liegt die Zeile in diesem Durchgang, bei Anfang plus
+        `i` Schritte; sonst zieh seine Zeilen von `i` ab und frag den nächsten.
+        Ein Durchgang kann auch gar keine Zeile haben.
+      - |
+        Ein Gerüst; die Lücken mit `…` füllst du:
+
+        ```c
+        int image_row(int i, int height, int interlaced)
+        {
+            if (!interlaced)
+                return i;
+            int start[4] = {0, 4, 2, 1};
+            int step[4] = {8, 8, 4, 2};
+            for (int pass = 0; pass < 4; pass++)
+            {
+                int rows = …;   // wie viele Zeilen hat dieser Durchgang?
+                if (i < rows)
+                    return …;
+                i -= rows;
+            }
+            return 0;
+        }
+        ```
 
   - id: interlacing
     title: Zeilen in anderer Reihenfolge
