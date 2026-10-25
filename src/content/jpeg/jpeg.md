@@ -446,7 +446,7 @@ Du solltest sicherstellen, dass die Datei mit den Bytes 0xFFD8 (SOI) beginnt. An
 
 <div class='hint'>
 <strong>Für deinen Decoder:</strong> Schreib in <code>main</code> diese Schleife. Lass sie für jeden Marker ausgeben, welcher es ist und wie lang sein Segment ist, und am SOS-Marker aufhören. Merk dir vor dem Überspringen, wo das nächste Segment beginnt: <code>pos</code> plus Länge minus 2, denn die Länge zählt sich selbst mit. Für <code>44-baseline.jpg</code> sieht die Ausgabe so aus:
-<pre class='mt-2 mb-0'>
+<pre class='mt-2 mb-0 no-copy'>
 FFE0   16
 FFDB   67
 FFDB   67

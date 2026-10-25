@@ -169,7 +169,9 @@ Voreingestellt hat trotzdem jeder Codeblock einen Kopierknopf. Wählt eine
 Lehrkraft auf der Klassenseite für eine Gruppe »Kopierknöpfe: Wo sinnvoll«,
 bekommen deren Lernende nur an den mit `_copy` markierten Blöcken einen und
 tippen den Rest ab. Darum markiert man die Blöcke trotzdem so und schreibt die
-Seite so, als tippten sie ab.
+Seite so, als tippten sie ab. Was kein Code ist, bekommt nie einen: Bitfelder
+und Hexdumps (`<pre class='spec'>`) und von Hand geschriebene Ausgaben oder
+Dateinamen (`<pre class='no-copy'>`).
 
 Kommt neuer Code mitten in eine Datei, zeigt der Block, wo: Zeilen, die mit
 `~ ` anfangen, sind **Kontext**, Code, der schon in der Datei steht. Sie

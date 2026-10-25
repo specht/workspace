@@ -395,19 +395,19 @@ Verwende einfache Dateinamen: kleine Buchstaben, keine Leerzeichen, keine Umlaut
     <div class='col-md-4'>
         <div class='hint good'>
             <p>Gut:</p>
-            <pre>fuji.jpg</pre>
+            <pre class='no-copy'>fuji.jpg</pre>
         </div>
     </div>
     <div class='col-md-4'>
         <div class='hint good'>
             <p>Auch gut:</p>
-            <pre>mount-fuji.webp</pre>
+            <pre class='no-copy'>mount-fuji.webp</pre>
         </div>
     </div>
     <div class='col-md-4'>
         <div class='hint bad'>
             <p>Eher schlecht:</p>
-            <pre>Fuji Bild NEU!!!.JPG</pre>
+            <pre class='no-copy'>Fuji Bild NEU!!!.JPG</pre>
         </div>
     </div>
 </div>
