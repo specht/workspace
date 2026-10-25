@@ -122,7 +122,7 @@ _task(ecke)
 
 ### Ein Kreis
 
-Einen Kreis zeichnet ein Shader nicht, er fragt jeden Pixel: Wie weit bist du von der Mitte weg? Ersetze den Inhalt von `shader.frag` durch dieses Programm:
+Einen Kreis zeichnet ein Shader nicht, er fragt jeden Pixel: Wie weit bist du von der Mitte weg? Ersetze den Inhalt von `shader.frag` durch dieses Programm; zwei Zeilen darin schreibst du gleich selbst:
 
 ```glsl
 // Ein Kreis: Jeder Pixel fragt, wie weit er von der Mitte weg ist.
@@ -136,17 +136,46 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     // so groß ist ein Pixel in diesen Koordinaten
     float pixel = 2.0 / iResolution.y;
 
-    // der Abstand zur Mitte
-    float d = length(p);
-
-    // 1 im Kreis, 0 draußen, dazwischen ein weicher Rand über zwei Pixel
-    float inside = 1.0 - smoothstep(0.5 - pixel, 0.5 + pixel, d);
+    // hier: d, der Abstand zur Mitte, und inside: 1 im Kreis, 0 draußen
+    float inside = 0.0;
 
     vec3 background = vec3(0.08, 0.1, 0.18) + 0.08 * p.y;
     vec3 disk = vec3(1.0, 0.6, 0.2);
     fragColor = vec4(mix(background, disk, inside), 1.0);
 }
 ```
+
+`p` ist die Position des Pixels, so verschoben, dass die Mitte des Bildes `(0, 0)` ist, und durch die **Höhe** geteilt. Oben ist dann 1, unten −1, und nach links und rechts reicht `p.x` so weit, wie das Bild breiter als hoch ist. Weil beide Richtungen durch dieselbe Zahl geteilt werden, bleibt ein Kreis rund. Der Raytracer rechnet in `ray_dir` genauso.
+
+`length(p)` ist der Abstand zur Mitte. Wer näher als 0,5 ist, gehört zum Kreis. Ein hartes `if (d < 0.5)` gäbe Treppenstufen am Rand. `smoothstep(a, b, d)` ist 0, solange `d` kleiner als `a` ist, 1 ab `b`, und dazwischen steigt es weich an. Über die Breite von zwei Pixeln wird der Rand so ein Verlauf: glatte Kanten mit einer Rechnung, für die PixelRAM in »Glatte Kanten« jeden Pixel an den Kanten mehrfach fragen musste. `mix(a, b, t)` mischt zwei Farben: `t = 0` ergibt `a`, `t = 1` ergibt `b`.
+
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Bis jetzt zeigt die Vorschau nur den Hintergrund. Schreib statt der Zeile <code>// hier</code> und <code>float inside = 0.0;</code> die beiden Zeilen für <code>d</code> und <code>inside</code>: <code>d</code> ist der Abstand des Pixels zur Mitte, und <code>inside</code> ist im Kreis mit dem Radius 0,5 gleich 1, draußen 0, mit einem weichen Rand von einem Pixel innen bis einem Pixel außen. Speichere und sieh in der Vorschau nach, ob die Scheibe einen glatten Rand hat.
+</div>
+
+<!-- hint -->
+`smoothstep(a, b, d)` steigt von 0 auf 1, wenn `d` von `a` nach `b` wächst.
+Wo soll der Rand anfangen, wo aufhören? Und `inside` soll innen 1 sein, wo
+`smoothstep` noch 0 ist: Wie drehst du eine Zahl von 0 bis 1 um?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücken mit `…` füllst du:
+
+```glsl
+    float d = length(…);
+    float inside = 1.0 - smoothstep(0.5 - …, 0.5 + …, d);
+```
+<!-- /hint -->
+
+<!-- solution -->
+```glsl
+    // der Abstand zur Mitte
+    float d = length(p);
+
+    // 1 im Kreis, 0 draußen, dazwischen ein weicher Rand über zwei Pixel
+    float inside = 1.0 - smoothstep(0.5 - pixel, 0.5 + pixel, d);
+```
+<!-- /solution -->
 
 <!-- tutorial-screenshot
 write-file: shader.frag <- file:stufen/02-kreis.frag
@@ -156,10 +185,6 @@ hook: open 2.5
 crop-element: #canvas
 -->
 <img class='full fit-width' src='kreis.webp' alt='Eine orange Scheibe mit glattem Rand in der Mitte eines dunkelblauen Hintergrunds, der nach oben etwas heller wird.'>
-
-`p` ist die Position des Pixels, so verschoben, dass die Mitte des Bildes `(0, 0)` ist, und durch die **Höhe** geteilt. Oben ist dann 1, unten −1, und nach links und rechts reicht `p.x` so weit, wie das Bild breiter als hoch ist. Weil beide Richtungen durch dieselbe Zahl geteilt werden, bleibt ein Kreis rund. Der Raytracer rechnet in `ray_dir` genauso.
-
-`length(p)` ist der Abstand zur Mitte. Wer näher als 0,5 ist, gehört zum Kreis. Ein hartes `if (d < 0.5)` gäbe Treppenstufen am Rand. `smoothstep(a, b, d)` ist 0, solange `d` kleiner als `a` ist, 1 ab `b`, und dazwischen steigt es weich an. Über die Breite von zwei Pixeln wird der Rand so ein Verlauf: glatte Kanten mit einer Rechnung, für die PixelRAM in »Glatte Kanten« jeden Pixel an den Kanten mehrfach fragen musste. `mix(a, b, t)` mischt zwei Farben: `t = 0` ergibt `a`, `t = 1` ergibt `b`.
 
 _task(rand)
 
@@ -406,7 +431,7 @@ So tastet sich der Strahl vor: große Schritte im freien Raum, immer kleinere di
 
 ### Eine Kugel
 
-Ersetze `shader.frag` durch dieses Programm:
+Ersetze `shader.frag` durch dieses Programm; das Herz davon, `march`, schreibst du gleich selbst:
 
 ```glsl_copy
 // Raymarching: eine Kugel in einem dunklen Studio
@@ -456,14 +481,7 @@ vec3 strips(vec3 n)
 // Raymarching: so weit gehen, wie der Abstand erlaubt; -1, wenn nichts kommt
 float march(vec3 from, vec3 dir)
 {
-    float t = 0.0;
-    for (int i = 0; i < 100; i++)
-    {
-        float d = map(from + dir * t);
-        if (d < 0.001 * t) return t;
-        t += d;
-        if (t > 40.0) break;
-    }
+    // hier: den Strahl Schritt für Schritt vorantasten
     return -1.0;
 }
 
@@ -505,6 +523,52 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     fragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
 }
 ```
+
+Bis `march` fertig ist, trifft kein Strahl etwas: Die Vorschau bleibt fast schwarz, das leere Studio.
+
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>march</code>, den Strahl aus dem Bild oben. <code>t</code> ist die Strecke, die er schon gegangen ist, am Anfang 0. In jedem Schritt fragt er <code>map</code> am Punkt <code>from + dir * t</code>. Ist der Abstand kleiner als <code>0.001 * t</code>, ist er angekommen, und <code>march</code> gibt <code>t</code> zurück. Sonst geht er um den Abstand weiter. Nach höchstens 100 Schritten, oder sobald <code>t</code> größer als 40 ist, gibt er auf: <code>-1.0</code>.
+</div>
+
+<!-- hint -->
+Geh den Strahl im Bild oben mit dem Finger ab: Was weißt du an jedem Punkt,
+und wie weit darfst du deshalb springen, ohne in eine Fläche zu geraten? Was
+musst du dir von Schritt zu Schritt merken? In GLSL braucht eine `for`-Schleife
+eine feste Grenze, hier 100.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücken mit `…` füllst du:
+
+```glsl
+    float t = 0.0;
+    for (int i = 0; i < 100; i++)
+    {
+        float d = map(…);
+        if (d < 0.001 * t) return …;
+        t += …;
+        if (t > 40.0) break;
+    }
+    return -1.0;
+```
+<!-- /hint -->
+
+<!-- solution -->
+```glsl
+// Raymarching: so weit gehen, wie der Abstand erlaubt; -1, wenn nichts kommt
+float march(vec3 from, vec3 dir)
+{
+    float t = 0.0;
+    for (int i = 0; i < 100; i++)
+    {
+        float d = map(from + dir * t);
+        if (d < 0.001 * t) return t;
+        t += d;
+        if (t > 40.0) break;
+    }
+    return -1.0;
+}
+```
+<!-- /solution -->
 
 <!-- tutorial-screenshot
 write-file: shader.frag <- file:stufen/06-raymarching.frag
@@ -863,7 +927,7 @@ Raymarching kann mehr, als Formen verschmelzen. Es kann eine Form ohne Ende wied
 
 _person(sierpinski)
 
-Ersetze `shader.frag` durch dieses Programm:
+Ersetze `shader.frag` durch dieses Programm; die Schleife in `carpet` schreibst du gleich selbst:
 
 ```glsl_copy
 // Der Sierpinski-Teppich: ein Quadrat, aus dem die Mitte fehlt, und aus jedem
@@ -875,12 +939,7 @@ float carpet(vec2 p, int steps)
     for (int i = 0; i < 6; i++)
     {
         if (i >= steps) break;
-        // in drei mal drei Kacheln teilen: welche Kachel, und wo darin?
-        p *= 3.0;
-        vec2 cell = floor(p);
-        p = fract(p);
-        // die mittlere Kachel ist ein Loch
-        if (cell.x == 1.0 && cell.y == 1.0) return 0.0;
+        // hier: in drei mal drei Kacheln teilen; die mittlere ist ein Loch
     }
     return 1.0;
 }
@@ -905,6 +964,47 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     fragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
 }
 ```
+
+Bis dahin ist der Teppich ein graues Quadrat ohne Loch.
+
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Schreib die Runde der Schleife in <code>carpet</code>, vier Zeilen. <code>p</code> läuft im Quadrat von 0 bis 1. Mal 3 läuft es von 0 bis 3: <code>floor</code> gibt dann die Nummer der Kachel, 0, 1 oder 2 in jeder Richtung, und <code>fract</code> die Lage darin, wieder von 0 bis 1, wie beim Kaleidoskop. Liegt der Pixel in der mittleren Kachel, ist er in einem Loch: <code>carpet</code> gibt 0 zurück. Sonst rechnet die nächste Runde mit der Lage in der Kachel weiter, als wäre sie das ganze Quadrat.
+</div>
+
+<!-- hint -->
+Nimm den Punkt `p = (0,5; 0,5)`, die Mitte des Quadrats, und den Punkt
+`p = (0,1; 0,5)`. Was ist `p * 3.0`, welche Kachel ist es, und wo liegt der
+Punkt darin? Welche Nummer hat die mittlere Kachel?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücken mit `…` füllst du:
+
+```glsl
+        p *= 3.0;
+        vec2 cell = floor(…);
+        p = fract(…);
+        if (cell.x == … && cell.y == …) return 0.0;
+```
+<!-- /hint -->
+
+<!-- solution -->
+```glsl
+float carpet(vec2 p, int steps)
+{
+    for (int i = 0; i < 6; i++)
+    {
+        if (i >= steps) break;
+        // in drei mal drei Kacheln teilen: welche Kachel, und wo darin?
+        p *= 3.0;
+        vec2 cell = floor(p);
+        p = fract(p);
+        // die mittlere Kachel ist ein Loch
+        if (cell.x == 1.0 && cell.y == 1.0) return 0.0;
+    }
+    return 1.0;
+}
+```
+<!-- /solution -->
 
 <div class='gallery columns-2'>
 <figure>
@@ -950,7 +1050,7 @@ crop-element: #canvas
 </figure>
 </div>
 
-Jede Sekunde kommt eine Stufe dazu, nach fünf beginnt es von vorn:
+Jede Sekunde kommt eine Stufe dazu, nach fünf beginnt es von vorn. Die Schleife noch einmal Zeile für Zeile:
 
 - **`p *= 3.0`** macht aus dem Quadrat von 0 bis 1 eines von 0 bis 3. `floor(p)` ist dann die Nummer der Kachel, 0, 1 oder 2 in jeder Richtung, und `fract(p)` die Lage in ihr, wieder von 0 bis 1. Das kennst du vom Kaleidoskop.
 - **Die mittlere Kachel** hat die Nummer `(1, 1)`. Liegt der Pixel darin, ist er in einem Loch, und die Schleife ist fertig.

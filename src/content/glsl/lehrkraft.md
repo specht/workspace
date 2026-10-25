@@ -14,6 +14,11 @@ Lernende schreiben Fragment-Shader in GLSL, im Stil von Shadertoy (`mainImage`, 
 <li>Jede Stufe liegt vollständig unter <a href='https://github.com/specht/workspace/tree/main/src/content/glsl/stufen'><code>src/content/glsl/stufen</code></a>, von <code>01-verlauf.frag</code> bis <code>12-im-schwamm.frag</code>. Wer den Anschluss verliert, kopiert die passende Stufe nach <code>shader.frag</code>.</li>
 <li><code>index.html?shader=NAME.frag</code> zeigt eine andere Datei aus dem Ordner; so lassen sich mehrere Shader nebeneinander halten.</li>
 </ul></td></tr>
+<tr><th>Jetzt bist du dran</th><td><ul>
+<li>An drei Stellen schreiben die Lernenden den Code zuerst selbst, nachdem die Seite erklärt hat, was er tun soll: <code>d</code> und <code>inside</code> des Kreises, die Schleife in <code>march</code> und die Runde der Schleife in <code>carpet</code>. Das Programm darum steht mit einer Lücke auf der Seite, und bis sie gefüllt ist, zeigt die Vorschau nur den Hintergrund.</li>
+<li>Vor dem Code der Seite stehen Tipps, ein Beispiel von Hand und ein Gerüst mit Lücken. Jede Stufe erscheint erst eine Minute nach der vorigen, ohne Uhr; der Code der Seite ist die letzte Stufe. Wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst.</li>
+<li>Keine Aufgabe prüft den eigenen Shader; ob er stimmt, sieht man in der Vorschau.</li>
+</ul></td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Die Aufgaben prüfen Antworten, nichts im Workspace: eine Vorhersage zur Farbe einer Ecke, Rechnungen mit den Formeln der Seite (<code>p.x</code> am Rand, der höchste Wert von <code>fbm</code>, der erste Schritt eines Strahls, das weiche Minimum zweier gleicher Abstände, was nach drei Stufen vom Teppich und nach zwei vom Schwamm bleibt) und eine Frage, warum sich der Schein der Kreise addiert.</li>
 <li>Am Ende geben die Lernenden einen eigenen Shader ab (eine <code>.frag</code>-Datei aus <code>glsl-starter</code>). Ob er läuft, prüft die Abgabe nicht; man sieht ihn, indem man ihn als <code>shader.frag</code> in eine eigene Vorlage legt.</li>

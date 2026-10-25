@@ -146,11 +146,16 @@ Aktivität ([widgets.md](widgets.md)).
   den Headern von raylib aus dem Workspace (`CCheck::RAYLIB_INCLUDE`) und
   setzen an die Stelle von Fenster, Tasten und Zufall kleine Ersatzfunktionen
   (`setup`).
+- Kästen »Jetzt bist du dran« ohne Prüfung des Verhaltens: GLSL (der Kreis,
+  `march`, der Sierpinski-Teppich), weil es für Shader keine Prüfart gibt,
+  und TIC-80 (der fallende Stern), weil Lua im Workspace nicht läuft; ob es
+  stimmt, zeigt die Vorschau oder das Spiel.
 - Änderungen statt ganzer Dateien: Webserver, Pixelwand.
 - Tipps in Stufen: Huffman (Baum, Decodieren, kanonische Codes), alle
   Aufgaben des Routenplaners, in denen eine Funktion entsteht, die
   Steganographie, alle Kästen »Jetzt bist du dran« (Raytracer, Raycaster,
-  Webserver, Pixelwand, Wetter, Echtzeitgrafik mit C, Klötzchenwelt), alle Programmieraufgaben des Rechners, von
+  Webserver, Pixelwand, Wetter, Echtzeitgrafik mit C, Klötzchenwelt, GLSL,
+  TIC-80), alle Programmieraufgaben des Rechners, von
   LZW, TOTP, RLE und den Automaten, und die schwereren SQL-Abfragen (GROUP BY
   mit HAVING, LEFT JOIN mit `IS NULL`, `JOIN` über eine Tabelle in der Mitte,
   in »Tabellen verbinden« und der Filmdatenbank). Die Abstände zwischen
@@ -164,4 +169,8 @@ Aktivität ([widgets.md](widgets.md)).
   anderes, das die Antwort nicht nennt. Hängen zwei Vorhersagen
   aneinander (Neo4j: Zwischentabelle, Tätigkeit), wartet die zweite Karte
   auf die erste.
-- Noch nicht durchgesehen: glsl, tic80.
+- Code, den die Seite nur zum Abschreiben gab: Die Aktivitäten mit dem
+  meisten davon (gezählt mit `src/scripts/audit-activities.rb`) sind
+  durchgesehen, zuletzt GLSL, die Klötzchenwelt und TIC-80; dort verrät auch
+  nichts nach einer Vorhersage die Antwort. Was in den übrigen zum Kopieren
+  bleibt, sind vor allem Vorlagen, Einstellungen und Daten.

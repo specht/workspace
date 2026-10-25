@@ -230,7 +230,76 @@ Ein Stern hat eine Position `sx`, `sy`. In jedem Bild fällt er ein Pixel tiefer
 
 Und gefangen ist er, wenn er die Figur berührt: wenn er tief genug ist (`sy` zwischen 104 und 128) und nicht links oder rechts an ihr vorbei (`sx + 8 > x` und `sx < x + 16`; der Stern ist 8 Pixel breit, die Figur 16). Dann gibt es einen Punkt, und der Stern fängt oben neu an.
 
-_include_file(step2.lua, lua_copy)
+Schreib die neuen Zeilen in dein Programm; was der Stern in jedem Bild tut, schreibst du gleich selbst:
+
+```lua
+~ x = 112
+sx = 120
+sy = 0
+score = 0
+~
+~ function TIC()
+~ 	if btn(2) then x = x - 2 end
+~ 	if btn(3) then x = x + 2 end
+~
+	-- hier: der Stern fällt, fängt unten neu an und wird gefangen
+~
+~ 	cls(0)
+~ 	spr(1, x, 112, 14, 1, 0, 0, 2, 2)
+	circ(sx + 4, sy + 4, 3, 4)
+	print("Score: " .. score, 4, 4, 12)
+~ end
+```
+
+`circ(sx + 4, sy + 4, 3, 4)` zeichnet den Stern als gefüllten Kreis: Mitte, Radius 3, Farbe 4, gelb. `print` schreibt den Punktestand oben links hin; `..` hängt zwei Texte aneinander.
+
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Schreib an die Stelle von <code>-- hier</code>, was der Stern in jedem Bild tut: ein Pixel tiefer fallen; unten aus dem Bild, also bei <code>sy</code> über 136, oben neu anfangen, an einer zufälligen Stelle. Berührt er die Figur, wie oben beschrieben, gibt es einen Punkt, und er fängt auch oben neu an. Führ das Spiel aus und fang ein paar Sterne.
+</div>
+
+<!-- hint -->
+Zwei `if` hintereinander: eines für »unten aus dem Bild«, eines für
+»gefangen«. In beiden passiert am Ende dasselbe: `sy` wird 0, und `sx` wird
+eine Zufallszahl. Was muss vor beiden geschehen, damit der Stern überhaupt
+fällt?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücken mit `…` füllst du:
+
+```lua
+	sy = sy + …
+	if sy > 136 then
+		sy = 0
+		sx = math.random(0, 232)
+	end
+
+	if sy > 104 and sy < 128 and … and … then
+		score = …
+		sy = 0
+		sx = math.random(0, 232)
+	end
+```
+<!-- /hint -->
+
+<!-- solution -->
+```lua
+~ 	if btn(3) then x = x + 2 end
+~
+	sy = sy + 1
+	if sy > 136 then
+		sy = 0
+		sx = math.random(0, 232)
+	end
+
+	if sy > 104 and sy < 128 and sx + 8 > x and sx < x + 16 then
+		score = score + 1
+		sy = 0
+		sx = math.random(0, 232)
+	end
+~
+~ 	cls(0)
+```
+<!-- /solution -->
 
 <!-- tutorial-screenshot
 write-file: TIC-80/stars.lua <- file:step2.lua
