@@ -338,10 +338,13 @@ test('after the code is sent, the address can be changed and the code sent again
   await expect(page.locator('#bu_submit_email')).toBeEnabled();
 });
 
-test('»Abmelden« is beside the name on every page', async ({page, e2eEmail}) => {
+test('»Abmelden« is beside the name on the profile page only', async ({page, e2eEmail}) => {
   await page.goto('/login?next=%2Freference');
   await loginHere(page, e2eEmail);
   expect(new URL(page.url()).pathname).toBe('/reference');
+  await expect(page.locator('.menu').getByRole('link', {name: 'Abmelden'})).toBeHidden();
+  await page.locator('.menu .btn-menu-profile').click();
+  await page.waitForURL(url => url.pathname === '/profil');
   const logout = page.locator('.menu').getByRole('link', {name: 'Abmelden'});
   await expect(logout).toBeVisible();
   await logout.click();

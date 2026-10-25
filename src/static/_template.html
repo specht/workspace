@@ -1143,9 +1143,10 @@ window.addEventListener('load', function() {
                     </ul>
                 </div>
                 <a href='/profil' style='#{@session_user.nil? ? 'display: none;' : ''}' class="btn btn-menu btn-menu-profile #{request.path == '/profil' ? 'active' : ''}" title='Profil'><i class='bi bi-person-badge'></i>#{CGI.escapeHTML(((@@invitations[(@session_user || {})[:email]] || {})[:name]).to_s.strip.empty? ? (@session_user || {})[:email].to_s : (@@invitations[(@session_user || {})[:email]] || {})[:name].to_s)}</a>
-                <!-- Abmelden on every page: a login lasts a year, and school
-                     computers are shared. -->
-                <a href='/logout' style='#{@session_user.nil? ? 'display: none;' : ''}' class="btn btn-menu btn-menu-logout" title='Abmelden' aria-label='Abmelden'><i class='bi bi-box-arrow-right' aria-hidden='true'></i></a>
+                <!-- Abmelden only on the profile page, beside the name, with
+                     its label: a login lasts a year, and the profile is
+                     where one looks for it (and signs out elsewhere). -->
+                <a href='/logout' style='#{@session_user.nil? || request.path != '/profil' ? 'display: none;' : ''}' class="btn btn-menu btn-menu-logout"><i class='bi bi-box-arrow-right' aria-hidden='true'></i>Abmelden</a>
             </div>
         </div>
     </div>

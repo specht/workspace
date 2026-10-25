@@ -75,8 +75,9 @@ an« auf einer Aufgabenkarte und »Anmelden« in der Navigation (`code.js`),
 und so leitet eine Seite nur für Angemeldete (`/profil`, `/klasse` …) zur
 Anmeldung weiter. `next` gilt nur als Pfad auf dieser Seite
 (`Authentication.safe_next_path`), alles andere führt zur Startseite. Eine
-Anmeldung gilt ein Jahr (`SESSION_LIFETIME_DAYS`); »Abmelden« steht auf
-jeder Seite neben dem Namen.
+Anmeldung gilt ein Jahr (`SESSION_LIFETIME_DAYS`); »Abmelden« steht in der
+Navigation des Profils (`/profil`) neben dem Namen, auf den anderen Seiten
+nicht. Dort meldet man sich auch in anderen Browsern ab.
 
 ## Zustimmung der Schule, Einverständnis, ungeklärt
 

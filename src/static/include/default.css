@@ -649,25 +649,6 @@ input.error {
     vertical-align: top;
 }
 
-/* Abmelden beside the name: an icon alone, centred in its button, as high
-   as the name button. */
-.btn-menu-logout {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    vertical-align: top;
-    min-width: calc(1.5em + 0.75rem + 2px);
-    min-height: calc(1.5em + 0.75rem + 2px);
-}
-
-.menu .btn-menu-logout .bi {
-    margin: 0;
-    line-height: 1;
-}
-
-.menu .btn-menu-logout .bi::before {
-    vertical-align: 0;
-}
 
 .menu a:hover,
 a.btn:hover {
