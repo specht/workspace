@@ -312,7 +312,7 @@ tasks:
 
   - id: pruefen
     title: Einen Code prüfen
-    prompt: 'Schreib `verify` in `totp.rb`.'
+    prompt: 'Schreib `verify(key, code, time)` in `totp.rb`: `true`, wenn der eingetippte Code für diese Unix-Zeit gilt, sonst `false`; ohne Zeit nimmt es die aktuelle, wie `totp`.'
     check:
       type: ruby
       file: totp/totp.rb
@@ -353,7 +353,7 @@ tasks:
         end
         ```
     python:
-      prompt: 'Schreib `verify` in `totp.py`.'
+      prompt: 'Schreib `verify(key, code, now=None)` in `totp.py`: `True`, wenn der eingetippte Code für diese Unix-Zeit gilt, sonst `False`; ohne Zeit nimmt es die aktuelle, wie `totp`.'
       check:
         type: python
         file: totp/totp.py
