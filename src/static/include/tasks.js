@@ -106,22 +106,46 @@
         }
         const token = String(Date.now() + Math.random());
         box.dataset.token = token;
-        box.innerHTML = '';
-        const text = document.createElement('p');
+        // The frame stays while the scene is drawn again: an empty box (never
+        // an <img> without a picture, which shows as a broken image), or the
+        // last picture until the new one is there.
+        let text = box.querySelector('.task-scene-preview-caption');
+        let frame = box.querySelector('.task-scene-preview-picture');
+        let status = box.querySelector('.task-scene-preview-status');
+        if (!text) {
+            box.innerHTML = '';
+            text = document.createElement('p');
+            text.className = 'task-scene-preview-caption';
+            frame = document.createElement('div');
+            frame.className = 'task-scene-preview-picture';
+            status = document.createElement('p');
+            status.className = 'task-scene-preview-status';
+            box.append(text, frame, status);
+        }
         text.textContent = caption;
-        const img = document.createElement('img');
-        img.alt = 'Die Szene, wie die Galerie sie zeigt.';
-        const status = document.createElement('p');
-        status.className = 'task-scene-preview-status';
+        frame.hidden = false;
+        frame.classList.add('drawing');
         status.textContent = 'Die Szene wird gezeichnet …';
-        box.append(text, img, status);
         const promise = window.AnaglyphPreview.picture(scene);
         promise.then((result) => {
             if (box.dataset.token !== token) return;
-            img.src = result.picture;
-            status.textContent = result.errors ? 'Der Viewer meldet Fehler in dieser Szene: ' + result.errors : '';
+            frame.classList.remove('drawing');
+            frame.innerHTML = '';
+            if (result.picture) {
+                const img = document.createElement('img');
+                img.alt = 'Die Szene, wie die Galerie sie zeigt.';
+                img.src = result.picture;
+                frame.appendChild(img);
+            } else {
+                frame.hidden = true;
+            }
+            status.textContent = result.errors ? 'Der Viewer meldet Fehler in dieser Szene: ' + result.errors
+                : result.picture ? '' : 'Die Szene ließ sich nicht zeichnen.';
         }).catch((error) => {
             if (box.dataset.token !== token) return;
+            frame.classList.remove('drawing');
+            frame.innerHTML = '';
+            frame.hidden = true;
             status.textContent = error.message;
         });
         return promise;

@@ -161,6 +161,10 @@ window.AnaglyphPreview = (function () {
                 figure.querySelector('button').addEventListener('click', () => present(items, i));
                 const img = figure.querySelector('img');
                 picture(items[i].scene).then((result) => {
+                    if (!result.picture) {
+                        figure.classList.add('scene-gallery-failed');
+                        return;
+                    }
                     img.src = result.picture;
                     figure.classList.add('scene-gallery-ready');
                     if (result.errors) figure.classList.add('scene-gallery-errors');

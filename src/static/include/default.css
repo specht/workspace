@@ -2320,8 +2320,8 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     margin: 0.8em 0;
 }
 
-.task-scene-preview img {
-    display: block;
+/* An empty frame while the scene is drawn, then the picture in it */
+.task-scene-preview-picture {
     width: 100%;
     max-width: 32em;
     aspect-ratio: 16 / 10;
@@ -2329,6 +2329,19 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     border-radius: 0.3em;
     background: rgba(var(--bs-body-color-rgb), 0.05);
     margin-bottom: 0.4em;
+    overflow: hidden;
+}
+
+.task-scene-preview-picture.drawing img {
+    opacity: 0.4;
+    transition: opacity 0.2s;
+}
+
+.task-scene-preview-picture img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .task-scene-preview-status {
@@ -2363,6 +2376,11 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     width: 100%;
     aspect-ratio: 16 / 10;
     object-fit: cover;
+}
+
+/* Until its picture is drawn, the button's empty frame, no broken image */
+.scene-gallery-item img:not([src]) {
+    visibility: hidden;
 }
 
 .scene-gallery-item figcaption {
