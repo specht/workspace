@@ -3037,9 +3037,16 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     color: #5b2f8f;
 }
 
-.class-repo-teacher .class-repo-none {
+/* No group has a class repository: a quiet line, no box */
+.class-repo-hint {
+    margin: 1em 0 0;
+    text-align: left;
+    font-size: 85%;
     color: #6c757d;
-    font-style: italic;
+}
+
+.class-repo-hint > .bi {
+    margin-right: 0.4em;
 }
 
 /* Code in a table: one short word (code.whole, main.rb) stays in one

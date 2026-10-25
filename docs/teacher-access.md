@@ -249,9 +249,11 @@ in der Reihenfolge des Katalogs (`class_board.js`,
   Arbeit bleibt im Workspace; die Git-Aufgaben fallen weg, auch in der
   Klassenübersicht der Gruppe und auf ihrer Startseite (docs/aufgaben.md,
   »Teile mit und ohne Klassen-Repository«).
-- Lehrkräfte sehen die Seite mit Platzhaltern und darüber eine Zeile mit
-  der Adresse jeder ihrer Gruppen oder »keins eingetragen«; jeder
+- Lehrkräfte sehen die Seite mit Platzhaltern und darüber einen Kasten mit
+  den Gruppen, die eine Adresse haben, und dieser Adresse; jeder
   Gruppenname führt zum Dialog auf der Klassenseite (`/klasse?group=…&repos=SLUG`).
+  Gruppen ohne Adresse fehlen darin. Hat keine Gruppe eine, steht dort statt
+  des Kastens ein leiser Hinweis, wo man sie einträgt (Klassenseite, »Git«).
 - Der Workspace legt auf dem Git-Server keine Konten an und lädt niemanden
   ein; das macht die Lehrkraft dort selbst. Die Seite sagt den Lernenden:
   »Deine Lehrkraft lädt dich dorthin ein«.

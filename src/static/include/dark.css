@@ -540,7 +540,7 @@ html[data-bs-theme="dark"] {
         background-color: #221b2d;
     }
     .class-repo-teacher > .bi { color: #cdb0f2; }
-    .class-repo-teacher .class-repo-none { color: #a3a29c; }
+    .class-repo-hint { color: #a3a29c; }
     .teacher-note-toggle {
         border-color: #4a3a63;
         background-color: #221b2d;

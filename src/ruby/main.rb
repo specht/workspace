@@ -5259,8 +5259,10 @@ class Main < Sinatra::Base
         ClassRepos.tasks(content, variant)
     end
 
-    # For teachers on a page with class_repo: group, one line: which address
-    # their groups use, each linked to the class page, where it is set.
+    # For teachers on a page with class_repo: group, one line: the groups
+    # that have an address, each linked to the dialog on the class page where
+    # it is set. Groups without one are left out; when none has one, a quiet
+    # hint says where to set it up instead of the box.
     # Administrators see the groups they teach, not every group.
     def class_repo_teacher_line(slug)
         return '' unless (@@content[slug] || {})[:class_repo] && (teacher_account_logged_in? || admin_logged_in?)
@@ -5273,14 +5275,16 @@ class Main < Sinatra::Base
         end
         repos = group_class_repos(groups)
         link = ->(g) { "/klasse?group=#{CGI.escape(g)}&repos=#{CGI.escape(slug)}" }
-        items = groups.map do |g|
-            address = (repos[g] || {})[slug]
-            value = address ? "<code>#{h.(address)}</code>" : "<span class='class-repo-none'>keins eingetragen</span>"
-            "<a href='#{h.(link.(g))}'>#{h.(g)}</a>: #{value}"
+        with = groups.select { |g| (repos[g] || {})[slug] }
+        if with.empty?
+            where = groups.size == 1 ? "<a href='#{h.(link.(groups.first))}'>auf der Klassenseite</a>" : "auf der <a href='/klasse'>Klassenseite</a> bei der Gruppe"
+            return "<p class='class-repo-hint'><i class='bi bi-hdd-network' aria-hidden='true'></i>Lernende sehen diese Seite ohne Git. " \
+                "Soll eine Klasse ihre Arbeit in ein gemeinsames Repository hochladen, trägst du dessen Adresse #{where} unter »Git« ein.</p>"
         end
-        text = items.empty? ? "Auf der <a href='/klasse'>Klassenseite</a> trägst du es je Gruppe ein." : items.join(' · ')
-        "<p class='class-repo-teacher'><i class='bi bi-hdd-network' aria-hidden='true'></i><strong>Klassen-Repository</strong> " \
-            "(ohne Adresse sehen Lernende die Seite ohne Git): #{text}</p>"
+        items = with.map { |g| "<a href='#{h.(link.(g))}'>#{h.(g)}</a>: <code>#{h.(repos[g][slug])}</code>" }
+        others = with.size < groups.size ? ' Deine anderen Gruppen sehen die Seite ohne Git.' : ''
+        "<p class='class-repo-teacher'><i class='bi bi-hdd-network' aria-hidden='true'></i><strong>Klassen-Repository</strong>: " \
+            "#{items.join(' · ')}.#{others}</p>"
     end
 
     # The language this person sees on a page that offers more than one,

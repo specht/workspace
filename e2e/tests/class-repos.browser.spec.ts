@@ -45,12 +45,13 @@ test('a teacher sets the class repository of a group; its students see it, other
     const refused = await teacher.request.post('/api/set_group_class_repos', { data: { group: 'E2E Teachers', repos: { 'sandbox-sortieren': address } } });
     expect(refused.status()).toBe(403);
 
-    // The activity page tells the teacher which address each group has and
-    // leads to the dialog.
+    // The activity page names the groups that have an address, leaves out
+    // the others and leads to the dialog.
     await teacher.goto('/sandbox-sortieren');
     const line = teacher.locator('.class-repo-teacher');
     await expect(line).toContainText(address);
-    await expect(line).toContainText('E2E: keins eingetragen');
+    await expect(line).not.toContainText('E2E:');
+    await expect(line).toContainText('Deine anderen Gruppen sehen die Seite ohne Git.');
     await expect(teacher.locator('pre', { hasText: 'git clone [Adresse des Klassen-Repositorys]' })).toHaveCount(1);
     await line.getByRole('link', { name: testGroup }).click();
     await expect(teacher.locator('#__template_modal .modal-title')).toContainText(testGroup);
@@ -112,6 +113,13 @@ test('a teacher sets the class repository of a group; its students see it, other
     await teacher.goto('/klasse?group=' + encodeURIComponent(testGroup) + '&tab=fortschritt&activity=sandbox-sortieren');
     await expect(teacher.locator('table.class-board thead')).toContainText('Committet und gepusht');
     await expect(teacher.locator('table.class-board thead')).toContainText('Dein Schlüssel');
+
+    // No group with an address: no box, a hint where to set one.
+    await teacher.request.post('/api/set_group_class_repos', { data: { group: testGroup, repos: { 'sandbox-sortieren': '' } } });
+    await teacher.goto('/sandbox-sortieren');
+    await expect(teacher.locator('.class-repo-teacher')).toHaveCount(0);
+    await expect(teacher.locator('.class-repo-hint')).toContainText('Lernende sehen diese Seite ohne Git.');
+    await expect(teacher.locator('.class-repo-hint a', { hasText: 'Klassenseite' })).toHaveCount(1);
     expect(errors).toEqual([]);
   } finally {
     await teacher.request.post('/api/set_group_class_repos', { data: { group: testGroup, repos: { 'sandbox-sortieren': '' } } });
