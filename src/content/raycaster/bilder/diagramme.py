@@ -31,7 +31,10 @@ LINE, PALE, WHITE, LIGHT = '#d1d5db', '#eef3fb', '#ffffff', '#f3f4f6'
 FS = 16      # text
 CS = 15      # code
 MS = 17      # formulas
-FONT = '/usr/share/fonts/truetype/ibm-plex/IBMPlexSans-Regular.ttf'
+# the site's own copy, so the widths of the labels are measured the same on
+# every machine
+FONT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'static', 'include', 'fonts',
+                    'IBM_Plex_Sans', 'IBMPlexSans-Regular.ttf')
 _fonts = {}
 
 
