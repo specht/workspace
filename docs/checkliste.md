@@ -61,7 +61,7 @@ Repository arbeitet, liest sie also ohnehin.
 | Regel | Warum | Geprüft durch |
 | --- | --- | --- |
 | Es gibt Aufgaben, und sie stehen dort, wo die Lernenden gerade etwas getan haben, nicht gesammelt am Ende. Ausgenommen sind `about` und `basics`: Sie erklären den Workspace, da gibt es nichts zu prüfen | Lehrkräfte sehen den Fortschritt der Klasse; Lernende wissen, ob es stimmt | Audit (Spalte »Aufgaben«), Lesen |
-| Der Text verrät die Antwort nicht: Was eine Aufgabe fragt, steht nicht in den Sätzen direkt davor, und das Bild davor zeigt nicht das Ergebnis, nach dem gefragt wird. Eine Vorhersage (`prediction: true`) kommt vor dem Ausprobieren | Sonst lernt man nur Abschreiben | Lesen |
+| Der Text verrät die Antwort nicht: Was eine Aufgabe fragt, steht nicht in den Sätzen direkt davor, und das Bild davor zeigt nicht das Ergebnis, nach dem gefragt wird. Eine Vorhersage (`prediction: true`) kommt vor dem Ausprobieren, und was ihre Antwort verrät (Bild, Erklärung, Kasten), steht danach zwischen `<!-- after: id -->` und `<!-- /after -->` | Sonst lernt man nur Abschreiben | `after_task_test.rb`, Lesen |
 | Rückmeldungen (`feedback`, `say`) für die typischen Fehler, die Lösung (`solution`) erst nach dem Lösen | Die Rückmeldung soll weiterhelfen | Lesen |
 | Jede Prüfung, die Dateien liest, hat Beispiele in `task-examples.yaml`: eine Lösung, die sie annimmt, einen Anfang, den sie ablehnt | Sonst merkt niemand, wenn eine Prüfung zu streng oder zu lasch ist | `task_examples_test.rb` |
 | Rezepte prüfen mit `check-task` und `check-task-fails`, dass die Schritte der Seite zur gelösten Aufgabe führen, in jeder Sprache | Die Seite und die Prüfung passen zusammen | Rezepte beim Rendern |

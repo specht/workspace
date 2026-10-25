@@ -65,6 +65,15 @@ Vor einem Ergebnis, das man vorhersagen kann, steht eine Vorhersage
 die Kugeln schon Schatten? Wer erst vermutet, schaut beim Ausprobieren genau
 hin. Nur der erste Versuch zählt fürs Klassenboard.
 
+Was die Antwort verrät, steht nicht gleich darunter: Ein Bild vom Ergebnis,
+der Absatz, der es erklärt, oder ein Kasten, der es vorführt, wartet zwischen
+`<!-- after: id -->` und `<!-- /after -->` (`AfterTask`), bis die Aufgabe eine
+Antwort hat, richtig oder falsch. Bis dahin steht dort »Hier geht es weiter,
+sobald du deine Antwort oben abgegeben hast.« Das gilt nur für Lernende, die
+antworten können; Lehrkräfte, Besucher und Klassen ohne Aufgaben sehen alles.
+Zuerst stand das Bild vom Ergebnis direkt unter der Vorhersage (»Licht mit
+256 Farben« im Raycaster), und die Vermutung war geschenkt.
+
 ## Ausprobieren
 
 Wo etwas gerade läuft, schlägt ein Kasten `hint try` eine kleine Änderung vor
@@ -141,4 +150,8 @@ Aktivität ([widgets.md](widgets.md)).
 - Als Nächstes für Tipps in Stufen: der Rechner (`baum` vor allem), LZW
   (`entpacker`), TOTP, RLE, die Automaten und die schwereren SQL-Abfragen
   (LEFT JOIN mit `IS NULL`, GROUP BY mit HAVING, Abstände).
+- Was eine Vorhersage verrät, wartet auf die Antwort: im Raycaster
+  (Fischauge, Gleiten, Licht mit 256 Farben) und im Raytracer (Akne). Die
+  übrigen rund 70 Vorhersagen aller Aktivitäten sind darauf noch nicht
+  durchgesehen; bei vielen folgt das Bild oder die Erklärung direkt.
 - Noch nicht durchgesehen: glsl, raylib, tic80.

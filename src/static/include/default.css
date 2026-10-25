@@ -1245,6 +1245,14 @@ details.solution[open] > summary {
     margin-left: 1.2em;
 }
 
+/* What gives away a task's answer waits for it (AfterTask): only for
+   students is it hidden (task_page_setup), with this line in its place. */
+.after-task-wait {
+    display: none;
+    font-style: italic;
+    color: #6c757d;
+}
+
 /* a step that has just appeared */
 .hint-steps > details.hint-step-new > summary,
 details.solution.hint-step-new > summary {

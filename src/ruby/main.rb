@@ -6,6 +6,7 @@ require './include/task_spec.rb'
 require './include/code_languages.rb'
 require './include/solution_blocks.rb'
 require './include/hint_steps.rb'
+require './include/after_task.rb'
 require './include/task_check.rb'
 require './include/task_card.rb'
 require './include/stage_code.rb'
@@ -1878,6 +1879,8 @@ class Main < Sinatra::Base
                 markdown = SolutionBlocks.mark(markdown)
                 # Tips in steps before it (HintSteps), wrapped after rendering as well.
                 markdown = HintSteps.mark(markdown)
+                # What gives away a task's answer, until it is answered (AfterTask).
+                markdown = AfterTask.mark(markdown)
                 # Parts for people with a class repository over SSH or HTTPS,
                 # or without one (<!-- if: class_repo -->, ClassRepos): the
                 # page is rendered once for each, and each request picks one
@@ -1951,6 +1954,7 @@ class Main < Sinatra::Base
                 CodeLanguages.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
                 SolutionBlocks.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
                 HintSteps.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
+                AfterTask.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
                 CodeLanguages.pair(root) if page_languages.empty?
                 insert_task_cards(root, task_slots, page_tasks, redcarpet, path, page_languages) unless task_slots.empty?
                 StageCode.insert(root, stage_points) unless stage_points.empty?
@@ -5387,7 +5391,11 @@ class Main < Sinatra::Base
             "<script>window.CODE_INPUT_KEYWORDS = #{keywords.to_json};</script>" \
                 "<script src='/include/code_input.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
         end
-        "<style>.tasks-off-only { display: none; }</style>" \
+        # What gives away a task's answer waits for it (AfterTask), but only
+        # for students, who can answer; tasks.js shows it then.
+        waits = user_logged_in? && !teacher_logged_in?
+        "<style>.tasks-off-only { display: none; }" \
+            "#{waits ? ' .after-task:not(.after-task-shown) > .after-task-body { display: none; } .after-task:not(.after-task-shown) > .after-task-wait { display: block; }' : ''}</style>" \
             "<script>window.TASK_PAGE = #{config.to_json.gsub('</', '<\/')};</script>" \
             "#{previews ? "<script src='/include/anaglyph_preview.js?#{CACHE_BUSTER}'></script>" : ''}" \
             "#{code_input}" \

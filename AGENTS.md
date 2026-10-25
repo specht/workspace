@@ -148,6 +148,11 @@ address from `credentials.rb` and the code `123456`.
   the student's own version (check types ruby, python, c), named by
   `data-check='id'` on the box; solving it opens the solution at once
   (docs/aktivitaet-schreiben.md, »Jetzt bist du dran«).
+- What gives away the answer to a prediction (a screenshot of the result,
+  the paragraph that explains it) goes between `<!-- after: id -->` and
+  `<!-- /after -->` after `_task(id)` (`AfterTask`): students see it once
+  they have answered; teachers and visitors see it at once
+  (docs/aktivitaet-schreiben.md, `after_task_test.rb`).
 - Tips in steps where students can get stuck: `hint` as a list in
   tasks.yaml, or `<!-- hint -->` … `<!-- /hint -->` blocks before the
   solution of a »Jetzt bist du dran« box (`HintSteps`). From understanding

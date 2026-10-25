@@ -433,6 +433,24 @@ nicht, sag, wann (»Laufen lassen kannst du sie erst gleich mit
 (`prediction: true`) gut zusammen: erst vermuten, was der eigene Code tun
 wird, dann starten.
 
+Was die Antwort auf eine Vorhersage verrät, das Bild vom Ergebnis und der
+Absatz, der es erklärt, kommt zwischen zwei Markierungen und erscheint erst,
+wenn die Aufgabe beantwortet ist (`after_task_test.rb` prüft, dass die
+Aufgabe darüber steht):
+
+````markdown
+_task(stufen)
+
+<!-- after: stufen -->
+<!-- tutorial-screenshot
+…
+-->
+<img class='full fit-width' src='licht.webp' alt='…'>
+
+Nach hinten wird es dunkel. …
+<!-- /after -->
+````
+
 ### Tipps in Stufen
 
 Wo Lernende hängen bleiben können, helfen Tipps in Stufen besser als ein

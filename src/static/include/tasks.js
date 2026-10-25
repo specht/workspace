@@ -61,6 +61,20 @@
         span.appendChild(document.createTextNode(label[2]));
         el.appendChild(span);
         card.dataset.status = status;
+        showAfterTasks();
+    }
+
+    // What gives away a task's answer (AfterTask, <!-- after: id -->) shows
+    // once the task has an answer, right or wrong; without a card for the
+    // task on the page it shows at once. Whether it was hidden at all is up
+    // to the server (task_page_setup): only for students.
+    const ANSWERED = ['correct', 'wrong', 'sent', 'stale'];
+    function showAfterTasks() {
+        document.querySelectorAll('.after-task[data-after]').forEach((box) => {
+            const mine = cards().filter((card) => cardId(card) === box.dataset.after);
+            const answered = mine.length === 0 || mine.some((card) => ANSWERED.includes(card.dataset.status));
+            box.classList.toggle('after-task-shown', answered);
+        });
     }
 
     function readAnswer(card) {
@@ -364,6 +378,7 @@
             else writeAnswer(card, '');
             setBadge(card, null);
             delete card.dataset.status;
+            showAfterTasks();
             card.querySelector('.task-delete').hidden = true;
             showFeedback(card, 'sent', '<p>Gelöscht.</p>');
         }, { no_please_wait: true });
@@ -511,6 +526,7 @@
                 });
             }
         });
+        showAfterTasks();
         if (page.loggedIn) {
             loadStates();
             watchPicks();

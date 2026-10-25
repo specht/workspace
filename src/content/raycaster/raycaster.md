@@ -699,9 +699,11 @@ _task(fischauge)
 
 ### Gerade Wände
 
+<!-- after: fischauge -->
 <img class='drawing' style='width: 27.5em' src='fischauge.webp' alt='Von oben: eine gerade Wand, darunter die Spielfigur mit einem kurzen blauen Pfeil dir senkrecht zur Wand. Ein gestrichelter Strahl geht geradeaus zur Wand und trifft sie im rechten Winkel, ein zweiter schräg nach rechts, »direkt: länger«. Neben dem geraden Strahl eine grüne Linie von der Figur bis zur Wand, »entlang dir: gleich weit«: In Blickrichtung liegen beide Treffpunkte gleich weit vor der Figur.'>
 
 Steht die Figur gerade vor einer Wand, ist der Strahl zur Mitte am kürzesten. Ein Strahl zum Rand des Bildes ist länger, obwohl er dieselbe gerade Wand trifft, und so zeichnet das Programm die Wand dort niedriger. Unser Auge misst aber nicht den Weg zum Punkt, sondern wie weit er **vor** uns liegt: den Abstand **entlang der Blickrichtung**.
+<!-- /after -->
 
 Den liefert das Skalarprodukt. Der Vektor `a` von der Figur zum Treffpunkt, multipliziert mit `dir`, das die Länge 1 hat, ergibt genau den Anteil dieses Vektors, der in Blickrichtung zeigt.
 
@@ -813,6 +815,7 @@ _task(kollision)
 
 _task(gleiten)
 
+<!-- after: gleiten -->
 Am Ende von `move_player` bewegt sich die Figur in x und in y getrennt, und nur, wenn der neue Ort frei ist:
 
 ```c
@@ -826,6 +829,7 @@ Am Ende von `move_player` bewegt sich die Figur in x und in y getrennt, und nur,
 Läuft die Figur schräg gegen eine Wand, ist eine der beiden Richtungen blockiert, die andere nicht: Sie gleitet an der Wand entlang, statt hängen zu bleiben. So fühlt es sich in Spielen an.
 
 <img class='drawing' style='width: 25.6em' src='gleiten.webp' alt='Von oben: die Spielfigur als Kreis in einem Quadrat mit einem Punkt an jeder Ecke, dicht vor einer grauen Wand rechts; ein gestrichelter Pfeil schräg nach rechts oben zeigt, wohin sie will. Ein roter Pfeil nach rechts führt zum rot gestrichelten Quadrat, nur in x verschoben: Seine beiden rechten Ecken stehen rot in der Wand, »nur x: zwei Ecken in der Wand«. Ein grüner Pfeil nach oben führt zum grün gestrichelten Quadrat, nur in y verschoben, alle Ecken frei, »nur y: frei«.'>
+<!-- /after -->
 
 Eine Kleinigkeit in `main`: Ruckelt der Browser, etwa weil der Tab im Hintergrund war, ist `dt` auf einmal eine ganze Sekunde, und die Figur macht einen Riesenschritt, vielleicht durch eine dünne Wand hindurch. Darum höchstens eine Zehntelsekunde:
 
@@ -1011,6 +1015,7 @@ In `draw_view` werden Decke und Boden Zeile für Zeile gezeichnet, und jede Wand
 
 _task(stufen)
 
+<!-- after: stufen -->
 <!-- tutorial-screenshot
 write-file: raycaster.c <- file:stufen/08-licht.c
 terminal-open
@@ -1028,6 +1033,7 @@ crop-element: #canvas
 <img class='full fit-width' src='licht.webp' alt='Die Wände sind nah hell und werden nach hinten immer dunkler; Boden und Decke auch. In den Verläufen sieht man deutliche Stufen der Helligkeit.'>
 
 Nach hinten wird es dunkel. Sieh dir die Verläufe an Boden und Decke genau an: Sie haben Stufen, denn es gibt nur 16 Helligkeiten. Am Ende der Seite verschwinden sie.
+<!-- /after -->
 
 ## Texturen
 

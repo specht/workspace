@@ -781,6 +781,7 @@ Ein Gerüst, in `sunlight` vor dem letzten `return`:
 
 _task(akne)
 
+<!-- after: akne -->
 <!-- tutorial-screenshot
 write-file: raytracer.c <- file:stufen/06-akne.c
 terminal-open
@@ -801,6 +802,7 @@ crop-element: #canvas
 Die Schatten sind da, aber auf dem Boden liegen dunkle Sprenkel, vor allem auf den hellen Feldern vorn. Grafiker nennen das **Shadow Acne**. Der Schattenstrahl beginnt genau auf der Oberfläche, und genau heißt bei Kommazahlen: fast. Liegt der berechnete Treffpunkt durch einen Rundungsfehler ein winziges Stück unter dem Boden, trifft der Schattenstrahl den Boden selbst, bei einem `t` wie 0,0000000000000002, und hält den Punkt für beschattet.
 
 Mit jedem Durchgang werden die Sprenkel blasser, denn im Durchschnitt fallen die wenigen falschen Strahlen kaum noch auf. Weg ist der Fehler damit nicht, nur verdünnt: Ein Rauschen wird durch viele Durchgänge richtig, ein Fehler nicht. Das Bild oben zeigt den ersten Durchgang.
+<!-- /after -->
 
 Die Abhilfe: Treffer, die näher als eine kleine Zahl `EPS` am Anfang des Strahls liegen, zählen nicht.
 
