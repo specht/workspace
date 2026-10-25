@@ -50,6 +50,17 @@ class StageCodeTest < Minitest::Test
         assert_equal ['stufen/02.c'], points[0].map(&:source)
     end
 
+    # Path Tracing in the raytracer: the step's picture and, beside it in a
+    # gallery, the same scene without it (stufen/vergleich-…). The button is
+    # the step's program, not the one changed for the comparison.
+    def test_a_comparison_beside_the_step_is_no_step
+        File.write(File.join(@dir, 'stufen', 'vergleich-ohne.c'), "int main(void) { return 3; }\n")
+        md = "<div class='gallery'>\n<figure>\n" + recipe('main.c <- file:stufen/02.c') + "<img src='mit.webp' alt=''>\n</figure>\n" \
+             "<figure>\n" + recipe('main.c <- file:stufen/vergleich-ohne.c') + "<img src='ohne.webp' alt=''>\n</figure>\n</div>\n"
+        _, points = StageCode.mark(md, @dir)
+        assert_equal [['stufen/02.c']], points.map { |p| p.map(&:source) }
+    end
+
     def test_only_the_changed_file_of_several
         md = recipe('main.c <- file:stufen/01.c', 'light.fs <- file:stufen/light.fs') + "<img src='a.webp' alt=''>\n\n" +
              recipe('main.c <- file:stufen/02.c', 'light.fs <- file:stufen/light.fs') + "<img src='b.webp' alt=''>\n"

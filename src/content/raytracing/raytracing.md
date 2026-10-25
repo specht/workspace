@@ -2037,6 +2037,8 @@ Und der Titel zeigt, wie hell belichtet ist; die Zeile mit `snprintf` wird zu:
         snprintf(title, sizeof title, "Raytracer – %d Durchgänge, Belichtung %.2f", passes, exposure);
 ```
 
+<!-- stage: stufen/17-belichtung.c as raytracer.c -->
+
 <div class='gallery columns-2'>
 <figure>
 <!-- tutorial-screenshot

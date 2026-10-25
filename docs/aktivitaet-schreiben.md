@@ -111,6 +111,11 @@ unter fünf Zeilen sind keine Schritte. Ein Schritt, den die Seite nur in
 Stücken zeigt, bekommt seine Datei in `stufen/` und eine Zeile für sich,
 `<!-- stage: stufen/lichtspur-2.c as lichtspur.c -->`; `page_code_test.rb`
 prüft, dass der Code der Seite seit dem letzten Schritt darin steht.
+Ein Programm, das nur für ein Vergleichsbild geändert ist (dieselbe Szene
+ohne Path Tracing neben dem Bild mit), heißt `stufen/vergleich-…`
+(`stufen/vergleich-ohne-pathtracing.c`): Es ist nie ein Schritt, der Knopf
+bleibt beim Programm der Seite. Schreibt kein Rezept den Schritt selbst,
+weil alle Bilder dort Vergleiche sind, nennt ihn eine `stage`-Zeile.
 Lernende bekommen weder den Knopf noch den Code; der Server lässt beides für
 sie weg.
 

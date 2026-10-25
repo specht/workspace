@@ -26,6 +26,11 @@ require 'nokogiri'
 #   <!-- stage: stufen/10-glas.c -->
 #   <!-- stage: stufen/shader.fs as light.fs -->
 #
+# A file whose name starts with vergleich- (stufen/vergleich-ohne-pathtracing.c)
+# is the program changed for a picture to compare with, in the same gallery
+# as the step's own picture; it is never a step, so the button keeps the
+# step's program.
+#
 # A file shows up only where it differs from the last time the page wrote
 # it, so the same program does not come twice; a recipe that writes it more
 # than once (a version a check must reject, then the solution) counts with
@@ -49,6 +54,9 @@ module StageCode
     MARKER = /\A<!--\s*stage:\s*(\S+)(?:\s+as\s+(\S+))?\s*-->\s*\z/
     RECIPE = /\A<!-- tutorial-(screenshot|step)\b/
     FOLDERS = %w[stufen/ loesung/].freeze
+    # stufen/vergleich-ohne-pathtracing.c: the program changed only for a
+    # picture beside the step's own (»ohne Path Tracing«), never a step
+    COMPARISON = 'vergleich-'
     MIN_LINES = 5
     # the buttons' wrapper; the code in it is escaped, so no </div> inside
     # ends it early (HTML comments as markers do not survive the rendering)
@@ -124,6 +132,8 @@ module StageCode
             if in_recipe
                 if included
                     # a Handbuch example, not a step of this page
+                elsif (m = stripped.match(WRITE)) && File.basename(m[2]).start_with?(COMPARISON)
+                    # a variant for a picture beside the step, not the step
                 elsif (m = stripped.match(WRITE)) && (file = read(page_dir, m[2], m[1]))
                     step_folder = FOLDERS.any? { |f| m[2].start_with?(f) }
                     grows = writes[m[1]] > 1 && CODE.include?(File.extname(m[1]).downcase) && long?(file.text)
