@@ -449,11 +449,7 @@ TRANSITIONS[['q3', '3']] = Set['q4']
 def opens(digits)
     states = Set[START]
     digits.each_char do |digit|
-        new_states = Set.new
-        states.each do |state|
-            new_states |= TRANSITIONS.fetch([state, digit], Set.new)
-        end
-        states = new_states
+        …
         puts "#{digit} #{states.sort.inspect}"
     end
     !(states & ACCEPTING).empty?
@@ -465,6 +461,40 @@ end
 ```
 
 Ein paar Zeichen sind neu. `Set['q0', 'q1']` ist eine Menge; `a |= b` fügt alle Elemente von `b` zur Menge `a` hinzu, und `states & ACCEPTING` sind die Zustände, die in beiden Mengen liegen. Der Teil unter `if __FILE__ == $0` läuft nur, wenn du die Datei selbst startest, nicht, wenn ein anderes Programm sie lädt; das brauchst du gleich.
+
+<div class='hint own' data-check='nea-schritt'>
+<strong>Jetzt bist du dran:</strong> In <code>opens</code> fehlt der eigentliche Schritt, dort, wo <code>…</code> steht: Aus der Menge <code>states</code> vor einer Ziffer wird die Menge danach. Jeder Zustand in <code>states</code> führt mit <code>digit</code> zu einer Menge in <code>TRANSITIONS</code>, und alle diese Mengen zusammen sind die neuen Zustände. Hat ein Zustand für die Ziffer keinen Eintrag, endet sein Weg: Er trägt nichts bei.
+</div>
+
+<!-- hint -->
+Spiel es mit `states = {q0, q1}` und der Ziffer `2` durch: Wohin führt `q0` mit 2, wohin `q1`? Die neue Menge ist alles, was dabei herauskommt, zusammengenommen. Die alte Menge brauchst du dabei noch, also sammelst du in einer neuen.
+<!-- /hint -->
+<!-- hint -->
+`TRANSITIONS.fetch([state, digit], Set.new)` gibt die Menge für einen Zustand, und eine leere, wenn es keinen Eintrag gibt. Mit `|=` sammelst du alle in einer zunächst leeren Menge; danach wird sie zu `states`.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücken mit `…` füllst du:
+
+```ruby
+        new_states = Set.new
+        states.each do |state|
+            new_states |= …
+        end
+        states = …
+```
+<!-- /hint -->
+
+<!-- solution -->
+```ruby
+~     digits.each_char do |digit|
+        new_states = Set.new
+        states.each do |state|
+            new_states |= TRANSITIONS.fetch([state, digit], Set.new)
+        end
+        states = new_states
+~         puts "#{digit} #{states.sort.inspect}"
+```
+<!-- /solution -->
 <!-- /language -->
 <!-- language: python -->
 Python kann nicht raten, aber es kann alle Wege zugleich verfolgen: Statt eines Zustands merkt sich `opens` eine **Menge** von Zuständen, nämlich alle, in denen der NEA gerade sein könnte. Die Tabelle führt darum zu Mengen. Lege `lock_nfa.py` an:
@@ -491,10 +521,7 @@ TRANSITIONS[('q3', '3')] = {'q4'}
 def opens(digits):
     states = {START}
     for digit in digits:
-        new_states = set()
-        for state in states:
-            new_states |= TRANSITIONS.get((state, digit), set())
-        states = new_states
+        …
         print(digit, sorted(states))
     return len(states & ACCEPTING) > 0
 
@@ -504,7 +531,41 @@ if __name__ == '__main__':
 ```
 
 Ein paar Zeichen sind neu. `{'q0', 'q1'}` ist eine Menge; `a |= b` fügt alle Elemente von `b` zur Menge `a` hinzu, und `states & ACCEPTING` sind die Zustände, die in beiden Mengen liegen. Der Teil unter `if __name__ == '__main__':` läuft nur, wenn du die Datei selbst startest, nicht, wenn ein anderes Programm sie lädt; das brauchst du gleich.
+
+<div class='hint own' data-check='nea-schritt'>
+<strong>Jetzt bist du dran:</strong> In <code>opens</code> fehlt der eigentliche Schritt, dort, wo <code>…</code> steht: Aus der Menge <code>states</code> vor einer Ziffer wird die Menge danach. Jeder Zustand in <code>states</code> führt mit <code>digit</code> zu einer Menge in <code>TRANSITIONS</code>, und alle diese Mengen zusammen sind die neuen Zustände. Hat ein Zustand für die Ziffer keinen Eintrag, endet sein Weg: Er trägt nichts bei.
+</div>
+
+<!-- hint -->
+Spiel es mit `states = {q0, q1}` und der Ziffer `2` durch: Wohin führt `q0` mit 2, wohin `q1`? Die neue Menge ist alles, was dabei herauskommt, zusammengenommen. Die alte Menge brauchst du dabei noch, also sammelst du in einer neuen.
+<!-- /hint -->
+<!-- hint -->
+`TRANSITIONS.get((state, digit), set())` gibt die Menge für einen Zustand, und eine leere, wenn es keinen Eintrag gibt. Mit `|=` sammelst du alle in einer zunächst leeren Menge; danach wird sie zu `states`.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücken mit `…` füllst du:
+
+```python
+        new_states = set()
+        for state in states:
+            new_states |= …
+        states = …
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+~     for digit in digits:
+        new_states = set()
+        for state in states:
+            new_states |= TRANSITIONS.get((state, digit), set())
+        states = new_states
+~         print(digit, sorted(states))
+```
+<!-- /solution -->
 <!-- /language -->
+
+_task(nea-schritt)
 
 _task(nea-zustaende)
 
@@ -590,6 +651,7 @@ terminal-run: clear
 terminal-run: ruby convert.rb
 terminal-wait-for-prompt
 crop-terminal-lines: auto
+check-task: nea-schritt ruby
 check-task-fails: generalschluessel ruby
 -->
 <img class='full' src='umwandeln-ruby.webp' alt='ruby convert.rb gibt aus: 5 Zustände, dann acht Übergänge, etwa von der Menge q0, q1, q3 mit 2 zur Menge q0, q2 und mit 3 zur Menge q0, q4.'>
@@ -645,6 +707,7 @@ terminal-run: clear
 terminal-run: python3 convert.py
 terminal-wait-for-prompt
 crop-terminal-lines: auto
+check-task: nea-schritt
 check-task-fails: generalschluessel
 -->
 <img class='full' src='umwandeln.webp' alt='python3 convert.py gibt aus: 5 Zustände, dann acht Übergänge, etwa von der Menge q0, q1, q3 mit 2 zur Menge q0, q2 und mit 3 zur Menge q0, q4.'>
@@ -778,6 +841,8 @@ check-task: teilbar-5
 check-task: teilbar-5 ruby
 check-task: schloss
 check-task: schloss ruby
+check-task: nea-schritt
+check-task: nea-schritt ruby
 check-task: generalschluessel
 check-task: generalschluessel ruby
 -->

@@ -39,6 +39,17 @@ examples:
       fail:
         - files: { automata/lock.rb: stufen/lock.rb }
         - files: { automata/lock.rb: { text: "def opens(word)\n  word == '1213'\nend\n" } }
+  nea-schritt:
+    pass:
+      - files: { automata/lock_nfa.py: stufen/lock_nfa.py }
+    fail:
+      - files: { automata/lock_nfa.py: { text: "def opens(digits):\n    return digits == '1213'\n" } }
+      - files: { automata/lock_nfa.py: { text: "TRANSITIONS = {('q0', '1'): {'q0', 'q1'}, ('q1', '2'): {'q2'}, ('q2', '1'): {'q3'}, ('q3', '3'): {'q4'}}\n\ndef opens(digits):\n    state = 'q0'\n    for digit in digits:\n        state = sorted(TRANSITIONS.get((state, digit), {'q0'}))[-1]\n    return state == 'q4'\n" } }
+    ruby:
+      pass:
+        - files: { automata/lock_nfa.rb: stufen/lock_nfa.rb }
+      fail:
+        - files: { automata/lock_nfa.rb: { text: "def opens(digits)\n  digits == '1213'\nend\n" } }
   generalschluessel:
     pass:
       - files: { automata/lock_nfa.py: loesung/lock_nfa.py }

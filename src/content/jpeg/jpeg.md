@@ -338,7 +338,7 @@ int main(int argc, char **argv)
 }
 ```
 
-`read_byte` gibt das Byte an der Stelle `pos` zurück und rückt `pos` weiter, `read_word` setzt zwei Bytes zu einer Zahl zusammen, das hohe zuerst. Übersetze mit dem Namen der Datei, die das Programm lesen soll:
+`read_byte` gibt das Byte am Index `pos` zurück und rückt `pos` weiter, `read_word` setzt zwei Bytes zu einer Zahl zusammen, das hohe zuerst. Übersetze mit dem Namen der Datei, die das Programm lesen soll:
 
 ```bash
 make PROGRAM=jpeg ARGS=44-baseline.jpg

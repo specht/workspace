@@ -388,7 +388,7 @@ Das sind alle 106 Bytes. Die Farben zeigen die Blöcke, aus denen eine GIF-Datei
 
 ### Das Programm
 
-Lege im Ordner `gif` die Datei `gif.c` an. Der Anfang liest die ganze Datei in den Speicher, und drei kleine Funktionen lesen daraus, immer an der Stelle `pos`, die dabei weiterwandert:
+Lege im Ordner `gif` die Datei `gif.c` an. Der Anfang liest die ganze Datei in den Speicher, und drei kleine Funktionen lesen daraus, immer am Index `pos`, der dabei weiterwandert:
 
 <!-- page-code: own -->
 ```c_copy
@@ -453,7 +453,7 @@ int main(int argc, char **argv)
 ```
 
 - `read_file` öffnet die Datei, springt mit `fseek` ans Ende, um mit `ftell` die Größe zu erfahren, und liest dann alles auf einmal in `file`.
-- `read_byte` gibt das Byte an der Stelle `pos` zurück und rückt `pos` eins weiter. Ist die Datei schon zu Ende, bricht `fail` das Programm mit einer Meldung ab, statt hinter der Datei weiterzulesen.
+- `read_byte` gibt das Byte am Index `pos` zurück und rückt `pos` eins weiter. Ist die Datei schon zu Ende, bricht `fail` das Programm mit einer Meldung ab, statt hinter der Datei weiterzulesen.
 - `read_word` liest zwei Bytes und setzt sie zu einer Zahl zusammen, das erste ist das niedrige. Darauf kommen wir gleich beim Logical Screen Descriptor zurück.
 
 Übersetze das Programm mit dem Namen der Datei, die es lesen soll:

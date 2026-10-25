@@ -180,6 +180,14 @@ tasks:
       type: number
       expect: 8
       unit: s
+    feedback:
+      - when: { equals: 45 }
+        say: 45 ist, um wie viel Grad sich der Ring in einer Sekunde dreht. Wie viele solcher Sekunden braucht er für eine ganze Drehung?
+      - when: { equals: 0.125 }
+        say: Das ist der Anteil einer ganzen Drehung, den er in einer Sekunde schafft. Gefragt ist die Zeit für die ganze Drehung.
+      - when: { equals: 4 }
+        say: Nach 4 Sekunden steht der Ring auf dem Kopf, bei 180 Grad. Eine ganze Drehung sind 360 Grad.
+    hint: '`t` sind die Sekunden seit dem Start. Wie viele Grad kommen in einer Sekunde dazu, und wie viele Grad hat eine ganze Drehung?'
     solution: |
       Eine ganze Drehung sind 360 Grad. Mit `t * 45` kommen in jeder Sekunde 45
       Grad dazu, also dauert sie 360 ÷ 45 = 8 Sekunden.

@@ -362,6 +362,63 @@ tasks:
           }
           ```
 
+  - id: nea-schritt
+    title: Alle Wege zugleich
+    prompt: |
+      Schreib in `opens` in `lock_nfa.py` den Schritt von einer Menge von
+      Zuständen zur nächsten. Der Workspace lässt das Schloss ein paar Ziffern
+      lesen, auch solche, bei denen der NEA richtig raten muss.
+    check:
+      type: python
+      file: automata/lock_nfa.py
+      cases:
+        - opens('1213'): true
+        - opens(''): false
+        - opens('1212'): false
+        - call: opens('121213')
+          expect: true
+          say: Bei der zweiten 1 muss der NEA neu raten können. Bleibt `q0` in der Menge, auch wenn er schon in `q1` oder `q3` ist?
+        - call: opens('11213')
+          expect: true
+          say: Aus `q0` führt eine 1 nach `q0` und nach `q1`. Kommen beide in die neue Menge?
+        - call: opens('12')
+          expect: false
+          say: Ein Zustand ohne Eintrag für die Ziffer trägt nichts bei; sein Weg endet.
+        - opens('991213'): true
+    solution: |
+      Für jeden Zustand der alten Menge kommt seine Menge aus `TRANSITIONS`
+      dazu, mit einer leeren für einen fehlenden Eintrag:
+      `new_states |= TRANSITIONS.get((state, digit), set())`, danach
+      `states = new_states`.
+
+    ruby:
+      prompt: |
+        Schreib in `opens` in `lock_nfa.rb` den Schritt von einer Menge von
+        Zuständen zur nächsten. Der Workspace lässt das Schloss ein paar
+        Ziffern lesen, auch solche, bei denen der NEA richtig raten muss.
+      check:
+        type: ruby
+        file: automata/lock_nfa.rb
+        cases:
+          - opens('1213'): true
+          - opens(''): false
+          - opens('1212'): false
+          - call: opens('121213')
+            expect: true
+            say: Bei der zweiten 1 muss der NEA neu raten können. Bleibt `q0` in der Menge, auch wenn er schon in `q1` oder `q3` ist?
+          - call: opens('11213')
+            expect: true
+            say: Aus `q0` führt eine 1 nach `q0` und nach `q1`. Kommen beide in die neue Menge?
+          - call: opens('12')
+            expect: false
+            say: Ein Zustand ohne Eintrag für die Ziffer trägt nichts bei; sein Weg endet.
+          - opens('991213'): true
+      solution: |
+        Für jeden Zustand der alten Menge kommt seine Menge aus `TRANSITIONS`
+        dazu, mit einer leeren für einen fehlenden Eintrag:
+        `new_states |= TRANSITIONS.fetch([state, digit], Set.new)`, danach
+        `states = new_states`.
+
   - id: nea-zustaende
     title: Drei Ziffern später
     prediction: true
