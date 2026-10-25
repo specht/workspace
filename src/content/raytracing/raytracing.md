@@ -200,7 +200,7 @@ Einen Vektor kannst du dir als Pfeil vorstellen, der so weit nach rechts, oben u
 
 ### Vom Auge durch den Bildschirm
 
-<img class='drawing' style='width: 24em' src='bildebene.webp' alt='Schräg von hinten und oben über das Auge gesehen: unten ein Punkt, das Auge im Nullpunkt, davor eine Glasscheibe mit einem Gitter aus Pixeln, das Bild, eine Einheit vor dem Auge. Ein blauer Pfeil geht vom Auge zur Mitte der Scheibe, »−z: 1 nach vorn«. Von dort führt ein roter Pfeil sx nach rechts und ein grüner Pfeil sy nach oben zu einem markierten Pixel. Ein blauer Strahl geht vom Auge durch diesen Pixel und gestrichelt weiter in die Szene; an ihm steht (sx, sy, -1). Unten rechts zeigen kleine Pfeile x nach rechts, y nach oben und z auf uns zu.'>
+<img class='drawing' style='width: 27.5em' src='bildebene.webp' alt='Schräg von hinten und oben über das Auge gesehen: unten ein Punkt, das Auge im Nullpunkt, davor eine Glasscheibe mit einem Gitter aus 16 mal 9 quadratischen Pixeln, das Bild, eine Einheit vor dem Auge. Über der Scheibe zeigt eine Maßlinie »W / H breit«, links eine »1 hoch«. Ein blauer Pfeil geht vom Auge zur Mitte der Scheibe, »−z: 1 nach vorn«. Von dort führt ein roter Pfeil sx nach rechts und ein grüner Pfeil sy nach oben zu einem markierten Pixel. Ein blauer Strahl geht vom Auge durch diesen Pixel und gestrichelt weiter in die Szene; an ihm steht (sx, sy, -1). Unten rechts zeigen kleine Pfeile x nach rechts, y nach oben und z auf uns zu.'>
 
 Stell dir vor, das Auge sitzt im Nullpunkt und schaut in Richtung −z. Eine Einheit davor steht das Bild, wie eine Glasscheibe, auf der die Pixel liegen. Ein Strahl beginnt beim Auge und geht durch einen Pixel weiter in die Szene. `ray_dir` rechnet die Richtung dieses Strahls aus:
 
@@ -211,6 +211,8 @@ Stell dir vor, das Auge sitzt im Nullpunkt und schaut in Richtung −z. Eine Ein
 `x + 0.5` zielt auf die Mitte des Pixels, nicht auf seine linke obere Ecke.
 
 _task(sx)
+
+Wie groß die Scheibe ist, legen `W` und `H` fest: Weil `sx` und `sy` durch `H` geteilt werden, ist sie 1 hoch und `W / H` breit, 320 / 180 ≈ 1,78. Sie hat also dasselbe Seitenverhältnis 16 : 9 wie das Bild aus 320 × 180 Pixeln. Zusammen mit dem Abstand 1 bestimmt diese Größe, wie viel von der Szene ins Bild passt: Von der Unterkante bis zur Oberkante sieht das Auge einen Winkel von 2 · arctan(0,5) ≈ 53°. Wäre die Scheibe nur halb so hoch, zeigte das Bild weniger von der Szene, dafür größer, wie ein Teleobjektiv.
 
 `sky` mischt mit `mix` zwei Farben: das helle Weiß am Horizont und das Blau ganz oben. Wie viel von welcher, entscheidet `dir.y`, wie steil der Strahl nach oben zeigt. Farben sind hier Zahlen von 0 bis 1 für Rot, Grün und Blau; erst `to_byte` macht daraus die Werte 0 bis 255 für PixelRAM.
 
@@ -1022,7 +1024,7 @@ Bisher hat jede Kugel eine einzige Farbe. Eine **Textur** gibt jedem Punkt der O
 - **Längengrad** `u = atan2(n.z, n.x)`: der Winkel rund um die Kugel, von −π bis π.
 - **Breitengrad** `v = asin(n.y)`: wie hoch der Punkt liegt, von −π/2 am Südpol bis π/2 am Nordpol.
 
-<img class='drawing' style='width: 26.5em' src='laenge-breite.webp' alt='Zweimal ein Kreis, die Kugel, mit einem Pfeil n vom Mittelpunkt. Links von oben gesehen: ein roter Pfeil x nach rechts, ein blauer Pfeil z nach unten, n zeigt schräg dazwischen; der Bogen u vom Pfeil x bis zu n ist der Längengrad. Rechts von der Seite: eine waagrechte Linie, der Äquator, ein grüner Pfeil y nach oben, n zeigt schräg nach rechts oben zum Rand; der Bogen v vom Äquator bis zu n ist der Breitengrad.'>
+<img class='drawing' style='width: 26.5em' src='laenge-breite.webp' alt='Zweimal ein Kreis, die Kugel, mit einem Pfeil n vom Mittelpunkt und dem blassen Gitter eines Globus. Links von oben gesehen, die Längengrade als Speichen und die Breitengrade als Ringe um den Nordpol in der Mitte: ein roter Pfeil x nach rechts, ein blauer Pfeil z nach unten, n zeigt schräg dazwischen; der Bogen u vom Pfeil x bis zu n ist der Längengrad. Rechts von der Seite, die Breitengrade als waagrechte Linien und die Längengrade als Ellipsen: eine waagrechte Linie, der Äquator, ein grüner Pfeil y nach oben, n zeigt schräg nach rechts oben zum Rand; der Bogen v vom Äquator bis zu n ist der Breitengrad.'>
 
 Mit `u` und `v` kann man rechnen wie mit `x` und `y` auf einem Bild. Der Planet hier bekommt Streifen wie Jupiter: Die Farbe wechselt mit dem Breitengrad hin und her, in breiten und in feinen Streifen, und damit sie nicht wie mit dem Lineal gezogen aussehen, wellt der Längengrad sie ein wenig. Dazu kommt Jupiters großer roter Fleck, ein Sturm, größer als die Erde. `r` sagt, wie weit ein Punkt von seiner Mitte weg ist, gemessen in seiner Größe: 0 in der Mitte, 1 am Rand. Innen ist er rot, zum Rand hin dunkler, und weich geht er in einen hellen Ring über, wie auf den Fotos von Jupiter.
 
@@ -1067,6 +1069,33 @@ vec planet_color(vec n)
     return mix(color, spot, fmin(1, fmax(0, (1 - r) / 0.2)));
 }
 ```
+
+Was die Zeilen tun, siehst du am besten flach. Breite die Textur als Rechteck aus, waagrecht `u` von −π links bis π rechts, senkrecht `v` von −π/2 unten bis π/2 oben, so wie eine Weltkarte die Erde ausbreitet. Die blassen Linien liegen alle π/4. Zeile für Zeile entsteht so der Planet:
+
+<div class='gallery columns-2'>
+<figure>
+<img src='textur-1-streifen.webp' alt='Ein Rechteck mit waagrechten Streifen, abwechselnd braun und cremefarben, alle gleich breit und ganz gerade.'>
+<figcaption>Nur <code>0.5 + 0.5 * sin(13 * v)</code>: gerade Streifen, die nur vom Breitengrad abhängen.</figcaption>
+</figure>
+<figure>
+<img src='textur-2-wellen.webp' alt='Dieselben Streifen, jetzt sanft gewellt: Sie schwingen von links nach rechts ein wenig auf und ab.'>
+<figcaption>Mit <code>0.3 * sin(5 * u + 8 * v)</code> im Sinus: Der Längengrad wellt die Streifen.</figcaption>
+</figure>
+<figure>
+<img src='textur-3-fein.webp' alt='Zwischen den breiten gewellten Streifen liegen jetzt viele feine, helle und dunkle Linien.'>
+<figcaption>Dazu <code>0.12 * sin(45 * v + 2 * sin(3 * u))</code>: feine Streifen zwischen den breiten.</figcaption>
+</figure>
+<figure>
+<img src='textur-4-fleck.webp' alt='Die fertige Textur: die Streifen und rechts unterhalb der Mitte ein roter ovaler Fleck in einem hellen Ring.'>
+<figcaption>Dazu der Fleck mit seinem Ring, in der Mitte bei <code>u = 1.0</code> und <code>v = -0.38</code>.</figcaption>
+</figure>
+</div>
+
+Auf der Kugel holt sich jeder Punkt mit seinem `u` und `v` die Farbe an dieser Stelle des Rechtecks: Das Rechteck wird um die Kugel gewickelt.
+
+<img class='drawing' style='width: 14em' src='textur-kugel.webp' alt='Eine Kugel von vorn mit der fertigen Textur: gewellte braune und cremefarbene Streifen, rechts unterhalb der Mitte der rote Fleck. Die blassen Linien sind auf der Kugel waagrechte Breitenkreise und gebogene Längenkreise, die sich oben und unten zu den Polen hin zusammendrängen.'>
+
+Von vorn siehst du die Hälfte mit `u` von 0 am rechten Rand der Kugel bis π am linken: Wegen `atan2(n.z, n.x)` wächst `u` auf der Kugel von rechts nach links, das Rechteck liegt also gespiegelt auf ihr. Und je näher ein Punkt an einem Pol liegt, desto enger rücken die Spalten des Rechtecks zusammen; am Pol treffen sie sich alle in einem Punkt.
 
 In `nearest_hit` holt sich eine Kugel mit `planet` ihre Farbe aus der Textur:
 

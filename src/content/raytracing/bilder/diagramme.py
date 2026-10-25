@@ -66,14 +66,15 @@ def vektoren():
 
 def bildebene():
     """From behind and above the eye: the image plane one unit in front (−z),
+    as wide and high as in the program (W / H by 1, 16:9, square pixels),
     the pixel at (sx, sy), the ray through it."""
-    w, h = 384, 236
+    w, h = 440, 320
     s = Svg('bildebene', w, h, 'Schräg von hinten über das Auge gesehen: das Auge im Nullpunkt schaut in Richtung −z; '
-            'eine Einheit davor steht das Bild mit seinen Pixeln. sx geht nach rechts, sy nach oben; der Strahl durch '
-            'diesen Pixel hat die Richtung (sx, sy, -1).')
-    v = View(24, 42, 132, (150, 192))
-    half_w, half_h = 0.89, 0.5          # W / 2 / H and H / 2 / H
-    cols, rows = 8, 5
+            'eine Einheit davor steht das Bild mit seinen Pixeln, W / H breit und 1 hoch. sx geht nach rechts, sy '
+            'nach oben; der Strahl durch diesen Pixel hat die Richtung (sx, sy, -1).')
+    v = View(26, 38, 132, (196, 236))
+    half_w, half_h = 320 / 180 / 2, 0.5     # W / 2 / H and H / 2 / H, W = 320, H = 180
+    cols, rows = 16, 9                      # square pixels, 16:9 like W × H
     # the plane at z = -1
     corners = [(-half_w, -half_h, -1), (half_w, -half_h, -1), (half_w, half_h, -1), (-half_w, half_h, -1)]
     s.polygon([v(p) for p in corners], PALE, INK, 2)
@@ -84,33 +85,46 @@ def bildebene():
         y = -half_h + 2 * half_h * j / rows
         s.line(v((-half_w, y, -1)), v((half_w, y, -1)), LINE, 1)
     # one pixel, right and up
-    i, j = 6, 3
+    i, j = 12, 6
     px0, px1 = -half_w + 2 * half_w * i / cols, -half_w + 2 * half_w * (i + 1) / cols
     py0, py1 = -half_h + 2 * half_h * j / rows, -half_h + 2 * half_h * (j + 1) / rows
     s.polygon([v((px0, py0, -1)), v((px1, py0, -1)), v((px1, py1, -1)), v((px0, py1, -1))], BLUE, None, opacity=0.35)
     sx, sy = (px0 + px1) / 2, (py0 + py1) / 2
+    # the size of the plane: W / H wide, 1 high
+    gap = 0.13
+    tick = 0.05
+    a, b = (-half_w, half_h + gap, -1), (half_w, half_h + gap, -1)
+    s.line(v(a), v(b), GREY, 1.5)
+    for p in (a, b):
+        s.line(v(add3(p, (0, tick, 0))), v(add3(p, (0, -tick, 0))), GREY, 1.5)
+    s.label(add(v((-half_w, half_h + gap, -1)), (-4, -14)), [('c', 'W / H'), ' breit'], GREY, 'start')
+    a, b = (-half_w - gap, -half_h, -1), (-half_w - gap, half_h, -1)
+    s.line(v(a), v(b), GREY, 1.5)
+    for p in (a, b):
+        s.line(v(add3(p, (tick, 0, 0))), v(add3(p, (-tick, 0, 0))), GREY, 1.5)
+    s.text(add(v((-half_w - gap, 0, -1)), (-10, 5)), '1 hoch', GREY, 'end')
     eye = (0, 0, 0)
     mid = (0, 0, -1)
     # 1 forward along -z, then sx to the right and sy up
     s.arrow(v(eye), v(mid), BLUE, 2.5)
     s.arrow(v(mid), v((sx, 0, -1)), RED, 2.5)
     s.arrow(v((sx, 0, -1)), v((sx, sy, -1)), GREEN, 2.5)
-    s.code(add(v((sx / 2, 0, -1)), (-4, 20)), 'sx', 'middle')
+    s.code(add(v((sx / 2, 0, -1)), (0, 20)), 'sx', 'middle')
     s.code(add(v((sx, sy / 2, -1)), (8, 6)), 'sy')
     # the ray through the pixel, on into the scene
-    far = mul3((sx, sy, -1), 1.75)
+    far = mul3((sx, sy, -1), 1.6)
     s.line(v(eye), v((sx, sy, -1)), BLUE, 2)
     s.line(v((sx, sy, -1)), v(far), BLUE, 2, dash='5 4')
     s.hollow(v((sx, sy, -1)), 4, BLUE)
-    s.code(add(v(far), (-10, -4)), '(sx, sy, -1)', 'end')
+    s.code(add(v(far), (-4, -24)), '(sx, sy, -1)', 'end')
     s.dot(v(eye), 6)
-    s.text(add(v(eye), (12, 6)), 'Auge, im Nullpunkt', INK, 'start')
-    s.label(add(v((0, 0, -0.5)), (-14, 4)), [('m', '-z'), ': 1 nach vorn'], BLUE, 'end')
-    s.text(add(v((-half_w, half_h, -1)), (0, -10)), 'das Bild', INK, 'start')
+    s.text(add(v(eye), (0, 28)), 'Auge, im Nullpunkt', INK, 'middle')
+    s.label(add(v((0, 0, -0.3)), (-14, 6)), [('m', '-z'), ': 1 nach vorn'], BLUE, 'end')
+    s.text(add(v((half_w, -half_h, -1)), (0, 24)), 'das Bild', INK, 'end')
     # the axes, bottom right
-    o = (338, 206)
+    o = (400, 282)
     for d, name, col in [((1, 0, 0), 'x', INK), ((0, 1, 0), 'y', INK), ((0, 0, 1), 'z', INK)]:
-        tip = add(o, sub(v(mul3(d, 0.22)), v((0, 0, 0))))
+        tip = add(o, sub(v(mul3(d, 0.2)), v((0, 0, 0))))
         s.arrow(o, tip, col, 1.8, size=9)
         s.tex(add(tip, mul(unit(sub(tip, o)), 10)), name, col, 'middle')
     return s
@@ -491,14 +505,24 @@ def kamera():
 
 def laenge_breite():
     w, h = 424, 272
-    s = Svg('laenge-breite', w, h, 'Zweimal die Kugel mit der Normalen n. Links von oben: x nach rechts, z nach unten auf '
-            'uns zu; u ist der Winkel von x bis n, rund um die Kugel, der Längengrad. Rechts von der Seite: y nach oben; '
-            'v ist der Winkel vom Äquator bis n, der Breitengrad.')
+    s = Svg('laenge-breite', w, h, 'Zweimal die Kugel mit der Normalen n und dem Gitter eines Globus. Links von oben: '
+            'die Längengrade als Speichen, die Breitengrade als Ringe; x nach rechts, z nach unten auf uns zu; u ist '
+            'der Winkel von x bis n, rund um die Kugel, der Längengrad. Rechts von der Seite: die Breitengrade als '
+            'waagrechte Linien, die Längengrade als Ellipsen; y nach oben; v ist der Winkel vom Äquator bis n, der '
+            'Breitengrad.')
     r = 74
     # from above
     c = (104, 128)
     s.text((c[0], 22), 'von oben', GREY)
-    s.circle(c, r, PALE, INK, 2.2)
+    s.circle(c, r, PALE, None)
+    # the grid of a globe seen from above the north pole: meridians every
+    # 30° as spokes, the circles of latitude 30° and 60° as rings
+    for k in range(6):
+        d = polar(k * 30, r)
+        s.line(sub(c, d), add(c, d), LINE, 1)
+    for lat in (30, 60):
+        s.circle(c, r * math.cos(math.radians(lat)), 'none', LINE, 1)
+    s.circle(c, r, 'none', INK, 2.2)
     s.arrow(c, (c[0] + r + 34, c[1]), RED, 2)
     s.tex((c[0] + r + 40, c[1] + 6), 'x', RED)
     s.arrow(c, (c[0], c[1] + r + 24), BLUE, 2)
@@ -513,7 +537,19 @@ def laenge_breite():
     # from the side
     c = (318, 128)
     s.text((c[0], 22), 'von der Seite', GREY)
-    s.circle(c, r, PALE, INK, 2.2)
+    s.circle(c, r, PALE, None)
+    # the same grid from the side: circles of latitude as lines, meridians
+    # as ellipses (0° edge-on as a line through the poles)
+    for lat in (-60, -30, 30, 60):
+        y = c[1] - r * math.sin(math.radians(lat))
+        half = r * math.cos(math.radians(lat))
+        s.line((c[0] - half, y), (c[0] + half, y), LINE, 1)
+    s.line((c[0], c[1] - r), (c[0], c[1] + r), LINE, 1)
+    for lon in (30, 60):
+        a = r * math.sin(math.radians(lon))
+        s.polyline([(c[0] + a * math.cos(t * math.pi / 60), c[1] + r * math.sin(t * math.pi / 60))
+                    for t in range(121)], LINE, 1)
+    s.circle(c, r, 'none', INK, 2.2)
     s.line((c[0] - r, c[1]), (c[0] + r, c[1]), GREY, 1.5)
     s.text((c[0] - r + 6, c[1] + 20), 'Äquator', GREY, 'start')
     s.arrow(c, (c[0], c[1] - r - 20), GREEN, 2)
