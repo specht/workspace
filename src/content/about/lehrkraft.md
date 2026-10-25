@@ -2,5 +2,6 @@ Lernende lesen hier zum ersten Mal, was der Hackschule Workspace ist: eine Progr
 
 <table class='table'>
 <tr><th>Danach</th><td><a href='/basics'>»Die Basics«</a> und <a href='/keyboard'>das Keyboard-Tutorial</a>, dann eine Aktivität der Klasse.</td></tr>
+<tr><th>Für Lehrkräfte</th><td>Das letzte Kapitel, »Was eine Aktivität ausmacht«, ist für Lehrkräfte und Gäste, die den Workspace kennenlernen; mit der Klasse kann es wegbleiben.</td></tr>
 <tr><th>Die Klasse</th><td>Gruppen, Sprache (Ruby oder Python) und die Übersicht über Aufgaben und Abgaben stehen auf der <a href='/klasse'>Klassenseite</a>.</td></tr>
 </table>

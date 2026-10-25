@@ -1,0 +1,33 @@
+{
+  "script": "e2e/tests/activity-tour.pictures.ts",
+  "command": "cd e2e && HS_PICTURES=1 npx playwright test --project=pictures activity-tour.pictures",
+  "inputs": [
+    "e2e/tests/activity-tour.pictures.ts",
+    "src/content/raytracing/raytracing.md",
+    "src/content/raytracing/tasks.yaml",
+    "src/ruby/include/after_task.rb",
+    "src/ruby/include/hint_steps.rb",
+    "src/ruby/include/solution_blocks.rb",
+    "src/ruby/include/task_card.rb",
+    "src/ruby/include/person_boxes.rb",
+    "src/content/reference/personen/personen.md",
+    "src/static/include/tasks.js",
+    "src/static/include/hint_steps.js",
+    "src/static/include/default.css",
+    "src/static/include/dark.css",
+    "src/static/_template.html"
+  ],
+  "hash": "",
+  "pictures": [
+    "tour-menschen-dark.webp",
+    "tour-menschen.webp",
+    "tour-rueckmeldung-dark.webp",
+    "tour-rueckmeldung.webp",
+    "tour-tipp-dark.webp",
+    "tour-tipp.webp",
+    "tour-vorhersage-danach-dark.webp",
+    "tour-vorhersage-danach.webp",
+    "tour-vorhersage-dark.webp",
+    "tour-vorhersage.webp"
+  ]
+}
