@@ -29,6 +29,14 @@ class PageKindsTest < Minitest::Test
         assert_includes html, '>Folien mit HTML</a>'
     end
 
+    # with a switch of languages the switch shows it, the label stays the same
+    def test_a_page_with_a_language_switch_keeps_its_label
+        c = content.merge('katas' => { :title => 'Katas', :kind => 'uebung', :languages => %w[ruby python] })
+        html = PageKinds.header('katas', c, sections, :code_language => 'python')
+        assert_includes html, '</i>Übung</span>'
+        assert_includes html, "data-set-language='python'"
+    end
+
     def test_activity_shows_its_language
         c = content.merge('drawing' => { :title => 'Pixelgrafik', :kind => 'projekt', :language => 'Ruby' })
         assert_includes PageKinds.header('drawing', c, sections), '</i>Projekt (Ruby)</span>'

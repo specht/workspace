@@ -59,9 +59,13 @@ html[data-bs-theme="dark"] {
         filter: none;
         opacity: 1;
     }
-    .code-language-option[aria-pressed='true'] {
+    .code-language-option[aria-pressed='true'],
+    .code-language-thumb {
         background: #3a3a37;
         box-shadow: none;
+    }
+    .code-language-sliding .code-language-option[aria-pressed='true'] {
+        background: transparent;
     }
     .code-language-option[data-set-language='ruby'][aria-pressed='true'] {
         color: #ff8a8f;

@@ -749,6 +749,64 @@ The rules that came out of the same review are in
    sprite catalogue of `specht/2d` (substantial already), and shows them to the
    maintainer.
 
+### Decided in the review of Pip and the sets (26 October 2026)
+
+What the maintainer decided while looking at the pages, for a later session
+to keep. The rules that follow from it, with what checks them, are in
+[checkliste.md](checkliste.md), »Katas und Pip«; what is still to be built is
+under »Next« above.
+
+The cards and the strip
+- One button per Kata, »Ausführen« with a play icon: it runs the code (a
+  function Kata's own program first, when it has code of its own, so its
+  output shows) and checks. Pip shows the result only after the replay.
+- Map tabs name the call the check makes on that map; the map in the tab
+  runs first and stays; the tabs wait while a run is under way.
+- The level is a word with three bars, not dots.
+- Teachers get »Lösung einsetzen« beside a Kata's buttons; the solution goes
+  into the editor, never into the card's HTML.
+- Visitors see a Kata's code in its editor, read-only, with colours and line
+  numbers; a map in the page with its plan after it shows the plan beside it
+  in the same editor.
+- No page `/katas`: the front page has one strip of the sets, a ring with the
+  total beside it, no taller than a row of cards. A set opens with its
+  button (»Loslegen«, »Weitermachen«, »Ansehen«), the strip is dragged with
+  a mouse, swiped on a phone (a set snaps into the middle) and has arrows
+  that fade out at its ends; it fades into the page where more follows. A
+  set pinned for the person's group is marked and scrolled into the middle.
+- Only Pip's sets have a picture (the map halfway through a run, no code,
+  zoomed in round Pip or Bello with `focus:`); the others have an icon
+  (`icon:`, quotation marks for Texte), since a solved card would give a
+  solution away. The section's icon is the martial arts uniform.
+- On a page with a language switch the kind label does not name the
+  language (»Übung«, not »Übung (Ruby)«); the chosen language's pill slides.
+
+Pip
+- The 3/4 view stays: the 2D Game Studio's figures, the surroundings drawn
+  anew with dithering, light and shadow, mixed corners, side faces on left
+  walls only, every figure in the middle of its field, and behind the rock
+  in front of it. Spikes instead of a gate, long and uneven, animated.
+- Several maps of a task differ, each shows what is expected (a corridor as
+  long as `walk(n)` should go), and a prompt that has the check call a
+  function says so and names the calls. Numbers in a prompt hold for every
+  map a person can get.
+- Turns and taking a stone play faster than a step; the speed holds for the
+  page and the next one. Pip speaks sentence by sentence in Pixelify Sans.
+- The story ends in itself, without a teaser for the 2D Game Studio.
+- To be built (»Next«): clicking commands before typing, a chasing monster
+  as a finale.
+
+The sets
+- FizzBuzz is introduced as an English counting game; »Brot« (divisible by 3
+  or with a 3) is the game of German primary schools, an Extra.
+- Set 9 is »Suchen« (see the catalogue); the merge step is set 5's, the
+  sieve stays the Extra of set 3, counting comparisons is the Sorting
+  Sandbox's.
+- Examples never imitate a difficulty a student may have (a »stutter«
+  function became one putting letters in brackets).
+- The curriculum line, shown to teachers in the strip, is wanted for every
+  activity (TODO.md).
+
 
 ## Progress
 

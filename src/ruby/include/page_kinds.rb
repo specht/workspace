@@ -89,7 +89,9 @@ module PageKinds
     # show_duration: only for teachers; how long an activity takes is for
     # planning lessons, not something students need to read.
     # code_language: the programming language shown on a page that offers
-    # more than one (CodeLanguages); the label names it, a switch follows.
+    # more than one (CodeLanguages); the switch beside the label shows it,
+    # the label itself does not name it (»Übung«, not »Übung (Ruby)«, which
+    # would change width when switching).
     def self.header(slug, content, sections, development: false, extra: '', show_duration: false, code_language: nil)
         entry = content[slug]
         return '' if entry.nil? || entry[:teacher_only]
@@ -115,15 +117,11 @@ module PageKinds
             html << '</nav>'
         else
             languages = entry[:languages] || []
-            if languages.empty? || !languages.include?(code_language)
-                kind = h.(kind_label(entry[:kind], entry[:language]) || 'Aktivität')
-            else
-                kind = h.(kind_label(entry[:kind], '@LANGUAGE@') || 'Aktivität')
-                kind = kind.sub('@LANGUAGE@', "<span class='code-language-name'>#{h.(CodeLanguages::NAMES[code_language])}</span>")
-            end
+            switch = languages.include?(code_language)
+            kind = h.(kind_label(entry[:kind], switch ? nil : entry[:language]) || 'Aktivität')
             html = +"<div class='page-kind page-kind-activity'>"
             html << "<span class='page-kind-label'><i class='bi bi-signpost-2'></i>#{kind}</span>"
-            html << CodeLanguages.switch_html(languages, code_language) if languages.include?(code_language)
+            html << CodeLanguages.switch_html(languages, code_language) if switch
             if show_duration && entry[:duration].is_a?(String) && !entry[:duration].strip.empty?
                 html << "<span class='page-kind-duration'><i class='bi bi-clock'></i>#{h.(entry[:duration].strip)}</span>"
             end

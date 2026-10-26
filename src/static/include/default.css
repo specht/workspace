@@ -3195,6 +3195,8 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 }
 
 .code-language-switch {
+    position: relative;
+    isolation: isolate;
     display: inline-flex;
     gap: 2px;
     padding: 2px;
@@ -3252,6 +3254,51 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 .code-language-option[aria-pressed='true'] img {
     filter: none;
     opacity: 1;
+}
+
+/* the name as wide as the wider of its regular and its bold form (in
+   some fonts the bold one is narrower), so that nothing moves when it
+   becomes bold */
+.code-language-option-name {
+    display: inline-flex;
+    flex-direction: column;
+}
+.code-language-option-name::before,
+.code-language-option-name::after {
+    content: attr(data-name);
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+}
+.code-language-option-name::before {
+    font-weight: 400;
+}
+.code-language-option-name::after {
+    font-weight: 600;
+}
+
+/* With the script, one pill behind the buttons slides to the chosen one;
+   without it, the chosen button has its own background (above). */
+.code-language-thumb {
+    position: absolute;
+    top: 2px;
+    bottom: 2px;
+    left: 0;
+    z-index: -1;
+    width: 0;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+.code-language-sliding .code-language-thumb {
+    transition: left 0.25s ease, width 0.25s ease;
+}
+.code-language-sliding .code-language-option[aria-pressed='true'] {
+    background: transparent;
+    box-shadow: none;
+}
+@media (prefers-reduced-motion: reduce) {
+    .code-language-sliding .code-language-thumb { transition: none; }
 }
 
 .code-language-option[data-set-language='ruby'][aria-pressed='true'] {
@@ -8196,8 +8243,15 @@ html[data-bs-theme="dark"] .bitplane-widget {
     --fade-right: 0em;
     mask-image: linear-gradient(to right, transparent, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent);
     scroll-behavior: smooth;
-    /* the arrows and a swipe scroll it */
+    /* the arrows, a swipe or a mouse dragging it scroll it */
     scrollbar-width: none;
+    cursor: grab;
+}
+.kata-dragging .kata-track {
+    cursor: grabbing;
+    scroll-snap-type: none;
+    scroll-behavior: auto;
+    user-select: none;
 }
 .kata-track::-webkit-scrollbar {
     display: none;
@@ -8219,8 +8273,6 @@ html[data-bs-theme="dark"] .bitplane-widget {
 }
 .kata-set:hover {
     border-color: #198754;
-    color: inherit;
-    text-decoration: none;
     box-shadow: 0 0.3em 1em rgba(0, 0, 0, 0.08);
 }
 .kata-set-pinned {
@@ -8357,6 +8409,23 @@ html[data-bs-theme="dark"] .bitplane-widget {
     margin-top: auto;
     padding-top: 0.2em;
     font-size: 0.8em;
+}
+/* the set opens with its button (the strip is dragged, KataMap) */
+.kata-set-open {
+    align-self: flex-start;
+    margin-top: 0.5em;
+    cursor: pointer;
+}
+.kata-set-progress + .kata-set-open {
+    margin-top: 0.55em;
+}
+.kata-set-body > .kata-set-open:first-child,
+.kata-set-counts + .kata-set-open,
+.kata-set-curriculum + .kata-set-open {
+    margin-top: auto;
+}
+.kata-set-open .bi {
+    margin: 0 0 0 0.35em;
 }
 .kata-set-bar {
     display: block;

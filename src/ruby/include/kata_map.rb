@@ -86,7 +86,9 @@ module KataMap
             done = mine && mine[:total].to_i > 0 && mine[:done] == mine[:total]
             pin = pinned.include?(stop.slug)
             classes = ['kata-set', done ? 'kata-set-done' : nil, pin ? 'kata-set-pinned' : nil].compact.join(' ')
-            io << "<a class='#{classes}' href='/#{h(stop.slug)}'#{pin && pinned.first == stop.slug ? " data-centre=''" : ''}>"
+            # the strip is dragged with a mouse, so the set is no link: its
+            # button opens it
+            io << "<div class='#{classes}'#{pin && pinned.first == stop.slug ? " data-centre=''" : ''}>"
             # the card's picture, or for a set without one (no picture would
             # not give a solution away) its icon on a band (meta icon:)
             io << (images[stop.slug] || "<span class='kata-set-art' aria-hidden='true'><i class='bi #{h(stop.icon || 'bi-code-slash')}'></i></span>")
@@ -100,6 +102,7 @@ module KataMap
             extras = stop.counts[:extra].to_i
             io << "<span class='kata-set-counts' title='#{h(counts_text(stop.counts))}'>#{core.(stop)} Katas#{extras > 0 ? ", #{extras} #{extras == 1 ? 'Extra' : 'Extras'}" : ''}</span>"
             io << "<span class='kata-set-curriculum' title='#{h(stop.curriculum)}'>#{h(stop.curriculum)}</span>" if teacher && stop.curriculum
+            solved = 0
             if progress
                 total = mine ? mine[:total].to_i : core.(stop)
                 solved = mine ? mine[:done].to_i : 0
@@ -108,7 +111,13 @@ module KataMap
                 io << "<span class='kata-set-progress'><span class='kata-set-bar' aria-hidden='true'><span style='width: #{share}%'></span></span>"
                 io << "#{solved} von #{total} gelöst#{extras > 0 ? ", dazu #{extras} #{extras == 1 ? 'Extra' : 'Extras'}" : ''}</span>"
             end
-            io << '</span></a>'
+            label = if !progress || done then 'Ansehen'
+                    elsif solved > 0 then 'Weitermachen'
+                    else 'Loslegen'
+                    end
+            io << "<a class='btn btn-sm btn-success kata-set-open' href='/#{h(stop.slug)}' aria-label='#{label}: #{h(stop.title)}'>" \
+                  "#{label}<i class='bi bi-arrow-right' aria-hidden='true'></i></a>"
+            io << '</span></div>'
         end
         io << '</div>'
         io << "<button type='button' class='kata-scroll' data-dir='1' aria-label='Weiter'><i class='bi bi-chevron-right' aria-hidden='true'></i></button>"
@@ -116,8 +125,9 @@ module KataMap
         io << SCRIPT
     end
 
-    # The arrows scroll by about one set and hide at the ends; a pinned set
-    # (data-centre) is scrolled into the middle, without moving the page.
+    # The arrows scroll by about one set and hide at the ends; a mouse drags
+    # the strip; a pinned set (data-centre) is scrolled into the middle,
+    # without moving the page.
     SCRIPT = <<~JS.freeze
         <script>
         document.querySelectorAll('.kata-carousel').forEach(function (carousel) {
@@ -141,6 +151,33 @@ module KataMap
                 });
             });
             track.addEventListener('scroll', ends, { passive: true });
+            // with a mouse the strip is dragged sideways; after a drag, the
+            // click that ends it opens nothing
+            var drag = null;
+            track.addEventListener('pointerdown', function (event) {
+                if (event.pointerType !== 'mouse' || event.button !== 0) return;
+                drag = { x: event.clientX, left: track.scrollLeft, moved: false };
+            });
+            window.addEventListener('pointermove', function (event) {
+                if (!drag) return;
+                var dx = event.clientX - drag.x;
+                if (!drag.moved && Math.abs(dx) < 6) return;
+                if (!drag.moved) {
+                    drag.moved = true;
+                    carousel.classList.add('kata-dragging');
+                }
+                track.scrollLeft = drag.left - dx;
+            });
+            window.addEventListener('pointerup', function () {
+                if (!drag) return;
+                var moved = drag.moved;
+                drag = null;
+                carousel.classList.remove('kata-dragging');
+                if (moved) {
+                    track.addEventListener('click', function (event) { event.preventDefault(); event.stopPropagation(); }, { capture: true, once: true });
+                }
+            });
+            track.addEventListener('dragstart', function (event) { event.preventDefault(); });
             var centre = track.querySelector('[data-centre]');
             if (centre) {
                 track.style.scrollBehavior = 'auto';

@@ -5325,23 +5325,38 @@ class Main < Sinatra::Base
     def code_language_setup(slug)
         return '' if page_code_language(slug).nil?
 
-        names = CodeLanguages::NAMES.to_json
         chosen = user_logged_in? && CodeLanguages.known?(@session_user[:code_language])
         <<~END_OF_STRING
             <script>
             (function () {
                 const container = document.querySelector('[data-code-language]');
                 if (!container) return;
-                const names = #{names};
                 const loggedIn = #{user_logged_in? ? 'true' : 'false'};
+                // the pill behind the chosen button, sliding there
+                function place() {
+                    container.querySelectorAll('.code-language-switch').forEach(function (group) {
+                        const thumb = group.querySelector('.code-language-thumb');
+                        const pressed = group.querySelector("[aria-pressed='true']");
+                        if (!thumb || !pressed || !pressed.offsetWidth) return;
+                        thumb.style.left = pressed.offsetLeft + 'px';
+                        thumb.style.width = pressed.offsetWidth + 'px';
+                        // placed at once the first time, sliding from then on
+                        if (!group.classList.contains('code-language-sliding')) {
+                            requestAnimationFrame(function () { group.classList.add('code-language-sliding'); });
+                        }
+                    });
+                }
                 function show(language) {
                     container.dataset.codeLanguage = language;
                     container.querySelectorAll('[data-set-language]').forEach(function (button) {
                         const on = button.dataset.setLanguage === language;
                         button.setAttribute('aria-pressed', on ? 'true' : 'false');
                     });
-                    container.querySelectorAll('.code-language-name').forEach(function (el) { el.textContent = names[language]; });
+                    place();
                 }
+                place();
+                window.addEventListener('resize', place);
+                if (document.fonts) document.fonts.ready.then(place);
                 if (!loggedIn && !#{chosen}) {
                     try {
                         const stored = localStorage.getItem('code-language');

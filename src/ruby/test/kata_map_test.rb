@@ -21,7 +21,8 @@ class KataMapTest < Minitest::Test
 
     def test_a_visitor_sees_the_sets_and_how_many_katas_there_are
         html = KataMap.carousel_html(stops, :images => { 'kata-loops' => "<img alt='Schleifen'>" })
-        assert_includes html, "<a class='kata-set' href='/kata-functions'>"
+        assert_includes html, "<div class='kata-set'>"
+        assert_includes html, "href='/kata-functions' aria-label='Ansehen: Erste Funktionen'>"
         assert_includes html, 'Werte bekommen, rechnen, zurückgeben'
         assert_includes html, "<img alt='Schleifen'>"
         assert_includes html, '<strong>7</strong><small>Katas</small>'
@@ -35,7 +36,9 @@ class KataMapTest < Minitest::Test
     def test_a_student_sees_how_far_they_are_in_each_set_and_in_all
         html = KataMap.carousel_html(stops, :progress => { 'kata-functions' => { :done => 4, :total => 4, :extras_done => 1 } })
         assert_includes html, '4 von 4 gelöst, dazu 1 Extra'
-        assert_includes html, "<a class='kata-set kata-set-done' href='/kata-functions'>"
+        assert_includes html, "<div class='kata-set kata-set-done'>"
+        assert_includes html, "aria-label='Ansehen: Erste Funktionen'"
+        assert_includes html, "aria-label='Loslegen: Wiederholen'"
         assert_includes html, '0 von 3 gelöst'
         # 4 of 7 in all: the ring
         assert_includes html, "style='--share: 57%'"
@@ -44,8 +47,9 @@ class KataMapTest < Minitest::Test
 
     def test_a_pinned_set_is_marked_and_the_latest_centred
         html = KataMap.carousel_html(stops, :progress => {}, :pinned => %w[kata-loops kata-functions])
-        assert_includes html, "<a class='kata-set kata-set-pinned' href='/kata-loops' data-centre=''>"
-        assert_includes html, "<a class='kata-set kata-set-pinned' href='/kata-functions'>"
+        assert_equal 1, html.scan("<div class='kata-set kata-set-pinned' data-centre=''>").size
+        assert_equal 2, html.scan("kata-set-pinned").size
+        assert html.index("data-centre") < html.index("href='/kata-loops'"), 'the latest pin is centred'
         assert_equal 2, html.scan('Angepinnt').size
     end
 

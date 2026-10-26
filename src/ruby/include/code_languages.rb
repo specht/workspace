@@ -154,12 +154,17 @@ module CodeLanguages
     # The switch in the page header: one button per language, with its logo
     # (static/images/languages/), the current one pressed; the look follows
     # aria-pressed (default.css, .code-language-switch).
+    # The name keeps the width it has in bold (data-name, default.css), and a
+    # pill behind the buttons slides to the chosen one (main.rb,
+    # code_language_setup).
     def self.switch_html(languages, current)
         buttons = languages.map do |l|
             pressed = l == current
             "<button type='button' class='code-language-option' data-set-language='#{l}' aria-pressed='#{pressed}'>" \
-                "<img src='/images/languages/#{l}.webp' alt='' width='16' height='16'>#{NAMES[l]}</button>"
+                "<img src='/images/languages/#{l}.webp' alt='' width='16' height='16'>" \
+                "<span class='code-language-option-name' data-name='#{NAMES[l]}'>#{NAMES[l]}</span></button>"
         end
-        "<span class='code-language-switch' role='group' aria-label='Programmiersprache'>#{buttons.join}</span>"
+        "<span class='code-language-switch' role='group' aria-label='Programmiersprache'>" \
+            "<span class='code-language-thumb' aria-hidden='true'></span>#{buttons.join}</span>"
     end
 end
