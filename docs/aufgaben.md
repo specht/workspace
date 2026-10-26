@@ -846,6 +846,16 @@ Varianten der Aufgabe nennen ihre Funktionen so.
 Eingabe), sagt `slow:`, was die Rückmeldung nach Ablauf der Zeit stattdessen
 sagt, statt nach einer Endlosschleife zu fragen.
 
+**Wo eine Rekursion verlangt ist**, sagt `recursive: true`, dass die Funktion
+sich selbst aufrufen muss, und `loops: false`, dass sie keine Schleife
+benutzen darf. Eine Schleife liefert dieselben Ergebnisse wie eine Rekursion,
+die Fälle können sie nicht unterscheiden; darum liest `RecursionCheck` den
+Code, sobald die Fälle stimmen: Ruby mit dem Parser Prism (`while`, `until`,
+`for`, ein Aufruf mit Block), Python und JavaScript als Text ohne Strings und
+Kommentare (`for`, `while`, in JavaScript auch `do` und `forEach`, `map` …).
+Die Funktion ist die des ersten Falls. Stimmt es nicht, sagt die Rückmeldung,
+was fehlt, und nennt die Schleife.
+
 **Fälle für jede Person** erzeugt `random`: `count` Aufrufe (höchstens 20)
 mit Werten aus `args` (ein Bereich `1..1000` oder eine Liste von Werten),
 für jede Person und jede Fassung der Aufgabe andere, bei einer zweiten

@@ -214,12 +214,17 @@ Numbers as bits, other bases, only with dividing and remainders.
 * Sek I: Information und Daten (Zahlensysteme); links to the Handbuch page
   `bits-und-bytes`
 
-**8 · Rekursion**
-A function that calls itself, with a case that stops.
-* Einstieg: factorial again, recursively; sum of a list
-* Übung: power, Fibonacci recursively, palindrome recursively
-* Knobelei: Towers of Hanoi (the moves as a list), flatten a nested list
-* Extras: Fibonacci with memoisation under a time limit
+**8 · Rekursion** (built, `kata-recursion`)
+A function that calls itself, with a case that stops. The check reads the
+code once the cases pass: `recursive: true`, `loops: false`
+(RecursionCheck; the maintainer asked whether static analysis could see a
+recursion, 26 October 2026).
+* Einstieg: factorial, the sum of a list, a countdown as a list, the length
+  of a text without `length`
+* Übung: power, Fibonacci, palindrome, how often a character occurs
+* Knobelei: Towers of Hanoi (the moves as a list), flatten a nested list,
+  all orders of a text (both with a loop beside the recursion)
+* Extras: Fibonacci with a memo under a time limit, subset sum
 * Oberstufe: Algorithmen (rekursive Verfahren)
 
 **9 · Suchen**

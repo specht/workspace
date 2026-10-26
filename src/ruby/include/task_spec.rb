@@ -557,7 +557,7 @@ module TaskSpec
         when 'function'
             # A Kata: calls functions in the code typed into the card, run in
             # a container of its own (KataCheck).
-            allowed += %w[language cases timeout forbid random slow]
+            allowed += %w[language cases timeout forbid random slow recursive loops]
             errors.concat(KataCheck.spec_errors(check))
         when 'pip'
             # A plan for Pip, run against the world on the server (PipCheck).

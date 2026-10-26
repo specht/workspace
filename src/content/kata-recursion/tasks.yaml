@@ -1,0 +1,1423 @@
+format: 1
+activity: kata-recursion
+tasks:
+  - id: factorial
+    title: "Fakultät, rekursiv"
+    level: 1
+    prompt: |
+      Die Fakultät kennst du aus den Schleifen: 5! = 5 · 4 · 3 · 2 · 1. Es geht auch so: 5! = 5 · 4!, und 0! = 1. Schreib `factorial(n)` genau so: Die Funktion ruft sich selbst mit `n - 1` auf, bis `n` 0 ist. `factorial(5)` ergibt `120`. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+    starter: |
+      def factorial(n)
+      end
+    check:
+      type: function
+      language: ruby
+      recursive: true
+      loops: false
+      cases:
+        - call: "factorial(5)"
+          expect: "120"
+        - call: "factorial(0)"
+          expect: "1"
+          say: "0! ist 1: Dort hört die Rekursion auf."
+        - call: "factorial(1)"
+          expect: "1"
+        - call: "factorial(10)"
+          expect: "3628800"
+        - call: "factorial(20)"
+          expect: "2432902008176640000"
+    hint:
+      - "Zwei Fälle: Wann bist du sofort fertig? Und wie hilft dir `factorial(n - 1)` sonst?"
+      - "Ein Gerüst:\n\n```ruby\ndef factorial(n)\n  return 1 if n == 0\n  # n mal die Fakultät von n - 1\nend\n```"
+    solution: |
+      ```ruby
+      def factorial(n)
+        return 1 if n == 0
+        n * factorial(n - 1)
+      end
+      ```
+    python:
+      starter: |
+        def factorial(n):
+            pass
+      check:
+        type: function
+        language: python
+        recursive: true
+        loops: false
+        cases:
+          - call: "factorial(5)"
+            expect: "120"
+          - call: "factorial(0)"
+            expect: "1"
+            say: "0! ist 1: Dort hört die Rekursion auf."
+          - call: "factorial(1)"
+            expect: "1"
+          - call: "factorial(10)"
+            expect: "3628800"
+          - call: "factorial(20)"
+            expect: "2432902008176640000"
+      hint:
+        - "Zwei Fälle: Wann bist du sofort fertig? Und wie hilft dir `factorial(n - 1)` sonst?"
+        - "Ein Gerüst:\n\n```python\ndef factorial(n):\n    if n == 0:\n        return 1\n    # n mal die Fakultät von n - 1\n```"
+      solution: |
+        ```python
+        def factorial(n):
+            if n == 0:
+                return 1
+            return n * factorial(n - 1)
+        ```
+    javascript:
+      starter: |
+        function factorial(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        recursive: true
+        loops: false
+        cases:
+          - call: "factorial(5)"
+            expect: "120"
+          - call: "factorial(0)"
+            expect: "1"
+            say: "0! ist 1: Dort hört die Rekursion auf."
+          - call: "factorial(1)"
+            expect: "1"
+          - call: "factorial(10)"
+            expect: "3628800"
+          - call: "factorial(20)"
+            expect: "2432902008176640000"
+      hint:
+        - "Zwei Fälle: Wann bist du sofort fertig? Und wie hilft dir `factorial(n - 1)` sonst?"
+        - "Ein Gerüst:\n\n```javascript\nfunction factorial(n) {\n  if (n === 0) {\n    return 1;\n  }\n  // n mal die Fakultät von n - 1\n}\n```"
+      solution: |
+        ```javascript
+        function factorial(n) {
+          if (n === 0) {
+            return 1;
+          }
+          return n * factorial(n - 1);
+        }
+        ```
+  - id: total
+    title: "Die Summe, rekursiv"
+    level: 1
+    prompt: |
+      Die Summe einer Liste ist ihre erste Zahl plus die Summe des Rests; die leere Liste hat die Summe 0. Schreib `total(numbers)` so: `total([3, 4, 5])` ergibt `12`. `numbers[1..]` ist der Rest der Liste. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+    starter: |
+      def total(numbers)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#sum, Array#reduce, Array#inject, Array#each]
+      recursive: true
+      loops: false
+      cases:
+        - call: "total([3, 4, 5])"
+          expect: "12"
+        - call: "total([])"
+          expect: "0"
+          say: "Die leere Liste hat die Summe 0: Dort hört die Rekursion auf."
+        - call: "total([7])"
+          expect: "7"
+        - call: "total([1, -1, 1, -1, 10])"
+          expect: "10"
+    hint:
+      - "Wann bist du sofort fertig? Bei der leeren Liste, `numbers.empty?`."
+      - "Sonst: die erste Zahl, `numbers[0]`, plus `total` vom Rest."
+    solution: |
+      ```ruby
+      def total(numbers)
+        return 0 if numbers.empty?
+        numbers[0] + total(numbers[1..])
+      end
+      ```
+    python:
+      prompt: |
+        Die Summe einer Liste ist ihre erste Zahl plus die Summe des Rests; die leere Liste hat die Summe 0. Schreib `total(numbers)` so: `total([3, 4, 5])` ergibt `12`. `numbers[1:]` ist der Rest der Liste. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        def total(numbers):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [sum]
+        recursive: true
+        loops: false
+        cases:
+          - call: "total([3, 4, 5])"
+            expect: "12"
+          - call: "total([])"
+            expect: "0"
+            say: "Die leere Liste hat die Summe 0: Dort hört die Rekursion auf."
+          - call: "total([7])"
+            expect: "7"
+          - call: "total([1, -1, 1, -1, 10])"
+            expect: "10"
+      hint:
+        - "Wann bist du sofort fertig? Bei der leeren Liste, `not numbers`."
+        - "Sonst: die erste Zahl, `numbers[0]`, plus `total` vom Rest."
+      solution: |
+        ```python
+        def total(numbers):
+            if not numbers:
+                return 0
+            return numbers[0] + total(numbers[1:])
+        ```
+    javascript:
+      prompt: |
+        Die Summe einer Liste ist ihre erste Zahl plus die Summe des Rests; die leere Liste hat die Summe 0. Schreib `total(numbers)` so: `total([3, 4, 5])` ergibt `12`. `numbers.slice(1)` ist der Rest der Liste. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        function total(numbers) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.reduce, Array.prototype.forEach]
+        recursive: true
+        loops: false
+        cases:
+          - call: "total([3, 4, 5])"
+            expect: "12"
+          - call: "total([])"
+            expect: "0"
+            say: "Die leere Liste hat die Summe 0: Dort hört die Rekursion auf."
+          - call: "total([7])"
+            expect: "7"
+          - call: "total([1, -1, 1, -1, 10])"
+            expect: "10"
+      hint:
+        - "Wann bist du sofort fertig? Bei der leeren Liste, `numbers.length === 0`."
+        - "Sonst: die erste Zahl, `numbers[0]`, plus `total` vom Rest."
+      solution: |
+        ```javascript
+        function total(numbers) {
+          if (numbers.length === 0) {
+            return 0;
+          }
+          return numbers[0] + total(numbers.slice(1));
+        }
+        ```
+  - id: countdown
+    title: "Countdown, rekursiv"
+    level: 1
+    prompt: |
+      Schreib `countdown(n)`, die die Liste von `n` herunter bis 1 zurückgibt: `countdown(3)` ergibt `[3, 2, 1]`, `countdown(0)` ergibt `[]`. Der Countdown von 3 ist die 3 und dann der Countdown von 2. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+    starter: |
+      def countdown(n)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#downto, Integer#times, Range#each, Range#to_a, Array#reverse]
+      recursive: true
+      loops: false
+      cases:
+        - call: "countdown(3)"
+          expect: "[3, 2, 1]"
+        - call: "countdown(0)"
+          expect: "[]"
+          say: "Bei 0 ist die Liste leer: Dort hört die Rekursion auf."
+        - call: "countdown(1)"
+          expect: "[1]"
+        - call: "countdown(6)"
+          expect: "[6, 5, 4, 3, 2, 1]"
+    feedback:
+      - when: { same_as: "def countdown(n)\n  return [] if n == 0\n  countdown(n - 1) + [n]\nend\n" }
+        say: "So zählt es hinauf: Die Zahl `n` steht hinter dem Rest. Wohin gehört sie?"
+    hint: "Eine Liste aus einer Zahl ist `[n]`, und `+` hängt zwei Listen aneinander."
+    solution: |
+      ```ruby
+      def countdown(n)
+        return [] if n == 0
+        [n] + countdown(n - 1)
+      end
+      ```
+    python:
+      starter: |
+        def countdown(n):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [range, reversed]
+        recursive: true
+        loops: false
+        cases:
+          - call: "countdown(3)"
+            expect: "[3, 2, 1]"
+          - call: "countdown(0)"
+            expect: "[]"
+            say: "Bei 0 ist die Liste leer: Dort hört die Rekursion auf."
+          - call: "countdown(1)"
+            expect: "[1]"
+          - call: "countdown(6)"
+            expect: "[6, 5, 4, 3, 2, 1]"
+      feedback:
+        - when: { same_as: "def countdown(n):\n    if n == 0:\n        return []\n    return countdown(n - 1) + [n]\n" }
+          say: "So zählt es hinauf: Die Zahl `n` steht hinter dem Rest. Wohin gehört sie?"
+      hint: "Eine Liste aus einer Zahl ist `[n]`, und `+` hängt zwei Listen aneinander."
+      solution: |
+        ```python
+        def countdown(n):
+            if n == 0:
+                return []
+            return [n] + countdown(n - 1)
+        ```
+    javascript:
+      starter: |
+        function countdown(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.from, Array.prototype.reverse, Array.prototype.fill]
+        recursive: true
+        loops: false
+        cases:
+          - call: "countdown(3)"
+            expect: "[3, 2, 1]"
+          - call: "countdown(0)"
+            expect: "[]"
+            say: "Bei 0 ist die Liste leer: Dort hört die Rekursion auf."
+          - call: "countdown(1)"
+            expect: "[1]"
+          - call: "countdown(6)"
+            expect: "[6, 5, 4, 3, 2, 1]"
+      feedback:
+        - when: { same_as: "function countdown(n) {\n  if (n === 0) {\n    return [];\n  }\n  return countdown(n - 1).concat([n]);\n}\n" }
+          say: "So zählt es hinauf: Die Zahl `n` steht hinter dem Rest. Wohin gehört sie?"
+      hint: "Eine Liste aus einer Zahl ist `[n]`, und `concat` hängt zwei Listen aneinander."
+      solution: |
+        ```javascript
+        function countdown(n) {
+          if (n === 0) {
+            return [];
+          }
+          return [n].concat(countdown(n - 1));
+        }
+        ```
+  - id: text-length
+    title: "Wie lang, ohne zu messen?"
+    level: 1
+    prompt: |
+      Schreib `text_length(text)`, die die Zeichen eines Textes zählt, ohne `length` und `size`; `text[1..]` ist der Text ohne sein erstes Zeichen: Ein leerer Text hat die Länge 0, jeder andere ist um eins länger als der Text ohne sein erstes Zeichen. `text_length('Hallo')` ergibt `5`. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+    starter: |
+      def text_length(text)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [String#length, String#size, String#chars, String#each_char, String#count]
+      recursive: true
+      loops: false
+      cases:
+        - call: "text_length('Hallo')"
+          expect: "5"
+        - call: "text_length('')"
+          expect: "0"
+          say: "Ein leerer Text hat die Länge 0: Dort hört die Rekursion auf."
+        - call: "text_length('a')"
+          expect: "1"
+        - call: "text_length('Rekursion')"
+          expect: "9"
+    hint:
+      - "Wann bist du sofort fertig? Beim leeren Text, `''`."
+      - "Sonst: 1 plus die Länge des Rests."
+    solution: |
+      ```ruby
+      def text_length(text)
+        return 0 if text == ''
+        1 + text_length(text[1..])
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `text_length(text)`, die die Zeichen eines Textes zählt, ohne `len`; `text[1:]` ist der Text ohne sein erstes Zeichen: Ein leerer Text hat die Länge 0, jeder andere ist um eins länger als der Text ohne sein erstes Zeichen. `text_length('Hallo')` ergibt `5`. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        def text_length(text):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [len, str.count]
+        recursive: true
+        loops: false
+        cases:
+          - call: "text_length('Hallo')"
+            expect: "5"
+          - call: "text_length('')"
+            expect: "0"
+            say: "Ein leerer Text hat die Länge 0: Dort hört die Rekursion auf."
+          - call: "text_length('a')"
+            expect: "1"
+          - call: "text_length('Rekursion')"
+            expect: "9"
+      hint:
+        - "Wann bist du sofort fertig? Beim leeren Text, `''`."
+        - "Sonst: 1 plus die Länge des Rests."
+      solution: |
+        ```python
+        def text_length(text):
+            if text == '':
+                return 0
+            return 1 + text_length(text[1:])
+        ```
+    javascript:
+      prompt: |
+        Schreib `textLength(text)`, die die Zeichen eines Textes zählt, ohne `length`; `text.slice(1)` ist der Text ohne sein erstes Zeichen: Ein leerer Text hat die Länge 0, jeder andere ist um eins länger als der Text ohne sein erstes Zeichen. `textLength('Hallo')` ergibt `5`. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        function textLength(text) {
+        }
+      check:
+        type: function
+        language: javascript
+        recursive: true
+        loops: false
+        cases:
+          - call: "textLength('Hallo')"
+            expect: "5"
+          - call: "textLength('')"
+            expect: "0"
+            say: "Ein leerer Text hat die Länge 0: Dort hört die Rekursion auf."
+          - call: "textLength('a')"
+            expect: "1"
+          - call: "textLength('Rekursion')"
+            expect: "9"
+      hint:
+        - "Wann bist du sofort fertig? Beim leeren Text, `''`."
+        - "Sonst: 1 plus die Länge des Rests."
+      solution: |
+        ```javascript
+        function textLength(text) {
+          if (text === '') {
+            return 0;
+          }
+          return 1 + textLength(text.slice(1));
+        }
+        ```
+  - id: power
+    title: "Potenz"
+    level: 2
+    prompt: |
+      Schreib `power(base, exponent)` für einen Exponenten ab 0: `power(2, 10)` ergibt `1024`. Jede Zahl hoch 0 ist 1, und base hoch n ist base mal base hoch n - 1. Ohne `**` und `pow`. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+    starter: |
+      def power(base, exponent)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#pow]
+      recursive: true
+      loops: false
+      cases:
+        - call: "power(2, 10)"
+          expect: "1024"
+        - call: "power(5, 0)"
+          expect: "1"
+          say: "Hoch 0 ist 1: Dort hört die Rekursion auf."
+        - call: "power(3, 1)"
+          expect: "3"
+        - call: "power(10, 6)"
+          expect: "1000000"
+        - call: "power(-2, 3)"
+          expect: "-8"
+    feedback:
+      - when: { same_as: "def power(base, exponent)\n  return base if exponent == 1\n  base * power(base, exponent - 1)\nend\n" }
+        say: "Bei `power(5, 0)` kommt dein Code nie zum Ende: Er hört erst bei 1 auf und zählt an 0 vorbei. Fang bei 0 an."
+    hint: "Wie bei der Fakultät: ein Fall, in dem du sofort fertig bist, und einer, der sich selbst mit einer kleineren Zahl aufruft."
+    solution: |
+      ```ruby
+      def power(base, exponent)
+        return 1 if exponent == 0
+        base * power(base, exponent - 1)
+      end
+      ```
+    python:
+      starter: |
+        def power(base, exponent):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [pow, math.pow]
+        recursive: true
+        loops: false
+        cases:
+          - call: "power(2, 10)"
+            expect: "1024"
+          - call: "power(5, 0)"
+            expect: "1"
+            say: "Hoch 0 ist 1: Dort hört die Rekursion auf."
+          - call: "power(3, 1)"
+            expect: "3"
+          - call: "power(10, 6)"
+            expect: "1000000"
+          - call: "power(-2, 3)"
+            expect: "-8"
+      hint: "Wie bei der Fakultät: ein Fall, in dem du sofort fertig bist, und einer, der sich selbst mit einer kleineren Zahl aufruft."
+      solution: |
+        ```python
+        def power(base, exponent):
+            if exponent == 0:
+                return 1
+            return base * power(base, exponent - 1)
+        ```
+    javascript:
+      prompt: |
+        Schreib `power(base, exponent)` für einen Exponenten ab 0: `power(2, 10)` ergibt `1024`. Jede Zahl hoch 0 ist 1, und base hoch n ist base mal base hoch n - 1. Ohne `**` und `Math.pow`. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        function power(base, exponent) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Math.pow]
+        recursive: true
+        loops: false
+        cases:
+          - call: "power(2, 10)"
+            expect: "1024"
+          - call: "power(5, 0)"
+            expect: "1"
+            say: "Hoch 0 ist 1: Dort hört die Rekursion auf."
+          - call: "power(3, 1)"
+            expect: "3"
+          - call: "power(10, 6)"
+            expect: "1000000"
+          - call: "power(-2, 3)"
+            expect: "-8"
+      hint: "Wie bei der Fakultät: ein Fall, in dem du sofort fertig bist, und einer, der sich selbst mit einer kleineren Zahl aufruft."
+      solution: |
+        ```javascript
+        function power(base, exponent) {
+          if (exponent === 0) {
+            return 1;
+          }
+          return base * power(base, exponent - 1);
+        }
+        ```
+  - id: fibonacci
+    title: "Fibonacci, rekursiv"
+    level: 2
+    prompt: |
+      Jede Fibonacci-Zahl ist die Summe der beiden davor; die nullte ist 0, die erste 1. Schreib `fibonacci(n)` genau so, mit zwei Aufrufen von sich selbst: `fibonacci(10)` ergibt `55`. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+    starter: |
+      def fibonacci(n)
+      end
+    check:
+      type: function
+      language: ruby
+      recursive: true
+      loops: false
+      cases:
+        - call: "fibonacci(10)"
+          expect: "55"
+        - call: "fibonacci(0)"
+          expect: "0"
+          say: "Die nullte ist 0."
+        - call: "fibonacci(1)"
+          expect: "1"
+          say: "Die erste ist 1."
+        - call: "fibonacci(2)"
+          expect: "1"
+        - call: "fibonacci(20)"
+          expect: "6765"
+    feedback:
+      - when: { same_as: "def fibonacci(n)\n  return 1 if n < 2\n  fibonacci(n - 1) + fibonacci(n - 2)\nend\n" }
+        say: "Die nullte Fibonacci-Zahl ist 0, nicht 1. Dann verschiebt sich die ganze Reihe."
+    hint: "Zwei Zahlen stehen fest, `fibonacci(0)` und `fibonacci(1)`. Jede andere ist `fibonacci(n - 1) + fibonacci(n - 2)`."
+    solution: |
+      ```ruby
+      def fibonacci(n)
+        return n if n < 2
+        fibonacci(n - 1) + fibonacci(n - 2)
+      end
+      ```
+    python:
+      starter: |
+        def fibonacci(n):
+            pass
+      check:
+        type: function
+        language: python
+        recursive: true
+        loops: false
+        cases:
+          - call: "fibonacci(10)"
+            expect: "55"
+          - call: "fibonacci(0)"
+            expect: "0"
+            say: "Die nullte ist 0."
+          - call: "fibonacci(1)"
+            expect: "1"
+            say: "Die erste ist 1."
+          - call: "fibonacci(2)"
+            expect: "1"
+          - call: "fibonacci(20)"
+            expect: "6765"
+      feedback:
+        - when: { same_as: "def fibonacci(n):\n    if n < 2:\n        return 1\n    return fibonacci(n - 1) + fibonacci(n - 2)\n" }
+          say: "Die nullte Fibonacci-Zahl ist 0, nicht 1. Dann verschiebt sich die ganze Reihe."
+      hint: "Zwei Zahlen stehen fest, `fibonacci(0)` und `fibonacci(1)`. Jede andere ist `fibonacci(n - 1) + fibonacci(n - 2)`."
+      solution: |
+        ```python
+        def fibonacci(n):
+            if n < 2:
+                return n
+            return fibonacci(n - 1) + fibonacci(n - 2)
+        ```
+    javascript:
+      starter: |
+        function fibonacci(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        recursive: true
+        loops: false
+        cases:
+          - call: "fibonacci(10)"
+            expect: "55"
+          - call: "fibonacci(0)"
+            expect: "0"
+            say: "Die nullte ist 0."
+          - call: "fibonacci(1)"
+            expect: "1"
+            say: "Die erste ist 1."
+          - call: "fibonacci(2)"
+            expect: "1"
+          - call: "fibonacci(20)"
+            expect: "6765"
+      feedback:
+        - when: { same_as: "function fibonacci(n) {\n  if (n < 2) {\n    return 1;\n  }\n  return fibonacci(n - 1) + fibonacci(n - 2);\n}\n" }
+          say: "Die nullte Fibonacci-Zahl ist 0, nicht 1. Dann verschiebt sich die ganze Reihe."
+      hint: "Zwei Zahlen stehen fest, `fibonacci(0)` und `fibonacci(1)`. Jede andere ist `fibonacci(n - 1) + fibonacci(n - 2)`."
+      solution: |
+        ```javascript
+        function fibonacci(n) {
+          if (n < 2) {
+            return n;
+          }
+          return fibonacci(n - 1) + fibonacci(n - 2);
+        }
+        ```
+  - id: palindrome
+    title: "Palindrom, rekursiv"
+    level: 2
+    prompt: |
+      Ein Text ist ein Palindrom, wenn sein erstes und sein letztes Zeichen gleich sind und das, was dazwischen steht, wieder ein Palindrom ist; ein Text mit weniger als zwei Zeichen ist immer eins. Schreib `palindrome(text)` so, ohne den Text umzudrehen: `palindrome('rentner')` ergibt true. Die Texte sind klein geschrieben. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+    starter: |
+      def palindrome(text)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [String#reverse, Array#reverse]
+      recursive: true
+      loops: false
+      cases:
+        - call: "palindrome('rentner')"
+          expect: "true"
+        - call: "palindrome('')"
+          expect: "true"
+        - call: "palindrome('a')"
+          expect: "true"
+        - call: "palindrome('ab')"
+          expect: "false"
+        - call: "palindrome('abba')"
+          expect: "true"
+        - call: "palindrome('abca')"
+          expect: "false"
+          say: "Das erste und das letzte Zeichen sind gleich, aber `'bc'` ist kein Palindrom."
+    feedback:
+      - when: { same_as: "def palindrome(text)\n  return true if text.length < 2\n  text[0] == text[-1]\nend\n" }
+        say: "Das erste und das letzte Zeichen reichen nicht: Bei `'abca'` stimmen sie, aber dazwischen steht `'bc'`. Frag für das, was dazwischen steht, wieder `palindrome`."
+    hint: "`text[0]` ist das erste Zeichen, `text[-1]` das letzte, `text[1...-1]` das, was dazwischen steht."
+    solution: |
+      ```ruby
+      def palindrome(text)
+        return true if text.length < 2
+        text[0] == text[-1] && palindrome(text[1...-1])
+      end
+      ```
+    python:
+      prompt: |
+        Ein Text ist ein Palindrom, wenn sein erstes und sein letztes Zeichen gleich sind und das, was dazwischen steht, wieder ein Palindrom ist; ein Text mit weniger als zwei Zeichen ist immer eins. Schreib `palindrome(text)` so, ohne den Text umzudrehen: `palindrome('rentner')` ergibt True. Die Texte sind klein geschrieben. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        def palindrome(text):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [reversed]
+        recursive: true
+        loops: false
+        cases:
+          - call: "palindrome('rentner')"
+            expect: "True"
+          - call: "palindrome('')"
+            expect: "True"
+          - call: "palindrome('a')"
+            expect: "True"
+          - call: "palindrome('ab')"
+            expect: "False"
+          - call: "palindrome('abba')"
+            expect: "True"
+          - call: "palindrome('abca')"
+            expect: "False"
+            say: "Das erste und das letzte Zeichen sind gleich, aber `'bc'` ist kein Palindrom."
+      feedback:
+        - when: { same_as: "def palindrome(text):\n    if len(text) < 2:\n        return True\n    return text[0] == text[-1]\n" }
+          say: "Das erste und das letzte Zeichen reichen nicht: Bei `'abca'` stimmen sie, aber dazwischen steht `'bc'`. Frag für das, was dazwischen steht, wieder `palindrome`."
+      hint: "`text[0]` ist das erste Zeichen, `text[-1]` das letzte, `text[1:-1]` das, was dazwischen steht."
+      solution: |
+        ```python
+        def palindrome(text):
+            if len(text) < 2:
+                return True
+            return text[0] == text[-1] and palindrome(text[1:-1])
+        ```
+    javascript:
+      starter: |
+        function palindrome(text) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.reverse, Array.prototype.toReversed]
+        recursive: true
+        loops: false
+        cases:
+          - call: "palindrome('rentner')"
+            expect: "true"
+          - call: "palindrome('')"
+            expect: "true"
+          - call: "palindrome('a')"
+            expect: "true"
+          - call: "palindrome('ab')"
+            expect: "false"
+          - call: "palindrome('abba')"
+            expect: "true"
+          - call: "palindrome('abca')"
+            expect: "false"
+            say: "Das erste und das letzte Zeichen sind gleich, aber `'bc'` ist kein Palindrom."
+      feedback:
+        - when: { same_as: "function palindrome(text) {\n  if (text.length < 2) {\n    return true;\n  }\n  return text[0] === text[text.length - 1];\n}\n" }
+          say: "Das erste und das letzte Zeichen reichen nicht: Bei `'abca'` stimmen sie, aber dazwischen steht `'bc'`. Frag für das, was dazwischen steht, wieder `palindrome`."
+      hint: "`text[0]` ist das erste Zeichen, `text[text.length - 1]` das letzte, `text.slice(1, -1)` das, was dazwischen steht."
+      solution: |
+        ```javascript
+        function palindrome(text) {
+          if (text.length < 2) {
+            return true;
+          }
+          return text[0] === text[text.length - 1] && palindrome(text.slice(1, -1));
+        }
+        ```
+  - id: count-char
+    title: "Wie oft kommt es vor?"
+    level: 2
+    prompt: |
+      Schreib `count_char(text, char)`, die zählt, wie oft das Zeichen `char` im Text steht: `count_char('banane', 'n')` ergibt `2`. Wie bei der Länge, nur zählt das erste Zeichen nur dann, wenn es `char` ist. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+    starter: |
+      def count_char(text, char)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [String#count, String#scan, String#each_char, String#chars]
+      recursive: true
+      loops: false
+      cases:
+        - call: "count_char('banane', 'n')"
+          expect: "2"
+        - call: "count_char('', 'a')"
+          expect: "0"
+        - call: "count_char('aaa', 'a')"
+          expect: "3"
+        - call: "count_char('Abend', 'a')"
+          expect: "0"
+          say: "Groß und klein sind verschiedene Zeichen."
+        - call: "count_char('xyz', 'a')"
+          expect: "0"
+    hint: "Wie `text_length`, nur zählt das erste Zeichen 1 oder 0."
+    solution: |
+      ```ruby
+      def count_char(text, char)
+        return 0 if text == ''
+        (text[0] == char ? 1 : 0) + count_char(text[1..], char)
+      end
+      ```
+    python:
+      starter: |
+        def count_char(text, char):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [str.count]
+        recursive: true
+        loops: false
+        cases:
+          - call: "count_char('banane', 'n')"
+            expect: "2"
+          - call: "count_char('', 'a')"
+            expect: "0"
+          - call: "count_char('aaa', 'a')"
+            expect: "3"
+          - call: "count_char('Abend', 'a')"
+            expect: "0"
+            say: "Groß und klein sind verschiedene Zeichen."
+          - call: "count_char('xyz', 'a')"
+            expect: "0"
+      hint: "Wie `text_length`, nur zählt das erste Zeichen 1 oder 0."
+      solution: |
+        ```python
+        def count_char(text, char):
+            if text == '':
+                return 0
+            return (1 if text[0] == char else 0) + count_char(text[1:], char)
+        ```
+    javascript:
+      prompt: |
+        Schreib `countChar(text, char)`, die zählt, wie oft das Zeichen `char` im Text steht: `countChar('banane', 'n')` ergibt `2`. Wie bei der Länge, nur zählt das erste Zeichen nur dann, wenn es `char` ist. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        function countChar(text, char) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [String.prototype.split, String.prototype.match, String.prototype.matchAll]
+        recursive: true
+        loops: false
+        cases:
+          - call: "countChar('banane', 'n')"
+            expect: "2"
+          - call: "countChar('', 'a')"
+            expect: "0"
+          - call: "countChar('aaa', 'a')"
+            expect: "3"
+          - call: "countChar('Abend', 'a')"
+            expect: "0"
+            say: "Groß und klein sind verschiedene Zeichen."
+          - call: "countChar('xyz', 'a')"
+            expect: "0"
+      hint: "Wie `textLength`, nur zählt das erste Zeichen 1 oder 0."
+      solution: |
+        ```javascript
+        function countChar(text, char) {
+          if (text === '') {
+            return 0;
+          }
+          return (text[0] === char ? 1 : 0) + countChar(text.slice(1), char);
+        }
+        ```
+  - id: hanoi
+    title: "Die Türme von Hanoi"
+    level: 3
+    prompt: |
+      Auf dem Stab `source` liegen `n` Scheiben, die größte unten. Sie sollen auf den Stab `target`; eine Scheibe nach der anderen, nie eine größere auf eine kleinere, und `spare` hilft. Schreib `hanoi(n, source, target, spare)`, die die Züge als Liste zurückgibt, jeden Zug als Paar `[von, nach]`: `hanoi(2, 'A', 'C', 'B')` ergibt `[['A', 'B'], ['A', 'C'], ['B', 'C']]`. Der Trick: Die oberen `n - 1` Scheiben sind ein kleinerer Turm.
+    starter: |
+      def hanoi(n, source, target, spare)
+      end
+    check:
+      type: function
+      language: ruby
+      recursive: true
+      loops: false
+      cases:
+        - call: "hanoi(1, 'A', 'C', 'B')"
+          expect: "[['A', 'C']]"
+        - call: "hanoi(2, 'A', 'C', 'B')"
+          expect: "[['A', 'B'], ['A', 'C'], ['B', 'C']]"
+        - call: "hanoi(0, 'A', 'C', 'B')"
+          expect: "[]"
+          say: "Ohne Scheiben gibt es nichts zu tun."
+        - call: "hanoi(3, 'A', 'C', 'B')"
+          expect: "[['A', 'C'], ['A', 'B'], ['C', 'B'], ['A', 'C'], ['B', 'A'], ['B', 'C'], ['A', 'C']]"
+        - call: "hanoi(3, 'X', 'Y', 'Z')"
+          expect: "[['X', 'Y'], ['X', 'Z'], ['Y', 'Z'], ['X', 'Y'], ['Z', 'X'], ['Z', 'Y'], ['X', 'Y']]"
+          say: "Die Stäbe können auch anders heißen."
+    feedback:
+      - when: { same_as: "def hanoi(n, source, target, spare)\n  return [] if n == 0\n  hanoi(n - 1, source, target, spare) + [[source, target]] + hanoi(n - 1, spare, target, source)\nend\n" }
+        say: "Die oberen Scheiben müssen zuerst aus dem Weg, auf den Hilfsstab `spare`, nicht auf `target`: Dorthin soll ja gleich die größte."
+    hint:
+      - "Drei Schritte: den Turm aus `n - 1` Scheiben aus dem Weg räumen, die größte Scheibe ziehen, den kleineren Turm wieder darauf."
+      - "Wohin kommt der kleinere Turm zuerst, und welcher Stab hilft ihm dabei? Jeder Schritt ist ein Aufruf von `hanoi` mit anderen Stäben."
+    solution: |
+      ```ruby
+      def hanoi(n, source, target, spare)
+        return [] if n == 0
+        hanoi(n - 1, source, spare, target) + [[source, target]] + hanoi(n - 1, spare, target, source)
+      end
+      ```
+    python:
+      starter: |
+        def hanoi(n, source, target, spare):
+            pass
+      check:
+        type: function
+        language: python
+        recursive: true
+        loops: false
+        cases:
+          - call: "hanoi(1, 'A', 'C', 'B')"
+            expect: "[['A', 'C']]"
+          - call: "hanoi(2, 'A', 'C', 'B')"
+            expect: "[['A', 'B'], ['A', 'C'], ['B', 'C']]"
+          - call: "hanoi(0, 'A', 'C', 'B')"
+            expect: "[]"
+            say: "Ohne Scheiben gibt es nichts zu tun."
+          - call: "hanoi(3, 'A', 'C', 'B')"
+            expect: "[['A', 'C'], ['A', 'B'], ['C', 'B'], ['A', 'C'], ['B', 'A'], ['B', 'C'], ['A', 'C']]"
+          - call: "hanoi(3, 'X', 'Y', 'Z')"
+            expect: "[['X', 'Y'], ['X', 'Z'], ['Y', 'Z'], ['X', 'Y'], ['Z', 'X'], ['Z', 'Y'], ['X', 'Y']]"
+            say: "Die Stäbe können auch anders heißen."
+      feedback:
+        - when: { same_as: "def hanoi(n, source, target, spare):\n    if n == 0:\n        return []\n    return hanoi(n - 1, source, target, spare) + [[source, target]] + hanoi(n - 1, spare, target, source)\n" }
+          say: "Die oberen Scheiben müssen zuerst aus dem Weg, auf den Hilfsstab `spare`, nicht auf `target`: Dorthin soll ja gleich die größte."
+      hint:
+        - "Drei Schritte: den Turm aus `n - 1` Scheiben aus dem Weg räumen, die größte Scheibe ziehen, den kleineren Turm wieder darauf."
+        - "Wohin kommt der kleinere Turm zuerst, und welcher Stab hilft ihm dabei? Jeder Schritt ist ein Aufruf von `hanoi` mit anderen Stäben."
+      solution: |
+        ```python
+        def hanoi(n, source, target, spare):
+            if n == 0:
+                return []
+            return hanoi(n - 1, source, spare, target) + [[source, target]] + hanoi(n - 1, spare, target, source)
+        ```
+    javascript:
+      starter: |
+        function hanoi(n, source, target, spare) {
+        }
+      check:
+        type: function
+        language: javascript
+        recursive: true
+        loops: false
+        cases:
+          - call: "hanoi(1, 'A', 'C', 'B')"
+            expect: "[['A', 'C']]"
+          - call: "hanoi(2, 'A', 'C', 'B')"
+            expect: "[['A', 'B'], ['A', 'C'], ['B', 'C']]"
+          - call: "hanoi(0, 'A', 'C', 'B')"
+            expect: "[]"
+            say: "Ohne Scheiben gibt es nichts zu tun."
+          - call: "hanoi(3, 'A', 'C', 'B')"
+            expect: "[['A', 'C'], ['A', 'B'], ['C', 'B'], ['A', 'C'], ['B', 'A'], ['B', 'C'], ['A', 'C']]"
+          - call: "hanoi(3, 'X', 'Y', 'Z')"
+            expect: "[['X', 'Y'], ['X', 'Z'], ['Y', 'Z'], ['X', 'Y'], ['Z', 'X'], ['Z', 'Y'], ['X', 'Y']]"
+            say: "Die Stäbe können auch anders heißen."
+      feedback:
+        - when: { same_as: "function hanoi(n, source, target, spare) {\n  if (n === 0) {\n    return [];\n  }\n  return [...hanoi(n - 1, source, target, spare), [source, target], ...hanoi(n - 1, spare, target, source)];\n}\n" }
+          say: "Die oberen Scheiben müssen zuerst aus dem Weg, auf den Hilfsstab `spare`, nicht auf `target`: Dorthin soll ja gleich die größte."
+      hint:
+        - "Drei Schritte: den Turm aus `n - 1` Scheiben aus dem Weg räumen, die größte Scheibe ziehen, den kleineren Turm wieder darauf."
+        - "Wohin kommt der kleinere Turm zuerst, und welcher Stab hilft ihm dabei? Jeder Schritt ist ein Aufruf von `hanoi` mit anderen Stäben."
+      solution: |
+        ```javascript
+        function hanoi(n, source, target, spare) {
+          if (n === 0) {
+            return [];
+          }
+          return [...hanoi(n - 1, source, spare, target), [source, target], ...hanoi(n - 1, spare, target, source)];
+        }
+        ```
+  - id: flatten
+    title: "Listen in Listen"
+    level: 3
+    prompt: |
+      In einer Liste können wieder Listen stehen, beliebig tief: `[1, [2, [3, 4]], 5]`. Schreib `flatten(items)`, die alle Zahlen in einer flachen Liste zurückgibt, in ihrer Reihenfolge: `[1, 2, 3, 4, 5]`. Ohne `flatten`.
+    starter: |
+      def flatten(items)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#flatten, "Array#flatten!"]
+      recursive: true
+      cases:
+        - call: "flatten([1, [2, [3, 4]], 5])"
+          expect: "[1, 2, 3, 4, 5]"
+        - call: "flatten([])"
+          expect: "[]"
+        - call: "flatten([[[[7]]]])"
+          expect: "[7]"
+          say: "Auch ganz tief drinnen."
+        - call: "flatten([1, 2, 3])"
+          expect: "[1, 2, 3]"
+        - call: "flatten([[], [1, []], 2])"
+          expect: "[1, 2]"
+          say: "Leere Listen geben nichts."
+    feedback:
+      - when: { same_as: "def flatten(items)\n  result = []\n  items.each do |item|\n    if item.is_a?(Array)\n      result += item\n    else\n      result << item\n    end\n  end\n  result\nend\n" }
+        say: "Das macht nur eine Ebene flach: In `[2, [3, 4]]` bleibt `[3, 4]` eine Liste. Ruf für jede Liste in der Liste wieder `flatten` auf."
+    hint:
+      - "Geh die Elemente durch. `item.is_a?(Array)` fragt, ob ein Element selbst eine Liste ist."
+      - "Ist es eine, machst du sie mit `flatten` flach, bevor sie ins Ergebnis kommt."
+    solution: |
+      ```ruby
+      def flatten(items)
+        result = []
+        items.each do |item|
+          if item.is_a?(Array)
+            result += flatten(item)
+          else
+            result << item
+          end
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        In einer Liste können wieder Listen stehen, beliebig tief: `[1, [2, [3, 4]], 5]`. Schreib `flatten(items)`, die alle Zahlen in einer flachen Liste zurückgibt, in ihrer Reihenfolge: `[1, 2, 3, 4, 5]`. Ohne eine fertige Funktion.
+      starter: |
+        def flatten(items):
+            pass
+      check:
+        type: function
+        language: python
+        recursive: true
+        cases:
+          - call: "flatten([1, [2, [3, 4]], 5])"
+            expect: "[1, 2, 3, 4, 5]"
+          - call: "flatten([])"
+            expect: "[]"
+          - call: "flatten([[[[7]]]])"
+            expect: "[7]"
+            say: "Auch ganz tief drinnen."
+          - call: "flatten([1, 2, 3])"
+            expect: "[1, 2, 3]"
+          - call: "flatten([[], [1, []], 2])"
+            expect: "[1, 2]"
+            say: "Leere Listen geben nichts."
+      feedback:
+        - when: { same_as: "def flatten(items):\n    result = []\n    for item in items:\n        if isinstance(item, list):\n            result += item\n        else:\n            result.append(item)\n    return result\n" }
+          say: "Das macht nur eine Ebene flach: In `[2, [3, 4]]` bleibt `[3, 4]` eine Liste. Ruf für jede Liste in der Liste wieder `flatten` auf."
+      hint:
+        - "Geh die Elemente durch. `isinstance(item, list)` fragt, ob ein Element selbst eine Liste ist."
+        - "Ist es eine, machst du sie mit `flatten` flach, bevor sie ins Ergebnis kommt."
+      solution: |
+        ```python
+        def flatten(items):
+            result = []
+            for item in items:
+                if isinstance(item, list):
+                    result += flatten(item)
+                else:
+                    result.append(item)
+            return result
+        ```
+    javascript:
+      prompt: |
+        In einer Liste können wieder Listen stehen, beliebig tief: `[1, [2, [3, 4]], 5]`. Schreib `flatten(items)`, die alle Zahlen in einer flachen Liste zurückgibt, in ihrer Reihenfolge: `[1, 2, 3, 4, 5]`. Ohne `flat`.
+      starter: |
+        function flatten(items) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.flat, Array.prototype.flatMap]
+        recursive: true
+        cases:
+          - call: "flatten([1, [2, [3, 4]], 5])"
+            expect: "[1, 2, 3, 4, 5]"
+          - call: "flatten([])"
+            expect: "[]"
+          - call: "flatten([[[[7]]]])"
+            expect: "[7]"
+            say: "Auch ganz tief drinnen."
+          - call: "flatten([1, 2, 3])"
+            expect: "[1, 2, 3]"
+          - call: "flatten([[], [1, []], 2])"
+            expect: "[1, 2]"
+            say: "Leere Listen geben nichts."
+      feedback:
+        - when: { same_as: "function flatten(items) {\n  const result = [];\n  for (const item of items) {\n    if (Array.isArray(item)) {\n      result.push(...item);\n    } else {\n      result.push(item);\n    }\n  }\n  return result;\n}\n" }
+          say: "Das macht nur eine Ebene flach: In `[2, [3, 4]]` bleibt `[3, 4]` eine Liste. Ruf für jede Liste in der Liste wieder `flatten` auf."
+      hint:
+        - "Geh die Elemente durch. `Array.isArray(item)` fragt, ob ein Element selbst eine Liste ist."
+        - "Ist es eine, machst du sie mit `flatten` flach, bevor sie ins Ergebnis kommt."
+      solution: |
+        ```javascript
+        function flatten(items) {
+          const result = [];
+          for (const item of items) {
+            if (Array.isArray(item)) {
+              result.push(...flatten(item));
+            } else {
+              result.push(item);
+            }
+          }
+          return result;
+        }
+        ```
+  - id: permutations
+    title: "Alle Reihenfolgen"
+    level: 3
+    prompt: |
+      Schreib `permutations(text)`, die alle Reihenfolgen der Zeichen zurückgibt: `permutations('abc')` ergibt `['abc', 'acb', 'bac', 'bca', 'cab', 'cba']`. Der Reihe nach kommt jedes Zeichen einmal nach vorn, und dahinter stehen alle Reihenfolgen der übrigen. Der leere Text hat eine Reihenfolge, `['']`. Ohne `permutation`.
+    starter: |
+      def permutations(text)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#permutation]
+      recursive: true
+      cases:
+        - call: "permutations('abc')"
+          expect: "['abc', 'acb', 'bac', 'bca', 'cab', 'cba']"
+        - call: "permutations('')"
+          expect: "['']"
+          say: "Der leere Text hat eine Reihenfolge: sich selbst."
+        - call: "permutations('a')"
+          expect: "['a']"
+        - call: "permutations('ab')"
+          expect: "['ab', 'ba']"
+        - call: "permutations('abcd')"
+          expect: "['abcd', 'abdc', 'acbd', 'acdb', 'adbc', 'adcb', 'bacd', 'badc', 'bcad', 'bcda', 'bdac', 'bdca', 'cabd', 'cadb', 'cbad', 'cbda', 'cdab', 'cdba', 'dabc', 'dacb', 'dbac', 'dbca', 'dcab', 'dcba']"
+    feedback:
+      - when: { same_as: "def permutations(text)\n  return [] if text == ''\n  result = []\n  text.length.times do |i|\n    rest = text[0...i] + text[(i + 1)..]\n    permutations(rest).each do |order|\n      result << text[i] + order\n    end\n  end\n  result\nend\n" }
+        say: "Gibt der leere Text keine Reihenfolge zurück, hat am Ende auch kein anderer eine. Er hat genau eine: `['']`."
+    hint:
+      - "Für jedes Zeichen: Nimm es heraus, `text[0...i] + text[(i + 1)..]` ist der Rest, und setz es vor jede Reihenfolge des Rests."
+      - "Eine Schleife über die Zeichen darfst du hier benutzen; die Rekursion steckt in `permutations(rest)`."
+    solution: |
+      ```ruby
+      def permutations(text)
+        return [''] if text == ''
+        result = []
+        text.length.times do |i|
+          rest = text[0...i] + text[(i + 1)..]
+          permutations(rest).each do |order|
+            result << text[i] + order
+          end
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `permutations(text)`, die alle Reihenfolgen der Zeichen zurückgibt: `permutations('abc')` ergibt `['abc', 'acb', 'bac', 'bca', 'cab', 'cba']`. Der Reihe nach kommt jedes Zeichen einmal nach vorn, und dahinter stehen alle Reihenfolgen der übrigen. Der leere Text hat eine Reihenfolge, `['']`. Ohne `itertools.permutations`.
+      starter: |
+        def permutations(text):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [itertools.permutations]
+        recursive: true
+        cases:
+          - call: "permutations('abc')"
+            expect: "['abc', 'acb', 'bac', 'bca', 'cab', 'cba']"
+          - call: "permutations('')"
+            expect: "['']"
+            say: "Der leere Text hat eine Reihenfolge: sich selbst."
+          - call: "permutations('a')"
+            expect: "['a']"
+          - call: "permutations('ab')"
+            expect: "['ab', 'ba']"
+          - call: "permutations('abcd')"
+            expect: "['abcd', 'abdc', 'acbd', 'acdb', 'adbc', 'adcb', 'bacd', 'badc', 'bcad', 'bcda', 'bdac', 'bdca', 'cabd', 'cadb', 'cbad', 'cbda', 'cdab', 'cdba', 'dabc', 'dacb', 'dbac', 'dbca', 'dcab', 'dcba']"
+      feedback:
+        - when: { same_as: "def permutations(text):\n    if text == '':\n        return []\n    result = []\n    for i in range(len(text)):\n        rest = text[:i] + text[i + 1:]\n        for order in permutations(rest):\n            result.append(text[i] + order)\n    return result\n" }
+          say: "Gibt der leere Text keine Reihenfolge zurück, hat am Ende auch kein anderer eine. Er hat genau eine: `['']`."
+      hint:
+        - "Für jedes Zeichen: Nimm es heraus, `text[:i] + text[i + 1:]` ist der Rest, und setz es vor jede Reihenfolge des Rests."
+        - "Eine Schleife über die Zeichen darfst du hier benutzen; die Rekursion steckt in `permutations(rest)`."
+      solution: |
+        ```python
+        def permutations(text):
+            if text == '':
+                return ['']
+            result = []
+            for i in range(len(text)):
+                rest = text[:i] + text[i + 1:]
+                for order in permutations(rest):
+                    result.append(text[i] + order)
+            return result
+        ```
+    javascript:
+      prompt: |
+        Schreib `permutations(text)`, die alle Reihenfolgen der Zeichen zurückgibt: `permutations('abc')` ergibt `['abc', 'acb', 'bac', 'bca', 'cab', 'cba']`. Der Reihe nach kommt jedes Zeichen einmal nach vorn, und dahinter stehen alle Reihenfolgen der übrigen. Der leere Text hat eine Reihenfolge, `['']`. Ohne eine fertige Funktion.
+      starter: |
+        function permutations(text) {
+        }
+      check:
+        type: function
+        language: javascript
+        recursive: true
+        cases:
+          - call: "permutations('abc')"
+            expect: "['abc', 'acb', 'bac', 'bca', 'cab', 'cba']"
+          - call: "permutations('')"
+            expect: "['']"
+            say: "Der leere Text hat eine Reihenfolge: sich selbst."
+          - call: "permutations('a')"
+            expect: "['a']"
+          - call: "permutations('ab')"
+            expect: "['ab', 'ba']"
+          - call: "permutations('abcd')"
+            expect: "['abcd', 'abdc', 'acbd', 'acdb', 'adbc', 'adcb', 'bacd', 'badc', 'bcad', 'bcda', 'bdac', 'bdca', 'cabd', 'cadb', 'cbad', 'cbda', 'cdab', 'cdba', 'dabc', 'dacb', 'dbac', 'dbca', 'dcab', 'dcba']"
+      feedback:
+        - when: { same_as: "function permutations(text) {\n  if (text === '') {\n    return [];\n  }\n  const result = [];\n  for (let i = 0; i < text.length; i++) {\n    const rest = text.slice(0, i) + text.slice(i + 1);\n    for (const order of permutations(rest)) {\n      result.push(text[i] + order);\n    }\n  }\n  return result;\n}\n" }
+          say: "Gibt der leere Text keine Reihenfolge zurück, hat am Ende auch kein anderer eine. Er hat genau eine: `['']`."
+      hint:
+        - "Für jedes Zeichen: Nimm es heraus, `text.slice(0, i) + text.slice(i + 1)` ist der Rest, und setz es vor jede Reihenfolge des Rests."
+        - "Eine Schleife über die Zeichen darfst du hier benutzen; die Rekursion steckt in `permutations(rest)`."
+      solution: |
+        ```javascript
+        function permutations(text) {
+          if (text === '') {
+            return [''];
+          }
+          const result = [];
+          for (let i = 0; i < text.length; i++) {
+            const rest = text.slice(0, i) + text.slice(i + 1);
+            for (const order of permutations(rest)) {
+              result.push(text[i] + order);
+            }
+          }
+          return result;
+        }
+        ```
+  - id: fast-fibonacci
+    title: "Fibonacci mit Gedächtnis"
+    extra: true
+    prompt: |
+      Deine rekursive Fibonacci-Funktion rechnet dieselben Zahlen wieder und wieder aus: `fibonacci(70)` dauert Jahre. Schreib `fast_fibonacci(n)`, rekursiv wie vorher, aber mit einem Gedächtnis: einem Hash, in dem jede Zahl steht, sobald sie einmal ausgerechnet ist. `fast_fibonacci(70)` ergibt `190392490709135`, in weniger als drei Sekunden.
+    starter: |
+      def fast_fibonacci(n)
+      end
+    check:
+      type: function
+      language: ruby
+      recursive: true
+      timeout: 3
+      slow: "Zu langsam: Dein Code rechnet dieselben Zahlen immer wieder aus. Schau im Gedächtnis nach, bevor du rechnest, und schreib jedes Ergebnis hinein."
+      cases:
+        - call: "fast_fibonacci(70)"
+          expect: "190392490709135"
+        - call: "fast_fibonacci(0)"
+          expect: "0"
+        - call: "fast_fibonacci(1)"
+          expect: "1"
+        - call: "fast_fibonacci(10)"
+          expect: "55"
+        - call: "fast_fibonacci(50)"
+          expect: "12586269025"
+    hint:
+      - "Ein Hash außerhalb der Funktion, `MEMO = {}`, merkt sich die Zahlen. Steht `n` schon darin, gibst du sie gleich zurück."
+      - "`MEMO[n] ||= …` rechnet nur, wenn `MEMO[n]` noch fehlt, und schreibt das Ergebnis hinein."
+    solution: |
+      ```ruby
+      MEMO = {}
+
+      def fast_fibonacci(n)
+        return n if n < 2
+        MEMO[n] ||= fast_fibonacci(n - 1) + fast_fibonacci(n - 2)
+      end
+      ```
+    python:
+      prompt: |
+        Deine rekursive Fibonacci-Funktion rechnet dieselben Zahlen wieder und wieder aus: `fibonacci(70)` dauert Jahre. Schreib `fast_fibonacci(n)`, rekursiv wie vorher, aber mit einem Gedächtnis: einem Dictionary, in dem jede Zahl steht, sobald sie einmal ausgerechnet ist. `fast_fibonacci(70)` ergibt `190392490709135`, in weniger als drei Sekunden.
+      starter: |
+        def fast_fibonacci(n):
+            pass
+      check:
+        type: function
+        language: python
+        recursive: true
+        timeout: 3
+        slow: "Zu langsam: Dein Code rechnet dieselben Zahlen immer wieder aus. Schau im Gedächtnis nach, bevor du rechnest, und schreib jedes Ergebnis hinein."
+        cases:
+          - call: "fast_fibonacci(70)"
+            expect: "190392490709135"
+          - call: "fast_fibonacci(0)"
+            expect: "0"
+          - call: "fast_fibonacci(1)"
+            expect: "1"
+          - call: "fast_fibonacci(10)"
+            expect: "55"
+          - call: "fast_fibonacci(50)"
+            expect: "12586269025"
+      hint:
+        - "Ein Dictionary außerhalb der Funktion, `memo = {}`, merkt sich die Zahlen. Steht `n` schon darin, gibst du sie gleich zurück."
+        - "Erst nachsehen (`n in memo`), sonst rechnen und hineinschreiben."
+      solution: |
+        ```python
+        memo = {}
+
+        def fast_fibonacci(n):
+            if n < 2:
+                return n
+            if n not in memo:
+                memo[n] = fast_fibonacci(n - 1) + fast_fibonacci(n - 2)
+            return memo[n]
+        ```
+    javascript:
+      prompt: |
+        Deine rekursive Fibonacci-Funktion rechnet dieselben Zahlen wieder und wieder aus: `fibonacci(70)` dauert Jahre. Schreib `fastFibonacci(n)`, rekursiv wie vorher, aber mit einem Gedächtnis: einem Objekt, in dem jede Zahl steht, sobald sie einmal ausgerechnet ist. `fastFibonacci(70)` ergibt `190392490709135`, in weniger als drei Sekunden.
+      starter: |
+        function fastFibonacci(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        recursive: true
+        timeout: 3
+        slow: "Zu langsam: Dein Code rechnet dieselben Zahlen immer wieder aus. Schau im Gedächtnis nach, bevor du rechnest, und schreib jedes Ergebnis hinein."
+        cases:
+          - call: "fastFibonacci(70)"
+            expect: "190392490709135"
+          - call: "fastFibonacci(0)"
+            expect: "0"
+          - call: "fastFibonacci(1)"
+            expect: "1"
+          - call: "fastFibonacci(10)"
+            expect: "55"
+          - call: "fastFibonacci(50)"
+            expect: "12586269025"
+      hint:
+        - "Ein Objekt außerhalb der Funktion, `const memo = {};`, merkt sich die Zahlen. Steht `n` schon darin, gibst du sie gleich zurück."
+        - "Erst nachsehen (`n in memo`), sonst rechnen und hineinschreiben."
+      solution: |
+        ```javascript
+        const memo = {};
+
+        function fastFibonacci(n) {
+          if (n < 2) {
+            return n;
+          }
+          if (!(n in memo)) {
+            memo[n] = fastFibonacci(n - 1) + fastFibonacci(n - 2);
+          }
+          return memo[n];
+        }
+        ```
+  - id: subset-sum
+    title: "Geht die Summe auf?"
+    extra: true
+    prompt: |
+      Schreib `subset_sum(numbers, target)`, die true zurückgibt, wenn einige der Zahlen zusammen genau `target` ergeben, jede höchstens einmal, und sonst false: `subset_sum([3, 34, 4, 12, 5, 2], 9)` ergibt true (4 + 5). Für die erste Zahl gibt es zwei Möglichkeiten: Sie ist dabei, oder nicht. Die Zahlen sind größer als 0.
+    starter: |
+      def subset_sum(numbers, target)
+      end
+    check:
+      type: function
+      language: ruby
+      recursive: true
+      loops: false
+      cases:
+        - call: "subset_sum([3, 34, 4, 12, 5, 2], 9)"
+          expect: "true"
+        - call: "subset_sum([3, 34, 4, 12, 5, 2], 30)"
+          expect: "false"
+        - call: "subset_sum([], 0)"
+          expect: "true"
+          say: "Nichts zusammen ergibt 0."
+        - call: "subset_sum([], 5)"
+          expect: "false"
+        - call: "subset_sum([7], 7)"
+          expect: "true"
+        - call: "subset_sum([2, 4, 6], 5)"
+          expect: "false"
+          say: "Lauter gerade Zahlen geben keine ungerade Summe."
+    hint:
+      - "Zwei Fälle, in denen du sofort fertig bist: `target` ist 0 (dann ja), oder es sind keine Zahlen mehr übrig (dann nein)."
+      - "Sonst: mit der ersten Zahl, `subset_sum(rest, target - numbers[0])`, oder ohne sie, `subset_sum(rest, target)`. Geht eins davon, geht es."
+    solution: |
+      ```ruby
+      def subset_sum(numbers, target)
+        return true if target == 0
+        return false if numbers.empty? || target < 0
+        rest = numbers[1..]
+        subset_sum(rest, target - numbers[0]) || subset_sum(rest, target)
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `subset_sum(numbers, target)`, die True zurückgibt, wenn einige der Zahlen zusammen genau `target` ergeben, jede höchstens einmal, und sonst False: `subset_sum([3, 34, 4, 12, 5, 2], 9)` ergibt True (4 + 5). Für die erste Zahl gibt es zwei Möglichkeiten: Sie ist dabei, oder nicht. Die Zahlen sind größer als 0.
+      starter: |
+        def subset_sum(numbers, target):
+            pass
+      check:
+        type: function
+        language: python
+        recursive: true
+        loops: false
+        cases:
+          - call: "subset_sum([3, 34, 4, 12, 5, 2], 9)"
+            expect: "True"
+          - call: "subset_sum([3, 34, 4, 12, 5, 2], 30)"
+            expect: "False"
+          - call: "subset_sum([], 0)"
+            expect: "True"
+            say: "Nichts zusammen ergibt 0."
+          - call: "subset_sum([], 5)"
+            expect: "False"
+          - call: "subset_sum([7], 7)"
+            expect: "True"
+          - call: "subset_sum([2, 4, 6], 5)"
+            expect: "False"
+            say: "Lauter gerade Zahlen geben keine ungerade Summe."
+      hint:
+        - "Zwei Fälle, in denen du sofort fertig bist: `target` ist 0 (dann ja), oder es sind keine Zahlen mehr übrig (dann nein)."
+        - "Sonst: mit der ersten Zahl, `subset_sum(rest, target - numbers[0])`, oder ohne sie, `subset_sum(rest, target)`. Geht eins davon, geht es."
+      solution: |
+        ```python
+        def subset_sum(numbers, target):
+            if target == 0:
+                return True
+            if not numbers or target < 0:
+                return False
+            rest = numbers[1:]
+            return subset_sum(rest, target - numbers[0]) or subset_sum(rest, target)
+        ```
+    javascript:
+      prompt: |
+        Schreib `subsetSum(numbers, target)`, die true zurückgibt, wenn einige der Zahlen zusammen genau `target` ergeben, jede höchstens einmal, und sonst false: `subsetSum([3, 34, 4, 12, 5, 2], 9)` ergibt true (4 + 5). Für die erste Zahl gibt es zwei Möglichkeiten: Sie ist dabei, oder nicht. Die Zahlen sind größer als 0.
+      starter: |
+        function subsetSum(numbers, target) {
+        }
+      check:
+        type: function
+        language: javascript
+        recursive: true
+        loops: false
+        cases:
+          - call: "subsetSum([3, 34, 4, 12, 5, 2], 9)"
+            expect: "true"
+          - call: "subsetSum([3, 34, 4, 12, 5, 2], 30)"
+            expect: "false"
+          - call: "subsetSum([], 0)"
+            expect: "true"
+            say: "Nichts zusammen ergibt 0."
+          - call: "subsetSum([], 5)"
+            expect: "false"
+          - call: "subsetSum([7], 7)"
+            expect: "true"
+          - call: "subsetSum([2, 4, 6], 5)"
+            expect: "false"
+            say: "Lauter gerade Zahlen geben keine ungerade Summe."
+      hint:
+        - "Zwei Fälle, in denen du sofort fertig bist: `target` ist 0 (dann ja), oder es sind keine Zahlen mehr übrig (dann nein)."
+        - "Sonst: mit der ersten Zahl, `subsetSum(rest, target - numbers[0])`, oder ohne sie, `subsetSum(rest, target)`. Geht eins davon, geht es."
+      solution: |
+        ```javascript
+        function subsetSum(numbers, target) {
+          if (target === 0) {
+            return true;
+          }
+          if (numbers.length === 0 || target < 0) {
+            return false;
+          }
+          const rest = numbers.slice(1);
+          return subsetSum(rest, target - numbers[0]) || subsetSum(rest, target);
+        }
+        ```

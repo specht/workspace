@@ -34,6 +34,7 @@
     - .kata-lists
     - .kata-dicts
     - .kata-bits
+    - .kata-recursion
 
 - key: graphics
   compact: true

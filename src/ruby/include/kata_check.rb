@@ -3,6 +3,7 @@ require_relative 'call_check'
 require_relative 'python_check'
 require_relative 'ruby_check'
 require_relative 'javascript_check'
+require_relative 'recursion_check'
 
 # Check type function (docs/aufgaben.md, docs/plan-katas.md): a Kata. The
 # code is typed into the card, not written in the Workspace; it runs in a
@@ -28,6 +29,9 @@ require_relative 'javascript_check'
 #     timeout: 10                 # seconds for all cases together
 #     slow: Für eine Million …    # the message when the time is up, where
 #                                 # speed is the point (not »Endlosschleife?«)
+#     recursive: true             # the function must call itself, and
+#     loops: false                # use no loop (RecursionCheck, read from
+#                                 # the code once the cases pass)
 #
 #   feedback:
 #     - when: { same_as: 'def gcd(a, b) = [a, b].min' }
@@ -85,6 +89,12 @@ module KataCheck
         end
         errors.concat(random_errors(check['random'])) if check.key?('random')
         errors << 'slow must be text' if check.key?('slow') && !(check['slow'].is_a?(String) && !check['slow'].strip.empty?)
+        # read from the code once the cases pass (RecursionCheck)
+        errors << 'recursive must be true' if check.key?('recursive') && check['recursive'] != true
+        errors << 'loops must be false' if check.key?('loops') && check['loops'] != false
+        if (check.key?('recursive') || check.key?('loops')) && RecursionCheck.function_name(check).nil?
+            errors << 'recursive and loops need cases that call the function'
+        end
         errors
     end
 
@@ -284,6 +294,10 @@ module KataCheck
         end
         explanation = status == :wrong ? explain(message, language_name) : nil
         message = "#{message}\n\n#{explanation}" if explanation
+        # right results, but a loop where a recursion is asked for
+        if status == :correct && (problem = RecursionCheck.problem(check, code, RecursionCheck.function_name(check)))
+            return [:wrong, problem, read]
+        end
         [status, message, read]
     end
 
