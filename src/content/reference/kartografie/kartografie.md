@@ -75,7 +75,7 @@ In `[map]` steht der Grundriss, von oben gesehen, oben ist Norden. Jedes Zeichen
 <tr><td><code>.</code></td><td>Boden</td></tr>
 <tr><td><code>@</code></td><td>hier fängt man an, nur einmal im ganzen Level</td></tr>
 <tr><td>Leerzeichen</td><td>nichts, außerhalb des Raums</td></tr>
-<tr><td>ein Buchstabe</td><td>eine Leuchte, ein Block, ein Modell, ein Becken, eine Treppe oder ein Podest, beschrieben im Abschnitt mit diesem Buchstaben</td></tr>
+<tr><td>ein Buchstabe</td><td>eine Leuchte, ein Block, ein Modell, ein Becken, eine Treppe oder ein Podest, beschrieben im Abschnitt mit diesem Buchstaben; statt eines <code>#</code>: eine Wand mit runden Ecken</td></tr>
 <tr><td>eine Ziffer</td><td>eine Tür, beschrieben im Abschnitt mit dieser Ziffer; dieselbe Ziffer mehrmals in einer Reihe, nebeneinander oder untereinander, ist eine breite Tür</td></tr>
 <tr><td><code>_</code></td><td>ein Loch im Boden; darunter liegt ein anderer Raum, beschrieben in <code>[_]</code></td></tr>
 <tr><td><code>^</code></td><td>ein Loch in der Decke: Der Raum darüber hat dort sein <code>_</code></td></tr>
@@ -131,6 +131,17 @@ Sie hängt knapp unter der Decke, mitten über ihrem Feld, unter einer schrägen
 <tr><td><code>rotation</code></td><td>in Grad um die senkrechte Achse gedreht, um seine Mitte; nur um diese Achse. Gedreht bleibt er am besten in seinem Feld</td></tr>
 <tr><td><code>offset</code></td><td>aus der Mitte des Felds geschoben: x, y, z (x nach Osten, y nach oben, z nach Süden)</td></tr>
 </table>
+
+### Eine runde Ecke
+
+Ein Buchstabe statt eines `#`, dessen Abschnitt `round` nennt, ist eine Wand mit runden Ecken.
+
+<table class='table'>
+<tr><th>Eintrag</th><th>Bedeutung</th></tr>
+<tr><td><code>round</code></td><td>der Radius in Metern. Treffen an dem Feld zwei Wände des Raums aufeinander (ein <code>#</code> in einer Ecke des Raums), wird die Ecke ein Viertelkreis, Boden und Decke folgen ihm. Ragt die Wand dort in den Raum (das Ende einer Wand, die Ecke eines Pfeilers), wird ihre Kante rund; an einer Wand, die ein Feld dick ist, höchstens 0,5, dann ist ihr Ende ein Halbkreis</td></tr>
+</table>
+
+Sockelleiste, Lambris, Stuhlleiste und Gesims laufen um die Rundung herum. Der Radius muss passen: auf beiden Wänden bis zur nächsten Tür oder Ecke, innerhalb des Raums. Passt er nicht, steht oben links, an welchem Feld.
 
 ### Ein Modell
 

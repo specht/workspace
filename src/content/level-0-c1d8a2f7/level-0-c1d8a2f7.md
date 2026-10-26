@@ -65,7 +65,7 @@ Danach liegt die Vorlage in `/workspace/backrooms-starter`:
 # Klonen wie im Handbuch »Workspace« (oben eingebunden), dann die
 # geöffnete Vorlage im Explorer, level.ini im Editor
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ f19e4cd775bc42e8338fc1c9645a016b49e44cdf
+clone-start: https://github.com/specht/backrooms-starter.git @ 0ecf118ca12e8d61b685a3653354f4c3adedf9c8
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -884,6 +884,42 @@ hook: info off
 -->
 
 <img class='full fit-width' src='salon-5.webp' alt='Der fertige Salon: oben an allen Wänden eine helle, schräge Leiste zur Decke, darunter grüne Tapete, eine helle Stuhlleiste, dunkles Holz und eine dunkle Sockelleiste; durch den Bogen der Marmorsaal.'>
+### Runde Ecken
+
+Zuletzt verlieren die Ecken des Salons ihre Kanten. Setz in die vier Ecken des Grundrisses statt `#` einen Buchstaben und beschreib ihn:
+
+```room
+~ [map]
+r####111####r
+~ #...........#
+```
+
+```room
+~ #...........#
+r###########r
+
+[r]
+round = 2               # die Ecken des Raums rund, 2 m Radius
+```
+
+Ein Buchstabe statt eines `#`, dessen Abschnitt `round` nennt, ist eine Wand mit runden Ecken. Treffen an seinem Feld zwei Wände aufeinander wie hier, wird die Ecke des Raums ein Viertelkreis mit diesem Radius. Boden und Decke folgen ihm, und alle Leisten laufen um die Rundung herum. Ragt eine Wand in den Raum, wird mit `round` ihre Kante rund: Das Ende einer Wand, die ein Feld dick ist, wird mit `round = 0.5` ein Halbkreis.
+
+<!-- tutorial-screenshot
+write-file: rooms/salon.room <- file:stufen/salon-6.room
+tab: preview
+viewport: 1536x864
+zoom: 1.5
+hook: open view=27.60,28.60,42,1
+hook: light
+hook: info off
+-->
+
+<img class='full fit-width' src='salon-6.webp' alt='Der Salon mit runden Ecken: Die grüne Wand biegt in einem Viertelkreis um die Ecke, Sockelleiste, Holz, Stuhlleiste und Gesims laufen ohne Kante mit.'>
+
+<div class='hint try'>
+<p><strong>Ausprobieren:</strong> Wie groß darf der Radius hier werden? Probier <code>round = 4</code>: Oben links steht dann, an welchem Feld er nicht mehr passt und warum. Öffne danach die Automap: Auch dort sind die Ecken rund.</p>
+</div>
+
 ## Dein eigener Raum
 
 Jetzt bist du dran: Bau einen Raum nach deiner Idee und schließ ihn mit einer Tür an. Was du in `[room]` einstellen kannst:
@@ -910,6 +946,7 @@ Für die Buchstaben im Grundriss:
 <tr><td><code>light</code></td><td>eine Leuchte unter der Decke, in dieser Farbe; dazu <code>power</code> (wie hell), <code>size</code> (wie groß, in Metern) und <code>flicker = 1</code> (sie flackert)</td></tr>
 <tr><td><code>block</code></td><td>ein Block: Breite, Höhe, Tiefe; eine Zahl: ein ganzes Feld so hoch. Dazu <code>base</code> (wie hoch er schwebt), <code>color</code>, <code>material</code> (auch <code>cardboard</code>, ein Karton), <code>shape = round</code> und <code>rotation</code> (in Grad um die senkrechte Achse gedreht)</td></tr>
 <tr><td><code>model</code></td><td>ein Modell aus <code>models/</code>: <code>height</code> (wie hoch), <code>rotation</code> (in Grad gedreht), <code>material = marble</code>, <code>pedestal</code> (ein Sockel: Breite, Höhe, Tiefe)</td></tr>
+<tr><td><code>round</code></td><td>statt eines <code>#</code>: eine Wand mit runden Ecken, so viele Meter Radius</td></tr>
 </table>
 
 Und für eine Tür, im Abschnitt ihrer Ziffer:
@@ -963,7 +1000,7 @@ Bis hierher hast du gebaut. Jetzt schauen wir hinter die Wände: Das Programm st
 3. **Ein Gitter.** Alle Räume kommen in ein großes Gitter aus Feldern, ein Meter je Feld. Für jedes Feld steht fest, ob dort Boden ist, Wand oder nichts, und zu welchem Raum es gehört. Zwei Räume auf demselben Feld meldet das Programm: `lie in the same place`.
 4. **Flächen.** `geometry.js` setzt ein Stück Wand überall dort, wo ein Feld mit Boden an eines ohne grenzt, von Boden bis Decke, und über jedes Feld mit Boden ein Stück Decke. Ein `#` im Grundriss ist im Bauwerk also keine dicke Mauer, sondern eine dünne Fläche an der Kante des Felds davor. Darum dürfen sich die Wände zweier Räume überdecken. Stücke nebeneinander legt es zu großen Flächen zusammen, solange sie nicht knicken.
 
-Mit <kbd>E</kbd> siehst du das Gerüst des Bauwerks: jede Kante, an der zwei Flächen im Winkel aneinanderstoßen, an Ecken, an Leisten, an Möbeln und am Bogen. Am Anfang, solange das Licht noch fehlt, zeigt die Vorschau genau diese Linien. Im Salon, mit <kbd>T</kbd> ohne Texturen, damit man sie besser sieht:
+Mit <kbd>E</kbd> siehst du das Gerüst des Bauwerks: jede Kante, an der zwei Flächen im Winkel aneinanderstoßen, an Ecken, an Leisten, an Möbeln und am Bogen. Am Anfang, solange das Licht noch fehlt, zeigt die Vorschau genau diese Linien. In den runden Ecken ist keine Linie: Dort knickt nichts. Im Salon, mit <kbd>T</kbd> ohne Texturen, damit man sie besser sieht:
 
 <!-- tutorial-screenshot
 tab: preview
@@ -975,7 +1012,7 @@ hook: info off
 hook: key e t
 -->
 
-<img class='full fit-width' src='saal-kanten.webp' alt='Der Salon mit hellblauen Linien auf allen Kanten: wo die Wände auf Boden und Decke treffen, an den Leisten, um den Bogen, an Sofa und Tisch.'>
+<img class='full fit-width' src='saal-kanten.webp' alt='Der Salon mit hellblauen Linien auf allen Kanten: wo die Wände auf Boden und Decke treffen, an den Leisten, um den Bogen, an Sofa und Tisch; über die runden Ecken laufen nur die Linien unten und oben, keine senkrechte.'>
 ### Texturen ohne ein einziges Bild
 
 Tapete, Teppich, Marmor, Holz, Fliesen und Samt sind keine Fotos: `textures.js` malt sie beim Laden, auf eine Leinwand des Browsers (ein `canvas`), mit Formen oder Punkt für Punkt. Man nennt das **prozedurale Texturen**: Gespeichert ist nicht das Bild, sondern das Rezept dafür. Die Vorlage braucht so keine Bilddateien, und jede Farbe in `wallpaper` oder `carpet` bekommt ihre eigene Textur.
