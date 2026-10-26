@@ -3155,7 +3155,8 @@ body.has-autotoc-secondary.autotoc-primary-visible {
    container says which one is shown, the other parts stay hidden. Without
    a choice the first one, Ruby, is shown. */
 [data-code-language='ruby'] .code-language:not([data-language='ruby']),
-[data-code-language='python'] .code-language:not([data-language='python']) {
+[data-code-language='python'] .code-language:not([data-language='python']),
+[data-code-language='javascript'] .code-language:not([data-language='javascript']) {
     display: none;
 }
 
@@ -3256,6 +3257,10 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 
 .code-language-option[data-set-language='python'][aria-pressed='true'] {
     color: #306998;
+}
+
+.code-language-option[data-set-language='javascript'][aria-pressed='true'] {
+    color: #8a6d00;
 }
 
 .page-kind-links a {

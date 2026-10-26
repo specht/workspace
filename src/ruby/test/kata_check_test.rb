@@ -163,6 +163,42 @@ class KataCheckTest < Minitest::Test
         assert_includes ran[:message], '`str(zahl)`'
     end
 
+    def test_javascript
+        check = { 'type' => 'function', 'language' => 'javascript', 'cases' => [
+            { 'gcd(60, 48)' => 12 }, { 'call' => 'gcd(7, 7)', 'expect' => 7, 'say' => 'Der größte Teiler einer Zahl mit sich selbst ist sie selbst.' }] }
+        assert_empty TaskSpec.validate_single_task(task(check).merge('starter' => "function gcd(a, b) {\n}\n"))
+        refute_empty TaskSpec.validate_single_task(task(check.merge('forbid' => ['Integer#gcd'])))
+        needs_docker
+        right = "function gcd(a, b) {\n  while (b !== 0) {\n    [a, b] = [b, a % b];\n  }\n  return a;\n}\n\nconsole.log(gcd(60, 48));\n"
+        assert_equal :correct, KataCheck.check(task(check), check, right, RUN).first
+        status, message, = KataCheck.check(task(check), check, "const gcd = (a, b) => Math.min(a, b);\n", RUN)
+        assert_equal :wrong, status
+        assert_equal '`gcd(60, 48)` ergibt `48`, richtig wäre `12`.', message
+        status, message, = KataCheck.check(task(check), check, "function gcd(a, b) {\n  return a +\n", RUN)
+        assert_equal :wrong, status
+        assert_match(/\AIn deinem Code \(Zeile \d\) ist ein Syntaxfehler/, message)
+        status, message, = KataCheck.check(task(check), check, "function gcd(a, b) {\n  return resutl;\n}\n", RUN)
+        assert_includes message, '`resutl` kennt JavaScript an dieser Stelle nicht.'
+        # arrays are compared by content; forbidden methods fail from the code only
+        lists = { 'type' => 'function', 'language' => 'javascript', 'forbid' => ['Array.prototype.sort', 'Math.max'],
+                  'cases' => [{ 'call' => 'largest([3, 1, 2])', 'expect' => 3 }, { 'call' => 'numbers(3)', 'expect' => '[1, 2, 3]' }] }
+        code = "function largest(xs) {\n  let best = xs[0];\n  for (const x of xs) if (x > best) best = x;\n  return best;\n}\nfunction numbers(n) {\n  const result = [];\n  for (let i = 1; i <= n; i++) result.push(i);\n  return result;\n}\n"
+        assert_equal :correct, KataCheck.check(task(lists), lists, code, RUN).first
+        status, message, = KataCheck.check(task(lists), lists, code.sub("let best = xs[0];\n  for (const x of xs) if (x > best) best = x;\n  return best;", 'return Math.max(...xs);'), RUN)
+        assert_equal :wrong, status
+        assert_includes message, 'benutzt `Math.max`'
+        random = check.merge('random' => { 'count' => 3, 'call' => 'gcd(a, b)', 'args' => { 'a' => '1..500', 'b' => '1..500' },
+                                           'reference' => '(function g(x, y) { return y ? g(y, x % y) : x; })(a, b)' })
+        assert_equal :correct, KataCheck.check(task(random), random, right, RUN, :seed => 7).first
+        feedback = [{ 'when' => { 'same_as' => "const gcd = (a, b) => Math.min(a, b);\n" }, 'say' => 'Die kleinere Zahl ist nur manchmal ein Teiler.' }]
+        status, message, = KataCheck.check(task(check).merge('feedback' => feedback), check, "function gcd(a, b) { return a < b ? a : b; }\n", RUN)
+        assert_equal 'Die kleinere Zahl ist nur manchmal ein Teiler.', message
+        ran = KataCheck.run_program('javascript', "console.log('Hallo');\nconsole.log(nichts.length);\n", RUN)
+        assert_equal :error, ran[:status]
+        assert_includes ran[:output], "Hallo\n"
+        assert_includes ran[:message], '`nichts` kennt JavaScript'
+    end
+
     def test_running_the_program_shows_what_it_prints
         needs_docker
         ran = KataCheck.run_program('python', "print('Hallo')\nprint(1 / 0)\n", RUN)

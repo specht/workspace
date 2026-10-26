@@ -2,7 +2,7 @@
 image: teaser.webp:50:20
 kind: uebung
 duration: 1 Doppelstunde
-languages: [ruby, python]
+languages: [ruby, python, javascript]
 </div>
 
 # Katas: Erste Funktionen
@@ -53,6 +53,20 @@ print(triple(14))
 
 `return` gibt das Ergebnis zurück. `print` ruft die Funktion zum Ausprobieren
 auf und schreibt ihr Ergebnis, `42`, ins Terminal.
+<!-- /language -->
+<!-- language: javascript -->
+```javascript
+function triple(n) {
+  return 3 * n;
+}
+
+console.log(triple(14));
+```
+
+`return` gibt das Ergebnis zurück. `console.log` ruft die Funktion zum
+Ausprobieren auf und schreibt ihr Ergebnis, `42`, in die Ausgabe. Namen aus
+mehreren Wörtern schreibt man in JavaScript zusammen, jedes weitere Wort groß:
+`rectangleArea`.
 <!-- /language -->
 
 In jeder Karte unten schreibst du eine solche Funktion. **Ausführen** startet

@@ -201,7 +201,9 @@ Dort brechen die Tests mit einem `LoadError` ab, die die Seiten rendern
 `task_card_test.rb`, `code_context_test.rb`, `stage_code_test.rb`,
 `reference_index_test.rb`, die Lexer-Tests und einige mehr (`grep -l
 "nokogiri\|redcarpet\|rouge" test/*_test.rb include/*.rb` zeigt sie).
-`c_check_test.rb` braucht `cc` und wird ohne übersprungen.
+`c_check_test.rb` braucht `cc` und wird ohne übersprungen; die Beispiele der
+JavaScript-Katas in `task_examples_test.rb` brauchen `node` und laufen darum
+nur auf dem eigenen Rechner.
 `task_spec_test.rb` prüft alle `tasks.yaml` im Inhaltsordner, ein Test in
 `content_parts_test.rb` alle Kataloge und `_include(…, done: …)`.
 `task_examples_test.rb` führt die `ruby`- und `python`-Prüfungen mit den

@@ -26,16 +26,22 @@ require 'cgi'
 # or file; it keeps its id and version, so a task solved in one language is
 # solved in the other.
 #
-# Which language a person sees: their own choice (u.code_language, set with
-# the switch), else that of the first of their classes a teacher has set one
-# for, else Ruby.
+# Which language a person sees: the first the page offers of their own
+# choice (u.code_language, set with the switch), the languages of their
+# classes a teacher has set one for, and Ruby; else the page's first.
+#
+# JavaScript is a language of the Katas only (docs/plan-katas.md): a Kata
+# page may offer it, the class setting does not (GROUP_LANGUAGES), and
+# someone who picks it on a Kata page still sees Ruby or Python elsewhere.
 #
 # A page without languages: in its meta (a Handbuch page) may use the same
 # markers to show both: a Ruby part and a Python part right after each other
 # stand side by side, each labelled with its language (pair).
 module CodeLanguages
-    LANGUAGES = %w[ruby python].freeze
-    NAMES = { 'ruby' => 'Ruby', 'python' => 'Python' }.freeze
+    LANGUAGES = %w[ruby python javascript].freeze
+    NAMES = { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript' }.freeze
+    # What a teacher can set for a class
+    GROUP_LANGUAGES = %w[ruby python].freeze
     DEFAULT = 'ruby'
     VARIANT_KEYS = %w[prompt check hint solution feedback file starter].freeze
 
@@ -139,11 +145,10 @@ module CodeLanguages
     # Which language a person sees: own choice, then the first class with a
     # setting, then Ruby. group_languages: { group => language } for the
     # person's groups, in file order.
-    def self.resolve(own, group_languages)
-        return own if known?(own)
-
-        from_group = group_languages.values.find { |l| known?(l) }
-        from_group || DEFAULT
+    # offered: the page's languages; without them, any known language.
+    def self.resolve(own, group_languages, offered = LANGUAGES)
+        candidates = [own, *group_languages.values, DEFAULT]
+        candidates.find { |l| known?(l) && offered.include?(l) } || offered.first
     end
 
     # The switch in the page header: one button per language, with its logo

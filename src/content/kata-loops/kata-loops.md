@@ -2,7 +2,7 @@
 image: teaser.webp:50:20
 kind: uebung
 duration: 1 Doppelstunde
-languages: [ruby, python]
+languages: [ruby, python, javascript]
 requires: [kata-decisions]
 </div>
 
@@ -65,6 +65,27 @@ print(sevens(50))
 die erste, die nicht mehr dabei ist. `range(n, -1, -1)` zählt herunter, und
 `while` wiederholt, solange eine Bedingung gilt. Eine Variable wie `count`,
 die vor der Schleife anfängt und in ihr wächst, sammelt das Ergebnis.
+<!-- /language -->
+<!-- language: javascript -->
+```javascript
+function sevens(n) {
+  let count = 0;
+  for (let i = 1; i <= n; i++) {
+    if (i % 7 === 0) {
+      count++;
+    }
+  }
+  return count;
+}
+
+console.log(sevens(50));
+```
+
+`for (let i = 1; i <= n; i++)` fängt mit `i` bei 1 an, läuft, solange
+`i <= n` gilt, und zählt nach jedem Durchlauf eins weiter. `i--` zählt
+herunter, und `while` wiederholt, solange eine Bedingung gilt. Eine Variable
+wie `count`, die vor der Schleife anfängt und in ihr wächst, sammelt das
+Ergebnis; `let` erlaubt, sie zu ändern, `const` nicht.
 <!-- /language -->
 
 ## Einstieg

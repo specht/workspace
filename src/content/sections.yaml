@@ -19,7 +19,8 @@
   label: Katas
   icon: /images/brain.png
   description: |
-    Kleine Programmieraufgaben direkt auf der Seite, in Ruby oder Python:
+    Kleine Programmieraufgaben direkt auf der Seite, in Ruby, Python oder
+    JavaScript:
     ohne Terminal und Dateien, mit einem Knopf zum Ausprobieren und einem
     zum Prüfen.
   entries:

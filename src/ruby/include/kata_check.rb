@@ -2,6 +2,7 @@ require 'digest'
 require_relative 'call_check'
 require_relative 'python_check'
 require_relative 'ruby_check'
+require_relative 'javascript_check'
 
 # Check type function (docs/aufgaben.md, docs/plan-katas.md): a Kata. The
 # code is typed into the card, not written in the Workspace; it runs in a
@@ -12,7 +13,7 @@ require_relative 'ruby_check'
 #
 #   check:
 #     type: function
-#     language: ruby              # ruby or python; per language as a variant
+#     language: ruby              # ruby, python or javascript; per language as a variant
 #     forbid: [Integer#gcd]       # built-ins that are no help here
 #     cases:
 #       - gcd(60, 48): 12
@@ -36,18 +37,20 @@ require_relative 'ruby_check'
 # person's code calls it (the harness and the reference may still use it);
 # in Python a built-in (sorted), a module's function (math.gcd), a
 # built-in type (str) or a method of one (list.sort); types and their
-# methods cannot be switched off and are looked for in the code instead. random: the values come from a seed per
+# methods cannot be switched off and are looked for in the code instead; in
+# JavaScript a function or method by its path (Math.max,
+# Array.prototype.sort), made to fail like in Ruby (JavascriptCheck). random: the values come from a seed per
 # person and task version, so a second check has the same cases and a table
 # of answers does not pass; the message names the value the reference gave.
 # same_as: a typical wrong solution, written by the author and never shown,
 # runs on the same cases; if the person's results are its results, its say
 # replaces the message.
 module KataCheck
-    CHECKS = { 'python' => PythonCheck, 'ruby' => RubyCheck }.freeze
-    FILES = { 'python' => 'kata.py', 'ruby' => 'kata.rb' }.freeze
-    HARNESS_FILES = { 'python' => 'harness.py', 'ruby' => 'harness.rb' }.freeze
+    CHECKS = { 'python' => PythonCheck, 'ruby' => RubyCheck, 'javascript' => JavascriptCheck }.freeze
+    FILES = { 'python' => 'kata.py', 'ruby' => 'kata.rb', 'javascript' => 'kata.js' }.freeze
+    HARNESS_FILES = { 'python' => 'harness.py', 'ruby' => 'harness.rb', 'javascript' => 'harness.js' }.freeze
     # What runs on »Ausführen«: the program as it is, top-level code included.
-    PROGRAMS = { 'python' => %w[python3 -I -B kata.py], 'ruby' => %w[ruby -W0 kata.rb] }.freeze
+    PROGRAMS = { 'python' => %w[python3 -I -B kata.py], 'ruby' => %w[ruby -W0 kata.rb], 'javascript' => %w[node kata.js] }.freeze
     MAX_CODE = 4000
     # What is stored as the task's answer: the code per language, as JSON,
     # so each language keeps its own (TaskStore, max:).
@@ -59,6 +62,7 @@ module KataCheck
 
     RUBY_FORBID = /\A[A-Z]\w*(::[A-Z]\w*)*[#.][a-z_]\w*[?!]?\z/
     PYTHON_FORBID = /\A[a-z_]\w*(\.[a-z_]\w*)*\z/
+    JAVASCRIPT_FORBID = /\A[A-Za-z_$][\w$]*(\.[A-Za-z_$][\w$]*)+\z/
     # Python's built-in types, whose methods are looked for in the code
     PYTHON_TYPES = %w[list str dict set tuple int float bytes].freeze
     RANGE = /\A\s*(-?\d+)\s*\.\.\s*(-?\d+)\s*\z/
@@ -72,10 +76,11 @@ module KataCheck
         errors << "language must be #{CHECKS.keys.join(' or ')}" unless CHECKS.key?(language)
         errors.concat(CallCheck.spec_errors(check, ''))
         if check.key?('forbid')
-            pattern = language == 'python' ? PYTHON_FORBID : RUBY_FORBID
+            pattern = { 'python' => PYTHON_FORBID, 'javascript' => JAVASCRIPT_FORBID }.fetch(language, RUBY_FORBID)
             unless check['forbid'].is_a?(Array) && !check['forbid'].empty? && check['forbid'].all? { |f| f.is_a?(String) && f =~ pattern }
-                errors << (language == 'python' ? 'forbid must list names like sorted, math.gcd or list.sort' :
-                    'forbid must list methods like Integer#gcd or Math.sqrt')
+                errors << { 'python' => 'forbid must list names like sorted, math.gcd or list.sort',
+                            'javascript' => 'forbid must list functions like Math.max or Array.prototype.sort' }
+                    .fetch(language, 'forbid must list methods like Integer#gcd or Math.sqrt')
             end
         end
         errors.concat(random_errors(check['random'])) if check.key?('random')
@@ -130,7 +135,7 @@ module KataCheck
         case value
         when true then language == 'python' ? 'True' : 'true'
         when false then language == 'python' ? 'False' : 'false'
-        when nil then language == 'python' ? 'None' : 'nil'
+        when nil then { 'python' => 'None', 'javascript' => 'null' }.fetch(language, 'nil')
         when Array then "[#{value.map { |v| literal(v, language) }.join(', ')}]"
         when String then JSON.generate(value)
         else value.to_s
@@ -157,6 +162,8 @@ module KataCheck
             arguments = names.map { |n| shown[n] }.join(', ')
             expect = if language == 'python'
                 "(lambda #{names.join(', ')}: #{random['reference']})(#{arguments})"
+            elsif language == 'javascript'
+                "((#{names.join(', ')}) => (#{random['reference']}))(#{arguments})"
             else
                 "->(#{names.join(', ')}) { #{random['reference']} }.call(#{arguments})"
             end
@@ -164,10 +171,11 @@ module KataCheck
         end
     end
 
-    # What runs before the harness when check forbids built-ins.
+    # What runs before the harness when check forbids built-ins (the
+    # JavaScript harness gets the list as an argument instead).
     def self.prelude(check)
         list = JSON.generate(check['forbid'] || [])
-        return '' if list == '[]'
+        return '' if list == '[]' || check['language'] == 'javascript'
 
         if check['language'] == 'python'
             <<~PY
@@ -244,13 +252,19 @@ module KataCheck
         alternatives = (task['feedback'] || []).select { |f| f.dig('when', 'same_as') }
         files = { file => code.to_s, harness => prelude(check) + language::HARNESS }
         alternatives.each_with_index { |f, i| files["alt#{i + 1}#{File.extname(file)}"] = f['when']['same_as'] }
-        payload = language.argv(file, cases).last
-        interpreter = language.argv(file, cases).first(language == PythonCheck ? 3 : 2)
+        # the language's command for its harness, taken apart: what comes
+        # before the harness (interpreter and options), and the arguments
+        # after the file (the cases, for JavaScript also what is forbidden)
+        full = language_name == 'javascript' ? language.argv(file, cases, check['forbid'] || []) : language.argv(file, cases)
+        at = full.index(language::HARNESS)
+        interpreter = full[0...at - 1]
+        arguments = full[(at + 2)..]
         targets = [file] + alternatives.each_index.map { |i| "alt#{i + 1}#{File.extname(file)}" }
         argv = if targets.size == 1
-            interpreter + [harness, file, payload]
+            interpreter + [harness, file] + arguments
         else
-            ['sh', '-c', "for f in #{targets.join(' ')}; do #{interpreter.join(' ')} #{harness} \"$f\" \"$0\"; done", payload]
+            positions = arguments.each_index.map { |i| "\"$#{i}\"" }.join(' ')
+            ['sh', '-c', "for f in #{targets.join(' ')}; do #{interpreter.join(' ')} #{harness} \"$f\" #{positions}; done", *arguments]
         end
         seconds = check['timeout'] || 10
         timeout = [seconds * targets.size, MAX_SECONDS].min
@@ -294,6 +308,12 @@ module KataCheck
          'Hier ist ein Wert `nil`, also nichts, und der kann kein `%s`. Gibt eine Funktion vielleicht nichts zurück?'],
         ['ruby', /unexpected end-of-input|expected an `end`|expected a matching `end`|unexpected 'end'|unexpected `end'/,
          'Die `end` passen nicht: Jedes `def`, `if`, `while` und `do` braucht genau ein `end`.'],
+        ['javascript', /ReferenceError: (\S+) is not defined/,
+         '`%s` kennt JavaScript an dieser Stelle nicht. Ist es anders geschrieben, oder fehlt ein `let` oder `const`?'],
+        ['javascript', /Cannot read properties of (?:undefined|null) \(reading '([^']+)'\)/,
+         'Hier ist ein Wert `undefined` oder `null`, also nichts, und der hat kein `%s`. Gibt eine Funktion vielleicht nichts mit `return` zurück?'],
+        ['javascript', /Unexpected end of input|missing \) after argument list|Unexpected token '\}'/,
+         'Die Klammern passen nicht: Jede `{` und jede `(` braucht ihr Gegenstück.'],
         ['ruby', /String can't be coerced into Integer|no implicit conversion of Integer into String/,
          'Text und Zahl lassen sich nicht mit `+` aneinanderhängen. `zahl.to_s` macht aus der Zahl einen Text, oder du schreibst `"…#{zahl}…"`.'],
     ].freeze

@@ -726,6 +726,20 @@ language as JSON in the task's answer, teachers see only the result;
 in the run, the message names the value) and `same_as` feedback (the wrong
 solutions run in the same container) are done, and beginner errors get a
 line of explanation under the original (`KataCheck::EXPLAINED`). The
-solution after solving comes as for every task, in the card's language. Still
+solution after solving comes as for every task, in the card's language. A check may name
+`slow:`, the message when the time is up where speed is the point. Still
 open in step 2: a time limit per case, and the live console over the
 WebSocket (the output now comes when the run ends).
+
+**Step 3, `extra: true`: done.** Counts for nobody's »x von y« (start page,
+class board, the card says »Extra«); extra chapters may hold extra tasks.
+
+**Step 4, sets 1 to 3 and JavaScript: done, dev-only.** `kata-functions`,
+`kata-decisions`, `kata-loops` in the catalog section »Katas« (entries with a
+dot, so only development shows them until the maintainer has looked), each in
+Ruby, Python and JavaScript, with card pictures from recipes. JavaScript is a
+language of the Katas only: `CodeLanguages::GROUP_LANGUAGES` keeps the class
+setting at Ruby and Python, and a choice of JavaScript is stored apart
+(`u.kata_code_language`), so other pages keep Ruby or Python.
+`JavascriptCheck` is the harness. Person boxes for Euklid, Fibonacci,
+Collatz and Eratosthenes (set 3) are still to be written.

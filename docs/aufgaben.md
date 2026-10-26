@@ -781,7 +781,8 @@ check:
 ### function
 
 Eine Kata (docs/plan-katas.md): Der Code steht nicht in einer Datei im
-Workspace, sondern wird in der Karte geschrieben, in Ruby oder Python, mit
+Workspace, sondern wird in der Karte geschrieben, in Ruby, Python oder
+JavaScript, mit
 den Farben der Codeblöcke, Einrückung mit <kbd>Tab</kbd> und
 <kbd>Strg</kbd>+<kbd>Enter</kbd> zum Prüfen. **Ausführen** startet ihn einmal
 und zeigt, was er ausgibt; **Prüfen** ruft die Funktionen auf und vergleicht,
@@ -800,7 +801,7 @@ Rückmeldung sagt »dein Code« statt eines Dateinamens.
     end
   check:
     type: function
-    language: ruby                # ruby oder python
+    language: ruby                # ruby, python oder javascript
     cases:
       - gcd(60, 48): 12
       - call: gcd(7, 7)
@@ -826,7 +827,23 @@ selbst darf sie weiter benutzen. In Python eine eingebaute Funktion
 (`sorted`), eine Funktion eines Moduls (`math.gcd`), ein eingebauter Typ
 (`str`, `list`) oder eine Methode eines solchen (`list.sort`, `str.upper`);
 Typen und ihre Methoden lassen sich in Python nicht abschalten, darum genügt
-es, wenn der Name im Code vorkommt.
+es, wenn der Name im Code vorkommt. In JavaScript eine Funktion oder Methode
+mit ihrem Pfad (`Math.max`, `Array.prototype.sort`, `globalThis.String`),
+wie in Ruby nur für den Code der Lernenden.
+
+**JavaScript gibt es nur für Katas** (die Einstellung »Sprache« einer Klasse
+bleibt bei Ruby und Python): Eine Seite mit
+`languages: [ruby, python, javascript]` bietet es im Umschalter an, und wer
+dort JavaScript wählt, behält auf anderen Seiten Ruby oder Python
+(`u.kata_code_language` neben `u.code_language`). Der Code läuft mit `node`
+in einem eigenen Kontext (`JavascriptCheck`); verglichen wird mit
+`util.isDeepStrictEqual`, Listen und Objekte also nach ihrem Inhalt. Namen
+aus mehreren Wörtern schreibt man in JavaScript zusammen (`maxOfTwo`), die
+Varianten der Aufgabe nennen ihre Funktionen so.
+
+**Wo es auf die Geschwindigkeit ankommt** (`timeout` klein, eine große
+Eingabe), sagt `slow:`, was die Rückmeldung nach Ablauf der Zeit stattdessen
+sagt, statt nach einer Endlosschleife zu fragen.
 
 **Fälle für jede Person** erzeugt `random`: `count` Aufrufe (höchstens 20)
 mit Werten aus `args` (ein Bereich `1..1000` oder eine Liste von Werten),

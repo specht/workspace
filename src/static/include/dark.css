@@ -69,6 +69,9 @@ html[data-bs-theme="dark"] {
     .code-language-option[data-set-language='python'][aria-pressed='true'] {
         color: #8cbfe8;
     }
+    .code-language-option[data-set-language='javascript'][aria-pressed='true'] {
+        color: #f7df1e;
+    }
     .autotoc-up {
         color: #c9c8c3;
         background: #2a2a28;

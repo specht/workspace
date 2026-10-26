@@ -192,8 +192,50 @@
         ]);
     }
 
-    const HIGHLIGHT = { sql, cypher, ruby, python };
-    const INDENT = { python: '    ', ruby: '  ' };
+    // JavaScript, as Rouge's lexer: declarations kd (function, const, let),
+    // keywords k, true/false/null/undefined kc, built-ins nb, names nx, the
+    // name after function and a method called after a dot nf.
+    const JS_DECLARATIONS = new Set(['function', 'const', 'let', 'var', 'class']);
+    const JS_KEYWORDS = new Set(('if else for while do return break continue new of in typeof instanceof switch case '
+        + 'default throw try catch finally this async await yield delete void extends super').split(' '));
+    const JS_CONSTANTS = new Set(['true', 'false', 'null', 'undefined', 'NaN', 'Infinity']);
+    const JS_BUILTINS = new Set('Math Array Object String Number Boolean JSON Date Map Set Promise parseInt parseFloat isNaN'.split(' '));
+
+    function javascript(text) {
+        let afterFunction = false;
+        let afterDot = false;
+        const plain = (token) => () => { afterDot = false; return token; };
+        return scan(text, [
+            [/\s+/y, null],
+            [/\/\/.*/y, plain('c1')],
+            [/\/\*[\s\S]*?(?:\*\/|$)/y, plain('cm')],
+            [/`(?:\\[\s\S]|[^`\\])*`?/y, plain('s2')],
+            [/"(?:\\[\s\S]|[^"\\\n])*"?/y, plain('s2')],
+            [/'(?:\\[\s\S]|[^'\\\n])*'?/y, plain('s1')],
+            [/\d+\.\d+/y, plain('mf')],
+            [/\d+/y, plain('mi')],
+            [/[A-Za-z_$][\w$]*(?=\s*\()/y, (w) => {
+                const token = afterFunction || afterDot ? 'nf' : JS_KEYWORDS.has(w) ? 'k' : JS_BUILTINS.has(w) ? 'nb' : 'nx';
+                afterFunction = JS_DECLARATIONS.has(w) && w === 'function';
+                afterDot = false;
+                return JS_DECLARATIONS.has(w) ? 'kd' : token;
+            }],
+            [/[A-Za-z_$][\w$]*/y, (w) => {
+                const token = afterFunction ? 'nf' : JS_DECLARATIONS.has(w) ? 'kd' : JS_KEYWORDS.has(w) ? 'k'
+                    : JS_CONSTANTS.has(w) ? 'kc' : JS_BUILTINS.has(w) ? 'nb' : 'nx';
+                afterFunction = w === 'function';
+                afterDot = false;
+                return token;
+            }],
+            [/\./y, () => { afterDot = true; return 'p'; }],
+            [/[+*/<>=~!&|%^?-]+/y, plain('o')],
+            [/[;:()[\]{},]/y, plain('p')],
+            [/[\s\S]/y, null],
+        ]);
+    }
+
+    const HIGHLIGHT = { sql, cypher, ruby, python, javascript };
+    const INDENT = { python: '    ', ruby: '  ', javascript: '  ' };
 
     // Writing code: Tab indents (the selected lines, or at the cursor),
     // Shift+Tab takes it back, Enter keeps the line's indentation and adds
@@ -201,6 +243,7 @@
     // field, as everywhere else on the page. Edits go through insertText, so
     // Ctrl+Z still undoes them.
     function opensBlock(language, line) {
+        if (language === 'javascript') return /[{([]$/.test(line.replace(/\/\/.*$/, '').trimEnd());
         const code = line.replace(/#.*$/, '').trimEnd();
         if (language === 'python') return code.endsWith(':');
         return /^\s*(def|class|module|if|unless|while|until|for|case|when|begin|else|elsif|rescue|ensure)\b/.test(code)
@@ -290,5 +333,5 @@
         update();
     }
 
-    window.CodeInput = { attach, sql, cypher, ruby, python };
+    window.CodeInput = { attach, sql, cypher, ruby, python, javascript };
 })();

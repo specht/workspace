@@ -1,4 +1,4 @@
-Lernende schreiben kleine Funktionen direkt in die Karten der Seite, in Ruby oder Python: Werte bekommen, rechnen, ein Ergebnis zurückgeben. Ohne Terminal und Dateien; **Ausführen** zeigt, was der Code ausgibt, **Prüfen** ruft die Funktion mit festen und zufälligen Werten auf.
+Lernende schreiben kleine Funktionen direkt in die Karten der Seite, in Ruby, Python oder JavaScript: Werte bekommen, rechnen, ein Ergebnis zurückgeben. Ohne Terminal und Dateien; **Ausführen** zeigt, was der Code ausgibt, **Prüfen** ruft die Funktion mit festen und zufälligen Werten auf.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Keine Programmiererfahrung nötig; Variablen und Rechenzeichen werden gebraucht, aber nicht eigens erklärt.</td></tr>
@@ -9,7 +9,7 @@ Lernende schreiben kleine Funktionen direkt in die Karten der Seite, in Ruby ode
 <li>Extras (2): zählen nicht mit, für Schnelle.</li>
 </ul></td></tr>
 <tr><th>Prüfung</th><td>Jede Kata ruft die Funktion mit festen Werten auf, einige zusätzlich mit Werten, die für jede Person anders sind; eine Tabelle der Beispiele besteht also nicht. Der Code läuft in einem eigenen Container ohne Netz, nicht im Workspace.</td></tr>
-<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt, sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
+<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt (Ruby, Python, JavaScript), sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
 </table>
 
 #### Was schiefgeht

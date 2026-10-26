@@ -14,6 +14,11 @@ examples:
         - answer: "def add(a, b):\n    return a + b\n"
       fail:
         - answer: "def add(a, b):\n    print(a + b)\n"
+    javascript:
+      pass:
+        - answer: "function add(a, b) {\n  return a + b;\n}\n"
+      fail:
+        - answer: "function add(a, b) {\n  console.log(a + b);\n}\n"
   double:
     pass:
       - answer: "def double(n)\n  2 * n\nend\n"
@@ -24,6 +29,11 @@ examples:
         - answer: "def double(n):\n    return 2 * n\n"
       fail:
         - answer: "def double(n):\n    return n + 2\n"
+    javascript:
+      pass:
+        - answer: "function double(n) {\n  return 2 * n;\n}\n"
+      fail:
+        - answer: "function double(n) {\n  return n + 2;\n}\n"
   greet:
     pass:
       - answer: "def greet(name)\n  \"Hallo, #{name}!\"\nend\n"
@@ -34,6 +44,11 @@ examples:
         - answer: "def greet(name):\n    return f'Hallo, {name}!'\n"
       fail:
         - answer: "def greet(name):\n    return 'Hallo ' + name\n"
+    javascript:
+      pass:
+        - answer: "function greet(name) {\n  return `Hallo, ${name}!`;\n}\n"
+      fail:
+        - answer: "function greet(name) {\n  return 'Hallo ' + name;\n}\n"
   rectangle:
     pass:
       - answer: "def rectangle_area(width, height)\n  width * height\nend\n"
@@ -44,6 +59,11 @@ examples:
         - answer: "def rectangle_area(width, height):\n    return width * height\n"
       fail:
         - answer: "def rectangle_area(width, height):\n    return 2 * width + 2 * height\n"
+    javascript:
+      pass:
+        - answer: "function rectangleArea(width, height) {\n  return width * height;\n}\n"
+      fail:
+        - answer: "function rectangleArea(width, height) {\n  return 2 * width + 2 * height;\n}\n"
   fahrenheit:
     pass:
       - answer: "def fahrenheit(celsius)\n  celsius * 1.8 + 32\nend\n"
@@ -55,6 +75,11 @@ examples:
         - answer: "def fahrenheit(celsius):\n    return celsius * 1.8 + 32\n"
       fail:
         - answer: "def fahrenheit(celsius):\n    return (celsius + 32) * 1.8\n"
+    javascript:
+      pass:
+        - answer: "function fahrenheit(celsius) {\n  return celsius * 1.8 + 32;\n}\n"
+      fail:
+        - answer: "function fahrenheit(celsius) {\n  return (celsius + 32) * 1.8;\n}\n"
   clock:
     pass:
       - answer: "def clock(seconds)\n  format('%d:%02d', seconds / 60, seconds % 60)\nend\n"
@@ -66,6 +91,11 @@ examples:
       fail:
         - answer: "def clock(seconds):\n    return f'{seconds // 60}:{seconds % 60}'\n"
         - answer: "def clock(seconds):\n    return f'{seconds / 60}:{seconds % 60:02d}'\n"
+    javascript:
+      pass:
+        - answer: "function clock(seconds) {\n  const minutes = Math.floor(seconds / 60);\n  return `${minutes}:${String(seconds % 60).padStart(2, '0')}`;\n}\n"
+      fail:
+        - answer: "function clock(seconds) {\n  return `${Math.floor(seconds / 60)}:${seconds % 60}`;\n}\n"
   average:
     pass:
       - answer: "def average(a, b, c)\n  (a + b + c) / 3.0\nend\n"
@@ -78,6 +108,11 @@ examples:
       fail:
         - answer: "def average(a, b, c):\n    return a + b + c / 3\n"
         - answer: "def average(a, b, c):\n    return (a + b + c) // 3\n"
+    javascript:
+      pass:
+        - answer: "function average(a, b, c) {\n  return (a + b + c) / 3;\n}\n"
+      fail:
+        - answer: "function average(a, b, c) {\n  return a + b + c / 3;\n}\n"
   price:
     pass:
       - answer: "def price(count, unit_price, discount)\n  total = count * unit_price\n  total - total * discount / 100.0\nend\n"
@@ -88,6 +123,11 @@ examples:
         - answer: "def price(count, unit_price, discount):\n    total = count * unit_price\n    return total - total * discount / 100\n"
       fail:
         - answer: "def price(count, unit_price, discount):\n    return count * unit_price - discount\n"
+    javascript:
+      pass:
+        - answer: "function price(count, unitPrice, discount) {\n  const total = count * unitPrice;\n  return total - total * discount / 100;\n}\n"
+      fail:
+        - answer: "function price(count, unitPrice, discount) {\n  return count * unitPrice - discount;\n}\n"
   clock-after:
     pass:
       - answer: "def clock_after(hour, minute, minutes)\n  total = (hour * 60 + minute + minutes) % (24 * 60)\n  format('%02d:%02d', total / 60, total % 60)\nend\n"
@@ -98,6 +138,11 @@ examples:
         - answer: "def clock_after(hour, minute, minutes):\n    total = (hour * 60 + minute + minutes) % (24 * 60)\n    return f'{total // 60:02d}:{total % 60:02d}'\n"
       fail:
         - answer: "def clock_after(hour, minute, minutes):\n    t = hour * 60 + minute + minutes\n    return f'{t // 60:02d}:{t % 60:02d}'\n"
+    javascript:
+      pass:
+        - answer: "function clockAfter(hour, minute, minutes) {\n  const total = (hour * 60 + minute + minutes) % (24 * 60);\n  const two = (n) => String(n).padStart(2, '0');\n  return `${two(Math.floor(total / 60))}:${two(total % 60)}`;\n}\n"
+      fail:
+        - answer: "function clockAfter(hour, minute, minutes) {\n  const t = hour * 60 + minute + minutes;\n  return String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');\n}\n"
   last-digit:
     pass:
       - answer: "def last_digit(n)\n  n.abs % 10\nend\n"
@@ -112,6 +157,13 @@ examples:
         - answer: "def last_digit(n):\n    return n % 10\n"
         - answer: "def last_digit(n):\n    return int(str(n)[-1])\n"
           say: "benutzt `str`"
+    javascript:
+      pass:
+        - answer: "function lastDigit(n) {\n  return Math.abs(n) % 10;\n}\n"
+      fail:
+        - answer: "function lastDigit(n) {\n  return n % 10;\n}\n"
+        - answer: "function lastDigit(n) {\n  return Number(n.toString().slice(-1));\n}\n"
+          say: "benutzt `Number.prototype.toString`"
   reverse-digits:
     pass:
       - answer: "def reverse_digits(n)\n  ones = n % 10\n  tens = n / 10 % 10\n  hundreds = n / 100\n  return ones if n < 10\n  return ones * 10 + tens if n < 100\n  ones * 100 + tens * 10 + hundreds\nend\n"
@@ -126,6 +178,13 @@ examples:
         - answer: "def reverse_digits(n):\n    return int(str(n)[::-1])\n"
           say: "benutzt `str`"
         - answer: "def reverse_digits(n):\n    return (n % 10) * 100 + (n // 10 % 10) * 10 + n // 100\n"
+    javascript:
+      pass:
+        - answer: "function reverseDigits(n) {\n  const ones = n % 10;\n  const tens = Math.floor(n / 10) % 10;\n  const hundreds = Math.floor(n / 100);\n  if (n < 10) return ones;\n  if (n < 100) return ones * 10 + tens;\n  return ones * 100 + tens * 10 + hundreds;\n}\n"
+      fail:
+        - answer: "function reverseDigits(n) {\n  return Number(String(n).split('').reverse().join(''));\n}\n"
+          say: "benutzt `globalThis.String`"
+        - answer: "function reverseDigits(n) {\n  return (n % 10) * 100 + (Math.floor(n / 10) % 10) * 10 + Math.floor(n / 100);\n}\n"
   duration:
     pass:
       - answer: "def duration(seconds)\n  format('%d:%02d:%02d', seconds / 3600, seconds / 60 % 60, seconds % 60)\nend\n"
@@ -136,3 +195,8 @@ examples:
         - answer: "def duration(seconds):\n    return f'{seconds // 3600}:{seconds // 60 % 60:02d}:{seconds % 60:02d}'\n"
       fail:
         - answer: "def duration(seconds):\n    return f'{seconds // 3600}:{seconds // 60:02d}:{seconds % 60:02d}'\n"
+    javascript:
+      pass:
+        - answer: "function duration(seconds) {\n  const two = (n) => String(n).padStart(2, '0');\n  return `${Math.floor(seconds / 3600)}:${two(Math.floor(seconds / 60) % 60)}:${two(seconds % 60)}`;\n}\n"
+      fail:
+        - answer: "function duration(seconds) {\n  const two = (n) => String(n).padStart(2, '0');\n  return `${Math.floor(seconds / 3600)}:${two(Math.floor(seconds / 60))}:${two(seconds % 60)}`;\n}\n"

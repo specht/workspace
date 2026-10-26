@@ -87,6 +87,12 @@ class CodeLanguagesTest < Minitest::Test
         assert_equal 'python', CodeLanguages.resolve(nil, { '10a' => nil, 'LK' => 'python' })
         assert_equal 'ruby', CodeLanguages.resolve(nil, { '10a' => nil })
         assert_equal 'ruby', CodeLanguages.resolve('cobol', {})
+        # JavaScript, picked on a Kata page, is passed over where a page
+        # does not offer it: the class's language comes next
+        assert_equal 'python', CodeLanguages.resolve('javascript', { '10a' => 'python' }, %w[ruby python])
+        assert_equal 'javascript', CodeLanguages.resolve('javascript', { '10a' => 'python' }, %w[ruby python javascript])
+        assert_equal 'ruby', CodeLanguages.resolve('javascript', {}, %w[ruby python])
+        assert_equal 'python', CodeLanguages.resolve(nil, {}, %w[python])
     end
 
     TASK = {

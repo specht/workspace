@@ -1,4 +1,4 @@
-Lernende schreiben Funktionen mit Schleifen direkt in die Karten der Seite, in Ruby oder Python: zählen, summieren, Listen füllen, herunterzählen, und Schleifen, die laufen, bis etwas gefunden ist (Primzahlen, der größte gemeinsame Teiler, die Collatz-Folge).
+Lernende schreiben Funktionen mit Schleifen direkt in die Karten der Seite, in Ruby, Python oder JavaScript: zählen, summieren, Listen füllen, herunterzählen, und Schleifen, die laufen, bis etwas gefunden ist (Primzahlen, der größte gemeinsame Teiler, die Collatz-Folge).
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Funktionen und Entscheidungen, etwa aus den <a href='/kata-functions'>Katas: Erste Funktionen</a> und den <a href='/kata-decisions'>Katas: Entscheidungen</a>.</td></tr>
@@ -9,7 +9,7 @@ Lernende schreiben Funktionen mit Schleifen direkt in die Karten der Seite, in R
 <li>Extras (2): vollkommene Zahlen, alle Primzahlen bis eine Million in sechs Sekunden (das Sieb des Eratosthenes).</li>
 </ul></td></tr>
 <tr><th>Prüfung</th><td>Feste Werte, dazu bei den meisten Katas Werte, die für jede Person anders sind. Wo eine eingebaute Funktion die Aufgabe lösen würde (<code>sum</code>, <code>reduce</code>, <code>math.factorial</code>, <code>gcd</code>), ist sie abgeschaltet. Beim letzten Extra hat der Code sechs Sekunden; eine Prüfung jeder Zahl bis zur Wurzel ist knapp zu langsam, das Sieb braucht etwa eine.</td></tr>
-<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt, sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
+<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt (Ruby, Python, JavaScript), sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
 </table>
 
 #### Was schiefgeht

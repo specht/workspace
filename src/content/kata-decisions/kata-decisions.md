@@ -2,7 +2,7 @@
 image: teaser.webp:50:20
 kind: uebung
 duration: 1 Doppelstunde
-languages: [ruby, python]
+languages: [ruby, python, javascript]
 requires: [kata-functions]
 </div>
 
@@ -72,6 +72,28 @@ verbinden `and` (beide) und `or` (mindestens eine), `not` dreht eine um.
 Ein Vergleich ist selbst ein Wert, `True` oder `False`: `degrees >= 25` kann
 eine Funktion auch direkt zurückgeben.
 <!-- /language -->
+<!-- language: javascript -->
+```javascript
+function weather(degrees) {
+  if (degrees >= 25) {
+    return 'Baden!';
+  } else if (degrees >= 15) {
+    return 'Spazieren';
+  } else {
+    return 'Lesen';
+  }
+}
+
+console.log(weather(28));
+```
+
+JavaScript prüft die Bedingungen der Reihe nach und nimmt die erste, die
+stimmt. Verglichen wird mit `===`, `!==`, `<`, `<=`, `>` und `>=`; das
+kürzere `==` gibt es auch, aber es hält `'5' == 5` für wahr. Zwei Bedingungen
+verbinden `&&` (beide) und `||` (mindestens eine), `!` dreht eine um. Ein
+Vergleich ist selbst ein Wert, `true` oder `false`: `degrees >= 25` kann eine
+Funktion auch direkt zurückgeben.
+<!-- /language -->
 
 ## Einstieg
 
@@ -98,7 +120,8 @@ _task(max-of-three)
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Vertausch in einer deiner Lösungen zwei
-<code>elsif</code>- oder <code>elif</code>-Zweige und drück <em>Prüfen</em>.
+Zweige mit <code>elsif</code>, <code>elif</code> oder <code>else if</code> und
+drück <em>Prüfen</em>.
 Bei welchen Werten macht die Reihenfolge einen Unterschied, und bei welchen
 nicht?
 </div>

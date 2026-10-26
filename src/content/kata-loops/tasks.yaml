@@ -82,6 +82,48 @@ tasks:
                 total += i
             return total
         ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `sumTo(n)`, die alle Zahlen von 1 bis `n` zusammenzählt: `sumTo(4)` ergibt `10`, denn 1 + 2 + 3 + 4 = 10. Mit einer Schleife.
+      starter: |
+        function sumTo(n) {
+          let total = 0;
+          // hier: eine Schleife
+          return total;
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.reduce]
+        cases:
+          - call: "sumTo(4)"
+            expect: "10"
+          - call: "sumTo(1)"
+            expect: "1"
+          - call: "sumTo(0)"
+            expect: "0"
+          - call: "sumTo(100)"
+            expect: "5050"
+        random:
+          count: 4
+          call: "sumTo(n)"
+          args: { n: 1..2000 }
+          reference: "n * (n + 1) / 2"
+      feedback:
+        - when: { same_as: "function sumTo(n) {\n  let total = 0;\n  for (let i = 1; i < n; i++) total += i;\n  return total;\n}\n" }
+          say: "`i < n` hört vor `n` auf. Damit `n` dabei ist, brauchst du `i <= n`."
+      hint: |
+        `for (let i = 1; i <= n; i++) { … }` läuft mit `i` von 1 bis `n`. In der Schleife addierst du `i` zu `total`.
+      solution: |
+        ```javascript
+        function sumTo(n) {
+          let total = 0;
+          for (let i = 1; i <= n; i++) {
+            total += i;
+          }
+          return total;
+        }
+        ```
 
   - id: numbers
     title: "Eine Zahlenreihe"
@@ -144,6 +186,36 @@ tasks:
                 result.append(i)
             return result
         ```
+    javascript:
+      starter: |
+        function numbers(n) {
+          const result = [];
+          // hier: eine Schleife
+          return result;
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.from, Array.prototype.keys, Array.prototype.fill]
+        cases:
+          - call: "numbers(4)"
+            expect: "[1, 2, 3, 4]"
+          - call: "numbers(1)"
+            expect: "[1]"
+          - call: "numbers(0)"
+            expect: "[]"
+            say: "Bis 0 gibt es keine Zahl: eine leere Liste."
+      hint: "`result.push(i)` hängt `i` hinten an die Liste an."
+      solution: |
+        ```javascript
+        function numbers(n) {
+          const result = [];
+          for (let i = 1; i <= n; i++) {
+            result.push(i);
+          }
+          return result;
+        }
+        ```
 
   - id: squares
     title: "Quadratzahlen"
@@ -196,6 +268,30 @@ tasks:
             for i in range(1, n + 1):
                 result.append(i * i)
             return result
+        ```
+    javascript:
+      starter: |
+        function squares(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "squares(4)"
+            expect: "[1, 4, 9, 16]"
+          - call: "squares(1)"
+            expect: "[1]"
+          - call: "squares(0)"
+            expect: "[]"
+          - call: "squares(10).at(-1)"
+            expect: "100"
+      solution: |
+        ```javascript
+        function squares(n) {
+          const result = [];
+          for (let i = 1; i <= n; i++) result.push(i * i);
+          return result;
+        }
         ```
 
   - id: countdown
@@ -251,6 +347,30 @@ tasks:
             for i in range(n, -1, -1):
                 result.append(i)
             return result
+        ```
+    javascript:
+      starter: |
+        function countdown(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.reverse, Array.prototype.toReversed]
+        cases:
+          - call: "countdown(3)"
+            expect: "[3, 2, 1, 0]"
+          - call: "countdown(0)"
+            expect: "[0]"
+          - call: "countdown(10).length"
+            expect: "11"
+      hint: "`for (let i = n; i >= 0; i--)` zählt herunter bis 0."
+      solution: |
+        ```javascript
+        function countdown(n) {
+          const result = [];
+          for (let i = n; i >= 0; i--) result.push(i);
+          return result;
+        }
         ```
 
   - id: factorial
@@ -330,6 +450,43 @@ tasks:
             for i in range(1, n + 1):
                 product *= i
             return product
+        ```
+    javascript:
+      starter: |
+        function factorial(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.reduce]
+        cases:
+          - call: "factorial(5)"
+            expect: "120"
+          - call: "factorial(1)"
+            expect: "1"
+          - call: "factorial(0)"
+            expect: "1"
+            say: "0! ist 1: das Produkt von gar keiner Zahl."
+          - call: "factorial(10)"
+            expect: "3628800"
+        random:
+          count: 4
+          call: "factorial(n)"
+          args: { n: 2..18 }
+          reference: "(function f(k) { return k <= 1 ? 1 : k * f(k - 1); })(n)"
+      feedback:
+        - when: { same_as: "function factorial(n) {\n  let product = 0;\n  for (let i = 1; i <= n; i++) product *= i;\n  return product;\n}\n" }
+          say: "Ein Produkt, das bei 0 anfängt, bleibt 0, was auch immer du damit multiplizierst. Fang bei 1 an."
+      hint:
+        - "Rechne 4! von Hand und schreib jeden Zwischenwert auf: 1, 2, 6, 24."
+        - "Wie bei der Summe, nur mit `*` statt `+`. Womit muss das Produkt anfangen?"
+      solution: |
+        ```javascript
+        function factorial(n) {
+          let product = 1;
+          for (let i = 1; i <= n; i++) product *= i;
+          return product;
+        }
         ```
 
   - id: digit-sum
@@ -432,6 +589,58 @@ tasks:
                 n //= 10
             return total
         ```
+    javascript:
+      prompt: |
+        Die Quersumme einer Zahl ist die Summe ihrer Ziffern: Die Quersumme von 1234 ist 1 + 2 + 3 + 4 = 10. Schreib eine Funktion `digitSum(n)`, nur mit Rechnen, ohne die Zahl in einen Text zu verwandeln.
+      starter: |
+        function digitSum(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Number.prototype.toString, globalThis.String]
+        cases:
+          - call: "digitSum(1234)"
+            expect: "10"
+          - call: "digitSum(7)"
+            expect: "7"
+          - call: "digitSum(0)"
+            expect: "0"
+          - call: "digitSum(9999)"
+            expect: "36"
+          - call: "digitSum(1000)"
+            expect: "1"
+        random:
+          count: 4
+          call: "digitSum(n)"
+          args: { n: 0..1000000 }
+          reference: "[...`${n}`].reduce((s, d) => s + Number(d), 0)"
+      hint:
+        - "`1234 % 10` ist 4, die letzte Ziffer. Und `Math.floor(1234 / 10)`?"
+        - "Wiederhole: letzte Ziffer zur Summe, dann die Zahl durch 10 teilen. Bis wann?"
+        - |
+          Ein Gerüst:
+
+          ```javascript
+          function digitSum(n) {
+            let total = 0;
+            while (n > 0) {
+              // hier: letzte Ziffer dazu, dann n kleiner machen
+            }
+            return total;
+          }
+          ```
+      solution: |
+        ```javascript
+        function digitSum(n) {
+          let total = 0;
+          while (n > 0) {
+            total += n % 10;
+            n = Math.floor(n / 10);
+          }
+          return total;
+        }
+        ```
 
   - id: fibonacci
     title: "Fibonacci"
@@ -504,6 +713,43 @@ tasks:
             for i in range(n):
                 a, b = b, a + b
             return a
+        ```
+    javascript:
+      starter: |
+        function fibonacci(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "fibonacci(0)"
+            expect: "0"
+          - call: "fibonacci(1)"
+            expect: "1"
+          - call: "fibonacci(2)"
+            expect: "1"
+          - call: "fibonacci(7)"
+            expect: "13"
+          - call: "fibonacci(10)"
+            expect: "55"
+        random:
+          count: 4
+          call: "fibonacci(n)"
+          args: { n: 15..60 }
+          reference: "Math.round(((1 + Math.sqrt(5)) / 2) ** n / Math.sqrt(5))"
+      hint:
+        - "Schreib die Folge bis `fibonacci(7)` auf und zeig mit dem Finger auf die beiden Zahlen, die du gerade addierst."
+        - "Zwei Variablen merken sich die letzten beiden Zahlen, `a` und `b`. Wie sehen sie nach einem Schritt aus?"
+      solution: |
+        ```javascript
+        function fibonacci(n) {
+          let a = 0;
+          let b = 1;
+          for (let i = 0; i < n; i++) {
+            [a, b] = [b, a + b];
+          }
+          return a;
+        }
         ```
 
   - id: divisors
@@ -582,6 +828,46 @@ tasks:
                 if n % d == 0:
                     count += 1
             return count
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `countDivisors(n)`, die zählt, durch wie viele Zahlen `n` ohne Rest teilbar ist: 12 hat die Teiler 1, 2, 3, 4, 6 und 12, `countDivisors(12)` ergibt also `6`.
+      starter: |
+        function countDivisors(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "countDivisors(12)"
+            expect: "6"
+          - call: "countDivisors(1)"
+            expect: "1"
+          - call: "countDivisors(7)"
+            expect: "2"
+          - call: "countDivisors(36)"
+            expect: "9"
+            say: "36 hat auch 6 als Teiler, 6 · 6 = 36: einmal gezählt."
+        random:
+          count: 4
+          call: "countDivisors(n)"
+          args: { n: 1..1000 }
+          reference: "Array.from({ length: n }, (_, i) => i + 1).filter((d) => n % d === 0).length"
+      feedback:
+        - when: { same_as: "function countDivisors(n) {\n  let count = 0;\n  for (let d = 1; d < n; d++) if (n % d === 0) count++;\n  return count;\n}\n" }
+          say: "Die Zahl selbst ist auch ein Teiler: `d <= n`."
+      hint:
+        - "Probier jede Zahl von 1 bis `n` aus: Lässt sie einen Rest?"
+        - "Ein Zähler fängt bei 0 an und wird bei jedem Teiler um 1 größer."
+      solution: |
+        ```javascript
+        function countDivisors(n) {
+          let count = 0;
+          for (let d = 1; d <= n; d++) {
+            if (n % d === 0) count++;
+          }
+          return count;
+        }
         ```
 
   - id: prime
@@ -684,6 +970,52 @@ tasks:
                     return False
                 d += 1
             return True
+        ```
+    javascript:
+      starter: |
+        function prime(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "prime(2)"
+            expect: "true"
+          - call: "prime(3)"
+            expect: "true"
+          - call: "prime(9)"
+            expect: "false"
+          - call: "prime(97)"
+            expect: "true"
+          - call: "prime(91)"
+            expect: "false"
+            say: "91 ist 7 mal 13."
+          - call: "prime(1)"
+            expect: "false"
+            say: "1 ist keine Primzahl: Eine Primzahl hat genau zwei Teiler, 1 und sich selbst."
+          - call: "prime(0)"
+            expect: "false"
+        random:
+          count: 4
+          call: "prime(n)"
+          args: { n: 1..2000 }
+          reference: "n > 1 && Array.from({ length: Math.floor(Math.sqrt(n)) - 1 }, (_, i) => i + 2).every((d) => n % d !== 0)"
+      feedback:
+        - when: { same_as: "function prime(n) {\n  for (let d = 2; d < n; d++) if (n % d === 0) return false;\n  return true;\n}\n" }
+          say: "1 ist keine Primzahl: Eine Primzahl hat genau zwei Teiler. Für `n` kleiner als 2 gibt es kein `true`."
+      hint:
+        - "Teilt irgendeine Zahl zwischen 2 und `n - 1` die Zahl `n` ohne Rest? Dann ist `n` keine Primzahl."
+        - "Sobald du einen Teiler gefunden hast, steht die Antwort fest: `return false`. Und was gilt für 0 und 1?"
+        - "Es reicht, bis zur Wurzel von `n` zu suchen: Hat `n` einen Teiler, der größer ist, hat es auch einen kleineren."
+      solution: |
+        ```javascript
+        function prime(n) {
+          if (n < 2) return false;
+          for (let d = 2; d * d <= n; d++) {
+            if (n % d === 0) return false;
+          }
+          return true;
+        }
         ```
 
   - id: gcd
@@ -788,6 +1120,56 @@ tasks:
                 a, b = b, a % b
             return a
         ```
+    javascript:
+      starter: |
+        function gcd(a, b) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "gcd(60, 48)"
+            expect: "12"
+          - call: "gcd(48, 60)"
+            expect: "12"
+          - call: "gcd(17, 5)"
+            expect: "1"
+          - call: "gcd(7, 7)"
+            expect: "7"
+            say: "Der größte Teiler einer Zahl mit sich selbst ist sie selbst."
+          - call: "gcd(100, 25)"
+            expect: "25"
+        random:
+          count: 4
+          call: "gcd(a, b)"
+          args: { a: 1..1000, b: 1..1000 }
+          reference: "(function g(x, y) { return y ? g(y, x % y) : x; })(a, b)"
+      feedback:
+        - when: { same_as: "function gcd(a, b) {\n  return Math.min(a, b);\n}\n" }
+          say: "Die kleinere Zahl ist nur manchmal ein Teiler der größeren. Probier `gcd(12, 8)` von Hand."
+      hint:
+        - "Rechne `gcd(60, 48)` von Hand. Welche Zahlen teilen beide?"
+        - "Euklid: Was `a` und `b` teilt, teilt auch den Rest `a % b`. Was passiert, wenn du `a, b` durch `b, a % b` ersetzt, bis `b` 0 ist?"
+        - |
+          Ein Gerüst:
+
+          ```javascript
+          function gcd(a, b) {
+            while (b !== 0) {
+              // hier: a und b neu belegen
+            }
+            return a;
+          }
+          ```
+      solution: |
+        ```javascript
+        function gcd(a, b) {
+          while (b !== 0) {
+            [a, b] = [b, a % b];
+          }
+          return a;
+        }
+        ```
 
   - id: collatz
     title: "Die Collatz-Folge"
@@ -862,6 +1244,41 @@ tasks:
                 steps += 1
             return steps
         ```
+    javascript:
+      prompt: |
+        Nimm eine Zahl. Ist sie gerade, halbiere sie, sonst nimm sie mal 3 und addiere 1. Wiederhole das. Aus 6 wird 3, 10, 5, 16, 8, 4, 2, 1: acht Schritte bis zur 1. Bisher kam jede Zahl, die man probiert hat, irgendwann bei 1 an; ob das für alle gilt, weiß niemand. Schreib eine Funktion `collatzSteps(n)`, die die Schritte bis zur 1 zählt.
+      starter: |
+        function collatzSteps(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "collatzSteps(1)"
+            expect: "0"
+            say: "Bei 1 ist man schon am Ziel: null Schritte."
+          - call: "collatzSteps(2)"
+            expect: "1"
+          - call: "collatzSteps(6)"
+            expect: "8"
+          - call: "collatzSteps(7)"
+            expect: "16"
+          - call: "collatzSteps(27)"
+            expect: "111"
+      hint:
+        - "Geh die Folge von 6 mit dem Finger durch und zähl mit: Wann hörst du auf zu zählen?"
+        - "Eine `while`-Schleife läuft, solange `n` nicht 1 ist; jeder Durchlauf ist ein Schritt."
+      solution: |
+        ```javascript
+        function collatzSteps(n) {
+          let steps = 0;
+          while (n !== 1) {
+            n = n % 2 === 0 ? n / 2 : 3 * n + 1;
+            steps++;
+          }
+          return steps;
+        }
+        ```
 
   - id: perfect
     title: "Vollkommene Zahlen"
@@ -922,6 +1339,38 @@ tasks:
 
         def perfect_numbers(limit):
             return [n for n in range(2, limit + 1) if divisor_sum(n) == n]
+        ```
+    javascript:
+      prompt: |
+        Eine Zahl ist vollkommen, wenn sie die Summe ihrer Teiler ist, ohne sich selbst: 6 = 1 + 2 + 3. Schreib eine Funktion `perfectNumbers(limit)`, die alle vollkommenen Zahlen bis `limit` als Liste zurückgibt. Bis 10000 sind es vier.
+      starter: |
+        function perfectNumbers(limit) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "perfectNumbers(10)"
+            expect: "[6]"
+          - call: "perfectNumbers(30)"
+            expect: "[6, 28]"
+          - call: "perfectNumbers(10000)"
+            expect: "[6, 28, 496, 8128]"
+      hint: |
+        Eine Funktion, die die Teiler einer Zahl zusammenzählt, und eine Schleife über alle Zahlen bis `limit`. Teiler gibt es höchstens bis zur Hälfte der Zahl.
+      solution: |
+        ```javascript
+        function divisorSum(n) {
+          let total = 0;
+          for (let d = 1; d <= n / 2; d++) if (n % d === 0) total += d;
+          return total;
+        }
+
+        function perfectNumbers(limit) {
+          const result = [];
+          for (let n = 2; n <= limit; n++) if (divisorSum(n) === n) result.push(n);
+          return result;
+        }
         ```
 
   - id: primes-up-to
@@ -997,4 +1446,41 @@ tasks:
                         prime[m] = False
                 p += 1
             return [i for i in range(2, n + 1) if prime[i]]
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `primesUpTo(n)`, die alle Primzahlen bis `n` als Liste zurückgibt: `primesUpTo(20)` ergibt `[2, 3, 5, 7, 11, 13, 17, 19]`. Die Prüfung fragt auch nach allen bis zehn Millionen, und dafür hat dein Code sechs Sekunden. Prüft er jede Zahl einzeln, reicht das nicht. Eratosthenes hat sich vor über 2000 Jahren etwas Schnelleres ausgedacht: Streich aus einer Liste aller Zahlen die Vielfachen jeder Primzahl.
+      starter: |
+        function primesUpTo(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        timeout: 6
+        slow: "Dein Code brauchte länger als 6 Sekunden. Jede Zahl bis zehn Millionen einzeln zu prüfen dauert zu lange: Probier das Sieb des Eratosthenes, das die Vielfachen jeder Primzahl auf einmal streicht."
+        cases:
+          - call: "primesUpTo(20)"
+            expect: "[2, 3, 5, 7, 11, 13, 17, 19]"
+          - call: "primesUpTo(2)"
+            expect: "[2]"
+          - call: "primesUpTo(1)"
+            expect: "[]"
+          - call: "primesUpTo(10_000_000).length"
+            expect: "664579"
+      hint: |
+        Eine Liste `const prime = new Array(n + 1).fill(true)` sagt für jede Zahl, ob sie noch im Rennen ist. Für jede Zahl `p`, die noch drin ist, streichst du `p * p`, `p * p + p`, … bis `n`.
+      solution: |
+        ```javascript
+        function primesUpTo(n) {
+          if (n < 2) return [];
+          const prime = new Array(n + 1).fill(true);
+          prime[0] = prime[1] = false;
+          for (let p = 2; p * p <= n; p++) {
+            if (!prime[p]) continue;
+            for (let m = p * p; m <= n; m += p) prime[m] = false;
+          }
+          const result = [];
+          for (let i = 2; i <= n; i++) if (prime[i]) result.push(i);
+          return result;
+        }
         ```

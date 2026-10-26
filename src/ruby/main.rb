@@ -5298,8 +5298,10 @@ class Main < Sinatra::Base
         @page_code_language[slug] ||= begin
             own = user_logged_in? ? @session_user[:code_language] : nil
             groups = user_logged_in? ? group_code_languages(my_groups) : {}
-            language = CodeLanguages.resolve(own, groups)
-            languages.include?(language) ? language : languages.first
+            # JavaScript, picked on a Kata page, is kept apart from the
+            # choice between Ruby and Python, which stays for other pages
+            kata = user_logged_in? ? @session_user[:kata_code_language] : nil
+            CodeLanguages.resolve(kata, { :own => own }.merge(groups), languages)
         end
     end
 
@@ -6076,7 +6078,7 @@ class Main < Sinatra::Base
         # the form.
         current = group_code_languages([group])[group]
         io << "<label title='Für Aktivitäten, die es in mehreren Sprachen gibt. Lernende können auf der Seite selbst umschalten.'>Sprache <select class='form-select class-code-language' data-group='#{h.(group)}'>"
-        CodeLanguages::LANGUAGES.each do |language|
+        CodeLanguages::GROUP_LANGUAGES.each do |language|
             selected = (current || CodeLanguages::DEFAULT) == language ? ' selected' : ''
             io << "<option value='#{language}'#{selected}>#{CodeLanguages::NAMES[language]}</option>"
         end
@@ -7774,11 +7776,23 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         data = parse_request_data(:required_keys => [:language])
         assert(CodeLanguages.known?(data[:language]))
-        neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :language => data[:language]})
-            MATCH (u:User {email: $email})
-            SET u.code_language = $language
-            RETURN u;
-        END_OF_STRING
+        # JavaScript only on Kata pages (CodeLanguages): it does not replace
+        # the choice between Ruby and Python, and picking one of those again
+        # leaves JavaScript behind.
+        if CodeLanguages::GROUP_LANGUAGES.include?(data[:language])
+            neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :language => data[:language]})
+                MATCH (u:User {email: $email})
+                SET u.code_language = $language
+                REMOVE u.kata_code_language
+                RETURN u;
+            END_OF_STRING
+        else
+            neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :language => data[:language]})
+                MATCH (u:User {email: $email})
+                SET u.kata_code_language = $language
+                RETURN u;
+            END_OF_STRING
+        end
         respond(:yay => 'sure')
     end
 
@@ -7790,7 +7804,7 @@ class Main < Sinatra::Base
         group = data[:group]
         assert(class_groups.include?(group))
         language = data[:language].to_s
-        assert(language.empty? || CodeLanguages.known?(language))
+        assert(language.empty? || CodeLanguages::GROUP_LANGUAGES.include?(language))
         if language.empty?
             neo4j_query(<<~END_OF_STRING, {:group => group})
                 MATCH (g:GroupSetting {group: $group})

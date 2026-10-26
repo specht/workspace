@@ -72,6 +72,28 @@ test('an Extra is marked and counts for nobody', async ({ page, e2eEmail }, test
   }
 });
 
+test('JavaScript on a Kata page, Ruby or Python elsewhere', async ({ page, e2eEmail }, testInfo) => {
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/automata');
+  const before = await page.locator('[data-code-language]').first().getAttribute('data-code-language');
+  await page.goto('/kata-functions');
+  await page.locator('.code-language-option[data-set-language="javascript"]').click();
+  await page.locator('.code-language-switch').screenshot({ path: testInfo.outputPath('switch.png') });
+  const card = page.locator('.task-card[data-task="kata-functions/greet"]:visible');
+  await expect(card.locator('.task-code')).toHaveAttribute('data-code-language', 'javascript');
+  await card.locator('.task-code').fill("function greet(name) {\n  return `Hallo, ${name}!`;\n}\n\nconsole.log(greet('Ada'));\n");
+  await card.locator('.task-run').click();
+  await expect(card.locator('.task-console')).toHaveText('Hallo, Ada!\n', { timeout: 30_000 });
+  await card.locator('.task-submit').click();
+  await expect(card.locator('.task-feedback')).toContainText('Alle 3 Aufrufe liefern, was sie sollen.', { timeout: 30_000 });
+  // a page without JavaScript keeps the language from before
+  await page.goto('/automata');
+  await expect(page.locator('[data-code-language]').first()).toHaveAttribute('data-code-language', before!);
+  // back to it on the Kata page for the other tests
+  await page.goto('/kata-functions');
+  await page.locator(`.code-language-option[data-set-language="${before}"]`).click();
+});
+
 test('pictures of a Kata card', async ({ page, e2eEmail }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
   for (const [scheme, width] of [['light', 1100], ['dark', 1100], ['light', 390]] as const) {

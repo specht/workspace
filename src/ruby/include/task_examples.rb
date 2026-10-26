@@ -76,6 +76,10 @@ module TaskExamples
                 variant = CodeLanguages.variant(task, language)
                 type = variant['check']['type']
                 next unless FAST_TYPES.include?(type)
+                # A Kata in JavaScript runs with the local node; where there is
+                # none (the Ruby container), its examples wait for a machine
+                # that has it.
+                next if type == 'function' && variant['check']['language'] == 'javascript' && !node?
 
                 given = examples[id] || {}
                 given = given[language] || {} if language
@@ -196,6 +200,11 @@ module TaskExamples
                 { :output => output, :status => wait.value.exitstatus, :timed_out => timed_out }
             end
         end
+    end
+
+    def self.node?
+        @node = system('node', '--version', :out => File::NULL, :err => File::NULL) if @node.nil?
+        @node
     end
 
     # A Kata's run, here with the local interpreters in the example folder
