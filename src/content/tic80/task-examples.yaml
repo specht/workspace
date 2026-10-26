@@ -41,3 +41,58 @@ examples:
     fail:
       - files: { TIC-80/stars.lua: step3.lua }
         say: sky
+  fangen:
+    pass:
+      - files: { TIC-80/stars.lua: step2.lua }
+      # anders geschrieben: ein if mit allem, die Vergleiche andersherum
+      - files:
+          TIC-80/stars.lua:
+            text: |
+              function TIC()
+                  sy = 1 + sy
+                  if sy >= 137 or (sy > 104 and sy < 128 and x < sx + 8 and x + 16 > sx) then
+                      if sy < 137 then score = score + 1 end
+                      sy = 0
+                      sx = math.random(0, 232)
+                  end
+              end
+    fail:
+      # die Figur allein
+      - files: { TIC-80/stars.lua: step1.lua }
+        say: '`sy` um 1'
+      # die neuen Zeilen von der Seite, noch mit der Lücke
+      - files:
+          TIC-80/stars.lua:
+            text: |
+              x = 112
+              sx = 120
+              sy = 0
+              score = 0
+
+              function TIC()
+                  if btn(2) then x = x - 2 end
+                  if btn(3) then x = x + 2 end
+
+                  -- hier: der Stern fällt, fängt unten neu an und wird gefangen
+
+                  cls(0)
+                  spr(1, x, 112, 14, 1, 0, 0, 2, 2)
+                  circ(sx + 4, sy + 4, 3, 4)
+                  print("Score: " .. score, 4, 4, 12)
+              end
+        say: '`sy` um 1'
+      # nur die halbe Figur: rechts fällt der Stern durch sie hindurch
+      - files:
+          TIC-80/stars.lua:
+            text: |
+                  sy = sy + 1
+                  if sy > 136 then
+                      sy = 0
+                      sx = math.random(0, 232)
+                  end
+                  if sy > 104 and sy < 128 and sx + 8 > x and sx < x + 8 then
+                      score = score + 1
+                      sy = 0
+                      sx = math.random(0, 232)
+                  end
+        say: rechts an der Figur

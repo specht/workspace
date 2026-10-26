@@ -7,7 +7,7 @@ Lernende bauen in TIC-80 ihr erstes eigenes Spiel, mit allem, was dazugehört: C
 <li><b>3. Doppelstunde:</b> viele Sterne, Leben, Ton, dann das eigene Spiel und die Abgabe.</li>
 </ul></td></tr>
 <tr><th>Speichern</th><td>TIC-80 speichert in <code>/workspace/TIC-80</code>. Als <code>stars.lua</code> ist das Spiel eine Textdatei: Code oben, Sprites und Töne als Kommentarblöcke darunter. Ändert sich eine Datei außerhalb von TIC-80, während dort an derselben gearbeitet wird, bleibt sie, und TIC-80 legt seinen Stand daneben (<code>stars (TIC-80).lua</code>).</td></tr>
-<tr><th>Jetzt bist du dran</th><td>Beim fallenden Stern schreiben die Lernenden selbst, was der Stern in jedem Bild tut (fallen, oben neu anfangen, gefangen werden), nachdem die Seite es beschrieben hat. Davor stehen Tipps, eine Stufe nach der anderen mit einer Minute Pause und ohne Uhr; der Code der Seite ist die letzte Stufe. »Ein Stern fällt« sieht nur nach, ob <code>math.random</code> und <code>print</code> im Spiel stehen; ob das Fangen klappt, zeigt das Spiel.</td></tr>
+<tr><th>Jetzt bist du dran</th><td>Beim fallenden Stern schreiben die Lernenden selbst, was der Stern in jedem Bild tut (fallen, oben neu anfangen, gefangen werden), nachdem die Seite es beschrieben hat. Davor stehen Tipps, eine Stufe nach der anderen mit einer Minute Pause und ohne Uhr; der Code der Seite ist die letzte Stufe. »Fallen und fangen« direkt unter dem Kasten liest <code>stars.lua</code> und sucht jede Zeile, die er verlangt, in verschiedenen Schreibweisen: <code>sy = sy + 1</code>, die Grenze 136, <code>math.random(0, 232)</code>, die vier Vergleiche fürs Fangen (auch andersherum, <code>x &lt; sx + 8</code>) und <code>score = score + 1</code>; die Rückmeldung nennt den ersten, der fehlt. Wer sie löst, kann die Lösung des Kastens sofort öffnen. Ob das Fangen sich richtig anfühlt, zeigt das Spiel.</td></tr>
 <tr><th>Abgabe</th><td>»Dein Spiel« kopiert eine <code>.lua</code>-Datei aus <code>TIC-80</code>. In der Klassenübersicht ist ihr Code lesbar; spielen lässt sie sich, indem man sie in den eigenen Ordner <code>TIC-80</code> legt und in TIC-80 mit <code>load</code> lädt.</td></tr>
 </table>
 
@@ -20,7 +20,7 @@ Lernende bauen in TIC-80 ihr erstes eigenes Spiel, mit allem, was dazugehört: C
 
 #### Die Aufgaben
 
-»Im Workspace gespeichert«, »Ein Stern fällt«, »Viele Sterne«, »Ein Ton beim Fangen« und »Ein Himmel« lesen `TIC-80/stars.lua` und suchen typische Bausteine (`function TIC`, `math.random`, `for`, `sfx(`, `pix(`); die Karte nennt die Zeile, in der sie etwas gefunden hat. »Deine Figur« sieht nach, ob Sprite 1 anders aussieht als die mitgelieferte Figur. »Ohne cls« ist eine Vorhersage.
+»Fallen und fangen« sucht die Zeilen aus dem Kasten »Jetzt bist du dran« (oben). »Im Workspace gespeichert«, »Ein Stern fällt«, »Viele Sterne«, »Ein Ton beim Fangen« und »Ein Himmel« lesen `TIC-80/stars.lua` und suchen typische Bausteine (`function TIC`, `math.random`, `for`, `sfx(`, `pix(`); die Karte nennt die Zeile, in der sie etwas gefunden hat. »Deine Figur« sieht nach, ob Sprite 1 anders aussieht als die mitgelieferte Figur. »Ohne cls« ist eine Vorhersage.
 
 #### Weiter
 

@@ -253,7 +253,7 @@ score = 0
 
 `circ(sx + 4, sy + 4, 3, 4)` zeichnet den Stern als gefüllten Kreis: Mitte, Radius 3, Farbe 4, gelb. `print` schreibt den Punktestand oben links hin; `..` hängt zwei Texte aneinander.
 
-<div class='hint own'>
+<div class='hint own' data-check='fangen'>
 <strong>Jetzt bist du dran:</strong> Schreib an die Stelle von <code>-- hier</code>, was der Stern in jedem Bild tut: ein Pixel tiefer fallen; unten aus dem Bild, also bei <code>sy</code> über 136, oben neu anfangen, an einer zufälligen Stelle. Berührt er die Figur, wie oben beschrieben, gibt es einen Punkt, und er fängt auch oben neu an. Führ das Spiel aus und fang ein paar Sterne.
 </div>
 
@@ -300,6 +300,8 @@ Ein Gerüst; die Lücken mit `…` füllst du:
 ~ 	cls(0)
 ```
 <!-- /solution -->
+
+_task(fangen)
 
 <!-- tutorial-screenshot
 write-file: TIC-80/stars.lua <- file:step2.lua

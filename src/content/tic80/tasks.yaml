@@ -75,6 +75,32 @@ tasks:
         say: Das ist die Zahl der Bilder. Gefragt ist die Zeit in Sekunden.
     solution: Bei 137 Bildern und 60 Bildern pro Sekunde sind das 137 ÷ 60 ≈ 2,28 Sekunden.
 
+  - id: fangen
+    title: Fallen und fangen
+    prompt: |
+      Schreib in `stars.lua`, was der Stern in jedem Bild tut, und speichere
+      (<kbd>Strg</kbd><kbd>S</kbd>). Wenn es stimmt, fällt der Stern, fängt
+      unten aus dem Bild oben neu an, und für jeden gefangenen Stern zählt
+      der Score eins hoch.
+    file: TIC-80/stars.lua
+    check:
+      type: files
+      path: TIC-80/stars.lua
+      expect:
+        format: text
+        contains:
+          - { pattern: '\bsy\s*=\s*sy\s*\+\s*1\b|\bsy\s*=\s*1\s*\+\s*sy\b', say: 'In `TIC-80/stars.lua` fällt der Stern noch nicht: In jedem Bild wird `sy` um 1 größer.' }
+          - { pattern: '\bsy\s*>=?\s*13[67]\b|\b13[67]\s*<=?\s*sy\b', say: 'Noch fängt der Stern unten nicht neu an: wenn `sy` über 136 ist.' }
+          - { pattern: '\bsx\s*=\s*math\.random\s*\(\s*0\s*,\s*232\s*\)', say: 'Der Stern fängt noch nicht an einer zufälligen Stelle an: `sx = math.random(0, 232)`.' }
+          - { pattern: '\bsy\s*>=?\s*104\b|\b104\s*<=?\s*sy\b', say: 'Für das Fangen fehlt noch, dass der Stern tief genug ist: `sy` über 104.' }
+          - { pattern: '\bsy\s*<=?\s*128\b|\b128\s*>=?\s*sy\b', say: 'Für das Fangen fehlt noch, dass der Stern nicht schon unter der Figur ist: `sy` unter 128.' }
+          - { pattern: '\bsx\s*\+\s*8\s*>=?\s*x\b|\bx\s*<=?\s*sx\s*\+\s*8\b', say: 'Für das Fangen fehlt noch, dass der Stern nicht links an der Figur vorbeifällt. Er ist 8 Pixel breit: `sx + 8 > x`.' }
+          - { pattern: '\bsx\s*<=?\s*x\s*\+\s*16\b|\bx\s*\+\s*16\s*>=?\s*sx\b', say: 'Für das Fangen fehlt noch, dass der Stern nicht rechts an der Figur vorbeifällt. Sie ist 16 Pixel breit.' }
+          - { pattern: '\bscore\s*=\s*score\s*\+\s*1\b|\bscore\s*=\s*1\s*\+\s*score\b', say: 'Für einen gefangenen Stern gibt es noch keinen Punkt: `score` wird um 1 größer.' }
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/TIC-80/stars.lua`. Tipp in der Konsole von TIC-80 `save stars.lua` (mit `.lua` am Ende) und drücke Enter.
+
   - id: ein-stern
     title: Ein Stern fällt
     prompt: |
