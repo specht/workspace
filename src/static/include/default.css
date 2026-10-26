@@ -2104,9 +2104,14 @@ body.has-autotoc-secondary.autotoc-primary-visible {
         margin-left: calc((100% - var(--autotoc-layout)) / 2 + var(--autotoc-secondary-width) + var(--autotoc-secondary-gap));
     }
 
-    /* the bar of chapters at the top would say the same as the side navigation */
+    /* the bar of chapters at the top would say the same as the side navigation,
+       which then goes up to the window's top edge */
     body:has(.autotoc-secondary-trigger) .autotoc {
         display: none;
+    }
+    body.has-autotoc-secondary,
+    body.has-autotoc-secondary.autotoc-primary-visible {
+        --autotoc-secondary-top: 0.5rem;
     }
 }
 
