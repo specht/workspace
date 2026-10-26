@@ -1,5 +1,5 @@
 <div class='meta'>
-image: teaser.webp:50:20
+icon: bi-braces
 kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
@@ -15,17 +15,6 @@ oder Texte und geben ein Ergebnis zurück. Ohne Terminal und ohne Dateien, mit
 einem Knopf, der deinen Code ausführt und prüft.
 </p>
 
-<!-- tutorial-screenshot
-# Die Karte für den Katalog: die Begrüßung, gelöst und geprüft
-open-site: /kata-functions
-tab: preview
-viewport: 640x900
-hook: solve greet
-sleep: 2
-crop-element: .task-card[data-task="kata-functions/greet"]:visible
-variants: dark
--->
-<img class='teaser' hidden src='teaser.webp' alt='Eine Kata-Karte »Eine Begrüßung« mit einer Funktion greet, die »Hallo, « und den Namen zurückgibt, darunter die Rückmeldung, dass alle Aufrufe stimmen.'>
 
 ## Eine Funktion
 

@@ -435,6 +435,8 @@
             // a function Kata: what its own program printed, above the result
             if (data.ran) showConsole(card, { status: data.ran === 'ran' ? 'ran' : 'error', output: data.output });
             const result = function () {
+                // hidden while a Pip run plays (below)
+                card.querySelector('.task-feedback').hidden = false;
                 showFeedback(card, data.status, data.message, data.solution, data.read);
                 if (data.state) {
                     setBadge(card, data.state.status, data.status === 'correct' && card.dataset.status !== 'correct');
@@ -648,6 +650,14 @@
             if (!page.loggedIn) {
                 card.classList.add('task-logged-out');
                 setDisabled(card, true);
+                // a Kata's code in its editor, to read: colours and line
+                // numbers as when logged in (code_input.js)
+                const code = card.querySelector('.task-code');
+                if (code && window.CodeInput) {
+                    code.disabled = false;
+                    code.readOnly = true;
+                    CodeInput.attach(code);
+                }
                 // Pip's map is shown, without anything to play
                 const map = card.querySelector('.pip-world');
                 if (map && window.PipWorld) {

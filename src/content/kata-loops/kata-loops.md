@@ -1,5 +1,5 @@
 <div class='meta'>
-image: teaser.webp:50:20
+icon: bi-arrow-repeat
 kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
@@ -16,17 +16,6 @@ und suchen, bis sie fertig sind. Von der Summe bis eins über Fakultät und
 Fibonacci bis zu den Primzahlen.
 </p>
 
-<!-- tutorial-screenshot
-# Die Karte für den Katalog: die Quersumme, gelöst und geprüft
-open-site: /kata-loops
-tab: preview
-viewport: 640x1100
-hook: solve digit-sum
-sleep: 2
-crop-element: .task-card[data-task="kata-loops/digit-sum"]:visible
-variants: dark
--->
-<img class='teaser' hidden src='teaser.webp' alt='Eine Kata-Karte »Die Quersumme« mit einer while-Schleife, die die letzte Ziffer addiert und die Zahl durch 10 teilt, darunter die Rückmeldung, dass alle Aufrufe stimmen.'>
 
 ## Immer wieder
 

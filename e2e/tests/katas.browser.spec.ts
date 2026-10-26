@@ -170,10 +170,12 @@ test('Pip walks a plan, and a wall names the line', async ({ browser, page, e2eE
   await card.locator('.task-code').fill(language === 'ruby' ? 'move\nturn_left\nmove\n' : 'move()\nturn_left()\nmove()\n');
   await card.locator('.task-submit').click();
   await expect(card.locator('.task-feedback')).toContainText('Hier in Zeile 3 läuft Pip gegen die Wand.', { timeout: 30_000 });
+  await expect(card.locator('.task-feedback')).toBeVisible();
 
   await card.locator('.task-code').fill(PIP_SHAFT[language]);
   await card.locator('.task-submit').click();
   await expect(card.locator('.task-feedback')).toContainText('Pip schafft es.', { timeout: 30_000 });
+  await expect(card.locator('.task-feedback')).toBeVisible();
   await expect(card).toHaveAttribute('data-status', 'correct');
   // the replay ends at the lamp, the last step on the last line
   await expect(card.locator('.pip-status')).toHaveText('Schritt 8 von 8 · Zeile 8', { timeout: 20_000 });
@@ -275,6 +277,7 @@ test('Pip runs on the map of the tab', async ({ page, e2eEmail }, testInfo) => {
   await card.locator('.task-submit').click();
   await expect(card.locator('.pip-tab').first()).toBeDisabled({ timeout: 30_000 });
   await expect(card.locator('.task-feedback')).toContainText('Pip schafft alle 3 Karten.', { timeout: 30_000 });
+  await expect(card.locator('.task-feedback')).toBeVisible();
   await expect(card.locator('.pip-status')).toHaveText(/^Karte 2 von 3 · Schritt 5 von 5/);
   await expect(card.locator('.pip-tab').nth(1)).toHaveClass(/active/);
   await expect(card.locator('.pip-tab').first()).toBeEnabled();

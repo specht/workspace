@@ -714,9 +714,13 @@ The rules that came out of the same review are in
    (`monster_ahead`). Probably the last chapter of Teil 2 or the start of a
    Teil 3; needs a sprite and maps where escaping is possible but not by
    chance.
-3. **The front page instead of `/katas`.** One carousel of the Kata sets,
-   each with its progress, and the overall progress, no taller than one
-   row of activity cards. The page `/katas` and its catalog entry go then.
+3. **The front page instead of `/katas`** (done). One strip of the Kata
+   sets (`carousel: true` in sections.yaml, `KataMap.carousel_html`), each
+   with its picture or icon, idea, number of Katas and progress, the total
+   in a ring beside it, lower than one row of activity cards; a set pinned
+   for the person's group is marked and scrolled into the middle. The page
+   `/katas` is gone. A Kata without Pip has no picture: a solved card would
+   only give a solution away.
 4. **One Kata widget on the Kata pages**, instead of the general task
    cards: the task beside the code on a wide screen (like Pip's map beside
    the plan), one button (done for every Kata: »Ausführen« runs the program,

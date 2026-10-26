@@ -22,6 +22,9 @@ export default {
             const language = await field.getAttribute('data-code-language');
             await field.fill(PLANS[id][language]);
             await card.locator('.task-submit').click();
+            // the result shows once the replay is over: skip to its end
+            await card.locator('.pip-world[data-steps]:not([data-steps="1"])').waitFor({ timeout });
+            await card.locator("[data-go='last']").click();
             await card.locator('.task-feedback .bi-stars, .task-feedback-correct').first().waitFor({ timeout });
             await card.evaluate((element) => {
                 const player = element.pipPlayer;

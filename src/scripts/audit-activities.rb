@@ -19,7 +19,7 @@ require 'yaml'
 ROOT = File.expand_path('../..', __dir__)
 CONTENT = File.join(ROOT, 'src/content')
 # what the Workspace is and how to work in it: pages to read, nothing to check
-TASKLESS = %w[about basics katas].freeze
+TASKLESS = %w[about basics].freeze
 LONG_CHAPTER = 800
 
 def catalog

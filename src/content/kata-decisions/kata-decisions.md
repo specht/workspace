@@ -1,5 +1,5 @@
 <div class='meta'>
-image: teaser.webp:50:20
+icon: bi-signpost-split
 kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
@@ -17,17 +17,6 @@ Du schreibst Funktionen, die je nach Wert etwas anderes tun: mit
 Aufgabe aus Vorstellungsgesprächen.
 </p>
 
-<!-- tutorial-screenshot
-# Die Karte für den Katalog: FizzBuzz, gelöst und geprüft
-open-site: /kata-decisions
-tab: preview
-viewport: 640x1100
-hook: solve fizzbuzz
-sleep: 2
-crop-element: .task-card[data-task="kata-decisions/fizzbuzz"]:visible
-variants: dark
--->
-<img class='teaser' hidden src='teaser.webp' alt='Eine Kata-Karte »FizzBuzz« mit einer Funktion, die je nach Teilbarkeit FizzBuzz, Fizz, Buzz oder die Zahl als Text zurückgibt, darunter die Rückmeldung, dass alle Aufrufe stimmen.'>
 
 ## Wenn, dann
 

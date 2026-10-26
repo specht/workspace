@@ -1,5 +1,6 @@
 <div class='meta'>
 image: teaser.webp:50:40
+focus: "54:26"
 kind: uebung
 duration: 3 Doppelstunden
 languages: [ruby, python, javascript]

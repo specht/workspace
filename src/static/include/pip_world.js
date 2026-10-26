@@ -85,7 +85,7 @@
     const SIDE = 4;
     const SIDE_ROWS = [7, 5, 4, 3];
     const RIM_FACE = [140, 156, 196];
-    const VERSION = '?v=12';
+    const VERSION = '?v=13';
 
     // The pictures the rock and the ground are drawn from, loaded once for
     // every map on the page and read into pixels: { top, face, ground }.

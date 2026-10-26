@@ -1,20 +1,18 @@
 require 'cgi'
 
-# The overview of the Katas (/katas, docs/plan-katas.md): every set of the
-# catalog section »Katas« as a stop on a path, in the order of sections.yaml,
-# with its idea in a few words (meta idea:) and how many Katas it has on
-# each level; for a logged-in person how far they are (solved of the core
-# Katas, and Extras besides), for teachers the line of the curriculum the
-# set belongs to (meta curriculum:). The page holds an empty
-# <div class='kata-map'></div> (MARKER matches it after rendering, with
-# either quotes); page_html puts the map there for the person viewing it.
+# The Katas on the front page (docs/plan-katas.md): every set of the catalog
+# section »Katas« (carousel: true in sections.yaml), in its order, with its
+# idea in a few words (meta idea:) and how many Katas it has on each level;
+# for a logged-in person how far they are (solved of the core Katas, and
+# Extras besides) and, in a ring, how far in all; for teachers the line of
+# the curriculum the set belongs to (meta curriculum:). A set a teacher
+# pinned for the person's group is marked and scrolled into view.
 #
 # Plain Ruby, tested on its own (test/kata_map_test.rb).
 module KataMap
-    MARKER = %r{<div class=["']kata-map["']>\s*</div>}
     LEVELS = { 1 => 'Einstieg', 2 => 'Übung', 3 => 'Knobelei' }.freeze
 
-    Stop = Struct.new(:slug, :title, :idea, :curriculum, :counts, keyword_init: true)
+    Stop = Struct.new(:slug, :title, :idea, :curriculum, :icon, :counts, keyword_init: true)
 
     # A stop from a page's content entry: counts are { 1 => n, 2 => n,
     # 3 => n, :extra => n } over the tasks on the page.
@@ -22,7 +20,22 @@ module KataMap
         tasks = content[:tasks] ? content[:tasks][:on_page].map { |id| content[:tasks][:by_id][id] } : []
         counts = Hash.new(0)
         tasks.each { |t| t['extra'] ? counts[:extra] += 1 : counts[t['level'] || 1] += 1 }
-        Stop.new(:slug => slug, :title => title(content[:title]), :idea => content[:idea], :curriculum => content[:curriculum], :counts => counts)
+        Stop.new(:slug => slug, :title => title(content[:title]), :idea => content[:idea], :curriculum => content[:curriculum], :icon => content[:icon], :counts => counts)
+    end
+
+    # The picture of a set in its low band (16:6) is its card's picture,
+    # ZOOM times the band's width (default.css, .kata-set-picture img), its
+    # point of focus (meta focus: x:y in percent of the picture, where Pip or
+    # Bello stands) in the middle of the band. The point keeps far enough
+    # from the edges that the picture covers the band (a picture at least
+    # half as high as wide). The custom properties for the <img>.
+    ZOOM = 1.9
+    EDGE_X = (50.0 / ZOOM).ceil
+    EDGE_Y = 20
+
+    def self.picture_style(focus)
+        fx, fy = focus || [50, 50]
+        "--fx: #{fx.clamp(EDGE_X, 100 - EDGE_X)}%; --fy: #{fy.clamp(EDGE_Y, 100 - EDGE_Y)}%;"
     end
 
     # »Katas: Erste Funktionen« -> »Erste Funktionen«
@@ -41,31 +54,103 @@ module KataMap
         parts.join(' · ')
     end
 
-    # progress: { slug => { done:, total:, extras_done: } } of the person,
-    # nil for a visitor; teacher: shows the curriculum lines.
-    def self.html(stops, progress: nil, teacher: false)
-        io = +"<ol class='kata-map-path'>"
+    # The Katas on the front page instead of their cards: a ring with how
+    # many are solved in all (or how many there are, for a visitor), then
+    # every set in a strip that scrolls sideways. progress: { slug => {
+    # done:, total:, extras_done: } }, nil for a visitor; pinned: the slugs
+    # a teacher pinned for the person's groups (the first is scrolled into
+    # the middle); images: { slug => the <img> of its card }.
+    def self.carousel_html(stops, progress: nil, teacher: false, pinned: [], images: {})
+        core = ->(stop) { stop.counts.reject { |k, _| k == :extra }.values.sum }
+        io = +"<div class='kata-carousel'>"
+        io << "<div class='kata-total'>"
+        if progress
+            total = stops.sum { |stop| progress[stop.slug] ? progress[stop.slug][:total].to_i : core.(stop) }
+            solved = stops.sum { |stop| progress[stop.slug].to_h[:done].to_i }
+            extras = stops.sum { |stop| progress[stop.slug].to_h[:extras_done].to_i }
+            share = total > 0 ? (100.0 * solved / total).round : 0
+            io << "<div class='kata-ring' style='--share: #{share}%' role='img' aria-label='#{solved} von #{total} Katas gelöst'>"
+            io << "<span class='kata-ring-text' aria-hidden='true'><strong>#{solved}</strong><small>von #{total}</small></span></div>"
+            io << "<span class='kata-total-label'>Katas gelöst#{extras > 0 ? ", dazu #{extras} #{extras == 1 ? 'Extra' : 'Extras'}" : ''}</span>"
+        else
+            total = stops.sum { |stop| core.(stop) }
+            io << "<div class='kata-ring'><span class='kata-ring-text'><strong>#{total}</strong><small>Katas</small></span></div>"
+            io << "<span class='kata-total-label'>in #{stops.size} Übungen</span>"
+        end
+        io << '</div>'
+        io << "<div class='kata-strip'>"
+        io << "<button type='button' class='kata-scroll' data-dir='-1' aria-label='Zurück'><i class='bi bi-chevron-left' aria-hidden='true'></i></button>"
+        io << "<div class='kata-track'>"
         stops.each_with_index do |stop, i|
             mine = progress && progress[stop.slug]
             done = mine && mine[:total].to_i > 0 && mine[:done] == mine[:total]
-            io << "<li class='kata-stop#{done ? ' kata-stop-done' : ''}'>"
-            io << "<a class='kata-stop-link' href='/#{h(stop.slug)}'>"
-            io << "<span class='kata-stop-number' aria-hidden='true'>#{done ? "<i class='bi bi-check-lg'></i>" : i + 1}</span>"
-            io << "<span class='kata-stop-title'>#{h(stop.title)}</span>"
-            io << "<span class='kata-stop-idea'>#{h(stop.idea)}</span>" if stop.idea
-            io << "<span class='kata-stop-counts'>#{h(counts_text(stop.counts))}</span>"
+            pin = pinned.include?(stop.slug)
+            classes = ['kata-set', done ? 'kata-set-done' : nil, pin ? 'kata-set-pinned' : nil].compact.join(' ')
+            io << "<a class='#{classes}' href='/#{h(stop.slug)}'#{pin && pinned.first == stop.slug ? " data-centre=''" : ''}>"
+            # the card's picture, or for a set without one (no picture would
+            # not give a solution away) its icon on a band (meta icon:)
+            io << (images[stop.slug] || "<span class='kata-set-art' aria-hidden='true'><i class='bi #{h(stop.icon || 'bi-code-slash')}'></i></span>")
+            io << "<span class='kata-set-marks'><span class='kata-set-number'>#{done ? "<i class='bi bi-check-lg' aria-hidden='true'></i><span class='visually-hidden'>Erledigt</span>" : i + 1}</span>"
+            io << "<span class='kata-set-pin'><i class='bi bi-pin-angle-fill' aria-hidden='true'></i>Angepinnt</span>" if pin
+            io << '</span>'
+            io << "<span class='kata-set-body'>"
+            io << "<span class='kata-set-title'>#{h(stop.title)}</span>"
+            io << "<span class='kata-set-idea'>#{h(stop.idea)}</span>" if stop.idea
+            # in one line, the levels on hover
+            extras = stop.counts[:extra].to_i
+            io << "<span class='kata-set-counts' title='#{h(counts_text(stop.counts))}'>#{core.(stop)} Katas#{extras > 0 ? ", #{extras} #{extras == 1 ? 'Extra' : 'Extras'}" : ''}</span>"
+            io << "<span class='kata-set-curriculum' title='#{h(stop.curriculum)}'>#{h(stop.curriculum)}</span>" if teacher && stop.curriculum
             if progress
-                total = mine ? mine[:total].to_i : stop.counts.select { |k, _| k != :extra }.values.sum
+                total = mine ? mine[:total].to_i : core.(stop)
                 solved = mine ? mine[:done].to_i : 0
                 extras = mine ? mine[:extras_done].to_i : 0
                 share = total > 0 ? (100.0 * solved / total).round : 0
-                io << "<span class='kata-stop-progress'><span class='kata-stop-bar' aria-hidden='true'><span style='width: #{share}%'></span></span>"
+                io << "<span class='kata-set-progress'><span class='kata-set-bar' aria-hidden='true'><span style='width: #{share}%'></span></span>"
                 io << "#{solved} von #{total} gelöst#{extras > 0 ? ", dazu #{extras} #{extras == 1 ? 'Extra' : 'Extras'}" : ''}</span>"
             end
-            io << "<span class='kata-stop-curriculum'>#{h(stop.curriculum)}</span>" if teacher && stop.curriculum
-            io << '</a></li>'
+            io << '</span></a>'
         end
-        io << '</ol>'
-        "<div class='kata-map'>#{io}</div>"
+        io << '</div>'
+        io << "<button type='button' class='kata-scroll' data-dir='1' aria-label='Weiter'><i class='bi bi-chevron-right' aria-hidden='true'></i></button>"
+        io << '</div></div>'
+        io << SCRIPT
     end
+
+    # The arrows scroll by about one set and hide at the ends; a pinned set
+    # (data-centre) is scrolled into the middle, without moving the page.
+    SCRIPT = <<~JS.freeze
+        <script>
+        document.querySelectorAll('.kata-carousel').forEach(function (carousel) {
+            var track = carousel.querySelector('.kata-track');
+            var buttons = carousel.querySelectorAll('.kata-scroll');
+            // at an end its arrow fades out; where more sets follow, the
+            // strip fades into the page (default.css, kata-more-left/right)
+            function ends() {
+                var start = track.scrollLeft <= 8;
+                var end = track.scrollLeft + track.clientWidth >= track.scrollWidth - 8;
+                buttons[0].disabled = start;
+                buttons[1].disabled = end;
+                carousel.classList.toggle('kata-more-left', !start);
+                carousel.classList.toggle('kata-more-right', !end);
+            }
+            buttons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var set = track.querySelector('.kata-set');
+                    var step = set ? set.getBoundingClientRect().width + 16 : track.clientWidth * 0.8;
+                    track.scrollBy({ left: Number(button.dataset.dir) * step });
+                });
+            });
+            track.addEventListener('scroll', ends, { passive: true });
+            var centre = track.querySelector('[data-centre]');
+            if (centre) {
+                track.style.scrollBehavior = 'auto';
+                track.style.scrollSnapType = 'none';
+                track.scrollLeft = centre.offsetLeft - track.offsetLeft - (track.clientWidth - centre.offsetWidth) / 2;
+                requestAnimationFrame(function () { track.style.scrollBehavior = ''; track.style.scrollSnapType = ''; });
+            }
+            ends();
+            window.addEventListener('resize', ends);
+        });
+        </script>
+    JS
 end

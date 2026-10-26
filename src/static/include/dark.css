@@ -147,12 +147,19 @@ html[data-bs-theme="dark"] {
     .task-level { --level: #6fd39b; }
     .task-level-2 { --level: #7fb4f0; }
     .task-level-3 { --level: #f0a56a; }
-    /* The stops of the Katas' overview: solid, so the dashed path behind
-       them does not show through; the colour of the veil on the page. */
-    .kata-stop-link {
-        background: #101010;
+    /* the Katas on the front page (default.css) */
+    .kata-set {
+        background: rgba(0, 0, 0, 0.2);
         border-color: rgba(255, 255, 255, 0.08);
     }
+    .kata-set-number,
+    .kata-set-pin {
+        background: rgba(20, 20, 20, 0.88);
+        color: #6fd39b;
+    }
+    .kata-set-pin { color: #7fbfe3; }
+    .kata-set .theme-image-light { display: none; }
+    .kata-set .theme-image-dark { display: block; }
     .person, .book, .case-note {
         background: rgba(0, 0, 0, 0.25);
         border-color: transparent;

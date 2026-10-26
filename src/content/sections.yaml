@@ -17,12 +17,14 @@
 - key: katas
   label: Katas
   icon: /images/martial-arts-uniform.png
+  # one strip of the sets with the person's progress (KataMap)
+  carousel: true
   description: |
     Kleine Programmieraufgaben direkt auf der Seite, in Ruby, Python oder
     JavaScript: ohne Terminal und Dateien, mit einem Knopf, der den Code
-    ausführt und prüft.
+    ausführt und prüft. Eine Kata übt man, bis sie sitzt, wie in den
+    Kampfkünsten; die Übungen bauen aufeinander auf, springen darfst du immer.
   entries:
-    - .katas
     - .pip-1
     - .kata-functions
     - .kata-decisions
