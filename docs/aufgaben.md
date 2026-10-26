@@ -816,6 +816,47 @@ Rückmeldung sagt »dein Code« statt eines Dateinamens.
         - gcd(60, 48): 12
 ```
 
+**Was eine Kata leicht machen würde**, schaltet `forbid` ab. In Ruby
+`Klasse#methode` oder `Klasse.methode` (`Integer#gcd`, `Array#sort`,
+`Math.sqrt`): Ruft der Code der Lernenden sie auf, bricht der Aufruf ab, und
+die Rückmeldung sagt »`gcd(60, 48)` (Zeile 2) benutzt `Integer#gcd`. Das gibt
+es in dieser Aufgabe nicht: Du schreibst es gerade selbst.« Die Prüfung
+selbst darf sie weiter benutzen. In Python eine eingebaute Funktion
+(`sorted`), eine Funktion eines Moduls (`math.gcd`) oder eine Methode eines
+eingebauten Typs (`list.sort`, `str.upper`); diese lassen sich in Python
+nicht abschalten, darum genügt es, wenn der Name im Code vorkommt.
+
+**Fälle für jede Person** erzeugt `random`: `count` Aufrufe (höchstens 20)
+mit Werten aus `args` (ein Bereich `1..1000` oder eine Liste von Werten),
+für jede Person und jede Fassung der Aufgabe andere, bei einer zweiten
+Prüfung dieselben. Was herauskommen muss, rechnet `reference` im Lauf aus,
+in der Sprache der Aufgabe; die Rückmeldung nennt den Wert, nie die
+Referenz. So besteht keine Tabelle der festen Fälle.
+
+```yaml
+  check:
+    type: function
+    language: ruby
+    forbid: [Integer#gcd, Integer#lcm]
+    cases:
+      - gcd(60, 48): 12
+    random:
+      count: 4
+      call: gcd(a, b)
+      args: { a: 1..1000, b: 1..1000 }
+      reference: a.gcd(b)          # in Python: math.gcd(a, b)
+  feedback:
+    - when: { same_as: "def gcd(a, b) = [a, b].min" }
+      say: Die kleinere Zahl ist nur manchmal ein Teiler der größeren.
+```
+
+**Typische Fehler** erkennt `feedback` mit `same_as`, dem Gegenstück zu
+`same_result_as` bei SQL: eine falsche Lösung, die die Autorin schreibt und
+niemand zu sehen bekommt. Sie läuft im selben Container mit denselben
+Fällen; kommt bei den Lernenden bei jedem Fall dasselbe heraus wie bei ihr,
+ersetzt ihr `say` die Rückmeldung. Eine für jeden Fehler, den Klassen
+machen.
+
 Der Code läuft nie im Workspace und nie auf dem Server, sondern jedes Mal in
 einem neuen Container aus dem Workspace-Image (dieselben Interpreter), ohne
 Netz, schreibgeschützt bis auf ein kleines `/tmp`, als `nobody`, höchstens

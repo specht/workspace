@@ -151,6 +151,7 @@ module RubyCheck
                 end
                 begin
                     expected = TOPLEVEL_BINDING.eval(c['expect'])
+                    entry['shown'] = short.call(expected) if c['show']
                     $stdout = StringIO.new
                     got = TOPLEVEL_BINDING.eval(c['call'])
                     $stdout = real_stdout
@@ -190,7 +191,7 @@ module RubyCheck
     # The harness as a list of arguments, for a run outside the Workspace
     # too (KataCheck: the code of a card, in a container of its own).
     def self.argv(file, cases)
-        payload = cases.map { |c| { 'call' => c['call'], 'expect' => c['expect'], 'raises' => c['raises'] } }
+        payload = cases.map { |c| { 'call' => c['call'], 'expect' => c['expect'], 'raises' => c['raises'], 'show' => c['show'] }.compact }
         ['ruby', '-W0', '-e', HARNESS, file, JSON.generate(payload)]
     end
 

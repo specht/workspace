@@ -52,13 +52,13 @@ test('a Kata runs, checks and keeps its code', async ({ page, e2eEmail }, testIn
   await expect(card.locator('.task-code')).toHaveValue(ruby ? /"Hallo, #\{name\}!"/ : /f'Hallo, \{name\}!'/);
 });
 
-test('a wrong Kata names the call that fails', async ({ page, e2eEmail }, testInfo) => {
+test('a typical wrong Kata gets its own feedback', async ({ page, e2eEmail }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
   await page.goto('/kata-demo');
   const card = page.locator('.task-card[data-task="kata-demo/ggt"]:visible');
   await card.locator('.task-code').fill((await languageOf(card)) === 'ruby' ? 'def gcd(a, b) = [a, b].min\n' : 'def gcd(a, b):\n    return min(a, b)\n');
   await card.locator('.task-submit').click();
-  await expect(card.locator('.task-feedback')).toContainText('gcd(60, 48) ergibt 48, richtig wäre 12.', { timeout: 30_000 });
+  await expect(card.locator('.task-feedback')).toContainText('Die kleinere Zahl ist nur manchmal ein Teiler der größeren.', { timeout: 30_000 });
 });
 
 test('pictures of a Kata card', async ({ page, e2eEmail }, testInfo) => {

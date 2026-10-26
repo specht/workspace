@@ -12,7 +12,9 @@ require 'json'
 #
 # A case with raises: true expects the call to fail with an error (a
 # StandardError in Ruby, an Exception in Python): then error holds it and ok is
-# true.
+# true. A case with show: true (a Kata's random cases, whose expect is the
+# reference to compute) also gets shown, the expected value as it came out,
+# so that messages name the value, not the reference.
 #
 # Everything here works on that line and can be tested without a Workspace.
 module CallCheck
@@ -129,7 +131,7 @@ module CallCheck
         elsif r['error']
             "`#{r['call']}` bricht ab#{at_line(r['line'])}: `#{r['error']}`"
         else
-            "`#{r['call']}` ergibt `#{r['got']}`, richtig wäre `#{r['expect']}`."
+            "`#{r['call']}` ergibt `#{r['got']}`, richtig wäre `#{r['shown'] || r['expect']}`."
         end
         message += " #{says[failed_at]}" if says[failed_at]
         [:wrong, message, read]

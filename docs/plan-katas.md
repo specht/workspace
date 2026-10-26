@@ -537,7 +537,8 @@ answer (`TaskStore`), there again at home, visible only to the student, who can
 delete it. Stored code is new data: `src/ruby/include/privacy.rb`,
 docs/datenschutz.md and the CHANGELOG change with it.
 
-Under a solved Kata, **Meiner Lehrkraft zeigen** hands the code in as a copy
+Under a solved Kata, **Einreichen** (not »Meiner Lehrkraft zeigen«, the
+maintainer's choice; not »Abgeben«, the label of hand-in tasks) hands the code in as a copy
 (`SubmissionStore`), which the student can take back. The teacher finds it under
 »Fortschritt« like other hand-ins and opens it in the viewer, large enough for
 the projector and **without the name** unless the teacher switches it on. A line
@@ -680,7 +681,7 @@ in set 10 they are typed into the card and run in the executor.
 3. **`extra: true`** for tasks: counting, card, class page, checkliste.
 4. **Sets 1 to 3** in Ruby and Python, then **JavaScript** for the Katas.
 5. **The overview page** and the catalog section.
-6. **Meiner Lehrkraft zeigen** and the viewer without names.
+6. **Einreichen** and the viewer without names.
 7. **Pip, Teil 1**: engine, trace, commands, widget, pictures, story, five
    chapters. Then **Teil 2**.
 8. **Sets 4 to 9**, as many as there is time for, Texte and Listen first.

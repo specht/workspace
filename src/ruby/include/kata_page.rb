@@ -40,8 +40,9 @@ class Main < Sinatra::Base
         return respond(:done => true, :status => 'invalid', :message => render_task_markdown(KataCheck::EMPTY)) if code.strip.empty?
 
         task = found[:task]
+        seed = KataCheck.seed(@session_user[:email], found[:key], found[:version])
         ticket = KATA_QUEUE.submit(@session_user[:email]) do |t|
-            TaskCheck.check(task, code, :kata => Main.kata_run(t))
+            TaskCheck.check(task, code, :kata => Main.kata_run(t), :kata_seed => seed)
         end
         ticket.data = { :kind => :check, :found => found, :code => code }
         respond(:done => false, :ticket => ticket.id, :ahead => KATA_QUEUE.ahead(ticket))

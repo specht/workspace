@@ -78,7 +78,8 @@ module TaskCheck
     #              database, host, workspace running, .my.cnf); see SqlCheck
     # kata:        lambda(files:, argv:, timeout:) -> KataRunner::Result, a run
     #              in a container of its own (function); nil if none
-    def self.check(task, answer, variables: {}, workspace: nil, git: nil, runner: nil, guest_runner: nil, sql: nil, sql_env: {}, cypher: nil, kata: nil)
+    # kata_seed:   for a Kata's random cases (KataCheck.seed)
+    def self.check(task, answer, variables: {}, workspace: nil, git: nil, runner: nil, guest_runner: nil, sql: nil, sql_env: {}, cypher: nil, kata: nil, kata_seed: 0)
         check = task['check']
         type = check['type']
         unless RUNS.include?(type)
@@ -93,7 +94,7 @@ module TaskCheck
         return check_calls(task, check, workspace, guest_runner, PythonCheck) if type == 'python'
         return check_calls(task, check, workspace, guest_runner, RubyCheck) if type == 'ruby'
         return check_calls(task, check, workspace, guest_runner, CCheck) if type == 'c'
-        return check_function(task, check, answer, kata) if type == 'function'
+        return check_function(task, check, answer, kata, kata_seed) if type == 'function'
         return check_schema(task, check, sql, sql_env) if type == 'schema'
         return check_keyboard(task, check, workspace) if type == 'keyboard'
         return check_workspace(task, check, answer, workspace, git, runner) unless ANSWER_TYPES.include?(type)
@@ -219,9 +220,9 @@ module TaskCheck
     end
 
     # function: a Kata, the code of the card in a container of its own.
-    def self.check_function(task, check, answer, kata)
+    def self.check_function(task, check, answer, kata, seed)
         kata ||= ->(**_) { nil }
-        status, message, read = KataCheck.check(task, check, answer, kata)
+        status, message, read = KataCheck.check(task, check, answer, kata, :seed => seed)
         Result.new(:status => status, :message => message, :read => read,
             :solution => status == :correct ? task['solution'] : nil)
     end

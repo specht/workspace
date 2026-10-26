@@ -166,7 +166,10 @@ module PythonCheck
                     result['cases'].append(entry)
                     continue
                 try:
-                    expected = eval(case['expect'], {})
+                    # math for the reference of a Kata's random cases (KataCheck)
+                    expected = eval(case['expect'], {'math': __import__('math')})
+                    if case.get('show'):
+                        entry['shown'] = short(expected)
                     with contextlib.redirect_stdout(sink):
                         got = eval(case['call'], vars(module))
                     entry['got'] = short(got)
@@ -202,7 +205,7 @@ module PythonCheck
     # The harness as a list of arguments, for a run outside the Workspace
     # too (KataCheck: the code of a card, in a container of its own).
     def self.argv(file, cases)
-        payload = cases.map { |c| { 'call' => c['call'], 'expect' => c['expect'], 'raises' => c['raises'] } }
+        payload = cases.map { |c| { 'call' => c['call'], 'expect' => c['expect'], 'raises' => c['raises'], 'show' => c['show'] }.compact }
         ['python3', '-I', '-B', '-c', HARNESS, file, JSON.generate(payload)]
     end
 

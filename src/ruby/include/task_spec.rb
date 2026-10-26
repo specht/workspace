@@ -100,7 +100,7 @@ module TaskSpec
         'python' => [],
         'ruby' => [],
         'c' => [],
-        'function' => [],
+        'function' => %w[same_as],
     }.freeze
 
     class Error < StandardError
@@ -223,6 +223,7 @@ module TaskSpec
         end
         if task.key?('feedback')
             errors.concat(validate_feedback(type, task['feedback']))
+            errors.concat(KataCheck.feedback_errors(task['feedback'])) if type == 'function'
         end
         errors
     end
@@ -553,7 +554,7 @@ module TaskSpec
         when 'function'
             # A Kata: calls functions in the code typed into the card, run in
             # a container of its own (KataCheck).
-            allowed += %w[language cases timeout]
+            allowed += %w[language cases timeout forbid random]
             errors.concat(KataCheck.spec_errors(check))
         when 'c'
             # Calls functions in the person's C file, compiled and run as the guest (CCheck).

@@ -81,6 +81,70 @@ class KataCheckTest < Minitest::Test
         assert_equal 'Dein Code lief länger als 2 Sekunden und wurde abgebrochen. Steckt irgendwo eine Endlosschleife?', message
     end
 
+    def test_forbid_switches_off_what_would_solve_it
+        refute_empty TaskSpec.validate_single_task(task(ruby_check.merge('forbid' => ['gcd'])))
+        refute_empty TaskSpec.validate_single_task(task(python_check.merge('forbid' => ['Integer#gcd'])))
+        assert_empty TaskSpec.validate_single_task(task(python_check.merge('forbid' => ['math.gcd', 'sorted', 'list.sort'])))
+        needs_docker
+        check = ruby_check.merge('forbid' => ['Integer#gcd'])
+        status, message, = KataCheck.check(task(check), check, "def gcd(a, b)\n  a.gcd(b)\nend\n", RUN)
+        assert_equal :wrong, status
+        assert_equal '`gcd(60, 48)` (Zeile 2) benutzt `Integer#gcd`. Das gibt es in dieser Aufgabe nicht: Du schreibst es gerade selbst.', message
+        # the expected values may still use it
+        status, = KataCheck.check(task(check), check, "def gcd(a, b)\n  b.zero? ? a : gcd(b, a % b)\nend\n", RUN)
+        assert_equal :correct, status
+        check = python_check.merge('forbid' => ['math.gcd'])
+        status, message, = KataCheck.check(task(check), check, "from math import gcd as g\ndef gcd(a, b):\n    return g(a, b)\n", RUN)
+        assert_equal :wrong, status
+        assert_includes message, 'benutzt `math.gcd`'
+        sorting = { 'type' => 'function', 'language' => 'python', 'forbid' => ['sorted', 'list.sort'],
+                    'cases' => [{ 'smallest([3, 1, 2])' => 1 }] }
+        status, message, = KataCheck.check(task(sorting), sorting, "def smallest(xs):\n    xs.sort()\n    return xs[0]\n", RUN)
+        assert_equal :wrong, status
+        assert_equal 'Dein Code (Zeile 2) benutzt `list.sort`. Das gibt es in dieser Aufgabe nicht: Du schreibst es gerade selbst.', message
+        status, = KataCheck.check(task(sorting), sorting, "def smallest(xs):\n    return min(xs)\n", RUN)
+        assert_equal :correct, status
+    end
+
+    def test_random_cases_are_the_same_for_a_person_and_name_the_value
+        random = { 'count' => 4, 'call' => 'gcd(a, b)', 'args' => { 'a' => '1..1000', 'b' => '1..1000' }, 'reference' => 'a.gcd(b)' }
+        check = ruby_check.merge('random' => random)
+        assert_empty TaskSpec.validate_single_task(task(check))
+        refute_empty TaskSpec.validate_single_task(task(ruby_check.merge('random' => random.merge('args' => { 'a' => '9..1' }))))
+        seed = KataCheck.seed('ada@example.org', 'kata-demo/ggt', 'v1')
+        assert_equal KataCheck.random_cases(check, seed), KataCheck.random_cases(check, seed)
+        refute_equal KataCheck.random_cases(check, seed), KataCheck.random_cases(check, KataCheck.seed('linus@example.org', 'kata-demo/ggt', 'v1'))
+        first = KataCheck.random_cases(check, seed).first
+        assert_match(/\Agcd\(\d+, \d+\)\z/, first['call'])
+        needs_docker
+        # a table of the fixed cases does not pass
+        table = "def gcd(a, b)\n  { [60, 48] => 12, [7, 7] => 7 }.fetch([a, b], 1)\nend\n"
+        status, message, = KataCheck.check(task(check), check, table, RUN, :seed => seed)
+        assert_equal :wrong, status
+        assert_match(/\A`gcd\(\d+, \d+\)` ergibt `1`, richtig wäre `\d+`\.\z/, message)
+        refute_includes message, 'a.gcd'
+        right = "def gcd(a, b)\n  b.zero? ? a : gcd(b, a % b)\nend\n"
+        assert_equal :correct, KataCheck.check(task(check), check, right, RUN, :seed => seed).first
+        python = python_check.merge('random' => random.merge('reference' => 'math.gcd(a, b)'))
+        right = "def gcd(a, b):\n    while b:\n        a, b = b, a % b\n    return a\n"
+        assert_equal :correct, KataCheck.check(task(python), python, right, RUN, :seed => seed).first
+    end
+
+    def test_same_as_recognises_a_typical_wrong_solution
+        feedback = [{ 'when' => { 'same_as' => "def gcd(a, b) = [a, b].min\n" },
+                      'say' => 'Die kleinere Zahl ist nur manchmal ein Teiler der größeren.' }]
+        t = task(ruby_check).merge('feedback' => feedback)
+        assert_empty TaskSpec.validate_single_task(t)
+        refute_empty TaskSpec.validate_single_task(task(ruby_check).merge('feedback' => [{ 'when' => { 'same_as' => '' }, 'say' => 'x' }]))
+        needs_docker
+        status, message, = KataCheck.check(t, ruby_check, "def gcd(a, b)\n  a < b ? a : b\nend\n", RUN)
+        assert_equal :wrong, status
+        assert_equal 'Die kleinere Zahl ist nur manchmal ein Teiler der größeren.', message
+        status, message, = KataCheck.check(t, ruby_check, "def gcd(a, b)\n  a\nend\n", RUN)
+        assert_equal :wrong, status
+        assert_equal '`gcd(60, 48)` ergibt `60`, richtig wäre `12`.', message
+    end
+
     def test_running_the_program_shows_what_it_prints
         needs_docker
         ran = KataCheck.run_program('python', "print('Hallo')\nprint(1 / 0)\n", RUN)
