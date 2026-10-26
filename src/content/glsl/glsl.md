@@ -160,7 +160,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 `length(p)` ist der Abstand zur Mitte. Wer näher als 0,5 ist, gehört zum Kreis. Ein hartes `if (d < 0.5)` gäbe Treppenstufen am Rand. `smoothstep(a, b, d)` ist 0, solange `d` kleiner als `a` ist, 1 ab `b`, und dazwischen steigt es weich an. Über die Breite von zwei Pixeln wird der Rand so ein Verlauf: glatte Kanten mit einer Rechnung, für die PixelRAM in »Glatte Kanten« jeden Pixel an den Kanten mehrfach fragen musste. `mix(a, b, t)` mischt zwei Farben: `t = 0` ergibt `a`, `t = 1` ergibt `b`.
 
-<div class='hint own'>
+<div class='hint own' data-check='scheibe'>
 <strong>Jetzt bist du dran:</strong> Bis jetzt zeigt die Vorschau nur den Hintergrund. Schreib statt der Zeile <code>// hier</code> und <code>float inside = 0.0;</code> die beiden Zeilen für <code>d</code> und <code>inside</code>: <code>d</code> ist der Abstand des Pixels zur Mitte, und <code>inside</code> ist im Kreis mit dem Radius 0,5 gleich 1, draußen 0, mit einem weichen Rand von einem Pixel innen bis einem Pixel außen. Speichere und sieh in der Vorschau nach, ob die Scheibe einen glatten Rand hat.
 </div>
 
@@ -187,6 +187,8 @@ Ein Gerüst; die Lücken mit `…` füllst du:
     float inside = 1.0 - smoothstep(0.5 - pixel, 0.5 + pixel, d);
 ```
 <!-- /solution -->
+
+_task(scheibe)
 
 <!-- tutorial-screenshot
 write-file: shader.frag <- file:stufen/02-kreis.frag
@@ -539,7 +541,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 Bis `march` fertig ist, trifft kein Strahl etwas: Die Vorschau bleibt fast schwarz, das leere Studio.
 
-<div class='hint own'>
+<div class='hint own' data-check='abstaende'>
 <strong>Jetzt bist du dran:</strong> Schreib <code>ball</code> und <code>map</code>, jede eine Zeile, statt <code>// hier</code> und <code>return 1.0;</code>. <code>ball</code> gibt den Abstand von <code>p</code> zur Kugel zurück: den Abstand zum Mittelpunkt <code>(0, 0.6, 0)</code>, weniger den Radius 0,5. <code>map</code> gibt den Abstand zur nächsten Fläche zurück, zur Kugel oder zum Boden bei <code>y = 0</code>, so wie es oben unter »Strahlen wie im Raytracer« steht. In GLSL ist <code>length(v)</code> die Länge eines Vektors und <code>min(a, b)</code> die kleinere von zwei Zahlen. Sehen kannst du die Kugel erst, wenn auch <code>march</code> fertig ist.
 </div>
 
@@ -574,7 +576,9 @@ float map(vec3 p)
 ```
 <!-- /solution -->
 
-<div class='hint own'>
+_task(abstaende)
+
+<div class='hint own' data-check='march'>
 <strong>Jetzt bist du dran:</strong> Schreib <code>march</code>, den Strahl aus dem Bild oben. <code>t</code> ist die Strecke, die er schon gegangen ist, am Anfang 0. In jedem Schritt fragt er <code>map</code> am Punkt <code>from + dir * t</code>. Ist der Abstand kleiner als <code>0.001 * t</code>, ist er angekommen, und <code>march</code> gibt <code>t</code> zurück. Sonst geht er um den Abstand weiter. Nach höchstens 100 Schritten, oder sobald <code>t</code> größer als 40 ist, gibt er auf: <code>-1.0</code>.
 </div>
 
@@ -617,6 +621,8 @@ float march(vec3 from, vec3 dir)
 }
 ```
 <!-- /solution -->
+
+_task(march)
 
 <!-- tutorial-screenshot
 write-file: shader.frag <- file:stufen/06-raymarching.frag
@@ -1006,7 +1012,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 Bis dahin ist der Teppich ein graues Quadrat ohne Loch.
 
-<div class='hint own'>
+<div class='hint own' data-check='carpet'>
 <strong>Jetzt bist du dran:</strong> Schreib die Runde der Schleife in <code>carpet</code>, vier Zeilen. <code>p</code> läuft im Quadrat von 0 bis 1. Mal 3 läuft es von 0 bis 3: <code>floor</code> gibt dann die Nummer der Kachel, 0, 1 oder 2 in jeder Richtung, und <code>fract</code> die Lage darin, wieder von 0 bis 1, wie beim Kaleidoskop. Liegt der Pixel in der mittleren Kachel, ist er in einem Loch: <code>carpet</code> gibt 0 zurück. Sonst rechnet die nächste Runde mit der Lage in der Kachel weiter, als wäre sie das ganze Quadrat.
 </div>
 
@@ -1044,6 +1050,8 @@ float carpet(vec2 p, int steps)
 }
 ```
 <!-- /solution -->
+
+_task(carpet)
 
 <div class='gallery columns-2'>
 <figure>
@@ -1249,7 +1257,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 Bis dahin ist der Schwamm ein glatter Würfel ohne Löcher.
 
-<div class='hint own'>
+<div class='hint own' data-check='sponge'>
 <strong>Jetzt bist du dran:</strong> Schreib die Runde der Schleife in <code>sponge</code>, drei Zeilen. <code>size</code> ist die Kantenlänge der Würfel dieser Stufe, am Anfang 2: der ganze Würfel von −1 bis 1. Die erste Zeile rechnet <code>vec3 q</code> aus, die Lage von <code>p</code> im Würfel dieser Stufe, mit seiner Mitte bei 0. Das ist wie <code>fract</code> im Teppich: <code>mod(x, size)</code> läuft von 0 bis <code>size</code> und fängt dann wieder bei 0 an. Die zweite Zeile nimmt durch diese Mitte das Kreuz aus <code>bars</code> heraus, ein Drittel so breit wie der Würfel: <code>max(d, -b)</code> zieht eine Form mit dem Abstand <code>b</code> von der Form mit dem Abstand <code>d</code> ab. Die dritte macht <code>size</code> für die nächste Stufe dreimal kleiner.
 </div>
 
@@ -1291,6 +1299,8 @@ float sponge(vec3 p)
 }
 ```
 <!-- /solution -->
+
+_task(sponge)
 
 <!-- tutorial-screenshot
 write-file: shader.frag <- file:stufen/11-schwamm.frag

@@ -1,0 +1,240 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Die Lücken stammen aus den Programmen auf der Seite, vor jedem Kasten
+# »Jetzt bist du dran«.
+format: 1
+activity: glsl
+examples:
+  scheibe:
+    pass:
+      - files: { glsl-starter/shader.frag: stufen/02-kreis.frag }
+      # anders geschrieben: distance, ohne Kommentare
+      - files:
+          glsl-starter/shader.frag:
+            text: |
+              float d = distance(p, vec2(0.0));
+              float inside = 1.0 - smoothstep(.5 - pixel, .5 + pixel, d);
+    fail:
+      # der Farbverlauf davor
+      - files: { glsl-starter/shader.frag: stufen/01-verlauf.frag }
+        say: '`d`'
+      # das Programm auf der Seite, mit der Lücke
+      - files:
+          glsl-starter/shader.frag:
+            text: |
+              void mainImage(out vec4 fragColor, in vec2 fragCoord)
+              {
+                  vec2 p = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
+                  float pixel = 2.0 / iResolution.y;
+                  // hier: d, der Abstand zur Mitte, und inside: 1 im Kreis, 0 draußen
+                  float inside = 0.0;
+                  vec3 background = vec3(0.08, 0.1, 0.18) + 0.08 * p.y;
+                  vec3 disk = vec3(1.0, 0.6, 0.2);
+                  fragColor = vec4(mix(background, disk, inside), 1.0);
+              }
+        say: '`d`'
+      # smoothstep ohne 1.0 -: innen dunkel, außen orange
+      - files:
+          glsl-starter/shader.frag:
+            text: |
+              float d = length(p);
+              float inside = smoothstep(0.5 - pixel, 0.5 + pixel, d);
+        say: andersherum
+  abstaende:
+    pass:
+      - files: { glsl-starter/shader.frag: stufen/06-raymarching.frag }
+      # anders geschrieben: der Mittelpunkt vorn, ganze Zahlen im vec3, p.y zuerst
+      - files:
+          glsl-starter/shader.frag:
+            text: |
+              float ball(vec3 p) { return length(vec3(0, .6, 0) - p) - .5; }
+              float map(vec3 p) { return min(p.y, ball(p)); }
+    fail:
+      - files: { glsl-starter/shader.frag: stufen/05-wolken.frag }
+        say: '`ball`'
+      # das Programm auf der Seite, mit den Lücken
+      - files:
+          glsl-starter/shader.frag:
+            text: |
+              float ball(vec3 p)
+              {
+                  // hier: die Kugel um (0, 0.6, 0) mit dem Radius 0.5
+                  return 1.0;
+              }
+              float map(vec3 p)
+              {
+                  // hier: die nächste der beiden Flächen
+                  return 1.0;
+              }
+              float march(vec3 from, vec3 dir)
+              {
+                  // hier: den Strahl Schritt für Schritt vorantasten
+                  return -1.0;
+              }
+              vec3 shade(vec3 q, vec3 dir)
+              {
+                  vec3 n = normal(q);
+                  bool on_floor = ball(q) > q.y;
+                  if (march(q + n * 0.002, LAMP) > 0.0) lamp = 0.0;
+              }
+        say: '`ball`'
+      # max statt min: der Abstand zur ferneren Fläche
+      - files:
+          glsl-starter/shader.frag:
+            text: |
+              float ball(vec3 p) { return length(p - vec3(0.0, 0.6, 0.0)) - 0.5; }
+              float map(vec3 p) { return max(ball(p), p.y); }
+        say: näheren
+  march:
+    pass:
+      - files: { glsl-starter/shader.frag: stufen/06-raymarching.frag }
+      # anders geschrieben: t * dir, ein eigener Name für den Abstand
+      - files:
+          glsl-starter/shader.frag:
+            text: |
+              float march(vec3 from, vec3 dir)
+              {
+                  float t = 0.0;
+                  for (int step = 0; step < 100; step++) {
+                      float dist = map(from + t * dir);
+                      if (dist < t * 0.001) { return t; }
+                      t = t + dist;
+                      if (t > 40.) break;
+                  }
+                  return -1.0;
+              }
+    fail:
+      # das Programm auf der Seite, mit den Lücken
+      - files:
+          glsl-starter/shader.frag:
+            text: |
+              float march(vec3 from, vec3 dir)
+              {
+                  // hier: den Strahl Schritt für Schritt vorantasten
+                  return -1.0;
+              }
+              vec3 normal(vec3 p)
+              {
+                  vec2 e = vec2(0.001, 0.0);
+              }
+              void mainImage(out vec4 fragColor, in vec2 fragCoord)
+              {
+                  float t = march(eye, dir);
+              }
+        say: 100 Schritten
+      # angekommen bei einem festen Abstand, ohne * t
+      - files:
+          glsl-starter/shader.frag:
+            text: |
+              float march(vec3 from, vec3 dir)
+              {
+                  float t = 0.0;
+                  for (int i = 0; i < 100; i++)
+                  {
+                      float d = map(from + dir * t);
+                      if (d < 0.001) return t;
+                      t += d;
+                      if (t > 40.0) break;
+                  }
+                  return -1.0;
+              }
+        say: 0.001 * t
+  carpet:
+    pass:
+      - files: { glsl-starter/shader.frag: stufen/10-teppich.frag }
+      # anders geschrieben: in einer Zeile multipliziert, vec2 verglichen
+      - files:
+          glsl-starter/shader.frag:
+            text: |
+              vec2 cell = floor(p * 3.0);
+              p = fract(p * 3.0);
+              if (cell == vec2(1.0)) return 0.0;
+    fail:
+      - files: { glsl-starter/shader.frag: stufen/09-maus.frag }
+        say: '`3.0`'
+      # das Programm auf der Seite, mit der Lücke
+      - files:
+          glsl-starter/shader.frag:
+            text: |
+              float carpet(vec2 p, int steps)
+              {
+                  for (int i = 0; i < 6; i++)
+                  {
+                      if (i >= steps) break;
+                      // hier: in drei mal drei Kacheln teilen; die mittlere ist ein Loch
+                  }
+                  return 1.0;
+              }
+
+              void mainImage(out vec4 fragColor, in vec2 fragCoord)
+              {
+                  vec2 p = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
+                  int steps = 1 + int(mod(iTime, 5.0));
+                  vec2 q = (p + 0.9) / 1.8;
+                  vec3 color = vec3(0.01, 0.012, 0.018);
+                  if (q.x > 0.0 && q.x < 1.0 && q.y > 0.0 && q.y < 1.0)
+                  {
+                      vec3 stone = vec3(0.45, 0.5, 0.55) * (0.85 + 0.15 * q.y);
+                      vec3 hole = vec3(0.02, 0.03, 0.04);
+                      color = mix(hole, stone, carpet(q, steps));
+                  }
+                  fragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
+              }
+        say: '`3.0`'
+      # oder statt und: ein Kreuz statt eines Lochs in der Mitte
+      - files:
+          glsl-starter/shader.frag:
+            text: |
+              p *= 3.0;
+              vec2 cell = floor(p);
+              p = fract(p);
+              if (cell.x == 1.0 || cell.y == 1.0) return 0.0;
+        say: '`&&`'
+  sponge:
+    pass:
+      - files: { glsl-starter/shader.frag: stufen/11-schwamm.frag }
+      - files: { glsl-starter/shader.frag: stufen/12-im-schwamm.frag }
+      # anders geschrieben: eine Variable für die halbe Kantenlänge, size * 0.5 / 3.0
+      - files:
+          glsl-starter/shader.frag:
+            text: |
+              float half_size = size * 0.5;
+              vec3 q = mod(p + half_size, size) - half_size;
+              d = max(d, -bars(q, half_size / 3.0));
+              size = size / 3.0;
+    fail:
+      - files: { glsl-starter/shader.frag: stufen/10-teppich.frag }
+        say: halbe Kantenlänge
+      # das Programm auf der Seite, mit der Lücke
+      - files:
+          glsl-starter/shader.frag:
+            text: |
+              float bars(vec3 p, float w)
+              {
+                  vec3 a = abs(p);
+                  return min(max(a.y, a.z), min(max(a.x, a.z), max(a.x, a.y))) - w;
+              }
+              float sponge(vec3 p)
+              {
+                  float d = box(p);
+                  float size = 2.0;   // die Kantenlänge der Würfel dieser Stufe
+                  for (int i = 0; i < 4; i++)
+                  {
+                      // hier: die Lage im Würfel dieser Stufe, das Kreuz durch seine Mitte
+                      // wegnehmen, und size für die nächste Stufe
+                  }
+                  return d;
+              }
+              mat2 rotate(float a)
+              {
+                  return mat2(cos(a), sin(a), -sin(a), cos(a));
+              }
+        say: kein `mod`
+      # das Kreuz so breit wie ein Drittel nach jeder Seite: zwei Drittel des Würfels
+      - files:
+          glsl-starter/shader.frag:
+            text: |
+              vec3 q = mod(p + size / 2.0, size) - size / 2.0;
+              d = max(d, -bars(q, size / 3.0));
+              size /= 3.0;
+        say: Breite des Kreuzes

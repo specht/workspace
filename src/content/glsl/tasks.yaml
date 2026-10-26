@@ -2,7 +2,10 @@
 # Format: docs/aufgaben.md. Gearbeitet wird in /workspace/glsl-starter.
 # Die Aufgaben prüfen Antworten: Rechnungen mit den Formeln der Seite und
 # eine Vorhersage; die Zahlen sind von Hand gerechnet, mit den Stufen in
-# stufen/. Am Ende wird der eigene Shader abgegeben.
+# stufen/. Unter jedem Kasten »Jetzt bist du dran« liest eine Aufgabe
+# shader.frag als Text und sucht die Zeilen, die er verlangt; ausführen
+# kann der Workspace einen Shader nicht. Am Ende wird der eigene Shader
+# abgegeben.
 format: 1
 activity: glsl
 tasks:
@@ -29,6 +32,26 @@ tasks:
       - when: { picked: 3 }
         say: Rot ist `uv.x`, und das ist ganz links 0.
     solution: 'Rot ist `uv.x = 0`, Grün `uv.y = 0`, Blau `0.5 + 0.5 · (−1) = 0`: Schwarz. In der Vorschau wird die Ecke darum regelmäßig dunkel und wieder blau.'
+
+  - id: scheibe
+    title: Deine Scheibe
+    prompt: |
+      Schreib in `shader.frag` die Zeilen für `d` und `inside` und speichere.
+      Wenn es stimmt, zeigt die Vorschau in der Mitte eine orange Scheibe mit
+      glattem Rand.
+    file: glsl-starter/shader.frag
+    check:
+      type: files
+      path: glsl-starter/shader.frag
+      expect:
+        format: text
+        contains:
+          - { pattern: '\bd\s*=\s*(?:length\s*\(\s*p\s*\)|distance\s*\(\s*p\s*,\s*vec2\s*\(\s*0(?:\.0*)?\s*\)\s*\))', say: 'In `shader.frag` finde ich `d` noch nicht, den Abstand des Pixels zur Mitte: `length(p)`.' }
+          - { pattern: '\binside\s*=.*smoothstep\s*\(\s*0?\.50*\s*-\s*pixel\s*,\s*0?\.50*\s*\+\s*pixel\s*,\s*d\s*\)', say: 'Für den Rand fehlt noch `smoothstep` mit `d`: von einem Pixel innen, `0.5 - pixel`, bis einem Pixel außen, `0.5 + pixel`.' }
+          - { pattern: '\binside\s*=\s*1\.0*\s*-\s*smoothstep', say: '`smoothstep` ist innen 0 und außen 1, `inside` soll es andersherum sein. Zieh es von `1.0` ab; in GLSL mit Punkt.' }
+    feedback:
+      - when: { problem: missing }
+        say: 'Ich finde `/workspace/glsl-starter/shader.frag` nicht. Hast du die Vorlage nach `/workspace/glsl-starter` geklont?'
 
   - id: rand
     title: Wie weit nach rechts?
@@ -91,6 +114,48 @@ tasks:
     hint: '0.5 + 0.25 + 0.125 + 0.0625 + 0.03125 + 0.015625.'
     solution: '0.5 + 0.25 + 0.125 + 0.0625 + 0.03125 + 0.015625 = 0.984375, also 1 − 1/64. Darum passt `smoothstep(0.45, 0.75, clouds)`: Das Rauschen liegt zwischen 0 und knapp 1, meist um die Mitte.'
 
+  - id: abstaende
+    title: Deine Abstände
+    prompt: |
+      Schreib in `shader.frag` die Zeilen für `ball` und `map` und speichere.
+      Die Kugel siehst du erst, wenn auch `march` fertig ist; bis dahin bleibt
+      die Vorschau fast schwarz.
+    file: glsl-starter/shader.frag
+    check:
+      type: files
+      path: glsl-starter/shader.frag
+      expect:
+        format: text
+        contains:
+          - { pattern: '(?:length\s*\(\s*(?:p\s*-\s*vec3\s*\(\s*(?:0(?:\.0*)?|\.0+)\s*,\s*0?\.60*\s*,\s*(?:0(?:\.0*)?|\.0+)\s*\)|vec3\s*\(\s*(?:0(?:\.0*)?|\.0+)\s*,\s*0?\.60*\s*,\s*(?:0(?:\.0*)?|\.0+)\s*\)\s*-\s*p)\s*\)|distance\s*\(\s*(?:p\s*,\s*vec3\s*\(\s*(?:0(?:\.0*)?|\.0+)\s*,\s*0?\.60*\s*,\s*(?:0(?:\.0*)?|\.0+)\s*\)|vec3\s*\(\s*(?:0(?:\.0*)?|\.0+)\s*,\s*0?\.60*\s*,\s*(?:0(?:\.0*)?|\.0+)\s*\)\s*,\s*p)\s*\))\s*-\s*0?\.50*(?!\d)', say: 'In `ball` finde ich den Abstand zur Kugel noch nicht: die Länge von `p` minus dem Mittelpunkt `vec3(0.0, 0.6, 0.0)`, weniger den Radius `0.5`.' }
+          - { pattern: '\bmin\s*\(\s*(?:ball\s*\(\s*p\s*\)\s*,\s*p\.y|p\.y\s*,\s*ball\s*\(\s*p\s*\))\s*\)', say: '`map` gibt noch nicht den Abstand zur näheren der beiden Flächen zurück: der kleinere von `ball(p)` und dem Abstand zum Boden, `p.y`.' }
+    feedback:
+      - when: { problem: missing }
+        say: 'Ich finde `/workspace/glsl-starter/shader.frag` nicht. Hast du die Vorlage nach `/workspace/glsl-starter` geklont?'
+
+  - id: march
+    title: Dein march
+    prompt: |
+      Schreib in `shader.frag` die Schleife in `march` und speichere. Wenn es
+      stimmt, steht in der Vorschau eine helle Kugel im Licht einer Lampe und
+      wirft einen Schatten auf den Boden.
+    file: glsl-starter/shader.frag
+    check:
+      type: files
+      path: glsl-starter/shader.frag
+      expect:
+        format: text
+        contains:
+          - { pattern: '\bfor\s*\(\s*int\s+\w+\s*=\s*0\s*;\s*\w+\s*<\s*100\s*;', say: 'In `march` finde ich noch keine Schleife mit höchstens 100 Schritten: `for (int i = 0; i < 100; i++)`.' }
+          - { pattern: '\bmap\s*\(\s*(?:from\s*\+\s*(?:dir\s*\*\s*t|t\s*\*\s*dir)|(?:dir\s*\*\s*t|t\s*\*\s*dir)\s*\+\s*from)\s*\)', say: 'Der Strahl fragt `map` noch nicht am Punkt `from + dir * t`.' }
+          - { pattern: '<\s*(?:0?\.0010*\s*\*\s*t|t\s*\*\s*0?\.0010*)(?![\w.])', say: 'Noch fehlt der Vergleich, ob der Strahl angekommen ist: Ist der Abstand kleiner als `0.001 * t`?' }
+          - { pattern: '\breturn\s+t\s*;', say: 'Ist der Strahl angekommen, gibt `march` die Strecke `t` zurück. Ein `return t;` finde ich noch nicht.' }
+          - { pattern: '\bt\s*\+=\s*\w|\bt\s*=\s*t\s*\+\s*\w', say: 'Der Strahl geht noch nicht weiter: In jedem Schritt wächst `t` um den Abstand.' }
+          - { pattern: '\bt\s*>=?\s*40\.0*(?!\d)', say: 'Noch gibt der Strahl nicht auf, wenn `t` größer als 40 ist. In GLSL mit Punkt: `40.0`.' }
+    feedback:
+      - when: { problem: missing }
+        say: 'Ich finde `/workspace/glsl-starter/shader.frag` nicht. Hast du die Vorlage nach `/workspace/glsl-starter` geklont?'
+
   - id: schritt
     title: Der erste Schritt
     prompt: |
@@ -130,6 +195,28 @@ tasks:
     hint: 'Rechne erst `h = clamp(0.5 + 0.5 · (b − a) / k, 0, 1)`, dann `mix(b, a, h) − k · h · (1 − h)`.'
     solution: '`h = 0.5 + 0.5 · 0 / 0.6 = 0.5`, `mix(0.3, 0.3, 0.5) = 0.3`, `0.6 · 0.5 · 0.5 = 0.15`, also `0.3 − 0.15 = 0.15`. Der Punkt ist für `map` nur noch 0.15 von einer Fläche weg statt 0.3: Zwischen den Tropfen ist schon Fläche, der Hals.'
 
+  - id: carpet
+    title: Deine Runde im Teppich
+    prompt: |
+      Schreib in `shader.frag` die Runde der Schleife in `carpet` und speichere.
+      Wenn es stimmt, hat das graue Quadrat ein Loch in der Mitte, und jede
+      Sekunde kommt eine Stufe kleinerer Löcher dazu.
+    file: glsl-starter/shader.frag
+    check:
+      type: files
+      path: glsl-starter/shader.frag
+      expect:
+        format: text
+        contains:
+          - { pattern: '\bp\s*\*=\s*3\.0*(?![\d.])|\bp\s*\*\s*3\.0*(?![\d.])|\b3\.0*\s*\*\s*p\b', say: 'In `carpet` wird `p` noch nicht mit `3.0` multipliziert. In GLSL mit Punkt, sonst meldet die Vorschau einen Fehler.' }
+          - { pattern: '\bfloor\s*\(', say: 'Noch fehlt die Nummer der Kachel: `floor`.' }
+          - { pattern: '\bfract\s*\(', say: 'Noch fehlt die Lage in der Kachel: `fract`.' }
+          - { pattern: '\.x\s*==\s*1\.0*(?!\d)\s*&&\s*\w+\.y\s*==\s*1\.0*(?!\d)|\.y\s*==\s*1\.0*(?!\d)\s*&&\s*\w+\.x\s*==\s*1\.0*(?!\d)|==\s*vec2\s*\(\s*1\.0*\s*(?:,\s*1\.0*\s*)?\)', say: 'Noch fehlt der Vergleich, ob der Pixel in der mittleren Kachel liegt. Sie hat in beiden Richtungen die Nummer `1.0`: `x` und `y`, beide zugleich (`&&`).' }
+          - { pattern: '\breturn\s+(?:0\.0*|\.0+)\s*;', say: 'Liegt der Pixel in der mittleren Kachel, gibt `carpet` `0.0` zurück. Das finde ich noch nicht.' }
+    feedback:
+      - when: { problem: missing }
+        say: 'Ich finde `/workspace/glsl-starter/shader.frag` nicht. Hast du die Vorlage nach `/workspace/glsl-starter` geklont?'
+
   - id: teppich
     title: Was vom Teppich bleibt
     prompt: |
@@ -150,6 +237,28 @@ tasks:
         say: Du hast nur die 64 Löcher der letzten Stufe abgezogen. Die großen Löcher der ersten beiden Stufen nehmen auch kleinste Kacheln weg.
     hint: 'Nach einer Stufe bleiben 8 Kacheln. Jede davon wird wieder in 9 geteilt, und 8 bleiben.'
     solution: '`8 · 8 · 8 = 512`. Mit jeder Stufe bleiben 8 von 9 Teilen, also wird der Teppich mit jeder Stufe um ein Neuntel leichter: Nach drei Stufen sind es 512 von 729 Kacheln, gut 70 Prozent.'
+
+  - id: sponge
+    title: Deine Runde im Schwamm
+    prompt: |
+      Schreib in `shader.frag` die Runde der Schleife in `sponge` und speichere.
+      Wenn es stimmt, dreht sich in der Vorschau ein Würfel voller Löcher, die
+      immer kleiner werden, und aus seinem Kern dringt blaues Licht.
+    file: glsl-starter/shader.frag
+    check:
+      type: files
+      path: glsl-starter/shader.frag
+      expect:
+        format: text
+        contains:
+          - { pattern: '\bmod\s*\(', say: 'In `sponge` finde ich noch kein `mod`: Die erste Zeile rechnet `vec3 q` aus, die Lage von `p` im Würfel dieser Stufe.' }
+          - { pattern: '\bmod\s*\(\s*p\s*\+\s*(?:size\s*/\s*2\.0*|size\s*\*\s*0?\.50*|0?\.50*\s*\*\s*size|\(\s*size\s*/\s*2\.0*\s*\)|(?!size\b)[A-Za-z_]\w*)\s*,\s*size\s*\)\s*-\s*(?:size\s*/\s*2\.0*|size\s*\*\s*0?\.50*|0?\.50*\s*\*\s*size|\(\s*size\s*/\s*2\.0*\s*\)|(?!size\b)[A-Za-z_]\w*)', say: '`q` soll die Lage im Würfel sein, mit seiner Mitte bei 0. Verschieb `p` vor `mod` um eine halbe Kantenlänge und zieh sie danach wieder ab.' }
+          - { pattern: '\bmax\s*\(\s*d\s*,\s*-\s*bars\s*\(\s*q\s*,', say: 'Noch nimmt nichts das Kreuz aus dem Würfel: `max(d, -b)` zieht die Form mit dem Abstand `b` ab, hier `bars(q, …)`.' }
+          - { pattern: '\bbars\s*\(\s*q\s*,\s*(?:size\s*/\s*6\.0*|size\s*/\s*3\.0*\s*/\s*2\.0*|size\s*/\s*2\.0*\s*/\s*3\.0*|size\s*/\s*3\.0*\s*\*\s*0?\.50*|size\s*\*\s*0?\.50*\s*/\s*3\.0*|0?\.50*\s*\*\s*size\s*/\s*3\.0*|(?!size\b)[A-Za-z_]\w*\s*/\s*3\.0*)\s*\)', say: 'Die Breite des Kreuzes stimmt noch nicht. Es ist ein Drittel so breit wie der Würfel, und `w` in `bars` zählt von der Mitte aus nach jeder Seite.' }
+          - { pattern: '\bsize\s*/=\s*3\.0*(?![\d.])|\bsize\s*=\s*size\s*/\s*3\.0*(?![\d.])|\bsize\s*\*=\s*(?:1\.0*\s*/\s*3\.0*|0?\.333)', say: '`size` wird für die nächste Stufe noch nicht dreimal kleiner: geteilt durch `3.0`, in GLSL mit Punkt.' }
+    feedback:
+      - when: { problem: missing }
+        say: 'Ich finde `/workspace/glsl-starter/shader.frag` nicht. Hast du die Vorlage nach `/workspace/glsl-starter` geklont?'
 
   - id: schwamm
     title: Würfel im Schwamm
