@@ -319,8 +319,8 @@ module TaskSpec
                     if list.is_a?(Array) && !list.empty?
                         list.each_with_index do |want, i|
                             pattern = want.is_a?(Hash) ? want['pattern'] : want
-                            if want.is_a?(Hash) && (want.keys - %w[pattern say]).any?
-                                errors << "expect.contains[#{i}] knows pattern and say"
+                            if want.is_a?(Hash) && (want.keys - %w[pattern min after say]).any?
+                                errors << "expect.contains[#{i}] knows pattern, min, after and say"
                             end
                             errors.concat(regex_errors(pattern, "expect.contains[#{i}]"))
                         end

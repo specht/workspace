@@ -215,21 +215,33 @@ module FileChecks
         if expect['executable'] && (entry[:mode] & 0o111).zero?
             return failed(:not_executable, "#{code(path)} gibt es, aber die Datei ist nicht ausführbar.", :read => read)
         end
-        # contains: [pattern | { pattern:, say: }]: each regular expression
-        # matches somewhere in the text (line by line); the read part names
-        # the line where each was found.
+        # contains: [pattern | { pattern:, min:, after:, say: }]: each regular
+        # expression matches somewhere in the text (line by line), in at
+        # least min lines (1); with after, the last of them comes after the
+        # last line matching that expression. The read part names the line
+        # where each was found.
         found = []
         text = nil
         Array(expect['contains']).each do |want|
             pattern, say = want.is_a?(Hash) ? [want['pattern'], want['say']] : [want, nil]
+            min = want.is_a?(Hash) ? (want['min'] || 1).to_i : 1
             text ||= ws.read_text(path)
             re = Regexp.new(pattern, timeout: 0.5)
-            hit = text.each_line.with_index(1).find { |line, _| re.match?(line) }
-            if hit.nil?
+            hits = text.each_line.with_index(1).select { |line, _| re.match?(line) }
+            if hits.size < min
                 read_all = ([read] + found).join("\n\n")
-                return failed(:missing_text, say || "In #{code(path)} finde ich noch nichts, das zu #{code(pattern)} passt.", :read => read_all)
+                message = say || (hits.empty? ? "In #{code(path)} finde ich noch nichts, das zu #{code(pattern)} passt." : "In #{code(path)} passen #{hits.size} Zeilen zu #{code(pattern)}, verlangt sind #{min}.")
+                return failed(:missing_text, message, :read => read_all)
             end
-            found << "- #{code(pattern)}: Zeile #{hit[1]}, #{code(hit[0].strip[0, 80])}"
+            if want.is_a?(Hash) && want['after']
+                before = Regexp.new(want['after'], timeout: 0.5)
+                last = text.each_line.with_index(1).select { |line, _| before.match?(line) }.last
+                if last && hits.last[1] < last[1]
+                    read_all = ([read] + found).join("\n\n")
+                    return failed(:wrong_order, say || "In #{code(path)} steht #{code(pattern)} noch vor Zeile #{last[1]}, #{code(last[0].strip[0, 80])}; es gehört dahinter.", :read => read_all)
+                end
+            end
+            found << "- #{code(pattern)}: #{hits.size == 1 ? 'Zeile' : 'Zeilen'} #{hits.map(&:last).join(', ')}, #{code(hits.first[0].strip[0, 80])}"
         end
         ok(:read => ([read] + found).join("\n\n"))
     end

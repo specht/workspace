@@ -456,8 +456,10 @@ check:
 Für eine einzelne Datei: `exists`, `executable`, `format` (z. B. `elf`) und
 `contains`: reguläre Ausdrücke, die irgendwo in einer Zeile der Datei passen
 müssen, jeder auf Wunsch mit einem eigenen Satz für den Fall, dass er fehlt.
-Unter »Was der Workspace gelesen hat« steht die Zeile, in der jeder gefunden
-wurde.
+`min: 2` verlangt so viele passende Zeilen, `after: 'fill_circle'`, dass die
+letzte von ihnen hinter der letzten Zeile steht, auf die dieser Ausdruck passt.
+Unter »Was der Workspace gelesen hat« stehen die Zeilen, in denen jeder
+gefunden wurde.
 
 ```yaml
 check:
