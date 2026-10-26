@@ -11,7 +11,8 @@
 // page), and the Handbuch pages opened from there in the same tab show that
 // view. A click changes it until the next activity page; it is kept for the
 // tab only (sessionStorage), so a choice made in one activity does not stick
-// to the other.
+// to the other. On the activity page itself the view is the activity's,
+// with no switch; the Handbuch pages keep theirs.
 (function () {
     const TOGGLES = [
         {
@@ -115,7 +116,8 @@
 
     media.forEach((element) => {
         element.dataset.variantBase = element.getAttribute('src');
-        const toggles = TOGGLES.filter((t) => variant(element, t.name));
+        // the slide toggle not on an activity page that chose its view
+        const toggles = TOGGLES.filter((t) => variant(element, t.name) && !(t.perTab && context));
         if (toggles.length === 0) return;
         // A preview that enlarges on a click is a button itself; the
         // switches go beside it, not into it.
