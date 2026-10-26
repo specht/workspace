@@ -826,7 +826,7 @@ Ob ein Punkt im Schatten liegt, findet ein Raytracer genauso heraus wie alles an
 
 <img class='drawing' style='width: 31em' src='schattenstrahl.webp' alt='Eine Kugel liegt auf dem Boden, rechts oben steht weit weg die Sonne. Von zwei Treffpunkten auf dem Boden geht je ein gestrichelter Strahl zur Sonne, in Richtung sun_dir. Der linke, im Schatten, stößt an die Kugel und endet an einem roten Kreuz; dünn und grau gestrichelt geht es weiter, wie er zur Sonne ginge. Der rechte, in der Sonne, kommt frei durch.'>
 
-<div class='hint own'>
+<div class='hint own' data-check='schatten'>
 <strong>Jetzt bist du dran:</strong> Ergänze <code>sunlight</code> so, dass ein Punkt im Schatten kein Sonnenlicht bekommt. Dafür brauchst du nichts Neues: <code>nearest_hit</code> sagt dir, ob ein Strahl, der beim Treffpunkt <code>h.point</code> beginnt und in Richtung <code>sun_dir</code> läuft, unterwegs etwas trifft.
 </div>
 
@@ -854,6 +854,8 @@ Ein Gerüst, in `sunlight` vor dem letzten `return`:
 ~     return scale(sun_color, d);
 ```
 <!-- /solution -->
+
+_task(schatten)
 
 _task(akne)
 

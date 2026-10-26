@@ -20,6 +20,8 @@ examples:
     skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Dass die Schritte der Seite die Aufgabe lösen, prüfen die Rezepte mit check-task; die Prüfart selbst testet c_check_test.rb.
   schachbrett:
     skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Dass die Schritte der Seite die Aufgabe lösen, prüfen die Rezepte mit check-task; die Prüfart selbst testet c_check_test.rb.
+  schatten:
+    skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Von Hand mit pixelram.h geprüft, angenommen stufen/06-akne.c, stufen/06-schatten.c und jede spätere Stufe bis stufen/raytracer.c (auch die weichen Schatten und die Szene von stufen/16-pathtracing.c, weil die Prüfung ihre eigene Szene baut), abgelehnt stufen/05-boden.c (ohne Schattenstrahl), ein Schattenstrahl entlang der Normale statt sun_dir und einer mit !nearest_hit; ein Rezept mit check-task gibt es dafür noch nicht.
   kamera:
     skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Dass die Schritte der Seite die Aufgabe lösen, prüfen die Rezepte mit check-task; die Prüfart selbst testet c_check_test.rb.
   reflect:

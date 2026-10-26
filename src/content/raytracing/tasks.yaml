@@ -5,8 +5,8 @@
 # Kästen »Jetzt bist du dran« schreiben die Lernenden selbst, und unter fast
 # jedem ruft eine Aufgabe ihre Funktion auf (Prüfart c, mit data-check am
 # Kasten): hit_sphere, das Licht in trace, hit_floor, das Schachbrett, die
-# Kamera, reflect und fresnel. Nur den Schattenstrahl prüft keine Aufgabe; was
-# er tut, hängt von der ganzen Szene ab. Die Zahlen sind von Hand gerechnet;
+# Kamera, reflect und fresnel, und sunlight mit dem Schattenstrahl in einer
+# Szene, in der nur die große Kugel steht. Die Zahlen sind von Hand gerechnet;
 # das Programm in stufen/ ist dasselbe wie auf der Seite.
 format: 1
 activity: raytracing
@@ -252,6 +252,54 @@ tasks:
           expect: true
           say: Die Felder links und rechts von x = 0 haben dieselbe Farbe. `(int)` macht aus −0.5 eine 0; `floor` rundet ab, auf −1.
     hint: '`floor(h->point.x)` und `floor(h->point.z)` sind die Nummern des Feldes. Ist ihre Summe gerade, ist das Feld dunkel.'
+
+  - id: schatten
+    title: Dein Schattenstrahl
+    prompt: |
+      Ergänze `sunlight` in `raytracer.c` um den Schattenstrahl und speichere.
+      Der Workspace lässt nur die große Kugel in der Szene stehen und fragt
+      an Stellen des Bodens nach dem Sonnenlicht: unter der Kugel, in ihrem
+      schrägen Schatten und frei in der Sonne.
+    file: raytracer/raytracer.c
+    check:
+      type: c
+      file: raytracer/raytracer.c
+      tolerance: 0.0001
+      setup: |
+        // das Sonnenlicht (rot) an der Stelle (x, 0, z) des Bodens, mit der
+        // Sonne aus der Richtung (sx, sy, sz). In der Szene steht nur die
+        // große Kugel; die übrigen liegen weit unter dem Boden.
+        double sunlight_on_floor(double x, double z, double sx, double sy, double sz)
+        {
+            for (int i = 0; i < (int)(sizeof spheres / sizeof spheres[0]); i++)
+            {
+                spheres[i] = (sphere){ 0 };
+                spheres[i].center = (vec){0, -1000, 0};
+                spheres[i].radius = 1;
+            }
+            spheres[0].center = (vec){-0.3, 1.2, -1.4};
+            spheres[0].radius = 1.2;
+
+            hit h = { 0 };
+            h.t = 1;
+            h.point = (vec){x, 0, z};
+            h.normal = (vec){0, 1, 0};
+            sun_dir = normalize((vec){sx, sy, sz});
+            return sunlight(h).x;
+        }
+      cases:
+        - call: sunlight_on_floor(0, 6, 1.4, 1.0, 0.3) > 0
+          expect: true
+          say: 'Vorn auf dem Boden, wo nichts zwischen ihm und der Sonne steht, kommt kein Sonnenlicht an. Gibst du `(vec){0, 0, 0}` nur zurück, wenn `nearest_hit` für den Strahl zur Sonne `true` liefert?'
+        - call: sunlight_on_floor(-0.3, -1.0, 0, 1, 0)
+          expect: 0
+          say: 'Die Sonne steht genau oben, und die Stelle liegt unter der großen Kugel; trotzdem kommt Sonnenlicht an. Schickst du von `h.point` einen Strahl in Richtung `sun_dir` mit `nearest_hit` los?'
+        - call: sunlight_on_floor(-1.98, -1.76, 1.4, 1.0, 0.3)
+          expect: 0
+          say: 'Die Sonne scheint schräg, und die Stelle liegt im Schatten der großen Kugel; trotzdem kommt Sonnenlicht an. Läuft dein Strahl in Richtung `sun_dir`, nicht entlang der Normale?'
+        - call: sunlight_on_floor(0.8, -1.4, 1.4, 1.0, 0.3) > 0
+          expect: true
+          say: 'Die Stelle liegt unter dem rechten Rand der großen Kugel; die Sonne scheint schräg von rechts an der Kugel vorbei auf sie. Trotzdem bekommt sie kein Sonnenlicht. Läuft dein Strahl in Richtung `sun_dir`, nicht entlang der Normale?'
 
   - id: akne
     title: Ein Strahl, der auf der Oberfläche beginnt
