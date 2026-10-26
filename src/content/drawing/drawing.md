@@ -472,14 +472,32 @@ image-file: drawing-steps/step.png 8
 -->
 <img src='out5.webp' class='full' alt='Die Fläche zwischen den oberen Kurven ist hellgrün gefüllt.'>
 
-Füll mit diesen Zeilen auch die beiden anderen Flächen:
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Füll auch die beiden anderen Flächen: die mittlere mit Farbe 8, die untere mit Farbe 9. Für jede Fläche brauchst du zwei Zeilen, so wie eben: erst die Farbe, dann <code>flood_fill</code> mit einem Punkt, der in der Fläche liegt. Starte danach das Programm und sieh nach, ob alle drei Flächen grün sind.
+</div>
 
+<!-- hint -->
+Such dir die Punkte am linken Rand, bei x = 0. Dort beginnt die zweite Kurve bei y = 140 und die dritte bei y = 170. Die unterste Zeile des Bildes hat y = 179.
+<!-- /hint -->
+<!-- hint -->
+Die mittlere Fläche liegt am linken Rand zwischen y = 140 und y = 170, die untere zwischen y = 170 und y = 179. Nimm ein y dazwischen, nicht genau auf einer Kurve. Ein Gerüst; die Lücken mit `…` füllst du:
+
+```ruby
+set_color(8)
+flood_fill(0, …)
+set_color(…)
+flood_fill(0, …)
+```
+<!-- /hint -->
+
+<!-- solution -->
 ```ruby
 set_color(8)
 flood_fill(0, 150)
 set_color(9)
 flood_fill(0, 179)
 ```
+<!-- /solution -->
 
 <!-- tutorial-screenshot
 # Alle drei Flächen
@@ -534,13 +552,32 @@ image-file: drawing-steps/step.png 8
 
 ### Himmel zeichnen
 
-Für den Himmel brauchen wir die Maske neu: Sie umfasst noch die Pixel, die vorhin hellblau waren, also auch die, auf denen jetzt der Regenbogen liegt. Neu festgelegt umfasst sie nur noch, was jetzt hellblau ist:
+Für den Himmel brauchen wir die Maske neu: Sie umfasst noch die Pixel, die vorhin hellblau waren, also auch die, auf denen jetzt der Regenbogen liegt. Neu festgelegt umfasst sie nur noch, was jetzt hellblau ist.
 
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Leg die Maske neu fest. Schreib sie unter den Regenbogen. Sie soll wieder alle Pixel aufnehmen, die gerade hellblau sind, also die Farbe 16 haben.
+</div>
+
+<!-- hint -->
+Das hast du schon einmal gemacht, vor dem Regenbogen. Sieh dir die Zeilen dort an: Sie passen hier genauso.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücke mit `…` füllst du:
+
+```ruby
+set_mask do
+    add_color(…)
+end
+```
+<!-- /hint -->
+
+<!-- solution -->
 ```ruby
 set_mask do
     add_color(16)
 end
 ```
+<!-- /solution -->
 
 Zwischen 16 und 20 liegen in der Palette schöne Blautöne. Wir gehen Zeile für Zeile von oben nach unten durch das Bild, wählen für jede Zeile eine Farbe aus diesem Bereich, mit etwas Zufall, und ziehen eine waagerechte Linie:
 

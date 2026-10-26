@@ -5,6 +5,11 @@ Ein Einstieg in Grafikprogrammierung ohne Vorkenntnisse: Lernende zeichnen in Ru
 <li><b>1. Doppelstunde:</b> Einrichten, der erste Pixel, die Wiese mit Regenbogen und das gespeicherte Bild.</li>
 <li><b>2. Doppelstunde:</b> das eigene Bild mit den Ideen am Ende der Seite, dann Abgabe.</li>
 </ul></td></tr>
+<tr><th>Jetzt bist du dran</th><td><ul>
+<li>Zweimal schreiben die Lernenden einen Schritt selbst, den die Seite gerade gezeigt hat: die beiden anderen Flächen mit <code>set_color</code> und <code>flood_fill</code> und die zweite Maske vor dem Himmel.</li>
+<li>Davor stehen Tipps, eine Stufe nach der anderen mit einer Minute Pause und ohne Uhr; der Code der Seite ist die letzte Stufe.</li>
+<li>Ob es stimmt, zeigt die Zeichenfläche; keine Aufgabe prüft diesen Code.</li>
+</ul></td></tr>
 <tr><th>Einrichten</th><td>Die Erweiterung »Pixelflow Canvas« (<code>gymnasiumsteglitz.pixelflow-canvas</code>) fragt beim ersten Mal, ob man dem Herausgeber vertraut. Das Rubygem landet in <code>/workspace/.gem</code>; beides bleibt nach einem Neustart erhalten.</td></tr>
 <tr><th>Abgabe</th><td>»Dein eigenes Bild« kopiert <code>bild.rb</code> und <code>bild.png</code> aus <code>/workspace</code>. In der Klassenübersicht öffnet ein Klick auf die Abgabe den Code; <code>bild.png</code> steht links in der Dateiliste.</td></tr>
 </table>
