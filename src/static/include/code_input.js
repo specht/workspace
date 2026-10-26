@@ -306,6 +306,35 @@
         box.appendChild(view);
         box.appendChild(textarea);
         textarea.classList.add('code-input-text');
+        // A Kata's code has line numbers (messages and Pip's replay name
+        // lines). A long line wraps, so each number is as high as its line:
+        // an invisible copy of the text, one element per line, measures them.
+        const numbered = textarea.classList.contains('task-code');
+        const gutter = document.createElement('div');
+        const mirror = document.createElement('div');
+        if (numbered) {
+            box.classList.add('code-input-numbered');
+            gutter.className = 'code-input-gutter';
+            mirror.className = 'code-input-mirror';
+            gutter.setAttribute('aria-hidden', 'true');
+            mirror.setAttribute('aria-hidden', 'true');
+            box.insertBefore(mirror, view);
+            box.insertBefore(gutter, view);
+        }
+        function number() {
+            if (!numbered) return;
+            const lines = textarea.value.split('\n');
+            mirror.replaceChildren(...lines.map((line) => Object.assign(document.createElement('div'), { textContent: line || '\u200b' })));
+            const heights = [...mirror.children].map((line) => line.getBoundingClientRect().height);
+            const current = gutter.querySelector('.current');
+            const at = current ? [...gutter.children].indexOf(current) : -1;
+            gutter.replaceChildren(...heights.map((height, i) => {
+                const n = Object.assign(document.createElement('div'), { textContent: i + 1 });
+                n.style.height = height + 'px';
+                if (i === at) n.className = 'current';
+                return n;
+            }));
+        }
 
         function grow() {
             const style = getComputedStyle(textarea);
@@ -318,6 +347,7 @@
             const text = textarea.value;
             view.innerHTML = (HIGHLIGHT[language] || sql)(text) + '\n';
             grow();
+            number();
         }
         textarea.addEventListener('input', update);
         textarea.addEventListener('scroll', () => { view.scrollTop = textarea.scrollTop; });
@@ -325,7 +355,7 @@
         if (window.ResizeObserver) {
             let width = 0;
             new ResizeObserver(() => {
-                if (box.clientWidth !== width) { width = box.clientWidth; grow(); }
+                if (box.clientWidth !== width) { width = box.clientWidth; grow(); number(); }
             }).observe(box);
         }
         if (INDENT[language]) codeKeys(textarea, language);
@@ -335,6 +365,7 @@
         // measured: a marker at its first character, taken out again.
         textarea.codeInputMark = function (line) {
             let mark = box.querySelector('.code-input-mark');
+            [...gutter.children].forEach((n, i) => n.classList.toggle('current', i + 1 === line));
             if (!line) {
                 if (mark) mark.hidden = true;
                 return;

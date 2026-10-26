@@ -4999,7 +4999,8 @@ ul.task-teacher-list .task-teacher-answer {
 }
 
 .code-input-view,
-.code-input .code-input-text {
+.code-input .code-input-text,
+.code-input-mirror {
     font-family: '0xProto Nerd Font Mono', monospace;
     font-size: 90%;
     font-weight: normal;
@@ -5052,6 +5053,46 @@ ul.task-teacher-list .task-teacher-answer {
 
 .code-input:has(.code-input-text:disabled) {
     opacity: 0.65;
+}
+
+/* A Kata's line numbers (code_input.js): a gutter left of the text, each
+   number as high as its line, measured on an invisible copy (the mirror)
+   that sets the text like the view. The current line of a replay is
+   brighter. */
+.code-input-numbered .code-input-view,
+.code-input-numbered .code-input-text,
+.code-input-numbered .code-input-mirror {
+    padding-left: 3.4em;
+}
+.code-input-mirror {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+.code-input-gutter {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1;
+    width: 2.7em;
+    padding-top: calc(0.375rem + 1px);
+    padding-right: 0.6em;
+    border-right: 1px solid rgba(251, 241, 199, 0.1);
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 90%;
+    line-height: 1.5;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: rgba(251, 241, 199, 0.35);
+    pointer-events: none;
+    user-select: none;
+}
+.code-input-gutter .current {
+    color: #d0bfff;
 }
 
 /* SQL check: the student's result as a small table, in view. */
@@ -8382,47 +8423,33 @@ html[data-bs-theme="dark"] .bitplane-widget {
     image-rendering: auto;
 }
 
-.pip-status {
-    margin: 0.4em 0 0.2em;
-    text-align: center;
-    font-size: 0.85em;
-    color: var(--bs-secondary-color);
+/* In a task card the player is no widget card of its own (the task card
+   is the frame): no slate frame, no label, no lightbox; the controls are
+   those of every widget (stepper_keys.js). */
+.task-card div.pip-world[data-stepper] {
+    margin: 0.4em 0 0.8em;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+}
+.task-card div.pip-world[data-stepper]::before,
+.task-card div.pip-world[data-stepper] > .stepper-full {
+    display: none;
 }
 
 .pip-controls {
-    display: flex;
-    gap: 0.4em;
-    align-items: center;
-    justify-content: center;
+    margin-top: 0.6em;
 }
 
-.pip-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.2em;
-    height: 2em;
-    padding: 0;
+.pip-status {
+    color: var(--bs-secondary-color);
+    font-variant-numeric: tabular-nums;
 }
 
-.pip-button .bi {
-    margin: 0;
-}
-
-.pip-button .bi::before {
-    vertical-align: 0;
-}
-
-.pip-speed {
-    display: inline-flex;
-    gap: 0.4em;
-    align-items: center;
-    margin-left: 0.6em;
-    font-size: 0.85em;
-}
-
-.pip-speed input {
-    width: 6em;
+.pip-world .stepper-timeline {
+    margin-top: 0.5em;
 }
 
 /* a tile of a prediction map to talk about (»Feld 1«) */
@@ -8454,13 +8481,15 @@ html[data-bs-theme="dark"] .bitplane-widget {
     image-rendering: pixelated;
 }
 
-/* the line of the plan Pip is at (code_input.js, codeInputMark) */
+/* the line of the plan Pip is at (code_input.js, codeInputMark): purple,
+   what is current in every widget (docs/widgets.md); the editor is dark in
+   both schemes, so the light purple */
 .code-input-mark {
     position: absolute;
     left: 0;
     right: 0;
     z-index: 0;
-    background: rgba(250, 189, 47, 0.18);
-    border-left: 3px solid #fabd2f;
+    background: rgba(177, 151, 252, 0.2);
+    border-left: 3px solid #b197fc;
     pointer-events: none;
 }

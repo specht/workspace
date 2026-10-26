@@ -475,10 +475,12 @@
     }
 
     // What »Ausführen« printed, as text, and a line when it did not end well.
+    // Pip's run shows on the map; the console only when the plan printed
+    // something or broke off.
     function showConsole(card, data) {
         const console_ = card.querySelector('.task-console');
         if (console_) {
-            console_.hidden = false;
+            console_.hidden = card.dataset.type === 'pip' && !data.output && data.status === 'ran';
             console_.textContent = data.output || (data.status === 'ran' ? '(Dein Programm hat nichts ausgegeben.)' : '');
             console_.classList.toggle('task-console-error', data.status !== 'ran');
         }

@@ -8,7 +8,6 @@
 (function () {
     const SPRITES = '/images/pip/';
     const MAX_TILE = 48;
-    const SPEEDS = [700, 450, 280, 160, 80];
     const SAY = { wall: 'Autsch!', caught: 'Iiih, Glibber!', no_stone: 'Hier ist nichts …', no_lever: 'Kein Hebel?', steps: 'Puh …', lamp: 'Licht!' };
 
     function el(tag, className, parent) {
@@ -96,35 +95,61 @@
         }
     }
 
-    // The player under the map: Zurück, Abspielen/Pause, Weiter, the speed,
-    // and a line that says the step. onLine(line or null) marks the editor.
+    // The player under the map, with the controls of every step-by-step
+    // widget (docs/widgets.md, stepper_keys.js): to the start, back, next,
+    // to the end; play and its speed (1×, 2×, ½×); the step count; the
+    // timeline of dots; ← → and a swipe across the map. A step forward or
+    // back moves, a jump shows the frame at once. onLine(line or null)
+    // marks the editor.
+    const SPEED_NAMES = [[1, '1×'], [2, '2×'], [0.5, '½×']];
+    const STEP_TIME = 450;
+
     class PipPlayer {
         constructor(box, layout, start, onLine) {
             this.box = box;
             this.onLine = onLine || (() => {});
+            box.dataset.stepper = '';
             this.mapBox = el('div', 'pip-map-box', box);
-            this.status = el('p', 'pip-status', box);
+            const row = el('div', 'pip-controls', box);
+            this.buttons = {};
+            [['first', 'bi-chevron-bar-left', 'Zum Anfang'], ['prev', 'bi-chevron-left', 'Einen Schritt zurück'],
+                ['next', 'bi-chevron-right', 'Nächster Schritt'], ['last', 'bi-chevron-bar-right', 'Zum Ende']].forEach(([go, icon, label]) => {
+                const b = this.button(row, icon, label);
+                b.dataset.go = go;
+                this.buttons[go] = b;
+            });
+            this.buttons.first.addEventListener('click', () => { this.stop(); this.go(0); });
+            this.buttons.prev.addEventListener('click', () => { this.stop(); this.go(this.index - 1, true); });
+            this.buttons.next.addEventListener('click', () => { if (!this.auto) this.stop(); this.go(this.index + 1, true); });
+            this.buttons.last.addEventListener('click', () => { this.stop(); this.go(this.frames.length - 1); });
+            this.playButton = this.button(row, 'bi-play-fill', 'Abspielen');
+            this.playButton.className = 'btn btn-sm btn-outline-success';
+            this.playButton.dataset.play = '';
+            this.playButton.addEventListener('click', () => this.toggle());
+            this.speed = 0;
+            this.speedButton = el('button', 'btn btn-sm btn-outline-success', row);
+            this.speedButton.type = 'button';
+            this.speedButton.dataset.speed = '';
+            this.speedButton.setAttribute('aria-label', 'Tempo beim Abspielen');
+            this.speedButton.textContent = SPEED_NAMES[0][1];
+            this.speedButton.addEventListener('click', () => {
+                this.speed = (this.speed + 1) % SPEED_NAMES.length;
+                this.speedButton.textContent = SPEED_NAMES[this.speed][1];
+            });
+            this.status = el('span', 'pip-status', row);
             this.status.setAttribute('aria-live', 'polite');
-            const bar = el('div', 'pip-controls', box);
-            this.back = this.button(bar, 'bi-chevron-left', 'Zurück', () => this.go(this.index - 1));
-            this.playButton = this.button(bar, 'bi-play-fill', 'Abspielen', () => this.toggle());
-            this.next = this.button(bar, 'bi-chevron-right', 'Weiter', () => this.go(this.index + 1));
-            const speed = el('label', 'pip-speed', bar);
-            speed.textContent = 'Tempo ';
-            this.speed = el('input', null, speed);
-            this.speed.type = 'range';
-            this.speed.min = 0;
-            this.speed.max = SPEEDS.length - 1;
-            this.speed.value = 2;
+            // a step chosen on the timeline stops playing and shows that frame
+            box.addEventListener('pointerdown', (event) => { if (event.target.closest('.stepper-timeline')) this.stop(); }, true);
+            box.stepperGo = (i) => this.go(i);
             this.load({ layout: layout, frames: [start] });
+            document.dispatchEvent(new CustomEvent('stepper-added', { detail: box }));
         }
 
-        button(bar, icon, label, action) {
-            const b = el('button', 'btn btn-sm btn-outline-secondary pip-button', bar);
+        button(row, icon, label) {
+            const b = el('button', 'btn btn-sm btn-success', row);
             b.type = 'button';
-            b.title = label;
-            b.innerHTML = "<i class='bi " + icon + "' aria-hidden='true'></i><span class='visually-hidden'>" + label + '</span>';
-            b.addEventListener('click', action);
+            b.setAttribute('aria-label', label);
+            b.innerHTML = "<i class='bi " + icon + "' aria-hidden='true'></i>";
             return b;
         }
 
@@ -141,7 +166,7 @@
         }
 
         duration() {
-            return SPEEDS[Number(this.speed.value)];
+            return STEP_TIME / SPEED_NAMES[this.speed][0];
         }
 
         go(index, animate) {
@@ -152,12 +177,16 @@
 
         update() {
             const frame = this.frames[this.index];
+            const ran = this.frames.length > 1;
             const maps = this.replay.maps > 1 ? 'Karte ' + this.replay.map + ' von ' + this.replay.maps + ' · ' : '';
-            const step = this.frames.length > 1 ? 'Schritt ' + frame.step + (frame.line ? ', Zeile ' + frame.line : '') : 'Noch nicht gelaufen';
-            this.status.textContent = maps + step;
-            this.back.disabled = this.index === 0;
-            this.next.disabled = this.index >= this.frames.length - 1;
-            this.onLine(this.frames.length > 1 ? frame.line : null);
+            const steps = this.frames[this.frames.length - 1].step;
+            this.status.textContent = ran ? maps + 'Schritt ' + frame.step + ' von ' + steps + (frame.line ? ' · Zeile ' + frame.line : '') : 'Noch nicht gelaufen';
+            this.buttons.first.disabled = this.buttons.prev.disabled = this.index === 0;
+            this.buttons.next.disabled = this.buttons.last.disabled = this.index >= this.frames.length - 1;
+            this.playButton.disabled = !ran;
+            this.box.dataset.step = this.index;
+            this.box.dataset.steps = this.frames.length;
+            this.onLine(ran ? frame.line : null);
         }
 
         toggle() {
@@ -165,12 +194,17 @@
             else this.play();
         }
 
+        // play at the end starts again from the beginning
         play() {
+            if (this.frames.length < 2) return;
             if (this.index >= this.frames.length - 1) this.go(0);
-            this.playButton.innerHTML = "<i class='bi bi-pause-fill' aria-hidden='true'></i><span class='visually-hidden'>Pause</span>";
+            this.setPlay('bi-pause-fill', 'Anhalten');
             const tick = () => {
                 if (this.index >= this.frames.length - 1) return this.stop();
-                this.go(this.index + 1, true);
+                this.auto = true;
+                this.buttons.next.click();
+                this.auto = false;
+                if (this.index >= this.frames.length - 1) return this.stop();
                 this.timer = setTimeout(tick, this.duration());
             };
             this.timer = setTimeout(tick, 200);
@@ -179,7 +213,12 @@
         stop() {
             clearTimeout(this.timer);
             this.timer = null;
-            if (this.playButton) this.playButton.innerHTML = "<i class='bi bi-play-fill' aria-hidden='true'></i><span class='visually-hidden'>Abspielen</span>";
+            if (this.playButton) this.setPlay('bi-play-fill', 'Abspielen');
+        }
+
+        setPlay(icon, label) {
+            this.playButton.innerHTML = "<i class='bi " + icon + "' aria-hidden='true'></i>";
+            this.playButton.setAttribute('aria-label', label);
         }
     }
 

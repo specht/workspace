@@ -460,6 +460,11 @@ only to look nice.
   the Algo Stepper's timeline (dots, the done ones purple, tap or drag to a
   step) where the widget keeps `data-step` and `data-steps` and offers
   `stepperGo(step)` (Huffman, LZW, GIF, the calculator, the iDCT).
+  Pip's player in a Kata card (`pip_world.js`) has these controls and the
+  timeline too, with its own play (a step takes 450 ms at 1×, a plan has
+  many), and no frame, label or lightbox of its own: the task card is the
+  frame. The current line of the plan is marked purple in the editor, its
+  number brighter.
 - **A lightbox for a demo**: every widget has a square button at its top
   right (`bi-fullscreen`, `stepper_keys.js`) that opens it larger in a
   lightbox on a black background, for the big screen. The keys and the

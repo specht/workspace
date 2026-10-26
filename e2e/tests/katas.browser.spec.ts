@@ -1,4 +1,5 @@
 import { expect, test } from './fixtures';
+import { devices } from '@playwright/test';
 import type { Locator } from '@playwright/test';
 import { loginAsE2eUser } from './workspace';
 
@@ -155,7 +156,7 @@ const PIP_SHAFT = {
   python: 'move()\nmove()\nturn_left()\nturn_left()\nturn_left()\nmove()\nmove()\nmove()\n',
 };
 
-test('Pip walks a plan, and a wall names the line', async ({ page, e2eEmail }, testInfo) => {
+test('Pip walks a plan, and a wall names the line', async ({ browser, page, e2eEmail }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
   await page.goto('/pip-1');
   // the prediction's map is drawn from the text in the page
@@ -174,8 +175,18 @@ test('Pip walks a plan, and a wall names the line', async ({ page, e2eEmail }, t
   await expect(card.locator('.task-feedback')).toContainText('Pip schafft es.', { timeout: 30_000 });
   await expect(card).toHaveAttribute('data-status', 'correct');
   // the replay ends at the lamp, the last step on the last line
-  await expect(card.locator('.pip-status')).toHaveText('Schritt 8, Zeile 8', { timeout: 20_000 });
+  await expect(card.locator('.pip-status')).toHaveText('Schritt 8 von 8 · Zeile 8', { timeout: 20_000 });
   await expect(card.locator('.pip-pip')).toHaveAttribute('data-facing', 'south');
+  // line numbers beside the plan, the replay's line brighter; the step
+  // buttons and the timeline of every widget
+  await expect(card.locator('.code-input-gutter > div')).toHaveCount(9);
+  await expect(card.locator('.code-input-gutter > .current')).toHaveText('8');
+  await expect(card.locator('.stepper-timeline > span')).toHaveCount(10);
+  await card.locator("[data-go='first']").click();
+  await expect(card.locator('.pip-status')).toHaveText('Schritt 0 von 8');
+  await card.locator("[data-go='next']").click();
+  await expect(card.locator('.code-input-gutter > .current')).toHaveText('1');
+  await card.locator("[data-go='last']").click();
   for (const [scheme, width] of [['light', 1100], ['dark', 1100], ['light', 390]] as const) {
     await page.emulateMedia({ colorScheme: scheme });
     await page.setViewportSize({ width, height: 900 });
@@ -183,4 +194,15 @@ test('Pip walks a plan, and a wall names the line', async ({ page, e2eEmail }, t
     await card.screenshot({ path: testInfo.outputPath(`pip-${scheme}-${width}.png`) });
     await page.locator('.pip-static').screenshot({ path: testInfo.outputPath(`pip-static-${scheme}-${width}.png`) });
   }
+  // on a phone (a touch screen) the controls of every widget, for the thumb
+  const phone = await browser.newContext({ ...devices['iPhone 13'], storageState: await page.context().storageState() });
+  const mobile = await phone.newPage();
+  await mobile.goto(page.url());
+  const mobileCard = mobile.locator('.task-card[data-task="pip-1/shaft"]:visible');
+  await mobileCard.locator('.task-run').click();
+  await expect(mobileCard.locator('.pip-status')).toHaveText('Schritt 8 von 8 · Zeile 8', { timeout: 30_000 });
+  await expect(mobileCard.locator('.task-console')).toBeHidden();
+  await mobileCard.locator('.code-input').scrollIntoViewIfNeeded();
+  await mobileCard.locator('.pip-world').screenshot({ path: testInfo.outputPath('pip-phone.png') });
+  await phone.close();
 });
