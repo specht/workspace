@@ -2,122 +2,122 @@
   "screenshots": {
     "kammer-lampen.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "6892660807dd962178b0ce04bb167bc1156f3c497fcb80349c36c49ea8099985",
-      "state_hash": "7c224289af1c571a52af7f5abc012574fd02aab61eeaf9c674447ac75ef59123",
+      "output_sha256": "e89563bd9bd7c01b4ad410949136529b1e3be0432d1e3a85bb132c86e3f42bb4",
+      "state_hash": "e418eb3487b5ce8f63853fafb7ee2dd24a05e95ed9b39560d01587fce4b59cde",
       "workspace_look": "4.140.0-ls368"
     },
     "licht-alles.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "4c8707300f9926606f55b152e5583c5b60dff7ac66aa3fbd060a834261e09615",
-      "state_hash": "8a2a2abc4df68041d9a9d02788ce98ffa951f7008ccc7b59960ad1cf9c021de6",
+      "output_sha256": "4b3be0f9fb6a714d2638b41b797738fc87c32bb53f3c71f457b2f07dd76ca929",
+      "state_hash": "900ee9ce580109c81e2fb945de493f6c5877f5a9bebd6fb6d2a9bde034c84774",
       "workspace_look": "4.140.0-ls368"
     },
     "licht-bloom.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "4c8707300f9926606f55b152e5583c5b60dff7ac66aa3fbd060a834261e09615",
-      "state_hash": "bcb8c5506405a02cc8cf64e9925d7c074915af9f163a54bfe61b1c518652c962",
+      "output_sha256": "4b3be0f9fb6a714d2638b41b797738fc87c32bb53f3c71f457b2f07dd76ca929",
+      "state_hash": "23c836315ed511c2836cb3eeacd53ef40f92c0c1f37046188368ff1d9fc7512f",
       "workspace_look": "4.140.0-ls368"
     },
     "licht-bounce-ohne-kontakt.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "b06bfcceee48f721da0bcfa2541611920879aacdeaa579f074113a2b491aee67",
-      "state_hash": "cdca1b945f04fc3750989460e62f8759ba5c81761e006693f5935a5f1d1dc4cc",
+      "output_sha256": "dd4973413da3d2417259cfb71733584784ed739e2a40ab0e3ce9411810e580a6",
+      "state_hash": "b402d18dcbb20900afda8823457eebaf883cd632d29d8863659ad723997fb8b4",
       "workspace_look": "4.140.0-ls368"
     },
     "licht-bounce.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "a51d26bcc29de6cf2ef7b3d59ecfc609743531c86ef48197d42e364f80a5bac9",
-      "state_hash": "7a7a58b9c720423119d54344f561a924512222a9cce3219dd52f2ac10bab06fa",
+      "output_sha256": "e9489d6f84762ebc74569006b9a37c7ee0a09ddb31f42b90618652c92ed8ea3d",
+      "state_hash": "a6a054e5fcabe2e8fca876ff39be1d82eee73c2135f8945f0703416702d9fab9",
       "workspace_look": "4.140.0-ls368"
     },
     "licht-bounces-1.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "004d0484df2e4b35d84f41a5ad361bc90cf1bfdc2b2aa784c900cd7aa97d67d3",
-      "state_hash": "8b58d919996f399d03b02fa2944b922ef5cf912f5e3ef62726049586cf431d6f",
+      "output_sha256": "e6a2a69bc6154af2382defa2ac7c3a634021ea9208a657719f05780d29439f77",
+      "state_hash": "ab31964d4cfd026db27dcb344c5e8ac6606b337b25e687ab940c6dec785c8b1a",
       "workspace_look": "4.140.0-ls368"
     },
     "licht-bounces-2.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "df625ae6f176618c0a38d24b873a75b055a51e694022d4e3891ed98431af7f4d",
-      "state_hash": "bd73d2f38ea0a45372fcec11abfbfbf601bcc167cf85c1e1d2590a86a8db8b53",
+      "output_sha256": "1445339430f34a666ec34a5ccc57305721393f192491722e5ba781aed2cf13c5",
+      "state_hash": "ef28945cbe5a4b8a22a8af6128f360c0d22b9f27083e0f3253d96865c166d2fd",
       "workspace_look": "4.140.0-ls368"
     },
     "licht-direkt.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "b5fc93a32d4bf2bc9e566971ad0cd09cecc0c8d66bb5b89d949486d8bff56680",
-      "state_hash": "78d36177a86ddee2e089b791120c8861d774ef3e64e4f758ecc7dd5cffe15cd3",
+      "output_sha256": "f4ad82d9ebc87cb564b80387ef7bee223b5e64df608e299477cb546cde42b0d4",
+      "state_hash": "907a3be85b3d6b901a574e9274ef53cd973ce0fff1ac24bfd25b9a5fb413072f",
       "workspace_look": "4.140.0-ls368"
     },
     "licht-gross.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "98722782220c2e9e882537eb67bda38a243ef4f4948d5ded7aeb0259dc56ba74",
-      "state_hash": "48209ed3f508ba45677a00aa4204dc5f2d1c29e458f996d57eaa527ab0fcb993",
+      "output_sha256": "1c3c12479578847748221c2aa3fbd1b7f2e179bb2d302f0accdda55f94ab31d8",
+      "state_hash": "1e095e6ad52f3d61feaad404e1721b64afd6c02c0b690490867db8ad886e5257",
       "workspace_look": "4.140.0-ls368"
     },
     "licht-klein.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "4757f4ed8d0a1c66c6f60729008a9f19a4612ca00fdbd61eac94d70c316a806b",
-      "state_hash": "b99571c65872ecbad1cc3a74a51bd3624351143997fc1e259dc16afaabaf9fc2",
+      "output_sha256": "e3ec75d83943bd162be4f084fe5d0fba93a52535c1f01302ccf0a0578232c957",
+      "state_hash": "bea5263ef524def2597a23ef00649a23eb1d93d00eacf82b26e4b012797f4a3f",
       "workspace_look": "4.140.0-ls368"
     },
     "licht-ohne-bloom.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "a31f12adedc624bc4bc34393f733ab52bb59f70aecbe26894925cf556a2d15bb",
-      "state_hash": "079a371df9970c03c81289a3da20876a7ca273077a5c9aefc878ea72d974f1bb",
+      "output_sha256": "f4fbf66f47f5bbd24c76d6c13485c14c79906a7a0622b59586724432212478ac",
+      "state_hash": "587d14475b4097e4405e14a42bf5a799b12b3336a59e69e66dcac3b42ecb0d59",
       "workspace_look": "4.140.0-ls368"
     },
     "licht-ohne-texturen.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "bf92e9aa3bce63b003686cceba588a6f070d2bf6775e162a7f6f19c68b16c8a7",
-      "state_hash": "c63f85165afe5f34ad18fdb265773a4121576e3a295dad3f30b60e6de89beba0",
+      "output_sha256": "3e88a4708b9ed1b6124b081cb1d8193036be7f8dc61eaabd5fa5bad5b7fa56f7",
+      "state_hash": "7fcbb4830b5d33bce781fb1bed73e34c7de9d5b80370f2a98cfa1112c0fe402c",
       "workspace_look": "4.140.0-ls368"
     },
     "licht-punkte-gelaender.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "8d7faaf0cc15eaf3b727ce21fa1e27255b3619b68bf145ffce4de38278c66bca",
-      "state_hash": "d9aa043accaad686ac544bd43bd3131a4e89fc1fb0425a80daef5088d6dc91b1",
+      "output_sha256": "5a4a3966032e5de27f4faa4c838c3d1e0da717298a62a7d463424f5017718a89",
+      "state_hash": "6442b21818099eca0dd31d62eb176888acf226d5fd99fa43fce6af09e3a48880",
       "workspace_look": "4.140.0-ls368"
     },
     "licht-punkte-sofa.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "2d482316a5ca69261a974c29087054761bdfcf801b77bfcee2a744d3a5a40b25",
-      "state_hash": "3cf59887fbf7f81b8dcd0595ee2e277a4c219033ba72385dd2a6377186b85531",
+      "output_sha256": "ad3676389f5565b533766325d14c34d3ac8ba11ef6817aa1033e410a559302a0",
+      "state_hash": "4a02b48e1aaf73c01dcca8ab3077b81af1e6e229cd6eccbe4439f6f53da8f666",
       "workspace_look": "4.140.0-ls368"
     },
     "licht-punkte.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "e7c0d9e08e1544f455abda9f48403075266c43f37b52e9831f918201c86e0310",
-      "state_hash": "0aeddd476c898b85c31b042312ee060933e5a20fa08cc3ca13f93878e02c20e5",
+      "output_sha256": "dea2662a7a8f00e222c64e9fb41f870d76e208ad7d1601185140da0ae0cca05c",
+      "state_hash": "ae3dce0aa6699aae2b593a7a6fb638b659171274baa1e9e16f2f882ea891f8f8",
       "workspace_look": "4.140.0-ls368"
     },
     "lightmap-bad-raum.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "972b2ba90eaa1eed2aeaaa8222e09e65565029a5313537893e7bd622e4af15a5",
-      "state_hash": "dc2d327e2bb8bd1401b82ff29a404ea60133fe83c5e3051c4554bb8c445b8adf",
+      "output_sha256": "f8f9fb5186833fdcba21c15d764e926bd2020f595976b1c9965f3b8598c597ae",
+      "state_hash": "943b15fec7ee59d19025d32d931eecf1a1cda8dd97c46873b18438a286aa19be",
       "workspace_look": "4.140.0-ls368"
     },
     "lightmap-bad-wand.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "69dd404a36d68f056b43628a41cfe1abbd8083963b0b135b1f85fb05b3e3b998",
-      "state_hash": "c19b40b7a5ffe76b85e3567a2898becfec61ee17e62f365c697cc837bff1604f",
+      "output_sha256": "25cb8aebbe69ccb6794484bc98f28534461a76a7092c8c53d518b22b245b5404",
+      "state_hash": "fb1e7e6a24abd27bf7e7b9ae4795f0a7c1aeaafd9f55958333f51f228030083b",
       "workspace_look": "4.140.0-ls368"
     },
     "lightmap-ganz.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "713dec723dccb693ac8ca014bf8ffb8c8dccb99811f900f3fab3614a13a337ae",
-      "state_hash": "79677ecce6365c074da44ce5ddeef9d3da8623872acfd07b6fde3d08169dae06",
+      "output_sha256": "3dd6c90dd3cf0ad729864e89f78c7884f0fdf12f1e0844e3b3c68c44fd355a26",
+      "state_hash": "651b82fd9848fb18a214e938b93db571896b750d933c6879c6e405af2bc43838",
       "workspace_look": "4.140.0-ls368"
     },
     "lightmap-kiste-raum.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "ba015d0982be28d09b322e8c783f23753b2a0ea29d45557e8e2c815ad7d1a748",
-      "state_hash": "939ad522411d3ad35d1d26333b7b328c829c74bf243947897182e23727df9ab4",
+      "output_sha256": "ed0c7ac3b88c169cb5f088f1cd786cc6447d6cb3b7c727c31d5950f223919dd1",
+      "state_hash": "3d9fffd550ef2cd7cb68ae84ec44b6dd608f7d38e293f9472a6e42c8896460b3",
       "workspace_look": "4.140.0-ls368"
     },
     "lightmap-kiste.webp": {
       "environment_fingerprint": "7fcc70b840818eedecd08c92742058451e00f4a46f7476c14bf5fa4d9b03de6a",
-      "output_sha256": "e9f360ed976fcede1d8c5c8136924b62bcd139be95d8a164a9f56e0f723b1914",
-      "state_hash": "6ee9c23ba6f4acf959664fc5b430147f397dfd11c1e5ce4c1348d69f1d70f92f",
+      "output_sha256": "67b5bd7c563fdcb61803a5cf09aea214371c4a8ba45b3acb4a6c555407cf35df",
+      "state_hash": "833190771494aecba66df9a081350956112ca57c598d894636966271d73f4809",
       "workspace_look": "4.140.0-ls368"
     }
   },

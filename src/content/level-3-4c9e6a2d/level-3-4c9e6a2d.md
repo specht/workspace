@@ -39,7 +39,7 @@ Diese Seite baut auf [Level 2](/level-2-b52d0f18) auf: auf deinem Level, so wie 
 <!-- tutorial-step
 # Wo Level 2 aufgehört hat: die Vorlage mit den Räumen aus Level 0, 1 und 2, die Vorschau
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ f19e4cd775bc42e8338fc1c9645a016b49e44cdf
+clone-start: https://github.com/specht/backrooms-starter.git @ 0ecf118ca12e8d61b685a3653354f4c3adedf9c8
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -178,7 +178,7 @@ hook: key t g
 </figure>
 </div>
 
-**Ein Bild für alle Flächen.** Alle Punkte aller Flächen liegen in einem einzigen Bild, der Lightmap. Jede Fläche ist darin ein Rechteck aus ihren Punkten: so viele breit und hoch, wie sie Meter breit und hoch ist, mal 16. Das Programm legt die Rechtecke dicht an dicht in das Bild, die großen zuerst, wie Kisten in einen Kofferraum, und macht das Bild nur so groß wie nötig, mit einer Zweierpotenz als Seite, etwa 1024 × 1024 Punkte. Jede Ecke einer Fläche weiß, wo im Bild ihr Rechteck liegt. Beim Zeichnen holt sich die Grafikkarte für jeden Pixel der Fläche die Helligkeit von der passenden Stelle im Rechteck: Das Rechteck wird auf die Fläche geklebt, wie ein Bild auf eine Wand. <kbd>Shift</kbd>+<kbd>G</kbd> zeigt die ganze Lightmap, hier die deines Levels (zum Vergrößern anklicken):
+**Ein Bild für alle Flächen.** Alle Punkte aller Flächen liegen in einem einzigen Bild, der Lightmap. Jede Fläche ist darin ein Rechteck aus ihren Punkten: so viele breit und hoch, wie sie Meter breit und hoch ist, mal 16. Nur Boden und Decke eines Raums teilen sich je ein Rechteck, so wie der Grundriss sie von oben zeigt: Wo zwei ihrer Stücke aneinanderstoßen, liegen dieselben Punkte, und das Licht hat dort keine Naht. Das Programm legt die Rechtecke dicht an dicht in das Bild, die großen zuerst, wie Kisten in einen Kofferraum, und macht das Bild nur so groß wie nötig, mit einer Zweierpotenz als Seite, etwa 1024 × 1024 Punkte. Jede Ecke einer Fläche weiß, wo im Bild ihr Rechteck liegt. Beim Zeichnen holt sich die Grafikkarte für jeden Pixel der Fläche die Helligkeit von der passenden Stelle im Rechteck: Das Rechteck wird auf die Fläche geklebt, wie ein Bild auf eine Wand. <kbd>Shift</kbd>+<kbd>G</kbd> zeigt die ganze Lightmap, hier die deines Levels (zum Vergrößern anklicken):
 
 <div class='gallery columns-2'>
 <figure>

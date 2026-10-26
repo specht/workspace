@@ -39,7 +39,7 @@ Diese Seite baut auf [Level 1](/level-1-7e3a91c4) auf: auf deinem Level, so wie 
 <!-- tutorial-step
 # Wo Level 1 aufgehört hat: die Vorlage mit den Räumen aus Level 0 und 1, die Vorschau
 show-left-sidebar
-clone-start: https://github.com/specht/backrooms-starter.git @ f19e4cd775bc42e8338fc1c9645a016b49e44cdf
+clone-start: https://github.com/specht/backrooms-starter.git @ 0ecf118ca12e8d61b685a3653354f4c3adedf9c8
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
