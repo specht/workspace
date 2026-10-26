@@ -290,7 +290,7 @@ module Privacy
                 :how_long => 'Link zum Workspace eine Woche (verlängerbar), sonst bis die Person den Link abschaltet',
             },
             {
-                :data => 'Protokolle des Servers: welche Seite wann mit welchem Ergebnis abgerufen wurde, ohne IP-Adresse und ohne Namen; Meldungen der Programme, in denen bei manchen Vorgängen (Anmeldung, Start eines Workspace) die E-Mail-Adresse steht',
+                :data => 'Protokolle des Servers: welche Seite wann mit welchem Ergebnis abgerufen wurde, ohne IP-Adresse und ohne Namen; Meldungen der Programme, in denen bei manchen Vorgängen (Anmeldung, Start oder Zurücksetzen eines Workspace oder einer Datenbank, Sperren und Löschen eines Kontos) die E-Mail-Adresse steht, mit Datum und Uhrzeit',
                 :categories => [:traffic],
                 :purpose => 'Betrieb, Sicherheit und Fehlersuche',
                 :who => 'Administration',

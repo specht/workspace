@@ -142,7 +142,7 @@ class Main < Sinatra::Base
         halt 400, { :error => 'reason_missing' }.to_json unless LookIn.reason(data[:reason])
         stop_server(email)
         tell_about(email, 'stop', data[:reason], :notify => data[:notify] == true)
-        STDERR.puts "#{@session_user[:email]} stopped the Workspace of #{email}"
+        log_event "#{@session_user[:email]} stopped the Workspace of #{email}"
         respond(:stopped => email)
     end
 end

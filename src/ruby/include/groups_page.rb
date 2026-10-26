@@ -405,7 +405,7 @@ class Main < Sinatra::Base
         GroupData.drop!($neo4j, [name])
         drop_orphan_invitations
         Main.note_roster_change!
-        STDERR.puts "Group #{name} deleted by #{my_email}"
+        log_event "Group #{name} deleted by #{my_email}"
         respond(:deleted => name)
     end
 

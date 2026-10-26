@@ -922,7 +922,7 @@ class Main < Sinatra::Base
                 ~^/l/[a-z0-9]+(?:/|$) /l/[redacted];
             }
 
-            log_format custom 'method=$request_method uri=$hs_log_uri status=$status share=$hs_is_share allowed=$hs_allowed';
+            log_format custom 'time=$time_iso8601 method=$request_method uri=$hs_log_uri status=$status share=$hs_is_share allowed=$hs_allowed';
 
             map $sent_http_content_type $expires {
                 default                         off;
@@ -4151,6 +4151,13 @@ class Main < Sinatra::Base
         end
     end
 
+    # Who did what to whose Workspace, account or database, with the time:
+    # among the program messages (docs/datenschutz.md, »Protokolle des
+    # Servers«), to be found again later with ./config.rb logs.
+    def log_event(message)
+        STDERR.puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} #{message}"
+    end
+
     def stop_server(email)
         container_name = fs_tag_for_email(email)
 
@@ -4178,6 +4185,7 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         email = @session_user[:email]
         reset_mysql(email)
+        log_event "MySQL database reset by its owner: #{email}"
         respond(:yay => 'sure')
     end
 
@@ -4196,6 +4204,7 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         email = @session_user[:email]
         reset_neo4j(email)
+        log_event "Neo4j database reset by its owner: #{email}"
         respond(:yay => 'sure')
     end
 
@@ -4633,7 +4642,7 @@ class Main < Sinatra::Base
         Main.load_invitations()
         removed = delete_account(email)
         halt 404, { :error => 'no_account' }.to_json unless removed
-        STDERR.puts "Account deleted by #{@session_user[:email]}: #{email} #{removed.inspect}"
+        log_event "Account deleted by #{@session_user[:email]}: #{email} #{removed.inspect}"
         still_invited = @@invitations.key?(email)
         if data[:notify] == true
             mail_subject, html = MailTexts.account_deleted(:web_root => WEB_ROOT, :signature => mail_signature, :still_invited => still_invited)
@@ -4708,7 +4717,7 @@ class Main < Sinatra::Base
         neo4j_query('MATCH (:User {email: $email})-[:SHARES_LIVE_APP]->(s:LiveAppShare) SET s.active = false;', :email => email)
         stop_server(email)
         Main.refresh_nginx_config()
-        STDERR.puts "Access of #{email} suspended by #{@session_user[:email]}"
+        log_event "Access of #{email} suspended by #{@session_user[:email]}"
         respond(:ok => true)
     end
 
@@ -4717,7 +4726,7 @@ class Main < Sinatra::Base
         data = parse_request_data(:required_keys => [:email])
         neo4j_query('MATCH (u:User {email: $email}) REMOVE u.suspended_at, u.suspended_by, u.suspended_reason;', :email => data[:email].to_s.downcase)
         Main.refresh_nginx_config()
-        STDERR.puts "Suspension of #{data[:email]} lifted by #{@session_user[:email]}"
+        log_event "Suspension of #{data[:email]} lifted by #{@session_user[:email]}"
         respond(:ok => true)
     end
 
@@ -4832,7 +4841,7 @@ class Main < Sinatra::Base
         name = (@@invitations[email] || {})[:name]
         groups = @@group_members.select { |group, members| members.include?(email) && !@@test_groups.include?(group) }.keys.sort
         removed = delete_account(email)
-        STDERR.puts "Account deleted by its owner: #{email} #{removed.inspect}"
+        log_event "Account deleted by its owner: #{email} #{removed.inspect}"
         mail_subject, html = MailTexts.account_deleted_by_owner(:email => email, :name => name == email ? nil : name, :groups => groups,
             :still_invited => @@invitations.key?(email), :signature => 'Workspace')
         ADMIN_USERS.each do |admin|
@@ -5137,6 +5146,7 @@ class Main < Sinatra::Base
         test_email = @@test_accounts.key(@session_user[:email])
         halt 404 if test_email.nil?
         reset_test_account(test_email)
+        log_event "Test account #{test_email} reset by #{@session_user[:email]}"
         respond(:reset => test_email)
     end
 
@@ -5150,6 +5160,7 @@ class Main < Sinatra::Base
         stop_server(email)
         container_name = fs_tag_for_email(email)
         system("rm -rf /user/#{container_name}")
+        log_event "Workspace reset by its owner (all files deleted): #{email}"
 
         # assign new server_tag and server_sid
         server_tag = gen_server_tag()
@@ -8062,6 +8073,7 @@ class Main < Sinatra::Base
             )
             is_user_db = (data[:database] == @session_user[:db_login])
             client.query("DROP DATABASE IF EXISTS `#{data[:database]}`;")
+            log_event "MySQL database #{data[:database]} deleted by its owner: #{@session_user[:email]}"
             if DatabaseProvisioning.extra_database?(data[:database])
                 client.query(DatabaseProvisioning.extra_database_drop_login_statement(data[:database]))
             end
