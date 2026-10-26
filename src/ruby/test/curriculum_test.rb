@@ -14,6 +14,14 @@ class CurriculumTest < Minitest::Test
         assert_empty Curriculum.problems('Sek I: Datenbanken (suchen; einfügen); Oberstufe: Datenbanken'), '»; « inside brackets'
     end
 
+    def test_entries
+        assert_equal [['Sek I', 'Information und Daten', 'Codierung, Zahlensysteme'], ['Sek I', 'Datenbanken', nil],
+                      ['Oberstufe', 'Vertiefung Computergrafik', 'Shader (Fragment)']],
+                     Curriculum.entries('Sek I: Information und Daten (Codierung, Zahlensysteme), Datenbanken; Oberstufe: Vertiefung Computergrafik (Shader (Fragment))')
+        assert_equal [], Curriculum.entries('Sek I: Kontrollstrukturen')
+        assert_equal [], Curriculum.entries(nil)
+    end
+
     def test_wrong_lines
         assert_equal ['no line'], Curriculum.problems('')
         refute_empty Curriculum.problems('Sek I: Kontrollstrukturen (Verzweigung)'), 'a content, not a name of the plan'

@@ -6,6 +6,16 @@ angemeldete Lehrkräfte sehen: auf ihrer Karte im Katalog, oben auf ihrer Seite
 Streifen auf der Startseite. Sie sagt, wo die Aktivität in den Lehrplänen
 steht, damit eine Lehrkraft sie in ihre Planung einordnen kann.
 
+Die Seite `/lehrplan` (verlinkt von der Klassenseite und von der Zeile oben
+auf jeder Aktivität) zeigt es andersherum: für jeden Namen der Pläne die
+Aktivitäten, deren Zeile ihn nennt, in der Reihenfolge des Katalogs, mit den
+Einzelheiten aus ihrer Zeile. Sie entsteht bei jedem Aufruf aus diesen Zeilen
+(`src/ruby/include/curriculum_overview.rb`): Eine neue Aktivität steht dort,
+sobald sie im Katalog ist und ihre Zeile hat, auf dem Server nach dem
+nächsten Update (`./config.rb restart ruby`). Aktivitäten verborgener
+Abschnitte stehen nicht darauf. Ein Name ohne Aktivität bleibt mit »Noch
+keine Aktivität im Workspace« stehen: Auch eine Lücke ist gut zu wissen.
+
 ```yaml
 curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen: Wiederholung); Oberstufe: Algorithmen und Datenstrukturen"
 ```

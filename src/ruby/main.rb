@@ -13,6 +13,7 @@ require './include/task_check.rb'
 require './include/task_card.rb'
 require './include/stage_code.rb'
 require './include/person_sources.rb'
+require './include/curriculum_overview.rb'
 require './include/task_store.rb'
 require './include/class_board.rb'
 require './include/open_answers.rb'
@@ -8694,6 +8695,13 @@ class Main < Sinatra::Base
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
             halt_forbidden_page! unless admin_logged_in?
+        end
+        # The activities by the names of the curricula (curriculum_overview.rb),
+        # like the curriculum lines only for teachers.
+        if path == '/lehrplan'
+            this_is_a_page_for_logged_in_users!
+            Main.load_invitations()
+            halt_forbidden_page! unless teacher_logged_in?
         end
         # The profile is about the logged-in person; without one it would
         # fail while drawing its buttons.

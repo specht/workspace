@@ -372,8 +372,16 @@ html[data-bs-theme="dark"] {
         color: #5fcfc1;
     }
     .page-kind-curriculum,
-    .tutorial_card3 .card-content .card-curriculum {
+    .tutorial_card3 .card-content .card-curriculum,
+    .lehrplan-page .lp-group {
         color: #cdb0f2;
+    }
+    .lehrplan-page .lp-count {
+        background: #2e2440;
+        color: #cdb0f2;
+    }
+    .lehrplan-page .lp-details {
+        color: #adb5bd;
     }
     .color-swatch {
         border-color: rgba(255, 255, 255, 0.35);

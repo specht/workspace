@@ -54,6 +54,21 @@ module Curriculum
 
     LEVELS = { 'Sek I' => SEK_I, 'Oberstufe' => OBERSTUFE }.freeze
 
+    # A right line as its entries, in its order: [level, name, details]
+    # (details nil without brackets). [] for a line that is not right.
+    def self.entries(line)
+        return [] unless problems(line).empty?
+
+        split(line.to_s.strip, ';').flat_map do |part|
+            level = part[/\A(Sek I|Oberstufe): /, 1]
+            split(part.delete_prefix("#{level}: "), ',').map do |item|
+                name = item.sub(/\s*\(.*\)\z/m, '')
+                details = item[/\((.*)\)\z/m, 1]
+                [level, name, details]
+            end
+        end
+    end
+
     # What is wrong with a line, as messages; [] when it is right.
     def self.problems(line)
         text = line.to_s.strip

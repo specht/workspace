@@ -127,8 +127,8 @@ module PageKinds
             end
             # the line of the curriculum, for teachers (docs/lehrplan.md)
             if show_curriculum && entry[:curriculum].is_a?(String) && !entry[:curriculum].strip.empty?
-                html << "<span class='page-kind-curriculum' title='Rahmenlehrplan (nur für Lehrkräfte sichtbar)'>" \
-                        "<i class='bi bi-mortarboard'></i>#{h.(entry[:curriculum].strip)}</span>"
+                html << "<span class='page-kind-curriculum' title='Rahmenlehrplan (nur für Lehrkräfte sichtbar): alle Aktivitäten nach Lehrplan'>" \
+                        "<a href='/lehrplan'><i class='bi bi-mortarboard'></i>#{h.(entry[:curriculum].strip)}</a></span>"
             end
             required = requires_of(slug, content, development: development)
             unless required.empty?
