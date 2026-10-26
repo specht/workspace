@@ -1,5 +1,5 @@
 <div class='meta'>
-icon: bi-fonts
+icon: bi-quote
 kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
@@ -20,19 +20,19 @@ Titel bauen und zum Schluss verschlüsseln wie Caesar.
 
 Ein Text ist eine Reihe von Zeichen. Man kann sie der Reihe nach durchgehen,
 nach ihrem Index fragen und aus ihnen einen neuen Text bauen. Diese Funktion
-verdoppelt jeden Buchstaben:
+setzt jedes Zeichen in eckige Klammern:
 
 <!-- language: ruby -->
 ```ruby
-def stutter(text)
+def bracket(text)
   result = ''
   text.each_char do |char|
-    result += char + char
+    result += '[' + char + ']'
   end
   result
 end
 
-puts stutter('Hallo')     # HHaalllloo
+puts bracket('Hallo')     # [H][a][l][l][o]
 puts 'Hallo'.length       # 5
 puts 'Hallo'[0]           # H, das Zeichen mit dem Index 0
 puts 'a'.ord              # 97, die Nummer des Zeichens
@@ -45,13 +45,13 @@ Leerzeichen in eine Liste von Wörtern, `words.join(' ')` verbindet sie wieder.
 <!-- /language -->
 <!-- language: python -->
 ```python
-def stutter(text):
+def bracket(text):
     result = ''
     for char in text:
-        result += char + char
+        result += '[' + char + ']'
     return result
 
-print(stutter('Hallo'))   # HHaalllloo
+print(bracket('Hallo'))   # [H][a][l][l][o]
 print(len('Hallo'))       # 5
 print('Hallo'[0])         # H, das Zeichen mit dem Index 0
 print(ord('a'))           # 97, die Nummer des Zeichens
@@ -64,15 +64,15 @@ Liste von Wörtern, `' '.join(words)` verbindet sie wieder.
 <!-- /language -->
 <!-- language: javascript -->
 ```javascript
-function stutter(text) {
+function bracket(text) {
   let result = '';
   for (const char of text) {
-    result += char + char;
+    result += '[' + char + ']';
   }
   return result;
 }
 
-console.log(stutter('Hallo'));          // HHaalllloo
+console.log(bracket('Hallo'));          // [H][a][l][l][o]
 console.log('Hallo'.length);            // 5
 console.log('Hallo'[0]);                // H, das Zeichen mit dem Index 0
 console.log('a'.charCodeAt(0));         // 97, die Nummer des Zeichens
