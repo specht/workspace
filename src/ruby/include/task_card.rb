@@ -148,7 +148,12 @@ module TaskCard
                 io << "<button type='button' class='task-reads-toggle' aria-expanded='false' aria-controls='#{h.(field)}-reads' title='Was passiert beim Prüfen?'>"
                 io << "<i class='bi bi-info-circle' aria-hidden='true'></i><span class='visually-hidden'>Was passiert beim Prüfen?</span></button>"
             end
-            io << "<span class='task-queue' aria-live='polite'></span>" if type == 'function'
+            if type == 'function'
+                io << "<span class='task-queue' aria-live='polite'></span>"
+                # Einreichen (KataHandIns): shown once the Kata is solved
+                io << "<button type='button' class='btn btn-link btn-sm task-hand-in' hidden " \
+                    "title='Deine Lehrkraft kann deine Lösung in der Stunde zeigen, ohne deinen Namen. Du kannst sie jederzeit zurücknehmen.'>Einreichen</button>"
+            end
             io << '</div>'
             io << "<div class='task-reads' id='#{h.(field)}-reads' hidden>#{reads}</div>" if reads
             io << "<pre class='task-console no-copy' hidden aria-live='polite' aria-label='Ausgabe'></pre>" if type == 'function'

@@ -94,6 +94,43 @@ test('JavaScript on a Kata page, Ruby or Python elsewhere', async ({ page, e2eEm
   await page.locator(`.code-language-option[data-set-language="${before}"]`).click();
 });
 
+test('a solved Kata is handed in and shown in class without the name', async ({ browser, page, e2eEmail }, testInfo) => {
+  test.setTimeout(120_000);
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/kata-functions');
+  const card = page.locator('.task-card[data-task="kata-functions/double"]:visible');
+  const handIn = card.locator('.task-hand-in');
+  const ruby = (await languageOf(card)) === 'ruby';
+  await card.locator('.task-code').fill(ruby ? 'def double(n)\n  n * 2\nend\n' : 'def double(n):\n    return n * 2\n');
+  await card.locator('.task-submit').click();
+  await expect(card).toHaveAttribute('data-status', 'correct', { timeout: 30_000 });
+  await expect(handIn).toHaveText('Einreichen');
+  await handIn.click();
+  await expect(handIn).toHaveText('Eingereicht · Zurücknehmen');
+  await page.reload();
+  await expect(card.locator('.task-hand-in')).toHaveText('Eingereicht · Zurücknehmen');
+
+  const teacher = await browser.newPage();
+  await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
+  await teacher.goto('/klasse?group=E2E&tab=fortschritt&activity=kata-functions');
+  const box = teacher.locator('.kata-hand-ins');
+  await expect(box.locator('summary')).toContainText('eingereicht');
+  await box.locator('summary').click();
+  await expect(box.locator('.kata-hand-in-name').first()).toBeHidden();
+  await box.locator('.kata-hand-in').first().click();
+  const viewer = teacher.locator('dialog.kata-viewer');
+  await expect(viewer.locator('.kata-viewer-title')).toHaveText(/^Lösung \d+$/);
+  await expect(viewer.locator('.kata-viewer-code')).toContainText('double');
+  await viewer.screenshot({ path: testInfo.outputPath('viewer.png') });
+  await teacher.keyboard.press('Escape');
+  await box.locator('.kata-hand-ins-names input').check();
+  await expect(box.locator('.kata-hand-in-name').first()).toBeVisible();
+  await teacher.close();
+
+  await card.locator('.task-hand-in').click();
+  await expect(card.locator('.task-hand-in')).toHaveText('Einreichen');
+});
+
 test('pictures of a Kata card', async ({ page, e2eEmail }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
   for (const [scheme, width] of [['light', 1100], ['dark', 1100], ['light', 390]] as const) {

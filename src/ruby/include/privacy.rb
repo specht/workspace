@@ -262,9 +262,9 @@ module Privacy
                 :how_long => 'bis die Person sie selbst löscht, sonst ' + ACCOUNT_END,
             },
             {
-                :data => 'Abgaben: eine Kopie der Dateien, die bei einer Aufgabe abgegeben werden',
+                :data => 'Abgaben: eine Kopie der Dateien, die bei einer Aufgabe abgegeben werden, oder der Code einer gelösten Kata, den die Person selbst einreicht',
                 :categories => [:content],
-                :purpose => 'Abgabe an die Lehrkraft',
+                :purpose => 'Abgabe an die Lehrkraft; eingereichte Katas zum Besprechen im Unterricht, ohne Namen gezeigt',
                 :who => 'die Person selbst, Lehrkräfte der Gruppe',
                 :how_long => 'bis die Person sie löscht oder neu abgibt, sonst ' + ACCOUNT_END,
             },

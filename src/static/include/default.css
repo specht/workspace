@@ -8163,3 +8163,95 @@ html[data-bs-theme="dark"] .bitplane-widget {
     height: 100%;
     background: #198754;
 }
+
+/* Katas handed in (KataHandIns, kata_hand_ins.js): the list on the class
+   board and the viewer for the projector. */
+.kata-hand-ins-note {
+    margin: 0.5em 0;
+    color: var(--bs-secondary-color);
+    font-size: 0.9em;
+}
+
+.kata-hand-ins-names {
+    display: inline-flex;
+    gap: 0.4em;
+    align-items: center;
+    font-size: 0.9em;
+}
+
+.kata-hand-ins-list {
+    margin: 0.4em 0 0;
+}
+
+.kata-hand-ins-list .btn-link {
+    padding: 0;
+    vertical-align: baseline;
+}
+
+.kata-viewer {
+    width: min(96vw, 70em);
+    max-height: 92vh;
+    padding: 0;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.6em;
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+.kata-viewer::backdrop {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.kata-viewer-head {
+    display: flex;
+    gap: 0.4em;
+    align-items: center;
+    padding: 0.6em 0.8em;
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+.kata-viewer-title {
+    flex: 1;
+    font-weight: 600;
+    font-size: 1.3em;
+}
+
+.kata-viewer-head button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2em;
+    height: 2.2em;
+    padding: 0;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.4em;
+    background: transparent;
+    color: inherit;
+}
+
+.kata-viewer-head button:disabled {
+    opacity: 0.35;
+}
+
+.kata-viewer-head button .bi {
+    margin: 0;
+}
+
+.kata-viewer-head button .bi::before {
+    vertical-align: 0;
+}
+
+.kata-viewer-code {
+    overflow: auto;
+    max-height: calc(92vh - 4em);
+}
+
+/* large enough to read from the back of the room */
+.kata-viewer-code pre {
+    margin: 0;
+    padding: 1em 1.2em;
+    border-radius: 0;
+    font-size: 1.5em;
+    line-height: 1.45;
+    white-space: pre-wrap;
+}

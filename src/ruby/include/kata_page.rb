@@ -1,4 +1,6 @@
 require_relative 'kata_check'
+require_relative 'kata_hand_ins'
+require_relative 'submission_store'
 require_relative 'kata_queue'
 require_relative 'kata_runner'
 
@@ -84,6 +86,61 @@ class Main < Sinatra::Base
         end
     end
 
+    # Einreichen (KataHandIns): a copy of the stored code of a solved Kata
+    # in this language, as the task's hand-in; the student's own choice.
+    post '/api/kata/hand_in' do
+        assert(user_logged_in?)
+        assert(tasks_visible?)
+        data = parse_request_data(:required_keys => [:task], :optional_keys => [:language],
+            :max_value_lengths => {:task => 120, :language => 20})
+        found = find_task(data[:task], data[:language])
+        halt 404 if found.nil? || found[:task]['check']['type'] != 'function'
+
+        language = found[:task]['check']['language']
+        email = @session_user[:email]
+        stored = neo4j_query(<<~END_OF_QUERY, :email => email, :key => TaskStore.state_key(email, found[:key])).first
+            MATCH (:User {email: $email})-[:HAS_TASK_STATE]->(s:TaskState {key: $key})
+            RETURN s.status AS status, s.version AS version, s.last_answer AS answer;
+        END_OF_QUERY
+        halt 409 unless stored && stored['status'] == 'correct' && stored['version'] == found[:version]
+
+        code = (JSON.parse(stored['answer'].to_s) rescue {})[language]
+        halt 409 unless code.is_a?(String) && !code.strip.empty?
+
+        SubmissionStore.write_text(submission_path(found[:key]), KataCheck::FILES.fetch(language), code)
+        respond(:handed_in => true)
+    end
+
+    post '/api/kata/take_back' do
+        assert(user_logged_in?)
+        data = parse_request_data(:required_keys => [:task], :max_value_lengths => {:task => 120})
+        found = find_task(data[:task])
+        halt 404 if found.nil? || found[:task]['check']['type'] != 'function'
+
+        FileUtils.rm_f(submission_path(found[:key]))
+        respond(:handed_in => false)
+    end
+
+    # The Katas a group handed in, per Kata of the activity, for the class
+    # board: numbered, without names until the teacher shows them.
+    def class_kata_hand_ins_html(activity_key, tasks, members)
+        tasks.each_with_index.map do |t, i|
+            next '' unless t[:type] == 'function'
+
+            key = "#{activity_key}/#{t[:id]}"
+            entries = members.filter_map do |m|
+                name, code = SubmissionStore.read_text(submission_path(key, m[:email]))
+                next unless code
+
+                language = KataCheck::FILES.key(name) || 'ruby'
+                lexer = Rouge::Lexer.find(language) || Rouge::Lexers::PlainText
+                { :email => m[:email], :name => m[:name], :language => language,
+                  :code_html => Rouge::Formatters::HTML.new.format(lexer.new.lex(code)) }
+            end
+            KataHandIns.html(key, i + 1, t[:title], entries)
+        end.join
+    end
+
     def kata_response(ticket)
         if ticket.error
             STDERR.puts "Kata run failed: #{ticket.error.class}: #{ticket.error.message}"
@@ -107,6 +164,7 @@ class Main < Sinatra::Base
             END_OF_QUERY
             answer = KataCheck.stored_answer(previous && previous['answer'], language, ticket.data[:code])
             state = store_task_result(found, result.status.to_s, answer, ticket.owner, :max => KataCheck::MAX_STORED)
+            state[:handed_in] = File.file?(submission_path(found[:key], ticket.owner))
         end
         {
             :done => true,

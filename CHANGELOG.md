@@ -21,6 +21,8 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Katas einreichen: Unter einer gelösten Kata kann man den Code einreichen (eine Kopie, wie eine Abgabe gespeichert) und zurücknehmen;
+  Lehrkräfte sehen eingereichte Lösungen unter »Fortschritt« ohne Namen, groß zum Zeigen. Die Datenschutzerklärung nennt es.
 - Drei Übungen mit Katas, noch nur in der Entwicklung sichtbar: »Erste Funktionen«, »Entscheidungen« und »Wiederholen«, je zehn bis
   elf Katas in Ruby, Python und JavaScript, dazu Extras. JavaScript gibt es nur für Katas; wer es dort wählt, behält auf anderen
   Seiten Ruby oder Python (gespeichert als eigene Einstellung). Aufgaben mit `extra: true` zählen bei niemandem mit (»8 von 10 erledigt, dazu 2 Extras«),

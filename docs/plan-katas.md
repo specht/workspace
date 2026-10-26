@@ -751,3 +751,11 @@ order of `sections.yaml`, with `idea:` and the count per level from their
 meta and tasks, the person's progress, and `curriculum:` for teachers. The
 map draws only the sets that exist; Pip and sets 4 to 10 join it as they
 come.
+
+**Step 6, Einreichen: done.** Under a solved Kata »Einreichen« stores a copy
+of the code in its language as the task's hand-in (`SubmissionStore.write_text`,
+the same path as other hand-ins, so deleting the answer or the account and
+the data export include it); »Eingereicht · Zurücknehmen« removes it. The
+class board lists them per Kata as »Lösung 1, 2 …« in an order of their own
+(`KataHandIns`), with the line what they are for, »Namen zeigen«, and a
+viewer for the projector (`kata_hand_ins.js`).

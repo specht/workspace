@@ -425,6 +425,7 @@
             if (data.state) {
                 setBadge(card, data.state.status, data.status === 'correct' && card.dataset.status !== 'correct');
                 card.querySelector('.task-delete').hidden = false;
+                showHandIn(card, data.state);
             }
         };
         const follow = function (data) {
@@ -442,6 +443,29 @@
             if (data.ticket) card.dataset.kataTicket = data.ticket;
         };
         api_call('/api/kata/' + kind, { task: card.dataset.task, answer: answer, language: card.dataset.language }, follow, { no_please_wait: true });
+    }
+
+    // Einreichen (KataHandIns): under a solved Kata, a copy of the code for
+    // the teacher to show in class; the student's own choice, taken back
+    // at any time.
+    function showHandIn(card, state) {
+        const button = card.querySelector('.task-hand-in');
+        if (!button) return;
+        const handedIn = !!(state && state.handed_in);
+        button.hidden = !(state && state.status === 'correct') && !handedIn;
+        card.dataset.handedIn = handedIn ? '1' : '';
+        button.textContent = handedIn ? 'Eingereicht · Zurücknehmen' : 'Einreichen';
+    }
+
+    function toggleHandIn(card) {
+        const handedIn = card.dataset.handedIn === '1';
+        api_call(handedIn ? '/api/kata/take_back' : '/api/kata/hand_in', { task: card.dataset.task, language: card.dataset.language }, function (data) {
+            if (!data.success) {
+                showFeedback(card, 'unavailable', '<p>Das hat gerade nicht geklappt. Versuch es gleich noch einmal.</p>');
+                return;
+            }
+            showHandIn(card, { status: card.dataset.status, handed_in: data.handed_in });
+        }, { no_please_wait: true });
     }
 
     // What »Ausführen« printed, as text, and a line when it did not end well.
@@ -474,6 +498,7 @@
             else writeAnswer(card, '');
             setBadge(card, null);
             delete card.dataset.status;
+            showHandIn(card, null);
             showAfterTasks();
             card.querySelector('.task-delete').hidden = true;
             showFeedback(card, 'sent', '<p>Gelöscht.</p>');
@@ -559,6 +584,7 @@
                 if (!state) return;
                 writeAnswer(card, state.answer);
                 setBadge(card, state.status);
+                showHandIn(card, state);
                 const del = card.querySelector('.task-delete');
                 if (del) del.hidden = false;
             });
@@ -605,6 +631,8 @@
             if (sql && window.CodeInput) CodeInput.attach(sql);
             const run = card.querySelector('.task-run');
             if (run) run.addEventListener('click', function () { kata(card, 'run', readAnswer(card)); });
+            const handIn = card.querySelector('.task-hand-in');
+            if (handIn) handIn.addEventListener('click', function () { toggleHandIn(card); });
             if (sql) sql.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
                     e.preventDefault();

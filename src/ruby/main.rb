@@ -6190,6 +6190,7 @@ class Main < Sinatra::Base
         io << ClassBoard.html(board, :activity => activity_key,
             :submission_url => lambda { |email, id| "/api/task/submission/#{activity_key}/#{id}?email=#{CGI.escape(email)}" })
         io << class_scene_galleries_html(activity_key, tasks, board[:own] ? members + [viewer] : members)
+        io << class_kata_hand_ins_html(activity_key, tasks, members)
         io
     end
 
@@ -7027,6 +7028,8 @@ class Main < Sinatra::Base
             task = entry[:tasks][:by_id][id]
             next if task.nil?
             states[id] = TaskStore.public_state(stored, TaskSpec.check_version(task))
+            # a Kata handed in to be shown in class (KataHandIns)
+            states[id][:handed_in] = File.file?(submission_path(stored[:task].to_s)) if task['check']['type'] == 'function'
         end
         respond(:states => states)
     end
