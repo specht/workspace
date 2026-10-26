@@ -92,7 +92,7 @@ module PageKinds
     # more than one (CodeLanguages); the switch beside the label shows it,
     # the label itself does not name it (»Übung«, not »Übung (Ruby)«, which
     # would change width when switching).
-    def self.header(slug, content, sections, development: false, extra: '', show_duration: false, code_language: nil)
+    def self.header(slug, content, sections, development: false, extra: '', show_duration: false, show_curriculum: false, code_language: nil)
         entry = content[slug]
         return '' if entry.nil? || entry[:teacher_only]
 
@@ -124,6 +124,11 @@ module PageKinds
             html << CodeLanguages.switch_html(languages, code_language) if switch
             if show_duration && entry[:duration].is_a?(String) && !entry[:duration].strip.empty?
                 html << "<span class='page-kind-duration'><i class='bi bi-clock'></i>#{h.(entry[:duration].strip)}</span>"
+            end
+            # the line of the curriculum, for teachers (docs/lehrplan.md)
+            if show_curriculum && entry[:curriculum].is_a?(String) && !entry[:curriculum].strip.empty?
+                html << "<span class='page-kind-curriculum' title='Rahmenlehrplan (nur für Lehrkräfte sichtbar)'>" \
+                        "<i class='bi bi-mortarboard'></i>#{h.(entry[:curriculum].strip)}</span>"
             end
             required = requires_of(slug, content, development: development)
             unless required.empty?

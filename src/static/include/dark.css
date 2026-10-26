@@ -371,6 +371,10 @@ html[data-bs-theme="dark"] {
     .reference-include-link a {
         color: #5fcfc1;
     }
+    .page-kind-curriculum,
+    .tutorial_card3 .card-content .card-curriculum {
+        color: #cdb0f2;
+    }
     .color-swatch {
         border-color: rgba(255, 255, 255, 0.35);
     }

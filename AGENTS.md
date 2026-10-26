@@ -41,6 +41,8 @@ address from `credentials.rb` and the code `123456`.
 - [docs/test-workspace-packages.md](docs/test-workspace-packages.md): Workspace packages for Leistungsüberprüfungen
 - [docs/plan-katas.md](docs/plan-katas.md): Katas (code typed into a card; check types `function`, `pip`,
   `tests`), Pip unter Funkelbach in three parts: what exists, the maintainer's decisions and why, what is open
+- [docs/lehrplan.md](docs/lehrplan.md): the `curriculum:` line every activity carries for teachers:
+  its form and the only names allowed, from the Berlin-Brandenburg curricula
 - [docs/checkliste.md](docs/checkliste.md): every rule an activity must meet, why, and what checks it;
   go through it for every new or changed activity. `src/scripts/audit-activities.rb` counts the countable part
 - [src/tutorial-screenshots/README.md](src/tutorial-screenshots/README.md): the recipe language for generated pictures

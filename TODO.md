@@ -145,7 +145,6 @@ below is a writing priority, not a prerequisite chain.
 
 Plus, from the review:
 
-* [ ] **The curriculum for teachers on every activity**: the Kata sets carry `curriculum:` in their meta block (»Sek I: Kontrollstrukturen (Verzweigung)«), shown to logged-in teachers in the Kata strip on the front page (`kata_map.rb`). The maintainer wants the same for all activities, only for logged-in teachers: a field per activity, on its card in the catalog and at the top of its page
 * [ ] **Query stepper, further**: subqueries and `UNION`; the music data (Discogs) once it has a chapter
 * [ ] **»Wie sicher ist ein Passwort?«**: not written; »Zwei Faktoren« fills the place in Netze & Sicherheit. The local branch `passwords` keeps solutions, starters, a list and tasks from a first attempt
 * [ ] **Person boxes waiting for a visible page**: Béla Julesz and Christopher Tyler (autostereograms, `sirds`), William Reeves (particle systems, `feuerwerk` is parked), Yann LeCun (`digits-experiment` is in no catalog); Turner Whitted has his place in Raytracing

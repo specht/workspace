@@ -119,6 +119,14 @@ class StudentHomeTest < Minitest::Test
         assert_equal '', StudentHome.card_badges(nil, 'Ruby')
     end
 
+    def test_card_curriculum
+        assert_equal '', StudentHome.card_curriculum(nil)
+        assert_equal '', StudentHome.card_curriculum('  ')
+        html = StudentHome.card_curriculum('Sek I: Datenbanken (<Tabellen>)')
+        assert_includes html, "class='card-curriculum'"
+        assert_includes html, 'Sek I: Datenbanken (&lt;Tabellen&gt;)'
+    end
+
     def test_card_requires
         assert_equal '', StudentHome.card_requires([])
         assert_includes StudentHome.card_requires(['Echtzeitgrafik mit C']), 'Baut auf Echtzeitgrafik mit C auf'

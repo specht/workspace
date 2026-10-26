@@ -1539,9 +1539,15 @@ details.solution.hint-step-new > summary {
                     -webkit-line-clamp: 2;
                 }
 
-                /* With »Baut auf … auf« below, one line of text, so the
-                   row stays about as high as its picture. */
-                &:has(.card-requires) .abstract {
+                /* With »Baut auf … auf« or the curriculum below, one line of
+                   text, so the row stays about as high as its picture; the
+                   curriculum on one line, all of it in the tooltip. */
+                &:has(.card-requires) .abstract,
+                &:has(.card-curriculum) .abstract {
+                    -webkit-line-clamp: 1;
+                }
+
+                .card-curriculum {
                     -webkit-line-clamp: 1;
                 }
             }
@@ -3518,6 +3524,12 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     white-space: nowrap;
 }
 
+/* The curriculum, only for teachers: in the purple of the teachers' tools
+   (»Notiz für Lehrkräfte«), so that nobody takes it for what students see. */
+.page-kind-curriculum {
+    color: #5b2f8f;
+}
+
 .page-kind-activity .page-kind-links a,
 .reference-include-link a {
     color: #0f766e;
@@ -5293,6 +5305,23 @@ ul.task-teacher-list .task-teacher-answer {
 }
 
 .card-requires .bi {
+    margin-right: 0.35em;
+}
+
+/* The curriculum on a catalog card, for teachers (page-kind-curriculum). */
+.tutorial_card3 .card-content .card-curriculum {
+    display: -webkit-box;
+    overflow: hidden;
+    margin-top: 0.4em;
+    color: #5b2f8f;
+    font-size: 0.8rem;
+    line-height: 1.3;
+    hyphens: manual;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.card-curriculum .bi {
     margin-right: 0.35em;
 }
 

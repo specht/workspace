@@ -5329,7 +5329,8 @@ class Main < Sinatra::Base
         tools = page_pin_button(slug) + teacher_note_toggle(slug)
         toggle = tools.empty? ? '' : "<span class='page-teacher-tools'>#{tools}</span>"
         header = PageKinds.header(slug, @@content, @@sections, :development => DEVELOPMENT, :extra => toggle,
-                                  :show_duration => teacher_logged_in?, :code_language => page_code_language(slug))
+                                  :show_duration => teacher_logged_in?, :show_curriculum => teacher_logged_in?,
+                                  :code_language => page_code_language(slug))
         header.empty? && !toggle.empty? ? "<div class='page-kind'>#{toggle}</div>" : header
     end
 
@@ -6602,6 +6603,7 @@ class Main < Sinatra::Base
                         if catalog == :student
                             io.puts StudentHome.card_requires(PageKinds.requires_of(slug, @@content, :development => DEVELOPMENT).map(&:last))
                         end
+                        io.puts StudentHome.card_curriculum(content[:curriculum]) if teacher_logged_in? && catalog != :reference
                         io.puts "</div>"
                         io.puts "</div>"
                         io.puts "</a>"
