@@ -382,9 +382,8 @@ html[data-bs-theme="dark"] {
     .lehrplan-page .lp-details {
         color: #adb5bd;
     }
-    .lehrplan-page .lp-topic:has(> h3:target) {
-        background: #221b2d;
-        box-shadow: 0 0 0 0.6rem #221b2d;
+    .lehrplan-page {
+        --lp-target: #221b2d;
     }
     .page-kind-curriculum a {
         text-decoration-color: rgba(205, 176, 242, 0.4);

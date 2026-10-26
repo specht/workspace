@@ -3541,11 +3541,29 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     /* reached from an activity (#sek-i-…): clear of the bar at the top */
     scroll-margin-top: 4.5rem;
 }
-/* the name one came for, on a light purple ground that leaves the layout as it is */
+/* the name one came for, on a light purple ground that leaves the layout as
+   it is; it stays a moment for the eye to find it, then fades */
+.lehrplan-page {
+    --lp-target: #f7f2fc;
+}
 .lehrplan-page .lp-topic:has(> h3:target) {
     border-radius: 0.3rem;
-    background: #f7f2fc;
-    box-shadow: 0 0 0 0.6rem #f7f2fc;
+    animation: lp-target-fade 2.5s ease-in 2s both;
+}
+@keyframes lp-target-fade {
+    from {
+        background: var(--lp-target);
+        box-shadow: 0 0 0 0.6rem var(--lp-target);
+    }
+    to {
+        background: transparent;
+        box-shadow: 0 0 0 0.6rem transparent;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .lehrplan-page .lp-topic:has(> h3:target) {
+        animation-duration: 0.01s;
+    }
 }
 .lehrplan-page .lp-count {
     display: inline-block;
