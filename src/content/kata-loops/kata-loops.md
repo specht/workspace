@@ -1,5 +1,6 @@
 <div class='meta'>
 icon: bi-arrow-repeat
+accent: 220
 kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]

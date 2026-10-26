@@ -2026,6 +2026,8 @@ class Main < Sinatra::Base
                 # line of the curriculum teachers see on the overview.
                 :idea => page_meta['idea'],
                 :curriculum => page_meta['curriculum'],
+                # the hue of its band in the strip, in degrees (0 to 359)
+                :accent => page_meta['accent'].is_a?(Integer) && page_meta['accent'].between?(0, 359) ? page_meta['accent'] : nil,
                 # its icon in the strip: bi-braces, or a picture (/images/…)
                 :icon => page_meta['icon'].to_s[%r{\A(bi-[a-z0-9-]+|/images/[\w/.-]+\.(png|webp|svg))\z}],
             }

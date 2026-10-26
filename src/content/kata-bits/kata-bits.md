@@ -1,5 +1,6 @@
 <div class='meta'>
 icon: bi-toggles
+accent: 340
 kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]

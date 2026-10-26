@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """Pip and Bello as icons for the strip of Katas on the front page
 (KataMap, meta icon: of pip-1 and pip-2): the first frame of pip-east.png (from the side)
-and bello.png, cut to what is drawn, in the green of the other icons
+and bello.png, cut to what is drawn, in amber like the band of Pip's sets
 (default.css, .kata-set-art): each pixel's brightness becomes a shade of
-green, so the figure keeps its drawing. Run after make_sprites.py:
+amber, so the figure keeps its drawing. Run after make_sprites.py:
 
     python3 make_icons.py
 """
 from PIL import Image
 
-DARK = (20, 70, 45)
-LIGHT = (190, 245, 215)
+# the lantern amber of Pip's sets (meta accent: 38); default.css turns a
+# sprite to another set's hue from there
+DARK = (72, 46, 12)
+LIGHT = (255, 205, 120)
 SIZE = 24
 
 

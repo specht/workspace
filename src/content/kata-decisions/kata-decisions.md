@@ -1,5 +1,6 @@
 <div class='meta'>
 icon: bi-signpost-split
+accent: 195
 kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]

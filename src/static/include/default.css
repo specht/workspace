@@ -8327,15 +8327,16 @@ html[data-bs-theme="dark"] .bitplane-widget {
 .kata-set .theme-image-dark {
     display: none;
 }
-/* a set without a picture (one would give a solution away): its icon on
-   a band in the green of the Katas, like a code editor's dark */
+/* a set's icon on a band in its own hue (--accent, meta accent:), all
+   hues equally light and strong, so the strip stays calm; green stays for
+   what is done and what to click */
 .kata-set-art {
     display: grid;
     place-items: center;
     background:
-        radial-gradient(circle at 70% 30%, rgba(111, 211, 155, 0.22), transparent 60%),
-        #1f2a24;
-    color: #6fd39b;
+        radial-gradient(circle at 70% 30%, hsl(var(--accent) 60% 60% / 0.24), transparent 60%),
+        hsl(var(--accent) 22% 15%);
+    color: hsl(var(--accent) 62% 72%);
     font-size: 3em;
 }
 .kata-set-art .bi {
@@ -8355,7 +8356,8 @@ html[data-bs-theme="dark"] .bitplane-widget {
     width: 48px;
     height: 48px;
     image-rendering: pixelated;
-    filter: drop-shadow(0 0 0.35em rgba(111, 211, 155, 0.35));
+    /* drawn in amber (hue 38, make_icons.py): turned to the set's hue */
+    filter: hue-rotate(calc((var(--accent) - 38) * 1deg)) drop-shadow(0 0 0.35em hsl(var(--accent) 60% 60% / 0.35));
     transition: scale 300ms;
 }
 .kata-set:hover .kata-set-sprite {
@@ -8477,7 +8479,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
 }
 .kata-set-bar {
     display: block;
-    height: 0.4em;
+    height: 0.5em;
     overflow: hidden;
     border-radius: 0.2em;
     background: var(--bs-secondary-bg);
@@ -8486,7 +8488,9 @@ html[data-bs-theme="dark"] .bitplane-widget {
     display: block;
     height: 100%;
     border-radius: 0.2em;
-    background: #198754;
+    background:
+        repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.22) 0 0.3em, transparent 0.3em 0.6em),
+        #198754;
 }
 
 /* the arrows at the ends of the strip, with a mouse only */
