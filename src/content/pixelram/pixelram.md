@@ -578,24 +578,27 @@ while (!should_close())
 
 `present()` zeigt das fertige Bild und wartet bis zum nächsten, höchstens 60-mal pro Sekunde. `seconds()` sagt, wie viele Sekunden seit dem Start vergangen sind. Steckt diese Zeit in der Sinusfunktion, wandern die Wellen nach außen.
 
-Die Zeit braucht `color`, gesetzt wird sie in `main`: Sie steht deshalb als Variable `t` außerhalb von beiden, wo jede Funktion sie lesen kann. Ändere den Anfang der Datei bis `color`:
+Die Zeit braucht `color`, gesetzt wird sie in `main`: Sie steht deshalb als Variable `t` außerhalb von beiden, wo jede Funktion sie lesen kann, über `color`:
 
 ```c
-#include "pixelram.h"
-#include <math.h>
-
-#define W 320
-#define H 180
-
+~ #define W 320
+~ #define H 180
+~
 // Sekunden seit dem Start, für jedes Bild neu
 double t;
+~
+~ int color(double x, double y)
+```
 
-int color(double x, double y)
-{
+In `color` werden die drei Zeilen für den Abstand zu einer, und in `sin` kommt `- t * 2.0` dazu:
+
+```c
+~ int color(double x, double y)
+~ {
     double distance = hypot(x - W / 2.0, y - H / 2.0);
     double wave = sin(distance * 0.12 - t * 2.0);
-    return (int)((wave + 1.0) * 7.5);
-}
+~     return (int)((wave + 1.0) * 7.5);
+~ }
 ```
 
 `hypot(dx, dy)` rechnet dasselbe wie `sqrt(dx * dx + dy * dy)`, nur kürzer. `draw` bleibt, wie es ist. In `main` kommt die Schleife um `draw()`:
@@ -841,8 +844,36 @@ for (int y = 0; y < H; y++)
 }
 ```
 
-Und prüfe bei jedem Schritt, bevor das neue Pixel gesetzt wird:
+Bei jedem Schritt sieht das Programm nach, bevor es das neue Pixel setzt. Den Zusammenstoß merkt sich eine Variable `bool crashed = false;` vor der äußeren Schleife, und die Unfallstelle wird rot, Farbe 2. Für die Wahl zwischen zwei Farben hat C eine kurze Form: `crashed ? 2 : 11` ist 2, wenn `crashed` wahr ist, und sonst 11.
 
+<div class='hint own' data-check='kollision'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>bool crashed = false;</code> vor die äußere Schleife und ändere die innere <code>while</code>-Schleife: Nach dem Schritt fragt sie mit <code>get_pixel</code>, ob auf dem neuen Feld schon etwas steht, und setzt dann <code>crashed</code> auf <code>true</code>. Danach setzt sie das Pixel, rot nach dem Zusammenstoß, sonst wie bisher in Farbe 11. Ist die Spur verunglückt, fährt sie nicht weiter, auch wenn in diesem Bild noch Schritte übrig wären: Das gehört in die Bedingung der Schleife.
+</div>
+
+<!-- hint -->
+Die Spur fährt nach rechts und steht bei (157, 45); der Rahmen rechts liegt bei x = 159. Was gibt `get_pixel` beim nächsten Schritt zurück, was beim übernächsten? Wann wird `crashed` wahr, und was soll die Schleife danach tun?
+<!-- /hint -->
+<!-- hint -->
+In der Schleife kommt zuerst der Schritt, dann ein `if` mit `get_pixel(x, y)`, dann `set_pixel` mit `crashed ? 2 : 11`. Die Bedingung der Schleife bekommt einen zweiten Teil, der falsch wird, sobald es gekracht hat.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```c
+while (… && lag >= STEP)   // hier: nicht weiter nach dem Zusammenstoß
+{
+    x += dx;
+    y += dy;
+    if (…)                 // steht auf dem neuen Feld schon etwas?
+        crashed = true;
+
+    set_pixel(x, y, …);
+    lag -= STEP;
+}
+```
+<!-- /hint -->
+
+<!-- solution -->
 ```c
 while (!crashed && lag >= STEP)
 {
@@ -855,18 +886,19 @@ while (!crashed && lag >= STEP)
     lag -= STEP;
 }
 ```
+<!-- /solution -->
 
-Dazu gehört eine Variable `bool crashed = false;` vor der äußeren Schleife. `!crashed` in der Bedingung hält die Spur nach dem Zusammenstoß an, auch mitten in einem Bild, in dem sie noch mehrere Schritte vor sich hätte. Die Unfallstelle wird rot (Farbe 2).
+`!crashed` in der Bedingung hält die Spur nach dem Zusammenstoß an, auch mitten in einem Bild, in dem sie noch mehrere Schritte vor sich hätte.
 
 <!-- stage: stufen/lichtspur-2.c as lichtspur.c -->
+
+_task(kollision)
 
 _task(reihenfolge)
 
 <div class='hint think'>
 <strong>Zum Nachdenken:</strong> Was passiert, wenn du direkt in die Gegenrichtung lenkst?
 </div>
-
-_task(kollision)
 
 ### Zu zweit
 

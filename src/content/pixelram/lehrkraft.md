@@ -18,9 +18,9 @@ Lernende programmieren in C Grafik direkt in den Bildschirmspeicher (PixelRAM), 
 <li>Die übrigen fragen Zahlen und Auswahl: die Farbnummer eines Pixels nach der ersten Formel (4, mit <code>% 16</code>) und nach dem Abstand zur Mitte (0), vier Vorhersagen (<code>+ t</code> statt <code>- t</code>, zwei Wellen, die sich auslöschen, eine kurz gedrückte Taste, <code>set_pixel</code> vor <code>get_pixel</code>) und wer bei einem gleichzeitigen Unfall den Punkt bekommt.</li>
 </ul></td></tr>
 <tr><th>Jetzt bist du dran</th><td><ul>
-<li>An vier Stellen schreiben die Lernenden den Code zuerst selbst: <code>color</code> mit dem Abstand zur Mitte, die Welle in 16 Farben, im Spiel <code>drive</code> und <code>steer</code> für zwei Spuren. Die Seite geht danach mit ihrem eigenen Code weiter.</li>
+<li>An fünf Stellen schreiben die Lernenden den Code zuerst selbst: <code>color</code> mit dem Abstand zur Mitte, die Welle in 16 Farben, im Spiel den Zusammenstoß mit <code>get_pixel</code> und für zwei Spuren <code>drive</code> und <code>steer</code>. <code>drive</code> ist derselbe Zusammenstoß mit <code>p-&gt;x</code> statt <code>x</code>. Die Seite geht danach mit ihrem eigenen Code weiter.</li>
 <li>Vor dem Code der Seite stehen Tipps, eine Stufe nach der anderen mit einer Minute Pause und ohne Uhr; der Code der Seite ist die letzte Stufe. Wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst.</li>
-<li>Bei <code>color</code> und der Welle prüft eine Aufgabe unter dem Kasten den eigenen Code; wer sie löst, kann den Code der Seite sofort öffnen und vergleichen. <code>drive</code> und <code>steer</code> sieht man im Spiel.</li>
+<li>Bei <code>color</code> und der Welle prüft eine Aufgabe unter dem Kasten den eigenen Code, beim Zusammenstoß »Wände und Zusammenstöße«, die nur nach <code>get_pixel</code> und <code>crashed</code> sucht; wer sie löst, kann den Code der Seite sofort öffnen und vergleichen. Ob der Zusammenstoß wirklich klappt, <code>drive</code> und <code>steer</code> sieht man im Spiel.</li>
 </ul></td></tr>
 </table>
 
