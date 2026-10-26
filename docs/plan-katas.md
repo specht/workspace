@@ -800,3 +800,15 @@ gate as an event of its own; JavaScript plans run as a script
 (Richard E. Pattis) is named in the teacher note; a person box waits for
 his year of birth, which no source gives.
 
+**Pip's pictures, the 3/4 view.** The map is seen from above at a slant,
+as in tile games: the ground, the top of the rock with a light edge on each
+open side and its front face above an open tile, about half the corners
+round, what stands upright sorted by row and taller than its tile (the old
+lamp on its post, the gate). Pip, Bello, the Glibber and the Wichtel stay
+the figures of the 2D Game Studio, so that students know them; everything
+around them is drawn by `src/static/images/pip/make_sprites.py` in one
+palette, shading dithered. A light layer darkens the cave; Pip's lantern,
+the Funkensteine, the lit lamp, glowing mushrooms and crystals shine. When
+Pip lights the lamp (or finds Bello), it flares up, sparks fly, the cave
+brightens and Pip hops. The maintainer looks at the pictures and may redraw.
+

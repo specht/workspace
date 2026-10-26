@@ -37,19 +37,33 @@
     const ROUND = (inner, keep) => 'radial-gradient(circle calc(var(--tile) / 2) at ' + inner + ', ' +
         (keep ? '#000 calc(100% - 0.5px), transparent 100%)' : 'transparent calc(100% - 0.5px), #000 100%)');
 
+    // How many variants each strip of the ground and the rock has
+    // (make_sprites.py).
+    const FLOORS = 4;
+    const TOPS = 3;
+    const FACES = 4;
+    const IMG = '/images/pip/';
+    const VERSION = '?v=6';
+
     class PipView {
         // box: the element the map goes into; layout: PipWorld#layout;
         // start: the first frame (where Pip stands, the Glibbers).
         //
-        // Atmosphere, only drawn, the world does not know it: the walls
-        // throw a shadow and about half their corners are round (a wall tile
-        // loses the corner between two open sides, an open tile between two
-        // walls gets a curved nook), so tunnels bend here and there; mushrooms and stalagmites grow
-        // at the edges of the tunnels, never on a tile Pip walks on; a light
+        // Seen from above at a slant (the 3/4 view), only drawn, the world
+        // does not know it. Each open tile has its ground; a wall tile is the
+        // top of the rock, with a light edge on each open side, and where an
+        // open tile lies below it, its front face fills the lower half.
+        // About half the corners are round (a wall tile loses the corner
+        // between two open sides, an open tile between two walls gets a
+        // nook). What stands upright reaches into the tile above and is
+        // drawn row by row, the lower row in front (z-index by --y). A light
         // layer darkens the cave by multiplying and brightens it where
-        // something glows (Pip's lantern, the old lamp once Pip has lit it,
-        // the Funkensteine, the glowing mushrooms); fireflies drift and now and then a bat flies
-        // past (not with prefers-reduced-motion).
+        // something glows; what shines by itself (Pip with its lantern, the
+        // Funkensteine, the old lamp, glowing mushrooms and crystals) is
+        // drawn above it, the rest in the dark. Fireflies drift and now and
+        // then a bat flies past (not with prefers-reduced-motion). When Pip
+        // lights the old lamp, it flares up, sparks fly, the cave brightens
+        // and Pip hops (pip-done).
         constructor(box, layout, start) {
             this.box = box;
             this.layout = layout;
@@ -65,7 +79,6 @@
             const wall = (x, y) => x < 0 || y < 0 || x >= layout.width || y >= layout.height || walls.has(x + ',' + y);
             const lights = [];
             this.floor(wall);
-            this.walls(wall, lights);
             const put = (list, name) => (list || []).forEach((p) => this.tile(name, p));
             (layout.trail || []).forEach((p) => {
                 // a corner of the trail has prints of its own, pointing north-east
@@ -73,18 +86,28 @@
                 this.tile(diagonal ? 'trail pip-trail-diagonal' : 'trail', [p[0], p[1], diagonal ? p[2] - 45 : p[2]]);
             });
             put(layout.puddles, 'puddle');
-            put(layout.gates, 'gate');
-            this.levers = (layout.levers || []).map((p) => this.tile('lever', p));
-            if (layout.lamp) this.lamp = this.tile('lamp', layout.lamp);
-            if (layout.bello) this.tile('bello', layout.bello);
-            (layout.stones || []).forEach((p) => { this.stones[key(p)] = this.tile('stone', p); });
-            this.glibbers = (start.glibbers || []).map((p) => this.tile('glibber actor', p));
-            this.pip = this.tile('pip actor', [start.pip.x, start.pip.y]);
+            this.walls(wall, lights);
+            // in the dark, sorted by row
+            put(layout.gates, 'gate pip-sort pip-tall');
+            this.levers = (layout.levers || []).map((p) => this.tile('lever pip-sort', p));
+            if (layout.bello) this.tile('bello pip-sort', layout.bello);
+            this.glibbers = (start.glibbers || []).map((p) => this.tile('glibber pip-sort actor', p));
             this.light = el('div', 'pip-light', this.world);
             lights.forEach(([name, p, r]) => this.glow(name, p, r));
-            if (layout.lamp) this.lampGlow = this.glow('lamp', layout.lamp, 3);
+            if (layout.lamp) this.lampGlow = this.glow('lamp', [layout.lamp[0] + 0.15, layout.lamp[1] - 0.6], 3);
             (layout.stones || []).forEach((p) => { this.stoneGlows[key(p)] = this.glow('stone', p, 0.75); });
             this.lantern = this.glow('lantern actor', [start.pip.x, start.pip.y], 3.5);
+            // shining by themselves, above the light, sorted by row
+            (layout.stones || []).forEach((p) => { this.stones[key(p)] = this.tile('stone', p); });
+            this.shining.forEach(([name, p]) => this.tile(name + ' pip-sort pip-bright', p));
+            if (layout.lamp) {
+                this.lamp = this.tile('lamp pip-sort pip-tall pip-bright', layout.lamp);
+                this.sparks = el('div', 'pip-sparks', this.world);
+                this.sparks.style.setProperty('--x', layout.lamp[0]);
+                this.sparks.style.setProperty('--y', layout.lamp[1]);
+                for (let i = 0; i < 10; i++) el('i', null, this.sparks).style.setProperty('--a', (i * 36 + 8) + 'deg');
+            }
+            this.pip = this.tile('pip pip-sort pip-bright actor', [start.pip.x, start.pip.y]);
             this.creatures(wall);
             (layout.labels || []).forEach((label) => { this.tile('label', label.at).textContent = label.text; });
             this.bubble = el('div', 'pip-bubble', this.world);
@@ -93,60 +116,88 @@
             if (window.ResizeObserver) new ResizeObserver(() => this.resize()).observe(box);
         }
 
-        // The ground: some tiles a little darker, so it does not look tiled.
+        // The ground of each open tile, one of the variants, and some soft
+        // darker patches, so that it does not look tiled.
         floor(wall) {
             for (let y = 0; y < this.layout.height; y++) {
                 for (let x = 0; x < this.layout.width; x++) {
+                    if (wall(x, y)) continue;
+                    this.tile('floor', [x, y]).style.setProperty('--v', Math.floor(hash(x, y, 9) * FLOORS));
                     const h = hash(x, y, 1);
-                    if (!wall(x, y) && h < 0.22) this.tile('shade', [x, y]).style.opacity = (0.15 + h).toFixed(2);
+                    if (h < 0.22) this.tile('shade', [x, y]).style.opacity = (0.15 + h).toFixed(2);
                 }
             }
         }
 
-        // The walls in a layer of their own, which throws the shadow; round
-        // corners, about half of them, so that the rock looks worn in places
-        // and hewn in others (the corner point decides, so the same corner
-        // stays round); what grows at the edges of the tunnels.
+        // The rock, in a layer of its own that throws the shadow: each wall
+        // tile its top, an edge on each open side, its front face above an
+        // open tile; round corners, about half of them (the corner point
+        // decides, so the same corner stays round); what grows at the foot
+        // of the faces.
         walls(wall, lights) {
             const layer = el('div', 'pip-walls', this.world);
             const open = (x, y) => !wall(x, y);
             const worn = (x, y, q) => hash(x + q.at[0], y + q.at[1], 8) < 0.5;
+            const url = (name) => 'url(' + IMG + name + '.png' + VERSION + ')';
+            this.shining = [];
             for (let y = 0; y < this.layout.height; y++) {
                 for (let x = 0; x < this.layout.width; x++) {
                     if (wall(x, y)) {
+                        const node = this.tile('wall', [x, y], layer);
+                        const images = [];
+                        const positions = [];
+                        const sizes = [];
+                        [['n', 0, -1], ['w', -1, 0], ['e', 1, 0]].forEach(([side, dx, dy]) => {
+                            if (!open(x + dx, y + dy)) return;
+                            images.push(url('rim-' + side));
+                            positions.push('0 0');
+                            sizes.push('100% 100%');
+                        });
+                        images.push(url('rock-top'));
+                        positions.push('calc(var(--tile) * ' + -Math.floor(hash(x, y, 10) * TOPS) + ') 0');
+                        sizes.push('calc(var(--tile) * ' + TOPS + ') 100%');
+                        node.style.backgroundImage = images.join(', ');
+                        node.style.backgroundPosition = positions.join(', ');
+                        node.style.backgroundSize = sizes.join(', ');
+                        if (open(x, y + 1)) el('div', 'pip-face', node).style.setProperty('--v', Math.floor(hash(x, y, 11) * FACES));
                         // a corner between two open sides is round
                         const layers = QUARTERS.map((q) => {
                             const round = worn(x, y, q) && q.sides.every(([dx, dy]) => open(x + dx, y + dy)) && open(x + q.diagonal[0], y + q.diagonal[1]);
                             return round ? ROUND(q.inner, true) : 'linear-gradient(#000, #000)';
                         });
-                        const node = this.tile('wall', [x, y], layer);
                         if (layers.some((l) => l.startsWith('radial'))) {
                             node.style.maskImage = node.style.webkitMaskImage = layers.join(', ');
                             node.classList.add('pip-rounded');
                         }
                     } else {
-                        // between two walls, an open tile gets a curved nook
+                        // between two walls, an open tile gets a curved nook:
+                        // the face of the rock above it at the top, the rock's
+                        // top at the bottom
                         QUARTERS.forEach((q) => {
                             if (!(worn(x, y, q) && q.sides.every(([dx, dy]) => wall(x + dx, y + dy)) && wall(x + q.diagonal[0], y + q.diagonal[1]))) return;
-                            const nook = this.tile('nook', [x, y], layer);
+                            const nook = this.tile('nook ' + (q.at[1] ? 'pip-nook-top' : 'pip-nook-face'), [x, y], layer);
                             nook.style.setProperty('--qx', q.at[0]);
                             nook.style.setProperty('--qy', q.at[1]);
+                            nook.style.setProperty('--v', Math.floor(hash(x, y, 11) * FACES));
                             nook.style.maskImage = nook.style.webkitMaskImage = ROUND(q.inner, false);
                         });
                     }
                 }
             }
-            // at the foot of a wall that has an open tile below it: glowing
-            // mushrooms (with their own light), red ones, stalagmites
+            // at the foot of a face: glowing mushrooms and crystals (with
+            // their own light, above the dark), red mushrooms, stalagmites
             for (let y = 0; y < this.layout.height; y++) {
                 for (let x = 0; x < this.layout.width; x++) {
                     if (!wall(x, y) || wall(x, y + 1)) continue;
                     const h = hash(x, y, 2);
-                    if (h < 0.14) {
-                        this.tile('deco pip-glowshroom', [x, y]);
+                    if (h < 0.1) {
+                        this.shining.push(['glowshroom', [x, y]]);
                         lights.push(['shroom', [x, y], 1.3]);
-                    } else if (h < 0.2) this.tile('deco pip-mushroom', [x, y]);
-                    else if (h < 0.3) this.tile('deco pip-stalagmite', [x, y]);
+                    } else if (h < 0.15) {
+                        this.shining.push(['crystals', [x, y]]);
+                        lights.push(['crystal', [x, y], 1.2]);
+                    } else if (h < 0.21) this.tile('deco pip-mushroom pip-sort', [x, y]);
+                    else if (h < 0.3) this.tile('deco pip-stalagmite pip-sort', [x, y]);
                 }
             }
         }
@@ -217,12 +268,15 @@
             const left = new Set((frame.stones || []).map(key));
             Object.keys(this.stones).forEach((k) => this.stones[k].classList.toggle('pip-taken', !left.has(k)));
             Object.keys(this.stoneGlows).forEach((k) => this.stoneGlows[k].classList.toggle('pip-taken', !left.has(k)));
-            // the old lamp lights up when Pip gets there
+            // the old lamp lights up when Pip gets there; finding Bello is an
+            // end as good
             const lit = frame.event === 'lamp';
             if (this.lamp) {
                 this.lamp.classList.toggle('pip-lit', lit);
                 this.lampGlow.classList.toggle('pip-lit', lit);
             }
+            this.world.classList.toggle('pip-done', lit || frame.event === 'bello');
+            this.pip.classList.toggle('pip-cheer', animate && (lit || frame.event === 'bello'));
             const open = frame.pulls === 3;
             this.levers.forEach((lever) => lever.classList.toggle('pip-pulled', frame.pulls % 2 === 1));
             this.world.classList.toggle('pip-gate-open', open);

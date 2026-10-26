@@ -183,7 +183,8 @@ test('Pip walks a plan, and a wall names the line', async ({ browser, page, e2eE
   // buttons and the timeline of every widget
   await expect(card.locator('.code-input-gutter > div')).toHaveCount(9);
   await expect(card.locator('.code-input-gutter > .current')).toHaveText('8');
-  await expect(card.locator('.stepper-timeline > span')).toHaveCount(10);
+  // the start and eight steps, the last one onto the lamp
+  await expect(card.locator('.stepper-timeline > span')).toHaveCount(9);
   await card.locator("[data-go='first']").click();
   await expect(card.locator('.pip-status')).toHaveText('Schritt 0 von 8');
   await expect(card.locator('.pip-lamp')).not.toHaveClass(/pip-lit/);
