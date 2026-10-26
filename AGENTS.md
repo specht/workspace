@@ -39,6 +39,8 @@ address from `credentials.rb` and the code `123456`.
 - [docs/widgets.md](docs/widgets.md): how the step-by-step widgets look, move and are built (the AVL tree is the model)
 - [docs/teacher-access.md](docs/teacher-access.md): roles, groups, the roster import, /personen, what teachers see
 - [docs/test-workspace-packages.md](docs/test-workspace-packages.md): Workspace packages for Leistungsüberprüfungen
+- [docs/plan-katas.md](docs/plan-katas.md): Katas (code typed into a card, check type `function`), Pip unter
+  Funkelbach and unit tests: the plan, the maintainer's answers and what is built
 - [docs/checkliste.md](docs/checkliste.md): every rule an activity must meet, why, and what checks it;
   go through it for every new or changed activity. `src/scripts/audit-activities.rb` counts the countable part
 - [src/tutorial-screenshots/README.md](src/tutorial-screenshots/README.md): the recipe language for generated pictures
