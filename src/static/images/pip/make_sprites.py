@@ -377,21 +377,23 @@ def lamp(lit):
 
 
 def lever(on):
-    """A lever on a stone block, the handle to the left or, pulled, to the right."""
-    img = canvas()
-    shadow(img, 12, 20.5, 7, 1.6)
-    for y in range(15, 21):
+    """A lever at the back of its tile, so that Pip standing in front of it
+    does not hide it: a stone block, the handle reaching up, to the left or,
+    pulled, to the right. 24 × 32, the tile in the lower 24 rows."""
+    img = canvas(T, 32)
+    shadow(img, 12, 19.5, 7, 1.4)
+    for y in range(14, 20):
         for x in range(6, 18):
-            put(img, x, y, ROCK[5] if y == 15 else tone(ROCK, 4.3 - (x - 6) * 0.12 - (y - 15) * 0.15, x, y))
+            put(img, x, y, ROCK[5] if y == 14 else tone(ROCK, 4.3 - (x - 6) * 0.12 - (y - 14) * 0.15, x, y))
     for x in range(6, 18):
-        put(img, x, 20, ROCK[1])
-    tip = (17, 6) if on else (7, 6)
-    for i in range(10):
-        x = round(12 + (tip[0] - 12) * i / 9)
-        y = round(15 + (tip[1] - 15) * i / 9)
+        put(img, x, 19, ROCK[1])
+    tip = (18, 2) if on else (6, 2)
+    for i in range(13):
+        x = round(12 + (tip[0] - 12) * i / 12)
+        y = round(14 + (tip[1] - 14) * i / 12)
         put(img, x, y, WOOD[3])
         put(img, x + 1, y, WOOD[1])
-    blob(img, tip[0] + 0.5, tip[1], 2, 2, RED)
+    blob(img, tip[0] + 0.5, tip[1] + 0.5, 2.2, 2.2, RED)
     outline(img)
     return img
 
@@ -400,36 +402,39 @@ SPIKE_FRAMES = 4
 
 
 def spikes(frame):
-    """Spikes out of the floor, which Pip does not walk onto: thirteen iron
-    needles scattered over the tile, of different heights, some leaning a
-    little, each with its own dark outline, drawn from the back to the
-    front. Four frames: out (0), sinking (1, 2), sunk (3), where only their
-    holes in the floor show. 24 × 32, the tile in the lower 24 rows, the
-    points reaching up into the tile above."""
-    rng = random.Random(77)
+    """Spikes out of the floor, which Pip does not walk onto: long, thin
+    iron needles scattered over the tile, of different heights, some
+    leaning a little, reaching up into the tile above; each with a light
+    edge on its left, a bright point and its own dark outline, drawn from
+    the back to the front. Four frames: out (0), sinking (1, 2), sunk (3),
+    where only their holes in the floor show. 24 × 40, the tile in the lower
+    24 rows."""
+    # a loose grid of three by three over the tile, each point shifted at
+    # random, so that they stand apart but not in rows
+    rng = random.Random(78)
     points = []
-    while len(points) < 13:
-        x, y = rng.randint(3, 20), rng.randint(13, 30)
-        if all(abs(x - px) + abs(y - py) > 4 for px, py, _, _, _ in points):
-            points.append((x, y, rng.randint(5, 10), 0, rng.choice([0, 0, 0, -1, 1])))
+    for row, y in enumerate((22, 29, 36)):
+        for x in (5, 12, 19):
+            points.append((x + rng.randint(-2, 2) + (2 if row == 1 else 0), y + rng.randint(-2, 2),
+                           rng.randint(11, 18), rng.choice([0, 0, -1, 1, -2, 2])))
     points.sort(key=lambda p: p[1])
     out = 1 - frame / (SPIKE_FRAMES - 1)
-    img = canvas(T, 32)
-    for x, y, height, _, lean in points:
+    img = canvas(T, 40)
+    for x, y, _, _ in points:
         # the hole it comes out of
         for dx in (-1, 0, 1):
             put(img, x + dx, y, ROCK[0])
         put(img, x - 2, y, GROUND[0])
-    for x, y, height, _, lean in points:
+        put(img, x + 2, y, GROUND[0])
+    for x, y, height, lean in points:
         h = round(height * out)
         if h <= 0:
             continue
-        # a needle: three pixels wide at its foot, then two, a single one
-        # at its tip
+        # a needle: three wide just at its foot, then two, then a long tip
         shape = []
         for i in range(h):
-            shift = round(lean * i / max(1, h - 1))
-            columns = (-1, 0, 1) if i < h * 0.35 else (0, 1) if i < h * 0.7 else (0,)
+            shift = round(lean * i / max(1, height - 1))
+            columns = (-1, 0, 1) if i < h * 0.15 else (0, 1) if i < h * 0.45 else (0,)
             shape.extend((dx + shift, -i) for dx in columns)
         cells = set(shape)
         for dx, dy in shape:
@@ -437,7 +442,11 @@ def spikes(frame):
                 if (dx + ox, dy + oy) not in cells:
                     put(img, x + dx + ox, y + dy + oy, OUT)
         for dx, dy in shape:
-            put(img, x + dx, y + dy, IRON[3] if dx < 0 or (dx == 0 and dy < -1) else IRON[1] if dx > 0 else IRON[2])
+            lit = (dx - round(lean * -dy / max(1, height - 1))) <= 0
+            put(img, x + dx, y + dy, IRON[3] if lit else IRON[1])
+        # the bright point
+        tip = min(shape, key=lambda c: c[1])
+        put(img, x + tip[0], y + tip[1], WHITE)
     return img
 
 

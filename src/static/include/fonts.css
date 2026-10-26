@@ -334,3 +334,11 @@
     font-display: swap;
     src: url(fonts/PT_Sans_Narrow/PTSansNarrow-Bold.ttf) format('truetype');
 }
+/* the letters of what Pip says (pip_world.js), as in the 2D Game Studio */
+@font-face {
+    font-family: 'Pixelify Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/Pixelify_Sans/PixelifySans.ttf) format('truetype');
+}
