@@ -1106,8 +1106,6 @@ class Main < Sinatra::Base
                 location @ruby {
                     limit_req zone=hs_backend burst=#{NGINX_BACKEND_BURST} nodelay;
                     include /etc/nginx/snippets/proxy_ws.conf;
-                    # the address the limits count for (/api/my_address)
-                    proxy_set_header X-Hs-Client $hs_client;
                     proxy_pass http://ruby:9292;
                 }
 
@@ -6941,14 +6939,6 @@ class Main < Sinatra::Base
 
     get '/api/ping' do
         respond(:pong => 'yeah')
-    end
-
-    # One's own address, as nginx counts it for its limits (X-Hs-Client,
-    # which nginx always sets) and as the app sees it (client_ip, for the
-    # limits on logging in): behind Traefik both should be the browser's
-    # public address, not one of the server's. Stored nowhere.
-    get '/api/my_address' do
-        respond(:nginx => request.env['HTTP_X_HS_CLIENT'].to_s, :app => client_ip)
     end
 
     post '/api/toggle_show_module' do
