@@ -5616,8 +5616,8 @@ class Main < Sinatra::Base
     # Messages carry text from students' files: rendered and then filtered
     # to harmless HTML (TaskHtml). Feedback boxes are light and style plain
     # code themselves (.task-feedback pre code), so no highlighting here.
-    def render_task_markdown(markdown)
-        TaskHtml.render(markdown)
+    def render_task_markdown(markdown, lineno: false)
+        TaskHtml.render(markdown, :lineno => lineno)
     end
 
     SUBMISSIONS_ROOT = '/internal/submissions'
@@ -6747,7 +6747,7 @@ class Main < Sinatra::Base
         respond(
             :status => result.status.to_s,
             :message => render_task_markdown(result.message),
-            :solution => render_task_markdown(result.solution),
+            :solution => render_task_markdown(result.solution, :lineno => true),
             :read => render_task_markdown(result.read),
             :warnings => (result.warnings || []).map { |w| render_task_markdown(w) },
             :state => state,

@@ -26,7 +26,8 @@ module TaskHtml
 
     SAFE_HREF = %r{\A(https?://|/(?!/)|#|mailto:)}i
 
-    def self.render(markdown)
+    # lineno: code blocks with line numbers (a solution)
+    def self.render(markdown, lineno: false)
         return nil if markdown.nil? || markdown.to_s.strip.empty?
 
         @renderer ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML.new(:safe_links_only => true),
@@ -37,7 +38,9 @@ module TaskHtml
         # language-ruby, the highlighter wants it back as it was.
         html = @renderer.render(markdown.to_s).gsub(/<code class="([a-z0-9_+-]+)">/, '<code class="language-\\1">')
         fragment = Nokogiri::HTML5.fragment(sanitize(html))
-        fragment.css('code[class^="language-"]').each { |code| code['class'] = code['class'].delete_prefix('language-') }
+        fragment.css('code[class^="language-"]').each do |code|
+            code['class'] = code['class'].delete_prefix('language-') + (lineno ? '_lineno' : '')
+        end
         CodeHighlight.apply(fragment)
         fragment.to_html
     end

@@ -3961,6 +3961,16 @@ ul.task-teacher-list .task-teacher-answer {
     color: inherit;
 }
 
+/* a solution with line numbers: Rouge's table of two pre in the pre,
+   which take nothing of their own */
+.task-feedback pre pre {
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+    box-shadow: none;
+}
+
 .task-read p:last-child {
     margin-bottom: 0;
 }

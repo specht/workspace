@@ -202,7 +202,7 @@ class Main < Sinatra::Base
             :done => true,
             :status => result.status.to_s,
             :message => render_task_markdown(result.message),
-            :solution => render_task_markdown(result.solution),
+            :solution => render_task_markdown(result.solution, :lineno => true),
             :read => render_task_markdown(result.read),
             :state => state,
             :replay => result.replay,
