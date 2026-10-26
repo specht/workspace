@@ -8457,6 +8457,23 @@ html[data-bs-theme="dark"] .bitplane-widget {
 .kata-set-open .bi {
     margin: 0 0 0 0.35em;
 }
+/* a click on the set, not on its button: the button calls attention to
+   itself (KataMap's script) */
+.kata-set-callout {
+    animation: kata-callout 700ms ease;
+}
+@keyframes kata-callout {
+    0%, 100% { scale: 1; box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.5); }
+    35% { scale: 1.12; box-shadow: 0 0 0 0.45em rgba(25, 135, 84, 0.25); }
+    70% { scale: 0.98; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .kata-set-callout {
+        animation: none;
+        outline: 2px solid #198754;
+        outline-offset: 2px;
+    }
+}
 .kata-set-bar {
     display: block;
     height: 0.4em;

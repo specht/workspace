@@ -178,6 +178,16 @@ module KataMap
                 }
             });
             track.addEventListener('dragstart', function (event) { event.preventDefault(); });
+            // a click on the set itself: its button calls attention to itself
+            track.addEventListener('click', function (event) {
+                if (event.target.closest('.kata-set-open')) return;
+                var set = event.target.closest('.kata-set');
+                var button = set && set.querySelector('.kata-set-open');
+                if (!button) return;
+                button.classList.remove('kata-set-callout');
+                void button.offsetWidth;
+                button.classList.add('kata-set-callout');
+            });
             var centre = track.querySelector('[data-centre]');
             if (centre) {
                 track.style.scrollBehavior = 'auto';
