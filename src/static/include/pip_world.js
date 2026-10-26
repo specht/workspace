@@ -45,6 +45,8 @@
     const PX = 24;
     const HALF = 12;
     const FACE = 12;
+    // the radius of a corner that is not worn round
+    const TIGHT = 4;
     // the light edge of the rock's top (the palette of make_sprites.py, ROCK)
     const RIM_LIGHT = [100, 114, 158];
     const RIM_SOFT = [74, 84, 126];
@@ -138,12 +140,13 @@
         // pixels per tile, scaled up sharp), which throws the shadow. First
         // its shape at ground level: every wall tile, without the corners
         // that are round, with the nooks it fills in the corners of open
-        // tiles (a round corner is a quarter circle round the middle of its
-        // tile; about half of them, the corner point decides, so the same
-        // corner stays round). Then, column by column, the lowest FACE
+        // tiles (a round corner is a quarter circle in the corner of its
+        // tile; wide or tight, the corner point decides, so the same corner
+        // stays the same). Then, column by column, the lowest FACE
         // pixels of the shape above an open tile are its front face, the
         // rest is its top: so the face bends round a round corner and into
-        // a nook. The top gets a light edge along its outline where it
+        // a nook. No corner is sharp: about half are worn wide (a radius of
+        // half a tile), the others tight (TIGHT pixels). The top gets a light edge along its outline where it
         // borders open ground. The textures are the strips rock-top.png and
         // rock-face.png (make_sprites.py).
         walls(wall, lights) {
@@ -156,17 +159,26 @@
             const worn = (x, y, q) => hash(x + q.at[0], y + q.at[1], 8) < 0.5;
             const shape = new Uint8Array(W * H);
             const inQuarter = (q, px, py) => (px < HALF) === (q.at[0] === 0) && (py < HALF) === (q.at[1] === 0);
-            const outsideRound = (px, py) => (px + 0.5 - HALF) ** 2 + (py + 0.5 - HALF) ** 2 > HALF * HALF;
+            // outside the quarter circle of radius r in the tile's corner
+            // that quarter q holds
+            const outsideRound = (q, r, px, py) => {
+                const cx = q.at[0] ? PX - r : r;
+                const cy = q.at[1] ? PX - r : r;
+                const dx = px + 0.5 - cx;
+                const dy = py + 0.5 - cy;
+                return (q.at[0] ? dx > 0 : dx < 0) && (q.at[1] ? dy > 0 : dy < 0) && dx * dx + dy * dy > r * r;
+            };
             for (let ty = 0; ty < this.layout.height; ty++) {
                 for (let tx = 0; tx < this.layout.width; tx++) {
-                    const rounded = QUARTERS.filter((q) => wall(tx, ty)
-                        ? worn(tx, ty, q) && q.sides.every(([dx, dy]) => open(tx + dx, ty + dy)) && open(tx + q.diagonal[0], ty + q.diagonal[1])
-                        : worn(tx, ty, q) && q.sides.every(([dx, dy]) => wall(tx + dx, ty + dy)) && wall(tx + q.diagonal[0], ty + q.diagonal[1]));
+                    const corners = QUARTERS.filter((q) => wall(tx, ty)
+                        ? q.sides.every(([dx, dy]) => open(tx + dx, ty + dy)) && open(tx + q.diagonal[0], ty + q.diagonal[1])
+                        : q.sides.every(([dx, dy]) => wall(tx + dx, ty + dy)) && wall(tx + q.diagonal[0], ty + q.diagonal[1]));
                     for (let py = 0; py < PX; py++) {
                         for (let px = 0; px < PX; px++) {
-                            const q = rounded.find((r) => inQuarter(r, px, py));
+                            const q = corners.find((c) => inQuarter(c, px, py));
+                            const cut = q && outsideRound(q, worn(tx, ty, q) ? HALF : TIGHT, px, py);
                             // a wall loses its round corner, an open tile gains its nook
-                            const rock = wall(tx, ty) ? !(q && outsideRound(px, py)) : Boolean(q && outsideRound(px, py));
+                            const rock = wall(tx, ty) ? !cut : Boolean(cut);
                             if (rock) shape[(ty * PX + py) * W + tx * PX + px] = 1;
                         }
                     }
