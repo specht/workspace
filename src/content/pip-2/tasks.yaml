@@ -1,0 +1,2271 @@
+format: 1
+activity: pip-2
+tasks:
+  - id: dark-tunnel
+    title: "Bis zur Wand"
+    level: 1
+    prompt: |
+      Drei Stollen, alle verschieden lang. Pip geht mit `while` vorwärts, solange vorn frei ist: `front_clear?` sagt es.
+    starter: |
+      # Dein Plan
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, front_clear]
+      maps:
+        - facing: east
+          map: |
+            #######
+            #P...L#
+            #######
+        - facing: east
+          map: |
+            ############
+            #P........L#
+            ############
+        - facing: east
+          map: |
+            #####
+            #P.L#
+            #####
+      goal: { lamp: true }
+    hint: |
+      Was in der Schleife steht, macht Pip, solange die Frage `front_clear?` mit Ja beantwortet wird. In der Schleife reicht ein Schritt.
+    solution: |
+      ```ruby
+      while front_clear?
+        move
+      end
+      ```
+    python:
+      prompt: |
+        Drei Stollen, alle verschieden lang. Pip geht mit `while` vorwärts, solange vorn frei ist: `front_clear()` sagt es.
+      starter: |
+        # Dein Plan
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, front_clear]
+        maps:
+          - facing: east
+            map: |
+              #######
+              #P...L#
+              #######
+          - facing: east
+            map: |
+              ############
+              #P........L#
+              ############
+          - facing: east
+            map: |
+              #####
+              #P.L#
+              #####
+        goal: { lamp: true }
+      hint: |
+        Was in der Schleife steht, macht Pip, solange die Frage `front_clear()` mit Ja beantwortet wird. In der Schleife reicht ein Schritt.
+      solution: |
+        ```python
+        while front_clear():
+            move()
+        ```
+    javascript:
+      prompt: |
+        Drei Stollen, alle verschieden lang. Pip geht mit `while` vorwärts, solange vorn frei ist: `frontClear()` sagt es.
+      starter: |
+        // Dein Plan
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, front_clear]
+        maps:
+          - facing: east
+            map: |
+              #######
+              #P...L#
+              #######
+          - facing: east
+            map: |
+              ############
+              #P........L#
+              ############
+          - facing: east
+            map: |
+              #####
+              #P.L#
+              #####
+        goal: { lamp: true }
+      hint: |
+        Was in der Schleife steht, macht Pip, solange die Frage `frontClear()` mit Ja beantwortet wird. In der Schleife reicht ein Schritt.
+      solution: |
+        ```javascript
+        while (frontClear()) {
+          move();
+        }
+        ```
+
+  - id: dark-stones
+    title: "Steine im Finstern"
+    level: 2
+    prompt: |
+      Dieselben Stollen, jetzt mit Funkensteinen, auf jeder Karte woanders. Sammle sie auf dem Weg zur Lampe alle ein.
+    starter: |
+      # Dein Plan
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, take, on_stone, front_clear]
+      maps:
+        - facing: east
+          map: |
+            ###########
+            #P.o..oo.L#
+            ###########
+        - facing: east
+          map: |
+            #############
+            #Poo.....o.L#
+            #############
+        - facing: east
+          map: |
+            ########
+            #P..o.L#
+            ########
+      goal: { lamp: true, stones: all }
+    hint: "In die Schleife kommt nach dem Schritt die Frage aus der Pilzwiese: Liegt hier ein Stein?"
+    solution: |
+      ```ruby
+      while front_clear?
+        move
+        take if on_stone?
+      end
+      ```
+    python:
+      prompt: |
+        Dieselben Stollen, jetzt mit Funkensteinen, auf jeder Karte woanders. Sammle sie auf dem Weg zur Lampe alle ein.
+      starter: |
+        # Dein Plan
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, take, on_stone, front_clear]
+        maps:
+          - facing: east
+            map: |
+              ###########
+              #P.o..oo.L#
+              ###########
+          - facing: east
+            map: |
+              #############
+              #Poo.....o.L#
+              #############
+          - facing: east
+            map: |
+              ########
+              #P..o.L#
+              ########
+        goal: { lamp: true, stones: all }
+      hint: "In die Schleife kommt nach dem Schritt die Frage aus der Pilzwiese: Liegt hier ein Stein?"
+      solution: |
+        ```python
+        while front_clear():
+            move()
+            if on_stone():
+                take()
+        ```
+    javascript:
+      prompt: |
+        Dieselben Stollen, jetzt mit Funkensteinen, auf jeder Karte woanders. Sammle sie auf dem Weg zur Lampe alle ein.
+      starter: |
+        // Dein Plan
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, take, on_stone, front_clear]
+        maps:
+          - facing: east
+            map: |
+              ###########
+              #P.o..oo.L#
+              ###########
+          - facing: east
+            map: |
+              #############
+              #Poo.....o.L#
+              #############
+          - facing: east
+            map: |
+              ########
+              #P..o.L#
+              ########
+        goal: { lamp: true, stones: all }
+      hint: "In die Schleife kommt nach dem Schritt die Frage aus der Pilzwiese: Liegt hier ein Stein?"
+      solution: |
+        ```javascript
+        while (frontClear()) {
+          move();
+          if (onStone()) {
+            take();
+          }
+        }
+        ```
+
+  - id: winding
+    title: "Um die Ecken"
+    level: 3
+    prompt: |
+      Diese Stollen biegen mal nach links, mal nach rechts ab. Pip geht, bis `on_lamp?` wahr ist: geradeaus, solange es geht, und an einer Wand dorthin, wo es weitergeht.
+    starter: |
+      # Dein Plan
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, front_clear, on_lamp]
+      maps:
+        - facing: east
+          map: |
+            ##########
+            #P..######
+            ###.######
+            ###....###
+            ######.###
+            ######..L#
+            ##########
+        - facing: east
+          map: |
+            #########
+            #####L..#
+            #######.#
+            #P......#
+            #########
+        - facing: east
+          map: |
+            ###########
+            #P.#######
+            ##.#######
+            ##....####
+            #####.####
+            ##L...####
+            ###########
+      goal: { lamp: true }
+    hint: |
+      An der Wand dreht sich Pip erst nach links. Ist dort auch Wand, geht es rechts weiter: von links aus noch zwei Vierteldrehungen.
+    solution: |
+      ```ruby
+      until on_lamp?
+        if front_clear?
+          move
+        else
+          turn_left
+          unless front_clear?
+            turn_left
+            turn_left
+          end
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Diese Stollen biegen mal nach links, mal nach rechts ab. Pip geht, bis `on_lamp()` wahr ist: geradeaus, solange es geht, und an einer Wand dorthin, wo es weitergeht.
+      starter: |
+        # Dein Plan
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, front_clear, on_lamp]
+        maps:
+          - facing: east
+            map: |
+              ##########
+              #P..######
+              ###.######
+              ###....###
+              ######.###
+              ######..L#
+              ##########
+          - facing: east
+            map: |
+              #########
+              #####L..#
+              #######.#
+              #P......#
+              #########
+          - facing: east
+            map: |
+              ###########
+              #P.#######
+              ##.#######
+              ##....####
+              #####.####
+              ##L...####
+              ###########
+        goal: { lamp: true }
+      hint: |
+        An der Wand dreht sich Pip erst nach links. Ist dort auch Wand, geht es rechts weiter: von links aus noch zwei Vierteldrehungen.
+      solution: |
+        ```python
+        while not on_lamp():
+            if front_clear():
+                move()
+            else:
+                turn_left()
+                if not front_clear():
+                    turn_left()
+                    turn_left()
+        ```
+    javascript:
+      prompt: |
+        Diese Stollen biegen mal nach links, mal nach rechts ab. Pip geht, bis `onLamp()` wahr ist: geradeaus, solange es geht, und an einer Wand dorthin, wo es weitergeht.
+      starter: |
+        // Dein Plan
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, front_clear, on_lamp]
+        maps:
+          - facing: east
+            map: |
+              ##########
+              #P..######
+              ###.######
+              ###....###
+              ######.###
+              ######..L#
+              ##########
+          - facing: east
+            map: |
+              #########
+              #####L..#
+              #######.#
+              #P......#
+              #########
+          - facing: east
+            map: |
+              ###########
+              #P.#######
+              ##.#######
+              ##....####
+              #####.####
+              ##L...####
+              ###########
+        goal: { lamp: true }
+      hint: |
+        An der Wand dreht sich Pip erst nach links. Ist dort auch Wand, geht es rechts weiter: von links aus noch zwei Vierteldrehungen.
+      solution: |
+        ```javascript
+        while (!onLamp()) {
+          if (frontClear()) {
+            move();
+          } else {
+            turnLeft();
+            if (!frontClear()) {
+              turnLeft();
+              turnLeft();
+            }
+          }
+        }
+        ```
+
+  - id: turn-right
+    title: "Rechtsherum"
+    level: 1
+    prompt: |
+      Schreib den Zauberspruch `turn_right`: Pip dreht sich eine Vierteldrehung nach rechts. Die Prüfung stellt Pip auf zwei Karten und ruft `turn_right` auf.
+    starter: |
+      def turn_right
+        # drei Vierteldrehungen nach links
+      end
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left]
+      maps:
+        - facing: east
+          call: "turn_right"
+          expect: { facing: south, moves: 0 }
+          map: |
+            #####
+            #...#
+            #.P.#
+            #...#
+            #####
+        - facing: north
+          call: "turn_right"
+          expect: { facing: east, moves: 0 }
+          map: |
+            #####
+            #...#
+            #.P.#
+            #...#
+            #####
+    hint: "Was im Schacht drei Zeilen waren, steht jetzt im Zauberspruch."
+    solution: |
+      ```ruby
+      def turn_right
+        3.times do
+          turn_left
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Schreib den Zauberspruch `turn_right()`: Pip dreht sich eine Vierteldrehung nach rechts. Die Prüfung stellt Pip auf zwei Karten und ruft `turn_right()` auf.
+      starter: |
+        def turn_right():
+            # drei Vierteldrehungen nach links
+            pass
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left]
+        maps:
+          - facing: east
+            call: "turn_right()"
+            expect: { facing: south, moves: 0 }
+            map: |
+              #####
+              #...#
+              #.P.#
+              #...#
+              #####
+          - facing: north
+            call: "turn_right()"
+            expect: { facing: east, moves: 0 }
+            map: |
+              #####
+              #...#
+              #.P.#
+              #...#
+              #####
+      hint: "Was im Schacht drei Zeilen waren, steht jetzt im Zauberspruch."
+      solution: |
+        ```python
+        def turn_right():
+            for i in range(3):
+                turn_left()
+        ```
+    javascript:
+      prompt: |
+        Schreib den Zauberspruch `turnRight()`: Pip dreht sich eine Vierteldrehung nach rechts. Die Prüfung stellt Pip auf zwei Karten und ruft `turnRight()` auf.
+      starter: |
+        function turnRight() {
+          // drei Vierteldrehungen nach links
+        }
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left]
+        maps:
+          - facing: east
+            call: "turnRight();"
+            expect: { facing: south, moves: 0 }
+            map: |
+              #####
+              #...#
+              #.P.#
+              #...#
+              #####
+          - facing: north
+            call: "turnRight();"
+            expect: { facing: east, moves: 0 }
+            map: |
+              #####
+              #...#
+              #.P.#
+              #...#
+              #####
+      hint: "Was im Schacht drei Zeilen waren, steht jetzt im Zauberspruch."
+      solution: |
+        ```javascript
+        function turnRight() {
+          for (let i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+        ```
+
+  - id: turn-around
+    title: "Kehrt!"
+    level: 2
+    prompt: |
+      Noch ein Zauberspruch: `turn_around` dreht Pip in die Gegenrichtung.
+    starter: |
+      def turn_around
+        # Pip schaut danach in die Gegenrichtung
+      end
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left]
+      maps:
+        - facing: east
+          call: "turn_around"
+          expect: { facing: west, moves: 0 }
+          map: |
+            #####
+            #...#
+            #.P.#
+            #...#
+            #####
+        - facing: north
+          call: "turn_around"
+          expect: { facing: south, moves: 0 }
+          map: |
+            #####
+            #...#
+            #.P.#
+            #...#
+            #####
+    solution: |
+      ```ruby
+      def turn_around
+        turn_left
+        turn_left
+      end
+      ```
+    python:
+      prompt: |
+        Noch ein Zauberspruch: `turn_around()` dreht Pip in die Gegenrichtung.
+      starter: |
+        def turn_around():
+            # Pip schaut danach in die Gegenrichtung
+            pass
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left]
+        maps:
+          - facing: east
+            call: "turn_around()"
+            expect: { facing: west, moves: 0 }
+            map: |
+              #####
+              #...#
+              #.P.#
+              #...#
+              #####
+          - facing: north
+            call: "turn_around()"
+            expect: { facing: south, moves: 0 }
+            map: |
+              #####
+              #...#
+              #.P.#
+              #...#
+              #####
+      solution: |
+        ```python
+        def turn_around():
+            turn_left()
+            turn_left()
+        ```
+    javascript:
+      prompt: |
+        Noch ein Zauberspruch: `turnAround()` dreht Pip in die Gegenrichtung.
+      starter: |
+        function turnAround() {
+          // Pip schaut danach in die Gegenrichtung
+        }
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left]
+        maps:
+          - facing: east
+            call: "turnAround();"
+            expect: { facing: west, moves: 0 }
+            map: |
+              #####
+              #...#
+              #.P.#
+              #...#
+              #####
+          - facing: north
+            call: "turnAround();"
+            expect: { facing: south, moves: 0 }
+            map: |
+              #####
+              #...#
+              #.P.#
+              #...#
+              #####
+      solution: |
+        ```javascript
+        function turnAround() {
+          turnLeft();
+          turnLeft();
+        }
+        ```
+
+  - id: walk
+    title: "Ein Spruch mit Zahl"
+    level: 2
+    prompt: |
+      `walk(n)` lässt Pip `n` Felder vorwärts gehen: `walk(3)` drei, `walk(5)` fünf. `n` ist ein Parameter: Beim Aufruf steht dort eine Zahl, und im Zauberspruch hat `n` diesen Wert.
+    starter: |
+      def walk(n)
+        # n Felder vorwärts
+      end
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left]
+      maps:
+        - facing: east
+          call: "walk(3)"
+          expect: { moves: 3 }
+          map: |
+            ############
+            #P.........#
+            ############
+        - facing: east
+          call: "walk(5)"
+          expect: { moves: 5 }
+          map: |
+            ############
+            #P.........#
+            ############
+        - facing: east
+          call: "walk(1)"
+          expect: { moves: 1 }
+          map: |
+            ############
+            #P.........#
+            ############
+    hint: "Eine Schleife, die so oft läuft, wie `n` groß ist."
+    solution: |
+      ```ruby
+      def walk(n)
+        n.times do
+          move
+        end
+      end
+      ```
+    python:
+      prompt: |
+        `walk(n)` lässt Pip `n` Felder vorwärts gehen: `walk(3)` drei, `walk(5)` fünf. `n` ist ein Parameter: Beim Aufruf steht dort eine Zahl, und im Zauberspruch hat `n` diesen Wert.
+      starter: |
+        def walk(n):
+            # n Felder vorwärts
+            pass
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left]
+        maps:
+          - facing: east
+            call: "walk(3)"
+            expect: { moves: 3 }
+            map: |
+              ############
+              #P.........#
+              ############
+          - facing: east
+            call: "walk(5)"
+            expect: { moves: 5 }
+            map: |
+              ############
+              #P.........#
+              ############
+          - facing: east
+            call: "walk(1)"
+            expect: { moves: 1 }
+            map: |
+              ############
+              #P.........#
+              ############
+      hint: "Eine Schleife, die so oft läuft, wie `n` groß ist."
+      solution: |
+        ```python
+        def walk(n):
+            for i in range(n):
+                move()
+        ```
+    javascript:
+      prompt: |
+        `walk(n)` lässt Pip `n` Felder vorwärts gehen: `walk(3)` drei, `walk(5)` fünf. `n` ist ein Parameter: Beim Aufruf steht dort eine Zahl, und im Zauberspruch hat `n` diesen Wert.
+      starter: |
+        function walk(n) {
+          // n Felder vorwärts
+        }
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left]
+        maps:
+          - facing: east
+            call: "walk(3);"
+            expect: { moves: 3 }
+            map: |
+              ############
+              #P.........#
+              ############
+          - facing: east
+            call: "walk(5);"
+            expect: { moves: 5 }
+            map: |
+              ############
+              #P.........#
+              ############
+          - facing: east
+            call: "walk(1);"
+            expect: { moves: 1 }
+            map: |
+              ############
+              #P.........#
+              ############
+      hint: "Eine Schleife, die so oft läuft, wie `n` groß ist."
+      solution: |
+        ```javascript
+        function walk(n) {
+          for (let i = 0; i < n; i++) {
+            move();
+          }
+        }
+        ```
+
+  - id: stairs
+    title: "Die Treppe"
+    level: 3
+    prompt: |
+      Eine Treppe nach oben: eine Stufe, dann zwei, drei und vier, jede so hoch wie breit. Deine Zaubersprüche stehen schon da; der Plan darunter braucht nur noch eine Schleife.
+    starter: |
+      def turn_right
+        3.times do
+          turn_left
+        end
+      end
+
+      def walk(n)
+        n.times do
+          move
+        end
+      end
+
+      # Die Treppe
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left]
+      max_lines: 18
+      maps:
+        - facing: east
+          map: |
+            #############
+            ###########L#
+            ###########.#
+            ###########.#
+            ###########.#
+            #######.....#
+            #######.#####
+            #######.#####
+            ####....#####
+            ####.########
+            ##...########
+            #P.##########
+            #############
+      goal: { lamp: true }
+    hint: |
+      Jede Stufe ist: `n` Felder geradeaus, links hoch, `n` Felder, rechts wieder in die alte Richtung. `n` zählt von 1 bis 4.
+    solution: |
+      ```ruby
+      def turn_right
+        3.times do
+          turn_left
+        end
+      end
+
+      def walk(n)
+        n.times do
+          move
+        end
+      end
+
+      (1..4).each do |n|
+        walk(n)
+        turn_left
+        walk(n)
+        turn_right
+      end
+      ```
+    python:
+      prompt: |
+        Eine Treppe nach oben: eine Stufe, dann zwei, drei und vier, jede so hoch wie breit. Deine Zaubersprüche stehen schon da; der Plan darunter braucht nur noch eine Schleife.
+      starter: |
+        def turn_right():
+            for i in range(3):
+                turn_left()
+
+        def walk(n):
+            for i in range(n):
+                move()
+
+        # Die Treppe
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left]
+        max_lines: 18
+        maps:
+          - facing: east
+            map: |
+              #############
+              ###########L#
+              ###########.#
+              ###########.#
+              ###########.#
+              #######.....#
+              #######.#####
+              #######.#####
+              ####....#####
+              ####.########
+              ##...########
+              #P.##########
+              #############
+        goal: { lamp: true }
+      hint: |
+        Jede Stufe ist: `n` Felder geradeaus, links hoch, `n` Felder, rechts wieder in die alte Richtung. `n` zählt von 1 bis 4.
+      solution: |
+        ```python
+        def turn_right():
+            for i in range(3):
+                turn_left()
+
+        def walk(n):
+            for i in range(n):
+                move()
+
+        for n in range(1, 5):
+            walk(n)
+            turn_left()
+            walk(n)
+            turn_right()
+        ```
+    javascript:
+      prompt: |
+        Eine Treppe nach oben: eine Stufe, dann zwei, drei und vier, jede so hoch wie breit. Deine Zaubersprüche stehen schon da; der Plan darunter braucht nur noch eine Schleife.
+      starter: |
+        function turnRight() {
+          for (let i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        function walk(n) {
+          for (let i = 0; i < n; i++) {
+            move();
+          }
+        }
+
+        // Die Treppe
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left]
+        max_lines: 18
+        maps:
+          - facing: east
+            map: |
+              #############
+              ###########L#
+              ###########.#
+              ###########.#
+              ###########.#
+              #######.....#
+              #######.#####
+              #######.#####
+              ####....#####
+              ####.########
+              ##...########
+              #P.##########
+              #############
+        goal: { lamp: true }
+      hint: |
+        Jede Stufe ist: `n` Felder geradeaus, links hoch, `n` Felder, rechts wieder in die alte Richtung. `n` zählt von 1 bis 4.
+      solution: |
+        ```javascript
+        function turnRight() {
+          for (let i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        function walk(n) {
+          for (let i = 0; i < n; i++) {
+            move();
+          }
+        }
+
+        for (let n = 1; n <= 4; n++) {
+          walk(n);
+          turnLeft();
+          walk(n);
+          turnRight();
+        }
+        ```
+
+  - id: hand-on-wall
+    title: "Die Hand an der Wand"
+    level: 2
+    prompt: |
+      Ein kleines Labyrinth. Der Trick des Wichtels: Pip legt die linke Hand an die Wand und nimmt sie nie weg. Bei jedem Schritt dreht sich Pip erst nach links und dann nach rechts, bis vorn frei ist.
+    starter: |
+      def turn_right
+        3.times do
+          turn_left
+        end
+      end
+
+      # Die Hand an der Wand
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, front_clear, on_lamp]
+      maps:
+        - facing: south
+          map: |
+            #########
+            #P#.....#
+            #.#.###.#
+            #.#...#.#
+            #.###.#.#
+            #.....#L#
+            #########
+      goal: { lamp: true }
+    hint: |
+      In der Schleife: einmal `turn_left`, dann `turn_right`, solange vorn kein Weg ist, dann ein Schritt.
+    solution: |
+      ```ruby
+      def turn_right
+        3.times do
+          turn_left
+        end
+      end
+
+      until on_lamp?
+        turn_left
+        turn_right until front_clear?
+        move
+      end
+      ```
+    python:
+      prompt: |
+        Ein kleines Labyrinth. Der Trick des Wichtels: Pip legt die linke Hand an die Wand und nimmt sie nie weg. Bei jedem Schritt dreht sich Pip erst nach links und dann nach rechts, bis vorn frei ist.
+      starter: |
+        def turn_right():
+            for i in range(3):
+                turn_left()
+
+        # Die Hand an der Wand
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, front_clear, on_lamp]
+        maps:
+          - facing: south
+            map: |
+              #########
+              #P#.....#
+              #.#.###.#
+              #.#...#.#
+              #.###.#.#
+              #.....#L#
+              #########
+        goal: { lamp: true }
+      hint: |
+        In der Schleife: einmal `turn_left()`, dann `turn_right()`, solange vorn kein Weg ist, dann ein Schritt.
+      solution: |
+        ```python
+        def turn_right():
+            for i in range(3):
+                turn_left()
+
+        while not on_lamp():
+            turn_left()
+            while not front_clear():
+                turn_right()
+            move()
+        ```
+    javascript:
+      prompt: |
+        Ein kleines Labyrinth. Der Trick des Wichtels: Pip legt die linke Hand an die Wand und nimmt sie nie weg. Bei jedem Schritt dreht sich Pip erst nach links und dann nach rechts, bis vorn frei ist.
+      starter: |
+        function turnRight() {
+          for (let i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        // Die Hand an der Wand
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, front_clear, on_lamp]
+        maps:
+          - facing: south
+            map: |
+              #########
+              #P#.....#
+              #.#.###.#
+              #.#...#.#
+              #.###.#.#
+              #.....#L#
+              #########
+        goal: { lamp: true }
+      hint: |
+        In der Schleife: einmal `turnLeft()`, dann `turnRight()`, solange vorn kein Weg ist, dann ein Schritt.
+      solution: |
+        ```javascript
+        function turnRight() {
+          for (let i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        while (!onLamp()) {
+          turnLeft();
+          while (!frontClear()) {
+            turnRight();
+          }
+          move();
+        }
+        ```
+
+  - id: maze
+    title: "Das Labyrinth"
+    level: 3
+    prompt: |
+      Drei Labyrinthe: eines siehst du hier, die anderen zwei baut der Wichtel für dich, jedes Mal dieselben, aber für jede Person andere. Ein Plan für alle.
+    starter: |
+      def turn_right
+        3.times do
+          turn_left
+        end
+      end
+
+      # Die Hand an der Wand
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, front_clear, on_lamp]
+      maps:
+        - facing: south
+          map: |
+            #############
+            #P#L..#.....#
+            #.###.#.#.###
+            #...#.#.#...#
+            ###.#.#.###.#
+            #.#.#...#...#
+            #.#.#####.#.#
+            #.#.#.....#.#
+            #.#.#.#####.#
+            #.....#.....#
+            #############
+        - generate: maze
+          size: [6, 5]
+        - generate: maze
+          size: [6, 5]
+      goal: { lamp: true }
+    hint: |
+      Die Hand an der Wand führt durch jedes Labyrinth, in dem alle Wände zusammenhängen: Pip läuft jede Sackgasse aus und kommt irgendwann an der Lampe vorbei.
+    solution: |
+      ```ruby
+      def turn_right
+        3.times do
+          turn_left
+        end
+      end
+
+      until on_lamp?
+        turn_left
+        turn_right until front_clear?
+        move
+      end
+      ```
+    python:
+      prompt: |
+        Drei Labyrinthe: eines siehst du hier, die anderen zwei baut der Wichtel für dich, jedes Mal dieselben, aber für jede Person andere. Ein Plan für alle.
+      starter: |
+        def turn_right():
+            for i in range(3):
+                turn_left()
+
+        # Die Hand an der Wand
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, front_clear, on_lamp]
+        maps:
+          - facing: south
+            map: |
+              #############
+              #P#L..#.....#
+              #.###.#.#.###
+              #...#.#.#...#
+              ###.#.#.###.#
+              #.#.#...#...#
+              #.#.#####.#.#
+              #.#.#.....#.#
+              #.#.#.#####.#
+              #.....#.....#
+              #############
+          - generate: maze
+            size: [6, 5]
+          - generate: maze
+            size: [6, 5]
+        goal: { lamp: true }
+      hint: |
+        Die Hand an der Wand führt durch jedes Labyrinth, in dem alle Wände zusammenhängen: Pip läuft jede Sackgasse aus und kommt irgendwann an der Lampe vorbei.
+      solution: |
+        ```python
+        def turn_right():
+            for i in range(3):
+                turn_left()
+
+        while not on_lamp():
+            turn_left()
+            while not front_clear():
+                turn_right()
+            move()
+        ```
+    javascript:
+      prompt: |
+        Drei Labyrinthe: eines siehst du hier, die anderen zwei baut der Wichtel für dich, jedes Mal dieselben, aber für jede Person andere. Ein Plan für alle.
+      starter: |
+        function turnRight() {
+          for (let i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        // Die Hand an der Wand
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, front_clear, on_lamp]
+        maps:
+          - facing: south
+            map: |
+              #############
+              #P#L..#.....#
+              #.###.#.#.###
+              #...#.#.#...#
+              ###.#.#.###.#
+              #.#.#...#...#
+              #.#.#####.#.#
+              #.#.#.....#.#
+              #.#.#.#####.#
+              #.....#.....#
+              #############
+          - generate: maze
+            size: [6, 5]
+          - generate: maze
+            size: [6, 5]
+        goal: { lamp: true }
+      hint: |
+        Die Hand an der Wand führt durch jedes Labyrinth, in dem alle Wände zusammenhängen: Pip läuft jede Sackgasse aus und kommt irgendwann an der Lampe vorbei.
+      solution: |
+        ```javascript
+        function turnRight() {
+          for (let i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        while (!onLamp()) {
+          turnLeft();
+          while (!frontClear()) {
+            turnRight();
+          }
+          move();
+        }
+        ```
+
+  - id: island
+    title: "Die Insel"
+    extra: true
+    prompt: |
+      In diesem Labyrinth läuft Pip mit der linken Hand an der Wand ewig im Kreis. Probier es aus und finde heraus, warum. Dann bring Pip trotzdem zur Lampe.
+    starter: |
+      def turn_right
+        3.times do
+          turn_left
+        end
+      end
+
+      # Die Hand an der Wand
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, front_clear, on_lamp]
+      maps:
+        - facing: east
+          map: |
+            #########
+            #..P....#
+            #.#####.#
+            #.#.L.#.#
+            #.#.#.#.#
+            #.......#
+            #########
+      goal: { lamp: true }
+    hint: |
+      Die linke Hand bleibt an der Außenwand, und die läuft ringsherum. Die Lampe liegt in der Mitte, an einer Wand, die mit der Außenwand nicht zusammenhängt. Welche Wand hat Pip am Anfang auf der anderen Seite?
+    solution: |
+      ```ruby
+      def turn_right
+        3.times do
+          turn_left
+        end
+      end
+
+      until on_lamp?
+        turn_right
+        turn_left until front_clear?
+        move
+      end
+      ```
+    python:
+      prompt: |
+        In diesem Labyrinth läuft Pip mit der linken Hand an der Wand ewig im Kreis. Probier es aus und finde heraus, warum. Dann bring Pip trotzdem zur Lampe.
+      starter: |
+        def turn_right():
+            for i in range(3):
+                turn_left()
+
+        # Die Hand an der Wand
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, front_clear, on_lamp]
+        maps:
+          - facing: east
+            map: |
+              #########
+              #..P....#
+              #.#####.#
+              #.#.L.#.#
+              #.#.#.#.#
+              #.......#
+              #########
+        goal: { lamp: true }
+      hint: |
+        Die linke Hand bleibt an der Außenwand, und die läuft ringsherum. Die Lampe liegt in der Mitte, an einer Wand, die mit der Außenwand nicht zusammenhängt. Welche Wand hat Pip am Anfang auf der anderen Seite?
+      solution: |
+        ```python
+        def turn_right():
+            for i in range(3):
+                turn_left()
+
+        while not on_lamp():
+            turn_right()
+            while not front_clear():
+                turn_left()
+            move()
+        ```
+    javascript:
+      prompt: |
+        In diesem Labyrinth läuft Pip mit der linken Hand an der Wand ewig im Kreis. Probier es aus und finde heraus, warum. Dann bring Pip trotzdem zur Lampe.
+      starter: |
+        function turnRight() {
+          for (let i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        // Die Hand an der Wand
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, front_clear, on_lamp]
+        maps:
+          - facing: east
+            map: |
+              #########
+              #..P....#
+              #.#####.#
+              #.#.L.#.#
+              #.#.#.#.#
+              #.......#
+              #########
+        goal: { lamp: true }
+      hint: |
+        Die linke Hand bleibt an der Außenwand, und die läuft ringsherum. Die Lampe liegt in der Mitte, an einer Wand, die mit der Außenwand nicht zusammenhängt. Welche Wand hat Pip am Anfang auf der anderen Seite?
+      solution: |
+        ```javascript
+        function turnRight() {
+          for (let i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        while (!onLamp()) {
+          turnRight();
+          while (!frontClear()) {
+            turnLeft();
+          }
+          move();
+        }
+        ```
+
+  - id: one-lever
+    title: "Der Hebel"
+    level: 1
+    prompt: |
+      Vor der Lampe ist ein Tor. Es geht auf, wenn Pip genau dreimal am Hebel zieht: `pull`, auf dem Feld des Hebels. Ein vierter Zug schließt es wieder.
+    starter: |
+      # Dein Plan
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, pull]
+      maps:
+        - facing: east
+          map: |
+            ########
+            #P.HT.L#
+            ########
+      goal: { lamp: true }
+    solution: |
+      ```ruby
+      move
+      move
+      pull
+      pull
+      pull
+      move
+      move
+      move
+      ```
+    python:
+      prompt: |
+        Vor der Lampe ist ein Tor. Es geht auf, wenn Pip genau dreimal am Hebel zieht: `pull()`, auf dem Feld des Hebels. Ein vierter Zug schließt es wieder.
+      starter: |
+        # Dein Plan
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, pull]
+        maps:
+          - facing: east
+            map: |
+              ########
+              #P.HT.L#
+              ########
+        goal: { lamp: true }
+      solution: |
+        ```python
+        move()
+        move()
+        pull()
+        pull()
+        pull()
+        move()
+        move()
+        move()
+        ```
+    javascript:
+      prompt: |
+        Vor der Lampe ist ein Tor. Es geht auf, wenn Pip genau dreimal am Hebel zieht: `pull()`, auf dem Feld des Hebels. Ein vierter Zug schließt es wieder.
+      starter: |
+        // Dein Plan
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, pull]
+        maps:
+          - facing: east
+            map: |
+              ########
+              #P.HT.L#
+              ########
+        goal: { lamp: true }
+      solution: |
+        ```javascript
+        move();
+        move();
+        pull();
+        pull();
+        pull();
+        move();
+        move();
+        move();
+        ```
+
+  - id: levers
+    title: "Zu viele Hebel"
+    level: 2
+    prompt: |
+      Auf diesen Karten stehen drei, vier oder fünf Hebel vor dem Tor, und jeder Zug zählt, egal an welchem. Pip prüft mit `on_lever?`, ob auf dem Feld ein Hebel steht, und zählt in einer Variable mit, wie oft schon gezogen wurde.
+    starter: |
+      pulls = 0
+      # Dein Plan
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, pull, on_lever, front_clear]
+      maps:
+        - facing: east
+          map: |
+            #############
+            #P.H.H.H.T.L#
+            #############
+        - facing: east
+          map: |
+            ##############
+            #PH.HH..H.T.L#
+            ##############
+        - facing: east
+          map: |
+            ###############
+            #P.HHH.H.H.T.L#
+            ###############
+      goal: { lamp: true }
+    hint: |
+      `pulls` fängt bei 0 an. An einem Hebel zieht Pip nur, solange `pulls` kleiner als 3 ist, und zählt dann eins weiter.
+    solution: |
+      ```ruby
+      pulls = 0
+      while front_clear?
+        move
+        if on_lever?
+          if pulls < 3
+            pull
+            pulls += 1
+          end
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Auf diesen Karten stehen drei, vier oder fünf Hebel vor dem Tor, und jeder Zug zählt, egal an welchem. Pip prüft mit `on_lever()`, ob auf dem Feld ein Hebel steht, und zählt in einer Variable mit, wie oft schon gezogen wurde.
+      starter: |
+        pulls = 0
+        # Dein Plan
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, pull, on_lever, front_clear]
+        maps:
+          - facing: east
+            map: |
+              #############
+              #P.H.H.H.T.L#
+              #############
+          - facing: east
+            map: |
+              ##############
+              #PH.HH..H.T.L#
+              ##############
+          - facing: east
+            map: |
+              ###############
+              #P.HHH.H.H.T.L#
+              ###############
+        goal: { lamp: true }
+      hint: |
+        `pulls` fängt bei 0 an. An einem Hebel zieht Pip nur, solange `pulls` kleiner als 3 ist, und zählt dann eins weiter.
+      solution: |
+        ```python
+        pulls = 0
+        while front_clear():
+            move()
+            if on_lever():
+                if pulls < 3:
+                    pull()
+                    pulls += 1
+        ```
+    javascript:
+      prompt: |
+        Auf diesen Karten stehen drei, vier oder fünf Hebel vor dem Tor, und jeder Zug zählt, egal an welchem. Pip prüft mit `onLever()`, ob auf dem Feld ein Hebel steht, und zählt in einer Variable mit, wie oft schon gezogen wurde.
+      starter: |
+        let pulls = 0;
+        // Dein Plan
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, pull, on_lever, front_clear]
+        maps:
+          - facing: east
+            map: |
+              #############
+              #P.H.H.H.T.L#
+              #############
+          - facing: east
+            map: |
+              ##############
+              #PH.HH..H.T.L#
+              ##############
+          - facing: east
+            map: |
+              ###############
+              #P.HHH.H.H.T.L#
+              ###############
+        goal: { lamp: true }
+      hint: |
+        `pulls` fängt bei 0 an. An einem Hebel zieht Pip nur, solange `pulls` kleiner als 3 ist, und zählt dann eins weiter.
+      solution: |
+        ```javascript
+        let pulls = 0;
+        while (frontClear()) {
+          move();
+          if (onLever()) {
+            if (pulls < 3) {
+              pull();
+              pulls++;
+            }
+          }
+        }
+        ```
+
+  - id: count-stones
+    title: "Gezählt"
+    extra: true
+    prompt: |
+      Der Wichtel will wissen, wie viele Funkensteine in jedem Stollen lagen. Pip sammelt sie bis zur Wand ein, zählt mit und sagt am Ende mit `say` die Zahl.
+    starter: |
+      # Dein Plan
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, take, on_stone, front_clear]
+      maps:
+        - facing: east
+          map: |
+            ###########
+            #Po..oo.o.#
+            ###########
+        - facing: east
+          map: |
+            ###############
+            #P.oo....o.ooo#
+            ###############
+        - facing: east
+          map: |
+            #######
+            #P...o#
+            #######
+      goal: { stones: all, say: stones }
+    solution: |
+      ```ruby
+      count = 0
+      while front_clear?
+        move
+        if on_stone?
+          take
+          count += 1
+        end
+      end
+      say count
+      ```
+    python:
+      prompt: |
+        Der Wichtel will wissen, wie viele Funkensteine in jedem Stollen lagen. Pip sammelt sie bis zur Wand ein, zählt mit und sagt am Ende mit `say()` die Zahl.
+      starter: |
+        # Dein Plan
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, take, on_stone, front_clear]
+        maps:
+          - facing: east
+            map: |
+              ###########
+              #Po..oo.o.#
+              ###########
+          - facing: east
+            map: |
+              ###############
+              #P.oo....o.ooo#
+              ###############
+          - facing: east
+            map: |
+              #######
+              #P...o#
+              #######
+        goal: { stones: all, say: stones }
+      solution: |
+        ```python
+        count = 0
+        while front_clear():
+            move()
+            if on_stone():
+                take()
+                count += 1
+        say(count)
+        ```
+    javascript:
+      prompt: |
+        Der Wichtel will wissen, wie viele Funkensteine in jedem Stollen lagen. Pip sammelt sie bis zur Wand ein, zählt mit und sagt am Ende mit `say()` die Zahl.
+      starter: |
+        // Dein Plan
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, take, on_stone, front_clear]
+        maps:
+          - facing: east
+            map: |
+              ###########
+              #Po..oo.o.#
+              ###########
+          - facing: east
+            map: |
+              ###############
+              #P.oo....o.ooo#
+              ###############
+          - facing: east
+            map: |
+              #######
+              #P...o#
+              #######
+        goal: { stones: all, say: stones }
+      solution: |
+        ```javascript
+        let count = 0;
+        while (frontClear()) {
+          move();
+          if (onStone()) {
+            take();
+            count++;
+          }
+        }
+        say(count);
+        ```
+
+  - id: dry-feet
+    title: "Trockene Füße"
+    level: 2
+    prompt: |
+      Bello läuft nie durch Pfützen, und Pip will auch keine nassen Füße. `puddle_ahead?` sagt, ob vorn eine Pfütze ist. Für Pip zählt eine Pfütze jetzt wie eine Wand: Weiter geht es nur, wo vorn frei ist und keine Pfütze.
+    starter: |
+      def turn_right
+        3.times do
+          turn_left
+        end
+      end
+
+      # Die Hand an der Wand
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, front_clear, puddle_ahead, on_lamp]
+      dry: true
+      maps:
+        - facing: south
+          map: |
+            ###########
+            #P........#
+            #.###.###.#
+            #...#...#.#
+            ###.#.###~#
+            #..~#L#...#
+            #.#.###.#~#
+            #.......#.#
+            ###########
+        - facing: south
+          map: |
+            ###########
+            #P#.......#
+            #.#.#.###.#
+            #.#~#...#.#
+            #.#####~#~#
+            #.#.....#.#
+            #.#.#####.#
+            #....L....#
+            ###########
+        - facing: east
+          map: |
+            ###########
+            #P..#.....#
+            ###.#.###.#
+            #L#...#.#.#
+            #.#####~#.#
+            #...~...#.#
+            #~#.#.#.#.#
+            #.#...#...#
+            ###########
+      goal: { lamp: true }
+    hint: |
+      Die Hand an der Wand, nur die Frage ist länger: `front_clear? && !puddle_ahead?` heißt »vorn frei und keine Pfütze«. `&&` ist »und«, `!` ist »nicht«.
+    solution: |
+      ```ruby
+      def turn_right
+        3.times do
+          turn_left
+        end
+      end
+
+      until on_lamp?
+        turn_left
+        turn_right until front_clear? && !puddle_ahead?
+        move
+      end
+      ```
+    python:
+      prompt: |
+        Bello läuft nie durch Pfützen, und Pip will auch keine nassen Füße. `puddle_ahead()` sagt, ob vorn eine Pfütze ist. Für Pip zählt eine Pfütze jetzt wie eine Wand: Weiter geht es nur, wo vorn frei ist und keine Pfütze.
+      starter: |
+        def turn_right():
+            for i in range(3):
+                turn_left()
+
+        # Die Hand an der Wand
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, front_clear, puddle_ahead, on_lamp]
+        dry: true
+        maps:
+          - facing: south
+            map: |
+              ###########
+              #P........#
+              #.###.###.#
+              #...#...#.#
+              ###.#.###~#
+              #..~#L#...#
+              #.#.###.#~#
+              #.......#.#
+              ###########
+          - facing: south
+            map: |
+              ###########
+              #P#.......#
+              #.#.#.###.#
+              #.#~#...#.#
+              #.#####~#~#
+              #.#.....#.#
+              #.#.#####.#
+              #....L....#
+              ###########
+          - facing: east
+            map: |
+              ###########
+              #P..#.....#
+              ###.#.###.#
+              #L#...#.#.#
+              #.#####~#.#
+              #...~...#.#
+              #~#.#.#.#.#
+              #.#...#...#
+              ###########
+        goal: { lamp: true }
+      hint: |
+        Die Hand an der Wand, nur die Frage ist länger: Pip dreht sich weiter, solange `not front_clear() or puddle_ahead()` gilt, »vorn Wand oder Pfütze«.
+      solution: |
+        ```python
+        def turn_right():
+            for i in range(3):
+                turn_left()
+
+        while not on_lamp():
+            turn_left()
+            while not front_clear() or puddle_ahead():
+                turn_right()
+            move()
+        ```
+    javascript:
+      prompt: |
+        Bello läuft nie durch Pfützen, und Pip will auch keine nassen Füße. `puddleAhead()` sagt, ob vorn eine Pfütze ist. Für Pip zählt eine Pfütze jetzt wie eine Wand: Weiter geht es nur, wo vorn frei ist und keine Pfütze.
+      starter: |
+        function turnRight() {
+          for (let i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        // Die Hand an der Wand
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, front_clear, puddle_ahead, on_lamp]
+        dry: true
+        maps:
+          - facing: south
+            map: |
+              ###########
+              #P........#
+              #.###.###.#
+              #...#...#.#
+              ###.#.###~#
+              #..~#L#...#
+              #.#.###.#~#
+              #.......#.#
+              ###########
+          - facing: south
+            map: |
+              ###########
+              #P#.......#
+              #.#.#.###.#
+              #.#~#...#.#
+              #.#####~#~#
+              #.#.....#.#
+              #.#.#####.#
+              #....L....#
+              ###########
+          - facing: east
+            map: |
+              ###########
+              #P..#.....#
+              ###.#.###.#
+              #L#...#.#.#
+              #.#####~#.#
+              #...~...#.#
+              #~#.#.#.#.#
+              #.#...#...#
+              ###########
+        goal: { lamp: true }
+      hint: |
+        Die Hand an der Wand, nur die Frage ist länger: Pip dreht sich weiter, solange `!frontClear() || puddleAhead()` gilt, »vorn Wand oder Pfütze«. `||` ist »oder«, `!` ist »nicht«.
+      solution: |
+        ```javascript
+        function turnRight() {
+          for (let i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        while (!onLamp()) {
+          turnLeft();
+          while (!frontClear() || puddleAhead()) {
+            turnRight();
+          }
+          move();
+        }
+        ```
+
+  - id: trail
+    title: "Bellos Spur"
+    level: 3
+    prompt: |
+      Auf dem Boden der Höhle: Pfotenabdrücke. `trail_ahead?` sagt, ob auf dem nächsten Feld welche sind. Wo Bello durch eine Pfütze gelaufen ist, hat das Wasser sie weggewaschen; dort geht die Spur trotzdem weiter. Folge ihr, bis `bello_here?` wahr ist.
+    starter: |
+      def turn_right
+        3.times do
+          turn_left
+        end
+      end
+
+      # Die Hand an der Wand
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, trail_ahead, puddle_ahead, bello_here]
+      maps:
+        - facing: north
+          map: |
+            ##############
+            #.........ppp#
+            #......Bppp.~#
+            #...........p#
+            #pppppp..pp~p#
+            #p....p..p...#
+            #p....pppp...#
+            #p...........#
+            #P...........#
+            ##############
+        - facing: north
+          map: |
+            ##############
+            #........pppp#
+            #........p..p#
+            #........p..p#
+            #ppppppppp..p#
+            #p........ppp#
+            #p........p..#
+            #p........p..#
+            #P....Bp~~p..#
+            ##############
+        - facing: east
+          map: |
+            ##############
+            #pppp........#
+            #p..p........#
+            #p..ppppppB..#
+            #p...........#
+            #p.ppp.......#
+            #ppp.~.......#
+            #....p.......#
+            #Ppp~p.......#
+            ##############
+      goal: { bello: true }
+    hint: |
+      Die Spur ist wie ein Gang ohne Wände: Die Hand an der Wand geht auch hier, mit »Spur oder Pfütze vorn« statt »vorn frei«.
+    solution: |
+      ```ruby
+      def turn_right
+        3.times do
+          turn_left
+        end
+      end
+
+      until bello_here?
+        turn_left
+        turn_right until trail_ahead? || puddle_ahead?
+        move
+      end
+      ```
+    python:
+      prompt: |
+        Auf dem Boden der Höhle: Pfotenabdrücke. `trail_ahead()` sagt, ob auf dem nächsten Feld welche sind. Wo Bello durch eine Pfütze gelaufen ist, hat das Wasser sie weggewaschen; dort geht die Spur trotzdem weiter. Folge ihr, bis `bello_here()` wahr ist.
+      starter: |
+        def turn_right():
+            for i in range(3):
+                turn_left()
+
+        # Die Hand an der Wand
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, trail_ahead, puddle_ahead, bello_here]
+        maps:
+          - facing: north
+            map: |
+              ##############
+              #.........ppp#
+              #......Bppp.~#
+              #...........p#
+              #pppppp..pp~p#
+              #p....p..p...#
+              #p....pppp...#
+              #p...........#
+              #P...........#
+              ##############
+          - facing: north
+            map: |
+              ##############
+              #........pppp#
+              #........p..p#
+              #........p..p#
+              #ppppppppp..p#
+              #p........ppp#
+              #p........p..#
+              #p........p..#
+              #P....Bp~~p..#
+              ##############
+          - facing: east
+            map: |
+              ##############
+              #pppp........#
+              #p..p........#
+              #p..ppppppB..#
+              #p...........#
+              #p.ppp.......#
+              #ppp.~.......#
+              #....p.......#
+              #Ppp~p.......#
+              ##############
+        goal: { bello: true }
+      hint: |
+        Die Spur ist wie ein Gang ohne Wände: Die Hand an der Wand geht auch hier, mit »Spur oder Pfütze vorn« statt »vorn frei«.
+      solution: |
+        ```python
+        def turn_right():
+            for i in range(3):
+                turn_left()
+
+        while not bello_here():
+            turn_left()
+            while not (trail_ahead() or puddle_ahead()):
+                turn_right()
+            move()
+        ```
+    javascript:
+      prompt: |
+        Auf dem Boden der Höhle: Pfotenabdrücke. `trailAhead()` sagt, ob auf dem nächsten Feld welche sind. Wo Bello durch eine Pfütze gelaufen ist, hat das Wasser sie weggewaschen; dort geht die Spur trotzdem weiter. Folge ihr, bis `belloHere()` wahr ist.
+      starter: |
+        function turnRight() {
+          for (let i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        // Die Hand an der Wand
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, trail_ahead, puddle_ahead, bello_here]
+        maps:
+          - facing: north
+            map: |
+              ##############
+              #.........ppp#
+              #......Bppp.~#
+              #...........p#
+              #pppppp..pp~p#
+              #p....p..p...#
+              #p....pppp...#
+              #p...........#
+              #P...........#
+              ##############
+          - facing: north
+            map: |
+              ##############
+              #........pppp#
+              #........p..p#
+              #........p..p#
+              #ppppppppp..p#
+              #p........ppp#
+              #p........p..#
+              #p........p..#
+              #P....Bp~~p..#
+              ##############
+          - facing: east
+            map: |
+              ##############
+              #pppp........#
+              #p..p........#
+              #p..ppppppB..#
+              #p...........#
+              #p.ppp.......#
+              #ppp.~.......#
+              #....p.......#
+              #Ppp~p.......#
+              ##############
+        goal: { bello: true }
+      hint: |
+        Die Spur ist wie ein Gang ohne Wände: Die Hand an der Wand geht auch hier, mit »Spur oder Pfütze vorn« statt »vorn frei«.
+      solution: |
+        ```javascript
+        function turnRight() {
+          for (let i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        while (!belloHere()) {
+          turnLeft();
+          while (!(trailAhead() || puddleAhead())) {
+            turnRight();
+          }
+          move();
+        }
+        ```
+
+  - id: way-out
+    title: "Zurück ans Licht"
+    level: 3
+    prompt: |
+      Der Weg nach oben: ein langer, gewundener Stollen ohne Abzweigungen, quer durch die Schächte der Glibber. Unterwegs liegen Funkensteine, und vor der Lampe ist ein Tor, das nur nach genau drei Zügen offen ist, verteilt auf zwei Hebel. Drei Karten, ein Plan.
+    starter: |
+      # Dein Plan
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, take, wait, pull, on_stone, on_lever, front_clear, glibber_ahead, on_lamp]
+      maps:
+        - facing: east
+          map: |
+            ###############
+            #...o.......###
+            #.#########o###
+            #.####.####.###
+            #.####g##....g#
+            #.o.oH...##.###
+            ######.#.##...#
+            ######.#.####o#
+            ########.####.#
+            #P......H#L.T.#
+            ###############
+        - facing: north
+          map: |
+            ###############
+            ###############
+            ####g#.########
+            ####.#g########
+            #..o......#..o#
+            #H##.#.##H#T#o#
+            #o##.#.##.#.#o#
+            #.#######.#L#.#
+            #.#######.###.#
+            #P#######.....#
+            ###############
+        - facing: north
+          map: |
+            ###############
+            ######....H.###
+            #o.....####.###
+            #.#####g#.g...#
+            #H#####.###.###
+            #.#.........###
+            #.#o###.#######
+            #.#.###.##.T.L#
+            #.#o######.####
+            #P#..oo....####
+            ###############
+      goal: { lamp: true, stones: all }
+    hint: |
+      Fang mit dem Plan aus »Um die Ecken« an. Vor jedem Schritt: warten, solange ein Glibber vor Pip ist. Nach jedem Schritt: Stein? Hebel? Und für die Hebel brauchst du wieder eine Variable, die mitzählt.
+    solution: |
+      ```ruby
+      pulls = 0
+      until on_lamp?
+        if front_clear?
+          wait while glibber_ahead?
+          move
+          take if on_stone?
+          while on_lever? && pulls < 3
+            pull
+            pulls += 1
+          end
+        else
+          turn_left
+          unless front_clear?
+            turn_left
+            turn_left
+          end
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Der Weg nach oben: ein langer, gewundener Stollen ohne Abzweigungen, quer durch die Schächte der Glibber. Unterwegs liegen Funkensteine, und vor der Lampe ist ein Tor, das nur nach genau drei Zügen offen ist, verteilt auf zwei Hebel. Drei Karten, ein Plan.
+      starter: |
+        # Dein Plan
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, take, wait, pull, on_stone, on_lever, front_clear, glibber_ahead, on_lamp]
+        maps:
+          - facing: east
+            map: |
+              ###############
+              #...o.......###
+              #.#########o###
+              #.####.####.###
+              #.####g##....g#
+              #.o.oH...##.###
+              ######.#.##...#
+              ######.#.####o#
+              ########.####.#
+              #P......H#L.T.#
+              ###############
+          - facing: north
+            map: |
+              ###############
+              ###############
+              ####g#.########
+              ####.#g########
+              #..o......#..o#
+              #H##.#.##H#T#o#
+              #o##.#.##.#.#o#
+              #.#######.#L#.#
+              #.#######.###.#
+              #P#######.....#
+              ###############
+          - facing: north
+            map: |
+              ###############
+              ######....H.###
+              #o.....####.###
+              #.#####g#.g...#
+              #H#####.###.###
+              #.#.........###
+              #.#o###.#######
+              #.#.###.##.T.L#
+              #.#o######.####
+              #P#..oo....####
+              ###############
+        goal: { lamp: true, stones: all }
+      hint: |
+        Fang mit dem Plan aus »Um die Ecken« an. Vor jedem Schritt: warten, solange ein Glibber vor Pip ist. Nach jedem Schritt: Stein? Hebel? Und für die Hebel brauchst du wieder eine Variable, die mitzählt.
+      solution: |
+        ```python
+        pulls = 0
+        while not on_lamp():
+            if front_clear():
+                while glibber_ahead():
+                    wait()
+                move()
+                if on_stone():
+                    take()
+                while on_lever() and pulls < 3:
+                    pull()
+                    pulls += 1
+            else:
+                turn_left()
+                if not front_clear():
+                    turn_left()
+                    turn_left()
+        ```
+    javascript:
+      prompt: |
+        Der Weg nach oben: ein langer, gewundener Stollen ohne Abzweigungen, quer durch die Schächte der Glibber. Unterwegs liegen Funkensteine, und vor der Lampe ist ein Tor, das nur nach genau drei Zügen offen ist, verteilt auf zwei Hebel. Drei Karten, ein Plan.
+      starter: |
+        // Dein Plan
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, take, wait, pull, on_stone, on_lever, front_clear, glibber_ahead, on_lamp]
+        maps:
+          - facing: east
+            map: |
+              ###############
+              #...o.......###
+              #.#########o###
+              #.####.####.###
+              #.####g##....g#
+              #.o.oH...##.###
+              ######.#.##...#
+              ######.#.####o#
+              ########.####.#
+              #P......H#L.T.#
+              ###############
+          - facing: north
+            map: |
+              ###############
+              ###############
+              ####g#.########
+              ####.#g########
+              #..o......#..o#
+              #H##.#.##H#T#o#
+              #o##.#.##.#.#o#
+              #.#######.#L#.#
+              #.#######.###.#
+              #P#######.....#
+              ###############
+          - facing: north
+            map: |
+              ###############
+              ######....H.###
+              #o.....####.###
+              #.#####g#.g...#
+              #H#####.###.###
+              #.#.........###
+              #.#o###.#######
+              #.#.###.##.T.L#
+              #.#o######.####
+              #P#..oo....####
+              ###############
+        goal: { lamp: true, stones: all }
+      hint: |
+        Fang mit dem Plan aus »Um die Ecken« an. Vor jedem Schritt: warten, solange ein Glibber vor Pip ist. Nach jedem Schritt: Stein? Hebel? Und für die Hebel brauchst du wieder eine Variable, die mitzählt.
+      solution: |
+        ```javascript
+        let pulls = 0;
+        while (!onLamp()) {
+          if (frontClear()) {
+            while (glibberAhead()) {
+              wait();
+            }
+            move();
+            if (onStone()) {
+              take();
+            }
+            while (onLever() && pulls < 3) {
+              pull();
+              pulls++;
+            }
+          } else {
+            turnLeft();
+            if (!frontClear()) {
+              turnLeft();
+              turnLeft();
+            }
+          }
+        }
+        ```

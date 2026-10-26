@@ -415,7 +415,8 @@ table.
 | `front_clear()` | `front_clear?` | `frontClear()` | is the next tile free? | 6 |
 | `on_lamp()` | `on_lamp?` | `onLamp()` | is Pip at the lamp (the goal)? | 6 |
 | `pull()` | `pull` | `pull()` | pulls the lever Pip stands on | 9 |
-| `on_trail()` | `on_trail?` | `onTrail()` | are there paw prints here? | 10 |
+| `on_lever()` | `on_lever?` | `onLever()` | is there a lever here? | 9 |
+| `trail_ahead()` | `trail_ahead?` | `trailAhead()` | are there paw prints (or Bello) on the next tile? | 10 |
 | `puddle_ahead()` | `puddle_ahead?` | `puddleAhead()` | is a puddle on the next tile? | 10 |
 | `bello_here()` | `bello_here?` | `belloHere()` | is Bello on this tile? | 11 |
 
@@ -777,3 +778,25 @@ Studio's catalogue (`catalog/`): Pip in four directions, Glibber, Bello,
 stone, lamp, lever, gate, wall, floor, paw prints, puddle, Wichtel. Still
 open: the tunnel map at the top of the page that lights up per chapter, and
 `same_as`-style feedback by trace.
+
+**Step 7, Pip, Teil 2: done, dev-only.** `pip-2`, six chapters, 16 Katas
+(two Extras), in Ruby, Python and JavaScript. Changes from the plan, found
+by simulating every map (the scripts searched for maps the intended plan
+solves and the naive one does not): `on_lever` was added, since without it
+Pip cannot know where a lever is on several maps; `trail_ahead` replaced
+`on_trail`, since with »prints here« following a trail means stepping off
+it and back, while »prints ahead« lets the hand on the wall follow it;
+Bello's tile counts as trail, so the trail ends at him, and chapter 10 ends
+with Bello found. Chapter 11 is a winding tunnel without branches instead of
+a maze: the hand on the wall walks into every side passage, a Glibber's
+shaft too, and meets the Glibber head-on; »straight on where possible«
+crosses the shafts. The Extra of chapter 8 is an island: the left hand
+circles the outer wall for ever, the right hand from the start reaches the
+lamp. New in the engine: `call`/`expect` for functions of one's own (the
+program is loaded with its commands ignored), `generate: maze` from the
+seed (`PipMaps`), `dry: true`, goals `bello` and `say: stones`, the closed
+gate as an event of its own; JavaScript plans run as a script
+(`vm.runInThisContext`), so their functions are global. Karel the Robot
+(Richard E. Pattis) is named in the teacher note; a person box waits for
+his year of birth, which no source gives.
+

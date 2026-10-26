@@ -1,0 +1,279 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Der Startcode jeder Kata muss von selbst scheitern; das prüft der Test ohne Beispiel.
+format: 1
+activity: pip-2
+examples:
+  dark-tunnel:
+    pass:
+      - answer: "while front_clear?\n  move\nend\n"
+    fail:
+      - answer: "4.times do\n  move\nend\n"
+        say: "In Karte 2"
+    python:
+      pass:
+        - answer: "while front_clear():\n    move()\n"
+      fail:
+        - answer: "for i in range(4):\n    move()\n"
+          say: "In Karte 2"
+    javascript:
+      pass:
+        - answer: "while (frontClear()) {\n  move();\n}\n"
+      fail:
+        - answer: "for (let i = 0; i < 4; i++) {\n  move();\n}\n"
+          say: "In Karte 2"
+  dark-stones:
+    pass:
+      - answer: "while front_clear?\n  move\n  take if on_stone?\nend\n"
+    fail:
+      - answer: "while front_clear?\n  move\nend\n"
+        say: "Funkenstein"
+    python:
+      pass:
+        - answer: "while front_clear():\n    move()\n    if on_stone():\n        take()\n"
+      fail:
+        - answer: "while front_clear():\n    move()\n"
+          say: "Funkenstein"
+    javascript:
+      pass:
+        - answer: "while (frontClear()) {\n  move();\n  if (onStone()) {\n    take();\n  }\n}\n"
+      fail:
+        - answer: "while (frontClear()) {\n  move();\n}\n"
+          say: "Funkenstein"
+  winding:
+    pass:
+      - answer: "until on_lamp?\n  if front_clear?\n    move\n  else\n    turn_left\n    unless front_clear?\n      turn_left\n      turn_left\n    end\n  end\nend\n"
+    fail:
+      - answer: "until on_lamp?\n  if front_clear?\n    move\n  else\n    turn_left\n  end\nend\n"
+    python:
+      pass:
+        - answer: "while not on_lamp():\n    if front_clear():\n        move()\n    else:\n        turn_left()\n        if not front_clear():\n            turn_left()\n            turn_left()\n"
+      fail:
+        - answer: "while not on_lamp():\n    if front_clear():\n        move()\n    else:\n        turn_left()\n"
+    javascript:
+      pass:
+        - answer: "while (!onLamp()) {\n  if (frontClear()) {\n    move();\n  } else {\n    turnLeft();\n    if (!frontClear()) {\n      turnLeft();\n      turnLeft();\n    }\n  }\n}\n"
+      fail:
+        - answer: "while (!onLamp()) {\n  if (frontClear()) {\n    move();\n  } else {\n    turnLeft();\n  }\n}\n"
+  turn-right:
+    pass:
+      - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n"
+    fail:
+      - answer: "def turn_right\n  turn_left\nend\n"
+        say: "nach oben statt nach unten"
+    python:
+      pass:
+        - answer: "def turn_right():\n    for i in range(3):\n        turn_left()\n"
+      fail:
+        - answer: "def turn_right():\n    turn_left()\n"
+          say: "nach oben statt nach unten"
+    javascript:
+      pass:
+        - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n"
+      fail:
+        - answer: "function turnRight() {\n  turnLeft();\n}\n"
+          say: "nach oben statt nach unten"
+  turn-around:
+    pass:
+      - answer: "def turn_around\n  turn_left\n  turn_left\nend\n"
+    fail:
+      - answer: "def turn_around\n  3.times do\n    turn_left\n  end\nend\n"
+        say: "statt nach links"
+    python:
+      pass:
+        - answer: "def turn_around():\n    turn_left()\n    turn_left()\n"
+      fail:
+        - answer: "def turn_around():\n    for i in range(3):\n        turn_left()\n"
+          say: "statt nach links"
+    javascript:
+      pass:
+        - answer: "function turnAround() {\n  turnLeft();\n  turnLeft();\n}\n"
+      fail:
+        - answer: "function turnAround() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n"
+          say: "statt nach links"
+  walk:
+    pass:
+      - answer: "def walk(n)\n  n.times do\n    move\n  end\nend\n"
+    fail:
+      - answer: "def walk(n)\n  3.times do\n    move\n  end\nend\n"
+        say: "In Karte 2"
+    python:
+      pass:
+        - answer: "def walk(n):\n    for i in range(n):\n        move()\n"
+      fail:
+        - answer: "def walk(n):\n    for i in range(3):\n        move()\n"
+          say: "In Karte 2"
+    javascript:
+      pass:
+        - answer: "function walk(n) {\n  for (let i = 0; i < n; i++) {\n    move();\n  }\n}\n"
+      fail:
+        - answer: "function walk(n) {\n  for (let i = 0; i < 3; i++) {\n    move();\n  }\n}\n"
+          say: "In Karte 2"
+  stairs:
+    pass:
+      - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\ndef walk(n)\n  n.times do\n    move\n  end\nend\n\n(1..4).each do |n|\n  walk(n)\n  turn_left\n  walk(n)\n  turn_right\nend\n"
+    fail:
+      - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\ndef walk(n)\n  n.times do\n    move\n  end\nend\n\n(1..3).each do |n|\n  walk(n)\n  turn_left\n  walk(n)\n  turn_right\nend\n"
+    python:
+      pass:
+        - answer: "def turn_right():\n    for i in range(3):\n        turn_left()\n\ndef walk(n):\n    for i in range(n):\n        move()\n\nfor n in range(1, 5):\n    walk(n)\n    turn_left()\n    walk(n)\n    turn_right()\n"
+      fail:
+        - answer: "def turn_right():\n    for i in range(3):\n        turn_left()\n\ndef walk(n):\n    for i in range(n):\n        move()\n\nfor n in range(1, 4):\n    walk(n)\n    turn_left()\n    walk(n)\n    turn_right()\n"
+    javascript:
+      pass:
+        - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nfunction walk(n) {\n  for (let i = 0; i < n; i++) {\n    move();\n  }\n}\n\nfor (let n = 1; n <= 4; n++) {\n  walk(n);\n  turnLeft();\n  walk(n);\n  turnRight();\n}\n"
+      fail:
+        - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nfunction walk(n) {\n  for (let i = 0; i < n; i++) {\n    move();\n  }\n}\n\nfor (let n = 1; n <= 3; n++) {\n  walk(n);\n  turnLeft();\n  walk(n);\n  turnRight();\n}\n"
+  hand-on-wall:
+    pass:
+      - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_left\n  turn_right until front_clear?\n  move\nend\n"
+    fail:
+      - answer: "until on_lamp?\n  if front_clear?\n    move\n  else\n    turn_left\n  end\nend\n"
+    python:
+      pass:
+        - answer: "def turn_right():\n    for i in range(3):\n        turn_left()\n\nwhile not on_lamp():\n    turn_left()\n    while not front_clear():\n        turn_right()\n    move()\n"
+      fail:
+        - answer: "while not on_lamp():\n    if front_clear():\n        move()\n    else:\n        turn_left()\n"
+    javascript:
+      pass:
+        - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nwhile (!onLamp()) {\n  turnLeft();\n  while (!frontClear()) {\n    turnRight();\n  }\n  move();\n}\n"
+      fail:
+        - answer: "while (!onLamp()) {\n  if (frontClear()) {\n    move();\n  } else {\n    turnLeft();\n  }\n}\n"
+  maze:
+    pass:
+      - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_left\n  turn_right until front_clear?\n  move\nend\n"
+    fail:
+      - answer: "until on_lamp?\n  if front_clear?\n    move\n  else\n    turn_left\n  end\nend\n"
+    python:
+      pass:
+        - answer: "def turn_right():\n    for i in range(3):\n        turn_left()\n\nwhile not on_lamp():\n    turn_left()\n    while not front_clear():\n        turn_right()\n    move()\n"
+      fail:
+        - answer: "while not on_lamp():\n    if front_clear():\n        move()\n    else:\n        turn_left()\n"
+    javascript:
+      pass:
+        - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nwhile (!onLamp()) {\n  turnLeft();\n  while (!frontClear()) {\n    turnRight();\n  }\n  move();\n}\n"
+      fail:
+        - answer: "while (!onLamp()) {\n  if (frontClear()) {\n    move();\n  } else {\n    turnLeft();\n  }\n}\n"
+  island:
+    pass:
+      - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_right\n  turn_left until front_clear?\n  move\nend\n"
+    fail:
+      - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_left\n  turn_right until front_clear?\n  move\nend\n"
+        say: "Läuft Pip im Kreis?"
+    python:
+      pass:
+        - answer: "def turn_right():\n    for i in range(3):\n        turn_left()\n\nwhile not on_lamp():\n    turn_right()\n    while not front_clear():\n        turn_left()\n    move()\n"
+      fail:
+        - answer: "def turn_right():\n    for i in range(3):\n        turn_left()\n\nwhile not on_lamp():\n    turn_left()\n    while not front_clear():\n        turn_right()\n    move()\n"
+          say: "Läuft Pip im Kreis?"
+    javascript:
+      pass:
+        - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nwhile (!onLamp()) {\n  turnRight();\n  while (!frontClear()) {\n    turnLeft();\n  }\n  move();\n}\n"
+      fail:
+        - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nwhile (!onLamp()) {\n  turnLeft();\n  while (!frontClear()) {\n    turnRight();\n  }\n  move();\n}\n"
+          say: "Läuft Pip im Kreis?"
+  one-lever:
+    pass:
+      - answer: "move\nmove\npull\npull\npull\nmove\nmove\nmove\n"
+    fail:
+      - answer: "move\nmove\npull\npull\npull\npull\nmove\nmove\nmove\n"
+        say: "gegen das geschlossene Tor"
+    python:
+      pass:
+        - answer: "move()\nmove()\npull()\npull()\npull()\nmove()\nmove()\nmove()\n"
+      fail:
+        - answer: "move()\nmove()\npull()\npull()\npull()\npull()\nmove()\nmove()\nmove()\n"
+          say: "gegen das geschlossene Tor"
+    javascript:
+      pass:
+        - answer: "move();\nmove();\npull();\npull();\npull();\nmove();\nmove();\nmove();\n"
+      fail:
+        - answer: "move();\nmove();\npull();\npull();\npull();\npull();\nmove();\nmove();\nmove();\n"
+          say: "gegen das geschlossene Tor"
+  levers:
+    pass:
+      - answer: "pulls = 0\nwhile front_clear?\n  move\n  if on_lever?\n    if pulls < 3\n      pull\n      pulls += 1\n    end\n  end\nend\n"
+    fail:
+      - answer: "while front_clear?\n  move\n  pull if on_lever?\nend\n"
+        say: "In Karte 2"
+    python:
+      pass:
+        - answer: "pulls = 0\nwhile front_clear():\n    move()\n    if on_lever():\n        if pulls < 3:\n            pull()\n            pulls += 1\n"
+      fail:
+        - answer: "while front_clear():\n    move()\n    if on_lever():\n        pull()\n"
+          say: "In Karte 2"
+    javascript:
+      pass:
+        - answer: "let pulls = 0;\nwhile (frontClear()) {\n  move();\n  if (onLever()) {\n    if (pulls < 3) {\n      pull();\n      pulls++;\n    }\n  }\n}\n"
+      fail:
+        - answer: "while (frontClear()) {\n  move();\n  if (onLever()) {\n    pull();\n  }\n}\n"
+          say: "In Karte 2"
+  count-stones:
+    pass:
+      - answer: "count = 0\nwhile front_clear?\n  move\n  if on_stone?\n    take\n    count += 1\n  end\nend\nsay count\n"
+    fail:
+      - answer: "count = 0\nwhile front_clear?\n  move\n  if on_stone?\n    take\n    count += 1\n  end\nend\nsay 5\n"
+        say: "aber Pip hat"
+    python:
+      pass:
+        - answer: "count = 0\nwhile front_clear():\n    move()\n    if on_stone():\n        take()\n        count += 1\nsay(count)\n"
+      fail:
+        - answer: "count = 0\nwhile front_clear():\n    move()\n    if on_stone():\n        take()\n        count += 1\nsay(5)\n"
+          say: "aber Pip hat"
+    javascript:
+      pass:
+        - answer: "let count = 0;\nwhile (frontClear()) {\n  move();\n  if (onStone()) {\n    take();\n    count++;\n  }\n}\nsay(count);\n"
+      fail:
+        - answer: "let count = 0;\nwhile (frontClear()) {\n  move();\n  if (onStone()) {\n    take();\n    count++;\n  }\n}\nsay(5);\n"
+          say: "aber Pip hat"
+  dry-feet:
+    pass:
+      - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_left\n  turn_right until front_clear? && !puddle_ahead?\n  move\nend\n"
+    fail:
+      - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_left\n  turn_right until front_clear?\n  move\nend\n"
+        say: "Pfütze"
+    python:
+      pass:
+        - answer: "def turn_right():\n    for i in range(3):\n        turn_left()\n\nwhile not on_lamp():\n    turn_left()\n    while not front_clear() or puddle_ahead():\n        turn_right()\n    move()\n"
+      fail:
+        - answer: "def turn_right():\n    for i in range(3):\n        turn_left()\n\nwhile not on_lamp():\n    turn_left()\n    while not front_clear():\n        turn_right()\n    move()\n"
+          say: "Pfütze"
+    javascript:
+      pass:
+        - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nwhile (!onLamp()) {\n  turnLeft();\n  while (!frontClear() || puddleAhead()) {\n    turnRight();\n  }\n  move();\n}\n"
+      fail:
+        - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nwhile (!onLamp()) {\n  turnLeft();\n  while (!frontClear()) {\n    turnRight();\n  }\n  move();\n}\n"
+          say: "Pfütze"
+  trail:
+    pass:
+      - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil bello_here?\n  turn_left\n  turn_right until trail_ahead? || puddle_ahead?\n  move\nend\n"
+    fail:
+      - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil bello_here?\n  turn_left\n  turn_right until trail_ahead?\n  move\nend\n"
+    python:
+      pass:
+        - answer: "def turn_right():\n    for i in range(3):\n        turn_left()\n\nwhile not bello_here():\n    turn_left()\n    while not (trail_ahead() or puddle_ahead()):\n        turn_right()\n    move()\n"
+      fail:
+        - answer: "def turn_right():\n    for i in range(3):\n        turn_left()\n\nwhile not bello_here():\n    turn_left()\n    while not trail_ahead():\n        turn_right()\n    move()\n"
+    javascript:
+      pass:
+        - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nwhile (!belloHere()) {\n  turnLeft();\n  while (!(trailAhead() || puddleAhead())) {\n    turnRight();\n  }\n  move();\n}\n"
+      fail:
+        - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nwhile (!belloHere()) {\n  turnLeft();\n  while (!trailAhead()) {\n    turnRight();\n  }\n  move();\n}\n"
+  way-out:
+    pass:
+      - answer: "pulls = 0\nuntil on_lamp?\n  if front_clear?\n    wait while glibber_ahead?\n    move\n    take if on_stone?\n    while on_lever? && pulls < 3\n      pull\n      pulls += 1\n    end\n  else\n    turn_left\n    unless front_clear?\n      turn_left\n      turn_left\n    end\n  end\nend\n"
+    fail:
+      - answer: "pulls = 0\nuntil on_lamp?\n  if front_clear?\n    move\n    take if on_stone?\n    while on_lever? && pulls < 3\n      pull\n      pulls += 1\n    end\n  else\n    turn_left\n    unless front_clear?\n      turn_left\n      turn_left\n    end\n  end\nend\n"
+        say: "Glibber"
+    python:
+      pass:
+        - answer: "pulls = 0\nwhile not on_lamp():\n    if front_clear():\n        while glibber_ahead():\n            wait()\n        move()\n        if on_stone():\n            take()\n        while on_lever() and pulls < 3:\n            pull()\n            pulls += 1\n    else:\n        turn_left()\n        if not front_clear():\n            turn_left()\n            turn_left()\n"
+      fail:
+        - answer: "pulls = 0\nwhile not on_lamp():\n    if front_clear():\n        move()\n        if on_stone():\n            take()\n        while on_lever() and pulls < 3:\n            pull()\n            pulls += 1\n    else:\n        turn_left()\n        if not front_clear():\n            turn_left()\n            turn_left()\n"
+          say: "Glibber"
+    javascript:
+      pass:
+        - answer: "let pulls = 0;\nwhile (!onLamp()) {\n  if (frontClear()) {\n    while (glibberAhead()) {\n      wait();\n    }\n    move();\n    if (onStone()) {\n      take();\n    }\n    while (onLever() && pulls < 3) {\n      pull();\n      pulls++;\n    }\n  } else {\n    turnLeft();\n    if (!frontClear()) {\n      turnLeft();\n      turnLeft();\n    }\n  }\n}\n"
+      fail:
+        - answer: "let pulls = 0;\nwhile (!onLamp()) {\n  if (frontClear()) {\n    move();\n    if (onStone()) {\n      take();\n    }\n    while (onLever() && pulls < 3) {\n      pull();\n      pulls++;\n    }\n  } else {\n    turnLeft();\n    if (!frontClear()) {\n      turnLeft();\n      turnLeft();\n    }\n  }\n}\n"
+          say: "Glibber"

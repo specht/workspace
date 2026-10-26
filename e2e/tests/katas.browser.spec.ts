@@ -206,3 +206,25 @@ test('Pip walks a plan, and a wall names the line', async ({ browser, page, e2eE
   await mobileCard.locator('.pip-world').screenshot({ path: testInfo.outputPath('pip-phone.png') });
   await phone.close();
 });
+
+// Teil 2: a function of one's own; the check calls it on its own maps and
+// says where Pip looks afterwards.
+test('Pip learns turn_right, and the check calls it', async ({ page, e2eEmail }, testInfo) => {
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/pip-2');
+  const card = page.locator('.task-card[data-task="pip-2/turn-right"]:visible');
+  const language = await languageOf(card);
+  const wrong = language === 'ruby' ? 'def turn_right\n  turn_left\nend\n' : 'def turn_right():\n    turn_left()\n';
+  await card.locator('.task-code').fill(wrong);
+  await card.locator('.task-submit').click();
+  await expect(card.locator('.task-feedback')).toContainText('nach oben statt nach unten', { timeout: 30_000 });
+  const right = language === 'ruby'
+    ? 'def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nmove\n'
+    : 'def turn_right():\n    for i in range(3):\n        turn_left()\n\nmove()\n';
+  await card.locator('.task-code').fill(right);
+  await card.locator('.task-submit').click();
+  await expect(card.locator('.task-feedback')).toContainText('Pip schafft alle 2 Karten.', { timeout: 30_000 });
+  // the replay: three turns, the plan's own move left out
+  await expect(card.locator('.pip-status')).toHaveText(/^Karte 1 von 2 · Schritt 3 von 3/, { timeout: 20_000 });
+  await expect(card.locator('.pip-pip')).toHaveAttribute('data-facing', 'south');
+});
