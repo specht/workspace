@@ -1930,11 +1930,18 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     display: block;
     position: relative;
     z-index: 0;
-    padding-bottom: var(--footer-reserved-space);
 }
 
+/* The room under the page in the article's column, not under the layout:
+   the sticky side navigation stays inside the layout's content, which then
+   reaches the footer, so that at the page's end it is not pushed up. The
+   footer's own distance (production) moves here too. */
 .autotoc-secondary-main {
     min-width: 0;
+    padding-bottom: max(var(--footer-reserved-space), 2rem);
+}
+body.has-autotoc-secondary footer:not(.footer-fixed) {
+    margin-top: 0;
 }
 
 .autotoc-secondary {
