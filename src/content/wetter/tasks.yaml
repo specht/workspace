@@ -57,6 +57,42 @@ tasks:
         say: Die Adresse gibt es ja, nur findet die Suche nichts. Eine Suche ohne Treffer ist für diese API kein Fehler.
     solution: 'Die API antwortet mit 200 und einem Objekt, in dem nur `generationtime_ms` steht. Ein Programm muss darum selbst prüfen, ob `results` da ist.'
 
+  - id: vorhersage
+    title: Drei Tage, und kein Xyzzy
+    prompt: |
+      Trag `ruby wetter.rb München; ruby wetter.rb Xyzzy` hier ein. Der
+      Workspace führt beides im Ordner `wetter` aus und sieht nach, was dein
+      Programm ausgibt: für München den Ort, das Wetter jetzt und für jeden
+      der drei Tage eine Zeile, die mit dem Datum beginnt; für Xyzzy nur die
+      Meldung, dass es keinen Ort mit diesem Namen gibt. Zusammen sind das
+      sechs Zeilen.
+    check:
+      type: command
+      dir: wetter
+      timeout: 25
+      output:
+        lines: 6
+        matching: '^(\S.* \(.*\)|Jetzt: .*\d.*|\d{4}-\d{2}-\d{2}\D.*\d.*|.*Xyzzy.*)$'
+        not_matching: '(Error|Traceback|undefined|not defined)'
+    feedback:
+      - when: { output_matches: '(429|Too Many Requests)' }
+        say: 'Open-Meteo will gerade nicht mehr (429). Nimm den Spiegel der Schule, wie unter »Wenn die API nicht mehr will«, und prüfe dann noch einmal.'
+      - when: { output_matches: "(undefined local variable or method .place|name 'place' is not defined)" }
+        say: '`place` gibt es noch nicht: Nimm den ersten Treffer aus `results`. Ohne ihn bricht das Programm schon bei München ab.'
+      - when: { output_matches: '(NoMethodError|for nil|NoneType|KeyError|IndexError|TypeError)' }
+        say: 'Für Xyzzy bricht dein Programm ab, statt zu melden, dass es den Ort nicht gibt: Ohne Treffer fehlt `results` ganz. Prüf das, bevor du den ersten Treffer nimmst.'
+    hint: Für München kommen zwei Zeilen und dann eine für jeden Tag aus `days['time']`, mit dem Index, der zu den anderen Listen passt.
+    solution: '`ruby wetter.rb München` zeigt Ort, Wetter jetzt und drei Tage, `ruby wetter.rb Xyzzy` meldet »Keinen Ort namens Xyzzy gefunden.«: Ohne `results` ist `place` gleich `nil`, und `abort` beendet das Programm mit der Meldung.'
+    python:
+      prompt: |
+        Trag `python3 wetter.py München; python3 wetter.py Xyzzy` hier ein.
+        Der Workspace führt beides im Ordner `wetter` aus und sieht nach, was
+        dein Programm ausgibt: für München den Ort, das Wetter jetzt und für
+        jeden der drei Tage eine Zeile, die mit dem Datum beginnt; für Xyzzy
+        nur die Meldung, dass es keinen Ort mit diesem Namen gibt. Zusammen
+        sind das sechs Zeilen.
+      solution: '`python3 wetter.py München` zeigt Ort, Wetter jetzt und drei Tage, `python3 wetter.py Xyzzy` meldet »Keinen Ort namens Xyzzy gefunden.«: Ohne `results` ist die Liste leer, und `sys.exit` beendet das Programm mit der Meldung.'
+
   - id: wetter-rb
     title: Das Wetter aus deinem Programm
     prompt: |

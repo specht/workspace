@@ -224,7 +224,7 @@ days = weather['daily']
 - `describe` übersetzt die Wettercodes in Wörter.
 - `ARGV[0]` ist das, was du beim Start hinter den Dateinamen schreibst.
 
-<div class='hint own'>
+<div class='hint own' data-check='vorhersage'>
 <strong>Jetzt bist du dran:</strong> Zwei Stellen fehlen noch.
 <ul>
 <li>Findet die Geocoding-API keinen Ort, fehlt in ihrer Antwort <code>results</code> ganz; das hast du unter »Wenn etwas schiefgeht« gesehen. Dann meldet das Programm mit <code>abort</code> »Keinen Ort namens Xyzzy gefunden.« (mit dem gesuchten Namen); sonst ist <code>place</code> der erste Treffer.</li>
@@ -357,7 +357,7 @@ days = weather['daily']
 - `describe` übersetzt die Wettercodes in Wörter.
 - `sys.argv[1]` ist das, was du beim Start hinter den Dateinamen schreibst; `sys.argv[0]` ist der Dateiname selbst.
 
-<div class='hint own'>
+<div class='hint own' data-check='vorhersage'>
 <strong>Jetzt bist du dran:</strong> Zwei Stellen fehlen noch.
 <ul>
 <li>Findet die Geocoding-API keinen Ort, fehlt in ihrer Antwort <code>results</code> ganz; das hast du unter »Wenn etwas schiefgeht« gesehen. Dann meldet das Programm mit <code>sys.exit</code> »Keinen Ort namens Xyzzy gefunden.« (mit dem gesuchten Namen); sonst ist <code>place</code> der erste Treffer.</li>
@@ -454,6 +454,8 @@ check-task-fails: cache python
 -->
 <img class='full' src='python.webp' alt='In VS Code ist wetter.py offen; im Terminal antwortet python3 wetter.py München mit dem Ort, dem Wetter jetzt und einer Zeile für jeden der nächsten drei Tage.'>
 <!-- /language -->
+
+_task(vorhersage)
 
 _task(wetter-rb)
 

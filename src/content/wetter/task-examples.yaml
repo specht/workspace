@@ -3,6 +3,28 @@
 format: 1
 activity: wetter
 examples:
+  vorhersage:
+    # Der Befehl startet sonst das Programm, das Open-Meteo fragt. Hier steht
+    # seine Ausgabe, wie Stufe 2 und typische Fehler sie geben.
+    pass:
+      - files: { wetter/wetter.rb: stufen/wetter2.rb }
+        answer: "printf 'München (Bayern, Deutschland)\\nJetzt: 9.4 °C, bedeckt\\n2026-10-24: 6.1 bis 12.4 °C, Regen\\n2026-10-25: 4.0 bis 10.2 °C, teils bewölkt\\n2026-10-26: 3.5 bis 9.8 °C, klar\\nKeinen Ort namens Xyzzy gefunden.\\n'"
+    fail:
+      # die Seite vor dem Kasten: place fehlt
+      - files: { wetter/wetter.rb: stufen/wetter2.rb }
+        answer: "printf \"wetter.rb:207:in '<main>': undefined local variable or method 'place' for main (NameError)\\nwetter.rb:207:in '<main>': undefined local variable or method 'place' for main (NameError)\\n\""
+        say: results
+      # nur der erste Teil: Xyzzy bricht ab
+      - files: { wetter/wetter.rb: stufen/wetter2.rb }
+        answer: "printf \"München (Bayern, Deutschland)\\nJetzt: 9.4 °C, bedeckt\\n2026-10-24: 6.1 bis 12.4 °C, Regen\\n2026-10-25: 4.0 bis 10.2 °C, teils bewölkt\\n2026-10-26: 3.5 bis 9.8 °C, klar\\nwetter.rb:207:in '<main>': undefined method '[]' for nil (NoMethodError)\\n\""
+        say: Xyzzy
+      # nur der zweite Teil: keine Zeilen für die Tage
+      - files: { wetter/wetter.rb: stufen/wetter2.rb }
+        answer: "printf 'München (Bayern, Deutschland)\\nJetzt: 9.4 °C, bedeckt\\nKeinen Ort namens Xyzzy gefunden.\\n'"
+        say: 3 Zeilen
+      - files: { wetter/wetter.rb: stufen/wetter2.rb }
+        answer: "printf 'Fehler 429: Daily API request limit exceeded. Please try again tomorrow. (429 Too Many Requests)\\n'"
+        say: Spiegel
   wetter-rb:
     pass:
       - files: { wetter/wetter.rb: stufen/wetter2.rb }
