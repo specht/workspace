@@ -199,6 +199,46 @@ fresnel:
       - url: https://en.wikipedia.org/wiki/Fresnel_lens
         quote: "use Fresnel lenses as condensers in overhead projectors … are also used in traffic lights … continue in wide use in automobile tail, marker, and reversing lights"
 
+lovelace:
+  - text: Ada Lovelace (1815–1852), englische Mathematikerin, Tochter des Dichters Lord Byron.
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Lovelace/
+        quote: "Born 10 December 1815 Piccadilly, Middlesex (now in London), England … Died 27 November 1852 Marylebone, London, England"
+      - url: https://en.wikipedia.org/wiki/Ada_Lovelace
+        quote: "Augusta Ada King, Countess of Lovelace (née Byron; 10 December 1815 – 27 November 1852), also known as Ada Lovelace, was an English mathematician and writer … She was the only legitimate child of poet Lord Byron"
+  - text: 1843 übersetzte sie einen Aufsatz über die Analytical Engine, eine Rechenmaschine, die Charles Babbage entworfen hatte, und schrieb Anmerkungen dazu, etwa dreimal so lang wie der Aufsatz.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Ada_Lovelace
+        quote: "She augmented the paper with seven notes, A to G, about three times longer than the translation."
+      - url: https://www.fourmilab.ch/babbage/sketch.html
+        quote: "Sketch of The Analytical Engine Invented by Charles Babbage By L. F. MENABREA of Turin … With notes upon the Memoir by the Translator ADA AUGUSTA, COUNTESS OF LOVELACE"
+      - url: https://en.wikipedia.org/wiki/Ada_Lovelace
+        quote: "The translation and notes were then published in the September 1843 edition of Taylor's Scientific Memoirs under her initials AAL."
+  - text: "In der letzten, Note G, steht Schritt für Schritt, wie die Maschine die Bernoulli-Zahlen ausrechnen soll: das erste veröffentlichte Programm."
+    sources:
+      - url: https://en.wikipedia.org/wiki/Ada_Lovelace
+        quote: "Note G described, in complete detail, a method for calculating a sequence of Bernoulli numbers using the Analytical Engine … Though Babbage's personal notes from 1837 to 1840 contain the first programs for the engine, the algorithm in Note G is often called the first published computer program."
+  - text: Für jede weitere Zahl wiederholen sich darin die Schritte 13 bis 23, eine Schleife.
+    sources:
+      - url: https://www.fourmilab.ch/babbage/sketch.html
+        quote: "It will be perceived that every unit added to n in B2n-1, entails an additional repetition of operations (13…23) for the computation of B2n-1."
+  - text: "Lovelace nannte so etwas einen »cycle of operations«, eine Folge von Schritten, die mehr als einmal ausgeführt wird, und kannte auch schon die Schleife in der Schleife: »a cycle of cycles«."
+    sources:
+      - url: https://www.fourmilab.ch/babbage/sketch.html
+        quote: "A cycle of operations, then, must be understood to signify any set of operations which is repeated more than once. … In many cases of analysis there is a recurring group of one or more cycles; that is, a cycle of a cycle, or a cycle of cycles."
+  - text: Die Maschine wurde nie fertig gebaut, und das Programm lief nie.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Ada_Lovelace
+        quote: "The engine was never completed and so the program was never tested."
+  - text: "Lovelace sah aber schon, dass sie mehr kann als rechnen: Stünden die Zahlen für Töne, könnte sie Musik komponieren."
+    sources:
+      - url: https://www.fourmilab.ch/babbage/sketch.html
+        quote: "Supposing, for instance, that the fundamental relations of pitched sounds in the science of harmony and of musical composition were susceptible of such expression and adaptations, the engine might compose elaborate and scientific pieces of music of any degree of complexity or extent."
+  - text: Die Programmiersprache Ada ist nach ihr benannt.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Ada_Lovelace
+        quote: "The computer language Ada, created on behalf of the United States Department of Defense, was named after Lovelace."
+
 maxwell:
   - text: James Clerk Maxwell (1831–1879), schottischer Physiker.
     sources:
