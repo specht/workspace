@@ -47,8 +47,9 @@ test('no page is wider than a phone', async ({ page, e2eEmail }, testInfo) => {
 });
 
 // The strip of Katas runs from edge to edge, its first set in line with the text.
-test('the Kata strip on a phone', async ({ page }) => {
+test('the Kata strip on a phone', async ({ page, e2eEmail }, testInfo) => {
   await page.setViewportSize({ width: 390, height: 844 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
   await page.goto('/');
   const strip = page.locator('.kata-carousel');
   await strip.scrollIntoViewIfNeeded();
@@ -56,6 +57,6 @@ test('the Kata strip on a phone', async ({ page }) => {
   expect(box!.x).toBe(0);
   expect(box!.width).toBe(390);
   const first = await page.locator('.kata-set').first().boundingBox();
-  const text = await page.locator('h2').first().boundingBox();
+  const text = await page.getByText('Kleine Programmieraufgaben').boundingBox();
   expect(Math.abs(first!.x - text!.x)).toBeLessThanOrEqual(2);
 });

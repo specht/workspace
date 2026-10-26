@@ -8478,9 +8478,12 @@ html[data-bs-theme="dark"] .bitplane-widget {
     display: flex;
     flex: 1;
     gap: 1em;
-    padding: 0.15em;
+    /* a scrolling box clips on every side: room for a set's hover shadow,
+       taken back by the margins so the sets stay in line with the text */
+    padding: 0.6em 1em 1.8em;
+    margin: -0.6em -1em -1.8em;
     overflow-x: auto;
-    scroll-padding-inline: 0.15em;
+    scroll-padding-inline: 1em;
     scroll-snap-type: x mandatory;
     /* faded at a side where more sets follow (the script in KataMap); the
        fade comes and goes softly (@property below) */
@@ -8494,6 +8497,18 @@ html[data-bs-theme="dark"] .bitplane-widget {
     /* the arrows, a swipe or a mouse dragging it scroll it */
     scrollbar-width: none;
     cursor: grab;
+}
+/* a set is a link: a pointer over it, the grabbing hand while dragging,
+   and no underline on hover, like the other cards */
+.kata-set {
+    cursor: pointer;
+}
+.kata-set:hover,
+.kata-set:hover * {
+    text-decoration: none;
+}
+.kata-dragging .kata-set {
+    cursor: grabbing;
 }
 .kata-dragging .kata-track {
     cursor: grabbing;
@@ -8523,9 +8538,9 @@ html[data-bs-theme="dark"] .bitplane-widget {
     transition: border-color 150ms, box-shadow 150ms;
 }
 .kata-set:hover {
-    /* in the set's hue, like its band */
+    /* in the set's hue, like its band: the border and a soft shadow */
     border-color: hsl(var(--accent, 150) 50% 45%);
-    box-shadow: 0 0.3em 1em rgba(0, 0, 0, 0.08);
+    box-shadow: 0 0.4em 1.2em hsl(var(--accent, 150) 55% 45% / 0.22);
 }
 .kata-set-pinned {
     border-color: var(--bs-primary);
@@ -8678,40 +8693,6 @@ html[data-bs-theme="dark"] .bitplane-widget {
     padding-top: 0.2em;
     font-size: 0.8em;
 }
-/* the set opens with its button (the strip is dragged, KataMap) */
-.kata-set-open {
-    align-self: flex-start;
-    margin-top: 0.5em;
-    cursor: pointer;
-}
-.kata-set-progress + .kata-set-open {
-    margin-top: 0.55em;
-}
-.kata-set-body > .kata-set-open:first-child,
-.kata-set-counts + .kata-set-open,
-.kata-set-curriculum + .kata-set-open {
-    margin-top: auto;
-}
-.kata-set-open .bi {
-    margin: 0 0 0 0.35em;
-}
-/* a click on the set, not on its button: the button calls attention to
-   itself (KataMap's script) */
-.kata-set-callout {
-    animation: kata-callout 700ms ease;
-}
-@keyframes kata-callout {
-    0%, 100% { scale: 1; box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.5); }
-    35% { scale: 1.12; box-shadow: 0 0 0 0.45em rgba(25, 135, 84, 0.25); }
-    70% { scale: 0.98; }
-}
-@media (prefers-reduced-motion: reduce) {
-    .kata-set-callout {
-        animation: none;
-        outline: 2px solid #198754;
-        outline-offset: 2px;
-    }
-}
 .kata-set-bar {
     display: block;
     height: 0.5em;
@@ -8770,6 +8751,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
     }
     .kata-track {
         padding-inline: 1rem;
+        margin-inline: 0;
         scroll-padding-inline: 1rem;
     }
     /* one set in the middle, its neighbours peeking in */

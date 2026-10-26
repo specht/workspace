@@ -117,8 +117,11 @@ The code:
 - **The strip** is dragged with a mouse and thrown (it glides to the set it
   would come to rest at, without a snap afterwards), swiped on a phone (a set
   snaps into the middle), has arrows that fade out at its ends and fades into
-  the page where more follows; a click on a set calls out its button; text on
-  it is not selectable. A set pinned for the group is marked and centred.
+  the page where more follows; text on it is not selectable. A set is a
+  link like every card, without a button (the maintainer, after a button
+  of its own first): the click that ends a drag opens nothing. A set
+  pinned for the group is marked and centred; on hover a set casts a soft
+  shadow in its hue.
 - **Icons, no pictures of cards** (a solved card gives a solution away), on a
   band in the set's hue. The hue comes from the set's place in the strip,
   equally spaced from Pip's lantern amber, no exception (the maintainer).

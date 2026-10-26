@@ -66,11 +66,10 @@ module KataMap
             done = mine && mine[:total].to_i > 0 && mine[:done] == mine[:total]
             pin = pinned.include?(stop.slug)
             classes = ['kata-set', done ? 'kata-set-done' : nil, pin ? 'kata-set-pinned' : nil].compact.join(' ')
-            # the strip is dragged with a mouse, so the set is no link: its
-            # button opens it
-            # its hue on the band, from its place in the strip: all equally
-            # spaced, whatever the set
-            io << "<div class='#{classes}' style='--accent: #{hue(i, stops.size)}'#{pin && pinned.first == stop.slug ? " data-centre=''" : ''}>"
+            # the set is the link, like every card (the click that ends a
+            # drag of the strip opens nothing, the script below); its hue on
+            # the band, from its place in the strip: all equally spaced
+            io << "<a class='#{classes}' href='/#{h(stop.slug)}' style='--accent: #{hue(i, stops.size)}'#{pin && pinned.first == stop.slug ? " data-centre=''" : ''}>"
             # its icon on a band (meta icon:): one of Bootstrap's, or a
             # figure like Pip, drawn in grey and tinted in the band's hue
             # (images/pip/make_icons.py, default.css); no picture of a card,
@@ -88,7 +87,6 @@ module KataMap
             extras = stop.counts[:extra].to_i
             io << "<span class='kata-set-counts' title='#{h(counts_text(stop.counts))}'>#{core.(stop)} Katas#{extras > 0 ? ", #{extras} #{extras == 1 ? 'Extra' : 'Extras'}" : ''}</span>"
             io << "<span class='kata-set-curriculum' title='#{h(stop.curriculum)}'>#{h(stop.curriculum)}</span>" if teacher && stop.curriculum
-            solved = 0
             if progress
                 total = mine ? mine[:total].to_i : core.(stop)
                 solved = mine ? mine[:done].to_i : 0
@@ -97,13 +95,7 @@ module KataMap
                 io << "<span class='kata-set-progress'><span class='kata-set-bar' aria-hidden='true'><span style='width: #{share}%'></span></span>"
                 io << "#{solved} von #{total} gelöst#{extras > 0 ? ", dazu #{extras} #{extras == 1 ? 'Extra' : 'Extras'}" : ''}</span>"
             end
-            label = if !progress || done then 'Ansehen'
-                    elsif solved > 0 then 'Weitermachen'
-                    else 'Loslegen'
-                    end
-            io << "<a class='btn btn-sm btn-success kata-set-open' href='/#{h(stop.slug)}' aria-label='#{label}: #{h(stop.title)}'>" \
-                  "#{label}<i class='bi bi-arrow-right' aria-hidden='true'></i></a>"
-            io << '</span></div>'
+            io << '</span></a>'
         end
         io << '</div>'
         io << "<button type='button' class='kata-scroll' data-dir='1' aria-label='Weiter'><i class='bi bi-chevron-right' aria-hidden='true'></i></button>"
@@ -214,16 +206,6 @@ module KataMap
                 coasting = requestAnimationFrame(step);
             });
             track.addEventListener('dragstart', function (event) { event.preventDefault(); });
-            // a click on the set itself: its button calls attention to itself
-            track.addEventListener('click', function (event) {
-                if (event.target.closest('.kata-set-open')) return;
-                var set = event.target.closest('.kata-set');
-                var button = set && set.querySelector('.kata-set-open');
-                if (!button) return;
-                button.classList.remove('kata-set-callout');
-                void button.offsetWidth;
-                button.classList.add('kata-set-callout');
-            });
             var centre = track.querySelector('[data-centre]');
             if (centre) {
                 track.style.scrollBehavior = 'auto';

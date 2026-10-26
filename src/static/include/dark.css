@@ -179,6 +179,10 @@ html[data-bs-theme="dark"] {
     }
     .shc-picture .theme-image-light { display: none; }
     .shc-picture .theme-image-dark { display: block; }
+    /* on the dark page a grey shadow vanishes: the set's hue, a little stronger */
+    .kata-set:hover {
+        box-shadow: 0 0.4em 1.4em hsl(var(--accent, 150) 60% 50% / 0.3);
+    }
     /* the band of a Kata set: a softer glow on the dark page */
     .kata-set-art {
         background:
