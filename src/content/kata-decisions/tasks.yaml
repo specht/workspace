@@ -939,7 +939,7 @@ tasks:
     title: "FizzBuzz"
     level: 3
     prompt: |
-      Ein Spiel aus der Grundschule, und eine berühmte Aufgabe in Vorstellungsgesprächen: Man zählt reihum, aber statt einer Zahl, die durch 3 teilbar ist, sagt man »Fizz«, statt einer, die durch 5 teilbar ist, »Buzz«, und wenn sie durch beide teilbar ist, »FizzBuzz«. Schreib eine Funktion `fizzbuzz(n)`, die zurückgibt, was man bei `n` sagt, als Text: `fizzbuzz(9)` ergibt `'Fizz'`, `fizzbuzz(7)` ergibt `'7'`.
+      Ein englisches Zählspiel, und eine berühmte Aufgabe in Vorstellungsgesprächen für Programmierer: Man zählt reihum, aber statt einer Zahl, die durch 3 teilbar ist, sagt man »Fizz«, statt einer, die durch 5 teilbar ist, »Buzz«, und wenn sie durch beide teilbar ist, »FizzBuzz«. Schreib eine Funktion `fizzbuzz(n)`, die zurückgibt, was man bei `n` sagt, als Text: `fizzbuzz(9)` ergibt `'Fizz'`, `fizzbuzz(7)` ergibt `'7'`.
     starter: |
       def fizzbuzz(n)
       end
@@ -1480,5 +1480,134 @@ tasks:
         function rockPaperScissors(first, second) {
           if (first === second) return 0;
           return BEATS[first] === second ? 1 : 2;
+        }
+        ```
+  - id: bread
+    title: "Brot"
+    extra: true
+    prompt: |
+      Ein Zählspiel aus der Grundschule: Man zählt reihum, aber statt einer Zahl, die durch 3 teilbar ist oder eine 3 enthält, sagt man »Brot«. Bei 13 heißt es also »Brot«, obwohl 13 nicht durch 3 teilbar ist. Schreib eine Funktion `bread(n)`, die zurückgibt, was man bei `n` sagt, als Text: `bread(6)` ergibt `'Brot'`, `bread(31)` ergibt `'Brot'`, `bread(7)` ergibt `'7'`.
+    starter: |
+      def bread(n)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "bread(6)"
+          expect: "'Brot'"
+        - call: "bread(7)"
+          expect: "'7'"
+          say: "Die Zahl selbst kommt als Text zurück."
+        - call: "bread(13)"
+          expect: "'Brot'"
+          say: "13 ist nicht durch 3 teilbar, aber in 13 steht eine 3."
+        - call: "bread(31)"
+          expect: "'Brot'"
+          say: "Auch eine 3 vorne zählt: In 31 steht eine 3."
+        - call: "bread(20)"
+          expect: "'20'"
+        - call: "bread(303)"
+          expect: "'Brot'"
+        - call: "bread(1)"
+          expect: "'1'"
+      random:
+        count: 4
+        call: "bread(n)"
+        args: { n: 1..1000 }
+        reference: "n % 3 == 0 || n.to_s.include?('3') ? 'Brot' : n.to_s"
+    hint:
+      - "Zwei Fragen: Ist `n` durch 3 teilbar? Steht in `n` eine 3? Wenn eine davon mit Ja beantwortet wird, heißt es »Brot«."
+      - "Ob eine Ziffer in einer Zahl steht, siehst du am Text der Zahl: `n.to_s` macht aus `13` den Text `'13'`, und `include?` fragt, ob ein Text einen anderen enthält."
+    solution: |
+      ```ruby
+      def bread(n)
+        if n % 3 == 0 || n.to_s.include?('3')
+          'Brot'
+        else
+          n.to_s
+        end
+      end
+      ```
+    python:
+      starter: |
+        def bread(n):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "bread(6)"
+            expect: "'Brot'"
+          - call: "bread(7)"
+            expect: "'7'"
+            say: "Die Zahl selbst kommt als Text zurück."
+          - call: "bread(13)"
+            expect: "'Brot'"
+            say: "13 ist nicht durch 3 teilbar, aber in 13 steht eine 3."
+          - call: "bread(31)"
+            expect: "'Brot'"
+            say: "Auch eine 3 vorne zählt: In 31 steht eine 3."
+          - call: "bread(20)"
+            expect: "'20'"
+          - call: "bread(303)"
+            expect: "'Brot'"
+          - call: "bread(1)"
+            expect: "'1'"
+        random:
+          count: 4
+          call: "bread(n)"
+          args: { n: 1..1000 }
+          reference: "'Brot' if n % 3 == 0 or '3' in str(n) else str(n)"
+      hint:
+        - "Zwei Fragen: Ist `n` durch 3 teilbar? Steht in `n` eine 3? Wenn eine davon mit Ja beantwortet wird, heißt es »Brot«."
+        - "Ob eine Ziffer in einer Zahl steht, siehst du am Text der Zahl: `str(n)` macht aus `13` den Text `'13'`, und `'3' in text` fragt, ob der Text eine 3 enthält."
+      solution: |
+        ```python
+        def bread(n):
+            if n % 3 == 0 or '3' in str(n):
+                return 'Brot'
+            return str(n)
+        ```
+    javascript:
+      starter: |
+        function bread(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "bread(6)"
+            expect: "'Brot'"
+          - call: "bread(7)"
+            expect: "'7'"
+            say: "Die Zahl selbst kommt als Text zurück."
+          - call: "bread(13)"
+            expect: "'Brot'"
+            say: "13 ist nicht durch 3 teilbar, aber in 13 steht eine 3."
+          - call: "bread(31)"
+            expect: "'Brot'"
+            say: "Auch eine 3 vorne zählt: In 31 steht eine 3."
+          - call: "bread(20)"
+            expect: "'20'"
+          - call: "bread(303)"
+            expect: "'Brot'"
+          - call: "bread(1)"
+            expect: "'1'"
+        random:
+          count: 4
+          call: "bread(n)"
+          args: { n: 1..1000 }
+          reference: "n % 3 === 0 || String(n).includes('3') ? 'Brot' : String(n)"
+      hint:
+        - "Zwei Fragen: Ist `n` durch 3 teilbar? Steht in `n` eine 3? Wenn eine davon mit Ja beantwortet wird, heißt es »Brot«."
+        - "Ob eine Ziffer in einer Zahl steht, siehst du am Text der Zahl: `String(n)` macht aus `13` den Text `'13'`, und `includes` fragt, ob ein Text einen anderen enthält."
+      solution: |
+        ```javascript
+        function bread(n) {
+          if (n % 3 === 0 || String(n).includes('3')) {
+            return 'Brot';
+          }
+          return String(n);
         }
         ```

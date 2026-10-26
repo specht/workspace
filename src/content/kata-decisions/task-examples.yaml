@@ -207,3 +207,18 @@ examples:
         - answer: "const BEATS = { Stein: 'Schere', Schere: 'Papier', Papier: 'Stein' };\n\nfunction rockPaperScissors(first, second) {\n  if (first === second) return 0;\n  return BEATS[first] === second ? 1 : 2;\n}\n"
       fail:
         - answer: "function rockPaperScissors(first, second) {\n  return first === second ? 0 : 1;\n}\n"
+  bread:
+    pass:
+      - answer: "def bread(n)\n  if n % 3 == 0 || n.to_s.include?('3')\n    'Brot'\n  else\n    n.to_s\n  end\nend\n"
+    fail:
+      - answer: "def bread(n)\n  n % 3 == 0 ? 'Brot' : n.to_s\nend\n"
+    python:
+      pass:
+        - answer: "def bread(n):\n    if n % 3 == 0 or '3' in str(n):\n        return 'Brot'\n    return str(n)\n"
+      fail:
+        - answer: "def bread(n):\n    return 'Brot' if n % 3 == 0 else str(n)\n"
+    javascript:
+      pass:
+        - answer: "function bread(n) {\n  if (n % 3 === 0 || String(n).includes('3')) {\n    return 'Brot';\n  }\n  return String(n);\n}\n"
+      fail:
+        - answer: "function bread(n) {\n  return n % 3 === 0 ? 'Brot' : String(n);\n}\n"

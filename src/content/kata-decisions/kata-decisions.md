@@ -123,7 +123,7 @@ _task(max-of-three)
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Vertausch in einer deiner Lösungen zwei
 Zweige mit <code>elsif</code>, <code>elif</code> oder <code>else if</code> und
-drück <em>Prüfen</em>.
+drück <em>Ausführen</em>.
 Bei welchen Werten macht die Reihenfolge einen Unterschied, und bei welchen
 nicht?
 </div>
@@ -140,5 +140,7 @@ _task(pythagorean)
 ## Extras
 
 _task(rock-paper-scissors)
+
+_task(bread)
 
 Weiter geht es mit Wiederholungen: Funktionen, die etwas viele Male tun.
