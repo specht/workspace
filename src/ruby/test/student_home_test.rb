@@ -35,6 +35,23 @@ class StudentHomeTest < Minitest::Test
         assert_nil p[2][:next]
     end
 
+    # An extra counts for nobody's »x von y«; done, it is said besides.
+    def test_extras_count_apart
+        katas = [{ :slug => 'katas', :activity => 'katas', :title => 'Katas', :tasks => [
+            { :id => 'add', :title => 'Addieren', :version => 'a' },
+            { :id => 'primes', :title => 'Primzahlen', :version => 'b', :extra => true },
+            { :id => 'double', :title => 'Verdoppeln', :version => 'c' }] }]
+        p = StudentHome.progress(katas, { 'katas/add' => st('correct', 'a', 10), 'katas/primes' => st('correct', 'b', 20),
+                                          'katas/double' => st('correct', 'c', 30) }).first
+        assert_equal [2, 2, 1], [p[:done], p[:total], p[:extras_done]]
+        assert_nil p[:next]
+        html = StudentHome.card('katas', 'Katas', p)
+        assert_includes html, '2 von 2 erledigt, dazu 1 Extra'
+        p = StudentHome.progress(katas, { 'katas/primes' => st('correct', 'b', 20) }).first
+        assert_equal [0, 2, 1], [p[:done], p[:total], p[:extras_done]]
+        assert_equal 'add', p[:next][:id]
+    end
+
     def test_pinned_activities_come_first_with_their_progress
         pinned = [{ :slug => 'tcpip', :title => 'TCP/IP', :group => '10b' },
                   { :slug => 'latex', :title => 'LaTeX', :abstract => 'Setze <b>Formeln</b>.', :group => 'WP 10' }]

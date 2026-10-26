@@ -258,6 +258,7 @@ tasks:
 | `exam` | nein | `false`: nie in einer Leistungsüberprüfung; Prüfarten mit Netz sind dort ohnehin gesperrt |
 | `starter` | nein | Nur bei `function`: der Code, mit dem die Karte beginnt (höchstens 4000 Zeichen); er muss von selbst scheitern |
 | `level` | nein | Nur für Katas gedacht: `1` Einstieg, `2` Übung, `3` Knobelei; die Karte zeigt so viele Punkte |
+| `extra` | nein | `true`: für Schnelle und Neugierige; zählt bei niemandem mit (»8 von 10 erledigt, dazu 2 Extras«), die Karte zeigt »Extra«, das Klassenboard die Spalte heller und rechnet sie nicht zu »gelöst«. Eine Aufgabe in einem Extra-Kapitel muss eine sein |
 | `ruby`, `python` | nein | Was in dieser Sprache anders ist, auf Seiten in mehreren Sprachen (siehe unten) |
 
 ### In mehreren Sprachen
@@ -822,9 +823,10 @@ Rückmeldung sagt »dein Code« statt eines Dateinamens.
 die Rückmeldung sagt »`gcd(60, 48)` (Zeile 2) benutzt `Integer#gcd`. Das gibt
 es in dieser Aufgabe nicht: Du schreibst es gerade selbst.« Die Prüfung
 selbst darf sie weiter benutzen. In Python eine eingebaute Funktion
-(`sorted`), eine Funktion eines Moduls (`math.gcd`) oder eine Methode eines
-eingebauten Typs (`list.sort`, `str.upper`); diese lassen sich in Python
-nicht abschalten, darum genügt es, wenn der Name im Code vorkommt.
+(`sorted`), eine Funktion eines Moduls (`math.gcd`), ein eingebauter Typ
+(`str`, `list`) oder eine Methode eines solchen (`list.sort`, `str.upper`);
+Typen und ihre Methoden lassen sich in Python nicht abschalten, darum genügt
+es, wenn der Name im Code vorkommt.
 
 **Fälle für jede Person** erzeugt `random`: `count` Aufrufe (höchstens 20)
 mit Werten aus `args` (ein Bereich `1..1000` oder eine Liste von Werten),

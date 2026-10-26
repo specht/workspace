@@ -32,9 +32,9 @@ require_relative 'ruby_check'
 #
 # forbid: in Ruby Class#method or Class.method, made to fail when the
 # person's code calls it (the harness and the reference may still use it);
-# in Python a built-in (sorted), a module's function (math.gcd), or a
-# method of a built-in type (list.sort), which cannot be switched off and
-# is looked for in the code instead. random: the values come from a seed per
+# in Python a built-in (sorted), a module's function (math.gcd), a
+# built-in type (str) or a method of one (list.sort); types and their
+# methods cannot be switched off and are looked for in the code instead. random: the values come from a seed per
 # person and task version, so a second check has the same cases and a table
 # of answers does not pass; the message names the value the reference gave.
 # same_as: a typical wrong solution, written by the author and never shown,
@@ -178,7 +178,11 @@ module KataCheck
                             raise #{FORBIDDEN}(name)
                         return original(*args, **kwargs)
                     return forbidden
+                # methods of built-in types and built-in types themselves (str,
+                # list) cannot be wrapped: isinstance(x, str) must keep working.
+                # They are looked for in the code instead.
                 _k_methods = {}
+                _k_names = {}
                 for _k_name in _k_json.loads(#{list.inspect}):
                     _k_owner, _, _k_attr = _k_name.rpartition('.')
                     if _k_owner in #{PYTHON_TYPES.inspect}:
@@ -186,17 +190,21 @@ module KataCheck
                     elif _k_owner:
                         _k_module = _k_importlib.import_module(_k_owner)
                         setattr(_k_module, _k_attr, _k_wrap(getattr(_k_module, _k_attr), _k_name))
+                    elif isinstance(getattr(_k_builtins, _k_attr), type):
+                        _k_names[_k_attr] = _k_name
                     else:
                         setattr(_k_builtins, _k_attr, _k_wrap(getattr(_k_builtins, _k_attr), _k_name))
-                if _k_methods and _k_os.path.isfile(_k_full):
+                if (_k_methods or _k_names) and _k_os.path.isfile(_k_full):
                     try:
                         _k_tree = _k_ast.parse(open(_k_full, encoding='utf-8').read())
                     except SyntaxError:
                         _k_tree = None
                     for _k_node in (_k_ast.walk(_k_tree) if _k_tree else []):
-                        if isinstance(_k_node, _k_ast.Attribute) and _k_node.attr in _k_methods:
+                        _k_found = (_k_methods.get(_k_node.attr) if isinstance(_k_node, _k_ast.Attribute) else
+                                    _k_names.get(_k_node.id) if isinstance(_k_node, _k_ast.Name) else None)
+                        if _k_found:
                             _k_sys.stdout.write('\\n#{CallCheck::RESULT_MARK}' + _k_json.dumps({'error': {'kind': 'load', 'line': _k_node.lineno,
-                                'message': '#{FORBIDDEN}: ' + _k_methods[_k_node.attr]}}) + '\\n')
+                                'message': '#{FORBIDDEN}: ' + _k_found}}) + '\\n')
                             _k_sys.exit(0)
             PY
         else

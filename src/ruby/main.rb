@@ -5779,7 +5779,8 @@ class Main < Sinatra::Base
                 tasks = on_page.map do |id|
                     t = c[:tasks][:by_id][id]
                     { :id => id, :title => t['title'], :type => t['check']['type'],
-                      :version => TaskSpec.check_version(t), :prediction => t['prediction'] == true }
+                      :version => TaskSpec.check_version(t), :prediction => t['prediction'] == true,
+                      :extra => t['extra'] == true }
                 end
                 { :slug => slug, :activity => c[:tasks][:activity],
                   :title => CGI.unescapeHTML(c[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '')), :tasks => tasks }

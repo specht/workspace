@@ -1,4 +1,5 @@
 require 'minitest/autorun'
+require 'yaml'
 require 'redcarpet'
 require 'nokogiri'
 require_relative '../include/extra_chapters'
@@ -129,14 +130,17 @@ class ExtraChaptersTest < Minitest::Test
     end
 
     # In the pages themselves: a marker stands directly before a ## heading,
-    # and an extra chapter has no task, or »x von y Aufgaben« could never
-    # be complete for someone who leaves the extras out.
+    # and a task in an extra chapter is an extra itself (extra: true), or
+    # »x von y Aufgaben« could never be complete for someone who leaves the
+    # extras out.
     def test_markers_in_content
         problems = []
         Dir[File.join(CONTENT, '**', '*.md')].each do |file|
             lines = File.readlines(file, encoding: 'UTF-8').map(&:rstrip)
             next unless lines.any? { |l| l.strip == '<!-- extra -->' }
             name = file.sub(CONTENT + '/', '')
+            tasks_file = File.join(File.dirname(file), 'tasks.yaml')
+            extras = File.file?(tasks_file) ? (YAML.safe_load(File.read(tasks_file))['tasks'] || []).select { |t| t['extra'] == true }.map { |t| t['id'] } : []
             in_extra = false
             in_code = false
             lines.each_with_index do |line, i|
@@ -146,8 +150,8 @@ class ExtraChaptersTest < Minitest::Test
                     problems << "#{name}:#{i + 1}: not on the line before a ## heading" unless lines[i + 1].to_s.start_with?('## ')
                 elsif line.start_with?('## ')
                     in_extra = lines[i - 1].to_s.strip == '<!-- extra -->'
-                elsif in_extra && line =~ /\A_task\(/
-                    problems << "#{name}:#{i + 1}: #{line} in an extra chapter"
+                elsif in_extra && line =~ /\A_task\(\s*([a-z0-9-]+)/ && !extras.include?($1)
+                    problems << "#{name}:#{i + 1}: #{line} in an extra chapter, but not extra: true"
                 end
             end
         end

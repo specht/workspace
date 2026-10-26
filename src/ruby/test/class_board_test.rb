@@ -38,6 +38,16 @@ class ClassBoardTest < Minitest::Test
         assert_equal 'stale', b[:rows][3][:cells][2].status
     end
 
+    # An extra counts for nobody's »gelöst«; its column is marked.
+    def test_extras_do_not_count
+        tasks = TASKS.first(1) + [{ :id => 'bonus', :title => 'Bonus', :type => 'answer', :version => 'v1', :extra => true }]
+        b = ClassBoard.build(MEMBERS, tasks, { 'ada@x' => { 'adresse' => state('correct'), 'bonus' => state('correct') } })
+        assert_equal 1, b[:rows][0][:solved]
+        html = ClassBoard.html(b, :activity => 'tcpip')
+        assert_includes html, "<td class='cb-total'>1/1</td>"
+        assert_includes html, "<th class='cb-task cb-extra'"
+    end
+
     def test_summary
         s = board[:summary]
         assert_equal 2, s[0][:done]

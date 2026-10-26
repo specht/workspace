@@ -61,6 +61,17 @@ test('a typical wrong Kata gets its own feedback', async ({ page, e2eEmail }, te
   await expect(card.locator('.task-feedback')).toContainText('Die kleinere Zahl ist nur manchmal ein Teiler der größeren.', { timeout: 30_000 });
 });
 
+test('an Extra is marked and counts for nobody', async ({ page, e2eEmail }, testInfo) => {
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/kata-demo');
+  const card = page.locator('.task-card[data-task="kata-demo/ziffern"]:visible');
+  await expect(card.locator('.task-extra')).toHaveText('Extra');
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    await card.locator('.task-head').screenshot({ path: testInfo.outputPath(`extra-${scheme}.png`) });
+  }
+});
+
 test('pictures of a Kata card', async ({ page, e2eEmail }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
   for (const [scheme, width] of [['light', 1100], ['dark', 1100], ['light', 390]] as const) {

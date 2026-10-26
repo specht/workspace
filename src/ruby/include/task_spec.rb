@@ -60,7 +60,7 @@ module TaskSpec
     # Check types that need the network; they are never used in exams.
     NEEDS_NETWORK = %w[measure].to_set.freeze
 
-    TASK_KEYS = (%w[id title prompt check hint solution examples feedback prediction file exam starter level] + CodeLanguages::LANGUAGES).freeze
+    TASK_KEYS = (%w[id title prompt check hint solution examples feedback prediction file exam starter level extra] + CodeLanguages::LANGUAGES).freeze
     # The levels of a Kata (docs/plan-katas.md): 1 Einstieg, 2 Übung, 3 Knobelei.
     LEVELS = [1, 2, 3].freeze
 
@@ -192,7 +192,7 @@ module TaskSpec
             errors << "#{key} must be text" if task.key?(key) && !nonempty_string?(task[key])
         end
         errors.concat(hint_errors(task['hint'])) if task.key?('hint')
-        %w[prediction exam].each do |key|
+        %w[prediction exam extra].each do |key|
             errors << "#{key} must be true or false" if task.key?(key) && ![true, false].include?(task[key])
         end
         errors << "level must be one of #{LEVELS.join(', ')}" if task.key?('level') && !LEVELS.include?(task['level'])

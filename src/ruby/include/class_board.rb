@@ -33,8 +33,9 @@ module ClassBoard
                     :updated => s[:updated], :first_status => s[:first_status],
                     :stuck => status == 'wrong' && attempts >= STUCK_ATTEMPTS)
             end
+            # extras (tasks with extra: true) count for nobody's »gelöst«
             { :email => m[:email], :name => m[:name], :cells => cells,
-              :solved => cells.count { |c| %w[correct sent].include?(c.status) } }
+              :solved => cells.each_with_index.count { |c, i| !tasks[i][:extra] && %w[correct sent].include?(c.status) } }
         end
         rows = members.sort_by { |m| m[:name].to_s.downcase }.map(&row)
         own = nil
@@ -86,11 +87,11 @@ module ClassBoard
         r[:cells].each_with_index do |c, i|
             icon, label = SYMBOLS.fetch(c.status, SYMBOLS['none'])
             symbol = icon.start_with?('bi-') ? "<i class='bi #{icon}' role='img' aria-label='#{h(label)}'></i>" : Icons.tabler(icon, :label => label)
-            klass = "cb-cell cb-#{c.status}#{c.stuck ? ' cb-stuck' : ''}"
+            klass = "cb-cell cb-#{c.status}#{c.stuck ? ' cb-stuck' : ''}#{tasks[i][:extra] ? ' cb-extra' : ''}"
             count = c.attempts.to_i > 1 && c.status == 'wrong' ? "<small>#{c.attempts}</small>" : ''
             io << "<td class='#{klass}' data-task='#{h(activity)}/#{h(tasks[i][:id])}' title='#{h(cell_title(c))}'>#{symbol}#{count}</td>"
         end
-        io << "<td class='cb-total'>#{r[:solved]}/#{tasks.size}</td></tr>"
+        io << "<td class='cb-total'>#{r[:solved]}/#{tasks.count { |t| !t[:extra] }}</td></tr>"
     end
 
     # HTML of the board. submission_url: lambda(email, task_id) -> URL.
@@ -102,9 +103,10 @@ module ClassBoard
             s = board[:summary][i]
             flags = []
             flags << 'cb-often-wrong' if s[:often_wrong]
+            flags << 'cb-extra' if t[:extra]
             io << "<th class='cb-task #{flags.join(' ')}' data-task='#{h(activity)}/#{h(t[:id])}' title='#{h(t[:title])}'>"
             # Title first, upright; the numbers then line up right above the cells.
-            io << "<span class='cb-task-title'>#{h(t[:title])}</span><span class='cb-task-number'>#{i + 1}</span></th>"
+            io << "<span class='cb-task-title'>#{t[:extra] ? "<i class='bi bi-stars' aria-label='Extra'></i> " : ''}#{h(t[:title])}</span><span class='cb-task-number'>#{i + 1}</span></th>"
         end
         io << '<th class="cb-total">gelöst</th></tr></thead><tbody>'
         board[:rows].each do |r|

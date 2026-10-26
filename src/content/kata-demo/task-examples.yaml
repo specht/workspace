@@ -31,3 +31,15 @@ examples:
           say: Die kleinere Zahl ist nur manchmal ein Teiler
         - answer: "import math\ndef gcd(a, b):\n    return math.gcd(a, b)\n"
           say: benutzt `math.gcd`
+  ziffern:
+    pass:
+      - answer: "def reverse_digits(n)\n  r = 0\n  while n > 0\n    r = r * 10 + n % 10\n    n /= 10\n  end\n  r\nend\n"
+    fail:
+      - answer: "def reverse_digits(n)\n  n.to_s.reverse.to_i\nend\n"
+        say: benutzt `Integer#to_s`
+    python:
+      pass:
+        - answer: "def reverse_digits(n):\n    r = 0\n    while n > 0:\n        r = r * 10 + n % 10\n        n //= 10\n    return r\n"
+      fail:
+        - answer: "def reverse_digits(n):\n    return int(str(n)[::-1])\n"
+          say: benutzt `str`

@@ -4513,6 +4513,11 @@ ul.task-teacher-list .task-teacher-answer {
     border-radius: 4px;
 }
 
+/* A task with extra: true counts for nobody's »gelöst«: its column lighter. */
+.class-board .cb-extra {
+    opacity: 0.6;
+}
+
 .cb-often-wrong {
     background-color: #fdf0dc;
 }
@@ -4948,6 +4953,22 @@ ul.task-teacher-list .task-teacher-answer {
     align-self: center;
     font-size: 85%;
     color: var(--bs-secondary-color);
+}
+
+/* A task with extra: true (for the fast and the curious): a small label,
+   with the stars of the extra chapters. */
+.task-extra {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+    margin-left: 0.5em;
+    color: var(--bs-secondary-color);
+    font-size: 0.8em;
+    font-weight: 500;
+}
+
+.task-extra .bi::before {
+    vertical-align: 0;
 }
 
 /* The level of a Kata: one to three dots after the title. */

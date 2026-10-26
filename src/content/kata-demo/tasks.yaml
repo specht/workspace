@@ -117,3 +117,42 @@ tasks:
                 a, b = b, a % b
             return a
         ```
+
+  - id: ziffern
+    title: Ziffern rückwärts
+    extra: true
+    prompt: |
+      Schreib eine Funktion `reverse_digits(n)`, die die Ziffern einer Zahl
+      umdreht: `reverse_digits(1234)` ergibt `4321`. Ohne Texte: nur mit
+      Rechnen, `%` und `//` (in Ruby `/`).
+    starter: |
+      def reverse_digits(n)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#to_s, Integer#digits, String#reverse]
+      cases:
+        - reverse_digits(1234): 4321
+        - reverse_digits(7): 7
+        - call: reverse_digits(1200)
+          expect: 21
+          say: Nullen am Ende werden vorn zu nichts.
+    python:
+      prompt: |
+        Schreib eine Funktion `reverse_digits(n)`, die die Ziffern einer Zahl
+        umdreht: `reverse_digits(1234)` ergibt `4321`. Ohne Texte: nur mit
+        Rechnen, `%` und `//`.
+      starter: |
+        def reverse_digits(n):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [str, repr]
+        cases:
+          - reverse_digits(1234): 4321
+          - reverse_digits(7): 7
+          - call: reverse_digits(1200)
+            expect: 21
+            say: Nullen am Ende werden vorn zu nichts.

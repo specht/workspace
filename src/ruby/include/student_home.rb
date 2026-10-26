@@ -35,9 +35,12 @@ module StudentHome
     # states:     { 'activity/id' => stored TaskState (symbol keys) }
     # Returns the activities the person has started, most recent first:
     # [{ slug:, title:, done:, total:, next: task or nil, updated:, marks: [..] }]
+    # Tasks with extra: true (for the fast and the curious) count for
+    # nobody's »x von y«: total, done, marks and next are the other tasks';
+    # extras_done says how many extras are done besides.
     def self.progress(activities, states)
         activities.map do |a|
-            marks = a[:tasks].map do |t|
+            mark = lambda do |t|
                 s = states["#{a[:activity]}/#{t[:id]}"]
                 if s.nil? then :open
                 elsif s[:version] != t[:version] then :stale
@@ -45,14 +48,17 @@ module StudentHome
                 else :wrong
                 end
             end
+            core, extras = a[:tasks].partition { |t| !t[:extra] }
+            marks = core.map(&mark)
             touched = a[:tasks].map { |t| states["#{a[:activity]}/#{t[:id]}"] }.compact
             next nil if touched.empty?
 
             next_index = marks.index { |m| m != :done }
             {
-                :slug => a[:slug], :title => a[:title], :total => a[:tasks].size,
+                :slug => a[:slug], :title => a[:title], :total => core.size,
                 :done => marks.count(:done), :marks => marks,
-                :next => next_index ? a[:tasks][next_index] : nil,
+                :extras_done => extras.count { |t| mark.call(t) == :done },
+                :next => next_index ? core[next_index] : nil,
                 :updated => touched.map { |s| s[:updated].to_i }.max,
             }
         end.compact.sort_by { |p| [p[:done] == p[:total] ? 1 : 0, -p[:updated]] }
@@ -60,6 +66,12 @@ module StudentHome
 
     def self.h(text)
         CGI.escapeHTML(text.to_s)
+    end
+
+    # », dazu 2 Extras«, when the person did some.
+    def self.extras_text(entry)
+        n = entry[:extras_done].to_i
+        n > 0 ? ", dazu #{n} #{n == 1 ? 'Extra' : 'Extras'}" : ''
     end
 
     # The top of the start page for a student, in this order:
@@ -116,7 +128,7 @@ module StudentHome
             io << "<span class='sc-meta'><span class='shc-bar' aria-hidden='true'>"
             e[:marks].each { |m| io << "<span class='shc-mark shc-#{m}'></span>" }
             io << '</span>'
-            io << "<span class='sc-count'>#{e[:done]} von #{e[:total]} #{e[:total] == 1 ? 'Aufgabe' : 'Aufgaben'}</span></span>"
+            io << "<span class='sc-count'>#{e[:done]} von #{e[:total]} #{e[:total] == 1 ? 'Aufgabe' : 'Aufgaben'}#{extras_text(e)}</span></span>"
             io << "<i class='bi bi-arrow-right-short' aria-hidden='true'></i>"
             io << '</a></li>'
         end
@@ -158,7 +170,7 @@ module StudentHome
             io << "<span class='shc-bar' aria-hidden='true'>"
             entry[:marks].each { |m| io << "<span class='shc-mark shc-#{m}'></span>" }
             io << '</span>'
-            io << "<span class='shc-count'>#{entry[:done]} von #{entry[:total]} erledigt</span>"
+            io << "<span class='shc-count'>#{entry[:done]} von #{entry[:total]} erledigt#{extras_text(entry)}</span>"
             io << "<span class='shc-next'>Weiter mit: #{h(entry[:next][:title])}</span>" if entry[:next]
         elsif abstract && !abstract.to_s.strip.empty?
             io << "<span class='shc-next'>#{h(abstract.to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '').strip)}</span>"

@@ -19,3 +19,5 @@ Karte, probier sie mit **Ausführen** aus und lass sie mit **Prüfen** testen.
 _task(greet)
 
 _task(ggt)
+
+_task(ziffern)

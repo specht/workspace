@@ -51,6 +51,9 @@ module TaskCard
         io << "<span class='task-number'>#{task['prediction'] ? 'Vermutung' : 'Aufgabe'} #{number.to_i}</span>"
         io << "<span class='task-title' id='#{h.(field)}-title'>#{h.(task['title'])}</span>"
         io << level_html(task['level']) if task['level']
+        if task['extra']
+            io << "<span class='task-extra' title='Für Schnelle und Neugierige; zählt nicht mit'><i class='bi bi-stars' aria-hidden='true'></i>Extra</span>"
+        end
         io << "<span class='task-status' aria-live='polite'></span>"
         io << '</div>'
         io << "<div class='task-prompt'>#{render.(task['prompt'])}</div>"
