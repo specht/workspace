@@ -1,7 +1,7 @@
 Lernende steuern Pip mit Plänen, die selbst nachsehen, wo es weitergeht: Schleifen mit `while`, eigene Funktionen mit Parameter, eine Variable, die mitzählt, verknüpfte Bedingungen und die Hand an der Wand als erster Algorithmus, in Ruby, Python oder JavaScript.
 
 <table class='table'>
-<tr><th>Voraussetzungen</th><td><a href='/pip-1'>Pip unter Funkelbach: Hinab</a> und Schleifen mit Zählvariable, etwa aus den <a href='/kata-loops'>Katas: Wiederholen</a>.</td></tr>
+<tr><th>Voraussetzungen</th><td><a href='/pip-1'>Pip unter Funkelbach: Hinab in die Stollen</a> und Schleifen mit Zählvariable, etwa aus den <a href='/kata-loops'>Katas: Wiederholen</a>.</td></tr>
 <tr><th>Ablauf</th><td>Etwa drei Doppelstunden, sechs Kapitel.<ul>
 <li>Im Finstern und Eigene Zaubersprüche: <code>while</code> mit <code>front_clear</code>, <code>not</code> und <code>on_lamp</code>; dann Funktionen: <code>turn_right</code>, <code>turn_around</code>, <code>walk(n)</code> und eine Treppe aus ihnen.</li>
 <li>Das Labyrinth und Drei Hebel: die Hand an der Wand, auf Labyrinthen, die für jede Person anders gebaut werden; eine Variable, die die Züge an den Hebeln zählt. Extras: ein Labyrinth mit Insel, Steine zählen und die Zahl sagen.</li>

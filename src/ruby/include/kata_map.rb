@@ -31,7 +31,7 @@ module KataMap
     end
 
     # »Katas: Erste Funktionen« -> »Erste Funktionen«; »Pip unter
-    # Funkelbach: Hinab« -> »Hinab«, Pip on the band says the rest, and the
+    # Funkelbach: Bellos Spur« -> »Bellos Spur«, Pip on the band says the rest, and the
     # title fits in one line
     def self.title(text)
         CGI.unescapeHTML(text.to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '')).sub(/\A(Katas?|Pip unter Funkelbach):\s*/, '')

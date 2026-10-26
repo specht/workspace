@@ -8,7 +8,7 @@ idea: "Pip mit einem Plan durch die Stollen schicken: Befehle nacheinander, Schl
 curriculum: "Sek I: Algorithmisches Problemlösen, Miniwelten, Kontrollstrukturen"
 </div>
 
-# Pip unter Funkelbach: Hinab
+# Pip unter Funkelbach: Hinab in die Stollen
 
 <p class='abstract'>
 Bello ist in einen Schacht gesprungen und verschwunden. Du schreibst Pip einen

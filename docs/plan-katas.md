@@ -27,7 +27,7 @@ the strip on the front page:
 
 | # | Page | Idea | Special |
 | --- | --- | --- | --- |
-| 1 | `pip-1` Hinab | plans, loops, conditions, waiting; no prior knowledge | first chapter clicked (`buttons:`) |
+| 1 | `pip-1` Hinab in die Stollen | plans, loops, conditions, waiting; no prior knowledge | first chapter clicked (`buttons:`) |
 | 2 | `kata-functions` Erste Funktionen | values in, one value out | |
 | 3 | `kata-decisions` Entscheidungen | `if`, comparisons, `and`/`or` | |
 | 4 | `kata-loops` Wiederholen | loops, a variable that collects | the sieve as Extra, with a time limit |
