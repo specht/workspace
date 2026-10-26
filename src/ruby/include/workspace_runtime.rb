@@ -69,6 +69,12 @@ module WorkspaceRuntime
             '--cap-drop SETFCAP --cap-drop SETPCAP --cap-drop NET_BIND_SERVICE --cap-drop FSETID ' \
             '--security-opt no-new-privileges'
 
+        # The program messages of a Workspace at most 3 × 10 MB, as for the
+        # services (config.rb; docs/datenschutz.md): Docker's own default
+        # keeps them without limit. The driver named, since max-file belongs
+        # to json-file and a server may default to another one.
+        LOGGING = '--log-driver json-file --log-opt max-size=10m --log-opt max-file=3'
+
         # The databases, which a Workspace reaches by name (their aliases on
         # WORKSPACE_NETWORK). An exam Workspace has no DNS, so that it stays
         # offline; it gets these two names as fixed entries instead, or its
@@ -109,7 +115,7 @@ module WorkspaceRuntime
                     STDERR.puts "Exam Workspace #{fs_tag}: database addresses unknown (#{e.message})"
                 end
             end
-            command = "docker run --cpus=4 --memory=4g --memory-swap=4g --pids-limit=256 #{HARDENING} -d --rm --hostname workspace -e PUID=1000 -e PGID=1000 -e TZ=Europe/Berlin -e WORKSPACE_USER=#{Shellwords.escape(workspace_login)} -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace #{TOOL_ENVIRONMENT} -e MYSQL_HOST=\"#{database_environment['MYSQL_HOST']}\" -e MYSQL_USER=\"#{database_environment['MYSQL_USER']}\" -e MYSQL_PASSWORD -e MYSQL_DATABASE=\"#{database_environment['MYSQL_DATABASE']}\" -e NEO4J_URI=\"#{database_environment['NEO4J_URI']}\" -e NEO4J_USERNAME=\"#{database_environment['NEO4J_USERNAME']}\" -e NEO4J_PASSWORD -e NEO4J_DATABASE=\"#{database_environment['NEO4J_DATABASE']}\" #{extra}-v #{host_data_path}/user/#{fs_tag}/config:/config -v #{host_data_path}/user/#{fs_tag}/workspace:/workspace --network #{WORKSPACE_NETWORK} #{test_mode ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{fs_tag} #{WORKSPACE_IMAGE}"
+            command = "docker run --cpus=4 --memory=4g --memory-swap=4g --pids-limit=256 #{HARDENING} #{LOGGING} -d --rm --hostname workspace -e PUID=1000 -e PGID=1000 -e TZ=Europe/Berlin -e WORKSPACE_USER=#{Shellwords.escape(workspace_login)} -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace #{TOOL_ENVIRONMENT} -e MYSQL_HOST=\"#{database_environment['MYSQL_HOST']}\" -e MYSQL_USER=\"#{database_environment['MYSQL_USER']}\" -e MYSQL_PASSWORD -e MYSQL_DATABASE=\"#{database_environment['MYSQL_DATABASE']}\" -e NEO4J_URI=\"#{database_environment['NEO4J_URI']}\" -e NEO4J_USERNAME=\"#{database_environment['NEO4J_USERNAME']}\" -e NEO4J_PASSWORD -e NEO4J_DATABASE=\"#{database_environment['NEO4J_DATABASE']}\" #{extra}-v #{host_data_path}/user/#{fs_tag}/config:/config -v #{host_data_path}/user/#{fs_tag}/workspace:/workspace --network #{WORKSPACE_NETWORK} #{test_mode ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{fs_tag} #{WORKSPACE_IMAGE}"
             @ok.call(command, :timeout => timeout, :env => secrets)
         end
 
@@ -222,7 +228,7 @@ module WorkspaceRuntime
             # with the Workspace prefix (docker_policy.rb).
             ['docker', 'run', '--rm', '--name', "hs_code_offline_#{SecureRandom.hex(4)}", '--network', 'none', '--read-only', '--tmpfs', '/tmp',
              '--cpus', '1', '--memory', '256m', '--memory-swap', '256m', '--pids-limit', '64',
-             '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
+             '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges', *LOGGING.split,
              '-u', uid, '-e', 'HOME=/workspace',
              '-v', "#{host_data_path}/user/#{fs_tag}/workspace:/workspace:ro",
              '--entrypoint', 'sh', WORKSPACE_IMAGE, '-c', script, 'sh', "/workspace/#{repo}"]
