@@ -313,11 +313,33 @@ _tool(tcp-console)
 
 ## Pfade und 404
 
-Bisher bekommt jeder Pfad dieselbe Antwort. Ein richtiger Server schaut in die Request-Line und antwortet je nach Pfad etwas anderes, und auf einen unbekannten Pfad mit dem Statuscode **404 Not Found**. Weil sich jede Antwort gleich aufbaut, steht das jetzt in einer Funktion `respond`:
+Bisher bekommt jeder Pfad dieselbe Antwort. Ein richtiger Server schaut in die Request-Line und antwortet je nach Pfad etwas anderes, und auf einen unbekannten Pfad mit dem Statuscode **404 Not Found**. Jede dieser Antworten baut sich gleich auf, nur Statuscode, `Content-Type` und Inhalt ändern sich. Darum kommt das Antworten in eine Funktion `respond`, und der Server ruft sie für jeden Pfad mit anderen Werten auf.
 
 <!-- language: ruby -->
-```ruby_copy
-require 'socket'
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Schreib unter <code>require 'socket'</code> die Funktion <code>respond(client, status, type, body)</code>. Sie schickt die Status-Line mit <code>status</code>, etwa <code>200 OK</code>, die Header mit <code>type</code> und der Länge von <code>body</code>, die leere Zeile und <code>body</code>, und schließt die Verbindung. Die Zeilen dafür stehen schon in deinem Thread: Zieh sie in <code>respond</code> um und setz dort die Parameter ein, wo bisher feste Werte stehen.
+</div>
+
+<!-- hint -->
+Leg die Zeilen der Antwort im Thread nebeneinander: Welche Teile sind bei
+jeder Antwort gleich, und welche ändern sich von Pfad zu Pfad? Was sich
+ändert, wird ein Parameter von `respond`.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```ruby
+def respond(client, status, type, body)
+  client.print "HTTP/1.1 #{status}\r\n"
+  # hier: Content-Type mit type, Content-Length mit der Länge von body in Bytes,
+  # Connection: close, die leere Zeile, body, und die Verbindung schließen
+end
+```
+<!-- /hint -->
+
+<!-- solution -->
+```ruby
+~ require 'socket'
 
 # Schickt eine vollständige HTTP-Antwort und schließt die Verbindung
 def respond(client, status, type, body)
@@ -329,19 +351,20 @@ def respond(client, status, type, body)
   client.print body
   client.close
 end
+```
+<!-- /solution -->
 
-server = TCPServer.new(8000)
-puts "Der Server wartet auf Port 8000 ..."
+Im Thread liest der Server jetzt zuerst die Request-Line. Die Zeile `puts line` in der Schleife fällt weg: Ins Terminal kommen nur noch Methode und Pfad. Wo die feste Antwort stand, wählt `case path` eine aus:
 
-loop do
-  Thread.new(server.accept) do |client|
+```ruby
+~   Thread.new(client) do |client|
     # Die erste Zeile: Methode, Pfad, Version
     request_line = client.gets.to_s
     method, path, version = request_line.split(' ')
     puts "#{method} #{path}"
     # Die übrigen Zeilen (Header) brauchen wir noch nicht
-    while (line = client.gets) && line != "\r\n"
-    end
+~     while (line = client.gets) && line != "\r\n"
+~     end
 
     case path
     when '/'
@@ -354,17 +377,40 @@ loop do
       respond(client, '404 Not Found', 'text/plain; charset=utf-8',
               "Die Seite #{path} gibt es nicht.\n")
     end
-  end
-end
+~   end
+~ end
 ```
 
 `split(' ')` zerlegt die Request-Line an den Leerzeichen in Methode, Pfad und Version. `case path` wählt die Antwort. Probiere die drei Fälle im zweiten Terminal aus:
 <!-- /language -->
 <!-- language: python -->
-```python_copy
-import socket
-import threading
-import time
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Schreib über <code>handle</code> die Funktion <code>respond(client, status, content_type, body)</code>. Sie schickt die Status-Line mit <code>status</code>, etwa <code>200 OK</code>, die Header mit <code>content_type</code> und der Länge von <code>body</code>, die leere Zeile und <code>body</code>. Die Zeilen dafür stehen schon in <code>handle</code>: Zieh sie in <code>respond</code> um und setz dort die Parameter ein, wo bisher feste Werte stehen. <code>body</code> darf Text sein oder schon Bytes, denn später schickt der Server auch Bilder: Nur Text wird mit <code>encode()</code> zu Bytes (<code>isinstance(body, str)</code>).
+</div>
+
+<!-- hint -->
+Leg die Zeilen der Antwort in `handle` nebeneinander: Welche Teile sind bei
+jeder Antwort gleich, und welche ändern sich von Pfad zu Pfad? Was sich
+ändert, wird ein Parameter von `respond`. Die feste Status-Line
+`b'HTTP/1.1 200 OK\r\n'` wird dabei ein f-String, der mit `.encode()` zu
+Bytes wird, wie schon die Zeile mit `Content-Length`.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```python
+def respond(client, status, content_type, body):
+    data = body.encode() if isinstance(body, str) else body
+    client.sendall(f'HTTP/1.1 {status}\r\n'.encode())
+    # hier: Content-Type mit content_type, Content-Length mit len(data),
+    # Connection: close, die leere Zeile und data
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+~ import socket
+~ import threading
 
 
 def respond(client, status, content_type, body):
@@ -376,19 +422,33 @@ def respond(client, status, content_type, body):
             'Connection: close\r\n'
             '\r\n')
     client.sendall(head.encode() + data)
+```
 
+Diese Fassung setzt die Status-Line und die Header zu einem Text zusammen und schickt ihn mit dem Inhalt in einem `sendall`. Einzelne `sendall` wie bisher gehen genauso.
+<!-- /solution -->
 
-def handle(client):
-    with client, client.makefile('rb') as reader:
+Für die Uhrzeit kommt `import time` dazu:
+
+```python
+~ import socket
+~ import threading
+import time
+```
+
+In `handle` liest der Server jetzt zuerst die Request-Line. Die Zeile mit `print` in der Schleife fällt weg: Ins Terminal kommen nur noch Methode und Pfad. Wo die feste Antwort stand, wählen `if` und `elif` eine aus:
+
+```python
+~ def handle(client):
+~     with client, client.makefile('rb') as reader:
         # Die erste Zeile: Methode, Pfad, Version
         request_line = reader.readline().decode()
         method, _, rest = request_line.partition(' ')
         path, _, version = rest.partition(' ')
         print(method, path)
         # Die übrigen Zeilen (Header) brauchen wir noch nicht
-        for line in reader:
-            if line == b'\r\n':
-                break
+~         for line in reader:
+~             if line == b'\r\n':
+~                 break
 
         if path == '/':
             respond(client, '200 OK', 'text/html; charset=utf-8',
@@ -399,17 +459,9 @@ def handle(client):
         else:
             respond(client, '404 Not Found', 'text/plain; charset=utf-8',
                     f'Die Seite {path} gibt es nicht.\n')
-
-
-server = socket.create_server(('', 8000))
-print('Der Server wartet auf Port 8000 ...')
-
-while True:
-    client, address = server.accept()
-    threading.Thread(target=handle, args=(client,), daemon=True).start()
 ```
 
-`partition(' ')` teilt die Request-Line am ersten Leerzeichen und liefert immer drei Teile: was davor steht, das Leerzeichen und den Rest. Zweimal angewendet, ergibt das Methode, Pfad und Version, und das auch dann, wenn eine Anfrage einmal leer ist. `if` und `elif` wählen die Antwort. `respond` nimmt Text oder Bytes und schickt Kopf und Inhalt zusammen mit `sendall`. Probiere die drei Fälle im zweiten Terminal aus:
+`partition(' ')` teilt die Request-Line am ersten Leerzeichen und liefert immer drei Teile: was davor steht, das Leerzeichen und den Rest. Zweimal angewendet, ergibt das Methode, Pfad und Version, und das auch dann, wenn eine Anfrage einmal leer ist. `if` und `elif` wählen die Antwort. Probiere die drei Fälle im zweiten Terminal aus:
 <!-- /language -->
 
 ```bash

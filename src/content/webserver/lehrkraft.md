@@ -29,8 +29,8 @@ Lernende schreiben einen Webserver in Ruby oder Python, ohne Bibliothek, in sech
 
 #### Jetzt bist du dran
 
-- Ab den Dateien aus `public` zeigt die Seite nur noch, was sich am Server ändert, mit grauen Zeilen drumherum, statt die ganze Datei noch einmal. Wer den Überblick über die eigene Datei verliert, findet jede Stufe vollständig unter `stufen/`.
-- An drei Stellen schreiben die Lernenden den Code zuerst selbst: die Auswahl, die alles außer `/time` an `serve_file` gibt, den Fall `/hello` und die Funktion `redirect`. Die Seite geht danach mit ihrem eigenen Code weiter.
+- Ab »Pfade und 404« zeigt die Seite nur noch, was sich am Server ändert, mit grauen Zeilen drumherum, statt die ganze Datei noch einmal. Wer den Überblick über die eigene Datei verliert, findet jede Stufe vollständig unter `stufen/`.
+- An vier Stellen schreiben die Lernenden den Code zuerst selbst: die Funktion `respond`, in die sie die Zeilen der festen Antwort umziehen, die Auswahl, die alles außer `/time` an `serve_file` gibt, den Fall `/hello` und die Funktion `redirect`. Die Seite geht danach mit ihrem eigenen Code weiter.
 - Vor dem Code der Seite stehen Tipps, ein Denkanstoß und ein Gerüst mit Lücken. Jede Stufe erscheint erst eine Minute nach der vorigen, ohne Uhr, damit die Lernenden mit dem Tipp arbeiten, statt auf den nächsten zu warten; der Code der Seite ist die letzte Stufe. Wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst.
 - Den Fall `/hello` prüft »Dein Server grüßt« am laufenden Server; wer sie löst, kann den Code der Seite sofort öffnen und mit dem eigenen vergleichen.
 
