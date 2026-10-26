@@ -1,0 +1,1553 @@
+format: 1
+activity: kata-lists
+tasks:
+  - id: list-sum
+    title: "Die Summe"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `list_sum(numbers)`, die alle Zahlen einer Liste zusammenzählt: `list_sum([3, 4, 5])` ergibt `12`. Mit einer Schleife, ohne `sum`.
+    starter: |
+      def list_sum(numbers)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#sum, Array#reduce, Array#inject]
+      cases:
+        - call: "list_sum([3, 4, 5])"
+          expect: "12"
+        - call: "list_sum([10])"
+          expect: "10"
+        - call: "list_sum([])"
+          expect: "0"
+          say: "Die leere Liste hat die Summe 0."
+        - call: "list_sum([-2, 2, 7])"
+          expect: "7"
+        - call: "list_sum([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])"
+          expect: "55"
+    feedback:
+      - when: { same_as: "def list_sum(numbers)\n  total = 0\n  numbers.each do |number|\n    total += number\n  end\nend\n" }
+        say: "Das Letzte in deiner Funktion ist die Schleife, und `each` gibt die Liste zurück, nicht die Summe. Schreib `total` in die letzte Zeile."
+    hint:
+      - "Wie bei `sum_to` aus den Schleifen: eine Variable, die bei 0 anfängt, und in der Schleife kommt jede Zahl dazu."
+      - "`numbers.each do |number| … end` geht die Zahlen der Liste der Reihe nach durch."
+    solution: |
+      ```ruby
+      def list_sum(numbers)
+        total = 0
+        numbers.each do |number|
+          total += number
+        end
+        total
+      end
+      ```
+    python:
+      starter: |
+        def list_sum(numbers):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [sum]
+        cases:
+          - call: "list_sum([3, 4, 5])"
+            expect: "12"
+          - call: "list_sum([10])"
+            expect: "10"
+          - call: "list_sum([])"
+            expect: "0"
+            say: "Die leere Liste hat die Summe 0."
+          - call: "list_sum([-2, 2, 7])"
+            expect: "7"
+          - call: "list_sum([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])"
+            expect: "55"
+      feedback:
+        - when: { same_as: "def list_sum(numbers):\n    total = 0\n    for number in numbers:\n        total += number\n" }
+          say: "Deine Funktion rechnet, gibt aber nichts zurück: Es fehlt `return total`."
+      hint:
+        - "Wie bei `sum_to` aus den Schleifen: eine Variable, die bei 0 anfängt, und in der Schleife kommt jede Zahl dazu."
+        - "`for number in numbers:` geht die Zahlen der Liste der Reihe nach durch."
+      solution: |
+        ```python
+        def list_sum(numbers):
+            total = 0
+            for number in numbers:
+                total += number
+            return total
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `listSum(numbers)`, die alle Zahlen einer Liste zusammenzählt: `listSum([3, 4, 5])` ergibt `12`. Mit einer Schleife, ohne `reduce`.
+      starter: |
+        function listSum(numbers) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.reduce]
+        cases:
+          - call: "listSum([3, 4, 5])"
+            expect: "12"
+          - call: "listSum([10])"
+            expect: "10"
+          - call: "listSum([])"
+            expect: "0"
+            say: "Die leere Liste hat die Summe 0."
+          - call: "listSum([-2, 2, 7])"
+            expect: "7"
+          - call: "listSum([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])"
+            expect: "55"
+      feedback:
+        - when: { same_as: "function listSum(numbers) {\n  let total = 0;\n  for (const number of numbers) {\n    total += number;\n  }\n}\n" }
+          say: "Deine Funktion rechnet, gibt aber nichts zurück: Es fehlt `return total;`."
+      hint:
+        - "Wie bei `sumTo` aus den Schleifen: eine Variable, die bei 0 anfängt, und in der Schleife kommt jede Zahl dazu."
+        - "`for (const number of numbers) { … }` geht die Zahlen der Liste der Reihe nach durch."
+      solution: |
+        ```javascript
+        function listSum(numbers) {
+          let total = 0;
+          for (const number of numbers) {
+            total += number;
+          }
+          return total;
+        }
+        ```
+  - id: list-max
+    title: "Die größte Zahl"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `list_max(numbers)`, die die größte Zahl einer Liste zurückgibt: `list_max([3, 9, 4])` ergibt `9`. Die Liste ist nie leer. Ohne `max` und `sort`.
+    starter: |
+      def list_max(numbers)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#max, Array#max_by, Array#minmax, Array#sort, Array#sort_by]
+      cases:
+        - call: "list_max([3, 9, 4])"
+          expect: "9"
+        - call: "list_max([7])"
+          expect: "7"
+        - call: "list_max([-3, -1, -7])"
+          expect: "-1"
+          say: "Lauter negative Zahlen: Die größte ist `-1`."
+        - call: "list_max([5, 5, 2])"
+          expect: "5"
+        - call: "list_max([1, 2, 3, 100])"
+          expect: "100"
+          say: "Die größte Zahl steht ganz hinten."
+    feedback:
+      - when: { same_as: "def list_max(numbers)\n  best = 0\n  numbers.each do |number|\n    best = number if number > best\n  end\n  best\nend\n" }
+        say: "Fang mit der ersten Zahl der Liste an, nicht mit 0: Bei lauter negativen Zahlen ist 0 gar nicht dabei."
+    hint:
+      - "Merk dir die bisher größte Zahl in einer Variablen und vergleich jede Zahl mit ihr."
+      - "Womit fängst du an? `numbers[0]` ist die Zahl mit dem Index 0, die erste."
+    solution: |
+      ```ruby
+      def list_max(numbers)
+        best = numbers[0]
+        numbers.each do |number|
+          best = number if number > best
+        end
+        best
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `list_max(numbers)`, die die größte Zahl einer Liste zurückgibt: `list_max([3, 9, 4])` ergibt `9`. Die Liste ist nie leer. Ohne `max` und `sorted`.
+      starter: |
+        def list_max(numbers):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [max, sorted, list.sort]
+        cases:
+          - call: "list_max([3, 9, 4])"
+            expect: "9"
+          - call: "list_max([7])"
+            expect: "7"
+          - call: "list_max([-3, -1, -7])"
+            expect: "-1"
+            say: "Lauter negative Zahlen: Die größte ist `-1`."
+          - call: "list_max([5, 5, 2])"
+            expect: "5"
+          - call: "list_max([1, 2, 3, 100])"
+            expect: "100"
+            say: "Die größte Zahl steht ganz hinten."
+      feedback:
+        - when: { same_as: "def list_max(numbers):\n    best = 0\n    for number in numbers:\n        if number > best:\n            best = number\n    return best\n" }
+          say: "Fang mit der ersten Zahl der Liste an, nicht mit 0: Bei lauter negativen Zahlen ist 0 gar nicht dabei."
+      hint:
+        - "Merk dir die bisher größte Zahl in einer Variablen und vergleich jede Zahl mit ihr."
+        - "Womit fängst du an? `numbers[0]` ist die Zahl mit dem Index 0, die erste."
+      solution: |
+        ```python
+        def list_max(numbers):
+            best = numbers[0]
+            for number in numbers:
+                if number > best:
+                    best = number
+            return best
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `listMax(numbers)`, die die größte Zahl einer Liste zurückgibt: `listMax([3, 9, 4])` ergibt `9`. Die Liste ist nie leer. Ohne `Math.max` und `sort`.
+      starter: |
+        function listMax(numbers) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Math.max, Array.prototype.sort, Array.prototype.toSorted]
+        cases:
+          - call: "listMax([3, 9, 4])"
+            expect: "9"
+          - call: "listMax([7])"
+            expect: "7"
+          - call: "listMax([-3, -1, -7])"
+            expect: "-1"
+            say: "Lauter negative Zahlen: Die größte ist `-1`."
+          - call: "listMax([5, 5, 2])"
+            expect: "5"
+          - call: "listMax([1, 2, 3, 100])"
+            expect: "100"
+            say: "Die größte Zahl steht ganz hinten."
+      feedback:
+        - when: { same_as: "function listMax(numbers) {\n  let best = 0;\n  for (const number of numbers) {\n    if (number > best) {\n      best = number;\n    }\n  }\n  return best;\n}\n" }
+          say: "Fang mit der ersten Zahl der Liste an, nicht mit 0: Bei lauter negativen Zahlen ist 0 gar nicht dabei."
+      hint:
+        - "Merk dir die bisher größte Zahl in einer Variablen und vergleich jede Zahl mit ihr."
+        - "Womit fängst du an? `numbers[0]` ist die Zahl mit dem Index 0, die erste."
+      solution: |
+        ```javascript
+        function listMax(numbers) {
+          let best = numbers[0];
+          for (const number of numbers) {
+            if (number > best) {
+              best = number;
+            }
+          }
+          return best;
+        }
+        ```
+  - id: count-even
+    title: "Gerade Zahlen zählen"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `count_even(numbers)`, die zählt, wie viele gerade Zahlen in der Liste stehen: `count_even([1, 2, 3, 4])` ergibt `2`.
+    starter: |
+      def count_even(numbers)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#count, Array#select, Array#filter, Array#reject]
+      cases:
+        - call: "count_even([1, 2, 3, 4])"
+          expect: "2"
+        - call: "count_even([1, 3, 5])"
+          expect: "0"
+        - call: "count_even([])"
+          expect: "0"
+        - call: "count_even([0, -2, 7])"
+          expect: "2"
+          say: "0 und -2 sind auch gerade."
+        - call: "count_even([2, 2, 2, 2])"
+          expect: "4"
+    hint:
+      - "Zählen wie bei den Vokalen: eine Variable, die bei 0 anfängt. Wann ist eine Zahl gerade?"
+      - "`number % 2 == 0` fragt, ob beim Teilen durch 2 nichts übrig bleibt."
+    solution: |
+      ```ruby
+      def count_even(numbers)
+        count = 0
+        numbers.each do |number|
+          count += 1 if number % 2 == 0
+        end
+        count
+      end
+      ```
+    python:
+      starter: |
+        def count_even(numbers):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [filter]
+        cases:
+          - call: "count_even([1, 2, 3, 4])"
+            expect: "2"
+          - call: "count_even([1, 3, 5])"
+            expect: "0"
+          - call: "count_even([])"
+            expect: "0"
+          - call: "count_even([0, -2, 7])"
+            expect: "2"
+            say: "0 und -2 sind auch gerade."
+          - call: "count_even([2, 2, 2, 2])"
+            expect: "4"
+      hint:
+        - "Zählen wie bei den Vokalen: eine Variable, die bei 0 anfängt. Wann ist eine Zahl gerade?"
+        - "`number % 2 == 0` fragt, ob beim Teilen durch 2 nichts übrig bleibt."
+      solution: |
+        ```python
+        def count_even(numbers):
+            count = 0
+            for number in numbers:
+                if number % 2 == 0:
+                    count += 1
+            return count
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `countEven(numbers)`, die zählt, wie viele gerade Zahlen in der Liste stehen: `countEven([1, 2, 3, 4])` ergibt `2`.
+      starter: |
+        function countEven(numbers) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.filter]
+        cases:
+          - call: "countEven([1, 2, 3, 4])"
+            expect: "2"
+          - call: "countEven([1, 3, 5])"
+            expect: "0"
+          - call: "countEven([])"
+            expect: "0"
+          - call: "countEven([0, -2, 7])"
+            expect: "2"
+            say: "0 und -2 sind auch gerade."
+          - call: "countEven([2, 2, 2, 2])"
+            expect: "4"
+      hint:
+        - "Zählen wie bei den Vokalen: eine Variable, die bei 0 anfängt. Wann ist eine Zahl gerade?"
+        - "`number % 2 === 0` fragt, ob beim Teilen durch 2 nichts übrig bleibt."
+      solution: |
+        ```javascript
+        function countEven(numbers) {
+          let count = 0;
+          for (const number of numbers) {
+            if (number % 2 === 0) {
+              count++;
+            }
+          }
+          return count;
+        }
+        ```
+  - id: contains
+    title: "Ist es dabei?"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `contains(items, wanted)`, die true zurückgibt, wenn `wanted` in der Liste steht, und sonst false: `contains([4, 8, 15], 8)` ergibt `true`. Mit einer Schleife, ohne `include?` und `index`.
+    starter: |
+      def contains(items, wanted)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#include?, Array#member?, Array#index, Array#find_index, Array#any?, Array#find]
+      cases:
+        - call: "contains([4, 8, 15], 8)"
+          expect: "true"
+        - call: "contains([4, 8, 15], 16)"
+          expect: "false"
+        - call: "contains([], 1)"
+          expect: "false"
+          say: "In der leeren Liste steht nichts."
+        - call: "contains([4, 8, 15], 15)"
+          expect: "true"
+          say: "Auch das letzte Element zählt."
+        - call: "contains([7], 7)"
+          expect: "true"
+    feedback:
+      - when: { same_as: "def contains(items, wanted)\n  items.each do |item|\n    if item == wanted\n      return true\n    else\n      return false\n    end\n  end\n  false\nend\n" }
+        say: "Dein Code entscheidet schon beim ersten Element. `false` steht erst fest, wenn die ganze Liste durch ist: nach der Schleife."
+    hint:
+      - "Geh die Liste durch. Findest du `wanted`, bist du sofort fertig: `return true` beendet die Funktion mitten in der Schleife."
+      - "Und wenn die Schleife zu Ende ist, ohne dass du es gefunden hast?"
+    solution: |
+      ```ruby
+      def contains(items, wanted)
+        items.each do |item|
+          return true if item == wanted
+        end
+        false
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `contains(items, wanted)`, die True zurückgibt, wenn `wanted` in der Liste steht, und sonst False: `contains([4, 8, 15], 8)` ergibt `True`. Mit einer Schleife, ohne `in` (außer in `for … in`) und `index`.
+      starter: |
+        def contains(items, wanted):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [list.index, list.count]
+        cases:
+          - call: "contains([4, 8, 15], 8)"
+            expect: "True"
+          - call: "contains([4, 8, 15], 16)"
+            expect: "False"
+          - call: "contains([], 1)"
+            expect: "False"
+            say: "In der leeren Liste steht nichts."
+          - call: "contains([4, 8, 15], 15)"
+            expect: "True"
+            say: "Auch das letzte Element zählt."
+          - call: "contains([7], 7)"
+            expect: "True"
+      feedback:
+        - when: { same_as: "def contains(items, wanted):\n    for item in items:\n        if item == wanted:\n            return True\n        else:\n            return False\n    return False\n" }
+          say: "Dein Code entscheidet schon beim ersten Element. `False` steht erst fest, wenn die ganze Liste durch ist: nach der Schleife."
+      hint:
+        - "Geh die Liste durch. Findest du `wanted`, bist du sofort fertig: `return True` beendet die Funktion mitten in der Schleife."
+        - "Und wenn die Schleife zu Ende ist, ohne dass du es gefunden hast?"
+      solution: |
+        ```python
+        def contains(items, wanted):
+            for item in items:
+                if item == wanted:
+                    return True
+            return False
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `contains(items, wanted)`, die true zurückgibt, wenn `wanted` in der Liste steht, und sonst false: `contains([4, 8, 15], 8)` ergibt `true`. Mit einer Schleife, ohne `includes`, `indexOf` und `some`.
+      starter: |
+        function contains(items, wanted) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.includes, Array.prototype.indexOf, Array.prototype.lastIndexOf, Array.prototype.some, Array.prototype.find, Array.prototype.findIndex]
+        cases:
+          - call: "contains([4, 8, 15], 8)"
+            expect: "true"
+          - call: "contains([4, 8, 15], 16)"
+            expect: "false"
+          - call: "contains([], 1)"
+            expect: "false"
+            say: "In der leeren Liste steht nichts."
+          - call: "contains([4, 8, 15], 15)"
+            expect: "true"
+            say: "Auch das letzte Element zählt."
+          - call: "contains([7], 7)"
+            expect: "true"
+      feedback:
+        - when: { same_as: "function contains(items, wanted) {\n  for (const item of items) {\n    if (item === wanted) {\n      return true;\n    } else {\n      return false;\n    }\n  }\n  return false;\n}\n" }
+          say: "Dein Code entscheidet schon beim ersten Element. `false` steht erst fest, wenn die ganze Liste durch ist: nach der Schleife."
+      hint:
+        - "Geh die Liste durch. Findest du `wanted`, bist du sofort fertig: `return true;` beendet die Funktion mitten in der Schleife."
+        - "Und wenn die Schleife zu Ende ist, ohne dass du es gefunden hast?"
+      solution: |
+        ```javascript
+        function contains(items, wanted) {
+          for (const item of items) {
+            if (item === wanted) {
+              return true;
+            }
+          }
+          return false;
+        }
+        ```
+  - id: reverse-list
+    title: "Rückwärts"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `reverse_list(items)`, die eine neue Liste zurückgibt, mit denselben Elementen in umgekehrter Reihenfolge: `reverse_list([1, 2, 3])` ergibt `[3, 2, 1]`. Ohne `reverse`.
+    starter: |
+      def reverse_list(items)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#reverse, Array#reverse!, Array#reverse_each]
+      cases:
+        - call: "reverse_list([1, 2, 3])"
+          expect: "[3, 2, 1]"
+        - call: "reverse_list([])"
+          expect: "[]"
+        - call: "reverse_list([5])"
+          expect: "[5]"
+        - call: "reverse_list([1, 2, 3, 4])"
+          expect: "[4, 3, 2, 1]"
+        - call: "reverse_list([9, 9, 1])"
+          expect: "[1, 9, 9]"
+    feedback:
+      - when: { same_as: "def reverse_list(items)\n  result = []\n  i = items.length\n  while i > 0\n    result << items[i]\n    i -= 1\n  end\n  result\nend\n" }
+        say: "Der letzte Index ist `items.length - 1`, nicht `items.length`: Bei `[1, 2, 3]` ist es 2. Und der Index 0 gehört auch dazu."
+    hint:
+      - "Der letzte Index einer Liste ist `items.length - 1`. Zähl von dort herunter bis 0 und häng jedes Element mit `<<` an eine neue Liste an."
+      - "Ein Gerüst:\n\n```ruby\ni = items.length - 1\nwhile i >= 0\n  # items[i] anhängen\n  i -= 1\nend\n```"
+    solution: |
+      ```ruby
+      def reverse_list(items)
+        result = []
+        i = items.length - 1
+        while i >= 0
+          result << items[i]
+          i -= 1
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `reverse_list(items)`, die eine neue Liste zurückgibt, mit denselben Elementen in umgekehrter Reihenfolge: `reverse_list([1, 2, 3])` ergibt `[3, 2, 1]`. Ohne `reversed`, `reverse` und `[::-1]`.
+      starter: |
+        def reverse_list(items):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [reversed, list.reverse]
+        cases:
+          - call: "reverse_list([1, 2, 3])"
+            expect: "[3, 2, 1]"
+          - call: "reverse_list([])"
+            expect: "[]"
+          - call: "reverse_list([5])"
+            expect: "[5]"
+          - call: "reverse_list([1, 2, 3, 4])"
+            expect: "[4, 3, 2, 1]"
+          - call: "reverse_list([9, 9, 1])"
+            expect: "[1, 9, 9]"
+      feedback:
+        - when: { same_as: "def reverse_list(items):\n    result = []\n    for i in range(len(items) - 1, 0, -1):\n        result.append(items[i])\n    return result\n" }
+          say: "`range(len(items) - 1, 0, -1)` hört vor 0 auf: Das erste Element fehlt. Die zweite Zahl ist die erste, die nicht mehr dabei ist."
+      hint:
+        - "Der letzte Index einer Liste ist `len(items) - 1`. Zähl von dort herunter bis 0 und häng jedes Element mit `append` an eine neue Liste an."
+        - "`range(len(items) - 1, -1, -1)` zählt vom letzten Index bis 0 herunter."
+      solution: |
+        ```python
+        def reverse_list(items):
+            result = []
+            i = len(items) - 1
+            while i >= 0:
+                result.append(items[i])
+                i -= 1
+            return result
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `reverseList(items)`, die eine neue Liste zurückgibt, mit denselben Elementen in umgekehrter Reihenfolge: `reverseList([1, 2, 3])` ergibt `[3, 2, 1]`. Ohne `reverse` und `toReversed`.
+      starter: |
+        function reverseList(items) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.reverse, Array.prototype.toReversed]
+        cases:
+          - call: "reverseList([1, 2, 3])"
+            expect: "[3, 2, 1]"
+          - call: "reverseList([])"
+            expect: "[]"
+          - call: "reverseList([5])"
+            expect: "[5]"
+          - call: "reverseList([1, 2, 3, 4])"
+            expect: "[4, 3, 2, 1]"
+          - call: "reverseList([9, 9, 1])"
+            expect: "[1, 9, 9]"
+      feedback:
+        - when: { same_as: "function reverseList(items) {\n  const result = [];\n  for (let i = items.length - 1; i > 0; i--) {\n    result.push(items[i]);\n  }\n  return result;\n}\n" }
+          say: "Mit `i > 0` kommt der Index 0 nicht mehr dran: Das erste Element fehlt."
+      hint:
+        - "Der letzte Index einer Liste ist `items.length - 1`. Zähl von dort herunter bis 0 und häng jedes Element mit `push` an eine neue Liste an."
+        - "`for (let i = items.length - 1; i >= 0; i--)` zählt vom letzten Index bis 0 herunter."
+      solution: |
+        ```javascript
+        function reverseList(items) {
+          const result = [];
+          for (let i = items.length - 1; i >= 0; i--) {
+            result.push(items[i]);
+          }
+          return result;
+        }
+        ```
+  - id: swap-ends
+    title: "Erstes und letztes tauschen"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `swap_ends(items)`, die eine neue Liste zurückgibt, in der das erste und das letzte Element die Plätze getauscht haben: `swap_ends([1, 2, 3, 4])` ergibt `[4, 2, 3, 1]`. Eine Liste mit weniger als zwei Elementen bleibt, wie sie ist.
+    starter: |
+      def swap_ends(items)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "swap_ends([1, 2, 3, 4])"
+          expect: "[4, 2, 3, 1]"
+        - call: "swap_ends([1, 2])"
+          expect: "[2, 1]"
+        - call: "swap_ends([7])"
+          expect: "[7]"
+          say: "Mit einem Element gibt es nichts zu tauschen."
+        - call: "swap_ends([])"
+          expect: "[]"
+          say: "Die leere Liste bleibt leer."
+        - call: "swap_ends([5, 6, 7])"
+          expect: "[7, 6, 5]"
+    feedback:
+      - when: { same_as: "def swap_ends(items)\n  result = items.dup\n  result[0] = result[-1]\n  result[-1] = result[0]\n  result\nend\n" }
+        say: "Nach `result[0] = result[-1]` ist das erste Element schon überschrieben, und hinten landet wieder das letzte. Nimm die Werte aus der alten Liste, oder merk dir einen vorher."
+    hint:
+      - "`items.dup` ist eine Kopie der Liste. `items[-1]` ist das letzte Element."
+      - "Wenn du `result[0]` überschreibst, ist der alte Wert weg. Woher nimmst du ihn für hinten?"
+    solution: |
+      ```ruby
+      def swap_ends(items)
+        return items.dup if items.length < 2
+        result = items.dup
+        result[0] = items[-1]
+        result[-1] = items[0]
+        result
+      end
+      ```
+    python:
+      starter: |
+        def swap_ends(items):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "swap_ends([1, 2, 3, 4])"
+            expect: "[4, 2, 3, 1]"
+          - call: "swap_ends([1, 2])"
+            expect: "[2, 1]"
+          - call: "swap_ends([7])"
+            expect: "[7]"
+            say: "Mit einem Element gibt es nichts zu tauschen."
+          - call: "swap_ends([])"
+            expect: "[]"
+            say: "Die leere Liste bleibt leer."
+          - call: "swap_ends([5, 6, 7])"
+            expect: "[7, 6, 5]"
+      feedback:
+        - when: { same_as: "def swap_ends(items):\n    result = list(items)\n    if len(result) < 2:\n        return result\n    result[0] = result[-1]\n    result[-1] = result[0]\n    return result\n" }
+          say: "Nach `result[0] = result[-1]` ist das erste Element schon überschrieben, und hinten landet wieder das letzte. Nimm die Werte aus der alten Liste, oder merk dir einen vorher."
+      hint:
+        - "`list(items)` ist eine Kopie der Liste. `items[-1]` ist das letzte Element."
+        - "Wenn du `result[0]` überschreibst, ist der alte Wert weg. Woher nimmst du ihn für hinten?"
+      solution: |
+        ```python
+        def swap_ends(items):
+            if len(items) < 2:
+                return list(items)
+            result = list(items)
+            result[0] = items[-1]
+            result[-1] = items[0]
+            return result
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `swapEnds(items)`, die eine neue Liste zurückgibt, in der das erste und das letzte Element die Plätze getauscht haben: `swapEnds([1, 2, 3, 4])` ergibt `[4, 2, 3, 1]`. Eine Liste mit weniger als zwei Elementen bleibt, wie sie ist.
+      starter: |
+        function swapEnds(items) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "swapEnds([1, 2, 3, 4])"
+            expect: "[4, 2, 3, 1]"
+          - call: "swapEnds([1, 2])"
+            expect: "[2, 1]"
+          - call: "swapEnds([7])"
+            expect: "[7]"
+            say: "Mit einem Element gibt es nichts zu tauschen."
+          - call: "swapEnds([])"
+            expect: "[]"
+            say: "Die leere Liste bleibt leer."
+          - call: "swapEnds([5, 6, 7])"
+            expect: "[7, 6, 5]"
+      feedback:
+        - when: { same_as: "function swapEnds(items) {\n  const result = [...items];\n  if (items.length < 2) {\n    return result;\n  }\n  result[0] = result[result.length - 1];\n  result[result.length - 1] = result[0];\n  return result;\n}\n" }
+          say: "Nach `result[0] = result[result.length - 1]` ist das erste Element schon überschrieben, und hinten landet wieder das letzte. Nimm die Werte aus der alten Liste, oder merk dir einen vorher."
+      hint:
+        - "`[...items]` ist eine Kopie der Liste. `items[items.length - 1]` ist das letzte Element."
+        - "Wenn du `result[0]` überschreibst, ist der alte Wert weg. Woher nimmst du ihn für hinten?"
+      solution: |
+        ```javascript
+        function swapEnds(items) {
+          const result = [...items];
+          if (items.length < 2) {
+            return result;
+          }
+          result[0] = items[items.length - 1];
+          result[items.length - 1] = items[0];
+          return result;
+        }
+        ```
+  - id: rotate-left
+    title: "Einen Platz nach links"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `rotate_left(items)`, die alle Elemente um einen Platz nach links rückt; das erste kommt ans Ende: `rotate_left([1, 2, 3, 4])` ergibt `[2, 3, 4, 1]`. Ohne `rotate`.
+    starter: |
+      def rotate_left(items)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#rotate, Array#rotate!]
+      cases:
+        - call: "rotate_left([1, 2, 3, 4])"
+          expect: "[2, 3, 4, 1]"
+        - call: "rotate_left([7])"
+          expect: "[7]"
+        - call: "rotate_left([])"
+          expect: "[]"
+          say: "Die leere Liste bleibt leer."
+        - call: "rotate_left([1, 2])"
+          expect: "[2, 1]"
+        - call: "rotate_left(['a', 'b', 'c'])"
+          expect: "['b', 'c', 'a']"
+          say: "Auch Texte rücken."
+    feedback:
+      - when: { same_as: "def rotate_left(items)\n  return [] if items.empty?\n  [items[-1]] + items[0...-1]\nend\n" }
+        say: "Das rückt nach rechts: Das letzte Element kommt nach vorn. Nach links heißt: Das erste geht ans Ende."
+    hint:
+      - "Die neue Liste besteht aus allen Elementen ab dem Index 1 und danach dem Element mit dem Index 0."
+      - "Denk an die leere Liste: Sie hat kein erstes Element."
+    solution: |
+      ```ruby
+      def rotate_left(items)
+        return [] if items.empty?
+        result = []
+        (1...items.length).each do |i|
+          result << items[i]
+        end
+        result << items[0]
+        result
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `rotate_left(items)`, die alle Elemente um einen Platz nach links rückt; das erste kommt ans Ende: `rotate_left([1, 2, 3, 4])` ergibt `[2, 3, 4, 1]`.
+      starter: |
+        def rotate_left(items):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "rotate_left([1, 2, 3, 4])"
+            expect: "[2, 3, 4, 1]"
+          - call: "rotate_left([7])"
+            expect: "[7]"
+          - call: "rotate_left([])"
+            expect: "[]"
+            say: "Die leere Liste bleibt leer."
+          - call: "rotate_left([1, 2])"
+            expect: "[2, 1]"
+          - call: "rotate_left(['a', 'b', 'c'])"
+            expect: "['b', 'c', 'a']"
+            say: "Auch Texte rücken."
+      feedback:
+        - when: { same_as: "def rotate_left(items):\n    if len(items) == 0:\n        return []\n    return [items[-1]] + items[:-1]\n" }
+          say: "Das rückt nach rechts: Das letzte Element kommt nach vorn. Nach links heißt: Das erste geht ans Ende."
+      hint:
+        - "Die neue Liste besteht aus allen Elementen ab dem Index 1 und danach dem Element mit dem Index 0."
+        - "Denk an die leere Liste: Sie hat kein erstes Element."
+      solution: |
+        ```python
+        def rotate_left(items):
+            if len(items) == 0:
+                return []
+            result = []
+            for i in range(1, len(items)):
+                result.append(items[i])
+            result.append(items[0])
+            return result
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `rotateLeft(items)`, die alle Elemente um einen Platz nach links rückt; das erste kommt ans Ende: `rotateLeft([1, 2, 3, 4])` ergibt `[2, 3, 4, 1]`.
+      starter: |
+        function rotateLeft(items) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "rotateLeft([1, 2, 3, 4])"
+            expect: "[2, 3, 4, 1]"
+          - call: "rotateLeft([7])"
+            expect: "[7]"
+          - call: "rotateLeft([])"
+            expect: "[]"
+            say: "Die leere Liste bleibt leer."
+          - call: "rotateLeft([1, 2])"
+            expect: "[2, 1]"
+          - call: "rotateLeft(['a', 'b', 'c'])"
+            expect: "['b', 'c', 'a']"
+            say: "Auch Texte rücken."
+      feedback:
+        - when: { same_as: "function rotateLeft(items) {\n  if (items.length === 0) {\n    return [];\n  }\n  return [items[items.length - 1], ...items.slice(0, -1)];\n}\n" }
+          say: "Das rückt nach rechts: Das letzte Element kommt nach vorn. Nach links heißt: Das erste geht ans Ende."
+      hint:
+        - "Die neue Liste besteht aus allen Elementen ab dem Index 1 und danach dem Element mit dem Index 0."
+        - "Denk an die leere Liste: Sie hat kein erstes Element."
+      solution: |
+        ```javascript
+        function rotateLeft(items) {
+          if (items.length === 0) {
+            return [];
+          }
+          const result = [];
+          for (let i = 1; i < items.length; i++) {
+            result.push(items[i]);
+          }
+          result.push(items[0]);
+          return result;
+        }
+        ```
+  - id: ascending
+    title: "Aufsteigend sortiert?"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `ascending(numbers)`, die true zurückgibt, wenn jede Zahl mindestens so groß ist wie die vor ihr, und sonst false: `ascending([1, 3, 3, 8])` ergibt `true`, `ascending([1, 5, 2])` ergibt `false`. Ohne zu sortieren.
+    starter: |
+      def ascending(numbers)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#sort, Array#sort_by, Array#sort!]
+      cases:
+        - call: "ascending([1, 3, 3, 8])"
+          expect: "true"
+          say: "Gleiche Zahlen nebeneinander sind erlaubt."
+        - call: "ascending([1, 5, 2])"
+          expect: "false"
+        - call: "ascending([])"
+          expect: "true"
+          say: "Eine leere Liste ist sortiert."
+        - call: "ascending([4])"
+          expect: "true"
+        - call: "ascending([2, 1])"
+          expect: "false"
+        - call: "ascending([1, 2, 3, 4, 0])"
+          expect: "false"
+          say: "Auch der letzte Schritt zählt."
+    feedback:
+      - when: { same_as: "def ascending(numbers)\n  (1...numbers.length).each do |i|\n    return false if numbers[i] <= numbers[i - 1]\n  end\n  true\nend\n" }
+        say: "Gleiche Zahlen nebeneinander sind erlaubt: `[1, 3, 3, 8]` ist aufsteigend. `<=` sagt schon bei gleichen Zahlen nein."
+    hint:
+      - "Vergleich jede Zahl mit der vor ihr: `numbers[i]` mit `numbers[i - 1]`. Bei welchem `i` fängst du an?"
+      - "Ein einziger Schritt abwärts reicht für `false`. Erst wenn alle Schritte stimmen, ist es `true`, wie bei `contains`."
+    solution: |
+      ```ruby
+      def ascending(numbers)
+        (1...numbers.length).each do |i|
+          return false if numbers[i] < numbers[i - 1]
+        end
+        true
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `ascending(numbers)`, die True zurückgibt, wenn jede Zahl mindestens so groß ist wie die vor ihr, und sonst False: `ascending([1, 3, 3, 8])` ergibt `True`, `ascending([1, 5, 2])` ergibt `False`. Ohne zu sortieren.
+      starter: |
+        def ascending(numbers):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [sorted, list.sort]
+        cases:
+          - call: "ascending([1, 3, 3, 8])"
+            expect: "True"
+            say: "Gleiche Zahlen nebeneinander sind erlaubt."
+          - call: "ascending([1, 5, 2])"
+            expect: "False"
+          - call: "ascending([])"
+            expect: "True"
+            say: "Eine leere Liste ist sortiert."
+          - call: "ascending([4])"
+            expect: "True"
+          - call: "ascending([2, 1])"
+            expect: "False"
+          - call: "ascending([1, 2, 3, 4, 0])"
+            expect: "False"
+            say: "Auch der letzte Schritt zählt."
+      feedback:
+        - when: { same_as: "def ascending(numbers):\n    for i in range(1, len(numbers)):\n        if numbers[i] <= numbers[i - 1]:\n            return False\n    return True\n" }
+          say: "Gleiche Zahlen nebeneinander sind erlaubt: `[1, 3, 3, 8]` ist aufsteigend. `<=` sagt schon bei gleichen Zahlen nein."
+      hint:
+        - "Vergleich jede Zahl mit der vor ihr: `numbers[i]` mit `numbers[i - 1]`. Bei welchem `i` fängst du an?"
+        - "Ein einziger Schritt abwärts reicht für `False`. Erst wenn alle Schritte stimmen, ist es `True`, wie bei `contains`."
+      solution: |
+        ```python
+        def ascending(numbers):
+            for i in range(1, len(numbers)):
+                if numbers[i] < numbers[i - 1]:
+                    return False
+            return True
+        ```
+    javascript:
+      starter: |
+        function ascending(numbers) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.sort, Array.prototype.toSorted]
+        cases:
+          - call: "ascending([1, 3, 3, 8])"
+            expect: "true"
+            say: "Gleiche Zahlen nebeneinander sind erlaubt."
+          - call: "ascending([1, 5, 2])"
+            expect: "false"
+          - call: "ascending([])"
+            expect: "true"
+            say: "Eine leere Liste ist sortiert."
+          - call: "ascending([4])"
+            expect: "true"
+          - call: "ascending([2, 1])"
+            expect: "false"
+          - call: "ascending([1, 2, 3, 4, 0])"
+            expect: "false"
+            say: "Auch der letzte Schritt zählt."
+      feedback:
+        - when: { same_as: "function ascending(numbers) {\n  for (let i = 1; i < numbers.length; i++) {\n    if (numbers[i] <= numbers[i - 1]) {\n      return false;\n    }\n  }\n  return true;\n}\n" }
+          say: "Gleiche Zahlen nebeneinander sind erlaubt: `[1, 3, 3, 8]` ist aufsteigend. `<=` sagt schon bei gleichen Zahlen nein."
+      hint:
+        - "Vergleich jede Zahl mit der vor ihr: `numbers[i]` mit `numbers[i - 1]`. Bei welchem `i` fängst du an?"
+        - "Ein einziger Schritt abwärts reicht für `false`. Erst wenn alle Schritte stimmen, ist es `true`, wie bei `contains`."
+      solution: |
+        ```javascript
+        function ascending(numbers) {
+          for (let i = 1; i < numbers.length; i++) {
+            if (numbers[i] < numbers[i - 1]) {
+              return false;
+            }
+          }
+          return true;
+        }
+        ```
+  - id: remove-duplicates
+    title: "Ohne Doppelte"
+    level: 3
+    prompt: |
+      Schreib eine Funktion `remove_duplicates(items)`, die eine neue Liste zurückgibt, in der jedes Element nur einmal vorkommt, dort, wo es zum ersten Mal stand: `remove_duplicates([3, 1, 3, 2, 1])` ergibt `[3, 1, 2]`. Ohne `uniq`.
+    starter: |
+      def remove_duplicates(items)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#uniq, Array#uniq!, Array#to_set]
+      cases:
+        - call: "remove_duplicates([3, 1, 3, 2, 1])"
+          expect: "[3, 1, 2]"
+          say: "Die Reihenfolge bleibt: Jedes Element steht dort, wo es zum ersten Mal vorkam."
+        - call: "remove_duplicates([])"
+          expect: "[]"
+        - call: "remove_duplicates([5, 5, 5])"
+          expect: "[5]"
+        - call: "remove_duplicates([1, 2, 3])"
+          expect: "[1, 2, 3]"
+        - call: "remove_duplicates(['b', 'a', 'b'])"
+          expect: "['b', 'a']"
+    feedback:
+      - when: { same_as: "def remove_duplicates(items)\n  result = []\n  items.each_with_index do |item, i|\n    result << item if item != items[i + 1]\n  end\n  result\nend\n" }
+        say: "Du vergleichst nur mit dem Nachbarn. Doppelte können auch weit auseinander stehen: Schau nach, ob das Element schon in deinem Ergebnis ist."
+    hint:
+      - "Bau eine neue Liste auf. Bevor ein Element hineinkommt: Steht es schon darin? Das ist deine Kata `contains`, und hier darfst du `include?` benutzen."
+      - "`result << item unless result.include?(item)`"
+    solution: |
+      ```ruby
+      def remove_duplicates(items)
+        result = []
+        items.each do |item|
+          result << item unless result.include?(item)
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `remove_duplicates(items)`, die eine neue Liste zurückgibt, in der jedes Element nur einmal vorkommt, dort, wo es zum ersten Mal stand: `remove_duplicates([3, 1, 3, 2, 1])` ergibt `[3, 1, 2]`. Ohne `set` und `dict.fromkeys`.
+      starter: |
+        def remove_duplicates(items):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [set, dict.fromkeys]
+        cases:
+          - call: "remove_duplicates([3, 1, 3, 2, 1])"
+            expect: "[3, 1, 2]"
+            say: "Die Reihenfolge bleibt: Jedes Element steht dort, wo es zum ersten Mal vorkam."
+          - call: "remove_duplicates([])"
+            expect: "[]"
+          - call: "remove_duplicates([5, 5, 5])"
+            expect: "[5]"
+          - call: "remove_duplicates([1, 2, 3])"
+            expect: "[1, 2, 3]"
+          - call: "remove_duplicates(['b', 'a', 'b'])"
+            expect: "['b', 'a']"
+      feedback:
+        - when: { same_as: "def remove_duplicates(items):\n    result = []\n    for i in range(len(items)):\n        if i + 1 >= len(items) or items[i] != items[i + 1]:\n            result.append(items[i])\n    return result\n" }
+          say: "Du vergleichst nur mit dem Nachbarn. Doppelte können auch weit auseinander stehen: Schau nach, ob das Element schon in deinem Ergebnis ist."
+      hint:
+        - "Bau eine neue Liste auf. Bevor ein Element hineinkommt: Steht es schon darin? Das ist deine Kata `contains`, und hier darfst du `in` benutzen."
+        - "`if item not in result:` und dann `append`."
+      solution: |
+        ```python
+        def remove_duplicates(items):
+            result = []
+            for item in items:
+                if item not in result:
+                    result.append(item)
+            return result
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `removeDuplicates(items)`, die eine neue Liste zurückgibt, in der jedes Element nur einmal vorkommt, dort, wo es zum ersten Mal stand: `removeDuplicates([3, 1, 3, 2, 1])` ergibt `[3, 1, 2]`. Ohne `Set`.
+      starter: |
+        function removeDuplicates(items) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [globalThis.Set]
+        cases:
+          - call: "removeDuplicates([3, 1, 3, 2, 1])"
+            expect: "[3, 1, 2]"
+            say: "Die Reihenfolge bleibt: Jedes Element steht dort, wo es zum ersten Mal vorkam."
+          - call: "removeDuplicates([])"
+            expect: "[]"
+          - call: "removeDuplicates([5, 5, 5])"
+            expect: "[5]"
+          - call: "removeDuplicates([1, 2, 3])"
+            expect: "[1, 2, 3]"
+          - call: "removeDuplicates(['b', 'a', 'b'])"
+            expect: "['b', 'a']"
+      feedback:
+        - when: { same_as: "function removeDuplicates(items) {\n  const result = [];\n  for (let i = 0; i < items.length; i++) {\n    if (items[i] !== items[i + 1]) {\n      result.push(items[i]);\n    }\n  }\n  return result;\n}\n" }
+          say: "Du vergleichst nur mit dem Nachbarn. Doppelte können auch weit auseinander stehen: Schau nach, ob das Element schon in deinem Ergebnis ist."
+      hint:
+        - "Bau eine neue Liste auf. Bevor ein Element hineinkommt: Steht es schon darin? Das ist deine Kata `contains`, und hier darfst du `includes` benutzen."
+        - "`if (!result.includes(item))` und dann `push`."
+      solution: |
+        ```javascript
+        function removeDuplicates(items) {
+          const result = [];
+          for (const item of items) {
+            if (!result.includes(item)) {
+              result.push(item);
+            }
+          }
+          return result;
+        }
+        ```
+  - id: missing-number
+    title: "Die fehlende Zahl"
+    level: 3
+    prompt: |
+      In der Liste stehen die Zahlen von 1 bis n, durcheinander, und genau eine fehlt. Die Liste hat also n - 1 Zahlen. Schreib eine Funktion `missing_number(numbers)`, die die fehlende Zahl zurückgibt: `missing_number([3, 1, 5, 2])` ergibt `4`. Geht es ohne zu suchen?
+    starter: |
+      def missing_number(numbers)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "missing_number([3, 1, 5, 2])"
+          expect: "4"
+        - call: "missing_number([2, 3, 4])"
+          expect: "1"
+          say: "Auch die 1 kann fehlen."
+        - call: "missing_number([1, 2, 3])"
+          expect: "4"
+          say: "Auch die größte kann fehlen: Hier ist n gleich 4."
+        - call: "missing_number([])"
+          expect: "1"
+          say: "Die leere Liste: n ist 1, und die 1 fehlt."
+        - call: "missing_number([7, 2, 1, 6, 3, 5])"
+          expect: "4"
+        - call: "missing_number([1])"
+          expect: "2"
+    feedback:
+      - when: { same_as: "def missing_number(numbers)\n  n = numbers.length\n  total = n * (n + 1) / 2\n  numbers.each do |number|\n    total -= number\n  end\n  total\nend\n" }
+        say: "In der Liste fehlt eine Zahl: n ist um eins größer als die Länge der Liste."
+    hint:
+      - "Wie groß ist n? Die Liste hat n - 1 Zahlen."
+      - "Du weißt, was alle Zahlen von 1 bis n zusammen ergeben: `sum_to(n)` aus den Schleifen, oder n · (n + 1) / 2. Was fehlt, wenn du die Zahlen der Liste davon abziehst?"
+    solution: |
+      ```ruby
+      def missing_number(numbers)
+        n = numbers.length + 1
+        total = n * (n + 1) / 2
+        numbers.each do |number|
+          total -= number
+        end
+        total
+      end
+      ```
+    python:
+      starter: |
+        def missing_number(numbers):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "missing_number([3, 1, 5, 2])"
+            expect: "4"
+          - call: "missing_number([2, 3, 4])"
+            expect: "1"
+            say: "Auch die 1 kann fehlen."
+          - call: "missing_number([1, 2, 3])"
+            expect: "4"
+            say: "Auch die größte kann fehlen: Hier ist n gleich 4."
+          - call: "missing_number([])"
+            expect: "1"
+            say: "Die leere Liste: n ist 1, und die 1 fehlt."
+          - call: "missing_number([7, 2, 1, 6, 3, 5])"
+            expect: "4"
+          - call: "missing_number([1])"
+            expect: "2"
+      feedback:
+        - when: { same_as: "def missing_number(numbers):\n    n = len(numbers)\n    total = n * (n + 1) // 2\n    for number in numbers:\n        total -= number\n    return total\n" }
+          say: "In der Liste fehlt eine Zahl: n ist um eins größer als die Länge der Liste."
+      hint:
+        - "Wie groß ist n? Die Liste hat n - 1 Zahlen."
+        - "Du weißt, was alle Zahlen von 1 bis n zusammen ergeben: `sum_to(n)` aus den Schleifen, oder n · (n + 1) / 2. Was fehlt, wenn du die Zahlen der Liste davon abziehst?"
+      solution: |
+        ```python
+        def missing_number(numbers):
+            n = len(numbers) + 1
+            total = n * (n + 1) // 2
+            for number in numbers:
+                total -= number
+            return total
+        ```
+    javascript:
+      prompt: |
+        In der Liste stehen die Zahlen von 1 bis n, durcheinander, und genau eine fehlt. Die Liste hat also n - 1 Zahlen. Schreib eine Funktion `missingNumber(numbers)`, die die fehlende Zahl zurückgibt: `missingNumber([3, 1, 5, 2])` ergibt `4`. Geht es ohne zu suchen?
+      starter: |
+        function missingNumber(numbers) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "missingNumber([3, 1, 5, 2])"
+            expect: "4"
+          - call: "missingNumber([2, 3, 4])"
+            expect: "1"
+            say: "Auch die 1 kann fehlen."
+          - call: "missingNumber([1, 2, 3])"
+            expect: "4"
+            say: "Auch die größte kann fehlen: Hier ist n gleich 4."
+          - call: "missingNumber([])"
+            expect: "1"
+            say: "Die leere Liste: n ist 1, und die 1 fehlt."
+          - call: "missingNumber([7, 2, 1, 6, 3, 5])"
+            expect: "4"
+          - call: "missingNumber([1])"
+            expect: "2"
+      feedback:
+        - when: { same_as: "function missingNumber(numbers) {\n  const n = numbers.length;\n  let total = n * (n + 1) / 2;\n  for (const number of numbers) {\n    total -= number;\n  }\n  return total;\n}\n" }
+          say: "In der Liste fehlt eine Zahl: n ist um eins größer als die Länge der Liste."
+      hint:
+        - "Wie groß ist n? Die Liste hat n - 1 Zahlen."
+        - "Du weißt, was alle Zahlen von 1 bis n zusammen ergeben: `sumTo(n)` aus den Schleifen, oder n · (n + 1) / 2. Was fehlt, wenn du die Zahlen der Liste davon abziehst?"
+      solution: |
+        ```javascript
+        function missingNumber(numbers) {
+          const n = numbers.length + 1;
+          let total = n * (n + 1) / 2;
+          for (const number of numbers) {
+            total -= number;
+          }
+          return total;
+        }
+        ```
+  - id: merge-sorted
+    title: "Zwei sortierte Listen mischen"
+    level: 3
+    prompt: |
+      `a` und `b` sind aufsteigend sortiert. Schreib eine Funktion `merge_sorted(a, b)`, die daraus eine sortierte Liste macht, ohne zu sortieren: Schau immer auf die vorderste Zahl beider Listen und nimm die kleinere. `merge_sorted([1, 4, 6], [2, 3, 7])` ergibt `[1, 2, 3, 4, 6, 7]`.
+    starter: |
+      def merge_sorted(a, b)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#sort, Array#sort_by, Array#sort!, Array#min, Array#max]
+      cases:
+        - call: "merge_sorted([1, 4, 6], [2, 3, 7])"
+          expect: "[1, 2, 3, 4, 6, 7]"
+        - call: "merge_sorted([], [1, 2])"
+          expect: "[1, 2]"
+        - call: "merge_sorted([5], [])"
+          expect: "[5]"
+        - call: "merge_sorted([1, 2], [2, 3])"
+          expect: "[1, 2, 2, 3]"
+          say: "Gleiche Zahlen kommen beide hinein."
+        - call: "merge_sorted([1, 2, 3], [10, 20])"
+          expect: "[1, 2, 3, 10, 20]"
+          say: "Ist eine Liste zu Ende, gehört der Rest der anderen noch dazu."
+        - call: "merge_sorted([8, 9], [1])"
+          expect: "[1, 8, 9]"
+    feedback:
+      - when: { same_as: "def merge_sorted(a, b)\n  result = []\n  i = 0\n  j = 0\n  while i < a.length && j < b.length\n    if a[i] <= b[j]\n      result << a[i]\n      i += 1\n    else\n      result << b[j]\n      j += 1\n    end\n  end\n  result\nend\n" }
+        say: "Ist eine Liste zu Ende, hört deine Schleife auf, aber in der anderen stehen noch Zahlen. Die gehören noch dazu."
+    hint:
+      - "Zwei Zählvariablen, `i` für `a` und `j` für `b`, zeigen auf die vorderste Zahl, die noch nicht im Ergebnis ist. Die kleinere von `a[i]` und `b[j]` kommt hinein, und ihre Zählvariable rückt weiter."
+      - "Das geht, solange beide Listen noch Zahlen haben. Was ist danach mit dem Rest? `a[i..]` ist alles ab dem Index `i`."
+    solution: |
+      ```ruby
+      def merge_sorted(a, b)
+        result = []
+        i = 0
+        j = 0
+        while i < a.length && j < b.length
+          if a[i] <= b[j]
+            result << a[i]
+            i += 1
+          else
+            result << b[j]
+            j += 1
+          end
+        end
+        result + a[i..] + b[j..]
+      end
+      ```
+    python:
+      starter: |
+        def merge_sorted(a, b):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [sorted, list.sort, min, max, heapq.merge]
+        cases:
+          - call: "merge_sorted([1, 4, 6], [2, 3, 7])"
+            expect: "[1, 2, 3, 4, 6, 7]"
+          - call: "merge_sorted([], [1, 2])"
+            expect: "[1, 2]"
+          - call: "merge_sorted([5], [])"
+            expect: "[5]"
+          - call: "merge_sorted([1, 2], [2, 3])"
+            expect: "[1, 2, 2, 3]"
+            say: "Gleiche Zahlen kommen beide hinein."
+          - call: "merge_sorted([1, 2, 3], [10, 20])"
+            expect: "[1, 2, 3, 10, 20]"
+            say: "Ist eine Liste zu Ende, gehört der Rest der anderen noch dazu."
+          - call: "merge_sorted([8, 9], [1])"
+            expect: "[1, 8, 9]"
+      feedback:
+        - when: { same_as: "def merge_sorted(a, b):\n    result = []\n    i = 0\n    j = 0\n    while i < len(a) and j < len(b):\n        if a[i] <= b[j]:\n            result.append(a[i])\n            i += 1\n        else:\n            result.append(b[j])\n            j += 1\n    return result\n" }
+          say: "Ist eine Liste zu Ende, hört deine Schleife auf, aber in der anderen stehen noch Zahlen. Die gehören noch dazu."
+      hint:
+        - "Zwei Zählvariablen, `i` für `a` und `j` für `b`, zeigen auf die vorderste Zahl, die noch nicht im Ergebnis ist. Die kleinere von `a[i]` und `b[j]` kommt hinein, und ihre Zählvariable rückt weiter."
+        - "Das geht, solange beide Listen noch Zahlen haben. Was ist danach mit dem Rest? `a[i:]` ist alles ab dem Index `i`."
+      solution: |
+        ```python
+        def merge_sorted(a, b):
+            result = []
+            i = 0
+            j = 0
+            while i < len(a) and j < len(b):
+                if a[i] <= b[j]:
+                    result.append(a[i])
+                    i += 1
+                else:
+                    result.append(b[j])
+                    j += 1
+            return result + a[i:] + b[j:]
+        ```
+    javascript:
+      prompt: |
+        `a` und `b` sind aufsteigend sortiert. Schreib eine Funktion `mergeSorted(a, b)`, die daraus eine sortierte Liste macht, ohne zu sortieren: Schau immer auf die vorderste Zahl beider Listen und nimm die kleinere. `mergeSorted([1, 4, 6], [2, 3, 7])` ergibt `[1, 2, 3, 4, 6, 7]`.
+      starter: |
+        function mergeSorted(a, b) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.sort, Array.prototype.toSorted, Math.min, Math.max]
+        cases:
+          - call: "mergeSorted([1, 4, 6], [2, 3, 7])"
+            expect: "[1, 2, 3, 4, 6, 7]"
+          - call: "mergeSorted([], [1, 2])"
+            expect: "[1, 2]"
+          - call: "mergeSorted([5], [])"
+            expect: "[5]"
+          - call: "mergeSorted([1, 2], [2, 3])"
+            expect: "[1, 2, 2, 3]"
+            say: "Gleiche Zahlen kommen beide hinein."
+          - call: "mergeSorted([1, 2, 3], [10, 20])"
+            expect: "[1, 2, 3, 10, 20]"
+            say: "Ist eine Liste zu Ende, gehört der Rest der anderen noch dazu."
+          - call: "mergeSorted([8, 9], [1])"
+            expect: "[1, 8, 9]"
+      feedback:
+        - when: { same_as: "function mergeSorted(a, b) {\n  const result = [];\n  let i = 0;\n  let j = 0;\n  while (i < a.length && j < b.length) {\n    if (a[i] <= b[j]) {\n      result.push(a[i]);\n      i++;\n    } else {\n      result.push(b[j]);\n      j++;\n    }\n  }\n  return result;\n}\n" }
+          say: "Ist eine Liste zu Ende, hört deine Schleife auf, aber in der anderen stehen noch Zahlen. Die gehören noch dazu."
+      hint:
+        - "Zwei Zählvariablen, `i` für `a` und `j` für `b`, zeigen auf die vorderste Zahl, die noch nicht im Ergebnis ist. Die kleinere von `a[i]` und `b[j]` kommt hinein, und ihre Zählvariable rückt weiter."
+        - "Das geht, solange beide Listen noch Zahlen haben. Was ist danach mit dem Rest? `a.slice(i)` ist alles ab dem Index `i`."
+      solution: |
+        ```javascript
+        function mergeSorted(a, b) {
+          const result = [];
+          let i = 0;
+          let j = 0;
+          while (i < a.length && j < b.length) {
+            if (a[i] <= b[j]) {
+              result.push(a[i]);
+              i++;
+            } else {
+              result.push(b[j]);
+              j++;
+            }
+          }
+          return result.concat(a.slice(i), b.slice(j));
+        }
+        ```
+  - id: two-sum
+    title: "Zwei, die zusammenpassen"
+    extra: true
+    prompt: |
+      Schreib eine Funktion `two_sum(numbers, target)`, die die Indizes der ersten zwei Zahlen zurückgibt, die zusammen `target` ergeben, als Liste `[i, j]` mit `i < j`: `two_sum([2, 7, 11, 15], 9)` ergibt `[0, 1]`. »Die ersten« heißt: mit dem kleinsten `j`, und bei gleichem `j` mit dem kleinsten `i`. Gibt es keine, kommt `[]` zurück.
+    starter: |
+      def two_sum(numbers, target)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "two_sum([2, 7, 11, 15], 9)"
+          expect: "[0, 1]"
+        - call: "two_sum([3, 2, 4], 6)"
+          expect: "[1, 2]"
+          say: "Eine Zahl zählt nicht doppelt: `3 + 3` geht nur mit zwei Dreien."
+        - call: "two_sum([3, 3], 6)"
+          expect: "[0, 1]"
+        - call: "two_sum([1, 2, 3], 7)"
+          expect: "[]"
+        - call: "two_sum([], 1)"
+          expect: "[]"
+        - call: "two_sum([5, 1, 4, 2], 6)"
+          expect: "[0, 1]"
+          say: "Am kleinsten `j` erkennt man das erste Paar: `5 + 1`."
+    feedback:
+      - when: { same_as: "def two_sum(numbers, target)\n  numbers.each_index do |i|\n    numbers.each_index do |j|\n      return [i, j] if numbers[i] + numbers[j] == target\n    end\n  end\n  []\nend\n" }
+        say: "Bei `[3, 2, 4]` und 6 nimmt dein Code die 3 zweimal. `j` muss hinter `i` liegen."
+    hint:
+      - "Zwei Schleifen ineinander: die äußere für `j`, die innere für alle `i` vor `j`."
+      - "Mit einem Hash, der sich merkt, welche Zahl an welchem Index stand, geht es mit einer einzigen Schleife. Das kommt bei den Dictionaries."
+    solution: |
+      ```ruby
+      def two_sum(numbers, target)
+        (1...numbers.length).each do |j|
+          (0...j).each do |i|
+            return [i, j] if numbers[i] + numbers[j] == target
+          end
+        end
+        []
+      end
+      ```
+    python:
+      starter: |
+        def two_sum(numbers, target):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "two_sum([2, 7, 11, 15], 9)"
+            expect: "[0, 1]"
+          - call: "two_sum([3, 2, 4], 6)"
+            expect: "[1, 2]"
+            say: "Eine Zahl zählt nicht doppelt: `3 + 3` geht nur mit zwei Dreien."
+          - call: "two_sum([3, 3], 6)"
+            expect: "[0, 1]"
+          - call: "two_sum([1, 2, 3], 7)"
+            expect: "[]"
+          - call: "two_sum([], 1)"
+            expect: "[]"
+          - call: "two_sum([5, 1, 4, 2], 6)"
+            expect: "[0, 1]"
+            say: "Am kleinsten `j` erkennt man das erste Paar: `5 + 1`."
+      feedback:
+        - when: { same_as: "def two_sum(numbers, target):\n    for i in range(len(numbers)):\n        for j in range(len(numbers)):\n            if numbers[i] + numbers[j] == target:\n                return [i, j]\n    return []\n" }
+          say: "Bei `[3, 2, 4]` und 6 nimmt dein Code die 3 zweimal. `j` muss hinter `i` liegen."
+      hint:
+        - "Zwei Schleifen ineinander: die äußere für `j`, die innere für alle `i` vor `j`."
+        - "Mit einem Dictionary, das sich merkt, welche Zahl an welchem Index stand, geht es mit einer einzigen Schleife. Das kommt bei den Dictionaries."
+      solution: |
+        ```python
+        def two_sum(numbers, target):
+            for j in range(1, len(numbers)):
+                for i in range(j):
+                    if numbers[i] + numbers[j] == target:
+                        return [i, j]
+            return []
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `twoSum(numbers, target)`, die die Indizes der ersten zwei Zahlen zurückgibt, die zusammen `target` ergeben, als Liste `[i, j]` mit `i < j`: `twoSum([2, 7, 11, 15], 9)` ergibt `[0, 1]`. »Die ersten« heißt: mit dem kleinsten `j`, und bei gleichem `j` mit dem kleinsten `i`. Gibt es keine, kommt `[]` zurück.
+      starter: |
+        function twoSum(numbers, target) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "twoSum([2, 7, 11, 15], 9)"
+            expect: "[0, 1]"
+          - call: "twoSum([3, 2, 4], 6)"
+            expect: "[1, 2]"
+            say: "Eine Zahl zählt nicht doppelt: `3 + 3` geht nur mit zwei Dreien."
+          - call: "twoSum([3, 3], 6)"
+            expect: "[0, 1]"
+          - call: "twoSum([1, 2, 3], 7)"
+            expect: "[]"
+          - call: "twoSum([], 1)"
+            expect: "[]"
+          - call: "twoSum([5, 1, 4, 2], 6)"
+            expect: "[0, 1]"
+            say: "Am kleinsten `j` erkennt man das erste Paar: `5 + 1`."
+      feedback:
+        - when: { same_as: "function twoSum(numbers, target) {\n  for (let i = 0; i < numbers.length; i++) {\n    for (let j = 0; j < numbers.length; j++) {\n      if (numbers[i] + numbers[j] === target) {\n        return [i, j];\n      }\n    }\n  }\n  return [];\n}\n" }
+          say: "Bei `[3, 2, 4]` und 6 nimmt dein Code die 3 zweimal. `j` muss hinter `i` liegen."
+      hint:
+        - "Zwei Schleifen ineinander: die äußere für `j`, die innere für alle `i` vor `j`."
+        - "Mit einer `Map`, die sich merkt, welche Zahl an welchem Index stand, geht es mit einer einzigen Schleife. Das kommt bei den Dictionaries."
+      solution: |
+        ```javascript
+        function twoSum(numbers, target) {
+          for (let j = 1; j < numbers.length; j++) {
+            for (let i = 0; i < j; i++) {
+              if (numbers[i] + numbers[j] === target) {
+                return [i, j];
+              }
+            }
+          }
+          return [];
+        }
+        ```
+  - id: chunks
+    title: "In Stücke teilen"
+    extra: true
+    prompt: |
+      Schreib eine Funktion `chunks(items, size)`, die die Liste in Stücke von je `size` Elementen teilt; das letzte Stück darf kürzer sein: `chunks([1, 2, 3, 4, 5], 2)` ergibt `[[1, 2], [3, 4], [5]]`. Ohne `each_slice`.
+    starter: |
+      def chunks(items, size)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Enumerable#each_slice, Array#each_slice]
+      cases:
+        - call: "chunks([1, 2, 3, 4, 5], 2)"
+          expect: "[[1, 2], [3, 4], [5]]"
+          say: "Das letzte Stück darf kürzer sein."
+        - call: "chunks([1, 2, 3, 4], 2)"
+          expect: "[[1, 2], [3, 4]]"
+        - call: "chunks([], 3)"
+          expect: "[]"
+          say: "Die leere Liste hat keine Stücke."
+        - call: "chunks([1, 2, 3], 5)"
+          expect: "[[1, 2, 3]]"
+        - call: "chunks([1, 2, 3], 1)"
+          expect: "[[1], [2], [3]]"
+    hint:
+      - "Der Anfang jedes Stücks liegt bei den Indizes 0, `size`, `2 * size` … `items[i, size]` sind `size` Elemente ab dem Index `i`, am Ende auch weniger."
+      - "Eine `while`-Schleife, in der `i` jedes Mal um `size` wächst."
+    solution: |
+      ```ruby
+      def chunks(items, size)
+        result = []
+        i = 0
+        while i < items.length
+          result << items[i, size]
+          i += size
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `chunks(items, size)`, die die Liste in Stücke von je `size` Elementen teilt; das letzte Stück darf kürzer sein: `chunks([1, 2, 3, 4, 5], 2)` ergibt `[[1, 2], [3, 4], [5]]`.
+      starter: |
+        def chunks(items, size):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "chunks([1, 2, 3, 4, 5], 2)"
+            expect: "[[1, 2], [3, 4], [5]]"
+            say: "Das letzte Stück darf kürzer sein."
+          - call: "chunks([1, 2, 3, 4], 2)"
+            expect: "[[1, 2], [3, 4]]"
+          - call: "chunks([], 3)"
+            expect: "[]"
+            say: "Die leere Liste hat keine Stücke."
+          - call: "chunks([1, 2, 3], 5)"
+            expect: "[[1, 2, 3]]"
+          - call: "chunks([1, 2, 3], 1)"
+            expect: "[[1], [2], [3]]"
+      hint:
+        - "Der Anfang jedes Stücks liegt bei den Indizes 0, `size`, `2 * size` … `items[i:i + size]` sind die Elemente ab dem Index `i`, am Ende auch weniger."
+        - "`range(0, len(items), size)` zählt in Schritten von `size`."
+      solution: |
+        ```python
+        def chunks(items, size):
+            result = []
+            for i in range(0, len(items), size):
+                result.append(items[i:i + size])
+            return result
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `chunks(items, size)`, die die Liste in Stücke von je `size` Elementen teilt; das letzte Stück darf kürzer sein: `chunks([1, 2, 3, 4, 5], 2)` ergibt `[[1, 2], [3, 4], [5]]`.
+      starter: |
+        function chunks(items, size) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "chunks([1, 2, 3, 4, 5], 2)"
+            expect: "[[1, 2], [3, 4], [5]]"
+            say: "Das letzte Stück darf kürzer sein."
+          - call: "chunks([1, 2, 3, 4], 2)"
+            expect: "[[1, 2], [3, 4]]"
+          - call: "chunks([], 3)"
+            expect: "[]"
+            say: "Die leere Liste hat keine Stücke."
+          - call: "chunks([1, 2, 3], 5)"
+            expect: "[[1, 2, 3]]"
+          - call: "chunks([1, 2, 3], 1)"
+            expect: "[[1], [2], [3]]"
+      hint:
+        - "Der Anfang jedes Stücks liegt bei den Indizes 0, `size`, `2 * size` … `items.slice(i, i + size)` sind die Elemente ab dem Index `i`, am Ende auch weniger."
+        - "Eine Schleife, in der `i` jedes Mal um `size` wächst: `i += size`."
+      solution: |
+        ```javascript
+        function chunks(items, size) {
+          const result = [];
+          for (let i = 0; i < items.length; i += size) {
+            result.push(items.slice(i, i + size));
+          }
+          return result;
+        }
+        ```
