@@ -24,9 +24,9 @@ wird blass.
 
 <div class='pip-wichtel'>
 »Ein Herzstein«, sagt er. »Der gehört nach ganz unten, hinter die letzte alte
-Lampe. Dort wohnt der Mampfer. Er sieht nichts, aber er hört jeden Schritt und
-kennt jeden Gang. Er nimmt immer den kürzesten Weg zu dir. Nur ins Licht traut
-er sich nicht.«
+Lampe. Dort wohnt der Mampfer. Er hört jeden Schritt und kennt jeden Gang, und
+er nimmt immer den kürzesten Weg zu dir. Nur ins Licht geht er nicht: Seine
+Augen sind fürs Dunkle gemacht, eine Lampe blendet ihn.«
 </div>
 
 ## Der Mampfer
