@@ -803,13 +803,13 @@ The cards and the strip
   that fade out at its ends; it fades into the page where more follows. A
   set pinned for the person's group is marked and scrolled into the middle.
 - Every set has an icon on a band in its own hue (`icon:`, `accent:` in
-  degrees, equally light and strong, moving along the strip; Pip's sets in
-  the lantern amber), no picture of a card, which would give a solution
+  degrees, equally light and strong, moving along the strip; Pip in the
+  lantern amber, Bello in blue), no picture of a card, which would give a solution
   away; green stays for buttons and progress, the bars striped: braces for Erste Funktionen, a signpost
   for Entscheidungen, a loop for Wiederholen, quotation marks for Texte, a
   numbered list for Listen, a book for Dictionaries, toggles for Bits, a
   tree for Rekursion, a magnifier for Suchen; Pip (from the side) and Bello
-  for Pip's sets, in amber, every pixel the same size
+  for Pip's sets, each drawn in its set's hue, every pixel the same size
   (`images/pip/make_icons.py`). The section's icon is the martial arts
   uniform.
 - A mouse drags the strip; thrown, it glides to the set it would come to

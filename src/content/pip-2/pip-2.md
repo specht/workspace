@@ -1,7 +1,7 @@
 <div class='meta'>
 image: teaser.webp:50:40
 icon: /images/pip/icon-bello.png
-accent: 38
+accent: 235
 kind: uebung
 duration: 3 Doppelstunden
 languages: [ruby, python, javascript]

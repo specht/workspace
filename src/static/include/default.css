@@ -8356,8 +8356,8 @@ html[data-bs-theme="dark"] .bitplane-widget {
     width: 48px;
     height: 48px;
     image-rendering: pixelated;
-    /* drawn in amber (hue 38, make_icons.py): turned to the set's hue */
-    filter: hue-rotate(calc((var(--accent) - 38) * 1deg)) drop-shadow(0 0 0.35em hsl(var(--accent) 60% 60% / 0.35));
+    /* drawn in the set's hue (make_icons.py), with its glow */
+    filter: drop-shadow(0 0 0.35em hsl(var(--accent) 60% 60% / 0.35));
     transition: scale 300ms;
 }
 .kata-set:hover .kata-set-sprite {

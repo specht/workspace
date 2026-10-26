@@ -1,22 +1,27 @@
 #!/usr/bin/env python3
 """Pip and Bello as icons for the strip of Katas on the front page
 (KataMap, meta icon: of pip-1 and pip-2): the first frame of pip-east.png (from the side)
-and bello.png, cut to what is drawn, in amber like the band of Pip's sets
+and bello.png, cut to what is drawn, each in the hue of its set's band
 (default.css, .kata-set-art): each pixel's brightness becomes a shade of
-amber, so the figure keeps its drawing. Run after make_sprites.py:
+it, so the figure keeps its drawing. Run after make_sprites.py:
 
     python3 make_icons.py
 """
+import colorsys
 from PIL import Image
 
-# the lantern amber of Pip's sets (meta accent: 38); default.css turns a
-# sprite to another set's hue from there
-DARK = (72, 46, 12)
-LIGHT = (255, 205, 120)
+# each figure in the hue of its set's band (meta accent: of pip-1 and
+# pip-2, in degrees), from dark to light
+def ramp(hue):
+    dark = colorsys.hls_to_rgb(hue / 360, 0.32, 0.6)
+    light = colorsys.hls_to_rgb(hue / 360, 0.82, 0.95)
+    return tuple(round(c * 255) for c in dark), tuple(round(c * 255) for c in light)
+
 SIZE = 24
 
 
-def icon(source, target):
+def icon(source, target, hue):
+    DARK, LIGHT = ramp(hue)
     sheet = Image.open(source).convert('RGBA')
     frame = sheet.crop((0, 0, sheet.height, sheet.height))
     solid = frame.getchannel('A').point(lambda a: 255 if a >= 200 else 0)
@@ -37,5 +42,5 @@ def icon(source, target):
     canvas.save(target)
 
 
-icon('pip-east.png', 'icon-pip.png')
-icon('bello.png', 'icon-bello.png')
+icon('pip-east.png', 'icon-pip.png', 38)
+icon('bello.png', 'icon-bello.png', 235)
