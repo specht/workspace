@@ -3,6 +3,8 @@ image: teaser.webp:50:20
 kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
+idea: Je nach Wert etwas anderes tun
+curriculum: "Sek I: Kontrollstrukturen (Verzweigung)"
 requires: [kata-functions]
 </div>
 

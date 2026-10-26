@@ -24,6 +24,7 @@
     ohne Terminal und Dateien, mit einem Knopf zum Ausprobieren und einem
     zum Prüfen.
   entries:
+    - .katas
     - .kata-functions
     - .kata-decisions
     - .kata-loops

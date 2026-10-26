@@ -62,6 +62,7 @@ Jahr steht dafür im Titel der Seite in Klammern.
 | `kind` | `projekt`, `labor`, `grundlagen`, `uebung`, `galerie` oder `steckbrief` (Programmiersprachen); steht auf der Karte, jede Aktivität im Katalog braucht eines |
 | `language` | Die Sprache, in der man programmiert, wenn es eine feste gibt: `Ruby`, `C / raylib`; steht als »Projekt (Ruby)« auf der Karte |
 | `duration` | Freier Text, zum Beispiel »2 Doppelstunden« |
+| `idea`, `curriculum` | Nur bei Übungen mit Katas: die Idee in wenigen Worten und die Zeile des Lehrplans; die Übersicht `/katas` zeigt beides (`curriculum` nur Lehrkräften) |
 | `requires` | Aktivitäten, die vorher sinnvoll sind |
 | `reference` | Handbuch-Seiten, die die Aktivität braucht; erscheinen oben auf der Seite |
 | `template` | Adresse einer Vorlage zum Klonen (`https://…`); im Text `${template}`. Der Workspace sagt Lernenden, wenn ihr Klon veraltet ist |

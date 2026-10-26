@@ -157,6 +157,12 @@ html[data-bs-theme="dark"] {
         --bs-btn-disabled-color: #6fd39b;
         --bs-btn-disabled-border-color: #3f8f63;
     }
+    /* The stops of the Katas' overview: solid, so the dashed path behind
+       them does not show through; the colour of the veil on the page. */
+    .kata-stop-link {
+        background: #101010;
+        border-color: rgba(255, 255, 255, 0.08);
+    }
     .person, .book, .case-note {
         background: rgba(0, 0, 0, 0.25);
         border-color: transparent;

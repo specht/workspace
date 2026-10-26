@@ -3,6 +3,8 @@ image: teaser.webp:50:20
 kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
+idea: Zählen, sammeln und suchen mit Schleifen
+curriculum: "Sek I: Kontrollstrukturen (Wiederholung); Oberstufe: Algorithmen"
 requires: [kata-decisions]
 </div>
 

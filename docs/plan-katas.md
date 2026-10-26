@@ -743,3 +743,11 @@ setting at Ruby and Python, and a choice of JavaScript is stored apart
 (`u.kata_code_language`), so other pages keep Ruby or Python.
 `JavascriptCheck` is the harness. Person boxes for Euklid, Fibonacci,
 Collatz and Eratosthenes (set 3) are still to be written.
+
+**Step 5, the overview: done, dev-only.** `/katas` (`src/content/katas`,
+the first entry of the section) holds `<div class='kata-map'></div>`;
+`KataMap` and `page_html` put the sets there as stops on a path, in the
+order of `sections.yaml`, with `idea:` and the count per level from their
+meta and tasks, the person's progress, and `curriculum:` for teachers. The
+map draws only the sets that exist; Pip and sets 4 to 10 join it as they
+come.

@@ -3,6 +3,8 @@ image: teaser.webp:50:20
 kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
+idea: Werte bekommen, rechnen, ein Ergebnis zurückgeben
+curriculum: "Sek I: Variablen, Ausdrücke, Prozeduren"
 </div>
 
 # Katas: Erste Funktionen

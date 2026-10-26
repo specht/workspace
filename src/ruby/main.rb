@@ -4,6 +4,7 @@ require './include/vscode_settings.rb'
 require './include/page_kinds.rb'
 require './include/task_spec.rb'
 require './include/code_languages.rb'
+require './include/kata_map.rb'
 require './include/solution_blocks.rb'
 require './include/hint_steps.rb'
 require './include/after_task.rb'
@@ -2021,6 +2022,10 @@ class Main < Sinatra::Base
                 # search: words that find the page in the Handbuch search
                 # without standing in its title (Regex for »Reguläre Ausdrücke«)
                 :search_words => page_meta['search'].to_s.split(',').map(&:strip).reject(&:empty?),
+                # A set of Katas (KataMap): its idea in a few words, and the
+                # line of the curriculum teachers see on the overview.
+                :idea => page_meta['idea'],
+                :curriculum => page_meta['curriculum'],
             }
             if page_tasks
                 parsed_content[slug][:tasks] = page_tasks.merge(:on_page => task_slots & page_tasks[:by_id].keys)
@@ -8124,6 +8129,7 @@ class Main < Sinatra::Base
         # the page as a student; after the variant is chosen, which has the
         # buttons too
         html = StageCode.strip(html) unless teacher_logged_in? && @impersonated_by.nil?
+        html = html.sub(KataMap::MARKER) { kata_map_html } if html.match?(KataMap::MARKER)
         return html unless slug == 'terminal-mystery' && CaseServer.enabled?
 
         # the note with the person's own access to the case server, written
@@ -8133,6 +8139,18 @@ class Main < Sinatra::Base
         return html unless @session_user
 
         html.gsub(CaseServer::ARCHIVE_PATH, CaseServer.personal_archive_path(CaseServer.secret(LOGIN_CODE_SALT), @session_user[:email]))
+    end
+
+    # The overview of the Katas (KataMap) for the person viewing it: the
+    # sets of the catalog section »Katas«, their progress, and for teachers
+    # the curriculum lines.
+    def kata_map_html
+        slugs = ((@@sections['katas'] || {})[:entries] || []).select do |slug|
+            @@content[slug] && @@content[slug][:tasks] && (DEVELOPMENT || !@@content[slug][:dev_only])
+        end
+        stops = slugs.map { |slug| KataMap.stop(slug, @@content[slug]) }
+        progress = user_logged_in? ? my_progress.to_h { |p| [p[:slug], p] } : nil
+        KataMap.html(stops, :progress => progress, :teacher => teacher_logged_in?)
     end
 
     # Whose Workspace has this address: exactly one running Workspace of an
