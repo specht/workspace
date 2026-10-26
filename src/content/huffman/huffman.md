@@ -5,6 +5,7 @@ kind: labor
 language: Ruby / Python
 languages: [ruby, python]
 duration: 2 Doppelstunden
+curriculum: "Sek I: Information und Daten (Codierung); Oberstufe: Algorithmen und Datenstrukturen (Bäume, Huffman-Codierung)"
 reference: [heap, baeume, bits-und-bytes, ruby-python]
 </div>
 

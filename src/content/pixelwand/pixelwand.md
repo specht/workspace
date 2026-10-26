@@ -5,6 +5,7 @@ kind: projekt
 language: Ruby / Python
 languages: [ruby, python]
 duration: 2 Doppelstunden
+curriculum: "Oberstufe: Rechner und Netze (Client-Server-Struktur, Protokolle), Vertiefung Computer-Netze (WebSockets, Threads und Locks)"
 requires: [webserver]
 reference: [http, json, ruby-python]
 </div>

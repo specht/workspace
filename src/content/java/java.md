@@ -1,6 +1,7 @@
 <div class='meta'>
 image: Java-Logo.png
 kind: steckbrief
+curriculum: "Oberstufe: Syntax und Semantik (Compiler, Bytecode)"
 </div>
 
 <div

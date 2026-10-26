@@ -4,6 +4,7 @@ image_alt: "Ein Straßenfoto mit einem Lastendreirad; ein Gesicht ist vergröße
 kind: labor
 language: C
 duration: 3 Doppelstunden
+curriculum: "Oberstufe: Vertiefung Computergrafik (Rastergrafik, Bildformat GIF), Vertiefung Maschinennahe Programmierung (Bytes und Bits in C)"
 requires: [pixelram]
 reference: [c, pixelram, workspace, bits-und-bytes]
 template: https://github.com/specht/pixelram-starter.git

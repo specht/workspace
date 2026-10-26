@@ -4,6 +4,7 @@ image_alt: "Ein pixeliger Regenbogen über einer grünen Wiese vor einem gestrei
 kind: projekt
 language: Pixelflow Canvas / Ruby
 duration: 2 Doppelstunden
+curriculum: "Sek I: Digitale Bilder und Visualisierung (Rastergrafik, Farbmodelle, Turtle-Grafik), Algorithmisches Problemlösen (algorithmische Grundstrukturen)"
 reference: [workspace, farben]
 </div>
 

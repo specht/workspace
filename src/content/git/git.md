@@ -3,6 +3,7 @@ image: git-logo.png
 image_alt: "Das Logo von Git"
 kind: grundlagen
 duration: 3 Doppelstunden
+curriculum: "Sek I: Projektmanagement (Arbeiten und Kooperieren im Team); Oberstufe: Softwareprojekt (systematische Softwareentwicklung)"
 reference: [workspace, terminal, git, gitlab]
 </div>
 

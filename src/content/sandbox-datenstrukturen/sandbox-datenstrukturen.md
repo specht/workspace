@@ -3,6 +3,7 @@ image: data-structures-avl.webp
 image_alt: "Die Datenstruktur-Sandbox mit Python-Code eines AVL-Baums links und dem gezeichneten Baum mit der Wurzel 30 rechts"
 kind: projekt
 duration: 4 bis 6 Doppelstunden
+curriculum: "Oberstufe: Algorithmen und Datenstrukturen (Listen, Stack, Queue, Bäume, Heap, Hash Table)"
 language: Dart / Python / JavaScript / Java
 reference: [gitlab, git, listen, baeume, heap, hash-tables]
 template: https://github.com/specht/data-structures-sandbox.git

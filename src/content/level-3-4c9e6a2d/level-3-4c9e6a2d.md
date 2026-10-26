@@ -3,6 +3,7 @@ image: licht-alles.webp
 image_alt: "Ein Saal aus Marmor im warmen Licht der Leuchten: helle Wände und heller Boden, die Säulen mit ihren weichen Schatten, Athena auf ihrem Sockel, das Satteldach hell."
 kind: projekt
 duration: 1 Doppelstunde
+curriculum: "Sek I: Digitale Bilder und Visualisierung; Oberstufe: Vertiefung Computergrafik (Lightmap, weiche Schatten, indirektes Licht)"
 reference: [workspace, kartografie]
 template: https://github.com/specht/backrooms-starter.git
 template_name: der Backrooms-Vorlage

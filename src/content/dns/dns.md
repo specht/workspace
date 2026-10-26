@@ -3,6 +3,7 @@ image: dns-tree.webp:contain
 image_alt: "Ein Baum der Domainnamen: die Wurzel, darunter de, com und org, darunter hackschule, wikipedia und google"
 kind: labor
 duration: 1 Doppelstunde
+curriculum: "Sek I: Leben in und mit vernetzten Systemen (Datenaustausch im Netzwerk); Oberstufe: Rechner und Netze (Protokolle, Client-Server-Struktur)"
 language: Bash
 requires: [tcpip]
 reference: [netzwerk, terminal]

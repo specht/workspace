@@ -3,6 +3,7 @@ image: teaser.webp
 image_alt: "Ein Terminal, in dem nc eine HTTP-Anfrage an info.cern.ch schickt, darunter die Antwort des Servers"
 kind: labor
 duration: 2 Doppelstunden
+curriculum: "Sek I: Leben in und mit vernetzten Systemen (Datenaustausch im Netzwerk); Oberstufe: Rechner und Netze (Protokolle, Schichtenarchitektur)"
 reference: [netzwerk, http, json, terminal]
 </div>
 

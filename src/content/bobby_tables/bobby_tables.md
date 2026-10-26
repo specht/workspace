@@ -5,6 +5,7 @@ kind: labor
 language: Ruby / Python / SQL
 languages: [ruby, python]
 duration: 1 Doppelstunde
+curriculum: "Sek I: Datenbanken (Datensätze suchen), Information und Daten (Datensicherheit); Oberstufe: Datenbanken (Datenschutz und Datensicherheit: SQL Injection, Prepared Statements)"
 requires: [mysql]
 reference: [sql, ruby-python]
 </div>

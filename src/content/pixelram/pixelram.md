@@ -3,6 +3,7 @@ image: interference.webp
 image_alt: "Bunte, ineinander verschlungene Farbringe mit weichen Kanten"
 kind: projekt
 duration: 3 Doppelstunden
+curriculum: "Sek I: Digitale Bilder und Visualisierung (Rastergrafik, Farbmodelle, Figuren und Animationen); Oberstufe: Vertiefung Computergrafik (Bilder aus Formeln, Bildschirmspeicher)"
 language: PixelRAM / C
 reference: [c, pixelram]
 template: https://github.com/specht/pixelram-starter.git

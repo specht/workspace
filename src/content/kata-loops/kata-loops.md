@@ -4,7 +4,7 @@ kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Zählen, sammeln und suchen mit Schleifen
-curriculum: "Sek I: Kontrollstrukturen (Wiederholung); Oberstufe: Algorithmen"
+curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen: Wiederholung); Oberstufe: Algorithmen und Datenstrukturen"
 requires: [kata-decisions]
 </div>
 

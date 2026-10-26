@@ -3,6 +3,7 @@ image: working-with-files.webp
 image_alt: "Ein Terminal mit der Ausgabe von tree: zehn Dateien im Ordner working-with-files"
 kind: grundlagen
 duration: 3 Doppelstunden
+curriculum: "Sek I: Informatiksysteme (Bedienen von Hard- und Software, strukturierte Speicherung von Dateien); Oberstufe: Grundlagen informatischen Arbeitens (Verzeichnisbaum, Betriebssysteme)"
 reference: [workspace, terminal, bits-und-bytes]
 </div>
 

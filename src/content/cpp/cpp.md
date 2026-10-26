@@ -1,6 +1,7 @@
 <div class='meta'>
 image: cpp-logo.png
 kind: steckbrief
+curriculum: "Oberstufe: Syntax und Semantik (Compiler)"
 </div>
 
 <div

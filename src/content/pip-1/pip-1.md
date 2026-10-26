@@ -5,7 +5,7 @@ kind: uebung
 duration: 2 Doppelstunden
 languages: [ruby, python, javascript]
 idea: "Pip mit einem Plan durch die Stollen schicken: Befehle nacheinander, Schleifen, Bedingungen"
-curriculum: "Sek I: Algorithmisches Problemlösen, Miniwelten, Kontrollstrukturen"
+curriculum: "Sek I: Algorithmisches Problemlösen (Miniwelten, algorithmische Grundstrukturen: Sequenz, Wiederholung, Verzweigung)"
 </div>
 
 # Pip unter Funkelbach: Hinab in die Stollen

@@ -4,7 +4,7 @@ kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Listen durchgehen, zusammenrechnen, umbauen und mischen
-curriculum: "Sek I: Information und Daten (Datenstrukturen); Oberstufe: Datenstrukturen"
+curriculum: "Sek I: Algorithmisches Problemlösen (Implementieren von Algorithmen auf Listen); Oberstufe: Algorithmen und Datenstrukturen (Listen)"
 requires: [kata-texts]
 </div>
 

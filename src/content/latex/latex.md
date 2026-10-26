@@ -4,6 +4,7 @@ image_alt: "VS Code mit dem LaTeX-Quelltext einer Facharbeit links und dem ferti
 kind: projekt
 language: LaTeX
 duration: 3 Doppelstunden
+curriculum: "Sek I: Standardsoftware (Umgang mit Textverarbeitungssoftware)"
 reference: [latex]
 </div>
 

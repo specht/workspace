@@ -4,6 +4,7 @@ image_alt: "VS Code mit dem Ordner bitstein und dem Brief der Kriminalpolizei ü
 kind: projekt
 language: Bash
 duration: 2 Doppelstunden
+curriculum: "Sek I: Informatiksysteme (Bedienen von Hard- und Software, Netzwerkkommunikation); Oberstufe: Grundlagen informatischen Arbeitens (Arbeitsumgebung im Rechnernetz, Betriebssysteme)"
 requires: [working-with-files, git]
 reference: [netzwerk, terminal, git]
 </div>

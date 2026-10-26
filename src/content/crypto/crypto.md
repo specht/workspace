@@ -4,6 +4,7 @@ image_alt: "Ein Terminal, in dem ssh-keygen die Signatur eines Briefs erst best√
 kind: labor
 language: Bash
 duration: 2 Doppelstunden
+curriculum: "Sek I: Information und Daten (Datensicherheit); Oberstufe: Vertiefung Kryptologie und Datensicherheit (Hashes, symmetrische und asymmetrische Verschl√ºsselung, Signaturen)"
 requires: [tcpip]
 reference: [kryptographie, netzwerk, terminal]
 </div>

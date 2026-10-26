@@ -2,6 +2,7 @@
 image: vs-code-welcome.webp:0:50
 image_alt: "VS Code im Browser mit der Einführung »Willkommen im Hackschule Workspace« und dem leeren Explorer"
 kind: grundlagen
+curriculum: "Sek I: Informatiksysteme (Bedienen von Hard- und Software, strukturierte Speicherung von Dateien); Oberstufe: Grundlagen informatischen Arbeitens (Arbeitsumgebung im Rechnernetz, Verzeichnisbaum)"
 </div>
 
 <style>

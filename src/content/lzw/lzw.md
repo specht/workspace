@@ -5,6 +5,7 @@ kind: labor
 language: Ruby / Python
 languages: [ruby, python]
 duration: 2 Doppelstunden
+curriculum: "Sek I: Information und Daten (Codierung); Oberstufe: Algorithmen und Datenstrukturen (Kompression mit einem Wörterbuch)"
 reference: [bits-und-bytes, ruby-python]
 </div>
 

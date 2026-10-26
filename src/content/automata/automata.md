@@ -5,6 +5,7 @@ kind: projekt
 language: Ruby / Python
 languages: [ruby, python]
 duration: 2 Doppelstunden
+curriculum: "Oberstufe: Sprachen und Automaten (zustandsorientierte Modellierung, endliche Automaten, deterministisch und nichtdeterministisch)"
 reference: [automaten, regex, ruby-python]
 </div>
 

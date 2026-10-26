@@ -4,7 +4,7 @@ kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Suchen, Schritt für Schritt und durch Halbieren
-curriculum: "Oberstufe: Algorithmen, Effizienz"
+curriculum: "Oberstufe: Algorithmen und Datenstrukturen (lineare und binäre Suche, Effizienz)"
 requires: [kata-recursion]
 </div>
 
