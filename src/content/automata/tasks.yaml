@@ -542,6 +542,74 @@ tasks:
           # … die beiden Schritte für 1 und 1
           ```
 
+  - id: dea-schritt
+    title: Ein Schritt für den DEA
+    prompt: |
+      Schreib `step` in `convert.py` und speichere. Der Workspace ruft `step`
+      mit ein paar Mengen von Zuständen und Ziffern auf, mit deinem
+      `lock_nfa.py`, und sieht nach, welche Menge danach kommt, ob es eine
+      `frozenset` ist und ob `states` dabei bleibt, wie es war.
+    file: automata/convert.py
+    check:
+      type: python
+      file: automata/convert.py
+      cases:
+        - call: step(frozenset({'q0'}), '1')
+          expect: "{'q0', 'q1'}"
+          say: '`q0` führt mit 1 nach `q0` und `q1`. `step` gibt diese Menge mit `return` zurück.'
+        - step(frozenset({'q0', 'q1'}), '2'): "{'q0', 'q2'}"
+        - call: step(frozenset({'q0', 'q2'}), '1')
+          expect: "{'q0', 'q1', 'q3'}"
+          say: 'Jeder Zustand der Menge trägt bei: `q0` führt mit 1 nach `q0` und `q1`, `q2` mit 1 nach `q3`.'
+        - call: step(frozenset({'q0', 'q1', 'q3'}), '3')
+          expect: "{'q0', 'q4'}"
+          say: Ein Zustand ohne Eintrag für die Ziffer trägt nichts bei; `q1` führt mit 3 nirgendwohin.
+        - call: step(frozenset(), '1')
+          expect: set()
+          say: Aus der leeren Menge führt nichts heraus.
+        - call: type(step(frozenset({'q0'}), '1'))
+          expect: frozenset
+          say: '`step` gibt die Menge als `frozenset` zurück: Nur so kann `to_dfa` sie in `found` aufheben und als Schlüssel in `transitions` benutzen.'
+        - call: (before := {'q0', 'q1'}, step(before, '2'), before)[-1]
+          expect: "{'q0', 'q1'}"
+          say: '`step` ändert `states` nicht, sondern gibt die Menge danach zurück.'
+    solution: |
+      Wie in `opens`: `new_states = set()`, für jeden Zustand
+      `new_states |= TRANSITIONS.get((state, symbol), set())`, danach
+      `return frozenset(new_states)`.
+
+    ruby:
+      prompt: |
+        Schreib `step` in `convert.rb` und speichere. Der Workspace ruft
+        `step` mit ein paar Mengen von Zuständen und Ziffern auf, mit deinem
+        `lock_nfa.rb`, und sieht nach, welche Menge danach kommt und ob
+        `states` dabei bleibt, wie es war.
+      file: automata/convert.rb
+      check:
+        type: ruby
+        file: automata/convert.rb
+        cases:
+          - call: step(Set['q0'], '1')
+            expect: "Set['q0', 'q1']"
+            say: '`q0` führt mit 1 nach `q0` und `q1`. `step` gibt diese Menge zurück; in Ruby ist das der Wert der letzten Zeile.'
+          - step(Set['q0', 'q1'], '2'): "Set['q0', 'q2']"
+          - call: step(Set['q0', 'q2'], '1')
+            expect: "Set['q0', 'q1', 'q3']"
+            say: 'Jeder Zustand der Menge trägt bei: `q0` führt mit 1 nach `q0` und `q1`, `q2` mit 1 nach `q3`.'
+          - call: step(Set['q0', 'q1', 'q3'], '3')
+            expect: "Set['q0', 'q4']"
+            say: Ein Zustand ohne Eintrag für die Ziffer trägt nichts bei; `q1` führt mit 3 nirgendwohin.
+          - call: step(Set.new, '1')
+            expect: Set.new
+            say: Aus der leeren Menge führt nichts heraus.
+          - call: before = Set['q0', 'q1']; step(before, '2'); before
+            expect: "Set['q0', 'q1']"
+            say: '`step` ändert `states` nicht, sondern gibt die Menge danach zurück: Die letzte Zeile ist die neue Menge.'
+      solution: |
+        Wie in `opens`: `new_states = Set.new`, für jeden Zustand
+        `new_states |= TRANSITIONS.fetch([state, symbol], Set.new)`, und als
+        letzte Zeile `new_states`.
+
   - id: dea-generalschluessel
     title: Der DEA zum Generalschlüssel
     prompt: |

@@ -50,6 +50,182 @@ examples:
         - files: { automata/lock_nfa.rb: stufen/lock_nfa.rb }
       fail:
         - files: { automata/lock_nfa.rb: { text: "def opens(digits)\n  digits == '1213'\nend\n" } }
+  dea-schritt:
+    pass:
+      - files: { automata/convert.py: stufen/convert.py, automata/lock_nfa.py: stufen/lock_nfa.py }
+      # mit dem Generalschlüssel
+      - files: { automata/convert.py: stufen/convert.py, automata/lock_nfa.py: loesung/lock_nfa.py }
+    fail:
+      # die Seite vor dem Kasten
+      - files:
+          automata/lock_nfa.py: stufen/lock_nfa.py
+          automata/convert.py:
+            text: |
+              # Die Potenzmengenkonstruktion: Sie baut aus einem NEA einen DEA. Jeder
+              # Zustand des DEA ist eine Menge von Zuständen des NEA, nämlich die, in denen
+              # der NEA gerade sein könnte.
+              from lock_nfa import DIGITS, START, ACCEPTING, TRANSITIONS
+
+
+              # Alle Zustände, in die der NEA aus states mit symbol kommt.
+              def step(states, symbol):
+                  …
+
+
+              def to_dfa():
+                  start = frozenset({START})
+                  found = {start}
+                  todo = [start]
+                  transitions = {}
+                  while todo:
+                      states = todo.pop()
+                      for symbol in DIGITS:
+                          target = step(states, symbol)
+                          transitions[(states, symbol)] = target
+                          if target not in found:
+                              found.add(target)
+                              todo.append(target)
+                  return found, transitions
+
+
+              found, transitions = to_dfa()
+              print(len(found), 'Zustände')
+              for (states, symbol), target in transitions.items():
+                  if target != {START}:
+                      print(sorted(states), symbol, '→', sorted(target))
+      # eine set statt einer frozenset: to_dfa kann sie nicht aufheben
+      - files:
+          automata/lock_nfa.py: stufen/lock_nfa.py
+          automata/convert.py:
+            text: |
+              # Die Potenzmengenkonstruktion: Sie baut aus einem NEA einen DEA. Jeder
+              # Zustand des DEA ist eine Menge von Zuständen des NEA, nämlich die, in denen
+              # der NEA gerade sein könnte.
+              from lock_nfa import DIGITS, START, ACCEPTING, TRANSITIONS
+
+
+              # Alle Zustände, in die der NEA aus states mit symbol kommt.
+              def step(states, symbol):
+                  new_states = set()
+                  for state in states:
+                      new_states |= TRANSITIONS.get((state, symbol), set())
+                  return new_states
+
+
+              def to_dfa():
+                  start = frozenset({START})
+                  found = {start}
+                  todo = [start]
+                  transitions = {}
+                  while todo:
+                      states = todo.pop()
+                      for symbol in DIGITS:
+                          target = step(states, symbol)
+                          transitions[(states, symbol)] = target
+                          if target not in found:
+                              found.add(target)
+                              todo.append(target)
+                  return found, transitions
+
+
+              found, transitions = to_dfa()
+              print(len(found), 'Zustände')
+              for (states, symbol), target in transitions.items():
+                  if target != {START}:
+                      print(sorted(states), symbol, '→', sorted(target))
+        say: frozenset
+    ruby:
+      pass:
+        - files: { automata/convert.rb: stufen/convert.rb, automata/lock_nfa.rb: stufen/lock_nfa.rb }
+        # mit dem Generalschlüssel
+        - files: { automata/convert.rb: stufen/convert.rb, automata/lock_nfa.rb: loesung/lock_nfa.rb }
+      fail:
+        # die Seite vor dem Kasten
+        - files:
+            automata/lock_nfa.rb: stufen/lock_nfa.rb
+            automata/convert.rb:
+              text: |
+                # Die Potenzmengenkonstruktion: Sie baut aus einem NEA einen DEA. Jeder
+                # Zustand des DEA ist eine Menge von Zuständen des NEA, nämlich die, in denen
+                # der NEA gerade sein könnte.
+                require_relative 'lock_nfa'
+
+                # Alle Zustände, in die der NEA aus states mit symbol kommt.
+                def step(states, symbol)
+                    …
+                end
+
+                def to_dfa
+                    start = Set[START]
+                    found = Set[start]
+                    todo = [start]
+                    transitions = {}
+                    until todo.empty?
+                        states = todo.pop
+                        DIGITS.each_char do |symbol|
+                            target = step(states, symbol)
+                            transitions[[states, symbol]] = target
+                            unless found.include?(target)
+                                found << target
+                                todo << target
+                            end
+                        end
+                    end
+                    [found, transitions]
+                end
+
+                found, transitions = to_dfa
+                puts "#{found.size} Zustände"
+                transitions.each do |(states, symbol), target|
+                    next if target == Set[START]
+
+                    puts "#{states.sort.inspect} #{symbol} → #{target.sort.inspect}"
+                end
+        # ohne new_states als letzte Zeile: step gibt states zurück, das each liefert
+        - files:
+            automata/lock_nfa.rb: stufen/lock_nfa.rb
+            automata/convert.rb:
+              text: |
+                # Die Potenzmengenkonstruktion: Sie baut aus einem NEA einen DEA. Jeder
+                # Zustand des DEA ist eine Menge von Zuständen des NEA, nämlich die, in denen
+                # der NEA gerade sein könnte.
+                require_relative 'lock_nfa'
+
+                # Alle Zustände, in die der NEA aus states mit symbol kommt.
+                def step(states, symbol)
+                    new_states = Set.new
+                    states.each do |state|
+                        new_states |= TRANSITIONS.fetch([state, symbol], Set.new)
+                    end
+                end
+
+                def to_dfa
+                    start = Set[START]
+                    found = Set[start]
+                    todo = [start]
+                    transitions = {}
+                    until todo.empty?
+                        states = todo.pop
+                        DIGITS.each_char do |symbol|
+                            target = step(states, symbol)
+                            transitions[[states, symbol]] = target
+                            unless found.include?(target)
+                                found << target
+                                todo << target
+                            end
+                        end
+                    end
+                    [found, transitions]
+                end
+
+                found, transitions = to_dfa
+                puts "#{found.size} Zustände"
+                transitions.each do |(states, symbol), target|
+                    next if target == Set[START]
+
+                    puts "#{states.sort.inspect} #{symbol} → #{target.sort.inspect}"
+                end
+          say: q1
   generalschluessel:
     pass:
       - files: { automata/lock_nfa.py: loesung/lock_nfa.py }

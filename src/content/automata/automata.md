@@ -635,7 +635,7 @@ transitions.each do |(states, symbol), target|
 end
 ```
 
-<div class='hint own'>
+<div class='hint own' data-check='dea-schritt'>
 <strong>Jetzt bist du dran:</strong> In <code>step</code> fehlt der Schritt von einer Menge zur nächsten, dort, wo <code>…</code> steht. Den hast du schon geschrieben: Nimm deinen Schritt aus <code>opens</code> in <code>lock_nfa.rb</code>. Die Ziffer heißt hier <code>symbol</code>, und statt die neue Menge <code>states</code> zuzuweisen, gibt <code>step</code> sie zurück.
 </div>
 
@@ -723,7 +723,7 @@ for (states, symbol), target in transitions.items():
 
 `frozenset` ist eine Menge, die sich nicht mehr ändern lässt. Nur solche Mengen dürfen in Python Schlüssel eines `dict` sein oder in einer anderen Menge liegen.
 
-<div class='hint own'>
+<div class='hint own' data-check='dea-schritt'>
 <strong>Jetzt bist du dran:</strong> In <code>step</code> fehlt der Schritt von einer Menge zur nächsten, dort, wo <code>…</code> steht. Den hast du schon geschrieben: Nimm deinen Schritt aus <code>opens</code> in <code>lock_nfa.py</code>. Die Ziffer heißt hier <code>symbol</code>, und statt die neue Menge <code>states</code> zuzuweisen, gibt <code>step</code> sie als <code>frozenset</code> zurück.
 </div>
 
@@ -769,6 +769,8 @@ check-task-fails: generalschluessel
 -->
 <img class='full' src='umwandeln.webp' alt='python3 convert.py gibt aus: 5 Zustände, dann acht Übergänge, etwa von der Menge q0, q1, q3 mit 2 zur Menge q0, q2 und mit 3 zur Menge q0, q4.'>
 <!-- /language -->
+
+_task(dea-schritt)
 
 <!-- language: ruby -->
 Fünf Zustände, wie bei Automatron. Und sieh dir die Übergänge an: `["q0", "q1", "q3"] 2 → ["q0", "q2"]` ist genau der Pfeil, den du in `lock.rb` von Hand gesucht hast, von q<sub>3</sub> mit einer 2 nach q<sub>2</sub>. Das Programm hat ihn gefunden, ohne nachzudenken. Eine leere Menge kommt hier nicht vor, weil der NEA in q<sub>0</sub> immer bleiben kann; käme eine vor, wäre sie der Fehlerzustand q<sub>F</sub> des DEA.
