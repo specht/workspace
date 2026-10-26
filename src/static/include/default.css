@@ -8430,9 +8430,9 @@ html[data-bs-theme="dark"] .bitplane-widget {
 .kata-set .theme-image-dark {
     display: none;
 }
-/* a set's icon on a band in its own hue (--accent, meta accent:), all
-   hues equally light and strong, so the strip stays calm; green stays for
-   what is done and what to click */
+/* a set's icon on a band in its own hue (--accent, from its place in the
+   strip, KataMap.hue: equally spaced, no exceptions), all hues equally
+   light and strong, so the strip stays calm */
 .kata-set-art {
     display: grid;
     place-items: center;
@@ -8451,20 +8451,38 @@ html[data-bs-theme="dark"] .bitplane-widget {
 .kata-set:hover .kata-set-art .bi {
     scale: 1.12;
 }
-/* Pip or Bello in green instead of an icon (images/pip/make_icons.py),
-   pixels kept sharp */
-.kata-set-sprite {
-    /* twice its 24 pixels, every pixel the same size, as large as the
-       other icons */
-    width: 48px;
-    height: 48px;
-    image-rendering: pixelated;
-    /* drawn in the set's hue (make_icons.py), with its glow */
+/* Pip, Bello or the Mampfer instead of an icon (images/pip/make_icons.py):
+   drawn in grey, tinted here in the set's hue (its brightness over the
+   hue, cut to its shape), pixels kept sharp; the glow on the figure round
+   it, as a mask would cut it off */
+.kata-set-figure {
+    display: block;
     filter: drop-shadow(0 0 0.35em hsl(var(--accent) 60% 60% / 0.35));
-    transition: scale 300ms;
+}
+.kata-set-sprite {
+    display: block;
+    /* its 32 pixels two and a half times: Pip and Bello about as large as
+       the other icons, every pixel of the two alike */
+    --size: 80px;
+    width: var(--size);
+    height: var(--size);
+    background: var(--sprite) center / 100% 100% no-repeat, hsl(var(--accent) 75% 62%);
+    background-blend-mode: luminosity;
+    -webkit-mask: var(--sprite) center / 100% 100% no-repeat;
+    mask: var(--sprite) center / 100% 100% no-repeat;
+    image-rendering: pixelated;
+    /* the zoom on hover by its size, not scale: drawn with sharp pixels at
+       every moment, so it does not change when the zoom stops */
+    transition: width 300ms, height 300ms;
+}
+/* the Mampfer is drawn larger than Pip: 1.6 times, as large as the
+   other icons */
+.kata-sprite-icon-mampfer {
+    --size: 51.2px;
 }
 .kata-set:hover .kata-set-sprite {
-    scale: 1.12;
+    width: calc(var(--size) * 1.12);
+    height: calc(var(--size) * 1.12);
 }
 .kata-set-art .bi::before {
     vertical-align: 0;

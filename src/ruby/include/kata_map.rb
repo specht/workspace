@@ -12,7 +12,14 @@ require 'cgi'
 module KataMap
     LEVELS = { 1 => 'Einstieg', 2 => 'Übung', 3 => 'Knobelei' }.freeze
 
-    Stop = Struct.new(:slug, :title, :idea, :curriculum, :icon, :accent, :counts, keyword_init: true)
+    Stop = Struct.new(:slug, :title, :idea, :curriculum, :icon, :counts, keyword_init: true)
+    # the hue of the first set's band, Pip's lantern; the others follow,
+    # equally spaced round the colour wheel (hue)
+    FIRST_HUE = 38
+
+    def self.hue(index, count)
+        (FIRST_HUE + index * 360.0 / count).round % 360
+    end
 
     # A stop from a page's content entry: counts are { 1 => n, 2 => n,
     # 3 => n, :extra => n } over the tasks on the page.
@@ -20,7 +27,7 @@ module KataMap
         tasks = content[:tasks] ? content[:tasks][:on_page].map { |id| content[:tasks][:by_id][id] } : []
         counts = Hash.new(0)
         tasks.each { |t| t['extra'] ? counts[:extra] += 1 : counts[t['level'] || 1] += 1 }
-        Stop.new(:slug => slug, :title => title(content[:title]), :idea => content[:idea], :curriculum => content[:curriculum], :icon => content[:icon], :accent => content[:accent], :counts => counts)
+        Stop.new(:slug => slug, :title => title(content[:title]), :idea => content[:idea], :curriculum => content[:curriculum], :icon => content[:icon], :counts => counts)
     end
 
     # »Katas: Erste Funktionen« -> »Erste Funktionen«
@@ -73,13 +80,15 @@ module KataMap
             classes = ['kata-set', done ? 'kata-set-done' : nil, pin ? 'kata-set-pinned' : nil].compact.join(' ')
             # the strip is dragged with a mouse, so the set is no link: its
             # button opens it
-            # its hue on the band (meta accent:), green where it has none
-            io << "<div class='#{classes}' style='--accent: #{stop.accent || 150}'#{pin && pinned.first == stop.slug ? " data-centre=''" : ''}>"
+            # its hue on the band, from its place in the strip: all equally
+            # spaced, whatever the set
+            io << "<div class='#{classes}' style='--accent: #{hue(i, stops.size)}'#{pin && pinned.first == stop.slug ? " data-centre=''" : ''}>"
             # its icon on a band (meta icon:): one of Bootstrap's, or a
-            # picture like Pip in green (images/pip/make_icons.py); no picture
-            # of a card, which would give a solution away
+            # figure like Pip, drawn in grey and tinted in the band's hue
+            # (images/pip/make_icons.py, default.css); no picture of a card,
+            # which would give a solution away
             icon = stop.icon || 'bi-code-slash'
-            art = icon.start_with?('/') ? "<img class='kata-set-sprite' src='#{h(icon)}' alt=''>" : "<i class='bi #{h(icon)}'></i>"
+            art = icon.start_with?('/') ? "<span class='kata-set-figure'><span class='kata-set-sprite kata-sprite-#{h(File.basename(icon.split('?').first, '.*'))}' style='--sprite: url(#{h(icon)})'></span></span>" : "<i class='bi #{h(icon)}'></i>"
             io << "<span class='kata-set-art' aria-hidden='true'>#{art}</span>"
             io << "<span class='kata-set-marks'><span class='kata-set-number'>#{done ? "<i class='bi bi-check-lg' aria-hidden='true'></i><span class='visually-hidden'>Erledigt</span>" : i + 1}</span>"
             io << "<span class='kata-set-pin'><i class='bi bi-pin-angle-fill' aria-hidden='true'></i>Angepinnt</span>" if pin

@@ -1,6 +1,5 @@
 <div class='meta'>
 icon: bi-check2-square
-accent: 95
 kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]

@@ -1,6 +1,5 @@
 <div class='meta'>
 icon: bi-list-ol
-accent: 280
 kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]

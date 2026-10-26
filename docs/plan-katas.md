@@ -840,16 +840,20 @@ The cards and the strip
   a mouse, swiped on a phone (a set snaps into the middle) and has arrows
   that fade out at its ends; it fades into the page where more follows. A
   set pinned for the person's group is marked and scrolled into the middle.
-- Every set has an icon on a band in its own hue (`icon:`, `accent:` in
-  degrees, equally light and strong, moving along the strip; Pip in the
-  lantern amber, Bello in blue), no picture of a card, which would give a solution
-  away; green stays for buttons and progress, the bars striped: braces for Erste Funktionen, a signpost
-  for Entscheidungen, a loop for Wiederholen, quotation marks for Texte, a
+- Every set has an icon on a band in its own hue, no picture of a card,
+  which would give a solution away. The hue comes from the set's place in
+  the strip, equally spaced round the colour wheel from Pip's lantern amber,
+  with no exception, not for Pip either (the maintainer; `KataMap.hue`), all
+  equally light and strong: braces for Erste Funktionen, a signpost for
+  Entscheidungen, a loop for Wiederholen, quotation marks for Texte, a
   numbered list for Listen, a book for Dictionaries, toggles for Bits, a
-  tree for Rekursion, a magnifier for Suchen; Pip (from the side) and Bello
-  for Pip's sets, each drawn in its set's hue, every pixel the same size
-  (`images/pip/make_icons.py`). The section's icon is the martial arts
-  uniform.
+  tree for Rekursion, a magnifier for Suchen, a ticked box for Tests
+  schreiben; Pip (from the side), Bello and the Mampfer for Pip's sets,
+  drawn in grey and tinted in the band's hue (`images/pip/make_icons.py`,
+  default.css), about as large as the other icons: Pip and Bello at two and
+  a half times, every pixel of the two alike, the Mampfer, drawn larger, at
+  1.6 times. Buttons and progress stay green, the bars striped. The
+  section's icon is the martial arts uniform.
 - A mouse drags the strip; thrown, it glides to the set it would come to
   rest at and stops there, with no snap afterwards. A click on a set calls
   out its button. Text on the sets is not selectable.

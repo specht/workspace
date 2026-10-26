@@ -1,6 +1,5 @@
 <div class='meta'>
 icon: bi-search
-accent: 60
 kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]

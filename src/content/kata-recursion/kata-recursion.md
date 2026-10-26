@@ -1,6 +1,5 @@
 <div class='meta'>
 icon: bi-diagram-3
-accent: 10
 kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]

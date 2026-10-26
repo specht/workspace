@@ -21,7 +21,10 @@ class KataMapTest < Minitest::Test
 
     def test_a_visitor_sees_the_sets_and_how_many_katas_there_are
         html = KataMap.carousel_html(stops)
-        assert_includes html, "<div class='kata-set' style='--accent: 150'>"
+        # the hues equally spaced from Pip's amber: two sets, half the wheel apart
+        assert_includes html, "<div class='kata-set' style='--accent: 38'>"
+        assert_includes html, "<div class='kata-set' style='--accent: 218'>"
+        assert_equal [38, 66, 93], (0..2).map { |i| KataMap.hue(i, 13) }
         assert_includes html, "href='/kata-functions' aria-label='Ansehen: Erste Funktionen'>"
         assert_includes html, 'Werte bekommen, rechnen, zurückgeben'
         assert_includes html, '<strong>7</strong><small>Katas</small>'
@@ -35,7 +38,7 @@ class KataMapTest < Minitest::Test
     def test_a_student_sees_how_far_they_are_in_each_set_and_in_all
         html = KataMap.carousel_html(stops, :progress => { 'kata-functions' => { :done => 4, :total => 4, :extras_done => 1 } })
         assert_includes html, '4 von 4 gelöst, dazu 1 Extra'
-        assert_includes html, "<div class='kata-set kata-set-done' style='--accent: 150'>"
+        assert_includes html, "<div class='kata-set kata-set-done' style='--accent: 38'>"
         assert_includes html, "aria-label='Ansehen: Erste Funktionen'"
         assert_includes html, "aria-label='Loslegen: Wiederholen'"
         assert_includes html, '0 von 3 gelöst'
@@ -46,17 +49,17 @@ class KataMapTest < Minitest::Test
 
     def test_a_pinned_set_is_marked_and_the_latest_centred
         html = KataMap.carousel_html(stops, :progress => {}, :pinned => %w[kata-loops kata-functions])
-        assert_equal 1, html.scan("<div class='kata-set kata-set-pinned' style='--accent: 150' data-centre=''>").size
+        assert_equal 1, html.scan("<div class='kata-set kata-set-pinned' style='--accent: 218' data-centre=''>").size
         assert_equal 2, html.scan("kata-set-pinned").size
         assert html.index("data-centre") < html.index("href='/kata-loops'"), 'the latest pin is centred'
         assert_equal 2, html.scan('Angepinnt').size
     end
 
-    # an icon of Bootstrap, or a picture such as Pip in green
+    # an icon of Bootstrap, or a figure such as Pip, tinted in the band's hue
     def test_a_set_has_its_icon
         stop = KataMap.stop('pip-1', content([1], :title => 'Pip').merge(:icon => '/images/pip/icon-pip.png'))
         html = KataMap.carousel_html([stop] + stops)
-        assert_includes html, "<img class='kata-set-sprite' src='/images/pip/icon-pip.png' alt=''>"
+        assert_includes html, "<span class='kata-set-sprite kata-sprite-icon-pip' style='--sprite: url(/images/pip/icon-pip.png)'></span>"
         assert_includes html, "<i class='bi bi-code-slash'></i>"
     end
 
