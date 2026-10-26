@@ -8755,8 +8755,15 @@ html[data-bs-theme="dark"] .bitplane-widget {
     font-size: 0.8rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
-.card-pin .bi::before {
-    vertical-align: 0;
+/* the glyph's own box, centred in the circle (the line's height would lift it) */
+.card-pin .bi,
+.kata-set-pin .bi {
+    display: block;
+    line-height: 1;
+}
+.card-pin .bi::before,
+.kata-set-pin .bi::before {
+    display: block;
 }
 .tutorial_card3.card-pinned {
     outline: 2px solid #0b4fb3;
@@ -8783,9 +8790,6 @@ html[data-bs-theme="dark"] .bitplane-widget {
 }
 .kata-set-pin .bi {
     margin: 0;
-}
-.kata-set-pin .bi::before {
-    vertical-align: 0;
 }
 
 .kata-set-body {
