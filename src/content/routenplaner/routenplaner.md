@@ -483,6 +483,59 @@ _task(heap)
 Dann bekommt `dijkstra` den Heap statt `frontier`. Ein Knoten kann jetzt mehrmals im Heap stehen: Findet die Suche einen kürzeren Weg zu ihm, legt sie ihn mit dem neuen Abstand noch einmal hinein, statt den alten Eintrag zu suchen. Kommt später der alte Eintrag heraus, war der Knoten schon dran, und die Suche überspringt ihn. Dafür merkt sie sich in `done`, welche Knoten fertig sind:
 
 <!-- language: ruby -->
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Bau dein <code>dijkstra</code> auf den Heap um. Statt <code>frontier</code> gibt es am Anfang <code>done = {}</code> und einen <code>MinHeap</code>, in dem der Start mit 0 Metern liegt. Die Schleife läuft, bis der Heap leer ist: <code>pop</code> gibt den Knoten mit dem kleinsten Abstand, ein Knoten aus <code>done</code> wird übersprungen, und ein Nachbar mit einem neuen, kürzeren Abstand kommt mit <code>push</code> in den Heap.
+</div>
+
+<!-- hint -->
+Was ändert sich gegenüber deiner Fassung mit `frontier`? Nur, woher der
+nächste Knoten kommt und wie ein Nachbar hineinkommt. `previous`, `visited`
+und das Ende mit `path_to` bleiben. Warum kann derselbe Knoten jetzt zweimal
+aus dem Heap kommen, und was soll beim zweiten Mal passieren?
+<!-- /hint -->
+<!-- hint -->
+`heap.pop` gibt ein Paar aus Priorität und Wert, hier Meter und Knoten:
+`so_far, node = heap.pop`. Steht `node` schon in `done`, geht es mit `next`
+zum nächsten Paar. Sonst kommt er in `done` und `visited`. Bei den Nachbarn
+ersetzt `heap.push(total, neighbour)` die Zeile, die ihn in `frontier`
+geschrieben hat.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst für die Schleife:
+
+```ruby
+until heap.empty?
+    so_far, node = heap.pop
+    # hier: überspringen, wenn node schon fertig ist, sonst als fertig merken
+    visited << node
+    break if node == goal
+
+    graph[:edges][node].each do |neighbour, length|
+        total = so_far + length
+        # wie bisher: weiter, wenn neighbour schon einen Weg hat, der nicht länger ist
+        # hier: neuer Abstand, neuer Vorgänger, und neighbour mit total in den Heap
+    end
+end
+```
+<!-- /hint -->
+
+<!-- solution -->
+Am Anfang stehen statt `frontier` diese Zeilen. Den Hash mit den Abständen
+nennt die Lösung `costs` statt `metres`, weil später, beim Reisen mit dem
+Rad oder dem Auto, auch Sekunden darin stehen:
+
+<!-- page-code: own -->
+```ruby
+costs = { start => 0 }
+previous = { start => nil }
+done = {}
+heap = MinHeap.new
+heap.push(0, start)
+visited = []
+```
+
+Und die Schleife:
+
 <!-- page-code: own -->
 ```ruby
 until heap.empty?
@@ -503,8 +556,60 @@ until heap.empty?
     end
 end
 ```
+<!-- /solution -->
 <!-- /language -->
 <!-- language: python -->
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Bau dein <code>dijkstra</code> auf den Heap um. Statt <code>frontier</code> gibt es am Anfang <code>done = set()</code> und einen <code>MinHeap</code>, in dem der Start mit 0 Metern liegt. Die Schleife läuft, bis der Heap leer ist: <code>pop</code> gibt den Knoten mit dem kleinsten Abstand, ein Knoten aus <code>done</code> wird übersprungen, und ein Nachbar mit einem neuen, kürzeren Abstand kommt mit <code>push</code> in den Heap.
+</div>
+
+<!-- hint -->
+Was ändert sich gegenüber deiner Fassung mit `frontier`? Nur, woher der
+nächste Knoten kommt und wie ein Nachbar hineinkommt. `previous`, `visited`
+und das Ende mit `path_to` bleiben. Warum kann derselbe Knoten jetzt zweimal
+aus dem Heap kommen, und was soll beim zweiten Mal passieren?
+<!-- /hint -->
+<!-- hint -->
+`heap.pop()` gibt ein Paar aus Priorität und Wert, hier Meter und Knoten:
+`so_far, node = heap.pop()`. Steht `node` schon in `done`, geht es mit
+`continue` zum nächsten Paar. Sonst kommt er in `done` und `visited`. Bei den
+Nachbarn ersetzt `heap.push(total, neighbour)` die Zeile, die ihn in
+`frontier` geschrieben hat.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst für die Schleife:
+
+```python
+while not heap.empty():
+    so_far, node = heap.pop()
+    # hier: überspringen, wenn node schon fertig ist, sonst als fertig merken
+    visited.append(node)
+    if node == goal:
+        break
+    for neighbour, length in graph['edges'].get(node, []):
+        total = so_far + length
+        # wie bisher: weiter, wenn neighbour schon einen Weg hat, der nicht länger ist
+        # hier: neuer Abstand, neuer Vorgänger, und neighbour mit total in den Heap
+```
+<!-- /hint -->
+
+<!-- solution -->
+Am Anfang stehen statt `frontier` diese Zeilen. Das dict mit den Abständen
+nennt die Lösung `costs` statt `metres`, weil später, beim Reisen mit dem
+Rad oder dem Auto, auch Sekunden darin stehen:
+
+<!-- page-code: own -->
+```python
+costs = {start: 0}
+previous = {start: None}
+done = set()
+heap = MinHeap()
+heap.push(0, start)
+visited = []
+```
+
+Und die Schleife:
+
 <!-- page-code: own -->
 ```python
 while not heap.empty():
@@ -523,6 +628,7 @@ while not heap.empty():
         previous[neighbour] = node
         heap.push(total, neighbour)
 ```
+<!-- /solution -->
 <!-- /language -->
 
 Prüfe `dijkstra` mit dem Knopf oben noch einmal, starte den Server neu und such den Weg zur Pfaueninsel wieder mit Dijkstra. Derselbe Weg, dieselben besuchten Knoten, aber statt ein paar Sekunden noch knapp eine.

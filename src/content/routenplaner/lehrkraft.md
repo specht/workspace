@@ -5,7 +5,7 @@ Lernende bauen einen Routenplaner für Berlin mit echten Karten von OpenStreetMa
 <tr><th>Ablauf</th><td><ul>
 <li><b>Einrichten:</b> Klonen, Sinatra (<code>gem install sinatra rackup puma</code>) oder Flask (<code>pip install flask</code>) installieren, einmal pro Workspace, den Server starten (<code>ruby server.rb</code> oder <code>python3 server.py</code>) und die Karte im Browser öffnen: Der Server schreibt ihre Adresse ins Terminal, ein Klick mit Strg öffnet sie. Die Vorlage hat beide Sprachen nebeneinander; die Seite im Browser ist dieselbe.</li>
 <li><b>Der Graph:</b> Das Programm liest die Wege, rechnet Abstände aus Koordinaten und baut den Graphen; die Ansicht »Graph« macht ihn auf der Karte sichtbar.</li>
-<li><b>Die Suchen:</b> Breitensuche und Dijkstra schreiben die Lernenden selbst, die Seite zeigt bei jeder Suche, in welcher Reihenfolge sie die Knoten besucht hat. Daran sieht man den Unterschied: Die Breitensuche breitet sich nach Kanten aus, Dijkstra in Metern, wie Ringe um den Start. Danach ein Heap und A*.</li>
+<li><b>Die Suchen:</b> Breitensuche und Dijkstra schreiben die Lernenden selbst, die Seite zeigt bei jeder Suche, in welcher Reihenfolge sie die Knoten besucht hat. Daran sieht man den Unterschied: Die Breitensuche breitet sich nach Kanten aus, Dijkstra in Metern, wie Ringe um den Start. Danach ein Heap; Dijkstra bauen die Lernenden selbst auf ihn um (ein Kasten »Jetzt bist du dran« mit Tipps in Stufen, die Prüfung <code>dijkstra</code> läuft noch einmal), dann A*.</li>
 <li><b>Unterwegs:</b> zu Fuß, mit dem Rad und mit dem Auto (Einbahnstraßen, Minuten statt Meter).</li>
 <li><b>Die Rundfahrt:</b> alle Reihenfolgen, nächster Nachbar, 2-opt.</li>
 </ul></td></tr>
