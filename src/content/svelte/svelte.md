@@ -737,8 +737,31 @@ Bootstrap bringt unter anderem Klassen für Buttons mit. Damit bauen wir einen R
 
 Der Button hat die ID `bu_reset` und die Bootstrap-Klasse `btn`. Solange `state` kleiner als 3 ist, bekommt er dazu die Klasse `btn-outline-secondary` (grau umrandet) und ist abgeschaltet (`disabled`), sonst die Klasse `btn-warning` (gelb). Ein Klick ruft die Funktion `resetTimer` auf.
 
-Die fehlt noch. Schreib sie in den `<script>`-Teil, zum Beispiel nach `updateTimer`:
+Die fehlt noch, und die schreibst du selbst.
 
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Schreib die Funktion <code>resetTimer</code> in den <code>&lt;script&gt;</code>-Teil, nach <code>updateTimer</code>. Sie stellt die Stoppuhr wieder auf den Anfang, aber nur, wenn sie läuft oder steht, also im Zustand 3 oder 4: <code>state</code> und <code>t0</code> bekommen wieder 0, <code>timerString</code> den Text vom Anfang, und die Anzeige verliert die Klasse <code>ready</code>, damit sie nicht mehr grün ist. Probier es danach aus: Miss eine Zeit und klick auf »Reset«.
+</div>
+
+<!-- hint -->
+Schau oben im `<script>`-Teil nach, mit welchen Werten `state`, `t0` und `timerString` anfangen: Genau diese Werte brauchst du wieder. Die Klasse `ready` gibt `handleKeyDown` der Anzeige mit `classList.add`.
+<!-- /hint -->
+<!-- hint -->
+Mit `if (state > 2)` tut die Funktion nur im Zustand 3 oder 4 etwas. Das Gegenstück zu `classList.add` ist `classList.remove`. Ein Gerüst; die Lücken mit `…` füllst du:
+
+```js
+function resetTimer() {
+    if (state > 2) {
+        state = …;
+        t0 = …;
+        timerString = …;
+        document.querySelector(".timer")?.classList.…("ready");
+    }
+}
+```
+<!-- /hint -->
+
+<!-- solution -->
 ```js
 ~     timerString = `${minutes}:${seconds}<span class='small'>.${centiseconds}</span>`;
 ~
@@ -758,6 +781,7 @@ function resetTimer() {
 ~     if (state === 0) {
 ~         state = 1;
 ```
+<!-- /solution -->
 
 ### Icons einbinden
 
