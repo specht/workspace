@@ -101,6 +101,26 @@ tasks:
         say: Die Füllung kennt keinen Radius. Sie hört dort auf, wo eine andere Farbe beginnt.
     solution: Der Himmel ist überall hellblau und hängt zusammen. Die Füllung breitet sich über alle hellblauen Pixel aus, bis sie an die oberste grüne Kurve stößt. Darunter liegt ein anderer Bereich, den sie nicht erreicht.
 
+  - id: flaechen
+    title: Drei grüne Flächen
+    prompt: |
+      Füll in `rainbow.rb` die mittlere und die untere Fläche und speichere.
+      Nimm dafür Punkte am linken Rand, bei x = 0, wie bei `flood_fill(0, 130)`.
+      Wenn es stimmt, sind nach dem Start alle drei Flächen unter den Kurven
+      grün, jede in ihrem eigenen Ton.
+    file: rainbow.rb
+    check:
+      type: files
+      path: rainbow.rb
+      expect:
+        format: text
+        contains:
+          - { pattern: '\bflood_fill\s*\(\s*0\s*,\s*(?:14[1-9]|1[56]\d)\s*\)', say: 'In `rainbow.rb` finde ich noch kein `flood_fill` für die mittlere Fläche. Ihr Punkt am linken Rand liegt zwischen den Kurven bei y = 140 und y = 170, nicht genau auf einer Kurve.' }
+          - { pattern: '\bflood_fill\s*\(\s*0\s*,\s*17[1-9]\s*\)', say: 'In `rainbow.rb` finde ich noch kein `flood_fill` für die untere Fläche. Ihr Punkt am linken Rand liegt unter der Kurve bei y = 170. Die unterste Zeile des Bildes hat y = 179.' }
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/rainbow.rb`. Hast du die Datei unter einem anderen Namen gespeichert? Im Explorer siehst du alle Dateien in `/workspace`.
+
   - id: maske
     title: Ohne Maske
     prediction: true
@@ -121,6 +141,22 @@ tasks:
       - when: { picked: 2 }
         say: Eine Maske ist freiwillig. Ohne sie zeichnet jeder Befehl einfach überall.
     solution: Die Kreise reichen bis zum unteren Rand und übermalen alles, was dort liegt. Mit der Maske dürfen sie nur die Pixel verändern, die vorher hellblau waren, also den Himmel.
+
+  - id: zweite-maske
+    title: Die zweite Maske
+    prompt: |
+      Schreib in `rainbow.rb` die zweite Maske unter den Regenbogen und
+      speichere. Mit dem Himmel darunter sieht man es dann: Der Regenbogen
+      bleibt stehen, nur das Hellblaue drumherum wird zum Himmel.
+    file: rainbow.rb
+    check:
+      type: files
+      path: rainbow.rb
+      expect:
+        contains:
+          - { pattern: '^\s*set_mask\b', min: 2, say: 'In `rainbow.rb` steht erst eine Maske. Die zweite gehört unter den Regenbogen.' }
+          - { pattern: '^\s*add_color\(\s*16\s*\)', min: 2, say: 'Die neue Maske soll wieder alle Pixel aufnehmen, die gerade hellblau sind, also die Farbe 16 haben.' }
+          - { pattern: '^\s*set_mask\b', after: '^\s*fill_circle\b', say: 'Die zweite Maske steht noch über dem Regenbogen. Sie gehört darunter, hinter das `end` der Schleife mit `fill_circle`.' }
 
   - id: bild-gespeichert
     title: Das Bild als Datei

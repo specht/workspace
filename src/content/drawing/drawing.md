@@ -472,7 +472,7 @@ image-file: drawing-steps/step.png 8
 -->
 <img src='out5.webp' class='full' alt='Die Fläche zwischen den oberen Kurven ist hellgrün gefüllt.'>
 
-<div class='hint own'>
+<div class='hint own' data-check='flaechen'>
 <strong>Jetzt bist du dran:</strong> Füll auch die beiden anderen Flächen: die mittlere mit Farbe 8, die untere mit Farbe 9. Für jede Fläche brauchst du zwei Zeilen, so wie eben: erst die Farbe, dann <code>flood_fill</code> mit einem Punkt, der in der Fläche liegt. Starte danach das Programm und sieh nach, ob alle drei Flächen grün sind.
 </div>
 
@@ -498,6 +498,8 @@ set_color(9)
 flood_fill(0, 179)
 ```
 <!-- /solution -->
+
+_task(flaechen)
 
 <!-- tutorial-screenshot
 # Alle drei Flächen
@@ -554,7 +556,7 @@ image-file: drawing-steps/step.png 8
 
 Für den Himmel brauchen wir die Maske neu: Sie umfasst noch die Pixel, die vorhin hellblau waren, also auch die, auf denen jetzt der Regenbogen liegt. Neu festgelegt umfasst sie nur noch, was jetzt hellblau ist.
 
-<div class='hint own'>
+<div class='hint own' data-check='zweite-maske'>
 <strong>Jetzt bist du dran:</strong> Leg die Maske neu fest. Schreib sie unter den Regenbogen. Sie soll wieder alle Pixel aufnehmen, die gerade hellblau sind, also die Farbe 16 haben.
 </div>
 
@@ -578,6 +580,8 @@ set_mask do
 end
 ```
 <!-- /solution -->
+
+_task(zweite-maske)
 
 Zwischen 16 und 20 liegen in der Palette schöne Blautöne. Wir gehen Zeile für Zeile von oben nach unten durch das Bild, wählen für jede Zeile eine Farbe aus diesem Bereich, mit etwas Zufall, und ziehen eine waagerechte Linie:
 

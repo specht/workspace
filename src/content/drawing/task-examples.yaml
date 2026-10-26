@@ -22,3 +22,29 @@ examples:
     fail:
       # Ein WebP, das .png heißt
       - files: { rainbow.png: first-pixel.webp }
+  flaechen:
+    pass:
+      - files: { rainbow.rb: stufen/step-6.rb }
+      - files: { rainbow.rb: rainbow.rb }
+      # andere Punkte am linken Rand, ohne Leerzeichen
+      - files: { rainbow.rb: { text: "set_color(8)\nflood_fill(0,160)\nset_color(9)\nflood_fill(0,175)\n" } }
+    fail:
+      # der Stand davor: nur die obere Fläche gefüllt
+      - files: { rainbow.rb: stufen/step-5.rb }
+        say: mittlere Fläche
+      # ein Punkt genau auf der Kurve: es wird nur die Kurve gefärbt
+      - files: { rainbow.rb: { text: "set_color(8)\nflood_fill(0, 140)\nset_color(9)\nflood_fill(0, 170)\n" } }
+        say: nicht genau auf einer Kurve
+  zweite-maske:
+    pass:
+      - files: { rainbow.rb: rainbow.rb }
+    fail:
+      # der Stand davor: eine Maske
+      - files: { rainbow.rb: stufen/step-7.rb }
+        say: erst eine Maske
+      # die zweite Maske nimmt eine andere Farbe auf
+      - files: { rainbow.rb: { text: "set_mask do\n  add_color(16)\nend\n(0..5).each do |i|\n  fill_circle(160, 180, 100 - i)\nend\nset_mask do\n  add_color(20)\nend\n" } }
+        say: Farbe 16
+      # die zweite Maske über dem Regenbogen
+      - files: { rainbow.rb: { text: "set_mask do\n  add_color(16)\nend\nset_mask do\n  add_color(16)\nend\n(0..5).each do |i|\n  fill_circle(160, 180, 100 - i)\nend\n" } }
+        say: über dem Regenbogen

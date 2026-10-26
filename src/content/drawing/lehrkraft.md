@@ -8,7 +8,7 @@ Ein Einstieg in Grafikprogrammierung ohne Vorkenntnisse: Lernende zeichnen in Ru
 <tr><th>Jetzt bist du dran</th><td><ul>
 <li>Zweimal schreiben die Lernenden einen Schritt selbst, den die Seite gerade gezeigt hat: die beiden anderen Flächen mit <code>set_color</code> und <code>flood_fill</code> und die zweite Maske vor dem Himmel.</li>
 <li>Davor stehen Tipps, eine Stufe nach der anderen mit einer Minute Pause und ohne Uhr; der Code der Seite ist die letzte Stufe.</li>
-<li>Ob es stimmt, zeigt die Zeichenfläche; keine Aufgabe prüft diesen Code.</li>
+<li>Unter jedem Kasten prüft eine Aufgabe <code>rainbow.rb</code>, ohne das Programm zu starten. »Drei grüne Flächen« sucht je ein <code>flood_fill</code> am linken Rand (x = 0) zwischen den Kurven, für die mittlere Fläche y von 141 bis 169, für die untere 171 bis 179; ein Punkt anderswo wird abgelehnt, auch wenn er in der Fläche liegt, und ob davor die richtige Farbe steht, sieht die Prüfung nicht. »Die zweite Maske« zählt Zeilen: zweimal <code>set_mask</code>, zweimal <code>add_color(16)</code>, die letzte Maske hinter dem letzten <code>fill_circle</code>. Wer eine Aufgabe löst, kann die Lösung des Kastens sofort öffnen.</li>
 </ul></td></tr>
 <tr><th>Einrichten</th><td>Die Erweiterung »Pixelflow Canvas« (<code>gymnasiumsteglitz.pixelflow-canvas</code>) fragt beim ersten Mal, ob man dem Herausgeber vertraut. Das Rubygem landet in <code>/workspace/.gem</code>; beides bleibt nach einem Neustart erhalten.</td></tr>
 <tr><th>Abgabe</th><td>»Dein eigenes Bild« kopiert <code>bild.rb</code> und <code>bild.png</code> aus <code>/workspace</code>. In der Klassenübersicht öffnet ein Klick auf die Abgabe den Code; <code>bild.png</code> steht links in der Dateiliste.</td></tr>
@@ -21,7 +21,7 @@ Ein Einstieg in Grafikprogrammierung ohne Vorkenntnisse: Lernende zeichnen in Ru
 
 #### Die Aufgaben
 
-»Das erste Programm« und »Das Bild als Datei« sehen nur nach, ob `rainbow.rb` als Text und `rainbow.png` als echtes PNG in `/workspace` liegen. Die übrigen fragen nach dem, was man auf der Zeichenfläche beobachten kann. »Ein Eimer Farbe im Himmel« und »Ohne Maske« sind Vorhersagen: Für die Klassenübersicht zählt die erste Antwort, danach sollen die Lernenden es ausprobieren.
+»Drei grüne Flächen« und »Die zweite Maske« lesen den Code aus den Kästen »Jetzt bist du dran« (oben). »Das erste Programm« und »Das Bild als Datei« sehen nur nach, ob `rainbow.rb` als Text und `rainbow.png` als echtes PNG in `/workspace` liegen. Die übrigen fragen nach dem, was man auf der Zeichenfläche beobachten kann. »Ein Eimer Farbe im Himmel« und »Ohne Maske« sind Vorhersagen: Für die Klassenübersicht zählt die erste Antwort, danach sollen die Lernenden es ausprobieren.
 
 #### Weiter
 
