@@ -8613,7 +8613,8 @@ html[data-bs-theme="dark"] .bitplane-widget {
     .pip-layout {
         display: grid;
         grid-template-columns: minmax(0, 1.5fr) minmax(16em, 1fr);
-        grid-template-areas: 'map code' 'controls controls' 'timeline timeline';
+        grid-template-areas: 'map code' 'map commands' 'controls controls' 'timeline timeline';
+        grid-template-rows: auto 1fr auto auto;
         column-gap: 1em;
         align-items: start;
         margin-bottom: 0.8em;
@@ -8626,6 +8627,27 @@ html[data-bs-theme="dark"] .bitplane-widget {
     .pip-layout .stepper-timeline { grid-area: timeline; }
     .pip-layout > .code-input,
     .pip-layout > textarea { grid-area: code; }
+    .pip-layout > .pip-commands { grid-area: commands; align-self: start; }
+}
+
+/* the commands of a task under the plan; a question (on_stone?) set apart
+   by its colour; its meaning on hover (title) */
+.pip-commands {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35em;
+    margin: 0.5em 0 0.8em;
+}
+.pip-command {
+    padding: 0.1em 0.45em;
+    border-radius: 0.35em;
+    background: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+    font-size: 0.85em;
+    cursor: help;
+}
+.pip-command.pip-question {
+    color: var(--stepper-current);
 }
 
 /* In a task card the player is no widget card of its own (the task card

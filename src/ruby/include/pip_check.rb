@@ -58,6 +58,25 @@ module PipCheck
                           'say' => 'say' },
     }.freeze
     COMMANDS = NAMES['ruby'].keys.freeze
+    # What each command does, for the card's list of commands (TaskCard).
+    DESCRIPTIONS = {
+        'move' => 'ein Feld vorwärts', 'turn_left' => 'eine Vierteldrehung nach links', 'take' => 'den Funkenstein hier aufheben',
+        'wait' => 'einen Schritt stehen bleiben', 'pull' => 'am Hebel hier ziehen', 'on_stone' => 'liegt hier ein Funkenstein?',
+        'on_lever' => 'steht hier ein Hebel?', 'front_clear' => 'ist das Feld vorn frei?', 'glibber_ahead' => 'ist vorn ein Glibber, oder kommt gleich einer?',
+        'on_lamp' => 'steht Pip an der Lampe?', 'trail_ahead' => 'sind vorn Pfotenabdrücke?', 'puddle_ahead' => 'ist vorn eine Pfütze?',
+        'bello_here' => 'ist Bello hier?', 'say' => 'etwas sagen, ohne einen Schritt',
+    }.freeze
+    QUESTIONS = %w[on_stone on_lever front_clear glibber_ahead on_lamp trail_ahead puddle_ahead bello_here].freeze
+
+    # How a command is written in language: a step with its parentheses
+    # (Ruby without), say with a text.
+    def self.spelling(language, command)
+        name = NAMES.fetch(language).fetch(command)
+        return language == 'ruby' ? 'say "…"' : 'say("…")' if command == 'say'
+        return name if language == 'ruby'
+
+        "#{name}()"
+    end
     MAX_MAPS = 6
     SECONDS = 10
 

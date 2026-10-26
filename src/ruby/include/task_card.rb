@@ -121,6 +121,12 @@ module TaskCard
                 io << "<textarea class='form-control task-input task-code' name='answer' rows='6' spellcheck='false' autocapitalize='off'"
                 io << " data-code-language='#{h.(check['language'])}' data-starter='#{h.(task['starter'])}' aria-labelledby='#{h.(field)}-title'>"
                 io << "#{h.(task['starter'])}</textarea>"
+                # the commands this task knows, as the language writes them
+                io << "<div class='pip-commands' aria-label='Befehle für Pip'>"
+                (check['commands'] + ['say']).each do |command|
+                    io << "<code class='pip-command#{PipCheck::QUESTIONS.include?(command) ? ' pip-question' : ''}' title='#{h.(PipCheck::DESCRIPTIONS[command])}'>#{h.(PipCheck.spelling(check['language'], command))}</code>"
+                end
+                io << '</div>'
                 io << '</div>'
                 maps = check['maps'].size
                 reads = "Dein Plan läuft in einem eigenen kleinen Rechner, getrennt von deinem Workspace und ohne Internet. Pip macht genau, was draufsteht. " \

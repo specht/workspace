@@ -45,7 +45,7 @@
     const PX = 24;
     const HALF = 12;
     const FACE = 12;
-    // the radius of a corner that is not worn round
+    // the radius of a tight corner (a wide one has HALF, a round one PX)
     const TIGHT = 4;
     // the light edge of the rock's top (the palette of make_sprites.py, ROCK)
     const RIM_LIGHT = [100, 114, 158];
@@ -170,10 +170,11 @@
         // pixels per tile, scaled up sharp), which throws the shadow. First
         // its shape at ground level: every wall tile, without the corners
         // that are round, with the nooks it fills in the corners of open
-        // tiles (a round corner is a quarter circle in the corner of its
-        // tile; wide or tight, the corner point decides, so the same corner
-        // stays the same); no corner is sharp: about half are worn wide (a
-        // radius of half a tile), the others tight (TIGHT pixels). Then the
+        // tiles (a corner is a quarter circle in the corner of its tile; no
+        // corner is sharp: tight (TIGHT pixels), wide (half a tile) or round
+        // (a whole tile, where the tile has no other corner to round, so
+        // that a 2 × 2 room or pillar can be a circle); the corner point
+        // decides, so the same corner stays the same). Then the
         // faces: the view comes from the front and a little from the left,
         // so a pixel of rock is face where open ground lies in the box below
         // it and to its right (FACE pixels down, SIDE across: the front face,
@@ -196,13 +197,21 @@
             groundNode.width = canvasNode.width = W;
             groundNode.height = canvasNode.height = H;
             const open = (x, y) => !wall(x, y);
-            // wide or tight; PipWorld.corners ('wide' or 'tight') makes them
-            // all one kind, for looking at them (scratch tests)
-            const worn = (x, y, q) => window.PipWorld.corners ? window.PipWorld.corners === 'wide' : hash(x + q.at[0], y + q.at[1], 8) < 0.5;
+            // the radius of a corner: tight, wide (half a tile) or round (a
+            // whole tile, where the tile has no other corner to round, so
+            // that a 2 × 2 room or pillar can be a circle); the corner point
+            // decides. PipWorld.corners ('tight', 'wide' or 'round') makes
+            // them all one kind, for looking at them (scratch tests).
+            const radius = (x, y, q, alone) => {
+                const kind = window.PipWorld.corners;
+                const h = hash(x + q.at[0], y + q.at[1], 8);
+                const choice = kind || (h < 0.4 ? 'tight' : h < 0.75 ? 'wide' : 'round');
+                return choice === 'tight' ? TIGHT : choice === 'round' && alone ? PX : HALF;
+            };
             const shape = new Uint8Array(W * H);
             const inQuarter = (q, px, py) => (px < HALF) === (q.at[0] === 0) && (py < HALF) === (q.at[1] === 0);
             // outside the quarter circle of radius r in the tile's corner
-            // that quarter q holds
+            // that quarter q holds (r up to a whole tile)
             const outsideRound = (q, r, px, py) => {
                 const cx = q.at[0] ? PX - r : r;
                 const cy = q.at[1] ? PX - r : r;
@@ -215,10 +224,13 @@
                     const corners = QUARTERS.filter((q) => wall(tx, ty)
                         ? q.sides.every(([dx, dy]) => open(tx + dx, ty + dy)) && open(tx + q.diagonal[0], ty + q.diagonal[1])
                         : q.sides.every(([dx, dy]) => wall(tx + dx, ty + dy)) && wall(tx + q.diagonal[0], ty + q.diagonal[1]));
+                    const radii = corners.map((q) => radius(tx, ty, q, corners.length === 1));
                     for (let py = 0; py < PX; py++) {
                         for (let px = 0; px < PX; px++) {
-                            const q = corners.find((c) => inQuarter(c, px, py));
-                            const cut = q && outsideRound(q, worn(tx, ty, q) ? HALF : TIGHT, px, py);
+                            // a round corner takes the whole tile, the others
+                            // their quarter
+                            const n = corners.findIndex((c, k) => radii[k] === PX || inQuarter(c, px, py));
+                            const cut = n >= 0 && outsideRound(corners[n], radii[n], px, py);
                             // a wall loses its round corner, an open tile gains its nook
                             const rock = wall(tx, ty) ? !cut : Boolean(cut);
                             if (rock) shape[(ty * PX + py) * W + tx * PX + px] = 1;
@@ -318,8 +330,10 @@
                         // behind it, a soft one where it lies to the left: the
                         // edge of a room's right wall, which goes on up beside
                         // the face of the wall behind, to the top of that face
-                        if (!at(x, y - 1)) setColour(i, RIM_LIGHT);
-                        else if (!at(x, y - 2)) setColour(i, RIM_SOFT);
+                        // (and where the narrow face of a left wall ends on it,
+                        // so that the outline goes round the corner unbroken)
+                        if (!at(x, y - 1) || isFace(x, y - 1)) setColour(i, RIM_LIGHT);
+                        else if (!at(x, y - 2) || isFace(x, y - 2)) setColour(i, RIM_SOFT);
                         else if (!at(x - 1, y) || isFace(x - 1, y)) setColour(i, RIM_SOFT);
                     }
                 }
