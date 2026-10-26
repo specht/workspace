@@ -1,11 +1,11 @@
 {
   "screenshots": {
     "teaser.webp": {
-      "environment_fingerprint": "c302ba7094f4f64d90b74309e1992d891605f4fe3767c37811e6de0cf08bf51f",
-      "output_sha256": "70dd02e1375a83f33ba33f58181f6f2647c400f68241023644863615ab28d07e",
+      "environment_fingerprint": "b7a8faceacc0124725270295b00fbc06cb8fed4b12d318130dcacb8d77abfecc",
+      "output_sha256": "d784311a45e1b8ddfc5a48d56950416ae3b8011d482d10d77df63aa4a0ed05f3",
       "state_hash": "87d80db8c75fbe64b895bfbf13f1575f954891e52ed2ebf850cbc10879824acf",
       "variants": {
-        "teaser-dark.webp": "7c2f314781d8f1eb29b91e3f3792a9810fc4cd737d90e523a65605582f653932"
+        "teaser-dark.webp": "b14c6cdd80631f85f176699e32107f851c500759cdc7338a2ae7743d004f108d"
       },
       "workspace_look": "4.140.0-ls368"
     }

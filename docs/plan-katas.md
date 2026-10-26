@@ -64,7 +64,7 @@ pinning a set for a group (the »angeheftet« activities of `/klasse`) and
    ▼                                                                        ▼
  4 Texte ─────────── 5 Listen ─────────── 6 Dictionaries         7 Bits und Zahlensysteme
    │                   │
-   └──────── 8 Rekursion ──── 9 Suchen und Sortieren ──── 10 Tests schreiben
+   └──────── 8 Rekursion ──── 9 Suchen ──────────────── 10 Tests schreiben
 ```
 
 A class with no programming yet starts with Pip; a class that has programmed
@@ -179,7 +179,8 @@ Going through a list, building a new one, positions (Index, not »Stelle«).
 * Übung: reverse (CB array_reverse), swap first and last (CB), rotate left
   (CB), sorted? (HS Monotonie)
 * Knobelei: remove duplicates, the missing number (CB find_missing_number),
-  merge two sorted lists
+  merge two sorted lists, the sieve of Eratosthenes (moved here from set 9;
+  the prime test of set 3 is the idea it speeds up)
 * Extras: two numbers that add up to a target (two-sum) in one pass
 * Oberstufe: Datenstrukturen; links to the Data Structures Sandbox
 
@@ -208,14 +209,21 @@ A function that calls itself, with a case that stops.
 * Extras: Fibonacci with memoisation under a time limit
 * Oberstufe: Algorithmen (rekursive Verfahren)
 
-**9 · Suchen und Sortieren**
-The helpers of the algorithms; the full sorting algorithms stay in the Sorting
-Sandbox, which the page links.
-* Einstieg: linear search (the index or `nil`), minimum's index
-* Übung: binary search, insert into a sorted list, is a list a permutation
-* Knobelei: the sieve of Eratosthenes, merge step of merge sort
-* Extras: count comparisons of two search methods on the same list
-* Oberstufe: Algorithmen, Effizienz
+**9 · Suchen**
+Finding something in a list, and halving. Whole sorting algorithms are the
+Sorting Sandbox's (`sandbox-sortieren`: written in Dart, watched, raced,
+measured, checked for stability); this set gives two of their building blocks
+and ends with a link there: the minimum's index is what selection sort is
+made of, inserting into a sorted list what insertion sort is made of. The
+merge step is set 5's (merge two sorted lists), counting comparisons the
+sandbox's Analyze (decided with the maintainer, 26 October 2026).
+* Einstieg: linear search (the index or `nil`), the minimum's index
+* Übung: binary search, guess the number by halving, the first index from
+  which a condition holds
+* Knobelei: insert into a sorted list keeping it sorted, is a list a
+  permutation of another
+* Extras: binary search that counts its steps, compared with log₂ n
+* Oberstufe: Algorithmen, Effizienz; links to `sandbox-sortieren`
 
 **10 · Tests schreiben**
 Writing tests instead of code, with the check type `tests` (section 4): for each
