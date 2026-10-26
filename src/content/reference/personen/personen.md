@@ -64,6 +64,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1815 -->
+<!-- part: lovelace -->
+### Ada Lovelace
+
+<div class='person'>
+<img src='lovelace.webp' alt='Ada Lovelace um 1840, Aquarell: eine junge Frau mit dunklem, über den Ohren aufgestecktem Haar, einem goldenen Band und Blumen im Haar und einem schwarzen Spitzenschleier über den Schultern, den Blick zum Betrachter.'>
+<p><strong>Ada Lovelace</strong> (1815–1852), englische Mathematikerin, Tochter des Dichters Lord Byron. 1843 übersetzte sie einen Aufsatz über die Analytical Engine, eine Rechenmaschine, die Charles Babbage entworfen hatte, und schrieb Anmerkungen dazu, etwa dreimal so lang wie der Aufsatz. In der letzten, Note G, steht Schritt für Schritt, wie die Maschine die Bernoulli-Zahlen ausrechnen soll: das erste veröffentlichte Programm. Für jede weitere Zahl wiederholen sich darin die Schritte 13 bis 23, eine Schleife. Lovelace nannte so etwas einen »cycle of operations«, eine Folge von Schritten, die mehr als einmal ausgeführt wird, und kannte auch schon die Schleife in der Schleife: »a cycle of cycles«.</p>
+<p>Die Maschine wurde nie fertig gebaut, und das Programm lief nie. Lovelace sah aber schon, dass sie mehr kann als rechnen: Stünden die Zahlen für Töne, könnte sie Musik komponieren. Die Programmiersprache Ada ist nach ihr benannt.</p>
+<p class='person-credit'>Aquarell: Alfred Edward Chalon, um 1840, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Ada_Lovelace_portrait.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1831 -->
 <!-- part: maxwell -->
 ### James Clerk Maxwell

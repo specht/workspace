@@ -67,10 +67,15 @@ hin. Nur der erste Versuch zählt fürs Klassenboard.
 
 Was die Antwort verrät, steht nicht gleich darunter: Ein Bild vom Ergebnis,
 der Absatz, der es erklärt, oder ein Kasten, der es vorführt, wartet zwischen
-`<!-- after: id -->` und `<!-- /after -->` (`AfterTask`), bis die Aufgabe eine
-Antwort hat, richtig oder falsch. Bis dahin steht dort »Hier geht es weiter,
-sobald du deine Antwort oben abgegeben hast.« Das gilt nur für Lernende, die
-antworten können; Lehrkräfte, Besucher und Klassen ohne Aufgaben sehen alles.
+`<!-- after: id -->` und `<!-- /after -->` (`AfterTask`): nach einer Vorhersage,
+bis sie eine Antwort hat, richtig oder falsch (dann kommt das Warum); nach jeder
+anderen Aufgabe, bis sie gelöst ist, sonst zeigte eine falsche Antwort die
+richtige. Bis dahin steht dort »Hier geht es weiter, sobald du deine Antwort
+oben abgegeben hast« oder »… sobald du die Aufgabe oben gelöst hast«. Das gilt
+für alle, die antworten können, auch für Lehrkräfte: Sie sehen die Seite wie
+ihre Klasse und öffnen die Stelle mit »Für Lehrkräfte: jetzt zeigen« (der
+Maintainer, der sonst meinte, die Antwort stünde gleich darunter). Besucher und
+Klassen ohne Aufgaben sehen alles.
 Zuerst stand das Bild vom Ergebnis direkt unter der Vorhersage (»Licht mit
 256 Farben« im Raycaster), und die Vermutung war geschenkt.
 

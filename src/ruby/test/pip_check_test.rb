@@ -62,9 +62,17 @@ class PipCheckTest < Minitest::Test
         assert_equal 'Hier in Zeile 2 greift Pip ins Leere: Hier liegt kein Funkenstein.', message
         status, message, = PipCheck.check({}, check('ruby'), "move\nmove\n", RUN)
         assert_equal 'Hier liegt am Ende noch ein Funkenstein da.', message
+        # a name Pip does not know: said plainly, with what Pip knows here
         status, message, = PipCheck.check({}, check('javascript'), "move();\njump();\n", RUN)
         assert_equal :wrong, status
-        assert_includes message, '`jump` kennt JavaScript an dieser Stelle nicht.'
+        assert_equal 'Hier kennt Pip `jump` nicht (Zeile 2). Ist es anders geschrieben, oder fehlt eine eigene Funktion? ' \
+                     'In diesem Kapitel versteht Pip `move`, `turnLeft`, `take` und `say`.', message
+        # in a loop the error's own line counts, not the last of the way there (»from …«)
+        status, message, = PipCheck.check({}, check('ruby'), "2.times do\n  forward\nend\n", RUN)
+        assert_includes message, 'Hier kennt Pip `forward` nicht (Zeile 2).'
+        status, message, = PipCheck.check({}, check('ruby'), "move\nx = nil + 1\n", RUN)
+        assert_includes message, "Hier bricht dein Plan ab (Zeile 2): `undefined method '+' for nil"
+        refute_includes message, 'from '
     end
 
     def test_several_maps_need_a_general_plan

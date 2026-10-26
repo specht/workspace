@@ -744,8 +744,7 @@ Am Ende von `move_player` stand bisher `feet = Vector3Add(feet, move);`. Ersetze
 ~     if (IsKeyDown(KEY_A)) move = Vector3Subtract(move, right);
 ~     move = Vector3Scale(Vector3Normalize(move), 4.5f * dt);
 ~
-    // Jede Richtung einzeln: So gleitet man an einer Wand entlang, statt an
-    // ihr kleben zu bleiben.
+    // Jede Richtung einzeln: erst der Schritt in x, dann der in z
     Vector3 next = feet;
     next.x += move.x;
     if (!collides(next)) feet.x = next.x;
@@ -762,6 +761,10 @@ Am Ende von `move_player` stand bisher `feet = Vector3Add(feet, move);`. Ersetze
 Das Programm probiert jeden Schritt erst aus: Würde die Figur nach dem Schritt in einem Block stecken, bleibt sie, wo sie ist.
 
 _task(einzeln)
+
+<!-- after: einzeln -->
+Zusammen ausprobiert, bliebe die Figur schräg an einer Wand stehen: Nach dem ganzen Schritt steckt sie in der Wand, also wird er verworfen. Einzeln ausprobiert, klappt der Teil entlang der Wand, nur der Teil in die Wand hinein fällt weg. So gleitet die Figur an der Wand entlang, statt an ihr kleben zu bleiben.
+<!-- /after -->
 
 ### Fallen und springen
 

@@ -79,6 +79,11 @@ wie `count`, die vor der Schleife anfängt und in ihr wächst, sammelt das
 Ergebnis; `let` erlaubt, sie zu ändern, `const` nicht.
 <!-- /language -->
 
+Schon das erste veröffentlichte Programm, 1843 für eine Rechenmaschine, die
+nie fertig wurde, hatte eine Schleife.
+
+_person(lovelace)
+
 ## Einstieg
 
 _task(sum-to)

@@ -21,10 +21,11 @@ require 'cgi'
 #   <div class='after-task-body'>…</div>
 #   </div>
 #
-# Only for students who can answer does Main#task_page_setup hide the body
-# (and show the line instead) until tasks.js finds an answer to the task;
-# visitors, teachers, classes without tasks and pages without JavaScript see
-# everything at once.
+# For everyone who can answer, teachers too, Main#task_page_setup hides the
+# body (and shows the line instead) until tasks.js finds an answer to a
+# prediction, or a solution to any other task; a teacher can open it with a
+# button in the line. Visitors, classes without tasks and pages without
+# JavaScript see everything at once.
 module AfterTask
     START = /^[ \t]*<!--[ \t]*after:[ \t]*([A-Za-z0-9_-]+)[ \t]*-->[ \t]*$/
     FINISH = /^[ \t]*<!--[ \t]*\/after[ \t]*-->[ \t]*$/

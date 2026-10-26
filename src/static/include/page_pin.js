@@ -51,6 +51,12 @@
             box.appendChild(menu);
             toggle.addEventListener('click', () => {
                 menu.hidden = !menu.hidden;
+                // down to just above the footer bar fixed at the window's foot
+                // (in development) or the window's edge; at least a few classes
+                const bar = document.querySelector('footer.footer-fixed');
+                const end = bar ? bar.getBoundingClientRect().top : window.innerHeight;
+                const below = end - toggle.getBoundingClientRect().bottom;
+                menu.style.setProperty('--page-pin-menu-height', Math.max(below - 12, 160) + 'px');
                 toggle.setAttribute('aria-expanded', menu.hidden ? 'false' : 'true');
             });
             document.addEventListener('click', (event) => {

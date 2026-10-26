@@ -55,7 +55,7 @@ tasks:
         say: Ein Fehler wäre ein Code, der größer ist als der nächste freie Eintrag. Genau der nächste freie Eintrag ist erlaubt.
       - when: { picked: 3 }
         say: LZW überspringt nichts; jeder Code außer Clear und End steht für mindestens ein Pixel.
-    solution: 'Der Encoder hat nach dem ersten Pixel 3 den Eintrag 6 = 3 3 angelegt und ihn gleich benutzt, weil die nächsten beiden Pixel wieder 3 3 sind. Der Decoder kennt ihn noch nicht, kann ihn aber bauen: der vorige Eintrag (3) und dessen erstes Pixel (3). Die Zeitlupe oben zeigt dasselbe bei der Diskette.'
+    solution: 'Der Encoder hat nach dem ersten Pixel 3 den Eintrag 6 = 3 3 angelegt und ihn gleich benutzt, weil die nächsten beiden Pixel wieder 3 3 sind. Der Decoder kennt ihn noch nicht, kann ihn aber bauen: der vorige Eintrag (3) und dessen erstes Pixel (3). Die Zeitlupe unter der Aufgabe zeigt dasselbe bei der Diskette.'
 
   - id: pruefsumme-diskette
     title: Die Diskette

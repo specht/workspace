@@ -48,7 +48,7 @@ class KataMapTest < Minitest::Test
         assert_equal 1, html.scan("<a class='kata-set kata-set-pinned' href='/kata-loops' style='--accent: 218' data-centre=''>").size
         assert_equal 2, html.scan("kata-set-pinned").size
         assert html.index("data-centre") < html.index("kata-set-title'>Schleifen"), 'the latest pin is centred'
-        assert_equal 2, html.scan('Angepinnt').size
+        assert_equal 2, html.scan("title='Angepinnt'").size
     end
 
     # an icon of Bootstrap, or a figure such as Pip, tinted in the band's hue

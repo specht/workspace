@@ -21,6 +21,16 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Neo4j für die Lernenden (eine Datenbank je Person): Ihr Transaktionslog wird nicht mehr im Voraus
+  reserviert (bisher 256 MB je Datenbank, auf einem Server mit einer Schule viele GB) und beginnt alle 16 MB
+  neu (`config.rb`). Beim Update: `./config.rb up -d neo4j`, dann einmal
+  `src/scripts/neo4j-user-compact-logs.sh`. Es kopiert jede Datenbank nacheinander neu, mit kleinem Log,
+  und gibt den Platz zurück; jede ist dabei für Sekunden offline (am besten außerhalb des Unterrichts). Daten,
+  Indizes und Constraints bleiben; stimmt nach dem Kopieren eine Zahl nicht, kommt das Original zurück.
+  Auf dem Entwicklungsrechner: 38 Datenbanken von 9,8 GB auf 0,5 GB.
+- Der Ruby-Dienst rendert die Inhalte beim Start in mehreren Prozessen und legt das Ergebnis in
+  `content-cache/` im Bildcache (`WEB_CACHE_PATH`) ab (etwa 15 MB, nur die neueste Fassung); ein Start ohne Änderungen lädt es
+  in einem Bruchteil einer Sekunde. Die Datei kann jederzeit gelöscht werden, dann wird neu gerendert.
 - Katas (kurze Programmieraufgaben in der Karte, Prüfarten `function`, `pip` und `tests`) und »Pip unter Funkelbach«, im Katalog und als Streifen auf der Startseite:
   Der Code läuft in einem eigenen Container aus dem Workspace-Image ohne Netz, durch eine Warteschlange. Neu und freiwillig in
   `credentials.rb`: `KATA_PARALLEL_RUNS` (ohne 4), messen mit `./config.rb exec ruby ruby /src/scripts/measure-katas.rb`.

@@ -55,6 +55,19 @@ module KataMap
     # progress: { slug => { done:, total:, extras_done: } }, nil for a
     # visitor; pinned: the slugs a teacher pinned for the person's groups
     # (the first is scrolled into the middle).
+    # A set's band: its icon, or a figure like Pip (a sprite tinted in the
+    # band's hue, default.css), on its colour (--accent from where it sits).
+    # The pinned card on the start page shows it too (StudentHome.card).
+    def self.art_html(icon)
+        icon ||= 'bi-code-slash'
+        art = if icon.start_with?('/')
+            "<span class='kata-set-figure'><span class='kata-set-sprite kata-sprite-#{h(File.basename(icon.split('?').first, '.*'))}' style='--sprite: url(#{h(icon)})'></span></span>"
+        else
+            "<i class='bi #{h(icon)}'></i>"
+        end
+        "<span class='kata-set-art' aria-hidden='true'>#{art}</span>"
+    end
+
     def self.carousel_html(stops, progress: nil, teacher: false, pinned: [])
         core = ->(stop) { stop.counts.reject { |k, _| k == :extra }.values.sum }
         io = +"<div class='kata-carousel'>"
@@ -74,12 +87,11 @@ module KataMap
             # figure like Pip, drawn in grey and tinted in the band's hue
             # (images/pip/make_icons.py, default.css); no picture of a card,
             # which would give a solution away
-            icon = stop.icon || 'bi-code-slash'
-            art = icon.start_with?('/') ? "<span class='kata-set-figure'><span class='kata-set-sprite kata-sprite-#{h(File.basename(icon.split('?').first, '.*'))}' style='--sprite: url(#{h(icon)})'></span></span>" : "<i class='bi #{h(icon)}'></i>"
-            io << "<span class='kata-set-art' aria-hidden='true'>#{art}</span>"
+            io << art_html(stop.icon)
             io << "<span class='kata-set-marks'><span class='kata-set-number'>#{done ? "<i class='bi bi-check-lg' aria-hidden='true'></i><span class='visually-hidden'>Erledigt</span>" : i + 1}</span>"
-            io << "<span class='kata-set-pin'><i class='bi bi-pin-angle-fill' aria-hidden='true'></i>Angepinnt</span>" if pin
             io << '</span>'
+            # pinned for the group: a pin in the theme's blue at the right, the word only for screen readers
+            io << "<span class='kata-set-pin' title='Angepinnt'><i class='bi bi-pin-angle-fill' aria-hidden='true'></i><span class='visually-hidden'>Angepinnt</span></span>" if pin
             io << "<span class='kata-set-body'>"
             io << "<span class='kata-set-title'>#{h(stop.title)}</span>"
             io << "<span class='kata-set-idea'>#{h(stop.idea)}</span>" if stop.idea

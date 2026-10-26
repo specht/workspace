@@ -89,7 +89,7 @@ tasks:
 
   - id: umbenennen
     title: Umbenennen ist nicht umwandeln
-    prompt: Du benennst `classroom.png` in `classroom.webp` um. Was passiert mit der Datei?
+    prompt: Du benennst ein Bild `classroom.png` in `classroom.webp` um. Was passiert mit der Datei?
     prediction: true
     check:
       type: choice

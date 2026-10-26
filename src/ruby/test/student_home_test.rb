@@ -46,7 +46,7 @@ class StudentHomeTest < Minitest::Test
         assert_equal [2, 2, 1], [p[:done], p[:total], p[:extras_done]]
         assert_nil p[:next]
         html = StudentHome.card('katas', 'Katas', p)
-        assert_includes html, '2 von 2 erledigt, dazu 1 Extra'
+        assert_includes html, '2 von 2 gelöst, dazu 1 Extra'
         p = StudentHome.progress(katas, { 'katas/primes' => st('correct', 'b', 20) }).first
         assert_equal [0, 2, 1], [p[:done], p[:total], p[:extras_done]]
         assert_equal 'add', p[:next][:id]
@@ -58,7 +58,7 @@ class StudentHomeTest < Minitest::Test
         html = StudentHome.html(:progress => progress, :pinned => pinned)
         assert_includes html, 'Von deiner Lehrkraft'
         assert_includes html, "href='/tcpip#aufgabe-loopback'"
-        assert_includes html, '1 von 3 erledigt'
+        assert_includes html, '1 von 3 gelöst'
         assert_includes html, 'Angeheftet für 10b'
         assert_includes html, 'Setze Formeln.'
         refute_includes html, 'shc-template'
@@ -74,8 +74,8 @@ class StudentHomeTest < Minitest::Test
         html = StudentHome.html(:progress => progress)
         assert_includes html, 'Weiter mit'
         assert_includes html, "href='/tcpip#aufgabe-loopback'"
-        assert_includes html, '1 von 3 Aufgaben'
-        assert_includes html, '0 von 1 Aufgabe<'
+        assert_includes html, '1 von 3 gelöst'
+        assert_includes html, '0 von 1 gelöst<'
         assert_operator html.index('/tcpip'), :<, html.index('/showerjs')
         refute_includes html, 'uebung-strings'
         refute_includes html, 'So geht'

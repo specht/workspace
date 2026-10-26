@@ -1930,11 +1930,18 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     display: block;
     position: relative;
     z-index: 0;
-    padding-bottom: var(--footer-reserved-space);
 }
 
+/* The room under the page in the article's column, not under the layout:
+   the sticky side navigation stays inside the layout's content, which then
+   reaches the footer, so that at the page's end it is not pushed up. The
+   footer's own distance (production) moves here too. */
 .autotoc-secondary-main {
     min-width: 0;
+    padding-bottom: max(var(--footer-reserved-space), 2rem);
+}
+body.has-autotoc-secondary footer:not(.footer-fixed) {
+    margin-top: 0;
 }
 
 .autotoc-secondary {
@@ -1969,11 +1976,30 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 
 .autotoc-secondary-title {
     flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
     margin: 0 0 0.7rem;
     padding: 0 0 0.55rem;
     border-bottom: 1px solid rgba(var(--bs-body-color-rgb), 0.12);
     font-size: 0.86rem;
     font-weight: 700;
+}
+
+/* the bar's »Nach oben« at the title's right end, smaller; its place kept
+   while the page's header is still in sight, so nothing moves */
+.autotoc-secondary-up {
+    width: 1.9rem;
+    height: 1.9rem;
+    margin: -0.4rem 0;
+    font-size: 0.9rem;
+    font-weight: normal;
+    transition: background-color 0.15s, color 0.15s, transform 0.15s, opacity 0.2s, visibility 0.2s;
+}
+body:not(.autotoc-primary-visible) .autotoc-secondary-up {
+    visibility: hidden;
+    opacity: 0;
 }
 
 .autotoc-secondary-items {
@@ -2002,6 +2028,11 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     font-weight: 400;
     line-height: 1.22;
     opacity: 0.56;
+}
+
+.autotoc-secondary a code {
+    padding: 0 0.15em;
+    font-size: 0.92em;
 }
 
 .autotoc-secondary a:hover {
@@ -2075,6 +2106,38 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 @media (max-width: 1399.98px) {
     .autotoc-secondary {
         display: none;
+    }
+}
+
+/* Before the script builds the side navigation (install_secondary_autotoc,
+   after the page has loaded), the page already stands where it will stand:
+   the container that holds the trigger takes the place of the layout's
+   second column, so nothing shifts when the navigation arrives. The same
+   sizes as body.has-autotoc-secondary and .autotoc-secondary-layout. */
+@media (min-width: 1400px) {
+    body:has(.autotoc-secondary-trigger) {
+        --autotoc-secondary-width: 18rem;
+        --autotoc-secondary-gap: 1.75rem;
+        --autotoc-article-width: 1320px;
+        --autotoc-layout-width: calc(var(--autotoc-secondary-width) + var(--autotoc-secondary-gap) + var(--autotoc-article-width));
+    }
+
+    .container:has(.autotoc-secondary-trigger):not(.autotoc-secondary-main) {
+        --autotoc-layout: min(calc(100vw - 2rem), var(--autotoc-layout-width));
+        width: min(calc(var(--autotoc-layout) - var(--autotoc-secondary-width) - var(--autotoc-secondary-gap)), var(--autotoc-article-width));
+        max-width: none;
+        margin-right: 0;
+        margin-left: calc((100% - var(--autotoc-layout)) / 2 + var(--autotoc-secondary-width) + var(--autotoc-secondary-gap));
+    }
+
+    /* the bar of chapters at the top would say the same as the side navigation,
+       which then goes up to the window's top edge */
+    body:has(.autotoc-secondary-trigger) .autotoc {
+        display: none;
+    }
+    body.has-autotoc-secondary,
+    body.has-autotoc-secondary.autotoc-primary-visible {
+        --autotoc-secondary-top: 0.5rem;
     }
 }
 
@@ -2971,13 +3034,34 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     display: flex;
     flex-direction: column;
     min-width: 12em;
+    /* no lower than the window (page_pin.js sets the height); a long list
+       of classes scrolls in it, not the page */
+    max-height: var(--page-pin-menu-height, 70vh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: #d9c9ee transparent;
     padding: 0.3em;
     border: 1px solid #d9c9ee;
     border-radius: 0.6em;
     background: var(--bs-body-bg);
     box-shadow: 0 0.4em 1.2em rgba(0, 0, 0, 0.12);
 }
+/* a thin thumb in the menu's purple on no track (Safari takes these parts) */
+.page-pin-menu::-webkit-scrollbar {
+    width: 8px;
+}
+.page-pin-menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+.page-pin-menu::-webkit-scrollbar-thumb {
+    background: #d9c9ee;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    background-clip: padding-box;
+}
 .page-pin-item {
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     gap: 0.5em;
@@ -4789,17 +4873,39 @@ ul.task-teacher-list .task-teacher-answer {
     box-shadow: 0 0.3em 1em rgba(0, 0, 0, 0.08);
 }
 .shc-with-picture {
-    grid-template-columns: 15em 1fr;
+    --shc-picture-width: 20em;
+    grid-template-columns: var(--shc-picture-width) 1fr;
+    align-items: center;
 }
 
-/* the picture fills its column without setting the card's height (the
-   text does); display stays with the rule that shows the light or the dark
-   variant */
+/* the picture flush with the card's edge, in 16:9 as on the catalog's
+   cards; it sets the card's height, and the abstract beside it ends after
+   two lines (…) so that the text fits; display stays with the rule that
+   shows the light or the dark variant */
 .shc-picture {
     position: relative;
     display: block;
-    min-height: 9em;
+    align-self: start;
+    aspect-ratio: 16 / 9;
     background: var(--bs-tertiary-bg);
+}
+@media (min-width: 576px) {
+    .shc-with-picture .shc-abstract {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        overflow: hidden;
+    }
+}
+/* a set of Katas: its band from the strip (KataMap.art_html), filling the picture */
+.shc-kata .kata-set-art {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    font-size: 3.4em;
 }
 .shc-picture .theme-image-dark {
     display: none;
@@ -5085,8 +5191,11 @@ ul.task-teacher-list .task-teacher-answer {
     grid-column: 1;
     overflow: hidden;
     font-weight: 600;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    /* a long title (»Pip unter Funkelbach: Hinab in die Stollen«) on two lines, not cut */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
 }
 
 .student-continue-list .sc-meta {
@@ -5357,6 +5466,25 @@ ul.task-teacher-list .task-teacher-answer {
 
 .code-input .code-input-text:focus {
     border-color: #86b7fe;
+}
+
+/* the editor is dark in both schemes: a scrollbar in its colours, a soft
+   light thumb on no track, instead of the browser's light one (Safari
+   ignores scrollbar-color and takes the ::-webkit-scrollbar parts) */
+.code-input .code-input-text {
+    scrollbar-color: rgba(251, 241, 199, 0.28) transparent;
+}
+.code-input .code-input-text::-webkit-scrollbar {
+    width: 8px;
+}
+.code-input .code-input-text::-webkit-scrollbar-track {
+    background: transparent;
+}
+.code-input .code-input-text::-webkit-scrollbar-thumb {
+    background: rgba(251, 241, 199, 0.28);
+    border: 2px solid transparent;
+    border-radius: 4px;
+    background-clip: padding-box;
 }
 
 .code-input .code-input-text::placeholder {
@@ -8559,8 +8687,8 @@ html[data-bs-theme="dark"] .bitplane-widget {
     box-shadow: 0 0.4em 1.2em hsl(var(--accent, 150) 55% 45% / 0.22);
 }
 .kata-set-pinned {
-    border-color: var(--bs-primary);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--bs-primary) 35%, transparent);
+    border-color: #0b4fb3;
+    box-shadow: 0 0 0 2px color-mix(in srgb, #0b4fb3 35%, transparent);
 }
 
 .kata-set-art {
@@ -8632,7 +8760,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
     vertical-align: 0;
 }
 
-/* the set's number, or a tick when it is done; »Angepinnt« beside it */
+/* the set's number, or a tick when it is done */
 .kata-set-marks {
     position: absolute;
     top: 0.5em;
@@ -8660,8 +8788,51 @@ html[data-bs-theme="dark"] .bitplane-widget {
     background: #198754;
     color: #fff;
 }
+/* a catalog card pinned for one of the person's groups: the same pin as
+   on the Kata strip, over the picture's right corner, and a blue border */
+.card-pin {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.55rem;
+    height: 1.55rem;
+    border-radius: 50%;
+    /* light like the set's number on the strip, the pin in the site's blue: readable on any picture */
+    background: rgba(255, 255, 255, 0.92);
+    color: #0b4fb3;
+    font-size: 0.8rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+/* the glyph's own box, centred in the circle (the line's height would lift it) */
+.card-pin .bi,
+.kata-set-pin .bi {
+    display: block;
+    line-height: 1;
+}
+.card-pin .bi::before,
+.kata-set-pin .bi::before {
+    display: block;
+}
+.tutorial_card3.card-pinned {
+    outline: 2px solid #0b4fb3;
+    outline-offset: -2px;
+}
+
+/* pinned for the group: a pin in the site's blue (as »Aufgabe 1«) on a light
+   circle like the number's, at the right, as high as the number (0.5em of the set, in its 0.8em) */
 .kata-set-pin {
-    color: var(--bs-primary);
+    position: absolute;
+    top: 0.625em;
+    right: 0.625em;
+    width: 1.9em;
+    padding: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    color: #0b4fb3;
 }
 .kata-set-marks .bi {
     margin: 0;
@@ -8670,7 +8841,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
     vertical-align: 0;
 }
 .kata-set-pin .bi {
-    margin-right: 0.3em;
+    margin: 0;
 }
 
 .kata-set-body {
@@ -9416,8 +9587,9 @@ html[data-bs-theme="dark"] .bitplane-widget {
     font-variant-numeric: tabular-nums;
 }
 
-.pip-world .stepper-timeline {
-    margin-top: 0.5em;
+/* more specific than div[data-stepper] .stepper-timeline, whose margin has no top */
+div.pip-world[data-stepper] .stepper-timeline {
+    margin-top: 1.1em;
 }
 
 /* a run of hundreds of steps: the dots close up into a line */

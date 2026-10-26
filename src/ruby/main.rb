@@ -1,3 +1,4 @@
+require 'etc'
 require './include/helper.rb'
 require './include/content_parts.rb'
 require './include/vscode_settings.rb'
@@ -1465,6 +1466,26 @@ class Main < Sinatra::Base
         result
     end
 
+    # The result of a full parse is kept in CONTENT_CACHE, under a key made
+    # of everything it comes from: the code that renders, every file of the
+    # content (path, size, time), the installation's variables in pages,
+    # and whether this is development. A start with the same inputs loads it
+    # instead of rendering every page again; anything changed, and the pages
+    # are rendered (parse_content_locked). Only the newest result is kept.
+    CONTENT_CACHE = '/webcache/content-cache'
+
+    def self.content_cache_key
+        digest = Digest::SHA256.new
+        digest.update("format 1\0#{DEVELOPMENT}\0")
+        files = Dir.glob('/src/ruby/**/*.rb') + Dir.glob('/src/content/**/*', File::FNM_DOTMATCH).select { |path| File.file?(path) }
+        files.sort.each do |path|
+            stat = File.stat(path)
+            digest.update("#{path}\0#{stat.size}\0#{stat.mtime.to_f}\0")
+        end
+        digest.update(Main.content_variables({}, :per_viewer => false).to_a.sort.inspect)
+        digest.hexdigest
+    end
+
     def self.content_catalog_signature
         digest = Digest::SHA256.new
         ['/src/content/sections.yaml', '/src/content/lehrmaterial/sections.yaml',
@@ -1677,6 +1698,20 @@ class Main < Sinatra::Base
     def self.parse_content_locked(only_slug = nil)
         partial = !only_slug.nil?
         parse_started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+        cache_key = partial ? nil : (content_cache_key rescue nil)
+        cache_file = cache_key && File.join(CONTENT_CACHE, "#{cache_key}.marshal")
+        if cache_file && File.file?(cache_file)
+            begin
+                cached = Marshal.load(File.binread(cache_file))
+                @@section_order, @@teaching_section_order, @@reference_section_order, @@sections, @@kenney, @@content, @@content_paths = cached
+                @@content_catalog_signature = content_catalog_signature
+                @@parse_content_count = (@@parse_content_count ||= 0) + 1
+                STDERR.puts "Loaded content from #{cache_file} in #{format('%.3f', Process.clock_gettime(Process::CLOCK_MONOTONIC) - parse_started_at)}s"
+                return true
+            rescue StandardError => e
+                STDERR.puts "Content cache #{cache_file} not usable (#{e.class}: #{e.message}), rendering the pages"
+            end
+        end
         STDERR.puts(partial ? "Parsing content: #{only_slug}..." : "Parsing content...")
         # Keep the student and teacher catalogs independent while sharing the
         # Markdown renderer, image cache, and screenshot generator.
@@ -1785,335 +1820,386 @@ class Main < Sinatra::Base
             end
         end
 
-        paths.each do |entry|
-            entry_started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-            section = entry[:section]
-            path = entry[:original_path]
-            # Kenney kit pages are built once; a later full parse (in
-            # development, after a content change) keeps them instead of
-            # dropping them, which made every kit page a 404 until a restart.
-            if parse_content_count > 1 && entry[:kenney]
-                previous = defined?(@@content) && @@content && @@content[entry[:path]]
-                parsed_content[entry[:path]] = previous if previous
-                next
-            end
-            markdown = nil
-            page_meta = {}
-            page_references = []
-            page_tasks = nil
-            task_slots = []
-            unless entry[:kenney]
-                next unless path
-                markdown = File.read(path)
-                markdown.gsub!(/_include_file\(([^)]+)\)/) do |match|
-                    options = $1.split(',').map { |x| x.strip }
-                    StringIO.open do |io|
-                        io.puts "```#{options[1]}_lineno"
-                        io.puts File.read(File.join(File.dirname(path), options[0]))
-                        io.puts "```"
-                        io.string
-                    end
+        # Rendering a page: everything below for one entry of paths, into
+        # parsed_content, parsed_content_paths and the catalog order
+        # (parsed_sections, entries).
+        render_entries = lambda do |list|
+            list.each do |entry|
+                entry_started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+                section = entry[:section]
+                path = entry[:original_path]
+                # Kenney kit pages are built once; a later full parse (in
+                # development, after a content change) keeps them instead of
+                # dropping them, which made every kit page a 404 until a restart.
+                if parse_content_count > 1 && entry[:kenney]
+                    previous = defined?(@@content) && @@content && @@content[entry[:path]]
+                    parsed_content[entry[:path]] = previous if previous
+                    next
                 end
-                markdown.gsub!(/_include_svg\(([^)]+)\)/) do |match|
-                    options = $1.split(',').map { |x| x.strip }
-                    StringIO.open do |io|
-                        svg = File.read(File.join(File.dirname(path), options[0]))
-                        dom = Nokogiri::XML(svg)
-                        dom.css('svg').first['class'] = (dom.css('svg').first['class'].to_s.split(' ') + ['full']).join(' ')
-                        dom.css('svg').each do |s|
-                            s.remove_attribute('width')
-                            s.remove_attribute('height')
-                        end
-                        io.puts dom.css('svg').first.to_s
-                        io.string
-                    end
-                end
-                # Reference building blocks (docs/aufgaben.md): _include(slug#part)
-                # inserts a part of a reference page, _uses(a, b) links to parts,
-                # and part markers become anchors on the reference page itself.
-                page_meta = ContentParts.meta(markdown)
-                page_references = PageKinds.references_of(page_meta, markdown, ContentParts::INCLUDE,
-                    :catalog => reference_sections.flat_map { |section| Array(section['entries']).map(&:to_s) })
-                content_warning = lambda { |message| STDERR.puts "#{path}: #{message}" }
-                page_included_parts = ContentParts.included_parts(markdown)
-                markdown = ContentParts.expand_includes(markdown,
-                    :page_dir => File.dirname(path), :reference_root => REFERENCE_ROOT,
-                    :variables => Main.content_variables(page_meta), :warn => content_warning)
-                markdown = ContentParts.expand_uses(markdown,
-                    :references => page_meta['reference'], :reference_root => REFERENCE_ROOT,
-                    :warn => content_warning)
-                markdown = ContentParts.fill_variables(markdown, Main.content_variables(page_meta))
-                markdown = ContentParts.filter_features(markdown, Main.content_features, :warn => content_warning)
-                # on the Personen page, the pages that place each person (before
-                # the part markers become anchors)
-                if path == PersonBoxes.file(REFERENCE_ROOT)
-                    markdown = PersonBoxes.annotate(markdown, PersonBoxes.uses(person_pages), PersonBoxes.sources(path))
-                end
-                markdown = ContentParts.mark_parts(markdown)
-                # _person(name): a person box from the Handbuch page Personen.
-                markdown = PersonBoxes.expand(markdown, :page_dir => File.dirname(path),
-                    :reference_root => REFERENCE_ROOT, :warn => content_warning)
-                # _tool(name): a box that opens a tool of the site in a new tab (Tools).
-                markdown = Tools.expand(markdown, :warn => content_warning)
-                # _schema(dataset): the tables of a dataset as schema lines (Schemas).
-                markdown = Schemas.expand(markdown, :warn => content_warning)
-                # Tasks (docs/aufgaben.md): tasks.yaml next to the page holds
-                # them, _task(id) on a line of its own places a card.
-                tasks_path = File.join(File.dirname(path), 'tasks.yaml')
-                if File.file?(tasks_path)
-                    begin
-                        task_data = TaskSpec.load_file(tasks_path)
-                        page_tasks = {
-                            :activity => task_data['activity'],
-                            :by_id => task_data['tasks'].to_h { |t| [t['id'], t] },
-                        }
-                    rescue TaskSpec::Error, Psych::Exception => e
-                        STDERR.puts "#{tasks_path}: tasks not loaded: #{e.message}"
-                    end
-                end
-                # Parts for one programming language (CodeLanguages), wrapped after rendering.
-                markdown = CodeLanguages.mark(markdown, :warn => content_warning)
-                # Code to write first, folded under »Lösung anzeigen« (SolutionBlocks), wrapped after rendering.
-                markdown = SolutionBlocks.mark(markdown)
-                # Tips in steps before it (HintSteps), wrapped after rendering as well.
-                markdown = HintSteps.mark(markdown)
-                # What gives away a task's answer, until it is answered (AfterTask).
-                markdown = AfterTask.mark(markdown)
-                # Parts for people with a class repository over SSH or HTTPS,
-                # or without one (<!-- if: class_repo -->, ClassRepos): the
-                # page is rendered once for each, and each request picks one
-                # (page_html).
-                page_conditions = ContentParts.conditions(markdown)
-                if !page_conditions.empty? && !ClassRepos.page?(page_meta)
-                    content_warning.call("<!-- if: class_repo --> on a page without class_repo: #{ClassRepos::META_VALUE}")
-                end
-                variant_markdowns = ClassRepos.variants(page_conditions).to_h do |variant|
-                    [variant, ContentParts.filter_conditions(markdown, ClassRepos::CONDITION_VALUES[variant], :warn => variant.nil? ? content_warning : nil)]
-                end
-            else
-                kit = entry[:path]
-                markdown = StringIO.open do |io|
-                    title = kit.split('-').map { |x| x.capitalize}. join(' ')
-                    io.puts "# #{title}"
-                    io.puts
-                    io.puts <<~EOS
-                        Um das #{title} verwenden zu können, musst du es erst installieren. Öffne dazu ein Terminal, indem du <kbd>Strg</kbd><kbd>J</kbd> drückst. Führe dann den folgenden Befehl aus:
-
-                        ```bash
-                        ./download.rb #{kit}
-                        ```
-
-                        <div class='hint'>
-                            Hinweis: Achte auf die genaue Schreibweise des Befehls.
-                        </div>
-
-                        Du kannst dann mit dem Befehl `model` ein Modell zu deiner Szene hinzufügen, also z. B.:
-
-                        ```ini
-                        model = #{kit}/#{parsed_kenney[kit].first}
-                        ```
-
-                        <div class='hint'>
-                            Achtung: Vergiss nicht, den Namen des Kits (<code>#{kit}/</code>) vor dem Modellnamen anzugeben!
-                        </div>
-
-                        Die folgenden Modelle stehen zur Auswahl:
-
-                        __KENNEY_GALLERY__
-                    EOS
-                    io.string
-                end
-            end
-            slug = entry[:slug] || File.basename(path, '.md').sub(/^[0-9]+\-/, '').sub('+', '')
-            parsed_content_paths[slug] = path unless entry[:kenney]
-            variant_markdowns = { nil => markdown } if entry[:kenney]
-            page_languages = CodeLanguages.of_page(page_meta)
-            variants = variant_markdowns.to_h do |variant, variant_markdown|
-                variant_markdown, task_slots = TaskCard.mark_slots(variant_markdown)
-                # At each step, the whole code for teachers (StageCode), on activities.
-                stage_points = []
-                if !entry[:kenney] && parsed_sections.dig(section, :catalog) != 'reference'
-                    variant_markdown, stage_points = StageCode.mark(variant_markdown, File.dirname(path))
-                end
-                root = render_content_markdown(variant_markdown, path, redcarpet) do |md|
-                    if entry[:kenney]
-                        gallery = StringIO.open do |io|
-                            io.puts "<div class='gallery tiles'>"
-                            parsed_kenney[entry[:path]].each do |model|
-                                io.puts "<figure><img alt='Das Modell #{model}' src='/cache/kenney/#{entry[:path]}/#{model}.webp'><figcaption>#{model}</figcaption></figure>"
-                            end
-                            io.puts "</div>"
+                markdown = nil
+                page_meta = {}
+                page_references = []
+                page_tasks = nil
+                task_slots = []
+                unless entry[:kenney]
+                    next unless path
+                    markdown = File.read(path)
+                    markdown.gsub!(/_include_file\(([^)]+)\)/) do |match|
+                        options = $1.split(',').map { |x| x.strip }
+                        StringIO.open do |io|
+                            io.puts "```#{options[1]}_lineno"
+                            io.puts File.read(File.join(File.dirname(path), options[0]))
+                            io.puts "```"
                             io.string
                         end
-                        md.sub!('__KENNEY_GALLERY__', gallery)
                     end
-                    md
-                end
-                CodeLanguages.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
-                SolutionBlocks.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
-                HintSteps.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
-                AfterTask.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
-                CodeLanguages.pair(root) if page_languages.empty?
-                insert_task_cards(root, task_slots, page_tasks, redcarpet, path, page_languages) unless task_slots.empty?
-                ExternalLinks.mark(root)    # also the links in the task cards
-                StageCode.insert(root, stage_points) unless stage_points.empty?
-                # Reference pages: every h2 and h3 gets an anchor for the Handbuch index.
-                outline = parsed_sections.dig(section, :catalog) == 'reference' ? ReferenceIndex.anchor_headings(root) : nil
-                search_sections = outline ? ReferenceIndex.search_sections(root) : nil
-                # Optional chapters (<!-- extra --> before ##): badge, note, marks in the tables of contents
-                ExtraChapters.find(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
-                inject_autotoc(root)
-                ExtraChapters.mark(root)
-                # Code in a table that is one short word ([0-9], \\d+, --force)
-                # stays in one piece instead of breaking at its hyphen when the
-                # table squeezes its column (default.css, .table code.whole)
-                root.css('table code').each do |code|
-                    text = code.text
-                    next if text =~ /\s/ || text.length > 24
-                    code['class'] = [code['class'], 'whole'].compact.join(' ')
-                end
-
-                # Scripts a page loads itself (the colour mixer) get a fresh
-                # address with each version, like default.css: nginx lets
-                # browsers keep /include/*.js forever.
-                html = root.to_html.gsub(%r{(<script src=['"]/include/[a-z_]+\.js)(['"])}) do
-                    "#{$1}?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}#{$2}"
-                end
-                [variant, { :root => root, :html => html, :task_slots => task_slots, :outline => outline, :search_sections => search_sections }]
-            end
-            root, html, task_slots, outline, search_sections = variants[nil].values_at(:root, :html, :task_slots, :outline, :search_sections)
-            # The Handbuch search is the same for everyone: placeholders for
-            # the class repository's variables.
-            search_sections&.each { |section_entry| section_entry.transform_values! { |value| ClassRepos.neutral(value) } }
-            # root.css('h2, h3, h4, h5, h6').each do |e|
-            #     if slug == 'c'
-            #         level = e.name.sub('h', '').to_i
-            #         STDERR.puts "#{'  ' * (level - 2)}- #{e.text}"
-            #     end
-            # end
-            meta = root.css('.meta').first
-            entry_elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - entry_started_at
-            STDERR.puts "Added content: #{slug} (#{format('%.3f', entry_elapsed)}s)"
-            parsed_content[slug] = {
-                :html => html,
-                :dev_only => entry[:dev_only],
-                :teacher_only => parsed_sections.dig(section, :teacher_only) == true,
-                # in a section hidden from the catalogs (sections.yaml hidden: true)
-                :hidden_section => parsed_sections.dig(section, :hidden) == true,
-                # What kind of page this is (PageKinds.header shows it).
-                :section => section,
-                :kind => page_meta['kind'],
-                :language => page_meta['language'],
-                # Programming languages the page offers (CodeLanguages), [] for one.
-                :languages => page_languages,
-                :duration => page_meta['duration'],
-                # Activities this one builds on (requires:), information
-                # for the strip above the page and the catalog card.
-                :requires => Array(page_meta['requires']).map(&:to_s).reject(&:empty?),
-                :references => page_references,
-                # Reference parts the page includes ('slug#part'), so a box
-                # can shrink once someone has been through it elsewhere.
-                :included_parts => page_included_parts,
-                # Template to clone (template:, template_name:), for the
-                # »new version« hint; nil if the page has none.
-                :template => TemplateFreshness.from_meta(page_meta),
-                :outline => outline,
-                :search_sections => search_sections,
-                # search: words that find the page in the Handbuch search
-                # without standing in its title (Regex for »Reguläre Ausdrücke«)
-                :search_words => page_meta['search'].to_s.split(',').map(&:strip).reject(&:empty?),
-                # A set of Katas (KataMap): its idea in a few words, and the
-                # line of the curriculum teachers see on the overview.
-                :idea => page_meta['idea'],
-                :curriculum => page_meta['curriculum'],
-                # its icon in the strip: bi-braces, or a picture (/images/…)
-                :icon => page_meta['icon'].to_s[%r{\A(bi-[a-z0-9-]+|/images/[\w/.-]+\.(png|webp|svg))\z}],
-            }
-            if page_tasks
-                parsed_content[slug][:tasks] = page_tasks.merge(:on_page => task_slots & page_tasks[:by_id].keys)
-            end
-            # class_repo: group (ClassRepos): the variant for people without a
-            # class repository, with its own HTML and tasks.
-            parsed_content[slug][:class_repo] = ClassRepos.page?(page_meta)
-            (variants.keys - [nil]).each do |variant|
-                v = variants[variant]
-                (parsed_content[slug][:variants] ||= {})[variant] = {
-                    :html => v[:html],
-                    :on_page => page_tasks ? v[:task_slots] & page_tasks[:by_id].keys : [],
-                }
-            end
-            # Teacher note next to the page (docs/aufgaben.md): rendered like the
-            # page, shown only to teachers by teacher_note_panel.
-            note_path = File.join(File.dirname(path), ContentParts::NOTE_FILE)
-            if !entry[:kenney] && File.file?(note_path)
-                note_markdown = ContentParts.fill_variables(File.read(note_path), Main.content_variables({}, :per_viewer => false))
-                note_root = render_content_markdown(note_markdown, note_path, redcarpet)
-                # Inline code that is one short word (01-karte.c, plane_x)
-                # stays in one piece, in the note's tables and lists alike,
-                # as in the tables of a page (.teacher-note-body code.whole)
-                note_root.css('code').each do |code|
-                    next if code.parent&.name == 'pre' || code.text =~ /\s/ || code.text.length > 24
-                    code.add_class('whole')
-                end
-                parsed_content[slug][:teacher_note] = (note_root.at_css('body') || note_root).inner_html
-            end
-            unless entry[:extra]
-                parsed_sections[section][:entries] << slug
-                if meta
-                    meta = YAML.load(meta)
-                    if meta['image']
-                        parts = meta['image'].split(':')
-                        # name.webp:contain for a drawing: padded to 16:9 instead of cropped
-                        contain = parts[1] == 'contain'
-                        parts = parts.first(1) if contain
-                        convert = contain ? method(:convert_image_padded) : method(:convert_image)
-                        image_path = File.join(File.dirname(path), parts[0])
-                        if File.file?(image_path)
-                            sha1 = convert.call(image_path)
-                            parsed_content[slug][:image] = "/cache/#{sha1}.webp"
-
-                            # The dark file as the screenshot tool names it:
-                            # box-anaglyph.webp → box-dark-anaglyph.webp.
-                            extension = File.extname(image_path)
-                            base = image_path.delete_suffix(extension)
-                            dark_image_path = base.sub(/(-anaglyph)?\z/) { "-dark#{$1}" } + extension
-                            if File.exist?(dark_image_path)
-                                dark_sha1 = convert.call(dark_image_path)
-                                parsed_content[slug][:image_dark] = "/cache/#{dark_sha1}.webp"
+                    markdown.gsub!(/_include_svg\(([^)]+)\)/) do |match|
+                        options = $1.split(',').map { |x| x.strip }
+                        StringIO.open do |io|
+                            svg = File.read(File.join(File.dirname(path), options[0]))
+                            dom = Nokogiri::XML(svg)
+                            dom.css('svg').first['class'] = (dom.css('svg').first['class'].to_s.split(' ') + ['full']).join(' ')
+                            dom.css('svg').each do |s|
+                                s.remove_attribute('width')
+                                s.remove_attribute('height')
                             end
-                        else
-                            # A generated screenshot may not exist on first load.
-                            parsed_content[slug][:image] = '/images/keyboard.png'
+                            io.puts dom.css('svg').first.to_s
+                            io.string
                         end
+                    end
+                    # Reference building blocks (docs/aufgaben.md): _include(slug#part)
+                    # inserts a part of a reference page, _uses(a, b) links to parts,
+                    # and part markers become anchors on the reference page itself.
+                    page_meta = ContentParts.meta(markdown)
+                    page_references = PageKinds.references_of(page_meta, markdown, ContentParts::INCLUDE,
+                        :catalog => reference_sections.flat_map { |section| Array(section['entries']).map(&:to_s) })
+                    content_warning = lambda { |message| STDERR.puts "#{path}: #{message}" }
+                    page_included_parts = ContentParts.included_parts(markdown)
+                    markdown = ContentParts.expand_includes(markdown,
+                        :page_dir => File.dirname(path), :reference_root => REFERENCE_ROOT,
+                        :variables => Main.content_variables(page_meta), :warn => content_warning)
+                    markdown = ContentParts.expand_uses(markdown,
+                        :references => page_meta['reference'], :reference_root => REFERENCE_ROOT,
+                        :warn => content_warning)
+                    markdown = ContentParts.fill_variables(markdown, Main.content_variables(page_meta))
+                    markdown = ContentParts.filter_features(markdown, Main.content_features, :warn => content_warning)
+                    # on the Personen page, the pages that place each person (before
+                    # the part markers become anchors)
+                    if path == PersonBoxes.file(REFERENCE_ROOT)
+                        markdown = PersonBoxes.annotate(markdown, PersonBoxes.uses(person_pages), PersonBoxes.sources(path))
+                    end
+                    markdown = ContentParts.mark_parts(markdown)
+                    # _person(name): a person box from the Handbuch page Personen.
+                    markdown = PersonBoxes.expand(markdown, :page_dir => File.dirname(path),
+                        :reference_root => REFERENCE_ROOT, :warn => content_warning)
+                    # _tool(name): a box that opens a tool of the site in a new tab (Tools).
+                    markdown = Tools.expand(markdown, :warn => content_warning)
+                    # _schema(dataset): the tables of a dataset as schema lines (Schemas).
+                    markdown = Schemas.expand(markdown, :warn => content_warning)
+                    # Tasks (docs/aufgaben.md): tasks.yaml next to the page holds
+                    # them, _task(id) on a line of its own places a card.
+                    tasks_path = File.join(File.dirname(path), 'tasks.yaml')
+                    if File.file?(tasks_path)
+                        begin
+                            task_data = TaskSpec.load_file(tasks_path)
+                            page_tasks = {
+                                :activity => task_data['activity'],
+                                :by_id => task_data['tasks'].to_h { |t| [t['id'], t] },
+                            }
+                        rescue TaskSpec::Error, Psych::Exception => e
+                            STDERR.puts "#{tasks_path}: tasks not loaded: #{e.message}"
+                        end
+                    end
+                    # Parts for one programming language (CodeLanguages), wrapped after rendering.
+                    markdown = CodeLanguages.mark(markdown, :warn => content_warning)
+                    # Code to write first, folded under »Lösung anzeigen« (SolutionBlocks), wrapped after rendering.
+                    markdown = SolutionBlocks.mark(markdown)
+                    # Tips in steps before it (HintSteps), wrapped after rendering as well.
+                    markdown = HintSteps.mark(markdown)
+                    # What gives away a task's answer, until it is answered (AfterTask).
+                    markdown = AfterTask.mark(markdown)
+                    # Parts for people with a class repository over SSH or HTTPS,
+                    # or without one (<!-- if: class_repo -->, ClassRepos): the
+                    # page is rendered once for each, and each request picks one
+                    # (page_html).
+                    page_conditions = ContentParts.conditions(markdown)
+                    if !page_conditions.empty? && !ClassRepos.page?(page_meta)
+                        content_warning.call("<!-- if: class_repo --> on a page without class_repo: #{ClassRepos::META_VALUE}")
+                    end
+                    variant_markdowns = ClassRepos.variants(page_conditions).to_h do |variant|
+                        [variant, ContentParts.filter_conditions(markdown, ClassRepos::CONDITION_VALUES[variant], :warn => variant.nil? ? content_warning : nil)]
+                    end
+                else
+                    kit = entry[:path]
+                    markdown = StringIO.open do |io|
+                        title = kit.split('-').map { |x| x.capitalize}. join(' ')
+                        io.puts "# #{title}"
+                        io.puts
+                        io.puts <<~EOS
+                            Um das #{title} verwenden zu können, musst du es erst installieren. Öffne dazu ein Terminal, indem du <kbd>Strg</kbd><kbd>J</kbd> drückst. Führe dann den folgenden Befehl aus:
 
-                        parsed_content[slug][:image_x] = (parts[1] || '50').to_i
-                        parsed_content[slug][:image_y] = (parts[2] || '50').to_i
-                        parsed_content[slug][:needs_contrast] = meta['needs_contrast']
-                        # The card's alt text (docs/aufgaben.md): image_alt,
-                        # else the alt of the same picture on the page.
-                        basename = File.basename(parts[0])
-                        same = root.css('img').find { |img| File.basename(img['src'].to_s) == basename && !img['alt'].to_s.strip.empty? }
-                        parsed_content[slug][:image_alt] = meta['image_alt'] || (same && same['alt'])
+                            ```bash
+                            ./download.rb #{kit}
+                            ```
+
+                            <div class='hint'>
+                                Hinweis: Achte auf die genaue Schreibweise des Befehls.
+                            </div>
+
+                            Du kannst dann mit dem Befehl `model` ein Modell zu deiner Szene hinzufügen, also z. B.:
+
+                            ```ini
+                            model = #{kit}/#{parsed_kenney[kit].first}
+                            ```
+
+                            <div class='hint'>
+                                Achtung: Vergiss nicht, den Namen des Kits (<code>#{kit}/</code>) vor dem Modellnamen anzugeben!
+                            </div>
+
+                            Die folgenden Modelle stehen zur Auswahl:
+
+                            __KENNEY_GALLERY__
+                        EOS
+                        io.string
                     end
                 end
-                begin
-                    parsed_content[slug][:title] = root.css('h1').first.to_s.sub('<h1>', '').sub('</h1>', '').strip
-                rescue
-                end
-                begin
-                    parsed_content[slug][:abstract] = root.css('.abstract').first.text
-                rescue
-                end
-                begin
-                    unless parsed_content[slug][:image]
-                        parsed_content[slug][:image_alt] = root.css('img').first.attr('alt')
+                slug = entry[:slug] || File.basename(path, '.md').sub(/^[0-9]+\-/, '').sub('+', '')
+                parsed_content_paths[slug] = path unless entry[:kenney]
+                variant_markdowns = { nil => markdown } if entry[:kenney]
+                page_languages = CodeLanguages.of_page(page_meta)
+                variants = variant_markdowns.to_h do |variant, variant_markdown|
+                    variant_markdown, task_slots = TaskCard.mark_slots(variant_markdown)
+                    # At each step, the whole code for teachers (StageCode), on activities.
+                    stage_points = []
+                    if !entry[:kenney] && parsed_sections.dig(section, :catalog) != 'reference'
+                        variant_markdown, stage_points = StageCode.mark(variant_markdown, File.dirname(path))
                     end
-                    parsed_content[slug][:image] ||= root.css('img').first.attr('src')
-                    parsed_content[slug][:image_x] ||= 50
-                    parsed_content[slug][:image_y] ||= 50
-                rescue
+                    root = render_content_markdown(variant_markdown, path, redcarpet) do |md|
+                        if entry[:kenney]
+                            gallery = StringIO.open do |io|
+                                io.puts "<div class='gallery tiles'>"
+                                parsed_kenney[entry[:path]].each do |model|
+                                    io.puts "<figure><img alt='Das Modell #{model}' src='/cache/kenney/#{entry[:path]}/#{model}.webp'><figcaption>#{model}</figcaption></figure>"
+                                end
+                                io.puts "</div>"
+                                io.string
+                            end
+                            md.sub!('__KENNEY_GALLERY__', gallery)
+                        end
+                        md
+                    end
+                    CodeLanguages.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
+                    SolutionBlocks.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
+                    HintSteps.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
+                    AfterTask.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
+                    CodeLanguages.pair(root) if page_languages.empty?
+                    insert_task_cards(root, task_slots, page_tasks, redcarpet, path, page_languages) unless task_slots.empty?
+                    ExternalLinks.mark(root)    # also the links in the task cards
+                    StageCode.insert(root, stage_points) unless stage_points.empty?
+                    # Reference pages: every h2 and h3 gets an anchor for the Handbuch index.
+                    outline = parsed_sections.dig(section, :catalog) == 'reference' ? ReferenceIndex.anchor_headings(root) : nil
+                    search_sections = outline ? ReferenceIndex.search_sections(root) : nil
+                    # Optional chapters (<!-- extra --> before ##): badge, note, marks in the tables of contents
+                    ExtraChapters.find(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
+                    inject_autotoc(root)
+                    ExtraChapters.mark(root)
+                    # Code in a table that is one short word ([0-9], \\d+, --force)
+                    # stays in one piece instead of breaking at its hyphen when the
+                    # table squeezes its column (default.css, .table code.whole)
+                    root.css('table code').each do |code|
+                        text = code.text
+                        next if text =~ /\s/ || text.length > 24
+                        code['class'] = [code['class'], 'whole'].compact.join(' ')
+                    end
+
+                    # Scripts a page loads itself (the colour mixer) get a fresh
+                    # address with each version, like default.css: nginx lets
+                    # browsers keep /include/*.js forever.
+                    html = root.to_html.gsub(%r{(<script src=['"]/include/[a-z_]+\.js)(['"])}) do
+                        "#{$1}?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}#{$2}"
+                    end
+                    [variant, { :root => root, :html => html, :task_slots => task_slots, :outline => outline, :search_sections => search_sections }]
+                end
+                root, html, task_slots, outline, search_sections = variants[nil].values_at(:root, :html, :task_slots, :outline, :search_sections)
+                # The Handbuch search is the same for everyone: placeholders for
+                # the class repository's variables.
+                search_sections&.each { |section_entry| section_entry.transform_values! { |value| ClassRepos.neutral(value) } }
+                # root.css('h2, h3, h4, h5, h6').each do |e|
+                #     if slug == 'c'
+                #         level = e.name.sub('h', '').to_i
+                #         STDERR.puts "#{'  ' * (level - 2)}- #{e.text}"
+                #     end
+                # end
+                meta = root.css('.meta').first
+                entry_elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - entry_started_at
+                STDERR.puts "Added content: #{slug} (#{format('%.3f', entry_elapsed)}s)"
+                parsed_content[slug] = {
+                    :html => html,
+                    :dev_only => entry[:dev_only],
+                    :teacher_only => parsed_sections.dig(section, :teacher_only) == true,
+                    # in a section hidden from the catalogs (sections.yaml hidden: true)
+                    :hidden_section => parsed_sections.dig(section, :hidden) == true,
+                    # What kind of page this is (PageKinds.header shows it).
+                    :section => section,
+                    :kind => page_meta['kind'],
+                    :language => page_meta['language'],
+                    # Programming languages the page offers (CodeLanguages), [] for one.
+                    :languages => page_languages,
+                    :duration => page_meta['duration'],
+                    # Activities this one builds on (requires:), information
+                    # for the strip above the page and the catalog card.
+                    :requires => Array(page_meta['requires']).map(&:to_s).reject(&:empty?),
+                    :references => page_references,
+                    # Reference parts the page includes ('slug#part'), so a box
+                    # can shrink once someone has been through it elsewhere.
+                    :included_parts => page_included_parts,
+                    # Template to clone (template:, template_name:), for the
+                    # »new version« hint; nil if the page has none.
+                    :template => TemplateFreshness.from_meta(page_meta),
+                    :outline => outline,
+                    :search_sections => search_sections,
+                    # search: words that find the page in the Handbuch search
+                    # without standing in its title (Regex for »Reguläre Ausdrücke«)
+                    :search_words => page_meta['search'].to_s.split(',').map(&:strip).reject(&:empty?),
+                    # A set of Katas (KataMap): its idea in a few words, and the
+                    # line of the curriculum teachers see on the overview.
+                    :idea => page_meta['idea'],
+                    :curriculum => page_meta['curriculum'],
+                    # its icon in the strip: bi-braces, or a picture (/images/…)
+                    :icon => page_meta['icon'].to_s[%r{\A(bi-[a-z0-9-]+|/images/[\w/.-]+\.(png|webp|svg))\z}],
+                }
+                if page_tasks
+                    parsed_content[slug][:tasks] = page_tasks.merge(:on_page => task_slots & page_tasks[:by_id].keys)
+                end
+                # class_repo: group (ClassRepos): the variant for people without a
+                # class repository, with its own HTML and tasks.
+                parsed_content[slug][:class_repo] = ClassRepos.page?(page_meta)
+                (variants.keys - [nil]).each do |variant|
+                    v = variants[variant]
+                    (parsed_content[slug][:variants] ||= {})[variant] = {
+                        :html => v[:html],
+                        :on_page => page_tasks ? v[:task_slots] & page_tasks[:by_id].keys : [],
+                    }
+                end
+                # Teacher note next to the page (docs/aufgaben.md): rendered like the
+                # page, shown only to teachers by teacher_note_panel.
+                note_path = File.join(File.dirname(path), ContentParts::NOTE_FILE)
+                if !entry[:kenney] && File.file?(note_path)
+                    note_markdown = ContentParts.fill_variables(File.read(note_path), Main.content_variables({}, :per_viewer => false))
+                    note_root = render_content_markdown(note_markdown, note_path, redcarpet)
+                    # Inline code that is one short word (01-karte.c, plane_x)
+                    # stays in one piece, in the note's tables and lists alike,
+                    # as in the tables of a page (.teacher-note-body code.whole)
+                    note_root.css('code').each do |code|
+                        next if code.parent&.name == 'pre' || code.text =~ /\s/ || code.text.length > 24
+                        code.add_class('whole')
+                    end
+                    parsed_content[slug][:teacher_note] = (note_root.at_css('body') || note_root).inner_html
+                end
+                unless entry[:extra]
+                    parsed_sections[section][:entries] << slug
+                    if meta
+                        meta = YAML.load(meta)
+                        if meta['image']
+                            parts = meta['image'].split(':')
+                            # name.webp:contain for a drawing: padded to 16:9 instead of cropped
+                            contain = parts[1] == 'contain'
+                            parts = parts.first(1) if contain
+                            convert = contain ? method(:convert_image_padded) : method(:convert_image)
+                            image_path = File.join(File.dirname(path), parts[0])
+                            if File.file?(image_path)
+                                sha1 = convert.call(image_path)
+                                parsed_content[slug][:image] = "/cache/#{sha1}.webp"
+
+                                # The dark file as the screenshot tool names it:
+                                # box-anaglyph.webp → box-dark-anaglyph.webp.
+                                extension = File.extname(image_path)
+                                base = image_path.delete_suffix(extension)
+                                dark_image_path = base.sub(/(-anaglyph)?\z/) { "-dark#{$1}" } + extension
+                                if File.exist?(dark_image_path)
+                                    dark_sha1 = convert.call(dark_image_path)
+                                    parsed_content[slug][:image_dark] = "/cache/#{dark_sha1}.webp"
+                                end
+                            else
+                                # A generated screenshot may not exist on first load.
+                                parsed_content[slug][:image] = '/images/keyboard.png'
+                            end
+
+                            parsed_content[slug][:image_x] = (parts[1] || '50').to_i
+                            parsed_content[slug][:image_y] = (parts[2] || '50').to_i
+                            parsed_content[slug][:needs_contrast] = meta['needs_contrast']
+                            # The card's alt text (docs/aufgaben.md): image_alt,
+                            # else the alt of the same picture on the page.
+                            basename = File.basename(parts[0])
+                            same = root.css('img').find { |img| File.basename(img['src'].to_s) == basename && !img['alt'].to_s.strip.empty? }
+                            parsed_content[slug][:image_alt] = meta['image_alt'] || (same && same['alt'])
+                        end
+                    end
+                    begin
+                        parsed_content[slug][:title] = root.css('h1').first.to_s.sub('<h1>', '').sub('</h1>', '').strip
+                    rescue
+                    end
+                    begin
+                        parsed_content[slug][:abstract] = root.css('.abstract').first.text
+                    rescue
+                    end
+                    begin
+                        unless parsed_content[slug][:image]
+                            parsed_content[slug][:image_alt] = root.css('img').first.attr('alt')
+                        end
+                        parsed_content[slug][:image] ||= root.css('img').first.attr('src')
+                        parsed_content[slug][:image_x] ||= 50
+                        parsed_content[slug][:image_y] ||= 50
+                    rescue
+                    end
                 end
             end
+        end
+
+        # Rendering every page is most of a start (about ten seconds for 160
+        # pages, one after another). On a full parse several processes share
+        # the pages, dealt in turn: each renders its part and hands it back
+        # (Marshal), and leaves with exit!, so it closes nothing it shares
+        # (connections, Puma does not run yet). A part whose process fails
+        # is rendered here afterwards; that only costs time.
+        workers = partial || paths.size < 20 ? 1 : [Etc.nprocessors, 8].min
+        if workers > 1
+            children = paths.each_with_index.group_by { |_, i| i % workers }.values.map { |part| part.map(&:first) }.map do |part|
+                reader, writer = IO.pipe
+                pid = fork do
+                    reader.close
+                    begin
+                        render_entries.call(part)
+                        entries = parsed_sections.transform_values { |s| s[:entries] }
+                        writer.write(Marshal.dump([parsed_content, parsed_content_paths, entries]))
+                        writer.close
+                        exit!(0)
+                    rescue Exception => e
+                        STDERR.puts "Rendering content in a worker failed: #{e.class}: #{e.message}"
+                        exit!(1)
+                    end
+                end
+                writer.close
+                [pid, reader, part]
+            end
+            children.each do |pid, reader, part|
+                data = reader.read
+                reader.close
+                Process.wait(pid)
+                if $?.success? && !data.empty?
+                    content, content_paths, entries = Marshal.load(data)
+                    parsed_content.merge!(content)
+                    parsed_content_paths.merge!(content_paths)
+                    entries.each_pair { |key, slugs| parsed_sections[key][:entries].concat(slugs) }
+                else
+                    render_entries.call(part)
+                end
+            end
+            # the catalog in the order of paths, as one process would make it
+            order = paths.each_with_index.to_h { |entry, i| [entry[:original_path], i] }
+            parsed_sections.each_value { |s| s[:entries].sort_by! { |slug| order[parsed_content_paths[slug]] || 0 } }
+        else
+            render_entries.call(paths)
         end
         if partial
             parsed_content.each_pair do |slug, content|
@@ -2133,6 +2219,17 @@ class Main < Sinatra::Base
             @@content = parsed_content
             @@content_paths = parsed_content_paths
             @@content_catalog_signature = content_catalog_signature
+            if cache_file
+                begin
+                    FileUtils.mkdir_p(CONTENT_CACHE)
+                    data = Marshal.dump([section_order, teaching_section_order, reference_section_order, parsed_sections, parsed_kenney, parsed_content, parsed_content_paths])
+                    File.binwrite("#{cache_file}.tmp", data)
+                    File.rename("#{cache_file}.tmp", cache_file)
+                    (Dir[File.join(CONTENT_CACHE, '*.marshal')] - [cache_file]).each { |old| File.delete(old) rescue nil }
+                rescue StandardError => e
+                    STDERR.puts "Content cache not written (#{e.class}: #{e.message})"
+                end
+            end
         end
 
         parse_elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - parse_started_at
@@ -5431,6 +5528,7 @@ class Main < Sinatra::Base
             config[:teacher] = answers if answers
             solutions = kata_solutions_config(tasks)
             config[:solutions] = solutions if solutions
+            config[:revealAfter] = true if teacher_logged_in?
         end
         # Text that only stands in for the cards (an exercise list) is hidden
         # while the cards are shown.
@@ -5449,9 +5547,11 @@ class Main < Sinatra::Base
             "<script>window.CODE_INPUT_KEYWORDS = #{keywords.to_json};</script>" \
                 "<script src='/include/code_input.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
         end
-        # What gives away a task's answer waits for it (AfterTask), but only
-        # for students, who can answer; tasks.js shows it then.
-        waits = user_logged_in? && !teacher_logged_in?
+        # What gives away a task's answer waits for it (AfterTask), for
+        # everyone who can answer; tasks.js shows it then. A teacher sees the
+        # page as the class does and can open it without answering
+        # (revealAfter: a button in the line that waits).
+        waits = user_logged_in?
         "<style>.tasks-off-only { display: none; }" \
             "#{waits ? ' .after-task:not(.after-task-shown) > .after-task-body { display: none; } .after-task:not(.after-task-shown) > .after-task-wait { display: block; }' : ''}</style>" \
             "<script>window.TASK_PAGE = #{config.to_json.gsub('</', '<\/')};</script>" \
@@ -5947,6 +6047,14 @@ class Main < Sinatra::Base
         user_logged_in? && tasks_visible? && !teacher_account_logged_in? && my_running_tests.empty?
     end
 
+    # The hue and icon of a set of Katas (KataMap: its place in the Katas
+    # section, as the strip shows it), or nil for any other page.
+    def kata_teaser(slug)
+        entries = ((@@sections['katas'] || {})[:entries] || [])
+        index = entries.index(slug)
+        index && { :hue => KataMap.hue(index, entries.size), :icon => (@@content[slug] || {})[:icon] }
+    end
+
     # Start page for logged-in students: activities a teacher pinned, where
     # to continue, how the site works (M5).
     def student_home
@@ -5960,7 +6068,9 @@ class Main < Sinatra::Base
             { :slug => p[:slug], :title => plain_title(p[:slug]), :abstract => c[:abstract], :group => p[:group],
               :template_folder => (c[:template] || {})[:folder], :kind => PageKinds.kind_label(c[:kind]),
               :image => c[:image] && CardImages.attributes(c[:image]), :image_dark => c[:image_dark] && CardImages.attributes(c[:image_dark]),
-              :position => "#{c[:image_x] || 50}% #{c[:image_y] || 50}%" }
+              :position => "#{c[:image_x] || 50}% #{c[:image_y] || 50}%",
+              # a set of Katas: its band from the strip, in its hue
+              :kata => kata_teaser(p[:slug]) }
         end
         html = StudentHome.html(:progress => my_progress, :pinned => pinned, :listed => allowed,
                                 :guide => student_home_visible?)
@@ -6330,6 +6440,8 @@ class Main < Sinatra::Base
                     section_order = []
                 end
                 card_index = 0
+                # pinned for one of the person's groups: a pin on the card, as on the Kata strip
+                catalog_pins = user_logged_in? ? pins_for_groups((my_groups + class_groups).uniq).map { |p| p[:slug] }.to_set : Set.new
                 section_order.each do |section_key|
                     section = @@sections[section_key]
                     # hidden: true in sections.yaml: the pages exist, the
@@ -6385,7 +6497,9 @@ class Main < Sinatra::Base
                     entries.each do |slug|
                         content = @@content[slug]
                         io.puts "<div class='hscol'>"
-                        io.puts "<a href='/#{slug}' class='tutorial_card3'>"
+                        pinned_card = catalog == :student && catalog_pins.include?(slug)
+                        io.puts "<a href='/#{slug}' class='tutorial_card3#{pinned_card ? ' card-pinned' : ''}'>"
+                        io.puts "<span class='card-pin' title='Angepinnt'><i class='bi bi-pin-angle-fill' aria-hidden='true'></i><span class='visually-hidden'>Angepinnt</span></span>" if pinned_card
                         io.puts "<h4>#{content[:title]}</h4>"
                         io.puts "<div>"
                         additional_classes = []

@@ -270,8 +270,6 @@ Beide bekommen sofort denselben Kopf und Fuß, ohne dass du dafür HTML schreibs
 
 `{{ range site.RegularPages }} … {{ end }}` ist eine Schleife über alle Seiten der Website. Was dazwischen steht, schreibt Hugo für jede Seite einmal hin; der Punkt steht darin für die Seite, um die es gerade geht. `.RelPermalink` ist ihre Adresse, `.Title` ihr Titel.
 
-_task(neue-seite)
-
 _task(navigation)
 
 <div class='hint try'>
@@ -310,7 +308,13 @@ Sie bekommt ein eigenes Layout, `layouts/home.html`, das unter ihrem Text eine K
 {{ end }}
 ```
 
-`{{ .Description }}` ist die Beschreibung aus der Front Matter jeder Seite. Wer einen neuen Planeten anlegt, bekommt die Karte auf der Startseite und den Link in der Navigation dazu, ohne eine Zeile HTML.
+`{{ .Description }}` ist die Beschreibung aus der Front Matter jeder Seite.
+
+_task(neue-seite)
+
+<!-- after: neue-seite -->
+Wer einen neuen Planeten anlegt, bekommt die Karte auf der Startseite und den Link in der Navigation dazu, ohne eine Zeile HTML.
+<!-- /after -->
 
 ## Aussehen mit CSS
 

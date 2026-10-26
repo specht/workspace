@@ -297,6 +297,26 @@ module PipCheck
     end
 
     # [status, message, read, replay]
+    # The line of an error output that says what went wrong: in Ruby the
+    # one that ends with the error's class (the others are the way there,
+    # »from …«), in Python and JavaScript the one that starts with it; the
+    # place in front of it (»kata.rb:5:in '…': «) goes, the message says the line.
+    def self.error_line(errors)
+        lines = errors.to_s.strip.lines.map(&:strip).reject(&:empty?)
+        found = lines.find { |l| l.match?(/\((?:\w+::)*\w*(?:Error|Exception)\)\z/) } ||
+                lines.reverse.find { |l| l.match?(/\A(?:\w+\.)*\w*(?:Error|Exception)\b/) } ||
+                lines.reject { |l| l.start_with?('from ', 'at ') }.last || lines.last
+        found.to_s.sub(/\A\S*:\d+:in [^:]*: /, '')
+    end
+
+    # The name in »undefined local variable or method 'forward'« (Ruby),
+    # »name 'forward' is not defined« (Python), »forward is not defined«
+    # (JavaScript), or nil.
+    def self.unknown_name(errors)
+        m = errors.to_s.match(/undefined local variable or method ['`]([^'`]+)'|undefined method ['`]([^'`]+)' for main|NameError: name '([^']+)' is not defined|ReferenceError: (\S+) is not defined/)
+        m && m.captures.compact.first
+    end
+
     # The lines that count for max_lines: not empty, not only a comment.
     def self.lines(code)
         code.to_s.lines.count { |l| l.strip != '' && !l.strip.start_with?('#', '//') }
@@ -336,9 +356,15 @@ module PipCheck
                 return [:wrong, "#{where} lief dein Plan länger als #{SECONDS} Sekunden. Steckt irgendwo eine Endlosschleife?", nil, replay]
             end
             unless ran[:errors].to_s.strip.empty? || ran[:status] == 0
-                error = ran[:errors].to_s.strip.lines.last.to_s.strip
                 line = ran[:errors][/kata\.(?:rb|py|js)"?(?:, line |:)(\d+)/, 1]
-                message = "#{where} bricht dein Plan ab#{line ? " (Zeile #{line})" : ''}: `#{error[0, 200]}`"
+                at = line ? " (Zeile #{line})" : ''
+                # ein Name, den Pip nicht kennt (forward statt move): sagen, was Pip hier versteht
+                if (name = unknown_name(ran[:errors])) && !NAMES.fetch(check['language'], {}).value?(name)
+                    known = (check['commands'] + ['say']).map { |c| "`#{NAMES.fetch(check['language'], NAMES['ruby'])[c]}`" }
+                    return [:wrong, "#{where} kennt Pip `#{name}` nicht#{at}. Ist es anders geschrieben, oder fehlt eine eigene Funktion? " \
+                                    "In diesem Kapitel versteht Pip #{known[0..-2].join(', ')} und #{known[-1]}.", nil, replay]
+                end
+                message = "#{where} bricht dein Plan ab#{at}: `#{error_line(ran[:errors])[0, 200]}`"
                 explanation = KataCheck.explain(ran[:errors], check['language'])
                 message += "\n\n#{explanation}" if explanation
                 return [:wrong, message, nil, replay]

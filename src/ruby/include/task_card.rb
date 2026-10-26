@@ -224,10 +224,9 @@ module TaskCard
             io << "<p class='task-later'><i class='bi bi-hourglass-split'></i>Diese Aufgabe kann der Workspace noch nicht selbst prüfen. Zeig dein Ergebnis deiner Lehrkraft.</p>"
         end
 
-        if task['hint'].is_a?(Array)
-            io << HintSteps.html(task['hint'].map { |hint| render.(hint) }, :extra_class => 'task-hint')
-        elsif task['hint']
-            io << "<details class='task-hint'><summary>Tipp</summary>#{render.(task['hint'])}</details>"
+        # one tip or several: the same toggle with the chevron as everywhere (HintSteps)
+        if task['hint']
+            io << HintSteps.html(Array(task['hint']).map { |hint| render.(hint) }, :extra_class => 'task-hint')
         end
         io << "<div class='task-feedback' aria-live='polite'></div>"
         io << "<div class='task-login-note'><a href='/login'>Melde dich an</a>, damit der Workspace deine Antwort prüfen und speichern kann.</div>" if runs

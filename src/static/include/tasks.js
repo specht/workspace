@@ -65,20 +65,41 @@
     }
 
     // What gives away a task's answer (AfterTask, <!-- after: id -->) shows
-    // once the task has an answer, right or wrong; after a Kata, where the
-    // story goes on, once it is solved. Without a card for the task on the
-    // page it shows at once. Whether it was hidden at all is up to the
-    // server (task_page_setup): only for students.
+    // after a prediction once it has an answer, right or wrong (only the
+    // first counts, then comes why); after any other task, and after a Kata,
+    // where the story goes on, once it is solved: otherwise a wrong answer
+    // would show the right one. Without a card for the task on the page it
+    // shows at once. Whether it was hidden at all is up to the server
+    // (task_page_setup): for everyone who can answer.
     const ANSWERED = ['correct', 'wrong', 'sent', 'stale'];
+    const SOLVED = ['correct', 'sent'];
     const KATA = ['function', 'pip', 'tests'];
     function showAfterTasks() {
         document.querySelectorAll('.after-task[data-after]').forEach((box) => {
             const mine = cards().filter((card) => cardId(card) === box.dataset.after);
             const kata = mine.some((card) => KATA.includes(card.dataset.type));
-            const answered = mine.length === 0 || mine.some((card) => (kata ? ['correct'] : ANSWERED).includes(card.dataset.status));
-            box.classList.toggle('after-task-shown', answered);
+            const prediction = mine.some((card) => card.dataset.prediction === '1');
+            const answered = mine.length === 0 || mine.some((card) => (prediction ? ANSWERED : SOLVED).includes(card.dataset.status));
+            box.classList.toggle('after-task-shown', answered || box.dataset.revealed === 'yes');
             const wait = box.querySelector('.after-task-wait');
-            if (kata && wait) wait.textContent = 'Hier geht die Geschichte weiter, sobald du die Kata oben gelöst hast.';
+            const text = kata ? 'Hier geht die Geschichte weiter, sobald du die Kata oben gelöst hast.'
+                : prediction ? null : 'Hier geht es weiter, sobald du die Aufgabe oben gelöst hast.';
+            if (wait && text && wait.dataset.text !== text) {
+                wait.textContent = text;
+                wait.dataset.text = text;
+            }
+            // a teacher sees the page as the class does, and opens it here without answering
+            if (page.revealAfter && wait && !wait.querySelector('.after-task-reveal')) {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'btn btn-link btn-sm after-task-reveal';
+                button.innerHTML = "<i class='bi bi-eye' aria-hidden='true'></i> Für Lehrkräfte: jetzt zeigen";
+                button.addEventListener('click', () => {
+                    box.dataset.revealed = 'yes';
+                    box.classList.add('after-task-shown');
+                });
+                wait.append(' ', button);
+            }
         });
     }
 

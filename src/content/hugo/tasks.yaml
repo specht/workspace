@@ -54,6 +54,22 @@ tasks:
         say: Die Front Matter beschreibt die Seite; ihre Werte holst du einzeln, etwa mit `{{ .Title }}`.
     solution: '`.Content` ist der Markdown-Teil der Seite, von Hugo in HTML übersetzt. Die Werte aus der Front Matter stehen in `.Title`, `.Description`, `.Params` und so weiter.'
 
+  - id: navigation
+    title: Die Navigation
+    prompt: |
+      Lege die Seiten für Jupiter und Saturn an und ergänze in
+      `layouts/baseof.html` die Navigation zu allen Seiten, dann speichere.
+    file: solar-system/layouts/baseof.html
+    check:
+      type: files
+      path: solar-system/layouts/baseof.html
+      expect:
+        format: text
+        contains:
+          - { pattern: '\{\{-?\s*block\s+"main"', say: 'In `baseof.html` fehlt die Lücke für den Inhalt: `{{ block "main" . }}{{ end }}`.' }
+          - { pattern: '\{\{-?\s*range\s+(?:\$\w+\s*:=\s*)?(?:site|\.Site)\.(?:RegularPages|Pages)\b', say: 'Noch gibt es keine Navigation: `{{ range site.RegularPages }}` geht alle Seiten durch.' }
+          - { pattern: '\.RelPermalink', say: 'Die Navigation braucht für jede Seite ihre Adresse: `href="{{ .RelPermalink }}"`.' }
+
   - id: neue-seite
     title: Ein vierter Planet
     prediction: true
@@ -73,22 +89,6 @@ tasks:
       - when: { picked: 2 }
         say: Steht in `baseof.html` eine Liste von Planeten, oder eine Schleife über alle Seiten?
     solution: '`range site.RegularPages` geht bei jedem Bauen alle Seiten durch, die es gibt. Eine neue Datei in `content` kommt dadurch überall hin, wo die Schleife steht: in die Navigation jeder Seite und auf die Startseite.'
-
-  - id: navigation
-    title: Die Navigation
-    prompt: |
-      Lege die Seiten für Jupiter und Saturn an und ergänze in
-      `layouts/baseof.html` die Navigation zu allen Seiten, dann speichere.
-    file: solar-system/layouts/baseof.html
-    check:
-      type: files
-      path: solar-system/layouts/baseof.html
-      expect:
-        format: text
-        contains:
-          - { pattern: '\{\{-?\s*block\s+"main"', say: 'In `baseof.html` fehlt die Lücke für den Inhalt: `{{ block "main" . }}{{ end }}`.' }
-          - { pattern: '\{\{-?\s*range\s+(?:\$\w+\s*:=\s*)?(?:site|\.Site)\.(?:RegularPages|Pages)\b', say: 'Noch gibt es keine Navigation: `{{ range site.RegularPages }}` geht alle Seiten durch.' }
-          - { pattern: '\.RelPermalink', say: 'Die Navigation braucht für jede Seite ihre Adresse: `href="{{ .RelPermalink }}"`.' }
 
   - id: tags
     title: Schlagwörter

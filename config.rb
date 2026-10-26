@@ -214,6 +214,11 @@ docker_compose[:services][:neo4j] = {
         # Disable the default CSV metrics exporter (one growing file per metric/database).
         'NEO4J_server_metrics_csv_enabled' => 'false',
         'NEO4J_dbms_security_auth__enabled' => 'true',
+        # One database per person, each small: its transaction log not
+        # reserved in advance (256 MB each by default, 9.8 GB for 38 people)
+        # and started anew every 16 MB, so that old logs can go.
+        'NEO4J_db_tx__log_preallocate' => 'false',
+        'NEO4J_db_tx__log_rotation_size' => '16MiB',
     },
 }
 
