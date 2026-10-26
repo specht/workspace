@@ -4821,21 +4821,30 @@ ul.task-teacher-list .task-teacher-answer {
     box-shadow: 0 0.3em 1em rgba(0, 0, 0, 0.08);
 }
 .shc-with-picture {
-    --shc-picture-width: 19em;
+    --shc-picture-width: 20em;
     grid-template-columns: var(--shc-picture-width) 1fr;
     align-items: center;
 }
 
 /* the picture flush with the card's edge, in 16:9 as on the catalog's
-   cards: at least as high as its width asks, taller only where the text
-   needs more room; display stays with the rule that shows the light or
-   the dark variant */
+   cards; it sets the card's height, and the abstract beside it ends after
+   two lines (…) so that the text fits; display stays with the rule that
+   shows the light or the dark variant */
 .shc-picture {
     position: relative;
     display: block;
-    align-self: stretch;
-    min-height: calc(var(--shc-picture-width) * 9 / 16);
+    align-self: start;
+    aspect-ratio: 16 / 9;
     background: var(--bs-tertiary-bg);
+}
+@media (min-width: 576px) {
+    .shc-with-picture .shc-abstract {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        overflow: hidden;
+    }
 }
 /* a set of Katas: its band from the strip (KataMap.art_html), filling the picture */
 .shc-kata .kata-set-art {
