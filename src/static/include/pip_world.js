@@ -123,15 +123,16 @@
             if (window.ResizeObserver) new ResizeObserver(() => this.resize()).observe(box);
         }
 
-        // The ground of each open tile, one of the variants, and some soft
-        // darker patches, so that it does not look tiled.
+        // The ground, one of the variants on each tile, under the rock too,
+        // so that a round corner of a wall shows ground where it is cut
+        // away; on open tiles some soft darker patches, so that it does not
+        // look tiled.
         floor(wall) {
             for (let y = 0; y < this.layout.height; y++) {
                 for (let x = 0; x < this.layout.width; x++) {
-                    if (wall(x, y)) continue;
                     this.tile('floor', [x, y]).style.setProperty('--v', Math.floor(hash(x, y, 9) * FLOORS));
                     const h = hash(x, y, 1);
-                    if (h < 0.22) this.tile('shade', [x, y]).style.opacity = (0.15 + h).toFixed(2);
+                    if (!wall(x, y) && h < 0.22) this.tile('shade', [x, y]).style.opacity = (0.15 + h).toFixed(2);
                 }
             }
         }
