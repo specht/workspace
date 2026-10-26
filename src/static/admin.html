@@ -5,6 +5,8 @@
     #running_here td.num, #running_here th.num { text-align: right; font-variant-numeric: tabular-nums; }
     #running_count { font-size: 1rem; vertical-align: middle; }
     #running_here tr > td { --bs-table-bg-state: rgba(255, 200, 0, var(--ws-activity, 0)); }
+    /* the mark of a heavy Workspace at the row's left, the name a little away from it */
+    #running_here tr > :first-child { padding-left: 0.75rem; }
     #running_here tr.running-heavy > td:first-child { box-shadow: inset 4px 0 0 var(--health-warn); }
     #running_here tr.running-heavy .running-name::after { content: ' · braucht viel'; color: var(--bs-warning-text-emphasis); font-size: 0.8rem; }
     .running-groups { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; font-size: 0.875rem; color: var(--bs-secondary-color); }
@@ -36,7 +38,8 @@
     <h2 id="laufend">Laufende Workspaces <span class='class-tab-count align-middle' id='running_count'>0</span></h2>
     <p class='small text-body-secondary'>
         Jede Sekunde neu, wer am meisten braucht oben; gelb, wer gerade rechnet, markiert, wer seit über einer Minute
-        mehr als die Hälfte eines Kerns oder 2 GB Speicher braucht. Wer am meisten Platz belegt, zeigt
+        mehr als die Hälfte eines Kerns oder 2 GB Speicher braucht. Den Speicherplatz misst der Server stündlich;
+        wer am meisten belegt, zeigt
         <a href='/personen?sortierung=speicher#personen'>Personen</a>; einen Workspace, der nicht läuft, öffnest du dort oder
         auf der <a href='/klasse'>Klassenseite</a>.
     </p>
@@ -219,7 +222,7 @@
         const shown = show_all ? order : order.slice(0, TOP);
         let table = here.find('table');
         if (table.length === 0) {
-            table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Name</th><th>Gruppe</th><th class='num'>CPU</th><th class='num'>RAM</th><th class='num'>Prozesse</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
+            table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Name</th><th>Gruppe</th><th class='num'>CPU</th><th class='num'>RAM</th><th class='num'>Prozesse</th><th class='num' title='stündlich gemessen'>Speicherplatz</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
             table.on('mouseenter', () => { hovering = true; }).on('mouseleave', () => { hovering = false; });
             here.empty().append(table);
         }
@@ -233,7 +236,7 @@
                 const who = $('<td>');
                 who.append($('<div class="running-name">').text(info.name || info.email || tag));
                 if (info.name && info.email) who.append($('<div class="small text-body-secondary">').text(info.email));
-                row.append(who, $('<td>').text(info.group || '–'), $(`<td class='num td_cpu'>`), $(`<td class='num td_ram'>`), $(`<td class='num td_pid'>`));
+                row.append(who, $('<td>').text(info.group || '–'), $(`<td class='num td_cpu'>`), $(`<td class='num td_ram'>`), $(`<td class='num td_pid'>`), $(`<td class='num td_disk'>`));
                 const actions = $(`<td class='text-end text-nowrap'>`).appendTo(row);
                 if (info.email && info.email !== my_email) {
                     actions.append($(`<button class='btn btn-sm btn-outline-secondary btn-icon bu-open-workspace-as-admin me-1' title='Workspace öffnen' aria-label='Workspace öffnen'><i class='bi bi-code-slash'></i></button>`).attr('data-email', info.email));
@@ -249,12 +252,22 @@
             row.find('.td_cpu').html(wrapLettersInSpan(s['CPUPerc'] || '–'));
             row.find('.td_ram').html(wrapLettersInSpan((s['MemUsage'] ?? '–').split('/')[0].trim().replace('iB', '')));
             row.find('.td_pid').text(s['PIDs'] || '–');
+            row.find('.td_disk').html(disk_html(info.disk_kb, info.disk_fat));
             rows.push(row);
         }
         tbody.children().detach();
         tbody.append(rows);
         $('#running_more').prop('hidden', order.length <= TOP)
             .text(show_all ? 'Nur die zehn, die am meisten brauchen' : `Alle ${order.length} zeigen`);
+    }
+
+    // Disk space in KB as on Personen: »153.0M«, the unit in its own span;
+    // highlighted where it is much more than most Workspaces have.
+    function disk_html(kb, fat) {
+        if (kb === null || kb === undefined) return "<span class='text-body-secondary'>–</span>";
+        const [value, unit] = kb < 1024 ? [kb, 'k'] : kb < 1024 * 1024 ? [kb / 1024, 'M'] : kb < 1024 * 1024 * 1024 ? [kb / 1024 / 1024, 'G'] : [kb / 1024 / 1024 / 1024, 'T'];
+        const text = `${value.toFixed(1)}<span class='unit'>${unit}</span>`;
+        return fat ? `<span class='disk-fat' title='deutlich mehr als die meisten'>${text}</span>` : text;
     }
 
     function wrapLettersInSpan(input) {
