@@ -13,6 +13,20 @@
     - keyboard
     - .kata-demo
 
+# Katas (docs/plan-katas.md): small exercises typed into the cards of the
+# page. Dev-only (.) until the maintainer has looked at them.
+- key: katas
+  label: Katas
+  icon: /images/brain.png
+  description: |
+    Kleine Programmieraufgaben direkt auf der Seite, in Ruby oder Python:
+    ohne Terminal und Dateien, mit einem Knopf zum Ausprobieren und einem
+    zum Prüfen.
+  entries:
+    - .kata-functions
+    - .kata-decisions
+    - .kata-loops
+
 - key: graphics
   compact: true
   label: Grafik

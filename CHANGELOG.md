@@ -21,6 +21,9 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Drei Übungen mit Katas, noch nur in der Entwicklung sichtbar: »Erste Funktionen«, »Entscheidungen« und »Wiederholen«, je zehn bis
+  elf Katas in Ruby und Python, dazu Extras. Aufgaben mit `extra: true` zählen bei niemandem mit (»8 von 10 erledigt, dazu 2 Extras«),
+  auch in den Extra-Kapiteln anderer Aktivitäten.
 - Katas (Programmieraufgaben, die in der Karte geschrieben werden, Prüfart `function`, noch nur auf einer Entwicklungsseite): Der Code läuft in einem eigenen Container
   aus dem Workspace-Image ohne Netz, durch eine Warteschlange. Neu und freiwillig in `credentials.rb`: `KATA_PARALLEL_RUNS` (ohne 4), messen mit
   `./config.rb exec ruby ruby /src/scripts/measure-katas.rb`. Gespeichert wird der Code als Antwort der Aufgabe, je Sprache; die Datenschutzerklärung nennt es.

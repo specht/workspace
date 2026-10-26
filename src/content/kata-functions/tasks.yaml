@@ -1,0 +1,756 @@
+format: 1
+activity: kata-functions
+tasks:
+  - id: add
+    title: "Zwei Zahlen addieren"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `add(a, b)`, die die Summe der beiden Zahlen zurückgibt: `add(2, 3)` ergibt `5`.
+    starter: |
+      def add(a, b)
+      end
+
+      puts add(2, 3)
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "add(2, 3)"
+          expect: "5"
+        - call: "add(-4, 4)"
+          expect: "0"
+        - call: "add(0, 0)"
+          expect: "0"
+      random:
+        count: 4
+        call: "add(a, b)"
+        args: { a: -100..100, b: -100..100 }
+        reference: "a + b"
+    feedback:
+      - when: { same_as: "def add(a, b)\n  puts a + b\nend\n" }
+        say: "`puts` schreibt die Summe nur hin. Die Funktion soll sie mit `return` (oder als letzte Zeile) zurückgeben."
+    solution: |
+      ```ruby
+      def add(a, b)
+        a + b
+      end
+      ```
+    python:
+      starter: |
+        def add(a, b):
+            pass
+
+        print(add(2, 3))
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "add(2, 3)"
+            expect: "5"
+          - call: "add(-4, 4)"
+            expect: "0"
+          - call: "add(0, 0)"
+            expect: "0"
+        random:
+          count: 4
+          call: "add(a, b)"
+          args: { a: -100..100, b: -100..100 }
+          reference: "a + b"
+      feedback:
+        - when: { same_as: "def add(a, b):\n    print(a + b)\n" }
+          say: "`print` schreibt die Summe nur hin. Die Funktion soll sie mit `return` zurückgeben."
+      solution: |
+        ```python
+        def add(a, b):
+            return a + b
+        ```
+
+  - id: double
+    title: "Verdoppeln"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `double(n)`, die das Doppelte einer Zahl zurückgibt: `double(21)` ergibt `42`.
+    starter: |
+      def double(n)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "double(21)"
+          expect: "42"
+        - call: "double(0)"
+          expect: "0"
+        - call: "double(-3)"
+          expect: "-6"
+        - call: "double(2.5)"
+          expect: "5.0"
+    solution: |
+      ```ruby
+      def double(n)
+        2 * n
+      end
+      ```
+    python:
+      starter: |
+        def double(n):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "double(21)"
+            expect: "42"
+          - call: "double(0)"
+            expect: "0"
+          - call: "double(-3)"
+            expect: "-6"
+          - call: "double(2.5)"
+            expect: "5.0"
+      solution: |
+        ```python
+        def double(n):
+            return 2 * n
+        ```
+
+  - id: greet
+    title: "Eine Begrüßung"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `greet(name)`, die eine Begrüßung zurückgibt: `greet('Ada')` ergibt `'Hallo, Ada!'`.
+    starter: |
+      def greet(name)
+      end
+
+      puts greet('Ada')
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "greet('Ada')"
+          expect: "'Hallo, Ada!'"
+        - call: "greet('Grace')"
+          expect: "'Hallo, Grace!'"
+        - call: "greet('')"
+          expect: "'Hallo, !'"
+          say: "Auch ein leerer Name bekommt seinen Gruß."
+    hint: |
+      Zwei Texte hängst du mit `+` aneinander. Oder du setzt den Namen mit `"Hallo, #{name}!"` mitten in den Text.
+    solution: |
+      ```ruby
+      def greet(name)
+        "Hallo, #{name}!"
+      end
+      ```
+    python:
+      starter: |
+        def greet(name):
+            pass
+
+        print(greet('Ada'))
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "greet('Ada')"
+            expect: "'Hallo, Ada!'"
+          - call: "greet('Grace')"
+            expect: "'Hallo, Grace!'"
+          - call: "greet('')"
+            expect: "'Hallo, !'"
+            say: "Auch ein leerer Name bekommt seinen Gruß."
+      hint: |
+        Zwei Texte hängst du mit `+` aneinander. Oder du setzt den Namen mit `f'Hallo, {name}!'` mitten in den Text.
+      solution: |
+        ```python
+        def greet(name):
+            return f'Hallo, {name}!'
+        ```
+
+  - id: rectangle
+    title: "Die Fläche eines Rechtecks"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `rectangle_area(width, height)`, die die Fläche eines Rechtecks zurückgibt: `rectangle_area(3, 4)` ergibt `12`.
+    starter: |
+      def rectangle_area(width, height)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "rectangle_area(3, 4)"
+          expect: "12"
+        - call: "rectangle_area(10, 1)"
+          expect: "10"
+        - call: "rectangle_area(2.5, 2)"
+          expect: "5.0"
+    feedback:
+      - when: { same_as: "def rectangle_area(width, height)\n  2 * width + 2 * height\nend\n" }
+        say: "Das ist der Umfang, einmal um das Rechteck herum. Die Fläche ist Breite mal Höhe."
+    solution: |
+      ```ruby
+      def rectangle_area(width, height)
+        width * height
+      end
+      ```
+    python:
+      starter: |
+        def rectangle_area(width, height):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "rectangle_area(3, 4)"
+            expect: "12"
+          - call: "rectangle_area(10, 1)"
+            expect: "10"
+          - call: "rectangle_area(2.5, 2)"
+            expect: "5.0"
+      feedback:
+        - when: { same_as: "def rectangle_area(width, height):\n    return 2 * width + 2 * height\n" }
+          say: "Das ist der Umfang, einmal um das Rechteck herum. Die Fläche ist Breite mal Höhe."
+      solution: |
+        ```python
+        def rectangle_area(width, height):
+            return width * height
+        ```
+
+  - id: fahrenheit
+    title: "Celsius in Fahrenheit"
+    level: 2
+    prompt: |
+      In den USA misst man die Temperatur in Grad Fahrenheit. Man rechnet um, indem man die Grad Celsius mit 1,8 multipliziert und 32 addiert. Schreib eine Funktion `fahrenheit(celsius)`: `fahrenheit(100)` ergibt `212`, `fahrenheit(37.5)` ergibt `99.5`.
+    starter: |
+      def fahrenheit(celsius)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "fahrenheit(100)"
+          expect: "212"
+        - call: "fahrenheit(0)"
+          expect: "32"
+        - call: "fahrenheit(-40)"
+          expect: "-40"
+        - call: "fahrenheit(37.5)"
+          expect: "99.5"
+        - call: "fahrenheit(1).round(2)"
+          expect: "33.8"
+          say: "In Ruby ergibt eine Division zweier ganzer Zahlen wieder eine ganze Zahl: `7 / 2` ist `3`. Mit einer Kommazahl darin, etwa `7 / 2.0` oder `1.8`, wird es eine Kommazahl."
+    feedback:
+      - when: { same_as: "def fahrenheit(celsius)\n  celsius * 9 / 5 + 32\nend\n" }
+        say: "In Ruby ergibt eine Division zweier ganzer Zahlen wieder eine ganze Zahl: `7 / 2` ist `3`. Mit einer Kommazahl darin, etwa `7 / 2.0` oder `1.8`, wird es eine Kommazahl."
+    hint:
+      - "Rechne `fahrenheit(10)` von Hand: 10 mal 1,8 ist 18, dazu 32 macht 50."
+      - "Ein Komma schreibst du in Ruby als Punkt: `1.8`."
+    solution: |
+      ```ruby
+      def fahrenheit(celsius)
+        celsius * 1.8 + 32
+      end
+      ```
+    python:
+      starter: |
+        def fahrenheit(celsius):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "fahrenheit(100)"
+            expect: "212"
+          - call: "fahrenheit(0)"
+            expect: "32"
+          - call: "fahrenheit(-40)"
+            expect: "-40"
+          - call: "fahrenheit(37.5)"
+            expect: "99.5"
+          - call: "round(fahrenheit(1), 2)"
+            expect: "33.8"
+      feedback:
+        - when: { same_as: "def fahrenheit(celsius):\n    return (celsius + 32) * 1.8\n" }
+          say: "Erst multiplizieren, dann 32 addieren: Punkt- vor Strichrechnung, oder Klammern an der richtigen Stelle."
+      hint:
+        - "Rechne `fahrenheit(10)` von Hand: 10 mal 1,8 ist 18, dazu 32 macht 50."
+        - "Ein Komma schreibst du in Python als Punkt: `1.8`."
+      solution: |
+        ```python
+        def fahrenheit(celsius):
+            return celsius * 1.8 + 32
+        ```
+
+  - id: clock
+    title: "Sekunden als Uhrzeit"
+    level: 2
+    prompt: |
+      Ein Video ist 125 Sekunden lang. Ein Player zeigt das als `2:05`: zwei Minuten und fünf Sekunden. Schreib eine Funktion `clock(seconds)`, die diesen Text zurückgibt; die Sekunden immer mit zwei Ziffern.
+    starter: |
+      def clock(seconds)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "clock(125)"
+          expect: "'2:05'"
+        - call: "clock(59)"
+          expect: "'0:59'"
+        - call: "clock(600)"
+          expect: "'10:00'"
+        - call: "clock(61)"
+          expect: "'1:01'"
+          say: "Die Sekunden haben immer zwei Ziffern: `1:01`, nicht `1:1`."
+    feedback:
+      - when: { same_as: "def clock(seconds)\n  \"#{seconds / 60}:#{seconds % 60}\"\nend\n" }
+        say: "Die Sekunden haben immer zwei Ziffern: `1:01`, nicht `1:1`. `format('%02d', zahl)` füllt vorne mit einer Null auf."
+    hint:
+      - "Wie viele ganze Minuten stecken in 125 Sekunden, und wie viele Sekunden bleiben übrig?"
+      - "`/` mit zwei ganzen Zahlen gibt die ganzen Minuten, `%` den Rest."
+      - "Zwei Ziffern bekommst du mit `format('%02d', zahl)`, oder mit `zahl.to_s.rjust(2, '0')`."
+    solution: |
+      ```ruby
+      def clock(seconds)
+        format('%d:%02d', seconds / 60, seconds % 60)
+      end
+      ```
+    python:
+      starter: |
+        def clock(seconds):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "clock(125)"
+            expect: "'2:05'"
+          - call: "clock(59)"
+            expect: "'0:59'"
+          - call: "clock(600)"
+            expect: "'10:00'"
+          - call: "clock(61)"
+            expect: "'1:01'"
+            say: "Die Sekunden haben immer zwei Ziffern: `1:01`, nicht `1:1`."
+      feedback:
+        - when: { same_as: "def clock(seconds):\n    return f'{seconds // 60}:{seconds % 60}'\n" }
+          say: "Die Sekunden haben immer zwei Ziffern: `1:01`, nicht `1:1`. `f'{zahl:02d}'` füllt vorne mit einer Null auf."
+      hint:
+        - "Wie viele ganze Minuten stecken in 125 Sekunden, und wie viele Sekunden bleiben übrig?"
+        - "`//` gibt die ganzen Minuten, `%` den Rest."
+        - "Zwei Ziffern bekommst du mit `f'{zahl:02d}'`."
+      solution: |
+        ```python
+        def clock(seconds):
+            return f'{seconds // 60}:{seconds % 60:02d}'
+        ```
+
+  - id: average
+    title: "Der Durchschnitt"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `average(a, b, c)`, die den Durchschnitt dreier Zahlen zurückgibt: `average(1, 2, 3)` ergibt `2`, `average(1, 2, 4)` ergibt etwa `2.333`.
+    starter: |
+      def average(a, b, c)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "average(1, 2, 3)"
+          expect: "2"
+        - call: "average(90, 85, 95)"
+          expect: "90"
+        - call: "average(1, 2, 4.5)"
+          expect: "2.5"
+        - call: "average(1, 2, 4).round(3)"
+          expect: "2.333"
+          say: "In Ruby ergibt eine Division zweier ganzer Zahlen wieder eine ganze Zahl: `7 / 2` ist `3`. Mit einer Kommazahl darin, etwa `7 / 2.0` oder `1.8`, wird es eine Kommazahl."
+    feedback:
+      - when: { same_as: "def average(a, b, c)\n  (a + b + c) / 3\nend\n" }
+        say: "In Ruby ergibt eine Division zweier ganzer Zahlen wieder eine ganze Zahl: `7 / 2` ist `3`. Mit einer Kommazahl darin, etwa `7 / 2.0` oder `1.8`, wird es eine Kommazahl."
+      - when: { same_as: "def average(a, b, c)\n  a + b + c / 3.0\nend\n" }
+        say: "Ohne Klammern teilst du nur `c` durch 3. Die Summe kommt in Klammern: `(a + b + c)`."
+    hint:
+      - "Der Durchschnitt ist die Summe geteilt durch die Anzahl."
+      - "Achte darauf, was zuerst gerechnet wird, und darauf, was `/` mit ganzen Zahlen macht."
+    solution: |
+      ```ruby
+      def average(a, b, c)
+        (a + b + c) / 3.0
+      end
+      ```
+    python:
+      starter: |
+        def average(a, b, c):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "average(1, 2, 3)"
+            expect: "2"
+          - call: "average(90, 85, 95)"
+            expect: "90"
+          - call: "average(1, 2, 4.5)"
+            expect: "2.5"
+          - call: "round(average(1, 2, 4), 3)"
+            expect: "2.333"
+      feedback:
+        - when: { same_as: "def average(a, b, c):\n    return a + b + c / 3\n" }
+          say: "Ohne Klammern teilst du nur `c` durch 3. Die Summe kommt in Klammern: `(a + b + c)`."
+        - when: { same_as: "def average(a, b, c):\n    return (a + b + c) // 3\n" }
+          say: "`//` teilt ganzzahlig und lässt den Rest weg. Für den Durchschnitt brauchst du `/`."
+      hint:
+        - "Der Durchschnitt ist die Summe geteilt durch die Anzahl."
+        - "Achte darauf, was zuerst gerechnet wird."
+      solution: |
+        ```python
+        def average(a, b, c):
+            return (a + b + c) / 3
+        ```
+
+  - id: price
+    title: "Der Preis mit Rabatt"
+    level: 2
+    prompt: |
+      Im Schulkiosk kostet ein Brötchen `unit_price` Euro. Wer mehrere kauft, bekommt `discount` Prozent Rabatt auf alles. Schreib eine Funktion `price(count, unit_price, discount)`: `price(3, 2.5, 10)` ergibt `6.75`, denn 3 Brötchen kosten 7,50 Euro, und 10 Prozent davon sind 75 Cent.
+    starter: |
+      def price(count, unit_price, discount)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "price(3, 2.5, 10).round(2)"
+          expect: "6.75"
+        - call: "price(1, 2, 0).round(2)"
+          expect: "2.0"
+        - call: "price(4, 1.5, 50).round(2)"
+          expect: "3.0"
+        - call: "price(10, 1, 25).round(2)"
+          expect: "7.5"
+    feedback:
+      - when: { same_as: "def price(count, unit_price, discount)\n  count * unit_price - discount\nend\n" }
+        say: "Der Rabatt ist in Prozent: 10 Prozent von 7,50 Euro sind 75 Cent, nicht 10 Euro."
+      - when: { same_as: "def price(count, unit_price, discount)\n  count * unit_price * discount / 100.0\nend\n" }
+        say: "So kommt der Rabatt selbst heraus, nicht der Preis. Was bleibt nach dem Abzug übrig?"
+    hint:
+      - "Rechne das Beispiel Schritt für Schritt: erst der Preis ohne Rabatt, dann der Rabatt in Euro, dann der Unterschied."
+      - "Der Rabatt in Euro ist Preis mal `discount` durch 100. Denk an die Division in Ruby."
+    solution: |
+      ```ruby
+      def price(count, unit_price, discount)
+        total = count * unit_price
+        total - total * discount / 100.0
+      end
+      ```
+    python:
+      starter: |
+        def price(count, unit_price, discount):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "round(price(3, 2.5, 10), 2)"
+            expect: "6.75"
+          - call: "round(price(1, 2, 0), 2)"
+            expect: "2.0"
+          - call: "round(price(4, 1.5, 50), 2)"
+            expect: "3.0"
+          - call: "round(price(10, 1, 25), 2)"
+            expect: "7.5"
+      feedback:
+        - when: { same_as: "def price(count, unit_price, discount):\n    return count * unit_price - discount\n" }
+          say: "Der Rabatt ist in Prozent: 10 Prozent von 7,50 Euro sind 75 Cent, nicht 10 Euro."
+        - when: { same_as: "def price(count, unit_price, discount):\n    return count * unit_price * discount / 100\n" }
+          say: "So kommt der Rabatt selbst heraus, nicht der Preis. Was bleibt nach dem Abzug übrig?"
+      hint:
+        - "Rechne das Beispiel Schritt für Schritt: erst der Preis ohne Rabatt, dann der Rabatt in Euro, dann der Unterschied."
+        - "Der Rabatt in Euro ist Preis mal `discount` durch 100."
+      solution: |
+        ```python
+        def price(count, unit_price, discount):
+            total = count * unit_price
+            return total - total * discount / 100
+        ```
+
+  - id: clock-after
+    title: "Die Uhr nach n Minuten"
+    level: 3
+    prompt: |
+      Es ist 23:50 Uhr. Wie spät ist es 25 Minuten später? Schreib eine Funktion `clock_after(hour, minute, minutes)`, die die Uhrzeit nach `minutes` Minuten als Text mit zwei Ziffern für Stunden und Minuten zurückgibt: `clock_after(23, 50, 25)` ergibt `'00:15'`.
+    starter: |
+      def clock_after(hour, minute, minutes)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "clock_after(23, 50, 25)"
+          expect: "'00:15'"
+        - call: "clock_after(8, 0, 45)"
+          expect: "'08:45'"
+        - call: "clock_after(9, 30, 90)"
+          expect: "'11:00'"
+        - call: "clock_after(12, 0, 0)"
+          expect: "'12:00'"
+        - call: "clock_after(22, 15, 1500)"
+          expect: "'23:15'"
+          say: "1500 Minuten sind einen ganzen Tag und eine Stunde. Nach Mitternacht beginnt die Uhr wieder bei 0."
+      random:
+        count: 4
+        call: "clock_after(h, m, n)"
+        args: { h: 0..23, m: 0..59, n: 0..3000 }
+        reference: "t = (h * 60 + m + n) % 1440; format('%02d:%02d', t / 60, t % 60)"
+    feedback:
+      - when: { same_as: "def clock_after(hour, minute, minutes)\n  t = hour * 60 + minute + minutes\n  format('%02d:%02d', t / 60, t % 60)\nend\n" }
+        say: "Nach 23:59 kommt 00:00: Die Stunden fangen nach Mitternacht wieder bei 0 an. `% 24` (oder `% 1440` für die Minuten eines Tages) sorgt dafür."
+    hint:
+      - "Zähl alles in Minuten seit Mitternacht: 23:50 Uhr sind 23 · 60 + 50 = 1430 Minuten."
+      - "Ein Tag hat 1440 Minuten. Was liefert `% 1440`, wenn die Summe darüber liegt?"
+      - "Aus den Minuten seit Mitternacht werden mit `/ 60` und `% 60` wieder Stunden und Minuten; `format('%02d:%02d', …)` schreibt sie mit zwei Ziffern."
+    solution: |
+      ```ruby
+      def clock_after(hour, minute, minutes)
+        total = (hour * 60 + minute + minutes) % (24 * 60)
+        format('%02d:%02d', total / 60, total % 60)
+      end
+      ```
+    python:
+      starter: |
+        def clock_after(hour, minute, minutes):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "clock_after(23, 50, 25)"
+            expect: "'00:15'"
+          - call: "clock_after(8, 0, 45)"
+            expect: "'08:45'"
+          - call: "clock_after(9, 30, 90)"
+            expect: "'11:00'"
+          - call: "clock_after(12, 0, 0)"
+            expect: "'12:00'"
+          - call: "clock_after(22, 15, 1500)"
+            expect: "'23:15'"
+            say: "1500 Minuten sind einen ganzen Tag und eine Stunde. Nach Mitternacht beginnt die Uhr wieder bei 0."
+        random:
+          count: 4
+          call: "clock_after(h, m, n)"
+          args: { h: 0..23, m: 0..59, n: 0..3000 }
+          reference: "'%02d:%02d' % divmod((h * 60 + m + n) % 1440, 60)"
+      feedback:
+        - when: { same_as: "def clock_after(hour, minute, minutes):\n    t = hour * 60 + minute + minutes\n    return f'{t // 60:02d}:{t % 60:02d}'\n" }
+          say: "Nach 23:59 kommt 00:00: Die Stunden fangen nach Mitternacht wieder bei 0 an. `% 24` (oder `% 1440` für die Minuten eines Tages) sorgt dafür."
+      hint:
+        - "Zähl alles in Minuten seit Mitternacht: 23:50 Uhr sind 23 · 60 + 50 = 1430 Minuten."
+        - "Ein Tag hat 1440 Minuten. Was liefert `% 1440`, wenn die Summe darüber liegt?"
+        - "Aus den Minuten seit Mitternacht werden mit `// 60` und `% 60` wieder Stunden und Minuten; `f'{zahl:02d}'` schreibt sie mit zwei Ziffern."
+      solution: |
+        ```python
+        def clock_after(hour, minute, minutes):
+            total = (hour * 60 + minute + minutes) % (24 * 60)
+            return f'{total // 60:02d}:{total % 60:02d}'
+        ```
+
+  - id: last-digit
+    title: "Die letzte Ziffer"
+    level: 3
+    prompt: |
+      Schreib eine Funktion `last_digit(n)`, die die letzte Ziffer einer ganzen Zahl zurückgibt, auch bei negativen Zahlen: `last_digit(1234)` ergibt `4`, `last_digit(-57)` ergibt `7`. Ohne die Zahl in einen Text zu verwandeln.
+    starter: |
+      def last_digit(n)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#to_s, Integer#digits, Integer#inspect]
+      cases:
+        - call: "last_digit(1234)"
+          expect: "4"
+        - call: "last_digit(7)"
+          expect: "7"
+        - call: "last_digit(90)"
+          expect: "0"
+        - call: "last_digit(-57)"
+          expect: "7"
+          say: "In Ruby ist `-57 % 10` nicht 7, sondern 3: Der Rest hat das Vorzeichen des Teilers. Mit dem Betrag `n.abs` wird die Zahl erst positiv."
+    feedback:
+      - when: { same_as: "def last_digit(n)\n  n % 10\nend\n" }
+        say: "In Ruby ist `-57 % 10` nicht 7, sondern 3: Der Rest hat das Vorzeichen des Teilers. Mit dem Betrag `n.abs` wird die Zahl erst positiv."
+    hint:
+      - "Was bleibt übrig, wenn du 1234 durch 10 teilst?"
+      - "Bei negativen Zahlen hilft der Betrag: `n.abs`."
+    solution: |
+      ```ruby
+      def last_digit(n)
+        n.abs % 10
+      end
+      ```
+    python:
+      starter: |
+        def last_digit(n):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [str, repr]
+        cases:
+          - call: "last_digit(1234)"
+            expect: "4"
+          - call: "last_digit(7)"
+            expect: "7"
+          - call: "last_digit(90)"
+            expect: "0"
+          - call: "last_digit(-57)"
+            expect: "7"
+            say: "In Python ist `-57 % 10` nicht 7, sondern 3: Der Rest hat das Vorzeichen des Teilers. Mit dem Betrag `abs(n)` wird die Zahl erst positiv."
+      feedback:
+        - when: { same_as: "def last_digit(n):\n    return n % 10\n" }
+          say: "In Python ist `-57 % 10` nicht 7, sondern 3: Der Rest hat das Vorzeichen des Teilers. Mit dem Betrag `abs(n)` wird die Zahl erst positiv."
+      hint:
+        - "Was bleibt übrig, wenn du 1234 durch 10 teilst?"
+        - "Bei negativen Zahlen hilft der Betrag: `abs(n)`."
+      solution: |
+        ```python
+        def last_digit(n):
+            return abs(n) % 10
+        ```
+
+  - id: reverse-digits
+    title: "Ziffern rückwärts"
+    extra: true
+    prompt: |
+      Schreib eine Funktion `reverse_digits(n)`, die die Ziffern einer höchstens dreistelligen Zahl umdreht: `reverse_digits(123)` ergibt `321`, `reverse_digits(45)` ergibt `54`. Nur mit Rechnen, ohne Texte und ohne Schleife.
+    starter: |
+      def reverse_digits(n)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#to_s, Integer#digits, Integer#inspect, String#reverse]
+      cases:
+        - call: "reverse_digits(123)"
+          expect: "321"
+        - call: "reverse_digits(45)"
+          expect: "54"
+        - call: "reverse_digits(7)"
+          expect: "7"
+        - call: "reverse_digits(100)"
+          expect: "1"
+        - call: "reverse_digits(908)"
+          expect: "809"
+    hint:
+      - "Die Einer bekommst du mit `% 10`. Wie bekommst du die Zehner und die Hunderter?"
+      - "Bei zweistelligen Zahlen sind die Hunderter 0. Schreib die Zahl erst so, als hätte sie immer drei Ziffern, und lass dann die Nullen weg, die vorne stehen würden."
+    solution: |
+      ```ruby
+      def reverse_digits(n)
+        ones = n % 10
+        tens = n / 10 % 10
+        hundreds = n / 100
+        return ones if n < 10
+        return ones * 10 + tens if n < 100
+        ones * 100 + tens * 10 + hundreds
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `reverse_digits(n)`, die die Ziffern einer höchstens dreistelligen Zahl umdreht: `reverse_digits(123)` ergibt `321`, `reverse_digits(45)` ergibt `54`. Nur mit Rechnen, ohne Texte und ohne Schleife.
+      starter: |
+        def reverse_digits(n):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [str, repr, reversed]
+        cases:
+          - call: "reverse_digits(123)"
+            expect: "321"
+          - call: "reverse_digits(45)"
+            expect: "54"
+          - call: "reverse_digits(7)"
+            expect: "7"
+          - call: "reverse_digits(100)"
+            expect: "1"
+          - call: "reverse_digits(908)"
+            expect: "809"
+      hint:
+        - "Die Einer bekommst du mit `% 10`. Wie bekommst du die Zehner und die Hunderter?"
+        - "Bei zweistelligen Zahlen sind die Hunderter 0. Schreib die Zahl erst so, als hätte sie immer drei Ziffern, und lass dann die Nullen weg, die vorne stehen würden."
+      solution: |
+        ```python
+        def reverse_digits(n):
+            ones = n % 10
+            tens = n // 10 % 10
+            hundreds = n // 100
+            if n < 10:
+                return ones
+            if n < 100:
+                return ones * 10 + tens
+            return ones * 100 + tens * 10 + hundreds
+        ```
+
+  - id: duration
+    title: "Stunden, Minuten, Sekunden"
+    extra: true
+    prompt: |
+      Ein Film dauert 7385 Sekunden. Schreib eine Funktion `duration(seconds)`, die daraus `'2:03:05'` macht: Stunden, dann Minuten und Sekunden mit je zwei Ziffern.
+    starter: |
+      def duration(seconds)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "duration(7385)"
+          expect: "'2:03:05'"
+        - call: "duration(59)"
+          expect: "'0:00:59'"
+        - call: "duration(3600)"
+          expect: "'1:00:00'"
+        - call: "duration(36000)"
+          expect: "'10:00:00'"
+      random:
+        count: 4
+        call: "duration(s)"
+        args: { s: 0..100000 }
+        reference: "format('%d:%02d:%02d', s / 3600, s / 60 % 60, s % 60)"
+    hint: "Wie viele ganze Stunden stecken in 7385 Sekunden? Was bleibt danach übrig?"
+    solution: |
+      ```ruby
+      def duration(seconds)
+        format('%d:%02d:%02d', seconds / 3600, seconds / 60 % 60, seconds % 60)
+      end
+      ```
+    python:
+      starter: |
+        def duration(seconds):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "duration(7385)"
+            expect: "'2:03:05'"
+          - call: "duration(59)"
+            expect: "'0:00:59'"
+          - call: "duration(3600)"
+            expect: "'1:00:00'"
+          - call: "duration(36000)"
+            expect: "'10:00:00'"
+        random:
+          count: 4
+          call: "duration(s)"
+          args: { s: 0..100000 }
+          reference: "'%d:%02d:%02d' % (s // 3600, s // 60 % 60, s % 60)"
+      hint: "Wie viele ganze Stunden stecken in 7385 Sekunden? Was bleibt danach übrig?"
+      solution: |
+        ```python
+        def duration(seconds):
+            return f'{seconds // 3600}:{seconds // 60 % 60:02d}:{seconds % 60:02d}'
+        ```

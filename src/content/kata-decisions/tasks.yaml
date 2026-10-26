@@ -1,0 +1,1000 @@
+format: 1
+activity: kata-decisions
+tasks:
+  - id: even
+    title: "Gerade oder ungerade"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `even(n)`, die `true` zurückgibt, wenn eine Zahl gerade ist, sonst `false`: `even(4)` ergibt `true`, `even(7)` ergibt `false`. Ohne `even?` und `odd?`.
+    starter: |
+      def even(n)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#even?, Integer#odd?]
+      cases:
+        - call: "even(4)"
+          expect: "true"
+        - call: "even(7)"
+          expect: "false"
+        - call: "even(0)"
+          expect: "true"
+        - call: "even(-2)"
+          expect: "true"
+        - call: "even(-3)"
+          expect: "false"
+    feedback:
+      - when: { same_as: "def even(n)\n  n % 2\nend\n" }
+        say: "`n % 2` ist der Rest, `0` oder `1`. Gefragt ist `true` oder `false`: Ist der Rest gleich 0?"
+    hint: "Eine gerade Zahl lässt bei der Division durch 2 keinen Rest. Den Rest liefert `%`."
+    solution: |
+      ```ruby
+      def even(n)
+        n % 2 == 0
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `even(n)`, die `True` zurückgibt, wenn eine Zahl gerade ist, sonst `False`: `even(4)` ergibt `True`, `even(7)` ergibt `False`.
+      starter: |
+        def even(n):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "even(4)"
+            expect: "True"
+          - call: "even(7)"
+            expect: "False"
+          - call: "even(0)"
+            expect: "True"
+          - call: "even(-2)"
+            expect: "True"
+          - call: "even(-3)"
+            expect: "False"
+      feedback:
+        - when: { same_as: "def even(n):\n    return n % 2\n" }
+          say: "`n % 2` ist der Rest, `0` oder `1`. Gefragt ist `True` oder `False`: Ist der Rest gleich 0?"
+      hint: "Eine gerade Zahl lässt bei der Division durch 2 keinen Rest. Den Rest liefert `%`."
+      solution: |
+        ```python
+        def even(n):
+            return n % 2 == 0
+        ```
+
+  - id: max-of-two
+    title: "Die größere Zahl"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `max_of_two(a, b)`, die die größere der beiden Zahlen zurückgibt: `max_of_two(3, 7)` ergibt `7`. Ohne `max`: mit `if`.
+    starter: |
+      def max_of_two(a, b)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#max, Array#minmax, Array#sort, Comparable#clamp]
+      cases:
+        - call: "max_of_two(3, 7)"
+          expect: "7"
+        - call: "max_of_two(7, 3)"
+          expect: "7"
+        - call: "max_of_two(-1, -5)"
+          expect: "-1"
+        - call: "max_of_two(4, 4)"
+          expect: "4"
+      random:
+        count: 4
+        call: "max_of_two(a, b)"
+        args: { a: -1000..1000, b: -1000..1000 }
+        reference: "a > b ? a : b"
+    feedback:
+      - when: { same_as: "def max_of_two(a, b)\n  a\nend\n" }
+        say: "Gib nicht immer `a` zurück: Wenn `b` größer ist, ist `b` die Antwort. Dafür ist `if` da."
+    solution: |
+      ```ruby
+      def max_of_two(a, b)
+        if a > b
+          a
+        else
+          b
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `max_of_two(a, b)`, die die größere der beiden Zahlen zurückgibt: `max_of_two(3, 7)` ergibt `7`. Ohne `max`: mit `if`.
+      starter: |
+        def max_of_two(a, b):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [max, sorted]
+        cases:
+          - call: "max_of_two(3, 7)"
+            expect: "7"
+          - call: "max_of_two(7, 3)"
+            expect: "7"
+          - call: "max_of_two(-1, -5)"
+            expect: "-1"
+          - call: "max_of_two(4, 4)"
+            expect: "4"
+        random:
+          count: 4
+          call: "max_of_two(a, b)"
+          args: { a: -1000..1000, b: -1000..1000 }
+          reference: "a if a > b else b"
+      feedback:
+        - when: { same_as: "def max_of_two(a, b):\n    return a\n" }
+          say: "Gib nicht immer `a` zurück: Wenn `b` größer ist, ist `b` die Antwort. Dafür ist `if` da."
+      solution: |
+        ```python
+        def max_of_two(a, b):
+            if a > b:
+                return a
+            else:
+                return b
+        ```
+
+  - id: absolute
+    title: "Der Betrag"
+    level: 1
+    prompt: |
+      Der Betrag einer Zahl ist ihr Abstand von 0: Er ist nie negativ. Schreib eine Funktion `absolute(n)`: `absolute(-5)` ergibt `5`, `absolute(5)` ergibt `5`. Ohne `abs`.
+    starter: |
+      def absolute(n)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#abs, Float#abs, Integer#magnitude, Float#magnitude]
+      cases:
+        - call: "absolute(-5)"
+          expect: "5"
+        - call: "absolute(5)"
+          expect: "5"
+        - call: "absolute(0)"
+          expect: "0"
+        - call: "absolute(-2.5)"
+          expect: "2.5"
+    feedback:
+      - when: { same_as: "def absolute(n)\n  -n\nend\n" }
+        say: "Eine positive Zahl bleibt, wie sie ist: Nur eine negative bekommt das Minus weg."
+    solution: |
+      ```ruby
+      def absolute(n)
+        n < 0 ? -n : n
+      end
+      ```
+    python:
+      prompt: |
+        Der Betrag einer Zahl ist ihr Abstand von 0: Er ist nie negativ. Schreib eine Funktion `absolute(n)`: `absolute(-5)` ergibt `5`, `absolute(5)` ergibt `5`. Ohne `abs`.
+      starter: |
+        def absolute(n):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [abs, math.fabs]
+        cases:
+          - call: "absolute(-5)"
+            expect: "5"
+          - call: "absolute(5)"
+            expect: "5"
+          - call: "absolute(0)"
+            expect: "0"
+          - call: "absolute(-2.5)"
+            expect: "2.5"
+      feedback:
+        - when: { same_as: "def absolute(n):\n    return -n\n" }
+          say: "Eine positive Zahl bleibt, wie sie ist: Nur eine negative bekommt das Minus weg."
+      solution: |
+        ```python
+        def absolute(n):
+            if n < 0:
+                return -n
+            return n
+        ```
+
+  - id: adult
+    title: "Volljährig?"
+    level: 1
+    prompt: |
+      In Deutschland ist man mit 18 Jahren volljährig. Schreib eine Funktion `adult(age)`, die `true` oder `false` zurückgibt: `adult(30)` ergibt `true`, `adult(12)` ergibt `false`.
+    starter: |
+      def adult(age)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "adult(30)"
+          expect: "true"
+        - call: "adult(12)"
+          expect: "false"
+        - call: "adult(17)"
+          expect: "false"
+        - call: "adult(18)"
+          expect: "true"
+          say: "Mit 18 ist man volljährig: `>=` statt `>`."
+    feedback:
+      - when: { same_as: "def adult(age)\n  age > 18\nend\n" }
+        say: "Mit 18 ist man volljährig: `>=` statt `>`."
+    solution: |
+      ```ruby
+      def adult(age)
+        age >= 18
+      end
+      ```
+    python:
+      prompt: |
+        In Deutschland ist man mit 18 Jahren volljährig. Schreib eine Funktion `adult(age)`, die `True` oder `False` zurückgibt: `adult(30)` ergibt `True`, `adult(12)` ergibt `False`.
+      starter: |
+        def adult(age):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "adult(30)"
+            expect: "True"
+          - call: "adult(12)"
+            expect: "False"
+          - call: "adult(17)"
+            expect: "False"
+          - call: "adult(18)"
+            expect: "True"
+            say: "Mit 18 ist man volljährig: `>=` statt `>`."
+      feedback:
+        - when: { same_as: "def adult(age):\n    return age > 18\n" }
+          say: "Mit 18 ist man volljährig: `>=` statt `>`."
+      solution: |
+        ```python
+        def adult(age):
+            return age >= 18
+        ```
+
+  - id: leap-year
+    title: "Schaltjahre"
+    level: 2
+    prompt: |
+      Ein Jahr ist ein Schaltjahr, wenn es durch 4 teilbar ist, außer volle Jahrhunderte wie 1900. Davon sind wieder die ausgenommen, die durch 400 teilbar sind: 2000 war ein Schaltjahr. Schreib eine Funktion `leap_year(year)`, die sagt, ob ein Jahr ein Schaltjahr ist.
+    starter: |
+      def leap_year(year)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "leap_year(2024)"
+          expect: "true"
+        - call: "leap_year(2023)"
+          expect: "false"
+        - call: "leap_year(1900)"
+          expect: "false"
+          say: "1900 war kein Schaltjahr: Volle Jahrhunderte sind keine Schaltjahre …"
+        - call: "leap_year(2000)"
+          expect: "true"
+          say: "… außer, sie sind durch 400 teilbar: 2000 war ein Schaltjahr."
+        - call: "leap_year(2100)"
+          expect: "false"
+        - call: "leap_year(1996)"
+          expect: "true"
+    feedback:
+      - when: { same_as: "def leap_year(year)\n  year % 4 == 0\nend\n" }
+        say: "Durch 4 teilbar genügt nicht: 1900 war kein Schaltjahr. Volle Jahrhunderte (durch 100 teilbar) sind ausgenommen, außer durch 400 teilbare."
+      - when: { same_as: "def leap_year(year)\n  year % 4 == 0 && year % 100 != 0\nend\n" }
+        say: "Fast: 2000 war doch ein Schaltjahr, weil es durch 400 teilbar ist."
+    hint:
+      - "Geh 1996, 1900 und 2000 von Hand durch: Welche Regel entscheidet jeweils?"
+      - "Prüf von der speziellsten Regel zur allgemeinsten: erst 400, dann 100, dann 4."
+      - "Mit `&&` und `||` geht es auch in einer Zeile: durch 4 teilbar und (nicht durch 100 teilbar oder durch 400 teilbar)."
+    solution: |
+      ```ruby
+      def leap_year(year)
+        year % 400 == 0 || (year % 4 == 0 && year % 100 != 0)
+      end
+      ```
+    python:
+      starter: |
+        def leap_year(year):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [calendar.isleap]
+        cases:
+          - call: "leap_year(2024)"
+            expect: "True"
+          - call: "leap_year(2023)"
+            expect: "False"
+          - call: "leap_year(1900)"
+            expect: "False"
+            say: "1900 war kein Schaltjahr: Volle Jahrhunderte sind keine Schaltjahre …"
+          - call: "leap_year(2000)"
+            expect: "True"
+            say: "… außer, sie sind durch 400 teilbar: 2000 war ein Schaltjahr."
+          - call: "leap_year(2100)"
+            expect: "False"
+          - call: "leap_year(1996)"
+            expect: "True"
+      feedback:
+        - when: { same_as: "def leap_year(year):\n    return year % 4 == 0\n" }
+          say: "Durch 4 teilbar genügt nicht: 1900 war kein Schaltjahr. Volle Jahrhunderte (durch 100 teilbar) sind ausgenommen, außer durch 400 teilbare."
+        - when: { same_as: "def leap_year(year):\n    return year % 4 == 0 and year % 100 != 0\n" }
+          say: "Fast: 2000 war doch ein Schaltjahr, weil es durch 400 teilbar ist."
+      hint:
+        - "Geh 1996, 1900 und 2000 von Hand durch: Welche Regel entscheidet jeweils?"
+        - "Prüf von der speziellsten Regel zur allgemeinsten: erst 400, dann 100, dann 4."
+        - "Mit `and` und `or` geht es auch in einer Zeile: durch 4 teilbar und (nicht durch 100 teilbar oder durch 400 teilbar)."
+      solution: |
+        ```python
+        def leap_year(year):
+            return year % 400 == 0 or (year % 4 == 0 and year % 100 != 0)
+        ```
+
+  - id: grade
+    title: "Punkte und Noten"
+    level: 2
+    prompt: |
+      In einer Klassenarbeit gibt es höchstens 100 Punkte. Ab 92 Punkten gibt es eine 1, ab 81 eine 2, ab 67 eine 3, ab 50 eine 4, ab 30 eine 5, darunter eine 6. Schreib eine Funktion `grade(points)`, die die Note zurückgibt: `grade(85)` ergibt `2`.
+    starter: |
+      def grade(points)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "grade(100)"
+          expect: "1"
+        - call: "grade(92)"
+          expect: "1"
+        - call: "grade(91)"
+          expect: "2"
+          say: "Die Grenze gehört zur besseren Note: Ab 92 Punkten ist es eine 1, mit 91 eine 2."
+        - call: "grade(81)"
+          expect: "2"
+        - call: "grade(80)"
+          expect: "3"
+        - call: "grade(67)"
+          expect: "3"
+        - call: "grade(66)"
+          expect: "4"
+        - call: "grade(50)"
+          expect: "4"
+        - call: "grade(49)"
+          expect: "5"
+        - call: "grade(30)"
+          expect: "5"
+        - call: "grade(29)"
+          expect: "6"
+        - call: "grade(0)"
+          expect: "6"
+    feedback:
+      - when: { same_as: "def grade(points)\n  if points > 92 then 1\n  elsif points > 81 then 2\n  elsif points > 67 then 3\n  elsif points > 50 then 4\n  elsif points > 30 then 5\n  else 6\n  end\nend\n" }
+        say: "»Ab 92« heißt: 92 gehört dazu. `>=` statt `>`."
+      - when: { same_as: "def grade(points)\n  if points >= 30 then 5\n  elsif points >= 50 then 4\n  elsif points >= 67 then 3\n  elsif points >= 81 then 2\n  elsif points >= 92 then 1\n  else 6\n  end\nend\n" }
+        say: "Die erste passende Bedingung gewinnt: Wer 95 Punkte hat, hat auch mehr als 30. Fang bei der besten Note an."
+    hint:
+      - "Was ist `grade(85)`, was `grade(81)`, was `grade(80)`? Schreib die drei auf, bevor du programmierst."
+      - "`if … elsif … else` prüft der Reihe nach und nimmt die erste Bedingung, die stimmt. In welcher Reihenfolge müssen die Grenzen stehen?"
+    solution: |
+      ```ruby
+      def grade(points)
+        if points >= 92 then 1
+        elsif points >= 81 then 2
+        elsif points >= 67 then 3
+        elsif points >= 50 then 4
+        elsif points >= 30 then 5
+        else 6
+        end
+      end
+      ```
+    python:
+      starter: |
+        def grade(points):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "grade(100)"
+            expect: "1"
+          - call: "grade(92)"
+            expect: "1"
+          - call: "grade(91)"
+            expect: "2"
+            say: "Die Grenze gehört zur besseren Note: Ab 92 Punkten ist es eine 1, mit 91 eine 2."
+          - call: "grade(81)"
+            expect: "2"
+          - call: "grade(80)"
+            expect: "3"
+          - call: "grade(67)"
+            expect: "3"
+          - call: "grade(66)"
+            expect: "4"
+          - call: "grade(50)"
+            expect: "4"
+          - call: "grade(49)"
+            expect: "5"
+          - call: "grade(30)"
+            expect: "5"
+          - call: "grade(29)"
+            expect: "6"
+          - call: "grade(0)"
+            expect: "6"
+      feedback:
+        - when: { same_as: "def grade(points):\n    if points > 92:\n        return 1\n    elif points > 81:\n        return 2\n    elif points > 67:\n        return 3\n    elif points > 50:\n        return 4\n    elif points > 30:\n        return 5\n    return 6\n" }
+          say: "»Ab 92« heißt: 92 gehört dazu. `>=` statt `>`."
+        - when: { same_as: "def grade(points):\n    if points >= 30:\n        return 5\n    elif points >= 50:\n        return 4\n    elif points >= 67:\n        return 3\n    elif points >= 81:\n        return 2\n    elif points >= 92:\n        return 1\n    return 6\n" }
+          say: "Die erste passende Bedingung gewinnt: Wer 95 Punkte hat, hat auch mehr als 30. Fang bei der besten Note an."
+      hint:
+        - "Was ist `grade(85)`, was `grade(81)`, was `grade(80)`? Schreib die drei auf, bevor du programmierst."
+        - "`if … elif … else` prüft der Reihe nach und nimmt die erste Bedingung, die stimmt. In welcher Reihenfolge müssen die Grenzen stehen?"
+      solution: |
+        ```python
+        def grade(points):
+            if points >= 92:
+                return 1
+            elif points >= 81:
+                return 2
+            elif points >= 67:
+                return 3
+            elif points >= 50:
+                return 4
+            elif points >= 30:
+                return 5
+            return 6
+        ```
+
+  - id: ticket-price
+    title: "Eintritt ins Schwimmbad"
+    level: 2
+    prompt: |
+      Im Schwimmbad zahlen Kinder unter 6 Jahren nichts, Kinder und Jugendliche unter 18 zahlen 5 Euro, Seniorinnen und Senioren ab 65 zahlen 6 Euro, alle anderen 9 Euro. Schreib eine Funktion `ticket_price(age)`: `ticket_price(12)` ergibt `5`.
+    starter: |
+      def ticket_price(age)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "ticket_price(5)"
+          expect: "0"
+        - call: "ticket_price(6)"
+          expect: "5"
+          say: "Mit 6 Jahren zahlt man schon: Kostenlos ist es nur unter 6."
+        - call: "ticket_price(17)"
+          expect: "5"
+        - call: "ticket_price(18)"
+          expect: "9"
+        - call: "ticket_price(64)"
+          expect: "9"
+        - call: "ticket_price(65)"
+          expect: "6"
+          say: "Ab 65 gilt der Preis für Senioren."
+        - call: "ticket_price(80)"
+          expect: "6"
+    feedback:
+      - when: { same_as: "def ticket_price(age)\n  if age <= 6 then 0\n  elsif age < 18 then 5\n  elsif age >= 65 then 6\n  else 9\n  end\nend\n" }
+        say: "»Unter 6« heißt: 6 gehört nicht mehr dazu. Mit 6 Jahren zahlt man 5 Euro."
+    hint:
+      - "Zeichne einen Zahlenstrahl von 0 bis 100 und trag die Grenzen ein. Welche Bereiche gibt es?"
+      - "Prüf die Bereiche von unten nach oben: unter 6, unter 18, dann ab 65."
+    solution: |
+      ```ruby
+      def ticket_price(age)
+        if age < 6 then 0
+        elsif age < 18 then 5
+        elsif age >= 65 then 6
+        else 9
+        end
+      end
+      ```
+    python:
+      starter: |
+        def ticket_price(age):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "ticket_price(5)"
+            expect: "0"
+          - call: "ticket_price(6)"
+            expect: "5"
+            say: "Mit 6 Jahren zahlt man schon: Kostenlos ist es nur unter 6."
+          - call: "ticket_price(17)"
+            expect: "5"
+          - call: "ticket_price(18)"
+            expect: "9"
+          - call: "ticket_price(64)"
+            expect: "9"
+          - call: "ticket_price(65)"
+            expect: "6"
+            say: "Ab 65 gilt der Preis für Senioren."
+          - call: "ticket_price(80)"
+            expect: "6"
+      feedback:
+        - when: { same_as: "def ticket_price(age):\n    if age <= 6:\n        return 0\n    elif age < 18:\n        return 5\n    elif age >= 65:\n        return 6\n    return 9\n" }
+          say: "»Unter 6« heißt: 6 gehört nicht mehr dazu. Mit 6 Jahren zahlt man 5 Euro."
+      hint:
+        - "Zeichne einen Zahlenstrahl von 0 bis 100 und trag die Grenzen ein. Welche Bereiche gibt es?"
+        - "Prüf die Bereiche von unten nach oben: unter 6, unter 18, dann ab 65."
+      solution: |
+        ```python
+        def ticket_price(age):
+            if age < 6:
+                return 0
+            elif age < 18:
+                return 5
+            elif age >= 65:
+                return 6
+            return 9
+        ```
+
+  - id: max-of-three
+    title: "Die größte von dreien"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `max_of_three(a, b, c)`, die die größte von drei Zahlen zurückgibt: `max_of_three(3, 1, 5)` ergibt `5`. Ohne `max`.
+    starter: |
+      def max_of_three(a, b, c)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#max, Array#minmax, Array#sort, Array#sort_by]
+      cases:
+        - call: "max_of_three(1, 2, 3)"
+          expect: "3"
+        - call: "max_of_three(3, 2, 1)"
+          expect: "3"
+        - call: "max_of_three(2, 3, 1)"
+          expect: "3"
+        - call: "max_of_three(3, 1, 5)"
+          expect: "5"
+        - call: "max_of_three(4, 4, 1)"
+          expect: "4"
+        - call: "max_of_three(-1, -2, -3)"
+          expect: "-1"
+        - call: "max_of_three(7, 7, 7)"
+          expect: "7"
+      random:
+        count: 4
+        call: "max_of_three(a, b, c)"
+        args: { a: -100..100, b: -100..100, c: -100..100 }
+        reference: "[a, b, c].max"
+    feedback:
+      - when: { same_as: "def max_of_three(a, b, c)\n  if a > b\n    a\n  elsif b > c\n    b\n  else\n    c\n  end\nend\n" }
+        say: "Wenn `a` größer ist als `b`, kann `c` trotzdem noch größer sein als `a`: Bei `3, 1, 5` ist es 5."
+    hint:
+      - "Probier deine Lösung von Hand mit `3, 1, 5`, mit `1, 5, 3` und mit `5, 3, 1`."
+      - "Ein Weg: Merk dir die größte bisher, fang mit `a` an, und vergleiche sie dann mit `b` und mit `c`."
+    solution: |
+      ```ruby
+      def max_of_three(a, b, c)
+        largest = a
+        largest = b if b > largest
+        largest = c if c > largest
+        largest
+      end
+      ```
+    python:
+      starter: |
+        def max_of_three(a, b, c):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [max, sorted, list.sort]
+        cases:
+          - call: "max_of_three(1, 2, 3)"
+            expect: "3"
+          - call: "max_of_three(3, 2, 1)"
+            expect: "3"
+          - call: "max_of_three(2, 3, 1)"
+            expect: "3"
+          - call: "max_of_three(3, 1, 5)"
+            expect: "5"
+          - call: "max_of_three(4, 4, 1)"
+            expect: "4"
+          - call: "max_of_three(-1, -2, -3)"
+            expect: "-1"
+          - call: "max_of_three(7, 7, 7)"
+            expect: "7"
+        random:
+          count: 4
+          call: "max_of_three(a, b, c)"
+          args: { a: -100..100, b: -100..100, c: -100..100 }
+          reference: "max(a, b, c)"
+      feedback:
+        - when: { same_as: "def max_of_three(a, b, c):\n    if a > b:\n        return a\n    elif b > c:\n        return b\n    return c\n" }
+          say: "Wenn `a` größer ist als `b`, kann `c` trotzdem noch größer sein als `a`: Bei `3, 1, 5` ist es 5."
+      hint:
+        - "Probier deine Lösung von Hand mit `3, 1, 5`, mit `1, 5, 3` und mit `5, 3, 1`."
+        - "Ein Weg: Merk dir die größte bisher, fang mit `a` an, und vergleiche sie dann mit `b` und mit `c`."
+      solution: |
+        ```python
+        def max_of_three(a, b, c):
+            largest = a
+            if b > largest:
+                largest = b
+            if c > largest:
+                largest = c
+            return largest
+        ```
+
+  - id: fizzbuzz
+    title: "FizzBuzz"
+    level: 3
+    prompt: |
+      Ein Spiel aus der Grundschule, und eine berühmte Aufgabe in Vorstellungsgesprächen: Man zählt reihum, aber statt einer Zahl, die durch 3 teilbar ist, sagt man »Fizz«, statt einer, die durch 5 teilbar ist, »Buzz«, und wenn sie durch beide teilbar ist, »FizzBuzz«. Schreib eine Funktion `fizzbuzz(n)`, die zurückgibt, was man bei `n` sagt, als Text: `fizzbuzz(9)` ergibt `'Fizz'`, `fizzbuzz(7)` ergibt `'7'`.
+    starter: |
+      def fizzbuzz(n)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "fizzbuzz(3)"
+          expect: "'Fizz'"
+        - call: "fizzbuzz(10)"
+          expect: "'Buzz'"
+        - call: "fizzbuzz(15)"
+          expect: "'FizzBuzz'"
+          say: "15 ist durch 3 und durch 5 teilbar: `FizzBuzz`. Prüf das zuerst, sonst gewinnt schon die 3."
+        - call: "fizzbuzz(7)"
+          expect: "'7'"
+          say: "Die Zahl selbst kommt als Text zurück."
+        - call: "fizzbuzz(30)"
+          expect: "'FizzBuzz'"
+        - call: "fizzbuzz(9)"
+          expect: "'Fizz'"
+        - call: "fizzbuzz(1)"
+          expect: "'1'"
+      random:
+        count: 4
+        call: "fizzbuzz(n)"
+        args: { n: 1..1000 }
+        reference: "n % 15 == 0 ? 'FizzBuzz' : n % 3 == 0 ? 'Fizz' : n % 5 == 0 ? 'Buzz' : n.to_s"
+    feedback:
+      - when: { same_as: "def fizzbuzz(n)\n  if n % 3 == 0 then 'Fizz'\n  elsif n % 5 == 0 then 'Buzz'\n  elsif n % 15 == 0 then 'FizzBuzz'\n  else n.to_s\n  end\nend\n" }
+        say: "Bei 15 gewinnt schon die erste Bedingung, `n % 3 == 0`, und `FizzBuzz` kommt nie dran. Welche Bedingung muss zuerst stehen?"
+      - when: { same_as: "def fizzbuzz(n)\n  if n % 15 == 0 then 'FizzBuzz'\n  elsif n % 3 == 0 then 'Fizz'\n  elsif n % 5 == 0 then 'Buzz'\n  else n\n  end\nend\n" }
+        say: "Die Zahl selbst kommt als Text zurück: `n.to_s` macht aus `7` den Text `'7'`."
+    hint:
+      - "Was sagt man bei 3, bei 5, bei 15 und bei 7? Welche Zahlen sind durch 3 und durch 5 teilbar?"
+      - "Die Reihenfolge der Bedingungen entscheidet: Was durch 15 teilbar ist, ist auch durch 3 teilbar."
+    solution: |
+      ```ruby
+      def fizzbuzz(n)
+        if n % 15 == 0
+          'FizzBuzz'
+        elsif n % 3 == 0
+          'Fizz'
+        elsif n % 5 == 0
+          'Buzz'
+        else
+          n.to_s
+        end
+      end
+      ```
+    python:
+      starter: |
+        def fizzbuzz(n):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "fizzbuzz(3)"
+            expect: "'Fizz'"
+          - call: "fizzbuzz(10)"
+            expect: "'Buzz'"
+          - call: "fizzbuzz(15)"
+            expect: "'FizzBuzz'"
+            say: "15 ist durch 3 und durch 5 teilbar: `FizzBuzz`. Prüf das zuerst, sonst gewinnt schon die 3."
+          - call: "fizzbuzz(7)"
+            expect: "'7'"
+            say: "Die Zahl selbst kommt als Text zurück."
+          - call: "fizzbuzz(30)"
+            expect: "'FizzBuzz'"
+          - call: "fizzbuzz(9)"
+            expect: "'Fizz'"
+          - call: "fizzbuzz(1)"
+            expect: "'1'"
+        random:
+          count: 4
+          call: "fizzbuzz(n)"
+          args: { n: 1..1000 }
+          reference: "'FizzBuzz' if n % 15 == 0 else 'Fizz' if n % 3 == 0 else 'Buzz' if n % 5 == 0 else str(n)"
+      feedback:
+        - when: { same_as: "def fizzbuzz(n):\n    if n % 3 == 0:\n        return 'Fizz'\n    elif n % 5 == 0:\n        return 'Buzz'\n    elif n % 15 == 0:\n        return 'FizzBuzz'\n    return str(n)\n" }
+          say: "Bei 15 gewinnt schon die erste Bedingung, `n % 3 == 0`, und `FizzBuzz` kommt nie dran. Welche Bedingung muss zuerst stehen?"
+        - when: { same_as: "def fizzbuzz(n):\n    if n % 15 == 0:\n        return 'FizzBuzz'\n    elif n % 3 == 0:\n        return 'Fizz'\n    elif n % 5 == 0:\n        return 'Buzz'\n    return n\n" }
+          say: "Die Zahl selbst kommt als Text zurück: `str(n)` macht aus `7` den Text `'7'`."
+      hint:
+        - "Was sagt man bei 3, bei 5, bei 15 und bei 7? Welche Zahlen sind durch 3 und durch 5 teilbar?"
+        - "Die Reihenfolge der Bedingungen entscheidet: Was durch 15 teilbar ist, ist auch durch 3 teilbar."
+      solution: |
+        ```python
+        def fizzbuzz(n):
+            if n % 15 == 0:
+                return 'FizzBuzz'
+            elif n % 3 == 0:
+                return 'Fizz'
+            elif n % 5 == 0:
+                return 'Buzz'
+            return str(n)
+        ```
+
+  - id: triangle
+    title: "Was für ein Dreieck?"
+    level: 3
+    prompt: |
+      Aus drei Stäben der Längen `a`, `b` und `c` lässt sich nur dann ein Dreieck legen, wenn je zwei zusammen länger sind als der dritte. Schreib eine Funktion `triangle(a, b, c)`, die `'keins'` zurückgibt, wenn es nicht geht, sonst `'gleichseitig'` (alle drei gleich lang), `'gleichschenklig'` (zwei gleich lang) oder `'ungleichseitig'`.
+    starter: |
+      def triangle(a, b, c)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "triangle(3, 3, 3)"
+          expect: "'gleichseitig'"
+        - call: "triangle(3, 3, 5)"
+          expect: "'gleichschenklig'"
+        - call: "triangle(5, 3, 3)"
+          expect: "'gleichschenklig'"
+        - call: "triangle(3, 5, 3)"
+          expect: "'gleichschenklig'"
+        - call: "triangle(3, 4, 5)"
+          expect: "'ungleichseitig'"
+        - call: "triangle(1, 2, 5)"
+          expect: "'keins'"
+          say: "Zwei Seiten mit 1 und 2 reichen nicht über eine Seite mit 5 hinweg: Das ist kein Dreieck."
+        - call: "triangle(5, 1, 2)"
+          expect: "'keins'"
+        - call: "triangle(1, 2, 3)"
+          expect: "'keins'"
+          say: "Mit 1 + 2 = 3 liegen alle drei Ecken auf einer Linie: Ein Dreieck braucht zwei Seiten, die zusammen länger sind als die dritte."
+    feedback:
+      - when: { same_as: "def triangle(a, b, c)\n  return 'keins' if a + b < c\n  return 'gleichseitig' if a == b && b == c\n  return 'gleichschenklig' if a == b || b == c || a == c\n  'ungleichseitig'\nend\n" }
+        say: "Jede Seite kann die längste sein: Prüf alle drei Paare, nicht nur `a + b` gegen `c`."
+      - when: { same_as: "def triangle(a, b, c)\n  return 'keins' if a + b <= c || a + c <= b || b + c <= a\n  return 'gleichseitig' if a == b && b == c\n  return 'gleichschenklig' if a == b || b == c\n  'ungleichseitig'\nend\n" }
+        say: "Auch `a` und `c` können die beiden gleich langen Seiten sein: bei `3, 5, 3`."
+    hint:
+      - "Lege die Beispiele im Kopf: 3, 4, 5 geht, 1, 2, 5 nicht. Was ist mit 1, 2, 3?"
+      - "Erst prüfen, ob es überhaupt ein Dreieck ist (alle drei Paare), dann von gleichseitig zu ungleichseitig."
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def triangle(a, b, c)
+          return 'keins' if # hier: eine Bedingung für jedes Paar, mit ||
+          return 'gleichseitig' if # …
+          # …
+        end
+        ```
+    solution: |
+      ```ruby
+      def triangle(a, b, c)
+        return 'keins' if a + b <= c || a + c <= b || b + c <= a
+        return 'gleichseitig' if a == b && b == c
+        return 'gleichschenklig' if a == b || b == c || a == c
+        'ungleichseitig'
+      end
+      ```
+    python:
+      starter: |
+        def triangle(a, b, c):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "triangle(3, 3, 3)"
+            expect: "'gleichseitig'"
+          - call: "triangle(3, 3, 5)"
+            expect: "'gleichschenklig'"
+          - call: "triangle(5, 3, 3)"
+            expect: "'gleichschenklig'"
+          - call: "triangle(3, 5, 3)"
+            expect: "'gleichschenklig'"
+          - call: "triangle(3, 4, 5)"
+            expect: "'ungleichseitig'"
+          - call: "triangle(1, 2, 5)"
+            expect: "'keins'"
+            say: "Zwei Seiten mit 1 und 2 reichen nicht über eine Seite mit 5 hinweg: Das ist kein Dreieck."
+          - call: "triangle(5, 1, 2)"
+            expect: "'keins'"
+          - call: "triangle(1, 2, 3)"
+            expect: "'keins'"
+            say: "Mit 1 + 2 = 3 liegen alle drei Ecken auf einer Linie: Ein Dreieck braucht zwei Seiten, die zusammen länger sind als die dritte."
+      feedback:
+        - when: { same_as: "def triangle(a, b, c):\n    if a + b < c:\n        return 'keins'\n    if a == b and b == c:\n        return 'gleichseitig'\n    if a == b or b == c or a == c:\n        return 'gleichschenklig'\n    return 'ungleichseitig'\n" }
+          say: "Jede Seite kann die längste sein: Prüf alle drei Paare, nicht nur `a + b` gegen `c`."
+        - when: { same_as: "def triangle(a, b, c):\n    if a + b <= c or a + c <= b or b + c <= a:\n        return 'keins'\n    if a == b and b == c:\n        return 'gleichseitig'\n    if a == b or b == c:\n        return 'gleichschenklig'\n    return 'ungleichseitig'\n" }
+          say: "Auch `a` und `c` können die beiden gleich langen Seiten sein: bei `3, 5, 3`."
+      hint:
+        - "Lege die Beispiele im Kopf: 3, 4, 5 geht, 1, 2, 5 nicht. Was ist mit 1, 2, 3?"
+        - "Erst prüfen, ob es überhaupt ein Dreieck ist (alle drei Paare), dann von gleichseitig zu ungleichseitig."
+        - |
+          Ein Gerüst:
+
+          ```python
+          def triangle(a, b, c):
+              if ...:  # eine Bedingung für jedes Paar, mit or
+                  return 'keins'
+              if ...:
+                  return 'gleichseitig'
+              # …
+          ```
+      solution: |
+        ```python
+        def triangle(a, b, c):
+            if a + b <= c or a + c <= b or b + c <= a:
+                return 'keins'
+            if a == b and b == c:
+                return 'gleichseitig'
+            if a == b or b == c or a == c:
+                return 'gleichschenklig'
+            return 'ungleichseitig'
+        ```
+
+  - id: pythagorean
+    title: "Ein rechter Winkel"
+    level: 3
+    prompt: |
+      Drei Seiten bilden ein rechtwinkliges Dreieck, wenn die Quadrate der beiden kürzeren zusammen das Quadrat der längsten ergeben (Pythagoras): 3² + 4² = 5². Schreib eine Funktion `pythagorean(a, b, c)`, die das prüft, in welcher Reihenfolge die Seiten auch kommen.
+    starter: |
+      def pythagorean(a, b, c)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "pythagorean(3, 4, 5)"
+          expect: "true"
+        - call: "pythagorean(5, 12, 13)"
+          expect: "true"
+        - call: "pythagorean(2, 3, 4)"
+          expect: "false"
+        - call: "pythagorean(5, 3, 4)"
+          expect: "true"
+          say: "Die längste Seite muss nicht die letzte sein: 3, 4 und 5 bilden in jeder Reihenfolge ein rechtwinkliges Dreieck."
+        - call: "pythagorean(13, 5, 12)"
+          expect: "true"
+        - call: "pythagorean(1, 1, 1)"
+          expect: "false"
+        - call: "pythagorean(6, 8, 10)"
+          expect: "true"
+    feedback:
+      - when: { same_as: "def pythagorean(a, b, c)\n  a * a + b * b == c * c\nend\n" }
+        say: "Die längste Seite muss nicht die letzte sein: 3, 4 und 5 bilden in jeder Reihenfolge ein rechtwinkliges Dreieck."
+    hint:
+      - "Teste mit `5, 3, 4`: Welche Seite ist hier die längste?"
+      - "Entweder du prüfst alle drei Möglichkeiten, welche Seite die längste ist, mit `||`, oder du sortierst die drei Seiten erst."
+    solution: |
+      ```ruby
+      def pythagorean(a, b, c)
+        a * a + b * b == c * c || a * a + c * c == b * b || b * b + c * c == a * a
+      end
+      ```
+    python:
+      starter: |
+        def pythagorean(a, b, c):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "pythagorean(3, 4, 5)"
+            expect: "True"
+          - call: "pythagorean(5, 12, 13)"
+            expect: "True"
+          - call: "pythagorean(2, 3, 4)"
+            expect: "False"
+          - call: "pythagorean(5, 3, 4)"
+            expect: "True"
+            say: "Die längste Seite muss nicht die letzte sein: 3, 4 und 5 bilden in jeder Reihenfolge ein rechtwinkliges Dreieck."
+          - call: "pythagorean(13, 5, 12)"
+            expect: "True"
+          - call: "pythagorean(1, 1, 1)"
+            expect: "False"
+          - call: "pythagorean(6, 8, 10)"
+            expect: "True"
+      feedback:
+        - when: { same_as: "def pythagorean(a, b, c):\n    return a * a + b * b == c * c\n" }
+          say: "Die längste Seite muss nicht die letzte sein: 3, 4 und 5 bilden in jeder Reihenfolge ein rechtwinkliges Dreieck."
+      hint:
+        - "Teste mit `5, 3, 4`: Welche Seite ist hier die längste?"
+        - "Entweder du prüfst alle drei Möglichkeiten, welche Seite die längste ist, mit `or`, oder du sortierst die drei Seiten erst."
+      solution: |
+        ```python
+        def pythagorean(a, b, c):
+            return a * a + b * b == c * c or a * a + c * c == b * b or b * b + c * c == a * a
+        ```
+
+  - id: rock-paper-scissors
+    title: "Schere, Stein, Papier"
+    extra: true
+    prompt: |
+      Zwei spielen Schere, Stein, Papier: Stein schlägt Schere, Schere schlägt Papier, Papier schlägt Stein. Schreib eine Funktion `rock_paper_scissors(first, second)`, die `1` zurückgibt, wenn die erste Hand gewinnt, `2`, wenn die zweite gewinnt, und `0` bei einem Unentschieden: `rock_paper_scissors('Stein', 'Schere')` ergibt `1`. Geht es mit weniger als neun Fällen?
+    starter: |
+      def rock_paper_scissors(first, second)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "rock_paper_scissors('Stein', 'Schere')"
+          expect: "1"
+        - call: "rock_paper_scissors('Schere', 'Papier')"
+          expect: "1"
+        - call: "rock_paper_scissors('Papier', 'Stein')"
+          expect: "1"
+        - call: "rock_paper_scissors('Schere', 'Stein')"
+          expect: "2"
+        - call: "rock_paper_scissors('Papier', 'Schere')"
+          expect: "2"
+        - call: "rock_paper_scissors('Stein', 'Papier')"
+          expect: "2"
+        - call: "rock_paper_scissors('Stein', 'Stein')"
+          expect: "0"
+        - call: "rock_paper_scissors('Papier', 'Papier')"
+          expect: "0"
+        - call: "rock_paper_scissors('Schere', 'Schere')"
+          expect: "0"
+    hint: |
+      Wer gewinnt, hängt nur davon ab, welche Hand die andere schlägt. Eine Tabelle (ein Hash) `{ 'Stein' => 'Schere', … }` sagt das für jede Hand.
+    solution: |
+      ```ruby
+      BEATS = { 'Stein' => 'Schere', 'Schere' => 'Papier', 'Papier' => 'Stein' }
+
+      def rock_paper_scissors(first, second)
+        return 0 if first == second
+        BEATS[first] == second ? 1 : 2
+      end
+      ```
+    python:
+      starter: |
+        def rock_paper_scissors(first, second):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "rock_paper_scissors('Stein', 'Schere')"
+            expect: "1"
+          - call: "rock_paper_scissors('Schere', 'Papier')"
+            expect: "1"
+          - call: "rock_paper_scissors('Papier', 'Stein')"
+            expect: "1"
+          - call: "rock_paper_scissors('Schere', 'Stein')"
+            expect: "2"
+          - call: "rock_paper_scissors('Papier', 'Schere')"
+            expect: "2"
+          - call: "rock_paper_scissors('Stein', 'Papier')"
+            expect: "2"
+          - call: "rock_paper_scissors('Stein', 'Stein')"
+            expect: "0"
+          - call: "rock_paper_scissors('Papier', 'Papier')"
+            expect: "0"
+          - call: "rock_paper_scissors('Schere', 'Schere')"
+            expect: "0"
+      hint: |
+        Wer gewinnt, hängt nur davon ab, welche Hand die andere schlägt. Ein Dictionary `{'Stein': 'Schere', …}` sagt das für jede Hand.
+      solution: |
+        ```python
+        BEATS = {'Stein': 'Schere', 'Schere': 'Papier', 'Papier': 'Stein'}
+
+        def rock_paper_scissors(first, second):
+            if first == second:
+                return 0
+            return 1 if BEATS[first] == second else 2
+        ```

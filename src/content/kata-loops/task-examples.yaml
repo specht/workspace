@@ -1,0 +1,158 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Der Startcode jeder Kata muss von selbst scheitern; das prüft der Test ohne Beispiel.
+format: 1
+activity: kata-loops
+examples:
+  sum-to:
+    pass:
+      - answer: "def sum_to(n)\n  total = 0\n  (1..n).each do |i|\n    total += i\n  end\n  total\nend\n"
+    fail:
+      - answer: "def sum_to(n)\n  total = 0\n  (1...n).each { |i| total += i }\n  total\nend\n"
+      - answer: "def sum_to(n)\n  (1..n).sum\nend\n"
+        say: "benutzt `Range#sum`"
+    python:
+      pass:
+        - answer: "def sum_to(n):\n    total = 0\n    for i in range(1, n + 1):\n        total += i\n    return total\n"
+      fail:
+        - answer: "def sum_to(n):\n    total = 0\n    for i in range(1, n):\n        total += i\n    return total\n"
+        - answer: "def sum_to(n):\n    return sum(range(n + 1))\n"
+          say: "benutzt `sum`"
+  numbers:
+    pass:
+      - answer: "def numbers(n)\n  result = []\n  (1..n).each do |i|\n    result << i\n  end\n  result\nend\n"
+    fail:
+      - answer: "def numbers(n)\n  result = []\n  (0..n).each { |i| result << i }\n  result\nend\n"
+      - answer: "def numbers(n)\n  (1..n).to_a\nend\n"
+        say: "benutzt `Range#to_a`"
+    python:
+      pass:
+        - answer: "def numbers(n):\n    result = []\n    for i in range(1, n + 1):\n        result.append(i)\n    return result\n"
+      fail:
+        - answer: "def numbers(n):\n    result = []\n    for i in range(n + 1):\n        result.append(i)\n    return result\n"
+        - answer: "def numbers(n):\n    return list(range(1, n + 1))\n"
+          say: "benutzt `list`"
+  squares:
+    pass:
+      - answer: "def squares(n)\n  result = []\n  (1..n).each { |i| result << i * i }\n  result\nend\n"
+    fail:
+      - answer: "def squares(n)\n  result = []\n  (1..n).each { |i| result << i * 2 }\n  result\nend\n"
+    python:
+      pass:
+        - answer: "def squares(n):\n    result = []\n    for i in range(1, n + 1):\n        result.append(i * i)\n    return result\n"
+      fail:
+        - answer: "def squares(n):\n    result = []\n    for i in range(1, n + 1):\n        result.append(i * 2)\n    return result\n"
+  countdown:
+    pass:
+      - answer: "def countdown(n)\n  result = []\n  n.downto(0) { |i| result << i }\n  result\nend\n"
+    fail:
+      - answer: "def countdown(n)\n  result = []\n  n.downto(1) { |i| result << i }\n  result\nend\n"
+    python:
+      pass:
+        - answer: "def countdown(n):\n    result = []\n    for i in range(n, -1, -1):\n        result.append(i)\n    return result\n"
+      fail:
+        - answer: "def countdown(n):\n    result = []\n    for i in range(n, 0, -1):\n        result.append(i)\n    return result\n"
+  factorial:
+    pass:
+      - answer: "def factorial(n)\n  product = 1\n  (1..n).each { |i| product *= i }\n  product\nend\n"
+    fail:
+      - answer: "def factorial(n)\n  product = 0\n  (1..n).each { |i| product *= i }\n  product\nend\n"
+      - answer: "def factorial(n)\n  (1..n).reduce(1, :*)\nend\n"
+        say: "benutzt `Range#reduce`"
+    python:
+      pass:
+        - answer: "def factorial(n):\n    product = 1\n    for i in range(1, n + 1):\n        product *= i\n    return product\n"
+      fail:
+        - answer: "def factorial(n):\n    product = 0\n    for i in range(1, n + 1):\n        product *= i\n    return product\n"
+        - answer: "import math\ndef factorial(n):\n    return math.factorial(n)\n"
+          say: "benutzt `math.factorial`"
+  digit-sum:
+    pass:
+      - answer: "def digit_sum(n)\n  total = 0\n  while n > 0\n    total += n % 10\n    n /= 10\n  end\n  total\nend\n"
+    fail:
+      - answer: "def digit_sum(n)\n  n.to_s.chars.map(&:to_i).sum\nend\n"
+        say: "benutzt `Integer#to_s`"
+      - answer: "def digit_sum(n)\n  n % 10\nend\n"
+    python:
+      pass:
+        - answer: "def digit_sum(n):\n    total = 0\n    while n > 0:\n        total += n % 10\n        n //= 10\n    return total\n"
+      fail:
+        - answer: "def digit_sum(n):\n    return sum(int(d) for d in str(n))\n"
+          say: "benutzt `str`"
+        - answer: "def digit_sum(n):\n    return n % 10\n"
+  fibonacci:
+    pass:
+      - answer: "def fibonacci(n)\n  a, b = 0, 1\n  n.times { a, b = b, a + b }\n  a\nend\n"
+    fail:
+      - answer: "def fibonacci(n)\n  a, b = 1, 1\n  n.times { a, b = b, a + b }\n  a\nend\n"
+    python:
+      pass:
+        - answer: "def fibonacci(n):\n    a, b = 0, 1\n    for i in range(n):\n        a, b = b, a + b\n    return a\n"
+      fail:
+        - answer: "def fibonacci(n):\n    a, b = 1, 1\n    for i in range(n):\n        a, b = b, a + b\n    return a\n"
+  divisors:
+    pass:
+      - answer: "def count_divisors(n)\n  count = 0\n  (1..n).each { |d| count += 1 if n % d == 0 }\n  count\nend\n"
+    fail:
+      - answer: "def count_divisors(n)\n  (1...n).count { |d| n % d == 0 }\nend\n"
+    python:
+      pass:
+        - answer: "def count_divisors(n):\n    count = 0\n    for d in range(1, n + 1):\n        if n % d == 0:\n            count += 1\n    return count\n"
+      fail:
+        - answer: "def count_divisors(n):\n    return len([d for d in range(1, n) if n % d == 0])\n"
+  prime:
+    pass:
+      - answer: "def prime(n)\n  return false if n < 2\n  d = 2\n  while d * d <= n\n    return false if n % d == 0\n    d += 1\n  end\n  true\nend\n"
+    fail:
+      - answer: "def prime(n)\n  (2...n).none? { |d| n % d == 0 }\nend\n"
+    python:
+      pass:
+        - answer: "def prime(n):\n    if n < 2:\n        return False\n    d = 2\n    while d * d <= n:\n        if n % d == 0:\n            return False\n        d += 1\n    return True\n"
+      fail:
+        - answer: "def prime(n):\n    for d in range(2, n):\n        if n % d == 0:\n            return False\n    return True\n"
+  gcd:
+    pass:
+      - answer: "def gcd(a, b)\n  while b != 0\n    a, b = b, a % b\n  end\n  a\nend\n"
+    fail:
+      - answer: "def gcd(a, b) = [a, b].min\n"
+      - answer: "def gcd(a, b)\n  a.gcd(b)\nend\n"
+        say: "benutzt `Integer#gcd`"
+    python:
+      pass:
+        - answer: "def gcd(a, b):\n    while b != 0:\n        a, b = b, a % b\n    return a\n"
+      fail:
+        - answer: "def gcd(a, b):\n    return min(a, b)\n"
+        - answer: "import math\ndef gcd(a, b):\n    return math.gcd(a, b)\n"
+          say: "benutzt `math.gcd`"
+  collatz:
+    pass:
+      - answer: "def collatz_steps(n)\n  steps = 0\n  while n != 1\n    n = n.even? ? n / 2 : 3 * n + 1\n    steps += 1\n  end\n  steps\nend\n"
+    fail:
+      - answer: "def collatz_steps(n)\n  steps = 1\n  while n != 1\n    n = n.even? ? n / 2 : 3 * n + 1\n    steps += 1\n  end\n  steps\nend\n"
+    python:
+      pass:
+        - answer: "def collatz_steps(n):\n    steps = 0\n    while n != 1:\n        n = n // 2 if n % 2 == 0 else 3 * n + 1\n        steps += 1\n    return steps\n"
+      fail:
+        - answer: "def collatz_steps(n):\n    steps = 1\n    while n != 1:\n        n = n // 2 if n % 2 == 0 else 3 * n + 1\n        steps += 1\n    return steps\n"
+  perfect:
+    pass:
+      - answer: "def divisor_sum(n)\n  total = 0\n  (1..n / 2).each { |d| total += d if n % d == 0 }\n  total\nend\n\ndef perfect_numbers(limit)\n  (2..limit).select { |n| divisor_sum(n) == n }\nend\n"
+    fail:
+      - answer: "def perfect_numbers(limit)\n  [6, 28]\nend\n"
+    python:
+      pass:
+        - answer: "def divisor_sum(n):\n    total = 0\n    for d in range(1, n // 2 + 1):\n        if n % d == 0:\n            total += d\n    return total\n\ndef perfect_numbers(limit):\n    return [n for n in range(2, limit + 1) if divisor_sum(n) == n]\n"
+      fail:
+        - answer: "def perfect_numbers(limit):\n    return [6, 28]\n"
+  primes-up-to:
+    pass:
+      - answer: "def primes_up_to(n)\n  return [] if n < 2\n  prime = Array.new(n + 1, true)\n  prime[0] = prime[1] = false\n  p = 2\n  while p * p <= n\n    (p * p).step(n, p) { |m| prime[m] = false } if prime[p]\n    p += 1\n  end\n  (2..n).select { |i| prime[i] }\nend\n"
+    fail:
+      - answer: "def primes_up_to(n)\n  (2..n).select { |m| (2...m).none? { |d| m % d == 0 } }\nend\n"
+        say: Sieb des Eratosthenes
+    python:
+      pass:
+        - answer: "def primes_up_to(n):\n    if n < 2:\n        return []\n    prime = [True] * (n + 1)\n    prime[0] = prime[1] = False\n    p = 2\n    while p * p <= n:\n        if prime[p]:\n            for m in range(p * p, n + 1, p):\n                prime[m] = False\n        p += 1\n    return [i for i in range(2, n + 1) if prime[i]]\n"
+      fail:
+        - answer: "def primes_up_to(n):\n    return [m for m in range(2, n + 1) if all(m % d for d in range(2, m))]\n"
+          say: Sieb des Eratosthenes

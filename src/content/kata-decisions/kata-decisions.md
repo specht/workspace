@@ -1,0 +1,119 @@
+<div class='meta'>
+image: teaser.webp:50:20
+kind: uebung
+duration: 1 Doppelstunde
+languages: [ruby, python]
+requires: [kata-functions]
+</div>
+
+# Katas: Entscheidungen
+
+<p class='abstract'>
+Du schreibst Funktionen, die je nach Wert etwas anderes tun: mit
+<code>if</code> und <code>else</code>, mit Vergleichen und mit
+<code>and</code> und <code>or</code>. Bis zu FizzBuzz, einer berühmten
+Aufgabe aus Vorstellungsgesprächen.
+</p>
+
+<!-- tutorial-screenshot
+# Die Karte für den Katalog: FizzBuzz, gelöst und geprüft
+open-site: /kata-decisions
+tab: preview
+viewport: 640x1100
+hook: solve fizzbuzz
+sleep: 2
+crop-element: .task-card[data-task="kata-decisions/fizzbuzz"]:visible
+variants: dark
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Eine Kata-Karte »FizzBuzz« mit einer Funktion, die je nach Teilbarkeit FizzBuzz, Fizz, Buzz oder die Zahl als Text zurückgibt, darunter die Rückmeldung, dass alle Aufrufe stimmen.'>
+
+## Wenn, dann
+
+Eine Funktion kann je nach Wert etwas anderes tun. Diese hier sagt, ob eine
+Temperatur zum Baden reicht:
+
+<!-- language: ruby -->
+```ruby
+def weather(degrees)
+  if degrees >= 25
+    'Baden!'
+  elsif degrees >= 15
+    'Spazieren'
+  else
+    'Lesen'
+  end
+end
+
+puts weather(28)
+```
+
+Ruby prüft die Bedingungen der Reihe nach und nimmt die erste, die stimmt.
+Verglichen wird mit `==`, `!=`, `<`, `<=`, `>` und `>=`; zwei Bedingungen
+verbinden `&&` (beide) und `||` (mindestens eine), `!` dreht eine um. Ein
+Vergleich ist selbst ein Wert, `true` oder `false`: `degrees >= 25` kann
+eine Funktion auch direkt zurückgeben.
+<!-- /language -->
+<!-- language: python -->
+```python
+def weather(degrees):
+    if degrees >= 25:
+        return 'Baden!'
+    elif degrees >= 15:
+        return 'Spazieren'
+    else:
+        return 'Lesen'
+
+print(weather(28))
+```
+
+Python prüft die Bedingungen der Reihe nach und nimmt die erste, die stimmt.
+Verglichen wird mit `==`, `!=`, `<`, `<=`, `>` und `>=`; zwei Bedingungen
+verbinden `and` (beide) und `or` (mindestens eine), `not` dreht eine um.
+Ein Vergleich ist selbst ein Wert, `True` oder `False`: `degrees >= 25` kann
+eine Funktion auch direkt zurückgeben.
+<!-- /language -->
+
+## Einstieg
+
+_task(even)
+
+_task(max-of-two)
+
+_task(absolute)
+
+_task(adult)
+
+## Übung
+
+Jetzt gibt es mehr als zwei Möglichkeiten. Schreib dir die Grenzen auf, bevor
+du programmierst, und prüf genau die Werte, die auf einer Grenze liegen.
+
+_task(leap-year)
+
+_task(grade)
+
+_task(ticket-price)
+
+_task(max-of-three)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Vertausch in einer deiner Lösungen zwei
+<code>elsif</code>- oder <code>elif</code>-Zweige und drück <em>Prüfen</em>.
+Bei welchen Werten macht die Reihenfolge einen Unterschied, und bei welchen
+nicht?
+</div>
+
+## Knobelei
+
+_task(fizzbuzz)
+
+_task(triangle)
+
+_task(pythagorean)
+
+<!-- extra -->
+## Extras
+
+_task(rock-paper-scissors)
+
+Weiter geht es mit Wiederholungen: Funktionen, die etwas viele Male tun.

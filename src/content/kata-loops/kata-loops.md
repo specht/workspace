@@ -1,0 +1,115 @@
+<div class='meta'>
+image: teaser.webp:50:20
+kind: uebung
+duration: 1 Doppelstunde
+languages: [ruby, python]
+requires: [kata-decisions]
+</div>
+
+# Katas: Wiederholen
+
+<p class='abstract'>
+Du schreibst Funktionen mit Schleifen: Sie zählen, summieren, füllen Listen
+und suchen, bis sie fertig sind. Von der Summe bis eins über Fakultät und
+Fibonacci bis zu den Primzahlen.
+</p>
+
+<!-- tutorial-screenshot
+# Die Karte für den Katalog: die Quersumme, gelöst und geprüft
+open-site: /kata-loops
+tab: preview
+viewport: 640x1100
+hook: solve digit-sum
+sleep: 2
+crop-element: .task-card[data-task="kata-loops/digit-sum"]:visible
+variants: dark
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Eine Kata-Karte »Die Quersumme« mit einer while-Schleife, die die letzte Ziffer addiert und die Zahl durch 10 teilt, darunter die Rückmeldung, dass alle Aufrufe stimmen.'>
+
+## Immer wieder
+
+Eine Schleife wiederholt, was in ihr steht. Diese Funktion zählt, wie viele
+Zahlen von 1 bis `n` durch 7 teilbar sind:
+
+<!-- language: ruby -->
+```ruby
+def sevens(n)
+  count = 0
+  (1..n).each do |i|
+    count += 1 if i % 7 == 0
+  end
+  count
+end
+
+puts sevens(50)
+```
+
+`(1..n).each do |i|` läuft mit `i` von 1 bis `n`; mit drei Punkten, `1...n`,
+hört es vor `n` auf. `n.downto(0)` zählt herunter, und `while` wiederholt,
+solange eine Bedingung gilt. Eine Variable wie `count`, die vor der Schleife
+anfängt und in ihr wächst, sammelt das Ergebnis.
+<!-- /language -->
+<!-- language: python -->
+```python
+def sevens(n):
+    count = 0
+    for i in range(1, n + 1):
+        if i % 7 == 0:
+            count += 1
+    return count
+
+print(sevens(50))
+```
+
+`for i in range(1, n + 1):` läuft mit `i` von 1 bis `n`: Die zweite Zahl ist
+die erste, die nicht mehr dabei ist. `range(n, -1, -1)` zählt herunter, und
+`while` wiederholt, solange eine Bedingung gilt. Eine Variable wie `count`,
+die vor der Schleife anfängt und in ihr wächst, sammelt das Ergebnis.
+<!-- /language -->
+
+## Einstieg
+
+_task(sum-to)
+
+_task(numbers)
+
+_task(squares)
+
+_task(countdown)
+
+## Übung
+
+_task(factorial)
+
+_task(digit-sum)
+
+_task(fibonacci)
+
+_task(divisors)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Lass deine Fibonacci-Funktion mit
+<em>Ausführen</em> die Zahlen bis 90 ausgeben. Wie groß werden sie, und wie
+lange braucht dein Code dafür?
+</div>
+
+## Knobelei
+
+Jetzt hört eine Schleife nicht nach einer festen Zahl von Durchläufen auf,
+sondern wenn etwas gefunden ist.
+
+_task(prime)
+
+_task(gcd)
+
+_task(collatz)
+
+<!-- extra -->
+## Extras
+
+Zwei Katas, die nicht mitzählen. Bei der zweiten zählt auch, wie schnell
+dein Code ist.
+
+_task(perfect)
+
+_task(primes-up-to)

@@ -1,0 +1,142 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Der Startcode jeder Kata muss von selbst scheitern; das prüft der Test ohne Beispiel.
+format: 1
+activity: kata-decisions
+examples:
+  even:
+    pass:
+      - answer: "def even(n)\n  n % 2 == 0\nend\n"
+    fail:
+      - answer: "def even(n)\n  n % 2\nend\n"
+      - answer: "def even(n)\n  n.even?\nend\n"
+        say: "benutzt `Integer#even?`"
+    python:
+      pass:
+        - answer: "def even(n):\n    return n % 2 == 0\n"
+      fail:
+        - answer: "def even(n):\n    return n % 2\n"
+  max-of-two:
+    pass:
+      - answer: "def max_of_two(a, b)\n  if a > b\n    a\n  else\n    b\n  end\nend\n"
+    fail:
+      - answer: "def max_of_two(a, b)\n  [a, b].max\nend\n"
+        say: "benutzt `Array#max`"
+      - answer: "def max_of_two(a, b)\n  a\nend\n"
+    python:
+      pass:
+        - answer: "def max_of_two(a, b):\n    if a > b:\n        return a\n    else:\n        return b\n"
+      fail:
+        - answer: "def max_of_two(a, b):\n    return max(a, b)\n"
+          say: "benutzt `max`"
+        - answer: "def max_of_two(a, b):\n    return a\n"
+  absolute:
+    pass:
+      - answer: "def absolute(n)\n  n < 0 ? -n : n\nend\n"
+    fail:
+      - answer: "def absolute(n)\n  -n\nend\n"
+      - answer: "def absolute(n)\n  n.abs\nend\n"
+        say: "benutzt `Integer#abs`"
+    python:
+      pass:
+        - answer: "def absolute(n):\n    if n < 0:\n        return -n\n    return n\n"
+      fail:
+        - answer: "def absolute(n):\n    return -n\n"
+        - answer: "def absolute(n):\n    return abs(n)\n"
+          say: "benutzt `abs`"
+  adult:
+    pass:
+      - answer: "def adult(age)\n  age >= 18\nend\n"
+    fail:
+      - answer: "def adult(age)\n  age > 18\nend\n"
+    python:
+      pass:
+        - answer: "def adult(age):\n    return age >= 18\n"
+      fail:
+        - answer: "def adult(age):\n    return age > 18\n"
+  leap-year:
+    pass:
+      - answer: "def leap_year(year)\n  year % 400 == 0 || (year % 4 == 0 && year % 100 != 0)\nend\n"
+    fail:
+      - answer: "def leap_year(year)\n  year % 4 == 0\nend\n"
+      - answer: "def leap_year(year)\n  year % 4 == 0 && year % 100 != 0\nend\n"
+    python:
+      pass:
+        - answer: "def leap_year(year):\n    return year % 400 == 0 or (year % 4 == 0 and year % 100 != 0)\n"
+      fail:
+        - answer: "def leap_year(year):\n    return year % 4 == 0\n"
+        - answer: "def leap_year(year):\n    return year % 4 == 0 and year % 100 != 0\n"
+  grade:
+    pass:
+      - answer: "def grade(points)\n  if points >= 92 then 1\n  elsif points >= 81 then 2\n  elsif points >= 67 then 3\n  elsif points >= 50 then 4\n  elsif points >= 30 then 5\n  else 6\n  end\nend\n"
+    fail:
+      - answer: "def grade(points)\n  if points > 92 then 1\n  elsif points > 81 then 2\n  elsif points > 67 then 3\n  elsif points > 50 then 4\n  elsif points > 30 then 5\n  else 6\n  end\nend\n"
+    python:
+      pass:
+        - answer: "def grade(points):\n    if points >= 92:\n        return 1\n    elif points >= 81:\n        return 2\n    elif points >= 67:\n        return 3\n    elif points >= 50:\n        return 4\n    elif points >= 30:\n        return 5\n    return 6\n"
+      fail:
+        - answer: "def grade(points):\n    if points > 92:\n        return 1\n    elif points > 81:\n        return 2\n    elif points > 67:\n        return 3\n    elif points > 50:\n        return 4\n    elif points > 30:\n        return 5\n    return 6\n"
+  ticket-price:
+    pass:
+      - answer: "def ticket_price(age)\n  if age < 6 then 0\n  elsif age < 18 then 5\n  elsif age >= 65 then 6\n  else 9\n  end\nend\n"
+    fail:
+      - answer: "def ticket_price(age)\n  if age <= 6 then 0\n  elsif age < 18 then 5\n  elsif age >= 65 then 6\n  else 9\n  end\nend\n"
+    python:
+      pass:
+        - answer: "def ticket_price(age):\n    if age < 6:\n        return 0\n    elif age < 18:\n        return 5\n    elif age >= 65:\n        return 6\n    return 9\n"
+      fail:
+        - answer: "def ticket_price(age):\n    if age <= 6:\n        return 0\n    elif age < 18:\n        return 5\n    elif age >= 65:\n        return 6\n    return 9\n"
+  max-of-three:
+    pass:
+      - answer: "def max_of_three(a, b, c)\n  largest = a\n  largest = b if b > largest\n  largest = c if c > largest\n  largest\nend\n"
+    fail:
+      - answer: "def max_of_three(a, b, c)\n  if a > b\n    a\n  elsif b > c\n    b\n  else\n    c\n  end\nend\n"
+      - answer: "def max_of_three(a, b, c)\n  [a, b, c].max\nend\n"
+        say: "benutzt `Array#max`"
+    python:
+      pass:
+        - answer: "def max_of_three(a, b, c):\n    largest = a\n    if b > largest:\n        largest = b\n    if c > largest:\n        largest = c\n    return largest\n"
+      fail:
+        - answer: "def max_of_three(a, b, c):\n    if a > b:\n        return a\n    elif b > c:\n        return b\n    return c\n"
+        - answer: "def max_of_three(a, b, c):\n    return max(a, b, c)\n"
+          say: "benutzt `max`"
+  fizzbuzz:
+    pass:
+      - answer: "def fizzbuzz(n)\n  if n % 15 == 0\n    'FizzBuzz'\n  elsif n % 3 == 0\n    'Fizz'\n  elsif n % 5 == 0\n    'Buzz'\n  else\n    n.to_s\n  end\nend\n"
+    fail:
+      - answer: "def fizzbuzz(n)\n  if n % 3 == 0 then 'Fizz'\n  elsif n % 5 == 0 then 'Buzz'\n  elsif n % 15 == 0 then 'FizzBuzz'\n  else n.to_s\n  end\nend\n"
+    python:
+      pass:
+        - answer: "def fizzbuzz(n):\n    if n % 15 == 0:\n        return 'FizzBuzz'\n    elif n % 3 == 0:\n        return 'Fizz'\n    elif n % 5 == 0:\n        return 'Buzz'\n    return str(n)\n"
+      fail:
+        - answer: "def fizzbuzz(n):\n    if n % 3 == 0:\n        return 'Fizz'\n    elif n % 5 == 0:\n        return 'Buzz'\n    elif n % 15 == 0:\n        return 'FizzBuzz'\n    return str(n)\n"
+  triangle:
+    pass:
+      - answer: "def triangle(a, b, c)\n  return 'keins' if a + b <= c || a + c <= b || b + c <= a\n  return 'gleichseitig' if a == b && b == c\n  return 'gleichschenklig' if a == b || b == c || a == c\n  'ungleichseitig'\nend\n"
+    fail:
+      - answer: "def triangle(a, b, c)\n  return 'keins' if a + b < c\n  return 'gleichseitig' if a == b && b == c\n  return 'gleichschenklig' if a == b || b == c || a == c\n  'ungleichseitig'\nend\n"
+    python:
+      pass:
+        - answer: "def triangle(a, b, c):\n    if a + b <= c or a + c <= b or b + c <= a:\n        return 'keins'\n    if a == b and b == c:\n        return 'gleichseitig'\n    if a == b or b == c or a == c:\n        return 'gleichschenklig'\n    return 'ungleichseitig'\n"
+      fail:
+        - answer: "def triangle(a, b, c):\n    if a + b < c:\n        return 'keins'\n    if a == b and b == c:\n        return 'gleichseitig'\n    if a == b or b == c or a == c:\n        return 'gleichschenklig'\n    return 'ungleichseitig'\n"
+  pythagorean:
+    pass:
+      - answer: "def pythagorean(a, b, c)\n  a * a + b * b == c * c || a * a + c * c == b * b || b * b + c * c == a * a\nend\n"
+    fail:
+      - answer: "def pythagorean(a, b, c)\n  a * a + b * b == c * c\nend\n"
+    python:
+      pass:
+        - answer: "def pythagorean(a, b, c):\n    return a * a + b * b == c * c or a * a + c * c == b * b or b * b + c * c == a * a\n"
+      fail:
+        - answer: "def pythagorean(a, b, c):\n    return a * a + b * b == c * c\n"
+  rock-paper-scissors:
+    pass:
+      - answer: "BEATS = { 'Stein' => 'Schere', 'Schere' => 'Papier', 'Papier' => 'Stein' }\n\ndef rock_paper_scissors(first, second)\n  return 0 if first == second\n  BEATS[first] == second ? 1 : 2\nend\n"
+    fail:
+      - answer: "def rock_paper_scissors(first, second)\n  first == second ? 0 : 1\nend\n"
+    python:
+      pass:
+        - answer: "BEATS = {'Stein': 'Schere', 'Schere': 'Papier', 'Papier': 'Stein'}\n\ndef rock_paper_scissors(first, second):\n    if first == second:\n        return 0\n    return 1 if BEATS[first] == second else 2\n"
+      fail:
+        - answer: "def rock_paper_scissors(first, second):\n    return 0 if first == second else 1\n"

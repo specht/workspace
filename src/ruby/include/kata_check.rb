@@ -25,6 +25,8 @@ require_relative 'ruby_check'
 #       args: { a: 1..1000, b: 1..1000 }
 #       reference: a.gcd(b)       # computed in the run, never shown
 #     timeout: 10                 # seconds for all cases together
+#     slow: Für eine Million …    # the message when the time is up, where
+#                                 # speed is the point (not »Endlosschleife?«)
 #
 #   feedback:
 #     - when: { same_as: 'def gcd(a, b) = [a, b].min' }
@@ -77,6 +79,7 @@ module KataCheck
             end
         end
         errors.concat(random_errors(check['random'])) if check.key?('random')
+        errors << 'slow must be text' if check.key?('slow') && !(check['slow'].is_a?(String) && !check['slow'].strip.empty?)
         errors
     end
 
@@ -260,6 +263,7 @@ module KataCheck
         status, message, read = language.evaluate(task, check.merge('file' => nil), mine,
             :timed_out => result.timed_out && outputs.empty?)
         message = forbidden_message(message) if message.to_s.include?("#{FORBIDDEN}: ")
+        message = check['slow'] if check['slow'] && result.timed_out && outputs.empty?
         if status == :wrong && !alternatives.empty?
             say = same_as(mine, outputs.drop(1), alternatives)
             message = say if say

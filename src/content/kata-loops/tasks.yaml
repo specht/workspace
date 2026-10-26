@@ -1,0 +1,1000 @@
+format: 1
+activity: kata-loops
+tasks:
+  - id: sum-to
+    title: "Von 1 bis n zusammenzählen"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `sum_to(n)`, die alle Zahlen von 1 bis `n` zusammenzählt: `sum_to(4)` ergibt `10`, denn 1 + 2 + 3 + 4 = 10. Mit einer Schleife.
+    starter: |
+      def sum_to(n)
+        total = 0
+        # hier: eine Schleife
+        total
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Range#sum, Array#sum, Enumerable#sum, Enumerable#inject, Enumerable#reduce]
+      cases:
+        - call: "sum_to(4)"
+          expect: "10"
+        - call: "sum_to(1)"
+          expect: "1"
+        - call: "sum_to(0)"
+          expect: "0"
+        - call: "sum_to(100)"
+          expect: "5050"
+      random:
+        count: 4
+        call: "sum_to(n)"
+        args: { n: 1..2000 }
+        reference: "n * (n + 1) / 2"
+    feedback:
+      - when: { same_as: "def sum_to(n)\n  total = 0\n  (1...n).each { |i| total += i }\n  total\nend\n" }
+        say: "`1...n` mit drei Punkten hört vor `n` auf. Mit zwei Punkten, `1..n`, ist `n` dabei."
+    hint: |
+      `(1..n).each do |i| … end` läuft mit `i` von 1 bis `n`. In der Schleife addierst du `i` zu `total`.
+    solution: |
+      ```ruby
+      def sum_to(n)
+        total = 0
+        (1..n).each do |i|
+          total += i
+        end
+        total
+      end
+      ```
+    python:
+      starter: |
+        def sum_to(n):
+            total = 0
+            # hier: eine Schleife
+            return total
+      check:
+        type: function
+        language: python
+        forbid: [sum]
+        cases:
+          - call: "sum_to(4)"
+            expect: "10"
+          - call: "sum_to(1)"
+            expect: "1"
+          - call: "sum_to(0)"
+            expect: "0"
+          - call: "sum_to(100)"
+            expect: "5050"
+        random:
+          count: 4
+          call: "sum_to(n)"
+          args: { n: 1..2000 }
+          reference: "n * (n + 1) // 2"
+      feedback:
+        - when: { same_as: "def sum_to(n):\n    total = 0\n    for i in range(1, n):\n        total += i\n    return total\n" }
+          say: "`range(1, n)` hört vor `n` auf. Damit `n` dabei ist, brauchst du `range(1, n + 1)`."
+      hint: |
+        `for i in range(1, n + 1):` läuft mit `i` von 1 bis `n`. In der Schleife addierst du `i` zu `total`.
+      solution: |
+        ```python
+        def sum_to(n):
+            total = 0
+            for i in range(1, n + 1):
+                total += i
+            return total
+        ```
+
+  - id: numbers
+    title: "Eine Zahlenreihe"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `numbers(n)`, die eine Liste der Zahlen von 1 bis `n` zurückgibt: `numbers(4)` ergibt `[1, 2, 3, 4]`. Mit einer Schleife, die die Liste Zahl für Zahl füllt.
+    starter: |
+      def numbers(n)
+        result = []
+        # hier: eine Schleife
+        result
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Range#to_a, Range#entries, Enumerable#to_a, Array#fill]
+      cases:
+        - call: "numbers(4)"
+          expect: "[1, 2, 3, 4]"
+        - call: "numbers(1)"
+          expect: "[1]"
+        - call: "numbers(0)"
+          expect: "[]"
+          say: "Bis 0 gibt es keine Zahl: eine leere Liste."
+    hint: "`result << i` hängt `i` hinten an die Liste an."
+    solution: |
+      ```ruby
+      def numbers(n)
+        result = []
+        (1..n).each do |i|
+          result << i
+        end
+        result
+      end
+      ```
+    python:
+      starter: |
+        def numbers(n):
+            result = []
+            # hier: eine Schleife
+            return result
+      check:
+        type: function
+        language: python
+        forbid: [list]
+        cases:
+          - call: "numbers(4)"
+            expect: "[1, 2, 3, 4]"
+          - call: "numbers(1)"
+            expect: "[1]"
+          - call: "numbers(0)"
+            expect: "[]"
+            say: "Bis 0 gibt es keine Zahl: eine leere Liste."
+      hint: "`result.append(i)` hängt `i` hinten an die Liste an."
+      solution: |
+        ```python
+        def numbers(n):
+            result = []
+            for i in range(1, n + 1):
+                result.append(i)
+            return result
+        ```
+
+  - id: squares
+    title: "Quadratzahlen"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `squares(n)`, die die Quadratzahlen von 1² bis n² als Liste zurückgibt: `squares(4)` ergibt `[1, 4, 9, 16]`.
+    starter: |
+      def squares(n)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "squares(4)"
+          expect: "[1, 4, 9, 16]"
+        - call: "squares(1)"
+          expect: "[1]"
+        - call: "squares(0)"
+          expect: "[]"
+        - call: "squares(10).last"
+          expect: "100"
+    solution: |
+      ```ruby
+      def squares(n)
+        result = []
+        (1..n).each { |i| result << i * i }
+        result
+      end
+      ```
+    python:
+      starter: |
+        def squares(n):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "squares(4)"
+            expect: "[1, 4, 9, 16]"
+          - call: "squares(1)"
+            expect: "[1]"
+          - call: "squares(0)"
+            expect: "[]"
+          - call: "squares(10)[-1]"
+            expect: "100"
+      solution: |
+        ```python
+        def squares(n):
+            result = []
+            for i in range(1, n + 1):
+                result.append(i * i)
+            return result
+        ```
+
+  - id: countdown
+    title: "Countdown"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `countdown(n)`, die von `n` bis 0 herunterzählt und die Zahlen als Liste zurückgibt: `countdown(3)` ergibt `[3, 2, 1, 0]`.
+    starter: |
+      def countdown(n)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#reverse, Range#reverse_each]
+      cases:
+        - call: "countdown(3)"
+          expect: "[3, 2, 1, 0]"
+        - call: "countdown(0)"
+          expect: "[0]"
+        - call: "countdown(10).length"
+          expect: "11"
+    hint: |
+      `n.downto(0) do |i| … end` zählt herunter. Oder eine `while`-Schleife, die `n` jedes Mal um 1 kleiner macht.
+    solution: |
+      ```ruby
+      def countdown(n)
+        result = []
+        n.downto(0) { |i| result << i }
+        result
+      end
+      ```
+    python:
+      starter: |
+        def countdown(n):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [reversed, list.reverse]
+        cases:
+          - call: "countdown(3)"
+            expect: "[3, 2, 1, 0]"
+          - call: "countdown(0)"
+            expect: "[0]"
+          - call: "len(countdown(10))"
+            expect: "11"
+      hint: |
+        `range(n, -1, -1)` zählt von `n` herunter bis 0: Die zweite Zahl ist die erste, die nicht mehr dabei ist. Oder eine `while`-Schleife, die `n` jedes Mal um 1 kleiner macht.
+      solution: |
+        ```python
+        def countdown(n):
+            result = []
+            for i in range(n, -1, -1):
+                result.append(i)
+            return result
+        ```
+
+  - id: factorial
+    title: "Fakultät"
+    level: 2
+    prompt: |
+      Die Fakultät `n!` ist das Produkt aller Zahlen von 1 bis `n`: 5! = 1 · 2 · 3 · 4 · 5 = 120. Und 0! ist 1. Schreib eine Funktion `factorial(n)`: `factorial(5)` ergibt `120`.
+    starter: |
+      def factorial(n)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Enumerable#inject, Enumerable#reduce, Range#inject, Range#reduce]
+      cases:
+        - call: "factorial(5)"
+          expect: "120"
+        - call: "factorial(1)"
+          expect: "1"
+        - call: "factorial(0)"
+          expect: "1"
+          say: "0! ist 1: das Produkt von gar keiner Zahl."
+        - call: "factorial(10)"
+          expect: "3628800"
+      random:
+        count: 4
+        call: "factorial(n)"
+        args: { n: 2..25 }
+        reference: "(1..n).reduce(1, :*)"
+    feedback:
+      - when: { same_as: "def factorial(n)\n  product = 0\n  (1..n).each { |i| product *= i }\n  product\nend\n" }
+        say: "Ein Produkt, das bei 0 anfängt, bleibt 0, was auch immer du damit multiplizierst. Fang bei 1 an."
+    hint:
+      - "Rechne 4! von Hand und schreib jeden Zwischenwert auf: 1, 2, 6, 24."
+      - "Wie bei der Summe, nur mit `*` statt `+`. Womit muss das Produkt anfangen?"
+    solution: |
+      ```ruby
+      def factorial(n)
+        product = 1
+        (1..n).each { |i| product *= i }
+        product
+      end
+      ```
+    python:
+      starter: |
+        def factorial(n):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [math.factorial, math.prod]
+        cases:
+          - call: "factorial(5)"
+            expect: "120"
+          - call: "factorial(1)"
+            expect: "1"
+          - call: "factorial(0)"
+            expect: "1"
+            say: "0! ist 1: das Produkt von gar keiner Zahl."
+          - call: "factorial(10)"
+            expect: "3628800"
+        random:
+          count: 4
+          call: "factorial(n)"
+          args: { n: 2..25 }
+          reference: "math.factorial(n)"
+      feedback:
+        - when: { same_as: "def factorial(n):\n    product = 0\n    for i in range(1, n + 1):\n        product *= i\n    return product\n" }
+          say: "Ein Produkt, das bei 0 anfängt, bleibt 0, was auch immer du damit multiplizierst. Fang bei 1 an."
+      hint:
+        - "Rechne 4! von Hand und schreib jeden Zwischenwert auf: 1, 2, 6, 24."
+        - "Wie bei der Summe, nur mit `*` statt `+`. Womit muss das Produkt anfangen?"
+      solution: |
+        ```python
+        def factorial(n):
+            product = 1
+            for i in range(1, n + 1):
+                product *= i
+            return product
+        ```
+
+  - id: digit-sum
+    title: "Die Quersumme"
+    level: 2
+    prompt: |
+      Die Quersumme einer Zahl ist die Summe ihrer Ziffern: Die Quersumme von 1234 ist 1 + 2 + 3 + 4 = 10. Schreib eine Funktion `digit_sum(n)`, nur mit Rechnen, ohne die Zahl in einen Text zu verwandeln.
+    starter: |
+      def digit_sum(n)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#to_s, Integer#digits, Integer#inspect]
+      cases:
+        - call: "digit_sum(1234)"
+          expect: "10"
+        - call: "digit_sum(7)"
+          expect: "7"
+        - call: "digit_sum(0)"
+          expect: "0"
+        - call: "digit_sum(9999)"
+          expect: "36"
+        - call: "digit_sum(1000)"
+          expect: "1"
+      random:
+        count: 4
+        call: "digit_sum(n)"
+        args: { n: 0..1000000 }
+        reference: "n.digits.sum"
+    hint:
+      - "`1234 % 10` ist 4, die letzte Ziffer. Und `1234 / 10`?"
+      - "Wiederhole: letzte Ziffer zur Summe, dann die Zahl durch 10 teilen. Bis wann?"
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def digit_sum(n)
+          total = 0
+          while n > 0
+            # hier: letzte Ziffer dazu, dann n kleiner machen
+          end
+          total
+        end
+        ```
+    solution: |
+      ```ruby
+      def digit_sum(n)
+        total = 0
+        while n > 0
+          total += n % 10
+          n /= 10
+        end
+        total
+      end
+      ```
+    python:
+      starter: |
+        def digit_sum(n):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [str, repr]
+        cases:
+          - call: "digit_sum(1234)"
+            expect: "10"
+          - call: "digit_sum(7)"
+            expect: "7"
+          - call: "digit_sum(0)"
+            expect: "0"
+          - call: "digit_sum(9999)"
+            expect: "36"
+          - call: "digit_sum(1000)"
+            expect: "1"
+        random:
+          count: 4
+          call: "digit_sum(n)"
+          args: { n: 0..1000000 }
+          reference: "sum(int(d) for d in str(n))"
+      hint:
+        - "`1234 % 10` ist 4, die letzte Ziffer. Und `1234 // 10`?"
+        - "Wiederhole: letzte Ziffer zur Summe, dann die Zahl durch 10 teilen. Bis wann?"
+        - |
+          Ein Gerüst:
+
+          ```python
+          def digit_sum(n):
+              total = 0
+              while n > 0:
+                  ...  # letzte Ziffer dazu, dann n kleiner machen
+              return total
+          ```
+      solution: |
+        ```python
+        def digit_sum(n):
+            total = 0
+            while n > 0:
+                total += n % 10
+                n //= 10
+            return total
+        ```
+
+  - id: fibonacci
+    title: "Fibonacci"
+    level: 2
+    prompt: |
+      Die Fibonacci-Zahlen beginnen mit 0 und 1, und jede weitere ist die Summe der beiden davor: 0, 1, 1, 2, 3, 5, 8, 13 … Schreib eine Funktion `fibonacci(n)`, die die `n`-te zurückgibt, gezählt ab 0: `fibonacci(0)` ergibt `0`, `fibonacci(7)` ergibt `13`.
+    starter: |
+      def fibonacci(n)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "fibonacci(0)"
+          expect: "0"
+        - call: "fibonacci(1)"
+          expect: "1"
+        - call: "fibonacci(2)"
+          expect: "1"
+        - call: "fibonacci(7)"
+          expect: "13"
+        - call: "fibonacci(10)"
+          expect: "55"
+      random:
+        count: 4
+        call: "fibonacci(n)"
+        args: { n: 15..60 }
+        reference: "(1..n).reduce([0, 1]) { |(a, b), _| [b, a + b] }[0]"
+    hint:
+      - "Schreib die Folge bis `fibonacci(7)` auf und zeig mit dem Finger auf die beiden Zahlen, die du gerade addierst."
+      - "Zwei Variablen merken sich die letzten beiden Zahlen, `a` und `b`. Wie sehen sie nach einem Schritt aus?"
+    solution: |
+      ```ruby
+      def fibonacci(n)
+        a, b = 0, 1
+        n.times { a, b = b, a + b }
+        a
+      end
+      ```
+    python:
+      starter: |
+        def fibonacci(n):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "fibonacci(0)"
+            expect: "0"
+          - call: "fibonacci(1)"
+            expect: "1"
+          - call: "fibonacci(2)"
+            expect: "1"
+          - call: "fibonacci(7)"
+            expect: "13"
+          - call: "fibonacci(10)"
+            expect: "55"
+        random:
+          count: 4
+          call: "fibonacci(n)"
+          args: { n: 15..60 }
+          reference: "round(((1 + 5 ** 0.5) / 2) ** n / 5 ** 0.5)"
+      hint:
+        - "Schreib die Folge bis `fibonacci(7)` auf und zeig mit dem Finger auf die beiden Zahlen, die du gerade addierst."
+        - "Zwei Variablen merken sich die letzten beiden Zahlen, `a` und `b`. Wie sehen sie nach einem Schritt aus?"
+      solution: |
+        ```python
+        def fibonacci(n):
+            a, b = 0, 1
+            for i in range(n):
+                a, b = b, a + b
+            return a
+        ```
+
+  - id: divisors
+    title: "Teiler zählen"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `count_divisors(n)`, die zählt, durch wie viele Zahlen `n` ohne Rest teilbar ist: 12 hat die Teiler 1, 2, 3, 4, 6 und 12, `count_divisors(12)` ergibt also `6`.
+    starter: |
+      def count_divisors(n)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "count_divisors(12)"
+          expect: "6"
+        - call: "count_divisors(1)"
+          expect: "1"
+        - call: "count_divisors(7)"
+          expect: "2"
+        - call: "count_divisors(36)"
+          expect: "9"
+          say: "36 hat auch 6 als Teiler, 6 · 6 = 36: einmal gezählt."
+      random:
+        count: 4
+        call: "count_divisors(n)"
+        args: { n: 1..1000 }
+        reference: "(1..n).count { |d| n % d == 0 }"
+    feedback:
+      - when: { same_as: "def count_divisors(n)\n  (1...n).count { |d| n % d == 0 }\nend\n" }
+        say: "Die Zahl selbst ist auch ein Teiler: `1..n` mit zwei Punkten."
+    hint:
+      - "Probier jede Zahl von 1 bis `n` aus: Lässt sie einen Rest?"
+      - "Ein Zähler fängt bei 0 an und wird bei jedem Teiler um 1 größer."
+    solution: |
+      ```ruby
+      def count_divisors(n)
+        count = 0
+        (1..n).each { |d| count += 1 if n % d == 0 }
+        count
+      end
+      ```
+    python:
+      starter: |
+        def count_divisors(n):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "count_divisors(12)"
+            expect: "6"
+          - call: "count_divisors(1)"
+            expect: "1"
+          - call: "count_divisors(7)"
+            expect: "2"
+          - call: "count_divisors(36)"
+            expect: "9"
+            say: "36 hat auch 6 als Teiler, 6 · 6 = 36: einmal gezählt."
+        random:
+          count: 4
+          call: "count_divisors(n)"
+          args: { n: 1..1000 }
+          reference: "len([d for d in range(1, n + 1) if n % d == 0])"
+      feedback:
+        - when: { same_as: "def count_divisors(n):\n    return len([d for d in range(1, n) if n % d == 0])\n" }
+          say: "Die Zahl selbst ist auch ein Teiler: `range(1, n + 1)`."
+      hint:
+        - "Probier jede Zahl von 1 bis `n` aus: Lässt sie einen Rest?"
+        - "Ein Zähler fängt bei 0 an und wird bei jedem Teiler um 1 größer."
+      solution: |
+        ```python
+        def count_divisors(n):
+            count = 0
+            for d in range(1, n + 1):
+                if n % d == 0:
+                    count += 1
+            return count
+        ```
+
+  - id: prime
+    title: "Primzahlen"
+    level: 3
+    prompt: |
+      Eine Primzahl hat genau zwei Teiler, 1 und sich selbst: 2, 3, 5, 7, 11 … Schreib eine Funktion `prime(n)`, die sagt, ob `n` eine Primzahl ist.
+    starter: |
+      def prime(n)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#prime?]
+      cases:
+        - call: "prime(2)"
+          expect: "true"
+        - call: "prime(3)"
+          expect: "true"
+        - call: "prime(9)"
+          expect: "false"
+        - call: "prime(97)"
+          expect: "true"
+        - call: "prime(91)"
+          expect: "false"
+          say: "91 ist 7 mal 13."
+        - call: "prime(1)"
+          expect: "false"
+          say: "1 ist keine Primzahl: Eine Primzahl hat genau zwei Teiler, 1 und sich selbst."
+        - call: "prime(0)"
+          expect: "false"
+      random:
+        count: 4
+        call: "prime(n)"
+        args: { n: 1..2000 }
+        reference: "n > 1 && (2..Math.sqrt(n)).none? { |d| n % d == 0 }"
+    feedback:
+      - when: { same_as: "def prime(n)\n  (2...n).none? { |d| n % d == 0 }\nend\n" }
+        say: "1 ist keine Primzahl: Eine Primzahl hat genau zwei Teiler. Für `n` kleiner als 2 gibt es kein `true`."
+    hint:
+      - "Teilt irgendeine Zahl zwischen 2 und `n - 1` die Zahl `n` ohne Rest? Dann ist `n` keine Primzahl."
+      - "Sobald du einen Teiler gefunden hast, steht die Antwort fest: `return false`. Und was gilt für 0 und 1?"
+      - "Es reicht, bis zur Wurzel von `n` zu suchen: Hat `n` einen Teiler, der größer ist, hat es auch einen kleineren."
+    solution: |
+      ```ruby
+      def prime(n)
+        return false if n < 2
+        d = 2
+        while d * d <= n
+          return false if n % d == 0
+          d += 1
+        end
+        true
+      end
+      ```
+    python:
+      starter: |
+        def prime(n):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "prime(2)"
+            expect: "True"
+          - call: "prime(3)"
+            expect: "True"
+          - call: "prime(9)"
+            expect: "False"
+          - call: "prime(97)"
+            expect: "True"
+          - call: "prime(91)"
+            expect: "False"
+            say: "91 ist 7 mal 13."
+          - call: "prime(1)"
+            expect: "False"
+            say: "1 ist keine Primzahl: Eine Primzahl hat genau zwei Teiler, 1 und sich selbst."
+          - call: "prime(0)"
+            expect: "False"
+        random:
+          count: 4
+          call: "prime(n)"
+          args: { n: 1..2000 }
+          reference: "n > 1 and all(n % d for d in range(2, int(n ** 0.5) + 1))"
+      feedback:
+        - when: { same_as: "def prime(n):\n    for d in range(2, n):\n        if n % d == 0:\n            return False\n    return True\n" }
+          say: "1 ist keine Primzahl: Eine Primzahl hat genau zwei Teiler. Für `n` kleiner als 2 gibt es kein `True`."
+      hint:
+        - "Teilt irgendeine Zahl zwischen 2 und `n - 1` die Zahl `n` ohne Rest? Dann ist `n` keine Primzahl."
+        - "Sobald du einen Teiler gefunden hast, steht die Antwort fest: `return False`. Und was gilt für 0 und 1?"
+        - "Es reicht, bis zur Wurzel von `n` zu suchen: Hat `n` einen Teiler, der größer ist, hat es auch einen kleineren."
+      solution: |
+        ```python
+        def prime(n):
+            if n < 2:
+                return False
+            d = 2
+            while d * d <= n:
+                if n % d == 0:
+                    return False
+                d += 1
+            return True
+        ```
+
+  - id: gcd
+    title: "Der größte gemeinsame Teiler"
+    level: 3
+    prompt: |
+      Schreib eine Funktion `gcd(a, b)`, die den größten gemeinsamen Teiler zweier Zahlen zurückgibt: die größte Zahl, die beide ohne Rest teilt. `gcd(60, 48)` ergibt `12`.
+    starter: |
+      def gcd(a, b)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#gcd, Integer#lcm, Integer#gcdlcm]
+      cases:
+        - call: "gcd(60, 48)"
+          expect: "12"
+        - call: "gcd(48, 60)"
+          expect: "12"
+        - call: "gcd(17, 5)"
+          expect: "1"
+        - call: "gcd(7, 7)"
+          expect: "7"
+          say: "Der größte Teiler einer Zahl mit sich selbst ist sie selbst."
+        - call: "gcd(100, 25)"
+          expect: "25"
+      random:
+        count: 4
+        call: "gcd(a, b)"
+        args: { a: 1..1000, b: 1..1000 }
+        reference: "a.gcd(b)"
+    feedback:
+      - when: { same_as: "def gcd(a, b) = [a, b].min\n" }
+        say: "Die kleinere Zahl ist nur manchmal ein Teiler der größeren. Probier `gcd(12, 8)` von Hand."
+    hint:
+      - "Rechne `gcd(60, 48)` von Hand. Welche Zahlen teilen beide?"
+      - "Euklid: Was `a` und `b` teilt, teilt auch den Rest `a % b`. Was passiert, wenn du `a, b` durch `b, a % b` ersetzt, bis `b` 0 ist?"
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def gcd(a, b)
+          while b != 0
+            # hier: a und b neu belegen
+          end
+          a
+        end
+        ```
+    solution: |
+      ```ruby
+      def gcd(a, b)
+        while b != 0
+          a, b = b, a % b
+        end
+        a
+      end
+      ```
+    python:
+      starter: |
+        def gcd(a, b):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [math.gcd, math.lcm]
+        cases:
+          - call: "gcd(60, 48)"
+            expect: "12"
+          - call: "gcd(48, 60)"
+            expect: "12"
+          - call: "gcd(17, 5)"
+            expect: "1"
+          - call: "gcd(7, 7)"
+            expect: "7"
+            say: "Der größte Teiler einer Zahl mit sich selbst ist sie selbst."
+          - call: "gcd(100, 25)"
+            expect: "25"
+        random:
+          count: 4
+          call: "gcd(a, b)"
+          args: { a: 1..1000, b: 1..1000 }
+          reference: "math.gcd(a, b)"
+      feedback:
+        - when: { same_as: "def gcd(a, b):\n    return min(a, b)\n" }
+          say: "Die kleinere Zahl ist nur manchmal ein Teiler der größeren. Probier `gcd(12, 8)` von Hand."
+      hint:
+        - "Rechne `gcd(60, 48)` von Hand. Welche Zahlen teilen beide?"
+        - "Euklid: Was `a` und `b` teilt, teilt auch den Rest `a % b`. Was passiert, wenn du `a, b` durch `b, a % b` ersetzt, bis `b` 0 ist?"
+        - |
+          Ein Gerüst:
+
+          ```python
+          def gcd(a, b):
+              while b != 0:
+                  ...  # a und b neu belegen
+              return a
+          ```
+      solution: |
+        ```python
+        def gcd(a, b):
+            while b != 0:
+                a, b = b, a % b
+            return a
+        ```
+
+  - id: collatz
+    title: "Die Collatz-Folge"
+    level: 3
+    prompt: |
+      Nimm eine Zahl. Ist sie gerade, halbiere sie, sonst nimm sie mal 3 und addiere 1. Wiederhole das. Aus 6 wird 3, 10, 5, 16, 8, 4, 2, 1: acht Schritte bis zur 1. Bisher kam jede Zahl, die man probiert hat, irgendwann bei 1 an; ob das für alle gilt, weiß niemand. Schreib eine Funktion `collatz_steps(n)`, die die Schritte bis zur 1 zählt.
+    starter: |
+      def collatz_steps(n)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "collatz_steps(1)"
+          expect: "0"
+          say: "Bei 1 ist man schon am Ziel: null Schritte."
+        - call: "collatz_steps(2)"
+          expect: "1"
+        - call: "collatz_steps(6)"
+          expect: "8"
+        - call: "collatz_steps(7)"
+          expect: "16"
+        - call: "collatz_steps(27)"
+          expect: "111"
+      random:
+        count: 4
+        call: "collatz_steps(n)"
+        args: { n: 1..10000 }
+        reference: "s = 0; x = n; (x = x.even? ? x / 2 : 3 * x + 1; s += 1) while x != 1; s"
+    hint:
+      - "Geh die Folge von 6 mit dem Finger durch und zähl mit: Wann hörst du auf zu zählen?"
+      - "Eine `while`-Schleife läuft, solange `n` nicht 1 ist; jeder Durchlauf ist ein Schritt."
+    solution: |
+      ```ruby
+      def collatz_steps(n)
+        steps = 0
+        while n != 1
+          n = n.even? ? n / 2 : 3 * n + 1
+          steps += 1
+        end
+        steps
+      end
+      ```
+    python:
+      starter: |
+        def collatz_steps(n):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "collatz_steps(1)"
+            expect: "0"
+            say: "Bei 1 ist man schon am Ziel: null Schritte."
+          - call: "collatz_steps(2)"
+            expect: "1"
+          - call: "collatz_steps(6)"
+            expect: "8"
+          - call: "collatz_steps(7)"
+            expect: "16"
+          - call: "collatz_steps(27)"
+            expect: "111"
+      hint:
+        - "Geh die Folge von 6 mit dem Finger durch und zähl mit: Wann hörst du auf zu zählen?"
+        - "Eine `while`-Schleife läuft, solange `n` nicht 1 ist; jeder Durchlauf ist ein Schritt."
+      solution: |
+        ```python
+        def collatz_steps(n):
+            steps = 0
+            while n != 1:
+                n = n // 2 if n % 2 == 0 else 3 * n + 1
+                steps += 1
+            return steps
+        ```
+
+  - id: perfect
+    title: "Vollkommene Zahlen"
+    extra: true
+    prompt: |
+      Eine Zahl ist vollkommen, wenn sie die Summe ihrer Teiler ist, ohne sich selbst: 6 = 1 + 2 + 3. Schreib eine Funktion `perfect_numbers(limit)`, die alle vollkommenen Zahlen bis `limit` als Liste zurückgibt. Bis 10000 sind es vier.
+    starter: |
+      def perfect_numbers(limit)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "perfect_numbers(10)"
+          expect: "[6]"
+        - call: "perfect_numbers(30)"
+          expect: "[6, 28]"
+        - call: "perfect_numbers(10000)"
+          expect: "[6, 28, 496, 8128]"
+    hint: |
+      Eine Funktion, die die Teiler einer Zahl zusammenzählt, und eine Schleife über alle Zahlen bis `limit`. Teiler gibt es höchstens bis zur Hälfte der Zahl.
+    solution: |
+      ```ruby
+      def divisor_sum(n)
+        total = 0
+        (1..n / 2).each { |d| total += d if n % d == 0 }
+        total
+      end
+
+      def perfect_numbers(limit)
+        (2..limit).select { |n| divisor_sum(n) == n }
+      end
+      ```
+    python:
+      starter: |
+        def perfect_numbers(limit):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "perfect_numbers(10)"
+            expect: "[6]"
+          - call: "perfect_numbers(30)"
+            expect: "[6, 28]"
+          - call: "perfect_numbers(10000)"
+            expect: "[6, 28, 496, 8128]"
+      hint: |
+        Eine Funktion, die die Teiler einer Zahl zusammenzählt, und eine Schleife über alle Zahlen bis `limit`. Teiler gibt es höchstens bis zur Hälfte der Zahl.
+      solution: |
+        ```python
+        def divisor_sum(n):
+            total = 0
+            for d in range(1, n // 2 + 1):
+                if n % d == 0:
+                    total += d
+            return total
+
+        def perfect_numbers(limit):
+            return [n for n in range(2, limit + 1) if divisor_sum(n) == n]
+        ```
+
+  - id: primes-up-to
+    title: "Alle Primzahlen, schnell"
+    extra: true
+    prompt: |
+      Schreib eine Funktion `primes_up_to(n)`, die alle Primzahlen bis `n` als Liste zurückgibt: `primes_up_to(20)` ergibt `[2, 3, 5, 7, 11, 13, 17, 19]`. Die Prüfung fragt auch nach allen bis eine Million, und dafür hat dein Code sechs Sekunden. Prüft er jede Zahl einzeln, reicht das nicht. Eratosthenes hat sich vor über 2000 Jahren etwas Schnelleres ausgedacht: Streich aus einer Liste aller Zahlen die Vielfachen jeder Primzahl.
+    starter: |
+      def primes_up_to(n)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#prime?]
+      timeout: 6
+      slow: "Dein Code brauchte länger als 6 Sekunden. Jede Zahl bis eine Million einzeln zu prüfen dauert zu lange: Probier das Sieb des Eratosthenes, das die Vielfachen jeder Primzahl auf einmal streicht."
+      cases:
+        - call: "primes_up_to(20)"
+          expect: "[2, 3, 5, 7, 11, 13, 17, 19]"
+        - call: "primes_up_to(2)"
+          expect: "[2]"
+        - call: "primes_up_to(1)"
+          expect: "[]"
+        - call: "primes_up_to(1_000_000).length"
+          expect: "78498"
+    hint: |
+      Ein Array `prime = Array.new(n + 1, true)` sagt für jede Zahl, ob sie noch im Rennen ist. Für jede Zahl `p`, die noch drin ist, streichst du `p * p`, `p * p + p`, … bis `n`.
+    solution: |
+      ```ruby
+      def primes_up_to(n)
+        return [] if n < 2
+        prime = Array.new(n + 1, true)
+        prime[0] = prime[1] = false
+        p = 2
+        while p * p <= n
+          (p * p).step(n, p) { |m| prime[m] = false } if prime[p]
+          p += 1
+        end
+        (2..n).select { |i| prime[i] }
+      end
+      ```
+    python:
+      starter: |
+        def primes_up_to(n):
+            pass
+      check:
+        type: function
+        language: python
+        timeout: 6
+        slow: "Dein Code brauchte länger als 6 Sekunden. Jede Zahl bis eine Million einzeln zu prüfen dauert zu lange: Probier das Sieb des Eratosthenes, das die Vielfachen jeder Primzahl auf einmal streicht."
+        cases:
+          - call: "primes_up_to(20)"
+            expect: "[2, 3, 5, 7, 11, 13, 17, 19]"
+          - call: "primes_up_to(2)"
+            expect: "[2]"
+          - call: "primes_up_to(1)"
+            expect: "[]"
+          - call: "len(primes_up_to(1_000_000))"
+            expect: "78498"
+      hint: |
+        Eine Liste `prime = [True] * (n + 1)` sagt für jede Zahl, ob sie noch im Rennen ist. Für jede Zahl `p`, die noch drin ist, streichst du `p * p`, `p * p + p`, … bis `n`.
+      solution: |
+        ```python
+        def primes_up_to(n):
+            if n < 2:
+                return []
+            prime = [True] * (n + 1)
+            prime[0] = prime[1] = False
+            p = 2
+            while p * p <= n:
+                if prime[p]:
+                    for m in range(p * p, n + 1, p):
+                        prime[m] = False
+                p += 1
+            return [i for i in range(2, n + 1) if prime[i]]
+        ```

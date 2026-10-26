@@ -554,7 +554,7 @@ module TaskSpec
         when 'function'
             # A Kata: calls functions in the code typed into the card, run in
             # a container of its own (KataCheck).
-            allowed += %w[language cases timeout forbid random]
+            allowed += %w[language cases timeout forbid random slow]
             errors.concat(KataCheck.spec_errors(check))
         when 'c'
             # Calls functions in the person's C file, compiled and run as the guest (CCheck).
