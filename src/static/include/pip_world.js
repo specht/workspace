@@ -54,9 +54,9 @@
     // walls of a room show a narrow face, SIDE pixels wide; which rows of the
     // face's picture its columns take, from the ground inwards
     const SIDE = 4;
-    const SIDE_ROWS = [10, 6, 3, 1];
+    const SIDE_ROWS = [10, 8, 6, 4];
     const RIM_FACE = [140, 156, 196];
-    const VERSION = '?v=6';
+    const VERSION = '?v=7';
 
     // The pictures the rock and the ground are drawn from, loaded once for
     // every map on the page and read into pixels: { top, face, ground }.
@@ -195,7 +195,9 @@
             groundNode.width = canvasNode.width = W;
             groundNode.height = canvasNode.height = H;
             const open = (x, y) => !wall(x, y);
-            const worn = (x, y, q) => hash(x + q.at[0], y + q.at[1], 8) < 0.5;
+            // wide or tight; PipWorld.corners ('wide' or 'tight') makes them
+            // all one kind, for looking at them (scratch tests)
+            const worn = (x, y, q) => window.PipWorld.corners ? window.PipWorld.corners === 'wide' : hash(x + q.at[0], y + q.at[1], 8) < 0.5;
             const shape = new Uint8Array(W * H);
             const inQuarter = (q, px, py) => (px < HALF) === (q.at[0] === 0) && (py < HALF) === (q.at[1] === 0);
             // outside the quarter circle of radius r in the tile's corner
@@ -313,10 +315,12 @@
                         }
                         copy(top, Math.floor(hash(tx, ty, 10) * TOPS) * PX + (x % PX), y % PX, i);
                         // the light edge of the top where open ground lies
-                        // behind it, a soft one where it lies to the left
+                        // behind it, a soft one where it lies to the left: the
+                        // edge of a room's right wall, which goes on up beside
+                        // the face of the wall behind, to the top of that face
                         if (!at(x, y - 1)) setColour(i, RIM_LIGHT);
                         else if (!at(x, y - 2)) setColour(i, RIM_SOFT);
-                        else if (!at(x - 1, y)) setColour(i, RIM_SOFT);
+                        else if (!at(x - 1, y) || isFace(x - 1, y)) setColour(i, RIM_SOFT);
                     }
                 }
                 g.putImageData(out, 0, 0);
@@ -602,5 +606,5 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', drawStatic);
     else drawStatic();
 
-    window.PipWorld = { PipView, PipPlayer, parse };
+    window.PipWorld = { PipView, PipPlayer, parse, corners: null };
 })();

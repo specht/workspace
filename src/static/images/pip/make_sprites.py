@@ -200,8 +200,7 @@ def rock_top(variant):
 def rock_face(variant):
     """The front of the rock where it faces an open tile, half a tile high:
     rounded rocks lit from the top left (dithered), dark gaps between them,
-    a light edge on top where the face meets the top of the rock, dark at
-    its foot."""
+    dark at its foot."""
     rng = random.Random(300 + variant)
     grain = noise(310 + variant, 8)
     h = T // 2
@@ -228,9 +227,9 @@ def rock_face(variant):
             if len(near) > 1 and near[1][0] - d < 0.25:
                 value = 1.4
             put(img, x, y, tone(ROCK, value, x, y))
+    # dark at its foot; the light edge on top is drawn by pip_world.js along
+    # the face's outline, round curves too, so it is not in the picture
     for x in range(T):
-        put(img, x, 0, ROCK[6] if (x * 7 + variant) % 5 else ROCK[5])
-        put(img, x, 1, tone(ROCK, 5.0, x, 1))
         put(img, x, h - 1, ROCK[0])
     return img
 
