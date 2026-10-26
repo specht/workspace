@@ -24,9 +24,11 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 - Neo4j für die Lernenden (eine Datenbank je Person): Ihr Transaktionslog wird nicht mehr im Voraus
   reserviert (bisher 256 MB je Datenbank, auf einem Server mit einer Schule viele GB) und beginnt alle 16 MB
   neu (`config.rb`). Beim Update: `./config.rb up -d neo4j`, dann einmal
-  `src/scripts/neo4j-user-compact-logs.sh`. Es kopiert jede Datenbank nacheinander neu, mit kleinem Log,
-  und gibt den Platz zurück; jede ist dabei für Sekunden offline (am besten außerhalb des Unterrichts). Daten,
-  Indizes und Constraints bleiben; stimmt nach dem Kopieren eine Zahl nicht, kommt das Original zurück.
+  `src/scripts/neo4j-user-compact-logs.sh`. Leere Datenbanken legt es mit ihren Rechten neu an (eine Sekunde),
+  die übrigen kopiert es neu, mit kleinem Log, und gibt den Platz zurück; jede ist dabei kurz offline (am besten
+  außerhalb des Unterrichts). Daten, Indizes und Constraints bleiben; stimmt nach dem Kopieren eine Zahl nicht,
+  kommt das Original zurück. Ein zweiter Lauf macht nur, was übrig ist. Läuft noch die erste Fassung des
+  Skripts (Ctrl-C beendet sie nicht), beendet `--stop-other` sie dort, wo sie nur zählt.
   Auf dem Entwicklungsrechner: 38 Datenbanken von 9,8 GB auf 0,5 GB.
 - Der Ruby-Dienst rendert die Inhalte beim Start in mehreren Prozessen und legt das Ergebnis in
   `content-cache/` im Bildcache (`WEB_CACHE_PATH`) ab (etwa 15 MB, nur die neueste Fassung); ein Start ohne Änderungen lädt es
