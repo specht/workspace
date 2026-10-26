@@ -21,6 +21,10 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Das Frontend (Traefik) liegt jetzt unter `docker/traefik/docker-compose.yaml` statt `frontend-docker-compose.yaml`,
+  mit Protokollen von höchstens 3 × 10 MB (bisher ohne Grenze). Die Adresse für Letsencrypt steht nicht mehr in der
+  Datei: `ACME_EMAIL=…` in die `.env` neben ihr, dann die Datei hineinkopieren und `docker compose up -d` (das
+  Frontend ist dabei Sekunden weg). Workspaces protokollieren ebenfalls höchstens 3 × 10 MB.
 - nginx begrenzt je Adresse (hinter Traefik die des Browsers): höchstens 10 Anfragen in der Sekunde an die
   Ruby-App, mit einem Vorrat von 300 für eine Klasse, die eine Seite gleichzeitig öffnet, und höchstens 1000
   offene Verbindungen; darüber antwortet es mit 429. Statische Dateien und Workspaces zählen nicht zu den

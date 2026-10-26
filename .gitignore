@@ -1,5 +1,6 @@
 /data
-docker-compose.yaml
+# the one config.rb writes; docker/traefik/docker-compose.yaml belongs to the repository
+/docker-compose.yaml
 docker/code/dart.deb
 docker/code/*.vsix
 docker/ruby/Gemfile

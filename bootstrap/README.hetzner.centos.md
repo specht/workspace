@@ -239,6 +239,12 @@ Dieser Vorgang dauert etwas länger – ca. 20 Minuten.
 
 ### 4.4 Workspace starten
 
+Der Workspace und das Frontend (Schritt 5) treffen sich im Docker-Netz `proxy`. Das legt keiner von beiden an, also einmal von Hand, vor dem ersten Start:
+
+```
+docker network create proxy
+```
+
 Wir können nun den Workspace starten:
 
 ```
@@ -252,13 +258,21 @@ Es wird ein paar Minuten dauern, bis der Workspace läuft – es werden beim ers
 
 ## Schritt 5: Frontend starten
 
-Das Frontend kümmert sich um das TLS-Zertifikat (Letsencrypt) und stellt die Schnittstelle nach außen dar:
+Das Frontend (Traefik) kümmert sich um das TLS-Zertifikat (Letsencrypt) und stellt die Schnittstelle nach außen dar:
 
 ```
 cd
-mkdir frontend
-cp workspace/frontend-docker-compose.yaml frontend/docker-compose.yaml
+mkdir -p frontend/traefik
+cp workspace/docker/traefik/docker-compose.yaml frontend/docker-compose.yaml
 cd frontend
+touch traefik/acme.json && chmod 600 traefik/acme.json
+```
+
+Das Zertifikat gilt für deine Domain und alle Subdomains (`*.deine-domain.de`, für die Workspaces). Dafür beweist Traefik bei Letsencrypt über die DNS-Einträge, dass die Domain dir gehört; der DNS muss dazu bei Cloudflare liegen. Lege in Cloudflare einen API-Token an, der die DNS-Einträge deiner Zone bearbeiten darf, und schreibe ihn mit der Adresse, an die Letsencrypt zu den Zertifikaten schreibt, in eine Datei `.env` neben der `docker-compose.yaml`:
+
+```
+CF_DNS_API_TOKEN=dein-token
+ACME_EMAIL=deine-adresse@example.org
 ```
 
 Jetzt können wir das Frontend starten:

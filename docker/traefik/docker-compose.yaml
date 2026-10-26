@@ -1,3 +1,16 @@
+# Traefik in front of the Workspace on the production server: HTTPS with
+# Let's Encrypt (a wildcard certificate by DNS challenge at Cloudflare, which
+# only hosts the DNS; no traffic goes through Cloudflare).
+#
+# Started on its own, before the Workspace: docker compose up -d here, with
+# CF_DNS_API_TOKEN and ACME_EMAIL (the address Let's Encrypt writes to about
+# the certificates) in the environment or in an .env file next to this one.
+#
+# Privacy (docs/datenschutz.md): there is deliberately no --accesslog, so
+# Traefik writes no IP addresses of visitors; the Datenschutzerklärung says
+# the logs contain none. What Traefik does write (start, certificates,
+# errors) is overwritten after 3 × 10 MB, like the Workspace's services.
+
 networks:
   proxy:
     external: true
@@ -6,7 +19,7 @@ services:
   traefik:
     networks:
       - proxy
-    image: traefik:v3.6.17
+    image: traefik:v3.6
     container_name: traefik
     restart: unless-stopped
     command:
@@ -24,7 +37,7 @@ services:
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
 
-      - --certificatesresolvers.le.acme.email=specht@gymnasiumsteglitz.de
+      - --certificatesresolvers.le.acme.email=${ACME_EMAIL:?ACME_EMAIL missing, see the top of this file}
       - --certificatesresolvers.le.acme.storage=/acme/acme.json
       - --certificatesresolvers.le.acme.dnschallenge=true
       - --certificatesresolvers.le.acme.dnschallenge.provider=cloudflare
@@ -40,3 +53,9 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/acme.json:/acme/acme.json
+
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
