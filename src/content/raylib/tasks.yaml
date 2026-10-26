@@ -560,6 +560,28 @@ tasks:
           - { pattern: 'LoadShader\s*\(\s*"light\.vs"\s*,\s*"light\.fs"\s*\)', say: 'Noch lädt `main.c` den Shader nicht: `LoadShader("light.vs", "light.fs")`.' }
           - { pattern: 'BeginShaderMode\s*\(', say: 'Der Shader ist geladen, aber noch zeichnet nichts mit ihm: `BeginShaderMode(light)` vor der Schleife über die Welt.' }
 
+  - id: nebel
+    title: Dein Nebel
+    prompt: |
+      Schreib die beiden Zeilen für den Nebel unter `result` in `light.fs` und
+      speichere. Der Workspace liest den Shader und sucht die Teile der
+      Rechnung: die Entfernung von den Augen, ab 16 Blöcken, auf 20 Blöcke
+      verteilt, zwischen 0 und 1 gehalten, und die Mischung mit dem Himmel.
+    file: raylib-starter/light.fs
+    check:
+      type: files
+      path: raylib-starter/light.fs
+      expect:
+        format: text
+        contains:
+          - { pattern: '^\s*(float\s+)?fog\s*=', say: 'In `light.fs` gibt es noch kein `fog`: Schreib unter `result` die Zeile `float fog = …`.' }
+          - { pattern: '(length\s*\(\s*(position\s*-\s*eyes|eyes\s*-\s*position)\s*\)|distance\s*\(\s*(position\s*,\s*eyes|eyes\s*,\s*position)\s*\))', say: 'Der Nebel hängt von der Entfernung ab, aber die finde ich noch nicht: `length(position - eyes)`.' }
+          - { pattern: '(-\s*16\.\d*|\(\s*16\.\d*\s*,\s*36\.)', say: 'Der Nebel fängt erst bei 16 Blöcken an: Zieh `16.0` von der Entfernung ab, dann ist `fog` dort 0.' }
+          - { pattern: '(/\s*\(?\s*20\.|/\s*\(\s*36\.\d*\s*-\s*16\.|\*\s*0?\.05\b|\(\s*16\.\d*\s*,\s*36\.)', say: 'Von 16 bis 36 Blöcken sind es 20 Blöcke: Teil durch `20.0`, dann ist `fog` bei 36 Blöcken genau 1.' }
+          - { pattern: '^\s*(float\s+)?fog\s*=.*\b(clamp|smoothstep|min|max)\s*\(', say: 'Ganz nah würde `fog` kleiner als 0 und weit weg größer als 1. `clamp(…, 0.0, 1.0)` um die Rechnung hält es dazwischen.' }
+          - { pattern: 'mix\s*\(\s*result\b[^,]*,\s*sky\b[^,]*,\s*fog\b', say: 'Noch mischt nichts `result` mit dem Himmel: `mix(result, sky, fog)`; mit `fog = 0` kommt `result` heraus, mit 1 der Himmel.' }
+          - { pattern: '^\s*gl_FragColor\s*=', say: 'Der Nebel ist ausgerechnet, aber `gl_FragColor` bekommt noch keine Farbe: `gl_FragColor = vec4(mix(…), 1.0);`' }
+
   - id: fackel-abstand
     title: Licht in der Ferne
     prompt: |

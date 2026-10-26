@@ -1579,7 +1579,7 @@ Jede Fackel gibt warmes, orangefarbenes Licht. Wie bei der Sonne zählt, wie seh
 
 `result` ist die Farbe des Pixels ohne Nebel. Der Nebel fängt 16 Blöcke vor den Augen an und wird mit der Entfernung dichter, bis 20 Blöcke weiter, also bei 36, nur noch Himmel zu sehen ist.
 
-<div class='hint own'>
+<div class='hint own' data-check='nebel'>
 <strong>Jetzt bist du dran:</strong> Schreib unter <code>result</code> die beiden Zeilen für den Nebel. Die erste rechnet <code>float fog</code> aus: 0 bis zu einer Entfernung von 16 Blöcken, dann gleichmäßig mehr, bis es bei 36 Blöcken 1 ist, und weiter weg bleibt es 1. Die zweite setzt <code>gl_FragColor</code>: <code>result</code>, mit dem Himmel <code>sky</code> gemischt, so viel, wie <code>fog</code> sagt. <code>length(position - eyes)</code> ist die Entfernung des Pixels von den Augen, <code>clamp(x, 0.0, 1.0)</code> hält eine Zahl zwischen 0 und 1, und <code>mix(a, b, t)</code> mischt zwei Farben: <code>t = 0</code> ergibt <code>a</code>, <code>t = 1</code> ergibt <code>b</code>. Ausprobieren kannst du es, sobald <code>main</code> dem Shader die neuen Werte gibt, gleich unten.
 </div>
 
@@ -1608,6 +1608,8 @@ ist die Deckkraft, wie bisher 1:
 ~ }
 ```
 <!-- /solution -->
+
+_task(nebel)
 
 Damit der Shader die neuen Werte bekommt, braucht `main` vier weitere Stellen:
 
