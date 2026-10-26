@@ -436,12 +436,15 @@
         }
 
         // The light of the lamps that burn on the ground, one picture in map
-        // pixels (PX a tile) under the rock: the nine fields round a lamp,
-        // where the Mampfer does not go, lit up to their edge and brightest
-        // round the lamp; just outside them the light fades in a few pixels,
-        // dithered with the Bayer pattern of make_sprites.py, round at the
-        // corners. Where lights meet, the brighter counts, so there is no
-        // seam; only open fields get it.
+        // pixels (PX a tile) under the rock: brightest round the lamp, falling
+        // off with the distance from it, measured round (a square with round
+        // corners, SHAPE), so that the light is round and still covers the
+        // nine fields round the lamp, where the Mampfer does not go: up to
+        // their edge it stays bright (EDGE), only their outer corners lie a
+        // little in the fade. Outside them it fades over FADE tiles, softly to
+        // nothing, dithered with the Bayer pattern of make_sprites.py. Where
+        // lights meet, the brighter counts, so there is no seam; only open
+        // fields get it.
         safeLight(burning, wall) {
             const W = this.layout.width * PX;
             const H = this.layout.height * PX;
@@ -451,9 +454,11 @@
             const g = node.getContext('2d');
             const image = g.createImageData(W, H);
             // the tint at each level of light (the last: round the lamp)
-            const LEVELS = [0, 0.05, 0.1, 0.15, 0.2, 0.26, 0.32];
-            const EDGE = 0.6;
-            const FADE = 8 / PX;
+            const LEVELS = [0, 0.025, 0.05, 0.08, 0.11, 0.14, 0.18, 0.22, 0.26, 0.3, 0.34];
+            const SHAPE = 4;     // 2 a circle, larger: more like a square
+            const INSIDE = 1.5;  // tiles from the middle of the lamp's field to the edge of the nine
+            const EDGE = 0.55;
+            const FADE = 1.1;
             const top = LEVELS.length - 1;
             for (let y = 0; y < H; y++) {
                 for (let x = 0; x < W; x++) {
@@ -464,13 +469,11 @@
                     const v = (y + 0.5) / PX;
                     let light = 0;
                     burning.forEach(([bx, by]) => {
-                        // how far outside the nine fields, in tiles
-                        const ox = Math.max(bx - 1 - u, 0, u - (bx + 2));
-                        const oy = Math.max(by - 1 - v, 0, v - (by + 2));
-                        const out = Math.hypot(ox, oy);
+                        const dx = Math.abs(u - bx - 0.5), dy = Math.abs(v - by - 0.5);
+                        const d = (dx ** SHAPE + dy ** SHAPE) ** (1 / SHAPE);
                         let here;
-                        if (out === 0) here = EDGE + (1 - EDGE) * Math.max(0, 1 - Math.hypot(u - bx - 0.5, v - by - 0.5) / 1.5);
-                        else here = out < FADE ? EDGE * (1 - out / FADE) : 0;
+                        if (d <= INSIDE) here = EDGE + (1 - EDGE) * (1 + Math.cos(Math.PI * d / INSIDE)) / 2;
+                        else here = d < INSIDE + FADE ? EDGE * (1 - (d - INSIDE) / FADE) ** 2 : 0;
                         light = Math.max(light, here);
                     });
                     if (!light) continue;
