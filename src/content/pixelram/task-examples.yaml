@@ -28,3 +28,7 @@ examples:
         say: get_pixel
       - files: { pixelram-starter/main.c: stufen/interferenz.c }
         say: lichtspur.c
+  fahren:
+    skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Von Hand mit pixelram.h geprüft, angenommen stufen/lichtspur-3.c, abgelehnt das Spiel zu zweit, wie die Seite es anfangen lässt (drive und steer leer), stufen/lichtspur-2.c (ohne Player) und ein drive, das get_pixel vor dem Fahren fragt; ein Rezept mit check-task gibt es dafür noch nicht.
+  lenken:
+    skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Von Hand mit pixelram.h geprüft, angenommen stufen/lichtspur-3.c, abgelehnt das Spiel zu zweit, wie die Seite es anfangen lässt (drive und steer leer), ein steer, das umdrehen lässt, und eines, das die Pfeiltasten statt seiner vier Tasten abfragt; ein Rezept mit check-task gibt es dafür noch nicht.

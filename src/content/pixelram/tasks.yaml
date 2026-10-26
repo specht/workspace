@@ -240,6 +240,112 @@ tasks:
       - when: { problem: missing }
         say: 'Ich finde `pixelram-starter/lichtspur.c` nicht. Das Spiel bekommt eine eigene Datei neben `main.c`.'
 
+  - id: fahren
+    title: Dein drive
+    prompt: |
+      Schreib `drive` in `lichtspur.c` und speichere. Der Workspace lässt eine
+      Spur einen Schritt fahren, einmal auf ein freies Feld und einmal auf
+      ein Feld, auf dem schon etwas steht.
+    file: pixelram-starter/lichtspur.c
+    check:
+      type: c
+      file: pixelram-starter/lichtspur.c
+      setup: |
+        // ein Bildschirm, auf dem nur beim Pixel (taken_x, taken_y) etwas steht
+        static int taken_x = -1, taken_y = -1;
+        uint8_t get_pixel(int x, int y)
+        {
+            return (x == taken_x && y == taken_y) ? 14 : 0;
+        }
+
+        // eine Spur bei (x, y) mit der Richtung (dx, dy) fährt einen Schritt
+        Player drive_from(int x, int y, int dx, int dy)
+        {
+            Player p = { .x = x, .y = y, .dx = dx, .dy = dy, .color = 3 };
+            drive(&p);
+            return p;
+        }
+      cases:
+        - call: drive_from(20, 45, 1, 0).x
+          expect: 21
+          say: 'Die Spur fährt nach rechts, `dx` ist 1: Aus `x` = 20 wird 21. `drive` ändert `p->x` um `p->dx`.'
+        - call: drive_from(20, 45, 0, -1).y
+          expect: 44
+          say: 'Die Spur fährt nach oben, `dy` ist −1: Aus `y` = 45 wird 44. Ändert `drive` auch `p->y` um `p->dy`?'
+        - call: drive_from(20, 45, 0, -1).x
+          expect: 20
+          say: 'Nach oben bleibt `x`, wie es ist.'
+        - call: drive_from(20, 45, 1, 0).crashed
+          expect: false
+          say: 'Das Feld rechts ist frei, und trotzdem ist die Spur verunglückt.'
+        - call: (taken_x = 21, taken_y = 45, drive_from(20, 45, 1, 0).crashed)
+          expect: true
+          say: 'Auf dem Feld rechts steht schon etwas, aber die Spur ist nicht verunglückt. Fragt `drive` mit `get_pixel` das neue Feld ab, nachdem sie gefahren ist?'
+        - call: (taken_x = 20, taken_y = 45, drive_from(20, 45, 1, 0).crashed)
+          expect: false
+          say: 'Etwas steht nur auf dem Feld, von dem die Spur losfährt; das ist ihre eigene Spur. Verunglückt ist sie erst, wenn auf dem neuen Feld etwas steht: erst fahren, dann `get_pixel`.'
+
+  - id: lenken
+    title: Dein steer
+    prompt: |
+      Schreib `steer` in `lichtspur.c` und speichere. Der Workspace drückt
+      eine Taste, während die Spur in eine Richtung fährt, und sieht nach,
+      wohin sie danach fährt.
+    file: pixelram-starter/lichtspur.c
+    check:
+      type: c
+      file: pixelram-starter/lichtspur.c
+      setup: |
+        // gedrückt ist nur die Taste pressed
+        static int pressed = -1;
+        bool key_pressed(pixel_key key)
+        {
+            return (int)key == pressed;
+        }
+
+        // Die Spur fährt in Richtung (dx, dy), und die Taste key ist gedrückt.
+        // Gelenkt wird mit den Pfeiltasten oder mit WASD.
+        Player steer_arrows(int dx, int dy, pixel_key key)
+        {
+            Player p = { .x = 80, .y = 45, .dx = dx, .dy = dy, .color = 11 };
+            pressed = key;
+            steer(&p, pixel_key_up, pixel_key_down, pixel_key_left, pixel_key_right);
+            return p;
+        }
+
+        Player steer_wasd(int dx, int dy, pixel_key key)
+        {
+            Player p = { .x = 80, .y = 45, .dx = dx, .dy = dy, .color = 3 };
+            pressed = key;
+            steer(&p, pixel_key_w, pixel_key_s, pixel_key_a, pixel_key_d);
+            return p;
+        }
+      cases:
+        - call: steer_arrows(1, 0, pixel_key_up).dy
+          expect: -1
+          say: 'Die Spur fährt nach rechts, und ↑ ist gedrückt: Sie biegt nach oben ab, `dy` wird −1.'
+        - call: steer_arrows(1, 0, pixel_key_up).dx
+          expect: 0
+          say: 'Nach oben abgebogen fährt die Spur senkrecht: `dx` wird 0.'
+        - call: steer_arrows(1, 0, pixel_key_down).dy
+          expect: 1
+          say: 'Die Spur fährt nach rechts, und ↓ ist gedrückt: Sie biegt nach unten ab, `dy` wird 1.'
+        - call: steer_arrows(0, -1, pixel_key_left).dx
+          expect: -1
+          say: 'Die Spur fährt nach oben, und ← ist gedrückt: Sie biegt nach links ab, `dx` wird −1.'
+        - call: steer_arrows(1, 0, pixel_key_left).dx
+          expect: 1
+          say: 'Die Spur fährt nach rechts, und ← ist gedrückt: Umdrehen geht nicht, sie fährt weiter nach rechts. Nach links oder rechts darf sie nur abbiegen, wenn `p->dx` 0 ist.'
+        - call: steer_arrows(0, -1, pixel_key_down).dy
+          expect: -1
+          say: 'Die Spur fährt nach oben, und ↓ ist gedrückt: Umdrehen geht nicht, sie fährt weiter nach oben. Nach oben oder unten darf sie nur abbiegen, wenn `p->dy` 0 ist.'
+        - call: steer_wasd(0, 1, pixel_key_d).dx
+          expect: 1
+          say: 'Mit den Tasten W, S, A und D lenkt `steer` nicht: Die Spur fährt nach unten, und D ist gedrückt, also biegt sie nach rechts ab. Fragt `steer` die vier Tasten ab, die es bekommt, `up`, `down`, `left` und `right`?'
+        - call: steer_arrows(1, 0, pixel_key_space).dx
+          expect: 1
+          say: 'Ohne eine der vier Tasten fährt die Spur weiter, wie sie fährt.'
+
   - id: unentschieden
     title: Gleichzeitig
     prompt: |

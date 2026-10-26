@@ -1026,7 +1026,7 @@ int main(void)
 }
 ```
 
-<div class='hint own'>
+<div class='hint own' data-check='fahren'>
 <strong>Jetzt bist du dran:</strong> Schreib <code>drive</code>: Die Spur <code>p</code> fährt einen Schritt in ihre Richtung, und steht auf dem neuen Feld schon etwas, ist sie verunglückt. Das hast du vorhin schon geschrieben, mit <code>x</code> statt <code>p-&gt;x</code>.
 </div>
 
@@ -1059,7 +1059,9 @@ void drive(Player *p)
 ```
 <!-- /solution -->
 
-<div class='hint own'>
+_task(fahren)
+
+<div class='hint own' data-check='lenken'>
 <strong>Jetzt bist du dran:</strong> Schreib <code>steer</code>: Mit den vier Tasten, die es bekommt, lenkt es die Spur <code>p</code> wie vorhin mit den Pfeiltasten. Nur umdrehen darf sie nicht mehr, sonst führe sie sofort in ihre eigene Spur: Wer nach rechts fährt, kann nach oben oder unten abbiegen, aber nicht nach links.
 </div>
 
@@ -1086,6 +1088,8 @@ Nach oben oder unten darf die Spur nur abbiegen, wenn sie gerade waagrecht fähr
 ~ }
 ```
 <!-- /solution -->
+
+_task(lenken)
 
 <!-- tutorial-screenshot
 write-file: lichtspur.c <- file:stufen/lichtspur-3.c
