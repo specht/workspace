@@ -6650,8 +6650,17 @@ class Main < Sinatra::Base
                     email_for_tag_loaded_at = Time.now
                 end
                 load_email_for_tag.call
+                # For admins also the disk space of each Workspace, as the
+                # hourly housekeeping measured it; read again every minute.
+                show_disk = admin_logged_in?
+                disk = nil
+                disk_loaded_at = Time.at(0)
                 docker_stats_thread = Thread.new do
                     loop do
+                        if show_disk && Time.now - disk_loaded_at > 60
+                            disk = workspace_disk_usage
+                            disk_loaded_at = Time.now
+                        end
                         lines = {}
                         workspace_runtime.workspace_stats.each_pair do |fs_tag, stat_line|
                             load_email_for_tag.call if !email_for_tag.key?(fs_tag) && Time.now - email_for_tag_loaded_at > 5
@@ -6663,6 +6672,10 @@ class Main < Sinatra::Base
                                 :group => (@@invitations[email] || {})[:group],
                                 :stats => stat_line
                             }
+                            if disk && disk[:by_tag].key?(fs_tag)
+                                lines[fs_tag][:disk_kb] = disk[:by_tag][fs_tag].to_i
+                                lines[fs_tag][:disk_fat] = lines[fs_tag][:disk_kb] >= disk[:fat_kb]
+                            end
                         end
                         ws.send({:stats => lines}.to_json)
                         sleep 1
