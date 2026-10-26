@@ -98,7 +98,8 @@ module TaskExamples
                 end
                 numbers = Hash.new(0)
                 cases.each do |kind, example|
-                    outcomes << run_case(dir, activity, id, language, variant, kind, example, numbers[kind], problems)
+                    outcome = run_case(dir, activity, id, language, variant, kind, example, numbers[kind], problems)
+                    outcomes << outcome if outcome
                     numbers[kind] += 1
                 end
             end
@@ -170,6 +171,13 @@ module TaskExamples
                 File.binwrite(file, text)
                 File.chmod(0o755, file) if spec['executable']
             end
+            # A Python file that imports a module this machine does not have
+            # (websockets in the Ruby container, which the Workspace has):
+            # like JavaScript without Node, its example waits for a machine
+            # that has it.
+            checked = task['check']['type'] == 'python' && task['check']['file'] && File.join(root, WorkspaceFiles.clean(task['check']['file']))
+            beside = ->(name) { File.exist?(File.join(File.dirname(checked), "#{name}.py")) || File.directory?(File.join(File.dirname(checked), name)) }
+            return nil if checked && File.file?(checked) && python_modules(File.read(checked)).any? { |name| !beside.(name) && !python_module?(name) }
             result = TaskCheck.check(task, example['answer'], :workspace => WorkspaceFiles.new(root),
                 :runner => local_runner(root), :guest_runner => local_runner(root), :kata => local_kata(root))
             expected = kind == 'pass' ? %i[correct] : %i[wrong invalid]
@@ -200,6 +208,18 @@ module TaskExamples
                 { :output => output, :status => wait.value.exitstatus, :timed_out => timed_out }
             end
         end
+    end
+
+    # the top-level modules a Python file imports
+    def self.python_modules(source)
+        source.scan(/^\s*(?:import|from)\s+([A-Za-z_]\w*)/).flatten.uniq
+    end
+
+    def self.python_module?(name)
+        @python_modules ||= {}
+        return @python_modules[name] if @python_modules.key?(name)
+        @python_modules[name] = system('python3', '-c', 'import importlib.util, sys; sys.exit(importlib.util.find_spec(sys.argv[1]) is None)', name,
+            :out => File::NULL, :err => File::NULL)
     end
 
     def self.node?

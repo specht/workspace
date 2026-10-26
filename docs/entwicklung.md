@@ -203,7 +203,9 @@ Dort brechen die Tests mit einem `LoadError` ab, die die Seiten rendern
 "nokogiri\|redcarpet\|rouge" test/*_test.rb include/*.rb` zeigt sie).
 `c_check_test.rb` braucht `cc` und wird ohne übersprungen; die Beispiele der
 JavaScript-Katas in `task_examples_test.rb` brauchen `node` und laufen darum
-nur auf dem eigenen Rechner.
+nur auf dem eigenen Rechner; ebenso ein Beispiel einer `python`-Prüfung, deren
+Datei ein Modul lädt, das der Rechner nicht hat (`websockets` im
+Ruby-Container, die Pixelwand).
 `task_spec_test.rb` prüft alle `tasks.yaml` im Inhaltsordner, ein Test in
 `content_parts_test.rb` alle Kataloge und `_include(…, done: …)`.
 `task_examples_test.rb` führt die `ruby`- und `python`-Prüfungen mit den
