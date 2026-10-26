@@ -11,8 +11,12 @@ place in the strip, so no hue is drawn in. Run after make_sprites.py:
 """
 from PIL import Image
 
-DARK = (104, 104, 104)
-LIGHT = (244, 244, 244)
+# from near black (outlines, eyes, the Mampfer's mouth) to near white, the
+# mid tones lifted (GAMMA below 1), so that the figure keeps its contrast
+# once it is tinted
+DARK = (22, 22, 22)
+LIGHT = (250, 250, 250)
+GAMMA = 0.75
 # every icon in the middle of SIZE × SIZE pixels; the strip shows Pip and
 # Bello two and a half times as large, every pixel of the two alike, and
 # the Mampfer, drawn larger, 1.6 times, so that each is about as large as
@@ -32,7 +36,7 @@ def icon(source, target, width):
             # the soft shadow under the feet stays with the sprite
             if a < 200:
                 continue
-            t = min(1.0, (0.299 * r + 0.587 * g + 0.114 * b) / 200)
+            t = min(1.0, (0.299 * r + 0.587 * g + 0.114 * b) / 200) ** GAMMA
             out.putpixel((x, y), tuple(round(d + (l - d) * t) for d, l in zip(DARK, LIGHT)) + (a,))
     canvas = Image.new('RGBA', (SIZE, SIZE))
     canvas.paste(out, ((SIZE - out.width) // 2, (SIZE - out.height) // 2))
