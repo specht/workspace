@@ -27,15 +27,13 @@
     }
 
     // The four quarters of a tile: where each sits, its two neighbours and
-    // the one diagonal to it, and its corner towards the middle of the tile.
+    // the one diagonal to it.
     const QUARTERS = [
-        { name: 'nw', at: [0, 0], sides: [[0, -1], [-1, 0]], diagonal: [-1, -1], inner: '100% 100%' },
-        { name: 'ne', at: [1, 0], sides: [[0, -1], [1, 0]], diagonal: [1, -1], inner: '0 100%' },
-        { name: 'sw', at: [0, 1], sides: [[0, 1], [-1, 0]], diagonal: [-1, 1], inner: '100% 0' },
-        { name: 'se', at: [1, 1], sides: [[0, 1], [1, 0]], diagonal: [1, 1], inner: '0 0' },
+        { name: 'nw', at: [0, 0], sides: [[0, -1], [-1, 0]], diagonal: [-1, -1] },
+        { name: 'ne', at: [1, 0], sides: [[0, -1], [1, 0]], diagonal: [1, -1] },
+        { name: 'sw', at: [0, 1], sides: [[0, 1], [-1, 0]], diagonal: [-1, 1] },
+        { name: 'se', at: [1, 1], sides: [[0, 1], [1, 0]], diagonal: [1, 1] },
     ];
-    const ROUND = (inner, keep) => 'radial-gradient(circle calc(var(--tile) / 2) at ' + inner + ', ' +
-        (keep ? '#000 calc(100% - 0.5px), transparent 100%)' : 'transparent calc(100% - 0.5px), #000 100%)');
 
     // How many variants each strip of the ground and the rock has
     // (make_sprites.py).
@@ -43,6 +41,14 @@
     const TOPS = 3;
     const FACES = 4;
     const IMG = '/images/pip/';
+    // pixels of a tile in the pictures, half of it, the height of a face
+    const PX = 24;
+    const HALF = 12;
+    const FACE = 12;
+    // the light edge of the rock's top (the palette of make_sprites.py, ROCK)
+    const RIM_LIGHT = [100, 114, 158];
+    const RIM_SOFT = [74, 84, 126];
+    const RIM_DARK = [26, 28, 50];
     const VERSION = '?v=6';
 
     class PipView {
@@ -51,11 +57,10 @@
         //
         // Seen from above at a slant (the 3/4 view), only drawn, the world
         // does not know it. Each open tile has its ground; a wall tile is the
-        // top of the rock, with a light edge on each open side, and where an
+        // top of the rock, with a light edge along its outline, and where an
         // open tile lies below it, its front face fills the lower half.
-        // About half the corners are round (a wall tile loses the corner
-        // between two open sides, an open tile between two walls gets a
-        // nook). What stands upright reaches into the tile above and is
+        // About half the corners are round, and the faces and edges follow
+        // them (walls()). What stands upright reaches into the tile above and is
         // drawn row by row, the lower row in front (z-index by --y). A light
         // layer darkens the cave by multiplying and brightens it where
         // something glows; what shines by itself (Pip with its lantern, the
@@ -129,63 +134,114 @@
             }
         }
 
-        // The rock, in a layer of its own that throws the shadow: each wall
-        // tile its top, an edge on each open side, its front face above an
-        // open tile; round corners, about half of them (the corner point
-        // decides, so the same corner stays round); what grows at the foot
-        // of the faces.
+        // The rock, drawn as one picture of the whole map (a canvas of 24
+        // pixels per tile, scaled up sharp), which throws the shadow. First
+        // its shape at ground level: every wall tile, without the corners
+        // that are round, with the nooks it fills in the corners of open
+        // tiles (a round corner is a quarter circle round the middle of its
+        // tile; about half of them, the corner point decides, so the same
+        // corner stays round). Then, column by column, the lowest FACE
+        // pixels of the shape above an open tile are its front face, the
+        // rest is its top: so the face bends round a round corner and into
+        // a nook. The top gets a light edge along its outline where it
+        // borders open ground. The textures are the strips rock-top.png and
+        // rock-face.png (make_sprites.py).
         walls(wall, lights) {
-            const layer = el('div', 'pip-walls', this.world);
+            const W = this.layout.width * PX;
+            const H = this.layout.height * PX;
+            const canvasNode = el('canvas', 'pip-rock', this.world);
+            canvasNode.width = W;
+            canvasNode.height = H;
             const open = (x, y) => !wall(x, y);
             const worn = (x, y, q) => hash(x + q.at[0], y + q.at[1], 8) < 0.5;
-            const url = (name) => 'url(' + IMG + name + '.png' + VERSION + ')';
-            this.shining = [];
-            for (let y = 0; y < this.layout.height; y++) {
-                for (let x = 0; x < this.layout.width; x++) {
-                    if (wall(x, y)) {
-                        const node = this.tile('wall', [x, y], layer);
-                        const images = [];
-                        const positions = [];
-                        const sizes = [];
-                        [['n', 0, -1], ['w', -1, 0], ['e', 1, 0]].forEach(([side, dx, dy]) => {
-                            if (!open(x + dx, y + dy)) return;
-                            images.push(url('rim-' + side));
-                            positions.push('0 0');
-                            sizes.push('100% 100%');
-                        });
-                        images.push(url('rock-top'));
-                        positions.push('calc(var(--tile) * ' + -Math.floor(hash(x, y, 10) * TOPS) + ') 0');
-                        sizes.push('calc(var(--tile) * ' + TOPS + ') 100%');
-                        node.style.backgroundImage = images.join(', ');
-                        node.style.backgroundPosition = positions.join(', ');
-                        node.style.backgroundSize = sizes.join(', ');
-                        if (open(x, y + 1)) el('div', 'pip-face', node).style.setProperty('--v', Math.floor(hash(x, y, 11) * FACES));
-                        // a corner between two open sides is round
-                        const layers = QUARTERS.map((q) => {
-                            const round = worn(x, y, q) && q.sides.every(([dx, dy]) => open(x + dx, y + dy)) && open(x + q.diagonal[0], y + q.diagonal[1]);
-                            return round ? ROUND(q.inner, true) : 'linear-gradient(#000, #000)';
-                        });
-                        if (layers.some((l) => l.startsWith('radial'))) {
-                            node.style.maskImage = node.style.webkitMaskImage = layers.join(', ');
-                            node.classList.add('pip-rounded');
+            const shape = new Uint8Array(W * H);
+            const inQuarter = (q, px, py) => (px < HALF) === (q.at[0] === 0) && (py < HALF) === (q.at[1] === 0);
+            const outsideRound = (px, py) => (px + 0.5 - HALF) ** 2 + (py + 0.5 - HALF) ** 2 > HALF * HALF;
+            for (let ty = 0; ty < this.layout.height; ty++) {
+                for (let tx = 0; tx < this.layout.width; tx++) {
+                    const rounded = QUARTERS.filter((q) => wall(tx, ty)
+                        ? worn(tx, ty, q) && q.sides.every(([dx, dy]) => open(tx + dx, ty + dy)) && open(tx + q.diagonal[0], ty + q.diagonal[1])
+                        : worn(tx, ty, q) && q.sides.every(([dx, dy]) => wall(tx + dx, ty + dy)) && wall(tx + q.diagonal[0], ty + q.diagonal[1]));
+                    for (let py = 0; py < PX; py++) {
+                        for (let px = 0; px < PX; px++) {
+                            const q = rounded.find((r) => inQuarter(r, px, py));
+                            // a wall loses its round corner, an open tile gains its nook
+                            const rock = wall(tx, ty) ? !(q && outsideRound(px, py)) : Boolean(q && outsideRound(px, py));
+                            if (rock) shape[(ty * PX + py) * W + tx * PX + px] = 1;
                         }
-                    } else {
-                        // between two walls, an open tile gets a curved nook:
-                        // the face of the rock above it at the top, the rock's
-                        // top at the bottom
-                        QUARTERS.forEach((q) => {
-                            if (!(worn(x, y, q) && q.sides.every(([dx, dy]) => wall(x + dx, y + dy)) && wall(x + q.diagonal[0], y + q.diagonal[1]))) return;
-                            const nook = this.tile('nook ' + (q.at[1] ? 'pip-nook-top' : 'pip-nook-face'), [x, y], layer);
-                            nook.style.setProperty('--qx', q.at[0]);
-                            nook.style.setProperty('--qy', q.at[1]);
-                            nook.style.setProperty('--v', Math.floor(hash(x, y, 11) * FACES));
-                            nook.style.maskImage = nook.style.webkitMaskImage = ROUND(q.inner, false);
-                        });
                     }
                 }
             }
+            const at = (x, y) => (x < 0 || y < 0 || x >= W || y >= H) ? 1 : shape[y * W + x];
+            const draw = () => {
+                if (!tops.complete || !faces.complete || !tops.naturalWidth || !faces.naturalWidth) return;
+                const g = canvasNode.getContext('2d');
+                const read = (image) => {
+                    const c = document.createElement('canvas');
+                    c.width = image.naturalWidth;
+                    c.height = image.naturalHeight;
+                    const cg = c.getContext('2d');
+                    cg.drawImage(image, 0, 0);
+                    return cg.getImageData(0, 0, c.width, c.height);
+                };
+                const top = read(tops);
+                const face = read(faces);
+                const out = g.createImageData(W, H);
+                const copy = (source, sx, sy, i) => {
+                    const j = (sy * source.width + sx) * 4;
+                    out.data[i] = source.data[j];
+                    out.data[i + 1] = source.data[j + 1];
+                    out.data[i + 2] = source.data[j + 2];
+                    out.data[i + 3] = 255;
+                };
+                const setColour = (i, c) => {
+                    out.data[i] = c[0];
+                    out.data[i + 1] = c[1];
+                    out.data[i + 2] = c[2];
+                    out.data[i + 3] = 255;
+                };
+                for (let x = 0; x < W; x++) {
+                    // from the bottom up: how far above the rock's lower edge,
+                    // and the tile the face stands on (its variant)
+                    let above = -1;
+                    let foot = 0;
+                    for (let y = H - 1; y >= 0; y--) {
+                        if (!at(x, y)) {
+                            above = -1;
+                            continue;
+                        }
+                        // the lower edge of the rock, over open ground
+                        if (above < 0) {
+                            above = y < H - 1 && !at(x, y + 1) ? 0 : FACE;
+                            foot = Math.floor(y / PX);
+                        } else above++;
+                        const i = (y * W + x) * 4;
+                        const tx = Math.floor(x / PX);
+                        const ty = Math.floor(y / PX);
+                        if (above < FACE) {
+                            const variant = Math.floor(hash(tx, foot, 11) * FACES);
+                            copy(face, variant * PX + (x % PX), FACE - 1 - above, i);
+                            continue;
+                        }
+                        copy(top, Math.floor(hash(tx, ty, 10) * TOPS) * PX + (x % PX), y % PX, i);
+                        // the light edge of the top where it borders open ground
+                        if (!at(x, y - 1)) setColour(i, RIM_LIGHT);
+                        else if (!at(x, y - 2)) setColour(i, RIM_SOFT);
+                        else if (!at(x - 1, y)) setColour(i, RIM_SOFT);
+                        else if (!at(x + 1, y)) setColour(i, RIM_DARK);
+                    }
+                }
+                g.putImageData(out, 0, 0);
+            };
+            const tops = new Image();
+            const faces = new Image();
+            tops.onload = faces.onload = draw;
+            tops.src = IMG + 'rock-top.png' + VERSION;
+            faces.src = IMG + 'rock-face.png' + VERSION;
+            draw();
             // at the foot of a face: glowing mushrooms and crystals (with
             // their own light, above the dark), red mushrooms, stalagmites
+            this.shining = [];
             for (let y = 0; y < this.layout.height; y++) {
                 for (let x = 0; x < this.layout.width; x++) {
                     if (!wall(x, y) || wall(x, y + 1)) continue;

@@ -235,20 +235,6 @@ def rock_face(variant):
     return img
 
 
-def rim(side):
-    """The edge of the rock's top where an open tile lies to that side."""
-    img = canvas()
-    for i in range(T):
-        if side == 'n':
-            put(img, i, 0, ROCK[5])
-            put(img, i, 1, tone(ROCK, 4.4, i, 1))
-        elif side == 'w':
-            put(img, 0, i, ROCK[4])
-        else:
-            put(img, T - 1, i, ROCK[0])
-    return img
-
-
 # --- the characters: from the 2D Game Studio ------------------------------
 # Pip, the Glibber, Bello and the Wichtel are the figures of the 2D Game
 # Studio's demo game (specht/2d, rezepte/sprites, copied to catalog/), so
@@ -556,7 +542,6 @@ def main():
         'floor.png': strip([floor(i) for i in range(4)]),
         'rock-top.png': strip([rock_top(i) for i in range(3)]),
         'rock-face.png': strip([rock_face(i) for i in range(4)]),
-        'rim-n.png': rim('n'), 'rim-w.png': rim('w'), 'rim-e.png': rim('e'),
         'stone.png': strip([stone(i) for i in range(4)]),
         'glibber.png': strip([grounded(f, 8) for f in frames(load('glibber_laufen.png'))]),
         'bello.png': strip([grounded(f, 8) for f in frames(load('hund_stehen.png'))]),
