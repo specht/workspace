@@ -48,15 +48,15 @@ module PipCheck
         'ruby' => { 'move' => 'move', 'turn_left' => 'turn_left', 'take' => 'take', 'wait' => 'wait', 'pull' => 'pull',
                     'on_stone' => 'on_stone?', 'on_lever' => 'on_lever?', 'front_clear' => 'front_clear?', 'glibber_ahead' => 'glibber_ahead?',
                     'on_lamp' => 'on_lamp?', 'trail_ahead' => 'trail_ahead?', 'puddle_ahead' => 'puddle_ahead?', 'bello_here' => 'bello_here?',
-                    'say' => 'say' },
+                    'cave_map' => 'cave_map', 'facing' => 'facing', 'say' => 'say' },
         'python' => { 'move' => 'move', 'turn_left' => 'turn_left', 'take' => 'take', 'wait' => 'wait', 'pull' => 'pull',
                       'on_stone' => 'on_stone', 'on_lever' => 'on_lever', 'front_clear' => 'front_clear', 'glibber_ahead' => 'glibber_ahead',
                       'on_lamp' => 'on_lamp', 'trail_ahead' => 'trail_ahead', 'puddle_ahead' => 'puddle_ahead', 'bello_here' => 'bello_here',
-                      'say' => 'say' },
+                      'cave_map' => 'cave_map', 'facing' => 'facing', 'say' => 'say' },
         'javascript' => { 'move' => 'move', 'turn_left' => 'turnLeft', 'take' => 'take', 'wait' => 'wait', 'pull' => 'pull',
                           'on_stone' => 'onStone', 'on_lever' => 'onLever', 'front_clear' => 'frontClear', 'glibber_ahead' => 'glibberAhead',
                           'on_lamp' => 'onLamp', 'trail_ahead' => 'trailAhead', 'puddle_ahead' => 'puddleAhead', 'bello_here' => 'belloHere',
-                          'say' => 'say' },
+                          'cave_map' => 'caveMap', 'facing' => 'facing', 'say' => 'say' },
     }.freeze
     COMMANDS = NAMES['ruby'].keys.freeze
     # What each command does, for the card's list of commands (TaskCard).
@@ -65,9 +65,10 @@ module PipCheck
         'wait' => 'einen Schritt stehen bleiben', 'pull' => 'am Hebel hier ziehen', 'on_stone' => 'liegt hier ein Funkenstein?',
         'on_lever' => 'steht hier ein Hebel?', 'front_clear' => 'ist das Feld vorn frei?', 'glibber_ahead' => 'ist vorn ein Glibber, oder kommt gleich einer?',
         'on_lamp' => 'steht Pip an der Lampe?', 'trail_ahead' => 'sind vorn Pfotenabdrücke?', 'puddle_ahead' => 'ist vorn eine Pfütze?',
-        'bello_here' => 'ist Bello hier?', 'say' => 'etwas sagen, ohne einen Schritt',
+        'bello_here' => 'ist Bello hier?', 'cave_map' => 'die Karte des Wichtels, wie sie gerade ist: eine Liste von Zeilen',
+        'facing' => 'wohin Pip schaut: "east", "north", "west" oder "south"', 'say' => 'etwas sagen, ohne einen Schritt',
     }.freeze
-    QUESTIONS = %w[on_stone on_lever front_clear glibber_ahead on_lamp trail_ahead puddle_ahead bello_here].freeze
+    QUESTIONS = %w[on_stone on_lever front_clear glibber_ahead on_lamp trail_ahead puddle_ahead bello_here cave_map facing].freeze
 
     # How a command is written in language: a step with its parentheses
     # (Ruby without), say with a text.
@@ -91,6 +92,7 @@ module PipCheck
         'no_stone' => 'greift Pip ins Leere: Hier liegt kein Funkenstein',
         'no_lever' => 'zieht Pip an einem Hebel, der nicht da ist',
         'caught' => 'erwischt ein Glibber Pip',
+        'chomped' => 'schnappt der Mampfer Pip',
         'puddle' => 'tritt Pip in eine Pfütze',
         'steps' => "hält Pip nach #{PipWorld::MAX_STEPS} Schritten an. Läuft Pip im Kreis?",
     }.freeze
@@ -185,6 +187,8 @@ module PipCheck
                         sys.stdout.flush()
                         import os
                         os._exit(0)
+                    if answer.startswith(('[', '"')):
+                        return json.loads(answer)
                     return {'true': True, 'false': False}.get(answer)
                 #{functions}
                 _names = {name: value for name, value in globals().items() if not name.startswith('_')}
@@ -204,6 +208,8 @@ module PipCheck
                     $stdout.write("\\x1ePIP " + JSON.generate({ 'c' => command, 'l' => location&.lineno, 't' => text }) + "\\n")
                     answer = $stdin.gets.to_s.strip
                     exit!(0) if answer == 'end'
+                    return JSON.parse(answer) if answer.start_with?('[', '"')
+
                     { 'true' => true, 'false' => false }[answer]
                 end
                 #{functions}
@@ -233,6 +239,7 @@ module PipCheck
                     fs.writeSync(1, '\\x1ePIP ' + JSON.stringify({ c: command, l: line, t: text === undefined ? null : text }) + '\\n');
                     const answer = readLine().trim();
                     if (answer === 'end') process.exit(0);
+                    if (answer.startsWith('[') || answer.startsWith('"')) return JSON.parse(answer);
                     return answer === 'true' ? true : answer === 'false' ? false : undefined;
                 }
                 #{functions}
@@ -268,6 +275,9 @@ module PipCheck
             next 'end' unless request.is_a?(Hash) && allowed.include?(request['c'])
 
             answer = world.command(request['c'], :line => request['l'], :text => request['t'])
+            # cave_map and facing: data, as JSON (the prelude reads it back)
+            next JSON.generate(answer) if PipWorld::QUERIES.include?(request['c']) && answer != 'end'
+
             answer == true || answer == false ? answer.to_s : answer
         end
         language = check['language']

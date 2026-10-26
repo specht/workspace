@@ -11,6 +11,7 @@
 #   o  Funkenstein        L  the lamp (goal)   G  Glibber, moving east–west
 #   g  Glibber, moving north–south            H  lever      T  spikes (raised)
 #   p  paw prints          ~  puddle            B  Bello
+#   M  the Mampfer         *  a lamp that burns already (its light)
 #
 # A step is move, turn_left, take, wait or pull. After each step every
 # Glibber moves one tile, turning back at walls; one on Pip's tile catches
@@ -23,6 +24,17 @@
 # without a lever, a Glibber and too many steps end the run with that
 # event; with dry: true, so does stepping into a puddle (»trockene Füße«).
 #
+# The Mampfer (Teil 3): after each step of Pip (a turn, a wait and taking
+# a stone are steps too, say is none), it goes one tile along a shortest
+# way to Pip, so Pip standing still is caught. The way is a
+# breadth-first search from Pip (neighbours in the order of DIRECTIONS),
+# and the Mampfer steps to its tile's predecessor, the next tile towards
+# Pip. It never steps into light, the 3 × 3 tiles around a lamp that burns
+# (*); Pip may. Pip on its tile, or it on Pip's, ends the run (chomped).
+# cave_map and facing ask what Pip knows from the Wichtel's map: the map
+# as it is now (rows of the legend, Pip, the Mampfer, Glibbers and the
+# stones where they are) and where Pip looks; like a sensor, no step.
+#
 # While a program is only being loaded (quiet: a check that calls one of
 # its functions afterwards, PipCheck), commands do nothing and are not
 # written down; only say still shows.
@@ -33,6 +45,7 @@ class PipWorld
     DELTA = { 'east' => [1, 0], 'north' => [0, -1], 'west' => [-1, 0], 'south' => [0, 1] }.freeze
     STEPS = %w[move turn_left take wait pull].freeze
     SENSORS = %w[on_stone on_lever front_clear glibber_ahead on_lamp trail_ahead puddle_ahead bello_here].freeze
+    QUERIES = %w[cave_map facing].freeze
     MAX_STEPS = 1000
     MAX_SAY = 80
     # pulls that lower the spikes (T, a gate in the world); one more raises
@@ -58,6 +71,8 @@ class PipWorld
         @gates = {}
         @lamp = nil
         @bello = nil
+        @mampfers = []
+        @burning = {}
         start = nil
         rows.each_with_index do |row, y|
             row.ljust(@width, '#').each_char.with_index do |c, x|
@@ -73,12 +88,15 @@ class PipWorld
                 when 'p' then @floor_marks[[x, y]] = :trail
                 when '~' then @floor_marks[[x, y]] = :puddle
                 when 'B' then @bello = [x, y]
+                when 'M' then @mampfers << { :x => x, :y => y }
+                when '*' then @burning[[x, y]] = true
                 when '.', ' ' then nil
                 else raise Error, "unknown tile #{c.inspect} in row #{y + 1}"
                 end
             end
         end
         raise Error, 'the map has no P' unless start
+        raise Error, 'the Mampfer cannot stand in the light' if @mampfers.any? { |m| light?(m[:x], m[:y]) }
         raise Error, "facing must be one of #{DIRECTIONS.join(', ')}" unless DIRECTIONS.include?(facing)
 
         @pip = { :x => start[0], :y => start[1], :facing => facing }
@@ -102,6 +120,7 @@ class PipWorld
             :levers => @levers.keys, :gates => @gates.keys,
             :trail => trail_directions,
             :puddles => @floor_marks.select { |_, v| v == :puddle }.keys,
+            :burning => @burning.keys,
         }
     end
 
@@ -176,6 +195,7 @@ class PipWorld
             @trace << frame(:say, line, :text => text.to_s[0, MAX_SAY])
             return 'ok'
         end
+        return query(name) if QUERIES.include?(name)
         return SENSORS.include?(name) ? false : 'ok' if @quiet
         return sense(name) if SENSORS.include?(name)
         raise Error, "unknown command #{name}" unless STEPS.include?(name)
@@ -195,6 +215,10 @@ class PipWorld
             @pip[:x], @pip[:y] = x, y
             if @dry && @floor_marks[here] == :puddle
                 finish(:puddle, line)
+                return 'end'
+            end
+            if chomped?
+                finish(:chomped, line)
                 return 'end'
             end
             event = :move
@@ -229,9 +253,15 @@ class PipWorld
         # the replay shows Pip walk up to it
         move_glibbers
         reached = (:lamp if at_lamp?) || (:bello if at_bello?)
+        # at the lamp it is too late for the Mampfer
+        move_mampfers unless reached
         @trace << frame(event, line) unless reached && !caught?
         if caught?
             finish(:caught, line)
+            return 'end'
+        end
+        if chomped?
+            finish(:chomped, line)
             return 'end'
         end
         if reached
@@ -276,6 +306,69 @@ class PipWorld
         end
     end
 
+    # In the light of a lamp that burns: its tile and the eight around it.
+    def light?(x, y)
+        @burning.keys.any? { |bx, by| (bx - x).abs <= 1 && (by - y).abs <= 1 }
+    end
+
+    def chomped?
+        @mampfers.any? { |m| m[:x] == @pip[:x] && m[:y] == @pip[:y] }
+    end
+
+    # Breadth-first search from Pip over the tiles the Mampfer may walk:
+    # for every tile it reaches, its predecessor, the tile one step nearer
+    # to Pip.
+    def towards_pip
+        predecessor = { here => nil }
+        queue = [here]
+        until queue.empty?
+            x, y = queue.shift
+            DIRECTIONS.each do |direction|
+                dx, dy = DELTA[direction]
+                n = [x + dx, y + dy]
+                next if predecessor.key?(n) || @walls[n] || @gates[n] || light?(*n) ||
+                        n[0].negative? || n[1].negative? || n[0] >= @width || n[1] >= @height
+
+                predecessor[n] = [x, y]
+                queue << n
+            end
+        end
+        predecessor
+    end
+
+    # One tile each, towards Pip; never into the light, not even onto Pip
+    # standing in it, and not at all without a way.
+    def move_mampfers
+        return if @mampfers.empty?
+
+        predecessor = towards_pip
+        @mampfers.each do |m|
+            to = predecessor[[m[:x], m[:y]]]
+            next if to.nil? || light?(*to)
+
+            m[:x], m[:y] = to
+        end
+    end
+
+    # What cave_map and facing answer.
+    def query(name)
+        return @pip[:facing] if name == 'facing'
+
+        rows = Array.new(@height) { |y| Array.new(@width) { |x| @walls[[x, y]] ? '#' : '.' } }
+        put = ->(p, c) { rows[p[1]][p[0]] = c }
+        @floor_marks.each { |p, mark| put.call(p, mark == :trail ? 'p' : '~') }
+        @levers.each_key { |p| put.call(p, 'H') }
+        @gates.each_key { |p| put.call(p, 'T') }
+        @burning.each_key { |p| put.call(p, '*') }
+        put.call(@lamp, 'L') if @lamp
+        put.call(@bello, 'B') if @bello
+        @stones.each_key { |p| put.call(p, 'o') }
+        @glibbers.each { |g| put.call([g[:x], g[:y]], g[:dx].zero? ? 'g' : 'G') }
+        @mampfers.each { |m| put.call([m[:x], m[:y]], 'M') }
+        put.call(here, 'P')
+        rows.map(&:join)
+    end
+
     # Where a Glibber will be after the next step, without moving it.
     def next_position(g)
         copy = g.dup
@@ -314,6 +407,7 @@ class PipWorld
             :event => event, :line => line, :step => @steps,
             :pip => @pip.dup, :glibbers => @glibbers.map { |g| [g[:x], g[:y]] },
             :stones => @stones.keys, :pulls => @pulls,
+            :mampfers => @mampfers.map { |m| [m[:x], m[:y]] },
         }.merge(extra)
     end
 end

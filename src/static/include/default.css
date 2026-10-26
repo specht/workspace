@@ -8881,6 +8881,29 @@ html[data-bs-theme="dark"] .bitplane-widget {
     background-size: 400% 100%;
     animation: pip-frames-4 0.9s steps(4) infinite;
 }
+/* the Mampfer (Teil 3): 32 × 37 pixels (make_sprites.py), its feet where
+   every figure's are, reaching into the tile above and a little over the
+   sides; chomping, and running while it moves (--step) */
+.pip-mampfer {
+    --w: calc(var(--tile) * 32 / 24);
+    width: var(--w);
+    height: calc(var(--tile) * 37 / 24);
+    margin: calc(var(--tile) * -14 / 24) 0 0 calc(var(--tile) * -4 / 24);
+    background-image: url(/images/pip/mampfer.png?v=13);
+    background-size: 800% 100%;
+    animation: pip-mampfer-chomp 0.8s steps(4) infinite;
+}
+.pip-mampfer.pip-running { animation: pip-mampfer-run max(var(--step), 1ms) steps(4); }
+@keyframes pip-mampfer-chomp { to { background-position-x: calc(var(--w) * -4); } }
+@keyframes pip-mampfer-run {
+    from { background-position-x: calc(var(--w) * -4); }
+    to { background-position-x: calc(var(--w) * -8); }
+}
+/* the nine fields in the light of a lamp that burns: the Mampfer keeps out */
+.pip-safe {
+    z-index: 3;
+    background: rgba(255, 190, 100, 0.16);
+}
 .pip-bello {
     background-image: url(/images/pip/bello.png?v=13);
     background-size: 400% 100%;
@@ -8972,6 +8995,11 @@ html[data-bs-theme="dark"] .bitplane-widget {
     opacity: 1;
     animation: pip-burst 900ms ease-out, pip-flicker 2.3s ease-in-out 900ms infinite alternate;
 }
+/* a lamp lit long ago: only its flicker */
+.pip-glow-lamp.pip-burning {
+    opacity: 1;
+    animation: pip-flicker 2.3s ease-in-out infinite alternate;
+}
 .pip-glow-stone { background: radial-gradient(closest-side, rgba(255, 214, 100, 0.6), transparent 85%); }
 .pip-glow-stone.pip-taken { opacity: 0; }
 .pip-glow-shroom { background: radial-gradient(closest-side, rgba(100, 220, 255, 0.7), rgba(100, 220, 255, 0.25) 50%, transparent); }
@@ -9052,6 +9080,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
     .pip-firefly,
     .pip-bat,
     .pip-glow-lamp.pip-lit,
+    .pip-glow-lamp.pip-burning,
     .pip-pip.pip-cheer,
     .pip-spikes.pip-sinking,
     .pip-spikes.pip-rising,

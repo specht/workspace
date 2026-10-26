@@ -35,7 +35,7 @@
         return parts.filter((p) => p.length > 0);
     }
     const READ_TIME = (sentence) => 1000 * Math.max(1.5, 1.0 + 0.065 * sentence.length);
-    const SAY = { wall: 'Autsch!', gate: 'Lieber nicht!', puddle: 'Platsch!', bello: 'Bello!', caught: 'Iiih, Glibber!', no_stone: 'Hier ist nichts …', no_lever: 'Kein Hebel?', steps: 'Puh …', lamp: 'Licht!' };
+    const SAY = { wall: 'Autsch!', gate: 'Lieber nicht!', puddle: 'Platsch!', bello: 'Bello!', caught: 'Iiih, Glibber!', chomped: 'Mampf!', no_stone: 'Hier ist nichts …', no_lever: 'Kein Hebel?', steps: 'Puh …', lamp: 'Licht!' };
 
     function el(tag, className, parent) {
         const node = document.createElement(tag);
@@ -169,6 +169,16 @@
             const mirrored = layout.lamp && wall(layout.lamp[0] + 1, layout.lamp[1]) && !wall(layout.lamp[0] - 1, layout.lamp[1]);
             if (layout.lamp) this.lampGlow = this.glow('lamp', [layout.lamp[0] + (mirrored ? -0.15 : 0.15), layout.lamp[1] - 0.6], 3);
             (layout.stones || []).forEach((p) => { this.stoneGlows[key(p)] = this.glow('stone', p, 0.75); });
+            // the lamps Pip has lit before (Teil 3): burning, and the nine
+            // fields of their light, which the Mampfer keeps out of, tinted
+            (layout.burning || []).forEach((p) => {
+                const right = wall(p[0] + 1, p[1]) && !wall(p[0] - 1, p[1]);
+                this.glow('lamp', [p[0] + (right ? -0.15 : 0.15), p[1] - 0.6], 3).classList.add('pip-burning');
+                this.tile('lamp pip-lit pip-sort pip-tall pip-bright' + (right ? ' pip-mirrored' : ''), p);
+                for (let dy = -1; dy <= 1; dy++) {
+                    for (let dx = -1; dx <= 1; dx++) if (!wall(p[0] + dx, p[1] + dy)) this.tile('safe', [p[0] + dx, p[1] + dy]);
+                }
+            });
             this.lantern = this.glow('lantern actor', [start.pip.x, start.pip.y], 3.5);
             // shining by themselves, above the light, sorted by row
             (layout.stones || []).forEach((p) => { this.stones[key(p)] = this.tile('stone', p); });
@@ -181,6 +191,8 @@
                 for (let i = 0; i < 10; i++) el('i', null, this.sparks).style.setProperty('--a', (i * 36 + 8) + 'deg');
             }
             this.pip = this.tile('pip pip-sort pip-bright actor', [start.pip.x, start.pip.y]);
+            // the Mampfer, above the light: in the dark it would not be seen
+            this.mampfers = (start.mampfers || []).map((p) => this.tile('mampfer pip-bright actor', p));
             this.creatures(wall);
             (layout.labels || []).forEach((label) => { this.tile('label', label.at).textContent = label.text; });
             this.bubble = el('div', 'pip-bubble', this.world);
@@ -471,7 +483,7 @@
             const list = (name) => (map[name] || []).map(at);
             const layout = {
                 width: cols, height: rows, walls,
-                stones: list('stones'), levers: list('levers'), gates: list('gates'), trail: list('trail'), puddles: list('puddles'),
+                stones: list('stones'), levers: list('levers'), gates: list('gates'), trail: list('trail'), puddles: list('puddles'), burning: list('burning'),
                 lamp: map.lamp && at(map.lamp), bello: map.bello && at(map.bello),
                 labels: (map.labels || []).map((label) => ({ at: at(label.at), text: label.text })),
             };
@@ -483,6 +495,7 @@
             return Object.assign({}, frame, {
                 pip: Object.assign({}, frame.pip, { x: frame.pip.x + ox, y: frame.pip.y + oy }),
                 glibbers: (frame.glibbers || []).map((g) => [g[0] + ox, g[1] + oy]),
+                mampfers: (frame.mampfers || []).map((m) => [m[0] + ox, m[1] + oy]),
                 stones: (frame.stones || []).map((p) => [p[0] + ox, p[1] + oy]),
             });
         }
@@ -522,11 +535,24 @@
             this.pip.dataset.facing = pip.facing;
             this.pip.classList.toggle('pip-walking', animate && ['move', 'lamp', 'bello'].includes(frame.event));
             this.pip.classList.toggle('pip-bump', frame.event === 'wall');
-            this.pip.classList.toggle('pip-caught', frame.event === 'caught');
+            this.pip.classList.toggle('pip-caught', frame.event === 'caught' || frame.event === 'chomped');
             (frame.glibbers || []).forEach((g, i) => {
                 if (!this.glibbers[i]) return;
                 this.glibbers[i].style.setProperty('--x', g[0]);
                 this.glibbers[i].style.setProperty('--y', g[1]);
+            });
+            // the Mampfer runs while it moves, and chomps standing
+            (frame.mampfers || []).forEach((m, i) => {
+                const node = this.mampfers[i];
+                if (!node) return;
+                const moved = node.style.getPropertyValue('--x') !== String(m[0]) || node.style.getPropertyValue('--y') !== String(m[1]);
+                node.style.setProperty('--x', m[0]);
+                node.style.setProperty('--y', m[1]);
+                node.classList.remove('pip-running');
+                if (animate && moved) {
+                    void node.offsetWidth;
+                    node.classList.add('pip-running');
+                }
             });
             const left = new Set((frame.stones || []).map(key));
             Object.keys(this.stones).forEach((k) => this.stones[k].classList.toggle('pip-taken', !left.has(k)));
@@ -850,8 +876,8 @@
     // Pip looks east. Drawn once, nothing moves.
     function parse(text) {
         const rows = text.split('\n').filter((row) => row.trim() !== '');
-        const layout = { width: Math.max(...rows.map((row) => row.length)), height: rows.length, walls: [], stones: [], levers: [], gates: [], trail: [], puddles: [], labels: [] };
-        const start = { event: 'start', step: 0, glibbers: [], stones: [], pulls: 0, pip: { x: 0, y: 0, facing: 'east' } };
+        const layout = { width: Math.max(...rows.map((row) => row.length)), height: rows.length, walls: [], stones: [], levers: [], gates: [], trail: [], puddles: [], labels: [], burning: [] };
+        const start = { event: 'start', step: 0, glibbers: [], mampfers: [], stones: [], pulls: 0, pip: { x: 0, y: 0, facing: 'east' } };
         rows.forEach((row, y) => {
             row.split('').forEach((c, x) => {
                 const p = [x, y];
@@ -864,6 +890,8 @@
                 else if (c === 'p') layout.trail.push(p);
                 else if (c === '~') layout.puddles.push(p);
                 else if (c === 'G' || c === 'g') start.glibbers.push(p);
+                else if (c === 'M') start.mampfers.push(p);
+                else if (c === '*') layout.burning.push(p);
                 else if (c === 'P') start.pip = { x: x, y: y, facing: 'east' };
                 else if (/[0-9]/.test(c)) layout.labels.push({ at: p, text: c });
             });

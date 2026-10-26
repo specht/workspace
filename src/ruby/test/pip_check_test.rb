@@ -140,5 +140,33 @@ class PipCheckTest < Minitest::Test
         assert_equal :correct, PipCheck.check({}, counting, plan.sub('say n', 'say "Ich habe #{n} Steine."'), RUN).first
         assert_equal :wrong, PipCheck.check({}, counting, plan.sub('say n', 'say "#{n} von 3"'), RUN).first
     end
-end
 
+    # cave_map and facing come back as data: a list of rows, a text
+    def test_cave_map_and_facing_in_each_language
+        needs_docker
+        corridor = [{ 'map' => "#######\n#P...L#\n#######", 'facing' => 'east' }]
+        plans = {
+            'ruby' => "row = cave_map[1]\n(row.index('L') - row.index('P')).times { move }\n",
+            'python' => "row = cave_map()[1]\nfor _ in range(row.index('L') - row.index('P')):\n    move()\n",
+            'javascript' => "const row = caveMap()[1];\nfor (let i = 0; i < row.indexOf('L') - row.indexOf('P'); i++) move();\n",
+        }
+        plans.each do |language, plan|
+            c = check(language, :maps => corridor, :commands => %w[move cave_map facing], :goal => { 'lamp' => true })
+            assert_empty PipCheck.spec_errors(c)
+            status, message, = PipCheck.check({}, c, plan, RUN)
+            assert_equal :correct, status, "#{language}: #{message}"
+            said = { 'ruby' => 'say facing', 'python' => 'say(facing())', 'javascript' => 'say(facing());' }[language]
+            replay = PipCheck.check({}, c, "#{said}\n#{plan}", RUN)[3]
+            assert_equal ['east'], replay[:said], language
+        end
+    end
+
+    def test_the_mampfer_chomps_with_the_line
+        needs_docker
+        c = check('ruby', :maps => [{ 'map' => "########\n#M.P..L#\n########", 'facing' => 'east' }],
+                          :commands => %w[move turn_left wait], :goal => { 'lamp' => true })
+        status, message, = PipCheck.check({}, c, "move\nwait\nwait\n", RUN)
+        assert_equal :wrong, status
+        assert_equal 'Hier in Zeile 3 schnappt der Mampfer Pip.', message
+    end
+end

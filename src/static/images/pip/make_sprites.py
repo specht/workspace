@@ -572,6 +572,24 @@ def bat(frame):
     return img
 
 
+# --- the Mampfer: 0x72's »big demon« -------------------------------------
+# From the 16x16 DungeonTileset II by 0x72 (https://0x72.itch.io/dungeontileset-ii,
+# CC0), the monster of the old Hackschule, copied to catalog/. 32 × 36, its
+# pixels as large as Pip's: it reaches into the tile above, like the lamp
+# post, and a little over the sides. Its feet are on the bottom row, a
+# shadow under them; frames 0 to 3 chomp, 4 to 7 run.
+def mampfer_frames():
+    out = []
+    for name in ('mampfer_idle.png', 'mampfer_run.png'):
+        image = load(name)
+        for x in range(0, image.width, 32):
+            img = canvas(32, 37)
+            shadow(img, 16, 35.2, 9, 1.6)
+            img.alpha_composite(image.crop((x, 0, x + 32, 36)), (0, 0))
+            out.append(img)
+    return out
+
+
 def main():
     out = {
         'floor.png': strip([floor(i) for i in range(4)]),
@@ -587,6 +605,7 @@ def main():
         'glowshroom.png': glowshroom(), 'mushroom.png': mushroom(), 'crystals.png': crystals(),
         'stalagmite.png': stalagmite(), 'bat.png': strip([bat(i) for i in range(4)]),
         'wichtel.png': load('wichtel_stehen.png'),
+        'mampfer.png': strip(mampfer_frames()),
     }
     for direction in ('east', 'west', 'north', 'south'):
         out[f'pip-{direction}.png'] = strip(pip_frames(direction))

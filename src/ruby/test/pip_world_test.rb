@@ -158,5 +158,61 @@ class PipWorldTest < Minitest::Test
         w = PipWorld.new("#######\n#Pp~p.#\n####pB#\n#######")
         assert_equal [[2, 1, 90], [4, 1, 135], [4, 2, 135]], w.layout[:trail].sort
     end
-end
 
+    # the Mampfer: one tile after each step of Pip, along the shortest way,
+    # round the pillar on the side that is shorter; a turn and a wait are
+    # steps too, so Pip standing still is caught
+    def test_the_mampfer_takes_the_shortest_way_after_each_step
+        w = PipWorld.new("#######\n#M....#\n#.###.#\n#...P.#\n#######", :facing => 'west')
+        w.command('move')
+        assert_equal [[1, 2]], w.trace.last[:mampfers]
+        w.command('turn_left')
+        assert_equal [[1, 3]], w.trace.last[:mampfers]
+        w.command('say', :text => 'Hilfe!')
+        assert_equal [[1, 3]], w.trace.last[:mampfers], 'say is no step'
+        w.command('wait')
+        assert_equal [[2, 3]], w.trace.last[:mampfers]
+        assert_equal 'end', w.command('wait')
+        assert_equal :chomped, w.ended
+    end
+
+    def test_the_mampfer_chomps_pip
+        w = PipWorld.new("#####\n#P.M#\n#####")
+        assert_equal 'end', w.command('move', :line => 1)
+        assert_equal :chomped, w.ended
+        assert_equal 1, w.trace.last[:line]
+        # walking into it is as bad
+        w = PipWorld.new("#####\n#PM.#\n#####")
+        w.command('move')
+        assert_equal :chomped, w.ended
+    end
+
+    # the light of a lamp that burns: the 3 × 3 tiles round it; the
+    # Mampfer does not step in, not even onto Pip standing there
+    def test_the_mampfer_keeps_out_of_the_light
+        w = PipWorld.new("#########\n#M.....P#\n#...*...#\n#########", :facing => 'west')
+        3.times { w.command('move') }
+        assert_equal [[1, 1]], w.trace.last[:mampfers], 'the light cuts the way'
+        # Pip at the edge of the light: the Mampfer comes up to it
+        w.command('move')
+        assert_equal [3, 1], [w.pip[:x], w.pip[:y]]
+        assert_equal [[2, 1]], w.trace.last[:mampfers]
+        assert_nil w.ended
+        w = PipWorld.new("#######\n#MP..*#\n#######")
+        3.times { w.command('move') }
+        assert_equal [[3, 1]], w.trace.last[:mampfers]
+        assert_nil w.ended
+        assert_equal [[5, 1]], w.layout[:burning]
+        assert_raises(PipWorld::Error) { PipWorld.new("######\n#P.M*#\n######") }
+    end
+
+    # what the Wichtel's map says, now: no step
+    def test_cave_map_and_facing
+        w = PipWorld.new("######\n#P.o.#\n####M#\n####L#\n######")
+        assert_equal ['######', '#P.o.#', '####M#', '####L#', '######'], w.command('cave_map')
+        assert_equal 'east', w.command('facing')
+        w.command('move')
+        assert_equal ['######', '#.PoM#', '####.#', '####L#', '######'], w.command('cave_map')
+        assert_equal 1, w.steps
+    end
+end

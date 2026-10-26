@@ -753,14 +753,41 @@ The rules that came out of the same review are in
    validates it). Pip starts facing down, so the first left turn goes to the
    right of the screen: »left is Pip's left« is felt before the prediction
    asks it. »Der Schacht« then says: from now on you write the plan.
-2. **A chasing monster for a finale.** As in the old Hackschule: a monster
-   that, after each of Pip's steps, moves one field towards Pip (the longer
-   distance first, around nothing: a wall stops it), so that clever
-   navigation (round a pillar, through a door it cannot take) gets Pip away.
-   Deterministic, so a plan can be predicted and checked; a sensor for it
-   (`monster_ahead`). Probably the last chapter of Teil 2 or the start of a
-   Teil 3; needs a sprite and maps where escaping is possible but not by
-   chance.
+2. **A chasing monster for a finale: Teil 3, »Der Mampfer«** (being built).
+   The maintainer: the monster of the old Hackschule, which always found
+   the shortest way; keep it, make it the way into breadth-first search.
+   The sprite is that monster, 0x72's »big demon« from the 16x16
+   DungeonTileset II (CC0, https://0x72.itch.io/dungeontileset-ii; credited
+   anyway, as the old Impressum did), copied to `images/pip/catalog/` and
+   built into `mampfer.png` by make_sprites.py, its pixels as large as
+   Pip's. The rules (PipWorld):
+   - After every step of Pip, a turn, `wait` and `take` included, the
+     Mampfer goes one tile along a shortest way to Pip: Pip standing still
+     is caught (the maintainer). `say` is no step.
+   - The way is a breadth-first search from Pip, neighbours in the order
+     east, north, west, south; the Mampfer steps to its tile's
+     predecessor. That is the Handbuch's `breadth_first_search` exactly,
+     so the widget and the students' own search are the same algorithm.
+   - The lamps Pip lit in Teil 1 and 2 still burn (`*`): the Mampfer never
+     steps into their light, the 3 × 3 tiles round them (tinted on the
+     map), not even onto Pip standing there.
+   - Pip on its tile or it on Pip's ends the run (»schnappt der Mampfer
+     Pip«).
+   - Two new questions, no step: `cave_map` (the map as it is now, a list of
+     rows in the legend) and `facing` (»east«, »north«, »west«, »south«).
+   Because turns cost a step, the shortest way in tiles is not always the
+   cheapest; the generated maps of the last chapter are therefore checked
+   by simulation: every shortest way escapes, counting its turns at worst
+   (a right turn as three lefts), and the wall-following plans of Teil 2
+   are caught.
+   Chapters: (1) the Mampfer wakes: what it does, a prediction round a
+   pillar, fleeing, the light as a refuge; (2) what the Mampfer knows: the
+   breadth-first search on Pip's map as a widget (»Was der Mampfer
+   sieht«), then function Katas on the map as a list of rows (find a
+   tile, the free neighbours, the distance, the way); (3) the shortest way:
+   Pip reads the map, searches and walks the way, on generated mazes with
+   loops. In the catalogue after »Suchen«: it needs lists and
+   dictionaries. Then there are 13 Kata pages.
 3. **The front page instead of `/katas`** (done). One strip of the Kata
    sets (`carousel: true` in sections.yaml, `KataMap.carousel_html`), each
    with its picture or icon, idea, number of Katas and progress, the total
@@ -841,8 +868,8 @@ Pip
 - Turns and taking a stone play faster than a step; the speed holds for the
   page and the next one. Pip speaks sentence by sentence in Pixelify Sans.
 - The story ends in itself, without a teaser for the 2D Game Studio.
-- The first chapter is clicked, not typed (»Next«, 1). To be built: a
-  chasing monster as a finale.
+- The first chapter is clicked, not typed (»Next«, 1). Teil 3 is the
+  chasing monster, the Mampfer (»Next«, 2).
 
 The sets
 - FizzBuzz is introduced as an English counting game; »Brot« (divisible by 3
