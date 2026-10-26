@@ -9103,10 +9103,33 @@ html[data-bs-theme="dark"] .bitplane-widget {
     .pip-layout .stepper-timeline { grid-area: timeline; }
     .pip-layout > .code-input,
     .pip-layout > textarea { grid-area: code; }
-    /* the plan as high as the scene beside it (pip_world.js, --scene-height) */
+    /* the plan as high as the scene beside it (pip_world.js,
+       --scene-height), no higher: a longer plan scrolls (code_input.js
+       moves the colours, the numbers and the marked line along, and
+       follows a run). The text, its colours and its measuring copy keep
+       room for the same thin scrollbar, so that their lines wrap alike. */
     .pip-layout .code-input-text,
     .pip-layout > textarea {
         min-height: var(--scene-height, 16em);
+        max-height: var(--scene-height, 16em);
+    }
+    .pip-layout .code-input .code-input-text {
+        overflow-y: auto;
+        scrollbar-width: thin;
+    }
+    .pip-layout .code-input-text,
+    .pip-layout .code-input-view,
+    .pip-layout .code-input-mirror {
+        scrollbar-gutter: stable;
+    }
+    .pip-layout .code-input-mirror,
+    .pip-layout .code-input-gutter {
+        overflow: hidden;
+    }
+    /* as much room below the last number as below the last line, so that
+       the numbers scroll as far as the text */
+    .pip-layout .code-input-gutter {
+        padding-bottom: calc(0.375rem + 1px);
     }
     .pip-layout > .pip-commands,
     .pip-layout > .pip-buttons { grid-area: commands; }

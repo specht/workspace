@@ -384,7 +384,14 @@
             number();
         }
         textarea.addEventListener('input', update);
-        textarea.addEventListener('scroll', () => { view.scrollTop = textarea.scrollTop; });
+        // An editor with a fixed height (Pip's plan beside the map) scrolls:
+        // the colours, the numbers and the marked line go along.
+        let marked = null;
+        textarea.addEventListener('scroll', () => {
+            view.scrollTop = textarea.scrollTop;
+            gutter.scrollTop = textarea.scrollTop;
+            if (marked) place(marked);
+        });
         // Another width wraps the lines differently.
         if (window.ResizeObserver) {
             let width = 0;
@@ -397,10 +404,20 @@
         // The line a run is at (Pip's plan, pip_world.js), as a bar behind the
         // text; null takes it away. Long lines wrap, so the line's place is
         // measured: a marker at its first character, taken out again.
+        // where the mark stands, from the line's place in the text and how far
+        // the editor is scrolled; out of sight it is hidden
+        function place(at) {
+            const mark = box.querySelector('.code-input-mark');
+            if (!mark) return;
+            const top = at.top - textarea.scrollTop;
+            mark.style.top = top + 'px';
+            mark.hidden = top + at.height <= 0 || top >= textarea.clientHeight;
+        }
         textarea.codeInputMark = function (line) {
             let mark = box.querySelector('.code-input-mark');
             [...gutter.children].forEach((n, i) => n.classList.toggle('current', i + 1 === line));
             if (!line) {
+                marked = null;
                 if (mark) mark.hidden = true;
                 return;
             }
@@ -428,9 +445,16 @@
             probe.remove();
             view.normalize();
             const style = getComputedStyle(view);
-            mark.style.top = top + 'px';
-            mark.style.height = parseFloat(style.lineHeight) + 'px';
-            mark.hidden = false;
+            const height = parseFloat(style.lineHeight);
+            mark.style.height = height + 'px';
+            // a run goes on below or above what is in view: the editor
+            // follows, so that the line stays a third from the top
+            if (textarea.scrollHeight > textarea.clientHeight &&
+                (top < textarea.scrollTop || top + height > textarea.scrollTop + textarea.clientHeight)) {
+                textarea.scrollTop = Math.max(0, top - textarea.clientHeight / 3);
+            }
+            marked = { top, height };
+            place(marked);
         };
         update();
     }
