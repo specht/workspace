@@ -75,8 +75,10 @@ often:
 - Run renders, Playwright and anything longer than a minute in the
   background and keep working. Run scripts you write (generators,
   searches, simulations) as `(ulimit -v 4000000; timeout 120 …)`, give every
-  loop a bound, and run one heavy job at a time: an unbounded loop froze the
-  machine twice.
+  loop a bound, and run one heavy job at a time: never two agents that
+  compile, start containers or run tests at once, and no Playwright while one
+  works. The machine froze three times (an unbounded loop; three agents
+  running C checks beside a Playwright run).
 - The development site serves the branch that is checked out, and the
   maintainer reviews it live: stack new work on the newest branch instead of
   checking out an older one.
