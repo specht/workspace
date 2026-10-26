@@ -52,10 +52,10 @@
     const RIM_SOFT = [74, 84, 126];
     // the view comes from the front and a little from the left: the left
     // walls of a room show a narrow face, SIDE pixels wide; which rows of the
-    // face's picture its columns take, from the ground inwards: the dark
-    // foot, then its lit rock
+    // face's picture its columns take, from the ground inwards: only its lit
+    // rock (the picture's dark foot row would be a black line along the wall)
     const SIDE = 4;
-    const SIDE_ROWS = [11, 5, 4, 3];
+    const SIDE_ROWS = [7, 5, 4, 3];
     const RIM_FACE = [140, 156, 196];
     const VERSION = '?v=8';
 
