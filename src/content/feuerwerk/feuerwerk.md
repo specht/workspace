@@ -341,7 +341,7 @@ int main(void)
 }
 ```
 
-<div class='hint own'>
+<div class='hint own' data-check='funken'>
 <strong>Jetzt bist du dran:</strong> Schreib an der Stelle mit <code>// hier</code> die Schleife über alle lebenden Funken. Jeder wird mit <code>move_particle</code> bewegt, und seine Lebenszeit wird um <code>dt</code> kürzer. Ist sie abgelaufen, rückt der letzte Funke an seine Stelle, wie oben; sonst wird er gezeichnet, in der Farbe 12.
 </div>
 
@@ -389,6 +389,8 @@ Ein Gerüst:
 
 ```
 <!-- /solution -->
+
+_task(funken)
 
 <!-- tutorial-screenshot
 write-file: feuerwerk.c <- file:stufen/02-explosion.c
@@ -450,7 +452,7 @@ Echte Funken ziehen einen Schweif hinter sich her, weil das Auge ein Leuchten no
 
 Die Helligkeit eines Pixels der Farbe `c` innerhalb seines Verlaufs ist `c % 16`. Ist sie schon 0, bleibt das Pixel dunkel; sonst rutscht es mit `c - 1` eine Farbe tiefer, im selben Verlauf.
 
-<div class='hint own'>
+<div class='hint own' data-check='verblassen'>
 <strong>Jetzt bist du dran:</strong> Schreib <code>void fade(void)</code>: Sie geht über alle Pixel des Bildschirms, liest jedes mit <code>get_pixel(x, y)</code> und macht es eine Stufe dunkler, wenn es noch nicht ganz dunkel ist. Laufen lassen kannst du sie erst gleich, im ganzen Feuerwerk.
 </div>
 
@@ -488,6 +490,8 @@ void fade(void)
 }
 ```
 <!-- /solution -->
+
+_task(verblassen)
 
 ### Raketen
 
@@ -696,7 +700,7 @@ int main(void)
 }
 ```
 
-<div class='hint own'>
+<div class='hint own' data-check='rakete'>
 <strong>Jetzt bist du dran:</strong> Schreib an der Stelle mit <code>// hier</code>, was eine Rakete zur Rakete macht: Kehrt sie um, explodiert sie, und sie selbst verlischt.
 </div>
 
@@ -726,6 +730,8 @@ Ein Gerüst:
             }
 ```
 <!-- /solution -->
+
+_task(rakete)
 
 <!-- tutorial-screenshot
 write-file: feuerwerk.c <- file:stufen/03-feuerwerk.c
