@@ -21,6 +21,11 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- nginx begrenzt je Adresse (hinter Traefik die des Browsers): höchstens 10 Anfragen in der Sekunde an die
+  Ruby-App, mit einem Vorrat von 300 für eine Klasse, die eine Seite gleichzeitig öffnet, und höchstens 1000
+  offene Verbindungen; darüber antwortet es mit 429. Statische Dateien und Workspaces zählen nicht zu den
+  Anfragen. Die Werte stehen in `main.rb` (`NGINX_BACKEND_RATE` und folgende). Beim Update:
+  `./config.rb build nginx && ./config.rb up -d nginx` (4096 Verbindungen je Worker statt 1024).
 - Neo4j für die Lernenden (eine Datenbank je Person): Ihr Transaktionslog wird nicht mehr im Voraus
   reserviert (bisher 256 MB je Datenbank, auf einem Server mit einer Schule viele GB) und beginnt alle 16 MB
   neu (`config.rb`). Beim Update: `./config.rb up -d neo4j`, dann einmal

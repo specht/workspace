@@ -704,6 +704,83 @@ class Main < Sinatra::Base
         end.join("\n\n            ")
     end
 
+    # The subnets of the user network (where the Workspaces are), from the
+    # networks of the nginx container whose name ends in _user; kept once
+    # found (not while nginx is not up yet). Here, before the nginx config,
+    # whose first one is written while this class still loads.
+    @@user_subnets = nil
+
+    def self.user_subnets
+        return @@user_subnets if @@user_subnets
+        found = begin
+            names, = Open3.capture2('docker', 'ps', '--filter', 'label=com.docker.compose.service=nginx', '--format', '{{.Names}}')
+            networks = names.split.flat_map do |name|
+                out, = Open3.capture2('docker', 'inspect', '-f', '{{range $n, $c := .NetworkSettings.Networks}}{{$n}} {{end}}', name)
+                out.split.select { |n| n.end_with?('_user') }
+            end
+            networks.uniq.flat_map do |network|
+                out, = Open3.capture2('docker', 'network', 'inspect', '-f', '{{range .IPAM.Config}}{{.Subnet}}={{.Gateway}} {{end}}', network)
+                out.split.filter_map do |entry|
+                    cidr, gateway = entry.split('=')
+                    { :net => IPAddr.new(cidr), :gateway => gateway.to_s } rescue nil
+                end
+            end
+        end
+        @@user_subnets = found unless found.empty?
+        found
+    rescue => e
+        STDERR.puts "user subnets: #{e.class}: #{e.message}"
+        []
+    end
+
+    # Limits per browser in nginx, against floods from a few addresses (a
+    # flood from many is Hetzner's to filter): requests to the Ruby app per
+    # second with a burst, and connections open at once (long WebSockets
+    # included) everywhere. The burst is generous, since a school's classes
+    # reach the server from one address: a class opening a page at once makes
+    # a few hundred requests, each Workspace keeps a few WebSockets open. The
+    # rate stays well below what the app serves: one Puma process renders
+    # with one core (about 14 pages a second in development), so that one
+    # address alone cannot keep it busy.
+    NGINX_BACKEND_RATE = 10
+    NGINX_BACKEND_BURST = 300
+    NGINX_CONNECTIONS_PER_CLIENT = 1000
+
+    # Which address a request counts for: through Traefik the last entry of
+    # X-Forwarded-For (as client_ip), without it the peer. A Workspace
+    # reaches nginx directly on the user network and could write any header,
+    # so there the peer counts (its gateway is the host, as in
+    # in_user_network?).
+    # In development a request without the header (the browser, Playwright,
+    # the screenshot service, all from the host) has no key, and nginx
+    # counts nothing without one; with the header it is limited as behind
+    # Traefik, which is how the limits are tried there.
+    def self.nginx_client_key_config
+        subnets = user_subnets.map do |s|
+            "    #{s[:net]}/#{s[:net].prefix} 1;" + (s[:gateway].empty? ? '' : "\n    #{s[:gateway]}/32 0;")
+        end
+        <<~END_OF_STRING
+            geo $hs_from_workspace {
+                default 0;
+            #{subnets.join("\n")}
+            }
+            map $http_x_forwarded_for $hs_forwarded_last {
+                default "";
+                "~(?:^|,)\\s*(?<a>[^,\\s]+)\\s*$" $a;
+            }
+            map "$hs_from_workspace:$hs_forwarded_last" $hs_client {
+                default $hs_forwarded_last;
+                "~^1:" $remote_addr;
+                "0:" #{DEVELOPMENT ? '""' : '$remote_addr'};
+            }
+            limit_req_zone $hs_client zone=hs_backend:20m rate=#{NGINX_BACKEND_RATE}r/s;
+            limit_conn_zone $hs_client zone=hs_conn:20m;
+            limit_req_status 429;
+            limit_conn_status 429;
+            limit_conn hs_conn #{NGINX_CONNECTIONS_PER_CLIENT};
+        END_OF_STRING
+    end
+
     def self.refresh_nginx_config
         @@nginx_config_mutex.synchronize do
             refresh_nginx_config_locked
@@ -832,6 +909,9 @@ class Main < Sinatra::Base
             #                '"$http_user_agent" "$request_time"';
 
             map_hash_bucket_size 128;
+
+            # Limits per browser (NGINX_BACKEND_RATE and the rest)
+            #{nginx_client_key_config.rstrip}
 
             # Keep access logs useful without recording capability tokens, session
             # cookies, workspace tags or one-time login URLs.
@@ -1024,6 +1104,7 @@ class Main < Sinatra::Base
                 }
 
                 location @ruby {
+                    limit_req zone=hs_backend burst=#{NGINX_BACKEND_BURST} nodelay;
                     include /etc/nginx/snippets/proxy_ws.conf;
                     proxy_pass http://ruby:9292;
                 }
@@ -3029,30 +3110,6 @@ class Main < Sinatra::Base
     rescue => e
         STDERR.puts "nginx addresses: #{e.class}: #{e.message}"
         @@nginx_addresses || []
-    end
-
-    # The subnets of the user network (where the Workspaces are), from the
-    # networks of the nginx container whose name ends in _user.
-    @@user_subnets = nil
-
-    def self.user_subnets
-        @@user_subnets ||= begin
-            names, = Open3.capture2('docker', 'ps', '--filter', 'label=com.docker.compose.service=nginx', '--format', '{{.Names}}')
-            networks = names.split.flat_map do |name|
-                out, = Open3.capture2('docker', 'inspect', '-f', '{{range $n, $c := .NetworkSettings.Networks}}{{$n}} {{end}}', name)
-                out.split.select { |n| n.end_with?('_user') }
-            end
-            networks.uniq.flat_map do |network|
-                out, = Open3.capture2('docker', 'network', 'inspect', '-f', '{{range .IPAM.Config}}{{.Subnet}}={{.Gateway}} {{end}}', network)
-                out.split.filter_map do |entry|
-                    cidr, gateway = entry.split('=')
-                    { :net => IPAddr.new(cidr), :gateway => gateway.to_s } rescue nil
-                end
-            end
-        end
-    rescue => e
-        STDERR.puts "user subnets: #{e.class}: #{e.message}"
-        []
     end
 
     # In the user network, but not its gateway (that is the host, through
