@@ -561,7 +561,18 @@ function install_secondary_autotoc() {
 
     let title_element = document.createElement('div');
     title_element.className = 'autotoc-secondary-title';
-    title_element.textContent = title;
+    title_element.append(document.createElement('span'));
+    title_element.firstChild.textContent = title;
+    // »Nach oben« as on the bar this navigation stands in for; there once
+    // the page's header has scrolled away (autotoc-primary-visible)
+    let up = document.createElement('button');
+    up.type = 'button';
+    up.className = 'autotoc-up autotoc-secondary-up';
+    up.title = 'Nach oben';
+    up.setAttribute('aria-label', 'Nach oben');
+    up.innerHTML = "<i class='bi bi-arrow-up' aria-hidden='true'></i>";
+    up.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    title_element.append(up);
 
     let items = document.createElement('div');
     items.className = 'autotoc-secondary-items';

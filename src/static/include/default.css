@@ -1969,11 +1969,30 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 
 .autotoc-secondary-title {
     flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
     margin: 0 0 0.7rem;
     padding: 0 0 0.55rem;
     border-bottom: 1px solid rgba(var(--bs-body-color-rgb), 0.12);
     font-size: 0.86rem;
     font-weight: 700;
+}
+
+/* the bar's »Nach oben« at the title's right end, smaller; its place kept
+   while the page's header is still in sight, so nothing moves */
+.autotoc-secondary-up {
+    width: 1.9rem;
+    height: 1.9rem;
+    margin: -0.4rem 0;
+    font-size: 0.9rem;
+    font-weight: normal;
+    transition: background-color 0.15s, color 0.15s, transform 0.15s, opacity 0.2s, visibility 0.2s;
+}
+body:not(.autotoc-primary-visible) .autotoc-secondary-up {
+    visibility: hidden;
+    opacity: 0;
 }
 
 .autotoc-secondary-items {
