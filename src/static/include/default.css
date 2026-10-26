@@ -8297,8 +8297,8 @@ html[data-bs-theme="dark"] .bitplane-widget {
     initial-value: 1;
 }
 
-/* The Katas on the front page (KataMap.carousel_html): how many are solved
-   in all, in a ring, then the sets in a strip that scrolls sideways, as
+/* The Katas on the front page (KataMap.carousel_html): what there is or how
+   far the person is (total_html), then the sets in a strip that scrolls sideways, as
    high as one row of cards; arrows at its ends with a mouse. A pinned set
    is marked and scrolled into the middle (main.rb, its script). */
 .kata-carousel {
@@ -8321,38 +8321,49 @@ html[data-bs-theme="dark"] .bitplane-widget {
     text-align: center;
 }
 
-.kata-ring {
-    --share: 0%;
-    position: relative;
-    display: grid;
-    place-items: center;
-    width: 6em;
-    height: 6em;
-    border-radius: 50%;
-    background: conic-gradient(#198754 var(--share), color-mix(in srgb, #198754 16%, var(--bs-body-bg)) 0);
+/* before anything is solved: the section's icon, how many Katas there
+   are, a button to start */
+.kata-total-icon {
+    width: 3.2em;
+    height: 3.2em;
 }
-.kata-ring::before {
-    content: '';
-    position: absolute;
-    inset: 0.55em;
-    border-radius: 50%;
-    background: var(--bs-body-bg);
+.kata-total-count {
+    line-height: 1.2;
 }
-.kata-ring-text {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    line-height: 1.15;
-    text-align: center;
-}
-.kata-ring-text strong {
+.kata-total-count strong {
     font-size: 1.4em;
 }
-.kata-ring-text small,
 .kata-total-label {
     color: var(--bs-secondary-color);
     font-size: 0.85em;
+    line-height: 1.3;
+}
+.kata-total-go .bi {
+    margin: 0 0 0 0.35em;
+}
+
+/* once something is solved: a thin bar per set, stacked in the strip's
+   order, each in its set's hue (KataMap.hue), filled as far as solved over
+   a faint track; a bar names its set on hover and brings it into the
+   middle of the strip on a click */
+.kata-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 0.28em;
+    width: 100%;
+}
+.kata-badge {
+    display: block;
+    width: 100%;
+    height: 0.42em;
+    padding: 0;
+    border: none;
+    border-radius: 1em;
+    background: linear-gradient(to right, hsl(var(--accent) 60% 48%) var(--share), hsl(var(--accent) 45% 50% / 0.18) 0);
+    transition: transform 150ms;
+}
+.kata-badge:hover {
+    transform: scaleY(1.6);
 }
 
 .kata-strip {
@@ -8648,25 +8659,23 @@ html[data-bs-theme="dark"] .bitplane-widget {
     .kata-scroll { display: flex; }
 }
 
-/* on a phone the ring goes above the strip, small and beside its words */
+/* on a phone what there is or how far goes above the strip, in a row
+   that wraps */
 @media (max-width: 575.98px) {
     .kata-carousel {
         flex-direction: column;
     }
     .kata-total {
         flex: none;
-        flex-direction: row;
+        flex-flow: row wrap;
         justify-content: flex-start;
+        gap: 0.4em 1em;
         text-align: left;
     }
-    .kata-ring {
-        width: 4.5em;
-        height: 4.5em;
-        font-size: 0.85em;
+    .kata-total-icon {
+        width: 2.4em;
+        height: 2.4em;
     }
-    .kata-ring::before { inset: 0.45em; }
-    .kata-ring-text strong { font-size: 1.2em; }
-    .kata-ring-text small { font-size: 0.75em; }
     /* one set in the middle, its neighbours peeking in */
     .kata-set { flex-basis: 78%; }
 }

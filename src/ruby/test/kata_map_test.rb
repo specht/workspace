@@ -27,8 +27,10 @@ class KataMapTest < Minitest::Test
         assert_equal [38, 66, 93], (0..2).map { |i| KataMap.hue(i, 13) }
         assert_includes html, "href='/kata-functions' aria-label='Ansehen: Erste Funktionen'>"
         assert_includes html, 'Werte bekommen, rechnen, zurückgeben'
-        assert_includes html, '<strong>7</strong><small>Katas</small>'
+        assert_includes html, '<strong>7</strong> Katas</span>'
         assert_includes html, 'in 2 Übungen'
+        refute_includes html, "class='kata-badge"
+        refute_includes html, 'kata-total-go'
         # the levels of a set on hover, in its line how many
         assert_includes html, "title='2 Einstieg · 1 Übung · 1 Knobelei · 1 Extra'>4 Katas, 1 Extra</span>"
         refute_includes html, 'gelöst'
@@ -42,16 +44,37 @@ class KataMapTest < Minitest::Test
         assert_includes html, "aria-label='Ansehen: Erste Funktionen'"
         assert_includes html, "aria-label='Loslegen: Wiederholen'"
         assert_includes html, '0 von 3 gelöst'
-        # 4 of 7 in all: the ring
-        assert_includes html, "style='--share: 57%'"
-        assert_includes html, "aria-label='4 von 7 Katas gelöst'"
+        # beside the strip a bar per set in its hue: one done, one not begun
+        assert_includes html, "class='kata-badge kata-badge-done' data-set='0' style='--accent: 38; --share: 100%' title='Erste Funktionen: geschafft'"
+        assert_includes html, "class='kata-badge kata-badge-new' data-set='1'"
+        assert_includes html, '1 Übung geschafft</span>'
+        assert_includes html, '<strong>4</strong> Katas gelöst'
+        # on with the first set not done yet
+        assert_includes html, "class='btn btn-sm btn-success kata-total-go' href='/kata-loops'"
+    end
+
+    # nothing solved yet: no empty collection, a button to start with,
+    # into the pinned set if there is one
+    def test_before_anything_is_solved_a_button_to_start
+        html = KataMap.carousel_html(stops, :progress => {}, :icon => '/images/martial-arts-uniform.png')
+        refute_includes html, "class='kata-badge"
+        assert_includes html, "<img class='kata-total-icon' src='/images/martial-arts-uniform.png' alt=''>"
+        assert_includes html, "href='/kata-functions' aria-label='Loslegen: Erste Funktionen'>Loslegen"
+        html = KataMap.carousel_html(stops, :progress => {}, :pinned => %w[kata-loops])
+        assert_includes html, "class='btn btn-sm btn-success kata-total-go' href='/kata-loops'"
+        # begun: its bar filled as far as solved, and on with that set
+        html = KataMap.carousel_html(stops, :progress => { 'kata-loops' => { :done => 1, :total => 3, :extras_done => 0 } })
+        assert_includes html, "class='kata-badge kata-badge-begun' data-set='1' style='--accent: 218; --share: 33%' title='Wiederholen: 1 von 3 gelöst'"
+        assert_includes html, '1 angefangen</span>'
+        assert_includes html, '<strong>1</strong> Kata gelöst'
+        assert_includes html, "kata-total-go' href='/kata-loops'"
     end
 
     def test_a_pinned_set_is_marked_and_the_latest_centred
         html = KataMap.carousel_html(stops, :progress => {}, :pinned => %w[kata-loops kata-functions])
         assert_equal 1, html.scan("<div class='kata-set kata-set-pinned' style='--accent: 218' data-centre=''>").size
         assert_equal 2, html.scan("kata-set-pinned").size
-        assert html.index("data-centre") < html.index("href='/kata-loops'"), 'the latest pin is centred'
+        assert html.index("data-centre") < html.index("kata-set-open' href='/kata-loops'"), 'the latest pin is centred'
         assert_equal 2, html.scan('Angepinnt').size
     end
 

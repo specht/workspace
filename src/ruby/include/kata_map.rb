@@ -4,7 +4,8 @@ require 'cgi'
 # section »Katas« (carousel: true in sections.yaml), in its order, with its
 # idea in a few words (meta idea:) and how many Katas it has on each level;
 # for a logged-in person how far they are (solved of the core Katas, and
-# Extras besides) and, in a ring, how far in all; for teachers the line of
+# Extras besides) and, once something is solved, every set as a badge
+# beside the strip (total_html); for teachers the line of
 # the curriculum the set belongs to (meta curriculum:). A set a teacher
 # pinned for the person's group is marked and scrolled into view.
 #
@@ -46,30 +47,15 @@ module KataMap
         parts.join(' · ')
     end
 
-    # The Katas on the front page instead of their cards: a ring with how
-    # many are solved in all (or how many there are, for a visitor), then
-    # every set in a strip that scrolls sideways. progress: { slug => {
-    # done:, total:, extras_done: } }, nil for a visitor; pinned: the slugs
-    # a teacher pinned for the person's groups (the first is scrolled into
-    # the middle).
-    def self.carousel_html(stops, progress: nil, teacher: false, pinned: [])
+    # The Katas on the front page instead of their cards: what there is or
+    # how far the person is, then every set in a strip that scrolls
+    # sideways. progress: { slug => { done:, total:, extras_done: } }, nil
+    # for a visitor; pinned: the slugs a teacher pinned for the person's
+    # groups (the first is scrolled into the middle); icon: the section's.
+    def self.carousel_html(stops, progress: nil, teacher: false, pinned: [], icon: nil)
         core = ->(stop) { stop.counts.reject { |k, _| k == :extra }.values.sum }
         io = +"<div class='kata-carousel'>"
-        io << "<div class='kata-total'>"
-        if progress
-            total = stops.sum { |stop| progress[stop.slug] ? progress[stop.slug][:total].to_i : core.(stop) }
-            solved = stops.sum { |stop| progress[stop.slug].to_h[:done].to_i }
-            extras = stops.sum { |stop| progress[stop.slug].to_h[:extras_done].to_i }
-            share = total > 0 ? (100.0 * solved / total).round : 0
-            io << "<div class='kata-ring' style='--share: #{share}%' role='img' aria-label='#{solved} von #{total} Katas gelöst'>"
-            io << "<span class='kata-ring-text' aria-hidden='true'><strong>#{solved}</strong><small>von #{total}</small></span></div>"
-            io << "<span class='kata-total-label'>Katas gelöst#{extras > 0 ? ", dazu #{extras} #{extras == 1 ? 'Extra' : 'Extras'}" : ''}</span>"
-        else
-            total = stops.sum { |stop| core.(stop) }
-            io << "<div class='kata-ring'><span class='kata-ring-text'><strong>#{total}</strong><small>Katas</small></span></div>"
-            io << "<span class='kata-total-label'>in #{stops.size} Übungen</span>"
-        end
-        io << '</div>'
+        io << total_html(stops, progress, pinned, icon, core)
         io << "<div class='kata-strip'>"
         io << "<button type='button' class='kata-scroll' data-dir='-1' aria-label='Zurück'><i class='bi bi-chevron-left' aria-hidden='true'></i></button>"
         io << "<div class='kata-track'>"
@@ -123,6 +109,59 @@ module KataMap
         io << SCRIPT
     end
 
+    # Beside the strip. Before anything is solved (and for a visitor) no
+    # empty ring, which would only say how much is missing: how many Katas
+    # there are, and for a student a button into the set to start with (the
+    # pinned one, else the first). Once something is solved, a thin bar per
+    # set, stacked in the strip's order, each in its set's hue and filled as
+    # far as solved (the maintainer: stacked bars in colour, not pies, not
+    # one bar in segments); a bar brings its set into the middle of the
+    # strip. Under them what is done and begun, how many Katas are solved,
+    # and a button into the set to go on with.
+    def self.total_html(stops, progress, pinned, icon, core)
+        mine = ->(stop) { progress && progress[stop.slug] }
+        solved = ->(stop) { mine.(stop).to_h[:done].to_i }
+        total = ->(stop) { mine.(stop) ? mine.(stop)[:total].to_i : core.(stop) }
+        done = ->(stop) { total.(stop) > 0 && solved.(stop) >= total.(stop) }
+        begun = ->(stop) { !done.(stop) && (solved.(stop) > 0 || mine.(stop).to_h[:extras_done].to_i > 0) }
+        io = +"<div class='kata-total'>"
+        if progress.nil? || stops.none? { |stop| done.(stop) || begun.(stop) }
+            io << "<img class='kata-total-icon' src='#{h(icon)}' alt=''>" if icon
+            io << "<span class='kata-total-count'><strong>#{stops.sum { |stop| core.(stop) }}</strong> Katas</span>"
+            io << "<span class='kata-total-label'>in #{stops.size} Übungen</span>"
+            first = stops.find { |stop| stop.slug == pinned.first } || stops.first
+            if progress && first
+                io << "<a class='btn btn-sm btn-success kata-total-go' href='/#{h(first.slug)}' aria-label='Loslegen: #{h(first.title)}'>" \
+                      "Loslegen<i class='bi bi-arrow-right' aria-hidden='true'></i></a>"
+            end
+            return io << '</div>'
+        end
+        io << "<div class='kata-badges'>"
+        stops.each_with_index do |stop, i|
+            state = done.(stop) ? 'done' : begun.(stop) ? 'begun' : 'new'
+            share = total.(stop) > 0 ? (100.0 * solved.(stop) / total.(stop)).round : 0
+            text = "#{stop.title}: #{done.(stop) ? 'geschafft' : "#{solved.(stop)} von #{total.(stop)} gelöst"}"
+            io << "<button type='button' class='kata-badge kata-badge-#{state}' data-set='#{i}' style='--accent: #{hue(i, stops.size)}; --share: #{share}%' " \
+                  "title='#{h(text)}' aria-label='#{h(text)}'></button>"
+        end
+        io << '</div>'
+        finished = stops.count { |stop| done.(stop) }
+        going = stops.count { |stop| begun.(stop) }
+        parts = []
+        parts << "#{finished} #{finished == 1 ? 'Übung' : 'Übungen'} geschafft" if finished > 0
+        parts << "#{going} angefangen" if going > 0
+        io << "<span class='kata-total-label'>#{parts.join(' · ')}</span>"
+        katas = stops.sum { |stop| solved.(stop) }
+        io << "<span class='kata-total-count'><strong>#{katas}</strong> #{katas == 1 ? 'Kata' : 'Katas'} gelöst</span>"
+        # on with the first set begun, else the first not done yet
+        nxt = stops.find { |stop| begun.(stop) } || stops.find { |stop| !done.(stop) }
+        if nxt
+            io << "<a class='btn btn-sm btn-success kata-total-go' href='/#{h(nxt.slug)}' title='#{h(nxt.title)}' aria-label='Weitermachen: #{h(nxt.title)}'>" \
+                  "Weitermachen<i class='bi bi-arrow-right' aria-hidden='true'></i></a>"
+        end
+        io << '</div>'
+    end
+
     # The arrows scroll by about one set and hide at the ends; a mouse drags
     # the strip; a pinned set (data-centre) is scrolled into the middle,
     # without moving the page.
@@ -149,6 +188,13 @@ module KataMap
                 });
             });
             track.addEventListener('scroll', ends, { passive: true });
+            // a badge beside the strip brings its set into the middle
+            carousel.querySelectorAll('.kata-badge').forEach(function (badge) {
+                badge.addEventListener('click', function () {
+                    var set = track.querySelectorAll('.kata-set')[Number(badge.dataset.set)];
+                    if (set) track.scrollTo({ left: centred(set) });
+                });
+            });
             // with a mouse the strip is dragged sideways and, let go while
             // moving, coasts on with that speed and slows down; then it
             // snaps to the set nearest the middle. After a drag, the click
