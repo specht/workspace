@@ -8385,7 +8385,8 @@ html[data-bs-theme="dark"] .bitplane-widget {
     padding: 0 0.5em;
     border-radius: 1em;
     background: rgba(255, 255, 255, 0.92);
-    color: #145c39;
+    /* in the set's hue, like its band */
+    color: hsl(var(--accent, 150) 55% 32%);
     font-size: 0.8em;
     font-weight: 700;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);

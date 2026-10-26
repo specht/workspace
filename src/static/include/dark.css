@@ -159,7 +159,7 @@ html[data-bs-theme="dark"] {
     .kata-set-number,
     .kata-set-pin {
         background: rgba(20, 20, 20, 0.88);
-        color: #6fd39b;
+        color: hsl(var(--accent, 150) 62% 72%);
     }
     .kata-set-pin { color: #7fbfe3; }
     .kata-set .theme-image-light { display: none; }
