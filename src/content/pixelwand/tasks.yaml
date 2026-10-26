@@ -50,6 +50,197 @@ tasks:
           say: Neu laden muss niemand. Die Verbindung ist offen, und der Server schickt von sich aus.
       solution: '`broadcast` schickt an jede Verbindung in `clients`, auch an Adas eigene. So sieht Ada ihre Nachricht erst, wenn der Server sie verteilt hat, genau wie alle anderen.'
 
+  - id: alle
+    title: An alle, und wieder weg
+    prompt: |
+      Lass in `server.rb` jede Nachricht an alle gehen und schreib
+      `ws.on(:close)`, und speichere. Der Workspace ruft dein `App` mit einer
+      Verbindung zum Ausprobieren auf, während Bo schon verbunden ist: Sie
+      öffnet, schickt »Hallo« und schließt. Bekommt Bo das »Hallo«,
+      verschwindet die Verbindung aus `$clients`, und erfährt Bo danach, dass
+      noch 1 da ist? Der Server muss dafür nicht laufen.
+    file: pixelwand/server.rb
+    check:
+      type: ruby
+      file: pixelwand/server.rb
+      cases:
+        - call: >-
+            ws = Object.new; def ws.on(event, &block) = (@on ||= {}).store(event, block); def ws.send(text) = nil; def ws.rack_response = []; def ws.fire(event, data = nil) = @on[event]&.call(Struct.new(:data).new(data)); bo = Object.new; def bo.got = (@got ||= []); def bo.send(text) = got << text; Faye::WebSocket.define_singleton_method(:websocket?) { |env| true }; Faye::WebSocket.define_singleton_method(:new) { |env| ws }; ($clients ||= []).replace([bo]); App.call({}); ws.fire(:open); ws.fire(:message, 'Hallo'); ws.fire(:close); true
+          expect: true
+          say: Der Workspace konnte dein `App` nicht mit einer Verbindung zum Ausprobieren aufrufen.
+        - call: bo.got.include?('Hallo')
+          expect: true
+          say: 'Bo ist verbunden und hat »Hallo« nicht bekommen: In `ws.on(:message)` geht jede Nachricht mit `broadcast(event.data)` an alle, statt mit »Echo:« zurück.'
+        - call: $clients == [bo]
+          expect: true
+          say: 'Die Verbindung ist zu, steht aber noch in `$clients`: In `ws.on(:close)` gehört `$clients.delete(ws)` hin.'
+        - call: bo.got.last != 'Hallo' && bo.got.last.include?('1')
+          expect: true
+          say: 'Zuletzt erfährt Bo, wie viele es noch sind, nämlich 1: ein `broadcast` mit `$clients.size` in `ws.on(:close)`, nach dem `delete`.'
+    solution: |
+      In `ws.on(:message)` steht `broadcast(event.data)`. `ws.on(:close)`
+      nimmt die Verbindung mit `$clients.delete(ws)` heraus und sagt dann mit
+      `broadcast` und `$clients.size` allen, wie viele es noch sind.
+
+    python:
+      prompt: |
+        Füll in `handle` in `server.py` die beiden Stellen mit `...` und
+        speichere. Der Workspace ruft `handle` mit einer Verbindung zum
+        Ausprobieren auf, während Bo schon verbunden ist: Sie schickt
+        »Hallo« und schließt. Bekommt Bo das »Hallo«, verschwindet die
+        Verbindung aus `clients`, und erfährt Bo danach, dass noch 1 da ist?
+        Der Server muss dafür nicht laufen.
+      file: pixelwand/server.py
+      check:
+        type: python
+        file: pixelwand/server.py
+        cases:
+          - call: >-
+              (Fake := type('Fake', (), {'__init__': lambda self, texts=(): setattr(self, 'texts', texts) or setattr(self, 'got', []), '__iter__': lambda self: iter(self.texts), 'send': lambda self, text: self.got.append(text)}), bo := Fake(), clients.add(bo), handle(Fake(['Hallo'])), True)[-1]
+            expect: true
+            say: Der Workspace konnte `handle` nicht mit einer Verbindung zum Ausprobieren aufrufen.
+          - call: '''Hallo'' in bo.got'
+            expect: true
+            say: 'Bo ist verbunden und hat »Hallo« nicht bekommen: In der Schleife geht jede Nachricht mit `broadcast(message)` an alle.'
+          - call: clients == {bo}
+            expect: true
+            say: 'Die Verbindung ist zu, steht aber noch in `clients`: Im `finally` gehört `clients.discard(ws)` hin.'
+          - call: bo.got[-1] != 'Hallo' and '1' in bo.got[-1]
+            expect: true
+            say: 'Zuletzt erfährt Bo, wie viele es noch sind, nämlich 1: ein `broadcast` mit `len(clients)` im `finally`, nach dem `discard`.'
+      solution: |
+        In der Schleife steht `broadcast(message)`. Im `finally` nimmt
+        `clients.discard(ws)` die Verbindung heraus, und `broadcast` mit
+        `len(clients)` sagt allen, wie viele es noch sind.
+
+  - id: pruefung
+    title: Nur glauben, was passt
+    prompt: |
+      Schreib in `ws.on(:message)` in `server.rb` die Prüfung und speichere.
+      Der Workspace ruft dein `App` mit einer Verbindung zum Ausprobieren auf
+      und schickt ihr Nachrichten: einen gültigen Pixel, Text, der kein JSON
+      ist, JSON, das kein Hash ist, Werte, die keine ganzen Zahlen sind,
+      Pixel knapp außerhalb des Bildes und Farben außerhalb von 0 bis 15.
+      Nur der gültige Pixel darf auf die Wand und an alle gehen. Der Server
+      muss dafür nicht laufen.
+    file: pixelwand/server.rb
+    check:
+      type: ruby
+      file: pixelwand/server.rb
+      cases:
+        - call: >-
+            ws = Object.new; def ws.on(event, &block) = (@on ||= {}).store(event, block); def ws.send(text) = $sent << text; def ws.rack_response = []; Faye::WebSocket.define_singleton_method(:websocket?) { |env| true }; Faye::WebSocket.define_singleton_method(:new) { |env| ws }; App.call({}); $clients.replace([ws]); paint = ->(text) { $sent = []; ws.instance_variable_get(:@on)[:message].call(Struct.new(:data).new(text)); $sent.map { |m| JSON.parse(m) }.select { |m| m['type'] == 'pixel' } }; true
+          expect: true
+          say: Der Workspace konnte dein `App` nicht mit einer Verbindung zum Ausprobieren aufrufen.
+        - call: 'paint.(''{"x": 3, "y": 2, "color": 4}'').size'
+          expect: 1
+          say: 'Ein gültiger Pixel, `{"x": 3, "y": 2, "color": 4}`, muss auf die Wand und mit `broadcast` an alle gehen.'
+        - call: $pixels[2 * WIDTH + 3]
+          expect: 4
+          say: Der gültige Pixel steht danach in `$pixels`, am Index `y * WIDTH + x`.
+        - call: 'paint.(''Hallo'')'
+          expect: '[]'
+          say: 'Text, der kein JSON ist, lässt `JSON.parse` einen Fehler werfen: abfangen und überspringen, mit `rescue next`.'
+        - call: 'paint.(''[1, 2, 3]'')'
+          expect: '[]'
+          say: 'JSON, das kein Hash ist, wird übersprungen: `message.is_a?(Hash)`.'
+        - call: 'paint.(''{"y": 0, "color": 4}'')'
+          expect: '[]'
+          say: 'Fehlt `x`, ist es `nil`, keine ganze Zahl: überspringen.'
+        - call: 'paint.(''{"x": "0", "y": 0, "color": 4}'')'
+          expect: '[]'
+          say: '`"0"` ist ein Text, keine ganze Zahl (`Integer`).'
+        - call: 'paint.(''{"x": 1.5, "y": 0, "color": 4}'')'
+          expect: '[]'
+          say: '`1.5` ist keine ganze Zahl (`Integer`).'
+        - call: 'paint.(''{"x": 64, "y": 0, "color": 4}'')'
+          expect: '[]'
+          say: '`x` geht von 0 bis `WIDTH - 1`; 64 liegt schon außerhalb.'
+        - call: 'paint.(''{"x": -1, "y": 0, "color": 4}'')'
+          expect: '[]'
+          say: 'Ein negatives `x` liegt außerhalb des Bildes, auch wenn `$pixels[-1]` keinen Fehler gibt.'
+        - call: 'paint.(''{"x": 0, "y": 40, "color": 4}'')'
+          expect: '[]'
+          say: '`y` geht von 0 bis `HEIGHT - 1`; 40 liegt schon außerhalb.'
+        - call: 'paint.(''{"x": 0, "y": 0, "color": 16}'')'
+          expect: '[]'
+          say: Farben gehen von 0 bis 15.
+        - call: 'paint.(''{"x": 0, "y": 0, "color": -1}'')'
+          expect: '[]'
+          say: Farben gehen von 0 bis 15, eine negative gibt es nicht.
+        - call: $pixels.count(0) == WIDTH * HEIGHT - 1
+          expect: true
+          say: Nur der gültige Pixel darf `$pixels` ändern, auch wenn eine Nachricht danach nicht an alle geht.
+    solution: |
+      `JSON.parse(event.data) rescue next` überspringt, was kein JSON ist;
+      danach `next unless message.is_a?(Hash)`, `values_at('x', 'y',
+      'color')`, `next unless [x, y, color].all?(Integer)` und `next unless`
+      mit `between?(0, WIDTH - 1)`, `between?(0, HEIGHT - 1)` und
+      `between?(0, 15)`.
+
+    python:
+      prompt: |
+        Schreib in `handle` in `server.py` die Prüfung und speichere. Der
+        Workspace ruft `handle` mit einer Verbindung zum Ausprobieren auf und
+        schickt ihr Nachrichten: einen gültigen Pixel, Text, der kein JSON
+        ist, JSON, das kein `dict` ist, Werte, die keine ganzen Zahlen sind,
+        Pixel knapp außerhalb des Bildes und Farben außerhalb von 0 bis 15.
+        Nur der gültige Pixel darf auf die Wand und an alle gehen. Der Server
+        muss dafür nicht laufen.
+      file: pixelwand/server.py
+      check:
+        type: python
+        file: pixelwand/server.py
+        cases:
+          - call: >-
+              (Fake := type('Fake', (), {'__init__': lambda self, texts=(): setattr(self, 'texts', texts) or setattr(self, 'got', []), '__iter__': lambda self: iter(self.texts), 'send': lambda self, text: self.got.append(text)}), bo := Fake(), clients.add(bo), paint := lambda text: (bo.got.clear(), handle(Fake([text])), [m for m in map(__import__('json').loads, bo.got) if m.get('type') == 'pixel'])[-1], True)[-1]
+            expect: true
+            say: Der Workspace konnte `handle` nicht mit einer Verbindung zum Ausprobieren aufrufen.
+          - call: 'len(paint(''{"x": 3, "y": 2, "color": 4}''))'
+            expect: 1
+            say: 'Ein gültiger Pixel, `{"x": 3, "y": 2, "color": 4}`, muss auf die Wand und mit `broadcast` an alle gehen.'
+          - call: pixels[2 * WIDTH + 3]
+            expect: 4
+            say: Der gültige Pixel steht danach in `pixels`, am Index `y * WIDTH + x`.
+          - call: 'paint(''Hallo'')'
+            expect: '[]'
+            say: 'Text, der kein JSON ist, lässt `json.loads` einen `ValueError` werfen: abfangen und überspringen, mit `continue`.'
+          - call: 'paint(''[1, 2, 3]'')'
+            expect: '[]'
+            say: 'JSON, das kein `dict` ist, wird übersprungen: `isinstance(message, dict)`.'
+          - call: 'paint(''{"y": 0, "color": 4}'')'
+            expect: '[]'
+            say: 'Fehlt `x`, ist `message.get(''x'')` gleich `None`, keine ganze Zahl: überspringen.'
+          - call: 'paint(''{"x": "0", "y": 0, "color": 4}'')'
+            expect: '[]'
+            say: '`"0"` ist ein Text, keine ganze Zahl (`int`).'
+          - call: 'paint(''{"x": 1.5, "y": 0, "color": 4}'')'
+            expect: '[]'
+            say: '`1.5` ist keine ganze Zahl (`int`).'
+          - call: 'paint(''{"x": 64, "y": 0, "color": 4}'')'
+            expect: '[]'
+            say: '`x` geht von 0 bis `WIDTH - 1`; 64 liegt schon außerhalb.'
+          - call: 'paint(''{"x": -1, "y": 0, "color": 4}'')'
+            expect: '[]'
+            say: 'Ein negatives `x` liegt außerhalb des Bildes, auch wenn `pixels[-1]` keinen Fehler gibt.'
+          - call: 'paint(''{"x": 0, "y": 40, "color": 4}'')'
+            expect: '[]'
+            say: '`y` geht von 0 bis `HEIGHT - 1`; 40 liegt schon außerhalb.'
+          - call: 'paint(''{"x": 0, "y": 0, "color": 16}'')'
+            expect: '[]'
+            say: Farben gehen von 0 bis 15.
+          - call: 'paint(''{"x": 0, "y": 0, "color": -1}'')'
+            expect: '[]'
+            say: Farben gehen von 0 bis 15, eine negative gibt es nicht.
+          - call: pixels.count(0) == WIDTH * HEIGHT - 1
+            expect: true
+            say: Nur der gültige Pixel darf `pixels` ändern, auch wenn eine Nachricht danach nicht an alle geht.
+      solution: |
+        `json.loads(text)` in `try` mit `except ValueError: continue`, danach
+        `continue`, wenn `message` kein `dict` ist, wenn `x`, `y` oder `color`
+        keine ganzen Zahlen sind (`type(value) is int`) und wenn nicht
+        `0 <= x < WIDTH and 0 <= y < HEIGHT and 0 <= color <= 15`.
+
   - id: pixel-zahl
     title: Das ganze Bild
     prompt: |

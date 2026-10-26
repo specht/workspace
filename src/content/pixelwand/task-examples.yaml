@@ -3,6 +3,465 @@
 format: 1
 activity: pixelwand
 examples:
+  alle:
+    pass:
+      - files: { pixelwand/server.rb: stufen/server2.rb }
+    fail:
+      - files: { pixelwand/server.rb: stufen/server1.rb }
+        say: Bo
+      # die Seite vor dem Kasten: on(:open) ist da, die Nachricht geht noch als Echo zurück
+      - files:
+          pixelwand/server.rb:
+            text: |
+              require 'faye/websocket'
+              require 'rackup'
+
+              # Alle offenen Verbindungen. Faye ruft die on-Blöcke aller Verbindungen
+              # nacheinander auf, nie zwei gleichzeitig: Die Liste braucht keinen Lock.
+              $clients = []
+
+              def broadcast(text)
+                $clients.each { |client| client.send(text) }
+              end
+
+              App = lambda do |env|
+                if Faye::WebSocket.websocket?(env)
+                  ws = Faye::WebSocket.new(env)
+
+                  ws.on(:open) do
+                    $clients << ws
+                    broadcast("Jemand ist dazugekommen. Jetzt sind wir #{$clients.size}.")
+                  end
+
+                  # Was kommt, geht an alle
+                  ws.on(:message) do |event|
+                    puts "Empfangen: #{event.data}"
+                    ws.send("Echo: #{event.data}")
+                  end
+
+                  ws.rack_response
+                else
+                  [200, { 'content-type' => 'text/html; charset=utf-8' },
+                   [File.read(File.join(__dir__, 'index.html'))]]
+                end
+              end
+
+              puts "Der Server wartet auf Port 8000 ..."
+              Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Silent: true)
+        say: broadcast(event.data)
+      # ws.on(:close) ohne delete
+      - files:
+          pixelwand/server.rb:
+            text: |
+              require 'faye/websocket'
+              require 'rackup'
+
+              # Alle offenen Verbindungen. Faye ruft die on-Blöcke aller Verbindungen
+              # nacheinander auf, nie zwei gleichzeitig: Die Liste braucht keinen Lock.
+              $clients = []
+
+              def broadcast(text)
+                $clients.each { |client| client.send(text) }
+              end
+
+              App = lambda do |env|
+                if Faye::WebSocket.websocket?(env)
+                  ws = Faye::WebSocket.new(env)
+
+                  ws.on(:open) do
+                    $clients << ws
+                    broadcast("Jemand ist dazugekommen. Jetzt sind wir #{$clients.size}.")
+                  end
+
+                  # Was kommt, geht an alle
+                  ws.on(:message) do |event|
+                    puts "Empfangen: #{event.data}"
+                    broadcast(event.data)
+                  end
+
+                  ws.on(:close) do
+                    broadcast("Jemand ist gegangen. Jetzt sind wir #{$clients.size}.")
+                  end
+
+                  ws.rack_response
+                else
+                  [200, { 'content-type' => 'text/html; charset=utf-8' },
+                   [File.read(File.join(__dir__, 'index.html'))]]
+                end
+              end
+
+              puts "Der Server wartet auf Port 8000 ..."
+              Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Silent: true)
+        say: $clients.delete(ws)
+    python:
+      pass:
+        - files: { pixelwand/server.py: stufen/server2.py }
+      fail:
+        - files: { pixelwand/server.py: stufen/server1.py }
+        # die Seite vor dem Kasten, mit ... an beiden Stellen
+        - files:
+            pixelwand/server.py:
+              text: |
+                from pathlib import Path
+                from websockets.datastructures import Headers
+                from websockets.exceptions import ConnectionClosed
+                from websockets.http11 import Response
+                from websockets.sync.server import serve
+
+                PAGE = Path(__file__).with_name('index.html')
+
+                # Alle offenen Verbindungen. Jede Verbindung hat ihren eigenen Thread, alle
+                # benutzen dieselbe Menge.
+                clients = set()
+
+
+                def broadcast(text):
+                    # Über eine Kopie: Kommt während der Schleife jemand dazu, ändert sich
+                    # die Menge, und die Schleife bräche mit einem Fehler ab.
+                    for client in list(clients):
+                        try:
+                            client.send(text)
+                        except ConnectionClosed:
+                            pass    # gerade gegangen; das Aufräumen erledigt ihr eigener Thread
+
+
+                def page(connection, request):
+                    if request.path == '/ws':
+                        return None
+                    body = PAGE.read_bytes()
+                    headers = Headers({'Content-Type': 'text/html; charset=utf-8',
+                                       'Content-Length': str(len(body))})
+                    return Response(200, 'OK', headers, body)
+
+
+                def handle(ws):
+                    clients.add(ws)
+                    broadcast(f'Jemand ist dazugekommen. Jetzt sind wir {len(clients)}.')
+                    try:
+                        # Was kommt, geht an alle
+                        for message in ws:
+                            print(f'Empfangen: {message}')
+                            ...
+                    finally:
+                        # Die Verbindung ist zu, weil jemand den Tab geschlossen hat
+                        ...
+
+
+                with serve(handle, '0.0.0.0', 8000, process_request=page) as server:
+                    print('Der Server wartet auf Port 8000 ...')
+                    server.serve_forever()
+          say: broadcast(message)
+        # erst allen sagen, dann herausnehmen: Bo hört 2 statt 1
+        - files:
+            pixelwand/server.py:
+              text: |
+                from pathlib import Path
+                from websockets.datastructures import Headers
+                from websockets.exceptions import ConnectionClosed
+                from websockets.http11 import Response
+                from websockets.sync.server import serve
+
+                PAGE = Path(__file__).with_name('index.html')
+
+                # Alle offenen Verbindungen. Jede Verbindung hat ihren eigenen Thread, alle
+                # benutzen dieselbe Menge.
+                clients = set()
+
+
+                def broadcast(text):
+                    # Über eine Kopie: Kommt während der Schleife jemand dazu, ändert sich
+                    # die Menge, und die Schleife bräche mit einem Fehler ab.
+                    for client in list(clients):
+                        try:
+                            client.send(text)
+                        except ConnectionClosed:
+                            pass    # gerade gegangen; das Aufräumen erledigt ihr eigener Thread
+
+
+                def page(connection, request):
+                    if request.path == '/ws':
+                        return None
+                    body = PAGE.read_bytes()
+                    headers = Headers({'Content-Type': 'text/html; charset=utf-8',
+                                       'Content-Length': str(len(body))})
+                    return Response(200, 'OK', headers, body)
+
+
+                def handle(ws):
+                    clients.add(ws)
+                    broadcast(f'Jemand ist dazugekommen. Jetzt sind wir {len(clients)}.')
+                    try:
+                        # Was kommt, geht an alle
+                        for message in ws:
+                            print(f'Empfangen: {message}')
+                            broadcast(message)
+                    finally:
+                        # Die Verbindung ist zu, weil jemand den Tab geschlossen hat
+                        broadcast(f'Jemand ist gegangen. Jetzt sind wir {len(clients)}.')
+                        clients.discard(ws)
+
+
+                with serve(handle, '0.0.0.0', 8000, process_request=page) as server:
+                    print('Der Server wartet auf Port 8000 ...')
+                    server.serve_forever()
+          say: nach dem `discard`
+  pruefung:
+    pass:
+      - files: { pixelwand/server.rb: stufen/server3.rb }
+    fail:
+      - files: { pixelwand/server.rb: stufen/server2.rb }
+      # die Seite vor dem Kasten: noch keine Prüfung
+      - files:
+          pixelwand/server.rb:
+            text: |
+              require 'faye/websocket'
+              require 'rackup'
+              require 'json'
+
+              # Das Bild: 64 × 40 Pixel, jedes eine Farbnummer von 0 bis 15
+              WIDTH = 64
+              HEIGHT = 40
+              $pixels = Array.new(WIDTH * HEIGHT, 0)
+
+              # Alle offenen Verbindungen
+              $clients = []
+
+              def broadcast(message)
+                text = JSON.generate(message)
+                $clients.each { |client| client.send(text) }
+              end
+
+              App = lambda do |env|
+                if Faye::WebSocket.websocket?(env)
+                  ws = Faye::WebSocket.new(env)
+
+                  # Wer neu ist, bekommt das ganze Bild, danach nur noch einzelne Pixel
+                  ws.on(:open) do
+                    $clients << ws
+                    ws.send(JSON.generate({ 'type' => 'picture', 'width' => WIDTH,
+                                            'height' => HEIGHT, 'pixels' => $pixels }))
+                    broadcast({ 'type' => 'people', 'count' => $clients.size })
+                  end
+
+                  ws.on(:message) do |event|
+                    # Jeder kann alles schicken: nur glauben, was passt
+                    # hier: die Nachricht lesen und prüfen; danach stehen x, y und color fest
+
+
+                    $pixels[y * WIDTH + x] = color
+                    broadcast({ 'type' => 'pixel', 'x' => x, 'y' => y, 'color' => color })
+                  end
+
+                  ws.on(:close) do
+                    $clients.delete(ws)
+                    broadcast({ 'type' => 'people', 'count' => $clients.size })
+                  end
+
+                  ws.rack_response
+                else
+                  [200, { 'content-type' => 'text/html; charset=utf-8' },
+                   [File.read(File.join(__dir__, 'index.html'))]]
+                end
+              end
+
+              puts "Der Server wartet auf Port 8000 ..."
+              Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Silent: true)
+      # eins zu weit: x bis WIDTH statt WIDTH - 1
+      - files:
+          pixelwand/server.rb:
+            text: |
+              require 'faye/websocket'
+              require 'rackup'
+              require 'json'
+
+              # Das Bild: 64 × 40 Pixel, jedes eine Farbnummer von 0 bis 15
+              WIDTH = 64
+              HEIGHT = 40
+              $pixels = Array.new(WIDTH * HEIGHT, 0)
+
+              # Alle offenen Verbindungen
+              $clients = []
+
+              def broadcast(message)
+                text = JSON.generate(message)
+                $clients.each { |client| client.send(text) }
+              end
+
+              App = lambda do |env|
+                if Faye::WebSocket.websocket?(env)
+                  ws = Faye::WebSocket.new(env)
+
+                  # Wer neu ist, bekommt das ganze Bild, danach nur noch einzelne Pixel
+                  ws.on(:open) do
+                    $clients << ws
+                    ws.send(JSON.generate({ 'type' => 'picture', 'width' => WIDTH,
+                                            'height' => HEIGHT, 'pixels' => $pixels }))
+                    broadcast({ 'type' => 'people', 'count' => $clients.size })
+                  end
+
+                  ws.on(:message) do |event|
+                    # Jeder kann alles schicken: nur glauben, was passt
+                    message = JSON.parse(event.data) rescue next
+                    next unless message.is_a?(Hash)
+                    x, y, color = message.values_at('x', 'y', 'color')
+                    next unless [x, y, color].all?(Integer)
+                    next unless x.between?(0, WIDTH) && y.between?(0, HEIGHT - 1) && color.between?(0, 15)
+
+                    $pixels[y * WIDTH + x] = color
+                    broadcast({ 'type' => 'pixel', 'x' => x, 'y' => y, 'color' => color })
+                  end
+
+                  ws.on(:close) do
+                    $clients.delete(ws)
+                    broadcast({ 'type' => 'people', 'count' => $clients.size })
+                  end
+
+                  ws.rack_response
+                else
+                  [200, { 'content-type' => 'text/html; charset=utf-8' },
+                   [File.read(File.join(__dir__, 'index.html'))]]
+                end
+              end
+
+              puts "Der Server wartet auf Port 8000 ..."
+              Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Silent: true)
+        say: 64 liegt schon außerhalb
+    python:
+      pass:
+        - files: { pixelwand/server.py: stufen/server3.py }
+      fail:
+        - files: { pixelwand/server.py: stufen/server2.py }
+        # die Seite vor dem Kasten: noch keine Prüfung
+        - files:
+            pixelwand/server.py:
+              text: |
+                import json
+                from pathlib import Path
+                from websockets.datastructures import Headers
+                from websockets.exceptions import ConnectionClosed
+                from websockets.http11 import Response
+                from websockets.sync.server import serve
+
+                PAGE = Path(__file__).with_name('index.html')
+
+                # Das Bild: 64 × 40 Pixel, jedes eine Farbnummer von 0 bis 15
+                WIDTH = 64
+                HEIGHT = 40
+                pixels = [0] * (WIDTH * HEIGHT)
+
+                # Alle offenen Verbindungen
+                clients = set()
+
+
+                def broadcast(message):
+                    text = json.dumps(message)
+                    for client in list(clients):
+                        try:
+                            client.send(text)
+                        except ConnectionClosed:
+                            pass
+
+
+                def page(connection, request):
+                    if request.path == '/ws':
+                        return None
+                    body = PAGE.read_bytes()
+                    headers = Headers({'Content-Type': 'text/html; charset=utf-8',
+                                       'Content-Length': str(len(body))})
+                    return Response(200, 'OK', headers, body)
+
+
+                def handle(ws):
+                    # Wer neu ist, bekommt das ganze Bild, danach nur noch einzelne Pixel
+                    clients.add(ws)
+                    ws.send(json.dumps({'type': 'picture', 'width': WIDTH,
+                                        'height': HEIGHT, 'pixels': pixels}))
+                    broadcast({'type': 'people', 'count': len(clients)})
+                    try:
+                        for text in ws:
+                            # Jeder kann alles schicken: nur glauben, was passt
+                            # hier: die Nachricht lesen und prüfen; danach stehen x, y und color fest
+                            ...
+
+                            pixels[y * WIDTH + x] = color
+                            broadcast({'type': 'pixel', 'x': x, 'y': y, 'color': color})
+                    finally:
+                        clients.discard(ws)
+                        broadcast({'type': 'people', 'count': len(clients)})
+
+
+                with serve(handle, '0.0.0.0', 8000, process_request=page) as server:
+                    print('Der Server wartet auf Port 8000 ...')
+                    server.serve_forever()
+        # ohne try: Text, der kein JSON ist, beendet die Verbindung
+        - files:
+            pixelwand/server.py:
+              text: |
+                import json
+                from pathlib import Path
+                from websockets.datastructures import Headers
+                from websockets.exceptions import ConnectionClosed
+                from websockets.http11 import Response
+                from websockets.sync.server import serve
+
+                PAGE = Path(__file__).with_name('index.html')
+
+                # Das Bild: 64 × 40 Pixel, jedes eine Farbnummer von 0 bis 15
+                WIDTH = 64
+                HEIGHT = 40
+                pixels = [0] * (WIDTH * HEIGHT)
+
+                # Alle offenen Verbindungen
+                clients = set()
+
+
+                def broadcast(message):
+                    text = json.dumps(message)
+                    for client in list(clients):
+                        try:
+                            client.send(text)
+                        except ConnectionClosed:
+                            pass
+
+
+                def page(connection, request):
+                    if request.path == '/ws':
+                        return None
+                    body = PAGE.read_bytes()
+                    headers = Headers({'Content-Type': 'text/html; charset=utf-8',
+                                       'Content-Length': str(len(body))})
+                    return Response(200, 'OK', headers, body)
+
+
+                def handle(ws):
+                    # Wer neu ist, bekommt das ganze Bild, danach nur noch einzelne Pixel
+                    clients.add(ws)
+                    ws.send(json.dumps({'type': 'picture', 'width': WIDTH,
+                                        'height': HEIGHT, 'pixels': pixels}))
+                    broadcast({'type': 'people', 'count': len(clients)})
+                    try:
+                        for text in ws:
+                            # Jeder kann alles schicken: nur glauben, was passt
+                            message = json.loads(text)
+                            if not isinstance(message, dict):
+                                continue
+                            x, y, color = message.get('x'), message.get('y'), message.get('color')
+                            if not all(type(value) is int for value in (x, y, color)):
+                                continue
+                            if not (0 <= x < WIDTH and 0 <= y < HEIGHT and 0 <= color <= 15):
+                                continue
+
+                            pixels[y * WIDTH + x] = color
+                            broadcast({'type': 'pixel', 'x': x, 'y': y, 'color': color})
+                    finally:
+                        clients.discard(ws)
+                        broadcast({'type': 'people', 'count': len(clients)})
+
+
+                with serve(handle, '0.0.0.0', 8000, process_request=page) as server:
+                    print('Der Server wartet auf Port 8000 ...')
+                    server.serve_forever()
+          say: ValueError
   pixelwand:
     pass:
       - files: { pixelwand/server.rb: stufen/server3.rb }

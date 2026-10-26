@@ -33,15 +33,16 @@ Die ganze Klasse malt an einem Bild, live: Lernende schreiben einen Server in Ru
 #### Die Aufgaben
 
 - »Die Pixelwand« liest `server.rb` und sucht `JSON.parse`, `Faye::WebSocket` und eine Bereichsprüfung, »Ein Lock« `Thread.new`, `Mutex.new` und `synchronize`; in Python lesen sie `server.py` und suchen `json.loads`, `websockets` und eine Bereichsprüfung, `threading.Thread`, `Lock()` und `with lock`.
+- »An alle, und wieder weg« und »Nur glauben, was passt« laden `server.rb` und rufen `App` mit einer Verbindung zum Ausprobieren auf, ohne dass der Server läuft (in Python `handle` aus `server.py`). Die erste schickt »Hallo«, während eine zweite Verbindung (Bo) offen ist, und schließt: Bo muss das »Hallo« bekommen, die Verbindung aus der Liste verschwinden und Bo danach hören, dass noch 1 da ist. Die zweite schickt einen gültigen Pixel und zehn ungültige Nachrichten (kein JSON, kein Hash, Text statt Zahl, `x` 64 und −1, `y` 40, Farbe 16 und −1 …); nur der gültige darf ins Bild und an alle. Beide gelten für den Stand, an dem sie stehen: Ab »Viele Threads« verarbeitet eine Queue die Nachrichten, dann kommt bei diesem Aufruf nichts mehr an.
 - Die übrigen fragen nach dem Statuscode 101, wer eine Nachricht bekommt und was der Zähler nach 200 Pixeln zeigt (Vorhersagen), der Größe des Bildes und warum ein Server fremden Nachrichten nicht trauen darf.
 
 #### Jetzt bist du dran
 
 - Nach dem Echo zeigt die Seite den Server nicht mehr jedes Mal ganz, sondern nur, was sich ändert; nur für die Pixelwand mit JSON kommt die Datei noch einmal ganz, weil sich fast jede Zeile ändert.
-- An drei Stellen schreiben die Lernenden den Code zuerst selbst: Nachrichten an alle und das Aufräumen beim Schließen einer Verbindung (in Python die beiden Lücken mit `...` in `handle`), dann die Prüfung jeder Nachricht, bevor sie ins Bild kommt, und zuletzt den Lock um das Ändern von Bild und Zähler (`$lock.synchronize`, `with lock:`); »Ein Lock« prüft ihn. Die Seite geht danach mit ihrem eigenen Code weiter.
+- An drei Stellen schreiben die Lernenden den Code zuerst selbst: Nachrichten an alle und das Aufräumen beim Schließen einer Verbindung (in Python die beiden Lücken mit `...` in `handle`), dann die Prüfung jeder Nachricht, bevor sie ins Bild kommt, und zuletzt den Lock um das Ändern von Bild und Zähler (`$lock.synchronize`, `with lock:`). »An alle, und wieder weg«, »Nur glauben, was passt« und »Ein Lock« prüfen sie. Die Seite geht danach mit ihrem eigenen Code weiter.
 - Für die Threads zeigt die Seite die Schleife mit einer Lücke: Die Lernenden schneiden ihre eigene Prüfung aus `ws.on(:message)` (in Python aus `handle`) aus und setzen sie dort ein, statt sie von der Seite neu zu kopieren.
 - Vor dem Code der Seite stehen Tipps, ein Denkanstoß und ein Gerüst mit Lücken. Jede Stufe erscheint erst eine Minute nach der vorigen, ohne Uhr, damit die Lernenden mit dem Tipp arbeiten, statt auf den nächsten zu warten; der Code der Seite ist die letzte Stufe. Wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst.
-- Der Kasten »Ausprobieren« nach der Pixelwand schickt aus der Browserkonsole ungültige Nachrichten und zeigt so, ob die eigene Prüfung hält; »Die Pixelwand« sucht nur nach einer Bereichsprüfung, nicht nach allen.
+- Der Kasten »Ausprobieren« nach der Pixelwand schickt aus der Browserkonsole ungültige Nachrichten und zeigt so, ob die eigene Prüfung hält; »Die Pixelwand« sucht nur nach einer Bereichsprüfung, »Nur glauben, was passt« probiert alle aus.
 
 #### Weiter
 

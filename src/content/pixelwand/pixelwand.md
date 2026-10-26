@@ -372,7 +372,7 @@ In `App` kommt jede neue Verbindung in die Liste, sobald sie steht. Unter `ws = 
     end
 ```
 
-<div class='hint own'>
+<div class='hint own' data-check='alle'>
 <strong>Jetzt bist du dran:</strong> Was in <code>ws.on(:message)</code> ankommt, soll an alle gehen, statt mit »Echo:« zurück. Und schließt jemand den Tab, läuft <code>ws.on(:close) do … end</code>: Schreib es unter <code>ws.on(:message)</code> so, dass die Verbindung aus <code>$clients</code> verschwindet und alle erfahren, wie viele es noch sind.
 </div>
 
@@ -443,6 +443,7 @@ def broadcast(text):
         try:
             client.send(text)
         except ConnectionClosed:
+            pass
 ```
 
 Ersetze `handle` durch:
@@ -460,7 +461,7 @@ def handle(ws):
         ...
 ```
 
-<div class='hint own'>
+<div class='hint own' data-check='alle'>
 <strong>Jetzt bist du dran:</strong> Füll die beiden Stellen mit <code>...</code>. In der Schleife geht jede Nachricht an alle, statt mit »Echo:« zurück. Im <code>finally</code> verschwindet die Verbindung aus <code>clients</code>, und alle erfahren, wie viele es noch sind. <code>...</code> ist in Python eine Anweisung, die nichts tut; sie hält nur den Platz frei.
 </div>
 
@@ -495,6 +496,8 @@ def handle(ws):
             broadcast(message)
     finally:
         # Die Verbindung ist zu, weil jemand den Tab geschlossen hat
+        clients.discard(ws)
+        broadcast(f'Jemand ist gegangen. Jetzt sind wir {len(clients)}.')
 ```
 <!-- /solution -->
 
@@ -502,6 +505,8 @@ def handle(ws):
 - `broadcast` schickt eine Nachricht an jede Verbindung in der Menge, auch an die, von der sie kam. Ist eine Verbindung gerade zugegangen, wirft `send` den Fehler `ConnectionClosed`, und `broadcast` macht mit den anderen weiter.
 - Jede Verbindung hat ihren eigenen Thread, und alle benutzen dieselbe Menge. `add` und `discard` sind in Python je ein einziger Schritt, dabei kommen sich Threads nicht in die Quere. Die Schleife in `broadcast` dagegen dauert; kommt währenddessen jemand dazu, bräche sie mit einem Fehler ab. Darum geht sie über eine Kopie, `list(clients)`. Was passiert, wenn mehrere Schritte zusammengehören, siehst du am Ende in [Viele Threads](#7-viele-threads).
 <!-- /language -->
+
+_task(alle)
 
 Starte den Server neu und öffne die Seite in zwei Tabs nebeneinander. Was du in einem Tab schreibst, erscheint in beiden.
 
@@ -572,7 +577,7 @@ Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Sile
 - Jede Nachricht hat einen `type`: `picture` für das ganze Bild, `pixel` für einen einzelnen Pixel, `people` für die Zahl der Verbundenen.
 - **Jeder kann alles schicken**, nicht nur deine Webseite. Darum glaubt der Server keiner Nachricht. Ein Server, der fremden Eingaben traut, ist eine Einladung, ihn kaputt zu machen.
 
-<div class='hint own'>
+<div class='hint own' data-check='pruefung'>
 <strong>Jetzt bist du dran:</strong> Schreib in <code>ws.on(:message)</code> die Prüfung. Lies die Nachricht mit <code>JSON.parse(event.data)</code> und überspring mit <code>next</code> alles, was nicht passt: Text, der kein JSON ist (dann wirft <code>JSON.parse</code> einen Fehler), JSON, das kein Hash ist, <code>x</code>, <code>y</code> oder <code>color</code>, die keine ganzen Zahlen sind, einen Pixel außerhalb des Bildes und eine Farbe außerhalb von 0 bis 15.
 </div>
 
@@ -676,7 +681,7 @@ with serve(handle, '0.0.0.0', 8000, process_request=page) as server:
 - Jede Nachricht hat einen `type`: `picture` für das ganze Bild, `pixel` für einen einzelnen Pixel, `people` für die Zahl der Verbundenen.
 - **Jeder kann alles schicken**, nicht nur deine Webseite. Darum glaubt der Server keiner Nachricht. Ein Server, der fremden Eingaben traut, ist eine Einladung, ihn kaputt zu machen.
 
-<div class='hint own'>
+<div class='hint own' data-check='pruefung'>
 <strong>Jetzt bist du dran:</strong> Schreib in <code>handle</code> an der Stelle mit <code>...</code> die Prüfung. Lies die Nachricht mit <code>json.loads(text)</code> und überspring mit <code>continue</code> alles, was nicht passt: Text, der kein JSON ist (dann wirft <code>json.loads</code> einen <code>ValueError</code>), JSON, das kein <code>dict</code> ist, <code>x</code>, <code>y</code> oder <code>color</code>, die keine ganzen Zahlen sind, einen Pixel außerhalb des Bildes und eine Farbe außerhalb von 0 bis 15.
 </div>
 
@@ -724,6 +729,8 @@ Ein Gerüst; die Bedingungen mit `…` schreibst du:
 `message.get('x')` gibt `None`, wenn `x` fehlt, statt abzubrechen. `type(value) is int` lässt nur ganze Zahlen durch, auch kein `true`, das in Python sonst als 1 zählen würde.
 <!-- /solution -->
 <!-- /language -->
+
+_task(pruefung)
 
 Die neue `index.html` zeichnet das Bild in ein `<canvas>`, ein Element, in das JavaScript zeichnen kann. Es ist nur 64 × 40 Pixel groß. CSS zieht es so groß, wie das Fenster erlaubt, und legt ein feines Gitter darüber, damit man jeden Pixel der Wand sieht:
 
