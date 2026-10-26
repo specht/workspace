@@ -776,6 +776,85 @@ tasks:
               return top
           ```
 
+  - id: dijkstra-heap
+    title: Dijkstra mit dem Heap
+    prompt: |
+      Bau `dijkstra` in `routes.rb` auf den Heap um. Der Workspace sucht
+      wieder Wege auf `data/detour.tsv` und auf einem kleinen Graphen, in dem
+      ein Knoten zweimal in den Heap kommt, und sieht nach, ob `dijkstra` den
+      nächsten Knoten mit `pop` aus einem `MinHeap` holt.
+    check:
+      type: ruby
+      file: routenplaner-starter/routes.rb
+      cases:
+        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:path]
+          expect: "['11', '12', '13', '14', '15', '16']"
+          say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
+        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')[:path]
+          expect: "['11']"
+        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')[:path]
+          expect: ~
+          say: Zum Fußweg 31-32 führt nichts hin; ist der Heap leer, gibt es keinen Weg.
+        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].last
+          expect: "'16'"
+          say: Kommt das Ziel aus dem Heap, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.
+        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].include?('22')
+          expect: false
+          say: Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.
+        - call: 'dijkstra({ nodes: {}, edges: { ''a'' => [[''b'', 5], [''c'', 1]], ''b'' => [[''a'', 5], [''c'', 1], [''d'', 1]], ''c'' => [[''a'', 1], [''b'', 1]], ''d'' => [[''b'', 1], [''e'', 10]], ''e'' => [[''d'', 10]] } }, ''a'', ''e'')[:path]'
+          expect: "['a', 'c', 'b', 'd', 'e']"
+          say: Über `c` ist `b` nur 2 entfernt statt 5. Bekommt `b` den kürzeren Abstand und kommt damit noch einmal in den Heap?
+        - call: 'dijkstra({ nodes: {}, edges: { ''a'' => [[''b'', 5], [''c'', 1]], ''b'' => [[''a'', 5], [''c'', 1], [''d'', 1]], ''c'' => [[''a'', 1], [''b'', 1]], ''d'' => [[''b'', 1], [''e'', 10]], ''e'' => [[''d'', 10]] } }, ''a'', ''e'')[:visited]'
+          expect: "['a', 'c', 'b', 'd', 'e']"
+          say: 'Der Knoten `b` steht zweimal im Heap, mit 5 und mit 2. Kommt der alte Eintrag mit 5 heraus, ist `b` schon fertig: überspringen, mit `next if done[node]`.'
+        - call: 'pops = 0; MinHeap.prepend(Module.new { define_method(:pop) { pops += 1; super() } }); dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16''); pops > 0'
+          expect: true
+          say: '`dijkstra` holt den nächsten Knoten noch nicht mit `pop` aus einem `MinHeap`: Statt `frontier` gibt es den Heap, in dem am Anfang der Start mit 0 liegt.'
+    solution: |
+      `done = {}`, `heap = MinHeap.new` und `heap.push(0, start)` statt
+      `frontier`. Die Schleife läuft `until heap.empty?`: `so_far, node =
+      heap.pop`, `next if done[node]`, dann `done[node] = true`; ein Nachbar
+      mit einem kürzeren Weg kommt mit `heap.push(total, neighbour)` hinein.
+    python:
+      prompt: |
+        Bau `dijkstra` in `routes.py` auf den Heap um. Der Workspace sucht
+        wieder Wege auf `data/detour.tsv` und auf einem kleinen Graphen, in
+        dem ein Knoten zweimal in den Heap kommt, und sieht nach, ob
+        `dijkstra` den nächsten Knoten mit `pop` aus einem `MinHeap` holt.
+      check:
+        type: python
+        file: routenplaner-starter/routes.py
+        cases:
+          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''path'']'
+            expect: "['11', '12', '13', '14', '15', '16']"
+            say: 'Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.'
+          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''11'')[''path'']'
+            expect: "['11']"
+          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'')[''path'']'
+            expect: ~
+            say: 'Zum Fußweg 31-32 führt nichts hin; ist der Heap leer, gibt es keinen Weg.'
+          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''visited''][-1]'
+            expect: "'16'"
+            say: 'Kommt das Ziel aus dem Heap, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.'
+          - call: '''22'' in dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''visited'']'
+            expect: false
+            say: 'Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.'
+          - call: 'dijkstra({''nodes'': {}, ''edges'': {''a'': [[''b'', 5], [''c'', 1]], ''b'': [[''a'', 5], [''c'', 1], [''d'', 1]], ''c'': [[''a'', 1], [''b'', 1]], ''d'': [[''b'', 1], [''e'', 10]], ''e'': [[''d'', 10]]}}, ''a'', ''e'')[''path'']'
+            expect: "['a', 'c', 'b', 'd', 'e']"
+            say: Über `c` ist `b` nur 2 entfernt statt 5. Bekommt `b` den kürzeren Abstand und kommt damit noch einmal in den Heap?
+          - call: 'dijkstra({''nodes'': {}, ''edges'': {''a'': [[''b'', 5], [''c'', 1]], ''b'': [[''a'', 5], [''c'', 1], [''d'', 1]], ''c'': [[''a'', 1], [''b'', 1]], ''d'': [[''b'', 1], [''e'', 10]], ''e'': [[''d'', 10]]}}, ''a'', ''e'')[''visited'']'
+            expect: "['a', 'c', 'b', 'd', 'e']"
+            say: 'Der Knoten `b` steht zweimal im Heap, mit 5 und mit 2. Kommt der alte Eintrag mit 5 heraus, ist `b` schon fertig: überspringen, mit `continue`, wenn er in `done` steht.'
+          - call: '(calls := [], original := MinHeap.pop, setattr(MinHeap, ''pop'', lambda self: calls.append(1) or original(self)), dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16''), setattr(MinHeap, ''pop'', original), len(calls) > 0)[-1]'
+            expect: true
+            say: '`dijkstra` holt den nächsten Knoten noch nicht mit `pop` aus einem `MinHeap`: Statt `frontier` gibt es den Heap, in dem am Anfang der Start mit 0 liegt.'
+      solution: |
+        `done = set()`, `heap = MinHeap()` und `heap.push(0, start)` statt
+        `frontier`. Die Schleife läuft `while not heap.empty()`: `so_far,
+        node = heap.pop()`, `continue`, wenn `node in done`, sonst
+        `done.add(node)`; ein Nachbar mit einem kürzeren Weg kommt mit
+        `heap.push(total, neighbour)` hinein.
+
   - id: astern
     title: A*
     prompt: Schreib `a_star` in `routes.rb`.

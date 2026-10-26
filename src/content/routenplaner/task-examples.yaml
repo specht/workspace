@@ -195,6 +195,137 @@ examples:
                     def pop(self):
                         return self.items.pop() if self.items else None
           say: Elternteil
+  dijkstra-heap:
+    pass:
+      - files: { routenplaner-starter/routes.rb: loesung/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+    fail:
+      - files: { routenplaner-starter/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        say: MinHeap
+      # der Heap ist fertig, dijkstra sucht noch in frontier
+      - files:
+          routenplaner-starter/solution.rb: loesung/routes.rb
+          routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+          routenplaner-starter/routes.rb:
+            text: |
+              require_relative 'solution'
+              def dijkstra(graph, start, goal)
+                  metres = { start => 0 }
+                  previous = { start => nil }
+                  frontier = { start => 0 } # gefunden, aber noch nicht fertig
+                  visited = []
+                  until frontier.empty?
+                      node, so_far = frontier.min_by { |_id, m| m }
+                      frontier.delete(node)
+                      visited << node
+                      break if node == goal
+
+                      graph[:edges][node].each do |neighbour, length|
+                          total = so_far + length
+                          next if metres.key?(neighbour) && metres[neighbour] <= total
+
+                          metres[neighbour] = total
+                          previous[neighbour] = node
+                          frontier[neighbour] = total
+                      end
+                  end
+                  { path: path_to(previous, goal), visited: visited }
+              end
+        say: MinHeap
+      # mit dem Heap, aber ohne done: b kommt zweimal dran
+      - files:
+          routenplaner-starter/solution.rb: loesung/routes.rb
+          routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+          routenplaner-starter/routes.rb:
+            text: |
+              require_relative 'solution'
+              def dijkstra(graph, start, goal)
+                  costs = { start => 0 }
+                  previous = { start => nil }
+                  done = {}
+                  heap = MinHeap.new
+                  heap.push(0, start)
+                  visited = []
+                  until heap.empty?
+                      so_far, node = heap.pop
+                      visited << node
+                      break if node == goal
+
+                      graph[:edges][node].each do |neighbour, length|
+                          total = so_far + length
+                          next if costs.key?(neighbour) && costs[neighbour] <= total
+
+                          costs[neighbour] = total
+                          previous[neighbour] = node
+                          heap.push(total, neighbour)
+                      end
+                  end
+                  { path: path_to(previous, goal), visited: visited }
+              end
+        say: done
+    python:
+      pass:
+        - files: { routenplaner-starter/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      fail:
+        - files: { routenplaner-starter/routes.py: loesung/routes-5.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        # der Heap ist fertig, dijkstra sucht noch in frontier
+        - files:
+            routenplaner-starter/solution.py: loesung/routes.py
+            routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/routes.py:
+              text: |
+                from solution import *
+
+
+                def dijkstra(graph, start, goal):
+                    metres = {start: 0}
+                    previous = {start: None}
+                    frontier = {start: 0}  # gefunden, aber noch nicht fertig
+                    visited = []
+                    while frontier:
+                        node = min(frontier, key=frontier.get)
+                        so_far = frontier.pop(node)
+                        visited.append(node)
+                        if node == goal:
+                            break
+                        for neighbour, length in graph['edges'].get(node, []):
+                            total = so_far + length
+                            if neighbour in metres and metres[neighbour] <= total:
+                                continue
+                            metres[neighbour] = total
+                            previous[neighbour] = node
+                            frontier[neighbour] = total
+                    return {'path': path_to(previous, goal), 'visited': visited}
+          say: MinHeap
+        # mit dem Heap, aber ohne done: b kommt zweimal dran
+        - files:
+            routenplaner-starter/solution.py: loesung/routes.py
+            routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/routes.py:
+              text: |
+                from solution import *
+
+
+                def dijkstra(graph, start, goal):
+                    costs = {start: 0}
+                    previous = {start: None}
+                    done = set()
+                    heap = MinHeap()
+                    heap.push(0, start)
+                    visited = []
+                    while not heap.empty():
+                        so_far, node = heap.pop()
+                        visited.append(node)
+                        if node == goal:
+                            break
+                        for neighbour, length in graph['edges'].get(node, []):
+                            total = so_far + length
+                            if neighbour in costs and costs[neighbour] <= total:
+                                continue
+                            costs[neighbour] = total
+                            previous[neighbour] = node
+                            heap.push(total, neighbour)
+                    return {'path': path_to(previous, goal), 'visited': visited}
+          say: done
   astern:
     pass:
       - files: { routenplaner-starter/routes.rb: loesung/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }

@@ -483,7 +483,7 @@ _task(heap)
 Dann bekommt `dijkstra` den Heap statt `frontier`. Ein Knoten kann jetzt mehrmals im Heap stehen: Findet die Suche einen kürzeren Weg zu ihm, legt sie ihn mit dem neuen Abstand noch einmal hinein, statt den alten Eintrag zu suchen. Kommt später der alte Eintrag heraus, war der Knoten schon dran, und die Suche überspringt ihn. Dafür merkt sie sich in `done`, welche Knoten fertig sind:
 
 <!-- language: ruby -->
-<div class='hint own'>
+<div class='hint own' data-check='dijkstra-heap'>
 <strong>Jetzt bist du dran:</strong> Bau dein <code>dijkstra</code> auf den Heap um. Statt <code>frontier</code> gibt es am Anfang <code>done = {}</code> und einen <code>MinHeap</code>, in dem der Start mit 0 Metern liegt. Die Schleife läuft, bis der Heap leer ist: <code>pop</code> gibt den Knoten mit dem kleinsten Abstand, ein Knoten aus <code>done</code> wird übersprungen, und ein Nachbar mit einem neuen, kürzeren Abstand kommt mit <code>push</code> in den Heap.
 </div>
 
@@ -559,7 +559,7 @@ end
 <!-- /solution -->
 <!-- /language -->
 <!-- language: python -->
-<div class='hint own'>
+<div class='hint own' data-check='dijkstra-heap'>
 <strong>Jetzt bist du dran:</strong> Bau dein <code>dijkstra</code> auf den Heap um. Statt <code>frontier</code> gibt es am Anfang <code>done = set()</code> und einen <code>MinHeap</code>, in dem der Start mit 0 Metern liegt. Die Schleife läuft, bis der Heap leer ist: <code>pop</code> gibt den Knoten mit dem kleinsten Abstand, ein Knoten aus <code>done</code> wird übersprungen, und ein Nachbar mit einem neuen, kürzeren Abstand kommt mit <code>push</code> in den Heap.
 </div>
 
@@ -631,7 +631,9 @@ while not heap.empty():
 <!-- /solution -->
 <!-- /language -->
 
-Prüfe `dijkstra` mit dem Knopf oben noch einmal, starte den Server neu und such den Weg zur Pfaueninsel wieder mit Dijkstra. Derselbe Weg, dieselben besuchten Knoten, aber statt ein paar Sekunden noch knapp eine.
+_task(dijkstra-heap)
+
+Prüfe `dijkstra` mit der Aufgabe darüber, starte dann den Server neu und such den Weg zur Pfaueninsel wieder mit Dijkstra. Derselbe Weg, dieselben besuchten Knoten, aber statt ein paar Sekunden noch knapp eine.
 
 <!-- tutorial-step
 # Die Lösung aller Schritte, der Server neu gestartet
