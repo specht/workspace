@@ -75,10 +75,13 @@ often:
 - Run renders, Playwright and anything longer than a minute in the
   background and keep working. Run scripts you write (generators,
   searches, simulations) as `(ulimit -v 4000000; timeout 120 …)`, give every
-  loop a bound, and run one heavy job at a time: never two agents that
-  compile, start containers or run tests at once, and no Playwright while one
-  works. The machine froze three times (an unbounded loop; three agents
-  running C checks beside a Playwright run).
+  loop a bound, and run every heavy command (Playwright, task examples,
+  compiling) in a scope of its own with a memory limit
+  (`systemd-run --user --scope -q -p MemoryMax=6G …`), so that a runaway
+  job is killed alone. At most three agents that execute code at once. The
+  machine froze three times before (an unbounded loop; three agents running
+  C checks beside a Playwright run); since then it has an early OOM killer
+  (earlyoom at 5 % free memory) and compressed swap in RAM (zram).
 - The development site serves the branch that is checked out, and the
   maintainer reviews it live: stack new work on the newest branch instead of
   checking out an older one.
