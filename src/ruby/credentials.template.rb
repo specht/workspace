@@ -41,6 +41,10 @@ CONTACT_EMAIL = 'kontakt@example.com'
 # HOSTING = 'Hetzner Online GmbH, Rechenzentrum in Deutschland'
 # Wer die E-Mails verschickt:
 # MAIL_PROVIDER = 'united-domains AG'
+# Wer die Namen (DNS) verwaltet, dieselbe Wahl wie DNS_PROVIDER in der .env
+# des Frontends (docker/traefik/docker-compose.yaml); ohne den Wert steht in
+# der Datenschutzerklärung Cloudflare:
+# DNS_PROVIDER = 'deSEC e. V.'
 # Wo die verschlüsselten Sicherungen liegen und wie viele Monate sie
 # höchstens aufbewahrt werden (so lange bleiben gelöschte Daten darin):
 # BACKUP = 'in einer eigenen Storage Box im Rechenzentrum'
