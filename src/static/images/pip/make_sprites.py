@@ -253,12 +253,17 @@ def frames(image):
     return [image.crop((x, 0, x + T, T)) for x in range(0, image.width, T)]
 
 
+# where every figure's feet are in its tile, so that all of them stand in
+# the middle of their field, not on its lower edge
+FEET = 21
+
+
 def grounded(frame, rx=7):
-    """The figure with a shadow on the floor under its feet."""
+    """The figure, its feet at FEET, with a shadow on the floor under them."""
     bottom = max(y for y in range(T) for x in range(T) if frame.getpixel((x, y))[3])
     img = canvas()
-    shadow(img, 12, bottom + 0.5, rx, 1.6)
-    img.alpha_composite(frame)
+    shadow(img, 12, FEET + 0.5, rx, 1.6)
+    img.alpha_composite(frame, (0, FEET - bottom))
     return img
 
 

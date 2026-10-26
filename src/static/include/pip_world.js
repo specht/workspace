@@ -52,11 +52,12 @@
     const RIM_SOFT = [74, 84, 126];
     // the view comes from the front and a little from the left: the left
     // walls of a room show a narrow face, SIDE pixels wide; which rows of the
-    // face's picture its columns take, from the ground inwards
+    // face's picture its columns take, from the ground inwards: the dark
+    // foot, then its lit rock
     const SIDE = 4;
-    const SIDE_ROWS = [10, 8, 6, 4];
+    const SIDE_ROWS = [11, 5, 4, 3];
     const RIM_FACE = [140, 156, 196];
-    const VERSION = '?v=7';
+    const VERSION = '?v=8';
 
     // The pictures the rock and the ground are drawn from, loaded once for
     // every map on the page and read into pixels: { top, face, ground }.
@@ -304,10 +305,9 @@
                                 const foot = Math.floor(Math.min(H - 1, y + k) / PX);
                                 copy(face, Math.floor(hash(tx, foot, 11) * FACES) * PX + (x % PX), FACE - k, i);
                             } else {
-                                // the side face: the face's rock turned upright, in
-                                // the shade (the light comes from the left)
+                                // the side face: the face's rock turned upright, as
+                                // light as the front face, so that it reads as a wall
                                 copy(face, Math.floor(hash(tx, ty, 12) * FACES) * PX + (y % PX), SIDE_ROWS[across[y * W + x] - 1], i);
-                                for (let c = 0; c < 3; c++) out.data[i + c] = Math.round(out.data[i + c] * 0.8);
                             }
                             // its upper edge, where the top of the rock begins
                             if ((at(x, y - 1) && !isFace(x, y - 1)) || (at(x - 1, y) && !isFace(x - 1, y))) setColour(i, RIM_FACE);

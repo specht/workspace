@@ -8392,39 +8392,39 @@ html[data-bs-theme="dark"] .bitplane-widget {
 
 /* on the ground */
 .pip-trail {
-    background-image: url(/images/pip/trail.png?v=7);
+    background-image: url(/images/pip/trail.png?v=8);
     /* turned the way Bello went (--turn); at a corner the prints of their
        own, pointing north-east */
     transform: translate(calc(var(--x) * var(--tile)), calc(var(--y) * var(--tile))) rotate(var(--turn, 0deg));
 }
-.pip-trail-diagonal { background-image: url(/images/pip/trail-diagonal.png?v=7); }
-.pip-puddle { background-image: url(/images/pip/puddle.png?v=7); }
+.pip-trail-diagonal { background-image: url(/images/pip/trail-diagonal.png?v=8); }
+.pip-puddle { background-image: url(/images/pip/puddle.png?v=8); }
 
 /* standing, in the dark */
 .pip-deco { --h: 1; }
-.pip-mushroom { background-image: url(/images/pip/mushroom.png?v=7); }
-.pip-stalagmite { background-image: url(/images/pip/stalagmite.png?v=7); }
-.pip-lever { background-image: url(/images/pip/lever-off.png?v=7); }
-.pip-lever.pip-pulled { background-image: url(/images/pip/lever-on.png?v=7); }
-.pip-gate { --h: 1.3334; background-image: url(/images/pip/gate-closed.png?v=7); }
-.pip-gate-open .pip-gate { background-image: url(/images/pip/gate-open.png?v=7); }
+.pip-mushroom { background-image: url(/images/pip/mushroom.png?v=8); }
+.pip-stalagmite { background-image: url(/images/pip/stalagmite.png?v=8); }
+.pip-lever { background-image: url(/images/pip/lever-off.png?v=8); }
+.pip-lever.pip-pulled { background-image: url(/images/pip/lever-on.png?v=8); }
+.pip-gate { --h: 1.3334; background-image: url(/images/pip/gate-closed.png?v=8); }
+.pip-gate-open .pip-gate { background-image: url(/images/pip/gate-open.png?v=8); }
 .pip-glibber {
-    background-image: url(/images/pip/glibber.png?v=7);
+    background-image: url(/images/pip/glibber.png?v=8);
     background-size: 400% 100%;
     animation: pip-frames-4 0.9s steps(4) infinite;
 }
 .pip-bello {
-    background-image: url(/images/pip/bello.png?v=7);
+    background-image: url(/images/pip/bello.png?v=8);
     background-size: 400% 100%;
     animation: pip-frames-4 1.6s steps(4) infinite;
 }
 
 /* shining by themselves */
-.pip-glowshroom { background-image: url(/images/pip/glowshroom.png?v=7); }
-.pip-crystals { background-image: url(/images/pip/crystals.png?v=7); }
+.pip-glowshroom { background-image: url(/images/pip/glowshroom.png?v=8); }
+.pip-crystals { background-image: url(/images/pip/crystals.png?v=8); }
 .pip-stone {
     z-index: 499;
-    background-image: url(/images/pip/stone.png?v=7);
+    background-image: url(/images/pip/stone.png?v=8);
     background-size: 400% 100%;
     animation: pip-frames-4 1.4s steps(4) infinite;
     transition: opacity 300ms;
@@ -8433,27 +8433,24 @@ html[data-bs-theme="dark"] .bitplane-widget {
 /* the old lamp on its post, dark with a faint ember until Pip lights it */
 .pip-lamp {
     --h: 1.6667;
-    background-image: url(/images/pip/lamp-off.png?v=7);
+    background-image: url(/images/pip/lamp-off.png?v=8);
 }
 .pip-lamp:not(.pip-lit) {
     filter: drop-shadow(0 0 calc(var(--tile) * 0.12) rgba(255, 200, 140, 0.6));
 }
-.pip-lamp.pip-lit { background-image: url(/images/pip/lamp.png?v=7); }
+.pip-lamp.pip-lit { background-image: url(/images/pip/lamp.png?v=8); }
 /* the post against a wall on the right, the lantern out over the ground */
 .pip-tall.pip-mirrored {
     transform: translate(calc(var(--x) * var(--tile)), calc((var(--y) + 1 - var(--h)) * var(--tile))) scaleX(-1);
 }
 
 .pip-pip {
-    /* standing in the middle of its tile, not at its lower edge */
-    --lift: calc(var(--tile) * -0.12);
-    translate: 0 var(--lift);
-    background-image: url(/images/pip/pip-east.png?v=7);
+    background-image: url(/images/pip/pip-east.png?v=8);
     background-size: 200% 100%;
 }
-.pip-pip[data-facing='west'] { background-image: url(/images/pip/pip-west.png?v=7); }
-.pip-pip[data-facing='north'] { background-image: url(/images/pip/pip-north.png?v=7); }
-.pip-pip[data-facing='south'] { background-image: url(/images/pip/pip-south.png?v=7); }
+.pip-pip[data-facing='west'] { background-image: url(/images/pip/pip-west.png?v=8); }
+.pip-pip[data-facing='north'] { background-image: url(/images/pip/pip-north.png?v=8); }
+.pip-pip[data-facing='south'] { background-image: url(/images/pip/pip-south.png?v=8); }
 .pip-pip.pip-walking { animation: pip-frames-2 var(--step) steps(2); }
 .pip-pip.pip-bump { animation: pip-bump 300ms; }
 .pip-pip.pip-caught { animation: pip-caught 600ms 2; }
@@ -8462,11 +8459,11 @@ html[data-bs-theme="dark"] .bitplane-widget {
 @keyframes pip-frames-2 { to { background-position-x: calc(-2 * var(--tile)); } }
 @keyframes pip-frames-4 { to { background-position-x: calc(-4 * var(--tile)); } }
 @keyframes pip-bump {
-    30% { translate: calc(var(--tile) * 0.15) var(--lift, 0); }
-    60% { translate: calc(var(--tile) * -0.08) var(--lift, 0); }
+    30% { translate: calc(var(--tile) * 0.15) 0; }
+    60% { translate: calc(var(--tile) * -0.08) 0; }
 }
 @keyframes pip-caught { 50% { opacity: 0.25; } }
-@keyframes pip-hop { 50% { translate: 0 calc(var(--lift, 0px) - var(--tile) * 0.3); } }
+@keyframes pip-hop { 50% { translate: 0 calc(var(--tile) * -0.3); } }
 
 /* The light: a layer over the ground, the rock and what stands in the dark,
    which multiplies them with a cave blue, so that it is darker but every
@@ -8572,7 +8569,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
 .pip-bat {
     z-index: 960;
     opacity: 0;
-    background-image: url(/images/pip/bat.png?v=7);
+    background-image: url(/images/pip/bat.png?v=8);
     background-size: 400% 100%;
     animation: pip-bat 22s linear infinite, pip-frames-4 0.5s steps(4) infinite;
     pointer-events: none;
@@ -8691,7 +8688,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
     content: '';
     flex: 0 0 48px;
     height: 48px;
-    background: url(/images/pip/wichtel.png?v=7) no-repeat 0 0 / 400% 100%;
+    background: url(/images/pip/wichtel.png?v=8) no-repeat 0 0 / 400% 100%;
     image-rendering: pixelated;
 }
 
