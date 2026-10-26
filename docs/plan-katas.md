@@ -21,8 +21,8 @@ Container«), the rules with what checks them in [checkliste.md](checkliste.md)
 
 ## What exists
 
-All pages are dev-only (entries with a dot in `sections.yaml`) until the
-maintainer has looked at them. In catalog order, which is also the order of
+All pages are in the catalog since 2026-10-26 (before, dev-only until the
+maintainer had looked at them). In catalog order, which is also the order of
 the strip on the front page:
 
 | # | Page | Idea | Special |

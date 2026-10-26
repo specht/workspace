@@ -13,7 +13,7 @@
     - keyboard
 
 # Katas (docs/plan-katas.md): small exercises typed into the cards of the
-# page. Dev-only (.) until the maintainer has looked at them.
+# page.
 - key: katas
   label: Katas
   icon: /images/martial-arts-uniform.png
@@ -25,20 +25,19 @@
     ausführt und prüft. Eine Kata übt man, bis sie sitzt, wie in den
     Kampfkünsten; die Übungen bauen aufeinander auf, springen darfst du immer.
   entries:
-    - .pip-1
-    - .kata-functions
-    - .kata-decisions
-    - .kata-loops
-    - .pip-2
-    - .kata-texts
-    - .kata-lists
-    - .kata-dicts
-    - .kata-bits
-    - .kata-recursion
-    - .kata-search
-    - .pip-3
-    - .kata-tests
-
+    - pip-1
+    - kata-functions
+    - kata-decisions
+    - kata-loops
+    - pip-2
+    - kata-texts
+    - kata-lists
+    - kata-dicts
+    - kata-bits
+    - kata-recursion
+    - kata-search
+    - pip-3
+    - kata-tests
 - key: graphics
   compact: true
   label: Grafik

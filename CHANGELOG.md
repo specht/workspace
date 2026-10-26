@@ -21,7 +21,7 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
-- Katas (kurze Programmieraufgaben in der Karte, Prüfarten `function`, `pip` und `tests`), noch nur in der Entwicklung sichtbar:
+- Katas (kurze Programmieraufgaben in der Karte, Prüfarten `function`, `pip` und `tests`) und »Pip unter Funkelbach«, im Katalog und als Streifen auf der Startseite:
   Der Code läuft in einem eigenen Container aus dem Workspace-Image ohne Netz, durch eine Warteschlange. Neu und freiwillig in
   `credentials.rb`: `KATA_PARALLEL_RUNS` (ohne 4), messen mit `./config.rb exec ruby ruby /src/scripts/measure-katas.rb`.
   Gespeichert werden der Code als Antwort der Aufgabe, je Sprache, eine eingereichte Kopie, bis sie zurückgenommen wird, und eine
