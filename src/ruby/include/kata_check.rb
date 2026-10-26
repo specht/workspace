@@ -256,7 +256,44 @@ module KataCheck
             say = same_as(mine, outputs.drop(1), alternatives)
             message = say if say
         end
+        explanation = status == :wrong ? explain(message, language_name) : nil
+        message = "#{message}\n\n#{explanation}" if explanation
         [status, message, read]
+    end
+
+    # Error messages that stop a beginner, each with a line in German that
+    # says what usually lies behind it; the original stays above it.
+    # [language, pattern, explanation]; the name in the pattern's first
+    # group goes into the explanation as %s.
+    EXPLAINED = [
+        ['python', /IndentationError|expected an indented block|unindent does not match|unexpected indent/,
+         'Python liest an der Einrückung, was zusammengehört: Nach einer Zeile mit `:` kommen eingerückte Zeilen, und alle Zeilen eines Blocks sind gleich weit eingerückt.'],
+        ['python', /expected ':'/,
+         'Nach `def …`, `if …`, `else`, `for …` und `while …` steht in Python ein Doppelpunkt.'],
+        ['python', /NameError: name '([^']+)' is not defined/,
+         '`%s` kennt Python an dieser Stelle nicht. Ist es anders geschrieben, oder bekommt es erst später einen Wert?'],
+        ['python', /can only concatenate str \(not "int"\) to str|unsupported operand type\(s\) for \+: 'int' and 'str'/,
+         'Text und Zahl lassen sich nicht mit `+` aneinanderhängen. `str(zahl)` macht aus der Zahl einen Text.'],
+        ['python', /'NoneType' object/,
+         'Hier ist ein Wert `None`, also nichts. Gibt eine Funktion vielleicht nichts mit `return` zurück?'],
+        ['ruby', /undefined local variable or method '([^']+)'|undefined local variable or method `([^']+)'/,
+         '`%s` kennt Ruby an dieser Stelle nicht. Ist es anders geschrieben, oder bekommt es erst später einen Wert?'],
+        ['ruby', /undefined method '([^']+)' for nil|undefined method `([^']+)' for nil/,
+         'Hier ist ein Wert `nil`, also nichts, und der kann kein `%s`. Gibt eine Funktion vielleicht nichts zurück?'],
+        ['ruby', /unexpected end-of-input|expected an `end`|expected a matching `end`|unexpected 'end'|unexpected `end'/,
+         'Die `end` passen nicht: Jedes `def`, `if`, `while` und `do` braucht genau ein `end`.'],
+        ['ruby', /String can't be coerced into Integer|no implicit conversion of Integer into String/,
+         'Text und Zahl lassen sich nicht mit `+` aneinanderhängen. `zahl.to_s` macht aus der Zahl einen Text, oder du schreibst `"…#{zahl}…"`.'],
+    ].freeze
+
+    def self.explain(text, language)
+        EXPLAINED.each do |lang, pattern, explanation|
+            next unless lang == language && (m = text.to_s.match(pattern))
+
+            name = m.captures.compact.first
+            return name ? format(explanation.gsub('%', '%%').sub('%%s', '%s'), name) : explanation
+        end
+        nil
     end
 
     # »`Integer#gcd` gibt es in dieser Aufgabe nicht«, with the call or the
@@ -308,7 +345,8 @@ module KataCheck
         elsif result.too_long
             { :status => :too_long, :output => output, :message => 'Dein Programm hat so viel ausgegeben, dass es abgebrochen wurde.' }
         else
-            { :status => result.status == 0 ? :ran : :error, :output => output, :message => nil }
+            status = result.status == 0 ? :ran : :error
+            { :status => status, :output => output, :message => status == :error ? explain(output, language) : nil }
         end
     end
 end

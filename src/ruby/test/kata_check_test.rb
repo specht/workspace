@@ -145,6 +145,24 @@ class KataCheckTest < Minitest::Test
         assert_equal '`gcd(60, 48)` ergibt `60`, richtig wäre `12`.', message
     end
 
+    def test_beginner_errors_are_explained
+        assert_includes KataCheck.explain("NameError: name 'resutl' is not defined", 'python'), '`resutl` kennt Python an dieser Stelle nicht.'
+        assert_includes KataCheck.explain("undefined local variable or method 'resutl' for main", 'ruby'), '`resutl` kennt Ruby'
+        assert_includes KataCheck.explain("undefined method 'upcase' for nil", 'ruby'), 'kann kein `upcase`'
+        assert_includes KataCheck.explain('IndentationError: expected an indented block', 'python'), 'Einrückung'
+        assert_nil KataCheck.explain('ZeroDivisionError: division by zero', 'python')
+        needs_docker
+        status, message, = KataCheck.check(task(python_check), python_check, "def gcd(a, b):\nreturn a\n", RUN)
+        assert_equal :wrong, status
+        assert_match(/Syntaxfehler.*\n\nPython liest an der Einrückung/m, message)
+        status, message, = KataCheck.check(task(ruby_check), ruby_check, "def gcd(a, b)\n  if a > b\n    a\nend\n", RUN)
+        assert_equal :wrong, status
+        assert_includes message, 'Jedes `def`, `if`, `while` und `do` braucht genau ein `end`.'
+        ran = KataCheck.run_program('python', "x = 5\nprint('Ergebnis: ' + x)\n", RUN)
+        assert_equal :error, ran[:status]
+        assert_includes ran[:message], '`str(zahl)`'
+    end
+
     def test_running_the_program_shows_what_it_prints
         needs_docker
         ran = KataCheck.run_program('python', "print('Hallo')\nprint(1 / 0)\n", RUN)

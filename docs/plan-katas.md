@@ -722,6 +722,10 @@ showing »Noch 2 vor dir«; »Ausführen« shows the output; the code is stored 
 language as JSON in the task's answer, teachers see only the result;
 `level:`; `starter:`; examples with `answer:`, the starter must fail. The page
 `/kata-demo` (dev only) has two Katas; `e2e/tests/katas.browser.spec.ts`.
-Still open in step 2: `random`, `forbid`, `same_as`, the solution after
-solving in the card's language, explained beginner errors, the live console
-over the WebSocket (the output now comes when the run ends).
+`forbid`, `random` (seed per person and task version, the reference computed
+in the run, the message names the value) and `same_as` feedback (the wrong
+solutions run in the same container) are done, and beginner errors get a
+line of explanation under the original (`KataCheck::EXPLAINED`). The
+solution after solving comes as for every task, in the card's language. Still
+open in step 2: a time limit per case, and the live console over the
+WebSocket (the output now comes when the run ends).
