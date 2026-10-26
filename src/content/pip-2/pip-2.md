@@ -1,6 +1,6 @@
 <div class='meta'>
 image: teaser.webp:50:40
-focus: "53:30"
+icon: /images/pip/icon-bello.png
 kind: uebung
 duration: 3 Doppelstunden
 languages: [ruby, python, javascript]

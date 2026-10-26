@@ -23,21 +23,6 @@ module KataMap
         Stop.new(:slug => slug, :title => title(content[:title]), :idea => content[:idea], :curriculum => content[:curriculum], :icon => content[:icon], :counts => counts)
     end
 
-    # The picture of a set in its low band (16:6) is its card's picture,
-    # ZOOM times the band's width (default.css, .kata-set-picture img), its
-    # point of focus (meta focus: x:y in percent of the picture, where Pip or
-    # Bello stands) in the middle of the band. The point keeps far enough
-    # from the edges that the picture covers the band (a picture at least
-    # half as high as wide). The custom properties for the <img>.
-    ZOOM = 1.9
-    EDGE_X = (50.0 / ZOOM).ceil
-    EDGE_Y = 20
-
-    def self.picture_style(focus)
-        fx, fy = focus || [50, 50]
-        "--fx: #{fx.clamp(EDGE_X, 100 - EDGE_X)}%; --fy: #{fy.clamp(EDGE_Y, 100 - EDGE_Y)}%;"
-    end
-
     # »Katas: Erste Funktionen« -> »Erste Funktionen«
     def self.title(text)
         CGI.unescapeHTML(text.to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '')).sub(/\AKatas?:\s*/, '')
@@ -59,8 +44,8 @@ module KataMap
     # every set in a strip that scrolls sideways. progress: { slug => {
     # done:, total:, extras_done: } }, nil for a visitor; pinned: the slugs
     # a teacher pinned for the person's groups (the first is scrolled into
-    # the middle); images: { slug => the <img> of its card }.
-    def self.carousel_html(stops, progress: nil, teacher: false, pinned: [], images: {})
+    # the middle).
+    def self.carousel_html(stops, progress: nil, teacher: false, pinned: [])
         core = ->(stop) { stop.counts.reject { |k, _| k == :extra }.values.sum }
         io = +"<div class='kata-carousel'>"
         io << "<div class='kata-total'>"
@@ -89,9 +74,12 @@ module KataMap
             # the strip is dragged with a mouse, so the set is no link: its
             # button opens it
             io << "<div class='#{classes}'#{pin && pinned.first == stop.slug ? " data-centre=''" : ''}>"
-            # the card's picture, or for a set without one (no picture would
-            # not give a solution away) its icon on a band (meta icon:)
-            io << (images[stop.slug] || "<span class='kata-set-art' aria-hidden='true'><i class='bi #{h(stop.icon || 'bi-code-slash')}'></i></span>")
+            # its icon on a band (meta icon:): one of Bootstrap's, or a
+            # picture like Pip in green (images/pip/make_icons.py); no picture
+            # of a card, which would give a solution away
+            icon = stop.icon || 'bi-code-slash'
+            art = icon.start_with?('/') ? "<img class='kata-set-sprite' src='#{h(icon)}' alt=''>" : "<i class='bi #{h(icon)}'></i>"
+            io << "<span class='kata-set-art' aria-hidden='true'>#{art}</span>"
             io << "<span class='kata-set-marks'><span class='kata-set-number'>#{done ? "<i class='bi bi-check-lg' aria-hidden='true'></i><span class='visually-hidden'>Erledigt</span>" : i + 1}</span>"
             io << "<span class='kata-set-pin'><i class='bi bi-pin-angle-fill' aria-hidden='true'></i>Angepinnt</span>" if pin
             io << '</span>'
@@ -151,12 +139,20 @@ module KataMap
                 });
             });
             track.addEventListener('scroll', ends, { passive: true });
-            // with a mouse the strip is dragged sideways; after a drag, the
-            // click that ends it opens nothing
+            // with a mouse the strip is dragged sideways and, let go while
+            // moving, coasts on with that speed and slows down; then it
+            // snaps to the set nearest the middle. After a drag, the click
+            // that ends it opens nothing.
             var drag = null;
+            var coasting = 0;
+            function stopCoasting() {
+                cancelAnimationFrame(coasting);
+                coasting = 0;
+            }
             track.addEventListener('pointerdown', function (event) {
                 if (event.pointerType !== 'mouse' || event.button !== 0) return;
-                drag = { x: event.clientX, left: track.scrollLeft, moved: false };
+                stopCoasting();
+                drag = { x: event.clientX, left: track.scrollLeft, moved: false, speed: 0, lastX: event.clientX, lastT: event.timeStamp };
             });
             window.addEventListener('pointermove', function (event) {
                 if (!drag) return;
@@ -167,15 +163,57 @@ module KataMap
                     carousel.classList.add('kata-dragging');
                 }
                 track.scrollLeft = drag.left - dx;
+                // the speed of the last moves, in pixels per millisecond
+                var dt = event.timeStamp - drag.lastT;
+                if (dt > 0) drag.speed = 0.7 * ((drag.lastX - event.clientX) / dt) + 0.3 * drag.speed;
+                drag.lastX = event.clientX;
+                drag.lastT = event.timeStamp;
             });
-            window.addEventListener('pointerup', function () {
+            // where a set stands in the middle of the strip (within its ends)
+            function centred(set) {
+                var left = set.offsetLeft - track.offsetLeft + set.offsetWidth / 2 - track.clientWidth / 2;
+                return Math.max(0, Math.min(track.scrollWidth - track.clientWidth, left));
+            }
+            window.addEventListener('pointerup', function (event) {
                 if (!drag) return;
                 var moved = drag.moved;
+                // a pause before letting go: no throw
+                var speed = event.timeStamp - drag.lastT > 80 ? 0 : drag.speed;
                 drag = null;
-                carousel.classList.remove('kata-dragging');
-                if (moved) {
-                    track.addEventListener('click', function (event) { event.preventDefault(); event.stopPropagation(); }, { capture: true, once: true });
+                if (!moved) {
+                    carousel.classList.remove('kata-dragging');
+                    return;
                 }
+                track.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); }, { capture: true, once: true });
+                // where the throw would come to rest, slowing down by FRICTION
+                // per millisecond: there the set nearest the middle is the one
+                // the strip glides to, easing out, so nothing snaps afterwards
+                var FRICTION = 0.994;
+                var rest = track.scrollLeft + speed / -Math.log(FRICTION);
+                var target = track.scrollLeft;
+                var best = Infinity;
+                track.querySelectorAll('.kata-set').forEach(function (set) {
+                    var left = centred(set);
+                    if (Math.abs(left - rest) < best) {
+                        best = Math.abs(left - rest);
+                        target = left;
+                    }
+                });
+                var from = track.scrollLeft;
+                var distance = target - from;
+                var duration = Math.max(250, Math.min(1100, Math.abs(distance) * 1.6));
+                var start = performance.now();
+                var step = function (now) {
+                    var t = Math.min(1, (now - start) / duration);
+                    track.scrollLeft = from + distance * (1 - Math.pow(1 - t, 3));
+                    if (t < 1) {
+                        coasting = requestAnimationFrame(step);
+                        return;
+                    }
+                    coasting = 0;
+                    carousel.classList.remove('kata-dragging');
+                };
+                coasting = requestAnimationFrame(step);
             });
             track.addEventListener('dragstart', function (event) { event.preventDefault(); });
             // a click on the set itself: its button calls attention to itself

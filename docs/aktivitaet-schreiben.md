@@ -62,7 +62,7 @@ Jahr steht dafür im Titel der Seite in Klammern.
 | `kind` | `projekt`, `labor`, `grundlagen`, `uebung`, `galerie` oder `steckbrief` (Programmiersprachen); steht auf der Karte, jede Aktivität im Katalog braucht eines |
 | `language` | Die Sprache, in der man programmiert, wenn es eine feste gibt: `Ruby`, `C / raylib`; steht als »Projekt (Ruby)« auf der Karte |
 | `duration` | Freier Text, zum Beispiel »2 Doppelstunden« |
-| `idea`, `curriculum`, `icon`, `focus` | Nur bei Übungen mit Katas: die Idee in wenigen Worten, die Zeile des Lehrplans, ein Bootstrap-Icon (`bi-braces`) und wohin der Streifen ins Bild zoomt (`focus: "65:50"`, x und y in Prozent, in Anführungszeichen, sonst liest YAML eine Zahl zur Basis 60); der Streifen der Katas auf der Startseite zeigt sie (`curriculum` nur Lehrkräften, `icon` statt eines Bildes: eine Kata ohne Pip hat kein Bild, das verriete nur eine Lösung) |
+| `idea`, `curriculum`, `icon` | Nur bei Übungen mit Katas: die Idee in wenigen Worten, die Zeile des Lehrplans und ein Icon, ein Bootstrap-Icon (`bi-braces`) oder ein Bild (`/images/pip/icon-pip.png`, aus `make_icons.py`); der Streifen der Katas auf der Startseite zeigt sie (`curriculum` nur Lehrkräften). Ein Bild einer gelösten Kata zeigt er nicht: Es verriete die Lösung |
 | `requires` | Aktivitäten, die vorher sinnvoll sind |
 | `reference` | Handbuch-Seiten, die die Aktivität braucht; erscheinen oben auf der Seite |
 | `template` | Adresse einer Vorlage zum Klonen (`https://…`); im Text `${template}`. Der Workspace sagt Lernenden, wenn ihr Klon veraltet ist |

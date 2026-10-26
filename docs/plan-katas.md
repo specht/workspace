@@ -203,13 +203,16 @@ Dictionary in Python, an object in JavaScript.
 * Oberstufe: Datenstrukturen (Hash Table); links to the Handbuch page
   `hash-tables`
 
-**7 · Bits und Zahlensysteme**
-Numbers as bits, other bases.
-* Einstieg: binary representation (HS Binärdarstellung), from binary back
-* Übung: count set bits (HS), hexadecimal, is a power of two
-* Knobelei: two's complement of a byte, any base to any base
-* Extras: a number in Roman numerals
-* Sek I: Information und Daten (Zahlensysteme); links to `bits-und-bytes`
+**7 · Bits und Zahlensysteme** (built, `kata-bits`)
+Numbers as bits, other bases, only with dividing and remainders.
+* Einstieg: a number in bits, bits back into a number, a single bit, how
+  many bits a number needs
+* Übung: count the ones, hexadecimal and back, is it a power of two
+* Knobelei: two's complement of a byte, any base from 2 to 16, from one base
+  into another
+* Extras: Roman numerals, written and read
+* Sek I: Information und Daten (Zahlensysteme); links to the Handbuch page
+  `bits-und-bytes`
 
 **8 · Rekursion**
 A function that calls itself, with a case that stops.
@@ -784,12 +787,16 @@ The cards and the strip
   a mouse, swiped on a phone (a set snaps into the middle) and has arrows
   that fade out at its ends; it fades into the page where more follows. A
   set pinned for the person's group is marked and scrolled into the middle.
-- Only Pip's sets have a picture (the map halfway through a run, no code,
-  zoomed in round Pip or Bello with `focus:`); the others have an icon
-  (`icon:`), since a solved card would give a solution away: braces for
-  Erste Funktionen, a signpost for Entscheidungen, a loop for Wiederholen,
-  quotation marks for Texte, a numbered list for Listen, a book for
-  Dictionaries. The section's icon is the martial arts uniform.
+- Every set has an icon on a green band (`icon:`), no picture of a card,
+  which would give a solution away: braces for Erste Funktionen, a signpost
+  for Entscheidungen, a loop for Wiederholen, quotation marks for Texte, a
+  numbered list for Listen, a book for Dictionaries, toggles for Bits; Pip
+  (from the side) and Bello for Pip's sets, in green, every pixel the same
+  size (`images/pip/make_icons.py`). The section's icon is the martial arts
+  uniform.
+- A mouse drags the strip; thrown, it glides to the set it would come to
+  rest at and stops there, with no snap afterwards. A click on a set calls
+  out its button. Text on the sets is not selectable.
 - On a page with a language switch the kind label does not name the
   language (»Übung«, not »Übung (Ruby)«); the chosen language's pill slides.
 

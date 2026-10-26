@@ -1,0 +1,165 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Der Startcode jeder Kata muss von selbst scheitern; das prüft der Test ohne Beispiel.
+format: 1
+activity: kata-bits
+examples:
+  to-binary:
+    pass:
+      - answer: "def to_binary(n)\n  return '0' if n == 0\n  result = ''\n  while n > 0\n    result = (n % 2 == 1 ? '1' : '0') + result\n    n /= 2\n  end\n  result\nend\n"
+    fail:
+      - answer: "def to_binary(n)\n  return '0' if n == 0\n  result = ''\n  while n > 0\n    result += (n % 2 == 1 ? '1' : '0')\n    n /= 2\n  end\n  result\nend\n"
+    python:
+      pass:
+        - answer: "def to_binary(n):\n    if n == 0:\n        return '0'\n    result = ''\n    while n > 0:\n        result = str(n % 2) + result\n        n //= 2\n    return result\n"
+      fail:
+        - answer: "def to_binary(n):\n    if n == 0:\n        return '0'\n    result = ''\n    while n > 0:\n        result += str(n % 2)\n        n //= 2\n    return result\n"
+    javascript:
+      pass:
+        - answer: "function toBinary(n) {\n  if (n === 0) {\n    return '0';\n  }\n  let result = '';\n  while (n > 0) {\n    result = (n % 2) + result;\n    n = Math.floor(n / 2);\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "function toBinary(n) {\n  if (n === 0) {\n    return '0';\n  }\n  let result = '';\n  while (n > 0) {\n    result += (n % 2);\n    n = Math.floor(n / 2);\n  }\n  return result;\n}\n"
+  from-binary:
+    pass:
+      - answer: "def from_binary(bits)\n  value = 0\n  bits.each_char do |bit|\n    value = value * 2 + (bit == '1' ? 1 : 0)\n  end\n  value\nend\n"
+    fail:
+      - answer: "def from_binary(bits)\n  value = 0\n  bits.each_char do |bit|\n    value += 1 if bit == '1'\n  end\n  value\nend\n"
+    python:
+      pass:
+        - answer: "def from_binary(bits):\n    value = 0\n    for bit in bits:\n        value = value * 2 + (1 if bit == '1' else 0)\n    return value\n"
+      fail:
+        - answer: "def from_binary(bits):\n    value = 0\n    for bit in bits:\n        if bit == '1':\n            value += 1\n    return value\n"
+    javascript:
+      pass:
+        - answer: "function fromBinary(bits) {\n  let value = 0;\n  for (const bit of bits) {\n    value = value * 2 + (bit === '1' ? 1 : 0);\n  }\n  return value;\n}\n"
+      fail:
+        - answer: "function fromBinary(bits) {\n  let value = 0;\n  for (const bit of bits) {\n    if (bit === '1') {\n      value += 1;\n    }\n  }\n  return value;\n}\n"
+  bit:
+    pass:
+      - answer: "def bit(n, i)\n  i.times do\n    n /= 2\n  end\n  n % 2\nend\n"
+    python:
+      pass:
+        - answer: "def bit(n, i):\n    for _ in range(i):\n        n //= 2\n    return n % 2\n"
+    javascript:
+      pass:
+        - answer: "function bit(n, i) {\n  for (let k = 0; k < i; k++) {\n    n = Math.floor(n / 2);\n  }\n  return n % 2;\n}\n"
+  binary-length:
+    pass:
+      - answer: "def binary_length(n)\n  length = 1\n  while n > 1\n    n /= 2\n    length += 1\n  end\n  length\nend\n"
+    fail:
+      - answer: "def binary_length(n)\n  length = 0\n  while n > 0\n    n /= 2\n    length += 1\n  end\n  length\nend\n"
+    python:
+      pass:
+        - answer: "def binary_length(n):\n    length = 1\n    while n > 1:\n        n //= 2\n        length += 1\n    return length\n"
+      fail:
+        - answer: "def binary_length(n):\n    length = 0\n    while n > 0:\n        n //= 2\n        length += 1\n    return length\n"
+    javascript:
+      pass:
+        - answer: "function binaryLength(n) {\n  let length = 1;\n  while (n > 1) {\n    n = Math.floor(n / 2);\n    length++;\n  }\n  return length;\n}\n"
+      fail:
+        - answer: "function binaryLength(n) {\n  let length = 0;\n  while (n > 0) {\n    n = Math.floor(n / 2);\n    length++;\n  }\n  return length;\n}\n"
+  count-ones:
+    pass:
+      - answer: "def count_ones(n)\n  count = 0\n  while n > 0\n    count += n % 2\n    n /= 2\n  end\n  count\nend\n"
+    python:
+      pass:
+        - answer: "def count_ones(n):\n    count = 0\n    while n > 0:\n        count += n % 2\n        n //= 2\n    return count\n"
+    javascript:
+      pass:
+        - answer: "function countOnes(n) {\n  let count = 0;\n  while (n > 0) {\n    count += n % 2;\n    n = Math.floor(n / 2);\n  }\n  return count;\n}\n"
+  to-hex:
+    pass:
+      - answer: "DIGITS = '0123456789abcdef'\n\ndef to_hex(n)\n  return '0' if n == 0\n  result = ''\n  while n > 0\n    result = DIGITS[n % 16] + result\n    n /= 16\n  end\n  result\nend\n"
+    python:
+      pass:
+        - answer: "DIGITS = '0123456789abcdef'\n\ndef to_hex(n):\n    if n == 0:\n        return '0'\n    result = ''\n    while n > 0:\n        result = DIGITS[n % 16] + result\n        n //= 16\n    return result\n"
+    javascript:
+      pass:
+        - answer: "const DIGITS = '0123456789abcdef';\n\nfunction toHex(n) {\n  if (n === 0) {\n    return '0';\n  }\n  let result = '';\n  while (n > 0) {\n    result = DIGITS[n % 16] + result;\n    n = Math.floor(n / 16);\n  }\n  return result;\n}\n"
+  from-hex:
+    pass:
+      - answer: "DIGITS = '0123456789abcdef'\n\ndef from_hex(text)\n  value = 0\n  text.each_char do |digit|\n    value = value * 16 + DIGITS.index(digit)\n  end\n  value\nend\n"
+    python:
+      pass:
+        - answer: "DIGITS = '0123456789abcdef'\n\ndef from_hex(text):\n    value = 0\n    for digit in text:\n        value = value * 16 + DIGITS.index(digit)\n    return value\n"
+    javascript:
+      pass:
+        - answer: "const DIGITS = '0123456789abcdef';\n\nfunction fromHex(text) {\n  let value = 0;\n  for (const digit of text) {\n    value = value * 16 + DIGITS.indexOf(digit);\n  }\n  return value;\n}\n"
+  power-of-two:
+    pass:
+      - answer: "def power_of_two(n)\n  return false if n < 1\n  n /= 2 while n % 2 == 0\n  n == 1\nend\n"
+    fail:
+      - answer: "def power_of_two(n)\n  n % 2 == 0\nend\n"
+    python:
+      pass:
+        - answer: "def power_of_two(n):\n    if n < 1:\n        return False\n    while n % 2 == 0:\n        n //= 2\n    return n == 1\n"
+      fail:
+        - answer: "def power_of_two(n):\n    return n % 2 == 0\n"
+    javascript:
+      pass:
+        - answer: "function powerOfTwo(n) {\n  if (n < 1) {\n    return false;\n  }\n  while (n % 2 === 0) {\n    n /= 2;\n  }\n  return n === 1;\n}\n"
+      fail:
+        - answer: "function powerOfTwo(n) {\n  return n % 2 === 0;\n}\n"
+  twos-complement:
+    pass:
+      - answer: "def twos_complement(n)\n  n += 256 if n < 0\n  result = ''\n  8.times do\n    result = (n % 2 == 1 ? '1' : '0') + result\n    n /= 2\n  end\n  result\nend\n"
+    fail:
+      - answer: "def twos_complement(n)\n  n += 256 if n < 0\n  result = ''\n  while n > 0\n    result = (n % 2 == 1 ? '1' : '0') + result\n    n /= 2\n  end\n  result\nend\n"
+    python:
+      pass:
+        - answer: "def twos_complement(n):\n    if n < 0:\n        n += 256\n    result = ''\n    for _ in range(8):\n        result = str(n % 2) + result\n        n //= 2\n    return result\n"
+      fail:
+        - answer: "def twos_complement(n):\n    if n < 0:\n        n += 256\n    result = ''\n    while n > 0:\n        result = str(n % 2) + result\n        n //= 2\n    return result\n"
+    javascript:
+      pass:
+        - answer: "function twosComplement(n) {\n  if (n < 0) {\n    n += 256;\n  }\n  let result = '';\n  for (let i = 0; i < 8; i++) {\n    result = (n % 2) + result;\n    n = Math.floor(n / 2);\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "function twosComplement(n) {\n  if (n < 0) {\n    n += 256;\n  }\n  let result = '';\n  while (n > 0) {\n    result = (n % 2) + result;\n    n = Math.floor(n / 2);\n  }\n  return result;\n}\n"
+  to-base:
+    pass:
+      - answer: "DIGITS = '0123456789abcdef'\n\ndef to_base(n, base)\n  return '0' if n == 0\n  result = ''\n  while n > 0\n    result = DIGITS[n % base] + result\n    n /= base\n  end\n  result\nend\n"
+    python:
+      pass:
+        - answer: "DIGITS = '0123456789abcdef'\n\ndef to_base(n, base):\n    if n == 0:\n        return '0'\n    result = ''\n    while n > 0:\n        result = DIGITS[n % base] + result\n        n //= base\n    return result\n"
+    javascript:
+      pass:
+        - answer: "const DIGITS = '0123456789abcdef';\n\nfunction toBase(n, base) {\n  if (n === 0) {\n    return '0';\n  }\n  let result = '';\n  while (n > 0) {\n    result = DIGITS[n % base] + result;\n    n = Math.floor(n / base);\n  }\n  return result;\n}\n"
+  convert:
+    pass:
+      - answer: "DIGITS = '0123456789abcdef'\n\ndef convert(text, source, target)\n  n = 0\n  text.each_char do |digit|\n    n = n * source + DIGITS.index(digit)\n  end\n  return '0' if n == 0\n  result = ''\n  while n > 0\n    result = DIGITS[n % target] + result\n    n /= target\n  end\n  result\nend\n"
+    python:
+      pass:
+        - answer: "DIGITS = '0123456789abcdef'\n\ndef convert(text, source, target):\n    n = 0\n    for digit in text:\n        n = n * source + DIGITS.index(digit)\n    if n == 0:\n        return '0'\n    result = ''\n    while n > 0:\n        result = DIGITS[n % target] + result\n        n //= target\n    return result\n"
+    javascript:
+      pass:
+        - answer: "const DIGITS = '0123456789abcdef';\n\nfunction convert(text, source, target) {\n  let n = 0;\n  for (const digit of text) {\n    n = n * source + DIGITS.indexOf(digit);\n  }\n  if (n === 0) {\n    return '0';\n  }\n  let result = '';\n  while (n > 0) {\n    result = DIGITS[n % target] + result;\n    n = Math.floor(n / target);\n  }\n  return result;\n}\n"
+  roman:
+    pass:
+      - answer: "SYMBOLS = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']]\n\ndef roman(n)\n  result = ''\n  SYMBOLS.each do |value, symbol|\n    while n >= value\n      result += symbol\n      n -= value\n    end\n  end\n  result\nend\n"
+    fail:
+      - answer: "SYMBOLS = [[1000, 'M'], [500, 'D'], [100, 'C'], [50, 'L'], [10, 'X'], [5, 'V'], [1, 'I']]\n\ndef roman(n)\n  result = ''\n  SYMBOLS.each do |value, symbol|\n    while n >= value\n      result += symbol\n      n -= value\n    end\n  end\n  result\nend\n"
+    python:
+      pass:
+        - answer: "SYMBOLS = [(1000, 'M'), (900, 'CM'), (500, 'D'), (400, 'CD'), (100, 'C'), (90, 'XC'), (50, 'L'), (40, 'XL'), (10, 'X'), (9, 'IX'), (5, 'V'), (4, 'IV'), (1, 'I')]\n\ndef roman(n):\n    result = ''\n    for value, symbol in SYMBOLS:\n        while n >= value:\n            result += symbol\n            n -= value\n    return result\n"
+      fail:
+        - answer: "SYMBOLS = [(1000, 'M'), (500, 'D'), (100, 'C'), (50, 'L'), (10, 'X'), (5, 'V'), (1, 'I')]\n\ndef roman(n):\n    result = ''\n    for value, symbol in SYMBOLS:\n        while n >= value:\n            result += symbol\n            n -= value\n    return result\n"
+    javascript:
+      pass:
+        - answer: "const SYMBOLS = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']];\n\nfunction roman(n) {\n  let result = '';\n  for (const [value, symbol] of SYMBOLS) {\n    while (n >= value) {\n      result += symbol;\n      n -= value;\n    }\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "const SYMBOLS = [[1000, 'M'], [500, 'D'], [100, 'C'], [50, 'L'], [10, 'X'], [5, 'V'], [1, 'I']];\n\nfunction roman(n) {\n  let result = '';\n  for (const [value, symbol] of SYMBOLS) {\n    while (n >= value) {\n      result += symbol;\n      n -= value;\n    }\n  }\n  return result;\n}\n"
+  from-roman:
+    pass:
+      - answer: "VALUES = { 'I' => 1, 'V' => 5, 'X' => 10, 'L' => 50, 'C' => 100, 'D' => 500, 'M' => 1000 }\n\ndef from_roman(text)\n  total = 0\n  text.each_char.with_index do |char, i|\n    value = VALUES[char]\n    if i + 1 < text.length && VALUES[text[i + 1]] > value\n      total -= value\n    else\n      total += value\n    end\n  end\n  total\nend\n"
+    fail:
+      - answer: "VALUES = { 'I' => 1, 'V' => 5, 'X' => 10, 'L' => 50, 'C' => 100, 'D' => 500, 'M' => 1000 }\n\ndef from_roman(text)\n  total = 0\n  text.each_char do |char|\n    total += VALUES[char]\n  end\n  total\nend\n"
+    python:
+      pass:
+        - answer: "VALUES = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}\n\ndef from_roman(text):\n    total = 0\n    for i in range(len(text)):\n        value = VALUES[text[i]]\n        if i + 1 < len(text) and VALUES[text[i + 1]] > value:\n            total -= value\n        else:\n            total += value\n    return total\n"
+      fail:
+        - answer: "VALUES = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}\n\ndef from_roman(text):\n    total = 0\n    for char in text:\n        total += VALUES[char]\n    return total\n"
+    javascript:
+      pass:
+        - answer: "const VALUES = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };\n\nfunction fromRoman(text) {\n  let total = 0;\n  for (let i = 0; i < text.length; i++) {\n    const value = VALUES[text[i]];\n    if (i + 1 < text.length && VALUES[text[i + 1]] > value) {\n      total -= value;\n    } else {\n      total += value;\n    }\n  }\n  return total;\n}\n"
+      fail:
+        - answer: "const VALUES = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };\n\nfunction fromRoman(text) {\n  let total = 0;\n  for (const char of text) {\n    total += VALUES[char];\n  }\n  return total;\n}\n"

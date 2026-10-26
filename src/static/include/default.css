@@ -8310,31 +8310,11 @@ html[data-bs-theme="dark"] .bitplane-widget {
     box-shadow: 0 0 0 2px color-mix(in srgb, var(--bs-primary) 35%, transparent);
 }
 
-.kata-set-picture,
 .kata-set-art {
     display: block;
     width: 100%;
     aspect-ratio: 16 / 6;
     overflow: hidden;
-}
-/* the card's picture larger (KataMap::ZOOM), its point of focus (--fx,
-   --fy, in percent of the picture) in the middle; a little more on hover */
-.kata-set-picture {
-    position: relative;
-}
-.kata-set-picture img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 190%;
-    max-width: none;
-    height: auto;
-    translate: calc(-1 * var(--fx, 50%)) calc(-1 * var(--fy, 50%));
-    transform-origin: var(--fx, 50%) var(--fy, 50%);
-    transition: scale 300ms;
-}
-.kata-set:hover .kata-set-picture img {
-    scale: 1.08;
 }
 /* of a picture with a dark variant only the one of the scheme (dark.css) */
 .kata-set .theme-image-dark {
@@ -8358,6 +8338,19 @@ html[data-bs-theme="dark"] .bitplane-widget {
     transition: scale 300ms;
 }
 .kata-set:hover .kata-set-art .bi {
+    scale: 1.12;
+}
+/* Pip or Bello in green instead of an icon (images/pip/make_icons.py),
+   pixels kept sharp */
+.kata-set-sprite {
+    /* three times its 24 pixels, every pixel the same size */
+    width: 72px;
+    height: 72px;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 0 0.35em rgba(111, 211, 155, 0.35));
+    transition: scale 300ms;
+}
+.kata-set:hover .kata-set-sprite {
     scale: 1.12;
 }
 .kata-set-art .bi::before {

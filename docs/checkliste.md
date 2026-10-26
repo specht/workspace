@@ -94,7 +94,7 @@ Entstanden beim Bau der Katas und von »Pip unter Funkelbach«
 | Pips Welt in der 3/4-Ansicht: Figuren aus dem 2D Game Studio, in der Mitte ihres Feldes; Seitenwände nur links; Ecken gemischt eng, weit und rund; Licht und Schatten. Bilder aus `src/static/images/pip/make_sprites.py`; nach einer Änderung die `?v=` in `default.css` und `pip_world.js` erhöhen | Wiedererkennbar und lesbar; der Browser hält alte Bilder sonst fest | Lesen |
 | Ein Spiel oder Brauch im Aufgabentext stimmt für deutsche Schulen, oder der Text sagt, woher er kommt (FizzBuzz ist ein englisches Zählspiel, »Brot« das aus der Grundschule) | Sonst stimmt die Geschichte nicht für die Klasse | Lesen |
 | Das Ende einer Geschichte kündigt keine Fortsetzung an und wirbt nicht für etwas anderes | Es soll ein Ende sein | Lesen |
-| Eine Übung mit Katas ohne Pip hat kein Bild für die Karte, sondern ein Icon (`icon: bi-braces`); Pips Übungen zeigen ihre Karte halb abgespielt, ohne Code, und `focus:` sagt, wohin der Streifen auf der Startseite zoomt | Eine gelöste Kata im Bild verriete die Lösung | Lesen |
+| Eine Übung mit Katas hat im Streifen auf der Startseite ein Icon (`icon: bi-braces`), kein Bild einer Karte; Pips Übungen zeigen Pip und Bello in Grün, so groß, dass jedes Pixel gleich groß ist (`make_icons.py`, dreimal 24 Pixel) | Eine gelöste Kata im Bild verriete die Lösung; ein Streifen in einem Stil | Lesen |
 | Jede Kata hat eine Lösung (`solution`); Lehrkräfte setzen sie mit »Lösung einsetzen« in den Code ein, Lernende sehen sie erst nach einer richtigen Antwort | Lehrkräfte wollen in der Stunde vorführen können | Lesen |
 
 ## Bilder

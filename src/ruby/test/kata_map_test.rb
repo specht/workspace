@@ -20,11 +20,10 @@ class KataMapTest < Minitest::Test
     end
 
     def test_a_visitor_sees_the_sets_and_how_many_katas_there_are
-        html = KataMap.carousel_html(stops, :images => { 'kata-loops' => "<img alt='Schleifen'>" })
+        html = KataMap.carousel_html(stops)
         assert_includes html, "<div class='kata-set'>"
         assert_includes html, "href='/kata-functions' aria-label='Ansehen: Erste Funktionen'>"
         assert_includes html, 'Werte bekommen, rechnen, zurückgeben'
-        assert_includes html, "<img alt='Schleifen'>"
         assert_includes html, '<strong>7</strong><small>Katas</small>'
         assert_includes html, 'in 2 Übungen'
         # the levels of a set on hover, in its line how many
@@ -53,11 +52,12 @@ class KataMapTest < Minitest::Test
         assert_equal 2, html.scan('Angepinnt').size
     end
 
-    # the point of focus in the middle of the band, kept away from the edges
-    def test_the_band_zooms_in_round_the_focus
-        assert_equal '--fx: 65%; --fy: 50%;', KataMap.picture_style([65, 50])
-        assert_equal '--fx: 27%; --fy: 20%;', KataMap.picture_style([5, 10])
-        assert_equal '--fx: 50%; --fy: 50%;', KataMap.picture_style(nil)
+    # an icon of Bootstrap, or a picture such as Pip in green
+    def test_a_set_has_its_icon
+        stop = KataMap.stop('pip-1', content([1], :title => 'Pip').merge(:icon => '/images/pip/icon-pip.png'))
+        html = KataMap.carousel_html([stop] + stops)
+        assert_includes html, "<img class='kata-set-sprite' src='/images/pip/icon-pip.png' alt=''>"
+        assert_includes html, "<i class='bi bi-code-slash'></i>"
     end
 
     def test_a_teacher_sees_the_curriculum

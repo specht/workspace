@@ -350,7 +350,7 @@ tasks:
     check:
       type: function
       language: ruby
-      forbid: [Array#include?, Array#member?, Array#index, Array#find_index, Array#any?, Array#find]
+      forbid: ["Array#include?", "Array#member?", Array#index, Array#find_index, "Array#any?", Array#find]
       cases:
         - call: "contains([4, 8, 15], 8)"
           expect: "true"
@@ -467,7 +467,7 @@ tasks:
     check:
       type: function
       language: ruby
-      forbid: [Array#reverse, Array#reverse!, Array#reverse_each]
+      forbid: [Array#reverse, "Array#reverse!", Array#reverse_each]
       cases:
         - call: "reverse_list([1, 2, 3])"
           expect: "[3, 2, 1]"
@@ -698,7 +698,7 @@ tasks:
     check:
       type: function
       language: ruby
-      forbid: [Array#rotate, Array#rotate!]
+      forbid: [Array#rotate, "Array#rotate!"]
       cases:
         - call: "rotate_left([1, 2, 3, 4])"
           expect: "[2, 3, 4, 1]"
@@ -822,7 +822,7 @@ tasks:
     check:
       type: function
       language: ruby
-      forbid: [Array#sort, Array#sort_by, Array#sort!]
+      forbid: [Array#sort, Array#sort_by, "Array#sort!"]
       cases:
         - call: "ascending([1, 3, 3, 8])"
           expect: "true"
@@ -946,7 +946,7 @@ tasks:
     check:
       type: function
       language: ruby
-      forbid: [Array#uniq, Array#uniq!, Array#to_set]
+      forbid: [Array#uniq, "Array#uniq!", Array#to_set]
       cases:
         - call: "remove_duplicates([3, 1, 3, 2, 1])"
           expect: "[3, 1, 2]"
@@ -1187,7 +1187,7 @@ tasks:
     check:
       type: function
       language: ruby
-      forbid: [Array#sort, Array#sort_by, Array#sort!, Array#min, Array#max]
+      forbid: [Array#sort, Array#sort_by, "Array#sort!", Array#min, Array#max]
       cases:
         - call: "merge_sorted([1, 4, 6], [2, 3, 7])"
           expect: "[1, 2, 3, 4, 6, 7]"

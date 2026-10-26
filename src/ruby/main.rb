@@ -2026,10 +2026,8 @@ class Main < Sinatra::Base
                 # line of the curriculum teachers see on the overview.
                 :idea => page_meta['idea'],
                 :curriculum => page_meta['curriculum'],
-                # its icon in the strip where it has no picture (bi-braces)
-                :icon => page_meta['icon'].to_s[/\Abi-[a-z0-9-]+\z/],
-                # where in its card's picture the strip zooms in (x:y in %)
-                :focus => page_meta['focus'].to_s =~ /\A(\d{1,3}):(\d{1,3})\z/ ? [$1.to_i, $2.to_i] : nil,
+                # its icon in the strip: bi-braces, or a picture (/images/…)
+                :icon => page_meta['icon'].to_s[%r{\A(bi-[a-z0-9-]+|/images/[\w/.-]+\.(png|webp|svg))\z}],
             }
             if page_tasks
                 parsed_content[slug][:tasks] = page_tasks.merge(:on_page => task_slots & page_tasks[:by_id].keys)
@@ -8195,8 +8193,7 @@ class Main < Sinatra::Base
     end
 
     # The Katas of a catalog section (carousel: true) for the person viewing
-    # the front page (KataMap): the sets with their card pictures and
-    # progress, the curriculum lines for teachers, and the sets pinned for
+    # the front page (KataMap): the sets with their icons and progress, the curriculum lines for teachers, and the sets pinned for
     # the person's groups, the latest first.
     def kata_carousel_html(section)
         slugs = section[:entries].select do |slug|
@@ -8205,20 +8202,7 @@ class Main < Sinatra::Base
         stops = slugs.map { |slug| KataMap.stop(slug, @@content[slug]) }
         progress = user_logged_in? ? my_progress.to_h { |p| [p[:slug], p] } : nil
         pinned = user_logged_in? ? pins_for_groups((my_groups + class_groups).uniq).map { |p| p[:slug] }.uniq & slugs : []
-        images = slugs.to_h do |slug|
-            content = @@content[slug]
-            # the band is low: the picture larger, round Pip (meta focus:)
-            style = KataMap.picture_style(content[:focus])
-            alt = CGI.escapeHTML(content[:image_alt].to_s)
-            img = ->(url, cls) { "<img alt='#{alt}'#{cls ? " class='#{cls}'" : ''} #{CardImages.attributes(url)} loading='lazy' decoding='async' style='#{style}'>" }
-            html = if content[:image_dark]
-                img.(content[:image], 'theme-image-light') + img.(content[:image_dark], 'theme-image-dark')
-            elsif content[:image]
-                img.(content[:image], nil)
-            end
-            [slug, html && "<span class='kata-set-picture'>#{html}</span>"]
-        end
-        KataMap.carousel_html(stops, :progress => progress, :teacher => teacher_logged_in?, :pinned => pinned, :images => images)
+        KataMap.carousel_html(stops, :progress => progress, :teacher => teacher_logged_in?, :pinned => pinned)
     end
 
     # Whose Workspace has this address: exactly one running Workspace of an

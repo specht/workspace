@@ -1,0 +1,1667 @@
+format: 1
+activity: kata-bits
+tasks:
+  - id: to-binary
+    title: "Eine Zahl in Bits"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `to_binary(n)`, die eine Zahl ab 0 als Text aus Nullen und Einsen zurückgibt, so wie sie im Rechner steht: `to_binary(13)` ergibt `'1101'`, denn 13 = 8 + 4 + 1. Ohne `to_s(2)`.
+    starter: |
+      def to_binary(n)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#to_s, Integer#digits, Integer#inspect, Kernel#format, Kernel#sprintf]
+      cases:
+        - call: "to_binary(13)"
+          expect: "'1101'"
+        - call: "to_binary(0)"
+          expect: "'0'"
+          say: "Die 0 ist `'0'`, nicht ein leerer Text."
+        - call: "to_binary(1)"
+          expect: "'1'"
+        - call: "to_binary(8)"
+          expect: "'1000'"
+        - call: "to_binary(255)"
+          expect: "'11111111'"
+        - call: "to_binary(1024)"
+          expect: "'10000000000'"
+      random:
+        count: 4
+        call: "to_binary(n)"
+        args: { n: 1..100000 }
+        reference: "n.to_s(2)"
+    feedback:
+      - when: { same_as: "def to_binary(n)\n  return '0' if n == 0\n  result = ''\n  while n > 0\n    result += (n % 2 == 1 ? '1' : '0')\n    n /= 2\n  end\n  result\nend\n" }
+        say: "Der Rest beim Teilen durch 2 ist das letzte Bit, das ganz rechts. Dein Code hängt jedes neue Bit hinten an, so stehen sie verkehrt herum: Aus 13 wird `'1011'`."
+    hint:
+      - "`n % 2` ist das letzte Bit, das ganz rechts. `n / 2` streicht es weg. Wiederhole, bis nichts mehr übrig ist, wie bei der Quersumme."
+      - "Jedes neue Bit gehört vor die, die du schon hast."
+    solution: |
+      ```ruby
+      def to_binary(n)
+        return '0' if n == 0
+        result = ''
+        while n > 0
+          result = (n % 2 == 1 ? '1' : '0') + result
+          n /= 2
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `to_binary(n)`, die eine Zahl ab 0 als Text aus Nullen und Einsen zurückgibt, so wie sie im Rechner steht: `to_binary(13)` ergibt `'1101'`, denn 13 = 8 + 4 + 1. Ohne `bin`.
+      starter: |
+        def to_binary(n):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [bin, oct, hex, format, str.format]
+        cases:
+          - call: "to_binary(13)"
+            expect: "'1101'"
+          - call: "to_binary(0)"
+            expect: "'0'"
+            say: "Die 0 ist `'0'`, nicht ein leerer Text."
+          - call: "to_binary(1)"
+            expect: "'1'"
+          - call: "to_binary(8)"
+            expect: "'1000'"
+          - call: "to_binary(255)"
+            expect: "'11111111'"
+          - call: "to_binary(1024)"
+            expect: "'10000000000'"
+        random:
+          count: 4
+          call: "to_binary(n)"
+          args: { n: 1..100000 }
+          reference: "bin(n)[2:]"
+      feedback:
+        - when: { same_as: "def to_binary(n):\n    if n == 0:\n        return '0'\n    result = ''\n    while n > 0:\n        result += str(n % 2)\n        n //= 2\n    return result\n" }
+          say: "Der Rest beim Teilen durch 2 ist das letzte Bit, das ganz rechts. Dein Code hängt jedes neue Bit hinten an, so stehen sie verkehrt herum: Aus 13 wird `'1011'`."
+      hint:
+        - "`n % 2` ist das letzte Bit, das ganz rechts. `n // 2` streicht es weg. Wiederhole, bis nichts mehr übrig ist, wie bei der Quersumme."
+        - "Jedes neue Bit gehört vor die, die du schon hast."
+      solution: |
+        ```python
+        def to_binary(n):
+            if n == 0:
+                return '0'
+            result = ''
+            while n > 0:
+                result = str(n % 2) + result
+                n //= 2
+            return result
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `toBinary(n)`, die eine Zahl ab 0 als Text aus Nullen und Einsen zurückgibt, so wie sie im Rechner steht: `toBinary(13)` ergibt `'1101'`, denn 13 = 8 + 4 + 1. Ohne `toString(2)`.
+      starter: |
+        function toBinary(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Number.prototype.toString, Number.prototype.toFixed]
+        cases:
+          - call: "toBinary(13)"
+            expect: "'1101'"
+          - call: "toBinary(0)"
+            expect: "'0'"
+            say: "Die 0 ist `'0'`, nicht ein leerer Text."
+          - call: "toBinary(1)"
+            expect: "'1'"
+          - call: "toBinary(8)"
+            expect: "'1000'"
+          - call: "toBinary(255)"
+            expect: "'11111111'"
+          - call: "toBinary(1024)"
+            expect: "'10000000000'"
+        random:
+          count: 4
+          call: "toBinary(n)"
+          args: { n: 1..100000 }
+          reference: "n.toString(2)"
+      feedback:
+        - when: { same_as: "function toBinary(n) {\n  if (n === 0) {\n    return '0';\n  }\n  let result = '';\n  while (n > 0) {\n    result += (n % 2);\n    n = Math.floor(n / 2);\n  }\n  return result;\n}\n" }
+          say: "Der Rest beim Teilen durch 2 ist das letzte Bit, das ganz rechts. Dein Code hängt jedes neue Bit hinten an, so stehen sie verkehrt herum: Aus 13 wird `'1011'`."
+      hint:
+        - "`n % 2` ist das letzte Bit, das ganz rechts. `Math.floor(n / 2)` streicht es weg. Wiederhole, bis nichts mehr übrig ist, wie bei der Quersumme."
+        - "Jedes neue Bit gehört vor die, die du schon hast."
+      solution: |
+        ```javascript
+        function toBinary(n) {
+          if (n === 0) {
+            return '0';
+          }
+          let result = '';
+          while (n > 0) {
+            result = (n % 2) + result;
+            n = Math.floor(n / 2);
+          }
+          return result;
+        }
+        ```
+  - id: from-binary
+    title: "Bits zurück in eine Zahl"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `from_binary(bits)`, die einen Text aus Nullen und Einsen in die Zahl zurückverwandelt: `from_binary('1101')` ergibt `13`. Ohne `to_i(2)`.
+    starter: |
+      def from_binary(bits)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [String#to_i, String#hex, String#oct]
+      cases:
+        - call: "from_binary('1101')"
+          expect: "13"
+        - call: "from_binary('0')"
+          expect: "0"
+        - call: "from_binary('1')"
+          expect: "1"
+        - call: "from_binary('10000000')"
+          expect: "128"
+        - call: "from_binary('11111111')"
+          expect: "255"
+        - call: "from_binary('0011')"
+          expect: "3"
+          say: "Nullen vorn ändern nichts."
+    feedback:
+      - when: { same_as: "def from_binary(bits)\n  value = 0\n  bits.each_char do |bit|\n    value += 1 if bit == '1'\n  end\n  value\nend\n" }
+        say: "Du zählst die Einsen. Aber eine Eins ist umso mehr wert, je weiter links sie steht: Mit jeder Stelle nach rechts verdoppelt sich, was schon da ist."
+    hint: "Lies von links nach rechts. Bei jedem Bit verdoppelt sich, was du schon hast, und das neue Bit kommt dazu: `'110'` ist 1, dann 1·2 + 1 = 3, dann 3·2 + 0 = 6."
+    solution: |
+      ```ruby
+      def from_binary(bits)
+        value = 0
+        bits.each_char do |bit|
+          value = value * 2 + (bit == '1' ? 1 : 0)
+        end
+        value
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `from_binary(bits)`, die einen Text aus Nullen und Einsen in die Zahl zurückverwandelt: `from_binary('1101')` ergibt `13`. Ohne `int`.
+      starter: |
+        def from_binary(bits):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [int]
+        cases:
+          - call: "from_binary('1101')"
+            expect: "13"
+          - call: "from_binary('0')"
+            expect: "0"
+          - call: "from_binary('1')"
+            expect: "1"
+          - call: "from_binary('10000000')"
+            expect: "128"
+          - call: "from_binary('11111111')"
+            expect: "255"
+          - call: "from_binary('0011')"
+            expect: "3"
+            say: "Nullen vorn ändern nichts."
+      feedback:
+        - when: { same_as: "def from_binary(bits):\n    value = 0\n    for bit in bits:\n        if bit == '1':\n            value += 1\n    return value\n" }
+          say: "Du zählst die Einsen. Aber eine Eins ist umso mehr wert, je weiter links sie steht: Mit jeder Stelle nach rechts verdoppelt sich, was schon da ist."
+      hint: "Lies von links nach rechts. Bei jedem Bit verdoppelt sich, was du schon hast, und das neue Bit kommt dazu: `'110'` ist 1, dann 1·2 + 1 = 3, dann 3·2 + 0 = 6."
+      solution: |
+        ```python
+        def from_binary(bits):
+            value = 0
+            for bit in bits:
+                value = value * 2 + (1 if bit == '1' else 0)
+            return value
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `fromBinary(bits)`, die einen Text aus Nullen und Einsen in die Zahl zurückverwandelt: `fromBinary('1101')` ergibt `13`. Ohne `parseInt` und `Number`.
+      starter: |
+        function fromBinary(bits) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [globalThis.parseInt, Number.parseInt, globalThis.Number]
+        cases:
+          - call: "fromBinary('1101')"
+            expect: "13"
+          - call: "fromBinary('0')"
+            expect: "0"
+          - call: "fromBinary('1')"
+            expect: "1"
+          - call: "fromBinary('10000000')"
+            expect: "128"
+          - call: "fromBinary('11111111')"
+            expect: "255"
+          - call: "fromBinary('0011')"
+            expect: "3"
+            say: "Nullen vorn ändern nichts."
+      feedback:
+        - when: { same_as: "function fromBinary(bits) {\n  let value = 0;\n  for (const bit of bits) {\n    if (bit === '1') {\n      value += 1;\n    }\n  }\n  return value;\n}\n" }
+          say: "Du zählst die Einsen. Aber eine Eins ist umso mehr wert, je weiter links sie steht: Mit jeder Stelle nach rechts verdoppelt sich, was schon da ist."
+      hint: "Lies von links nach rechts. Bei jedem Bit verdoppelt sich, was du schon hast, und das neue Bit kommt dazu: `'110'` ist 1, dann 1·2 + 1 = 3, dann 3·2 + 0 = 6."
+      solution: |
+        ```javascript
+        function fromBinary(bits) {
+          let value = 0;
+          for (const bit of bits) {
+            value = value * 2 + (bit === '1' ? 1 : 0);
+          }
+          return value;
+        }
+        ```
+  - id: bit
+    title: "Ein einzelnes Bit"
+    level: 1
+    prompt: |
+      Die Bits einer Zahl zählt man von rechts, beim Bit 0. Schreib eine Funktion `bit(n, i)`, die das Bit `i` von `n` zurückgibt, 0 oder 1: `bit(13, 2)` ergibt `1`, denn 13 ist `1101`. Nur mit Rechnen, ohne die Zahl in einen Text zu verwandeln und ohne `n[i]`.
+    starter: |
+      def bit(n, i)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#to_s, Integer#digits, Integer#inspect, Kernel#format, Kernel#sprintf]
+      cases:
+        - call: "bit(13, 0)"
+          expect: "1"
+          say: "Bit 0 ist das ganz rechts."
+        - call: "bit(13, 1)"
+          expect: "0"
+        - call: "bit(13, 2)"
+          expect: "1"
+        - call: "bit(13, 3)"
+          expect: "1"
+        - call: "bit(13, 4)"
+          expect: "0"
+          say: "Weiter links stehen nur noch Nullen."
+        - call: "bit(1024, 10)"
+          expect: "1"
+      random:
+        count: 4
+        call: "bit(n, 5)"
+        args: { n: 0..1000 }
+        reference: "n[5]"
+    hint: "`n % 2` ist Bit 0. Teilst du `n` durch 2, rücken alle Bits einen Platz nach rechts, und Bit 1 wird zu Bit 0."
+    solution: |
+      ```ruby
+      def bit(n, i)
+        i.times do
+          n /= 2
+        end
+        n % 2
+      end
+      ```
+    python:
+      prompt: |
+        Die Bits einer Zahl zählt man von rechts, beim Bit 0. Schreib eine Funktion `bit(n, i)`, die das Bit `i` von `n` zurückgibt, 0 oder 1: `bit(13, 2)` ergibt `1`, denn 13 ist `1101`. Nur mit Rechnen, ohne die Zahl in einen Text zu verwandeln.
+      starter: |
+        def bit(n, i):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [bin, oct, hex, format, str.format, str]
+        cases:
+          - call: "bit(13, 0)"
+            expect: "1"
+            say: "Bit 0 ist das ganz rechts."
+          - call: "bit(13, 1)"
+            expect: "0"
+          - call: "bit(13, 2)"
+            expect: "1"
+          - call: "bit(13, 3)"
+            expect: "1"
+          - call: "bit(13, 4)"
+            expect: "0"
+            say: "Weiter links stehen nur noch Nullen."
+          - call: "bit(1024, 10)"
+            expect: "1"
+        random:
+          count: 4
+          call: "bit(n, 5)"
+          args: { n: 0..1000 }
+          reference: "(n >> 5) & 1"
+      hint: "`n % 2` ist Bit 0. Teilst du `n` durch 2 (`//`), rücken alle Bits einen Platz nach rechts, und Bit 1 wird zu Bit 0."
+      solution: |
+        ```python
+        def bit(n, i):
+            for _ in range(i):
+                n //= 2
+            return n % 2
+        ```
+    javascript:
+      prompt: |
+        Die Bits einer Zahl zählt man von rechts, beim Bit 0. Schreib eine Funktion `bit(n, i)`, die das Bit `i` von `n` zurückgibt, 0 oder 1: `bit(13, 2)` ergibt `1`, denn 13 ist `1101`. Nur mit Rechnen, ohne die Zahl in einen Text zu verwandeln.
+      starter: |
+        function bit(n, i) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Number.prototype.toString, Number.prototype.toFixed, globalThis.String]
+        cases:
+          - call: "bit(13, 0)"
+            expect: "1"
+            say: "Bit 0 ist das ganz rechts."
+          - call: "bit(13, 1)"
+            expect: "0"
+          - call: "bit(13, 2)"
+            expect: "1"
+          - call: "bit(13, 3)"
+            expect: "1"
+          - call: "bit(13, 4)"
+            expect: "0"
+            say: "Weiter links stehen nur noch Nullen."
+          - call: "bit(1024, 10)"
+            expect: "1"
+        random:
+          count: 4
+          call: "bit(n, 5)"
+          args: { n: 0..1000 }
+          reference: "(n >> 5) & 1"
+      hint: "`n % 2` ist Bit 0. Teilst du `n` durch 2 und rundest ab, rücken alle Bits einen Platz nach rechts, und Bit 1 wird zu Bit 0."
+      solution: |
+        ```javascript
+        function bit(n, i) {
+          for (let k = 0; k < i; k++) {
+            n = Math.floor(n / 2);
+          }
+          return n % 2;
+        }
+        ```
+  - id: binary-length
+    title: "Wie viele Bits?"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `binary_length(n)`, die zählt, wie viele Bits `n` braucht: `binary_length(13)` ergibt `4`, denn 13 ist `1101`. Die 0 braucht ein Bit. Nur mit Rechnen.
+    starter: |
+      def binary_length(n)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#to_s, Integer#digits, Integer#inspect, Kernel#format, Kernel#sprintf, Integer#bit_length]
+      cases:
+        - call: "binary_length(13)"
+          expect: "4"
+        - call: "binary_length(0)"
+          expect: "1"
+          say: "Die 0 braucht ein Bit."
+        - call: "binary_length(1)"
+          expect: "1"
+        - call: "binary_length(8)"
+          expect: "4"
+          say: "Die 8 ist `1000`: vier Bits."
+        - call: "binary_length(255)"
+          expect: "8"
+        - call: "binary_length(256)"
+          expect: "9"
+      random:
+        count: 4
+        call: "binary_length(n)"
+        args: { n: 1..1000000 }
+        reference: "n.bit_length"
+    feedback:
+      - when: { same_as: "def binary_length(n)\n  length = 0\n  while n > 0\n    n /= 2\n    length += 1\n  end\n  length\nend\n" }
+        say: "Fast: Bei der 0 läuft deine Schleife nie, und es kommt 0 heraus. Die 0 braucht aber ein Bit."
+    hint: "Wie oft kann man `n` durch 2 teilen, bis 1 übrig ist? Jedes Teilen streicht ein Bit."
+    solution: |
+      ```ruby
+      def binary_length(n)
+        length = 1
+        while n > 1
+          n /= 2
+          length += 1
+        end
+        length
+      end
+      ```
+    python:
+      starter: |
+        def binary_length(n):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [bin, oct, hex, format, str.format, str, int.bit_length, math.log2, math.log]
+        cases:
+          - call: "binary_length(13)"
+            expect: "4"
+          - call: "binary_length(0)"
+            expect: "1"
+            say: "Die 0 braucht ein Bit."
+          - call: "binary_length(1)"
+            expect: "1"
+          - call: "binary_length(8)"
+            expect: "4"
+            say: "Die 8 ist `1000`: vier Bits."
+          - call: "binary_length(255)"
+            expect: "8"
+          - call: "binary_length(256)"
+            expect: "9"
+        random:
+          count: 4
+          call: "binary_length(n)"
+          args: { n: 1..1000000 }
+          reference: "n.bit_length()"
+      feedback:
+        - when: { same_as: "def binary_length(n):\n    length = 0\n    while n > 0:\n        n //= 2\n        length += 1\n    return length\n" }
+          say: "Fast: Bei der 0 läuft deine Schleife nie, und es kommt 0 heraus. Die 0 braucht aber ein Bit."
+      hint: "Wie oft kann man `n` durch 2 teilen, bis 1 übrig ist? Jedes Teilen streicht ein Bit."
+      solution: |
+        ```python
+        def binary_length(n):
+            length = 1
+            while n > 1:
+                n //= 2
+                length += 1
+            return length
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `binaryLength(n)`, die zählt, wie viele Bits `n` braucht: `binaryLength(13)` ergibt `4`, denn 13 ist `1101`. Die 0 braucht ein Bit. Nur mit Rechnen.
+      starter: |
+        function binaryLength(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Number.prototype.toString, Number.prototype.toFixed, globalThis.String, Math.log2, Math.clz32, Math.log]
+        cases:
+          - call: "binaryLength(13)"
+            expect: "4"
+          - call: "binaryLength(0)"
+            expect: "1"
+            say: "Die 0 braucht ein Bit."
+          - call: "binaryLength(1)"
+            expect: "1"
+          - call: "binaryLength(8)"
+            expect: "4"
+            say: "Die 8 ist `1000`: vier Bits."
+          - call: "binaryLength(255)"
+            expect: "8"
+          - call: "binaryLength(256)"
+            expect: "9"
+        random:
+          count: 4
+          call: "binaryLength(n)"
+          args: { n: 1..1000000 }
+          reference: "n.toString(2).length"
+      feedback:
+        - when: { same_as: "function binaryLength(n) {\n  let length = 0;\n  while (n > 0) {\n    n = Math.floor(n / 2);\n    length++;\n  }\n  return length;\n}\n" }
+          say: "Fast: Bei der 0 läuft deine Schleife nie, und es kommt 0 heraus. Die 0 braucht aber ein Bit."
+      hint: "Wie oft kann man `n` durch 2 teilen, bis 1 übrig ist? Jedes Teilen streicht ein Bit."
+      solution: |
+        ```javascript
+        function binaryLength(n) {
+          let length = 1;
+          while (n > 1) {
+            n = Math.floor(n / 2);
+            length++;
+          }
+          return length;
+        }
+        ```
+  - id: count-ones
+    title: "Einsen zählen"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `count_ones(n)`, die zählt, wie viele Bits von `n` eine 1 sind: `count_ones(13)` ergibt `3`. Nur mit Rechnen.
+    starter: |
+      def count_ones(n)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#to_s, Integer#digits, Integer#inspect, Kernel#format, Kernel#sprintf]
+      cases:
+        - call: "count_ones(13)"
+          expect: "3"
+        - call: "count_ones(0)"
+          expect: "0"
+        - call: "count_ones(255)"
+          expect: "8"
+        - call: "count_ones(256)"
+          expect: "1"
+        - call: "count_ones(1023)"
+          expect: "10"
+      random:
+        count: 4
+        call: "count_ones(n)"
+        args: { n: 0..1000000 }
+        reference: "n.to_s(2).count('1')"
+    hint: "Wie bei der Quersumme, nur im Zweiersystem: `n % 2` ist das letzte Bit, `n / 2` streicht es."
+    solution: |
+      ```ruby
+      def count_ones(n)
+        count = 0
+        while n > 0
+          count += n % 2
+          n /= 2
+        end
+        count
+      end
+      ```
+    python:
+      starter: |
+        def count_ones(n):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [bin, oct, hex, format, str.format, str, int.bit_count]
+        cases:
+          - call: "count_ones(13)"
+            expect: "3"
+          - call: "count_ones(0)"
+            expect: "0"
+          - call: "count_ones(255)"
+            expect: "8"
+          - call: "count_ones(256)"
+            expect: "1"
+          - call: "count_ones(1023)"
+            expect: "10"
+        random:
+          count: 4
+          call: "count_ones(n)"
+          args: { n: 0..1000000 }
+          reference: "bin(n).count('1')"
+      hint: "Wie bei der Quersumme, nur im Zweiersystem: `n % 2` ist das letzte Bit, `n // 2` streicht es."
+      solution: |
+        ```python
+        def count_ones(n):
+            count = 0
+            while n > 0:
+                count += n % 2
+                n //= 2
+            return count
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `countOnes(n)`, die zählt, wie viele Bits von `n` eine 1 sind: `countOnes(13)` ergibt `3`. Nur mit Rechnen.
+      starter: |
+        function countOnes(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Number.prototype.toString, Number.prototype.toFixed, globalThis.String]
+        cases:
+          - call: "countOnes(13)"
+            expect: "3"
+          - call: "countOnes(0)"
+            expect: "0"
+          - call: "countOnes(255)"
+            expect: "8"
+          - call: "countOnes(256)"
+            expect: "1"
+          - call: "countOnes(1023)"
+            expect: "10"
+        random:
+          count: 4
+          call: "countOnes(n)"
+          args: { n: 0..1000000 }
+          reference: "n.toString(2).split('1').length - 1"
+      hint: "Wie bei der Quersumme, nur im Zweiersystem: `n % 2` ist das letzte Bit, `Math.floor(n / 2)` streicht es."
+      solution: |
+        ```javascript
+        function countOnes(n) {
+          let count = 0;
+          while (n > 0) {
+            count += n % 2;
+            n = Math.floor(n / 2);
+          }
+          return count;
+        }
+        ```
+  - id: to-hex
+    title: "Hexadezimal"
+    level: 2
+    prompt: |
+      Im Sechzehnersystem gibt es sechzehn Ziffern: `0` bis `9`, dann `a` bis `f` für 10 bis 15. Farben im Netz schreibt man so (`#ff8800`). Schreib eine Funktion `to_hex(n)`, die `n` als Text im Sechzehnersystem zurückgibt, mit kleinen Buchstaben: `to_hex(255)` ergibt `'ff'`. Ohne `to_s(16)`.
+    starter: |
+      def to_hex(n)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#to_s, Integer#digits, Integer#inspect, Kernel#format, Kernel#sprintf]
+      cases:
+        - call: "to_hex(255)"
+          expect: "'ff'"
+        - call: "to_hex(0)"
+          expect: "'0'"
+        - call: "to_hex(10)"
+          expect: "'a'"
+          say: "Zehn ist die Ziffer `a`."
+        - call: "to_hex(16)"
+          expect: "'10'"
+        - call: "to_hex(4096)"
+          expect: "'1000'"
+        - call: "to_hex(48879)"
+          expect: "'beef'"
+      random:
+        count: 4
+        call: "to_hex(n)"
+        args: { n: 1..1000000 }
+        reference: "n.to_s(16)"
+    hint:
+      - "Genau wie bei den Bits, nur mit 16 statt 2."
+      - "Für die Ziffer hilft ein Text mit allen sechzehn: `'0123456789abcdef'[11]` ist `'b'`."
+    solution: |
+      ```ruby
+      DIGITS = '0123456789abcdef'
+
+      def to_hex(n)
+        return '0' if n == 0
+        result = ''
+        while n > 0
+          result = DIGITS[n % 16] + result
+          n /= 16
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        Im Sechzehnersystem gibt es sechzehn Ziffern: `0` bis `9`, dann `a` bis `f` für 10 bis 15. Farben im Netz schreibt man so (`#ff8800`). Schreib eine Funktion `to_hex(n)`, die `n` als Text im Sechzehnersystem zurückgibt, mit kleinen Buchstaben: `to_hex(255)` ergibt `'ff'`. Ohne `hex` und `format`.
+      starter: |
+        def to_hex(n):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [bin, oct, hex, format, str.format]
+        cases:
+          - call: "to_hex(255)"
+            expect: "'ff'"
+          - call: "to_hex(0)"
+            expect: "'0'"
+          - call: "to_hex(10)"
+            expect: "'a'"
+            say: "Zehn ist die Ziffer `a`."
+          - call: "to_hex(16)"
+            expect: "'10'"
+          - call: "to_hex(4096)"
+            expect: "'1000'"
+          - call: "to_hex(48879)"
+            expect: "'beef'"
+        random:
+          count: 4
+          call: "to_hex(n)"
+          args: { n: 1..1000000 }
+          reference: "hex(n)[2:]"
+      hint:
+        - "Genau wie bei den Bits, nur mit 16 statt 2."
+        - "Für die Ziffer hilft ein Text mit allen sechzehn: `'0123456789abcdef'[11]` ist `'b'`."
+      solution: |
+        ```python
+        DIGITS = '0123456789abcdef'
+
+        def to_hex(n):
+            if n == 0:
+                return '0'
+            result = ''
+            while n > 0:
+                result = DIGITS[n % 16] + result
+                n //= 16
+            return result
+        ```
+    javascript:
+      prompt: |
+        Im Sechzehnersystem gibt es sechzehn Ziffern: `0` bis `9`, dann `a` bis `f` für 10 bis 15. Farben im Netz schreibt man so (`#ff8800`). Schreib eine Funktion `toHex(n)`, die `n` als Text im Sechzehnersystem zurückgibt, mit kleinen Buchstaben: `toHex(255)` ergibt `'ff'`. Ohne `toString(16)`.
+      starter: |
+        function toHex(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Number.prototype.toString, Number.prototype.toFixed]
+        cases:
+          - call: "toHex(255)"
+            expect: "'ff'"
+          - call: "toHex(0)"
+            expect: "'0'"
+          - call: "toHex(10)"
+            expect: "'a'"
+            say: "Zehn ist die Ziffer `a`."
+          - call: "toHex(16)"
+            expect: "'10'"
+          - call: "toHex(4096)"
+            expect: "'1000'"
+          - call: "toHex(48879)"
+            expect: "'beef'"
+        random:
+          count: 4
+          call: "toHex(n)"
+          args: { n: 1..1000000 }
+          reference: "n.toString(16)"
+      hint:
+        - "Genau wie bei den Bits, nur mit 16 statt 2."
+        - "Für die Ziffer hilft ein Text mit allen sechzehn: `'0123456789abcdef'[11]` ist `'b'`."
+      solution: |
+        ```javascript
+        const DIGITS = '0123456789abcdef';
+
+        function toHex(n) {
+          if (n === 0) {
+            return '0';
+          }
+          let result = '';
+          while (n > 0) {
+            result = DIGITS[n % 16] + result;
+            n = Math.floor(n / 16);
+          }
+          return result;
+        }
+        ```
+  - id: from-hex
+    title: "Hexadezimal zurück"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `from_hex(text)`, die eine Zahl im Sechzehnersystem, mit kleinen Buchstaben, in die Zahl zurückverwandelt: `from_hex('ff')` ergibt `255`. Ohne `hex` und `to_i(16)`.
+    starter: |
+      def from_hex(text)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [String#to_i, String#hex, String#oct]
+      cases:
+        - call: "from_hex('ff')"
+          expect: "255"
+        - call: "from_hex('0')"
+          expect: "0"
+        - call: "from_hex('a')"
+          expect: "10"
+        - call: "from_hex('10')"
+          expect: "16"
+          say: "Eine 1 vorn ist sechzehnmal so viel wert."
+        - call: "from_hex('beef')"
+          expect: "48879"
+        - call: "from_hex('ff8800')"
+          expect: "16746496"
+          say: "Das Orange von `#ff8800`."
+    hint: "Wie bei den Bits: von links nach rechts, mal 16 und die neue Ziffer dazu. `'0123456789abcdef'.index('b')` ist 11."
+    solution: |
+      ```ruby
+      DIGITS = '0123456789abcdef'
+
+      def from_hex(text)
+        value = 0
+        text.each_char do |digit|
+          value = value * 16 + DIGITS.index(digit)
+        end
+        value
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `from_hex(text)`, die eine Zahl im Sechzehnersystem, mit kleinen Buchstaben, in die Zahl zurückverwandelt: `from_hex('ff')` ergibt `255`. Ohne `int`.
+      starter: |
+        def from_hex(text):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [int]
+        cases:
+          - call: "from_hex('ff')"
+            expect: "255"
+          - call: "from_hex('0')"
+            expect: "0"
+          - call: "from_hex('a')"
+            expect: "10"
+          - call: "from_hex('10')"
+            expect: "16"
+            say: "Eine 1 vorn ist sechzehnmal so viel wert."
+          - call: "from_hex('beef')"
+            expect: "48879"
+          - call: "from_hex('ff8800')"
+            expect: "16746496"
+            say: "Das Orange von `#ff8800`."
+      hint: "Wie bei den Bits: von links nach rechts, mal 16 und die neue Ziffer dazu. `'0123456789abcdef'.index('b')` ist 11."
+      solution: |
+        ```python
+        DIGITS = '0123456789abcdef'
+
+        def from_hex(text):
+            value = 0
+            for digit in text:
+                value = value * 16 + DIGITS.index(digit)
+            return value
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `fromHex(text)`, die eine Zahl im Sechzehnersystem, mit kleinen Buchstaben, in die Zahl zurückverwandelt: `fromHex('ff')` ergibt `255`. Ohne `parseInt` und `Number`.
+      starter: |
+        function fromHex(text) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [globalThis.parseInt, Number.parseInt, globalThis.Number]
+        cases:
+          - call: "fromHex('ff')"
+            expect: "255"
+          - call: "fromHex('0')"
+            expect: "0"
+          - call: "fromHex('a')"
+            expect: "10"
+          - call: "fromHex('10')"
+            expect: "16"
+            say: "Eine 1 vorn ist sechzehnmal so viel wert."
+          - call: "fromHex('beef')"
+            expect: "48879"
+          - call: "fromHex('ff8800')"
+            expect: "16746496"
+            say: "Das Orange von `#ff8800`."
+      hint: "Wie bei den Bits: von links nach rechts, mal 16 und die neue Ziffer dazu. `'0123456789abcdef'.indexOf('b')` ist 11."
+      solution: |
+        ```javascript
+        const DIGITS = '0123456789abcdef';
+
+        function fromHex(text) {
+          let value = 0;
+          for (const digit of text) {
+            value = value * 16 + DIGITS.indexOf(digit);
+          }
+          return value;
+        }
+        ```
+  - id: power-of-two
+    title: "Eine Zweierpotenz?"
+    level: 2
+    prompt: |
+      1, 2, 4, 8, 16 … sind Zweierpotenzen: Im Zweiersystem haben sie genau eine 1. Schreib eine Funktion `power_of_two(n)`, die true zurückgibt, wenn `n` eine Zweierpotenz ist, und sonst false: `power_of_two(64)` ergibt `true`, `power_of_two(12)` ergibt `false`.
+    starter: |
+      def power_of_two(n)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "power_of_two(64)"
+          expect: "true"
+        - call: "power_of_two(12)"
+          expect: "false"
+        - call: "power_of_two(1)"
+          expect: "true"
+          say: "1 ist 2 hoch 0, also auch eine Zweierpotenz."
+        - call: "power_of_two(0)"
+          expect: "false"
+          say: "0 ist keine Zweierpotenz."
+        - call: "power_of_two(1024)"
+          expect: "true"
+        - call: "power_of_two(1023)"
+          expect: "false"
+        - call: "power_of_two(6)"
+          expect: "false"
+    feedback:
+      - when: { same_as: "def power_of_two(n)\n  n % 2 == 0\nend\n" }
+        say: "Gerade ist nicht genug: 12 ist gerade, aber keine Zweierpotenz. Und 1 ist eine, obwohl sie ungerade ist."
+    hint:
+      - "Teil `n` durch 2, solange es gerade ist. Was bleibt bei einer Zweierpotenz übrig?"
+      - "Denk an die 0: Sie ist immer wieder gerade."
+    solution: |
+      ```ruby
+      def power_of_two(n)
+        return false if n < 1
+        n /= 2 while n % 2 == 0
+        n == 1
+      end
+      ```
+    python:
+      prompt: |
+        1, 2, 4, 8, 16 … sind Zweierpotenzen: Im Zweiersystem haben sie genau eine 1. Schreib eine Funktion `power_of_two(n)`, die True zurückgibt, wenn `n` eine Zweierpotenz ist, und sonst False: `power_of_two(64)` ergibt `True`, `power_of_two(12)` ergibt `False`.
+      starter: |
+        def power_of_two(n):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "power_of_two(64)"
+            expect: "True"
+          - call: "power_of_two(12)"
+            expect: "False"
+          - call: "power_of_two(1)"
+            expect: "True"
+            say: "1 ist 2 hoch 0, also auch eine Zweierpotenz."
+          - call: "power_of_two(0)"
+            expect: "False"
+            say: "0 ist keine Zweierpotenz."
+          - call: "power_of_two(1024)"
+            expect: "True"
+          - call: "power_of_two(1023)"
+            expect: "False"
+          - call: "power_of_two(6)"
+            expect: "False"
+      feedback:
+        - when: { same_as: "def power_of_two(n):\n    return n % 2 == 0\n" }
+          say: "Gerade ist nicht genug: 12 ist gerade, aber keine Zweierpotenz. Und 1 ist eine, obwohl sie ungerade ist."
+      hint:
+        - "Teil `n` durch 2, solange es gerade ist. Was bleibt bei einer Zweierpotenz übrig?"
+        - "Denk an die 0: Sie ist immer wieder gerade."
+      solution: |
+        ```python
+        def power_of_two(n):
+            if n < 1:
+                return False
+            while n % 2 == 0:
+                n //= 2
+            return n == 1
+        ```
+    javascript:
+      prompt: |
+        1, 2, 4, 8, 16 … sind Zweierpotenzen: Im Zweiersystem haben sie genau eine 1. Schreib eine Funktion `powerOfTwo(n)`, die true zurückgibt, wenn `n` eine Zweierpotenz ist, und sonst false: `powerOfTwo(64)` ergibt `true`, `powerOfTwo(12)` ergibt `false`.
+      starter: |
+        function powerOfTwo(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "powerOfTwo(64)"
+            expect: "true"
+          - call: "powerOfTwo(12)"
+            expect: "false"
+          - call: "powerOfTwo(1)"
+            expect: "true"
+            say: "1 ist 2 hoch 0, also auch eine Zweierpotenz."
+          - call: "powerOfTwo(0)"
+            expect: "false"
+            say: "0 ist keine Zweierpotenz."
+          - call: "powerOfTwo(1024)"
+            expect: "true"
+          - call: "powerOfTwo(1023)"
+            expect: "false"
+          - call: "powerOfTwo(6)"
+            expect: "false"
+      feedback:
+        - when: { same_as: "function powerOfTwo(n) {\n  return n % 2 === 0;\n}\n" }
+          say: "Gerade ist nicht genug: 12 ist gerade, aber keine Zweierpotenz. Und 1 ist eine, obwohl sie ungerade ist."
+      hint:
+        - "Teil `n` durch 2, solange es gerade ist. Was bleibt bei einer Zweierpotenz übrig?"
+        - "Denk an die 0: Sie ist immer wieder gerade."
+      solution: |
+        ```javascript
+        function powerOfTwo(n) {
+          if (n < 1) {
+            return false;
+          }
+          while (n % 2 === 0) {
+            n /= 2;
+          }
+          return n === 1;
+        }
+        ```
+  - id: twos-complement
+    title: "Negative Zahlen in einem Byte"
+    level: 3
+    prompt: |
+      Ein Byte hat acht Bits. Für Zahlen von -128 bis 127 nimmt der Rechner das Zweierkomplement: Eine Zahl ab 0 steht wie gewohnt da, eine negative Zahl `n` als `256 + n`. Schreib eine Funktion `twos_complement(n)`, die die acht Bits als Text zurückgibt, mit Nullen vorn: `twos_complement(5)` ergibt `'00000101'`, `twos_complement(-1)` ergibt `'11111111'`. Ohne `to_s(2)`.
+    starter: |
+      def twos_complement(n)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#to_s, Integer#digits, Integer#inspect, Kernel#format, Kernel#sprintf]
+      cases:
+        - call: "twos_complement(5)"
+          expect: "'00000101'"
+          say: "Vorn stehen Nullen, bis es acht Bits sind."
+        - call: "twos_complement(-1)"
+          expect: "'11111111'"
+        - call: "twos_complement(-128)"
+          expect: "'10000000'"
+        - call: "twos_complement(127)"
+          expect: "'01111111'"
+        - call: "twos_complement(0)"
+          expect: "'00000000'"
+        - call: "twos_complement(-5)"
+          expect: "'11111011'"
+      random:
+        count: 4
+        call: "twos_complement(n)"
+        args: { n: -128..127 }
+        reference: "(n % 256).to_s(2).rjust(8, '0')"
+    feedback:
+      - when: { same_as: "def twos_complement(n)\n  n += 256 if n < 0\n  result = ''\n  while n > 0\n    result = (n % 2 == 1 ? '1' : '0') + result\n    n /= 2\n  end\n  result\nend\n" }
+        say: "Ein Byte hat immer acht Bits: 5 ist `'00000101'`, nicht `'101'`. Füll vorn mit Nullen auf, oder rechne genau achtmal."
+    hint:
+      - "Erst die Zahl, die im Byte steht: bei einer negativen `256 + n`. Dann ihre Bits wie in der ersten Kata."
+      - "Rechne genau achtmal, dann stehen vorn von selbst Nullen: `8.times do … end`."
+    solution: |
+      ```ruby
+      def twos_complement(n)
+        n += 256 if n < 0
+        result = ''
+        8.times do
+          result = (n % 2 == 1 ? '1' : '0') + result
+          n /= 2
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        Ein Byte hat acht Bits. Für Zahlen von -128 bis 127 nimmt der Rechner das Zweierkomplement: Eine Zahl ab 0 steht wie gewohnt da, eine negative Zahl `n` als `256 + n`. Schreib eine Funktion `twos_complement(n)`, die die acht Bits als Text zurückgibt, mit Nullen vorn: `twos_complement(5)` ergibt `'00000101'`, `twos_complement(-1)` ergibt `'11111111'`. Ohne `bin`.
+      starter: |
+        def twos_complement(n):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [bin, oct, hex, format, str.format]
+        cases:
+          - call: "twos_complement(5)"
+            expect: "'00000101'"
+            say: "Vorn stehen Nullen, bis es acht Bits sind."
+          - call: "twos_complement(-1)"
+            expect: "'11111111'"
+          - call: "twos_complement(-128)"
+            expect: "'10000000'"
+          - call: "twos_complement(127)"
+            expect: "'01111111'"
+          - call: "twos_complement(0)"
+            expect: "'00000000'"
+          - call: "twos_complement(-5)"
+            expect: "'11111011'"
+        random:
+          count: 4
+          call: "twos_complement(n)"
+          args: { n: -128..127 }
+          reference: "format(n % 256, '08b')"
+      feedback:
+        - when: { same_as: "def twos_complement(n):\n    if n < 0:\n        n += 256\n    result = ''\n    while n > 0:\n        result = str(n % 2) + result\n        n //= 2\n    return result\n" }
+          say: "Ein Byte hat immer acht Bits: 5 ist `'00000101'`, nicht `'101'`. Füll vorn mit Nullen auf, oder rechne genau achtmal."
+      hint:
+        - "Erst die Zahl, die im Byte steht: bei einer negativen `256 + n`. Dann ihre Bits wie in der ersten Kata."
+        - "Rechne genau achtmal, dann stehen vorn von selbst Nullen: `for _ in range(8):`."
+      solution: |
+        ```python
+        def twos_complement(n):
+            if n < 0:
+                n += 256
+            result = ''
+            for _ in range(8):
+                result = str(n % 2) + result
+                n //= 2
+            return result
+        ```
+    javascript:
+      prompt: |
+        Ein Byte hat acht Bits. Für Zahlen von -128 bis 127 nimmt der Rechner das Zweierkomplement: Eine Zahl ab 0 steht wie gewohnt da, eine negative Zahl `n` als `256 + n`. Schreib eine Funktion `twosComplement(n)`, die die acht Bits als Text zurückgibt, mit Nullen vorn: `twosComplement(5)` ergibt `'00000101'`, `twosComplement(-1)` ergibt `'11111111'`. Ohne `toString(2)`.
+      starter: |
+        function twosComplement(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Number.prototype.toString, Number.prototype.toFixed]
+        cases:
+          - call: "twosComplement(5)"
+            expect: "'00000101'"
+            say: "Vorn stehen Nullen, bis es acht Bits sind."
+          - call: "twosComplement(-1)"
+            expect: "'11111111'"
+          - call: "twosComplement(-128)"
+            expect: "'10000000'"
+          - call: "twosComplement(127)"
+            expect: "'01111111'"
+          - call: "twosComplement(0)"
+            expect: "'00000000'"
+          - call: "twosComplement(-5)"
+            expect: "'11111011'"
+        random:
+          count: 4
+          call: "twosComplement(n)"
+          args: { n: -128..127 }
+          reference: "((n + 256) % 256).toString(2).padStart(8, '0')"
+      feedback:
+        - when: { same_as: "function twosComplement(n) {\n  if (n < 0) {\n    n += 256;\n  }\n  let result = '';\n  while (n > 0) {\n    result = (n % 2) + result;\n    n = Math.floor(n / 2);\n  }\n  return result;\n}\n" }
+          say: "Ein Byte hat immer acht Bits: 5 ist `'00000101'`, nicht `'101'`. Füll vorn mit Nullen auf, oder rechne genau achtmal."
+      hint:
+        - "Erst die Zahl, die im Byte steht: bei einer negativen `256 + n`. Dann ihre Bits wie in der ersten Kata."
+        - "Rechne genau achtmal, dann stehen vorn von selbst Nullen: `for (let i = 0; i < 8; i++)`."
+      solution: |
+        ```javascript
+        function twosComplement(n) {
+          if (n < 0) {
+            n += 256;
+          }
+          let result = '';
+          for (let i = 0; i < 8; i++) {
+            result = (n % 2) + result;
+            n = Math.floor(n / 2);
+          }
+          return result;
+        }
+        ```
+  - id: to-base
+    title: "Jedes Zahlensystem"
+    level: 3
+    prompt: |
+      Schreib eine Funktion `to_base(n, base)`, die eine Zahl ab 0 in einem Zahlensystem mit der Basis `base` von 2 bis 16 schreibt, mit den Ziffern `0` bis `9` und `a` bis `f`: `to_base(255, 2)` ergibt `'11111111'`, `to_base(255, 8)` ergibt `'377'`. Ohne `to_s(base)`.
+    starter: |
+      def to_base(n, base)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#to_s, Integer#digits, Integer#inspect, Kernel#format, Kernel#sprintf]
+      cases:
+        - call: "to_base(255, 2)"
+          expect: "'11111111'"
+        - call: "to_base(255, 8)"
+          expect: "'377'"
+        - call: "to_base(255, 16)"
+          expect: "'ff'"
+        - call: "to_base(0, 7)"
+          expect: "'0'"
+        - call: "to_base(100, 10)"
+          expect: "'100'"
+          say: "In der Basis 10 kommt die gewohnte Zahl heraus."
+        - call: "to_base(35, 3)"
+          expect: "'1022'"
+      random:
+        count: 4
+        call: "to_base(n, 7)"
+        args: { n: 1..100000 }
+        reference: "n.to_s(7)"
+    hint: "Was du für 2 und für 16 geschrieben hast, geht mit jeder Basis: Rest beim Teilen durch `base`, dann durch `base` teilen."
+    solution: |
+      ```ruby
+      DIGITS = '0123456789abcdef'
+
+      def to_base(n, base)
+        return '0' if n == 0
+        result = ''
+        while n > 0
+          result = DIGITS[n % base] + result
+          n /= base
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `to_base(n, base)`, die eine Zahl ab 0 in einem Zahlensystem mit der Basis `base` von 2 bis 16 schreibt, mit den Ziffern `0` bis `9` und `a` bis `f`: `to_base(255, 2)` ergibt `'11111111'`, `to_base(255, 8)` ergibt `'377'`. Ohne `format`.
+      starter: |
+        def to_base(n, base):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [bin, oct, hex, format, str.format]
+        cases:
+          - call: "to_base(255, 2)"
+            expect: "'11111111'"
+          - call: "to_base(255, 8)"
+            expect: "'377'"
+          - call: "to_base(255, 16)"
+            expect: "'ff'"
+          - call: "to_base(0, 7)"
+            expect: "'0'"
+          - call: "to_base(100, 10)"
+            expect: "'100'"
+            say: "In der Basis 10 kommt die gewohnte Zahl heraus."
+          - call: "to_base(35, 3)"
+            expect: "'1022'"
+        random:
+          count: 4
+          call: "to_base(n, 7)"
+          args: { n: 1..100000 }
+          reference: "(lambda f: f(f, n))(lambda f, m: (f(f, m // 7) if m >= 7 else '') + str(m % 7))"
+      hint: "Was du für 2 und für 16 geschrieben hast, geht mit jeder Basis: Rest beim Teilen durch `base`, dann durch `base` teilen."
+      solution: |
+        ```python
+        DIGITS = '0123456789abcdef'
+
+        def to_base(n, base):
+            if n == 0:
+                return '0'
+            result = ''
+            while n > 0:
+                result = DIGITS[n % base] + result
+                n //= base
+            return result
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `toBase(n, base)`, die eine Zahl ab 0 in einem Zahlensystem mit der Basis `base` von 2 bis 16 schreibt, mit den Ziffern `0` bis `9` und `a` bis `f`: `toBase(255, 2)` ergibt `'11111111'`, `toBase(255, 8)` ergibt `'377'`. Ohne `toString(base)`.
+      starter: |
+        function toBase(n, base) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Number.prototype.toString, Number.prototype.toFixed]
+        cases:
+          - call: "toBase(255, 2)"
+            expect: "'11111111'"
+          - call: "toBase(255, 8)"
+            expect: "'377'"
+          - call: "toBase(255, 16)"
+            expect: "'ff'"
+          - call: "toBase(0, 7)"
+            expect: "'0'"
+          - call: "toBase(100, 10)"
+            expect: "'100'"
+            say: "In der Basis 10 kommt die gewohnte Zahl heraus."
+          - call: "toBase(35, 3)"
+            expect: "'1022'"
+        random:
+          count: 4
+          call: "toBase(n, 7)"
+          args: { n: 1..100000 }
+          reference: "n.toString(7)"
+      hint: "Was du für 2 und für 16 geschrieben hast, geht mit jeder Basis: Rest beim Teilen durch `base`, dann durch `base` teilen."
+      solution: |
+        ```javascript
+        const DIGITS = '0123456789abcdef';
+
+        function toBase(n, base) {
+          if (n === 0) {
+            return '0';
+          }
+          let result = '';
+          while (n > 0) {
+            result = DIGITS[n % base] + result;
+            n = Math.floor(n / base);
+          }
+          return result;
+        }
+        ```
+  - id: convert
+    title: "Von einem System ins andere"
+    level: 3
+    prompt: |
+      Schreib eine Funktion `convert(text, source, target)`, die eine Zahl, im System mit der Basis `source` geschrieben, im System mit der Basis `target` zurückgibt: `convert('ff', 16, 2)` ergibt `'11111111'`. Deine Funktionen von eben darfst du mitbenutzen, wenn du sie hier hineinschreibst.
+    starter: |
+      def convert(text, source, target)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#to_s, Integer#digits, Integer#inspect, Kernel#format, Kernel#sprintf, String#to_i, String#hex, String#oct]
+      cases:
+        - call: "convert('ff', 16, 2)"
+          expect: "'11111111'"
+        - call: "convert('11111111', 2, 10)"
+          expect: "'255'"
+        - call: "convert('377', 8, 16)"
+          expect: "'ff'"
+        - call: "convert('0', 5, 3)"
+          expect: "'0'"
+        - call: "convert('beef', 16, 10)"
+          expect: "'48879'"
+        - call: "convert('100', 10, 7)"
+          expect: "'202'"
+    hint: "Zwei Schritte: erst lesen, wie bei `from_hex`, nur mit `source`; dann schreiben wie bei `to_base`, mit `target`."
+    solution: |
+      ```ruby
+      DIGITS = '0123456789abcdef'
+
+      def convert(text, source, target)
+        n = 0
+        text.each_char do |digit|
+          n = n * source + DIGITS.index(digit)
+        end
+        return '0' if n == 0
+        result = ''
+        while n > 0
+          result = DIGITS[n % target] + result
+          n /= target
+        end
+        result
+      end
+      ```
+    python:
+      starter: |
+        def convert(text, source, target):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [bin, oct, hex, format, str.format, int]
+        cases:
+          - call: "convert('ff', 16, 2)"
+            expect: "'11111111'"
+          - call: "convert('11111111', 2, 10)"
+            expect: "'255'"
+          - call: "convert('377', 8, 16)"
+            expect: "'ff'"
+          - call: "convert('0', 5, 3)"
+            expect: "'0'"
+          - call: "convert('beef', 16, 10)"
+            expect: "'48879'"
+          - call: "convert('100', 10, 7)"
+            expect: "'202'"
+      hint: "Zwei Schritte: erst lesen, wie bei `from_hex`, nur mit `source`; dann schreiben wie bei `to_base`, mit `target`."
+      solution: |
+        ```python
+        DIGITS = '0123456789abcdef'
+
+        def convert(text, source, target):
+            n = 0
+            for digit in text:
+                n = n * source + DIGITS.index(digit)
+            if n == 0:
+                return '0'
+            result = ''
+            while n > 0:
+                result = DIGITS[n % target] + result
+                n //= target
+            return result
+        ```
+    javascript:
+      starter: |
+        function convert(text, source, target) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Number.prototype.toString, Number.prototype.toFixed, globalThis.parseInt, Number.parseInt, globalThis.Number]
+        cases:
+          - call: "convert('ff', 16, 2)"
+            expect: "'11111111'"
+          - call: "convert('11111111', 2, 10)"
+            expect: "'255'"
+          - call: "convert('377', 8, 16)"
+            expect: "'ff'"
+          - call: "convert('0', 5, 3)"
+            expect: "'0'"
+          - call: "convert('beef', 16, 10)"
+            expect: "'48879'"
+          - call: "convert('100', 10, 7)"
+            expect: "'202'"
+      hint: "Zwei Schritte: erst lesen, wie bei `fromHex`, nur mit `source`; dann schreiben wie bei `toBase`, mit `target`."
+      solution: |
+        ```javascript
+        const DIGITS = '0123456789abcdef';
+
+        function convert(text, source, target) {
+          let n = 0;
+          for (const digit of text) {
+            n = n * source + DIGITS.indexOf(digit);
+          }
+          if (n === 0) {
+            return '0';
+          }
+          let result = '';
+          while (n > 0) {
+            result = DIGITS[n % target] + result;
+            n = Math.floor(n / target);
+          }
+          return result;
+        }
+        ```
+  - id: roman
+    title: "Römische Zahlen"
+    extra: true
+    prompt: |
+      Die Römer schrieben `I` für 1, `V` für 5, `X` für 10, `L` für 50, `C` für 100, `D` für 500 und `M` für 1000; vier gleiche Zeichen hintereinander gibt es nicht, statt `IIII` schreibt man `IV` (eins vor fünf), ebenso `IX`, `XL`, `XC`, `CD` und `CM`. Schreib eine Funktion `roman(n)` für 1 bis 3999: `roman(1994)` ergibt `'MCMXCIV'`.
+    starter: |
+      def roman(n)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "roman(1994)"
+          expect: "'MCMXCIV'"
+        - call: "roman(4)"
+          expect: "'IV'"
+        - call: "roman(9)"
+          expect: "'IX'"
+        - call: "roman(40)"
+          expect: "'XL'"
+        - call: "roman(3999)"
+          expect: "'MMMCMXCIX'"
+        - call: "roman(2026)"
+          expect: "'MMXXVI'"
+        - call: "roman(1)"
+          expect: "'I'"
+    feedback:
+      - when: { same_as: "SYMBOLS = [[1000, 'M'], [500, 'D'], [100, 'C'], [50, 'L'], [10, 'X'], [5, 'V'], [1, 'I']]\n\ndef roman(n)\n  result = ''\n  SYMBOLS.each do |value, symbol|\n    while n >= value\n      result += symbol\n      n -= value\n    end\n  end\n  result\nend\n" }
+        say: "Aus 4 wird bei dir `IIII`. Nimm die Paare `IV`, `IX`, `XL`, `XC`, `CD` und `CM` mit ihren Werten in deine Liste auf, an der richtigen Stelle."
+    hint:
+      - "Nimm immer das größte Zeichen, das noch hineinpasst, wie beim Herausgeben von Wechselgeld: 1994 ist 1000, dann 900, 90, 4."
+      - "Die Paare wie `CM` sind eigene Zeichen mit eigenem Wert. Eine Liste von Paaren aus Wert und Zeichen, vom größten zum kleinsten, macht den Rest einfach."
+    solution: |
+      ```ruby
+      SYMBOLS = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']]
+
+      def roman(n)
+        result = ''
+        SYMBOLS.each do |value, symbol|
+          while n >= value
+            result += symbol
+            n -= value
+          end
+        end
+        result
+      end
+      ```
+    python:
+      starter: |
+        def roman(n):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "roman(1994)"
+            expect: "'MCMXCIV'"
+          - call: "roman(4)"
+            expect: "'IV'"
+          - call: "roman(9)"
+            expect: "'IX'"
+          - call: "roman(40)"
+            expect: "'XL'"
+          - call: "roman(3999)"
+            expect: "'MMMCMXCIX'"
+          - call: "roman(2026)"
+            expect: "'MMXXVI'"
+          - call: "roman(1)"
+            expect: "'I'"
+      feedback:
+        - when: { same_as: "SYMBOLS = [(1000, 'M'), (500, 'D'), (100, 'C'), (50, 'L'), (10, 'X'), (5, 'V'), (1, 'I')]\n\ndef roman(n):\n    result = ''\n    for value, symbol in SYMBOLS:\n        while n >= value:\n            result += symbol\n            n -= value\n    return result\n" }
+          say: "Aus 4 wird bei dir `IIII`. Nimm die Paare `IV`, `IX`, `XL`, `XC`, `CD` und `CM` mit ihren Werten in deine Liste auf, an der richtigen Stelle."
+      hint:
+        - "Nimm immer das größte Zeichen, das noch hineinpasst, wie beim Herausgeben von Wechselgeld: 1994 ist 1000, dann 900, 90, 4."
+        - "Die Paare wie `CM` sind eigene Zeichen mit eigenem Wert. Eine Liste von Paaren aus Wert und Zeichen, vom größten zum kleinsten, macht den Rest einfach."
+      solution: |
+        ```python
+        SYMBOLS = [(1000, 'M'), (900, 'CM'), (500, 'D'), (400, 'CD'), (100, 'C'), (90, 'XC'), (50, 'L'), (40, 'XL'), (10, 'X'), (9, 'IX'), (5, 'V'), (4, 'IV'), (1, 'I')]
+
+        def roman(n):
+            result = ''
+            for value, symbol in SYMBOLS:
+                while n >= value:
+                    result += symbol
+                    n -= value
+            return result
+        ```
+    javascript:
+      starter: |
+        function roman(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "roman(1994)"
+            expect: "'MCMXCIV'"
+          - call: "roman(4)"
+            expect: "'IV'"
+          - call: "roman(9)"
+            expect: "'IX'"
+          - call: "roman(40)"
+            expect: "'XL'"
+          - call: "roman(3999)"
+            expect: "'MMMCMXCIX'"
+          - call: "roman(2026)"
+            expect: "'MMXXVI'"
+          - call: "roman(1)"
+            expect: "'I'"
+      feedback:
+        - when: { same_as: "const SYMBOLS = [[1000, 'M'], [500, 'D'], [100, 'C'], [50, 'L'], [10, 'X'], [5, 'V'], [1, 'I']];\n\nfunction roman(n) {\n  let result = '';\n  for (const [value, symbol] of SYMBOLS) {\n    while (n >= value) {\n      result += symbol;\n      n -= value;\n    }\n  }\n  return result;\n}\n" }
+          say: "Aus 4 wird bei dir `IIII`. Nimm die Paare `IV`, `IX`, `XL`, `XC`, `CD` und `CM` mit ihren Werten in deine Liste auf, an der richtigen Stelle."
+      hint:
+        - "Nimm immer das größte Zeichen, das noch hineinpasst, wie beim Herausgeben von Wechselgeld: 1994 ist 1000, dann 900, 90, 4."
+        - "Die Paare wie `CM` sind eigene Zeichen mit eigenem Wert. Eine Liste von Paaren aus Wert und Zeichen, vom größten zum kleinsten, macht den Rest einfach."
+      solution: |
+        ```javascript
+        const SYMBOLS = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']];
+
+        function roman(n) {
+          let result = '';
+          for (const [value, symbol] of SYMBOLS) {
+            while (n >= value) {
+              result += symbol;
+              n -= value;
+            }
+          }
+          return result;
+        }
+        ```
+  - id: from-roman
+    title: "Römische Zahlen lesen"
+    extra: true
+    prompt: |
+      Und zurück: Schreib eine Funktion `from_roman(text)`, die eine römische Zahl in die gewohnte verwandelt: `from_roman('MCMXCIV')` ergibt `1994`. Steht ein Zeichen vor einem größeren, wird es abgezogen, sonst dazugezählt.
+    starter: |
+      def from_roman(text)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "from_roman('MCMXCIV')"
+          expect: "1994"
+        - call: "from_roman('IV')"
+          expect: "4"
+        - call: "from_roman('VI')"
+          expect: "6"
+        - call: "from_roman('MMXXVI')"
+          expect: "2026"
+        - call: "from_roman('XL')"
+          expect: "40"
+        - call: "from_roman('MMMCMXCIX')"
+          expect: "3999"
+    feedback:
+      - when: { same_as: "VALUES = { 'I' => 1, 'V' => 5, 'X' => 10, 'L' => 50, 'C' => 100, 'D' => 500, 'M' => 1000 }\n\ndef from_roman(text)\n  total = 0\n  text.each_char do |char|\n    total += VALUES[char]\n  end\n  total\nend\n" }
+        say: "`IV` ist 4, nicht 6: Ein Zeichen vor einem größeren wird abgezogen. Schau beim Zeichen auf das nächste."
+    hint: "Ein Hash ordnet jedem Zeichen seinen Wert zu. Geh die Zeichen mit ihrem Index durch, dann kannst du das nächste ansehen: `text[i + 1]`."
+    solution: |
+      ```ruby
+      VALUES = { 'I' => 1, 'V' => 5, 'X' => 10, 'L' => 50, 'C' => 100, 'D' => 500, 'M' => 1000 }
+
+      def from_roman(text)
+        total = 0
+        text.each_char.with_index do |char, i|
+          value = VALUES[char]
+          if i + 1 < text.length && VALUES[text[i + 1]] > value
+            total -= value
+          else
+            total += value
+          end
+        end
+        total
+      end
+      ```
+    python:
+      starter: |
+        def from_roman(text):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "from_roman('MCMXCIV')"
+            expect: "1994"
+          - call: "from_roman('IV')"
+            expect: "4"
+          - call: "from_roman('VI')"
+            expect: "6"
+          - call: "from_roman('MMXXVI')"
+            expect: "2026"
+          - call: "from_roman('XL')"
+            expect: "40"
+          - call: "from_roman('MMMCMXCIX')"
+            expect: "3999"
+      feedback:
+        - when: { same_as: "VALUES = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}\n\ndef from_roman(text):\n    total = 0\n    for char in text:\n        total += VALUES[char]\n    return total\n" }
+          say: "`IV` ist 4, nicht 6: Ein Zeichen vor einem größeren wird abgezogen. Schau beim Zeichen auf das nächste."
+      hint: "Ein Dictionary ordnet jedem Zeichen seinen Wert zu. Geh die Zeichen mit ihrem Index durch, dann kannst du das nächste ansehen: `text[i + 1]`."
+      solution: |
+        ```python
+        VALUES = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}
+
+        def from_roman(text):
+            total = 0
+            for i in range(len(text)):
+                value = VALUES[text[i]]
+                if i + 1 < len(text) and VALUES[text[i + 1]] > value:
+                    total -= value
+                else:
+                    total += value
+            return total
+        ```
+    javascript:
+      prompt: |
+        Und zurück: Schreib eine Funktion `fromRoman(text)`, die eine römische Zahl in die gewohnte verwandelt: `fromRoman('MCMXCIV')` ergibt `1994`. Steht ein Zeichen vor einem größeren, wird es abgezogen, sonst dazugezählt.
+      starter: |
+        function fromRoman(text) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "fromRoman('MCMXCIV')"
+            expect: "1994"
+          - call: "fromRoman('IV')"
+            expect: "4"
+          - call: "fromRoman('VI')"
+            expect: "6"
+          - call: "fromRoman('MMXXVI')"
+            expect: "2026"
+          - call: "fromRoman('XL')"
+            expect: "40"
+          - call: "fromRoman('MMMCMXCIX')"
+            expect: "3999"
+      feedback:
+        - when: { same_as: "const VALUES = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };\n\nfunction fromRoman(text) {\n  let total = 0;\n  for (const char of text) {\n    total += VALUES[char];\n  }\n  return total;\n}\n" }
+          say: "`IV` ist 4, nicht 6: Ein Zeichen vor einem größeren wird abgezogen. Schau beim Zeichen auf das nächste."
+      hint: "Ein Objekt ordnet jedem Zeichen seinen Wert zu. Geh die Zeichen mit ihrem Index durch, dann kannst du das nächste ansehen: `text[i + 1]`."
+      solution: |
+        ```javascript
+        const VALUES = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+
+        function fromRoman(text) {
+          let total = 0;
+          for (let i = 0; i < text.length; i++) {
+            const value = VALUES[text[i]];
+            if (i + 1 < text.length && VALUES[text[i + 1]] > value) {
+              total -= value;
+            } else {
+              total += value;
+            }
+          }
+          return total;
+        }
+        ```

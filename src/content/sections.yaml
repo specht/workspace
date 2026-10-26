@@ -33,6 +33,7 @@
     - .kata-texts
     - .kata-lists
     - .kata-dicts
+    - .kata-bits
 
 - key: graphics
   compact: true
