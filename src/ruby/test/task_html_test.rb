@@ -19,7 +19,8 @@ class TaskHtmlTest < Minitest::Test
         out = html("<i class='bi bi-check-lg'></i> [Profil](/profil), [Doku](https://example.com)\n\n```ruby\nputs 1\n```")
         assert_includes out, '<i class="bi bi-check-lg"></i>'
         assert_includes out, '<a href="/profil">Profil</a>'
-        assert_includes out, '<a href="https://example.com">Doku</a>'
+        # links to other sites open in a new tab (ExternalLinks)
+        assert_includes out, '<a href="https://example.com" target="_blank" rel="noopener">Doku</a>'
         assert_includes out, "<pre><code>puts 1\n</code></pre>"
     end
 
