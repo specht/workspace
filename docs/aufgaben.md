@@ -252,7 +252,7 @@ tasks:
 | `file` | nein | Die Datei, in der gearbeitet wird, relativ zu `/workspace`; wird bei der Aufgabe angezeigt |
 | `hint` | nein | Hinweis, den man aufklappen kann; oder eine Liste von 2 bis 5 Tipps in Stufen (siehe »Tipps in Stufen«) |
 | `feedback` | nein | Eigene Rückmeldungen für typische Fehler |
-| `prediction` | nein | `true`: Vorhersage; nur der erste Versuch zählt fürs Klassenboard, danach darf ausprobiert werden. Was die Antwort verrät, steht auf der Seite zwischen `<!-- after: id -->` und `<!-- /after -->` und erscheint erst nach einer Antwort (aktivitaet-schreiben.md) |
+| `prediction` | nein | `true`: Vorhersage; nur der erste Versuch zählt fürs Klassenboard, danach darf ausprobiert werden. Was die Antwort verrät, steht auf der Seite zwischen `<!-- after: id -->` und `<!-- /after -->` und erscheint erst nach einer Antwort; nach einer anderen Aufgabe erst, wenn sie gelöst ist (didaktik.md) |
 | `solution` | nein | Lösung; nur Lehrkräfte sehen sie |
 | `examples` | nein | Nur bei `reflection`: eine Liste von Beispielantworten in Markdown, die nur Lehrkräfte unter der Aufgabe sehen (siehe »Antworten unter offenen Aufgaben«) |
 | `exam` | nein | `false`: nie in einer Leistungsüberprüfung; Prüfarten mit Netz sind dort ohnehin gesperrt |

@@ -5431,6 +5431,7 @@ class Main < Sinatra::Base
             config[:teacher] = answers if answers
             solutions = kata_solutions_config(tasks)
             config[:solutions] = solutions if solutions
+            config[:revealAfter] = true if teacher_logged_in?
         end
         # Text that only stands in for the cards (an exercise list) is hidden
         # while the cards are shown.
@@ -5449,9 +5450,11 @@ class Main < Sinatra::Base
             "<script>window.CODE_INPUT_KEYWORDS = #{keywords.to_json};</script>" \
                 "<script src='/include/code_input.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
         end
-        # What gives away a task's answer waits for it (AfterTask), but only
-        # for students, who can answer; tasks.js shows it then.
-        waits = user_logged_in? && !teacher_logged_in?
+        # What gives away a task's answer waits for it (AfterTask), for
+        # everyone who can answer; tasks.js shows it then. A teacher sees the
+        # page as the class does and can open it without answering
+        # (revealAfter: a button in the line that waits).
+        waits = user_logged_in?
         "<style>.tasks-off-only { display: none; }" \
             "#{waits ? ' .after-task:not(.after-task-shown) > .after-task-body { display: none; } .after-task:not(.after-task-shown) > .after-task-wait { display: block; }' : ''}</style>" \
             "<script>window.TASK_PAGE = #{config.to_json.gsub('</', '<\/')};</script>" \
