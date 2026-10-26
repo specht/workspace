@@ -1,4 +1,5 @@
 require_relative 'code_languages'
+require_relative 'curriculum'
 require 'cgi'
 
 # The strip above a content page that says what kind of page it is
@@ -125,10 +126,11 @@ module PageKinds
             if show_duration && entry[:duration].is_a?(String) && !entry[:duration].strip.empty?
                 html << "<span class='page-kind-duration'><i class='bi bi-clock'></i>#{h.(entry[:duration].strip)}</span>"
             end
-            # the line of the curriculum, for teachers (docs/lehrplan.md)
+            # the line of the curriculum, for teachers (docs/lehrplan.md), each
+            # name a link to the activities under it on /lehrplan
             if show_curriculum && entry[:curriculum].is_a?(String) && !entry[:curriculum].strip.empty?
-                html << "<span class='page-kind-curriculum' title='Rahmenlehrplan (nur für Lehrkräfte sichtbar): alle Aktivitäten nach Lehrplan'>" \
-                        "<a href='/lehrplan'><i class='bi bi-mortarboard'></i>#{h.(entry[:curriculum].strip)}</a></span>"
+                html << "<span class='page-kind-curriculum' title='Rahmenlehrplan (nur für Lehrkräfte sichtbar)'>" \
+                        "<i class='bi bi-mortarboard'></i>#{Curriculum.linked_html(entry[:curriculum])}</span>"
             end
             required = requires_of(slug, content, development: development)
             unless required.empty?

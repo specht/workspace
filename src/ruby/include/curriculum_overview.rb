@@ -30,9 +30,8 @@ module CurriculumOverview
         CGI.escapeHTML(text.to_s)
     end
 
-    # The anchor of a name: »sek-i-information-und-daten«.
     def self.anchor(level, name)
-        "#{level} #{name}".downcase.tr('äöüß', 'aous').gsub(/[^a-z0-9]+/, '-').gsub(/\A-|-\z/, '')
+        Curriculum.anchor(level, name)
     end
 
     # [level, name] => [[slug, details], …] for the given activities, in

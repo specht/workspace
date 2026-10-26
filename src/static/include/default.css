@@ -3538,6 +3538,14 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
 .lehrplan-page .lp-topic h3 {
     margin: 1rem 0 0.4rem;
     font-size: 1.15rem;
+    /* reached from an activity (#sek-i-…): clear of the bar at the top */
+    scroll-margin-top: 4.5rem;
+}
+/* the name one came for, on a light purple ground that leaves the layout as it is */
+.lehrplan-page .lp-topic:has(> h3:target) {
+    border-radius: 0.3rem;
+    background: #f7f2fc;
+    box-shadow: 0 0 0 0.6rem #f7f2fc;
 }
 .lehrplan-page .lp-count {
     display: inline-block;
@@ -3581,6 +3589,13 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
 }
 .page-kind-curriculum a {
     color: inherit;
+    /* each name a link to its place on /lehrplan: underlined, faintly */
+    text-decoration: underline;
+    text-decoration-color: rgba(91, 47, 143, 0.4);
+    text-underline-offset: 0.15em;
+}
+.page-kind-curriculum a:hover {
+    text-decoration-color: currentColor;
 }
 
 /* The curriculum, only for teachers: in the purple of the teachers' tools

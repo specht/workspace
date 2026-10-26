@@ -8,6 +8,8 @@
 # A part for Sek I, one for the Oberstufe or both, in this order, divided by
 # »; «. In a part names divided by », «, each with details in brackets if
 # wanted; only the details are free.
+require 'cgi'
+
 module Curriculum
     # Rahmenlehrplan Teil C Informatik, Wahlpflichtfach 7–10 (2015): the
     # Themenfelder 3.1 to 3.10, the last five Wahlthemenfelder.
@@ -53,6 +55,26 @@ module Curriculum
     ].freeze
 
     LEVELS = { 'Sek I' => SEK_I, 'Oberstufe' => OBERSTUFE }.freeze
+
+    # The anchor of a name on /lehrplan: »sek-i-information-und-daten«.
+    def self.anchor(level, name)
+        "#{level} #{name}".downcase.tr('äöüß', 'aous').gsub(/[^a-z0-9]+/, '-').gsub(/\A-|-\z/, '')
+    end
+
+    # A line as HTML: each name a link to its place on /lehrplan, the details
+    # as text; a line that is not right as plain text.
+    def self.linked_html(line)
+        h = ->(s) { CGI.escapeHTML(s.to_s) }
+        entries = entries(line)
+        return h.(line.to_s.strip) if entries.empty?
+
+        entries.chunk_while { |a, b| a[0] == b[0] }.map do |part|
+            names = part.map do |level, name, details|
+                "<a href='/lehrplan##{anchor(level, name)}'>#{h.(name)}</a>#{details ? " (#{h.(details)})" : ''}"
+            end
+            "#{h.(part[0][0])}: #{names.join(', ')}"
+        end.join('; ')
+    end
 
     # A right line as its entries, in its order: [level, name, details]
     # (details nil without brackets). [] for a line that is not right.

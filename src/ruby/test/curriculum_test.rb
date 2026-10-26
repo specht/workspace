@@ -22,6 +22,14 @@ class CurriculumTest < Minitest::Test
         assert_equal [], Curriculum.entries(nil)
     end
 
+    def test_linked_html
+        assert_equal "Sek I: <a href='/lehrplan#sek-i-information-und-daten'>Information und Daten</a> (Codierung), " \
+                     "<a href='/lehrplan#sek-i-datenbanken'>Datenbanken</a>; " \
+                     "Oberstufe: <a href='/lehrplan#oberstufe-vertiefung-computergrafik'>Vertiefung Computergrafik</a> (&lt;Shader&gt;)",
+                     Curriculum.linked_html('Sek I: Information und Daten (Codierung), Datenbanken; Oberstufe: Vertiefung Computergrafik (<Shader>)')
+        assert_equal 'Sek I: Kontrollstrukturen &amp; mehr', Curriculum.linked_html('Sek I: Kontrollstrukturen & mehr'), 'not right: text'
+    end
+
     def test_wrong_lines
         assert_equal ['no line'], Curriculum.problems('')
         refute_empty Curriculum.problems('Sek I: Kontrollstrukturen (Verzweigung)'), 'a content, not a name of the plan'

@@ -78,7 +78,7 @@ class PageKindsTest < Minitest::Test
         refute_includes PageKinds.header('x', c, sections), 'Datenbanken'
         html = PageKinds.header('x', c, sections, :show_curriculum => true)
         assert_includes html, "class='page-kind-curriculum'"
-        assert_includes html, 'Sek I: Datenbanken (&lt;Tabellen&gt;)'
+        assert_includes html, "Sek I: <a href='/lehrplan#sek-i-datenbanken'>Datenbanken</a> (&lt;Tabellen&gt;)"
         refute_includes PageKinds.header('showerjs', content, sections, :show_curriculum => true), 'page-kind-curriculum'
     end
 
