@@ -4,7 +4,7 @@ kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Je nach Wert etwas anderes tun
-curriculum: "Sek I: Kontrollstrukturen (Verzweigung)"
+curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen: Verzweigung)"
 requires: [kata-functions]
 </div>
 

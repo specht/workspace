@@ -1,6 +1,7 @@
 <div class='meta'>
 image: rust-logo.png
 kind: steckbrief
+curriculum: "Oberstufe: Syntax und Semantik (Compiler)"
 </div>
 
 <div

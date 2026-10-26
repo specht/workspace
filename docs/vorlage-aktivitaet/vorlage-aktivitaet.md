@@ -2,6 +2,7 @@
 image: vorlage-aktivitaet.webp
 kind: labor
 duration: 1 Doppelstunde
+curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen); Oberstufe: Algorithmen und Datenstrukturen"
 reference: [workspace]
 </div>
 

@@ -1,6 +1,7 @@
 <div class='meta'>
 image: js-logo.png
 kind: steckbrief
+curriculum: "Oberstufe: Syntax und Semantik (Interpreter)"
 </div>
 
 <div

@@ -3,6 +3,7 @@ image: ../reference/bif/story-image.webp
 image_alt: "Der BIF-Editor mit den Seiten einer Geschichte als Graph, daneben die Vorschau mit einem Schlüssel an einer Wand"
 kind: projekt
 duration: 3 Doppelstunden
+curriculum: "Sek I: Algorithmisches Problemlösen (Modellierung einfacher Abläufe, Variablenkonzept, algorithmische Grundstrukturen: Verzweigung)"
 language: Markdown / JavaScript
 template: https://github.com/specht/bif.git
 template_name: der BIF-Vorlage

@@ -1,6 +1,7 @@
 <div class='meta'>
 image: basic-logo.png
 kind: steckbrief
+curriculum: "Sek I: Geschichte der Informatik (Heimcomputer); Oberstufe: Syntax und Semantik (Interpreter)"
 </div>
 
 <div

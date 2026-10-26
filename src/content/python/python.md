@@ -2,6 +2,7 @@
 image: python-logo.png
 kind: steckbrief
 reference: [ruby-python]
+curriculum: "Sek I: Algorithmisches Problemlösen (Modifizieren von Algorithmen); Oberstufe: Algorithmen und Softwareentwicklung"
 </div>
 
 <div

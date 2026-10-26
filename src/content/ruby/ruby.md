@@ -2,6 +2,7 @@
 image: ruby-logo.png
 kind: steckbrief
 reference: [ruby-python]
+curriculum: "Sek I: Algorithmisches Problemlösen (Analysieren von Algorithmen); Oberstufe: Algorithmen und Softwareentwicklung"
 </div>
 
 <div

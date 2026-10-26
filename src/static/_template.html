@@ -475,9 +475,11 @@ function extra_chapter_mark(after) {
     return mark;
 }
 
+// What a heading shows only on the page stays out of both: the »Extra«
+// badge, and what carries .autotoc-skip (the counts on /lehrplan).
 function heading_label(heading) {
     let copy = heading.cloneNode(true);
-    copy.querySelectorAll('.extra-badge').forEach(badge => badge.remove());
+    copy.querySelectorAll('.extra-badge, .autotoc-skip').forEach(badge => badge.remove());
     return copy.textContent.trim();
 }
 
@@ -486,7 +488,7 @@ function heading_label(heading) {
 // text, a link may not hold one.
 function heading_content(heading) {
     let copy = heading.cloneNode(true);
-    copy.querySelectorAll('.extra-badge').forEach(badge => badge.remove());
+    copy.querySelectorAll('.extra-badge, .autotoc-skip').forEach(badge => badge.remove());
     copy.querySelectorAll('a').forEach(a => a.replaceWith(...a.childNodes));
     let fragment = document.createDocumentFragment();
     fragment.append(...copy.childNodes);

@@ -4,6 +4,7 @@ image_alt: "Ein Farbwürfel, in dem eine Farbe als Pfeile entlang Y, Cb und Cr z
 kind: labor
 language: C
 duration: 4 Doppelstunden
+curriculum: "Oberstufe: Vertiefung Computergrafik (Farbräume, DCT, Bildkompression), Algorithmen und Datenstrukturen (Huffman-Codierung)"
 requires: [pixelram]
 reference: [c, pixelram, workspace, farbraeume, bits-und-bytes]
 template: https://github.com/specht/pixelram-starter.git

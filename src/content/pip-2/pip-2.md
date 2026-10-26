@@ -5,7 +5,7 @@ kind: uebung
 duration: 3 Doppelstunden
 languages: [ruby, python, javascript]
 idea: "Pip findet Bello: Schleifen mit Bedingung, eigene Funktionen, Variablen, ein Algorithmus fürs Labyrinth"
-curriculum: "Sek I: Algorithmisches Problemlösen, Kontrollstrukturen, Prozeduren; Oberstufe: Algorithmen"
+curriculum: "Sek I: Algorithmisches Problemlösen (Miniwelten, algorithmische Grundstrukturen, Variablenkonzept und Prozeduren); Oberstufe: Algorithmen und Datenstrukturen (ein Algorithmus fürs Labyrinth)"
 requires: [pip-1, kata-loops]
 </div>
 

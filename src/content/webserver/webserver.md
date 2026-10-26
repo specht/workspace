@@ -5,6 +5,7 @@ kind: projekt
 language: Ruby / Python
 languages: [ruby, python]
 duration: 2 Doppelstunden
+curriculum: "Sek I: Leben in und mit vernetzten Systemen (Datenaustausch im Netzwerk); Oberstufe: Rechner und Netze (Client-Server-Struktur, Protokolle)"
 requires: [tcpip]
 reference: [netzwerk, http, ruby-python]
 </div>

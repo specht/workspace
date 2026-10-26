@@ -4,7 +4,7 @@ kind: uebung
 duration: 2 Doppelstunden
 languages: [ruby, python, javascript]
 idea: "Dem Mampfer entkommen: Schritte zählen, das Licht nutzen und den kürzesten Weg mit einer Breitensuche finden"
-curriculum: "Sek I: Algorithmisches Problemlösen; Oberstufe: Graphen, Breitensuche"
+curriculum: "Sek I: Algorithmisches Problemlösen (Miniwelten); Oberstufe: Algorithmen und Datenstrukturen (Graphen, Breitensuche)"
 requires: [pip-2, kata-dicts]
 </div>
 

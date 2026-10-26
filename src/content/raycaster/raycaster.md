@@ -4,6 +4,7 @@ image_alt: "Blick durch eine Halle mit Ziegelsäulen, gefliestem Boden und einer
 kind: projekt
 language: C
 duration: 4 Doppelstunden
+curriculum: "Oberstufe: Vertiefung Computergrafik (Raycasting, Texturen, Mipmaps)"
 requires: [pixelram]
 reference: [c, pixelram, workspace, vektoren]
 template: https://github.com/specht/pixelram-starter.git

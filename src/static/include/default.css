@@ -3518,6 +3518,110 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     white-space: nowrap;
 }
 
+/* /lehrplan (curriculum_overview.rb): the activities under each name of
+   the curricula, for teachers. */
+.lehrplan-page {
+    max-width: 60rem;
+}
+.lehrplan-page .lp-source {
+    color: var(--bs-secondary-color);
+    font-size: 0.9rem;
+}
+.lehrplan-page .lp-group {
+    margin: 1.6rem 0 0.2rem;
+    color: #5b2f8f;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+.lehrplan-page .lp-topic h3 {
+    margin: 1rem 0 0.4rem;
+    font-size: 1.15rem;
+    /* reached from an activity (#sek-i-…): clear of the bar at the top */
+    scroll-margin-top: 4.5rem;
+}
+/* the name one came for, on a light purple ground that leaves the layout as
+   it is; it stays a moment for the eye to find it, then fades */
+.lehrplan-page {
+    --lp-target: #f7f2fc;
+}
+.lehrplan-page .lp-topic:has(> h3:target) {
+    border-radius: 0.3rem;
+    animation: lp-target-fade 2.5s ease-in 2s both;
+}
+@keyframes lp-target-fade {
+    from {
+        background: var(--lp-target);
+        box-shadow: 0 0 0 0.6rem var(--lp-target);
+    }
+    to {
+        background: transparent;
+        box-shadow: 0 0 0 0.6rem transparent;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .lehrplan-page .lp-topic:has(> h3:target) {
+        animation-duration: 0.01s;
+    }
+}
+.lehrplan-page .lp-count {
+    display: inline-block;
+    min-width: 1.6em;
+    margin-left: 0.3em;
+    padding: 0 0.45em;
+    border-radius: 1em;
+    background: #f7f2fc;
+    color: #5b2f8f;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    vertical-align: 0.15em;
+}
+.lehrplan-page .lp-note {
+    margin: -0.3rem 0 0.4rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.85rem;
+}
+.lehrplan-page .lp-activities {
+    margin: 0;
+    padding-left: 1.2rem;
+}
+.lehrplan-page .lp-activities li {
+    margin: 0.15rem 0;
+}
+.lehrplan-page .lp-kind {
+    margin-left: 0.4em;
+    color: var(--bs-secondary-color);
+    font-size: 0.85rem;
+}
+/* what the activity practises there, from its line */
+.lehrplan-page .lp-details {
+    display: block;
+    color: #5c636a;
+    font-size: 0.9rem;
+}
+.lehrplan-page .lp-none {
+    color: var(--bs-secondary-color);
+    font-style: italic;
+}
+.page-kind-curriculum a {
+    color: inherit;
+    /* each name a link to its place on /lehrplan: underlined, faintly */
+    text-decoration: underline;
+    text-decoration-color: rgba(91, 47, 143, 0.4);
+    text-underline-offset: 0.15em;
+}
+.page-kind-curriculum a:hover {
+    text-decoration-color: currentColor;
+}
+
+/* The curriculum, only for teachers: in the purple of the teachers' tools
+   (»Notiz für Lehrkräfte«), so that nobody takes it for what students see. */
+.page-kind-curriculum {
+    color: #5b2f8f;
+}
+
 .page-kind-activity .page-kind-links a,
 .reference-include-link a {
     color: #0f766e;
@@ -4259,6 +4363,13 @@ ul.task-teacher-list .task-teacher-answer {
     align-items: baseline;
     justify-content: space-between;
     gap: 0.3em 1em;
+}
+
+/* the links beside the title together at its right end */
+.class-help-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3em 1.2em;
 }
 
 .class-help-link .bi {

@@ -3,6 +3,7 @@ image: cpu-sandbox.webp
 image_alt: "Die CPU-Sandbox mit Maschinencode, dem Quelltext, den Registern, dem Speicher und einem kleinen 3D-Labyrinth auf dem Bildschirm"
 kind: projekt
 duration: 6 bis 8 Doppelstunden
+curriculum: "Sek I: Informatiksysteme (Aufbau und Eigenschaften eines Informatiksystems, EVA-Prinzip); Oberstufe: Rechner und Netze (Von-Neumann-Architektur), Vertiefung Maschinennahe Programmierung (Assembler, C)"
 language: Assembler / C
 reference: [gitlab, git, minicpu, minicpu-io, minicpu-c, bits-und-bytes]
 template: https://github.com/specht/cpu-sandbox.git

@@ -4,7 +4,7 @@ kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Tests schreiben, die jeden Fehler finden
-curriculum: "Oberstufe: Softwareentwicklung (Testen)"
+curriculum: "Oberstufe: Softwareprojekt (systematische Softwareentwicklung: Testen)"
 requires: [kata-search]
 </div>
 

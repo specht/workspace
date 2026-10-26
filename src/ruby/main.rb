@@ -13,6 +13,7 @@ require './include/task_check.rb'
 require './include/task_card.rb'
 require './include/stage_code.rb'
 require './include/person_sources.rb'
+require './include/curriculum_overview.rb'
 require './include/task_store.rb'
 require './include/class_board.rb'
 require './include/open_answers.rb'
@@ -5329,7 +5330,8 @@ class Main < Sinatra::Base
         tools = page_pin_button(slug) + teacher_note_toggle(slug)
         toggle = tools.empty? ? '' : "<span class='page-teacher-tools'>#{tools}</span>"
         header = PageKinds.header(slug, @@content, @@sections, :development => DEVELOPMENT, :extra => toggle,
-                                  :show_duration => teacher_logged_in?, :code_language => page_code_language(slug))
+                                  :show_duration => teacher_logged_in?, :show_curriculum => teacher_logged_in?,
+                                  :code_language => page_code_language(slug))
         header.empty? && !toggle.empty? ? "<div class='page-kind'>#{toggle}</div>" : header
     end
 
@@ -8692,6 +8694,13 @@ class Main < Sinatra::Base
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
             halt_forbidden_page! unless admin_logged_in?
+        end
+        # The activities by the names of the curricula (curriculum_overview.rb),
+        # like the curriculum lines only for teachers.
+        if path == '/lehrplan'
+            this_is_a_page_for_logged_in_users!
+            Main.load_invitations()
+            halt_forbidden_page! unless teacher_logged_in?
         end
         # The profile is about the logged-in person; without one it would
         # fail while drawing its buttons.

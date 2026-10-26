@@ -4,6 +4,7 @@ image_alt: "Ein Retro-Spiel: eine kleine Figur auf grünem Boden, von oben falle
 kind: projekt
 language: TIC-80 / Lua
 duration: 3 Doppelstunden
+curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen, Variablenkonzept), Digitale Bilder und Visualisierung (Figuren und Animationen); Oberstufe: Algorithmen und Softwareentwicklung (Sequenz, Auswahl, Wiederholung, Variablenkonzept)"
 reference: [tic80, workspace]
 </div>
 

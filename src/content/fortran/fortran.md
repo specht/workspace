@@ -1,6 +1,7 @@
 <div class='meta'>
 image: fortran-logo.png
 kind: steckbrief
+curriculum: "Sek I: Geschichte der Informatik (Lebensläufe und Leistungen bedeutender Persönlichkeiten); Oberstufe: Syntax und Semantik (Compiler)"
 </div>
 
 <div

@@ -4,6 +4,7 @@ image_alt: "Der Neo4j Browser mit einer Cypher-Abfrage und dem Ergebnis als Grap
 kind: projekt
 language: Cypher
 duration: 2 Doppelstunden
+curriculum: "Oberstufe: Datenbanken (Datenmodellierung als Graph, Abfragen mit Cypher im Vergleich zu SQL)"
 requires: [filmdatenbank]
 reference: [cypher, datensaetze]
 </div>

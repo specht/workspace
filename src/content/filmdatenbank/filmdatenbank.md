@@ -4,6 +4,7 @@ image_alt: "VS Code mit einem Datenmodell für Filme als Text links und dem dara
 kind: projekt
 language: SQL
 duration: 3 Doppelstunden
+curriculum: "Sek I: Datenbanken (Datenbanken als Tabellen planen, verknüpfte Tabellen); Oberstufe: Datenbanken (Datenmodellierung, relationales Datenbankschema, Join)"
 requires: [mysql]
 reference: [er-modelle, sql, json, datensaetze]
 </div>

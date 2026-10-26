@@ -4,7 +4,7 @@ kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Funktionen, die sich selbst aufrufen, mit einem Fall, der aufhört
-curriculum: "Oberstufe: Algorithmen (rekursive Verfahren)"
+curriculum: "Oberstufe: Algorithmen und Datenstrukturen (rekursive Verfahren)"
 requires: [kata-lists]
 </div>
 

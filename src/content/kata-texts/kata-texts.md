@@ -4,7 +4,7 @@ kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Buchstaben zählen, umdrehen, umwandeln und verschlüsseln
-curriculum: "Sek I: Information und Daten (Codierung, Verschlüsselung)"
+curriculum: "Sek I: Algorithmisches Problemlösen (Zeichenkettenbearbeitung), Information und Daten (Codierung, Verschlüsselung)"
 requires: [kata-loops]
 </div>
 

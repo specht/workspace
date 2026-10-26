@@ -4,7 +4,7 @@ kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Nachschlagen, zählen und gruppieren mit Schlüsseln und Werten
-curriculum: "Sek I: Information und Daten (Datenstrukturen); Oberstufe: Datenstrukturen (Hash Table)"
+curriculum: "Sek I: Algorithmisches Problemlösen (Implementieren von Algorithmen mit Schlüsseln und Werten); Oberstufe: Algorithmen und Datenstrukturen (Hash Table)"
 requires: [kata-lists]
 </div>
 

@@ -1,6 +1,7 @@
 <div class='meta'>
 image: nasm-logo.png
 kind: steckbrief
+curriculum: "Oberstufe: Vertiefung Maschinennahe Programmierung (Register, Systemaufrufe, Unterprogramme)"
 </div>
 
 <div

@@ -2,6 +2,7 @@
 image: c-logo.png
 kind: steckbrief
 reference: [c]
+curriculum: "Sek I: Geschichte der Informatik (Unix); Oberstufe: Syntax und Semantik (Compiler)"
 </div>
 
 <div

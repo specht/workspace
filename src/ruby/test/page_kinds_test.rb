@@ -73,6 +73,15 @@ class PageKindsTest < Minitest::Test
         assert_includes PageKinds.header('x', c, sections, :show_duration => true), '&lt;b&gt;1&lt;/b&gt;'
     end
 
+    def test_the_curriculum_is_only_for_teachers
+        c = content.merge('x' => { :title => 'X', :kind => 'projekt', :curriculum => 'Sek I: Datenbanken (<Tabellen>)' })
+        refute_includes PageKinds.header('x', c, sections), 'Datenbanken'
+        html = PageKinds.header('x', c, sections, :show_curriculum => true)
+        assert_includes html, "class='page-kind-curriculum'"
+        assert_includes html, "Sek I: <a href='/lehrplan#sek-i-datenbanken'>Datenbanken</a> (&lt;Tabellen&gt;)"
+        refute_includes PageKinds.header('showerjs', content, sections, :show_curriculum => true), 'page-kind-curriculum'
+    end
+
     def test_the_duration_is_only_for_teachers
         refute_includes PageKinds.header('showerjs', content, sections), 'Doppelstunden'
         assert_includes PageKinds.header('showerjs', content, sections, :show_duration => true), 'Doppelstunden'

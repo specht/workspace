@@ -371,6 +371,23 @@ html[data-bs-theme="dark"] {
     .reference-include-link a {
         color: #5fcfc1;
     }
+    .page-kind-curriculum,
+    .lehrplan-page .lp-group {
+        color: #cdb0f2;
+    }
+    .lehrplan-page .lp-count {
+        background: #2e2440;
+        color: #cdb0f2;
+    }
+    .lehrplan-page .lp-details {
+        color: #adb5bd;
+    }
+    .lehrplan-page {
+        --lp-target: #221b2d;
+    }
+    .page-kind-curriculum a {
+        text-decoration-color: rgba(205, 176, 242, 0.4);
+    }
     .color-swatch {
         border-color: rgba(255, 255, 255, 0.35);
     }

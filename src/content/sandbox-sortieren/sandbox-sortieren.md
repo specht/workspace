@@ -3,6 +3,7 @@ image: sorting-sandbox.webp
 image_alt: "Die Sortier-Sandbox mit dem Code von Bubblesort links und den zu sortierenden Zahlen als grüne Balken rechts"
 kind: projekt
 duration: 4 bis 6 Doppelstunden
+curriculum: "Sek I: Algorithmisches Problemlösen (Analysieren, Modifizieren und Implementieren von Algorithmen); Oberstufe: Algorithmen und Datenstrukturen (Sortierverfahren, Aufwand)"
 language: Dart / Python / JavaScript / Java
 reference: [gitlab, git, sortieren, heap]
 template: https://github.com/specht/sorting-sandbox.git

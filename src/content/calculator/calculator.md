@@ -5,6 +5,7 @@ kind: projekt
 language: Ruby / Python
 languages: [ruby, python]
 duration: 2 Doppelstunden
+curriculum: "Oberstufe: Syntax und Semantik (Grammatik, Syntaxbaum, rekursiver Abstieg), Sprachen und Automaten (formale Sprachen)"
 requires: [automata]
 reference: [listen, baeume, ruby-python]
 </div>
@@ -645,7 +646,8 @@ python3 -c 'import ast; print(ast.dump(ast.parse("2 + 3 * 4", mode="eval"), inde
 
     const isLeaf = (t) => 'value' in t;
     const show = (v) => Number.isInteger(v) ? String(v) : String(Number(v.toPrecision(10)));
-    const label = (t) => isLeaf(t) ? show(t.value) : t.op;
+    // a sign shows as the minus it is written with; only the code calls it neg
+    const label = (t) => isLeaf(t) ? show(t.value) : t.op === 'neg' ? '-' : t.op;
 
     function apply(op, v) {
         switch (op) {
@@ -689,7 +691,8 @@ python3 -c 'import ast; print(ast.dump(ast.parse("2 + 3 * 4", mode="eval"), inde
     }
 
     // Jeder Knoten bekommt eine Spalte, in der Reihenfolge des Ausdrucks:
-    // links der linke Teilbaum, dann der Knoten, dann der rechte.
+    // links der linke Teilbaum, dann der Knoten, dann der rechte. Ein
+    // Vorzeichen hat nur ein Kind und steht in dessen Spalte, genau darüber.
     function width(t) {
         return Math.max(40, label(t).length * 9 + 18);
     }
@@ -706,7 +709,12 @@ python3 -c 'import ast; print(ast.dump(ast.parse("2 + 3 * 4", mode="eval"), inde
         };
         (function walk(t, d) {
             if (isLeaf(t)) return place(t, d);
-            if (t.kids.length === 1) { place(t, d); return walk(t.kids[0], d + 1); }
+            if (t.kids.length === 1) {
+                walk(t.kids[0], d + 1);
+                const below = pos.get(t.kids[0].id);
+                pos.set(t.id, { x: below.x, y: PAD + 16 + d * DY, w: width(t) });
+                return;
+            }
             walk(t.kids[0], d + 1);
             place(t, d);
             walk(t.kids[1], d + 1);

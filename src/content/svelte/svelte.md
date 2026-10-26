@@ -4,6 +4,7 @@ image_alt: "Das Svelte-Logo als futuristisches Gebäude, durch das eine Fahrbahn
 kind: projekt
 language: Svelte
 duration: 3 Doppelstunden
+curriculum: "Sek I: Leben in und mit vernetzten Systemen (Gestalten von Internetseiten, Stylesheets); Oberstufe: Sprachen und Automaten (zustandsorientierte Modellierung)"
 requires: [static-website]
 reference: [workspace, html, css, layout]
 </div>

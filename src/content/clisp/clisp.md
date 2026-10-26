@@ -1,6 +1,7 @@
 <div class='meta'>
 image: clisp-logo.png
 kind: steckbrief
+curriculum: "Sek I: Geschichte der Informatik (Lebensläufe und Leistungen bedeutender Persönlichkeiten); Oberstufe: Vertiefung Applikative Programmierung (funktional)"
 </div>
 
 <div
