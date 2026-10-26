@@ -8,7 +8,7 @@ Du benötigst:
 
 - einen Hetzner-Account
 - einen Public Key
-- eine Domain oder Subdomain, die du auf deinen Server zeigen lassen kannst
+- eine Domain oder Subdomain, die du auf deinen Server zeigen lassen kannst, mit ihrem DNS bei Cloudflare (ein kostenloses Konto genügt; Schritt 5 sagt, warum)
 - SMTP-Zugangsdaten für einen E-Mail-Account, von dem aus die Anmeldecodes versendet werden
 
 ## Schritt 0: Server und Volume anlegen
@@ -48,7 +48,7 @@ port 22
 identityFile <Pfad zum Private Key>
 ```
 
-**Tipp:** Jetzt ist ein guter Zeitpunkt, um den A-Record deiner Domain (oder Subdomain) zu setzen, damit nachher alles bereit ist.
+**Tipp:** Jetzt ist ein guter Zeitpunkt, die DNS-Einträge bei Cloudflare anzulegen, damit nachher alles bereit ist (Schritt 5, »DNS bei Cloudflare«).
 
 Verbinde dich als `root` mit deinem Server:
 
@@ -268,12 +268,26 @@ cd frontend
 touch traefik/acme.json && chmod 600 traefik/acme.json
 ```
 
-Das Zertifikat gilt für deine Domain und alle Subdomains (`*.deine-domain.de`, für die Workspaces). Dafür beweist Traefik bei Letsencrypt über die DNS-Einträge, dass die Domain dir gehört; der DNS muss dazu bei Cloudflare liegen. Lege in Cloudflare einen API-Token an, der die DNS-Einträge deiner Zone bearbeiten darf, und schreibe ihn mit der Adresse, an die Letsencrypt zu den Zertifikaten schreibt, in eine Datei `.env` neben der `docker-compose.yaml`:
+### DNS bei Cloudflare
+
+Jeder Workspace hat eine eigene Subdomain, also braucht der Workspace ein Zertifikat für deine Domain und alle Subdomains (`*.workspace.deine-schule.de`). So eines stellt Letsencrypt nur aus, wenn Traefik über einen DNS-Eintrag beweist, dass die Domain dir gehört; Traefik legt diesen Eintrag selbst an, über die Schnittstelle von Cloudflare.
+
+1. Die Domain bei Cloudflare hinzufügen und bei deinem Registrar die Nameserver eintragen, die Cloudflare nennt (falls die Domain noch nicht bei Cloudflare liegt). Cloudflare verwaltet immer eine ganze Domain: Für `workspace.deine-schule.de` liegt also `deine-schule.de` bei Cloudflare.
+2. Unter »DNS › Records« zwei Einträge auf die Adresse deines Servers, und `AAAA` ebenso, wenn er eine IPv6-Adresse hat:
+   - Typ `A`, Name `workspace` (oder `@` für die Domain selbst)
+   - Typ `A`, Name `*.workspace` (oder `*`)
+
+   Bei beiden **Proxy status: DNS only** (graue Wolke), nicht »Proxied«. Über Cloudflare laufen sonst alle Verbindungen der Schülerinnen und Schüler, was die Datenschutzerklärung ausschließt (Cloudflare verwaltet nur die Namen), und der Workspace sähe statt der Adressen der Browser die von Cloudflare: Die Grenzen je Adresse (Anfragen, Anmeldungen) träfen dann alle gemeinsam.
+3. Unter »My Profile › API Tokens« einen Token anlegen, mit der Vorlage »Edit zone DNS«: Rechte `Zone › DNS › Edit` und `Zone › Zone › Read`, unter »Zone Resources« nur deine Zone.
+
+Den Token und die Adresse, an die Letsencrypt zu den Zertifikaten schreibt, in eine Datei `.env` neben der `docker-compose.yaml`:
 
 ```
 CF_DNS_API_TOKEN=dein-token
 ACME_EMAIL=deine-adresse@example.org
 ```
+
+Die Datei enthält ein Geheimnis: `chmod 600 .env`.
 
 Jetzt können wir das Frontend starten:
 
