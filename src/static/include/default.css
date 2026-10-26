@@ -8163,7 +8163,9 @@ html[data-bs-theme="dark"] .bitplane-widget {
     position: relative;
     display: flex;
     flex-direction: column;
+    align-items: center;
     line-height: 1.15;
+    text-align: center;
 }
 .kata-ring-text strong {
     font-size: 1.4em;
@@ -8420,8 +8422,9 @@ html[data-bs-theme="dark"] .bitplane-widget {
     }
     .kata-ring::before { inset: 0.45em; }
     .kata-ring-text strong { font-size: 1.2em; }
-    .kata-ring-text small { display: none; }
-    .kata-set { flex-basis: 78%; }
+    .kata-ring-text small { font-size: 0.75em; }
+    /* one set in the middle, its neighbours peeking in */
+    .kata-set { flex-basis: 78%; scroll-snap-align: center; }
 }
 
 /* Katas handed in (KataHandIns, kata_hand_ins.js): the list on the class

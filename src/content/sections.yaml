@@ -30,6 +30,7 @@
     - .kata-decisions
     - .kata-loops
     - .pip-2
+    - .kata-texts
 
 - key: graphics
   compact: true

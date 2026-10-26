@@ -1,0 +1,1571 @@
+format: 1
+activity: kata-texts
+tasks:
+  - id: reverse-text
+    title: "Rückwärts"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `reverse_text(text)`, die den Text rückwärts zurückgibt: `reverse_text('Hallo')` ergibt `'ollaH'`. Mit einer Schleife über die Buchstaben, ohne `reverse`.
+    starter: |
+      def reverse_text(text)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [String#reverse, Array#reverse]
+      cases:
+        - call: "reverse_text('Hallo')"
+          expect: "'ollaH'"
+        - call: "reverse_text('Anna')"
+          expect: "'annA'"
+        - call: "reverse_text('a b')"
+          expect: "'b a'"
+          say: "Auch ein Leerzeichen ist ein Zeichen und dreht sich mit."
+        - call: "reverse_text('')"
+          expect: "''"
+          say: "Ein leerer Text bleibt leer."
+        - call: "reverse_text('Workspace')"
+          expect: "'ecapskroW'"
+    feedback:
+      - when: { same_as: "def reverse_text(text)\n  result = ''\n  text.each_char do |char|\n    result = result + char\n  end\n  result\nend\n" }
+        say: "Du hängst jeden Buchstaben hinten an, so kommt derselbe Text heraus. Wohin muss der neue Buchstabe?"
+    hint:
+      - "`text.each_char do |char| … end` geht die Buchstaben der Reihe nach durch. Wo muss jeder neue Buchstabe im Ergebnis stehen, vorn oder hinten?"
+      - "`char + result` setzt den Buchstaben vor das, was du schon hast."
+    solution: |
+      ```ruby
+      def reverse_text(text)
+        result = ''
+        text.each_char do |char|
+          result = char + result
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `reverse_text(text)`, die den Text rückwärts zurückgibt: `reverse_text('Hallo')` ergibt `'ollaH'`. Mit einer Schleife über die Buchstaben, ohne `reversed` und `[::-1]`.
+      starter: |
+        def reverse_text(text):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [reversed]
+        cases:
+          - call: "reverse_text('Hallo')"
+            expect: "'ollaH'"
+          - call: "reverse_text('Anna')"
+            expect: "'annA'"
+          - call: "reverse_text('a b')"
+            expect: "'b a'"
+            say: "Auch ein Leerzeichen ist ein Zeichen und dreht sich mit."
+          - call: "reverse_text('')"
+            expect: "''"
+            say: "Ein leerer Text bleibt leer."
+          - call: "reverse_text('Workspace')"
+            expect: "'ecapskroW'"
+      feedback:
+        - when: { same_as: "def reverse_text(text):\n    result = ''\n    for char in text:\n        result = result + char\n    return result\n" }
+          say: "Du hängst jeden Buchstaben hinten an, so kommt derselbe Text heraus. Wohin muss der neue Buchstabe?"
+      hint:
+        - "`for char in text:` geht die Buchstaben der Reihe nach durch. Wo muss jeder neue Buchstabe im Ergebnis stehen, vorn oder hinten?"
+        - "`char + result` setzt den Buchstaben vor das, was du schon hast."
+      solution: |
+        ```python
+        def reverse_text(text):
+            result = ''
+            for char in text:
+                result = char + result
+            return result
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `reverseText(text)`, die den Text rückwärts zurückgibt: `reverseText('Hallo')` ergibt `'ollaH'`. Mit einer Schleife über die Buchstaben, ohne `reverse`.
+      starter: |
+        function reverseText(text) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.reverse, Array.prototype.toReversed]
+        cases:
+          - call: "reverseText('Hallo')"
+            expect: "'ollaH'"
+          - call: "reverseText('Anna')"
+            expect: "'annA'"
+          - call: "reverseText('a b')"
+            expect: "'b a'"
+            say: "Auch ein Leerzeichen ist ein Zeichen und dreht sich mit."
+          - call: "reverseText('')"
+            expect: "''"
+            say: "Ein leerer Text bleibt leer."
+          - call: "reverseText('Workspace')"
+            expect: "'ecapskroW'"
+      feedback:
+        - when: { same_as: "function reverseText(text) {\n  let result = '';\n  for (const char of text) {\n    result = result + char;\n  }\n  return result;\n}\n" }
+          say: "Du hängst jeden Buchstaben hinten an, so kommt derselbe Text heraus. Wohin muss der neue Buchstabe?"
+      hint:
+        - "`for (const char of text) { … }` geht die Buchstaben der Reihe nach durch. Wo muss jeder neue Buchstabe im Ergebnis stehen, vorn oder hinten?"
+        - "`char + result` setzt den Buchstaben vor das, was du schon hast."
+      solution: |
+        ```javascript
+        function reverseText(text) {
+          let result = '';
+          for (const char of text) {
+            result = char + result;
+          }
+          return result;
+        }
+        ```
+  - id: count-vowels
+    title: "Vokale zählen"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `count_vowels(text)`, die zählt, wie viele Vokale im Text stehen, also `a`, `e`, `i`, `o` und `u`, klein oder groß: `count_vowels('Hallo Welt')` ergibt `3`.
+    starter: |
+      def count_vowels(text)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "count_vowels('Hallo Welt')"
+          expect: "3"
+        - call: "count_vowels('AEIOU')"
+          expect: "5"
+          say: "Große Vokale zählen auch."
+        - call: "count_vowels('xyz')"
+          expect: "0"
+        - call: "count_vowels('')"
+          expect: "0"
+        - call: "count_vowels('Programmieren')"
+          expect: "5"
+    feedback:
+      - when: { same_as: "def count_vowels(text)\n  count = 0\n  text.each_char do |char|\n    count += 1 if 'aeiou'.include?(char)\n  end\n  count\nend\n" }
+        say: "In `'AEIOU'` zählt dein Code keinen Vokal. Wie wird aus einem großen Buchstaben ein kleiner?"
+    hint:
+      - "Geh die Buchstaben durch und zähle mit, wie bei den Schleifen. `'aeiou'.include?(char)` fragt, ob `char` ein Vokal ist."
+      - "`text.downcase` macht alle Buchstaben klein; dann reicht der Vergleich mit den kleinen Vokalen."
+    solution: |
+      ```ruby
+      def count_vowels(text)
+        count = 0
+        text.downcase.each_char do |char|
+          count += 1 if 'aeiou'.include?(char)
+        end
+        count
+      end
+      ```
+    python:
+      starter: |
+        def count_vowels(text):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "count_vowels('Hallo Welt')"
+            expect: "3"
+          - call: "count_vowels('AEIOU')"
+            expect: "5"
+            say: "Große Vokale zählen auch."
+          - call: "count_vowels('xyz')"
+            expect: "0"
+          - call: "count_vowels('')"
+            expect: "0"
+          - call: "count_vowels('Programmieren')"
+            expect: "5"
+      feedback:
+        - when: { same_as: "def count_vowels(text):\n    count = 0\n    for char in text:\n        if char in 'aeiou':\n            count += 1\n    return count\n" }
+          say: "In `'AEIOU'` zählt dein Code keinen Vokal. Wie wird aus einem großen Buchstaben ein kleiner?"
+      hint:
+        - "Geh die Buchstaben durch und zähle mit, wie bei den Schleifen. `char in 'aeiou'` fragt, ob `char` ein Vokal ist."
+        - "`text.lower()` macht alle Buchstaben klein; dann reicht der Vergleich mit den kleinen Vokalen."
+      solution: |
+        ```python
+        def count_vowels(text):
+            count = 0
+            for char in text.lower():
+                if char in 'aeiou':
+                    count += 1
+            return count
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `countVowels(text)`, die zählt, wie viele Vokale im Text stehen, also `a`, `e`, `i`, `o` und `u`, klein oder groß: `countVowels('Hallo Welt')` ergibt `3`.
+      starter: |
+        function countVowels(text) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "countVowels('Hallo Welt')"
+            expect: "3"
+          - call: "countVowels('AEIOU')"
+            expect: "5"
+            say: "Große Vokale zählen auch."
+          - call: "countVowels('xyz')"
+            expect: "0"
+          - call: "countVowels('')"
+            expect: "0"
+          - call: "countVowels('Programmieren')"
+            expect: "5"
+      feedback:
+        - when: { same_as: "function countVowels(text) {\n  let count = 0;\n  for (const char of text) {\n    if ('aeiou'.includes(char)) {\n      count++;\n    }\n  }\n  return count;\n}\n" }
+          say: "In `'AEIOU'` zählt dein Code keinen Vokal. Wie wird aus einem großen Buchstaben ein kleiner?"
+      hint:
+        - "Geh die Buchstaben durch und zähle mit, wie bei den Schleifen. `'aeiou'.includes(char)` fragt, ob `char` ein Vokal ist."
+        - "`text.toLowerCase()` macht alle Buchstaben klein; dann reicht der Vergleich mit den kleinen Vokalen."
+      solution: |
+        ```javascript
+        function countVowels(text) {
+          let count = 0;
+          for (const char of text.toLowerCase()) {
+            if ('aeiou'.includes(char)) {
+              count++;
+            }
+          }
+          return count;
+        }
+        ```
+  - id: initials
+    title: "Anfangsbuchstaben"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `initials(text)`, die den ersten Buchstaben jedes Wortes zurückgibt, als einen Text: `initials('Hackschule Workspace')` ergibt `'HW'`. Wörter stehen zwischen Leerzeichen, manchmal auch zwischen mehreren.
+    starter: |
+      def initials(text)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "initials('Hackschule Workspace')"
+          expect: "'HW'"
+        - call: "initials('ein kleiner Test')"
+          expect: "'ekT'"
+        - call: "initials('Ada')"
+          expect: "'A'"
+        - call: "initials('Grace  Hopper')"
+          expect: "'GH'"
+          say: "Zwei Leerzeichen hintereinander trennen auch nur zwei Wörter."
+        - call: "initials('')"
+          expect: "''"
+          say: "Ein leerer Text hat keine Wörter."
+    hint: "`text.split` zerlegt den Text an den Leerzeichen in eine Liste von Wörtern, auch an mehreren hintereinander. `word[0]` ist der erste Buchstabe."
+    solution: |
+      ```ruby
+      def initials(text)
+        result = ''
+        text.split.each do |word|
+          result += word[0]
+        end
+        result
+      end
+      ```
+    python:
+      starter: |
+        def initials(text):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "initials('Hackschule Workspace')"
+            expect: "'HW'"
+          - call: "initials('ein kleiner Test')"
+            expect: "'ekT'"
+          - call: "initials('Ada')"
+            expect: "'A'"
+          - call: "initials('Grace  Hopper')"
+            expect: "'GH'"
+            say: "Zwei Leerzeichen hintereinander trennen auch nur zwei Wörter."
+          - call: "initials('')"
+            expect: "''"
+            say: "Ein leerer Text hat keine Wörter."
+      hint: "`text.split()` zerlegt den Text an den Leerzeichen in eine Liste von Wörtern, auch an mehreren hintereinander. `word[0]` ist der erste Buchstabe."
+      solution: |
+        ```python
+        def initials(text):
+            result = ''
+            for word in text.split():
+                result += word[0]
+            return result
+        ```
+    javascript:
+      starter: |
+        function initials(text) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "initials('Hackschule Workspace')"
+            expect: "'HW'"
+          - call: "initials('ein kleiner Test')"
+            expect: "'ekT'"
+          - call: "initials('Ada')"
+            expect: "'A'"
+          - call: "initials('Grace  Hopper')"
+            expect: "'GH'"
+            say: "Zwei Leerzeichen hintereinander trennen auch nur zwei Wörter."
+          - call: "initials('')"
+            expect: "''"
+            say: "Ein leerer Text hat keine Wörter."
+      feedback:
+        - when: { same_as: "function initials(text) {\n  let result = '';\n  for (const word of text.split(' ')) {\n    result += word[0];\n  }\n  return result;\n}\n" }
+          say: "Zwischen zwei Leerzeichen liefert `split(' ')` ein leeres Wort, und sein erster Buchstabe ist `undefined`. Überspring die leeren Wörter."
+      hint:
+        - "`text.split(' ')` zerlegt den Text an jedem Leerzeichen in eine Liste. `word[0]` ist der erste Buchstabe."
+        - "Zwischen zwei Leerzeichen steht ein leeres Wort, `''`. Das hat keinen ersten Buchstaben."
+      solution: |
+        ```javascript
+        function initials(text) {
+          let result = '';
+          for (const word of text.split(' ')) {
+            if (word !== '') {
+              result += word[0];
+            }
+          }
+          return result;
+        }
+        ```
+  - id: shout
+    title: "Großbuchstaben"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `shout(text)`, die jeden Kleinbuchstaben von `a` bis `z` groß macht und alles andere lässt, wie es ist: `shout('Hallo, Welt!')` ergibt `'HALLO, WELT!'`. Ohne `upcase`: Jedes Zeichen hat eine Nummer, `'A'.ord` ist 65, `'a'.ord` ist 97.
+    starter: |
+      def shout(text)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [String#upcase, String#capitalize, String#swapcase, String#tr]
+      cases:
+        - call: "shout('hallo')"
+          expect: "'HALLO'"
+        - call: "shout('Hallo, Welt!')"
+          expect: "'HALLO, WELT!'"
+          say: "Ein Komma, ein Leerzeichen und ein Großbuchstabe bleiben, wie sie sind."
+        - call: "shout('123 abc')"
+          expect: "'123 ABC'"
+        - call: "shout('')"
+          expect: "''"
+        - call: "shout('xyz')"
+          expect: "'XYZ'"
+    feedback:
+      - when: { same_as: "def shout(text)\n  result = ''\n  text.each_char do |char|\n    result += (char.ord - 32).chr\n  end\n  result\nend\n" }
+        say: "Nur die Kleinbuchstaben `a` bis `z` werden groß. Was ist ein Komma minus 32?"
+    hint:
+      - "Ein großer Buchstabe hat eine um 32 kleinere Nummer als sein kleiner: `'a'.ord - 32` ist `'A'.ord`. `65.chr` macht aus der Nummer wieder ein Zeichen."
+      - "`char >= 'a' && char <= 'z'` fragt, ob `char` ein Kleinbuchstabe ist. Nur dann rechnest du."
+    solution: |
+      ```ruby
+      def shout(text)
+        result = ''
+        text.each_char do |char|
+          if char >= 'a' && char <= 'z'
+            result += (char.ord - 32).chr
+          else
+            result += char
+          end
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `shout(text)`, die jeden Kleinbuchstaben von `a` bis `z` groß macht und alles andere lässt, wie es ist: `shout('Hallo, Welt!')` ergibt `'HALLO, WELT!'`. Ohne `upper`: Jedes Zeichen hat eine Nummer, `ord('A')` ist 65, `ord('a')` ist 97.
+      starter: |
+        def shout(text):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [str.upper, str.capitalize, str.title, str.swapcase]
+        cases:
+          - call: "shout('hallo')"
+            expect: "'HALLO'"
+          - call: "shout('Hallo, Welt!')"
+            expect: "'HALLO, WELT!'"
+            say: "Ein Komma, ein Leerzeichen und ein Großbuchstabe bleiben, wie sie sind."
+          - call: "shout('123 abc')"
+            expect: "'123 ABC'"
+          - call: "shout('')"
+            expect: "''"
+          - call: "shout('xyz')"
+            expect: "'XYZ'"
+      feedback:
+        - when: { same_as: "def shout(text):\n    result = ''\n    for char in text:\n        result += chr(ord(char) - 32)\n    return result\n" }
+          say: "Nur die Kleinbuchstaben `a` bis `z` werden groß. Was ist ein Komma minus 32?"
+      hint:
+        - "Ein großer Buchstabe hat eine um 32 kleinere Nummer als sein kleiner: `ord('a') - 32` ist `ord('A')`. `chr(65)` macht aus der Nummer wieder ein Zeichen."
+        - "`'a' <= char <= 'z'` fragt, ob `char` ein Kleinbuchstabe ist. Nur dann rechnest du."
+      solution: |
+        ```python
+        def shout(text):
+            result = ''
+            for char in text:
+                if 'a' <= char <= 'z':
+                    result += chr(ord(char) - 32)
+                else:
+                    result += char
+            return result
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `shout(text)`, die jeden Kleinbuchstaben von `a` bis `z` groß macht und alles andere lässt, wie es ist: `shout('Hallo, Welt!')` ergibt `'HALLO, WELT!'`. Ohne `toUpperCase`: Jedes Zeichen hat eine Nummer, `'A'.charCodeAt(0)` ist 65, `'a'.charCodeAt(0)` ist 97.
+      starter: |
+        function shout(text) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [String.prototype.toUpperCase, String.prototype.toLocaleUpperCase]
+        cases:
+          - call: "shout('hallo')"
+            expect: "'HALLO'"
+          - call: "shout('Hallo, Welt!')"
+            expect: "'HALLO, WELT!'"
+            say: "Ein Komma, ein Leerzeichen und ein Großbuchstabe bleiben, wie sie sind."
+          - call: "shout('123 abc')"
+            expect: "'123 ABC'"
+          - call: "shout('')"
+            expect: "''"
+          - call: "shout('xyz')"
+            expect: "'XYZ'"
+      feedback:
+        - when: { same_as: "function shout(text) {\n  let result = '';\n  for (const char of text) {\n    result += String.fromCharCode(char.charCodeAt(0) - 32);\n  }\n  return result;\n}\n" }
+          say: "Nur die Kleinbuchstaben `a` bis `z` werden groß. Was ist ein Komma minus 32?"
+      hint:
+        - "Ein großer Buchstabe hat eine um 32 kleinere Nummer als sein kleiner: `'a'.charCodeAt(0) - 32` ist `'A'.charCodeAt(0)`. `String.fromCharCode(65)` macht aus der Nummer wieder ein Zeichen."
+        - "`char >= 'a' && char <= 'z'` fragt, ob `char` ein Kleinbuchstabe ist. Nur dann rechnest du."
+      solution: |
+        ```javascript
+        function shout(text) {
+          let result = '';
+          for (const char of text) {
+            if (char >= 'a' && char <= 'z') {
+              result += String.fromCharCode(char.charCodeAt(0) - 32);
+            } else {
+              result += char;
+            }
+          }
+          return result;
+        }
+        ```
+  - id: palindrome
+    title: "Palindrom"
+    level: 2
+    prompt: |
+      Ein Palindrom liest sich vorwärts wie rückwärts, wenn man nicht auf groß und klein achtet: »Anna«, »Otto«, »Reliefpfeiler«. Schreib eine Funktion `palindrome(text)`, die true oder false zurückgibt: `palindrome('Anna')` ergibt `true`.
+    starter: |
+      def palindrome(text)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "palindrome('Anna')"
+          expect: "true"
+          say: "Groß und klein zählen nicht: `'Anna'` ist ein Palindrom."
+        - call: "palindrome('Otto')"
+          expect: "true"
+        - call: "palindrome('Hallo')"
+          expect: "false"
+        - call: "palindrome('Reliefpfeiler')"
+          expect: "true"
+        - call: "palindrome('')"
+          expect: "true"
+          say: "Ein leerer Text liest sich rückwärts genauso."
+        - call: "palindrome('ab')"
+          expect: "false"
+    feedback:
+      - when: { same_as: "def palindrome(text)\n  text == text.reverse\nend\n" }
+        say: "`'Anna'` rückwärts ist `'annA'`, und das ist für den Vergleich ein anderer Text. Mach vorher alles klein."
+    hint:
+      - "Jetzt darfst du `reverse` benutzen. Vergleiche den Text mit sich selbst rückwärts."
+      - "`text.downcase` macht vorher alles klein."
+    solution: |
+      ```ruby
+      def palindrome(text)
+        lower = text.downcase
+        lower == lower.reverse
+      end
+      ```
+    python:
+      prompt: |
+        Ein Palindrom liest sich vorwärts wie rückwärts, wenn man nicht auf groß und klein achtet: »Anna«, »Otto«, »Reliefpfeiler«. Schreib eine Funktion `palindrome(text)`, die True oder False zurückgibt: `palindrome('Anna')` ergibt `True`.
+      starter: |
+        def palindrome(text):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "palindrome('Anna')"
+            expect: "True"
+            say: "Groß und klein zählen nicht: `'Anna'` ist ein Palindrom."
+          - call: "palindrome('Otto')"
+            expect: "True"
+          - call: "palindrome('Hallo')"
+            expect: "False"
+          - call: "palindrome('Reliefpfeiler')"
+            expect: "True"
+          - call: "palindrome('')"
+            expect: "True"
+            say: "Ein leerer Text liest sich rückwärts genauso."
+          - call: "palindrome('ab')"
+            expect: "False"
+      feedback:
+        - when: { same_as: "def palindrome(text):\n    return text == text[::-1]\n" }
+          say: "`'Anna'` rückwärts ist `'annA'`, und das ist für den Vergleich ein anderer Text. Mach vorher alles klein."
+      hint:
+        - "Jetzt darfst du `[::-1]` benutzen: `text[::-1]` ist der Text rückwärts. Vergleiche ihn mit dem Text."
+        - "`text.lower()` macht vorher alles klein."
+      solution: |
+        ```python
+        def palindrome(text):
+            lower = text.lower()
+            return lower == lower[::-1]
+        ```
+    javascript:
+      starter: |
+        function palindrome(text) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "palindrome('Anna')"
+            expect: "true"
+            say: "Groß und klein zählen nicht: `'Anna'` ist ein Palindrom."
+          - call: "palindrome('Otto')"
+            expect: "true"
+          - call: "palindrome('Hallo')"
+            expect: "false"
+          - call: "palindrome('Reliefpfeiler')"
+            expect: "true"
+          - call: "palindrome('')"
+            expect: "true"
+            say: "Ein leerer Text liest sich rückwärts genauso."
+          - call: "palindrome('ab')"
+            expect: "false"
+      feedback:
+        - when: { same_as: "function palindrome(text) {\n  return text === [...text].reverse().join('');\n}\n" }
+          say: "`'Anna'` rückwärts ist `'annA'`, und das ist für den Vergleich ein anderer Text. Mach vorher alles klein."
+      hint:
+        - "Jetzt darfst du `reverse` benutzen: `[...text].reverse().join('')` ist der Text rückwärts. Vergleiche ihn mit dem Text."
+        - "`text.toLowerCase()` macht vorher alles klein."
+      solution: |
+        ```javascript
+        function palindrome(text) {
+          const lower = text.toLowerCase();
+          return lower === [...lower].reverse().join('');
+        }
+        ```
+  - id: word-count
+    title: "Wörter zählen"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `word_count(text)`, die zählt, wie viele Wörter im Text stehen: `word_count('Ich lerne Ruby')` ergibt `3`. Zwischen den Wörtern können mehrere Leerzeichen stehen, auch am Anfang und am Ende.
+    starter: |
+      def word_count(text)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "word_count('Ich lerne Ruby')"
+          expect: "3"
+        - call: "word_count('eins')"
+          expect: "1"
+        - call: "word_count('')"
+          expect: "0"
+          say: "Ein leerer Text hat kein Wort."
+        - call: "word_count('  zwei   Wörter ')"
+          expect: "2"
+          say: "Mehrere Leerzeichen trennen nur zwei Wörter."
+        - call: "word_count('a b c d e')"
+          expect: "5"
+    feedback:
+      - when: { same_as: "def word_count(text)\n  text.count(' ') + 1\nend\n" }
+        say: "Leerzeichen zählen geht nur, solange genau eines zwischen zwei Wörtern steht: Ein leerer Text hat kein Wort, nicht eines."
+    hint: "Wie bei den Anfangsbuchstaben: `text.split` macht aus dem Text eine Liste von Wörtern. Wie lang ist sie?"
+    solution: |
+      ```ruby
+      def word_count(text)
+        text.split.length
+      end
+      ```
+    python:
+      starter: |
+        def word_count(text):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "word_count('Ich lerne Ruby')"
+            expect: "3"
+          - call: "word_count('eins')"
+            expect: "1"
+          - call: "word_count('')"
+            expect: "0"
+            say: "Ein leerer Text hat kein Wort."
+          - call: "word_count('  zwei   Wörter ')"
+            expect: "2"
+            say: "Mehrere Leerzeichen trennen nur zwei Wörter."
+          - call: "word_count('a b c d e')"
+            expect: "5"
+      feedback:
+        - when: { same_as: "def word_count(text):\n    return text.count(' ') + 1\n" }
+          say: "Leerzeichen zählen geht nur, solange genau eines zwischen zwei Wörtern steht: Ein leerer Text hat kein Wort, nicht eines."
+      hint: "Wie bei den Anfangsbuchstaben: `text.split()` macht aus dem Text eine Liste von Wörtern. Wie lang ist sie?"
+      solution: |
+        ```python
+        def word_count(text):
+            return len(text.split())
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `wordCount(text)`, die zählt, wie viele Wörter im Text stehen: `wordCount('Ich lerne Ruby')` ergibt `3`. Zwischen den Wörtern können mehrere Leerzeichen stehen, auch am Anfang und am Ende.
+      starter: |
+        function wordCount(text) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "wordCount('Ich lerne Ruby')"
+            expect: "3"
+          - call: "wordCount('eins')"
+            expect: "1"
+          - call: "wordCount('')"
+            expect: "0"
+            say: "Ein leerer Text hat kein Wort."
+          - call: "wordCount('  zwei   Wörter ')"
+            expect: "2"
+            say: "Mehrere Leerzeichen trennen nur zwei Wörter."
+          - call: "wordCount('a b c d e')"
+            expect: "5"
+      feedback:
+        - when: { same_as: "function wordCount(text) {\n  return text.split(' ').length;\n}\n" }
+          say: "`split(' ')` liefert zwischen zwei Leerzeichen ein leeres Wort, und für einen leeren Text eine Liste mit einem leeren Wort. Zähl nur die Wörter, die nicht leer sind."
+      hint: "Wie bei den Anfangsbuchstaben: `text.split(' ')` zerlegt den Text an jedem Leerzeichen. Zähl die Stücke, die nicht leer sind."
+      solution: |
+        ```javascript
+        function wordCount(text) {
+          let count = 0;
+          for (const word of text.split(' ')) {
+            if (word !== '') {
+              count++;
+            }
+          }
+          return count;
+        }
+        ```
+  - id: longest-word
+    title: "Das längste Wort"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `longest_word(text)`, die das längste Wort im Text zurückgibt: `longest_word('Ich lerne Programmieren')` ergibt `'Programmieren'`. Sind mehrere gleich lang, gewinnt das erste. Ein leerer Text hat kein Wort: Dann kommt `''` zurück.
+    starter: |
+      def longest_word(text)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "longest_word('Ich lerne Programmieren')"
+          expect: "'Programmieren'"
+        - call: "longest_word('ab cd')"
+          expect: "'ab'"
+          say: "Bei gleich langen Wörtern gewinnt das erste."
+        - call: "longest_word('eins')"
+          expect: "'eins'"
+        - call: "longest_word('')"
+          expect: "''"
+        - call: "longest_word('Der Workspace prüft Katas')"
+          expect: "'Workspace'"
+    feedback:
+      - when: { same_as: "def longest_word(text)\n  best = ''\n  text.split.each do |word|\n    best = word if word.length >= best.length\n  end\n  best\nend\n" }
+        say: "Bei `'ab cd'` gewinnt `'cd'`, weil `>=` auch ein gleich langes Wort nimmt. Nur ein längeres soll das bisher beste ersetzen."
+    hint:
+      - "Merk dir das bisher längste Wort in einer Variablen und vergleich jedes Wort mit ihm, wie beim Maximum zweier Zahlen."
+      - "`word.length` ist die Länge eines Wortes."
+    solution: |
+      ```ruby
+      def longest_word(text)
+        best = ''
+        text.split.each do |word|
+          best = word if word.length > best.length
+        end
+        best
+      end
+      ```
+    python:
+      starter: |
+        def longest_word(text):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "longest_word('Ich lerne Programmieren')"
+            expect: "'Programmieren'"
+          - call: "longest_word('ab cd')"
+            expect: "'ab'"
+            say: "Bei gleich langen Wörtern gewinnt das erste."
+          - call: "longest_word('eins')"
+            expect: "'eins'"
+          - call: "longest_word('')"
+            expect: "''"
+          - call: "longest_word('Der Workspace prüft Katas')"
+            expect: "'Workspace'"
+      feedback:
+        - when: { same_as: "def longest_word(text):\n    best = ''\n    for word in text.split():\n        if len(word) >= len(best):\n            best = word\n    return best\n" }
+          say: "Bei `'ab cd'` gewinnt `'cd'`, weil `>=` auch ein gleich langes Wort nimmt. Nur ein längeres soll das bisher beste ersetzen."
+      hint:
+        - "Merk dir das bisher längste Wort in einer Variablen und vergleich jedes Wort mit ihm, wie beim Maximum zweier Zahlen."
+        - "`len(word)` ist die Länge eines Wortes."
+      solution: |
+        ```python
+        def longest_word(text):
+            best = ''
+            for word in text.split():
+                if len(word) > len(best):
+                    best = word
+            return best
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `longestWord(text)`, die das längste Wort im Text zurückgibt: `longestWord('Ich lerne Programmieren')` ergibt `'Programmieren'`. Sind mehrere gleich lang, gewinnt das erste. Ein leerer Text hat kein Wort: Dann kommt `''` zurück.
+      starter: |
+        function longestWord(text) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "longestWord('Ich lerne Programmieren')"
+            expect: "'Programmieren'"
+          - call: "longestWord('ab cd')"
+            expect: "'ab'"
+            say: "Bei gleich langen Wörtern gewinnt das erste."
+          - call: "longestWord('eins')"
+            expect: "'eins'"
+          - call: "longestWord('')"
+            expect: "''"
+          - call: "longestWord('Der Workspace prüft Katas')"
+            expect: "'Workspace'"
+      feedback:
+        - when: { same_as: "function longestWord(text) {\n  let best = '';\n  for (const word of text.split(' ')) {\n    if (word.length >= best.length) {\n      best = word;\n    }\n  }\n  return best;\n}\n" }
+          say: "Bei `'ab cd'` gewinnt `'cd'`, weil `>=` auch ein gleich langes Wort nimmt. Nur ein längeres soll das bisher beste ersetzen."
+      hint:
+        - "Merk dir das bisher längste Wort in einer Variablen und vergleich jedes Wort mit ihm, wie beim Maximum zweier Zahlen."
+        - "`word.length` ist die Länge eines Wortes."
+      solution: |
+        ```javascript
+        function longestWord(text) {
+          let best = '';
+          for (const word of text.split(' ')) {
+            if (word.length > best.length) {
+              best = word;
+            }
+          }
+          return best;
+        }
+        ```
+  - id: slug
+    title: "Ein Text für die Adresse"
+    level: 2
+    prompt: |
+      Eine Adresse im Netz hat keine Leerzeichen und keine Satzzeichen: Aus dem Titel »Hello World!« wird `hello-world`. Schreib eine Funktion `slug(text)`, die alles klein macht, nur Buchstaben von `a` bis `z` und Ziffern behält und die Wörter mit `-` verbindet: `slug('Hello World!')` ergibt `'hello-world'`. Umlaute kommen nicht vor.
+    starter: |
+      def slug(text)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "slug('Hello World!')"
+          expect: "'hello-world'"
+          say: "Satzzeichen wie `!` fallen weg."
+        - call: "slug('Katas: Texte')"
+          expect: "'katas-texte'"
+        - call: "slug('  Viel   Platz ')"
+          expect: "'viel-platz'"
+          say: "Mehrere Leerzeichen werden ein `-`, und am Anfang und am Ende steht keins."
+        - call: "slug('Hackschule 2026')"
+          expect: "'hackschule-2026'"
+          say: "Ziffern bleiben."
+        - call: "slug('ein-Wort')"
+          expect: "'ein-wort'"
+          say: "Ein `-` im Titel trennt Wörter wie ein Leerzeichen."
+    feedback:
+      - when: { same_as: "def slug(text)\n  text.downcase.split.join('-')\nend\n" }
+        say: "Satzzeichen wie `!` und `:` gehören nicht in die Adresse. Mach aus jedem Zeichen, das kein Buchstabe und keine Ziffer ist, ein Leerzeichen, bevor du die Wörter verbindest."
+    hint:
+      - "In zwei Schritten: Mach zuerst aus jedem Zeichen, das kein kleiner Buchstabe und keine Ziffer ist, ein Leerzeichen. Dann sind nur noch Wörter und Leerzeichen übrig."
+      - "`clean.split` macht daraus eine Liste von Wörtern, `join('-')` verbindet sie mit `-`."
+    solution: |
+      ```ruby
+      def slug(text)
+        clean = ''
+        text.downcase.each_char do |char|
+          if (char >= 'a' && char <= 'z') || (char >= '0' && char <= '9')
+            clean += char
+          else
+            clean += ' '
+          end
+        end
+        clean.split.join('-')
+      end
+      ```
+    python:
+      starter: |
+        def slug(text):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "slug('Hello World!')"
+            expect: "'hello-world'"
+            say: "Satzzeichen wie `!` fallen weg."
+          - call: "slug('Katas: Texte')"
+            expect: "'katas-texte'"
+          - call: "slug('  Viel   Platz ')"
+            expect: "'viel-platz'"
+            say: "Mehrere Leerzeichen werden ein `-`, und am Anfang und am Ende steht keins."
+          - call: "slug('Hackschule 2026')"
+            expect: "'hackschule-2026'"
+            say: "Ziffern bleiben."
+          - call: "slug('ein-Wort')"
+            expect: "'ein-wort'"
+            say: "Ein `-` im Titel trennt Wörter wie ein Leerzeichen."
+      feedback:
+        - when: { same_as: "def slug(text):\n    return '-'.join(text.lower().split())\n" }
+          say: "Satzzeichen wie `!` und `:` gehören nicht in die Adresse. Mach aus jedem Zeichen, das kein Buchstabe und keine Ziffer ist, ein Leerzeichen, bevor du die Wörter verbindest."
+      hint:
+        - "In zwei Schritten: Mach zuerst aus jedem Zeichen, das kein kleiner Buchstabe und keine Ziffer ist, ein Leerzeichen. Dann sind nur noch Wörter und Leerzeichen übrig."
+        - "`clean.split()` macht daraus eine Liste von Wörtern, `'-'.join(words)` verbindet sie mit `-`."
+      solution: |
+        ```python
+        def slug(text):
+            clean = ''
+            for char in text.lower():
+                if 'a' <= char <= 'z' or '0' <= char <= '9':
+                    clean += char
+                else:
+                    clean += ' '
+            return '-'.join(clean.split())
+        ```
+    javascript:
+      starter: |
+        function slug(text) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "slug('Hello World!')"
+            expect: "'hello-world'"
+            say: "Satzzeichen wie `!` fallen weg."
+          - call: "slug('Katas: Texte')"
+            expect: "'katas-texte'"
+          - call: "slug('  Viel   Platz ')"
+            expect: "'viel-platz'"
+            say: "Mehrere Leerzeichen werden ein `-`, und am Anfang und am Ende steht keins."
+          - call: "slug('Hackschule 2026')"
+            expect: "'hackschule-2026'"
+            say: "Ziffern bleiben."
+          - call: "slug('ein-Wort')"
+            expect: "'ein-wort'"
+            say: "Ein `-` im Titel trennt Wörter wie ein Leerzeichen."
+      feedback:
+        - when: { same_as: "function slug(text) {\n  return text.toLowerCase().split(' ').filter((word) => word !== '').join('-');\n}\n" }
+          say: "Satzzeichen wie `!` und `:` gehören nicht in die Adresse. Mach aus jedem Zeichen, das kein Buchstabe und keine Ziffer ist, ein Leerzeichen, bevor du die Wörter verbindest."
+      hint:
+        - "In zwei Schritten: Mach zuerst aus jedem Zeichen, das kein kleiner Buchstabe und keine Ziffer ist, ein Leerzeichen. Dann sind nur noch Wörter und Leerzeichen übrig."
+        - "`clean.split(' ')` zerlegt an den Leerzeichen, `filter((word) => word !== '')` lässt die leeren Stücke weg, `join('-')` verbindet mit `-`."
+      solution: |
+        ```javascript
+        function slug(text) {
+          let clean = '';
+          for (const char of text.toLowerCase()) {
+            if ((char >= 'a' && char <= 'z') || (char >= '0' && char <= '9')) {
+              clean += char;
+            } else {
+              clean += ' ';
+            }
+          }
+          return clean.split(' ').filter((word) => word !== '').join('-');
+        }
+        ```
+  - id: caesar
+    title: "Die Caesar-Verschlüsselung"
+    level: 3
+    prompt: |
+      Caesar soll seine Briefe so verschlüsselt haben: Jeder Buchstabe rückt im Alphabet um dieselbe Zahl weiter, nach `z` geht es bei `a` weiter. Schreib eine Funktion `caesar(text, shift)`: Klein- und Großbuchstaben rücken um `shift` weiter, alles andere bleibt. `caesar('Hallo', 3)` ergibt `'Kdoor'`, `caesar('xyz', 3)` ergibt `'abc'`; mit einem negativen `shift` geht es zurück.
+    starter: |
+      def caesar(text, shift)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "caesar('Hallo', 3)"
+          expect: "'Kdoor'"
+        - call: "caesar('xyz', 3)"
+          expect: "'abc'"
+          say: "Nach `z` geht es wieder bei `a` weiter."
+        - call: "caesar('Hallo, Welt!', 13)"
+          expect: "'Unyyb, Jryg!'"
+        - call: "caesar('abc', 26)"
+          expect: "'abc'"
+        - call: "caesar('Kdoor', -3)"
+          expect: "'Hallo'"
+        - call: "caesar('abc', -1)"
+          expect: "'zab'"
+          say: "Auch rückwärts geht es über das Ende: vor `a` kommt `z`."
+      random:
+        count: 4
+        call: "caesar('Programmieren macht Spass', n)"
+        args: { n: 0..25 }
+        reference: "'Programmieren macht Spass'.gsub(/[a-z]/) { |c| ((c.ord - 97 + n) % 26 + 97).chr }.gsub(/[A-Z]/) { |c| ((c.ord - 65 + n) % 26 + 65).chr }"
+    feedback:
+      - when: { same_as: "def caesar(text, shift)\n  result = ''\n  text.each_char do |char|\n    if (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z')\n      result += (char.ord + shift).chr\n    else\n      result += char\n    end\n  end\n  result\nend\n" }
+        say: "Nach `z` kommt bei dir `{` und nicht `a`. Zähl die Buchstaben von 0 bis 25 (`char.ord - 97`), rück weiter und nimm den Rest der Division durch 26."
+    hint:
+      - "Zähl die Buchstaben von 0 bis 25: `char.ord - 97` ist 0 für `'a'`. Dann rückst du weiter, und `% 26` bringt dich nach 25 wieder auf 0."
+      - "Für Großbuchstaben dasselbe mit 65 statt 97. Ein Zeichen, das kein Buchstabe ist, hängst du so an, wie es ist."
+    solution: |
+      ```ruby
+      def caesar(text, shift)
+        result = ''
+        text.each_char do |char|
+          if char >= 'a' && char <= 'z'
+            result += ((char.ord - 97 + shift) % 26 + 97).chr
+          elsif char >= 'A' && char <= 'Z'
+            result += ((char.ord - 65 + shift) % 26 + 65).chr
+          else
+            result += char
+          end
+        end
+        result
+      end
+      ```
+    python:
+      starter: |
+        def caesar(text, shift):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "caesar('Hallo', 3)"
+            expect: "'Kdoor'"
+          - call: "caesar('xyz', 3)"
+            expect: "'abc'"
+            say: "Nach `z` geht es wieder bei `a` weiter."
+          - call: "caesar('Hallo, Welt!', 13)"
+            expect: "'Unyyb, Jryg!'"
+          - call: "caesar('abc', 26)"
+            expect: "'abc'"
+          - call: "caesar('Kdoor', -3)"
+            expect: "'Hallo'"
+          - call: "caesar('abc', -1)"
+            expect: "'zab'"
+            say: "Auch rückwärts geht es über das Ende: vor `a` kommt `z`."
+        random:
+          count: 4
+          call: "caesar('Programmieren macht Spass', n)"
+          args: { n: 0..25 }
+          reference: "''.join(chr((ord(c) - 97 + n) % 26 + 97) if 'a' <= c <= 'z' else chr((ord(c) - 65 + n) % 26 + 65) if 'A' <= c <= 'Z' else c for c in 'Programmieren macht Spass')"
+      feedback:
+        - when: { same_as: "def caesar(text, shift):\n    result = ''\n    for char in text:\n        if 'a' <= char <= 'z' or 'A' <= char <= 'Z':\n            result += chr(ord(char) + shift)\n        else:\n            result += char\n    return result\n" }
+          say: "Nach `z` kommt bei dir `{` und nicht `a`. Zähl die Buchstaben von 0 bis 25 (`ord(char) - 97`), rück weiter und nimm den Rest der Division durch 26."
+      hint:
+        - "Zähl die Buchstaben von 0 bis 25: `ord(char) - 97` ist 0 für `'a'`. Dann rückst du weiter, und `% 26` bringt dich nach 25 wieder auf 0."
+        - "Für Großbuchstaben dasselbe mit 65 statt 97. Ein Zeichen, das kein Buchstabe ist, hängst du so an, wie es ist."
+      solution: |
+        ```python
+        def caesar(text, shift):
+            result = ''
+            for char in text:
+                if 'a' <= char <= 'z':
+                    result += chr((ord(char) - 97 + shift) % 26 + 97)
+                elif 'A' <= char <= 'Z':
+                    result += chr((ord(char) - 65 + shift) % 26 + 65)
+                else:
+                    result += char
+            return result
+        ```
+    javascript:
+      starter: |
+        function caesar(text, shift) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "caesar('Hallo', 3)"
+            expect: "'Kdoor'"
+          - call: "caesar('xyz', 3)"
+            expect: "'abc'"
+            say: "Nach `z` geht es wieder bei `a` weiter."
+          - call: "caesar('Hallo, Welt!', 13)"
+            expect: "'Unyyb, Jryg!'"
+          - call: "caesar('abc', 26)"
+            expect: "'abc'"
+          - call: "caesar('Kdoor', -3)"
+            expect: "'Hallo'"
+          - call: "caesar('abc', -1)"
+            expect: "'zab'"
+            say: "Auch rückwärts geht es über das Ende: vor `a` kommt `z`."
+        random:
+          count: 4
+          call: "caesar('Programmieren macht Spass', n)"
+          args: { n: 0..25 }
+          reference: "'Programmieren macht Spass'.replace(/[a-z]/g, (c) => String.fromCharCode((c.charCodeAt(0) - 97 + n) % 26 + 97)).replace(/[A-Z]/g, (c) => String.fromCharCode((c.charCodeAt(0) - 65 + n) % 26 + 65))"
+      feedback:
+        - when: { same_as: "function caesar(text, shift) {\n  let result = '';\n  for (const char of text) {\n    if (char >= 'a' && char <= 'z') {\n      result += String.fromCharCode((char.charCodeAt(0) - 97 + shift) % 26 + 97);\n    } else if (char >= 'A' && char <= 'Z') {\n      result += String.fromCharCode((char.charCodeAt(0) - 65 + shift) % 26 + 65);\n    } else {\n      result += char;\n    }\n  }\n  return result;\n}\n" }
+          say: "Vorwärts stimmt es, rückwärts nicht: In JavaScript ist `-1 % 26` gleich `-1`, nicht `25`. Zähl 26 dazu, bevor du den Rest nimmst."
+      hint:
+        - "Zähl die Buchstaben von 0 bis 25: `char.charCodeAt(0) - 97` ist 0 für `'a'`. Dann rückst du weiter, und `% 26` bringt dich nach 25 wieder auf 0."
+        - "In JavaScript bleibt der Rest einer negativen Zahl negativ: `-1 % 26` ist `-1`. `(x % 26 + 26) % 26` ist immer zwischen 0 und 25."
+      solution: |
+        ```javascript
+        function caesar(text, shift) {
+          let result = '';
+          for (const char of text) {
+            if (char >= 'a' && char <= 'z') {
+              result += String.fromCharCode(((char.charCodeAt(0) - 97 + shift) % 26 + 26) % 26 + 97);
+            } else if (char >= 'A' && char <= 'Z') {
+              result += String.fromCharCode(((char.charCodeAt(0) - 65 + shift) % 26 + 26) % 26 + 65);
+            } else {
+              result += char;
+            }
+          }
+          return result;
+        }
+        ```
+  - id: anagram
+    title: "Anagramme"
+    level: 3
+    prompt: |
+      Zwei Wörter sind Anagramme, wenn sie aus genau denselben Buchstaben bestehen, jeder gleich oft: »Lampe« und »Palme«. Schreib eine Funktion `anagram(a, b)`, die true oder false zurückgibt; groß und klein und Leerzeichen zählen nicht. `anagram('Lampe', 'Palme')` ergibt `true`.
+    starter: |
+      def anagram(a, b)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "anagram('Lampe', 'Palme')"
+          expect: "true"
+        - call: "anagram('Ampel', 'Lampe')"
+          expect: "true"
+        - call: "anagram('abc', 'abd')"
+          expect: "false"
+        - call: "anagram('aab', 'abb')"
+          expect: "false"
+          say: "Jeder Buchstabe muss gleich oft vorkommen: `'aab'` und `'abb'` haben dieselben Buchstaben, aber nicht gleich oft."
+        - call: "anagram('Dormitory', 'dirty room')"
+          expect: "true"
+          say: "Groß und klein und Leerzeichen zählen nicht."
+        - call: "anagram('Hallo', 'Hall')"
+          expect: "false"
+    feedback:
+      - when: { same_as: "def anagram(a, b)\n  letters = ->(text) { text.downcase.delete(' ').chars.uniq.sort }\n  letters.call(a) == letters.call(b)\nend\n" }
+        say: "`'aab'` und `'abb'` haben dieselben Buchstaben, aber nicht gleich oft. `uniq` vergisst, wie oft ein Buchstabe vorkommt."
+    hint:
+      - "Wenn man die Buchstaben beider Wörter sortiert, was kommt bei Anagrammen heraus?"
+      - "`text.chars.sort` ist die sortierte Liste der Buchstaben, `downcase` und `delete(' ')` machen vorher klein und nehmen die Leerzeichen weg."
+    solution: |
+      ```ruby
+      def anagram(a, b)
+        letters = ->(text) { text.downcase.delete(' ').chars.sort }
+        letters.call(a) == letters.call(b)
+      end
+      ```
+    python:
+      prompt: |
+        Zwei Wörter sind Anagramme, wenn sie aus genau denselben Buchstaben bestehen, jeder gleich oft: »Lampe« und »Palme«. Schreib eine Funktion `anagram(a, b)`, die True oder False zurückgibt; groß und klein und Leerzeichen zählen nicht. `anagram('Lampe', 'Palme')` ergibt `True`.
+      starter: |
+        def anagram(a, b):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "anagram('Lampe', 'Palme')"
+            expect: "True"
+          - call: "anagram('Ampel', 'Lampe')"
+            expect: "True"
+          - call: "anagram('abc', 'abd')"
+            expect: "False"
+          - call: "anagram('aab', 'abb')"
+            expect: "False"
+            say: "Jeder Buchstabe muss gleich oft vorkommen: `'aab'` und `'abb'` haben dieselben Buchstaben, aber nicht gleich oft."
+          - call: "anagram('Dormitory', 'dirty room')"
+            expect: "True"
+            say: "Groß und klein und Leerzeichen zählen nicht."
+          - call: "anagram('Hallo', 'Hall')"
+            expect: "False"
+      feedback:
+        - when: { same_as: "def anagram(a, b):\n    def letters(text):\n        return set(text.lower().replace(' ', ''))\n    return letters(a) == letters(b)\n" }
+          say: "`'aab'` und `'abb'` haben dieselben Buchstaben, aber nicht gleich oft. Eine Menge (`set`) vergisst, wie oft ein Buchstabe vorkommt."
+      hint:
+        - "Wenn man die Buchstaben beider Wörter sortiert, was kommt bei Anagrammen heraus?"
+        - "`sorted(text)` ist die sortierte Liste der Buchstaben, `lower()` und `replace(' ', '')` machen vorher klein und nehmen die Leerzeichen weg."
+      solution: |
+        ```python
+        def anagram(a, b):
+            def letters(text):
+                return sorted(text.lower().replace(' ', ''))
+            return letters(a) == letters(b)
+        ```
+    javascript:
+      starter: |
+        function anagram(a, b) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "anagram('Lampe', 'Palme')"
+            expect: "true"
+          - call: "anagram('Ampel', 'Lampe')"
+            expect: "true"
+          - call: "anagram('abc', 'abd')"
+            expect: "false"
+          - call: "anagram('aab', 'abb')"
+            expect: "false"
+            say: "Jeder Buchstabe muss gleich oft vorkommen: `'aab'` und `'abb'` haben dieselben Buchstaben, aber nicht gleich oft."
+          - call: "anagram('Dormitory', 'dirty room')"
+            expect: "true"
+            say: "Groß und klein und Leerzeichen zählen nicht."
+          - call: "anagram('Hallo', 'Hall')"
+            expect: "false"
+      feedback:
+        - when: { same_as: "function anagram(a, b) {\n  const letters = (text) => [...new Set(text.toLowerCase().replaceAll(' ', ''))].sort().join('');\n  return letters(a) === letters(b);\n}\n" }
+          say: "`'aab'` und `'abb'` haben dieselben Buchstaben, aber nicht gleich oft. Ein `Set` vergisst, wie oft ein Buchstabe vorkommt."
+      hint:
+        - "Wenn man die Buchstaben beider Wörter sortiert, was kommt bei Anagrammen heraus?"
+        - "`[...text].sort().join('')` sortiert die Buchstaben, `toLowerCase()` und `replaceAll(' ', '')` machen vorher klein und nehmen die Leerzeichen weg."
+      solution: |
+        ```javascript
+        function anagram(a, b) {
+          const letters = (text) => [...text.toLowerCase().replaceAll(' ', '')].sort().join('');
+          return letters(a) === letters(b);
+        }
+        ```
+  - id: format-name
+    title: "Namen schreiben"
+    level: 3
+    prompt: |
+      Schreib eine Funktion `format_name(text)`, die jedes Wort mit einem großen Buchstaben anfangen lässt und den Rest klein schreibt; zwischen den Wörtern steht danach genau ein Leerzeichen. `format_name('max mustermann')` ergibt `'Max Mustermann'`, `format_name('ADA LOVELACE')` ergibt `'Ada Lovelace'`. Ohne `capitalize`.
+    starter: |
+      def format_name(text)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [String#capitalize]
+      cases:
+        - call: "format_name('max mustermann')"
+          expect: "'Max Mustermann'"
+        - call: "format_name('ADA LOVELACE')"
+          expect: "'Ada Lovelace'"
+          say: "Der Rest jedes Wortes wird klein: aus `'ADA'` wird `'Ada'`."
+        - call: "format_name('grace')"
+          expect: "'Grace'"
+        - call: "format_name('  alan   turing ')"
+          expect: "'Alan Turing'"
+          say: "Zwischen den Wörtern steht danach genau ein Leerzeichen, am Anfang und am Ende keins."
+        - call: "format_name('')"
+          expect: "''"
+    feedback:
+      - when: { same_as: "def format_name(text)\n  words = text.split.map do |word|\n    word[0].upcase + word[1..]\n  end\n  words.join(' ')\nend\n" }
+        say: "Der Rest jedes Wortes wird klein: aus `'ADA'` wird `'Ada'`."
+    hint:
+      - "Ein Wort besteht aus seinem ersten Buchstaben, `word[0]`, und dem Rest, `word[1..]`. Der eine wird groß (`upcase`), der andere klein (`downcase`)."
+      - "`text.split` und `join(' ')` sorgen für genau ein Leerzeichen zwischen den Wörtern."
+    solution: |
+      ```ruby
+      def format_name(text)
+        words = text.split.map do |word|
+          word[0].upcase + word[1..].downcase
+        end
+        words.join(' ')
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `format_name(text)`, die jedes Wort mit einem großen Buchstaben anfangen lässt und den Rest klein schreibt; zwischen den Wörtern steht danach genau ein Leerzeichen. `format_name('max mustermann')` ergibt `'Max Mustermann'`, `format_name('ADA LOVELACE')` ergibt `'Ada Lovelace'`. Ohne `capitalize` und `title`.
+      starter: |
+        def format_name(text):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [str.capitalize, str.title]
+        cases:
+          - call: "format_name('max mustermann')"
+            expect: "'Max Mustermann'"
+          - call: "format_name('ADA LOVELACE')"
+            expect: "'Ada Lovelace'"
+            say: "Der Rest jedes Wortes wird klein: aus `'ADA'` wird `'Ada'`."
+          - call: "format_name('grace')"
+            expect: "'Grace'"
+          - call: "format_name('  alan   turing ')"
+            expect: "'Alan Turing'"
+            say: "Zwischen den Wörtern steht danach genau ein Leerzeichen, am Anfang und am Ende keins."
+          - call: "format_name('')"
+            expect: "''"
+      feedback:
+        - when: { same_as: "def format_name(text):\n    words = []\n    for word in text.split():\n        words.append(word[0].upper() + word[1:])\n    return ' '.join(words)\n" }
+          say: "Der Rest jedes Wortes wird klein: aus `'ADA'` wird `'Ada'`."
+      hint:
+        - "Ein Wort besteht aus seinem ersten Buchstaben, `word[0]`, und dem Rest, `word[1:]`. Der eine wird groß (`upper()`), der andere klein (`lower()`)."
+        - "`text.split()` und `' '.join(words)` sorgen für genau ein Leerzeichen zwischen den Wörtern."
+      solution: |
+        ```python
+        def format_name(text):
+            words = []
+            for word in text.split():
+                words.append(word[0].upper() + word[1:].lower())
+            return ' '.join(words)
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `formatName(text)`, die jedes Wort mit einem großen Buchstaben anfangen lässt und den Rest klein schreibt; zwischen den Wörtern steht danach genau ein Leerzeichen. `formatName('max mustermann')` ergibt `'Max Mustermann'`, `formatName('ADA LOVELACE')` ergibt `'Ada Lovelace'`. Ohne eine fertige Funktion, die es für ein ganzes Wort tut.
+      starter: |
+        function formatName(text) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "formatName('max mustermann')"
+            expect: "'Max Mustermann'"
+          - call: "formatName('ADA LOVELACE')"
+            expect: "'Ada Lovelace'"
+            say: "Der Rest jedes Wortes wird klein: aus `'ADA'` wird `'Ada'`."
+          - call: "formatName('grace')"
+            expect: "'Grace'"
+          - call: "formatName('  alan   turing ')"
+            expect: "'Alan Turing'"
+            say: "Zwischen den Wörtern steht danach genau ein Leerzeichen, am Anfang und am Ende keins."
+          - call: "formatName('')"
+            expect: "''"
+      feedback:
+        - when: { same_as: "function formatName(text) {\n  const words = [];\n  for (const word of text.split(' ')) {\n    if (word !== '') {\n      words.push(word[0].toUpperCase() + word.slice(1));\n    }\n  }\n  return words.join(' ');\n}\n" }
+          say: "Der Rest jedes Wortes wird klein: aus `'ADA'` wird `'Ada'`."
+      hint:
+        - "Ein Wort besteht aus seinem ersten Buchstaben, `word[0]`, und dem Rest, `word.slice(1)`. Der eine wird groß (`toUpperCase()`), der andere klein (`toLowerCase()`)."
+        - "Sammle die Wörter in einer Liste und verbinde sie mit `join(' ')`; leere Stücke aus `split(' ')` lässt du weg."
+      solution: |
+        ```javascript
+        function formatName(text) {
+          const words = [];
+          for (const word of text.split(' ')) {
+            if (word !== '') {
+              words.push(word[0].toUpperCase() + word.slice(1).toLowerCase());
+            }
+          }
+          return words.join(' ');
+        }
+        ```
+  - id: vigenere
+    title: "Die Vigenère-Verschlüsselung"
+    extra: true
+    prompt: |
+      Bei Caesar rückt jeder Buchstabe gleich weit. Vigenère nimmt ein Schlüsselwort aus Kleinbuchstaben: Der erste Buchstabe des Textes rückt so weit wie der erste des Schlüssels (`a` um 0, `b` um 1 …), der zweite wie der zweite, und ist der Schlüssel zu Ende, fängt er von vorn an. Was kein Buchstabe ist, bleibt und verbraucht keinen Buchstaben des Schlüssels. Schreib `vigenere(text, key)`: `vigenere('hallo welt', 'abc')` ergibt `'hbnlp yemv'`. Deine Caesar-Funktion darfst du mitbenutzen, wenn du sie hier hineinschreibst.
+    starter: |
+      def vigenere(text, key)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "vigenere('hallo welt', 'abc')"
+          expect: "'hbnlp yemv'"
+          say: "Das Leerzeichen bleibt und verbraucht keinen Buchstaben des Schlüssels."
+        - call: "vigenere('Angriff im Morgengrauen', 'key')"
+          expect: "'Krebmdp mk Wspqilqvyeil'"
+          say: "Großbuchstaben rücken auch und bleiben groß."
+        - call: "vigenere('abc', 'a')"
+          expect: "'abc'"
+        - call: "vigenere('zzz', 'b')"
+          expect: "'aaa'"
+        - call: "vigenere('Hallo!', 'zz')"
+          expect: "'Gzkkn!'"
+    hint:
+      - "Zähl in einer eigenen Variablen mit, wie viele Buchstaben des Textes schon verschlüsselt sind: `key[i % key.length]` ist der Buchstabe des Schlüssels, der dran ist."
+      - "Wie weit er rückt: `key[i % key.length].ord - 97`. Damit rufst du deine Caesar-Funktion für den einen Buchstaben auf."
+    solution: |
+      ```ruby
+      def caesar(text, shift)
+        result = ''
+        text.each_char do |char|
+          if char >= 'a' && char <= 'z'
+            result += ((char.ord - 97 + shift) % 26 + 97).chr
+          elsif char >= 'A' && char <= 'Z'
+            result += ((char.ord - 65 + shift) % 26 + 65).chr
+          else
+            result += char
+          end
+        end
+        result
+      end
+
+      def vigenere(text, key)
+        result = ''
+        i = 0
+        text.each_char do |char|
+          if (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z')
+            result += caesar(char, key[i % key.length].ord - 97)
+            i += 1
+          else
+            result += char
+          end
+        end
+        result
+      end
+      ```
+    python:
+      starter: |
+        def vigenere(text, key):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "vigenere('hallo welt', 'abc')"
+            expect: "'hbnlp yemv'"
+            say: "Das Leerzeichen bleibt und verbraucht keinen Buchstaben des Schlüssels."
+          - call: "vigenere('Angriff im Morgengrauen', 'key')"
+            expect: "'Krebmdp mk Wspqilqvyeil'"
+            say: "Großbuchstaben rücken auch und bleiben groß."
+          - call: "vigenere('abc', 'a')"
+            expect: "'abc'"
+          - call: "vigenere('zzz', 'b')"
+            expect: "'aaa'"
+          - call: "vigenere('Hallo!', 'zz')"
+            expect: "'Gzkkn!'"
+      hint:
+        - "Zähl in einer eigenen Variablen mit, wie viele Buchstaben des Textes schon verschlüsselt sind: `key[i % len(key)]` ist der Buchstabe des Schlüssels, der dran ist."
+        - "Wie weit er rückt: `ord(key[i % len(key)]) - 97`. Damit rufst du deine Caesar-Funktion für den einen Buchstaben auf."
+      solution: |
+        ```python
+        def caesar(text, shift):
+            result = ''
+            for char in text:
+                if 'a' <= char <= 'z':
+                    result += chr((ord(char) - 97 + shift) % 26 + 97)
+                elif 'A' <= char <= 'Z':
+                    result += chr((ord(char) - 65 + shift) % 26 + 65)
+                else:
+                    result += char
+            return result
+
+        def vigenere(text, key):
+            result = ''
+            i = 0
+            for char in text:
+                if 'a' <= char <= 'z' or 'A' <= char <= 'Z':
+                    result += caesar(char, ord(key[i % len(key)]) - 97)
+                    i += 1
+                else:
+                    result += char
+            return result
+        ```
+    javascript:
+      starter: |
+        function vigenere(text, key) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "vigenere('hallo welt', 'abc')"
+            expect: "'hbnlp yemv'"
+            say: "Das Leerzeichen bleibt und verbraucht keinen Buchstaben des Schlüssels."
+          - call: "vigenere('Angriff im Morgengrauen', 'key')"
+            expect: "'Krebmdp mk Wspqilqvyeil'"
+            say: "Großbuchstaben rücken auch und bleiben groß."
+          - call: "vigenere('abc', 'a')"
+            expect: "'abc'"
+          - call: "vigenere('zzz', 'b')"
+            expect: "'aaa'"
+          - call: "vigenere('Hallo!', 'zz')"
+            expect: "'Gzkkn!'"
+      hint:
+        - "Zähl in einer eigenen Variablen mit, wie viele Buchstaben des Textes schon verschlüsselt sind: `key[i % key.length]` ist der Buchstabe des Schlüssels, der dran ist."
+        - "Wie weit er rückt: `key.charCodeAt(i % key.length) - 97`. Damit rufst du deine Caesar-Funktion für den einen Buchstaben auf."
+      solution: |
+        ```javascript
+        function caesar(text, shift) {
+          let result = '';
+          for (const char of text) {
+            if (char >= 'a' && char <= 'z') {
+              result += String.fromCharCode(((char.charCodeAt(0) - 97 + shift) % 26 + 26) % 26 + 97);
+            } else if (char >= 'A' && char <= 'Z') {
+              result += String.fromCharCode(((char.charCodeAt(0) - 65 + shift) % 26 + 26) % 26 + 65);
+            } else {
+              result += char;
+            }
+          }
+          return result;
+        }
+
+        function vigenere(text, key) {
+          let result = '';
+          let i = 0;
+          for (const char of text) {
+            if ((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z')) {
+              result += caesar(char, key.charCodeAt(i % key.length) - 97);
+              i++;
+            } else {
+              result += char;
+            }
+          }
+          return result;
+        }
+        ```
+  - id: strong-password
+    title: "Ein sicheres Passwort?"
+    extra: true
+    prompt: |
+      Viele Seiten nehmen ein Passwort nur, wenn es mindestens acht Zeichen hat und darin mindestens ein Kleinbuchstabe, ein Großbuchstabe und eine Ziffer vorkommen. Schreib `strong_password(password)`, die true oder false zurückgibt: `strong_password('Passwort1')` ergibt `true`. Ob so eine Regel ein Passwort wirklich sicher macht, ist eine andere Frage.
+    starter: |
+      def strong_password(password)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "strong_password('Passwort1')"
+          expect: "true"
+        - call: "strong_password('passwort1')"
+          expect: "false"
+          say: "Ein Großbuchstabe fehlt."
+        - call: "strong_password('PASSWORT1')"
+          expect: "false"
+          say: "Ein Kleinbuchstabe fehlt."
+        - call: "strong_password('Passwort')"
+          expect: "false"
+          say: "Eine Ziffer fehlt."
+        - call: "strong_password('Pw1')"
+          expect: "false"
+        - call: "strong_password('Ab345678')"
+          expect: "true"
+          say: "Acht Zeichen reichen: Es heißt mindestens acht."
+    feedback:
+      - when: { same_as: "def strong_password(password)\n  lower = upper = digit = false\n  password.each_char do |char|\n    lower = true if char >= 'a' && char <= 'z'\n    upper = true if char >= 'A' && char <= 'Z'\n    digit = true if char >= '0' && char <= '9'\n  end\n  password.length > 8 && lower && upper && digit\nend\n" }
+        say: "Acht Zeichen reichen: Es heißt mindestens acht, also `>=`."
+    hint: "Drei Fragen auf einmal: Merk dir für jede Art von Zeichen in einer Variablen, ob sie schon vorkam, und geh das Passwort einmal durch."
+    solution: |
+      ```ruby
+      def strong_password(password)
+        lower = upper = digit = false
+        password.each_char do |char|
+          lower = true if char >= 'a' && char <= 'z'
+          upper = true if char >= 'A' && char <= 'Z'
+          digit = true if char >= '0' && char <= '9'
+        end
+        password.length >= 8 && lower && upper && digit
+      end
+      ```
+    python:
+      prompt: |
+        Viele Seiten nehmen ein Passwort nur, wenn es mindestens acht Zeichen hat und darin mindestens ein Kleinbuchstabe, ein Großbuchstabe und eine Ziffer vorkommen. Schreib `strong_password(password)`, die True oder False zurückgibt: `strong_password('Passwort1')` ergibt `True`. Ob so eine Regel ein Passwort wirklich sicher macht, ist eine andere Frage.
+      starter: |
+        def strong_password(password):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "strong_password('Passwort1')"
+            expect: "True"
+          - call: "strong_password('passwort1')"
+            expect: "False"
+            say: "Ein Großbuchstabe fehlt."
+          - call: "strong_password('PASSWORT1')"
+            expect: "False"
+            say: "Ein Kleinbuchstabe fehlt."
+          - call: "strong_password('Passwort')"
+            expect: "False"
+            say: "Eine Ziffer fehlt."
+          - call: "strong_password('Pw1')"
+            expect: "False"
+          - call: "strong_password('Ab345678')"
+            expect: "True"
+            say: "Acht Zeichen reichen: Es heißt mindestens acht."
+      feedback:
+        - when: { same_as: "def strong_password(password):\n    lower = upper = digit = False\n    for char in password:\n        if 'a' <= char <= 'z':\n            lower = True\n        if 'A' <= char <= 'Z':\n            upper = True\n        if '0' <= char <= '9':\n            digit = True\n    return len(password) > 8 and lower and upper and digit\n" }
+          say: "Acht Zeichen reichen: Es heißt mindestens acht, also `>=`."
+      hint: "Drei Fragen auf einmal: Merk dir für jede Art von Zeichen in einer Variablen, ob sie schon vorkam, und geh das Passwort einmal durch."
+      solution: |
+        ```python
+        def strong_password(password):
+            lower = upper = digit = False
+            for char in password:
+                if 'a' <= char <= 'z':
+                    lower = True
+                if 'A' <= char <= 'Z':
+                    upper = True
+                if '0' <= char <= '9':
+                    digit = True
+            return len(password) >= 8 and lower and upper and digit
+        ```
+    javascript:
+      prompt: |
+        Viele Seiten nehmen ein Passwort nur, wenn es mindestens acht Zeichen hat und darin mindestens ein Kleinbuchstabe, ein Großbuchstabe und eine Ziffer vorkommen. Schreib `strongPassword(password)`, die true oder false zurückgibt: `strongPassword('Passwort1')` ergibt `true`. Ob so eine Regel ein Passwort wirklich sicher macht, ist eine andere Frage.
+      starter: |
+        function strongPassword(password) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "strongPassword('Passwort1')"
+            expect: "true"
+          - call: "strongPassword('passwort1')"
+            expect: "false"
+            say: "Ein Großbuchstabe fehlt."
+          - call: "strongPassword('PASSWORT1')"
+            expect: "false"
+            say: "Ein Kleinbuchstabe fehlt."
+          - call: "strongPassword('Passwort')"
+            expect: "false"
+            say: "Eine Ziffer fehlt."
+          - call: "strongPassword('Pw1')"
+            expect: "false"
+          - call: "strongPassword('Ab345678')"
+            expect: "true"
+            say: "Acht Zeichen reichen: Es heißt mindestens acht."
+      feedback:
+        - when: { same_as: "function strongPassword(password) {\n  let lower = false, upper = false, digit = false;\n  for (const char of password) {\n    if (char >= 'a' && char <= 'z') lower = true;\n    if (char >= 'A' && char <= 'Z') upper = true;\n    if (char >= '0' && char <= '9') digit = true;\n  }\n  return password.length > 8 && lower && upper && digit;\n}\n" }
+          say: "Acht Zeichen reichen: Es heißt mindestens acht, also `>=`."
+      hint: "Drei Fragen auf einmal: Merk dir für jede Art von Zeichen in einer Variablen, ob sie schon vorkam, und geh das Passwort einmal durch."
+      solution: |
+        ```javascript
+        function strongPassword(password) {
+          let lower = false, upper = false, digit = false;
+          for (const char of password) {
+            if (char >= 'a' && char <= 'z') lower = true;
+            if (char >= 'A' && char <= 'Z') upper = true;
+            if (char >= '0' && char <= '9') digit = true;
+          }
+          return password.length >= 8 && lower && upper && digit;
+        }
+        ```
