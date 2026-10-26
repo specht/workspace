@@ -8309,7 +8309,8 @@ html[data-bs-theme="dark"] .bitplane-widget {
     transition: border-color 150ms, box-shadow 150ms;
 }
 .kata-set:hover {
-    border-color: #198754;
+    /* in the set's hue, like its band */
+    border-color: hsl(var(--accent, 150) 50% 45%);
     box-shadow: 0 0.3em 1em rgba(0, 0, 0, 0.08);
 }
 .kata-set-pinned {
