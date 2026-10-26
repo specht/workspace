@@ -704,6 +704,83 @@ class Main < Sinatra::Base
         end.join("\n\n            ")
     end
 
+    # The subnets of the user network (where the Workspaces are), from the
+    # networks of the nginx container whose name ends in _user; kept once
+    # found (not while nginx is not up yet). Here, before the nginx config,
+    # whose first one is written while this class still loads.
+    @@user_subnets = nil
+
+    def self.user_subnets
+        return @@user_subnets if @@user_subnets
+        found = begin
+            names, = Open3.capture2('docker', 'ps', '--filter', 'label=com.docker.compose.service=nginx', '--format', '{{.Names}}')
+            networks = names.split.flat_map do |name|
+                out, = Open3.capture2('docker', 'inspect', '-f', '{{range $n, $c := .NetworkSettings.Networks}}{{$n}} {{end}}', name)
+                out.split.select { |n| n.end_with?('_user') }
+            end
+            networks.uniq.flat_map do |network|
+                out, = Open3.capture2('docker', 'network', 'inspect', '-f', '{{range .IPAM.Config}}{{.Subnet}}={{.Gateway}} {{end}}', network)
+                out.split.filter_map do |entry|
+                    cidr, gateway = entry.split('=')
+                    { :net => IPAddr.new(cidr), :gateway => gateway.to_s } rescue nil
+                end
+            end
+        end
+        @@user_subnets = found unless found.empty?
+        found
+    rescue => e
+        STDERR.puts "user subnets: #{e.class}: #{e.message}"
+        []
+    end
+
+    # Limits per browser in nginx, against floods from a few addresses (a
+    # flood from many is Hetzner's to filter): requests to the Ruby app per
+    # second with a burst, and connections open at once (long WebSockets
+    # included) everywhere. The burst is generous, since a school's classes
+    # reach the server from one address: a class opening a page at once makes
+    # a few hundred requests, each Workspace keeps a few WebSockets open. The
+    # rate stays well below what the app serves: one Puma process renders
+    # with one core (about 14 pages a second in development), so that one
+    # address alone cannot keep it busy.
+    NGINX_BACKEND_RATE = 10
+    NGINX_BACKEND_BURST = 300
+    NGINX_CONNECTIONS_PER_CLIENT = 1000
+
+    # Which address a request counts for: through Traefik the last entry of
+    # X-Forwarded-For (as client_ip), without it the peer. A Workspace
+    # reaches nginx directly on the user network and could write any header,
+    # so there the peer counts (its gateway is the host, as in
+    # in_user_network?).
+    # In development a request without the header (the browser, Playwright,
+    # the screenshot service, all from the host) has no key, and nginx
+    # counts nothing without one; with the header it is limited as behind
+    # Traefik, which is how the limits are tried there.
+    def self.nginx_client_key_config
+        subnets = user_subnets.map do |s|
+            "    #{s[:net]}/#{s[:net].prefix} 1;" + (s[:gateway].empty? ? '' : "\n    #{s[:gateway]}/32 0;")
+        end
+        <<~END_OF_STRING
+            geo $hs_from_workspace {
+                default 0;
+            #{subnets.join("\n")}
+            }
+            map $http_x_forwarded_for $hs_forwarded_last {
+                default "";
+                "~(?:^|,)\\s*(?<a>[^,\\s]+)\\s*$" $a;
+            }
+            map "$hs_from_workspace:$hs_forwarded_last" $hs_client {
+                default $hs_forwarded_last;
+                "~^1:" $remote_addr;
+                "0:" #{DEVELOPMENT ? '""' : '$remote_addr'};
+            }
+            limit_req_zone $hs_client zone=hs_backend:20m rate=#{NGINX_BACKEND_RATE}r/s;
+            limit_conn_zone $hs_client zone=hs_conn:20m;
+            limit_req_status 429;
+            limit_conn_status 429;
+            limit_conn hs_conn #{NGINX_CONNECTIONS_PER_CLIENT};
+        END_OF_STRING
+    end
+
     def self.refresh_nginx_config
         @@nginx_config_mutex.synchronize do
             refresh_nginx_config_locked
@@ -833,6 +910,9 @@ class Main < Sinatra::Base
 
             map_hash_bucket_size 128;
 
+            # Limits per browser (NGINX_BACKEND_RATE and the rest)
+            #{nginx_client_key_config.rstrip}
+
             # Keep access logs useful without recording capability tokens, session
             # cookies, workspace tags or one-time login URLs.
             map $uri $hs_log_uri {
@@ -842,7 +922,7 @@ class Main < Sinatra::Base
                 ~^/l/[a-z0-9]+(?:/|$) /l/[redacted];
             }
 
-            log_format custom 'method=$request_method uri=$hs_log_uri status=$status share=$hs_is_share allowed=$hs_allowed';
+            log_format custom 'time=$time_iso8601 method=$request_method uri=$hs_log_uri status=$status share=$hs_is_share allowed=$hs_allowed';
 
             map $sent_http_content_type $expires {
                 default                         off;
@@ -1024,6 +1104,7 @@ class Main < Sinatra::Base
                 }
 
                 location @ruby {
+                    limit_req zone=hs_backend burst=#{NGINX_BACKEND_BURST} nodelay;
                     include /etc/nginx/snippets/proxy_ws.conf;
                     proxy_pass http://ruby:9292;
                 }
@@ -3031,30 +3112,6 @@ class Main < Sinatra::Base
         @@nginx_addresses || []
     end
 
-    # The subnets of the user network (where the Workspaces are), from the
-    # networks of the nginx container whose name ends in _user.
-    @@user_subnets = nil
-
-    def self.user_subnets
-        @@user_subnets ||= begin
-            names, = Open3.capture2('docker', 'ps', '--filter', 'label=com.docker.compose.service=nginx', '--format', '{{.Names}}')
-            networks = names.split.flat_map do |name|
-                out, = Open3.capture2('docker', 'inspect', '-f', '{{range $n, $c := .NetworkSettings.Networks}}{{$n}} {{end}}', name)
-                out.split.select { |n| n.end_with?('_user') }
-            end
-            networks.uniq.flat_map do |network|
-                out, = Open3.capture2('docker', 'network', 'inspect', '-f', '{{range .IPAM.Config}}{{.Subnet}}={{.Gateway}} {{end}}', network)
-                out.split.filter_map do |entry|
-                    cidr, gateway = entry.split('=')
-                    { :net => IPAddr.new(cidr), :gateway => gateway.to_s } rescue nil
-                end
-            end
-        end
-    rescue => e
-        STDERR.puts "user subnets: #{e.class}: #{e.message}"
-        []
-    end
-
     # In the user network, but not its gateway (that is the host, through
     # which browsers can arrive when ports are published).
     def self.in_user_network?(address)
@@ -4094,6 +4151,13 @@ class Main < Sinatra::Base
         end
     end
 
+    # Who did what to whose Workspace, account or database, with the time:
+    # among the program messages (docs/datenschutz.md, »Protokolle des
+    # Servers«), to be found again later with ./config.rb logs.
+    def log_event(message)
+        STDERR.puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} #{message}"
+    end
+
     def stop_server(email)
         container_name = fs_tag_for_email(email)
 
@@ -4121,6 +4185,7 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         email = @session_user[:email]
         reset_mysql(email)
+        log_event "MySQL database reset by its owner: #{email}"
         respond(:yay => 'sure')
     end
 
@@ -4139,6 +4204,7 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         email = @session_user[:email]
         reset_neo4j(email)
+        log_event "Neo4j database reset by its owner: #{email}"
         respond(:yay => 'sure')
     end
 
@@ -4576,7 +4642,7 @@ class Main < Sinatra::Base
         Main.load_invitations()
         removed = delete_account(email)
         halt 404, { :error => 'no_account' }.to_json unless removed
-        STDERR.puts "Account deleted by #{@session_user[:email]}: #{email} #{removed.inspect}"
+        log_event "Account deleted by #{@session_user[:email]}: #{email} #{removed.inspect}"
         still_invited = @@invitations.key?(email)
         if data[:notify] == true
             mail_subject, html = MailTexts.account_deleted(:web_root => WEB_ROOT, :signature => mail_signature, :still_invited => still_invited)
@@ -4651,7 +4717,7 @@ class Main < Sinatra::Base
         neo4j_query('MATCH (:User {email: $email})-[:SHARES_LIVE_APP]->(s:LiveAppShare) SET s.active = false;', :email => email)
         stop_server(email)
         Main.refresh_nginx_config()
-        STDERR.puts "Access of #{email} suspended by #{@session_user[:email]}"
+        log_event "Access of #{email} suspended by #{@session_user[:email]}"
         respond(:ok => true)
     end
 
@@ -4660,7 +4726,7 @@ class Main < Sinatra::Base
         data = parse_request_data(:required_keys => [:email])
         neo4j_query('MATCH (u:User {email: $email}) REMOVE u.suspended_at, u.suspended_by, u.suspended_reason;', :email => data[:email].to_s.downcase)
         Main.refresh_nginx_config()
-        STDERR.puts "Suspension of #{data[:email]} lifted by #{@session_user[:email]}"
+        log_event "Suspension of #{data[:email]} lifted by #{@session_user[:email]}"
         respond(:ok => true)
     end
 
@@ -4775,7 +4841,7 @@ class Main < Sinatra::Base
         name = (@@invitations[email] || {})[:name]
         groups = @@group_members.select { |group, members| members.include?(email) && !@@test_groups.include?(group) }.keys.sort
         removed = delete_account(email)
-        STDERR.puts "Account deleted by its owner: #{email} #{removed.inspect}"
+        log_event "Account deleted by its owner: #{email} #{removed.inspect}"
         mail_subject, html = MailTexts.account_deleted_by_owner(:email => email, :name => name == email ? nil : name, :groups => groups,
             :still_invited => @@invitations.key?(email), :signature => 'Workspace')
         ADMIN_USERS.each do |admin|
@@ -5080,6 +5146,7 @@ class Main < Sinatra::Base
         test_email = @@test_accounts.key(@session_user[:email])
         halt 404 if test_email.nil?
         reset_test_account(test_email)
+        log_event "Test account #{test_email} reset by #{@session_user[:email]}"
         respond(:reset => test_email)
     end
 
@@ -5093,6 +5160,7 @@ class Main < Sinatra::Base
         stop_server(email)
         container_name = fs_tag_for_email(email)
         system("rm -rf /user/#{container_name}")
+        log_event "Workspace reset by its owner (all files deleted): #{email}"
 
         # assign new server_tag and server_sid
         server_tag = gen_server_tag()
@@ -8005,6 +8073,7 @@ class Main < Sinatra::Base
             )
             is_user_db = (data[:database] == @session_user[:db_login])
             client.query("DROP DATABASE IF EXISTS `#{data[:database]}`;")
+            log_event "MySQL database #{data[:database]} deleted by its owner: #{@session_user[:email]}"
             if DatabaseProvisioning.extra_database?(data[:database])
                 client.query(DatabaseProvisioning.extra_database_drop_login_statement(data[:database]))
             end
