@@ -4766,62 +4766,148 @@ ul.task-teacher-list .task-teacher-answer {
     margin: 0 0 0.6em;
 }
 
+/* Pinned by the teacher: one wide card each, the activity's picture from
+   the catalog on the left, on the right its kind, title, the start of its
+   description, the progress and a button to go on (StudentHome.card). */
 .student-home-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(16em, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 0.8em;
 }
 
 .student-home-card {
-    position: relative;
-    border: 1px solid #e3e3e3;
+    display: grid;
+    grid-template-columns: 1fr;
+    overflow: hidden;
+    border: 1px solid var(--bs-border-color);
+    border-left: 4px solid var(--bs-primary);
     border-radius: 0.75em;
+    background: transparent;
+    transition: box-shadow 150ms;
 }
-
 .student-home-card:hover {
-    border-color: #0b5ed7;
+    box-shadow: 0 0.3em 1em rgba(0, 0, 0, 0.08);
+}
+.shc-with-picture {
+    grid-template-columns: 15em 1fr;
 }
 
-.student-home-pinned {
-    border-color: #0b5ed7;
-    border-width: 2px;
+/* the picture fills its column without setting the card's height (the
+   text does); display stays with the rule that shows the light or the dark
+   variant */
+.shc-picture {
+    position: relative;
+    display: block;
+    min-height: 9em;
+    background: var(--bs-tertiary-bg);
+}
+.shc-picture .theme-image-dark {
+    display: none;
+}
+.shc-picture img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.shc-link {
+.shc-body {
     display: flex;
     flex-direction: column;
-    gap: 0.45em;
-    height: 100%;
-    padding: 0.9em 2.6em 0.9em 1em;
+    gap: 0.4em;
+    min-width: 0;
+    padding: 0.9em 1.1em 1em;
+}
+
+.shc-kind {
+    align-self: flex-start;
+    padding: 0.05em 0.6em;
+    border-radius: 1em;
+    background: var(--bs-tertiary-bg);
+    color: var(--bs-secondary-color);
+    font-size: 78%;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.student-home-card .shc-title {
+    margin: 0;
+    font-size: 1.2rem;
+}
+.shc-link {
     color: inherit;
     text-decoration: none;
 }
-
 .shc-link:hover {
-    text-decoration: none;
+    text-decoration: underline;
 }
 
-.shc-hide {
-    position: absolute;
-    top: 0.5em;
-    right: 0.5em;
-    padding: 0.2em 0.35em;
-    border: none;
-    border-radius: 0.4em;
-    background: none;
-    color: #adb5bd;
-    line-height: 1;
+/* the start of the description, three lines at most */
+.shc-abstract {
+    display: -webkit-box;
+    margin: 0;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    color: var(--bs-secondary-color);
 }
 
-.shc-hide:hover,
-.shc-hide:focus-visible {
-    color: #495057;
-    background-color: rgba(0, 0, 0, 0.06);
+.shc-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    max-width: 26em;
+}
+.shc-progress .shc-bar {
+    flex: 1;
+}
+
+.shc-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4em 1em;
+    margin-top: 0.3em;
+}
+.shc-go .bi {
+    margin: 0 0 0 0.35em;
 }
 
 .shc-pinned-by {
-    font-size: 80%;
-    color: #0b5ed7;
+    color: var(--bs-secondary-color);
+    font-size: 85%;
+}
+.shc-pinned-by .bi {
+    margin-right: 0.3em;
+}
+
+@media (max-width: 575.98px) {
+    /* the picture on top, as wide as the card; the cards from edge to
+       edge, like the boxes of a page, the colour bar at the screen's edge */
+    .shc-with-picture {
+        grid-template-columns: 1fr;
+    }
+    .student-home-card,
+    .student-continue-list a {
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        border-right-width: 0;
+        border-radius: 0;
+    }
+    .student-continue-list a {
+        border-left-width: 0;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    .shc-body {
+        padding-left: calc(1rem - 4px);
+    }
+    .shc-picture {
+        aspect-ratio: 16 / 9;
+        min-height: 0;
+    }
 }
 
 .student-home-label .ti {
@@ -4844,47 +4930,88 @@ ul.task-teacher-list .task-teacher-answer {
 }
 
 .class-pins {
+    max-width: 44em;
+    margin: 0.5em 0 1.5em;
+}
+.class-pins-title {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45em;
+    margin: 0 0 0.25em;
+    font-size: 1.15rem;
+}
+.class-pins-title .bi {
+    margin: 0;
+    color: var(--bs-primary);
+}
+.class-pins-note {
+    margin: 0 0 0.8em;
+    color: var(--bs-secondary-color);
+    font-size: 90%;
+}
+.class-pins-none {
+    margin: 0 0 0.8em;
+    color: var(--bs-secondary-color);
+    font-style: italic;
+}
+/* one row per pinned activity: its title, its kind, »Lösen« at the end */
+.class-pins-list {
+    margin: 0 0 0.8em;
+    padding: 0;
+    list-style: none;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.6em;
+    overflow: hidden;
+}
+.class-pin {
+    display: flex;
     align-items: center;
     gap: 0.4em 0.8em;
-    margin: 0.5em 0 1em;
+    padding: 0.5em 0.6em 0.5em 0.9em;
+    border-left: 4px solid var(--bs-primary);
+    background: transparent;
 }
-
-.class-pins .ti {
-    margin-right: 0.2em;
+.class-pin + .class-pin {
+    border-top: 1px solid var(--bs-border-color);
 }
-
-.class-pin {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.2em;
-    padding: 0.1em 0.3em 0.1em 0.7em;
-    border: 1px solid #b6d0f7;
+.class-pin a {
+    flex: 1;
+    min-width: 0;
+    font-weight: 600;
+    text-decoration: none;
+}
+.class-pin a:hover {
+    text-decoration: underline;
+}
+.class-pin-kind {
+    padding: 0.05em 0.6em;
     border-radius: 1em;
-    background-color: #e7f0fe;
+    background: var(--bs-tertiary-bg);
+    color: var(--bs-secondary-color);
+    font-size: 80%;
+    white-space: nowrap;
 }
-
 .class-unpin {
-    border: none;
-    background: none;
-    padding: 0 0.2em;
-    color: #5c636a;
-    line-height: 1;
+    white-space: nowrap;
 }
-
-.class-pins-none {
-    color: #6c757d;
+.class-unpin .bi {
+    margin-right: 0.3em;
 }
-
-.class-pin-select {
-    width: auto;
+.class-pins-add .searchable-select,
+.class-pins-add .class-pin-select {
+    width: 100%;
 }
-
-.class-pins-note {
-    flex-basis: 100%;
-    font-size: 85%;
-    color: #5c636a;
+@media (max-width: 575.98px) {
+    /* the kind under the title, »Lösen« beside it */
+    .class-pin {
+        flex-wrap: wrap;
+    }
+    .class-pin a {
+        flex-basis: 100%;
+    }
+    .class-pin-kind {
+        margin-right: auto;
+    }
 }
 
 .shc-title {
@@ -5869,20 +5996,31 @@ ul.task-teacher-list .task-teacher-answer {
 }
 
 /* The bar under the menu: a teacher looking at the site as a student, or
-   the student's calm notice that a teacher looked in (look_in_bar_html). */
+   the student's calm notice that a teacher looked in (look_in_bar_html).
+   Across the whole width, right under the menu bar, its content in the
+   page's column. */
 .look-in-bar {
-    display: flex;
-    align-items: center;
-    gap: 0.75em;
-    max-width: 1320px;
-    margin: 0.8em auto 0;
-    padding: 0.6em 1em;
-    border-radius: 0.6em;
+    margin: 0;
+    padding: 0.55em 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-.look-in-bar > div,
-.look-in-bar > span {
+.look-in-bar-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4em 0.75em;
+}
+
+.look-in-bar-inner > div,
+.look-in-bar-inner > span {
     flex: 1;
+    min-width: 12em;
+}
+
+.look-in-bar .btn .bi {
+    margin-right: 0.35em;
+    font-size: 1em;
 }
 
 .look-in-bar p {
@@ -5905,6 +6043,16 @@ ul.task-teacher-list .task-teacher-answer {
 
 [data-bs-theme=dark] .look-in-bar-impersonating {
     background: #3d3214;
+    color: #ffe59a;
+}
+
+[data-bs-theme=dark] .look-in-bar {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-bs-theme=dark] .look-in-bar-impersonating .btn-light {
+    border-color: rgba(255, 229, 154, 0.35);
+    background: rgba(255, 229, 154, 0.12);
     color: #ffe59a;
 }
 

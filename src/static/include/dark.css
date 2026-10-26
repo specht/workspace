@@ -164,6 +164,27 @@ html[data-bs-theme="dark"] {
     .kata-set-pin { color: #7fbfe3; }
     .kata-set .theme-image-light { display: none; }
     .kata-set .theme-image-dark { display: block; }
+    /* a pinned activity: a faint line round it, its colour bar stays */
+    .student-home-card,
+    .class-pins-list,
+    .student-continue-list a {
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+    .student-home-card,
+    .class-pin {
+        border-left-color: var(--bs-primary);
+    }
+    .class-pin + .class-pin {
+        border-top-color: rgba(255, 255, 255, 0.08);
+    }
+    .shc-picture .theme-image-light { display: none; }
+    .shc-picture .theme-image-dark { display: block; }
+    /* the band of a Kata set: a softer glow on the dark page */
+    .kata-set-art {
+        background:
+            radial-gradient(circle at 70% 30%, hsl(var(--accent) 50% 50% / 0.12), transparent 60%),
+            hsl(var(--accent) 18% 11%);
+    }
     .person, .book, .case-note {
         background: rgba(0, 0, 0, 0.25);
         border-color: transparent;
@@ -426,26 +447,10 @@ html[data-bs-theme="dark"] {
     .class-live-note {
         color: #adb5bd;
     }
-    .student-home-card {
-        border-color: #33332f;
-    }
     .shc-open { background-color: #3a3a36; }
-    .student-home-pinned { border-color: #4d8ff0; }
-    .shc-pinned-by { color: #8db8f5; }
-    .shc-hide:hover,
-    .shc-hide:focus-visible {
-        color: #e7e6e1;
-        background-color: rgba(255, 255, 255, 0.08);
-    }
-    .student-home-hidden,
-    .class-pins-note {
+    .student-home-hidden {
         color: #adb5bd;
     }
-    .class-pin {
-        border-color: #2b4a73;
-        background-color: #172a45;
-    }
-    .class-unpin { color: #adb5bd; }
     .student-home-label,
     .shc-count,
     .shc-next,

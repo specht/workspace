@@ -3380,16 +3380,16 @@ class Main < Sinatra::Base
 
         if @impersonated_by
             name = (@@invitations[@session_user[:email]] || {})[:name] || @session_user[:email]
-            return "<div class='look-in-bar look-in-bar-impersonating'><i class='bi bi-person-vcard'></i>" \
+            return "<div class='look-in-bar look-in-bar-impersonating'><div class='container look-in-bar-inner'><i class='bi bi-person-vcard' aria-hidden='true'></i>" \
                 "<span>Du siehst die Seite als <strong>#{CGI.escapeHTML(name)}</strong>.</span>" \
-                "<button type='button' class='btn btn-sm btn-light bu-stop-impersonation'>Zurück zu deinem Konto</button></div>"
+                "<button type='button' class='btn btn-sm btn-light bu-stop-impersonation'><i class='bi bi-arrow-return-left' aria-hidden='true'></i>Zurück zu deinem Konto</button></div></div>"
         end
         unseen = look_ins(:only_unseen => true)
         return '' if unseen.empty?
 
         lines = unseen.reverse.map { |l| "<p>#{LookIn.notice_html(l)}</p>" }.join
-        "<div class='look-in-bar look-in-bar-notice'><i class='bi bi-info-circle'></i><div>#{lines}</div>" \
-            "<button type='button' class='btn btn-sm btn-outline-secondary bu-look-ins-seen'>Verstanden</button></div>"
+        "<div class='look-in-bar look-in-bar-notice'><div class='container look-in-bar-inner'><i class='bi bi-info-circle' aria-hidden='true'></i><div>#{lines}</div>" \
+            "<button type='button' class='btn btn-sm btn-outline-secondary bu-look-ins-seen'>Verstanden</button></div></div>"
     end
 
     def get_server_state(tag)
@@ -5904,6 +5904,15 @@ class Main < Sinatra::Base
             .select { |slug| @@content[slug] && (DEVELOPMENT || !@@content[slug][:dev_only]) }
     end
 
+    # What else finds an activity in the search fields of the class page
+    # (searchable_select): the label of its catalog section (»Katas« finds
+    # Pip's sets too) and its description.
+    def activity_search_text(slug)
+        section = @@section_order.find { |key| ((@@sections[key] || {})[:entries] || []).include?(slug) }
+        label = section ? CGI.unescapeHTML((@@sections[section] || {})[:label].to_s.gsub('&shy;', '')) : ''
+        "#{label} #{(@@content[slug] || {})[:abstract].to_s.strip[0, 600]}".strip
+    end
+
     # The title as text: without tags, with »&« instead of &amp; (it is
     # escaped where it goes into HTML)
     def plain_title(slug)
@@ -5925,8 +5934,12 @@ class Main < Sinatra::Base
 
         allowed = pinnable_slugs
         pinned = pins_for_groups(my_groups).select { |p| allowed.include?(p[:slug]) }.uniq { |p| p[:slug] }.map do |p|
-            { :slug => p[:slug], :title => plain_title(p[:slug]), :abstract => @@content[p[:slug]][:abstract], :group => p[:group],
-              :template_folder => (@@content[p[:slug]][:template] || {})[:folder] }
+            c = @@content[p[:slug]]
+            # the catalog's picture, its dark variant and focus (CardImages)
+            { :slug => p[:slug], :title => plain_title(p[:slug]), :abstract => c[:abstract], :group => p[:group],
+              :template_folder => (c[:template] || {})[:folder], :kind => PageKinds.kind_label(c[:kind]),
+              :image => c[:image] && CardImages.attributes(c[:image]), :image_dark => c[:image_dark] && CardImages.attributes(c[:image_dark]),
+              :position => "#{c[:image_x] || 50}% #{c[:image_y] || 50}%" }
         end
         html = StudentHome.html(:progress => my_progress, :pinned => pinned, :listed => allowed,
                                 :guide => student_home_visible?)
@@ -5972,27 +5985,36 @@ class Main < Sinatra::Base
         states
     end
 
-    # Pinned activities of a group, with controls to pin and unpin.
+    # Pinned activities of a group, with controls to pin and unpin: a
+    # heading with what pinning does, the pinned activities as a list (title,
+    # kind, »Lösen«), and a search field to pin another.
     def class_pins_html(group)
         h = ->(t) { CGI.escapeHTML(t.to_s) }
         pins = pins_for_groups([group])
-        io = +"<div class='class-pins' data-group='#{h.(group)}'>"
-        io << "<span class='class-pins-label'>#{Icons.tabler('pin')} Angeheftet für #{h.(group)}:</span>"
+        io = +"<section class='class-pins' data-group='#{h.(group)}' aria-labelledby='class-pins-title'>"
+        io << "<h3 class='class-pins-title' id='class-pins-title'><i class='bi bi-pin-angle-fill' aria-hidden='true'></i>Angeheftet für #{h.(group)}</h3>"
+        io << "<p class='class-pins-note'>Was du hier anheftest, sehen alle in der Gruppe als Erstes auf ihrer Startseite, mit ihrem Fortschritt; sie können es dort nicht wegklicken.</p>"
         if pins.empty?
-            io << "<span class='class-pins-none'>nichts</span>"
+            io << "<p class='class-pins-none'>Noch nichts angeheftet.</p>"
         else
+            io << "<ul class='class-pins-list'>"
             pins.each do |p|
-                io << "<span class='class-pin'><a href='/#{h.(p[:slug])}'>#{h.(plain_title(p[:slug]))}</a>"
-                io << "<button type='button' class='class-unpin' data-slug='#{h.(p[:slug])}' title='Lösen' aria-label='#{h.(plain_title(p[:slug]))} lösen'>#{Icons.tabler('x')}</button></span>"
+                title = plain_title(p[:slug])
+                kind = PageKinds.kind_label((@@content[p[:slug]] || {})[:kind])
+                io << "<li class='class-pin'><a href='/#{h.(p[:slug])}'>#{h.(title)}</a>"
+                io << "<span class='class-pin-kind'>#{h.(kind)}</span>" if kind
+                io << "<button type='button' class='btn btn-sm btn-outline-secondary class-unpin' data-slug='#{h.(p[:slug])}' aria-label='#{h.(title)} lösen'>" \
+                      "<i class='bi bi-x-lg' aria-hidden='true'></i>Lösen</button></li>"
             end
+            io << '</ul>'
         end
-        io << "<select class='form-select form-select-sm class-pin-select' aria-label='Aktivität zum Anheften'><option value=''>Aktivität anheften …</option>"
+        io << "<div class='class-pins-add'><select class='form-select class-pin-select' aria-label='Aktivität suchen und anheften'><option value=''>Aktivität suchen und anheften …</option>"
         pinned = pins.map { |p| p[:slug] }
         pinnable_slugs.reject { |s| pinned.include?(s) }.sort_by { |s| plain_title(s).downcase }.each do |s|
-            # The description too, for the search (searchable_select).
-            io << "<option value='#{h.(s)}' data-search='#{h.((@@content[s] || {})[:abstract].to_s.strip[0, 600])}'>#{h.(plain_title(s))}</option>"
+            # The section and the description too, for the search (searchable_select).
+            io << "<option value='#{h.(s)}' data-search='#{h.(activity_search_text(s))}'>#{h.(plain_title(s))}</option>"
         end
-        io << "</select><div class='class-pins-note'>Angeheftetes steht bei allen in der Gruppe oben auf der Startseite und lässt sich dort nicht ausblenden.</div></div>"
+        io << '</select></div></section>'
         io
     end
 
@@ -6225,8 +6247,13 @@ class Main < Sinatra::Base
         io = +"<div class='class-toolbar'>"
         io << "<form method='get' action='/klasse' class='class-activity-select'>"
         io << "<input type='hidden' name='group' value='#{h.(group)}'><input type='hidden' name='tab' value='fortschritt'>"
-        io << "<label>Aktivität <select class='form-select' name='activity' onchange='this.form.submit()'>"
-        activities.each { |a, t, _| io << "<option value='#{h.(a)}'#{a == activity_key ? ' selected' : ''}>#{h.(t)}</option>" }
+        # searchable (class_board.js): the list of all activities is too long
+        # to scroll, and a native list that tall picked an entry by itself
+        io << "<label>Aktivität <select class='form-select class-activity-choice' name='activity'>"
+        slugs = @@content.each_with_object({}) { |(s, c), all| all[c[:tasks][:activity]] ||= s if c[:tasks] }
+        activities.each do |a, t, _|
+            io << "<option value='#{h.(a)}' data-search='#{h.(activity_search_text(slugs[a]))}'#{a == activity_key ? ' selected' : ''}>#{h.(t)}</option>"
+        end
         io << "</select></label><noscript><button class='btn btn-primary'>Anzeigen</button></noscript></form>"
         io << "<a class='class-activity-link' href='/#{h.(slug)}' title='#{h.(title)} öffnen'><i class='bi bi-box-arrow-up-right' aria-hidden='true'></i>Zur Seite</a>" if slug
         live = tasks.select { |t| TaskCheck::LIVE_TYPES.include?(t[:type]) }

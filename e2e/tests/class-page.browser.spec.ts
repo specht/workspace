@@ -88,3 +88,26 @@ test('each teacher has its own test group and resets its test account', async ({
   expect(names.filter((n) => n.startsWith('Testgruppe'))).toEqual(['Testgruppe (E2E Teacher) (1)']);
 });
 
+// Activities are found by typing: the board's activity and the one to pin
+// are search fields (searchable_select), and a choice in either works.
+test('the class page finds activities by typing', async ({ page }, testInfo) => {
+  await loginAsE2eUser(page, 'e2e-teacher@example.com', testInfo);
+  await page.goto('/klasse?group=E2E&activity=bif&tab=fortschritt');
+  const board = page.locator('.class-activity-select input[role=combobox]');
+  await board.click();
+  await board.fill('routen');
+  await page.locator('.class-activity-select .suggest-menu .dropdown-item').first().click();
+  await expect(page).toHaveURL(/activity=routenplaner/);
+  await expect(page.locator('.class-activity-select input[role=combobox]')).toHaveValue(/Routenplaner/);
+
+  await page.getByRole('tab', { name: 'Startseite' }).click();
+  const pin = page.locator('.class-pins input[role=combobox]');
+  await pin.click();
+  // by its address, which every option can be found by
+  await pin.fill('sql-joins');
+  await page.locator('.class-pins .suggest-menu .dropdown-item').first().click();
+  const pinned = page.locator(".class-pin:has(a[href='/sql-joins'])");
+  await expect(pinned).toBeVisible();
+  await pinned.locator('.class-unpin').click();
+  await expect(pinned).toHaveCount(0);
+});

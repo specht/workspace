@@ -95,7 +95,8 @@ module StudentHome
             io << "<h2 id='student-home-title' class='student-home-label'>#{Icons.tabler('pin')} Von deiner Lehrkraft</h2><div class='student-home-cards'>"
             pinned.each do |p|
                 io << card(p[:slug], p[:title], by_slug[p[:slug]], :abstract => p[:abstract], :pinned => p[:group],
-                           :template_folder => p[:template_folder])
+                           :template_folder => p[:template_folder], :kind => p[:kind], :image => p[:image],
+                           :image_dark => p[:image_dark], :position => p[:position])
             end
             io << '</div></section>'
         end
@@ -161,26 +162,44 @@ module StudentHome
         io
     end
 
-    def self.card(slug, title, entry, abstract: nil, pinned: nil, template_folder: nil)
+    # A pinned activity as a wide card: its picture from the catalog on the
+    # left (image: the <img> attributes, image_dark: those of the dark
+    # variant, position: its focus), on the right its kind, title, the start
+    # of its description, the progress once begun and a button to go on;
+    # which group it was pinned for, small. On a phone the picture is on top.
+    def self.card(slug, title, entry, abstract: nil, pinned: nil, template_folder: nil, kind: nil, image: nil, image_dark: nil, position: nil)
         link = entry && entry[:next] ? "/#{h(slug)}#aufgabe-#{h(entry[:next][:id])}" : "/#{h(slug)}"
-        io = +"<div class='student-home-card#{pinned ? ' student-home-pinned' : ''}' data-slug='#{h(slug)}'>"
-        io << "<a class='shc-link' href='#{link}'>"
-        io << "<span class='shc-title'>#{h(title)}</span>"
+        io = +"<article class='student-home-card#{pinned ? ' student-home-pinned' : ''}#{image ? ' shc-with-picture' : ''}' data-slug='#{h(slug)}'>"
+        if image
+            style = position ? " style='object-position: #{h(position)};'" : ''
+            io << "<a class='shc-picture' href='#{link}' tabindex='-1' aria-hidden='true'>"
+            io << "<img alt='' class='#{image_dark ? 'theme-image-light' : ''}' #{image} loading='lazy' decoding='async'#{style}>"
+            io << "<img alt='' class='theme-image-dark' #{image_dark} loading='lazy' decoding='async'#{style}>" if image_dark
+            io << '</a>'
+        end
+        io << "<div class='shc-body'>"
+        io << "<span class='shc-kind'>#{h(kind)}</span>" if kind
+        io << "<h3 class='shc-title'><a class='shc-link' href='#{link}'>#{h(title)}</a></h3>"
+        text = abstract.to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '').strip
+        io << "<p class='shc-abstract'>#{h(text)}</p>" unless text.empty?
         if entry
-            io << "<span class='shc-bar' aria-hidden='true'>"
+            io << "<div class='shc-progress'><span class='shc-bar' aria-hidden='true'>"
             entry[:marks].each { |m| io << "<span class='shc-mark shc-#{m}'></span>" }
             io << '</span>'
-            io << "<span class='shc-count'>#{entry[:done]} von #{entry[:total]} erledigt#{extras_text(entry)}</span>"
+            io << "<span class='shc-count'>#{entry[:done]} von #{entry[:total]} erledigt#{extras_text(entry)}</span></div>"
             io << "<span class='shc-next'>Weiter mit: #{h(entry[:next][:title])}</span>" if entry[:next]
-        elsif abstract && !abstract.to_s.strip.empty?
-            io << "<span class='shc-next'>#{h(abstract.to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '').strip)}</span>"
         end
-        io << "<span class='shc-pinned-by'>Angeheftet für #{h(pinned)}</span>" if pinned
+        label = if entry.nil? || entry[:done].to_i.zero? then 'Loslegen'
+                elsif entry[:done] >= entry[:total] then 'Ansehen'
+                else 'Weitermachen'
+                end
+        io << "<div class='shc-actions'><a class='btn btn-success btn-sm shc-go' href='#{link}' aria-label='#{label}: #{h(title)}'>#{label}<i class='bi bi-arrow-right' aria-hidden='true'></i></a>"
+        io << "<span class='shc-pinned-by'><i class='bi bi-pin-angle' aria-hidden='true'></i>Angeheftet für #{h(pinned)}</span>" if pinned
+        io << '</div>'
         if template_folder
             io << "<span class='shc-template' data-slug='#{h(slug)}' data-folder='#{h(template_folder)}' aria-live='polite'></span>"
         end
-        io << '</a>'
-        io << '</div>'
+        io << '</div></article>'
         io
     end
 

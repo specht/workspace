@@ -74,11 +74,21 @@
         box.appendChild(ul);
     }
 
+    // The activity of the board: typed into a search field instead of a
+    // list too long to scroll; a choice shows that activity's board.
+    const choice = document.querySelector('.class-activity-choice');
+    if (choice) {
+        $(choice).on('change', function () { choice.form.submit(); });
+        searchable_select(choice);
+    }
+
     // Pin and unpin activities for the group (shown first on students' start page).
     const pins = document.querySelector('.class-pins');
     if (pins) {
         const select = pins.querySelector('.class-pin-select');
-        if (select) select.addEventListener('change', function () {
+        // bound with jQuery: the search field (searchable_select) announces
+        // a choice with a jQuery event, which addEventListener does not hear
+        if (select) $(select).on('change', function () {
             if (!select.value) return;
             api_call('/api/class/pin', { group: pins.dataset.group, slug: select.value }, function (data) {
                 if (data.success) window.location.reload();
