@@ -248,6 +248,9 @@ pre.wrap-code {
    fade behind the button. */
 .code-copy-box {
     position: relative;
+    /* beside a picture floating on the right, like the code block itself,
+       not under it: else the copy button lands on the picture */
+    display: flow-root;
     --code-bg: rgb(40, 40, 40);
 }
 
@@ -2490,11 +2493,6 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     width: 100%;
     margin: 0;
 }
-/* the switch at the bottom of a slide, where it covers no page number */
-.media-variant-box-preview .media-variant-toggles {
-    top: auto;
-    bottom: 0.5em;
-}
 
 .media-variant-toggles {
     position: absolute;
@@ -3858,7 +3856,7 @@ ul.task-teacher-list .task-teacher-answer {
 }
 
 .task-reads-toggle {
-    margin-left: auto;
+    /* right after the buttons, not at the far edge of the card */
     border: 0;
     background: none;
     padding: 0.2em 0.3em;

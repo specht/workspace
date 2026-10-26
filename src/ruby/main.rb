@@ -5454,9 +5454,11 @@ class Main < Sinatra::Base
 
         seen = {}
         parts.each do |part|
+            # never a page of a hidden section (the Backrooms are found, not
+            # named)
             other = @@content.find do |other_slug, c|
                 other_slug != slug && c[:tasks] && (c[:included_parts] || []).include?(part) &&
-                    solved.include?(c[:tasks][:activity])
+                    solved.include?(c[:tasks][:activity]) && !(@@sections[c[:section]] || {})[:hidden]
             end
             seen[part] = other[1][:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '') if other
         end
