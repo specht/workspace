@@ -183,7 +183,7 @@ So ist jede Zeile des Verlaufs gebaut: Zuerst kommt die Nummer der Farbe, `i` pl
 
 Im dritten Abschnitt steigt der Grünwert von 50% auf 100% an, während Blau von 0 auf 50% ansteigt. Rot bleibt bei 100%. Der Farbverlauf geht also von Orange (255, 128, 0) zu Gelb (255, 255, 128).
 
-<div class='hint own'>
+<div class='hint own' data-check='abschnitt-3'>
 <strong>Jetzt bist du dran:</strong> Schreib die Zeile für die Farben 32 bis 47 selbst, direkt unter die Zeile von eben. Bau sie wie die Zeile für den zweiten Abschnitt: die Nummer der Farbe, dann Rot, Grün und Blau.
 </div>
 
@@ -204,6 +204,8 @@ set_palette(i + 32, 255, i * 8 + 128, i * 8)
 ```
 <!-- /solution -->
 
+_task(abschnitt-3)
+
 Dein Farbverlauf sollte nun so aussehen:
 
 <!-- tutorial-screenshot
@@ -219,7 +221,7 @@ image-file: fire-steps/step.png 8
 
 Im vierten Abschnitt steigt der Blauwert von 50% auf 100% an, während Rot und Grün bei 100% bleiben. Der Farbverlauf geht also von Gelb (255, 255, 128) zu Weiß (255, 255, 255).
 
-<div class='hint own'>
+<div class='hint own' data-check='abschnitt-4'>
 <strong>Jetzt bist du dran:</strong> Die letzte Zeile, für die Farben 48 bis 63, schreibst du auch selbst, unter die anderen drei.
 </div>
 
@@ -239,6 +241,8 @@ set_palette(i + …, 255, 255, …)
 set_palette(i + 48, 255, 255, i * 8 + 128)
 ```
 <!-- /solution -->
+
+_task(abschnitt-4)
 
 Geschafft! Dein Farbverlauf sollte nun so aussehen:
 
@@ -426,7 +430,7 @@ Mit jedem Schritt wandert die Hitze im Mittel ein halbes Pixel nach oben: Das Ge
 
 Für das Feuer wendet dein Programm den Filterkernel in jedem Bild auf jedes Pixel an. Die Farbnummer eines Pixels liefert `get_pixel(x, y)`, so wie `set_pixel(x, y, c)` sie setzt.
 
-<div class='hint own'>
+<div class='hint own' data-check='kernel-anwenden'>
 <strong>Jetzt bist du dran:</strong> Schreib über die <code>flip()</code>-Zeile zwei Schleifen, die durch das ganze Bild gehen: <code>y</code> von 0 bis 127 und darin <code>x</code> von 0 bis 255. Für jedes Pixel rechnest du den Kernel von oben aus, in einer Variablen <code>c</code>: das Pixel darunter doppelt, dazu das linke und das rechte Pixel, die Summe durch 4. Das Ergebnis ist die neue Farbe des Pixels.
 </div>
 
@@ -469,6 +473,8 @@ end
 end
 ```
 <!-- /solution -->
+
+_task(kernel-anwenden)
 
 Das Programm geht Zeile für Zeile durch das Bild und in jeder Zeile durch jedes Pixel. Für jedes Pixel addiert es die Farbwerte der Nachbarn, das untere doppelt, und teilt die Summe durch 4. Dieser Mittelwert wird die neue Farbe des Pixels.
 
@@ -593,7 +599,7 @@ $$x = m\_x + r \cdot \cos a \qquad y = m\_y + r \cdot \sin a$$
 
 Weil y auf dem Bildschirm nach unten wächst, dreht sich das Quadrat im Uhrzeigersinn, wenn `angle` größer wird.
 
-<div class='hint own'>
+<div class='hint own' data-check='quadrat'>
 <strong>Jetzt bist du dran:</strong> Berechne vor <code>flip()</code> die vier Ecken für den aktuellen Winkel, verbinde jede Ecke mit <code>draw_line</code> mit der nächsten und die letzte mit der ersten, alles mit Farbe 63. Danach erhöhst du <code>angle</code> um 0.03.
 </div>
 
@@ -642,6 +648,8 @@ Ein Gerüst; die Lücken mit `…` füllst du:
 ~         flip()
 ```
 <!-- /solution -->
+
+_task(quadrat)
 
 Das Quadrat steht nach dem Kernel im Programm, direkt vor `flip()`. Zeichnest du es davor, verschmiert der Kernel es im selben Bild, und du siehst nur noch Flammen. So bleibt es als scharfe weiße Linie über seinen eigenen Flammen stehen, und im nächsten Bild steigt seine Hitze nach oben:
 

@@ -24,6 +24,43 @@ tasks:
       160, Grün 4 · 8 = 32, Blau 0. Ein dunkles Rot mit einem Hauch Grün auf
       dem Weg zu Orange.
 
+  - id: abschnitt-3
+    title: Orange bis Gelb
+    prompt: |
+      Schreib in `fire.rb` die Zeile für die Farben 32 bis 47 und speichere.
+      Führst du das Programm danach aus, reicht der Verlauf von Schwarz über
+      Rot und Orange bis Gelb.
+    file: fire.rb
+    check:
+      type: files
+      path: fire.rb
+      expect:
+        format: text
+        contains:
+          - { pattern: 'set_palette\s*\(\s*(?:i\s*\+\s*32|32\s*\+\s*i)\s*,', say: 'In `fire.rb` finde ich noch keine Zeile für die Farben 32 bis 47. Sie beginnt wie die anderen: `set_palette(i + 32, …`.' }
+          - { pattern: 'set_palette\s*\(\s*(?:i\s*\+\s*32|32\s*\+\s*i)\s*,\s*255\s*,\s*(?:(?:i\s*\*\s*8|8\s*\*\s*i)\s*\+\s*128|128\s*\+\s*(?:i\s*\*\s*8|8\s*\*\s*i))\s*,\s*(?:i\s*\*\s*8|8\s*\*\s*i)\s*\)', say: 'Die Zeile mit `i + 32` ist da, aber ein Farbwert stimmt noch nicht. Rot bleibt bei 255. Grün fängt bei 128 an und wächst, Blau fängt bei 0 an und wächst. Ein Kanal, der wächst, ist `i * 8` plus der Wert, mit dem er anfängt.' }
+    feedback:
+      - when: { problem: missing }
+        say: 'Ich finde `/workspace/fire.rb` nicht. Hast du die Datei unter dem Namen `fire.rb` gespeichert, ohne geöffneten Ordner?'
+
+  - id: abschnitt-4
+    title: Gelb bis Weiß
+    prompt: |
+      Schreib in `fire.rb` die Zeile für die Farben 48 bis 63 und speichere.
+      Führst du das Programm danach aus, endet der Verlauf rechts in Weiß.
+    file: fire.rb
+    check:
+      type: files
+      path: fire.rb
+      expect:
+        format: text
+        contains:
+          - { pattern: 'set_palette\s*\(\s*(?:i\s*\+\s*48|48\s*\+\s*i)\s*,', say: 'In `fire.rb` finde ich noch keine Zeile für die Farben 48 bis 63. Sie beginnt wie die anderen: `set_palette(i + 48, …`.' }
+          - { pattern: 'set_palette\s*\(\s*(?:i\s*\+\s*48|48\s*\+\s*i)\s*,\s*255\s*,\s*255\s*,\s*(?:(?:i\s*\*\s*8|8\s*\*\s*i)\s*\+\s*128|128\s*\+\s*(?:i\s*\*\s*8|8\s*\*\s*i))\s*\)', say: 'Die Zeile mit `i + 48` ist da, aber ein Farbwert stimmt noch nicht. Rot und Grün bleiben bei 255. Blau fängt bei 128 an und wächst.' }
+    feedback:
+      - when: { problem: missing }
+        say: 'Ich finde `/workspace/fire.rb` nicht. Hast du die Datei unter dem Namen `fire.rb` gespeichert, ohne geöffneten Ordner?'
+
   - id: blau-63
     title: Ganz genau Weiß?
     prompt: |
@@ -43,6 +80,30 @@ tasks:
       Schleife `(0...16)` hört bei 15 auf, deshalb erreicht keiner der vier
       Abschnitte ganz sein Ziel. Das letzte Weiß ist (255, 255, 248); den
       Unterschied sieht man nicht.
+
+  - id: kernel-anwenden
+    title: Der Kernel in zwei Schleifen
+    prompt: |
+      Schreib in `fire.rb` die beiden Schleifen mit dem Kernel und speichere.
+      Führst du das Programm danach aus, steigt nach einer kleinen Weile vom
+      hellen Rechteck ein weicher Verlauf nach oben.
+    file: fire.rb
+    check:
+      type: files
+      path: fire.rb
+      expect:
+        format: text
+        contains:
+          - { pattern: '\(\s*0\s*\.\.\.\s*128\s*\)|\(\s*0\s*\.\.\s*127\s*\)|\b128\.times\b|\b0\.upto\s*\(\s*127\s*\)', say: 'In `fire.rb` finde ich noch keine Schleife für `y` von 0 bis 127, etwa `(0...128).each do |y|`.' }
+          - { pattern: '\(\s*0\s*\.\.\.\s*256\s*\)|\(\s*0\s*\.\.\s*255\s*\)|\b256\.times\b|\b0\.upto\s*\(\s*255\s*\)', say: 'In `fire.rb` finde ich noch keine Schleife für `x` von 0 bis 255, etwa `(0...256).each do |x|`.' }
+          - { pattern: 'get_pixel\s*\(\s*x\s*,\s*y\s*\+\s*1\s*\)\s*\*\s*2\b|\b2\s*\*\s*get_pixel\s*\(\s*x\s*,\s*y\s*\+\s*1\s*\)|get_pixel\s*\(\s*x\s*,\s*y\s*\+\s*1\s*\).*get_pixel\s*\(\s*x\s*,\s*y\s*\+\s*1\s*\)', say: 'Das Pixel darunter, `get_pixel(x, y + 1)`, zählt noch nicht doppelt.' }
+          - { pattern: 'get_pixel\s*\(\s*x\s*-\s*1\s*,\s*y\s*\)', say: 'Noch fehlt das linke Pixel. Es liegt in derselben Zeile, ein Pixel weiter links.' }
+          - { pattern: 'get_pixel\s*\(\s*x\s*\+\s*1\s*,\s*y\s*\)', say: 'Noch fehlt das rechte Pixel. Es liegt in derselben Zeile, ein Pixel weiter rechts.' }
+          - { pattern: '/=?\s*4(?![\d.])', say: 'Die Summe wird noch nicht durch 4 geteilt.' }
+          - { pattern: 'set_pixel\s*\(\s*x\s*,\s*y\s*,\s*c\s*\)', say: 'Noch bekommt das Pixel die neue Farbe nicht: `set_pixel(x, y, c)`.' }
+    feedback:
+      - when: { problem: missing }
+        say: 'Ich finde `/workspace/fire.rb` nicht. Hast du die Datei unter dem Namen `fire.rb` gespeichert, ohne geöffneten Ordner?'
 
   - id: kernel
     title: Ein Pixel mit dem Kernel
@@ -137,3 +198,29 @@ tasks:
       Mittel −1: Jedes Pixel kühlt in jedem Bild ein wenig mehr ab, und das
       summiert sich auf dem Weg nach oben. Mit `rand(7) - 2` füllt das Feuer
       dagegen bald das ganze Bild.
+
+  - id: quadrat
+    title: Ein Quadrat, das sich dreht
+    extra: true
+    prompt: |
+      Zeichne in `fire.rb` das Quadrat, das sich dreht, und speichere. Führst
+      du das Programm danach aus, dreht sich ein weißes Quadrat langsam im
+      Uhrzeigersinn, und aus ihm schlagen Flammen nach oben.
+    file: fire.rb
+    check:
+      type: files
+      path: fire.rb
+      expect:
+        format: text
+        contains:
+          - { pattern: '\bdraw_line\s*\(', say: 'In `fire.rb` zeichnet noch nichts die Seiten des Quadrats: `draw_line` verbindet zwei Ecken.' }
+          - { pattern: 'Math\.cos\s*\(', say: 'Für die x-Koordinate der Ecken fehlt noch `Math.cos`.' }
+          - { pattern: 'Math\.sin\s*\(', say: 'Für die y-Koordinate der Ecken fehlt noch `Math.sin`.' }
+          - { pattern: '\b128\s*\+\s*30\s*\*|30\s*\*\s*Math\.cos\s*\([^)]*\)\s*\+\s*128\b', say: 'Die Ecken liegen noch nicht auf dem Kreis um die Mitte (128, 80) mit dem Radius 30: x ist 128 plus 30 mal der Kosinus.' }
+          - { pattern: '\b80\s*\+\s*30\s*\*|30\s*\*\s*Math\.sin\s*\([^)]*\)\s*\+\s*80\b', say: 'Die Ecken liegen noch nicht auf dem Kreis um die Mitte (128, 80) mit dem Radius 30: y ist 80 plus 30 mal der Sinus.' }
+          - { pattern: 'Math::PI\s*(?:/\s*2(?:\.0*)?(?![\d.])|\*\s*0?\.50*(?!\d))|\b0?\.50*\s*\*\s*Math::PI|Math::PI\s*\*\s*\w+\s*/\s*2(?:\.0*)?(?![\d.])|2\s*\*\s*Math::PI\s*(?:\*\s*\w+\s*)?/\s*4', say: 'Die Ecken liegen noch nicht je eine Vierteldrehung auseinander. Ruby rechnet Winkel nicht in Grad: Eine Vierteldrehung ist `Math::PI / 2`.' }
+          - { pattern: '\bset_color\s*\(\s*63\s*\)', say: 'Das Quadrat braucht die Farbe 63, die heißeste: `set_color(63)` vor `draw_line`.' }
+          - { pattern: '\bangle\s*\+=\s*0?\.03(?!\d)|\bangle\s*=\s*angle\s*\+\s*0?\.03(?!\d)', say: '`angle` wächst noch nicht um 0.03, und ohne das dreht sich das Quadrat nicht.' }
+    feedback:
+      - when: { problem: missing }
+        say: 'Ich finde `/workspace/fire.rb` nicht. Hast du die Datei unter dem Namen `fire.rb` gespeichert, ohne geöffneten Ordner?'

@@ -46,3 +46,88 @@ examples:
         say: clamp(0, 63)
       - files: { fire.rb: stufen/fire4.rb }
         say: if c > 0
+  abschnitt-3:
+    pass:
+      - files: { fire.rb: stufen/ramp3.rb }
+      # anders geschrieben: erst der Anfang, dann der Anstieg
+      - files: { fire.rb: { text: "        set_palette(32 + i, 255, 128 + 8 * i, 8*i)\n" } }
+    fail:
+      # der Stand davor, mit der Lücke
+      - files: { fire.rb: stufen/ramp2.rb }
+        say: i + 32
+      # Grün fängt bei 0 an statt bei 128
+      - files: { fire.rb: { text: "        set_palette(i + 32, 255, i * 8, i * 8)\n" } }
+        say: Grün fängt bei 128 an
+  abschnitt-4:
+    pass:
+      - files: { fire.rb: stufen/ramp4.rb }
+      - files: { fire.rb: fire.rb }
+    fail:
+      - files: { fire.rb: stufen/ramp3.rb }
+        say: i + 48
+      # Blau fängt bei 0 an statt bei 128
+      - files: { fire.rb: { text: "        set_palette(i + 48, 255, 255, i * 8)\n" } }
+        say: Blau fängt bei 128 an
+  kernel-anwenden:
+    pass:
+      - files: { fire.rb: stufen/fire2.rb }
+      - files: { fire.rb: fire.rb }
+      # anders geschrieben: 128.times, das untere Pixel vorn, in einer Zeile geteilt
+      - files:
+          fire.rb:
+            text: |
+              128.times do |y|
+                  256.times do |x|
+                      c = (2 * get_pixel(x, y + 1) + get_pixel(x - 1, y) + get_pixel(x + 1, y)) / 4
+                      set_pixel(x, y, c)
+                  end
+              end
+    fail:
+      # das Gerüst der Animation, noch ohne Kernel
+      - files: { fire.rb: draft1.rb }
+        say: Schleife für `y`
+      # der Mittelwert der drei: das untere Pixel nur einfach
+      - files:
+          fire.rb:
+            text: |
+              (0...128).each do |y|
+                  (0...256).each do |x|
+                      c = get_pixel(x, y + 1)
+                      c += get_pixel(x - 1, y)
+                      c += get_pixel(x + 1, y)
+                      c /= 3
+                      set_pixel(x, y, c)
+                  end
+              end
+        say: zählt noch nicht doppelt
+  quadrat:
+    pass:
+      - files: { fire.rb: stufen/form.rb }
+      # anders geschrieben: die Ecken mit Math::PI * k / 2, angle = angle + 0.03
+      - files:
+          fire.rb:
+            text: |
+                      set_color(63)
+                      corners = (0...4).map { |k| [30 * Math.cos(angle + Math::PI * k / 2) + 128, 30 * Math.sin(angle + Math::PI * k / 2) + 80] }
+                      4.times { |k| draw_line(*corners[k], *corners[(k + 1) % 4]) }
+                      angle = angle + 0.03
+    fail:
+      # das ganze Feuer, noch ohne Quadrat
+      - files: { fire.rb: fire.rb }
+        say: draw_line
+      # die Ecken in Grad statt im Bogenmaß
+      - files:
+          fire.rb:
+            text: |
+                      set_color(63)
+                      corners = (0...4).map do |k|
+                          a = angle + k * 90
+                          [128 + 30 * Math.cos(a), 80 + 30 * Math.sin(a)]
+                      end
+                      (0...4).each do |k|
+                          x0, y0 = corners[k]
+                          x1, y1 = corners[(k + 1) % 4]
+                          draw_line(x0, y0, x1, y1)
+                      end
+                      angle += 0.03
+        say: Math::PI / 2
