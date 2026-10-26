@@ -52,14 +52,8 @@
         if (closable) {
             const x = document.createElement('button');
             x.type = 'button';
-            // the site's icon, alone in the button and in its middle; the
-            // player page does not load the icons itself
-            if (!document.querySelector('link[href*="bootstrap-icons"]')) {
-                const icons = document.createElement('link');
-                icons.rel = 'stylesheet';
-                icons.href = '/include/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css';
-                document.head.appendChild(icons);
-            }
+            // the site's icon (index.html loads them), alone in the button
+            // and in its middle
             x.innerHTML = "<i class='bi bi-x-lg' aria-hidden='true' style='margin: 0;'></i>";
             x.setAttribute('aria-label', 'Schließen');
             Object.assign(x.style, {
