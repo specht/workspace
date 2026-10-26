@@ -146,3 +146,41 @@ test('pictures of a Kata card', async ({ page, e2eEmail }, testInfo) => {
     await card.screenshot({ path: testInfo.outputPath(`kata-${scheme}-${width}.png`) });
   }
 });
+
+// Pip (PipCheck): the plan runs against the world on the server, the card
+// plays the run back step by step and marks each step's line; a mistake
+// names the line. The page /pip-1 exists in development only.
+const PIP_SHAFT = {
+  ruby: 'move\nmove\nturn_left\nturn_left\nturn_left\nmove\nmove\nmove\n',
+  python: 'move()\nmove()\nturn_left()\nturn_left()\nturn_left()\nmove()\nmove()\nmove()\n',
+};
+
+test('Pip walks a plan, and a wall names the line', async ({ page, e2eEmail }, testInfo) => {
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/pip-1');
+  // the prediction's map is drawn from the text in the page
+  await expect(page.locator('.pip-static .pip-label')).toHaveCount(3);
+  await expect(page.locator('.pip-static .pip-pip')).toHaveCount(1);
+
+  const card = page.locator('.task-card[data-task="pip-1/shaft"]:visible');
+  const language = (await languageOf(card));
+  await expect(card.locator('.pip-map .pip-pip')).toHaveAttribute('data-facing', 'east');
+  await card.locator('.task-code').fill(language === 'ruby' ? 'move\nturn_left\nmove\n' : 'move()\nturn_left()\nmove()\n');
+  await card.locator('.task-submit').click();
+  await expect(card.locator('.task-feedback')).toContainText('Hier in Zeile 3 läuft Pip gegen die Wand.', { timeout: 30_000 });
+
+  await card.locator('.task-code').fill(PIP_SHAFT[language]);
+  await card.locator('.task-submit').click();
+  await expect(card.locator('.task-feedback')).toContainText('Pip schafft es.', { timeout: 30_000 });
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  // the replay ends at the lamp, the last step on the last line
+  await expect(card.locator('.pip-status')).toHaveText('Schritt 8, Zeile 8', { timeout: 20_000 });
+  await expect(card.locator('.pip-pip')).toHaveAttribute('data-facing', 'south');
+  for (const [scheme, width] of [['light', 1100], ['dark', 1100], ['light', 390]] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    await page.setViewportSize({ width, height: 900 });
+    await page.waitForTimeout(500);
+    await card.screenshot({ path: testInfo.outputPath(`pip-${scheme}-${width}.png`) });
+    await page.locator('.pip-static').screenshot({ path: testInfo.outputPath(`pip-static-${scheme}-${width}.png`) });
+  }
+});

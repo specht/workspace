@@ -25,6 +25,7 @@
     zum Prüfen.
   entries:
     - .katas
+    - .pip-1
     - .kata-functions
     - .kata-decisions
     - .kata-loops

@@ -759,3 +759,21 @@ the data export include it); »Eingereicht · Zurücknehmen« removes it. The
 class board lists them per Kata as »Lösung 1, 2 …« in an order of their own
 (`KataHandIns`), with the line what they are for, »Namen zeigen«, and a
 viewer for the projector (`kata_hand_ins.js`).
+
+**Step 7, Pip, Teil 1: done, dev-only, waiting for the maintainer's look at
+the pictures.** `PipWorld` (`src/ruby/include/pip_world.rb`) is the world on
+the server: the map, turn by turn, the Glibbers, the events, the trace.
+`PipCheck` (check type `pip`, aufgaben.md) runs the plan with a prelude per
+language in a Kata container; `KataRunner` got a dialog mode in which each
+command line (`DIALOG_MARK`) is answered by the world on stdin. The card
+draws the first map and plays a run back (`pip_world.js`, `PipPlayer`) with
+the line in the editor marked (`codeInputMark`); a map in the page for a
+prediction is `pip-static`. Story lines after a Kata wait until it is solved.
+The page `pip-1` has five chapters, 13 Katas (two Extras) and a prediction,
+in Ruby, Python and JavaScript; the Glibber maps were chosen by searching
+all fixed plans with up to eight waits, none of which passes all three. The
+pictures are made by `src/static/images/pip/make_sprites.py` from the 2D Game
+Studio's catalogue (`catalog/`): Pip in four directions, Glibber, Bello,
+stone, lamp, lever, gate, wall, floor, paw prints, puddle, Wichtel. Still
+open: the tunnel map at the top of the page that lights up per chapter, and
+`same_as`-style feedback by trace.

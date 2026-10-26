@@ -1,0 +1,204 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Der Startcode jeder Kata muss von selbst scheitern; das prüft der Test ohne Beispiel.
+format: 1
+activity: pip-1
+examples:
+  shaft:
+    pass:
+      - answer: "move\nmove\nturn_left\nturn_left\nturn_left\nmove\nmove\nmove\n"
+    fail:
+      - answer: "move\nmove\nturn_left\nmove\nmove\nmove\n"
+    python:
+      pass:
+        - answer: "move()\nmove()\nturn_left()\nturn_left()\nturn_left()\nmove()\nmove()\nmove()\n"
+      fail:
+        - answer: "move()\nmove()\nturn_left()\nmove()\nmove()\nmove()\n"
+    javascript:
+      pass:
+        - answer: "move();\nmove();\nturnLeft();\nturnLeft();\nturnLeft();\nmove();\nmove();\nmove();\n"
+      fail:
+        - answer: "move();\nmove();\nturnLeft();\nmove();\nmove();\nmove();\n"
+  first-stone:
+    pass:
+      - answer: "move\nmove\nturn_left\nturn_left\nturn_left\nmove\ntake\nmove\nmove\n"
+    fail:
+      - answer: "move\nmove\nturn_left\nturn_left\nturn_left\nmove\nmove\nmove\n"
+      - answer: "move\nmove\ntake\n"
+    python:
+      pass:
+        - answer: "move()\nmove()\nturn_left()\nturn_left()\nturn_left()\nmove()\ntake()\nmove()\nmove()\n"
+      fail:
+        - answer: "move()\nmove()\nturn_left()\nturn_left()\nturn_left()\nmove()\nmove()\nmove()\n"
+        - answer: "move()\nmove()\ntake()\n"
+    javascript:
+      pass:
+        - answer: "move();\nmove();\nturnLeft();\nturnLeft();\nturnLeft();\nmove();\ntake();\nmove();\nmove();\n"
+      fail:
+        - answer: "move();\nmove();\nturnLeft();\nturnLeft();\nturnLeft();\nmove();\nmove();\nmove();\n"
+        - answer: "move();\nmove();\ntake();\n"
+  few-stones:
+    pass:
+      - answer: "move\ntake\nmove\nmove\ntake\nturn_left\nturn_left\nturn_left\nmove\ntake\nmove\n"
+    fail:
+      - answer: "move\ntake\nmove\nmove\ntake\nmove\n"
+    python:
+      pass:
+        - answer: "move()\ntake()\nmove()\nmove()\ntake()\nturn_left()\nturn_left()\nturn_left()\nmove()\ntake()\nmove()\n"
+      fail:
+        - answer: "move()\ntake()\nmove()\nmove()\ntake()\nmove()\n"
+    javascript:
+      pass:
+        - answer: "move();\ntake();\nmove();\nmove();\ntake();\nturnLeft();\nturnLeft();\nturnLeft();\nmove();\ntake();\nmove();\n"
+      fail:
+        - answer: "move();\ntake();\nmove();\nmove();\ntake();\nmove();\n"
+  tunnel:
+    pass:
+      - answer: "move\ntake\nmove\ntake\nturn_left\nturn_left\nturn_left\nmove\ntake\nmove\ntake\nturn_left\nmove\ntake\nmove\ntake\nmove\ntake\nturn_left\nturn_left\nturn_left\nmove\ntake\nmove\ntake\nturn_left\nturn_left\nturn_left\nmove\ntake\nmove\ntake\nmove\n"
+    fail:
+      - answer: "move\ntake\nmove\ntake\nturn_left\nturn_left\nturn_left\nmove\ntake\nmove\ntake\nturn_left\nmove\ntake\nmove\ntake\nmove\ntake\nturn_left\nturn_left\nturn_left\nmove\ntake\nmove\ntake\nturn_left\nturn_left\nturn_left\nmove\ntake\nmove\ntake\n"
+    python:
+      pass:
+        - answer: "move()\ntake()\nmove()\ntake()\nturn_left()\nturn_left()\nturn_left()\nmove()\ntake()\nmove()\ntake()\nturn_left()\nmove()\ntake()\nmove()\ntake()\nmove()\ntake()\nturn_left()\nturn_left()\nturn_left()\nmove()\ntake()\nmove()\ntake()\nturn_left()\nturn_left()\nturn_left()\nmove()\ntake()\nmove()\ntake()\nmove()\n"
+      fail:
+        - answer: "move()\ntake()\nmove()\ntake()\nturn_left()\nturn_left()\nturn_left()\nmove()\ntake()\nmove()\ntake()\nturn_left()\nmove()\ntake()\nmove()\ntake()\nmove()\ntake()\nturn_left()\nturn_left()\nturn_left()\nmove()\ntake()\nmove()\ntake()\nturn_left()\nturn_left()\nturn_left()\nmove()\ntake()\nmove()\ntake()\n"
+    javascript:
+      pass:
+        - answer: "move();\ntake();\nmove();\ntake();\nturnLeft();\nturnLeft();\nturnLeft();\nmove();\ntake();\nmove();\ntake();\nturnLeft();\nmove();\ntake();\nmove();\ntake();\nmove();\ntake();\nturnLeft();\nturnLeft();\nturnLeft();\nmove();\ntake();\nmove();\ntake();\nturnLeft();\nturnLeft();\nturnLeft();\nmove();\ntake();\nmove();\ntake();\nmove();\n"
+      fail:
+        - answer: "move();\ntake();\nmove();\ntake();\nturnLeft();\nturnLeft();\nturnLeft();\nmove();\ntake();\nmove();\ntake();\nturnLeft();\nmove();\ntake();\nmove();\ntake();\nmove();\ntake();\nturnLeft();\nturnLeft();\nturnLeft();\nmove();\ntake();\nmove();\ntake();\nturnLeft();\nturnLeft();\nturnLeft();\nmove();\ntake();\nmove();\ntake();\n"
+  broken-plan:
+    pass:
+      - answer: "move\nmove\ntake\nturn_left\nturn_left\nturn_left\nmove\nmove\nturn_left\nmove\ntake\nmove\nmove\ntake\nmove\nturn_left\nturn_left\nturn_left\nmove\ntake\nmove\nturn_left\nturn_left\nturn_left\nmove\ntake\nmove\n"
+    python:
+      pass:
+        - answer: "move()\nmove()\ntake()\nturn_left()\nturn_left()\nturn_left()\nmove()\nmove()\nturn_left()\nmove()\ntake()\nmove()\nmove()\ntake()\nmove()\nturn_left()\nturn_left()\nturn_left()\nmove()\ntake()\nmove()\nturn_left()\nturn_left()\nturn_left()\nmove()\ntake()\nmove()\n"
+    javascript:
+      pass:
+        - answer: "move();\nmove();\ntake();\nturnLeft();\nturnLeft();\nturnLeft();\nmove();\nmove();\nturnLeft();\nmove();\ntake();\nmove();\nmove();\ntake();\nmove();\nturnLeft();\nturnLeft();\nturnLeft();\nmove();\ntake();\nmove();\nturnLeft();\nturnLeft();\nturnLeft();\nmove();\ntake();\nmove();\n"
+  room:
+    pass:
+      - answer: "4.times do\n  move\n  move\n  take\n  move\n  turn_left\nend\n"
+    fail:
+      - answer: "4.times do\n  # was Pip an jeder Wand entlang macht\nend\n"
+    python:
+      pass:
+        - answer: "for i in range(4):\n    move()\n    move()\n    take()\n    move()\n    turn_left()\n"
+      fail:
+        - answer: "for i in range(4):\n    # was Pip an jeder Wand entlang macht\n    pass\n"
+    javascript:
+      pass:
+        - answer: "for (let i = 0; i < 4; i++) {\n  move();\n  move();\n  take();\n  move();\n  turnLeft();\n}\n"
+      fail:
+        - answer: "for (let i = 0; i < 4; i++) {\n  // was Pip an jeder Wand entlang macht\n}\n"
+  corridor:
+    pass:
+      - answer: "8.times do\n  move\n  take\nend\n"
+    fail:
+      - answer: "move\ntake\nmove\ntake\nmove\ntake\nmove\ntake\nmove\ntake\nmove\ntake\nmove\ntake\n"
+    python:
+      pass:
+        - answer: "for i in range(8):\n    move()\n    take()\n"
+      fail:
+        - answer: "move()\ntake()\nmove()\ntake()\nmove()\ntake()\nmove()\ntake()\nmove()\ntake()\nmove()\ntake()\nmove()\ntake()\n"
+    javascript:
+      pass:
+        - answer: "for (let i = 0; i < 8; i++) {\n  move();\n  take();\n}\n"
+      fail:
+        - answer: "move();\ntake();\nmove();\ntake();\nmove();\ntake();\nmove();\ntake();\nmove();\ntake();\nmove();\ntake();\nmove();\ntake();\n"
+  spiral:
+    pass:
+      - answer: "(1..6).each do |side|\n  side.times do\n    move\n    take\n  end\n  turn_left\nend\n"
+    fail:
+      - answer: "8.times do\n  move\n  take\nend\n"
+    python:
+      pass:
+        - answer: "for side in range(1, 7):\n    for step in range(side):\n        move()\n        take()\n    turn_left()\n"
+      fail:
+        - answer: "for i in range(8):\n    move()\n    take()\n"
+    javascript:
+      pass:
+        - answer: "for (let side = 1; side <= 6; side++) {\n  for (let step = 0; step < side; step++) {\n    move();\n    take();\n  }\n  turnLeft();\n}\n"
+      fail:
+        - answer: "for (let i = 0; i < 8; i++) {\n  move();\n  take();\n}\n"
+  spiral-short:
+    pass:
+      - answer: "(1..6).each do |side|\n  side.times do\n    move\n    take\n  end\n  turn_left\nend\n"
+    fail:
+      - answer: "move\ntake\nturn_left\nmove\ntake\nmove\ntake\nturn_left\nmove\ntake\nmove\ntake\nmove\ntake\nturn_left\nmove\ntake\nmove\ntake\nmove\ntake\nmove\ntake\nturn_left\nmove\ntake\nmove\ntake\nmove\ntake\nmove\ntake\nmove\ntake\nturn_left\nmove\ntake\nmove\ntake\nmove\ntake\nmove\ntake\nmove\ntake\nmove\ntake\nturn_left\n"
+        say: "Pip schafft es, aber dein Plan hat 48 Zeilen. Geht es in höchstens 7?"
+    python:
+      pass:
+        - answer: "for side in range(1, 7):\n    for step in range(side):\n        move()\n        take()\n    turn_left()\n"
+      fail:
+        - answer: "move()\ntake()\nturn_left()\nmove()\ntake()\nmove()\ntake()\nturn_left()\nmove()\ntake()\nmove()\ntake()\nmove()\ntake()\nturn_left()\nmove()\ntake()\nmove()\ntake()\nmove()\ntake()\nmove()\ntake()\nturn_left()\nmove()\ntake()\nmove()\ntake()\nmove()\ntake()\nmove()\ntake()\nmove()\ntake()\nturn_left()\nmove()\ntake()\nmove()\ntake()\nmove()\ntake()\nmove()\ntake()\nmove()\ntake()\nmove()\ntake()\nturn_left()\n"
+          say: "Pip schafft es, aber dein Plan hat 48 Zeilen. Geht es in höchstens 7?"
+    javascript:
+      pass:
+        - answer: "for (let side = 1; side <= 6; side++) {\n  for (let step = 0; step < side; step++) {\n    move();\n    take();\n  }\n  turnLeft();\n}\n"
+      fail:
+        - answer: "move();\ntake();\nturnLeft();\nmove();\ntake();\nmove();\ntake();\nturnLeft();\nmove();\ntake();\nmove();\ntake();\nmove();\ntake();\nturnLeft();\nmove();\ntake();\nmove();\ntake();\nmove();\ntake();\nmove();\ntake();\nturnLeft();\nmove();\ntake();\nmove();\ntake();\nmove();\ntake();\nmove();\ntake();\nmove();\ntake();\nturnLeft();\nmove();\ntake();\nmove();\ntake();\nmove();\ntake();\nmove();\ntake();\nmove();\ntake();\nmove();\ntake();\nturnLeft();\n"
+          say: "Pip schafft es, aber dein Plan hat 48 Zeilen. Geht es in höchstens 7?"
+  meadow:
+    pass:
+      - answer: "2.times do\n  4.times do\n    move\n    take\n  end\n  turn_left\n  move\n  take\n  turn_left\n  4.times do\n    move\n    take\n  end\n  3.times do\n    turn_left\n  end\n  move\n  take\n  3.times do\n    turn_left\n  end\nend\n"
+    fail:
+      - answer: "4.times do\n  move\n  take\nend\n"
+    python:
+      pass:
+        - answer: "for i in range(2):\n    for j in range(4):\n        move()\n        take()\n    turn_left()\n    move()\n    take()\n    turn_left()\n    for j in range(4):\n        move()\n        take()\n    for j in range(3):\n        turn_left()\n    move()\n    take()\n    for j in range(3):\n        turn_left()\n"
+      fail:
+        - answer: "for i in range(4):\n    move()\n    take()\n"
+    javascript:
+      pass:
+        - answer: "for (let i = 0; i < 2; i++) {\n  for (let j = 0; j < 4; j++) {\n    move();\n    take();\n  }\n  turnLeft();\n  move();\n  take();\n  turnLeft();\n  for (let j = 0; j < 4; j++) {\n    move();\n    take();\n  }\n  for (let j = 0; j < 3; j++) {\n    turnLeft();\n  }\n  move();\n  take();\n  for (let j = 0; j < 3; j++) {\n    turnLeft();\n  }\n}\n"
+      fail:
+        - answer: "for (let i = 0; i < 4; i++) {\n  move();\n  take();\n}\n"
+  meadow-stones:
+    pass:
+      - answer: "2.times do\n  4.times do\n    move\n    take if on_stone?\n  end\n  turn_left\n  move\n  take if on_stone?\n  turn_left\n  4.times do\n    move\n    take if on_stone?\n  end\n  3.times do\n    turn_left\n  end\n  move\n  take if on_stone?\n  3.times do\n    turn_left\n  end\nend\n"
+    fail:
+      - answer: "2.times do\n  4.times do\n    move\n    take\n  end\n  turn_left\n  move\n  take\n  turn_left\n  4.times do\n    move\n    take\n  end\n  3.times do\n    turn_left\n  end\n  move\n  take\n  3.times do\n    turn_left\n  end\nend\n"
+    python:
+      pass:
+        - answer: "for i in range(2):\n    for j in range(4):\n        move()\n        if on_stone():\n            take()\n    turn_left()\n    move()\n    if on_stone():\n        take()\n    turn_left()\n    for j in range(4):\n        move()\n        if on_stone():\n            take()\n    for j in range(3):\n        turn_left()\n    move()\n    if on_stone():\n        take()\n    for j in range(3):\n        turn_left()\n"
+      fail:
+        - answer: "for i in range(2):\n    for j in range(4):\n        move()\n        take()\n    turn_left()\n    move()\n    take()\n    turn_left()\n    for j in range(4):\n        move()\n        take()\n    for j in range(3):\n        turn_left()\n    move()\n    take()\n    for j in range(3):\n        turn_left()\n"
+    javascript:
+      pass:
+        - answer: "for (let i = 0; i < 2; i++) {\n  for (let j = 0; j < 4; j++) {\n    move();\n    if (onStone()) {\n      take();\n    }\n  }\n  turnLeft();\n  move();\n  if (onStone()) {\n    take();\n  }\n  turnLeft();\n  for (let j = 0; j < 4; j++) {\n    move();\n    if (onStone()) {\n      take();\n    }\n  }\n  for (let j = 0; j < 3; j++) {\n    turnLeft();\n  }\n  move();\n  if (onStone()) {\n    take();\n  }\n  for (let j = 0; j < 3; j++) {\n    turnLeft();\n  }\n}\n"
+      fail:
+        - answer: "for (let i = 0; i < 2; i++) {\n  for (let j = 0; j < 4; j++) {\n    move();\n    take();\n  }\n  turnLeft();\n  move();\n  take();\n  turnLeft();\n  for (let j = 0; j < 4; j++) {\n    move();\n    take();\n  }\n  for (let j = 0; j < 3; j++) {\n    turnLeft();\n  }\n  move();\n  take();\n  for (let j = 0; j < 3; j++) {\n    turnLeft();\n  }\n}\n"
+  glibber:
+    pass:
+      - answer: "move\nmove\nwait\nwait\nmove\nmove\nmove\nmove\n"
+    fail:
+      - answer: "6.times do\n  move\nend\n"
+    python:
+      pass:
+        - answer: "move()\nmove()\nwait()\nwait()\nmove()\nmove()\nmove()\nmove()\n"
+      fail:
+        - answer: "for i in range(6):\n    move()\n"
+    javascript:
+      pass:
+        - answer: "move();\nmove();\nwait();\nwait();\nmove();\nmove();\nmove();\nmove();\n"
+      fail:
+        - answer: "for (let i = 0; i < 6; i++) {\n  move();\n}\n"
+  glibbers:
+    pass:
+      - answer: "20.times do\n  if glibber_ahead?\n    wait\n  else\n    move\n  end\nend\n"
+    fail:
+      - answer: "10.times do\n  move\nend\n"
+      - answer: "wait\nwait\nmove\nmove\nmove\nmove\nmove\nmove\nmove\nmove\nmove\nmove\n"
+    python:
+      pass:
+        - answer: "for i in range(20):\n    if glibber_ahead():\n        wait()\n    else:\n        move()\n"
+      fail:
+        - answer: "for i in range(10):\n    move()\n"
+        - answer: "wait()\nwait()\nmove()\nmove()\nmove()\nmove()\nmove()\nmove()\nmove()\nmove()\nmove()\nmove()\n"
+    javascript:
+      pass:
+        - answer: "for (let i = 0; i < 20; i++) {\n  if (glibberAhead()) {\n    wait();\n  } else {\n    move();\n  }\n}\n"
+      fail:
+        - answer: "for (let i = 0; i < 10; i++) {\n  move();\n}\n"
+        - answer: "wait();\nwait();\nmove();\nmove();\nmove();\nmove();\nmove();\nmove();\nmove();\nmove();\nmove();\nmove();\n"

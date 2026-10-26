@@ -1,0 +1,1700 @@
+format: 1
+activity: pip-1
+tasks:
+  - id: predict
+    title: "Wo steht Pip?"
+    prediction: true
+    prompt: |
+      Pip schaut nach rechts. Wo steht Pip nach dem Plan oben?
+    check:
+      type: choice
+      options: ["Auf Feld 1", "Auf Feld 2", "Auf Feld 3", "Pip läuft gegen die Wand"]
+      correct: 0
+
+  - id: shaft
+    title: "Hinunter zur Lampe"
+    level: 1
+    prompt: |
+      Unten im Schacht steht die Lampe des Wichtels. Schreib Pip einen Plan mit `move` und `turn_left`, der Pip zur Lampe bringt.
+    starter: |
+      # Dein Plan, ein Befehl pro Zeile
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left]
+      maps:
+        - facing: east
+          map: |
+            #######
+            #P..###
+            ###.###
+            ###.###
+            ###L###
+            #######
+      goal: { lamp: true }
+    hint: |
+      Nach zwei Schritten muss Pip nach rechts abbiegen, aber Pip kann sich nur nach links drehen. Wie oft nach links ergibt einmal rechts?
+    solution: |
+      ```ruby
+      move
+      move
+      turn_left
+      turn_left
+      turn_left
+      move
+      move
+      move
+      ```
+    python:
+      prompt: |
+        Unten im Schacht steht die Lampe des Wichtels. Schreib Pip einen Plan mit `move()` und `turn_left()`, der Pip zur Lampe bringt.
+      starter: |
+        # Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left]
+        maps:
+          - facing: east
+            map: |
+              #######
+              #P..###
+              ###.###
+              ###.###
+              ###L###
+              #######
+        goal: { lamp: true }
+      hint: |
+        Nach zwei Schritten muss Pip nach rechts abbiegen, aber Pip kann sich nur nach links drehen. Wie oft nach links ergibt einmal rechts?
+      solution: |
+        ```python
+        move()
+        move()
+        turn_left()
+        turn_left()
+        turn_left()
+        move()
+        move()
+        move()
+        ```
+    javascript:
+      prompt: |
+        Unten im Schacht steht die Lampe des Wichtels. Schreib Pip einen Plan mit `move()` und `turnLeft()`, der Pip zur Lampe bringt.
+      starter: |
+        // Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left]
+        maps:
+          - facing: east
+            map: |
+              #######
+              #P..###
+              ###.###
+              ###.###
+              ###L###
+              #######
+        goal: { lamp: true }
+      hint: |
+        Nach zwei Schritten muss Pip nach rechts abbiegen, aber Pip kann sich nur nach links drehen. Wie oft nach links ergibt einmal rechts?
+      solution: |
+        ```javascript
+        move();
+        move();
+        turnLeft();
+        turnLeft();
+        turnLeft();
+        move();
+        move();
+        move();
+        ```
+
+  - id: first-stone
+    title: "Der erste Funkenstein"
+    level: 1
+    prompt: |
+      Auf dem Weg nach unten liegt ein Funkenstein. Pip hebt ihn mit `take` auf, wenn Pip auf seinem Feld steht. Bring Pip mit dem Stein zur Lampe.
+    starter: |
+      # Dein Plan, ein Befehl pro Zeile
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, take]
+      maps:
+        - facing: east
+          map: |
+            #######
+            #P..###
+            ###o###
+            ###.###
+            ###L###
+            #######
+      goal: { lamp: true, stones: all }
+    hint: "Erst auf das Feld des Steins gehen, dann `take`. Steht Pip daneben, greift Pip ins Leere."
+    solution: |
+      ```ruby
+      move
+      move
+      turn_left
+      turn_left
+      turn_left
+      move
+      take
+      move
+      move
+      ```
+    python:
+      prompt: |
+        Auf dem Weg nach unten liegt ein Funkenstein. Pip hebt ihn mit `take()` auf, wenn Pip auf seinem Feld steht. Bring Pip mit dem Stein zur Lampe.
+      starter: |
+        # Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, take]
+        maps:
+          - facing: east
+            map: |
+              #######
+              #P..###
+              ###o###
+              ###.###
+              ###L###
+              #######
+        goal: { lamp: true, stones: all }
+      hint: |
+        Erst auf das Feld des Steins gehen, dann `take()`. Steht Pip daneben, greift Pip ins Leere.
+      solution: |
+        ```python
+        move()
+        move()
+        turn_left()
+        turn_left()
+        turn_left()
+        move()
+        take()
+        move()
+        move()
+        ```
+    javascript:
+      prompt: |
+        Auf dem Weg nach unten liegt ein Funkenstein. Pip hebt ihn mit `take()` auf, wenn Pip auf seinem Feld steht. Bring Pip mit dem Stein zur Lampe.
+      starter: |
+        // Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, take]
+        maps:
+          - facing: east
+            map: |
+              #######
+              #P..###
+              ###o###
+              ###.###
+              ###L###
+              #######
+        goal: { lamp: true, stones: all }
+      hint: |
+        Erst auf das Feld des Steins gehen, dann `take()`. Steht Pip daneben, greift Pip ins Leere.
+      solution: |
+        ```javascript
+        move();
+        move();
+        turnLeft();
+        turnLeft();
+        turnLeft();
+        move();
+        take();
+        move();
+        move();
+        ```
+
+  - id: few-stones
+    title: "Drei Steine"
+    level: 1
+    prompt: |
+      Drei Funkensteine liegen im Stollen. Sammle alle drei ein und bring Pip zur Lampe.
+    starter: |
+      # Dein Plan, ein Befehl pro Zeile
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, take]
+      maps:
+        - facing: east
+          map: |
+            #######
+            #Po.o.#
+            ####o##
+            ####L##
+            #######
+      goal: { lamp: true, stones: all }
+    hint: |
+      Geh den Weg auf der Karte mit dem Finger ab und schreib für jedes Feld auf, was Pip dort tut. Am Ende des Stollens geht es nicht weiter: Pip biegt vorher ab.
+    solution: |
+      ```ruby
+      move
+      take
+      move
+      move
+      take
+      turn_left
+      turn_left
+      turn_left
+      move
+      take
+      move
+      ```
+    python:
+      prompt: |
+        Drei Funkensteine liegen im Stollen. Sammle alle drei ein und bring Pip zur Lampe.
+      starter: |
+        # Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, take]
+        maps:
+          - facing: east
+            map: |
+              #######
+              #Po.o.#
+              ####o##
+              ####L##
+              #######
+        goal: { lamp: true, stones: all }
+      hint: |
+        Geh den Weg auf der Karte mit dem Finger ab und schreib für jedes Feld auf, was Pip dort tut. Am Ende des Stollens geht es nicht weiter: Pip biegt vorher ab.
+      solution: |
+        ```python
+        move()
+        take()
+        move()
+        move()
+        take()
+        turn_left()
+        turn_left()
+        turn_left()
+        move()
+        take()
+        move()
+        ```
+    javascript:
+      prompt: |
+        Drei Funkensteine liegen im Stollen. Sammle alle drei ein und bring Pip zur Lampe.
+      starter: |
+        // Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, take]
+        maps:
+          - facing: east
+            map: |
+              #######
+              #Po.o.#
+              ####o##
+              ####L##
+              #######
+        goal: { lamp: true, stones: all }
+      hint: |
+        Geh den Weg auf der Karte mit dem Finger ab und schreib für jedes Feld auf, was Pip dort tut. Am Ende des Stollens geht es nicht weiter: Pip biegt vorher ab.
+      solution: |
+        ```javascript
+        move();
+        take();
+        move();
+        move();
+        take();
+        turnLeft();
+        turnLeft();
+        turnLeft();
+        move();
+        take();
+        move();
+        ```
+
+  - id: tunnel
+    title: "Der lange Stollen"
+    level: 2
+    prompt: |
+      Im langen Stollen liegen elf Funkensteine, einer auf jedem Feld bis zur Lampe. Sammle alle ein.
+    starter: |
+      # Dein Plan, ein Befehl pro Zeile
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, take]
+      maps:
+        - facing: east
+          map: |
+            ##########
+            #Poo######
+            ###o######
+            ###oooo###
+            ######o###
+            ###Looo###
+            ##########
+      goal: { lamp: true, stones: all }
+    hint: |
+      Schreib den Plan Stück für Stück und probier ihn mit <em>Ausführen</em> aus, sobald ein Stück fertig ist. Läuft Pip gegen eine Wand, zeigt die Wiedergabe, in welcher Zeile.
+    solution: |
+      ```ruby
+      move
+      take
+      move
+      take
+      turn_left
+      turn_left
+      turn_left
+      move
+      take
+      move
+      take
+      turn_left
+      move
+      take
+      move
+      take
+      move
+      take
+      turn_left
+      turn_left
+      turn_left
+      move
+      take
+      move
+      take
+      turn_left
+      turn_left
+      turn_left
+      move
+      take
+      move
+      take
+      move
+      ```
+    python:
+      prompt: |
+        Im langen Stollen liegen elf Funkensteine, einer auf jedem Feld bis zur Lampe. Sammle alle ein.
+      starter: |
+        # Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, take]
+        maps:
+          - facing: east
+            map: |
+              ##########
+              #Poo######
+              ###o######
+              ###oooo###
+              ######o###
+              ###Looo###
+              ##########
+        goal: { lamp: true, stones: all }
+      hint: |
+        Schreib den Plan Stück für Stück und probier ihn mit <em>Ausführen</em> aus, sobald ein Stück fertig ist. Läuft Pip gegen eine Wand, zeigt die Wiedergabe, in welcher Zeile.
+      solution: |
+        ```python
+        move()
+        take()
+        move()
+        take()
+        turn_left()
+        turn_left()
+        turn_left()
+        move()
+        take()
+        move()
+        take()
+        turn_left()
+        move()
+        take()
+        move()
+        take()
+        move()
+        take()
+        turn_left()
+        turn_left()
+        turn_left()
+        move()
+        take()
+        move()
+        take()
+        turn_left()
+        turn_left()
+        turn_left()
+        move()
+        take()
+        move()
+        take()
+        move()
+        ```
+    javascript:
+      prompt: |
+        Im langen Stollen liegen elf Funkensteine, einer auf jedem Feld bis zur Lampe. Sammle alle ein.
+      starter: |
+        // Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, take]
+        maps:
+          - facing: east
+            map: |
+              ##########
+              #Poo######
+              ###o######
+              ###oooo###
+              ######o###
+              ###Looo###
+              ##########
+        goal: { lamp: true, stones: all }
+      hint: |
+        Schreib den Plan Stück für Stück und probier ihn mit <em>Ausführen</em> aus, sobald ein Stück fertig ist. Läuft Pip gegen eine Wand, zeigt die Wiedergabe, in welcher Zeile.
+      solution: |
+        ```javascript
+        move();
+        take();
+        move();
+        take();
+        turnLeft();
+        turnLeft();
+        turnLeft();
+        move();
+        take();
+        move();
+        take();
+        turnLeft();
+        move();
+        take();
+        move();
+        take();
+        move();
+        take();
+        turnLeft();
+        turnLeft();
+        turnLeft();
+        move();
+        take();
+        move();
+        take();
+        turnLeft();
+        turnLeft();
+        turnLeft();
+        move();
+        take();
+        move();
+        take();
+        move();
+        ```
+
+  - id: broken-plan
+    title: "Fehlersuche"
+    extra: true
+    prompt: |
+      Der Wichtel hat einen Plan geschrieben, aber Pip läuft damit gegen eine Wand. Lass ihn mit <em>Ausführen</em> laufen, such die falsche Stelle und repariere sie, sodass Pip alle Steine einsammelt und zur Lampe kommt.
+    starter: |
+      move
+      move
+      take
+      turn_left
+      turn_left
+      turn_left
+      move
+      move
+      turn_left
+      move
+      take
+      move
+      move
+      take
+      move
+      turn_left
+      move
+      take
+      move
+      turn_left
+      turn_left
+      turn_left
+      move
+      take
+      move
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, take]
+      maps:
+        - facing: east
+          map: |
+            #########
+            #P.o#####
+            ###.#####
+            ###.o.o.#
+            #######o#
+            #####Lo.#
+            #########
+      goal: { lamp: true, stones: all }
+    hint: |
+      Die Rückmeldung nennt die Zeile, in der Pip gegen die Wand läuft. Der Fehler steht kurz davor: In welche Richtung schaut Pip dort, und in welche sollte Pip schauen?
+    solution: |
+      ```ruby
+      move
+      move
+      take
+      turn_left
+      turn_left
+      turn_left
+      move
+      move
+      turn_left
+      move
+      take
+      move
+      move
+      take
+      move
+      turn_left
+      turn_left
+      turn_left
+      move
+      take
+      move
+      turn_left
+      turn_left
+      turn_left
+      move
+      take
+      move
+      ```
+    python:
+      prompt: |
+        Der Wichtel hat einen Plan geschrieben, aber Pip läuft damit gegen eine Wand. Lass ihn mit <em>Ausführen</em> laufen, such die falsche Stelle und repariere sie, sodass Pip alle Steine einsammelt und zur Lampe kommt.
+      starter: |
+        move()
+        move()
+        take()
+        turn_left()
+        turn_left()
+        turn_left()
+        move()
+        move()
+        turn_left()
+        move()
+        take()
+        move()
+        move()
+        take()
+        move()
+        turn_left()
+        move()
+        take()
+        move()
+        turn_left()
+        turn_left()
+        turn_left()
+        move()
+        take()
+        move()
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, take]
+        maps:
+          - facing: east
+            map: |
+              #########
+              #P.o#####
+              ###.#####
+              ###.o.o.#
+              #######o#
+              #####Lo.#
+              #########
+        goal: { lamp: true, stones: all }
+      hint: |
+        Die Rückmeldung nennt die Zeile, in der Pip gegen die Wand läuft. Der Fehler steht kurz davor: In welche Richtung schaut Pip dort, und in welche sollte Pip schauen?
+      solution: |
+        ```python
+        move()
+        move()
+        take()
+        turn_left()
+        turn_left()
+        turn_left()
+        move()
+        move()
+        turn_left()
+        move()
+        take()
+        move()
+        move()
+        take()
+        move()
+        turn_left()
+        turn_left()
+        turn_left()
+        move()
+        take()
+        move()
+        turn_left()
+        turn_left()
+        turn_left()
+        move()
+        take()
+        move()
+        ```
+    javascript:
+      prompt: |
+        Der Wichtel hat einen Plan geschrieben, aber Pip läuft damit gegen eine Wand. Lass ihn mit <em>Ausführen</em> laufen, such die falsche Stelle und repariere sie, sodass Pip alle Steine einsammelt und zur Lampe kommt.
+      starter: |
+        move();
+        move();
+        take();
+        turnLeft();
+        turnLeft();
+        turnLeft();
+        move();
+        move();
+        turnLeft();
+        move();
+        take();
+        move();
+        move();
+        take();
+        move();
+        turnLeft();
+        move();
+        take();
+        move();
+        turnLeft();
+        turnLeft();
+        turnLeft();
+        move();
+        take();
+        move();
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, take]
+        maps:
+          - facing: east
+            map: |
+              #########
+              #P.o#####
+              ###.#####
+              ###.o.o.#
+              #######o#
+              #####Lo.#
+              #########
+        goal: { lamp: true, stones: all }
+      hint: |
+        Die Rückmeldung nennt die Zeile, in der Pip gegen die Wand läuft. Der Fehler steht kurz davor: In welche Richtung schaut Pip dort, und in welche sollte Pip schauen?
+      solution: |
+        ```javascript
+        move();
+        move();
+        take();
+        turnLeft();
+        turnLeft();
+        turnLeft();
+        move();
+        move();
+        turnLeft();
+        move();
+        take();
+        move();
+        move();
+        take();
+        move();
+        turnLeft();
+        turnLeft();
+        turnLeft();
+        move();
+        take();
+        move();
+        turnLeft();
+        turnLeft();
+        turnLeft();
+        move();
+        take();
+        move();
+        ```
+
+  - id: room
+    title: "Vier Wände"
+    level: 1
+    prompt: |
+      In diesem Raum liegt an jeder Wand ein Funkenstein, an jeder an derselben Stelle. Pip macht an jeder Wand dasselbe: Schreib es einmal in die Schleife, und Pip wiederholt es viermal.
+    starter: |
+      4.times do
+        # was Pip an jeder Wand entlang macht
+      end
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, take]
+      maps:
+        - facing: east
+          map: |
+            ######
+            #.o..#
+            #...o#
+            #o...#
+            #P.o.#
+            ######
+      goal: { stones: all }
+    hint: |
+      Schau dir die erste Wand an: Wie viele Schritte bis zum Stein, wie viele danach bis zur Ecke? An der Ecke dreht sich Pip nach links.
+    solution: |
+      ```ruby
+      4.times do
+        move
+        move
+        take
+        move
+        turn_left
+      end
+      ```
+    python:
+      prompt: |
+        In diesem Raum liegt an jeder Wand ein Funkenstein, an jeder an derselben Stelle. Pip macht an jeder Wand dasselbe: Schreib es einmal in die Schleife, und Pip wiederholt es viermal.
+      starter: |
+        for i in range(4):
+            # was Pip an jeder Wand entlang macht
+            pass
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, take]
+        maps:
+          - facing: east
+            map: |
+              ######
+              #.o..#
+              #...o#
+              #o...#
+              #P.o.#
+              ######
+        goal: { stones: all }
+      hint: |
+        Schau dir die erste Wand an: Wie viele Schritte bis zum Stein, wie viele danach bis zur Ecke? An der Ecke dreht sich Pip nach links.
+      solution: |
+        ```python
+        for i in range(4):
+            move()
+            move()
+            take()
+            move()
+            turn_left()
+        ```
+    javascript:
+      prompt: |
+        In diesem Raum liegt an jeder Wand ein Funkenstein, an jeder an derselben Stelle. Pip macht an jeder Wand dasselbe: Schreib es einmal in die Schleife, und Pip wiederholt es viermal.
+      starter: |
+        for (let i = 0; i < 4; i++) {
+          // was Pip an jeder Wand entlang macht
+        }
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, take]
+        maps:
+          - facing: east
+            map: |
+              ######
+              #.o..#
+              #...o#
+              #o...#
+              #P.o.#
+              ######
+        goal: { stones: all }
+      hint: |
+        Schau dir die erste Wand an: Wie viele Schritte bis zum Stein, wie viele danach bis zur Ecke? An der Ecke dreht sich Pip nach links.
+      solution: |
+        ```javascript
+        for (let i = 0; i < 4; i++) {
+          move();
+          move();
+          take();
+          move();
+          turnLeft();
+        }
+        ```
+
+  - id: corridor
+    title: "Acht in einer Reihe"
+    level: 2
+    prompt: |
+      Acht Steine in einer Reihe. Sammle sie mit einer Schleife ein, nicht mit sechzehn Zeilen.
+    starter: |
+      # Dein Plan, ein Befehl pro Zeile
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, take]
+      maps:
+        - facing: east
+          map: |
+            ###########
+            #Poooooooo#
+            ###########
+      goal: { stones: all }
+    hint: "Was wiederholt sich? Ein Schritt und ein Griff, achtmal."
+    solution: |
+      ```ruby
+      8.times do
+        move
+        take
+      end
+      ```
+    python:
+      prompt: |
+        Acht Steine in einer Reihe. Sammle sie mit einer Schleife ein, nicht mit sechzehn Zeilen.
+      starter: |
+        # Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, take]
+        maps:
+          - facing: east
+            map: |
+              ###########
+              #Poooooooo#
+              ###########
+        goal: { stones: all }
+      hint: "Was wiederholt sich? Ein Schritt und ein Griff, achtmal."
+      solution: |
+        ```python
+        for i in range(8):
+            move()
+            take()
+        ```
+    javascript:
+      prompt: |
+        Acht Steine in einer Reihe. Sammle sie mit einer Schleife ein, nicht mit sechzehn Zeilen.
+      starter: |
+        // Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, take]
+        maps:
+          - facing: east
+            map: |
+              ###########
+              #Poooooooo#
+              ###########
+        goal: { stones: all }
+      hint: "Was wiederholt sich? Ein Schritt und ein Griff, achtmal."
+      solution: |
+        ```javascript
+        for (let i = 0; i < 8; i++) {
+          move();
+          take();
+        }
+        ```
+
+  - id: spiral
+    title: "Die Wendeltreppe"
+    level: 3
+    prompt: |
+      Die Wendeltreppe windet sich von der Mitte nach außen: erst ein Feld, dann zwei, dann drei, bis sechs, und nach jedem Stück eine Linksdrehung. Auf jedem Feld liegt ein Stein.
+    starter: |
+      # Dein Plan, ein Befehl pro Zeile
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, take]
+      maps:
+        - facing: east
+          map: |
+            ########
+            ######o#
+            ######o#
+            #oooo#o#
+            #o##o#o#
+            #o#Po#o#
+            #o####o#
+            #oooooo#
+            ########
+      goal: { stones: all }
+    hint:
+      - "Als lange Liste wären es über vierzig Zeilen. Die Stücke unterscheiden sich nur in der Länge: 1, 2, 3, 4, 5, 6."
+      - "Eine Schleife mit Zählvariable: `(1..6).each do |side| … end`. Darin wiederholt `side.times do … end` so oft, wie das Stück gerade lang ist."
+    solution: |
+      ```ruby
+      (1..6).each do |side|
+        side.times do
+          move
+          take
+        end
+        turn_left
+      end
+      ```
+    python:
+      prompt: |
+        Die Wendeltreppe windet sich von der Mitte nach außen: erst ein Feld, dann zwei, dann drei, bis sechs, und nach jedem Stück eine Linksdrehung. Auf jedem Feld liegt ein Stein.
+      starter: |
+        # Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, take]
+        maps:
+          - facing: east
+            map: |
+              ########
+              ######o#
+              ######o#
+              #oooo#o#
+              #o##o#o#
+              #o#Po#o#
+              #o####o#
+              #oooooo#
+              ########
+        goal: { stones: all }
+      hint:
+        - "Als lange Liste wären es über vierzig Zeilen. Die Stücke unterscheiden sich nur in der Länge: 1, 2, 3, 4, 5, 6."
+        - "Eine Schleife mit Zählvariable: `for side in range(1, 7):`. Darin wiederholt `for step in range(side):` so oft, wie das Stück gerade lang ist."
+      solution: |
+        ```python
+        for side in range(1, 7):
+            for step in range(side):
+                move()
+                take()
+            turn_left()
+        ```
+    javascript:
+      prompt: |
+        Die Wendeltreppe windet sich von der Mitte nach außen: erst ein Feld, dann zwei, dann drei, bis sechs, und nach jedem Stück eine Linksdrehung. Auf jedem Feld liegt ein Stein.
+      starter: |
+        // Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, take]
+        maps:
+          - facing: east
+            map: |
+              ########
+              ######o#
+              ######o#
+              #oooo#o#
+              #o##o#o#
+              #o#Po#o#
+              #o####o#
+              #oooooo#
+              ########
+        goal: { stones: all }
+      hint:
+        - "Als lange Liste wären es über vierzig Zeilen. Die Stücke unterscheiden sich nur in der Länge: 1, 2, 3, 4, 5, 6."
+        - "Eine Schleife mit Zählvariable: `for (let side = 1; side <= 6; side++) { … }`. Darin wiederholt `for (let step = 0; step < side; step++)` so oft, wie das Stück gerade lang ist."
+      solution: |
+        ```javascript
+        for (let side = 1; side <= 6; side++) {
+          for (let step = 0; step < side; step++) {
+            move();
+            take();
+          }
+          turnLeft();
+        }
+        ```
+
+  - id: spiral-short
+    title: "Die Wendeltreppe in sieben Zeilen"
+    extra: true
+    prompt: |
+      Dieselbe Wendeltreppe, aber der Plan hat höchstens sieben Zeilen. Kommentare und leere Zeilen zählen nicht mit.
+    starter: |
+      # Dein Plan, ein Befehl pro Zeile
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, take]
+      max_lines: 7
+      maps:
+        - facing: east
+          map: |
+            ########
+            ######o#
+            ######o#
+            #oooo#o#
+            #o##o#o#
+            #o#Po#o#
+            #o####o#
+            #oooooo#
+            ########
+      goal: { stones: all }
+    hint: |
+      Zwei Schleifen ineinander: Die äußere zählt die Länge des Stücks mit, die innere läuft so oft, wie das Stück lang ist.
+    solution: |
+      ```ruby
+      (1..6).each do |side|
+        side.times do
+          move
+          take
+        end
+        turn_left
+      end
+      ```
+    python:
+      prompt: |
+        Dieselbe Wendeltreppe, aber der Plan hat höchstens sieben Zeilen. Kommentare und leere Zeilen zählen nicht mit.
+      starter: |
+        # Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, take]
+        max_lines: 7
+        maps:
+          - facing: east
+            map: |
+              ########
+              ######o#
+              ######o#
+              #oooo#o#
+              #o##o#o#
+              #o#Po#o#
+              #o####o#
+              #oooooo#
+              ########
+        goal: { stones: all }
+      hint: |
+        Zwei Schleifen ineinander: Die äußere zählt die Länge des Stücks mit, die innere läuft so oft, wie das Stück lang ist.
+      solution: |
+        ```python
+        for side in range(1, 7):
+            for step in range(side):
+                move()
+                take()
+            turn_left()
+        ```
+    javascript:
+      prompt: |
+        Dieselbe Wendeltreppe, aber der Plan hat höchstens sieben Zeilen. Kommentare und leere Zeilen zählen nicht mit.
+      starter: |
+        // Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, take]
+        max_lines: 7
+        maps:
+          - facing: east
+            map: |
+              ########
+              ######o#
+              ######o#
+              #oooo#o#
+              #o##o#o#
+              #o#Po#o#
+              #o####o#
+              #oooooo#
+              ########
+        goal: { stones: all }
+      hint: |
+        Zwei Schleifen ineinander: Die äußere zählt die Länge des Stücks mit, die innere läuft so oft, wie das Stück lang ist.
+      solution: |
+        ```javascript
+        for (let side = 1; side <= 6; side++) {
+          for (let step = 0; step < side; step++) {
+            move();
+            take();
+          }
+          turnLeft();
+        }
+        ```
+
+  - id: meadow
+    title: "Reihe für Reihe"
+    level: 2
+    prompt: |
+      Auf der Pilzwiese liegt auf jedem Feld ein Funkenstein. Geh sie in Schlangenlinien ab, Reihe für Reihe, und sammle alle ein. Die Lampe steht am Ende der letzten Reihe.
+    starter: |
+      # Dein Plan, ein Befehl pro Zeile
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, take]
+      maps:
+        - facing: east
+          map: |
+            #######
+            #Loooo#
+            #ooooo#
+            #ooooo#
+            #Poooo#
+            #######
+      goal: { lamp: true, stones: all }
+    hint: |
+      Zwei Reihen hin und zurück sind ein Stück, das sich wiederholt: hin, links hoch, zurück, rechts hoch. Rechts ist dreimal links. Und sobald Pip die Lampe erreicht, ist der Plan zu Ende, auch mitten in der Schleife.
+    solution: |
+      ```ruby
+      2.times do
+        4.times do
+          move
+          take
+        end
+        turn_left
+        move
+        take
+        turn_left
+        4.times do
+          move
+          take
+        end
+        3.times do
+          turn_left
+        end
+        move
+        take
+        3.times do
+          turn_left
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Auf der Pilzwiese liegt auf jedem Feld ein Funkenstein. Geh sie in Schlangenlinien ab, Reihe für Reihe, und sammle alle ein. Die Lampe steht am Ende der letzten Reihe.
+      starter: |
+        # Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, take]
+        maps:
+          - facing: east
+            map: |
+              #######
+              #Loooo#
+              #ooooo#
+              #ooooo#
+              #Poooo#
+              #######
+        goal: { lamp: true, stones: all }
+      hint: |
+        Zwei Reihen hin und zurück sind ein Stück, das sich wiederholt: hin, links hoch, zurück, rechts hoch. Rechts ist dreimal links. Und sobald Pip die Lampe erreicht, ist der Plan zu Ende, auch mitten in der Schleife.
+      solution: |
+        ```python
+        for i in range(2):
+            for j in range(4):
+                move()
+                take()
+            turn_left()
+            move()
+            take()
+            turn_left()
+            for j in range(4):
+                move()
+                take()
+            for j in range(3):
+                turn_left()
+            move()
+            take()
+            for j in range(3):
+                turn_left()
+        ```
+    javascript:
+      prompt: |
+        Auf der Pilzwiese liegt auf jedem Feld ein Funkenstein. Geh sie in Schlangenlinien ab, Reihe für Reihe, und sammle alle ein. Die Lampe steht am Ende der letzten Reihe.
+      starter: |
+        // Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, take]
+        maps:
+          - facing: east
+            map: |
+              #######
+              #Loooo#
+              #ooooo#
+              #ooooo#
+              #Poooo#
+              #######
+        goal: { lamp: true, stones: all }
+      hint: |
+        Zwei Reihen hin und zurück sind ein Stück, das sich wiederholt: hin, links hoch, zurück, rechts hoch. Rechts ist dreimal links. Und sobald Pip die Lampe erreicht, ist der Plan zu Ende, auch mitten in der Schleife.
+      solution: |
+        ```javascript
+        for (let i = 0; i < 2; i++) {
+          for (let j = 0; j < 4; j++) {
+            move();
+            take();
+          }
+          turnLeft();
+          move();
+          take();
+          turnLeft();
+          for (let j = 0; j < 4; j++) {
+            move();
+            take();
+          }
+          for (let j = 0; j < 3; j++) {
+            turnLeft();
+          }
+          move();
+          take();
+          for (let j = 0; j < 3; j++) {
+            turnLeft();
+          }
+        }
+        ```
+
+  - id: meadow-stones
+    title: "Mal hier, mal da"
+    level: 3
+    prompt: |
+      Auf der Wiese liegen die Steine nicht mehr überall, und der Wichtel hat drei Karten, auf jeder liegen sie woanders. Ein Plan für alle drei: Pip prüft mit `on_stone?`, ob auf dem Feld ein Stein liegt, und hebt ihn nur dann auf.
+    starter: |
+      # Dein Plan, ein Befehl pro Zeile
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, take, on_stone]
+      maps:
+        - facing: east
+          map: |
+            #######
+            #L.o..#
+            #o...o#
+            #..o..#
+            #P.o..#
+            #######
+        - facing: east
+          map: |
+            #######
+            #L...o#
+            #.oo..#
+            #o...o#
+            #P...o#
+            #######
+        - facing: east
+          map: |
+            #######
+            #Lo...#
+            #...o.#
+            #.o..o#
+            #Po.o.#
+            #######
+      goal: { lamp: true, stones: all }
+    hint: |
+      Dein Plan von »Reihe für Reihe« passt fast: Wo dort `take` steht, nimmt Pip jetzt nur auf, wenn `on_stone?` wahr ist.
+    solution: |
+      ```ruby
+      2.times do
+        4.times do
+          move
+          take if on_stone?
+        end
+        turn_left
+        move
+        take if on_stone?
+        turn_left
+        4.times do
+          move
+          take if on_stone?
+        end
+        3.times do
+          turn_left
+        end
+        move
+        take if on_stone?
+        3.times do
+          turn_left
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Auf der Wiese liegen die Steine nicht mehr überall, und der Wichtel hat drei Karten, auf jeder liegen sie woanders. Ein Plan für alle drei: Pip prüft mit `on_stone()`, ob auf dem Feld ein Stein liegt, und hebt ihn nur dann auf.
+      starter: |
+        # Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, take, on_stone]
+        maps:
+          - facing: east
+            map: |
+              #######
+              #L.o..#
+              #o...o#
+              #..o..#
+              #P.o..#
+              #######
+          - facing: east
+            map: |
+              #######
+              #L...o#
+              #.oo..#
+              #o...o#
+              #P...o#
+              #######
+          - facing: east
+            map: |
+              #######
+              #Lo...#
+              #...o.#
+              #.o..o#
+              #Po.o.#
+              #######
+        goal: { lamp: true, stones: all }
+      hint: |
+        Dein Plan von »Reihe für Reihe« passt fast: Wo dort `take()` steht, nimmt Pip jetzt nur auf, wenn `on_stone()` wahr ist.
+      solution: |
+        ```python
+        for i in range(2):
+            for j in range(4):
+                move()
+                if on_stone():
+                    take()
+            turn_left()
+            move()
+            if on_stone():
+                take()
+            turn_left()
+            for j in range(4):
+                move()
+                if on_stone():
+                    take()
+            for j in range(3):
+                turn_left()
+            move()
+            if on_stone():
+                take()
+            for j in range(3):
+                turn_left()
+        ```
+    javascript:
+      prompt: |
+        Auf der Wiese liegen die Steine nicht mehr überall, und der Wichtel hat drei Karten, auf jeder liegen sie woanders. Ein Plan für alle drei: Pip prüft mit `onStone()`, ob auf dem Feld ein Stein liegt, und hebt ihn nur dann auf.
+      starter: |
+        // Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, take, on_stone]
+        maps:
+          - facing: east
+            map: |
+              #######
+              #L.o..#
+              #o...o#
+              #..o..#
+              #P.o..#
+              #######
+          - facing: east
+            map: |
+              #######
+              #L...o#
+              #.oo..#
+              #o...o#
+              #P...o#
+              #######
+          - facing: east
+            map: |
+              #######
+              #Lo...#
+              #...o.#
+              #.o..o#
+              #Po.o.#
+              #######
+        goal: { lamp: true, stones: all }
+      hint: |
+        Dein Plan von »Reihe für Reihe« passt fast: Wo dort `take()` steht, nimmt Pip jetzt nur auf, wenn `onStone()` wahr ist.
+      solution: |
+        ```javascript
+        for (let i = 0; i < 2; i++) {
+          for (let j = 0; j < 4; j++) {
+            move();
+            if (onStone()) {
+              take();
+            }
+          }
+          turnLeft();
+          move();
+          if (onStone()) {
+            take();
+          }
+          turnLeft();
+          for (let j = 0; j < 4; j++) {
+            move();
+            if (onStone()) {
+              take();
+            }
+          }
+          for (let j = 0; j < 3; j++) {
+            turnLeft();
+          }
+          move();
+          if (onStone()) {
+            take();
+          }
+          for (let j = 0; j < 3; j++) {
+            turnLeft();
+          }
+        }
+        ```
+
+  - id: glibber
+    title: "Der Glibber"
+    level: 2
+    prompt: |
+      Ein Glibber wabert quer durch den Stollen, auf und ab, ein Feld pro Schritt. Mit `wait` bleibt Pip einen Schritt lang stehen. Bring Pip zur Lampe, ohne dass der Glibber Pip erwischt.
+    starter: |
+      # Dein Plan, ein Befehl pro Zeile
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, wait]
+      maps:
+        - facing: east
+          map: |
+            #########
+            ####.####
+            ####.####
+            #P.....L#
+            ####g####
+            ####.####
+            #########
+      goal: { lamp: true }
+    hint: |
+      Lass Pip erst einfach geradeaus laufen und schau in der Wiedergabe, wo sich beide treffen. Ein oder zwei `wait` an der richtigen Stelle, und der Glibber ist schon vorbei.
+    solution: |
+      ```ruby
+      move
+      move
+      wait
+      wait
+      move
+      move
+      move
+      move
+      ```
+    python:
+      prompt: |
+        Ein Glibber wabert quer durch den Stollen, auf und ab, ein Feld pro Schritt. Mit `wait()` bleibt Pip einen Schritt lang stehen. Bring Pip zur Lampe, ohne dass der Glibber Pip erwischt.
+      starter: |
+        # Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, wait]
+        maps:
+          - facing: east
+            map: |
+              #########
+              ####.####
+              ####.####
+              #P.....L#
+              ####g####
+              ####.####
+              #########
+        goal: { lamp: true }
+      hint: |
+        Lass Pip erst einfach geradeaus laufen und schau in der Wiedergabe, wo sich beide treffen. Ein oder zwei `wait()` an der richtigen Stelle, und der Glibber ist schon vorbei.
+      solution: |
+        ```python
+        move()
+        move()
+        wait()
+        wait()
+        move()
+        move()
+        move()
+        move()
+        ```
+    javascript:
+      prompt: |
+        Ein Glibber wabert quer durch den Stollen, auf und ab, ein Feld pro Schritt. Mit `wait()` bleibt Pip einen Schritt lang stehen. Bring Pip zur Lampe, ohne dass der Glibber Pip erwischt.
+      starter: |
+        // Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, wait]
+        maps:
+          - facing: east
+            map: |
+              #########
+              ####.####
+              ####.####
+              #P.....L#
+              ####g####
+              ####.####
+              #########
+        goal: { lamp: true }
+      hint: |
+        Lass Pip erst einfach geradeaus laufen und schau in der Wiedergabe, wo sich beide treffen. Ein oder zwei `wait()` an der richtigen Stelle, und der Glibber ist schon vorbei.
+      solution: |
+        ```javascript
+        move();
+        move();
+        wait();
+        wait();
+        move();
+        move();
+        move();
+        move();
+        ```
+
+  - id: glibbers
+    title: "Glibber überall"
+    level: 3
+    prompt: |
+      Zwei Glibber, und auf den drei Karten des Wichtels fangen sie an verschiedenen Stellen an. Abzählen hilft nicht mehr. `glibber_ahead?` sagt, ob auf dem nächsten Feld ein Glibber ist oder gleich einer hinkommt: Dann wartet Pip, sonst geht Pip weiter.
+    starter: |
+      # Dein Plan, ein Befehl pro Zeile
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, wait, glibber_ahead]
+      maps:
+        - facing: east
+          map: |
+            #############
+            ####g###g####
+            ####.###.####
+            #P.........L#
+            ####.###.####
+            ####.###.####
+            #############
+        - facing: east
+          map: |
+            #############
+            ####.###g####
+            ####g###.####
+            #P.........L#
+            ####.###.####
+            ####.###.####
+            #############
+        - facing: east
+          map: |
+            #############
+            ####.###.####
+            ####.###.####
+            #P.........L#
+            ####g###g####
+            ####.###.####
+            #############
+      goal: { lamp: true }
+    hint:
+      - "In jedem Durchlauf der Schleife entscheidet Pip neu: warten oder gehen. Wie oft die Schleife läuft, ist egal, wenn es oft genug ist: An der Lampe ist Schluss."
+      - "`if glibber_ahead? … else … end` in einer Schleife."
+    solution: |
+      ```ruby
+      20.times do
+        if glibber_ahead?
+          wait
+        else
+          move
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Zwei Glibber, und auf den drei Karten des Wichtels fangen sie an verschiedenen Stellen an. Abzählen hilft nicht mehr. `glibber_ahead()` sagt, ob auf dem nächsten Feld ein Glibber ist oder gleich einer hinkommt: Dann wartet Pip, sonst geht Pip weiter.
+      starter: |
+        # Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, wait, glibber_ahead]
+        maps:
+          - facing: east
+            map: |
+              #############
+              ####g###g####
+              ####.###.####
+              #P.........L#
+              ####.###.####
+              ####.###.####
+              #############
+          - facing: east
+            map: |
+              #############
+              ####.###g####
+              ####g###.####
+              #P.........L#
+              ####.###.####
+              ####.###.####
+              #############
+          - facing: east
+            map: |
+              #############
+              ####.###.####
+              ####.###.####
+              #P.........L#
+              ####g###g####
+              ####.###.####
+              #############
+        goal: { lamp: true }
+      hint:
+        - "In jedem Durchlauf der Schleife entscheidet Pip neu: warten oder gehen. Wie oft die Schleife läuft, ist egal, wenn es oft genug ist: An der Lampe ist Schluss."
+        - "`if glibber_ahead():` und `else:` in einer Schleife."
+      solution: |
+        ```python
+        for i in range(20):
+            if glibber_ahead():
+                wait()
+            else:
+                move()
+        ```
+    javascript:
+      prompt: |
+        Zwei Glibber, und auf den drei Karten des Wichtels fangen sie an verschiedenen Stellen an. Abzählen hilft nicht mehr. `glibberAhead()` sagt, ob auf dem nächsten Feld ein Glibber ist oder gleich einer hinkommt: Dann wartet Pip, sonst geht Pip weiter.
+      starter: |
+        // Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, wait, glibber_ahead]
+        maps:
+          - facing: east
+            map: |
+              #############
+              ####g###g####
+              ####.###.####
+              #P.........L#
+              ####.###.####
+              ####.###.####
+              #############
+          - facing: east
+            map: |
+              #############
+              ####.###g####
+              ####g###.####
+              #P.........L#
+              ####.###.####
+              ####.###.####
+              #############
+          - facing: east
+            map: |
+              #############
+              ####.###.####
+              ####.###.####
+              #P.........L#
+              ####g###g####
+              ####.###.####
+              #############
+        goal: { lamp: true }
+      hint:
+        - "In jedem Durchlauf der Schleife entscheidet Pip neu: warten oder gehen. Wie oft die Schleife läuft, ist egal, wenn es oft genug ist: An der Lampe ist Schluss."
+        - "`if (glibberAhead()) { … } else { … }` in einer Schleife."
+      solution: |
+        ```javascript
+        for (let i = 0; i < 20; i++) {
+          if (glibberAhead()) {
+            wait();
+          } else {
+            move();
+          }
+        }
+        ```
