@@ -1315,7 +1315,7 @@ tasks:
     title: "Der Hebel"
     level: 1
     prompt: |
-      Vor der Lampe ist ein Tor. Es geht auf, wenn Pip genau dreimal am Hebel zieht: `pull`, auf dem Feld des Hebels. Ein vierter Zug schließt es wieder.
+      Vor der Lampe ragen Stacheln aus dem Boden; darauf tritt Pip nicht. Sie versinken, wenn Pip genau dreimal am Hebel zieht: `pull`, auf dem Feld des Hebels. Ein vierter Zug lässt sie wieder herausfahren.
     starter: |
       # Dein Plan
     check:
@@ -1342,7 +1342,7 @@ tasks:
       ```
     python:
       prompt: |
-        Vor der Lampe ist ein Tor. Es geht auf, wenn Pip genau dreimal am Hebel zieht: `pull()`, auf dem Feld des Hebels. Ein vierter Zug schließt es wieder.
+        Vor der Lampe ragen Stacheln aus dem Boden; darauf tritt Pip nicht. Sie versinken, wenn Pip genau dreimal am Hebel zieht: `pull()`, auf dem Feld des Hebels. Ein vierter Zug lässt sie wieder herausfahren.
       starter: |
         # Dein Plan
       check:
@@ -1369,7 +1369,7 @@ tasks:
         ```
     javascript:
       prompt: |
-        Vor der Lampe ist ein Tor. Es geht auf, wenn Pip genau dreimal am Hebel zieht: `pull()`, auf dem Feld des Hebels. Ein vierter Zug schließt es wieder.
+        Vor der Lampe ragen Stacheln aus dem Boden; darauf tritt Pip nicht. Sie versinken, wenn Pip genau dreimal am Hebel zieht: `pull()`, auf dem Feld des Hebels. Ein vierter Zug lässt sie wieder herausfahren.
       starter: |
         // Dein Plan
       check:
@@ -1399,7 +1399,7 @@ tasks:
     title: "Zu viele Hebel"
     level: 2
     prompt: |
-      Auf diesen Karten stehen drei, vier oder fünf Hebel vor dem Tor, und jeder Zug zählt, egal an welchem. Pip prüft mit `on_lever?`, ob auf dem Feld ein Hebel steht, und zählt in einer Variable mit, wie oft schon gezogen wurde.
+      Auf diesen Karten stehen drei, vier oder fünf Hebel vor den Stacheln, und jeder Zug zählt, egal an welchem. Pip prüft mit `on_lever?`, ob auf dem Feld ein Hebel steht, und zählt in einer Variable mit, wie oft schon gezogen wurde.
     starter: |
       pulls = 0
       # Dein Plan
@@ -1441,7 +1441,7 @@ tasks:
       ```
     python:
       prompt: |
-        Auf diesen Karten stehen drei, vier oder fünf Hebel vor dem Tor, und jeder Zug zählt, egal an welchem. Pip prüft mit `on_lever()`, ob auf dem Feld ein Hebel steht, und zählt in einer Variable mit, wie oft schon gezogen wurde.
+        Auf diesen Karten stehen drei, vier oder fünf Hebel vor den Stacheln, und jeder Zug zählt, egal an welchem. Pip prüft mit `on_lever()`, ob auf dem Feld ein Hebel steht, und zählt in einer Variable mit, wie oft schon gezogen wurde.
       starter: |
         pulls = 0
         # Dein Plan
@@ -1480,7 +1480,7 @@ tasks:
         ```
     javascript:
       prompt: |
-        Auf diesen Karten stehen drei, vier oder fünf Hebel vor dem Tor, und jeder Zug zählt, egal an welchem. Pip prüft mit `onLever()`, ob auf dem Feld ein Hebel steht, und zählt in einer Variable mit, wie oft schon gezogen wurde.
+        Auf diesen Karten stehen drei, vier oder fünf Hebel vor den Stacheln, und jeder Zug zählt, egal an welchem. Pip prüft mit `onLever()`, ob auf dem Feld ein Hebel steht, und zählt in einer Variable mit, wie oft schon gezogen wurde.
       starter: |
         let pulls = 0;
         // Dein Plan
@@ -2050,7 +2050,7 @@ tasks:
     title: "Zurück ans Licht"
     level: 3
     prompt: |
-      Der Weg nach oben: ein langer, gewundener Stollen ohne Abzweigungen, quer durch die Schächte der Glibber. Unterwegs liegen Funkensteine, und vor der Lampe ist ein Tor, das nur nach genau drei Zügen offen ist, verteilt auf zwei Hebel. Drei Karten, ein Plan.
+      Der Weg nach oben: ein langer, gewundener Stollen ohne Abzweigungen, quer durch die Schächte der Glibber. Unterwegs liegen Funkensteine, und vor der Lampe ragen Stacheln aus dem Boden, die nur nach genau drei Zügen versinken, verteilt auf zwei Hebel. Drei Karten, ein Plan.
     starter: |
       # Dein Plan
     check:
@@ -2123,7 +2123,7 @@ tasks:
       ```
     python:
       prompt: |
-        Der Weg nach oben: ein langer, gewundener Stollen ohne Abzweigungen, quer durch die Schächte der Glibber. Unterwegs liegen Funkensteine, und vor der Lampe ist ein Tor, das nur nach genau drei Zügen offen ist, verteilt auf zwei Hebel. Drei Karten, ein Plan.
+        Der Weg nach oben: ein langer, gewundener Stollen ohne Abzweigungen, quer durch die Schächte der Glibber. Unterwegs liegen Funkensteine, und vor der Lampe ragen Stacheln aus dem Boden, die nur nach genau drei Zügen versinken, verteilt auf zwei Hebel. Drei Karten, ein Plan.
       starter: |
         # Dein Plan
       check:
@@ -2194,7 +2194,7 @@ tasks:
         ```
     javascript:
       prompt: |
-        Der Weg nach oben: ein langer, gewundener Stollen ohne Abzweigungen, quer durch die Schächte der Glibber. Unterwegs liegen Funkensteine, und vor der Lampe ist ein Tor, das nur nach genau drei Zügen offen ist, verteilt auf zwei Hebel. Drei Karten, ein Plan.
+        Der Weg nach oben: ein langer, gewundener Stollen ohne Abzweigungen, quer durch die Schächte der Glibber. Unterwegs liegen Funkensteine, und vor der Lampe ragen Stacheln aus dem Boden, die nur nach genau drei Zügen versinken, verteilt auf zwei Hebel. Drei Karten, ein Plan.
       starter: |
         // Dein Plan
       check:

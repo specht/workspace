@@ -935,14 +935,14 @@ check:
 
 Die Zeichen der Karte: `#` Wand, `.` Boden, `P` Pip (Blickrichtung in
 `facing`), `o` Funkenstein, `L` Lampe, `G`/`g` Glibber, der waagerecht/senkrecht
-hin und her wabert, `H` Hebel, `T` Tor, `p` Pfotenabdruck, `~` Pfütze, `B`
+hin und her wabert, `H` Hebel, `T` Stacheln im Boden, `p` Pfotenabdruck, `~` Pfütze, `B`
 Bello. Die Befehle: `move`, `turn_left`, `take`, `wait`, `pull` (je ein
 Schritt), `say` (kein Schritt), die Fragen `on_stone`, `on_lever`,
 `front_clear`, `glibber_ahead`, `on_lamp`, `trail_ahead` (Pfotenabdrücke
 vorn, auch Bello selbst), `puddle_ahead`, `bello_here`. Nach jedem Schritt
 geht jeder Glibber ein Feld weiter. Erreicht Pip die Lampe oder Bello, ist
-der Lauf zu Ende, auch mitten in einer Schleife. Eine Wand, ein geschlossenes
-Tor (drei Züge öffnen es, ein vierter schließt es), `take` ohne Stein, `pull`
+der Lauf zu Ende, auch mitten in einer Schleife. Eine Wand,
+Stacheln, die aus dem Boden ragen (drei Züge versenken sie, ein vierter lässt sie wieder herausfahren; im Spec heißen sie `gate`), `take` ohne Stein, `pull`
 ohne Hebel, ein Glibber, mit `dry: true` eine Pfütze und mehr als 1000
 Schritte beenden den Lauf mit diesem Ereignis; die Rückmeldung nennt die Karte und die Zeile (»In Karte
 2 in Zeile 6 läuft Pip gegen die Wand.«) und spielt diesen Lauf ab. Wo es um

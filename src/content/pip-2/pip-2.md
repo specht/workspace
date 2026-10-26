@@ -197,7 +197,8 @@ _task(island)
 
 ## Drei Hebel
 
-Hinter dem Labyrinth versperrt ein Gitter den Weg. Daneben steht ein Hebel, und
+Hinter dem Labyrinth ragen Stacheln aus dem Boden, quer über den Weg; da tritt
+Pip nicht drauf. Daneben steht ein Hebel, und
 in den Fels hat jemand geritzt: »Dreimal ziehen. Nicht öfter.«
 
 <!-- language: ruby -->
@@ -263,7 +264,7 @@ _task(count-stones)
 
 ## Bellos Spur
 
-Hinter dem Tor riecht es nach nassem Hund. Auf dem Boden sind Pfotenabdrücke,
+Hinter den Stacheln riecht es nach nassem Hund. Auf dem Boden sind Pfotenabdrücke,
 und hier und da Pfützen.
 
 <!-- language: ruby -->

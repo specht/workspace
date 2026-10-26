@@ -177,19 +177,19 @@ examples:
       - answer: "move\nmove\npull\npull\npull\nmove\nmove\nmove\n"
     fail:
       - answer: "move\nmove\npull\npull\npull\npull\nmove\nmove\nmove\n"
-        say: "gegen das geschlossene Tor"
+        say: "vor den Stacheln"
     python:
       pass:
         - answer: "move()\nmove()\npull()\npull()\npull()\nmove()\nmove()\nmove()\n"
       fail:
         - answer: "move()\nmove()\npull()\npull()\npull()\npull()\nmove()\nmove()\nmove()\n"
-          say: "gegen das geschlossene Tor"
+          say: "vor den Stacheln"
     javascript:
       pass:
         - answer: "move();\nmove();\npull();\npull();\npull();\nmove();\nmove();\nmove();\n"
       fail:
         - answer: "move();\nmove();\npull();\npull();\npull();\npull();\nmove();\nmove();\nmove();\n"
-          say: "gegen das geschlossene Tor"
+          say: "vor den Stacheln"
   levers:
     pass:
       - answer: "pulls = 0\nwhile front_clear?\n  move\n  if on_lever?\n    if pulls < 3\n      pull\n      pulls += 1\n    end\n  end\nend\n"

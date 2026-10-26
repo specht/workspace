@@ -396,73 +396,48 @@ def lever(on):
     return img
 
 
-def bar(img, x, foot, height, edge=False):
-    """One iron bar standing up from the floor: lit, then shaded, a point on
-    top, a small dark hole round its foot; edge: a dark line on its left
-    that sets it off from a bar behind it."""
-    for y in range(foot - height, foot + 1):
-        if edge:
-            put(img, x - 1, y, OUT)
-        put(img, x, y, IRON[3])
-        put(img, x + 1, y, IRON[1])
-    put(img, x, foot - height - 1, IRON[3])
-    put(img, x - 1, foot + 1, ROCK[0])
-    put(img, x + 2, foot + 1, ROCK[0])
-    put(img, x, foot + 1, IRON[0])
-    put(img, x + 1, foot + 1, IRON[0])
+SPIKE_FRAMES = 4
 
 
-def rail(img, points, colour):
-    for (x0, y0), (x1, y1) in zip(points, points[1:]):
-        steps = max(abs(x1 - x0), abs(y1 - y0), 1)
-        for i in range(steps + 1):
-            put(img, round(x0 + (x1 - x0) * i / steps), round(y0 + (y1 - y0) * i / steps), colour)
-
-
-def hole(img, x, foot):
-    """Where a bar has sunk into the floor: a ring of iron round a dark hole."""
-    for dx, dy, c in ((-1, 0, IRON[2]), (0, -1, IRON[3]), (1, -1, IRON[2]), (2, 0, IRON[1]), (0, 1, IRON[1]), (1, 1, IRON[0]),
-                      (0, 0, ROCK[0]), (1, 0, ROCK[0])):
-        put(img, x + dx, foot + dy, c)
-
-
-GATE_HEIGHT = 17
-
-
-def gate(along, open_):
-    """The gate: iron bars that rise from the floor and sink back into it.
-    across: the corridor runs up and down, the bars stand side by side and
-    are seen from the front; along: the corridor runs left to right, the
-    row of bars goes into the depth, slanting like the rock's side faces
-    but a little more, so that the bars stand apart, drawn from the back to
-    the front, each in front of the one behind. 24 × 40, the tile in the lower
-    24 rows; open, only their rims show in the floor."""
-    img = canvas(T, 40)
-    if along:
-        feet = [(round(7 + i * 2.5), 19 + round(i * 4.5)) for i in range(5)]
-    else:
-        feet = [(x, 32) for x in (2, 7, 12, 17, 21)]
-    if open_:
-        for x, foot in feet:
-            hole(img, x, foot)
-        return img
-    for x, foot in feet:
-        shadow(img, x + 1, foot + 1.5, 3, 1, 90)
-    rails = (GATE_HEIGHT - 3, GATE_HEIGHT // 2)
-    if along:
-        # each bar, then the pieces of rail in front of it up to the next
-        for k, (x, foot) in enumerate(feet):
-            bar(img, x, foot, GATE_HEIGHT, edge=True)
-            if k + 1 < len(feet):
-                for lift in rails:
-                    rail(img, [(x + 2, foot - lift), (feet[k + 1][0] - 1, feet[k + 1][1] - lift)], IRON[2])
-    else:
-        for lift in rails:
-            rail(img, [(x, foot - lift + 1) for x, foot in feet], IRON[0])
-            rail(img, [(x, foot - lift) for x, foot in feet], IRON[2])
-        for x, foot in feet:
-            bar(img, x, foot, GATE_HEIGHT)
-    outline(img)
+def spikes(frame):
+    """Spikes out of the floor, which Pip does not walk onto: thirteen iron
+    needles scattered over the tile, of different heights, some leaning a
+    little, each with its own dark outline, drawn from the back to the
+    front. Four frames: out (0), sinking (1, 2), sunk (3), where only their
+    holes in the floor show. 24 × 32, the tile in the lower 24 rows, the
+    points reaching up into the tile above."""
+    rng = random.Random(77)
+    points = []
+    while len(points) < 13:
+        x, y = rng.randint(3, 20), rng.randint(13, 30)
+        if all(abs(x - px) + abs(y - py) > 4 for px, py, _, _, _ in points):
+            points.append((x, y, rng.randint(5, 10), 0, rng.choice([0, 0, 0, -1, 1])))
+    points.sort(key=lambda p: p[1])
+    out = 1 - frame / (SPIKE_FRAMES - 1)
+    img = canvas(T, 32)
+    for x, y, height, _, lean in points:
+        # the hole it comes out of
+        for dx in (-1, 0, 1):
+            put(img, x + dx, y, ROCK[0])
+        put(img, x - 2, y, GROUND[0])
+    for x, y, height, _, lean in points:
+        h = round(height * out)
+        if h <= 0:
+            continue
+        # a needle: three pixels wide at its foot, then two, a single one
+        # at its tip
+        shape = []
+        for i in range(h):
+            shift = round(lean * i / max(1, h - 1))
+            columns = (-1, 0, 1) if i < h * 0.35 else (0, 1) if i < h * 0.7 else (0,)
+            shape.extend((dx + shift, -i) for dx in columns)
+        cells = set(shape)
+        for dx, dy in shape:
+            for ox, oy in ((-1, 0), (1, 0), (0, -1)):
+                if (dx + ox, dy + oy) not in cells:
+                    put(img, x + dx + ox, y + dy + oy, OUT)
+        for dx, dy in shape:
+            put(img, x + dx, y + dy, IRON[3] if dx < 0 or (dx == 0 and dy < -1) else IRON[1] if dx > 0 else IRON[2])
     return img
 
 
@@ -598,8 +573,7 @@ def main():
         'bello.png': strip([grounded(f, 8) for f in frames(load('hund_stehen.png'))]),
         'lamp-off.png': lamp(False), 'lamp.png': lamp(True),
         'lever-off.png': lever(False), 'lever-on.png': lever(True),
-        'gate-across.png': gate(False, False), 'gate-across-open.png': gate(False, True),
-        'gate-along.png': gate(True, False), 'gate-along-open.png': gate(True, True),
+        'spikes.png': strip([spikes(i) for i in range(SPIKE_FRAMES)]),
         'puddle.png': puddle(), 'trail.png': trail(), 'trail-diagonal.png': trail_diagonal(),
         'glowshroom.png': glowshroom(), 'mushroom.png': mushroom(), 'crystals.png': crystals(),
         'stalagmite.png': stalagmite(), 'bat.png': strip([bat(i) for i in range(4)]),

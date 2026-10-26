@@ -7,7 +7,7 @@
 // map fits the card.
 (function () {
     const MAX_TILE = 48;
-    const SAY = { wall: 'Autsch!', gate: 'Zu!', puddle: 'Platsch!', bello: 'Bello!', caught: 'Iiih, Glibber!', no_stone: 'Hier ist nichts …', no_lever: 'Kein Hebel?', steps: 'Puh …', lamp: 'Licht!' };
+    const SAY = { wall: 'Autsch!', gate: 'Lieber nicht!', puddle: 'Platsch!', bello: 'Bello!', caught: 'Iiih, Glibber!', no_stone: 'Hier ist nichts …', no_lever: 'Kein Hebel?', steps: 'Puh …', lamp: 'Licht!' };
 
     function el(tag, className, parent) {
         const node = document.createElement(tag);
@@ -57,7 +57,7 @@
     const SIDE = 4;
     const SIDE_ROWS = [7, 5, 4, 3];
     const RIM_FACE = [140, 156, 196];
-    const VERSION = '?v=9';
+    const VERSION = '?v=10';
 
     // The pictures the rock and the ground are drawn from, loaded once for
     // every map on the page and read into pixels: { top, face, ground }.
@@ -124,12 +124,9 @@
             put(layout.puddles, 'puddle');
             this.walls(wall, lights);
             // in the dark, sorted by row
-            // the gate's bars: seen from the front in a corridor that runs up
-            // and down (walls left and right), along it otherwise
-            (layout.gates || []).forEach((p) => {
-                const across = wall(p[0] - 1, p[1]) && wall(p[0] + 1, p[1]);
-                this.tile('gate pip-sort pip-tall ' + (across ? 'pip-gate-across' : 'pip-gate-along'), p);
-            });
+            // spikes in the floor (a gate in the world: T), lowered once the
+            // levers have been pulled three times
+            this.spikes = (layout.gates || []).map((p) => this.tile('spikes pip-sort pip-tall', p));
             this.levers = (layout.levers || []).map((p) => this.tile('lever pip-sort', p));
             if (layout.bello) this.tile('bello pip-sort', layout.bello);
             this.glibbers = (start.glibbers || []).map((p) => this.tile('glibber pip-sort actor', p));
@@ -423,7 +420,7 @@
             this.lantern.style.setProperty('--y', pip.y);
             this.pip.dataset.facing = pip.facing;
             this.pip.classList.toggle('pip-walking', animate && ['move', 'lamp', 'bello'].includes(frame.event));
-            this.pip.classList.toggle('pip-bump', frame.event === 'wall' || frame.event === 'gate');
+            this.pip.classList.toggle('pip-bump', frame.event === 'wall');
             this.pip.classList.toggle('pip-caught', frame.event === 'caught');
             (frame.glibbers || []).forEach((g, i) => {
                 if (!this.glibbers[i]) return;
@@ -445,6 +442,17 @@
             const open = frame.pulls === 3;
             this.levers.forEach((lever) => lever.classList.toggle('pip-pulled', frame.pulls % 2 === 1));
             this.world.classList.toggle('pip-gate-open', open);
+            // the spikes sink or shoot up when the pulls change it, while the
+            // run plays; a jump shows them at once
+            const moving = animate && this.spikesOpen !== undefined && open !== this.spikesOpen;
+            this.spikes.forEach((node) => {
+                node.classList.remove('pip-sinking', 'pip-rising');
+                if (moving) {
+                    void node.offsetWidth;
+                    node.classList.add(open ? 'pip-sinking' : 'pip-rising');
+                }
+            });
+            this.spikesOpen = open;
             const text = frame.event === 'say' ? frame.text : SAY[frame.event];
             this.bubble.hidden = !text;
             if (text) {

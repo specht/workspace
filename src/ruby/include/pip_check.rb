@@ -82,7 +82,7 @@ module PipCheck
 
     EVENTS = {
         'wall' => 'läuft Pip gegen die Wand',
-        'gate' => 'läuft Pip gegen das geschlossene Tor',
+        'gate' => 'bleibt Pip vor den Stacheln stehen',
         'no_stone' => 'greift Pip ins Leere: Hier liegt kein Funkenstein',
         'no_lever' => 'zieht Pip an einem Hebel, der nicht da ist',
         'caught' => 'erwischt ein Glibber Pip',
@@ -328,7 +328,7 @@ module PipCheck
             return "liegt am Ende noch #{n == 1 ? 'ein Funkenstein' : "#{n} Funkensteine"} da."
         end
         return 'steht Pip am Ende nicht an der Lampe.' if goal['lamp'] && !world.at_lamp?
-        return 'ist das Tor am Ende nicht offen.' if goal['gate'] == 'open' && !world.gate_open?
+        return 'ragen die Stacheln am Ende noch aus dem Boden.' if goal['gate'] == 'open' && !world.gate_open?
         return 'hat Pip Bello am Ende nicht gefunden.' if goal['bello'] && !world.at_bello?
         if goal['say'] == 'stones'
             n = world.taken

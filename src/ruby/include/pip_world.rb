@@ -9,7 +9,7 @@
 #
 #   #  wall               .  floor             P  Pip (facing: in the task)
 #   o  Funkenstein        L  the lamp (goal)   G  Glibber, moving east–west
-#   g  Glibber, moving north–south            H  lever      T  gate (closed)
+#   g  Glibber, moving north–south            H  lever      T  spikes (raised)
 #   p  paw prints          ~  puddle            B  Bello
 #
 # A step is move, turn_left, take, wait or pull. After each step every
@@ -35,7 +35,8 @@ class PipWorld
     SENSORS = %w[on_stone on_lever front_clear glibber_ahead on_lamp trail_ahead puddle_ahead bello_here].freeze
     MAX_STEPS = 1000
     MAX_SAY = 80
-    # pulls that open a gate; one more closes it again (»Drei Hebel«)
+    # pulls that lower the spikes (T, a gate in the world); one more raises
+    # them again (»Drei Hebel«)
     PULLS_TO_OPEN = 3
 
     class Error < StandardError; end
