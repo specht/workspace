@@ -29,10 +29,10 @@ the strip on the front page:
 | --- | --- | --- | --- |
 | 1 | `pip-1` Hinab in die Stollen | plans, loops, conditions, waiting; no prior knowledge | first chapter clicked (`buttons:`) |
 | 2 | `kata-functions` Erste Funktionen | values in, one value out | |
-| 3 | `kata-decisions` Entscheidungen | `if`, comparisons, `and`/`or` | |
-| 4 | `kata-loops` Wiederholen | loops, a variable that collects | the sieve as Extra, with a time limit |
+| 3 | `kata-decisions` Verzweigungen | `if`, comparisons, `and`/`or` | |
+| 4 | `kata-loops` Schleifen | loops, a variable that collects | the sieve as Extra, with a time limit |
 | 5 | `pip-2` Bellos Spur | `while`, own functions, variables, the hand on the wall | `call`/`expect`, `generate: maze` |
-| 6 | `kata-texts` Texte | strings, characters, building text | |
+| 6 | `kata-texts` Strings | strings, characters, building text | |
 | 7 | `kata-lists` Listen | going through a list, building one | the merge step |
 | 8 | `kata-dicts` Dictionaries | counting, grouping, looking up | |
 | 9 | `kata-bits` Bits und Zahlensysteme | bits and bases with `/` and `%` | |

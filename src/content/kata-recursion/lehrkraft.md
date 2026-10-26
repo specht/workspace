@@ -1,7 +1,7 @@
 Lernende schreiben Funktionen, die sich selbst aufrufen, direkt in die Karten der Seite, in Ruby, Python oder JavaScript: mit einem Fall, in dem sie sofort fertig sind, und einem Aufruf mit etwas Kleinerem; von der Fakultät bis zu den Türmen von Hanoi und allen Reihenfolgen eines Textes.
 
 <table class='table'>
-<tr><th>Voraussetzungen</th><td>Funktionen und Listen, etwa aus den <a href='/kata-lists'>Katas: Listen</a>; die Fakultät und Fibonacci aus den <a href='/kata-loops'>Katas: Wiederholen</a>.</td></tr>
+<tr><th>Voraussetzungen</th><td>Funktionen und Listen, etwa aus den <a href='/kata-lists'>Katas: Listen</a>; die Fakultät und Fibonacci aus den <a href='/kata-loops'>Katas: Schleifen</a>.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde.<ul>
 <li>Einstieg (4 Katas): Fakultät, die Summe einer Liste, ein Countdown als Liste, die Länge eines Textes ohne <code>length</code>, alle rekursiv.</li>
 <li>Übung (4): Potenz, Fibonacci, Palindrom, wie oft ein Zeichen vorkommt.</li>

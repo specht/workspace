@@ -1,7 +1,7 @@
 Lernende schreiben Funktionen mit Schleifen direkt in die Karten der Seite, in Ruby, Python oder JavaScript: zählen, summieren, Listen füllen, herunterzählen, und Schleifen, die laufen, bis etwas gefunden ist (Primzahlen, der größte gemeinsame Teiler, die Collatz-Folge).
 
 <table class='table'>
-<tr><th>Voraussetzungen</th><td>Funktionen und Entscheidungen, etwa aus den <a href='/kata-functions'>Katas: Erste Funktionen</a> und den <a href='/kata-decisions'>Katas: Entscheidungen</a>.</td></tr>
+<tr><th>Voraussetzungen</th><td>Funktionen und Verzweigungen, etwa aus den <a href='/kata-functions'>Katas: Erste Funktionen</a> und den <a href='/kata-decisions'>Katas: Verzweigungen</a>.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde.<ul>
 <li>Einstieg (4 Katas): Summe bis <code>n</code>, eine Zahlenreihe, Quadratzahlen, Countdown; der Startcode zeigt bei den ersten beiden, wo die Schleife hingehört.</li>
 <li>Übung (4): Fakultät, Quersumme ohne Text, Fibonacci, Teiler zählen.</li>

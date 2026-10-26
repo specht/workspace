@@ -8,7 +8,7 @@ curriculum: "Sek I: Kontrollstrukturen (Wiederholung); Oberstufe: Algorithmen"
 requires: [kata-decisions]
 </div>
 
-# Katas: Wiederholen
+# Katas: Schleifen
 
 <p class='abstract'>
 Du schreibst Funktionen mit Schleifen: Sie zählen, summieren, füllen Listen

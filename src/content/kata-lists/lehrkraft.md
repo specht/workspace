@@ -1,7 +1,7 @@
 Lernende schreiben Funktionen, die Listen bekommen, direkt in die Karten der Seite, in Ruby, Python oder JavaScript: Elemente der Reihe nach durchgehen, mit dem Index arbeiten, eine neue Liste bauen, Doppelte entfernen und zwei sortierte Listen mischen, den Kern von Merge Sort.
 
 <table class='table'>
-<tr><th>Voraussetzungen</th><td>Schleifen und Texte, etwa aus den <a href='/kata-loops'>Katas: Wiederholen</a> und den <a href='/kata-texts'>Katas: Texte</a>.</td></tr>
+<tr><th>Voraussetzungen</th><td>Schleifen und Strings, etwa aus den <a href='/kata-loops'>Katas: Schleifen</a> und den <a href='/kata-texts'>Katas: Strings</a>.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde.<ul>
 <li>Einstieg (4 Katas): Summe, die größte Zahl, gerade Zahlen zählen, ist ein Element dabei.</li>
 <li>Übung (4): eine Liste rückwärts, erstes und letztes tauschen, einen Platz nach links rücken, aufsteigend sortiert?</li>

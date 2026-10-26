@@ -8,7 +8,7 @@ curriculum: "Sek I: Kontrollstrukturen (Verzweigung)"
 requires: [kata-functions]
 </div>
 
-# Katas: Entscheidungen
+# Katas: Verzweigungen
 
 <p class='abstract'>
 Du schreibst Funktionen, die je nach Wert etwas anderes tun: mit

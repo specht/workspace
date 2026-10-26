@@ -8,11 +8,11 @@ curriculum: "Sek I: Information und Daten (Codierung, Verschlüsselung)"
 requires: [kata-loops]
 </div>
 
-# Katas: Texte
+# Katas: Strings
 
 <p class='abstract'>
-Du schreibst Funktionen, die mit Texten arbeiten: Buchstaben zählen, einen
-Text umdrehen, Großbuchstaben aus Nummern rechnen, eine Adresse aus einem
+Du schreibst Funktionen, die mit Strings arbeiten: Buchstaben zählen, einen
+String umdrehen, Großbuchstaben aus Nummern rechnen, eine Adresse aus einem
 Titel bauen und zum Schluss verschlüsseln wie Caesar.
 </p>
 

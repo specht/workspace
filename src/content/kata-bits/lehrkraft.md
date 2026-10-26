@@ -1,7 +1,7 @@
 Lernende schreiben Funktionen, die Zahlen ins Zweier- und Sechzehnersystem und in jedes andere schreiben und zurücklesen, direkt in die Karten der Seite, in Ruby, Python oder JavaScript, nur mit Teilen und Rest; dazu negative Zahlen im Zweierkomplement eines Bytes und römische Zahlen.
 
 <table class='table'>
-<tr><th>Voraussetzungen</th><td>Schleifen, Texte und Dictionaries, etwa aus den <a href='/kata-loops'>Katas: Wiederholen</a> und den <a href='/kata-dicts'>Katas: Dictionaries</a>.</td></tr>
+<tr><th>Voraussetzungen</th><td>Schleifen, Strings und Dictionaries, etwa aus den <a href='/kata-loops'>Katas: Schleifen</a> und den <a href='/kata-dicts'>Katas: Dictionaries</a>.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde.<ul>
 <li>Einstieg (4 Katas): eine Zahl in Bits, Bits zurück in eine Zahl, ein einzelnes Bit, wie viele Bits eine Zahl braucht.</li>
 <li>Übung (4): Einsen zählen, ins Sechzehnersystem und zurück, ist es eine Zweierpotenz.</li>

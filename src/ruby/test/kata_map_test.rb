@@ -10,7 +10,7 @@ class KataMapTest < Minitest::Test
     def stops
         [KataMap.stop('kata-functions', content([1, 1, 2, 3, :extra], :title => 'Katas: Erste Funktionen', :idea => 'Werte bekommen, rechnen, zurückgeben',
                                                 :curriculum => 'Sek I: Variablen, Ausdrücke')),
-         KataMap.stop('kata-loops', content([1, 2, 2], :title => 'Katas: Wiederholen'))]
+         KataMap.stop('kata-loops', content([1, 2, 2], :title => 'Katas: Schleifen'))]
     end
 
     def test_a_stop_counts_its_katas_by_level
@@ -47,7 +47,7 @@ class KataMapTest < Minitest::Test
         html = KataMap.carousel_html(stops, :progress => {}, :pinned => %w[kata-loops kata-functions])
         assert_equal 1, html.scan("<a class='kata-set kata-set-pinned' href='/kata-loops' style='--accent: 218' data-centre=''>").size
         assert_equal 2, html.scan("kata-set-pinned").size
-        assert html.index("data-centre") < html.index("kata-set-title'>Wiederholen"), 'the latest pin is centred'
+        assert html.index("data-centre") < html.index("kata-set-title'>Schleifen"), 'the latest pin is centred'
         assert_equal 2, html.scan('Angepinnt').size
     end
 
