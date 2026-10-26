@@ -1242,7 +1242,7 @@ tasks:
               text.gsub(/[^a-zA-Z]/, '').gsub(/[a-z]/) { |c| ((c.ord - 97 + shift) % 26 + 97).chr }.gsub(/[A-Z]/) { |c| ((c.ord - 65 + shift) % 26 + 65).chr }
             end
           say: "Eine Fassung, die Leerzeichen und Satzzeichen weglässt, besteht deine Tests."
-    hint: "Vier Fehler, vier Dinge, die eine Verschlüsselung können muss: über `z` hinaus, Großbuchstaben, rückwärts, alles andere stehen lassen."
+    hint: "Vier Fehler, vier Fälle, die eine Verschlüsselung beherrschen muss: über `z` hinaus, Großbuchstaben, rückwärts, alles andere stehen lassen."
     solution: |
       ```ruby
       assert_equal('abc', caesar('xyz', 3))
@@ -1301,7 +1301,7 @@ tasks:
                           out += chr((ord(c) - 65 + shift) % 26 + 65)
                   return out
             say: "Eine Fassung, die Leerzeichen und Satzzeichen weglässt, besteht deine Tests."
-      hint: "Vier Fehler, vier Dinge, die eine Verschlüsselung können muss: über `z` hinaus, Großbuchstaben, rückwärts, alles andere stehen lassen."
+      hint: "Vier Fehler, vier Fälle, die eine Verschlüsselung beherrschen muss: über `z` hinaus, Großbuchstaben, rückwärts, alles andere stehen lassen."
       solution: |
         ```python
         assert_equal('abc', caesar('xyz', 3))
@@ -1370,7 +1370,7 @@ tasks:
                 return out;
               }
             say: "Eine Fassung, die Leerzeichen und Satzzeichen weglässt, besteht deine Tests."
-      hint: "Vier Fehler, vier Dinge, die eine Verschlüsselung können muss: über `z` hinaus, Großbuchstaben, rückwärts, alles andere stehen lassen."
+      hint: "Vier Fehler, vier Fälle, die eine Verschlüsselung beherrschen muss: über `z` hinaus, Großbuchstaben, rückwärts, alles andere stehen lassen."
       solution: |
         ```javascript
         assertEqual('abc', caesar('xyz', 3));

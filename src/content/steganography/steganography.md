@@ -27,7 +27,7 @@ In [Kryptographie im Terminal](/crypto) hast du Nachrichten verschlüsselt. Wer 
 
 **Steganographie** (griechisch für »verdecktes Schreiben«) versteckt, *dass* es eine Nachricht gibt. Früher war das unsichtbare Tinte oder ein winziger Mikropunkt auf einem Brief. Heute ist es oft ein Bild: Ein Foto hat Hunderttausende Pixel, und an jedem kann man ein wenig ändern, ohne dass es jemand sieht. Die Kunst ist, genau so wenig zu ändern, dass niemand Verdacht schöpft, weder ein Mensch noch ein Programm, das danach sucht.
 
-Die älteste Geschichte dazu erzählt Herodot vor rund 2500 Jahren: Histiaios ließ einem Sklaven den Kopf scheren, schrieb die Nachricht auf die Kopfhaut und schickte ihn los, als die Haare nachgewachsen waren. Und versteckte Nachrichten stecken in Dingen, die du kennst. Viele Farblaserdrucker drucken auf jede Seite ein Muster aus winzigen gelben Punkten, das die Seriennummer des Druckers und Datum und Uhrzeit verrät; öffentlich bekannt wurde das 2004. 2017 veröffentlichte die Zeitung *The Intercept* ein geheimes Dokument der NSA samt diesen Punkten, und kurz darauf wurde die Frau verhaftet, die es weitergegeben hatte. Ob die Punkte dabei geholfen haben, ist umstritten.
+Die älteste Geschichte dazu erzählt Herodot vor rund 2500 Jahren: Histiaios ließ einem Sklaven den Kopf scheren, schrieb die Nachricht auf die Kopfhaut und schickte ihn los, als die Haare nachgewachsen waren. Und versteckte Nachrichten stecken in Gegenständen, die du kennst. Viele Farblaserdrucker drucken auf jede Seite ein Muster aus winzigen gelben Punkten, das die Seriennummer des Druckers und Datum und Uhrzeit verrät; öffentlich bekannt wurde das 2004. 2017 veröffentlichte die Zeitung *The Intercept* ein geheimes Dokument der NSA samt diesen Punkten, und kurz darauf wurde die Frau verhaftet, die es weitergegeben hatte. Ob die Punkte dabei geholfen haben, ist umstritten.
 
 Beides lässt sich kombinieren: erst verschlüsseln, dann verstecken. Dann muss jemand die Nachricht erst finden und kann sie danach noch immer nicht lesen.
 
@@ -47,7 +47,7 @@ wget ${web_root}/steganography/strandhaeuser.png
 wget ${web_root}/steganography/moewen.png
 ```
 
-<p class='expl'>Die Fotos der Strandhäuser und der Möwen mit freundlicher Genehmigung von Ian Kobylanski · <a href='https://koby.photography/' target='_blank'>https://koby.photography/</a></p>
+<p class='expl'>Die Fotos der Strandhäuser und der Möwen mit freundlicher Genehmigung von Ian Kobylanski · <a href='https://koby.photography/'>https://koby.photography/</a></p>
 
 PNG-Dateien sind komprimiert, aber ohne Verlust: Jedes Pixel kommt genau so wieder heraus, wie es hineingesteckt wurde. Das ist wichtig, denn eine versteckte Botschaft lebt in den kleinsten Unterschieden. Ein JPEG würde sie beim Speichern zerstören. Das Lesen und Schreiben übernimmt eine Bibliothek:
 

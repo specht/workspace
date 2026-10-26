@@ -20,7 +20,8 @@ Eine Priority Queue gibt immer den Eintrag mit der kleinsten Priorität zurück:
 <!-- short: Priority Queue: push legt einen Eintrag mit Priorität hinein, pop gibt den mit der kleinsten heraus. -->
 ## Die Priority Queue
 
-Eine **Priority Queue** kann zwei Dinge:
+Eine **Priority Queue** hat zwei Operationen:
+
 
 - **push** legt einen Eintrag mit einer Priorität hinein,
 - **pop** nimmt den Eintrag mit der **kleinsten** Priorität heraus und gibt ihn zurück.

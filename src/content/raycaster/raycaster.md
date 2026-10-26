@@ -1590,7 +1590,7 @@ Im Standbild ist der Unterschied klein, in Bewegung groß: Lauf durch die Halle 
 <!-- extra -->
 ## Das fertige Programm
 
-Vier Dinge machen aus dem Raycaster das Programm vom Anfang der Seite.
+Vier Schritte machen aus dem Raycaster das Programm vom Anfang der Seite.
 
 **Böden aus der Karte.** Nicht jeder Raum hat Fliesen: In der Karte steht `,` für Holz und `:` für Steinplatten, und alles, was keine Ziffer ist, ist Boden. Ersetze die Karte:
 

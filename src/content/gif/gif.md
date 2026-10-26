@@ -1018,7 +1018,7 @@ Jetzt bist du dran: Schreib eine Funktion, die die Codes liest und die Pixelnumm
 long decode_lzw(uint8_t *data, long data_size, int min_code_size, uint8_t *pixels, long pixel_count)
 ```
 
-Die Tabelle braucht für 4096 Einträge nicht 4096 Listen. Ein neuer Eintrag ist immer ein Eintrag, den es schon gibt, und ein Pixel dahinter. Speichere also für jeden Eintrag `k` nur diese zwei Dinge, und dazu, was du beim Schreiben brauchst:
+Die Tabelle braucht für 4096 Einträge nicht 4096 Listen. Ein neuer Eintrag ist immer ein Eintrag, den es schon gibt, und ein Pixel dahinter. Speichere also für jeden Eintrag `k` nur diese zwei Angaben, und dazu, was du beim Schreiben brauchst:
 
 ```c
 int prefix[4096];      // der Eintrag davor, -1 bei den einzelnen Farben
@@ -1027,7 +1027,7 @@ uint8_t first[4096];   // das erste Pixel
 int length[4096];      // wie viele Pixel
 ```
 
-Um den Eintrag `k` hinzuschreiben, gehst du die Kette rückwärts: `suffix[k]` ist das letzte Pixel, `suffix[prefix[k]]` das vorletzte, und so weiter. Weil `length[k]` sagt, wie lang der Eintrag ist, kannst du gleich an der richtigen Stelle von hinten nach vorn schreiben.
+Um den Eintrag `k` hinzuschreiben, gehst du die Kette rückwärts: `suffix[k]` ist das letzte Pixel, `suffix[prefix[k]]` das vorletzte, und so weiter. Weil `length[k]` sagt, wie lang der Eintrag ist, kannst du gleich an der richtigen Position von hinten nach vorn schreiben.
 
 <div class='hint'>
 <strong>Worauf es ankommt:</strong>
@@ -1112,7 +1112,7 @@ crop-element: #canvas
 -->
 <img class='full' src='markt.webp' alt='Ein Lastendreirad mit drei Männern vor einem Laden mit bunten Plastikwaren, als GIF mit 256 Farben.'>
 
-<p class='expl'>Foto mit freundlicher Genehmigung von Ian Kobylanski · <a href='https://koby.photography/' target='_blank'>https://koby.photography/</a></p>
+<p class='expl'>Foto mit freundlicher Genehmigung von Ian Kobylanski · <a href='https://koby.photography/'>https://koby.photography/</a></p>
 
 _task(pruefsumme-markt)
 

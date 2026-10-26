@@ -25,7 +25,7 @@ _person(gruber)
 
 In [Statische Webseiten mit HTML & CSS](/static-website) hast du eine einzelne Seite gebaut. Stell dir vor, du schreibst ein kleines Lexikon über die Planeten: eine Seite für den Mars, eine für den Jupiter, eine für den Saturn. Jede Seite braucht denselben Kopf mit derselben Navigation, die zu allen anderen Seiten führt. Kommt ein vierter Planet dazu, musst du die Navigation in allen Seiten ändern, und vergisst du eine, fehlt dort der Link.
 
-Ein **Static Site Generator** wie Hugo trennt zwei Dinge:
+Ein **Static Site Generator** wie Hugo trennt zwei Teile einer Website:
 
 - Die **Inhalte**: Für jede Seite eine Markdown-Datei, nur mit dem, was auf dieser Seite steht.
 - Das **Layout**: Einmal HTML für alles, was auf jeder Seite gleich ist, mit Lücken für das, was sich ändert.

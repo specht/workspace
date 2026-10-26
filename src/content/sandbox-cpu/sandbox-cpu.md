@@ -346,7 +346,7 @@ click: selector:#step-next
 
 _task(takte-schleife)
 
-Ein paar Dinge, die du in der Sandbox fast von selbst entdeckst:
+Was du in der Sandbox fast von selbst entdeckst:
 
 - Es gibt **nur einen Speicher**. Bildschirm und Stack sind einfach Bereiche darin, und ein Schreibzugriff an die falsche Adresse kann das Programm selbst verändern. Das Beispiel `05-self-modifying` macht das sogar absichtlich.
 - Ein Label ist die **Adresse eines Bytes**, keine Zeilennummer.

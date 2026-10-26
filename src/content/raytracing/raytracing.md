@@ -188,7 +188,7 @@ crop-element: #canvas
 
 Das Programm hat für jeden der 57.600 Pixel eine Richtung ausgerechnet und gefragt: Welche Farbe hat der Himmel in dieser Richtung? Wer nach oben schaut, sieht Blau, wer geradeaus schaut, das helle Licht am Horizont. Die untere Hälfte ist auch Himmel, nur hell: Einen Boden gibt es noch nicht.
 
-Drei Dinge im Programm sind vielleicht neu:
+Drei Stellen im Programm sind vielleicht neu:
 
 - `typedef struct { double x, y, z; } vec;` legt einen eigenen Typ an: drei Kommazahlen unter einem Namen. Ist `a` ein `vec`, liest du sie mit `a.x`, `a.y` und `a.z`.
 - `(vec){a.x + b.x, a.y + b.y, a.z + b.z}` schreibt einen solchen Wert direkt hin, so wie `3` eine Zahl hinschreibt. `add` gibt ihn gleich zurück.
@@ -540,7 +540,7 @@ _task(hell)
 
 ### Material und Treffer
 
-Mit mehr Dingen in der Szene braucht das Programm etwas Ordnung. Jede Oberfläche bekommt ein **Material**; im Moment ist das nur eine Farbe, bald kommen Spiegel und Glas dazu. Statt einer Kugel gibt es eine Liste. Ersetze `sphere` und `ball` durch:
+Mit mehr Objekten in der Szene braucht das Programm etwas Ordnung. Jede Oberfläche bekommt ein **Material**; im Moment ist das nur eine Farbe, bald kommen Spiegel und Glas dazu. Statt einer Kugel gibt es eine Liste. Ersetze `sphere` und `ball` durch:
 
 ```c
 typedef struct
@@ -617,7 +617,7 @@ _task(boden)
 
 ### Der nächste Treffer
 
-Ein Strahl kann mehrere Dinge treffen; zu sehen ist das vorderste. `nearest_hit` fragt den Boden und jede Kugel und behält das kleinste `t`.
+Ein Strahl kann mehrere Objekte treffen; zu sehen ist das vorderste. `nearest_hit` fragt den Boden und jede Kugel und behält das kleinste `t`.
 
 <img class='drawing' style='width: 31em' src='naechster.webp' alt='Ein Strahl beginnt links bei origin und läuft leicht abwärts nach rechts. Oben verfehlt er einen Kreis: kein Treffer. Den zweiten Kreis trifft er bei t = 1.9, dort endet der blaue Pfeil; gestrichelt geht er weiter, trifft einen dritten Kreis bei t = 3.2 und den Boden bei t = 4.2. Oben steht: zu sehen: das kleinste t.'>
 

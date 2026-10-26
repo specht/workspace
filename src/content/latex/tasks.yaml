@@ -210,7 +210,7 @@ tasks:
     prompt: |
       Würdest du deine nächste Facharbeit oder dein nächstes Protokoll lieber
       in einem Textprogramm wie Word schreiben oder in LaTeX? Begründe mit
-      zwei Dingen, die dir beim Schreiben aufgefallen sind.
+      zwei Punkten, die dir beim Schreiben aufgefallen sind.
     check:
       type: reflection
       min_words: 20

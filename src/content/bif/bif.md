@@ -900,7 +900,7 @@ Für interaktive Geschichten sind außerdem ein paar praktische Regeln hilfreich
 - **Entscheidungen dürfen wieder zusammenlaufen.** Du musst nicht nach jeder Wahl zwei völlig getrennte Geschichten weiterschreiben. Zwei Wege können später wieder am selben Ort zusammentreffen.
 - **Zeige Folgen.** Wenn eine Entscheidung wichtig war, sollte die Leserin oder der Leser irgendwann merken, was sie bewirkt hat.
 - **Verzweige nicht zu schnell.** Beginne mit wenigen Seiten und erweitere die Geschichte erst, wenn der bisherige Teil funktioniert. Der Graph hilft dir dabei.
-- **Teste ungewöhnliche Wege.** Besuche Orte erneut, triff Entscheidungen in anderer Reihenfolge und lass die Geschichte auch von jemand anderem spielen. Andere Menschen probieren oft Dinge aus, an die man beim Schreiben nicht gedacht hat.
+- **Teste ungewöhnliche Wege.** Besuche Orte erneut, triff Entscheidungen in anderer Reihenfolge und lass die Geschichte auch von jemand anderem spielen. Andere Menschen probieren oft etwas aus, an das man beim Schreiben nicht gedacht hat.
 
 <div class='hint'>
 Eine kleine Geschichte braucht nicht alles. Für einen guten Anfang reichen oft schon eine Figur mit einem Ziel, ein Hindernis und zwei Entscheidungen, die unterschiedliche Folgen haben.

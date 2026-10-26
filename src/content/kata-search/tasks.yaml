@@ -970,7 +970,7 @@ tasks:
     title: "Einsortieren"
     level: 3
     prompt: |
-      Schreib `insert_sorted(numbers, value)`, die eine neue Liste zurückgibt, in der `value` an der richtigen Stelle der aufsteigend sortierten Liste `numbers` steht: `insert_sorted([1, 4, 9], 5)` ergibt `[1, 4, 5, 9]`. Ohne zu sortieren: Such die Stelle und setz die Zahl dort ein. So arbeitet Insertion Sort, Zahl für Zahl.
+      Schreib `insert_sorted(numbers, value)`, die eine neue Liste zurückgibt, in der `value` an der richtigen Position der aufsteigend sortierten Liste `numbers` steht: `insert_sorted([1, 4, 9], 5)` ergibt `[1, 4, 5, 9]`. Ohne zu sortieren: Such die Position und setz die Zahl dort ein. So arbeitet Insertion Sort, Zahl für Zahl.
     starter: |
       def insert_sorted(numbers, value)
       end
@@ -1039,7 +1039,7 @@ tasks:
         ```
     javascript:
       prompt: |
-        Schreib `insertSorted(numbers, value)`, die eine neue Liste zurückgibt, in der `value` an der richtigen Stelle der aufsteigend sortierten Liste `numbers` steht: `insertSorted([1, 4, 9], 5)` ergibt `[1, 4, 5, 9]`. Ohne zu sortieren: Such die Stelle und setz die Zahl dort ein. So arbeitet Insertion Sort, Zahl für Zahl.
+        Schreib `insertSorted(numbers, value)`, die eine neue Liste zurückgibt, in der `value` an der richtigen Position der aufsteigend sortierten Liste `numbers` steht: `insertSorted([1, 4, 9], 5)` ergibt `[1, 4, 5, 9]`. Ohne zu sortieren: Such die Position und setz die Zahl dort ein. So arbeitet Insertion Sort, Zahl für Zahl.
       starter: |
         function insertSorted(numbers, value) {
         }

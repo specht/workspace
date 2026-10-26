@@ -1540,7 +1540,8 @@ _task(idct)
 Wenn wir 6 Blöcke decodiert haben (4&times;Y, 1&times;Cb, 1&times;Cr), können wir die MCU von 16x16 Pixeln rekonstruieren. Dazu müssen wir die Blöcke der Y-Komponente entsprechend ihrer Position in der MCU anordnen und die Blöcke der Cb- und Cr-Komponenten auf die Größe von 16x16 Pixeln hochskalieren (da sie nur 8x8 Pixel groß sind). Die iDCT ist dann schon auf jeden Block angewendet: Hochskaliert werden Pixelwerte, nicht Koeffizienten.
 
 <div class='hint'>
-<strong>Für deinen Decoder:</strong> Eine MCU ist 8 · größter horizontaler Sampling-Faktor Pixel breit und 8 · größter vertikaler Faktor hoch, bei <code>44-baseline.jpg</code> also 16 × 16. Die Blöcke einer Komponente kommen Zeile für Zeile: erst die beiden oberen Y-Blöcke, dann die unteren. 667 ist kein Vielfaches von 16: Die letzte Reihe von MCUs ragt über das Bild hinaus, und was darüber hinausragt, zeichnest du nicht. Am einfachsten schreibst du jede Komponente erst in eine eigene Ebene, ein Array in der Größe aller MCUs, und rechnest danach Pixel für Pixel die Farben aus. Bei Subsampling liest du Cb und Cr dabei an einer kleineren Stelle, bei <code>44-baseline.jpg</code> an <code>x / 2</code>, <code>y / 2</code>, allgemein an <code>x · h / hmax</code>, <code>y · v / vmax</code>.
+<strong>Für deinen Decoder:</strong> Eine MCU ist 8 · größter horizontaler Sampling-Faktor Pixel breit und 8 · größter vertikaler Faktor hoch, bei <code>44-baseline.jpg</code> also 16 × 16. Die Blöcke einer Komponente kommen Zeile für Zeile: erst die beiden oberen Y-Blöcke, dann die unteren. 667 ist kein Vielfaches von 16: Die letzte Reihe von MCUs ragt über das Bild hinaus, und was darüber hinausragt, zeichnest du nicht. Am einfachsten schreibst du jede Komponente erst in eine eigene Ebene, ein Array in der Größe aller MCUs, und rechnest danach Pixel für Pixel die Farben aus. Bei Subsampling liest du Cb und Cr dabei an kleineren Koordinaten,
+ bei <code>44-baseline.jpg</code> an <code>x / 2</code>, <code>y / 2</code>, allgemein an <code>x · h / hmax</code>, <code>y · v / vmax</code>.
 </div>
 
 _task(mcu-lage)
@@ -1576,7 +1577,7 @@ crop-element: #canvas
 -->
 <img class='full' src='ergebnis.webp' alt='Eine Frau mit Maske trägt ein Kleinkind in einem Tragetuch an einer Bushaltestelle; daneben eine Tafel mit Busnummern.'>
 
-<p class='expl'>Fotos mit freundlicher Genehmigung von Ian Kobylanski · <a href='https://koby.photography/' target='_blank'>https://koby.photography/</a></p>
+<p class='expl'>Fotos mit freundlicher Genehmigung von Ian Kobylanski · <a href='https://koby.photography/'>https://koby.photography/</a></p>
 
 Pixel für Pixel vergleichen lassen sich zwei JPEG-Decoder nicht: Die iDCT rechnet mit Kommazahlen, und ob ein Wert 127 oder 128 wird, hängt davon ab, wie genau und in welcher Reihenfolge gerechnet wird. Decoder wie der in deinem Browser rechnen Cb und Cr bei Subsampling außerdem weich hoch, statt einen Wert für vier Pixel zu nehmen. Die Mittelwerte von Rot, Grün und Blau über das ganze Bild ändert das aber kaum. Schreib diese Funktion über `main` und ruf sie am Ende auf:
 

@@ -359,7 +359,7 @@ tasks:
     prompt: |
       Sieh dir das Cover von »Let's Talk About Love« genau an und vergleiche
       es mit deinem Raytracer: mit den Spiegelkugeln, den Schatten und dem
-      Schachbrett. Was kann so nicht stimmen? Nenne mindestens drei Dinge und
+      Schachbrett. Was kann so nicht stimmen? Nenne mindestens drei Fehler und
       sag jeweils, wie es richtig aussehen müsste.
     check:
       type: reflection

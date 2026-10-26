@@ -167,9 +167,9 @@ Eine **doppelt verkettete** Linked List gibt jedem Knoten zusätzlich `prev`, de
 <!-- short: Sortierte Liste: insert sucht die Stelle selbst; im Array mit binärer Suche, in einer Linked List durch Laufen. -->
 ## Sortierte Listen
 
-Eine **sortierte Liste** hat kein `insert(i, value)`, sondern nur `insert(value)`: Sie sucht die Stelle selbst, sodass die Werte immer aufsteigend bleiben.
+Eine **sortierte Liste** hat kein `insert(i, value)`, sondern nur `insert(value)`: Sie sucht die Position selbst, sodass die Werte immer aufsteigend bleiben.
 
-- **Im Array** findet man die Stelle mit **binärer Suche**: den mittleren Wert ansehen, dann in der linken oder rechten Hälfte weitersuchen. Bei einer Million Werten sind das 20 Vergleiche. Danach muss trotzdem alles dahinter rücken.
+- **Im Array** findet man die Position mit **binärer Suche**: den mittleren Wert ansehen, dann in der linken oder rechten Hälfte weitersuchen. Bei einer Million Werten sind das 20 Vergleiche. Danach muss trotzdem alles dahinter rücken.
 - **In einer Linked List** hilft binäre Suche nicht, denn die Mitte findet man nur durch Laufen. Man läuft vom Anfang, bis der nächste Wert größer ist, und hängt den neuen Knoten davor ein.
 
 ```pseudocode

@@ -149,7 +149,7 @@ DrawGrid(10, 1);
 EndMode3D();
 ```
 
-- Mit `CAMERA_ORTHOGRAPHIC` statt `CAMERA_PERSPECTIVE` werden entfernte Dinge nicht kleiner; `fovy` ist dann die Höhe des sichtbaren Bereichs in Einheiten.
+- Mit `CAMERA_ORTHOGRAPHIC` statt `CAMERA_PERSPECTIVE` werden entfernte Objekte nicht kleiner; `fovy` ist dann die Höhe des sichtbaren Bereichs in Einheiten.
 - Schaut die Kamera genau in Richtung `up` (senkrecht nach unten oder oben), weiß raylib nicht, wie das Bild gedreht sein soll. Ein kleiner Versatz hilft: `position` = `(0, 12, 0.1f)`.
 
 `UpdateCamera(&camera, mode)` bewegt die Kamera selbst, einmal pro Bild aufgerufen:

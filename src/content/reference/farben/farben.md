@@ -22,7 +22,10 @@ Wie du dem Computer eine Farbe nennst: mit einem Namen wie <code>gold</code>, mi
 Der einfachste Weg: Du schreibst den englischen Namen der Farbe. Browser kennen 148 Namen, von `red` bis `rebeccapurple`. Groß- und Kleinschreibung ist egal, Leerzeichen gibt es nicht (`lightblue`, nicht `light blue`). Ein paar, die du oft brauchst:
 
 <table class='table table-sm reference-table'>
+<thead>
 <tr><th></th><th>Name</th><th>Farbcode</th><th></th><th>Name</th><th>Farbcode</th></tr>
+</thead>
+<tbody>
 <tr><td><span class='color-swatch' style='background: white;'></span></td><td><code>white</code></td><td><code>#ffffff</code></td><td><span class='color-swatch' style='background: black;'></span></td><td><code>black</code></td><td><code>#000000</code></td></tr>
 <tr><td><span class='color-swatch' style='background: silver;'></span></td><td><code>silver</code></td><td><code>#c0c0c0</code></td><td><span class='color-swatch' style='background: gray;'></span></td><td><code>gray</code> / <code>grey</code></td><td><code>#808080</code></td></tr>
 <tr><td><span class='color-swatch' style='background: red;'></span></td><td><code>red</code></td><td><code>#ff0000</code></td><td><span class='color-swatch' style='background: crimson;'></span></td><td><code>crimson</code></td><td><code>#dc143c</code></td></tr>
@@ -32,6 +35,7 @@ Der einfachste Weg: Du schreibst den englischen Namen der Farbe. Browser kennen 
 <tr><td><span class='color-swatch' style='background: teal;'></span></td><td><code>teal</code></td><td><code>#008080</code></td><td><span class='color-swatch' style='background: skyblue;'></span></td><td><code>skyblue</code></td><td><code>#87ceeb</code></td></tr>
 <tr><td><span class='color-swatch' style='background: blue;'></span></td><td><code>blue</code></td><td><code>#0000ff</code></td><td><span class='color-swatch' style='background: navy;'></span></td><td><code>navy</code></td><td><code>#000080</code></td></tr>
 <tr><td><span class='color-swatch' style='background: purple;'></span></td><td><code>purple</code></td><td><code>#800080</code></td><td><span class='color-swatch' style='background: hotpink;'></span></td><td><code>hotpink</code></td><td><code>#ff69b4</code></td></tr>
+</tbody>
 </table>
 
 Vorsicht bei Namen, die anders aussehen, als sie klingen: `green` ist ein dunkles Grün, das helle heißt `lime`. `gray` ist dunkler als `darkgray`.
@@ -54,12 +58,16 @@ Alle 148 Namen mit ihren Farben findest du in der [Liste von MDN](https://develo
 Ein Farbcode wie `#f9c80e` besteht aus drei Paaren: Rot (`f9`), Grün (`c8`) und Blau (`0e`). Jedes Paar ist eine Hexadezimalzahl von `00` (nichts von dieser Farbe) bis `ff` (so viel wie möglich, 255). Licht mischt sich anders als Malfarbe: Rot und Grün ergeben Gelb, alle drei ganz ergeben Weiß.
 
 <table class='table table-sm reference-table'>
+<thead>
 <tr><th></th><th>Code</th><th>Rot</th><th>Grün</th><th>Blau</th><th>Farbe</th></tr>
+</thead>
+<tbody>
 <tr><td><span class='color-swatch' style='background: #ff0000;'></span></td><td><code>#ff0000</code></td><td>255</td><td>0</td><td>0</td><td>Rot</td></tr>
 <tr><td><span class='color-swatch' style='background: #ffff00;'></span></td><td><code>#ffff00</code></td><td>255</td><td>255</td><td>0</td><td>Gelb</td></tr>
 <tr><td><span class='color-swatch' style='background: #f9c80e;'></span></td><td><code>#f9c80e</code></td><td>249</td><td>200</td><td>14</td><td>Sonnengelb</td></tr>
 <tr><td><span class='color-swatch' style='background: #3a6ee8;'></span></td><td><code>#3a6ee8</code></td><td>58</td><td>110</td><td>232</td><td>ein kräftiges Blau</td></tr>
 <tr><td><span class='color-swatch' style='background: #808080;'></span></td><td><code>#808080</code></td><td>128</td><td>128</td><td>128</td><td>Grau: alle drei gleich</td></tr>
+</tbody>
 </table>
 
 Die Kurzform `#fa0` steht für `#ffaa00`: Jede Ziffer wird verdoppelt. Einen Farbcode suchst du am bequemsten mit einem Farbwähler aus. VS Code zeigt in CSS-Dateien vor jedem Farbcode ein kleines Kästchen; ein Klick darauf öffnet einen.
@@ -177,10 +185,14 @@ Mit den Reglern mischst du eine Farbe auf zwei Arten:
 - **OKLCH** ist an unserer Wahrnehmung ausgerichtet: Jeder Regler ändert genau eine Eigenschaft, die wir an einer Farbe sehen, und gleiche Schritte sehen ungefähr gleich groß aus.
 
 <table class='table table-sm reference-table'>
+<thead>
 <tr><th>Achse</th><th>bedeutet</th><th>von … bis</th></tr>
+</thead>
+<tbody>
 <tr><td><strong>L</strong> (lightness)</td><td>Helligkeit</td><td><code>0%</code> schwarz bis <code>100%</code> weiß</td></tr>
 <tr><td><strong>C</strong> (chroma)</td><td>Buntheit: wie kräftig die Farbe ist</td><td><code>0</code> grau bis etwa <code>0.32</code> beim kräftigsten Magenta; wie viel ein Bildschirm zeigen kann, hängt von Helligkeit und Farbton ab</td></tr>
 <tr><td><strong>H</strong> (hue)</td><td>Farbton, ein Winkel auf dem Farbkreis</td><td>etwa <code>30</code> Rot, <code>70</code> Orange, <code>110</code> Gelb, <code>140</code> Grün, <code>195</code> Türkis, <code>265</code> Blau, <code>330</code> Magenta, <code>360</code> wieder Rot</td></tr>
+</tbody>
 </table>
 
 Drehst du nur am Farbton, bleibt die Farbe gleich hell und gleich kräftig. So findest du zum Beispiel mehrere Farben, die nebeneinander gleich stark wirken. Bei RGB geht das nicht: Wer dort nur eine Zahl ändert, ändert meist Helligkeit, Buntheit und Farbton zugleich.

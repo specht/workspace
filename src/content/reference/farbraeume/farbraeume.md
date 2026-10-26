@@ -22,7 +22,7 @@ Die Bilder auf dieser Seite zerlegen dasselbe Foto in die drei Kanäle eines Far
 
 <img class='drawing' style='width: 24em' src='photo.webp' alt='Ein Foto von Strandhäusern: links eine rote Tür mit einem weißen Farbfleck, daneben zwei hellblaue Türen unter blassgrünen Giebeln, darüber blauer Himmel.'>
 
-<p class='expl'>Foto mit freundlicher Genehmigung von Ian Kobylanski · <a href='https://koby.photography/' target='_blank'>https://koby.photography/</a></p>
+<p class='expl'>Foto mit freundlicher Genehmigung von Ian Kobylanski · <a href='https://koby.photography/'>https://koby.photography/</a></p>
 
 <!-- part: rgb-wuerfel -->
 ## RGB

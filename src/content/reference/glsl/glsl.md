@@ -42,7 +42,7 @@ precision mediump float;
 
 Die zweite Zeile braucht nur der Fragment-Shader: Er muss sagen, wie genau er mit Kommazahlen rechnet. `mediump` reicht für Farben und Licht, `highp` ist genauer, aber nicht auf jedem Handy da.
 
-Auf dem Computer ohne Browser verwendet raylib meist `#version 330`. Dort heißen einige Dinge anders: `in` und `out` statt `attribute` und `varying`, `texture` statt `texture2D` und eine eigene `out vec4`-Variable statt `gl_FragColor`. Die Beispiele hier sind alle `#version 100`.
+Auf dem Computer ohne Browser verwendet raylib meist `#version 330`. Dort heißt einiges anders: `in` und `out` statt `attribute` und `varying`, `texture` statt `texture2D` und eine eigene `out vec4`-Variable statt `gl_FragColor`. Die Beispiele hier sind alle `#version 100`.
 <!-- /part -->
 
 ## Die Sprache

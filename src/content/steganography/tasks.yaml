@@ -261,7 +261,7 @@ tasks:
         Paar heraus? Alle anderen Paare haben e = 0: Zählen sie mit?
       - |
         Erst die Zeilen ausschneiden (`image.crop(0, top, image.width, bottom - top)`),
-        dann zählen: ein Array mit 256 Nullen, und für jeden Kanal wird die Stelle
+        dann zählen: ein Array mit 256 Nullen, und für jeden Kanal wird der Eintrag am Index
         seines Werts um 1 größer. Dann für jedes Paar k (die Werte 2k und 2k + 1):
         e ausrechnen, Paare mit e < 5 überspringen, sonst die beiden Summanden
         dazuzählen und mitzählen, wie viele Paare dabei waren. Am Ende teilst du die
@@ -314,7 +314,7 @@ tasks:
           Paar heraus? Alle anderen Paare haben e = 0: Zählen sie mit?
         - |
           Erst die Zeilen ausschneiden (`image.crop((0, top, image.width, bottom))`),
-          dann zählen: eine Liste mit 256 Nullen, und für jeden Kanal wird die Stelle
+          dann zählen: eine Liste mit 256 Nullen, und für jeden Kanal wird der Eintrag am Index
           seines Werts um 1 größer. Dann für jedes Paar k (die Werte 2k und 2k + 1):
           e ausrechnen, Paare mit e < 5 überspringen, sonst die beiden Summanden
           dazuzählen und mitzählen, wie viele Paare dabei waren. Am Ende teilst du die

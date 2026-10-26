@@ -234,7 +234,7 @@ _person(ierusalimschy-celes-figueiredo)
 <!-- short: {} als Liste ab 1 oder mit Namen wie { x = 3, y = 5 }; #t, table.insert, table.remove, ipairs; rückwärts löschen. -->
 ### Tabellen
 
-Eine Tabelle ist eine Liste, ein Ding mit Namen für seine Teile, oder beides:
+Eine Tabelle ist eine Liste, ein Objekt mit Namen für seine Teile, oder beides:
 
 ```lua
 stars = {}                          -- eine leere Liste

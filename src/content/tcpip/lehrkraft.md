@@ -14,7 +14,7 @@ Lernende erkunden das Netz mit Kommandozeilenwerkzeugen: die eigene Adresse, Ent
 - Die Aufgabe »Mindestens wie lange?« rechnet die Lichtlaufzeit nach Lima aus (111 ms), »Wo steht der Server wirklich?« lässt den Namen in der `ping`-Ausgabe lesen: ein Hoster in Belgien.
 - Der Punkt: Eine Domain-Endung sagt nichts über den Standort.
 - Canberra danach zeigt, wie ein wirklich weit entfernter Server aussieht.
-- Steht der Server einmal woanders, ändert sich die Antwort in der Aufgabe von selbst, weil sie aus einer Messung im Workspace der Person kommt.
+- Steht der Server einmal woanders, prüft die Aufgabe weiter gegen eine Messung im Workspace der Person. Die Musterlösung nennt aber Combell, und einen Hoster, dessen Name nicht auf ein Länderkürzel endet, erkennt die Prüfung nur, wenn er in `src/ruby/include/measure_check.rb` eingetragen ist.
 
 #### Was schiefgeht
 

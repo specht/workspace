@@ -423,7 +423,7 @@ hook: route Gymnasium Steglitz | Botanischer Garten | dijkstra
 
 Jetzt breitet sich die Welle in Metern aus, wie Ringe um den Start. Der Weg ist 1,8 km lang statt 2,1 km: Er hat mehr Knoten, aber keine Zacken. Wie verschieden die beiden Wege sein können, zeigt erst ein weiter Weg.
 
-Mit dem Schieber unter dem Ergebnis siehst du dir die Suche Schritt für Schritt an: ▶ spielt sie ab, ‹ und › gehen einen Knoten zurück und vor, das Tempo »Langsam« zeigt jeden einzelnen. Hast du angehalten, bleibt der Schritt stehen, wenn du die andere Suche wählst. So vergleichst du beide an derselben Stelle.
+Mit dem Schieber unter dem Ergebnis siehst du dir die Suche Schritt für Schritt an: »Abspielen« spielt sie ab, die Knöpfe »Einen Schritt zurück« und »Einen Schritt vor« gehen einen Knoten zurück und vor, das Tempo »Langsam« zeigt jeden einzelnen. Hast du angehalten, bleibt der Schritt stehen, wenn du die andere Suche wählst. So vergleichst du beide an derselben Stelle.
 
 Probier einen weiten Weg, zur Pfaueninsel ganz im Westen. Dahin kommt man nur mit der Fähre, und auch die ist ein Weg der Karte:
 
@@ -462,10 +462,10 @@ Die Breitensuche macht gut 7 Kilometer Umweg. Dijkstra findet den kürzesten Weg
 
 Dijkstra sucht bei jedem Schritt in der ganzen `frontier` nach dem kleinsten Abstand. Stehen dort tausend Knoten, sind das tausend Vergleiche, bei jedem der hunderttausend Schritte. Schneller geht es mit einer **Priority Queue**: Man legt Werte mit einer Priorität hinein und bekommt immer den mit der kleinsten heraus, ohne alle anzusehen.
 
-Ein **binärer Heap** macht das so: Die Einträge stehen in einem Array, aber man denkt sie sich als Baum. Die Kinder des Eintrags an der Stelle `i` stehen an den Stellen `2 * i + 1` und `2 * i + 2`, sein Elternteil an der Stelle `(i - 1) / 2`. Und es gilt immer: Kein Kind ist kleiner als sein Elternteil. Ganz oben, an der Stelle 0, steht deshalb das Kleinste.
+Ein **binärer Heap** macht das so: Die Einträge stehen in einem Array, aber man denkt sie sich als Baum. Die Kinder des Eintrags am Index `i` stehen an den Indizes `2 * i + 1` und `2 * i + 2`, sein Elternteil am Index `(i - 1) / 2`. Und es gilt immer: Kein Kind ist kleiner als sein Elternteil. Ganz oben, an Index 0, steht deshalb das Kleinste.
 
 - **push:** Hänge den neuen Eintrag hinten an. Solange er kleiner ist als sein Elternteil, tausche die beiden; so steigt er nach oben, bis er passt.
-- **pop:** Nimm den Eintrag an der Stelle 0. Setze den letzten an seine Stelle. Solange eines seiner Kinder kleiner ist, tausche ihn mit dem kleineren Kind; so sinkt er nach unten.
+- **pop:** Nimm den Eintrag an Index 0. Setze den letzten an seine Stelle. Solange eines seiner Kinder kleiner ist, tausche ihn mit dem kleineren Kind; so sinkt er nach unten.
 
 Beides braucht nur so viele Schritte, wie der Baum hoch ist: bei hunderttausend Einträgen 17.
 

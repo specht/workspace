@@ -258,7 +258,7 @@ int count = 0;
 </div>
 
 <!-- hint -->
-In `particles` leben 3 Funken, an den Stellen 0, 1 und 2, und `count` ist 3. An welche Stelle kommt der nächste, und was ist `count` danach? Was soll passieren, wenn schon `MAX_PARTICLES` Funken leben?
+In `particles` leben 3 Funken, an den Indizes 0, 1 und 2, und `count` ist 3. An welchen Index kommt der nächste, und was ist `count` danach? Was soll passieren, wenn schon `MAX_PARTICLES` Funken leben?
 <!-- /hint -->
 <!-- hint -->
 Ein Gerüst:

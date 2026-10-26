@@ -120,8 +120,9 @@ tasks:
       Bob sieht nach `git pull` diese Stelle in `README.md`. Was steht zwischen
       `<<<<<<< HEAD` und `=======`?
 
-      ```
+      ```text
       <<<<<<< HEAD
+
       HOLAAA
       =======
       HEYYYY

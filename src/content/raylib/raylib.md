@@ -155,7 +155,7 @@ int main(void)
 }
 ```
 
-Die erste Zeile in `main` bittet um zwei Dinge, bevor `InitWindow` das Fenster öffnet:
+Die erste Zeile in `main` bittet um zweierlei, bevor `InitWindow` das Fenster öffnet:
 
 - **Kantenglättung** (Antialiasing, `FLAG_MSAA_4X_HINT`). Eine schräge Kante liegt auf dem Bildschirm zwischen den Pixeln; ohne Glättung ist jedes Pixel ganz Würfel oder ganz Himmel, und die Kante wird zur Treppe. Mit der Glättung prüft die Grafikkarte an jedem Rand vier Punkte pro Pixel und mischt die Farbe daraus.
 - **Ein Fenster, das seine Größe ändern darf** (`FLAG_WINDOW_RESIZABLE`). Das Programm beginnt mit 960 × 540 Pixeln, die Seite gibt ihm dann so viele, wie Platz ist, auch im Vollbild. Ohne diese Angabe hätte das Bild immer 960 × 540 Pixel, und auf einem großen Bildschirm würde es vergrößert: Jedes Pixel wäre ein sichtbares Kästchen. Weil sich die Größe ändern kann, fragt das Programm später in jedem Bild mit `GetScreenWidth()` und `GetScreenHeight()`, wie groß das Fenster gerade ist, statt mit 960 und 540 zu rechnen.
@@ -1531,7 +1531,7 @@ Und in der Schleife, die die Welt zeichnet, werden Fackeln nicht als Block gezei
 
 ### Nebel
 
-Weit entfernte Dinge sehen in der Wirklichkeit blasser aus, weil Luft nie ganz klar ist. Das hilft dem Auge, Entfernungen zu schätzen, und versteckt nebenbei den Rand der Welt. Der Shader mischt dafür die Farbe eines Pixels mit der Farbe des Himmels, je weiter er von den Augen entfernt ist.
+Was weit entfernt ist, sieht in der Wirklichkeit blasser aus, weil Luft nie ganz klar ist. Das hilft dem Auge, Entfernungen zu schätzen, und versteckt nebenbei den Rand der Welt. Der Shader mischt dafür die Farbe eines Pixels mit der Farbe des Himmels, je weiter er von den Augen entfernt ist.
 
 Hier ist der ganze neue Fragment-Shader mit Fackeln und Nebel. Ersetze `light.fs` durch:
 
@@ -1960,7 +1960,7 @@ _person(abrash)
 <!-- extra -->
 ## Wenn die Welt wächst
 
-Unsere Welt hat 48 × 24 × 48 = 55 296 Felder. In jedem Bild geht die Schleife in `main` alle durch, fragt bei jedem Block die Nachbarn ab und schickt die Seiten, an die Luft grenzt, neu an die Grafikkarte, 60-mal in der Sekunde. Zwei Dinge sparen dabei schon Arbeit: Seiten zwischen zwei Blöcken zeichnen wir nicht, und die Grafikkarte lässt Rückseiten weg. Gezeichnet wird aber alles andere, auch was hinter dir liegt und was der Nebel längst verschluckt hat.
+Unsere Welt hat 48 × 24 × 48 = 55 296 Felder. In jedem Bild geht die Schleife in `main` alle durch, fragt bei jedem Block die Nachbarn ab und schickt die Seiten, an die Luft grenzt, neu an die Grafikkarte, 60-mal in der Sekunde. Zweierlei spart dabei schon Arbeit: Seiten zwischen zwei Blöcken zeichnen wir nicht, und die Grafikkarte lässt Rückseiten weg. Gezeichnet wird aber alles andere, auch was hinter dir liegt und was der Nebel längst verschluckt hat.
 
 Eine Welt, die du erst in sieben Minuten durchquert hast, ist 2000 Blöcke breit und tief. Mit 256 Blöcken in der Höhe sind das 2000 × 256 × 2000, gut eine Milliarde Felder. Die Schleife schafft kein Computer 60-mal in der Sekunde, und das Array allein bräuchte ein Gigabyte Arbeitsspeicher, ein Byte je Feld. Spiele mit großen Klötzchenwelten lösen beides mit ein paar Ideen.
 

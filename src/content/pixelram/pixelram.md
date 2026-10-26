@@ -254,7 +254,7 @@ Die dritte Formel zeichnet das **Sierpinski-Dreieck**, ein Fraktal. `x & y` verk
 Dieselben Zahlen sehen mit einer anderen Palette ganz anders aus. Ersetze `"sweetie_16"` zum Beispiel durch `"pico_8"` (16 Farben), `"endesga_32"` (32 Farben) oder `"aap_64"` (64 Farben). Hat eine Palette mehr Farben, kannst du statt `% 16` auch `% 32` oder `% 64` rechnen.
 
 <div class='hint books'>
-Alle eingebauten Paletten siehst du unter <a href='https://specht.github.io/pixelram/palettes.html' target='_blank'>specht.github.io/pixelram/palettes.html</a>. Mit <code>set_palette(nummer, rot, grün, blau)</code> stellst du dir eine einzelne Farbe selbst ein, jeweils mit Werten von 0 bis 255.
+Alle eingebauten Paletten siehst du unter <a href='https://specht.github.io/pixelram/palettes.html'>specht.github.io/pixelram/palettes.html</a>. Mit <code>set_palette(nummer, rot, grün, blau)</code> stellst du dir eine einzelne Farbe selbst ein, jeweils mit Werten von 0 bis 255.
 </div>
 
 ## Wellen
@@ -779,7 +779,7 @@ int main(void)
 _task(loslassen)
 
 <!-- after: loslassen -->
-Klicke in die Vorschau, damit sie die Tasten bekommt, und steuere mit den Pfeiltasten. Drei Dinge sind neu:
+Klicke in die Vorschau, damit sie die Tasten bekommt, und steuere mit den Pfeiltasten. Dreierlei ist neu:
 
 - Das Spielfeld hat nur 160 × 90 Pixel, also große Pixel.
 - `key_pressed` ist in genau dem Bild wahr, in dem eine Taste heruntergedrückt wurde. `dx` und `dy` merken sich die Richtung, und bei jedem Schritt geht die Spur einen Pixel weiter.
@@ -1156,7 +1156,7 @@ crop-element: #canvas
 Dazu kommen `beispiele/feuer`, ein Feuer, in dem jedes Pixel die Hitze seiner Nachbarn darunter aufnimmt, und `beispiele/sterne`, ein Flug durch 400 Sterne in 3D. Kopiere ein Beispiel neben `main.c` und verändere es: Das ist oft der schnellste Weg zu einer eigenen Idee.
 
 <div class='hint info'>
-Der Palettentrick aus <code>beispiele/magie</code> heißt <strong>Color Cycling</strong>. Der Künstler Mark Ferrari hat damit ganze Landschaften mit Regen, Schnee und Wasser zum Leben erweckt, ohne ein einziges Pixel zu verändern. <a href='https://www.effectgames.com/demos/canvascycle/' target='_blank'>Hier kannst du seine Bilder ansehen.</a>
+Der Palettentrick aus <code>beispiele/magie</code> heißt <strong>Color Cycling</strong>. Der Künstler Mark Ferrari hat damit ganze Landschaften mit Regen, Schnee und Wasser zum Leben erweckt, ohne ein einziges Pixel zu verändern. <a href='https://www.effectgames.com/demos/canvascycle/'>Hier kannst du seine Bilder ansehen.</a>
 </div>
 
 ### Ganze Spiele

@@ -739,7 +739,7 @@ Wenn es dir wichtig ist, dass dein <code>main</code>-Branch stabil bleibt, sollt
 
 ## Etwas Luxus im Terminal
 
-Um die Arbeit im Terminal etwas zu vereinfachen, können wir zwei Dinge tun:
+Um die Arbeit im Terminal etwas zu vereinfachen, können wir zweierlei tun:
 
 1. Bash-Completion für Git aktivieren
 2. Einen Git-Prompt einrichten

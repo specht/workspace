@@ -12,7 +12,7 @@ kind: reference
 # Layout: Anordnen
 
 <p class='abstract'>
-Normalerweise stehen alle Elemente untereinander. Mit CSS stellst du Bild und Text nebeneinander, teilst den Platz in Spalten, setzt einzelne Dinge genau an eine Stelle und sorgst dafür, dass eine Webseite auch auf dem Handy funktioniert.
+Normalerweise stehen alle Elemente untereinander. Mit CSS stellst du Bild und Text nebeneinander, teilst den Platz in Spalten, setzt einzelne Elemente genau an eine Stelle und sorgst dafür, dass eine Webseite auch auf dem Handy funktioniert.
 </p>
 
 Alles auf dieser Seite gilt für Webseiten und für Folien mit Shower. Jedes Beispiel zeigt rechts, wie es aussieht; mit dem Knopf <svg class='icon-slide' viewBox='0 0 24 24' aria-hidden='true'><rect x='3' y='4' width='18' height='12' rx='1.5'/><path d='M12 16v3.5M8.5 21l3.5-1.5 3.5 1.5M7 8.5h6M7 11.5h9'/></svg> in der Ecke des Bildes siehst du es als Folie.
@@ -86,7 +86,7 @@ Das innere `<div>` ist wichtig: Ohne es wären Überschrift und Absatz zwei eige
 <!-- short: `display: grid` mit `grid-template-columns: 1fr 1fr` teilt den Platz in zwei gleich breite Spalten, `1fr 1fr 1fr` in drei. -->
 ## Spalten
 
-Sollen mehrere gleich wichtige Dinge gleich breit nebeneinander stehen, etwa ein Vergleich oder Vor- und Nachteile, ist ein **Grid** einfacher. `grid-template-columns` legt die Spalten fest; `1fr` ist ein gleicher Anteil am Platz:
+Sollen mehrere gleich wichtige Elemente gleich breit nebeneinander stehen, etwa ein Vergleich oder Vor- und Nachteile, ist ein **Grid** einfacher. `grid-template-columns` legt die Spalten fest; `1fr` ist ein gleicher Anteil am Platz:
 
 <!-- screenshot-code: spalten-html -->
 ```html
@@ -201,7 +201,7 @@ variants: folie
 - `rgba(0, 0, 0, 0.6)` ist Schwarz mit 60 % Deckkraft; das Bild scheint durch, die Schrift bleibt lesbar.
 
 <div class='hint'>
-Setze nur einzelne Dinge so genau: einen Hinweis, ein Logo, eine Beschriftung. Für den normalen Inhalt sind Absätze, Flexbox und Spalten besser, denn sie passen sich von selbst an, wenn sich der Text ändert.
+Setze nur einzelne Elemente so genau: einen Hinweis, ein Logo, eine Beschriftung. Für den normalen Inhalt sind Absätze, Flexbox und Spalten besser, denn sie passen sich von selbst an, wenn sich der Text ändert.
 </div>
 
 <div class='tutorial-preview-clear'></div>

@@ -655,7 +655,7 @@ Achte auf die Ecken, während sich das Quadrat dreht: Hinter jeder zieht ein Sch
 <!-- extra -->
 ## Geheimnisvolles Leuchten
 
-Zwei Dinge machen den Effekt: der Kernel, der bestimmt, wohin die Hitze geht, und die Palette, die bestimmt, wie sie aussieht. Beides kannst du tauschen. Damit das bequemer geht, schreibst du den Kernel als Tabelle, so wie in den Bildern oben. Über `Pixelflow::Canvas.new` kommt:
+Zwei Teile machen den Effekt: der Kernel, der bestimmt, wohin die Hitze geht, und die Palette, die bestimmt, wie sie aussieht. Beides kannst du tauschen. Damit das bequemer geht, schreibst du den Kernel als Tabelle, so wie in den Bildern oben. Über `Pixelflow::Canvas.new` kommt:
 
 ```ruby
 ~ require 'pixelflow_canvas'

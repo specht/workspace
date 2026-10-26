@@ -251,7 +251,7 @@ tasks:
           say: "Was mehrmals im Einkauf steht, zählt mehrmals."
     feedback:
       - when: { same_as: "def total_price(prices, cart)\n  total = 0\n  prices.each do |item, price|\n    total += price if cart.include?(item)\n  end\n  total\nend\n" }
-        say: "Du gehst die Preisliste durch und zählst jedes Ding einmal. Geh den Einkauf durch: Was zweimal darin steht, kostet zweimal."
+        say: "Du gehst die Preisliste durch und zählst jedes Produkt einmal. Geh den Einkauf durch: Was zweimal darin steht, kostet zweimal."
     hint: "Geh den Einkauf durch, nicht die Preisliste. `prices['Saft']` ist der Preis eines Safts."
     solution: |
       ```ruby
@@ -285,7 +285,7 @@ tasks:
             say: "Was mehrmals im Einkauf steht, zählt mehrmals."
       feedback:
         - when: { same_as: "def total_price(prices, cart):\n    total = 0\n    for item, price in prices.items():\n        if item in cart:\n            total += price\n    return total\n" }
-          say: "Du gehst die Preisliste durch und zählst jedes Ding einmal. Geh den Einkauf durch: Was zweimal darin steht, kostet zweimal."
+          say: "Du gehst die Preisliste durch und zählst jedes Produkt einmal. Geh den Einkauf durch: Was zweimal darin steht, kostet zweimal."
       hint: "Geh den Einkauf durch, nicht die Preisliste. `prices['Saft']` ist der Preis eines Safts."
       solution: |
         ```python
@@ -317,7 +317,7 @@ tasks:
             say: "Was mehrmals im Einkauf steht, zählt mehrmals."
       feedback:
         - when: { same_as: "function totalPrice(prices, cart) {\n  let total = 0;\n  for (const item in prices) {\n    if (cart.includes(item)) {\n      total += prices[item];\n    }\n  }\n  return total;\n}\n" }
-          say: "Du gehst die Preisliste durch und zählst jedes Ding einmal. Geh den Einkauf durch: Was zweimal darin steht, kostet zweimal."
+          say: "Du gehst die Preisliste durch und zählst jedes Produkt einmal. Geh den Einkauf durch: Was zweimal darin steht, kostet zweimal."
       hint: "Geh den Einkauf durch, nicht die Preisliste. `prices['Saft']` ist der Preis eines Safts."
       solution: |
         ```javascript

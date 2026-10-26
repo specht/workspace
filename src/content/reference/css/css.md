@@ -12,7 +12,7 @@ kind: reference
 # CSS: Aussehen
 
 <p class='abstract'>
-Mit CSS legst du fest, wie der Inhalt aussieht: Farben, Schrift, Abstände, Rahmen und die Größe von Bildern. Wie du Dinge nebeneinander anordnest, steht unter Layout.
+Mit CSS legst du fest, wie der Inhalt aussieht: Farben, Schrift, Abstände, Rahmen und die Größe von Bildern. Wie du Elemente nebeneinander anordnest, steht unter Layout.
 </p>
 
 _person(wium-lie)

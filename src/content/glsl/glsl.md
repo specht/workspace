@@ -433,7 +433,7 @@ Ein Shader fragt die Szene etwas Einfacheres: Wie weit ist es von diesem Punkt b
 
 <img class='full' src='marching.webp' alt='Seitenansicht: links das Auge über dem Boden, rechts eine Kugel. Ein Strahl geht vom Auge leicht aufwärts zur Kugel. Um jeden Punkt des Strahls ist ein gestrichelter Kreis gezeichnet, der gerade den Boden oder die Kugel berührt; der erste hat den Radius d bis zum Boden. Der Strahl springt jeweils bis zum Rand seines Kreises, die Kreise werden größer, solange der Boden am nächsten ist, und an der Kugel immer kleiner, bis der Strahl sie trifft.'>
 
-So tastet sich der Strahl vor: große Schritte im freien Raum, immer kleinere dicht an einer Fläche, bis der Abstand fast 0 ist. Das heißt **Raymarching**. Eine Formel für den Treffer braucht es nicht mehr, nur eine für den Abstand, und Abstände lassen sich kombinieren: Der Abstand zu zwei Dingen ist der kleinere der beiden Abstände.
+So tastet sich der Strahl vor: große Schritte im freien Raum, immer kleinere dicht an einer Fläche, bis der Abstand fast 0 ist. Das heißt **Raymarching**. Eine Formel für den Treffer braucht es nicht mehr, nur eine für den Abstand, und Abstände lassen sich kombinieren: Der Abstand zu zwei Flächen ist der kleinere der beiden Abstände.
 
 <div class='book'>
 <i class='bi bi-file-earmark-text'></i>
@@ -799,7 +799,7 @@ _task(smin)
 
 ### Glanz und ein schwarzer Spiegel
 
-Drei Dinge fehlen noch: Glanz auf den Tropfen, ein Boden, in dem sie sich spiegeln, und dunklere Stellen, wo wenig Licht hinkommt, unter den Tropfen und in den Kehlen zwischen ihnen. Für das Letzte fragt der Shader `map` ein paar Mal entlang der Normale: Ist über der Fläche weniger Platz, als der Weg nach außen lang ist, liegt dort etwas, das Licht wegnimmt. Das heißt **Umgebungsverdeckung** (englisch Ambient Occlusion). Schreib unter `shadow`:
+Dreierlei fehlt noch: Glanz auf den Tropfen, ein Boden, in dem sie sich spiegeln, und dunklere Stellen, wo wenig Licht hinkommt, unter den Tropfen und in den Kehlen zwischen ihnen. Für das Letzte fragt der Shader `map` ein paar Mal entlang der Normale: Ist über der Fläche weniger Platz, als der Weg nach außen lang ist, liegt dort etwas, das Licht wegnimmt. Das heißt **Umgebungsverdeckung** (englisch Ambient Occlusion). Schreib unter `shadow`:
 
 ```glsl
 ~     }
@@ -1390,7 +1390,7 @@ crop-element: #canvas
 - **`room`** gibt jedem Raum mit `hash` eine Zufallszahl, die für ihn immer gleich bleibt. Nur wo sie über 0,7 liegt, brennt ein Licht, kalt, ganz selten warm. Jeder Punkt fragt seinen eigenen Raum und die sechs Nachbarn, durch deren Gänge ihr Licht hereinfällt; mit der Entfernung wird es schnell schwächer, und der Rest bleibt dunkel.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Setze <code>roll</code> auf 0 und sieh dir den Flug noch einmal an. Ändere dann in <code>room</code> die <code>0.7</code> auf <code>0.3</code>: Achte darauf, ob der Schwamm mit mehr Licht noch genauso wirkt.
+<strong>Ausprobieren:</strong> Setze <code>roll</code> auf 0 und sieh dir den Flug noch einmal an. Ändere dann in <code>room</code> die <code>0.7</code> auf <code>0.3</code>: Achte darauf, wie viele Räume jetzt leuchten und ob vorn im Gang noch Wände ganz schwarz bleiben.
 </div>
 
 ## Schnell genug für jeden Rechner

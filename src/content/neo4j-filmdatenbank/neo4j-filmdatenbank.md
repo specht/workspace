@@ -68,7 +68,7 @@ Man muss eine relationale Datenbank nicht immer so in einen Graphen übersetzen.
 
 ### Knoten haben Eigenschaften
 
-Ein Knoten hat ein **Label**, das sagt, was für ein Ding er ist, und **Eigenschaften** mit Werten. »Back to the Future« sieht im Graphen ungefähr so aus:
+Ein Knoten hat ein **Label**, das sagt, was er darstellt, und **Eigenschaften** mit Werten. »Back to the Future« sieht im Graphen ungefähr so aus:
 
 ```cypher
 (:Movie {
@@ -102,7 +102,7 @@ _person(eifrem-svensson-neubauer)
 
 ### Die Filmdaten laden
 
-Schalte zuerst in deinem [Profil](/profil) unter »Datenbanken« **Neo4j** ein. Du hast dann eine eigene, leere Neo4j-Datenbank, und oben im Menü erscheint der Knopf »Neo4j«. Im Workspace stehen deine Zugangsdaten in den Umgebungsvariablen `NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD` und `NEO4J_DATABASE`; die Werkzeuge unten lesen sie von selbst.
+Schalte zuerst in deinem [Profil](/profil) unter »Datenbanken« **Neo4j** ein. Du hast dann eine eigene, leere Neo4j-Datenbank, und oben im Menü erscheint der Knopf »Neo4j«. Im Workspace stehen deine Zugangsdaten in den Umgebungsvariablen `NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD` und `NEO4J_DATABASE`; `neo4j_bolt` und `cypher-shell` weiter unten lesen sie von selbst.
 
 Öffne ein Terminal und wechsle in den Ordner aus der Filmdatenbank (`mkdir -p` legt ihn an, falls es ihn noch nicht gibt):
 
@@ -485,7 +485,7 @@ _task(vergleich)
 
 ## Zusammenfassung
 
-- **Knoten** sind Dinge wie Filme, Personen und Genres, ihr **Label** sagt, welche Art. **Eigenschaften** speichern Werte wie Titel oder Jahr.
+- **Knoten** stehen für Filme, Personen und Genres, ihr **Label** sagt, welche Art. **Eigenschaften** speichern Werte wie Titel oder Jahr.
 - **Beziehungen** verbinden zwei Knoten direkt und haben einen **Typ** wie `IN_GENRE`, `ACTOR` oder `DIRECTOR`. Zwischentabellen und die Tabelle `job` aus MySQL werden zu Beziehungen und ihren Typen.
 - `MATCH` beschreibt ein Muster, `WHERE` filtert, `RETURN` sagt, was herauskommt. Gruppiert wird von selbst, `WITH` reicht Zwischenergebnisse weiter.
 - **Schlüssel** (`IS NODE KEY`) übernehmen die Aufgabe von Primärschlüsseln, **Indizes** beschleunigen Suchen.

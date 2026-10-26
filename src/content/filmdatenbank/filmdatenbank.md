@@ -48,7 +48,7 @@ F체r den Austausch ist das bequem: Alles 체ber einen Film steht an einer Stelle.
 
 _uses(json-aufbau)
 
-In dem Datensatz stecken verschiedene Arten von Dingen: **Filme**, **Genres**, **Personen** und das, was eine Person bei einem Film gemacht hat, die **T채tigkeit**. In einer relationalen Datenbank bekommt jede Art ihre eigene Tabelle, und die Beziehungen zwischen ihnen werden eigens gespeichert.
+In dem Datensatz stecken verschiedene Arten von Objekten: **Filme**, **Genres**, **Personen** und das, was eine Person bei einem Film gemacht hat, die **T채tigkeit**. In einer relationalen Datenbank bekommt jede Art ihre eigene Tabelle, und die Beziehungen zwischen ihnen werden eigens gespeichert.
 
 _task(eine-spalte)
 
@@ -71,7 +71,7 @@ Lege im Ordner eine neue Datei `film.er` an: Klicke im Explorer auf das Symbol �
 
 ### Das Modell als Text
 
-Ein ER-Modell (Entity-Relationship-Modell) beschreibt, welche Dinge es gibt (**Entit채ten**), welche Eigenschaften sie haben (**Attribute**) und wie sie zusammenh채ngen (**Beziehungen**). Du schreibst es als Text. Fang mit Filmen und Genres an:
+Ein ER-Modell (Entity-Relationship-Modell) beschreibt, welche Objekte es gibt (**Entit채ten**), welche Eigenschaften sie haben (**Attribute**) und wie sie zusammenh채ngen (**Beziehungen**). Du schreibst es als Text. Fang mit Filmen und Genres an:
 
 ```er
 # Filme und ihre Genres

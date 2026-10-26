@@ -430,7 +430,7 @@ tasks:
         unter »Breitensuche« kannst du dasselbe an einem anderen Graphen Schritt für
         Schritt durchklicken.
       - |
-        Die Suche merkt sich drei Dinge: `previous` (am Anfang nur der Start, ohne
+        Die Suche merkt sich dreierlei: `previous` (am Anfang nur der Start, ohne
         Vorgänger), die Queue (am Anfang nur der Start) und `visited` (am Anfang
         leer). Einen Nachbarn, der schon gefunden ist, erkennst du daran, dass er in
         `previous` steht. Am Ende baut dein `path_to` den Weg.
@@ -480,7 +480,7 @@ tasks:
           unter »Breitensuche« kannst du dasselbe an einem anderen Graphen Schritt für
           Schritt durchklicken.
         - |
-          Die Suche merkt sich drei Dinge: `previous` (am Anfang nur der Start, ohne
+          Die Suche merkt sich dreierlei: `previous` (am Anfang nur der Start, ohne
           Vorgänger), die Queue (am Anfang nur der Start, dazu `first = 0` für den
           Knoten, der als Nächster dran ist) und `visited` (am Anfang leer). Einen
           Nachbarn, der schon gefunden ist, erkennst du daran, dass er in `previous`
@@ -555,7 +555,7 @@ tasks:
         »Dijkstra« kannst du die Suche durchklicken; achte darauf, welcher Knoten
         jeweils als Nächster drankommt und wann sich ein Abstand noch ändert.
       - |
-        Gegenüber deiner Breitensuche ändern sich zwei Dinge. Statt der Queue gibt es
+        Gegenüber deiner Breitensuche ändert sich zweierlei. Statt der Queue gibt es
         `frontier`, einen Hash von Knoten zu Metern, und als Nächstes kommt der mit
         den wenigsten Metern (`min_by`). Und ein Nachbar wird nicht nur eingetragen,
         wenn er neu ist, sondern auch, wenn der Weg über diesen Knoten kürzer ist als
@@ -613,7 +613,7 @@ tasks:
           »Dijkstra« kannst du die Suche durchklicken; achte darauf, welcher Knoten
           jeweils als Nächster drankommt und wann sich ein Abstand noch ändert.
         - |
-          Gegenüber deiner Breitensuche ändern sich zwei Dinge. Statt der Queue gibt es
+          Gegenüber deiner Breitensuche ändert sich zweierlei. Statt der Queue gibt es
           `frontier`, ein dict von Knoten zu Metern, und als Nächstes kommt der mit den
           wenigsten Metern (`min(frontier, key=frontier.get)`). Und ein Nachbar wird
           nicht nur eingetragen, wenn er neu ist, sondern auch, wenn der Weg über
@@ -666,13 +666,13 @@ tasks:
       - |
         Leg von Hand nacheinander 4, 7, 2 und 9 in einen leeren Heap und schreib das
         Array nach jedem Schritt auf. Wo landet die 2, und mit wem wird sie
-        getauscht? Nimm dann einmal das Kleinste heraus: Was kommt an die Stelle 0,
+        getauscht? Nimm dann einmal das Kleinste heraus: Was kommt an Index 0,
         und wohin sinkt es? Im Handbuch unter »push« und »pop« kannst du ein anderes
         Beispiel durchklicken.
       - |
-        `push`: hinten anhängen, dann mit dem Elternteil an der Stelle
+        `push`: hinten anhängen, dann mit dem Elternteil am Index
         `(i - 1) / 2` vergleichen und tauschen, solange das Elternteil größer ist.
-        `pop`: das Paar an der Stelle 0 merken, das letzte Paar an die Stelle 0 setzen
+        `pop`: das Paar an Index 0 merken, das letzte Paar an Index 0 setzen
         und nach unten tauschen, immer mit dem kleineren der beiden Kinder
         `2 * i + 1` und `2 * i + 2`, solange eines kleiner ist. Verglichen wird nur
         die Priorität, `[0]`. Und Vorsicht: War der herausgenommene Eintrag der
@@ -734,13 +734,13 @@ tasks:
         - |
           Leg von Hand nacheinander 4, 7, 2 und 9 in einen leeren Heap und schreib die
           Liste nach jedem Schritt auf. Wo landet die 2, und mit wem wird sie
-          getauscht? Nimm dann einmal das Kleinste heraus: Was kommt an die Stelle 0,
+          getauscht? Nimm dann einmal das Kleinste heraus: Was kommt an Index 0,
           und wohin sinkt es? Im Handbuch unter »push« und »pop« kannst du ein anderes
           Beispiel durchklicken.
         - |
-          `push`: hinten anhängen, dann mit dem Elternteil an der Stelle
+          `push`: hinten anhängen, dann mit dem Elternteil am Index
           `(i - 1) // 2` vergleichen und tauschen, solange das Elternteil größer ist.
-          `pop`: das Paar an der Stelle 0 merken, das letzte Paar an die Stelle 0 setzen
+          `pop`: das Paar an Index 0 merken, das letzte Paar an Index 0 setzen
           und nach unten tauschen, immer mit dem kleineren der beiden Kinder
           `2 * i + 1` und `2 * i + 2`, solange eines kleiner ist. Verglichen wird nur
           die Priorität, `[0]`. Und Vorsicht: War der herausgenommene Eintrag der
@@ -803,7 +803,7 @@ tasks:
         siehst du an einem anderen Graphen, welche Knoten deshalb gar nicht erst
         drankommen.
       - |
-        Nimm dein `dijkstra` mit dem Heap als Vorlage. Neu sind zwei Dinge: eine
+        Nimm dein `dijkstra` mit dem Heap als Vorlage. Neu ist zweierlei: eine
         kleine Funktion `estimate`, die mit `distance` die Luftlinie von einem Knoten
         zum Ziel ausrechnet (die Lage steht in `graph[:nodes]`), und beim Hineinlegen
         ist die Priorität der Weg plus diese Schätzung. Den Weg bis zu einem Knoten
@@ -862,7 +862,7 @@ tasks:
           siehst du an einem anderen Graphen, welche Knoten deshalb gar nicht erst
           drankommen.
         - |
-          Nimm dein `dijkstra` mit dem Heap als Vorlage. Neu sind zwei Dinge: eine
+          Nimm dein `dijkstra` mit dem Heap als Vorlage. Neu ist zweierlei: eine
           kleine Funktion `estimate`, die mit `distance` die Luftlinie von einem Knoten
           zum Ziel ausrechnet (die Lage steht in `graph['nodes']`), und beim
           Hineinlegen ist die Priorität der Weg plus diese Schätzung. Den Weg bis zu
@@ -1204,8 +1204,8 @@ tasks:
         die 0 vorne an ihrem Platz bleibt? Im Handbuch unter »Eine Rundreise« kannst
         du 2-opt an anderen Orten durchklicken.
       - |
-        Zwei Schleifen geben jedes Stück: Es beginnt an der Stelle `i` (ab 1, denn
-        die 0 bleibt vorne) und endet an der Stelle `j` (nach `i`). Umgedreht wird
+        Zwei Schleifen geben jedes Stück: Es beginnt am Index `i` (ab 1, denn
+        die 0 bleibt vorne) und endet am Index `j` (nach `i`). Umgedreht wird
         mit `order[0...i] + order[i..j].reverse + order[j + 1..]`. Ist das kürzer,
         nimmst du es und merkst dir, dass sich etwas verbessert hat. Das Ganze
         wiederholst du, bis ein ganzer Durchgang nichts mehr verbessert. Arbeite auf
@@ -1253,8 +1253,8 @@ tasks:
           die 0 vorne an ihrem Platz bleibt? Im Handbuch unter »Eine Rundreise« kannst
           du 2-opt an anderen Orten durchklicken.
         - |
-          Zwei Schleifen geben jedes Stück: Es beginnt an der Stelle `i` (ab 1, denn
-          die 0 bleibt vorne) und endet an der Stelle `j` (nach `i`). Umgedreht wird
+          Zwei Schleifen geben jedes Stück: Es beginnt am Index `i` (ab 1, denn
+          die 0 bleibt vorne) und endet am Index `j` (nach `i`). Umgedreht wird
           mit `order[:i] + order[i:j + 1][::-1] + order[j + 1:]`. Ist das kürzer,
           nimmst du es und merkst dir, dass sich etwas verbessert hat. Das Ganze
           wiederholst du, bis ein ganzer Durchgang nichts mehr verbessert. Arbeite auf

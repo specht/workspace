@@ -224,7 +224,7 @@ Schreib `rle_bytes`, das ein Array von Zahlen zurückgibt, und `unrle_bytes`, da
 Schreib `rle_bytes`, das eine Liste von Zahlen zurückgibt, und `unrle_bytes`, das daraus wieder Bytes macht.
 
 - `b'AAAB'` sind Bytes, keine Zeichen, und `for byte in data:` liefert sie als Zahlen: 65, 65, 65, 66.
-- `zip(numbers[0::2], numbers[1::2])` geht eine Liste paarweise durch: die Zahlen an geraden und an ungeraden Stellen.
+- `zip(numbers[0::2], numbers[1::2])` geht eine Liste paarweise durch: die Zahlen an geraden und an ungeraden Indizes.
 - `[65] * 3` ist `[65, 65, 65]`, und `bytes([65, 65, 65])` macht daraus `b'AAA'`.
 <!-- /language -->
 

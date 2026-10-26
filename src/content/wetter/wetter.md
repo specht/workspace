@@ -248,7 +248,7 @@ results = places['results'] || []   # ohne Treffer gibt es results gar nicht
 
 ```ruby
 days['time'].each_with_index do |day, i|
-  # hier: eine Zeile mit day und den Werten an der Stelle i der anderen Listen
+  # hier: eine Zeile mit day und den Werten am Index i der anderen Listen
 end
 ```
 <!-- /hint -->
@@ -381,7 +381,7 @@ results = places.get('results', [])   # ohne Treffer gibt es results gar nicht
 
 ```python
 for i, day in enumerate(days['time']):
-    # hier: eine Zeile mit day und den Werten an der Stelle i der anderen Listen
+    # hier: eine Zeile mit day und den Werten am Index i der anderen Listen
     ...
 ```
 <!-- /hint -->

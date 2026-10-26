@@ -172,7 +172,8 @@ Das legt `algorithms/DEIN_NAME/bubble_sort.py` mit einem Bubble Sort als Ausgang
 
 ### Explore: deinem Code beim Arbeiten zusehen
 
-Im Reiter **Explore** steht links dein Quelltext; du kannst ihn direkt im Browser bearbeiten, formatieren und speichern. Rechts läuft der Algorithmus Schritt für Schritt: Die **aktuelle Zeile** ist markiert, darunter stehen die lokalen Variablen, und Indexvariablen wie `i` und `j` erscheinen als Zeiger unter der Liste. Auf Wunsch leuchten gelesene Elemente orange und geschriebene rot auf. Mit der Zeitleiste spulst du jederzeit zurück.
+Im Reiter **Explore** steht links dein Quelltext; du kannst ihn direkt im Browser bearbeiten, formatieren und speichern. Rechts läuft der Algorithmus Schritt für Schritt: Die **aktuelle Zeile** ist markiert, darunter stehen die lokalen Variablen, und Indexvariablen wie `i` und `j` erscheinen als Zeiger unter der Liste. Auf Wunsch leuchten gelesene Elemente orange und geschriebene rot auf. Hältst du den Lauf an oder ist er fertig, spulst du mit der Zeitleiste zurück.
+
 
 <!-- tutorial-screenshot
 terminal-open

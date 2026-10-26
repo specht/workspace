@@ -237,7 +237,7 @@ show-mouse
 
 <div class='hint'>
 <p>
-Intern verwendet die Checkpoints-Erweiterung Git, um die Zwischenstände zu speichern, ohne dass du dich um die Details kümmern musst. Du kannst Checkpoints jederzeit wieder löschen, wenn du sie nicht mehr brauchst. Die gespeicherten Checkpoints werden separat von eventuell vorhandenen Commits in einem Git-Repository verwaltet.
+Intern verwendet die Checkpoints-Erweiterung Git, um die Zwischenstände zu speichern, ohne dass du dich um die Details kümmern musst. Brauchst du sie nicht mehr, löschst du alle Checkpoints eines Projekts auf einmal: im Menü »…« über der Liste mit »Alle Checkpoints löschen…«. Die gespeicherten Checkpoints werden separat von eventuell vorhandenen Commits in einem Git-Repository verwaltet.
 </p>
 </div>
 

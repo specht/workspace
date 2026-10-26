@@ -202,7 +202,7 @@ viewport: 720x405
     <img src='website-list.webp' alt='Die ungestaltete Axolotl-Webseite zeigt jetzt zusätzlich die Überschrift „Was ich spannend finde“ und eine Liste mit drei Stichpunkten.'>
 </button>
 
-Auf unserer Beispielseite wollen wir drei Dinge sammeln, die an Axolotl interessant sind. Füge unter dem ersten Absatz Folgendes ein:
+Auf unserer Beispielseite wollen wir drei Punkte sammeln, die an Axolotl interessant sind. Füge unter dem ersten Absatz Folgendes ein:
 
 ```html
 ~             Axolotl sind Salamander, die normalerweise ihr ganzes Leben
@@ -673,7 +673,7 @@ Im Handbuch: _uses(kleine-bildschirme, spalten, platzieren)
 
 ## Mach die Seite zu deiner
 
-Der technische Teil ist geschafft. Jetzt sollte die Seite nicht mehr wie unser Beispiel aussehen, sondern wirklich zu deinem Thema passen. Verändere dafür mindestens einige dieser Dinge:
+Der technische Teil ist geschafft. Jetzt sollte die Seite nicht mehr wie unser Beispiel aussehen, sondern wirklich zu deinem Thema passen. Verändere dafür mindestens einige dieser Punkte:
 
 - eigenes Thema und eigene Texte
 - eigenes Bild und passender Alt-Text

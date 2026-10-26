@@ -98,7 +98,7 @@ puts "Der Server wartet auf Port 8000 ..."
 Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Silent: true)
 ```
 
-- `App` ist ein **Rack-Programm**: Für jede Anfrage bekommt es `env`, einen Hash mit Methode, Pfad und Headern, und gibt drei Dinge zurück, Status, Header und Inhalt, wie die Antwort deines eigenen Webservers.
+- `App` ist ein **Rack-Programm**: Für jede Anfrage bekommt es `env`, einen Hash mit Methode, Pfad und Headern, und gibt drei Werte zurück, Status, Header und Inhalt, wie die Antwort deines eigenen Webservers.
 - `Faye::WebSocket.websocket?(env)` erkennt eine Anfrage, die eine WebSocket-Verbindung öffnen will. Dann übernimmt `Faye::WebSocket.new(env)` den Handshake; `ws` steht für diese eine Verbindung.
 - `ws.on(:message) do |event| … end` legt fest, was bei jeder neuen Nachricht passiert. `event.data` ist der Text, `ws.send` schickt einen zurück.
 - Alle anderen Anfragen bekommen die Webseite `index.html`.
