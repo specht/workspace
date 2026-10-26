@@ -172,6 +172,7 @@ terminal-wait-for-prompt: 180
 move-mouse: selector:.terminal
 terminal-expect-no-text: error:
 terminal-expect-no-text: ***
+check-task-fails: hit-sphere
 -->
 <img class='full' src='make.webp' alt='Der Workspace mit dem Ordner raytracer: links die Dateien, oben raytracer.c im Editor, unten im Terminal hat make die Datei raytracer.html erzeugt.'>
 
@@ -236,6 +237,8 @@ $$t^2 + 2b\,t + c = 0 \quad\text{mit}\quad b = \text{oc} \cdot \text{dir}, \quad
 
 Sie hat die Lösungen \\(t = -b \pm \sqrt{b^2 - c}\\). Ist \\(b^2 - c\\) negativ, gibt es keine: Der Strahl geht an der Kugel vorbei. Sonst trifft er sie zweimal, vorn und hinten, und sichtbar ist der vordere Treffpunkt mit dem kleineren `t`.
 
+_task(treffer)
+
 Schreib die Kugel in dein Programm. Zum Abziehen von Vektoren kommt `sub` dazu:
 
 ```c
@@ -250,7 +253,7 @@ vec sub(vec a, vec b)
 }
 ```
 
-Unter `sky` kommen die Kugel, das Auge und die Rechnung:
+Unter `sky` kommen die Kugel und das Auge:
 
 ```c
 typedef struct
@@ -264,7 +267,35 @@ sphere ball = {{0, 1, 0}, 1, {0.9, 0.15, 0.1}};
 
 // hier steht das Auge, es schaut in Richtung -z
 vec eye = {0, 1.2, 5.5};
+```
 
+<div class='hint own' data-check='hit-sphere'>
+<strong>Jetzt bist du dran:</strong> Schreib darunter die Funktion <code>double hit_sphere(vec origin, vec dir, sphere s)</code> nach den Formeln oben. Sie gibt das <code>t</code> des vorderen Treffpunkts zurück. Geht der Strahl an der Kugel vorbei, gibt sie <code>INFINITY</code> zurück: eine Zahl aus <code>math.h</code>, die größer ist als jede andere und hier für »kein Treffer« steht. Ebenso, wenn die Kugel hinter dem Auge liegt; dann ist auch das kleinere <code>t</code> nicht größer als 0. Die Wurzel zieht <code>sqrt</code>. Laufen lassen kannst du die Funktion erst gleich mit <code>trace</code>, prüfen kann der Workspace sie schon jetzt: mit der Aufgabe unter der Lösung.
+</div>
+
+<!-- hint -->
+Rechne die Aufgabe »Wo trifft der Strahl?« oben noch einmal Schritt für Schritt: erst `oc`, dann `b`, `c` und `b² − c`, am Ende `t`. Jeder Schritt wird eine Zeile deiner Funktion; `oc` ist ein `vec` aus `sub`, `b` und `c` kommen aus `dot`.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```c
+double hit_sphere(vec origin, vec dir, sphere s)
+{
+    vec oc = …;
+    double b = …;
+    double c = …;
+    double d = b * b - c;
+    // hier: d negativ? Dann geht der Strahl vorbei.
+    double t = …;   // der vordere Treffpunkt
+    // hier: t zurückgeben, wenn die Kugel vor dem Auge liegt
+    return INFINITY;
+}
+```
+<!-- /hint -->
+
+<!-- solution -->
+```c
 // Abstand t, in dem der Strahl origin + t * dir die Kugel trifft, sonst INFINITY
 double hit_sphere(vec origin, vec dir, sphere s)
 {
@@ -279,7 +310,14 @@ double hit_sphere(vec origin, vec dir, sphere s)
         return t;
     return INFINITY;      // die Kugel liegt hinter dem Auge
 }
+```
+<!-- /solution -->
 
+_task(hit-sphere)
+
+Unter `hit_sphere` kommt `trace`. Trifft der Strahl die Kugel, gibt es ihre Farbe zurück, sonst den Himmel:
+
+```c
 // die Farbe, die aus Richtung dir beim Punkt origin ankommt
 vec trace(vec origin, vec dir)
 {
@@ -289,7 +327,7 @@ vec trace(vec origin, vec dir)
 }
 ```
 
-`INFINITY` aus `math.h` ist eine Zahl, die größer ist als jede andere; sie steht hier für »kein Treffer«. Das Auge steht jetzt nicht mehr im Nullpunkt, sondern bei `eye`, etwas zurück und auf Augenhöhe der Kugel. In `draw` fragt das Programm statt des Himmels jetzt `trace`, was der Strahl vom Auge aus sieht:
+Das Auge steht jetzt nicht mehr im Nullpunkt, sondern bei `eye`, etwas zurück und auf Augenhöhe der Kugel. In `draw` fragt das Programm statt des Himmels jetzt `trace`, was der Strahl vom Auge aus sieht:
 
 ```c
 ~         for (int x = 0; x < W; x++)
@@ -309,12 +347,12 @@ tab: preview
 viewport: 800x450
 hook: open raytracer.html
 crop-element: #canvas
+check-task: hit-sphere
+check-task-fails: licht
 -->
 <img class='full fit-width' src='kugel.webp' alt='Vor dem Himmel eine rote, gleichmäßig gefärbte Scheibe in der Mitte des Bildes.'>
 
 Eine rote Scheibe. Dass sie eine Kugel ist, sieht man noch nicht: Jeder Strahl, der sie trifft, bekommt dieselbe Farbe.
-
-_task(treffer)
 
 ## Glatte Kanten
 
@@ -368,23 +406,19 @@ void draw(int passes)
 }
 ```
 
-In `main` zeichnet die Schleife jetzt in jedem Bild einen weiteren Durchgang, und `passes` zählt sie mit. Das `draw();` vor der Schleife fällt weg. Ersetze `main` durch:
+In `main` zeichnet die Schleife jetzt in jedem Bild einen weiteren Durchgang, und `passes` zählt sie mit. Das `draw();` vor der Schleife fällt weg, an seiner Stelle steht `int passes = 0;`, und die Schleife bekommt geschweifte Klammern:
 
 ```c
-int main(void)
-{
-    screen_open(W, H, pixel_rgb24, "Raytracer");
+~     screen_open(W, H, pixel_rgb24, "Raytracer");
     int passes = 0;
-    while (!should_close())
+~     while (!should_close())
     {
         // jedes Bild ein weiterer Durchgang: das Bild wird immer glatter
         passes++;
         draw(passes);
-        present();
+~         present();
     }
-    screen_close();
-    return 0;
-}
+~     screen_close();
 ```
 
 <div class='gallery columns-2'>
@@ -469,8 +503,42 @@ vec sun_color = {1.4, 1.2, 0.9};
 vec ambient = {0.12, 0.15, 0.22};
 ```
 
-`trace` rechnet jetzt den Treffpunkt aus, die Normale und das Licht. Ersetze `trace` durch:
+`trace` rechnet jetzt den Treffpunkt aus, die Normale und das Licht. Ersetze `trace` durch dieses Gerüst:
 
+<!-- page-code: own -->
+```c
+// die Farbe, die aus Richtung dir beim Punkt origin ankommt
+vec trace(vec origin, vec dir)
+{
+    double t = hit_sphere(origin, dir, ball);
+    if (t == INFINITY)
+        return sky(dir);
+
+    // hier: der Treffpunkt, die Normale und das Licht
+}
+```
+
+<div class='hint own' data-check='licht'>
+<strong>Jetzt bist du dran:</strong> Füll die Lücke in <code>trace</code> nach den Absätzen oben. Rechne den Treffpunkt <code>point</code> aus, dann die Normale dort, mit der Länge 1. <code>dot(normal, sun_dir)</code> sagt, wie viel Sonne ankommt, aber nie weniger als 0. Das Licht ist so viel <code>sun_color</code> und dazu <code>ambient</code>, und zurück kommt die Farbe der Kugel, mit <code>mul</code> mit dem Licht multipliziert. Prüfen kann der Workspace es gleich mit der Aufgabe unter der Lösung; laufen lassen kannst du es, sobald <code>sun_dir</code> gleich in <code>main</code> seinen Wert bekommt.
+</div>
+
+<!-- hint -->
+Rechne einen Punkt von Hand: Ein Strahl trifft `ball` ganz oben, bei `point = (0, 2, 0)`. Die Normale zeigt vom Mittelpunkt `(0, 1, 0)` dorthin: `(0, 1, 0)`, geteilt durch den Radius 1. Stünde die Sonne genau darüber, wäre `d = 1` und das Licht `sun_color + ambient`. Schiene sie von unten, wäre `d` negativ, und es bliebe nur `ambient`.
+<!-- /hint -->
+<!-- hint -->
+Die Lücken mit `…` füllst du:
+
+```c
+    vec point = …;                      // origin + t · dir
+    vec normal = scale(sub(…, …), …);   // vom Mittelpunkt zum Treffpunkt, Länge 1
+    double d = dot(normal, sun_dir);
+    // hier: ist d negativ, wird es 0
+    vec light = add(…, ambient);
+    return mul(…, …);
+```
+<!-- /hint -->
+
+<!-- solution -->
 ```c
 // die Farbe, die aus Richtung dir beim Punkt origin ankommt
 vec trace(vec origin, vec dir)
@@ -491,6 +559,9 @@ vec trace(vec origin, vec dir)
     return mul(ball.color, light);
 }
 ```
+<!-- /solution -->
+
+_task(licht)
 
 `sun_dir` bekommt seinen Wert in `main`, weil `normalize` erst dort aufgerufen werden kann:
 
@@ -524,6 +595,7 @@ viewport: 800x450
 hook: open raytracer.html
 hook: frames 64
 crop-element: #canvas
+check-task: licht
 check-task-fails: hit-floor
 -->
 <img class='full fit-width' src='licht-kugel.webp' alt='Die rote Kugel ist jetzt rund: oben rechts hell, wo die Sonne auf sie scheint, nach links unten immer dunkler.'>
@@ -941,20 +1013,17 @@ _task(kamera)
 
 ### Um die Szene kreisen
 
-In `main` fragt die Schleife jetzt die Pfeiltasten ab. Bewegt sich die Kamera, gelten die alten Durchgänge nicht mehr: `passes` fängt wieder bei 0 an, und der nächste Durchgang überschreibt die Summe. Ersetze `main` durch:
+In `main` fragt die Schleife jetzt die Pfeiltasten ab. Bewegt sich die Kamera, gelten die alten Durchgänge nicht mehr: `passes` fängt wieder bei 0 an, und der nächste Durchgang überschreibt die Summe. Neu in `main` sind der Winkel und die Höhe der Kamera, die Zeit, die Pfeiltasten und vor jedem Durchgang `set_camera`:
 
 ```c
-int main(void)
-{
-    screen_open(W, H, pixel_rgb24, "Raytracer");
-    sun_dir = normalize((vec){1.4, 1.0, 0.3});
+~     sun_dir = normalize((vec){1.4, 1.0, 0.3});
 
     double angle = 0.2, height = 1.8;
-    int passes = 0;
+~     int passes = 0;
     double last = seconds();
 
-    while (!should_close())
-    {
+~     while (!should_close())
+~     {
         // die Zeit seit dem letzten Bild, höchstens eine Zehntelsekunde
         double now = seconds();
         double dt = fmin(now - last, 0.1);
@@ -967,15 +1036,9 @@ int main(void)
         if (key_down(pixel_key_up) && height < 6)     { height += 2 * dt; passes = 0; }
         if (key_down(pixel_key_down) && height > 0.3) { height -= 2 * dt; passes = 0; }
 
-        // jedes Bild ein weiterer Durchgang: das Bild wird immer glatter
+~         // jedes Bild ein weiterer Durchgang: das Bild wird immer glatter
         set_camera(angle, height);
-        passes++;
-        draw(passes);
-        present();
-    }
-    screen_close();
-    return 0;
-}
+~         passes++;
 ```
 
 Wie weit die Kamera in einem Bild kreist, rechnet das Programm aus der Zeit seit dem letzten Bild aus, `dt`: 1,2 im Bogenmaß pro Sekunde, egal ob der Rechner 60 Bilder in der Sekunde schafft oder nur 10. `fmin` begrenzt `dt` auf eine Zehntelsekunde, damit die Kamera nach einer Pause, etwa mit dem Tab im Hintergrund, nicht springt.
@@ -1583,6 +1646,7 @@ viewport: 800x450
 hook: open raytracer.html
 hook: frames 128
 crop-element: #canvas
+check-task-fails: fresnel
 -->
 <img class='full fit-width' src='himmelslicht.webp' alt='Die Szene nach 128 Durchgängen: Unter jeder Kugel ist der Boden dort dunkel, wo sie ihn fast berührt, die Unterseiten der Kugeln sind dunkler, und der Himmel färbt die Schattenseiten leicht bläulich.'>
 
@@ -1592,8 +1656,36 @@ Unter jeder Kugel ist der Boden jetzt dort dunkel, wo sie ihn fast berührt, und
 
 ### Lack
 
-Die rote und die blaue Kugel sehen noch aus wie aus Ton. Eine lackierte Kugel hat in der Sonne einen hellen Punkt, den **Glanzpunkt**, und der ist nichts anderes als die Sonne, gespiegelt im Lack. Lack ist eine dünne, durchsichtige Schicht wie Glas: Er spiegelt ein wenig, wenn du steil von vorn schaust, und flach am Rand fast alles. Wie viel, rechnet die Formel von Schlick aus, die du schon für das Glas geschrieben hast. Damit `glass` und der Lack sie beide benutzen können, kommt sie in eine eigene Funktion über `glass`:
+Die rote und die blaue Kugel sehen noch aus wie aus Ton. Eine lackierte Kugel hat in der Sonne einen hellen Punkt, den **Glanzpunkt**, und der ist nichts anderes als die Sonne, gespiegelt im Lack. Lack ist eine dünne, durchsichtige Schicht wie Glas: Er spiegelt ein wenig, wenn du steil von vorn schaust, und flach am Rand fast alles. Wie viel, rechnet die Formel von Schlick aus, die schon in `glass` steht, in den Zeilen nach `// Fresnel nach Schlick`. Mit dem Brechungsindex \\(n\\) und \\(\cos\_{\text{in}}\\), dem Kosinus des Winkels, unter dem der Strahl auftrifft, lautet sie:
 
+$$r\_0 = \left(\frac{1 - n}{1 + n}\right)^2, \qquad r = r\_0 + (1 - r\_0)\,(1 - \cos\_{\text{in}})^5$$
+
+`r` ist der Anteil, der gespiegelt wird, von 0 bis 1.
+
+_task(lack)
+
+Damit `glass` und der Lack die Formel beide benutzen können, kommt sie in eine eigene Funktion.
+
+<div class='hint own' data-check='fresnel'>
+<strong>Jetzt bist du dran:</strong> Schreib über <code>glass</code> die Funktion <code>double fresnel(double cos_in, double index)</code>. Sie gibt nach der Formel oben zurück, welchen Anteil eine Oberfläche mit dem Brechungsindex <code>index</code> spiegelt, wenn ein Strahl mit diesem <code>cos_in</code> auftrifft. Prüfen kann der Workspace sie mit der Aufgabe unter der Lösung.
+</div>
+
+<!-- hint -->
+Rechne mit deinem Ergebnis aus »Wie viel spiegelt Lack?« weiter. Senkrecht, mit `cos_in = 1`, bleibt nur `r0`, bei 1,5 also 0,04. Ganz flach, mit `cos_in = 0`, ist `(1 − cos_in)⁵ = 1` und `r = r0 + 1 − r0 = 1`: Alles wird gespiegelt. Deine Funktion muss beides ergeben.
+<!-- /hint -->
+<!-- hint -->
+In `glass` steht die Rechnung schon, mit `h.mat.glass` als Brechungsindex; hier heißt er `index`. Die fünfte Potenz rechnet `pow(…, 5)`. Ein Gerüst:
+
+```c
+double fresnel(double cos_in, double index)
+{
+    // hier: r0 aus index, dann ins Quadrat
+    // hier: r zurückgeben
+}
+```
+<!-- /hint -->
+
+<!-- solution -->
 ```c
 // Fresnel nach Schlick: wie viel eine Oberfläche mit diesem Brechungsindex
 // spiegelt, flach mehr als steil
@@ -1604,6 +1696,9 @@ double fresnel(double cos_in, double index)
     return r0 + (1 - r0) * pow(1 - cos_in, 5);
 }
 ```
+<!-- /solution -->
+
+_task(fresnel)
 
 Am Ende von `glass` steht dann statt der vier Zeilen von Schlick nur noch:
 
@@ -1642,8 +1737,6 @@ Lackiert werden die rote und die blaue Kugel; ihre Zeilen in `spheres` werden zu
     {{0.4, 0.3, 2.3}, 0.3, {.color = {0.1, 0.35, 0.9}, .varnish = true}},
 ```
 
-_task(lack)
-
 Übersetzt du jetzt, siehst du kaum einen Glanzpunkt. Das liegt an der Sonnenscheibe: Sie ist bisher nur dreimal so hell wie `sun_color`, und davon spiegelt der Lack nur wenig. Wie hell ist sie wirklich? Das ganze Licht `sun_color` kommt aus einer winzigen Scheibe mit dem Radius `SUN_SIZE`. Ihre Fläche am Himmel ist \\(\pi \cdot 0{,}08^2 \approx 0{,}02\\), und so viel Licht aus so wenig Himmel heißt: Jeder Punkt der Scheibe ist etwa fünfzigmal so hell wie `sun_color`. In `trace` wird aus `return scale(sun_color, 3);`:
 
 ```c
@@ -1664,6 +1757,7 @@ viewport: 800x450
 hook: open raytracer.html
 hook: frames 128
 crop-element: #canvas
+check-task: fresnel
 -->
 <img class='full fit-width' src='lack.webp' alt='Die rote und die blaue Kugel glänzen jetzt: Auf jeder sitzt oben rechts ein kleiner weißer Glanzpunkt, die gespiegelte Sonne, und an ihren Rändern spiegeln sie schwach den Himmel und das Schachbrett.'>
 

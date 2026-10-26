@@ -1,10 +1,13 @@
 # Aufgaben zu »Raytracing in C«.
 # Format: docs/aufgaben.md. Gearbeitet wird in /workspace/raytracer.
-# Alle Aufgaben prüfen Antworten: Rechnungen mit den Formeln der Seite,
-# Vorhersagen und eine Rückmeldung zum eigenen Bild. Den Code in den Kästen
-# »Jetzt bist du dran« schreiben die Lernenden selbst; geprüft wird er nicht. Die
-# Zahlen sind von Hand gerechnet; das Programm in stufen/ ist dasselbe wie
-# auf der Seite.
+# Die meisten Aufgaben prüfen Antworten: Rechnungen mit den Formeln der
+# Seite, Vorhersagen und eine Rückmeldung zum eigenen Bild. Den Code in den
+# Kästen »Jetzt bist du dran« schreiben die Lernenden selbst, und unter fast
+# jedem ruft eine Aufgabe ihre Funktion auf (Prüfart c, mit data-check am
+# Kasten): hit_sphere, das Licht in trace, hit_floor, das Schachbrett, die
+# Kamera, reflect und fresnel. Nur den Schattenstrahl prüft keine Aufgabe; was
+# er tut, hängt von der ganzen Szene ab. Die Zahlen sind von Hand gerechnet;
+# das Programm in stufen/ ist dasselbe wie auf der Seite.
 format: 1
 activity: raytracing
 tasks:
@@ -33,7 +36,8 @@ tasks:
     prompt: |
       Ein Strahl beginnt bei `origin = (0, 0, 0)` und läuft in Richtung
       `dir = (0, 0, -1)`. Eine Kugel hat den Mittelpunkt `center = (0, 0, -5)`
-      und den Radius 1. Welches `t` gibt `hit_sphere` zurück?
+      und den Radius 1. Bei welchem `t` trifft der Strahl die Kugel dort,
+      wo das Auge sie sieht?
     check:
       type: number
       expect: 4
@@ -47,6 +51,36 @@ tasks:
         say: Das Vorzeichen stimmt nicht. Rechne `b = dot(oc, dir)` mit `oc = origin − center = (0, 0, 5)` noch einmal.
     hint: 'Rechne `oc = origin − center`, dann `b = dot(oc, dir)`, `c = dot(oc, oc) − radius²`, `d = b² − c` und `t = −b − sqrt(d)`.'
     solution: '`oc = (0, 0, 5)`, `b = 5 · (−1) = −5`, `c = 25 − 1 = 24`, `d = 25 − 24 = 1`, `t = 5 − 1 = 4`. Der Strahl trifft die Kugel bei `(0, 0, −4)`, eine Einheit vor ihrem Mittelpunkt.'
+
+  - id: hit-sphere
+    title: Dein hit_sphere
+    prompt: |
+      Schreib `hit_sphere` in `raytracer.c` und speichere. Der Workspace
+      übersetzt deine Datei und schickt ein paar Strahlen auf Kugeln: den
+      Strahl aus »Wo trifft der Strahl?«, einen, der die Kugel nicht in der
+      Mitte trifft, einen schrägen auf eine Kugel mit dem Radius 2, einen,
+      der vorbeigeht, und einen, der von der Kugel weg zeigt.
+    file: raytracer/raytracer.c
+    check:
+      type: c
+      file: raytracer/raytracer.c
+      tolerance: 0.0001
+      cases:
+        - call: hit_sphere((vec){0, 0, 0}, (vec){0, 0, -1}, (sphere){{0, 0, -5}, 1})
+          expect: 4
+          say: Sichtbar ist der vordere Treffpunkt, das kleinere `t`, `−b − sqrt(d)`.
+        - hit_sphere((vec){0, 0, 0}, (vec){0, 0, -1}, (sphere){{0.6, 0, -5}, 1}): 4.2
+        - call: hit_sphere((vec){0, 0, 0}, (vec){0.6, 0, -0.8}, (sphere){{3, 0, -4}, 2})
+          expect: 3
+          say: Bei einer Kugel mit dem Radius 2 stimmt es nicht. Ziehst du in `c` das Quadrat des Radius ab, `s.radius * s.radius`?
+        - call: hit_sphere((vec){0, 0, 0}, (vec){0, 1, 0}, (sphere){{0, 0, -5}, 1})
+          expect: INFINITY
+          say: Dieser Strahl zeigt nach oben und geht an der Kugel vorbei; `d` ist negativ.
+        - call: hit_sphere((vec){0, 0, 0}, (vec){0, 0, 1}, (sphere){{0, 0, -5}, 1})
+          expect: INFINITY
+          say: Die Kugel liegt hinter dem Strahl, beide Lösungen für `t` sind negativ. Gib `t` nur zurück, wenn es größer als 0 ist.
+    hint: '`t = −b − sqrt(d)` mit `oc = sub(origin, s.center)`, `b = dot(oc, dir)`, `c = dot(oc, oc) − radius²` und `d = b² − c`. Ist `d` negativ oder `t` nicht größer als 0, gibt die Funktion `INFINITY` zurück.'
+    solution: 'Die Funktion auf der Seite unter »Lösung anzeigen«. Mit `d < 0` gibt es keine Wurzel: Der Strahl geht vorbei. Liegt die Kugel hinter dem Auge, ist auch das kleinere `t` negativ, und es bleibt bei `INFINITY`.'
 
   - id: rauschen
     title: Warum rauscht es?
@@ -69,6 +103,36 @@ tasks:
       - when: { picked: 3 }
         say: '`EPS` ist eine feste Zahl.'
     solution: 'Ein Strahl sieht nur, was genau auf seinem Weg liegt. Viele Strahlen durch zufällige Punkte im Pixel decken die ganze Fläche des Pixels ab, und ihr Durchschnitt nähert sich der Farbe, die der Pixel im Mittel zeigen soll: am Rand einer Kugel eine Mischung aus Kugel und Himmel. Dasselbe Prinzip macht später die Schatten weich.'
+
+  - id: licht
+    title: Dein Licht
+    prompt: |
+      Schreib das Licht in `trace` und speichere. Der Workspace stellt die
+      Sonne in ein paar Richtungen, auch hinter die Kugel, und schickt Strahlen
+      auf `ball`, einmal auch mit dem Radius 2. Prüf es jetzt: Sobald im
+      nächsten Kapitel der Boden dazukommt, passt die Prüfung nicht mehr zu
+      deinem Programm.
+    file: raytracer/raytracer.c
+    check:
+      type: c
+      file: raytracer/raytracer.c
+      tolerance: 0.0001
+      cases:
+        - call: (sun_dir = (vec){0, 0, 1}, trace((vec){0, 1, 5}, (vec){0, 0, -1}).x)
+          expect: 1.368
+          say: 'Die Sonne scheint genau auf die Stelle, `d` ist 1. Das Licht ist `sun_color` plus `ambient`, mit `mul` auf die Farbe der Kugel.'
+        - (sun_dir = (vec){0, 0, 1}, trace((vec){0, 1, 5}, (vec){0, 0, -1}).y): 0.2025
+        - call: (sun_dir = (vec){0, 0, -1}, trace((vec){0, 1, 5}, (vec){0, 0, -1}).x)
+          expect: 0.108
+          say: Die Sonne scheint von hinten, `d` ist negativ. Dann bekommt die Stelle kein Sonnenlicht, nur `ambient`.
+        - call: (sun_dir = (vec){1, 0, 0}, trace((vec){0.6, 1, 5}, (vec){0, 0, -1}).x)
+          expect: 0.864
+          say: Bei einem Strahl, der die Kugel nicht in der Mitte trifft, stimmt das Licht nicht. Zeigt deine Normale vom Mittelpunkt zum Treffpunkt?
+        - call: (sun_dir = (vec){0, 0.8, 0.6}, ball.radius = 2, trace((vec){0, 1, 5}, (vec){0, 0, -1}).x)
+          expect: 0.864
+          say: Bei einer Kugel mit dem Radius 2 stimmt es nicht. Teilst du durch den Radius, damit die Normale die Länge 1 hat?
+    hint: '`normal = scale(sub(point, ball.center), 1 / ball.radius)`, `d = dot(normal, sun_dir)`, nicht kleiner als 0, und `light = add(scale(sun_color, d), ambient)`.'
+    solution: 'Der Code auf der Seite unter »Lösung anzeigen«. Bei der Sonne von hinten bleibt `d` bei 0, und die Stelle bekommt nur das Himmelslicht: `0.9 · 0.12 = 0.108` für Rot.'
 
   - id: hell
     title: Wie viel Sonne?
@@ -348,11 +412,36 @@ tasks:
       - when: { equals: 4 }
         say: Das sind Prozent. Gefragt ist der Anteil, eine Zahl zwischen 0 und 1.
       - when: { equals: -0.2 }
-        say: Das ist `(1 − 1.5) / (1 + 1.5)`. In `fresnel` kommt das noch ins Quadrat.
+        say: Das ist `(1 − 1.5) / (1 + 1.5)`. Für `r0` kommt das noch ins Quadrat.
       - when: { equals: 0.2 }
-        say: Das ist der Betrag von `(1 − 1.5) / (1 + 1.5)`. In `fresnel` kommt das noch ins Quadrat.
-    hint: 'Mit `cos_in = 1` ist `pow(1 − cos_in, 5) = 0`, und `fresnel` gibt nur `r0` zurück.'
+        say: Das ist der Betrag von `(1 − 1.5) / (1 + 1.5)`. Für `r0` kommt das noch ins Quadrat.
+    hint: 'Mit `cos_in = 1` ist `(1 − cos_in)⁵ = 0`, und von der Formel bleibt nur `r0`.'
     solution: '`r0 = ((1 − 1.5) / (1 + 1.5))² = (−0.2)² = 0.04`: Steil von vorn spiegelt Lack nur 4 Prozent. Ein Glanzpunkt ist trotzdem hell, weil die Sonne so hell ist.'
+
+  - id: fresnel
+    title: Dein fresnel
+    prompt: |
+      Schreib `fresnel` in `raytracer.c` und speichere. Der Workspace ruft
+      die Funktion für Strahlen auf, die senkrecht, schräg und ganz flach
+      auftreffen, mit den Brechungsindizes 1,5 und 2.
+    file: raytracer/raytracer.c
+    check:
+      type: c
+      file: raytracer/raytracer.c
+      tolerance: 0.0001
+      cases:
+        - call: fresnel(1, 1.5)
+          expect: 0.04
+          say: 'Senkrecht von vorn bleibt nur `r0`: `(1 − index) / (1 + index)`, ins Quadrat.'
+        - call: fresnel(0, 1.5)
+          expect: 1
+          say: Ganz flach spiegelt die Oberfläche alles, denn `(1 − cos_in)` hoch 5 ist dann 1.
+        - fresnel(0.5, 1.5): 0.07
+        - call: fresnel(1, 2)
+          expect: 0.1111
+          say: Mit dem Brechungsindex 2 stimmt es nicht. Rechnest du mit `index` statt mit 1,5?
+    hint: '`r0 = ((1 − index) / (1 + index))²` und `r = r0 + (1 − r0) · (1 − cos_in)⁵`, mit `pow(1 - cos_in, 5)`.'
+    solution: 'Die Funktion auf der Seite unter »Lösung anzeigen«. Schräg, mit `cos_in = 0.5`, ist `0.5⁵ = 0.03125`, also `r = 0.04 + 0.96 · 0.03125 = 0.07`: kaum mehr als von vorn. Erst sehr flach steigt der Anteil steil auf 1.'
 
   - id: cover
     title: Was stimmt hier nicht?
