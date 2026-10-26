@@ -600,6 +600,11 @@ html[data-bs-theme="dark"] {
     .page-pin-menu {
         border-color: #4a3a63;
         background: #1c1a20;
+        scrollbar-color: #4a3a63 transparent;
+    }
+    .page-pin-menu::-webkit-scrollbar-thumb {
+        background: #4a3a63;
+        background-clip: padding-box;
     }
     .page-pin-item:hover {
         background: #2e2440;

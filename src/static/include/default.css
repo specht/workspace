@@ -3003,13 +3003,34 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     display: flex;
     flex-direction: column;
     min-width: 12em;
+    /* no lower than the window (page_pin.js sets the height); a long list
+       of classes scrolls in it, not the page */
+    max-height: var(--page-pin-menu-height, 70vh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: #d9c9ee transparent;
     padding: 0.3em;
     border: 1px solid #d9c9ee;
     border-radius: 0.6em;
     background: var(--bs-body-bg);
     box-shadow: 0 0.4em 1.2em rgba(0, 0, 0, 0.12);
 }
+/* a thin thumb in the menu's purple on no track (Safari takes these parts) */
+.page-pin-menu::-webkit-scrollbar {
+    width: 8px;
+}
+.page-pin-menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+.page-pin-menu::-webkit-scrollbar-thumb {
+    background: #d9c9ee;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    background-clip: padding-box;
+}
 .page-pin-item {
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     gap: 0.5em;
