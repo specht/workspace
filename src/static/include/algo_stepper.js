@@ -4,6 +4,12 @@
 //   <div class='algo-stepper' data-algo='dijkstra' data-graph='stadt' data-start='A' data-goal='H'></div>
 //   <div class='algo-stepper' data-algo='heap' data-ops='push 5, push 3, push 8, pop'></div>
 //   <div class='algo-stepper' data-algo='sort' data-sort='insertion' data-values='5, 2, 8, 1'></div>
+//   <div class='algo-stepper' data-algo='bfs' data-grid='#####|#M..#|#.#P#|#####'></div>
+//
+// data-grid: a map of Pip's world (pip_world.rb's legend, rows joined by
+// |): every open tile a node named x,y, joined to its neighbours, which
+// come east, north, west, south, as the Mampfer's search takes them; P is
+// the start, M the goal, and the legend calls them Pip and Mampfer.
 //
 // algo: bfs, dfs, dijkstra, astar (on a graph from GRAPHS), heap, sort
 // (selection, insertion, bubble, merge, quick). The widget
@@ -168,7 +174,34 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         return node;
     };
 
+    // A graph from a map (data-grid): the open tiles, 14 units apart; the
+    // neighbours in the world's order, not by name (grid).
+    function gridGraph(text) {
+        const rows = text.split('|');
+        const open = (x, y) => rows[y] !== undefined && rows[y][x] !== undefined && rows[y][x] !== '#';
+        const graph = { nodes: {}, edges: [], grid: {} };
+        let minX = Infinity;
+        let minY = Infinity;
+        rows.forEach((row, y) => [...row].forEach((c, x) => {
+            if (!open(x, y)) return;
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+            if (c === 'P') graph.start = `${x},${y}`;
+            if (c === 'M') graph.goal = `${x},${y}`;
+        }));
+        rows.forEach((row, y) => [...row].forEach((c, x) => {
+            if (!open(x, y)) return;
+            const id = `${x},${y}`;
+            graph.nodes[id] = [(x - minX) * 14, (y - minY) * 14];
+            if (open(x + 1, y)) graph.edges.push([id, `${x + 1},${y}`, 1]);
+            if (open(x, y + 1)) graph.edges.push([id, `${x},${y + 1}`, 1]);
+            graph.grid[id] = [[1, 0], [0, -1], [-1, 0], [0, 1]].filter(([dx, dy]) => open(x + dx, y + dy)).map(([dx, dy]) => [`${x + dx},${y + dy}`, 1]);
+        }));
+        return graph;
+    }
+
     function neighbours(graph) {
+        if (graph.grid) return graph.grid;
         const list = {};
         for (const id of Object.keys(graph.nodes)) list[id] = [];
         for (const [a, b, w] of graph.edges) {
@@ -347,7 +380,8 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         const at = {};
         for (const [id, [x, y]] of Object.entries(graph.nodes)) at[id] = [x * 5 + 60, y * 5 + 54];
         const width = 620;
-        const rowY = 400;
+        // a cave (data-grid) is as high as its rows: the queue right under it
+        const rowY = graph.grid ? Math.max(...Object.values(at).map(([, y]) => y)) + 110 : 400;
         const segments = graph.edges.map(([a, b]) => [at[a], at[b]]);
         const rectPoint = (r, [px, py]) => Math.hypot(Math.max(r.x - px, 0, px - r.x - r.w), Math.max(r.y - py, 0, py - r.y - r.h));
         const rectSegment = (r, [p, q]) => {
@@ -3440,14 +3474,14 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
     // that occur in this widget's steps, in its own words (a graph search's
     // gold is »in der Queue«, a sort's »verglichen«). Swatches: a filled
     // square, a ring, a line.
-    function legendOf(algo, sortKind, frames) {
+    function legendOf(algo, sortKind, frames, grid) {
         const any = (test) => frames.some(test);
         const items = [];
         const add = (kind, color, text) => items.push({ kind, color, text });
         if (['bfs', 'dfs', 'dijkstra', 'astar'].includes(algo)) {
             const shortest = algo === 'dijkstra' || algo === 'astar';
-            add('ring', 'var(--algo-start)', 'Start');
-            add('ring', 'var(--algo-goal)', 'Ziel');
+            add('ring', 'var(--algo-start)', grid ? 'Start: Pip' : 'Start');
+            add('ring', 'var(--algo-goal)', grid ? 'Ziel: der Mampfer' : 'Ziel');
             add('fill', 'var(--algo-frontier)', algo === 'bfs' ? 'in der Queue' : algo === 'dfs' ? 'auf dem Stack' : 'in der pq');
             add('fill', 'var(--algo-done)', shortest ? 'fertig' : 'schon dran gewesen');
             add('line', 'var(--algo-pred)', 'predecessor');
@@ -3627,16 +3661,17 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
                     : [el('span', { class: 'algo-empty', text: '–' })])] : []), ...codeBox(frame.code));
             };
         } else {
-            const graph = GRAPHS[widget.dataset.graph || 'stadt'];
-            const start = widget.dataset.start || 'A';
-            const goal = widget.dataset.goal || 'H';
+            const graph = widget.dataset.grid ? gridGraph(widget.dataset.grid) : GRAPHS[widget.dataset.graph || 'stadt'];
+            const start = widget.dataset.start || graph.start || 'A';
+            const goal = widget.dataset.goal || graph.goal || 'H';
             frames = traceGraph(graph, start, goal, algo);
             const marker = `algo-arrow-${++widgetCount}`;
             const layout = graphLayout(graph, start, algo);
             // the path beside the row if the longest row ends before it
             const rowLeft = 30 + 7.5 * ({ bfs: 'queue', dfs: 'stack' }[algo] || 'pq').length;
             layout.pathBeside = rowLeft + 18 + (Math.max(1, ...frames.map((f) => f.entries.length)) - 1) * 36 + 14 < 320;
-            svg.setAttribute('aria-label', `Der Beispielgraph mit Knoten A bis H; ${start} ist der Start, ${goal} das Ziel`);
+            svg.setAttribute('aria-label', graph.grid ? `Die Höhle als Graph: jedes freie Feld ein Knoten, mit den Feldern daneben verbunden; Pip steht auf ${start}, der Mampfer auf ${goal}`
+                : `Der Beispielgraph mit Knoten A bis H; ${start} ist der Start, ${goal} das Ziel`);
             // the calls: the search, and path_back at the end
             draw = (frame) => { drawGraph(svg, graph, frame, start, goal, algo, marker, layout); listSide(frame, 2); };
         }
@@ -3763,7 +3798,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         // data-title: what the widget shows, above everything else
         const title = widget.dataset.title ? [el('div', { class: 'algo-title', text: widget.dataset.title })] : [];
         // the legend under the picture, the message last (it keeps no reserved height)
-        const legend = legendOf(algo, widget.dataset.sort, frames);
+        const legend = legendOf(algo, widget.dataset.sort, frames, Boolean(widget.dataset.grid));
         if (legend) body.appendChild(legend);
         widget.replaceChildren(...title, ...presetChoice(widget), el('div', { class: 'algo-controls' }, [...buttons, play, speedButton, count]), timelineBox, body, message);
         // One under the other where the code would get less than about 20em
