@@ -227,7 +227,7 @@ recursion, 26 October 2026).
 * Extras: Fibonacci with a memo under a time limit, subset sum
 * Oberstufe: Algorithmen (rekursive Verfahren)
 
-**9 · Suchen**
+**9 · Suchen** (built, `kata-search`)
 Finding something in a list, and halving. Whole sorting algorithms are the
 Sorting Sandbox's (`sandbox-sortieren`: written in Dart, watched, raced,
 measured, checked for stability); this set gives two of their building blocks
@@ -235,12 +235,16 @@ and ends with a link there: the minimum's index is what selection sort is
 made of, inserting into a sorted list what insertion sort is made of. The
 merge step is set 5's (merge two sorted lists), counting comparisons the
 sandbox's Analyze (decided with the maintainer, 26 October 2026).
-* Einstieg: linear search (the index or `nil`), the minimum's index
-* Übung: binary search, guess the number by halving, the first index from
-  which a condition holds
+* Einstieg: linear search (the index or `nil`), the minimum's index, the
+  last occurrence, the first number above a limit
+* Übung: binary search, guess the number by halving (the list of guesses),
+  the first index from which a sorted list reaches a limit, the integer
+  square root by halving up to a trillion
 * Knobelei: insert into a sorted list keeping it sorted, is a list a
-  permutation of another
-* Extras: binary search that counts its steps, compared with log₂ n
+  permutation of another (counting, without sorting), where a rotated
+  sorted list starts again
+* Extras: binary search that counts its steps; 100 000 searches in 100 000
+  numbers in five seconds
 * Oberstufe: Algorithmen, Effizienz; links to `sandbox-sortieren`
 
 **10 · Tests schreiben**
@@ -257,6 +261,12 @@ Not in the catalogue: what needs files or the network (CSV, JSON, a URL
 shortener) belongs in Workspace activities. The quine (HS) is an Extra of set 4
 once a whole-program mode exists (run the program, compare its output with its
 source).
+
+
+The numbers here count the sets of functions only. The strip on the front
+page counts in catalog order, Pip's two parts included: there Erste
+Funktionen is 2, Wiederholen 4, Pip Teil 2 is 5, Texte 6, Rekursion 10,
+Suchen 11 and Tests schreiben 12.
 
 
 ## 2. Pip unter Funkelbach

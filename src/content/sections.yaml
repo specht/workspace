@@ -35,6 +35,7 @@
     - .kata-dicts
     - .kata-bits
     - .kata-recursion
+    - .kata-search
 
 - key: graphics
   compact: true
