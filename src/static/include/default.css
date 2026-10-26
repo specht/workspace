@@ -9236,7 +9236,8 @@ html[data-bs-theme="dark"] .bitplane-widget {
     content: '';
     flex: 0 0 48px;
     height: 48px;
-    background: url(/images/pip/wichtel.png?v=13) no-repeat 0 0 / 400% 100%;
+    /* the third frame: he turns to the right, towards what he says */
+    background: url(/images/pip/wichtel.png?v=13) no-repeat 66.667% 0 / 400% 100%;
     image-rendering: pixelated;
 }
 
