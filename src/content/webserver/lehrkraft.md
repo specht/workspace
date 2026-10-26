@@ -23,6 +23,8 @@ Lernende schreiben einen Webserver in Ruby oder Python, ohne Bibliothek, in sech
 #### Die Aufgaben
 
 - »Die erste Antwort« liest `server.rb` und sucht Status-Line, `Content-Length` und `Thread.new` (in Python `server.py` mit `threading.Thread`); »Eine Seite aus public« prüft `public/index.html`.
+- »Eine Funktion für jede Antwort« und »Sieh dort nach« laden `server.rb` und rufen `respond` und `redirect` auf, ohne dass der Server läuft: in Ruby mit einem `StringIO` statt einer Verbindung, in Python mit einem Ende von `socket.socketpair()`. Sie sehen nach Status-Line, Headern, der leeren Zeile, dem Inhalt (bei `respond` mit Umlauten, damit `Content-Length` Bytes zählen muss, in Python auch mit Bytes als `body`) und in Ruby, ob die Verbindung danach zu ist. `redirect` wird mit `/poll.html` aufgerufen, eine fest eingetragene Adresse `/results` fällt also auf.
+- »Alles außer /time aus public« führt `curl -sI localhost:8000/style.css` der Lernenden aus und verlangt `200` und `Content-Type: text/css`; vor dem Umbau antwortet der Server darauf mit 404.
 - »Dein Server grüßt« führt den `curl`-Befehl der Lernenden in ihrem Workspace aus (als Gast, ohne Schreibrechte) und prüft, was ihr laufender Server auf `/hello?name=Ada%20Lovelace` antwortet; läuft der Server nicht, kommt keine Ausgabe.
 - Die übrigen fragen nach Request-Line, Bytes, Statuscodes, der Sicherheitsprüfung, dem Mutex und dem Body; »Eine Seite, die es nicht gibt«, »Ein Name in der Adresse« und »Neu laden« sind Vorhersagen.
 - »Eine Umfrage« sucht in `server.rb` nach `POST`, `Content-Length`, `client.read` und `303`, in `server.py` statt `client.read` nach `reader.read`.
@@ -30,9 +32,9 @@ Lernende schreiben einen Webserver in Ruby oder Python, ohne Bibliothek, in sech
 #### Jetzt bist du dran
 
 - Ab »Pfade und 404« zeigt die Seite nur noch, was sich am Server ändert, mit grauen Zeilen drumherum, statt die ganze Datei noch einmal. Wer den Überblick über die eigene Datei verliert, findet jede Stufe vollständig unter `stufen/`.
-- An vier Stellen schreiben die Lernenden den Code zuerst selbst: die Funktion `respond`, in die sie die Zeilen der festen Antwort umziehen, die Auswahl, die alles außer `/time` an `serve_file` gibt, den Fall `/hello` und die Funktion `redirect`. Die Seite geht danach mit ihrem eigenen Code weiter.
+- An vier Stellen schreiben die Lernenden den Code zuerst selbst: die Funktion `respond`, in die sie die Zeilen der festen Antwort umziehen, die Auswahl, die alles außer `/time` an `serve_file` gibt, den Fall `/hello` und die Funktion `redirect`. Jede Stelle hat eine Aufgabe darunter, die den eigenen Code prüft. Die Seite geht danach mit ihrem eigenen Code weiter.
 - Vor dem Code der Seite stehen Tipps, ein Denkanstoß und ein Gerüst mit Lücken. Jede Stufe erscheint erst eine Minute nach der vorigen, ohne Uhr, damit die Lernenden mit dem Tipp arbeiten, statt auf den nächsten zu warten; der Code der Seite ist die letzte Stufe. Wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst.
-- Den Fall `/hello` prüft »Dein Server grüßt« am laufenden Server; wer sie löst, kann den Code der Seite sofort öffnen und mit dem eigenen vergleichen.
+- `respond` und `redirect` prüfen »Eine Funktion für jede Antwort« und »Sieh dort nach« mit Aufrufen, die Auswahl »Alles außer /time aus public« und den Fall `/hello` »Dein Server grüßt« am laufenden Server; wer eine löst, kann den Code der Seite sofort öffnen und mit dem eigenen vergleichen.
 
 #### Weiter
 

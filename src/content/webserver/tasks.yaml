@@ -75,6 +75,81 @@ tasks:
     python:
       solution: G, r, e und `\n` sind je ein Byte, ü und ß je zwei. Zusammen 8 Bytes, `len('Grüße\n'.encode())`.
 
+  - id: respond
+    title: Eine Funktion für jede Antwort
+    prompt: |
+      Schreib `respond(client, status, type, body)` in `server.rb` und
+      speichere. Der Workspace ruft `respond` mit einem `StringIO` statt einer
+      Verbindung auf, das aufschreibt, was ankommt, und sieht nach:
+      Status-Line, Header, leere Zeile, Inhalt, und ob die Verbindung danach
+      zu ist. Der Server muss dafür nicht laufen.
+    file: webserver/server.rb
+    check:
+      type: ruby
+      file: webserver/server.rb
+      cases:
+        - call: 'respond(c = StringIO.new, ''404 Not Found'', ''text/plain; charset=utf-8'', "Weg\n"); c.string.lines.first'
+          expect: '"HTTP/1.1 404 Not Found\r\n"'
+          say: 'Die erste Zeile ist die Status-Line: `HTTP/1.1`, ein Leerzeichen, `status` und `"\r\n"`.'
+        - call: 'respond(c = StringIO.new, ''200 OK'', ''text/css; charset=utf-8'', "h1 {}\n"); c.string.include?("Content-Type: text/css; charset=utf-8\r\n")'
+          expect: true
+          say: Der Header `Content-Type` nimmt seinen Wert aus `type`.
+        - call: 'respond(c = StringIO.new, ''200 OK'', ''text/plain; charset=utf-8'', "Grüße\n"); c.string[/content-length: *(\d+)/i, 1]'
+          expect: '"8"'
+          say: '`Content-Length` zählt die Bytes von `body`, nicht die Zeichen: `"Grüße\n"` hat 8 Bytes, `body.bytesize`.'
+        - call: 'respond(c = StringIO.new, ''200 OK'', ''text/plain; charset=utf-8'', "Grüße\n"); c.string.include?("Connection: close\r\n")'
+          expect: true
+          say: 'Es fehlt der Header `Connection: close`.'
+        - call: 'respond(c = StringIO.new, ''200 OK'', ''text/plain; charset=utf-8'', "Grüße\n"); c.string.split("\r\n\r\n", 2)[1]'
+          expect: '"Grüße\n"'
+          say: Nach den Headern kommen die leere Zeile und dann genau `body`, sonst nichts.
+        - call: 'respond(c = StringIO.new, ''200 OK'', ''text/plain; charset=utf-8'', "Hallo\n"); c.closed?'
+          expect: true
+          say: 'Nach der Antwort schließt `respond` die Verbindung: `client.close`.'
+    solution: |
+      `respond` schickt `"HTTP/1.1 #{status}\r\n"`, dann `Content-Type` mit
+      `type`, `Content-Length` mit `body.bytesize` und `Connection: close`,
+      die leere Zeile `"\r\n"` und `body`, und schließt mit `client.close`.
+
+    python:
+      prompt: |
+        Schreib `respond(client, status, content_type, body)` in `server.py`
+        und speichere. Der Workspace ruft `respond` mit einem Ende von
+        `socket.socketpair()` statt einer echten Verbindung auf, liest am
+        anderen Ende, was ankommt, und sieht nach: Status-Line, Header, leere
+        Zeile, Inhalt, als Text und als Bytes. Der Server muss dafür nicht
+        laufen.
+      file: webserver/server.py
+      check:
+        type: python
+        file: webserver/server.py
+        cases:
+          - call: 'callable(sent := lambda *args: (s := socket.socketpair(), respond(s[0], *args), s[0].close(), s[1].recv(65536))[-1])'
+            expect: true
+          - call: 'sent(''404 Not Found'', ''text/plain; charset=utf-8'', ''Weg\n'').split(b''\r\n'')[0]'
+            expect: "b'HTTP/1.1 404 Not Found'"
+            say: 'Die erste Zeile ist die Status-Line: `HTTP/1.1`, ein Leerzeichen, `status` und `\r\n`.'
+          - call: 'b''Content-Type: text/css; charset=utf-8\r\n'' in sent(''200 OK'', ''text/css; charset=utf-8'', ''h1 {}\n'')'
+            expect: true
+            say: Der Header `Content-Type` nimmt seinen Wert aus `content_type`.
+          - call: '[line.lower() for line in sent(''200 OK'', ''text/plain; charset=utf-8'', ''Grüße\n'').split(b''\r\n'') if line.lower().startswith(b''content-length'')]'
+            expect: "[b'content-length: 8']"
+            say: '`Content-Length` zählt die Bytes von `body`, nicht die Zeichen: `''Grüße\n''` hat 8 Bytes, `len(data)` nach `encode()`.'
+          - call: 'b''Connection: close\r\n'' in sent(''200 OK'', ''text/plain; charset=utf-8'', ''Grüße\n'')'
+            expect: true
+            say: 'Es fehlt der Header `Connection: close`.'
+          - call: 'sent(''200 OK'', ''text/plain; charset=utf-8'', ''Grüße\n'').split(b''\r\n\r\n'', 1)[1]'
+            expect: "'Grüße\\n'.encode()"
+            say: Nach den Headern kommen die leere Zeile und dann genau `body`, als Bytes, sonst nichts.
+          - call: 'sent(''200 OK'', ''image/png'', b''\x89PNG'').split(b''\r\n\r\n'', 1)[1]'
+            expect: "b'\\x89PNG'"
+            say: '`body` darf schon Bytes sein, etwa ein Bild. Dann schickt `respond` sie, wie sie sind; nur Text wird mit `encode()` zu Bytes (`isinstance(body, str)`).'
+      solution: |
+        `respond` macht aus Text Bytes (`body.encode()`, wenn
+        `isinstance(body, str)`), schickt `f'HTTP/1.1 {status}\r\n'`, dann
+        `Content-Type` mit `content_type`, `Content-Length` mit `len(data)` und
+        `Connection: close`, die leere Zeile und die Bytes.
+
   - id: statuscodes
     title: Eine Seite, die es nicht gibt
     prediction: true
@@ -94,6 +169,32 @@ tasks:
       - when: { picked: 1 }
         say: Der Browser zeigt, was der Server schickt, auch bei einem Fehler. Der Statuscode sagt nur, dass es ein Fehler ist.
     solution: Der Browser zeigt den Inhalt, den der Server schickt. Der Statuscode 404 ist für Programme gedacht, für Suchmaschinen etwa, die wissen wollen, ob es die Seite wirklich gibt.
+
+  - id: dateien
+    title: Alles außer /time aus public
+    prompt: |
+      Starte deinen Server neu, frag ihn mit `curl -sI localhost:8000/style.css`
+      nach den Headern von `/style.css` und trag den Befehl hier ein. Der
+      Workspace führt ihn aus und sieht nach, was dein Server antwortet: Geht
+      der Pfad an `serve_file`, kommt `200 OK` mit dem `Content-Type` für CSS,
+      sonst eine 404.
+    check:
+      type: command
+      timeout: 10
+      output:
+        matching: '^(HTTP/1\.[01] 200 |[A-Za-z-]+: )'
+        not_matching: '(?i)^content-type: (?!text/css)'
+    feedback:
+      - when: { output_matches: '(Failed to connect|Couldn.t connect|Connection refused)' }
+        say: Unter Port 8000 antwortet gerade niemand. Starte deinen Server im linken Terminal und prüfe dann noch einmal.
+      - when: { output_matches: '% Total' }
+        say: Ohne `-s` schreibt `curl` hier eine Fortschrittsanzeige dazu. Schreib `curl -sI …`.
+      - when: { output_matches: '^HTTP/1\.[01] 404' }
+        say: 'Dein Server antwortet auf `/style.css` mit 404. Geht jeder Pfad außer `/time` an `serve_file`, und hast du den Server nach der Änderung neu gestartet? Liegt `style.css` in `public`?'
+      - when: { output_matches: '(?i)^content-type: ' }
+        say: '`/style.css` kommt an, aber nicht als `text/css`. Nimmt `serve_file` den `Content-Type` aus `TYPES`, an der Endung der Datei?'
+    hint: Läuft dein Server nicht, gibt `curl -s` gar nichts aus.
+    solution: '`curl -sI localhost:8000/style.css` ergibt `HTTP/1.1 200 OK` und `Content-Type: text/css; charset=utf-8`: Außer `/time` geht jeder Pfad an `serve_file`, und das findet die Datei in `public`.'
 
   - id: webseite
     title: Eine Seite aus public
@@ -220,6 +321,76 @@ tasks:
         - when: { picked: 3 }
           say: '`visits += 1` ist lesen, eins dazuzählen, schreiben. Was passiert, wenn beide Threads lesen, bevor einer schreibt?'
       solution: Beide Threads lesen 10, beide schreiben 11. Ein Besuch geht verloren. Der Lock sorgt dafür, dass immer nur ein Thread zählt.
+
+  - id: weiterleitung
+    title: Sieh dort nach
+    prompt: |
+      Schreib `redirect(client, location)` in `server.rb` und speichere. Der
+      Workspace ruft `redirect` mit einem `StringIO` statt einer Verbindung
+      auf, das aufschreibt, was ankommt, und sieht nach: `303 See Other`, die
+      drei Header, die leere Zeile, und ob die Verbindung danach zu ist. Der
+      Server muss dafür nicht laufen.
+    file: webserver/server.rb
+    check:
+      type: ruby
+      file: webserver/server.rb
+      cases:
+        - call: 'redirect(c = StringIO.new, ''/results''); c.string.lines.first'
+          expect: '"HTTP/1.1 303 See Other\r\n"'
+          say: 'Die erste Zeile ist die Status-Line: `HTTP/1.1 303 See Other` und `"\r\n"`.'
+        - call: 'redirect(c = StringIO.new, ''/poll.html''); c.string.include?("Location: /poll.html\r\n")'
+          expect: true
+          say: 'Der Header `Location` sagt, wohin der Browser gehen soll, mit dem Wert aus `location`.'
+        - call: 'redirect(c = StringIO.new, ''/results''); c.string[/content-length: *(\d+)/i, 1]'
+          expect: '"0"'
+          say: 'Eine Antwort ohne Inhalt hat trotzdem `Content-Length`, mit 0.'
+        - call: 'redirect(c = StringIO.new, ''/results''); c.string.include?("Connection: close\r\n")'
+          expect: true
+          say: 'Es fehlt der Header `Connection: close`.'
+        - call: 'redirect(c = StringIO.new, ''/results''); c.string.end_with?("\r\n\r\n")'
+          expect: true
+          say: Nach den Headern kommt die leere Zeile, und danach nichts mehr.
+        - call: 'redirect(c = StringIO.new, ''/results''); c.closed?'
+          expect: true
+          say: 'Danach schließt `redirect` die Verbindung, wie `respond`: `client.close`.'
+    solution: |
+      `redirect` schickt `"HTTP/1.1 303 See Other\r\n"`, dann
+      `"Location: #{location}\r\n"`, `Content-Length: 0` und
+      `Connection: close`, die leere Zeile, und schließt mit `client.close`.
+
+    python:
+      prompt: |
+        Schreib `redirect(client, location)` in `server.py` und speichere. Der
+        Workspace ruft `redirect` mit einem Ende von `socket.socketpair()`
+        statt einer echten Verbindung auf, liest am anderen Ende, was ankommt,
+        und sieht nach: `303 See Other`, die drei Header und die leere Zeile.
+        Der Server muss dafür nicht laufen.
+      file: webserver/server.py
+      check:
+        type: python
+        file: webserver/server.py
+        cases:
+          - call: 'callable(moved := lambda location: (s := socket.socketpair(), redirect(s[0], location), s[0].close(), s[1].recv(65536))[-1])'
+            expect: true
+          - call: 'moved(''/results'').split(b''\r\n'')[0]'
+            expect: "b'HTTP/1.1 303 See Other'"
+            say: 'Die erste Zeile ist die Status-Line: `HTTP/1.1 303 See Other` und `\r\n`.'
+          - call: 'b''Location: /poll.html\r\n'' in moved(''/poll.html'')'
+            expect: true
+            say: 'Der Header `Location` sagt, wohin der Browser gehen soll, mit dem Wert aus `location`.'
+          - call: '[line.lower() for line in moved(''/results'').split(b''\r\n'') if line.lower().startswith(b''content-length'')]'
+            expect: "[b'content-length: 0']"
+            say: 'Eine Antwort ohne Inhalt hat trotzdem `Content-Length`, mit 0.'
+          - call: 'b''Connection: close\r\n'' in moved(''/results'')'
+            expect: true
+            say: 'Es fehlt der Header `Connection: close`.'
+          - call: 'moved(''/results'').endswith(b''\r\n\r\n'')'
+            expect: true
+            say: Nach den Headern kommt die leere Zeile, und danach nichts mehr.
+      solution: |
+        `redirect` schickt als Bytes `HTTP/1.1 303 See Other`, dann
+        `f'Location: {location}'`, `Content-Length: 0` und
+        `Connection: close`, jede Zeile mit `\r\n`, und die leere Zeile.
 
   - id: umfrage
     title: Eine Umfrage

@@ -316,7 +316,7 @@ _tool(tcp-console)
 Bisher bekommt jeder Pfad dieselbe Antwort. Ein richtiger Server schaut in die Request-Line und antwortet je nach Pfad etwas anderes, und auf einen unbekannten Pfad mit dem Statuscode **404 Not Found**. Jede dieser Antworten baut sich gleich auf, nur Statuscode, `Content-Type` und Inhalt ändern sich. Darum kommt das Antworten in eine Funktion `respond`, und der Server ruft sie für jeden Pfad mit anderen Werten auf.
 
 <!-- language: ruby -->
-<div class='hint own'>
+<div class='hint own' data-check='respond'>
 <strong>Jetzt bist du dran:</strong> Schreib unter <code>require 'socket'</code> die Funktion <code>respond(client, status, type, body)</code>. Sie schickt die Status-Line mit <code>status</code>, etwa <code>200 OK</code>, die Header mit <code>type</code> und der Länge von <code>body</code>, die leere Zeile und <code>body</code>, und schließt die Verbindung. Die Zeilen dafür stehen schon in deinem Thread: Zieh sie in <code>respond</code> um und setz dort die Parameter ein, wo bisher feste Werte stehen.
 </div>
 
@@ -384,7 +384,7 @@ Im Thread liest der Server jetzt zuerst die Request-Line. Die Zeile `puts line` 
 `split(' ')` zerlegt die Request-Line an den Leerzeichen in Methode, Pfad und Version. `case path` wählt die Antwort. Probiere die drei Fälle im zweiten Terminal aus:
 <!-- /language -->
 <!-- language: python -->
-<div class='hint own'>
+<div class='hint own' data-check='respond'>
 <strong>Jetzt bist du dran:</strong> Schreib über <code>handle</code> die Funktion <code>respond(client, status, content_type, body)</code>. Sie schickt die Status-Line mit <code>status</code>, etwa <code>200 OK</code>, die Header mit <code>content_type</code> und der Länge von <code>body</code>, die leere Zeile und <code>body</code>. Die Zeilen dafür stehen schon in <code>handle</code>: Zieh sie in <code>respond</code> um und setz dort die Parameter ein, wo bisher feste Werte stehen. <code>body</code> darf Text sein oder schon Bytes, denn später schickt der Server auch Bilder: Nur Text wird mit <code>encode()</code> zu Bytes (<code>isinstance(body, str)</code>).
 </div>
 
@@ -517,6 +517,8 @@ expect-no-text: Traceback
 -->
 <img class='full' src='pfade-python.webp' alt='Rechts antwortet der Python-Server auf /time mit der Uhrzeit und auf /missing mit HTTP/1.1 404 Not Found; links stehen die beiden Anfragen.'>
 <!-- /language -->
+
+_task(respond)
 
 _uses(statuscodes, curl)
 
@@ -708,7 +710,7 @@ end
 
 Wichtig ist die Zeile mit `start_with?`. `File.expand_path` macht aus dem Pfad einen vollständigen Dateinamen, und der muss im Ordner `public` liegen. Ohne diese Prüfung könnte jemand nach `/../server.rb` fragen und bekäme deinen Quelltext, oder jede andere Datei, die dein Workspace lesen kann.
 
-<div class='hint own'>
+<div class='hint own' data-check='dateien'>
 <strong>Jetzt bist du dran:</strong> Die Antwort für <code>/</code> und die für unbekannte Pfade übernimmt jetzt <code>serve_file</code>. Ändere die Auswahl in der Schleife: <code>/time</code> bleibt, wie es ist, und jeder andere Pfad geht an <code>serve_file</code>.
 </div>
 
@@ -788,7 +790,7 @@ def serve_file(client, path):
 
 Wichtig ist die Zeile mit `startswith`. `os.path.realpath` macht aus dem Pfad einen vollständigen Dateinamen, ohne `..`, und der muss im Ordner `public` liegen. Ohne diese Prüfung könnte jemand nach `/../server.py` fragen und bekäme deinen Quelltext, oder jede andere Datei, die dein Workspace lesen kann.
 
-<div class='hint own'>
+<div class='hint own' data-check='dateien'>
 <strong>Jetzt bist du dran:</strong> Die Antwort für <code>/</code> und die für unbekannte Pfade übernimmt jetzt <code>serve_file</code>. Ändere die Auswahl in <code>handle</code>: <code>/time</code> bleibt, wie es ist, und jeder andere Pfad geht an <code>serve_file</code>.
 </div>
 
@@ -874,6 +876,8 @@ check-task-fails: hallo <- curl -s "localhost:8000/hello?name=Ada%20Lovelace"
 -->
 <img class='full' src='css-antwort-python.webp' alt='Rechts zeigt curl -I die Header der Antwort auf /style.css: 200 OK, Content-Type text/css und Content-Length; links steht die Anfrage HEAD /style.css.'>
 <!-- /language -->
+
+_task(dateien)
 
 Öffne dann die Adresse aus dem Reiter »Ports« (»Forwarded Address«) im Browser:
 
@@ -1325,7 +1329,7 @@ Was neu ist:
 Nach einer Stimme zeigt `/vote` nicht gleich das Ergebnis, sondern ruft `redirect` auf: Der Server antwortet mit **`303 See Other`** und dem Header `Location: /results`, »Sieh dort nach.« Der Browser holt dann `/results` mit `GET`. Der Umweg hat einen Grund: Wäre das Ergebnis die Antwort auf das `POST`, würde der Browser beim Neuladen das Formular noch einmal schicken, und die Stimme zählte doppelt. So lädt er nur die Ergebnisseite neu. Das Muster heißt **Post/Redirect/Get**.
 
 <!-- language: ruby -->
-<div class='hint own'>
+<div class='hint own' data-check='weiterleitung'>
 <strong>Jetzt bist du dran:</strong> Schreib unter <code>respond</code> die Funktion <code>redirect(client, location)</code>. Sie schickt eine Antwort ohne Inhalt: die Status-Line mit <code>303 See Other</code>, die Header <code>Location</code>, <code>Content-Length: 0</code> und <code>Connection: close</code> und die leere Zeile. Danach schließt sie die Verbindung, so wie <code>respond</code>.
 </div>
 
@@ -1364,7 +1368,7 @@ end
 <!-- /solution -->
 <!-- /language -->
 <!-- language: python -->
-<div class='hint own'>
+<div class='hint own' data-check='weiterleitung'>
 <strong>Jetzt bist du dran:</strong> Schreib unter <code>respond</code> die Funktion <code>redirect(client, location)</code>. Sie schickt eine Antwort ohne Inhalt: die Status-Line mit <code>303 See Other</code>, die Header <code>Location</code>, <code>Content-Length: 0</code> und <code>Connection: close</code> und die leere Zeile, als Bytes mit <code>sendall</code>, so wie <code>respond</code>.
 </div>
 
@@ -1399,6 +1403,8 @@ def redirect(client, location):
 ```
 <!-- /solution -->
 <!-- /language -->
+
+_task(weiterleitung)
 
 ### Abstimmen
 
