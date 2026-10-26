@@ -5142,8 +5142,28 @@ class Main < Sinatra::Base
 
     # The strip above a content page: activity (kind, duration, reference
     # pages it uses) or reference page (where it sits, who uses it).
+    # Pinning the activity from its own page, for teachers with classes:
+    # the same pins as on the class page (/api/class/pin), shown first on the
+    # students' start page. One class: a click pins or unpins; several: a
+    # list of them with ticks (page_pin.js).
+    def page_pin_button(slug)
+        return '' unless user_logged_in? && (teacher_account_logged_in? || admin_logged_in?)
+        return '' unless pinnable_slugs.include?(slug)
+
+        groups = class_groups
+        return '' if groups.empty?
+
+        pinned = pins_for_groups(groups).select { |p| p[:slug] == slug }.map { |p| p[:group] }
+        data = groups.map { |g| { :name => g, :pinned => pinned.include?(g) } }
+        "<span class='page-pin' data-slug='#{CGI.escapeHTML(slug)}' data-groups='#{CGI.escapeHTML(data.to_json)}'>" \
+            "<button type='button' class='page-pin-toggle' aria-expanded='false'><i class='bi bi-pin-angle' aria-hidden='true'></i><span>Anpinnen</span></button>" \
+            "<script src='/include/page_pin.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}' defer></script></span>"
+    end
+
     def page_kind_header(slug)
-        toggle = teacher_note_toggle(slug)
+        # the teacher's buttons together at the right end, wrapping together
+        tools = page_pin_button(slug) + teacher_note_toggle(slug)
+        toggle = tools.empty? ? '' : "<span class='page-teacher-tools'>#{tools}</span>"
         header = PageKinds.header(slug, @@content, @@sections, :development => DEVELOPMENT, :extra => toggle,
                                   :show_duration => teacher_logged_in?, :code_language => page_code_language(slug))
         header.empty? && !toggle.empty? ? "<div class='page-kind'>#{toggle}</div>" : header

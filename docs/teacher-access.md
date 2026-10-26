@@ -313,6 +313,8 @@ als eine gibt; Testgruppen und Gruppen ohne Schule zuletzt.
 | Leistungsüberprüfungen | | | ✓ eigene Gruppen | ✓ |
 | Verwaltungsseite `/admin` (Server, alle Workspaces) | | | | ✓ |
 | Dauer einer Aktivität (`duration`, im Streifen über der Seite) | | | ✓ | ✓ |
+| »Anpinnen« im Streifen über einer Aktivität: dieselben Anheftungen wie auf der Klassenseite, bei einer Gruppe mit einem Klick, bei mehreren in einer Liste mit Häkchen | | | ✓ eigene Gruppen | ✓ |
+| »Lösung einsetzen« neben den Knöpfen einer Kata | | ✓ | ✓ | ✓ |
 | Startseite: »Weiter mit«, »So geht’s« | ✓ (auch Testkonten) | | | |
 
 Eine Lehrkraft sieht eine Person, sobald sie **eine** ihrer Gruppen betreut,

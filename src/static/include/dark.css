@@ -560,15 +560,29 @@ html[data-bs-theme="dark"] {
     }
     .class-repo-teacher > .bi { color: #cdb0f2; }
     .class-repo-hint { color: #a3a29c; }
-    .teacher-note-toggle {
+    .teacher-note-toggle,
+    .page-pin-toggle {
         border-color: #4a3a63;
         background-color: #221b2d;
         color: #cdb0f2;
     }
     .teacher-note-toggle:hover,
-    .teacher-note-toggle[aria-expanded='true'] {
+    .teacher-note-toggle[aria-expanded='true'],
+    .page-pin-toggle:hover,
+    .page-pin-toggle.pinned,
+    .page-pin-toggle[aria-expanded='true'] {
         background-color: #2e2440;
         border-color: #6b5590;
+    }
+    .page-pin-menu {
+        border-color: #4a3a63;
+        background: #1c1a20;
+    }
+    .page-pin-item:hover {
+        background: #2e2440;
+    }
+    .page-pin-item .bi {
+        color: #cdb0f2;
     }
     .template-notice {
         background-color: #172a45;

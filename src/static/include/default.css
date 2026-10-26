@@ -2921,6 +2921,75 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     margin-right: 0.4em;
 }
 
+/* The teacher's buttons, together at the right end of the strip */
+.page-teacher-tools {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.4em;
+    margin-left: auto;
+}
+.page-teacher-tools > .teacher-note-toggle {
+    margin-left: 0;
+}
+
+/* Pinning the activity for a class (page_pin.js), beside the teacher note,
+   in its colours; pinned, filled */
+.page-pin {
+    position: relative;
+}
+.page-pin-toggle {
+    padding: 0.15em 0.75em;
+    border: 1px solid #d9c9ee;
+    border-radius: 1em;
+    background-color: #f7f2fc;
+    color: #5b2f8f;
+    font-size: 90%;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.page-pin-toggle .bi {
+    margin-right: 0.4em;
+}
+.page-pin-toggle:hover,
+.page-pin-toggle.pinned,
+.page-pin-toggle[aria-expanded='true'] {
+    background-color: #ece1f8;
+    border-color: #b99ae0;
+}
+.page-pin-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.3em);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    min-width: 12em;
+    padding: 0.3em;
+    border: 1px solid #d9c9ee;
+    border-radius: 0.6em;
+    background: var(--bs-body-bg);
+    box-shadow: 0 0.4em 1.2em rgba(0, 0, 0, 0.12);
+}
+.page-pin-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.35em 0.6em;
+    border: 0;
+    border-radius: 0.4em;
+    background: none;
+    color: inherit;
+    font-size: 90%;
+    text-align: left;
+}
+.page-pin-item:hover {
+    background: #f7f2fc;
+}
+.page-pin-item .bi {
+    margin: 0;
+    color: #5b2f8f;
+}
+
 .teacher-note-toggle:hover,
 .teacher-note-toggle[aria-expanded='true'] {
     background-color: #ece1f8;
