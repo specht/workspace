@@ -57,7 +57,7 @@
     const SIDE = 4;
     const SIDE_ROWS = [7, 5, 4, 3];
     const RIM_FACE = [140, 156, 196];
-    const VERSION = '?v=8';
+    const VERSION = '?v=9';
 
     // The pictures the rock and the ground are drawn from, loaded once for
     // every map on the page and read into pixels: { top, face, ground }.
@@ -124,7 +124,12 @@
             put(layout.puddles, 'puddle');
             this.walls(wall, lights);
             // in the dark, sorted by row
-            put(layout.gates, 'gate pip-sort pip-tall');
+            // the gate's bars: seen from the front in a corridor that runs up
+            // and down (walls left and right), along it otherwise
+            (layout.gates || []).forEach((p) => {
+                const across = wall(p[0] - 1, p[1]) && wall(p[0] + 1, p[1]);
+                this.tile('gate pip-sort pip-tall ' + (across ? 'pip-gate-across' : 'pip-gate-along'), p);
+            });
             this.levers = (layout.levers || []).map((p) => this.tile('lever pip-sort', p));
             if (layout.bello) this.tile('bello pip-sort', layout.bello);
             this.glibbers = (start.glibbers || []).map((p) => this.tile('glibber pip-sort actor', p));

@@ -396,25 +396,72 @@ def lever(on):
     return img
 
 
-def gate(open_):
-    """Iron bars across the way, between two stone posts; open, they are
-    pulled up and only their points show. 24 × 32."""
-    img = canvas(T, 32)
-    for x in (1, 2, 21, 22):
-        for y in range(4, 30):
-            put(img, x, y, tone(ROCK, 4.6 - (x in (2, 22)) * 1.6 - y * 0.03, x, y))
-    for x in range(1, 23):
-        put(img, x, 3, ROCK[5])
-        put(img, x, 4, ROCK[3])
-        put(img, x, 5, ROCK[2])
-    bottom = 13 if open_ else 29
-    for x in range(4, 21, 4):
-        for y in range(6, bottom):
-            put(img, x, y, IRON[3])
-            put(img, x + 1, y, IRON[1])
-        put(img, x, bottom, IRON[2])
-    for x in range(3, 22):
-        put(img, x, bottom - 4 if open_ else 18, IRON[2])
+def bar(img, x, foot, height, edge=False):
+    """One iron bar standing up from the floor: lit, then shaded, a point on
+    top, a small dark hole round its foot; edge: a dark line on its left
+    that sets it off from a bar behind it."""
+    for y in range(foot - height, foot + 1):
+        if edge:
+            put(img, x - 1, y, OUT)
+        put(img, x, y, IRON[3])
+        put(img, x + 1, y, IRON[1])
+    put(img, x, foot - height - 1, IRON[3])
+    put(img, x - 1, foot + 1, ROCK[0])
+    put(img, x + 2, foot + 1, ROCK[0])
+    put(img, x, foot + 1, IRON[0])
+    put(img, x + 1, foot + 1, IRON[0])
+
+
+def rail(img, points, colour):
+    for (x0, y0), (x1, y1) in zip(points, points[1:]):
+        steps = max(abs(x1 - x0), abs(y1 - y0), 1)
+        for i in range(steps + 1):
+            put(img, round(x0 + (x1 - x0) * i / steps), round(y0 + (y1 - y0) * i / steps), colour)
+
+
+def hole(img, x, foot):
+    """Where a bar has sunk into the floor: a ring of iron round a dark hole."""
+    for dx, dy, c in ((-1, 0, IRON[2]), (0, -1, IRON[3]), (1, -1, IRON[2]), (2, 0, IRON[1]), (0, 1, IRON[1]), (1, 1, IRON[0]),
+                      (0, 0, ROCK[0]), (1, 0, ROCK[0])):
+        put(img, x + dx, foot + dy, c)
+
+
+GATE_HEIGHT = 17
+
+
+def gate(along, open_):
+    """The gate: iron bars that rise from the floor and sink back into it.
+    across: the corridor runs up and down, the bars stand side by side and
+    are seen from the front; along: the corridor runs left to right, the
+    row of bars goes into the depth, slanting like the rock's side faces
+    but a little more, so that the bars stand apart, drawn from the back to
+    the front, each in front of the one behind. 24 × 40, the tile in the lower
+    24 rows; open, only their rims show in the floor."""
+    img = canvas(T, 40)
+    if along:
+        feet = [(round(7 + i * 2.5), 19 + round(i * 4.5)) for i in range(5)]
+    else:
+        feet = [(x, 32) for x in (2, 7, 12, 17, 21)]
+    if open_:
+        for x, foot in feet:
+            hole(img, x, foot)
+        return img
+    for x, foot in feet:
+        shadow(img, x + 1, foot + 1.5, 3, 1, 90)
+    rails = (GATE_HEIGHT - 3, GATE_HEIGHT // 2)
+    if along:
+        # each bar, then the pieces of rail in front of it up to the next
+        for k, (x, foot) in enumerate(feet):
+            bar(img, x, foot, GATE_HEIGHT, edge=True)
+            if k + 1 < len(feet):
+                for lift in rails:
+                    rail(img, [(x + 2, foot - lift), (feet[k + 1][0] - 1, feet[k + 1][1] - lift)], IRON[2])
+    else:
+        for lift in rails:
+            rail(img, [(x, foot - lift + 1) for x, foot in feet], IRON[0])
+            rail(img, [(x, foot - lift) for x, foot in feet], IRON[2])
+        for x, foot in feet:
+            bar(img, x, foot, GATE_HEIGHT)
     outline(img)
     return img
 
@@ -551,7 +598,8 @@ def main():
         'bello.png': strip([grounded(f, 8) for f in frames(load('hund_stehen.png'))]),
         'lamp-off.png': lamp(False), 'lamp.png': lamp(True),
         'lever-off.png': lever(False), 'lever-on.png': lever(True),
-        'gate-closed.png': gate(False), 'gate-open.png': gate(True),
+        'gate-across.png': gate(False, False), 'gate-across-open.png': gate(False, True),
+        'gate-along.png': gate(True, False), 'gate-along-open.png': gate(True, True),
         'puddle.png': puddle(), 'trail.png': trail(), 'trail-diagonal.png': trail_diagonal(),
         'glowshroom.png': glowshroom(), 'mushroom.png': mushroom(), 'crystals.png': crystals(),
         'stalagmite.png': stalagmite(), 'bat.png': strip([bat(i) for i in range(4)]),

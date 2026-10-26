@@ -8392,39 +8392,44 @@ html[data-bs-theme="dark"] .bitplane-widget {
 
 /* on the ground */
 .pip-trail {
-    background-image: url(/images/pip/trail.png?v=8);
+    background-image: url(/images/pip/trail.png?v=9);
     /* turned the way Bello went (--turn); at a corner the prints of their
        own, pointing north-east */
     transform: translate(calc(var(--x) * var(--tile)), calc(var(--y) * var(--tile))) rotate(var(--turn, 0deg));
 }
-.pip-trail-diagonal { background-image: url(/images/pip/trail-diagonal.png?v=8); }
-.pip-puddle { background-image: url(/images/pip/puddle.png?v=8); }
+.pip-trail-diagonal { background-image: url(/images/pip/trail-diagonal.png?v=9); }
+.pip-puddle { background-image: url(/images/pip/puddle.png?v=9); }
 
 /* standing, in the dark */
 .pip-deco { --h: 1; }
-.pip-mushroom { background-image: url(/images/pip/mushroom.png?v=8); }
-.pip-stalagmite { background-image: url(/images/pip/stalagmite.png?v=8); }
-.pip-lever { background-image: url(/images/pip/lever-off.png?v=8); }
-.pip-lever.pip-pulled { background-image: url(/images/pip/lever-on.png?v=8); }
-.pip-gate { --h: 1.3334; background-image: url(/images/pip/gate-closed.png?v=8); }
-.pip-gate-open .pip-gate { background-image: url(/images/pip/gate-open.png?v=8); }
+.pip-mushroom { background-image: url(/images/pip/mushroom.png?v=9); }
+.pip-stalagmite { background-image: url(/images/pip/stalagmite.png?v=9); }
+.pip-lever { background-image: url(/images/pip/lever-off.png?v=9); }
+.pip-lever.pip-pulled { background-image: url(/images/pip/lever-on.png?v=9); }
+/* the gate: iron bars that rise from the floor, seen from the front or
+   along the corridor; open, sunk into the floor */
+.pip-gate { --h: 1.6667; }
+.pip-gate-across { background-image: url(/images/pip/gate-across.png?v=9); }
+.pip-gate-along { background-image: url(/images/pip/gate-along.png?v=9); }
+.pip-gate-open .pip-gate-across { background-image: url(/images/pip/gate-across-open.png?v=9); }
+.pip-gate-open .pip-gate-along { background-image: url(/images/pip/gate-along-open.png?v=9); }
 .pip-glibber {
-    background-image: url(/images/pip/glibber.png?v=8);
+    background-image: url(/images/pip/glibber.png?v=9);
     background-size: 400% 100%;
     animation: pip-frames-4 0.9s steps(4) infinite;
 }
 .pip-bello {
-    background-image: url(/images/pip/bello.png?v=8);
+    background-image: url(/images/pip/bello.png?v=9);
     background-size: 400% 100%;
     animation: pip-frames-4 1.6s steps(4) infinite;
 }
 
 /* shining by themselves */
-.pip-glowshroom { background-image: url(/images/pip/glowshroom.png?v=8); }
-.pip-crystals { background-image: url(/images/pip/crystals.png?v=8); }
+.pip-glowshroom { background-image: url(/images/pip/glowshroom.png?v=9); }
+.pip-crystals { background-image: url(/images/pip/crystals.png?v=9); }
 .pip-stone {
     z-index: 499;
-    background-image: url(/images/pip/stone.png?v=8);
+    background-image: url(/images/pip/stone.png?v=9);
     background-size: 400% 100%;
     animation: pip-frames-4 1.4s steps(4) infinite;
     transition: opacity 300ms;
@@ -8433,24 +8438,24 @@ html[data-bs-theme="dark"] .bitplane-widget {
 /* the old lamp on its post, dark with a faint ember until Pip lights it */
 .pip-lamp {
     --h: 1.6667;
-    background-image: url(/images/pip/lamp-off.png?v=8);
+    background-image: url(/images/pip/lamp-off.png?v=9);
 }
 .pip-lamp:not(.pip-lit) {
     filter: drop-shadow(0 0 calc(var(--tile) * 0.12) rgba(255, 200, 140, 0.6));
 }
-.pip-lamp.pip-lit { background-image: url(/images/pip/lamp.png?v=8); }
+.pip-lamp.pip-lit { background-image: url(/images/pip/lamp.png?v=9); }
 /* the post against a wall on the right, the lantern out over the ground */
 .pip-tall.pip-mirrored {
     transform: translate(calc(var(--x) * var(--tile)), calc((var(--y) + 1 - var(--h)) * var(--tile))) scaleX(-1);
 }
 
 .pip-pip {
-    background-image: url(/images/pip/pip-east.png?v=8);
+    background-image: url(/images/pip/pip-east.png?v=9);
     background-size: 200% 100%;
 }
-.pip-pip[data-facing='west'] { background-image: url(/images/pip/pip-west.png?v=8); }
-.pip-pip[data-facing='north'] { background-image: url(/images/pip/pip-north.png?v=8); }
-.pip-pip[data-facing='south'] { background-image: url(/images/pip/pip-south.png?v=8); }
+.pip-pip[data-facing='west'] { background-image: url(/images/pip/pip-west.png?v=9); }
+.pip-pip[data-facing='north'] { background-image: url(/images/pip/pip-north.png?v=9); }
+.pip-pip[data-facing='south'] { background-image: url(/images/pip/pip-south.png?v=9); }
 .pip-pip.pip-walking { animation: pip-frames-2 var(--step) steps(2); }
 .pip-pip.pip-bump { animation: pip-bump 300ms; }
 .pip-pip.pip-caught { animation: pip-caught 600ms 2; }
@@ -8569,7 +8574,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
 .pip-bat {
     z-index: 960;
     opacity: 0;
-    background-image: url(/images/pip/bat.png?v=8);
+    background-image: url(/images/pip/bat.png?v=9);
     background-size: 400% 100%;
     animation: pip-bat 22s linear infinite, pip-frames-4 0.5s steps(4) infinite;
     pointer-events: none;
@@ -8710,7 +8715,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
     content: '';
     flex: 0 0 48px;
     height: 48px;
-    background: url(/images/pip/wichtel.png?v=8) no-repeat 0 0 / 400% 100%;
+    background: url(/images/pip/wichtel.png?v=9) no-repeat 0 0 / 400% 100%;
     image-rendering: pixelated;
 }
 
