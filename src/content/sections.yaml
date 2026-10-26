@@ -32,6 +32,7 @@
     - .pip-2
     - .kata-texts
     - .kata-lists
+    - .kata-dicts
 
 - key: graphics
   compact: true

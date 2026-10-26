@@ -1,0 +1,187 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Der Startcode jeder Kata muss von selbst scheitern; das prüft der Test ohne Beispiel.
+format: 1
+activity: kata-dicts
+examples:
+  phone-number:
+    pass:
+      - answer: "def phone_number(book, name)\n  if book.key?(name)\n    book[name]\n  else\n    'unbekannt'\n  end\nend\n"
+    fail:
+      - answer: "def phone_number(book, name)\n  book[name]\nend\n"
+    python:
+      pass:
+        - answer: "def phone_number(book, name):\n    if name in book:\n        return book[name]\n    return 'unbekannt'\n"
+      fail:
+        - answer: "def phone_number(book, name):\n    return book.get(name)\n"
+    javascript:
+      pass:
+        - answer: "function phoneNumber(book, name) {\n  if (name in book) {\n    return book[name];\n  }\n  return 'unbekannt';\n}\n"
+      fail:
+        - answer: "function phoneNumber(book, name) {\n  return book[name];\n}\n"
+  count-items:
+    pass:
+      - answer: "def count_items(items)\n  counts = {}\n  items.each do |item|\n    counts[item] = counts.fetch(item, 0) + 1\n  end\n  counts\nend\n"
+    fail:
+      - answer: "def count_items(items)\n  counts = {}\n  items.each do |item|\n    counts[item] = 1\n  end\n  counts\nend\n"
+    python:
+      pass:
+        - answer: "def count_items(items):\n    counts = {}\n    for item in items:\n        counts[item] = counts.get(item, 0) + 1\n    return counts\n"
+      fail:
+        - answer: "def count_items(items):\n    counts = {}\n    for item in items:\n        counts[item] = 1\n    return counts\n"
+    javascript:
+      pass:
+        - answer: "function countItems(items) {\n  const counts = {};\n  for (const item of items) {\n    counts[item] = (counts[item] || 0) + 1;\n  }\n  return counts;\n}\n"
+      fail:
+        - answer: "function countItems(items) {\n  const counts = {};\n  for (const item of items) {\n    counts[item] = 1;\n  }\n  return counts;\n}\n"
+  total-price:
+    pass:
+      - answer: "def total_price(prices, cart)\n  total = 0\n  cart.each do |item|\n    total += prices[item]\n  end\n  total\nend\n"
+    fail:
+      - answer: "def total_price(prices, cart)\n  total = 0\n  prices.each do |item, price|\n    total += price if cart.include?(item)\n  end\n  total\nend\n"
+    python:
+      pass:
+        - answer: "def total_price(prices, cart):\n    total = 0\n    for item in cart:\n        total += prices[item]\n    return total\n"
+      fail:
+        - answer: "def total_price(prices, cart):\n    total = 0\n    for item, price in prices.items():\n        if item in cart:\n            total += price\n    return total\n"
+    javascript:
+      pass:
+        - answer: "function totalPrice(prices, cart) {\n  let total = 0;\n  for (const item of cart) {\n    total += prices[item];\n  }\n  return total;\n}\n"
+      fail:
+        - answer: "function totalPrice(prices, cart) {\n  let total = 0;\n  for (const item in prices) {\n    if (cart.includes(item)) {\n      total += prices[item];\n    }\n  }\n  return total;\n}\n"
+  keys-with-value:
+    pass:
+      - answer: "def keys_with_value(scores, value)\n  names = []\n  scores.each do |name, points|\n    names << name if points == value\n  end\n  names\nend\n"
+    python:
+      pass:
+        - answer: "def keys_with_value(scores, value):\n    names = []\n    for name, points in scores.items():\n        if points == value:\n            names.append(name)\n    return names\n"
+    javascript:
+      pass:
+        - answer: "function keysWithValue(scores, value) {\n  const names = [];\n  for (const name in scores) {\n    if (scores[name] === value) {\n      names.push(name);\n    }\n  }\n  return names;\n}\n"
+  letter-count:
+    pass:
+      - answer: "def letter_count(text)\n  counts = {}\n  text.downcase.each_char do |char|\n    next unless char >= 'a' && char <= 'z'\n    counts[char] = counts.fetch(char, 0) + 1\n  end\n  counts\nend\n"
+    fail:
+      - answer: "def letter_count(text)\n  counts = {}\n  text.each_char do |char|\n    next unless (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z')\n    counts[char] = counts.fetch(char, 0) + 1\n  end\n  counts\nend\n"
+    python:
+      pass:
+        - answer: "def letter_count(text):\n    counts = {}\n    for char in text.lower():\n        if 'a' <= char <= 'z':\n            counts[char] = counts.get(char, 0) + 1\n    return counts\n"
+      fail:
+        - answer: "def letter_count(text):\n    counts = {}\n    for char in text:\n        if char.isalpha():\n            counts[char] = counts.get(char, 0) + 1\n    return counts\n"
+    javascript:
+      pass:
+        - answer: "function letterCount(text) {\n  const counts = {};\n  for (const char of text.toLowerCase()) {\n    if (char >= 'a' && char <= 'z') {\n      counts[char] = (counts[char] || 0) + 1;\n    }\n  }\n  return counts;\n}\n"
+      fail:
+        - answer: "function letterCount(text) {\n  const counts = {};\n  for (const char of text) {\n    if ((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z')) {\n      counts[char] = (counts[char] || 0) + 1;\n    }\n  }\n  return counts;\n}\n"
+  most-frequent:
+    pass:
+      - answer: "def most_frequent(words)\n  counts = {}\n  words.each do |word|\n    counts[word] = counts.fetch(word, 0) + 1\n  end\n  best = words[0]\n  words.each do |word|\n    best = word if counts[word] > counts[best]\n  end\n  best\nend\n"
+    fail:
+      - answer: "def most_frequent(words)\n  counts = {}\n  words.each do |word|\n    counts[word] = counts.fetch(word, 0) + 1\n  end\n  best = words[0]\n  words.each do |word|\n    best = word if counts[word] >= counts[best]\n  end\n  best\nend\n"
+    python:
+      pass:
+        - answer: "def most_frequent(words):\n    counts = {}\n    for word in words:\n        counts[word] = counts.get(word, 0) + 1\n    best = words[0]\n    for word in words:\n        if counts[word] > counts[best]:\n            best = word\n    return best\n"
+      fail:
+        - answer: "def most_frequent(words):\n    counts = {}\n    for word in words:\n        counts[word] = counts.get(word, 0) + 1\n    best = words[0]\n    for word in words:\n        if counts[word] >= counts[best]:\n            best = word\n    return best\n"
+    javascript:
+      pass:
+        - answer: "function mostFrequent(words) {\n  const counts = {};\n  for (const word of words) {\n    counts[word] = (counts[word] || 0) + 1;\n  }\n  let best = words[0];\n  for (const word of words) {\n    if (counts[word] > counts[best]) {\n      best = word;\n    }\n  }\n  return best;\n}\n"
+      fail:
+        - answer: "function mostFrequent(words) {\n  const counts = {};\n  for (const word of words) {\n    counts[word] = (counts[word] || 0) + 1;\n  }\n  let best = words[0];\n  for (const word of words) {\n    if (counts[word] >= counts[best]) {\n      best = word;\n    }\n  }\n  return best;\n}\n"
+  group-by-length:
+    pass:
+      - answer: "def group_by_length(words)\n  groups = {}\n  words.each do |word|\n    groups[word.length] ||= []\n    groups[word.length] << word\n  end\n  groups\nend\n"
+    fail:
+      - answer: "def group_by_length(words)\n  groups = {}\n  words.each do |word|\n    groups[word.length] = [word]\n  end\n  groups\nend\n"
+    python:
+      pass:
+        - answer: "def group_by_length(words):\n    groups = {}\n    for word in words:\n        if len(word) not in groups:\n            groups[len(word)] = []\n        groups[len(word)].append(word)\n    return groups\n"
+      fail:
+        - answer: "def group_by_length(words):\n    groups = {}\n    for word in words:\n        groups[len(word)] = [word]\n    return groups\n"
+    javascript:
+      pass:
+        - answer: "function groupByLength(words) {\n  const groups = {};\n  for (const word of words) {\n    if (!(word.length in groups)) {\n      groups[word.length] = [];\n    }\n    groups[word.length].push(word);\n  }\n  return groups;\n}\n"
+      fail:
+        - answer: "function groupByLength(words) {\n  const groups = {};\n  for (const word of words) {\n    groups[word.length] = [word];\n  }\n  return groups;\n}\n"
+  merge-counts:
+    pass:
+      - answer: "def merge_counts(a, b)\n  result = a.dup\n  b.each do |key, count|\n    result[key] = result.fetch(key, 0) + count\n  end\n  result\nend\n"
+    fail:
+      - answer: "def merge_counts(a, b)\n  a.merge(b)\nend\n"
+    python:
+      pass:
+        - answer: "def merge_counts(a, b):\n    result = dict(a)\n    for key, count in b.items():\n        result[key] = result.get(key, 0) + count\n    return result\n"
+      fail:
+        - answer: "def merge_counts(a, b):\n    return {**a, **b}\n"
+    javascript:
+      pass:
+        - answer: "function mergeCounts(a, b) {\n  const result = { ...a };\n  for (const key in b) {\n    result[key] = (result[key] || 0) + b[key];\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "function mergeCounts(a, b) {\n  return { ...a, ...b };\n}\n"
+  invert:
+    pass:
+      - answer: "def invert(colors)\n  result = {}\n  colors.each do |fruit, color|\n    result[color] ||= []\n    result[color] << fruit\n  end\n  result\nend\n"
+    fail:
+      - answer: "def invert(colors)\n  result = {}\n  colors.each do |fruit, color|\n    result[color] = [fruit]\n  end\n  result\nend\n"
+    python:
+      pass:
+        - answer: "def invert(colors):\n    result = {}\n    for fruit, color in colors.items():\n        if color not in result:\n            result[color] = []\n        result[color].append(fruit)\n    return result\n"
+      fail:
+        - answer: "def invert(colors):\n    result = {}\n    for fruit, color in colors.items():\n        result[color] = [fruit]\n    return result\n"
+    javascript:
+      pass:
+        - answer: "function invert(colors) {\n  const result = {};\n  for (const fruit in colors) {\n    const color = colors[fruit];\n    if (!(color in result)) {\n      result[color] = [];\n    }\n    result[color].push(fruit);\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "function invert(colors) {\n  const result = {};\n  for (const fruit in colors) {\n    result[colors[fruit]] = [fruit];\n  }\n  return result;\n}\n"
+  averages:
+    pass:
+      - answer: "def averages(grades)\n  sums = {}\n  counts = {}\n  grades.each do |subject, grade|\n    sums[subject] = sums.fetch(subject, 0) + grade\n    counts[subject] = counts.fetch(subject, 0) + 1\n  end\n  result = {}\n  sums.each do |subject, sum|\n    result[subject] = sum.to_f / counts[subject]\n  end\n  result\nend\n"
+    fail:
+      - answer: "def averages(grades)\n  sums = {}\n  counts = {}\n  grades.each do |subject, grade|\n    sums[subject] = sums.fetch(subject, 0) + grade\n    counts[subject] = counts.fetch(subject, 0) + 1\n  end\n  result = {}\n  sums.each do |subject, sum|\n    result[subject] = sum / counts[subject]\n  end\n  result\nend\n"
+    python:
+      pass:
+        - answer: "def averages(grades):\n    sums = {}\n    counts = {}\n    for subject, grade in grades:\n        sums[subject] = sums.get(subject, 0) + grade\n        counts[subject] = counts.get(subject, 0) + 1\n    result = {}\n    for subject in sums:\n        result[subject] = sums[subject] / counts[subject]\n    return result\n"
+      fail:
+        - answer: "def averages(grades):\n    sums = {}\n    counts = {}\n    for subject, grade in grades:\n        sums[subject] = sums.get(subject, 0) + grade\n        counts[subject] = counts.get(subject, 0) + 1\n    result = {}\n    for subject in sums:\n        result[subject] = sums[subject] // counts[subject]\n    return result\n"
+    javascript:
+      pass:
+        - answer: "function averages(grades) {\n  const sums = {};\n  const counts = {};\n  for (const [subject, grade] of grades) {\n    sums[subject] = (sums[subject] || 0) + grade;\n    counts[subject] = (counts[subject] || 0) + 1;\n  }\n  const result = {};\n  for (const subject in sums) {\n    result[subject] = sums[subject] / counts[subject];\n  }\n  return result;\n}\n"
+  first-repeat:
+    pass:
+      - answer: "def first_repeat(numbers)\n  seen = {}\n  numbers.each do |number|\n    return number if seen.key?(number)\n    seen[number] = true\n  end\n  nil\nend\n"
+    fail:
+      - answer: "def first_repeat(numbers)\n  numbers.each_with_index do |number, i|\n    return number if numbers[(i + 1)..].include?(number)\n  end\n  nil\nend\n"
+    python:
+      pass:
+        - answer: "def first_repeat(numbers):\n    seen = {}\n    for number in numbers:\n        if number in seen:\n            return number\n        seen[number] = True\n    return None\n"
+      fail:
+        - answer: "def first_repeat(numbers):\n    for i in range(len(numbers)):\n        if numbers[i] in numbers[i + 1:]:\n            return numbers[i]\n    return None\n"
+    javascript:
+      pass:
+        - answer: "function firstRepeat(numbers) {\n  const seen = {};\n  for (const number of numbers) {\n    if (number in seen) {\n      return number;\n    }\n    seen[number] = true;\n  }\n  return null;\n}\n"
+      fail:
+        - answer: "function firstRepeat(numbers) {\n  for (let i = 0; i < numbers.length; i++) {\n    if (numbers.slice(i + 1).includes(numbers[i])) {\n      return numbers[i];\n    }\n  }\n  return null;\n}\n"
+  lru-misses:
+    pass:
+      - answer: "def lru_misses(capacity, requests)\n  cache = []\n  misses = 0\n  requests.each do |page|\n    if cache.include?(page)\n      cache.delete(page)\n    else\n      misses += 1\n      cache.shift if cache.length == capacity\n    end\n    cache << page\n  end\n  misses\nend\n"
+    fail:
+      - answer: "def lru_misses(capacity, requests)\n  cache = []\n  misses = 0\n  requests.each do |page|\n    next if cache.include?(page)\n    misses += 1\n    cache.shift if cache.length == capacity\n    cache << page\n  end\n  misses\nend\n"
+    python:
+      pass:
+        - answer: "def lru_misses(capacity, requests):\n    cache = []\n    misses = 0\n    for page in requests:\n        if page in cache:\n            cache.remove(page)\n        else:\n            misses += 1\n            if len(cache) == capacity:\n                cache.pop(0)\n        cache.append(page)\n    return misses\n"
+      fail:
+        - answer: "def lru_misses(capacity, requests):\n    cache = []\n    misses = 0\n    for page in requests:\n        if page in cache:\n            continue\n        misses += 1\n        if len(cache) == capacity:\n            cache.pop(0)\n        cache.append(page)\n    return misses\n"
+    javascript:
+      pass:
+        - answer: "function lruMisses(capacity, requests) {\n  const cache = [];\n  let misses = 0;\n  for (const page of requests) {\n    const i = cache.indexOf(page);\n    if (i >= 0) {\n      cache.splice(i, 1);\n    } else {\n      misses++;\n      if (cache.length === capacity) {\n        cache.shift();\n      }\n    }\n    cache.push(page);\n  }\n  return misses;\n}\n"
+      fail:
+        - answer: "function lruMisses(capacity, requests) {\n  const cache = [];\n  let misses = 0;\n  for (const page of requests) {\n    if (cache.includes(page)) {\n      continue;\n    }\n    misses++;\n    if (cache.length === capacity) {\n      cache.shift();\n    }\n    cache.push(page);\n  }\n  return misses;\n}\n"
+  anagram-groups:
+    pass:
+      - answer: "def anagram_groups(words)\n  groups = {}\n  words.each do |word|\n    key = word.chars.sort.join\n    groups[key] ||= []\n    groups[key] << word\n  end\n  groups.values\nend\n"
+    python:
+      pass:
+        - answer: "def anagram_groups(words):\n    groups = {}\n    for word in words:\n        key = ''.join(sorted(word))\n        if key not in groups:\n            groups[key] = []\n        groups[key].append(word)\n    return list(groups.values())\n"
+    javascript:
+      pass:
+        - answer: "function anagramGroups(words) {\n  const groups = new Map();\n  for (const word of words) {\n    const key = [...word].sort().join('');\n    if (!groups.has(key)) {\n      groups.set(key, []);\n    }\n    groups.get(key).push(word);\n  }\n  return [...groups.values()];\n}\n"

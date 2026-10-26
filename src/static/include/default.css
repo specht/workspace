@@ -8165,6 +8165,29 @@ html[data-bs-theme="dark"] .bitplane-widget {
 }
 
 
+/* the fade at the sides of the Katas' strip, registered so that it can
+   change smoothly */
+@property --kata-fade-left {
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 0em;
+}
+@property --kata-fade-right {
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 0em;
+}
+@property --kata-fade-from {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 1;
+}
+@property --kata-fade-to {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 1;
+}
+
 /* The Katas on the front page (KataMap.carousel_html): how many are solved
    in all, in a ring, then the sets in a strip that scrolls sideways, as
    high as one row of cards; arrows at its ends with a mouse. A pinned set
@@ -8238,10 +8261,14 @@ html[data-bs-theme="dark"] .bitplane-widget {
     overflow-x: auto;
     scroll-padding-inline: 0.15em;
     scroll-snap-type: x mandatory;
-    /* faded at a side where more sets follow (the script in KataMap) */
-    --fade-left: 0em;
-    --fade-right: 0em;
-    mask-image: linear-gradient(to right, transparent, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent);
+    /* faded at a side where more sets follow (the script in KataMap); the
+       fade comes and goes softly (@property below) */
+    --kata-fade-left: 0em;
+    --kata-fade-right: 0em;
+    --kata-fade-from: 1;
+    --kata-fade-to: 1;
+    mask-image: linear-gradient(to right, rgb(0 0 0 / var(--kata-fade-from)), #000 var(--kata-fade-left), #000 calc(100% - var(--kata-fade-right)), rgb(0 0 0 / var(--kata-fade-to)));
+    transition: --kata-fade-left 300ms ease, --kata-fade-right 300ms ease, --kata-fade-from 300ms ease, --kata-fade-to 300ms ease;
     scroll-behavior: smooth;
     /* the arrows, a swipe or a mouse dragging it scroll it */
     scrollbar-width: none;
@@ -8268,7 +8295,10 @@ html[data-bs-theme="dark"] .bitplane-widget {
     background: var(--bs-body-bg);
     color: inherit;
     text-decoration: none;
-    scroll-snap-align: start;
+    /* at every width a set snaps into the middle */
+    scroll-snap-align: center;
+    /* a mouse drags the strip: no text is selected meanwhile */
+    user-select: none;
     transition: border-color 150ms, box-shadow 150ms;
 }
 .kata-set:hover {
@@ -8463,8 +8493,8 @@ html[data-bs-theme="dark"] .bitplane-widget {
 .kata-scroll .bi::before {
     vertical-align: 0;
 }
-.kata-more-left .kata-track { --fade-left: 3em; }
-.kata-more-right .kata-track { --fade-right: 3em; }
+.kata-more-left .kata-track { --kata-fade-left: 1.6em; --kata-fade-from: 0.3; }
+.kata-more-right .kata-track { --kata-fade-right: 1.6em; --kata-fade-to: 0.3; }
 .kata-scroll[data-dir='-1'] { left: -0.8em; }
 .kata-scroll[data-dir='1'] { right: -0.8em; }
 .kata-scroll { transition: opacity 250ms; }
@@ -8493,7 +8523,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
     .kata-ring-text strong { font-size: 1.2em; }
     .kata-ring-text small { font-size: 0.75em; }
     /* one set in the middle, its neighbours peeking in */
-    .kata-set { flex-basis: 78%; scroll-snap-align: center; }
+    .kata-set { flex-basis: 78%; }
 }
 
 /* Katas handed in (KataHandIns, kata_hand_ins.js): the list on the class

@@ -1,0 +1,1465 @@
+format: 1
+activity: kata-dicts
+tasks:
+  - id: phone-number
+    title: "Im Telefonbuch"
+    level: 1
+    prompt: |
+      Ein Telefonbuch ordnet jedem Namen eine Nummer zu: `{'Ada' => '030 1815', 'Alan' => '040 1912', 'Grace' => '089 1906'}`. Schreib eine Funktion `phone_number(book, name)`, die die Nummer zurückgibt, und `'unbekannt'`, wenn der Name nicht darin steht: `phone_number(book, 'Ada')` ergibt `'030 1815'`.
+    starter: |
+      def phone_number(book, name)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "phone_number({'Ada' => '030 1815', 'Alan' => '040 1912', 'Grace' => '089 1906'}, 'Ada')"
+          expect: "'030 1815'"
+        - call: "phone_number({'Ada' => '030 1815', 'Alan' => '040 1912', 'Grace' => '089 1906'}, 'Grace')"
+          expect: "'089 1906'"
+        - call: "phone_number({'Ada' => '030 1815', 'Alan' => '040 1912', 'Grace' => '089 1906'}, 'Linus')"
+          expect: "'unbekannt'"
+          say: "Steht der Name nicht im Telefonbuch, kommt `'unbekannt'` zurück."
+        - call: "phone_number({}, 'Ada')"
+          expect: "'unbekannt'"
+        - call: "phone_number({'Ada' => '030 1815', 'Alan' => '040 1912', 'Grace' => '089 1906'}, 'ada')"
+          expect: "'unbekannt'"
+          say: "Groß und klein zählen hier: `'ada'` steht nicht darin."
+    feedback:
+      - when: { same_as: "def phone_number(book, name)\n  book[name]\nend\n" }
+        say: "Steht ein Name nicht darin, gibt `book[name]` `nil` zurück. Frag vorher mit `book.key?(name)`, ob er darin steht."
+    hint:
+      - "`book['Ada']` ist die Nummer, die zum Schlüssel `'Ada'` gehört."
+      - "`book.key?(name)` fragt, ob der Name darin steht."
+    solution: |
+      ```ruby
+      def phone_number(book, name)
+        if book.key?(name)
+          book[name]
+        else
+          'unbekannt'
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Ein Telefonbuch ordnet jedem Namen eine Nummer zu: `{'Ada': '030 1815', 'Alan': '040 1912', 'Grace': '089 1906'}`. Schreib eine Funktion `phone_number(book, name)`, die die Nummer zurückgibt, und `'unbekannt'`, wenn der Name nicht darin steht: `phone_number(book, 'Ada')` ergibt `'030 1815'`.
+      starter: |
+        def phone_number(book, name):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "phone_number({'Ada': '030 1815', 'Alan': '040 1912', 'Grace': '089 1906'}, 'Ada')"
+            expect: "'030 1815'"
+          - call: "phone_number({'Ada': '030 1815', 'Alan': '040 1912', 'Grace': '089 1906'}, 'Grace')"
+            expect: "'089 1906'"
+          - call: "phone_number({'Ada': '030 1815', 'Alan': '040 1912', 'Grace': '089 1906'}, 'Linus')"
+            expect: "'unbekannt'"
+            say: "Steht der Name nicht im Telefonbuch, kommt `'unbekannt'` zurück."
+          - call: "phone_number({}, 'Ada')"
+            expect: "'unbekannt'"
+          - call: "phone_number({'Ada': '030 1815', 'Alan': '040 1912', 'Grace': '089 1906'}, 'ada')"
+            expect: "'unbekannt'"
+            say: "Groß und klein zählen hier: `'ada'` steht nicht darin."
+      feedback:
+        - when: { same_as: "def phone_number(book, name):\n    return book.get(name)\n" }
+          say: "Steht ein Name nicht darin, gibt `book.get(name)` `None` zurück. Frag vorher mit `name in book`, ob er darin steht."
+      hint:
+        - "`book['Ada']` ist die Nummer, die zum Schlüssel `'Ada'` gehört."
+        - "`name in book` fragt, ob der Name darin steht."
+      solution: |
+        ```python
+        def phone_number(book, name):
+            if name in book:
+                return book[name]
+            return 'unbekannt'
+        ```
+    javascript:
+      prompt: |
+        Ein Telefonbuch ordnet jedem Namen eine Nummer zu: `{'Ada': '030 1815', 'Alan': '040 1912', 'Grace': '089 1906'}`. Schreib eine Funktion `phoneNumber(book, name)`, die die Nummer zurückgibt, und `'unbekannt'`, wenn der Name nicht darin steht: `phoneNumber(book, 'Ada')` ergibt `'030 1815'`.
+      starter: |
+        function phoneNumber(book, name) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "phoneNumber({'Ada': '030 1815', 'Alan': '040 1912', 'Grace': '089 1906'}, 'Ada')"
+            expect: "'030 1815'"
+          - call: "phoneNumber({'Ada': '030 1815', 'Alan': '040 1912', 'Grace': '089 1906'}, 'Grace')"
+            expect: "'089 1906'"
+          - call: "phoneNumber({'Ada': '030 1815', 'Alan': '040 1912', 'Grace': '089 1906'}, 'Linus')"
+            expect: "'unbekannt'"
+            say: "Steht der Name nicht im Telefonbuch, kommt `'unbekannt'` zurück."
+          - call: "phoneNumber({}, 'Ada')"
+            expect: "'unbekannt'"
+          - call: "phoneNumber({'Ada': '030 1815', 'Alan': '040 1912', 'Grace': '089 1906'}, 'ada')"
+            expect: "'unbekannt'"
+            say: "Groß und klein zählen hier: `'ada'` steht nicht darin."
+      feedback:
+        - when: { same_as: "function phoneNumber(book, name) {\n  return book[name];\n}\n" }
+          say: "Steht ein Name nicht darin, gibt `book[name]` `undefined` zurück. Frag vorher mit `name in book`, ob er darin steht."
+      hint:
+        - "`book['Ada']` ist die Nummer, die zum Schlüssel `'Ada'` gehört."
+        - "`name in book` fragt, ob der Name darin steht."
+      solution: |
+        ```javascript
+        function phoneNumber(book, name) {
+          if (name in book) {
+            return book[name];
+          }
+          return 'unbekannt';
+        }
+        ```
+  - id: count-items
+    title: "Strichliste"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `count_items(items)`, die zählt, wie oft jedes Element in der Liste steht, und das als Hash zurückgibt: `count_items(['Apfel', 'Birne', 'Apfel'])` ergibt `{'Apfel' => 2, 'Birne' => 1}`. Ohne `tally` und `group_by`.
+    starter: |
+      def count_items(items)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#tally, Array#group_by, Array#count]
+      cases:
+        - call: "count_items(['Apfel', 'Birne', 'Apfel'])"
+          expect: "{'Apfel' => 2, 'Birne' => 1}"
+        - call: "count_items([])"
+          expect: "{}"
+          say: "Eine leere Liste gibt ein leeres Ergebnis."
+        - call: "count_items(['a', 'a', 'a'])"
+          expect: "{'a' => 3}"
+          say: "Kommt ein Element wieder, zählst du weiter."
+        - call: "count_items([3, 1, 3, 3])"
+          expect: "{3 => 3, 1 => 1}"
+          say: "Auch Zahlen lassen sich zählen."
+    feedback:
+      - when: { same_as: "def count_items(items)\n  counts = {}\n  items.each do |item|\n    counts[item] = 1\n  end\n  counts\nend\n" }
+        say: "Kommt ein Element ein zweites Mal, fängt dein Code wieder bei 1 an. Zähl weiter, wo du warst."
+    hint:
+      - "Fang mit einem leeren Hash an, `{}`. Für jedes Element erhöhst du seinen Zähler um 1."
+      - "Beim ersten Mal hat das Element noch keinen Zähler: `counts.fetch(item, 0)` ist dann 0."
+    solution: |
+      ```ruby
+      def count_items(items)
+        counts = {}
+        items.each do |item|
+          counts[item] = counts.fetch(item, 0) + 1
+        end
+        counts
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `count_items(items)`, die zählt, wie oft jedes Element in der Liste steht, und das als Dictionary zurückgibt: `count_items(['Apfel', 'Birne', 'Apfel'])` ergibt `{'Apfel': 2, 'Birne': 1}`. Ohne `Counter`.
+      starter: |
+        def count_items(items):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [list.count]
+        cases:
+          - call: "count_items(['Apfel', 'Birne', 'Apfel'])"
+            expect: "{'Apfel': 2, 'Birne': 1}"
+          - call: "count_items([])"
+            expect: "{}"
+            say: "Eine leere Liste gibt ein leeres Ergebnis."
+          - call: "count_items(['a', 'a', 'a'])"
+            expect: "{'a': 3}"
+            say: "Kommt ein Element wieder, zählst du weiter."
+          - call: "count_items([3, 1, 3, 3])"
+            expect: "{3: 3, 1: 1}"
+            say: "Auch Zahlen lassen sich zählen."
+      feedback:
+        - when: { same_as: "def count_items(items):\n    counts = {}\n    for item in items:\n        counts[item] = 1\n    return counts\n" }
+          say: "Kommt ein Element ein zweites Mal, fängt dein Code wieder bei 1 an. Zähl weiter, wo du warst."
+      hint:
+        - "Fang mit einem leeren Dictionary an, `{}`. Für jedes Element erhöhst du seinen Zähler um 1."
+        - "Beim ersten Mal hat das Element noch keinen Zähler: `counts.get(item, 0)` ist dann 0."
+      solution: |
+        ```python
+        def count_items(items):
+            counts = {}
+            for item in items:
+                counts[item] = counts.get(item, 0) + 1
+            return counts
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `countItems(items)`, die zählt, wie oft jedes Element in der Liste steht, und das als Objekt zurückgibt: `countItems(['Apfel', 'Birne', 'Apfel'])` ergibt `{'Apfel': 2, 'Birne': 1}`. Ohne `Object.groupBy`.
+      starter: |
+        function countItems(items) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Object.groupBy, Map.groupBy]
+        cases:
+          - call: "countItems(['Apfel', 'Birne', 'Apfel'])"
+            expect: "{'Apfel': 2, 'Birne': 1}"
+          - call: "countItems([])"
+            expect: "{}"
+            say: "Eine leere Liste gibt ein leeres Ergebnis."
+          - call: "countItems(['a', 'a', 'a'])"
+            expect: "{'a': 3}"
+            say: "Kommt ein Element wieder, zählst du weiter."
+          - call: "countItems([3, 1, 3, 3])"
+            expect: "{3: 3, 1: 1}"
+            say: "Auch Zahlen lassen sich zählen."
+      feedback:
+        - when: { same_as: "function countItems(items) {\n  const counts = {};\n  for (const item of items) {\n    counts[item] = 1;\n  }\n  return counts;\n}\n" }
+          say: "Kommt ein Element ein zweites Mal, fängt dein Code wieder bei 1 an. Zähl weiter, wo du warst."
+      hint:
+        - "Fang mit einem leeren Objekt an, `{}`. Für jedes Element erhöhst du seinen Zähler um 1."
+        - "Beim ersten Mal hat das Element noch keinen Zähler: `counts[item]` ist dann `undefined`, und `counts[item] || 0` ist 0."
+      solution: |
+        ```javascript
+        function countItems(items) {
+          const counts = {};
+          for (const item of items) {
+            counts[item] = (counts[item] || 0) + 1;
+          }
+          return counts;
+        }
+        ```
+  - id: total-price
+    title: "Was kostet der Einkauf?"
+    level: 1
+    prompt: |
+      Im Schulkiosk hat alles seinen Preis, in Cent: `{'Brötchen' => 50, 'Brezel' => 80, 'Saft' => 150}`. Schreib eine Funktion `total_price(prices, cart)`, die zusammenrechnet, was die Liste `cart` kostet: `total_price(prices, ['Brezel', 'Saft', 'Brezel'])` ergibt `310`.
+    starter: |
+      def total_price(prices, cart)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "total_price({'Brötchen' => 50, 'Brezel' => 80, 'Saft' => 150}, ['Brezel', 'Saft', 'Brezel'])"
+          expect: "310"
+        - call: "total_price({'Brötchen' => 50, 'Brezel' => 80, 'Saft' => 150}, [])"
+          expect: "0"
+          say: "Ein leerer Einkauf kostet nichts."
+        - call: "total_price({'Brötchen' => 50, 'Brezel' => 80, 'Saft' => 150}, ['Saft'])"
+          expect: "150"
+        - call: "total_price({'Brötchen' => 50, 'Brezel' => 80, 'Saft' => 150}, ['Brötchen', 'Brötchen', 'Brötchen', 'Brötchen'])"
+          expect: "200"
+          say: "Was mehrmals im Einkauf steht, zählt mehrmals."
+    feedback:
+      - when: { same_as: "def total_price(prices, cart)\n  total = 0\n  prices.each do |item, price|\n    total += price if cart.include?(item)\n  end\n  total\nend\n" }
+        say: "Du gehst die Preisliste durch und zählst jedes Ding einmal. Geh den Einkauf durch: Was zweimal darin steht, kostet zweimal."
+    hint: "Geh den Einkauf durch, nicht die Preisliste. `prices['Saft']` ist der Preis eines Safts."
+    solution: |
+      ```ruby
+      def total_price(prices, cart)
+        total = 0
+        cart.each do |item|
+          total += prices[item]
+        end
+        total
+      end
+      ```
+    python:
+      prompt: |
+        Im Schulkiosk hat alles seinen Preis, in Cent: `{'Brötchen': 50, 'Brezel': 80, 'Saft': 150}`. Schreib eine Funktion `total_price(prices, cart)`, die zusammenrechnet, was die Liste `cart` kostet: `total_price(prices, ['Brezel', 'Saft', 'Brezel'])` ergibt `310`.
+      starter: |
+        def total_price(prices, cart):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "total_price({'Brötchen': 50, 'Brezel': 80, 'Saft': 150}, ['Brezel', 'Saft', 'Brezel'])"
+            expect: "310"
+          - call: "total_price({'Brötchen': 50, 'Brezel': 80, 'Saft': 150}, [])"
+            expect: "0"
+            say: "Ein leerer Einkauf kostet nichts."
+          - call: "total_price({'Brötchen': 50, 'Brezel': 80, 'Saft': 150}, ['Saft'])"
+            expect: "150"
+          - call: "total_price({'Brötchen': 50, 'Brezel': 80, 'Saft': 150}, ['Brötchen', 'Brötchen', 'Brötchen', 'Brötchen'])"
+            expect: "200"
+            say: "Was mehrmals im Einkauf steht, zählt mehrmals."
+      feedback:
+        - when: { same_as: "def total_price(prices, cart):\n    total = 0\n    for item, price in prices.items():\n        if item in cart:\n            total += price\n    return total\n" }
+          say: "Du gehst die Preisliste durch und zählst jedes Ding einmal. Geh den Einkauf durch: Was zweimal darin steht, kostet zweimal."
+      hint: "Geh den Einkauf durch, nicht die Preisliste. `prices['Saft']` ist der Preis eines Safts."
+      solution: |
+        ```python
+        def total_price(prices, cart):
+            total = 0
+            for item in cart:
+                total += prices[item]
+            return total
+        ```
+    javascript:
+      prompt: |
+        Im Schulkiosk hat alles seinen Preis, in Cent: `{'Brötchen': 50, 'Brezel': 80, 'Saft': 150}`. Schreib eine Funktion `totalPrice(prices, cart)`, die zusammenrechnet, was die Liste `cart` kostet: `totalPrice(prices, ['Brezel', 'Saft', 'Brezel'])` ergibt `310`.
+      starter: |
+        function totalPrice(prices, cart) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "totalPrice({'Brötchen': 50, 'Brezel': 80, 'Saft': 150}, ['Brezel', 'Saft', 'Brezel'])"
+            expect: "310"
+          - call: "totalPrice({'Brötchen': 50, 'Brezel': 80, 'Saft': 150}, [])"
+            expect: "0"
+            say: "Ein leerer Einkauf kostet nichts."
+          - call: "totalPrice({'Brötchen': 50, 'Brezel': 80, 'Saft': 150}, ['Saft'])"
+            expect: "150"
+          - call: "totalPrice({'Brötchen': 50, 'Brezel': 80, 'Saft': 150}, ['Brötchen', 'Brötchen', 'Brötchen', 'Brötchen'])"
+            expect: "200"
+            say: "Was mehrmals im Einkauf steht, zählt mehrmals."
+      feedback:
+        - when: { same_as: "function totalPrice(prices, cart) {\n  let total = 0;\n  for (const item in prices) {\n    if (cart.includes(item)) {\n      total += prices[item];\n    }\n  }\n  return total;\n}\n" }
+          say: "Du gehst die Preisliste durch und zählst jedes Ding einmal. Geh den Einkauf durch: Was zweimal darin steht, kostet zweimal."
+      hint: "Geh den Einkauf durch, nicht die Preisliste. `prices['Saft']` ist der Preis eines Safts."
+      solution: |
+        ```javascript
+        function totalPrice(prices, cart) {
+          let total = 0;
+          for (const item of cart) {
+            total += prices[item];
+          }
+          return total;
+        }
+        ```
+  - id: keys-with-value
+    title: "Wer hat so viele Punkte?"
+    level: 1
+    prompt: |
+      `scores` ordnet jedem Namen seine Punkte zu. Schreib eine Funktion `keys_with_value(scores, value)`, die die Namen mit genau `value` Punkten als Liste zurückgibt, in der Reihenfolge, in der sie in `scores` stehen: `keys_with_value({'Ada' => 7, 'Alan' => 5, 'Grace' => 7}, 7)` ergibt `['Ada', 'Grace']`.
+    starter: |
+      def keys_with_value(scores, value)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "keys_with_value({'Ada' => 7, 'Alan' => 5, 'Grace' => 7}, 7)"
+          expect: "['Ada', 'Grace']"
+        - call: "keys_with_value({'Ada' => 7, 'Alan' => 5, 'Grace' => 7}, 3)"
+          expect: "[]"
+          say: "Hat niemand so viele Punkte, ist die Liste leer."
+        - call: "keys_with_value({}, 1)"
+          expect: "[]"
+        - call: "keys_with_value({'Linus' => 0, 'Margaret' => 0}, 0)"
+          expect: "['Linus', 'Margaret']"
+    hint: "`scores.each do |name, points| … end` geht die Paare der Reihe nach durch, Schlüssel und Wert."
+    solution: |
+      ```ruby
+      def keys_with_value(scores, value)
+        names = []
+        scores.each do |name, points|
+          names << name if points == value
+        end
+        names
+      end
+      ```
+    python:
+      prompt: |
+        `scores` ordnet jedem Namen seine Punkte zu. Schreib eine Funktion `keys_with_value(scores, value)`, die die Namen mit genau `value` Punkten als Liste zurückgibt, in der Reihenfolge, in der sie in `scores` stehen: `keys_with_value({'Ada': 7, 'Alan': 5, 'Grace': 7}, 7)` ergibt `['Ada', 'Grace']`.
+      starter: |
+        def keys_with_value(scores, value):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "keys_with_value({'Ada': 7, 'Alan': 5, 'Grace': 7}, 7)"
+            expect: "['Ada', 'Grace']"
+          - call: "keys_with_value({'Ada': 7, 'Alan': 5, 'Grace': 7}, 3)"
+            expect: "[]"
+            say: "Hat niemand so viele Punkte, ist die Liste leer."
+          - call: "keys_with_value({}, 1)"
+            expect: "[]"
+          - call: "keys_with_value({'Linus': 0, 'Margaret': 0}, 0)"
+            expect: "['Linus', 'Margaret']"
+      hint: "`for name, points in scores.items():` geht die Paare der Reihe nach durch, Schlüssel und Wert."
+      solution: |
+        ```python
+        def keys_with_value(scores, value):
+            names = []
+            for name, points in scores.items():
+                if points == value:
+                    names.append(name)
+            return names
+        ```
+    javascript:
+      prompt: |
+        `scores` ordnet jedem Namen seine Punkte zu. Schreib eine Funktion `keysWithValue(scores, value)`, die die Namen mit genau `value` Punkten als Liste zurückgibt, in der Reihenfolge, in der sie in `scores` stehen: `keysWithValue({'Ada': 7, 'Alan': 5, 'Grace': 7}, 7)` ergibt `['Ada', 'Grace']`.
+      starter: |
+        function keysWithValue(scores, value) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "keysWithValue({'Ada': 7, 'Alan': 5, 'Grace': 7}, 7)"
+            expect: "['Ada', 'Grace']"
+          - call: "keysWithValue({'Ada': 7, 'Alan': 5, 'Grace': 7}, 3)"
+            expect: "[]"
+            say: "Hat niemand so viele Punkte, ist die Liste leer."
+          - call: "keysWithValue({}, 1)"
+            expect: "[]"
+          - call: "keysWithValue({'Linus': 0, 'Margaret': 0}, 0)"
+            expect: "['Linus', 'Margaret']"
+      hint: "`for (const name in scores) { … }` geht die Schlüssel der Reihe nach durch; `scores[name]` ist der Wert."
+      solution: |
+        ```javascript
+        function keysWithValue(scores, value) {
+          const names = [];
+          for (const name in scores) {
+            if (scores[name] === value) {
+              names.push(name);
+            }
+          }
+          return names;
+        }
+        ```
+  - id: letter-count
+    title: "Wie oft jeder Buchstabe?"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `letter_count(text)`, die zählt, wie oft jeder Buchstabe von `a` bis `z` im Text vorkommt; groß und klein zählen gemeinsam, alles andere zählt nicht: `letter_count('Anna!')` ergibt `{'a' => 2, 'n' => 2}`.
+    starter: |
+      def letter_count(text)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#tally, String#count]
+      cases:
+        - call: "letter_count('Anna!')"
+          expect: "{'a' => 2, 'n' => 2}"
+          say: "Groß und klein zählen gemeinsam."
+        - call: "letter_count('')"
+          expect: "{}"
+        - call: "letter_count('Hallo Welt')"
+          expect: "{'h' => 1, 'a' => 1, 'l' => 3, 'o' => 1, 'w' => 1, 'e' => 1, 't' => 1}"
+          say: "Ein Leerzeichen ist kein Buchstabe."
+        - call: "letter_count('123')"
+          expect: "{}"
+        - call: "letter_count('Zz')"
+          expect: "{'z' => 2}"
+    feedback:
+      - when: { same_as: "def letter_count(text)\n  counts = {}\n  text.each_char do |char|\n    next unless (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z')\n    counts[char] = counts.fetch(char, 0) + 1\n  end\n  counts\nend\n" }
+        say: "`'A'` und `'a'` sind bei dir zwei Schlüssel. Mach den Text vorher klein."
+    hint: "Wie die Strichliste, nur über die Buchstaben des Textes. Welche Zeichen lässt du aus?"
+    solution: |
+      ```ruby
+      def letter_count(text)
+        counts = {}
+        text.downcase.each_char do |char|
+          next unless char >= 'a' && char <= 'z'
+          counts[char] = counts.fetch(char, 0) + 1
+        end
+        counts
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `letter_count(text)`, die zählt, wie oft jeder Buchstabe von `a` bis `z` im Text vorkommt; groß und klein zählen gemeinsam, alles andere zählt nicht: `letter_count('Anna!')` ergibt `{'a': 2, 'n': 2}`.
+      starter: |
+        def letter_count(text):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [str.count]
+        cases:
+          - call: "letter_count('Anna!')"
+            expect: "{'a': 2, 'n': 2}"
+            say: "Groß und klein zählen gemeinsam."
+          - call: "letter_count('')"
+            expect: "{}"
+          - call: "letter_count('Hallo Welt')"
+            expect: "{'h': 1, 'a': 1, 'l': 3, 'o': 1, 'w': 1, 'e': 1, 't': 1}"
+            say: "Ein Leerzeichen ist kein Buchstabe."
+          - call: "letter_count('123')"
+            expect: "{}"
+          - call: "letter_count('Zz')"
+            expect: "{'z': 2}"
+      feedback:
+        - when: { same_as: "def letter_count(text):\n    counts = {}\n    for char in text:\n        if char.isalpha():\n            counts[char] = counts.get(char, 0) + 1\n    return counts\n" }
+          say: "`'A'` und `'a'` sind bei dir zwei Schlüssel. Mach den Text vorher klein."
+      hint: "Wie die Strichliste, nur über die Buchstaben des Textes. Welche Zeichen lässt du aus?"
+      solution: |
+        ```python
+        def letter_count(text):
+            counts = {}
+            for char in text.lower():
+                if 'a' <= char <= 'z':
+                    counts[char] = counts.get(char, 0) + 1
+            return counts
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `letterCount(text)`, die zählt, wie oft jeder Buchstabe von `a` bis `z` im Text vorkommt; groß und klein zählen gemeinsam, alles andere zählt nicht: `letterCount('Anna!')` ergibt `{'a': 2, 'n': 2}`.
+      starter: |
+        function letterCount(text) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "letterCount('Anna!')"
+            expect: "{'a': 2, 'n': 2}"
+            say: "Groß und klein zählen gemeinsam."
+          - call: "letterCount('')"
+            expect: "{}"
+          - call: "letterCount('Hallo Welt')"
+            expect: "{'h': 1, 'a': 1, 'l': 3, 'o': 1, 'w': 1, 'e': 1, 't': 1}"
+            say: "Ein Leerzeichen ist kein Buchstabe."
+          - call: "letterCount('123')"
+            expect: "{}"
+          - call: "letterCount('Zz')"
+            expect: "{'z': 2}"
+      feedback:
+        - when: { same_as: "function letterCount(text) {\n  const counts = {};\n  for (const char of text) {\n    if ((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z')) {\n      counts[char] = (counts[char] || 0) + 1;\n    }\n  }\n  return counts;\n}\n" }
+          say: "`'A'` und `'a'` sind bei dir zwei Schlüssel. Mach den Text vorher klein."
+      hint: "Wie die Strichliste, nur über die Buchstaben des Textes. Welche Zeichen lässt du aus?"
+      solution: |
+        ```javascript
+        function letterCount(text) {
+          const counts = {};
+          for (const char of text.toLowerCase()) {
+            if (char >= 'a' && char <= 'z') {
+              counts[char] = (counts[char] || 0) + 1;
+            }
+          }
+          return counts;
+        }
+        ```
+  - id: most-frequent
+    title: "Das häufigste Wort"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `most_frequent(words)`, die das Wort zurückgibt, das in der Liste am häufigsten vorkommt: `most_frequent(['ja', 'nein', 'ja'])` ergibt `'ja'`. Kommen mehrere gleich oft vor, gewinnt das, das zuerst in der Liste steht. Die Liste ist nie leer.
+    starter: |
+      def most_frequent(words)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#tally]
+      cases:
+        - call: "most_frequent(['ja', 'nein', 'ja'])"
+          expect: "'ja'"
+        - call: "most_frequent(['eins'])"
+          expect: "'eins'"
+        - call: "most_frequent(['a', 'b', 'a', 'b'])"
+          expect: "'a'"
+          say: "Gleich oft: Es gewinnt das Wort, das zuerst in der Liste steht."
+        - call: "most_frequent(['x', 'y', 'y', 'z'])"
+          expect: "'y'"
+        - call: "most_frequent(['rot', 'grün', 'blau', 'grün', 'rot', 'grün'])"
+          expect: "'grün'"
+    feedback:
+      - when: { same_as: "def most_frequent(words)\n  counts = {}\n  words.each do |word|\n    counts[word] = counts.fetch(word, 0) + 1\n  end\n  best = words[0]\n  words.each do |word|\n    best = word if counts[word] >= counts[best]\n  end\n  best\nend\n" }
+        say: "Bei gleich vielen gewinnt das erste Wort. Mit `>=` nimmt dein Code das letzte; nur ein häufigeres soll das bisher beste ersetzen."
+    hint:
+      - "Zwei Schritte: Zähl zuerst wie bei der Strichliste. Dann such das Wort mit dem größten Zähler, wie bei der größten Zahl einer Liste."
+      - "Geh beim Suchen die Wörter der Liste der Reihe nach durch, dann gewinnt bei gleich vielen das erste."
+    solution: |
+      ```ruby
+      def most_frequent(words)
+        counts = {}
+        words.each do |word|
+          counts[word] = counts.fetch(word, 0) + 1
+        end
+        best = words[0]
+        words.each do |word|
+          best = word if counts[word] > counts[best]
+        end
+        best
+      end
+      ```
+    python:
+      starter: |
+        def most_frequent(words):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "most_frequent(['ja', 'nein', 'ja'])"
+            expect: "'ja'"
+          - call: "most_frequent(['eins'])"
+            expect: "'eins'"
+          - call: "most_frequent(['a', 'b', 'a', 'b'])"
+            expect: "'a'"
+            say: "Gleich oft: Es gewinnt das Wort, das zuerst in der Liste steht."
+          - call: "most_frequent(['x', 'y', 'y', 'z'])"
+            expect: "'y'"
+          - call: "most_frequent(['rot', 'grün', 'blau', 'grün', 'rot', 'grün'])"
+            expect: "'grün'"
+      feedback:
+        - when: { same_as: "def most_frequent(words):\n    counts = {}\n    for word in words:\n        counts[word] = counts.get(word, 0) + 1\n    best = words[0]\n    for word in words:\n        if counts[word] >= counts[best]:\n            best = word\n    return best\n" }
+          say: "Bei gleich vielen gewinnt das erste Wort. Mit `>=` nimmt dein Code das letzte; nur ein häufigeres soll das bisher beste ersetzen."
+      hint:
+        - "Zwei Schritte: Zähl zuerst wie bei der Strichliste. Dann such das Wort mit dem größten Zähler, wie bei der größten Zahl einer Liste."
+        - "Geh beim Suchen die Wörter der Liste der Reihe nach durch, dann gewinnt bei gleich vielen das erste."
+      solution: |
+        ```python
+        def most_frequent(words):
+            counts = {}
+            for word in words:
+                counts[word] = counts.get(word, 0) + 1
+            best = words[0]
+            for word in words:
+                if counts[word] > counts[best]:
+                    best = word
+            return best
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `mostFrequent(words)`, die das Wort zurückgibt, das in der Liste am häufigsten vorkommt: `mostFrequent(['ja', 'nein', 'ja'])` ergibt `'ja'`. Kommen mehrere gleich oft vor, gewinnt das, das zuerst in der Liste steht. Die Liste ist nie leer.
+      starter: |
+        function mostFrequent(words) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "mostFrequent(['ja', 'nein', 'ja'])"
+            expect: "'ja'"
+          - call: "mostFrequent(['eins'])"
+            expect: "'eins'"
+          - call: "mostFrequent(['a', 'b', 'a', 'b'])"
+            expect: "'a'"
+            say: "Gleich oft: Es gewinnt das Wort, das zuerst in der Liste steht."
+          - call: "mostFrequent(['x', 'y', 'y', 'z'])"
+            expect: "'y'"
+          - call: "mostFrequent(['rot', 'grün', 'blau', 'grün', 'rot', 'grün'])"
+            expect: "'grün'"
+      feedback:
+        - when: { same_as: "function mostFrequent(words) {\n  const counts = {};\n  for (const word of words) {\n    counts[word] = (counts[word] || 0) + 1;\n  }\n  let best = words[0];\n  for (const word of words) {\n    if (counts[word] >= counts[best]) {\n      best = word;\n    }\n  }\n  return best;\n}\n" }
+          say: "Bei gleich vielen gewinnt das erste Wort. Mit `>=` nimmt dein Code das letzte; nur ein häufigeres soll das bisher beste ersetzen."
+      hint:
+        - "Zwei Schritte: Zähl zuerst wie bei der Strichliste. Dann such das Wort mit dem größten Zähler, wie bei der größten Zahl einer Liste."
+        - "Geh beim Suchen die Wörter der Liste der Reihe nach durch, dann gewinnt bei gleich vielen das erste."
+      solution: |
+        ```javascript
+        function mostFrequent(words) {
+          const counts = {};
+          for (const word of words) {
+            counts[word] = (counts[word] || 0) + 1;
+          }
+          let best = words[0];
+          for (const word of words) {
+            if (counts[word] > counts[best]) {
+              best = word;
+            }
+          }
+          return best;
+        }
+        ```
+  - id: group-by-length
+    title: "Nach Länge sortiert"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `group_by_length(words)`, die die Wörter nach ihrer Länge in Gruppen ordnet: Der Schlüssel ist die Länge, der Wert die Liste der Wörter mit dieser Länge, in ihrer Reihenfolge. `group_by_length(['ich', 'du', 'wir'])` ergibt `{3 => ['ich', 'wir'], 2 => ['du']}`. Ohne `group_by`.
+    starter: |
+      def group_by_length(words)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#group_by, Array#partition]
+      cases:
+        - call: "group_by_length(['ich', 'du', 'wir'])"
+          expect: "{3 => ['ich', 'wir'], 2 => ['du']}"
+        - call: "group_by_length([])"
+          expect: "{}"
+        - call: "group_by_length(['a', 'bb', 'c', 'dd', 'eee'])"
+          expect: "{1 => ['a', 'c'], 2 => ['bb', 'dd'], 3 => ['eee']}"
+          say: "Die Wörter einer Gruppe bleiben in ihrer Reihenfolge."
+        - call: "group_by_length(['Haus'])"
+          expect: "{4 => ['Haus']}"
+    feedback:
+      - when: { same_as: "def group_by_length(words)\n  groups = {}\n  words.each do |word|\n    groups[word.length] = [word]\n  end\n  groups\nend\n" }
+        say: "Kommt ein zweites Wort derselben Länge, ersetzt es bei dir die ganze Gruppe. Leg die Liste nur beim ersten Mal an und häng danach an."
+    hint:
+      - "Die Werte sind Listen. Beim ersten Wort einer Länge gibt es seine Liste noch nicht: `groups[length] ||= []` legt sie an, wenn sie fehlt."
+      - "Danach hängst du das Wort an: `groups[length] << word`."
+    solution: |
+      ```ruby
+      def group_by_length(words)
+        groups = {}
+        words.each do |word|
+          groups[word.length] ||= []
+          groups[word.length] << word
+        end
+        groups
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `group_by_length(words)`, die die Wörter nach ihrer Länge in Gruppen ordnet: Der Schlüssel ist die Länge, der Wert die Liste der Wörter mit dieser Länge, in ihrer Reihenfolge. `group_by_length(['ich', 'du', 'wir'])` ergibt `{3: ['ich', 'wir'], 2: ['du']}`. Ohne `itertools.groupby`.
+      starter: |
+        def group_by_length(words):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [itertools.groupby]
+        cases:
+          - call: "group_by_length(['ich', 'du', 'wir'])"
+            expect: "{3: ['ich', 'wir'], 2: ['du']}"
+          - call: "group_by_length([])"
+            expect: "{}"
+          - call: "group_by_length(['a', 'bb', 'c', 'dd', 'eee'])"
+            expect: "{1: ['a', 'c'], 2: ['bb', 'dd'], 3: ['eee']}"
+            say: "Die Wörter einer Gruppe bleiben in ihrer Reihenfolge."
+          - call: "group_by_length(['Haus'])"
+            expect: "{4: ['Haus']}"
+      feedback:
+        - when: { same_as: "def group_by_length(words):\n    groups = {}\n    for word in words:\n        groups[len(word)] = [word]\n    return groups\n" }
+          say: "Kommt ein zweites Wort derselben Länge, ersetzt es bei dir die ganze Gruppe. Leg die Liste nur beim ersten Mal an und häng danach an."
+      hint:
+        - "Die Werte sind Listen. Beim ersten Wort einer Länge gibt es seine Liste noch nicht: Leg sie an, wenn die Länge noch nicht in `groups` steht."
+        - "Danach hängst du das Wort an: `groups[length].append(word)`."
+      solution: |
+        ```python
+        def group_by_length(words):
+            groups = {}
+            for word in words:
+                if len(word) not in groups:
+                    groups[len(word)] = []
+                groups[len(word)].append(word)
+            return groups
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `groupByLength(words)`, die die Wörter nach ihrer Länge in Gruppen ordnet: Der Schlüssel ist die Länge, der Wert die Liste der Wörter mit dieser Länge, in ihrer Reihenfolge. `groupByLength(['ich', 'du', 'wir'])` ergibt `{3: ['ich', 'wir'], 2: ['du']}`. Ohne `Object.groupBy`.
+      starter: |
+        function groupByLength(words) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Object.groupBy, Map.groupBy]
+        cases:
+          - call: "groupByLength(['ich', 'du', 'wir'])"
+            expect: "{3: ['ich', 'wir'], 2: ['du']}"
+          - call: "groupByLength([])"
+            expect: "{}"
+          - call: "groupByLength(['a', 'bb', 'c', 'dd', 'eee'])"
+            expect: "{1: ['a', 'c'], 2: ['bb', 'dd'], 3: ['eee']}"
+            say: "Die Wörter einer Gruppe bleiben in ihrer Reihenfolge."
+          - call: "groupByLength(['Haus'])"
+            expect: "{4: ['Haus']}"
+      feedback:
+        - when: { same_as: "function groupByLength(words) {\n  const groups = {};\n  for (const word of words) {\n    groups[word.length] = [word];\n  }\n  return groups;\n}\n" }
+          say: "Kommt ein zweites Wort derselben Länge, ersetzt es bei dir die ganze Gruppe. Leg die Liste nur beim ersten Mal an und häng danach an."
+      hint:
+        - "Die Werte sind Listen. Beim ersten Wort einer Länge gibt es seine Liste noch nicht: Leg sie an, wenn die Länge noch nicht in `groups` steht."
+        - "Danach hängst du das Wort an: `groups[length].push(word)`."
+      solution: |
+        ```javascript
+        function groupByLength(words) {
+          const groups = {};
+          for (const word of words) {
+            if (!(word.length in groups)) {
+              groups[word.length] = [];
+            }
+            groups[word.length].push(word);
+          }
+          return groups;
+        }
+        ```
+  - id: merge-counts
+    title: "Zwei Strichlisten zusammen"
+    level: 2
+    prompt: |
+      Zwei Klassen haben gezählt, welches Obst sie mögen. Schreib eine Funktion `merge_counts(a, b)`, die beide Zählungen zu einer zusammenrechnet: `merge_counts({'Apfel' => 3, 'Birne' => 1}, {'Apfel' => 2, 'Kiwi' => 4})` ergibt `{'Apfel' => 5, 'Birne' => 1, 'Kiwi' => 4}`. Die beiden Zählungen bleiben, wie sie sind.
+    starter: |
+      def merge_counts(a, b)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "merge_counts({'Apfel' => 3, 'Birne' => 1}, {'Apfel' => 2, 'Kiwi' => 4})"
+          expect: "{'Apfel' => 5, 'Birne' => 1, 'Kiwi' => 4}"
+          say: "Steht ein Schlüssel in beiden, zählen beide zusammen."
+        - call: "merge_counts({}, {'Kiwi' => 1})"
+          expect: "{'Kiwi' => 1}"
+        - call: "merge_counts({'Kiwi' => 1}, {})"
+          expect: "{'Kiwi' => 1}"
+        - call: "merge_counts({'a' => 1}, {'a' => 1})"
+          expect: "{'a' => 2}"
+    feedback:
+      - when: { same_as: "def merge_counts(a, b)\n  a.merge(b)\nend\n" }
+        say: "`merge` nimmt bei einem Schlüssel, der in beiden steht, den Wert aus `b`, und der aus `a` ist weg. Zähl die beiden zusammen."
+    hint:
+      - "Fang mit einer Kopie von `a` an, `a.dup`, und geh `b` durch."
+      - "Steht der Schlüssel aus `b` schon darin? `result.fetch(key, 0)` ist sein Zähler oder 0."
+    solution: |
+      ```ruby
+      def merge_counts(a, b)
+        result = a.dup
+        b.each do |key, count|
+          result[key] = result.fetch(key, 0) + count
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        Zwei Klassen haben gezählt, welches Obst sie mögen. Schreib eine Funktion `merge_counts(a, b)`, die beide Zählungen zu einer zusammenrechnet: `merge_counts({'Apfel': 3, 'Birne': 1}, {'Apfel': 2, 'Kiwi': 4})` ergibt `{'Apfel': 5, 'Birne': 1, 'Kiwi': 4}`. Die beiden Zählungen bleiben, wie sie sind.
+      starter: |
+        def merge_counts(a, b):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "merge_counts({'Apfel': 3, 'Birne': 1}, {'Apfel': 2, 'Kiwi': 4})"
+            expect: "{'Apfel': 5, 'Birne': 1, 'Kiwi': 4}"
+            say: "Steht ein Schlüssel in beiden, zählen beide zusammen."
+          - call: "merge_counts({}, {'Kiwi': 1})"
+            expect: "{'Kiwi': 1}"
+          - call: "merge_counts({'Kiwi': 1}, {})"
+            expect: "{'Kiwi': 1}"
+          - call: "merge_counts({'a': 1}, {'a': 1})"
+            expect: "{'a': 2}"
+      feedback:
+        - when: { same_as: "def merge_counts(a, b):\n    return {**a, **b}\n" }
+          say: "Bei einem Schlüssel, der in beiden steht, gewinnt so der Wert aus `b`, und der aus `a` ist weg. Zähl die beiden zusammen."
+      hint:
+        - "Fang mit einer Kopie von `a` an, `dict(a)`, und geh `b` durch."
+        - "Steht der Schlüssel aus `b` schon darin? `result.get(key, 0)` ist sein Zähler oder 0."
+      solution: |
+        ```python
+        def merge_counts(a, b):
+            result = dict(a)
+            for key, count in b.items():
+                result[key] = result.get(key, 0) + count
+            return result
+        ```
+    javascript:
+      prompt: |
+        Zwei Klassen haben gezählt, welches Obst sie mögen. Schreib eine Funktion `mergeCounts(a, b)`, die beide Zählungen zu einer zusammenrechnet: `mergeCounts({'Apfel': 3, 'Birne': 1}, {'Apfel': 2, 'Kiwi': 4})` ergibt `{'Apfel': 5, 'Birne': 1, 'Kiwi': 4}`. Die beiden Zählungen bleiben, wie sie sind.
+      starter: |
+        function mergeCounts(a, b) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "mergeCounts({'Apfel': 3, 'Birne': 1}, {'Apfel': 2, 'Kiwi': 4})"
+            expect: "{'Apfel': 5, 'Birne': 1, 'Kiwi': 4}"
+            say: "Steht ein Schlüssel in beiden, zählen beide zusammen."
+          - call: "mergeCounts({}, {'Kiwi': 1})"
+            expect: "{'Kiwi': 1}"
+          - call: "mergeCounts({'Kiwi': 1}, {})"
+            expect: "{'Kiwi': 1}"
+          - call: "mergeCounts({'a': 1}, {'a': 1})"
+            expect: "{'a': 2}"
+      feedback:
+        - when: { same_as: "function mergeCounts(a, b) {\n  return { ...a, ...b };\n}\n" }
+          say: "Bei einem Schlüssel, der in beiden steht, gewinnt so der Wert aus `b`, und der aus `a` ist weg. Zähl die beiden zusammen."
+      hint:
+        - "Fang mit einer Kopie von `a` an, `{ ...a }`, und geh `b` durch."
+        - "Steht der Schlüssel aus `b` schon darin? `result[key] || 0` ist sein Zähler oder 0."
+      solution: |
+        ```javascript
+        function mergeCounts(a, b) {
+          const result = { ...a };
+          for (const key in b) {
+            result[key] = (result[key] || 0) + b[key];
+          }
+          return result;
+        }
+        ```
+  - id: invert
+    title: "Umgekehrt nachschlagen"
+    level: 3
+    prompt: |
+      `colors` ordnet jedem Obst seine Farbe zu. Schreib eine Funktion `invert(colors)`, die umgekehrt jeder Farbe die Liste ihrer Obstsorten zuordnet, in ihrer Reihenfolge: `invert({'Kiwi' => 'grün', 'Banane' => 'gelb', 'Apfel' => 'grün'})` ergibt `{'grün' => ['Kiwi', 'Apfel'], 'gelb' => ['Banane']}`. Ohne `invert` und `group_by`.
+    starter: |
+      def invert(colors)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Hash#invert, Hash#group_by, Array#group_by]
+      cases:
+        - call: "invert({'Kiwi' => 'grün', 'Banane' => 'gelb', 'Apfel' => 'grün'})"
+          expect: "{'grün' => ['Kiwi', 'Apfel'], 'gelb' => ['Banane']}"
+          say: "Haben zwei Obstsorten dieselbe Farbe, stehen beide in ihrer Liste."
+        - call: "invert({})"
+          expect: "{}"
+        - call: "invert({'Kirsche' => 'rot'})"
+          expect: "{'rot' => ['Kirsche']}"
+        - call: "invert({'a' => 1, 'b' => 2, 'c' => 1, 'd' => 2})"
+          expect: "{1 => ['a', 'c'], 2 => ['b', 'd']}"
+    feedback:
+      - when: { same_as: "def invert(colors)\n  result = {}\n  colors.each do |fruit, color|\n    result[color] = [fruit]\n  end\n  result\nend\n" }
+        say: "Haben zwei Obstsorten dieselbe Farbe, bleibt bei dir nur die letzte. Häng an die Liste an, statt sie zu ersetzen."
+    hint: "Geh die Paare durch: Jetzt ist die Farbe der Schlüssel, und das Obst kommt in ihre Liste. Wie bei den Längen der Wörter."
+    solution: |
+      ```ruby
+      def invert(colors)
+        result = {}
+        colors.each do |fruit, color|
+          result[color] ||= []
+          result[color] << fruit
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        `colors` ordnet jedem Obst seine Farbe zu. Schreib eine Funktion `invert(colors)`, die umgekehrt jeder Farbe die Liste ihrer Obstsorten zuordnet, in ihrer Reihenfolge: `invert({'Kiwi': 'grün', 'Banane': 'gelb', 'Apfel': 'grün'})` ergibt `{'grün': ['Kiwi', 'Apfel'], 'gelb': ['Banane']}`. Ohne eine fertige Funktion fürs Gruppieren.
+      starter: |
+        def invert(colors):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [itertools.groupby]
+        cases:
+          - call: "invert({'Kiwi': 'grün', 'Banane': 'gelb', 'Apfel': 'grün'})"
+            expect: "{'grün': ['Kiwi', 'Apfel'], 'gelb': ['Banane']}"
+            say: "Haben zwei Obstsorten dieselbe Farbe, stehen beide in ihrer Liste."
+          - call: "invert({})"
+            expect: "{}"
+          - call: "invert({'Kirsche': 'rot'})"
+            expect: "{'rot': ['Kirsche']}"
+          - call: "invert({'a': 1, 'b': 2, 'c': 1, 'd': 2})"
+            expect: "{1: ['a', 'c'], 2: ['b', 'd']}"
+      feedback:
+        - when: { same_as: "def invert(colors):\n    result = {}\n    for fruit, color in colors.items():\n        result[color] = [fruit]\n    return result\n" }
+          say: "Haben zwei Obstsorten dieselbe Farbe, bleibt bei dir nur die letzte. Häng an die Liste an, statt sie zu ersetzen."
+      hint: "Geh die Paare durch: Jetzt ist die Farbe der Schlüssel, und das Obst kommt in ihre Liste. Wie bei den Längen der Wörter."
+      solution: |
+        ```python
+        def invert(colors):
+            result = {}
+            for fruit, color in colors.items():
+                if color not in result:
+                    result[color] = []
+                result[color].append(fruit)
+            return result
+        ```
+    javascript:
+      prompt: |
+        `colors` ordnet jedem Obst seine Farbe zu. Schreib eine Funktion `invert(colors)`, die umgekehrt jeder Farbe die Liste ihrer Obstsorten zuordnet, in ihrer Reihenfolge: `invert({'Kiwi': 'grün', 'Banane': 'gelb', 'Apfel': 'grün'})` ergibt `{'grün': ['Kiwi', 'Apfel'], 'gelb': ['Banane']}`. Ohne `Object.groupBy`.
+      starter: |
+        function invert(colors) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Object.groupBy, Map.groupBy]
+        cases:
+          - call: "invert({'Kiwi': 'grün', 'Banane': 'gelb', 'Apfel': 'grün'})"
+            expect: "{'grün': ['Kiwi', 'Apfel'], 'gelb': ['Banane']}"
+            say: "Haben zwei Obstsorten dieselbe Farbe, stehen beide in ihrer Liste."
+          - call: "invert({})"
+            expect: "{}"
+          - call: "invert({'Kirsche': 'rot'})"
+            expect: "{'rot': ['Kirsche']}"
+          - call: "invert({'a': 1, 'b': 2, 'c': 1, 'd': 2})"
+            expect: "{1: ['a', 'c'], 2: ['b', 'd']}"
+      feedback:
+        - when: { same_as: "function invert(colors) {\n  const result = {};\n  for (const fruit in colors) {\n    result[colors[fruit]] = [fruit];\n  }\n  return result;\n}\n" }
+          say: "Haben zwei Obstsorten dieselbe Farbe, bleibt bei dir nur die letzte. Häng an die Liste an, statt sie zu ersetzen."
+      hint: "Geh die Paare durch: Jetzt ist die Farbe der Schlüssel, und das Obst kommt in ihre Liste. Wie bei den Längen der Wörter."
+      solution: |
+        ```javascript
+        function invert(colors) {
+          const result = {};
+          for (const fruit in colors) {
+            const color = colors[fruit];
+            if (!(color in result)) {
+              result[color] = [];
+            }
+            result[color].push(fruit);
+          }
+          return result;
+        }
+        ```
+  - id: averages
+    title: "Der Durchschnitt je Fach"
+    level: 3
+    prompt: |
+      `grades` ist eine Liste von Noten, jede als Paar aus Fach und Note: `[['Mathe', 2], ['Kunst', 1], ['Mathe', 3]]`. Schreib eine Funktion `averages(grades)`, die für jedes Fach den Durchschnitt seiner Noten zurückgibt: Für diese Liste ergibt es `{'Mathe' => 2.5, 'Kunst' => 1.0}`.
+    starter: |
+      def averages(grades)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "averages([['Mathe', 2], ['Kunst', 1], ['Mathe', 3]])"
+          expect: "{'Mathe' => 2.5, 'Kunst' => 1.0}"
+        - call: "averages([])"
+          expect: "{}"
+        - call: "averages([['Musik', 1], ['Musik', 2]])"
+          expect: "{'Musik' => 1.5}"
+          say: "Der Durchschnitt von 1 und 2 ist 1.5, nicht 1."
+        - call: "averages([['Deutsch', 4], ['Sport', 1], ['Deutsch', 2], ['Deutsch', 3]])"
+          expect: "{'Deutsch' => 3.0, 'Sport' => 1.0}"
+    feedback:
+      - when: { same_as: "def averages(grades)\n  sums = {}\n  counts = {}\n  grades.each do |subject, grade|\n    sums[subject] = sums.fetch(subject, 0) + grade\n    counts[subject] = counts.fetch(subject, 0) + 1\n  end\n  result = {}\n  sums.each do |subject, sum|\n    result[subject] = sum / counts[subject]\n  end\n  result\nend\n" }
+        say: "In Ruby ist `3 / 2` gleich `1`: Zwei ganze Zahlen geteilt ergeben eine ganze. Mach eine davon zur Kommazahl, `sum.to_f`."
+    hint:
+      - "Für den Durchschnitt brauchst du je Fach zwei Zahlen: die Summe der Noten und wie viele es sind. Zwei Hashes, oder einer mit Paaren."
+      - "`grades.each do |subject, grade| … end` nimmt jedes Paar gleich auseinander. Am Ende teilst du je Fach die Summe durch die Anzahl."
+    solution: |
+      ```ruby
+      def averages(grades)
+        sums = {}
+        counts = {}
+        grades.each do |subject, grade|
+          sums[subject] = sums.fetch(subject, 0) + grade
+          counts[subject] = counts.fetch(subject, 0) + 1
+        end
+        result = {}
+        sums.each do |subject, sum|
+          result[subject] = sum.to_f / counts[subject]
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        `grades` ist eine Liste von Noten, jede als Paar aus Fach und Note: `[['Mathe', 2], ['Kunst', 1], ['Mathe', 3]]`. Schreib eine Funktion `averages(grades)`, die für jedes Fach den Durchschnitt seiner Noten zurückgibt: Für diese Liste ergibt es `{'Mathe': 2.5, 'Kunst': 1.0}`.
+      starter: |
+        def averages(grades):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "averages([['Mathe', 2], ['Kunst', 1], ['Mathe', 3]])"
+            expect: "{'Mathe': 2.5, 'Kunst': 1.0}"
+          - call: "averages([])"
+            expect: "{}"
+          - call: "averages([['Musik', 1], ['Musik', 2]])"
+            expect: "{'Musik': 1.5}"
+            say: "Der Durchschnitt von 1 und 2 ist 1.5, nicht 1."
+          - call: "averages([['Deutsch', 4], ['Sport', 1], ['Deutsch', 2], ['Deutsch', 3]])"
+            expect: "{'Deutsch': 3.0, 'Sport': 1.0}"
+      feedback:
+        - when: { same_as: "def averages(grades):\n    sums = {}\n    counts = {}\n    for subject, grade in grades:\n        sums[subject] = sums.get(subject, 0) + grade\n        counts[subject] = counts.get(subject, 0) + 1\n    result = {}\n    for subject in sums:\n        result[subject] = sums[subject] // counts[subject]\n    return result\n" }
+          say: "`//` teilt ganzzahlig: `3 // 2` ist `1`. Für den Durchschnitt teilst du mit `/`."
+      hint:
+        - "Für den Durchschnitt brauchst du je Fach zwei Zahlen: die Summe der Noten und wie viele es sind. Zwei Dictionaries, oder eines mit Paaren."
+        - "`for subject, grade in grades:` nimmt jedes Paar gleich auseinander. Am Ende teilst du je Fach die Summe durch die Anzahl."
+      solution: |
+        ```python
+        def averages(grades):
+            sums = {}
+            counts = {}
+            for subject, grade in grades:
+                sums[subject] = sums.get(subject, 0) + grade
+                counts[subject] = counts.get(subject, 0) + 1
+            result = {}
+            for subject in sums:
+                result[subject] = sums[subject] / counts[subject]
+            return result
+        ```
+    javascript:
+      prompt: |
+        `grades` ist eine Liste von Noten, jede als Paar aus Fach und Note: `[['Mathe', 2], ['Kunst', 1], ['Mathe', 3]]`. Schreib eine Funktion `averages(grades)`, die für jedes Fach den Durchschnitt seiner Noten zurückgibt: Für diese Liste ergibt es `{'Mathe': 2.5, 'Kunst': 1}`.
+      starter: |
+        function averages(grades) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "averages([['Mathe', 2], ['Kunst', 1], ['Mathe', 3]])"
+            expect: "{'Mathe': 2.5, 'Kunst': 1.0}"
+          - call: "averages([])"
+            expect: "{}"
+          - call: "averages([['Musik', 1], ['Musik', 2]])"
+            expect: "{'Musik': 1.5}"
+            say: "Der Durchschnitt von 1 und 2 ist 1.5, nicht 1."
+          - call: "averages([['Deutsch', 4], ['Sport', 1], ['Deutsch', 2], ['Deutsch', 3]])"
+            expect: "{'Deutsch': 3.0, 'Sport': 1.0}"
+      hint:
+        - "Für den Durchschnitt brauchst du je Fach zwei Zahlen: die Summe der Noten und wie viele es sind. Zwei Objekte, oder eines mit Paaren."
+        - "`for (const [subject, grade] of grades)` nimmt jedes Paar gleich auseinander. Am Ende teilst du je Fach die Summe durch die Anzahl."
+      solution: |
+        ```javascript
+        function averages(grades) {
+          const sums = {};
+          const counts = {};
+          for (const [subject, grade] of grades) {
+            sums[subject] = (sums[subject] || 0) + grade;
+            counts[subject] = (counts[subject] || 0) + 1;
+          }
+          const result = {};
+          for (const subject in sums) {
+            result[subject] = sums[subject] / counts[subject];
+          }
+          return result;
+        }
+        ```
+  - id: first-repeat
+    title: "Die erste Wiederholung"
+    level: 3
+    prompt: |
+      Schreib eine Funktion `first_repeat(numbers)`, die die erste Zahl zurückgibt, die zum zweiten Mal kommt: `first_repeat([2, 5, 5, 2])` ergibt `5`, denn die zweite 5 kommt vor der zweiten 2. Kommt keine Zahl zweimal, ist das Ergebnis `nil`. Die Prüfung gibt auch eine Liste mit 100 000 Zahlen: Geht es, ohne bei jeder Zahl die Liste von vorn durchzusehen?
+    starter: |
+      def first_repeat(numbers)
+      end
+    check:
+      type: function
+      language: ruby
+      timeout: 10
+      slow: "Bei 100 000 Zahlen ist dein Code zu langsam: Er sieht bei jeder Zahl alle vorher durch. Merk dir die Zahlen, die schon da waren, in einem Hash: Nachsehen geht dort sofort."
+      cases:
+        - call: "first_repeat([2, 5, 5, 2])"
+          expect: "5"
+          say: "Es zählt, welche Zahl zuerst zum zweiten Mal kommt, nicht welche zuerst da war."
+        - call: "first_repeat([1, 2, 3])"
+          expect: "nil"
+        - call: "first_repeat([])"
+          expect: "nil"
+        - call: "first_repeat([7, 7])"
+          expect: "7"
+        - call: "first_repeat((1..100000).to_a + [99999])"
+          expect: "99999"
+    hint:
+      - "Geh die Zahlen der Reihe nach durch und merk dir, welche schon da waren. Ist die Zahl schon dabei, hast du sie."
+      - "In einer Liste nachzusehen dauert bei 100 000 Zahlen lange. In einem Hash geht es sofort: `seen.key?(number)`."
+    solution: |
+      ```ruby
+      def first_repeat(numbers)
+        seen = {}
+        numbers.each do |number|
+          return number if seen.key?(number)
+          seen[number] = true
+        end
+        nil
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `first_repeat(numbers)`, die die erste Zahl zurückgibt, die zum zweiten Mal kommt: `first_repeat([2, 5, 5, 2])` ergibt `5`, denn die zweite 5 kommt vor der zweiten 2. Kommt keine Zahl zweimal, ist das Ergebnis `None`. Die Prüfung gibt auch eine Liste mit 100 000 Zahlen: Geht es, ohne bei jeder Zahl die Liste von vorn durchzusehen?
+      starter: |
+        def first_repeat(numbers):
+            pass
+      check:
+        type: function
+        language: python
+        timeout: 10
+        slow: "Bei 100 000 Zahlen ist dein Code zu langsam: Er sieht bei jeder Zahl alle vorher durch. Merk dir die Zahlen, die schon da waren, in einem Dictionary: Nachsehen geht dort sofort."
+        cases:
+          - call: "first_repeat([2, 5, 5, 2])"
+            expect: "5"
+            say: "Es zählt, welche Zahl zuerst zum zweiten Mal kommt, nicht welche zuerst da war."
+          - call: "first_repeat([1, 2, 3])"
+            expect: "None"
+          - call: "first_repeat([])"
+            expect: "None"
+          - call: "first_repeat([7, 7])"
+            expect: "7"
+          - call: "first_repeat(list(range(1, 100001)) + [99999])"
+            expect: "99999"
+      hint:
+        - "Geh die Zahlen der Reihe nach durch und merk dir, welche schon da waren. Ist die Zahl schon dabei, hast du sie."
+        - "In einer Liste nachzusehen dauert bei 100 000 Zahlen lange. In einem Dictionary geht es sofort: `number in seen`."
+      solution: |
+        ```python
+        def first_repeat(numbers):
+            seen = {}
+            for number in numbers:
+                if number in seen:
+                    return number
+                seen[number] = True
+            return None
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `firstRepeat(numbers)`, die die erste Zahl zurückgibt, die zum zweiten Mal kommt: `firstRepeat([2, 5, 5, 2])` ergibt `5`, denn die zweite 5 kommt vor der zweiten 2. Kommt keine Zahl zweimal, ist das Ergebnis `null`. Die Prüfung gibt auch eine Liste mit 100 000 Zahlen: Geht es, ohne bei jeder Zahl die Liste von vorn durchzusehen?
+      starter: |
+        function firstRepeat(numbers) {
+        }
+      check:
+        type: function
+        language: javascript
+        timeout: 10
+        slow: "Bei 100 000 Zahlen ist dein Code zu langsam: Er sieht bei jeder Zahl alle vorher durch. Merk dir die Zahlen, die schon da waren, in einem Objekt: Nachsehen geht dort sofort."
+        cases:
+          - call: "firstRepeat([2, 5, 5, 2])"
+            expect: "5"
+            say: "Es zählt, welche Zahl zuerst zum zweiten Mal kommt, nicht welche zuerst da war."
+          - call: "firstRepeat([1, 2, 3])"
+            expect: "null"
+          - call: "firstRepeat([])"
+            expect: "null"
+          - call: "firstRepeat([7, 7])"
+            expect: "7"
+          - call: "firstRepeat([...Array(100000).keys()].map((i) => i + 1).concat([99999]))"
+            expect: "99999"
+      hint:
+        - "Geh die Zahlen der Reihe nach durch und merk dir, welche schon da waren. Ist die Zahl schon dabei, hast du sie."
+        - "In einer Liste nachzusehen dauert bei 100 000 Zahlen lange. In einem Objekt geht es sofort: `number in seen`."
+      solution: |
+        ```javascript
+        function firstRepeat(numbers) {
+          const seen = {};
+          for (const number of numbers) {
+            if (number in seen) {
+              return number;
+            }
+            seen[number] = true;
+          }
+          return null;
+        }
+        ```
+  - id: lru-misses
+    title: "Ein kleiner Cache"
+    extra: true
+    prompt: |
+      Ein Cache hält die letzten Seiten bereit, die jemand aufgerufen hat, höchstens `capacity` viele. Wird eine Seite verlangt, die nicht darin ist, ist das ein Fehlschlag: Sie kommt hinein, und ist der Cache voll, fliegt die, die am längsten nicht mehr verlangt wurde (»least recently used«). Schreib `lru_misses(capacity, requests)`, die die Fehlschläge zählt: `lru_misses(2, ['a', 'b', 'a', 'c', 'b'])` ergibt `4`.
+    starter: |
+      def lru_misses(capacity, requests)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "lru_misses(2, ['a', 'b', 'a', 'c', 'b'])"
+          expect: "4"
+          say: "Bei `c` fliegt `b` hinaus, denn `a` wurde gerade erst verlangt."
+        - call: "lru_misses(1, ['a', 'a', 'a'])"
+          expect: "1"
+        - call: "lru_misses(3, [])"
+          expect: "0"
+        - call: "lru_misses(2, ['a', 'b', 'c', 'a', 'b', 'c'])"
+          expect: "6"
+        - call: "lru_misses(3, ['a', 'b', 'c', 'a', 'd', 'b', 'e', 'a'])"
+          expect: "7"
+    feedback:
+      - when: { same_as: "def lru_misses(capacity, requests)\n  cache = []\n  misses = 0\n  requests.each do |page|\n    next if cache.include?(page)\n    misses += 1\n    cache.shift if cache.length == capacity\n    cache << page\n  end\n  misses\nend\n" }
+        say: "Dein Cache wirft die Seite hinaus, die zuerst kam, auch wenn sie gerade wieder verlangt wurde. Eine verlangte Seite rückt nach hinten, zu den frischen."
+    hint:
+      - "Eine Liste reicht: vorn die Seite, die am längsten nicht verlangt wurde, hinten die frischeste. Wird eine Seite verlangt, kommt sie nach hinten."
+      - "`cache.delete(page)` nimmt sie heraus, `cache << page` hängt sie hinten an, `cache.shift` wirft die vorderste hinaus."
+    solution: |
+      ```ruby
+      def lru_misses(capacity, requests)
+        cache = []
+        misses = 0
+        requests.each do |page|
+          if cache.include?(page)
+            cache.delete(page)
+          else
+            misses += 1
+            cache.shift if cache.length == capacity
+          end
+          cache << page
+        end
+        misses
+      end
+      ```
+    python:
+      starter: |
+        def lru_misses(capacity, requests):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "lru_misses(2, ['a', 'b', 'a', 'c', 'b'])"
+            expect: "4"
+            say: "Bei `c` fliegt `b` hinaus, denn `a` wurde gerade erst verlangt."
+          - call: "lru_misses(1, ['a', 'a', 'a'])"
+            expect: "1"
+          - call: "lru_misses(3, [])"
+            expect: "0"
+          - call: "lru_misses(2, ['a', 'b', 'c', 'a', 'b', 'c'])"
+            expect: "6"
+          - call: "lru_misses(3, ['a', 'b', 'c', 'a', 'd', 'b', 'e', 'a'])"
+            expect: "7"
+      feedback:
+        - when: { same_as: "def lru_misses(capacity, requests):\n    cache = []\n    misses = 0\n    for page in requests:\n        if page in cache:\n            continue\n        misses += 1\n        if len(cache) == capacity:\n            cache.pop(0)\n        cache.append(page)\n    return misses\n" }
+          say: "Dein Cache wirft die Seite hinaus, die zuerst kam, auch wenn sie gerade wieder verlangt wurde. Eine verlangte Seite rückt nach hinten, zu den frischen."
+      hint:
+        - "Eine Liste reicht: vorn die Seite, die am längsten nicht verlangt wurde, hinten die frischeste. Wird eine Seite verlangt, kommt sie nach hinten."
+        - "`cache.remove(page)` nimmt sie heraus, `cache.append(page)` hängt sie hinten an, `cache.pop(0)` wirft die vorderste hinaus."
+      solution: |
+        ```python
+        def lru_misses(capacity, requests):
+            cache = []
+            misses = 0
+            for page in requests:
+                if page in cache:
+                    cache.remove(page)
+                else:
+                    misses += 1
+                    if len(cache) == capacity:
+                        cache.pop(0)
+                cache.append(page)
+            return misses
+        ```
+    javascript:
+      prompt: |
+        Ein Cache hält die letzten Seiten bereit, die jemand aufgerufen hat, höchstens `capacity` viele. Wird eine Seite verlangt, die nicht darin ist, ist das ein Fehlschlag: Sie kommt hinein, und ist der Cache voll, fliegt die, die am längsten nicht mehr verlangt wurde (»least recently used«). Schreib `lruMisses(capacity, requests)`, die die Fehlschläge zählt: `lruMisses(2, ['a', 'b', 'a', 'c', 'b'])` ergibt `4`.
+      starter: |
+        function lruMisses(capacity, requests) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "lruMisses(2, ['a', 'b', 'a', 'c', 'b'])"
+            expect: "4"
+            say: "Bei `c` fliegt `b` hinaus, denn `a` wurde gerade erst verlangt."
+          - call: "lruMisses(1, ['a', 'a', 'a'])"
+            expect: "1"
+          - call: "lruMisses(3, [])"
+            expect: "0"
+          - call: "lruMisses(2, ['a', 'b', 'c', 'a', 'b', 'c'])"
+            expect: "6"
+          - call: "lruMisses(3, ['a', 'b', 'c', 'a', 'd', 'b', 'e', 'a'])"
+            expect: "7"
+      feedback:
+        - when: { same_as: "function lruMisses(capacity, requests) {\n  const cache = [];\n  let misses = 0;\n  for (const page of requests) {\n    if (cache.includes(page)) {\n      continue;\n    }\n    misses++;\n    if (cache.length === capacity) {\n      cache.shift();\n    }\n    cache.push(page);\n  }\n  return misses;\n}\n" }
+          say: "Dein Cache wirft die Seite hinaus, die zuerst kam, auch wenn sie gerade wieder verlangt wurde. Eine verlangte Seite rückt nach hinten, zu den frischen."
+      hint:
+        - "Eine Liste reicht: vorn die Seite, die am längsten nicht verlangt wurde, hinten die frischeste. Wird eine Seite verlangt, kommt sie nach hinten."
+        - "`cache.splice(i, 1)` nimmt sie heraus, `cache.push(page)` hängt sie hinten an, `cache.shift()` wirft die vorderste hinaus."
+      solution: |
+        ```javascript
+        function lruMisses(capacity, requests) {
+          const cache = [];
+          let misses = 0;
+          for (const page of requests) {
+            const i = cache.indexOf(page);
+            if (i >= 0) {
+              cache.splice(i, 1);
+            } else {
+              misses++;
+              if (cache.length === capacity) {
+                cache.shift();
+              }
+            }
+            cache.push(page);
+          }
+          return misses;
+        }
+        ```
+  - id: anagram-groups
+    title: "Anagramme sammeln"
+    extra: true
+    prompt: |
+      Schreib eine Funktion `anagram_groups(words)`, die die Wörter in Gruppen von Anagrammen teilt, in der Reihenfolge, in der die erste jeder Gruppe vorkommt: `anagram_groups(['lampe', 'regen', 'palme', 'ampel', 'gerne'])` ergibt `[['lampe', 'palme', 'ampel'], ['regen', 'gerne']]`. Die Wörter sind klein geschrieben.
+    starter: |
+      def anagram_groups(words)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "anagram_groups(['lampe', 'regen', 'palme', 'ampel', 'gerne'])"
+          expect: "[['lampe', 'palme', 'ampel'], ['regen', 'gerne']]"
+        - call: "anagram_groups([])"
+          expect: "[]"
+        - call: "anagram_groups(['abc'])"
+          expect: "[['abc']]"
+        - call: "anagram_groups(['ab', 'ba', 'ab'])"
+          expect: "[['ab', 'ba', 'ab']]"
+          say: "Auch dasselbe Wort zweimal gehört in dieselbe Gruppe."
+        - call: "anagram_groups(['eis', 'see', 'sie'])"
+          expect: "[['eis', 'sie'], ['see']]"
+    hint:
+      - "Was haben alle Anagramme gemeinsam? Ihre sortierten Buchstaben: aus `'palme'` und `'ampel'` wird beide Male `'aelmp'`. Das ist ein guter Schlüssel."
+      - "Wie beim Gruppieren nach der Länge, nur mit diesem Schlüssel. `groups.values` sind am Ende die Listen."
+    solution: |
+      ```ruby
+      def anagram_groups(words)
+        groups = {}
+        words.each do |word|
+          key = word.chars.sort.join
+          groups[key] ||= []
+          groups[key] << word
+        end
+        groups.values
+      end
+      ```
+    python:
+      starter: |
+        def anagram_groups(words):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "anagram_groups(['lampe', 'regen', 'palme', 'ampel', 'gerne'])"
+            expect: "[['lampe', 'palme', 'ampel'], ['regen', 'gerne']]"
+          - call: "anagram_groups([])"
+            expect: "[]"
+          - call: "anagram_groups(['abc'])"
+            expect: "[['abc']]"
+          - call: "anagram_groups(['ab', 'ba', 'ab'])"
+            expect: "[['ab', 'ba', 'ab']]"
+            say: "Auch dasselbe Wort zweimal gehört in dieselbe Gruppe."
+          - call: "anagram_groups(['eis', 'see', 'sie'])"
+            expect: "[['eis', 'sie'], ['see']]"
+      hint:
+        - "Was haben alle Anagramme gemeinsam? Ihre sortierten Buchstaben: aus `'palme'` und `'ampel'` wird beide Male `'aelmp'`. Das ist ein guter Schlüssel."
+        - "Wie beim Gruppieren nach der Länge, nur mit diesem Schlüssel. `list(groups.values())` sind am Ende die Listen."
+      solution: |
+        ```python
+        def anagram_groups(words):
+            groups = {}
+            for word in words:
+                key = ''.join(sorted(word))
+                if key not in groups:
+                    groups[key] = []
+                groups[key].append(word)
+            return list(groups.values())
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `anagramGroups(words)`, die die Wörter in Gruppen von Anagrammen teilt, in der Reihenfolge, in der die erste jeder Gruppe vorkommt: `anagramGroups(['lampe', 'regen', 'palme', 'ampel', 'gerne'])` ergibt `[['lampe', 'palme', 'ampel'], ['regen', 'gerne']]`. Die Wörter sind klein geschrieben.
+      starter: |
+        function anagramGroups(words) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "anagramGroups(['lampe', 'regen', 'palme', 'ampel', 'gerne'])"
+            expect: "[['lampe', 'palme', 'ampel'], ['regen', 'gerne']]"
+          - call: "anagramGroups([])"
+            expect: "[]"
+          - call: "anagramGroups(['abc'])"
+            expect: "[['abc']]"
+          - call: "anagramGroups(['ab', 'ba', 'ab'])"
+            expect: "[['ab', 'ba', 'ab']]"
+            say: "Auch dasselbe Wort zweimal gehört in dieselbe Gruppe."
+          - call: "anagramGroups(['eis', 'see', 'sie'])"
+            expect: "[['eis', 'sie'], ['see']]"
+      hint:
+        - "Was haben alle Anagramme gemeinsam? Ihre sortierten Buchstaben: aus `'palme'` und `'ampel'` wird beide Male `'aelmp'`. Das ist ein guter Schlüssel."
+        - "Wie beim Gruppieren nach der Länge, nur mit diesem Schlüssel. Eine `Map` behält die Reihenfolge, in der die Schlüssel dazukommen; `[...groups.values()]` sind am Ende die Listen."
+      solution: |
+        ```javascript
+        function anagramGroups(words) {
+          const groups = new Map();
+          for (const word of words) {
+            const key = [...word].sort().join('');
+            if (!groups.has(key)) {
+              groups.set(key, []);
+            }
+            groups.get(key).push(word);
+          }
+          return [...groups.values()];
+        }
+        ```
