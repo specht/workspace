@@ -580,7 +580,7 @@ Im Zustand 0 springt sie in Zustand 1 und stellt mit `setTimeout` einen Wecker a
 
 Auch `handleKeyUp` bekommt die ganze Logik, und die schreibst du selbst.
 
-<div class='hint own'>
+<div class='hint own' data-check='keyup'>
 <strong>Jetzt bist du dran:</strong> Schreib <code>handleKeyUp</code> neu, so wie das Ablaufdiagramm es verlangt, nach dem Muster von <code>handleKeyDown</code>. Lässt du die Taste im Zustand 1 los, geht es zurück in Zustand 0, und der Wecker wird abgestellt: <code>clearTimeout(timeoutId)</code>. Im Zustand 2 beginnt die Messung: Zustand 3, die Startzeit kommt in <code>t0</code>, und <code>requestAnimationFrame(updateTimer)</code> ruft <code>updateTimer</code> zum ersten Mal auf. Probier es danach aus.
 </div>
 
@@ -632,6 +632,8 @@ So sieht `src/routes/+page.svelte` jetzt aus:
 
 _include_file(+page.svelte, svelte)
 <!-- /solution -->
+
+_task(keyup)
 
 <!-- tutorial-screenshot
 write-file: src/routes/+page.svelte <- file:+page.svelte
@@ -739,7 +741,7 @@ Der Button hat die ID `bu_reset` und die Bootstrap-Klasse `btn`. Solange `state`
 
 Die fehlt noch, und die schreibst du selbst.
 
-<div class='hint own'>
+<div class='hint own' data-check='reset-timer'>
 <strong>Jetzt bist du dran:</strong> Schreib die Funktion <code>resetTimer</code> in den <code>&lt;script&gt;</code>-Teil, nach <code>updateTimer</code>. Sie stellt die Stoppuhr wieder auf den Anfang, aber nur, wenn sie läuft oder steht, also im Zustand 3 oder 4: <code>state</code> und <code>t0</code> bekommen wieder 0, <code>timerString</code> den Text vom Anfang, und die Anzeige verliert die Klasse <code>ready</code>, damit sie nicht mehr grün ist. Probier es danach aus: Miss eine Zeit und klick auf »Reset«.
 </div>
 
@@ -782,6 +784,8 @@ function resetTimer() {
 ~         state = 1;
 ```
 <!-- /solution -->
+
+_task(reset-timer)
 
 ### Icons einbinden
 

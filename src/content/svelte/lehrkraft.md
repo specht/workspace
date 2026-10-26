@@ -11,7 +11,7 @@ Lernende bauen ihr erstes Projekt mit einem Frontend-Framework: Aus HTML, CSS un
 <li>Nach <code>handleKeyDown</code> als Beispiel schreiben die Lernenden <code>handleKeyUp</code> selbst, aus dem Ablaufdiagramm.</li>
 <li>Für den Reset-Button schreiben sie <code>resetTimer</code>: <code>state</code>, <code>t0</code> und <code>timerString</code> zurück auf ihre Anfangswerte, die Klasse <code>ready</code> weg.</li>
 <li>Davor stehen Tipps, eine Stufe nach der anderen mit einer Minute Pause und ohne Uhr; der Code der Seite (bei <code>handleKeyUp</code> mit der ganzen Datei) ist die letzte Stufe.</li>
-<li>Ob die Stoppuhr richtig läuft und zurückspringt, zeigt das Ausprobieren; keine Aufgabe prüft das JavaScript, »Der Reset-Button« nur das HTML des Buttons.</li>
+<li>Unter jedem Kasten liest eine Aufgabe den <code>&lt;script&gt;</code>-Teil von <code>+page.svelte</code> als Text, ohne ihn auszuführen. »Dein handleKeyUp« sucht <code>clearTimeout(timeoutId)</code>, den Fall für Zustand 2 (<code>state === 2</code> oder <code>case 2:</code>), <code>state = 3</code> und <code>t0 = Date.now()</code>; »Dein resetTimer« die Funktion, die Bedingung für Zustand 3 oder 4, <code>t0 = 0</code>, den Anfangstext von <code>timerString</code> und <code>classList.remove("ready")</code>. Nicht prüfen lassen sich so <code>state = 0</code> und <code>requestAnimationFrame(updateTimer)</code>, weil beide Zeilen schon an anderer Stelle der Datei stehen; ob die Stoppuhr richtig läuft und zurückspringt, zeigt das Ausprobieren. Wer eine Aufgabe löst, kann die Lösung des Kastens sofort öffnen.</li>
 </ul></td></tr>
 <tr><th>Abgabe</th><td>»Dein Timer« kopiert den Ordner <code>rubik-timer/build</code> (höchstens 5 MB). In der Klassenübersicht startet ein Klick die gebaute Seite im Browser, ohne dass der Workspace der Person laufen muss; nach einem Klick in die Seite reagiert sie auf die Leertaste wie das Original.</td></tr>
 </table>
@@ -26,6 +26,7 @@ Lernende bauen ihr erstes Projekt mit einem Frontend-Framework: Aus HTML, CSS un
 #### Die Aufgaben
 
 - »Die Überschrift in der Mitte« liest nur den `<style>`-Teil von `src/routes/+page.svelte` und sucht die Flexbox-Angaben für `.main`.
+- »Dein handleKeyUp« und »Dein resetTimer« lesen den `<script>`-Teil derselben Datei als Text (oben, »Jetzt bist du dran«).
 - »Die Anzeige steht« und »Der Reset-Button« lesen das HTML derselben Datei.
 - »Die statische Webseite« liest `build/index.html`, also das, was `npm run build` wirklich erzeugt hat: Steht dort keine Anzeige, ist der Build älter als die letzte Änderung.
 - »Zu kurz gedrückt« und »Warum :global?« fragen nach dem Ablaufdiagramm und dem CSS; »Ohne $state« ist eine Vorhersage, die die Lernenden danach ausprobieren.

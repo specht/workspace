@@ -28,3 +28,112 @@ examples:
         say: bu_reset
   build:
     skip: build/index.html entsteht erst, wenn npm run build die Seite baut.
+  keyup:
+    pass:
+      - files: { rubik-timer/src/routes/+page.svelte: +page.svelte }
+      - files: { rubik-timer/src/routes/+page.svelte: page-final.svelte }
+      # anders geschrieben: switch statt if
+      - files:
+          rubik-timer/src/routes/+page.svelte:
+            text: |
+              <script>
+                  function handleKeyUp() {
+                      switch (state) {
+                          case 1: state = 0; clearTimeout(timeoutId); break;
+                          case 2: state = 3; t0 = Date.now(); requestAnimationFrame(updateTimer); break;
+                      }
+                  }
+              </script>
+    fail:
+      # der Stand davor: handleKeyUp setzt nur den Zustand zurück
+      - files:
+          rubik-timer/src/routes/+page.svelte:
+            text: |
+              <script>
+                  let t0 = 0;
+                  function updateTimer() {
+                      if (state != 3) return;
+                      let t1 = Date.now();
+                      requestAnimationFrame(updateTimer);
+                  }
+                  function handleKeyDown() {
+                      if (state === 0) {
+                          state = 1;
+                          timeoutId = setTimeout(() => {
+                              if (state === 1) {
+                                  state = 2;
+                                  document.querySelector(".timer")?.classList.add("ready");
+                              }
+                          }, 500);
+                      } else if (state === 3) {
+                          state = 4;
+                      }
+                  }
+                  function handleKeyUp() {
+                      state = 0;
+                  }
+              </script>
+        say: clearTimeout(timeoutId)
+      - files: { rubik-timer/src/routes/+page.svelte: page-state.svelte }
+        say: clearTimeout(timeoutId)
+      # ohne die Startzeit: die Anzeige zeigt die Zeit seit 1970
+      - files:
+          rubik-timer/src/routes/+page.svelte:
+            text: |
+              function handleKeyUp() {
+                  if (state === 1) {
+                      state = 0;
+                      clearTimeout(timeoutId);
+                  } else if (state === 2) {
+                      state = 3;
+                      requestAnimationFrame(updateTimer);
+                  }
+              }
+        say: Date.now()
+  reset-timer:
+    pass:
+      - files: { rubik-timer/src/routes/+page.svelte: page-final.svelte }
+      # anders geschrieben: eine Pfeilfunktion, state >= 3, einfache Anführungszeichen
+      - files:
+          rubik-timer/src/routes/+page.svelte:
+            text: |
+              const resetTimer = () => {
+                  if (state >= 3) {
+                      state = 0; t0 = 0;
+                      timerString = '00:00<span class="small">.00</span>';
+                      document.querySelector('.timer')?.classList.remove('ready');
+                  }
+              };
+    fail:
+      # der Stand davor, noch ohne Button und ohne resetTimer
+      - files: { rubik-timer/src/routes/+page.svelte: page-fonts.svelte }
+        say: resetTimer
+      # der Button steht schon da, die Funktion noch nicht
+      - files:
+          rubik-timer/src/routes/+page.svelte:
+            text: |
+              <script>
+                  let state = $state(0);
+                  let t0 = 0;
+                  let timerString = $state("00:00<span class='small'>.00</span>");
+              </script>
+              <button
+                  id="bu_reset"
+                  class="btn btn-lg {state < 3 ? 'btn-outline-secondary' : 'btn-warning'}"
+                  disabled={state < 3}
+                  onclick={resetTimer}>
+                  Reset
+              </button>
+        say: resetTimer
+      # die Klasse ready bleibt: die Anzeige bleibt grün
+      - files:
+          rubik-timer/src/routes/+page.svelte:
+            text: |
+              function resetTimer() {
+                  if (state > 2) {
+                      state = 0;
+                      t0 = 0;
+                      timerString = "00:00<span class='small'>.00</span>";
+                  }
+              }
+        say: classList.remove

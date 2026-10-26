@@ -101,6 +101,27 @@ tasks:
         say: Andersherum. Ohne `:global` gilt CSS in Svelte nur in dieser Komponente; `:global` hebt das auf.
     solution: Svelte schaut beim Übersetzen nach, welche Klassen im HTML der Komponente vorkommen, und lässt Regeln für andere weg. `ready` kommt erst mit `classList.add` dazu, wenn das Programm läuft. `:global` sagt Svelte, dass die Regel trotzdem gebraucht wird.
 
+  - id: keyup
+    title: Dein handleKeyUp
+    prompt: |
+      Schreib `handleKeyUp` in `src/routes/+page.svelte` neu und speichere.
+      Wenn es stimmt, läuft die Zeit, sobald du die Leertaste loslässt,
+      nachdem die Anzeige grün geworden ist; ein kurzer Druck startet nichts.
+    file: rubik-timer/src/routes/+page.svelte
+    check:
+      type: files
+      path: rubik-timer/src/routes/+page.svelte
+      expect:
+        format: text
+        contains:
+          - { pattern: '\bclearTimeout\s*\(\s*timeoutId\s*\)', say: 'In `+page.svelte` wird der Wecker noch nicht abgestellt, wenn du die Taste im Zustand 1 loslässt: `clearTimeout(timeoutId)`.' }
+          - { pattern: '\bstate\s*===?\s*2\b|\b2\s*===?\s*state\b|\bcase\s+2\s*:', say: 'In `handleKeyUp` fehlt noch der Fall für Zustand 2, in dem die Messung beginnt.' }
+          - { pattern: '\bstate\s*=(?!=)\s*3\b', say: 'Im Zustand 2 beginnt die Messung: `state` wird 3.' }
+          - { pattern: '\bt0\s*=(?!=)\s*Date\.now\s*\(\s*\)', say: 'Die Startzeit fehlt noch: `t0` bekommt `Date.now()`, so wie `t1` in `updateTimer`.' }
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/rubik-timer/src/routes/+page.svelte`. Hast du das Projekt mit `npx sv create rubik-timer` in `/workspace` angelegt?
+
   - id: timer
     title: Die Anzeige steht
     prompt: |
@@ -115,6 +136,28 @@ tasks:
         elements:
           - { selector: div.main h1 }
           - { selector: p.timer, say: "Ich finde kein `<p class=\"timer\">`. Die Anzeige steht in `<div class=\"main\">`, unter der Anleitung: `<p class=\"timer\">{@html timerString}</p>`" }
+
+  - id: reset-timer
+    title: Dein resetTimer
+    prompt: |
+      Schreib `resetTimer` in den `<script>`-Teil von `src/routes/+page.svelte`
+      und speichere. Wenn es stimmt, springt die Anzeige nach einem Klick auf
+      »Reset« auf 00:00.00 und ist nicht mehr grün.
+    file: rubik-timer/src/routes/+page.svelte
+    check:
+      type: files
+      path: rubik-timer/src/routes/+page.svelte
+      expect:
+        format: text
+        contains:
+          - { pattern: '\bfunction\s+resetTimer\b|\bresetTimer\s*=\s*(?:function\b|\()', say: 'Im `<script>`-Teil von `+page.svelte` finde ich noch keine Funktion `resetTimer`.' }
+          - { pattern: '\bstate\s*(?:>\s*2|>=\s*3)\b|\b(?:2\s*<\s*state|3\s*<=\s*state)\b|\bstate\s*===?\s*[34]\b.*\|\|', say: '`resetTimer` soll nur im Zustand 3 oder 4 etwas tun. Diese Bedingung finde ich noch nicht.' }
+          - { pattern: '(?:^|[;{])\s*t0\s*=(?!=)\s*0\b', say: '`t0` bekommt in `resetTimer` noch nicht wieder 0.' }
+          - { pattern: '\btimerString\s*=(?!=)\s*["''`]00:00', say: '`timerString` bekommt noch nicht den Text vom Anfang. Sieh oben im `<script>`-Teil nach, womit es anfängt.' }
+          - { pattern: 'classList\.remove\s*\(\s*["'']ready["'']\s*\)|classList\.toggle\s*\(\s*["'']ready["'']\s*,\s*false\s*\)', say: 'Die Anzeige verliert die Klasse `ready` noch nicht und bliebe grün. Das Gegenstück zu `classList.add` ist `classList.remove`.' }
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/rubik-timer/src/routes/+page.svelte`. Hast du das Projekt mit `npx sv create rubik-timer` in `/workspace` angelegt?
 
   - id: reset
     title: Der Reset-Button
