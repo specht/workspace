@@ -8606,6 +8606,17 @@ html[data-bs-theme="dark"] .bitplane-widget {
 }
 
 @media (max-width: 575.98px) {
+    /* from edge to edge, like the boxes of a page: at its start the first
+       set lines up with the text, scrolled the sets pass under the screen's
+       edge */
+    .kata-carousel {
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+    }
+    .kata-track {
+        padding-inline: 1rem;
+        scroll-padding-inline: 1rem;
+    }
     /* one set in the middle, its neighbours peeking in */
     .kata-set { flex-basis: 78%; }
 }

@@ -111,7 +111,7 @@ Entstanden beim Bau der Katas und von »Pip unter Funkelbach«
 
 | Regel | Warum | Geprüft durch |
 | --- | --- | --- |
-| Auf einem Handy (bis 576 px) laufen alle Kästen der Seite von Rand zu Rand (Notiz für Lehrkräfte, Aufgabe, Tipp, Person, Buch, Codeblock); ihr Text beginnt dort, wo die Absätze beginnen. Kästen in Kästen, Code in Listen und Bilder behalten ihren Rahmen | Mehr Platz für Code und Text | Lesen (Bildschirmfotos in iPhone-Breite) |
+| Auf einem Handy (bis 576 px) laufen alle Kästen der Seite von Rand zu Rand (Notiz für Lehrkräfte, Aufgabe, Tipp, Person, Buch, Codeblock); ihr Text beginnt dort, wo die Absätze beginnen. Ebenso der Streifen der Katas: Am Anfang steht die erste Übung bündig mit dem Text, beim Blättern laufen die Übungen unter den Rand. Kästen in Kästen, Code in Listen und Bilder behalten ihren Rahmen | Mehr Platz für Code und Text | Lesen (Bildschirmfotos in iPhone-Breite) |
 
 ## Bilder
 
