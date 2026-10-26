@@ -46,6 +46,31 @@ startet ANZAHL (vorgegeben 30) Test-Workspaces gleichzeitig, misst die Zeit
 bis jeder antwortet, Last und Speicher, räumt danach auf und legt den Bericht
 in `/internal/capacity-*.txt`. Auf dem Server außerhalb des Unterrichts.
 
+### Katas: Läufe im eigenen Container
+
+Der Code einer Kata (docs/plan-katas.md) läuft nie im Workspace und nie im
+Ruby-Container, sondern jedes Mal in einem neuen Container aus dem
+Workspace-Image, ohne code-server, ohne Netz, schreibgeschützt bis auf ein
+kleines `/tmp`, als `nobody`, mit Grenzen für CPU, Speicher und Prozesse
+(`src/ruby/include/kata_runner.rb`). Er heißt `hs_code_kata_*`, so lässt ihn
+der Docker-Wächter durch wie den Leser für Workspaces, die nicht laufen. Der
+Code kommt über stdin hinein, nie als Datei auf dem Server. Alle Läufe gehen
+durch eine Warteschlange (`kata_queue.rb`): höchstens so viele gleichzeitig
+wie eingestellt, die anderen warten der Reihe nach, und jede Person hat
+höchstens einen Lauf; ein neuer ersetzt ihren alten.
+
+Wie viele gleichzeitig sinnvoll sind, misst
+
+```bash
+./config.rb exec ruby ruby /src/scripts/measure-katas.rb [ANZAHL]
+```
+
+mit ANZAHL (vorgegeben 30) Läufen auf einmal für 1, 2, 4, 8 … gleichzeitige,
+druckt einen Vorschlag und legt den Bericht in `/internal/katas-*.txt`. Auf
+dem Server außerhalb des Unterrichts. Auf einem Entwicklungsrechner mit
+6 Kernen brauchten 30 Läufe nacheinander 12,8 s, mit 8 gleichzeitig 2,1 s;
+mehr brachte kaum noch etwas.
+
 ### Betrieb überwachen
 
 `/admin` zeigt unter »Betrieb«, beim Laden der Seite geprüft
