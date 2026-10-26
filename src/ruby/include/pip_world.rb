@@ -25,7 +25,7 @@
 #
 # While a program is only being loaded (quiet: a check that calls one of
 # its functions afterwards, PipCheck), commands do nothing and are not
-# written down.
+# written down; only say still shows.
 #
 # Plain Ruby, tested on its own (test/pip_world_test.rb).
 class PipWorld
@@ -168,13 +168,15 @@ class PipWorld
     # or 'end' once the run is over (the event is in ended).
     def command(name, line: nil, text: nil)
         return 'end' if @ended
-        return SENSORS.include?(name) ? false : 'ok' if @quiet
 
+        # say changes nothing in the world, so it counts while the program
+        # is only being loaded too
         if name == 'say'
             @said << text.to_s[0, MAX_SAY]
             @trace << frame(:say, line, :text => text.to_s[0, MAX_SAY])
             return 'ok'
         end
+        return SENSORS.include?(name) ? false : 'ok' if @quiet
         return sense(name) if SENSORS.include?(name)
         raise Error, "unknown command #{name}" unless STEPS.include?(name)
 

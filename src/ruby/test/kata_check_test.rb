@@ -111,9 +111,9 @@ class KataCheckTest < Minitest::Test
         check = ruby_check.merge('random' => random)
         assert_empty TaskSpec.validate_single_task(task(check))
         refute_empty TaskSpec.validate_single_task(task(ruby_check.merge('random' => random.merge('args' => { 'a' => '9..1' }))))
-        seed = KataCheck.seed('ada@example.org', 'kata-demo/ggt', 'v1')
+        seed = KataCheck.seed('ada@example.org', 'kata-loops/gcd', 'v1')
         assert_equal KataCheck.random_cases(check, seed), KataCheck.random_cases(check, seed)
-        refute_equal KataCheck.random_cases(check, seed), KataCheck.random_cases(check, KataCheck.seed('linus@example.org', 'kata-demo/ggt', 'v1'))
+        refute_equal KataCheck.random_cases(check, seed), KataCheck.random_cases(check, KataCheck.seed('linus@example.org', 'kata-loops/gcd', 'v1'))
         first = KataCheck.random_cases(check, seed).first
         assert_match(/\Agcd\(\d+, \d+\)\z/, first['call'])
         needs_docker

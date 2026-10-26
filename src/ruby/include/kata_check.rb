@@ -362,6 +362,25 @@ module KataCheck
         JSON.generate(codes.merge(language => code.to_s[0, MAX_CODE]))
     end
 
+    # Lines that only define (a function, a constant, an import) and so
+    # print nothing; anything else at the start of a line is code of the
+    # program's own (puts greet('Ada')), which the one button runs before
+    # the check (/api/kata/check), so that its output shows.
+    DEFINING = {
+        'ruby' => /\A(?:def |end\b|class |module |require|private\b|[A-Z][A-Z0-9_]*\s*=|[\]})])/,
+        'python' => /\A(?:def |class |import |from |@|[A-Z][A-Z0-9_]*\s*=|[\]})])/,
+        'javascript' => /\A(?:(?:async\s+)?function\b|(?:const|let|var)\s|class |[\]})]|\/\/|\/\*|\*|['"]use strict)/,
+    }.freeze
+
+    def self.top_level?(code, language)
+        defining = DEFINING[language] or return true
+        code.to_s.each_line.any? do |line|
+            next false if line =~ /\A\s/ || line.strip.empty? || line.start_with?('#')
+
+            line !~ defining
+        end
+    end
+
     # »Ausführen«: the program once, with what it prints. { status:, output:,
     # message: } with status :ran, :error (it ended with an error),
     # :timed_out, :too_long or :unavailable.

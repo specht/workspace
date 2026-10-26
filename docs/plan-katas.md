@@ -529,9 +529,10 @@ the whole thing.
 
 ### The card
 
-Title, level, prompt with examples, a code editor with a starter, **Ausführen**
-(runs once, shows the console) and **Prüfen** (runs the cases), then console and
-feedback. The language switch of the page chooses Ruby, Python or JavaScript
+Title, level, prompt with examples, a code editor with a starter, one button
+**Ausführen** (runs the program once where it has code of its own, shows the
+console, then runs the cases; first it was two buttons, »Ausführen« and
+»Prüfen«), then console and feedback. The language switch of the page chooses Ruby, Python or JavaScript
 (the class setting picks Ruby or Python as before; JavaScript only by the
 student's switch). What has been written is stored per language as the task's
 answer (`TaskStore`), there again at home, visible only to the student, who can
@@ -693,6 +694,39 @@ card in light and dark and on a phone, and a CHANGELOG line where an operator
 must know (a new image, a value in `credentials.rb`, what is stored).
 
 
+## Next: the maintainer's wishes (26 October 2026)
+
+Asked for while Teil 1 and 2 were looked at; not built yet unless marked.
+The rules that came out of the same review are in
+[checkliste.md](checkliste.md), »Katas und Pip«.
+
+1. **Clicking before typing (Pip Teil 1, before the first plan).** Buttons
+   under the map (»Vorwärts«, »Links drehen«, later »Nimm«) move Pip at once,
+   and every click writes its command as a line into the plan beside it. The
+   student sees that a plan is the list of what was done, can run it again
+   from the start, and only then writes a plan by hand. One chapter, nothing
+   to check but the lamp.
+2. **A chasing monster for a finale.** As in the old Hackschule: a monster
+   that, after each of Pip's steps, moves one field towards Pip (the longer
+   distance first, around nothing: a wall stops it), so that clever
+   navigation (round a pillar, through a door it cannot take) gets Pip away.
+   Deterministic, so a plan can be predicted and checked; a sensor for it
+   (`monster_ahead`). Probably the last chapter of Teil 2 or the start of a
+   Teil 3; needs a sprite and maps where escaping is possible but not by
+   chance.
+3. **The front page instead of `/katas`.** One carousel of the Kata sets,
+   each with its progress, and the overall progress, no taller than one
+   row of activity cards. The page `/katas` and its catalog entry go then.
+4. **One Kata widget on the Kata pages**, instead of the general task
+   cards: the task beside the code on a wide screen (like Pip's map beside
+   the plan), one button (done for every Kata: »Ausführen« runs the program,
+   shows what it prints, and checks), the level marks redrawn (done), and a
+   UI/UX pass over all of it. Planned and shown to the maintainer before it
+   is built.
+5. **Solutions for teachers** (done): a small button »Lösung einsetzen«
+   beside a Kata's buttons puts the solution into the editor
+   (`kata_solutions_config`, tasks.js).
+
 ## Answers of the maintainer (26 October 2026)
 
 1. The name is »Kata«.
@@ -722,7 +756,7 @@ gets a ticket and the card polls `/api/kata/poll` (no web server thread waits),
 showing »Noch 2 vor dir«; »Ausführen« shows the output; the code is stored per
 language as JSON in the task's answer, teachers see only the result;
 `level:`; `starter:`; examples with `answer:`, the starter must fail. The page
-`/kata-demo` (dev only) has two Katas; `e2e/tests/katas.browser.spec.ts`.
+`e2e/tests/katas.browser.spec.ts` uses the Kata pages themselves (a demo page `/kata-demo` was removed).
 `forbid`, `random` (seed per person and task version, the reference computed
 in the run, the message names the value) and `same_as` feedback (the wrong
 solutions run in the same container) are done, and beginner errors get a

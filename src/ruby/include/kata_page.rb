@@ -33,11 +33,13 @@ class Main < Sinatra::Base
     def kata_request
         assert(user_logged_in?)
         assert(tasks_visible?)
-        data = parse_request_data(:required_keys => [:task, :answer], :optional_keys => [:language],
+        data = parse_request_data(:required_keys => [:task, :answer], :optional_keys => [:language, :map],
             :max_body_length => 16384,
             :max_value_lengths => {:task => 120, :answer => KataCheck::MAX_CODE})
         found = find_task(data[:task], data[:language])
         halt 404 if found.nil? || !KATA_TYPES.include?(found[:task]['check']['type'])
+        # Pip: the map the card shows (its tab), counted from 0
+        found[:map] = data[:map].to_s =~ /\A\d{1,2}\z/ ? data[:map].to_i : 0
         [data[:answer], found]
     end
 
@@ -48,7 +50,11 @@ class Main < Sinatra::Base
         task = found[:task]
         seed = KataCheck.seed(@session_user[:email], found[:key], found[:version])
         ticket = KATA_QUEUE.submit(@session_user[:email]) do |t|
-            TaskCheck.check(task, code, :kata => Main.kata_run(t), :kata_seed => seed)
+            # one button: a function Kata's own program runs first, where it
+            # has code of its own (KataCheck.top_level?), for what it prints
+            language = task['check']['language']
+            ran = task['check']['type'] == 'function' && KataCheck.top_level?(code, language) ? KataCheck.run_program(language, code, Main.kata_run(t)) : nil
+            [TaskCheck.check(task, code, :kata => Main.kata_run(t), :kata_seed => seed, :kata_map => found[:map]), ran]
         end
         ticket.data = { :kind => :check, :found => found, :code => code }
         respond(:done => false, :ticket => ticket.id, :ahead => KATA_QUEUE.ahead(ticket))
@@ -61,16 +67,26 @@ class Main < Sinatra::Base
         return respond(:done => true, :status => 'invalid', :message => render_task_markdown(KataCheck::EMPTY)) if code.strip.empty?
 
         check = found[:task]['check']
+        seed = KataCheck.seed(@session_user[:email], found[:key], found[:version])
         ticket = KATA_QUEUE.submit(@session_user[:email]) do |t|
             if check['type'] == 'pip'
-                # Pip's plan on the first map, to watch
-                ran = PipCheck.run_map(check, code, check['maps'].first, Main.kata_run(t))
+                # Pip's plan on the map the card shows, to watch, as it is
+                # written: with the plan's own calls of its functions. Only a
+                # plan that does nothing by itself (just a function) gets the
+                # call the check makes (call:), so that one sees what the
+                # function does.
+                index = found[:map].clamp(0, check['maps'].size - 1)
+                map = PipCheck.maps(check, seed)[index]
+                ran = PipCheck.run_map(check, code, map.reject { |k, _| %w[call expect].include?(k) }, Main.kata_run(t))
+                if ran && map['call'] && ran[:world].trace.size <= 2 && ran[:world].ended == :done && ran[:world].said.empty?
+                    ran = PipCheck.run_map(check, code, map, Main.kata_run(t))
+                end
                 next { :status => :unavailable, :output => '', :message => KataCheck::BUSY } if ran.nil?
 
                 error = ran[:status] == 0 || ran[:errors].to_s.strip.empty? ? nil : ran[:errors]
                 { :status => error ? :error : :ran, :output => ran[:output].to_s + ran[:errors].to_s,
                   :message => error ? KataCheck.explain(error, language) : nil,
-                  :replay => PipCheck.replay(ran[:world], 0, check['maps'].size, ran[:output]) }
+                  :replay => PipCheck.replay(ran[:world], index, check['maps'].size, ran[:output]) }
             else
                 KataCheck.run_program(language, code, Main.kata_run(t))
             end
@@ -169,7 +185,7 @@ class Main < Sinatra::Base
                      :message => ran[:message] ? render_task_markdown(ran[:message]) : nil, :replay => ran[:replay] }
         end
 
-        result = ticket.result
+        result, ran = ticket.result
         found = ticket.data[:found]
         state = nil
         if result.counts?
@@ -190,6 +206,9 @@ class Main < Sinatra::Base
             :read => render_task_markdown(result.read),
             :state => state,
             :replay => result.replay,
+            # what the program printed (or why it stopped), for the console
+            :output => ran && ran[:output],
+            :ran => ran && ran[:status].to_s,
         }
     end
 end

@@ -72,6 +72,30 @@ Repository arbeitet, liest sie also ohnehin.
 | Wo Lernende hängen bleiben können (Labs, Kästen »Jetzt bist du dran«), gibt es Tipps in Stufen: vom Verstehen über den Weg zum Gerüst, nie die ganze Lösung | Wer feststeckt, kommt weiter, ohne abzuschreiben; die Pause zwischen den Stufen lässt nachdenken | Lesen ([didaktik.md](didaktik.md)) |
 | Wo etwas gerade läuft, lädt ein Kasten `hint try` (»Ausprobieren:«) zu einer kleinen Änderung ein und sagt, worauf man achten soll; ungeprüft, die Seite geht mit dem unveränderten Code weiter | Wie etwas funktioniert, versteht man, wenn man es ändert und sieht, was passiert | Lesen |
 
+## Katas und Pip
+
+Entstanden beim Bau der Katas und von »Pip unter Funkelbach«
+([plan-katas.md](plan-katas.md)); was noch nicht überall gilt, steht dabei.
+
+| Regel | Warum | Geprüft durch |
+| --- | --- | --- |
+| Die Aufgabe sagt, was man schreibt und was die Prüfung damit tut: Ruft sie eine Funktion selbst auf, nennt der Text die Aufrufe (»die Prüfung ruft ihn auf drei Karten auf, mit `walk(3)`, `walk(5)` und `walk(1)`«) und dass der Plan selbst nichts laufen lassen muss | Sonst rätselt man, warum Pip drei Schritte geht, obwohl man nur einen Spruch geschrieben hat | Lesen |
+| Mehrere Karten einer Aufgabe unterscheiden sich, und jede zeigt, was erwartet wird (ein Gang, genau so lang wie `walk(n)` gehen soll); jeder Reiter nennt den Aufruf, den die Prüfung auf dieser Karte macht | Drei gleiche Karten prüfen nichts Neues und verwirren | Lesen, `katas.browser.spec.ts` (»Pip runs on the map of the tab«) |
+| Zahlen im Aufgabentext gelten für jede Karte, die jemand zu sehen bekommt (»genau dreimal ziehen«, nicht »drei, vier oder fünf Hebel«) | Jede Person sieht nur ihre eigene Karte | Lesen |
+| Jede Kata (`function` und `pip`) hat einen Knopf, »Ausführen« mit dem Abspiel-Symbol: Er führt den Code aus, zeigt, was er ausgibt (bei Pip: spielt den Lauf ab), und prüft. Der Erfolg (grün, Abzeichen) kommt bei Pip erst, wenn der Lauf auf dem Bildschirm zu Ende ist | Zwei Knöpfe für fast dasselbe verwirren; ein Lob vor dem Ende verrät das Ergebnis | `katas.browser.spec.ts` |
+| Die Stufe einer Kata steht als Wort mit drei Balken neben dem Titel (Einstieg, Übung, Knobelei), in einer Farbe je Stufe | Punkte allein sagt niemandem etwas | `katas.browser.spec.ts` |
+| Beim Abspielen gehen Drehen und Aufheben schneller als ein Schritt; das gewählte Tempo gilt für alle Pip-Karten der Seite und bleibt für die nächste Seite | Warten langweilt; einmal einstellen reicht | Lesen |
+| Pip und alles, was steht, verschwinden hinter dem Fels, der davor liegt (der Fels in der unteren Hälfte eines Feldes, an runden Ecken) | Sonst steht Pip auf der Wand | Lesen (Bildschirmfotos) |
+| »Ausführen« läuft zuerst auf der Karte im gewählten Reiter, und die Karte bleibt danach gewählt (außer eine andere Karte scheitert, dann zeigt die Karte sie). Solange ein Lauf unterwegs ist oder abgespielt wird, lassen sich die Reiter nicht wechseln | Man probiert gerade diese Karte aus | `pip_check_test.rb`, `katas.browser.spec.ts` |
+| Alle Karten einer Aufgabe erscheinen gleich groß (mit Fels aufgefüllt), auf dem Desktop neben dem Code, und füllen den Platz | Beim Wechseln springt nichts; man scrollt nicht zwischen Plan und Karte | Lesen (Bildschirmfotos aus `katas.browser.spec.ts`) |
+| Unter dem Code stehen die Befehle der Aufgabe, in der Schreibweise der Sprache, mit ihrer Bedeutung beim Überfahren | Man sieht, was man zur Verfügung hat | `katas.browser.spec.ts` |
+| `say` funktioniert in jeder Pip-Aufgabe; was Pip sagt, kommt Satz für Satz in der Pixelschrift, lang genug zum Lesen und ganz innerhalb der Karte; ein Satz mit der richtigen Zahl zählt wie die Zahl allein | So verspricht es das Handbuch; »Ich habe 4 Steine« ist eine richtige Antwort | `pip_check_test.rb`, `katas.browser.spec.ts` |
+| Nach einem Lauf steht der Cursor wieder im Code (mit Maus); der Code hat Zeilennummern, und `end`, `}` rücken beim Tippen selbst aus | Weiterschreiben ohne Klick | `katas.browser.spec.ts` |
+| Pips Welt in der 3/4-Ansicht: Figuren aus dem 2D Game Studio, in der Mitte ihres Feldes; Seitenwände nur links; Ecken gemischt eng, weit und rund; Licht und Schatten. Bilder aus `src/static/images/pip/make_sprites.py`; nach einer Änderung die `?v=` in `default.css` und `pip_world.js` erhöhen | Wiedererkennbar und lesbar; der Browser hält alte Bilder sonst fest | Lesen |
+| Ein Spiel oder Brauch im Aufgabentext stimmt für deutsche Schulen, oder der Text sagt, woher er kommt (FizzBuzz ist ein englisches Zählspiel, »Brot« das aus der Grundschule) | Sonst stimmt die Geschichte nicht für die Klasse | Lesen |
+| Das Ende einer Geschichte kündigt keine Fortsetzung an und wirbt nicht für etwas anderes | Es soll ein Ende sein | Lesen |
+| Jede Kata hat eine Lösung (`solution`); Lehrkräfte setzen sie mit »Lösung einsetzen« in den Code ein, Lernende sehen sie erst nach einer richtigen Antwort | Lehrkräfte wollen in der Stunde vorführen können | Lesen |
+
 ## Bilder
 
 | Regel | Warum | Geprüft durch |

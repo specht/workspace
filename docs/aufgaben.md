@@ -941,7 +941,10 @@ Schritt), `say` (kein Schritt), die Fragen `on_stone`, `on_lever`,
 `front_clear`, `glibber_ahead`, `on_lamp`, `trail_ahead` (Pfotenabdrücke
 vorn, auch Bello selbst), `puddle_ahead`, `bello_here`. Nach jedem Schritt
 geht jeder Glibber ein Feld weiter. Erreicht Pip die Lampe oder Bello, ist
-der Lauf zu Ende, auch mitten in einer Schleife. Eine Wand,
+der Lauf zu Ende, auch mitten in einer Schleife. Mehrere Karten stehen als
+Reiter über der Karte, jeder mit dem Aufruf, den die Prüfung dort macht
+(»Karte 1 `walk(3)`«); »Ausführen« läuft zuerst auf der Karte des Reiters,
+und solange ein Lauf unterwegs ist oder abgespielt wird, wartet der Reiter. Eine Wand,
 Stacheln, die aus dem Boden ragen (drei Züge versenken sie, ein vierter lässt sie wieder herausfahren; im Spec heißen sie `gate`), `take` ohne Stein, `pull`
 ohne Hebel, ein Glibber, mit `dry: true` eine Pfütze und mehr als 1000
 Schritte beenden den Lauf mit diesem Ereignis; die Rückmeldung nennt die Karte und die Zeile (»In Karte

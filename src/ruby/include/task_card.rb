@@ -116,8 +116,17 @@ module TaskCard
                 # side by side on a wide screen.
                 first = check['maps'].first
                 world = PipWorld.new(first['map'], :facing => first['facing'] || 'east')
+                # every map of the check, for the card's tabs; one made from a
+                # person's seed (generate:) only shows after a run
+                maps = check['maps'].map do |m|
+                    # a maze of w × h cells is 2w + 1 × 2h + 1 tiles (PipMaps)
+                    next { :size => m['size'].map { |n| 2 * n + 1 }, :call => m['call'] } if m['generate']
+
+                    w = PipWorld.new(m['map'], :facing => m['facing'] || 'east')
+                    { :layout => w.layout, :start => w.trace.first, :call => m['call'] }
+                end
                 io << "<div class='pip-layout'>"
-                io << "<div class='pip-world' data-layout='#{h.(JSON.generate(world.layout))}' data-start='#{h.(JSON.generate(world.trace.first))}'></div>"
+                io << "<div class='pip-world' data-layout='#{h.(JSON.generate(world.layout))}' data-start='#{h.(JSON.generate(world.trace.first))}' data-maps='#{h.(JSON.generate(maps))}'></div>"
                 io << "<textarea class='form-control task-input task-code' name='answer' rows='6' spellcheck='false' autocapitalize='off'"
                 io << " data-code-language='#{h.(check['language'])}' data-starter='#{h.(task['starter'])}' aria-labelledby='#{h.(field)}-title'>"
                 io << "#{h.(task['starter'])}</textarea>"
@@ -130,7 +139,7 @@ module TaskCard
                 io << '</div>'
                 maps = check['maps'].size
                 reads = "Dein Plan läuft in einem eigenen kleinen Rechner, getrennt von deinem Workspace und ohne Internet. Pip macht genau, was draufsteht. " \
-                    "<em>Ausführen</em> zeigt Pip auf der Karte oben, <em>Prüfen</em> schickt Pip #{maps > 1 ? "durch alle #{maps} Karten, jedes Mal von vorn" : 'los und prüft das Ziel'}. <kbd>Strg</kbd>+<kbd>Enter</kbd> prüft."
+                    "<em>Ausführen</em> schickt Pip #{maps > 1 ? "durch alle #{maps} Karten, jedes Mal von vorn," : 'los'} und spielt den Lauf auf der Karte ab; schafft Pip es, ist die Kata gelöst. <kbd>Strg</kbd>+<kbd>Enter</kbd> führt aus."
             when 'function'
                 # A Kata: the code is written here; it starts with the task's starter.
                 io << "<textarea class='form-control task-input task-code' name='answer' rows='6' spellcheck='false' autocapitalize='off'"
@@ -157,11 +166,14 @@ module TaskCard
                 when type == 'reflection' then 'Speichern'
                 when type == 'submit' then 'Abgeben'
                 when task['prediction'] then 'Vermutung abgeben'
+                # a Kata: one button runs the code (Pip: plays the run) and,
+                # when it works, solves the Kata
+                when %w[pip function].include?(type) then 'Ausführen'
                 else 'Prüfen'
             end
             io << "<div class='task-actions'>"
-            io << "<button type='button' class='btn btn-outline-success task-run'>Ausführen</button>" if %w[function pip].include?(type)
-            io << "<button type='submit' class='btn btn-success task-submit'>#{label}</button>"
+            play = "<i class='bi bi-play-fill' aria-hidden='true'></i>"
+            io << "<button type='submit' class='btn btn-success task-submit'>#{%w[pip function].include?(type) ? play : ''}#{label}</button>"
             io << "<button type='button' class='btn btn-link btn-sm task-delete' hidden>Meine Antwort löschen</button>"
             # What the check reads, for whoever wants to know (rule 5), behind
             # a small (i) so the card itself stays short.
@@ -194,14 +206,17 @@ module TaskCard
         io
     end
 
-    # The level of a Kata (TaskSpec::LEVELS) as one to three dots; the name
-    # for those who cannot see them.
+    # The level of a Kata (TaskSpec::LEVELS): a small mark with its name and
+    # three rising bars, as many filled as the level (default.css).
     LEVEL_NAMES = { 1 => 'Einstieg', 2 => 'Übung', 3 => 'Knobelei' }.freeze
+    LEVEL_TITLES = { 1 => 'Zum Einstieg: eine Sache auf einmal', 2 => 'Zum Üben: wie eben, ein wenig anders',
+                     3 => 'Zum Knobeln: braucht eine eigene Idee' }.freeze
 
     def self.level_html(level)
         name = LEVEL_NAMES.fetch(level)
-        dots = Array.new(level) { "<i class='bi bi-circle-fill' aria-hidden='true'></i>" }.join
-        "<span class='task-level' title='#{name}'>#{dots}<span class='visually-hidden'>#{name}</span></span>"
+        bars = (1..3).map { |i| "<i#{i <= level ? " class='on'" : ''}></i>" }.join
+        "<span class='task-level task-level-#{level}' title='#{LEVEL_TITLES.fetch(level)}'>" \
+            "<span class='task-level-bars' aria-hidden='true'>#{bars}</span>#{name}</span>"
     end
 
     # Which files a Workspace check reads or copies, with their real paths

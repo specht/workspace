@@ -7,6 +7,34 @@
 // map fits the card.
 (function () {
     const MAX_TILE = 48;
+    // the scene round a map: at least so many fields across, about so much
+    // wider than high
+    const SCENE_COLUMNS = 10;
+    const SCENE_RATIO = 1.5;
+    // What Pip says, sentence by sentence, as in the 2D Game Studio
+    // (speech.js): a sentence ends after . ! ? … when the next one begins,
+    // not after »z. B.«, »Nr.« or »3.«, nor before a word in small letters;
+    // each stays long enough to read, at least 1.5 seconds.
+    const ABBREVIATIONS = new Set(['z', 'b', 'd', 'h', 'u', 'a', 'o', 's', 'v', 'nr', 'dr', 'bzw', 'usw', 'ca', 'evtl', 'ggf', 'hr', 'fr', 'st', 'str', 'vgl', 'bspw', 'inkl', 'zb', 'etc', 'max', 'min']);
+    function sentences(text) {
+        const line = String(text).replace(/\s+/g, ' ').trim();
+        const parts = [];
+        const end = /[.!?…]+["“”„»«'’)\]]*(?=\s+\S)/g;
+        let start = 0;
+        let m;
+        while ((m = end.exec(line))) {
+            const word = ((line.slice(start, m.index).match(/(\S+)$/) || [])[1] || '').replace(/^["“„»«'(\[]+/, '');
+            const next = line.slice(end.lastIndex).trimStart()[0] || '';
+            const stopOnly = m[0][0] === '.' && !/[!?…]/.test(m[0]) && m[0].replace(/[^.]/g, '').length === 1;
+            if (stopOnly && (/^\d+$/.test(word) || /^\p{L}$/u.test(word) || ABBREVIATIONS.has(word.toLowerCase()))) continue;
+            if (/\p{Ll}/u.test(next)) continue;
+            parts.push(line.slice(start, end.lastIndex).trim());
+            start = end.lastIndex;
+        }
+        parts.push(line.slice(start).trim());
+        return parts.filter((p) => p.length > 0);
+    }
+    const READ_TIME = (sentence) => 1000 * Math.max(1.5, 1.0 + 0.065 * sentence.length);
     const SAY = { wall: 'Autsch!', gate: 'Lieber nicht!', puddle: 'Platsch!', bello: 'Bello!', caught: 'Iiih, Glibber!', no_stone: 'Hier ist nichts …', no_lever: 'Kein Hebel?', steps: 'Puh …', lamp: 'Licht!' };
 
     function el(tag, className, parent) {
@@ -57,7 +85,7 @@
     const SIDE = 4;
     const SIDE_ROWS = [7, 5, 4, 3];
     const RIM_FACE = [140, 156, 196];
-    const VERSION = '?v=10';
+    const VERSION = '?v=12';
 
     // The pictures the rock and the ground are drawn from, loaded once for
     // every map on the page and read into pixels: { top, face, ground }.
@@ -100,8 +128,11 @@
         // then a bat flies past (not with prefers-reduced-motion). When Pip
         // lights the old lamp, it flares up, sparks fly, the cave brightens
         // and Pip hops (pip-done).
-        constructor(box, layout, start) {
+        // scene: { width, height }, the largest map of the task, so that the
+        // scenes of all its maps are the same size
+        constructor(box, map, first, scene) {
             this.box = box;
+            const { layout, start } = this.frame(map, first, scene || map);
             this.layout = layout;
             this.world = el('div', 'pip-map', box);
             if (!box.closest('[role=img]')) {
@@ -110,6 +141,7 @@
             }
             this.stones = {};
             this.stoneGlows = {};
+            this.nooks = {};
             this.resize();
             const walls = new Set((layout.walls || []).map(key));
             const wall = (x, y) => x < 0 || y < 0 || x >= layout.width || y >= layout.height || walls.has(x + ',' + y);
@@ -127,7 +159,7 @@
             // spikes in the floor (a gate in the world: T), lowered once the
             // levers have been pulled three times
             this.spikes = (layout.gates || []).map((p) => this.tile('spikes pip-sort pip-tall', p));
-            this.levers = (layout.levers || []).map((p) => this.tile('lever pip-sort', p));
+            this.levers = (layout.levers || []).map((p) => this.tile('lever pip-sort pip-tall', p));
             if (layout.bello) this.tile('bello pip-sort', layout.bello);
             this.glibbers = (start.glibbers || []).map((p) => this.tile('glibber pip-sort actor', p));
             this.light = el('div', 'pip-light', this.world);
@@ -153,7 +185,7 @@
             (layout.labels || []).forEach((label) => { this.tile('label', label.at).textContent = label.text; });
             this.bubble = el('div', 'pip-bubble', this.world);
             this.bubble.hidden = true;
-            this.show(start, false);
+            this.show(first, false);
             if (window.ResizeObserver) new ResizeObserver(() => this.resize()).observe(box);
         }
 
@@ -340,6 +372,33 @@
                     }
                 }
                 g.putImageData(out, 0, 0);
+                // the rock in the lower half of an open field (a round
+                // corner's nook) stands in front of what stands there: a
+                // piece of its own, sorted with the row (.pip-nook)
+                for (let ty = 0; ty < this.layout.height; ty++) {
+                    for (let tx = 0; tx < this.layout.width; tx++) {
+                        if (wall(tx, ty)) continue;
+                        let piece = null;
+                        for (let py = HALF; py < PX; py++) {
+                            for (let px = 0; px < PX; px++) {
+                                const x = tx * PX + px;
+                                const y = ty * PX + py;
+                                if (!at(x, y)) continue;
+                                piece = piece || new ImageData(PX, PX);
+                                const i = (y * W + x) * 4;
+                                piece.data.set(out.data.subarray(i, i + 4), (py * PX + px) * 4);
+                            }
+                        }
+                        if (!piece) continue;
+                        const node = el('canvas', 'pip-tile pip-nook', this.world);
+                        node.width = node.height = PX;
+                        node.getContext('2d').putImageData(piece, 0, 0);
+                        node.style.setProperty('--x', tx);
+                        node.style.setProperty('--y', ty);
+                        this.nooks[tx + ',' + ty] = node;
+                    }
+                }
+                this.near();
             };
             // until the rock is drawn, the map stays hidden: no flash of a
             // cave without walls
@@ -392,6 +451,42 @@
             }
         }
 
+        // The scene round the map: rock on every side, at least one field
+        // all round, at least SCENE_COLUMNS across (or scene.columns, as
+        // many as fill the box, PipPlayer) and rows for about SCENE_RATIO,
+        // the map in the middle; the size of a field then comes
+        // from the width of the box (resize). The world and
+        // the frames know only the map: shift() moves a frame into the scene.
+        frame(map, first, scene) {
+            const cols = Math.max(Math.max(map.width, scene.width) + 2, scene.columns || SCENE_COLUMNS);
+            const rows = Math.max(Math.max(map.height, scene.height) + 2, Math.round(cols / SCENE_RATIO));
+            const ox = Math.floor((cols - map.width) / 2);
+            const oy = Math.floor((rows - map.height) / 2);
+            this.offset = [ox, oy];
+            const at = (p) => [p[0] + ox, p[1] + oy].concat(p.slice(2));
+            const inside = new Set();
+            for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) inside.add((x + ox) + ',' + (y + oy));
+            const walls = (map.walls || []).map(at);
+            for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) if (!inside.has(x + ',' + y)) walls.push([x, y]);
+            const list = (name) => (map[name] || []).map(at);
+            const layout = {
+                width: cols, height: rows, walls,
+                stones: list('stones'), levers: list('levers'), gates: list('gates'), trail: list('trail'), puddles: list('puddles'),
+                lamp: map.lamp && at(map.lamp), bello: map.bello && at(map.bello),
+                labels: (map.labels || []).map((label) => ({ at: at(label.at), text: label.text })),
+            };
+            return { layout, start: this.shift(first) };
+        }
+
+        shift(frame) {
+            const [ox, oy] = this.offset;
+            return Object.assign({}, frame, {
+                pip: Object.assign({}, frame.pip, { x: frame.pip.x + ox, y: frame.pip.y + oy }),
+                glibbers: (frame.glibbers || []).map((g) => [g[0] + ox, g[1] + oy]),
+                stones: (frame.stones || []).map((p) => [p[0] + ox, p[1] + oy]),
+            });
+        }
+
         resize() {
             const width = this.box.clientWidth || 400;
             const size = Math.max(12, Math.min(MAX_TILE, Math.floor(width / this.layout.width)));
@@ -399,6 +494,9 @@
             this.world.style.setProperty('--map-width', this.layout.width);
             this.world.style.width = size * this.layout.width + 'px';
             this.world.style.height = size * this.layout.height + 'px';
+            // the plan beside the scene is as high as it (default.css)
+            const layout = this.box.closest('.pip-layout, .pip-pair');
+            if (layout) layout.style.setProperty('--scene-height', size * this.layout.height + 'px');
         }
 
         // p: [x, y], for paw prints [x, y, the way Bello went in degrees]
@@ -411,9 +509,12 @@
         }
 
         // A frame of the run: animate: walk there in duration ms.
-        show(frame, animate, duration) {
+        show(original, animate, duration) {
+            const frame = this.shift(original);
             this.world.style.setProperty('--step', (animate ? duration : 0) + 'ms');
             const pip = frame.pip;
+            this.near([this.at, [pip.x, pip.y]]);
+            this.at = [pip.x, pip.y];
             this.pip.style.setProperty('--x', pip.x);
             this.pip.style.setProperty('--y', pip.y);
             this.lantern.style.setProperty('--x', pip.x);
@@ -453,13 +554,36 @@
                 }
             });
             this.spikesOpen = open;
-            const text = frame.event === 'say' ? frame.text : SAY[frame.event];
+            // a pull counts aloud: 1, 2, 3! (three lower the spikes)
+            const counted = frame.event === 'pull' ? (frame.pulls === 3 ? '3!' : String(frame.pulls)) : null;
+            this.say(frame.event === 'say' ? frame.text : counted || SAY[frame.event], pip);
+        }
+
+        // Pip shines above the dark (.pip-bright); the nooks of the fields
+        // Pip stands on or walks between go above Pip too, unlit by the
+        // light layer, as Pip's lantern lights them anyway.
+        near(tiles) {
+            if (tiles) this.nearTiles = tiles.filter(Boolean).map(key);
+            const set = new Set(this.nearTiles || []);
+            Object.keys(this.nooks).forEach((k) => this.nooks[k].classList.toggle('pip-near', set.has(k)));
+        }
+
+        // What Pip says, above Pip's head (none: hidden), in the letters of
+        // the 2D Game Studio, kept inside the map: lines wrap, and the text
+        // moves in from an edge.
+        say(text, pip) {
             this.bubble.hidden = !text;
-            if (text) {
-                this.bubble.textContent = text;
-                this.bubble.style.setProperty('--x', pip.x);
-                this.bubble.style.setProperty('--y', pip.y);
-            }
+            if (!text) return;
+            if (pip) this.speaker = pip;
+            this.bubble.textContent = String(text).trim();
+            const tile = parseFloat(this.world.style.getPropertyValue('--tile')) || 24;
+            const width = this.world.clientWidth;
+            const box = this.bubble.getBoundingClientRect();
+            const p = this.speaker || { x: 0, y: 0 };
+            const left = Math.max(2, Math.min(width - box.width - 2, (p.x + 0.5) * tile - box.width / 2));
+            const top = Math.max(2, (p.y + 0.1) * tile - box.height);
+            this.bubble.style.left = left + 'px';
+            this.bubble.style.top = top + 'px';
         }
     }
 
@@ -470,14 +594,57 @@
     // back moves, a jump shows the frame at once. onLine(line or null)
     // marks the editor.
     const SPEED_NAMES = [[1, '1×'], [2, '2×'], [0.5, '½×']];
-    const STEP_TIME = 450;
+    const STEP_TIME = 320;
+    const QUICK = ['turn', 'take'];
+    const QUICK_SHARE = 0.45;
+    const SPEED_KEY = 'pip-speed';
+    const players = [];
+    let speed = 0;
+    try { speed = Math.max(0, Math.min(SPEED_NAMES.length - 1, parseInt(localStorage.getItem(SPEED_KEY), 10) || 0)); } catch (e) { /* 1× */ }
 
     class PipPlayer {
-        constructor(box, layout, start, onLine) {
+        // maps: every map of the task ({ layout, start, call }, or { size,
+        // call } for one made from the person's seed), for tabs above the
+        // map; null: just one. selected: the tab shown, the map a run goes
+        // on first.
+        constructor(box, layout, start, maps, onLine) {
             this.box = box;
             this.onLine = onLine || (() => {});
             box.dataset.stepper = '';
+            this.maps = maps && maps.length > 1 ? maps : null;
+            this.runs = [];
+            this.selected = 0;
+            this.busy = false;
+            // the largest map of the task: every scene that size
+            const sizes = (maps || []).map((m) => m && m.layout ? [m.layout.width, m.layout.height] : m && m.size ? m.size : [0, 0]);
+            this.scene = { width: Math.max(layout.width, ...sizes.map((s) => s[0])), height: Math.max(layout.height, ...sizes.map((s) => s[1])) };
+            if (this.maps) {
+                this.tabs = el('div', 'pip-tabs', box);
+                this.tabs.setAttribute('role', 'tablist');
+                this.maps.forEach((map, i) => {
+                    const tab = el('button', 'pip-tab', this.tabs);
+                    tab.type = 'button';
+                    tab.setAttribute('role', 'tab');
+                    tab.textContent = 'Karte ' + (i + 1);
+                    // the call the check makes on this map (walk(3))
+                    if (map && map.call) el('code', 'pip-tab-call', tab).textContent = map.call.trim();
+                    if (!map || !map.layout) tab.title = 'Diese Karte baut der Wichtel für dich, wenn du deinen Plan ausführst.';
+                    tab.addEventListener('click', () => this.show(i));
+                });
+            }
             this.mapBox = el('div', 'pip-map-box', box);
+            // a small map on a wide screen: more rock round it, so that the
+            // scene fills the box with fields of at most MAX_TILE; drawn
+            // anew when that changes (a hidden card has no width yet)
+            this.columns = this.scene.columns = this.wanted();
+            if (window.ResizeObserver) {
+                new ResizeObserver(() => {
+                    const columns = this.wanted();
+                    if (columns === this.columns || !this.replay) return;
+                    this.columns = this.scene.columns = columns;
+                    this.redraw();
+                }).observe(this.mapBox);
+            }
             const row = el('div', 'pip-controls', box);
             this.buttons = {};
             [['first', 'bi-chevron-bar-left', 'Zum Anfang'], ['prev', 'bi-chevron-left', 'Einen Schritt zurück'],
@@ -494,22 +661,24 @@
             this.playButton.className = 'btn btn-sm btn-outline-success';
             this.playButton.dataset.play = '';
             this.playButton.addEventListener('click', () => this.toggle());
-            this.speed = 0;
             this.speedButton = el('button', 'btn btn-sm btn-outline-success', row);
             this.speedButton.type = 'button';
             this.speedButton.dataset.speed = '';
             this.speedButton.setAttribute('aria-label', 'Tempo beim Abspielen');
-            this.speedButton.textContent = SPEED_NAMES[0][1];
+            this.speedButton.textContent = SPEED_NAMES[speed][1];
+            // one speed for every player of the page, kept for the next page
             this.speedButton.addEventListener('click', () => {
-                this.speed = (this.speed + 1) % SPEED_NAMES.length;
-                this.speedButton.textContent = SPEED_NAMES[this.speed][1];
+                speed = (speed + 1) % SPEED_NAMES.length;
+                try { localStorage.setItem(SPEED_KEY, String(speed)); } catch (e) { /* only for this page */ }
+                players.forEach((player) => { player.speedButton.textContent = SPEED_NAMES[speed][1]; });
             });
+            players.push(this);
             this.status = el('span', 'pip-status', row);
             this.status.setAttribute('aria-live', 'polite');
             // a step chosen on the timeline stops playing and shows that frame
             box.addEventListener('pointerdown', (event) => { if (event.target.closest('.stepper-timeline')) this.stop(); }, true);
             box.stepperGo = (i) => this.go(i);
-            this.load({ layout: layout, frames: [start] });
+            this.load({ layout: layout, frames: [start], map: 1, maps: this.maps ? this.maps.length : 1 });
             document.dispatchEvent(new CustomEvent('stepper-added', { detail: box }));
         }
 
@@ -521,29 +690,92 @@
             return b;
         }
 
-        // A run from the server (PipCheck.replay); play: start at once.
-        load(replay, play) {
+        // Map i in its tab: its run, if there was one, else its start; a map
+        // made from the seed before any run only says so.
+        show(i) {
+            if (this.busy || this.timer) return;
+            this.selected = i;
+            const run = this.runs[i];
+            const map = this.maps[i];
+            if (run) this.load(Object.assign({}, run, { runs: this.runs }), false);
+            else if (map && map.layout) this.load({ layout: map.layout, frames: [map.start], map: i + 1, maps: this.maps.length }, false);
+            else {
+                this.stop();
+                this.active(i);
+                this.status.textContent = 'Karte ' + (i + 1) + ' baut der Wichtel für dich, wenn du deinen Plan ausführst.';
+            }
+        }
+
+        active(i) {
+            this.selected = i;
+            if (!this.tabs) return;
+            [...this.tabs.children].forEach((tab, k) => {
+                tab.classList.toggle('active', k === i);
+                tab.setAttribute('aria-selected', k === i ? 'true' : 'false');
+            });
+            this.lockTabs();
+        }
+
+        // While a run is on its way or plays, the map stays: the tabs wait.
+        lock(busy) {
+            this.busy = busy;
+            this.lockTabs();
+        }
+
+        lockTabs() {
+            if (!this.tabs) return;
+            const locked = this.busy || !!this.timer;
+            [...this.tabs.children].forEach((tab) => { tab.disabled = locked; });
+        }
+
+        // A run from the server (PipCheck.replay); play: start at once;
+        // over: called once, when the run has played to its end or is
+        // stopped or skipped (the card shows the result then).
+        load(replay, play, over) {
             this.stop();
+            this.over = over || null;
             this.replay = replay;
+            if (replay.runs) this.runs = replay.runs;
+            this.active((replay.map || 1) - 1);
             this.frames = replay.frames;
             this.mapBox.innerHTML = '';
-            this.view = new PipView(this.mapBox, replay.layout, this.frames[0]);
+            this.view = new PipView(this.mapBox, replay.layout, this.frames[0], this.scene);
             this.index = 0;
             this.update();
             if (play) this.play();
         }
 
+        wanted() {
+            return columns(this.mapBox);
+        }
+
+        // the same frame in a scene of the new size
+        redraw() {
+            this.mapBox.innerHTML = '';
+            this.view = new PipView(this.mapBox, this.replay.layout, this.frames[0], this.scene);
+            this.view.show(this.frames[this.index], false);
+        }
+
         // a long run (a maze) goes faster, so that it plays in about half a
-        // minute at 1×
-        duration() {
+        // minute at 1×; a turn or taking a stone is quicker than a step,
+        // unless Glibbers walk meanwhile
+        duration(frame) {
             const base = Math.max(60, Math.min(STEP_TIME, 30000 / this.frames.length));
-            return base / SPEED_NAMES[this.speed][0];
+            const quick = frame && QUICK.includes(frame.event) && !(frame.glibbers || []).length ? QUICK_SHARE : 1;
+            return base * quick / SPEED_NAMES[speed][0];
         }
 
         go(index, animate) {
             this.index = Math.max(0, Math.min(this.frames.length - 1, index));
-            this.view.show(this.frames[this.index], animate, this.duration());
+            this.view.show(this.frames[this.index], animate, this.duration(this.frames[this.index]));
             this.update();
+            if (this.index === this.frames.length - 1 && !this.timer) this.finish();
+        }
+
+        finish() {
+            const over = this.over;
+            this.over = null;
+            if (over) over();
         }
 
         update() {
@@ -567,23 +799,42 @@
 
         // play at the end starts again from the beginning
         play() {
-            if (this.frames.length < 2) return;
+            if (this.frames.length < 2) return this.finish();
             if (this.index >= this.frames.length - 1) this.go(0);
             this.setPlay('bi-pause-fill', 'Anhalten');
+            // what Pip says comes sentence by sentence, each as long as it
+            // takes to read; then the run goes on
             const tick = () => {
                 if (this.index >= this.frames.length - 1) return this.stop();
                 this.auto = true;
                 this.buttons.next.click();
                 this.auto = false;
-                if (this.index >= this.frames.length - 1) return this.stop();
-                this.timer = setTimeout(tick, this.duration());
+                const frame = this.frames[this.index];
+                let wait = this.duration(frame);
+                if (frame.event === 'say') {
+                    wait = 0;
+                    sentences(frame.text).forEach((sentence) => {
+                        this.saying.push(setTimeout(() => this.view.say(sentence), wait));
+                        wait += READ_TIME(sentence) / Math.sqrt(SPEED_NAMES[speed][0]);
+                    });
+                }
+                if (this.index >= this.frames.length - 1) {
+                    this.timer = setTimeout(() => this.stop(), wait);
+                    return;
+                }
+                this.timer = setTimeout(tick, wait);
             };
             this.timer = setTimeout(tick, 200);
+            this.lockTabs();
         }
 
         stop() {
             clearTimeout(this.timer);
             this.timer = null;
+            (this.saying || []).forEach(clearTimeout);
+            this.saying = [];
+            this.lockTabs();
+            this.finish();
             if (this.playButton) this.setPlay('bi-play-fill', 'Abspielen');
         }
 
@@ -620,18 +871,57 @@
         return { layout: layout, start: start };
     }
 
+    // The plan right after such a map (code blocks, one per language) goes
+    // beside it on a wide screen, as in the cards (.pip-pair).
+    function pair(box) {
+        const code = [];
+        for (let next = box.nextElementSibling; next && (next.matches('.code-language') || next.matches('pre, div.highlight')); next = next.nextElementSibling) code.push(next);
+        if (code.length === 0) return;
+        const wrap = document.createElement('div');
+        wrap.className = 'pip-pair';
+        box.before(wrap);
+        wrap.append(box, ...code);
+        // each plan in the editor of the cards, to read only: the same
+        // colours, the line numbers (code_input.js)
+        code.forEach((block) => {
+            const pre = block.matches('pre') ? block : block.querySelector('pre');
+            const language = block.dataset.language;
+            if (!pre || !language || !window.CodeInput) return;
+            const text = document.createElement('textarea');
+            text.className = 'form-control task-code pip-plan';
+            text.readOnly = true;
+            text.spellcheck = false;
+            text.dataset.codeLanguage = language;
+            text.setAttribute('aria-label', 'Der Plan');
+            text.value = pre.textContent.replace(/\n$/, '');
+            text.rows = text.value.split('\n').length;
+            pre.replaceWith(text);
+            CodeInput.attach(text);
+        });
+    }
+
     function drawStatic() {
         document.querySelectorAll('.pip-world.pip-static').forEach((box) => {
             const source = box.querySelector('pre');
             if (!source) return;
+            pair(box);
             const map = parse(source.textContent);
             source.hidden = true;
-            new PipView(el('div', 'pip-map-box', box), map.layout, map.start);
+            const mapBox = el('div', 'pip-map-box', box);
+            // beside its plan, the scene fills its column like a card's
+            const scene = box.parentElement.matches('.pip-pair') ? { width: map.layout.width, height: map.layout.height, columns: columns(mapBox) } : null;
+            new PipView(mapBox, map.layout, map.start, scene);
         });
     }
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', drawStatic);
     else drawStatic();
 
-    window.PipWorld = { PipView, PipPlayer, parse, corners: null };
+    // As many columns as fill box with fields of at most MAX_TILE.
+    function columns(box) {
+        const width = box.clientWidth;
+        return width > 0 ? Math.max(SCENE_COLUMNS, Math.ceil(width / MAX_TILE)) : SCENE_COLUMNS;
+    }
+
+    window.PipWorld = { PipView, PipPlayer, parse, columns, corners: null };
 })();

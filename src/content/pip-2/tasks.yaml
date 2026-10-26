@@ -603,7 +603,7 @@ tasks:
     title: "Ein Spruch mit Zahl"
     level: 2
     prompt: |
-      `walk(n)` lässt Pip `n` Felder vorwärts gehen: `walk(3)` drei, `walk(5)` fünf. `n` ist ein Parameter: Beim Aufruf steht dort eine Zahl, und im Zauberspruch hat `n` diesen Wert.
+      `walk(n)` lässt Pip `n` Felder vorwärts gehen: `walk(3)` drei, `walk(5)` fünf. `n` ist ein Parameter: Beim Aufruf steht dort eine Zahl, und im Zauberspruch hat `n` diesen Wert. Du schreibst nur den Spruch; die Prüfung ruft ihn auf drei Karten auf, mit `walk(3)`, `walk(5)` und `walk(1)`, und jeder Gang ist genau so lang, wie Pip gehen soll.
     starter: |
       def walk(n)
         # n Felder vorwärts
@@ -617,23 +617,28 @@ tasks:
           call: "walk(3)"
           expect: { moves: 3 }
           map: |
-            ############
-            #P.........#
-            ############
-        - facing: east
+            ######
+            #P...#
+            ######
+        - facing: south
           call: "walk(5)"
           expect: { moves: 5 }
           map: |
-            ############
-            #P.........#
-            ############
-        - facing: east
+            ###
+            #P#
+            #.#
+            #.#
+            #.#
+            #.#
+            #.#
+            ###
+        - facing: west
           call: "walk(1)"
           expect: { moves: 1 }
           map: |
-            ############
-            #P.........#
-            ############
+            ####
+            #.P#
+            ####
     hint: "Eine Schleife, die so oft läuft, wie `n` groß ist."
     solution: |
       ```ruby
@@ -645,7 +650,7 @@ tasks:
       ```
     python:
       prompt: |
-        `walk(n)` lässt Pip `n` Felder vorwärts gehen: `walk(3)` drei, `walk(5)` fünf. `n` ist ein Parameter: Beim Aufruf steht dort eine Zahl, und im Zauberspruch hat `n` diesen Wert.
+        `walk(n)` lässt Pip `n` Felder vorwärts gehen: `walk(3)` drei, `walk(5)` fünf. `n` ist ein Parameter: Beim Aufruf steht dort eine Zahl, und im Zauberspruch hat `n` diesen Wert. Du schreibst nur den Spruch; die Prüfung ruft ihn auf drei Karten auf, mit `walk(3)`, `walk(5)` und `walk(1)`, und jeder Gang ist genau so lang, wie Pip gehen soll.
       starter: |
         def walk(n):
             # n Felder vorwärts
@@ -659,23 +664,28 @@ tasks:
             call: "walk(3)"
             expect: { moves: 3 }
             map: |
-              ############
-              #P.........#
-              ############
-          - facing: east
+              ######
+              #P...#
+              ######
+          - facing: south
             call: "walk(5)"
             expect: { moves: 5 }
             map: |
-              ############
-              #P.........#
-              ############
-          - facing: east
+              ###
+              #P#
+              #.#
+              #.#
+              #.#
+              #.#
+              #.#
+              ###
+          - facing: west
             call: "walk(1)"
             expect: { moves: 1 }
             map: |
-              ############
-              #P.........#
-              ############
+              ####
+              #.P#
+              ####
       hint: "Eine Schleife, die so oft läuft, wie `n` groß ist."
       solution: |
         ```python
@@ -685,7 +695,7 @@ tasks:
         ```
     javascript:
       prompt: |
-        `walk(n)` lässt Pip `n` Felder vorwärts gehen: `walk(3)` drei, `walk(5)` fünf. `n` ist ein Parameter: Beim Aufruf steht dort eine Zahl, und im Zauberspruch hat `n` diesen Wert.
+        `walk(n)` lässt Pip `n` Felder vorwärts gehen: `walk(3)` drei, `walk(5)` fünf. `n` ist ein Parameter: Beim Aufruf steht dort eine Zahl, und im Zauberspruch hat `n` diesen Wert. Du schreibst nur den Spruch; die Prüfung ruft ihn auf drei Karten auf, mit `walk(3)`, `walk(5)` und `walk(1)`, und jeder Gang ist genau so lang, wie Pip gehen soll.
       starter: |
         function walk(n) {
           // n Felder vorwärts
@@ -699,23 +709,28 @@ tasks:
             call: "walk(3);"
             expect: { moves: 3 }
             map: |
-              ############
-              #P.........#
-              ############
-          - facing: east
+              ######
+              #P...#
+              ######
+          - facing: south
             call: "walk(5);"
             expect: { moves: 5 }
             map: |
-              ############
-              #P.........#
-              ############
-          - facing: east
+              ###
+              #P#
+              #.#
+              #.#
+              #.#
+              #.#
+              #.#
+              ###
+          - facing: west
             call: "walk(1);"
             expect: { moves: 1 }
             map: |
-              ############
-              #P.........#
-              ############
+              ####
+              #.P#
+              ####
       hint: "Eine Schleife, die so oft läuft, wie `n` groß ist."
       solution: |
         ```javascript
@@ -725,7 +740,6 @@ tasks:
           }
         }
         ```
-
   - id: stairs
     title: "Die Treppe"
     level: 3

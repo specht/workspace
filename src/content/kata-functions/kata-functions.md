@@ -12,7 +12,7 @@ curriculum: "Sek I: Variablen, Ausdrücke, Prozeduren"
 <p class='abstract'>
 Du schreibst kleine Funktionen direkt hier auf der Seite: Sie bekommen Zahlen
 oder Texte und geben ein Ergebnis zurück. Ohne Terminal und ohne Dateien, mit
-einem Knopf zum Ausprobieren und einem zum Prüfen.
+einem Knopf, der deinen Code ausführt und prüft.
 </p>
 
 <!-- tutorial-screenshot
@@ -72,10 +72,10 @@ mehreren Wörtern schreibt man in JavaScript zusammen, jedes weitere Wort groß:
 <!-- /language -->
 
 In jeder Karte unten schreibst du eine solche Funktion. **Ausführen** startet
-deinen Code einmal und zeigt, was er ausgibt. **Prüfen** ruft deine Funktion
-mit verschiedenen Werten auf und vergleicht, was herauskommt. Die Punkte
-neben dem Titel sagen, wie schwer eine Kata ist: einer für den Einstieg, zwei
-für die Übung, drei für eine Knobelei. Du darfst springen.
+deinen Code einmal und zeigt, was er ausgibt; dann ruft es deine Funktion mit
+verschiedenen Werten auf und vergleicht, was herauskommt. Neben dem Titel
+steht, wie schwer eine Kata ist: Einstieg, Übung oder Knobelei. Du darfst
+springen.
 
 ## Einstieg
 

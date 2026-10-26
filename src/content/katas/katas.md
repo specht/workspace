@@ -8,8 +8,8 @@ duration: je Übung 1 Doppelstunde
 
 <p class='abstract'>
 Kleine Programmieraufgaben, die du direkt auf der Seite schreibst, in Ruby,
-Python oder JavaScript: ohne Terminal und Dateien, mit einem Knopf zum
-Ausprobieren und einem zum Prüfen. Hier siehst du alle Übungen und wie weit
+Python oder JavaScript: ohne Terminal und Dateien, mit einem Knopf, der
+deinen Code ausführt und prüft. Hier siehst du alle Übungen und wie weit
 du schon bist.
 </p>
 

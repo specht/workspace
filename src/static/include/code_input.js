@@ -258,10 +258,44 @@
         }
     }
 
+    // A line that closes a block or starts its next part goes back to the
+    // indentation of the line that opened it, as soon as it is typed:
+    // Ruby's end, else, elsif, when, rescue, ensure; Python's else, elif,
+    // except, finally with their colon; JavaScript's closing brace.
+    const CLOSES = {
+        ruby: /^(end|else|elsif|when|rescue|ensure)$/,
+        python: /^(else|elif\b.*|except\b.*|finally):$/,
+        javascript: /^\}$/,
+    };
+
+    function outdent(textarea, language) {
+        const value = textarea.value;
+        const caret = textarea.selectionStart;
+        const first = value.lastIndexOf('\n', caret - 1) + 1;
+        const lineEnd = value.indexOf('\n', caret) < 0 ? value.length : value.indexOf('\n', caret);
+        if (caret !== lineEnd || caret !== textarea.selectionEnd) return;
+        const line = value.slice(first, lineEnd);
+        const indent = line.match(/^[ \t]*/)[0];
+        if (!indent || !CLOSES[language].test(line.trim())) return;
+        // the opening line: the nearest line above with less indentation
+        const above = value.slice(0, first).split('\n').reverse();
+        const opener = above.find((l) => l.trim() !== '' && l.match(/^[ \t]*/)[0].length < indent.length);
+        if (opener === undefined) return;
+        const target = opener.match(/^[ \t]*/)[0];
+        insert(textarea, target, first, first + indent.length);
+        const end = first + target.length + line.length - indent.length;
+        textarea.setSelectionRange(end, end);
+    }
+
     function codeKeys(textarea, language) {
         const unit = INDENT[language];
         let leaving = false;
+        textarea.addEventListener('input', (e) => {
+            if (e.inputType === 'insertText' && e.data && CLOSES[language]) outdent(textarea, language);
+        });
         textarea.addEventListener('keydown', (e) => {
+            // a plan to read (pip_world.js, pair): no keys that write
+            if (textarea.readOnly) return;
             if (e.key === 'Escape') { leaving = true; return; }
             if (e.key === 'Tab' && !leaving && !e.ctrlKey && !e.altKey && !e.metaKey) {
                 e.preventDefault();

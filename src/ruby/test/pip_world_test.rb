@@ -143,6 +143,9 @@ class PipWorldTest < Minitest::Test
         w.quiet = true
         assert_equal 'ok', w.command('move')
         assert_equal false, w.command('front_clear')
+        # say changes nothing, so it shows while loading too
+        w.command('say', :text => 'Hallo')
+        assert_equal ['Hallo'], w.said
         w.quiet = false
         w.command('move')
         assert_equal 1, w.moves

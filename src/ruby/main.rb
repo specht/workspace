@@ -5391,6 +5391,8 @@ class Main < Sinatra::Base
             config[:order] = TaskCard.option_orders(@session_user[:email], tasks[:activity], tasks[:on_page], tasks[:by_id])
             answers = open_answers_config(tasks, slug)
             config[:teacher] = answers if answers
+            solutions = kata_solutions_config(tasks)
+            config[:solutions] = solutions if solutions
         end
         # Text that only stands in for the cards (an exercise list) is hidden
         # while the cards are shown.
@@ -5751,6 +5753,28 @@ class Main < Sinatra::Base
             :pinned => groups.select { |g| pinned.include?(g) },
             :examples => examples ? ids.to_h { |id| [id, (tasks[:by_id][id]['examples'] || []).map { |e| render_task_markdown(e) }] } : nil,
         }
+    end
+
+    # For teachers, beside each Kata's buttons: its solution's code in every
+    # language it has, { id => { language => code } }, for a button that
+    # puts it into the editor (tasks.js). Like the example answers only in
+    # this config, never in the cards.
+    def kata_solutions_config(tasks)
+        return nil unless answer_examples_visible? || admin_logged_in?
+
+        solutions = {}
+        tasks[:on_page].each do |id|
+            task = tasks[:by_id][id]
+            next unless task && %w[function pip].include?(task.dig('check', 'type'))
+
+            [task, *CodeLanguages.variant_languages(task).map { |l| CodeLanguages.variant(task, l) }].each do |t|
+                next unless t['solution']
+
+                code = t['solution'].scan(/^```[^\n]*\n(.*?)^```/m).map(&:first).join("\n")
+                (solutions[id] ||= {})[t.dig('check', 'language')] = code unless code.empty?
+            end
+        end
+        solutions.empty? ? nil : solutions
     end
 
     # --- Class board (docs/aufgaben.md, »Klassenübersicht«) ---------------------

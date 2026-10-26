@@ -2969,7 +2969,8 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     margin: -0.4em 0 1em;
 }
 
-.stage-code-copy {
+.stage-code-copy,
+.task-solution-fill {
     padding: 0.1em 0.7em;
     border: 1px solid #d9c9ee;
     border-radius: 1em;
@@ -2980,11 +2981,13 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     white-space: nowrap;
 }
 
-.stage-code-copy .bi {
+.stage-code-copy .bi,
+.task-solution-fill .bi {
     margin-right: 0.4em;
 }
 
-.stage-code-copy:hover {
+.stage-code-copy:hover,
+.task-solution-fill:hover {
     background-color: #ece1f8;
     border-color: #b99ae0;
 }
@@ -4976,20 +4979,44 @@ ul.task-teacher-list .task-teacher-answer {
     vertical-align: 0;
 }
 
-/* The level of a Kata: one to three dots after the title. */
+/* The level of a Kata after the title: its name in a small pill, with
+   three rising bars, as many filled as the level; a colour per level
+   (dark.css: lighter). */
 .task-level {
+    --level: #1e7a45;
     display: inline-flex;
-    gap: 0.15em;
+    gap: 0.4em;
     align-items: center;
-    margin-left: 0.5em;
-    color: var(--bs-secondary-color);
-    font-size: 0.55em;
+    margin-left: 0.6em;
+    padding: 0.15em 0.6em 0.15em 0.5em;
+    border-radius: 1em;
+    background: color-mix(in srgb, var(--level) 11%, transparent);
+    color: var(--level);
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.3;
     vertical-align: middle;
+    white-space: nowrap;
 }
+.task-level-2 { --level: #1d5fb4; }
+.task-level-3 { --level: #a5480b; }
 
-.task-level .bi::before {
-    vertical-align: 0;
+.task-level-bars {
+    display: inline-flex;
+    gap: 2px;
+    align-items: flex-end;
+    height: 0.8em;
 }
+.task-level-bars i {
+    width: 3px;
+    border-radius: 1px;
+    background: currentColor;
+    opacity: 0.25;
+}
+.task-level-bars i:nth-child(1) { height: 40%; }
+.task-level-bars i:nth-child(2) { height: 70%; }
+.task-level-bars i:nth-child(3) { height: 100%; }
+.task-level-bars i.on { opacity: 1; }
 
 /* SQL and Cypher answers in the colours of the code blocks (code_input.js):
    the <pre> underneath draws the text, the textarea on top only holds the
@@ -8346,13 +8373,17 @@ html[data-bs-theme="dark"] .bitplane-widget {
 }
 
 .pip-sort {
-    z-index: calc(10 + var(--y) * 3);
+    z-index: calc(10 + var(--y) * 4);
 }
-.pip-sort.actor { z-index: calc(11 + var(--y) * 3); }
-.pip-pip.pip-sort { z-index: calc(12 + var(--y) * 3); }
+.pip-sort.actor { z-index: calc(11 + var(--y) * 4); }
+.pip-pip.pip-sort { z-index: calc(12 + var(--y) * 4); }
 /* above the light layer: what shines by itself */
-.pip-bright { z-index: calc(500 + var(--y) * 3); }
-.pip-pip.pip-bright { z-index: calc(502 + var(--y) * 3); }
+.pip-bright { z-index: calc(500 + var(--y) * 4); }
+.pip-pip.pip-bright { z-index: calc(502 + var(--y) * 4); }
+/* the rock of a nook in the lower half of a field, in front of what
+   stands there (pip_world.js); beside Pip above Pip */
+.pip-nook { z-index: calc(13 + var(--y) * 4); }
+.pip-nook.pip-near { z-index: calc(503 + var(--y) * 4); }
 
 .pip-tall {
     height: calc(var(--tile) * var(--h));
@@ -8392,25 +8423,25 @@ html[data-bs-theme="dark"] .bitplane-widget {
 
 /* on the ground */
 .pip-trail {
-    background-image: url(/images/pip/trail.png?v=10);
+    background-image: url(/images/pip/trail.png?v=12);
     /* turned the way Bello went (--turn); at a corner the prints of their
        own, pointing north-east */
     transform: translate(calc(var(--x) * var(--tile)), calc(var(--y) * var(--tile))) rotate(var(--turn, 0deg));
 }
-.pip-trail-diagonal { background-image: url(/images/pip/trail-diagonal.png?v=10); }
-.pip-puddle { background-image: url(/images/pip/puddle.png?v=10); }
+.pip-trail-diagonal { background-image: url(/images/pip/trail-diagonal.png?v=12); }
+.pip-puddle { background-image: url(/images/pip/puddle.png?v=12); }
 
 /* standing, in the dark */
 .pip-deco { --h: 1; }
-.pip-mushroom { background-image: url(/images/pip/mushroom.png?v=10); }
-.pip-stalagmite { background-image: url(/images/pip/stalagmite.png?v=10); }
-.pip-lever { background-image: url(/images/pip/lever-off.png?v=10); }
-.pip-lever.pip-pulled { background-image: url(/images/pip/lever-on.png?v=10); }
+.pip-mushroom { background-image: url(/images/pip/mushroom.png?v=12); }
+.pip-stalagmite { background-image: url(/images/pip/stalagmite.png?v=12); }
+.pip-lever { --h: 1.3334; background-image: url(/images/pip/lever-off.png?v=12); }
+.pip-lever.pip-pulled { background-image: url(/images/pip/lever-on.png?v=12); }
 /* spikes in the floor, which Pip does not walk onto; lowered once the
    levers have been pulled three times */
 .pip-spikes {
-    --h: 1.3334;
-    background-image: url(/images/pip/spikes.png?v=10);
+    --h: 1.6667;
+    background-image: url(/images/pip/spikes.png?v=12);
     background-size: 400% 100%;
 }
 .pip-gate-open .pip-spikes { background-position-x: calc(var(--tile) * -3); }
@@ -8426,22 +8457,22 @@ html[data-bs-theme="dark"] .bitplane-widget {
     to { background-position-x: 0; }
 }
 .pip-glibber {
-    background-image: url(/images/pip/glibber.png?v=10);
+    background-image: url(/images/pip/glibber.png?v=12);
     background-size: 400% 100%;
     animation: pip-frames-4 0.9s steps(4) infinite;
 }
 .pip-bello {
-    background-image: url(/images/pip/bello.png?v=10);
+    background-image: url(/images/pip/bello.png?v=12);
     background-size: 400% 100%;
     animation: pip-frames-4 1.6s steps(4) infinite;
 }
 
 /* shining by themselves */
-.pip-glowshroom { background-image: url(/images/pip/glowshroom.png?v=10); }
-.pip-crystals { background-image: url(/images/pip/crystals.png?v=10); }
+.pip-glowshroom { background-image: url(/images/pip/glowshroom.png?v=12); }
+.pip-crystals { background-image: url(/images/pip/crystals.png?v=12); }
 .pip-stone {
     z-index: 499;
-    background-image: url(/images/pip/stone.png?v=10);
+    background-image: url(/images/pip/stone.png?v=12);
     background-size: 400% 100%;
     animation: pip-frames-4 1.4s steps(4) infinite;
     transition: opacity 300ms;
@@ -8450,24 +8481,24 @@ html[data-bs-theme="dark"] .bitplane-widget {
 /* the old lamp on its post, dark with a faint ember until Pip lights it */
 .pip-lamp {
     --h: 1.6667;
-    background-image: url(/images/pip/lamp-off.png?v=10);
+    background-image: url(/images/pip/lamp-off.png?v=12);
 }
 .pip-lamp:not(.pip-lit) {
     filter: drop-shadow(0 0 calc(var(--tile) * 0.12) rgba(255, 200, 140, 0.6));
 }
-.pip-lamp.pip-lit { background-image: url(/images/pip/lamp.png?v=10); }
+.pip-lamp.pip-lit { background-image: url(/images/pip/lamp.png?v=12); }
 /* the post against a wall on the right, the lantern out over the ground */
 .pip-tall.pip-mirrored {
     transform: translate(calc(var(--x) * var(--tile)), calc((var(--y) + 1 - var(--h)) * var(--tile))) scaleX(-1);
 }
 
 .pip-pip {
-    background-image: url(/images/pip/pip-east.png?v=10);
+    background-image: url(/images/pip/pip-east.png?v=12);
     background-size: 200% 100%;
 }
-.pip-pip[data-facing='west'] { background-image: url(/images/pip/pip-west.png?v=10); }
-.pip-pip[data-facing='north'] { background-image: url(/images/pip/pip-north.png?v=10); }
-.pip-pip[data-facing='south'] { background-image: url(/images/pip/pip-south.png?v=10); }
+.pip-pip[data-facing='west'] { background-image: url(/images/pip/pip-west.png?v=12); }
+.pip-pip[data-facing='north'] { background-image: url(/images/pip/pip-north.png?v=12); }
+.pip-pip[data-facing='south'] { background-image: url(/images/pip/pip-south.png?v=12); }
 .pip-pip.pip-walking { animation: pip-frames-2 var(--step) steps(2); }
 .pip-pip.pip-bump { animation: pip-bump 300ms; }
 .pip-pip.pip-caught { animation: pip-caught 600ms 2; }
@@ -8586,7 +8617,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
 .pip-bat {
     z-index: 960;
     opacity: 0;
-    background-image: url(/images/pip/bat.png?v=10);
+    background-image: url(/images/pip/bat.png?v=12);
     background-size: 400% 100%;
     animation: pip-bat 22s linear infinite, pip-frames-4 0.5s steps(4) infinite;
     pointer-events: none;
@@ -8610,18 +8641,19 @@ html[data-bs-theme="dark"] .bitplane-widget {
 }
 
 .pip-bubble {
+    /* what Pip says, as in the 2D Game Studio: light pixel letters with a
+       black outline, no box; placed by pip_world.js (say) */
     position: absolute;
     z-index: 1000;
-    top: 0;
-    left: 0;
-    transform: translate(calc(var(--x) * var(--tile) - 0.5em), calc((var(--y) - 0.9) * var(--tile)));
-    padding: 0.1em 0.5em;
-    border: 1px solid #1a1c2c;
-    border-radius: 0.6em;
-    background: #f4f4f4;
-    color: #1a1c2c;
-    font-size: 0.8em;
-    white-space: nowrap;
+    max-width: min(16em, 90%);
+    font-family: 'Pixelify Sans', monospace;
+    font-size: max(13px, calc(var(--tile) * 0.42));
+    line-height: 1.15;
+    text-align: center;
+    color: #f4f4f4;
+    text-shadow: 1px 0 #000, -1px 0 #000, 0 1px #000, 0 -1px #000, 1px 1px #000, -1px -1px #000, 1px -1px #000, -1px 1px #000,
+        2px 0 #000, -2px 0 #000, 0 2px #000, 0 -2px #000;
+    pointer-events: none;
     image-rendering: auto;
 }
 
@@ -8632,8 +8664,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
     .pip-layout {
         display: grid;
         grid-template-columns: minmax(0, 1.5fr) minmax(16em, 1fr);
-        grid-template-areas: 'map code' 'map commands' 'controls controls' 'timeline timeline';
-        grid-template-rows: auto 1fr auto auto;
+        grid-template-areas: 'tabs tabs' 'map code' 'commands commands' 'controls controls' 'timeline timeline';
         column-gap: 1em;
         align-items: start;
         margin-bottom: 0.8em;
@@ -8642,11 +8673,67 @@ html[data-bs-theme="dark"] .bitplane-widget {
        timeline run under both columns */
     .pip-layout > .pip-world { display: contents; }
     .pip-layout .pip-map-box { grid-area: map; }
+    .pip-layout .pip-tabs { grid-area: tabs; }
     .pip-layout .pip-controls { grid-area: controls; }
     .pip-layout .stepper-timeline { grid-area: timeline; }
     .pip-layout > .code-input,
     .pip-layout > textarea { grid-area: code; }
-    .pip-layout > .pip-commands { grid-area: commands; align-self: start; }
+    /* the plan as high as the scene beside it (pip_world.js, --scene-height) */
+    .pip-layout .code-input-text,
+    .pip-layout > textarea {
+        min-height: var(--scene-height, 16em);
+    }
+    .pip-layout > .pip-commands { grid-area: commands; }
+}
+
+/* a map in the page with the plan after it: side by side on a wide
+   screen, like a card (pip_world.js, pair) */
+@media (min-width: 992px) {
+    .pip-pair {
+        display: grid;
+        grid-template-columns: minmax(0, 1.5fr) minmax(16em, 1fr);
+        column-gap: 1em;
+        align-items: start;
+    }
+    .pip-pair > .pip-world { grid-row: 1 / span 9; }
+    .pip-pair > :not(.pip-world) { grid-column: 2; margin-top: 0.4em; }
+    /* the plan as high as the scene beside it (--scene-height) */
+    .pip-pair pre:not(.code-input-view),
+    .pip-pair .code-input-text {
+        min-height: var(--scene-height, 16em);
+        margin: 0;
+    }
+}
+
+/* the maps of a task, one tab each, above the map */
+.pip-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3em;
+    margin-bottom: 0.4em;
+}
+.pip-tab {
+    padding: 0.15em 0.7em;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1em;
+    background: var(--bs-body-bg);
+    color: var(--bs-secondary-color);
+    font-size: 0.85em;
+}
+.pip-tab.active {
+    border-color: var(--stepper-current);
+    color: var(--stepper-current);
+    font-weight: 600;
+}
+/* while a run is on its way or plays */
+.pip-tab:disabled { opacity: 0.55; cursor: default; }
+/* the call the check makes on the map: Karte 1 walk(3) */
+.pip-tab-call {
+    margin-left: 0.45em;
+    padding: 0;
+    background: none;
+    color: inherit;
+    font-size: 0.95em;
 }
 
 /* the commands of a task under the plan; a question (on_stone?) set apart
@@ -8729,7 +8816,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
     content: '';
     flex: 0 0 48px;
     height: 48px;
-    background: url(/images/pip/wichtel.png?v=10) no-repeat 0 0 / 400% 100%;
+    background: url(/images/pip/wichtel.png?v=12) no-repeat 0 0 / 400% 100%;
     image-rendering: pixelated;
 }
 

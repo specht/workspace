@@ -370,7 +370,7 @@
             spinner.className = 'task-submit-busy';
             spinner.innerHTML = "<span class='spinner-border spinner-border-sm' aria-hidden='true'></span>" +
                 "<span class='visually-hidden'>" + (card.dataset.type === 'submit' ? 'Wird abgegeben …'
-                    : which === '.task-run' ? 'Läuft …' : 'Wird geprüft …') + '</span>';
+                    : which === '.task-run' || KATA.includes(card.dataset.type) ? 'Läuft …' : 'Wird geprüft …') + '</span>';
             button.appendChild(spinner);
         } else if (!busy && button.classList.contains('is-busy')) {
             button.classList.remove('is-busy');
@@ -414,25 +414,43 @@
         const which = kind === 'run' ? '.task-run' : '.task-submit';
         const queue = card.querySelector('.task-queue');
         setBusy(card, true, which);
+        if (card.pipPlayer) card.pipPlayer.lock(true);
         const done = function (data) {
             setBusy(card, false, which);
+            if (card.pipPlayer) card.pipPlayer.lock(false);
             if (queue) queue.textContent = '';
+            // back to writing, with a mouse (on a touch screen the keyboard
+            // would cover the map); without moving the page
+            const editor = card.querySelector('.task-code');
+            if (editor && window.matchMedia('(pointer: fine)').matches) editor.focus({ preventScroll: true });
             if (!data || !data.success) {
                 showFeedback(card, 'unavailable', '<p>Das hat gerade nicht geklappt. Versuch es gleich noch einmal.</p>');
                 return;
             }
             if (data.status === 'cancelled') return;
-            if (data.replay && card.pipPlayer) card.pipPlayer.load(data.replay, true);
             if (kind === 'run') {
                 showConsole(card, data);
                 return;
             }
-            showFeedback(card, data.status, data.message, data.solution, data.read);
-            if (data.state) {
-                setBadge(card, data.state.status, data.status === 'correct' && card.dataset.status !== 'correct');
-                card.querySelector('.task-delete').hidden = false;
-                showHandIn(card, data.state);
+            // a function Kata: what its own program printed, above the result
+            if (data.ran) showConsole(card, { status: data.ran === 'ran' ? 'ran' : 'error', output: data.output });
+            const result = function () {
+                showFeedback(card, data.status, data.message, data.solution, data.read);
+                if (data.state) {
+                    setBadge(card, data.state.status, data.status === 'correct' && card.dataset.status !== 'correct');
+                    card.querySelector('.task-delete').hidden = false;
+                    showHandIn(card, data.state);
+                }
+            };
+            // Pip: the run plays first, the result comes when it is over (or
+            // stopped, or skipped to its end); what the plan printed below
+            if (data.replay && card.pipPlayer) {
+                card.querySelector('.task-feedback').hidden = true;
+                if (data.replay.output) showConsole(card, { status: 'ran', output: data.replay.output });
+                card.pipPlayer.load(data.replay, true, result);
+                return;
             }
+            result();
         };
         const follow = function (data) {
             if (!data || !data.success || data.done) {
@@ -448,7 +466,10 @@
             }, KATA_POLL_MS);
             if (data.ticket) card.dataset.kataTicket = data.ticket;
         };
-        api_call('/api/kata/' + kind, { task: card.dataset.task, answer: answer, language: card.dataset.language }, follow, { no_please_wait: true });
+        const request = { task: card.dataset.task, answer: answer, language: card.dataset.language };
+        // Pip: the map in the card's tab runs first
+        if (card.pipPlayer) request.map = String(card.pipPlayer.selected);
+        api_call('/api/kata/' + kind, request, follow, { no_please_wait: true });
     }
 
     // Einreichen (KataHandIns): under a solved Kata, a copy of the code for
@@ -633,7 +654,9 @@
                     const box = document.createElement('div');
                     box.className = 'pip-map-box';
                     map.appendChild(box);
-                    new PipWorld.PipView(box, JSON.parse(map.dataset.layout), JSON.parse(map.dataset.start));
+                    const layout = JSON.parse(map.dataset.layout);
+                    new PipWorld.PipView(box, layout, JSON.parse(map.dataset.start),
+                        { width: layout.width, height: layout.height, columns: PipWorld.columns(box) });
                 }
                 return;
             }
@@ -652,7 +675,7 @@
             // Pip's map (pip_world.js): the player under it marks each step's line
             const world = card.querySelector('.pip-world');
             if (world && window.PipWorld) {
-                card.pipPlayer = new PipWorld.PipPlayer(world, JSON.parse(world.dataset.layout), JSON.parse(world.dataset.start), function (line) {
+                card.pipPlayer = new PipWorld.PipPlayer(world, JSON.parse(world.dataset.layout), JSON.parse(world.dataset.start), JSON.parse(world.dataset.maps || 'null'), function (line) {
                     if (sql && sql.codeInputMark) sql.codeInputMark(line);
                 });
             }
@@ -682,6 +705,33 @@
             watchPicks();
         }
         setupTeacherAnswers();
+        setupTeacherSolutions();
+    }
+
+    // For teachers, beside a Kata's buttons: a small button that puts the
+    // solution into the editor, in the card's language, to run it or show
+    // it in class.
+    function setupTeacherSolutions() {
+        const solutions = page.solutions;
+        if (!solutions) return;
+        cards().forEach((card) => {
+            const own = solutions[cardId(card)];
+            const editor = card.querySelector('.task-code');
+            const actions = card.querySelector('.task-actions');
+            if (!own || !editor || !actions) return;
+            const code = own[card.dataset.language] || Object.values(own)[0];
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'task-solution-fill';
+            button.title = 'Für Lehrkräfte: die Lösung in den Code einsetzen';
+            button.innerHTML = "<i class='bi bi-box-arrow-in-down' aria-hidden='true'></i>Lösung einsetzen";
+            button.addEventListener('click', () => {
+                editor.value = code;
+                editor.dispatchEvent(new Event('input', { bubbles: true }));
+                editor.focus({ preventScroll: true });
+            });
+            actions.insertBefore(button, actions.querySelector('.task-reads-toggle'));
+        });
     }
 
     // For teachers, under each open task (reflection): the example answers

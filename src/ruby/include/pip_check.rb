@@ -268,16 +268,28 @@ module PipCheck
         check['maps'].each_with_index.map { |m, i| m.key?('generate') ? PipMaps.make(m, seed, i) : m }
     end
 
-    def self.check(task, check, code, run, seed: 0)
+    # selected: the map the card shows; it runs first, and its run is what
+    # the card plays when the plan works on every map.
+    def self.check(task, check, code, run, seed: 0, selected: 0)
         return [:invalid, KataCheck::EMPTY, nil, nil] if code.to_s.strip.empty?
 
         first = nil
-        maps(check, seed).each_with_index do |map, i|
+        # the run of every map so far by its index, for the card to show
+        # each (runs)
+        runs = []
+        with_runs = ->(r) { r.merge(:runs => runs) }
+        maps = maps(check, seed)
+        selected = 0 unless selected.is_a?(Integer) && selected.between?(0, maps.size - 1)
+        order = [selected] + ((0...maps.size).to_a - [selected])
+        order.each do |i|
+            map = maps[i]
             ran = run_map(check, code, map, run)
             return [:unavailable, KataCheck::BUSY, nil, nil] if ran.nil?
 
             world = ran[:world]
             replay = replay(world, i, check['maps'].size, ran[:output])
+            runs[i] = replay
+            replay = with_runs.call(replay)
             first ||= replay
             where = check['maps'].size > 1 ? "In Karte #{i + 1}" : 'Hier'
             if ran[:timed_out]
@@ -334,7 +346,9 @@ module PipCheck
             n = world.taken
             stones = n == 1 ? 'einen Funkenstein' : "#{n} Funkensteine"
             return "sagt Pip am Ende nichts. Pip hat #{stones} aufgehoben: Wie viele, soll Pip sagen." if world.said.empty?
-            return "sagt Pip am Ende »#{world.said.last}«, aber Pip hat #{stones} aufgehoben." unless world.said.last.strip == n.to_s
+            # a sentence counts too, as long as its one number is the right one
+            # (»Ich habe 4 Steine eingesammelt.«)
+            return "sagt Pip am Ende »#{world.said.last}«, aber Pip hat #{stones} aufgehoben." unless world.said.last.scan(/\d+/) == [n.to_s]
         end
 
         nil

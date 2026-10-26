@@ -143,20 +143,10 @@ html[data-bs-theme="dark"] {
     .table {
         --bs-table-bg: rgba(0, 0, 0, 0.2);
     }
-    /* »Ausführen« beside »Prüfen« on a Kata: Bootstrap's green outline is
-       too dark on the dark page; the green of the badges instead. */
-    .btn-outline-success.task-run {
-        --bs-btn-color: #6fd39b;
-        --bs-btn-border-color: #3f8f63;
-        --bs-btn-hover-color: #9be6bb;
-        --bs-btn-hover-bg: rgba(111, 211, 155, 0.14);
-        --bs-btn-hover-border-color: #6fd39b;
-        --bs-btn-active-color: #9be6bb;
-        --bs-btn-active-bg: rgba(111, 211, 155, 0.22);
-        --bs-btn-active-border-color: #6fd39b;
-        --bs-btn-disabled-color: #6fd39b;
-        --bs-btn-disabled-border-color: #3f8f63;
-    }
+    /* the level of a Kata (default.css) in lighter colours */
+    .task-level { --level: #6fd39b; }
+    .task-level-2 { --level: #7fb4f0; }
+    .task-level-3 { --level: #f0a56a; }
     /* The stops of the Katas' overview: solid, so the dashed path behind
        them does not show through; the colour of the veil on the page. */
     .kata-stop-link {

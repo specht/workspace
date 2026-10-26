@@ -95,7 +95,13 @@ class PipCheckTest < Minitest::Test
             assert_empty PipCheck.spec_errors(c)
             status, message, = PipCheck.check({}, c, plan, RUN)
             assert_equal :correct, status, "#{language}: #{message}"
+            # the map in the card's tab runs first and is what it plays
+            status, _, _, replay = PipCheck.check({}, c, plan, RUN, :selected => 1)
+            assert_equal [:correct, 2], [status, replay[:map]], language
+            assert_equal [1, 2], replay[:runs].map { |r| r[:map] }, language
             wrong = plan.sub('3', '1')
+            _, message, = PipCheck.check({}, c, wrong, RUN, :selected => 1)
+            assert_equal "In Karte 2 schaut Pip nach `#{calls[language]}` nach links statt nach rechts.", message, language
             status, message, = PipCheck.check({}, c, wrong, RUN)
             assert_equal "In Karte 1 schaut Pip nach `#{calls[language]}` nach oben statt nach unten.", message, language
         end
@@ -119,6 +125,9 @@ class PipCheckTest < Minitest::Test
         plan = "n = 0\nwhile front_clear?\n  move\n  if on_stone?\n    take\n    n += 1\n  end\nend\nsay n\n"
         assert_equal :correct, PipCheck.check({}, counting, plan, RUN).first
         assert_equal 'Hier sagt Pip am Ende »1«, aber Pip hat 2 Funkensteine aufgehoben.', PipCheck.check({}, counting, plan.sub('say n', 'say 1'), RUN)[1]
+        # a sentence with the right number counts, one with two numbers does not
+        assert_equal :correct, PipCheck.check({}, counting, plan.sub('say n', 'say "Ich habe #{n} Steine."'), RUN).first
+        assert_equal :wrong, PipCheck.check({}, counting, plan.sub('say n', 'say "#{n} von 3"'), RUN).first
     end
 end
 

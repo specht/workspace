@@ -1,4 +1,4 @@
-Lernende schreiben kleine Funktionen direkt in die Karten der Seite, in Ruby, Python oder JavaScript: Werte bekommen, rechnen, ein Ergebnis zurückgeben. Ohne Terminal und Dateien; **Ausführen** zeigt, was der Code ausgibt, **Prüfen** ruft die Funktion mit festen und zufälligen Werten auf.
+Lernende schreiben kleine Funktionen direkt in die Karten der Seite, in Ruby, Python oder JavaScript: Werte bekommen, rechnen, ein Ergebnis zurückgeben. Ohne Terminal und Dateien; ein Knopf, **Ausführen**, zeigt, was der Code ausgibt, und ruft die Funktion mit festen und zufälligen Werten auf.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Keine Programmiererfahrung nötig; Variablen und Rechenzeichen werden gebraucht, aber nicht eigens erklärt.</td></tr>

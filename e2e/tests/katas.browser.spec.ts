@@ -4,10 +4,10 @@ import type { Locator } from '@playwright/test';
 import { loginAsE2eUser } from './workspace';
 
 // A Kata (KataCheck, docs/plan-katas.md): code typed into the card, run in a
-// container of its own. »Ausführen« shows what the program prints,
-// »Prüfen« calls the functions and compares; the code comes back after a
-// reload. The page /kata-demo exists in development only. The visible card
-// is in the person's language (Ruby or Python), so each test writes in that.
+// container of its own. One button, »Ausführen«, shows what the program
+// prints, then calls the functions and compares; the code comes back after
+// a reload. The Kata pages exist in development only. The visible card is
+// in the person's language (Ruby or Python), so each test writes in that.
 
 async function languageOf(card: Locator): Promise<'ruby' | 'python'> {
   return (await card.locator('.task-code').getAttribute('data-code-language')) as 'ruby' | 'python';
@@ -15,11 +15,12 @@ async function languageOf(card: Locator): Promise<'ruby' | 'python'> {
 
 test('a Kata runs, checks and keeps its code', async ({ page, e2eEmail }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
-  await page.goto('/kata-demo');
-  const card = page.locator('.task-card[data-task="kata-demo/greet"]:visible');
+  await page.goto('/kata-functions');
+  const card = page.locator('.task-card[data-task="kata-functions/greet"]:visible');
   const field = card.locator('.task-code');
   await expect(field).toHaveValue(/def greet\(name\)/);
-  await expect(card.locator('.task-level .bi')).toHaveCount(1);
+  await expect(card.locator('.task-level')).toHaveText('Einstieg');
+  await expect(card.locator('.task-level-bars .on')).toHaveCount(1);
 
   // Enter keeps the indentation and adds one after def (or a colon);
   // Shift+Tab takes one back.
@@ -42,11 +43,12 @@ test('a Kata runs, checks and keeps its code', async ({ page, e2eEmail }, testIn
   const view = card.locator('.code-input-view');
   await expect(view.locator('.nf')).toHaveText('greet');
 
-  await card.locator('.task-run').click();
-  await expect(card.locator('.task-console')).toHaveText('Hallo, Ada!\n', { timeout: 30_000 });
-
+  // one button: the program runs, what it prints shows, and the check says
+  // whether the function works
+  await expect(card.locator('.task-run')).toHaveCount(0);
   await card.locator('.task-submit').click();
   await expect(card.locator('.task-feedback')).toContainText('Alle 3 Aufrufe liefern, was sie sollen.', { timeout: 30_000 });
+  await expect(card.locator('.task-console')).toHaveText('Hallo, Ada!\n');
   await expect(card).toHaveAttribute('data-status', 'correct');
 
   await page.reload();
@@ -55,8 +57,8 @@ test('a Kata runs, checks and keeps its code', async ({ page, e2eEmail }, testIn
 
 test('a typical wrong Kata gets its own feedback', async ({ page, e2eEmail }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
-  await page.goto('/kata-demo');
-  const card = page.locator('.task-card[data-task="kata-demo/ggt"]:visible');
+  await page.goto('/kata-loops');
+  const card = page.locator('.task-card[data-task="kata-loops/gcd"]:visible');
   await card.locator('.task-code').fill((await languageOf(card)) === 'ruby' ? 'def gcd(a, b) = [a, b].min\n' : 'def gcd(a, b):\n    return min(a, b)\n');
   await card.locator('.task-submit').click();
   await expect(card.locator('.task-feedback')).toContainText('Die kleinere Zahl ist nur manchmal ein Teiler der größeren.', { timeout: 30_000 });
@@ -64,8 +66,8 @@ test('a typical wrong Kata gets its own feedback', async ({ page, e2eEmail }, te
 
 test('an Extra is marked and counts for nobody', async ({ page, e2eEmail }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
-  await page.goto('/kata-demo');
-  const card = page.locator('.task-card[data-task="kata-demo/ziffern"]:visible');
+  await page.goto('/kata-decisions');
+  const card = page.locator('.task-card[data-task="kata-decisions/rock-paper-scissors"]:visible');
   await expect(card.locator('.task-extra')).toHaveText('Extra');
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
@@ -83,10 +85,9 @@ test('JavaScript on a Kata page, Ruby or Python elsewhere', async ({ page, e2eEm
   const card = page.locator('.task-card[data-task="kata-functions/greet"]:visible');
   await expect(card.locator('.task-code')).toHaveAttribute('data-code-language', 'javascript');
   await card.locator('.task-code').fill("function greet(name) {\n  return `Hallo, ${name}!`;\n}\n\nconsole.log(greet('Ada'));\n");
-  await card.locator('.task-run').click();
-  await expect(card.locator('.task-console')).toHaveText('Hallo, Ada!\n', { timeout: 30_000 });
   await card.locator('.task-submit').click();
   await expect(card.locator('.task-feedback')).toContainText('Alle 3 Aufrufe liefern, was sie sollen.', { timeout: 30_000 });
+  await expect(card.locator('.task-console')).toHaveText('Hallo, Ada!\n');
   // a page without JavaScript keeps the language from before
   await page.goto('/automata');
   await expect(page.locator('[data-code-language]').first()).toHaveAttribute('data-code-language', before!);
@@ -137,12 +138,12 @@ test('pictures of a Kata card', async ({ page, e2eEmail }, testInfo) => {
   for (const [scheme, width] of [['light', 1100], ['dark', 1100], ['light', 390]] as const) {
     await page.emulateMedia({ colorScheme: scheme });
     await page.setViewportSize({ width, height: 900 });
-    await page.goto('/kata-demo');
-    const card = page.locator('.task-card[data-task="kata-demo/ggt"]:visible');
+    await page.goto('/kata-loops');
+    const card = page.locator('.task-card[data-task="kata-loops/gcd"]:visible');
     await card.locator('.task-code').fill((await languageOf(card)) === 'ruby'
       ? 'def gcd(a, b)\n  # Euklid: der Rest ist der neue Teiler\n  b.zero? ? a : gcd(b, a % b)\nend\n\nputs gcd(60, 48)\n'
       : 'def gcd(a, b):\n    # Euklid: der Rest ist der neue Teiler\n    while b:\n        a, b = b, a % b\n    return a\n\nprint(gcd(60, 48))\n');
-    await card.locator('.task-run').click();
+    await card.locator('.task-submit').click();
     await expect(card.locator('.task-console')).toContainText('12', { timeout: 30_000 });
     await card.screenshot({ path: testInfo.outputPath(`kata-${scheme}-${width}.png`) });
   }
@@ -203,7 +204,7 @@ test('Pip walks a plan, and a wall names the line', async ({ browser, page, e2eE
   const mobile = await phone.newPage();
   await mobile.goto(page.url());
   const mobileCard = mobile.locator('.task-card[data-task="pip-1/shaft"]:visible');
-  await mobileCard.locator('.task-run').click();
+  await mobileCard.locator('.task-submit').click();
   await expect(mobileCard.locator('.pip-status')).toHaveText('Schritt 8 von 8 · Zeile 8', { timeout: 30_000 });
   await expect(mobileCard.locator('.task-console')).toBeHidden();
   await mobileCard.locator('.code-input').scrollIntoViewIfNeeded();
@@ -231,4 +232,50 @@ test('Pip learns turn_right, and the check calls it', async ({ page, e2eEmail },
   // the replay: three turns, the plan's own move left out
   await expect(card.locator('.pip-status')).toHaveText(/^Karte 1 von 2 · Schritt 3 von 3/, { timeout: 20_000 });
   await expect(card.locator('.pip-pip')).toHaveAttribute('data-facing', 'south');
+  // what the plan says while it is loaded is said too, and the cursor is
+  // back in the editor
+  const said = language === 'ruby'
+    ? 'def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nsay "Rechts!"\nturn_right\n'
+    : 'def turn_right():\n    for i in range(3):\n        turn_left()\n\nsay("Rechts!")\nturn_right()\n';
+  await card.locator('.task-code').fill(said);
+  await card.locator('.task-submit').click();
+  await expect(card.locator('.pip-bubble')).toHaveText('Rechts!', { timeout: 30_000 });
+  await expect(card.locator('.task-code')).toBeFocused();
+});
+
+// What Pip says comes sentence by sentence while the run plays, each long
+// enough to read.
+test('Pip says one sentence after the other', async ({ page, e2eEmail }, testInfo) => {
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/pip-1');
+  const card = page.locator('.task-card[data-task="pip-1/shaft"]:visible');
+  const plan = (await languageOf(card)) === 'ruby'
+    ? 'say "Hallo. Wo ist Bello?"\nmove\n'
+    : 'say("Hallo. Wo ist Bello?")\nmove()\n';
+  await card.locator('.task-code').fill(plan);
+  await card.locator('.task-submit').click();
+  const bubble = card.locator('.pip-bubble');
+  await expect(bubble).toHaveText('Hallo.', { timeout: 30_000 });
+  await expect(bubble).toHaveText('Wo ist Bello?', { timeout: 5_000 });
+});
+
+// The map in the tab runs first and stays; while a run plays, the tabs wait.
+test('Pip runs on the map of the tab', async ({ page, e2eEmail }, testInfo) => {
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/pip-2');
+  const card = page.locator('.task-card[data-task="pip-2/walk"]:visible');
+  const language = await languageOf(card);
+  await expect(card.locator('.pip-tab')).toHaveCount(3);
+  await expect(card.locator('.pip-tab').nth(1)).toContainText('walk(5)');
+  await card.locator('.pip-tab').nth(1).click();
+  await expect(card.locator('.pip-pip')).toHaveAttribute('data-facing', 'south');
+  await card.locator('.task-code').fill(language === 'ruby'
+    ? 'def walk(n)\n  n.times do\n    move\n  end\nend\n'
+    : 'def walk(n):\n    for i in range(n):\n        move()\n');
+  await card.locator('.task-submit').click();
+  await expect(card.locator('.pip-tab').first()).toBeDisabled({ timeout: 30_000 });
+  await expect(card.locator('.task-feedback')).toContainText('Pip schafft alle 3 Karten.', { timeout: 30_000 });
+  await expect(card.locator('.pip-status')).toHaveText(/^Karte 2 von 3 · Schritt 5 von 5/);
+  await expect(card.locator('.pip-tab').nth(1)).toHaveClass(/active/);
+  await expect(card.locator('.pip-tab').first()).toBeEnabled();
 });
