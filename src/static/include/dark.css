@@ -162,12 +162,12 @@ html[data-bs-theme="dark"] {
     }
     /* the site's blue in the dark (as »Aufgabe 1«) */
     .kata-set-pin {
-        background: #8db8f5;
-        color: #172a45;
+        background: rgba(20, 20, 20, 0.88);
+        color: #8db8f5;
     }
     .card-pin {
-        background: #8db8f5;
-        color: #172a45;
+        background: rgba(20, 20, 20, 0.88);
+        color: #8db8f5;
     }
     .tutorial_card3.card-pinned {
         outline-color: #8db8f5;

@@ -481,6 +481,18 @@ function heading_label(heading) {
     return copy.textContent.trim();
 }
 
+// A heading's text for the side navigation with its code as code
+// (»Ein Angriff mit ..« read like a cut-off title); links inside it become
+// text, a link may not hold one.
+function heading_content(heading) {
+    let copy = heading.cloneNode(true);
+    copy.querySelectorAll('.extra-badge').forEach(badge => badge.remove());
+    copy.querySelectorAll('a').forEach(a => a.replaceWith(...a.childNodes));
+    let fragment = document.createDocumentFragment();
+    fragment.append(...copy.childNodes);
+    return fragment;
+}
+
 var autotoc_secondary = null;
 var autotoc_secondary_headings = [];
 var autotoc_secondary_links = [];
@@ -564,7 +576,7 @@ function install_secondary_autotoc() {
         let link = document.createElement('a');
         link.href = `#${id}`;
         link.className = `level-${level}`;
-        link.textContent = heading_label(heading);
+        link.append(heading_content(heading));
         if (heading.classList.contains('extra')) {
             link.classList.add('extra');
             link.append(extra_chapter_mark(true));
