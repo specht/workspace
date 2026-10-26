@@ -34,6 +34,11 @@
 # cave_map and facing ask what Pip knows from the Wichtel's map: the map
 # as it is now (rows of the legend, Pip, the Mampfer, Glibbers and the
 # stones where they are) and where Pip looks; like a sensor, no step.
+# When the plan ends with Pip neither at the goal nor caught (PipCheck asks
+# for that), Pip stands still and the world goes on (chase): wait after
+# wait, without a line, until the Mampfer has Pip or can come no nearer
+# (Pip in the light, no way); chased counts these steps, and their frames
+# say after: true (the player shows »nach dem Plan«).
 #
 # While a program is only being loaded (quiet: a check that calls one of
 # its functions afterwards, PipCheck), commands do nothing and are not
@@ -54,7 +59,7 @@ class PipWorld
 
     class Error < StandardError; end
 
-    attr_reader :width, :height, :pip, :stones, :taken, :steps, :trace, :ended, :pulls, :said
+    attr_reader :width, :height, :pip, :stones, :taken, :steps, :trace, :ended, :pulls, :said, :chased
     attr_accessor :quiet
 
     def initialize(map, facing: 'east', dry: false)
@@ -107,6 +112,7 @@ class PipWorld
         @steps = 0
         @pulls = 0
         @said = []
+        @chased = 0
         @ended = nil
         @trace = [frame(:start, nil)]
     end
@@ -271,6 +277,21 @@ class PipWorld
         'ok'
     end
 
+    # The plan is over, but not the run: Pip stands still, and while a
+    # Mampfer can still come nearer, the world goes on, a wait (with no line
+    # of the plan) at a time, until it has Pip. Every wait brings a Mampfer
+    # one tile nearer on a way that stays the same, so it ends within as
+    # many waits as the map has tiles; the bound is that, and MAX_STEPS.
+    def chase
+        @chasing = true
+        (@width * @height).times do
+            break if @ended || @steps >= MAX_STEPS || !mampfer_coming?
+
+            @chased += 1
+            command('wait')
+        end
+    end
+
     # The program ended by itself.
     def done(line = nil)
         finish(:done, line) unless @ended
@@ -350,6 +371,17 @@ class PipWorld
         end
     end
 
+    # Would a Mampfer move after the next step of Pip standing still?
+    def mampfer_coming?
+        return false if @mampfers.empty?
+
+        predecessor = towards_pip
+        @mampfers.any? do |m|
+            to = predecessor[[m[:x], m[:y]]]
+            !to.nil? && !light?(*to)
+        end
+    end
+
     # What cave_map and facing answer.
     def query(name)
         return @pip[:facing] if name == 'facing'
@@ -408,6 +440,6 @@ class PipWorld
             :pip => @pip.dup, :glibbers => @glibbers.map { |g| [g[:x], g[:y]] },
             :stones => @stones.keys, :pulls => @pulls,
             :mampfers => @mampfers.map { |m| [m[:x], m[:y]] },
-        }.merge(extra)
+        }.merge(@chasing ? { :after => true } : {}).merge(extra)
     end
 end

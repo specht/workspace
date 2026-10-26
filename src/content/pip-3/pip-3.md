@@ -33,8 +33,9 @@ Augen sind fürs Dunkle gemacht, eine Lampe blendet ihn.«
 
 Nach jedem Schritt von Pip geht der Mampfer ein Feld weiter, auf dem kürzesten
 Weg zu Pip. Ein Schritt ist jeder Befehl außer `say`: auch eine Drehung und das
-Aufheben eines Steins. Bleibt Pip stehen, holt der Mampfer Pip also ein. Steht
-er auf Pips Feld oder Pip auf seinem, schnappt er zu.
+Aufheben eines Steins. Bleibt Pip stehen, holt der Mampfer Pip also ein, auch
+wenn dein Plan zu Ende ist, bevor Pip an der Lampe ist. Steht er auf Pips Feld
+oder Pip auf seinem, schnappt er zu.
 
 Bevor Pip losläuft: Auf dieser Karte macht Pip einen Schritt nach rechts.
 

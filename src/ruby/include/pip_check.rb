@@ -92,7 +92,7 @@ module PipCheck
         'no_stone' => 'greift Pip ins Leere: Hier liegt kein Funkenstein',
         'no_lever' => 'zieht Pip an einem Hebel, der nicht da ist',
         'caught' => 'erwischt ein Glibber Pip',
-        'chomped' => 'schnappt der Mampfer Pip',
+        'chomped' => 'hat der Mampfer Pip zum Frühstück',
         'puddle' => 'tritt Pip in eine Pfütze',
         'steps' => "hält Pip nach #{PipWorld::MAX_STEPS} Schritten an. Läuft Pip im Kreis?",
     }.freeze
@@ -285,7 +285,14 @@ module PipCheck
                           :timeout => SECONDS, :dialog => dialog)
         return nil if result.nil?
 
-        world.done unless world.ended || result.timed_out
+        unless world.ended || result.timed_out
+            # a plan that ends early is not the end of the run: Pip stands
+            # still, and the Mampfer comes (PipWorld#chase). Not after a
+            # crash, which is its own message, nor for a call of a function.
+            crashed = !(result.stderr.to_s.strip.empty? || result.status == 0)
+            world.chase unless crashed || map['call'] || goal_missing(check['goal'] || {}, world).nil?
+            world.done
+        end
         { :world => world, :output => result.stdout, :errors => result.stderr, :timed_out => result.timed_out, :status => result.status }
     end
 
@@ -335,6 +342,11 @@ module PipCheck
                 explanation = KataCheck.explain(ran[:errors], check['language'])
                 message += "\n\n#{explanation}" if explanation
                 return [:wrong, message, nil, replay]
+            end
+            if world.chased > 0 && world.ended == :chomped
+                n = world.chased == 1 ? 'einem Schritt' : "#{world.chased} Schritten"
+                return [:wrong, "#{where} ist dein Plan zu Ende, bevor Pip es geschafft hat. Pip bleibt stehen, " \
+                                "und der Mampfer kommt: Nach #{n} hat er Pip zum Frühstück.", nil, replay]
             end
             if (event = EVENTS[world.ended.to_s])
                 line = world.trace.last[:line]

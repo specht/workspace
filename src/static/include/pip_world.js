@@ -86,6 +86,8 @@
     const SIDE_ROWS = [7, 5, 4, 3];
     const RIM_FACE = [140, 156, 196];
     const VERSION = '?v=13';
+    // ordered dithering in map pixels, as in make_sprites.py
+    const BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
 
     // The pictures the rock and the ground are drawn from, loaded once for
     // every map on the page and read into pixels: { top, face, ground }.
@@ -175,10 +177,8 @@
                 const right = wall(p[0] + 1, p[1]) && !wall(p[0] - 1, p[1]);
                 this.glow('lamp', [p[0] + (right ? -0.15 : 0.15), p[1] - 0.6], 3).classList.add('pip-burning');
                 this.tile('lamp pip-lit pip-sort pip-tall pip-bright' + (right ? ' pip-mirrored' : ''), p);
-                for (let dy = -1; dy <= 1; dy++) {
-                    for (let dx = -1; dx <= 1; dx++) if (!wall(p[0] + dx, p[1] + dy)) this.tile('safe', [p[0] + dx, p[1] + dy]);
-                }
             });
+            if ((layout.burning || []).length) this.safeLight(layout.burning, wall);
             this.lantern = this.glow('lantern actor', [start.pip.x, start.pip.y], 3.5);
             // shining by themselves, above the light, sorted by row
             (layout.stones || []).forEach((p) => { this.stones[key(p)] = this.tile('stone', p); });
@@ -435,6 +435,58 @@
             }
         }
 
+        // The light of the lamps that burn on the ground, one picture in map
+        // pixels (PX a tile) under the rock: the nine fields round a lamp,
+        // where the Mampfer does not go, lit up to their edge and brightest
+        // round the lamp; just outside them the light fades in a few pixels,
+        // dithered with the Bayer pattern of make_sprites.py, round at the
+        // corners. Where lights meet, the brighter counts, so there is no
+        // seam; only open fields get it.
+        safeLight(burning, wall) {
+            const W = this.layout.width * PX;
+            const H = this.layout.height * PX;
+            const node = el('canvas', 'pip-safe', this.world);
+            node.width = W;
+            node.height = H;
+            const g = node.getContext('2d');
+            const image = g.createImageData(W, H);
+            // the tint at each level of light (the last: round the lamp)
+            const LEVELS = [0, 0.05, 0.1, 0.15, 0.2, 0.26, 0.32];
+            const EDGE = 0.6;
+            const FADE = 8 / PX;
+            const top = LEVELS.length - 1;
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    const tx = Math.floor(x / PX);
+                    const ty = Math.floor(y / PX);
+                    if (wall(tx, ty)) continue;
+                    const u = (x + 0.5) / PX;
+                    const v = (y + 0.5) / PX;
+                    let light = 0;
+                    burning.forEach(([bx, by]) => {
+                        // how far outside the nine fields, in tiles
+                        const ox = Math.max(bx - 1 - u, 0, u - (bx + 2));
+                        const oy = Math.max(by - 1 - v, 0, v - (by + 2));
+                        const out = Math.hypot(ox, oy);
+                        let here;
+                        if (out === 0) here = EDGE + (1 - EDGE) * Math.max(0, 1 - Math.hypot(u - bx - 0.5, v - by - 0.5) / 1.5);
+                        else here = out < FADE ? EDGE * (1 - out / FADE) : 0;
+                        light = Math.max(light, here);
+                    });
+                    if (!light) continue;
+                    const level = light * top;
+                    const low = Math.floor(level);
+                    const step = low < top && level - low > (BAYER[y % 4][x % 4] + 0.5) / 16 ? low + 1 : low;
+                    const i = (y * W + x) * 4;
+                    image.data[i] = 255;
+                    image.data[i + 1] = 190;
+                    image.data[i + 2] = 100;
+                    image.data[i + 3] = Math.round(LEVELS[step] * 255);
+                }
+            }
+            g.putImageData(image, 0, 0);
+        }
+
         // A spot of light in the light layer, r tiles across from its middle.
         glow(name, p, r) {
             const node = el('div', 'pip-glow pip-glow-' + name.split(' ').join(' pip-glow-'), this.light);
@@ -535,7 +587,11 @@
             this.pip.dataset.facing = pip.facing;
             this.pip.classList.toggle('pip-walking', animate && ['move', 'lamp', 'bello'].includes(frame.event));
             this.pip.classList.toggle('pip-bump', frame.event === 'wall');
-            this.pip.classList.toggle('pip-caught', frame.event === 'caught' || frame.event === 'chomped');
+            this.pip.classList.toggle('pip-caught', frame.event === 'caught');
+            // the Mampfer has Pip, lantern and all: gone once it is there;
+            // a step back brings Pip back
+            this.pip.classList.toggle('pip-eaten', frame.event === 'chomped');
+            this.lantern.classList.toggle('pip-eaten', frame.event === 'chomped');
             (frame.glibbers || []).forEach((g, i) => {
                 if (!this.glibbers[i]) return;
                 this.glibbers[i].style.setProperty('--x', g[0]);
@@ -809,7 +865,7 @@
             const ran = this.frames.length > 1;
             const maps = this.replay.maps > 1 ? 'Karte ' + this.replay.map + ' von ' + this.replay.maps + ' · ' : '';
             const steps = this.frames[this.frames.length - 1].step;
-            this.status.textContent = ran ? maps + 'Schritt ' + frame.step + ' von ' + steps + (frame.line ? ' · Zeile ' + frame.line : '') : 'Noch nicht gelaufen';
+            this.status.textContent = ran ? maps + 'Schritt ' + frame.step + ' von ' + steps + (frame.line ? ' · Zeile ' + frame.line : frame.after ? ' · nach dem Plan' : '') : 'Noch nicht gelaufen';
             this.buttons.first.disabled = this.buttons.prev.disabled = this.index === 0;
             this.buttons.next.disabled = this.buttons.last.disabled = this.index >= this.frames.length - 1;
             this.playButton.disabled = !ran;

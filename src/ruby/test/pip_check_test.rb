@@ -167,6 +167,24 @@ class PipCheckTest < Minitest::Test
                           :commands => %w[move turn_left wait], :goal => { 'lamp' => true })
         status, message, = PipCheck.check({}, c, "move\nwait\nwait\n", RUN)
         assert_equal :wrong, status
-        assert_equal 'Hier in Zeile 3 schnappt der Mampfer Pip.', message
+        assert_equal 'Hier in Zeile 3 hat der Mampfer Pip zum Frühstück.', message
+    end
+
+    # a plan that ends too early: Pip stands still, the Mampfer comes; in
+    # the light it cannot, and the old message stays
+    def test_the_mampfer_comes_after_the_plan
+        needs_docker
+        c = check('ruby', :maps => [{ 'map' => "###########\n#M....P...#\n#########L#\n###########", 'facing' => 'east' }],
+                          :commands => %w[move turn_left], :goal => { 'lamp' => true })
+        status, message, _, replay = PipCheck.check({}, c, "move\n", RUN)
+        assert_equal :wrong, status
+        assert_equal 'Hier ist dein Plan zu Ende, bevor Pip es geschafft hat. Pip bleibt stehen, und der Mampfer kommt: ' \
+                     'Nach 5 Schritten hat er Pip zum Frühstück.', message
+        assert_equal 'chomped', replay[:ended].to_s
+        assert_equal 6, replay[:frames].last[:step]
+        c = check('ruby', :maps => [{ 'map' => "##########\n#M....P.L#\n#....*...#\n##########", 'facing' => 'west' }],
+                          :commands => %w[move turn_left], :goal => { 'lamp' => true })
+        _, message, = PipCheck.check({}, c, "move\n", RUN)
+        assert_equal 'Hier steht Pip am Ende nicht an der Lampe.', message
     end
 end

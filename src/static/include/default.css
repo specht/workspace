@@ -8922,6 +8922,9 @@ html[data-bs-theme="dark"] .bitplane-widget {
 /* above the light layer: what shines by itself */
 .pip-bright { z-index: calc(500 + var(--y) * 4); }
 .pip-pip.pip-bright { z-index: calc(502 + var(--y) * 4); }
+/* the Mampfer in front of Pip, also on Pip's tile (the same z-index, later
+   in the map), still behind the rock of a nook in front of it */
+.pip-mampfer.pip-bright { z-index: calc(502 + var(--y) * 4); }
 /* the rock of a nook in the lower half of a field, in front of what
    stands there (pip_world.js); beside Pip above Pip */
 .pip-nook { z-index: calc(13 + var(--y) * 4); }
@@ -9021,10 +9024,17 @@ html[data-bs-theme="dark"] .bitplane-widget {
     from { background-position-x: calc(var(--w) * -4); }
     to { background-position-x: calc(var(--w) * -8); }
 }
-/* the nine fields in the light of a lamp that burns: the Mampfer keeps out */
+/* the nine fields in the light of a lamp that burns, where the Mampfer
+   keeps out: one picture of the map in its pixels (pip_world.js), under
+   the rock */
 .pip-safe {
+    position: absolute;
+    inset: 0;
     z-index: 3;
-    background: rgba(255, 190, 100, 0.16);
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    pointer-events: none;
 }
 .pip-bello {
     background-image: url(/images/pip/bello.png?v=13);
@@ -9076,6 +9086,9 @@ html[data-bs-theme="dark"] .bitplane-widget {
     60% { translate: calc(var(--tile) * -0.08) 0; }
 }
 @keyframes pip-caught { 50% { opacity: 0.25; } }
+/* eaten by the Mampfer: gone after the step that brings it there */
+.pip-eaten { animation: pip-eaten 1ms var(--step, 0ms) forwards; }
+@keyframes pip-eaten { to { visibility: hidden; opacity: 0; } }
 @keyframes pip-hop { 50% { translate: 0 calc(var(--tile) * -0.3); } }
 
 /* The light: a layer over the ground, the rock and what stands in the dark,

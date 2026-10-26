@@ -206,6 +206,35 @@ class PipWorldTest < Minitest::Test
         assert_raises(PipWorld::Error) { PipWorld.new("######\n#P.M*#\n######") }
     end
 
+    # after the plan Pip stands still and the Mampfer keeps coming, a wait
+    # without a line at a time, until it has Pip; in the light, or without
+    # a way, it cannot come, and nothing happens
+    def test_the_chase_after_the_plan
+        w = PipWorld.new("###########\n#M....P...#\n#########L#\n###########")
+        w.command('move', :line => 1)
+        w.chase
+        assert_equal :chomped, w.ended
+        assert_equal 5, w.chased
+        assert_equal 6, w.steps
+        after = w.trace.select { |f| f[:after] }
+        assert_equal 6, after.size, 'five waits and the end'
+        assert(after.all? { |f| f[:line].nil? })
+        assert_equal [[3, 1], [4, 1], [5, 1], [6, 1], [7, 1]], after.map { |f| f[:mampfers].first }.first(5)
+        assert_nil w.trace[1][:after]
+        w = PipWorld.new("#######\n#M..P*#\n#######")
+        w.chase
+        assert_equal 2, w.chased, 'up to the edge of the light'
+        assert_nil w.ended
+        assert_equal [[3, 1]], w.trace.last[:mampfers]
+        w = PipWorld.new("#######\n#M#.P.#\n#######")
+        w.chase
+        assert_equal 0, w.chased
+        assert_equal 1, w.trace.size
+        w = PipWorld.new("#####\n#P.L#\n#####")
+        w.chase
+        assert_equal 0, w.chased, 'no Mampfer'
+    end
+
     # what the Wichtel's map says, now: no step
     def test_cave_map_and_facing
         w = PipWorld.new("######\n#P.o.#\n####M#\n####L#\n######")

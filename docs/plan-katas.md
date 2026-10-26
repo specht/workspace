@@ -183,7 +183,11 @@ The code:
   Stepper on a map, `data-grid`) and the students' own search are the same
   algorithm. It is not blind: its eyes are made for the dark and a burning
   lamp dazzles it, so it never steps into the light, the 3 × 3 tiles round
-  a lamp Pip lit earlier, not even onto Pip standing there. A puzzle that
+  a lamp Pip lit earlier, not even onto Pip standing there. A plan that
+  ends before Pip is at the goal does not end the run: Pip stands still and
+  the Mampfer keeps coming, step by step (»nach dem Plan« in the player, no
+  line), until it has Pip for breakfast (Pip vanishes under it) or cannot
+  come nearer; not after a crash, which keeps its own message. A puzzle that
   depends on which of two equal ways it takes is unfair and was dropped.
   Because turns cost a step, the generated caves of the last chapter are
   checked by simulation: every shortest way escapes even turning left only,
