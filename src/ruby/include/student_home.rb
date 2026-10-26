@@ -129,7 +129,7 @@ module StudentHome
             io << "<span class='sc-meta'><span class='shc-bar' aria-hidden='true'>"
             e[:marks].each { |m| io << "<span class='shc-mark shc-#{m}'></span>" }
             io << '</span>'
-            io << "<span class='sc-count'>#{e[:done]} von #{e[:total]} #{e[:total] == 1 ? 'Aufgabe' : 'Aufgaben'}#{extras_text(e)}</span></span>"
+            io << "<span class='sc-count'>#{e[:done]} von #{e[:total]} gelöst#{extras_text(e)}</span></span>"
             io << "<i class='bi bi-arrow-right-short' aria-hidden='true'></i>"
             io << '</a></li>'
         end
@@ -186,7 +186,7 @@ module StudentHome
             io << "<div class='shc-progress'><span class='shc-bar' aria-hidden='true'>"
             entry[:marks].each { |m| io << "<span class='shc-mark shc-#{m}'></span>" }
             io << '</span>'
-            io << "<span class='shc-count'>#{entry[:done]} von #{entry[:total]} erledigt#{extras_text(entry)}</span></div>"
+            io << "<span class='shc-count'>#{entry[:done]} von #{entry[:total]} gelöst#{extras_text(entry)}</span></div>"
             io << "<span class='shc-next'>Weiter mit: #{h(entry[:next][:title])}</span>" if entry[:next]
         end
         label = if entry.nil? || entry[:done].to_i.zero? then 'Loslegen'
