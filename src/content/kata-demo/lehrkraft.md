@@ -1,0 +1,1 @@
+Lernende schreiben kleine Funktionen direkt in die Karte, in Ruby oder Python, ohne Terminal und Dateien. Nur in der Entwicklung zu sehen: ein Entwurf, um die Karten der Katas auszuprobieren (docs/plan-katas.md).

@@ -199,10 +199,16 @@ module PythonCheck
         CallCheck.spec_errors(check, '.py')
     end
 
+    # The harness as a list of arguments, for a run outside the Workspace
+    # too (KataCheck: the code of a card, in a container of its own).
+    def self.argv(file, cases)
+        payload = cases.map { |c| { 'call' => c['call'], 'expect' => c['expect'], 'raises' => c['raises'] } }
+        ['python3', '-I', '-B', '-c', HARNESS, file, JSON.generate(payload)]
+    end
+
     # The command that prints the result, run in /workspace as the guest.
     def self.command(file, cases)
-        payload = cases.map { |c| { 'call' => c['call'], 'expect' => c['expect'], 'raises' => c['raises'] } }
-        Shellwords.join(['python3', '-I', '-B', '-c', HARNESS, file, JSON.generate(payload)])
+        Shellwords.join(argv(file, cases))
     end
 
     def self.parse(output)

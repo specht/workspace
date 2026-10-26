@@ -106,3 +106,9 @@ end
 # ./config.rb build case_museum case_alarm peer_firewall && ./config.rb up -d;
 # Workspaces bekommen ihren Zugang beim nächsten Start.
 # CASE_SERVER = true
+
+# Wie viele Katas (Programmieraufgaben in der Karte, docs/aufgaben.md,
+# »function«) gleichzeitig laufen; die anderen warten der Reihe nach. Ohne
+# diese Zeile 4. Wie viele der Server verträgt, misst
+# ./config.rb exec ruby ruby /src/scripts/measure-katas.rb
+# KATA_PARALLEL_RUNS = 4

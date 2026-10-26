@@ -37,7 +37,7 @@ module CodeLanguages
     LANGUAGES = %w[ruby python].freeze
     NAMES = { 'ruby' => 'Ruby', 'python' => 'Python' }.freeze
     DEFAULT = 'ruby'
-    VARIANT_KEYS = %w[prompt check hint solution feedback file].freeze
+    VARIANT_KEYS = %w[prompt check hint solution feedback file starter].freeze
 
     START = /^[ \t]*<!--[ \t]*language:[ \t]*([a-z]+)[ \t]*-->[ \t]*$/
     FINISH = /^[ \t]*<!--[ \t]*\/language[ \t]*-->[ \t]*$/

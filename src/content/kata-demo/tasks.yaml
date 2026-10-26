@@ -1,0 +1,101 @@
+format: 1
+activity: kata-demo
+tasks:
+  - id: greet
+    title: Eine Begrüßung
+    level: 1
+    prompt: |
+      Schreib eine Funktion `greet(name)`, die eine Begrüßung zurückgibt:
+      `greet('Ada')` ergibt `'Hallo, Ada!'`.
+    starter: |
+      def greet(name)
+      end
+
+      puts greet('Ada')
+    check:
+      type: function
+      language: ruby
+      cases:
+        - greet('Ada'): "'Hallo, Ada!'"
+        - greet('Linus'): "'Hallo, Linus!'"
+        - call: greet('')
+          expect: "'Hallo, !'"
+          say: Auch ein leerer Name bekommt seinen Gruß.
+    hint: Zwei Texte hängst du mit `+` aneinander, oder du schreibst `"Hallo, #{name}!"`.
+    solution: |
+      ```ruby
+      def greet(name)
+        "Hallo, #{name}!"
+      end
+      ```
+    python:
+      starter: |
+        def greet(name):
+            pass
+
+        print(greet('Ada'))
+      check:
+        type: function
+        language: python
+        cases:
+          - greet('Ada'): "'Hallo, Ada!'"
+          - greet('Linus'): "'Hallo, Linus!'"
+          - call: greet('')
+            expect: "'Hallo, !'"
+            say: Auch ein leerer Name bekommt seinen Gruß.
+      hint: Zwei Texte hängst du mit `+` aneinander, oder du schreibst `f'Hallo, {name}!'`.
+      solution: |
+        ```python
+        def greet(name):
+            return f'Hallo, {name}!'
+        ```
+
+  - id: ggt
+    title: Der größte gemeinsame Teiler
+    level: 3
+    prompt: |
+      Schreib eine Funktion `gcd(a, b)`, die den größten gemeinsamen Teiler
+      zweier Zahlen zurückgibt: `gcd(60, 48)` ergibt `12`.
+    starter: |
+      def gcd(a, b)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - gcd(60, 48): 12
+        - gcd(48, 60): 12
+        - gcd(17, 5): 1
+        - call: gcd(7, 7)
+          expect: 7
+          say: Der größte Teiler einer Zahl mit sich selbst ist sie selbst.
+    hint:
+      - Rechne `gcd(60, 48)` von Hand. Welche Zahlen teilen beide?
+      - "Euklid: Was `a` und `b` teilt, teilt auch `a - b`. Was passiert, wenn du das wiederholst?"
+    solution: |
+      ```ruby
+      def gcd(a, b)
+        b.zero? ? a : gcd(b, a % b)
+      end
+      ```
+    python:
+      starter: |
+        def gcd(a, b):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - gcd(60, 48): 12
+          - gcd(48, 60): 12
+          - gcd(17, 5): 1
+          - call: gcd(7, 7)
+            expect: 7
+            say: Der größte Teiler einer Zahl mit sich selbst ist sie selbst.
+      solution: |
+        ```python
+        def gcd(a, b):
+            while b:
+                a, b = b, a % b
+            return a
+        ```

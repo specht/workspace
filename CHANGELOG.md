@@ -21,6 +21,9 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Katas (Programmieraufgaben in der Karte, Prüfart `function`, noch nur auf einer Entwicklungsseite): Der Code läuft in einem eigenen Container
+  aus dem Workspace-Image ohne Netz, durch eine Warteschlange. Neu und freiwillig in `credentials.rb`: `KATA_PARALLEL_RUNS` (ohne 4), messen mit
+  `./config.rb exec ruby ruby /src/scripts/measure-katas.rb`. Gespeichert wird der Code als Antwort der Aufgabe, je Sprache; die Datenschutzerklärung nennt es.
 - Tipps in Stufen: Welche Tipps einer Aufgabe aufgeklappt wurden, merkt sich nur der Browser (lokaler Speicher),
   für jedes Konto getrennt; der Server speichert davon nichts; die Datenschutzerklärung nennt es bei »Cookies und Speicher im Browser«.
 - Fallserver: Die Eingabeaufforderung beginnt farbig mit dem Namen des Servers (`[museum]` gelb,

@@ -4913,13 +4913,56 @@ ul.task-teacher-list .task-teacher-answer {
 }
 
 .task-command,
-.task-sql {
+.task-sql,
+.task-code {
     font-family: '0xProto Nerd Font Mono', monospace;
 }
 
-.task-sql {
+.task-sql,
+.task-code {
     font-size: 90%;
     min-height: 6em;
+}
+
+/* A Kata (KataCheck): what »Ausführen« printed, below the buttons, as a
+   console; a run that ended with an error in the colour of a hint. */
+.task-console {
+    margin: 0.6em 0 0;
+    padding: 0.5em 0.75em;
+    max-height: 16em;
+    overflow: auto;
+    border-radius: 0.5em;
+    background: var(--code-bg, rgb(40, 40, 40));
+    color: #ebdbb2;
+    font-size: 85%;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+.task-console.task-console-error {
+    color: #fabd2f;
+}
+
+/* Its place in the queue while it waits (»Noch 2 vor dir«). */
+.task-queue {
+    align-self: center;
+    font-size: 85%;
+    color: var(--bs-secondary-color);
+}
+
+/* The level of a Kata: one to three dots after the title. */
+.task-level {
+    display: inline-flex;
+    gap: 0.15em;
+    align-items: center;
+    margin-left: 0.5em;
+    color: var(--bs-secondary-color);
+    font-size: 0.55em;
+    vertical-align: middle;
+}
+
+.task-level .bi::before {
+    vertical-align: 0;
 }
 
 /* SQL and Cypher answers in the colours of the code blocks (code_input.js):

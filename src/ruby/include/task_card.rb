@@ -50,6 +50,7 @@ module TaskCard
         io << "<div class='task-head'>"
         io << "<span class='task-number'>#{task['prediction'] ? 'Vermutung' : 'Aufgabe'} #{number.to_i}</span>"
         io << "<span class='task-title' id='#{h.(field)}-title'>#{h.(task['title'])}</span>"
+        io << level_html(task['level']) if task['level']
         io << "<span class='task-status' aria-live='polite'></span>"
         io << '</div>'
         io << "<div class='task-prompt'>#{render.(task['prompt'])}</div>"
@@ -106,6 +107,13 @@ module TaskCard
             when 'cypher'
                 io << "<textarea class='form-control task-input task-sql task-cypher' name='answer' rows='4' spellcheck='false' autocapitalize='off' placeholder='MATCH …' aria-labelledby='#{h.(field)}-title'></textarea>"
                 reads = "Läuft in deiner eigenen Neo4j-Datenbank, angemeldet als du, und liest nur: eine Abfrage mit <code>MATCH</code> und <code>RETURN</code>, höchstens #{CypherCheck::MAX_SECONDS} Sekunden. <kbd>Strg</kbd>+<kbd>Enter</kbd> prüft."
+            when 'function'
+                # A Kata: the code is written here; it starts with the task's starter.
+                io << "<textarea class='form-control task-input task-code' name='answer' rows='6' spellcheck='false' autocapitalize='off'"
+                io << " data-code-language='#{h.(check['language'])}' data-starter='#{h.(task['starter'])}' aria-labelledby='#{h.(field)}-title'>"
+                io << "#{h.(task['starter'])}</textarea>"
+                reads = "Dein Code läuft in einem eigenen kleinen Rechner, getrennt von deinem Workspace und ohne Internet, höchstens #{(check['timeout'] || 10).to_i} Sekunden. " \
+                    "<em>Ausführen</em> startet ihn einmal und zeigt, was er ausgibt, <em>Prüfen</em> ruft deine Funktionen auf und vergleicht. <kbd>Strg</kbd>+<kbd>Enter</kbd> prüft."
             when 'command'
                 io << "<input type='text' class='form-control task-input task-command' name='answer' spellcheck='false' autocomplete='off' placeholder='Befehl' aria-labelledby='#{h.(field)}-title'>"
                 where = check['dir'] ? "/workspace/#{check['dir'].to_s.sub(%r{/+\z}, '')}" : '/workspace'
@@ -128,6 +136,7 @@ module TaskCard
                 else 'Prüfen'
             end
             io << "<div class='task-actions'>"
+            io << "<button type='button' class='btn btn-outline-secondary task-run'>Ausführen</button>" if type == 'function'
             io << "<button type='submit' class='btn btn-success task-submit'>#{label}</button>"
             io << "<button type='button' class='btn btn-link btn-sm task-delete' hidden>Meine Antwort löschen</button>"
             # What the check reads, for whoever wants to know (rule 5), behind
@@ -136,8 +145,10 @@ module TaskCard
                 io << "<button type='button' class='task-reads-toggle' aria-expanded='false' aria-controls='#{h.(field)}-reads' title='Was passiert beim Prüfen?'>"
                 io << "<i class='bi bi-info-circle' aria-hidden='true'></i><span class='visually-hidden'>Was passiert beim Prüfen?</span></button>"
             end
+            io << "<span class='task-queue' aria-live='polite'></span>" if type == 'function'
             io << '</div>'
             io << "<div class='task-reads' id='#{h.(field)}-reads' hidden>#{reads}</div>" if reads
+            io << "<pre class='task-console no-copy' hidden aria-live='polite' aria-label='Ausgabe'></pre>" if type == 'function'
             io << '</form>'
         else
             io << "<p class='task-later'><i class='bi bi-hourglass-split'></i>Diese Aufgabe kann der Workspace noch nicht selbst prüfen. Zeig dein Ergebnis deiner Lehrkraft.</p>"
@@ -152,6 +163,16 @@ module TaskCard
         io << "<div class='task-login-note'><a href='/login'>Melde dich an</a>, damit der Workspace deine Antwort prüfen und speichern kann.</div>" if runs
         io << '</section>'
         io
+    end
+
+    # The level of a Kata (TaskSpec::LEVELS) as one to three dots; the name
+    # for those who cannot see them.
+    LEVEL_NAMES = { 1 => 'Einstieg', 2 => 'Übung', 3 => 'Knobelei' }.freeze
+
+    def self.level_html(level)
+        name = LEVEL_NAMES.fetch(level)
+        dots = Array.new(level) { "<i class='bi bi-circle-fill' aria-hidden='true'></i>" }.join
+        "<span class='task-level' title='#{name}'>#{dots}<span class='visually-hidden'>#{name}</span></span>"
     end
 
     # Which files a Workspace check reads or copies, with their real paths

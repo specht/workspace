@@ -73,27 +73,36 @@ module CallCheck
         nil
     end
 
+    # How messages name what was checked: a file of the Workspace by its
+    # path, the code typed into a card (a Kata, KataCheck) as »dein Code«.
+    def self.names(file)
+        return { :it => "`#{file}`", :in => "In `#{file}`", :of => "von `#{file}`" } if file
+
+        { :it => 'Dein Code', :in => 'In deinem Code', :of => 'deines Codes' }
+    end
+
     # [status, message, read] for the harness output; language is the name
     # in messages (»bricht Python ab«), cases the result of cases above.
     def self.evaluate(check, cases, output, language:, timed_out: false)
         file = check['file']
+        name = names(file)
         seconds = check['timeout'] || 10
         if timed_out
-            return [:wrong, "`#{file}` lief länger als #{seconds} Sekunden und wurde abgebrochen. Steckt irgendwo eine Endlosschleife?", nil]
+            return [:wrong, "#{name[:it]} lief länger als #{seconds} Sekunden und wurde abgebrochen. Steckt irgendwo eine Endlosschleife?", nil]
         end
 
         data = parse(output)
         if data.nil?
             shown = output.to_s.strip.lines.last(8).join
             read = shown.empty? ? nil : "```\n#{shown.gsub('```', "'''")}\n```"
-            return [:wrong, "`#{file}` ließ sich nicht prüfen.", read]
+            return [:wrong, "#{name[:it]} ließ sich nicht prüfen.", read]
         end
 
         if (error = data['error'])
             message = case error['kind']
-                when 'missing' then "`#{file}` gibt es nicht."
-                when 'syntax' then "In `#{file}`#{at_line(error['line'])} ist ein Syntaxfehler: #{error['message']}."
-                else "Schon beim Laden von `#{file}` bricht #{language} ab#{at_line(error['line'])}: `#{error['message']}`"
+                when 'missing' then "#{name[:it]} gibt es nicht."
+                when 'syntax' then "#{name[:in]}#{at_line(error['line'])} ist ein Syntaxfehler: #{error['message']}."
+                else "Schon beim Laden #{name[:of]} bricht #{language} ab#{at_line(error['line'])}: `#{error['message']}`"
             end
             return [:wrong, message, nil]
         end

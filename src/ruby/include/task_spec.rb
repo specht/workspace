@@ -14,6 +14,7 @@ require_relative 'python_check'
 require_relative 'c_check'
 require_relative 'hint_steps'
 require_relative 'ruby_check'
+require_relative 'kata_check'
 require_relative 'code_languages'
 
 # Format and validation of an activity's tasks.yaml (see docs/aufgaben.md).
@@ -53,12 +54,15 @@ module TaskSpec
         'python' => 'M7',
         'ruby' => 'M7',
         'c' => 'M7',
+        'function' => 'M8',
     }.freeze
 
     # Check types that need the network; they are never used in exams.
     NEEDS_NETWORK = %w[measure].to_set.freeze
 
-    TASK_KEYS = (%w[id title prompt check hint solution examples feedback prediction file exam] + CodeLanguages::LANGUAGES).freeze
+    TASK_KEYS = (%w[id title prompt check hint solution examples feedback prediction file exam starter level] + CodeLanguages::LANGUAGES).freeze
+    # The levels of a Kata (docs/plan-katas.md): 1 Einstieg, 2 Übung, 3 Knobelei.
+    LEVELS = [1, 2, 3].freeze
 
     EXTRACTORS = %w[ping_rtt_avg ping_hops ping_reply_country traceroute_hops dns_answers].freeze
     EXTRACTOR_WITH_ARGUMENT = /\Ahttp_header:[A-Za-z0-9-]+\z/
@@ -96,6 +100,7 @@ module TaskSpec
         'python' => [],
         'ruby' => [],
         'c' => [],
+        'function' => [],
     }.freeze
 
     class Error < StandardError
@@ -190,6 +195,7 @@ module TaskSpec
         %w[prediction exam].each do |key|
             errors << "#{key} must be true or false" if task.key?(key) && ![true, false].include?(task[key])
         end
+        errors << "level must be one of #{LEVELS.join(', ')}" if task.key?('level') && !LEVELS.include?(task['level'])
         check = task['check']
         unless check.is_a?(Hash) && AVAILABLE.key?(check['type'])
             errors << "check.type must be one of #{AVAILABLE.keys.join(', ')}"
@@ -197,6 +203,11 @@ module TaskSpec
         end
         type = check['type']
         errors.concat(validate_check(type, check).map { |e| "check: #{e}" })
+        if task.key?('starter')
+            errors << 'starter only works with function' unless type == 'function'
+            errors << 'starter must be text' unless task['starter'].is_a?(String)
+            errors << "starter must be at most #{KataCheck::MAX_CODE} characters" if task['starter'].is_a?(String) && task['starter'].size > KataCheck::MAX_CODE
+        end
         if task.key?('examples')
             if type != 'reflection'
                 errors << 'examples only work with reflection; other checks have a solution'
@@ -539,6 +550,11 @@ module TaskSpec
             allowed += %w[file cases timeout]
             errors.concat(path_errors(check['file'], 'file'))
             errors.concat(RubyCheck.spec_errors(check))
+        when 'function'
+            # A Kata: calls functions in the code typed into the card, run in
+            # a container of its own (KataCheck).
+            allowed += %w[language cases timeout]
+            errors.concat(KataCheck.spec_errors(check))
         when 'c'
             # Calls functions in the person's C file, compiled and run as the guest (CCheck).
             allowed += %w[file cases timeout tolerance setup]

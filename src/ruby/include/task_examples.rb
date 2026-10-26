@@ -7,6 +7,7 @@ require_relative 'code_languages'
 require_relative 'task_check'
 require_relative 'task_spec'
 require_relative 'workspace_files'
+require_relative 'kata_runner'
 
 # Examples for the checks of an activity (docs/aufgaben.md, »Beispiele für
 # die Prüfungen«): what each check must accept and what it must reject.
@@ -37,14 +38,17 @@ require_relative 'workspace_files'
 # correct answer must pass and every other option (or a number outside the
 # tolerance) must fail.
 #
+# A Kata (function) has no files: answer: is the code, and the task's
+# starter must fail by itself (automatic_cases).
+#
 # Only checks that run without a Workspace container or a database are run
-# here (FAST_TYPES); ruby and python checks run with the local interpreters,
-# c checks with the local cc, command checks with the local sh.
+# here (FAST_TYPES); ruby, python and function checks run with the local
+# interpreters, c checks with the local cc, command checks with the local sh.
 module TaskExamples
     FILE = 'task-examples.yaml'
-    FAST_TYPES = %w[files html css references ruby python c command choice number answer].freeze
+    FAST_TYPES = %w[files html css references ruby python c command choice number answer function].freeze
     # Checks that need examples to be tested at all.
-    NEEDS_EXAMPLES = %w[files html css references ruby python c command].freeze
+    NEEDS_EXAMPLES = %w[files html css references ruby python c command function].freeze
     # answer with compare: regex needs examples as well (see missing).
     CASE_KEYS = %w[archive files answer say].freeze
 
@@ -123,6 +127,8 @@ module TaskExamples
             return [] if check['compare'] == 'regex'
             first = Array(check['expect']).first
             first.is_a?(String) && !first.include?('${') ? [['pass', { 'answer' => first }]] : []
+        when 'function'
+            task['starter'].to_s.strip.empty? ? [] : [['fail', { 'answer' => task['starter'] }]]
         else
             []
         end
@@ -161,7 +167,7 @@ module TaskExamples
                 File.chmod(0o755, file) if spec['executable']
             end
             result = TaskCheck.check(task, example['answer'], :workspace => WorkspaceFiles.new(root),
-                :runner => local_runner(root), :guest_runner => local_runner(root))
+                :runner => local_runner(root), :guest_runner => local_runner(root), :kata => local_kata(root))
             expected = kind == 'pass' ? %i[correct] : %i[wrong invalid]
             outcome.ok = expected.include?(result.status)
             if outcome.ok && kind == 'fail' && example['say'] && !result.message.to_s.include?(example['say'].to_s)
@@ -189,6 +195,32 @@ module TaskExamples
                 end
                 { :output => output, :status => wait.value.exitstatus, :timed_out => timed_out }
             end
+        end
+    end
+
+    # A Kata's run, here with the local interpreters in the example folder
+    # (KataRunner does the same in a container of its own).
+    def self.local_kata(root)
+        lambda do |files:, argv:, timeout:|
+            files.each { |name, text| File.write(File.join(root, name), text) }
+            stdout = +''
+            stderr = +''
+            timed_out = false
+            status = nil
+            Open3.popen3(*argv, :chdir => root, :pgroup => true) do |stdin, out, err, wait|
+                stdin.close
+                reader = Thread.new { stderr << err.read.to_s }
+                begin
+                    Timeout.timeout(timeout) { stdout << out.read.to_s }
+                rescue Timeout::Error
+                    timed_out = true
+                    Process.kill('KILL', -wait.pid) rescue nil
+                end
+                reader.join(1)
+                status = wait.value.exitstatus
+            end
+            KataRunner::Result.new(:stdout => stdout, :stderr => stderr, :status => status, :timed_out => timed_out,
+                :too_long => false, :cancelled => false)
         end
     end
 

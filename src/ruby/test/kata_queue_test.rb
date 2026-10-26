@@ -76,6 +76,25 @@ class KataQueueTest < Minitest::Test
         assert_equal 42, fine.result
     end
 
+    def test_a_ticket_is_found_by_its_id_and_dropped_long_after_it_ended
+        queue = KataQueue.new(parallel: 1)
+        ticket = queue.submit('a') { 1 }
+        assert_same ticket, queue.find(ticket.id)
+        assert_nil queue.find('nichts')
+        ticket.wait(5)
+        ticket.instance_variable_set(:@finished_at, Time.now - KataQueue::KEEP - 1)
+        queue.submit('b') { 2 }
+        assert_nil queue.find(ticket.id)
+    end
+
+    def test_once_computes_a_value_only_the_first_time
+        ticket = KataQueue.new(parallel: 1).submit('a') { 1 }
+        count = 0
+        threads = 4.times.map { Thread.new { ticket.once(:stored) { count += 1; sleep 0.05; :ok } } }
+        assert_equal [:ok] * 4, threads.map(&:value)
+        assert_equal 1, count
+    end
+
     def test_wait_gives_up_after_its_timeout
         queue = KataQueue.new(parallel: 1)
         job, started, release = gate

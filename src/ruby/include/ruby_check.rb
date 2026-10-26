@@ -187,11 +187,17 @@ module RubyCheck
     end
 
     # The command that prints the result, run in /workspace as the guest.
-    def self.command(file, cases)
+    # The harness as a list of arguments, for a run outside the Workspace
+    # too (KataCheck: the code of a card, in a container of its own).
+    def self.argv(file, cases)
         payload = cases.map { |c| { 'call' => c['call'], 'expect' => c['expect'], 'raises' => c['raises'] } }
+        ['ruby', '-W0', '-e', HARNESS, file, JSON.generate(payload)]
+    end
+
+    def self.command(file, cases)
         # With RubyGems: a program may use what the person installed with
         # gem install (ChunkyPNG for Steganographie), from GEM_HOME.
-        Shellwords.join(['ruby', '-W0', '-e', HARNESS, file, JSON.generate(payload)])
+        Shellwords.join(argv(file, cases))
     end
 
     def self.parse(output)

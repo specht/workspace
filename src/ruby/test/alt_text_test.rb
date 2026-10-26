@@ -26,7 +26,9 @@ class AltTextTest < Minitest::Test
     # an alt text (docs/aufgaben.md). Only cards: the logos of the language
     # tiles stand next to their names, hidden sections show nothing.
     def test_every_card_picture_has_an_alt_text
-        cards = YAML.load_file(File.join(CONTENT, 'sections.yaml')).reject { |s| s['tiles'] || s['hidden'] }.flat_map { |s| s['entries'] }
+        # .slug: a page shown in development only (main.rb)
+        cards = YAML.load_file(File.join(CONTENT, 'sections.yaml')).reject { |s| s['tiles'] || s['hidden'] }
+            .flat_map { |s| s['entries'] }.map { |slug| slug.delete_prefix('.') }
         found = cards.filter_map do |slug|
             file = Dir[File.join(CONTENT, '**', "#{slug}.md")].find { |f| File.basename(File.dirname(f)) == slug }
             next "#{slug}: no page" unless file

@@ -667,6 +667,7 @@ class Main < Sinatra::Base
     require './include/my_data.rb'
     require './include/login_sessions_page.rb'
     require './include/cable_page.rb'
+    require './include/kata_page.rb'
 
     def workspace_url()
         if user_logged_in?
@@ -5387,9 +5388,10 @@ class Main < Sinatra::Base
         # Text that only stands in for the cards (an exercise list) is hidden
         # while the cards are shown.
         previews = tasks[:on_page].any? { |id| (tasks[:by_id][id] || {}).dig('check', 'preview') == 'anaglyph' }
-        # SQL and Cypher answers in the colours of the code blocks, with the
-        # keyword lists of the same lexers (code_input.js).
-        code = tasks[:on_page].any? { |id| %w[sql cypher].include?((tasks[:by_id][id] || {}).dig('check', 'type')) }
+        # SQL and Cypher answers, and the code of a Kata, in the colours of
+        # the code blocks, with the keyword lists of the same lexers
+        # (code_input.js).
+        code = tasks[:on_page].any? { |id| %w[sql cypher function].include?((tasks[:by_id][id] || {}).dig('check', 'type')) }
         code_input = if code
             keywords = {
                 :sql => Rouge::Lexers::SQL.keywords.to_a,
@@ -5664,7 +5666,7 @@ class Main < Sinatra::Base
         File.join(SUBMISSIONS_ROOT, "#{TaskStore.state_key(email, task_key)}.tar.gz")
     end
 
-    def store_task_result(found, status, answer, email = @session_user[:email])
+    def store_task_result(found, status, answer, email = @session_user[:email], max: TaskStore::MAX_ANSWER)
         key = TaskStore.state_key(email, found[:key])
         now = Time.now.to_i
         previous = neo4j_query(<<~END_OF_QUERY, :email => email, :key => key).first
@@ -5673,7 +5675,7 @@ class Main < Sinatra::Base
         END_OF_QUERY
         props = TaskStore.next_state(previous && previous['s'],
             :task => found[:key], :version => found[:version], :status => status,
-            :answer => answer, :now => now)
+            :answer => answer, :now => now, :max => max)
         neo4j_query(<<~END_OF_QUERY, props.merge(:email => email, :key => key))
             MATCH (u:User {email: $email})
             MERGE (s:TaskState {key: $key})

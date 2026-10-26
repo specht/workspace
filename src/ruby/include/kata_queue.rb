@@ -5,12 +5,27 @@
 # cancel:). A waiting ticket knows how many are ahead of it (»Noch 2 vor
 # dir«).
 #
+# A request does not wait for its run (each waiting request would hold a
+# thread of the web server): it gets the ticket's id and asks again (find),
+# until the run is done. Finished tickets are dropped after KEEP seconds.
+#
 # Plain Ruby with threads, tested on its own (test/kata_queue_test.rb).
+require 'securerandom'
+
 class KataQueue
+    KEEP = 600
+
     class Ticket
-        attr_reader :owner, :result, :error
+        attr_reader :id, :owner, :result, :error, :created_at, :finished_at
+        # whatever the caller wants to keep with the ticket (the task, what
+        # has been stored already)
+        attr_accessor :data
 
         def initialize(owner, job)
+            @id = SecureRandom.hex(12)
+            @created_at = Time.now
+            @memo = {}
+            @once = Mutex.new
             @owner = owner
             @job = job
             @state = :waiting
@@ -35,6 +50,12 @@ class KataQueue
 
         def cancelled?
             state == :cancelled
+        end
+
+        # The block's value, computed only the first time for key (storing a
+        # result once, however often the page asks).
+        def once(key)
+            @once.synchronize { @memo.fetch(key) { @memo[key] = yield } }
         end
 
         # Waits until the ticket is done or cancelled (at most timeout
@@ -74,6 +95,7 @@ class KataQueue
                 return unless @state == :waiting || @state == :running
 
                 @state = :cancelled
+                @finished_at = Time.now
                 @done.broadcast
                 @stops.dup
             end
@@ -85,6 +107,7 @@ class KataQueue
         def finish(state)
             @mutex.synchronize do
                 @state = state unless @state == :cancelled
+                @finished_at = Time.now
                 @done.broadcast
             end
         end
@@ -98,6 +121,7 @@ class KataQueue
         @available = ConditionVariable.new
         @waiting = []
         @current = {} # owner => their ticket, waiting or running
+        @tickets = {} # id => ticket, until KEEP seconds after it ended
         @workers = []
     end
 
@@ -107,15 +131,22 @@ class KataQueue
         ticket = Ticket.new(owner, job)
         previous = nil
         @mutex.synchronize do
+            prune
             previous = @current[owner]
             @waiting.delete(previous) if previous
             @current[owner] = ticket
+            @tickets[ticket.id] = ticket
             @waiting << ticket
             start_workers
             @available.signal
         end
         previous&.cancel
         ticket
+    end
+
+    # The ticket with this id, or nil (unknown, or ended long ago).
+    def find(id)
+        @mutex.synchronize { @tickets[id.to_s] }
     end
 
     # How many runs wait before ticket; nil when it no longer waits.
@@ -128,6 +159,11 @@ class KataQueue
     end
 
     private
+
+    def prune
+        limit = Time.now - KEEP
+        @tickets.delete_if { |_, t| t.finished_at && t.finished_at < limit }
+    end
 
     def start_workers
         while @workers.size < @parallel

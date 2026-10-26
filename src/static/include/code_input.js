@@ -1,4 +1,5 @@
-// SQL and Cypher answers in the colours of the page's code blocks. The
+// SQL and Cypher answers, and the code of a Kata (Ruby, Python), in the
+// colours of the page's code blocks. The
 // textarea's own text is transparent; a <pre> underneath shows the same text
 // with Rouge's token classes, so the gruvbox theme (scope pre) and the
 // ```cypher colours (pre.code-cypher) apply as they are. The field grows with
@@ -127,9 +128,132 @@
         return out;
     }
 
+    // Ruby and Python for the code of a Kata (KataCheck), with the token
+    // classes of Rouge's lexers, so they look like the page's code blocks:
+    // keywords k, true/false/nil kc, function names after def nf, built-ins
+    // nb, strings s1/s2, numbers mi/mf, comments c1, symbols ss, instance
+    // variables vi, constants and classes nc.
+    const RUBY_KEYWORDS = new Set(('alias and begin break case class def defined? do else elsif end ensure for if in '
+        + 'module next not or redo rescue retry return self super then undef unless until when while yield').split(' '));
+    const RUBY_CONSTANTS = new Set(['true', 'false', 'nil']);
+    const RUBY_BUILTINS = new Set('puts print p gets require require_relative attr_reader attr_writer attr_accessor raise loop lambda proc'.split(' '));
+    const PYTHON_KEYWORDS = new Set(('as assert async await break class continue def del elif else except finally for '
+        + 'from global if import lambda nonlocal pass raise return try while with yield').split(' '));
+    const PYTHON_WORDS = new Set(['and', 'or', 'not', 'in', 'is']);
+    const PYTHON_CONSTANTS = new Set(['True', 'False', 'None']);
+    const PYTHON_BUILTINS = new Set(('abs all any bool dict enumerate filter float input int isinstance len list map max '
+        + 'min open print range repr reversed round set sorted str sum tuple type zip').split(' '));
+
+    // After def the next word is the function's name.
+    function named(set, constants, builtins, words) {
+        let afterDef = false;
+        return (w) => {
+            if (afterDef) { afterDef = false; return 'nf'; }
+            if (w === 'def') { afterDef = true; return 'k'; }
+            if (constants.has(w)) return 'kc';
+            if (words && words.has(w)) return 'ow';
+            if (set.has(w)) return 'k';
+            if (builtins.has(w)) return 'nb';
+            return /^[A-Z]/.test(w) ? 'nc' : 'n';
+        };
+    }
+
+    function ruby(text) {
+        return scan(text, [
+            [/\s+/y, null],
+            [/#.*/y, 'c1'],
+            [/"(?:\\[\s\S]|[^"\\])*"?/y, 's2'],
+            [/'(?:\\[\s\S]|[^'\\])*'?/y, 's1'],
+            [/:[A-Za-z_]\w*[?!]?/y, 'ss'],
+            [/@@?[A-Za-z_]\w*/y, 'vi'],
+            [/\d[\d_]*\.\d+/y, 'mf'],
+            [/\d[\d_]*/y, 'mi'],
+            [/[A-Za-z_]\w*[?!]?/y, named(RUBY_KEYWORDS, RUBY_CONSTANTS, RUBY_BUILTINS)],
+            [/[+*/<>=~!&|%^-]+/y, 'o'],
+            [/[;:()[\]{},.]/y, 'p'],
+            [/[\s\S]/y, null],
+        ]);
+    }
+
+    function python(text) {
+        return scan(text, [
+            [/\s+/y, null],
+            [/#.*/y, 'c1'],
+            [/[rRbBfF]{0,2}"""[\s\S]*?(?:"""|$)/y, 's2'],
+            [/[rRbBfF]{0,2}"(?:\\[\s\S]|[^"\\\n])*"?/y, 's2'],
+            [/[rRbBfF]{0,2}'(?:\\[\s\S]|[^'\\\n])*'?/y, 's1'],
+            [/@[A-Za-z_]\w*/y, 'nd'],
+            [/\d+\.\d*|\.\d+/y, 'mf'],
+            [/\d+/y, 'mi'],
+            [/[A-Za-z_]\w*/y, named(PYTHON_KEYWORDS, PYTHON_CONSTANTS, PYTHON_BUILTINS, PYTHON_WORDS)],
+            [/[+*/<>=~!&|%^@-]+/y, 'o'],
+            [/[;:()[\]{},.]/y, 'p'],
+            [/[\s\S]/y, null],
+        ]);
+    }
+
+    const HIGHLIGHT = { sql, cypher, ruby, python };
+    const INDENT = { python: '    ', ruby: '  ' };
+
+    // Writing code: Tab indents (the selected lines, or at the cursor),
+    // Shift+Tab takes it back, Enter keeps the line's indentation and adds
+    // one after a line that opens a block. Escape lets the next Tab leave the
+    // field, as everywhere else on the page. Edits go through insertText, so
+    // Ctrl+Z still undoes them.
+    function opensBlock(language, line) {
+        const code = line.replace(/#.*$/, '').trimEnd();
+        if (language === 'python') return code.endsWith(':');
+        return /^\s*(def|class|module|if|unless|while|until|for|case|when|begin|else|elsif|rescue|ensure)\b/.test(code)
+            || /\bdo(\s*\|[^|]*\|)?$/.test(code);
+    }
+
+    function insert(textarea, text, from, to) {
+        textarea.setSelectionRange(from, to);
+        if (!document.execCommand || !document.execCommand('insertText', false, text)) {
+            textarea.setRangeText(text, from, to, 'end');
+            textarea.dispatchEvent(new Event('input'));
+        }
+    }
+
+    function codeKeys(textarea, language) {
+        const unit = INDENT[language];
+        let leaving = false;
+        textarea.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') { leaving = true; return; }
+            if (e.key === 'Tab' && !leaving && !e.ctrlKey && !e.altKey && !e.metaKey) {
+                e.preventDefault();
+                const value = textarea.value;
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                const first = value.lastIndexOf('\n', start - 1) + 1;
+                if (!e.shiftKey && start === end) {
+                    insert(textarea, unit, start, end);
+                    return;
+                }
+                const last = end > start && value[end - 1] === '\n' ? end - 1 : end;
+                const lines = value.slice(first, last).split('\n');
+                const changed = lines.map((line) => e.shiftKey
+                    ? line.replace(new RegExp('^ {1,' + unit.length + '}'), '')
+                    : unit + line).join('\n');
+                insert(textarea, changed, first, last);
+                textarea.setSelectionRange(first, first + changed.length);
+                return;
+            }
+            leaving = false;
+            if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
+                const value = textarea.value;
+                const start = textarea.selectionStart;
+                const line = value.slice(value.lastIndexOf('\n', start - 1) + 1, start);
+                const indent = line.match(/^[ \t]*/)[0] + (opensBlock(language, line) ? unit : '');
+                e.preventDefault();
+                insert(textarea, '\n' + indent, start, textarea.selectionEnd);
+            }
+        });
+    }
+
     function attach(textarea) {
         if (textarea.codeInputUpdate) return;
-        const language = textarea.classList.contains('task-cypher') ? 'cypher' : 'sql';
+        const language = textarea.dataset.codeLanguage || (textarea.classList.contains('task-cypher') ? 'cypher' : 'sql');
         const box = document.createElement('div');
         box.className = 'code-input';
         const view = document.createElement('pre');
@@ -149,7 +273,7 @@
         // A final newline would not make a line of its own in the <pre>.
         function update() {
             const text = textarea.value;
-            view.innerHTML = (language === 'cypher' ? cypher(text) : sql(text)) + '\n';
+            view.innerHTML = (HIGHLIGHT[language] || sql)(text) + '\n';
             grow();
         }
         textarea.addEventListener('input', update);
@@ -161,9 +285,10 @@
                 if (box.clientWidth !== width) { width = box.clientWidth; grow(); }
             }).observe(box);
         }
+        if (INDENT[language]) codeKeys(textarea, language);
         textarea.codeInputUpdate = update;
         update();
     }
 
-    window.CodeInput = { attach, sql, cypher };
+    window.CodeInput = { attach, sql, cypher, ruby, python };
 })();

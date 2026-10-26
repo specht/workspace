@@ -255,10 +255,10 @@ module Privacy
                 :how_long => ACCOUNT_END,
             },
             {
-                :data => 'Aufgaben: letzte Antwort, Ergebnis der automatischen Prüfung, Zahl und Zeitpunkte der Versuche',
+                :data => 'Aufgaben: letzte Antwort (bei einer Programmieraufgabe in der Karte der Code, für jede Sprache), Ergebnis der automatischen Prüfung, Zahl und Zeitpunkte der Versuche',
                 :categories => [:content],
                 :purpose => 'Rückmeldung an die Person; Überblick für die Lehrkraft',
-                :who => 'die Person selbst, Lehrkräfte der Gruppe',
+                :who => 'die Person selbst, Lehrkräfte der Gruppe (vom Code in der Karte nur das Ergebnis)',
                 :how_long => 'bis die Person sie selbst löscht, sonst ' + ACCOUNT_END,
             },
             {
@@ -386,6 +386,7 @@ module Privacy
                 'Schriften, Skripte und Symbole kommen vom Server selbst; die Seiten des Workspace laden nichts von fremden Servern.',
                 'Die Zugriffsprotokolle enthalten keine IP-Adressen und keine Namen; geheime Teile von Adressen (Links zum Teilen, Anmeldelinks) werden unkenntlich gemacht. Sie werden nach 7 Tagen gelöscht.',
                 'Von Aufgaben wird nur die letzte Antwort gespeichert; Versuche werden ohne Text gezählt.',
+                'Code, der in einer Aufgabe in der Karte geschrieben wird, läuft in einem eigenen kurzlebigen Container ohne Netz, der danach gelöscht wird; was er ausgibt, wird nicht gespeichert.',
                 'Von einer Sitzung werden nur die Tage der Anmeldung und der letzten Nutzung und eine grobe Angabe des Geräts (Browser und Betriebssystem) gespeichert, nicht die vollständige Kennung des Browsers und keine IP-Adresse.',
             ],
             'Verschlüsselung' => [

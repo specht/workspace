@@ -1,0 +1,27 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Der Startcode jeder Kata muss von selbst scheitern.
+format: 1
+activity: kata-demo
+examples:
+  greet:
+    pass:
+      - answer: "def greet(name)\n  \"Hallo, #{name}!\"\nend\n\nputs greet('Ada')\n"
+    fail:
+      - answer: "def greet(name)\n  \"Hallo #{name}\"\nend\n"
+    python:
+      pass:
+        - answer: "def greet(name):\n    return 'Hallo, ' + name + '!'\n\nprint(greet('Ada'))\n"
+      fail:
+        - answer: "def greet(name):\n    print('Hallo, ' + name + '!')\n"
+  ggt:
+    pass:
+      - answer: "def gcd(a, b)\n  b.zero? ? a : gcd(b, a % b)\nend\n"
+    fail:
+      - answer: "def gcd(a, b) = [a, b].min\n"
+        say: "`gcd(60, 48)` ergibt `48`"
+    python:
+      pass:
+        - answer: "def gcd(a, b):\n    while b:\n        a, b = b, a % b\n    return a\n"
+      fail:
+        - answer: "def gcd(a, b):\n    return min(a, b)\n"

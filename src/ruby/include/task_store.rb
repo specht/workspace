@@ -23,8 +23,9 @@ module TaskStore
 
     # Properties of the new TaskState. previous is the stored node (a Hash
     # with symbol keys) or nil. When the check of a task has changed
-    # (another version), the count starts again.
-    def self.next_state(previous, task:, version:, status:, answer:, now:)
+    # (another version), the count starts again. max: the longest answer
+    # kept (a Kata keeps its code per language, KataCheck.stored_answer).
+    def self.next_state(previous, task:, version:, status:, answer:, now:, max: MAX_ANSWER)
         prev = previous || {}
         same = prev[:version] == version
         first_correct = same ? prev[:first_correct] : nil
@@ -33,7 +34,7 @@ module TaskStore
             :task => task,
             :version => version,
             :status => status,
-            :last_answer => answer.to_s[0, MAX_ANSWER],
+            :last_answer => answer.to_s[0, max],
             :attempts => (same ? prev[:attempts].to_i : 0) + 1,
             :first_status => (same && prev[:first_status]) ? prev[:first_status] : status,
             :first_correct => first_correct,

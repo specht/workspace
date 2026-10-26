@@ -28,7 +28,7 @@ module TaskCheck
     # read files or git status (/api/class/check_now).
     LIVE_TYPES = (FILE_TYPES + %w[git keyboard]).freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er schema keyboard python ruby c]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er schema keyboard python ruby c function]).freeze
 
     # status:
     #   :correct, :wrong   – checked; counts as an attempt
@@ -76,7 +76,9 @@ module TaskCheck
     #              database as them, read-only (SqlCheck); nil if unreachable
     # sql_env:     what to name when the database cannot be used (login,
     #              database, host, workspace running, .my.cnf); see SqlCheck
-    def self.check(task, answer, variables: {}, workspace: nil, git: nil, runner: nil, guest_runner: nil, sql: nil, sql_env: {}, cypher: nil)
+    # kata:        lambda(files:, argv:, timeout:) -> KataRunner::Result, a run
+    #              in a container of its own (function); nil if none
+    def self.check(task, answer, variables: {}, workspace: nil, git: nil, runner: nil, guest_runner: nil, sql: nil, sql_env: {}, cypher: nil, kata: nil)
         check = task['check']
         type = check['type']
         unless RUNS.include?(type)
@@ -91,6 +93,7 @@ module TaskCheck
         return check_calls(task, check, workspace, guest_runner, PythonCheck) if type == 'python'
         return check_calls(task, check, workspace, guest_runner, RubyCheck) if type == 'ruby'
         return check_calls(task, check, workspace, guest_runner, CCheck) if type == 'c'
+        return check_function(task, check, answer, kata) if type == 'function'
         return check_schema(task, check, sql, sql_env) if type == 'schema'
         return check_keyboard(task, check, workspace) if type == 'keyboard'
         return check_workspace(task, check, answer, workspace, git, runner) unless ANSWER_TYPES.include?(type)
@@ -211,6 +214,14 @@ module TaskCheck
         return Result.new(:status => :unavailable, :message => NOT_RUNNING_CALLS) if result.nil?
 
         status, message, read = language.evaluate(task, check, result[:output], timed_out: result[:timed_out])
+        Result.new(:status => status, :message => message, :read => read,
+            :solution => status == :correct ? task['solution'] : nil)
+    end
+
+    # function: a Kata, the code of the card in a container of its own.
+    def self.check_function(task, check, answer, kata)
+        kata ||= ->(**_) { nil }
+        status, message, read = KataCheck.check(task, check, answer, kata)
         Result.new(:status => status, :message => message, :read => read,
             :solution => status == :correct ? task['solution'] : nil)
     end

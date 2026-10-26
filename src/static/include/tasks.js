@@ -239,7 +239,16 @@
             return;
         }
         const input = card.querySelector('.task-input');
-        if (input) input.value = answer || '';
+        if (input && card.dataset.type === 'function') {
+            // A Kata keeps its code per language ({"python": "…"}); without
+            // code in this card's language it shows the starter.
+            let codes = {};
+            try { codes = JSON.parse(answer || '{}') || {}; } catch (e) { codes = {}; }
+            const code = codes[input.dataset.codeLanguage];
+            input.value = typeof code === 'string' ? code : (input.dataset.starter || '');
+        } else if (input) {
+            input.value = answer || '';
+        }
         if (input && input.codeInputUpdate) input.codeInputUpdate();
     }
 
@@ -345,9 +354,9 @@
     // button says that something is happening: a spinner in its middle, its
     // label kept but invisible, so that it keeps its size and nothing jumps;
     // a screen reader hears what happens.
-    function setBusy(card, busy) {
+    function setBusy(card, busy, which) {
         setDisabled(card, busy);
-        const button = card.querySelector('.task-submit');
+        const button = card.querySelector(which || '.task-submit');
         if (!button) return;
         if (busy && !button.classList.contains('is-busy')) {
             button.classList.add('is-busy');
@@ -355,7 +364,8 @@
             const spinner = document.createElement('span');
             spinner.className = 'task-submit-busy';
             spinner.innerHTML = "<span class='spinner-border spinner-border-sm' aria-hidden='true'></span>" +
-                "<span class='visually-hidden'>" + (card.dataset.type === 'submit' ? 'Wird abgegeben …' : 'Wird geprüft …') + '</span>';
+                "<span class='visually-hidden'>" + (card.dataset.type === 'submit' ? 'Wird abgegeben …'
+                    : which === '.task-run' ? 'Läuft …' : 'Wird geprüft …') + '</span>';
             button.appendChild(spinner);
         } else if (!busy && button.classList.contains('is-busy')) {
             button.classList.remove('is-busy');
@@ -366,6 +376,10 @@
 
     function submit(card) {
         const answer = readAnswer(card);
+        if (card.dataset.type === 'function') {
+            kata(card, 'check', answer);
+            return;
+        }
         setBusy(card, true);
         checkPickedScene(card, function () { send(card, answer); });
     }
@@ -384,6 +398,64 @@
                 if (card.dataset.type === 'submit') showSubmission(card, data.state.answer);
             }
         }, { no_please_wait: true });
+    }
+
+    // A Kata (KataCheck): the run is queued on the server and the card asks
+    // again every half second until it is done, showing its place in the
+    // queue meanwhile. kind: check (»Prüfen«) or run (»Ausführen«).
+    const KATA_POLL_MS = 500;
+
+    function kata(card, kind, answer) {
+        const which = kind === 'run' ? '.task-run' : '.task-submit';
+        const queue = card.querySelector('.task-queue');
+        setBusy(card, true, which);
+        const done = function (data) {
+            setBusy(card, false, which);
+            if (queue) queue.textContent = '';
+            if (!data || !data.success) {
+                showFeedback(card, 'unavailable', '<p>Das hat gerade nicht geklappt. Versuch es gleich noch einmal.</p>');
+                return;
+            }
+            if (data.status === 'cancelled') return;
+            if (kind === 'run') {
+                showConsole(card, data);
+                return;
+            }
+            showFeedback(card, data.status, data.message, data.solution, data.read);
+            if (data.state) {
+                setBadge(card, data.state.status, data.status === 'correct' && card.dataset.status !== 'correct');
+                card.querySelector('.task-delete').hidden = false;
+            }
+        };
+        const follow = function (data) {
+            if (!data || !data.success || data.done) {
+                done(data);
+                return;
+            }
+            if (queue) {
+                queue.textContent = data.running ? 'Läuft …'
+                    : data.ahead > 0 ? 'Noch ' + data.ahead + ' vor dir' : 'Gleich dran …';
+            }
+            setTimeout(function () {
+                api_call('/api/kata/poll', { ticket: data.ticket || card.dataset.kataTicket }, follow, { no_please_wait: true });
+            }, KATA_POLL_MS);
+            if (data.ticket) card.dataset.kataTicket = data.ticket;
+        };
+        api_call('/api/kata/' + kind, { task: card.dataset.task, answer: answer, language: card.dataset.language }, follow, { no_please_wait: true });
+    }
+
+    // What »Ausführen« printed, as text, and a line when it did not end well.
+    function showConsole(card, data) {
+        const console_ = card.querySelector('.task-console');
+        if (console_) {
+            console_.hidden = false;
+            console_.textContent = data.output || (data.status === 'ran' ? '(Dein Programm hat nichts ausgegeben.)' : '');
+            console_.classList.toggle('task-console-error', data.status !== 'ran');
+        }
+        const box = card.querySelector('.task-feedback');
+        if (data.message) showFeedback(card, data.status === 'invalid' ? 'invalid' : 'unavailable', data.message);
+        else if (box && box.dataset.from === 'run') box.innerHTML = '';
+        if (box) box.dataset.from = data.message ? 'run' : '';
     }
 
     function remove(card) {
@@ -527,9 +599,12 @@
                 e.preventDefault();
                 submit(card);
             });
-            // SQL: Enter makes a new line, Ctrl+Enter (Cmd+Enter) checks.
-            const sql = card.querySelector('.task-sql');
+            // SQL and a Kata's code: Enter makes a new line, Ctrl+Enter
+            // (Cmd+Enter) checks.
+            const sql = card.querySelector('.task-sql, .task-code');
             if (sql && window.CodeInput) CodeInput.attach(sql);
+            const run = card.querySelector('.task-run');
+            if (run) run.addEventListener('click', function () { kata(card, 'run', readAnswer(card)); });
             if (sql) sql.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
                     e.preventDefault();
@@ -539,7 +614,7 @@
             const del = card.querySelector('.task-delete');
             if (del) {
                 if (card.dataset.type === 'submit') del.textContent = 'Abgabe löschen';
-                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command', 'sql', 'cypher'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
+                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command', 'sql', 'cypher', 'function'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
                 del.addEventListener('click', function () { remove(card); });
             }
             loadOptions(card);

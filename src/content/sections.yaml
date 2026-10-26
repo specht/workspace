@@ -11,6 +11,7 @@
     - about
     - basics
     - keyboard
+    - .kata-demo
 
 - key: graphics
   compact: true

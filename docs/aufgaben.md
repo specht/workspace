@@ -256,6 +256,8 @@ tasks:
 | `solution` | nein | Lösung; nur Lehrkräfte sehen sie |
 | `examples` | nein | Nur bei `reflection`: eine Liste von Beispielantworten in Markdown, die nur Lehrkräfte unter der Aufgabe sehen (siehe »Antworten unter offenen Aufgaben«) |
 | `exam` | nein | `false`: nie in einer Leistungsüberprüfung; Prüfarten mit Netz sind dort ohnehin gesperrt |
+| `starter` | nein | Nur bei `function`: der Code, mit dem die Karte beginnt (höchstens 4000 Zeichen); er muss von selbst scheitern |
+| `level` | nein | Nur für Katas gedacht: `1` Einstieg, `2` Übung, `3` Knobelei; die Karte zeigt so viele Punkte |
 | `ruby`, `python` | nein | Was in dieser Sprache anders ist, auf Seiten in mehreren Sprachen (siehe unten) |
 
 ### In mehreren Sprachen
@@ -264,7 +266,7 @@ Auf einer Seite mit `languages: [ruby, python]` (siehe
 [aktivitaet-schreiben.md](aktivitaet-schreiben.md#in-ruby-und-in-python))
 kann eine Aufgabe für eine Sprache anders sein. Unter dem Namen der Sprache
 steht nur, was sich ändert: `prompt`, `check`, `hint`, `solution`,
-`feedback` oder `file`. Alles andere gilt für beide.
+`feedback`, `file` oder `starter`. Alles andere gilt für beide.
 
 ```yaml
   - id: kompressor
@@ -368,6 +370,7 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `python` | Funktionen aus einer Python-Datei der Lernenden: Aufrufe und ihre Ergebnisse | eine `.py`-Datei | Workspace, als Gast | M7 |
 | `ruby` | dasselbe für eine Ruby-Datei | eine `.rb`-Datei | Workspace, als Gast | M7 |
 | `c` | Funktionen aus einer C-Datei der Lernenden, übersetzt mit `cc`, ohne ihr `main` | eine `.c`-Datei | Workspace, als Gast | M7 |
+| `function` | eine Kata: Funktionen aus dem Code, der in der Karte geschrieben wird, wie `python` und `ruby` | der Code der Karte | eigener Container ohne Netz | M8 |
 | `scene` | Szene des Anaglyph-Viewers, zu einem oder mehreren Zeitpunkten | eine `.ini`-Datei | Workspace | M6 |
 | `sql` | Ergebnis einer `SELECT`-Abfrage gegen das einer Musterabfrage | Abfrage | eigene MySQL-Datenbank, nur lesend | M6 |
 | `cypher` | Ergebnis einer Cypher-Abfrage gegen das einer Musterabfrage | Abfrage | eigene Neo4j-Datenbank, nur lesend | M7 |
@@ -772,6 +775,71 @@ check:
     - call: compress('')
       expect: '[]'
       say: Ein leerer Text ergibt keinen einzigen Code.
+```
+
+### function
+
+Eine Kata (docs/plan-katas.md): Der Code steht nicht in einer Datei im
+Workspace, sondern wird in der Karte geschrieben, in Ruby oder Python, mit
+den Farben der Codeblöcke, Einrückung mit <kbd>Tab</kbd> und
+<kbd>Strg</kbd>+<kbd>Enter</kbd> zum Prüfen. **Ausführen** startet ihn einmal
+und zeigt, was er ausgibt; **Prüfen** ruft die Funktionen auf und vergleicht,
+mit demselben Skript wie `python` und `ruby` und denselben `cases`. Die
+Rückmeldung sagt »dein Code« statt eines Dateinamens.
+
+```yaml
+- id: ggt
+  title: Der größte gemeinsame Teiler
+  level: 3
+  prompt: |
+    Schreib eine Funktion `gcd(a, b)`, die den größten gemeinsamen Teiler
+    zweier Zahlen zurückgibt.
+  starter: |
+    def gcd(a, b)
+    end
+  check:
+    type: function
+    language: ruby                # ruby oder python
+    cases:
+      - gcd(60, 48): 12
+      - call: gcd(7, 7)
+        expect: 7
+        say: Der größte Teiler einer Zahl mit sich selbst ist sie selbst.
+  python:
+    starter: |
+      def gcd(a, b):
+          pass
+    check:
+      type: function
+      language: python
+      cases:
+        - gcd(60, 48): 12
+```
+
+Der Code läuft nie im Workspace und nie auf dem Server, sondern jedes Mal in
+einem neuen Container aus dem Workspace-Image (dieselben Interpreter), ohne
+Netz, schreibgeschützt bis auf ein kleines `/tmp`, als `nobody`, höchstens
+`timeout` Sekunden (`KataRunner`, entwicklung.md, »Katas: Läufe im eigenen
+Container«). Alle Läufe stehen in einer Warteschlange; solange ein Lauf
+wartet, zeigt die Karte, wie viele vor ihm sind. Gespeichert wird der Code
+als Antwort, für jede Sprache getrennt, so dass Ruby und Python ihren eigenen
+behalten; Lehrkräfte sehen im Klassenboard nur das Ergebnis, nicht den Code.
+Was ein Lauf ausgibt, wird nicht gespeichert.
+
+In `task-examples.yaml` steht der Code unter `answer:`; der `starter` jeder
+Sprache muss von selbst scheitern und wird automatisch mitgeprüft:
+
+```yaml
+examples:
+  ggt:
+    pass:
+      - answer: "def gcd(a, b)\n  b.zero? ? a : gcd(b, a % b)\nend\n"
+    fail:
+      - answer: "def gcd(a, b) = [a, b].min\n"
+        say: "`gcd(60, 48)` ergibt `48`"
+    python:
+      pass:
+        - answer: "def gcd(a, b):\n    while b:\n        a, b = b, a % b\n    return a\n"
 ```
 
 ### c
