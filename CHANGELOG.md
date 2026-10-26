@@ -21,21 +21,15 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
-- Katas einreichen: Unter einer gelösten Kata kann man den Code einreichen (eine Kopie, wie eine Abgabe gespeichert) und zurücknehmen;
-  Lehrkräfte sehen eingereichte Lösungen unter »Fortschritt« ohne Namen, groß zum Zeigen. Die Datenschutzerklärung nennt es.
-- Drei Übungen mit Katas, noch nur in der Entwicklung sichtbar: »Erste Funktionen«, »Entscheidungen« und »Wiederholen«, je zehn bis
-  elf Katas in Ruby, Python und JavaScript, dazu Extras. JavaScript gibt es nur für Katas; wer es dort wählt, behält auf anderen
-  Seiten Ruby oder Python (gespeichert als eigene Einstellung). Aufgaben mit `extra: true` zählen bei niemandem mit (»8 von 10 erledigt, dazu 2 Extras«),
-  auch in den Extra-Kapiteln anderer Aktivitäten.
-- Katas (Programmieraufgaben, die in der Karte geschrieben werden, Prüfart `function`, noch nur auf einer Entwicklungsseite): Der Code läuft in einem eigenen Container
-  aus dem Workspace-Image ohne Netz, durch eine Warteschlange. Neu und freiwillig in `credentials.rb`: `KATA_PARALLEL_RUNS` (ohne 4), messen mit
-  `./config.rb exec ruby ruby /src/scripts/measure-katas.rb`. Gespeichert wird der Code als Antwort der Aufgabe, je Sprache; die Datenschutzerklärung nennt es.
+- Katas (kurze Programmieraufgaben in der Karte, Prüfarten `function`, `pip` und `tests`), noch nur in der Entwicklung sichtbar:
+  Der Code läuft in einem eigenen Container aus dem Workspace-Image ohne Netz, durch eine Warteschlange. Neu und freiwillig in
+  `credentials.rb`: `KATA_PARALLEL_RUNS` (ohne 4), messen mit `./config.rb exec ruby ruby /src/scripts/measure-katas.rb`.
+  Gespeichert werden der Code als Antwort der Aufgabe, je Sprache, eine eingereichte Kopie, bis sie zurückgenommen wird, und eine
+  Wahl von JavaScript als eigene Einstellung; die Datenschutzerklärung nennt es. Aufgaben mit `extra: true` zählen bei niemandem mit.
+- Die E-Mail mit dem Anmeldecode unterschreibt mit `OPERATOR_NAME` aus `credentials.rb` (ohne: »Workspace«), nicht mehr mit einem
+  festen Namen.
 - Tipps in Stufen: Welche Tipps einer Aufgabe aufgeklappt wurden, merkt sich nur der Browser (lokaler Speicher),
   für jedes Konto getrennt; der Server speichert davon nichts; die Datenschutzerklärung nennt es bei »Cookies und Speicher im Browser«.
-- Fallserver: Die Eingabeaufforderung beginnt farbig mit dem Namen des Servers (`[museum]` gelb,
-  `[alarmanlage]` rot), die Alarmanlage begrüßt mit der Werbung von Elektro Reuter. Mit
-  `CASE_SERVER = true` nach dem Update `./config.rb build case_museum case_alarm` und
-  `./config.rb up -d case_museum case_alarm`.
 - Die Neo4j-Datenbank der Anwendung liegt jetzt in einem eigenen Docker-Netz, das nur der
   Ruby-Container mit ihr teilt. Nach dem Update `./config.rb up -d`, damit `neo4japp` und
   `ruby` neu angelegt werden.
@@ -53,8 +47,8 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
   ganzen Liste im Anhang an die Adressen in `ADMIN_USERS` (Betreff »Löschliste des Workspace …:
   aufbewahren«; die neueste genügt). Sie hilft, wenn der Server verloren geht oder eine Sicherung
   die Datei überschreibt: docs/datenschutz.md, »Löschen«.
-- Fallserver: Die Alarmanlage startete nach einem Neustart des Containers immer wieder neu
-  (`mkfifo: … File exists`). Mit `CASE_SERVER = true` nach dem Update
+- Fallserver: neu bauen (die Alarmanlage startete nach einem Neustart des Containers immer wieder
+  neu, die Eingabeaufforderung ist farbig). Mit `CASE_SERVER = true` nach dem Update
   `./config.rb build case_museum case_alarm` und `./config.rb up -d case_museum case_alarm`.
 - Je Sitzung speichert der Workspace jetzt den Tag der Anmeldung, den Tag der letzten Nutzung
   und eine grobe Angabe des Geräts aus dem User-Agent (»Firefox auf Windows«), nicht den

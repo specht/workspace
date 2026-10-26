@@ -5,9 +5,9 @@ require_relative '../include/workspace_credentials'
 
 class DatabaseProvisioningTest < Minitest::Test
     def test_deterministic_workspace_password_is_unchanged
-        assert_equal 'JqtR4ZS6-v35q',
+        assert_equal '487yB7mb-K77S',
             WorkspaceCredentials.password_for_email(
-                'micha.specht@example.com',
+                'lehrkraft@example.com',
                 'test-salt',
             )
     end

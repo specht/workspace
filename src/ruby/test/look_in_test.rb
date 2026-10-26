@@ -6,7 +6,7 @@ require_relative '../include/look_in'
 class LookInTest < Minitest::Test
     ADMINS = ['admin@example.org'].freeze
     TEACHERS = {
-        'specht@example.org' => Set['LK Informatik'],
+        'lehrer@example.org' => Set['LK Informatik'],
         'kollegin@example.org' => Set['Klasse 11'],
     }.freeze
     MEMBERS = {
@@ -20,23 +20,23 @@ class LookInTest < Minitest::Test
     end
 
     def test_a_teacher_looks_into_students_of_its_groups_only
-        assert allowed?('specht@example.org', 'lena@example.org') # LK, though Klasse 12 comes first
-        assert allowed?('specht@example.org', 'mia@example.org')
-        refute allowed?('specht@example.org', 'tom@example.org')
+        assert allowed?('lehrer@example.org', 'lena@example.org') # LK, though Klasse 12 comes first
+        assert allowed?('lehrer@example.org', 'mia@example.org')
+        refute allowed?('lehrer@example.org', 'tom@example.org')
     end
 
     def test_never_into_teachers_administrators_or_oneself
-        refute allowed?('specht@example.org', 'kollegin@example.org')
-        refute allowed?('specht@example.org', 'admin@example.org')
-        refute allowed?('specht@example.org', 'specht@example.org')
+        refute allowed?('lehrer@example.org', 'kollegin@example.org')
+        refute allowed?('lehrer@example.org', 'admin@example.org')
+        refute allowed?('lehrer@example.org', 'lehrer@example.org')
         refute allowed?('lena@example.org', 'mia@example.org') # a student
         assert allowed?('admin@example.org', 'kollegin@example.org')
         refute allowed?('admin@example.org', 'admin@example.org')
     end
 
     def test_the_test_account_is_the_teachers_address_with_plus_test
-        assert_equal 'specht+test@schule.de', LookIn.test_account_email('Specht@Schule.de')
-        assert_nil LookIn.test_account_email('specht+test@schule.de')
+        assert_equal 'lehrer+test@schule.de', LookIn.test_account_email('Lehrer@Schule.de')
+        assert_nil LookIn.test_account_email('lehrer+test@schule.de')
         assert_nil LookIn.test_account_email('kein-at')
     end
 
@@ -51,10 +51,10 @@ class LookInTest < Minitest::Test
 
     def test_the_notice_says_who_when_what_and_why_and_escapes
         now = Time.local(2026, 10, 14, 15, 0)
-        look = { :by_name => 'Herr <Specht>', :ts => Time.local(2026, 10, 14, 10, 12).to_i, :kind => 'workspace',
+        look = { :by_name => 'Herr <Beispiel>', :ts => Time.local(2026, 10, 14, 10, 12).to_i, :kind => 'workspace',
                  :reason => 'Ich sehe mir deine <b>Abgabe</b> an.' }
         html = LookIn.notice_html(look, :now => now)
-        assert_includes html, 'Herr &lt;Specht&gt;'
+        assert_includes html, 'Herr &lt;Beispiel&gt;'
         assert_includes html, 'heute um 10:12 Uhr deinen Workspace angesehen'
         assert_includes html, '»Ich sehe mir deine &lt;b&gt;Abgabe&lt;/b&gt; an.«'
         earlier = LookIn.notice_html(look.merge(:ts => Time.local(2026, 10, 9, 8, 5).to_i, :kind => 'impersonate'), :now => now)

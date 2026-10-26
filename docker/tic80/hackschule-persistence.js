@@ -52,11 +52,20 @@
         if (closable) {
             const x = document.createElement('button');
             x.type = 'button';
-            x.textContent = '×';
+            // the site's icon, alone in the button and in its middle; the
+            // player page does not load the icons itself
+            if (!document.querySelector('link[href*="bootstrap-icons"]')) {
+                const icons = document.createElement('link');
+                icons.rel = 'stylesheet';
+                icons.href = '/include/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css';
+                document.head.appendChild(icons);
+            }
+            x.innerHTML = "<i class='bi bi-x-lg' aria-hidden='true' style='margin: 0;'></i>";
             x.setAttribute('aria-label', 'Schließen');
             Object.assign(x.style, {
                 position: 'absolute', right: '8px', top: '4px', border: 'none', background: 'none',
-                color: '#fff', font: '22px sans-serif', cursor: 'pointer',
+                color: '#fff', fontSize: '18px', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', padding: '0',
             });
             x.addEventListener('click', () => {
                 box.remove();

@@ -58,9 +58,9 @@ class DatabaseIdentityTest < Minitest::Test
     end
 
     def test_unique_stem_keeps_plain_readable_login
-        assert_equal 'micha.specht', logins([
-            { :email => 'Micha.Specht@gmail.com' },
-        ])['Micha.Specht@gmail.com']
+        assert_equal 'lea.lehrerin', logins([
+            { :email => 'Lea.Lehrerin@example.com' },
+        ])['Lea.Lehrerin@example.com']
     end
 
     def test_valid_readable_stems_are_preserved
@@ -88,30 +88,30 @@ class DatabaseIdentityTest < Minitest::Test
 
     def test_two_identical_stems_get_one_plain_and_one_suffix
         result = logins([
-            { :email => 'specht@ovgu.de' },
-            { :email => 'specht@gymnasiumsteglitz.de' },
+            { :email => 'lehrer@uni.example' },
+            { :email => 'lehrer@schule.example' },
         ])
 
-        assert_equal 'specht', result['specht@gymnasiumsteglitz.de']
-        assert_match(/\Aspecht-[a-z0-9]{4}\z/, result['specht@ovgu.de'])
+        assert_equal 'lehrer', result['lehrer@schule.example']
+        assert_match(/\Alehrer-[a-z0-9]{4}\z/, result['lehrer@uni.example'])
     end
 
     def test_three_way_collision_is_unique
         result = logins(%w[
-            specht@third.de
-            specht@ovgu.de
-            specht@gymnasiumsteglitz.de
+            lehrer@third.example
+            lehrer@uni.example
+            lehrer@schule.example
         ].map { |email| { :email => email } })
 
         assert_equal 3, result.values.uniq.size
-        assert_equal 1, result.values.count('specht')
+        assert_equal 1, result.values.count('lehrer')
     end
 
     def test_plan_is_independent_of_input_order
         users = %w[
-            specht@third.de
-            specht@ovgu.de
-            specht@gymnasiumsteglitz.de
+            lehrer@third.example
+            lehrer@uni.example
+            lehrer@schule.example
         ].map { |email| { :email => email } }
 
         assert_equal logins(users), logins(users.reverse)
@@ -200,7 +200,7 @@ class DatabaseIdentityTest < Minitest::Test
     end
 
     def test_suffix_is_extended_when_short_candidate_is_occupied
-        email = 'specht@ovgu.de'
+        email = 'lehrer@uni.example'
         candidates = DatabaseIdentity.candidates_for_email(email).take(3)
         result = logins([{ :email => email }], :occupied => candidates.take(2))
 

@@ -3106,6 +3106,7 @@ class Main < Sinatra::Base
                 recipient = @@test_accounts[email] || email
                 for_test = recipient != email
                 STDERR.puts "Sending login code email for invited user #{email} to #{recipient}"
+                signature = mail_signature
                 deliver_mail do
                     to recipient
                     # bcc SMTP_FROM
@@ -3119,7 +3120,7 @@ class Main < Sinatra::Base
                         io.puts "<p style='font-size: 200%;'>#{login_request[:code]}</p>"
                         io.puts "<p>Der Code ist für zehn Minuten gültig. Nachdem du dich angemeldet hast, bleibst du für ein ganzes Jahr angemeldet (falls du dich nicht wieder abmeldest).</p>"
                         io.puts "<p>Falls du diese E-Mail nicht angefordert hast, hat jemand versucht, sich mit deiner E-Mail-Adresse auf <a href='https://#{WEBSITE_HOST}/'>https://#{WEBSITE_HOST}/</a> anzumelden. In diesem Fall musst du nichts weiter tun (es sei denn, du befürchtest, dass jemand anderes Zugriff auf dein E-Mail-Konto hat – dann solltest du dein E-Mail-Passwort ändern).</p>"
-                        io.puts "<p>Viele Grüße,<br />Michael Specht</p>"
+                        io.puts "<p>Viele Grüße,<br />#{CGI.escapeHTML(signature)}</p>"
                         io.string
                     end
                 end

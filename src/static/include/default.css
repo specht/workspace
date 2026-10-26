@@ -198,7 +198,7 @@ pre.code-minicpu .nl {
     font-weight: bold;
 }
 
-/* ```room blocks (Rouge::Lexers::BackroomsRoom): a floor plan is a grid,
+/* ```room blocks (their lexer, src/ruby/include): a floor plan is a grid,
    so no ligatures (»...« would melt into one sign); walls, floor, the start,
    doors and things each in their own colour. */
 pre.code-room {
@@ -1279,8 +1279,8 @@ details.solution.hint-step-new > summary {
     transform: scale(0.5) translateY(-8px);
 }
 
-/* A note found in the Backrooms: a scrap of paper with typewriter text,
-   the source underneath (backrooms.md) */
+/* A found note: a scrap of paper with typewriter text, the source
+   underneath */
 .found-note {
     margin: 1.5em 0;
     padding: 0.9em 1.2em 0.8em 1.2em;
@@ -3251,7 +3251,11 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 
 .page-kind-sep {
     margin: 0 0.5em;
+    font-size: 0.75em;
     font-weight: 400;
+}
+.page-kind-sep::before {
+    vertical-align: 0;
 }
 
 /* Pages in more than one programming language (CodeLanguages): the page

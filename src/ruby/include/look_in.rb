@@ -3,7 +3,7 @@ require_relative 'group_visibility'
 
 # A teacher looks into a student's account: as the student (impersonation)
 # or in the student's workspace. Both need a short reason, which the student
-# finds calmly the next time it logs in: »Herr Specht hat sich am 14.10. um
+# finds calmly the next time it logs in: »Herr Beispiel hat sich am 14.10. um
 # 10:12 deinen Workspace angesehen: Ich sehe mir deine Abgabe an.« Grades
 # never go here. Plain Ruby, tested on its own.
 module LookIn
@@ -28,7 +28,7 @@ module LookIn
 
     # A teacher's test account: its own address with +test, so that with most
     # mail providers the login codes reach the teacher's inbox.
-    # specht@schule.de -> specht+test@schule.de
+    # lehrer@schule.de -> lehrer+test@schule.de
     def self.test_account_email(teacher)
         local, domain = teacher.to_s.downcase.split('@', 2)
         return nil if local.to_s.empty? || domain.to_s.empty? || local.end_with?('+test')

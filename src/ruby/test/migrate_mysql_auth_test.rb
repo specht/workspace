@@ -141,18 +141,18 @@ class MysqlAuthMigrationTest < Minitest::Test
 
     def collision_users
         [
-            { :email => 'specht@ovgu.de', :db_login => nil },
-            { :email => 'specht@gymnasiumsteglitz.de', :db_login => nil },
+            { :email => 'lehrer@uni.example', :db_login => nil },
+            { :email => 'lehrer@schule.example', :db_login => nil },
         ]
     end
 
     def test_dry_run_describes_allocations_and_both_databases_without_mutation
         runner, mysql, store, _state, provisioner, output = components(
             :users => collision_users,
-            :accounts => [account('specht'), account('healthchecker')],
-            :mysql_databases => ['specht'],
-            :neo4j_users => ['specht'],
-            :neo4j_databases => ['specht'],
+            :accounts => [account('lehrer'), account('healthchecker')],
+            :mysql_databases => ['lehrer'],
+            :neo4j_users => ['lehrer'],
+            :neo4j_databases => ['lehrer'],
         )
 
         assert runner.run
@@ -163,7 +163,7 @@ class MysqlAuthMigrationTest < Minitest::Test
         assert_includes output.string, 'Database login allocation:'
         assert_includes output.string, 'MySQL:'
         assert_includes output.string, 'Neo4j:'
-        assert_includes output.string, '[collision] old database "specht" is shared by 2 workspace users'
+        assert_includes output.string, '[collision] old database "lehrer" is shared by 2 workspace users'
         assert_includes output.string, 'healthchecker'
         assert_includes output.string, 'Dry run only.'
     end
@@ -172,13 +172,13 @@ class MysqlAuthMigrationTest < Minitest::Test
         runner, mysql, store, state, provisioner, output = components(
             :users => collision_users,
             :accounts => [
-                account('specht'),
+                account('lehrer'),
                 account('root', :host => 'localhost'),
                 account('healthchecker', :host => 'localhost'),
             ],
-            :mysql_databases => ['specht'],
-            :neo4j_users => ['specht'],
-            :neo4j_databases => ['specht'],
+            :mysql_databases => ['lehrer'],
+            :neo4j_users => ['lehrer'],
+            :neo4j_databases => ['lehrer'],
             :apply => true,
         )
 
@@ -186,16 +186,16 @@ class MysqlAuthMigrationTest < Minitest::Test
         persisted = store.users.to_h do |user|
             [user[:email], user[:db_login]]
         end
-        assert_equal 'specht', persisted['specht@gymnasiumsteglitz.de']
-        assert_match(/\Aspecht-[a-z0-9]{4}\z/, persisted['specht@ovgu.de'])
-        refute_includes state.users, persisted['specht@ovgu.de']
-        refute_includes state.databases, persisted['specht@ovgu.de']
-        assert_equal ['specht'], provisioner.calls.map(&:first)
+        assert_equal 'lehrer', persisted['lehrer@schule.example']
+        assert_match(/\Alehrer-[a-z0-9]{4}\z/, persisted['lehrer@uni.example'])
+        refute_includes state.users, persisted['lehrer@uni.example']
+        refute_includes state.databases, persisted['lehrer@uni.example']
+        assert_equal ['lehrer'], provisioner.calls.map(&:first)
         assert provisioner.calls.first.last
         assert_includes output.string,
-            'specht@gymnasiumsteglitz.de keeps existing database "specht"'
+            'lehrer@schule.example keeps existing database "lehrer"'
         assert_includes output.string,
-            'specht@ovgu.de uses'
+            'lehrer@uni.example uses'
         assert_includes output.string, 'on next login'
         assert mysql.writes.any? do |sql|
             sql.include?('ALTER USER') &&

@@ -105,7 +105,7 @@ module PageKinds
             used = used_by(slug, content, development: development)
             html = +"<nav class='page-kind page-kind-reference' aria-label='Handbuch'>"
             html << "<span class='page-kind-label'><a href='/reference'><i class='bi bi-book'></i>Handbuch</a>"
-            html << "<span class='page-kind-sep' aria-hidden='true'>›</span>#{h.(label)}" unless label.empty?
+            html << "<i class='bi bi-chevron-right page-kind-sep' aria-hidden='true'></i>#{h.(label)}" unless label.empty?
             html << '</span>'
             unless used.empty?
                 # titles are HTML already (»HTML &amp; CSS«): unescaped first

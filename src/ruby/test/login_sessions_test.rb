@@ -101,7 +101,7 @@ class LoginSessionsTest < Minitest::Test
         { :sid => 'phone', :email => 'lena@example.org', :created_on => '2026-09-01', :last_used_on => '2026-10-21', :device => 'Safari auf iPhone' },
         { :sid => 'here', :email => 'lena@example.org', :created_on => '2026-01-10', :last_used_on => '2026-10-01', :device => 'Firefox auf Windows' },
         { :sid => 'school', :email => 'lena@example.org', :created_on => '2026-10-20', :last_used_on => '2026-10-22', :device => 'Chrome auf ChromeOS' },
-        { :sid => 'teacher', :email => 'lena@example.org', :impersonated_by => 'specht@example.org', :created_on => '2026-10-22', :last_used_on => '2026-10-22' },
+        { :sid => 'teacher', :email => 'lena@example.org', :impersonated_by => 'lehrer@example.org', :created_on => '2026-10-22', :last_used_on => '2026-10-22' },
         { :sid => 'mia', :email => 'mia@example.org', :created_on => '2026-10-22', :last_used_on => '2026-10-22' },
     ].freeze
 

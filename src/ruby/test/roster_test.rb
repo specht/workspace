@@ -24,15 +24,15 @@ class RosterTest < Minitest::Test
             > Klasse 12
             Lena Muster <lena@example.org>
             Tom Beispiel <tom@example.org>
-            + specht@example.org
+            + lehrer@example.org
 
             > LK Informatik
             lena@example.org
             Mia Test <mia@example.org>
-            + specht@example.org
+            + lehrer@example.org
 
             > Lehrkräfte
-            Dr. Michael Specht <specht@example.org>
+            Dr. Erika Beispiel <beispiel@example.org>
             Lea Lehrerin <lea@example.org>
             * lea@example.org
         END_OF_TEXT
