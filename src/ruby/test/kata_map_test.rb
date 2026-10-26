@@ -17,6 +17,7 @@ class KataMapTest < Minitest::Test
         stop = stops.first
         assert_equal 'Erste Funktionen', stop.title
         assert_equal '2 Einstieg · 1 Übung · 1 Knobelei · 1 Extra', KataMap.counts_text(stop.counts)
+        assert_equal 'Der Mampfer', KataMap.title('Pip unter Funkelbach: Der Mampfer')
     end
 
     def test_a_visitor_sees_the_sets_and_how_many_katas_there_are

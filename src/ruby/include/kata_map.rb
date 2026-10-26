@@ -30,9 +30,11 @@ module KataMap
         Stop.new(:slug => slug, :title => title(content[:title]), :idea => content[:idea], :curriculum => content[:curriculum], :icon => content[:icon], :counts => counts)
     end
 
-    # »Katas: Erste Funktionen« -> »Erste Funktionen«
+    # »Katas: Erste Funktionen« -> »Erste Funktionen«; »Pip unter
+    # Funkelbach: Hinab« -> »Hinab«, Pip on the band says the rest, and the
+    # title fits in one line
     def self.title(text)
-        CGI.unescapeHTML(text.to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '')).sub(/\AKatas?:\s*/, '')
+        CGI.unescapeHTML(text.to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '')).sub(/\A(Katas?|Pip unter Funkelbach):\s*/, '')
     end
 
     def self.h(text)
