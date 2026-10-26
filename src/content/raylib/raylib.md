@@ -337,8 +337,32 @@ _task(saeule)
 
 ### Was man sieht
 
-Jetzt zeichnen wir die Welt. Für jeden Block einen `DrawCube` aufzurufen, wäre viel Arbeit für den Computer: Die meisten Blöcke stecken im Boden, und niemand sieht sie. Gezeichnet wird deshalb nur ein Block, der an Luft grenzt:
+Jetzt zeichnen wir die Welt. Für jeden Block einen `DrawCube` aufzurufen, wäre viel Arbeit für den Computer: Die meisten Blöcke stecken im Boden, und niemand sieht sie. Gezeichnet wird deshalb nur ein Block, der an Luft grenzt. Ein Block hat sechs Nachbarn, mit denen er eine Seite teilt: rechts und links, oben und unten, vorne und hinten.
 
+<div class='hint own' data-check='sichtbar'>
+<strong>Jetzt bist du dran:</strong> Schreib unter <code>generate_world</code> die Funktion <code>bool visible(int x, int y, int z)</code>. Sie gibt <code>true</code> zurück, wenn mindestens einer der sechs Nachbarn des Blocks bei (x, y, z) Luft ist, sonst <code>false</code>. Lies die Nachbarn mit <code>block</code>, nicht direkt aus <code>world</code>. Laufen lassen kannst du sie erst gleich mit dem neuen <code>main</code>; die Aufgabe darunter prüft sie schon vorher.
+</div>
+
+<!-- hint -->
+Der Nachbar rechts von (x, y, z) liegt bei (x + 1, y, z). Schreib die
+anderen fünf auf: Bei jedem ändert sich nur eine der drei Koordinaten, um 1
+nach oben oder nach unten. Ein Block, der nur schräg über eine Kante an Luft
+grenzt, zählt nicht.
+<!-- /hint -->
+<!-- hint -->
+»Mindestens einer ist Luft« ist ein Oder, `||`, zwischen sechs Vergleichen.
+Ein Gerüst; die Lücken mit `…` füllst du:
+
+```c
+bool visible(int x, int y, int z)
+{
+    return block(x + 1, y, z) == AIR || block(…) == AIR
+        || …;
+}
+```
+<!-- /hint -->
+
+<!-- solution -->
 ```c
 ~             tree(x, y, z);
 ~     }
@@ -351,40 +375,42 @@ bool visible(int x, int y, int z)
         || block(x, y, z + 1) == AIR || block(x, y, z - 1) == AIR;
 }
 ```
+<!-- /solution -->
+
+_task(sichtbar)
 
 Hier hilft, dass `block` außerhalb der Welt `AIR` sagt: Am Rand gilt ein Block als sichtbar, ohne dass wir über das Array hinaus lesen.
 
-Ersetze `main` durch diese Fassung. Die Kamera steht jetzt hoch über der Welt, und `UpdateCamera(&camera, CAMERA_ORBITAL)` lässt sie langsam um ihr Ziel kreisen, die Mitte der Welt:
+Jetzt kommt `main` dran. Gleich nach dem Fenster entsteht die Welt, und die Kamera steht hoch über ihr und schaut auf ihre Mitte. Ersetze die Zeilen vom Kommentar `// Die Kamera: …` bis `camera.target` durch diese:
 
-```c_copy
-~         || block(x, y + 1, z) == AIR || block(x, y - 1, z) == AIR
-~         || block(x, y, z + 1) == AIR || block(x, y, z - 1) == AIR;
-~ }
+```c
+~     SetTargetFPS(60);
 ~
-int main(void)
-{
-    SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_WINDOW_RESIZABLE);   // glatte Kanten, Größe wie die Seite
-    InitWindow(960, 540, "Klötzchenwelt");
-    SetTargetFPS(60);
-
     generate_world();
 
     Camera3D camera = { 0 };
     camera.position = (Vector3){ -20, 30, -20 };
     camera.target = (Vector3){ WIDTH / 2, 4, DEPTH / 2 };
-    camera.up = (Vector3){ 0, 1, 0 };
-    camera.fovy = 45;
-    camera.projection = CAMERA_PERSPECTIVE;
+~     camera.up = (Vector3){ 0, 1, 0 };
+~     camera.fovy = 45;
+```
 
-    while (!WindowShouldClose())
-    {
+Am Anfang der Schleife lässt `UpdateCamera(&camera, CAMERA_ORBITAL)` die Kamera langsam um ihr Ziel kreisen:
+
+```c
+~     while (!WindowShouldClose())
+~     {
         // raylib dreht die Kamera langsam um ihr Ziel
         UpdateCamera(&camera, CAMERA_ORBITAL);
 
-        BeginDrawing();
-        ClearBackground(SKYBLUE);
+~         BeginDrawing();
+~         ClearBackground(SKYBLUE);
+```
 
-        BeginMode3D(camera);
+Statt des Gitters und des Würfels zeichnet die Schleife jetzt die Welt. Ersetze die Zeilen von `DrawGrid` bis `DrawText` durch:
+
+```c
+~         BeginMode3D(camera);
         int blocks = 0;
         for (int x = 0; x < WIDTH; x++)
             for (int y = 0; y < HEIGHT; y++)
@@ -398,12 +424,8 @@ int main(void)
         EndMode3D();
 
         DrawText(TextFormat("%d Blöcke  %d FPS", blocks, GetFPS()), 10, 10, 20, DARKBLUE);
-        EndDrawing();
-    }
-
-    CloseWindow();
-    return 0;
-}
+~         EndDrawing();
+~     }
 ```
 
 <!-- tutorial-screenshot
@@ -420,6 +442,7 @@ hook: play 3
 hook: settle
 crop-element: #canvas
 check-task: saeule
+check-task: sichtbar
 check-task-fails: blickrichtung
 -->
 <img class='full fit-width' src='insel.webp' alt='Die ganze Welt von schräg oben: Hügel aus Gras, ein Sandstrand, Bäume, am Rand Erd- und Steinschichten.'>
@@ -569,32 +592,28 @@ _task(pro-bild)
 
 ### Die Kamera folgt
 
-In `main` steht die Kamera jetzt dort, wo die Augen der Figur sind, und schaut in die Blickrichtung. Ersetze `main` noch einmal:
+In `main` steht die Kamera jetzt dort, wo die Augen der Figur sind, und schaut in die Blickrichtung. Am Anfang bekommt die Figur ihren Platz und ihre Winkel. `position` und `target` der Kamera rechnet die Schleife ab jetzt in jedem Bild aus: Lösche die beiden Zeilen, und setz `fovy` auf 70, dann reicht der Blick weiter nach oben und unten, wie in Spielen:
 
-```c_copy
-~     move = Vector3Scale(Vector3Normalize(move), 4.5f * dt);
-~     feet = Vector3Add(feet, move);
-~ }
-~
-int main(void)
-{
-    SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_WINDOW_RESIZABLE);   // glatte Kanten, Größe wie die Seite
-    InitWindow(960, 540, "Klötzchenwelt");
-    SetTargetFPS(60);
+```c
+~     SetTargetFPS(60);
     SetExitKey(KEY_NULL);   // Esc gibt nur die Maus frei
-
-    generate_world();
+~
+~     generate_world();
     feet = (Vector3){ 8.5f, 9, 10.5f };
     yaw = 0.8f;      // schräg über die Welt schauen
     pitch = -0.2f;
-
-    Camera3D camera = { 0 };
-    camera.up = (Vector3){ 0, 1, 0 };
+~
+~     Camera3D camera = { 0 };
+~     camera.up = (Vector3){ 0, 1, 0 };
     camera.fovy = 70;
-    camera.projection = CAMERA_PERSPECTIVE;
+~     camera.projection = CAMERA_PERSPECTIVE;
+```
 
-    while (!WindowShouldClose())
-    {
+In der Schleife ersetzt die Figur das `UpdateCamera` und den Kommentar darüber:
+
+```c
+~     while (!WindowShouldClose())
+~     {
         float dt = GetFrameTime();
         if (dt > 0.05f) dt = 0.05f;
 
@@ -608,32 +627,19 @@ int main(void)
         Vector3 eyes = { feet.x, feet.y + EYE_HEIGHT, feet.z };
         camera.position = eyes;
         camera.target = Vector3Add(eyes, view_direction());
+~
+~         BeginDrawing();
+~         ClearBackground(SKYBLUE);
+```
 
-        BeginDrawing();
-        ClearBackground(SKYBLUE);
+Unter der Zeile mit den Blöcken steht in den ersten Sekunden, wie man die Figur steuert:
 
-        BeginMode3D(camera);
-        int blocks = 0;
-        for (int x = 0; x < WIDTH; x++)
-            for (int y = 0; y < HEIGHT; y++)
-                for (int z = 0; z < DEPTH; z++)
-                    if (world[x][y][z] != AIR && visible(x, y, z)) {
-                        Vector3 center = { x + 0.5f, y + 0.5f, z + 0.5f };
-                        DrawCube(center, 1, 1, 1, colors[world[x][y][z]]);
-                        DrawCubeWires(center, 1.01f, 1.01f, 1.01f, Fade(BLACK, 0.25f));
-                        blocks++;
-                    }
-        EndMode3D();
-
-        DrawText(TextFormat("%d Blöcke  %d FPS", blocks, GetFPS()), 10, 10, 20, DARKBLUE);
+```c
+~         DrawText(TextFormat("%d Blöcke  %d FPS", blocks, GetFPS()), 10, 10, 20, DARKBLUE);
         if (!IsCursorHidden() && GetTime() < 8)
             DrawText("Klick ins Bild: Maus fangen. WASD laufen, Pfeiltasten umsehen.", 10, 36, 20, WHITE);
-        EndDrawing();
-    }
-
-    CloseWindow();
-    return 0;
-}
+~         EndDrawing();
+~     }
 ```
 
 Neu ist auch die Maus: Ein Klick ins Bild ruft `DisableCursor()` auf. Der Mauszeiger verschwindet, und jede Bewegung der Maus dreht den Blick, wie in einem Spiel. <kbd>Esc</kbd> gibt die Maus wieder frei (`SetExitKey(KEY_NULL)` sorgt dafür, dass <kbd>Esc</kbd> nicht gleich das ganze Programm beendet).
@@ -1533,34 +1539,29 @@ Und in der Schleife, die die Welt zeichnet, werden Fackeln nicht als Block gezei
 
 Was weit entfernt ist, sieht in der Wirklichkeit blasser aus, weil Luft nie ganz klar ist. Das hilft dem Auge, Entfernungen zu schätzen, und versteckt nebenbei den Rand der Welt. Der Shader mischt dafür die Farbe eines Pixels mit der Farbe des Himmels, je weiter er von den Augen entfernt ist.
 
-Hier ist der ganze neue Fragment-Shader mit Fackeln und Nebel. Ersetze `light.fs` durch:
+Für Nebel und Fackeln braucht der Fragment-Shader neue Werte von `main`: die Farbe des Himmels, wo die Augen sind, und wo die Fackeln stehen. Schreib sie in `light.fs` unter die anderen `uniform`:
 
-```glsl_copy
-#version 100
-precision mediump float;
-
-varying vec3 position;
-varying vec3 normal;
-varying vec4 color;
-
-uniform vec3 sun;        // Richtung, aus der die Sonne scheint
-uniform vec3 sunlight;   // Farbe und Stärke des Sonnenlichts
-uniform vec3 ambient;    // Licht, das von überall kommt
+```glsl
+~ uniform vec3 sun;        // Richtung, aus der die Sonne scheint
+~ uniform vec3 sunlight;   // Farbe und Stärke des Sonnenlichts
+~ uniform vec3 ambient;    // Licht, das von überall kommt
 uniform vec3 sky;        // Farbe des Himmels, für den Nebel
 uniform vec3 eyes;       // wo die Kamera ist
 
 #define MAX_TORCHES 16
 uniform vec3 torches[MAX_TORCHES];
 uniform int torchCount;
+~
+~ void main()
+~ {
+```
 
-void main()
-{
-    vec3 n = normalize(normal);
+In `main` kommt das Licht der Fackeln zum Licht der Sonne dazu. Ersetze die letzte Zeile, `gl_FragColor = …`, durch:
 
-    // Wie direkt trifft die Sonne diese Fläche? 1 = senkrecht, 0 = gar nicht
-    float sunAmount = max(dot(n, sun), 0.0);
-    vec3 light = ambient + sunlight * sunAmount;
-
+```glsl
+~     float sunAmount = max(dot(n, sun), 0.0);
+~     vec3 light = ambient + sunlight * sunAmount;
+~
     // Jede Fackel leuchtet warm, je näher, desto heller
     for (int i = 0; i < MAX_TORCHES; i++) {
         if (i >= torchCount) break;
@@ -1571,14 +1572,42 @@ void main()
     }
 
     vec3 result = color.rgb * min(light, vec3(1.4));
-
-    // Nebel: weit Entferntes verschwimmt mit dem Himmel
-    float fog = clamp((length(position - eyes) - 16.0) / 20.0, 0.0, 1.0);
-    gl_FragColor = vec4(mix(result, sky, fog), 1.0);
-}
+~ }
 ```
 
 Jede Fackel gibt warmes, orangefarbenes Licht. Wie bei der Sonne zählt, wie sehr eine Fläche der Fackel zugewandt ist; dazu kommt der Abstand: Das Licht wird mit `1.0 + 0.3 * dist * dist` geteilt, also schwächer, je weiter die Fläche entfernt ist. `min(light, vec3(1.4))` verhindert, dass eine Fläche zwischen vielen Fackeln weiß ausbrennt.
+
+`result` ist die Farbe des Pixels ohne Nebel. Der Nebel fängt 16 Blöcke vor den Augen an und wird mit der Entfernung dichter, bis 20 Blöcke weiter, also bei 36, nur noch Himmel zu sehen ist.
+
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Schreib unter <code>result</code> die beiden Zeilen für den Nebel. Die erste rechnet <code>float fog</code> aus: 0 bis zu einer Entfernung von 16 Blöcken, dann gleichmäßig mehr, bis es bei 36 Blöcken 1 ist, und weiter weg bleibt es 1. Die zweite setzt <code>gl_FragColor</code>: <code>result</code>, mit dem Himmel <code>sky</code> gemischt, so viel, wie <code>fog</code> sagt. <code>length(position - eyes)</code> ist die Entfernung des Pixels von den Augen, <code>clamp(x, 0.0, 1.0)</code> hält eine Zahl zwischen 0 und 1, und <code>mix(a, b, t)</code> mischt zwei Farben: <code>t = 0</code> ergibt <code>a</code>, <code>t = 1</code> ergibt <code>b</code>. Ausprobieren kannst du es, sobald <code>main</code> dem Shader die neuen Werte gibt, gleich unten.
+</div>
+
+<!-- hint -->
+Rechne mit der Hand: Wie groß soll `fog` bei 16, 26 und 36 Blöcken
+Entfernung sein? Welche Rechnung macht aus 16 eine 0, aus 26 eine 0,5 und
+aus 36 eine 1? Was gibt sie bei 10 und bei 50, und was macht `clamp` daraus?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücken mit `…` füllst du. Die vierte Zahl in `gl_FragColor`
+ist die Deckkraft, wie bisher 1:
+
+```glsl
+    float fog = clamp((… - 16.0) / …, 0.0, 1.0);
+    gl_FragColor = vec4(mix(…, …, fog), 1.0);
+```
+<!-- /hint -->
+
+<!-- solution -->
+```glsl
+~     vec3 result = color.rgb * min(light, vec3(1.4));
+~
+    // Nebel: weit Entferntes verschwimmt mit dem Himmel
+    float fog = clamp((length(position - eyes) - 16.0) / 20.0, 0.0, 1.0);
+    gl_FragColor = vec4(mix(result, sky, fog), 1.0);
+~ }
+```
+<!-- /solution -->
 
 Damit der Shader die neuen Werte bekommt, braucht `main` vier weitere Stellen:
 
@@ -1632,6 +1661,7 @@ variants: dark
 crop-element: #canvas
 check-task: fackeln
 check-task-fails: texturen
+check-task-fails: kacheln
 -->
 <img class='full fit-width' src='fackeln.webp' alt='Blick über die Wiese, drei Fackeln stehen im Gras; im dunklen Modus bei Nacht, die Fackeln leuchten.'>
 
@@ -1661,7 +1691,7 @@ In der Vorlage liegt `textures.png`, ein Bild aus acht Kacheln von 16 × 16 Pixe
 
 <img src='vorlage/textures.png' data-noconvert style='display: block; width: 100%; max-width: 48em; image-rendering: pixelated; margin: 1em 0;' alt='Acht Kacheln nebeneinander: Gras von oben, Gras von der Seite mit grünem Rand, Erde, Stein, Rinde, Jahresringe, Laub, Sand.'>
 
-Gras bekommt oben die erste Kachel, an den Seiten die zweite mit dem grünen Rand und unten Erde. Ein Holzblock zeigt an den Seiten Rinde und oben die Jahresringe. Die Reihenfolge der Kacheln steht als `enum` im Programm, und `tile_for` sagt, welche Kachel eine Seite bekommt. Schreibe beides unter `world`:
+Gras bekommt oben die erste Kachel, an den Seiten die zweite mit dem grünen Rand und unten Erde. Ein Holzblock zeigt an den Seiten Rinde und oben und unten die Jahresringe. Erde, Stein, Laub und Sand sehen von allen Seiten gleich aus. Die Reihenfolge der Kacheln steht als `enum` im Programm, und `tile_for` sagt, welche Kachel eine Seite bekommt. Schreibe beides unter `world`:
 
 ```c_copy
 ~     { 255, 200, 80, 255 },    // Fackel
@@ -1679,6 +1709,44 @@ enum { T_GRASS_TOP, T_GRASS_SIDE, T_DIRT, T_STONE, T_WOOD_SIDE, T_WOOD_TOP,
 // Welche Kachel bekommt eine Seite? dir: 0 oben, 1 unten, 2 seitlich
 int tile_for(int type, int dir)
 {
+    // hier: die Kachel für die Blockart type an der Seite dir
+}
+~
+~ // Der Block an einer Stelle; außerhalb der Welt ist Luft
+~ int block(int x, int y, int z)
+~ {
+```
+
+<div class='hint own' data-check='kacheln'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>tile_for</code>. Es bekommt eine Blockart (<code>GRASS</code>, <code>DIRT</code> …) und eine Seite <code>dir</code> und gibt die Kachel zurück, die diese Seite zeigt, einen der Namen aus dem neuen <code>enum</code> (<code>T_GRASS_TOP</code> …), so wie es der Absatz über dem Code beschreibt. Für alle anderen Blockarten gibt es Sand. Zu sehen sind die Kacheln erst, wenn <code>draw_block</code> sie im nächsten Abschnitt benutzt; die Aufgabe darunter prüft <code>tile_for</code> schon jetzt.
+</div>
+
+<!-- hint -->
+Mach dir eine Tabelle: eine Zeile für jede Blockart, drei Spalten für oben
+(0), unten (1) und seitlich (2). In welchen Zeilen stehen drei gleiche
+Kacheln, in welchen nicht?
+<!-- /hint -->
+<!-- hint -->
+`switch (type)` springt zu dem `case`, das zur Blockart passt, und dort gibt
+`return` gleich die Kachel zurück. Wo die Seite eine Rolle spielt, fragst du
+zusätzlich nach `dir`, mit `if` oder mit `?:`. Ein Gerüst; die Lücken mit
+`…` füllst du:
+
+```c
+    switch (type) {
+    case GRASS: return dir == 0 ? T_GRASS_TOP : dir == 1 ? … : …;
+    case DIRT: return T_DIRT;
+    …
+    default: return T_SAND;
+    }
+```
+<!-- /hint -->
+
+<!-- solution -->
+```c
+// Welche Kachel bekommt eine Seite? dir: 0 oben, 1 unten, 2 seitlich
+int tile_for(int type, int dir)
+{
     switch (type) {
     case GRASS: return dir == 0 ? T_GRASS_TOP : dir == 1 ? T_DIRT : T_GRASS_SIDE;
     case DIRT: return T_DIRT;
@@ -1688,11 +1756,10 @@ int tile_for(int type, int dir)
     default: return T_SAND;
     }
 }
-~
-~ // Der Block an einer Stelle; außerhalb der Welt ist Luft
-~ int block(int x, int y, int z)
-~ {
 ```
+<!-- /solution -->
+
+_task(kacheln)
 
 ### Texturkoordinaten
 
@@ -1868,6 +1935,7 @@ hook: settle
 variants: dark
 crop-element: #canvas
 check-task: texturen
+check-task: kacheln
 -->
 <img class='full fit-width' src='tag.webp' alt='Blick über eine hügelige Welt aus Blöcken mit Gras-, Erd- und Holztexturen, ein paar Fackeln stehen im Gras.'>
 

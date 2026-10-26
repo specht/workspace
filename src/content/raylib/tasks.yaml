@@ -125,6 +125,61 @@ tasks:
           expect: 0
           say: 'In so vielen Säulen stimmt mindestens ein Block noch nicht.'
 
+  - id: sichtbar
+    title: Dein visible
+    prompt: |
+      Schreib `visible` in `main.c` und speichere. Der Workspace füllt die
+      Welt mit Stein, macht ein Feld zu Luft und fragt, welche Blöcke zu
+      sehen sind.
+    file: raylib-starter/main.c
+    check:
+      type: c
+      file: raylib-starter/main.c
+      setup: |
+        // eine Welt ganz aus Stein, nur bei (ax, ay, az) ist Luft (ax < 0: nirgends);
+        // ist der Block bei (x, y, z) zu sehen?
+        bool hs_visible(int ax, int ay, int az, int x, int y, int z)
+        {
+            for (int i = 0; i < WIDTH; i++)
+                for (int j = 0; j < HEIGHT; j++)
+                    for (int k = 0; k < DEPTH; k++)
+                        world[i][j][k] = STONE;
+            if (ax >= 0)
+                world[ax][ay][az] = AIR;
+            return visible(x, y, z);
+        }
+      cases:
+        - call: hs_visible(-1, 0, 0, 10, 10, 10)
+          expect: false
+          say: 'Ringsum ist Stein: Dieser Block grenzt nirgends an Luft, man sieht ihn nicht.'
+        - call: hs_visible(11, 10, 10, 10, 10, 10)
+          expect: true
+          say: 'Rechts daneben, bei x + 1, ist Luft: Der Block ist zu sehen.'
+        - call: hs_visible(9, 10, 10, 10, 10, 10)
+          expect: true
+          say: 'Links daneben, bei x − 1, ist Luft: Der Block ist zu sehen.'
+        - call: hs_visible(10, 11, 10, 10, 10, 10)
+          expect: true
+          say: 'Über dem Block, bei y + 1, ist Luft: Der Block ist zu sehen.'
+        - call: hs_visible(10, 9, 10, 10, 10, 10)
+          expect: true
+          say: 'Unter dem Block, bei y − 1, ist Luft: Der Block ist zu sehen.'
+        - call: hs_visible(10, 10, 11, 10, 10, 10)
+          expect: true
+          say: 'Vor dem Block, bei z + 1, ist Luft: Der Block ist zu sehen.'
+        - call: hs_visible(10, 10, 9, 10, 10, 10)
+          expect: true
+          say: 'Hinter dem Block, bei z − 1, ist Luft: Der Block ist zu sehen.'
+        - call: hs_visible(11, 11, 10, 10, 10, 10)
+          expect: false
+          say: 'Die Luft liegt nur schräg daneben, über eine Kante. Zählen sollen nur die sechs Nachbarn, mit denen der Block eine Seite teilt.'
+        - call: hs_visible(-1, 0, 0, 0, 10, 10)
+          expect: true
+          say: 'Der Block liegt am Rand der Welt, bei x = 0: Links davon ist nichts mehr, und `block` sagt dort `AIR`. Liest du die Nachbarn mit `block`?'
+        - call: hs_visible(-1, 0, 0, 10, HEIGHT - 1, 10)
+          expect: true
+          say: 'Der Block liegt ganz oben in der Welt: Darüber ist nichts mehr, und `block` sagt dort `AIR`. Liest du die Nachbarn mit `block`?'
+
   - id: blickrichtung
     title: Deine Blickrichtung
     prompt: |
@@ -535,6 +590,44 @@ tasks:
         contains:
           - { pattern: 'uniform\s+vec3\s+torches\s*\[', say: 'In `light.fs` gibt es noch keine Liste `torches`.' }
           - { pattern: '\bfog\b', say: 'In `light.fs` fehlt noch der Nebel (`fog`): Er mischt die Farbe mit `sky`, je weiter entfernt ein Pixel ist.' }
+
+  - id: kacheln
+    title: Dein tile_for
+    prompt: |
+      Schreib `tile_for` in `main.c` und speichere. Der Workspace fragt nach
+      den Kacheln für jede Blockart, oben, unten und an der Seite.
+    file: raylib-starter/main.c
+    check:
+      type: c
+      file: raylib-starter/main.c
+      cases:
+        - call: tile_for(GRASS, 0) == T_GRASS_TOP
+          expect: true
+          say: 'Gras zeigt oben die erste Kachel, `T_GRASS_TOP`.'
+        - call: tile_for(GRASS, 1) == T_DIRT
+          expect: true
+          say: 'Gras zeigt unten Erde, `T_DIRT`.'
+        - call: tile_for(GRASS, 2) == T_GRASS_SIDE
+          expect: true
+          say: 'Gras zeigt an den Seiten die Kachel mit dem grünen Rand, `T_GRASS_SIDE`.'
+        - call: tile_for(DIRT, 0) == T_DIRT && tile_for(DIRT, 2) == T_DIRT
+          expect: true
+          say: 'Erde zeigt auf allen Seiten `T_DIRT`.'
+        - call: tile_for(STONE, 1) == T_STONE && tile_for(STONE, 2) == T_STONE
+          expect: true
+          say: 'Stein zeigt auf allen Seiten `T_STONE`.'
+        - call: tile_for(WOOD, 2) == T_WOOD_SIDE
+          expect: true
+          say: 'Holz zeigt an den Seiten Rinde, `T_WOOD_SIDE`.'
+        - call: tile_for(WOOD, 0) == T_WOOD_TOP && tile_for(WOOD, 1) == T_WOOD_TOP
+          expect: true
+          say: 'Holz zeigt oben und unten die Jahresringe, `T_WOOD_TOP`.'
+        - call: tile_for(LEAVES, 0) == T_LEAVES && tile_for(LEAVES, 2) == T_LEAVES
+          expect: true
+          say: 'Laub zeigt auf allen Seiten `T_LEAVES`.'
+        - call: tile_for(SAND, 0) == T_SAND && tile_for(SAND, 2) == T_SAND
+          expect: true
+          say: 'Sand zeigt auf allen Seiten `T_SAND`.'
 
   - id: texturen
     title: Texturen
