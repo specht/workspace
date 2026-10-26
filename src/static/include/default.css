@@ -9236,9 +9236,10 @@ html[data-bs-theme="dark"] .bitplane-widget {
     content: '';
     flex: 0 0 48px;
     height: 48px;
-    /* the third frame: he turns to the right, towards what he says */
-    background: url(/images/pip/wichtel.png?v=13) no-repeat 66.667% 0 / 400% 100%;
+    background: url(/images/pip/wichtel.png?v=13) no-repeat 0 0 / 400% 100%;
     image-rendering: pixelated;
+    /* the sprite looks to the left: mirrored, he turns to what he says */
+    transform: scaleX(-1);
 }
 
 /* the line of the plan Pip is at (code_input.js, codeInputMark): purple,
