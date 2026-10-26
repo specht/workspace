@@ -15,7 +15,7 @@ Lernende schreiben Fragment-Shader in GLSL, im Stil von Shadertoy (`mainImage`, 
 <li><code>index.html?shader=NAME.frag</code> zeigt eine andere Datei aus dem Ordner; so lassen sich mehrere Shader nebeneinander halten.</li>
 </ul></td></tr>
 <tr><th>Jetzt bist du dran</th><td><ul>
-<li>An drei Stellen schreiben die Lernenden den Code zuerst selbst, nachdem die Seite erklärt hat, was er tun soll: <code>d</code> und <code>inside</code> des Kreises, die Schleife in <code>march</code> und die Runde der Schleife in <code>carpet</code>. Das Programm darum steht mit einer Lücke auf der Seite, und bis sie gefüllt ist, zeigt die Vorschau nur den Hintergrund.</li>
+<li>An fünf Stellen schreiben die Lernenden den Code zuerst selbst, nachdem die Seite erklärt hat, was er tun soll: <code>d</code> und <code>inside</code> des Kreises, die Abstände <code>ball</code> und <code>map</code> und die Schleife in <code>march</code> für die erste Kugel, die Runde der Schleife in <code>carpet</code> und die Runde der Schleife in <code>sponge</code>, das Gegenstück zum Teppich in 3D. Das Programm darum steht mit einer Lücke auf der Seite, und bis sie gefüllt ist, zeigt die Vorschau nur den Hintergrund, ein graues Quadrat oder einen glatten Würfel.</li>
 <li>Vor dem Code der Seite stehen Tipps, ein Beispiel von Hand und ein Gerüst mit Lücken. Jede Stufe erscheint erst eine Minute nach der vorigen, ohne Uhr; der Code der Seite ist die letzte Stufe. Wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst.</li>
 <li>Keine Aufgabe prüft den eigenen Shader; ob er stimmt, sieht man in der Vorschau.</li>
 </ul></td></tr>

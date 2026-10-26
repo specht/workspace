@@ -442,7 +442,7 @@ So tastet sich der Strahl vor: große Schritte im freien Raum, immer kleinere di
 
 ### Eine Kugel
 
-Ersetze `shader.frag` durch dieses Programm; das Herz davon, `march`, schreibst du gleich selbst:
+Ersetze `shader.frag` durch dieses Programm. Die beiden Abstände, `ball` und `map`, und das Herz davon, `march`, schreibst du gleich selbst:
 
 ```glsl_copy
 // Raymarching: eine Kugel in einem dunklen Studio
@@ -455,13 +455,15 @@ const vec3 DARK = vec3(0.003, 0.004, 0.008); // die Farbe des Studios, wo kein L
 // Abstand von p zur Kugel: zum Mittelpunkt, weniger den Radius
 float ball(vec3 p)
 {
-    return length(p - vec3(0.0, 0.6, 0.0)) - 0.5;
+    // hier: die Kugel um (0, 0.6, 0) mit dem Radius 0.5
+    return 1.0;
 }
 
 // Abstand von p zur nächsten Oberfläche: die Kugel oder der Boden (y = 0)
 float map(vec3 p)
 {
-    return min(ball(p), p.y);
+    // hier: die nächste der beiden Flächen
+    return 1.0;
 }
 
 // die Richtung, in der der Abstand am schnellsten wächst: die Normale
@@ -536,6 +538,41 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 ```
 
 Bis `march` fertig ist, trifft kein Strahl etwas: Die Vorschau bleibt fast schwarz, das leere Studio.
+
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>ball</code> und <code>map</code>, jede eine Zeile, statt <code>// hier</code> und <code>return 1.0;</code>. <code>ball</code> gibt den Abstand von <code>p</code> zur Kugel zurück: den Abstand zum Mittelpunkt <code>(0, 0.6, 0)</code>, weniger den Radius 0,5. <code>map</code> gibt den Abstand zur nächsten Fläche zurück, zur Kugel oder zum Boden bei <code>y = 0</code>, so wie es oben unter »Strahlen wie im Raytracer« steht. In GLSL ist <code>length(v)</code> die Länge eines Vektors und <code>min(a, b)</code> die kleinere von zwei Zahlen. Sehen kannst du die Kugel erst, wenn auch <code>march</code> fertig ist.
+</div>
+
+<!-- hint -->
+Rechne mit der Hand: Der Punkt `p = (0, 1.6, 0)` liegt genau über der
+Kugel. Wie weit ist er von ihrem Mittelpunkt weg, wie weit von ihrer
+Oberfläche, und wie weit vom Boden? Welcher der beiden Abstände ist der für
+`map`?
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücken mit `…` füllst du:
+
+```glsl
+    return length(p - …) - …;   // in ball
+    return min(…, …);           // in map
+```
+<!-- /hint -->
+
+<!-- solution -->
+```glsl
+// Abstand von p zur Kugel: zum Mittelpunkt, weniger den Radius
+float ball(vec3 p)
+{
+    return length(p - vec3(0.0, 0.6, 0.0)) - 0.5;
+}
+
+// Abstand von p zur nächsten Oberfläche: die Kugel oder der Boden (y = 0)
+float map(vec3 p)
+{
+    return min(ball(p), p.y);
+}
+```
+<!-- /solution -->
 
 <div class='hint own'>
 <strong>Jetzt bist du dran:</strong> Schreib <code>march</code>, den Strahl aus dem Bild oben. <code>t</code> ist die Strecke, die er schon gegangen ist, am Anfang 0. In jedem Schritt fragt er <code>map</code> am Punkt <code>from + dir * t</code>. Ist der Abstand kleiner als <code>0.001 * t</code>, ist er angekommen, und <code>march</code> gibt <code>t</code> zurück. Sonst geht er um den Abstand weiter. Nach höchstens 100 Schritten, oder sobald <code>t</code> größer als 40 ist, gibt er auf: <code>-1.0</code>.
@@ -823,20 +860,11 @@ float occlusion(vec3 p, vec3 n)
 ~ {
 ```
 
-Dann wird `shade` noch einmal länger:
+Dann wird `shade` noch einmal länger. Ersetze die Zeile mit `return` durch:
 
 ```glsl
-// die Farbe des Punktes q, den ein Strahl in Richtung dir trifft
-vec3 shade(vec3 q, vec3 dir)
-{
-    vec3 n = normal(q);
-    bool on_floor = blobs(q) > q.y;
-    vec3 albedo = on_floor
-        ? vec3(0.04)
-        : blob_color(q);
-
-    // die Lampe leuchtet einen Kreis auf dem Boden aus, mit weichen Schatten
-    float lamp = max(dot(n, LAMP), 0.0) * smoothstep(3.0, 0.3, length(q.xz)) * shadow(q + n * 0.002);
+~     // die Lampe leuchtet einen Kreis auf dem Boden aus, mit weichen Schatten
+~     float lamp = max(dot(n, LAMP), 0.0) * smoothstep(3.0, 0.3, length(q.xz)) * shadow(q + n * 0.002);
     float ao = occlusion(q, n);
     vec3 color = albedo * (vec3(1.0, 0.95, 0.9) * 2.0 * lamp + strips(n) * ao);
 
@@ -849,7 +877,7 @@ vec3 shade(vec3 q, vec3 dir)
         color = mix(color, studio(reflect(dir, n)) * ao, fresnel);
     }
     return color;
-}
+~ }
 ```
 
 Der Boden spiegelt mit einem zweiten Strahl, so wie die Spiegelkugel im Raytracer. In `mainImage`:
@@ -1076,7 +1104,7 @@ Dasselbe geht mit einem Würfel. Teile ihn in drei mal drei mal drei kleinere W�
 
 _person(menger)
 
-Ersetze `shader.frag` durch dieses Programm:
+Ersetze `shader.frag` durch dieses Programm; die Schleife in `sponge` schreibst du gleich selbst, wie die in `carpet`:
 
 ```glsl_copy
 // Der Menger-Schwamm: ein Würfel, aus dem in jeder Stufe ein Kreuz aus drei Balken
@@ -1104,11 +1132,8 @@ float sponge(vec3 p)
     float size = 2.0;   // die Kantenlänge der Würfel dieser Stufe
     for (int i = 0; i < 4; i++)
     {
-        // die Lage im Würfel dieser Stufe, seine Mitte bei 0: mod wiederholt ihn
-        vec3 q = mod(p + size / 2.0, size) - size / 2.0;
-        // durch seine Mitte ein Kreuz ein Drittel so breit wie er wegnehmen
-        d = max(d, -bars(q, size / 6.0));
-        size /= 3.0;
+        // hier: die Lage im Würfel dieser Stufe, das Kreuz durch seine Mitte
+        // wegnehmen, und size für die nächste Stufe
     }
     return d;
 }
@@ -1221,6 +1246,51 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     fragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
 }
 ```
+
+Bis dahin ist der Schwamm ein glatter Würfel ohne Löcher.
+
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Schreib die Runde der Schleife in <code>sponge</code>, drei Zeilen. <code>size</code> ist die Kantenlänge der Würfel dieser Stufe, am Anfang 2: der ganze Würfel von −1 bis 1. Die erste Zeile rechnet <code>vec3 q</code> aus, die Lage von <code>p</code> im Würfel dieser Stufe, mit seiner Mitte bei 0. Das ist wie <code>fract</code> im Teppich: <code>mod(x, size)</code> läuft von 0 bis <code>size</code> und fängt dann wieder bei 0 an. Die zweite Zeile nimmt durch diese Mitte das Kreuz aus <code>bars</code> heraus, ein Drittel so breit wie der Würfel: <code>max(d, -b)</code> zieht eine Form mit dem Abstand <code>b</code> von der Form mit dem Abstand <code>d</code> ab. Die dritte macht <code>size</code> für die nächste Stufe dreimal kleiner.
+</div>
+
+<!-- hint -->
+Nimm die erste Runde, `size = 2.0`: Der Würfel reicht von −1 bis 1, seine
+Mitte ist 0. Das Kreuz ist ein Drittel so breit, also 2/3; wie weit reicht
+es nach jeder Seite? Das ist das `w` von `bars`. Und wo liegt der Würfel der
+nächsten Stufe, der bei x = 1/3 anfängt, und wo ist seine Mitte?
+<!-- /hint -->
+<!-- hint -->
+`mod(p, size)` läuft von 0 bis `size`, die Mitte eines Würfels liegt also
+bei `size / 2`. Verschieb `p` vor `mod` um eine halbe Kantenlänge und das
+Ergebnis danach zurück, dann liegt die Mitte bei 0. Ein Gerüst; die Lücken
+mit `…` füllst du:
+
+```glsl
+        vec3 q = mod(p + …, size) - …;
+        d = max(d, -bars(q, …));
+        size /= …;
+```
+<!-- /hint -->
+
+<!-- solution -->
+```glsl
+// der Schwamm: der Würfel, weniger die Balken jeder Stufe
+float sponge(vec3 p)
+{
+    float d = box(p);
+    float size = 2.0;   // die Kantenlänge der Würfel dieser Stufe
+    for (int i = 0; i < 4; i++)
+    {
+        // die Lage im Würfel dieser Stufe, seine Mitte bei 0: mod wiederholt ihn
+        vec3 q = mod(p + size / 2.0, size) - size / 2.0;
+        // durch seine Mitte ein Kreuz ein Drittel so breit wie er wegnehmen
+        d = max(d, -bars(q, size / 6.0));
+        size /= 3.0;
+    }
+    return d;
+}
+```
+<!-- /solution -->
 
 <!-- tutorial-screenshot
 write-file: shader.frag <- file:stufen/11-schwamm.frag
