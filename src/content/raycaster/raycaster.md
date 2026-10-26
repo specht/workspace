@@ -759,7 +759,7 @@ Den liefert das Skalarprodukt. Der Vektor `a` von der Figur zum Treffpunkt, mult
 
 Für zwei Vektoren der Länge 1 ist das Skalarprodukt der Kosinus des Winkels zwischen ihnen: 1, wenn sie in dieselbe Richtung zeigen, 0, wenn sie senkrecht aufeinander stehen, und dazwischen etwas zwischen 0 und 1. Das ist genau die Länge des Schattens, den `a` auf `dir` wirft (grün). Ist `a` doppelt so lang, ist es auch sein Schatten; mit `dir` der Länge 1 ist das Skalarprodukt also der Weg, den der Treffpunkt in Blickrichtung vor der Figur liegt.
 
-<div class='hint own'>
+<div class='hint own' data-check='gerade'>
 <strong>Jetzt bist du dran:</strong> In <code>draw_view</code> ändert sich eine einzige Rechnung, die von <code>distance</code>. Rechne dort das Skalarprodukt aus dem Vektor von der Spielfigur zum Treffpunkt und <code>dir</code> aus: die Summe aus den multiplizierten x-Anteilen und den multiplizierten y-Anteilen. Danach sind die Wände gerade.
 </div>
 
@@ -781,6 +781,8 @@ y-Anteil mal y-Anteil.
         double distance = (hit.x - player_x) * dir_x + (hit.y - player_y) * dir_y;
 ```
 <!-- /solution -->
+
+_task(gerade)
 
 <!-- tutorial-screenshot
 write-file: raycaster.c <- file:stufen/06-waende-gerade.c
@@ -1261,7 +1263,7 @@ void draw_wall_column(int column, double distance, int tex, double u, double lig
 
 Weil `draw_wall_column` jetzt `shaded` benutzt, müssen `light_at` und `shaded` darüberstehen; verschiebe die beiden Funktionen vor `draw_wall_column`.
 
-<div class='hint own'>
+<div class='hint own' data-check='textur-u'>
 <strong>Jetzt bist du dran:</strong> Rechne in <code>draw_view</code> für jede Spalte ihr <code>u</code> aus, wie oben beschrieben: den Nachkommateil von <code>hit.y</code> bei einer Wand quer zur x-Achse (<code>hit.side == 0</code>), sonst den von <code>hit.x</code>. <code>floor</code> rundet ab.
 </div>
 
@@ -1290,6 +1292,8 @@ welche bei 1?
 
 Die beiden letzten Zeilen verlangt der Kasten nicht. Ohne sie wächst `u` auf zwei der vier Seiten eines Kästchens von rechts nach links, so wie man auf die Seite schaut, und die Textur erscheint dort spiegelverkehrt: bei Ziegeln kaum zu sehen, bei Schrift sofort.
 <!-- /solution -->
+
+_task(textur-u)
 
 ```c
         draw_wall_column(column, distance, hit.cell - '0', u, light);

@@ -7,7 +7,11 @@ examples:
     skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Dass die Schritte der Seite die Aufgabe lösen, prüfen die Rezepte mit check-task; die Prüfart selbst testet c_check_test.rb.
   march:
     skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Von Hand mit pixelram.h geprüft, angenommen stufen/03-strahlen.c, abgelehnt stufen/02-bewegen.c (ohne march) und march ohne die Länge oder ohne die Position der Figur; ein Rezept mit check-task gibt es dafür noch nicht.
+  gerade:
+    skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Von Hand mit pixelram.h geprüft, angenommen stufen/06-waende-gerade.c bis stufen/12-fertig.c, abgelehnt stufen/05-waende-rund.c (das Fischauge, am Rand 54 Pixel), das Skalarprodukt nur mit den x-Anteilen und eins ohne die Position der Figur; ein Rezept mit check-task gibt es dafür noch nicht.
   kollision:
     skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Dass die Schritte der Seite die Aufgabe lösen, prüfen die Rezepte mit check-task; die Prüfart selbst testet c_check_test.rb.
+  textur-u:
+    skip: Die Datei bindet pixelram.h und palette.h ein, und pixelram.h holt erst make in den Ordner. Von Hand mit pixelram.h und stufen/palette.h geprüft, angenommen stufen/09-texturen.c bis stufen/12-fertig.c und stufen/09-texturen.c ohne die beiden Zeilen gegen das Spiegeln, abgelehnt stufen/09-texturen.c mit u = 0 (der Stand vor dem Kasten), mit vertauschtem hit.x und hit.y und stufen/08-licht.c (ohne Texturen); ein Rezept mit check-task gibt es dafür noch nicht.
   mipmap:
     skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Von Hand mit pixelram.h geprüft, angenommen stufen/11-mipmaps.c und stufen/12-fertig.c, abgelehnt stufen/10-boden.c (ohne mip_level) und mip_level ohne die Grenze MIP_LEVELS - 1 oder ohne use_mipmaps; ein Rezept mit check-task gibt es dafür noch nicht.

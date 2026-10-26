@@ -1,8 +1,10 @@
 # Aufgaben zu »Raycasting in C«.
 # Format: docs/aufgaben.md. Gearbeitet wird in /workspace/raycaster.
 # Den Code in den Kästen »Jetzt bist du dran« schreiben die Lernenden
-# selbst. Wo es geht, prüft eine Aufgabe vom Typ c ihn (kamera, march,
-# kollision, mipmap): Sie übersetzt raycaster.c und ruft die Funktion auf.
+# selbst. Eine Aufgabe vom Typ c prüft ihn (kamera, march, gerade,
+# kollision, textur-u, mipmap): Sie übersetzt raycaster.c und ruft die
+# Funktion auf; gerade und textur-u rufen draw_view mit einem eigenen
+# set_pixel auf.
 # Die übrigen Aufgaben prüfen Antworten: Rechnungen mit den Formeln der
 # Seite, Vorhersagen und eine Rückmeldung zur eigenen Welt.
 format: 1
@@ -97,6 +99,54 @@ tasks:
       - when: { picked: 3 }
         say: Etwas, das doppelt so weit weg ist, erscheint halb so groß, nicht ein Viertel so groß.
     solution: 'Der direkte Abstand wächst zum Rand hin, auch wenn die Wand überall gleich weit vor der Figur steht. Unser Auge misst, wie weit etwas vor uns liegt: den Abstand entlang der Blickrichtung. Den liefert das Skalarprodukt mit `dir`.'
+
+  - id: gerade
+    title: Dein Abstand entlang der Blickrichtung
+    prompt: |
+      Rechne `distance` in `draw_view` mit dem Skalarprodukt aus und speichere.
+      Der Workspace stellt die Figur gerade vor eine Wand und zählt, wie hoch
+      `draw_view` sie in der Mitte und an den Rändern zeichnet.
+    file: raycaster/raycaster.c
+    check:
+      type: c
+      file: raycaster/raycaster.c
+      tolerance: 1
+      setup: |
+        // zählt, wie viele Pixel draw_view in jede Spalte setzt
+        static int column_pixels[W];
+        void set_pixel(int x, int y, uint8_t index)
+        {
+            (void)y;
+            (void)index;
+            if (x >= 0 && x < W)
+                column_pixels[x]++;
+        }
+
+        // die Figur bei (x, y) mit dem Winkel angle: wie viele Pixel hoch ist
+        // die Wand in dieser Spalte? Decke und Boden sind zusammen H Pixel.
+        int wall_pixels(double x, double y, double angle, int column)
+        {
+            player_x = x;
+            player_y = y;
+            player_angle = angle;
+            update_camera();
+            memset(column_pixels, 0, sizeof column_pixels);
+            draw_view();
+            return column_pixels[column] - H;
+        }
+      cases:
+        - call: wall_pixels(3.5, 3.5, 3.14159265, 160)
+          expect: 72
+          say: 'Die Figur steht 2,5 Kästchen vor der Wand am linken Rand und schaut sie an: In der Mitte ist die Wand `H / 2.5`, also 72 Pixel hoch. Beginnt dein Vektor bei der Figur, mit `hit.x - player_x`?'
+        - call: wall_pixels(3.5, 3.5, 3.14159265, 0)
+          expect: 72
+          say: 'Am linken Rand des Bildes ist die Wand niedriger als in der Mitte, obwohl sie gerade vor der Figur steht. Der Abstand soll das Skalarprodukt mit `dir` sein, nicht der direkte Weg.'
+        - call: wall_pixels(3.5, 3.5, 3.14159265, 319)
+          expect: 72
+          say: 'Am rechten Rand des Bildes ist die Wand anders hoch als in der Mitte. Der Abstand soll das Skalarprodukt mit `dir` sein, nicht der direkte Weg.'
+        - call: wall_pixels(3.5, 3.5, -1.5707963, 0)
+          expect: 72
+          say: 'Schaut die Figur nach oben, zur Wand bei y = 1, stimmt die Höhe nicht. Zählen in deinem Skalarprodukt die x-Anteile und die y-Anteile, jeweils vom Treffpunkt minus der Position der Figur?'
 
   - id: kollision
     title: Dein is_free
@@ -205,6 +255,62 @@ tasks:
         say: Fast. `row_distance` rechnet mit der Mitte der Zeile, `y + 0.5`.
     hint: '`row_distance(y) = 0.5 · H / |y + 0.5 − H/2|`.'
     solution: '`0.5 · 180 / |135.5 − 90| = 90 / 45.5 ≈ 1.98`: Diese Zeile, ein Viertel des Bildes über dem unteren Rand, zeigt den Boden knapp zwei Kästchen vor der Figur.'
+
+  - id: textur-u
+    title: Dein u
+    prompt: |
+      Rechne `u` in `draw_view` aus, gib es mit der Zeile unter dem Kasten an
+      `draw_wall_column` weiter und speichere. Der Workspace gibt jeder Spalte
+      der Textur ihre Nummer als Farbe und sieht nach, welche Spalte der
+      Textur `draw_view` mitten im Bild zeichnet.
+    file: raycaster/raycaster.c
+    check:
+      type: c
+      file: raycaster/raycaster.c
+      setup: |
+        // merkt sich die Farbe, die draw_view in der Bildmitte setzt
+        static int middle_color[W];
+        void set_pixel(int x, int y, uint8_t index)
+        {
+            if (x >= 0 && x < W && y == H / 2)
+                middle_color[x] = index;
+        }
+
+        // Jedes Texel hat als Farbe die Nummer seiner Spalte in der Textur,
+        // und das Licht ändert keine Farbe. Welche Spalte der Textur
+        // zeichnet draw_view in der Mitte des Bildes?
+        int texture_column(double x, double y, double angle)
+        {
+            for (int t = 0; t < TEXTURES; t++)
+                for (int ty = 0; ty < TEX; ty++)
+                    for (int tx = 0; tx < TEX; tx++)
+                        texture[t][ty][tx] = tx;
+        #ifdef MIP_LEVELS
+            // mit Mipmaps: die Stufe 0 bekommt dieselben Nummern, und es
+            // bleibt bei Stufe 0
+            for (int t = 0; t < TEXTURES; t++)
+                for (int ty = 0; ty < TEX; ty++)
+                    for (int tx = 0; tx < TEX; tx++)
+                        mip[t][0][ty][tx] = tx;
+            use_mipmaps = false;
+        #endif
+            for (int light = 0; light < LEVELS; light++)
+                for (int color = 0; color < 256; color++)
+                    shade[light][color] = color;
+            player_x = x;
+            player_y = y;
+            player_angle = angle;
+            update_camera();
+            draw_view();
+            return middle_color[W / 2];
+        }
+      cases:
+        - call: texture_column(5.5, 2.3, 0)
+          expect: 19
+          say: 'Die Figur schaut nach rechts auf die Wand bei x = 7 und trifft sie bei `hit.y` ≈ 2,30. Der Nachkommateil 0,30 ist Spalte 19 von 64 der Textur. Nimmst du bei `hit.side == 0` den Nachkommateil von `hit.y`?'
+        - call: texture_column(5.6, 3.5, -1.5707963)
+          expect: 38
+          say: 'Die Figur schaut nach oben auf die Wand bei y = 1 und trifft sie bei `hit.x` ≈ 5,61. Der Nachkommateil 0,61 ist Spalte 38 von 64 der Textur. Nimmst du bei `hit.side == 1` den Nachkommateil von `hit.x`?'
 
   - id: palette
     title: So viel Dunkel
