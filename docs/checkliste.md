@@ -111,7 +111,11 @@ Entstanden beim Bau der Katas und von »Pip unter Funkelbach«
 
 | Regel | Warum | Geprüft durch |
 | --- | --- | --- |
-| Auf einem Handy (bis 576 px) laufen alle Kästen der Seite von Rand zu Rand (Notiz für Lehrkräfte, Aufgabe, Tipp, Person, Buch, Codeblock); ihr Text beginnt dort, wo die Absätze beginnen. Ebenso der Streifen der Katas: Am Anfang steht die erste Übung bündig mit dem Text, beim Blättern laufen die Übungen unter den Rand. Kästen in Kästen, Code in Listen und Bilder behalten ihren Rahmen | Mehr Platz für Code und Text | Lesen (Bildschirmfotos in iPhone-Breite) |
+| Auf einem Handy (bis 576 px) laufen alle Kästen der Seite von Rand zu Rand (Notiz für Lehrkräfte, Aufgabe, Tipp, Person, Buch, Codeblock); ihr Text beginnt dort, wo die Absätze beginnen. Ebenso der Streifen der Katas: Am Anfang steht die erste Übung bündig mit dem Text, beim Blättern laufen die Übungen unter den Rand. Kästen in Kästen, Code in Listen und Bilder behalten ihren Rahmen | Mehr Platz für Code und Text | `phone-width.browser.spec.ts` (der Streifen), Lesen (Bildschirmfotos in iPhone-Breite) |
+| Keine Seite ist auf einem Handy breiter als der Bildschirm: Nichts lässt die ganze Seite seitwärts scrollen; was breiter ist (eine Tabelle, ein Codeblock, ein Streifen), scrollt für sich | Sonst rutscht beim Lesen die ganze Seite weg | `phone-width.browser.spec.ts` (jede Seite beider Kataloge bei 390 px) |
+| Was man auf einem Touchscreen antippt, ist mindestens 44 px groß; Knöpfe, die nah beieinanderliegen und Verschiedenes tun, haben Abstand | Ein Finger ist breiter als ein Mauszeiger | Lesen |
+| Wird es schmal und rutscht etwas untereinander, steht das, womit man handelt, direkt bei dem, was es verändert: Pips Knöpfe unter der Karte, nicht unter dem Plan; die Meldung eines Widgets unter dem Bild | Sonst scrollt man nach jedem Tippen hin und her | Lesen |
+| Jede neue oder geänderte Karte und Seite wird in iPhone-Breite (390 px) angesehen, hell und dunkel, bevor sie committet wird | Fehler auf dem Handy fallen am Desktop nicht auf | Lesen (Bildschirmfotos) |
 
 ## Bilder
 

@@ -242,6 +242,13 @@ pre.wrap-code {
     overflow-wrap: anywhere;
 }
 
+/* the options of a task (choice) may hold long code, an address with its
+   query: it breaks where it must instead of widening the page on a phone */
+.task-card .form-check-label,
+.task-card .form-check-label code {
+    overflow-wrap: anywhere;
+}
+
 /* A copy button in the corner (_template.html, install_code_copy): on
    blocks marked _copy, or on every block for groups that want it. The
    block keeps room for it; --code-bg is the block's background, for the
