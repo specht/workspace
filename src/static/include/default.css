@@ -9103,7 +9103,8 @@ html[data-bs-theme="dark"] .bitplane-widget {
     .pip-layout > textarea {
         min-height: var(--scene-height, 16em);
     }
-    .pip-layout > .pip-commands { grid-area: commands; }
+    .pip-layout > .pip-commands,
+    .pip-layout > .pip-buttons { grid-area: commands; }
 }
 
 /* a map in the page with the plan after it: side by side on a wide
@@ -9174,6 +9175,33 @@ html[data-bs-theme="dark"] .bitplane-widget {
 }
 .pip-command.pip-question {
     color: var(--stepper-current);
+}
+
+/* the first chapter: a button a command instead of the list, the plan
+   only watched (pip_world.js, PipButtons); »Rückgängig« at the far end */
+.pip-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    margin: 0.6em 0 0.8em;
+}
+.pip-buttons .pip-undo { margin-left: auto; }
+/* on a narrow screen the buttons right under the map, the plan after
+   them, so that a click and Pip's step are in view together; the player
+   (less needed here) last */
+@media (max-width: 991.98px) {
+    .pip-layout:has(> .pip-buttons) {
+        display: flex;
+        flex-direction: column;
+    }
+    .pip-layout:has(> .pip-buttons) > .pip-world { display: contents; }
+    .pip-layout:has(> .pip-buttons) .pip-tabs { order: 0; }
+    .pip-layout:has(> .pip-buttons) .pip-map-box { order: 1; margin-top: 0.4em; }
+    .pip-layout:has(> .pip-buttons) > .pip-buttons { order: 2; }
+    .pip-layout:has(> .pip-buttons) > .code-input,
+    .pip-layout:has(> .pip-buttons) > textarea { order: 3; }
+    .pip-layout:has(> .pip-buttons) .pip-controls { order: 4; margin-top: 0.6em; }
+    .pip-layout:has(> .pip-buttons) .stepper-timeline { order: 5; margin-bottom: 0.8em; }
 }
 
 /* In a task card the player is no widget card of its own (the task card

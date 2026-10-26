@@ -127,19 +127,41 @@ module TaskCard
                 end
                 io << "<div class='pip-layout'>"
                 io << "<div class='pip-world' data-layout='#{h.(JSON.generate(world.layout))}' data-start='#{h.(JSON.generate(world.trace.first))}' data-maps='#{h.(JSON.generate(maps))}'></div>"
+                buttons = check['buttons']
+                # with buttons the plan is clicked together and only watched
                 io << "<textarea class='form-control task-input task-code' name='answer' rows='6' spellcheck='false' autocapitalize='off'"
+                io << ' readonly' if buttons
                 io << " data-code-language='#{h.(check['language'])}' data-starter='#{h.(task['starter'])}' aria-labelledby='#{h.(field)}-title'>"
                 io << "#{h.(task['starter'])}</textarea>"
-                # the commands this task knows, as the language writes them
-                io << "<div class='pip-commands' aria-label='Befehle für Pip'>"
-                (check['commands'] + ['say']).each do |command|
-                    io << "<code class='pip-command#{PipCheck::QUESTIONS.include?(command) ? ' pip-question' : ''}' title='#{h.(PipCheck::DESCRIPTIONS[command])}'>#{h.(PipCheck.spelling(check['language'], command))}</code>"
+                if buttons
+                    # a button a command: a click moves Pip and writes its
+                    # line into the plan; »Rückgängig« takes the last one back
+                    io << "<div class='pip-buttons' aria-label='Pip steuern'>"
+                    buttons.each do |command|
+                        icon, label = PipCheck::BUTTON_LABELS.fetch(command)
+                        line = PipCheck.spelling(check['language'], command) + (check['language'] == 'javascript' ? ';' : '')
+                        io << "<button type='button' class='btn btn-outline-success pip-button' data-command='#{h.(command)}' data-line='#{h.(line)}'>" \
+                              "<i class='bi #{icon}' aria-hidden='true'></i>#{h.(label)}</button>"
+                    end
+                    io << "<button type='button' class='btn btn-outline-secondary pip-undo' disabled><i class='bi bi-arrow-return-left' aria-hidden='true'></i>Rückgängig</button>"
+                    io << '</div>'
+                else
+                    # the commands this task knows, as the language writes them
+                    io << "<div class='pip-commands' aria-label='Befehle für Pip'>"
+                    (check['commands'] + ['say']).each do |command|
+                        io << "<code class='pip-command#{PipCheck::QUESTIONS.include?(command) ? ' pip-question' : ''}' title='#{h.(PipCheck::DESCRIPTIONS[command])}'>#{h.(PipCheck.spelling(check['language'], command))}</code>"
+                    end
+                    io << '</div>'
                 end
                 io << '</div>'
-                io << '</div>'
                 maps = check['maps'].size
-                reads = "Dein Plan läuft in einem eigenen kleinen Rechner, getrennt von deinem Workspace und ohne Internet. Pip macht genau, was draufsteht. " \
+                reads = if buttons
+                    'Jeder Klick schickt Pip einen Schritt los und schreibt die Zeile dazu in den Plan; <em>Rückgängig</em> nimmt die letzte Zeile wieder heraus. ' \
+                        'Erreicht Pip die Lampe, wird der Plan geprüft, als hättest du ihn getippt: in einem eigenen kleinen Rechner, getrennt von deinem Workspace und ohne Internet.'
+                else
+                    "Dein Plan läuft in einem eigenen kleinen Rechner, getrennt von deinem Workspace und ohne Internet. Pip macht genau, was draufsteht. " \
                     "<em>Ausführen</em> schickt Pip #{maps > 1 ? "durch alle #{maps} Karten, jedes Mal von vorn," : 'los'} und spielt den Lauf auf der Karte ab; schafft Pip es, ist die Kata gelöst. <kbd>Strg</kbd>+<kbd>Enter</kbd> führt aus."
+                end
             when 'function', 'tests'
                 # A Kata: the code is written here; it starts with the task's
                 # starter. tests: the code is tests (TestsCheck).
@@ -178,7 +200,9 @@ module TaskCard
             end
             io << "<div class='task-actions'>"
             play = "<i class='bi bi-play-fill' aria-hidden='true'></i>"
-            io << "<button type='submit' class='btn btn-success task-submit'>#{%w[pip function tests].include?(type) ? play : ''}#{label}</button>"
+            # a clicked plan is checked at the lamp (PipButtons)
+            clicked = type == 'pip' && check['buttons']
+            io << "<button type='submit' class='btn btn-success task-submit'#{clicked ? ' hidden' : ''}>#{%w[pip function tests].include?(type) ? play : ''}#{label}</button>"
             io << "<button type='button' class='btn btn-link btn-sm task-delete' hidden>Meine Antwort löschen</button>"
             # What the check reads, for whoever wants to know (rule 5), behind
             # a small (i) so the card itself stays short.

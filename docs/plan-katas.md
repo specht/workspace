@@ -740,12 +740,19 @@ Asked for while Teil 1 and 2 were looked at; not built yet unless marked.
 The rules that came out of the same review are in
 [checkliste.md](checkliste.md), »Katas und Pip«.
 
-1. **Clicking before typing (Pip Teil 1, before the first plan).** Buttons
-   under the map (»Vorwärts«, »Links drehen«, later »Nimm«) move Pip at once,
-   and every click writes its command as a line into the plan beside it. The
-   student sees that a plan is the list of what was done, can run it again
-   from the start, and only then writes a plan by hand. One chapter, nothing
-   to check but the lamp.
+1. **Clicking before typing (Pip Teil 1, before the first plan)** (done).
+   The first chapter, »Der Eingang«: buttons under the map (»Vorwärts«,
+   »Links drehen«; »Nimm« exists) move Pip at once, and every click writes
+   its command as a line into the plan beside the map, which can only be
+   watched, not typed into (the maintainer: »only watch it fill«). A step
+   into a wall or a take without a stone shows Pip's surprise and writes
+   nothing; »Rückgängig« (not »Zurück«, which the player has for a step back) takes the last line back. When Pip reaches the lamp,
+   the plan goes to the usual check by itself; there is no »Ausführen«. The
+   browser moves Pip itself (`PipButtons` in pip_world.js), so such a map
+   has only walls, stones and the lamp (`buttons:` in the check, PipCheck
+   validates it). Pip starts facing down, so the first left turn goes to the
+   right of the screen: »left is Pip's left« is felt before the prediction
+   asks it. »Der Schacht« then says: from now on you write the plan.
 2. **A chasing monster for a finale.** As in the old Hackschule: a monster
    that, after each of Pip's steps, moves one field towards Pip (the longer
    distance first, around nothing: a wall stops it), so that clever
@@ -834,8 +841,8 @@ Pip
 - Turns and taking a stone play faster than a step; the speed holds for the
   page and the next one. Pip speaks sentence by sentence in Pixelify Sans.
 - The story ends in itself, without a teaser for the 2D Game Studio.
-- To be built (»Next«): clicking commands before typing, a chasing monster
-  as a finale.
+- The first chapter is clicked, not typed (»Next«, 1). To be built: a
+  chasing monster as a finale.
 
 The sets
 - FizzBuzz is introduced as an English counting game; »Brot« (divisible by 3

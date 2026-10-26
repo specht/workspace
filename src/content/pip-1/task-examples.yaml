@@ -4,6 +4,22 @@
 format: 1
 activity: pip-1
 examples:
+  entrance:
+    pass:
+      - answer: "move\nmove\nturn_left\nmove\nmove\nmove\nmove\n"
+    fail:
+      - answer: "move\nmove\nturn_left\nmove\nmove\n"
+      - answer: "move\nmove\nturn_left\nturn_left\nturn_left\nmove\n"
+    python:
+      pass:
+        - answer: "move()\nmove()\nturn_left()\nmove()\nmove()\nmove()\nmove()\n"
+      fail:
+        - answer: "move()\nmove()\nturn_left()\nmove()\nmove()\n"
+    javascript:
+      pass:
+        - answer: "move();\nmove();\nturnLeft();\nmove();\nmove();\nmove();\nmove();\n"
+      fail:
+        - answer: "move();\nmove();\nturnLeft();\nmove();\nmove();\n"
   shaft:
     pass:
       - answer: "move\nmove\nturn_left\nturn_left\nturn_left\nmove\nmove\nmove\n"

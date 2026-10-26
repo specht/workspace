@@ -45,10 +45,21 @@ Jahren dunkel. Jeder Plan bringt Pip zur nächsten. Dort zündet Pip sie mit der
 eigenen Laterne an, und der Wichtel zeichnet von ihr aus den nächsten Gang in
 seine Karte. So bleibt auch der Weg zurück hell.
 
+## Der Eingang
+
+Pip steht oben am Eingang zum ersten Stollen und schaut nach unten. Unter der
+Karte sind zwei Knöpfe: *Vorwärts* schickt Pip ein Feld weiter, *Links drehen*
+dreht Pip um eine Vierteldrehung nach links. Jeder Klick schreibt eine Zeile in
+den Plan neben der Karte. Gegen eine Wand läuft Pip nicht, und
+*Rückgängig* nimmt die letzte Zeile wieder heraus.
+
+_task(entrance)
+
 ## Der Schacht
 
-Ein Plan ist eine Liste von Befehlen, einer pro Zeile. Pip führt sie von oben
-nach unten aus, einen nach dem anderen. Für den Anfang kennt Pip drei:
+Ab jetzt schreibst du den Plan selbst, statt zu klicken. Ein Plan ist eine
+Liste von Befehlen, einer pro Zeile. Pip führt sie von oben nach unten aus,
+einen nach dem anderen. Für den Anfang kennt Pip drei:
 
 <!-- language: ruby -->
 <table class='table'>

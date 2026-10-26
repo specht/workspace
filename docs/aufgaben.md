@@ -941,6 +941,7 @@ check:
   goal: { lamp: true, stones: all }             # außerdem gate: open, bello: true, say: stones
   max_lines: 7                                  # nur bei Bedarf: höchstens so viele Zeilen
   dry: true                                     # nur bei Bedarf: eine Pfütze beendet den Lauf
+  buttons: [move, turn_left]                    # nur im ersten Kapitel: der Plan wird geklickt
 ```
 
 Die Zeichen der Karte: `#` Wand, `.` Boden, `P` Pip (Blickrichtung in
@@ -973,6 +974,16 @@ und `expect` nennt, wohin Pip danach schaut und wie viele Felder Pip gegangen
 ist (»Nach `turn_right` schaut Pip nach oben statt nach unten.«). `call` ist
 in jeder Sprache anders geschrieben (`turn_right`, `turn_right()`,
 `turnRight();`); `goal` kann dann fehlen.
+
+Mit `buttons` wird der Plan nicht getippt, sondern geklickt (»Der Eingang«
+in Teil 1): Unter der Karte steht für jeden genannten Befehl ein Knopf
+(`move`, `turn_left`, `take`) und »Rückgängig«, der Plan daneben lässt sich nur
+ansehen. Jeder Klick bewegt Pip sofort, im Browser (`PipButtons` in
+pip_world.js), und schreibt seine Zeile in den Plan; ein Schritt gegen die
+Wand oder `take` ohne Stein schreibt nichts. Erreicht Pip die Lampe, geht der
+Plan von selbst an die gewöhnliche Prüfung; einen Knopf »Ausführen« gibt es
+dann nicht. Weil der Browser die Welt nachspielt, hat eine solche Aufgabe genau
+eine Karte aus `#`, `.`, `o`, `L` und `P`, ohne `call` und ohne `dry`.
 
 ```yaml
 maps:

@@ -255,6 +255,7 @@
             input.value = answer || '';
         }
         if (input && input.codeInputUpdate) input.codeInputUpdate();
+        if (card.pipButtons) card.pipButtons.load(input.value);
     }
 
     // message and solution are HTML rendered on the server from the task
@@ -361,6 +362,7 @@
     // a screen reader hears what happens.
     function setBusy(card, busy, which) {
         setDisabled(card, busy);
+        if (!busy && card.pipButtons) card.pipButtons.refresh();
         const button = card.querySelector(which || '.task-submit');
         if (!button) return;
         if (busy && !button.classList.contains('is-busy')) {
@@ -422,7 +424,7 @@
             // back to writing, with a mouse (on a touch screen the keyboard
             // would cover the map); without moving the page
             const editor = card.querySelector('.task-code');
-            if (editor && window.matchMedia('(pointer: fine)').matches) editor.focus({ preventScroll: true });
+            if (editor && !editor.readOnly && window.matchMedia('(pointer: fine)').matches) editor.focus({ preventScroll: true });
             if (!data || !data.success) {
                 showFeedback(card, 'unavailable', '<p>Das hat gerade nicht geklappt. Versuch es gleich noch einmal.</p>');
                 return;
@@ -446,7 +448,8 @@
             };
             // Pip: the run plays first, the result comes when it is over (or
             // stopped, or skipped to its end); what the plan printed below
-            if (data.replay && card.pipPlayer) {
+            // (a clicked plan has just been watched: the result at once)
+            if (data.replay && card.pipPlayer && !card.pipButtons) {
                 card.querySelector('.task-feedback').hidden = true;
                 if (data.replay.output) showConsole(card, { status: 'ran', output: data.replay.output });
                 card.pipPlayer.load(data.replay, true, result);
@@ -688,6 +691,15 @@
                 card.pipPlayer = new PipWorld.PipPlayer(world, JSON.parse(world.dataset.layout), JSON.parse(world.dataset.start), JSON.parse(world.dataset.maps || 'null'), function (line) {
                     if (sql && sql.codeInputMark) sql.codeInputMark(line);
                 });
+                // the first chapter: the plan is clicked and only watched;
+                // at the lamp it goes to the check by itself
+                const buttons = card.querySelector('.pip-buttons');
+                if (buttons) {
+                    card.pipButtons = new PipWorld.PipButtons(buttons, card.pipPlayer, JSON.parse(world.dataset.layout), JSON.parse(world.dataset.start), function (plan) {
+                        sql.value = plan;
+                        if (sql.codeInputUpdate) sql.codeInputUpdate();
+                    }, function () { submit(card); });
+                }
             }
             if (sql) sql.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {

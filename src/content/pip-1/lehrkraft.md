@@ -1,9 +1,10 @@
-Lernende schreiben der Figur Pip einen Plan, Befehl für Befehl, in Ruby, Python oder JavaScript, und schicken Pip damit durch die Stollen unter Funkelbach: zur Lampe, zu jedem Funkenstein, an Glibbern vorbei. Der Plan läuft erst, wenn er fertig ist; die Karte der Stollen über dem Plan spielt den Lauf Schritt für Schritt ab und markiert die Zeile, bei der Pip gerade ist.
+Lernende schreiben der Figur Pip einen Plan, Befehl für Befehl, in Ruby, Python oder JavaScript, und schicken Pip damit durch die Stollen unter Funkelbach: zur Lampe, zu jedem Funkenstein, an Glibbern vorbei. Im ersten Kapitel klicken sie Pip zur Lampe und sehen den Plan dabei entstehen; danach läuft der Plan erst, wenn er fertig ist; die Karte der Stollen über dem Plan spielt den Lauf Schritt für Schritt ab und markiert die Zeile, bei der Pip gerade ist.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Keine. Die Seite ist der Einstieg für eine Klasse, die noch nicht programmiert hat.</td></tr>
-<tr><th>Ablauf</th><td>Etwa zwei Doppelstunden, fünf Kapitel.<ul>
-<li>Der Schacht: eine Vorhersage (»Wo steht Pip?«, links ist von Pip aus gesehen links), dann zur Lampe mit <code>move</code> und <code>turn_left</code>; rechts ist dreimal links. Mit <code>take</code> der erste Stein.</li>
+<tr><th>Ablauf</th><td>Etwa zwei Doppelstunden, sechs Kapitel.<ul>
+<li>Der Eingang: Pip wird mit zwei Knöpfen zur Lampe geklickt, jeder Klick schreibt eine Zeile in den Plan daneben; so ist ein Plan zuerst die Liste dessen, was Pip getan hat. Pip schaut am Anfang nach unten, die erste Drehung nach links geht also auf dem Bildschirm nach rechts.</li>
+<li>Der Schacht: ab hier wird getippt; eine Vorhersage (»Wo steht Pip?«, links ist von Pip aus gesehen links), dann zur Lampe mit <code>move</code> und <code>turn_left</code>; rechts ist dreimal links. Mit <code>take</code> der erste Stein.</li>
 <li>Funkensteine: zwei lange Befehlsfolgen. Sie sollen mühsam werden, das ist der Grund für das nächste Kapitel. Extra: ein Plan mit einem Fehler, der in der Wiedergabe zu finden ist.</li>
 <li>Die Wendeltreppe: Schleifen, zuletzt eine mit Zählvariable, deren Wert die Länge des nächsten Stücks ist. Extra: dieselbe Treppe in höchstens sieben Zeilen.</li>
 <li>Die Pilzwiese: zwei Schleifen ineinander, dann drei Karten mit Steinen an verschiedenen Stellen, die nur ein <code>if</code> mit <code>on_stone</code> schafft.</li>

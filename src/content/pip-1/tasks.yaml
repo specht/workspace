@@ -1,6 +1,58 @@
 format: 1
 activity: pip-1
 tasks:
+  - id: entrance
+    title: "Zur ersten Lampe"
+    level: 1
+    prompt: |
+      Bring Pip mit den Knöpfen zur Lampe und schau zu, wie der Plan mitwächst.
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left]
+      buttons: [move, turn_left]
+      maps:
+        - facing: south
+          map: |
+            #######
+            #P#####
+            #.#####
+            #....L#
+            #######
+      goal: { lamp: true }
+    hint: |
+      Pip schaut nach unten. Wohin schaut Pip nach einer Drehung nach links? Probier es aus: Mit *Rückgängig* nimmst du jeden Klick wieder heraus.
+    python:
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left]
+        buttons: [move, turn_left]
+        maps:
+          - facing: south
+            map: |
+              #######
+              #P#####
+              #.#####
+              #....L#
+              #######
+        goal: { lamp: true }
+    javascript:
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left]
+        buttons: [move, turn_left]
+        maps:
+          - facing: south
+            map: |
+              #######
+              #P#####
+              #.#####
+              #....L#
+              #######
+        goal: { lamp: true }
+
   - id: predict
     title: "Wo steht Pip?"
     prediction: true

@@ -914,6 +914,128 @@
         });
     }
 
+    // The first chapter (PipCheck, buttons): the plan is clicked, not
+    // typed. A click moves Pip at once, here in the browser, as the world on
+    // the server would (such a map has only walls, stones and the lamp), and
+    // writes the command's line into the plan; a step into a wall or taking
+    // where there is no stone only shows Pip's surprise and writes nothing.
+    // »Rückgängig« takes the last line back. onPlan(text) after every change;
+    // onLamp() when Pip reaches the lamp, for the card to check the plan.
+    const DIRECTIONS = ['east', 'north', 'west', 'south'];
+    const DELTA = { east: [1, 0], north: [0, -1], west: [-1, 0], south: [0, 1] };
+    const SURPRISE_MS = 900;
+
+    class PipButtons {
+        constructor(row, player, layout, start, onPlan, onLamp) {
+            this.row = row;
+            this.player = player;
+            this.layout = layout;
+            this.start = start;
+            this.onPlan = onPlan;
+            this.onLamp = onLamp;
+            this.walls = new Set((layout.walls || []).map(key));
+            this.commands = {};
+            row.querySelectorAll('.pip-button').forEach((button) => {
+                this.commands[button.dataset.line] = button.dataset.command;
+                button.addEventListener('click', () => this.click(button.dataset.command, button.dataset.line));
+            });
+            this.undoButton = row.querySelector('.pip-undo');
+            this.undoButton.addEventListener('click', () => this.undo());
+            this.reset();
+        }
+
+        reset() {
+            this.lines = [];
+            this.frames = [this.start];
+        }
+
+        // The frame after command, or [null, what Pip says] when it can't be done.
+        step(frame, command) {
+            const pip = Object.assign({}, frame.pip);
+            let stones = frame.stones || [];
+            let event = command === 'turn_left' ? 'turn' : command;
+            if (command === 'move') {
+                const [dx, dy] = DELTA[pip.facing];
+                const x = pip.x + dx;
+                const y = pip.y + dy;
+                if (this.walls.has(key([x, y])) || x < 0 || y < 0 || x >= this.layout.width || y >= this.layout.height) return [null, 'wall'];
+                pip.x = x;
+                pip.y = y;
+                if (this.layout.lamp && key(this.layout.lamp) === key([x, y])) event = 'lamp';
+            } else if (command === 'turn_left') {
+                pip.facing = DIRECTIONS[(DIRECTIONS.indexOf(pip.facing) + 1) % 4];
+            } else if (command === 'take') {
+                const here = key([pip.x, pip.y]);
+                if (!stones.some((p) => key(p) === here)) return [null, 'no_stone'];
+                stones = stones.filter((p) => key(p) !== here);
+            }
+            return [Object.assign({}, frame, { event, pip, stones, step: frame.step + 1, line: this.lines.length + 1 }), null];
+        }
+
+        last() {
+            return this.frames[this.frames.length - 1];
+        }
+
+        click(command, line) {
+            if (this.player.busy || this.player.timer || this.last().event === 'lamp') return;
+            clearTimeout(this.surprise);
+            const [frame, refused] = this.step(this.last(), command);
+            if (!frame) {
+                // Pip stays where the plan leaves Pip, and says why
+                this.show(this.frames.length - 1);
+                this.player.view.show(Object.assign({}, this.last(), { event: refused }), true, 300);
+                this.surprise = setTimeout(() => this.player.view.show(this.last(), false), SURPRISE_MS);
+                return;
+            }
+            this.lines.push(line);
+            this.frames.push(frame);
+            this.show(this.frames.length - 1, true);
+            this.changed();
+            if (frame.event === 'lamp') this.onLamp();
+        }
+
+        undo() {
+            if (this.player.busy || this.player.timer || !this.lines.length) return;
+            clearTimeout(this.surprise);
+            this.lines.pop();
+            this.frames.pop();
+            this.show(this.frames.length - 1, true);
+            this.changed();
+        }
+
+        show(index, animate) {
+            this.player.frames = this.frames.slice();
+            this.player.go(index, animate);
+        }
+
+        changed() {
+            this.refresh();
+            this.onPlan(this.lines.map((line) => line + '\n').join(''));
+        }
+
+        // at the lamp only »Rückgängig« is left; also after the card was busy
+        refresh() {
+            this.undoButton.disabled = !this.lines.length;
+            this.row.querySelectorAll('.pip-button').forEach((button) => { button.disabled = this.last().event === 'lamp'; });
+            this.player.update();
+        }
+
+        // A plan stored before (the card's state): clicked again, line by
+        // line, as far as it goes.
+        load(text) {
+            this.reset();
+            for (const line of String(text || '').split('\n').map((l) => l.trim()).filter(Boolean)) {
+                const command = this.commands[line];
+                const frame = command && this.step(this.last(), command)[0];
+                if (!frame) break;
+                this.lines.push(line);
+                this.frames.push(frame);
+            }
+            this.show(this.frames.length - 1);
+            this.changed();
+        }
+    }
+
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', drawStatic);
     else drawStatic();
 
@@ -923,5 +1045,5 @@
         return width > 0 ? Math.max(SCENE_COLUMNS, Math.ceil(width / MAX_TILE)) : SCENE_COLUMNS;
     }
 
-    window.PipWorld = { PipView, PipPlayer, parse, columns, corners: null };
+    window.PipWorld = { PipView, PipPlayer, PipButtons, parse, columns, corners: null };
 })();

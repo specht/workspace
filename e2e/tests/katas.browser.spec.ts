@@ -214,6 +214,57 @@ test('Pip walks a plan, and a wall names the line', async ({ browser, page, e2eE
   await phone.close();
 });
 
+// The first chapter: the plan is clicked, one line a click, and only
+// watched; a wall writes nothing, »Zurück« takes the last line back, the
+// lamp checks the plan by itself (pip_world.js, PipButtons).
+test('Pip is clicked to the first lamp', async ({ page, e2eEmail }, testInfo) => {
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/pip-1');
+  const card = page.locator('.task-card[data-task="pip-1/entrance"]:visible');
+  const language = await languageOf(card);
+  const turn = language === 'ruby' ? 'turn_left' : language === 'python' ? 'turn_left()' : 'turnLeft();';
+  const forward = card.locator('.pip-button[data-command="move"]');
+  const left = card.locator('.pip-button[data-command="turn_left"]');
+  const undo = card.locator('.pip-undo');
+  const pip = card.locator('.pip-map .pip-pip');
+  await expect(card.locator('.task-submit')).toBeHidden();
+  await expect(card.locator('.task-code')).toHaveAttribute('readonly', '');
+  // a plan from an earlier run comes back; taken back to the start here
+  while (await undo.isEnabled()) await undo.click();
+  await expect(pip).toHaveAttribute('data-facing', 'south');
+
+  await left.click();
+  await expect(pip).toHaveAttribute('data-facing', 'east');
+  await expect(card.locator('.task-code')).toHaveValue(turn + '\n');
+  // east is the wall: Pip says so, the plan stays as it was
+  await forward.click();
+  await expect(card.locator('.pip-bubble')).toHaveText('Autsch!');
+  await expect(card.locator('.task-code')).toHaveValue(turn + '\n');
+  await undo.click();
+  await expect(pip).toHaveAttribute('data-facing', 'south');
+  await expect(card.locator('.task-code')).toHaveValue('');
+  await expect(undo).toBeDisabled();
+
+  for (const button of [forward, forward, left, forward, forward, forward]) await button.click();
+  await expect(card.locator('.pip-status')).toHaveText('Schritt 6 von 6 · Zeile 6');
+  await card.screenshot({ path: testInfo.outputPath('pip-buttons.png') });
+  await forward.click();
+  await expect(card.locator('.task-feedback')).toContainText('Pip schafft es.', { timeout: 30_000 });
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  await expect(card.locator('.pip-lamp')).toHaveClass(/pip-lit/);
+  await expect(forward).toBeDisabled();
+  await card.screenshot({ path: testInfo.outputPath('pip-buttons-done.png') });
+
+  // after a reload the plan is clicked through again, up to the lamp
+  await page.reload();
+  await expect(card.locator('.pip-status')).toHaveText('Schritt 7 von 7 · Zeile 7');
+  await expect(card.locator('.code-input-gutter > div')).toHaveCount(8);
+  await expect(undo).toBeEnabled();
+  await expect(card.locator("[data-go='next']")).toBeDisabled();
+  await page.setViewportSize({ width: 390, height: 900 });
+  await card.screenshot({ path: testInfo.outputPath('pip-buttons-390.png') });
+});
+
 // Teil 2: a function of one's own; the check calls it on its own maps and
 // says where Pip looks afterwards.
 test('Pip learns turn_right, and the check calls it', async ({ page, e2eEmail }, testInfo) => {

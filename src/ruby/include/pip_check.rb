@@ -27,6 +27,7 @@ require_relative 'kata_check'
 #     goal: { lamp: true, stones: all }     # what holds after each map
 #     max_lines: 6                          # optional: the plan in at most so many lines
 #     dry: true                             # optional: a puddle ends the run
+#     buttons: [move, turn_left]            # optional: the plan is clicked, not typed
 #
 # goal knows lamp: true, stones: all, gate: open, bello: true (Pip finds
 # Bello; that ends the run, like the lamp) and say: stones (the last thing
@@ -78,6 +79,10 @@ module PipCheck
         "#{name}()"
     end
     MAX_MAPS = 6
+    # what a button can do: a step on the map the browser can show at once
+    BUTTONS = %w[move turn_left take].freeze
+    BUTTON_LABELS = { 'move' => ['bi-arrow-up', 'Vorwärts'], 'turn_left' => ['bi-arrow-counterclockwise', 'Links drehen'],
+                      'take' => ['bi-gem', 'Nimm'] }.freeze
     SECONDS = 10
 
     EVENTS = {
@@ -99,6 +104,24 @@ module PipCheck
         commands = check['commands']
         unless commands.is_a?(Array) && !commands.empty? && (commands - COMMANDS).empty?
             errors << "commands must list some of #{COMMANDS.join(', ')}"
+        end
+        # buttons: the plan is clicked together, one command a click, and
+        # only watched in the editor (task_card.rb, tasks.js); one map
+        if check.key?('buttons')
+            buttons = check['buttons']
+            unless buttons.is_a?(Array) && !buttons.empty? && (buttons - BUTTONS).empty? && (buttons - (commands || [])).empty?
+                errors << "buttons must list some of #{BUTTONS.join(', ')}, each also in commands"
+            end
+            maps = check['maps']
+            if maps.is_a?(Array) && maps.size == 1 && maps.first.is_a?(Hash)
+                # the browser moves Pip itself (pip_world.js, PipButtons):
+                # walls, stones and the lamp, nothing that moves or switches
+                errors << 'a map for buttons has only # . o L P' unless maps.first['map'].to_s.delete("#.oLP \n").empty?
+                errors << 'a map for buttons has no call' if maps.first['call']
+            else
+                errors << 'buttons need exactly one map'
+            end
+            errors << 'buttons do not go with dry' if check['dry']
         end
         maps = check['maps']
         if maps.is_a?(Array) && !maps.empty? && maps.size <= MAX_MAPS

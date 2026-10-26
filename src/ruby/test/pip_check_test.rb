@@ -26,6 +26,17 @@ class PipCheckTest < Minitest::Test
         refute_empty PipCheck.spec_errors(check('ruby', :goal => {}))
     end
 
+    # buttons: the browser moves Pip itself, so one map of walls, stones
+    # and the lamp, and buttons only for commands the task knows
+    def test_the_spec_of_buttons
+        assert_empty PipCheck.spec_errors(check('ruby').merge('buttons' => %w[move turn_left take]))
+        refute_empty PipCheck.spec_errors(check('ruby').merge('buttons' => %w[move pull]))
+        refute_empty PipCheck.spec_errors(check('ruby', :commands => %w[move]).merge('buttons' => %w[move turn_left]))
+        refute_empty PipCheck.spec_errors(check('ruby', :maps => [{ 'map' => SHAFT }, { 'map' => SHAFT }]).merge('buttons' => %w[move]))
+        refute_empty PipCheck.spec_errors(check('ruby', :maps => [{ 'map' => SHAFT.sub('.', 'G') }]).merge('buttons' => %w[move]))
+        refute_empty PipCheck.spec_errors(check('ruby').merge('buttons' => %w[move], 'dry' => true))
+    end
+
     def test_a_plan_in_each_language
         needs_docker
         plans = {
