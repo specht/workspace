@@ -177,6 +177,8 @@ test('Pip walks a plan, and a wall names the line', async ({ browser, page, e2eE
   // the replay ends at the lamp, the last step on the last line
   await expect(card.locator('.pip-status')).toHaveText('Schritt 8 von 8 · Zeile 8', { timeout: 20_000 });
   await expect(card.locator('.pip-pip')).toHaveAttribute('data-facing', 'south');
+  // Pip has lit the old lamp; back at the start it is dark again
+  await expect(card.locator('.pip-lamp')).toHaveClass(/pip-lit/);
   // line numbers beside the plan, the replay's line brighter; the step
   // buttons and the timeline of every widget
   await expect(card.locator('.code-input-gutter > div')).toHaveCount(9);
@@ -184,6 +186,7 @@ test('Pip walks a plan, and a wall names the line', async ({ browser, page, e2eE
   await expect(card.locator('.stepper-timeline > span')).toHaveCount(10);
   await card.locator("[data-go='first']").click();
   await expect(card.locator('.pip-status')).toHaveText('Schritt 0 von 8');
+  await expect(card.locator('.pip-lamp')).not.toHaveClass(/pip-lit/);
   await card.locator("[data-go='next']").click();
   await expect(card.locator('.code-input-gutter > .current')).toHaveText('1');
   await card.locator("[data-go='last']").click();

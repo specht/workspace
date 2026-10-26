@@ -10,8 +10,9 @@
 #
 # Pip looks east in the catalogue's side view; west is its mirror image, the
 # front (south) has both eyes in the middle of the body, the back (north)
-# none. The Funkenstein is the catalogue's gem in the yellow of a spark.
+# none. The Funkenstein is drawn here after the catalogue's gem (GEM).
 # Paw prints and the puddle are drawn here, in the catalogue's colours.
+import math
 from pathlib import Path
 from PIL import Image
 
@@ -76,22 +77,39 @@ def facing(frame, direction):
     return out
 
 
-def recolour(image, mapping):
-    out = image.copy()
-    px = out.load()
-    for y in range(out.height):
-        for x in range(out.width):
-            p = px[x, y]
-            if p[3] and p[:3] in mapping:
-                px[x, y] = mapping[p[:3]] + (p[3],)
+# The Funkenstein lying on the floor, seen from above at a slant: the
+# catalogue's gem drawn again in the yellows of a spark, with a large crown
+# and a short pavilion, as one sees a stone from above, and a shadow under
+# it. Four frames: a spark of light wanders across it, then rests.
+GEM = [
+    '...oooooo...',
+    '..oaabbcco..',
+    '.oabbbbccco.',
+    'oabbbbbcccco',
+    'oooooooooooo',
+    '.occcccdddo.',
+    '...occddo...',
+    '....oooo....',
+]
+GEM_COLOURS = {'o': OUTLINE, 'a': (255, 247, 180, 255), 'b': (255, 220, 96, 255), 'c': (247, 176, 52, 255), 'd': (214, 120, 34, 255)}
+
+
+def stone_frame(spark):
+    out = Image.new('RGBA', (T, T), (0, 0, 0, 0))
+    ox, oy = 6, 9
+    for y in range(T):
+        for x in range(T):
+            if ((x - 11.5) / 6.8) ** 2 + ((y - 17.2) / 1.9) ** 2 <= 1:
+                out.putpixel((x, y), (10, 10, 25, 120))
+    for y, row in enumerate(GEM):
+        for x, c in enumerate(row):
+            if c in GEM_COLOURS:
+                out.putpixel((ox + x, oy + y), GEM_COLOURS[c])
+    if spark:
+        sx, sy = ox + spark[0], oy + spark[1]
+        for dx, dy in ((0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)):
+            out.putpixel((sx + dx, sy + dy), (255, 255, 255, 255) if (dx, dy) == (0, 0) else (255, 252, 220, 255))
     return out
-
-
-def spark_colours(image):
-    """The gem's blues as the yellows of a spark, lightest to darkest."""
-    blues = sorted({p[:3] for p in image.getdata() if p[3] and p[:3] != OUTLINE[:3]}, key=sum, reverse=True)
-    yellows = [(255, 247, 180), (255, 220, 96), (247, 176, 52), (214, 120, 34), (160, 80, 30)]
-    return {b: yellows[min(i, len(yellows) - 1)] for i, b in enumerate(blues)}
 
 
 def floor():
@@ -122,6 +140,28 @@ def trail():
     return out
 
 
+def trail_diagonal():
+    # the paw prints of trail(), pointing north-east, for the corners of a
+    # trail, drawn for themselves (a print turned 45 degrees in the browser
+    # gets jagged edges): the pad a rounded blob across the way, the four
+    # toes on an arc ahead of it, each two pixels slanting forward, with
+    # gaps between them
+    out = Image.new('RGBA', (T, T), (0, 0, 0, 0))
+    paw = (70, 44, 32, 245)
+    for ox, oy in ((7, 16), (16, 7)):
+        for y in range(-4, 5):
+            for x in range(-4, 5):
+                across, ahead = (x - y) * 0.7071, -(x + y) * 0.7071
+                if (across / 2.5) ** 2 + (ahead / 2.0) ** 2 <= 1:
+                    out.putpixel((ox + x, oy + y), paw)
+        for angle in (-66, -22, 22, 66):
+            t = math.radians(45 + angle)
+            tx, ty = round(4.6 * math.sin(t)), round(-4.6 * math.cos(t))
+            for px, py in ((tx, ty), (tx + 1, ty - 1)):
+                out.putpixel((ox + px, oy + py), paw)
+    return out
+
+
 def puddle():
     out = Image.new('RGBA', (T, T), (0, 0, 0, 0))
     water, light = (65, 166, 246, 210), (115, 239, 247, 230)
@@ -141,9 +181,10 @@ def main():
         strip([facing(stand[0], direction), facing(walk[1], direction)]).save(HERE / f'pip-{direction}.png')
     strip(frames(load('glibber_laufen.png'))).save(HERE / 'glibber.png')
     strip(frames(load('hund_stehen.png'))).save(HERE / 'bello.png')
-    gem = load('edelstein.png')
-    recolour(gem, spark_colours(gem)).save(HERE / 'stone.png')
-    load('fackel.png').save(HERE / 'lamp.png')
+    strip([stone_frame(spark) for spark in ((3, 2), (6, 1), (8, 3), None)]).save(HERE / 'stone.png')
+    # the goal: an old lamp of the stone diggers, dark until Pip lights it
+    load('wandlampe_aus.png').save(HERE / 'lamp-off.png')
+    load('wandlampe.png').save(HERE / 'lamp.png')
     load('schalter_aus.png').save(HERE / 'lever-off.png')
     load('schalter_an.png').save(HERE / 'lever-on.png')
     load('gitter_zu.png').save(HERE / 'gate-closed.png')
@@ -151,6 +192,12 @@ def main():
     wall().save(HERE / 'wall.png')
     floor().save(HERE / 'floor.png')
     trail().save(HERE / 'trail.png')
+    trail_diagonal().save(HERE / 'trail-diagonal.png')
+    # decoration at the edges of the tunnels, and a bat that flies past
+    load('leuchtpilz.png').save(HERE / 'glowshroom.png')
+    load('pilz.png').save(HERE / 'mushroom.png')
+    load('tropfstein_unten.png').save(HERE / 'stalagmite.png')
+    load('fledermaus_fliegen.png').save(HERE / 'bat.png')
     puddle().save(HERE / 'puddle.png')
     strip(frames(load('wichtel_stehen.png'))).save(HERE / 'wichtel.png')
 

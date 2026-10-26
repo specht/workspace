@@ -8312,9 +8312,10 @@ html[data-bs-theme="dark"] .bitplane-widget {
 
 .pip-map {
     position: relative;
+    isolation: isolate;
     overflow: hidden;
     border-radius: 0.4em;
-    background: url(/images/pip/floor.png?v=2) repeat;
+    background: url(/images/pip/floor.png?v=4) repeat;
     background-size: var(--tile) var(--tile);
     image-rendering: pixelated;
 }
@@ -8335,20 +8336,174 @@ html[data-bs-theme="dark"] .bitplane-widget {
     transition: transform var(--step, 0ms) linear;
 }
 
-.pip-wall { background-image: url(/images/pip/wall.png?v=2); }
-/* turned the way Bello went (--turn, pip_world.js) */
+.pip-wall { background-image: url(/images/pip/wall.png?v=4); }
+
+/* The atmosphere (pip_world.js, PipView): the walls in a layer that throws
+   a shadow onto the floor, their corners masked round, nooks of wall in the
+   corners of open tiles; darker patches of floor; what grows at the edges
+   of the tunnels; the actors on small shadows of their own. */
+.pip-walls {
+    position: absolute;
+    inset: 0;
+    filter: drop-shadow(0 calc(var(--tile) * 0.14) calc(var(--tile) * 0.1) rgba(8, 8, 20, 0.65));
+}
+.pip-rounded {
+    -webkit-mask-size: 50% 50%;
+    mask-size: 50% 50%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: 0 0, 100% 0, 0 100%, 100% 100%;
+    mask-position: 0 0, 100% 0, 0 100%, 100% 100%;
+}
+.pip-nook {
+    width: calc(var(--tile) / 2);
+    height: calc(var(--tile) / 2);
+    transform: translate(calc((var(--x) + var(--qx) / 2) * var(--tile)), calc((var(--y) + var(--qy) / 2) * var(--tile)));
+    background-image: url(/images/pip/wall.png?v=4);
+    background-size: var(--tile) var(--tile);
+    background-position: calc(var(--qx) * var(--tile) / -2) calc(var(--qy) * var(--tile) / -2);
+}
+.pip-shade {
+    width: calc(var(--tile) * 1.8);
+    height: calc(var(--tile) * 1.8);
+    margin: calc(var(--tile) * -0.4);
+    border-radius: 50%;
+    background: radial-gradient(closest-side, #1a1c2c, transparent);
+}
+.pip-deco {
+    z-index: 1;
+    /* smaller than a tile, standing at its foot: decoration, not a thing to pick up */
+    background-size: 72% 72%;
+    background-position: 50% 100%;
+    filter: drop-shadow(0 calc(var(--tile) * 0.06) calc(var(--tile) * 0.04) rgba(8, 8, 20, 0.6));
+}
+.pip-glowshroom { background-image: url(/images/pip/glowshroom.png?v=4); }
+.pip-mushroom { background-image: url(/images/pip/mushroom.png?v=4); }
+.pip-stalagmite { background-image: url(/images/pip/stalagmite.png?v=4); }
+.pip-pip,
+.pip-glibber,
+.pip-bello {
+    filter: drop-shadow(0 calc(var(--tile) * 0.08) calc(var(--tile) * 0.05) rgba(8, 8, 20, 0.55));
+}
+
+/* The light: a layer over everything that multiplies the map with a cave
+   blue, so it is darker but every tile still reads; spots of light in it
+   (screen) make it bright again: Pip's lantern, which walks along, the old
+   lamp once Pip has lit it (it flickers), the Funkensteine and the glowing
+   mushrooms. */
+.pip-light {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    isolation: isolate;
+    background: #6a72a0;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+}
+.pip-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(var(--r) * 2 * var(--tile));
+    height: calc(var(--r) * 2 * var(--tile));
+    transform: translate(calc((var(--x) + 0.5 - var(--r)) * var(--tile)), calc((var(--y) + 0.5 - var(--r)) * var(--tile)));
+    border-radius: 50%;
+    mix-blend-mode: screen;
+    transition: opacity 300ms;
+}
+.pip-glow.pip-glow-actor {
+    transition: transform var(--step, 0ms) linear;
+}
+.pip-glow-lantern { background: radial-gradient(closest-side, rgba(255, 236, 190, 1), rgba(255, 220, 160, 0.75) 35%, rgba(255, 200, 140, 0.3) 70%, transparent); }
+.pip-glow-lamp {
+    background: radial-gradient(closest-side, rgba(255, 196, 110, 1), rgba(255, 160, 80, 0.45) 55%, transparent);
+    opacity: 0;
+    transition: opacity 600ms;
+}
+.pip-glow-lamp.pip-lit {
+    opacity: 1;
+    animation: pip-flicker 2.3s ease-in-out 600ms infinite alternate;
+}
+.pip-glow-stone { background: radial-gradient(closest-side, rgba(255, 214, 100, 0.6), transparent 85%); }
+.pip-glow-stone.pip-taken { opacity: 0; }
+.pip-glow-shroom { background: radial-gradient(closest-side, rgba(100, 220, 255, 0.7), rgba(100, 220, 255, 0.25) 50%, transparent); }
+
+/* What shines by itself is not darkened: the Funkensteine (»Steine, die von
+   selbst leuchten«), the glowing mushrooms; the old lamp too, dark or lit,
+   so that the goal is always easy to see when planning. */
+.pip-stone,
+.pip-glowshroom,
+.pip-lamp {
+    z-index: 6;
+}
+
+@keyframes pip-flicker {
+    0% { opacity: 1; }
+    30% { opacity: 0.82; }
+    55% { opacity: 0.95; }
+    80% { opacity: 0.78; }
+    100% { opacity: 0.92; }
+}
+
+/* fireflies drift over the open tiles, above the light, glowing */
+.pip-firefly {
+    z-index: 6;
+    width: calc(var(--tile) * 0.14);
+    height: calc(var(--tile) * 0.14);
+    margin: calc(var(--tile) * 0.43);
+    border-radius: 50%;
+    background: #e8ff9a;
+    box-shadow: 0 0 calc(var(--tile) * 0.25) calc(var(--tile) * 0.08) rgba(200, 255, 120, 0.7);
+    animation: pip-firefly 9s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+@keyframes pip-firefly {
+    0% { translate: 0 0; opacity: 0.2; }
+    20% { translate: calc(var(--tile) * 0.7) calc(var(--tile) * -0.4); opacity: 1; }
+    45% { translate: calc(var(--tile) * 1.3) calc(var(--tile) * 0.3); opacity: 0.6; }
+    70% { translate: calc(var(--tile) * 0.4) calc(var(--tile) * 0.9); opacity: 1; }
+    100% { translate: calc(var(--tile) * -0.5) calc(var(--tile) * 0.2); opacity: 0.3; }
+}
+
+/* now and then a bat flaps across the whole map, above the light */
+.pip-bat {
+    z-index: 6;
+    opacity: 0;
+    background-image: url(/images/pip/bat.png?v=4);
+    background-size: 400% 100%;
+    animation: pip-bat 22s linear infinite, pip-frames-4 0.5s steps(4) infinite;
+    pointer-events: none;
+}
+@keyframes pip-bat {
+    0% { translate: calc(var(--tile) * -1.5) 0; opacity: 1; }
+    18% { translate: calc((var(--map-width) + 1) * var(--tile)) calc(var(--tile) * -0.8); opacity: 1; }
+    18.1%, 100% { translate: calc((var(--map-width) + 1) * var(--tile)) 0; opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pip-firefly,
+    .pip-bat,
+    .pip-glow-lamp {
+        animation: none;
+    }
+}
+/* turned the way Bello went (--turn, pip_world.js); at a corner the
+   prints of their own, pointing north-east */
 .pip-trail {
-    background-image: url(/images/pip/trail.png?v=2);
+    background-image: url(/images/pip/trail.png?v=4);
     transform: translate(calc(var(--x) * var(--tile)), calc(var(--y) * var(--tile))) rotate(var(--turn, 0deg));
 }
-.pip-puddle { background-image: url(/images/pip/puddle.png?v=2); }
-.pip-lever { background-image: url(/images/pip/lever-off.png?v=2); }
-.pip-lever.pip-pulled { background-image: url(/images/pip/lever-on.png?v=2); }
-.pip-gate { background-image: url(/images/pip/gate-closed.png?v=2); }
-.pip-gate-open .pip-gate { background-image: url(/images/pip/gate-open.png?v=2); }
+.pip-trail-diagonal {
+    background-image: url(/images/pip/trail-diagonal.png?v=4);
+}
+.pip-puddle { background-image: url(/images/pip/puddle.png?v=4); }
+.pip-lever { background-image: url(/images/pip/lever-off.png?v=4); }
+.pip-lever.pip-pulled { background-image: url(/images/pip/lever-on.png?v=4); }
+.pip-gate { background-image: url(/images/pip/gate-closed.png?v=4); }
+.pip-gate-open .pip-gate { background-image: url(/images/pip/gate-open.png?v=4); }
 
 .pip-stone {
-    background-image: url(/images/pip/stone.png?v=2);
+    background-image: url(/images/pip/stone.png?v=4);
     background-size: 400% 100%;
     animation: pip-frames-4 1.4s steps(4) infinite;
     transition: opacity 300ms;
@@ -8359,32 +8514,38 @@ html[data-bs-theme="dark"] .bitplane-widget {
 }
 
 .pip-lamp {
-    background-image: url(/images/pip/lamp.png?v=2);
-    background-size: 300% 100%;
-    animation: pip-frames-3 0.6s steps(3) infinite;
+    background-image: url(/images/pip/lamp-off.png?v=4);
+}
+/* dark, with a faint ember, so that the goal can be found */
+.pip-lamp:not(.pip-lit) {
+    filter: drop-shadow(0 0 calc(var(--tile) * 0.12) rgba(255, 200, 140, 0.6));
+}
+/* Pip has reached the old lamp and lit it */
+.pip-lamp.pip-lit {
+    background-image: url(/images/pip/lamp.png?v=4);
 }
 
 .pip-glibber {
-    background-image: url(/images/pip/glibber.png?v=2);
+    background-image: url(/images/pip/glibber.png?v=4);
     background-size: 400% 100%;
     animation: pip-frames-4 0.9s steps(4) infinite;
 }
 
 .pip-bello {
-    background-image: url(/images/pip/bello.png?v=2);
+    background-image: url(/images/pip/bello.png?v=4);
     background-size: 400% 100%;
     animation: pip-frames-4 1.6s steps(4) infinite;
 }
 
 .pip-pip {
     z-index: 2;
-    background-image: url(/images/pip/pip-east.png?v=2);
+    background-image: url(/images/pip/pip-east.png?v=4);
     background-size: 200% 100%;
 }
 
-.pip-pip[data-facing='west'] { background-image: url(/images/pip/pip-west.png?v=2); }
-.pip-pip[data-facing='north'] { background-image: url(/images/pip/pip-north.png?v=2); }
-.pip-pip[data-facing='south'] { background-image: url(/images/pip/pip-south.png?v=2); }
+.pip-pip[data-facing='west'] { background-image: url(/images/pip/pip-west.png?v=4); }
+.pip-pip[data-facing='north'] { background-image: url(/images/pip/pip-north.png?v=4); }
+.pip-pip[data-facing='south'] { background-image: url(/images/pip/pip-south.png?v=4); }
 
 .pip-pip.pip-walking {
     animation: pip-frames-2 var(--step) steps(2);
@@ -8413,7 +8574,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
 
 .pip-bubble {
     position: absolute;
-    z-index: 3;
+    z-index: 7;
     top: 0;
     left: 0;
     transform: translate(calc(var(--x) * var(--tile) - 0.5em), calc((var(--y) - 0.9) * var(--tile)));
@@ -8463,6 +8624,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
 
 /* a tile of a prediction map to talk about (»Feld 1«) */
 .pip-label {
+    z-index: 6;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -8486,7 +8648,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
     content: '';
     flex: 0 0 48px;
     height: 48px;
-    background: url(/images/pip/wichtel.png?v=2) no-repeat 0 0 / 400% 100%;
+    background: url(/images/pip/wichtel.png?v=4) no-repeat 0 0 / 400% 100%;
     image-rendering: pixelated;
 }
 

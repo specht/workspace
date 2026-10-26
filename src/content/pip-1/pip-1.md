@@ -38,6 +38,11 @@ er, »Schritt für Schritt. Pip macht genau, was draufsteht. Nicht mehr und
 nicht weniger.«
 </div>
 
+In den Stollen stehen noch die Lampen der alten Steingräber, seit vielen
+Jahren dunkel. Jeder Plan bringt Pip zur nächsten. Dort zündet Pip sie mit der
+eigenen Laterne an, und der Wichtel zeichnet von ihr aus den nächsten Gang in
+seine Karte. So bleibt auch der Weg zurück hell.
+
 ## Der Schacht
 
 Ein Plan ist eine Liste von Befehlen, einer pro Zeile. Pip führt sie von oben
@@ -153,7 +158,7 @@ _task(first-stone)
 
 <!-- after: first-stone -->
 <div class='pip-wichtel'>
-»Ein Funkenstein«, sagt der Wichtel. »Die halten die Lampe am Brennen. Wo einer
+»Ein Funkenstein«, sagt der Wichtel. »Die halten deine Laterne am Brennen. Wo einer
 liegt, liegen mehr. Und wo Steine liegen, ist Bello nicht weit: Der buddelt
 für sein Leben gern.«
 </div>
@@ -384,7 +389,7 @@ _task(glibbers)
 
 <!-- after: glibbers -->
 <div class='pip-wichtel'>
-Hinter dem letzten Glibber leuchtet die Lampe, und daneben, im Staub: ein
+Hinter dem letzten Glibber leuchtet die nächste Lampe auf, und daneben, im Staub: ein
 Pfotenabdruck. Noch einer. Eine ganze Spur, die tiefer in die Stollen führt.
 »Bello«, sagt Pip. Der Wichtel nickt. »Morgen. Für heute hast du genug Glibber
 gesehen.«

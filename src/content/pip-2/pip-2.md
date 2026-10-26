@@ -325,7 +325,7 @@ _task(way-out)
 <div class='pip-wichtel'>
 Oben ist es Nacht, und über Funkelbach leuchten die Sterne. Bello schüttelt
 sich, dass das Wasser nur so spritzt. »Gut gemacht«, sagt der Wichtel und
-nimmt Pips Lampe. »Aber das war erst der Anfang. In den Stollen liegt noch
+nimmt Pips Laterne. »Aber das war erst der Anfang. In den Stollen liegt noch
 mehr, und das letzte Licht von Funkelbach …« Er verstummt. Den Rest der
 Geschichte spielst du im [2D Game Studio](https://2d.hackschule.de/).
 </div>

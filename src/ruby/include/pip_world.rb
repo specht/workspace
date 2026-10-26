@@ -104,21 +104,23 @@ class PipWorld
         }
     end
 
-    # The paw prints with the way Bello went: [x, y, facing], facing towards
-    # the next tile of the trail on the way to Bello (puddles on the trail
-    # count as part of it). Prints that lead to no Bello keep facing north.
+    # The paw prints with the way Bello went: [x, y, angle], the angle in
+    # degrees clockwise from north, towards the next tile of the trail on
+    # the way to Bello (puddles on the trail count as part of it). At a
+    # corner a print points halfway between the way in and the way out, so
+    # the trail bends instead of turning on the spot. Prints that lead to
+    # no Bello point north.
     def trail_directions
         prints = @floor_marks.select { |_, v| v == :trail }.keys
         distance = {}
         if @bello
-            on_trail = ->(p) { @floor_marks.key?(p) }
             distance[@bello] = 0
             queue = [@bello]
             until queue.empty?
                 x, y = queue.shift
                 DELTA.each_value do |dx, dy|
                     n = [x + dx, y + dy]
-                    next if distance.key?(n) || !on_trail.call(n)
+                    next if distance.key?(n) || !@floor_marks.key?(n)
 
                     distance[n] = distance[[x, y]] + 1
                     queue << n
@@ -126,8 +128,16 @@ class PipWorld
             end
         end
         prints.map do |x, y|
-            toward = DELTA.find { |_, (dx, dy)| (d = distance[[x + dx, y + dy]]) && distance[[x, y]] && d < distance[[x, y]] }
-            [x, y, toward ? toward.first : 'north']
+            here = distance[[x, y]]
+            next [x, y, 0] unless here
+
+            steps = DELTA.values.select { |dx, dy| distance[[x + dx, y + dy]] }
+            out = steps.find { |dx, dy| distance[[x + dx, y + dy]] == here - 1 }
+            back = steps.find { |dx, dy| distance[[x + dx, y + dy]] == here + 1 }
+            # the way in is the way from the tile before to this one
+            vx, vy = out
+            vx, vy = vx - back[0], vy - back[1] if back
+            [x, y, (Math.atan2(vx, -vy) * 180 / Math::PI).round % 360]
         end
     end
 
@@ -211,19 +221,18 @@ class PipWorld
             finish(:caught, line)
             return 'end'
         end
-        # a frame shows the whole step: Pip's, then the Glibbers'
+        # a frame shows the whole step: Pip's, then the Glibbers'; the step
+        # onto the lamp or to Bello is the frame of the end itself, so that
+        # the replay shows Pip walk up to it
         move_glibbers
-        @trace << frame(event, line)
+        reached = (:lamp if at_lamp?) || (:bello if at_bello?)
+        @trace << frame(event, line) unless reached && !caught?
         if caught?
             finish(:caught, line)
             return 'end'
         end
-        if at_lamp?
-            finish(:lamp, line)
-            return 'end'
-        end
-        if at_bello?
-            finish(:bello, line)
+        if reached
+            finish(reached, line)
             return 'end'
         end
         'ok'

@@ -15,7 +15,7 @@ tasks:
     title: "Hinunter zur Lampe"
     level: 1
     prompt: |
-      Unten im Schacht steht die Lampe des Wichtels. Schreib Pip einen Plan mit `move` und `turn_left`, der Pip zur Lampe bringt.
+      Unten im Schacht steht die erste alte Lampe. Schreib Pip einen Plan mit `move` und `turn_left`, der Pip zur Lampe bringt.
     starter: |
       # Dein Plan, ein Befehl pro Zeile
     check:
@@ -47,7 +47,7 @@ tasks:
       ```
     python:
       prompt: |
-        Unten im Schacht steht die Lampe des Wichtels. Schreib Pip einen Plan mit `move()` und `turn_left()`, der Pip zur Lampe bringt.
+        Unten im Schacht steht die erste alte Lampe. Schreib Pip einen Plan mit `move()` und `turn_left()`, der Pip zur Lampe bringt.
       starter: |
         # Dein Plan, ein Befehl pro Zeile
       check:
@@ -79,7 +79,7 @@ tasks:
         ```
     javascript:
       prompt: |
-        Unten im Schacht steht die Lampe des Wichtels. Schreib Pip einen Plan mit `move()` und `turnLeft()`, der Pip zur Lampe bringt.
+        Unten im Schacht steht die erste alte Lampe. Schreib Pip einen Plan mit `move()` und `turnLeft()`, der Pip zur Lampe bringt.
       starter: |
         // Dein Plan, ein Befehl pro Zeile
       check:

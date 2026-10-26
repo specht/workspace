@@ -26,7 +26,7 @@ class PipWorldTest < Minitest::Test
         assert_equal :lamp, w.ended
         assert_equal 'end', w.command('move')
         assert_equal 8, w.steps
-        assert_equal %i[start move move take turn turn turn move move lamp], w.trace.map { |f| f[:event] }
+        assert_equal %i[start move move take turn turn turn move lamp], w.trace.map { |f| f[:event] }
         assert_equal 3, w.trace[3][:line]
         # the map to play the run on still has the stone Pip took
         assert_equal [[3, 1]], w.layout[:stones]
@@ -149,10 +149,11 @@ class PipWorldTest < Minitest::Test
         assert_equal [2, 1], [w.pip[:x], w.pip[:y]]
     end
 
-    # the prints point the way to Bello, round the corner and across a puddle
+    # the prints point the way to Bello, across a puddle and round the
+    # corners, where they point halfway between the way in and the way out
     def test_paw_prints_point_the_way_to_bello
         w = PipWorld.new("#######\n#Pp~p.#\n####pB#\n#######")
-        assert_equal [[2, 1, 'east'], [4, 1, 'south'], [4, 2, 'east']], w.layout[:trail].sort
+        assert_equal [[2, 1, 90], [4, 1, 135], [4, 2, 135]], w.layout[:trail].sort
     end
 end
 
