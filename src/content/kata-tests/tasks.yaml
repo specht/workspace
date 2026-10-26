@@ -1,0 +1,1379 @@
+format: 1
+activity: kata-tests
+tasks:
+  - id: test-even
+    title: "Tests für gerade Zahlen"
+    level: 1
+    prompt: |
+      `even(n)` soll true zurückgeben, wenn `n` gerade ist, und sonst false. Schreib Tests, die jede falsche Fassung entlarven: Die Prüfung hat eine richtige und drei, die sich in verschiedenen Fällen irren. Ein Test ist eine Zeile `assert_equal(erwartet, ergebnis)`; der erste steht schon da. Denk an die 0 und an negative Zahlen.
+    starter: |
+      # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+      assert_equal(true, even(4))
+    check:
+      type: tests
+      language: ruby
+      function: even
+      correct: |
+        def even(n)
+          n % 2 == 0
+        end
+      mutants:
+        - code: |
+            def even(n)
+              n % 2 == 1
+            end
+          say: "Eine Fassung, die »gerade« und »ungerade« vertauscht, besteht deine Tests. Prüf auch eine ungerade Zahl."
+        - code: |
+            def even(n)
+              n > 0 && n % 2 == 0
+            end
+          say: "Eine Fassung, die bei 0 und bei negativen Zahlen immer `false` sagt, besteht deine Tests. Ist 0 gerade? Und -4?"
+        - code: |
+            def even(n)
+              n == 2 || n == 4 || n == 6 || n == 8
+            end
+          say: "Eine Fassung, die nur 2, 4, 6 und 8 kennt, besteht deine Tests. Nimm auch eine größere gerade Zahl."
+    hint:
+      - "Was macht jede der falschen Fassungen anders? Sie irren sich bei ungeraden Zahlen, bei 0 und negativen Zahlen, oder bei großen Zahlen."
+      - "Für jede Art von Zahl ein Test: eine ungerade, die 0, eine negative gerade, eine große gerade."
+    solution: |
+      ```ruby
+      assert_equal(true, even(4))
+      assert_equal(false, even(7))
+      assert_equal(true, even(0))
+      assert_equal(true, even(-4))
+      assert_equal(true, even(100))
+      ```
+    python:
+      prompt: |
+        `even(n)` soll True zurückgeben, wenn `n` gerade ist, und sonst False. Schreib Tests, die jede falsche Fassung entlarven: Die Prüfung hat eine richtige und drei, die sich in verschiedenen Fällen irren. Ein Test ist eine Zeile `assert_equal(erwartet, ergebnis)`; der erste steht schon da. Denk an die 0 und an negative Zahlen.
+      starter: |
+        # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+        assert_equal(True, even(4))
+      check:
+        type: tests
+        language: python
+        function: even
+        correct: |
+          def even(n):
+              return n % 2 == 0
+        mutants:
+          - code: |
+              def even(n):
+                  return n % 2 == 1
+            say: "Eine Fassung, die »gerade« und »ungerade« vertauscht, besteht deine Tests. Prüf auch eine ungerade Zahl."
+          - code: |
+              def even(n):
+                  return n > 0 and n % 2 == 0
+            say: "Eine Fassung, die bei 0 und bei negativen Zahlen immer `False` sagt, besteht deine Tests. Ist 0 gerade? Und -4?"
+          - code: |
+              def even(n):
+                  return n in (2, 4, 6, 8)
+            say: "Eine Fassung, die nur 2, 4, 6 und 8 kennt, besteht deine Tests. Nimm auch eine größere gerade Zahl."
+      hint:
+        - "Was macht jede der falschen Fassungen anders? Sie irren sich bei ungeraden Zahlen, bei 0 und negativen Zahlen, oder bei großen Zahlen."
+        - "Für jede Art von Zahl ein Test: eine ungerade, die 0, eine negative gerade, eine große gerade."
+      solution: |
+        ```python
+        assert_equal(True, even(4))
+        assert_equal(False, even(7))
+        assert_equal(True, even(0))
+        assert_equal(True, even(-4))
+        assert_equal(True, even(100))
+        ```
+    javascript:
+      prompt: |
+        `even(n)` soll true zurückgeben, wenn `n` gerade ist, und sonst false. Schreib Tests, die jede falsche Fassung entlarven: Die Prüfung hat eine richtige und drei, die sich in verschiedenen Fällen irren. Ein Test ist eine Zeile `assertEqual(erwartet, ergebnis)`; der erste steht schon da. Denk an die 0 und an negative Zahlen.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual(true, even(4));
+      check:
+        type: tests
+        language: javascript
+        function: even
+        correct: |
+          function even(n) {
+            return n % 2 === 0;
+          }
+        mutants:
+          - code: |
+              function even(n) {
+                return Math.abs(n % 2) === 1;
+              }
+            say: "Eine Fassung, die »gerade« und »ungerade« vertauscht, besteht deine Tests. Prüf auch eine ungerade Zahl."
+          - code: |
+              function even(n) {
+                return n > 0 && n % 2 === 0;
+              }
+            say: "Eine Fassung, die bei 0 und bei negativen Zahlen immer `false` sagt, besteht deine Tests. Ist 0 gerade? Und -4?"
+          - code: |
+              function even(n) {
+                return [2, 4, 6, 8].includes(n);
+              }
+            say: "Eine Fassung, die nur 2, 4, 6 und 8 kennt, besteht deine Tests. Nimm auch eine größere gerade Zahl."
+      hint:
+        - "Was macht jede der falschen Fassungen anders? Sie irren sich bei ungeraden Zahlen, bei 0 und negativen Zahlen, oder bei großen Zahlen."
+        - "Für jede Art von Zahl ein Test: eine ungerade, die 0, eine negative gerade, eine große gerade."
+      solution: |
+        ```javascript
+        assertEqual(true, even(4));
+        assertEqual(false, even(7));
+        assertEqual(true, even(0));
+        assertEqual(true, even(-4));
+        assertEqual(true, even(100));
+        ```
+  - id: test-max
+    title: "Tests für die größere Zahl"
+    level: 1
+    prompt: |
+      `max_of_two(a, b)` soll die größere der beiden Zahlen zurückgeben. Schreib Tests, die jede falsche Fassung entlarven; die Prüfung hat drei. Denk daran, in welcher Reihenfolge die Zahlen kommen können.
+    starter: |
+      # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+      assert_equal(7, max_of_two(3, 7))
+    check:
+      type: tests
+      language: ruby
+      function: max_of_two
+      correct: |
+        def max_of_two(a, b)
+          a > b ? a : b
+        end
+      mutants:
+        - code: |
+            def max_of_two(a, b)
+              a
+            end
+          say: "Eine Fassung, die immer die erste Zahl zurückgibt, besteht deine Tests. Wo steht die größere in deinen Tests?"
+        - code: |
+            def max_of_two(a, b)
+              a < b ? a : b
+            end
+          say: "Eine Fassung, die die kleinere zurückgibt, besteht deine Tests."
+        - code: |
+            def max_of_two(a, b)
+              b
+            end
+          say: "Eine Fassung, die immer die zweite Zahl zurückgibt, besteht deine Tests. Steht die größere auch einmal vorn?"
+    hint: "Eine Fassung gibt immer die erste Zahl zurück, eine immer die zweite. Wie viele Tests brauchst du, um beide zu erwischen?"
+    solution: |
+      ```ruby
+      assert_equal(7, max_of_two(3, 7))
+      assert_equal(9, max_of_two(9, 2))
+      ```
+    python:
+      prompt: |
+        `max_of_two(a, b)` soll die größere der beiden Zahlen zurückgeben. Schreib Tests, die jede falsche Fassung entlarven; die Prüfung hat drei. Denk daran, in welcher Reihenfolge die Zahlen kommen können.
+      starter: |
+        # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+        assert_equal(7, max_of_two(3, 7))
+      check:
+        type: tests
+        language: python
+        function: max_of_two
+        correct: |
+          def max_of_two(a, b):
+              return a if a > b else b
+        mutants:
+          - code: |
+              def max_of_two(a, b):
+                  return a
+            say: "Eine Fassung, die immer die erste Zahl zurückgibt, besteht deine Tests. Wo steht die größere in deinen Tests?"
+          - code: |
+              def max_of_two(a, b):
+                  return a if a < b else b
+            say: "Eine Fassung, die die kleinere zurückgibt, besteht deine Tests."
+          - code: |
+              def max_of_two(a, b):
+                  return b
+            say: "Eine Fassung, die immer die zweite Zahl zurückgibt, besteht deine Tests. Steht die größere auch einmal vorn?"
+      hint: "Eine Fassung gibt immer die erste Zahl zurück, eine immer die zweite. Wie viele Tests brauchst du, um beide zu erwischen?"
+      solution: |
+        ```python
+        assert_equal(7, max_of_two(3, 7))
+        assert_equal(9, max_of_two(9, 2))
+        ```
+    javascript:
+      prompt: |
+        `maxOfTwo(a, b)` soll die größere der beiden Zahlen zurückgeben. Schreib Tests, die jede falsche Fassung entlarven; die Prüfung hat drei. Denk daran, in welcher Reihenfolge die Zahlen kommen können.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual(7, maxOfTwo(3, 7));
+      check:
+        type: tests
+        language: javascript
+        function: maxOfTwo
+        correct: |
+          function maxOfTwo(a, b) {
+            return a > b ? a : b;
+          }
+        mutants:
+          - code: |
+              function maxOfTwo(a, b) {
+                return a;
+              }
+            say: "Eine Fassung, die immer die erste Zahl zurückgibt, besteht deine Tests. Wo steht die größere in deinen Tests?"
+          - code: |
+              function maxOfTwo(a, b) {
+                return a < b ? a : b;
+              }
+            say: "Eine Fassung, die die kleinere zurückgibt, besteht deine Tests."
+          - code: |
+              function maxOfTwo(a, b) {
+                return b;
+              }
+            say: "Eine Fassung, die immer die zweite Zahl zurückgibt, besteht deine Tests. Steht die größere auch einmal vorn?"
+      hint: "Eine Fassung gibt immer die erste Zahl zurück, eine immer die zweite. Wie viele Tests brauchst du, um beide zu erwischen?"
+      solution: |
+        ```javascript
+        assertEqual(7, maxOfTwo(3, 7));
+        assertEqual(9, maxOfTwo(9, 2));
+        ```
+  - id: test-absolute
+    title: "Tests für den Betrag"
+    level: 1
+    prompt: |
+      `absolute(n)` soll den Betrag von `n` zurückgeben: die Zahl ohne ihr Minus, `absolute(-5)` ergibt `5`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+    starter: |
+      # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+      assert_equal(5, absolute(-5))
+    check:
+      type: tests
+      language: ruby
+      function: absolute
+      correct: |
+        def absolute(n)
+          n < 0 ? -n : n
+        end
+      mutants:
+        - code: |
+            def absolute(n)
+              n
+            end
+          say: "Eine Fassung, die jede Zahl so lässt, wie sie ist, besteht deine Tests. Prüf eine negative Zahl."
+        - code: |
+            def absolute(n)
+              -n
+            end
+          say: "Eine Fassung, die jede Zahl umdreht, besteht deine Tests. Prüf auch eine positive Zahl."
+        - code: |
+            def absolute(n)
+              n < 0 ? -n : 1
+            end
+          say: "Eine Fassung, die bei positiven Zahlen immer 1 zurückgibt, besteht deine Tests. Nimm eine positive Zahl, die nicht 1 ist."
+    hint: "Welche Arten von Zahlen gibt es für den Betrag? Negative, positive und die 0."
+    solution: |
+      ```ruby
+      assert_equal(5, absolute(-5))
+      assert_equal(8, absolute(8))
+      ```
+    python:
+      prompt: |
+        `absolute(n)` soll den Betrag von `n` zurückgeben: die Zahl ohne ihr Minus, `absolute(-5)` ergibt `5`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+        assert_equal(5, absolute(-5))
+      check:
+        type: tests
+        language: python
+        function: absolute
+        correct: |
+          def absolute(n):
+              return -n if n < 0 else n
+        mutants:
+          - code: |
+              def absolute(n):
+                  return n
+            say: "Eine Fassung, die jede Zahl so lässt, wie sie ist, besteht deine Tests. Prüf eine negative Zahl."
+          - code: |
+              def absolute(n):
+                  return -n
+            say: "Eine Fassung, die jede Zahl umdreht, besteht deine Tests. Prüf auch eine positive Zahl."
+          - code: |
+              def absolute(n):
+                  return -n if n < 0 else 1
+            say: "Eine Fassung, die bei positiven Zahlen immer 1 zurückgibt, besteht deine Tests. Nimm eine positive Zahl, die nicht 1 ist."
+      hint: "Welche Arten von Zahlen gibt es für den Betrag? Negative, positive und die 0."
+      solution: |
+        ```python
+        assert_equal(5, absolute(-5))
+        assert_equal(8, absolute(8))
+        ```
+    javascript:
+      prompt: |
+        `absolute(n)` soll den Betrag von `n` zurückgeben: die Zahl ohne ihr Minus, `absolute(-5)` ergibt `5`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual(5, absolute(-5));
+      check:
+        type: tests
+        language: javascript
+        function: absolute
+        correct: |
+          function absolute(n) {
+            return n < 0 ? -n : n;
+          }
+        mutants:
+          - code: |
+              function absolute(n) {
+                return n;
+              }
+            say: "Eine Fassung, die jede Zahl so lässt, wie sie ist, besteht deine Tests. Prüf eine negative Zahl."
+          - code: |
+              function absolute(n) {
+                return -n;
+              }
+            say: "Eine Fassung, die jede Zahl umdreht, besteht deine Tests. Prüf auch eine positive Zahl."
+          - code: |
+              function absolute(n) {
+                return n < 0 ? -n : 1;
+              }
+            say: "Eine Fassung, die bei positiven Zahlen immer 1 zurückgibt, besteht deine Tests. Nimm eine positive Zahl, die nicht 1 ist."
+      hint: "Welche Arten von Zahlen gibt es für den Betrag? Negative, positive und die 0."
+      solution: |
+        ```javascript
+        assertEqual(5, absolute(-5));
+        assertEqual(8, absolute(8));
+        ```
+  - id: test-leap-year
+    title: "Tests für Schaltjahre"
+    level: 2
+    prompt: |
+      `leap_year(year)` soll sagen, ob ein Jahr ein Schaltjahr ist: Durch 4 teilbare Jahre sind es, außer die durch 100 teilbaren, außer wieder die durch 400 teilbaren. 2024 ist eins, 1900 nicht, 2000 schon. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+    starter: |
+      # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+      assert_equal(false, leap_year(2023))
+    check:
+      type: tests
+      language: ruby
+      function: leap_year
+      correct: |
+        def leap_year(year)
+          (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
+        end
+      mutants:
+        - code: |
+            def leap_year(year)
+              year % 4 == 0
+            end
+          say: "Eine Fassung, die nur auf 4 schaut, besteht deine Tests. Was ist mit einem Jahr wie 1900?"
+        - code: |
+            def leap_year(year)
+              year % 4 == 0 && year % 100 != 0
+            end
+          say: "Eine Fassung, die die Regel für 400 vergisst, besteht deine Tests. Was ist mit 2000?"
+        - code: |
+            def leap_year(year)
+              year % 400 == 0
+            end
+          say: "Eine Fassung, die nur durch 400 teilbare Jahre kennt, besteht deine Tests. Ist 2024 bei dir dabei?"
+    hint: "Die Regel hat drei Teile. Für jeden Teil ein Jahr, an dem man sieht, ob er beachtet wird: eins durch 4, eins durch 100, eins durch 400."
+    solution: |
+      ```ruby
+      assert_equal(true, leap_year(2024))
+      assert_equal(false, leap_year(1900))
+      assert_equal(true, leap_year(2000))
+      assert_equal(false, leap_year(2023))
+      ```
+    python:
+      prompt: |
+        `leap_year(year)` soll sagen, ob ein Jahr ein Schaltjahr ist: Durch 4 teilbare Jahre sind es, außer die durch 100 teilbaren, außer wieder die durch 400 teilbaren. 2024 ist eins, 1900 nicht, 2000 schon. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+        assert_equal(False, leap_year(2023))
+      check:
+        type: tests
+        language: python
+        function: leap_year
+        correct: |
+          def leap_year(year):
+              return (year % 4 == 0 and year % 100 != 0) or year % 400 == 0
+        mutants:
+          - code: |
+              def leap_year(year):
+                  return year % 4 == 0
+            say: "Eine Fassung, die nur auf 4 schaut, besteht deine Tests. Was ist mit einem Jahr wie 1900?"
+          - code: |
+              def leap_year(year):
+                  return year % 4 == 0 and year % 100 != 0
+            say: "Eine Fassung, die die Regel für 400 vergisst, besteht deine Tests. Was ist mit 2000?"
+          - code: |
+              def leap_year(year):
+                  return year % 400 == 0
+            say: "Eine Fassung, die nur durch 400 teilbare Jahre kennt, besteht deine Tests. Ist 2024 bei dir dabei?"
+      hint: "Die Regel hat drei Teile. Für jeden Teil ein Jahr, an dem man sieht, ob er beachtet wird: eins durch 4, eins durch 100, eins durch 400."
+      solution: |
+        ```python
+        assert_equal(True, leap_year(2024))
+        assert_equal(False, leap_year(1900))
+        assert_equal(True, leap_year(2000))
+        assert_equal(False, leap_year(2023))
+        ```
+    javascript:
+      prompt: |
+        `leapYear(year)` soll sagen, ob ein Jahr ein Schaltjahr ist: Durch 4 teilbare Jahre sind es, außer die durch 100 teilbaren, außer wieder die durch 400 teilbaren. 2024 ist eins, 1900 nicht, 2000 schon. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual(false, leapYear(2023));
+      check:
+        type: tests
+        language: javascript
+        function: leapYear
+        correct: |
+          function leapYear(year) {
+            return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+          }
+        mutants:
+          - code: |
+              function leapYear(year) {
+                return year % 4 === 0;
+              }
+            say: "Eine Fassung, die nur auf 4 schaut, besteht deine Tests. Was ist mit einem Jahr wie 1900?"
+          - code: |
+              function leapYear(year) {
+                return year % 4 === 0 && year % 100 !== 0;
+              }
+            say: "Eine Fassung, die die Regel für 400 vergisst, besteht deine Tests. Was ist mit 2000?"
+          - code: |
+              function leapYear(year) {
+                return year % 400 === 0;
+              }
+            say: "Eine Fassung, die nur durch 400 teilbare Jahre kennt, besteht deine Tests. Ist 2024 bei dir dabei?"
+      hint: "Die Regel hat drei Teile. Für jeden Teil ein Jahr, an dem man sieht, ob er beachtet wird: eins durch 4, eins durch 100, eins durch 400."
+      solution: |
+        ```javascript
+        assertEqual(true, leapYear(2024));
+        assertEqual(false, leapYear(1900));
+        assertEqual(true, leapYear(2000));
+        assertEqual(false, leapYear(2023));
+        ```
+  - id: test-slug
+    title: "Tests für die Adresse"
+    level: 2
+    prompt: |
+      `slug(text)` soll aus einem Titel eine Adresse machen, wie in den Texten: klein, nur Buchstaben von `a` bis `z` und Ziffern, die Wörter mit `-` verbunden. `slug('Hello World!')` ergibt `'hello-world'`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+    starter: |
+      # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+      assert_equal('hello', slug('hello'))
+    check:
+      type: tests
+      language: ruby
+      function: slug
+      correct: |
+        def slug(text)
+          text.downcase.gsub(/[^a-z0-9]+/, ' ').split.join('-')
+        end
+      mutants:
+        - code: |
+            def slug(text)
+              text.gsub(/[^A-Za-z0-9]+/, ' ').split.join('-')
+            end
+          say: "Eine Fassung, die Großbuchstaben stehen lässt, besteht deine Tests."
+        - code: |
+            def slug(text)
+              text.downcase.split.join('-')
+            end
+          say: "Eine Fassung, die Satzzeichen wie `!` stehen lässt, besteht deine Tests."
+        - code: |
+            def slug(text)
+              text.downcase.gsub(/[^a-z0-9 ]/, '').gsub(' ', '-')
+            end
+          say: "Eine Fassung, die aus zwei Leerzeichen zwei Striche macht, besteht deine Tests."
+    hint: "Jede falsche Fassung vergisst etwas anderes: groß und klein, Satzzeichen, mehrere Leerzeichen. Ein Titel, in dem alles vorkommt, kann mehrere auf einmal erwischen."
+    solution: |
+      ```ruby
+      assert_equal('hello-world', slug('Hello World!'))
+      assert_equal('zwei-woerter', slug('zwei  woerter'))
+      ```
+    python:
+      prompt: |
+        `slug(text)` soll aus einem Titel eine Adresse machen, wie in den Texten: klein, nur Buchstaben von `a` bis `z` und Ziffern, die Wörter mit `-` verbunden. `slug('Hello World!')` ergibt `'hello-world'`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+        assert_equal('hello', slug('hello'))
+      check:
+        type: tests
+        language: python
+        function: slug
+        correct: |
+          import re
+
+          def slug(text):
+              return '-'.join(re.sub(r'[^a-z0-9]+', ' ', text.lower()).split())
+        mutants:
+          - code: |
+              import re
+
+              def slug(text):
+                  return '-'.join(re.sub(r'[^A-Za-z0-9]+', ' ', text).split())
+            say: "Eine Fassung, die Großbuchstaben stehen lässt, besteht deine Tests."
+          - code: |
+              def slug(text):
+                  return '-'.join(text.lower().split())
+            say: "Eine Fassung, die Satzzeichen wie `!` stehen lässt, besteht deine Tests."
+          - code: |
+              import re
+
+              def slug(text):
+                  return re.sub(r'[^a-z0-9 ]', '', text.lower()).replace(' ', '-')
+            say: "Eine Fassung, die aus zwei Leerzeichen zwei Striche macht, besteht deine Tests."
+      hint: "Jede falsche Fassung vergisst etwas anderes: groß und klein, Satzzeichen, mehrere Leerzeichen. Ein Titel, in dem alles vorkommt, kann mehrere auf einmal erwischen."
+      solution: |
+        ```python
+        assert_equal('hello-world', slug('Hello World!'))
+        assert_equal('zwei-woerter', slug('zwei  woerter'))
+        ```
+    javascript:
+      prompt: |
+        `slug(text)` soll aus einem Titel eine Adresse machen, wie in den Texten: klein, nur Buchstaben von `a` bis `z` und Ziffern, die Wörter mit `-` verbunden. `slug('Hello World!')` ergibt `'hello-world'`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual('hello', slug('hello'));
+      check:
+        type: tests
+        language: javascript
+        function: slug
+        correct: |
+          function slug(text) {
+            return text.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter((w) => w).join('-');
+          }
+        mutants:
+          - code: |
+              function slug(text) {
+                return text.replace(/[^A-Za-z0-9]+/g, ' ').trim().split(' ').filter((w) => w).join('-');
+              }
+            say: "Eine Fassung, die Großbuchstaben stehen lässt, besteht deine Tests."
+          - code: |
+              function slug(text) {
+                return text.toLowerCase().trim().split(' ').filter((w) => w).join('-');
+              }
+            say: "Eine Fassung, die Satzzeichen wie `!` stehen lässt, besteht deine Tests."
+          - code: |
+              function slug(text) {
+                return text.toLowerCase().replace(/[^a-z0-9 ]/g, '').replaceAll(' ', '-');
+              }
+            say: "Eine Fassung, die aus zwei Leerzeichen zwei Striche macht, besteht deine Tests."
+      hint: "Jede falsche Fassung vergisst etwas anderes: groß und klein, Satzzeichen, mehrere Leerzeichen. Ein Titel, in dem alles vorkommt, kann mehrere auf einmal erwischen."
+      solution: |
+        ```javascript
+        assertEqual('hello-world', slug('Hello World!'));
+        assertEqual('zwei-woerter', slug('zwei  woerter'));
+        ```
+  - id: test-fizzbuzz
+    title: "Tests für FizzBuzz"
+    level: 2
+    prompt: |
+      `fizzbuzz(n)` soll für FizzBuzz zurückgeben, was man bei `n` sagt, als Text: `'Fizz'` bei durch 3 teilbaren, `'Buzz'` bei durch 5 teilbaren, `'FizzBuzz'` bei durch beide teilbaren, sonst die Zahl als Text. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+    starter: |
+      # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+      assert_equal('FizzBuzz', fizzbuzz(15))
+    check:
+      type: tests
+      language: ruby
+      function: fizzbuzz
+      correct: |
+        def fizzbuzz(n)
+          if n % 15 == 0 then 'FizzBuzz'
+          elsif n % 3 == 0 then 'Fizz'
+          elsif n % 5 == 0 then 'Buzz'
+          else n.to_s
+          end
+        end
+      mutants:
+        - code: |
+            def fizzbuzz(n)
+              if n % 3 == 0 then 'Fizz'
+              elsif n % 5 == 0 then 'Buzz'
+              elsif n % 15 == 0 then 'FizzBuzz'
+              else n.to_s
+              end
+            end
+          say: "Eine Fassung, die bei 15 nur `'Fizz'` sagt, besteht deine Tests."
+        - code: |
+            def fizzbuzz(n)
+              if n % 15 == 0 then 'FizzBuzz'
+              elsif n % 3 == 0 then 'Fizz'
+              elsif n % 5 == 0 then 'Buzz'
+              else n
+              end
+            end
+          say: "Eine Fassung, die die Zahl als Zahl statt als Text zurückgibt, besteht deine Tests."
+        - code: |
+            def fizzbuzz(n)
+              if n % 15 == 0 then 'FizzBuzz'
+              elsif n % 3 == 0 then 'Buzz'
+              elsif n % 5 == 0 then 'Fizz'
+              else n.to_s
+              end
+            end
+          say: "Eine Fassung, die »Fizz« und »Buzz« vertauscht, besteht deine Tests."
+    hint: "Vier Arten von Zahlen, vier Antworten. Welche davon prüfst du schon?"
+    solution: |
+      ```ruby
+      assert_equal('FizzBuzz', fizzbuzz(15))
+      assert_equal('Fizz', fizzbuzz(9))
+      assert_equal('7', fizzbuzz(7))
+      ```
+    python:
+      prompt: |
+        `fizzbuzz(n)` soll für FizzBuzz zurückgeben, was man bei `n` sagt, als Text: `'Fizz'` bei durch 3 teilbaren, `'Buzz'` bei durch 5 teilbaren, `'FizzBuzz'` bei durch beide teilbaren, sonst die Zahl als Text. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+        assert_equal('FizzBuzz', fizzbuzz(15))
+      check:
+        type: tests
+        language: python
+        function: fizzbuzz
+        correct: |
+          def fizzbuzz(n):
+              if n % 15 == 0:
+                  return 'FizzBuzz'
+              if n % 3 == 0:
+                  return 'Fizz'
+              if n % 5 == 0:
+                  return 'Buzz'
+              return str(n)
+        mutants:
+          - code: |
+              def fizzbuzz(n):
+                  if n % 3 == 0:
+                      return 'Fizz'
+                  if n % 5 == 0:
+                      return 'Buzz'
+                  if n % 15 == 0:
+                      return 'FizzBuzz'
+                  return str(n)
+            say: "Eine Fassung, die bei 15 nur `'Fizz'` sagt, besteht deine Tests."
+          - code: |
+              def fizzbuzz(n):
+                  if n % 15 == 0:
+                      return 'FizzBuzz'
+                  if n % 3 == 0:
+                      return 'Fizz'
+                  if n % 5 == 0:
+                      return 'Buzz'
+                  return n
+            say: "Eine Fassung, die die Zahl als Zahl statt als Text zurückgibt, besteht deine Tests."
+          - code: |
+              def fizzbuzz(n):
+                  if n % 15 == 0:
+                      return 'FizzBuzz'
+                  if n % 3 == 0:
+                      return 'Buzz'
+                  if n % 5 == 0:
+                      return 'Fizz'
+                  return str(n)
+            say: "Eine Fassung, die »Fizz« und »Buzz« vertauscht, besteht deine Tests."
+      hint: "Vier Arten von Zahlen, vier Antworten. Welche davon prüfst du schon?"
+      solution: |
+        ```python
+        assert_equal('FizzBuzz', fizzbuzz(15))
+        assert_equal('Fizz', fizzbuzz(9))
+        assert_equal('7', fizzbuzz(7))
+        ```
+    javascript:
+      prompt: |
+        `fizzbuzz(n)` soll für FizzBuzz zurückgeben, was man bei `n` sagt, als Text: `'Fizz'` bei durch 3 teilbaren, `'Buzz'` bei durch 5 teilbaren, `'FizzBuzz'` bei durch beide teilbaren, sonst die Zahl als Text. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual('FizzBuzz', fizzbuzz(15));
+      check:
+        type: tests
+        language: javascript
+        function: fizzbuzz
+        correct: |
+          function fizzbuzz(n) {
+            if (n % 15 === 0) return 'FizzBuzz';
+            if (n % 3 === 0) return 'Fizz';
+            if (n % 5 === 0) return 'Buzz';
+            return String(n);
+          }
+        mutants:
+          - code: |
+              function fizzbuzz(n) {
+                if (n % 3 === 0) return 'Fizz';
+                if (n % 5 === 0) return 'Buzz';
+                if (n % 15 === 0) return 'FizzBuzz';
+                return String(n);
+              }
+            say: "Eine Fassung, die bei 15 nur `'Fizz'` sagt, besteht deine Tests."
+          - code: |
+              function fizzbuzz(n) {
+                if (n % 15 === 0) return 'FizzBuzz';
+                if (n % 3 === 0) return 'Fizz';
+                if (n % 5 === 0) return 'Buzz';
+                return n;
+              }
+            say: "Eine Fassung, die die Zahl als Zahl statt als Text zurückgibt, besteht deine Tests."
+          - code: |
+              function fizzbuzz(n) {
+                if (n % 15 === 0) return 'FizzBuzz';
+                if (n % 3 === 0) return 'Buzz';
+                if (n % 5 === 0) return 'Fizz';
+                return String(n);
+              }
+            say: "Eine Fassung, die »Fizz« und »Buzz« vertauscht, besteht deine Tests."
+      hint: "Vier Arten von Zahlen, vier Antworten. Welche davon prüfst du schon?"
+      solution: |
+        ```javascript
+        assertEqual('FizzBuzz', fizzbuzz(15));
+        assertEqual('Fizz', fizzbuzz(9));
+        assertEqual('7', fizzbuzz(7));
+        ```
+  - id: test-binary-search
+    title: "Tests für die binäre Suche"
+    level: 3
+    prompt: |
+      `binary_search(numbers, wanted)` soll in einer aufsteigend sortierten Liste verschiedener Zahlen den Index von `wanted` zurückgeben, und `nil`, wenn die Zahl nicht darin steht. Schreib Tests, die jede der drei falschen Fassungen entlarven. Die Fehler stecken in den Rändern.
+    starter: |
+      # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+      assert_equal(2, binary_search([1, 3, 5, 7, 9], 5))
+    check:
+      type: tests
+      language: ruby
+      function: binary_search
+      correct: |
+        def binary_search(numbers, wanted)
+          low = 0
+          high = numbers.length - 1
+          while low <= high
+            middle = (low + high) / 2
+            return middle if numbers[middle] == wanted
+            numbers[middle] < wanted ? low = middle + 1 : high = middle - 1
+          end
+          nil
+        end
+      mutants:
+        - code: |
+            def binary_search(numbers, wanted)
+              low = 0
+              high = numbers.length - 1
+              while low < high
+                middle = (low + high) / 2
+                return middle if numbers[middle] == wanted
+                numbers[middle] < wanted ? low = middle + 1 : high = middle - 1
+              end
+              nil
+            end
+          say: "Eine Fassung, die aufhört, wenn noch ein Feld übrig ist, besteht deine Tests. Such in einer Liste mit nur einer Zahl, oder ganz am Rand."
+        - code: |
+            def binary_search(numbers, wanted)
+              low = 0
+              high = numbers.length - 2
+              while low <= high
+                middle = (low + high) / 2
+                return middle if numbers[middle] == wanted
+                numbers[middle] < wanted ? low = middle + 1 : high = middle - 1
+              end
+              nil
+            end
+          say: "Eine Fassung, die die letzte Zahl nie ansieht, besteht deine Tests. Such die letzte."
+        - code: |
+            def binary_search(numbers, wanted)
+              low = 0
+              high = numbers.length - 1
+              while low <= high
+                middle = (low + high) / 2
+                return middle if numbers[middle] == wanted
+                numbers[middle] < wanted ? low = middle + 1 : high = middle - 1
+              end
+              0
+            end
+          say: "Eine Fassung, die bei einer fehlenden Zahl 0 statt `nil` zurückgibt, besteht deine Tests. Such eine Zahl, die nicht darin steht."
+    hint: "Fehler in einer Suche stecken an den Rändern: die erste Zahl, die letzte, eine Liste mit nur einer Zahl, eine Zahl, die fehlt."
+    solution: |
+      ```ruby
+      assert_equal(2, binary_search([1, 3, 5, 7, 9], 5))
+      assert_equal(0, binary_search([4], 4))
+      assert_equal(4, binary_search([1, 3, 5, 7, 9], 9))
+      assert_equal(nil, binary_search([1, 3, 5], 4))
+      ```
+    python:
+      prompt: |
+        `binary_search(numbers, wanted)` soll in einer aufsteigend sortierten Liste verschiedener Zahlen den Index von `wanted` zurückgeben, und `None`, wenn die Zahl nicht darin steht. Schreib Tests, die jede der drei falschen Fassungen entlarven. Die Fehler stecken in den Rändern.
+      starter: |
+        # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+        assert_equal(2, binary_search([1, 3, 5, 7, 9], 5))
+      check:
+        type: tests
+        language: python
+        function: binary_search
+        correct: |
+          def binary_search(numbers, wanted):
+              low, high = 0, len(numbers) - 1
+              while low <= high:
+                  middle = (low + high) // 2
+                  if numbers[middle] == wanted:
+                      return middle
+                  if numbers[middle] < wanted:
+                      low = middle + 1
+                  else:
+                      high = middle - 1
+              return None
+        mutants:
+          - code: |
+              def binary_search(numbers, wanted):
+                  low, high = 0, len(numbers) - 1
+                  while low < high:
+                      middle = (low + high) // 2
+                      if numbers[middle] == wanted:
+                          return middle
+                      if numbers[middle] < wanted:
+                          low = middle + 1
+                      else:
+                          high = middle - 1
+                  return None
+            say: "Eine Fassung, die aufhört, wenn noch ein Feld übrig ist, besteht deine Tests. Such in einer Liste mit nur einer Zahl, oder ganz am Rand."
+          - code: |
+              def binary_search(numbers, wanted):
+                  low, high = 0, len(numbers) - 2
+                  while low <= high:
+                      middle = (low + high) // 2
+                      if numbers[middle] == wanted:
+                          return middle
+                      if numbers[middle] < wanted:
+                          low = middle + 1
+                      else:
+                          high = middle - 1
+                  return None
+            say: "Eine Fassung, die die letzte Zahl nie ansieht, besteht deine Tests. Such die letzte."
+          - code: |
+              def binary_search(numbers, wanted):
+                  low, high = 0, len(numbers) - 1
+                  while low <= high:
+                      middle = (low + high) // 2
+                      if numbers[middle] == wanted:
+                          return middle
+                      if numbers[middle] < wanted:
+                          low = middle + 1
+                      else:
+                          high = middle - 1
+                  return 0
+            say: "Eine Fassung, die bei einer fehlenden Zahl 0 statt `None` zurückgibt, besteht deine Tests. Such eine Zahl, die nicht darin steht."
+      hint: "Fehler in einer Suche stecken an den Rändern: die erste Zahl, die letzte, eine Liste mit nur einer Zahl, eine Zahl, die fehlt."
+      solution: |
+        ```python
+        assert_equal(2, binary_search([1, 3, 5, 7, 9], 5))
+        assert_equal(0, binary_search([4], 4))
+        assert_equal(4, binary_search([1, 3, 5, 7, 9], 9))
+        assert_equal(None, binary_search([1, 3, 5], 4))
+        ```
+    javascript:
+      prompt: |
+        `binarySearch(numbers, wanted)` soll in einer aufsteigend sortierten Liste verschiedener Zahlen den Index von `wanted` zurückgeben, und `null`, wenn die Zahl nicht darin steht. Schreib Tests, die jede der drei falschen Fassungen entlarven. Die Fehler stecken in den Rändern.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual(2, binarySearch([1, 3, 5, 7, 9], 5));
+      check:
+        type: tests
+        language: javascript
+        function: binarySearch
+        correct: |
+          function binarySearch(numbers, wanted) {
+            let low = 0;
+            let high = numbers.length - 1;
+            while (low <= high) {
+              const middle = Math.floor((low + high) / 2);
+              if (numbers[middle] === wanted) return middle;
+              if (numbers[middle] < wanted) low = middle + 1;
+              else high = middle - 1;
+            }
+            return null;
+          }
+        mutants:
+          - code: |
+              function binarySearch(numbers, wanted) {
+                let low = 0;
+                let high = numbers.length - 1;
+                while (low < high) {
+                  const middle = Math.floor((low + high) / 2);
+                  if (numbers[middle] === wanted) return middle;
+                  if (numbers[middle] < wanted) low = middle + 1;
+                  else high = middle - 1;
+                }
+                return null;
+              }
+            say: "Eine Fassung, die aufhört, wenn noch ein Feld übrig ist, besteht deine Tests. Such in einer Liste mit nur einer Zahl, oder ganz am Rand."
+          - code: |
+              function binarySearch(numbers, wanted) {
+                let low = 0;
+                let high = numbers.length - 2;
+                while (low <= high) {
+                  const middle = Math.floor((low + high) / 2);
+                  if (numbers[middle] === wanted) return middle;
+                  if (numbers[middle] < wanted) low = middle + 1;
+                  else high = middle - 1;
+                }
+                return null;
+              }
+            say: "Eine Fassung, die die letzte Zahl nie ansieht, besteht deine Tests. Such die letzte."
+          - code: |
+              function binarySearch(numbers, wanted) {
+                let low = 0;
+                let high = numbers.length - 1;
+                while (low <= high) {
+                  const middle = Math.floor((low + high) / 2);
+                  if (numbers[middle] === wanted) return middle;
+                  if (numbers[middle] < wanted) low = middle + 1;
+                  else high = middle - 1;
+                }
+                return 0;
+              }
+            say: "Eine Fassung, die bei einer fehlenden Zahl 0 statt `null` zurückgibt, besteht deine Tests. Such eine Zahl, die nicht darin steht."
+      hint: "Fehler in einer Suche stecken an den Rändern: die erste Zahl, die letzte, eine Liste mit nur einer Zahl, eine Zahl, die fehlt."
+      solution: |
+        ```javascript
+        assertEqual(2, binarySearch([1, 3, 5, 7, 9], 5));
+        assertEqual(0, binarySearch([4], 4));
+        assertEqual(4, binarySearch([1, 3, 5, 7, 9], 9));
+        assertEqual(null, binarySearch([1, 3, 5], 4));
+        ```
+  - id: test-merge
+    title: "Tests fürs Mischen"
+    level: 3
+    prompt: |
+      `merge_sorted(a, b)` soll zwei aufsteigend sortierte Listen zu einer sortierten mischen, wie in den Listen: `merge_sorted([1, 4], [2, 3])` ergibt `[1, 2, 3, 4]`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+    starter: |
+      # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+      assert_equal([1, 2], merge_sorted([1], [2]))
+    check:
+      type: tests
+      language: ruby
+      function: merge_sorted
+      correct: |
+        def merge_sorted(a, b)
+          result = []
+          i = j = 0
+          while i < a.length && j < b.length
+            if a[i] <= b[j]
+              result << a[i]
+              i += 1
+            else
+              result << b[j]
+              j += 1
+            end
+          end
+          result + a[i..] + b[j..]
+        end
+      mutants:
+        - code: |
+            def merge_sorted(a, b)
+              result = []
+              i = j = 0
+              while i < a.length && j < b.length
+                if a[i] <= b[j]
+                  result << a[i]
+                  i += 1
+                else
+                  result << b[j]
+                  j += 1
+                end
+              end
+              result
+            end
+          say: "Eine Fassung, die den Rest der längeren Liste vergisst, besteht deine Tests. Nimm zwei Listen, von denen eine früher zu Ende ist."
+        - code: |
+            def merge_sorted(a, b)
+              a + b
+            end
+          say: "Eine Fassung, die die Listen nur hintereinanderhängt, besteht deine Tests. Nimm Listen, deren Zahlen sich abwechseln."
+        - code: |
+            def merge_sorted(a, b)
+              (a + b).uniq.sort
+            end
+          say: "Eine Fassung, die doppelte Zahlen weglässt, besteht deine Tests. Nimm eine Zahl, die in beiden Listen steht."
+    hint: "Jede falsche Fassung scheitert an einer anderen Art von Listen: verschieden lang, ineinander verschränkt, mit einer Zahl in beiden. Ein Test mit allem zugleich erwischt mehrere."
+    solution: |
+      ```ruby
+      assert_equal([1, 2, 3, 4], merge_sorted([1, 4], [2, 3]))
+      assert_equal([1, 2, 2, 3, 9], merge_sorted([2, 9], [1, 2, 3]))
+      ```
+    python:
+      prompt: |
+        `merge_sorted(a, b)` soll zwei aufsteigend sortierte Listen zu einer sortierten mischen, wie in den Listen: `merge_sorted([1, 4], [2, 3])` ergibt `[1, 2, 3, 4]`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+        assert_equal([1, 2], merge_sorted([1], [2]))
+      check:
+        type: tests
+        language: python
+        function: merge_sorted
+        correct: |
+          def merge_sorted(a, b):
+              result = []
+              i = j = 0
+              while i < len(a) and j < len(b):
+                  if a[i] <= b[j]:
+                      result.append(a[i])
+                      i += 1
+                  else:
+                      result.append(b[j])
+                      j += 1
+              return result + a[i:] + b[j:]
+        mutants:
+          - code: |
+              def merge_sorted(a, b):
+                  result = []
+                  i = j = 0
+                  while i < len(a) and j < len(b):
+                      if a[i] <= b[j]:
+                          result.append(a[i])
+                          i += 1
+                      else:
+                          result.append(b[j])
+                          j += 1
+                  return result
+            say: "Eine Fassung, die den Rest der längeren Liste vergisst, besteht deine Tests. Nimm zwei Listen, von denen eine früher zu Ende ist."
+          - code: |
+              def merge_sorted(a, b):
+                  return a + b
+            say: "Eine Fassung, die die Listen nur hintereinanderhängt, besteht deine Tests. Nimm Listen, deren Zahlen sich abwechseln."
+          - code: |
+              def merge_sorted(a, b):
+                  return sorted(set(a + b))
+            say: "Eine Fassung, die doppelte Zahlen weglässt, besteht deine Tests. Nimm eine Zahl, die in beiden Listen steht."
+      hint: "Jede falsche Fassung scheitert an einer anderen Art von Listen: verschieden lang, ineinander verschränkt, mit einer Zahl in beiden. Ein Test mit allem zugleich erwischt mehrere."
+      solution: |
+        ```python
+        assert_equal([1, 2, 3, 4], merge_sorted([1, 4], [2, 3]))
+        assert_equal([1, 2, 2, 3, 9], merge_sorted([2, 9], [1, 2, 3]))
+        ```
+    javascript:
+      prompt: |
+        `mergeSorted(a, b)` soll zwei aufsteigend sortierte Listen zu einer sortierten mischen, wie in den Listen: `mergeSorted([1, 4], [2, 3])` ergibt `[1, 2, 3, 4]`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual([1, 2], mergeSorted([1], [2]));
+      check:
+        type: tests
+        language: javascript
+        function: mergeSorted
+        correct: |
+          function mergeSorted(a, b) {
+            const result = [];
+            let i = 0;
+            let j = 0;
+            while (i < a.length && j < b.length) {
+              if (a[i] <= b[j]) result.push(a[i++]);
+              else result.push(b[j++]);
+            }
+            return result.concat(a.slice(i), b.slice(j));
+          }
+        mutants:
+          - code: |
+              function mergeSorted(a, b) {
+                const result = [];
+                let i = 0;
+                let j = 0;
+                while (i < a.length && j < b.length) {
+                  if (a[i] <= b[j]) result.push(a[i++]);
+                  else result.push(b[j++]);
+                }
+                return result;
+              }
+            say: "Eine Fassung, die den Rest der längeren Liste vergisst, besteht deine Tests. Nimm zwei Listen, von denen eine früher zu Ende ist."
+          - code: |
+              function mergeSorted(a, b) {
+                return a.concat(b);
+              }
+            say: "Eine Fassung, die die Listen nur hintereinanderhängt, besteht deine Tests. Nimm Listen, deren Zahlen sich abwechseln."
+          - code: |
+              function mergeSorted(a, b) {
+                return [...new Set(a.concat(b))].sort((x, y) => x - y);
+              }
+            say: "Eine Fassung, die doppelte Zahlen weglässt, besteht deine Tests. Nimm eine Zahl, die in beiden Listen steht."
+      hint: "Jede falsche Fassung scheitert an einer anderen Art von Listen: verschieden lang, ineinander verschränkt, mit einer Zahl in beiden. Ein Test mit allem zugleich erwischt mehrere."
+      solution: |
+        ```javascript
+        assertEqual([1, 2, 3, 4], mergeSorted([1, 4], [2, 3]));
+        assertEqual([1, 2, 2, 3, 9], mergeSorted([2, 9], [1, 2, 3]));
+        ```
+  - id: find-the-bug
+    title: "Finde den Fehler"
+    extra: true
+    prompt: |
+      Diese Fassung von `max_of_three(a, b, c)` soll die größte der drei Zahlen zurückgeben, hat aber einen Fehler. Finde ihn, indem du einen Test schreibst, an dem sie scheitert und den eine richtige Fassung besteht.
+
+      ```ruby
+      def max_of_three(a, b, c)
+        if a > b && a > c
+          a
+        elsif b > a && b > c
+          b
+        else
+          c
+        end
+      end
+      ```
+    starter: |
+      # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+      assert_equal(9, max_of_three(9, 2, 1))
+    check:
+      type: tests
+      language: ruby
+      function: max_of_three
+      correct: |
+        def max_of_three(a, b, c)
+          [a, b, c].max
+        end
+      mutants:
+        - code: |
+            def max_of_three(a, b, c)
+              if a > b && a > c
+                a
+              elsif b > a && b > c
+                b
+              else
+                c
+              end
+            end
+          say: "Die Fassung oben besteht deine Tests noch. Wann gilt keine der beiden Bedingungen, obwohl `c` nicht die größte ist?"
+    hint: "Bei verschiedenen Zahlen stimmt sie. Was ist, wenn zwei Zahlen gleich sind?"
+    solution: |
+      ```ruby
+      assert_equal(5, max_of_three(5, 5, 1))
+      ```
+    python:
+      prompt: |
+        Diese Fassung von `max_of_three(a, b, c)` soll die größte der drei Zahlen zurückgeben, hat aber einen Fehler. Finde ihn, indem du einen Test schreibst, an dem sie scheitert und den eine richtige Fassung besteht.
+
+        ```python
+        def max_of_three(a, b, c):
+            if a > b and a > c:
+                return a
+            elif b > a and b > c:
+                return b
+            else:
+                return c
+        ```
+      starter: |
+        # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+        assert_equal(9, max_of_three(9, 2, 1))
+      check:
+        type: tests
+        language: python
+        function: max_of_three
+        correct: |
+          def max_of_three(a, b, c):
+              return max(a, b, c)
+        mutants:
+          - code: |
+              def max_of_three(a, b, c):
+                  if a > b and a > c:
+                      return a
+                  elif b > a and b > c:
+                      return b
+                  else:
+                      return c
+            say: "Die Fassung oben besteht deine Tests noch. Wann gilt keine der beiden Bedingungen, obwohl `c` nicht die größte ist?"
+      hint: "Bei verschiedenen Zahlen stimmt sie. Was ist, wenn zwei Zahlen gleich sind?"
+      solution: |
+        ```python
+        assert_equal(5, max_of_three(5, 5, 1))
+        ```
+    javascript:
+      prompt: |
+        Diese Fassung von `maxOfThree(a, b, c)` soll die größte der drei Zahlen zurückgeben, hat aber einen Fehler. Finde ihn, indem du einen Test schreibst, an dem sie scheitert und den eine richtige Fassung besteht.
+
+        ```javascript
+        function maxOfThree(a, b, c) {
+          if (a > b && a > c) return a;
+          else if (b > a && b > c) return b;
+          else return c;
+        }
+        ```
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual(9, maxOfThree(9, 2, 1));
+      check:
+        type: tests
+        language: javascript
+        function: maxOfThree
+        correct: |
+          function maxOfThree(a, b, c) {
+            return Math.max(a, b, c);
+          }
+        mutants:
+          - code: |
+              function maxOfThree(a, b, c) {
+                if (a > b && a > c) return a;
+                else if (b > a && b > c) return b;
+                else return c;
+              }
+            say: "Die Fassung oben besteht deine Tests noch. Wann gilt keine der beiden Bedingungen, obwohl `c` nicht die größte ist?"
+      hint: "Bei verschiedenen Zahlen stimmt sie. Was ist, wenn zwei Zahlen gleich sind?"
+      solution: |
+        ```javascript
+        assertEqual(5, maxOfThree(5, 5, 1));
+        ```
+  - id: test-caesar
+    title: "Tests für Caesar"
+    extra: true
+    prompt: |
+      `caesar(text, shift)` soll verschlüsseln wie in den Texten: Klein- und Großbuchstaben rücken um `shift` weiter, nach `z` geht es bei `a` weiter, auch rückwärts, und alles andere bleibt. Schreib Tests, die jede der vier falschen Fassungen entlarven.
+    starter: |
+      # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+      assert_equal('def', caesar('abc', 3))
+    check:
+      type: tests
+      language: ruby
+      function: caesar
+      correct: |
+        def caesar(text, shift)
+          text.gsub(/[a-z]/) { |c| ((c.ord - 97 + shift) % 26 + 97).chr }.gsub(/[A-Z]/) { |c| ((c.ord - 65 + shift) % 26 + 65).chr }
+        end
+      mutants:
+        - code: |
+            def caesar(text, shift)
+              text.gsub(/[a-zA-Z]/) { |c| (c.ord + shift).chr }
+            end
+          say: "Eine Fassung, die nach `z` nicht wieder bei `a` anfängt, besteht deine Tests."
+        - code: |
+            def caesar(text, shift)
+              text.gsub(/[a-z]/) { |c| ((c.ord - 97 + shift) % 26 + 97).chr }
+            end
+          say: "Eine Fassung, die Großbuchstaben nicht verschiebt, besteht deine Tests."
+        - code: |
+            def caesar(text, shift)
+              text.gsub(/[a-z]/) { |c| ((c.ord - 97 + shift.abs) % 26 + 97).chr }.gsub(/[A-Z]/) { |c| ((c.ord - 65 + shift.abs) % 26 + 65).chr }
+            end
+          say: "Eine Fassung, die auch bei einem negativen `shift` vorwärts rückt, besteht deine Tests."
+        - code: |
+            def caesar(text, shift)
+              text.gsub(/[^a-zA-Z]/, '').gsub(/[a-z]/) { |c| ((c.ord - 97 + shift) % 26 + 97).chr }.gsub(/[A-Z]/) { |c| ((c.ord - 65 + shift) % 26 + 65).chr }
+            end
+          say: "Eine Fassung, die Leerzeichen und Satzzeichen weglässt, besteht deine Tests."
+    hint: "Vier Fehler, vier Dinge, die eine Verschlüsselung können muss: über `z` hinaus, Großbuchstaben, rückwärts, alles andere stehen lassen."
+    solution: |
+      ```ruby
+      assert_equal('abc', caesar('xyz', 3))
+      assert_equal('Def!', caesar('Abc!', 3))
+      assert_equal('zab', caesar('abc', -1))
+      ```
+    python:
+      prompt: |
+        `caesar(text, shift)` soll verschlüsseln wie in den Texten: Klein- und Großbuchstaben rücken um `shift` weiter, nach `z` geht es bei `a` weiter, auch rückwärts, und alles andere bleibt. Schreib Tests, die jede der vier falschen Fassungen entlarven.
+      starter: |
+        # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
+        assert_equal('def', caesar('abc', 3))
+      check:
+        type: tests
+        language: python
+        function: caesar
+        correct: |
+          def caesar(text, shift):
+              out = ''
+              for c in text:
+                  if 'a' <= c <= 'z':
+                      out += chr((ord(c) - 97 + shift) % 26 + 97)
+                  elif 'A' <= c <= 'Z':
+                      out += chr((ord(c) - 65 + shift) % 26 + 65)
+                  else:
+                      out += c
+              return out
+        mutants:
+          - code: |
+              def caesar(text, shift):
+                  return ''.join(chr(ord(c) + shift) if c.isalpha() else c for c in text)
+            say: "Eine Fassung, die nach `z` nicht wieder bei `a` anfängt, besteht deine Tests."
+          - code: |
+              def caesar(text, shift):
+                  return ''.join(chr((ord(c) - 97 + shift) % 26 + 97) if 'a' <= c <= 'z' else c for c in text)
+            say: "Eine Fassung, die Großbuchstaben nicht verschiebt, besteht deine Tests."
+          - code: |
+              def caesar(text, shift):
+                  out = ''
+                  for c in text:
+                      if 'a' <= c <= 'z':
+                          out += chr((ord(c) - 97 + abs(shift)) % 26 + 97)
+                      elif 'A' <= c <= 'Z':
+                          out += chr((ord(c) - 65 + abs(shift)) % 26 + 65)
+                      else:
+                          out += c
+                  return out
+            say: "Eine Fassung, die auch bei einem negativen `shift` vorwärts rückt, besteht deine Tests."
+          - code: |
+              def caesar(text, shift):
+                  out = ''
+                  for c in text:
+                      if 'a' <= c <= 'z':
+                          out += chr((ord(c) - 97 + shift) % 26 + 97)
+                      elif 'A' <= c <= 'Z':
+                          out += chr((ord(c) - 65 + shift) % 26 + 65)
+                  return out
+            say: "Eine Fassung, die Leerzeichen und Satzzeichen weglässt, besteht deine Tests."
+      hint: "Vier Fehler, vier Dinge, die eine Verschlüsselung können muss: über `z` hinaus, Großbuchstaben, rückwärts, alles andere stehen lassen."
+      solution: |
+        ```python
+        assert_equal('abc', caesar('xyz', 3))
+        assert_equal('Def!', caesar('Abc!', 3))
+        assert_equal('zab', caesar('abc', -1))
+        ```
+    javascript:
+      prompt: |
+        `caesar(text, shift)` soll verschlüsseln wie in den Texten: Klein- und Großbuchstaben rücken um `shift` weiter, nach `z` geht es bei `a` weiter, auch rückwärts, und alles andere bleibt. Schreib Tests, die jede der vier falschen Fassungen entlarven.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual('def', caesar('abc', 3));
+      check:
+        type: tests
+        language: javascript
+        function: caesar
+        correct: |
+          function caesar(text, shift) {
+            let out = '';
+            for (const c of text) {
+              if (c >= 'a' && c <= 'z') out += String.fromCharCode(((c.charCodeAt(0) - 97 + shift) % 26 + 26) % 26 + 97);
+              else if (c >= 'A' && c <= 'Z') out += String.fromCharCode(((c.charCodeAt(0) - 65 + shift) % 26 + 26) % 26 + 65);
+              else out += c;
+            }
+            return out;
+          }
+        mutants:
+          - code: |
+              function caesar(text, shift) {
+                let out = '';
+                for (const c of text) {
+                  if (/[a-zA-Z]/.test(c)) out += String.fromCharCode(c.charCodeAt(0) + shift);
+                  else out += c;
+                }
+                return out;
+              }
+            say: "Eine Fassung, die nach `z` nicht wieder bei `a` anfängt, besteht deine Tests."
+          - code: |
+              function caesar(text, shift) {
+                let out = '';
+                for (const c of text) {
+                  if (c >= 'a' && c <= 'z') out += String.fromCharCode(((c.charCodeAt(0) - 97 + shift) % 26 + 26) % 26 + 97);
+                  else out += c;
+                }
+                return out;
+              }
+            say: "Eine Fassung, die Großbuchstaben nicht verschiebt, besteht deine Tests."
+          - code: |
+              function caesar(text, shift) {
+                let out = '';
+                for (const c of text) {
+                  if (c >= 'a' && c <= 'z') out += String.fromCharCode((c.charCodeAt(0) - 97 + Math.abs(shift)) % 26 + 97);
+                  else if (c >= 'A' && c <= 'Z') out += String.fromCharCode((c.charCodeAt(0) - 65 + Math.abs(shift)) % 26 + 65);
+                  else out += c;
+                }
+                return out;
+              }
+            say: "Eine Fassung, die auch bei einem negativen `shift` vorwärts rückt, besteht deine Tests."
+          - code: |
+              function caesar(text, shift) {
+                let out = '';
+                for (const c of text) {
+                  if (c >= 'a' && c <= 'z') out += String.fromCharCode(((c.charCodeAt(0) - 97 + shift) % 26 + 26) % 26 + 97);
+                  else if (c >= 'A' && c <= 'Z') out += String.fromCharCode(((c.charCodeAt(0) - 65 + shift) % 26 + 26) % 26 + 65);
+                }
+                return out;
+              }
+            say: "Eine Fassung, die Leerzeichen und Satzzeichen weglässt, besteht deine Tests."
+      hint: "Vier Fehler, vier Dinge, die eine Verschlüsselung können muss: über `z` hinaus, Großbuchstaben, rückwärts, alles andere stehen lassen."
+      solution: |
+        ```javascript
+        assertEqual('abc', caesar('xyz', 3));
+        assertEqual('Def!', caesar('Abc!', 3));
+        assertEqual('zab', caesar('abc', -1));
+        ```

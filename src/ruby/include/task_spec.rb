@@ -15,6 +15,7 @@ require_relative 'c_check'
 require_relative 'hint_steps'
 require_relative 'ruby_check'
 require_relative 'kata_check'
+require_relative 'tests_check'
 require_relative 'pip_check'
 require_relative 'code_languages'
 
@@ -57,6 +58,7 @@ module TaskSpec
         'c' => 'M7',
         'function' => 'M8',
         'pip' => 'M8',
+        'tests' => 'M8',
     }.freeze
 
     # Check types that need the network; they are never used in exams.
@@ -104,6 +106,7 @@ module TaskSpec
         'c' => [],
         'function' => %w[same_as],
         'pip' => [],
+        'tests' => [],
     }.freeze
 
     class Error < StandardError
@@ -207,7 +210,7 @@ module TaskSpec
         type = check['type']
         errors.concat(validate_check(type, check).map { |e| "check: #{e}" })
         if task.key?('starter')
-            errors << 'starter only works with function and pip' unless %w[function pip].include?(type)
+            errors << 'starter only works with function, pip and tests' unless %w[function pip tests].include?(type)
             errors << 'starter must be text' unless task['starter'].is_a?(String)
             errors << "starter must be at most #{KataCheck::MAX_CODE} characters" if task['starter'].is_a?(String) && task['starter'].size > KataCheck::MAX_CODE
         end
@@ -559,6 +562,11 @@ module TaskSpec
             # a container of its own (KataCheck).
             allowed += %w[language cases timeout forbid random slow recursive loops]
             errors.concat(KataCheck.spec_errors(check))
+        when 'tests'
+            # A Kata of tests: assertions typed into the card, run against a
+            # right and some broken versions (TestsCheck).
+            allowed += %w[language function correct mutants]
+            errors.concat(TestsCheck.spec_errors(check))
         when 'pip'
             # A plan for Pip, run against the world on the server (PipCheck).
             allowed += %w[language commands maps goal max_lines dry]

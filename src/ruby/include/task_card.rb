@@ -140,13 +140,18 @@ module TaskCard
                 maps = check['maps'].size
                 reads = "Dein Plan läuft in einem eigenen kleinen Rechner, getrennt von deinem Workspace und ohne Internet. Pip macht genau, was draufsteht. " \
                     "<em>Ausführen</em> schickt Pip #{maps > 1 ? "durch alle #{maps} Karten, jedes Mal von vorn," : 'los'} und spielt den Lauf auf der Karte ab; schafft Pip es, ist die Kata gelöst. <kbd>Strg</kbd>+<kbd>Enter</kbd> führt aus."
-            when 'function'
-                # A Kata: the code is written here; it starts with the task's starter.
+            when 'function', 'tests'
+                # A Kata: the code is written here; it starts with the task's
+                # starter. tests: the code is tests (TestsCheck).
                 io << "<textarea class='form-control task-input task-code' name='answer' rows='6' spellcheck='false' autocapitalize='off'"
                 io << " data-code-language='#{h.(check['language'])}' data-starter='#{h.(task['starter'])}' aria-labelledby='#{h.(field)}-title'>"
                 io << "#{h.(task['starter'])}</textarea>"
-                reads = "Dein Code läuft in einem eigenen kleinen Rechner, getrennt von deinem Workspace und ohne Internet, höchstens #{(check['timeout'] || 10).to_i} Sekunden. " \
-                    "<em>Ausführen</em> startet ihn einmal und zeigt, was er ausgibt, <em>Prüfen</em> ruft deine Funktionen auf und vergleicht. <kbd>Strg</kbd>+<kbd>Enter</kbd> prüft."
+                reads = if type == 'tests'
+                    "Deine Tests laufen in einem eigenen kleinen Rechner, getrennt von deinem Workspace und ohne Internet: einmal mit einer richtigen Fassung von <code>#{h.(check['function'])}</code>, bei der alle bestehen müssen, und mit #{check['mutants'].size} fehlerhaften, von denen jede an mindestens einem Test scheitern muss. <kbd>Strg</kbd>+<kbd>Enter</kbd> führt aus."
+                else
+                    "Dein Code läuft in einem eigenen kleinen Rechner, getrennt von deinem Workspace und ohne Internet, höchstens #{(check['timeout'] || 10).to_i} Sekunden. " \
+                        "<em>Ausführen</em> startet ihn einmal und zeigt, was er ausgibt, und ruft dann deine Funktionen auf und vergleicht. <kbd>Strg</kbd>+<kbd>Enter</kbd> führt aus."
+                end
             when 'command'
                 io << "<input type='text' class='form-control task-input task-command' name='answer' spellcheck='false' autocomplete='off' placeholder='Befehl' aria-labelledby='#{h.(field)}-title'>"
                 where = check['dir'] ? "/workspace/#{check['dir'].to_s.sub(%r{/+\z}, '')}" : '/workspace'
@@ -168,12 +173,12 @@ module TaskCard
                 when task['prediction'] then 'Vermutung abgeben'
                 # a Kata: one button runs the code (Pip: plays the run) and,
                 # when it works, solves the Kata
-                when %w[pip function].include?(type) then 'Ausführen'
+                when %w[pip function tests].include?(type) then 'Ausführen'
                 else 'Prüfen'
             end
             io << "<div class='task-actions'>"
             play = "<i class='bi bi-play-fill' aria-hidden='true'></i>"
-            io << "<button type='submit' class='btn btn-success task-submit'>#{%w[pip function].include?(type) ? play : ''}#{label}</button>"
+            io << "<button type='submit' class='btn btn-success task-submit'>#{%w[pip function tests].include?(type) ? play : ''}#{label}</button>"
             io << "<button type='button' class='btn btn-link btn-sm task-delete' hidden>Meine Antwort löschen</button>"
             # What the check reads, for whoever wants to know (rule 5), behind
             # a small (i) so the card itself stays short.
@@ -181,7 +186,7 @@ module TaskCard
                 io << "<button type='button' class='task-reads-toggle' aria-expanded='false' aria-controls='#{h.(field)}-reads' title='Was passiert beim Prüfen?'>"
                 io << "<i class='bi bi-info-circle' aria-hidden='true'></i><span class='visually-hidden'>Was passiert beim Prüfen?</span></button>"
             end
-            if %w[function pip].include?(type)
+            if %w[function pip tests].include?(type)
                 io << "<span class='task-queue' aria-live='polite'></span>"
                 # Einreichen (KataHandIns): shown once the Kata is solved
                 io << "<button type='button' class='btn btn-link btn-sm task-hand-in' hidden " \
@@ -189,7 +194,7 @@ module TaskCard
             end
             io << '</div>'
             io << "<div class='task-reads' id='#{h.(field)}-reads' hidden>#{reads}</div>" if reads
-            io << "<pre class='task-console no-copy' hidden aria-live='polite' aria-label='Ausgabe'></pre>" if %w[function pip].include?(type)
+            io << "<pre class='task-console no-copy' hidden aria-live='polite' aria-label='Ausgabe'></pre>" if %w[function pip tests].include?(type)
             io << '</form>'
         else
             io << "<p class='task-later'><i class='bi bi-hourglass-split'></i>Diese Aufgabe kann der Workspace noch nicht selbst prüfen. Zeig dein Ergebnis deiner Lehrkraft.</p>"

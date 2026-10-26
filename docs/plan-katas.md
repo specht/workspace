@@ -247,14 +247,18 @@ sandbox's Analyze (decided with the maintainer, 26 October 2026).
   numbers in five seconds
 * Oberstufe: Algorithmen, Effizienz; links to `sandbox-sortieren`
 
-**10 · Tests schreiben**
+**10 · Tests schreiben** (built, `kata-tests`, with the check type `tests`)
 Writing tests instead of code, with the check type `tests` (section 4): for each
 Kata a function with a description, the student writes test cases, broken
-versions must fail them.
-* Einstieg: tests for `even`, for `max_of_two`
-* Übung: tests for `slug`, for `leap_year` (the century rule)
-* Knobelei: tests for binary search (empty list, one element, not there)
-* Extras: find the bug in a given function by writing the test that shows it
+versions must fail them. Typed into the card, the tests are lines
+`assert_equal(expected, actual)` that the harness provides, the same in the
+three languages, no framework (TestsCheck, docs/aufgaben.md »tests«).
+* Einstieg: tests for `even`, `max_of_two`, `absolute`
+* Übung: tests for `leap_year` (the century rule), `slug`, `fizzbuzz`
+* Knobelei: tests for binary search (one element, the edges, not there),
+  for merging two sorted lists
+* Extras: find the bug in a given `max_of_three` by writing the test that
+  shows it; tests for `caesar`
 * Oberstufe: Softwareentwicklung (Testen); leads to the activity »Testen«
 
 Not in the catalogue: what needs files or the network (CSV, JSON, a URL

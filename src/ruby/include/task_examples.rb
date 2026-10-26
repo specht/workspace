@@ -46,9 +46,9 @@ require_relative 'kata_runner'
 # interpreters, c checks with the local cc, command checks with the local sh.
 module TaskExamples
     FILE = 'task-examples.yaml'
-    FAST_TYPES = %w[files html css references ruby python c command choice number answer function pip].freeze
+    FAST_TYPES = %w[files html css references ruby python c command choice number answer function pip tests].freeze
     # Checks that need examples to be tested at all.
-    NEEDS_EXAMPLES = %w[files html css references ruby python c command function pip].freeze
+    NEEDS_EXAMPLES = %w[files html css references ruby python c command function pip tests].freeze
     # answer with compare: regex needs examples as well (see missing).
     CASE_KEYS = %w[archive files answer say].freeze
 
@@ -79,7 +79,7 @@ module TaskExamples
                 # A Kata in JavaScript runs with the local node; where there is
                 # none (the Ruby container), its examples wait for a machine
                 # that has it.
-                next if %w[function pip].include?(type) && variant['check']['language'] == 'javascript' && !node?
+                next if %w[function pip tests].include?(type) && variant['check']['language'] == 'javascript' && !node?
 
                 given = examples[id] || {}
                 given = given[language] || {} if language
@@ -131,7 +131,7 @@ module TaskExamples
             return [] if check['compare'] == 'regex'
             first = Array(check['expect']).first
             first.is_a?(String) && !first.include?('${') ? [['pass', { 'answer' => first }]] : []
-        when 'function', 'pip'
+        when 'function', 'pip', 'tests'
             task['starter'].to_s.strip.empty? ? [] : [['fail', { 'answer' => task['starter'] }]]
         else
             []

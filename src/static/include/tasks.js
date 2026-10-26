@@ -70,7 +70,7 @@
     // page it shows at once. Whether it was hidden at all is up to the
     // server (task_page_setup): only for students.
     const ANSWERED = ['correct', 'wrong', 'sent', 'stale'];
-    const KATA = ['function', 'pip'];
+    const KATA = ['function', 'pip', 'tests'];
     function showAfterTasks() {
         document.querySelectorAll('.after-task[data-after]').forEach((box) => {
             const mine = cards().filter((card) => cardId(card) === box.dataset.after);
@@ -244,7 +244,7 @@
             return;
         }
         const input = card.querySelector('.task-input');
-        if (input && (card.dataset.type === 'function' || card.dataset.type === 'pip')) {
+        if (input && KATA.includes(card.dataset.type)) {
             // A Kata keeps its code per language ({"python": "…"}); without
             // code in this card's language it shows the starter.
             let codes = {};
@@ -381,7 +381,7 @@
 
     function submit(card) {
         const answer = readAnswer(card);
-        if (card.dataset.type === 'function' || card.dataset.type === 'pip') {
+        if (KATA.includes(card.dataset.type)) {
             kata(card, 'check', answer);
             return;
         }
@@ -698,7 +698,7 @@
             const del = card.querySelector('.task-delete');
             if (del) {
                 if (card.dataset.type === 'submit') del.textContent = 'Abgabe löschen';
-                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command', 'sql', 'cypher', 'function', 'pip'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
+                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command', 'sql', 'cypher', 'function', 'pip', 'tests'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
                 del.addEventListener('click', function () { remove(card); });
             }
             loadOptions(card);

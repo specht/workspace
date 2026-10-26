@@ -1,0 +1,156 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Der Startcode jeder Kata muss von selbst scheitern; das prüft der Test ohne Beispiel.
+format: 1
+activity: kata-tests
+examples:
+  test-even:
+    pass:
+      - answer: "assert_equal(true, even(4))\nassert_equal(false, even(7))\nassert_equal(true, even(0))\nassert_equal(true, even(-4))\nassert_equal(true, even(100))\n"
+    fail:
+      - answer: "def even(n)\n  n % 2 == 0\nend\n"
+    python:
+      pass:
+        - answer: "assert_equal(True, even(4))\nassert_equal(False, even(7))\nassert_equal(True, even(0))\nassert_equal(True, even(-4))\nassert_equal(True, even(100))\n"
+      fail:
+        - answer: "def even(n):\n    return n % 2 == 0\n"
+    javascript:
+      pass:
+        - answer: "assertEqual(true, even(4));\nassertEqual(false, even(7));\nassertEqual(true, even(0));\nassertEqual(true, even(-4));\nassertEqual(true, even(100));\n"
+      fail:
+        - answer: "function even(n) {\n  return n % 2 === 0;\n}\n"
+  test-max:
+    pass:
+      - answer: "assert_equal(7, max_of_two(3, 7))\nassert_equal(9, max_of_two(9, 2))\n"
+    fail:
+      - answer: "def max_of_two(a, b)\n  a > b ? a : b\nend\n"
+    python:
+      pass:
+        - answer: "assert_equal(7, max_of_two(3, 7))\nassert_equal(9, max_of_two(9, 2))\n"
+      fail:
+        - answer: "def max_of_two(a, b):\n    return a if a > b else b\n"
+    javascript:
+      pass:
+        - answer: "assertEqual(7, maxOfTwo(3, 7));\nassertEqual(9, maxOfTwo(9, 2));\n"
+      fail:
+        - answer: "function maxOfTwo(a, b) {\n  return a > b ? a : b;\n}\n"
+  test-absolute:
+    pass:
+      - answer: "assert_equal(5, absolute(-5))\nassert_equal(8, absolute(8))\n"
+    fail:
+      - answer: "def absolute(n)\n  n < 0 ? -n : n\nend\n"
+    python:
+      pass:
+        - answer: "assert_equal(5, absolute(-5))\nassert_equal(8, absolute(8))\n"
+      fail:
+        - answer: "def absolute(n):\n    return -n if n < 0 else n\n"
+    javascript:
+      pass:
+        - answer: "assertEqual(5, absolute(-5));\nassertEqual(8, absolute(8));\n"
+      fail:
+        - answer: "function absolute(n) {\n  return n < 0 ? -n : n;\n}\n"
+  test-leap-year:
+    pass:
+      - answer: "assert_equal(true, leap_year(2024))\nassert_equal(false, leap_year(1900))\nassert_equal(true, leap_year(2000))\nassert_equal(false, leap_year(2023))\n"
+    fail:
+      - answer: "def leap_year(year)\n  (year % 4 == 0 && year % 100 != 0) || year % 400 == 0\nend\n"
+    python:
+      pass:
+        - answer: "assert_equal(True, leap_year(2024))\nassert_equal(False, leap_year(1900))\nassert_equal(True, leap_year(2000))\nassert_equal(False, leap_year(2023))\n"
+      fail:
+        - answer: "def leap_year(year):\n    return (year % 4 == 0 and year % 100 != 0) or year % 400 == 0\n"
+    javascript:
+      pass:
+        - answer: "assertEqual(true, leapYear(2024));\nassertEqual(false, leapYear(1900));\nassertEqual(true, leapYear(2000));\nassertEqual(false, leapYear(2023));\n"
+      fail:
+        - answer: "function leapYear(year) {\n  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;\n}\n"
+  test-slug:
+    pass:
+      - answer: "assert_equal('hello-world', slug('Hello World!'))\nassert_equal('zwei-woerter', slug('zwei  woerter'))\n"
+    fail:
+      - answer: "def slug(text)\n  text.downcase.gsub(/[^a-z0-9]+/, ' ').split.join('-')\nend\n"
+    python:
+      pass:
+        - answer: "assert_equal('hello-world', slug('Hello World!'))\nassert_equal('zwei-woerter', slug('zwei  woerter'))\n"
+      fail:
+        - answer: "import re\n\ndef slug(text):\n    return '-'.join(re.sub(r'[^a-z0-9]+', ' ', text.lower()).split())\n"
+    javascript:
+      pass:
+        - answer: "assertEqual('hello-world', slug('Hello World!'));\nassertEqual('zwei-woerter', slug('zwei  woerter'));\n"
+      fail:
+        - answer: "function slug(text) {\n  return text.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter((w) => w).join('-');\n}\n"
+  test-fizzbuzz:
+    pass:
+      - answer: "assert_equal('FizzBuzz', fizzbuzz(15))\nassert_equal('Fizz', fizzbuzz(9))\nassert_equal('7', fizzbuzz(7))\n"
+    fail:
+      - answer: "def fizzbuzz(n)\n  if n % 15 == 0 then 'FizzBuzz'\n  elsif n % 3 == 0 then 'Fizz'\n  elsif n % 5 == 0 then 'Buzz'\n  else n.to_s\n  end\nend\n"
+    python:
+      pass:
+        - answer: "assert_equal('FizzBuzz', fizzbuzz(15))\nassert_equal('Fizz', fizzbuzz(9))\nassert_equal('7', fizzbuzz(7))\n"
+      fail:
+        - answer: "def fizzbuzz(n):\n    if n % 15 == 0:\n        return 'FizzBuzz'\n    if n % 3 == 0:\n        return 'Fizz'\n    if n % 5 == 0:\n        return 'Buzz'\n    return str(n)\n"
+    javascript:
+      pass:
+        - answer: "assertEqual('FizzBuzz', fizzbuzz(15));\nassertEqual('Fizz', fizzbuzz(9));\nassertEqual('7', fizzbuzz(7));\n"
+      fail:
+        - answer: "function fizzbuzz(n) {\n  if (n % 15 === 0) return 'FizzBuzz';\n  if (n % 3 === 0) return 'Fizz';\n  if (n % 5 === 0) return 'Buzz';\n  return String(n);\n}\n"
+  test-binary-search:
+    pass:
+      - answer: "assert_equal(2, binary_search([1, 3, 5, 7, 9], 5))\nassert_equal(0, binary_search([4], 4))\nassert_equal(4, binary_search([1, 3, 5, 7, 9], 9))\nassert_equal(nil, binary_search([1, 3, 5], 4))\n"
+    fail:
+      - answer: "def binary_search(numbers, wanted)\n  low = 0\n  high = numbers.length - 1\n  while low <= high\n    middle = (low + high) / 2\n    return middle if numbers[middle] == wanted\n    numbers[middle] < wanted ? low = middle + 1 : high = middle - 1\n  end\n  nil\nend\n"
+    python:
+      pass:
+        - answer: "assert_equal(2, binary_search([1, 3, 5, 7, 9], 5))\nassert_equal(0, binary_search([4], 4))\nassert_equal(4, binary_search([1, 3, 5, 7, 9], 9))\nassert_equal(None, binary_search([1, 3, 5], 4))\n"
+      fail:
+        - answer: "def binary_search(numbers, wanted):\n    low, high = 0, len(numbers) - 1\n    while low <= high:\n        middle = (low + high) // 2\n        if numbers[middle] == wanted:\n            return middle\n        if numbers[middle] < wanted:\n            low = middle + 1\n        else:\n            high = middle - 1\n    return None\n"
+    javascript:
+      pass:
+        - answer: "assertEqual(2, binarySearch([1, 3, 5, 7, 9], 5));\nassertEqual(0, binarySearch([4], 4));\nassertEqual(4, binarySearch([1, 3, 5, 7, 9], 9));\nassertEqual(null, binarySearch([1, 3, 5], 4));\n"
+      fail:
+        - answer: "function binarySearch(numbers, wanted) {\n  let low = 0;\n  let high = numbers.length - 1;\n  while (low <= high) {\n    const middle = Math.floor((low + high) / 2);\n    if (numbers[middle] === wanted) return middle;\n    if (numbers[middle] < wanted) low = middle + 1;\n    else high = middle - 1;\n  }\n  return null;\n}\n"
+  test-merge:
+    pass:
+      - answer: "assert_equal([1, 2, 3, 4], merge_sorted([1, 4], [2, 3]))\nassert_equal([1, 2, 2, 3, 9], merge_sorted([2, 9], [1, 2, 3]))\n"
+    fail:
+      - answer: "def merge_sorted(a, b)\n  result = []\n  i = j = 0\n  while i < a.length && j < b.length\n    if a[i] <= b[j]\n      result << a[i]\n      i += 1\n    else\n      result << b[j]\n      j += 1\n    end\n  end\n  result + a[i..] + b[j..]\nend\n"
+    python:
+      pass:
+        - answer: "assert_equal([1, 2, 3, 4], merge_sorted([1, 4], [2, 3]))\nassert_equal([1, 2, 2, 3, 9], merge_sorted([2, 9], [1, 2, 3]))\n"
+      fail:
+        - answer: "def merge_sorted(a, b):\n    result = []\n    i = j = 0\n    while i < len(a) and j < len(b):\n        if a[i] <= b[j]:\n            result.append(a[i])\n            i += 1\n        else:\n            result.append(b[j])\n            j += 1\n    return result + a[i:] + b[j:]\n"
+    javascript:
+      pass:
+        - answer: "assertEqual([1, 2, 3, 4], mergeSorted([1, 4], [2, 3]));\nassertEqual([1, 2, 2, 3, 9], mergeSorted([2, 9], [1, 2, 3]));\n"
+      fail:
+        - answer: "function mergeSorted(a, b) {\n  const result = [];\n  let i = 0;\n  let j = 0;\n  while (i < a.length && j < b.length) {\n    if (a[i] <= b[j]) result.push(a[i++]);\n    else result.push(b[j++]);\n  }\n  return result.concat(a.slice(i), b.slice(j));\n}\n"
+  find-the-bug:
+    pass:
+      - answer: "assert_equal(5, max_of_three(5, 5, 1))\n"
+    fail:
+      - answer: "def max_of_three(a, b, c)\n  [a, b, c].max\nend\n"
+    python:
+      pass:
+        - answer: "assert_equal(5, max_of_three(5, 5, 1))\n"
+      fail:
+        - answer: "def max_of_three(a, b, c):\n    return max(a, b, c)\n"
+    javascript:
+      pass:
+        - answer: "assertEqual(5, maxOfThree(5, 5, 1));\n"
+      fail:
+        - answer: "function maxOfThree(a, b, c) {\n  return Math.max(a, b, c);\n}\n"
+  test-caesar:
+    pass:
+      - answer: "assert_equal('abc', caesar('xyz', 3))\nassert_equal('Def!', caesar('Abc!', 3))\nassert_equal('zab', caesar('abc', -1))\n"
+    fail:
+      - answer: "def caesar(text, shift)\n  text.gsub(/[a-z]/) { |c| ((c.ord - 97 + shift) % 26 + 97).chr }.gsub(/[A-Z]/) { |c| ((c.ord - 65 + shift) % 26 + 65).chr }\nend\n"
+    python:
+      pass:
+        - answer: "assert_equal('abc', caesar('xyz', 3))\nassert_equal('Def!', caesar('Abc!', 3))\nassert_equal('zab', caesar('abc', -1))\n"
+      fail:
+        - answer: "def caesar(text, shift):\n    out = ''\n    for c in text:\n        if 'a' <= c <= 'z':\n            out += chr((ord(c) - 97 + shift) % 26 + 97)\n        elif 'A' <= c <= 'Z':\n            out += chr((ord(c) - 65 + shift) % 26 + 65)\n        else:\n            out += c\n    return out\n"
+    javascript:
+      pass:
+        - answer: "assertEqual('abc', caesar('xyz', 3));\nassertEqual('Def!', caesar('Abc!', 3));\nassertEqual('zab', caesar('abc', -1));\n"
+      fail:
+        - answer: "function caesar(text, shift) {\n  let out = '';\n  for (const c of text) {\n    if (c >= 'a' && c <= 'z') out += String.fromCharCode(((c.charCodeAt(0) - 97 + shift) % 26 + 26) % 26 + 97);\n    else if (c >= 'A' && c <= 'Z') out += String.fromCharCode(((c.charCodeAt(0) - 65 + shift) % 26 + 26) % 26 + 65);\n    else out += c;\n  }\n  return out;\n}\n"

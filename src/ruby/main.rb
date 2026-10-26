@@ -5419,7 +5419,7 @@ class Main < Sinatra::Base
         # SQL and Cypher answers, and the code of a Kata, in the colours of
         # the code blocks, with the keyword lists of the same lexers
         # (code_input.js).
-        code = tasks[:on_page].any? { |id| %w[sql cypher function pip].include?((tasks[:by_id][id] || {}).dig('check', 'type')) }
+        code = tasks[:on_page].any? { |id| %w[sql cypher function pip tests].include?((tasks[:by_id][id] || {}).dig('check', 'type')) }
         pip = tasks[:on_page].any? { |id| (tasks[:by_id][id] || {}).dig('check', 'type') == 'pip' }
         code_input = if code
             keywords = {
@@ -5786,7 +5786,7 @@ class Main < Sinatra::Base
         solutions = {}
         tasks[:on_page].each do |id|
             task = tasks[:by_id][id]
-            next unless task && %w[function pip].include?(task.dig('check', 'type'))
+            next unless task && %w[function pip tests].include?(task.dig('check', 'type'))
 
             [task, *CodeLanguages.variant_languages(task).map { |l| CodeLanguages.variant(task, l) }].each do |t|
                 next unless t['solution']

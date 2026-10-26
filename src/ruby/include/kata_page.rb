@@ -28,7 +28,7 @@ class Main < Sinatra::Base
         end
     end
 
-    KATA_TYPES = %w[function pip].freeze
+    KATA_TYPES = %w[function pip tests].freeze
 
     def kata_request
         assert(user_logged_in?)

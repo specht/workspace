@@ -994,6 +994,40 @@ Aufgabe spricht. Was nach einer Kata erzählt wird, steht zwischen
 `<!-- after: id -->` und `<!-- /after -->` und erscheint, sobald die Kata
 gelöst ist.
 
+### tests
+
+Eine Kata, in der man Tests schreibt statt einer Funktion (`TestsCheck`,
+Übung »Tests schreiben«). Die Tests sind Zeilen
+`assert_equal(erwartet, ergebnis)` (in JavaScript `assertEqual`), die die
+Prüfung selbst bereitstellt, ohne Testbibliothek. Sie laufen gegen eine
+richtige Fassung der Funktion, bei der alle bestehen müssen, und gegen
+fehlerhafte, von denen jede an mindestens einem Test scheitern muss; jede
+Fassung läuft für sich, nacheinander im selben Container der Katas.
+
+```yaml
+check:
+  type: tests
+  language: ruby                 # ruby, python oder javascript; je Sprache als Variante
+  function: even                 # was die Tests aufrufen; sie dürfen es nicht selbst schreiben
+  correct: |
+    def even(n)
+      n % 2 == 0
+    end
+  mutants:                       # 1 bis 10
+    - code: |
+        def even(n)
+          n > 0 && n % 2 == 0
+        end
+      say: Eine Fassung, die bei 0 und negativen Zahlen immer `false` sagt, besteht deine Tests.
+```
+
+Scheitert ein Test an der richtigen Fassung, nennt die Rückmeldung die Zeile
+und was sie wirklich ergibt; kommt eine fehlerhafte durch, ersetzt ihr `say`
+die Rückmeldung. In Python ist `True` dabei nicht `1`. Schreibt jemand die
+Funktion selbst hinein, sagt die Prüfung, nur Tests zu schreiben, ohne etwas
+auszuführen. Der `starter` (ein erster Test) muss von selbst scheitern, wie
+bei `function`; in `task-examples.yaml` stehen Tests unter `answer:`.
+
 ### c
 
 Ruft Funktionen aus einer C-Datei der Lernenden auf, wie `python` und `ruby`
