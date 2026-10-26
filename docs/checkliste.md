@@ -95,6 +95,7 @@ Entstanden beim Bau der Katas und von »Pip unter Funkelbach«
 | Ein Spiel oder Brauch im Aufgabentext stimmt für deutsche Schulen, oder der Text sagt, woher er kommt (FizzBuzz ist ein englisches Zählspiel, »Brot« das aus der Grundschule) | Sonst stimmt die Geschichte nicht für die Klasse | Lesen |
 | Das Ende einer Geschichte kündigt keine Fortsetzung an und wirbt nicht für etwas anderes | Es soll ein Ende sein | Lesen |
 | Eine Übung mit Katas hat im Streifen auf der Startseite ein Icon (`icon: bi-braces`), kein Bild einer Karte; Pips Übungen zeigen Pip und Bello in Grün, so groß, dass jedes Pixel gleich groß ist (`make_icons.py`, dreimal 24 Pixel) | Eine gelöste Kata im Bild verriete die Lösung; ein Streifen in einem Stil | Lesen |
+| Code in einer Rückmeldung, einer Lösung oder einem Tipp steht in einem dunklen Codeblock mit den Farben der Seite, wie jeder andere Code | Hell auf hell ist nicht zu lesen; Code sieht überall gleich aus | Lesen (`task_html_test.rb` prüft die Farben) |
 | Jede Kata hat eine Lösung (`solution`); Lehrkräfte setzen sie mit »Lösung einsetzen« in den Code ein, Lernende sehen sie erst nach einer richtigen Antwort | Lehrkräfte wollen in der Stunde vorführen können | Lesen |
 
 ## Bilder

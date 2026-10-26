@@ -3945,13 +3945,12 @@ ul.task-teacher-list .task-teacher-answer {
     font-size: 90%;
 }
 
+/* a dark code block like everywhere on the page (gruvbox, the template),
+   a solution in its colours (TaskHtml) */
 .task-feedback pre {
     margin: 0.5em 0;
     padding: 0.6em 0.8em;
     border-radius: 0.4em;
-    background-color: rgba(255, 255, 255, 0.75);
-    /* The page's code theme (gruvbox) has light text for dark boxes. */
-    color: #212529;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
 }

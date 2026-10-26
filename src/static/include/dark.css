@@ -486,13 +486,8 @@ html[data-bs-theme="dark"] {
     .lang-tile-logo .theme-image-dark {
         display: block;
     }
-    .task-feedback pre,
     .template-notice-body pre {
         color: #e7e6e1;
-    }
-    .task-feedback pre code {
-        color: #e7e6e1;
-        background: none;
     }
     .task-feedback-correct { background-color: rgba(31, 157, 85, 0.18); }
     .task-feedback-wrong { background-color: rgba(224, 160, 48, 0.16); }
