@@ -98,6 +98,12 @@ Entstanden beim Bau der Katas und von »Pip unter Funkelbach«
 | Code in einer Rückmeldung, einer Lösung oder einem Tipp steht in einem dunklen Codeblock mit den Farben der Seite, wie jeder andere Code | Hell auf hell ist nicht zu lesen; Code sieht überall gleich aus | Lesen (`task_html_test.rb` prüft die Farben) |
 | Jede Kata hat eine Lösung (`solution`); Lehrkräfte setzen sie mit »Lösung einsetzen« in den Code ein, Lernende sehen sie erst nach einer richtigen Antwort | Lehrkräfte wollen in der Stunde vorführen können | Lesen |
 
+## Auf dem Handy
+
+| Regel | Warum | Geprüft durch |
+| --- | --- | --- |
+| Auf einem Handy (bis 576 px) laufen alle Kästen der Seite von Rand zu Rand: Notiz für Lehrkräfte, Aufgabenkarte, Tipp- und Ausprobieren-Kästen, Person und Buch, Handbuch-Kasten, Codeblock. Ihr Text beginnt dort, wo die Absätze beginnen (1rem); man erkennt sie an Hintergrund und Farbleiste. Kästen in Kästen, Code in Listen und Bilder behalten ihren Rahmen | Mehr Platz für Code und Text, ein Stil statt zweier | Lesen (Bildschirmfotos in iPhone-Breite) |
+
 ## Bilder
 
 | Regel | Warum | Geprüft durch |

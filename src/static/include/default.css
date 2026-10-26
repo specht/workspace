@@ -3076,6 +3076,39 @@ body.has-autotoc-secondary.autotoc-primary-visible {
         padding-left: 1em;
         padding-right: 1em;
     }
+    /* Every box in the page's column likewise: a task card, a hint, a
+       person or a book, a Handbuch box, a code block. Its text starts where
+       the paragraphs start, the box is told apart by its background and
+       its colour bar, and a code block gains the whole width. Boxes inside
+       a box stay as they are; pictures and previews keep their frame. */
+    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) >
+        :is(.task-card, .hint, .person, .book, .reference-include, .code-copy-box, pre):not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        border-left-width: 0;
+        border-right-width: 0;
+        border-radius: 0;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    /* the card's colour bar stays, at the screen's edge */
+    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > .task-card:not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
+        border-left-width: 5px;
+        padding-left: calc(1rem - 5px);
+    }
+    /* the person box's ⓘ keeps its corner */
+    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > .person:has(> .person-sources):not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
+        padding-right: 2.2em;
+    }
+    /* a code block with a copy button: the box goes wide, its block with it */
+    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > .code-copy-box:not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
+        padding-left: 0;
+        padding-right: 0;
+    }
+    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > .code-copy-box:not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) > pre {
+        border-radius: 0;
+        padding-left: 1rem;
+    }
     .teacher-note-body .table th,
     .teacher-note-body .table td {
         padding-left: 0;
