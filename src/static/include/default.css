@@ -8321,6 +8321,13 @@ html[data-bs-theme="dark"] .bitplane-widget {
     background: #10101e;
     image-rendering: pixelated;
 }
+/* until its rock is drawn (pip_world.js), then it fades in */
+.pip-map > * {
+    transition: opacity 200ms;
+}
+.pip-map.pip-loading > * {
+    opacity: 0;
+}
 
 .pip-tile {
     position: absolute;
@@ -8352,11 +8359,15 @@ html[data-bs-theme="dark"] .bitplane-widget {
     transform: translate(calc(var(--x) * var(--tile)), calc((var(--y) + 1 - var(--h)) * var(--tile)));
 }
 
-/* the ground: four variants, a soft darker patch here and there */
-.pip-floor {
-    background-image: url(/images/pip/floor.png?v=6);
-    background-size: calc(var(--tile) * 4) 100%;
-    background-position: calc(var(--v) * var(--tile) * -1) 0;
+/* the ground: one picture (pip_world.js), under everything else on the
+   map; a soft darker patch here and there */
+.pip-ground {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
 }
 .pip-shade {
     width: calc(var(--tile) * 1.8);
@@ -8428,8 +8439,15 @@ html[data-bs-theme="dark"] .bitplane-widget {
     filter: drop-shadow(0 0 calc(var(--tile) * 0.12) rgba(255, 200, 140, 0.6));
 }
 .pip-lamp.pip-lit { background-image: url(/images/pip/lamp.png?v=6); }
+/* the post against a wall on the right, the lantern out over the ground */
+.pip-tall.pip-mirrored {
+    transform: translate(calc(var(--x) * var(--tile)), calc((var(--y) + 1 - var(--h)) * var(--tile))) scaleX(-1);
+}
 
 .pip-pip {
+    /* standing in the middle of its tile, not at its lower edge */
+    --lift: calc(var(--tile) * -0.12);
+    translate: 0 var(--lift);
     background-image: url(/images/pip/pip-east.png?v=6);
     background-size: 200% 100%;
 }
@@ -8444,11 +8462,11 @@ html[data-bs-theme="dark"] .bitplane-widget {
 @keyframes pip-frames-2 { to { background-position-x: calc(-2 * var(--tile)); } }
 @keyframes pip-frames-4 { to { background-position-x: calc(-4 * var(--tile)); } }
 @keyframes pip-bump {
-    30% { translate: calc(var(--tile) * 0.15) 0; }
-    60% { translate: calc(var(--tile) * -0.08) 0; }
+    30% { translate: calc(var(--tile) * 0.15) var(--lift, 0); }
+    60% { translate: calc(var(--tile) * -0.08) var(--lift, 0); }
 }
 @keyframes pip-caught { 50% { opacity: 0.25; } }
-@keyframes pip-hop { 50% { translate: 0 calc(var(--tile) * -0.3); } }
+@keyframes pip-hop { 50% { translate: 0 calc(var(--lift, 0px) - var(--tile) * 0.3); } }
 
 /* The light: a layer over the ground, the rock and what stands in the dark,
    which multiplies them with a cave blue, so that it is darker but every
@@ -8589,6 +8607,28 @@ html[data-bs-theme="dark"] .bitplane-widget {
     font-size: 0.8em;
     white-space: nowrap;
     image-rendering: auto;
+}
+
+/* The map and the plan side by side on a wide screen, so that both are in
+   view while the run plays; the map takes the larger part, the player's
+   controls run under both. */
+@media (min-width: 992px) {
+    .pip-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.5fr) minmax(16em, 1fr);
+        grid-template-areas: 'map code' 'controls controls' 'timeline timeline';
+        column-gap: 1em;
+        align-items: start;
+        margin-bottom: 0.8em;
+    }
+    /* the player's parts take part in the grid: the controls and the
+       timeline run under both columns */
+    .pip-layout > .pip-world { display: contents; }
+    .pip-layout .pip-map-box { grid-area: map; }
+    .pip-layout .pip-controls { grid-area: controls; }
+    .pip-layout .stepper-timeline { grid-area: timeline; }
+    .pip-layout > .code-input,
+    .pip-layout > textarea { grid-area: code; }
 }
 
 /* In a task card the player is no widget card of its own (the task card

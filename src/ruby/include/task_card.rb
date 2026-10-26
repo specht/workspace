@@ -112,13 +112,16 @@ module TaskCard
                 reads = "Läuft in deiner eigenen Neo4j-Datenbank, angemeldet als du, und liest nur: eine Abfrage mit <code>MATCH</code> und <code>RETURN</code>, höchstens #{CypherCheck::MAX_SECONDS} Sekunden. <kbd>Strg</kbd>+<kbd>Enter</kbd> prüft."
             when 'pip'
                 # Pip's plan (PipCheck): the first map above the editor, for
-                # pip_world.js to draw and to play the runs on.
+                # pip_world.js to draw and to play the runs on; map and editor
+                # side by side on a wide screen.
                 first = check['maps'].first
                 world = PipWorld.new(first['map'], :facing => first['facing'] || 'east')
+                io << "<div class='pip-layout'>"
                 io << "<div class='pip-world' data-layout='#{h.(JSON.generate(world.layout))}' data-start='#{h.(JSON.generate(world.trace.first))}'></div>"
                 io << "<textarea class='form-control task-input task-code' name='answer' rows='6' spellcheck='false' autocapitalize='off'"
                 io << " data-code-language='#{h.(check['language'])}' data-starter='#{h.(task['starter'])}' aria-labelledby='#{h.(field)}-title'>"
                 io << "#{h.(task['starter'])}</textarea>"
+                io << '</div>'
                 maps = check['maps'].size
                 reads = "Dein Plan läuft in einem eigenen kleinen Rechner, getrennt von deinem Workspace und ohne Internet. Pip macht genau, was draufsteht. " \
                     "<em>Ausführen</em> zeigt Pip auf der Karte oben, <em>Prüfen</em> schickt Pip #{maps > 1 ? "durch alle #{maps} Karten, jedes Mal von vorn" : 'los und prüft das Ziel'}. <kbd>Strg</kbd>+<kbd>Enter</kbd> prüft."
