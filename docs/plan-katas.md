@@ -160,7 +160,7 @@ Loops over numbers, a variable that collects.
 `while`, functions of one's own, variables, combined conditions, an algorithm
 on generated mazes. Comes after set 3, because it uses all of it.
 
-**4 · Texte**
+**4 · Texte** (built, `kata-texts`)
 Strings: characters, positions, building a new text.
 * Einstieg: reverse (CB reverse_string), count vowels (CB count_vowels), the
   first letter of each word, to upper case without `upcase` (HS
@@ -172,24 +172,34 @@ Strings: characters, positions, building a new text.
 * Extras: Vigenère, password rules
 * Sek I: Information und Daten (Codierung, Verschlüsselung); links to `crypto`
 
-**5 · Listen**
+**5 · Listen** (built, `kata-lists`)
 Going through a list, building a new one, positions (Index, not »Stelle«).
 * Einstieg: sum (CB array_sum), max (CB array_max), count the even numbers,
   contains
 * Übung: reverse (CB array_reverse), swap first and last (CB), rotate left
   (CB), sorted? (HS Monotonie)
 * Knobelei: remove duplicates, the missing number (CB find_missing_number),
-  merge two sorted lists, the sieve of Eratosthenes (moved here from set 9;
-  the prime test of set 3 is the idea it speeds up)
-* Extras: two numbers that add up to a target (two-sum) in one pass
+  merge two sorted lists. The sieve of Eratosthenes, meant to move here from
+  set 9, stays where it already is: the Extra of set 3 (all primes up to a
+  million in six seconds).
+* Extras: two numbers that add up to a target (their indices, with two
+  loops; the one pass with a dictionary is hinted at for set 6), chunks
 * Oberstufe: Datenstrukturen; links to the Data Structures Sandbox
 
-**6 · Dictionaries**
-Keys and values: counting, grouping, looking up.
-* Einstieg: look up a phone number, count words in a list
-* Übung: word frequency, most frequent word, group words by length
-* Knobelei: invert a dictionary, the average per subject from a list of grades
-* Extras: a tiny LRU cache
+**6 · Dictionaries** (built, `kata-dicts`)
+Keys and values: counting, grouping, looking up. A Hash in Ruby, a
+Dictionary in Python, an object in JavaScript.
+* Einstieg: the phone book (a missing name gives `'unbekannt'`), a tally of a
+  list, the price of a shopping list (in cent, so that no sum depends on the
+  order of adding decimals), the names with so many points
+* Übung: how often each letter, the most frequent word, group words by
+  length, two tallies together
+* Knobelei: invert (each value with the list of its keys), the average per
+  subject, the first number that comes again (100 000 numbers in ten
+  seconds: searching a list each time is too slow)
+* Extras: count the misses of a small LRU cache (a check calls one function,
+  so a cache with state becomes counting), groups of anagrams
+* Count words and two-sum, planned here first, are already in sets 4 and 5.
 * Oberstufe: Datenstrukturen (Hash Table); links to the Handbuch page
   `hash-tables`
 
@@ -776,8 +786,10 @@ The cards and the strip
   set pinned for the person's group is marked and scrolled into the middle.
 - Only Pip's sets have a picture (the map halfway through a run, no code,
   zoomed in round Pip or Bello with `focus:`); the others have an icon
-  (`icon:`, quotation marks for Texte), since a solved card would give a
-  solution away. The section's icon is the martial arts uniform.
+  (`icon:`), since a solved card would give a solution away: braces for
+  Erste Funktionen, a signpost for Entscheidungen, a loop for Wiederholen,
+  quotation marks for Texte, a numbered list for Listen, a book for
+  Dictionaries. The section's icon is the martial arts uniform.
 - On a page with a language switch the kind label does not name the
   language (»Übung«, not »Übung (Ruby)«); the chosen language's pill slides.
 
@@ -801,7 +813,9 @@ The sets
   or with a 3) is the game of German primary schools, an Extra.
 - Set 9 is »Suchen« (see the catalogue); the merge step is set 5's, the
   sieve stays the Extra of set 3, counting comparisons is the Sorting
-  Sandbox's.
+  Sandbox's. No Kata twice: what one set has, another leaves out.
+- Prices and other sums in cent, not in euros with decimals, so that no
+  result depends on the order of adding.
 - Examples never imitate a difficulty a student may have (a »stutter«
   function became one putting letters in brackets).
 - The curriculum line, shown to teachers in the strip, is wanted for every
