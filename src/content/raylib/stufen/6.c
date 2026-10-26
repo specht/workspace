@@ -195,8 +195,7 @@ void move_player(float dt)
     if (IsKeyDown(KEY_A)) move = Vector3Subtract(move, right);
     move = Vector3Scale(Vector3Normalize(move), 4.5f * dt);
 
-    // Jede Richtung einzeln: So gleitet man an einer Wand entlang, statt an
-    // ihr kleben zu bleiben.
+    // Jede Richtung einzeln: erst der Schritt in x, dann der in z
     Vector3 next = feet;
     next.x += move.x;
     if (!collides(next)) feet.x = next.x;

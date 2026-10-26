@@ -453,6 +453,7 @@ Um die Hügel mit Farbe zu füllen, gibt es `flood_fill(x, y)`. Der Befehl begin
 
 _task(fluten)
 
+<!-- after: fluten -->
 Schreib den folgenden Code dazu:
 
 ```ruby
@@ -471,6 +472,7 @@ terminal-wait-for-prompt
 image-file: drawing-steps/step.png 8
 -->
 <img src='out5.webp' class='full' alt='Die Fläche zwischen den oberen Kurven ist hellgrün gefüllt.'>
+<!-- /after -->
 
 <div class='hint own' data-check='flaechen'>
 <strong>Jetzt bist du dran:</strong> Füll auch die beiden anderen Flächen: die mittlere mit Farbe 8, die untere mit Farbe 9. Für jede Fläche brauchst du zwei Zeilen, so wie eben: erst die Farbe, dann <code>flood_fill</code> mit einem Punkt, der in der Fläche liegt. Starte danach das Programm und sieh nach, ob alle drei Flächen grün sind.
@@ -513,7 +515,7 @@ image-file: drawing-steps/step.png 8
 
 ### Regenbogen zeichnen
 
-Der Regenbogen besteht aus gefüllten Kreisen, einer in den anderen gelegt. Gezeichnet wie bisher, würden die Kreise auch die Wiese übermalen. Dagegen hilft eine Maske: Sie legt fest, welche Pixel die folgenden Befehle überhaupt verändern dürfen.
+Der Regenbogen besteht aus gefüllten Kreisen, einer in den anderen gelegt. Er soll nur den Himmel verändern. Dafür gibt es eine Maske: Sie legt fest, welche Pixel die folgenden Befehle überhaupt verändern dürfen.
 
 `set_mask` legt eine Maske fest. Zwischen `do` und `end` steht, was dazugehört: `add_color(16)` nimmt alle Pixel auf, die gerade die Farbe 16 haben, also den hellblauen Himmel. Alle anderen Pixel bleiben ab jetzt, wie sie sind.
 
@@ -537,6 +539,10 @@ end
 `[28, 27, …].each do |color|` geht die Liste der Reihe nach durch; bei jedem Durchgang steht in `color` die nächste Zahl.
 
 _task(maske)
+
+<!-- after: maske -->
+Ohne Maske übermalen die Kreise auch die Wiese, und der Regenbogen reicht bis zum unteren Rand. Mit der Maske verändern sie nur die Pixel, die vorher hellblau waren, also den Himmel. Nimm die `#` vor den drei Zeilen wieder heraus.
+<!-- /after -->
 
 <!-- tutorial-screenshot
 # Der Regenbogen hinter den Hügeln

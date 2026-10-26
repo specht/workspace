@@ -1330,7 +1330,7 @@ Was neu ist:
 - Die Ergebnisseite zeichnet für jede Antwort einen Balken mit `<progress>`: `value` ist die Zahl ihrer Stimmen, `max` die größte Zahl. Den Balken malt der Browser selbst, ganz ohne CSS.
 <!-- /language -->
 
-Nach einer Stimme zeigt `/vote` nicht gleich das Ergebnis, sondern ruft `redirect` auf: Der Server antwortet mit **`303 See Other`** und dem Header `Location: /results`, »Sieh dort nach.« Der Browser holt dann `/results` mit `GET`. Der Umweg hat einen Grund: Wäre das Ergebnis die Antwort auf das `POST`, würde der Browser beim Neuladen das Formular noch einmal schicken, und die Stimme zählte doppelt. So lädt er nur die Ergebnisseite neu. Das Muster heißt **Post/Redirect/Get**.
+Nach einer Stimme zeigt `/vote` nicht gleich das Ergebnis, sondern ruft `redirect` auf: Der Server antwortet mit **`303 See Other`** und dem Header `Location: /results`, »Sieh dort nach.« Der Browser holt dann `/results` mit `GET`. Wozu der Umweg gut ist, überlegst du gleich selbst.
 
 <!-- language: ruby -->
 <div class='hint own' data-check='weiterleitung'>
@@ -1495,8 +1495,6 @@ sleep: 1
 -->
 <img class='full border' src='ergebnis.webp' alt='Im Browser die Seite »Ergebnis« mit einem Balken für jede Antwort: Pizza 1 und Curry 1 mit vollem Balken, Nudeln 0 und Salat 0 mit leerem, darunter der Link »Noch einmal abstimmen«.'>
 
-Lade die Ergebnisseite neu: Die Zahlen bleiben gleich. Im linken Terminal siehst du, dass der Browser nur `GET /results` geschickt hat.
-
 _uses(http-methoden, http-formulare)
 
 _task(umfrage)
@@ -1505,6 +1503,9 @@ _task(body)
 
 _task(neu-laden)
 
+<!-- after: neu-laden -->
+Lädst du die Ergebnisseite neu, bleiben die Zahlen gleich. Im linken Terminal siehst du, dass der Browser nur `GET /results` geschickt hat. Dafür ist der Umweg über `303 See Other` da: Wäre das Ergebnis die Antwort auf das `POST`, würde der Browser beim Neuladen das Formular noch einmal schicken, und die Stimme zählte doppelt. So lädt er nur die Ergebnisseite neu. Das Muster heißt **Post/Redirect/Get**.
+<!-- /after -->
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ein Formular schickt nur, was darin steht, aber <code>curl</code> schickt, was du willst:

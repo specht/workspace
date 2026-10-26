@@ -18,16 +18,20 @@ reference: [kryptographie, bits-und-bytes, ruby-python]
 # Zwei Faktoren: Einmalcodes selbst gebaut
 
 <p class='abstract'>
-Viele Konten fragen nach dem Passwort noch nach einem sechsstelligen Code aus einer App, der alle 30 Sekunden wechselt. Du baust das Verfahren dahinter selbst, in Ruby oder Python: einen Schlüssel in Base32, einen Code aus Schlüssel und Zähler, einen Zähler aus der Uhrzeit. Am Ende scannst du deinen eigenen Schlüssel mit dem Handy, und deine App zeigt dieselben Codes wie dein Programm.
+Viele Konten fragen nach dem Passwort noch nach einem zweiten Faktor, einer Authenticator-App auf dem Handy. Du baust das Verfahren dahinter selbst, in Ruby oder Python: einen Schlüssel in Base32, einen Code aus Schlüssel und Zähler, einen Zähler aus der Uhrzeit. Am Ende scannst du deinen eigenen Schlüssel mit dem Handy, und deine App zeigt dieselben Codes wie dein Programm.
 </p>
 
 ## Etwas, das du weißt, und etwas, das du hast
 
-Ein Passwort ist etwas, das du **weißt**. Das Problem: Andere können es auch erfahren. Es taucht in einem Datenleck auf, weil eine Website es schlecht gespeichert hat, jemand hat dir über die Schulter geschaut, oder du hast es bei mehreren Diensten benutzt. Ein **zweiter Faktor** ist etwas anderes: etwas, das du **hast**, zum Beispiel dein Handy. Der Server fragt dann nach dem Passwort und nach einem Code, den nur das Handy kennt.
-
-Wie kann das Handy einen Code kennen, den der Server nachprüfen kann, ohne dass die beiden miteinander reden? Beim Einrichten bekommen beide denselben geheimen **Schlüssel**, meistens über einen QR-Code. Danach rechnen beide unabhängig voneinander aus dem Schlüssel und der Uhrzeit einen Code aus. Weil sie dieselbe Rechnung mit denselben Zahlen machen, kommt dasselbe heraus. Wer den Schlüssel nicht hat, kann den Code nicht ausrechnen, auch nicht, wenn er hundert frühere Codes gesehen hat.
+Ein Passwort ist etwas, das du **weißt**. Das Problem: Andere können es auch erfahren. Es taucht in einem Datenleck auf, weil eine Website es schlecht gespeichert hat, jemand hat dir über die Schulter geschaut, oder du hast es bei mehreren Diensten benutzt. Ein **zweiter Faktor** ist etwas anderes: etwas, das du **hast**, zum Beispiel dein Handy.
 
 _task(zweiter-faktor)
+
+<!-- after: zweiter-faktor -->
+Mit dem zweiten Faktor fragt der Server nach dem Passwort und nach einem sechsstelligen Code, den nur das Handy kennt und der alle 30 Sekunden wechselt. Wer nur das Passwort erfahren hat, kommt nicht hinein.
+
+Wie kann das Handy einen Code kennen, den der Server nachprüfen kann, ohne dass die beiden miteinander reden? Beim Einrichten bekommen beide denselben geheimen **Schlüssel**, meistens über einen QR-Code. Danach rechnen beide unabhängig voneinander aus dem Schlüssel und der Uhrzeit einen Code aus. Weil sie dieselbe Rechnung mit denselben Zahlen machen, kommt dasselbe heraus. Wer den Schlüssel nicht hat, kann den Code nicht ausrechnen, auch nicht, wenn er hundert frühere Codes gesehen hat.
+<!-- /after -->
 
 Das Verfahren heißt **TOTP** (»Time-based One-Time Password«) und steht in zwei kurzen Standards, [RFC 4226](https://www.rfc-editor.org/rfc/rfc4226.html) und [RFC 6238](https://www.rfc-editor.org/rfc/rfc6238.html). Jede Authenticator-App kann es. Deshalb funktioniert dein eigenes Programm am Ende mit ihr zusammen.
 

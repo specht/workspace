@@ -111,9 +111,9 @@ Mehr zum Text auf Folien: _uses(text, hervorheben, links)
 
 ## Bilder
 
-_include(html#bilddateien)
-
 _task(umbenennen)
+
+_include(html#bilddateien)
 
 _task(eigenes-bild)
 

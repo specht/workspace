@@ -979,15 +979,19 @@ Der nächste freie Eintrag ist also 6. Den Rest baut der Decoder beim Lesen selb
 
 1. Nach dem Clear Code steht ein Code für eine einzelne Farbe. Schreib sie hin. Er ist der **vorige Code** für den nächsten Schritt.
 2. Steht der Code schon in der Tabelle, schreib seinen Eintrag hin. Der neue Eintrag in der Tabelle ist der Eintrag des vorigen Codes und dahinter das **erste Pixel** des jetzigen.
-3. Steht der Code noch nicht in der Tabelle, ist er genau der Eintrag, der jetzt neu entsteht. Er ist der Eintrag des vorigen Codes und dahinter das erste Pixel **des vorigen**. Trag ihn ein und schreib ihn hin.
+3. Steht der Code noch nicht in der Tabelle, ist er der nächste freie Eintrag. Wofür er dann steht, überlegst du in der Aufgabe unten.
 4. Hat die Tabelle danach 2<sup>Codelänge</sup> Einträge, wird die Codelänge um 1 größer, bis höchstens 12 Bits. Mit 3 Bits gibt es Codes bis 7. Sobald Eintrag 7 da ist, braucht der nächste Code 4 Bits.
 5. Hat die Tabelle 4096 Einträge, kommen keine mehr dazu, bis ein Clear Code sie leert.
 
 Regel 5 steht nicht im Text von 1990, sondern auf dem Deckblatt, das CompuServe nachgereicht hat: Ein Encoder muss bei voller Tabelle keinen Clear Code schicken, er darf mit der vollen Tabelle weitermachen. Viele Decoder kamen damit damals nicht zurecht.
 
-Der Encoder hat beim Komprimieren dieselbe Tabelle gebaut, nach denselben Regeln, nur einen Schritt früher. Deshalb muss sie nicht in der Datei stehen. Und deshalb gibt es Regel 3: Der Encoder kann einen Eintrag benutzen, den er gerade erst angelegt hat und den der Decoder noch nicht kennt. Das passiert immer dann, wenn sich eine Folge gleich wiederholt, bei der Diskette schon beim dritten Code.
+Der Encoder hat beim Komprimieren dieselbe Tabelle gebaut, nach denselben Regeln, nur einen Schritt früher. Deshalb muss sie nicht in der Datei stehen.
 
 _task(neuer-code)
+
+<!-- after: neuer-code -->
+Der Encoder kann einen Eintrag benutzen, den er gerade erst angelegt hat und den der Decoder noch nicht kennt. Das passiert immer dann, wenn sich eine Folge gleich wiederholt, bei der Diskette schon beim dritten Code. Regel 3 heißt darum vollständig: Steht der Code noch nicht in der Tabelle, ist er genau der Eintrag, der jetzt neu entsteht. Er ist der Eintrag des vorigen Codes und dahinter das erste Pixel **des vorigen**. Trag ihn ein und schreib ihn hin.
+<!-- /after -->
 
 Probier es mit den Bytes der Diskette aus: Jeder Klick liest einen Code. Das Bild wächst dabei mit, die neuen Pixel sind umrandet. Die Zahlen in den Pixeln sind ihre Nummern in der Farbtabelle.
 
