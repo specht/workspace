@@ -604,11 +604,7 @@ require_relative 'lock_nfa'
 
 # Alle Zustände, in die der NEA aus states mit symbol kommt.
 def step(states, symbol)
-    new_states = Set.new
-    states.each do |state|
-        new_states |= TRANSITIONS.fetch([state, symbol], Set.new)
-    end
-    new_states
+    …
 end
 
 def to_dfa
@@ -639,6 +635,39 @@ transitions.each do |(states, symbol), target|
 end
 ```
 
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> In <code>step</code> fehlt der Schritt von einer Menge zur nächsten, dort, wo <code>…</code> steht. Den hast du schon geschrieben: Nimm deinen Schritt aus <code>opens</code> in <code>lock_nfa.rb</code>. Die Ziffer heißt hier <code>symbol</code>, und statt die neue Menge <code>states</code> zuzuweisen, gibt <code>step</code> sie zurück.
+</div>
+
+<!-- hint -->
+Es sind die Zeilen in `opens` von `new_states = Set.new` bis zum `end` der inneren Schleife. `states = new_states` brauchst du hier nicht: `step` ändert `states` nicht, sondern liefert die Menge danach.
+<!-- /hint -->
+<!-- hint -->
+Eine Ruby-Methode gibt den Wert ihrer letzten Zeile zurück. Ein Gerüst; die Lücken mit `…` füllst du:
+
+```ruby
+def step(states, symbol)
+    new_states = Set.new
+    states.each do |state|
+        new_states |= …
+    end
+    …
+end
+```
+<!-- /hint -->
+
+<!-- solution -->
+```ruby
+~ def step(states, symbol)
+    new_states = Set.new
+    states.each do |state|
+        new_states |= TRANSITIONS.fetch([state, symbol], Set.new)
+    end
+    new_states
+~ end
+```
+<!-- /solution -->
+
 Eine Menge kann in Ruby Schlüssel eines Hash sein oder in einer anderen Menge liegen; sie darf sich danach nur nicht mehr ändern. `todo` ist die Liste der Mengen, deren Übergänge noch nicht ausgerechnet sind. Am Ende gibt das Programm aus, wie viele Zustände der DEA hat, und alle Übergänge, die nicht zurück nach `{q0}` führen:
 
 <!-- tutorial-screenshot
@@ -666,10 +695,7 @@ from lock_nfa import DIGITS, START, ACCEPTING, TRANSITIONS
 
 # Alle Zustände, in die der NEA aus states mit symbol kommt.
 def step(states, symbol):
-    new_states = set()
-    for state in states:
-        new_states |= TRANSITIONS.get((state, symbol), set())
-    return frozenset(new_states)
+    …
 
 
 def to_dfa():
@@ -695,7 +721,38 @@ for (states, symbol), target in transitions.items():
         print(sorted(states), symbol, '→', sorted(target))
 ```
 
-`frozenset` ist eine Menge, die sich nicht mehr ändern lässt. Nur solche Mengen dürfen in Python Schlüssel eines `dict` sein oder in einer anderen Menge liegen. `todo` ist die Liste der Mengen, deren Übergänge noch nicht ausgerechnet sind. Am Ende gibt das Programm aus, wie viele Zustände der DEA hat, und alle Übergänge, die nicht zurück nach `{q0}` führen:
+`frozenset` ist eine Menge, die sich nicht mehr ändern lässt. Nur solche Mengen dürfen in Python Schlüssel eines `dict` sein oder in einer anderen Menge liegen.
+
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> In <code>step</code> fehlt der Schritt von einer Menge zur nächsten, dort, wo <code>…</code> steht. Den hast du schon geschrieben: Nimm deinen Schritt aus <code>opens</code> in <code>lock_nfa.py</code>. Die Ziffer heißt hier <code>symbol</code>, und statt die neue Menge <code>states</code> zuzuweisen, gibt <code>step</code> sie als <code>frozenset</code> zurück.
+</div>
+
+<!-- hint -->
+Es sind die Zeilen in `opens` von `new_states = set()` bis zum Ende der inneren Schleife. `states = new_states` brauchst du hier nicht: `step` ändert `states` nicht, sondern liefert die Menge danach.
+<!-- /hint -->
+<!-- hint -->
+`frozenset(new_states)` macht aus der Menge eine, die sich nicht mehr ändert. Ein Gerüst; die Lücken mit `…` füllst du:
+
+```python
+def step(states, symbol):
+    new_states = set()
+    for state in states:
+        new_states |= …
+    return …
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+~ def step(states, symbol):
+    new_states = set()
+    for state in states:
+        new_states |= TRANSITIONS.get((state, symbol), set())
+    return frozenset(new_states)
+```
+<!-- /solution -->
+
+`todo` ist die Liste der Mengen, deren Übergänge noch nicht ausgerechnet sind. Am Ende gibt das Programm aus, wie viele Zustände der DEA hat, und alle Übergänge, die nicht zurück nach `{q0}` führen:
 
 <!-- tutorial-screenshot
 # convert.py: der DEA für das Schloss
