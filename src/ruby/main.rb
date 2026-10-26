@@ -8229,7 +8229,7 @@ class Main < Sinatra::Base
         end
         progress = user_logged_in? ? my_progress.to_h { |p| [p[:slug], p] } : nil
         pinned = user_logged_in? ? pins_for_groups((my_groups + class_groups).uniq).map { |p| p[:slug] }.uniq & slugs : []
-        KataMap.carousel_html(stops, :progress => progress, :teacher => teacher_logged_in?, :pinned => pinned, :icon => section[:icon])
+        KataMap.carousel_html(stops, :progress => progress, :teacher => teacher_logged_in?, :pinned => pinned)
     end
 
     # Whose Workspace has this address: exactly one running Workspace of an

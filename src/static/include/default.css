@@ -8297,8 +8297,8 @@ html[data-bs-theme="dark"] .bitplane-widget {
     initial-value: 1;
 }
 
-/* The Katas on the front page (KataMap.carousel_html): what there is or how
-   far the person is (total_html), then the sets in a strip that scrolls sideways, as
+/* The Katas on the front page (KataMap.carousel_html): the sets in a strip
+   that scrolls sideways, as
    high as one row of cards; arrows at its ends with a mouse. A pinned set
    is marked and scrolled into the middle (main.rb, its script). */
 .kata-carousel {
@@ -8306,64 +8306,6 @@ html[data-bs-theme="dark"] .bitplane-widget {
     gap: 1em;
     align-items: stretch;
     margin-bottom: 2.5em;
-}
-
-.kata-total {
-    display: flex;
-    flex: 0 0 9.5em;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.6em;
-    padding: 1em;
-    border-radius: 0.8em;
-    background: color-mix(in srgb, #198754 9%, var(--bs-body-bg));
-    text-align: center;
-}
-
-/* before anything is solved: the section's icon, how many Katas there
-   are, a button to start */
-.kata-total-icon {
-    width: 3.2em;
-    height: 3.2em;
-}
-.kata-total-count {
-    line-height: 1.2;
-}
-.kata-total-count strong {
-    font-size: 1.4em;
-}
-.kata-total-label {
-    color: var(--bs-secondary-color);
-    font-size: 0.85em;
-    line-height: 1.3;
-}
-.kata-total-go .bi {
-    margin: 0 0 0 0.35em;
-}
-
-/* once something is solved: a thin bar per set, stacked in the strip's
-   order, each in its set's hue (KataMap.hue), filled as far as solved over
-   a faint track; a bar names its set on hover and brings it into the
-   middle of the strip on a click */
-.kata-badges {
-    display: flex;
-    flex-direction: column;
-    gap: 0.28em;
-    width: 100%;
-}
-.kata-badge {
-    display: block;
-    width: 100%;
-    height: 0.42em;
-    padding: 0;
-    border: none;
-    border-radius: 1em;
-    background: linear-gradient(to right, hsl(var(--accent) 60% 48%) var(--share), hsl(var(--accent) 45% 50% / 0.18) 0);
-    transition: transform 150ms;
-}
-.kata-badge:hover {
-    transform: scaleY(1.6);
 }
 
 .kata-strip {
@@ -8659,23 +8601,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
     .kata-scroll { display: flex; }
 }
 
-/* on a phone what there is or how far goes above the strip, in a row
-   that wraps */
 @media (max-width: 575.98px) {
-    .kata-carousel {
-        flex-direction: column;
-    }
-    .kata-total {
-        flex: none;
-        flex-flow: row wrap;
-        justify-content: flex-start;
-        gap: 0.4em 1em;
-        text-align: left;
-    }
-    .kata-total-icon {
-        width: 2.4em;
-        height: 2.4em;
-    }
     /* one set in the middle, its neighbours peeking in */
     .kata-set { flex-basis: 78%; }
 }

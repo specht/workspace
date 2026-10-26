@@ -790,9 +790,8 @@ The rules that came out of the same review are in
    dictionaries. Then there are 13 Kata pages.
 3. **The front page instead of `/katas`** (done). One strip of the Kata
    sets (`carousel: true` in sections.yaml, `KataMap.carousel_html`), each
-   with its picture or icon, idea, number of Katas and progress, beside it
-   what there is or how far the person is (below), lower than one row of
-   activity cards; a set pinned
+   with its icon, idea, number of Katas and progress, lower than one row
+   of activity cards; a set pinned
    for the person's group is marked and scrolled into the middle. The page
    `/katas` is gone. A Kata without Pip has no picture: a solved card would
    only give a solution away.
@@ -836,16 +835,10 @@ The cards and the strip
   numbers; a map in the page with its plan after it shows the plan beside it
   in the same editor.
 - No page `/katas`: the front page has one strip of the sets, no taller
-  than a row of cards, and a panel beside it (`KataMap.total_html`). No
-  empty ring, which only says how much is missing: before anything is
-  solved, and for visitors, the section's icon, how many Katas there are in
-  how many Übungen and, for a student, »Loslegen« into the pinned set or
-  the first. Once something is solved, a thin bar per set stacked in the
-  strip's order, each in its set's hue and filled as far as solved (the
-  maintainer, after colourful pies were too busy and one bar in segments
-  too small); a bar names its set on hover and brings it into the middle
-  on a click. Under them »3 Übungen geschafft · 1 angefangen«, the Katas
-  solved and »Weitermachen« into the first set begun. A set opens with its
+  than a row of cards, each set with its own progress, and nothing beside
+  it: the maintainer tried an empty ring (discouraging), a collection of
+  the sets as coloured pies (too busy), one bar in segments and stacked
+  bars per set (too small), and dropped the total (not needed). A set opens with its
   button (»Loslegen«, »Weitermachen«, »Ansehen«), the strip is dragged with
   a mouse, swiped on a phone (a set snaps into the middle) and has arrows
   that fade out at its ends; it fades into the page where more follows. A
