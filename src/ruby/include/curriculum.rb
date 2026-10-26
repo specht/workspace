@@ -1,6 +1,6 @@
 # The line of the curriculum each activity carries (meta curriculum:), which
-# only logged-in teachers see: on its catalog card, at the top of its page and
-# in the Kata strip. The names are those of the Berlin-Brandenburg plans,
+# only logged-in teachers see: at the top of its page, in the Kata strip and
+# on /lehrplan (CurriculumOverview). The names are those of the Berlin-Brandenburg plans,
 # without numbers or course codes (docs/lehrplan.md):
 #
 #   Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen); Oberstufe: Algorithmen und Datenstrukturen

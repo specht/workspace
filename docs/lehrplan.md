@@ -1,9 +1,10 @@
 # Die Zeile des Lehrplans
 
 Jede Aktivität im Katalog hat im Meta-Block eine Zeile `curriculum:`, die nur
-angemeldete Lehrkräfte sehen: auf ihrer Karte im Katalog, oben auf ihrer Seite
-(in Lila, der Farbe dessen, was nur Lehrkräfte sehen) und bei den Katas im
-Streifen auf der Startseite. Sie sagt, wo die Aktivität in den Lehrplänen
+angemeldete Lehrkräfte sehen: oben auf ihrer Seite (in Lila, der Farbe dessen,
+was nur Lehrkräfte sehen), bei den Katas im Streifen auf der Startseite und
+gesammelt auf `/lehrplan`. Auf den Karten im Katalog steht sie nicht: Dort
+zählt, worum es geht. Sie sagt, wo die Aktivität in den Lehrplänen
 steht, damit eine Lehrkraft sie in ihre Planung einordnen kann.
 
 Die Seite `/lehrplan` (verlinkt von der Klassenseite und von der Zeile oben

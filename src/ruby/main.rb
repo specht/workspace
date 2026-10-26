@@ -6604,7 +6604,6 @@ class Main < Sinatra::Base
                         if catalog == :student
                             io.puts StudentHome.card_requires(PageKinds.requires_of(slug, @@content, :development => DEVELOPMENT).map(&:last))
                         end
-                        io.puts StudentHome.card_curriculum(content[:curriculum]) if teacher_logged_in? && catalog != :reference
                         io.puts "</div>"
                         io.puts "</div>"
                         io.puts "</a>"

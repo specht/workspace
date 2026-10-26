@@ -221,16 +221,6 @@ module StudentHome
         parts.empty? ? '' : "<div class='card-badges'>#{parts.join}</div>"
     end
 
-    # For logged-in teachers, the line of the curriculum (meta curriculum:,
-    # docs/lehrplan.md) at the foot of a catalog card, in the purple of
-    # what only teachers see.
-    def self.card_curriculum(text)
-        return '' if text.to_s.strip.empty?
-
-        "<div class='card-curriculum' title='Rahmenlehrplan (nur für Lehrkräfte sichtbar): #{h(text.strip)}'>" \
-            "<i class='bi bi-mortarboard' aria-hidden='true'></i>#{h(text.strip)}</div>"
-    end
-
     # The line at the foot of a catalog card: what the activity builds on.
     # titles: plain titles of the required activities (PageKinds.requires_of)
     def self.card_requires(titles)
