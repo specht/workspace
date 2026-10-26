@@ -16,10 +16,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Tools the task examples need
+        # what the Workspace has for them: Pillow, chunky_png, and for the
+        # WebSocket servers of PixelWand faye-websocket and rackup
         run: |
           apt-get update -qq
           apt-get install -y -qq python3-pil
-          gem install --no-document minitest minitest-mock rouge nokogiri redcarpet chunky_png
+          gem install --no-document minitest minitest-mock rouge nokogiri redcarpet chunky_png faye-websocket rackup
       - name: Run every test file
         working-directory: src/ruby
         run: |

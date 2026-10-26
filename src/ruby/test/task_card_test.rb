@@ -35,7 +35,8 @@ class TaskCardTest < Minitest::Test
         assert_includes html, "id='aufgabe-adresse'"
         assert_includes html, 'Aufgabe 3'
         assert_includes html, "placeholder='z. B. 172.17.0.42'"
-        assert_includes html, '<details class=\'task-hint\'><summary>Tipp</summary>'
+        # one tip is a step of its own as well (HintSteps)
+        assert_includes html, "<details class='hint-step task-hint'><summary>Tipp</summary>"
         assert_includes html, 'Prüfen'
         assert_includes html, 'task-login-note'
     end
@@ -47,7 +48,6 @@ class TaskCardTest < Minitest::Test
         assert_equal 3, html.scan("<details class='hint-step task-hint'>").size
         assert_includes html, '<summary>Tipp</summary><p>Erst das.</p>'
         assert_includes html, '<summary>Nächster Tipp</summary>'
-        refute_includes html, "<details class='task-hint'><summary>Tipp</summary>"
     end
 
     def test_cards_never_contain_what_is_checked
