@@ -1,5 +1,6 @@
 require 'json'
 require_relative 'pip_world'
+require_relative 'pip_maps'
 require_relative 'kata_runner'
 require_relative 'kata_check'
 
@@ -25,6 +26,16 @@ require_relative 'kata_check'
 #           #######
 #     goal: { lamp: true, stones: all }     # what holds after each map
 #     max_lines: 6                          # optional: the plan in at most so many lines
+#     dry: true                             # optional: a puddle ends the run
+#
+# goal knows lamp: true, stones: all, gate: open, bello: true (Pip finds
+# Bello; that ends the run, like the lamp) and say: stones (the last thing
+# Pip says is the number of stones taken). A map may be made from the
+# seed (PipMaps: generate: maze, size: [6, 5]); the first one is always
+# written out, the card shows it. A map with call: (»turn_right«) checks a
+# function of the student's own: the program is loaded with its commands
+# ignored, then call runs, and expect: { facing: south, moves: 3 } says
+# where Pip looks and how many tiles Pip has walked.
 #
 # The result names the map and the line where it went wrong (»In Karte 2
 # läuft Pip in Zeile 6 gegen die Wand«) and carries the run of that map, or
@@ -34,16 +45,16 @@ module PipCheck
     # The commands by their name in the world, as each language spells them.
     NAMES = {
         'ruby' => { 'move' => 'move', 'turn_left' => 'turn_left', 'take' => 'take', 'wait' => 'wait', 'pull' => 'pull',
-                    'on_stone' => 'on_stone?', 'front_clear' => 'front_clear?', 'glibber_ahead' => 'glibber_ahead?',
-                    'on_lamp' => 'on_lamp?', 'on_trail' => 'on_trail?', 'puddle_ahead' => 'puddle_ahead?', 'bello_here' => 'bello_here?',
+                    'on_stone' => 'on_stone?', 'on_lever' => 'on_lever?', 'front_clear' => 'front_clear?', 'glibber_ahead' => 'glibber_ahead?',
+                    'on_lamp' => 'on_lamp?', 'trail_ahead' => 'trail_ahead?', 'puddle_ahead' => 'puddle_ahead?', 'bello_here' => 'bello_here?',
                     'say' => 'say' },
         'python' => { 'move' => 'move', 'turn_left' => 'turn_left', 'take' => 'take', 'wait' => 'wait', 'pull' => 'pull',
-                      'on_stone' => 'on_stone', 'front_clear' => 'front_clear', 'glibber_ahead' => 'glibber_ahead',
-                      'on_lamp' => 'on_lamp', 'on_trail' => 'on_trail', 'puddle_ahead' => 'puddle_ahead', 'bello_here' => 'bello_here',
+                      'on_stone' => 'on_stone', 'on_lever' => 'on_lever', 'front_clear' => 'front_clear', 'glibber_ahead' => 'glibber_ahead',
+                      'on_lamp' => 'on_lamp', 'trail_ahead' => 'trail_ahead', 'puddle_ahead' => 'puddle_ahead', 'bello_here' => 'bello_here',
                       'say' => 'say' },
         'javascript' => { 'move' => 'move', 'turn_left' => 'turnLeft', 'take' => 'take', 'wait' => 'wait', 'pull' => 'pull',
-                          'on_stone' => 'onStone', 'front_clear' => 'frontClear', 'glibber_ahead' => 'glibberAhead',
-                          'on_lamp' => 'onLamp', 'on_trail' => 'onTrail', 'puddle_ahead' => 'puddleAhead', 'bello_here' => 'belloHere',
+                          'on_stone' => 'onStone', 'on_lever' => 'onLever', 'front_clear' => 'frontClear', 'glibber_ahead' => 'glibberAhead',
+                          'on_lamp' => 'onLamp', 'trail_ahead' => 'trailAhead', 'puddle_ahead' => 'puddleAhead', 'bello_here' => 'belloHere',
                           'say' => 'say' },
     }.freeze
     COMMANDS = NAMES['ruby'].keys.freeze
@@ -52,11 +63,16 @@ module PipCheck
 
     EVENTS = {
         'wall' => 'läuft Pip gegen die Wand',
+        'gate' => 'läuft Pip gegen das geschlossene Tor',
         'no_stone' => 'greift Pip ins Leere: Hier liegt kein Funkenstein',
         'no_lever' => 'zieht Pip an einem Hebel, der nicht da ist',
         'caught' => 'erwischt ein Glibber Pip',
+        'puddle' => 'tritt Pip in eine Pfütze',
         'steps' => "hält Pip nach #{PipWorld::MAX_STEPS} Schritten an. Läuft Pip im Kreis?",
     }.freeze
+    # where Pip looks, as seen on the map
+    LOOKS = { 'east' => 'nach rechts', 'west' => 'nach links', 'north' => 'nach oben', 'south' => 'nach unten' }.freeze
+    GOALS = %w[lamp stones gate bello say].freeze
 
     def self.spec_errors(check)
         errors = []
@@ -68,8 +84,12 @@ module PipCheck
         maps = check['maps']
         if maps.is_a?(Array) && !maps.empty? && maps.size <= MAX_MAPS
             maps.each_with_index do |m, i|
+                if m.is_a?(Hash) && m.key?('generate') && i > 0
+                    errors.concat(PipMaps.errors(m).map { |e| "maps[#{i}]: #{e}" })
+                    next
+                end
                 unless m.is_a?(Hash) && m['map'].is_a?(String)
-                    errors << "maps[#{i}] needs map"
+                    errors << "maps[#{i}] needs map#{i.zero? ? ' (the first map is written out, the card shows it)' : ''}"
                     next
                 end
                 begin
@@ -77,21 +97,31 @@ module PipCheck
                 rescue PipWorld::Error => e
                     errors << "maps[#{i}]: #{e.message}"
                 end
+                if m.key?('call') || m.key?('expect')
+                    expect = m['expect']
+                    errors << "maps[#{i}]: call needs a call as text" unless m['call'].is_a?(String) && !m['call'].strip.empty?
+                    unless expect.is_a?(Hash) && !expect.empty? && (expect.keys - %w[facing moves]).empty? &&
+                           (!expect.key?('facing') || LOOKS.key?(expect['facing'])) && (!expect.key?('moves') || expect['moves'].is_a?(Integer))
+                        errors << "maps[#{i}]: expect must name facing (east, north, west, south) and/or moves (a number)"
+                    end
+                end
             end
         else
             errors << "maps must list 1 to #{MAX_MAPS} maps"
         end
         goal = check['goal']
-        unless goal.is_a?(Hash) && !goal.empty? && (goal.keys - %w[lamp stones gate]).empty?
-            errors << 'goal must name lamp: true, stones: all and/or gate: open'
+        expecting = maps.is_a?(Array) && !maps.empty? && maps.all? { |m| m.is_a?(Hash) && m.key?('expect') }
+        unless (goal.nil? && expecting) || (goal.is_a?(Hash) && !goal.empty? && (goal.keys - GOALS).empty?)
+            errors << 'goal must name lamp: true, stones: all, gate: open, bello: true and/or say: stones (or every map has expect)'
         end
         errors << 'max_lines must be a whole number above 0' if check.key?('max_lines') && !(check['max_lines'].is_a?(Integer) && check['max_lines'] > 0)
         errors
     end
 
     # The prelude for language: Pip's commands of this chapter as functions,
-    # then the student's file.
-    def self.prelude(language, commands)
+    # then the student's file; with call, then »_loaded« (the world stops
+    # ignoring commands) and the call.
+    def self.prelude(language, commands, call = nil)
         names = NAMES.fetch(language)
         defined = commands + ['say']
         case language
@@ -118,6 +148,7 @@ module PipCheck
                 _names = {name: value for name, value in globals().items() if not name.startswith('_')}
                 _names['__name__'] = '__main__'
                 exec(compile(open('kata.py', encoding='utf-8').read(), 'kata.py', 'exec'), _names)
+                #{call ? "_pip('_loaded')\nexec(compile(#{JSON.generate(call)}, 'call', 'exec'), _names)" : ''}
             PY
         when 'ruby'
             functions = defined.map do |c|
@@ -135,6 +166,7 @@ module PipCheck
                 end
                 #{functions}
                 load File.expand_path('kata.rb')
+                #{call ? "__pip('_loaded')\nTOPLEVEL_BINDING.eval(#{call.inspect}, 'call')" : ''}
             RUBY
         when 'javascript'
             functions = defined.map do |c|
@@ -142,7 +174,7 @@ module PipCheck
             end.join
             <<~JS
                 const fs = require('fs');
-                const path = require('path');
+                const vm = require('vm');
                 function readLine() {
                     const one = Buffer.alloc(1);
                     let line = '';
@@ -162,13 +194,15 @@ module PipCheck
                     return answer === 'true' ? true : answer === 'false' ? false : undefined;
                 }
                 #{functions}
-                require(path.resolve('kata.js'));
+                // a script, not a module: the student's functions are global, for call
+                vm.runInThisContext(fs.readFileSync('kata.js', 'utf8'), { filename: 'kata.js' });
+                #{call ? "pip('_loaded');\nvm.runInThisContext(#{JSON.generate(call)}, { filename: 'call.js' });" : ''}
             JS
         end
     end
 
-    def self.argv(language, commands)
-        code = prelude(language, commands)
+    def self.argv(language, commands, call = nil)
+        code = prelude(language, commands, call)
         case language
         when 'python' then ['python3', '-I', '-B', '-c', code]
         when 'ruby' then ['ruby', '-W0', '-e', code]
@@ -180,17 +214,22 @@ module PipCheck
     # { world:, output:, errors:, timed_out: }. run: lambda(files:, argv:,
     # timeout:, dialog:) -> KataRunner::Result or nil.
     def self.run_map(check, code, map, run)
-        world = PipWorld.new(map['map'], :facing => map['facing'] || 'east')
+        world = PipWorld.new(map['map'], :facing => map['facing'] || 'east', :dry => check['dry'] == true)
+        world.quiet = true if map['call']
         allowed = check['commands'] + ['say']
         dialog = lambda do |line|
             request = JSON.parse(line) rescue nil
+            if request.is_a?(Hash) && request['c'] == '_loaded' && map['call']
+                world.quiet = false
+                next 'ok'
+            end
             next 'end' unless request.is_a?(Hash) && allowed.include?(request['c'])
 
             answer = world.command(request['c'], :line => request['l'], :text => request['t'])
             answer == true || answer == false ? answer.to_s : answer
         end
         language = check['language']
-        result = run.call(:files => { FILES.fetch(language) => code.to_s }, :argv => argv(language, check['commands']),
+        result = run.call(:files => { FILES.fetch(language) => code.to_s }, :argv => argv(language, check['commands'], map['call']),
                           :timeout => SECONDS, :dialog => dialog)
         return nil if result.nil?
 
@@ -204,11 +243,17 @@ module PipCheck
         code.to_s.lines.count { |l| l.strip != '' && !l.strip.start_with?('#', '//') }
     end
 
-    def self.check(task, check, code, run)
+    # The maps of a check for seed: the written ones as they are, the
+    # others made by PipMaps.
+    def self.maps(check, seed)
+        check['maps'].each_with_index.map { |m, i| m.key?('generate') ? PipMaps.make(m, seed, i) : m }
+    end
+
+    def self.check(task, check, code, run, seed: 0)
         return [:invalid, KataCheck::EMPTY, nil, nil] if code.to_s.strip.empty?
 
         first = nil
-        check['maps'].each_with_index do |map, i|
+        maps(check, seed).each_with_index do |map, i|
             ran = run_map(check, code, map, run)
             return [:unavailable, KataCheck::BUSY, nil, nil] if ran.nil?
 
@@ -231,13 +276,31 @@ module PipCheck
                 line = world.trace.last[:line]
                 return [:wrong, "#{where}#{line ? " in Zeile #{line}" : ''} #{event}.", nil, replay]
             end
-            missing = goal_missing(check['goal'], world)
+            missing = expect_missing(map, world) || goal_missing(check['goal'] || {}, world)
             return [:wrong, "#{where} #{missing}", nil, replay] if missing
         end
         if check['max_lines'] && (n = lines(code)) > check['max_lines']
             return [:wrong, "Pip schafft es, aber dein Plan hat #{n} Zeilen. Geht es in höchstens #{check['max_lines']}?", nil, first]
         end
         [:correct, check['maps'].size > 1 ? "Pip schafft alle #{check['maps'].size} Karten." : 'Pip schafft es.', nil, first]
+    end
+
+    # call and expect of a map: »schaut Pip nach `turn_right` nach oben
+    # statt nach unten«.
+    def self.expect_missing(map, world)
+        expect = map['expect']
+        return nil unless expect
+
+        call = "`#{map['call'].strip}`"
+        if expect['facing'] && world.pip[:facing] != expect['facing']
+            return "schaut Pip nach #{call} #{LOOKS[world.pip[:facing]]} statt #{LOOKS[expect['facing']]}."
+        end
+        if expect['moves'] && world.moves != expect['moves']
+            n = world.moves
+            return "geht Pip bei #{call} #{n == 1 ? 'ein Feld' : "#{n} Felder"} statt #{expect['moves']}."
+        end
+
+        nil
     end
 
     def self.goal_missing(goal, world)
@@ -247,6 +310,13 @@ module PipCheck
         end
         return 'steht Pip am Ende nicht an der Lampe.' if goal['lamp'] && !world.at_lamp?
         return 'ist das Tor am Ende nicht offen.' if goal['gate'] == 'open' && !world.gate_open?
+        return 'hat Pip Bello am Ende nicht gefunden.' if goal['bello'] && !world.at_bello?
+        if goal['say'] == 'stones'
+            n = world.taken
+            stones = n == 1 ? 'einen Funkenstein' : "#{n} Funkensteine"
+            return "sagt Pip am Ende nichts. Pip hat #{stones} aufgehoben: Wie viele, soll Pip sagen." if world.said.empty?
+            return "sagt Pip am Ende »#{world.said.last}«, aber Pip hat #{stones} aufgehoben." unless world.said.last.strip == n.to_s
+        end
 
         nil
     end

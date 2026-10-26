@@ -14,20 +14,25 @@
 #
 # A step is move, turn_left, take, wait or pull. After each step every
 # Glibber moves one tile, turning back at walls; one on Pip's tile catches
-# Pip. Reaching the lamp ends the run, like the end of a level, so a loop
-# need not stop exactly there. say costs no step. Sensors (on_stone,
-# front_clear, glibber_ahead, on_lamp, on_trail, puddle_ahead, bello_here)
-# never change anything; glibber_ahead also sees a Glibber that is about to
-# move onto the tile ahead, so »wait while one is ahead« is safe.
-# Walking into a wall, taking where there is no stone, pulling without a
-# lever, a Glibber and too many steps end the run with that event.
+# Pip. Reaching the lamp or Bello ends the run, like the end of a level, so
+# a loop need not stop exactly there. say costs no step. Sensors (on_stone,
+# on_lever, front_clear, glibber_ahead, on_lamp, trail_ahead, puddle_ahead,
+# bello_here) never change anything; glibber_ahead also sees a Glibber that
+# is about to move onto the tile ahead, so »wait while one is ahead« is
+# safe. Walking into a wall, taking where there is no stone, pulling
+# without a lever, a Glibber and too many steps end the run with that
+# event; with dry: true, so does stepping into a puddle (»trockene Füße«).
+#
+# While a program is only being loaded (quiet: a check that calls one of
+# its functions afterwards, PipCheck), commands do nothing and are not
+# written down.
 #
 # Plain Ruby, tested on its own (test/pip_world_test.rb).
 class PipWorld
     DIRECTIONS = %w[east north west south].freeze # turn_left goes one to the right in this list
     DELTA = { 'east' => [1, 0], 'north' => [0, -1], 'west' => [-1, 0], 'south' => [0, 1] }.freeze
     STEPS = %w[move turn_left take wait pull].freeze
-    SENSORS = %w[on_stone front_clear glibber_ahead on_lamp on_trail puddle_ahead bello_here].freeze
+    SENSORS = %w[on_stone on_lever front_clear glibber_ahead on_lamp trail_ahead puddle_ahead bello_here].freeze
     MAX_STEPS = 1000
     MAX_SAY = 80
     # pulls that open a gate; one more closes it again (»Drei Hebel«)
@@ -36,8 +41,9 @@ class PipWorld
     class Error < StandardError; end
 
     attr_reader :width, :height, :pip, :stones, :taken, :steps, :trace, :ended, :pulls, :said
+    attr_accessor :quiet
 
-    def initialize(map, facing: 'east')
+    def initialize(map, facing: 'east', dry: false)
         rows = map.to_s.lines.map(&:chomp).reject(&:empty?)
         raise Error, 'map is empty' if rows.empty?
 
@@ -75,6 +81,8 @@ class PipWorld
         raise Error, "facing must be one of #{DIRECTIONS.join(', ')}" unless DIRECTIONS.include?(facing)
 
         @pip = { :x => start[0], :y => start[1], :facing => facing }
+        @dry = dry
+        @quiet = false
         @start_stones = @stones.keys
         @taken = 0
         @steps = 0
@@ -108,11 +116,21 @@ class PipWorld
         @lamp == [@pip[:x], @pip[:y]]
     end
 
+    def at_bello?
+        !@bello.nil? && @bello == [@pip[:x], @pip[:y]]
+    end
+
+    # how many tiles Pip has walked
+    def moves
+        @trace.count { |f| f[:event] == :move }
+    end
+
     # Runs one command; line is the line of the program it came from.
     # Returns what the program gets back: 'ok', true or false for a sensor,
     # or 'end' once the run is over (the event is in ended).
     def command(name, line: nil, text: nil)
         return 'end' if @ended
+        return SENSORS.include?(name) ? false : 'ok' if @quiet
 
         if name == 'say'
             @said << text.to_s[0, MAX_SAY]
@@ -131,10 +149,14 @@ class PipWorld
         when 'move'
             x, y = ahead
             if blocked?(x, y)
-                finish(:wall, line)
+                finish(@gates[[x, y]] ? :gate : :wall, line)
                 return 'end'
             end
             @pip[:x], @pip[:y] = x, y
+            if @dry && @floor_marks[here] == :puddle
+                finish(:puddle, line)
+                return 'end'
+            end
             event = :move
         when 'turn_left'
             @pip[:facing] = DIRECTIONS[(DIRECTIONS.index(@pip[:facing]) + 1) % 4]
@@ -173,6 +195,10 @@ class PipWorld
             finish(:lamp, line)
             return 'end'
         end
+        if at_bello?
+            finish(:bello, line)
+            return 'end'
+        end
         'ok'
     end
 
@@ -200,10 +226,12 @@ class PipWorld
         x, y = ahead
         case name
         when 'on_stone' then @stones.key?(here)
+        when 'on_lever' then @levers.key?(here)
         when 'front_clear' then !blocked?(x, y)
         when 'glibber_ahead' then @glibbers.any? { |g| [g[:x], g[:y]] == [x, y] || next_position(g) == [x, y] }
         when 'on_lamp' then at_lamp?
-        when 'on_trail' then @floor_marks[here] == :trail
+        # Bello stands at the end of his trail
+        when 'trail_ahead' then @floor_marks[[x, y]] == :trail || @bello == [x, y]
         when 'puddle_ahead' then @floor_marks[[x, y]] == :puddle
         when 'bello_here' then @bello == here
         end

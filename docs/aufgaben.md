@@ -926,24 +926,51 @@ check:
         #######
         #P.o.L#
         #######
-  goal: { lamp: true, stones: all }             # außerdem gate: open
+    - generate: maze                            # ein Labyrinth aus dem Seed der Person
+      size: [6, 5]                              # Zellen quer und hoch
+  goal: { lamp: true, stones: all }             # außerdem gate: open, bello: true, say: stones
   max_lines: 7                                  # nur bei Bedarf: höchstens so viele Zeilen
+  dry: true                                     # nur bei Bedarf: eine Pfütze beendet den Lauf
 ```
 
 Die Zeichen der Karte: `#` Wand, `.` Boden, `P` Pip (Blickrichtung in
 `facing`), `o` Funkenstein, `L` Lampe, `G`/`g` Glibber, der waagerecht/senkrecht
 hin und her wabert, `H` Hebel, `T` Tor, `p` Pfotenabdruck, `~` Pfütze, `B`
 Bello. Die Befehle: `move`, `turn_left`, `take`, `wait`, `pull` (je ein
-Schritt), `say` (kein Schritt), die Fragen `on_stone`, `front_clear`,
-`glibber_ahead`, `on_lamp`, `on_trail`, `puddle_ahead`, `bello_here`. Nach
-jedem Schritt geht jeder Glibber ein Feld weiter. Erreicht Pip die Lampe, ist
-der Lauf zu Ende, auch mitten in einer Schleife. Eine Wand, `take` ohne Stein,
-`pull` ohne Hebel, ein Glibber und mehr als 1000 Schritte beenden den Lauf
-mit diesem Ereignis; die Rückmeldung nennt die Karte und die Zeile (»In Karte
+Schritt), `say` (kein Schritt), die Fragen `on_stone`, `on_lever`,
+`front_clear`, `glibber_ahead`, `on_lamp`, `trail_ahead` (Pfotenabdrücke
+vorn, auch Bello selbst), `puddle_ahead`, `bello_here`. Nach jedem Schritt
+geht jeder Glibber ein Feld weiter. Erreicht Pip die Lampe oder Bello, ist
+der Lauf zu Ende, auch mitten in einer Schleife. Eine Wand, ein geschlossenes
+Tor (drei Züge öffnen es, ein vierter schließt es), `take` ohne Stein, `pull`
+ohne Hebel, ein Glibber, mit `dry: true` eine Pfütze und mehr als 1000
+Schritte beenden den Lauf mit diesem Ereignis; die Rückmeldung nennt die Karte und die Zeile (»In Karte
 2 in Zeile 6 läuft Pip gegen die Wand.«) und spielt diesen Lauf ab. Wo es um
 eine allgemeine Lösung geht, prüfen mehrere Karten (höchstens sechs) mit
 verschiedenen Steinen oder Glibbern: Eine feste Folge von Schritten soll an
-mindestens einer scheitern.
+mindestens einer scheitern. Eine Karte mit `generate` entsteht aus dem Seed
+der Person und der Aufgabenversion (`PipMaps`, bisher `maze`: ein Labyrinth
+mit genau einem Weg zwischen zwei Zellen, die Lampe am weitesten weg); die
+erste Karte steht immer ausgeschrieben da, die Karte zeigt sie. `say: stones`
+heißt: Das Letzte, was Pip sagt, ist die Zahl der aufgehobenen Steine.
+
+Eigene Funktionen prüft eine Karte mit `call` und `expect`: Der Plan wird
+geladen, wobei seine eigenen Befehle nichts bewirken, dann läuft der Aufruf,
+und `expect` nennt, wohin Pip danach schaut und wie viele Felder Pip gegangen
+ist (»Nach `turn_right` schaut Pip nach oben statt nach unten.«). `call` ist
+in jeder Sprache anders geschrieben (`turn_right`, `turn_right()`,
+`turnRight();`); `goal` kann dann fehlen.
+
+```yaml
+maps:
+  - facing: east
+    call: "turn_right()"
+    expect: { facing: south, moves: 0 }
+    map: |
+      #####
+      #.P.#
+      #####
+```
 
 In `prompt`, `starter`, `hint` und `solution` schreibt jede Sprache die
 Befehle auf ihre Art; in `task-examples.yaml` steht der Plan unter `answer:`

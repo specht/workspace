@@ -96,7 +96,7 @@ module TaskCheck
         return check_calls(task, check, workspace, guest_runner, RubyCheck) if type == 'ruby'
         return check_calls(task, check, workspace, guest_runner, CCheck) if type == 'c'
         return check_function(task, check, answer, kata, kata_seed) if type == 'function'
-        return check_pip(task, check, answer, kata) if type == 'pip'
+        return check_pip(task, check, answer, kata, kata_seed) if type == 'pip'
         return check_schema(task, check, sql, sql_env) if type == 'schema'
         return check_keyboard(task, check, workspace) if type == 'keyboard'
         return check_workspace(task, check, answer, workspace, git, runner) unless ANSWER_TYPES.include?(type)
@@ -230,9 +230,9 @@ module TaskCheck
     end
 
     # pip: a plan for Pip, against the world on the server (PipCheck).
-    def self.check_pip(task, check, answer, kata)
+    def self.check_pip(task, check, answer, kata, seed)
         kata ||= ->(**_) { nil }
-        status, message, read, replay = PipCheck.check(task, check, answer, kata)
+        status, message, read, replay = PipCheck.check(task, check, answer, kata, :seed => seed)
         Result.new(:status => status, :message => message, :read => read, :replay => replay,
             :solution => status == :correct ? task['solution'] : nil)
     end

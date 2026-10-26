@@ -5,6 +5,9 @@
 #
 #   python3 make_sprites.py
 #
+# Browsers keep pictures for years: after a change, raise the ?v= of the
+# url(/images/pip/…) in default.css, or they show the old ones.
+#
 # Pip looks east in the catalogue's side view; west is its mirror image, the
 # front (south) has both eyes in the middle of the body, the back (north)
 # none. The Funkenstein is the catalogue's gem in the yellow of a spark.
@@ -107,12 +110,13 @@ def wall():
 
 
 def trail():
-    # two paw prints, a pad and four toes each, in the brown of Bello's ears
+    # two paw prints, a pad and four toes each, in a darker brown than
+    # Bello's ears, large enough to read as a trail across the floor
     out = Image.new('RGBA', (T, T), (0, 0, 0, 0))
-    paw = (93, 60, 42, 235)
-    pad = [(1, 3), (2, 3), (3, 3), (1, 4), (2, 4), (3, 4), (2, 5)]
-    toes = [(0, 1), (1, 0), (3, 0), (4, 1)]
-    for ox, oy in ((3, 12), (14, 4)):
+    paw = (70, 44, 32, 245)
+    pad = [(x, y) for y in range(4, 8) for x in range(1, 6) if (x, y) not in ((1, 7), (5, 7), (1, 4), (5, 4))]
+    toes = [(x, y + dy) for x, y in ((0, 1), (2, 0), (4, 0), (6, 1)) for dy in (0, 1)]
+    for ox, oy in ((3, 12), (13, 3)):
         for dx, dy in pad + toes:
             out.putpixel((ox + dx, oy + dy), paw)
     return out

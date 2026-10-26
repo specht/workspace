@@ -113,4 +113,40 @@ class PipWorldTest < Minitest::Test
         assert_equal [[3, 1]], layout[:stones]
         assert_equal [3, 3], layout[:lamp]
     end
+
+    def test_bello_ends_the_run_and_puddles_wet_only_when_dry
+        w = PipWorld.new("#######\n#P~.B.#\n#######")
+        assert_equal true, w.command('puddle_ahead')
+        w.command('move')
+        w.command('move')
+        assert_equal 'end', w.command('move')
+        assert_equal :bello, w.ended
+        assert w.at_bello?
+        dry = PipWorld.new("#######\n#P~.B.#\n#######", :dry => true)
+        assert_equal 'end', dry.command('move')
+        assert_equal :puddle, dry.ended
+    end
+
+    def test_trail_and_lever_sensors
+        w = PipWorld.new("######\n#PpH.#\n######")
+        assert_equal true, w.command('trail_ahead')
+        w.command('move')
+        assert_equal false, w.command('trail_ahead')
+        assert_equal false, w.command('on_lever')
+        w.command('move')
+        assert_equal true, w.command('on_lever')
+    end
+
+    # while a program is only loaded, its commands change nothing
+    def test_quiet_while_loading
+        w = PipWorld.new(SHAFT)
+        w.quiet = true
+        assert_equal 'ok', w.command('move')
+        assert_equal false, w.command('front_clear')
+        w.quiet = false
+        w.command('move')
+        assert_equal 1, w.moves
+        assert_equal [2, 1], [w.pip[:x], w.pip[:y]]
+    end
 end
+

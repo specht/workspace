@@ -8314,7 +8314,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
     position: relative;
     overflow: hidden;
     border-radius: 0.4em;
-    background: url(/images/pip/floor.png) repeat;
+    background: url(/images/pip/floor.png?v=2) repeat;
     background-size: var(--tile) var(--tile);
     image-rendering: pixelated;
 }
@@ -8335,16 +8335,16 @@ html[data-bs-theme="dark"] .bitplane-widget {
     transition: transform var(--step, 0ms) linear;
 }
 
-.pip-wall { background-image: url(/images/pip/wall.png); }
-.pip-trail { background-image: url(/images/pip/trail.png); }
-.pip-puddle { background-image: url(/images/pip/puddle.png); }
-.pip-lever { background-image: url(/images/pip/lever-off.png); }
-.pip-lever.pip-pulled { background-image: url(/images/pip/lever-on.png); }
-.pip-gate { background-image: url(/images/pip/gate-closed.png); }
-.pip-gate-open .pip-gate { background-image: url(/images/pip/gate-open.png); }
+.pip-wall { background-image: url(/images/pip/wall.png?v=2); }
+.pip-trail { background-image: url(/images/pip/trail.png?v=2); }
+.pip-puddle { background-image: url(/images/pip/puddle.png?v=2); }
+.pip-lever { background-image: url(/images/pip/lever-off.png?v=2); }
+.pip-lever.pip-pulled { background-image: url(/images/pip/lever-on.png?v=2); }
+.pip-gate { background-image: url(/images/pip/gate-closed.png?v=2); }
+.pip-gate-open .pip-gate { background-image: url(/images/pip/gate-open.png?v=2); }
 
 .pip-stone {
-    background-image: url(/images/pip/stone.png);
+    background-image: url(/images/pip/stone.png?v=2);
     background-size: 400% 100%;
     animation: pip-frames-4 1.4s steps(4) infinite;
     transition: opacity 300ms;
@@ -8355,32 +8355,32 @@ html[data-bs-theme="dark"] .bitplane-widget {
 }
 
 .pip-lamp {
-    background-image: url(/images/pip/lamp.png);
+    background-image: url(/images/pip/lamp.png?v=2);
     background-size: 300% 100%;
     animation: pip-frames-3 0.6s steps(3) infinite;
 }
 
 .pip-glibber {
-    background-image: url(/images/pip/glibber.png);
+    background-image: url(/images/pip/glibber.png?v=2);
     background-size: 400% 100%;
     animation: pip-frames-4 0.9s steps(4) infinite;
 }
 
 .pip-bello {
-    background-image: url(/images/pip/bello.png);
+    background-image: url(/images/pip/bello.png?v=2);
     background-size: 400% 100%;
     animation: pip-frames-4 1.6s steps(4) infinite;
 }
 
 .pip-pip {
     z-index: 2;
-    background-image: url(/images/pip/pip-east.png);
+    background-image: url(/images/pip/pip-east.png?v=2);
     background-size: 200% 100%;
 }
 
-.pip-pip[data-facing='west'] { background-image: url(/images/pip/pip-west.png); }
-.pip-pip[data-facing='north'] { background-image: url(/images/pip/pip-north.png); }
-.pip-pip[data-facing='south'] { background-image: url(/images/pip/pip-south.png); }
+.pip-pip[data-facing='west'] { background-image: url(/images/pip/pip-west.png?v=2); }
+.pip-pip[data-facing='north'] { background-image: url(/images/pip/pip-north.png?v=2); }
+.pip-pip[data-facing='south'] { background-image: url(/images/pip/pip-south.png?v=2); }
 
 .pip-pip.pip-walking {
     animation: pip-frames-2 var(--step) steps(2);
@@ -8452,6 +8452,11 @@ html[data-bs-theme="dark"] .bitplane-widget {
     margin-top: 0.5em;
 }
 
+/* a run of hundreds of steps: the dots close up into a line */
+.pip-world .stepper-timeline > span {
+    min-width: 0;
+}
+
 /* a tile of a prediction map to talk about (»Feld 1«) */
 .pip-label {
     display: flex;
@@ -8477,7 +8482,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
     content: '';
     flex: 0 0 48px;
     height: 48px;
-    background: url(/images/pip/wichtel.png) no-repeat 0 0 / 400% 100%;
+    background: url(/images/pip/wichtel.png?v=2) no-repeat 0 0 / 400% 100%;
     image-rendering: pixelated;
 }
 

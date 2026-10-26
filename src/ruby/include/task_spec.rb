@@ -561,7 +561,7 @@ module TaskSpec
             errors.concat(KataCheck.spec_errors(check))
         when 'pip'
             # A plan for Pip, run against the world on the server (PipCheck).
-            allowed += %w[language commands maps goal max_lines]
+            allowed += %w[language commands maps goal max_lines dry]
             errors.concat(PipCheck.spec_errors(check))
         when 'c'
             # Calls functions in the person's C file, compiled and run as the guest (CCheck).

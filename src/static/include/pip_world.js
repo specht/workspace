@@ -8,7 +8,7 @@
 (function () {
     const SPRITES = '/images/pip/';
     const MAX_TILE = 48;
-    const SAY = { wall: 'Autsch!', caught: 'Iiih, Glibber!', no_stone: 'Hier ist nichts …', no_lever: 'Kein Hebel?', steps: 'Puh …', lamp: 'Licht!' };
+    const SAY = { wall: 'Autsch!', gate: 'Zu!', puddle: 'Platsch!', bello: 'Bello!', caught: 'Iiih, Glibber!', no_stone: 'Hier ist nichts …', no_lever: 'Kein Hebel?', steps: 'Puh …', lamp: 'Licht!' };
 
     function el(tag, className, parent) {
         const node = document.createElement(tag);
@@ -73,7 +73,7 @@
             this.pip.style.setProperty('--y', pip.y);
             this.pip.dataset.facing = pip.facing;
             this.pip.classList.toggle('pip-walking', animate && frame.event === 'move');
-            this.pip.classList.toggle('pip-bump', frame.event === 'wall');
+            this.pip.classList.toggle('pip-bump', frame.event === 'wall' || frame.event === 'gate');
             this.pip.classList.toggle('pip-caught', frame.event === 'caught');
             (frame.glibbers || []).forEach((g, i) => {
                 if (!this.glibbers[i]) return;
@@ -165,8 +165,11 @@
             if (play) this.play();
         }
 
+        // a long run (a maze) goes faster, so that it plays in about half a
+        // minute at 1×
         duration() {
-            return STEP_TIME / SPEED_NAMES[this.speed][0];
+            const base = Math.max(60, Math.min(STEP_TIME, 30000 / this.frames.length));
+            return base / SPEED_NAMES[this.speed][0];
         }
 
         go(index, animate) {
