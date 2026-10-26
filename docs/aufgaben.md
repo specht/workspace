@@ -256,8 +256,8 @@ tasks:
 | `solution` | nein | Lösung; nur Lehrkräfte sehen sie |
 | `examples` | nein | Nur bei `reflection`: eine Liste von Beispielantworten in Markdown, die nur Lehrkräfte unter der Aufgabe sehen (siehe »Antworten unter offenen Aufgaben«) |
 | `exam` | nein | `false`: nie in einer Leistungsüberprüfung; Prüfarten mit Netz sind dort ohnehin gesperrt |
-| `starter` | nein | Nur bei `function`: der Code, mit dem die Karte beginnt (höchstens 4000 Zeichen); er muss von selbst scheitern |
-| `level` | nein | Nur für Katas gedacht: `1` Einstieg, `2` Übung, `3` Knobelei; die Karte zeigt so viele Punkte |
+| `starter` | nein | Nur bei `function`, `pip` und `tests`: der Code, mit dem die Karte beginnt (höchstens 4000 Zeichen); er muss von selbst scheitern |
+| `level` | nein | Nur für Katas gedacht: `1` Einstieg, `2` Übung, `3` Knobelei; die Karte zeigt das Wort mit so vielen Balken |
 | `extra` | nein | `true`: für Schnelle und Neugierige; zählt bei niemandem mit (»8 von 10 erledigt, dazu 2 Extras«), die Karte zeigt »Extra«, das Klassenboard die Spalte heller und rechnet sie nicht zu »gelöst«. Eine Aufgabe in einem Extra-Kapitel muss eine sein |
 | `ruby`, `python` | nein | Was in dieser Sprache anders ist, auf Seiten in mehreren Sprachen (siehe unten) |
 
@@ -354,32 +354,33 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 
 ## Prüfarten
 
-| Art | Prüft | Liest | Läuft | Ab |
-| --- | --- | --- | --- | --- |
-| `answer` | Text, Adresse oder regulären Ausdruck | die Eingabe | Server | M2 |
-| `choice` | Auswahl aus Antworten | die Eingabe | Server | M2 |
-| `number` | Zahl mit Toleranz | die Eingabe | Server | M2 |
-| `reflection` | nichts; Freitext geht ans Klassenboard | die Eingabe | Server | M2 |
-| `files` | ob es Dateien gibt, Namen, Größe, Format nach den ersten Bytes, ausführbar | Dateien in `/workspace` | Server | M3 |
-| `html` | Folien, Überschriften, offene Tags, Bildpfade, alt-Texte | eine HTML-Datei | Server | M3 |
-| `css` | eigene Regeln, offene Klammern | eine CSS-Datei | Server | M3 |
-| `references` | Adressen in `src`, `href`, `url()`, `@import`: extern oder vorhanden | HTML- und CSS-Dateien | Server | M3 |
-| `git` | Remote vorhanden, alles committet, alles gepusht | `git status` eines Repositories | Workspace | M3 |
-| `submit` | Abgabe: Kopie von Dateien, optional für die Galerie | Dateien in `/workspace` | Server | M3 |
-| `measure` | Messwert der Lernenden gegen eine eigene Messung | Ausgabe eines Befehls | Workspace | M6 |
-| `command` | Ausgabe eines Befehls der Lernenden | Ausgabe | Workspace | M6 |
-| `python` | Funktionen aus einer Python-Datei der Lernenden: Aufrufe und ihre Ergebnisse | eine `.py`-Datei | Workspace, als Gast | M7 |
-| `ruby` | dasselbe für eine Ruby-Datei | eine `.rb`-Datei | Workspace, als Gast | M7 |
-| `c` | Funktionen aus einer C-Datei der Lernenden, übersetzt mit `cc`, ohne ihr `main` | eine `.c`-Datei | Workspace, als Gast | M7 |
-| `function` | eine Kata: Funktionen aus dem Code, der in der Karte geschrieben wird, wie `python` und `ruby` | der Code der Karte | eigener Container ohne Netz | M8 |
-| `pip` | eine Kata mit Pip: ein Plan aus Befehlen, der Pip über eine oder mehrere Karten schickt; Ziel erreicht, nichts schiefgegangen | der Code der Karte | eigener Container ohne Netz, die Welt auf dem Server | M8 |
-| `scene` | Szene des Anaglyph-Viewers, zu einem oder mehreren Zeitpunkten | eine `.ini`-Datei | Workspace | M6 |
-| `sql` | Ergebnis einer `SELECT`-Abfrage gegen das einer Musterabfrage | Abfrage | eigene MySQL-Datenbank, nur lesend | M6 |
-| `cypher` | Ergebnis einer Cypher-Abfrage gegen das einer Musterabfrage | Abfrage | eigene Neo4j-Datenbank, nur lesend | M7 |
-| `er` | ER-Modell: Entitäten, Schlüssel, Attribute, Beziehungen, Kardinalitäten und die Tabellen, die daraus werden | eine `.er`-Datei | Workspace (ER-Werkstatt) | M7 |
-| `schema` | Tabellen der eigenen Datenbank: Spalten, Primär- und Fremdschlüssel, Indizes, Zeilenzahl | `information_schema` | eigene MySQL-Datenbank, nur lesend | M7 |
-| `keyboard` | ein Kapitel des Keyboard-Tutorials: alle Schritte abgehakt | `/workspace/.hs-kbd-tutorial/.state.json` | Server | M7 |
-| `story` | BIF-Geschichte: Seiten, Entscheidungen, Bedingungen, Enden, Fehler, erreichbar | `<projekt>/.story-tools/analysis.json`, die BIF selbst schreibt | Server | M7 |
+| Art | Prüft | Liest | Läuft |
+| --- | --- | --- | --- |
+| `answer` | Text, Adresse oder regulären Ausdruck | die Eingabe | Server |
+| `choice` | Auswahl aus Antworten | die Eingabe | Server |
+| `number` | Zahl mit Toleranz | die Eingabe | Server |
+| `reflection` | nichts; Freitext geht ans Klassenboard | die Eingabe | Server |
+| `files` | ob es Dateien gibt, Namen, Größe, Format nach den ersten Bytes, ausführbar | Dateien in `/workspace` | Server |
+| `html` | Folien, Überschriften, offene Tags, Bildpfade, alt-Texte | eine HTML-Datei | Server |
+| `css` | eigene Regeln, offene Klammern | eine CSS-Datei | Server |
+| `references` | Adressen in `src`, `href`, `url()`, `@import`: extern oder vorhanden | HTML- und CSS-Dateien | Server |
+| `git` | Remote vorhanden, alles committet, alles gepusht | `git status` eines Repositories | Workspace |
+| `submit` | Abgabe: Kopie von Dateien, optional für die Galerie | Dateien in `/workspace` | Server |
+| `measure` | Messwert der Lernenden gegen eine eigene Messung | Ausgabe eines Befehls | Workspace |
+| `command` | Ausgabe eines Befehls der Lernenden | Ausgabe | Workspace |
+| `python` | Funktionen aus einer Python-Datei der Lernenden: Aufrufe und ihre Ergebnisse | eine `.py`-Datei | Workspace, als Gast |
+| `ruby` | dasselbe für eine Ruby-Datei | eine `.rb`-Datei | Workspace, als Gast |
+| `c` | Funktionen aus einer C-Datei der Lernenden, übersetzt mit `cc`, ohne ihr `main` | eine `.c`-Datei | Workspace, als Gast |
+| `function` | eine Kata: Funktionen aus dem Code, der in der Karte geschrieben wird, wie `python` und `ruby` | der Code der Karte | eigener Container ohne Netz |
+| `pip` | eine Kata mit Pip: ein Plan aus Befehlen, der Pip über eine oder mehrere Karten schickt; Ziel erreicht, nichts schiefgegangen | der Code der Karte | eigener Container ohne Netz, die Welt auf dem Server |
+| `tests` | eine Kata, in der die Lernenden Tests schreiben: Sie bestehen mit der richtigen Fassung einer Funktion und erkennen jede fehlerhafte | der Code der Karte | eigener Container ohne Netz |
+| `scene` | Szene des Anaglyph-Viewers, zu einem oder mehreren Zeitpunkten | eine `.ini`-Datei | Workspace |
+| `sql` | Ergebnis einer `SELECT`-Abfrage gegen das einer Musterabfrage | Abfrage | eigene MySQL-Datenbank, nur lesend |
+| `cypher` | Ergebnis einer Cypher-Abfrage gegen das einer Musterabfrage | Abfrage | eigene Neo4j-Datenbank, nur lesend |
+| `er` | ER-Modell: Entitäten, Schlüssel, Attribute, Beziehungen, Kardinalitäten und die Tabellen, die daraus werden | eine `.er`-Datei | Workspace (ER-Werkstatt) |
+| `schema` | Tabellen der eigenen Datenbank: Spalten, Primär- und Fremdschlüssel, Indizes, Zeilenzahl | `information_schema` | eigene MySQL-Datenbank, nur lesend |
+| `keyboard` | ein Kapitel des Keyboard-Tutorials: alle Schritte abgehakt | `/workspace/.hs-kbd-tutorial/.state.json` | Server |
+| `story` | BIF-Geschichte: Seiten, Entscheidungen, Bedingungen, Enden, Fehler, erreichbar | `<projekt>/.story-tools/analysis.json`, die BIF selbst schreibt | Server |
 
 »Server« heißt: Der Server liest die Datei als Text und wertet sie aus, ohne
 etwas auszuführen. »Workspace« heißt: Ein festes Prüfskript läuft per
@@ -785,8 +786,9 @@ Eine Kata (docs/plan-katas.md): Der Code steht nicht in einer Datei im
 Workspace, sondern wird in der Karte geschrieben, in Ruby, Python oder
 JavaScript, mit
 den Farben der Codeblöcke, Einrückung mit <kbd>Tab</kbd> und
-<kbd>Strg</kbd>+<kbd>Enter</kbd> zum Prüfen. **Ausführen** startet ihn einmal
-und zeigt, was er ausgibt; **Prüfen** ruft die Funktionen auf und vergleicht,
+<kbd>Strg</kbd>+<kbd>Enter</kbd> zum Ausführen. Ein Knopf, **Ausführen**:
+Er startet den Code einmal und zeigt, was er ausgibt, wenn er außer den
+Funktionen eigenen Code hat, und ruft dann die Funktionen auf und vergleicht,
 mit demselben Skript wie `python` und `ruby` und denselben `cases`. Die
 Rückmeldung sagt »dein Code« statt eines Dateinamens.
 
@@ -1492,6 +1494,11 @@ schmale Teile (`StudentHome`):
   dazu eine Zeile, was Grundlagen, Übung, Labor und Projekt bedeuten. Nach
   der ersten geprüften Aufgabe verschwindet der Teil.
 
+Ein Abschnitt mit `carousel: true` in `sections.yaml` (die Katas) steht nicht
+als Karten da, sondern als Streifen, der sich seitwärts bewegt (`KataMap`):
+jede Übung mit Icon, Idee, Zahl der Katas und, für Angemeldete, wie weit
+sie ist; eine für die Gruppe angeheftete steht in der Mitte.
+
 Im Katalog trägt jede Karte ihre Art (`kind`; der Tooltip erklärt sie),
 aber keinen Stand: Der Katalog bleibt ruhig, den Stand zeigen die Seite der
 Aktivität und »Weiter mit«.
@@ -1678,6 +1685,10 @@ In Neo4j, nur für Antworten, die zählen:
   dem Schlüssel des `TaskState`. Eine neue Abgabe ersetzt die alte erst, wenn
   sie vollständig geschrieben ist. Symbolische Links werden nicht mit
   abgegeben. Lernende laden ihre Abgabe auf der Karte herunter.
+- Bei einer Kata ist die letzte Eingabe der Code, für jede Sprache getrennt.
+  Reicht jemand eine gelöste Kata ein (»Einreichen«), liegt eine Kopie des
+  Codes ebenso unter `/internal/submissions/`, bis die Person sie
+  zurücknimmt; die Lehrkraft sieht sie ohne Namen (`KataHandIns`).
 
 Sehen können das nur die Person selbst und die Lehrkräfte ihrer Gruppen, in
 der Klassenübersicht. Lernende löschen

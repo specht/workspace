@@ -8,21 +8,11 @@ hier geht es um den Weg von der Idee bis zur fertigen Seite.
 Eine fertige Vorlage liegt in [`docs/vorlage-aktivitaet/`](vorlage-aktivitaet/).
 Kopiere sie, statt bei null anzufangen.
 
-## Die fünf Regeln
-
-Bevor du schreibst: Jede Aktivität folgt diesen Regeln. Sie sind der Grund,
-warum der Workspace sich anders anfühlt als eine Lernplattform.
-
-1. **Prüfungen lesen nur.** Eine Aufgabe ändert nie etwas im Workspace der
-   Lernenden. Sie sieht nach.
-2. **Die Rückmeldung zeigt, was wirklich da ist.** Nicht »falsch«, sondern
-   »In `index.html` Zeile 16 ist `<div>` aus Zeile 15 noch offen.«
-3. **Ergebnisse sind Dateien.** Lernende arbeiten mit echten Dateien in echten
-   Ordnern. Eine Abgabe ist eine Kopie, über die sie bestimmen.
-4. **Ausführlich beim ersten Mal, eine Zeile danach.** Was neu ist, wird
-   erklärt; was bekannt ist, steht im Handbuch und wird verlinkt.
-5. **Adressen und Werkzeuge bleiben sichtbar.** Pfade, Befehle und Adressen
-   stehen im Text, wie sie sind. Nichts wird versteckt.
+Bevor du schreibst: die fünf Regeln, warum der Workspace sich anders anfühlt
+als eine Lernplattform (Prüfungen lesen nur, Rückmeldungen zeigen, was da ist,
+Ergebnisse sind Dateien, beim ersten Mal ausführlich, nichts wird versteckt),
+stehen in [aufgaben.md](aufgaben.md), »Fünf Regeln«; alle Regeln für Seiten
+mit Grund und Prüfung in [checkliste.md](checkliste.md).
 
 ## 1. Ordner anlegen
 
@@ -62,7 +52,7 @@ Jahr steht dafür im Titel der Seite in Klammern.
 | `kind` | `projekt`, `labor`, `grundlagen`, `uebung`, `galerie` oder `steckbrief` (Programmiersprachen); steht auf der Karte, jede Aktivität im Katalog braucht eines |
 | `language` | Die Sprache, in der man programmiert, wenn es eine feste gibt: `Ruby`, `C / raylib`; steht als »Projekt (Ruby)« auf der Karte |
 | `duration` | Freier Text, zum Beispiel »2 Doppelstunden« |
-| `idea`, `curriculum`, `icon` | Nur bei Übungen mit Katas: die Idee in wenigen Worten, die Zeile des Lehrplans und ein Icon, ein Bootstrap-Icon (`bi-braces`) oder eine Figur in Grau (`/images/pip/icon-pip.png`, aus `make_icons.py`); der Streifen der Katas auf der Startseite zeigt sie (`curriculum` nur Lehrkräften). Den Farbton ihres Bandes bekommt jede Übung von ihrem Platz im Streifen, gleichmäßig verteilt (`KataMap.hue`), ohne Ausnahme. Ein Bild einer gelösten Kata zeigt er nicht: Es verriete die Lösung |
+| `idea`, `curriculum`, `icon` | Nur bei Übungen mit Katas: die Idee in wenigen Worten, die Zeile des Lehrplans (nur Lehrkräfte sehen sie) und ein Icon, ein Bootstrap-Icon (`bi-braces`) oder eine Figur in Grau (`/images/pip/icon-pip.png`, aus `make_icons.py`), für den Streifen der Katas auf der Startseite (checkliste.md, »Katas und Pip«) |
 | `requires` | Aktivitäten, die vorher sinnvoll sind |
 | `reference` | Handbuch-Seiten, die die Aktivität braucht; erscheinen oben auf der Seite |
 | `template` | Adresse einer Vorlage zum Klonen (`https://…`); im Text `${template}`. Der Workspace sagt Lernenden, wenn ihr Klon veraltet ist |
@@ -232,7 +222,7 @@ Knöpfe.
 
 ### In Ruby und in Python
 
-Eine Aktivität, deren Sprache frei ist, kann es in Ruby und in Python geben.
+Eine Aktivität, deren Sprache frei ist, gibt es in Ruby und in Python.
 Lehrkräfte stellen auf der Klassenseite (`/klasse`) unter »Sprache« ein,
 welche ihre Gruppe sieht; ohne Einstellung ist es Ruby. Lernende können auf
 der Seite mit einem Schalter neben der Art der Aktivität selbst umschalten,
@@ -341,9 +331,12 @@ der Kasten den Text über die ganze Breite.
 Zwei Menschen in einem Kasten: `<div class='person pair'>` mit
 `<div class='portraits'>` um die beiden Fotos. Haben mehrere eine Sache
 gemacht und nur einer ein Foto (A*: Hart, Nilsson, Raphael), steht dieses
-eine Foto im Kasten, und der Text sagt, wer darauf ist. Das Foto ist frei
-(gemeinfrei, CC0, CC BY, CC BY-SA), meist von Wikimedia Commons, die
-Zeile darunter nennt Urheber, Jahr und Lizenz. Jedes Porträt ist 4:5, die
+eine Foto im Kasten, und der Text sagt, wer darauf ist. Das Foto darf unter
+jeder Lizenz stehen, unter der wir es kostenlos zeigen dürfen (gemeinfrei,
+CC0, CC BY, CC BY-SA, auch nicht-kommerzielle: der Workspace ist nicht
+kommerziell), meist von Wikimedia Commons; die Zeile darunter nennt Urheber,
+Jahr und Lizenz. Fotos, die der Maintainer ausgesucht hat, bleiben; ein
+besseres schlägt man vor, statt es zu tauschen. Jedes Porträt ist 4:5, die
 Augen auf etwa 40 % der Höhe, 320 × 400 Pixel als WebP. Der Kasten steht im
 Fluss der Seite, Foto links, Text rechts, und ist so hoch wie das Größere von
 beiden.

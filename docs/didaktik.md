@@ -138,41 +138,19 @@ gehören. Abtippen hilft beim Lesen; gelernt wird beim Selbstschreiben.
 Ein Widget zeigt, wie ein Verfahren läuft, und löst keine Aufgabe seiner
 Aktivität ([widgets.md](widgets.md)).
 
-## Wo es schon umgesetzt ist
+## Vorbilder
 
-- Kästen »Jetzt bist du dran« mit Prüfungen darunter: Raytracer, Raycaster, Webserver,
-  Pixelwand, Wetter, Echtzeitgrafik mit C, Klötzchenwelt; eine Prüfung `c` auch
-  im GIF-Decoder. Die Prüfungen der Klötzchenwelt übersetzen das Programm mit
-  den Headern von raylib aus dem Workspace (`CCheck::RAYLIB_INCLUDE`) und
-  setzen an die Stelle von Fenster, Tasten und Zufall kleine Ersatzfunktionen
-  (`setup`).
-- Kästen »Jetzt bist du dran« ohne Prüfung des Verhaltens: GLSL (der Kreis,
-  `march`, der Sierpinski-Teppich), weil es für Shader keine Prüfart gibt,
-  TIC-80 (der fallende Stern), weil Lua im Workspace nicht läuft, und Svelte
-  (`handleKeyUp`); ob es stimmt, zeigt die Vorschau oder das Spiel. Steht
-  danach die ganze Datei auf der Seite, gehört sie mit zur Lösung.
-- Änderungen statt ganzer Dateien: Webserver, Pixelwand.
-- Tipps in Stufen: Huffman (Baum, Decodieren, kanonische Codes), die Zeile
-  beim Interlacing im GIF-Decoder (`image_row`), alle
-  Aufgaben des Routenplaners, in denen eine Funktion entsteht, die
-  Steganographie, alle Kästen »Jetzt bist du dran« (Raytracer, Raycaster,
-  Webserver, Pixelwand, Wetter, Echtzeitgrafik mit C, Klötzchenwelt, GLSL,
-  TIC-80, Svelte), alle Programmieraufgaben des Rechners, von
-  LZW, TOTP, RLE und den Automaten, und die schwereren SQL-Abfragen (GROUP BY
-  mit HAVING, LEFT JOIN mit `IS NULL`, `JOIN` über eine Tabelle in der Mitte,
-  in »Tabellen verbinden« und der Filmdatenbank). Die Abstände zwischen
-  Städten bekommen keine: Dort ändert die Aufgabe nur einen Namen oder die
-  Richtung der Sortierung im Beispiel darüber.
-- Was eine Vorhersage verrät, wartet auf die Antwort: Alle 78 Vorhersagen
-  sind durchgesehen. Bei 42 folgte etwas, das die Antwort verriet (ein
-  Screenshot vom Ergebnis, der erklärende Absatz, ein Kasten), und steht
-  jetzt zwischen `<!-- after: … -->` und `<!-- /after -->`, in 26
-  Aktivitäten. Bei den übrigen folgt ein Kasten »Ausprobieren« oder etwas
-  anderes, das die Antwort nicht nennt. Hängen zwei Vorhersagen
-  aneinander (Neo4j: Zwischentabelle, Tätigkeit), wartet die zweite Karte
-  auf die erste.
-- Code, den die Seite nur zum Abschreiben gab: Die Aktivitäten mit dem
-  meisten davon (gezählt mit `src/scripts/audit-activities.rb`) sind
-  durchgesehen, zuletzt GLSL, die Klötzchenwelt und TIC-80; dort verrät auch
-  nichts nach einer Vorhersage die Antwort. Was in den übrigen zum Kopieren
-  bleibt, sind vor allem Vorlagen, Einstellungen und Daten.
+Je eine Seite, an der man sieht, wie es gemeint ist:
+
+- »Jetzt bist du dran« mit einer Prüfung darunter: der Raytracer; in C mit den
+  Headern von raylib und Ersatzfunktionen für Fenster und Tasten
+  (`CCheck::RAYLIB_INCLUDE`, `setup`): die Klötzchenwelt. Ohne Prüfart (Shader,
+  Lua) zeigt die Vorschau, ob es stimmt: GLSL, TIC-80.
+- Änderungen statt ganzer Dateien: der Webserver.
+- Tipps in Stufen: Huffman (Baum, Decodieren, kanonische Codes) und der
+  Routenplaner; eine Aufgabe, die nur einen Namen ändert, braucht keine.
+- Was eine Vorhersage verrät, wartet auf die Antwort (`<!-- after: … -->`):
+  die Neo4j-Filmdatenbank, wo zwei Vorhersagen aneinanderhängen und die
+  zweite Karte auf die erste wartet.
+- Katas: die Sets mit Pip (`pip-1` bis `pip-3`) und Tests schreiben, wo die
+  Lernenden die Prüfung selbst schreiben.

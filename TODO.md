@@ -36,7 +36,7 @@ page and the start page (`docs/aufgaben.md`).
 Still open:
 
 * [ ] A generated »Wie geht es weiter?« box at the end of a page, from a new `next` field
-* [ ] Teacher notes with solutions for every activity; 32 have a `lehrkraft.md`, the SQL introduction and the language pages have none
+* [ ] Teacher notes for the language pages (Steckbriefe): every activity in a catalog has a `lehrkraft.md`, they have none
 * [ ] Workspace-state check for a running server (a port answers), for the setup steps of web activities
 
 
@@ -145,7 +145,7 @@ below is a writing priority, not a prerequisite chain.
 
 Plus, from the review:
 
-* [ ] **The curriculum for teachers on every activity**: the Kata sets carry `curriculum:` in their meta block (»Sek I: Kontrollstrukturen (Verzweigung)«), shown to logged-in teachers on the Kata overview (`kata_map.rb`). The maintainer wants the same for all activities, only for logged-in teachers: a field per activity, on its card in the catalog and at the top of its page
+* [ ] **The curriculum for teachers on every activity**: the Kata sets carry `curriculum:` in their meta block (»Sek I: Kontrollstrukturen (Verzweigung)«), shown to logged-in teachers in the Kata strip on the front page (`kata_map.rb`). The maintainer wants the same for all activities, only for logged-in teachers: a field per activity, on its card in the catalog and at the top of its page
 * [ ] **Query stepper, further**: subqueries and `UNION`; the music data (Discogs) once it has a chapter
 * [ ] **»Wie sicher ist ein Passwort?«**: not written; »Zwei Faktoren« fills the place in Netze & Sicherheit. The local branch `passwords` keeps solutions, starters, a list and tasks from a first attempt
 * [ ] **Person boxes waiting for a visible page**: Béla Julesz and Christopher Tyler (autostereograms, `sirds`), William Reeves (particle systems, `feuerwerk` is parked), Yann LeCun (`digits-experiment` is in no catalog); Turner Whitted has his place in Raytracing
@@ -173,6 +173,19 @@ Android build support, before broad rollout:
 * [ ] Check whether the pinned CMake/NDK components are needed and remove them if not
 
 APK rather than App Bundle for the introduction; no release signing or Play Store accounts (mention `flutter build appbundle` as a follow-up). iOS: the same source can target iOS, but builds need macOS, Xcode and Apple signing; mention a Mac or a cloud build service such as Codemagic; keep App Store details optional.
+
+### Katas
+
+What exists and why: [docs/plan-katas.md](docs/plan-katas.md).
+
+* [ ] Out of dev-only, once the maintainer has looked at the 13 pages (the dots in `sections.yaml`)
+* [ ] **One Kata widget** instead of the general task card on Kata pages: the prompt beside the code on a wide screen, as Pip's map beside the plan, and a UI/UX pass over all of it; planned and shown to the maintainer before it is built
+* [ ] The output of a run while it runs (live, over the page's WebSocket); now it comes when the run ends
+* [ ] A time limit per case where speed is the point (now `timeout` is for all cases together; `slow:` words the message)
+* [ ] Pip: a map of the tunnels at the top of each Pip page that lights up chapter by chapter; `same_as`-style feedback by trace (»Pip biegt immer links ab, auch wenn dort eine Wand ist.«)
+* [ ] Person boxes for Euklid, Fibonacci, Collatz and Eratosthenes (Wiederholen); Richard E. Pattis (Karel the Robot) once a source gives his year of birth
+* [ ] The activity »Testen«: tests as files in the Workspace (`pytest`, `minitest`), red-green-refactor, with the check type `tests` reading files (`file:`, `against:`, mutants as files)
+* [ ] A whole-program mode (run the program, compare its output), for a quine as an Extra of Texte
 
 ## Existing pages
 
@@ -242,7 +255,6 @@ Continue extracting coherent pieces from `main.rb` (about 7000 lines) incrementa
 
 ## Later ideas
 
-* **Code Bites, revamped** – short functions in Ruby, Python or JavaScript with tests; removed on 2026-10-18 together with the practice sets Zahlen, Arrays and Strings, it may come back in a new form, ideally as tasks in the Workspace itself (the old code is in the git history under `src/codebites/`)
 * **Prolog** – facts, rules, queries, pattern matching, backtracking, recursive rules, a small knowledge base, a logic puzzle
 * **Digital audio** – oscillators, frequency and amplitude, envelopes, mixing, waveform/spectrum views, a tiny synthesizer or drum machine (headphones needed)
 * **WebGPU / parallel computing** – a minimal WGSL compute shader, CPU vs GPU, particles, cellular automata, image processing or fractals

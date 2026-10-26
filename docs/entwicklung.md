@@ -347,10 +347,11 @@ Zum schnellen Ausprobieren ohne neues Image: in einem laufenden Workspace
 ./build-image.sh      # Executor-Images, Erweiterungen, Toolchains, code-server-Image
 ./build-tic80.sh      # TIC-80 für den Browser (Version in TIC80_REF), nach jedem Wechsel der Version
 BRIDGE_ONLY=1 ./build-tic80.sh   # nur docker/tic80/hackschule-persistence.js neu davorsetzen
-docker system prune   # wenn der Platz knapp wird
 ```
 
-Das erste Bauen dauert lange und braucht mehrere Gigabyte. Die
+Das erste Bauen dauert lange und braucht mehrere Gigabyte. Wird der Platz
+knapp, räumt man von Hand auf und schaut vorher, was das Backup braucht; ein
+Agent räumt nie auf (kein `docker system prune`), er fragt. Die
 code-server-Version steht in `docker/code/Dockerfile` (`CODE_SERVER_IMAGE`).
 
 Ein Workspace startet als root (die Init von linuxserver, dann der Nutzer
@@ -513,6 +514,10 @@ rsync -a --delete ../nachtschicht-site/ SERVER:/mnt/hackschule/workspace/interna
 Der Server liefert, was in `INTERNAL_PATH/nachtschicht` liegt, sofort aus;
 ein Neustart ist nicht nötig. Lokal ist das `data/internal/nachtschicht`.
 
+In den Leveln flackern wenige Lampen: eine Handvoll im ganzen Level, höchstens
+eine je Raum, dort, wo es auffallen soll (`flicker = 0` als Standard); was
+ständig flackert, ist nicht mehr unheimlich.
+
 ## Daten für Tutorials
 
 Große Dateien, die Lernende mit `wget` holen, liegen im Repository
@@ -552,7 +557,8 @@ ruby src/ruby/tools/build_tabler_sprite.rb /tmp/tabler-icons
 
 ## Änderungen festhalten
 
-Jede nennenswerte Änderung bekommt einen Eintrag in
-[CHANGELOG.md](../CHANGELOG.md) unter »Unreleased«, getrennt nach
-»Hinzugefügt«, »Geändert« und »Für Betreibende«. Patches, die Claude liefert,
-spielt man mit `git am <datei>.patch` auf `main` ein.
+[CHANGELOG.md](../CHANGELOG.md) bekommt unter »Unreleased« eine kurze Zeile nur
+für das, was Betreibende einer anderen Installation wissen müssen (neue Werte
+in `credentials.rb`, Schritte beim Update, Funktionen, die ausgeschaltet
+beginnen, Änderungen an dem, was gespeichert wird); alles andere steht in der
+Git-Geschichte.

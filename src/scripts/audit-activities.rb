@@ -11,7 +11,8 @@
 # Notiz (lehrkraft.md opens with »Lernende«), generiert / von Hand (pictures
 # from recipes and others; »von Hand« counts photos and diagrams too),
 # dunkel (dark variants among the generated pictures), Karte (whether the card
-# picture comes from a recipe and has a NAME-dark version). A »!« marks what
+# picture comes from a recipe and has a NAME-dark version; »Icon« for a set
+# of Katas, which has an icon instead). A »!« marks what
 # the checklist asks for.
 require 'json'
 require 'yaml'
@@ -71,8 +72,10 @@ def audit(slug)
         note: note_ok ? 'ja' : 'fehlt!',
         generated: generated.size, manual: manual.size,
         dark: dark,
+        # a set of Katas shows an icon in the strip instead (meta icon:): a
+        # picture of a card would give a solution away
         card: if card.nil?
-                  'fehlt!'
+                  meta.match?(/^icon:\s*\S/) ? 'Icon' : 'fehlt!'
               else
                   dark_card = File.file?(File.join(dir, card.sub(/(\.\w+)\z/, '-dark\1')))
                   (generated.include?(card) ? 'Rezept' : 'kein Rezept') + (dark_card ? '' : ', nicht dunkel')
