@@ -8458,6 +8458,11 @@ html[data-bs-theme="dark"] .bitplane-widget {
 .kata-set-figure {
     display: block;
     filter: drop-shadow(0 0 0.35em hsl(var(--accent) 60% 60% / 0.35));
+    /* the zoom on hover scales the figure as drawn at rest, smoothly; one
+       layer that is not drawn anew, so it does not change when the zoom
+       stops */
+    will-change: transform;
+    transition: scale 300ms;
 }
 .kata-set-sprite {
     display: block;
@@ -8471,18 +8476,14 @@ html[data-bs-theme="dark"] .bitplane-widget {
     -webkit-mask: var(--sprite) center / 100% 100% no-repeat;
     mask: var(--sprite) center / 100% 100% no-repeat;
     image-rendering: pixelated;
-    /* the zoom on hover by its size, not scale: drawn with sharp pixels at
-       every moment, so it does not change when the zoom stops */
-    transition: width 300ms, height 300ms;
 }
 /* the Mampfer is drawn larger than Pip: 1.6 times, as large as the
    other icons */
 .kata-sprite-icon-mampfer {
     --size: 51.2px;
 }
-.kata-set:hover .kata-set-sprite {
-    width: calc(var(--size) * 1.12);
-    height: calc(var(--size) * 1.12);
+.kata-set:hover .kata-set-figure {
+    scale: 1.12;
 }
 .kata-set-art .bi::before {
     vertical-align: 0;
