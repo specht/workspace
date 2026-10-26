@@ -464,38 +464,79 @@ Open-Meteo erlaubt höchstens 600 Anfragen pro Minute, 5.000 pro Stunde und 10.0
 Das Wetter ändert sich nicht jede Sekunde. Darum merkt sich ein höfliches Programm Antworten eine Weile: in einem **Cache**.
 
 <!-- language: ruby -->
-Ersetze `fetch_json` in `wetter.rb` durch diese Fassung und ergänze die beiden Konstanten darüber:
+Über `fetch_json` in `wetter.rb` kommen zwei Konstanten, der Ordner für die Antworten und wie lange eine Antwort gilt. In `fetch_json` bekommt jede Anfrage ihren Dateinamen:
 
 ```ruby
 CACHE_DIR = File.join(__dir__, 'cache')
 CACHE_SECONDS = 600   # zehn Minuten
 
-# Holt JSON von einer API. Aus params wird die Query: ?name=wert&…
+~ # Holt JSON von einer API. Aus params wird die Query: ?name=wert&…
 # Dieselbe Anfrage in den letzten zehn Minuten? Dann kommt die Antwort aus
 # einer Datei im Ordner cache, und die API wird nicht gefragt.
-def fetch_json(base, params)
-  url = URI(base)
-  url.query = URI.encode_www_form(params)
+~ def fetch_json(base, params)
+~   url = URI(base)
+~   url.query = URI.encode_www_form(params)
   file = File.join(CACHE_DIR, url.to_s.gsub(/[^A-Za-z0-9]+/, '_') + '.json')
+```
+
+- Jede Antwort landet als Datei im Ordner `cache`. Der Dateiname ist die Adresse der Anfrage, mit `_` statt der Sonderzeichen.
+- Gibt es für dieselbe Adresse schon eine Datei, die jünger ist als zehn Minuten, kommt die Antwort aus der Datei, und die API wird gar nicht gefragt. Sonst fragt `fetch_json` die API wie bisher und schreibt die Antwort danach in die Datei.
+
+<div class='hint own' data-check='cache'>
+<strong>Jetzt bist du dran:</strong> Schreib die beiden Stellen für den Cache in <code>fetch_json</code>.
+<ul>
+<li>Direkt unter der Zeile mit <code>file</code>: Gibt es die Datei schon (<code>File.exist?</code>) und ist sie jünger als <code>CACHE_SECONDS</code>, schreibt <code>fetch_json</code> etwa »(aus dem Cache: api.open-meteo.com)« mit dem Host der Adresse (<code>url.host</code>) und gibt den Inhalt der Datei als JSON zurück. <code>File.mtime(file)</code> ist der Zeitpunkt, an dem die Datei zuletzt geschrieben wurde; <code>Time.now - File.mtime(file)</code> sind die Sekunden seitdem.</li>
+<li>Unter dem <code>abort</code> bei einem Fehler: Leg den Ordner <code>CACHE_DIR</code> an, wenn es ihn noch nicht gibt (<code>Dir.exist?</code>, <code>Dir.mkdir</code>), und schreib den Body der Antwort in die Datei (<code>File.write</code>).</li>
+</ul>
+</div>
+
+<!-- hint -->
+Wann darf die Antwort aus der Datei kommen? Zwei Bedingungen müssen beide
+stimmen. Und warum schreibt `fetch_json` erst nach dem `abort` in die Datei,
+nicht gleich nach der Anfrage? Denk an eine Antwort mit `429`.
+<!-- /hint -->
+<!-- hint -->
+Die erste Stelle ist ein `if` mit `return`: Nach seinem `end` geht es nur
+weiter, wenn die Datei fehlt oder zu alt ist. `File.read(file)` gibt den
+Text der Datei, und `JSON.parse` liest ihn wie den Body einer Antwort. Die
+zweite Stelle sind zwei Zeilen vor `data`, der letzten Zeile vor `rescue`.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst für beide Stellen:
+
+```ruby
+  if … && …   # die Datei gibt es, und sie ist jünger als CACHE_SECONDS
+    puts "(aus dem Cache: #{url.host})"
+    return …   # der Inhalt der Datei als JSON
+  end
+```
+
+```ruby
+  abort "Fehler #{response.code}: #{data['reason']}" unless response.is_a?(Net::HTTPSuccess)
+  # hier: den Ordner anlegen, wenn es ihn nicht gibt, und response.body in file schreiben
+  data
+```
+<!-- /hint -->
+
+<!-- solution -->
+```ruby
+~   file = File.join(CACHE_DIR, url.to_s.gsub(/[^A-Za-z0-9]+/, '_') + '.json')
   if File.exist?(file) && Time.now - File.mtime(file) < CACHE_SECONDS
     puts "(aus dem Cache: #{url.host})"
     return JSON.parse(File.read(file))
   end
 
-  response = Net::HTTP.get_response(url)
-  data = JSON.parse(response.body)
-  # Bei einem Fehler sagt Open-Meteo in »reason«, was nicht stimmt
-  abort "Fehler #{response.code}: #{data['reason']}" unless response.is_a?(Net::HTTPSuccess)
+~   response = Net::HTTP.get_response(url)
+~   data = JSON.parse(response.body)
+~   # Bei einem Fehler sagt Open-Meteo in »reason«, was nicht stimmt
+~   abort "Fehler #{response.code}: #{data['reason']}" unless response.is_a?(Net::HTTPSuccess)
   Dir.mkdir(CACHE_DIR) unless Dir.exist?(CACHE_DIR)
   File.write(file, response.body)
-  data
-rescue SocketError, Net::OpenTimeout => e
-  abort "Keine Verbindung: #{e.message}"
-end
+~   data
 ```
 
-- Jede Antwort landet als Datei im Ordner `cache`. Der Dateiname ist die Adresse der Anfrage, mit `_` statt der Sonderzeichen.
-- Gibt es für dieselbe Adresse schon eine Datei, die jünger ist als zehn Minuten (`File.mtime`), kommt die Antwort aus der Datei, und die API wird gar nicht gefragt.
+In die Datei kommt nur eine Antwort, die ein Erfolg war: Eine Fehlermeldung im Cache käme zehn Minuten lang immer wieder.
+<!-- /solution -->
 
 Starte das Programm zweimal hintereinander für denselben Ort:
 
@@ -505,39 +546,93 @@ ruby wetter.rb Hamburg
 ```
 <!-- /language -->
 <!-- language: python -->
-Ersetze `fetch_json` in `wetter.py` durch diese Fassung, ergänze die beiden Konstanten darüber und oben `import re`, `import time` und `from pathlib import Path`:
+Oben kommen drei Imports dazu:
+
+```python
+~ import json
+import re
+~ import sys
+import time
+~ import urllib.error
+~ import urllib.parse
+~ import urllib.request
+from pathlib import Path
+```
+
+Über `fetch_json` kommen zwei Konstanten, der Ordner für die Antworten und wie lange eine Antwort gilt. In `fetch_json` bekommt jede Anfrage ihren Dateinamen:
 
 ```python
 CACHE_DIR = Path(__file__).parent / 'cache'
 CACHE_SECONDS = 600   # zehn Minuten
 
 
-# Holt JSON von einer API. Aus params wird die Query: ?name=wert&…
+~ # Holt JSON von einer API. Aus params wird die Query: ?name=wert&…
 # Dieselbe Anfrage in den letzten zehn Minuten? Dann kommt die Antwort aus
 # einer Datei im Ordner cache, und die API wird nicht gefragt.
-def fetch_json(base, params):
-    url = base + '?' + urllib.parse.urlencode(params)
+~ def fetch_json(base, params):
+~     url = base + '?' + urllib.parse.urlencode(params)
     file = CACHE_DIR / (re.sub(r'[^A-Za-z0-9]+', '_', url) + '.json')
+```
+
+- Jede Antwort landet als Datei im Ordner `cache`. Der Dateiname ist die Adresse der Anfrage, mit `_` statt der Sonderzeichen.
+- Gibt es für dieselbe Adresse schon eine Datei, die jünger ist als zehn Minuten, kommt die Antwort aus der Datei, und die API wird gar nicht gefragt. Sonst fragt `fetch_json` die API wie bisher und schreibt die Antwort danach in die Datei.
+
+<div class='hint own' data-check='cache'>
+<strong>Jetzt bist du dran:</strong> Schreib die beiden Stellen für den Cache in <code>fetch_json</code>.
+<ul>
+<li>Direkt unter der Zeile mit <code>file</code>: Gibt es die Datei schon (<code>file.exists()</code>) und ist sie jünger als <code>CACHE_SECONDS</code>, schreibt <code>fetch_json</code> etwa »(aus dem Cache: api.open-meteo.com)« mit dem Host der Adresse (<code>urllib.parse.urlsplit(url).hostname</code>) und gibt den Inhalt der Datei als JSON zurück. <code>file.stat().st_mtime</code> ist der Zeitpunkt, an dem die Datei zuletzt geschrieben wurde, <code>time.time()</code> die Zeit jetzt, beide in Sekunden.</li>
+<li>Im <code>try</code> gibt <code>fetch_json</code> die Antwort nicht mehr gleich zurück, sondern hebt ihren Body auf: <code>body = response.read()</code>. Unter den beiden <code>except</code>: Leg den Ordner <code>CACHE_DIR</code> an, wenn es ihn noch nicht gibt (<code>CACHE_DIR.mkdir(exist_ok=True)</code>), schreib <code>body</code> in die Datei (<code>file.write_bytes</code>) und gib ihn als JSON zurück.</li>
+</ul>
+</div>
+
+<!-- hint -->
+Wann darf die Antwort aus der Datei kommen? Zwei Bedingungen müssen beide
+stimmen. Und warum schreibt `fetch_json` erst nach den beiden `except` in die
+Datei, nicht gleich im `try`? Denk an eine Antwort mit `429`.
+<!-- /hint -->
+<!-- hint -->
+Die erste Stelle ist ein `if` mit `return`: Darunter geht es nur weiter, wenn
+die Datei fehlt oder zu alt ist. `file.read_text()` gibt den Text der Datei,
+und `json.loads` liest ihn. `json.loads(body)` liest genauso die Bytes, die
+`response.read()` gibt.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst für beide Stellen:
+
+```python
+    if … and …:   # die Datei gibt es, und sie ist jünger als CACHE_SECONDS
+        print(f'(aus dem Cache: {urllib.parse.urlsplit(url).hostname})')
+        return …   # der Inhalt der Datei als JSON
+```
+
+```python
+    except urllib.error.URLError as error:
+        sys.exit(f'Keine Verbindung: {error.reason}')
+    # hier: den Ordner anlegen, body in file schreiben und als JSON zurückgeben
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+~     file = CACHE_DIR / (re.sub(r'[^A-Za-z0-9]+', '_', url) + '.json')
     if file.exists() and time.time() - file.stat().st_mtime < CACHE_SECONDS:
         print(f'(aus dem Cache: {urllib.parse.urlsplit(url).hostname})')
         return json.loads(file.read_text())
 
-    try:
-        with urllib.request.urlopen(url) as response:
+~     try:
+~         with urllib.request.urlopen(url) as response:
             body = response.read()
-    except urllib.error.HTTPError as error:
-        # Bei einem Fehler sagt Open-Meteo in »reason«, was nicht stimmt
-        data = json.load(error)
-        sys.exit(f"Fehler {error.code}: {data.get('reason')}")
-    except urllib.error.URLError as error:
-        sys.exit(f'Keine Verbindung: {error.reason}')
+~     except urllib.error.HTTPError as error:
+~         …
+~     except urllib.error.URLError as error:
+~         sys.exit(f'Keine Verbindung: {error.reason}')
     CACHE_DIR.mkdir(exist_ok=True)
     file.write_bytes(body)
     return json.loads(body)
 ```
 
-- Jede Antwort landet als Datei im Ordner `cache`. Der Dateiname ist die Adresse der Anfrage, mit `_` statt der Sonderzeichen.
-- Gibt es für dieselbe Adresse schon eine Datei, die jünger ist als zehn Minuten (`file.stat().st_mtime` ist der Zeitpunkt der letzten Änderung, `time.time()` die Zeit jetzt, beide in Sekunden), kommt die Antwort aus der Datei, und die API wird gar nicht gefragt.
+In die Datei kommt nur eine Antwort, die ein Erfolg war: Bei einem Fehler endet das Programm in einem `except`, bevor es schreibt. Eine Fehlermeldung im Cache käme sonst zehn Minuten lang immer wieder.
+<!-- /solution -->
 
 Starte das Programm zweimal hintereinander für denselben Ort:
 
