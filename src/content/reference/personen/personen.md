@@ -249,6 +249,16 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1925 -->
+<!-- part: moore -->
+### Edward F. Moore
+
+<div class='person'>
+<p><strong>Edward F. Moore</strong> (1925–2003), amerikanischer Mathematiker bei den Bell Labs. 1957 zeigte er, wie man den kürzesten Weg durch ein Labyrinth findet: vom Start aus erst alle Felder einen Schritt weit, dann alle zwei Schritte weit und so weiter, bis das Ziel dabei ist. So sucht die Breitensuche, und so sucht der Mampfer nach Pip.</p>
+<p>Gedruckt erschien das 1959 als »The Shortest Path Through a Maze«. Nach ihm heißen auch die Moore-Automaten und die acht Nachbarn einer Zelle im Game of Life, die Moore-Nachbarschaft.</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1926 -->
 <!-- part: kemeny-kurtz -->
 ### John G. Kemeny und Thomas E. Kurtz

@@ -36,6 +36,7 @@
     - .kata-bits
     - .kata-recursion
     - .kata-search
+    - .pip-3
     - .kata-tests
 
 - key: graphics

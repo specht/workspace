@@ -91,6 +91,8 @@ Probier es aus, von A nach H. Gelb sind die Knoten in der Queue, lila die schon 
 
 Die Breitensuche findet A–C–G–H: drei Kanten, die wenigsten, die es gibt, aber 128 lang. Auf die Längen achtet sie nicht. Für einen Stadtplan ist das selten der kürzeste Weg, für ein Labyrinth, in dem jeder Schritt gleich lang ist, genau richtig.
 
+_person(moore)
+
 **Typische Fehler**
 
 - Einen Knoten erst beim Herausnehmen als gefunden merken statt beim Hineinlegen. Dann kann er mehrmals in die Queue kommen, und die Suche wird bei großen Graphen sehr langsam.

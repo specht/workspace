@@ -1,0 +1,1641 @@
+format: 1
+activity: pip-3
+tasks:
+  - id: predict
+    title: "Wohin geht der Mampfer?"
+    prediction: true
+    prompt: |
+      Pip macht auf der Karte oben einen Schritt nach rechts. Wohin geht der Mampfer danach?
+    check:
+      type: choice
+      options: ["Auf Feld 1", "Auf Feld 2", "Er bleibt stehen"]
+      correct: 1
+
+  - id: run
+    title: "Lauf!"
+    level: 1
+    prompt: |
+      Der Mampfer ist aufgewacht und kommt. Bring Pip zur Lampe, bevor er Pip erreicht.
+    starter: |
+      # Dein Plan, ein Befehl pro Zeile
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left]
+      maps:
+        - facing: east
+          map: |
+            ###########
+            #M....P...#
+            #########.#
+            #########.#
+            #########L#
+            ###########
+      goal: { lamp: true }
+    hint:
+      - "Jeder Befehl ist ein Schritt, auch eine Drehung, und nach jedem Schritt kommt der Mampfer ein Feld näher."
+      - "Nach rechts dreht sich Pip mit drei Drehungen nach links."
+    solution: |
+      ```ruby
+      move
+      move
+      move
+      turn_left
+      turn_left
+      turn_left
+      move
+      move
+      move
+      ```
+    python:
+      prompt: |
+        Der Mampfer ist aufgewacht und kommt. Bring Pip zur Lampe, bevor er Pip erreicht.
+      starter: |
+        # Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left]
+        maps:
+          - facing: east
+            map: |
+              ###########
+              #M....P...#
+              #########.#
+              #########.#
+              #########L#
+              ###########
+        goal: { lamp: true }
+      hint:
+        - "Jeder Befehl ist ein Schritt, auch eine Drehung, und nach jedem Schritt kommt der Mampfer ein Feld näher."
+        - "Nach rechts dreht sich Pip mit drei Drehungen nach links."
+      solution: |
+        ```python
+        move()
+        move()
+        move()
+        turn_left()
+        turn_left()
+        turn_left()
+        move()
+        move()
+        move()
+        ```
+    javascript:
+      prompt: |
+        Der Mampfer ist aufgewacht und kommt. Bring Pip zur Lampe, bevor er Pip erreicht.
+      starter: |
+        // Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left]
+        maps:
+          - facing: east
+            map: |
+              ###########
+              #M....P...#
+              #########.#
+              #########.#
+              #########L#
+              ###########
+        goal: { lamp: true }
+      hint:
+        - "Jeder Befehl ist ein Schritt, auch eine Drehung, und nach jedem Schritt kommt der Mampfer ein Feld näher."
+        - "Nach rechts dreht sich Pip mit drei Drehungen nach links."
+      solution: |
+        ```javascript
+        move();
+        move();
+        move();
+        turnLeft();
+        turnLeft();
+        turnLeft();
+        move();
+        move();
+        move();
+        ```
+
+  - id: stone-in-the-dark
+    title: "Ein Stein im Dunkeln"
+    level: 2
+    prompt: |
+      Pip steht im Licht einer alten Lampe. Links im Dunkeln liegt ein Funkenstein. Hol ihn und bring Pip dann zur Lampe ganz rechts.
+    starter: |
+      # Dein Plan, ein Befehl pro Zeile
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, take]
+      maps:
+        - facing: west
+          map: |
+            #############
+            #M.....o.*PL#
+            #############
+      goal: { lamp: true, stones: all }
+    hint:
+      - "Solange Pip mitten im Licht steht, findet der Mampfer keinen Weg zu Pip und wartet."
+      - "Zähl mit: Wie viele Schritte braucht der Mampfer bis zum Stein, sobald Pip das Licht verlässt? Jede Drehung zählt."
+      - "Umdrehen kostet zwei Drehungen nach links. Kein Schritt darf übrig sein."
+    solution: |
+      ```ruby
+      move
+      move
+      move
+      take
+      turn_left
+      turn_left
+      move
+      move
+      move
+      move
+      ```
+    python:
+      prompt: |
+        Pip steht im Licht einer alten Lampe. Links im Dunkeln liegt ein Funkenstein. Hol ihn und bring Pip dann zur Lampe ganz rechts.
+      starter: |
+        # Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, take]
+        maps:
+          - facing: west
+            map: |
+              #############
+              #M.....o.*PL#
+              #############
+        goal: { lamp: true, stones: all }
+      hint:
+        - "Solange Pip mitten im Licht steht, findet der Mampfer keinen Weg zu Pip und wartet."
+        - "Zähl mit: Wie viele Schritte braucht der Mampfer bis zum Stein, sobald Pip das Licht verlässt? Jede Drehung zählt."
+        - "Umdrehen kostet zwei Drehungen nach links. Kein Schritt darf übrig sein."
+      solution: |
+        ```python
+        move()
+        move()
+        move()
+        take()
+        turn_left()
+        turn_left()
+        move()
+        move()
+        move()
+        move()
+        ```
+    javascript:
+      prompt: |
+        Pip steht im Licht einer alten Lampe. Links im Dunkeln liegt ein Funkenstein. Hol ihn und bring Pip dann zur Lampe ganz rechts.
+      starter: |
+        // Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, take]
+        maps:
+          - facing: west
+            map: |
+              #############
+              #M.....o.*PL#
+              #############
+        goal: { lamp: true, stones: all }
+      hint:
+        - "Solange Pip mitten im Licht steht, findet der Mampfer keinen Weg zu Pip und wartet."
+        - "Zähl mit: Wie viele Schritte braucht der Mampfer bis zum Stein, sobald Pip das Licht verlässt? Jede Drehung zählt."
+        - "Umdrehen kostet zwei Drehungen nach links. Kein Schritt darf übrig sein."
+      solution: |
+        ```javascript
+        move();
+        move();
+        move();
+        take();
+        turnLeft();
+        turnLeft();
+        move();
+        move();
+        move();
+        move();
+        ```
+
+  - id: both-sides
+    title: "Links und rechts"
+    level: 3
+    prompt: |
+      Zwei Funkensteine liegen im Dunkeln, einer links und einer rechts vom Licht. Durchs Licht kann der Mampfer nicht, er muss oben herum. Hol beide Steine und bring Pip zur Lampe.
+    starter: |
+      # Dein Plan, ein Befehl pro Zeile
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, take]
+      maps:
+        - facing: east
+          map: |
+            ###############
+            #M............#
+            #.###########.#
+            #.o...*P..o..L#
+            ###############
+      goal: { lamp: true, stones: all }
+    hint:
+      - "Der Mampfer nimmt immer den kürzesten Weg, und durchs Licht führt keiner."
+      - "Auf welcher Seite ist der Mampfer näher? Mit welchem Stein fängst du an?"
+      - "Zuerst der rechte Stein: Währenddessen läuft der Mampfer oben herum nach rechts, und links ist frei."
+    solution: |
+      ```ruby
+      move
+      move
+      move
+      take
+      turn_left
+      turn_left
+      move
+      move
+      move
+      move
+      move
+      move
+      move
+      move
+      take
+      turn_left
+      turn_left
+      move
+      move
+      move
+      move
+      move
+      move
+      move
+      move
+      move
+      move
+      move
+      ```
+    python:
+      prompt: |
+        Zwei Funkensteine liegen im Dunkeln, einer links und einer rechts vom Licht. Durchs Licht kann der Mampfer nicht, er muss oben herum. Hol beide Steine und bring Pip zur Lampe.
+      starter: |
+        # Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, take]
+        maps:
+          - facing: east
+            map: |
+              ###############
+              #M............#
+              #.###########.#
+              #.o...*P..o..L#
+              ###############
+        goal: { lamp: true, stones: all }
+      hint:
+        - "Der Mampfer nimmt immer den kürzesten Weg, und durchs Licht führt keiner."
+        - "Auf welcher Seite ist der Mampfer näher? Mit welchem Stein fängst du an?"
+        - "Zuerst der rechte Stein: Währenddessen läuft der Mampfer oben herum nach rechts, und links ist frei."
+      solution: |
+        ```python
+        move()
+        move()
+        move()
+        take()
+        turn_left()
+        turn_left()
+        move()
+        move()
+        move()
+        move()
+        move()
+        move()
+        move()
+        move()
+        take()
+        turn_left()
+        turn_left()
+        move()
+        move()
+        move()
+        move()
+        move()
+        move()
+        move()
+        move()
+        move()
+        move()
+        move()
+        ```
+    javascript:
+      prompt: |
+        Zwei Funkensteine liegen im Dunkeln, einer links und einer rechts vom Licht. Durchs Licht kann der Mampfer nicht, er muss oben herum. Hol beide Steine und bring Pip zur Lampe.
+      starter: |
+        // Dein Plan, ein Befehl pro Zeile
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, take]
+        maps:
+          - facing: east
+            map: |
+              ###############
+              #M............#
+              #.###########.#
+              #.o...*P..o..L#
+              ###############
+        goal: { lamp: true, stones: all }
+      hint:
+        - "Der Mampfer nimmt immer den kürzesten Weg, und durchs Licht führt keiner."
+        - "Auf welcher Seite ist der Mampfer näher? Mit welchem Stein fängst du an?"
+        - "Zuerst der rechte Stein: Währenddessen läuft der Mampfer oben herum nach rechts, und links ist frei."
+      solution: |
+        ```javascript
+        move();
+        move();
+        move();
+        take();
+        turnLeft();
+        turnLeft();
+        move();
+        move();
+        move();
+        move();
+        move();
+        move();
+        move();
+        move();
+        take();
+        turnLeft();
+        turnLeft();
+        move();
+        move();
+        move();
+        move();
+        move();
+        move();
+        move();
+        move();
+        move();
+        move();
+        move();
+        ```
+
+  - id: find
+    title: "Wo ist was?"
+    level: 1
+    prompt: |
+      Der Wichtel gibt dir seine Karte: eine Liste von Zeilen, jede ein Text, `#` ist Fels. Schreib eine Funktion `find(cave, tile)`, die die Stelle von `tile` auf der Karte als `[x, y]` zurückgibt, x die Spalte und y die Zeile, beide ab 0, und `nil`, wenn es nicht vorkommt. Kommt es mehrmals vor, gilt das erste von oben, in seiner Zeile das erste von links.
+    starter: |
+      def find(cave, tile)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "find(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], 'L')"
+          expect: "[5, 1]"
+        - call: "find(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], 'P')"
+          expect: "[1, 1]"
+          say: "Pip steht oben links, auf x = 1, y = 1."
+        - call: "find(['#########', '#P....#.#', '###.#.#.#', '#...#...#', '#.###.#L#', '#.....#.#', '#########'], 'L')"
+          expect: "[7, 4]"
+        - call: "find(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], 'M')"
+          expect: "nil"
+          say: "Wo es nicht vorkommt."
+        - call: "find(['#######', '#.o.P.#', '#o....#', '#######'], 'o')"
+          expect: "[2, 1]"
+          say: "Das erste von oben."
+    feedback:
+      - when: { same_as: "def find(cave, tile)\n  cave.each_with_index do |row, y|\n    x = row.index(tile)\n    return [y, x] if x\n  end\n  nil\nend\n" }
+        say: "Deine Funktion gibt `[y, x]` zurück: zuerst kommt x, die Spalte, dann y, die Zeile."
+    hint: "Geh die Zeilen mit ihrem Index durch; in jeder Zeile sucht `index` (Python: `find`, JavaScript: `indexOf`) das Zeichen."
+    solution: |
+      ```ruby
+      def find(cave, tile)
+        cave.each_with_index do |row, y|
+          x = row.index(tile)
+          return [x, y] if x
+        end
+        nil
+      end
+      ```
+    python:
+      prompt: |
+        Der Wichtel gibt dir seine Karte: eine Liste von Zeilen, jede ein Text, `#` ist Fels. Schreib eine Funktion `find(cave, tile)`, die die Stelle von `tile` auf der Karte als Tupel `(x, y)` zurückgibt, x die Spalte und y die Zeile, beide ab 0, und `None`, wenn es nicht vorkommt. Kommt es mehrmals vor, gilt das erste von oben, in seiner Zeile das erste von links.
+      starter: |
+        def find(cave, tile):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "find(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], 'L')"
+            expect: "(5, 1)"
+          - call: "find(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], 'P')"
+            expect: "(1, 1)"
+            say: "Pip steht oben links, auf x = 1, y = 1."
+          - call: "find(['#########', '#P....#.#', '###.#.#.#', '#...#...#', '#.###.#L#', '#.....#.#', '#########'], 'L')"
+            expect: "(7, 4)"
+          - call: "find(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], 'M')"
+            expect: "None"
+            say: "Wo es nicht vorkommt."
+          - call: "find(['#######', '#.o.P.#', '#o....#', '#######'], 'o')"
+            expect: "(2, 1)"
+            say: "Das erste von oben."
+      feedback:
+        - when: { same_as: "def find(cave, tile):\n    for y, row in enumerate(cave):\n        x = row.find(tile)\n        if x != -1:\n            return [x, y]\n    return None\n" }
+          say: "Deine Funktion gibt eine Liste `[x, y]` zurück; die Prüfung erwartet ein Tupel `(x, y)`."
+      hint: "Geh die Zeilen mit ihrem Index durch; in jeder Zeile sucht `index` (Python: `find`, JavaScript: `indexOf`) das Zeichen."
+      solution: |
+        ```python
+        def find(cave, tile):
+            for y, row in enumerate(cave):
+                x = row.find(tile)
+                if x != -1:
+                    return (x, y)
+            return None
+        ```
+    javascript:
+      prompt: |
+        Der Wichtel gibt dir seine Karte: eine Liste von Zeilen, jede ein Text, `#` ist Fels. Schreib eine Funktion `find(cave, tile)`, die die Stelle von `tile` auf der Karte als `[x, y]` zurückgibt, x die Spalte und y die Zeile, beide ab 0, und `null`, wenn es nicht vorkommt. Kommt es mehrmals vor, gilt das erste von oben, in seiner Zeile das erste von links.
+      starter: |
+        function find(cave, tile) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "find(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], 'L')"
+            expect: "[5, 1]"
+          - call: "find(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], 'P')"
+            expect: "[1, 1]"
+            say: "Pip steht oben links, auf x = 1, y = 1."
+          - call: "find(['#########', '#P....#.#', '###.#.#.#', '#...#...#', '#.###.#L#', '#.....#.#', '#########'], 'L')"
+            expect: "[7, 4]"
+          - call: "find(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], 'M')"
+            expect: "null"
+            say: "Wo es nicht vorkommt."
+          - call: "find(['#######', '#.o.P.#', '#o....#', '#######'], 'o')"
+            expect: "[2, 1]"
+            say: "Das erste von oben."
+      feedback:
+        - when: { same_as: "function find(cave, tile) {\n  for (let y = 0; y < cave.length; y++) {\n    const x = cave[y].indexOf(tile);\n    if (x !== -1) return [y, x];\n  }\n  return null;\n}\n" }
+          say: "Deine Funktion gibt `[y, x]` zurück: zuerst kommt x, die Spalte, dann y, die Zeile."
+      hint: "Geh die Zeilen mit ihrem Index durch; in jeder Zeile sucht `index` (Python: `find`, JavaScript: `indexOf`) das Zeichen."
+      solution: |
+        ```javascript
+        function find(cave, tile) {
+          for (let y = 0; y < cave.length; y++) {
+            const x = cave[y].indexOf(tile);
+            if (x !== -1) return [x, y];
+          }
+          return null;
+        }
+        ```
+
+  - id: neighbors
+    title: "Nebenan"
+    level: 1
+    prompt: |
+      Schreib `neighbors(cave, x, y)`: die Felder neben dem Feld x, y, auf die man gehen kann, also alles außer `#`, als Liste von Positionen (`[x, y]`), in der Reihenfolge Osten, Norden, Westen, Süden: rechts, oben, links, unten. Nach unten wird y größer. Jede Karte hat ringsum Fels, du musst also nicht prüfen, ob du über den Rand schaust.
+    starter: |
+      def neighbors(cave, x, y)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "neighbors(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], 1, 1)"
+          expect: "[[2, 1], [1, 2]]"
+          say: "Rechts und unten ist frei."
+        - call: "neighbors(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], 3, 2)"
+          expect: "[[4, 2], [3, 1], [3, 3]]"
+        - call: "neighbors(['#########', '#P....#.#', '###.#.#.#', '#...#...#', '#.###.#L#', '#.....#.#', '#########'], 3, 1)"
+          expect: "[[4, 1], [2, 1], [3, 2]]"
+        - call: "neighbors(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], 5, 1)"
+          expect: "[[5, 2]]"
+          say: "Nur unten ist frei."
+        - call: "neighbors(['#########', '#P....#.#', '###.#.#.#', '#...#...#', '#.###.#L#', '#.....#.#', '#########'], 5, 2)"
+          expect: "[[5, 1], [5, 3]]"
+          say: "Oben und unten."
+    feedback:
+      - when: { same_as: "def neighbors(cave, x, y)\n  result = []\n  [[1, 0], [0, 1], [-1, 0], [0, -1]].each do |dx, dy|\n    result << [x + dx, y + dy] if cave[y + dy][x + dx] != '#'\n  end\n  result\nend\n" }
+        say: "Die Reihenfolge stimmt nicht: Osten, Norden, Westen, Süden, also rechts, oben, links, unten. Norden ist oben, dort wird y kleiner."
+    hint: "Die vier Richtungen als Liste von Verschiebungen: `[1, 0]`, `[0, -1]`, `[-1, 0]`, `[0, 1]`. Für jede schaust du in `cave[y + dy][x + dx]`."
+    solution: |
+      ```ruby
+      def neighbors(cave, x, y)
+        result = []
+        [[1, 0], [0, -1], [-1, 0], [0, 1]].each do |dx, dy|
+          result << [x + dx, y + dy] if cave[y + dy][x + dx] != '#'
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `neighbors(cave, x, y)`: die Felder neben dem Feld x, y, auf die man gehen kann, also alles außer `#`, als Liste von Positionen (Tupel `(x, y)`), in der Reihenfolge Osten, Norden, Westen, Süden: rechts, oben, links, unten. Nach unten wird y größer. Jede Karte hat ringsum Fels, du musst also nicht prüfen, ob du über den Rand schaust.
+      starter: |
+        def neighbors(cave, x, y):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "neighbors(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], 1, 1)"
+            expect: "[(2, 1), (1, 2)]"
+            say: "Rechts und unten ist frei."
+          - call: "neighbors(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], 3, 2)"
+            expect: "[(4, 2), (3, 1), (3, 3)]"
+          - call: "neighbors(['#########', '#P....#.#', '###.#.#.#', '#...#...#', '#.###.#L#', '#.....#.#', '#########'], 3, 1)"
+            expect: "[(4, 1), (2, 1), (3, 2)]"
+          - call: "neighbors(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], 5, 1)"
+            expect: "[(5, 2)]"
+            say: "Nur unten ist frei."
+          - call: "neighbors(['#########', '#P....#.#', '###.#.#.#', '#...#...#', '#.###.#L#', '#.....#.#', '#########'], 5, 2)"
+            expect: "[(5, 1), (5, 3)]"
+            say: "Oben und unten."
+      feedback:
+        - when: { same_as: "def neighbors(cave, x, y):\n    result = []\n    for dx, dy in [(1, 0), (0, 1), (-1, 0), (0, -1)]:\n        if cave[y + dy][x + dx] != '#':\n            result.append((x + dx, y + dy))\n    return result\n" }
+          say: "Die Reihenfolge stimmt nicht: Osten, Norden, Westen, Süden, also rechts, oben, links, unten. Norden ist oben, dort wird y kleiner."
+      hint: "Die vier Richtungen als Liste von Verschiebungen: `[1, 0]`, `[0, -1]`, `[-1, 0]`, `[0, 1]`. Für jede schaust du in `cave[y + dy][x + dx]`."
+      solution: |
+        ```python
+        def neighbors(cave, x, y):
+            result = []
+            for dx, dy in [(1, 0), (0, -1), (-1, 0), (0, 1)]:
+                if cave[y + dy][x + dx] != '#':
+                    result.append((x + dx, y + dy))
+            return result
+        ```
+    javascript:
+      prompt: |
+        Schreib `neighbors(cave, x, y)`: die Felder neben dem Feld x, y, auf die man gehen kann, also alles außer `#`, als Liste von Positionen (`[x, y]`), in der Reihenfolge Osten, Norden, Westen, Süden: rechts, oben, links, unten. Nach unten wird y größer. Jede Karte hat ringsum Fels, du musst also nicht prüfen, ob du über den Rand schaust.
+      starter: |
+        function neighbors(cave, x, y) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "neighbors(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], 1, 1)"
+            expect: "[[2, 1], [1, 2]]"
+            say: "Rechts und unten ist frei."
+          - call: "neighbors(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], 3, 2)"
+            expect: "[[4, 2], [3, 1], [3, 3]]"
+          - call: "neighbors(['#########', '#P....#.#', '###.#.#.#', '#...#...#', '#.###.#L#', '#.....#.#', '#########'], 3, 1)"
+            expect: "[[4, 1], [2, 1], [3, 2]]"
+          - call: "neighbors(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], 5, 1)"
+            expect: "[[5, 2]]"
+            say: "Nur unten ist frei."
+          - call: "neighbors(['#########', '#P....#.#', '###.#.#.#', '#...#...#', '#.###.#L#', '#.....#.#', '#########'], 5, 2)"
+            expect: "[[5, 1], [5, 3]]"
+            say: "Oben und unten."
+      feedback:
+        - when: { same_as: "function neighbors(cave, x, y) {\n  const result = [];\n  for (const [dx, dy] of [[1, 0], [0, 1], [-1, 0], [0, -1]]) {\n    if (cave[y + dy][x + dx] !== '#') result.push([x + dx, y + dy]);\n  }\n  return result;\n}\n" }
+          say: "Die Reihenfolge stimmt nicht: Osten, Norden, Westen, Süden, also rechts, oben, links, unten. Norden ist oben, dort wird y kleiner."
+      hint: "Die vier Richtungen als Liste von Verschiebungen: `[1, 0]`, `[0, -1]`, `[-1, 0]`, `[0, 1]`. Für jede schaust du in `cave[y + dy][x + dx]`."
+      solution: |
+        ```javascript
+        function neighbors(cave, x, y) {
+          const result = [];
+          for (const [dx, dy] of [[1, 0], [0, -1], [-1, 0], [0, 1]]) {
+            if (cave[y + dy][x + dx] !== '#') result.push([x + dx, y + dy]);
+          }
+          return result;
+        }
+        ```
+
+  - id: distance
+    title: "Wie weit?"
+    level: 2
+    prompt: |
+      Schreib `distance(cave, start, goal)`: wie viele Schritte der kürzeste Weg von `start` nach `goal` hat, beide Positionen wie bei `find`, und `nil`, wenn es keinen Weg gibt. So sucht der Mampfer: eine Breitensuche, die sich zu jedem gefundenen Feld merkt, wie weit es vom Start ist. Nimm deine Funktion `neighbors` von oben mit hinein.
+    starter: |
+      def distance(cave, start, goal)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "distance(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], [1, 1], [5, 1])"
+          expect: "6"
+        - call: "distance(['#########', '#P....#.#', '###.#.#.#', '#...#...#', '#.###.#L#', '#.....#.#', '#########'], [1, 1], [7, 4])"
+          expect: "9"
+        - call: "distance(['######', '#P#..#', '#.#.##', '#...L#', '######'], [1, 1], [4, 3])"
+          expect: "5"
+        - call: "distance(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], [2, 1], [2, 1])"
+          expect: "0"
+          say: "Start und Ziel sind dasselbe Feld."
+        - call: "distance(['#######', '#P.#..#', '#..#.L#', '#######'], [1, 1], [5, 2])"
+          expect: "nil"
+          say: "Hier gibt es keinen Weg."
+    hint:
+      - "Ein Hash `steps` merkt sich zu jedem gefundenen Feld seinen Abstand; der Start hat 0."
+      - "Eine Queue, am Anfang nur der Start. Nimm vorne eines heraus (`shift`): Jeder Nachbar, der noch nicht in `steps` steht, bekommt den Abstand des Feldes plus 1 und kommt hinten in die Queue."
+    solution: |
+      ```ruby
+      def neighbors(cave, x, y)
+        result = []
+        [[1, 0], [0, -1], [-1, 0], [0, 1]].each do |dx, dy|
+          result << [x + dx, y + dy] if cave[y + dy][x + dx] != '#'
+        end
+        result
+      end
+
+      def distance(cave, start, goal)
+        steps = { start => 0 }
+        queue = [start]
+        until queue.empty?
+          node = queue.shift
+          return steps[node] if node == goal
+          neighbors(cave, *node).each do |neighbor|
+            next if steps.key?(neighbor)
+            steps[neighbor] = steps[node] + 1
+            queue << neighbor
+          end
+        end
+        nil
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `distance(cave, start, goal)`: wie viele Schritte der kürzeste Weg von `start` nach `goal` hat, beide Positionen wie bei `find`, und `None`, wenn es keinen Weg gibt. So sucht der Mampfer: eine Breitensuche, die sich zu jedem gefundenen Feld merkt, wie weit es vom Start ist. Nimm deine Funktion `neighbors` von oben mit hinein.
+      starter: |
+        def distance(cave, start, goal):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "distance(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], (1, 1), (5, 1))"
+            expect: "6"
+          - call: "distance(['#########', '#P....#.#', '###.#.#.#', '#...#...#', '#.###.#L#', '#.....#.#', '#########'], (1, 1), (7, 4))"
+            expect: "9"
+          - call: "distance(['######', '#P#..#', '#.#.##', '#...L#', '######'], (1, 1), (4, 3))"
+            expect: "5"
+          - call: "distance(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], (2, 1), (2, 1))"
+            expect: "0"
+            say: "Start und Ziel sind dasselbe Feld."
+          - call: "distance(['#######', '#P.#..#', '#..#.L#', '#######'], (1, 1), (5, 2))"
+            expect: "None"
+            say: "Hier gibt es keinen Weg."
+      hint:
+        - "Ein Dictionary `steps` merkt sich zu jedem gefundenen Feld seinen Abstand; der Start hat 0. Positionen als Tupel gehen als Schlüssel, Listen nicht."
+        - "Eine Queue (`collections.deque`), am Anfang nur der Start. Nimm vorne eines heraus (`popleft`): Jeder Nachbar, der noch nicht in `steps` steht, bekommt den Abstand des Feldes plus 1 und kommt hinten hinein."
+      solution: |
+        ```python
+        from collections import deque
+
+        def neighbors(cave, x, y):
+            result = []
+            for dx, dy in [(1, 0), (0, -1), (-1, 0), (0, 1)]:
+                if cave[y + dy][x + dx] != '#':
+                    result.append((x + dx, y + dy))
+            return result
+
+        def distance(cave, start, goal):
+            steps = {start: 0}
+            queue = deque([start])
+            while queue:
+                node = queue.popleft()
+                if node == goal:
+                    return steps[node]
+                for neighbor in neighbors(cave, *node):
+                    if neighbor not in steps:
+                        steps[neighbor] = steps[node] + 1
+                        queue.append(neighbor)
+            return None
+        ```
+    javascript:
+      prompt: |
+        Schreib `distance(cave, start, goal)`: wie viele Schritte der kürzeste Weg von `start` nach `goal` hat, beide Positionen wie bei `find`, und `null`, wenn es keinen Weg gibt. So sucht der Mampfer: eine Breitensuche, die sich zu jedem gefundenen Feld merkt, wie weit es vom Start ist. Nimm deine Funktion `neighbors` von oben mit hinein.
+      starter: |
+        function distance(cave, start, goal) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "distance(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], [1, 1], [5, 1])"
+            expect: "6"
+          - call: "distance(['#########', '#P....#.#', '###.#.#.#', '#...#...#', '#.###.#L#', '#.....#.#', '#########'], [1, 1], [7, 4])"
+            expect: "9"
+          - call: "distance(['######', '#P#..#', '#.#.##', '#...L#', '######'], [1, 1], [4, 3])"
+            expect: "5"
+          - call: "distance(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], [2, 1], [2, 1])"
+            expect: "0"
+            say: "Start und Ziel sind dasselbe Feld."
+          - call: "distance(['#######', '#P.#..#', '#..#.L#', '#######'], [1, 1], [5, 2])"
+            expect: "null"
+            say: "Hier gibt es keinen Weg."
+      hint:
+        - "Ein Objekt `steps` merkt sich zu jedem gefundenen Feld seinen Abstand; der Start hat 0. Ein Array als Schlüssel wird zum Text: `steps[[3, 1]]` ist `steps['3,1']`, und `[3, 1] in steps` fragt danach."
+        - "Eine Queue, am Anfang nur der Start. Nimm vorne eines heraus (`shift`): Jeder Nachbar, der noch nicht in `steps` steht, bekommt den Abstand des Feldes plus 1 und kommt hinten hinein."
+      solution: |
+        ```javascript
+        function neighbors(cave, x, y) {
+          const result = [];
+          for (const [dx, dy] of [[1, 0], [0, -1], [-1, 0], [0, 1]]) {
+            if (cave[y + dy][x + dx] !== '#') result.push([x + dx, y + dy]);
+          }
+          return result;
+        }
+
+        function distance(cave, start, goal) {
+          const steps = { [start]: 0 };
+          const queue = [start];
+          while (queue.length > 0) {
+            const node = queue.shift();
+            if (node[0] === goal[0] && node[1] === goal[1]) return steps[node];
+            for (const neighbor of neighbors(cave, node[0], node[1])) {
+              if (neighbor in steps) continue;
+              steps[neighbor] = steps[node] + 1;
+              queue.push(neighbor);
+            }
+          }
+          return null;
+        }
+        ```
+
+  - id: way
+    title: "Der kürzeste Weg"
+    level: 3
+    prompt: |
+      Schreib `way(cave, start, goal)`: den kürzesten Weg als Liste der Felder von `start` bis `goal`, beide mitgezählt, und `nil`, wenn es keinen gibt. Wie in der Breitensuche des Handbuchs: Merk dir zu jedem Feld seinen Vorgänger, und geh am Ende vom Ziel aus zurück bis zum Start.
+    starter: |
+      def way(cave, start, goal)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "way(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], [1, 1], [5, 1])"
+          expect: "[[1, 1], [2, 1], [3, 1], [3, 2], [4, 2], [5, 2], [5, 1]]"
+        - call: "way(['######', '#P#..#', '#.#.##', '#...L#', '######'], [1, 1], [4, 3])"
+          expect: "[[1, 1], [1, 2], [1, 3], [2, 3], [3, 3], [4, 3]]"
+        - call: "way(['#########', '#P....#.#', '###.#.#.#', '#...#...#', '#.###.#L#', '#.....#.#', '#########'], [1, 1], [7, 4])"
+          expect: "[[1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [5, 2], [5, 3], [6, 3], [7, 3], [7, 4]]"
+        - call: "way(['#####', '#PoL#', '#####'], [1, 1], [3, 1])"
+          expect: "[[1, 1], [2, 1], [3, 1]]"
+          say: "Ein Stein liegt im Weg, aber auf einen Stein kann man gehen."
+        - call: "way(['#######', '#P.#..#', '#..#.L#', '#######'], [1, 1], [5, 2])"
+          expect: "nil"
+          say: "Hier gibt es keinen Weg."
+    hint:
+      - "Wie `distance`, nur merkst du dir statt des Abstands den Vorgänger: das Feld, von dem aus du den Nachbarn gefunden hast. Der Start hat keinen."
+      - "Vom Ziel aus: Füg das Feld vorne an den Weg an und geh zu seinem Vorgänger, bis keiner mehr da ist."
+    solution: |
+      ```ruby
+      def neighbors(cave, x, y)
+        result = []
+        [[1, 0], [0, -1], [-1, 0], [0, 1]].each do |dx, dy|
+          result << [x + dx, y + dy] if cave[y + dy][x + dx] != '#'
+        end
+        result
+      end
+
+      def way(cave, start, goal)
+        predecessor = { start => nil }
+        queue = [start]
+        until queue.empty?
+          node = queue.shift
+          break if node == goal
+          neighbors(cave, *node).each do |neighbor|
+            next if predecessor.key?(neighbor)
+            predecessor[neighbor] = node
+            queue << neighbor
+          end
+        end
+        return nil unless predecessor.key?(goal)
+
+        path = []
+        node = goal
+        while node
+          path.unshift(node)
+          node = predecessor[node]
+        end
+        path
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `way(cave, start, goal)`: den kürzesten Weg als Liste der Felder von `start` bis `goal`, beide mitgezählt, und `None`, wenn es keinen gibt. Wie in der Breitensuche des Handbuchs: Merk dir zu jedem Feld seinen Vorgänger, und geh am Ende vom Ziel aus zurück bis zum Start.
+      starter: |
+        def way(cave, start, goal):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "way(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], (1, 1), (5, 1))"
+            expect: "[(1, 1), (2, 1), (3, 1), (3, 2), (4, 2), (5, 2), (5, 1)]"
+          - call: "way(['######', '#P#..#', '#.#.##', '#...L#', '######'], (1, 1), (4, 3))"
+            expect: "[(1, 1), (1, 2), (1, 3), (2, 3), (3, 3), (4, 3)]"
+          - call: "way(['#########', '#P....#.#', '###.#.#.#', '#...#...#', '#.###.#L#', '#.....#.#', '#########'], (1, 1), (7, 4))"
+            expect: "[(1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (5, 2), (5, 3), (6, 3), (7, 3), (7, 4)]"
+          - call: "way(['#####', '#PoL#', '#####'], (1, 1), (3, 1))"
+            expect: "[(1, 1), (2, 1), (3, 1)]"
+            say: "Ein Stein liegt im Weg, aber auf einen Stein kann man gehen."
+          - call: "way(['#######', '#P.#..#', '#..#.L#', '#######'], (1, 1), (5, 2))"
+            expect: "None"
+            say: "Hier gibt es keinen Weg."
+      hint:
+        - "Wie `distance`, nur merkst du dir statt des Abstands den Vorgänger: das Feld, von dem aus du den Nachbarn gefunden hast. Der Start hat keinen."
+        - "Vom Ziel aus: Füg das Feld vorne an den Weg an und geh zu seinem Vorgänger, bis keiner mehr da ist."
+      solution: |
+        ```python
+        from collections import deque
+
+        def neighbors(cave, x, y):
+            result = []
+            for dx, dy in [(1, 0), (0, -1), (-1, 0), (0, 1)]:
+                if cave[y + dy][x + dx] != '#':
+                    result.append((x + dx, y + dy))
+            return result
+
+        def way(cave, start, goal):
+            predecessor = {start: None}
+            queue = deque([start])
+            while queue:
+                node = queue.popleft()
+                if node == goal:
+                    break
+                for neighbor in neighbors(cave, *node):
+                    if neighbor not in predecessor:
+                        predecessor[neighbor] = node
+                        queue.append(neighbor)
+            if goal not in predecessor:
+                return None
+            path = []
+            node = goal
+            while node is not None:
+                path.insert(0, node)
+                node = predecessor[node]
+            return path
+        ```
+    javascript:
+      prompt: |
+        Schreib `way(cave, start, goal)`: den kürzesten Weg als Liste der Felder von `start` bis `goal`, beide mitgezählt, und `null`, wenn es keinen gibt. Wie in der Breitensuche des Handbuchs: Merk dir zu jedem Feld seinen Vorgänger, und geh am Ende vom Ziel aus zurück bis zum Start.
+      starter: |
+        function way(cave, start, goal) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "way(['#######', '#P..#L#', '#.#...#', '#...#.#', '#######'], [1, 1], [5, 1])"
+            expect: "[[1, 1], [2, 1], [3, 1], [3, 2], [4, 2], [5, 2], [5, 1]]"
+          - call: "way(['######', '#P#..#', '#.#.##', '#...L#', '######'], [1, 1], [4, 3])"
+            expect: "[[1, 1], [1, 2], [1, 3], [2, 3], [3, 3], [4, 3]]"
+          - call: "way(['#########', '#P....#.#', '###.#.#.#', '#...#...#', '#.###.#L#', '#.....#.#', '#########'], [1, 1], [7, 4])"
+            expect: "[[1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [5, 2], [5, 3], [6, 3], [7, 3], [7, 4]]"
+          - call: "way(['#####', '#PoL#', '#####'], [1, 1], [3, 1])"
+            expect: "[[1, 1], [2, 1], [3, 1]]"
+            say: "Ein Stein liegt im Weg, aber auf einen Stein kann man gehen."
+          - call: "way(['#######', '#P.#..#', '#..#.L#', '#######'], [1, 1], [5, 2])"
+            expect: "null"
+            say: "Hier gibt es keinen Weg."
+      hint:
+        - "Wie `distance`, nur merkst du dir statt des Abstands den Vorgänger: das Feld, von dem aus du den Nachbarn gefunden hast. Der Start hat keinen."
+        - "Vom Ziel aus: Füg das Feld vorne an den Weg an und geh zu seinem Vorgänger, bis keiner mehr da ist."
+      solution: |
+        ```javascript
+        function neighbors(cave, x, y) {
+          const result = [];
+          for (const [dx, dy] of [[1, 0], [0, -1], [-1, 0], [0, 1]]) {
+            if (cave[y + dy][x + dx] !== '#') result.push([x + dx, y + dy]);
+          }
+          return result;
+        }
+
+        function way(cave, start, goal) {
+          const predecessor = { [start]: null };
+          const queue = [start];
+          while (queue.length > 0) {
+            const node = queue.shift();
+            if (node[0] === goal[0] && node[1] === goal[1]) break;
+            for (const neighbor of neighbors(cave, node[0], node[1])) {
+              if (neighbor in predecessor) continue;
+              predecessor[neighbor] = node;
+              queue.push(neighbor);
+            }
+          }
+          if (!(goal in predecessor)) return null;
+          const path = [];
+          for (let node = goal; node !== null; node = predecessor[node]) path.unshift(node);
+          return path;
+        }
+        ```
+
+  - id: face
+    title: "Schau dorthin!"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `face(direction)`, die Pip so lange nach links dreht, bis Pip in die Richtung `direction` schaut: `"east"`, `"north"`, `"west"` oder `"south"`. Wohin Pip gerade schaut, sagt `facing`. Die Prüfung ruft `face` auf drei Karten auf, mit `"south"`, `"north"` und `"east"`.
+    starter: |
+      def face(direction)
+      end
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, facing]
+      maps:
+        - facing: east
+          call: "face(\"south\")"
+          expect: { facing: south, moves: 0 }
+          map: |
+            #####
+            #...#
+            #.P.#
+            #...#
+            #####
+        - facing: north
+          call: "face(\"north\")"
+          expect: { facing: north, moves: 0 }
+          map: |
+            #####
+            #...#
+            #.P.#
+            #...#
+            #####
+        - facing: south
+          call: "face(\"east\")"
+          expect: { facing: east, moves: 0 }
+          map: |
+            #####
+            #...#
+            #.P.#
+            #...#
+            #####
+    hint: "Eine Schleife: `turn_left until facing == direction`. Schaut Pip schon richtig, dreht sie gar nicht."
+    solution: |
+      ```ruby
+      def face(direction)
+        turn_left until facing == direction
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `face(direction)`, die Pip so lange nach links dreht, bis Pip in die Richtung `direction` schaut: `"east"`, `"north"`, `"west"` oder `"south"`. Wohin Pip gerade schaut, sagt `facing()`. Die Prüfung ruft `face` auf drei Karten auf, mit `"south"`, `"north"` und `"east"`.
+      starter: |
+        def face(direction):
+            pass
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, facing]
+        maps:
+          - facing: east
+            call: "face(\"south\")"
+            expect: { facing: south, moves: 0 }
+            map: |
+              #####
+              #...#
+              #.P.#
+              #...#
+              #####
+          - facing: north
+            call: "face(\"north\")"
+            expect: { facing: north, moves: 0 }
+            map: |
+              #####
+              #...#
+              #.P.#
+              #...#
+              #####
+          - facing: south
+            call: "face(\"east\")"
+            expect: { facing: east, moves: 0 }
+            map: |
+              #####
+              #...#
+              #.P.#
+              #...#
+              #####
+      hint: "Eine Schleife: `while facing() != direction:` und darin `turn_left()`. Schaut Pip schon richtig, dreht sie gar nicht."
+      solution: |
+        ```python
+        def face(direction):
+            while facing() != direction:
+                turn_left()
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `face(direction)`, die Pip so lange nach links dreht, bis Pip in die Richtung `direction` schaut: `"east"`, `"north"`, `"west"` oder `"south"`. Wohin Pip gerade schaut, sagt `facing()`. Die Prüfung ruft `face` auf drei Karten auf, mit `"south"`, `"north"` und `"east"`.
+      starter: |
+        function face(direction) {
+        }
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, facing]
+        maps:
+          - facing: east
+            call: "face(\"south\");"
+            expect: { facing: south, moves: 0 }
+            map: |
+              #####
+              #...#
+              #.P.#
+              #...#
+              #####
+          - facing: north
+            call: "face(\"north\");"
+            expect: { facing: north, moves: 0 }
+            map: |
+              #####
+              #...#
+              #.P.#
+              #...#
+              #####
+          - facing: south
+            call: "face(\"east\");"
+            expect: { facing: east, moves: 0 }
+            map: |
+              #####
+              #...#
+              #.P.#
+              #...#
+              #####
+      hint: "Eine Schleife: `while (facing() !== direction) turnLeft();`. Schaut Pip schon richtig, dreht sie gar nicht."
+      solution: |
+        ```javascript
+        function face(direction) {
+          while (facing() !== direction) turnLeft();
+        }
+        ```
+
+  - id: escape
+    title: "Der kürzeste Weg"
+    level: 3
+    prompt: |
+      Jetzt alles zusammen: Lies mit `cave_map` die Karte, such mit deiner Funktion `way` den kürzesten Weg von Pip zur Lampe und lauf ihn ab, mit `face` vor jedem Schritt. Der Mampfer ist so schnell wie Pip, nur der kürzeste Weg ist schnell genug. Die Prüfung schickt Pip durch drei Höhlen; zwei baut der Wichtel für dich.
+    starter: |
+      # deine Funktionen find, neighbors, way und face von oben
+
+      cave = cave_map
+    check:
+      type: pip
+      language: ruby
+      commands: [move, turn_left, cave_map, facing]
+      maps:
+        - facing: south
+          map: |
+            #############
+            #P#.......#.#
+            #.#.#####.#.#
+            #...........#
+            ###.#.#####.#
+            #...#.......#
+            #.#.#.###.#.#
+            #.#...#.#.#.#
+            #.#.###.#.#.#
+            #L......#..M#
+            #############
+        - generate: chase
+          size: [6, 5]
+        - generate: chase
+          size: [6, 5]
+      goal: { lamp: true }
+    hint:
+      - "`find(cave, 'P')` und `find(cave, 'L')` geben dir Start und Ziel für `way`."
+      - "Von einem Feld zum nächsten: x + 1 ist Osten, y − 1 Norden, x − 1 Westen, y + 1 Süden. Ein Dictionary von der Verschiebung zur Richtung hilft."
+    solution: |
+      ```ruby
+      def find(cave, tile)
+        cave.each_with_index do |row, y|
+          x = row.index(tile)
+          return [x, y] if x
+        end
+        nil
+      end
+
+      def neighbors(cave, x, y)
+        result = []
+        [[1, 0], [0, -1], [-1, 0], [0, 1]].each do |dx, dy|
+          result << [x + dx, y + dy] if cave[y + dy][x + dx] != '#'
+        end
+        result
+      end
+
+      def way(cave, start, goal)
+        predecessor = { start => nil }
+        queue = [start]
+        until queue.empty?
+          node = queue.shift
+          break if node == goal
+          neighbors(cave, *node).each do |neighbor|
+            next if predecessor.key?(neighbor)
+            predecessor[neighbor] = node
+            queue << neighbor
+          end
+        end
+        return nil unless predecessor.key?(goal)
+
+        path = []
+        node = goal
+        while node
+          path.unshift(node)
+          node = predecessor[node]
+        end
+        path
+      end
+
+      def face(direction)
+        turn_left until facing == direction
+      end
+
+      DIRECTIONS = { [1, 0] => 'east', [0, -1] => 'north', [-1, 0] => 'west', [0, 1] => 'south' }
+
+      cave = cave_map
+      path = way(cave, find(cave, 'P'), find(cave, 'L'))
+      path.each_cons(2) do |(x1, y1), (x2, y2)|
+        face(DIRECTIONS[[x2 - x1, y2 - y1]])
+        move
+      end
+      ```
+    python:
+      prompt: |
+        Jetzt alles zusammen: Lies mit `cave_map()` die Karte, such mit deiner Funktion `way` den kürzesten Weg von Pip zur Lampe und lauf ihn ab, mit `face` vor jedem Schritt. Der Mampfer ist so schnell wie Pip, nur der kürzeste Weg ist schnell genug. Die Prüfung schickt Pip durch drei Höhlen; zwei baut der Wichtel für dich.
+      starter: |
+        # deine Funktionen find, neighbors, way und face von oben
+
+        cave = cave_map()
+      check:
+        type: pip
+        language: python
+        commands: [move, turn_left, cave_map, facing]
+        maps:
+          - facing: south
+            map: |
+              #############
+              #P#.......#.#
+              #.#.#####.#.#
+              #...........#
+              ###.#.#####.#
+              #...#.......#
+              #.#.#.###.#.#
+              #.#...#.#.#.#
+              #.#.###.#.#.#
+              #L......#..M#
+              #############
+          - generate: chase
+            size: [6, 5]
+          - generate: chase
+            size: [6, 5]
+        goal: { lamp: true }
+      hint:
+        - "`find(cave, 'P')` und `find(cave, 'L')` geben dir Start und Ziel für `way`."
+        - "Von einem Feld zum nächsten: x + 1 ist Osten, y − 1 Norden, x − 1 Westen, y + 1 Süden. Ein Dictionary von der Verschiebung zur Richtung hilft."
+      solution: |
+        ```python
+        from collections import deque
+
+        def find(cave, tile):
+            for y, row in enumerate(cave):
+                x = row.find(tile)
+                if x != -1:
+                    return (x, y)
+            return None
+
+        def neighbors(cave, x, y):
+            result = []
+            for dx, dy in [(1, 0), (0, -1), (-1, 0), (0, 1)]:
+                if cave[y + dy][x + dx] != '#':
+                    result.append((x + dx, y + dy))
+            return result
+
+        def way(cave, start, goal):
+            predecessor = {start: None}
+            queue = deque([start])
+            while queue:
+                node = queue.popleft()
+                if node == goal:
+                    break
+                for neighbor in neighbors(cave, *node):
+                    if neighbor not in predecessor:
+                        predecessor[neighbor] = node
+                        queue.append(neighbor)
+            if goal not in predecessor:
+                return None
+            path = []
+            node = goal
+            while node is not None:
+                path.insert(0, node)
+                node = predecessor[node]
+            return path
+
+        def face(direction):
+            while facing() != direction:
+                turn_left()
+
+        DIRECTIONS = {(1, 0): 'east', (0, -1): 'north', (-1, 0): 'west', (0, 1): 'south'}
+
+        cave = cave_map()
+        path = way(cave, find(cave, 'P'), find(cave, 'L'))
+        for (x1, y1), (x2, y2) in zip(path, path[1:]):
+            face(DIRECTIONS[(x2 - x1, y2 - y1)])
+            move()
+        ```
+    javascript:
+      prompt: |
+        Jetzt alles zusammen: Lies mit `caveMap()` die Karte, such mit deiner Funktion `way` den kürzesten Weg von Pip zur Lampe und lauf ihn ab, mit `face` vor jedem Schritt. Der Mampfer ist so schnell wie Pip, nur der kürzeste Weg ist schnell genug. Die Prüfung schickt Pip durch drei Höhlen; zwei baut der Wichtel für dich.
+      starter: |
+        // deine Funktionen find, neighbors, way und face von oben
+
+        const cave = caveMap();
+      check:
+        type: pip
+        language: javascript
+        commands: [move, turn_left, cave_map, facing]
+        maps:
+          - facing: south
+            map: |
+              #############
+              #P#.......#.#
+              #.#.#####.#.#
+              #...........#
+              ###.#.#####.#
+              #...#.......#
+              #.#.#.###.#.#
+              #.#...#.#.#.#
+              #.#.###.#.#.#
+              #L......#..M#
+              #############
+          - generate: chase
+            size: [6, 5]
+          - generate: chase
+            size: [6, 5]
+        goal: { lamp: true }
+      hint:
+        - "`find(cave, 'P')` und `find(cave, 'L')` geben dir Start und Ziel für `way`."
+        - "Von einem Feld zum nächsten: x + 1 ist Osten, y − 1 Norden, x − 1 Westen, y + 1 Süden. Ein Dictionary von der Verschiebung zur Richtung hilft."
+      solution: |
+        ```javascript
+        function find(cave, tile) {
+          for (let y = 0; y < cave.length; y++) {
+            const x = cave[y].indexOf(tile);
+            if (x !== -1) return [x, y];
+          }
+          return null;
+        }
+
+        function neighbors(cave, x, y) {
+          const result = [];
+          for (const [dx, dy] of [[1, 0], [0, -1], [-1, 0], [0, 1]]) {
+            if (cave[y + dy][x + dx] !== '#') result.push([x + dx, y + dy]);
+          }
+          return result;
+        }
+
+        function way(cave, start, goal) {
+          const predecessor = { [start]: null };
+          const queue = [start];
+          while (queue.length > 0) {
+            const node = queue.shift();
+            if (node[0] === goal[0] && node[1] === goal[1]) break;
+            for (const neighbor of neighbors(cave, node[0], node[1])) {
+              if (neighbor in predecessor) continue;
+              predecessor[neighbor] = node;
+              queue.push(neighbor);
+            }
+          }
+          if (!(goal in predecessor)) return null;
+          const path = [];
+          for (let node = goal; node !== null; node = predecessor[node]) path.unshift(node);
+          return path;
+        }
+
+        function face(direction) {
+          while (facing() !== direction) turnLeft();
+        }
+
+        const DIRECTIONS = { '1,0': 'east', '0,-1': 'north', '-1,0': 'west', '0,1': 'south' };
+
+        const cave = caveMap();
+        const path = way(cave, find(cave, 'P'), find(cave, 'L'));
+        for (let i = 1; i < path.length; i++) {
+          face(DIRECTIONS[[path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1]]]);
+          move();
+        }
+        ```
+
+  - id: next-step
+    title: "Was tut der Mampfer?"
+    extra: true
+    prompt: |
+      Schreib `next_step(cave)`: das Feld, auf das der Mampfer (`M`) als Nächstes geht, wenn Pip (`P`) einen Schritt macht. Er sucht von Pip aus, die Nachbarn in der Reihenfolge Osten, Norden, Westen, Süden, und geht auf den Vorgänger seines Feldes. Findet er keinen Weg, bleibt er stehen. Lampen gibt es hier keine.
+    starter: |
+      def next_step(cave)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "next_step(['#######', '#M...P#', '#######'])"
+          expect: "[2, 1]"
+        - call: "next_step(['########', '#....M.#', '#.####.#', '#..P...#', '########'])"
+          expect: "[6, 1]"
+          say: "Der kürzere Weg führt rechts herum."
+        - call: "next_step(['#####', '#M..#', '#.#.#', '#..P#', '#####'])"
+          expect: "[2, 1]"
+          say: "Zwei Wege sind gleich lang: Pips Suche findet zuerst den über Norden."
+        - call: "next_step(['#####', '#M#P#', '#####'])"
+          expect: "[1, 1]"
+          say: "Der Mampfer findet keinen Weg und bleibt stehen."
+    hint: "Mit `find` und `way`: der Weg von Pip zum Mampfer. Das Feld vor seinem letzten ist das, auf das der Mampfer geht."
+    solution: |
+      ```ruby
+      def find(cave, tile)
+        cave.each_with_index do |row, y|
+          x = row.index(tile)
+          return [x, y] if x
+        end
+        nil
+      end
+
+      def neighbors(cave, x, y)
+        result = []
+        [[1, 0], [0, -1], [-1, 0], [0, 1]].each do |dx, dy|
+          result << [x + dx, y + dy] if cave[y + dy][x + dx] != '#'
+        end
+        result
+      end
+
+      def way(cave, start, goal)
+        predecessor = { start => nil }
+        queue = [start]
+        until queue.empty?
+          node = queue.shift
+          break if node == goal
+          neighbors(cave, *node).each do |neighbor|
+            next if predecessor.key?(neighbor)
+            predecessor[neighbor] = node
+            queue << neighbor
+          end
+        end
+        return nil unless predecessor.key?(goal)
+
+        path = []
+        node = goal
+        while node
+          path.unshift(node)
+          node = predecessor[node]
+        end
+        path
+      end
+
+      def next_step(cave)
+        mampfer = find(cave, 'M')
+        path = way(cave, find(cave, 'P'), mampfer)
+        path ? path[-2] : mampfer
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `next_step(cave)`: das Feld, auf das der Mampfer (`M`) als Nächstes geht, wenn Pip (`P`) einen Schritt macht. Er sucht von Pip aus, die Nachbarn in der Reihenfolge Osten, Norden, Westen, Süden, und geht auf den Vorgänger seines Feldes. Findet er keinen Weg, bleibt er stehen. Lampen gibt es hier keine.
+      starter: |
+        def next_step(cave):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "next_step(['#######', '#M...P#', '#######'])"
+            expect: "(2, 1)"
+          - call: "next_step(['########', '#....M.#', '#.####.#', '#..P...#', '########'])"
+            expect: "(6, 1)"
+            say: "Der kürzere Weg führt rechts herum."
+          - call: "next_step(['#####', '#M..#', '#.#.#', '#..P#', '#####'])"
+            expect: "(2, 1)"
+            say: "Zwei Wege sind gleich lang: Pips Suche findet zuerst den über Norden."
+          - call: "next_step(['#####', '#M#P#', '#####'])"
+            expect: "(1, 1)"
+            say: "Der Mampfer findet keinen Weg und bleibt stehen."
+      hint: "Mit `find` und `way`: der Weg von Pip zum Mampfer. Das Feld vor seinem letzten ist das, auf das der Mampfer geht."
+      solution: |
+        ```python
+        from collections import deque
+
+        def find(cave, tile):
+            for y, row in enumerate(cave):
+                x = row.find(tile)
+                if x != -1:
+                    return (x, y)
+            return None
+
+        def neighbors(cave, x, y):
+            result = []
+            for dx, dy in [(1, 0), (0, -1), (-1, 0), (0, 1)]:
+                if cave[y + dy][x + dx] != '#':
+                    result.append((x + dx, y + dy))
+            return result
+
+        def way(cave, start, goal):
+            predecessor = {start: None}
+            queue = deque([start])
+            while queue:
+                node = queue.popleft()
+                if node == goal:
+                    break
+                for neighbor in neighbors(cave, *node):
+                    if neighbor not in predecessor:
+                        predecessor[neighbor] = node
+                        queue.append(neighbor)
+            if goal not in predecessor:
+                return None
+            path = []
+            node = goal
+            while node is not None:
+                path.insert(0, node)
+                node = predecessor[node]
+            return path
+
+        def next_step(cave):
+            mampfer = find(cave, 'M')
+            path = way(cave, find(cave, 'P'), mampfer)
+            return path[-2] if path else mampfer
+        ```
+    javascript:
+      prompt: |
+        Schreib `nextStep(cave)`: das Feld, auf das der Mampfer (`M`) als Nächstes geht, wenn Pip (`P`) einen Schritt macht. Er sucht von Pip aus, die Nachbarn in der Reihenfolge Osten, Norden, Westen, Süden, und geht auf den Vorgänger seines Feldes. Findet er keinen Weg, bleibt er stehen. Lampen gibt es hier keine.
+      starter: |
+        function nextStep(cave) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "nextStep(['#######', '#M...P#', '#######'])"
+            expect: "[2, 1]"
+          - call: "nextStep(['########', '#....M.#', '#.####.#', '#..P...#', '########'])"
+            expect: "[6, 1]"
+            say: "Der kürzere Weg führt rechts herum."
+          - call: "nextStep(['#####', '#M..#', '#.#.#', '#..P#', '#####'])"
+            expect: "[2, 1]"
+            say: "Zwei Wege sind gleich lang: Pips Suche findet zuerst den über Norden."
+          - call: "nextStep(['#####', '#M#P#', '#####'])"
+            expect: "[1, 1]"
+            say: "Der Mampfer findet keinen Weg und bleibt stehen."
+      hint: "Mit `find` und `way`: der Weg von Pip zum Mampfer. Das Feld vor seinem letzten ist das, auf das der Mampfer geht."
+      solution: |
+        ```javascript
+        function find(cave, tile) {
+          for (let y = 0; y < cave.length; y++) {
+            const x = cave[y].indexOf(tile);
+            if (x !== -1) return [x, y];
+          }
+          return null;
+        }
+
+        function neighbors(cave, x, y) {
+          const result = [];
+          for (const [dx, dy] of [[1, 0], [0, -1], [-1, 0], [0, 1]]) {
+            if (cave[y + dy][x + dx] !== '#') result.push([x + dx, y + dy]);
+          }
+          return result;
+        }
+
+        function way(cave, start, goal) {
+          const predecessor = { [start]: null };
+          const queue = [start];
+          while (queue.length > 0) {
+            const node = queue.shift();
+            if (node[0] === goal[0] && node[1] === goal[1]) break;
+            for (const neighbor of neighbors(cave, node[0], node[1])) {
+              if (neighbor in predecessor) continue;
+              predecessor[neighbor] = node;
+              queue.push(neighbor);
+            }
+          }
+          if (!(goal in predecessor)) return null;
+          const path = [];
+          for (let node = goal; node !== null; node = predecessor[node]) path.unshift(node);
+          return path;
+        }
+
+        function nextStep(cave) {
+          const mampfer = find(cave, 'M');
+          const path = way(cave, find(cave, 'P'), mampfer);
+          return path ? path[path.length - 2] : mampfer;
+        }
+        ```
+
+  - id: steps
+    title: "Was kostet ein Weg?"
+    extra: true
+    prompt: |
+      Ein Weg ist eine Liste von Feldern, wie `way` sie liefert. Schreib `steps(path, facing)`: wie viele Schritte er Pip kostet, wenn Pip am Anfang in Richtung `facing` schaut (`'east'`, `'north'`, `'west'` oder `'south'`) und sich nur nach links drehen kann. Jeder Schritt vorwärts zählt, jede Drehung auch.
+    starter: |
+      def steps(path, facing)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "steps([[1, 1], [2, 1], [3, 1]], 'east')"
+          expect: "2"
+        - call: "steps([[1, 1], [2, 1], [2, 0]], 'east')"
+          expect: "3"
+          say: "Einmal links: ein Schritt mehr."
+        - call: "steps([[1, 1], [2, 1], [2, 2]], 'east')"
+          expect: "5"
+          say: "Rechts sind drei Drehungen nach links."
+        - call: "steps([[3, 1], [2, 1], [1, 1]], 'east')"
+          expect: "4"
+          say: "Umdrehen: zwei Drehungen."
+        - call: "steps([[2, 2]], 'south')"
+          expect: "0"
+          say: "Ein Weg aus einem Feld kostet nichts."
+    hint: "Nach links dreht Pip in der Reihenfolge Osten, Norden, Westen, Süden weiter. Wie viele Drehungen von einer Richtung zur anderen? Der Abstand in dieser Liste, modulo 4."
+    solution: |
+      ```ruby
+      def steps(path, facing)
+        directions = { [1, 0] => 'east', [0, -1] => 'north', [-1, 0] => 'west', [0, 1] => 'south' }
+        order = %w[east north west south]
+        total = 0
+        path.each_cons(2) do |(x1, y1), (x2, y2)|
+          want = directions[[x2 - x1, y2 - y1]]
+          total += (order.index(want) - order.index(facing)) % 4 + 1
+          facing = want
+        end
+        total
+      end
+      ```
+    python:
+      prompt: |
+        Ein Weg ist eine Liste von Feldern, wie `way` sie liefert. Schreib `steps(path, facing)`: wie viele Schritte er Pip kostet, wenn Pip am Anfang in Richtung `facing` schaut (`'east'`, `'north'`, `'west'` oder `'south'`) und sich nur nach links drehen kann. Jeder Schritt vorwärts zählt, jede Drehung auch.
+      starter: |
+        def steps(path, facing):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "steps([(1, 1), (2, 1), (3, 1)], 'east')"
+            expect: "2"
+          - call: "steps([(1, 1), (2, 1), (2, 0)], 'east')"
+            expect: "3"
+            say: "Einmal links: ein Schritt mehr."
+          - call: "steps([(1, 1), (2, 1), (2, 2)], 'east')"
+            expect: "5"
+            say: "Rechts sind drei Drehungen nach links."
+          - call: "steps([(3, 1), (2, 1), (1, 1)], 'east')"
+            expect: "4"
+            say: "Umdrehen: zwei Drehungen."
+          - call: "steps([(2, 2)], 'south')"
+            expect: "0"
+            say: "Ein Weg aus einem Feld kostet nichts."
+      hint: "Nach links dreht Pip in der Reihenfolge Osten, Norden, Westen, Süden weiter. Wie viele Drehungen von einer Richtung zur anderen? Der Abstand in dieser Liste, modulo 4."
+      solution: |
+        ```python
+        def steps(path, facing):
+            directions = {(1, 0): 'east', (0, -1): 'north', (-1, 0): 'west', (0, 1): 'south'}
+            order = ['east', 'north', 'west', 'south']
+            total = 0
+            for (x1, y1), (x2, y2) in zip(path, path[1:]):
+                want = directions[(x2 - x1, y2 - y1)]
+                total += (order.index(want) - order.index(facing)) % 4 + 1
+                facing = want
+            return total
+        ```
+    javascript:
+      prompt: |
+        Ein Weg ist eine Liste von Feldern, wie `way` sie liefert. Schreib `steps(path, facing)`: wie viele Schritte er Pip kostet, wenn Pip am Anfang in Richtung `facing` schaut (`'east'`, `'north'`, `'west'` oder `'south'`) und sich nur nach links drehen kann. Jeder Schritt vorwärts zählt, jede Drehung auch.
+      starter: |
+        function steps(path, facing) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "steps([[1, 1], [2, 1], [3, 1]], 'east')"
+            expect: "2"
+          - call: "steps([[1, 1], [2, 1], [2, 0]], 'east')"
+            expect: "3"
+            say: "Einmal links: ein Schritt mehr."
+          - call: "steps([[1, 1], [2, 1], [2, 2]], 'east')"
+            expect: "5"
+            say: "Rechts sind drei Drehungen nach links."
+          - call: "steps([[3, 1], [2, 1], [1, 1]], 'east')"
+            expect: "4"
+            say: "Umdrehen: zwei Drehungen."
+          - call: "steps([[2, 2]], 'south')"
+            expect: "0"
+            say: "Ein Weg aus einem Feld kostet nichts."
+      hint: "Nach links dreht Pip in der Reihenfolge Osten, Norden, Westen, Süden weiter. Wie viele Drehungen von einer Richtung zur anderen? Der Abstand in dieser Liste, modulo 4."
+      solution: |
+        ```javascript
+        function steps(path, facing) {
+          const directions = { '1,0': 'east', '0,-1': 'north', '-1,0': 'west', '0,1': 'south' };
+          const order = ['east', 'north', 'west', 'south'];
+          let total = 0;
+          for (let i = 1; i < path.length; i++) {
+            const want = directions[[path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1]]];
+            total += (order.indexOf(want) - order.indexOf(facing) + 4) % 4 + 1;
+            facing = want;
+          }
+          return total;
+        }
+        ```

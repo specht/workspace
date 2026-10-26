@@ -947,10 +947,16 @@ check:
 Die Zeichen der Karte: `#` Wand, `.` Boden, `P` Pip (Blickrichtung in
 `facing`), `o` Funkenstein, `L` Lampe, `G`/`g` Glibber, der waagerecht/senkrecht
 hin und her wabert, `H` Hebel, `T` Stacheln im Boden, `p` Pfotenabdruck, `~` Pfütze, `B`
-Bello. Die Befehle: `move`, `turn_left`, `take`, `wait`, `pull` (je ein
+Bello, `M` der Mampfer (Teil 3), `*` eine Lampe, die schon brennt. Die Befehle: `move`, `turn_left`, `take`, `wait`, `pull` (je ein
 Schritt), `say` (kein Schritt), die Fragen `on_stone`, `on_lever`,
 `front_clear`, `glibber_ahead`, `on_lamp`, `trail_ahead` (Pfotenabdrücke
-vorn, auch Bello selbst), `puddle_ahead`, `bello_here`. Nach jedem Schritt
+vorn, auch Bello selbst), `puddle_ahead`, `bello_here`, dazu zwei Fragen, die
+Daten liefern: `cave_map` (die Karte, wie sie gerade ist, als Liste von Zeilen)
+und `facing` (`"east"`, `"north"`, `"west"`, `"south"`). Nach jedem Schritt
+geht der Mampfer ein Feld auf dem kürzesten Weg zu Pip (eine Breitensuche von
+Pip aus, Nachbarn in der Reihenfolge Osten, Norden, Westen, Süden), nie ins
+Licht, die 3 × 3 Felder um eine brennende Lampe; auf demselben Feld wie Pip
+beendet er den Lauf. Nach jedem Schritt
 geht jeder Glibber ein Feld weiter. Erreicht Pip die Lampe oder Bello, ist
 der Lauf zu Ende, auch mitten in einer Schleife. Mehrere Karten stehen als
 Reiter über der Karte, jeder mit dem Aufruf, den die Prüfung dort macht
@@ -964,7 +970,10 @@ eine allgemeine Lösung geht, prüfen mehrere Karten (höchstens sechs) mit
 verschiedenen Steinen oder Glibbern: Eine feste Folge von Schritten soll an
 mindestens einer scheitern. Eine Karte mit `generate` entsteht aus dem Seed
 der Person und der Aufgabenversion (`PipMaps`, bisher `maze`: ein Labyrinth
-mit genau einem Weg zwischen zwei Zellen, die Lampe am weitesten weg); die
+mit genau einem Weg zwischen zwei Zellen, die Lampe am weitesten weg; `chase`:
+ein Labyrinth mit Rundwegen, die Lampe bei zwei Dritteln des längsten Wegs und
+der Mampfer dort, wo jeder kürzeste Weg entkommt, mit Drehungen nur nach
+links, und die Hand an der Wand nicht); die
 erste Karte steht immer ausgeschrieben da, die Karte zeigt sie. `say: stones`
 heißt: Das Letzte, was Pip sagt, ist die Zahl der aufgehobenen Steine.
 

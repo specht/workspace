@@ -753,7 +753,7 @@ The rules that came out of the same review are in
    validates it). Pip starts facing down, so the first left turn goes to the
    right of the screen: »left is Pip's left« is felt before the prediction
    asks it. »Der Schacht« then says: from now on you write the plan.
-2. **A chasing monster for a finale: Teil 3, »Der Mampfer«** (being built).
+2. **A chasing monster for a finale: Teil 3, »Der Mampfer«** (done, `pip-3`).
    The maintainer: the monster of the old Hackschule, which always found
    the shortest way; keep it, make it the way into breadth-first search.
    The sprite is that monster, 0x72's »big demon« from the 16x16
