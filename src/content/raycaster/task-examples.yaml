@@ -5,5 +5,9 @@ activity: raycaster
 examples:
   kamera:
     skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Dass die Schritte der Seite die Aufgabe lösen, prüfen die Rezepte mit check-task; die Prüfart selbst testet c_check_test.rb.
+  march:
+    skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Von Hand mit pixelram.h geprüft, angenommen stufen/03-strahlen.c, abgelehnt stufen/02-bewegen.c (ohne march) und march ohne die Länge oder ohne die Position der Figur; ein Rezept mit check-task gibt es dafür noch nicht.
   kollision:
     skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Dass die Schritte der Seite die Aufgabe lösen, prüfen die Rezepte mit check-task; die Prüfart selbst testet c_check_test.rb.
+  mipmap:
+    skip: Die Datei bindet pixelram.h ein, das erst make in den Ordner holt. Von Hand mit pixelram.h geprüft, angenommen stufen/11-mipmaps.c und stufen/12-fertig.c, abgelehnt stufen/10-boden.c (ohne mip_level) und mip_level ohne die Grenze MIP_LEVELS - 1 oder ohne use_mipmaps; ein Rezept mit check-task gibt es dafür noch nicht.

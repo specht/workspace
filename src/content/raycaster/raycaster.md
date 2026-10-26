@@ -408,6 +408,34 @@ Wie weit kommt ein Strahl, bis er an eine Wand stößt? Der einfachste Weg: in k
 
 und über `draw_player` zwei Funktionen: `march` geht den Strahl entlang, `draw_rays` zeichnet jeden 16. Strahl in die Karte.
 
+Ein Strahl `(ray_x, ray_y)` ist nicht unbedingt 1 lang. Teilt man ihn durch seine Länge, wird er es, und ein Punkt im Abstand `distance` von der Figur liegt dann bei `player_x + ray_x / length * distance`, in y genauso. `hypot(x, y)` ist die Länge des Vektors `(x, y)`, \\(\sqrt{x^2 + y^2}\\).
+
+<div class='hint own' data-check='march'>
+<strong>Jetzt bist du dran:</strong> Schreib über <code>draw_player</code> die Funktion <code>double march(double ray_x, double ray_y)</code>, darüber <code>#define MARCH_STEP 0.02</code>. Sie fängt bei der Figur an, mit <code>distance</code> 0, und geht in Schritten von <code>MARCH_STEP</code> Kästchen den Strahl entlang, solange <code>is_wall</code> an diesem Punkt nein sagt. Dann gibt sie <code>distance</code> zurück. Laufen lassen kannst du sie gleich mit <code>draw_rays</code>; die Aufgabe unter der Lösung prüft sie schon jetzt.
+</div>
+
+<!-- hint -->
+Die Figur steht bei (3,5; 3,5) und schaut nach rechts, der Strahl ist (1, 0). Bei welchem `distance` liegt der Punkt auf dem Strahl zum ersten Mal in einer Wand, wenn die nächste Wand bei x = 23 anfängt? Und was ändert sich, wenn der Strahl (2, 0) ist?
+<!-- /hint -->
+<!-- hint -->
+Erst die Länge, dann eine Schleife: Solange der Punkt bei `distance` keine Wand ist, wächst `distance` um `MARCH_STEP`. Eine `while`-Schleife mit `!is_wall(…)` als Bedingung braucht nur eine Zeile im Rumpf.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```c
+double march(double ray_x, double ray_y)
+{
+    double length = …;
+    double distance = 0;
+    while (!is_wall(…, …))   // hier: der Punkt im Abstand distance
+        distance += MARCH_STEP;
+    return distance;
+}
+```
+<!-- /hint -->
+
+<!-- solution -->
 ```c
 // geht in kleinen Schritten den Strahl entlang, bis er in einer Wand steckt
 #define MARCH_STEP 0.02
@@ -420,7 +448,14 @@ double march(double ray_x, double ray_y)
         distance += MARCH_STEP;
     return distance;
 }
+```
+<!-- /solution -->
 
+_task(march)
+
+Darunter kommt `draw_rays`. Es rechnet für jede 16. Bildspalte den Strahl aus, fragt `march`, wie weit er kommt, und zeichnet ihn als Linie in die Karte:
+
+```c
 // die Kamera-Ebene und einige Strahlen, von oben gesehen
 void draw_rays(int left, int top, int cell)
 {
@@ -445,7 +480,7 @@ void draw_rays(int left, int top, int cell)
 }
 ```
 
-`hypot(x, y)` ist die Länge des Vektors `(x, y)`, \\(\sqrt{x^2 + y^2}\\). In `main` kommen `update_camera()` nach der Bewegung und `draw_rays(28, 2, 11)` zwischen Karte und Spielfigur dazu:
+In `main` kommen `update_camera()` nach der Bewegung und `draw_rays(28, 2, 11)` zwischen Karte und Spielfigur dazu:
 
 ```c
 ~         last_time = now;
@@ -1431,7 +1466,7 @@ _person(williams)
 
 <img class='drawing' style='width: 40.6em; image-rendering: pixelated;' src='mipmaps.webp' alt='Die Ziegeltextur fünfmal nebeneinander in gleicher Größe: ganz links mit 64 mal 64 Texeln und scharfen Fugen, dann 32, 16, 8 und 4 Texel, immer gröber, bis ganz rechts nur noch große rotbraune Flecken bleiben.'>
 
-Mischen heißt in einer Palette: die Rot-, Grün- und Blauwerte der vier Farben mitteln und dann die Nummer der Palette suchen, deren Farbe dem Mittel am nächsten kommt. Das dauert, aber nur einmal beim Start. Ersetze `texel` durch:
+Mischen heißt in einer Palette: die Rot-, Grün- und Blauwerte der vier Farben mitteln und dann die Nummer der Palette suchen, deren Farbe dem Mittel am nächsten kommt. Das dauert, aber nur einmal beim Start. Ersetze `texel` durch die Mipmaps, eine Funktion, die die passende Stufe wählt, und ein neues `texel`. Zuerst die Mipmaps:
 
 ```c
 // Mipmaps: jede Textur noch einmal in halber Größe, in Viertelgröße ...
@@ -1491,7 +1526,38 @@ void make_mipmaps(void)
 
 // Mipmaps an (M schaltet um)
 bool use_mipmaps = true;
+```
 
+Welche Stufe passt, hängt davon ab, wie viele Texel auf ein Pixel fallen. Ist es weniger als 2, nimmt das Programm Stufe 0, das Original. Ab 2 Texeln nimmt es Stufe 1, in der ein Texel zwei des Originals breit ist, ab 4 Stufe 2, ab 8 Stufe 3, mit jeder Verdopplung eine Stufe mehr. Mehr als `MIP_LEVELS - 1` Stufen gibt es nicht, und mit `use_mipmaps` aus ist es immer Stufe 0.
+
+<div class='hint own' data-check='mipmap'>
+<strong>Jetzt bist du dran:</strong> Schreib unter <code>use_mipmaps</code> die Funktion <code>int mip_level(double texels_per_pixel)</code>. Sie gibt die Stufe zurück, die zu <code>texels_per_pixel</code> passt, nach der Regel oben. Laufen lassen kannst du sie gleich, wenn die Wände und der Boden sie aufrufen; die Aufgabe unter der Lösung prüft sie schon jetzt.
+</div>
+
+<!-- hint -->
+Rechne von Hand: Welche Stufe gehört zu 1 Texel pro Pixel, welche zu 3, welche zu 5? Wie oft kannst du 5 halbieren, bis weniger als 2 übrig bleibt? Und was soll bei 1000 herauskommen?
+<!-- /hint -->
+<!-- hint -->
+Fang bei Stufe 0 an. Solange noch mindestens 2 Texel auf ein Pixel fallen, halbierst du `texels_per_pixel` und gehst eine Stufe weiter. Die Schleife hört auch auf, wenn die letzte Stufe erreicht ist oder `use_mipmaps` aus ist.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```c
+int mip_level(double texels_per_pixel)
+{
+    int level = 0;
+    while (…)   // hier: Mipmaps an, mindestens 2 Texel, noch nicht die letzte Stufe
+    {
+        …
+    }
+    return level;
+}
+```
+<!-- /hint -->
+
+<!-- solution -->
+```c
 // welche Stufe passt, wenn so viele Texel auf ein Pixel fallen:
 // ab 2 Texeln Stufe 1, ab 4 Stufe 2, ab 8 Stufe 3 ...
 int mip_level(double texels_per_pixel)
@@ -1504,7 +1570,14 @@ int mip_level(double texels_per_pixel)
     }
     return level;
 }
+```
+<!-- /solution -->
 
+_task(mipmap)
+
+Darunter kommt das neue `texel`. Es holt ein Texel aus einer Stufe:
+
+```c
 // das Texel beim Punkt (u, v) der Textur t in der Mipmap-Stufe level;
 // u und v laufen von 0 bis 1
 int texel(int t, int level, double u, double v)
@@ -1516,7 +1589,7 @@ int texel(int t, int level, double u, double v)
 }
 ```
 
-`TEX >> level` ist `TEX` durch 2 hoch `level`, bei 64 Texeln 64, 32, 16, 8, 4. Welche Stufe passt, hängt davon ab, wie viele Texel auf ein Pixel fallen. Bei einer Wand sind das `TEX / wall_height`, in `draw_wall_column`:
+`TEX >> level` ist `TEX` durch 2 hoch `level`, bei 64 Texeln 64, 32, 16, 8, 4. Bei einer Wand fallen `TEX / wall_height` Texel auf ein Pixel, in `draw_wall_column`:
 
 ```c
 ~     double wall_top = H / 2.0 - wall_height / 2;

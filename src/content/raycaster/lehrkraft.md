@@ -15,15 +15,17 @@ Lernende schreiben in C mit PixelRAM einen Raycaster wie Wolfenstein 3D, Schritt
 <li>Wer den Anschluss verliert, macht mit der passenden Stufe weiter.</li>
 </ul></td></tr>
 <tr><th>Prüfung</th><td><ul>
-<li>»Deine Kamera« und »Dein is_free« übersetzen <code>raycaster.c</code> im Workspace, als Gast, und rufen <code>update_camera</code> und <code>is_free</code> der Lernenden auf, ohne ihr <code>main</code> zu starten (Prüfart <code>c</code>). Dafür muss <code>make</code> einmal gelaufen sein.</li>
+<li>»Deine Kamera«, »Dein march«, »Dein is_free« und »Dein mip_level« übersetzen <code>raycaster.c</code> im Workspace, als Gast, und rufen <code>update_camera</code>, <code>march</code>, <code>is_free</code> und <code>mip_level</code> der Lernenden auf, ohne ihr <code>main</code> zu starten (Prüfart <code>c</code>). Dafür muss <code>make</code> einmal gelaufen sein.</li>
+<li><code>march</code> schickt Strahlen von zwei Stellen der Karte los, auch einen, der nicht 1 lang ist, und lässt einen Schritt Spielraum. Es gibt <code>march</code> nur bis zum Abschnitt »Von Kästchen zu Kästchen«, dann ersetzt <code>cast_ray</code> es; wer erst danach prüft, bekommt »gibt es <code>march</code> noch nicht«.</li>
 <li><code>is_free</code> wird an Stellen geprüft, an denen nur eine Ecke der Figur in einer Säule steht.</li>
+<li><code>mip_level</code> wird an den Grenzen geprüft (1,9 und 2 Texel pro Pixel), an der letzten Stufe und mit ausgeschalteten Mipmaps.</li>
 <li>Die übrigen Aufgaben prüfen Antworten: <code>delta_x</code> eines Strahls, Vorhersagen (warum sich die Wände wölben, was ohne getrennte Prüfung von x und y an einer Wand passiert, wie der Verlauf zum Horizont aussieht), ein Nachschlagen in der Schattentabelle und der Abstand einer Bodenzeile.</li>
 <li>Am Ende beschreiben die Lernenden ihre eigene Welt (Klassenboard).</li>
 </ul></td></tr>
 <tr><th>Jetzt bist du dran</th><td><ul>
-<li>An vier Stellen schreiben die Lernenden den Code zuerst selbst, nachdem die Seite erklärt hat, was er tun soll: den Rumpf von <code>update_camera</code>, den Abstand entlang der Blickrichtung gegen das Fischauge, <code>is_free</code> mit den vier Ecken und <code>u</code> für die Texturen. Die Seite geht danach mit ihrem eigenen Code weiter.</li>
+<li>An sechs Stellen schreiben die Lernenden den Code zuerst selbst, nachdem die Seite erklärt hat, was er tun soll: den Rumpf von <code>update_camera</code>, <code>march</code> in kleinen Schritten, den Abstand entlang der Blickrichtung gegen das Fischauge, <code>is_free</code> mit den vier Ecken, <code>u</code> für die Texturen und <code>mip_level</code> für die Mipmaps. Die Seite geht danach mit ihrem eigenen Code weiter.</li>
 <li>Vor dem Code der Seite stehen Tipps, ein Denkanstoß und ein Gerüst mit Lücken. Jede Stufe erscheint erst eine Minute nach der vorigen, ohne Uhr, damit die Lernenden mit dem Tipp arbeiten, statt auf den nächsten zu warten; der Code der Seite ist die letzte Stufe. Wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst.</li>
-<li><code>update_camera</code> und <code>is_free</code> prüfen die Aufgaben unter dem Kasten; wer sie löst, kann den Code der Seite sofort öffnen und mit dem eigenen vergleichen. Den Abstand gegen das Fischauge und <code>u</code> prüft keine Aufgabe, man sieht sie im Bild.</li>
+<li><code>update_camera</code>, <code>march</code>, <code>is_free</code> und <code>mip_level</code> prüfen die Aufgaben unter dem Kasten; wer sie löst, kann den Code der Seite sofort öffnen und mit dem eigenen vergleichen. Den Abstand gegen das Fischauge und <code>u</code> prüft keine Aufgabe, man sieht sie im Bild.</li>
 </ul></td></tr>
 <tr><th>Steuerung</th><td><kbd>W</kbd> <kbd>S</kbd> oder <kbd>↑</kbd> <kbd>↓</kbd> vor und zurück, <kbd>A</kbd> <kbd>D</kbd> seitwärts, <kbd>←</kbd> <kbd>→</kbd> drehen; ab Stufe 5 <kbd>Tab</kbd> für die Karte, ab Stufe 11 <kbd>M</kbd> für die Mipmaps. Vorher einmal ins Bild klicken, damit es die Tasten bekommt.</td></tr>
 </table>

@@ -1,8 +1,10 @@
 # Aufgaben zu »Raycasting in C«.
 # Format: docs/aufgaben.md. Gearbeitet wird in /workspace/raycaster.
-# Alle Aufgaben prüfen Antworten: Rechnungen mit den Formeln der Seite,
-# Vorhersagen und eine Rückmeldung zur eigenen Welt. Den Code in den Kästen
-# »Jetzt bist du dran« schreiben die Lernenden selbst; geprüft wird er nicht.
+# Den Code in den Kästen »Jetzt bist du dran« schreiben die Lernenden
+# selbst. Wo es geht, prüft eine Aufgabe vom Typ c ihn (kamera, march,
+# kollision, mipmap): Sie übersetzt raycaster.c und ruft die Funktion auf.
+# Die übrigen Aufgaben prüfen Antworten: Rechnungen mit den Formeln der
+# Seite, Vorhersagen und eine Rückmeldung zur eigenen Welt.
 format: 1
 activity: raycaster
 tasks:
@@ -29,6 +31,34 @@ tasks:
         - call: (player_angle = 0.5, update_camera(), plane_x * dir_x + plane_y * dir_y)
           expect: 0
           say: '`plane` steht noch nicht senkrecht auf `dir`: Ihr Skalarprodukt müsste 0 sein.'
+
+  - id: march
+    title: Dein march
+    prompt: |
+      Schreib `march` in `raycaster.c` und speichere. Der Workspace schickt
+      von ein paar Stellen der Karte Strahlen los und misst, wie weit sie
+      kommen. Prüf es, bevor `cast_ray` gleich `march` ersetzt.
+    file: raycaster/raycaster.c
+    check:
+      type: c
+      file: raycaster/raycaster.c
+      tolerance: 0.05
+      cases:
+        - call: march(1, 0)
+          expect: 19.5
+          say: 'Die Figur steht bei (3,5; 3,5); nach rechts fängt die Wand bei x = 23 an, 19,5 Kästchen weit weg.'
+        - call: march(0, 1)
+          expect: 3.5
+          say: 'Nach unten (y wächst nach unten) fängt die Wand bei y = 7 an, 3,5 Kästchen weit weg.'
+        - call: march(2, 0)
+          expect: 19.5
+          say: 'Der Strahl `(2, 0)` ist doppelt so lang wie `(1, 0)`, zeigt aber in dieselbe Richtung und trifft dieselbe Wand. Teilst du durch seine Länge `hypot(ray_x, ray_y)`?'
+        - call: (player_x = 9.5, player_y = 2.5, march(1, 0))
+          expect: 1.5
+          say: 'Hier steht die Figur bei (9,5; 2,5), und die Wand rechts fängt bei x = 11 an. Fängt der Strahl bei `player_x` und `player_y` an?'
+        - call: march(1, 1)
+          expect: 4.95
+          say: 'Schräg nach rechts unten kommt der Strahl bis zur Ecke bei (7, 7), √(3,5² + 3,5²) ≈ 4,95 Kästchen weit. Gehst du in x und y zugleich?'
 
   - id: delta
     title: Von Linie zu Linie
@@ -197,6 +227,35 @@ tasks:
       - when: { picked: 3 }
         say: PixelRAM zeigt jede der 256 Farben genau so, wie sie in der Palette steht.
     solution: 'In `1-rampen.png` hat jede Farbe der Texturen 16 Stufen, von Schwarz bis zur vollen Farbe. Die dunklen Stufen aller Farben liegen nah beieinander, und viele Texel in der Ferne zeigen genau diese Stufen. Die Palette bekommt deshalb viele dunkle Farben, und weil sich Ziegelrot und Moosgrün ganz dunkel kaum unterscheiden, fasst sie sie zu fast grauen zusammen.'
+
+  - id: mipmap
+    title: Dein mip_level
+    prompt: |
+      Schreib `mip_level` in `raycaster.c` und speichere. Der Workspace fragt
+      nach der Stufe für ein paar Zahlen von Texeln pro Pixel.
+    file: raycaster/raycaster.c
+    check:
+      type: c
+      file: raycaster/raycaster.c
+      cases:
+        - call: mip_level(1)
+          expect: 0
+          say: 'Fällt ein Texel auf ein Pixel, passt das Original, Stufe 0.'
+        - call: mip_level(1.9)
+          expect: 0
+          say: 'Unter 2 Texeln pro Pixel bleibt es bei Stufe 0.'
+        - call: mip_level(2)
+          expect: 1
+          say: 'Ab 2 Texeln pro Pixel ist es Stufe 1. Vergleichst du mit `>= 2`?'
+        - call: mip_level(5)
+          expect: 2
+          say: '5 Texel pro Pixel: einmal halbiert 2,5, noch einmal 1,25, also Stufe 2.'
+        - call: mip_level(100)
+          expect: 4
+          say: 'Mehr als `MIP_LEVELS - 1`, also Stufe 4, gibt es nicht: `mip` hat keinen Platz für eine Stufe dahinter.'
+        - call: (use_mipmaps = false, mip_level(100))
+          expect: 0
+          say: 'Mit `use_mipmaps` aus ist es immer Stufe 0, sonst schaltet die Taste M die Mipmaps nicht aus.'
 
   - id: eigene-welt
     title: Deine Welt
