@@ -979,8 +979,9 @@ def save_picture
 end
 ```
 
-Unter `broadcast` kommen die Queue und die Threads. Die Prüfung und das Malen ziehen aus `ws.on(:message)` hierher um, in die Schleife der Threads; dazu kommen das Speichern und der Zähler:
+Unter `broadcast` kommen die Queue und die Threads. Die Prüfung und das Malen ziehen aus `ws.on(:message)` hierher um, in die Schleife der Threads; dazu kommen das Speichern und der Zähler. Deine Prüfung schreibst du dafür nicht neu: Schneide sie in `ws.on(:message)` aus und setz sie an die Stelle mit `# hier:`. Die Nachricht heißt dort `text` statt `event.data`, und `next` springt auch in `loop do` zur nächsten Nachricht:
 
+<!-- page-code: own -->
 ```ruby_copy
 # Vier Threads arbeiten die Nachrichten ab, während Faye neue annimmt. Mehr
 # als ein paar sollten es nicht sein: Jeder Thread kostet Speicher, und ein
@@ -992,11 +993,7 @@ $queue = Queue.new
       text = $queue.pop        # wartet, bis eine Nachricht da ist
 
       # Jeder kann alles schicken: nur glauben, was passt
-      message = JSON.parse(text) rescue next
-      next unless message.is_a?(Hash)
-      x, y, color = message.values_at('x', 'y', 'color')
-      next unless [x, y, color].all?(Integer)
-      next unless x.between?(0, WIDTH - 1) && y.between?(0, HEIGHT - 1) && color.between?(0, 15)
+      # hier: deine Prüfung aus ws.on(:message), mit text statt event.data
 
       $pixels[y * WIDTH + x] = color
       count = $painted
@@ -1009,7 +1006,7 @@ $queue = Queue.new
 end
 ```
 
-`ws.on(:message)` legt jede Nachricht jetzt nur noch in die Queue. Ersetze den ganzen Block durch:
+`ws.on(:message)` legt jede Nachricht jetzt nur noch in die Queue. Ersetze den ganzen Block, der nach dem Ausschneiden noch übrig ist, durch:
 
 ```ruby
     # Jede Nachricht kommt in die Queue; Faye ist sofort frei
@@ -1046,8 +1043,9 @@ def save_picture():
     Path('picture.json').write_text(json.dumps(pixels))
 ```
 
-Unter `broadcast` kommen die Threads mit ihrer Arbeit, `work`, und die Queue. Die Prüfung und das Malen ziehen aus `handle` hierher um, in die Schleife von `work`; dazu kommen das Speichern und der Zähler:
+Unter `broadcast` kommen die Threads mit ihrer Arbeit, `work`, und die Queue. Die Prüfung und das Malen ziehen aus `handle` hierher um, in die Schleife von `work`; dazu kommen das Speichern und der Zähler. Deine Prüfung schreibst du dafür nicht neu: Schneide sie in `handle` aus und setz sie an die Stelle mit `# hier:`, eine Stufe weniger eingerückt. Die Nachricht heißt dort auch `text`, und `continue` springt in `while True` genauso zur nächsten Nachricht:
 
+<!-- page-code: own -->
 ```python_copy
 def work():
     global painted
@@ -1055,17 +1053,7 @@ def work():
         text = messages.get()       # wartet, bis eine Nachricht da ist
 
         # Jeder kann alles schicken: nur glauben, was passt
-        try:
-            message = json.loads(text)
-        except ValueError:
-            continue
-        if not isinstance(message, dict):
-            continue
-        x, y, color = message.get('x'), message.get('y'), message.get('color')
-        if not all(type(value) is int for value in (x, y, color)):
-            continue
-        if not (0 <= x < WIDTH and 0 <= y < HEIGHT and 0 <= color <= 15):
-            continue
+        # hier: deine Prüfung aus handle
 
         pixels[y * WIDTH + x] = color
         count = painted
@@ -1083,7 +1071,7 @@ for _ in range(4):
     threading.Thread(target=work, daemon=True).start()
 ```
 
-In `handle` legt die Schleife jede Nachricht jetzt nur noch in die Queue. Ersetze sie durch:
+In `handle` legt die Schleife jede Nachricht jetzt nur noch in die Queue. Ersetze, was von ihr nach dem Ausschneiden übrig ist, durch:
 
 ```python
 ~     try:
@@ -1209,8 +1197,27 @@ $lock = Mutex.new
 ~   File.write('picture.json', JSON.generate($pixels))
 ```
 
-und schließe das Ändern von Bild und Zähler in `$lock.synchronize` ein:
+<div class='hint own' data-check='lock'>
+<strong>Jetzt bist du dran:</strong> Schließ in der Schleife der Threads das Ändern von Bild und Zähler in <code>$lock.synchronize do</code> … <code>end</code> ein. Nur diese Zeilen kommen hinein: Was jeder Thread für sich allein tut, läuft weiter gleichzeitig.
+</div>
 
+<!-- hint -->
+Geh die Zeilen der Schleife durch: Welche lesen oder ändern, was alle Threads
+gemeinsam haben, `$pixels` und `$painted`? Und welche arbeiten nur mit der
+eigenen Nachricht? Zwischen dem Lesen von `$painted` und dem Zurückschreiben
+darf kein anderer Thread dazwischen.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Prüfung steht darüber, `broadcast` darunter:
+
+```ruby
+    $lock.synchronize do
+      # hier: das Bild ändern, den Zähler lesen, speichern, erhöhen und ausgeben
+    end
+```
+<!-- /hint -->
+
+<!-- solution -->
 ```ruby
 ~     x, y, color = message.values_at('x', 'y', 'color')
 ~     next unless [x, y, color].all?(Integer)
@@ -1227,6 +1234,7 @@ und schließe das Ändern von Bild und Zähler in `$lock.synchronize` ein:
 ~   end
 ~ end
 ```
+<!-- /solution -->
 <!-- /language -->
 <!-- language: python -->
 200 Pixel, und der Zähler bleibt weit unter 200. Jeder der vier Threads liest `painted`, speichert das Bild und schreibt dann seinen Wert plus eins zurück. Während einer speichert, lesen die anderen denselben alten Wert; mehrere Threads schreiben dieselbe Zahl, und Pixel gehen beim Zählen verloren. Dasselbe Problem hatte der Besuchszähler deines Webservers; dort war die Lücke zwischen Lesen und Schreiben nur so kurz, dass man den Fehler selten sieht. Hier dauert das Speichern, und der Fehler passiert jedes Mal.
@@ -1245,20 +1253,39 @@ lock = threading.Lock()
 ~     Path('picture.json').write_text(json.dumps(pixels))
 ```
 
-und schließe das Ändern von Bild und Zähler in `with lock:` ein:
+<div class='hint own' data-check='lock'>
+<strong>Jetzt bist du dran:</strong> Schließ in <code>work</code> das Ändern von Bild und Zähler in <code>with lock:</code> ein. Nur diese Zeilen kommen hinein: Was jeder Thread für sich allein tut, läuft weiter gleichzeitig.
+</div>
+
+<!-- hint -->
+Geh die Zeilen von `work` durch: Welche lesen oder ändern, was alle Threads
+gemeinsam haben, `pixels` und `painted`? Und welche arbeiten nur mit der
+eigenen Nachricht? Zwischen dem Lesen von `painted` und dem Zurückschreiben
+darf kein anderer Thread dazwischen.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Prüfung steht darüber, `broadcast` darunter:
 
 ```python
-~ if not (0 <= x < WIDTH and 0 <= y < HEIGHT and 0 <= color <= 15):
-~     continue
-~
-with lock:
-    pixels[y * WIDTH + x] = color
-    count = painted
-    save_picture()          # dauert einen Moment
-    painted = count + 1
-    print(f'Pixel Nr. {painted}')
-~ broadcast({'type': 'pixel', 'x': x, 'y': y, 'color': color})
+        with lock:
+            ...   # hier: das Bild ändern, den Zähler lesen, speichern, erhöhen und ausgeben
 ```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+~         if not (0 <= x < WIDTH and 0 <= y < HEIGHT and 0 <= color <= 15):
+~             continue
+~
+        with lock:
+            pixels[y * WIDTH + x] = color
+            count = painted
+            save_picture()          # dauert einen Moment
+            painted = count + 1
+            print(f'Pixel Nr. {painted}')
+~         broadcast({'type': 'pixel', 'x': x, 'y': y, 'color': color})
+```
+<!-- /solution -->
 <!-- /language -->
 <!-- /after -->
 

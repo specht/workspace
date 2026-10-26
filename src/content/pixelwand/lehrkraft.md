@@ -38,7 +38,8 @@ Die ganze Klasse malt an einem Bild, live: Lernende schreiben einen Server in Ru
 #### Jetzt bist du dran
 
 - Nach dem Echo zeigt die Seite den Server nicht mehr jedes Mal ganz, sondern nur, was sich ändert; nur für die Pixelwand mit JSON kommt die Datei noch einmal ganz, weil sich fast jede Zeile ändert.
-- An zwei Stellen schreiben die Lernenden den Code zuerst selbst: Nachrichten an alle und das Aufräumen beim Schließen einer Verbindung (in Python die beiden Lücken mit `...` in `handle`), dann die Prüfung jeder Nachricht, bevor sie ins Bild kommt. Die Seite geht danach mit ihrem eigenen Code weiter.
+- An drei Stellen schreiben die Lernenden den Code zuerst selbst: Nachrichten an alle und das Aufräumen beim Schließen einer Verbindung (in Python die beiden Lücken mit `...` in `handle`), dann die Prüfung jeder Nachricht, bevor sie ins Bild kommt, und zuletzt den Lock um das Ändern von Bild und Zähler (`$lock.synchronize`, `with lock:`); »Ein Lock« prüft ihn. Die Seite geht danach mit ihrem eigenen Code weiter.
+- Für die Threads zeigt die Seite die Schleife mit einer Lücke: Die Lernenden schneiden ihre eigene Prüfung aus `ws.on(:message)` (in Python aus `handle`) aus und setzen sie dort ein, statt sie von der Seite neu zu kopieren.
 - Vor dem Code der Seite stehen Tipps, ein Denkanstoß und ein Gerüst mit Lücken. Jede Stufe erscheint erst eine Minute nach der vorigen, ohne Uhr, damit die Lernenden mit dem Tipp arbeiten, statt auf den nächsten zu warten; der Code der Seite ist die letzte Stufe. Wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst.
 - Der Kasten »Ausprobieren« nach der Pixelwand schickt aus der Browserkonsole ungültige Nachrichten und zeigt so, ob die eigene Prüfung hält; »Die Pixelwand« sucht nur nach einer Bereichsprüfung, nicht nach allen.
 
