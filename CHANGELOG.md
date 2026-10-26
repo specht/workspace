@@ -21,6 +21,9 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Der Ruby-Dienst rendert die Inhalte beim Start in mehreren Prozessen und legt das Ergebnis in
+  `content-cache/` im Bildcache (`WEB_CACHE_PATH`) ab (etwa 15 MB, nur die neueste Fassung); ein Start ohne Änderungen lädt es
+  in einem Bruchteil einer Sekunde. Die Datei kann jederzeit gelöscht werden, dann wird neu gerendert.
 - Katas (kurze Programmieraufgaben in der Karte, Prüfarten `function`, `pip` und `tests`) und »Pip unter Funkelbach«, im Katalog und als Streifen auf der Startseite:
   Der Code läuft in einem eigenen Container aus dem Workspace-Image ohne Netz, durch eine Warteschlange. Neu und freiwillig in
   `credentials.rb`: `KATA_PARALLEL_RUNS` (ohne 4), messen mit `./config.rb exec ruby ruby /src/scripts/measure-katas.rb`.
