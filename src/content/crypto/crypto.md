@@ -402,21 +402,23 @@ _task(unterschrift)
 
 ## Was hinter SSH, Git und HTTPS steckt
 
-Die Zeile `SHA256:…` in der Prüfung ist der **Fingerabdruck** des Schlüssels, ein Hash des öffentlichen Schlüssels. Du kannst ihn selbst anzeigen:
+Die Zeile `SHA256:…` in der Prüfung ist der **Fingerabdruck** des Schlüssels. Du kannst ihn selbst anzeigen:
 
 ```bash
 ssh-keygen -lf key.pub
 ```
 
-Fingerabdrücke sind kurz genug, um sie vorzulesen oder zu vergleichen. So prüfst du, ob ein öffentlicher Schlüssel, der über das Netz kam, wirklich der richtige ist: Ihr vergleicht den Fingerabdruck auf einem anderen Weg, zum Beispiel nebeneinander am Bildschirm.
+_task(fingerabdruck)
+
+<!-- after: fingerabdruck -->
+Der Fingerabdruck ist ein Hash des öffentlichen Schlüssels. Fingerabdrücke sind kurz genug, um sie vorzulesen oder zu vergleichen. So prüfst du, ob ein öffentlicher Schlüssel, der über das Netz kam, wirklich der richtige ist: Ihr vergleicht den Fingerabdruck auf einem anderen Weg, zum Beispiel nebeneinander am Bildschirm.
 
 Damit kennst du die Bausteine hinter Werkzeugen, die du jeden Tag benutzt:
 
 - **SSH**: Bei GitHub und vielen Servern kannst du statt eines Passworts deinen öffentlichen Schlüssel hinterlegen. Beim Anmelden beweist dein Rechner mit einer Unterschrift, dass er den privaten Schlüssel hat, ohne ihn zu verschicken. Beim ersten Kontakt mit einem Server zeigt SSH dessen Fingerabdruck.
 - **Git**: Commits sind nach ihrem Hash benannt, und mit `git config gpg.format ssh` kann Git Commits mit genau so einem SSH-Schlüssel unterschreiben.
 - **HTTPS**: Der Server schickt ein **Zertifikat**, seinen öffentlichen Schlüssel mit der Unterschrift einer Stelle, der dein Browser vertraut. Dann handeln beide einen AES-Schlüssel aus, und alles Weitere ist symmetrisch verschlüsselt.
-
-_task(fingerabdruck)
+<!-- /after -->
 
 ## Zusammenfassung
 

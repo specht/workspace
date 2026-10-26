@@ -157,11 +157,15 @@ check-task-fails: antwort python
 <img class='full' src='erste-anfrage-python.webp' alt='Zwei Terminals nebeneinander: links gibt der Python-Server die Anfrage von curl aus, GET / HTTP/1.1, Host, User-Agent und Accept; rechts meldet curl, dass keine Antwort kam.'>
 <!-- /language -->
 
-Im linken Terminal steht, was `curl` geschickt hat. Die erste Zeile ist die **Request-Line**: die Methode `GET` (»gib mir«), der Pfad `/` und die Version des Protokolls. Danach kommen **Header**, je ein Name und ein Wert: an wen die Anfrage geht (`Host`), welches Programm fragt (`User-Agent`), was es annimmt (`Accept`). Rechts beschwert sich `curl`: Der Server hat die Verbindung geschlossen, ohne zu antworten.
-
-_uses(http-anfrage)
+Im linken Terminal steht, was `curl` geschickt hat. Rechts beschwert sich `curl`: Der Server hat die Verbindung geschlossen, ohne zu antworten.
 
 _task(request-line)
+
+<!-- after: request-line -->
+Die erste Zeile ist die **Request-Line**: die Methode `GET` (»gib mir«), der Pfad und die Version des Protokolls. Danach kommen **Header**, je ein Name und ein Wert: an wen die Anfrage geht (`Host`), welches Programm fragt (`User-Agent`), was es annimmt (`Accept`).
+
+_uses(http-anfrage)
+<!-- /after -->
 
 ## Eine Antwort
 

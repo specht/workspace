@@ -264,12 +264,15 @@ check-task-fails: pixelwand python
 
 ### Der Handshake
 
-Eine WebSocket-Verbindung beginnt mit einer ganz normalen HTTP-Anfrage mit zwei besonderen Headern: `Upgrade: websocket` sagt, dass der Browser die Verbindung umwandeln möchte, und `Sec-WebSocket-Key` bringt einen zufälligen String mit. Der Server antwortet mit dem Statuscode **101 Switching Protocols** und beweist mit `Sec-WebSocket-Accept`, dass er WebSockets versteht. Das erledigt die Bibliothek; ansehen kannst du es trotzdem. Öffne mit <kbd>Strg</kbd><kbd>Shift</kbd><kbd>5</kbd> ein zweites Terminal. `curl` schickt dort die Header, die sonst der Browser schickt, mit dem Beispiel-Key aus dem Standard:
+Eine WebSocket-Verbindung beginnt mit einer ganz normalen HTTP-Anfrage mit zwei besonderen Headern: `Upgrade: websocket` sagt, dass der Browser die Verbindung umwandeln möchte, und `Sec-WebSocket-Key` bringt einen zufälligen String mit. Wie der Server antwortet, erledigt die Bibliothek; ansehen kannst du es trotzdem. Öffne mit <kbd>Strg</kbd><kbd>Shift</kbd><kbd>5</kbd> ein zweites Terminal. `curl` schickt dort die Header, die sonst der Browser schickt, mit dem Beispiel-Key aus dem Standard:
 
 ```bash
 curl -i --http1.1 -m 2 -H "Connection: Upgrade" -H "Upgrade: websocket" -H "Sec-WebSocket-Version: 13" -H "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==" localhost:8000/ws
 ```
 
+_task(handshake)
+
+<!-- after: handshake -->
 <!-- language: ruby -->
 <!-- tutorial-screenshot
 # Der Handshake mit curl, im zweiten Terminal
@@ -313,11 +316,12 @@ sleep: 3
 <img class='full' src='handschlag-python.webp' alt='Rechts antwortet der Python-Server auf die Anfrage von curl mit HTTP/1.1 101 Switching Protocols und Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=; nach zwei Sekunden gibt curl auf, und links meldet der Server ConnectionClosedError.'>
 <!-- /language -->
 
-Der Server antwortet mit `101 Switching Protocols` und `Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=`, genau dem Wert, den der Standard für diesen Key als Beispiel nennt. Danach bleibt die Verbindung offen, und beide Seiten schicken sich Nachrichten in einem eigenen Format aus Bytes, sogenannten Frames. `curl` versteht keine Frames und gibt nach zwei Sekunden auf (`-m 2`).
+Der Server antwortet mit dem Statuscode `101 Switching Protocols`: Er ist einverstanden, das Protokoll zu wechseln. Mit `Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=` beweist er, dass er WebSockets versteht; das ist genau der Wert, den der Standard für diesen Key als Beispiel nennt. Danach bleibt die Verbindung offen, und beide Seiten schicken sich Nachrichten in einem eigenen Format aus Bytes, sogenannten Frames. `curl` versteht keine Frames und gibt nach zwei Sekunden auf (`-m 2`).
 
 <!-- language: python -->
 Links meldet der Server danach einen Fehler, `ConnectionClosedError: no close frame received or sent`. In deinem Programm ist nichts falsch: `curl` hat die Verbindung einfach zugemacht, ohne sich zu verabschieden. Ein Browser schickt beim Schließen des Tabs zum Abschied einen eigenen Frame, und die Schleife `for message in ws` endet ohne Fehler.
 <!-- /language -->
+<!-- /after -->
 
 ### Im Browser
 
@@ -337,8 +341,6 @@ sleep: 1
 
 _uses(websocket-upgrade, statuscodes)
 
-_task(handshake)
-
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ändere im <code>curl</code>-Befehl von eben den ersten Buchstaben des Keys, aus <code>dGhl…</code> wird <code>eGhl…</code>. Wie viel ändert sich an <code>Sec-WebSocket-Accept</code>? Lass dann <code>-H "Upgrade: websocket"</code> ganz weg: Was antwortet der Server jetzt?
@@ -346,8 +348,12 @@ _task(handshake)
 
 ## An alle
 
+Ein Echo ist noch langweilig. Gleich schickt dein Server jede Nachricht an alle, die gerade verbunden sind. Vorher eine Vermutung:
+
+_task(wer-bekommt-was)
+
 <!-- language: ruby -->
-Ein Echo ist noch langweilig. Spannend wird es, wenn eine Nachricht bei **allen** ankommt, die gerade verbunden sind. Dafür merkt sich der Server alle offenen Verbindungen in einer Liste `$clients`. Über `App` kommen die Liste und eine Funktion, die einen Text an alle schickt:
+Dafür merkt sich der Server alle offenen Verbindungen in einer Liste `$clients`. Über `App` kommen die Liste und eine Funktion, die einen Text an alle schickt:
 
 ```ruby
 ~ require 'rackup'
@@ -419,7 +425,7 @@ Ein Gerüst:
 - Viele Verbindungen benutzen dieselbe Liste. Das geht gut, weil Faye die `on`-Blöcke aller Verbindungen nacheinander aufruft, nie zwei gleichzeitig. Was passiert, wenn das nicht so ist, siehst du am Ende in [Viele Threads](#7-viele-threads).
 <!-- /language -->
 <!-- language: python -->
-Ein Echo ist noch langweilig. Spannend wird es, wenn eine Nachricht bei **allen** ankommt, die gerade verbunden sind. Dafür merkt sich der Server alle offenen Verbindungen in einer Menge `clients`, einem `set`. Zu den Imports kommt ein Fehler, den `send` werfen kann:
+Dafür merkt sich der Server alle offenen Verbindungen in einer Menge `clients`, einem `set`. Zu den Imports kommt ein Fehler, den `send` werfen kann:
 
 ```python
 ~ from websockets.datastructures import Headers
@@ -508,9 +514,7 @@ def handle(ws):
 
 _task(alle)
 
-Starte den Server neu und öffne die Seite in zwei Tabs nebeneinander. Was du in einem Tab schreibst, erscheint in beiden.
-
-_task(wer-bekommt-was)
+Starte den Server neu und öffne die Seite in zwei Tabs nebeneinander. Was du in einem Tab schreibst, erscheint in beiden, auch in dem, aus dem es kam: So hast du es bei der Vermutung oben vorhergesagt, oder eben nicht.
 
 ## Die Pixelwand
 

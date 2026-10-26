@@ -25,9 +25,9 @@ tasks:
     title: Wer bekommt die Nachricht?
     prediction: true
     prompt: |
-      Ada und Bo haben die Seite offen, der Server ist auf dem Stand »An
-      alle«. Ada schickt »Hallo«. Wer sieht die Nachricht? Überleg erst, dann
-      probier es mit zwei Tabs aus.
+      Ada und Bo haben die Seite offen, der Server schickt jede Nachricht an
+      alle. Ada schickt »Hallo«. Wer sieht die Nachricht? Ausprobieren kannst
+      du es mit zwei Tabs, sobald dein Server so weit ist.
     check:
       type: choice
       options:
