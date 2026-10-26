@@ -24,7 +24,7 @@ module Privacy
     # The settings the pages use, each optional (credentials.template.rb).
     STRING_SETTINGS = %w[
         OPERATOR_NAME OPERATOR_ROLE OPERATOR_SCHOOL OPERATOR_ADDRESS CONTACT_EMAIL
-        DATA_PROTECTION_OFFICER HOSTING MAIL_PROVIDER SCHOOL_LAW SUPERVISORY_AUTHORITY BACKUP COST_NOTE
+        DATA_PROTECTION_OFFICER HOSTING MAIL_PROVIDER DNS_PROVIDER SCHOOL_LAW SUPERVISORY_AUTHORITY BACKUP COST_NOTE
     ].freeze
 
     # The settings as a Hash with symbol keys: strings stripped, an empty or
@@ -316,6 +316,8 @@ module Privacy
     def self.services(s)
         hosting = s[:hosting] ? h(s[:hosting]) : 'einem Rechenzentrum'
         mail = s[:mail_provider] ? " (#{h(s[:mail_provider])})" : ''
+        # without the setting Cloudflare, the only one documented before deSEC
+        dns = s[:dns_provider] ? h(s[:dns_provider]) : 'Cloudflare'
         [
             {
                 :name => 'Rechenzentrum',
@@ -331,7 +333,7 @@ module Privacy
             {
                 :name => 'DNS',
                 :kind => :server,
-                :html => 'Die Namen der Seite (DNS) verwaltet Cloudflare. Über Cloudflare laufen keine Verbindungen: Die Namen zeigen direkt auf den Server, und Cloudflare sieht nur Anfragen von DNS-Servern, keine Inhalte und keine Daten über Personen.',
+                :html => "Die Namen der Seite (DNS) verwaltet #{dns}. Darüber laufen keine Verbindungen: Die Namen zeigen direkt auf den Server, und #{dns} sieht nur Anfragen von DNS-Servern, keine Inhalte und keine Daten über Personen.",
             },
             {
                 :name => 'Paketquellen und GitHub',

@@ -8,7 +8,7 @@ Du benötigst:
 
 - einen Hetzner-Account
 - einen Public Key
-- eine Domain oder Subdomain, die du auf deinen Server zeigen lassen kannst, mit ihrem DNS bei Cloudflare (ein kostenloses Konto genügt; Schritt 5 sagt, warum)
+- eine Domain oder Subdomain, die du auf deinen Server zeigen lassen kannst, deren DNS du bei deSEC oder Cloudflare verwalten lassen kannst (beides kostenlos; Schritt 5 sagt, warum)
 - SMTP-Zugangsdaten für einen E-Mail-Account, von dem aus die Anmeldecodes versendet werden
 
 ## Schritt 0: Server und Volume anlegen
@@ -48,7 +48,7 @@ port 22
 identityFile <Pfad zum Private Key>
 ```
 
-**Tipp:** Jetzt ist ein guter Zeitpunkt, die DNS-Einträge bei Cloudflare anzulegen, damit nachher alles bereit ist (Schritt 5, »DNS bei Cloudflare«).
+**Tipp:** Jetzt ist ein guter Zeitpunkt, die DNS-Einträge anzulegen, damit nachher alles bereit ist (Schritt 5, »DNS: deSEC (empfohlen) oder Cloudflare«).
 
 Verbinde dich als `root` mit deinem Server:
 
@@ -268,26 +268,49 @@ cd frontend
 touch traefik/acme.json && chmod 600 traefik/acme.json
 ```
 
-### DNS bei Cloudflare
+### DNS: deSEC (empfohlen) oder Cloudflare
 
-Jeder Workspace hat eine eigene Subdomain, also braucht der Workspace ein Zertifikat für deine Domain und alle Subdomains (`*.workspace.deine-schule.de`). So eines stellt Letsencrypt nur aus, wenn Traefik über einen DNS-Eintrag beweist, dass die Domain dir gehört; Traefik legt diesen Eintrag selbst an, über die Schnittstelle von Cloudflare.
+Jeder Workspace hat eine eigene Subdomain, also braucht der Workspace ein Zertifikat für deine Domain und alle Subdomains (`*.workspace.deine-schule.de`). So eines stellt Letsencrypt nur aus, wenn Traefik über einen DNS-Eintrag beweist, dass die Domain dir gehört; Traefik legt diesen Eintrag selbst an, über die Schnittstelle dessen, der deinen DNS verwaltet. Das kann [deSEC](https://desec.io) oder Cloudflare.
 
-1. Die Domain bei Cloudflare hinzufügen und bei deinem Registrar die Nameserver eintragen, die Cloudflare nennt (falls die Domain noch nicht bei Cloudflare liegt). Cloudflare verwaltet immer eine ganze Domain: Für `workspace.deine-schule.de` liegt also `deine-schule.de` bei Cloudflare.
-2. Unter »DNS › Records« zwei Einträge auf die Adresse deines Servers, und `AAAA` ebenso, wenn er eine IPv6-Adresse hat:
-   - Typ `A`, Name `workspace` (oder `@` für die Domain selbst)
-   - Typ `A`, Name `*.workspace` (oder `*`)
+Wir empfehlen deSEC: ein gemeinnütziger Verein in Berlin, kostenlos (er lebt von Spenden). Cloudflare ist ein Unternehmen aus den USA. Beide verwalten nur die Namen; über sie laufen keine Verbindungen.
 
-   Bei beiden **Proxy status: DNS only** (graue Wolke), nicht »Proxied«. Über Cloudflare laufen sonst alle Verbindungen der Schülerinnen und Schüler, was die Datenschutzerklärung ausschließt (Cloudflare verwaltet nur die Namen), und der Workspace sähe statt der Adressen der Browser die von Cloudflare: Die Grenzen je Adresse (Anfragen, Anmeldungen) träfen dann alle gemeinsam.
+Bei beiden brauchst du zwei Einträge auf die Adresse deines Servers, und `AAAA` ebenso, wenn er eine IPv6-Adresse hat:
+
+- Typ `A`, Name `workspace` (oder leer bzw. `@` für die Domain selbst)
+- Typ `A`, Name `*.workspace` (oder `*`)
+
+#### deSEC
+
+1. Unter [desec.io](https://desec.io) ein Konto anlegen (eine E-Mail-Adresse genügt) und deine Domain hinzufügen.
+2. Bei deinem Registrar die Nameserver von deSEC eintragen: `ns1.desec.io` und `ns2.desec.org`. deSEC signiert die Einträge (DNSSEC) und zeigt dir dazu DS-Einträge; trage sie beim Registrar ein, wenn er DNSSEC anbietet.
+3. Die beiden Einträge von oben anlegen.
+4. Unter den Tokens einen neuen API-Token anlegen.
+
+#### Oder: Cloudflare
+
+1. Die Domain bei Cloudflare hinzufügen und bei deinem Registrar die Nameserver eintragen, die Cloudflare nennt. Cloudflare verwaltet immer eine ganze Domain: Für `workspace.deine-schule.de` liegt also `deine-schule.de` bei Cloudflare.
+2. Unter »DNS › Records« die beiden Einträge von oben, bei beiden **Proxy status: DNS only** (graue Wolke), nicht »Proxied«. Über Cloudflare liefen sonst alle Verbindungen der Schülerinnen und Schüler, was die Datenschutzerklärung ausschließt, und der Workspace sähe statt der Adressen der Browser die von Cloudflare: Die Grenzen je Adresse (Anfragen, Anmeldungen) träfen dann alle gemeinsam.
 3. Unter »My Profile › API Tokens« einen Token anlegen, mit der Vorlage »Edit zone DNS«: Rechte `Zone › DNS › Edit` und `Zone › Zone › Read`, unter »Zone Resources« nur deine Zone.
 
-Den Token und die Adresse, an die Letsencrypt zu den Zertifikaten schreibt, in eine Datei `.env` neben der `docker-compose.yaml`:
+#### Die `.env`
+
+Wer den DNS verwaltet, der Token und die Adresse, an die Letsencrypt zu den Zertifikaten schreibt, stehen in einer Datei `.env` neben der `docker-compose.yaml`. Mit deSEC:
 
 ```
+DNS_PROVIDER=desec
+DESEC_TOKEN=dein-token
+ACME_EMAIL=deine-adresse@example.org
+```
+
+Mit Cloudflare:
+
+```
+DNS_PROVIDER=cloudflare
 CF_DNS_API_TOKEN=dein-token
 ACME_EMAIL=deine-adresse@example.org
 ```
 
-Die Datei enthält ein Geheimnis: `chmod 600 .env`.
+Die Datei enthält ein Geheimnis: `chmod 600 .env`. Und damit die Datenschutzerklärung den Richtigen nennt, in `src/ruby/credentials.rb` des Workspace dasselbe, etwa `DNS_PROVIDER = 'deSEC e. V.'` (ohne den Wert steht dort Cloudflare).
 
 Jetzt können wir das Frontend starten:
 

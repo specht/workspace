@@ -28,6 +28,15 @@ class PrivacyTest < Minitest::Test
         Privacy.page_html(Privacy.settings(scope(values)))
     end
 
+    # Who hosts the DNS: Cloudflare without the setting (the only one
+    # documented before deSEC), otherwise the one named.
+    def test_dns_provider
+        assert_includes page, 'Die Namen der Seite (DNS) verwaltet Cloudflare.'
+        html = page('DNS_PROVIDER' => 'deSEC e. V.')
+        assert_includes html, 'Die Namen der Seite (DNS) verwaltet deSEC e. V.'
+        refute_includes html, 'Cloudflare'
+    end
+
     def test_renders_with_every_setting_missing
         html = page
         ['Impressum', 'Datenschutzerklärung', 'Wer verantwortlich ist', 'Rechtsgrundlage', 'Welche Daten gespeichert werden',
