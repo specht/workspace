@@ -18,6 +18,8 @@
     }
 
     const key = (p) => p[0] + ',' + p[1];
+    // the paw prints are drawn walking north
+    const TURNS = { north: 0, east: 90, south: 180, west: 270 };
 
     class PipView {
         // box: the element the map goes into; layout: PipWorld#layout;
@@ -58,10 +60,12 @@
             this.world.style.height = size * this.layout.height + 'px';
         }
 
+        // p: [x, y], for paw prints [x, y, the way Bello went]
         tile(name, p) {
             const node = el('div', 'pip-tile pip-' + name, this.world);
             node.style.setProperty('--x', p[0]);
             node.style.setProperty('--y', p[1]);
+            if (p[2]) node.style.setProperty('--turn', TURNS[p[2]] + 'deg');
             return node;
         }
 

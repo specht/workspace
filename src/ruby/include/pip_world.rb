@@ -99,9 +99,36 @@ class PipWorld
             :width => @width, :height => @height,
             :walls => @walls.keys, :stones => @start_stones, :lamp => @lamp, :bello => @bello,
             :levers => @levers.keys, :gates => @gates.keys,
-            :trail => @floor_marks.select { |_, v| v == :trail }.keys,
+            :trail => trail_directions,
             :puddles => @floor_marks.select { |_, v| v == :puddle }.keys,
         }
+    end
+
+    # The paw prints with the way Bello went: [x, y, facing], facing towards
+    # the next tile of the trail on the way to Bello (puddles on the trail
+    # count as part of it). Prints that lead to no Bello keep facing north.
+    def trail_directions
+        prints = @floor_marks.select { |_, v| v == :trail }.keys
+        distance = {}
+        if @bello
+            on_trail = ->(p) { @floor_marks.key?(p) }
+            distance[@bello] = 0
+            queue = [@bello]
+            until queue.empty?
+                x, y = queue.shift
+                DELTA.each_value do |dx, dy|
+                    n = [x + dx, y + dy]
+                    next if distance.key?(n) || !on_trail.call(n)
+
+                    distance[n] = distance[[x, y]] + 1
+                    queue << n
+                end
+            end
+        end
+        prints.map do |x, y|
+            toward = DELTA.find { |_, (dx, dy)| (d = distance[[x + dx, y + dy]]) && distance[[x, y]] && d < distance[[x, y]] }
+            [x, y, toward ? toward.first : 'north']
+        end
     end
 
     def stones_left

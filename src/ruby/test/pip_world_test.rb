@@ -148,5 +148,11 @@ class PipWorldTest < Minitest::Test
         assert_equal 1, w.moves
         assert_equal [2, 1], [w.pip[:x], w.pip[:y]]
     end
+
+    # the prints point the way to Bello, round the corner and across a puddle
+    def test_paw_prints_point_the_way_to_bello
+        w = PipWorld.new("#######\n#Pp~p.#\n####pB#\n#######")
+        assert_equal [[2, 1, 'east'], [4, 1, 'south'], [4, 2, 'east']], w.layout[:trail].sort
+    end
 end
 

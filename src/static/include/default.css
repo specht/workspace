@@ -8336,7 +8336,11 @@ html[data-bs-theme="dark"] .bitplane-widget {
 }
 
 .pip-wall { background-image: url(/images/pip/wall.png?v=2); }
-.pip-trail { background-image: url(/images/pip/trail.png?v=2); }
+/* turned the way Bello went (--turn, pip_world.js) */
+.pip-trail {
+    background-image: url(/images/pip/trail.png?v=2);
+    transform: translate(calc(var(--x) * var(--tile)), calc(var(--y) * var(--tile))) rotate(var(--turn, 0deg));
+}
 .pip-puddle { background-image: url(/images/pip/puddle.png?v=2); }
 .pip-lever { background-image: url(/images/pip/lever-off.png?v=2); }
 .pip-lever.pip-pulled { background-image: url(/images/pip/lever-on.png?v=2); }
