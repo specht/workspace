@@ -75,7 +75,7 @@ class StudentHomeTest < Minitest::Test
         assert_includes html, 'Weiter mit'
         assert_includes html, "href='/tcpip#aufgabe-loopback'"
         assert_includes html, '1 von 3 gelöst'
-        assert_includes html, '0 von 1 Aufgabe<'
+        assert_includes html, '0 von 1 gelöst<'
         assert_operator html.index('/tcpip'), :<, html.index('/showerjs')
         refute_includes html, 'uebung-strings'
         refute_includes html, 'So geht'

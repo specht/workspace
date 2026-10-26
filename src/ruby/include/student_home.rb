@@ -96,7 +96,7 @@ module StudentHome
             pinned.each do |p|
                 io << card(p[:slug], p[:title], by_slug[p[:slug]], :abstract => p[:abstract], :pinned => p[:group],
                            :template_folder => p[:template_folder], :kind => p[:kind], :image => p[:image],
-                           :image_dark => p[:image_dark], :position => p[:position])
+                           :image_dark => p[:image_dark], :position => p[:position], :kata => p[:kata])
             end
             io << '</div></section>'
         end
@@ -167,10 +167,14 @@ module StudentHome
     # variant, position: its focus), on the right its kind, title, the start
     # of its description, the progress once begun and a button to go on;
     # which group it was pinned for, small. On a phone the picture is on top.
-    def self.card(slug, title, entry, abstract: nil, pinned: nil, template_folder: nil, kind: nil, image: nil, image_dark: nil, position: nil)
+    # kata: { hue:, icon: } for a set of Katas, which has no picture of its
+    # own: its band from the strip instead (KataMap.art_html).
+    def self.card(slug, title, entry, abstract: nil, pinned: nil, template_folder: nil, kind: nil, image: nil, image_dark: nil, position: nil, kata: nil)
         link = entry && entry[:next] ? "/#{h(slug)}#aufgabe-#{h(entry[:next][:id])}" : "/#{h(slug)}"
-        io = +"<article class='student-home-card#{pinned ? ' student-home-pinned' : ''}#{image ? ' shc-with-picture' : ''}' data-slug='#{h(slug)}'>"
-        if image
+        io = +"<article class='student-home-card#{pinned ? ' student-home-pinned' : ''}#{image || kata ? ' shc-with-picture' : ''}' data-slug='#{h(slug)}'>"
+        if kata
+            io << "<a class='shc-picture shc-kata' href='#{link}' tabindex='-1' aria-hidden='true' style='--accent: #{kata[:hue].to_i}'>#{KataMap.art_html(kata[:icon])}</a>"
+        elsif image
             style = position ? " style='object-position: #{h(position)};'" : ''
             io << "<a class='shc-picture' href='#{link}' tabindex='-1' aria-hidden='true'>"
             io << "<img alt='' class='#{image_dark ? 'theme-image-light' : ''}' #{image} loading='lazy' decoding='async'#{style}>"

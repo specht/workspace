@@ -4816,17 +4816,30 @@ ul.task-teacher-list .task-teacher-answer {
     box-shadow: 0 0.3em 1em rgba(0, 0, 0, 0.08);
 }
 .shc-with-picture {
-    grid-template-columns: 15em 1fr;
+    --shc-picture-width: 19em;
+    grid-template-columns: var(--shc-picture-width) 1fr;
+    align-items: center;
 }
 
-/* the picture fills its column without setting the card's height (the
-   text does); display stays with the rule that shows the light or the dark
-   variant */
+/* the picture flush with the card's edge, in 16:9 as on the catalog's
+   cards: at least as high as its width asks, taller only where the text
+   needs more room; display stays with the rule that shows the light or
+   the dark variant */
 .shc-picture {
     position: relative;
     display: block;
-    min-height: 9em;
+    align-self: stretch;
+    min-height: calc(var(--shc-picture-width) * 9 / 16);
     background: var(--bs-tertiary-bg);
+}
+/* a set of Katas: its band from the strip (KataMap.art_html), filling the picture */
+.shc-kata .kata-set-art {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    font-size: 3.4em;
 }
 .shc-picture .theme-image-dark {
     display: none;
@@ -8608,8 +8621,8 @@ html[data-bs-theme="dark"] .bitplane-widget {
     box-shadow: 0 0.4em 1.2em hsl(var(--accent, 150) 55% 45% / 0.22);
 }
 .kata-set-pinned {
-    border-color: var(--bs-primary);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--bs-primary) 35%, transparent);
+    border-color: #0b4fb3;
+    box-shadow: 0 0 0 2px color-mix(in srgb, #0b4fb3 35%, transparent);
 }
 
 .kata-set-art {
@@ -8681,7 +8694,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
     vertical-align: 0;
 }
 
-/* the set's number, or a tick when it is done; »Angepinnt« beside it */
+/* the set's number, or a tick when it is done */
 .kata-set-marks {
     position: absolute;
     top: 0.5em;
@@ -8709,8 +8722,43 @@ html[data-bs-theme="dark"] .bitplane-widget {
     background: #198754;
     color: #fff;
 }
+/* a catalog card pinned for one of the person's groups: the same pin as
+   on the Kata strip, over the picture's right corner, and a blue border */
+.card-pin {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.55rem;
+    height: 1.55rem;
+    border-radius: 50%;
+    background: #0b4fb3;
+    color: #fff;
+    font-size: 0.8rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+.card-pin .bi::before {
+    vertical-align: 0;
+}
+.tutorial_card3.card-pinned {
+    outline: 2px solid #0b4fb3;
+    outline-offset: -2px;
+}
+
+/* pinned for the group: a round pin in the site's blue (as »Aufgabe 1«), at
+   the right, as high as the number (0.5em of the set, in its 0.8em) */
 .kata-set-pin {
-    color: var(--bs-primary);
+    position: absolute;
+    top: 0.625em;
+    right: 0.625em;
+    width: 1.9em;
+    padding: 0;
+    border-radius: 50%;
+    background: #0b4fb3;
+    color: #fff;
 }
 .kata-set-marks .bi {
     margin: 0;
@@ -8719,7 +8767,10 @@ html[data-bs-theme="dark"] .bitplane-widget {
     vertical-align: 0;
 }
 .kata-set-pin .bi {
-    margin-right: 0.3em;
+    margin: 0;
+}
+.kata-set-pin .bi::before {
+    vertical-align: 0;
 }
 
 .kata-set-body {

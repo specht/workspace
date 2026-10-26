@@ -156,12 +156,26 @@ html[data-bs-theme="dark"] {
         background: rgba(0, 0, 0, 0.2);
         border-color: rgba(255, 255, 255, 0.08);
     }
-    .kata-set-number,
-    .kata-set-pin {
+    .kata-set-number {
         background: rgba(20, 20, 20, 0.88);
         color: hsl(var(--accent, 150) 62% 72%);
     }
-    .kata-set-pin { color: #7fbfe3; }
+    /* the site's blue in the dark (as »Aufgabe 1«) */
+    .kata-set-pin {
+        background: #8db8f5;
+        color: #172a45;
+    }
+    .card-pin {
+        background: #8db8f5;
+        color: #172a45;
+    }
+    .tutorial_card3.card-pinned {
+        outline-color: #8db8f5;
+    }
+    .kata-set-pinned {
+        border-color: #8db8f5;
+        box-shadow: 0 0 0 2px rgba(141, 184, 245, 0.35);
+    }
     .kata-set .theme-image-light { display: none; }
     .kata-set .theme-image-dark { display: block; }
     /* a pinned activity: a faint line round it, its colour bar stays */

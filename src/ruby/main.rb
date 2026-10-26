@@ -6047,6 +6047,14 @@ class Main < Sinatra::Base
         user_logged_in? && tasks_visible? && !teacher_account_logged_in? && my_running_tests.empty?
     end
 
+    # The hue and icon of a set of Katas (KataMap: its place in the Katas
+    # section, as the strip shows it), or nil for any other page.
+    def kata_teaser(slug)
+        entries = ((@@sections['katas'] || {})[:entries] || [])
+        index = entries.index(slug)
+        index && { :hue => KataMap.hue(index, entries.size), :icon => (@@content[slug] || {})[:icon] }
+    end
+
     # Start page for logged-in students: activities a teacher pinned, where
     # to continue, how the site works (M5).
     def student_home
@@ -6060,7 +6068,9 @@ class Main < Sinatra::Base
             { :slug => p[:slug], :title => plain_title(p[:slug]), :abstract => c[:abstract], :group => p[:group],
               :template_folder => (c[:template] || {})[:folder], :kind => PageKinds.kind_label(c[:kind]),
               :image => c[:image] && CardImages.attributes(c[:image]), :image_dark => c[:image_dark] && CardImages.attributes(c[:image_dark]),
-              :position => "#{c[:image_x] || 50}% #{c[:image_y] || 50}%" }
+              :position => "#{c[:image_x] || 50}% #{c[:image_y] || 50}%",
+              # a set of Katas: its band from the strip, in its hue
+              :kata => kata_teaser(p[:slug]) }
         end
         html = StudentHome.html(:progress => my_progress, :pinned => pinned, :listed => allowed,
                                 :guide => student_home_visible?)
@@ -6430,6 +6440,8 @@ class Main < Sinatra::Base
                     section_order = []
                 end
                 card_index = 0
+                # pinned for one of the person's groups: a pin on the card, as on the Kata strip
+                catalog_pins = user_logged_in? ? pins_for_groups((my_groups + class_groups).uniq).map { |p| p[:slug] }.to_set : Set.new
                 section_order.each do |section_key|
                     section = @@sections[section_key]
                     # hidden: true in sections.yaml: the pages exist, the
@@ -6485,7 +6497,9 @@ class Main < Sinatra::Base
                     entries.each do |slug|
                         content = @@content[slug]
                         io.puts "<div class='hscol'>"
-                        io.puts "<a href='/#{slug}' class='tutorial_card3'>"
+                        pinned_card = catalog == :student && catalog_pins.include?(slug)
+                        io.puts "<a href='/#{slug}' class='tutorial_card3#{pinned_card ? ' card-pinned' : ''}'>"
+                        io.puts "<span class='card-pin' title='Angepinnt'><i class='bi bi-pin-angle-fill' aria-hidden='true'></i><span class='visually-hidden'>Angepinnt</span></span>" if pinned_card
                         io.puts "<h4>#{content[:title]}</h4>"
                         io.puts "<div>"
                         additional_classes = []
