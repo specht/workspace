@@ -42,7 +42,9 @@ test('the class page remembers the group and each group\'s activity', async ({ p
   await page.goto('/klasse');
   await expect(page.locator(".class-board-select select[name='group']")).toHaveValue(testGroup);
   await expect(page.locator('.class-activity-select select')).toHaveValue('tcpip');
-  await page.locator(".class-board-select select[name='group']").selectOption('E2E');
+  // the group is a search field over the hidden select
+  await page.locator('.class-board-select input[role=combobox]').fill('E2E');
+  await page.keyboard.press('Enter');
   await expect(page.locator('.class-activity-select select')).toHaveValue('bif');
   await page.goto('/klasse');
   await expect(page.locator(".class-board-select select[name='group']")).toHaveValue('E2E');
@@ -99,6 +101,17 @@ test('the class page finds activities by typing', async ({ page }, testInfo) => 
   await page.locator('.class-activity-select .suggest-menu .dropdown-item').first().click();
   await expect(page).toHaveURL(/activity=routenplaner/);
   await expect(page.locator('.class-activity-select input[role=combobox]')).toHaveValue(/Routenplaner/);
+  // the list has the catalog's sections as headings
+  const boardAgain = page.locator('.class-activity-select input[role=combobox]');
+  await boardAgain.click();
+  await expect(page.locator('.class-activity-select .suggest-menu .dropdown-header').first()).toBeVisible();
+  await page.keyboard.press('Escape');
+  // the group too is a search field, with the keyboard
+  const group = page.locator('.class-board-select input[role=combobox]');
+  await group.click();
+  await group.fill('E2E');
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/group=E2E/);
 
   await page.getByRole('tab', { name: 'Startseite' }).click();
   const pin = page.locator('.class-pins input[role=combobox]');

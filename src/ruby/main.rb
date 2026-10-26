@@ -5904,6 +5904,27 @@ class Main < Sinatra::Base
             .select { |slug| @@content[slug] && (DEVELOPMENT || !@@content[slug][:dev_only]) }
     end
 
+    # Activities as <option>s grouped by their catalog section, in catalog
+    # order (headings in the search field, searchable_select); within a
+    # section by title. items: [[value, title, slug]].
+    def grouped_activity_options(items, selected = nil)
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        section_of = {}
+        @@section_order.each { |key| ((@@sections[key] || {})[:entries] || []).each { |slug| section_of[slug.to_s.delete_prefix('.')] ||= key } }
+        groups = items.group_by { |_, _, slug| section_of[slug] }
+        order = @@section_order + [nil]
+        order.filter_map do |key|
+            list = groups[key]
+            next if list.nil? || list.empty?
+
+            label = key ? CGI.unescapeHTML((@@sections[key] || {})[:label].to_s.gsub('&shy;', '')) : 'Weitere'
+            options = list.sort_by { |_, title, _| title.downcase }.map do |value, title, slug|
+                "<option value='#{h.(value)}' data-search='#{h.(activity_search_text(slug))}'#{value == selected ? ' selected' : ''}>#{h.(title)}</option>"
+            end
+            "<optgroup label='#{h.(label)}'>#{options.join}</optgroup>"
+        end.join
+    end
+
     # What else finds an activity in the search fields of the class page
     # (searchable_select): the label of its catalog section (»Katas« finds
     # Pip's sets too) and its description.
@@ -6010,10 +6031,7 @@ class Main < Sinatra::Base
         end
         io << "<div class='class-pins-add'><select class='form-select class-pin-select' aria-label='Aktivität suchen und anheften'><option value=''>Aktivität suchen und anheften …</option>"
         pinned = pins.map { |p| p[:slug] }
-        pinnable_slugs.reject { |s| pinned.include?(s) }.sort_by { |s| plain_title(s).downcase }.each do |s|
-            # The section and the description too, for the search (searchable_select).
-            io << "<option value='#{h.(s)}' data-search='#{h.(activity_search_text(s))}'>#{h.(plain_title(s))}</option>"
-        end
+        io << grouped_activity_options(pinnable_slugs.reject { |s| pinned.include?(s) }.map { |s| [s, plain_title(s), s] })
         io << '</select></div></section>'
         io
     end
@@ -6148,7 +6166,8 @@ class Main < Sinatra::Base
         wanted = params['tab'] == 'gruppe' ? 'lernende' : params['tab']
         tab = CLASS_TABS.any? { |key, _, _| key == wanted } ? wanted : 'fortschritt'
         io = +"<form class='class-board-select' method='get' action='/klasse'>"
-        io << "<label>Gruppe <select class='form-select' name='group' onchange='this.form.submit()'>"
+        # a search field (class_board.js), with the schools as headings
+        io << "<label>Gruppe <select class='form-select class-group-choice' name='group'>"
         option = ->(g) { "<option value='#{h.(g)}'#{g == group ? ' selected' : ''}>#{h.(g)} (#{(@@group_members[g] || []).size})</option>" }
         # With more than one school (partner schools, guests), the groups are
         # nested under their school; test groups and groups without a school
@@ -6251,9 +6270,7 @@ class Main < Sinatra::Base
         # to scroll, and a native list that tall picked an entry by itself
         io << "<label>Aktivität <select class='form-select class-activity-choice' name='activity'>"
         slugs = @@content.each_with_object({}) { |(s, c), all| all[c[:tasks][:activity]] ||= s if c[:tasks] }
-        activities.each do |a, t, _|
-            io << "<option value='#{h.(a)}' data-search='#{h.(activity_search_text(slugs[a]))}'#{a == activity_key ? ' selected' : ''}>#{h.(t)}</option>"
-        end
+        io << grouped_activity_options(activities.map { |a, t, _| [a, t, slugs[a]] }, activity_key)
         io << "</select></label><noscript><button class='btn btn-primary'>Anzeigen</button></noscript></form>"
         io << "<a class='class-activity-link' href='/#{h.(slug)}' title='#{h.(title)} öffnen'><i class='bi bi-box-arrow-up-right' aria-hidden='true'></i>Zur Seite</a>" if slug
         live = tasks.select { |t| TaskCheck::LIVE_TYPES.include?(t[:type]) }

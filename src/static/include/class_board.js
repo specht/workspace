@@ -76,11 +76,11 @@
 
     // The activity of the board: typed into a search field instead of a
     // list too long to scroll; a choice shows that activity's board.
-    const choice = document.querySelector('.class-activity-choice');
-    if (choice) {
+    // So is the group, with its school as a heading where there are several.
+    document.querySelectorAll('.class-activity-choice, .class-group-choice').forEach(function (choice) {
         $(choice).on('change', function () { choice.form.submit(); });
         searchable_select(choice);
-    }
+    });
 
     // Pin and unpin activities for the group (shown first on students' start page).
     const pins = document.querySelector('.class-pins');

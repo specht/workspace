@@ -165,15 +165,22 @@ function searchable_select(select) {
     // field's placeholder, not a choice.
     const prompt = select.find('option').filter(function () { return $(this).val() === ''; }).first().text();
     if (prompt && !/alle /i.test(prompt)) input.attr('placeholder', prompt);
-    const options = () => select.find('option').map(function () { return { value: $(this).val(), text: $(this).text(), more: $(this).attr('data-search') || '' }; }).get()
-        .filter(o => o.value !== '' || /alle /i.test(o.text));
+    // An option in an <optgroup> (a section of the catalog, a school)
+    // belongs to its label, which the list shows as a heading.
+    const options = () => select.find('option').map(function () {
+        return { value: $(this).val(), text: $(this).text(), more: $(this).attr('data-search') || '', group: $(this).parent('optgroup').attr('label') || '' };
+    }).get().filter(o => o.value !== '' || /alle /i.test(o.text));
     const sync = function () {
         last = select.val();
         const chosen = select.find('option:selected');
         input.val(chosen.val() === '' && !/alle /i.test(chosen.text()) ? '' : chosen.text());
     };
     const close = function () { menu.removeClass('show').empty(); input.attr('aria-expanded', 'false'); shown = []; active = -1; };
-    const mark = () => menu.find('.dropdown-item').removeClass('active').eq(active).addClass('active');
+    const mark = function () {
+        const item = menu.find('.dropdown-item').removeClass('active').eq(active).addClass('active');
+        // the active one in view when the arrows move through a long list
+        if (item.length) item[0].scrollIntoView({ block: 'nearest' });
+    };
     const pick = function (option) {
         close();
         if (option && option.value !== select.val()) select.val(option.value).trigger('change');
@@ -194,8 +201,14 @@ function searchable_select(select) {
         shown = direct.concat(in_text);
         active = shown.length ? 0 : -1;
         menu.empty();
+        // a heading where the group changes; what only the description
+        // matched comes last, under its own heading
+        let heading = null;
         shown.forEach(function (o, i) {
-            const item = $(`<li><button type='button' class='dropdown-item' role='option'>${esc(o.text)}${o.in_text ? " <span class='small text-body-secondary'>im Text</span>" : ''}</button></li>`);
+            const label = o.in_text ? 'Im Text gefunden' : o.group;
+            if (label && label !== heading) menu.append(`<li role='presentation'><h6 class='dropdown-header'>${esc(label)}</h6></li>`);
+            heading = label;
+            const item = $(`<li><button type='button' class='dropdown-item' role='option'>${esc(o.text)}</button></li>`);
             item.find('button').on('mousedown', function (e) { e.preventDefault(); pick(shown[i]); });
             menu.append(item);
         });
