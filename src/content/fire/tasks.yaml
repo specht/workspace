@@ -103,7 +103,8 @@ tasks:
       expect:
         format: text
         contains:
-          - { pattern: 'get_pixel\s*\(\s*x\s*,\s*y\s*\+\s*1\s*\)\s*\*\s*2', say: 'In `fire.rb` finde ich den Kernel noch nicht: `c = get_pixel(x, y + 1) * 2`, das untere Pixel doppelt.' }
+          # das untere Pixel doppelt: »… * 2«, »2 * …« oder zweimal in einer Zeile
+          - { pattern: 'get_pixel\s*\(\s*x\s*,\s*y\s*\+\s*1\s*\)\s*\*\s*2\b|\b2\s*\*\s*get_pixel\s*\(\s*x\s*,\s*y\s*\+\s*1\s*\)|get_pixel\s*\(\s*x\s*,\s*y\s*\+\s*1\s*\).*get_pixel\s*\(\s*x\s*,\s*y\s*\+\s*1\s*\)', say: 'In `fire.rb` finde ich den Kernel noch nicht: das Pixel darunter, `get_pixel(x, y + 1)`, doppelt gezählt, etwa mit `c = get_pixel(x, y + 1) * 2`.' }
           - { pattern: 'clamp\s*\(\s*0\s*,\s*63\s*\)', say: 'Noch hält nichts `c` zwischen 0 und 63: `c = c.clamp(0, 63)` vor `set_pixel`.' }
           - { pattern: 'rand\s*\(.*\bif\s+c\s*>\s*0', say: 'Der Zufall kommt noch auch zu schwarzen Pixeln dazu, und die ganze Luft glüht. Häng `if c > 0` an die Zeile mit `rand`.' }
     feedback:

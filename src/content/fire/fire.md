@@ -177,13 +177,32 @@ image-file: fire-steps/step.png 8
 -->
 <img src='ramp2.webp' class='full' alt='Der Farbverlauf reicht von Schwarz über Rot bis Orange.'>
 
+So ist jede Zeile des Verlaufs gebaut: Zuerst kommt die Nummer der Farbe, `i` plus die erste Nummer des Abschnitts, hier 16. Dann kommen Rot, Grün und Blau. Ein Kanal, der wächst, ist `i * 8` plus der Wert, mit dem er anfängt; Rot fängt hier bei 128 an, Grün bei 0. Ein Kanal, der gleich bleibt, ist eine feste Zahl, hier Blau mit 0.
+
 ### Orange bis Gelb
 
-Im dritten Abschnitt steigt der Grünwert von 50% auf 100% an, während Blau von 0 auf 50% ansteigt. Rot bleibt bei 100%. Der Farbverlauf geht also von Orange (255, 128, 0) zu Gelb (255, 255, 128). Füge folgenden Code ein:
+Im dritten Abschnitt steigt der Grünwert von 50% auf 100% an, während Blau von 0 auf 50% ansteigt. Rot bleibt bei 100%. Der Farbverlauf geht also von Orange (255, 128, 0) zu Gelb (255, 255, 128).
 
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Schreib die Zeile für die Farben 32 bis 47 selbst, direkt unter die Zeile von eben. Bau sie wie die Zeile für den zweiten Abschnitt: die Nummer der Farbe, dann Rot, Grün und Blau.
+</div>
+
+<!-- hint -->
+Schreib dir für jeden Kanal auf, wo er anfängt und ob er wächst. Rot bleibt bei 255. Grün fängt bei 128 an und wächst. Blau fängt bei 0 an und wächst. Die erste Farbe des Abschnitts hat die Nummer 32.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücken mit `…` füllst du:
+
+```ruby
+set_palette(i + …, 255, i * 8 + …, …)
+```
+<!-- /hint -->
+
+<!-- solution -->
 ```ruby
 set_palette(i + 32, 255, i * 8 + 128, i * 8)
 ```
+<!-- /solution -->
 
 Dein Farbverlauf sollte nun so aussehen:
 
@@ -198,11 +217,28 @@ image-file: fire-steps/step.png 8
 
 ### Gelb bis Weiß
 
-Im vierten Abschnitt steigt der Blauwert von 50% auf 100% an, während Rot und Grün bei 100% bleiben. Der Farbverlauf geht also von Gelb (255, 255, 128) zu Weiß (255, 255, 255). Füge folgenden Code ein:
+Im vierten Abschnitt steigt der Blauwert von 50% auf 100% an, während Rot und Grün bei 100% bleiben. Der Farbverlauf geht also von Gelb (255, 255, 128) zu Weiß (255, 255, 255).
 
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Die letzte Zeile, für die Farben 48 bis 63, schreibst du auch selbst, unter die anderen drei.
+</div>
+
+<!-- hint -->
+Welche Kanäle bleiben gleich, welcher wächst, und bei welchem Wert fängt er an? Die erste Farbe des Abschnitts hat die Nummer 48.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücken mit `…` füllst du:
+
+```ruby
+set_palette(i + …, 255, 255, …)
+```
+<!-- /hint -->
+
+<!-- solution -->
 ```ruby
 set_palette(i + 48, 255, 255, i * 8 + 128)
 ```
+<!-- /solution -->
 
 Geschafft! Dein Farbverlauf sollte nun so aussehen:
 
@@ -388,8 +424,35 @@ Mit jedem Schritt wandert die Hitze im Mittel ein halbes Pixel nach oben: Das Ge
 
 ### Den Filterkernel anwenden
 
-Für das Feuer wendet dein Programm den Filterkernel in jedem Bild auf jedes Pixel an. Füge folgenden Code über der `flip()`-Zeile ein:
+Für das Feuer wendet dein Programm den Filterkernel in jedem Bild auf jedes Pixel an. Die Farbnummer eines Pixels liefert `get_pixel(x, y)`, so wie `set_pixel(x, y, c)` sie setzt.
 
+<div class='hint own'>
+<strong>Jetzt bist du dran:</strong> Schreib über die <code>flip()</code>-Zeile zwei Schleifen, die durch das ganze Bild gehen: <code>y</code> von 0 bis 127 und darin <code>x</code> von 0 bis 255. Für jedes Pixel rechnest du den Kernel von oben aus, in einer Variablen <code>c</code>: das Pixel darunter doppelt, dazu das linke und das rechte Pixel, die Summe durch 4. Das Ergebnis ist die neue Farbe des Pixels.
+</div>
+
+<!-- hint -->
+Rechne es einmal für das Pixel bei (10, 50) durch: Welche drei Pixel brauchst du, mit welchen Koordinaten? Das Pixel darunter hat das größere y, denn y wächst auf dem Bildschirm nach unten.
+<!-- /hint -->
+<!-- hint -->
+Zwei Schleifen ineinander, so wie `(0...16).each do |i|` beim Farbverlauf: außen eine für `y`, innen eine für `x`. Innen holst du die drei Farbnummern mit `get_pixel`, zählst sie mit ihren Gewichten in `c` zusammen, teilst durch 4 und setzt das Pixel mit `set_pixel`. Ruby teilt ganze Zahlen ohne Rest, und das passt: Farbnummern sind ganze Zahlen.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst; die Lücken mit `…` füllst du:
+
+```ruby
+(0...128).each do |y|
+    (0...256).each do |x|
+        c = get_pixel(x, y + 1) * …
+        c += get_pixel(…, y)
+        c += get_pixel(…, …)
+        c /= …
+        set_pixel(x, y, c)
+    end
+end
+```
+<!-- /hint -->
+
+<!-- solution -->
 ```ruby
 # Filterkernel auf jedes Pixel anwenden
 (0...128).each do |y|
@@ -405,6 +468,7 @@ Für das Feuer wendet dein Programm den Filterkernel in jedem Bild auf jedes Pix
     end
 end
 ```
+<!-- /solution -->
 
 Das Programm geht Zeile für Zeile durch das Bild und in jeder Zeile durch jedes Pixel. Für jedes Pixel addiert es die Farbwerte der Nachbarn, das untere doppelt, und teilt die Summe durch 4. Dieser Mittelwert wird die neue Farbe des Pixels.
 

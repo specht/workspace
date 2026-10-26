@@ -17,9 +17,31 @@ examples:
   feuer:
     pass:
       - files: { fire.rb: fire.rb }
+      # Der Kernel anders geschrieben, wie im Kasten »Jetzt bist du dran«
+      - files:
+          fire.rb:
+            text: |
+              c = (2 * get_pixel(x, y + 1) + get_pixel(x - 1, y) + get_pixel(x + 1, y)) / 4
+              c += rand(7) - 3 if c > 0
+              c = c.clamp(0, 63)
+      - files:
+          fire.rb:
+            text: |
+              c = get_pixel(x, y+1) + get_pixel(x, y+1) + get_pixel(x-1, y) + get_pixel(x+1, y)
+              c /= 4
+              c += rand(7) - 3 if c > 0
+              c = c.clamp(0, 63)
     fail:
       - files: { fire.rb: draft1.rb }
-        say: get_pixel(x, y + 1) * 2
+        say: get_pixel(x, y + 1)
+      # Der Mittelwert der drei: das untere Pixel nur einfach
+      - files:
+          fire.rb:
+            text: |
+              c = (get_pixel(x, y + 1) + get_pixel(x - 1, y) + get_pixel(x + 1, y)) / 3
+              c += rand(7) - 3 if c > 0
+              c = c.clamp(0, 63)
+        say: doppelt gezählt
       - files: { fire.rb: stufen/fire3.rb }
         say: clamp(0, 63)
       - files: { fire.rb: stufen/fire4.rb }

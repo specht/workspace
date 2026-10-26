@@ -5,8 +5,13 @@ Lernende programmieren in Ruby einen Feuer-Effekt, wie ihn die Demoszene der 90e
 <li><b>1. Doppelstunde:</b> der Farbverlauf in vier Abschnitten, die Animationsschleife, der Filterkernel an neun Pixeln und am Ring.</li>
 <li><b>2. Doppelstunde:</b> das Feuer: den Kernel anwenden, Zufall, die Grenzen 0 bis 63, kalte Luft; wer früher fertig ist, macht mit den Extras weiter.</li>
 </ul></td></tr>
+<tr><th>Jetzt bist du dran</th><td><ul>
+<li>Nach dem zweiten Abschnitt des Farbverlaufs als Beispiel schreiben die Lernenden die Zeilen für den dritten und den vierten selbst.</li>
+<li>Den Feuer-Kernel wenden sie selbst an: zwei Schleifen über das Bild, <code>get_pixel</code> für die drei Nachbarn, die Summe durch 4.</li>
+<li>Davor stehen Tipps, eine Stufe nach der anderen mit einer Minute Pause und ohne Uhr; der Code der Seite ist die letzte Stufe. Keine Aufgabe prüft die Zeilen direkt; der Blauwert von Farbe 63 kommt aus der vierten Zeile, und das fertige <code>fire.rb</code> braucht den Kernel.</li>
+</ul></td></tr>
 <tr><th>Prüfung</th><td><ul>
-<li>Sechs Aufgaben. Eine liest <code>/workspace/fire.rb</code> als Text, ohne es auszuführen (das Feuer läuft in einer Endlosschleife), und sucht den Kernel mit dem doppelt gezählten unteren Pixel, <code>clamp(0, 63)</code> und den Zufall mit <code>if c &gt; 0</code>.</li>
+<li>Sechs Aufgaben. Eine liest <code>/workspace/fire.rb</code> als Text, ohne es auszuführen (das Feuer läuft in einer Endlosschleife), und sucht den Kernel mit dem doppelt gezählten unteren Pixel (<code>get_pixel(x, y + 1) * 2</code>, <code>2 * …</code> oder zweimal in einer Zeile), <code>clamp(0, 63)</code> und den Zufall mit <code>if c &gt; 0</code>.</li>
 <li>Die übrigen fragen Zahlen und Auswahl: eine Farbe des Verlaufs (Nummer 20 ist <code>160, 32, 0</code>), den Blauwert der letzten Farbe (248, nicht 255, weil <code>(0...16)</code> bei 15 aufhört), einen Wert des Kernels mit ganzzahliger Division (32), warum falsche Farben auftauchen, und eine Vorhersage zu <code>rand(7) - 4</code>.</li>
 </ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Schleifen und Arrays in Ruby. Zweidimensionale Arrays und das Rechnen mit Nachbarn eines Pixels erklärt die Seite.</td></tr>
