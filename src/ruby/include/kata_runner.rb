@@ -87,11 +87,18 @@ module KataRunner
          '--entrypoint', 'python3', image, '-I', '-c', RUNNER]
     end
 
+    # A line the program writes to ask something (dialog: below), e.g. Pip's
+    # commands (PipCheck); the answer goes back on its stdin.
+    DIALOG_MARK = "\u001EPIP "
+
     # Runs files (name => text) with argv in a new container. input: what
     # the program reads after the setup line. cancel: a lambda that, given
     # a lambda, keeps it to stop this run from outside (KataQueue).
-    # on_output(stream, text) gets the output as it comes.
-    def self.run(files:, argv:, input: '', timeout: 10, image: IMAGE, cancel: nil, on_output: nil)
+    # on_output(stream, text) gets the output as it comes. dialog: a lambda
+    # that answers each line of the program that starts with DIALOG_MARK
+    # (with the rest of the line); those lines are not part of stdout, and
+    # stdin stays open for the answers until the program ends.
+    def self.run(files:, argv:, input: '', timeout: 10, image: IMAGE, cancel: nil, on_output: nil, dialog: nil)
         name = container_name
         stdout = +''
         stderr = +''
@@ -110,10 +117,12 @@ module KataRunner
             begin
                 stdin.write(JSON.generate({ 'files' => files, 'argv' => argv, 'limit' => [timeout + 5, HARD_LIMIT].min }) + "\n")
                 stdin.write(input.to_s)
+                stdin.flush
             rescue Errno::EPIPE
                 # the container ended (or never started) before it read everything
             end
-            stdin.close
+            stdin.close unless dialog
+            pending = +'' # a dialog line not yet complete
             deadline = Time.now + timeout
             streams = { out => [:stdout, stdout], err => [:stderr, stderr] }
             until streams.empty?
@@ -136,8 +145,29 @@ module KataRunner
                     end
                     kind, buffer = streams[io]
                     text = chunk.force_encoding('UTF-8').scrub
+                    if dialog && kind == :stdout
+                        pending << text
+                        text = +''
+                        while (newline = pending.index("\n"))
+                            line = pending.slice!(0..newline)
+                            if line.start_with?(DIALOG_MARK)
+                                answer = dialog.call(line.delete_prefix(DIALOG_MARK).chomp)
+                                begin
+                                    stdin.write("#{answer}\n")
+                                    stdin.flush
+                                rescue Errno::EPIPE, IOError
+                                    # the program is gone already
+                                end
+                            else
+                                text << line
+                            end
+                        end
+                        # output without a newline yet may still turn into a
+                        # dialog line; anything else goes out as it comes
+                        text << pending.slice!(0..) unless DIALOG_MARK.start_with?(pending[0, DIALOG_MARK.size]) || pending.empty?
+                    end
                     buffer << text
-                    on_output&.call(kind, text)
+                    on_output&.call(kind, text) unless text.empty?
                     if stdout.bytesize + stderr.bytesize > MAX_OUTPUT
                         too_long = true
                         kill.call
@@ -149,6 +179,7 @@ module KataRunner
             # After a stop nothing more is read: closed pipes let the docker
             # client end even if it was writing into a full one.
             [out, err].each { |io| io.close unless io.closed? } if stopped
+            stdin.close unless stdin.closed?
             unless wait.join(5)
                 Process.kill('KILL', wait.pid) rescue nil
             end

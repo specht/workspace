@@ -8255,3 +8255,212 @@ html[data-bs-theme="dark"] .bitplane-widget {
     line-height: 1.45;
     white-space: pre-wrap;
 }
+
+/* Pip unter Funkelbach (pip_world.js): the map and the player. Each tile
+   stands at (--x, --y) in tiles of --tile pixels; the sprites are strips of
+   24-pixel frames, drawn with sharp pixels. Pip and the Glibbers walk from
+   tile to tile in --step. */
+.pip-world {
+    margin: 0.4em 0 0.8em;
+}
+
+.pip-map-box {
+    display: flex;
+    justify-content: center;
+}
+
+.pip-map {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.4em;
+    background: url(/images/pip/floor.png) repeat;
+    background-size: var(--tile) var(--tile);
+    image-rendering: pixelated;
+}
+
+.pip-tile {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--tile);
+    height: var(--tile);
+    transform: translate(calc(var(--x) * var(--tile)), calc(var(--y) * var(--tile)));
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    image-rendering: pixelated;
+}
+
+.pip-tile.actor {
+    transition: transform var(--step, 0ms) linear;
+}
+
+.pip-wall { background-image: url(/images/pip/wall.png); }
+.pip-trail { background-image: url(/images/pip/trail.png); }
+.pip-puddle { background-image: url(/images/pip/puddle.png); }
+.pip-lever { background-image: url(/images/pip/lever-off.png); }
+.pip-lever.pip-pulled { background-image: url(/images/pip/lever-on.png); }
+.pip-gate { background-image: url(/images/pip/gate-closed.png); }
+.pip-gate-open .pip-gate { background-image: url(/images/pip/gate-open.png); }
+
+.pip-stone {
+    background-image: url(/images/pip/stone.png);
+    background-size: 400% 100%;
+    animation: pip-frames-4 1.4s steps(4) infinite;
+    transition: opacity 300ms;
+}
+
+.pip-stone.pip-taken {
+    opacity: 0;
+}
+
+.pip-lamp {
+    background-image: url(/images/pip/lamp.png);
+    background-size: 300% 100%;
+    animation: pip-frames-3 0.6s steps(3) infinite;
+}
+
+.pip-glibber {
+    background-image: url(/images/pip/glibber.png);
+    background-size: 400% 100%;
+    animation: pip-frames-4 0.9s steps(4) infinite;
+}
+
+.pip-bello {
+    background-image: url(/images/pip/bello.png);
+    background-size: 400% 100%;
+    animation: pip-frames-4 1.6s steps(4) infinite;
+}
+
+.pip-pip {
+    z-index: 2;
+    background-image: url(/images/pip/pip-east.png);
+    background-size: 200% 100%;
+}
+
+.pip-pip[data-facing='west'] { background-image: url(/images/pip/pip-west.png); }
+.pip-pip[data-facing='north'] { background-image: url(/images/pip/pip-north.png); }
+.pip-pip[data-facing='south'] { background-image: url(/images/pip/pip-south.png); }
+
+.pip-pip.pip-walking {
+    animation: pip-frames-2 var(--step) steps(2);
+}
+
+.pip-pip.pip-bump {
+    animation: pip-bump 300ms;
+}
+
+.pip-pip.pip-caught {
+    animation: pip-caught 600ms 2;
+}
+
+@keyframes pip-frames-2 { to { background-position-x: calc(-2 * var(--tile)); } }
+@keyframes pip-frames-3 { to { background-position-x: calc(-3 * var(--tile)); } }
+@keyframes pip-frames-4 { to { background-position-x: calc(-4 * var(--tile)); } }
+
+@keyframes pip-bump {
+    30% { translate: calc(var(--tile) * 0.15) 0; }
+    60% { translate: calc(var(--tile) * -0.08) 0; }
+}
+
+@keyframes pip-caught {
+    50% { opacity: 0.25; }
+}
+
+.pip-bubble {
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    transform: translate(calc(var(--x) * var(--tile) - 0.5em), calc((var(--y) - 0.9) * var(--tile)));
+    padding: 0.1em 0.5em;
+    border: 1px solid #1a1c2c;
+    border-radius: 0.6em;
+    background: #f4f4f4;
+    color: #1a1c2c;
+    font-size: 0.8em;
+    white-space: nowrap;
+    image-rendering: auto;
+}
+
+.pip-status {
+    margin: 0.4em 0 0.2em;
+    text-align: center;
+    font-size: 0.85em;
+    color: var(--bs-secondary-color);
+}
+
+.pip-controls {
+    display: flex;
+    gap: 0.4em;
+    align-items: center;
+    justify-content: center;
+}
+
+.pip-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2em;
+    height: 2em;
+    padding: 0;
+}
+
+.pip-button .bi {
+    margin: 0;
+}
+
+.pip-button .bi::before {
+    vertical-align: 0;
+}
+
+.pip-speed {
+    display: inline-flex;
+    gap: 0.4em;
+    align-items: center;
+    margin-left: 0.6em;
+    font-size: 0.85em;
+}
+
+.pip-speed input {
+    width: 6em;
+}
+
+/* a tile of a prediction map to talk about (»Feld 1«) */
+.pip-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: calc(var(--tile) * 0.55);
+    color: #ffcd75;
+    text-shadow: 0 0 3px #1a1c2c, 0 0 3px #1a1c2c;
+    image-rendering: auto;
+}
+
+/* what the Wichtel says on a Pip page: his picture beside it */
+.pip-wichtel {
+    display: flex;
+    gap: 0.8em;
+    align-items: flex-start;
+    margin: 1em 0;
+    font-style: italic;
+}
+
+.pip-wichtel::before {
+    content: '';
+    flex: 0 0 48px;
+    height: 48px;
+    background: url(/images/pip/wichtel.png) no-repeat 0 0 / 400% 100%;
+    image-rendering: pixelated;
+}
+
+/* the line of the plan Pip is at (code_input.js, codeInputMark) */
+.code-input-mark {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 0;
+    background: rgba(250, 189, 47, 0.18);
+    border-left: 3px solid #fabd2f;
+    pointer-events: none;
+}

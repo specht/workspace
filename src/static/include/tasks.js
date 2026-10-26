@@ -65,15 +65,20 @@
     }
 
     // What gives away a task's answer (AfterTask, <!-- after: id -->) shows
-    // once the task has an answer, right or wrong; without a card for the
-    // task on the page it shows at once. Whether it was hidden at all is up
-    // to the server (task_page_setup): only for students.
+    // once the task has an answer, right or wrong; after a Kata, where the
+    // story goes on, once it is solved. Without a card for the task on the
+    // page it shows at once. Whether it was hidden at all is up to the
+    // server (task_page_setup): only for students.
     const ANSWERED = ['correct', 'wrong', 'sent', 'stale'];
+    const KATA = ['function', 'pip'];
     function showAfterTasks() {
         document.querySelectorAll('.after-task[data-after]').forEach((box) => {
             const mine = cards().filter((card) => cardId(card) === box.dataset.after);
-            const answered = mine.length === 0 || mine.some((card) => ANSWERED.includes(card.dataset.status));
+            const kata = mine.some((card) => KATA.includes(card.dataset.type));
+            const answered = mine.length === 0 || mine.some((card) => (kata ? ['correct'] : ANSWERED).includes(card.dataset.status));
             box.classList.toggle('after-task-shown', answered);
+            const wait = box.querySelector('.after-task-wait');
+            if (kata && wait) wait.textContent = 'Hier geht die Geschichte weiter, sobald du die Kata oben gelöst hast.';
         });
     }
 
@@ -239,7 +244,7 @@
             return;
         }
         const input = card.querySelector('.task-input');
-        if (input && card.dataset.type === 'function') {
+        if (input && (card.dataset.type === 'function' || card.dataset.type === 'pip')) {
             // A Kata keeps its code per language ({"python": "…"}); without
             // code in this card's language it shows the starter.
             let codes = {};
@@ -376,7 +381,7 @@
 
     function submit(card) {
         const answer = readAnswer(card);
-        if (card.dataset.type === 'function') {
+        if (card.dataset.type === 'function' || card.dataset.type === 'pip') {
             kata(card, 'check', answer);
             return;
         }
@@ -417,6 +422,7 @@
                 return;
             }
             if (data.status === 'cancelled') return;
+            if (data.replay && card.pipPlayer) card.pipPlayer.load(data.replay, true);
             if (kind === 'run') {
                 showConsole(card, data);
                 return;
@@ -619,6 +625,14 @@
             if (!page.loggedIn) {
                 card.classList.add('task-logged-out');
                 setDisabled(card, true);
+                // Pip's map is shown, without anything to play
+                const map = card.querySelector('.pip-world');
+                if (map && window.PipWorld) {
+                    const box = document.createElement('div');
+                    box.className = 'pip-map-box';
+                    map.appendChild(box);
+                    new PipWorld.PipView(box, JSON.parse(map.dataset.layout), JSON.parse(map.dataset.start));
+                }
                 return;
             }
             form.addEventListener('submit', function (e) {
@@ -633,6 +647,13 @@
             if (run) run.addEventListener('click', function () { kata(card, 'run', readAnswer(card)); });
             const handIn = card.querySelector('.task-hand-in');
             if (handIn) handIn.addEventListener('click', function () { toggleHandIn(card); });
+            // Pip's map (pip_world.js): the player under it marks each step's line
+            const world = card.querySelector('.pip-world');
+            if (world && window.PipWorld) {
+                card.pipPlayer = new PipWorld.PipPlayer(world, JSON.parse(world.dataset.layout), JSON.parse(world.dataset.start), function (line) {
+                    if (sql && sql.codeInputMark) sql.codeInputMark(line);
+                });
+            }
             if (sql) sql.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
                     e.preventDefault();
@@ -642,7 +663,7 @@
             const del = card.querySelector('.task-delete');
             if (del) {
                 if (card.dataset.type === 'submit') del.textContent = 'Abgabe löschen';
-                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command', 'sql', 'cypher', 'function'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
+                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command', 'sql', 'cypher', 'function', 'pip'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
                 del.addEventListener('click', function () { remove(card); });
             }
             loadOptions(card);

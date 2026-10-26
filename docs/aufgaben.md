@@ -372,6 +372,7 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `ruby` | dasselbe für eine Ruby-Datei | eine `.rb`-Datei | Workspace, als Gast | M7 |
 | `c` | Funktionen aus einer C-Datei der Lernenden, übersetzt mit `cc`, ohne ihr `main` | eine `.c`-Datei | Workspace, als Gast | M7 |
 | `function` | eine Kata: Funktionen aus dem Code, der in der Karte geschrieben wird, wie `python` und `ruby` | der Code der Karte | eigener Container ohne Netz | M8 |
+| `pip` | eine Kata mit Pip: ein Plan aus Befehlen, der Pip über eine oder mehrere Karten schickt; Ziel erreicht, nichts schiefgegangen | der Code der Karte | eigener Container ohne Netz, die Welt auf dem Server | M8 |
 | `scene` | Szene des Anaglyph-Viewers, zu einem oder mehreren Zeitpunkten | eine `.ini`-Datei | Workspace | M6 |
 | `sql` | Ergebnis einer `SELECT`-Abfrage gegen das einer Musterabfrage | Abfrage | eigene MySQL-Datenbank, nur lesend | M6 |
 | `cypher` | Ergebnis einer Cypher-Abfrage gegen das einer Musterabfrage | Abfrage | eigene Neo4j-Datenbank, nur lesend | M7 |
@@ -901,6 +902,57 @@ examples:
       pass:
         - answer: "def gcd(a, b):\n    while b:\n        a, b = b, a % b\n    return a\n"
 ```
+
+### pip
+
+Pip unter Funkelbach (plan-katas.md, Abschnitt 2): Die Karte enthält einen
+Plan, das ganze Programm ohne Klasse und ohne `import`, und schickt Pip damit
+über eine Karte der Stollen. Ein unsichtbarer Vorspann macht die Befehle des
+Kapitels zu gewöhnlichen Funktionen (Ruby `move`, `on_stone?`; Python
+`move()`, `on_stone()`; JavaScript `move()`, `onStone()`). Jeder Befehl geht
+als Zeile an die Welt auf dem Server (`PipWorld`), die ihn ausführt und
+antwortet; der Plan kann sie nur über diese Befehle ändern. Die Welt
+schreibt jeden Schritt auf, die Prüfung urteilt danach, und die Karte spielt
+den Lauf ab, mit der Zeile, bei der Pip gerade ist.
+
+```yaml
+check:
+  type: pip
+  language: ruby
+  commands: [move, turn_left, take, on_stone]   # was das Kapitel kennt; say geht immer
+  maps:                                         # jede Karte: der Plan von vorn
+    - facing: east
+      map: |
+        #######
+        #P.o.L#
+        #######
+  goal: { lamp: true, stones: all }             # außerdem gate: open
+  max_lines: 7                                  # nur bei Bedarf: höchstens so viele Zeilen
+```
+
+Die Zeichen der Karte: `#` Wand, `.` Boden, `P` Pip (Blickrichtung in
+`facing`), `o` Funkenstein, `L` Lampe, `G`/`g` Glibber, der waagerecht/senkrecht
+hin und her wabert, `H` Hebel, `T` Tor, `p` Pfotenabdruck, `~` Pfütze, `B`
+Bello. Die Befehle: `move`, `turn_left`, `take`, `wait`, `pull` (je ein
+Schritt), `say` (kein Schritt), die Fragen `on_stone`, `front_clear`,
+`glibber_ahead`, `on_lamp`, `on_trail`, `puddle_ahead`, `bello_here`. Nach
+jedem Schritt geht jeder Glibber ein Feld weiter. Erreicht Pip die Lampe, ist
+der Lauf zu Ende, auch mitten in einer Schleife. Eine Wand, `take` ohne Stein,
+`pull` ohne Hebel, ein Glibber und mehr als 1000 Schritte beenden den Lauf
+mit diesem Ereignis; die Rückmeldung nennt die Karte und die Zeile (»In Karte
+2 in Zeile 6 läuft Pip gegen die Wand.«) und spielt diesen Lauf ab. Wo es um
+eine allgemeine Lösung geht, prüfen mehrere Karten (höchstens sechs) mit
+verschiedenen Steinen oder Glibbern: Eine feste Folge von Schritten soll an
+mindestens einer scheitern.
+
+In `prompt`, `starter`, `hint` und `solution` schreibt jede Sprache die
+Befehle auf ihre Art; in `task-examples.yaml` steht der Plan unter `answer:`
+wie bei `function`. Eine Karte mitten auf der Seite, etwa für eine Vorhersage,
+ist `<div class='pip-world pip-static'><pre class='no-copy'>…</pre></div>`
+mit der Karte im selben Format; Ziffern markieren Felder, über die die
+Aufgabe spricht. Was nach einer Kata erzählt wird, steht zwischen
+`<!-- after: id -->` und `<!-- /after -->` und erscheint, sobald die Kata
+gelöst ist.
 
 ### c
 

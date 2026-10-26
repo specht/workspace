@@ -330,6 +330,43 @@
         }
         if (INDENT[language]) codeKeys(textarea, language);
         textarea.codeInputUpdate = update;
+        // The line a run is at (Pip's plan, pip_world.js), as a bar behind the
+        // text; null takes it away. Long lines wrap, so the line's place is
+        // measured: a marker at its first character, taken out again.
+        textarea.codeInputMark = function (line) {
+            let mark = box.querySelector('.code-input-mark');
+            if (!line) {
+                if (mark) mark.hidden = true;
+                return;
+            }
+            if (!mark) {
+                mark = document.createElement('div');
+                mark.className = 'code-input-mark';
+                box.insertBefore(mark, textarea);
+            }
+            const walker = document.createTreeWalker(view, NodeFilter.SHOW_TEXT);
+            let at = null;
+            let seen = 1;
+            let node;
+            while (!at && (node = walker.nextNode())) {
+                if (seen === line) { at = [node, 0]; break; }
+                const text = node.nodeValue;
+                for (let i = 0; i < text.length; i++) {
+                    if (text[i] === '\n' && ++seen === line) { at = [node, i + 1]; break; }
+                }
+            }
+            if (!at) { mark.hidden = true; return; }
+            const rest = at[1] < at[0].nodeValue.length ? at[0].splitText(at[1]) : null;
+            const probe = document.createElement('span');
+            at[0].parentNode.insertBefore(probe, rest || at[0].nextSibling);
+            const top = probe.offsetTop;
+            probe.remove();
+            view.normalize();
+            const style = getComputedStyle(view);
+            mark.style.top = top + 'px';
+            mark.style.height = parseFloat(style.lineHeight) + 'px';
+            mark.hidden = false;
+        };
         update();
     }
 

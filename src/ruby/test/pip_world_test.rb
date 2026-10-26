@@ -1,0 +1,116 @@
+require 'minitest/autorun'
+require_relative '../include/pip_world'
+
+class PipWorldTest < Minitest::Test
+    SHAFT = <<~MAP
+        #####
+        #P.o#
+        ###.#
+        ###L#
+        #####
+    MAP
+
+    def test_walking_to_the_lamp_and_taking_a_stone
+        w = PipWorld.new(SHAFT, :facing => 'east')
+        assert_equal 'ok', w.command('move', :line => 1)
+        assert_equal 'ok', w.command('move', :line => 2)
+        assert_equal true, w.command('on_stone')
+        assert_equal 'ok', w.command('take', :line => 3)
+        assert_equal 0, w.stones_left
+        3.times { w.command('turn_left') }
+        assert_equal 'south', w.pip[:facing]
+        w.command('move')
+        w.command('move')
+        assert w.at_lamp?
+        # the lamp ends the run, like the end of a level
+        assert_equal :lamp, w.ended
+        assert_equal 'end', w.command('move')
+        assert_equal 8, w.steps
+        assert_equal %i[start move move take turn turn turn move move lamp], w.trace.map { |f| f[:event] }
+        assert_equal 3, w.trace[3][:line]
+        # the map to play the run on still has the stone Pip took
+        assert_equal [[3, 1]], w.layout[:stones]
+        assert_equal [], w.trace.last[:stones]
+    end
+
+    def test_a_wall_ends_the_run
+        w = PipWorld.new(SHAFT)
+        w.command('turn_left')
+        assert_equal false, w.command('front_clear')
+        assert_equal 'end', w.command('move', :line => 4)
+        assert_equal :wall, w.ended
+        assert_equal 4, w.trace.last[:line]
+        assert_equal 'end', w.command('move')
+    end
+
+    def test_taking_where_there_is_no_stone_ends_the_run
+        w = PipWorld.new(SHAFT)
+        assert_equal 'end', w.command('take')
+        assert_equal :no_stone, w.ended
+    end
+
+    def test_a_glibber_moves_each_step_and_catches_pip
+        corridor = "#######\n#P...G#\n#######\n"
+        w = PipWorld.new(corridor)
+        assert_equal true, w.command('front_clear')
+        w.command('wait')                      # Glibber 5 -> bounces at the wall: 4
+        assert_equal [[4, 1]], w.trace.last[:glibbers]
+        w.command('move')                      # Pip 2, Glibber 3
+        assert_equal true, w.command('glibber_ahead')
+        assert_equal 'end', w.command('move')  # Pip steps onto 3, where the Glibber is now
+        assert_equal :caught, w.ended
+    end
+
+    # A Glibber crossing the corridor: glibber_ahead also sees the one that
+    # is about to step onto the tile ahead, so »wait while one is ahead« is
+    # safe; it passes every eight steps.
+    def test_waiting_while_a_glibber_is_ahead_is_safe
+        map = "#########\n####.####\n####.####\n#P..g..L#\n####.####\n####.####\n#########\n"
+        (0..7).each do |delay|
+            w = PipWorld.new(map)
+            delay.times { w.command('wait') }
+            30.times do
+                break if w.ended
+                w.command('glibber_ahead') ? w.command('wait') : w.command('move')
+            end
+            assert_equal :lamp, w.ended, "after #{delay} waits"
+        end
+    end
+
+    def test_three_pulls_open_the_gate_and_a_fourth_closes_it
+        w = PipWorld.new("#####\n#PHT.L#\n#######\n".lines.map { |l| l.chomp.ljust(7, '#') }.join("\n"))
+        w.command('move')
+        3.times { w.command('pull') }
+        assert w.gate_open?
+        w.command('pull')
+        refute w.gate_open?
+        assert_equal false, w.command('front_clear')
+    end
+
+    def test_say_costs_no_step_and_is_kept_short
+        w = PipWorld.new(SHAFT)
+        assert_equal 'ok', w.command('say', :text => 'Hallo ' * 50, :line => 1)
+        assert_equal 0, w.steps
+        assert_equal PipWorld::MAX_SAY, w.said.first.size
+    end
+
+    def test_too_many_steps_end_the_run
+        w = PipWorld.new(SHAFT)
+        PipWorld::MAX_STEPS.times { w.command('turn_left') }
+        assert_equal 'end', w.command('turn_left')
+        assert_equal :steps, w.ended
+    end
+
+    def test_a_map_needs_pip_and_known_tiles
+        assert_raises(PipWorld::Error) { PipWorld.new("###\n#.#\n###") }
+        assert_raises(PipWorld::Error) { PipWorld.new("#P?#") }
+        assert_raises(PipWorld::Error) { PipWorld.new('#P#', :facing => 'up') }
+    end
+
+    def test_layout_for_the_browser
+        layout = PipWorld.new(SHAFT).layout
+        assert_equal [5, 5], [layout[:width], layout[:height]]
+        assert_equal [[3, 1]], layout[:stones]
+        assert_equal [3, 3], layout[:lamp]
+    end
+end

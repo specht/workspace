@@ -28,7 +28,7 @@ module TaskCheck
     # read files or git status (/api/class/check_now).
     LIVE_TYPES = (FILE_TYPES + %w[git keyboard]).freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er schema keyboard python ruby c function]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er schema keyboard python ruby c function pip]).freeze
 
     # status:
     #   :correct, :wrong   – checked; counts as an attempt
@@ -43,7 +43,8 @@ module TaskCheck
     # warnings: Markdown hints that do not make the task fail
     # problem:  code of what was missing (file checks)
     # plan:     the files a submit check will copy (SubmissionStore::Plan)
-    Result = Struct.new(:status, :message, :solution, :read, :warnings, :problem, :plan, keyword_init: true) do
+    # replay: what the card plays back (Pip's run, PipCheck.replay)
+    Result = Struct.new(:status, :message, :solution, :read, :warnings, :problem, :plan, :replay, keyword_init: true) do
         def counts?
             %i[correct wrong sent].include?(status)
         end
@@ -95,6 +96,7 @@ module TaskCheck
         return check_calls(task, check, workspace, guest_runner, RubyCheck) if type == 'ruby'
         return check_calls(task, check, workspace, guest_runner, CCheck) if type == 'c'
         return check_function(task, check, answer, kata, kata_seed) if type == 'function'
+        return check_pip(task, check, answer, kata) if type == 'pip'
         return check_schema(task, check, sql, sql_env) if type == 'schema'
         return check_keyboard(task, check, workspace) if type == 'keyboard'
         return check_workspace(task, check, answer, workspace, git, runner) unless ANSWER_TYPES.include?(type)
@@ -224,6 +226,14 @@ module TaskCheck
         kata ||= ->(**_) { nil }
         status, message, read = KataCheck.check(task, check, answer, kata, :seed => seed)
         Result.new(:status => status, :message => message, :read => read,
+            :solution => status == :correct ? task['solution'] : nil)
+    end
+
+    # pip: a plan for Pip, against the world on the server (PipCheck).
+    def self.check_pip(task, check, answer, kata)
+        kata ||= ->(**_) { nil }
+        status, message, read, replay = PipCheck.check(task, check, answer, kata)
+        Result.new(:status => status, :message => message, :read => read, :replay => replay,
             :solution => status == :correct ? task['solution'] : nil)
     end
 

@@ -5398,7 +5398,8 @@ class Main < Sinatra::Base
         # SQL and Cypher answers, and the code of a Kata, in the colours of
         # the code blocks, with the keyword lists of the same lexers
         # (code_input.js).
-        code = tasks[:on_page].any? { |id| %w[sql cypher function].include?((tasks[:by_id][id] || {}).dig('check', 'type')) }
+        code = tasks[:on_page].any? { |id| %w[sql cypher function pip].include?((tasks[:by_id][id] || {}).dig('check', 'type')) }
+        pip = tasks[:on_page].any? { |id| (tasks[:by_id][id] || {}).dig('check', 'type') == 'pip' }
         code_input = if code
             keywords = {
                 :sql => Rouge::Lexers::SQL.keywords.to_a,
@@ -5416,6 +5417,7 @@ class Main < Sinatra::Base
             "<script>window.TASK_PAGE = #{config.to_json.gsub('</', '<\/')};</script>" \
             "#{previews ? "<script src='/include/anaglyph_preview.js?#{CACHE_BUSTER}'></script>" : ''}" \
             "#{code_input}" \
+            "#{pip ? "<script src='/include/pip_world.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}" \
             "<script src='/include/tasks.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
     end
 
@@ -7029,7 +7031,7 @@ class Main < Sinatra::Base
             next if task.nil?
             states[id] = TaskStore.public_state(stored, TaskSpec.check_version(task))
             # a Kata handed in to be shown in class (KataHandIns)
-            states[id][:handed_in] = File.file?(submission_path(stored[:task].to_s)) if task['check']['type'] == 'function'
+            states[id][:handed_in] = File.file?(submission_path(stored[:task].to_s)) if Main::KATA_TYPES.include?(task['check']['type'])
         end
         respond(:states => states)
     end

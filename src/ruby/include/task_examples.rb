@@ -46,9 +46,9 @@ require_relative 'kata_runner'
 # interpreters, c checks with the local cc, command checks with the local sh.
 module TaskExamples
     FILE = 'task-examples.yaml'
-    FAST_TYPES = %w[files html css references ruby python c command choice number answer function].freeze
+    FAST_TYPES = %w[files html css references ruby python c command choice number answer function pip].freeze
     # Checks that need examples to be tested at all.
-    NEEDS_EXAMPLES = %w[files html css references ruby python c command function].freeze
+    NEEDS_EXAMPLES = %w[files html css references ruby python c command function pip].freeze
     # answer with compare: regex needs examples as well (see missing).
     CASE_KEYS = %w[archive files answer say].freeze
 
@@ -79,7 +79,7 @@ module TaskExamples
                 # A Kata in JavaScript runs with the local node; where there is
                 # none (the Ruby container), its examples wait for a machine
                 # that has it.
-                next if type == 'function' && variant['check']['language'] == 'javascript' && !node?
+                next if %w[function pip].include?(type) && variant['check']['language'] == 'javascript' && !node?
 
                 given = examples[id] || {}
                 given = given[language] || {} if language
@@ -131,7 +131,7 @@ module TaskExamples
             return [] if check['compare'] == 'regex'
             first = Array(check['expect']).first
             first.is_a?(String) && !first.include?('${') ? [['pass', { 'answer' => first }]] : []
-        when 'function'
+        when 'function', 'pip'
             task['starter'].to_s.strip.empty? ? [] : [['fail', { 'answer' => task['starter'] }]]
         else
             []
@@ -210,8 +210,9 @@ module TaskExamples
     # A Kata's run, here with the local interpreters in the example folder
     # (KataRunner does the same in a container of its own).
     def self.local_kata(root)
-        lambda do |files:, argv:, timeout:|
+        lambda do |files:, argv:, timeout:, dialog: nil|
             files.each { |name, text| File.write(File.join(root, name), text) }
+            next local_dialog(root, argv, timeout, dialog) if dialog
             stdout = +''
             stderr = +''
             timed_out = false
@@ -231,6 +232,40 @@ module TaskExamples
             KataRunner::Result.new(:stdout => stdout, :stderr => stderr, :status => status, :timed_out => timed_out,
                 :too_long => false, :cancelled => false)
         end
+    end
+
+    # A run that asks the world as it goes (Pip, PipCheck): each line that
+    # starts with KataRunner::DIALOG_MARK gets dialog's answer on stdin.
+    def self.local_dialog(root, argv, timeout, dialog)
+        stdout = +''
+        stderr = +''
+        timed_out = false
+        status = nil
+        Open3.popen3(*argv, :chdir => root, :pgroup => true) do |stdin, out, err, wait|
+            reader = Thread.new { stderr << err.read.to_s }
+            begin
+                Timeout.timeout(timeout) do
+                    while (line = out.gets)
+                        if line.start_with?(KataRunner::DIALOG_MARK)
+                            stdin.write("#{dialog.call(line.delete_prefix(KataRunner::DIALOG_MARK).chomp)}\n")
+                            stdin.flush
+                        else
+                            stdout << line
+                        end
+                    end
+                end
+            rescue Timeout::Error
+                timed_out = true
+                Process.kill('KILL', -wait.pid) rescue nil
+            rescue Errno::EPIPE
+                nil
+            end
+            stdin.close unless stdin.closed?
+            reader.join(1)
+            status = wait.value.exitstatus
+        end
+        KataRunner::Result.new(:stdout => stdout, :stderr => stderr, :status => status, :timed_out => timed_out,
+            :too_long => false, :cancelled => false)
     end
 
     # Tasks whose check can only be tested with examples, but has none.

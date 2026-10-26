@@ -110,6 +110,18 @@ module TaskCard
             when 'cypher'
                 io << "<textarea class='form-control task-input task-sql task-cypher' name='answer' rows='4' spellcheck='false' autocapitalize='off' placeholder='MATCH …' aria-labelledby='#{h.(field)}-title'></textarea>"
                 reads = "Läuft in deiner eigenen Neo4j-Datenbank, angemeldet als du, und liest nur: eine Abfrage mit <code>MATCH</code> und <code>RETURN</code>, höchstens #{CypherCheck::MAX_SECONDS} Sekunden. <kbd>Strg</kbd>+<kbd>Enter</kbd> prüft."
+            when 'pip'
+                # Pip's plan (PipCheck): the first map above the editor, for
+                # pip_world.js to draw and to play the runs on.
+                first = check['maps'].first
+                world = PipWorld.new(first['map'], :facing => first['facing'] || 'east')
+                io << "<div class='pip-world' data-layout='#{h.(JSON.generate(world.layout))}' data-start='#{h.(JSON.generate(world.trace.first))}'></div>"
+                io << "<textarea class='form-control task-input task-code' name='answer' rows='6' spellcheck='false' autocapitalize='off'"
+                io << " data-code-language='#{h.(check['language'])}' data-starter='#{h.(task['starter'])}' aria-labelledby='#{h.(field)}-title'>"
+                io << "#{h.(task['starter'])}</textarea>"
+                maps = check['maps'].size
+                reads = "Dein Plan läuft in einem eigenen kleinen Rechner, getrennt von deinem Workspace und ohne Internet. Pip macht genau, was draufsteht. " \
+                    "<em>Ausführen</em> zeigt Pip auf der Karte oben, <em>Prüfen</em> schickt Pip #{maps > 1 ? "durch alle #{maps} Karten, jedes Mal von vorn" : 'los und prüft das Ziel'}. <kbd>Strg</kbd>+<kbd>Enter</kbd> prüft."
             when 'function'
                 # A Kata: the code is written here; it starts with the task's starter.
                 io << "<textarea class='form-control task-input task-code' name='answer' rows='6' spellcheck='false' autocapitalize='off'"
@@ -139,7 +151,7 @@ module TaskCard
                 else 'Prüfen'
             end
             io << "<div class='task-actions'>"
-            io << "<button type='button' class='btn btn-outline-success task-run'>Ausführen</button>" if type == 'function'
+            io << "<button type='button' class='btn btn-outline-success task-run'>Ausführen</button>" if %w[function pip].include?(type)
             io << "<button type='submit' class='btn btn-success task-submit'>#{label}</button>"
             io << "<button type='button' class='btn btn-link btn-sm task-delete' hidden>Meine Antwort löschen</button>"
             # What the check reads, for whoever wants to know (rule 5), behind
@@ -148,7 +160,7 @@ module TaskCard
                 io << "<button type='button' class='task-reads-toggle' aria-expanded='false' aria-controls='#{h.(field)}-reads' title='Was passiert beim Prüfen?'>"
                 io << "<i class='bi bi-info-circle' aria-hidden='true'></i><span class='visually-hidden'>Was passiert beim Prüfen?</span></button>"
             end
-            if type == 'function'
+            if %w[function pip].include?(type)
                 io << "<span class='task-queue' aria-live='polite'></span>"
                 # Einreichen (KataHandIns): shown once the Kata is solved
                 io << "<button type='button' class='btn btn-link btn-sm task-hand-in' hidden " \
@@ -156,7 +168,7 @@ module TaskCard
             end
             io << '</div>'
             io << "<div class='task-reads' id='#{h.(field)}-reads' hidden>#{reads}</div>" if reads
-            io << "<pre class='task-console no-copy' hidden aria-live='polite' aria-label='Ausgabe'></pre>" if type == 'function'
+            io << "<pre class='task-console no-copy' hidden aria-live='polite' aria-label='Ausgabe'></pre>" if %w[function pip].include?(type)
             io << '</form>'
         else
             io << "<p class='task-later'><i class='bi bi-hourglass-split'></i>Diese Aufgabe kann der Workspace noch nicht selbst prüfen. Zeig dein Ergebnis deiner Lehrkraft.</p>"

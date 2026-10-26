@@ -3,6 +3,7 @@ require_relative 'kata_hand_ins'
 require_relative 'submission_store'
 require_relative 'kata_queue'
 require_relative 'kata_runner'
+require_relative 'pip_check'
 
 # Katas (docs/plan-katas.md): the code typed into a card runs in a container
 # of its own (KataRunner), through the one queue (KataQueue). A request does
@@ -21,10 +22,13 @@ class Main < Sinatra::Base
 
     # The run of one ticket: a newer run of the same person stops it.
     def self.kata_run(ticket)
-        lambda do |files:, argv:, timeout:|
-            KataRunner.run(:files => files, :argv => argv, :timeout => timeout, :cancel => ->(kill) { ticket.on_stop(kill) })
+        lambda do |files:, argv:, timeout:, dialog: nil|
+            KataRunner.run(:files => files, :argv => argv, :timeout => timeout, :dialog => dialog,
+                           :cancel => ->(kill) { ticket.on_stop(kill) })
         end
     end
+
+    KATA_TYPES = %w[function pip].freeze
 
     def kata_request
         assert(user_logged_in?)
@@ -33,7 +37,7 @@ class Main < Sinatra::Base
             :max_body_length => 16384,
             :max_value_lengths => {:task => 120, :answer => KataCheck::MAX_CODE})
         found = find_task(data[:task], data[:language])
-        halt 404 if found.nil? || found[:task]['check']['type'] != 'function'
+        halt 404 if found.nil? || !KATA_TYPES.include?(found[:task]['check']['type'])
         [data[:answer], found]
     end
 
@@ -56,8 +60,20 @@ class Main < Sinatra::Base
         language = found[:task]['check']['language']
         return respond(:done => true, :status => 'invalid', :message => render_task_markdown(KataCheck::EMPTY)) if code.strip.empty?
 
+        check = found[:task]['check']
         ticket = KATA_QUEUE.submit(@session_user[:email]) do |t|
-            KataCheck.run_program(language, code, Main.kata_run(t))
+            if check['type'] == 'pip'
+                # Pip's plan on the first map, to watch
+                ran = PipCheck.run_map(check, code, check['maps'].first, Main.kata_run(t))
+                next { :status => :unavailable, :output => '', :message => KataCheck::BUSY } if ran.nil?
+
+                error = ran[:status] == 0 || ran[:errors].to_s.strip.empty? ? nil : ran[:errors]
+                { :status => error ? :error : :ran, :output => ran[:output].to_s + ran[:errors].to_s,
+                  :message => error ? KataCheck.explain(error, language) : nil,
+                  :replay => PipCheck.replay(ran[:world], 0, check['maps'].size, ran[:output]) }
+            else
+                KataCheck.run_program(language, code, Main.kata_run(t))
+            end
         end
         ticket.data = { :kind => :run }
         respond(:done => false, :ticket => ticket.id, :ahead => KATA_QUEUE.ahead(ticket))
@@ -94,7 +110,7 @@ class Main < Sinatra::Base
         data = parse_request_data(:required_keys => [:task], :optional_keys => [:language],
             :max_value_lengths => {:task => 120, :language => 20})
         found = find_task(data[:task], data[:language])
-        halt 404 if found.nil? || found[:task]['check']['type'] != 'function'
+        halt 404 if found.nil? || !KATA_TYPES.include?(found[:task]['check']['type'])
 
         language = found[:task]['check']['language']
         email = @session_user[:email]
@@ -115,7 +131,7 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         data = parse_request_data(:required_keys => [:task], :max_value_lengths => {:task => 120})
         found = find_task(data[:task])
-        halt 404 if found.nil? || found[:task]['check']['type'] != 'function'
+        halt 404 if found.nil? || !KATA_TYPES.include?(found[:task]['check']['type'])
 
         FileUtils.rm_f(submission_path(found[:key]))
         respond(:handed_in => false)
@@ -125,7 +141,7 @@ class Main < Sinatra::Base
     # board: numbered, without names until the teacher shows them.
     def class_kata_hand_ins_html(activity_key, tasks, members)
         tasks.each_with_index.map do |t, i|
-            next '' unless t[:type] == 'function'
+            next '' unless KATA_TYPES.include?(t[:type])
 
             key = "#{activity_key}/#{t[:id]}"
             entries = members.filter_map do |m|
@@ -150,7 +166,7 @@ class Main < Sinatra::Base
         if ticket.data[:kind] == :run
             ran = ticket.result
             return { :done => true, :status => ran[:status].to_s, :output => ran[:output],
-                     :message => ran[:message] ? render_task_markdown(ran[:message]) : nil }
+                     :message => ran[:message] ? render_task_markdown(ran[:message]) : nil, :replay => ran[:replay] }
         end
 
         result = ticket.result
@@ -173,6 +189,7 @@ class Main < Sinatra::Base
             :solution => render_task_markdown(result.solution),
             :read => render_task_markdown(result.read),
             :state => state,
+            :replay => result.replay,
         }
     end
 end
