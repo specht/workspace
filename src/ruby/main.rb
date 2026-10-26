@@ -8200,6 +8200,11 @@ class Main < Sinatra::Base
             @@content[slug] && @@content[slug][:tasks] && (DEVELOPMENT || !@@content[slug][:dev_only])
         end
         stops = slugs.map { |slug| KataMap.stop(slug, @@content[slug]) }
+        # a picture as an icon with its file's time, so a new one is loaded
+        stops.each do |stop|
+            path = "/src/static#{stop.icon}"
+            stop.icon = "#{stop.icon}?#{File.mtime(path).to_i}" if stop.icon.to_s.start_with?('/') && File.file?(path)
+        end
         progress = user_logged_in? ? my_progress.to_h { |p| [p[:slug], p] } : nil
         pinned = user_logged_in? ? pins_for_groups((my_groups + class_groups).uniq).map { |p| p[:slug] }.uniq & slugs : []
         KataMap.carousel_html(stops, :progress => progress, :teacher => teacher_logged_in?, :pinned => pinned)

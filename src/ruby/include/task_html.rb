@@ -2,6 +2,7 @@ require 'nokogiri'
 require 'redcarpet'
 require 'set'
 require_relative 'external_links'
+require_relative 'code_highlight'
 
 # Task texts as HTML for the browser: a check's message, its warnings, what
 # it read and the solution (the task card and the class page put them in
@@ -30,7 +31,15 @@ module TaskHtml
 
         @renderer ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML.new(:safe_links_only => true),
             :fenced_code_blocks => true, :tables => true)
-        sanitize(@renderer.render(markdown.to_s))
+        # code blocks in the colours of the page's (a solution, a tip's
+        # scaffold), after the filter: Rouge only adds its escaped spans.
+        # Redcarpet names the language class='ruby'; the filter keeps it as
+        # language-ruby, the highlighter wants it back as it was.
+        html = @renderer.render(markdown.to_s).gsub(/<code class="([a-z0-9_+-]+)">/, '<code class="language-\\1">')
+        fragment = Nokogiri::HTML5.fragment(sanitize(html))
+        fragment.css('code[class^="language-"]').each { |code| code['class'] = code['class'].delete_prefix('language-') }
+        CodeHighlight.apply(fragment)
+        fragment.to_html
     end
 
     def self.sanitize(html)

@@ -21,7 +21,8 @@ class TaskHtmlTest < Minitest::Test
         assert_includes out, '<a href="/profil">Profil</a>'
         # links to other sites open in a new tab (ExternalLinks)
         assert_includes out, '<a href="https://example.com" target="_blank" rel="noopener">Doku</a>'
-        assert_includes out, "<pre><code>puts 1\n</code></pre>"
+        # a code block in the colours of the page's
+        assert_includes out, "<pre><span class=\"nb\">puts</span> <span class=\"mi\">1</span>\n</pre>"
     end
 
     def test_script_and_event_attributes_are_removed

@@ -8343,9 +8343,10 @@ html[data-bs-theme="dark"] .bitplane-widget {
 /* Pip or Bello in green instead of an icon (images/pip/make_icons.py),
    pixels kept sharp */
 .kata-set-sprite {
-    /* three times its 24 pixels, every pixel the same size */
-    width: 72px;
-    height: 72px;
+    /* twice its 24 pixels, every pixel the same size, as large as the
+       other icons */
+    width: 48px;
+    height: 48px;
     image-rendering: pixelated;
     filter: drop-shadow(0 0 0.35em rgba(111, 211, 155, 0.35));
     transition: scale 300ms;
