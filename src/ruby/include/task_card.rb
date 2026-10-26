@@ -136,7 +136,7 @@ module TaskCard
                 else 'Prüfen'
             end
             io << "<div class='task-actions'>"
-            io << "<button type='button' class='btn btn-outline-secondary task-run'>Ausführen</button>" if type == 'function'
+            io << "<button type='button' class='btn btn-outline-success task-run'>Ausführen</button>" if type == 'function'
             io << "<button type='submit' class='btn btn-success task-submit'>#{label}</button>"
             io << "<button type='button' class='btn btn-link btn-sm task-delete' hidden>Meine Antwort löschen</button>"
             # What the check reads, for whoever wants to know (rule 5), behind

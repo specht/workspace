@@ -140,6 +140,20 @@ html[data-bs-theme="dark"] {
     .table {
         --bs-table-bg: rgba(0, 0, 0, 0.2);
     }
+    /* »Ausführen« beside »Prüfen« on a Kata: Bootstrap's green outline is
+       too dark on the dark page; the green of the badges instead. */
+    .btn-outline-success.task-run {
+        --bs-btn-color: #6fd39b;
+        --bs-btn-border-color: #3f8f63;
+        --bs-btn-hover-color: #9be6bb;
+        --bs-btn-hover-bg: rgba(111, 211, 155, 0.14);
+        --bs-btn-hover-border-color: #6fd39b;
+        --bs-btn-active-color: #9be6bb;
+        --bs-btn-active-bg: rgba(111, 211, 155, 0.22);
+        --bs-btn-active-border-color: #6fd39b;
+        --bs-btn-disabled-color: #6fd39b;
+        --bs-btn-disabled-border-color: #3f8f63;
+    }
     .person, .book, .case-note {
         background: rgba(0, 0, 0, 0.25);
         border-color: transparent;
