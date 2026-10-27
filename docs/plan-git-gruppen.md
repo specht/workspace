@@ -132,10 +132,33 @@ leaving its files alone, and the read-only overlays that make the directory
 safe are exactly the kind of detail that breaks unnoticed. The directory is
 the better choice only if setup for students must be zero.
 
-## Open questions for the maintainer
+## Decided and built (27 October 2026)
 
-- Directory or SSH container (the comparison above)?
-- Backups of `data/git/` and `data/git-snapshots/`?
-- Account deletion: do a deleted student's commits stay in the group's
-  repositories (group work), or must the name be removed?
-- The soft limit per repository and the number of snapshots kept.
+- **The SSH container**, closer to how Git servers really work. Built as
+  docs/teacher-access.md »Repositorys im Workspace« and docs/entwicklung.md
+  »Der Git-Server der Gruppen« describe it; the repositories live in
+  `data/git-repos`, not `data/git` (the backend's container mounts the
+  site's own `.git` at `/git`).
+- **Keys, the teacher's choice per group:** students create a key pair and
+  hand in the public key on the page, or the Workspace sets up a key of its
+  own for every member (`~/.ssh/workspace_git`, with `~/.ssh/config` and
+  `known_hosts`). Pages have a variant for each (`class_repo_local_keys`,
+  `class_repo_local_auto`).
+- **Browsing:** built into the site as planned, with the maintainer's wish
+  for a light GitHub: files, history (also of a file), commits with their
+  diff, branches, a zip.
+- **Backups:** borgmatic takes all of `data/`; nothing to do.
+- **No snapshots for now:** through SSH no student can damage a
+  repository (no force push, no deleting a branch, no access to the files),
+  so the hourly bundles are left out. A teacher can still delete a
+  repository; the backups hold it.
+- **No size limit per repository yet;** a single push is limited to 50 MB
+  (`receive.maxInputSize`).
+- **Moving repositories** from a Git server elsewhere is the maintainer's
+  own work (`git push --mirror` into a new empty repository).
+
+## Open questions
+
+- Account deletion: a deleted student's commits stay in the group's
+  repositories as group work (so the Datenschutzerklärung says). Whether
+  the name must be removed is for the DSB (docs/handoff-datenschutz.md).

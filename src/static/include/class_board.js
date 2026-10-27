@@ -623,6 +623,10 @@ document.addEventListener('click', function (e) {
     if (!button) return;
     const esc = (t) => $('<div>').text(t === undefined || t === null ? '' : String(t)).html();
     const group = button.dataset.group;
+    // The Workspace's own Git server (GitServer in main.rb): a repository
+    // can be created there instead of naming one elsewhere.
+    const git_server = button.dataset.gitServer === '1';
+    const LOCAL = /^git@git\.workspace:([a-z0-9]{10})\/([a-z0-9-]+)\.git$/;
 
     function entries() {
         try { return JSON.parse(button.dataset.repos); } catch (e) { return []; }
@@ -670,9 +674,52 @@ document.addEventListener('click', function (e) {
         return false;
     }
 
+    // Beside a field: create the repository in the Workspace, or, for one
+    // there, look at it and delete it (a second click confirms).
+    function git_actions(e) {
+        if (!git_server) return '';
+        const m = (e.address || '').match(LOCAL);
+        if (m) {
+            return `<span class='class-repo-local'><i class='bi bi-hdd-stack' aria-hidden='true'></i>im Workspace</span>`
+                + `<a class='btn btn-sm btn-outline-secondary' href='/git/${esc(m[1])}/${esc(m[2])}' target='_blank' rel='noopener'>`
+                + `<i class='bi bi-eye' aria-hidden='true'></i>Ansehen</a>`
+                + `<button type='button' class='btn btn-sm btn-outline-danger class-repo-delete' data-slug='${esc(e.slug)}'>`
+                + `<i class='bi bi-trash' aria-hidden='true'></i>Löschen</button>`;
+        }
+        return `<button type='button' class='btn btn-sm btn-outline-secondary class-repo-create' data-slug='${esc(e.slug)}'>`
+            + `<i class='bi bi-plus-lg' aria-hidden='true'></i>Im Workspace anlegen${e.starter ? ', mit den Dateien der Seite' : ''}</button>`;
+    }
+
+    function set_entry(slug, address) {
+        const list = entries().map((e) => e.slug === slug ? Object.assign(e, { address: address }) : e);
+        button.dataset.repos = JSON.stringify(list);
+        show_count(list);
+        const input = document.querySelector(`.class-repo-input[data-slug="${CSS.escape(slug)}"]`);
+        if (input) input.value = address || '';
+        const actions = document.querySelector(`.class-repo-git[data-slug="${CSS.escape(slug)}"]`);
+        if (actions) actions.innerHTML = git_actions(list.find((e) => e.slug === slug));
+    }
+
+    function git_keys_html() {
+        if (!git_server) return '';
+        const mode = button.dataset.gitKeys || 'handed_in';
+        const option = (value, label, hint) => `<div class='form-check'>`
+            + `<input class='form-check-input' type='radio' name='class-repos-keys' id='class-repos-keys-${value}' value='${value}'${mode === value ? ' checked' : ''}>`
+            + `<label class='form-check-label' for='class-repos-keys-${value}'>${label}<span class='class-repos-keys-hint'>${hint}</span></label></div>`;
+        return `<fieldset class='class-repos-keys'><legend>Schlüssel für Repositorys im Workspace</legend>`
+            + option('handed_in', 'Die Lernenden erzeugen ein Schlüsselpaar und geben den öffentlichen Schlüssel ab',
+                'wie bei einem Git-Server im Netz; die Seiten zeigen, wie es geht')
+            + option('auto', 'Der Workspace richtet den Schlüssel für alle ein',
+                'für die Lernenden ist nichts zu tun; er gilt nur für den Git-Server des Workspace')
+            + `</fieldset>`;
+    }
+
     function open(focus_slug) {
         let body = `<p class='class-repos-intro'>Lernende der Gruppe sehen die Adresse im Befehl zum Klonen und bekommen die Aufgaben zu Git. `
-            + `Dafür lädst du sie auf den Git-Server ein.</p>`
+            + (git_server
+                ? `Ein Repository im Workspace legst du hier an; dafür braucht niemand ein Konto. Für einen Git-Server im Netz trägst du seine Adresse ein und lädst die Lernenden dort ein.</p>`
+                : `Dafür lädst du sie auf den Git-Server ein.</p>`)
+            + git_keys_html()
             + `<p class='class-repos-format' id='class-repos-format'>Zum Beispiel <code>git@git.example.org:lehrkraft/klasse.git</code>, `
             + `auch <code>ssh://…</code> oder <code>https://…</code></p>`;
         entries().forEach((e) => {
@@ -682,6 +729,7 @@ document.addEventListener('click', function (e) {
                 + `<i class='bi bi-box-arrow-up-right' aria-hidden='true'></i></a>`
                 + `<input type='text' class='form-control class-repo-input' id='${esc(id)}' data-slug='${esc(e.slug)}' value='${esc(e.address || '')}' `
                 + `placeholder='keine Adresse' aria-describedby='class-repos-format ${esc(id)}-error' autocomplete='off' autocapitalize='off' spellcheck='false'>`
+                + (git_server ? `<div class='class-repo-git' data-slug='${esc(e.slug)}'>${git_actions(e)}</div>` : '')
                 + `<div class='invalid-feedback' id='${esc(id)}-error'>Keine Adresse, die der Workspace annimmt: <code>git@server:pfad.git</code>, `
                 + `<code>ssh://server/pfad.git</code> oder <code>https://server/pfad.git</code>, ohne Leerzeichen.</div></div>`;
         });
@@ -698,6 +746,48 @@ document.addEventListener('click', function (e) {
         $('#__template_modal .class-repo-input').on('keydown', function (e) {
             if (e.key === 'Enter') { e.preventDefault(); save(); }
         });
+        if (git_server) bind_git();
+    }
+
+    function bind_git() {
+        const modal = $('#__template_modal');
+        modal.off('.git');
+        modal.on('change.git', 'input[name="class-repos-keys"]', function () {
+            const mode = this.value;
+            api_call('/api/git/set_keys', { group: group, mode: mode }, function (r) {
+                if (!r.success || !r.ok) return;
+                button.dataset.gitKeys = mode;
+                show_success_message(mode === 'auto'
+                    ? `Der Workspace richtet die Schlüssel ein: ${r.installed === 1 ? 'ein Workspace' : `${r.installed} Workspaces`} sofort, die anderen beim nächsten Start.`
+                    : 'Die Lernenden geben ihre Schlüssel selbst ab.');
+            }, { no_please_wait: true });
+        });
+        modal.on('click.git', '.class-repo-create', function () {
+            const slug = this.dataset.slug;
+            this.disabled = true;
+            api_call('/api/git/create_repo', { group: group, slug: slug }, (r) => {
+                this.disabled = false;
+                if (!r.success || !r.ok) return;
+                set_entry(slug, r.address);
+                show_success_message(`Angelegt: ${esc(r.address)}`);
+            }, { no_please_wait: true });
+        });
+        modal.on('click.git', '.class-repo-delete', function () {
+            const slug = this.dataset.slug;
+            if (!this.classList.contains('confirming')) {
+                this.classList.add('confirming');
+                this.innerHTML = "<i class='bi bi-trash' aria-hidden='true'></i>Wirklich löschen? Alles darin ist weg.";
+                return;
+            }
+            this.disabled = true;
+            api_call('/api/git/delete_repo', { group: group, slug: slug }, (r) => {
+                this.disabled = false;
+                if (!r.success || !r.ok) return;
+                set_entry(slug, (r.repos || {})[slug] || null);
+                show_success_message('Das Repository ist gelöscht.');
+            }, { no_please_wait: true });
+        });
+        modal.one('hidden.bs.modal', function () { modal.off('.git'); });
     }
 
     show_count(entries());

@@ -81,14 +81,30 @@ Die Karten auf dieser Seite schauen in deinem Workspace nach und sagen dir, was 
 
 <!-- if: class_repo -->
 ### Einmalig: Zugang zum Git-Server
+<!-- /if -->
+<!-- if: class_repo_outside -->
 
 Das Klassen-Repository liegt auf dem Git-Server [${git_host}](${git_web}). Deine Lehrkraft lädt dich dorthin ein; mit der Einladung kannst du dort mitmachen.
+<!-- /if -->
+<!-- if: class_repo_local -->
+
+Das Klassen-Repository liegt auf dem Git-Server des Workspace, `git.workspace`. Ein Konto brauchst du dort nicht.
 <!-- /if -->
 <!-- if: class_repo_ssh -->
 
 _include(gitlab#ssh-schluessel)
 
 _task(ssh-schluessel)
+<!-- /if -->
+<!-- if: class_repo_local_keys -->
+
+_include(gitlab#ssh-workspace)
+
+_task(ssh-schluessel)
+<!-- /if -->
+<!-- if: class_repo_local_auto -->
+
+_include(gitlab#ssh-workspace-auto)
 <!-- /if -->
 <!-- if: class_repo_https -->
 

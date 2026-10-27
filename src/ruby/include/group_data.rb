@@ -24,6 +24,17 @@ module GroupData
     # The groups of the roster before that are not in it after. Nothing
     # when there was no roster before (the first reading) or none is left
     # after: a roster without any group was not read, it did not lose them.
+    # The folders of Git repositories (GitServer) of groups about to be
+    # dropped: their names go with the GroupSetting, the folders must go too.
+    GIT_IDS = <<~END_OF_QUERY
+        MATCH (g:GroupSetting) WHERE g.group IN $names AND g.git_id IS NOT NULL
+        RETURN g.git_id AS id;
+    END_OF_QUERY
+    GIT_IDS_ALL_BUT = <<~END_OF_QUERY
+        MATCH (g:GroupSetting) WHERE NOT g.group IN $keep AND g.git_id IS NOT NULL
+        RETURN g.git_id AS id;
+    END_OF_QUERY
+
     def self.vanished(before, after)
         before = before.to_a
         after = after.to_a
@@ -37,7 +48,9 @@ module GroupData
         names = Array(names).map(&:to_s).reject(&:empty?).uniq
         return if names.empty?
 
+        ids = db.neo4j_query(GIT_IDS, :names => names).map { |row| row['id'] }
         db.neo4j_query(DROP, :names => names)
+        drop_git_folders(ids)
     end
 
     # Drops the settings and pins of every name not in keep (the import).
@@ -45,6 +58,16 @@ module GroupData
         keep = Array(keep).map(&:to_s).uniq
         return if keep.empty?
 
+        ids = db.neo4j_query(GIT_IDS_ALL_BUT, :keep => keep).map { |row| row['id'] }
         db.neo4j_query(DROP_ALL_BUT, :keep => keep)
+        drop_git_folders(ids)
+    end
+
+    def self.drop_git_folders(ids)
+        return unless defined?(GitServer) && GitServer.enabled?
+
+        Array(ids).each do |id|
+            GitServer.delete_folder(id) if id.to_s.match?(GitServer::GIT_ID)
+        end
     end
 end

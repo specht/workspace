@@ -142,8 +142,10 @@ Was nur geht, wenn eine Installation eine Funktion eingeschaltet hat, steht
 zwischen `<!-- feature: case_server -->` und `<!-- /feature -->`, jede Marke
 auf einer Zeile für sich. Ist die Funktion aus, fällt alles dazwischen weg,
 bevor die Aufgabenkarten gesucht werden: Seine Aufgaben stehen dann weder auf
-der Seite noch in der Klassenübersicht. Bisher gibt es nur `case_server`, den
-Fallserver für »Ein Krimi im Terminal« ([entwicklung.md](entwicklung.md#der-fallserver)).
+der Seite noch in der Klassenübersicht. Es gibt `case_server`, den
+Fallserver für »Ein Krimi im Terminal« ([entwicklung.md](entwicklung.md#der-fallserver)),
+und `git_server`, den Git-Server der Gruppen ([entwicklung.md](entwicklung.md#der-git-server-der-gruppen));
+mit ihm stehen im Handbuch »Git-Server« die Teile zum Schlüssel für diesen Server.
 Die Marken dürfen auch Zeilen einer HTML-Tabelle umschließen.
 
 ### Teile mit und ohne Klassen-Repository
@@ -160,6 +162,16 @@ Adresse über SSH geht (`git@…`, `ssh://…`: der SSH-Schlüssel), steht in
 sich; die Teile schachteln sich nicht, also endet ein `class_repo`-Teil vor
 einem `class_repo_ssh`-Teil und beginnt danach neu.
 
+Liegt das Repository auf dem Git-Server des Workspace (`git@git.workspace:…`,
+docs/teacher-access.md, »Repositorys im Workspace«), gilt
+`<!-- if: class_repo_local -->`, dazu `class_repo_local_keys`, wenn die
+Lernenden ihren Schlüssel selbst abgeben (`_include(gitlab#ssh-workspace)`
+mit dem Kasten zum Abgeben), oder `class_repo_local_auto`, wenn der Workspace
+ihn einrichtet (`_include(gitlab#ssh-workspace-auto)`). `class_repo_ssh` gilt
+dann nicht: Es meint einen Git-Server im Netz. Was nur für einen Server im
+Netz gilt (die Einladung, das Konto dort), steht in
+`<!-- if: class_repo_outside -->`, für SSH und HTTPS.
+
 Beim Laden wird die Seite in jeder Fassung gerendert (mit SSH, mit HTTPS,
 sofern sie die beiden unterscheidet, und ohne), mit eigenen
 Aufgabenkarten (`ContentParts.filter_conditions`, `ClassRepos` in
@@ -168,8 +180,10 @@ und setzt die Adresse ein:
 
 - Lernende sehen die Fassung **mit**, wenn eine ihrer Gruppen eine Adresse
   für die Seite hat (die erste solche Gruppe in der Reihenfolge ihrer
-  Gruppen), und zwar die mit HTTPS bei einer `https://`-Adresse, sonst die
-  mit SSH; ohne Adresse die Fassung **ohne**.
+  Gruppen), und zwar die mit HTTPS bei einer `https://`-Adresse, die für
+  den Workspace (mit abgegebenem oder eingerichtetem Schlüssel, wie die
+  Gruppe es eingestellt hat) bei einer Adresse dort, sonst die mit SSH;
+  ohne Adresse die Fassung **ohne**.
 - Lehrkräfte, Administration und nicht Angemeldete sehen die Fassung mit
   SSH, mit Platzhaltern statt der Adresse.
 
@@ -179,7 +193,8 @@ Startseite. Die Klassenübersicht zählt für jede Gruppe die Fassung, die ihre
 Lernenden sehen. Eine Aufgabe darf in beiden Fassungen stehen, aber in jeder
 nur einmal; `class_repos_test.rb` prüft die Sandboxes: jede Aufgabe aus
 `tasks.yaml` in einer Fassung, die Git-Aufgaben nur mit, die Fragen zum
-Thema in allen, `ssh-schluessel` nur mit SSH.
+Thema in allen, `ssh-schluessel` nur mit SSH und mit abgegebenem Schlüssel
+im Workspace.
 
 ### Teile einer Handbuch-Seite
 

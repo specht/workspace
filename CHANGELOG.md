@@ -102,6 +102,13 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
   Seiten der eigenen Adresse (Origin), höchstens 2000 Verbindungen und 300 je IP-Adresse.
   Gespeichert wird nichts; Frequenzen, Lampen und die Zahl der Verbindungen je Adresse liegen
   nur im Arbeitsspeicher. Die Zahl der Lampen stellen Lehrkräfte für alle auf der Installation ein.
+- Neu und zunächst abgeschaltet: Git-Repositorys für Gruppen im Workspace selbst, ohne Git-Server im Netz
+  (docs/teacher-access.md, »Repositorys im Workspace«). Einschalten mit `GIT_SERVER = true` in `credentials.rb`, dann
+  `./config.rb build git_server peer_firewall && ./config.rb up -d`. Gespeichert werden die Repositorys in
+  `data/git-repos`, der Schlüssel des Servers und die Zugriffe in `data/git-server`; dazu am Konto ein öffentlicher
+  SSH-Schlüssel. Die Datenschutzerklärung nennt beides, sobald es eingeschaltet ist.
+- `git pull` mit Commits auf beiden Seiten brach im Workspace ab (Git 2.43); das einmalige Einrichten im Handbuch
+  »Git-Server« setzt jetzt `pull.rebase false`. Wer es schon eingerichtet hat, liest den Hinweis bei »Wenn Git den Push ablehnt«.
 - Neue UML-Werkstatt `hackschule-uml-0.1.0.vsix` (Klassendiagramme in `.uml`-Dateien): das Workspace-Image
   neu bauen (`build-image.sh`). Die Prüfung `classes` bringt den Kern selbst mit und läuft auch ohne sie.
 

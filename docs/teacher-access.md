@@ -259,6 +259,51 @@ in der Reihenfolge des Katalogs (`class_board.js`,
   ein; das macht die Lehrkraft dort selbst. Die Seite sagt den Lernenden:
   »Deine Lehrkraft lädt dich dorthin ein«.
 
+## Repositorys im Workspace
+
+Mit `GIT_SERVER = true` in `credentials.rb` hält der Workspace die
+Repositorys der Gruppen selbst (`GitServer` in
+`src/ruby/include/git_server.rb`, der Dienst `git_server` aus
+`docker/git-server`, der Plan in docs/plan-git-gruppen.md). Ein Konto auf
+einem Git-Server im Netz braucht dann niemand.
+
+- **Anlegen:** Im Dialog »Git« der Klassenseite steht neben jeder Seite mit
+  `class_repo: group` »Im Workspace anlegen«. Hat die Seite einen Ordner
+  `starter/` (das Quiz der Klasse), kommt dessen Inhalt als erster Commit
+  hinein, sonst ist das Repository leer. Die Adresse,
+  `git@git.workspace:<Ordner>/<Seite>.git`, wird gleich als
+  Klassen-Repository der Seite eingetragen; alles andere wie oben.
+- **Der Ordner der Gruppe** ist eine zufällige Kennung (`GroupSetting.git_id`),
+  nicht ihr Name: Eine umbenannte Gruppe behält ihre Adressen.
+- **Schlüssel:** Die Lehrkraft wählt je Gruppe (`GroupSetting.git_keys`).
+  »Abgeben«: Lernende erzeugen ein Schlüsselpaar und geben den öffentlichen
+  Schlüssel mit dem Kasten auf der Seite ab (gelesen aus ihrem
+  `~/.ssh/id_ed25519.pub`); beim ersten `ssh -T` vergleichen sie den
+  Fingerabdruck des Servers mit dem im Kasten. »Automatisch«: Der Workspace
+  schreibt jedem Mitglied ein Schlüsselpaar `~/.ssh/workspace_git`, einen
+  Abschnitt für `git.workspace` in `~/.ssh/config` und den Schlüssel des
+  Servers in `~/.ssh/known_hosts`, beide Abschnitte zwischen Markierungen
+  (`# >>> Workspace-Git …`). Er tut das sofort für jeden, der schon einen
+  Workspace hat, nach jedem Einlesen der Gruppen und vor jedem Start eines
+  Workspace; vorhandene Schlüssel bleiben.
+- **Wer darf:** Mitglieder und Lehrkräfte der Gruppe, nur mit Git (clone,
+  fetch, pull, push); keine Shell, keine Weiterleitung. Der Server lehnt
+  `git push --force` und das Löschen eines Branches ab und nimmt keinen Push
+  über 50 MB an. Nach jeder Änderung an den Gruppen, an einem Repository oder
+  an einem Schlüssel schreibt das Backend die Liste der Schlüssel und der
+  Zugriffe neu (`data/git-server/config`).
+- **Ansehen:** »Ansehen« im Dialog führt zu `/git/<Ordner>/<Seite>`: Dateien,
+  Verlauf, jeder Commit mit seinen Änderungen, alles als ZIP. Die Lernenden
+  der Gruppe sehen dieselben Seiten. Bilder werden gezeigt; HTML, SVG und
+  Markdown-HTML aus den Repositorys nie ausgeführt.
+- **Löschen:** »Löschen« im Dialog (ein zweiter Klick bestätigt) löscht das
+  Repository mit allem darin. Wird eine Gruppe gelöscht oder fehlt sie im
+  eingelesenen Verzeichnis, gehen ihre Repositorys mit (`GroupData`). Wird ein
+  Konto gelöscht, verschwinden seine Schlüssel; seine Commits bleiben als
+  Arbeit der Gruppe in deren Repositorys.
+- **Ein vorhandenes Repository umziehen:** ein leeres im Workspace anlegen,
+  dann aus einem Klon des alten `git push --mirror` an die neue Adresse.
+
 ## Personen und Schulen (`/personen`, Administration)
 
 `include/people_page.rb`, `static/personen.html`:

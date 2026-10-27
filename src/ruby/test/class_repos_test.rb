@@ -198,6 +198,29 @@ class ClassReposTest < Minitest::Test
         ClassRepos::CONDITION_VALUES.each_value { |values| assert_equal ClassRepos::CONDITIONS.sort, values.keys.sort }
     end
 
+    # A repository on the Workspace's own server (GitServer): the variant
+    # after how the group's students get their keys.
+    def test_variants_of_the_workspaces_own_server
+        local = 'git@git.workspace:a1b2c3d4e5/class-quiz.git'
+        mode = ->(address) { address.include?('a1b2c3d4e5') ? :auto : nil }
+        assert_equal ClassRepos::LOCAL_AUTO, ClassRepos.variant(local, :local => mode)
+        assert_equal ClassRepos::LOCAL_KEYS, ClassRepos.variant(local, :local => ->(_) { :keys })
+        assert_nil ClassRepos.variant('git@git.example.org:a/b.git', :local => mode)
+        assert_nil ClassRepos.variant(local), 'without knowing the server, an SSH address'
+        assert_equal [nil, ClassRepos::HTTPS, ClassRepos::LOCAL_KEYS, ClassRepos::LOCAL_AUTO, ClassRepos::WITHOUT],
+            ClassRepos.variants(%w[class_repo class_repo_local_keys])
+        values = ClassRepos::CONDITION_VALUES
+        assert values[ClassRepos::LOCAL_AUTO]['class_repo']
+        refute values[ClassRepos::LOCAL_AUTO]['class_repo_ssh'], 'no key for an outside server'
+        refute values[ClassRepos::LOCAL_KEYS]['class_repo_outside']
+        assert values[nil]['class_repo_outside']
+        assert values[ClassRepos::HTTPS]['class_repo_outside']
+        assert ClassRepos.valid?(local)
+        assert_equal({ :variant => ClassRepos::LOCAL_AUTO, :address => local },
+            ClassRepos.view('class-quiz', :per_group => true, :placeholders => false, :groups => ['7b'],
+                :settings => { '7b' => { 'class-quiz' => local } }, :local => mode))
+    end
+
     # The sandbox pages themselves: the SSH key only with an SSH address,
     # signing in with a token only with an https:// one, the other Git
     # tasks with either, the questions about the topic and the clone check
@@ -208,7 +231,8 @@ class ClassReposTest < Minitest::Test
             markdown = File.read(File.join(dir, "#{slug}.md"))
             assert ClassRepos.page?(ContentParts.meta(markdown)), "#{slug}: class_repo: group"
             markdown = ContentParts.expand_includes(markdown, :page_dir => dir, :reference_root => File.join(CONTENT, 'reference'))
-            assert_equal [nil, ClassRepos::HTTPS, ClassRepos::WITHOUT], ClassRepos.variants(ContentParts.conditions(markdown)), slug
+            assert_equal [nil, ClassRepos::HTTPS, ClassRepos::LOCAL_KEYS, ClassRepos::LOCAL_AUTO, ClassRepos::WITHOUT],
+                ClassRepos.variants(ContentParts.conditions(markdown)), slug
             warnings = []
             text = ClassRepos::CONDITION_VALUES.to_h do |variant, values|
                 [variant, ContentParts.filter_conditions(markdown, values, :warn => ->(w) { warnings << w })]
@@ -216,6 +240,7 @@ class ClassReposTest < Minitest::Test
             assert_empty warnings, slug
             tasks = text.transform_values { |t| TaskCard.mark_slots(t).last }
             ssh, https, without = tasks.values_at(nil, ClassRepos::HTTPS, ClassRepos::WITHOUT)
+            local_keys, local_auto = tasks.values_at(ClassRepos::LOCAL_KEYS, ClassRepos::LOCAL_AUTO)
 
             ids = YAML.safe_load(File.read(File.join(dir, 'tasks.yaml')))['tasks'].map { |t| t['id'] }
             assert_equal ids.sort, (ssh | https | without).sort, "#{slug}: every task in a variant"
@@ -225,6 +250,22 @@ class ClassReposTest < Minitest::Test
                 refute_includes without, id, slug
             end
             (GIT_TASKS - ['ssh-schluessel']).each { |id| assert_includes https, id, slug }
+            # The Workspace's own server: a key handed in, or set up by the site
+            GIT_TASKS.each { |id| assert_includes local_keys, id, slug }
+            (GIT_TASKS - ['ssh-schluessel']).each { |id| assert_includes local_auto, id, slug }
+            refute_includes local_auto, 'ssh-schluessel', slug
+            [ClassRepos::LOCAL_KEYS, ClassRepos::LOCAL_AUTO].each do |variant|
+                assert_includes text[variant], 'git clone ${class_repo}', slug
+                assert_includes text[variant], 'Git-Server des Workspace', slug
+                assert_includes text[variant], 'ssh -T git@git.workspace', slug
+                refute_includes text[variant], 'lädt dich dorthin ein', slug
+                refute_includes text[variant], 'Zugangstoken', slug
+            end
+            assert_includes text[ClassRepos::LOCAL_KEYS], 'data-git-key', slug
+            assert_includes text[ClassRepos::LOCAL_KEYS], 'ssh-keygen', slug
+            assert_includes text[ClassRepos::LOCAL_AUTO], 'workspace_git', slug
+            refute_includes text[ClassRepos::LOCAL_AUTO], 'ssh-keygen', slug
+            refute_includes text[nil], 'git.workspace`. Ein Konto', slug
             refute_includes https, 'ssh-schluessel', slug
             (topic_tasks + ['geklont']).each do |id|
                 tasks.each_value { |list| assert_includes list, id, slug }

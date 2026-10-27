@@ -64,6 +64,56 @@ ssh -T ${git_ssh}
 Meldet SSH `Permission denied (publickey)`, fehlt der Schlüssel auf dem Server, oder du hast eine andere Zeile kopiert als die aus `id_ed25519.pub`.
 <!-- /part -->
 
+<!-- feature: git_server -->
+<!-- part: ssh-workspace -->
+### SSH-Schlüssel für den Git-Server des Workspace
+
+Euer Repository liegt auf dem Git-Server des Workspace, `git.workspace`. Ein Konto brauchst du dort nicht: Der Server erkennt dich an deinem SSH-Schlüssel, den du ihm einmal gibst. Prüfe zuerst im Terminal, ob du schon einen hast:
+
+```bash
+ls ~/.ssh/id_ed25519.pub
+```
+
+Erscheint `No such file or directory`, erzeugst du einen neuen. Bestätige den vorgeschlagenen Speicherort mit Enter; die Passphrase darfst du im Workspace leer lassen und noch zweimal Enter drücken:
+
+```bash
+ssh-keygen -t ed25519 -C "Vorname Nachname"
+```
+
+Ein Schlüssel besteht aus zwei Dateien. `~/.ssh/id_ed25519` ist der **private** Schlüssel: Er bleibt in deinem Workspace, und niemand bekommt ihn. `~/.ssh/id_ed25519.pub` ist der **öffentliche**: Mit ihm prüft der Server, dass du es bist. Den gibst du hier ab:
+
+<div class='git-key' data-git-key></div>
+<script src='/include/git_key.js'></script>
+
+Teste dann die Verbindung:
+
+```bash
+ssh -T git@git.workspace
+```
+
+Beim ersten Mal fragt SSH, ob du dem Server vertraust, und zeigt seinen Fingerabdruck: `ED25519 key fingerprint is SHA256:…`. Vergleiche ihn mit dem im Kasten oben. Stimmen sie überein, antworte mit `yes`; so weißt du, dass am anderen Ende wirklich der Git-Server sitzt. Danach begrüßt er dich und nennt die Repositorys, die du benutzen darfst.
+
+Meldet SSH `Permission denied (publickey)`, hast du den Schlüssel noch nicht abgegeben, oder du hast danach einen neuen erzeugt; dann gib ihn noch einmal ab.
+<!-- /part -->
+
+<!-- part: ssh-workspace-auto -->
+### Der Schlüssel für den Git-Server des Workspace
+
+Euer Repository liegt auf dem Git-Server des Workspace, `git.workspace`. Er erkennt dich an einem SSH-Schlüssel, den deine Lehrkraft für deinen Workspace hat einrichten lassen. Er liegt in `~/.ssh/workspace_git`, und `~/.ssh/config` sagt SSH, dass es ihn für diesen Server nehmen soll.
+
+<div class='git-key' data-git-key></div>
+<script src='/include/git_key.js'></script>
+
+Teste die Verbindung:
+
+```bash
+ssh -T git@git.workspace
+```
+
+Der Server begrüßt dich und nennt die Repositorys, die du benutzen darfst. Meldet SSH `Permission denied (publickey)`, kennt der Server deinen Schlüssel noch nicht; sag deiner Lehrkraft Bescheid.
+<!-- /part -->
+<!-- /feature -->
+
 <!-- part: https-anmelden -->
 ### Anmelden über HTTPS
 
@@ -101,7 +151,7 @@ git config --global pull.rebase false
 
 Die dritte Zeile sagt `git pull`, was es tun soll, wenn andere inzwischen gepusht haben und du auch schon committet hast: die Commits zusammenführen (merge). Ohne sie bricht `git pull` dann mit `Need to specify how to reconcile divergent branches` ab.
 
-Welche Adresse dein Konto hat, steht bei GitLab unter **Edit profile → Emails**, bei Gitea und Forgejo unter **Settings → Account**, bei GitHub unter **Settings → Emails** (wer dort die Adresse privat hält, nimmt die `noreply`-Adresse, die GitHub anzeigt).
+Liegt das Repository auf dem Git-Server des Workspace (`git.workspace`), gibt es dort kein Konto; dann nimm eine Adresse, die du auch anderen zeigen magst, denn sie steht in jedem deiner Commits. Welche Adresse dein Konto auf einem anderen Git-Server hat, steht bei GitLab unter **Edit profile → Emails**, bei Gitea und Forgejo unter **Settings → Account**, bei GitHub unter **Settings → Emails** (wer dort die Adresse privat hält, nimmt die `noreply`-Adresse, die GitHub anzeigt).
 
 Das ist in jedem Workspace nur einmal nötig. Ohne diese Angaben weigert sich Git zu committen.
 <!-- /part -->

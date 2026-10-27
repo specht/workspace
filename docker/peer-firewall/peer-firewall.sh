@@ -4,8 +4,9 @@ set -eu
 DOCKER_SOCKET="${DOCKER_SOCKET:-/var/run/docker.sock}"
 WORKSPACE_NETWORK="${WORKSPACE_NETWORK:-workspace_user}"
 INFRASTRUCTURE_LABEL="${INFRASTRUCTURE_LABEL:-hackschule.workspace.peer_firewall.infrastructure}"
-# The case server of »Ein Krimi im Terminal« (museum.bitstein): students reach
-# its SSH port, and it only answers. It is no infrastructure: from there, a
+# The case server of »Ein Krimi im Terminal« (museum.bitstein) and the Git
+# server of the groups (git.workspace) carry this label: students reach their
+# SSH port, and they only answer. They are no infrastructure: from there, a
 # student must not reach anyone else's Workspace.
 CASE_SERVER_LABEL="${CASE_SERVER_LABEL:-hackschule.workspace.peer_firewall.case_server}"
 PEER_TCP_PORTS="${PEER_TCP_PORTS:-1234}"

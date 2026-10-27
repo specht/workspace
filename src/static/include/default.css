@@ -4478,6 +4478,52 @@ ul.task-teacher-list .task-teacher-answer {
     margin-bottom: 0.3em;
 }
 
+/* The Workspace's own Git server (GitServer): how keys come about, and
+   beside each field what can be done with a repository there. Buttons
+   at least 44 px high for a finger, with room between them. */
+.class-repos-dialog .class-repos-keys {
+    margin: 0 0 1.2em;
+}
+
+.class-repos-dialog .class-repos-keys legend {
+    font-size: 100%;
+    font-weight: 600;
+    margin-bottom: 0.3em;
+}
+
+.class-repos-dialog .class-repos-keys-hint {
+    display: block;
+    font-size: 90%;
+    color: var(--bs-secondary-color);
+}
+
+.class-repos-dialog .class-repo-git {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em;
+    margin-top: 0.4em;
+}
+
+.class-repos-dialog .class-repo-git .btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+}
+
+.class-repos-dialog .class-repo-git .bi {
+    margin: 0;
+}
+
+.class-repos-dialog .class-repo-local {
+    font-size: 90%;
+    color: var(--bs-secondary-color);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+}
+
 /* The link to the page beside its label: the icon alone, centred. */
 .class-repos-dialog .class-repo-page {
     display: inline-flex;
@@ -9833,4 +9879,274 @@ div.pip-world[data-stepper] .stepper-timeline {
     background: rgba(177, 151, 252, 0.2);
     border-left: 3px solid #b197fc;
     pointer-events: none;
+}
+
+/* The key box for the Workspace's own Git server (git_key.js). */
+.git-key {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.6em;
+    padding: 0.8em 1em;
+    margin: 1em 0 1.5em;
+    overflow-wrap: anywhere;
+}
+
+.git-key p {
+    margin-bottom: 0.5em;
+}
+
+.git-key p:last-child {
+    margin-bottom: 0;
+}
+
+.git-key .bi-check-lg {
+    color: var(--bs-success);
+    margin-right: 0.3em;
+}
+
+.git-key-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6em;
+    margin: 0.4em 0 0.6em;
+}
+
+.git-key-buttons .btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+}
+
+.git-key-buttons .bi {
+    margin: 0;
+}
+
+.git-key .btn-link {
+    padding: 0;
+    vertical-align: baseline;
+}
+
+.git-key-host {
+    font-size: 90%;
+    color: var(--bs-secondary-color);
+}
+
+.git-key-warning {
+    color: var(--bs-danger-text-emphasis);
+}
+
+/* Reading a group's repository (/git/…, GitBrowse in main.rb): a light
+   view of files, history and commits. */
+.git-browse {
+    margin-top: 1em;
+}
+
+.git-crumbs {
+    font-size: 1.4em;
+    margin-bottom: 0.6em;
+    overflow-wrap: anywhere;
+}
+
+.git-crumbs .bi {
+    color: #f05133;
+}
+
+.git-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6em;
+    margin-bottom: 0.6em;
+}
+
+.git-bar .btn,
+.git-file-bar a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+}
+
+.git-bar .bi {
+    margin: 0;
+}
+
+.git-branch {
+    color: var(--bs-secondary-color);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+}
+
+.git-clone {
+    font-size: 90%;
+    color: var(--bs-secondary-color);
+    margin-bottom: 1em;
+    overflow-wrap: anywhere;
+}
+
+.git-path {
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 95%;
+    margin: 0.4em 0 0.8em;
+    overflow-wrap: anywhere;
+}
+
+.git-meta {
+    font-size: 90%;
+    color: var(--bs-secondary-color);
+}
+
+.git-last {
+    border: 1px solid var(--bs-border-color);
+    border-bottom: 0;
+    border-radius: 0.5em 0.5em 0 0;
+    background: var(--bs-tertiary-bg);
+    padding: 0.5em 0.8em;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.git-tree {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5em;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0 0 0.5em 0.5em;
+}
+
+.git-tree li {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.45em 0.8em;
+    border-top: 1px solid var(--bs-border-color);
+    min-height: 44px;
+}
+
+.git-tree li:first-child {
+    border-top: 0;
+}
+
+.git-tree .bi-folder-fill {
+    color: #54aeff;
+}
+
+.git-tree a {
+    flex: 1;
+    overflow-wrap: anywhere;
+}
+
+.git-size {
+    font-size: 85%;
+    color: var(--bs-secondary-color);
+    white-space: nowrap;
+}
+
+.git-readme {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5em;
+    padding: 1em 1.2em;
+    margin-bottom: 1.5em;
+    overflow-wrap: anywhere;
+}
+
+.git-file-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1em;
+    margin-bottom: 0.4em;
+}
+
+.git-picture img {
+    max-width: 100%;
+    border: 1px solid var(--bs-border-color);
+}
+
+.git-log {
+    list-style: none;
+    padding: 0;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5em;
+}
+
+.git-log li {
+    padding: 0.55em 0.8em;
+    border-top: 1px solid var(--bs-border-color);
+}
+
+.git-log li:first-child {
+    border-top: 0;
+}
+
+.git-log-subject {
+    display: block;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.git-commit-head h2 {
+    font-size: 1.4em;
+    overflow-wrap: anywhere;
+}
+
+.git-message {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    margin-bottom: 0.6em;
+}
+
+.git-file h3 {
+    font-size: 1em;
+    font-family: '0xProto Nerd Font Mono', monospace;
+    margin: 1.5em 0 0.4em;
+    overflow-wrap: anywhere;
+}
+
+.git-status {
+    font-family: var(--bs-body-font-family);
+    font-size: 80%;
+    border-radius: 0.4em;
+    padding: 0.1em 0.45em;
+    margin-right: 0.3em;
+    background: var(--bs-secondary-bg);
+}
+
+.git-status-added { background: rgba(26, 127, 55, 0.15); }
+.git-status-deleted { background: rgba(207, 34, 46, 0.15); }
+
+.git-diff {
+    font-size: 85%;
+    line-height: 1.45;
+    overflow-x: auto;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5em;
+    padding: 0.5em 0;
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+.git-diff span {
+    display: inline-block;
+    min-width: 100%;
+}
+
+.git-diff,
+.git-diff span {
+    padding-left: 0.6em;
+    padding-right: 0.6em;
+}
+
+.git-add { background: rgba(26, 127, 55, 0.15); }
+.git-del { background: rgba(207, 34, 46, 0.15); }
+.git-hunk { color: var(--bs-secondary-color); background: var(--bs-tertiary-bg); }
+
+.git-note {
+    color: var(--bs-secondary-color);
+    font-size: 90%;
+}
+
+.git-empty pre {
+    max-width: 40em;
 }

@@ -42,7 +42,7 @@ module ContentParts
     # switched on (docs/aufgaben.md): <!-- feature: case_server --> … <!-- /feature -->.
     FEATURE_START = /^<!--\s*feature:\s*([a-z_]+)\s*-->[ \t]*\n?/
     FEATURE_END = /^<!--\s*\/feature\s*-->[ \t]*\n?/
-    FEATURES = %w[case_server].freeze
+    FEATURES = %w[case_server git_server].freeze
 
     # Keeps what is inside a feature block if the feature is in enabled and
     # drops it otherwise; the markers themselves go. Blocks do not nest.

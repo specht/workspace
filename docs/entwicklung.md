@@ -20,8 +20,9 @@ Repositorys, sofern nicht anders angegeben. Die Einrichtung selbst steht im
 ```
 
 Dienste: `nginx`, `ruby`, `mysql`, `phpmyadmin`, `peer_firewall`, `neo4japp`,
-`docker_guard`, in der Entwicklung `tutorial_screenshots` und mit
-`CASE_SERVER = true` `case_museum` und `case_alarm` (siehe »Der Fallserver«).
+`docker_guard`, in der Entwicklung `tutorial_screenshots`, mit
+`CASE_SERVER = true` `case_museum` und `case_alarm` (siehe »Der Fallserver«)
+und mit `GIT_SERVER = true` `git_server` (siehe »Der Git-Server der Gruppen«).
 
 ### Der Docker-Wächter
 
@@ -496,6 +497,39 @@ CASE_SERVER = true
   ein Python mit OpenCV und Pillow, in `CCTV_PYTHON` (`beispiele/cctv/README.md`).
 - **Prüfung:** Im Prüfungsmodus hat ein Workspace kein Netz und bekommt keinen
   Zugang.
+
+## Der Git-Server der Gruppen
+
+Mit `GIT_SERVER = true` in `credentials.rb` hält der Workspace Git-Repositorys
+für Gruppen (für Lehrkräfte: docs/teacher-access.md, »Repositorys im
+Workspace«; der Plan: docs/plan-git-gruppen.md).
+
+```bash
+./config.rb build git_server peer_firewall && ./config.rb up -d
+```
+
+- **Der Dienst** (`docker/git-server`): `sshd` für einen Benutzer `git`
+  (uid 1000), im Netz der Workspaces unter `git.workspace`, mit dem Label der
+  Peer-Firewall, das auch der Fallserver hat: Workspaces erreichen ihn nur auf
+  Port 22, er erreicht keinen Workspace. Jeder Schlüssel führt
+  `/usr/local/bin/git-gate` aus, das nur `git-upload-pack`,
+  `git-receive-pack` und `git-upload-archive` auf einem Repository der
+  eigenen Gruppen durchlässt (`git-shell`); ohne Befehl (`ssh -T`) begrüßt es
+  und nennt die Repositorys.
+- **Die Daten:** die Repositorys in `data/git-repos/<Ordner der Gruppe>/`,
+  der Schlüssel des Servers in `data/git-server/host` (bleibt bei einem
+  neuen Build, also auch sein Fingerabdruck), die Liste der Schlüssel
+  (`authorized_keys`) und der Zugriffe (`access`) in
+  `data/git-server/config`. Diese beiden schreibt das Backend
+  (`Main.git_refresh!`); der Ordner muss 0755 sein, sonst liest `sshd` die
+  Schlüssel nicht (StrictModes).
+- **Im Backend** (`/git-repos`, `/git-server`): Anlegen und Löschen
+  (`GitServer`), das Ansehen unter `/git/…` (`GitBrowse`, nur lesend), die
+  automatischen Schlüssel.
+- **Tests:** `git_server_test.rb` (Schlüssel, die Dateien des Servers, ein
+  Repository samt abgelehntem `--force`), `git_browse_test.rb`,
+  `class_repos_test.rb` (die Fassungen der Seiten). Den ganzen Weg durch den
+  Container prüft `e2e/tests/git-server.browser.spec.ts`.
 
 ## Das Demo-Level der Backrooms
 
