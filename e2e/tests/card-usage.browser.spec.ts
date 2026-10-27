@@ -52,6 +52,38 @@ test('a teacher sees how many of their students solved each task', async ({ page
   await keep(page, 'usage-teacher');
 });
 
+// The teacher's numbers follow at once: a student's answer, stored or
+// deleted, shows on the next load, not after a cache runs out (during a
+// lesson an old number would mislead).
+test('a teacher sees a student\'s answer at once', async ({ browser, e2eEmail }, testInfo) => {
+  const student = await (await browser.newContext()).newPage();
+  await loginAsE2eUser(student, e2eEmail, testInfo);
+  const teacher = await (await browser.newContext()).newPage();
+  await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
+  const solved = async () => {
+    await teacher.goto('/');
+    const title = await teacher.locator("a.tutorial_card3[href='/crypto'] .usage-bar[title*='Der Fingerabdruck']").getAttribute('title');
+    return Number(title!.match(/: (\d+) von/)![1]);
+  };
+  const answer = async () => {
+    const states = student.waitForResponse((r) => r.url().includes('/api/task/states'));
+    await student.goto('/crypto');
+    await states;
+    const card = student.locator(".task-card[data-task='crypto/fingerabdruck']");
+    await card.getByText('Ein Hash des öffentlichen Schlüssels', { exact: true }).click();
+    await card.locator('.task-submit').click();
+    await expect(card).toHaveAttribute('data-status', 'correct');
+  };
+  await answer();
+  const before = await solved();
+  expect((await student.request.post('/api/task/delete', { data: { task: 'crypto/fingerabdruck' } })).ok()).toBeTruthy();
+  expect(await solved()).toBe(before - 1);
+  await answer();
+  expect(await solved()).toBe(before);
+  await student.context().close();
+  await teacher.context().close();
+});
+
 function adminEmail(): string {
   if (process.env.E2E_ADMIN_EMAIL) return process.env.E2E_ADMIN_EMAIL;
   const credentials = fs.readFileSync(path.resolve(process.cwd(), '..', 'src', 'ruby', 'credentials.rb'), 'utf8');

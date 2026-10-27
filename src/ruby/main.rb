@@ -6106,6 +6106,7 @@ class Main < Sinatra::Base
             CREATE (a:TaskAttempt {task: $task, version: $version, status: $status, ts: $updated})-[:BY]->(u);
         END_OF_QUERY
         notify_meeting_progress(email, found[:key].split('/').first)
+        @@task_results_changed_at = Time.now
         TaskStore.public_state(props, found[:version])
     end
 
@@ -6888,15 +6889,18 @@ class Main < Sinatra::Base
 
     # For a teacher the same counts as activity_usage, over the students of
     # the groups the teacher teaches (CardUsage.students_of), with :of, how
-    # many they are; cached per teacher for USAGE_SECONDS, and anew when the
-    # groups change. Two queries per teacher at most every ten minutes.
+    # many they are. Kept only until a task result changes (stored or
+    # deleted, @@task_results_changed_at) or the groups change: during a
+    # lesson the band is as current as the class page, and a quiet evening
+    # costs no queries.
     def teacher_usage(email)
         @@teacher_usage = {} unless defined?(@@teacher_usage)
         excluded = (ADMIN_USERS.to_a + @@teachers.keys + @@test_accounts.keys).uniq
         students = CardUsage.students_of(email, :teachers => @@teachers, :group_members => @@group_members,
                                          :skip => @@test_groups, :excluded => excluded).to_a.sort
         cached = @@teacher_usage[email]
-        return cached[:counts] if cached && cached[:students] == students && Time.now - cached[:at] < USAGE_SECONDS
+        changed = defined?(@@task_results_changed_at) ? @@task_results_changed_at : Time.at(0)
+        return cached[:counts] if cached && cached[:students] == students && cached[:at] > changed
 
         options = { :done => StudentHome::DONE, :students => students }
         tasks = students.empty? ? {} : neo4j_query(<<~END_OF_QUERY, options).to_h { |row| [row['task'], row['solved'].to_i] }
@@ -7890,6 +7894,7 @@ class Main < Sinatra::Base
             DETACH DELETE s;
         END_OF_QUERY
         notify_meeting_progress(email, task.split('/').first)
+        @@task_results_changed_at = Time.now
         neo4j_query(<<~END_OF_QUERY, :email => email, :task => task)
             MATCH (a:TaskAttempt {task: $task})-[:BY]->(:User {email: $email})
             DETACH DELETE a;

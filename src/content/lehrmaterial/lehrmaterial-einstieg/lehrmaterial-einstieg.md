@@ -128,9 +128,9 @@ Was du hier für die Gruppe **anheftest**, steht bei allen in der Gruppe oben au
 
 Hier steht, was für die ganze Gruppe gilt; jede Änderung ist sofort gespeichert.
 
-<img class='full full-shadow shot' src='klasse-einstellungen.webp' alt='Der Reiter Einstellungen: oben die Sprache, darunter die Kopierknöpfe, dann die Git-Repositorys mit der Wahl, wie die Lernenden zu ihrem Schlüssel kommen.'>
+<img class='full full-shadow shot' src='klasse-einstellungen.webp' alt='Der Reiter Einstellungen: oben die Sprachen der Klasse als geordnete Liste mit Logos, darunter weitere Sprachen zum Hinzufügen, dann die Kopierknöpfe, dann die Git-Repositorys mit der Wahl, wie die Lernenden zu ihrem Schlüssel kommen.'>
 
-- **Sprache:** Gibt es eine Aktivität in mehreren Programmiersprachen (etwa Ruby und Python), sieht die Gruppe zuerst diese. Lernende können auf der Seite selbst umschalten.
+- **Sprachen der Klasse:** Gibt es eine Aktivität in mehreren Programmiersprachen (etwa Ruby, Python und JavaScript), zeigt sie der Gruppe die erste Sprache dieser Liste, die sie anbietet. Du ordnest die Liste, indem du eine Sprache an ihren Platz ziehst oder mit den Pfeilen verschiebst, und holst Sprachen aus »Weitere Sprachen« dazu; ein Satz darunter sagt, was das für die Aktivitäten heißt. Lernende können auf der Seite selbst umschalten.
 - **Kopierknöpfe:** »An jedem Codeblock« setzt überall einen Kopierknopf. »Wo sinnvoll« lässt ihn nur dort, wo Abtippen nichts lehrt (Adressen, Befehle, große Dateien); alles andere tippt die Klasse ab.
 - **Git-Repositorys:** Für Aktivitäten, in denen die Klasse ein gemeinsames Repository klont, trägst du dessen Adresse ein oder legst es mit **Im Workspace anlegen** auf dem Git-Server des Workspace an. Die Lernenden sehen die Adresse dann im Befehl zum Klonen.
 - **Schule:** zu welcher Schule die Gruppe gehört, ob die Schule dem Einsatz zugestimmt hat, und der Weg zu den **Unterlagen für deine Schule** (mehr dazu unten).
@@ -181,7 +181,7 @@ Löst du in deinem eigenen Konto eine Aufgabe, steht sie auf der Klassenseite in
 
 ## Auf der Startseite
 
-Am Fuß jeder Karte mit Aufgaben siehst du ein schmales Band, ein Feld je Aufgabe, in der Reihenfolge der Seite. Es zählt nur die Schülerinnen und Schüler deiner Gruppen: Je dunkler ein Feld, desto mehr von ihnen haben die Aufgabe gelöst, ganz dunkel heißt alle, grau keiner. Daneben steht, wie viele Aufgaben sie dort zusammen gelöst haben und wie viele von ihnen überhaupt etwas, etwa »2« und »1/17«. Fährst du mit der Maus über ein Feld, steht dort die Aufgabe und »6 von 17 deiner Lernenden gelöst«. Die Zahlen sind höchstens zehn Minuten alt. So siehst du auf einen Blick, womit deine Klassen schon gearbeitet haben; wer genau wo steht, zeigt die Klassenseite.
+Am Fuß jeder Karte mit Aufgaben siehst du ein schmales Band, ein Feld je Aufgabe, in der Reihenfolge der Seite. Es zählt nur die Schülerinnen und Schüler deiner Gruppen: Je dunkler ein Feld, desto mehr von ihnen haben die Aufgabe gelöst, ganz dunkel heißt alle, grau keiner. Daneben steht, wie viele Aufgaben sie dort zusammen gelöst haben und wie viele von ihnen überhaupt etwas, etwa »2« und »1/17«. Fährst du mit der Maus über ein Feld, steht dort die Aufgabe und »6 von 17 deiner Lernenden gelöst«. Die Zahlen sind aktuell: Löst jemand eine Aufgabe, steht es beim nächsten Laden der Startseite im Band. So siehst du auf einen Blick, womit deine Klassen schon gearbeitet haben; wer genau wo steht, zeigt die Klassenseite.
 
 Deine Schülerinnen und Schüler sehen an derselben Stelle ihre eigenen Aufgaben, sobald sie eine Aktivität begonnen haben: grün gelöst, gelb versucht, dazu »3/14«.
 
