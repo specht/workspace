@@ -251,10 +251,19 @@ for word in ['(()())', '(()', '())(', '']:
 `accepts` nimmt bei jedem Zeichen das oberste Zeichen mit `pop` vom Stack und schlägt mit Zustand, Zeichen und diesem obersten Zeichen in `TRANSITIONS` nach. Was dort steht, kommt mit `extend` wieder oben drauf, Zeichen für Zeichen. Starte es mit `python3 pda.py`.
 <!-- /language -->
 
-Als Bild hat dieser Kellerautomat einen einzigen Zustand q<sub>0</sub>, und alle drei Übergänge führen zu ihm zurück. Am Pfeil steht für jeden Übergang erst das gelesene Zeichen, dann das oberste Zeichen des Stacks und hinter dem Schrägstrich, was dafür auf den Stack kommt, so wie in `TRANSITIONS`. Kommt nichts darauf (`''` in der Tabelle), steht dort ε:
+Als Bild hat dieser Kellerautomat einen einzigen Zustand q<sub>0</sub>, und alle drei Übergänge führen zu ihm zurück. Jede Zeile am Pfeil ist ein Übergang aus `TRANSITIONS`:
 
 <div class='automaton-drawing' role='img' aria-label='Ein Zustand q0 mit Startpfeil und doppeltem Rand, ein Pfeil führt im Bogen zu ihm zurück. Daran stehen untereinander drei Übergänge: »(, # / #(«, »(, ( / ((« und »), ( / ε«.' data-states='q0' data-start='q0' data-accept='q0' data-arrows='q0 | (, # / #( | q0; q0 | (, ( / (( | q0; q0 | ), ( / ε | q0'></div>
 <script src='/include/automaton_layout.js'></script>
+
+Weil hier die Zeichen selbst Klammern sind, liest sich das schwer. Vor dem Komma steht das gelesene Zeichen, zwischen Komma und Schrägstrich das oberste Zeichen des Stacks, hinter dem Schrägstrich, was danach an seiner Stelle liegt, von unten nach oben geschrieben. ε heißt: dort liegt nichts mehr, wie `''` in der Tabelle.
+
+<table class='table' style='width: auto;'>
+<tr><th>Am Pfeil</th><th>gelesen</th><th>oben auf dem Stack</th><th>danach an seiner Stelle</th><th>in Worten</th></tr>
+<tr><td><code>(, # / #(</code></td><td><code>(</code></td><td><code>#</code></td><td><code>#(</code></td><td>Keine Klammer ist offen, eine geht auf: <code>(</code> kommt auf <code>#</code>.</td></tr>
+<tr><td><code>(, ( / ((</code></td><td><code>(</code></td><td><code>(</code></td><td><code>((</code></td><td>Noch eine Klammer geht auf: <code>(</code> kommt auf die offene <code>(</code>.</td></tr>
+<tr><td><code>), ( / ε</code></td><td><code>)</code></td><td><code>(</code></td><td>nichts</td><td>Eine Klammer geht zu: Die oberste <code>(</code> verschwindet.</td></tr>
+</table>
 
 Die Ausgabe mit `trace` zeigt nach jedem Zeichen den Zustand und den Stack, von unten nach oben gelesen. So sieht der Stack beim Wort `(()())` aus, das oberste Zeichen hervorgehoben:
 
