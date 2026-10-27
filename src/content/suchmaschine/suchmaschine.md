@@ -1,6 +1,6 @@
 <div class='meta'>
 image: teaser.webp
-image_alt: "Ein kleines Netz aus Seiten des Tierlexikons mit Pfeilen für ihre Links; katze.html hat drei eingehende Pfeile, die Seite katzenfutter-billig.html nur einen und dazu Pfeile auf sich selbst. Daneben die Treffer für »katze«, katze.html ganz oben."
+image_alt: "Eine Seite mit Suchergebnissen: im Suchfeld »katze«, darunter drei Treffer mit Titel, Adresse und dem Anfang ihres Textes, oben die Hauskatze mit 3 Links auf sie, dann der Hund mit 2, zuletzt orange die Anzeige »Katze Katze Katzenfutter« mit 1 Link, deren Text nur aus dem Wort Katze besteht."
 kind: projekt
 language: Ruby / Python
 languages: [ruby, python]

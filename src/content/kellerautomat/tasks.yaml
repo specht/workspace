@@ -1,0 +1,443 @@
+# Aufgaben zu »Kellerautomaten«, in Python und in Ruby (unter ruby:).
+# Format: docs/aufgaben.md. Alles liegt in /workspace/kellerautomat.
+format: 1
+activity: kellerautomat
+tasks:
+  - id: zaehler
+    title: Reicht ein Zähler?
+    prediction: true
+    prompt: |
+      Jetzt gibt es auch eckige Klammern. Angenommen, du zählst runde und
+      eckige Klammern getrennt, jede Sorte mit ihrem eigenen Zähler wie in
+      `balanced`. Was sagen die beiden Zähler über `([)]`?
+    check:
+      type: choice
+      options:
+        - Beide Zähler gehen auf 0 zurück und nie darunter, das Wort sieht richtig aus.
+        - Der Zähler der runden Klammern fällt unter 0.
+        - Der Zähler der eckigen Klammern fällt unter 0.
+        - Am Ende steht einer der beiden Zähler auf 1.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Zähl nach. Erst `(`, dann `[`, dann `)`, dann `]`. Der runde Zähler geht auf 1 und wieder auf 0.
+      - when: { picked: 3 }
+        say: Jede Sorte ist einmal auf und einmal zu, beide Zähler enden bei 0.
+    solution: |
+      Beide Zähler gehen 0, 1, 0 und fallen nie unter 0. Die Zähler sehen nur,
+      wie viele Klammern jeder Sorte offen sind, nicht, welche zuletzt geöffnet
+      wurde. Bei `([)]` schließt `)`, während die eckige noch offen ist.
+
+  - id: stack
+    title: Klammern mit einem Stack
+    prompt: |
+      Schreib in `brackets.py` die Funktion `balanced(word)`: Sie gibt `True`
+      zurück, wenn die runden, eckigen und geschweiften Klammern in `word`
+      richtig stehen, sonst `False`. Andere Zeichen zählen nicht. Die Prüfung
+      ruft sie mit eigenen Wörtern auf.
+    check:
+      type: python
+      file: kellerautomat/brackets.py
+      cases:
+        - balanced(''): true
+        - balanced('()'): true
+        - balanced('([]{})'): true
+        - call: balanced('([)]')
+          expect: false
+          say: Bei `([)]` schließt `)`, während `[` noch offen ist. Die zuletzt geöffnete Klammer muss als erste zu.
+        - balanced('(('): false
+        - call: balanced(')(')
+          expect: false
+          say: Ein `)` am Anfang hat nichts, das es schließt.
+        - balanced('{[()()]}'): true
+        - call: balanced('x = (a[1] + b) * {2}')
+          expect: true
+          say: Buchstaben, Zahlen und Leerzeichen spielen keine Rolle, nur die Klammern.
+        - balanced('(]'): false
+    hint:
+      - |
+        Lies `([)]` von Hand und leg jede öffnende Klammer auf einen Stapel.
+        Wenn eine schließende Klammer kommt: Welche Klammer muss oben liegen,
+        damit es passt?
+      - |
+        Eine öffnende Klammer kommt mit `append` oben auf die Liste, eine
+        schließende nimmt mit `pop` die oberste herunter. Passt die nicht zu ihr,
+        oder ist die Liste leer, ist das Wort falsch. Am Ende muss die Liste leer
+        sein.
+      - |
+        Ein Gerüst:
+
+        ```python
+        PAIRS = {')': '(', ']': '[', '}': '{'}
+
+        def balanced(word):
+            stack = []
+            for symbol in word:
+                if symbol in PAIRS.values():
+                    ...  # öffnend: auf den Stack
+                elif symbol in PAIRS:
+                    ...  # schließend: passt die oberste?
+            return ...
+        ```
+    solution: |
+      ```python
+      PAIRS = {')': '(', ']': '[', '}': '{'}
+
+      def balanced(word):
+          stack = []
+          for symbol in word:
+              if symbol in PAIRS.values():
+                  stack.append(symbol)
+              elif symbol in PAIRS:
+                  if not stack or stack.pop() != PAIRS[symbol]:
+                      return False
+          return not stack
+      ```
+
+    ruby:
+      prompt: |
+        Schreib in `brackets.rb` die Methode `balanced(word)`: Sie gibt `true`
+        zurück, wenn die runden, eckigen und geschweiften Klammern in `word`
+        richtig stehen, sonst `false`. Andere Zeichen zählen nicht. Die Prüfung
+        ruft sie mit eigenen Wörtern auf.
+      check:
+        type: ruby
+        file: kellerautomat/brackets.rb
+        cases:
+          - balanced(''): true
+          - balanced('()'): true
+          - balanced('([]{})'): true
+          - call: balanced('([)]')
+            expect: false
+            say: Bei `([)]` schließt `)`, während `[` noch offen ist. Die zuletzt geöffnete Klammer muss als erste zu.
+          - balanced('(('): false
+          - call: balanced(')(')
+            expect: false
+            say: Ein `)` am Anfang hat nichts, das es schließt.
+          - balanced('{[()()]}'): true
+          - call: balanced('x = (a[1] + b) * {2}')
+            expect: true
+            say: Buchstaben, Zahlen und Leerzeichen spielen keine Rolle, nur die Klammern.
+          - balanced('(]'): false
+      hint:
+        - |
+          Lies `([)]` von Hand und leg jede öffnende Klammer auf einen Stapel.
+          Wenn eine schließende Klammer kommt: Welche Klammer muss oben liegen,
+          damit es passt?
+        - |
+          Eine öffnende Klammer kommt mit `push` oben auf das Array, eine
+          schließende nimmt mit `pop` die oberste herunter. Passt die nicht zu ihr,
+          oder ist das Array leer, ist das Wort falsch. Am Ende muss das Array leer
+          sein.
+        - |
+          Ein Gerüst:
+
+          ```ruby
+          PAIRS = { ')' => '(', ']' => '[', '}' => '{' }
+
+          def balanced(word)
+              stack = []
+              word.each_char do |symbol|
+                  if PAIRS.value?(symbol)
+                      # öffnend: auf den Stack
+                  elsif PAIRS.key?(symbol)
+                      # schließend: passt die oberste?
+                  end
+              end
+              # leer?
+          end
+          ```
+      solution: |
+        ```ruby
+        PAIRS = { ')' => '(', ']' => '[', '}' => '{' }
+
+        def balanced(word)
+            stack = []
+            word.each_char do |symbol|
+                if PAIRS.value?(symbol)
+                    stack.push(symbol)
+                elsif PAIRS.key?(symbol)
+                    return false if stack.empty? || stack.pop != PAIRS[symbol]
+                end
+            end
+            stack.empty?
+        end
+        ```
+
+  - id: eckig
+    title: Auch eckige Klammern
+    prompt: |
+      Ergänze `TRANSITIONS` in `pda.py`, sodass der Kellerautomat auch eckige
+      Klammern prüft: `accepts('([]())')` ist `True`, `accepts('([)]')` ist
+      `False`. Ändere `accepts` nicht; der Automat bleibt bei dem einen Zustand
+      `q0`.
+    check:
+      type: python
+      file: kellerautomat/pda.py
+      cases:
+        - accepts(''): true
+        - accepts('(())'): true
+        - accepts('[]'): true
+        - accepts('([]())'): true
+        - accepts('[([])]'): true
+        - call: accepts('([)]')
+          expect: false
+          say: Bei `([)]` liegt `[` oben auf dem Stack, wenn `)` kommt. Dafür darf es keinen Übergang geben.
+        - accepts('(]'): false
+        - accepts('[['): false
+        - call: accepts('][')
+          expect: false
+          say: Ein `]` auf leerem Stack, also mit `#` oben, hat keinen Übergang.
+    hint:
+      - |
+        Welche Paare aus gelesenem Zeichen und oberstem Zeichen des Stacks
+        können jetzt vorkommen? Eine öffnende Klammer kann auf `#`, auf `(` und
+        auf `[` treffen.
+      - |
+        Für `[` brauchst du drei Übergänge, je einen für `#`, `(` und `[` oben,
+        und für `(` einen weiteren, wenn `[` oben liegt. `]` passt nur, wenn `[`
+        oben liegt, und nimmt es weg.
+      - |
+        Zwei der neuen Zeilen:
+
+        ```python
+            ('q0', '[', '#'): ('q0', '#['),
+            ('q0', ']', '['): ('q0', ''),
+        ```
+    solution: |
+      Dazu kommen fünf Übergänge:
+
+      ```python
+          ('q0', '(', '['): ('q0', '[('),
+          ('q0', '[', '#'): ('q0', '#['),
+          ('q0', '[', '('): ('q0', '(['),
+          ('q0', '[', '['): ('q0', '[['),
+          ('q0', ']', '['): ('q0', ''),
+      ```
+
+    ruby:
+      prompt: |
+        Ergänze `TRANSITIONS` in `pda.rb`, sodass der Kellerautomat auch eckige
+        Klammern prüft: `accepts('([]())')` ist `true`, `accepts('([)]')` ist
+        `false`. Ändere `accepts` nicht; der Automat bleibt bei dem einen Zustand
+        `q0`.
+      check:
+        type: ruby
+        file: kellerautomat/pda.rb
+        cases:
+          - accepts(''): true
+          - accepts('(())'): true
+          - accepts('[]'): true
+          - accepts('([]())'): true
+          - accepts('[([])]'): true
+          - call: accepts('([)]')
+            expect: false
+            say: Bei `([)]` liegt `[` oben auf dem Stack, wenn `)` kommt. Dafür darf es keinen Übergang geben.
+          - accepts('(]'): false
+          - accepts('[['): false
+          - call: accepts('][')
+            expect: false
+            say: Ein `]` auf leerem Stack, also mit `#` oben, hat keinen Übergang.
+      hint:
+        - |
+          Welche Paare aus gelesenem Zeichen und oberstem Zeichen des Stacks
+          können jetzt vorkommen? Eine öffnende Klammer kann auf `#`, auf `(` und
+          auf `[` treffen.
+        - |
+          Für `[` brauchst du drei Übergänge, je einen für `#`, `(` und `[` oben,
+          und für `(` einen weiteren, wenn `[` oben liegt. `]` passt nur, wenn `[`
+          oben liegt, und nimmt es weg.
+        - |
+          Zwei der neuen Zeilen:
+
+          ```ruby
+              ['q0', '[', '#'] => ['q0', '#['],
+              ['q0', ']', '['] => ['q0', ''],
+          ```
+      solution: |
+        Dazu kommen fünf Übergänge:
+
+        ```ruby
+            ['q0', '(', '['] => ['q0', '[('],
+            ['q0', '[', '#'] => ['q0', '#['],
+            ['q0', '[', '('] => ['q0', '(['],
+            ['q0', '[', '['] => ['q0', '[['],
+            ['q0', ']', '['] => ['q0', ''],
+        ```
+
+  - id: anbn
+    title: Erst a, dann gleich viele b
+    prompt: |
+      Schreib in `anbn.py` die Übergänge und die akzeptierenden Zustände eines
+      Kellerautomaten, der genau die Wörter a<sup>n</sup>b<sup>n</sup> annimmt:
+      `''`, `'ab'`, `'aabb'`, `'aaabbb'` und so weiter, aber nicht `'aab'`,
+      `'abab'` oder `'ba'`. `accepts` bleibt, wie es ist.
+    check:
+      type: python
+      file: kellerautomat/anbn.py
+      cases:
+        - accepts(''): true
+        - accepts('ab'): true
+        - accepts('aabb'): true
+        - accepts('a' * 20 + 'b' * 20): true
+        - call: accepts('aab')
+          expect: false
+          say: Am Ende liegt noch ein `A` auf dem Stack, ein a hat kein b bekommen.
+        - accepts('abb'): false
+        - call: accepts('abab')
+          expect: false
+          say: Nach dem ersten b darf kein a mehr kommen. Merk dir das mit einem zweiten Zustand.
+        - accepts('ba'): false
+        - accepts('a'): false
+    hint:
+      - |
+        Jedes a legt etwas auf den Stack, jedes b nimmt es wieder weg. Am Ende
+        muss der Stack wieder leer sein, also nur `#` darauf liegen. Probier es
+        für `aabb` und `aab` von Hand.
+      - |
+        Was verhindert `abab`? Sobald das erste b gelesen ist, darf kein a mehr
+        kommen. Dafür wechselt der Automat beim ersten b in einen zweiten Zustand
+        `q1`, in dem es für a keinen Übergang gibt.
+      - |
+        Ein Gerüst; zwei Ziele fehlen:
+
+        ```python
+        ACCEPTING = {'q0', 'q1'}
+        TRANSITIONS = {
+            ('q0', 'a', '#'): ('q0', '#A'),
+            ('q0', 'a', 'A'): ...,
+            ('q0', 'b', 'A'): ...,
+            ('q1', 'b', 'A'): ('q1', ''),
+        }
+        ```
+    solution: |
+      ```python
+      ACCEPTING = {'q0', 'q1'}
+      TRANSITIONS = {
+          ('q0', 'a', '#'): ('q0', '#A'),
+          ('q0', 'a', 'A'): ('q0', 'AA'),
+          ('q0', 'b', 'A'): ('q1', ''),
+          ('q1', 'b', 'A'): ('q1', ''),
+      }
+      ```
+
+    ruby:
+      prompt: |
+        Schreib in `anbn.rb` die Übergänge und die akzeptierenden Zustände eines
+        Kellerautomaten, der genau die Wörter a<sup>n</sup>b<sup>n</sup> annimmt:
+        `''`, `'ab'`, `'aabb'`, `'aaabbb'` und so weiter, aber nicht `'aab'`,
+        `'abab'` oder `'ba'`. `accepts` bleibt, wie es ist.
+      check:
+        type: ruby
+        file: kellerautomat/anbn.rb
+        cases:
+          - accepts(''): true
+          - accepts('ab'): true
+          - accepts('aabb'): true
+          - accepts('a' * 20 + 'b' * 20): true
+          - call: accepts('aab')
+            expect: false
+            say: Am Ende liegt noch ein `A` auf dem Stack, ein a hat kein b bekommen.
+          - accepts('abb'): false
+          - call: accepts('abab')
+            expect: false
+            say: Nach dem ersten b darf kein a mehr kommen. Merk dir das mit einem zweiten Zustand.
+          - accepts('ba'): false
+          - accepts('a'): false
+      hint:
+        - |
+          Jedes a legt etwas auf den Stack, jedes b nimmt es wieder weg. Am Ende
+          muss der Stack wieder leer sein, also nur `#` darauf liegen. Probier es
+          für `aabb` und `aab` von Hand.
+        - |
+          Was verhindert `abab`? Sobald das erste b gelesen ist, darf kein a mehr
+          kommen. Dafür wechselt der Automat beim ersten b in einen zweiten Zustand
+          `q1`, in dem es für a keinen Übergang gibt.
+        - |
+          Ein Gerüst; zwei Ziele fehlen:
+
+          ```ruby
+          ACCEPTING = ['q0', 'q1']
+          TRANSITIONS = {
+              ['q0', 'a', '#'] => ['q0', '#A'],
+              ['q0', 'a', 'A'] => ...,
+              ['q0', 'b', 'A'] => ...,
+              ['q1', 'b', 'A'] => ['q1', ''],
+          }
+          ```
+      solution: |
+        ```ruby
+        ACCEPTING = ['q0', 'q1']
+        TRANSITIONS = {
+            ['q0', 'a', '#'] => ['q0', '#A'],
+            ['q0', 'a', 'A'] => ['q0', 'AA'],
+            ['q0', 'b', 'A'] => ['q1', ''],
+            ['q1', 'b', 'A'] => ['q1', ''],
+        }
+        ```
+
+  - id: schubfach
+    title: Vier Zustände, viele a
+    prompt: |
+      Ein endlicher Automat mit 4 Zuständen liest ein a nach dem anderen. Vor
+      dem ersten a ist er in seinem Startzustand. Nach wie vielen a ist sicher,
+      dass er in einem Zustand ist, in dem er vorher schon einmal war, egal wie
+      seine Übergänge aussehen?
+    check:
+      type: number
+      expect: 4
+    feedback:
+      - when: { equals: 5 }
+        say: Zähl den Startzustand mit. Nach 4 a hat er schon 5 Zustände durchlaufen, einen davon also doppelt.
+      - when: { equals: 3 }
+        say: Nach 3 a kann er noch in 4 verschiedenen Zuständen gewesen sein, jedem einmal.
+    solution: |
+      Nach 4 a war der Automat in 5 Zuständen, mit dem Startzustand. Er hat aber
+      nur 4, also war er in einem davon zweimal. Das ist das Schubfachprinzip:
+      5 Briefe in 4 Fächern, ein Fach bekommt zwei.
+
+  - id: welche-sprache
+    title: Wo reicht ein endlicher Automat?
+    prompt: |
+      Welche dieser Fragen über ein Wort aus a und b kann ein endlicher
+      Automat beantworten, ganz ohne Stack?
+    check:
+      type: choice
+      options:
+        - Steht darin eine gerade Anzahl von a?
+        - Steht darin erst eine Reihe a und dann gleich viele b?
+        - Ist es von vorn und von hinten gelesen gleich, wie abba?
+        - Stehen darin mehr a als b?
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Das ist a<sup>n</sup>b<sup>n</sup>. Der Automat müsste die a zählen, ohne Obergrenze.
+      - when: { picked: 2 }
+        say: Dafür müsste er sich die ganze erste Hälfte merken. Ein Kellerautomat, der in der Mitte raten darf, schafft das.
+      - when: { picked: 3 }
+        say: Er müsste mitzählen, wie viele a mehr als b er gesehen hat, und das können beliebig viele sein.
+    solution: |
+      Für »gerade viele a« reichen zwei Zustände: »bisher gerade« und »bisher
+      ungerade«. Die anderen Fragen brauchen ein Gedächtnis ohne feste Grenze.
+
+  - id: grammatik
+    title: Wo steckt ein Stack?
+    prompt: |
+      Ein Compiler prüft, ob in deinem Programm jedes `if` sein `end` hat (in
+      Ruby) oder jede Klammer ihr Gegenstück. Beschreib in ein paar Sätzen, warum
+      er dafür einen Stack braucht und was er darauf legt.
+    check:
+      type: reflection
+      min_words: 20
+    examples:
+      - |
+        Ein `if` kann in einem anderen `if` stehen, und so tief, wie man will.
+        Der Compiler legt bei jedem `if`, `def` oder `do` einen Eintrag auf den
+        Stack und nimmt bei jedem `end` den obersten wieder herunter. So weiß
+        er immer, welcher Block gerade zugeht, und am Ende muss der Stack leer
+        sein.
+      - |
+        Er muss sich merken, welche Klammern noch offen sind, und zwar in der
+        richtigen Reihenfolge, weil die zuletzt geöffnete als erste zugehen
+        muss. Ein Zähler reicht nicht, weil es verschiedene Sorten gibt. Auf den
+        Stack legt er jede öffnende Klammer.

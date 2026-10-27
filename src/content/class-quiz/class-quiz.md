@@ -5,6 +5,7 @@ kind: projekt
 duration: 2 Doppelstunden
 languages: [ruby, python]
 curriculum: "Sek I: Projektmanagement (Arbeiten und Kooperieren im Team); Oberstufe: Softwareprojekt (systematische Softwareentwicklung: Versionsverwaltung im Team)"
+requires: [git]
 reference: [git, gitlab]
 class_repo: group
 </div>

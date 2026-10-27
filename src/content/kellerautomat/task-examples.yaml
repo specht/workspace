@@ -1,0 +1,41 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: kellerautomat
+examples:
+  stack:
+    pass:
+      - files: { kellerautomat/brackets.py: loesung/brackets.py }
+    fail:
+      # Der Zähler aus count.py kennt nur runde Klammern
+      - files: { kellerautomat/brackets.py: stufen/count.py }
+      # Ein Zähler je Sorte hält ([)] für richtig
+      - files: { kellerautomat/brackets.py: { text: "def balanced(word):\n    for o, c in ['()', '[]', '{}']:\n        n = 0\n        for s in word:\n            n += (s == o) - (s == c)\n            if n < 0:\n                return False\n        if n != 0:\n            return False\n    return True\n" } }
+    ruby:
+      pass:
+        - files: { kellerautomat/brackets.rb: loesung/brackets.rb }
+      fail:
+        - files: { kellerautomat/brackets.rb: stufen/count.rb }
+        - files: { kellerautomat/brackets.rb: { text: "def balanced(word)\n  ['()', '[]', '{}'].all? do |pair|\n    n = 0\n    word.each_char.all? { |s| n += 1 if s == pair[0]; n -= 1 if s == pair[1]; n >= 0 } && n == 0\n  end\nend\n" } }
+  eckig:
+    pass:
+      - files: { kellerautomat/pda.py: loesung/pda.py }
+    fail:
+      - files: { kellerautomat/pda.py: stufen/pda.py }
+    ruby:
+      pass:
+        - files: { kellerautomat/pda.rb: loesung/pda.rb }
+      fail:
+        - files: { kellerautomat/pda.rb: stufen/pda.rb }
+  anbn:
+    pass:
+      - files: { kellerautomat/anbn.py: loesung/anbn.py }
+    fail:
+      - files: { kellerautomat/anbn.py: stufen/anbn.py }
+      # Ohne zweiten Zustand nimmt der Automat auch abab an
+      - files: { kellerautomat/anbn.py: { text: "# Ein Kellerautomat für a^n b^n: erst n-mal a, dann genauso oft b, also\n# '', 'ab', 'aabb', 'aaabbb' und so weiter. Ganz unten im Stack liegt #.\nSTART = 'q0'\nACCEPTING = {'q0', 'q1'}\n# (Zustand, gelesenes Zeichen, oberstes Zeichen des Stacks)\n#   -> (neuer Zustand, was an dessen Stelle auf den Stack kommt)\n# Der Stack wird von unten nach oben geschrieben: '#(' heißt, # bleibt\n# liegen und ( kommt oben drauf; '' heißt, das oberste Zeichen ist weg.\nTRANSITIONS = {\n    ('q0', 'a', '#'): ('q0', '#A'),\n    ('q0', 'a', 'A'): ('q0', 'AA'),\n    ('q0', 'b', 'A'): ('q0', ''),\n    ('q1', 'b', 'A'): ('q1', ''),\n}\n\n\ndef accepts(word, trace=False):\n    state = START\n    stack = ['#']\n    if trace:\n        print(f'      {state}  {\"\".join(stack)}')\n    for symbol in word:\n        top = stack.pop()\n        move = TRANSITIONS.get((state, symbol, top))\n        # kein Übergang: der Fehlerzustand, das Wort ist abgelehnt\n        if move is None:\n            return False\n        state, push = move\n        stack.extend(push)\n        if trace:\n            print(f'{symbol:<5} {state}  {\"\".join(stack)}')\n    return state in ACCEPTING and stack == ['#']\n\n\naccepts('aabb', trace=True)\nfor word in ['ab', 'aabb', 'aab', 'abab', 'ba', '']:\n    print(repr(word), accepts(word))\n" } }
+    ruby:
+      pass:
+        - files: { kellerautomat/anbn.rb: loesung/anbn.rb }
+      fail:
+        - files: { kellerautomat/anbn.rb: stufen/anbn.rb }

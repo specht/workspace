@@ -228,7 +228,7 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
       });
     });
     await teacher.reload();
-    await expect(teacher.locator('.class-server-load')).toBeVisible({ timeout: 20_000 });
+    await expect(teacher.locator('.class-server-line')).toBeVisible({ timeout: 20_000 });
     await expect(teacher.locator('.class-people-table tr.class-ws-active')).toHaveCount(tags.filter((_, i) => LOADS[i % LOADS.length][0] >= 1).length, { timeout: 15_000 });
     await teacher.waitForTimeout(1500);
     await dress(teacher, 0.78);

@@ -1,0 +1,442 @@
+# Aufgaben zu »Grammatiken«, in Python und in Ruby (unter ruby:).
+# Format: docs/aufgaben.md. Alles liegt in /workspace/grammatiken.
+format: 1
+activity: grammatiken
+tasks:
+  - id: saetze
+    title: Wie viele Sätze?
+    prompt: |
+      Wie viele verschiedene Sätze lassen sich mit der Grammatik oben ableiten,
+      `sentence` als Startsymbol?
+    check:
+      type: number
+      expect: 12
+    feedback:
+      - when: { equals: 7 }
+        say: Du hast die Möglichkeiten zusammengezählt. Zu jedem Subjekt passt aber jedes Verb, und zu jedem dieser Paare jedes Objekt.
+      - when: { equals: 8 }
+        say: Zähl die Objekte noch einmal; es sind drei.
+      - when: { equals: 3 }
+        say: Das sind die Nichtterminale unter dem Startsymbol. Gefragt ist, wie viele Sätze herauskommen können.
+    solution: |
+      2 Subjekte, 2 Verben und 3 Objekte, jedes mit jedem: 2 · 2 · 3 = 12.
+      »Bello findet Bello« zählt mit, die Grammatik verbietet es nicht.
+
+  - id: diagramm-lesen
+    title: Ein Diagramm lesen
+    prompt: |
+      Welches dieser Wörter beschreibt das Syntaxdiagramm `decimal` **nicht**?
+    check:
+      type: choice
+      options:
+        - "-0,5"
+        - "3,"
+        - "007"
+        - "12,25"
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Fahr die Linien nach. Erst durch das `-`, dann ein `digit`, dann der Weg durch das `,` und wieder ein `digit`. Das geht.
+      - when: { picked: 2 }
+        say: Nach dem ersten `digit` geht es unten zurück, so oft du willst, und am Komma oben vorbei. Dass eine Zahl nicht mit 0 anfangen soll, steht nicht im Diagramm.
+      - when: { picked: 3 }
+        say: Zwei Ziffern über den Weg zurück, dann das Komma, dann wieder zwei Ziffern. Das geht.
+    solution: |
+      Nach dem `,` kommt im Diagramm ein `digit`, und daran führt kein Weg
+      vorbei: Wer das Komma nimmt, braucht danach mindestens eine Ziffer. `3,`
+      hat keine. `007` ist erlaubt: Das Diagramm legt nur die Form fest, nicht,
+      ob man so eine Zahl schreiben würde.
+
+  - id: diagramm-ebnf
+    title: Vom Diagramm zur Regel
+    prompt: |
+      Welche Regel in EBNF beschreibt genau das Syntaxdiagramm `list`, also
+      genau dieselben Wörter?
+    check:
+      type: choice
+      options:
+        - '`list = "<" [ number { ";" number } ] ">"`'
+        - '`list = "<" number { ";" number } ">"`'
+        - '`list = "<" { number ";" } ">"`'
+        - '`list = "<" [ number ] { ";" number } ">"`'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Im Diagramm führt über den Zahlen ein Weg vorbei, direkt von `<` zu `>`. Nach dieser Regel gibt es `<>` nicht.
+      - when: { picked: 2 }
+        say: Nach dieser Regel steht hinter jeder Zahl ein `;`, auch hinter der letzten, wie in `<1;2;>`. Im Diagramm steht das `;` auf dem Weg zurück, also nur zwischen zwei Zahlen.
+      - when: { picked: 3 }
+        say: Nach dieser Regel geht auch `<;5>`, ohne Zahl vor dem ersten `;`. Im Diagramm kommt man zum `;` nur über eine Zahl.
+    solution: |
+      Der Weg oben herum ist `[ … ]`, einmal oder keinmal. Darin kommt `number`
+      einmal und dann der Weg zurück durch `;`, so oft man will: `number { ";"
+      number }`, die Form, die Wirth als Schleife zeichnete.
+
+  - id: tiefe
+    title: Wie tief geht es?
+    prediction: true
+    prompt: |
+      Wie viele Aufrufe von `brackets` sind bei `accepts('((()))')` höchstens
+      gleichzeitig offen, also angefangen und noch nicht zurückgekehrt?
+    check:
+      type: number
+      expect: 4
+    feedback:
+      - when: { equals: 3 }
+        say: Für jede `(` ruft `brackets` sich einmal auf. Dazu kommt der erste Aufruf, der aus `accepts`; er wartet auch.
+      - when: { equals: 6 }
+        say: Die `)` rufen nichts auf. Ein Aufruf kommt bei seiner `)` gerade zurück.
+      - when: { equals: 1 }
+        say: Nach jeder `(` ruft `brackets` sich selbst auf, bevor der Aufruf davor fertig ist.
+    solution: |
+      Der erste Aufruf kommt aus `accepts`, und jede der drei `(` startet einen
+      weiteren, bevor der davor fertig ist: 4. Bei der ersten `)` sind alle vier
+      offen.
+
+  - id: number
+    title: Zahlen nach ihrer Regel
+    prompt: |
+      Schreib in `number.py` die Funktionen `digit(word, i)` und
+      `number(word, i)` nach den Regeln `digit = "0" | "1" | … | "9"` und
+      `number = digit { digit }`. Beide lesen ab dem Index `i` und geben den
+      Index hinter dem Gelesenen zurück, oder `None`, wenn dort keine Ziffer
+      steht. Die Prüfung ruft sie mit eigenen Wörtern auf.
+    check:
+      type: python
+      file: grammatiken/number.py
+      cases:
+        - digit('7', 0): 1
+        - call: digit('x', 0)
+          expect: ~
+          say: Ein `x` ist keine Ziffer; dann gibt `digit` `None` zurück.
+        - call: digit('', 0)
+          expect: ~
+          say: Am Ende des Worts steht kein Zeichen mehr. `peek` gibt dort `''` zurück.
+        - number('123', 0): 3
+        - call: number('12a', 0)
+          expect: 2
+          say: '`number` liest nur, solange Ziffern kommen. Vor dem `a` hört es auf und gibt dessen Index zurück.'
+        - call: number('a1', 0)
+          expect: ~
+          say: Am Index 0 steht keine Ziffer, also fängt dort keine Zahl an.
+        - call: number('x42', 1)
+          expect: 3
+          say: '`number` fängt beim Index `i` an, nicht bei 0.'
+        - number('', 0): ~
+        - number('2026', 0): 4
+    hint:
+      - |
+        Geh `12a` von Hand durch, ab dem Index 0: Wo steht die erste Ziffer,
+        wo die letzte? Welchen Index soll `number` zurückgeben?
+      - |
+        `digit` fragt `peek` nach dem Zeichen und gibt `i + 1` zurück, wenn es
+        zwischen `'0'` und `'9'` liegt. `number` ruft `digit` einmal auf und
+        dann in einer Schleife, solange die nächste Ziffer kommt.
+    solution: |
+      ```python
+      def digit(word, i):
+          if not '0' <= peek(word, i) <= '9':
+              return None
+          return i + 1
+
+
+      def number(word, i):
+          i = digit(word, i)
+          if i is None:
+              return None
+          while '0' <= peek(word, i) <= '9':
+              i = digit(word, i)
+          return i
+      ```
+
+    ruby:
+      prompt: |
+        Schreib in `number.rb` die Funktionen `digit(word, i)` und
+        `number(word, i)` nach den Regeln `digit = "0" | "1" | … | "9"` und
+        `number = digit { digit }`. Beide lesen ab dem Index `i` und geben den
+        Index hinter dem Gelesenen zurück, oder `nil`, wenn dort keine Ziffer
+        steht. Die Prüfung ruft sie mit eigenen Wörtern auf.
+      check:
+        type: ruby
+        file: grammatiken/number.rb
+        cases:
+          - digit('7', 0): 1
+          - call: digit('x', 0)
+            expect: ~
+            say: Ein `x` ist keine Ziffer; dann gibt `digit` `nil` zurück.
+          - call: digit('', 0)
+            expect: ~
+            say: Am Ende des Worts steht kein Zeichen mehr. `peek` gibt dort `''` zurück.
+          - number('123', 0): 3
+          - call: number('12a', 0)
+            expect: 2
+            say: '`number` liest nur, solange Ziffern kommen. Vor dem `a` hört es auf und gibt dessen Index zurück.'
+          - call: number('a1', 0)
+            expect: ~
+            say: Am Index 0 steht keine Ziffer, also fängt dort keine Zahl an.
+          - call: number('x42', 1)
+            expect: 3
+            say: '`number` fängt beim Index `i` an, nicht bei 0.'
+          - number('', 0): ~
+          - number('2026', 0): 4
+      hint:
+        - |
+          Geh `12a` von Hand durch, ab dem Index 0: Wo steht die erste Ziffer,
+          wo die letzte? Welchen Index soll `number` zurückgeben?
+        - |
+          `digit` fragt `peek` nach dem Zeichen und gibt `i + 1` zurück, wenn es
+          zwischen `'0'` und `'9'` liegt. `number` ruft `digit` einmal auf und
+          dann in einer Schleife, solange die nächste Ziffer kommt.
+      solution: |
+        ```ruby
+        def digit(word, i)
+            return nil unless peek(word, i).between?('0', '9')
+            i + 1
+        end
+
+        def number(word, i)
+            i = digit(word, i)
+            return nil if i.nil?
+            i = digit(word, i) while peek(word, i).between?('0', '9')
+            i
+        end
+        ```
+
+  - id: ausdruck
+    title: Ausdrücke prüfen
+    prompt: |
+      Schreib in `expression.py` die Funktionen `expression`, `term` und
+      `factor` nach den drei Regeln oben, jede mit `(word, i)` wie `number`,
+      und `accepts(word)`, die `True` zurückgibt, wenn `word` ein ganzer
+      Ausdruck ist. Die Prüfung ruft `accepts` mit eigenen Wörtern auf, ohne
+      Leerzeichen.
+    check:
+      type: python
+      file: grammatiken/expression.py
+      cases:
+        - accepts('2'): true
+        - accepts('2+3*4'): true
+        - accepts('(1+2)*3'): true
+        - accepts('12*(34+5)'): true
+        - call: accepts('((7))')
+          expect: true
+          say: In einer Klammer steht ein ganzer Ausdruck, und der kann wieder mit einer Klammer anfangen. `factor` ruft dafür `expression` auf.
+        - call: accepts('2+')
+          expect: false
+          say: Nach einem `+` muss ein Term kommen. Gibt `term` `None` zurück, passt der Ausdruck nicht.
+        - call: accepts('(1+2')
+          expect: false
+          say: Nach dem Ausdruck in der Klammer muss `factor` eine `)` finden.
+        - accepts('2*+3'): false
+        - call: accepts('')
+          expect: false
+          say: Ein Ausdruck hat mindestens eine Zahl.
+        - call: accepts('1+2)')
+          expect: false
+          say: '`expression` liest `1+2` und hört vor der `)` auf. `accepts` muss prüfen, ob das ganze Wort gelesen ist.'
+        - accepts('2(3)'): false
+        - accepts('()'): false
+        - call: factor('(5)', 0)
+          expect: 3
+          say: '`factor` liest die ganze Klammer, mit der `)`, und gibt den Index dahinter zurück.'
+        - term('2*3+4', 0): 3
+    hint:
+      - |
+        Geh `(1+2)*3` von Hand durch: `expression` ruft `term` auf, `term` ruft
+        `factor` auf. Was sieht `factor` als Erstes? Welche Funktion liest das
+        `1+2` in der Klammer?
+      - |
+        `expression` sieht aus wie `number`: einmal `term`, dann eine Schleife,
+        solange das nächste Zeichen ein `+` ist; in der Schleife `term` ab dem
+        Zeichen hinter dem `+`. `term` genauso mit `factor` und `*`. `factor`
+        fragt `peek`: Bei `(` liest es einen Ausdruck und danach die `)`, sonst
+        eine Zahl.
+      - |
+        Ein Gerüst für zwei der Funktionen:
+
+        ```python
+        def expression(word, i):
+            i = term(word, i)
+            while i is not None and peek(word, i) == '+':
+                i = …
+            return i
+
+
+        def factor(word, i):
+            if peek(word, i) != '(':
+                return …
+            i = expression(word, i + 1)
+            if i is None or peek(word, i) != ')':
+                return None
+            return …
+        ```
+    solution: |
+      ```python
+      def expression(word, i):
+          i = term(word, i)
+          while i is not None and peek(word, i) == '+':
+              i = term(word, i + 1)
+          return i
+
+
+      def term(word, i):
+          i = factor(word, i)
+          while i is not None and peek(word, i) == '*':
+              i = factor(word, i + 1)
+          return i
+
+
+      def factor(word, i):
+          if peek(word, i) != '(':
+              return number(word, i)
+          i = expression(word, i + 1)
+          if i is None or peek(word, i) != ')':
+              return None
+          return i + 1
+
+
+      def accepts(word):
+          return expression(word, 0) == len(word)
+      ```
+
+    ruby:
+      prompt: |
+        Schreib in `expression.rb` die Funktionen `expression`, `term` und
+        `factor` nach den drei Regeln oben, jede mit `(word, i)` wie `number`,
+        und `accepts(word)`, die `true` zurückgibt, wenn `word` ein ganzer
+        Ausdruck ist. Die Prüfung ruft `accepts` mit eigenen Wörtern auf, ohne
+        Leerzeichen.
+      check:
+        type: ruby
+        file: grammatiken/expression.rb
+        cases:
+          - accepts('2'): true
+          - accepts('2+3*4'): true
+          - accepts('(1+2)*3'): true
+          - accepts('12*(34+5)'): true
+          - call: accepts('((7))')
+            expect: true
+            say: In einer Klammer steht ein ganzer Ausdruck, und der kann wieder mit einer Klammer anfangen. `factor` ruft dafür `expression` auf.
+          - call: accepts('2+')
+            expect: false
+            say: Nach einem `+` muss ein Term kommen. Gibt `term` `nil` zurück, passt der Ausdruck nicht.
+          - call: accepts('(1+2')
+            expect: false
+            say: Nach dem Ausdruck in der Klammer muss `factor` eine `)` finden.
+          - accepts('2*+3'): false
+          - call: accepts('')
+            expect: false
+            say: Ein Ausdruck hat mindestens eine Zahl.
+          - call: accepts('1+2)')
+            expect: false
+            say: '`expression` liest `1+2` und hört vor der `)` auf. `accepts` muss prüfen, ob das ganze Wort gelesen ist.'
+          - accepts('2(3)'): false
+          - accepts('()'): false
+          - call: factor('(5)', 0)
+            expect: 3
+            say: '`factor` liest die ganze Klammer, mit der `)`, und gibt den Index dahinter zurück.'
+          - term('2*3+4', 0): 3
+      hint:
+        - |
+          Geh `(1+2)*3` von Hand durch: `expression` ruft `term` auf, `term` ruft
+          `factor` auf. Was sieht `factor` als Erstes? Welche Funktion liest das
+          `1+2` in der Klammer?
+        - |
+          `expression` sieht aus wie `number`: einmal `term`, dann eine Schleife,
+          solange das nächste Zeichen ein `+` ist; in der Schleife `term` ab dem
+          Zeichen hinter dem `+`. `term` genauso mit `factor` und `*`. `factor`
+          fragt `peek`: Bei `(` liest es einen Ausdruck und danach die `)`, sonst
+          eine Zahl.
+        - |
+          Ein Gerüst für zwei der Funktionen:
+
+          ```ruby
+          def expression(word, i)
+              i = term(word, i)
+              while !i.nil? && peek(word, i) == '+'
+                  i = …
+              end
+              i
+          end
+
+          def factor(word, i)
+              return … unless peek(word, i) == '('
+              i = expression(word, i + 1)
+              return nil if i.nil? || peek(word, i) != ')'
+              …
+          end
+          ```
+      solution: |
+        ```ruby
+        def expression(word, i)
+            i = term(word, i)
+            while !i.nil? && peek(word, i) == '+'
+                i = term(word, i + 1)
+            end
+            i
+        end
+
+        def term(word, i)
+            i = factor(word, i)
+            while !i.nil? && peek(word, i) == '*'
+                i = factor(word, i + 1)
+            end
+            i
+        end
+
+        def factor(word, i)
+            return number(word, i) unless peek(word, i) == '('
+            i = expression(word, i + 1)
+            return nil if i.nil? || peek(word, i) != ')'
+            i + 1
+        end
+
+        def accepts(word)
+            expression(word, 0) == word.length
+        end
+        ```
+
+  - id: baeume
+    title: Wie viele Bäume?
+    prediction: true
+    prompt: |
+      Wie viele verschiedene Syntaxbäume hat `2+3*4` nach dieser kürzeren
+      Grammatik, mit `expression` als Startsymbol?
+    check:
+      type: number
+      expect: 2
+    feedback:
+      - when: { equals: 1 }
+        say: Fang oben an. `expression` kann zu `expression "+" expression` werden, aber auch zu `expression "*" expression`. Geht es mit beiden weiter bis `2+3*4`?
+      - when: { equals: 3 }
+        say: Fang oben an. Das oberste Rechenzeichen ist entweder das `+` oder das `*`; danach liegt der Rest fest.
+    solution: |
+      Zwei: Oben steht entweder das `+`, mit `3*4` als rechtem Teil, oder das
+      `*`, mit `2+3` als linkem Teil. Nur der erste Baum rechnet Punkt vor
+      Strich.
+
+  - id: welcher-typ
+    title: Wo endet regulär?
+    prompt: |
+      Die Grammatik der Ausdrücke besteht aus fünf Regeln. Wegen welcher Regel
+      erkennt kein endlicher Automat ihre Sprache?
+    check:
+      type: choice
+      options:
+        - '`number = digit { digit }`'
+        - '`term = factor { "*" factor }`'
+        - '`factor = number | "(" expression ")"`'
+        - '`expression = term { "+" term }`'
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Eine Reihe von Ziffern prüft ein endlicher Automat mit zwei Zuständen.
+      - when: { picked: 1 }
+        say: '`{ … }` ist eine Schleife, und eine Schleife schafft ein endlicher Automat mit einem Pfeil zurück.'
+      - when: { picked: 3 }
+        say: '`{ … }` ist eine Schleife, und eine Schleife schafft ein endlicher Automat mit einem Pfeil zurück.'
+    solution: |
+      `factor` enthält `expression` zwischen zwei Klammern, und `expression`
+      führt über `term` wieder zu `factor`: Die Regel enthält sich selbst
+      mittendrin. Dafür muss man mitzählen, wie viele Klammern offen sind, ohne
+      Grenze, und das kann nur ein Automat mit Stack.

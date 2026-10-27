@@ -35,6 +35,13 @@ dem passenden Abschnitt:
     - meine-aktivitaet
 ```
 
+Danach stimmt das Bild der Wege auf `/lehrplan` nicht mehr: Es wird einmal in
+der Entwicklung berechnet und gespeichert. Berechne es auf dem Host mit
+`src/scripts/curriculum-graph.rb` neu (etwa 3 Minuten) und committe
+`src/ruby/include/curriculum-graph.json` mit. Dasselbe gilt, wenn eine
+Aktivität wegfällt oder ihr `requires:` sich ändert; `curriculum_graph_test.rb`
+schlägt fehl, solange das Bild veraltet ist.
+
 Nur eingetragene Seiten gibt es überhaupt. Soll ein ganzer Abschnitt
 vorübergehend nicht im Katalog stehen, aber erreichbar bleiben (etwa über
 einen Link im Profil), bekommt er `hidden: true`, statt auskommentiert zu
@@ -356,8 +363,16 @@ Ein Buch, das genau dort weitermacht, wo ein Abschnitt aufhört (Abrashs
 *Graphics Programming Black Book* nach den Texture Mappern, Sanglards
 *Game Engine Black Book* nach Wolfenstein 3D), bekommt einen Kasten wie ein
 Mensch, mit einem Buch-Icon statt eines Fotos: Titel, Autor, Jahr, zwei
-Sätze, was darin steht, und wo man es lesen kann. Ein Cover steht nicht
-darin, denn Cover sind nicht frei. Ein Aufsatz, mit dem etwas angefangen
+Sätze, was darin steht, und wo man es lesen kann. Ein Cover steht nur
+darin, wo es frei ist (das Buch unter CC0 oder CC BY…, mit dem Cover) oder
+der Verlag es zum Herunterladen anbietet, etwa im Pressebereich oder auf der
+Seite des Buchs; dann wird der Kasten `book with-cover`, das Cover
+(`<img class='book-cover' …>`, etwa 240 Pixel breit, mit Alt-Text) steht
+an der Stelle des Icons, darunter eine Zeile `<p class='book-credit'>Cover:
+Verlag (Quelle)</p>`, und ein Cover, das nicht frei ist, kommt mit
+`status: granted` und den Bedingungen in `picture-rights.yaml`; ohne
+Eintrag bleibt es weg und das Icon steht da (`picture_rights.rb`). Kein
+Cover aus einem Shop, von Google Books oder Open Library. Ein Aufsatz, mit dem etwas angefangen
 hat (Whitteds Raytracing von 1980), bekommt denselben Kasten mit
 `bi-file-earmark-text` statt `bi-book`: nur der historische Aufsatz, in dem
 das Verfahren des Abschnitts zum ersten Mal beschrieben ist, und nur, wo er
@@ -654,6 +669,7 @@ ruby test/task_card_test.rb      # jedes _task() hat eine Aufgabe
 ruby test/page_kinds_test.rb     # jede Handbuch-Seite in reference: gibt es
 ruby test/task_examples_test.rb  # jede Prüfung nimmt ihre Beispiele an und lehnt Gegenbeispiele ab
 ruby test/page_code_test.rb      # der Code auf der Seite steht in den Dateien der Rezepte
+ruby test/curriculum_graph_test.rb  # das Bild auf /lehrplan passt zu den Aktivitäten, requires: zeigt nie auf Ältere
 ```
 
 Dann im Entwicklungsmodus die Seite öffnen. Als Lehrkraft siehst du die

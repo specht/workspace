@@ -17,6 +17,50 @@ nächsten Update (`./config.rb restart ruby`). Aktivitäten verborgener
 Abschnitte stehen nicht darauf. Ein Name ohne Aktivität bleibt mit »Noch
 keine Aktivität im Workspace« stehen: Auch eine Lücke ist gut zu wissen.
 
+Über der Liste steht ein Bild der Wege durch die Aktivitäten
+(`src/ruby/include/curriculum_graph.rb`): jede Aktivität, die auf einer
+anderen aufbaut (`requires:`) oder auf der eine andere aufbaut, als Kasten in
+einer Farbe nach Alter (was nur die Pläne der Sek I nennen, was beide nennen,
+was nur die der Oberstufe nennen), mit einem Pfeil von dem, was zuerst
+kommt. Von links nach rechts nach der längsten Kette davor. Ein Pfeil über
+mehrere Spalten bekommt in jeder Spalte dazwischen eigenen Platz, damit er
+durch keinen Kasten läuft; wo nichts im Weg ist, läuft er dort auf einer
+Höhe. Pfeile verlassen einen Kasten an seiner rechten Seite und kommen an
+der linken an, mehrere nebeneinander in der Reihenfolge, in der sie
+weiterlaufen, damit sie sich nicht überdecken. Bänder nach Alter von oben nach unten haben die
+Kästen von ihren Nachbarn weggezogen, die Pfeile liefen lang und steil;
+darum die Farben. Nennt die Zeile beide Pläne, ist die Aktivität aber für
+die Jüngeren gedacht, sagt es ein Feld `age:` im Meta-Block (`Sek I`, `Sek I
+und Oberstufe` oder `Oberstufe`; die Katas zu Schleifen, Listen und
+Dictionaries). Eine Aktivität baut nie auf einer für Ältere auf:
+`curriculum_graph_test.rb` prüft es.
+
+Die Reihenfolge der Kästen in jeder Spalte wird einmal gesucht und
+gespeichert (`src/ruby/include/curriculum-graph.json`), der Server liest sie
+nur: Die Suche zählt sich kreuzende Pfeile, wie weit und wie steil sie
+steigen und jede Stufe eines langen Pfeils von einer Höhe auf eine andere,
+und dauert etwa drei Minuten. Kommt eine Aktivität in den Katalog oder geht eine heraus, oder
+ändert sich bei einer `requires:`, dann auf dem Rechner der
+Entwicklung (nicht im Container, der `src` nur lesen darf):
+
+```bash
+src/scripts/curriculum-graph.rb
+```
+
+und die geänderte `curriculum-graph.json` mit committen.
+`src/ruby/test/curriculum_graph_test.rb` schlägt fehl, solange sie
+nicht passt; `src/scripts/curriculum-graph.rb --check` sagt es ohne zu
+suchen. Passt sie nicht, ordnet der Server die Kästen schnell und schlechter;
+die Entwicklungsseite sucht dann selbst kurz und behält das Ergebnis, bis
+sich wieder etwas ändert.
+
+Wählt eine
+Lehrkraft einen Namen der Pläne (über dem Bild, oder mit dem Knopf neben dem
+Namen in der Liste) oder klickt sie auf einen Kasten, bleibt hervorgehoben,
+was den Namen trägt, und jede Aktivität auf einem Weg dorthin; das Symbol im
+Kasten öffnet die Aktivität in einem neuen Tab. Aktivitäten ohne solche
+Verbindung stehen nicht im Bild, sondern darunter in einer Liste.
+
 ```yaml
 curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen: Wiederholung); Oberstufe: Algorithmen und Datenstrukturen"
 ```

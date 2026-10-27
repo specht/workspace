@@ -18,7 +18,7 @@ module PictureRights
     # under (the maintainer accepts NC too: the Workspace is non-commercial)
     FREE = /\b(?:CC0|CC[ -]BY|Creative Commons|gemeinfrei|public domain|GFDL|frei mit Namensnennung)\b/i
     # A caption is a credit when it says who made the picture
-    CREDIT = /\b(?:Foto|Fotos|Zeichnung|Bild|Gemälde|Grafik|Illustration)\s*:/
+    CREDIT = /\b(?:Foto|Fotos|Zeichnung|Bild|Gemälde|Grafik|Illustration|Cover)\s*:/
     STATES = {
         'open' => ['Offen', 'bi-envelope'],
         'asked' => ['Angefragt', 'bi-hourglass-split'],
@@ -49,7 +49,7 @@ module PictureRights
 
     # [{ file:, pages: [{ url:, title: }], credit:, credit_html:, box: }] for
     # every picture that needs permission, found in the Markdown files below
-    # root. box is :person or :figure.
+    # root. box is :person, :figure or :book.
     def self.scan(root = ROOT)
         found = {}
         Dir.glob(File.join(root, '**', '*.md')).sort.each do |md|
@@ -60,10 +60,14 @@ module PictureRights
             # its portraits in a div of their own)
             markdown.scan(%r{<div class='person(?: [a-z ]+)?'>.*?^</div>}m) { blocks << [:person, $~] }
             markdown.scan(%r{<figure>.*?</figure>}m) { blocks << [:figure, $~] }
+            # a book box with its cover (the credit in p.book-credit)
+            markdown.scan(%r{<div class='book(?: [a-z -]+)?'>.*?^</div>}m) { blocks << [:book, $~] }
             blocks.each do |box, match|
                 block = match[0]
                 credit_html = if box == :person
                     block[%r{<p class='person-credit'>(.*?)</p>}m, 1]
+                elsif box == :book
+                    block[%r{<p class='book-credit'>(.*?)</p>}m, 1]
                 else
                     caption = block[%r{<figcaption>(.*?)</figcaption>}m, 1]
                     caption if caption && text(caption) =~ CREDIT
@@ -74,7 +78,7 @@ module PictureRights
                 next if credit && credit =~ FREE
                 next if credit.nil? && box == :figure
 
-                block.scan(/<img src='([^']+)'/).flatten.each do |src|
+                block.scan(/<img [^>]*?src='([^']+)'/).flatten.each do |src|
                     next if src.start_with?('/', 'http')
 
                     file = File.join(File.dirname(md.delete_prefix("#{root}/")), src)
@@ -122,7 +126,14 @@ module PictureRights
             end
             figure = img.ancestors('figure').first
             box = img.ancestors('div.person').first
-            if box
+            book = img.ancestors('div.book').first
+            if book
+                # the book's icon again, as in a box without a cover
+                img.add_next_sibling("<i class='bi bi-book'></i>")
+                img.remove
+                book.css('p.book-credit').each(&:remove)
+                book['class'] = book['class'].to_s.sub(/\s*with-cover/, '')
+            elsif box
                 img.remove
                 box.css('div.portraits').each { |d| d.remove if d.css('img').empty? }
                 box.css('p.person-credit').each(&:remove) if box.css('img').empty?

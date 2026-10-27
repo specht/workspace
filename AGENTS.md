@@ -77,6 +77,11 @@ often:
   goes after it (`<!-- after: id -->`). Students write small functions first
   (»Jetzt bist du dran«), with tips in steps; try boxes say what to watch for.
 - Activities of a hidden section are never named or linked outside it.
+- The /lehrplan graph is laid out once in development and stored: whenever an
+  activity is added, removed or renamed, its `requires:` changes or
+  `sections.yaml` changes, run `src/scripts/curriculum-graph.rb` on the host
+  (about 3 minutes, in the background) and commit
+  `src/ruby/include/curriculum-graph.json` with the change.
 
 ## Working on the code
 

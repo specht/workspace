@@ -1329,7 +1329,8 @@ _task(rueckgaengig)
 
 Mit diesem Wissen kannst du Git für deine eigenen Projekte nutzen. Zum Nachschlagen stehen diese Befehle und ein paar weitere im Handbuch unter [Git: Versionen verwalten](/reference/git). Wie du mit einem Git-Server wie GitLab, Gitea oder GitHub arbeitest, steht im Handbuch unter [Git-Server: Zugang und Veröffentlichen](/reference/gitlab).
 
-<div class='book'>
-<i class='bi bi-book'></i>
+<div class='book with-cover'>
+<img class='book-cover' src='cover-pro-git.webp' alt='Cover von »Pro Git«, zweite Auflage: der Titel in Orange auf Schwarz, darunter Scott Chacon und Ben Straub.'>
 <p><strong>Pro Git</strong>, Scott Chacon und Ben Straub, Apress, 2. Auflage 2014. Alles, was hier fehlt: Rebase, Git auf einem Server, die Arbeit mit GitHub und wie Git seine Commits intern speichert. Frei lesbar, auch auf Deutsch: <a href='https://git-scm.com/book/de/v2'>auf git-scm.com</a>.</p>
+<p class='book-credit'>Cover: Apress, CC BY-NC-SA 3.0 (<a href='https://github.com/progit/progit2'>progit2</a>)</p>
 </div>

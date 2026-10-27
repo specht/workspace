@@ -7,6 +7,7 @@ require_relative 'anaglyph_scene_lexer'
 require_relative 'minicpu_lexer'
 require_relative 'backrooms_room_lexer'
 require_relative 'pseudocode_lexer'
+require_relative 'ebnf_lexer'
 
 module CodeHighlight
     # From this many lines on, a code block is set a little smaller.
@@ -117,6 +118,11 @@ module CodeHighlight
             when 'uml'
                 lexer = Rouge::Lexers::UML.new
                 pre['class'] = [pre['class'], 'code-uml'].compact.join(' ')
+            when 'ebnf'
+                # Grammars (Rouge::Lexers::EBNF): nonterminals and terminals
+                # apart, as in the syntax diagrams
+                lexer = Rouge::Lexers::EBNF.new
+                pre['class'] = [pre['class'], 'code-ebnf'].compact.join(' ')
             when 'erlang'
                 lexer = Rouge::Lexers::Erlang.new
             when 'fortran'
@@ -175,6 +181,12 @@ module CodeHighlight
                 lexer = Rouge::Lexers::Smalltalk.new
             when 'sql'
                 lexer = Rouge::Lexers::SQL.new
+            when 'syntaxdiagramm', 'syntaxbaum'
+                # EBNF or a tree that syntax_diagram.js draws as a syntax
+                # diagram or a syntax tree; without JavaScript the text stays,
+                # a grammar highlighted like ```ebnf.
+                lexer = language == 'syntaxdiagramm' ? Rouge::Lexers::EBNF.new : Rouge::Lexers::PlainText.new
+                pre['class'] = [pre['class'], "code-#{language}", ('code-ebnf' if language == 'syntaxdiagramm')].compact.join(' ')
             when 'svelte'
                 lexer = Rouge::Lexers::Svelte.new
             when 'tex'

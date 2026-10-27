@@ -1,6 +1,6 @@
 <div class='meta'>
-image: teaser.webp
-image_alt: "Pinguine in einem Diagramm, nach rechts die Länge des Schnabels, nach oben seine Höhe, in drei Farben für Adélie-, Zügel- und Eselspinguine. In der Mitte ein Kreis mit einem Fragezeichen, von dem Linien zu den fünf nächsten Pinguinen gehen: drei Zügelpinguine und zwei Eselspinguine."
+image: karte.webp
+image_alt: "Der Süden einer ausgedachten Stadt mit einem Fluss, darunter der Stadtteil Sandberg. Punkte für Kundinnen und Kunden, orange mit Kaution, blau ohne; am Sandberg sind die meisten orange. In der Mitte ein neuer Kunde mit einem Fragezeichen, von dem Linien zu seinen fünf nächsten Nachbarn gehen, drei davon orange."
 kind: projekt
 duration: 2 Doppelstunden
 languages: [ruby, python]

@@ -15,6 +15,7 @@ require './include/stage_code.rb'
 require './include/person_sources.rb'
 require './include/picture_rights.rb'
 require './include/curriculum_overview.rb'
+require './include/curriculum_graph.rb'
 require './include/task_store.rb'
 require './include/class_board.rb'
 require './include/meeting_point.rb'
@@ -2154,6 +2155,11 @@ class Main < Sinatra::Base
                     # line of the curriculum teachers see on the overview.
                     :idea => page_meta['idea'],
                     :curriculum => page_meta['curriculum'],
+                    # whom the activity is for, where its curriculum line
+                    # names both plans but it is meant for the younger
+                    # (CurriculumGraph.age_of): Sek I, Sek I und Oberstufe,
+                    # Oberstufe
+                    :age => page_meta['age'],
                     # its icon in the strip: bi-braces, or a picture (/images/…)
                     :icon => page_meta['icon'].to_s[%r{\A(bi-[a-z0-9-]+|/images/[\w/.-]+\.(png|webp|svg))\z}],
                 }

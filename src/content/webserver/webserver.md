@@ -1526,6 +1526,8 @@ _task(abgabe)
 
 Dein Server antwortet nur, wenn der Browser fragt. Soll er von sich aus etwas schicken, zum Beispiel, wenn jemand anderes etwas getan hat, braucht es eine Verbindung, die offen bleibt. Darum geht es in der [Pixelwand](/pixelwand): Die ganze Klasse malt gleichzeitig an einem Bild, und jeder sieht sofort, was die anderen malen.
 
+Was ein Server über jeden erfährt, der ihn aufruft, und wie Tracker daraus über viele Seiten hinweg ein Profil bauen, zeigt [Was eine Webseite über dich erfährt](/tracking); dort wird dein Server zum Tracker.
+
 Große Webserver wie nginx und Bibliotheken wie Sinatra für Ruby oder Flask für Python machen dasselbe wie deiner, nur mit vielen Fällen mehr: viele Verbindungen gleichzeitig, verschlüsselt mit HTTPS, mit Caching und Schutz gegen Angriffe.
 
 <!-- tutorial-screenshot

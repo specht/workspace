@@ -14,6 +14,7 @@
 
 # Katas (docs/plan-katas.md): small exercises typed into the cards of the
 # page.
+
 - key: katas
   label: Katas
   icon: /images/martial-arts-uniform.png
@@ -38,6 +39,7 @@
     - kata-search
     - pip-3
     - kata-tests
+
 - key: graphics
   compact: true
   label: Grafik
@@ -98,9 +100,40 @@
     - static-website
     - svelte
     - wetter
-    - .hugo
-    - .suchmaschine
-    - .tracking
+    - hugo
+    - suchmaschine
+    - tracking
+
+- key: ki
+  label: Künstliche Intelligenz
+  icon: /images/brain.png
+  description: |
+    Wie lernt ein Programm aus Beispielen? Du baust ein winziges
+    Sprachmodell, ein Neuron, das selbst lernt, und ein Programm, das nach
+    den nächsten Nachbarn entscheidet, ohne Bibliotheken, Funktion für
+    Funktion. Dabei siehst du, was diese Verfahren können, und was sie aus
+    ihren Daten übernehmen.
+  entries:
+    - sprachmodell
+    - perzeptron
+    - naechste-nachbarn
+
+- key: compression
+  compact: true
+  label: Bilder und Kompression
+  icon: /images/clamp.png
+  description: |
+    Daten kleiner machen, ohne etwas zu verlieren: Lauflängen, Huffman-Codes
+    und LZW, jedes Verfahren selbst geschrieben. Danach Decoder in C für GIF
+    und JPEG, die echte Bilddateien Byte für Byte lesen und zeigen, und
+    Botschaften, die in den Pixeln eines Fotos verschwinden.
+  entries:
+    - rle
+    - huffman
+    - lzw
+    - gif
+    - jpeg
+    - steganography
 
 - key: networks
   compact: true
@@ -137,6 +170,30 @@
 
 # Software entwerfen (docs/plan-lehrplan-luecken.md): Klassen und ihre
 # Diagramme; später Testen, Zusammenarbeit mit Git, ein Softwareprojekt.
+
+- key: computing
+  compact: true
+  label: Wie Computer rechnen
+  icon: /images/computer.png
+  description: |
+    Ein Blick unter die Haube: eine kleine CPU programmieren, Sortierverfahren
+    und Datenstrukturen selbst bauen, Automaten vom endlichen bis zur
+    Turingmaschine, Grammatiken und ein Rechner, der Ausdrücke versteht, und
+    ein Routenplaner, der in echten Karten von Berlin den kürzesten Weg findet.
+  entries:
+    - sandbox-cpu
+    - sandbox-sortieren
+    - sandbox-datenstrukturen
+    - automata
+    - kellerautomat
+    - turingmaschine
+    - grammatiken
+    - calculator
+    - routenplaner
+
+# docs/plan-lehrplan-luecken.md, »The KI section«: three cards, dev-only
+# until all three exist
+
 - key: software
   label: Software entwerfen
   icon: /images/hammer-and-wrench.png
@@ -149,56 +206,6 @@
     - check-digits
     - supermarkt
     - class-quiz
-
-- key: computing
-  compact: true
-  label: Wie Computer rechnen
-  icon: /images/computer.png
-  description: |
-    Ein Blick unter die Haube: eine kleine CPU programmieren, Sortierverfahren
-    und Datenstrukturen selbst bauen, endliche Automaten, ein Rechner, der
-    Ausdrücke versteht, und ein Routenplaner, der in echten Karten von Berlin
-    den kürzesten Weg findet.
-  entries:
-    - sandbox-cpu
-    - sandbox-sortieren
-    - sandbox-datenstrukturen
-    - automata
-    - calculator
-    - routenplaner
-
-# docs/plan-lehrplan-luecken.md, »The KI section«: three cards, dev-only
-# until all three exist
-- key: ki
-  label: Künstliche Intelligenz
-  icon: /images/brain.png
-  description: |
-    Wie lernt ein Programm aus Beispielen? Du baust ein winziges
-    Sprachmodell, ein Neuron, das selbst lernt, und ein Programm, das nach
-    den nächsten Nachbarn entscheidet, ohne Bibliotheken, Funktion für
-    Funktion. Dabei siehst du, was diese Verfahren können, und was sie aus
-    ihren Daten übernehmen.
-  entries:
-    - sprachmodell
-    - perzeptron
-    - naechste-nachbarn
-
-- key: compression
-  compact: true
-  label: Bilder und Kompression
-  icon: /images/clamp.png
-  description: |
-    Daten kleiner machen, ohne etwas zu verlieren: Lauflängen, Huffman-Codes
-    und LZW, jedes Verfahren selbst geschrieben. Danach Decoder in C für GIF
-    und JPEG, die echte Bilddateien Byte für Byte lesen und zeigen, und
-    Botschaften, die in den Pixeln eines Fotos verschwinden.
-  entries:
-    - rle
-    - huffman
-    - lzw
-    - gif
-    - jpeg
-    - steganography
 
 - key: terminal
   label: Terminal & Git
@@ -216,6 +223,7 @@
 # Parked for now, so that the sections above fill rows of three (and the
 # programming languages rows of four): not in the catalog, but the pages stay
 # reachable by direct links (static-website links to Hugo).
+
 - key: parked
   hidden: true
   label: Zurückgestellt
@@ -228,6 +236,7 @@
 
 # Hidden: not in the catalog and not pinnable; the pages are found by their
 # address (the Backrooms, level-0-…: by typing noclip on the 404 page).
+
 - key: hidden
   hidden: true
   label: Verborgen

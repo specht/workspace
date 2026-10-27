@@ -668,6 +668,52 @@ shannon:
       - url: https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf
         quote: "We see from this that the inefficiency in coding, when only a finite delay of N symbols is used, need not be greater than 1/N plus the difference between the true entropy H and the entropy G_N calculated for sequences of length N."
 
+chomsky:
+  - text: Noam Chomsky (geboren 1928), amerikanischer Sprachwissenschaftler am MIT.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Noam_Chomsky
+        quote: "Avram Noam Chomsky (born December 7, 1928) is an American intellectual, philosopher, linguist … He is a laureate professor of linguistics at the University of Arizona and an institute professor emeritus at the Massachusetts Institute of Technology (MIT)."
+  - text: Er beschrieb Sprachen durch Regeln, die alle ihre Sätze erzeugen, durch Grammatiken, und machte das 1957 mit seinem Buch Syntactic Structures bekannt.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Noam_Chomsky
+        quote: "in 1957 emerged as a significant figure in linguistics with his landmark work Syntactic Structures, which played a major role in remodeling the study of language. … He created or co-created the universal grammar theory, the generative grammar theory, the Chomsky hierarchy"
+      - url: https://en.wikipedia.org/wiki/Chomsky_hierarchy
+        quote: "A formal grammar describes how to form strings from a formal language's alphabet that are valid according to the language's syntax."
+  - text: 1956 ordnete er Grammatiken danach, was ihre Regeln dürfen; die Ordnung heißt heute Chomsky-Hierarchie.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Chomsky_hierarchy#History
+        quote: "The general idea of a hierarchy of grammars was first described by Noam Chomsky in \"Three models for the description of language\" during the formalization of transformational-generative grammar (TGG)."
+      - url: https://doi.org/10.1109/TIT.1956.1056813
+        quote: "Three models for the description of language. N. Chomsky. IRE Transactions on Information Theory, 1956 (Crossref: issued 1956-09)"
+  - text: Die Syntax von Programmiersprachen beschreibt man seit ALGOL 60 mit kontextfreien Grammatiken, ihrer Stufe 2.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Context-free_grammar
+        quote: "In an early application, grammars are used to describe the structure of programming languages. … Block structure was introduced into computer programming languages by the Algol project (1957–1960), which, as a consequence, also featured a context-free grammar to describe the resulting Algol syntax."
+      - url: https://en.wikipedia.org/wiki/Chomsky_hierarchy
+        quote: "Type-2 grammars generate the context-free languages."
+
+naur:
+  - text: Peter Naur (1928–2016), dänischer Informatiker, zuerst Astronom.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Peter_Naur
+        quote: "Peter Naur (25 October 1928 – 3 January 2016) was a Danish computer science pioneer and 2005 Turing Award winner. … He began his career as an astronomer for which he received his Doctor of Philosophy (Ph.D.) degree in 1957, but his encounter with computers led to a change of profession."
+  - text: 1960 gab er den Bericht über die Programmiersprache ALGOL 60 heraus und legte darin die ganze Sprache mit der Schreibweise von John Backus fest, die seitdem Backus-Naur-Form heißt.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Peter_Naur
+        quote: "his role as editor of the influential Report on the Algorithmic Language ALGOL 60 with its pioneering use of BNF was recognized. … He is best remembered as a contributor, with John Backus, to the Backus–Naur form (BNF) notation used in describing the syntax for most programming languages."
+      - url: https://www.masswerk.at/algol60/report.htm
+        quote: "Revised Report on the Algorithmic Language Algol 60 … [originally] Edited by Peter Naur"
+      - url: https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form
+        quote: "John Backus, a programming language designer at IBM, proposed a metalanguage of metalinguistic formulas to define the syntax of the new programming language IAL, known today as ALGOL 58, in 1959. This notation was formalized in the ALGOL 60 report"
+  - text: Dafür bekam er 2005 den Turing Award.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Peter_Naur
+        quote: "Naur won the 2005 Association for Computing Machinery (ACM) A.M. Turing Award for his work on defining the programming language ALGOL 60."
+  - text: Das Wort »computer science« mochte er nicht und schlug »datalogi« vor; in Dänemark und Schweden heißt die Informatik bis heute so.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Peter_Naur
+        quote: "Naur disliked the term computer science and suggested it be called datalogy or data science. The former term has been adopted in Denmark and Sweden as datalogi"
+
 bauer-samelson:
   - text: Friedrich L. Bauer (1924–2015, im Bild) und Klaus Samelson (1918–1980), Mathematiker in München
     sources:

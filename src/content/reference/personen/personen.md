@@ -311,6 +311,30 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <!-- /part -->
 
 <!-- year: 1928 -->
+<!-- part: chomsky -->
+### Noam Chomsky
+
+<div class='person'>
+<img src='chomsky.webp' alt='Schwarzweißporträt des jungen Noam Chomsky: ein Mann mit kurzem Haar und runder Brille, in Jackett und dunkler Krawatte, leicht zur Seite blickend.'>
+<p><strong>Noam Chomsky</strong> (geboren 1928), amerikanischer Sprachwissenschaftler am MIT. Er beschrieb Sprachen durch Regeln, die alle ihre Sätze erzeugen, durch Grammatiken, und machte das 1957 mit seinem Buch <em>Syntactic Structures</em> bekannt.</p>
+<p>1956 ordnete er Grammatiken danach, was ihre Regeln dürfen; die Ordnung heißt heute Chomsky-Hierarchie. Die Syntax von Programmiersprachen beschreibt man seit ALGOL 60 mit kontextfreien Grammatiken, ihrer Stufe 2.</p>
+<p class='person-credit'>Foto: unbekannt, 1961, aus The Technology Review, MIT Museum, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Portrait_of_Noam_Chomsky_used_in_the_April_1961_issue_of_The_Technology_Review.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1928 -->
+<!-- part: naur -->
+### Peter Naur
+
+<div class='person'>
+<img src='naur.webp' alt='Peter Naur 2008: ein älterer Mann mit weißem Haar, weißem Bart und Brille, im grünen Pullover, spricht in ein Mikrofon.'>
+<p><strong>Peter Naur</strong> (1928–2016), dänischer Informatiker, zuerst Astronom. 1960 gab er den Bericht über die Programmiersprache ALGOL 60 heraus und legte darin die ganze Sprache mit der Schreibweise von John Backus fest, die seitdem Backus-Naur-Form heißt. Dafür bekam er 2005 den Turing Award.</p>
+<p>Das Wort »computer science« mochte er nicht und schlug »datalogi« vor; in Dänemark und Schweden heißt die Informatik bis heute so.</p>
+<p class='person-credit'>Foto: Eriktj, 2008, CC BY-SA 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Peternaur.JPG'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1928 -->
 <!-- part: rosenblatt -->
 ### Frank Rosenblatt
 

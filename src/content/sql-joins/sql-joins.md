@@ -4,6 +4,7 @@ image_alt: "Ein ER-Diagramm mit country in der Mitte und continent, city, curren
 kind: grundlagen
 duration: 2 Doppelstunden
 curriculum: "Sek I: Datenbanken (verknüpfte Tabellen); Oberstufe: Datenbanken (Abfragen: Projektion, Selektion, Join)"
+requires: [mysql]
 language: SQL
 reference: [sql, datensaetze]
 </div>

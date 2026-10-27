@@ -106,6 +106,46 @@ class PictureRightsTest < Minitest::Test
         end
     end
 
+    BOOKS = <<~MARKDOWN
+        # Ein Buch
+
+        <div class='book with-cover'>
+        <img class='book-cover' src='cover-frei.webp' alt='Cover von »Frei«'>
+        <p><strong>Frei</strong>, 2020.</p>
+        <p class='book-credit'>Cover: die Autorin, CC0</p>
+        </div>
+
+        <div class='book with-cover'>
+        <img class='book-cover' src='cover-verlag.webp' alt='Cover von »Verlag«'>
+        <p><strong>Verlag</strong>, 2018.</p>
+        <p class='book-credit'>Cover: Ein Verlag (<a href='https://example.org'>Downloads</a>)</p>
+        </div>
+    MARKDOWN
+
+    def test_a_publishers_cover_needs_permission_and_gives_way_to_the_icon
+        require 'nokogiri'
+        Dir.mktmpdir do |root|
+            FileUtils.mkdir_p(File.join(root, 'buch'))
+            md = File.join(root, 'buch', 'buch.md')
+            File.write(md, BOOKS)
+            found = PictureRights.scan(root)
+            assert_equal ['buch/cover-verlag.webp'], found.map { |p| p[:file] }
+            assert_equal 'Cover: Ein Verlag (Downloads)', found.first[:credit]
+            live = Nokogiri::HTML(BOOKS.lines.drop(2).join)
+            PictureRights.withhold(live, md, root: root)
+            boxes = live.css('div.book')
+            assert_equal ['cover-frei.webp'], live.css('img').map { |i| i['src'] }
+            assert_equal 'book', boxes[1]['class']
+            assert_equal 1, boxes[1].css('i.bi-book').size
+            assert_empty boxes[1].css('p.book-credit')
+            File.write(File.join(root, 'picture-rights.yaml'), "buch/cover-verlag.webp:\n  status: granted\n")
+            File.utime(Time.now + 5, Time.now + 5, File.join(root, 'picture-rights.yaml'))
+            granted = Nokogiri::HTML(BOOKS.lines.drop(2).join)
+            PictureRights.withhold(granted, md, root: root)
+            assert_equal 2, granted.css('img').size
+        end
+    end
+
     def test_pictures_without_permission_stay_off_the_page
         require 'nokogiri'
         with_content do |root|

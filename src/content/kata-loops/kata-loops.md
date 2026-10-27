@@ -5,6 +5,7 @@ duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Zählen, sammeln und suchen mit Schleifen
 curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen: Wiederholung); Oberstufe: Algorithmen und Datenstrukturen"
+age: Sek I
 requires: [kata-decisions]
 </div>
 

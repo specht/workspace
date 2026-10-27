@@ -674,8 +674,11 @@
             const frame = this.shift(original);
             this.world.style.setProperty('--step', (animate ? duration : 0) + 'ms');
             const pip = frame.pip;
-            this.near([this.at, [pip.x, pip.y]]);
+            // the Mampfers' tiles, where they stand and where they come from
+            const mampfers = (frame.mampfers || []).map((m) => [m[0], m[1]]);
+            this.near([this.at, [pip.x, pip.y]], (this.mampferAt || []).concat(mampfers));
             this.at = [pip.x, pip.y];
+            this.mampferAt = mampfers;
             this.pip.style.setProperty('--x', pip.x);
             this.pip.style.setProperty('--y', pip.y);
             this.lantern.style.setProperty('--x', pip.x);
@@ -744,11 +747,18 @@
 
         // Pip shines above the dark (.pip-bright); the nooks of the fields
         // Pip stands on or walks between go above Pip too, unlit by the
-        // light layer, as Pip's lantern lights them anyway.
-        near(tiles) {
+        // light layer, as Pip's lantern lights them anyway. So do those of
+        // the Mampfers' fields (it shines too), darkened by hand
+        // (.pip-shaded), as no lantern lights them.
+        near(tiles, dark) {
             if (tiles) this.nearTiles = tiles.filter(Boolean).map(key);
+            if (dark) this.darkTiles = dark.filter(Boolean).map(key);
             const set = new Set(this.nearTiles || []);
-            Object.keys(this.nooks).forEach((k) => this.nooks[k].classList.toggle('pip-near', set.has(k)));
+            const shaded = new Set((this.darkTiles || []).filter((k) => !set.has(k)));
+            Object.keys(this.nooks).forEach((k) => {
+                this.nooks[k].classList.toggle('pip-near', set.has(k) || shaded.has(k));
+                this.nooks[k].classList.toggle('pip-shaded', shaded.has(k));
+            });
         }
 
         // What Pip says, above Pip's head (none: hidden), in the letters of
