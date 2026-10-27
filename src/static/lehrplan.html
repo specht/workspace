@@ -1,3 +1,165 @@
+<style>
+    /* The graph of »Baut auf … auf« (curriculum_graph.rb): a box for each
+       activity, coloured by its catalog section (its hue, --cg-h), the
+       arrows from what comes first. A name of the plans or a box chosen:
+       what carries the name, and the way to it, stay; the rest fades. */
+    .lehrplan-page .cg-intro {
+        color: var(--bs-secondary-color);
+        font-size: 0.95rem;
+    }
+    .lehrplan-page .cg-choose {
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        margin: 0.6em 0;
+        font-size: 0.95rem;
+    }
+    .lehrplan-page .cg-choose select {
+        width: auto;
+        max-width: 26em;
+    }
+    .lehrplan-page .cg-scroll {
+        overflow-x: auto;
+        padding-bottom: 0.4em;
+    }
+    .lehrplan-page .cg-graph {
+        position: relative;
+    }
+    .lehrplan-page .cg-edges {
+        position: absolute;
+        inset: 0;
+        overflow: visible;
+    }
+    .lehrplan-page .cg-edge {
+        fill: none;
+        stroke: var(--cg-line);
+        stroke-width: 1.5;
+        transition: opacity 0.2s, stroke 0.2s;
+    }
+    .lehrplan-page .cg-node {
+        position: absolute;
+        display: flex;
+        width: 132px;
+        height: 36px;
+        border: 1.5px solid hsl(var(--cg-h) 45% 45%);
+        border-radius: 7px;
+        background: hsl(var(--cg-h) 60% 93%);
+        transition: opacity 0.2s, box-shadow 0.2s;
+    }
+    .lehrplan-page .cg-pick {
+        flex: 1;
+        min-width: 0;
+        align-self: center;
+        padding: 0 0.35em 0 0.55em;
+        border: none;
+        background: none;
+        color: var(--bs-body-color);
+        font-size: 0.74rem;
+        line-height: 1.12;
+        text-align: left;
+        /* two lines at most */
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+    .lehrplan-page .cg-open {
+        display: flex;
+        align-items: center;
+        padding: 0 0.45em;
+        color: hsl(var(--cg-h) 45% 35%);
+        font-size: 0.75rem;
+        opacity: 0.6;
+    }
+    .lehrplan-page .cg-open:hover,
+    .lehrplan-page .cg-open:focus-visible {
+        opacity: 1;
+    }
+    .lehrplan-page .cg-graph.cg-picked .cg-node:not(.cg-hit, .cg-way),
+    .lehrplan-page .cg-graph.cg-picked .cg-edge:not(.cg-on) {
+        opacity: 0.18;
+    }
+    .lehrplan-page .cg-node.cg-hit {
+        box-shadow: 0 0 0 3px hsl(var(--cg-h) 55% 45% / 0.45);
+        font-weight: 600;
+    }
+    .lehrplan-page .cg-edge.cg-on {
+        stroke: var(--cg-on);
+        stroke-width: 2.2;
+    }
+    .lehrplan-page .cg-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.2em 1.1em;
+        margin: 0.6em 0 0.4em;
+        padding: 0;
+        list-style: none;
+        font-size: 0.85rem;
+        color: var(--bs-secondary-color);
+    }
+    .lehrplan-page .cg-swatch {
+        display: inline-block;
+        width: 0.9em;
+        height: 0.9em;
+        margin-right: 0.35em;
+        border: 1.5px solid hsl(var(--cg-h) 45% 45%);
+        border-radius: 3px;
+        background: hsl(var(--cg-h) 60% 93%);
+        vertical-align: -0.1em;
+    }
+    .lehrplan-page .cg-alone {
+        font-size: 0.85rem;
+        color: var(--bs-secondary-color);
+    }
+    .lehrplan-page .lp-graph-show {
+        margin-left: 0.4em;
+        padding: 0 0.3em;
+        border: none;
+        background: none;
+        color: #5b2f8f;
+        font-size: 0.9rem;
+        vertical-align: 0.05em;
+        opacity: 0.55;
+    }
+    .lehrplan-page .lp-graph-show:hover,
+    .lehrplan-page .lp-graph-show:focus-visible {
+        opacity: 1;
+    }
+    .lehrplan-page {
+        --cg-line: #adb5bd;
+        --cg-on: #5b2f8f;
+    }
+    [data-bs-theme='dark'] .lehrplan-page {
+        --cg-line: #5c636e;
+        --cg-on: #c7a6f0;
+    }
+    [data-bs-theme='dark'] .lehrplan-page .cg-node,
+    [data-bs-theme='dark'] .lehrplan-page .cg-swatch {
+        border-color: hsl(var(--cg-h) 45% 60%);
+        background: hsl(var(--cg-h) 30% 20%);
+    }
+    [data-bs-theme='dark'] .lehrplan-page .cg-open {
+        color: hsl(var(--cg-h) 50% 75%);
+    }
+    [data-bs-theme='dark'] .lehrplan-page .lp-graph-show {
+        color: #c7a6f0;
+    }
+    .lehrplan-page .cg-c0 { --cg-h: 0; }
+    .lehrplan-page .cg-c1 { --cg-h: 138; }
+    .lehrplan-page .cg-c2 { --cg-h: 275; }
+    .lehrplan-page .cg-c3 { --cg-h: 53; }
+    .lehrplan-page .cg-c4 { --cg-h: 190; }
+    .lehrplan-page .cg-c5 { --cg-h: 328; }
+    .lehrplan-page .cg-c6 { --cg-h: 105; }
+    .lehrplan-page .cg-c7 { --cg-h: 243; }
+    .lehrplan-page .cg-c8 { --cg-h: 20; }
+    .lehrplan-page .cg-c9 { --cg-h: 158; }
+    .lehrplan-page .cg-c10 { --cg-h: 295; }
+    .lehrplan-page .cg-c11 { --cg-h: 73; }
+    .lehrplan-page .cg-c12 { --cg-h: 210; }
+    .lehrplan-page .cg-c13 { --cg-h: 348; }
+    .lehrplan-page .cg-c14 { --cg-h: 125; }
+</style>
 <div class='container lehrplan-page'>
     <div
         class="autotoc-secondary-trigger"
@@ -11,5 +173,75 @@
         dazu übt. Dieselbe Zeile steht für Lehrkräfte oben auf jeder Aktivität.
         Nur Lehrkräfte sehen diese Seite.
     </p>
-    #{CurriculumOverview.html(@@content, pinnable_slugs)}
+    #{(@curriculum_graph = CurriculumGraph.from_content(@@content, pinnable_slugs, :development => DEVELOPMENT)) && ''}
+    <h2 id='wege'>Wege durch die Aktivitäten</h2>
+    <p class='cg-intro'>
+        Welche Aktivität auf welcher aufbaut: Ein Pfeil führt von dem, was zuerst kommt, zu dem, was darauf aufbaut,
+        von links nach rechts. Wähl einen Namen der Pläne oder klick auf eine Aktivität: Dann bleibt hervorgehoben,
+        was dazu gehört und welcher Weg dorthin führt.
+    </p>
+    #{CurriculumGraph.topic_select(@curriculum_graph)}
+    #{CurriculumGraph.html(@curriculum_graph, @@sections, @@section_order, @@content)}
+    #{CurriculumOverview.html(@@content, pinnable_slugs, :in_graph => @curriculum_graph[:nodes].flat_map { |n| n[:topics] }.to_set)}
 </div>
+<script>
+    // The graph (curriculum_graph.rb): a name of the plans or a box chosen
+    // keeps what carries it and every activity on a way to it; the rest
+    // fades. The same choice again, or a click beside the boxes, clears it.
+    (function () {
+        const graph = document.querySelector('.cg-graph');
+        const select = document.querySelector('.cg-topic');
+        if (!graph || !select) return;
+        const nodes = Array.from(graph.querySelectorAll('.cg-node'));
+        const edges = Array.from(graph.querySelectorAll('.cg-edge'));
+        const before = {};
+        edges.forEach(function (e) { (before[e.dataset.to] = before[e.dataset.to] || []).push(e.dataset.from); });
+        let picked = null;
+        function show(hits, key) {
+            picked = hits.length ? key : null;
+            const way = new Set();
+            const walk = function (slug) {
+                (before[slug] || []).forEach(function (p) { if (!way.has(p)) { way.add(p); walk(p); } });
+            };
+            hits.forEach(walk);
+            const on = new Set(hits.concat(Array.from(way)));
+            graph.classList.toggle('cg-picked', hits.length > 0);
+            nodes.forEach(function (n) {
+                n.classList.toggle('cg-hit', hits.includes(n.dataset.slug));
+                n.classList.toggle('cg-way', way.has(n.dataset.slug) && !hits.includes(n.dataset.slug));
+            });
+            edges.forEach(function (e) { e.classList.toggle('cg-on', on.has(e.dataset.to) && on.has(e.dataset.from)); });
+        }
+        function topic(anchor) {
+            select.value = anchor;
+            show(anchor ? nodes.filter(function (n) { return n.dataset.topics.split(' ').includes(anchor); }).map(function (n) { return n.dataset.slug; }) : [], 'topic:' + anchor);
+        }
+        select.addEventListener('change', function () { topic(select.value); });
+        nodes.forEach(function (n) {
+            n.querySelector('.cg-pick').addEventListener('click', function (event) {
+                event.stopPropagation();
+                select.value = '';
+                const key = 'node:' + n.dataset.slug;
+                show(picked === key ? [] : [n.dataset.slug], key);
+            });
+        });
+        graph.addEventListener('click', function (event) {
+            if (!event.target.closest('.cg-node')) { select.value = ''; show([], null); }
+        });
+        // from a name in the list below: up to the picture, the name chosen
+        document.querySelectorAll('.lp-graph-show').forEach(function (button) {
+            button.addEventListener('click', function () {
+                topic(button.dataset.topic);
+                document.getElementById('wege').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+        // as wide as the window allows right of the text's left edge
+        const scroll = graph.parentElement;
+        function widen() {
+            const left = scroll.getBoundingClientRect().left;
+            scroll.style.width = Math.max(scroll.parentElement.clientWidth, Math.min(graph.offsetWidth + 4, window.innerWidth - left - 16)) + 'px';
+        }
+        widen();
+        window.addEventListener('resize', widen);
+    })();
+</script>

@@ -17,6 +17,18 @@ nächsten Update (`./config.rb restart ruby`). Aktivitäten verborgener
 Abschnitte stehen nicht darauf. Ein Name ohne Aktivität bleibt mit »Noch
 keine Aktivität im Workspace« stehen: Auch eine Lücke ist gut zu wissen.
 
+Über der Liste steht ein Bild der Wege durch die Aktivitäten
+(`src/ruby/include/curriculum_graph.rb`): jede Aktivität, die auf einer
+anderen aufbaut (`requires:`) oder auf der eine andere aufbaut, als Kasten in
+der Farbe ihres Abschnitts im Katalog, mit einem Pfeil von dem, was zuerst
+kommt. Von links nach rechts nach der längsten Kette davor; in einer Spalte
+stehen die Kästen nahe bei denen, mit denen sie verbunden sind. Wählt eine
+Lehrkraft einen Namen der Pläne (über dem Bild, oder mit dem Knopf neben dem
+Namen in der Liste) oder klickt sie auf einen Kasten, bleibt hervorgehoben,
+was den Namen trägt, und jede Aktivität auf einem Weg dorthin; das Symbol im
+Kasten öffnet die Aktivität in einem neuen Tab. Aktivitäten ohne solche
+Verbindung stehen nicht im Bild, sondern darunter in einer Liste.
+
 ```yaml
 curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen: Wiederholung); Oberstufe: Algorithmen und Datenstrukturen"
 ```

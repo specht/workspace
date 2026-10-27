@@ -1,6 +1,7 @@
 require 'cgi'
 require_relative 'curriculum'
 require_relative 'page_kinds'
+require 'set'
 
 # The page /lehrplan, for logged-in teachers: for every name of the plans
 # (Curriculum, docs/lehrplan.md) the activities whose curriculum line names
@@ -46,7 +47,9 @@ module CurriculumOverview
         index
     end
 
-    def self.html(content, slugs)
+    # in_graph: the anchors of the names the graph above can show
+    # (CurriculumGraph); those get a button that shows them there.
+    def self.html(content, slugs, in_graph: Set.new)
         index = index(content, slugs)
         html = +''
         LEVELS.each do |l|
@@ -59,7 +62,9 @@ module CurriculumOverview
                     note = NOTES[[l[:level], name]]
                     html << "<section class='lp-topic'>\n"
                     # the count beside the heading, not in the side navigation
-                    html << "<h3 id='#{anchor(l[:level], name)}'>#{h(name)} <span class='lp-count autotoc-skip'>#{found.size}</span></h3>\n"
+                    show = in_graph.include?(anchor(l[:level], name)) ?
+                        "<button type='button' class='lp-graph-show autotoc-skip' data-topic='#{anchor(l[:level], name)}' title='Im Bild oben zeigen, welcher Weg dorthin führt' aria-label='#{h(name)} im Bild zeigen'><i class='bi bi-diagram-3' aria-hidden='true'></i></button>" : ''
+                    html << "<h3 id='#{anchor(l[:level], name)}'>#{h(name)} <span class='lp-count autotoc-skip'>#{found.size}</span>#{show}</h3>\n"
                     html << "<p class='lp-note'>#{h(note)}</p>\n" if note
                     if found.empty?
                         html << "<p class='lp-none'>Noch keine Aktivität im Workspace.</p>\n"
