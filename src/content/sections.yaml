@@ -178,6 +178,7 @@
   entries:
     - .sprachmodell
     - .perzeptron
+    - .naechste-nachbarn
 
 - key: compression
   compact: true

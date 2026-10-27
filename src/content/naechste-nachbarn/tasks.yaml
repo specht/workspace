@@ -1,0 +1,455 @@
+# Aufgaben zu »Nächste Nachbarn: Wer entscheidet hier?«, in Ruby und, unter
+# python:, in Python. Format: docs/aufgaben.md. Alles liegt in
+# /workspace/nachbarn. Die Zahlen gehören zu penguins.csv und customers.csv
+# in src/static/naechste-nachbarn (customers.csv erzeugt
+# src/scripts/collect-naechste-nachbarn mit festem Seed), mit jedem zweiten
+# Pinguin und jeder zweiten Kundin oder jedem zweiten Kunden als Beispiel,
+# den anderen als Test, in der Reihenfolge der Datei.
+format: 1
+activity: naechste-nachbarn
+tasks:
+  - id: abstand-von-hand
+    title: Von Hand gemessen
+    prompt: |
+      Ein Pinguin hat einen Schnabel, der 39 mm lang und 18 mm hoch ist, ein
+      anderer einen, der 42 mm lang und 14 mm hoch ist. Wie weit liegen die
+      beiden Punkte auseinander?
+    check: { type: number, expect: 5 }
+    feedback:
+      - when: { equals: 7 }
+        say: Das ist die Summe der beiden Unterschiede, 3 und 4. Der Abstand ist die Hypotenuse, nicht der Weg über die Katheten.
+      - when: { equals: 25 }
+        say: Das ist die Summe der Quadrate; die Wurzel fehlt noch.
+    hint: |
+      Die Unterschiede sind 3 und 4. Quadriere sie, addiere, zieh die Wurzel.
+    solution: |
+      Die Unterschiede sind 42 − 39 = 3 und 14 − 18 = −4; $\sqrt{9 + 16} = 5$.
+
+  - id: abstand
+    title: Der Abstand
+    prompt: |
+      Schreib in `nachbarn/knn.rb` die Funktion `distance(a, b)`. Die Prüfung
+      ruft sie mit zwei und mit drei Merkmalen auf.
+    check:
+      type: ruby
+      file: nachbarn/knn.rb
+      cases:
+        - call: 'distance([39, 18], [42, 14])'
+          expect: 5.0
+        - call: 'distance([42, 14], [39, 18])'
+          expect: 5.0
+          say: Der Abstand von b zu a ist derselbe wie von a zu b; ein negativer Unterschied wird durch das Quadrat positiv.
+        - call: 'distance([0, 0, 0], [2, 3, 6])'
+          expect: 7.0
+          say: Mit drei Merkmalen zählt auch das dritte; geh alle durch, nicht nur zwei.
+        - call: 'distance([1.5, 2.5], [1.5, 2.5])'
+          expect: 0.0
+    solution: |
+      ```ruby
+      def distance(a, b)
+        sum = 0.0
+        a.each_index do |i|
+          sum += (a[i] - b[i])**2
+        end
+        Math.sqrt(sum)
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `nachbarn/knn.py` die Funktion `distance(a, b)`. Die Prüfung
+        ruft sie mit zwei und mit drei Merkmalen auf.
+      check:
+        type: python
+        file: nachbarn/knn.py
+        cases:
+          - call: 'distance([39, 18], [42, 14])'
+            expect: 5.0
+          - call: 'distance([42, 14], [39, 18])'
+            expect: 5.0
+            say: Der Abstand von b zu a ist derselbe wie von a zu b; ein negativer Unterschied wird durch das Quadrat positiv.
+          - call: 'distance([0, 0, 0], [2, 3, 6])'
+            expect: 7.0
+            say: Mit drei Merkmalen zählt auch das dritte; geh alle durch, nicht nur zwei.
+          - call: 'distance([1.5, 2.5], [1.5, 2.5])'
+            expect: 0.0
+      solution: |
+        ```python
+        import math
+
+        def distance(a, b):
+            total = 0.0
+            for i in range(len(a)):
+                total += (a[i] - b[i]) ** 2
+            return math.sqrt(total)
+        ```
+
+  - id: nachbarn
+    title: Die nächsten Nachbarn
+    prompt: |
+      Schreib in `nachbarn/knn.rb` die Funktion `nearest(examples, features, k)`.
+      Die Prüfung gibt ihr vier Beispiele und fragt nach den zwei, drei und
+      einem nächsten.
+    check:
+      type: ruby
+      file: nachbarn/knn.rb
+      cases:
+        - call: 'nearest([[[0, 0], "a"], [[5, 5], "b"], [[1, 1], "c"], [[2, 0], "d"]], [0, 0.8], 2)'
+          expect: '[[[0, 0], "a"], [[1, 1], "c"]]'
+          say: Die zwei nächsten zu (0, 0.8) sind a (Abstand 0.8) und c (etwa 1.02), das nächste zuerst.
+        - call: 'nearest([[[0, 0], "a"], [[5, 5], "b"], [[1, 1], "c"], [[2, 0], "d"]], [0, 0.8], 3)'
+          expect: '[[[0, 0], "a"], [[1, 1], "c"], [[2, 0], "d"]]'
+          say: Es sollen genau k Beispiele sein, nach ihrem Abstand sortiert.
+        - call: 'nearest([[[0, 0], "a"], [[5, 5], "b"], [[1, 1], "c"], [[2, 0], "d"]], [5, 4], 1)'
+          expect: '[[[5, 5], "b"]]'
+          say: Zurück kommt eine Liste von Beispielen, auch wenn k 1 ist, jedes mit seinen Merkmalen und seiner Antwort.
+    solution: |
+      ```ruby
+      def nearest(examples, features, k)
+        examples.sort_by { |other, _label| distance(other, features) }.first(k)
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `nachbarn/knn.py` die Funktion `nearest(examples, features, k)`.
+        Die Prüfung gibt ihr vier Beispiele und fragt nach den zwei, drei und
+        einem nächsten.
+      check:
+        type: python
+        file: nachbarn/knn.py
+        cases:
+          - call: 'nearest([[[0, 0], "a"], [[5, 5], "b"], [[1, 1], "c"], [[2, 0], "d"]], [0, 0.8], 2)'
+            expect: '[[[0, 0], "a"], [[1, 1], "c"]]'
+            say: Die zwei nächsten zu (0, 0.8) sind a (Abstand 0.8) und c (etwa 1.02), das nächste zuerst.
+          - call: 'nearest([[[0, 0], "a"], [[5, 5], "b"], [[1, 1], "c"], [[2, 0], "d"]], [0, 0.8], 3)'
+            expect: '[[[0, 0], "a"], [[1, 1], "c"], [[2, 0], "d"]]'
+            say: Es sollen genau k Beispiele sein, nach ihrem Abstand sortiert.
+          - call: 'nearest([[[0, 0], "a"], [[5, 5], "b"], [[1, 1], "c"], [[2, 0], "d"]], [5, 4], 1)'
+            expect: '[[[5, 5], "b"]]'
+            say: Zurück kommt eine Liste von Beispielen, auch wenn k 1 ist, jedes mit seinen Merkmalen und seiner Antwort.
+      solution: |
+        ```python
+        def nearest(examples, features, k):
+            return sorted(examples, key=lambda example: distance(example[0], features))[:k]
+        ```
+
+  - id: abstimmen
+    title: Die Nachbarn stimmen ab
+    prompt: |
+      Schreib in `nachbarn/knn.rb` die Funktion `classify(examples, features, k)`.
+      Die Prüfung gibt ihr fünf Beispiele, zwei »A« nahe bei (0, 0) und drei
+      »B«, und fragt mit verschiedenen k, auch mit einem Gleichstand.
+    check:
+      type: ruby
+      file: nachbarn/knn.rb
+      cases:
+        - call: 'classify([[[0, 0], "A"], [[1, 0], "A"], [[0, 1], "B"], [[5, 5], "B"], [[6, 5], "B"]], [0.1, 0.3], 3)'
+          expect: '"A"'
+          say: Die drei nächsten sind A, B und A; die Mehrheit ist A.
+        - call: 'classify([[[0, 0], "A"], [[1, 0], "A"], [[0, 1], "B"], [[5, 5], "B"], [[6, 5], "B"]], [0.1, 0.3], 5)'
+          expect: '"B"'
+          say: Mit k = 5 stimmen alle ab, und B ist dreimal dabei. Zählt deine Funktion, statt nur den nächsten zu nehmen?
+        - call: 'classify([[[0, 0], "A"], [[1, 0], "A"], [[0, 1], "B"], [[5, 5], "B"], [[6, 5], "B"]], [0.1, 0.9], 1)'
+          expect: '"B"'
+        - call: 'classify([[[0, 0], "A"], [[1, 0], "A"], [[0, 1], "B"], [[5, 5], "B"], [[6, 5], "B"]], [0.1, 0.3], 2)'
+          expect: '"A"'
+          say: Bei k = 2 steht es eins zu eins; dann gewinnt der nähere Nachbar, und das ist A.
+    solution: |
+      ```ruby
+      def classify(examples, features, k)
+        labels = nearest(examples, features, k).map { |_features, label| label }
+        labels.max_by { |label| labels.count(label) }
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `nachbarn/knn.py` die Funktion `classify(examples, features, k)`.
+        Die Prüfung gibt ihr fünf Beispiele, zwei »A« nahe bei (0, 0) und drei
+        »B«, und fragt mit verschiedenen k, auch mit einem Gleichstand.
+      check:
+        type: python
+        file: nachbarn/knn.py
+        cases:
+          - call: 'classify([[[0, 0], "A"], [[1, 0], "A"], [[0, 1], "B"], [[5, 5], "B"], [[6, 5], "B"]], [0.1, 0.3], 3)'
+            expect: "'A'"
+            say: Die drei nächsten sind A, B und A; die Mehrheit ist A.
+          - call: 'classify([[[0, 0], "A"], [[1, 0], "A"], [[0, 1], "B"], [[5, 5], "B"], [[6, 5], "B"]], [0.1, 0.3], 5)'
+            expect: "'B'"
+            say: Mit k = 5 stimmen alle ab, und B ist dreimal dabei. Zählt deine Funktion, statt nur den nächsten zu nehmen?
+          - call: 'classify([[[0, 0], "A"], [[1, 0], "A"], [[0, 1], "B"], [[5, 5], "B"], [[6, 5], "B"]], [0.1, 0.9], 1)'
+            expect: "'B'"
+          - call: 'classify([[[0, 0], "A"], [[1, 0], "A"], [[0, 1], "B"], [[5, 5], "B"], [[6, 5], "B"]], [0.1, 0.3], 2)'
+            expect: "'A'"
+            say: Bei k = 2 steht es eins zu eins; dann gewinnt der nähere Nachbar, und das ist A.
+      solution: |
+        ```python
+        def classify(examples, features, k):
+            labels = [label for _features, label in nearest(examples, features, k)]
+            return max(labels, key=labels.count)
+        ```
+
+  - id: unbekannt
+    title: Ein unbekannter Pinguin
+    prompt: |
+      Welche Art sagt dein Programm für den Pinguin mit einem Schnabel, der
+      46 mm lang und 18 mm hoch ist, mit den fünf nächsten Nachbarn?
+    check:
+      type: choice
+      options:
+        - Adéliepinguin (Adelie)
+        - Zügelpinguin (Chinstrap)
+        - Eselspinguin (Gentoo)
+      correct: 1
+    hint: |
+      Führe `penguins.rb` aus (in Python `penguins.py`) und lies, was es ausgibt.
+    solution: |
+      Zügelpinguin: Alle fünf nächsten Nachbarn sind Zügelpinguine.
+
+  - id: genauigkeit
+    title: Wie oft richtig?
+    prompt: |
+      Schreib in `nachbarn/knn.rb` die Funktion `accuracy(training, test, k)`.
+      Die Prüfung gibt ihr vier Beispiele zum Vergleichen und vier
+      Testbeispiele, von denen zwei richtig eingeordnet werden.
+    check:
+      type: ruby
+      file: nachbarn/knn.rb
+      cases:
+        - call: 'accuracy([[[0, 0], "A"], [[0, 1], "A"], [[5, 5], "B"], [[5, 6], "B"]], [[[0.5, 0.5], "A"], [[4, 4], "B"], [[1, 0], "B"], [[6, 6], "A"]], 1)'
+          expect: 0.5
+          say: Zwei von vier sind richtig, also 0.5. Rechnet deine Funktion mit Kommazahlen? In Ruby ergibt 2 / 4 die ganze Zahl 0.
+        - call: 'accuracy([[[0, 0], "A"], [[0, 1], "A"], [[5, 5], "B"], [[5, 6], "B"]], [[[0.5, 0.5], "A"], [[4, 4], "B"]], 1)'
+          expect: 1.0
+    solution: |
+      ```ruby
+      def accuracy(training, test, k)
+        right = test.count { |features, label| classify(training, features, k) == label }
+        right.to_f / test.size
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `nachbarn/knn.py` die Funktion `accuracy(training, test, k)`.
+        Die Prüfung gibt ihr vier Beispiele zum Vergleichen und vier
+        Testbeispiele, von denen zwei richtig eingeordnet werden.
+      check:
+        type: python
+        file: nachbarn/knn.py
+        cases:
+          - call: 'accuracy([[[0, 0], "A"], [[0, 1], "A"], [[5, 5], "B"], [[5, 6], "B"]], [[[0.5, 0.5], "A"], [[4, 4], "B"], [[1, 0], "B"], [[6, 6], "A"]], 1)'
+            expect: 0.5
+            say: Zwei von vier sind richtig, also 0.5.
+          - call: 'accuracy([[[0, 0], "A"], [[0, 1], "A"], [[5, 5], "B"], [[5, 6], "B"]], [[[0.5, 0.5], "A"], [[4, 4], "B"]], 1)'
+            expect: 1.0
+      solution: |
+        ```python
+        def accuracy(training, test, k):
+            right = sum(1 for features, label in test if classify(training, features, k) == label)
+            return right / len(test)
+        ```
+
+  - id: pinguine
+    title: Pinguine, die es nicht kennt
+    prompt: |
+      Wie viel Prozent der Testpinguine ordnet dein Programm mit k = 3 richtig
+      ein? Runde auf eine Stelle nach dem Komma.
+    check: { type: number, expect: 97.1, tolerance: 0.05, unit: '%' }
+    feedback:
+      - when: { between: [0.9, 1] }
+        say: Das ist der Anteil als Zahl von 0 bis 1; gefragt sind Prozent.
+      - when: { equals: 100 }
+        say: So gut ist es nicht. Prüfst du an den Pinguinen in test, nicht an denen in training?
+    hint: |
+      Führe `penguins.rb` (in Python `penguins.py`) mit dem geänderten
+      Programm aus. Ist es eine andere Zahl, prüf, ob training die Pinguine mit
+      geradem Index bekommt und test die mit ungeradem.
+    solution: |
+      97,1 Prozent: 166 der 171 Testpinguine.
+
+  - id: alle-nachbarn
+    title: Alle Nachbarn
+    prediction: true
+    prompt: |
+      In `training` sind 171 Pinguine. Was passiert, wenn das Programm mit
+      k = 171 abstimmt? Vermute erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - Es sagt zu jedem Pinguin dieselbe Art.
+        - Es wird noch genauer, weil mehr Nachbarn abstimmen.
+        - Es liegt etwa so oft richtig wie mit k = 3.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Mit k = 171 stimmen bei jeder Frage dieselben 171 Pinguine ab. Hängt das Ergebnis dann noch vom Schnabel ab?
+      - when: { picked: 2 }
+        say: Mit k = 171 stimmen bei jeder Frage dieselben 171 Pinguine ab. Hängt das Ergebnis dann noch vom Schnabel ab?
+    solution: |
+      Es sagt immer »Adelie«, die häufigste Art unter allen, und liegt bei
+      43,9 Prozent richtig, so oft, wie unter den Testpinguinen
+      Adéliepinguine sind.
+
+  - id: uebereinstimmung
+    title: Wie der Laden
+    prompt: |
+      Wie viel Prozent der neuen Kundinnen und Kunden ordnet dein Programm
+      genauso ein, wie der Laden es getan hätte? Runde auf eine Stelle nach dem
+      Komma.
+    check: { type: number, expect: 81.3, tolerance: 0.05, unit: '%' }
+    feedback:
+      - when: { between: [0.7, 1] }
+        say: Das ist der Anteil als Zahl von 0 bis 1; gefragt sind Prozent.
+    hint: |
+      Führe `deposit.rb` (in Python `deposit.py`) aus. Ist es eine andere Zahl,
+      prüf, ob die Spalten `years`, `late`, `x` und `y` sind und k 5 ist.
+    solution: |
+      81,3 Prozent: Bei 244 von 300 entscheidet das Programm wie der Laden.
+
+  - id: stadtteile
+    title: Alle gleich?
+    prediction: true
+    prompt: |
+      Das Programm weiß nicht, in welchem Stadtteil jemand wohnt; es kennt nur
+      die Jahre, die Verspätungen und den Wohnort als zwei Zahlen. Von wem
+      verlangt es eine Kaution, obwohl er sein Rad pünktlich zurückbringt?
+    check:
+      type: choice
+      options:
+        - Von Pünktlichen in allen Stadtteilen etwa gleich oft; den Stadtteil kennt es nicht.
+        - Von Pünktlichen in einem Stadtteil viel öfter als in den anderen.
+        - Von niemandem; wer pünktlich ist, hat keine Verspätungen.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Es kennt den Namen nicht, aber den Ort. Wer sind die nächsten Nachbarn eines Menschen, der am Fluss wohnt?
+      - when: { picked: 2 }
+        say: Pünktlich war jemand beim nächsten Rad; Verspätungen im letzten Jahr kann es trotzdem geben, und manche sind neu im Laden.
+    solution: |
+      Von den Pünktlichen am Sandberg verlangt es in 84,7 Prozent der Fälle
+      eine Kaution, in den anderen Stadtteilen in 14 bis 19 Prozent.
+
+  - id: kaution-anteil
+    title: Wie oft eine Kaution?
+    prompt: |
+      Schreib in `nachbarn/knn.rb` die Funktion
+      `deposit_share(training, test, k)`. Die Prüfung gibt ihr vier
+      Beispiele zum Vergleichen und Testbeispiele, deren Antworten nicht
+      zählen.
+    check:
+      type: ruby
+      file: nachbarn/knn.rb
+      cases:
+        - call: 'deposit_share([[[0, 0], 1], [[0, 1], 1], [[5, 5], 0], [[5, 6], 0]], [[[0.5, 0.5], 0], [[4, 4], 1], [[1, 0], 0], [[6, 6], 1]], 1)'
+          expect: 0.5
+          say: Für zwei der vier sagt classify 1, also 0.5. Zählt deine Funktion, wo classify 1 sagt, und nicht, wo es richtig liegt?
+        - call: 'deposit_share([[[0, 0], 1], [[0, 1], 1], [[5, 5], 0], [[5, 6], 0]], [[[0.5, 0.5], 0]], 1)'
+          expect: 1.0
+          say: Die Antwort im Testbeispiel (hier 0) zählt nicht; es geht nur darum, was classify sagt.
+    solution: |
+      ```ruby
+      def deposit_share(training, test, k)
+        deposits = test.count { |features, _label| classify(training, features, k) == 1 }
+        deposits.to_f / test.size
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `nachbarn/knn.py` die Funktion
+        `deposit_share(training, test, k)`. Die Prüfung gibt ihr vier
+        Beispiele zum Vergleichen und Testbeispiele, deren Antworten nicht
+        zählen.
+      check:
+        type: python
+        file: nachbarn/knn.py
+        cases:
+          - call: 'deposit_share([[[0, 0], 1], [[0, 1], 1], [[5, 5], 0], [[5, 6], 0]], [[[0.5, 0.5], 0], [[4, 4], 1], [[1, 0], 0], [[6, 6], 1]], 1)'
+            expect: 0.5
+            say: Für zwei der vier sagt classify 1, also 0.5. Zählt deine Funktion, wo classify 1 sagt, und nicht, wo es richtig liegt?
+          - call: 'deposit_share([[[0, 0], 1], [[0, 1], 1], [[5, 5], 0], [[5, 6], 0]], [[[0.5, 0.5], 0]], 1)'
+            expect: 1.0
+            say: Die Antwort im Testbeispiel (hier 0) zählt nicht; es geht nur darum, was classify sagt.
+      solution: |
+        ```python
+        def deposit_share(training, test, k):
+            deposits = sum(1 for features, _label in test if classify(training, features, k) == 1)
+            return deposits / len(test)
+        ```
+
+  - id: sandberg
+    title: Die Pünktlichen am Sandberg
+    prompt: |
+      Wie viel Prozent der Pünktlichen am Sandberg sollen nach deinem Programm
+      eine Kaution zahlen? Runde auf eine Stelle nach dem Komma.
+    check: { type: number, expect: 84.7, tolerance: 0.05, unit: '%' }
+    feedback:
+      - when: { equals: 70.6 }
+        say: So oft hat der Laden selbst eine verlangt. Gefragt ist, was das Programm sagt.
+      - when: { between: [0.5, 1] }
+        say: Das ist der Anteil als Zahl von 0 bis 1; gefragt sind Prozent.
+    hint: |
+      Führe `deposit.rb` (in Python `deposit.py`) mit der Schleife über die
+      Stadtteile aus und lies die Zeile »Sandberg«.
+    solution: |
+      84,7 Prozent; in den anderen Stadtteilen 14,0 bis 18,8 Prozent.
+
+  - id: ohne-wohnort
+    title: Ohne Wohnort
+    prediction: true
+    prompt: |
+      Nimm in `deposit.rb` (in Python `deposit.py`) die Spalten `x` und `y`
+      aus `columns`, so dass nur `years` und `late` bleiben. Was passiert mit
+      den Pünktlichen am Sandberg? Vermute erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - Sie sollen etwa so oft eine Kaution zahlen wie die Pünktlichen anderswo.
+        - Sie sollen weiter in mehr als acht von zehn Fällen eine Kaution zahlen; das Programm lernt ja aus denselben Entscheidungen.
+        - Keiner von ihnen soll mehr eine Kaution zahlen.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Die Entscheidungen sind dieselben, aber woran soll das Programm jetzt noch erkennen, wer am Sandberg wohnt?
+      - when: { picked: 2 }
+        say: Neue Kundinnen und Kunden und solche mit Verspätungen zahlen weiter eine, überall.
+    solution: |
+      28,2 Prozent am Sandberg, 18,6 bis 27,5 Prozent in den anderen
+      Stadtteilen: fast gleich. Dafür trifft es in Lindenhof und im
+      Bahnhofsviertel mehr Pünktliche als vorher.
+
+  - id: entfernung
+    title: Die Entfernung
+    prompt: |
+      Nimm statt `x` und `y` die Spalte `distance` dazu, so dass `columns`
+      `years`, `late` und `distance` sind. Wie viel Prozent der Pünktlichen am
+      Sandberg sollen jetzt eine Kaution zahlen? Runde auf eine Stelle nach dem
+      Komma.
+    check: { type: number, expect: 56.5, tolerance: 0.05, unit: '%' }
+    feedback:
+      - when: { equals: 28.2 }
+        say: Das ist die Zahl ohne den Wohnort. Ist distance in columns?
+      - when: { equals: 84.7 }
+        say: Das ist die Zahl mit x und y. Hast du sie durch distance ersetzt?
+    solution: |
+      56,5 Prozent. Die Entfernung zum Laden verrät ungefähr den Stadtteil
+      und steht so für den Wohnort.
+
+  - id: verantwortung
+    title: Wer entscheidet hier?
+    prompt: |
+      Der Laden will das Programm einsetzen. Was rätst du ihm? Geh dabei auf
+      deine Zahlen ein und darauf, wer verantwortlich ist, wenn das Programm
+      jemanden zu Unrecht eine Kaution zahlen lässt.
+    check: { type: reflection, min_words: 30 }
+    examples:
+      - |
+        Mit dem Wohnort verlangt das Programm von 84,7 % der Pünktlichen am
+        Sandberg eine Kaution, weil der Laden dort früher öfter eine verlangt
+        hat. Den Wohnort wegzulassen reicht nicht, die Entfernung verrät ihn
+        auch. Besser wäre es, aus `on_time` zu lernen und vor dem Einsatz je
+        Stadtteil nachzuzählen. Verantwortlich bleibt der Laden, nicht das
+        Programm.
+      - |
+        Ich würde es nicht allein entscheiden lassen. Es macht nur nach, was
+        der Laden früher gemacht hat, auch das Ungerechte, und eine Abstimmung
+        macht aus »meistens« sogar »immer«. Wer eine Kaution zahlen soll,
+        sollte nachfragen können, und ein Mensch im Laden muss die
+        Entscheidung ändern dürfen.

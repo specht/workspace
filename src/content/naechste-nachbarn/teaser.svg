@@ -1,0 +1,88 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720' width='1280' height='720'>
+<rect width='1280' height='720' fill='#ffffff'/>
+<line x1='150' y1='620' x2='1210' y2='620' stroke='#d1d5db' stroke-width='3'/>
+<line x1='150' y1='620' x2='150' y2='40' stroke='#d1d5db' stroke-width='3'/>
+<text x='680.0' y='682.0' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='34' font-weight='normal' fill='#6b7280'>Länge des Schnabels</text>
+<g transform='rotate(-90 116 330.0)'><text x='116.0' y='330.0' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='34' font-weight='normal' fill='#6b7280'>Höhe</text></g>
+<line x1='644.7' y1='330.0' x2='630.5' y2='286.5' stroke='#1f2937' stroke-width='4'/>
+<line x1='644.7' y1='330.0' x2='743.6' y2='388.0' stroke='#1f2937' stroke-width='4'/>
+<line x1='644.7' y1='330.0' x2='743.6' y2='417.0' stroke='#1f2937' stroke-width='4'/>
+<line x1='644.7' y1='330.0' x2='786.0' y2='330.0' stroke='#1f2937' stroke-width='4'/>
+<line x1='644.7' y1='330.0' x2='743.6' y2='214.0' stroke='#1f2937' stroke-width='4'/>
+<circle cx='164.1' cy='243.0' r='11' fill='#d97706' stroke='#ffffff' stroke-width='2'/>
+<circle cx='319.6' cy='112.5' r='11' fill='#d97706' stroke='#ffffff' stroke-width='2'/>
+<circle cx='206.5' cy='98.0' r='11' fill='#d97706' stroke='#ffffff' stroke-width='2'/>
+<circle cx='164.1' cy='156.0' r='11' fill='#d97706' stroke='#ffffff' stroke-width='2'/>
+<circle cx='234.8' cy='185.0' r='11' fill='#d97706' stroke='#ffffff' stroke-width='2'/>
+<circle cx='828.4' cy='54.5' r='11' fill='#d97706' stroke='#ffffff' stroke-width='2'/>
+<circle cx='404.4' cy='112.5' r='11' fill='#d97706' stroke='#ffffff' stroke-width='2'/>
+<circle cx='418.5' cy='243.0' r='11' fill='#d97706' stroke='#ffffff' stroke-width='2'/>
+<circle cx='164.1' cy='170.5' r='11' fill='#d97706' stroke='#ffffff' stroke-width='2'/>
+<circle cx='460.9' cy='112.5' r='11' fill='#d97706' stroke='#ffffff' stroke-width='2'/>
+<circle cx='390.3' cy='141.5' r='11' fill='#d97706' stroke='#ffffff' stroke-width='2'/>
+<circle cx='164.1' cy='98.0' r='11' fill='#d97706' stroke='#ffffff' stroke-width='2'/>
+<circle cx='206.5' cy='112.5' r='11' fill='#d97706' stroke='#ffffff' stroke-width='2'/>
+<circle cx='220.7' cy='141.5' r='11' fill='#d97706' stroke='#ffffff' stroke-width='2'/>
+<circle cx='588.1' cy='185.0' r='11' fill='#d97706' stroke='#ffffff' stroke-width='2'/>
+<circle cx='164.1' cy='257.5' r='11' fill='#d97706' stroke='#ffffff' stroke-width='2'/>
+<circle cx='220.7' cy='112.5' r='11' fill='#d97706' stroke='#ffffff' stroke-width='2'/>
+<circle cx='955.6' cy='576.5' r='11' fill='#2b5fb4' stroke='#ffffff' stroke-width='2'/>
+<circle cx='969.7' cy='562.0' r='11' fill='#2b5fb4' stroke='#ffffff' stroke-width='2'/>
+<circle cx='899.1' cy='504.0' r='11' fill='#2b5fb4' stroke='#ffffff' stroke-width='2'/>
+<circle cx='870.8' cy='605.5' r='11' fill='#2b5fb4' stroke='#ffffff' stroke-width='2'/>
+<circle cx='1040.4' cy='576.5' r='11' fill='#2b5fb4' stroke='#ffffff' stroke-width='2'/>
+<circle cx='1195.9' cy='431.5' r='11' fill='#2b5fb4' stroke='#ffffff' stroke-width='2'/>
+<circle cx='630.5' cy='286.5' r='11' fill='#2b5fb4' stroke='#ffffff' stroke-width='2'/>
+<circle cx='743.6' cy='504.0' r='11' fill='#2b5fb4' stroke='#ffffff' stroke-width='2'/>
+<circle cx='715.3' cy='562.0' r='11' fill='#2b5fb4' stroke='#ffffff' stroke-width='2'/>
+<circle cx='913.2' cy='533.0' r='11' fill='#2b5fb4' stroke='#ffffff' stroke-width='2'/>
+<circle cx='1167.6' cy='533.0' r='11' fill='#2b5fb4' stroke='#ffffff' stroke-width='2'/>
+<circle cx='743.6' cy='417.0' r='11' fill='#2b5fb4' stroke='#ffffff' stroke-width='2'/>
+<circle cx='1026.3' cy='547.5' r='11' fill='#2b5fb4' stroke='#ffffff' stroke-width='2'/>
+<circle cx='969.7' cy='460.5' r='11' fill='#2b5fb4' stroke='#ffffff' stroke-width='2'/>
+<circle cx='1153.5' cy='605.5' r='11' fill='#2b5fb4' stroke='#ffffff' stroke-width='2'/>
+<circle cx='503.3' cy='591.0' r='11' fill='#2b5fb4' stroke='#ffffff' stroke-width='2'/>
+<circle cx='644.7' cy='518.5' r='11' fill='#2b5fb4' stroke='#ffffff' stroke-width='2'/>
+<circle cx='927.3' cy='199.5' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='771.9' cy='83.5' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='743.6' cy='214.0' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='870.8' cy='156.0' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='856.7' cy='54.5' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='941.5' cy='214.0' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='998.0' cy='286.5' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='842.5' cy='315.5' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='913.2' cy='98.0' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='347.9' cy='286.5' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='460.9' cy='388.0' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='955.6' cy='199.5' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='913.2' cy='214.0' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='362.0' cy='373.5' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='1068.7' cy='359.0' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='1082.8' cy='141.5' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='983.9' cy='388.0' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='884.9' cy='257.5' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='786.0' cy='330.0' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='1153.5' cy='417.0' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='814.3' cy='286.5' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='362.0' cy='286.5' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='743.6' cy='388.0' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='969.7' cy='402.5' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='814.3' cy='330.0' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='503.3' cy='170.5' r='11' fill='#7c3aed' stroke='#ffffff' stroke-width='2'/>
+<circle cx='630.5' cy='286.5' r='16' fill='none' stroke='#1f2937' stroke-width='4'/>
+<circle cx='743.6' cy='388.0' r='16' fill='none' stroke='#1f2937' stroke-width='4'/>
+<circle cx='743.6' cy='417.0' r='16' fill='none' stroke='#1f2937' stroke-width='4'/>
+<circle cx='786.0' cy='330.0' r='16' fill='none' stroke='#1f2937' stroke-width='4'/>
+<circle cx='743.6' cy='214.0' r='16' fill='none' stroke='#1f2937' stroke-width='4'/>
+<circle cx='644.7' cy='330.0' r='22' fill='#ffffff' stroke='#1f2937' stroke-width='5'/>
+<text x='644.7' y='341.0' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='32' font-weight='bold' fill='#1f2937'>?</text>
+<rect x='930' y='38' width='280' height='46' fill='#ffffff'/>
+<circle cx='950' cy='61' r='11' fill='#d97706'/>
+<text x='972.0' y='70.0' text-anchor='start' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='30' font-weight='normal' fill='#1f2937'>Adélie</text>
+<rect x='930' y='84' width='280' height='46' fill='#ffffff'/>
+<circle cx='950' cy='107' r='11' fill='#7c3aed'/>
+<text x='972.0' y='116.0' text-anchor='start' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='30' font-weight='normal' fill='#1f2937'>Zügelpinguin</text>
+<rect x='930' y='130' width='280' height='46' fill='#ffffff'/>
+<circle cx='950' cy='153' r='11' fill='#2b5fb4'/>
+<text x='972.0' y='162.0' text-anchor='start' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='30' font-weight='normal' fill='#1f2937'>Eselspinguin</text>
+</svg>
