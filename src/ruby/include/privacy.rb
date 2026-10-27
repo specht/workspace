@@ -631,8 +631,8 @@ module Privacy
 
             #{heading('Was Lehrkräfte sehen', 'Empfänger innerhalb der Schule · Art. 13 Abs. 1 Buchst. e DSGVO')}
             <p>
-            Lehrkräfte einer Gruppe sehen in der Klassenübersicht, welche Aufgaben ihre Schülerinnen und Schüler bearbeitet haben
-            und mit welchem Ergebnis, und deren Abgaben. Um zu helfen, können sie den Workspace einer Schülerin oder eines Schülers öffnen
+            Lehrkräfte einer Gruppe sehen in der Klassenübersicht, welche Aufgaben ihre Schülerinnen und Schüler bearbeitet haben,
+            mit welchem Ergebnis und wann zuletzt, und deren Abgaben. Um zu helfen, können sie den Workspace einer Schülerin oder eines Schülers öffnen
             oder die Seite so sehen, wie diese Person sie sieht. Dafür geben sie eine kurze Begründung an, und die Person sieht beim
             nächsten Besuch einen Hinweis, zum Beispiel: »Frau Berger hat sich am 14.10. um 10:12 deinen Workspace angesehen:
             Ich sehe mir deine Abgabe an.« Im Profil stehen die letzten dieser Hinweise.

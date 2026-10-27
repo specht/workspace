@@ -5333,6 +5333,135 @@ ul.task-teacher-list .task-teacher-answer {
     font-weight: 600;
 }
 
+/* »zuletzt« (ClassBoard.ago, class_last_active.js): quiet, after »gelöst« */
+.class-board .cb-last {
+    font-size: 85%;
+    color: #5c636a;
+    text-align: right;
+}
+
+/* Who has checked nothing for a while, while the class is at work: told
+   gently, with a cool tint and the hourglass of the line above the board,
+   not as an alarm (it may be someone who works without pressing »Prüfen«). */
+.class-board tr.cb-quiet .cb-name {
+    background-color: #eef2f7;
+}
+
+.class-board tr.cb-quiet .cb-name::after {
+    content: '\F41F';
+    font-family: bootstrap-icons;
+    margin-left: 0.4em;
+    font-size: 85%;
+    color: #6c7a8c;
+}
+
+.cb-quiet-line {
+    margin: 0.4em 0 0;
+    font-size: 90%;
+    color: #4a5868;
+}
+
+.cb-quiet-line .bi {
+    margin-right: 0.4em;
+}
+
+/* »Überblick«: per student and activity, solved of all, with a thin bar */
+.class-overview-note {
+    color: #5c636a;
+    font-size: 90%;
+    max-width: 48em;
+}
+
+.class-overview {
+    border-collapse: collapse;
+    font-size: 95%;
+}
+
+.class-overview th,
+.class-overview td {
+    padding: 0.35em 0.5em;
+    border-bottom: 1px solid #e3e3e3;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.class-overview .cb-name {
+    text-align: left;
+    position: sticky;
+    left: 0;
+    background-color: #fff;
+}
+
+.class-overview thead th.co-activity {
+    vertical-align: bottom;
+    font-weight: 400;
+    min-width: 4.2em;
+}
+
+.class-overview thead th.co-activity a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.class-overview thead th.co-activity a:hover .cb-task-title {
+    color: #0b5ed7;
+}
+
+.co-count {
+    display: block;
+    font-variant-numeric: tabular-nums;
+}
+
+.co-bar {
+    display: block;
+    height: 4px;
+    margin: 0.15em auto 0;
+    width: 3.2em;
+    border-radius: 2px;
+    background-color: #e3e6ea;
+    overflow: hidden;
+}
+
+.co-bar > span {
+    display: block;
+    height: 100%;
+    background-color: #198754;
+}
+
+.co-done .co-count {
+    color: #146c43;
+    font-weight: 600;
+}
+
+.co-none {
+    color: #adb5bd;
+}
+
+.class-overview .cb-last {
+    font-size: 85%;
+    color: #5c636a;
+    text-align: left;
+    padding-right: 1em;
+}
+
+.class-overview tfoot td,
+.class-overview tfoot th {
+    font-size: 80%;
+    color: #5c636a;
+}
+
+/* Where something cannot be done here: why, and whom to ask */
+.class-group-new-note,
+.class-group-files {
+    font-size: 90%;
+    color: #4a5868;
+}
+
+.class-group-new-note .bi,
+.class-group-files .bi {
+    margin-right: 0.4em;
+}
+
 .class-answers {
     margin: 0.6em 0;
 }
