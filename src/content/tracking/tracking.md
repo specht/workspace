@@ -7,7 +7,7 @@ languages: [ruby, python]
 duration: 2 Doppelstunden
 curriculum: "Sek I: Leben in und mit vernetzten Systemen (Datenschutz, rechtliche Grundlagen); Oberstufe: Datenbanken und Datenschutz (Datenschutz), Vertiefung Informatik und Gesellschaft (Tracking, Profile, Einwilligung)"
 requires: [webserver]
-reference: [http]
+reference: [http, dark-patterns]
 </div>
 
 <div
@@ -1016,7 +1016,50 @@ dass ein Häkchen, das schon gesetzt ist, keine Einwilligung ist: Die Person
 muss selbst etwas tun. Und die DSGVO verlangt, dass man eine Einwilligung so
 leicht zurücknehmen kann, wie man sie gegeben hat.
 
-Wie es der Workspace selbst hält, steht in seiner
+## Wie Banner fragen
+
+Die Banner sollten etwas Gutes bewirken: Niemand bekommt ein Cookie wie das
+deines Trackers, ohne gefragt zu werden. Wie sie fragen, entscheidet aber die
+Website, und viele fragen so, dass möglichst viele zustimmen. »Alle
+akzeptieren« ist ein großer farbiger Knopf; wer ablehnen will, muss erst auf
+»Einstellungen« und dort durch lange Listen von Partnern mit eigenen Schaltern.
+Bis man sich entscheidet, verdeckt das Banner die Seite.
+
+_task(ablehnen-versteckt)
+
+<!-- after: ablehnen-versteckt -->
+In einem Versuch der Forscherinnen und Forscher um Midas Nouwens stieg
+der Anteil der Zustimmungen um 22 bis 23 Prozentpunkte, wenn der Knopf zum
+Ablehnen von der ersten Seite des Banners verschwand. Dieselbe Gruppe hat sich
+die Banner auf den 10 000 meistbesuchten Websites in Großbritannien angesehen:
+Von 680 Bannern der fünf häufigsten Anbieter solcher Banner erfüllten nur 11,8
+Prozent die Mindestanforderungen, die sich aus dem europäischen Recht ergeben.
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Dark Patterns after the GDPR: Scraping Consent Pop-ups and Demonstrating their Influence</strong>, Midas Nouwens, Ilaria Liccardi, Michael Veale, David Karger und Lalana Kagal, CHI 2020. Wie Cookie-Banner fragen und was das an den Antworten ändert: <a href='https://arxiv.org/pdf/2001.02479'>PDF</a>, auch bei der <a href='https://doi.org/10.1145/3313831.3376321'>ACM</a>.</p>
+</div>
+<!-- /after -->
+
+Die deutschen Aufsichtsbehörden für den Datenschutz sehen das so: Wer ablehnen
+will, darf dafür nicht mehr klicken müssen als für die Zustimmung. Neben
+»Einwilligung erteilen« gehört ein Knopf, der in Größe, Farbe, Kontrast und
+Schrift vergleichbar ist; ein Knopf »Einstellungen« allein reicht nicht. Eine
+andere Farbe allein macht die Einwilligung noch nicht unwirksam: Es kommt
+darauf an, ob man die Ablehnung auf einen Blick als Wahl erkennt
+([Orientierungshilfe Digitale Dienste](https://www.datenschutzkonferenz-online.de/media/oh/OH_Digitale_Dienste.pdf),
+2024). Gestaltungen, die Menschen zu etwas bringen, das sie so nicht wollten,
+heißen [Dark Patterns](/reference/dark-patterns).
+
+_uses(dark-pattern-arten, dark-pattern-gesetz)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Öffne eine Website deiner Wahl in einem privaten Fenster, damit sie dich noch nicht kennt. Achte darauf, wie viele Klicks du zum Ablehnen brauchst und wie viele zum Zustimmen, und welche Farbe und Größe jeder Knopf hat.
+</div>
+
+Es geht auch ohne Banner: Eine Website, die im Browser nur ablegt, was für
+ihren Dienst unbedingt nötig ist, muss nicht fragen. Der Workspace ist so eine
+Website. Wie er es hält, steht in seiner
 [Datenschutzerklärung](/impressum#datenschutz), im Abschnitt »Cookies und
 Speicher im Browser«.
 
@@ -1028,4 +1071,6 @@ _task(banner)
   Website etwas im Browser speichern oder lesen darf
 - [DSGVO, Erwägungsgrund 30](https://dsgvo-gesetz.de/erwaegungsgruende/nr-30/):
   Kennungen wie Cookies und IP-Adressen, aus denen Profile entstehen können
+- [Dark Patterns](/reference/dark-patterns) im Handbuch: die häufigsten Muster,
+  was das Gesetz sagt, wie eine faire Abfrage aussieht
 - [Katas: Dictionaries](/kata-dicts): zählen mit einem Dictionary
