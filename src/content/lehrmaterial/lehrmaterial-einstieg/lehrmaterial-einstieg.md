@@ -11,7 +11,7 @@ image: klasse-fortschritt.webp
 # Einstieg für Lehrkräfte
 
 <p class='abstract'>
-Was du für die erste Stunde mit dem Workspace brauchst: wie deine Klasse sich anmeldet, was die Klassenseite zeigt, wie du Abgaben ansiehst und wie du alles vorher selbst ausprobierst. Diese Seite sehen nur Lehrkräfte.
+Was du für die erste Stunde mit dem Workspace brauchst: wie deine Klasse sich anmeldet, was die Klassenseite zeigt, wer wo hängt, wie du Abgaben ansiehst und wie du alles vorher selbst ausprobierst. Diese Seite sehen nur Lehrkräfte.
 </p>
 
 ## Was die Lernenden haben
@@ -36,17 +36,17 @@ Ein Code gilt einmal und nur kurze Zeit. Wer sich vertippt, fordert einfach eine
 
 ## Gruppen und Einladungen
 
-Wer sich anmelden kann, steht in einer Gruppe. Unter **Klassen** legst du mit **Neue Gruppe** deine Gruppen an; im Reiter **Lernende** trägst du die E-Mail-Adressen ein (eine pro Zeile, mit oder ohne Namen, auch aus einer Tabelle kopiert) und schickst eine **Willkommensmail**: Sie sagt, wie die Anmeldung geht, und Antworten darauf kommen bei dir an. Namen sind freiwillig und können auch später kommen; ohne Namen zeigt die Klassenseite die Adresse. Eine Kollegin oder einen Kollegen deiner Schule nimmst du mit **Lehrkraft dazu** in eine Gruppe.
+Wer sich anmelden kann, steht in einer Gruppe. Unter **Klassen** legst du mit **Neue Gruppe** deine Gruppen an. Den Knopf gibt es, sobald die Administration dir eine Schule zugeordnet hat; bis dahin steht an seiner Stelle, an wen du schreibst. Danach trägst du im Reiter **Lernende** die E-Mail-Adressen ein (eine pro Zeile, mit oder ohne Namen, auch aus einer Tabelle kopiert) und schickst eine **Willkommensmail**: Sie sagt, wie die Anmeldung geht, und Antworten darauf kommen bei dir an. Namen sind freiwillig und können auch später kommen; ohne Namen zeigt die Klassenseite die Adresse. Eine Kollegin oder einen Kollegen deiner Schule nimmst du mit **Lehrkraft dazu** in eine Gruppe.
 
 Welcher Schule du angehörst, trägt die Administration ein. Hat deine Schule dem Einsatz noch nicht zugestimmt, vermerkst du im Reiter **Lernende**, für wen ein schriftliches Einverständnis vorliegt; anmelden können sich alle schon jetzt (mehr dazu unten).
 
 <div class='hint'>
-Steht auf der Klassenseite, dass die Einladungen noch in Dateien stehen, pflegt sie die Administration: Schreib an <a href='mailto:${contact_email}'>${contact_email}</a>, für welche Gruppe, und schick die E-Mail-Adressen mit.
+Steht im Reiter **Lernende**, dass die Einladungen der Gruppe noch in Dateien stehen, pflegt sie die Administration: Schreib an <a href='mailto:${contact_email}'>${contact_email}</a>, für welche Gruppe, und schick die E-Mail-Adressen mit.
 </div>
 
 ## Die Klassenseite
 
-Unter **Klassen** wählst du oben die Gruppe. Darunter liegen drei Reiter.
+Unter **Klassen** wählst du oben die Gruppe. Darunter liegen fünf Reiter: **Fortschritt** zeigt eine Aktivität Aufgabe für Aufgabe, **Überblick** alle Aktivitäten der Gruppe auf einmal, **Lernende** die Personen und ihre Workspaces, **Startseite**, was die Gruppe zuerst sieht, und **Einstellungen**, was für die ganze Gruppe gilt.
 
 ### Fortschritt
 
@@ -69,6 +69,8 @@ Hier wählst du eine Aktivität und siehst, wer welche Aufgabe gelöst hat. Jede
 
 Die Zeile **Klasse** darunter zählt, wie viele fertig sind und wie viele hängen. Eine gelbe Spalte heißt: Viele liegen bei dieser Aufgabe gerade falsch. Das ist oft ein guter Moment, kurz für alle zu erklären.
 
+Ganz rechts steht unter **zuletzt**, wann jemand zuletzt eine Aufgabe dieser Aktivität geprüft, beantwortet oder abgegeben hat, etwa »vor 12 min«. Wer still ist, fällt dadurch auf, auch wenn noch kein Kreuz in der Zeile steht: Arbeitet die Klasse gerade an der Aktivität, steht über der Tabelle, wer seit über zehn Minuten nichts geprüft oder abgegeben hat, und diese Namen sind leicht hinterlegt. Das kann jemand sein, der hängt und nicht fragt, oder jemand, der in Ruhe arbeitet, ohne zu prüfen; was im Workspace geschieht, sieht die Seite nicht. Wer bei einem Treffpunkt als »fehlt heute« markiert ist, steht nicht in dieser Zeile. Die Zeiten laufen weiter, solange die Seite offen ist.
+
 Darüber stehen zwei Werkzeuge:
 
 - **Jetzt nachsehen** prüft eine Aufgabe sofort für alle, ohne dass jemand »Prüfen« drücken muss, zum Beispiel ob alle ihre Seite angelegt haben. Das Ergebnis erscheint blau umrandet in der Tabelle; gespeichert wird nichts.
@@ -83,6 +85,18 @@ Eine Abgabe ist eine Kopie. Was die Person danach im Workspace ändert, ändert 
 Für eine neue Runde, etwa im nächsten Halbjahr, löscht **Alle Abgaben löschen** unter der Liste die Abgaben dieser Aufgabe in dieser Gruppe. Vorher fragt der Workspace nach; lade herunter, was du behalten willst.
 
 Die Klassenseite merkt sich, welche Gruppe und welche Aktivität du zuletzt angesehen hast, und öffnet beim nächsten Mal dort.
+
+#### Treffpunkt
+
+Mit **Treffpunkt** über der Tabelle legst du fest, bis zu welcher Aufgabe alle kommen sollen, bevor ihr gemeinsam weitermacht, etwa für ein Gespräch an der Tafel. Wer die Aktivität offen hat, sieht nach dieser Aufgabe sofort das Band »Hier trifft sich deine Klasse«; wer alle Aufgaben bis dahin gelöst hat (Extras zählen nicht), liest dort »Du bist da«. Versteckt wird nichts; was danach kommt, ist nur blasser.
+
+Über der Tabelle steht, wie viele schon da sind und wer noch fehlt; die Zahl ändert sich, sobald jemand eine Aufgabe löst. Wer heute nicht da ist, nimmst du mit **fehlt heute** aus der Zählung; das merkt sich nur dein Browser, bis Mitternacht. Sind alle da, wird die Zeile grün. **keiner** hebt den Treffpunkt wieder auf. Auf der Seite der Aktivität setzt und verschiebst du ihn auch direkt, mit dem gestrichelten Knopf nach einer Aufgabe.
+
+### Überblick
+
+Hier steht jede Person der Gruppe mit allen Aktivitäten, an denen jemand aus der Gruppe gearbeitet hat; angeheftete kommen zuerst. In jeder Zelle steht, wie viele Aufgaben gelöst sind, von allen ohne Extras, mit einem schmalen Balken; ein Strich heißt: noch nichts bearbeitet. Ein Klick auf eine Spalte öffnet die Aktivität im Reiter **Fortschritt**. Ganz rechts steht, wann die Person zuletzt eine Aufgabe irgendeiner Aktivität geprüft hat. Noten sind das nicht: Die Zahlen sagen, wie weit jemand ist, nicht wie gut.
+
+<img class='full full-shadow' src='klasse-ueberblick.webp' alt='Der Reiter Überblick: Namen untereinander, darüber die Aktivitäten der Gruppe, in den Zellen gelöste Aufgaben mit einem schmalen Balken, rechts, wann zuletzt.'>
 
 ### Lernende
 
@@ -102,6 +116,24 @@ Bevor du einen Workspace öffnest oder jemanden nachahmst, schreibst du einen Sa
 ### Startseite
 
 Was du hier für die Gruppe **anheftest**, steht bei allen in der Gruppe oben auf der Startseite. So findet die Klasse die Aktivität der Stunde sofort.
+
+### Einstellungen
+
+Hier steht, was für die ganze Gruppe gilt; jede Änderung ist sofort gespeichert.
+
+- **Sprache:** Gibt es eine Aktivität in mehreren Programmiersprachen (etwa Ruby und Python), sieht die Gruppe zuerst diese. Lernende können auf der Seite selbst umschalten.
+- **Kopierknöpfe:** »An jedem Codeblock« setzt überall einen Kopierknopf. »Wo sinnvoll« lässt ihn nur dort, wo Abtippen nichts lehrt (Adressen, Befehle, große Dateien); alles andere tippt die Klasse ab.
+- **Git-Repositorys:** Für Aktivitäten, in denen die Klasse ein gemeinsames Repository klont, trägst du dessen Adresse ein oder legst es mit **Im Workspace anlegen** auf dem Git-Server des Workspace an. Die Lernenden sehen die Adresse dann im Befehl zum Klonen.
+- **Schule:** zu welcher Schule die Gruppe gehört, ob die Schule dem Einsatz zugestimmt hat, und der Weg zu den **Unterlagen für deine Schule** (mehr dazu unten).
+
+## Die erste Doppelstunde
+
+1. **Vorher:** Leg die Gruppe an und trag die Adressen ein (Reiter **Lernende**). Probier die Aktivität mit deinem Testkonto aus (siehe unten).
+2. **Anmelden:** Zeig **Anmelde-Codes zeigen** am Beamer; die Klasse meldet sich mit dem Anfang ihrer Adresse an und liest ihren Code dort ab.
+3. **Anheften:** Heft die Aktivität der Stunde im Reiter **Startseite** an. Sie steht dann bei allen ganz oben.
+4. **Treffpunkt:** Setz im Reiter **Fortschritt** einen Treffpunkt nach der Aufgabe, bis zu der alle vor dem ersten Gespräch kommen sollen.
+5. **Beobachten:** Behalt **Fortschritt** offen. Rote Kreuze zeigen, wer hängt, eine gelbe Spalte, wo viele hängen, die Zeile über der Tabelle, wer still ist. Ist die Treffpunkt-Zeile grün, sind alle da.
+6. **Am Ende:** Der Reiter **Überblick** zeigt, wie weit alle gekommen sind, auch über mehrere Aktivitäten.
 
 ## Selbst ausprobieren
 
@@ -142,6 +174,8 @@ Steht an einer Aufgabe **Vorschau für Lehrkräfte**, sind Aufgaben auf eurer In
 - Abgaben als Kopie, bis die Person sie löscht oder neu abgibt.
 - Wer wann einen Workspace geöffnet oder jemanden nachgeahmt hat, mit deinem Satz dazu.
 
+Daraus zeigt die Klassenseite auch, wann jemand zuletzt eine Aufgabe geprüft hat; eigens gespeichert wird dafür nichts.
+
 Noten speichert der Workspace nicht. Die Haken auf der Klassenseite sagen, ob eine Aufgabe gelöst ist, nicht wie gut.
 
 Im Profil unter **Meine Daten** lädt jede Person alles, was zu ihrem Konto gespeichert ist, als ZIP herunter und löscht ihr Konto selbst. Spätestens zum Ende des Schuljahres, in dem ein Kurs endet, werden die Konten gelöscht; sag der Administration, welche Gruppen enden und wer die Schule verlässt. Wer die Schule verlässt und das Konto behalten möchte, kann es weiterführen. Alles Weitere steht in der [Datenschutzerklärung](/impressum#datenschutz).
@@ -150,8 +184,8 @@ Im Profil unter **Meine Daten** lädt jede Person alles, was zu ihrem Konto gesp
 
 Unter [Datenschutz: Unterlagen für die Schule](/datenschutz) liegt alles, was eine Schulleitung braucht, um den Workspace im Unterricht einzusetzen: eine Seite mit der Entscheidung zum Unterschreiben, eine Prüfübersicht für die Datenschutzbeauftragte Stelle, der Eintrag für das Verzeichnis von Verarbeitungstätigkeiten, ein Elternbrief und eine Nutzungsordnung, jeweils zum Drucken.
 
-Unterrichtest du an einer anderen Schule als der, die den Workspace betreibt, gilt das auch für dich. Unter **Gruppen** führt **Unterlagen für deine Schule** zu denselben Unterlagen mit deiner Schule als Verantwortlicher: Sie nennen ihre Anschrift und ihre Datenschutzbeauftragte Stelle (das trägt die Administration ein; sag ihr, was fehlt), dich als Ansprechperson, und der Elternbrief trägt deinen Namen. Die Schulleitung unterschreibt die Entscheidung und die Vereinbarung zur Auftragsverarbeitung; schick beides an die Administration, die es einträgt. Damit ist für deine ganze Schule alles geklärt.
+Unterrichtest du an einer anderen Schule als der, die den Workspace betreibt, gilt das auch für dich. Unter **Klassen** im Reiter **Einstellungen** führt **Unterlagen für deine Schule** zu denselben Unterlagen mit deiner Schule als Verantwortlicher: Sie nennen ihre Anschrift und ihre Datenschutzbeauftragte Stelle (das trägt die Administration ein; sag ihr, was fehlt), dich als Ansprechperson, und der Elternbrief trägt deinen Namen. Die Schulleitung unterschreibt die Entscheidung und die Vereinbarung zur Auftragsverarbeitung; schick beides an die Administration, die es einträgt. Damit ist für deine ganze Schule alles geklärt.
 
-Bis dahin genügt für eine Schülerin oder einen Schüler ein schriftliches Einverständnis: Unter den Unterlagen gibt es den **Elternbrief mit Einverständniserklärung**. Du bewahrst die unterschriebenen Zettel auf und trägst unter **Gruppen** bei jeder Person das Datum ein; dafür bist du verantwortlich. Gesperrt wird niemand, solange das noch offen ist; die Gruppe zeigt aber, für wie viele es fehlt.
+Bis dahin genügt für eine Schülerin oder einen Schüler ein schriftliches Einverständnis: Unter den Unterlagen gibt es den **Elternbrief mit Einverständniserklärung**. Du bewahrst die unterschriebenen Zettel auf und trägst im Reiter **Lernende** bei jeder Person das Datum ein; dafür bist du verantwortlich. Gesperrt wird niemand, solange das noch offen ist; die Gruppe zeigt aber, für wie viele es fehlt.
 
 Leistungsüberprüfungen bereitest du im **Profil** unter **Für Lehrkräfte** vor.

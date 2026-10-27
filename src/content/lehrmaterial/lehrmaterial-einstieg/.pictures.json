@@ -4,9 +4,11 @@
   "inputs": [
     "e2e/tests/teacher-guide.pictures.ts",
     "src/ruby/include/class_board.rb",
+    "src/ruby/include/class_page.rb",
     "src/ruby/include/submission_view.rb",
     "src/ruby/include/teacher_roles.rb",
     "src/static/include/class_board.js",
+    "src/static/include/class_last_active.js",
     "src/static/include/submission_viewer.js",
     "src/static/include/tasks.js",
     "src/static/include/default.css",
@@ -14,11 +16,12 @@
     "src/static/_template.html",
     "src/content/static-website/tasks.yaml"
   ],
-  "hash": "b8e31469a39422dcb87a9a6c1268a0c8e375c55bbc9e6d7a528226ad766ac2dc",
+  "hash": "fc2f9b6ad63d1b79750faf3f6797bb35bfed5bc51d6e87f8dfa639775bcbece4",
   "pictures": [
     "abgabe-ansehen.webp",
     "codes-beamer.webp",
     "klasse-fortschritt.webp",
-    "klasse-lernende.webp"
+    "klasse-lernende.webp",
+    "klasse-ueberblick.webp"
   ]
 }

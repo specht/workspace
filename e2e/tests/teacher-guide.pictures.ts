@@ -25,8 +25,8 @@ const REPO = path.resolve(__dirname, '../..');
 // below, and hashes the files the same way).
 const INPUTS = [
   'e2e/tests/teacher-guide.pictures.ts',
-  'src/ruby/include/class_board.rb', 'src/ruby/include/submission_view.rb', 'src/ruby/include/teacher_roles.rb',
-  'src/static/include/class_board.js', 'src/static/include/submission_viewer.js', 'src/static/include/tasks.js',
+  'src/ruby/include/class_board.rb', 'src/ruby/include/class_page.rb', 'src/ruby/include/submission_view.rb', 'src/ruby/include/teacher_roles.rb',
+  'src/static/include/class_board.js', 'src/static/include/class_last_active.js', 'src/static/include/submission_viewer.js', 'src/static/include/tasks.js',
   'src/static/include/default.css', 'src/static/include/dark.css', 'src/static/_template.html',
   'src/content/static-website/tasks.yaml',
 ];
@@ -75,6 +75,17 @@ const MISTAKES: [string, string, string][] = [
   ['e2e-peer@example.com', 'selektor', '0'], ['e2e-peer@example.com', 'selektor', '2'], ['e2e-peer@example.com', 'selektor', '3'],
 ];
 const STUCK = new Set(['e2e-auth-student-3@example.com alt-text', 'e2e-peer@example.com selektor']);
+// »zuletzt« as in a lesson half an hour in (minutes ago; the script itself
+// checks every task within seconds): Mats has not checked anything yet and
+// Hannes stopped a while ago, so the line above the board names both.
+const LAST: Record<string, number> = {
+  'e2e-auth-student-0@example.com': 3, 'e2e-auth-student-1@example.com': 2, 'e2e-auth-student-2@example.com': 6,
+  'e2e-auth-student-3@example.com': 4, 'e2e-auth-student-4@example.com': 1, 'e2e-auth-student-5@example.com': 8,
+  'e2e-auth-student-6@example.com': 5, 'e2e-auth-student-7@example.com': 17, 'e2e-peer@example.com': 2,
+  'e2e-0@example.com': 1, 'e2e-1@example.com': 7, 'e2e-2@example.com': 3,
+  'e2e-4@example.com': 9, 'e2e-5@example.com': 4, 'e2e-6@example.com': 6, 'e2e-7@example.com': 2,
+};
+const QUIET = ['e2e-3@example.com', 'e2e-auth-student-7@example.com'];
 
 const STAGES = path.resolve(__dirname, '../../src/content/static-website/lehrkraft');
 const PHOTO = path.resolve(__dirname, '../../src/content/reference/html/bilder/classroom.jpg');
@@ -141,7 +152,9 @@ async function dress(page: Page, zoom = 1) {
     nodes.forEach((n) => { const t = fix(n.data); if (t !== n.data) n.data = t; });
     document.documentElement.style.zoom = String(z);
   }, [NAMES, zoom] as const);
-  await page.addStyleTag({ content: 'footer { display: none !important; } .class-board-intro { visibility: hidden; }' });
+  // the E2E teacher has no school and its group comes from a file: notes a
+  // teacher of a school with a group of its own never sees
+  await page.addStyleTag({ content: 'footer { display: none !important; } .class-board-intro { visibility: hidden; } .class-group-new-note, .class-group-files { display: none !important; }' });
 }
 
 async function shoot(page: Page, name: string, anchor: string | null, out: string) {
@@ -202,11 +215,33 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
 
     const teacher = await (await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 2 })).newPage();
     await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
+    await teacher.route('**/api/class/last_active', async (route) => {
+      const now = Math.floor(Date.now() / 1000);
+      const last = Object.fromEntries(Object.entries(LAST).map(([email, minutes]) => [email, now - minutes * 60 - 20]));
+      await route.fulfill({ contentType: 'application/json', body: JSON.stringify({ now, last: { ...last, 'e2e-3@example.com': 0 }, quiet: QUIET }) });
+    });
     await teacher.goto('/klasse?group=E2E&activity=static-website');
     await teacher.evaluate(() => localStorage.setItem('hackschule-class-welcome-hidden', '1'));
     await teacher.reload();
+    await expect(teacher.locator('.cb-quiet-line')).toBeVisible({ timeout: 15_000 });
     await dress(teacher, 0.78);
     await shoot(teacher, 'klasse-fortschritt', '.class-board-select', out);
+
+    // How far everyone has come, across the group's activities; »zuletzt«
+    // the same lesson as on the board
+    await teacher.goto('/klasse?group=E2E&tab=ueberblick');
+    await teacher.evaluate((last) => {
+      const now = Math.floor(Date.now() / 1000);
+      document.querySelectorAll<HTMLElement>('table.class-overview tbody tr[data-email]').forEach((tr) => {
+        const minutes = (last as Record<string, number>)[tr.dataset.email!];
+        const td = tr.querySelector<HTMLElement>('td.cb-last')!;
+        td.dataset.updated = minutes === undefined ? '0' : String(now - minutes * 60 - 20);
+        td.textContent = (window as any).ClassLastActive.ago(Number(td.dataset.updated), now);
+      });
+    }, LAST);
+    await dress(teacher, 0.78);
+    await shoot(teacher, 'klasse-ueberblick', '.class-board-select', out);
+    await teacher.unroute('**/api/class/last_active');
 
     // The class at work: each Workspace with a load of its own (LOADS)
     await teacher.goto('/klasse?group=E2E&tab=lernende');
