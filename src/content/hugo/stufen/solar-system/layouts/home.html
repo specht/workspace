@@ -4,7 +4,7 @@
   <ul class="cards">
     {{ range site.RegularPages }}
       <li>
-        <a href="{{ .RelPermalink }}">
+        <a href="{{ .RelPermalink }}"{{ with .Params.color }} style="--planet: {{ . }}"{{ end }}>
           <strong>{{ .Title }}</strong>
           <span>{{ .Description }}</span>
         </a>

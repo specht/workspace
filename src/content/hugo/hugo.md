@@ -1,6 +1,6 @@
 <div class='meta'>
 image: startseite.webp
-image_alt: "Die Startseite des Planetenlexikons »Unser Sonnensystem«: oben die Navigation mit Jupiter, Mars und Saturn, darunter je eine Karte für die drei Planeten mit einem Satz über sie"
+image_alt: "Die Startseite des Planetenlexikons »Unser Sonnensystem«: oben ein Kopf wie ein Nachthimmel mit der Navigation Jupiter, Mars und Saturn, darunter je eine Karte für die drei Planeten mit einer Kugel in seiner Farbe und einem Satz über ihn"
 kind: projekt
 language: Hugo
 duration: 2 Doppelstunden
@@ -96,6 +96,7 @@ Eine Seite ist eine Markdown-Datei in `content`. Lege `content/mars.md` an:
 title: Mars
 date: 2026-10-15
 description: Der rote Planet mit dem höchsten Vulkan.
+color: "#c1440e"
 tags: [Gesteinsplanet, Monde]
 ---
 
@@ -113,7 +114,7 @@ der Erde. Seit Jahren fahren dort Roboterfahrzeuge herum und schicken Bilder.
 - An seinen Polen liegen Kappen aus Eis.
 ```
 
-Oben steht zwischen zwei Zeilen `---` die **Front Matter**, Angaben über die Seite in YAML: ihr Titel, ein Datum, eine kurze Beschreibung und Schlagwörter (`tags`). Darunter steht der Inhalt in Markdown, wie in einer README-Datei: `**fett**`, `## Überschrift`, `- Liste`.
+Oben steht zwischen zwei Zeilen `---` die **Front Matter**, Angaben über die Seite in YAML: ihr Titel, ein Datum, eine kurze Beschreibung, eine Farbe und Schlagwörter (`tags`). `color` ist ein eigenes Feld: Hugo kennt es nicht, aber ein Layout kann es lesen; dazu später mehr. Darunter steht der Inhalt in Markdown, wie in einer README-Datei: `**fett**`, `## Überschrift`, `- Liste`.
 
 _uses(front-matter)
 
@@ -215,6 +216,7 @@ Jetzt zeigt sich, wofür das gut ist. Lege zwei weitere Seiten an, `content/jupi
 title: Jupiter
 date: 2026-10-15
 description: Ein Riese mit einem Sturm, größer als die Erde.
+color: "#c99b6b"
 tags: [Gasriese, Monde]
 ---
 
@@ -237,6 +239,7 @@ und `content/saturn.md`:
 title: Saturn
 date: 2026-10-15
 description: Leichter als Wasser, mit Ringen aus Eis.
+color: "#e3c27a"
 tags: [Gasriese, Ringe]
 ---
 
@@ -300,7 +303,7 @@ Sie bekommt ein eigenes Layout, `layouts/home.html`, das unter ihrem Text eine K
   <ul class="cards">
     {{ range site.RegularPages }}
       <li>
-        <a href="{{ .RelPermalink }}">
+        <a href="{{ .RelPermalink }}"{{ with .Params.color }} style="--planet: {{ . }}"{{ end }}>
           <strong>{{ .Title }}</strong>
           <span>{{ .Description }}</span>
         </a>
@@ -310,7 +313,7 @@ Sie bekommt ein eigenes Layout, `layouts/home.html`, das unter ihrem Text eine K
 {{ end }}
 ```
 
-`{{ .Description }}` ist die Beschreibung aus der Front Matter jeder Seite.
+`{{ .Description }}` ist die Beschreibung aus der Front Matter jeder Seite. Eigene Felder wie `color` stehen in `.Params`: `{{ with .Params.color }}` schreibt das `style` mit der Farbe nur, wenn die Seite eine hat, und darin steht sie für `{{ . }}`.
 
 _task(neue-seite)
 
@@ -331,13 +334,22 @@ body {
   background: #f4f4f6;
 }
 
+/* ein Nachthimmel: Sterne aus drei Mustern von Punkten, verschieden groß
+   und verschieden weit auseinander, über einem Verlauf */
 header {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 1em;
-  padding: 1em 2em;
-  background: #14213d;
+  padding: 1.2em 2em;
+  background-color: #0b132b;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.9) 1.2px, transparent 1.8px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.6) 0.8px, transparent 1.3px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.4) 0.7px, transparent 1.1px),
+    linear-gradient(135deg, #0b132b, #1c2541 60%, #3a506b);
+  background-size: 173px 97px, 109px 61px, 67px 43px, auto;
+  background-position: 23px 31px, 71px 9px, 41px 27px, 0 0;
 }
 
 header a {
@@ -353,13 +365,14 @@ header a {
 }
 
 main {
-  max-width: 40em;
+  max-width: 44em;
   margin: 2em auto;
   padding: 0 1em;
 }
 
 h1 {
   color: #14213d;
+  font-size: 2.2em;
 }
 
 main a {
@@ -383,19 +396,44 @@ main a {
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(12em, 1fr));
-  gap: 1em;
+  gap: 1.2em;
 }
 
 .cards a {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4em;
   height: 100%;
-  padding: 1em;
-  border-radius: 0.5em;
+  box-sizing: border-box;
+  padding: 1.4em 1em;
+  border-radius: 0.8em;
   background: white;
   color: inherit;
+  text-align: center;
   text-decoration: none;
-  border-top: 4px solid #fca311;
   box-shadow: 0 0.1em 0.4em rgba(20, 33, 61, 0.12);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.cards a:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0.5em 1.2em rgba(20, 33, 61, 0.2);
+}
+
+/* der Planet: eine Kugel in der Farbe aus seiner Front Matter */
+.cards a::before {
+  content: "";
+  width: 4.5em;
+  height: 4.5em;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.75), var(--planet, #fca311) 40%, #0b132b 130%);
+  box-shadow: 0 0.3em 0.8em rgba(11, 19, 43, 0.25);
+}
+
+.cards strong {
+  font-size: 1.2em;
+  color: #14213d;
 }
 
 .cards span {
@@ -411,7 +449,9 @@ footer {
 }
 ```
 
-und binde die Datei in `layouts/baseof.html` im `<head>` ein, unter dem `<title>`:
+Die Kugel jedes Planeten ist kein Bild: `.cards a::before` setzt vor jede Karte ein leeres Element, rund und mit einem Farbverlauf. `var(--planet, #fca311)` ist die Farbe, die `home.html` aus der Front Matter in das `style` der Karte schreibt, und Orange, wenn eine Seite keine hat.
+
+Binde die Datei in `layouts/baseof.html` im `<head>` ein, unter dem `<title>`:
 
 ```html
 ~   <meta charset="utf-8">
@@ -440,7 +480,7 @@ sleep: 1
 check-task: navigation
 terminal-expect-no-text: ERROR
 -->
-<img class='full border' src='startseite.webp' alt='Die Startseite »Unser Sonnensystem« mit nachtblauem Kopf, dem Titel in Orange und der Navigation Jupiter, Mars, Saturn; darunter ein Absatz und drei weiße Karten mit orangem Rand oben, Titel und Beschreibung der Planeten.'>
+<img class='full border' src='startseite.webp' alt='Die Startseite »Unser Sonnensystem« mit einem Kopf wie ein Nachthimmel mit kleinen Sternen, dem Titel in Orange und der Navigation Jupiter, Mars, Saturn; darunter ein Absatz und drei weiße Karten, jede mit einer Kugel in der Farbe des Planeten (hellbraun, rostrot, blassgelb), seinem Namen und einer Beschreibung.'>
 
 _uses(regeln, selektoren)
 
