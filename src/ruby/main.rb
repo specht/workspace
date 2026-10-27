@@ -2156,10 +2156,10 @@ class Main < Sinatra::Base
                     # line of the curriculum teachers see on the overview.
                     :idea => page_meta['idea'],
                     :curriculum => page_meta['curriculum'],
-                    # whom the activity is for, where its curriculum line
                     # its topics (src/content/curricula/themen.yaml), from which
                     # the plan of another state derives its line (Curriculum)
                     :topics => Array(page_meta['topics']).map(&:to_s),
+                    # whom the activity is for, where its curriculum line
                     # names both plans but it is meant for the younger
                     # (CurriculumGraph.age_of): Sek I, Sek I und Oberstufe,
                     # Oberstufe
@@ -5433,7 +5433,6 @@ class Main < Sinatra::Base
             "<script src='/include/page_pin.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}' defer></script></span>"
     end
 
-    def page_kind_header(slug)
     # The state whose curricula a teacher sees (profile, /lehrplan;
     # Curriculum, docs/plan-bundeslaender.md); Berlin without a choice.
     def curriculum_state
@@ -5455,6 +5454,7 @@ class Main < Sinatra::Base
         "<select id='#{id}' class='form-select form-select-sm curriculum-state' aria-label='Bundesland für die Lehrpläne'>#{options.join}</select>"
     end
 
+    def page_kind_header(slug)
         # the teacher's buttons together at the right end, wrapping together
         tools = page_pin_button(slug) + teacher_note_toggle(slug)
         toggle = tools.empty? ? '' : "<span class='page-teacher-tools'>#{tools}</span>"
@@ -7855,12 +7855,6 @@ class Main < Sinatra::Base
         "<button class='btn btn-md #{active ? 'btn-success' : 'btn-outline-secondary'} bu-toggle-module' data-module='#{key}'><i class='bi #{active ? 'bi-check-lg' : 'bi-x-lg'}'></i>#{MODULE_LABELS[key]} im Menü #{active ? '' : 'nicht'} anzeigen</button>"
     end
 
-    post '/api/set_brightness/:mode' do
-        mode = params['mode']
-        assert(%w(light dark auto).include?(mode))
-        neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :mode => mode})
-            MATCH (u:User {email: $email})
-            SET u.brightness = $mode
     # The state whose curricula a teacher sees (Curriculum): one of the
     # states of the plans in src/content/curricula/.
     post '/api/set_curriculum_state/:state' do
@@ -7875,6 +7869,12 @@ class Main < Sinatra::Base
         respond(:ok => true)
     end
 
+    post '/api/set_brightness/:mode' do
+        mode = params['mode']
+        assert(%w(light dark auto).include?(mode))
+        neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :mode => mode})
+            MATCH (u:User {email: $email})
+            SET u.brightness = $mode
             RETURN u;
         END_OF_STRING
     end
