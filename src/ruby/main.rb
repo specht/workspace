@@ -6891,8 +6891,14 @@ class Main < Sinatra::Base
                     end.empty?
                     # The icon next to the heading is decoration (alt='').
                     io.puts "<h2><div class='squircle'><img alt='' src='#{section[:icon]}'></div> #{section[:label]}</h2>"
+                    # short: in sections.yaml is the sentence a phone shows
+                    # instead of the description, so the cards come sooner.
                     if section[:description]
-                        io.puts "<p style='margin-top: -1em; margin-bottom: 1em;'>#{section[:description]}</p>"
+                        if section[:short]
+                            io.puts "<p class='section-description'><span class='section-long'>#{section[:description]}</span><span class='section-short'>#{section[:short]}</span></p>"
+                        else
+                            io.puts "<p class='section-description'>#{section[:description]}</p>"
+                        end
                     end
                     entries = section[:entries].reject do |entry|
                         (!DEVELOPMENT) && @@content[entry][:dev_only]

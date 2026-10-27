@@ -1,6 +1,8 @@
 # The catalog on the start page, in this order: first what the Workspace
 # offers, the tools of the trade (terminal, Git) further down; within a topic
 # the basics come first, TCP/IP before the web server.
+# short: is the one sentence a phone shows instead of the description, so
+# that the cards come sooner; a section with a short description needs none.
 - key: introduction
   label: Erste Schritte
   icon: /images/rocket.png
@@ -17,6 +19,7 @@
 
 - key: katas
   label: Katas
+  short: Kleine Programmieraufgaben, die du direkt auf der Seite ausführst und prüfst.
   icon: /images/martial-arts-uniform.png
   # one strip of the sets with the person's progress (KataMap)
   carousel: true
@@ -43,6 +46,7 @@
 - key: graphics
   compact: true
   label: Grafik
+  short: Erzeuge Bilder und Animationen mit Code, von Kurven bis zur 3D-Brille.
   icon: /images/palette.png
   description: |
     Erzeuge Bilder und Animationen mit selbst geschriebenem Code: aus Kurven
@@ -65,6 +69,7 @@
 - key: games
   compact: true
   label: Spiele & 3D-Welten
+  short: Programmiere Spiele und Welten, durch die du selbst läufst.
   icon: /images/joystick.png
   description: |
     Programmiere Spiele und Welten, durch die du selbst läufst: ein Spiel auf
@@ -78,6 +83,7 @@
 - key: writing
   compact: true
   label: Texte & Präsentationen
+  short: Erstelle Dokumente, Präsentationen und Geschichten, in denen Lesende entscheiden.
   icon: /images/book.png
   description: |
     Computer können Texte nicht nur anzeigen, sondern auch strukturieren,
@@ -106,6 +112,7 @@
 
 - key: ki
   label: Künstliche Intelligenz
+  short: Baue Programme, die aus Beispielen lernen, Funktion für Funktion.
   icon: /images/brain.png
   description: |
     Wie lernt ein Programm aus Beispielen? Du baust ein winziges
@@ -121,6 +128,7 @@
 - key: compression
   compact: true
   label: Bilder und Kompression
+  short: Mach Daten kleiner und lies echte GIF- und JPEG-Dateien Byte für Byte.
   icon: /images/clamp.png
   description: |
     Daten kleiner machen, ohne etwas zu verlieren: Lauflängen, Huffman-Codes
@@ -138,6 +146,7 @@
 - key: networks
   compact: true
   label: Netze & Sicherheit
+  short: Lerne, wie Rechner über das Netz reden und wie man Daten dabei schützt.
   icon: /images/handshake.png
   description: |
     Wie Rechner über das Netz miteinander reden, vom Paket bis zur Webseite:
@@ -155,6 +164,7 @@
 - key: databases
   compact: true
   label: Datenbanken
+  short: Speichere, verknüpfe und durchsuche größere Datenmengen mit SQL.
   icon: /images/card-file-box.png
   description: |
     Speichere, verknüpfe und durchsuche größere Datenmengen. Lerne SQL kennen,
@@ -174,6 +184,7 @@
 - key: computing
   compact: true
   label: Wie Computer rechnen
+  short: Ein Blick unter die Haube, von der CPU über Automaten bis zum Routenplaner.
   icon: /images/computer.png
   description: |
     Ein Blick unter die Haube: eine kleine CPU programmieren, Sortierverfahren
@@ -196,6 +207,7 @@
 
 - key: software
   label: Software entwerfen
+  short: Plane ein Programm, bevor du es schreibst, allein oder mit der ganzen Klasse.
   icon: /images/hammer-and-wrench.png
   description: |
     Plane ein Programm, bevor du es schreibst: einen Algorithmus als
@@ -209,6 +221,7 @@
 
 - key: terminal
   label: Terminal & Git
+  short: Arbeite mit Dateien, Programmen und Git im Terminal.
   icon: /images/penguin.png
   description: |
     Arbeite mit Dateien und Programmen im Terminal. Mit Git kannst du Änderungen
@@ -258,6 +271,7 @@
     zerlegt, und ein Programm, das den Bubblesort-Algorithmus demonstriert. Finde
     deine Lieblingssprache!
   label: Programmiersprachen
+  short: Probier viele Programmiersprachen mit je drei kurzen Beispielen aus.
   icon: /images/keyboard.png
   entries:
     - fortran

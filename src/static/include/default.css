@@ -201,6 +201,27 @@ pre.code-pseudocode .o {
     color: #fe8019 !important;
 }
 
+/* The front page's section introductions: on a phone the short sentence
+   (short: in sections.yaml), from 768 px the description. */
+.section-description {
+    margin-top: -1em;
+    margin-bottom: 1em;
+}
+
+.section-description .section-short {
+    display: none;
+}
+
+@media (max-width: 767.98px) {
+    .section-description:has(.section-short) .section-long {
+        display: none;
+    }
+
+    .section-description .section-short {
+        display: inline;
+    }
+}
+
 /* ```ebnf blocks (Rouge::Lexers::EBNF): nonterminals blue, the name a rule
    defines bold, terminals yellow like every string, and the signs of the
    notation (= | { } [ ] ( )) orange, so that "(" in quotes, which lands in
