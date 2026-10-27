@@ -6,7 +6,7 @@ duration: 2 Doppelstunden
 curriculum: "Sek I: Leben in und mit vernetzten Systemen (Gestalten von Internetseiten, Stylesheets)"
 topics: [webseiten]
 language: HTML / CSS
-reference: [workspace, html, css, layout]
+reference: [workspace, html, css, layout, webspace]
 </div>
 
 <div
@@ -736,7 +736,7 @@ _task(abgabe)
 
 ## Deine Seite veröffentlichen
 
-Bis jetzt läuft die Seite nur über »Go Live« in deinem eigenen Workspace. Eine statische Webseite besteht aber nur aus Dateien wie HTML, CSS und Bildern und lässt sich deshalb sehr einfach auf einen Webserver kopieren. Im Workspace kannst du deine Seite kostenlos unter einer Hackschule-Subdomain veröffentlichen; wie das funktioniert, steht in der [Anleitung zum eigenen Webspace](/custom-subdomain).
+Bis jetzt läuft die Seite nur über »Go Live« in deinem eigenen Workspace. Eine statische Webseite besteht aber nur aus Dateien wie HTML, CSS und Bildern und lässt sich deshalb sehr einfach auf einen Webserver kopieren. Im Workspace kannst du deine Seite kostenlos unter einer Hackschule-Subdomain veröffentlichen; wie das funktioniert, steht in der [Anleitung zum eigenen Webspace](/reference/webspace).
 
 Die Website ist dann öffentlich und nicht nur für angemeldete Workspace-Nutzer sichtbar. Gib bitte vorher die unterschriebene [Nutzungsvereinbarung](/datenschutz/webhosting) bei deiner Lehrkraft ab; wenn du noch minderjährig bist, unterschreibt auch eine erziehungsberechtigte Person.
 

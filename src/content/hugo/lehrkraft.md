@@ -23,4 +23,4 @@ Lernende bauen mit Hugo eine kleine Website ohne fertiges Theme, ein Lexikon üb
 
 #### Veröffentlichen
 
-Die Seite verweist auf die Anleitung zum eigenen Webspace (`/custom-subdomain`) und lädt `public/` mit `rsync` hoch. Minderjährige brauchen dafür die unterschriebene Einverständniserklärung.
+Die Seite verweist auf die Anleitung zum eigenen Webspace (`/reference/webspace`) und lädt `public/` mit `rsync` hoch. Minderjährige brauchen dafür die unterschriebene Einverständniserklärung.

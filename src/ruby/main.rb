@@ -299,6 +299,8 @@ class Main < Sinatra::Base
     # Pages that were renamed; old links and bookmarks lead to the new page.
     MOVED_PAGES = {
         'videothek' => 'filmdatenbank',
+        # the guide to the Hackschule subdomain became a Handbuch page (2026-10)
+        'custom-subdomain' => 'reference/webspace',
         # Teacher pages that became part of their sandbox (2026-10): the app
         # tour is on the activity page, the teaching notes in its teacher note.
         'lehrmaterial-sortieren' => 'sandbox-sortieren',
