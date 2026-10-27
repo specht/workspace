@@ -18,7 +18,7 @@ Was du für die erste Stunde mit dem Workspace brauchst: wie deine Klasse sich a
 
 Jede Schülerin und jeder Schüler hat einen eigenen **Workspace**: Visual Studio Code im Browser, mit einem eigenen Ordner, der erhalten bleibt. Auf der Startseite stehen **Aktivitäten**, also Anleitungen zu einem Thema (eine Webseite bauen, eine interaktive Geschichte schreiben, eine Datenbank abfragen). In vielen Aktivitäten stehen **Aufgaben**, die der Workspace selbst prüft: Er sieht in den Dateien nach, führt eine Abfrage aus oder vergleicht eine Antwort. Im **Handbuch** schlagen die Lernenden nach, was sie in mehreren Aktivitäten brauchen.
 
-Du siehst dieselben Seiten wie deine Klasse, mit ein paar Zusätzen: dem Menüpunkt **Klassen** (deine Gruppen, ihr Fortschritt und wer darin ist), auf manchen Aktivitäten dem Knopf **Notiz für Lehrkräfte** und unter den Schritten dem Knopf **Code bis hier** (mehr dazu unten).
+Du siehst dieselben Seiten wie deine Klasse, mit ein paar Zusätzen: den Menüpunkten **Klassen** (deine Gruppen, ihr Fortschritt und wer darin ist) und **Lehrplan** (welche Aktivität zu welchem Thema deines Lehrplans passt), auf manchen Aktivitäten dem Knopf **Notiz für Lehrkräfte** und unter den Schritten dem Knopf **Code bis hier** (mehr dazu unten).
 
 ## Die erste Stunde: anmelden
 
@@ -58,11 +58,12 @@ Hier wählst du eine Aktivität und siehst, wer welche Aufgabe gelöst hat. Jede
 <table class='table'>
 <thead><tr><th>Zeichen</th><th>Bedeutung</th></tr></thead>
 <tbody>
-<tr><td>Haken</td><td>gelöst</td></tr>
-<tr><td>Papierflieger</td><td>abgegeben, oder eine Antwort in eigenen Worten gespeichert</td></tr>
-<tr><td>Kreuz mit Zahl</td><td>noch nicht gelöst, nach so vielen Versuchen; rot ab drei Versuchen</td></tr>
-<tr><td>Kreis-Pfeile</td><td>Die Aufgabe hat sich geändert, die Antwort ist von vorher.</td></tr>
-<tr><td>Strich</td><td>noch nicht bearbeitet</td></tr>
+<tr><td class='cb-cell cb-correct'><svg class='ti ti-check' aria-hidden='true'><use href='/include/tabler/tabler.svg#check'/></svg></td><td>gelöst</td></tr>
+<tr><td class='cb-cell cb-sent'><i class='bi bi-paper-plane' aria-hidden='true'></i></td><td>abgegeben, oder eine Antwort in eigenen Worten gespeichert</td></tr>
+<tr><td class='cb-cell cb-wrong'><svg class='ti ti-x' aria-hidden='true'><use href='/include/tabler/tabler.svg#x'/></svg><small>2</small></td><td>noch nicht gelöst, nach so vielen Versuchen</td></tr>
+<tr><td class='cb-cell cb-wrong cb-stuck'><svg class='ti ti-x' aria-hidden='true'><use href='/include/tabler/tabler.svg#x'/></svg><small>3</small></td><td>hängt: noch nicht gelöst, nach drei Versuchen oder mehr</td></tr>
+<tr><td class='cb-cell cb-stale'><svg class='ti ti-refresh' aria-hidden='true'><use href='/include/tabler/tabler.svg#refresh'/></svg></td><td>Die Aufgabe hat sich geändert, die Antwort ist von vorher.</td></tr>
+<tr><td class='cb-cell cb-none'><svg class='ti ti-minus' aria-hidden='true'><use href='/include/tabler/tabler.svg#minus'/></svg></td><td>noch nicht bearbeitet</td></tr>
 </tbody>
 </table>
 </div>
@@ -126,9 +127,17 @@ Hier steht, was für die ganze Gruppe gilt; jede Änderung ist sofort gespeicher
 - **Git-Repositorys:** Für Aktivitäten, in denen die Klasse ein gemeinsames Repository klont, trägst du dessen Adresse ein oder legst es mit **Im Workspace anlegen** auf dem Git-Server des Workspace an. Die Lernenden sehen die Adresse dann im Befehl zum Klonen.
 - **Schule:** zu welcher Schule die Gruppe gehört, ob die Schule dem Einsatz zugestimmt hat, und der Weg zu den **Unterlagen für deine Schule** (mehr dazu unten).
 
+## Eine Aktivität finden: der Lehrplan
+
+Unter **Lehrplan** stehen die Themen deines Rahmenlehrplans, für die Sekundarstufe I und für die Oberstufe, und unter jedem die Aktivitäten, die es behandeln. Neben jeder Stufe führen Links zum Lehrplan selbst, als PDF, und zur Seite des Landes. Oben wählst du dein Bundesland; ohne Wahl siehst du Berlin.
+
+Darüber zeigt ein Bild, was worauf aufbaut: Ein Pfeil führt von einer Aktivität zu denen, die sie voraussetzen. Die Farbe sagt, für wen eine Aktivität gedacht ist: gelb für die Sekundarstufe I, türkis für die Oberstufe, beides im Verlauf für Aktivitäten, die zu beiden passen. Wählst du über dem Bild unter **Name der Pläne** ein Thema, hebt es die Aktivitäten dazu hervor.
+
+Dieselbe Zeile siehst du oben auf jeder Aktivitätsseite: Die Namen der Themen darin führen an ihre Stelle unter **Lehrplan**.
+
 ## Die erste Doppelstunde
 
-1. **Vorher:** Leg die Gruppe an und trag die Adressen ein (Reiter **Lernende**). Probier die Aktivität mit deinem Testkonto aus (siehe unten).
+1. **Vorher:** Such unter **Lehrplan** eine Aktivität zu deinem Thema aus. Leg die Gruppe an und trag die Adressen ein (Reiter **Lernende**). Probier die Aktivität mit deinem Testkonto aus (siehe unten).
 2. **Anmelden:** Zeig **Anmelde-Codes zeigen** am Beamer; die Klasse meldet sich mit dem Anfang ihrer Adresse an und liest ihren Code dort ab.
 3. **Anheften:** Heft die Aktivität der Stunde im Reiter **Startseite** an. Sie steht dann bei allen ganz oben.
 4. **Treffpunkt:** Setz im Reiter **Fortschritt** einen Treffpunkt nach der Aufgabe, bis zu der alle vor dem ersten Gespräch kommen sollen.
