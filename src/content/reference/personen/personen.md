@@ -310,6 +310,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1928 -->
+<!-- part: rosenblatt -->
+### Frank Rosenblatt
+
+<div class='person'>
+<img src='rosenblatt.webp' alt='Schwarzweißporträt von Frank Rosenblatt als junger Mann mit gewelltem Haar, in Jackett und gemusterter Krawatte.'>
+<p><strong>Frank Rosenblatt</strong> (1928–1971), US-amerikanischer Psychologe an der Cornell University. 1958 baute er das Mark I Perceptron: eine Kamera aus 20 × 20 Fotozellen, also 400 Eingaben, deren Gewichte Motoren an Drehwiderständen selbst einstellten. Die Maschine lernte, einfache Formen auseinanderzuhalten.</p>
+<p>Deine Funktion <code>train</code> lernt nach seiner Regel: bei jedem Fehler die Gewichte ein Stück in Richtung der richtigen Antwort.</p>
+<p class='person-credit'>Foto: unbekannt, um 1950, Heinz Nixdorf MuseumsForum, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Frank_Rosenblatt.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1930 -->
 <!-- part: dijkstra -->
 ### Edsger W. Dijkstra
@@ -929,6 +941,19 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1974 -->
+<!-- birth year not published; placed by her bachelor’s degree in 1996 -->
+<!-- part: gorman -->
+### Kristen Gorman
+
+<div class='person'>
+<img src='gorman.webp' alt='Porträt von Kristen Gorman auf einem Boot vor grauem Meer, mit Schirmmütze, die Sonnenbrille hochgeschoben, in blauer Jacke.'>
+<p><strong>Kristen Gorman</strong>, Meeresbiologin, heute an der University of Alaska Fairbanks. Für ihre Doktorarbeit an der Simon Fraser University in Kanada vermaß sie auf der Palmer-Station in der Antarktis drei Sommer lang Pinguine aller drei Arten. Sie wollte wissen, wie die Kolonien damit zurechtkommen, dass das Meereis und mit ihm das Futter zurückgeht.</p>
+<p>Ihre Messungen hat sie veröffentlicht, frei für alle. Allison Horst und Alison Hill machten 2020 daraus das Paket palmerpenguins, heute einer der beliebtesten Datensätze zum Üben. Deine Datei <code>penguins.csv</code> stammt daraus.</p>
+<p class='person-credit'>Foto: University of Alaska Fairbanks (<a href='https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php'>College of Fisheries and Ocean Sciences</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1977 -->
 <!-- part: graydon-hoare -->
 ### Graydon Hoare
@@ -1006,5 +1031,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <img src='harris.webp' alt='Rich Harris bei einem Vortrag vor einer Wand mit Svelte-Code: ein Mann mit lockigem rotblondem Haar, die Hand erhoben.'>
 <p><strong>Rich Harris</strong>, britischer Journalist und Programmierer, baute interaktive Grafiken für Zeitungen, erst beim Guardian, dann bei der New York Times. 2016 schrieb er Svelte: keine Bibliothek, die im Browser mitläuft, sondern einen Compiler. Wenn du <code>npm run build</code> eingibst, übersetzt Svelte deine <code>.svelte</code>-Dateien in gewöhnliches JavaScript.</p>
 <p>Vorher hatte er schon Rollup geschrieben, ein Programm, das viele JavaScript-Dateien zu wenigen zusammenpackt. Ende 2021 ging er von der Zeitung zur Firma Vercel, um nur noch an Svelte zu arbeiten.</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1990 -->
+<!-- 1990 in most sources, 1989 in some; the box names no year -->
+<!-- part: buolamwini -->
+### Joy Buolamwini
+
+<div class='person'>
+<img src='buolamwini.webp' alt='Porträt von Joy Buolamwini vor dunklem Hintergrund, mit lockigem Haar und einer roten Brille, in weißer Jacke über einem lachsfarbenen Oberteil.'>
+<p><strong>Joy Buolamwini</strong>, kanadisch-US-amerikanische Informatikerin. Am MIT Media Lab baute sie einen Spiegel, der Gesichter erkennen sollte; ihr Gesicht erkannte die Software erst, als sie eine weiße Maske aufsetzte. Sie gründete die Algorithmic Justice League, die Verzerrungen in Programmen aufdeckt, und schrieb darüber 2023 das Buch »Unmasking AI«.</p>
+<p>Wie du am Sandberg hat sie die Fehler eines Programms nach Gruppen getrennt gezählt.</p>
+<p class='person-credit'>Foto: Niccolò Caranti, 2018, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Joy_Buolamwini,_2018_(cropped).jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->

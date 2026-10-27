@@ -749,15 +749,7 @@ Was dein Programm mit ausgedachten Kunden macht, passiert mit echten Menschen.
 Die Informatikerin Joy Buolamwini hat es an Programmen gezeigt, die Gesichter
 erkennen.
 
-<!-- Moves to the Personen page (part buolamwini) when this activity leaves
-dev-only, like Rosenblatt on »Ein Neuron lernt«: person_boxes_test.rb wants
-every person there placed on a live page. -->
-<div class='person'>
-<img src='buolamwini.webp' alt='Porträt von Joy Buolamwini vor dunklem Hintergrund, mit lockigem Haar und einer roten Brille, in weißer Jacke über einem lachsfarbenen Oberteil.'>
-<p><strong>Joy Buolamwini</strong>, kanadisch-US-amerikanische Informatikerin. Am MIT Media Lab baute sie einen Spiegel, der Gesichter erkennen sollte; ihr Gesicht erkannte die Software erst, als sie eine weiße Maske aufsetzte. Sie gründete die Algorithmic Justice League, die Verzerrungen in Programmen aufdeckt, und schrieb darüber 2023 das Buch »Unmasking AI«.</p>
-<p>Wie du am Sandberg hat sie die Fehler eines Programms nach Gruppen getrennt gezählt.</p>
-<p class='person-credit'>Foto: Niccolò Caranti, 2018, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Joy_Buolamwini,_2018_(cropped).jpg'>Wikimedia Commons</a>)</p>
-</div>
+_person(buolamwini)
 
 2018 prüften sie und die Informatikerin Timnit Gebru drei Programme großer
 Firmen, die auf einem Foto erkennen sollten, ob es eine Frau oder einen Mann

@@ -28,14 +28,7 @@ von 2007 bis 2009 Pinguine vermessen: ihre Art, ihr Gewicht, die Länge ihrer
 Flossen und ihren Schnabel. Drei Arten leben dort: der Zügelpinguin
 (englisch Chinstrap), der Eselspinguin (Gentoo) und der Adéliepinguin.
 
-<!-- Moves to the Personen page (part gorman) when this activity leaves
-dev-only, like Rosenblatt. -->
-<div class='person'>
-<img src='gorman.webp' alt='Porträt von Kristen Gorman auf einem Boot vor grauem Meer, mit Schirmmütze, die Sonnenbrille hochgeschoben, in blauer Jacke.'>
-<p><strong>Kristen Gorman</strong>, Meeresbiologin, heute an der University of Alaska Fairbanks. Für ihre Doktorarbeit an der Simon Fraser University in Kanada vermaß sie auf der Palmer-Station in der Antarktis drei Sommer lang Pinguine aller drei Arten. Sie wollte wissen, wie die Kolonien damit zurechtkommen, dass das Meereis und mit ihm das Futter zurückgeht.</p>
-<p>Ihre Messungen hat sie veröffentlicht, frei für alle. Allison Horst und Alison Hill machten 2020 daraus das Paket palmerpenguins, heute einer der beliebtesten Datensätze zum Üben. Deine Datei <code>penguins.csv</code> stammt daraus.</p>
-<p class='person-credit'>Foto: University of Alaska Fairbanks (<a href='https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php'>College of Fisheries and Ocean Sciences</a>)</p>
-</div>
+_person(gorman)
 
 <div class='gallery single'>
 <figure><img src='pinguine.webp' alt='Drei gezeichnete Pinguine vor Farbflecken, mit ihren englischen Namen: links ein Zügelpinguin vor Lila, in der Mitte ein Eselspinguin mit orangefarbenem Schnabel vor Petrol, rechts ein Adéliepinguin vor Orange.'><figcaption>Zügel-, Esels- und Adéliepinguin. Zeichnung: Allison Horst, CC0 (<a href='https://allisonhorst.github.io/palmerpenguins/'>palmerpenguins</a>)</figcaption></figure>
@@ -80,14 +73,7 @@ Das erste solche Neuron beschrieben der Neurologe Warren McCulloch und der
 Logiker Walter Pitts 1943, auf Papier. Frank Rosenblatt baute 1958 eines, das
 seine Gewichte selbst einstellte: das **Perzeptron**.
 
-<!-- Moves to the Personen page (part rosenblatt) when this activity leaves
-dev-only: person_boxes_test.rb wants every person there placed on a live page. -->
-<div class='person'>
-<img src='rosenblatt.webp' alt='Schwarzweißporträt von Frank Rosenblatt als junger Mann mit gewelltem Haar, in Jackett und gemusterter Krawatte.'>
-<p><strong>Frank Rosenblatt</strong> (1928–1971), US-amerikanischer Psychologe an der Cornell University. 1958 baute er das Mark I Perceptron: eine Kamera aus 20 × 20 Fotozellen, also 400 Eingaben, deren Gewichte Motoren an Drehwiderständen selbst einstellten. Die Maschine lernte, einfache Formen auseinanderzuhalten.</p>
-<p>Deine Funktion <code>train</code> lernt nach seiner Regel: bei jedem Fehler die Gewichte ein Stück in Richtung der richtigen Antwort.</p>
-<p class='person-credit'>Foto: unbekannt, um 1950, Heinz Nixdorf MuseumsForum, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Frank_Rosenblatt.jpg'>Wikimedia Commons</a>)</p>
-</div>
+_person(rosenblatt)
 
 <div class='book'>
 <i class='bi bi-file-earmark-text'></i>

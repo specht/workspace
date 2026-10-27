@@ -24,7 +24,7 @@
 # Keep the answers themselves (the emails) outside the repository. After a
 # refusal, the picture leaves the page; its entry stays here with the date.
 
-perzeptron/gorman.webp:
+reference/personen/gorman.webp:
   holder: Kristen Gorman (the photo is from her faculty page at the University of Alaska Fairbanks)
   contact: kbgorman@alaska.edu
   source: https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php
