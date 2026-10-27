@@ -169,6 +169,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <img src='hopper.webp' alt='Schwarzweißfoto von Grace Hopper in der Uniform der US Navy, mit verschränkten Armen vor einem Rechner.'>
 <p><strong>Grace Hopper</strong> (1906–1992), amerikanische Informatikerin und Konteradmiralin der US Navy. Schon 1952 schrieb sie ein Programm, das aus kurzen Befehlen Maschinencode zusammensetzt, und nannte es Compiler; niemand glaubte ihr zunächst, dass ein Rechner so etwas kann. Sie wollte Programme in englischen Wörtern schreiben und hörte, Computer verstünden kein Englisch. Ihre Sprache FLOW-MATIC benutzte trotzdem englische Wörter, und COBOL übernahm das: <code>DIVIDE NUM BY 2 GIVING LIM</code>.</p>
 <p>1947 fand ihr Team in einem Relais des Rechners Mark II eine Motte und klebte sie ins Logbuch: »First actual case of bug being found«, der erste echte Fall eines Käfers. Fehler hießen schon vorher Bugs, aber Hopper erzählte die Geschichte so gern, dass sie berühmt wurde.</p>
+<p class='person-credit'>Foto: Lynn Gilbert, 1978, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Grace_Murray_Hopper,_in_her_office_in_Washington_DC,_1978,_©Lynn_Gilbert.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 
