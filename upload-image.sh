@@ -13,7 +13,8 @@
 #
 # Through a registry (the default): a registry container on the server, which
 # listens only on 127.0.0.1 there and keeps its layers in REMOTE_DIR/registry,
-# reached from here through an SSH tunnel. docker push sends only the layers
+# reached from here through SSH (socat here, docker exec there; no port
+# forwarding needed). docker push sends only the layers
 # it does not have yet, so after the first run an update sends only what
 # changed; docker pull on the server unpacks layer by layer. At the end the
 # registry stops and its garbage collection removes the layers no image needs
@@ -114,7 +115,7 @@ users_of() { remote "docker ps -a --filter ancestor=$1 --format '{{.Names}} ({{.
 
 needed_here='docker ssh'
 [ "$method" = archive ] && needed_here='docker zstd rsync ssh'
-[ "$method" = registry ] && needed_here='docker ssh curl'
+[ "$method" = registry ] && needed_here='docker ssh curl socat setsid'
 for tool in $needed_here; do
     command -v "$tool" >/dev/null || fail "Missing here: $tool"
 done
@@ -228,19 +229,30 @@ fi
 
 # --- The registry and the tunnel ---------------------------------------------
 tunnel_pid=''
-close_tunnel() { [ -z "$tunnel_pid" ] || kill "$tunnel_pid" 2>/dev/null || true; tunnel_pid=''; }
+# socat runs in a process group of its own, so that the connections it
+# forked (each an ssh) end with it
+close_tunnel() { [ -z "$tunnel_pid" ] || kill -- "-$tunnel_pid" 2>/dev/null || true; tunnel_pid=''; }
 trap close_tunnel EXIT
 open_tunnel() {
     close_tunnel
-    shown "ssh -N -L 127.0.0.1:$tunnel_port:127.0.0.1:$registry_port $host &"
-    ssh -N -o ExitOnForwardFailure=yes -L "127.0.0.1:$tunnel_port:127.0.0.1:$registry_port" "$host" &
+    # Not ssh -L: servers that forbid port forwarding (AllowTcpForwarding no,
+    # no-port-forwarding in authorized_keys) refuse it. Instead, socat here
+    # takes each connection of docker push and runs a command on the server
+    # for it, nc inside the registry's container (busybox in registry:2),
+    # which only needs docker there. One SSH connection each, not a shared
+    # one: docker keeps idle connections open, more than sshd's 10 sessions
+    # per connection.
+    local relay="ssh $host docker exec -i $registry_name nc 127.0.0.1 5000"
+    shown "socat TCP-LISTEN:$tunnel_port,bind=127.0.0.1,fork,reuseaddr SYSTEM:'$relay' &"
+    # quiet: it says »exiting on signal 15« for every connection at the end
+    setsid socat "TCP-LISTEN:$tunnel_port,bind=127.0.0.1,fork,reuseaddr" "SYSTEM:$relay" 2>/dev/null &
     tunnel_pid=$!
     for _ in $(seq 1 30); do
         curl -s -o /dev/null "http://127.0.0.1:$tunnel_port/v2/" && return 0
         kill -0 "$tunnel_pid" 2>/dev/null || fail "The tunnel to $host did not open; is port $tunnel_port here taken? TUNNEL_PORT=… takes another."
         sleep 1
     done
-    fail "The registry on $host does not answer through the tunnel."
+    fail "The registry on $host does not answer through the tunnel; try it by hand: ssh $host docker exec $registry_name wget -qO- http://127.0.0.1:5000/v2/"
 }
 start_registry() {
     # :Z labels the directory for the container where SELinux is on

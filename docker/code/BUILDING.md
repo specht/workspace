@@ -19,10 +19,11 @@ are in the Git history (before that date) for the Flutter activity in TODO.md.
 No usage reporting: the image sets `DART_SUPPRESS_ANALYTICS`,
 `DOTNET_CLI_TELEMETRY_OPTOUT`, `POWERSHELL_TELEMETRY_OPTOUT` and
 `DO_NOT_TRACK`; code-server runs with `--disable-telemetry`; Dart keeps its
-setting in the home directory, so `init-code-server-run` runs
-`dart --disable-analytics` as the student at every start. Go 1.22 (from apt)
-has no telemetry; if Go is updated to 1.23 or later, add `go telemetry off`
-there.
+setting in the home directory, and so does Go, so `init-code-server-run`
+runs `dart --disable-analytics` and `go telemetry off` as the student at every
+start. Go comes from go.dev (`GO_VERSION`), not from apt, with
+`GOTOOLCHAIN=local`: no other toolchain is downloaded behind the student's
+back.
 
 `./build-image.sh` refreshes those stages, builds a *candidate*, clones the
 real `specht/latex-tutorial` repository, compiles its six example documents
@@ -57,8 +58,9 @@ containers are not stopped by these build scripts.
 finished image from a machine that has it: `./upload-image.sh HOST
 [REMOTE_DIR]`. By default it goes through a registry container on the server
 (listening only on 127.0.0.1 there, its storage in `REMOTE_DIR/registry`)
-reached through an SSH tunnel: `docker push` sends only the layers the
-registry does not have, so after the first run an update sends only what
+reached through SSH: socat here, `docker exec` into the registry's container
+there, so the server needs no port forwarding. `docker push` sends only the
+layers the registry does not have, so after the first run an update sends only what
 changed, and `docker pull` unpacks layer by layer (the image and its largest
 layer, 3.5 GB in October 2026). Afterwards the registry stops and its garbage
 collection keeps only the current image's layers. `--archive` sends the whole
