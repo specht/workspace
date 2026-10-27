@@ -108,46 +108,23 @@ Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>da
 Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
 
 <!-- tutorial-screenshot
-# Der erste Lauf: Dart erklärt die Telemetrie, das braucht Platz
+# Der erste Lauf. Im Terminal des Editors zeigt Dart den Text zur
+# Telemetrie, obwohl sie aus ist (dart --disable-analytics beim Start,
+# init-code-server-run, und davor hier noch einmal); außerhalb des Editors
+# nicht. Ungeklärt; der Text unter dem Bild sagt, dass man ihn übergehen kann.
 hide-left-sidebar
 terminal-maximize
+terminal-run: dart --disable-analytics > /dev/null; dart run hello.dart > /dev/null
+terminal-wait-for-prompt
 press: Control+l
 terminal-run: dart run hello.dart
 terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello-telemetry.webp' alt='dart run hello.dart erklärt zuerst in einem langen Text, dass das Dart-Werkzeug Nutzungsdaten an Google Analytics schickt und wie dart --disable-analytics das abstellt; ganz unten steht Hello, World!.'>
+<img class='full' src='hello-again.webp' alt='dart run hello.dart zeigt zuerst einen englischen Text: Das Dart-Werkzeug schicke Nutzungsdaten an Google Analytics, abschalten lasse sich das mit dart --disable-analytics; darunter steht Hello, World!.'>
 
-### Was ist Telemetrie?
-
-Telemetrie ist eine Funktion von Dart, die Informationen über die Ausführung des Programms sammelt und an Google sendet. Diese Informationen helfen den Entwicklern von Dart, die Sprache zu verbessern. Um zu verhindern, dass Telemetrie-Daten gesendet werden, gib den folgenden Befehl wie angegeben ein:
-
-```bash
-dart --disable-analytics
-```
-
-Du solltest nun eine Bestätigung sehen, dass die Telemetrie deaktiviert wurde:
-
-<!-- tutorial-screenshot
-press: Control+l
-terminal-run: dart --disable-analytics
-terminal-wait-for-prompt
-crop-terminal-lines: auto
--->
-
-<img class='full' src='disable-analytics.webp' alt='dart --disable-analytics antwortet »Analytics reporting disabled«.'>
-
-Wenn wir das Programm erneut ausführen, sollte es die Nachricht `Hello, World!` ohne die Meldung zur Telemetrie ausgeben:
-
-<!-- tutorial-screenshot
-press: Control+l
-terminal-run: dart run hello.dart
-terminal-wait-for-prompt
-crop-terminal-lines: auto
--->
-
-<img class='full' src='hello-again.webp' alt='dart run hello.dart gibt jetzt nur noch Hello, World! aus.'>
+Von sich aus schickt Dart Nutzungsdaten an Google, damit seine Entwickler sehen, welche Befehle wie oft laufen. Im Workspace ist das abgeschaltet: Bei jedem Start deines Workspace läuft dafür `dart --disable-analytics`. Steht beim allerersten Lauf trotzdem ein langer englischer Text über Google Analytics vor `Hello, World!`, kannst du ihn übergehen. Auf einem eigenen Rechner schaltet derselbe Befehl die Nutzungsdaten ab.
 
 <div class='hint'>
 Dart kann Quelltext für viele verschiedene Plattformen kompilieren, z. B. für Webanwendungen, mobile Apps für Android und iOS (mit Flutter) und Desktopanwendungen unter Windows, Mac OS und Linux. In diesem Artikel probieren wir Dart auf der Kommandozeile aus, aber du kannst Dart auch in anderen Umgebungen verwenden.
