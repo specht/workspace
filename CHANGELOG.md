@@ -23,7 +23,10 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 - Traefik und die Peer-Firewall haben keinen Docker-Socket mehr, sondern einen Wächter, der nur lesen lässt
   (`GUARD_MODE=readonly`). Nach dem Update: `./config.rb build peer_firewall && ./config.rb up -d` und in
-  `docker/traefik` `docker compose up -d` (startet `traefik-docker-guard` und Traefik neu).
+  `docker/traefik` `docker compose up -d` (startet `traefik-docker-guard` und Traefik neu). Traefik läuft dafür aus
+  `docker/traefik` des Workspace, nicht aus einer Kopie der Datei (der Wächter braucht `docker/docker-guard`):
+  `.env` und `traefik/acme.json` aus dem alten Ordner dorthin kopieren, den alten mit `docker compose down`
+  anhalten und in `docker/traefik` starten (bootstrap/README.hetzner.centos.md, Schritt 5).
 - Lehrkräfte wählen im Profil oder auf `/lehrplan` ihr Bundesland; gespeichert wird es am Konto
   (`curriculum_state`), die Datenschutzerklärung nennt es unter den Einstellungen. Ohne Wahl gilt Berlin.
   Baden-Württemberg ist ein Entwurf (docs/plan-bundeslaender.md).
