@@ -3,7 +3,8 @@ import { loginAsE2eUser } from './workspace';
 
 // What gives away a task's answer waits for it (AfterTask, docs/didaktik.md):
 // after an ordinary task until it is solved, so that a wrong answer does not
-// show the right one; for teachers too, who open it with a button.
+// show the right one; for teachers too, who open it with a button; for
+// guests too.
 
 test('an explanation waits until the task above is solved', async ({ page, e2eEmail }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
@@ -36,4 +37,14 @@ test('a teacher sees the page as the class does and can open it', async ({ page 
   await expect(after.locator('.after-task-body')).toBeHidden();
   await after.getByRole('button', { name: /Für Lehrkräfte: jetzt zeigen/ }).click();
   await expect(after.locator('.after-task-body')).toBeVisible();
+});
+
+// A guest waits as a student does: otherwise a student could read the
+// answers in a private window before guessing.
+test('a guest waits too and is told to log in', async ({ page }) => {
+  await page.goto('/crypto');
+  const after = page.locator(".after-task[data-after='fingerabdruck']");
+  await expect(after.locator('.after-task-wait')).toContainText('sobald du angemeldet bist');
+  await expect(after.locator('.after-task-body')).toBeHidden();
+  await expect(after.getByRole('button', { name: /jetzt zeigen/ })).toHaveCount(0);
 });

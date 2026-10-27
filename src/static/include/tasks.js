@@ -82,7 +82,9 @@
             const answered = mine.length === 0 || mine.some((card) => (prediction ? ANSWERED : SOLVED).includes(card.dataset.status));
             box.classList.toggle('after-task-shown', answered || box.dataset.revealed === 'yes');
             const wait = box.querySelector('.after-task-wait');
-            const text = kata ? 'Hier geht die Geschichte weiter, sobald du die Kata oben gelöst hast.'
+            // a guest cannot answer: the way on is to log in
+            const text = !page.loggedIn ? 'Hier geht es weiter, sobald du angemeldet bist und die Aufgabe oben beantwortet hast.'
+                : kata ? 'Hier geht die Geschichte weiter, sobald du die Kata oben gelöst hast.'
                 : prediction ? null : 'Hier geht es weiter, sobald du die Aufgabe oben gelöst hast.';
             if (wait && text && wait.dataset.text !== text) {
                 wait.textContent = text;

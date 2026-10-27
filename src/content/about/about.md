@@ -106,7 +106,7 @@ Gearbeitet wird in Visual Studio Code, mit Dateien, Terminal und Git, so wie in 
 
 ### Erst vermuten, dann ausprobieren
 
-Bevor etwas ausgeführt wird, fragt die Seite oft, was gleich passieren wird, in der Einführung in SQL zum Beispiel, in welcher Reihenfolge die Datenbank die Teile einer Abfrage abarbeitet. Was die Antwort verraten würde, ein Bild vom Ergebnis oder der Absatz, der es erklärt, erscheint erst, wenn die Vermutung abgegeben ist, ob richtig oder falsch. Wer sich erst festgelegt hat, schaut beim Ausprobieren genau hin. Lehrkräfte und Gäste sehen alles sofort; so wie hier sehen es nur Lernende.
+Bevor etwas ausgeführt wird, fragt die Seite oft, was gleich passieren wird, in der Einführung in SQL zum Beispiel, in welcher Reihenfolge die Datenbank die Teile einer Abfrage abarbeitet. Was die Antwort verraten würde, ein Bild vom Ergebnis oder der Absatz, der es erklärt, erscheint erst, wenn die Vermutung abgegeben ist, ob richtig oder falsch. Wer sich erst festgelegt hat, schaut beim Ausprobieren genau hin. So sehen es Lernende und Gäste; Lehrkräfte öffnen es mit einem Klick, auch ohne Vermutung.
 
 <img class='full full-shadow shot' src='tour-vorhersage.webp' alt='Die Aufgabe »Die Reihenfolge«: In welcher Reihenfolge arbeitet die Datenbank SELECT, FROM, WHERE, ORDER BY und LIMIT ab? Vier Reihenfolgen zur Wahl und der Knopf »Vermutung abgeben«. Darunter statt der Erklärung nur die Zeile: Hier geht es weiter, sobald du deine Antwort oben abgegeben hast.'>
 
