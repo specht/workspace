@@ -349,6 +349,19 @@ einem Git-Server im Netz braucht dann niemand.
 Auf der Klassenseite stehen die Gruppen unter ihrer Schule, sobald es mehr
 als eine gibt; Testgruppen und Gruppen ohne Schule zuletzt.
 
+## Treffpunkt
+
+Im Reiter »Fortschritt« setzt eine Lehrkraft für ihre Gruppe einen
+Treffpunkt nach einer Aufgabe der Aktivität (»Treffpunkt«, über der
+Tabelle), verschiebt ihn oder hebt ihn auf (»keiner«). Wer die Seite offen
+hat, sieht es sofort, ohne neu zu laden: Nach der Aufgabe steht ein Band
+»Hier trifft sich deine Klasse«; wer alle Aufgaben bis dahin gelöst hat
+(Extras zählen nicht), liest dort »Du bist da« und was bis zum Gespräch zu
+tun ist. Versteckt wird nichts. Über der Tabelle steht, wie viele da sind und
+wer noch fehlt; die Tabelle hat nach der Spalte der Aufgabe eine
+gestrichelte Linie. Wer in zwei Gruppen ist, sieht den früheren Treffpunkt.
+Plan und Aufbau: [plan-treffpunkt.md](plan-treffpunkt.md).
+
 ## Wer was sieht
 
 | | Lernende | Lehrkraft (`*`) | Lehrkraft (`+`) | Admin |

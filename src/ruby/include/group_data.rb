@@ -1,7 +1,8 @@
 # What hangs on a group's name besides the group itself: its settings
-# (GroupSetting: programming language, class repositories) and the
-# activities pinned for it (Pin). They go with the group, so that a new
-# group of the same name never inherits them (docs/teacher-access.md).
+# (GroupSetting: programming language, class repositories), the
+# activities pinned for it (Pin) and its meeting points (MeetingPoint).
+# They go with the group, so that a new group of the same name never
+# inherits them (docs/teacher-access.md).
 #
 #   - the delete button (/api/groups/delete) drops them with the group;
 #   - a group that is gone from the roster when it is read again (an
@@ -13,11 +14,11 @@
 # db is anything with neo4j_query(query, params) ($neo4j, or a test double).
 module GroupData
     DROP = <<~END_OF_QUERY
-        MATCH (n) WHERE (n:GroupSetting OR n:Pin) AND n.group IN $names
+        MATCH (n) WHERE (n:GroupSetting OR n:Pin OR n:MeetingPoint) AND n.group IN $names
         DETACH DELETE n;
     END_OF_QUERY
     DROP_ALL_BUT = <<~END_OF_QUERY
-        MATCH (n) WHERE (n:GroupSetting OR n:Pin) AND NOT n.group IN $keep
+        MATCH (n) WHERE (n:GroupSetting OR n:Pin OR n:MeetingPoint) AND NOT n.group IN $keep
         DETACH DELETE n;
     END_OF_QUERY
 

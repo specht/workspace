@@ -17,6 +17,7 @@ require './include/picture_rights.rb'
 require './include/curriculum_overview.rb'
 require './include/task_store.rb'
 require './include/class_board.rb'
+require './include/meeting_point.rb'
 require './include/open_answers.rb'
 require './include/submission_view.rb'
 require './include/student_home.rb'
@@ -2654,7 +2655,7 @@ class Main < Sinatra::Base
             halt 404
         end
         origin_sensitive = %w(POST PUT PATCH DELETE).include?(request.request_method) ||
-            ['/ws', '/ws_tcp_console', '/logout'].include?(request.path)
+            ['/ws', '/ws_tcp_console', '/ws_meeting', '/logout'].include?(request.path)
         if origin_sensitive && !Authentication.same_origin?(
             :origin => request.env['HTTP_ORIGIN'],
             :referer => request.env['HTTP_REFERER'],
@@ -5706,6 +5707,8 @@ class Main < Sinatra::Base
             solutions = kata_solutions_config(tasks)
             config[:solutions] = solutions if solutions
             config[:revealAfter] = true if teacher_logged_in?
+            meeting = meeting_page_config(tasks)
+            config[:meeting] = meeting if meeting
         end
         # Text that only stands in for the cards (an exercise list) is hidden
         # while the cards are shown.
@@ -5735,7 +5738,26 @@ class Main < Sinatra::Base
             "#{previews ? "<script src='/include/anaglyph_preview.js?#{CACHE_BUSTER}'></script>" : ''}" \
             "#{code_input}" \
             "#{pip ? "<script src='/include/pip_world.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}" \
-            "<script src='/include/tasks.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
+            "<script src='/include/tasks.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" \
+            "#{config[:meeting] ? "<script src='/include/meeting_point.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}"
+    end
+
+    # What meeting_point.js needs on an activity page: the points of the
+    # person's groups (a teacher's: of the group chosen on the class page)
+    # and, for a student who has arrived, the next set of Katas. nil
+    # without a group: then no point can concern the page.
+    def meeting_page_config(tasks)
+        teacher = teacher_logged_in?
+        groups = teacher ? [class_prefs['group']].compact & class_groups : my_groups
+        return nil if groups.empty?
+
+        config = { :points => meeting_points(groups, tasks[:activity]), :groups => groups, :teacher => teacher }
+        if teacher
+            config[:classUrl] = "/klasse?group=#{CGI.escape(groups.first)}&tab=fortschritt&activity=#{CGI.escape(tasks[:activity])}"
+        else
+            config[:kata] = next_kata_set
+        end
+        config
     end
 
     # Handbuch boxes (_include) this person has already been through on
@@ -6280,6 +6302,133 @@ class Main < Sinatra::Base
         respond(:unpinned => data[:slug])
     end
 
+    # --- The meeting point of an activity (MeetingPoint, docs/plan-treffpunkt.md)
+
+    # { group => task id } of the activity, for these groups.
+    def meeting_points(groups, activity)
+        return {} if groups.empty?
+
+        neo4j_query(<<~END_OF_QUERY, :groups => groups, :activity => activity).to_h { |row| [row['group'], row['task']] }
+            MATCH (m:MeetingPoint) WHERE m.group IN $groups AND m.activity = $activity
+            RETURN m.group AS group, m.task AS task;
+        END_OF_QUERY
+    end
+
+    # Open pages of an activity, each with the groups whose point it shows
+    # (/ws_meeting): { id => { ws:, activity:, groups: } }
+    @@meeting_ws = {}
+    @@meeting_ws_mutex = Mutex.new
+
+    def broadcast_meeting(group, activity, task)
+        clients = @@meeting_ws_mutex.synchronize do
+            @@meeting_ws.values.select { |c| c[:activity] == activity && c[:groups].include?(group) }
+        end
+        message = { :action => 'meeting', :group => group, :task => task }.to_json
+        clients.each { |c| c[:ws].send(message) rescue nil }
+    end
+
+    # A teacher sets the point after a task (not an Extra), moves it by
+    # setting it elsewhere, or lifts it (task empty); every open page of the
+    # group shows the change.
+    post '/api/class/meeting' do
+        assert(user_logged_in?)
+        Main.load_invitations()
+        data = parse_request_data(:required_keys => [:group, :activity, :task],
+            :max_value_lengths => {:group => 200, :activity => 64, :task => 100})
+        halt 403 unless class_groups.include?(data[:group])
+        _, _, tasks = class_activities(data[:group]).find { |a, _, _| a == data[:activity] }
+        halt 404 if tasks.nil?
+        key = "#{data[:group]}|#{data[:activity]}"
+        task = data[:task].to_s
+        if task.empty?
+            neo4j_query('MATCH (m:MeetingPoint {key: $key}) DETACH DELETE m;', :key => key)
+        else
+            halt 400 unless tasks.any? { |t| t[:id] == task && !t[:extra] }
+            neo4j_query(<<~END_OF_QUERY, :key => key, :group => data[:group], :activity => data[:activity], :task => task, :ts => Time.now.to_i)
+                MERGE (m:MeetingPoint {key: $key})
+                SET m.group = $group, m.activity = $activity, m.task = $task, m.ts = $ts;
+            END_OF_QUERY
+        end
+        broadcast_meeting(data[:group], data[:activity], task.empty? ? nil : task)
+        respond(:task => task.empty? ? nil : task)
+    end
+
+    # The line above the class board, again and again while it is open
+    # (class_meeting.js): who has arrived.
+    post '/api/class/meeting_status' do
+        assert(user_logged_in?)
+        Main.load_invitations()
+        data = parse_request_data(:required_keys => [:group, :activity], :max_value_lengths => {:group => 200, :activity => 64})
+        halt 403 unless class_groups.include?(data[:group])
+        respond(:html => meeting_status_html(data[:group], data[:activity]))
+    end
+
+    def meeting_status_html(group, activity)
+        task = meeting_points([group], activity)[group]
+        return '' if task.nil?
+
+        _, _, tasks = class_activities(group).find { |a, _, _| a == activity }
+        return '' if tasks.nil?
+
+        members = class_members(group)
+        states = class_board_states(members.map { |m| m[:email] }, activity)
+        MeetingPoint.status_html(MeetingPoint.status(tasks, task, members, states))
+    end
+
+    # The choice on the class board: no point, or after one of the tasks.
+    def meeting_control_html(group, activity, tasks)
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        current = meeting_points([group], activity)[group]
+        options = ["<option value=''#{current ? '' : ' selected'}>keiner</option>"]
+        tasks.each_with_index do |t, i|
+            next if t[:extra]
+
+            options << "<option value='#{h.(t[:id])}'#{t[:id] == current ? ' selected' : ''}>nach #{i + 1}. #{h.(t[:title])}</option>"
+        end
+        "<label class='class-meeting-control' title='Wo sich die Klasse trifft, bevor es weitergeht; die Seiten zeigen es sofort'>" \
+            "<i class='bi bi-flag' aria-hidden='true'></i>Treffpunkt " \
+            "<select class='form-select form-select-sm class-meeting-choice' data-group='#{h.(group)}' data-activity='#{h.(activity)}'>#{options.join}</select></label>"
+    end
+
+    # Open pages of an activity hear when a point of their groups is set,
+    # moved or lifted (meeting_point.js); a ping every half minute keeps the
+    # connection (nginx ends a silent one after a minute).
+    get '/ws_meeting' do
+        halt 403 unless user_logged_in?
+        halt 400 unless Faye::WebSocket.websocket?(request.env)
+        activity = params['activity'].to_s
+        halt 400 unless activity =~ /\A[a-z0-9_-]+\z/
+        Main.load_invitations()
+        groups = (my_groups + (teacher_logged_in? ? class_groups : [])).uniq
+        ws = Faye::WebSocket.new(request.env)
+        id = ws.object_id
+        ws.on(:open) do |_|
+            @@meeting_ws_mutex.synchronize { @@meeting_ws[id] = { :ws => ws, :activity => activity, :groups => groups } }
+            # what is set now: a page that lost its connection catches up
+            ws.send({ :action => 'points', :points => meeting_points(groups, activity) }.to_json) rescue nil
+        end
+        ws.on(:message) { |_| ws.send({ :pong => true }.to_json) rescue nil }
+        ws.on(:close) { |_| @@meeting_ws_mutex.synchronize { @@meeting_ws.delete(id) } }
+        ws.rack_response
+    end
+
+    # What a student who has arrived could do next: the first set of Katas
+    # with tasks still open for them, { slug:, title: }, or nil.
+    def next_kata_set
+        ((@@sections['katas'] || {})[:entries] || []).each do |entry|
+            slug = entry.to_s.delete_prefix('.')
+            c = @@content[slug]
+            next if c.nil? || c[:tasks].nil? || (c[:dev_only] && !DEVELOPMENT)
+
+            ids = c[:tasks][:on_page] || []
+            next if ids.empty?
+
+            done = ids.count { |id| StudentHome::DONE.include?((my_task_states["#{c[:tasks][:activity]}/#{id}"] || {})[:status].to_s) }
+            return { :slug => slug, :title => plain_title(slug) } if done < ids.size
+        end
+        nil
+    end
+
     def class_board_states(emails, activity)
         states = {}
         neo4j_query(<<~END_OF_QUERY, :emails => emails, :prefix => "#{activity}/").each do |row|
@@ -6587,6 +6736,7 @@ class Main < Sinatra::Base
             end
             io << "</ul></div>"
         end
+        io << meeting_control_html(group, activity_key, tasks)
         io << class_template_html(group, activity_key)
         io << "</div>"
         io << "<div class='class-template-results' aria-live='polite'></div>"
@@ -6599,7 +6749,12 @@ class Main < Sinatra::Base
         viewer = { :email => me, :name => 'Du (Lehrkraft)' }
         states = class_board_states((members.map { |m| m[:email] } + [me]).uniq, activity_key)
         board = ClassBoard.build(members, tasks, states, :viewer => viewer)
-        io << ClassBoard.html(board, :activity => activity_key,
+        # The meeting point: who has arrived (class_meeting.js asks again
+        # while the page is open), and the line on the board after its task
+        point = meeting_points([group], activity_key)[group]
+        io << "<div class='class-meeting-line' data-group='#{h.(group)}' data-activity='#{h.(activity_key)}' aria-live='polite'>" \
+            "#{point ? MeetingPoint.status_html(MeetingPoint.status(tasks, point, members, states)) : ''}</div>"
+        io << ClassBoard.html(board, :activity => activity_key, :meeting => point,
             :submission_url => lambda { |email, id| "/api/task/submission/#{activity_key}/#{id}?email=#{CGI.escape(email)}" })
         io << class_scene_galleries_html(activity_key, tasks, board[:own] ? members + [viewer] : members)
         io << class_kata_hand_ins_html(activity_key, tasks, members)

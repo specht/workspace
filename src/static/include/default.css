@@ -4864,6 +4864,90 @@ ul.task-teacher-list .task-teacher-answer {
     margin-right: 0.4em;
 }
 
+/* The meeting point (meeting_point.js, class_meeting.js): on the page a
+   band across the width where the class meets, quiet until one has
+   arrived; on the class board the choice, who is there, and a line after
+   the task's column */
+:root {
+    --meeting: #0f766e;
+    --meeting-bg: #effaf8;
+}
+[data-bs-theme='dark'] {
+    --meeting: #5eead4;
+    --meeting-bg: rgba(94, 234, 212, 0.07);
+}
+.meeting-point {
+    margin: 2em 0;
+    padding: 0.7em 1.1em;
+    border-top: 2px dashed var(--meeting);
+    border-bottom: 2px dashed var(--meeting);
+    color: var(--bs-secondary-color);
+}
+.meeting-point.meeting-arrived {
+    background: var(--meeting-bg);
+    color: inherit;
+}
+.meeting-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25em 0.6em;
+}
+.meeting-head .bi,
+.meeting-head strong {
+    color: var(--meeting);
+}
+.meeting-head a {
+    margin-left: auto;
+    font-size: 0.9em;
+}
+.meeting-body {
+    margin-top: 0.5em;
+}
+.meeting-body p {
+    margin: 0 0 0.3em;
+}
+.meeting-body ul {
+    margin: 0;
+}
+.meeting-status .class-meeting-status {
+    margin: 0;
+}
+.class-meeting-control {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    margin: 0;
+}
+.class-meeting-control .bi {
+    color: var(--meeting);
+}
+.class-meeting-control select {
+    width: auto;
+    max-width: 22em;
+}
+.class-meeting-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.3em 0.6em;
+    margin: 0 0 0.8em;
+}
+.class-meeting-status > .bi {
+    color: var(--meeting);
+}
+.class-meeting-waiting summary {
+    color: var(--bs-secondary-color);
+    font-size: 0.9em;
+}
+.class-meeting-waiting p {
+    margin: 0.2em 0 0;
+    font-size: 0.9em;
+}
+.class-board .cb-meeting {
+    border-right: 3px dashed var(--meeting) !important;
+}
+
 .class-activity-select {
     margin: 0;
     padding: 0;
