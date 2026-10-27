@@ -108,13 +108,12 @@ Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>da
 Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
 
 <!-- tutorial-screenshot
-# Der erste Lauf. Im Terminal des Editors zeigt Dart den Text zur
-# Telemetrie, obwohl sie aus ist (dart --disable-analytics beim Start,
-# init-code-server-run, und davor hier noch einmal); außerhalb des Editors
-# nicht. Ungeklärt; der Text unter dem Bild sagt, dass man ihn übergehen kann.
+# Der erste Lauf. Der Workspace der Bilder beginnt mit einem leeren
+# /workspace; hier daher, was init-code-server-run bei jedem Start tut:
+# Nutzungsdaten aus, den Hinweis dazu als gezeigt vermerkt.
 hide-left-sidebar
 terminal-maximize
-terminal-run: dart --disable-analytics > /dev/null; dart run hello.dart > /dev/null
+terminal-run: dart --disable-analytics > /dev/null; printf '\ndart-tool=%s,1\n' $(date +%F) >> ~/.dart-tool/dart-flutter-telemetry.config
 terminal-wait-for-prompt
 press: Control+l
 terminal-run: dart run hello.dart
@@ -122,9 +121,9 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello-again.webp' alt='dart run hello.dart zeigt zuerst einen englischen Text: Das Dart-Werkzeug schicke Nutzungsdaten an Google Analytics, abschalten lasse sich das mit dart --disable-analytics; darunter steht Hello, World!.'>
+<img class='full' src='hello-again.webp' alt='dart run hello.dart gibt Hello, World! aus.'>
 
-Von sich aus schickt Dart Nutzungsdaten an Google, damit seine Entwickler sehen, welche Befehle wie oft laufen. Im Workspace ist das abgeschaltet: Bei jedem Start deines Workspace läuft dafür `dart --disable-analytics`. Steht beim allerersten Lauf trotzdem ein langer englischer Text über Google Analytics vor `Hello, World!`, kannst du ihn übergehen. Auf einem eigenen Rechner schaltet derselbe Befehl die Nutzungsdaten ab.
+Von sich aus schickt Dart Nutzungsdaten an Google, damit seine Entwickler sehen, welche Befehle wie oft laufen. Im Workspace ist das abgeschaltet: Bei jedem Start deines Workspace läuft dafür `dart --disable-analytics`. Auf einem eigenen Rechner erklärt Dart das beim ersten Lauf in einem langen englischen Text, und derselbe Befehl schaltet es ab.
 
 <div class='hint'>
 Dart kann Quelltext für viele verschiedene Plattformen kompilieren, z. B. für Webanwendungen, mobile Apps für Android und iOS (mit Flutter) und Desktopanwendungen unter Windows, Mac OS und Linux. In diesem Artikel probieren wir Dart auf der Kommandozeile aus, aber du kannst Dart auch in anderen Umgebungen verwenden.
